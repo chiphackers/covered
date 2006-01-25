@@ -781,12 +781,9 @@ void* malloc_safe_nolimit( size_t size, char* file, int line ) {
 */
 void free_safe( void* ptr ) {
 
-  /* curr_malloc_size -= sizeof( *ptr ); */
-
-  /* printf( "Freeing memory, addr: 0x%lx\n", ptr ); */
-
-  // printf( "Deallocating ptr %p\n", ptr );
-  free( ptr );
+  if( ptr != NULL ) {
+    free( ptr );
+  }
 
 }
 
@@ -904,6 +901,12 @@ const char* get_funit_type( int type ) {
 
 /*
  $Log$
+ Revision 1.40  2006/01/19 23:10:38  phase1geo
+ Adding line and starting column information to vsignal structure (and associated CDD
+ files).  Regression has been fully updated for this change which now fully passes.  Final
+ changes to summary GUI.  Fixed signal underlining for toggle coverage to work for both
+ explicit and implicit signals.  Getting things ready for a preferences window.
+
  Revision 1.39  2006/01/16 18:10:20  phase1geo
  Causing all error information to get sent to stderr no matter what mode we
  are in.  Updating error diagnostics for this change.  Full regression now

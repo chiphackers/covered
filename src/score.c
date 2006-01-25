@@ -32,7 +32,9 @@
 char* top_module             = NULL;                /*!< Name of top-level module to score */
 char* top_instance           = NULL;                /*!< Name of top-level instance name */
 char* output_db              = NULL;                /*!< Name of output score database file to generate */
-char* vcd_file               = NULL;                /*!< Name of VCD output file to parse */
+char* dump_file              = NULL;                /*!< Name of dumpfile to parse */
+int   dump_mode              = DUMP_FMT_NONE;       /*!< Specifies dumpfile format to parse */
+char* lxt_file               = NULL;                /*!< Name of LXT dumpfile to parse */
 char* vpi_file               = NULL;                /*!< Name of VPI output file to write contents to */
 int   delay_expr_type        = DELAY_EXPR_DEFAULT;  /*!< Value to use when a delay expression with min:typ:max */
 char* ppfilename             = NULL;                /*!< Name of preprocessor filename to use */
@@ -61,12 +63,17 @@ void define_macro( const char* name, const char* value );
 void score_usage() {
 
   printf( "\n" );
-  printf( "Usage:  covered score -t <top-level_module_name> [<options>]\n" );
+  printf( "Usage:  covered score -t <top-level_module_name> [-vcd <dumpfile> | -lxt <dumpfile>] [<options>]\n" );
+  printf( "\n" );
+  printf( "   Dumpfile formats:\n" );
+  printf( "      Both the VCD and LXT style dumpfiles are supported by Covered.\n" );
+  printf( "\n" );
+  printf( "      If either the -vcd or -lxt option is specified, the design is scored using this dumpfile\n" );
+  printf( "      for coverage gathering.  If neither option is specified, Covered will only create an\n" );
+  printf( "      initial CDD file from the design and will not attempt to score the design.  An error message\n" );
+  printf( "      will be displayed if both options are present on the command-line.\n" );
   printf( "\n" );
   printf( "   Options:\n" );
-  printf( "      -vcd <dumpfile>              Name of dumpfile to score design with.  If this option\n" );
-  printf( "                                    is not used, Covered will only create an initial CDD file\n" );
-  printf( "                                    from the design and will not attempt to score the design.\n" );
 #ifdef TBD
   printf( "      -vpi (<name>)                Generates Verilog module called <name> which contains code to\n" );
   printf( "                                    allow Covered to run as a VPI during simulation.  If <name>\n" );
@@ -289,11 +296,34 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
     } else if( strncmp( "-vcd", argv[i], 4 ) == 0 ) {
 
       i++;
-      if( file_exists( argv[i] ) ) {
-        vcd_file = strdup_safe( argv[i], __FILE__, __LINE__ );
+      if( dump_mode == DUMP_FMT_NONE ) {
+        if( file_exists( argv[i] ) ) {
+          dump_file = strdup_safe( argv[i], __FILE__, __LINE__ );
+          dump_mode = DUMP_FMT_VCD;
+        } else {
+          snprintf( user_msg, USER_MSG_LENGTH, "VCD dumpfile not found \"%s\"", argv[i] );
+          print_output( user_msg, FATAL, __FILE__, __LINE__ );
+          retval = FALSE;
+        }
       } else {
-        snprintf( user_msg, USER_MSG_LENGTH, "VCD dumpfile not found \"%s\"", argv[i] );
-        print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        print_output( "Both the -vcd and -lxt options were specified on the command-line", FATAL, __FILE__, __LINE__ );
+        retval = FALSE;
+      }
+
+    } else if( strncmp( "-lxt", argv[i], 4 ) == 0 ) {
+ 
+      i++; 
+      if( dump_mode == DUMP_FMT_NONE ) {
+        if( file_exists( argv[i] ) ) {
+          dump_file = strdup_safe( argv[i], __FILE__, __LINE__ );
+          dump_mode = DUMP_FMT_LXT;
+        } else {
+          snprintf( user_msg, USER_MSG_LENGTH, "LXT dumpfile not found \"%s\"", argv[i] );
+          print_output( user_msg, FATAL, __FILE__, __LINE__ );
+          retval = FALSE;
+        }
+      } else {
+        print_output( "Both the -vcd and -lxt options were specified on the command-line", FATAL, __FILE__, __LINE__ );
         retval = FALSE;
       }
 
@@ -449,16 +479,19 @@ int command_score( int argc, int last_arg, char** argv ) {
       // vpi_generate_top_module( vpi_file, output_db, top_instance );
 
     /* Read dumpfile and score design */
-    } else if( vcd_file != NULL ) {
+    } else if( dump_mode != DUMP_FMT_NONE ) {
 
-      snprintf( user_msg, USER_MSG_LENGTH, "Scoring dumpfile %s...", vcd_file );
+      switch( dump_mode ) {
+        case DUMP_FMT_VCD :  snprintf( user_msg, USER_MSG_LENGTH, "Scoring VCD dumpfile %s...", dump_file );  break;
+        case DUMP_FMT_LXT :  snprintf( user_msg, USER_MSG_LENGTH, "Scoring LXT dumpfile %s...", dump_file );  break;
+      }
       print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-      parse_and_score_dumpfile( output_db, vcd_file );
+      parse_and_score_dumpfile( output_db, dump_file, dump_mode );
       print_output( "", NORMAL, __FILE__, __LINE__ );
 
     }
 
-    if( vcd_file != NULL ) {
+    if( dump_mode != DUMP_FMT_NONE ) {
       print_output( "***  Scoring completed successfully!  ***\n", NORMAL, __FILE__, __LINE__ );
     }
     snprintf( user_msg, USER_MSG_LENGTH, "Dynamic memory allocated:   %ld bytes", largest_malloc_size );
@@ -484,19 +517,14 @@ int command_score( int argc, int last_arg, char** argv ) {
     defparam_dealloc();
 
     free_safe( output_db );
-    free_safe( vcd_file );
+    free_safe( dump_file );
     free_safe( vpi_file );
     free_safe( top_module );
     free_safe( ppfilename );
     ppfilename = NULL;
 
-    if( directive_filename != NULL ) {
-      free_safe( directive_filename );
-    }
-    
-    if( top_instance != NULL ) {
-      free_safe( top_instance );
-    }
+    free_safe( directive_filename );
+    free_safe( top_instance );
 
   }
 
@@ -506,6 +534,12 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.61  2006/01/09 18:58:15  phase1geo
+ Updating regression for VCS runs.  Added cleanup function at exit to remove the
+ tmp* file (if it exists) regardless of the internal state of Covered at the time
+ of exit (removes the need for the user to remove this file when things go awry).
+ Documentation updates for this feature.
+
  Revision 1.60  2006/01/04 22:07:04  phase1geo
  Changing expression execution calculation from sim to expression_operate function.
  Updating all regression files for this change.  Modifications to diagnostic Makefile

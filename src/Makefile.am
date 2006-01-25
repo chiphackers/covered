@@ -20,6 +20,8 @@ covered_SOURCES = arc.c \
 		  lexer.c \
 		  line.c \
                   link.c \
+		  lxt.c \
+		  lxt2_read.c \
 		  main.c \
 		  merge.c \
 		  param.c \

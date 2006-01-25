@@ -26,6 +26,12 @@ else
 FINISH_CODE   = 3
 endif
 
+ifdef LXT
+DUMP_FMT      = -lxt2
+else
+DUMP_FMT      = -vcd
+endif
+
 IVERILOG       = iverilog
 IVERILOG_FLAGS = -y ./lib -I ./include -DRUNTEST
 IVERILOG_EXEC  = a.out
@@ -45,7 +51,7 @@ else
 VERILOG       = $(IVERILOG)
 VERILOG_FLAGS = $(IVERILOG_FLAGS)
 VERILOG_EXEC  = $(IVERILOG_EXEC)
-VERILOG_CMD   = $(IVERILOG_INTER) $(IVERILOG_EXEC)
+VERILOG_CMD   = $(IVERILOG_INTER) $(IVERILOG_EXEC) $(DUMP_FMT)
 endif
 
 CDD_DIR       = ../cdd

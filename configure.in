@@ -10,6 +10,7 @@ dnl AC_ARG_PROGRAM
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 AC_PROG_RANLIB
+AC_CHECK_LIB(z,gzdopen)
 AC_CHECK_PROGS(XGPERF,gperf,none)
 if test "$XGPERF" = "none"
 then

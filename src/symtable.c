@@ -299,6 +299,8 @@ void symtable_assign() {
   sym_sig*  sig;   /* Pointer to current sym_sig in list */
   int       i;     /* Loop iterator                      */
 
+  printf( "postsim_size: %d\n", postsim_size );
+
   for( i=0; i<postsim_size; i++ ) {
     curr = timestep_tab[i];
     sig = curr->sig_head;
@@ -349,6 +351,12 @@ void symtable_dealloc( symtable* symtab ) {
 
 /*
  $Log$
+ Revision 1.19  2006/01/05 05:52:06  phase1geo
+ Removing wait bit in vector supplemental field and modifying algorithm to only
+ assign in the post-sim location (pre-sim now is gone).  This fixes some issues
+ with simulation results and increases performance a bit.  Updated regressions
+ for these changes.  Full regression passes.
+
  Revision 1.18  2004/03/30 15:42:15  phase1geo
  Renaming signal type to vsignal type to eliminate compilation problems on systems
  that contain a signal type in the OS.

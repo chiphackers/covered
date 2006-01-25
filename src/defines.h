@@ -70,6 +70,25 @@
 #define DEFAULT_LINE_WIDTH 105
 
 /*!
+ \addtogroup dumpfile_fmt Dumpfile Format
+
+ The following defines are used by Covered to determine what dumpfile parsing mode we are in
+
+ @{
+*/
+
+/*! No dumpfile was specified */
+#define DUMP_FMT_NONE      0
+
+/*! VCD dumpfile was specified */
+#define DUMP_FMT_VCD       1
+
+/*! LXT dumpfile was specified */
+#define DUMP_FMT_LXT       2
+
+/*! @} */
+
+/*!
  \addtogroup output_type Output type
 
  The following defines are used by the print_output function to
@@ -1760,6 +1779,10 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.172  2006/01/25 16:51:27  phase1geo
+ Fixing performance/output issue with hierarchical references.  Added support
+ for hierarchical references to parser.  Full regression passes.
+
  Revision 1.171  2006/01/24 23:24:37  phase1geo
  More updates to handle static functions properly.  I have redone quite a bit
  of code here which has regressions pretty broke at the moment.  More work

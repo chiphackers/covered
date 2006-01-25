@@ -68,14 +68,14 @@ void vcd_parse_def_ignore( FILE* vcd ) {
 */
 void vcd_parse_def_var( FILE* vcd ) {
 
-  char type[256];        /* Variable type                   */
-  int  size;             /* Bit width of specified variable */
-  char id_code[256];     /* Unique variable identifier_code */
-  char ref[256];         /* Name of variable in design      */
-  char reftmp[256];      /* Temporary variable name         */
-  char tmp[15];          /* Temporary string holder         */
-  int  msb = -1;         /* Most significant bit            */
-  int  lsb = -1;         /* Least significant bit           */
+  char type[256];     /* Variable type */
+  int  size;          /* Bit width of specified variable */
+  char id_code[256];  /* Unique variable identifier_code */
+  char ref[256];      /* Name of variable in design */
+  char reftmp[256];   /* Temporary variable name */
+  char tmp[15];       /* Temporary string holder */
+  int  msb = -1;      /* Most significant bit */
+  int  lsb = -1;      /* Least significant bit */
 
   if( fscanf( vcd, "%s %d %s %s %s", type, &size, id_code, ref, tmp ) == 5 ) {
 
@@ -143,8 +143,8 @@ void vcd_parse_def_var( FILE* vcd ) {
 */
 void vcd_parse_def_scope( FILE* vcd ) {
 
-  char type[256];     /* Scope type                 */
-  char id[256];       /* Name of scope to change to */
+  char type[256];  /* Scope type */
+  char id[256];    /* Name of scope to change to */
 
   if( fscanf( vcd, "%s %s $end", type, id ) == 2 ) {
 
@@ -172,8 +172,8 @@ void vcd_parse_def_scope( FILE* vcd ) {
 void vcd_parse_def( FILE* vcd ) {
 
   bool enddef_found = FALSE;  /* If set to true, definition section is finished */
-  char keyword[256];          /* Holds keyword value                            */
-  int  chars_read;            /* Number of characters scanned in                */
+  char keyword[256];          /* Holds keyword value */
+  int  chars_read;            /* Number of characters scanned in */
 
   while( !enddef_found && (fscanf( vcd, "%s%n", keyword, &chars_read ) == 1) ) {
 
@@ -389,6 +389,15 @@ void vcd_parse( char* vcd_file ) {
 
 /*
  $Log$
+ Revision 1.18  2004/03/16 05:45:43  phase1geo
+ Checkin contains a plethora of changes, bug fixes, enhancements...
+ Some of which include:  new diagnostics to verify bug fixes found in field,
+ test generator script for creating new diagnostics, enhancing error reporting
+ output to include filename and line number of failing code (useful for error
+ regression testing), support for error regression testing, bug fixes for
+ segmentation fault errors found in field, additional data integrity features,
+ and code support for GUI tool (this submission does not include TCL files).
+
  Revision 1.17  2004/03/15 21:38:17  phase1geo
  Updated source files after running lint on these files.  Full regression
  still passes at this point.

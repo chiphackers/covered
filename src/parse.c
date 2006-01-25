@@ -14,6 +14,7 @@
 #include "db.h"
 #include "binding.h"
 #include "vcd.h"
+#include "lxt.h"
 #include "fsm_var.h"
 #include "info.h"
 #include "sim.h"
@@ -135,15 +136,22 @@ bool parse_design( char* top, char* output_db ) {
 }
 
 /*!
- \param db   Name of output database file to generate.
- \param vcd  Name of VCD file to parse for scoring.
- \return Returns TRUE if VCD parsing and scoring is successful; otherwise,
+ \param db         Name of output database file to generate.
+ \param dump_file  Name of dumpfile to parse for scoring.
+ \param dump_mode  Type of dumpfile being used (see \ref dumpfile_fmt for legal values)
+
+ \return Returns TRUE if dumpfile parsing and scoring is successful; otherwise,
          returns FALSE.
 
+ Reads in specified CDD database file, reads in specified dumpfile in the specified format,
+ performs re-simulation and writes the scored design back to the specified CDD database file
+ for merging or reporting.
 */
-bool parse_and_score_dumpfile( char* db, char* vcd ) {
+bool parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) {
 
   bool retval = TRUE;  /* Return value of this function */
+
+  assert( dump_file != NULL );
 
 #ifdef DEBUG_MODE
   snprintf( user_msg, USER_MSG_LENGTH, "========  Reading in database %s  ========\n", db );
@@ -162,26 +170,20 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
   /* Bind expressions to signals/functional units */
   bind( TRUE );
 
+  /* Add static values to simulator */
   sim_add_statics();
 
-  /* Read in contents of VCD file */
-  if( vcd == NULL ) {
-    print_output( "VCD file not specified on command line", FATAL, __FILE__, __LINE__ );
-    exit( 1 );
-  }
-
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "========  Reading in VCD dumpfile %s  ========\n", vcd );
+  snprintf( user_msg, USER_MSG_LENGTH, "========  Reading in VCD dumpfile %s  ========\n", dump_file );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
   
-#ifdef OBSOLETE
-  /* Perform initialization simulation timestep */
-  db_do_timestep( 0 );
-#endif
-
   /* Perform the parse */
-  vcd_parse( vcd );
+  switch( dump_mode ) {
+    case DUMP_FMT_VCD :  vcd_parse( dump_file );  break;
+    case DUMP_FMT_LXT :  lxt_parse( dump_file );  break;
+    default           :  assert( (dump_mode == DUMP_FMT_VCD) || (dump_mode == DUMP_FMT_LXT) );
+  }
     
   /* Flush any pending statement trees that are waiting for delay */
   db_do_timestep( -1 );
@@ -206,6 +208,10 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
 
 /*
  $Log$
+ Revision 1.35  2006/01/06 23:39:10  phase1geo
+ Started working on removing the need to simulate more than is necessary.  Things
+ are pretty broken at this point, but all of the code should be in -- debugging.
+
  Revision 1.34  2006/01/02 21:35:36  phase1geo
  Added simulation performance statistical information to end of score command
  when we are in debug mode.
