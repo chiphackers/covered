@@ -1472,6 +1472,8 @@ struct expression_s {
   control     exec_num;             /*!< Specifies the number of times this expression was executed during simulation */
   control     col;                  /*!< Specifies column location of beginning/ending of expression */
   vsignal*    sig;                  /*!< Pointer to signal.  If NULL then no signal is attached */
+  char*       name;                 /*!< Name of signal/function/task for output purposes (only valid if we are binding
+                                         to a signal, task or function */
   expr_stmt*  parent;               /*!< Parent expression/statement */
   expression* right;                /*!< Pointer to expression on right */
   expression* left;                 /*!< Pointer to expression on left */
@@ -1758,6 +1760,11 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.171  2006/01/24 23:24:37  phase1geo
+ More updates to handle static functions properly.  I have redone quite a bit
+ of code here which has regressions pretty broke at the moment.  More work
+ to do but I'm checkpointing.
+
  Revision 1.170  2006/01/23 03:53:29  phase1geo
  Adding support for input/output ports of tasks/functions.  Regressions are not
  running cleanly at this point so there is still some work to do here.  Checkpointing.

@@ -1531,11 +1531,6 @@ void db_assign_symbol( char* name, char* symbol, int msb, int lsb ) {
 
       }
 
-    } else {
-
-      snprintf( user_msg, USER_MSG_LENGTH, "VCD signal \"%s.%s\" found that is not part of design", curr_inst_scope, name );
-      print_output( user_msg, WARNING, __FILE__, __LINE__ );
-
     }
 
   }
@@ -1640,6 +1635,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.168  2006/01/23 03:53:29  phase1geo
+ Adding support for input/output ports of tasks/functions.  Regressions are not
+ running cleanly at this point so there is still some work to do here.  Checkpointing.
+
  Revision 1.167  2006/01/20 22:44:51  phase1geo
  Moving parameter resolution to post-bind stage to allow static functions to
  be considered.  Regression passes without static function testing.  Static

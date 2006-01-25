@@ -298,7 +298,8 @@ void expression_assign_op_func( expression* expr );
  Creates a new expression from heap memory and initializes its values for
  usage.  Right and left expressions need to be created before this function is called.
 */
-expression* expression_create( expression* right, expression* left, exp_op_type op, bool lhs, int id, int line, int first, int last, bool data ) {
+expression* expression_create( expression* right, expression* left, exp_op_type op, bool lhs, int id,
+                               int line, int first, int last, bool data ) {
 
   expression* new_expr;    /* Pointer to newly created expression */
   int         rwidth = 0;  /* Bit width of expression on right */
@@ -323,6 +324,7 @@ expression* expression_create( expression* right, expression* left, exp_op_type 
   new_expr->value               = (vector*)malloc_safe( sizeof( vector ), __FILE__, __LINE__ );
   new_expr->table               = NULL;
   new_expr->stmt                = NULL;
+  new_expr->name                = NULL;
 
   if( right != NULL ) {
 
@@ -769,8 +771,7 @@ statement* expression_get_root_statement( expression* exp ) {
 */
 void expression_db_write( expression* expr, FILE* file, bool parse_mode ) {
 
-  func_unit* funit;     /* Pointer to functional unit containing the statement attached to this expression */
-  char*      sig_name;  /* Temporary pointer to signal name */
+  func_unit* funit;  /* Pointer to functional unit containing the statement attached to this expression */
 
   fprintf( file, "%d %d %d %x %x %x %x %d %d",
     DB_TYPE_EXPRESSION,
@@ -789,10 +790,8 @@ void expression_db_write( expression* expr, FILE* file, bool parse_mode ) {
     vector_db_write( expr->value, file, (expr->op == EXP_OP_STATIC) );
   }
 
-  sig_name = bind_find_sig_name( expr );
-
-  if( sig_name != NULL ) {
-    fprintf( file, " %s", sig_name );
+  if( expr->name != NULL ) {
+    fprintf( file, " %s", expr->name );
   } else if( expr->sig != NULL ) {
     fprintf( file, " %s", expr->sig->name );  /* This will be valid for parameters */
   } else if( expr->stmt != NULL ) {
@@ -2761,9 +2760,6 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
     } else {
 
-      /* Remove this expression from the binding list (if it exists there) */
-      bind_remove( expr->id, expression_is_assigned( expr ) );
-
       /* Deallocate vector memory but not vector itself */
       if( (op != EXP_OP_ASSIGN)  &&
           (op != EXP_OP_DASSIGN) &&
@@ -2775,7 +2771,12 @@ void expression_dealloc( expression* expr, bool exp_only ) {
         free_safe( expr->value );
       }
 
-      if( expr->sig != NULL ) {
+      if( expr->sig == NULL ) {
+
+        /* Remove this expression from the binding list */
+        bind_remove( expr->id, expression_is_assigned( expr ) );
+
+      } else {
 
         /* Remove this expression from the attached signal's expression list */
         exp_link_remove( expr, &(expr->sig->exp_head), &(expr->sig->exp_tail), FALSE );
@@ -2807,6 +2808,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
     free_safe( expr->parent );
 
+    /* If name contains data, free it */
+    if( expr->name != NULL ) {
+      free_safe( expr->name );
+    }
+
     if( !exp_only ) {
 
       expression_dealloc( expr->right, FALSE );
@@ -2827,6 +2833,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.165  2006/01/25 04:32:47  phase1geo
+ Fixing bug with latest checkins.  Full regression is now passing for IV simulated
+ diagnostics.
+
  Revision 1.164  2006/01/24 23:33:14  phase1geo
  A few cleanups.
 

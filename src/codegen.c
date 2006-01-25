@@ -315,7 +315,7 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
       if( expr->sig->name[0] == '#' ) {
         tmpstr = expr->sig->name + 1;
       } else {
-        tmpstr = expr->sig->name;
+        tmpstr = expr->name;
       }
 
       switch( strlen( tmpstr ) ) {
@@ -347,8 +347,8 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
         tmpstr = (char*)malloc_safe( (strlen( expr->sig->name ) + 1), __FILE__, __LINE__ );
         snprintf( tmpstr, (strlen( expr->sig->name ) + 1), "%s[", (expr->sig->name + 1) );
       } else {
-        tmpstr = (char*)malloc_safe( (strlen( expr->sig->name ) + 2), __FILE__, __LINE__ );
-        snprintf( tmpstr, (strlen( expr->sig->name ) + 2), "%s[", expr->sig->name );
+        tmpstr = (char*)malloc_safe( (strlen( expr->name ) + 2), __FILE__, __LINE__ );
+        snprintf( tmpstr, (strlen( expr->name ) + 2), "%s[", expr->name );
       }
 
       codegen_create_expr( code, code_depth, expr->line, tmpstr, left_code, left_code_depth, expr->left->line, "]", NULL, 0, 0, NULL );
@@ -363,8 +363,8 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
         tmpstr = (char*)malloc_safe( (strlen( expr->sig->name ) + 1), __FILE__, __LINE__ );
         snprintf( tmpstr, (strlen( expr->sig->name ) + 1), "%s[", (expr->sig->name + 1) );
       } else {
-        tmpstr = (char*)malloc_safe( (strlen( expr->sig->name ) + 2), __FILE__, __LINE__ );
-        snprintf( tmpstr, (strlen( expr->sig->name ) + 2), "%s[", expr->sig->name );
+        tmpstr = (char*)malloc_safe( (strlen( expr->name ) + 2), __FILE__, __LINE__ );
+        snprintf( tmpstr, (strlen( expr->name ) + 2), "%s[", expr->name );
       }
 
       if( ESUPPL_WAS_SWAPPED( expr->suppl ) ) {
@@ -406,8 +406,8 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
       assert( expr->sig != NULL );
 
-      tmpstr = (char*)malloc_safe( (strlen( expr->sig->name ) + 3), __FILE__, __LINE__ );
-      snprintf( tmpstr, (strlen( expr->sig->name ) + 3), "->%s", expr->sig->name );
+      tmpstr = (char*)malloc_safe( (strlen( expr->name ) + 3), __FILE__, __LINE__ );
+      snprintf( tmpstr, (strlen( expr->name ) + 3), "->%s", expr->name );
 
       *code       = (char**)malloc_safe( sizeof( char* ), __FILE__, __LINE__ );
       (*code)[0]  = strdup_safe( tmpstr, __FILE__, __LINE__ );
@@ -701,6 +701,10 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.58  2006/01/23 03:53:29  phase1geo
+ Adding support for input/output ports of tasks/functions.  Regressions are not
+ running cleanly at this point so there is still some work to do here.  Checkpointing.
+
  Revision 1.57  2006/01/13 23:27:02  phase1geo
  Initial attempt to fix problem with handling functions/tasks/named blocks with
  the same name in the design.  Still have a few diagnostics failing in regressions

@@ -20,6 +20,12 @@ else
 VG_COVERED    = $(COVERED)
 endif
 
+ifdef LEAVE
+FINISH_CODE   = 4
+else
+FINISH_CODE   = 3
+endif
+
 IVERILOG       = iverilog
 IVERILOG_FLAGS = -y ./lib -I ./include -DRUNTEST
 IVERILOG_EXEC  = a.out
@@ -188,7 +194,7 @@ $(COVERED):
 	cd $(COVERED_SRC); make
 
 eot:
-	@./check_test dummy 1 3
+	@./check_test dummy 1 $(FINISH_CODE)
 
 view_vg_errs:
 	@./view_vg_errs $(VG_LOG_PREFIX)

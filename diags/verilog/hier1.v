@@ -18,6 +18,9 @@ reg [1:0] a;
 
 initial begin
 	a = 2'b00;
+end
+
+initial begin
 	#5;
 	$finish;
 end

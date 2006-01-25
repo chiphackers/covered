@@ -771,6 +771,11 @@ void bind( bool cdd_reading ) {
 
       }
 
+      /* If we have bound successfully, copy the name of this exp_bind to the expression */
+      if( bound && (curr_eb->exp != NULL) ) {
+        curr_eb->exp->name = strdup_safe( curr_eb->name, __FILE__, __LINE__ );
+      }
+
     } else {
 
       /* Figure out ID to clear from the binding list after the bind occurs */
@@ -800,6 +805,9 @@ void bind( bool cdd_reading ) {
     }
 
     curr_eb = curr_eb->next;
+
+    /* Remove this from the binding list */
+    bind_remove( id, FALSE );
 
   }
 
@@ -839,6 +847,10 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.65  2006/01/25 04:32:46  phase1geo
+ Fixing bug with latest checkins.  Full regression is now passing for IV simulated
+ diagnostics.
+
  Revision 1.64  2006/01/24 23:24:37  phase1geo
  More updates to handle static functions properly.  I have redone quite a bit
  of code here which has regressions pretty broke at the moment.  More work

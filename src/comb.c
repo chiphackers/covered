@@ -618,7 +618,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
         if( exp->sig->name[0] == '#' ) {
           tmpname = exp->sig->name + 1;
         } else {
-          tmpname = exp->sig->name;
+          tmpname = exp->name;
         }
 
         *size = strlen( tmpname );
@@ -718,7 +718,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
               if( exp->sig->name[0] == '#' ) {
                 tmpname = exp->sig->name + 1;
               } else {
-                tmpname = exp->sig->name;
+                tmpname = exp->name;
               }
               *size = l_size + r_size + strlen( tmpname ) + 2;
               for( i=0; i<strlen( tmpname ); i++ ) {
@@ -732,7 +732,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
               if( exp->sig->name[0] == '#' ) {
                 tmpname = exp->sig->name + 1;
               } else {
-                tmpname = exp->sig->name;
+                tmpname = exp->name;
               }
               *size = l_size + r_size + strlen( tmpname ) + 3;  
               for( i=0; i<strlen( tmpname ); i++ ) {
@@ -742,7 +742,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
               strcat( code_fmt, " %s %s " );
               break;
             case EXP_OP_TRIGGER  :
-              tmpname = exp->sig->name;
+              tmpname = exp->name;
               *size = l_size + r_size + strlen( tmpname ) + 2;
               for( i=0; i<strlen( tmpname ) + 2; i++ ) {
                 code_fmt[i] = ' ';
@@ -2034,6 +2034,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.124  2006/01/23 03:53:29  phase1geo
+ Adding support for input/output ports of tasks/functions.  Regressions are not
+ running cleanly at this point so there is still some work to do here.  Checkpointing.
+
  Revision 1.123  2006/01/13 23:27:02  phase1geo
  Initial attempt to fix problem with handling functions/tasks/named blocks with
  the same name in the design.  Still have a few diagnostics failing in regressions

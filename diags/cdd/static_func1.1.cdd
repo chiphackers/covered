@@ -1,0 +1,17 @@
+5 1 * 6 0 0 0 0
+3 0 main main static_func1.1.v 1 23
+1 #SIZE 0 0 0 32 0 11 0 0 0 0 0 0 0
+1 #FOO 0 0 0 32 0 0 101 0 0 0 0 0 0
+1 a 0 6 30011 16 0 aa aa aa aa
+3 2 main.static_func main.static_func static_func1.1.v 15 21
+2 1 18 1e001e 0 0 20810 0 0 32 0 0 0 0 0 0 0 0 0
+2 2 18 4000e 0 1 c00 0 0 static_func
+2 3 18 4001e 1 37 11826 1 2
+2 4 19 1e0021 0 0 20810 0 0 1 1 1
+2 5 19 100019 0 1 c00 0 0 bit_to_set
+2 6 19 4001a 0 23 c00 0 5 static_func
+2 7 19 40021 1 37 82a 4 6
+1 static_func 0 15 50010 32 16 aa 1aa aa aa aa aa aa aa
+1 bit_to_set 0 16 15 5 0 aa 2
+4 7 0 0
+4 3 7 7

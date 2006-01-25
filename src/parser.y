@@ -1406,15 +1406,20 @@ identifier
     }
   | identifier '.' IDENTIFIER
     {
-      /* Hierarchical references are going to be unsupported at the current time */
+      int   len = strlen( $1 ) + strlen( $3 ) + 2;
+      char* str = (char*)malloc_safe( len, __FILE__, __LINE__ );
+      snprintf( str, len, "%s.%s", $1, $3 );
       if( $1 != NULL ) {
         free_safe( $1 );
       }
       free_safe( $3 );
-      $$ = NULL;
+      $$ = str;
     }
   | identifier '.' UNUSED_IDENTIFIER
     {
+      if( $1 != NULL ) {
+        free_safe( $1 );
+      }
       $$ = NULL;
     }
   ;

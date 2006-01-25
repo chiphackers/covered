@@ -8,6 +8,7 @@
 #          mode 1:  Error diagnostic (checks output against *.err files)
 #          mode 2:  Skipped diagnostic (no check but increment PASSED count)
 #          mode 3:  Finish run (removes all *.done files if FAILED count == 0)
+#          mode 4:  Finish run but leave *.done files
 
 $test   = $ARGV[0];
 $rm_cdd = $ARGV[1];
@@ -43,11 +44,11 @@ if( open( RPT_RESULTS, "${RPT_OUTPUT}" ) > 0 ) {
 }
 
 # If this is the finish mode, remove all *.done files if failed count shows no failures
-if( $mode == 3 ) {
+if( ($mode == 3) || ($mode == 4) ) {
 
   system( "echo; cat $RPT_OUTPUT; echo; rm -rf $RPT_OUTPUT" ) && die;
 
-  if( $failed == 0 ) {
+  if( ($failed == 0) && ($mode == 3) ) {
     system( "rm -rf *.done $FAIL_OUTPUT" ) && die;
   }
 
