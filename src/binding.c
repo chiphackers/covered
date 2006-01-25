@@ -496,7 +496,8 @@ bool bind_statement( int id, expression* exp, func_unit* funit_exp, bool cdd_rea
   func_unit* found_funit;     /* Pointer to functional unit containing the specified statement */
   stmt_link* found_stmtl;     /* Pointer to found statement */
 
-  if( ((found_funit = funit_find_by_id( id )) != NULL) && ((found_stmtl = stmt_link_find( id, found_funit->stmt_head )) != NULL) ) {
+  if( ((found_funit = funit_find_by_id( id )) != NULL) &&
+      ((found_stmtl = stmt_link_find( id, found_funit->stmt_head )) != NULL) ) {
 
     /* Bind the expression to the specified statement */
     if( !rm_stmt ) {
@@ -755,7 +756,7 @@ void bind( bool cdd_reading ) {
       } else if( curr_eb->type == 1 ) {
 
         /* Attempt to bind a named block -- if unsuccessful, attempt to bind with a task */
-        if( !bind_task_function_namedblock( FUNIT_NAMED_BLOCK, curr_eb->name, curr_eb->exp, curr_eb->funit, cdd_reading, curr_eb->line ) ) {
+        if( !(bound = bind_task_function_namedblock( FUNIT_NAMED_BLOCK, curr_eb->name, curr_eb->exp, curr_eb->funit, cdd_reading, curr_eb->line )) ) {
           bound = bind_task_function_namedblock( FUNIT_TASK, curr_eb->name, curr_eb->exp, curr_eb->funit, cdd_reading, curr_eb->line );
         }
 
@@ -838,6 +839,11 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.64  2006/01/24 23:24:37  phase1geo
+ More updates to handle static functions properly.  I have redone quite a bit
+ of code here which has regressions pretty broke at the moment.  More work
+ to do but I'm checkpointing.
+
  Revision 1.63  2006/01/23 22:55:10  phase1geo
  Updates to fix constant function support.  There is some issues to resolve
  here but full regression is passing with the exception of the newly added

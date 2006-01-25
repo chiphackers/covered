@@ -400,8 +400,9 @@ void param_find_and_set_expr_value( expression* expr, funit_inst* inst ) {
 */
 bool param_set_sig_size( vsignal* sig, inst_parm* icurr ) {
 
-  bool established = FALSE;  /* Specifies if current signal size is fully established */
-  int  bit_sel;              /* MSB/LSB bit select value from instance parameter */
+  bool    established = FALSE;  /* Specifies if current signal size is fully established */
+  int     bit_sel;              /* MSB/LSB bit select value from instance parameter */
+  vector* vec;                  /* Pointer to new signal vector */
 
   assert( sig != NULL );
   assert( sig->name != NULL );
@@ -423,11 +424,17 @@ bool param_set_sig_size( vsignal* sig, inst_parm* icurr ) {
       sig->lsb          = bit_sel;
     }
 
-    /* Create the vector data for this signal at this time since the width is now known */
+    /* Create the vector data for this signal */
+    vec = vector_create( sig->value->width, TRUE );
+
+    /* Deallocate and reassign the new data */
     if( sig->value->value != NULL ) {
       free_safe( sig->value->value );
     }
-    sig->value->value = (vec_data*)malloc_safe( (sizeof( vec_data ) * sig->value->width), __FILE__, __LINE__ );
+    sig->value->value = vec->value;
+
+    /* Deallocate the vector memory */
+    free_safe( vec );
     
     established = TRUE;
     
@@ -819,6 +826,11 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.51  2006/01/24 23:24:38  phase1geo
+ More updates to handle static functions properly.  I have redone quite a bit
+ of code here which has regressions pretty broke at the moment.  More work
+ to do but I'm checkpointing.
+
  Revision 1.50  2006/01/23 22:55:10  phase1geo
  Updates to fix constant function support.  There is some issues to resolve
  here but full regression is passing with the exception of the newly added
