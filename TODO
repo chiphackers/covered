@@ -23,10 +23,7 @@ X	- `ifndef
 	- `file
 X	- `line
 X	- task/function argument list
-IP	- constant functions (this needs support of the above for it to work)
-		- need to make signal sizing/expression binding work for all
-		  possibilities of parameter uses (need to size based on dependencies
-	 	  instead of assumptions)
+X	- constant functions (this needs support of the above for it to work)
 	- automatic storage for functions/tasks (instead of static) - difficult!
 X	! explicitly named parameters
 X	- make sure that localparams cannot be modified by a defparam or SDF
