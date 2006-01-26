@@ -299,8 +299,6 @@ void symtable_assign() {
   sym_sig*  sig;   /* Pointer to current sym_sig in list */
   int       i;     /* Loop iterator                      */
 
-  printf( "postsim_size: %d\n", postsim_size );
-
   for( i=0; i<postsim_size; i++ ) {
     curr = timestep_tab[i];
     sig = curr->sig_head;
@@ -351,6 +349,13 @@ void symtable_dealloc( symtable* symtab ) {
 
 /*
  $Log$
+ Revision 1.20  2006/01/25 22:13:46  phase1geo
+ Adding LXT-style dumpfile parsing support.  Everything is wired in but I still
+ need to look at a problem at the end of the dumpfile -- I'm getting coredumps
+ when using the new -lxt option.  I also need to disable LXT code if the z
+ library is missing along with documenting the new feature in the user's guide
+ and man page.
+
  Revision 1.19  2006/01/05 05:52:06  phase1geo
  Removing wait bit in vector supplemental field and modifying algorithm to only
  assign in the post-sim location (pre-sim now is gone).  This fixes some issues

@@ -20,7 +20,13 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
+#include "defines.h"
 #include "lxt2_read.h"
+#include "util.h"
+
+
+extern char user_msg[USER_MSG_LENGTH];
+
 
 /****************************************************************************/
 
@@ -85,39 +91,43 @@ unsigned int x = *((unsigned int *)((unsigned char *)mm+offset));
  */
 #define lxt2_rd_get_byte(mm,offset) 	((unsigned int)(*((unsigned char *)(mm)+(offset))))
 
-static unsigned int lxt2_rd_get_16(void *mm, int offset)
-{
-unsigned char *nn=(unsigned char *)mm+offset;
-unsigned int m1=*((unsigned char *)(nn++));
-unsigned int m2=*((unsigned char *)nn);
-return((m1<<8)|m2);
+static unsigned int lxt2_rd_get_16( void *mm, int offset ) {
+
+  unsigned char* nn =  (unsigned char*)mm + offset;
+  unsigned int   m1 =* ((unsigned char*)(nn++));
+  unsigned int   m2 =* ((unsigned char*)nn);
+
+  return( (m1 << 8) | m2 );
+
 }
 
-static unsigned int lxt2_rd_get_24(void *mm,int offset)
-{
-unsigned char *nn=(unsigned char *)mm+offset;
-unsigned int m1=*((unsigned char *)(nn++));
-unsigned int m2=*((unsigned char *)(nn++));
-unsigned int m3=*((unsigned char *)nn);
-return((m1<<16)|(m2<<8)|m3);
+static unsigned int lxt2_rd_get_24( void *mm, int offset ) {
+
+  unsigned char* nn =  (unsigned char*)mm + offset;
+  unsigned int   m1 =* ((unsigned char*)(nn++));
+  unsigned int   m2 =* ((unsigned char*)(nn++));
+  unsigned int   m3 =* ((unsigned char*)nn);
+
+  return( (m1 << 16) | (m2 << 8) | m3 );
+
 }
 
-static unsigned int lxt2_rd_get_32(void *mm, int offset)
-{
-unsigned char *nn=(unsigned char *)mm+offset;
-unsigned int m1=*((unsigned char *)(nn++));
-unsigned int m2=*((unsigned char *)(nn++));
-unsigned int m3=*((unsigned char *)(nn++));
-unsigned int m4=*((unsigned char *)nn);
-return((m1<<24)|(m2<<16)|(m3<<8)|m4);
+static unsigned int lxt2_rd_get_32( void *mm, int offset ) {
+
+  unsigned char* nn =  (unsigned char*)mm+offset;
+  unsigned int   m1 =* ((unsigned char*)(nn++));
+  unsigned int   m2 =* ((unsigned char*)(nn++));
+  unsigned int   m3 =* ((unsigned char*)(nn++));
+  unsigned int   m4 =* ((unsigned char*)nn);
+
+  return( (m1 << 24) | (m2 << 16) | (m3 << 8) | m4 );
+
 }
 
-static lxtint64_t lxt2_rd_get_64(void *mm, int offset)
-{
-return(
-(((lxtint64_t)lxt2_rd_get_32(mm,offset))<<32)
-|((lxtint64_t)lxt2_rd_get_32(mm,offset+4))
-);
+static lxtint64_t lxt2_rd_get_64( void *mm, int offset ) {
+
+  return( (((lxtint64_t)lxt2_rd_get_32( mm, offset )) << 32) | ((lxtint64_t)lxt2_rd_get_32( mm, (offset + 4))) );
+
 }
 
 #endif
@@ -130,24 +140,26 @@ return(
  */
 #if LXT2_RD_GRANULE_SIZE > 32
 
-_LXT2_RD_INLINE granmsk_t
-lxt2_rd_ones_cnt(granmsk_t x)
-{
-x -= ((x >> 1) & LXT2_RD_ULLDESC(0x5555555555555555));
-x = (((x >> 2) & LXT2_RD_ULLDESC(0x3333333333333333)) + (x & LXT2_RD_ULLDESC(0x3333333333333333)));
-x = (((x >> 4) + x) & LXT2_RD_ULLDESC(0x0f0f0f0f0f0f0f0f));
-return((x * LXT2_RD_ULLDESC(0x0101010101010101)) >> 56);
+_LXT2_RD_INLINE granmsk_t lxt2_rd_ones_cnt( granmsk_t x ) {
+
+  x -= ((x >> 1) & LXT2_RD_ULLDESC(0x5555555555555555));
+  x = (((x >> 2) & LXT2_RD_ULLDESC(0x3333333333333333)) + (x & LXT2_RD_ULLDESC(0x3333333333333333)));
+  x = (((x >> 4) + x) & LXT2_RD_ULLDESC(0x0f0f0f0f0f0f0f0f));
+
+  return( (x * LXT2_RD_ULLDESC(0x0101010101010101)) >> 56 );
+
 }
 
 #else
 
-_LXT2_RD_INLINE granmsk_t
-lxt2_rd_ones_cnt(granmsk_t x)
-{
-x -= ((x >> 1) & 0x55555555);
-x = (((x >> 2) & 0x33333333) + (x & 0x33333333));
-x = (((x >> 4) + x) & 0x0f0f0f0f);
-return((x * 0x01010101) >> 24);
+_LXT2_RD_INLINE granmsk_t lxt2_rd_ones_cnt( granmsk_t x ) {
+
+  x -= ((x >> 1) & 0x55555555);
+  x = (((x >> 2) & 0x33333333) + (x & 0x33333333));
+  x = (((x >> 4) + x) & 0x0f0f0f0f);
+
+  return( (x * 0x01010101) >> 24 );
+
 }
 
 #endif
@@ -159,10 +171,8 @@ return((x * 0x01010101) >> 24);
  * "return the bitposition of the least significant 1 in a granmsk_t"
  * (use x &= ~(x&-x) to clear out that bit quickly)
  */
-_LXT2_RD_INLINE granmsk_t
-lxt2_rd_tzc(granmsk_t x)
-{
-return (lxt2_rd_ones_cnt((x & -x) - LXT2_RD_GRAN_1VAL));
+_LXT2_RD_INLINE granmsk_t lxt2_rd_tzc( granmsk_t x ) {
+  return( lxt2_rd_ones_cnt( (x & -x) - LXT2_RD_GRAN_1VAL ) );
 }
 
 /****************************************************************************/
@@ -170,378 +180,344 @@ return (lxt2_rd_ones_cnt((x & -x) - LXT2_RD_GRAN_1VAL));
 /*
  * i2c and c2i utility functions
  */
-static char *lxt2_rd_expand_integer_to_bits(int len, unsigned int value)
-{
-static char s[33];
-char *p = s;
-int i;                          
-int len2 = len-1;
+static char* lxt2_rd_expand_integer_to_bits( int len, unsigned int value ) {
 
-for(i=0;i<len;i++)
-        {        
-        *(p++) = '0' | ((value & (1<<(len2-i)))!=0);
-        }
-*p = 0;  
+  static char s[33];
+  char*       p    = s;
+  int         i;                          
+  int         len2 = len - 1;
 
-return(s);
+  for( i=0; i<len; i++ ) {        
+    *(p++) = '0' | ((value & (1 << (len2 - i))) != 0);
+  }
+
+  *p = 0;  
+
+  return( s );
+
 }
 
+unsigned int lxt2_rd_expand_bits_to_integer( int len, char* s ) {
 
-unsigned int lxt2_rd_expand_bits_to_integer(int len, char *s)
-{
-unsigned int v = 0;
-int i;
+  unsigned int v = 0;
+  int          i;
 
-for(i=0;i<len;i++)
-	{
-	v <<= 1;
-	v |= ((*s) & 1);
-	s++;
-	}
+  for( i=0; i<len; i++ ) {
+    v <<= 1;
+    v |= ((*s) & 1);
+    s++;
+  }
 
-return(v);
+  return( v );
+
 }
-
 
 /*
  * called for all value changes except for the 1st one in a block
  * (as they're all unique based on the timeslot scheme, no duplicate
  * checking is necessary...)
  */
-void lxt2_rd_iter_radix(struct lxt2_rd_trace *lt, struct lxt2_rd_block *b)
-{
-unsigned int which_time;
-int offset;
-void **top_elem;
-granmsk_t msk = ~LXT2_RD_GRAN_1VAL;
-lxtint32_t x;
+void lxt2_rd_iter_radix( struct lxt2_rd_trace *lt, struct lxt2_rd_block *b ) {
 
-for(which_time = 0; which_time < lt->num_time_table_entries; which_time++, msk <<= 1)
-while((top_elem = lt->radix_sort[which_time]))
-	{
-	lxtint32_t idx = top_elem - lt->next_radix;
-	unsigned int vch;
-	int i;
+  unsigned int which_time;
+  int          offset;
+  void**       top_elem;
+  granmsk_t    msk = ~LXT2_RD_GRAN_1VAL;
+  lxtint32_t   x;
 
-	switch(lt->fac_curpos_width)
-		{
-		case 1:	vch = lxt2_rd_get_byte(lt->fac_curpos[idx], 0); break;
-		case 2:	vch = lxt2_rd_get_16(lt->fac_curpos[idx], 0); break;
-		case 3:	vch = lxt2_rd_get_24(lt->fac_curpos[idx], 0); break;
-		case 4:	
-		default:
-			vch = lxt2_rd_get_32(lt->fac_curpos[idx], 0); break;
-		}
+  for( which_time=0; which_time<lt->num_time_table_entries; which_time++, msk <<= 1 ) {
 
-	lt->fac_curpos[idx] += lt->fac_curpos_width;
+    while( (top_elem = lt->radix_sort[which_time]) ) {
 
-	offset = lxt2_rd_tzc(lt->fac_map[idx] &= msk);		/* offset = next "which time" for this fac */
+      lxtint32_t   idx = top_elem - lt->next_radix;
+      unsigned int vch;
+      int          i;
 
-	lt->radix_sort[which_time] = lt->next_radix[idx];	/* get next list item for this "which time" bucket */
+      switch( lt->fac_curpos_width ) {
+	case 1  :  vch = lxt2_rd_get_byte( lt->fac_curpos[idx], 0 ); break;
+	case 2  :  vch = lxt2_rd_get_16( lt->fac_curpos[idx], 0 );   break;
+	case 3  :  vch = lxt2_rd_get_24( lt->fac_curpos[idx], 0 );   break;
+	case 4  :
+	default :  vch = lxt2_rd_get_32( lt->fac_curpos[idx], 0 );   break;
+      }
 
-	lt->next_radix[idx] = lt->radix_sort[offset]; 		/* promote fac to its next (higher) possible bucket (if any) */
-        lt->radix_sort[offset] = &lt->next_radix[idx];		/* ...and put it at the head of that list */
+      lt->fac_curpos[idx] += lt->fac_curpos_width;
 
-	switch(vch)
-		{
-        	case LXT2_RD_ENC_0:
-        	case LXT2_RD_ENC_1:	memset(lt->value[idx], '0'+(vch-LXT2_RD_ENC_0), lt->len[idx]); break;
+      /* Offset = next "which time" for this fac */
+      offset = lxt2_rd_tzc( lt->fac_map[idx] &= msk );
 
-        	case LXT2_RD_ENC_INV:	for(i=0;i<lt->len[idx];i++) { lt->value[idx][i] ^= 1; } break;
+      /* Get next list item for this "which time" bucket */
+      lt->radix_sort[which_time] = lt->next_radix[idx];
 
-        	case LXT2_RD_ENC_LSH0:
-        	case LXT2_RD_ENC_LSH1:	memmove(lt->value[idx], lt->value[idx]+1, lt->len[idx]-1); 
-					lt->value[idx][lt->len[idx]-1] = '0'+(vch-LXT2_RD_ENC_LSH0); 
-					break;
+      /* Promote fac to its next (higher) possible bucket (if any) */
+      lt->next_radix[idx] = lt->radix_sort[offset];
 
-        	case LXT2_RD_ENC_RSH0:
-        	case LXT2_RD_ENC_RSH1:	memmove(lt->value[idx]+1, lt->value[idx], lt->len[idx]-1); 
-					lt->value[idx][0] = '0'+(vch-LXT2_RD_ENC_RSH0); 
-					break;
+      /* ... and put it at the head of that list */
+      lt->radix_sort[offset] = &lt->next_radix[idx];
 
-		case LXT2_RD_ENC_ADD1:
-		case LXT2_RD_ENC_ADD2:
-		case LXT2_RD_ENC_ADD3:
-        	case LXT2_RD_ENC_ADD4:	x=lxt2_rd_expand_bits_to_integer(lt->len[idx], lt->value[idx]); x+= (vch-LXT2_RD_ENC_ADD1+1); 
-					memcpy(lt->value[idx], lxt2_rd_expand_integer_to_bits(lt->len[idx], x), lt->len[idx]); break;
+      switch( vch ) {
+        case LXT2_RD_ENC_0:
+        case LXT2_RD_ENC_1:
+          memset( lt->value[idx], ('0' + (vch - LXT2_RD_ENC_0 )), lt->len[idx] );
+          break;
+        case LXT2_RD_ENC_INV:
+          for( i=0; i<lt->len[idx]; i++ ) {
+            lt->value[idx][i] ^= 1;
+          }
+          break;
+        case LXT2_RD_ENC_LSH0:
+        case LXT2_RD_ENC_LSH1:
+          memmove( lt->value[idx], (lt->value[idx] + 1), (lt->len[idx] - 1) ); 
+  	  lt->value[idx][lt->len[idx]-1] = '0' + (vch - LXT2_RD_ENC_LSH0); 
+          break;
+        case LXT2_RD_ENC_RSH0:
+        case LXT2_RD_ENC_RSH1:
+          memmove( (lt->value[idx] + 1), lt->value[idx], (lt->len[idx] - 1) ); 
+          lt->value[idx][0] = '0' + (vch - LXT2_RD_ENC_RSH0); 
+          break;
+        case LXT2_RD_ENC_ADD1:
+        case LXT2_RD_ENC_ADD2:
+        case LXT2_RD_ENC_ADD3:
+        case LXT2_RD_ENC_ADD4:
+          x = lxt2_rd_expand_bits_to_integer( lt->len[idx], lt->value[idx] );
+          x += (vch - LXT2_RD_ENC_ADD1 + 1); 
+          memcpy( lt->value[idx], lxt2_rd_expand_integer_to_bits( lt->len[idx], x ), lt->len[idx] );
+          break;
+        case LXT2_RD_ENC_SUB1:
+        case LXT2_RD_ENC_SUB2:
+        case LXT2_RD_ENC_SUB3:
+        case LXT2_RD_ENC_SUB4:
+          x = lxt2_rd_expand_bits_to_integer( lt->len[idx], lt->value[idx] );
+          x -= (vch - LXT2_RD_ENC_SUB1 + 1); 
+          memcpy( lt->value[idx], lxt2_rd_expand_integer_to_bits( lt->len[idx], x ), lt->len[idx] );
+          break;
+        case LXT2_RD_ENC_X:
+          memset( lt->value[idx], 'x', lt->len[idx] );
+          break;
+        case LXT2_RD_ENC_Z:
+          memset( lt->value[idx], 'z', lt->len[idx] );
+          break;
+        case LXT2_RD_ENC_BLACKOUT:	
+          lt->value[idx][0] = 0;
+          break;
+        default:
+          vch -= LXT2_RD_DICT_START;
+          if( vch >= b->num_dict_entries ) {
+            snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  vch(%d) >= num_dict_entries(%d)", vch, b->num_dict_entries );
+            print_output( user_msg, FATAL, __FILE__, __LINE__ );
+            exit( 1 );
+          }
+          if( lt->flags[idx] & (LXT2_RD_SYM_F_DOUBLE | LXT2_RD_SYM_F_STRING) ) {
+            free_safe( lt->value[idx] );
+            lt->value[idx] = strdup_safe( b->string_pointers[vch], __FILE__, __LINE__ );
+            break;
+          }
+          if( lt->len[idx] == b->string_lens[vch] ) {
+            memcpy( lt->value[idx], b->string_pointers[vch], lt->len[idx] );
+          } else if( lt->len[idx] > b->string_lens[vch] ) {
+            int lendelta = lt->len[idx] - b->string_lens[vch];
+            memset( lt->value[idx], ((b->string_pointers[vch][0] != '1') ?  b->string_pointers[vch][0] : '0'), lendelta );
+            strcpy( (lt->value[idx] + lendelta), b->string_pointers[vch] );
+          } else {
+            snprintf( user_msg, USER_MSG_LENGTH, "Internal error: %d ('%s') vs %d ('%s')",
+                      lt->len[idx], lt->value[idx], b->string_lens[vch], b->string_pointers[vch] );
+            print_output( user_msg, FATAL, __FILE__, __LINE__ );
+            exit( 1 );
+          }
+          break;
+      }
 
-		case LXT2_RD_ENC_SUB1:
-		case LXT2_RD_ENC_SUB2:
-		case LXT2_RD_ENC_SUB3:
-        	case LXT2_RD_ENC_SUB4:	x=lxt2_rd_expand_bits_to_integer(lt->len[idx], lt->value[idx]); x-= (vch-LXT2_RD_ENC_SUB1+1); 
-					memcpy(lt->value[idx], lxt2_rd_expand_integer_to_bits(lt->len[idx], x), lt->len[idx]); break;
+      if( lt->time_table[which_time] != lt->prev_time ) {
+	lt->prev_time = lt->time_table[which_time];
+      }
 
-        	case LXT2_RD_ENC_X:	memset(lt->value[idx], 'x', lt->len[idx]); break;
-        	case LXT2_RD_ENC_Z:	memset(lt->value[idx], 'z', lt->len[idx]); break;
+      lt->value_change_callback(&lt, &lt->time_table[which_time], &idx, &lt->value[idx]);
 
-		case LXT2_RD_ENC_BLACKOUT:	
-					lt->value[idx][0] = 0; break;
-		
-		default:		vch -= LXT2_RD_DICT_START;
-					if(vch >= b->num_dict_entries)
-						{
-						fprintf(stderr, LXT2_RDLOAD"Internal error: vch(%d) >= num_dict_entries(%d)\n", vch, b->num_dict_entries);
-						exit(255);
-						}
+    }
 
-					if(lt->flags[idx] & (LXT2_RD_SYM_F_DOUBLE|LXT2_RD_SYM_F_STRING))
-						{
-						/* fprintf(stderr, LXT2_RDLOAD"DOUBLE: %s\n", b->string_pointers[vch]); */
-						free(lt->value[idx]);
-						lt->value[idx] = strdup(b->string_pointers[vch]);
-						break;
-						}
+  }
 
-					if(lt->len[idx] == b->string_lens[vch])
-						{
-						memcpy(lt->value[idx],  b->string_pointers[vch], lt->len[idx]);
-						}
-					else
-					if(lt->len[idx] > b->string_lens[vch])
-						{
-						int lendelta = lt->len[idx] - b->string_lens[vch];
-				                memset(lt->value[idx], (b->string_pointers[vch][0]!='1') ?  b->string_pointers[vch][0] : '0', lendelta);
-                				strcpy(lt->value[idx]+lendelta,  b->string_pointers[vch]);
-						}
-					else
-						{
-						fprintf(stderr, LXT2_RDLOAD"Internal error %d ('%s') vs %d ('%s')\n", 
-							lt->len[idx], lt->value[idx], 
-							b->string_lens[vch], b->string_pointers[vch]);
-						exit(255);
-						}
-					
-					break;
-		}
-
-	/* this string is _always_ unique */
-	/* fprintf(stderr, LXT2_RDLOAD"%lld : [%d] '%s'\n", lt->time_table[which_time], idx, lt->value[idx]); */
-
-	if(lt->time_table[which_time] != lt->prev_time)
-		{
-		lt->prev_time = lt->time_table[which_time];
-		}
-
-	lt->value_change_callback(&lt, &lt->time_table[which_time], &idx, &lt->value[idx]);
-	}
 }
-
 
 /*
  * called for only 1st vch in a block: blocks out emission of duplicate
  * vch from preceeding block
  */
-void lxt2_rd_iter_radix0(struct lxt2_rd_trace *lt, struct lxt2_rd_block *b, lxtint32_t idx)
-{
-	unsigned int vch;
-	unsigned int which_time;
-	int i;
-	int uniq = 0;
+void lxt2_rd_iter_radix0( struct lxt2_rd_trace* lt, struct lxt2_rd_block* b, lxtint32_t idx ) {
 
-	switch(lt->fac_curpos_width)
-		{
-		case 1:	vch = lxt2_rd_get_byte(lt->fac_curpos[idx], 0); break;
-		case 2:	vch = lxt2_rd_get_16(lt->fac_curpos[idx], 0); break;
-		case 3:	vch = lxt2_rd_get_24(lt->fac_curpos[idx], 0); break;
-		case 4:	
-		default:
-			vch = lxt2_rd_get_32(lt->fac_curpos[idx], 0); break;
-		}
+  unsigned int vch;
+  unsigned int which_time;
+  int          i;
+  int          uniq = 0;
 
-	lt->fac_curpos[idx] += lt->fac_curpos_width;
-	which_time = 0;
+  switch( lt->fac_curpos_width ) {
+    case 1:  vch = lxt2_rd_get_byte( lt->fac_curpos[idx], 0 );  break;
+    case 2:  vch = lxt2_rd_get_16( lt->fac_curpos[idx], 0 );    break;
+    case 3:  vch = lxt2_rd_get_24( lt->fac_curpos[idx], 0 );    break;
+    case 4:	
+    default: vch = lxt2_rd_get_32( lt->fac_curpos[idx], 0 );    break;
+  }
 
-	switch(vch)
-		{
-        	case LXT2_RD_ENC_0:		for(i=0;i<lt->len[idx];i++)
-						{
-						if(lt->value[idx][i]!='0')
-							{
-							memset(lt->value[idx]+i, '0', lt->len[idx] - i);
-							uniq = 1;
-							break;
-							}
-						}
-					break;
+  lt->fac_curpos[idx] += lt->fac_curpos_width;
+  which_time = 0;
 
-        	case LXT2_RD_ENC_1:		for(i=0;i<lt->len[idx];i++)
-						{
-						if(lt->value[idx][i]!='1')
-							{
-							memset(lt->value[idx]+i, '1', lt->len[idx] - i);
-							uniq = 1;
-							break;
-							}
-						}
-					break;
+  switch( vch ) {
+    case LXT2_RD_ENC_0:
+      for( i=0; i<lt->len[idx]; i++ ) {
+        if( lt->value[idx][i] != '0' ) {
+          memset( (lt->value[idx] + i), '0', (lt->len[idx] - i) );
+          uniq = 1;
+          break;
+        }
+      }
+      break;
+    case LXT2_RD_ENC_1:
+      for( i=0; i<lt->len[idx]; i++) {
+        if( lt->value[idx][i] != '1' ) {
+          memset( (lt->value[idx] + i), '1', (lt->len[idx] - i) );
+          uniq = 1;
+          break;
+        }
+      }
+      break;
+    case LXT2_RD_ENC_INV:
+    case LXT2_RD_ENC_LSH0:
+    case LXT2_RD_ENC_LSH1:
+    case LXT2_RD_ENC_RSH0:
+    case LXT2_RD_ENC_RSH1:
+    case LXT2_RD_ENC_ADD1:
+    case LXT2_RD_ENC_ADD2:
+    case LXT2_RD_ENC_ADD3:
+    case LXT2_RD_ENC_ADD4:
+    case LXT2_RD_ENC_SUB1:
+    case LXT2_RD_ENC_SUB2:
+    case LXT2_RD_ENC_SUB3:
+    case LXT2_RD_ENC_SUB4:
+      print_output( "Internal error in granule 0 position 0", FATAL, __FILE__, __LINE__ );
+      exit( 1 );
+    case LXT2_RD_ENC_X:
+      for( i=0; i<lt->len[idx]; i++ ) {
+        if( lt->value[idx][i] != 'x' ) {
+          memset( (lt->value[idx] + i), 'x', (lt->len[idx] - i) );
+          uniq = 1;
+          break;
+        }
+      }
+      break;
+    case LXT2_RD_ENC_Z:
+      for( i=0; i<lt->len[idx]; i++ ) {
+        if( lt->value[idx][i] != 'z' ) {
+          memset( (lt->value[idx] + i), 'z', (lt->len[idx] - i) );
+          uniq = 1;
+          break;
+        }
+      }
+      break;
+    case LXT2_RD_ENC_BLACKOUT:	
+      if( lt->value[idx] ) {
+        lt->value[idx][0] = 0; 
+	uniq = 1;
+      }
+      break;
+    default:
+      vch -= LXT2_RD_DICT_START;
+      if( vch >= b->num_dict_entries ) {
+        snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  vch(%d) >= num_dict_entries(%d)", vch, b->num_dict_entries );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        exit( 1 );
+      }
+      if( lt->flags[idx] & (LXT2_RD_SYM_F_DOUBLE | LXT2_RD_SYM_F_STRING) ) {
+        if( strcmp( lt->value[idx], b->string_pointers[vch] ) ) {
+          free_safe( lt->value[idx] );
+          lt->value[idx] = strdup_safe( b->string_pointers[vch], __FILE__, __LINE__ );
+          uniq = 1;
+        }
+        break;
+      }
+      if( lt->len[idx] == b->string_lens[vch] ) {
+        for( i=0; i<lt->len[idx]; i++ ) {
+          if( lt->value[idx][i] != b->string_pointers[vch][i] ) {
+            memcpy( (lt->value[idx] + i), (b->string_pointers[vch] + i), (lt->len[idx] - i) );
+            uniq = 1;
+          }
+        }
+      } else if( lt->len[idx] > b->string_lens[vch] ) {
+        int lendelta = lt->len[idx] - b->string_lens[vch];
+        int fill = (b->string_pointers[vch][0] != '1') ?  b->string_pointers[vch][0] : '0';
+        for( i=0; i<lendelta; i++ ) {
+          if( lt->value[idx][i] != fill ) {
+            memset( (lt->value[idx] + i), fill, (lendelta - i) );
+            strcpy( (lt->value[idx] + lendelta), b->string_pointers[vch] );
+            uniq = 1;
+            goto fini;
+          }
+        }
+        for( i=lendelta; i<lt->len[idx]; i++ ) {
+          if( lt->value[idx][i] != b->string_pointers[vch][i-lendelta] ) {
+            memcpy( (lt->value[idx] + i), (b->string_pointers[vch] + i - lendelta), (lt->len[idx] - i) );
+            uniq = 1;
+          }
+        }
+      } else {
+        snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  %d ('%s') vs %d ('%s')",
+                  lt->len[idx], lt->value[idx], b->string_lens[vch], b->string_pointers[vch] );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        exit( 1 );
+      }
+      break;
+  }
 
-        	case LXT2_RD_ENC_INV:
-        	case LXT2_RD_ENC_LSH0:
-        	case LXT2_RD_ENC_LSH1:
-        	case LXT2_RD_ENC_RSH0:
-        	case LXT2_RD_ENC_RSH1:
-		case LXT2_RD_ENC_ADD1:
-		case LXT2_RD_ENC_ADD2:
-		case LXT2_RD_ENC_ADD3:
-        	case LXT2_RD_ENC_ADD4:
-		case LXT2_RD_ENC_SUB1:
-		case LXT2_RD_ENC_SUB2:
-		case LXT2_RD_ENC_SUB3:
-        	case LXT2_RD_ENC_SUB4:	fprintf(stderr, LXT2_RDLOAD"Internal error in granule 0 position 0\n");
-					exit(255);
+fini:
+  if( uniq ) {
+    if( lt->time_table[which_time] != lt->prev_time ) {
+      lt->prev_time = lt->time_table[which_time];
+    }
+    lt->value_change_callback( &lt, &lt->time_table[which_time], &idx, &lt->value[idx] );
+  }
 
-        	case LXT2_RD_ENC_X:	for(i=0;i<lt->len[idx];i++)
-						{
-						if(lt->value[idx][i]!='x')
-							{
-							memset(lt->value[idx]+i, 'x', lt->len[idx] - i);
-							uniq = 1;
-							break;
-							}
-						}
-					break;
-
-        	case LXT2_RD_ENC_Z:	for(i=0;i<lt->len[idx];i++)
-						{
-						if(lt->value[idx][i]!='z')
-							{
-							memset(lt->value[idx]+i, 'z', lt->len[idx] - i);
-							uniq = 1;
-							break;
-							}
-						}
-					break;
-
-		case LXT2_RD_ENC_BLACKOUT:	
-					if(lt->value[idx])
-						{
-						lt->value[idx][0] = 0; 
-						uniq=1;
-						}
-					break;
-
-		default:		vch -= LXT2_RD_DICT_START;
-					if(vch >= b->num_dict_entries)
-						{
-						fprintf(stderr, LXT2_RDLOAD"Internal error: vch(%d) >= num_dict_entries(%d)\n", vch, b->num_dict_entries);
-						exit(255);
-						}
-
-					if(lt->flags[idx] & (LXT2_RD_SYM_F_DOUBLE|LXT2_RD_SYM_F_STRING))
-						{
-						/* fprintf(stderr, LXT2_RDLOAD"DOUBLE: %s\n", b->string_pointers[vch]); */
-						if(strcmp(lt->value[idx], b->string_pointers[vch]))
-							{
-							free(lt->value[idx]);
-							lt->value[idx] = strdup(b->string_pointers[vch]);
-							uniq = 1;
-							}
-						break;
-						}
-
-					if(lt->len[idx] == b->string_lens[vch])
-						{
-						for(i=0;i<lt->len[idx];i++)
-							{
-							if(lt->value[idx][i] != b->string_pointers[vch][i])
-								{
-								memcpy(lt->value[idx]+i,  b->string_pointers[vch]+i, lt->len[idx]-i);
-								uniq = 1;
-								}
-							}
-						}
-					else
-					if(lt->len[idx] > b->string_lens[vch])
-						{
-						int lendelta = lt->len[idx] - b->string_lens[vch];
-						int fill = (b->string_pointers[vch][0]!='1') ?  b->string_pointers[vch][0] : '0';
-
-						for(i=0;i<lendelta;i++)
-							{
-							if (lt->value[idx][i] != fill)
-								{
-								memset(lt->value[idx] + i, fill, lendelta - i);
-		                				strcpy(lt->value[idx]+lendelta,  b->string_pointers[vch]);
-								uniq = 1;
-								goto fini;
-								}
-							}
-
-						for(i=lendelta;i<lt->len[idx];i++)
-							{
-							if(lt->value[idx][i] != b->string_pointers[vch][i-lendelta])
-								{
-								memcpy(lt->value[idx]+i,  b->string_pointers[vch]+i-lendelta, lt->len[idx]-i);
-								uniq = 1;
-								}
-							}
-						}
-					else
-						{
-						fprintf(stderr, LXT2_RDLOAD"Internal error %d ('%s') vs %d ('%s')\n", 
-							lt->len[idx], lt->value[idx], 
-							b->string_lens[vch], b->string_pointers[vch]);
-						exit(255);
-						}
-					
-					break;
-		}
-
-
-	/* this string is unique if uniq != 0 */
-	/* fprintf(stderr, LXT2_RDLOAD"%lld : [%d] '%s'\n", lt->time_table[which_time], idx, lt->value[idx]); */
-fini:	if(uniq)
-		{
-		if(lt->time_table[which_time] != lt->prev_time)
-			{
-			lt->prev_time = lt->time_table[which_time];
-			}
-
-		lt->value_change_callback(&lt, &lt->time_table[which_time], &idx, &lt->value[idx]);
-		}
 }
-
 
 /*
  * radix sort the fac entries based upon their first entry in the
  * time change table.  this runs in strict linear time: we can
  * do this because of the limited domain of the dataset.
  */
-static void lxt2_rd_build_radix(struct lxt2_rd_trace *lt, struct lxt2_rd_block *b, int granule,
-		lxtint32_t strtfac, lxtint32_t endfac)
-{
-int i;
-int offset;
+static void lxt2_rd_build_radix( struct lxt2_rd_trace* lt, struct lxt2_rd_block* b, int granule,
+                                 lxtint32_t strtfac, lxtint32_t endfac ) {
 
-for(i=0;i<LXT2_RD_GRANULE_SIZE+1;i++)	/* +1 because tzc returns 33/65 when its arg == 0 */
-	{
-	lt->radix_sort[i] = NULL;	/* each one is a linked list: we get fac number based on address of item from lt->next_radix */
-	}
+  int i;
+  int offset;
 
-for(i=strtfac;i<endfac;i++)
-	{
-	granmsk_t x;
-	int process_idx = i/8;
-	int process_bit = i&7;
+  for( i=0; i<(LXT2_RD_GRANULE_SIZE+1); i++ ) {    /* +1 because tzc returns 33/65 when its arg == 0 */
+    lt->radix_sort[i] = NULL;	/* each one is a linked list: we get fac number based on address of item from lt->next_radix */
+  }
 
-	if(lt->process_mask[process_idx]&(1<<process_bit))
-		{
-		if((x=lt->fac_map[i]))
-			{
-			if((!granule)&&(x&LXT2_RD_GRAN_1VAL))
-				{
-				lxt2_rd_iter_radix0(lt, b, i);		/* emit vcd only if it's unique */
-				x&=(~LXT2_RD_GRAN_1VAL);		/* clear out least sig bit */
-				lt->fac_map[i] = x;
-				if(!x) continue;
-				}
-		
-			offset = lxt2_rd_tzc(x);			/* get "which time" bucket number of new least sig one bit */
-			lt->next_radix[i] = lt->radix_sort[offset];	/* insert item into head of radix sorted "which time" buckets */
-			lt->radix_sort[offset] = &lt->next_radix[i];
-			}
-		}
-	}
+  for( i=strtfac; i<endfac; i++ ) {
+
+    granmsk_t x;
+    int       process_idx = i / 8;
+    int       process_bit = i & 7;
+
+    if( lt->process_mask[process_idx] & (1 << process_bit) ) {
+
+      if( (x = lt->fac_map[i]) ) {
+        if( !granule && (x & LXT2_RD_GRAN_1VAL) ) {
+          lxt2_rd_iter_radix0( lt, b, i );		/* emit vcd only if it's unique */
+          x &= ~LXT2_RD_GRAN_1VAL;		        /* clear out least sig bit */
+          lt->fac_map[i] = x;
+          if( !x ) {
+            continue;
+          }
+        }
+        offset = lxt2_rd_tzc( x );			/* get "which time" bucket number of new least sig one bit */
+        lt->next_radix[i] = lt->radix_sort[offset];	/* insert item into head of radix sorted "which time" buckets */
+        lt->radix_sort[offset] = &lt->next_radix[i];
+      }
+
+    }
+
+  }
+
 }
 
 /****************************************************************************/
@@ -549,41 +525,39 @@ for(i=strtfac;i<endfac;i++)
 /*
  * build compressed process mask if necessary
  */
-static void lxt2_rd_regenerate_process_mask(struct lxt2_rd_trace *lt)
-{
-int i, j, lim, idx;
+static void lxt2_rd_regenerate_process_mask( struct lxt2_rd_trace* lt ) {
 
-if((lt)&&(lt->process_mask_dirty))
-	{
-	lt->process_mask_dirty = 0;
-	idx=0;
-	for(i=0;i<lt->numrealfacs;i+=LXT2_RD_PARTIAL_SIZE)
-		{
-		if(i+LXT2_RD_PARTIAL_SIZE>lt->numrealfacs)
-			{
-			lim = lt->numrealfacs;
-			}
-			else
-			{
-			lim = i+LXT2_RD_PARTIAL_SIZE;
-			}
+  int i, j, lim, idx;
+
+  if( lt && lt->process_mask_dirty ) {
+
+    lt->process_mask_dirty = 0;
+    idx = 0;
+
+    for( i=0; i<lt->numrealfacs; i+=LXT2_RD_PARTIAL_SIZE ) {
+
+      if( (i + LXT2_RD_PARTIAL_SIZE) > lt->numrealfacs ) {
+        lim = lt->numrealfacs;
+      } else {
+        lim = i + LXT2_RD_PARTIAL_SIZE;
+      }
 	
-		lt->process_mask_compressed[idx] = 0;
-		for(j=i;j<lim;j++)
-			{
-			int process_idx = j/8;		/* no need to optimize this */
-			int process_bit = j&7;
+      lt->process_mask_compressed[idx] = 0;
+      for( j=i; j<lim; j++ ) {
+        int process_idx = j / 8;		/* no need to optimize this */
+        int process_bit = j & 7;
+        if( lt->process_mask[process_idx] & (1 << process_bit) ) {
+          lt->process_mask_compressed[idx] = 1;
+          break;
+        }
+      }
 
-			if(lt->process_mask[process_idx]&(1<<process_bit))
-				{
-				lt->process_mask_compressed[idx] = 1;
-				break;
-				}
-			}
+      idx++;
 
-		idx++;
-		}
-	}
+    }
+
+  }
+
 }
 
 /****************************************************************************/
@@ -592,184 +566,163 @@ if((lt)&&(lt->process_mask_dirty))
 /*
  * process a single block and execute the vch callback as necessary
  */
-int lxt2_rd_process_block(struct lxt2_rd_trace *lt, struct lxt2_rd_block *b)
-{
-char vld;
-char *pnt;
-int i;
-int granule = 0;
-char sect_typ;
-lxtint32_t strtfac_gran=0;
-char granvld=0;
+int lxt2_rd_process_block( struct lxt2_rd_trace* lt, struct lxt2_rd_block* b ) {
 
-b->num_map_entries = lxt2_rd_get_32(b->mem, b->uncompressed_siz - 4);
-b->num_dict_entries = lxt2_rd_get_32(b->mem, b->uncompressed_siz - 12);
+  char       vld;
+  char*      pnt;
+  int        i;
+  int        granule      = 0;
+  char       sect_typ;
+  lxtint32_t strtfac_gran = 0;
+  char       granvld      = 0;
 
-#if LXT2_RD_GRANULE_SIZE > 32
-if(lt->granule_size==LXT2_RD_GRANULE_SIZE)
-	{
-	b->map_start = (b->mem + b->uncompressed_siz - 12) - sizeof(granmsk_t) * b->num_map_entries;
-	}
-	else
-	{
-	b->map_start = (b->mem + b->uncompressed_siz - 12) - sizeof(granmsk_smaller_t) * b->num_map_entries;
-	}
-
-#else
-	b->map_start = (b->mem + b->uncompressed_siz - 12) - sizeof(granmsk_t) * b->num_map_entries;
-#endif
-
-b->dict_start = b->map_start - lxt2_rd_get_32(b->mem, b->uncompressed_siz - 8);
-
-/* fprintf(stderr, LXT2_RDLOAD"num_map_entries: %d, num_dict_entries: %d, map_start: %08x, dict_start: %08x, mem: %08x end: %08x\n",
-	b->num_map_entries, b->num_dict_entries, b->map_start, b->dict_start, b->mem, b->mem+b->uncompressed_siz); */
-
-vld = lxt2_rd_get_byte(b->dict_start - 1, 0);
-if(vld != LXT2_RD_GRAN_SECT_DICT)
-	{
-	fprintf(stderr, LXT2_RDLOAD"Malformed section\n");
-	exit(255);
-	}
-
-if(b->num_dict_entries)
-	{
-	b->string_pointers = malloc(b->num_dict_entries * sizeof(char *));
-	b->string_lens = malloc(b->num_dict_entries * sizeof(unsigned int));
-	pnt = b->dict_start;
-	for(i=0;i<b->num_dict_entries;i++)
-		{
-		b->string_pointers[i] = pnt;
-		b->string_lens[i] = strlen(pnt);
-		pnt += (b->string_lens[i] + 1);
-		/* fprintf(stderr, LXT2_RDLOAD"%d '%s'\n", i, b->string_pointers[i]); */
-		}
-
-	if(pnt!=b->map_start)
-		{
-		fprintf(stderr, LXT2_RDLOAD"dictionary corrupt, exiting\n");
-		exit(255);
-		}
-	}
-
-pnt = b->mem;
-while(((sect_typ=*pnt) == LXT2_RD_GRAN_SECT_TIME)||(sect_typ == LXT2_RD_GRAN_SECT_TIME_PARTIAL))
-	{
-	lxtint32_t strtfac, endfac;
-
-	if(sect_typ == LXT2_RD_GRAN_SECT_TIME_PARTIAL)
-		{
-		lxtint32_t sublen;
-
-		lxt2_rd_regenerate_process_mask(lt);
-
-		strtfac = lxt2_rd_get_32(pnt, 1);
-		sublen = lxt2_rd_get_32(pnt, 5);
-
-		if(!granvld)
-			{
-			granvld=1;
-			strtfac_gran = strtfac;
-			}
-		else
-			{
-			granule += (strtfac==strtfac_gran);
-			}
-
-		if(!lt->process_mask_compressed[strtfac/LXT2_RD_PARTIAL_SIZE])
-			{
-			/* fprintf(stderr, "skipping group %d for %d bytes\n", strtfac, sublen); */
-			pnt += 9;
-			pnt += sublen;
-			continue;
-			}
-
-		/* fprintf(stderr, "processing group %d for %d bytes\n", strtfac, sublen); */
-		endfac=strtfac+LXT2_RD_PARTIAL_SIZE;
-		if(endfac>lt->numrealfacs) endfac=lt->numrealfacs;
-		pnt += 8;
-		}
-		else
-		{
-		strtfac=0;
-		endfac=lt->numrealfacs;
-		}
-
-	/* fprintf(stderr, LXT2_RDLOAD"processing granule %d\n", granule); */
-	pnt++;
-	lt->num_time_table_entries = lxt2_rd_get_byte(pnt, 0);
-	pnt++;
-	for(i=0;i<lt->num_time_table_entries;i++)
-		{
-		lt->time_table[i] = lxt2_rd_get_64(pnt, 0);
-		pnt+=8;
-		/* fprintf(stderr, LXT2_RDLOAD"\t%d) %lld\n", i, lt->time_table[i]); */
-		}
-
-	lt->fac_map_index_width = lxt2_rd_get_byte(pnt, 0);
-	if((!lt->fac_map_index_width)||(lt->fac_map_index_width > 4))
-		{
-		fprintf(stderr, LXT2_RDLOAD"Map index width of %d is illegal, exiting.\n", lt->fac_map_index_width);
-		exit(255);
-		}
-	pnt++;
-
-	for(i=strtfac;i<endfac;i++)
-		{
-		lxtint32_t mskindx;
-
-		switch(lt->fac_map_index_width)
-			{
-			case 1: mskindx = lxt2_rd_get_byte(pnt, 0); break;
-			case 2: mskindx = lxt2_rd_get_16(pnt, 0); break;
-			case 3: mskindx = lxt2_rd_get_24(pnt, 0); break;
-			case 4: 
-			default:
-				mskindx = lxt2_rd_get_32(pnt, 0); break;
-			}
-
-		pnt += lt->fac_map_index_width;
+  b->num_map_entries  = lxt2_rd_get_32( b->mem, (b->uncompressed_siz -  4) );
+  b->num_dict_entries = lxt2_rd_get_32( b->mem, (b->uncompressed_siz - 12) );
 
 #if LXT2_RD_GRANULE_SIZE > 32
-		if(lt->granule_size==LXT2_RD_GRANULE_SIZE)
-			{
-			lt->fac_map[i] = get_fac_msk(b->map_start, mskindx * sizeof(granmsk_t));
-			}
-			else
-			{
-			lt->fac_map[i] = get_fac_msk_smaller(b->map_start, mskindx * sizeof(granmsk_smaller_t));
-			}
+  if( lt->granule_size == LXT2_RD_GRANULE_SIZE ) {
+    b->map_start = (b->mem + b->uncompressed_siz - 12) - sizeof( granmsk_t ) * b->num_map_entries;
+  } else {
+    b->map_start = (b->mem + b->uncompressed_siz - 12) - sizeof( granmsk_smaller_t ) * b->num_map_entries;
+  }
 #else
-		lt->fac_map[i] = get_fac_msk(b->map_start, mskindx * sizeof(granmsk_t));
+  b->map_start = (b->mem + b->uncompressed_siz - 12) - sizeof( granmsk_t ) * b->num_map_entries;
 #endif
-		}
 
-	lt->fac_curpos_width = lxt2_rd_get_byte(pnt, 0);
-	if((!lt->fac_curpos_width)||(lt->fac_curpos_width > 4))
-		{
-		fprintf(stderr, LXT2_RDLOAD"Curpos index width of %d is illegal, exiting.\n", lt->fac_curpos_width);
-		exit(255);
-		}
-	pnt++;
+  b->dict_start = b->map_start - lxt2_rd_get_32( b->mem, (b->uncompressed_siz - 8) );
 
-	for(i=strtfac;i<endfac;i++)
-		{
-		lt->fac_curpos[i] = pnt;
-		if(lt->fac_map[i])
-			{
-			pnt += (lxt2_rd_ones_cnt(lt->fac_map[i]) * lt->fac_curpos_width);
-			}
-		}
+  vld = lxt2_rd_get_byte( (b->dict_start - 1), 0 );
 
-	lxt2_rd_build_radix(lt, b, granule, strtfac, endfac);
-	lxt2_rd_iter_radix(lt, b);
+  if( vld != LXT2_RD_GRAN_SECT_DICT ) {
+    print_output( "Malformed section", FATAL, __FILE__, __LINE__ );
+    exit( 1 );
+  }
 
-	if(sect_typ != LXT2_RD_GRAN_SECT_TIME_PARTIAL)
-		{
-		granule++;
-		}
-	}
+  if( b->num_dict_entries ) {
+    b->string_pointers = malloc( b->num_dict_entries * sizeof( char* ) );
+    b->string_lens     = malloc( b->num_dict_entries * sizeof( unsigned int ) );
+    pnt                = b->dict_start;
+    for( i=0; i<b->num_dict_entries; i++ ) {
+      b->string_pointers[i] = pnt;
+      b->string_lens[i]     = strlen( pnt );
+      pnt                  += (b->string_lens[i] + 1);
+    }
+    if( pnt != b->map_start ) {
+      print_output( "Dictionary corrupt, exiting...", FATAL, __FILE__, __LINE__ );
+      exit( 1 );
+    }
+  }
 
-return(1);
+  pnt = b->mem;
+
+  while( ((sect_typ=*pnt) == LXT2_RD_GRAN_SECT_TIME) || (sect_typ == LXT2_RD_GRAN_SECT_TIME_PARTIAL) ) {
+
+    lxtint32_t strtfac, endfac;
+
+    if( sect_typ == LXT2_RD_GRAN_SECT_TIME_PARTIAL ) {
+
+      lxtint32_t sublen;
+
+      lxt2_rd_regenerate_process_mask( lt );
+      strtfac = lxt2_rd_get_32( pnt, 1 );
+      sublen  = lxt2_rd_get_32( pnt, 5 );
+
+      if( !granvld ) {
+        granvld      = 1;
+        strtfac_gran = strtfac;
+      } else {
+        granule += (strtfac == strtfac_gran);
+      }
+
+      if( !lt->process_mask_compressed[strtfac/LXT2_RD_PARTIAL_SIZE] ) {
+        pnt += 9;
+        pnt += sublen;
+        continue;
+      }
+
+      endfac = strtfac + LXT2_RD_PARTIAL_SIZE;
+
+      if( endfac > lt->numrealfacs ) {
+        endfac = lt->numrealfacs;
+      }
+
+      pnt += 8;
+
+    } else {
+
+      strtfac = 0;
+      endfac  = lt->numrealfacs;
+
+    }
+
+    pnt++;
+    lt->num_time_table_entries = lxt2_rd_get_byte( pnt, 0 );
+    pnt++;
+    for( i=0; i<lt->num_time_table_entries; i++ ) {
+      lt->time_table[i] = lxt2_rd_get_64( pnt, 0 );
+      pnt               += 8;
+    }
+
+    lt->fac_map_index_width = lxt2_rd_get_byte( pnt, 0 );
+    if( !lt->fac_map_index_width || (lt->fac_map_index_width > 4) ) {
+      snprintf( user_msg, USER_MSG_LENGTH, "Map index width of %d is illegal, exiting...", lt->fac_map_index_width );
+      print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      exit( 1 );
+    }
+    pnt++;
+
+    for( i=strtfac; i<endfac; i++ ) {
+
+      lxtint32_t mskindx;
+
+      switch( lt->fac_map_index_width ) {
+        case 1 :  mskindx = lxt2_rd_get_byte( pnt, 0 );  break;
+        case 2 :  mskindx = lxt2_rd_get_16( pnt, 0 );    break;
+        case 3 :  mskindx = lxt2_rd_get_24( pnt, 0 );    break;
+        case 4 : 
+        default:  mskindx = lxt2_rd_get_32( pnt, 0 );    break;
+      }
+
+      pnt += lt->fac_map_index_width;
+
+#if LXT2_RD_GRANULE_SIZE > 32
+      if( lt->granule_size==LXT2_RD_GRANULE_SIZE ) {
+        lt->fac_map[i] = get_fac_msk( b->map_start, (mskindx * sizeof( granmsk_t )) );
+      } else {
+        lt->fac_map[i] = get_fac_msk_smaller( b->map_start, (mskindx * sizeof( granmsk_smaller_t )) );
+      }
+#else
+      lt->fac_map[i] = get_fac_msk( b->map_start, (mskindx * sizeof( granmsk_t )) );
+#endif
+
+    }
+
+    lt->fac_curpos_width = lxt2_rd_get_byte( pnt, 0 );
+    if( !lt->fac_curpos_width || (lt->fac_curpos_width > 4) ) {
+      snprintf( user_msg, USER_MSG_LENGTH, "Curpos index width of %d is illegal, exiting...", lt->fac_curpos_width );
+      print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      exit( 1 );
+    }
+    pnt++;
+
+    for( i=strtfac; i<endfac; i++ ) {
+      lt->fac_curpos[i] = pnt;
+      if( lt->fac_map[i] ) {
+        pnt += (lxt2_rd_ones_cnt( lt->fac_map[i] ) * lt->fac_curpos_width);
+      }
+    }
+
+    lxt2_rd_build_radix( lt, b, granule, strtfac, endfac );
+    lxt2_rd_iter_radix( lt, b );
+
+    if( sect_typ != LXT2_RD_GRAN_SECT_TIME_PARTIAL ) {
+      granule++;
+    }
+
+  }
+
+  return( 1 );
+
 }
 
 
@@ -778,9 +731,7 @@ return(1);
 /*
  * null callback used when a user passes NULL as an argument to lxt2_rd_iter_blocks()
  */
-void lxt2_rd_null_callback(struct lxt2_rd_trace **lt, lxtint64_t *pnt_time, lxtint32_t *pnt_facidx, char **pnt_value)
-{
-/* fprintf(stderr, LXT2_RDLOAD"%lld %d %s\n", *pnt_time, *pnt_facidx, *pnt_value); */
+void lxt2_rd_null_callback( struct lxt2_rd_trace** lt, lxtint64_t* pnt_time, lxtint32_t* pnt_facidx, char** pnt_value ) {
 }
 
 /****************************************************************************/
@@ -802,6 +753,7 @@ if(!(lt->handle=fopen(name, "rb")))
         else
 	{
 	lxtint16_t id = 0, version = 0;
+        lxtint16_t foo;
 
 	lt->block_mem_max = LXT2_RD_MAX_BLOCK_MEM_USAGE;    /* cutoff after this number of bytes and force flush */
 
@@ -811,9 +763,10 @@ if(!(lt->handle=fopen(name, "rb")))
 	fread(&version, 2, 1, lt->handle);
 	fread(&lt->granule_size, 1, 1, lt->handle);
 	
-	if(lxt2_rd_get_16(&id,0) != LXT2_RD_HDRID)
+	if((foo = lxt2_rd_get_16(&id,0)) != LXT2_RD_HDRID)
 		{
 		fprintf(stderr, LXT2_RDLOAD"*** Not an lxt file ***\n");
+                printf( "lxt2_rd_get_16: %x, needs to be %x (id=%d)\n", foo, LXT2_RD_HDRID, id );
 		lxt2_rd_close(lt);
 	        lt=NULL;
 		}
@@ -824,6 +777,7 @@ if(!(lt->handle=fopen(name, "rb")))
 		lxt2_rd_close(lt);
 	        lt=NULL;
 		}
+	else
 	if(lt->granule_size > LXT2_RD_GRANULE_SIZE)
 		{
 		fprintf(stderr, LXT2_RDLOAD"*** Granule size of %d (>%d) not supported ***\n", lt->granule_size, LXT2_RD_GRANULE_SIZE);
