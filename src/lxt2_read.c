@@ -1024,13 +1024,14 @@ void lxt2_rd_close( struct lxt2_rd_trace* lt ) {
     lt->len                     = NULL;
     lt->next_radix              = NULL;
 
-    for( i=0; i<lt->numfacs; i++ ) {
-      free_safe( lt->value[i] );
-      lt->value[i] = NULL; 
+    if( lt->value != NULL ) {
+      for( i=0; i<lt->numfacs; i++ ) {
+        free_safe( lt->value[i] );
+        lt->value[i] = NULL; 
+      }
+      free_safe( lt->value );
+      lt->value = NULL;
     }
-
-    free_safe( lt->value );
-    lt->value = NULL;
 
     free_safe( lt->zfacnames );
     lt->zfacnames = NULL;
