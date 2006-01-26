@@ -99,6 +99,9 @@ void db_parse_attribute( attr_param* ap );
 /*! \brief Searches entire design for expressions that call the specified statement */
 exp_link* db_get_exprs_with_statement( statement* stmt );
 
+/*! \brief Synchronizes the curr_instance pointer to match the curr_inst_scope hierarchy */
+void db_sync_curr_instance();
+
 /*! \brief Sets current VCD scope to specified scope. */
 void db_set_vcd_scope( char* scope );
 
@@ -122,6 +125,10 @@ void db_dealloc_design();
 
 /*
  $Log$
+ Revision 1.52  2006/01/23 03:53:29  phase1geo
+ Adding support for input/output ports of tasks/functions.  Regressions are not
+ running cleanly at this point so there is still some work to do here.  Checkpointing.
+
  Revision 1.51  2006/01/19 23:10:38  phase1geo
  Adding line and starting column information to vsignal structure (and associated CDD
  files).  Regression has been fully updated for this change which now fully passes.  Final

@@ -57,7 +57,7 @@ extern tnode*      def_table;
 /*!
  Specifies the string Verilog scope that is currently specified in the VCD file.
 */
-char* curr_inst_scope   = NULL;
+char* curr_inst_scope = NULL;
 
 /*!
  Pointer to the current instance selected by the VCD parser.  If this value is
@@ -1420,13 +1420,37 @@ exp_link* db_get_exprs_with_statement( statement* stmt ) {
 }
 
 /*!
+ Synchronizes the curr_instance pointer to match the curr_inst_scope hierarchy.
+*/
+void db_sync_curr_instance() {
+ 
+  char stripped_scope[4096];  /* Temporary string */
+
+  if( strcmp( leading_hierarchy, "*" ) != 0 ) {
+    scope_extract_scope( curr_inst_scope, leading_hierarchy, stripped_scope );
+  } else {
+    strcpy( stripped_scope, curr_inst_scope );
+  }
+
+  if( stripped_scope[0] != '\0' ) {
+
+    curr_instance = instance_find_scope( instance_root, stripped_scope );
+
+    /* If we have found at least one matching instance, set the one_instance_found flag */
+    if( curr_instance != NULL ) {
+      one_instance_found = TRUE;
+    }
+
+  }
+
+} 
+
+/*!
  \param scope  Current VCD scope.
 
  Sets the curr_inst_scope global variable to the specified scope.
 */
 void db_set_vcd_scope( char* scope ) {
-
-  char stripped_scope[4096];  /* Temporary stripped scope */
 
 #ifdef DEBUG_MODE
   snprintf( user_msg, USER_MSG_LENGTH, "In db_set_vcd_scope, scope: %s", scope );
@@ -1446,23 +1470,9 @@ void db_set_vcd_scope( char* scope ) {
     strcat( curr_inst_scope, scope );
 
   }
-    
-  if( strcmp( leading_hierarchy, "*" ) != 0 ) {
-    scope_extract_scope( curr_inst_scope, leading_hierarchy, stripped_scope );
-  } else {
-    strcpy( stripped_scope, curr_inst_scope );
-  }
 
-  if( stripped_scope[0] != '\0' ) {
-
-    curr_instance = instance_find_scope( instance_root, stripped_scope );
-
-    /* If we have found at least one matching instance, set the one_instance_found flag */
-    if( curr_instance != NULL ) {
-      one_instance_found = TRUE;
-    }
-
-  }
+  /* Synchronize the current instance to the value of curr_inst_scope */
+  db_sync_curr_instance();
 
 }
 
@@ -1486,6 +1496,7 @@ void db_vcd_upscope() {
 
     if( rest[0] != '\0' ) {
       strcpy( curr_inst_scope, rest );
+      db_sync_curr_instance();
     } else {
       free_safe( curr_inst_scope );
       curr_inst_scope = NULL;
@@ -1635,6 +1646,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.169  2006/01/25 16:51:27  phase1geo
+ Fixing performance/output issue with hierarchical references.  Added support
+ for hierarchical references to parser.  Full regression passes.
+
  Revision 1.168  2006/01/23 03:53:29  phase1geo
  Adding support for input/output ports of tasks/functions.  Regressions are not
  running cleanly at this point so there is still some work to do here.  Checkpointing.

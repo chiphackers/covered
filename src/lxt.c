@@ -8,6 +8,7 @@
 #ifdef HAVE_STRING_H
 #include "string.h"
 #endif
+#include "assert.h"
 
 #include "defines.h"
 #include "lxt2_read.h"
@@ -23,13 +24,8 @@ extern symtable*  vcd_symtab;
 extern int        vcd_symtab_size;
 extern symtable** timestep_tab;
 extern bool       one_instance_found;
+extern char*      curr_inst_scope;
 
-
-struct namehier {
-  struct namehier* next;
-  char*            name;
-  bool             not_final;
-};
 
 /*! Specifies the last timestamp simulated */
 static lxtint64_t vcd_prevtime = -1;
@@ -37,127 +33,6 @@ static lxtint64_t vcd_prevtime = -1;
 /*! Specifies when we are handling dumping */
 bool vcd_blackout;
 
-static struct namehier* nhold = NULL;
-
-void lxt_free_hier() {
-
-  struct namehier* nhtemp;
-
-  while( nhold ) {
-
-    nhtemp = nhold->next;	
-    free_safe( nhold->name );
-    free_safe( nhold );
-    nhold = nhtemp;
-
-  }
-
-}
-
-/*!
- \param nh1  First hierarchy
- \param nh2  Second hierarchy
-
- Navigates up and down the scope hierarchy.
-*/
-static void lxt_diff_hier( struct namehier *nh1, struct namehier *nh2 ) {
-
-  struct namehier* nhtemp;
-
-  if( !nh2 ) {
-    while( nh1 && nh1->not_final ) {
-      db_set_vcd_scope( nh1->name );
-      nh1 = nh1->next;
-    }
-    return;
-  }
-
-  for( ; ; ) {
-    if( !nh1->not_final && !nh2->not_final ) { /* both are equal */
-      break;
-    }
-    if( !nh2->not_final ) {	/* old hier is shorter */
-      nhtemp = nh1;
-      while( nh1 && nh1->not_final ) {
-        db_set_vcd_scope( nh1->name );
-	nh1 = nh1->next;
-      }
-      break;
-    }
-    if( !nh1->not_final ) {	/* new hier is shorter */
-      nhtemp = nh2;
-      while( nh2 && nh2->not_final ) {
-        db_vcd_upscope();
-	nh2 = nh2->next;
-      }
-      break;
-    }
-    if( strcmp( nh1->name, nh2->name ) ) {
-      nhtemp = nh2;				/* prune old hier */
-      while( nh2 && nh2->not_final ) {
-        db_vcd_upscope();
-	nh2 = nh2->next;
-      }
-      nhtemp = nh1;				/* add new hier */
-      while( nh1 && nh1->not_final ) {
-        db_set_vcd_scope( nh1->name );
-	nh1 = nh1->next;
-      }
-      break;
-    }
-    nh1 = nh1->next;
-    nh2 = nh2->next;
-  }
-
-}
-
-/*
- * output scopedata for a given name if needed, return pointer to name string
- */
-char* lxt_find_hier( char* name ) {
-
-  char*            pnt;
-  char*            pnt2;
-  char*            s;
-  int              len;
-  struct namehier* nh_head=NULL;
-  struct namehier* nh_curr=NULL;
-  struct namehier* nhtemp;
-
-  pnt = pnt2 = name;
-
-  for( ; ; ) {
-
-    while( (*pnt2 != '.') && *pnt2 ) pnt2++;
-
-    s = (char*)calloc( 1, (len = pnt2 - pnt) + 1 );
-    memcpy(s, pnt, len);
-    nhtemp = (struct namehier*)calloc( 1, sizeof( struct namehier ) );
-    nhtemp->name = s;
-
-    if( !nh_curr ) {
-      nh_head = nh_curr = nhtemp;
-    } else {
-      nh_curr->next      = nhtemp;
-      nh_curr->not_final = 1;
-      nh_curr            = nhtemp;
-    }
-
-    if( !*pnt2 ) {
-      break;
-    }
-
-    pnt = (++pnt2);
-
-  }
-
-  lxt_diff_hier( nh_head, nhold );
-  lxt_free_hier();
-  nhold = nh_head;
-
-  return( nh_curr->name );
-
-}
 
 /*!
  \param value  Unique ID for a specific signal
@@ -179,30 +54,6 @@ static char* vcdid( int value ) {
   }
 
   return( buf );
-
-}
-
-static char* vcd_truncate_bitvec( char* s ) {
-
-  char l, r;
-
-  r = *s;
-  if( r == '1' ) {
-    return s;
-  } else {
-    s++;
-  }
-
-  for( ; ; s++ ) {
-    l = r;
-    r = *s;
-    if( !r ) {
-      return( s - 1 );
-    }
-    if( l != r ) {
-      return( ((l == '0') && (r == '1')) ? s : (s - 1) );
-    }
-  }
 
 }
 
@@ -243,7 +94,7 @@ void vcd_callback(struct lxt2_rd_trace **lt, lxtint64_t *pnt_time, lxtint32_t *p
     if( g->len==1 ) {
       db_set_symbol_char( vcdid( *pnt_facidx ), (*pnt_value)[0] );
     } else {                        
-      db_set_symbol_string( vcdid( *pnt_facidx ), vcd_truncate_bitvec( *pnt_value ) );
+      db_set_symbol_string( vcdid( *pnt_facidx ), *pnt_value );
     }
 
   }                               
@@ -263,7 +114,7 @@ void lxt_parse( char* lxt_file ) {
   int                      numfacs;  /* Number of symbols in design */
   struct lxt2_rd_geometry* g;
   lxtint32_t               newindx;
-  char*                    netname;  /* Name of net to assign symbol to */
+  char                     netname[4096];  /* Name of current signal */
 
   /* Open LXT file for opening and extract members */
   if( (lt = lxt2_rd_init( lxt_file )) != NULL ) {
@@ -276,12 +127,18 @@ void lxt_parse( char* lxt_file ) {
     /* Create initial symbol table */
     vcd_symtab = symtable_create();
 
+    /* Allocate memory for instance scope */
+    curr_inst_scope = (char*)malloc_safe( 4096, __FILE__, __LINE__ );
+
     /* Get symbol information */
     for( i=0; i<numfacs; i++ ) {
 
       g       = lxt2_rd_get_fac_geometry( lt, i );
       newindx = lxt2_rd_get_alias_root( lt, i );
-      netname = lxt_find_hier( lxt2_rd_get_facname( lt, i ) );
+
+      /* Extract scope and net name from facility name */
+      scope_extract_back( lxt2_rd_get_facname( lt, i ), netname, curr_inst_scope );
+      db_sync_curr_instance();
 
       if( g->flags & LXT2_RD_SYM_F_DOUBLE ) {
 
@@ -306,10 +163,6 @@ void lxt_parse( char* lxt_file ) {
       }
 
     }
-
-    /* Flush any remaining hierarchy if not back to top-level */
-    lxt_find_hier( "" );
-    lxt_free_hier();
 
     /* Check to see that at least one instance was found */
     if( !one_instance_found ) {
@@ -362,6 +215,10 @@ void lxt_parse( char* lxt_file ) {
 
 /*
  $Log$
+ Revision 1.2  2006/01/26 17:34:02  phase1geo
+ Finished work on lxt2_read.c and fixed bug in LXT-based simulator.  Also adding
+ missing lxt.h header file.
+
  Revision 1.1  2006/01/25 22:13:46  phase1geo
  Adding LXT-style dumpfile parsing support.  Everything is wired in but I still
  need to look at a problem at the end of the dumpfile -- I'm getting coredumps

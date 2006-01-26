@@ -10,7 +10,6 @@ dnl AC_ARG_PROGRAM
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 AC_PROG_RANLIB
-AC_CHECK_LIB(z,gzdopen)
 AC_CHECK_PROGS(XGPERF,gperf,none)
 if test "$XGPERF" = "none"
 then
@@ -18,6 +17,9 @@ then
 	echo "    Please install the 'gperf' package."
 	exit 1
 fi
+
+dnl Libraries
+AC_CHECK_LIB(z,gzdopen)
 
 ## Tcl/Tk.
 AC_ARG_WITH([tcltk],
