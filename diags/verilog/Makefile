@@ -27,9 +27,13 @@ FINISH_CODE   = 3
 endif
 
 ifdef LXT
+CFG_COPY_CMD  = sed 's/-vcd/-lxt/'
 DUMP_FMT      = -lxt2
+CHK_CODE      = 5
 else
+CFG_COPY_CMD  = cat
 DUMP_FMT      = -vcd
+CHK_CODE      = 0
 endif
 
 IVERILOG       = iverilog
@@ -68,18 +72,20 @@ $(DIAGLIST):
 		echo Running $@; \
 		$(VERILOG) $(VERILOG_FLAGS) $@.v; \
 		$(VERILOG_CMD); \
+		$(CFG_COPY_CMD) ../regress/$@.cfg > $@.cfg; \
 		vg_exists=`which $(VG_EXEC) | wc -w`; \
 		if test "$$vg_exists" = "1"; then \
-			$(VG_COVERED) $(COVERED_GFLAG) score -f ../regress/$@.cfg; \
+			$(VG_COVERED) $(COVERED_GFLAG) score -f $@.cfg; \
 			$(VG_COVERED) $(COVERED_GFLAG) report -d v -o $@.rptM $@.cdd; \
 		else \
-			$(COVERED) $(COVERED_GFLAG) score -f ../regress/$@.cfg; \
+			$(COVERED) $(COVERED_GFLAG) score -f $@.cfg; \
 			$(COVERED) $(COVERED_GFLAG) report -d v -o $@.rptM $@.cdd; \
 		fi; \
 		$(COVERED) $(COVERED_GFLAG) report -d v -i -o $@.rptI $@.cdd; \
 		$(COVERED) $(COVERED_GFLAG) report -w -d v -o $@.rptWM $@.cdd; \
 		$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $@.rptWI $@.cdd; \
-		./check_test $@ 1 0; \
+		rm -f $@.cfg; \
+		./check_test $@ 1 $(CHK_CODE); \
 	else \
 		echo Skipping $@; \
 		./check_test $@ 1 2; \
@@ -90,18 +96,20 @@ $(RACELIST):
 		echo Running $@; \
 		$(VERILOG) $(VERILOG_FLAGS) $@.v; \
 		$(VERILOG_CMD); \
+		$(CFG_COPY_CMD) ../regress/$@.cfg > $@.cfg; \
 		vg_exists=`which $(VG_EXEC) | wc -w`; \
 		if test "$$vg_exists" = "1"; then \
-			$(VG_COVERED) $(COVERED_GFLAG) score -f ../regress/$@.cfg; \
+			$(VG_COVERED) $(COVERED_GFLAG) score -f $@.cfg; \
 			$(VG_COVERED) $(COVERED_GFLAG) report -d v -m ltcfr -o $@.rptM $@.cdd; \
 		else \
-			$(COVERED) $(COVERED_GFLAG) score -f ../regress/$@.cfg; \
+			$(COVERED) $(COVERED_GFLAG) score -f $@.cfg; \
 			$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfr -o $@.rptM $@.cdd; \
 		fi; \
 		$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfr -i -o $@.rptI $@.cdd; \
 		$(COVERED) $(COVERED_GFLAG) report -w -d v -m ltcfr -o $@.rptWM $@.cdd; \
 		$(COVERED) $(COVERED_GFLAG) report -w -d v -m ltcfr -i -o $@.rptWI $@.cdd; \
-		./check_test $@ 1 0; \
+		rm -f $@.cfg; \
+		./check_test $@ 1 $(CHK_CODE); \
 	else \
 		echo Skipping $@; \
 		./check_test $@ 1 2; \
@@ -112,31 +120,35 @@ $(MERGELIST):
 		echo Running $@; \
 		$(VERILOG) $(VERILOG_FLAGS) $@a.v; \
 		$(VERILOG_CMD); \
+		$(CFG_COPY_CMD) ../regress/$@a.cfg > $@a.cfg; \
 		vg_exists=`which $(VG_EXEC) | wc -w`; \
 		if test "$$vg_exists" = "1"; then \
-			$(VG_COVERED) $(COVERED_GFLAG) score -f ../regress/$@a.cfg; \
+			$(VG_COVERED) $(COVERED_GFLAG) score -f $@a.cfg; \
 			$(VG_COVERED) $(COVERED_GFLAG) report -d v -o $@a.rptM $@a.cdd; \
 		else \
-			$(COVERED) $(COVERED_GFLAG) score -f ../regress/$@a.cfg; \
+			$(COVERED) $(COVERED_GFLAG) score -f $@a.cfg; \
 			$(COVERED) $(COVERED_GFLAG) report -d v -o $@a.rptM $@a.cdd; \
 		fi; \
 		$(COVERED) $(COVERED_GFLAG) report -d v -i -o $@a.rptI $@a.cdd; \
 		$(COVERED) $(COVERED_GFLAG) report -w -d v -o $@a.rptWM $@a.cdd; \
 		$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $@a.rptWI $@a.cdd; \
-		./check_test $@a 0 0; \
+		rm -f $@a.cfg; \
+		./check_test $@a 0 $(CHK_CODE); \
 		$(VERILOG) $(VERILOG_FLAGS) $@b.v; \
 		$(VERILOG_CMD); \
+		$(CFG_COPY_CMD) ../regress/$@b.cfg > $@b.cfg; \
 		if test "$$vg_exists" = "1"; then \
-			$(VG_COVERED) $(COVERED_GFLAG) score -f ../regress/$@b.cfg; \
+			$(VG_COVERED) $(COVERED_GFLAG) score -f $@b.cfg; \
 			$(VG_COVERED) $(COVERED_GFLAG) report -d v -o $@b.rptM $@b.cdd; \
 		else \
-			$(COVERED) $(COVERED_GFLAG) score -f ../regress/$@b.cfg; \
+			$(COVERED) $(COVERED_GFLAG) score -f $@b.cfg; \
 			$(COVERED) $(COVERED_GFLAG) report -d v -o $@b.rptM $@b.cdd; \
 		fi; \
 		$(COVERED) $(COVERED_GFLAG) report -d v -i -o $@b.rptI $@b.cdd; \
 		$(COVERED) $(COVERED_GFLAG) report -w -d v -o $@b.rptWM $@b.cdd; \
 		$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $@b.rptWI $@b.cdd; \
-		./check_test $@b 0 0; \
+		rm -f $@b.cfg; \
+		./check_test $@b 0 $(CHK_CODE); \
 		if test "$$vg_exists" = "1"; then \
 			$(VG_COVERED) $(COVERED_GFLAG) merge -o $@.cdd $@a.cdd $@b.cdd; \
 		else \
@@ -146,7 +158,7 @@ $(MERGELIST):
 		$(COVERED) $(COVERED_GFLAG) report -d v -i -o $@.rptI $@.cdd; \
 		$(COVERED) $(COVERED_GFLAG) report -w -d v -o $@.rptWM $@.cdd; \
 		$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $@.rptWI $@.cdd; \
-		./check_test $@ 1 0; \
+		./check_test $@ 1 $(CHK_CODE); \
 	else \
 		echo Skipping $@; \
 		./check_test $@ 1 2; \
@@ -157,7 +169,9 @@ $(ERRSCORELIST):
 		echo Running $@ -- should see an error message; \
 		$(VERILOG) $(VERILOG_FLAGS) $@.v; \
 		$(VERILOG_CMD); \
-		$(COVERED) $(COVERED_GFLAG) score -f ../regress/$@.cfg 2> $@.err; \
+		$(CFG_COPY_CMD) ../regress/$@.cfg > $@.cfg; \
+		$(COVERED) $(COVERED_GFLAG) score -f $@.cfg 2> $@.err; \
+		rm -f $@.cfg; \
 		cat $@.err; \
 		./check_test $@ 1 1; \
 	else \
@@ -170,11 +184,15 @@ $(ERRMERGELIST):
 		echo Running $@ -- should see an error message; \
 		$(VERILOG) $(VERILOG_FLAGS) $@a.v; \
 		$(VERILOG_CMD); \
-		$(COVERED) $(COVERED_GFLAG) score -f ../regress/$@a.cfg; \
+		$(CFG_COPY_CMD) ../regress/$@a.cfg > $@a.cfg; \
+		$(COVERED) $(COVERED_GFLAG) score -f $@a.cfg; \
+		rm -f $@a.cfg; \
 		$(VERILOG) $(VERILOG_FLAGS) $@b.v; \
 		$(VERILOG_CMD); \
-		$(COVERED) $(COVERED_GFLAG) score -f ../regress/$@b.cfg; \
+		$(CFG_COPY_CMD) ../regress/$@b.cfg > $@b.cfg; \
+		$(COVERED) $(COVERED_GFLAG) score -f $@b.cfg; \
 		$(COVERED) $(COVERED_GFLAG) merge -o $@.cdd $@a.cdd $@b.cdd 2> $@.err; \
+		rm -f $@b.cfg; \
 		cat $@.err; \
 		./check_test $@ 1 1; \
 	else \
@@ -187,8 +205,10 @@ $(ERRREPORTLIST):
 		echo Running $@ -- should see an error message; \
 		$(VERILOG) $(VERILOG_FLAGS) $@.v; \
 		$(VERILOG_CMD); \
-		$(COVERED) $(COVERED_GFLAG) score -f ../regress/$@.cfg; \
+		$(CFG_COPY_CMD) ../regress/$@.cfg > $@.cfg; \
+		$(COVERED) $(COVERED_GFLAG) score -f $@.cfg; \
 		$(COVERED) $(COVERED_GFLAG) report -d v $@.cdd 2> $@.err; \
+		rm -f $@.cfg; \
 		cat $@.err; \
 		./check_test $@ 1 1 || \
 	else \
@@ -214,5 +234,5 @@ clobber:  clean
 
 clean:
 	@rm -f $(LOGFILE)
-	@rm -f $(IVERILOG_EXEC) $(VCS_EXEC) *.vcd *.log
+	@rm -f $(IVERILOG_EXEC) $(VCS_EXEC) *.vcd *.log *.cfg
 	@rm -f core *.o
