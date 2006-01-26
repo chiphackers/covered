@@ -740,232 +740,257 @@ void lxt2_rd_null_callback( struct lxt2_rd_trace** lt, lxtint64_t* pnt_time, lxt
  * initialize the trace, get compressed facnames, get geometries,
  * and get block offset/size/timestart/timeend...
  */
-struct lxt2_rd_trace *lxt2_rd_init(const char *name)
-{
-struct lxt2_rd_trace *lt=(struct lxt2_rd_trace *)calloc(1, sizeof(struct lxt2_rd_trace));
-int i;
+struct lxt2_rd_trace* lxt2_rd_init( const char *name ) {
 
-if(!(lt->handle=fopen(name, "rb")))
-        {
-	lxt2_rd_close(lt);
-        lt=NULL;
+  struct lxt2_rd_trace* lt = (struct lxt2_rd_trace*)calloc( 1, sizeof( struct lxt2_rd_trace ) );
+  int                   i;
+
+  if( !(lt->handle = fopen( name, "rb" )) ) {
+
+    lxt2_rd_close( lt );
+    lt = NULL;
+
+  } else {
+
+    lxtint16_t id = 0, version = 0;
+    lxtint16_t foo;
+
+    /* Cutoff after this number of bytes and force flush */
+    lt->block_mem_max = LXT2_RD_MAX_BLOCK_MEM_USAGE;
+
+    /* Keeps gzip from acting weird in tandem with fopen */
+    setvbuf( lt->handle, (char*)NULL, _IONBF, 0 );
+
+    fread( &id, 2, 1, lt->handle );
+    fread( &version, 2, 1, lt->handle );
+    fread( &lt->granule_size, 1, 1, lt->handle );
+	
+    if( (foo = lxt2_rd_get_16( &id, 0 )) != LXT2_RD_HDRID ) {
+
+      print_output( "File specified with -lxt is not an LXT formatted dumpfile", FATAL, __FILE__, __LINE__ );
+      lxt2_rd_close( lt );
+      lt = NULL;
+
+    } else if( (version = lxt2_rd_get_16( &version, 0 )) > LXT2_RD_VERSION ) {
+
+      snprintf( user_msg, USER_MSG_LENGTH, "LXT dumpfile is version %d which is not supported by Covered", version );
+      print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      lxt2_rd_close( lt );
+      lt = NULL;
+
+    } else if( lt->granule_size > LXT2_RD_GRANULE_SIZE ) {
+
+      snprintf( user_msg, USER_MSG_LENGTH, "LXT dumpfile contains granule size of %d (>%d) which is not supported by Covered",
+                lt->granule_size, LXT2_RD_GRANULE_SIZE );
+      print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      lxt2_rd_close( lt );
+      lt = NULL;
+
+    } else {
+
+      int   rc;
+      char* m;
+      off_t pos, fend;
+      int   t;
+      struct lxt2_rd_block* b;
+
+      fread( &lt->numfacs, 4, 1, lt->handle );
+      lt->numfacs = lxt2_rd_get_32( &lt->numfacs, 0 );
+
+      fread( &lt->numfacbytes, 4, 1, lt->handle );
+      lt->numfacbytes = lxt2_rd_get_32( &lt->numfacbytes, 0 );
+
+      fread( &lt->longestname, 4, 1, lt->handle );
+      lt->longestname = lxt2_rd_get_32( &lt->longestname, 0 );
+
+      fread( &lt->zfacnamesize, 4, 1, lt->handle );
+      lt->zfacnamesize = lxt2_rd_get_32( &lt->zfacnamesize, 0 );
+
+      fread( &lt->zfacname_predec_size, 4, 1, lt->handle );
+      lt->zfacname_predec_size = lxt2_rd_get_32( &lt->zfacname_predec_size, 0 );
+
+      fread( &lt->zfacgeometrysize, 4, 1, lt->handle );
+      lt->zfacgeometrysize = lxt2_rd_get_32( &lt->zfacgeometrysize, 0 );
+
+      fread( &lt->timescale, 1, 1, lt->handle );  /* No swap necessary */
+
+#ifdef DEBUG_MODE
+      snprintf( user_msg, USER_MSG_LENGTH, "LXT:  %d facilities", lt->numfacs );
+      print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+#endif
+      
+      pos = ftello( lt->handle );
+
+      lt->process_mask            = calloc( 1, ((lt->numfacs / 8) + 1) );
+      lt->process_mask_compressed = calloc( 1, ((lt->numfacs / LXT2_RD_PARTIAL_SIZE) + 1) );
+
+      /* Open and read the name section of the file that is compressed */
+      lt->zhandle = gzdopen( dup( fileno( lt->handle ) ), "rb" );
+      m  = (char*)malloc( lt->zfacname_predec_size );
+      rc = gzread( lt->zhandle, m, lt->zfacname_predec_size );
+      gzclose( lt->zhandle );
+      lt->zhandle = NULL;
+
+      if( rc != lt->zfacname_predec_size ) {
+        snprintf( user_msg, USER_MSG_LENGTH, "LXT:  Name section mangled %d (actual) vs %d (expected)", rc, lt->zfacname_predec_size );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        free( m );
+        lxt2_rd_close( lt );
+        lt = NULL;
+        return( lt );
+      }
+
+      lt->zfacnames = m;
+
+      lt->faccache = calloc( 1, sizeof( struct lxt2_rd_facname_cache ) );
+      lt->faccache->old_facidx = lt->numfacs;   /* Causes lxt2_rd_get_facname to initialize its unroll ptr as this is always invalid */
+      lt->faccache->bufcurr = malloc( lt->longestname + 1 );
+      lt->faccache->bufprev = malloc( lt->longestname + 1 );
+
+      fseeko( lt->handle, (pos = (pos + lt->zfacnamesize)), SEEK_SET );
+      lt->zhandle = gzdopen( dup( fileno( lt->handle ) ), "rb" );
+
+      t  = lt->numfacs * 4 * sizeof( lxtint32_t );
+      m  = (char*)malloc( t );				
+      rc = gzread( lt->zhandle, m, t );
+      gzclose( lt->zhandle );
+      lt->zhandle = NULL;
+
+      if( rc != t ) {
+        snprintf( user_msg, USER_MSG_LENGTH, "LXT:  Geometry section mangled %d (actual) vs %d (expected)", rc, t );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        free( m );
+        lxt2_rd_close( lt );
+        lt = NULL;
+        return( lt );
+      }
+
+      pos = pos + lt->zfacgeometrysize;
+
+      lt->rows       = malloc( lt->numfacs * sizeof( lxtint32_t ) );
+      lt->msb        = malloc( lt->numfacs * sizeof( lxtint32_t ) );
+      lt->lsb        = malloc( lt->numfacs * sizeof( lxtint32_t ) );
+      lt->flags      = malloc( lt->numfacs * sizeof( lxtint32_t ) );
+      lt->len        = malloc( lt->numfacs * sizeof( lxtint32_t ) );
+      lt->value      = malloc( lt->numfacs * sizeof( char* ) );
+      lt->next_radix = malloc( lt->numfacs * sizeof( void* ) );
+
+      for( i=0; i<lt->numfacs; i++ ) {
+        lt->rows[i]  = lxt2_rd_get_32( m + i * 16, 0 );
+        lt->msb[i]   = lxt2_rd_get_32( m + i * 16, 4 );
+        lt->lsb[i]   = lxt2_rd_get_32( m + i * 16, 8 );
+        lt->flags[i] = lxt2_rd_get_32( m + i * 16, 12 );
+
+        if( !(lt->flags[i] & LXT2_RD_SYM_F_INTEGER) ) {
+          lt->len[i] = (lt->msb[i] <= lt->lsb[i]) ? (lt->lsb[i] - lt->msb[i] + 1) : (lt->msb[i] - lt->lsb[i] + 1);
+        } else {
+          lt->len[i] = 32;
         }
-        else
-	{
-	lxtint16_t id = 0, version = 0;
-        lxtint16_t foo;
+        lt->value[i] = calloc( (lt->len[i] + 1), sizeof( char ) );
+      }
 
-	lt->block_mem_max = LXT2_RD_MAX_BLOCK_MEM_USAGE;    /* cutoff after this number of bytes and force flush */
+      for( lt->numrealfacs=0; lt->numrealfacs<lt->numfacs; lt->numrealfacs++ ) {
+        if( lt->flags[lt->numrealfacs] & LXT2_RD_SYM_F_ALIAS ) {
+          break;
+        }
+      }
 
-	setvbuf(lt->handle, (char *)NULL, _IONBF, 0);	/* keeps gzip from acting weird in tandem with fopen */
+      if( lt->numrealfacs > lt->numfacs ) {
+        lt->numrealfacs = lt->numfacs;
+      }
 
-	fread(&id, 2, 1, lt->handle);
-	fread(&version, 2, 1, lt->handle);
-	fread(&lt->granule_size, 1, 1, lt->handle);
-	
-	if((foo = lxt2_rd_get_16(&id,0)) != LXT2_RD_HDRID)
-		{
-		fprintf(stderr, LXT2_RDLOAD"*** Not an lxt file ***\n");
-                printf( "lxt2_rd_get_16: %x, needs to be %x (id=%d)\n", foo, LXT2_RD_HDRID, id );
-		lxt2_rd_close(lt);
-	        lt=NULL;
-		}
-	else
-	if((version=lxt2_rd_get_16(&version,0)) > LXT2_RD_VERSION)
-		{
-		fprintf(stderr, LXT2_RDLOAD"*** Version %d lxt not supported ***\n", version);
-		lxt2_rd_close(lt);
-	        lt=NULL;
-		}
-	else
-	if(lt->granule_size > LXT2_RD_GRANULE_SIZE)
-		{
-		fprintf(stderr, LXT2_RDLOAD"*** Granule size of %d (>%d) not supported ***\n", lt->granule_size, LXT2_RD_GRANULE_SIZE);
-		lxt2_rd_close(lt);
-	        lt=NULL;
-		}
-	else
-		{
-		int rc;
-		char *m;
-		off_t pos, fend;
-		int t;
-		struct lxt2_rd_block *b;
+      lt->prev_time = ~(LXT2_RD_GRAN_0VAL);
+      free( m );
 
-		fread(&lt->numfacs, 4, 1, lt->handle);			lt->numfacs = lxt2_rd_get_32(&lt->numfacs,0);
-		fread(&lt->numfacbytes, 4, 1, lt->handle);		lt->numfacbytes = lxt2_rd_get_32(&lt->numfacbytes,0);
-		fread(&lt->longestname, 4, 1, lt->handle);		lt->longestname = lxt2_rd_get_32(&lt->longestname,0);
-		fread(&lt->zfacnamesize, 4, 1, lt->handle);		lt->zfacnamesize = lxt2_rd_get_32(&lt->zfacnamesize,0);
-		fread(&lt->zfacname_predec_size, 4, 1, lt->handle); 	lt->zfacname_predec_size = lxt2_rd_get_32(&lt->zfacname_predec_size,0);
-		fread(&lt->zfacgeometrysize, 4, 1, lt->handle);		lt->zfacgeometrysize = lxt2_rd_get_32(&lt->zfacgeometrysize,0);
-		fread(&lt->timescale, 1, 1, lt->handle);		/* no swap necessary */
+      lt->fac_map    = malloc( lt->numfacs * sizeof( granmsk_t ) );
+      lt->fac_curpos = malloc( lt->numfacs * sizeof( char* ) );
 
-		fprintf(stderr, LXT2_RDLOAD"%d facilities\n", lt->numfacs);
-		pos = ftello(lt->handle);
-		/* fprintf(stderr, LXT2_RDLOAD"gzip facnames start at pos %d (zsize=%d)\n", pos, lt->zfacnamesize); */
+      for( ; ; ) {
 
-		lt->process_mask = calloc(1, lt->numfacs/8+1);
-		lt->process_mask_compressed = calloc(1, lt->numfacs/LXT2_RD_PARTIAL_SIZE+1);
+        fseeko( lt->handle, 0L, SEEK_END );
+        fend = ftello( lt->handle );
 
-		lt->zhandle = gzdopen(dup(fileno(lt->handle)), "rb");
-		m=(char *)malloc(lt->zfacname_predec_size);
-		rc=gzread(lt->zhandle, m, lt->zfacname_predec_size);
-		gzclose(lt->zhandle); lt->zhandle=NULL;
+        if( pos >= fend ) {
+          break;
+        }
 
-		if(rc!=lt->zfacname_predec_size)
-			{
-			fprintf(stderr, LXT2_RDLOAD"*** name section mangled %d (act) vs %d (exp)\n", rc, lt->zfacname_predec_size);
-			free(m);
+        fseeko( lt->handle, pos, SEEK_SET );
 
-			lxt2_rd_close(lt);
-		        lt=NULL;
-			return(lt);
-			}
-
-		lt->zfacnames = m;
-
-                lt->faccache = calloc(1, sizeof(struct lxt2_rd_facname_cache));
-                lt->faccache->old_facidx = lt->numfacs;   /* causes lxt2_rd_get_facname to initialize its unroll ptr as this is always invalid */
-                lt->faccache->bufcurr = malloc(lt->longestname+1);
-                lt->faccache->bufprev = malloc(lt->longestname+1);
-
-		fseeko(lt->handle, pos = pos+lt->zfacnamesize, SEEK_SET);
-		/* fprintf(stderr, LXT2_RDLOAD"seeking to geometry at %d (0x%08x)\n", pos, pos); */
-		lt->zhandle = gzdopen(dup(fileno(lt->handle)), "rb");
-
-		t = lt->numfacs * 4 * sizeof(lxtint32_t);
-		m=(char *)malloc(t);				
-		rc=gzread(lt->zhandle, m, t);
-		gzclose(lt->zhandle); lt->zhandle=NULL;
-		if(rc!=t)
-			{
-			fprintf(stderr, LXT2_RDLOAD"*** geometry section mangled %d (act) vs %d (exp)\n", rc, t);
-			free(m);
-
-			lxt2_rd_close(lt);
-		        lt=NULL;
-			return(lt);
-			}
-
-		pos = pos+lt->zfacgeometrysize;
-
-		lt->rows = malloc(lt->numfacs * sizeof(lxtint32_t));
-		lt->msb = malloc(lt->numfacs * sizeof(lxtint32_t));
-		lt->lsb = malloc(lt->numfacs * sizeof(lxtint32_t));
-		lt->flags = malloc(lt->numfacs * sizeof(lxtint32_t));
-		lt->len = malloc(lt->numfacs * sizeof(lxtint32_t));
-		lt->value = malloc(lt->numfacs * sizeof(char *));
-		lt->next_radix = malloc(lt->numfacs * sizeof(void *));
-
-		for(i=0;i<lt->numfacs;i++)
-			{
-			lt->rows[i] = lxt2_rd_get_32(m+i*16, 0);
-			lt->msb[i] = lxt2_rd_get_32(m+i*16, 4);
-			lt->lsb[i] = lxt2_rd_get_32(m+i*16, 8);
-			lt->flags[i] = lxt2_rd_get_32(m+i*16, 12);
-
-			if(!(lt->flags[i] & LXT2_RD_SYM_F_INTEGER))
-				{
-				lt->len[i] = (lt->msb[i] <= lt->lsb[i]) ? (lt->lsb[i] - lt->msb[i] + 1) : (lt->msb[i] - lt->lsb[i] + 1);
-				}
-				else
-				{
-				lt->len[i] = 32;
-				}
-			lt->value[i] = calloc(lt->len[i] + 1, sizeof(char));
-			}
-
-		for(lt->numrealfacs=0; lt->numrealfacs<lt->numfacs; lt->numrealfacs++)
-			{
-			if(lt->flags[lt->numrealfacs] & LXT2_RD_SYM_F_ALIAS)
-				{
-				break;
-				}
-			}
-		if(lt->numrealfacs > lt->numfacs) lt->numrealfacs = lt->numfacs;
-
-		lt->prev_time = ~(LXT2_RD_GRAN_0VAL);
-		free(m);
-
-		lt->fac_map = malloc(lt->numfacs * sizeof(granmsk_t));
-		lt->fac_curpos = malloc(lt->numfacs * sizeof(char *));
-
-		for(;;)
-			{
-			fseeko(lt->handle, 0L, SEEK_END);
-			fend=ftello(lt->handle);
-			if(pos>=fend) break;
-
-			fseeko(lt->handle, pos, SEEK_SET);
-			/* fprintf(stderr, LXT2_RDLOAD"seeking to block at %d (0x%08x)\n", pos, pos); */
-
-			b=calloc(1, sizeof(struct lxt2_rd_block));
+        b = calloc( 1, sizeof( struct lxt2_rd_block ) );
 		
-			fread(&b->uncompressed_siz, 4, 1, lt->handle);			b->uncompressed_siz = lxt2_rd_get_32(&b->uncompressed_siz,0);
-			fread(&b->compressed_siz, 4, 1, lt->handle);			b->compressed_siz = lxt2_rd_get_32(&b->compressed_siz,0);
-			fread(&b->start, 8, 1, lt->handle);				b->start = lxt2_rd_get_64(&b->start,0);
-			fread(&b->end, 8, 1, lt->handle);				b->end = lxt2_rd_get_64(&b->end,0);
-			pos = ftello(lt->handle);
-			fseeko(lt->handle, pos, SEEK_SET);
-			/* fprintf(stderr, LXT2_RDLOAD"block gzip start at pos %d (0x%08x)\n", pos, pos); */
-			if(pos>=fend)
-				{
-				free(b);
-				break;
-				}
+        fread( &b->uncompressed_siz, 4, 1, lt->handle );
+        b->uncompressed_siz = lxt2_rd_get_32( &b->uncompressed_siz, 0 );
 
-			b->filepos = pos; /* mark startpos for later in case we purge it from memory */	
-			/* fprintf(stderr, LXT2_RDLOAD"un/compressed size: %d/%d\n", b->uncompressed_siz, b->compressed_siz); */
+        fread( &b->compressed_siz, 4, 1, lt->handle );
+        b->compressed_siz = lxt2_rd_get_32( &b->compressed_siz, 0 );
+
+        fread( &b->start, 8, 1, lt->handle );
+        b->start = lxt2_rd_get_64( &b->start, 0 );
+
+        fread( &b->end, 8, 1, lt->handle );
+        b->end = lxt2_rd_get_64( &b->end, 0 );
+
+        pos = ftello( lt->handle );
+        fseeko( lt->handle, pos, SEEK_SET );
+
+        if( pos >= fend ) {
+          free_safe( b );
+          break;
+        }
+
+        /* Mark startpos for later in case we purge it from memory */
+        b->filepos = pos;
 	
-			if((b->uncompressed_siz)&&(b->compressed_siz)&&(b->end))
-				{
-				/* fprintf(stderr, LXT2_RDLOAD"block [%d] %lld / %lld\n", lt->numblocks, b->start, b->end); */
-				fseeko(lt->handle, b->compressed_siz, SEEK_CUR);
-
-				lt->numblocks++;
-				if(lt->block_curr)
-					{
-					lt->block_curr->next = b;
-					lt->block_curr = b;
-					lt->end = b->end;
-					}
-					else
-					{
-					lt->block_head = lt->block_curr = b;
-					lt->start = b->start;
-					lt->end = b->end;
-					}			
-				}
-				else
-				{
-				free(b);
-				break;
-				}
+        if( b->uncompressed_siz && b->compressed_siz && b->end ) {
+          fseeko(lt->handle, b->compressed_siz, SEEK_CUR);
+          lt->numblocks++;
+          if( lt->block_curr ) {
+            lt->block_curr->next = b;
+            lt->block_curr       = b;
+            lt->end              = b->end;
+          } else {
+            lt->block_head = lt->block_curr = b;
+            lt->start      = b->start;
+            lt->end        = b->end;
+          }			
+        } else {
+          free_safe( b );
+          break;
+        }
 	
-			pos+=b->compressed_siz;
-			}
+        pos += b->compressed_siz;
 
-		if(lt->numblocks)
-			{
-			fprintf(stderr, LXT2_RDLOAD"Read %d block header%s OK\n", lt->numblocks, (lt->numblocks!=1) ? "s" : "");
+      }
 
-			fprintf(stderr, LXT2_RDLOAD"["LXT2_RD_LLD"] start time\n", lt->start);
-			fprintf(stderr, LXT2_RDLOAD"["LXT2_RD_LLD"] end time\n", lt->end);
-			fprintf(stderr, LXT2_RDLOAD"\n");
+      if( lt->numblocks ) {
 
-			lt->value_change_callback = lxt2_rd_null_callback;
-			}
-			else
-			{
-			lxt2_rd_close(lt);
-			lt=NULL;
-			}
-		}
-	}
+#ifdef DEBUG_MODE
+        snprintf( user_msg, USER_MSG_LENGTH, "LXT:  Read %d block header%s OK", lt->numblocks, ((lt->numblocks != 1) ? "s" : "") );
+        print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
-return(lt);
+        snprintf( user_msg, USER_MSG_LENGTH, "LXT:  Start time = "LXT2_RD_LLD"", lt->start );
+        print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+
+        snprintf( user_msg, USER_MSG_LENGTH, "LXT:  End time   = "LXT2_RD_LLD"", lt->end );
+        print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+#endif
+
+        lt->value_change_callback = lxt2_rd_null_callback;
+
+      } else {
+
+        lxt2_rd_close( lt );
+        lt = NULL;
+
+      }
+
+    }
+
+  }
+
+  return( lt );
+
 }
-
 
 /*
  * free up/deallocate any resources still left out there:
@@ -973,66 +998,96 @@ return(lt);
  * calloc() is used to allocate all structs) as performance
  * isn't an issue for this set of cleanup code
  */
-void lxt2_rd_close(struct lxt2_rd_trace *lt)
-{
-if(lt)
-	{
-	struct lxt2_rd_block *b, *bt;
-	int i;
+void lxt2_rd_close( struct lxt2_rd_trace* lt ) {
 
-	if(lt->process_mask) { free(lt->process_mask); lt->process_mask=NULL; }
-	if(lt->process_mask_compressed) { free(lt->process_mask_compressed); lt->process_mask_compressed=NULL; }
+  if( lt ) {
 
-	if(lt->rows) { free(lt->rows); lt->rows=NULL; }
-	if(lt->msb) { free(lt->msb); lt->msb=NULL; }
-	if(lt->lsb) { free(lt->lsb); lt->lsb=NULL; }
-	if(lt->flags) { free(lt->flags); lt->flags=NULL; }
-	if(lt->len) { free(lt->len); lt->len=NULL; }
-	if(lt->next_radix) { free(lt->next_radix); lt->next_radix=NULL; }
+    struct lxt2_rd_block* b;
+    struct lxt2_rd_block* bt;
+    int                   i;
 
-	for(i=0;i<lt->numfacs;i++)
-		{
-		if(lt->value[i])
-			{		
-			free(lt->value[i]); lt->value[i]=NULL; 
-			}
-		}
+    free_safe( lt->process_mask );
+    free_safe( lt->process_mask_compressed );
+    free_safe( lt->rows );
+    free_safe( lt->msb );
+    free_safe( lt->lsb );
+    free_safe( lt->flags );
+    free_safe( lt->len );
+    free_safe( lt->next_radix );
 
-	if(lt->value) { free(lt->value); lt->value=NULL; }
+    lt->process_mask            = NULL;
+    lt->process_mask_compressed = NULL;
+    lt->rows                    = NULL;
+    lt->msb                     = NULL;
+    lt->lsb                     = NULL;
+    lt->flags                   = NULL;
+    lt->len                     = NULL;
+    lt->next_radix              = NULL;
 
-	if(lt->zfacnames) { free(lt->zfacnames); lt->zfacnames=NULL; }
+    for( i=0; i<lt->numfacs; i++ ) {
+      free_safe( lt->value[i] );
+      lt->value[i] = NULL; 
+    }
 
-	if(lt->faccache)
-		{
-		if(lt->faccache->bufprev) { free(lt->faccache->bufprev); lt->faccache->bufprev=NULL; }
-		if(lt->faccache->bufcurr) { free(lt->faccache->bufcurr); lt->faccache->bufcurr=NULL; }
+    free_safe( lt->value );
+    lt->value = NULL;
 
-		free(lt->faccache); lt->faccache=NULL;
-		}
+    free_safe( lt->zfacnames );
+    lt->zfacnames = NULL;
 
-	if(lt->fac_map) { free(lt->fac_map); lt->fac_map=NULL; }
-	if(lt->fac_curpos) { free(lt->fac_curpos); lt->fac_curpos=NULL; }
+    if( lt->faccache ) {
 
-	b=lt->block_head;
-	while(b)
-		{
-		bt=b->next;
+      free_safe( lt->faccache->bufprev );
+      free( lt->faccache->bufcurr );
 
-		if(b->mem) { free(b->mem); b->mem=NULL; }
+      lt->faccache->bufprev = NULL;
+      lt->faccache->bufcurr = NULL;
 
-		if(b->string_pointers) { free(b->string_pointers); b->string_pointers=NULL; }
-		if(b->string_lens) { free(b->string_lens); b->string_lens=NULL; }
+      free_safe( lt->faccache );
+      lt->faccache = NULL;
 
-		free(b);
-		b=bt;
-		}
+    }
 
-	lt->block_head=lt->block_curr=NULL;
+    free_safe( lt->fac_map );
+    lt->fac_map = NULL;
+    free_safe( lt->fac_curpos );
+    lt->fac_curpos = NULL;
 
-	if(lt->zhandle) { gzclose(lt->zhandle); lt->zhandle=NULL; }
-	if(lt->handle) { fclose(lt->handle); lt->handle=NULL; }
-	free(lt);	
-	}
+    b = lt->block_head;
+    while( b ) {
+
+      bt = b->next;
+
+      free_safe( b->mem );
+      free_safe( b->string_pointers );
+      free_safe( b->string_lens );
+
+      b->mem             = NULL;
+      b->string_pointers = NULL;
+      b->string_lens     = NULL;
+
+      free_safe( b );
+
+      b = bt;
+
+    }
+
+    lt->block_head = lt->block_curr = NULL;
+
+    if( lt->zhandle ) {
+      gzclose( lt->zhandle );
+      lt->zhandle = NULL;
+    }
+
+    if( lt->handle ) {
+      fclose( lt->handle );
+      lt->handle = NULL;
+    }
+
+    free_safe( lt );	
+
+  }
+
 }
 
 /****************************************************************************/
@@ -1040,356 +1095,347 @@ if(lt)
 /* 
  * return number of facs in trace
  */
-_LXT2_RD_INLINE lxtint32_t lxt2_rd_get_num_facs(struct lxt2_rd_trace *lt)
-{
-return(lt ? lt->numfacs : 0);
+_LXT2_RD_INLINE lxtint32_t lxt2_rd_get_num_facs( struct lxt2_rd_trace* lt ) {
+
+  return( lt ? lt->numfacs : 0 );
+
 }
 
 
 /*
  * return fac geometry for a given index
  */
-struct lxt2_rd_geometry *lxt2_rd_get_fac_geometry(struct lxt2_rd_trace *lt, lxtint32_t facidx)
-{
-if((lt)&&(facidx<lt->numfacs))
-	{
-	lt->geometry.rows = lt->rows[facidx];	
-	lt->geometry.msb = lt->msb[facidx];	
-	lt->geometry.lsb = lt->lsb[facidx];	
-	lt->geometry.flags = lt->flags[facidx];	
-	lt->geometry.len = lt->len[facidx];	
-	return(&lt->geometry);
-	}
-	else
-	{
-	return(NULL);
-	}
+struct lxt2_rd_geometry *lxt2_rd_get_fac_geometry( struct lxt2_rd_trace* lt, lxtint32_t facidx ) {
+
+  if( lt && (facidx < lt->numfacs) ) {
+    lt->geometry.rows  = lt->rows[facidx];	
+    lt->geometry.msb   = lt->msb[facidx];	
+    lt->geometry.lsb   = lt->lsb[facidx];	
+    lt->geometry.flags = lt->flags[facidx];	
+    lt->geometry.len   = lt->len[facidx];	
+    return( &lt->geometry );
+  } else {
+    return( NULL );
+  }
+
 }
 
 
 /*
  * return partial fac geometry for a given index
  */
-_LXT2_RD_INLINE lxtint32_t lxt2_rd_get_fac_rows(struct lxt2_rd_trace *lt, lxtint32_t facidx)
-{
-if((lt)&&(facidx<lt->numfacs))
-	{
-	return(lt->rows[facidx]);
-	}
-	else
-	{
-	return(0);
-	}
+_LXT2_RD_INLINE lxtint32_t lxt2_rd_get_fac_rows( struct lxt2_rd_trace* lt, lxtint32_t facidx ) {
+
+  if( lt && (facidx < lt->numfacs) ) {
+    return( lt->rows[facidx] );
+  } else {
+    return( 0 );
+  }
+
 }
 
 
-_LXT2_RD_INLINE lxtint32_t lxt2_rd_get_fac_msb(struct lxt2_rd_trace *lt, lxtint32_t facidx)
-{
-if((lt)&&(facidx<lt->numfacs))
-	{
-	return(lt->msb[facidx]);
-	}
-	else
-	{
-	return(0);
-	}
+_LXT2_RD_INLINE lxtint32_t lxt2_rd_get_fac_msb(struct lxt2_rd_trace *lt, lxtint32_t facidx ) {
+
+  if( lt && (facidx < lt->numfacs) ) {
+    return( lt->msb[facidx] );
+  } else {
+    return( 0 );
+  }
+
 }
 
 
-_LXT2_RD_INLINE lxtint32_t lxt2_rd_get_fac_lsb(struct lxt2_rd_trace *lt, lxtint32_t facidx)
-{
-if((lt)&&(facidx<lt->numfacs))
-	{
-	return(lt->lsb[facidx]);
-	}
-	else
-	{
-	return(0);
-	}
+_LXT2_RD_INLINE lxtint32_t lxt2_rd_get_fac_lsb( struct lxt2_rd_trace* lt, lxtint32_t facidx ) {
+
+  if( lt && (facidx < lt->numfacs) ) {
+    return( lt->lsb[facidx] );
+  } else {
+    return( 0 );
+  }
+
 }
 
 
-_LXT2_RD_INLINE lxtint32_t lxt2_rd_get_fac_flags(struct lxt2_rd_trace *lt, lxtint32_t facidx)
-{
-if((lt)&&(facidx<lt->numfacs))
-	{
-	return(lt->flags[facidx]);
-	}
-	else
-	{
-	return(0);
-	}
+_LXT2_RD_INLINE lxtint32_t lxt2_rd_get_fac_flags( struct lxt2_rd_trace* lt, lxtint32_t facidx ) {
+
+  if( lt && (facidx < lt->numfacs) ) {
+    return( lt->flags[facidx] );
+  } else {
+    return( 0 );
+  }
+
 }
 
+_LXT2_RD_INLINE lxtint32_t lxt2_rd_get_fac_len( struct lxt2_rd_trace* lt, lxtint32_t facidx ) {
 
-_LXT2_RD_INLINE lxtint32_t lxt2_rd_get_fac_len(struct lxt2_rd_trace *lt, lxtint32_t facidx)
-{
-if((lt)&&(facidx<lt->numfacs))
-	{
-	return(lt->len[facidx]);
-	}
-	else
-	{
-	return(0);
-	}
+  if( lt && (facidx < lt->numfacs) ) {
+    return( lt->len[facidx] );
+  } else {
+    return( 0 );
+  }
+
 }
 
+_LXT2_RD_INLINE lxtint32_t lxt2_rd_get_alias_root(struct lxt2_rd_trace *lt, lxtint32_t facidx) {
 
-_LXT2_RD_INLINE lxtint32_t lxt2_rd_get_alias_root(struct lxt2_rd_trace *lt, lxtint32_t facidx)
-{
-if((lt)&&(facidx<lt->numfacs))
-	{
-	while(lt->flags[facidx] & LXT2_RD_SYM_F_ALIAS)
-		{
-		facidx = lt->rows[facidx];	/* iterate to next alias */
-		}
-	return(facidx);
-	}
-	else
-	{
-	return(~((lxtint32_t)0));
-	}
+  if( lt && (facidx < lt->numfacs) ) {
+
+    while( lt->flags[facidx] & LXT2_RD_SYM_F_ALIAS ) {
+      facidx = lt->rows[facidx];	/* iterate to next alias */
+    }
+
+    return( facidx );
+
+  } else {
+
+    return( ~((lxtint32_t)0) );
+
+  }
+
 }
-
 
 /*
  * time queries
  */ 
-_LXT2_RD_INLINE lxtint64_t lxt2_rd_get_start_time(struct lxt2_rd_trace *lt)
-{
-return(lt ? lt->start : LXT2_RD_GRAN_0VAL);
+_LXT2_RD_INLINE lxtint64_t lxt2_rd_get_start_time( struct lxt2_rd_trace* lt ) {
+
+  return( lt ? lt->start : LXT2_RD_GRAN_0VAL );
+
 }
 
+_LXT2_RD_INLINE lxtint64_t lxt2_rd_get_end_time( struct lxt2_rd_trace* lt ) {
 
-_LXT2_RD_INLINE lxtint64_t lxt2_rd_get_end_time(struct lxt2_rd_trace *lt)
-{
-return(lt ? lt->end : LXT2_RD_GRAN_0VAL);
+  return( lt ? lt->end : LXT2_RD_GRAN_0VAL );
+
 }
 
+_LXT2_RD_INLINE char lxt2_rd_get_timescale( struct lxt2_rd_trace* lt ) {
 
-_LXT2_RD_INLINE char lxt2_rd_get_timescale(struct lxt2_rd_trace *lt)
-{
-return(lt ? lt->timescale : 0);
+  return( lt ? lt->timescale : 0 );
+
 }
-
 
 /*
  * extract facname from prefix-compressed table.  this
  * performs best when extracting facs with monotonically
  * increasing indices...
  */
-char *lxt2_rd_get_facname(struct lxt2_rd_trace *lt, lxtint32_t facidx)
-{
-char *pnt;
-int clone, j;
+char* lxt2_rd_get_facname( struct lxt2_rd_trace* lt, lxtint32_t facidx ) {
 
-if(lt)
-	{
-	if((facidx==(lt->faccache->old_facidx+1))||(!facidx))
-		{
-		if(!facidx)
-			{
-			lt->faccache->n = lt->zfacnames;
-			lt->faccache->bufcurr[0] = 0;			
-			lt->faccache->bufprev[0] = 0;			
-			}
+  char* pnt;
+  int   clone, j;
 
-		if(facidx!=lt->numfacs)
-			{
-			pnt = lt->faccache->bufcurr;
-			lt->faccache->bufcurr = lt->faccache->bufprev;
-			lt->faccache->bufprev = pnt;
+  if( lt ) {
 
-			clone=lxt2_rd_get_16(lt->faccache->n, 0);  lt->faccache->n+=2;
-			pnt=lt->faccache->bufcurr;
+    if( (facidx == (lt->faccache->old_facidx + 1)) || !facidx ) {
 
-			for(j=0;j<clone;j++)
-				{
-				*(pnt++) = lt->faccache->bufprev[j];
-				}
+      if( !facidx ) {
+        lt->faccache->n          = lt->zfacnames;
+        lt->faccache->bufcurr[0] = 0;			
+        lt->faccache->bufprev[0] = 0;			
+      }
 
-			while((*(pnt++)=lxt2_rd_get_byte(lt->faccache->n++,0)));
-			lt->faccache->old_facidx = facidx;
-			return(lt->faccache->bufcurr);
-			}
-			else
-			{
-			return(NULL);	/* no more left */
-			}
-		}
-		else
-		{
-		if(facidx<lt->numfacs)
-			{		
-			int strt;
+      if( facidx != lt->numfacs ) {
 
-			if(facidx==lt->faccache->old_facidx)
-				{
-				return(lt->faccache->bufcurr);
-				}
+        pnt = lt->faccache->bufcurr;
+        lt->faccache->bufcurr = lt->faccache->bufprev;
+        lt->faccache->bufprev = pnt;
 
-			if(facidx>(lt->faccache->old_facidx+1))
-				{
-				strt = lt->faccache->old_facidx+1;
-				}
-				else
-				{
-				strt=0;
-				}
+        clone = lxt2_rd_get_16( lt->faccache->n, 0 );
+        lt->faccache->n += 2;
+        pnt = lt->faccache->bufcurr;
 
-			for(j=strt;j<facidx;j++)
-				{
-				lxt2_rd_get_facname(lt, j);
-				}
+        for( j=0; j<clone; j++ ) {
+          *(pnt++) = lt->faccache->bufprev[j];
+        }
+
+        while( *(pnt++) = lxt2_rd_get_byte( lt->faccache->n++, 0 ) );
+
+	lt->faccache->old_facidx = facidx;
+
+        return( lt->faccache->bufcurr );
+
+      } else {
+
+        return( NULL );	/* no more left */
+
+      }
+
+    } else {
+
+      if( facidx < lt->numfacs ) {		
+
+        int strt;
+
+        if( facidx == lt->faccache->old_facidx ) {
+          return( lt->faccache->bufcurr );
+        }
+
+        if( facidx > (lt->faccache->old_facidx + 1) ) {
+          strt = lt->faccache->old_facidx + 1;
+        } else {
+          strt = 0;
+        }
+
+        for( j=strt; j<facidx; j++ ) {
+          lxt2_rd_get_facname( lt, j );
+        }
 	
-			return(lxt2_rd_get_facname(lt, j));
-			}
-		}
-	}
+        return( lxt2_rd_get_facname( lt, j ) );
 
-return(NULL);
+      }
+
+    }
+
+  }
+
+  return( NULL );
+
 }
-
 
 /*
  * iter mask manipulation util functions
  */
-_LXT2_RD_INLINE int lxt2_rd_get_fac_process_mask(struct lxt2_rd_trace *lt, lxtint32_t facidx)
-{
-if(lt)
-	{
-	if(facidx<lt->numfacs)
-		{
-		int process_idx = facidx/8;
-		int process_bit = facidx&7;
+_LXT2_RD_INLINE int lxt2_rd_get_fac_process_mask( struct lxt2_rd_trace* lt, lxtint32_t facidx ) {
 
-		return( (lt->process_mask[process_idx]&(1<<process_bit)) != 0 );
-		}
-	}
-return(0);
+  if( lt ) {
+
+    if( facidx < lt->numfacs ) {
+      int process_idx = facidx / 8;
+      int process_bit = facidx & 7;
+      return( (lt->process_mask[process_idx] & (1 << process_bit)) != 0 );
+    }
+
+  }
+
+  return( 0 );
+
+}
+
+_LXT2_RD_INLINE int lxt2_rd_set_fac_process_mask( struct lxt2_rd_trace* lt, lxtint32_t facidx ) {
+
+  int rc = 0;
+
+  if( lt ) {
+
+    lt->process_mask_dirty = 1;
+
+    if( facidx < lt->numfacs ) {
+      int idx    = facidx / 8;
+      int bitpos = facidx & 7;
+      lt->process_mask[idx] |= (1 << bitpos);
+    }
+
+    rc = 1;
+
+  }
+
+  return( rc );
+
 }
 
 
-_LXT2_RD_INLINE int lxt2_rd_set_fac_process_mask(struct lxt2_rd_trace *lt, lxtint32_t facidx)
-{
-int rc=0;
+_LXT2_RD_INLINE int lxt2_rd_clr_fac_process_mask( struct lxt2_rd_trace *lt, lxtint32_t facidx ) {
 
-if(lt)
-	{
-	lt->process_mask_dirty = 1;
-	if(facidx<lt->numfacs)
-		{
-		int idx = facidx/8;
-		int bitpos = facidx&7;
+  int rc = 0;
 
-		lt->process_mask[idx] |= (1<<bitpos);
-		}
-	rc=1;
-	}
+  if( lt ) {
 
-return(rc);
+    lt->process_mask_dirty = 1;
+
+    if( facidx < lt->numfacs) {
+      int idx    = facidx / 8;
+      int bitpos = facidx & 7;
+      lt->process_mask[idx] &= ~(1 << bitpos);
+    }
+
+    rc = 1;
+
+  }
+
+  return( rc );
+
 }
 
+_LXT2_RD_INLINE int lxt2_rd_set_fac_process_mask_all( struct lxt2_rd_trace* lt ) {
 
-_LXT2_RD_INLINE int lxt2_rd_clr_fac_process_mask(struct lxt2_rd_trace *lt, lxtint32_t facidx)
-{
-int rc=0;
+  int rc = 0;
 
-if(lt)
-	{
-	lt->process_mask_dirty = 1;
-	if(facidx<lt->numfacs)
-		{
-		int idx = facidx/8;
-		int bitpos = facidx&7;
+  if( lt ) {
+    lt->process_mask_dirty = 1;
+    memset( lt->process_mask, 0xff, ((lt->numfacs + 7) / 8) );
+    rc = 1;
+  }
 
-		lt->process_mask[idx] &= (~(1<<bitpos));
-		}
-	rc=1;
-	}
+  return( rc );
 
-return(rc);
 }
 
+_LXT2_RD_INLINE int lxt2_rd_clr_fac_process_mask_all( struct lxt2_rd_trace* lt ) {
 
-_LXT2_RD_INLINE int lxt2_rd_set_fac_process_mask_all(struct lxt2_rd_trace *lt)
-{
-int rc=0;
+  int rc = 0;
 
-if(lt)
-	{
-	lt->process_mask_dirty = 1;
-	memset(lt->process_mask, 0xff, (lt->numfacs+7)/8);
-	rc=1;
-	}
+  if( lt ) {
+    lt->process_mask_dirty = 1;
+    memset( lt->process_mask, 0x00, ((lt->numfacs + 7) / 8) );
+    rc = 1;
+  }
 
-return(rc);
+  return( rc );
+
 }
-
-
-_LXT2_RD_INLINE int lxt2_rd_clr_fac_process_mask_all(struct lxt2_rd_trace *lt)
-{
-int rc=0;
-
-if(lt)
-	{
-	lt->process_mask_dirty = 1;
-	memset(lt->process_mask, 0x00, (lt->numfacs+7)/8);
-	rc=1;
-	}
-
-return(rc);
-}
-
 
 /*
  * block memory set/get used to control buffering
  */
-_LXT2_RD_INLINE lxtint64_t lxt2_rd_set_max_block_mem_usage(struct lxt2_rd_trace *lt, lxtint64_t block_mem_max)
-{
-lxtint64_t rc = lt->block_mem_max;
-lt->block_mem_max = block_mem_max;
-return(rc);
+_LXT2_RD_INLINE lxtint64_t lxt2_rd_set_max_block_mem_usage( struct lxt2_rd_trace* lt, lxtint64_t block_mem_max ) {
+
+  lxtint64_t rc = lt->block_mem_max;
+
+  lt->block_mem_max = block_mem_max;
+
+  return( rc );
+
 }
 
+_LXT2_RD_INLINE lxtint64_t lxt2_rd_get_block_mem_usage( struct lxt2_rd_trace* lt ) {
 
-_LXT2_RD_INLINE lxtint64_t lxt2_rd_get_block_mem_usage(struct lxt2_rd_trace *lt)
-{
-return(lt->block_mem_consumed);
+  return( lt->block_mem_consumed );
+
 }
-
 
 /*
  * return total number of blocks
  */
-_LXT2_RD_INLINE unsigned int lxt2_rd_get_num_blocks(struct lxt2_rd_trace *lt)
-{
-return(lt->numblocks);
+_LXT2_RD_INLINE unsigned int lxt2_rd_get_num_blocks( struct lxt2_rd_trace* lt ) {
+
+  return( lt->numblocks );
+
 }
 
 /*
  * return number of active blocks
  */
-unsigned int lxt2_rd_get_num_active_blocks(struct lxt2_rd_trace *lt)
-{
-int blk=0;
+unsigned int lxt2_rd_get_num_active_blocks( struct lxt2_rd_trace* lt ) {
 
-if(lt)
-	{
-	struct lxt2_rd_block *b = lt->block_head;
+  int blk = 0;
 
-	while(b)
-		{
-		if((!b->short_read_ignore)&&(!b->exclude_block))
-			{
-			blk++;
-			}
+  if( lt ) {
 
-		b=b->next;
-		}
-	}
+    struct lxt2_rd_block* b = lt->block_head;
 
-return(blk);
+    while( b ) {
+      if( !b->short_read_ignore && !b->exclude_block ) {
+        blk++;
+      }
+      b = b->next;
+    }
+
+  }
+
+  return( blk );
+
 }
 
 /****************************************************************************/
@@ -1399,274 +1445,300 @@ return(blk);
  * merely caches the FIRST set of blocks which fit in lt->block_mem_max.
  * n.b., returns number of blocks processed
  */
-int lxt2_rd_iter_blocks(struct lxt2_rd_trace *lt, 
-	void (*value_change_callback)(struct lxt2_rd_trace **lt, lxtint64_t *time, lxtint32_t *facidx, char **value),
-	void *user_callback_data_pointer)
-{
-struct lxt2_rd_block *b;
-int blk=0, blkfinal=0;
-int processed = 0;
-struct lxt2_rd_block *bcutoff=NULL, *bfinal=NULL;
-int striped_kill = 0;
-unsigned int real_uncompressed_siz = 0;
-unsigned char gzid[2];
+int lxt2_rd_iter_blocks( struct lxt2_rd_trace* lt, 
+                         void (*value_change_callback)( struct lxt2_rd_trace** lt, lxtint64_t* time, lxtint32_t* facidx, char** value ),
+                         void *user_callback_data_pointer ) {
 
-if(lt)
-	{
-	lt->value_change_callback = value_change_callback ? value_change_callback : lxt2_rd_null_callback; 
-	lt->user_callback_data_pointer = user_callback_data_pointer;
+  struct lxt2_rd_block* b;
+  int                   blk       = 0;
+  int                   blkfinal  = 0;
+  int                   processed = 0;
+  struct lxt2_rd_block* bcutoff   = NULL;
+  struct lxt2_rd_block* bfinal    = NULL;
+  int                   striped_kill          = 0;
+  unsigned int          real_uncompressed_siz = 0;
+  unsigned char         gzid[2];
 
-	b = lt->block_head;
-	blk=0;
+  if( lt ) {
 
-	while(b)
-		{
-		if((!b->mem)&&(!b->short_read_ignore)&&(!b->exclude_block))
-			{
-			int rc;
+    lt->value_change_callback      = value_change_callback ? value_change_callback : lxt2_rd_null_callback; 
+    lt->user_callback_data_pointer = user_callback_data_pointer;
 
-			if(processed<5)
-				{
-				int gate = (processed==4) && b->next;
-				fprintf(stderr, LXT2_RDLOAD"block [%d] processing "LXT2_RD_LLD" / "LXT2_RD_LLD"%s\n", blk, b->start, b->end, gate ? " ..." : "");
-				if(gate) { bcutoff = b; }
-				}
+    b   = lt->block_head;
+    blk = 0;
 
-			processed++;
+    while( b ) {
 
-			fseeko(lt->handle, b->filepos, SEEK_SET);
-			gzid[0]=gzid[1]=0;
-			fread(&gzid, 2, 1, lt->handle);
-			fseeko(lt->handle, b->filepos, SEEK_SET);
+      if( !b->mem && !b->short_read_ignore && !b->exclude_block ) {
 
-			if((striped_kill = (gzid[0]!=0x1f)||(gzid[1]!=0x8b)))
-				{
-				lxtint32_t clen, unclen, iter=0;
-				char *pnt;
-				off_t fspos = b->filepos;
-				int rc;
+        int rc;
 
-				char *zbuff=NULL;
-				int zlen = 0;
-				struct z_stream_s strm;
+	if( processed < 5 ) {
+          int gate = (processed == 4) && b->next;
+#ifdef DEBUG_MODE
+          snprintf( user_msg, USER_MSG_LENGTH, "LXT block [%d] processing "LXT2_RD_LLD" / "LXT2_RD_LLD"%s",
+                    blk, b->start, b->end, (gate ? " ..." : "") ); 
+          print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+#endif
+          if( gate ) {
+            bcutoff = b;
+          }
+        }
 
-				real_uncompressed_siz = b->uncompressed_siz;
-				pnt = b->mem = malloc(b->uncompressed_siz);
-				b->uncompressed_siz = 0;
+        processed++;
 
-				lxt2_rd_regenerate_process_mask(lt);
+        fseeko( lt->handle, b->filepos, SEEK_SET );
+        gzid[0] = gzid[1] = 0;
+        fread( &gzid, 2, 1, lt->handle );
+        fseeko( lt->handle, b->filepos, SEEK_SET );
 
-				while(iter!=0xFFFFFFFF)
-					{
-					clen = unclen = iter = 0;				
-					fread(&clen, 4, 1, lt->handle);		clen = lxt2_rd_get_32(&clen,0);
-					fread(&unclen, 4, 1, lt->handle);	unclen = lxt2_rd_get_32(&unclen,0);
-					fread(&iter, 4, 1, lt->handle);		iter = lxt2_rd_get_32(&iter,0);
+        if( (striped_kill = (gzid[0] != 0x1f) || (gzid[1] != 0x8b)) ) {
 
-					fspos += 12;
-					if((iter==0xFFFFFFFF)||(lt->process_mask_compressed[iter/LXT2_RD_PARTIAL_SIZE]))
-						{
-						if(clen > zlen)
-							{
-							if(zbuff) free(zbuff);
-							zbuff = malloc(zlen = clen * 2);
-							}
+          lxtint32_t        clen, unclen, iter = 0;
+          char*             pnt;
+          off_t             fspos = b->filepos;
+          int               rc;
+          char*             zbuff = NULL;
+          int               zlen  = 0;
+          struct z_stream_s strm;
 
-						fread(zbuff, clen, 1, lt->handle);
+          real_uncompressed_siz = b->uncompressed_siz;
+          pnt = b->mem = malloc( b->uncompressed_siz );
+          b->uncompressed_siz = 0;
 
-						strm.avail_in = clen-10;
-						strm.avail_out = unclen;
-						strm.total_in = strm.total_out = 0;
-						strm.zalloc = NULL; strm.zfree = NULL; strm.opaque = NULL;
-						strm.next_in = zbuff+10;
-						strm.next_out = pnt;
+          lxt2_rd_regenerate_process_mask( lt );
 
-						rc = inflateInit2(&strm, -MAX_WBITS);
-						while (Z_OK == (rc = inflate(&strm, Z_NO_FLUSH)));
-						rc = inflateEnd(&strm);
-						if(strm.total_out!=unclen)
-							{
-							fprintf(stderr, LXT2_RDLOAD"short read on subblock %ld vs %d (exp), ignoring\n", strm.total_out, unclen);
-							free(b->mem); b->mem=NULL;
-							b->short_read_ignore = 1;
-							b->uncompressed_siz = real_uncompressed_siz;
-							break;
-							}
+          while( iter != 0xFFFFFFFF ) {
 
-						b->uncompressed_siz+=strm.total_out;
-						pnt += strm.total_out;
-						fspos += clen;
-						}
-						else
-						{
-						fspos += clen;
-						fseeko(lt->handle, fspos, SEEK_SET);
-						}
-					}
+            clen = unclen = iter = 0;				
 
+            fread( &clen, 4, 1, lt->handle );
+            clen = lxt2_rd_get_32( &clen, 0 );
 
-				if(zbuff) free(zbuff);
-				}
-				else
-				{
-				b->mem = malloc(b->uncompressed_siz);
-				lt->zhandle = gzdopen(dup(fileno(lt->handle)), "rb");
-				rc=gzread(lt->zhandle, b->mem, b->uncompressed_siz);
-				gzclose(lt->zhandle); lt->zhandle=NULL;
-				if(rc!=b->uncompressed_siz)
-					{
-					fprintf(stderr, LXT2_RDLOAD"short read on block %d vs %d (exp), ignoring\n", rc, b->uncompressed_siz);
-					free(b->mem); b->mem=NULL;
-					b->short_read_ignore = 1;
-					}
-					else
-					{
-					lt->block_mem_consumed += b->uncompressed_siz;
-					}
-				}
+            fread( &unclen, 4, 1, lt->handle );
+            unclen = lxt2_rd_get_32( &unclen, 0 );
 
-			bfinal=b;
-			blkfinal = blk;
-			}
+            fread( &iter, 4, 1, lt->handle );
+            iter = lxt2_rd_get_32( &iter, 0 );
 
-		if(b->mem)
-			{
-			lxt2_rd_process_block(lt, b);
+            fspos += 12;
 
-			if(striped_kill)
-				{
-				free(b->mem); b->mem=NULL;
-				b->uncompressed_siz = real_uncompressed_siz;
-				}
-			else
-			if(lt->numblocks > 1)	/* no sense freeing up the single block case */
-				{
-				if(lt->block_mem_consumed > lt->block_mem_max)
-					{
-					lt->block_mem_consumed -= b->uncompressed_siz;
-					free(b->mem); b->mem=NULL;
-					}
-				}
-			}
+            if( (iter == 0xFFFFFFFF) || lt->process_mask_compressed[iter/LXT2_RD_PARTIAL_SIZE] ) {
 
-		blk++;
-		b=b->next;
-		}
-	}
+              if( clen > zlen ) {
+                free_safe( zbuff );
+                zbuff = malloc( zlen = (clen * 2) );
+              }
 
-if((bcutoff)&&(bfinal!=bcutoff))
-	{
-	fprintf(stderr, LXT2_RDLOAD"block [%d] processed "LXT2_RD_LLD" / "LXT2_RD_LLD"\n", blkfinal, bfinal->start, bfinal->end);
-	}
+              fread( zbuff, clen, 1, lt->handle );
 
-return(blk);
+              strm.avail_in  = clen - 10;
+              strm.avail_out = unclen;
+              strm.total_in  = strm.total_out = 0;
+              strm.zalloc    = NULL;
+              strm.zfree     = NULL;
+              strm.opaque    = NULL;
+              strm.next_in   = zbuff + 10;
+              strm.next_out  = pnt;
+
+              rc = inflateInit2( &strm, -MAX_WBITS );
+
+              while (Z_OK == (rc = inflate( &strm, Z_NO_FLUSH )) );
+
+              rc = inflateEnd( &strm );
+
+              if( strm.total_out != unclen ) {
+                snprintf( user_msg, USER_MSG_LENGTH, "LXT:  Short read on subblock %ld vs %d (expected), ignoring...",
+                          strm.total_out, unclen );
+                print_output( user_msg, WARNING, __FILE__, __LINE__ );
+                free_safe( b->mem );
+                b->mem = NULL;
+                b->short_read_ignore = 1;
+                b->uncompressed_siz = real_uncompressed_siz;
+                break;
+              }
+
+              b->uncompressed_siz += strm.total_out;
+              pnt                 += strm.total_out;
+              fspos               += clen;
+
+            } else {
+
+              fspos += clen;
+              fseeko( lt->handle, fspos, SEEK_SET );
+
+            }
+
+          }
+
+          free_safe( zbuff );
+
+        } else {
+
+          b->mem      = malloc( b->uncompressed_siz );
+          lt->zhandle = gzdopen( dup( fileno( lt->handle ) ), "rb" );
+          rc          = gzread( lt->zhandle, b->mem, b->uncompressed_siz );
+          gzclose( lt->zhandle );
+          lt->zhandle = NULL;
+
+          if( rc != b->uncompressed_siz ) {
+            snprintf( user_msg, USER_MSG_LENGTH, "LXT:  Short read on block %d vs %d (expected), ignoring...", rc, b->uncompressed_siz );
+            print_output( user_msg, WARNING, __FILE__, __LINE__ );
+            free_safe( b->mem );
+            b->mem = NULL;
+            b->short_read_ignore = 1;
+          } else {
+            lt->block_mem_consumed += b->uncompressed_siz;
+          }
+
+        }
+
+        bfinal   = b;
+        blkfinal = blk;
+
+      }
+
+      if( b->mem ) {
+
+        lxt2_rd_process_block( lt, b );
+
+        if( striped_kill ) {
+          free_safe( b->mem );
+          b->mem = NULL;
+          b->uncompressed_siz = real_uncompressed_siz;
+        } else if( lt->numblocks > 1 ) {	/* no sense freeing up the single block case */
+          if( lt->block_mem_consumed > lt->block_mem_max ) {
+            lt->block_mem_consumed -= b->uncompressed_siz;
+            free_safe( b->mem );
+            b->mem = NULL;
+          }
+        }
+
+      }
+
+      blk++;
+      b = b->next;
+
+    }
+
+  }
+
+#ifdef DEBUG_MODE
+  if( bcutoff && (bfinal != bcutoff) ) {
+    snprintf( user_msg, USER_MSG_LENGTH, "LXT:  Block [%d] processed "LXT2_RD_LLD" / "LXT2_RD_LLD"", blkfinal, bfinal->start, bfinal->end );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  }
+#endif
+
+  return( blk );
+
 }
 
 
 /*
  * callback access to the user callback data pointer (if required)
  */ 
-_LXT2_RD_INLINE void *lxt2_rd_get_user_callback_data_pointer(struct lxt2_rd_trace *lt)
-{
-if(lt)
-	{
-	return(lt->user_callback_data_pointer);
-	}
-	else
-	{
-	return(NULL);
-	}
+_LXT2_RD_INLINE void* lxt2_rd_get_user_callback_data_pointer( struct lxt2_rd_trace* lt ) {
+
+  if( lt ) {
+    return( lt->user_callback_data_pointer );
+  } else {
+    return( NULL );
+  }
+
 }
 
+/*!
+ \param lt         Pointer to LXT read tracer
+ \param strt_time  Starting time to limit access to
+ \param end_time   Ending time to limit access to
 
-/*
- * limit access to certain timerange in file
- * and return number of active blocks
- */
-unsigned int lxt2_rd_limit_time_range(struct lxt2_rd_trace *lt, lxtint64_t strt_time, lxtint64_t end_time)
-{
-lxtint64_t tmp_time;
-int blk=0;
+ \return Returns the number of active blocks within the time range
 
-if(lt)
-	{
-	struct lxt2_rd_block *b = lt->block_head;
-	struct lxt2_rd_block *bprev = NULL;
-	int state = 0;
+ Limits access to a given timerange in the LXT file
+*/
+unsigned int lxt2_rd_limit_time_range( struct lxt2_rd_trace* lt, lxtint64_t strt_time, lxtint64_t end_time ) {
 
-	if(strt_time > end_time)
-		{
-		tmp_time = strt_time;
-		strt_time = end_time;
-		end_time = tmp_time;
-		}
+  lxtint64_t tmp_time;
+  int        blk = 0;
 
-	while(b)
-		{
-		switch(state)
-			{
-			case 0: if(b->end >= strt_time) 
-					{
-					state = 1;
-					if((b->start > strt_time) && (bprev))
-						{
-						bprev->exclude_block = 0;	
-						blk++;
-						}
-					}
-				break;
+  if( lt ) {
 
-			case 1: if(b->start > end_time) state = 2;
-				break;
+    struct lxt2_rd_block* b     = lt->block_head;
+    struct lxt2_rd_block* bprev = NULL;
+    int                   state = 0;
 
-			default: break;
-			}
+    if( strt_time > end_time ) {
+      tmp_time  = strt_time;
+      strt_time = end_time;
+      end_time  = tmp_time;
+    }
 
-		if((state==1) && (!b->short_read_ignore))
-			{
-			b->exclude_block = 0;
-			blk++;
-			}
-			else
-			{
-			b->exclude_block = 1;
-			}
+    while( b ) {
 
-		bprev = b;
-		b = b->next;
-		}
+      switch( state ) {
+        case 0 :
+          if( b->end >= strt_time ) {
+            state = 1;
+            if( (b->start > strt_time) && bprev ) {
+              bprev->exclude_block = 0;	
+              blk++;
+            }
+          }
+          break;
+        case 1 :
+          if( b->start > end_time ) {
+            state = 2;
+          }
+          break;
+        default:  break;
+      }
 
-	}
+      if( (state == 1) && !b->short_read_ignore ) {
+        b->exclude_block = 0;
+        blk++;
+      } else {
+        b->exclude_block = 1;
+      }
 
-return(blk);
+      bprev = b;
+      b = b->next;
+
+    }
+
+  }
+
+  return( blk );
+
 }
 
-/*
- * unrestrict access to the whole file
- * and return number of active blocks
- */
-unsigned int lxt2_rd_unlimit_time_range(struct lxt2_rd_trace *lt)
-{
-int blk=0;
+/*!
+ \param lt  Pointer to LXT read tracer.
 
-if(lt)
-	{
-	struct lxt2_rd_block *b = lt->block_head;
+ \return Returns the number of active blocks
 
-	while(b)
-		{
-		b->exclude_block = 0;
+ Unrestricts access to the whole LXT file
+*/
+unsigned int lxt2_rd_unlimit_time_range( struct lxt2_rd_trace* lt ) {
 
-		if(!b->short_read_ignore)
-			{
-			blk++;
-			}
+  int blk = 0;
 
-		b=b->next;
-		}
-	}
+  if( lt ) {
 
-return(blk);
+    struct lxt2_rd_block *b = lt->block_head;
+
+    while( b ) {
+      b->exclude_block = 0;
+      if( !b->short_read_ignore ) {
+        blk++;
+      }
+      b = b->next;
+    }
+
+  }
+
+  return( blk );
+
 }
 
 
