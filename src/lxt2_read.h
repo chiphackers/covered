@@ -43,7 +43,9 @@ typedef long off_t;
 #define ftello ftell
 #endif
 
+#ifdef HAVE_LIBZ
 #include <zlib.h>
+#endif
 
 #ifdef __GNUC__
 #define _LXT2_RD_INLINE inline
@@ -229,7 +231,9 @@ struct lxt2_rd_geometry geometry;
 struct lxt2_rd_facname_cache *faccache;
 
 FILE *handle;
+#ifdef HAVE_LIBZ
 gzFile zhandle;
+#endif
 
 lxtint64_t block_mem_consumed, block_mem_max;
 

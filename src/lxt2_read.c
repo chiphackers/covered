@@ -740,7 +740,15 @@ void lxt2_rd_null_callback( struct lxt2_rd_trace** lt, lxtint64_t* pnt_time, lxt
  * initialize the trace, get compressed facnames, get geometries,
  * and get block offset/size/timestart/timeend...
  */
-struct lxt2_rd_trace* lxt2_rd_init( const char *name ) {
+#ifndef HAVE_LIBZ
+struct lxt2_rd_trace* lxt2_rd_init( const char* name ) {
+
+  print_output( "Unable to parse LXT dumpfile due to missing zlib library in the build of Covered", FATAL, __FILE__, __LINE__ );
+  return( NULL );
+
+}
+#else
+struct lxt2_rd_trace* lxt2_rd_init( const char* name ) {
 
   struct lxt2_rd_trace* lt = (struct lxt2_rd_trace*)calloc( 1, sizeof( struct lxt2_rd_trace ) );
   int                   i;
@@ -857,7 +865,11 @@ struct lxt2_rd_trace* lxt2_rd_init( const char *name ) {
       lt->zhandle = NULL;
 
       if( rc != t ) {
+#ifdef DEBUG_MODE
         snprintf( user_msg, USER_MSG_LENGTH, "LXT:  Geometry section mangled %d (actual) vs %d (expected)", rc, t );
+        print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+#endif
+        snprintf( user_msg, USER_MSG_LENGTH, "LXT:  No LXT dumpfile information available in file %s", name );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         free( m );
         lxt2_rd_close( lt );
@@ -979,6 +991,8 @@ struct lxt2_rd_trace* lxt2_rd_init( const char *name ) {
 
       } else {
 
+        snprintf( user_msg, USER_MSG_LENGTH, "No blocks exist in LXT dumpfile %s", name );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
         lxt2_rd_close( lt );
         lt = NULL;
 
@@ -991,6 +1005,7 @@ struct lxt2_rd_trace* lxt2_rd_init( const char *name ) {
   return( lt );
 
 }
+#endif
 
 /*
  * free up/deallocate any resources still left out there:
@@ -1075,10 +1090,12 @@ void lxt2_rd_close( struct lxt2_rd_trace* lt ) {
 
     lt->block_head = lt->block_curr = NULL;
 
+#ifdef HAVE_LIBZ
     if( lt->zhandle ) {
       gzclose( lt->zhandle );
       lt->zhandle = NULL;
     }
+#endif
 
     if( lt->handle ) {
       fclose( lt->handle );
@@ -1441,6 +1458,13 @@ unsigned int lxt2_rd_get_num_active_blocks( struct lxt2_rd_trace* lt ) {
 
 /****************************************************************************/
 
+#ifndef HAVE_ZLIB
+int lxt2_rd_iter_blocks( struct lxt2_rd_trace* lt,
+                         void (*value_change_callback)( struct lxt2_rd_trace** lt, lxtint64_t* time, lxtint32_t* facidx, char** value ),
+                         void *user_callback_data_pointer ) {
+  return( 0 );
+}
+#else
 /*
  * block iteration...purge/reload code here isn't sophisticated as it
  * merely caches the FIRST set of blocks which fit in lt->block_mem_max.
@@ -1634,6 +1658,7 @@ int lxt2_rd_iter_blocks( struct lxt2_rd_trace* lt,
   return( blk );
 
 }
+#endif
 
 
 /*

@@ -635,28 +635,6 @@ int command_report( int argc, int last_arg, char** argv ) {
 
     if( !report_gui ) {
 
-      /* Open output stream */
-      if( output_file != NULL ) {
-
-        if( (ofile = fopen( output_file, "w" )) == NULL ) {
-
-          snprintf( user_msg, USER_MSG_LENGTH, "Unable to open %s for writing", output_file );
-          print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          exit( 1 );
-
-        } else {
-
-          /* Free up memory for holding output_file */
-          free_safe( output_file );
-
-        }
-    
-      } else {
- 
-        ofile = stdout;
-
-      }
-
       /* Open database file for reading */
       if( input_db == NULL ) {
 
@@ -666,21 +644,33 @@ int command_report( int argc, int last_arg, char** argv ) {
 
       } else {
 
-        if( report_instance ) {
-          if( db_read( input_db, READ_MODE_REPORT_NO_MERGE ) ) {
-            bind( TRUE );
-            report_generate( ofile );
+        /* Read in CDD file */
+        if( db_read( input_db, (report_instance ? READ_MODE_REPORT_NO_MERGE : READ_MODE_REPORT_MOD_MERGE) ) ) {
+
+          /* Perform binding */
+          bind( TRUE );
+
+          /* Open output stream */
+          if( output_file != NULL ) {
+            if( (ofile = fopen( output_file, "w" )) == NULL ) {
+              snprintf( user_msg, USER_MSG_LENGTH, "Unable to open report output file %s for writing", output_file );
+              print_output( user_msg, FATAL, __FILE__, __LINE__ );
+            } else {
+              free_safe( output_file );
+            }
+          } else {
+            ofile = stdout;
           }
-        } else {
-          if( db_read( input_db, READ_MODE_REPORT_MOD_MERGE ) ) {
-            bind( TRUE );
-            report_generate( ofile );
-          }
+
+          /* Generate report */
+          report_generate( ofile );
+
+          /* Close output file */
+          fclose( ofile );
+
         }
 
       }
-
-      fclose( ofile );
 
 #ifdef HAVE_TCLTK
     } else {
@@ -756,6 +746,13 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.52  2006/01/19 00:01:09  phase1geo
+ Lots of changes/additions.  Summary report window work is now complete (with the
+ exception of adding extra features).  Added support for parsing left and right
+ shift operators and the exponent operator in static expression scenarios.  Fixed
+ issues related to GUI (due to recent changes in the score command).  Things seem
+ to be generally working as expected with the GUI now.
+
  Revision 1.51  2006/01/06 23:39:10  phase1geo
  Started working on removing the need to simulate more than is necessary.  Things
  are pretty broken at this point, but all of the code should be in -- debugging.

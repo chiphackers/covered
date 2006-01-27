@@ -206,7 +206,7 @@ void lxt_parse( char* lxt_file ) {
 
   } else {
 
-    print_output( "Unable to open specified LXT file", FATAL, __FILE__, __LINE__ );
+    print_output( "Unable to read data from LXT dumpfile.  Exiting without scoring.", FATAL, __FILE__, __LINE__ );
     exit( 1 );
 
   }
@@ -215,6 +215,9 @@ void lxt_parse( char* lxt_file ) {
 
 /*
  $Log$
+ Revision 1.3  2006/01/26 22:40:13  phase1geo
+ Fixing last LXT bug.
+
  Revision 1.2  2006/01/26 17:34:02  phase1geo
  Finished work on lxt2_read.c and fixed bug in LXT-based simulator.  Also adding
  missing lxt.h header file.
