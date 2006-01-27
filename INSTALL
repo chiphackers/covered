@@ -18,6 +18,11 @@
   - GNU gperf (Version 2.7.2 or higher)
   - TCL (Version 8.3 or higher)
   - TK (Version 8.3 or higher)
+
+  If you would like to use LXT2 formatted dumpfiles with Covered, you now may but
+  it will additionally require you to have the following library package:
+  - zlib-devel
+
   Additionally, the development documentation is built using the doxygen utility
   which can be found at http://www.doxygen.org
 

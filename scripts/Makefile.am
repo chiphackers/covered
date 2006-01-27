@@ -5,6 +5,7 @@ tcl_SCRIPTS = banner.gif \
               help.tcl \
               main_view.tcl \
               menu_create.tcl \
+              preferences.tcl \
               process_file.tcl \
 	      summary.tcl \
               toggle.tcl
