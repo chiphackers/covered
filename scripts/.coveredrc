@@ -1,0 +1,57 @@
+# Covered GUI Configuration File
+#--------------------------------
+# All variable assignments below are in the form of "variable = value"
+# where whitespace must be present between the variable, the "=" character
+# and the value.  Comment lines start with the "#" character.
+# Sets the foreground color for all source code that is found
+# to be uncovered during simulation.  The value can be any legal color
+# value accepted by Tcl.
+UncoveredForegroundColor = blue
+# Sets the background color for all source code that is found
+# to be uncovered during simulation.  The value can be any legal color
+# value accepted by Tcl.
+
+UncoveredBackgroundColor = yellow
+# Sets the foreground color for all source code that is found
+# to be covered during simulation.  The value can be any legal color value
+# accepted by Tcl.
+
+CoveredForegroundColor = black
+# Sets the background color for all source code that is found
+# to be covered during simulation.  The value can be any legal color value.
+# accepted by Tcl.
+CoveredBackgroundColor = white
+# Sets the foreground color for all source code that has been detected as
+# containing a race condition situation.  This code is not analyzed by Covered.
+# The value can be any legal color value accepted by Tcl.
+
+RaceConditionForegroundColor = white
+# Sets the background color for all source code that has been detected as
+# containing a race condition situation.  This code is not analyzed by Covered.
+# The value can be any legal color value accepted by Tcl.
+
+RaceConditionBackgroundColor = blue
+# Causes the summary color for a module/instance that has achieved a line
+# coverage percentage greater than or equal to this value (but not 100%) to be
+# colored "yellow", indicating that the line coverage can possibly be deemed
+# "good enough".  This value must be in the range of 0 - 100.
+
+AcceptableLinePercentage = 90
+# Causes the summary color for a module/instance that has achieved a toggle
+# coverage percentage greater than or equal to this value (but not 100%) to be
+# colored "yellow", indicating that the toggle coverage can possibly be deemed
+# "good enough".  This value must be in the range of 0 - 100.
+
+AcceptableTogglePercentage = 90
+# Causes the summary color for a module/instance that has achieved a combinational
+# logic coverage percentage greater than or equal to this value (but not 100%) to be
+# colored "yellow", indicating that the combinational logic coverage can possibly be
+# deemed "good enough".  This value must be in the range of 0 - 100.
+
+AcceptableCombinationalLogicPercentage = 90
+# Causes the summary color for a module/instance that has achieved an FSM state/arc
+# coverage percentage greater than or equal to this value (but not 100%) to be
+# colored "yellow", indicating that the FSM coverage can possibly be deemed
+# "good enough".  This value must be in the range of 0 - 100.
+
+AcceptableFsmPercentage = 90

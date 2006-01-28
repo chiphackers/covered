@@ -223,8 +223,8 @@ void report_parse_metrics( char* metrics ) {
 */
 bool report_parse_args( int argc, int last_arg, char** argv ) {
 
-  bool retval = TRUE;  /* Return value for this function           */
-  int  i;              /* Loop iterator                            */
+  bool retval = TRUE;  /* Return value for this function */
+  int  i;              /* Loop iterator */
   int  chars_read;     /* Number of characters read in from sscanf */
 
   i = last_arg + 1;
@@ -343,7 +343,7 @@ bool report_parse_args( int argc, int last_arg, char** argv ) {
 */
 void report_gather_instance_stats( funit_inst* root ) {
 
-  funit_inst* curr;    /* Pointer to current instance being evaluated */
+  funit_inst* curr;  /* Pointer to current instance being evaluated */
 
   /* Create a statistics structure for this instance */
   assert( root->stat == NULL );
@@ -617,12 +617,13 @@ bool report_read_cdd_and_ready( char* ifile, int read_mode ) {
 */
 int command_report( int argc, int last_arg, char** argv ) {
 
-  int   retval = 0;       /* Return value of this function                     */
-  FILE* ofile;            /* Pointer to output stream                          */
+  int   retval = 0;       /* Return value of this function */
+  FILE* ofile;            /* Pointer to output stream */
   char* covered_home;     /* Pathname to Covered's home installation directory */
-  char* covered_browser;  /* Name of browser to use for GUI help pages         */
-  char* covered_version;  /* String version of current Covered version         */
-  char* main_file;        /* Name of main TCL file to interpret                */ 
+  char* covered_browser;  /* Name of browser to use for GUI help pages */
+  char* covered_version;  /* String version of current Covered version */
+  char* main_file;        /* Name of main TCL file to interpret */ 
+  char* user_home;        /* HOME environment variable */
 
   /* Parse score command-line */
   if( report_parse_args( argc, last_arg, argv ) ) {
@@ -713,9 +714,10 @@ int command_report( int argc, int last_arg, char** argv ) {
 #endif
 
       covered_version = strdup( VERSION );
+      user_home       = getenv( "HOME" );
 
       /* Initialize TCL */
-      tcl_func_initialize( interp, covered_home, covered_version, covered_browser );
+      tcl_func_initialize( interp, user_home, covered_home, covered_version, covered_browser );
 
       /* Call the top-level Tcl file */
       main_file = (char*)malloc( strlen( covered_home ) + 30 );
@@ -746,6 +748,13 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.53  2006/01/27 15:43:58  phase1geo
+ Added ifdefs for HAVE_ZLIB define to allow Covered to compile correctly when
+ zlib.h and associated library is unavailable.  Also handle dumpfile reading
+ appropriately for this condition.  Moved report file opening after the CDD file
+ has been read in to avoid empty report files when a problem is detected in the
+ CDD file.
+
  Revision 1.52  2006/01/19 00:01:09  phase1geo
  Lots of changes/additions.  Summary report window work is now complete (with the
  exception of adding extra features).  Added support for parsing left and right

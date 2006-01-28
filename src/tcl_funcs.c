@@ -870,7 +870,7 @@ int tcl_func_get_comb_summary( ClientData d, Tcl_Interp* tcl, int argc, const ch
 
 }
 
-void tcl_func_initialize( Tcl_Interp* tcl, char* home, char* version, char* browser ) {
+void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* version, char* browser ) {
 
   Tcl_CreateCommand( tcl, "tcl_func_get_race_reason_msgs",      (Tcl_CmdProc*)(tcl_func_get_race_reason_msgs),      0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_funit_list",            (Tcl_CmdProc*)(tcl_func_get_funit_list),            0, 0 );
@@ -893,6 +893,9 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* home, char* version, char* brow
   Tcl_CreateCommand( tcl, "tcl_func_get_toggle_summary",        (Tcl_CmdProc*)(tcl_func_get_toggle_summary),        0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_comb_summary",          (Tcl_CmdProc*)(tcl_func_get_comb_summary),          0, 0 );
 
+  /* Set the USER_HOME variable to location of user's home directory */
+  Tcl_SetVar( tcl, "USER_HOME", user_home, TCL_GLOBAL_ONLY );
+
   /* Set HOME variable to location of scripts */
   Tcl_SetVar( tcl, "HOME", home, TCL_GLOBAL_ONLY );
 
@@ -909,6 +912,10 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* home, char* version, char* brow
 
 /*
  $Log$
+ Revision 1.25  2006/01/23 03:53:30  phase1geo
+ Adding support for input/output ports of tasks/functions.  Regressions are not
+ running cleanly at this point so there is still some work to do here.  Checkpointing.
+
  Revision 1.24  2006/01/19 23:29:08  phase1geo
  Fixing bug from last checkin in tcl_funcs.c (infinite looping).  Small updates
  to menu.

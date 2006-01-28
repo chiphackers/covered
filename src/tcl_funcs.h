@@ -19,11 +19,14 @@
 /*! \brief TBD */
 int tcl_func_get_funit_list( ClientData d, Tcl_Interp* tcl, int argc, const char *argv[] );
 
-/*! \brief TBD */
-void tcl_func_initialize( Tcl_Interp* tcl, char* home, char* version, char* browser );
+/*! \brief Initializes TCL interface */
+void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* version, char* browser );
 #endif
 
 /* $Log$
+/* Revision 1.8  2005/12/02 05:46:50  phase1geo
+/* Fixing compile errors when HAVE_TCLTK is defined in config.h.
+/*
 /* Revision 1.7  2005/12/01 19:46:50  phase1geo
 /* Removed Tcl/Tk from source files if HAVE_TCLTK is not defined.
 /*

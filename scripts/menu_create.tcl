@@ -1,11 +1,5 @@
 #!/usr/bin/env wish
 
-set uncov_fgColor blue
-set uncov_bgColor yellow
-set cov_fgColor   black
-set cov_bgColor   white
-set race_fgColor  white
-set race_bgColor  blue
 set uncov_type    1
 set cov_type      0
 set race_type     0
@@ -31,7 +25,7 @@ proc menu_create {.menubar} {
   # Create the menu-buttons for File, Preferences and About
   menubutton .menubar.file   -text "File"        -underline 0
   menubutton .menubar.report -text "Report"      -underline 0
-  menubutton .menubar.pref   -text "Preferences" -underline 0
+  menubutton .menubar.tools  -text "Tools"       -underline 0
   menubutton .menubar.help   -text "Help"        -underline 0
 
   # Configure the file option
@@ -54,7 +48,7 @@ proc menu_create {.menubar} {
       .menubar.file.menu entryconfigure 0 -state disabled
       .menubar.file.menu entryconfigure 1 -state normal
       .menubar.file.menu entryconfigure 2 -state normal
-      .menubar.report.menu entryconfigure 0 -state normal
+      .menubar.tools.menu entryconfigure 0 -state normal
     }
   }
   $tfm add command -label "Open Related CDD..." -state disabled -command {
@@ -92,10 +86,6 @@ proc menu_create {.menubar} {
 
   global mod_inst_type cov_uncov_type cov_rb
 
-  $report add command -label "Show Summary..." -state disabled -command {
-    create_summary
-  }
-  $report add separator
   $report add radiobutton -label "Module-based"   -variable mod_inst_type -value "module" -command {
     populate_listbox .bot.left.l
     update_summary
@@ -153,135 +143,16 @@ proc menu_create {.menubar} {
   set mod_inst_type  "module"
 
   # Configure the color options
-  .menubar.pref config -menu .menubar.pref.menu
-  set m [menu .menubar.pref.menu -tearoff false]
+  .menubar.tools config -menu .menubar.tools.menu
+  set m [menu .menubar.tools.menu -tearoff false]
 
-  # Choose foreground color of uncovered lines
-  global uncov_fgColor
-  $m add command -label "Choose Uncovered Foreground ..." -command { 
-    set uncov_fgColor [tk_chooseColor -initialcolor $uncov_fgColor -title \
-                       "Choose Foreground Color for Uncovered Lines"]
-    # Redisplay coverage
-    set text_x [.bot.right.txt xview]
-    set text_y [.bot.right.txt yview]
-    if {$cov_rb == "line"} {
-      display_line_cov
-    } elseif {$cov_rb == "toggle"} {
-      display_toggle_cov
-    } elseif {$cov_rb == "comb"} {
-      display_comb_cov
-    } else {
-      # Error
-    }
-    .bot.right.txt xview moveto [lindex $text_x 0]
-    .bot.right.txt yview moveto [lindex $text_y 0]
+  # Summary window
+  $m add command -label "Summary Window..." -state disabled -command {
+    create_summary
   }
-
-  # Choose background color of uncovered lines
-  global uncov_bgColor
-  $m add command -label "Choose Uncovered Background ..." -command { 
-    set uncov_bgColor [tk_chooseColor -initialcolor $uncov_bgColor -title \
-                       "Choose Background Color for Uncovered Lines"]
-    # Redisplay coverage
-    set text_x [.bot.right.txt xview]
-    set text_y [.bot.right.txt yview]
-    if {$cov_rb == "line"} {
-      display_line_cov
-    } elseif {$cov_rb == "toggle"} {
-      display_toggle_cov
-    } elseif {$cov_rb == "comb"} {
-      display_comb_cov
-    } else {
-      # Error
-    }
-    .bot.right.txt xview moveto [lindex $text_x 0]
-    .bot.right.txt yview moveto [lindex $text_y 0]
-  }
-
   $m add separator
-
-  # Choose foreground color of covered lines
-  global cov_fgColor
-  $m add command -label "Choose Covered Foreground ..." -command {
-    set cov_fgColor [tk_chooseColor -initialcolor $cov_fgColor -title \
-                     "Choose Foreground Color for Covered Lines"]
-    # Redisplay coverage
-    set text_x [.bot.right.txt xview]
-    set text_y [.bot.right.txt yview]
-    if {$cov_rb == "line"} {
-      display_line_cov
-    } elseif {$cov_rb == "toggle"} {
-      display_toggle_cov
-    } elseif {$cov_rb == "comb"} {
-      display_comb_cov
-    } else {
-      # Error
-    }
-    .bot.right.txt xview moveto [lindex $text_x 0]
-    .bot.right.txt yview moveto [lindex $text_y 0]
-  }
-
-  # Choose background color of covered lines
-  global cov_bgColor
-  $m add command -label "Choose Covered Background ..." -command {
-    set cov_bgColor [tk_chooseColor -initialcolor $cov_bgColor -title \
-                     "Choose Background Color for Covered Lines"]
-    # Redisplay coverage
-    set text_x [.bot.right.txt xview]
-    set text_y [.bot.right.txt yview]
-    if {$cov_rb == "line"} {
-      display_line_cov
-    } elseif {$cov_rb == "toggle"} {
-      display_toggle_cov
-    } elseif {$cov_rb == "comb"} {
-      display_comb_cov
-    } else {
-      # Error
-    }
-    .bot.right.txt xview moveto [lindex $text_x 0]
-    .bot.right.txt yview moveto [lindex $text_y 0]
-  }
-
-  $m add separator
-
-  # Choose foreground color of race condition lines
-  global race_fgColor
-  $m add command -label "Choose Race Condition Foreground ..." -command {
-    set race_fgColor [tk_chooseColor -initialcolor $race_fgColor -title \
-                      "Choose Foreground Color for Race Condition Lines"]
-    # Redisplay coverage
-    set text_x [.bot.right.txt xview]
-    set text_y [.bot.right.txt yview]
-    if {$cov_rb == "line"} {
-      display_line_cov
-    } elseif {$cov_rb == "toggle"} {
-    } elseif {$cov_rb == "comb"} {
-      display_comb_cov
-    } else {
-      # Error
-    }
-    .bot.right.txt xview moveto [lindex $text_x 0]
-    .bot.right.txt yview moveto [lindex $text_y 0]
-  }
-
-  # Choose foreground color of race condition lines
-  global race_bgColor
-  $m add command -label "Choose Race Condition Background ..." -command {
-    set race_bgColor [tk_chooseColor -initialcolor $race_bgColor -title \
-                      "Choose Background Color for Race Condition Lines"]
-    # Redisplay coverage
-    set text_x [.bot.right.txt xview]
-    set text_y [.bot.right.txt yview]
-    if {$cov_rb == "line"} {
-      display_line_cov
-    } elseif {$cov_rb == "toggle"} {
-    } elseif {$cov_rb == "comb"} {
-      display_comb_cov
-    } else {
-      # Error
-    }
-    .bot.right.txt xview moveto [lindex $text_x 0]
-    .bot.right.txt yview moveto [lindex $text_y 0]
+  $m add command -label "Preferences..." -command {
+    create_preferences
   }
 
   # Configure the help option
@@ -308,7 +179,7 @@ proc menu_create {.menubar} {
   # Pack the menu-buttons
   pack .menubar.file   -side left
   pack .menubar.report -side left
-  pack .menubar.pref   -side left
+  pack .menubar.tools  -side left
   pack .menubar.help   -side right
 
   # Create a 3D Seperator 

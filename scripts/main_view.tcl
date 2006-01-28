@@ -8,6 +8,7 @@ source $HOME/scripts/toggle.tcl
 source $HOME/scripts/comb.tcl
 source $HOME/scripts/help.tcl
 source $HOME/scripts/summary.tcl
+source $HOME/scripts/preferences.tcl
 
 set last_lb_index ""
 set lwidth        -1 
@@ -235,4 +236,8 @@ proc bgerror {msg} {
 
 }
 
+# Read configuration file
+read_coveredrc
+
+# Display main window
 main_view

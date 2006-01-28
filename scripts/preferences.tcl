@@ -15,10 +15,177 @@ set line_low_limit   90
 set toggle_low_limit 90
 set comb_low_limit   90
 set fsm_low_limit    90
+set rc_file_to_write ""
 
 # Create a list from 100 to 0
 for {set i 100} {$i >= 0} {incr i -1} {
   lappend percent_range $i
+}
+
+proc read_coveredrc {} {
+
+  global uncov_fgColor uncov_bgColor
+  global cov_fgColor   cov_bgColor
+  global race_fgColor  race_bgColor
+  global line_low_limit toggle_low_limit comb_low_limit fsm_low_limit
+  global HOME USER_HOME rc_file_to_write
+
+  puts "$HOME/scripts/.coveredrc"
+
+  # Find the correct configuration file to read and eventually write
+  if {[file exists ".coveredrc"] == 1} {
+    set rc [open ".coveredrc" r]
+    set rc_file_to_write ".coveredrc"
+    puts "Reading from configuration file .coveredrc"
+  } elseif {[file exists "$USER_HOME/.coveredrc"] == 1} {
+    set rc [open "$USER_HOME/.coveredrc" r]
+    set rc_file_to_write "$USER_HOME/.coveredrc"
+    puts "Reading from configuration file $USER_HOME/.coveredrc"
+  } elseif {[file exists "$HOME/scripts/.coveredrc"] == 1} {
+    set rc [open "$HOME/scripts/.coveredrc" r]
+    set rc_file_to_write "$USER_HOME/.coveredrc"
+    puts "Reading from configuration file $HOME/scripts/.coveredrc"
+  } else {
+    set rc -1
+    set rc_file_to_write ""
+    puts "Unable to find configuration file to read"
+  }
+
+  if {$rc != -1} {
+
+    seek $rc 0 start
+
+    while {[eof $rc] == 0} {
+
+      # Parse string here
+      set line_elems [split [gets $rc]]
+
+      if {[lindex $line_elems 1] == "="} {
+
+        set field [lindex $line_elems 0]
+        set value [lindex $line_elems 2]
+
+        if {$field == "UncoveredForegroundColor"} {
+          set uncov_fgColor $value
+        } elseif {$field == "UncoveredBackgroundColor"} {
+          set uncov_bgColor $value
+        } elseif {$field == "CoveredForegroundColor"} {
+          set cov_fgColor $value
+        } elseif {$field == "CoveredBackgroundColor"} {
+          set cov_bgColor $value
+        } elseif {$field == "RaceConditionForegroundColor"} {
+          set race_fgColor $value
+        } elseif {$field == "RaceConditionBackgroundColor"} {
+          set race_bgColor $value
+        } elseif {$field == "AcceptableLinePercentage"} {
+          set line_low_limit $value
+        } elseif {$field == "AcceptableTogglePercentage"} {
+          set toggle_low_limit $value
+        } elseif {$field == "AcceptableCombinationalLogicPercentage"} {
+          set comb_low_limit $value
+        } elseif {$field == "AcceptableFsmPercentage"} {
+          set fsm_low_limit $value
+        }
+
+      }
+        
+    }
+
+    close $rc
+
+  }
+
+}
+
+proc write_coveredrc {} {
+
+  global uncov_fgColor uncov_bgColor
+  global cov_fgColor   cov_bgColor
+  global race_fgColor  race_bgColor
+  global line_low_limit toggle_low_limit comb_low_limit fsm_low_limit
+  global rc_file_to_write
+
+  if {$rc_file_to_write != ""} {
+
+    puts "Writing to configuration file $rc_file_to_write"
+
+    set rc [open $rc_file_to_write w]
+
+    puts $rc "# Covered GUI Configuration File"
+    puts $rc "#--------------------------------"
+    puts $rc "# All variable assignments below are in the form of \"variable = value\""
+    puts $rc "# where whitespace must be present between the variable, the \"=\" character"
+    puts $rc "# and the value.  Comment lines start with the \"#\" character."
+
+    puts $rc "# Sets the foreground color for all source code that is found"
+    puts $rc "# to be uncovered during simulation.  The value can be any legal color"
+    puts $rc "# value accepted by Tcl."
+
+    puts $rc "UncoveredForegroundColor = $uncov_fgColor"
+
+    puts $rc "# Sets the background color for all source code that is found"
+    puts $rc "# to be uncovered during simulation.  The value can be any legal color"
+    puts $rc "# value accepted by Tcl.\n"
+
+    puts $rc "UncoveredBackgroundColor = $uncov_bgColor"
+
+    puts $rc "# Sets the foreground color for all source code that is found"
+    puts $rc "# to be covered during simulation.  The value can be any legal color value"
+    puts $rc "# accepted by Tcl.\n"
+
+    puts $rc "CoveredForegroundColor = $cov_fgColor"
+
+    puts $rc "# Sets the background color for all source code that is found"
+    puts $rc "# to be covered during simulation.  The value can be any legal color value."
+    puts $rc "# accepted by Tcl."
+
+    puts $rc "CoveredBackgroundColor = $cov_bgColor"
+
+    puts $rc "# Sets the foreground color for all source code that has been detected as"
+    puts $rc "# containing a race condition situation.  This code is not analyzed by Covered."
+    puts $rc "# The value can be any legal color value accepted by Tcl.\n"
+
+    puts $rc "RaceConditionForegroundColor = $race_fgColor"
+
+    puts $rc "# Sets the background color for all source code that has been detected as"
+    puts $rc "# containing a race condition situation.  This code is not analyzed by Covered."
+    puts $rc "# The value can be any legal color value accepted by Tcl.\n"
+
+    puts $rc "RaceConditionBackgroundColor = $race_bgColor"
+
+    puts $rc "# Causes the summary color for a module/instance that has achieved a line"
+    puts $rc "# coverage percentage greater than or equal to this value (but not 100%) to be"
+    puts $rc "# colored \"yellow\", indicating that the line coverage can possibly be deemed"
+    puts $rc "# \"good enough\".  This value must be in the range of 0 - 100.\n"
+
+    puts $rc "AcceptableLinePercentage = $line_low_limit"
+
+    puts $rc "# Causes the summary color for a module/instance that has achieved a toggle"
+    puts $rc "# coverage percentage greater than or equal to this value (but not 100%) to be"
+    puts $rc "# colored \"yellow\", indicating that the toggle coverage can possibly be deemed"
+    puts $rc "# \"good enough\".  This value must be in the range of 0 - 100.\n"
+
+    puts $rc "AcceptableTogglePercentage = $toggle_low_limit"
+
+    puts $rc "# Causes the summary color for a module/instance that has achieved a combinational"
+    puts $rc "# logic coverage percentage greater than or equal to this value (but not 100%) to be"
+    puts $rc "# colored \"yellow\", indicating that the combinational logic coverage can possibly be"
+    puts $rc "# deemed \"good enough\".  This value must be in the range of 0 - 100.\n"
+
+    puts $rc "AcceptableCombinationalLogicPercentage = $comb_low_limit"
+
+    puts $rc "# Causes the summary color for a module/instance that has achieved an FSM state/arc"
+    puts $rc "# coverage percentage greater than or equal to this value (but not 100%) to be"
+    puts $rc "# colored \"yellow\", indicating that the FSM coverage can possibly be deemed"
+    puts $rc "# \"good enough\".  This value must be in the range of 0 - 100.\n"
+
+    puts $rc "AcceptableFsmPercentage = $fsm_low_limit"
+
+    flush $rc
+    close $rc
+
+  }
+
 }
 
 proc create_preferences {} {
@@ -33,9 +200,6 @@ proc create_preferences {} {
 
   # Now create the window and set the grab to this window
   if {[winfo exists .prefwin] == 0} {
-
-    # DEBUG
-    display_settings "Before Settings"
 
     # Setup common color widget values
     set brelief "groove"
@@ -140,21 +304,81 @@ proc create_preferences {} {
       frame .prefwin.bbar -relief raised -borderwidth 1
 
       button .prefwin.bbar.ok -width 10 -text "OK" -command {
-        set cov_fgColor      $tmp_cov_fgColor
-        set cov_bgColor      $tmp_cov_bgColor
-        set uncov_fgColor    $tmp_uncov_fgColor
-        set uncov_bgColor    $tmp_uncov_bgColor
-        set race_fgColor     $tmp_race_fgColor
-        set race_bgColor     $tmp_race_bgColor
-        set line_low_limit   [expr 100 - [.prefwin.limits.ls.l nearest 0]]
-        set toggle_low_limit [expr 100 - [.prefwin.limits.ts.l nearest 0]]
-        set comb_low_limit   [expr 100 - [.prefwin.limits.cs.l nearest 0]]
-        set fsm_low_limit    [expr 100 - [.prefwin.limits.fs.l nearest 0]]
-        display_settings "Approved Settings"; # DEBUG
+
+        set changed 0
+
+        if {$cov_fgColor != $tmp_cov_fgColor} {
+          set cov_fgColor $tmp_cov_fgColor
+          set changed 1
+        }
+        if {$cov_bgColor != $tmp_cov_bgColor} {
+          set cov_bgColor $tmp_cov_bgColor
+          set changed 1
+        }
+        if {$uncov_fgColor != $tmp_uncov_fgColor} {
+          set uncov_fgColor $tmp_uncov_fgColor
+          set changed 1
+        }
+        if {$uncov_bgColor != $tmp_uncov_bgColor} {
+          set uncov_bgColor $tmp_uncov_bgColor
+          set changed 1
+        }
+        if {$race_fgColor != $tmp_race_fgColor} {
+          set race_fgColor $tmp_race_fgColor
+          set changed 1
+        }
+        if {$race_bgColor != $tmp_race_bgColor} {
+          set race_bgColor $tmp_race_bgColor
+          set changed 1
+        }
+        if {$line_low_limit != [expr 100 - [.prefwin.limits.ls.l nearest 0]]} {
+          set line_low_limit [expr 100 - [.prefwin.limits.ls.l nearest 0]]
+          set changed 1
+        }
+        if {$toggle_low_limit != [expr 100 - [.prefwin.limits.ts.l nearest 0]]} {
+          set toggle_low_limit [expr 100 - [.prefwin.limits.ts.l nearest 0]]
+          set changed 1
+        }
+        if {$comb_low_limit != [expr 100 - [.prefwin.limits.cs.l nearest 0]]} {
+          set comb_low_limit [expr 100 - [.prefwin.limits.cs.l nearest 0]]
+          set changed 1
+        }
+        if {$fsm_low_limit != [expr 100 - [.prefwin.limits.fs.l nearest 0]]} {
+          set fsm_low_limit    [expr 100 - [.prefwin.limits.fs.l nearest 0]]
+          set changed 1
+        }
+
         destroy .prefwin
+
+        if {$changed == 1} {
+
+          # Write configuration file with new values
+          write_coveredrc
+
+          # Redisplay with new settings
+          set text_x [.bot.right.txt xview]
+          set text_y [.bot.right.txt yview]
+          if {$cov_rb == "line"} {
+            display_line_cov
+          } elseif {$cov_rb == "toggle"} {
+            display_toggle_cov
+          } elseif {$cov_rb == "comb"} {
+            display_comb_cov
+          } else {
+            # Error
+          }
+          .bot.right.txt xview moveto [lindex $text_x 0]
+          .bot.right.txt yview moveto [lindex $text_y 0]
+
+          if {[.menubar.tools.menu entrycget 0 -state] != "disabled"} {
+            create_summary
+          }
+
+        }
+
       }
+
       button .prefwin.bbar.cancel -width 10 -text "Cancel" -command {
-        display_settings "Cancelled Settings"; # DEBUG
         destroy .prefwin
       }
 
@@ -260,8 +484,3 @@ proc display_settings {title} {
 
 }
 
-button .b -text "Preferences" -command {
-  create_preferences
-}
-
-pack .b
