@@ -86,12 +86,12 @@
     <TD valign=top>
       <P class="pg">
       Before Covered can be invoked, you must have a simulatable Verilog design and 
-      a VCD dumpfile containing information from a simulation run of the design that 
-      dumps the module(s) that you want to check for coverage. The VCD dumpfile style 
-      was chosen due to its universal support by Verilog simulators. That is, most, 
-      if not all, Verilog simulators have a mechanism for generating VCD dumpfiles. 
-      Once you have these two parts, you are ready to begin generating coverage 
-      results.</P>
+      a VCD or LXT dumpfile containing information from a simulation run of the design 
+      that dumps the module(s) that you want to check for coverage. The VCD dumpfile 
+      style was chosen due to its universal support by Verilog simulators while the LXT
+      dumpfile style was chosen due to its compactness and growing support by other
+      open source simulators and dumpfile readers.  Once you have these two parts, you 
+      are ready to begin generating coverage results.</P>
     </TD>
   </TR>
 
@@ -211,7 +211,52 @@
     </TD>
   </TR>
 
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header2">6.3&nbsp; <A name="6_3"></A>Creating an LXT dumpfile</P>
+    </TD>
+  </TR>
 
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      An LXT dumpfile can be created in several different ways depending on the
+      Verilog simulation tool that you are using.  If you are using the 
+      <a href="http://www.icarus.com/eda/verilog">Icarus Verilog</a>
+      open source simulator, you can simply generate an LXT-style dumpfile by specifying
+      the -lxt2 option to the simulator command-line.  For example, if you had a file
+      called "foo.v" that contained the same $dumpfile and $dumpvars commands used for
+      VCD dumping and compiled it with Icarus Verilog into a VVP file called "a.out",
+      you could cause Icarus Verilog to generate an LXT dumpfile (instead of a VCD
+      dumpfile by calling "vvp a.out -lxt2".  This will cause an LXT style dumpfile
+      instead of the standard VCD style dumpfile.</p>
+    </TD>
+  </TR>
+  
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      You can also transform many different dumpfile formats into an LXT style
+      dumpfile with the helper programs that come with the 
+      <a href="http://home.nc.rr.com/gtkwave/">GtkWave</a> waveform viewer.</P>
+    </TD>
+  </TR>
+  
   <TR>
     <TD></TD>
     <TD></TD>

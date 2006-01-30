@@ -11,7 +11,7 @@ Covered \- Verilog Code Coverage Analyzer
 \fBcovered\fR [<options>] report [<options>] <database_file>
 .SH "DESCRIPTION"
 .LP 
-\fICovered\fR is a Verilog code coverage analysis tool that can be useful for determining how well a diagnostic test suite is covering the design under test. Typically in the design verification work flow, a design verification engineer will develop a self\-checking test suite to verify design elements/functions specified by a design's specification document. When the test suite contains all of the tests required by the design specification, the test writer may be asking him/herself, "How much logic in the design is actually being exercised?", "Does my test suite cover all of the logic under test?", and "Am I done writing tests for the logic?". When the design verification gets to this point, it is often useful to get some metrics for determining logic coverage. This is where a code coverage utility, such as \fICovered\fR, is very useful.
+\fICovered\fR is a Verilog code coverage analysis tool that can be useful for determining how well a diagnostic test suite is covering the design under test. Covered reads in the Verilog design files and a VCD or LXT formatted dumpfile from a diagnostic run and generates a database file called a Coverage Description Database (CDD) file, using the score command.  This file can be merged with other CDD files from the same design to create accummulated coverage, using the merge command.  Once a CDD file is created, the user can use Covered to generate various human\-readable coverage reports in an ASCII format or use Covered's GUI to interactively look at coverage results, using the report command.  Additionally, as part of Covered's score command, race condition possibilities are found in the design files and can be either ignored, flagged as warnings or flagged as errors.  By specifying race conditions as errors, Covered can also be used as a race condition checker.
 .SH "GLOBAL OPTIONS"
 .LP 
 These options are placed immediately after the keyword \fIcovered\fR in the command\-line.  They can be used for any command (with the exception of \fI\-v\fR and \fI\-h\fR) and have the same effect in each case.
@@ -31,13 +31,13 @@ Version.  Display current Covered version.
 .LP 
 .TP 
 \fBscore\fR
-Parses Verilog files and VCD dumpfiles to create database file used for merging and reporting.
+Parses Verilog files and VCD/LXT dumpfiles to create database file used for merging and reporting.
 .TP 
 \fBmerge\fR
 Merges two database files into one.
 .TP 
 \fBreport\fR
-Generates human\-readable coverage reports from database file.
+Generates human\-readable coverage reports from database file or starts the coverage report GUI.
 .SH "SCORE COMMAND"
 .LP 
 The following options are valid for the score command:
@@ -75,6 +75,9 @@ Directory to find included Verilog files.
 \fB\-i\fR \fIinstance_name\fR
 Verilog hierarchical reference to the module that is at the top of the tree to be scored.  This option is necessary if module to verify coverage is not the top\-level module in the design.  If not specified, \fI\-t\fR value is used.
 .TP 
+\fB\-lxt\fR \fIfilename\fR
+Name of LXT/LXT2 dumpfile to score design with.  If this or the \-vcd option is not used, Covered will only create an initial CDD file from the design and will not attempt to score the design.
+.TP 
 \fB\-o\fR \fIdatabase\fR
 Name of database to write coverage information to.  If not specified, the output database filename will be "cov.cdd".
 .TP 
@@ -102,8 +105,8 @@ Specifies which value to use when encountering a delay expression in the form:  
 \fB\-v\fR \fIfilename\fR
 Name of specific Verilog file to score.
 .TP 
-\fB\-vcd\fR \fIdumpfile\fR
-Name of dumpfile to score design with.  If this option is not used, Covered will only create an initial CDD file from the design and will not attempt to score the design.
+\fB\-vcd\fR \fIfilename\fR
+Name of VCD dumpfile to score design with.  If this or the \-lxt option is not used, Covered will only create an initial CDD file from the design and will not attempt to score the design.
 .TP 
 \fB\-y\fR \fIdirectory\fR
 Directory to find unspecified Verilog files.
@@ -136,7 +139,7 @@ Displays this help information.
 Provides coverage information for instances instead of module.
 .TP 
 \fB\-m\fR \fI[l][t][c][f][r]\fR
-Type(s) of metrics to report.  Default is \fIltc\fR.
+Type(s) of metrics to report.  Default is \fIltcf\fR.
 .TP 
 \fB\-o\fR \fIfilename\fR
 File to output report information to.  Default is standard output.
@@ -145,7 +148,7 @@ File to output report information to.  Default is standard output.
 Deprecated.  Replaced by '\-d d' or '\-d v'.
 .TP 
 \fB\-view\fR
-Starts the GUI interface for Covered coverage reporting.
+Starts the GUI interface for interactive coverage reporting.
 .TP 
 \fB\-w (\fR\fInumber\fR\fB)\fR
 Specifies the maximum line width (in characters) that can be used to output Verilog information.  If this option is not specified, all Verilog code in the report will retain the same formatting as was specified in the original Verilog code.  If this option is specified, Verilog code will be formatted to use as much of the current line as possible, wrapping text when the line reaches the maximum line width.  The default maximum line width is 115 characters (this value is used if no number is specified with the \-w option).  If a number is specified with the \-w option, this value is used for the maximum line width.

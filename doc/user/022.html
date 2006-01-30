@@ -3,7 +3,7 @@
 <HEAD>
   <TITLE>Covered - FAQ</TITLE>
   <META name="GENERATOR" content="ManStyle">
-  <META name="AUTHOR" content="Trevor Williams">
+  <meta name="author" content="Trevor Williams">
   <LINK rel=stylesheet type="text/css" href="styles.css">
 </HEAD>
 <BODY text="#000000"
@@ -150,7 +150,13 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg"><ol> <li>The design being scored is sufficiently large</li> <li>The VCD dumpfile is sufficiently large</li> <li>The VCD dumpfile contains dump information for a part of the design not being scored</li> </ol></P>
+      <P class="pg">
+      <ol> 
+      	<li>The design being scored is sufficiently large</li> 
+      	<li>The VCD/LXT dumpfile is sufficiently large</li> 
+      	<li>The VCD/LXT dumpfile contains dump information for a part of 
+      	the design not being scored</li> 
+      </ol></P>
     </TD>
   </TR>
 
@@ -183,7 +189,9 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">If reason (2) is true, nothing can be done except to shorten the run time of the diagnostics to produce shorter dumpfiles.</P>
+      <P class="pg">
+      If reason (2) is true, nothing can be done except to shorten the run time of 
+      the diagnostics to produce shorter dumpfiles.</P>
     </TD>
   </TR>
 
@@ -194,7 +202,11 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">If reason (3) is true, the $dumpvars call in the simulator should be modified to only generate VCD dump information for the modules included in scoring. If there are modules not being scored which are included in the $dumpvars calls, please remove these unnecessary modules from dumpfile output.</P>
+      <P class="pg">
+      If reason (3) is true, the $dumpvars call in the simulator should be modified 
+      to only generate VCD/LXT dump information for the modules included in scoring. 
+      If there are modules not being scored which are included in the $dumpvars 
+      calls, please remove these unnecessary modules from dumpfile output.</P>
     </TD>
   </TR>
 
@@ -205,7 +217,12 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">If you believe that you have a situation which is void of these prevailing reasons and Covered is still running slowly, please send an e-mail to <a href="mailto:trevorw@charter.net">me</a>. I will consider these problems to be of lower priority than actual bugs but will look into the situation to see where code can be optimized.</P>
+      <P class="pg">
+      If you believe that you have a situation which is void of these prevailing 
+      reasons and Covered is still running slowly, please send an e-mail to 
+      <a href="mailto:trevorw@charter.net">me</a>. I will consider these problems 
+      to be of lower priority than actual bugs but will look into the situation to 
+      see where code can be optimized.</P>
     </TD>
   </TR>
 
@@ -216,7 +233,8 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg"><strong>I get an assertion error when running Covered, what should I do?</strong></P>
+      <P class="pg"><strong>
+      I get an assertion error when running Covered, what should I do?</strong></P>
     </TD>
   </TR>
 
@@ -227,7 +245,16 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">Covered uses C assertions to make sure that internal pointers are not be referenced when NULL and that certain internal situations do not arise. If you receive some type of assertion error when running Covered, it means that something went wrong internally in Covered. The error is NOT due to user error. Please submit a bug report containing the assertion error message, file and line number. Additionally, run the Covered command with the -D global option (covered -D <command>) and provide the output from doing this with the bug report (please only specify tail of output if the output is too lengthy).</P>
+      <P class="pg">
+      Covered uses C assertions to make sure that internal pointers are not be 
+      referenced when NULL and that certain internal situations do not arise. If you 
+      receive some type of assertion error when running Covered, it means that 
+      something went wrong internally in Covered. The error is NOT due to user 
+      error. Please submit a bug report containing the assertion error message, 
+      file and line number. Additionally, run the Covered command with the -D 
+      global option (covered -D &lt;command&gt;) and provide the output from doing 
+      this with the bug report (please only specify tail of output if the output is 
+      too lengthy).</P>
     </TD>
   </TR>
 
@@ -238,7 +265,11 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">If Covered provides any other type of error message (something other than a core dump), Covered has found a user error that must be fixed by the user. Please do not submit bug reports if these errors are encountered, unless you wish to add a question about it to the FAQ.</P>
+      <P class="pg">
+      If Covered provides any other type of error message (something other than a 
+      core dump), Covered has found a user error that must be fixed by the user. Please 
+      do not submit bug reports if these errors are encountered, unless you wish to 
+      add a question about it to the FAQ.</P>
     </TD>
   </TR>
 
@@ -249,7 +280,9 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg"><strong>Covered is giving me a parser error for Verilog code that seems to be syntactically correct. What is wrong?</strong></P>
+      <P class="pg"><strong>
+      Covered is giving me a parser error for Verilog code that seems to be 
+      syntactically correct. What is wrong?</strong></P>
     </TD>
   </TR>
 
@@ -260,7 +293,11 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">If Covered displays a syntax (parse) error during the score command and the Verilog code is written correctly, it may be that either the code is supported in the Verilog-2001 specification and not in older specifications or Covered's parser is incomplete. If the former is true, see the next FAQ. If the latter is true, please submit a bug or send an e-mail containing a code snippet of the unsupported Verilog. </P>
+      <P class="pg">
+      If Covered displays a syntax (parse) error during the score command and the 
+      Verilog code is written correctly, it is because Covered's parser is incomplete. 
+      Please submit a bug or send an e-mail containing a code snippet of the 
+      unsupported Verilog. </P>
     </TD>
   </TR>
 
@@ -282,7 +319,11 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">Not yet. The goal of the 0.2 stable release was to allow parsing of all Verilog-1995 standard code. Parsing support for the entire Verilog-2001 standard will be completed in the 0.3 stable release. However, there are some constructs in the Verilog-2001 standard that have been supported (basically because Icarus Verilog currently supports them), so the recommendation is to use Covered on that code to find out if the parsing support is there. If not, please send a bug report or e-mail containing the code snippet that doesn't parse. I will make a point to provide a patch containing parsing support for this code as soon as possible.</P>
+      <P class="pg">
+      This is currently being worked on.  The parser should properly parse all code;
+      however, not all Verilog-2001 constructs are considered for coverage due to lack
+      of support for them in Covered's core.  If there is code that will not parse
+      that should, please submit a bug report for this.</P>
     </TD>
   </TR>
 

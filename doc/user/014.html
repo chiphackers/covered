@@ -166,9 +166,16 @@
 					<tr> 
 						<td> -vcd &lt;dumpfile&gt; </td> 
 						<td> 
-						Name of dumpfile to score design with. If this option is not used, 
-						Covered will only create an initial CDD file from the design and will 
-						not attempt to score the design. </td> </tr> 
+						Name of VCD dumpfile to score design with. If this option or the -lxt
+						option is not used, Covered will only create an initial CDD file 
+						from the design and will not attempt to score the design. </td> </tr>
+					<tr>
+						<td> -lxt &lt;dumpfile&gt; </td>
+						<td>
+						Name of LXT/LXT2 dumpfile to score design with. If this option or
+						the -vcd option is not used, Covered will only create an initial
+						CDD file from the design and will not attempt to score the
+						design. </td></tr> 
 					<tr> 
 						<td> -i &lt;instance&gt; </td> 
 						<td>
@@ -305,7 +312,7 @@
       <P class="pg">
       Covered is not a logic simulator and, therefore, is not required to parse the 
       entire DUT. True simulation is performed by the Verilog simulator used to 
-      generate the VCD dumpfile. Covered, therefore, is given the ability to parse 
+      generate the VCD/LXT dumpfile. Covered, therefore, is given the ability to parse 
       only the part of the DUT that is to be scored for coverage. Having this ability 
       to ignore parts of the DUT has several advantages in the way of performance. 
       Less memory is necessary for coverage simulation/calculation. Additionally, 
@@ -516,9 +523,10 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      The -vcd &lt;<i>vcd_dumpfile</i>&gt; parameter is simply the name of 
-      the VCD dumpfile that contains all of the module instances selected by 
-      the -t parameter (in combination with the -e option -- see below).</P>
+      The -vcd &lt;<i>vcd_dumpfile</i>&gt; or -lxt &lt;<i>lxt_dumpfile</i>&gt;
+      parameter is simply the name of the VCD/LXT dumpfile that contains all of 
+      the module instances selected by the -t parameter (in combination with the 
+      -e option -- see below).</P>
     </TD>
   </TR>
 
@@ -560,7 +568,7 @@
       <P class="pg">
       The <i>defparam</i> statement can override any parameter specified in 
       the DUT from any module in the DUT. Since parameter information is not 
-      typically specified in VCD dumpfiles, Covered needs to know about all 
+      typically specified in VCD/LXT dumpfiles, Covered needs to know about all 
       parameter values at score time. Since all defparam statements are ignored 
       by the Covered parser (even those in the DUT being scored), the user must 
       inform Covered of any parameters that need to be overridden. This is 

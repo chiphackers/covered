@@ -94,7 +94,10 @@
       <P class="pg">
       For these reasons, a list of what type of logic can be analyzed and what type of 
       logic cannot be currently analyzed is listed below. Note that both of these lists 
-      may not be exhaustive and are subject to change between releases of the tool.</P>
+      may not be exhaustive and are subject to change between releases of the tool. Also
+      note that it is the goal of Covered to be able to parse all of the Verilog-1995
+      and Verilog-2001 constructs though some portions of it may be ignored for
+      coverage purposes.</P>
     </TD>
   </TR>
 
@@ -106,6 +109,17 @@
     <TD></TD>
     <TD valign=top>
       <P class="header2">3.1&nbsp; <A name="3_1"></A>What logic can be analyzed?</P>
+    </TD>
+  </TR>
+  
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header3">3.1.1&nbsp; <A name="3_1_1"></A>Verilog-1995 constructs</P>
     </TD>
   </TR>
 
@@ -157,10 +171,60 @@
     </TD>
     <TD></TD>
     <TD valign=top>
+      <P class="header3">3.1.2&nbsp; <A name="3_1_2"></A>Verilog-2001 constructs</P>
+    </TD>
+  </TR>
+  
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      <ol>
+      	<li>`ifndef and `elsif directives</li>
+      	<li>`file and `line directives</li>
+         <li>Constant functions calls</li>
+         <li>Inline parameter passing by name</li>
+         <li>Localparam support</li>
+         <li>Implicit event sensitivity lists (@*)</li>
+         <li>Comma-separated event lists (alternative to the "or" keyword)</li>
+         <li>Signed value support</li>
+         <li>Immediate register assignment (reg a = 1'b0)</li>
+         <li>Variable multi-bit selects (a[b+:3], a[b-:3]</li>
+         <li>Exponential power operator (a**b)</li>
+         <li>The "<<<" and ">>>" shift operators</li>
+         <li>Pre-port parameter listing (module foo #(parameter a=0) (...);)</li>
+         <li>Inline port listing (module foo (input wire a, output reg b);)</li>
+         <li>Attributes (note: Covered only performs attributes that it recognizes)</li>
+      </ol></P>
+    </TD>
+  </TR>
+  
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
       <P class="header2">3.2&nbsp; <A name="3_2"></A>What logic cannot be currently analyzed?</P>
     </TD>
   </TR>
 
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header3">3.2.1&nbsp; <A name="3_2_1"></A>Verilog-1995 constructs</P>
+    </TD>
+  </TR>
+  
   <TR>
     <TD></TD>
     <TD valign=top>
@@ -175,6 +239,36 @@
       	<li>Memories</li>
       	<li>All expressions containing types: time, real, realtime</li>
       	<li>System task calls (or any ... call)</li>
+      </ol></P>
+    </TD>
+  </TR>
+  
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header3">3.2.2&nbsp; <A name="3_2_2"></A>Verilog-2001 constructs</P>
+    </TD>
+  </TR>
+  
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      <ol>
+      	<li>Generate statements</li>
+      	<li>Arrays of instances</li>
+      	<li>Configuration statements</li>
+      	<li>Multidimensional arrays</li>
+      	<li>"Automatic" or reentrant tasks/recursive functions</li>
+      	<li></li>
       </ol></P>
     </TD>
   </TR>

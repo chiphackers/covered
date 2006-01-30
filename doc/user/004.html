@@ -3,7 +3,7 @@
 <HEAD>
   <TITLE>Covered - Line Coverage</TITLE>
   <META name="GENERATOR" content="ManStyle">
-  <META name="AUTHOR" content="Trevor Williams">
+  <meta name="author" content="Trevor Williams">
   <LINK rel=stylesheet type="text/css" href="styles.css">
 </HEAD>
 <BODY text="#000000"
@@ -73,7 +73,9 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">Line coverage simply answers the question, "Was this line of code executed during simulation?"</P>
+      <P class="pg">
+      Line coverage simply answers the question, "Was this line of code executed during 
+      simulation?"</P>
     </TD>
   </TR>
 
@@ -84,7 +86,12 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">Covered will display the number of logical lines of code that exist in a particular file with the number of logical lines that were executed during the simulation along with a percentage indicating the percentage of lines executed. If verbose mode is selected for a report, Covered will display the lines of logic that were not executed during the simulation run.</P>
+      <P class="pg">
+      Covered will display the number of logical lines of code that exist in a 
+      particular file with the number of logical lines that were executed during the 
+      simulation along with a percentage indicating the percentage of lines executed. 
+      If verbose mode is selected for a report, Covered will display the lines of 
+      logic that were not executed during the simulation run.</P>
     </TD>
   </TR>
 
@@ -106,7 +113,9 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">Suppose that the following module was specified in your DUT that is being analyzed:</P>
+      <P class="pg">
+      Suppose that the following module was specified in your DUT that is being 
+      analyzed:</P>
     </TD>
   </TR>
 
@@ -128,7 +137,12 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">If this code were simulated as stated, the simulator would execute lines 1 and 2, and due to the value assigned to <tt>a</tt>, line 4 would be executed. This means that during execution, out of a possibility of 4 lines, only 3 were executed. Therefore, Covered would state that for this module the line coverage percentage would be 75% (or 3 out of 4).</P>
+      <P class="pg">
+      If this code were simulated as stated, the simulator would execute lines 1 
+      and 2, and due to the value assigned to <tt>a</tt>, line 4 would be executed. 
+      This means that during execution, out of a possibility of 4 lines, only 3 were 
+      executed. Therefore, Covered would state that for this module the line coverage 
+      percentage would be 75% (or 3 out of 4).</P>
     </TD>
   </TR>
 
@@ -150,7 +164,11 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">For a design to pass full coverage, it is recommended that the line coverage for all modules in a design receive 100% coverage. If a line of logic is not executed during simulation, the design has not been fully exercised. Line coverage is useful for determining holes in the test suite.</P>
+      <P class="pg">
+      For a design to pass full coverage, it is recommended that the line coverage for 
+      all modules in a design receive 100% coverage. If a line of logic is not executed 
+      during simulation, the design has not been fully exercised. Line coverage is 
+      useful for determining holes in the test suite.</P>
     </TD>
   </TR>
 

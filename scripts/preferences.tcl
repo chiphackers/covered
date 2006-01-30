@@ -36,15 +36,12 @@ proc read_coveredrc {} {
   if {[file exists ".coveredrc"] == 1} {
     set rc [open ".coveredrc" r]
     set rc_file_to_write ".coveredrc"
-    puts "Reading from configuration file .coveredrc"
   } elseif {[file exists "$USER_HOME/.coveredrc"] == 1} {
     set rc [open "$USER_HOME/.coveredrc" r]
     set rc_file_to_write "$USER_HOME/.coveredrc"
-    puts "Reading from configuration file $USER_HOME/.coveredrc"
   } elseif {[file exists "$HOME/scripts/.coveredrc"] == 1} {
     set rc [open "$HOME/scripts/.coveredrc" r]
     set rc_file_to_write "$USER_HOME/.coveredrc"
-    puts "Reading from configuration file $HOME/scripts/.coveredrc"
   } else {
     set rc -1
     set rc_file_to_write ""
@@ -106,8 +103,6 @@ proc write_coveredrc {} {
   global rc_file_to_write
 
   if {$rc_file_to_write != ""} {
-
-    puts "Writing to configuration file $rc_file_to_write"
 
     set rc [open $rc_file_to_write w]
 
