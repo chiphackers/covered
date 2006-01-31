@@ -741,6 +741,22 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
               code_fmt[i] = '\0';
               strcat( code_fmt, " %s %s " );
               break;
+            case EXP_OP_PARAM_MBIT_POS :
+            case EXP_OP_PARAM_MBIT_NEG :
+            case EXP_OP_MBIT_POS       :
+            case EXP_OP_MBIT_NEG       :
+              if( exp->sig->name[0] == '#' ) {
+                tmpname = exp->sig->name + 1;
+              } else {
+                tmpname = exp->name;
+              }
+              *size = l_size + r_size + strlen( tmpname ) + 4;
+              for( i=0; i<strlen( tmpname ); i++ ) {
+                code_fmt[i] = ' ';
+              }
+              code_fmt[i] = '\0';
+              strcat( code_fmt, " %s  %s " );
+              break;
             case EXP_OP_TRIGGER  :
               tmpname = exp->name;
               *size = l_size + r_size + strlen( tmpname ) + 2;
@@ -1489,58 +1505,62 @@ void combination_get_missed_expr( char*** info, int* info_size, expression* exp,
 
         /* Create combination table */
         switch( exp->op ) {
-          case EXP_OP_SIG        :  combination_unary( info, info_size, exp, "" );         break;
-          case EXP_OP_FUNC_CALL  :  combination_unary( info, info_size, exp, "" );         break;
-          case EXP_OP_XOR        :  combination_two_vars( info, info_size, exp, "^" );     break;
-          case EXP_OP_ADD        :  combination_two_vars( info, info_size, exp, "+" );     break;
-          case EXP_OP_SUBTRACT   :  combination_two_vars( info, info_size, exp, "-" );     break;
-          case EXP_OP_MULTIPLY   :  combination_unary( info, info_size, exp, "*" );        break;
-          case EXP_OP_DIVIDE     :  combination_unary( info, info_size, exp, "/" );        break;
-          case EXP_OP_MOD        :  combination_unary( info, info_size, exp, "%%" );       break;
-          case EXP_OP_EXPONENT   :  combination_unary( info, info_size, exp, "**" );       break;
-          case EXP_OP_AND        :  combination_two_vars( info, info_size, exp, "&" );     break;
-          case EXP_OP_OR         :  combination_two_vars( info, info_size, exp, "|" );     break;
-          case EXP_OP_NAND       :  combination_two_vars( info, info_size, exp, "~&" );    break;
-          case EXP_OP_NOR        :  combination_two_vars( info, info_size, exp, "~|" );    break;
-          case EXP_OP_NXOR       :  combination_two_vars( info, info_size, exp, "~^" );    break;
-          case EXP_OP_LT         :  combination_unary( info, info_size, exp, "<" );        break;
-          case EXP_OP_GT         :  combination_unary( info, info_size, exp, ">" );        break;
-          case EXP_OP_LSHIFT     :  combination_unary( info, info_size, exp, "<<" );       break;
-          case EXP_OP_ALSHIFT    :  combination_unary( info, info_size, exp, "<<<" );      break;
-          case EXP_OP_RSHIFT     :  combination_unary( info, info_size, exp, ">>" );       break;
-          case EXP_OP_ARSHIFT    :  combination_unary( info, info_size, exp, ">>>" );      break;
-          case EXP_OP_EQ         :  combination_unary( info, info_size, exp, "==" );       break;
-          case EXP_OP_CEQ        :  combination_unary( info, info_size, exp, "===" );      break;
-          case EXP_OP_LE         :  combination_unary( info, info_size, exp, "<=" );       break;
-          case EXP_OP_GE         :  combination_unary( info, info_size, exp, ">=" );       break;
-          case EXP_OP_NE         :  combination_unary( info, info_size, exp, "!=" );       break;
-          case EXP_OP_CNE        :  combination_unary( info, info_size, exp, "!==" );      break;
-          case EXP_OP_COND       :  combination_unary( info, info_size, exp, "?:" );       break;
-          case EXP_OP_LOR        :  combination_two_vars( info, info_size, exp, "||" );    break;
-          case EXP_OP_LAND       :  combination_two_vars( info, info_size, exp, "&&" );    break;
-          case EXP_OP_UINV       :  combination_unary( info, info_size, exp, "~" );        break;
-          case EXP_OP_UAND       :  combination_unary( info, info_size, exp, "&" );        break;
-          case EXP_OP_UNOT       :  combination_unary( info, info_size, exp, "!" );        break;
-          case EXP_OP_UOR        :  combination_unary( info, info_size, exp, "|" );        break;
-          case EXP_OP_UXOR       :  combination_unary( info, info_size, exp, "^" );        break;
-          case EXP_OP_UNAND      :  combination_unary( info, info_size, exp, "~&" );       break;
-          case EXP_OP_UNOR       :  combination_unary( info, info_size, exp, "~|" );       break;
-          case EXP_OP_UNXOR      :  combination_unary( info, info_size, exp, "~^" );       break;
-          case EXP_OP_PARAM_SBIT :
-          case EXP_OP_SBIT_SEL   :  combination_unary( info, info_size, exp, "[]" );       break;
-          case EXP_OP_PARAM_MBIT :
-          case EXP_OP_MBIT_SEL   :  combination_unary( info, info_size, exp, "[:]" );      break;
-          case EXP_OP_EXPAND     :  combination_unary( info, info_size, exp, "{{}}" );     break;
-          case EXP_OP_CONCAT     :  combination_unary( info, info_size, exp, "{}" );       break;
-          case EXP_OP_CASE       :  combination_unary( info, info_size, exp, "" );         break;
-          case EXP_OP_CASEX      :  combination_unary( info, info_size, exp, "" );         break;
-          case EXP_OP_CASEZ      :  combination_unary( info, info_size, exp, "" );         break;
-          case EXP_OP_PEDGE      :  combination_event( info, info_size, exp, "posedge" );  break;
-          case EXP_OP_NEDGE      :  combination_event( info, info_size, exp, "negedge" );  break;
-          case EXP_OP_AEDGE      :  combination_event( info, info_size, exp, "" );         break;
-          case EXP_OP_SLIST      :  combination_event( info, info_size, exp, "@*" );       break;
-          case EXP_OP_TRIGGER    :  combination_event( info, info_size, exp, "->" );       break;
-          default                :  break;
+          case EXP_OP_SIG            :  combination_unary( info, info_size, exp, "" );         break;
+          case EXP_OP_FUNC_CALL      :  combination_unary( info, info_size, exp, "" );         break;
+          case EXP_OP_XOR            :  combination_two_vars( info, info_size, exp, "^" );     break;
+          case EXP_OP_ADD            :  combination_two_vars( info, info_size, exp, "+" );     break;
+          case EXP_OP_SUBTRACT       :  combination_two_vars( info, info_size, exp, "-" );     break;
+          case EXP_OP_MULTIPLY       :  combination_unary( info, info_size, exp, "*" );        break;
+          case EXP_OP_DIVIDE         :  combination_unary( info, info_size, exp, "/" );        break;
+          case EXP_OP_MOD            :  combination_unary( info, info_size, exp, "%%" );       break;
+          case EXP_OP_EXPONENT       :  combination_unary( info, info_size, exp, "**" );       break;
+          case EXP_OP_AND            :  combination_two_vars( info, info_size, exp, "&" );     break;
+          case EXP_OP_OR             :  combination_two_vars( info, info_size, exp, "|" );     break;
+          case EXP_OP_NAND           :  combination_two_vars( info, info_size, exp, "~&" );    break;
+          case EXP_OP_NOR            :  combination_two_vars( info, info_size, exp, "~|" );    break;
+          case EXP_OP_NXOR           :  combination_two_vars( info, info_size, exp, "~^" );    break;
+          case EXP_OP_LT             :  combination_unary( info, info_size, exp, "<" );        break;
+          case EXP_OP_GT             :  combination_unary( info, info_size, exp, ">" );        break;
+          case EXP_OP_LSHIFT         :  combination_unary( info, info_size, exp, "<<" );       break;
+          case EXP_OP_ALSHIFT        :  combination_unary( info, info_size, exp, "<<<" );      break;
+          case EXP_OP_RSHIFT         :  combination_unary( info, info_size, exp, ">>" );       break;
+          case EXP_OP_ARSHIFT        :  combination_unary( info, info_size, exp, ">>>" );      break;
+          case EXP_OP_EQ             :  combination_unary( info, info_size, exp, "==" );       break;
+          case EXP_OP_CEQ            :  combination_unary( info, info_size, exp, "===" );      break;
+          case EXP_OP_LE             :  combination_unary( info, info_size, exp, "<=" );       break;
+          case EXP_OP_GE             :  combination_unary( info, info_size, exp, ">=" );       break;
+          case EXP_OP_NE             :  combination_unary( info, info_size, exp, "!=" );       break;
+          case EXP_OP_CNE            :  combination_unary( info, info_size, exp, "!==" );      break;
+          case EXP_OP_COND           :  combination_unary( info, info_size, exp, "?:" );       break;
+          case EXP_OP_LOR            :  combination_two_vars( info, info_size, exp, "||" );    break;
+          case EXP_OP_LAND           :  combination_two_vars( info, info_size, exp, "&&" );    break;
+          case EXP_OP_UINV           :  combination_unary( info, info_size, exp, "~" );        break;
+          case EXP_OP_UAND           :  combination_unary( info, info_size, exp, "&" );        break;
+          case EXP_OP_UNOT           :  combination_unary( info, info_size, exp, "!" );        break;
+          case EXP_OP_UOR            :  combination_unary( info, info_size, exp, "|" );        break;
+          case EXP_OP_UXOR           :  combination_unary( info, info_size, exp, "^" );        break;
+          case EXP_OP_UNAND          :  combination_unary( info, info_size, exp, "~&" );       break;
+          case EXP_OP_UNOR           :  combination_unary( info, info_size, exp, "~|" );       break;
+          case EXP_OP_UNXOR          :  combination_unary( info, info_size, exp, "~^" );       break;
+          case EXP_OP_PARAM_SBIT     :
+          case EXP_OP_SBIT_SEL       :  combination_unary( info, info_size, exp, "[]" );       break;
+          case EXP_OP_PARAM_MBIT     :
+          case EXP_OP_MBIT_SEL       :  combination_unary( info, info_size, exp, "[:]" );      break;
+          case EXP_OP_PARAM_MBIT_POS :
+          case EXP_OP_MBIT_POS       :  combination_unary( info, info_size, exp, "[+:]" );     break;
+          case EXP_OP_PARAM_MBIT_NEG :
+          case EXP_OP_MBIT_NEG       :  combination_unary( info, info_size, exp, "[-:]" );     break;
+          case EXP_OP_EXPAND         :  combination_unary( info, info_size, exp, "{{}}" );     break;
+          case EXP_OP_CONCAT         :  combination_unary( info, info_size, exp, "{}" );       break;
+          case EXP_OP_CASE           :  combination_unary( info, info_size, exp, "" );         break;
+          case EXP_OP_CASEX          :  combination_unary( info, info_size, exp, "" );         break;
+          case EXP_OP_CASEZ          :  combination_unary( info, info_size, exp, "" );         break;
+          case EXP_OP_PEDGE          :  combination_event( info, info_size, exp, "posedge" );  break;
+          case EXP_OP_NEDGE          :  combination_event( info, info_size, exp, "negedge" );  break;
+          case EXP_OP_AEDGE          :  combination_event( info, info_size, exp, "" );         break;
+          case EXP_OP_SLIST          :  combination_event( info, info_size, exp, "@*" );       break;
+          case EXP_OP_TRIGGER        :  combination_event( info, info_size, exp, "->" );       break;
+          default                    :  break;
         }
 
       }
@@ -2034,6 +2054,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.125  2006/01/25 16:51:26  phase1geo
+ Fixing performance/output issue with hierarchical references.  Added support
+ for hierarchical references to parser.  Full regression passes.
+
  Revision 1.124  2006/01/23 03:53:29  phase1geo
  Adding support for input/output ports of tasks/functions.  Regressions are not
  running cleanly at this point so there is still some work to do here.  Checkpointing.

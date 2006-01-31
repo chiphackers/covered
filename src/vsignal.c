@@ -193,12 +193,16 @@ bool vsignal_db_read( char** line, func_unit* curr_funit ) {
            If expression is a vsignal holder, we need to set the expression's vector to point
            to our vector and set its vsignal pointer to point to us.
           */
-          if( (expl->exp->op == EXP_OP_SIG) ||
-              (expl->exp->op == EXP_OP_SBIT_SEL) ||
-              (expl->exp->op == EXP_OP_MBIT_SEL) ||
-              (expl->exp->op == EXP_OP_PARAM)    ||
-              (expl->exp->op == EXP_OP_PARAM_SBIT) ||
-              (expl->exp->op == EXP_OP_PARAM_MBIT) ||
+          if( (expl->exp->op == EXP_OP_SIG)            ||
+              (expl->exp->op == EXP_OP_SBIT_SEL)       ||
+              (expl->exp->op == EXP_OP_MBIT_SEL)       ||
+              (expl->exp->op == EXP_OP_MBIT_POS)       ||
+              (expl->exp->op == EXP_OP_MBIT_NEG)       ||
+              (expl->exp->op == EXP_OP_PARAM)          ||
+              (expl->exp->op == EXP_OP_PARAM_SBIT)     ||
+              (expl->exp->op == EXP_OP_PARAM_MBIT)     ||
+              (expl->exp->op == EXP_OP_PARAM_MBIT_POS) ||
+              (expl->exp->op == EXP_OP_PARAM_MBIT_NEG) ||
               (expl->exp->op == EXP_OP_FUNC_CALL) ) {
             expression_set_value( expl->exp, sig->value );
           }
@@ -460,14 +464,20 @@ void vsignal_display( vsignal* sig ) {
 */
 vsignal* vsignal_from_string( char** str ) {
 
-  vsignal* sig;        /* Pointer to newly created vsignal */
-  char    name[4096];  /* Signal name */
-  int     msb;         /* MSB of vsignal */
-  int     lsb;         /* LSB of vsignal */
-  int     chars_read;  /* Number of characters read from string */
+  vsignal* sig;         /* Pointer to newly created vsignal */
+  char     name[4096];  /* Signal name */
+  int      msb;         /* MSB of vsignal */
+  int      lsb;         /* LSB of vsignal */
+  int      chars_read;  /* Number of characters read from string */
 
   if( sscanf( *str, "%[a-zA-Z0-9_]\[%d:%d]%n", name, &msb, &lsb, &chars_read ) == 3 ) {
     sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT, ((msb - lsb) + 1), lsb, 0, 0 );
+    *str += chars_read;
+  } else if( sscanf( *str, "%[a-zA-Z0-9_]\[%d+:%d]%n", name, &msb, &lsb, &chars_read ) == 3 ) {
+    sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT_POS, lsb, msb, 0, 0 );
+    *str += chars_read;
+  } else if( sscanf( *str, "%[a-zA-Z0-9_]\[%d-:%d]%n", name, &msb, &lsb, &chars_read ) == 3 ) {
+    sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT_NEG, lsb, ((msb - lsb) + 1), 0, 0 );
     *str += chars_read;
   } else if( sscanf( *str, "%[a-zA-Z0-9_]\[%d]%n", name, &lsb, &chars_read ) == 2 ) {
     sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT, 1, lsb, 0, 0 );
@@ -525,6 +535,10 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.18  2006/01/23 17:23:28  phase1geo
+ Fixing scope issues that came up when port assignment was added.  Full regression
+ now passes.
+
  Revision 1.17  2006/01/23 03:53:30  phase1geo
  Adding support for input/output ports of tasks/functions.  Regressions are not
  running cleanly at this point so there is still some work to do here.  Checkpointing.

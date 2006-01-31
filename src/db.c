@@ -894,9 +894,11 @@ expression* db_create_expression( expression* right, expression* left, int op, b
     if( (mparm = funit_find_param( sig_name, curr_funit )) != NULL ) {
       sig_is_parm = TRUE;
       switch( op ) {
-        case EXP_OP_SIG      :  op = EXP_OP_PARAM;       break;
-        case EXP_OP_SBIT_SEL :  op = EXP_OP_PARAM_SBIT;  break;
-        case EXP_OP_MBIT_SEL :  op = EXP_OP_PARAM_MBIT;  break;
+        case EXP_OP_SIG      :  op = EXP_OP_PARAM;           break;
+        case EXP_OP_SBIT_SEL :  op = EXP_OP_PARAM_SBIT;      break;
+        case EXP_OP_MBIT_SEL :  op = EXP_OP_PARAM_MBIT;      break;
+        case EXP_OP_MBIT_POS :  op = EXP_OP_PARAM_MBIT_POS;  break;
+        case EXP_OP_MBIT_NEG :  op = EXP_OP_PARAM_MBIT_NEG;  break;
         default :  
           assert( (op == EXP_OP_SIG) || (op == EXP_OP_SBIT_SEL) || (op == EXP_OP_MBIT_SEL) );
           break;
@@ -1646,6 +1648,9 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.170  2006/01/26 22:40:13  phase1geo
+ Fixing last LXT bug.
+
  Revision 1.169  2006/01/25 16:51:27  phase1geo
  Fixing performance/output issue with hierarchical references.  Added support
  for hierarchical references to parser.  Full regression passes.

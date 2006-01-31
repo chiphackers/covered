@@ -416,6 +416,12 @@
 /*! This signal was implicitly created */
 #define SSUPPL_TYPE_IMPLICIT      5
 
+/*! This signal was implicitly created (this signal was created from a positive variable multi-bit expression) */
+#define SSUPPL_TYPE_IMPLICIT_POS  6
+
+/*! This signal was implicitly created (this signal was created from a negative variable multi-bit expression) */
+#define SSUPPL_TYPE_IMPLICIT_NEG  7
+
 /*! @} */
      
 /*!
@@ -623,6 +629,11 @@ typedef enum exp_op_type_e {
   EXP_OP_SLIST,           /*!< 69:0x45.  Specifies sensitivity list (*) */
   EXP_OP_EXPONENT,        /*!< 70:0x46.  Specifies the exponential operator "**" */
   EXP_OP_PASSIGN,         /*!< 71:0x47.  Specifies a port assignment */
+  EXP_OP_RASSIGN,         /*!< 72:0x48.  Specifies register assignment (reg a = 1'b0) */
+  EXP_OP_MBIT_POS,        /*!< 73:0x49.  Specifies positive variable multi-bit select (a[b+:3]) */
+  EXP_OP_MBIT_NEG,        /*!< 74:0x4a.  Specifies negative variable multi-bit select (a[b-:3]) */
+  EXP_OP_PARAM_MBIT_POS,  /*!< 75:0x4b.  Specifies positive variable multi-bit parameter select */
+  EXP_OP_PARAM_MBIT_NEG,  /*!< 76:0x4c.  Specifies negative variable multi-bit parameter select */
   EXP_OP_NUM              /*!< The total number of defines for expression values */
 } exp_op_type;
 
@@ -634,7 +645,9 @@ typedef enum exp_op_type_e {
                                      !((ESUPPL_IS_ROOT( x->suppl ) == 0) && \
                                        ((x->op == EXP_OP_SIG) || \
                                         (x->op == EXP_OP_SBIT_SEL) || \
-                                        (x->op == EXP_OP_MBIT_SEL)) && \
+                                        (x->op == EXP_OP_MBIT_SEL) || \
+                                        (x->op == EXP_OP_MBIT_POS) || \
+                                        (x->op == EXP_OP_MBIT_NEG)) && \
                                        (x->parent->expr->op != EXP_OP_ASSIGN) && \
                                        (x->parent->expr->op != EXP_OP_DASSIGN) && \
                                        (x->parent->expr->op != EXP_OP_BASSIGN) && \
@@ -645,8 +658,8 @@ typedef enum exp_op_type_e {
                                      (x->line != 0)) ? 1 : 0)
 
 /*!
- Returns a value of TRUE if the specified expression is a STATIC, PARAM, PARAM_SBIT or PARAM_MBIT
- operation type.
+ Returns a value of TRUE if the specified expression is a STATIC, PARAM, PARAM_SBIT, PARAM_MBIT,
+ PARAM_MBIT_POS or PARAM_MBIT_NEG operation type.
 */
 #define EXPR_IS_STATIC(x)        exp_op_info[x->op].suppl.is_static
 
@@ -672,21 +685,25 @@ typedef enum exp_op_type_e {
 /*!
  These expressions all use someone else's vectors instead of their own.
 */
-#define EXPR_OWNS_VEC(o,s)              ((o != EXP_OP_SIG)        && \
-                                         (o != EXP_OP_SBIT_SEL)   && \
-                                         (o != EXP_OP_MBIT_SEL)   && \
-                                         (o != EXP_OP_TRIGGER)    && \
-                                         (o != EXP_OP_PARAM)      && \
-                                         (o != EXP_OP_PARAM_SBIT) && \
-                                         (o != EXP_OP_PARAM_MBIT) && \
-                                         (o != EXP_OP_ASSIGN)     && \
-                                         (o != EXP_OP_DASSIGN)    && \
-                                         (o != EXP_OP_BASSIGN)    && \
-                                         (o != EXP_OP_NASSIGN)    && \
-                                         (o != EXP_OP_IF)         && \
-                                         (o != EXP_OP_WHILE)      && \
-                                         (o != EXP_OP_FUNC_CALL)  && \
-					 (o != EXP_OP_PASSIGN)    && \
+#define EXPR_OWNS_VEC(o,s)              ((o != EXP_OP_SIG)            && \
+                                         (o != EXP_OP_SBIT_SEL)       && \
+                                         (o != EXP_OP_MBIT_SEL)       && \
+                                         (o != EXP_OP_MBIT_POS)       && \
+                                         (o != EXP_OP_MBIT_NEG)       && \
+                                         (o != EXP_OP_TRIGGER)        && \
+                                         (o != EXP_OP_PARAM)          && \
+                                         (o != EXP_OP_PARAM_SBIT)     && \
+                                         (o != EXP_OP_PARAM_MBIT)     && \
+                                         (o != EXP_OP_PARAM_MBIT_POS) && \
+                                         (o != EXP_OP_PARAM_MBIT_NEG) && \
+                                         (o != EXP_OP_ASSIGN)         && \
+                                         (o != EXP_OP_DASSIGN)        && \
+                                         (o != EXP_OP_BASSIGN)        && \
+                                         (o != EXP_OP_NASSIGN)        && \
+                                         (o != EXP_OP_IF)             && \
+                                         (o != EXP_OP_WHILE)          && \
+                                         (o != EXP_OP_FUNC_CALL)      && \
+					 (o != EXP_OP_PASSIGN)        && \
                                          ((o == EXP_OP_STATIC) || (ESUPPL_IS_LHS( s ) == 0)))
 
 /*!
@@ -1779,6 +1796,13 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.173  2006/01/25 22:13:46  phase1geo
+ Adding LXT-style dumpfile parsing support.  Everything is wired in but I still
+ need to look at a problem at the end of the dumpfile -- I'm getting coredumps
+ when using the new -lxt option.  I also need to disable LXT code if the z
+ library is missing along with documenting the new feature in the user's guide
+ and man page.
+
  Revision 1.172  2006/01/25 16:51:27  phase1geo
  Fixing performance/output issue with hierarchical references.  Added support
  for hierarchical references to parser.  Full regression passes.

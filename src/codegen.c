@@ -377,6 +377,40 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
       free_safe( tmpstr );
 
+    } else if( (expr->op == EXP_OP_MBIT_POS) || (expr->op == EXP_OP_PARAM_MBIT_POS) ) {
+
+      assert( expr->sig != NULL );
+
+      if( expr->sig->name[0] == '#' ) {
+        tmpstr = (char*)malloc_safe( (strlen( expr->sig->name ) + 1), __FILE__, __LINE__ );
+        snprintf( tmpstr, (strlen( expr->sig->name ) + 1), "%s[", (expr->sig->name + 1) );
+      } else {
+        tmpstr = (char*)malloc_safe( (strlen( expr->name ) + 2), __FILE__, __LINE__ );
+        snprintf( tmpstr, (strlen( expr->name ) + 2), "%s[", expr->name );
+      }
+
+      codegen_create_expr( code, code_depth, expr->line, tmpstr, left_code, left_code_depth, expr->left->line, "+:",
+                           right_code, right_code_depth, expr->right->line, "]" );
+
+      free_safe( tmpstr );
+
+    } else if( (expr->op == EXP_OP_MBIT_NEG) || (expr->op == EXP_OP_PARAM_MBIT_NEG) ) {
+
+      assert( expr->sig != NULL );
+
+      if( expr->sig->name[0] == '#' ) {
+        tmpstr = (char*)malloc_safe( (strlen( expr->sig->name ) + 1), __FILE__, __LINE__ );
+        snprintf( tmpstr, (strlen( expr->sig->name ) + 1), "%s[", (expr->sig->name + 1) );
+      } else {
+        tmpstr = (char*)malloc_safe( (strlen( expr->name ) + 2), __FILE__, __LINE__ );
+        snprintf( tmpstr, (strlen( expr->name ) + 2), "%s[", expr->name );
+      }
+
+      codegen_create_expr( code, code_depth, expr->line, tmpstr, left_code, left_code_depth, expr->left->line, "-:",
+                           right_code, right_code_depth, expr->right->line, "]" );
+
+      free_safe( tmpstr );
+
     } else if( (expr->op == EXP_OP_FUNC_CALL) || (expr->op == EXP_OP_TASK_CALL) ) {
 
       assert( expr->stmt != NULL );
@@ -701,6 +735,10 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.59  2006/01/25 16:51:26  phase1geo
+ Fixing performance/output issue with hierarchical references.  Added support
+ for hierarchical references to parser.  Full regression passes.
+
  Revision 1.58  2006/01/23 03:53:29  phase1geo
  Adding support for input/output ports of tasks/functions.  Regressions are not
  running cleanly at this point so there is still some work to do here.  Checkpointing.

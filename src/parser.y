@@ -1238,21 +1238,51 @@ expr_primary
     }
   | identifier '[' expression K_PO_POS static_expr ']'
     {
-      snprintf( user_msg, USER_MSG_LENGTH, "K_PO_POS expressions not supported at this time, line: %d", @1.first_line );
-      print_output( user_msg, WARNING, __FILE__, __LINE__ );
-      expression_dealloc( $3, FALSE );
-      static_expr_dealloc( $5, TRUE );
-      free_safe( $1 );
-      $$ = NULL;
+      expression* tmp;
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) && ($5 != NULL) ) {
+        if( $5->exp == NULL ) {
+          tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+          vector_dealloc( tmp->value );
+          tmp->value = vector_create( 32, TRUE );
+          vector_from_int( tmp->value, $5->num );
+          tmp = db_create_expression( tmp, $3, EXP_OP_MBIT_POS, lhs_mode, @1.first_line, @1.first_column, (@6.last_column - 1), $1 );
+        } else {
+          tmp = db_create_expression( $5->exp, $3, EXP_OP_MBIT_POS, lhs_mode, @1.first_line, @1.first_column, (@6.last_column - 1), $1 );
+        }
+        $$  = tmp;
+        free_safe( $1 );
+      } else {
+        if( $1 != NULL ) {
+          free_safe( $1 );
+        }
+        expression_dealloc( $3, FALSE );
+        static_expr_dealloc( $5, FALSE );
+        $$ = NULL;
+      }
     }
   | identifier '[' expression K_PO_NEG static_expr ']'
     {
-      snprintf( user_msg, USER_MSG_LENGTH, "K_PO_POS expressions not supported at this time, line: %d", @1.first_line );
-      print_output( user_msg, WARNING, __FILE__, __LINE__ );
-      expression_dealloc( $3, FALSE );
-      static_expr_dealloc( $5, TRUE );
-      free_safe( $1 );
-      $$ = NULL;
+      expression* tmp;
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) && ($5 != NULL) ) {
+        if( $5->exp == NULL ) {
+          tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+          vector_dealloc( tmp->value );
+          tmp->value = vector_create( 32, TRUE );
+          vector_from_int( tmp->value, $5->num );
+          tmp = db_create_expression( tmp, $3, EXP_OP_MBIT_NEG, lhs_mode, @1.first_line, @1.first_column, (@6.last_column - 1), $1 );
+        } else {
+          tmp = db_create_expression( $5->exp, $3, EXP_OP_MBIT_NEG, lhs_mode, @1.first_line, @1.first_column, (@6.last_column - 1), $1 );
+        }
+        $$  = tmp;
+        free_safe( $1 );
+      } else {
+        if( $1 != NULL ) {
+          free_safe( $1 );
+        }
+        expression_dealloc( $3, FALSE );
+        static_expr_dealloc( $5, FALSE );
+        $$ = NULL;
+      }
     }
   | identifier '(' { port_mode++; } expression_list { port_mode--; } ')'
     {
@@ -3394,18 +3424,7 @@ range
 range_or_type_opt
   : range      
     { 
-      vector_width* tmp = $1;
-      if( ignore_mode == 0 ) {
-        $$ = tmp;
-      } else {
-        if( tmp->left != NULL ) {
-          free_safe( tmp->left );
-        } else {
-          free_safe( tmp->right );
-        }
-        free_safe( tmp );
-        $$ = NULL;
-      }
+      $$ = $1;
     }
   | K_integer
     {
@@ -3422,6 +3441,7 @@ range_or_type_opt
         tmp = (vector_width*)malloc_safe( sizeof( vector_width ), __FILE__, __LINE__ );
         tmp->left  = left;
         tmp->right = right;
+        curr_sig_width = tmp;
         $$ = tmp;
       } else {
         $$ = NULL;
@@ -3831,6 +3851,12 @@ defparam_assign_list
     }
   | range defparam_assign
     {
+      if( $1 != NULL ) {
+        static_expr_dealloc( $1->left,  FALSE );
+        static_expr_dealloc( $1->right, FALSE );
+        free_safe( $1 );
+        curr_sig_width = NULL;
+      }
       $$ = 0;
     }
   | defparam_assign_list ',' defparam_assign
@@ -4024,6 +4050,7 @@ parameter_assign_list
         static_expr_dealloc( $1->left,  FALSE );
         static_expr_dealloc( $1->right, FALSE );
         free_safe( $1 );
+        curr_sig_width = NULL;
       }
     }
   | parameter_assign_list ',' parameter_assign
@@ -4046,6 +4073,7 @@ localparam_assign_list
         static_expr_dealloc( $1->left,  FALSE );
         static_expr_dealloc( $1->right, FALSE );
         free_safe( $1 );
+        curr_sig_width = NULL;
       }
     }
   | localparam_assign_list ',' localparam_assign

@@ -479,12 +479,14 @@ void param_expr_eval( expression* expr, funit_inst* inst ) {
     param_expr_eval( expr->right, inst );
 
     switch( expr->op ) {
-      case EXP_OP_STATIC :
+      case EXP_OP_STATIC    :
       case EXP_OP_FUNC_CALL :
         break;
-      case EXP_OP_PARAM      :
-      case EXP_OP_PARAM_SBIT :
-      case EXP_OP_PARAM_MBIT :
+      case EXP_OP_PARAM          :
+      case EXP_OP_PARAM_SBIT     :
+      case EXP_OP_PARAM_MBIT     :
+      case EXP_OP_PARAM_MBIT_POS :
+      case EXP_OP_PARAM_MBIT_NEG :
         param_find_and_set_expr_value( expr, inst );
         break;
       default :
@@ -495,7 +497,9 @@ void param_expr_eval( expression* expr, funit_inst* inst ) {
         assert( expr->value != NULL );
         assert( (expr->op != EXP_OP_SIG)      &&
                 (expr->op != EXP_OP_SBIT_SEL) &&
-                (expr->op != EXP_OP_MBIT_SEL) );
+                (expr->op != EXP_OP_MBIT_SEL) &&
+                (expr->op != EXP_OP_MBIT_POS) &&
+                (expr->op != EXP_OP_MBIT_NEG) );
         expression_resize( expr, FALSE );
         if( expr->value->value != NULL ) {
           free_safe( expr->value->value );
@@ -826,6 +830,10 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.52  2006/01/25 04:32:47  phase1geo
+ Fixing bug with latest checkins.  Full regression is now passing for IV simulated
+ diagnostics.
+
  Revision 1.51  2006/01/24 23:24:38  phase1geo
  More updates to handle static functions properly.  I have redone quite a bit
  of code here which has regressions pretty broke at the moment.  More work

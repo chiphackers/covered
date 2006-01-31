@@ -40,6 +40,19 @@
  immediately.  In the case of MBIT_SEL, the LSB is also constant.  Vector direction
  is currently not considered at this point.
 
+ \par EXP_OP_MBIT_POS
+ A variable multi-bit positive select expression operates in much the same way as
+ the EXP_OP_MBIT_SEL expression; however, the right expression must be a constant
+ expression.  The left expression represents the LSB while the MSB is calculated by
+ adding the value of the right expression to the value of the left expression and
+ subtracting one.
+
+ \par EXP_OP_MBIT_NEG
+ A variable multi-bit negative select expression operates in much the same way as
+ the EXP_OP_MBIT_POS expression.  In this case, the left expression represents the
+ MSB while the the LSB is calculated by subtracting the value of the right expression
+ and adding one.
+
  \par EXP_OP_ASSIGN, EXP_OP_DASSIGN, EXP_OP_NASSIGN, EXP_OP_IF
  All of these expressions are assignment operators that are in assign statements,
  behavioral non-blocking assignments, and if expressions, respectively.
@@ -178,84 +191,91 @@ static bool expression_op_func__repeat( expression*, thread* );
 static bool expression_op_func__null( expression*, thread* );
 static bool expression_op_func__exponent( expression*, thread* );
 static bool expression_op_func__passign( expression*, thread* );
+static bool expression_op_func__mbit_pos( expression*, thread* );
+static bool expression_op_func__mbit_neg( expression*, thread* );
 
 
 /*!
  Array containing static information about expression operation types.  NOTE:  This structure MUST be
  updated if a new expression is added!  The third argument is an initialization to the \ref exp_info_s structure.
 */
-const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",     expression_op_func__null,      {0, 1, 0, 1, 0, 0} },
-                                           {"SIG",        expression_op_func__null,      {0, 0, 0, 1, 1, 0} },
-                                           {"XOR",        expression_op_func__xor,       {0, 0, 1, 0, 1, 0} },
-                                           {"MULTIPLY",   expression_op_func__multiply,  {0, 0, 0, 1, 1, 0} },
-                                           {"DIVIDE",     expression_op_func__divide,    {0, 0, 0, 1, 1, 0} },
-                                           {"MOD",        expression_op_func__mod,       {0, 0, 0, 1, 1, 0} },
-                                           {"ADD",        expression_op_func__add,       {0, 0, 1, 0, 1, 0} },
-                                           {"SUBTRACT",   expression_op_func__subtract,  {0, 0, 1, 0, 1, 0} },
-                                           {"AND",        expression_op_func__and,       {0, 0, 1, 0, 1, 0} },
-                                           {"OR",         expression_op_func__or,        {0, 0, 1, 0, 1, 0} },
-                                           {"NAND",       expression_op_func__nand,      {0, 0, 1, 0, 1, 0} },
-                                           {"NOR",        expression_op_func__nor,       {0, 0, 1, 0, 1, 0} },
-                                           {"NXOR",       expression_op_func__nxor,      {0, 0, 1, 0, 1, 0} },
-                                           {"LT",         expression_op_func__lt,        {0, 0, 0, 1, 1, 0} },
-                                           {"GT",         expression_op_func__gt,        {0, 0, 0, 1, 1, 0} },
-                                           {"LSHIFT",     expression_op_func__lshift,    {0, 0, 0, 1, 1, 0} },
-                                           {"RSHIFT",     expression_op_func__rshift,    {0, 0, 0, 1, 1, 0} },
-                                           {"EQ",         expression_op_func__eq,        {0, 0, 0, 1, 1, 0} },
-                                           {"CEQ",        expression_op_func__ceq,       {0, 0, 0, 1, 1, 0} },
-                                           {"LE",         expression_op_func__le,        {0, 0, 0, 1, 1, 0} },
-                                           {"GE",         expression_op_func__ge,        {0, 0, 0, 1, 1, 0} },
-                                           {"NE",         expression_op_func__ne,        {0, 0, 0, 1, 1, 0} },
-                                           {"CNE",        expression_op_func__cne,       {0, 0, 0, 1, 1, 0} },
-                                           {"LOR",        expression_op_func__lor,       {0, 0, 1, 0, 1, 0} },
-                                           {"LAND",       expression_op_func__land,      {0, 0, 1, 0, 1, 0} },
-                                           {"COND",       expression_op_func__cond,      {0, 0, 0, 1, 1, 0} },
-                                           {"COND_SEL",   expression_op_func__cond_sel,  {0, 0, 0, 1, 0, 0} },
-                                           {"UINV",       expression_op_func__uinv,      {0, 0, 0, 1, 1, 0} },
-                                           {"UAND",       expression_op_func__uand,      {0, 0, 0, 1, 1, 0} },
-                                           {"UNOT",       expression_op_func__unot,      {0, 0, 0, 1, 1, 0} },
-                                           {"UOR",        expression_op_func__uor,       {0, 0, 0, 1, 1, 0} },
-                                           {"UXOR",       expression_op_func__uxor,      {0, 0, 0, 1, 1, 0} },
-                                           {"UNAND",      expression_op_func__unand,     {0, 0, 0, 1, 1, 0} },
-                                           {"UNOR",       expression_op_func__unor,      {0, 0, 0, 1, 1, 0} },
-                                           {"UNXOR",      expression_op_func__unxor,     {0, 0, 0, 1, 1, 0} },
-                                           {"SBIT_SEL",   expression_op_func__sbit,      {0, 0, 0, 1, 1, 0} },
-                                           {"MBIT_SEL",   expression_op_func__null,      {0, 0, 0, 1, 1, 0} },
-                                           {"EXPAND",     expression_op_func__expand,    {0, 0, 0, 1, 1, 0} },
-                                           {"CONCAT",     expression_op_func__concat,    {0, 0, 0, 1, 1, 0} },
-                                           {"PEDGE",      expression_op_func__pedge,     {1, 0, 0, 0, 1, 1} },
-                                           {"NEDGE",      expression_op_func__nedge,     {1, 0, 0, 0, 1, 1} },
-                                           {"AEDGE",      expression_op_func__aedge,     {1, 0, 0, 0, 1, 1} },
-                                           {"LAST",       expression_op_func__null,      {0, 0, 0, 1, 0, 0} },
-                                           {"EOR",        expression_op_func__eor,       {1, 0, 0, 1, 0, 1} },
-                                           {"DELAY",      expression_op_func__delay,     {1, 0, 0, 0, 0, 1} },
-                                           {"CASE",       expression_op_func__case,      {0, 0, 0, 1, 0, 0} },
-                                           {"CASEX",      expression_op_func__casex,     {0, 0, 0, 1, 0, 0} },
-                                           {"CASEZ",      expression_op_func__casez,     {0, 0, 0, 1, 0, 0} },
-                                           {"DEFAULT",    expression_op_func__default,   {0, 0, 0, 1, 0, 0} },
-                                           {"LIST",       expression_op_func__list,      {0, 0, 0, 1, 0, 0} },
-                                           {"PARAM",      expression_op_func__null,      {0, 1, 0, 1, 0, 0} },
-                                           {"PARAM_SBIT", expression_op_func__sbit,      {0, 1, 0, 1, 0, 0} },
-                                           {"PARAM_MBIT", expression_op_func__null,      {0, 1, 0, 1, 0, 0} },
-                                           {"ASSIGN",     expression_op_func__null,      {0, 0, 0, 1, 0, 0} },
-                                           {"DASSIGN",    expression_op_func__null,      {0, 0, 0, 1, 0, 0} },
-                                           {"BASSIGN",    expression_op_func__bassign,   {0, 0, 0, 1, 0, 0} },
-                                           {"NASSIGN",    expression_op_func__null,      {0, 0, 0, 1, 0, 0} },
-                                           {"IF",         expression_op_func__null,      {0, 0, 0, 1, 0, 0} },
-                                           {"FUNC_CALL",  expression_op_func__func_call, {0, 0, 0, 1, 1, 0} },
-                                           {"TASK_CALL",  expression_op_func__task_call, {0, 0, 0, 1, 0, 1} },
-                                           {"TRIGGER",    expression_op_func__trigger,   {0, 0, 0, 1, 0, 0} },
-                                           {"NB_CALL",    expression_op_func__nb_call,   {0, 0, 0, 1, 0, 0} },
-                                           {"FORK",       expression_op_func__fork,      {0, 0, 0, 1, 0, 0} },
-                                           {"JOIN",       expression_op_func__join,      {0, 0, 0, 1, 0, 0} },
-                                           {"DISABLE",    expression_op_func__disable,   {0, 0, 0, 1, 0, 0} },
-                                           {"REPEAT",     expression_op_func__repeat,    {0, 0, 0, 1, 0, 0} },
-                                           {"WHILE",      expression_op_func__null,      {0, 0, 0, 1, 0, 0} },
-                                           {"ALSHIFT",    expression_op_func__lshift,    {0, 0, 0, 1, 1, 0} },
-                                           {"ARSHIFT",    expression_op_func__arshift,   {0, 0, 0, 1, 1, 0} },
-                                           {"SLIST",      expression_op_func__slist,     {1, 0, 0, 0, 1, 1} },
-                                           {"EXPONENT",   expression_op_func__exponent,  {0, 0, 0, 1, 1, 0} },
-                                           {"PASSIGN",    expression_op_func__passign,   {0, 0, 0, 1, 0, 0} } };
+const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",         expression_op_func__null,      {0, 1, 0, 1, 0, 0} },
+                                           {"SIG",            expression_op_func__null,      {0, 0, 0, 1, 1, 0} },
+                                           {"XOR",            expression_op_func__xor,       {0, 0, 1, 0, 1, 0} },
+                                           {"MULTIPLY",       expression_op_func__multiply,  {0, 0, 0, 1, 1, 0} },
+                                           {"DIVIDE",         expression_op_func__divide,    {0, 0, 0, 1, 1, 0} },
+                                           {"MOD",            expression_op_func__mod,       {0, 0, 0, 1, 1, 0} },
+                                           {"ADD",            expression_op_func__add,       {0, 0, 1, 0, 1, 0} },
+                                           {"SUBTRACT",       expression_op_func__subtract,  {0, 0, 1, 0, 1, 0} },
+                                           {"AND",            expression_op_func__and,       {0, 0, 1, 0, 1, 0} },
+                                           {"OR",             expression_op_func__or,        {0, 0, 1, 0, 1, 0} },
+                                           {"NAND",           expression_op_func__nand,      {0, 0, 1, 0, 1, 0} },
+                                           {"NOR",            expression_op_func__nor,       {0, 0, 1, 0, 1, 0} },
+                                           {"NXOR",           expression_op_func__nxor,      {0, 0, 1, 0, 1, 0} },
+                                           {"LT",             expression_op_func__lt,        {0, 0, 0, 1, 1, 0} },
+                                           {"GT",             expression_op_func__gt,        {0, 0, 0, 1, 1, 0} },
+                                           {"LSHIFT",         expression_op_func__lshift,    {0, 0, 0, 1, 1, 0} },
+                                           {"RSHIFT",         expression_op_func__rshift,    {0, 0, 0, 1, 1, 0} },
+                                           {"EQ",             expression_op_func__eq,        {0, 0, 0, 1, 1, 0} },
+                                           {"CEQ",            expression_op_func__ceq,       {0, 0, 0, 1, 1, 0} },
+                                           {"LE",             expression_op_func__le,        {0, 0, 0, 1, 1, 0} },
+                                           {"GE",             expression_op_func__ge,        {0, 0, 0, 1, 1, 0} },
+                                           {"NE",             expression_op_func__ne,        {0, 0, 0, 1, 1, 0} },
+                                           {"CNE",            expression_op_func__cne,       {0, 0, 0, 1, 1, 0} },
+                                           {"LOR",            expression_op_func__lor,       {0, 0, 1, 0, 1, 0} },
+                                           {"LAND",           expression_op_func__land,      {0, 0, 1, 0, 1, 0} },
+                                           {"COND",           expression_op_func__cond,      {0, 0, 0, 1, 1, 0} },
+                                           {"COND_SEL",       expression_op_func__cond_sel,  {0, 0, 0, 1, 0, 0} },
+                                           {"UINV",           expression_op_func__uinv,      {0, 0, 0, 1, 1, 0} },
+                                           {"UAND",           expression_op_func__uand,      {0, 0, 0, 1, 1, 0} },
+                                           {"UNOT",           expression_op_func__unot,      {0, 0, 0, 1, 1, 0} },
+                                           {"UOR",            expression_op_func__uor,       {0, 0, 0, 1, 1, 0} },
+                                           {"UXOR",           expression_op_func__uxor,      {0, 0, 0, 1, 1, 0} },
+                                           {"UNAND",          expression_op_func__unand,     {0, 0, 0, 1, 1, 0} },
+                                           {"UNOR",           expression_op_func__unor,      {0, 0, 0, 1, 1, 0} },
+                                           {"UNXOR",          expression_op_func__unxor,     {0, 0, 0, 1, 1, 0} },
+                                           {"SBIT_SEL",       expression_op_func__sbit,      {0, 0, 0, 1, 1, 0} },
+                                           {"MBIT_SEL",       expression_op_func__null,      {0, 0, 0, 1, 1, 0} },
+                                           {"EXPAND",         expression_op_func__expand,    {0, 0, 0, 1, 1, 0} },
+                                           {"CONCAT",         expression_op_func__concat,    {0, 0, 0, 1, 1, 0} },
+                                           {"PEDGE",          expression_op_func__pedge,     {1, 0, 0, 0, 1, 1} },
+                                           {"NEDGE",          expression_op_func__nedge,     {1, 0, 0, 0, 1, 1} },
+                                           {"AEDGE",          expression_op_func__aedge,     {1, 0, 0, 0, 1, 1} },
+                                           {"LAST",           expression_op_func__null,      {0, 0, 0, 1, 0, 0} },
+                                           {"EOR",            expression_op_func__eor,       {1, 0, 0, 1, 0, 1} },
+                                           {"DELAY",          expression_op_func__delay,     {1, 0, 0, 0, 0, 1} },
+                                           {"CASE",           expression_op_func__case,      {0, 0, 0, 1, 0, 0} },
+                                           {"CASEX",          expression_op_func__casex,     {0, 0, 0, 1, 0, 0} },
+                                           {"CASEZ",          expression_op_func__casez,     {0, 0, 0, 1, 0, 0} },
+                                           {"DEFAULT",        expression_op_func__default,   {0, 0, 0, 1, 0, 0} },
+                                           {"LIST",           expression_op_func__list,      {0, 0, 0, 1, 0, 0} },
+                                           {"PARAM",          expression_op_func__null,      {0, 1, 0, 1, 0, 0} },
+                                           {"PARAM_SBIT",     expression_op_func__sbit,      {0, 1, 0, 1, 0, 0} },
+                                           {"PARAM_MBIT",     expression_op_func__null,      {0, 1, 0, 1, 0, 0} },
+                                           {"ASSIGN",         expression_op_func__null,      {0, 0, 0, 1, 0, 0} },
+                                           {"DASSIGN",        expression_op_func__null,      {0, 0, 0, 1, 0, 0} },
+                                           {"BASSIGN",        expression_op_func__bassign,   {0, 0, 0, 1, 0, 0} },
+                                           {"NASSIGN",        expression_op_func__null,      {0, 0, 0, 1, 0, 0} },
+                                           {"IF",             expression_op_func__null,      {0, 0, 0, 1, 0, 0} },
+                                           {"FUNC_CALL",      expression_op_func__func_call, {0, 0, 0, 1, 1, 0} },
+                                           {"TASK_CALL",      expression_op_func__task_call, {0, 0, 0, 1, 0, 1} },
+                                           {"TRIGGER",        expression_op_func__trigger,   {0, 0, 0, 1, 0, 0} },
+                                           {"NB_CALL",        expression_op_func__nb_call,   {0, 0, 0, 1, 0, 0} },
+                                           {"FORK",           expression_op_func__fork,      {0, 0, 0, 1, 0, 0} },
+                                           {"JOIN",           expression_op_func__join,      {0, 0, 0, 1, 0, 0} },
+                                           {"DISABLE",        expression_op_func__disable,   {0, 0, 0, 1, 0, 0} },
+                                           {"REPEAT",         expression_op_func__repeat,    {0, 0, 0, 1, 0, 0} },
+                                           {"WHILE",          expression_op_func__null,      {0, 0, 0, 1, 0, 0} },
+                                           {"ALSHIFT",        expression_op_func__lshift,    {0, 0, 0, 1, 1, 0} },
+                                           {"ARSHIFT",        expression_op_func__arshift,   {0, 0, 0, 1, 1, 0} },
+                                           {"SLIST",          expression_op_func__slist,     {1, 0, 0, 0, 1, 1} },
+                                           {"EXPONENT",       expression_op_func__exponent,  {0, 0, 0, 1, 1, 0} },
+                                           {"PASSIGN",        expression_op_func__passign,   {0, 0, 0, 1, 0, 0} },
+                                           {"RASSIGN",        expression_op_func__null,      {0, 0, 0, 1, 0, 0} },
+                                           {"MBIT_POS",       expression_op_func__mbit_pos,  {0, 0, 0, 1, 1, 0} },
+                                           {"MBIT_NEG",       expression_op_func__mbit_neg,  {0, 0, 0, 1, 1, 0} },
+                                           {"PARAM_MBIT_POS", expression_op_func__mbit_pos,  {0, 1, 0, 1, 0, 0} },
+                                           {"PARAM_MBIT_NEG", expression_op_func__mbit_neg,  {0, 1, 0, 1, 0, 0} } };
 
 /*!
  \param exp    Pointer to expression to add value to.
@@ -404,8 +424,12 @@ expression* expression_create( expression* right, expression* left, exp_op_type 
 
     /* If both right and left values have their width values set. */
     if( (rwidth > 0) && (lwidth > 0) && 
-        (op != EXP_OP_MBIT_SEL) &&
-        (op != EXP_OP_PARAM_MBIT) ) {
+        (op != EXP_OP_MBIT_SEL)       &&
+        (op != EXP_OP_MBIT_POS)       &&
+        (op != EXP_OP_MBIT_NEG)       &&
+        (op != EXP_OP_PARAM_MBIT)     &&
+        (op != EXP_OP_PARAM_MBIT_POS) &&
+        (op != EXP_OP_PARAM_MBIT_NEG) ) {
 
       if( rwidth >= lwidth ) {
         /* Check to make sure that nothing has gone drastically wrong */
@@ -486,6 +510,14 @@ void expression_set_value( expression* exp, vector* vec ) {
         }
       }
       break;
+    case EXP_OP_MBIT_POS :
+    case EXP_OP_MBIT_NEG :
+    case EXP_OP_PARAM_MBIT_POS :
+    case EXP_OP_PARAM_MBIT_NEG :
+      expression_operate_recursively( exp->right );
+      exp->value->value = vec->value;
+      exp->value->width = vector_to_int( exp->right->value );
+      break;
     default :  break;
   }
 
@@ -514,22 +546,27 @@ void expression_resize( expression* expr, bool recursive ) {
     switch( expr->op ) {
 
       /* These operations will already be sized so nothing to do here */
-      case EXP_OP_STATIC     :
-      case EXP_OP_PARAM      :
-      case EXP_OP_PARAM_SBIT :
-      case EXP_OP_PARAM_MBIT :
-      case EXP_OP_SIG :
-      case EXP_OP_SBIT_SEL :
-      case EXP_OP_MBIT_SEL :
-      case EXP_OP_TRIGGER :
-      case EXP_OP_ASSIGN :
-      case EXP_OP_DASSIGN :
-      case EXP_OP_BASSIGN :
-      case EXP_OP_NASSIGN :
-      case EXP_OP_PASSIGN :
-      case EXP_OP_IF :
-      case EXP_OP_FUNC_CALL :
-      case EXP_OP_WHILE :
+      case EXP_OP_STATIC         :
+      case EXP_OP_PARAM          :
+      case EXP_OP_PARAM_SBIT     :
+      case EXP_OP_PARAM_MBIT     :
+      case EXP_OP_PARAM_MBIT_POS :
+      case EXP_OP_PARAM_MBIT_NEG :
+      case EXP_OP_SIG            :
+      case EXP_OP_SBIT_SEL       :
+      case EXP_OP_MBIT_SEL       :
+      case EXP_OP_MBIT_POS       :
+      case EXP_OP_MBIT_NEG       :
+      case EXP_OP_TRIGGER        :
+      case EXP_OP_ASSIGN         :
+      case EXP_OP_DASSIGN        :
+      case EXP_OP_BASSIGN        :
+      case EXP_OP_NASSIGN        :
+      case EXP_OP_PASSIGN        :
+      case EXP_OP_RASSIGN        :
+      case EXP_OP_IF             :
+      case EXP_OP_FUNC_CALL      :
+      case EXP_OP_WHILE          :
         break;
 
       /* These operations should always be set to a width 1 */
@@ -705,7 +742,9 @@ void expression_find_rhs_sigs( expression* expr, str_link** head, str_link** tai
     if( (expr->op == EXP_OP_SIG)      ||
         (expr->op == EXP_OP_TRIGGER)  ||
         (expr->op == EXP_OP_SBIT_SEL) ||
-        (expr->op == EXP_OP_MBIT_SEL) ) {
+        (expr->op == EXP_OP_MBIT_SEL) ||
+        (expr->op == EXP_OP_MBIT_POS) ||
+        (expr->op == EXP_OP_MBIT_NEG) ) {
  
       /*
        If the expression doesn't current contain the signal (i.e., it hasn't been bound yet),
@@ -2365,7 +2404,6 @@ bool expression_op_func__passign( expression* expr, thread* thr ) {
     /* If the connected signal is an input type, copy the parameter expression value to this vector */
     case SSUPPL_TYPE_INPUT :
       vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 );
-      // vsignal_display( expr->sig );
       vsignal_propagate( expr->sig );
       break;
 
@@ -2384,6 +2422,58 @@ bool expression_op_func__passign( expression* expr, thread* thr ) {
       break;
 
   }
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a positive variable multi-bit select operation.
+*/
+bool expression_op_func__mbit_pos( expression* expr, thread* thr ) {
+
+  int intval;  /* Integer value */
+
+  if( !vector_is_unknown( expr->left->value ) ) {
+
+    intval = vector_to_int( expr->left->value ) - expr->sig->lsb;
+    assert( intval >= 0 );
+    assert( intval < expr->sig->value->width );
+    expr->value->value = expr->sig->value->value + intval;
+
+  }
+
+  return( TRUE );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a negative variable multi-bit select operation.
+*/
+bool expression_op_func__mbit_neg( expression* expr, thread* thr ) {
+
+  int intval1;  /* Integer value */
+  int intval2;  /* Integer value */
+
+  if( !vector_is_unknown( expr->left->value ) ) {
+
+    intval1 = vector_to_int( expr->left->value ) - expr->sig->lsb;
+    intval2 = vector_to_int( expr->right->value );
+    assert( intval1 < expr->sig->value->width );
+    assert( ((intval1 - intval2) + 1) >= 0 );
+    expr->value->value = expr->sig->value->value + ((intval1 - intval2) + 1);
+
+  }
+
+  return( TRUE );
 
 }
 
@@ -2493,7 +2583,9 @@ void expression_operate_recursively( expression* expr ) {
     */
     assert( (expr->op != EXP_OP_SIG)      &&
             (expr->op != EXP_OP_SBIT_SEL) &&
-            (expr->op != EXP_OP_MBIT_SEL) );
+            (expr->op != EXP_OP_MBIT_SEL) &&
+            (expr->op != EXP_OP_MBIT_POS) &&
+            (expr->op != EXP_OP_MBIT_NEG) );
 
     /* Evaluate children */
     expression_operate_recursively( expr->left  );
@@ -2558,9 +2650,11 @@ bool expression_is_assigned( expression* expr ) {
     retval = TRUE;
 
   } else if( (ESUPPL_IS_LHS( expr->suppl ) == 1) &&
-             ((expr->op == EXP_OP_SIG) ||
+             ((expr->op == EXP_OP_SIG)      ||
               (expr->op == EXP_OP_SBIT_SEL) ||
-              (expr->op == EXP_OP_MBIT_SEL)) ) {
+              (expr->op == EXP_OP_MBIT_SEL) ||
+              (expr->op == EXP_OP_MBIT_POS) ||
+              (expr->op == EXP_OP_MBIT_NEG)) ) {
 
     while( (expr != NULL) && (ESUPPL_IS_ROOT( expr->suppl ) == 0) && (expr->op != EXP_OP_BASSIGN) ) {
       expr = expr->parent->expr;
@@ -2585,7 +2679,10 @@ bool expression_is_bit_select( expression* expr ) {
 
   if( (expr != NULL) && (ESUPPL_IS_ROOT( expr->suppl ) == 0) ) {
 
-    if( (expr->parent->expr->op == EXP_OP_SBIT_SEL) || (expr->parent->expr->op == EXP_OP_MBIT_SEL) ) {
+    if( (expr->parent->expr->op == EXP_OP_SBIT_SEL) ||
+        (expr->parent->expr->op == EXP_OP_MBIT_SEL) ||
+        (expr->parent->expr->op == EXP_OP_MBIT_POS) ||
+        (expr->parent->expr->op == EXP_OP_MBIT_NEG) ) {
       retval = TRUE;
     } else {
       retval = expression_is_bit_select( expr->parent->expr );
@@ -2641,7 +2738,7 @@ void expression_set_assigned( expression* expr ) {
 void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
 
   int intval1;  /* Integer value to use */
-  func_unit* funit;
+  int intval2;  /* Integer value to use */
 
   if( lhs != NULL ) {
 
@@ -2700,6 +2797,46 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
         }
         *lsb = *lsb + lhs->value->width;
         break;
+#ifdef NOT_SUPPORTED
+      case EXP_OP_MBIT_POS :
+        if( lhs->sig->value->suppl.part.assigned == 1 ) {
+          if( !vector_is_unknown( lhs->left->value ) ) {
+            intval1 = vector_to_int( lhs->left->value ) - lhs->sig->lsb;
+            intval2 = vector_to_int( lhs->right->value );
+            assert( intval1 >= 0 );
+            assert( ((intval1 + intval2) - 1) < lhs->sig->value->width );
+            lhs->value->value = lhs->sig->value->value + intval1;
+          }
+          vector_set_value( lhs->value, rhs->value->value, intval2, *lsb, 0 );
+          vsignal_propagate( lhs->sig );
+#ifdef DEBUG_MODE
+          if( debug_mode ) {
+            printf( "        " );  vsignal_display( lhs->sig );
+          }
+#endif
+        }
+        *lsb = *lsb + lhs->value->width;
+        break;
+      case EXP_OP_MBIT_NEG :
+        if( lhs->sig->value->suppl.part.assigned == 1 ) {
+          if( !vector_is_unknown( lhs->left->value ) ) {
+            intval1 = vector_to_int( lhs->left->value ) - lhs->sig->lsb;
+            intval2 = vector_to_int( lhs->right->value );
+            assert( intval1 < lhs->sig->value->width );
+            assert( ((intval1 - intval2) + 1) >= 0 );
+            lhs->value->value = lhs->sig->value->value + ((intval1 - intval2) + 1);
+          }
+          vector_set_value( lhs->value, rhs->value->value, intval2, *lsb, 0 );
+          vsignal_propagate( lhs->sig );
+#ifdef DEBUG_MODE
+          if( debug_mode ) {
+            printf( "        " );  vsignal_display( lhs->sig );
+          }
+#endif
+        }
+        *lsb = *lsb + lhs->value->width;
+        break;
+#endif
       case EXP_OP_CONCAT   :
       case EXP_OP_LIST     :
         expression_assign( lhs->right, rhs, lsb );
@@ -2712,6 +2849,10 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
 	assert( (lhs->op == EXP_OP_SIG)      ||
 	        (lhs->op == EXP_OP_SBIT_SEL) ||
 		(lhs->op == EXP_OP_MBIT_SEL) ||
+#ifdef NOT_SUPPORTED
+                (lhs->op == EXP_OP_MBIT_POS) ||
+                (lhs->op == EXP_OP_MBIT_NEG) ||
+#endif
 		(lhs->op == EXP_OP_CONCAT)   ||
 		(lhs->op == EXP_OP_LIST) );
         break;
@@ -2833,6 +2974,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.166  2006/01/25 16:51:27  phase1geo
+ Fixing performance/output issue with hierarchical references.  Added support
+ for hierarchical references to parser.  Full regression passes.
+
  Revision 1.165  2006/01/25 04:32:47  phase1geo
  Fixing bug with latest checkins.  Full regression is now passing for IV simulated
  diagnostics.

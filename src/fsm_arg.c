@@ -36,12 +36,13 @@ extern char user_msg[USER_MSG_LENGTH];
 */
 expression* fsm_arg_parse_state( char** arg, char* funit_name ) {
 
-  bool        error = FALSE;  /* Specifies if a parsing error has beenf found */
+  bool        error = FALSE;  /* Specifies if a parsing error has been found */
   vsignal*    sig;            /* Pointer to read-in signal */
   expression* expl  = NULL;   /* Pointer to left expression */
   expression* expr  = NULL;   /* Pointer to right expression */
   expression* expt  = NULL;   /* Pointer to temporary expression */
   statement*  stmt;           /* Pointer to statement containing top expression */
+  exp_op_type op;             /* Type of operation to decode for this signal */
 
   /*
    If we are a concatenation, parse arguments of concatenation as signal names
@@ -88,7 +89,13 @@ expression* fsm_arg_parse_state( char** arg, char* funit_name ) {
           expr->value = vector_create( 32, TRUE );
           vector_from_int( expr->value, ((sig->value->width - 1) + sig->lsb) );
 
-          expr = expression_create( expt, expr, EXP_OP_MBIT_SEL, FALSE, curr_expr_id, 0, 0, 0, FALSE );
+          switch( sig->suppl.part.type ) {
+            case SSUPPL_TYPE_IMPLICIT     :  op = EXP_OP_MBIT_SEL;  break;
+            case SSUPPL_TYPE_IMPLICIT_POS :  op = EXP_OP_MBIT_POS;  break;
+            case SSUPPL_TYPE_IMPLICIT_NEG :  op = EXP_OP_MBIT_NEG;  break;
+            default                       :  assert( 0 );           break;
+          }
+          expr = expression_create( expt, expr, op, FALSE, curr_expr_id, 0, 0, 0, FALSE );
           curr_expr_id++;
           fsm_var_bind_add( sig->name, expr, funit_name );
 
@@ -152,7 +159,14 @@ expression* fsm_arg_parse_state( char** arg, char* funit_name ) {
         expr->value = vector_create( 32, TRUE );
         vector_from_int( expr->value, ((sig->value->width - 1) + sig->lsb) );
 
-        expl = expression_create( expt, expr, EXP_OP_MBIT_SEL, FALSE, curr_expr_id, 0, 0, 0, FALSE );
+        switch( sig->suppl.part.type ) {
+          case SSUPPL_TYPE_IMPLICIT     :  op = EXP_OP_MBIT_SEL;  break;
+          case SSUPPL_TYPE_IMPLICIT_POS :  op = EXP_OP_MBIT_POS;  break;
+          case SSUPPL_TYPE_IMPLICIT_NEG :  op = EXP_OP_MBIT_NEG;  break;
+          default                       :  assert( 0 );           break;
+        }
+
+        expl = expression_create( expt, expr, op, FALSE, curr_expr_id, 0, 0, 0, FALSE );
         curr_expr_id++;
 
       }
@@ -306,6 +320,54 @@ expression* fsm_arg_parse_value( char** str, func_unit* funit ) {
 
         /* Generate multi-bit parameter expression */
         expr = expression_create( right, left, EXP_OP_PARAM_MBIT, FALSE, curr_expr_id, 0, 0, 0, FALSE ); 
+        curr_expr_id++;
+        exp_link_add( expr, &(mparm->exp_head), &(mparm->exp_tail) );
+
+      }
+    } else if( sscanf( *str, "%[a-zA-Z0-9_]\[%d+:%d]%n", str_val, &msb, &lsb, &chars_read ) == 3 ) {
+      *str = *str + chars_read;
+      if( (mparm = mod_parm_find( str_val, funit->param_head )) != NULL ) {
+
+        /* Generate left child expression */
+        left = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
+        curr_expr_id++;
+        vector_dealloc( left->value );
+        left->value = vector_create( 32, TRUE );
+        vector_from_int( left->value, msb );
+
+        /* Generate right child expression */
+        right = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
+        curr_expr_id++;
+        vector_dealloc( right->value );
+        right->value = vector_create( 32, TRUE );
+        vector_from_int( right->value, lsb );
+
+        /* Generate variable positive multi-bit parameter expression */
+        expr = expression_create( right, left, EXP_OP_PARAM_MBIT_POS, FALSE, curr_expr_id, 0, 0, 0, FALSE );
+        curr_expr_id++;
+        exp_link_add( expr, &(mparm->exp_head), &(mparm->exp_tail) );
+
+      }
+    } else if( sscanf( *str, "%[a-zA-Z0-9_]\[%d-:%d]%n", str_val, &msb, &lsb, &chars_read ) == 3 ) {
+      *str = *str + chars_read;
+      if( (mparm = mod_parm_find( str_val, funit->param_head )) != NULL ) {
+
+        /* Generate left child expression */
+        left = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
+        curr_expr_id++;
+        vector_dealloc( left->value );
+        left->value = vector_create( 32, TRUE );
+        vector_from_int( left->value, msb );
+
+        /* Generate right child expression */
+        right = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
+        curr_expr_id++;
+        vector_dealloc( right->value );
+        right->value = vector_create( 32, TRUE );
+        vector_from_int( right->value, lsb );
+
+        /* Generate variable positive multi-bit parameter expression */
+        expr = expression_create( right, left, EXP_OP_PARAM_MBIT_NEG, FALSE, curr_expr_id, 0, 0, 0, FALSE );
         curr_expr_id++;
         exp_link_add( expr, &(mparm->exp_head), &(mparm->exp_tail) );
 
@@ -523,6 +585,17 @@ void fsm_arg_parse_attr( attr_param* ap, func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.24  2005/12/23 05:41:52  phase1geo
+ Fixing several bugs in score command per bug report #1388339.  Fixed problem
+ with race condition checker statement iterator to eliminate infinite looping (this
+ was the problem in the original bug).  Also fixed expression assigment when static
+ expressions are used in the LHS (caused an assertion failure).  Also fixed the race
+ condition checker to properly pay attention to task calls, named blocks and fork
+ statements to make sure that these are being handled correctly for race condition
+ checking.  Fixed bug for signals that are on the LHS side of an assignment expression
+ but is not being assigned (bit selects) so that these are NOT considered for race
+ conditions.  Full regression is a bit broken now but the opened bug can now be closed.
+
  Revision 1.23  2005/12/21 22:30:54  phase1geo
  More updates to memory leak fix list.  We are getting close!  Added some helper
  scripts/rules to more easily debug valgrind memory leak errors.  Also added suppression
