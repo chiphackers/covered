@@ -19,19 +19,18 @@
 #include "info.h"
 #include "sim.h"
 #include "race.h"
+#include "parser_misc.h"
 
 
 extern void reset_lexer( str_link* file_list_head );
 extern int VLparse();
 
 extern str_link* use_files_head;
-
 extern str_link* modlist_head;
 extern str_link* modlist_tail;
-extern char user_msg[USER_MSG_LENGTH];
-extern int  error_count;
-extern bool flag_scored;
-extern bool flag_race_check;
+extern char      user_msg[USER_MSG_LENGTH];
+extern bool      flag_scored;
+extern bool      flag_race_check;
 
 /*!
  \param file  Pointer to file to read
@@ -90,6 +89,9 @@ bool parse_design( char* top, char* output_db ) {
       print_output( "Error in parsing design", FATAL, __FILE__, __LINE__ );
       exit( 1 );
     }
+
+    /* Deallocate any memory in curr_range variable */
+    parser_dealloc_curr_range();
 
 #ifdef DEBUG_MODE
     print_output( "========  Completed design parsing  ========\n", DEBUG, __FILE__, __LINE__ );
@@ -208,6 +210,13 @@ bool parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) {
 
 /*
  $Log$
+ Revision 1.36  2006/01/25 22:13:46  phase1geo
+ Adding LXT-style dumpfile parsing support.  Everything is wired in but I still
+ need to look at a problem at the end of the dumpfile -- I'm getting coredumps
+ when using the new -lxt option.  I also need to disable LXT code if the z
+ library is missing along with documenting the new feature in the user's guide
+ and man page.
+
  Revision 1.35  2006/01/06 23:39:10  phase1geo
  Started working on removing the need to simulate more than is necessary.  Things
  are pretty broken at this point, but all of the code should be in -- debugging.

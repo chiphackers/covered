@@ -1679,6 +1679,7 @@ struct static_expr_s {
 struct vector_width_s {
   static_expr* left;                 /*!< Specifies left bit value of bit range */
   static_expr* right;                /*!< Specifies right bit value of bit range */
+  bool         implicit;             /*!< Specifies if vector width was explicitly set by user or implicitly set by parser */
 };
 
 struct exp_bind_s {
@@ -1797,6 +1798,11 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.175  2006/02/01 15:13:11  phase1geo
+ Added support for handling bit selections in RHS parameter calculations.  New
+ mbit_sel5.4 diagnostic added to verify this change.  Added the start of a
+ regression utility that will eventually replace the old Makefile system.
+
  Revision 1.174  2006/01/31 16:41:00  phase1geo
  Adding initial support and diagnostics for the variable multi-bit select
  operators +: and -:.  More to come but full regression passes.

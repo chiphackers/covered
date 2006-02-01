@@ -60,8 +60,13 @@
 #include "instance.h"
 
 
-inst_parm* defparam_head = NULL;   /*!< Pointer to head of parameter list for global defparams */
-inst_parm* defparam_tail = NULL;   /*!< Pointer to tail of parameter list for global defparams */
+/*!
+ This may seem to be odd to store the defparams in a functional unit instance; however, the inst_parm_add
+ function has been modified to send in a functional unit instance so we need to pass the defparam head/tail
+ in a functional unit instance instead of individual head and tail pointers.  The defparams in this functional
+ unit can refer to any functional unit instance, however.
+*/
+funit_inst* defparam_list = NULL;
 
 extern char user_msg[USER_MSG_LENGTH];
 extern char leading_hierarchy[4096];
@@ -186,6 +191,9 @@ mod_parm* mod_parm_add( char* scope, static_expr* msb, static_expr* lsb, express
     parm->msb      = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
     parm->msb->num = msb->num;
     parm->msb->exp = msb->exp;
+    if( parm->msb->exp != NULL ) {
+      parm->msb->exp->suppl.part.root = 1;
+    }
   } else {
     parm->msb = NULL;
   }
@@ -193,6 +201,9 @@ mod_parm* mod_parm_add( char* scope, static_expr* msb, static_expr* lsb, express
     parm->lsb      = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
     parm->lsb->num = lsb->num;
     parm->lsb->exp = lsb->exp;
+    if( parm->lsb->exp != NULL ) {
+      parm->lsb->exp->suppl.part.root = 1;
+    }
   } else {
     parm->lsb = NULL;
   }
@@ -226,14 +237,28 @@ mod_parm* mod_parm_add( char* scope, static_expr* msb, static_expr* lsb, express
 */
 void mod_parm_display( mod_parm* mparm ) {
 
+  char type_str[30];  /* String version of module parameter type */
+
   while( mparm != NULL ) {
     assert( mparm->expr != NULL );
-    if( mparm->name == NULL ) {
-      printf( "  mparam => suppl: %d, exp_id: %d\n", mparm->suppl, mparm->expr->id );
-    } else {
-      printf( "  mparam =>  name: %s, suppl: %d, exp_id: %d\n", mparm->name, mparm->suppl, mparm->expr->id );
+    switch( mparm->suppl.part.type ) {
+      case PARAM_TYPE_DECLARED       :  strcpy( type_str, "DECLARED" );        break;
+      case PARAM_TYPE_OVERRIDE       :  strcpy( type_str, "OVERRIDE" );        break;
+      case PARAM_TYPE_SIG_LSB        :  strcpy( type_str, "SIG_LSB"  );        break;
+      case PARAM_TYPE_SIG_MSB        :  strcpy( type_str, "SIG_MSB"  );        break;
+      case PARAM_TYPE_EXP_LSB        :  strcpy( type_str, "EXP_LSB"  );        break;
+      case PARAM_TYPE_EXP_MSB        :  strcpy( type_str, "EXP_MSB"  );        break;
+      case PARAM_TYPE_DECLARED_LOCAL :  strcpy( type_str, "DECLARED_LOCAL" );  break;
+      default                        :  strcpy( type_str, "UNKNOWN" );         break;
     }
-    printf( "    " );  vsignal_display( mparm->sig );
+    if( mparm->name == NULL ) {
+      printf( "  mparam => type: %s, order: %d, exp_id: %d\n", type_str, mparm->suppl.part.order, mparm->expr->id );
+    } else {
+      printf( "  mparam =>  name: %s, type: %s, order: %d, exp_id: %d\n", mparm->name, type_str, mparm->suppl.part.order, mparm->expr->id );
+    }
+    if( mparm->sig != NULL ) {
+      printf( "    " );  vsignal_display( mparm->sig );
+    }
     printf( "    " );  exp_link_display( mparm->exp_head );
     mparm = mparm->next;
   }
@@ -274,22 +299,23 @@ inst_parm* inst_parm_find( char* name, inst_parm* iparm ) {
  \param scope      Full hierarchical name of parameter value.
  \param value      Vector value of specified instance parameter.
  \param mparm      Pointer to module instance that this instance parameter is derived from.
- \param head       Pointer to head of instance parameter list to add to.
- \param tail       Pointer to tail of instance parameter list to add to.
+ \param inst       Pointer to current functional unit instance.
 
  \return Returns pointer to newly created instance parameter.
 
  Creates a new instance parameter with the specified information and adds 
  it to the instance parameter list.
 */
-inst_parm* inst_parm_add( char* name, char* inst_name, static_expr* msb, static_expr* lsb, vector* value,
-                          mod_parm* mparm, inst_parm** head, inst_parm** tail ) {
+inst_parm* inst_parm_add( char* name, char* inst_name, static_expr* msb, static_expr* lsb, vector* value, mod_parm* mparm, funit_inst* inst ) {
 
   inst_parm* iparm;      /* Temporary pointer to instance parameter */
   int        sig_width;  /* Width of this parameter signal */
   int        sig_lsb;    /* LSB of this parameter signal */
+  int        left_val;   /* Value of left (msb) static expression */
+  int        right_val;  /* Value of right (lsb) static expression */
   
   assert( value != NULL );
+  assert( ((msb == NULL) && (lsb == NULL)) || ((msb != NULL) && (lsb != NULL)) );
 
   /* Create new signal/expression binding */
   iparm = (inst_parm*)malloc_safe( sizeof( inst_parm ), __FILE__, __LINE__ );
@@ -300,19 +326,48 @@ inst_parm* inst_parm_add( char* name, char* inst_name, static_expr* msb, static_
     iparm->inst_name = NULL;
   }
 
-  /* Get the width and LSB from the given MSB/LSB information */
-  static_expr_calc_lsb_and_width( msb, lsb, &sig_width, &sig_lsb );
+  /* If the MSB/LSB was specified, calculate the LSB and width values */
+  if( msb != NULL ) {
+
+    /* Calculate left value */
+    if( lsb->exp != NULL ) {
+      param_expr_eval( lsb->exp, inst );
+      right_val = vector_to_int( lsb->exp->value );
+    } else {
+      right_val = lsb->num;
+    }
+    assert( right_val >= 0 );
+
+    /* Calculate right value */
+    if( msb->exp != NULL ) {
+      param_expr_eval( msb->exp, inst );
+      left_val = vector_to_int( msb->exp->value );
+    } else {
+      left_val = msb->num;
+    }
+    assert( left_val >= 0 );
+
+    /* Calculate LSB and width information */
+    if( right_val > left_val ) {
+      sig_lsb   = left_val;
+      sig_width = (right_val - left_val) + 1;
+    } else {
+      sig_lsb   = right_val;
+      sig_width = (left_val - right_val) + 1;
+    }
+
+  } else {
+
+    sig_lsb   = 0;
+    sig_width = value->width;
+
+  }
 
   /* If the parameter is sized too big, panic */
-  assert( sig_width <= MAX_BIT_WIDTH );
+  assert( (sig_width <= MAX_BIT_WIDTH) && (sig_width >= 0) );
 
   /* Create instance parameter signal */
-  if( (sig_lsb != -1) && (sig_width != -1) ) {
-    // iparm->sig = vsignal_create( name, SSUPPL_TYPE_DECLARED, sig_width, sig_lsb, 0, 0 );
-    iparm->sig = vsignal_create( name, SSUPPL_TYPE_DECLARED, value->width, 0, 0, 0 );
-  } else {
-    iparm->sig = vsignal_create( name, SSUPPL_TYPE_DECLARED, value->width, 0, 0, 0 );
-  }
+  iparm->sig = vsignal_create( name, SSUPPL_TYPE_DECLARED, sig_width, sig_lsb, 0, 0 );
   
   /* Copy the contents of the specified vector value to the signal */
   vector_set_value_only( iparm->sig->value, value->value, value->width, 0, 0 );
@@ -321,11 +376,11 @@ inst_parm* inst_parm_add( char* name, char* inst_name, static_expr* msb, static_
   iparm->next  = NULL;
 
   /* Now add the parameter to the current expression */
-  if( *head == NULL ) {
-    *head = *tail = iparm;
+  if( inst->param_head == NULL ) {
+    inst->param_head = inst->param_tail = iparm;
   } else {
-    (*tail)->next = iparm;
-    *tail         = iparm;
+    inst->param_tail->next = iparm;
+    inst->param_tail       = iparm;
   }
 
   return( iparm );
@@ -350,7 +405,14 @@ void defparam_add( char* scope, vector* value ) {
 
   assert( scope != NULL );
 
-  if( inst_parm_find( scope, defparam_head ) == NULL ) {
+  /* If the defparam instance doesn't exist, create it now */
+  if( defparam_list == NULL ) {
+    defparam_list = (funit_inst*)malloc_safe( sizeof( funit_inst ), __FILE__, __LINE__ );
+    defparam_list->param_head = NULL;
+    defparam_list->param_tail = NULL;
+  }
+
+  if( inst_parm_find( scope, defparam_list->param_head ) == NULL ) {
 
     /* Generate MSB and LSB information */
     msb.num = 31;
@@ -358,7 +420,7 @@ void defparam_add( char* scope, vector* value ) {
     lsb.num = 0;
     lsb.exp = NULL;
 
-    inst_parm_add( scope, NULL, &msb, &lsb, value, NULL, &defparam_head, &defparam_tail );
+    inst_parm_add( scope, NULL, &msb, &lsb, value, NULL, defparam_list );
 
     vector_dealloc( value );
 
@@ -377,7 +439,15 @@ void defparam_add( char* scope, vector* value ) {
 */
 void defparam_dealloc() {
 
-  inst_parm_dealloc( defparam_head, TRUE );
+  if( defparam_list != NULL ) {
+
+    /* Deallocate the instance parameters in the defparam_list structure */
+    inst_parm_dealloc( defparam_list->param_head, TRUE );
+
+    /* Now free the defparam_list structure itself */
+    free_safe( defparam_list );
+
+  }
 
 }
 
@@ -608,7 +678,7 @@ inst_parm* param_has_override( mod_parm* mparm, funit_inst* inst ) {
   if( icurr != NULL ) {
 
     /* Add new instance parameter to current instance */
-    parm = inst_parm_add( mparm->name, NULL, mparm->msb, mparm->lsb, icurr->sig->value, mparm, &(inst->param_head), &(inst->param_tail) );
+    parm = inst_parm_add( mparm->name, NULL, mparm->msb, mparm->lsb, icurr->sig->value, mparm, inst );
 
   }
 
@@ -636,28 +706,33 @@ inst_parm* param_has_defparam( mod_parm* mparm, funit_inst* inst ) {
   assert( mparm != NULL );
   assert( inst != NULL );
 
-  /* Get scope of this instance */
-  scope[0] = '\0';
-  instance_gen_scope( scope, inst );
+  /* Make sure that the user specified at least one defparam */
+  if( defparam_list != NULL ) {
 
-  /* Generate full hierarchy of this parameter */
-  if( strcmp( leading_hierarchy, "*" ) == 0 ) {
-    snprintf( parm_scope, 4096, "%s.%s", scope, mparm->name );
-  } else {
-    snprintf( parm_scope, 4096, "%s.%s.%s", leading_hierarchy, scope, mparm->name );
-  }
+    /* Get scope of this instance */
+    scope[0] = '\0';
+    instance_gen_scope( scope, inst );
 
-  icurr = defparam_head;
-  while( (icurr != NULL) &&
-         !((strcmp( icurr->sig->name, parm_scope ) == 0) &&
-           (mparm->suppl.part.type != PARAM_TYPE_DECLARED_LOCAL)) ) {
-    icurr = icurr->next;
-  }
+    /* Generate full hierarchy of this parameter */
+    if( strcmp( leading_hierarchy, "*" ) == 0 ) {
+      snprintf( parm_scope, 4096, "%s.%s", scope, mparm->name );
+    } else {
+      snprintf( parm_scope, 4096, "%s.%s.%s", leading_hierarchy, scope, mparm->name );
+    }
 
-  if( icurr != NULL ) {
+    icurr = defparam_list->param_head;
+    while( (icurr != NULL) &&
+           !((strcmp( icurr->sig->name, parm_scope ) == 0) &&
+             (mparm->suppl.part.type != PARAM_TYPE_DECLARED_LOCAL)) ) {
+      icurr = icurr->next;
+    }
 
-    /* Defparam found, use its value to create new instance parameter */
-    parm = inst_parm_add( mparm->name, NULL, mparm->msb, mparm->lsb, icurr->sig->value, mparm, &(inst->param_head), &(inst->param_tail) );
+    if( icurr != NULL ) {
+
+      /* Defparam found, use its value to create new instance parameter */
+      parm = inst_parm_add( mparm->name, NULL, mparm->msb, mparm->lsb, icurr->sig->value, mparm, inst );
+
+    }
 
   }
 
@@ -699,7 +774,7 @@ void param_resolve_declared( mod_parm* mparm, funit_inst* inst ) {
     param_expr_eval( mparm->expr, inst );
 
     /* Now add the new instance parameter */
-    inst_parm_add( mparm->name, NULL, mparm->msb, mparm->lsb, mparm->expr->value, mparm, &(inst->param_head), &(inst->param_tail) );
+    inst_parm_add( mparm->name, NULL, mparm->msb, mparm->lsb, mparm->expr->value, mparm, inst );
 
   }
 
@@ -724,7 +799,7 @@ void param_resolve_override( mod_parm* oparm, funit_inst* inst ) {
   param_expr_eval( oparm->expr, inst );
 
   /* Add the new instance override parameter */
-  inst_parm_add( oparm->name, oparm->inst_name, oparm->msb, oparm->lsb, oparm->expr->value, oparm, &(inst->param_head), &(inst->param_tail) );
+  inst_parm_add( oparm->name, oparm->inst_name, oparm->msb, oparm->lsb, oparm->expr->value, oparm, inst );
 
 }
 
@@ -878,6 +953,11 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.54  2006/02/01 15:13:11  phase1geo
+ Added support for handling bit selections in RHS parameter calculations.  New
+ mbit_sel5.4 diagnostic added to verify this change.  Added the start of a
+ regression utility that will eventually replace the old Makefile system.
+
  Revision 1.53  2006/01/31 16:41:00  phase1geo
  Adding initial support and diagnostics for the variable multi-bit select
  operators +: and -:.  More to come but full regression passes.

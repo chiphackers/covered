@@ -1,9 +1,9 @@
 module main;
 
-parameter STATE_IDLE = 2'b00,
-          STATE_HEAD = 2'b01,
-          STATE_DATA = 2'b10,
-	  STATE_TAIL = 2'b11;
+parameter [1:0] STATE_IDLE = 2'b00,
+                STATE_HEAD = 2'b01,
+                STATE_DATA = 2'b10,
+	        STATE_TAIL = 2'b11;
 
 reg            clock;
 reg            reset;

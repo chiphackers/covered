@@ -29,8 +29,7 @@ void mod_parm_display( mod_parm* mparm );
 inst_parm* inst_parm_find( char* name, inst_parm* parm );
 
 /*! \brief Creates and adds new instance parameter to specified instance parameter list. */
-inst_parm* inst_parm_add( char* name, char* inst_name, static_expr* msb, static_expr* lsb, vector* value,
-                          mod_parm* mparm, inst_parm** head, inst_parm** tail );
+inst_parm* inst_parm_add( char* name, char* inst_name, static_expr* msb, static_expr* lsb, vector* value, mod_parm* mparm, funit_inst* inst );
 
 /*! \brief Adds parameter override to defparam list. */
 void defparam_add( char* scope, vector* expr );
@@ -43,6 +42,9 @@ void param_set_expr_size( expression* expr, inst_parm* icurr );
 
 /*! \brief Sets the specified signal size according to the specified instance parameter and resizes attached expressions. */
 bool param_set_sig_size( vsignal* sig, inst_parm* icurr );
+
+/*! \brief Evaluates parameter expression for the given instance. */
+void param_expr_eval( expression* expr, funit_inst* inst );
 
 /*! \brief Transforms a declared module parameter into an instance parameter. */
 void param_resolve_declared( mod_parm* mparm, funit_inst* inst );
@@ -65,6 +67,11 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive );
 
 /*
  $Log$
+ Revision 1.21  2006/02/01 15:13:11  phase1geo
+ Added support for handling bit selections in RHS parameter calculations.  New
+ mbit_sel5.4 diagnostic added to verify this change.  Added the start of a
+ regression utility that will eventually replace the old Makefile system.
+
  Revision 1.20  2006/01/24 23:24:38  phase1geo
  More updates to handle static functions properly.  I have redone quite a bit
  of code here which has regressions pretty broke at the moment.  More work

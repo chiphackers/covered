@@ -64,7 +64,8 @@ DIAGS1        = always1         always2         always3         always3.1.11A   
                 param3.5        param4          param4.1        param5          param6 \
                 param6.1        param7          param8          param8.1        param9 \
                 param9.1        param9.2        param10         param10.1       param10.2 \
-                param10.3       param10.4       param10.5       port1           port2           pulldown1 \
+                param10.3       param10.4       param10.5       param11         port1 \
+                port2           pulldown1 \
                 pullup1         repeat1         repeat2         sbit_sel1       sbit_sel1.1 \
                 slist1          slist1.1        slist1.2        slist1.3        slist2 \
                 static1         string1         supply0         supply1         task1 \
@@ -101,9 +102,8 @@ IVONLYDIAGS4  =
 VCSONLYDIAGS1 = always7.1       assign2.4       assign2.5       assign2.6       assign2.7 \
                 event1          exponent1       gate1.1         implicit2.1     mbit_sel5 \
                 mbit_sel5.1     mbit_sel5.2     mbit_sel5.3     mbit_sel5.4     mbit_sel6 \
-                real1 \
-                static_func1    static_func1.1  triand          trior           trireg \
-                wand            wor
+                param8.2        real1           static_func1    static_func1.1  triand \
+                trior           trireg          wand            wor
 VCSONLYDIAGS2 = 
 VCSONLYDIAGS3 = 
 VCSONLYDIAGS4 = 

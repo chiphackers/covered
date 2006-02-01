@@ -60,7 +60,11 @@ exp_link* param_exp_tail = NULL;
 sig_link* dummy_head    = NULL;
 sig_link* dummy_tail    = NULL;
 
-vector_width* curr_sig_width = NULL;
+/*!
+ Contains the last explicitly or implicitly defined range information.  This is needed because lists
+ of signals/parameters can be made using a previously set range.
+*/
+vector_width* curr_range = NULL;
 
 #define YYERROR_VERBOSE 1
 
@@ -108,7 +112,6 @@ int yydebug = 1;
   expression*     expr;
   statement*      state;
   static_expr*    statexp;
-  vector_width*   vecwidth; 
   str_link*       strlink;
   exp_link*       explink;
   case_statement* case_stmt;
@@ -154,7 +157,6 @@ int yydebug = 1;
 %token KK_attribute
 
 %type <integer>   net_type port_type net_type_opt var_type
-%type <vecwidth>  range_opt range range_or_type_opt
 %type <statexp>   static_expr static_expr_primary
 %type <text>      identifier
 %type <expr>      expr_primary expression_list expression
@@ -280,9 +282,9 @@ module_parameter_port_list_opt
   ;
 
 module_parameter_port_list
-  : K_parameter parameter_assign
+  : K_parameter signed_opt range_opt parameter_assign
   | module_parameter_port_list ',' parameter_assign
-  | module_parameter_port_list ',' K_parameter parameter_assign
+  | module_parameter_port_list ',' K_parameter signed_opt range_opt parameter_assign
   ;
 
 module_port_list_opt
@@ -330,17 +332,13 @@ port_declaration
     {
       port_info* pi;
       if( ignore_mode == 0 ) {
-        db_add_signal( $6, $2, $5->left, $5->right, FALSE, @6.first_line, @6.first_column );
+        db_add_signal( $6, $2, curr_range->left, curr_range->right, FALSE, @6.first_line, @6.first_column );
         pi = (port_info*)malloc_safe( sizeof( port_info ), __FILE__, __LINE__ );
-        pi->type       = $2;
-        pi->is_signed  = $4;
-        pi->range      = $5;
-        curr_sig_width = NULL;
+        pi->type      = $2;
+        pi->is_signed = $4;
+        pi->range     = parser_copy_curr_range();
         $$ = pi;
       } else {
-        static_expr_dealloc( $5->left,  FALSE );
-        static_expr_dealloc( $5->right, FALSE );
-        free_safe( $5 );
         $$ = NULL;
       }
     }
@@ -348,17 +346,13 @@ port_declaration
     {
       port_info* pi;
       if( ignore_mode == 0 ) {
-        db_add_signal( $6, SSUPPL_TYPE_OUTPUT, $5->left, $5->right, FALSE, @6.first_line, @6.first_column );
+        db_add_signal( $6, SSUPPL_TYPE_OUTPUT, curr_range->left, curr_range->right, FALSE, @6.first_line, @6.first_column );
         pi = (port_info*)malloc_safe( sizeof( port_info ), __FILE__, __LINE__ );
-        pi->type       = SSUPPL_TYPE_OUTPUT;
-        pi->is_signed  = $4;
-        pi->range      = $5;
-        curr_sig_width = NULL;
+        pi->type      = SSUPPL_TYPE_OUTPUT;
+        pi->is_signed = $4;
+        pi->range     = parser_copy_curr_range();
         $$ = pi;
       } else {
-        static_expr_dealloc( $5->left,  FALSE );
-        static_expr_dealloc( $5->right, FALSE );
-        free_safe( $5 );
         $$ = NULL;
       }
     }
@@ -367,39 +361,23 @@ port_declaration
     {
       port_info* pi;
       if( ignore_mode == 0 ) {
-        db_add_signal( $6, SSUPPL_TYPE_OUTPUT, $5->left, $5->right, FALSE, @6.first_line, @6.first_column );
+        db_add_signal( $6, SSUPPL_TYPE_OUTPUT, curr_range->left, curr_range->right, FALSE, @6.first_line, @6.first_column );
         pi = (port_info*)malloc_safe( sizeof( port_info ), __FILE__, __LINE__ );
         pi->type       = SSUPPL_TYPE_OUTPUT;
         pi->is_signed  = $4;
-        pi->range      = $5;
-        curr_sig_width = NULL;
+        pi->range      = parser_copy_curr_range();
         $$ = pi;
       } else {
-        static_expr_dealloc( $5->left,  FALSE );
-        static_expr_dealloc( $5->right, FALSE );
-        free_safe( $5 );
         $$ = NULL;
       }
     }
   | attribute_list_opt port_type net_type_opt signed_opt range_opt error
     {
-      if( $5 != NULL ) {
-        static_expr_dealloc( $5->left, FALSE );
-        static_expr_dealloc( $5->right, FALSE );
-        free_safe( $5 );
-        curr_sig_width = NULL;
-      }
       VLerror( "Invalid variable list in port declaration" );
       $$ = NULL;
     }
   | attribute_list_opt K_output var_type signed_opt range_opt error
     {
-      if( $5 != NULL ) {
-        static_expr_dealloc( $5->left, FALSE );
-        static_expr_dealloc( $5->right, FALSE );
-        free_safe( $5 );
-        curr_sig_width = NULL;
-      }
       VLerror( "Invalid variable list in port declaration" );
       $$ = NULL;
     }
@@ -1628,71 +1606,35 @@ module_item
     {
       str_link*     tmp  = $4;
       str_link*     curr = tmp;
-      if( ($2 == 1) && ($3 != NULL) ) {
+      if( ($2 == 1) && (curr_range != NULL) ) {
         /* Creating signal(s) */
         while( curr != NULL ) {
-          db_add_signal( curr->str, SSUPPL_TYPE_DECLARED, $3->left, $3->right, FALSE, curr->suppl1, curr->suppl2 );
+          db_add_signal( curr->str, SSUPPL_TYPE_DECLARED, curr_range->left, curr_range->right, FALSE, curr->suppl1, curr->suppl2 );
           curr = curr->next;
         }
       }
       str_link_delete_list( $4 );
-      if( $3 != NULL ) {
-        static_expr_dealloc( $3->left,  FALSE );
-        static_expr_dealloc( $3->right, FALSE );
-        free_safe( $3 );
-        curr_sig_width = NULL;
-      }
     }
   | attribute_list_opt
     net_type range_opt net_decl_assigns ';'
-    {
-      if( curr_sig_width != NULL ) {
-        static_expr_dealloc( curr_sig_width->left, FALSE );
-        static_expr_dealloc( curr_sig_width->right, FALSE );
-        free_safe( curr_sig_width );
-        curr_sig_width = NULL;
-      }
-    }
   | attribute_list_opt
     net_type drive_strength
     {
-      static_expr*  left;
-      static_expr*  right;
       if( (ignore_mode == 0) && ($2 == 1) ) {
-        left = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
-        left->exp = NULL;
-        left->num = 0;
-        right = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
-        right->exp = NULL;
-        right->num = 0;
-        curr_sig_width = (vector_width*)malloc_safe( sizeof( vector_width ), __FILE__, __LINE__ );
-        curr_sig_width->left  = left;
-        curr_sig_width->right = right;
+        parser_implicitly_set_curr_range( 0, 0 );
       }
     }
     net_decl_assigns ';'
-    {
-      if( curr_sig_width != NULL ) {
-        static_expr_dealloc( curr_sig_width->left, FALSE );
-        static_expr_dealloc( curr_sig_width->right, FALSE );
-        free_safe( curr_sig_width );
-        curr_sig_width = NULL;
-      }
-    }
   | port_type range_opt list_of_variables ';'
     {
       /* Create signal -- implicitly this is a wire which may not be explicitly declared */
       str_link* tmp  = $3;
       str_link* curr = tmp;
       while( curr != NULL ) {
-        db_add_signal( curr->str, $1, $2->left, $2->right, FALSE, curr->suppl1, curr->suppl2 );
+        db_add_signal( curr->str, $1, curr_range->left, curr_range->right, FALSE, curr->suppl1, curr->suppl2 );
         curr = curr->next;
       }
       str_link_delete_list( $3 );
-      static_expr_dealloc( $2->left, FALSE );
-      static_expr_dealloc( $2->right, FALSE );
-      free_safe( $2 );
-      curr_sig_width = NULL;
     }
   /* Handles Verilog-2001 port of type:  input wire [m:l] <list>; */
   | port_type net_type range_opt list_of_variables ';'
@@ -1701,21 +1643,13 @@ module_item
       str_link* tmp  = $4;
       str_link* curr = tmp;
       while( curr != NULL ) {
-        db_add_signal( curr->str, $1, $3->left, $3->right, FALSE, curr->suppl1, curr->suppl2 );
+        db_add_signal( curr->str, $1, curr_range->left, curr_range->right, FALSE, curr->suppl1, curr->suppl2 );
         curr = curr->next;
       }
       str_link_delete_list( $4 );
-      static_expr_dealloc( $3->left, FALSE );
-      static_expr_dealloc( $3->right, FALSE );
-      free_safe( $3 );
-      curr_sig_width = NULL;
     }
   | port_type range_opt error ';'
     {
-      if( $2 != NULL ) {
-        free_safe( $2 );
-        curr_sig_width = NULL;
-      }
       VLerror( "Invalid variable list in port declaration" );
     }
   | K_trireg charge_strength_opt range_opt delay3_opt list_of_variables ';'
@@ -1723,14 +1657,10 @@ module_item
       str_link* tmp  = $5;
       str_link* curr = tmp;
       while( curr != NULL ) {
-        db_add_signal( curr->str, SSUPPL_TYPE_DECLARED, $3->left, $3->right, FALSE, curr->suppl1, curr->suppl2 );
+        db_add_signal( curr->str, SSUPPL_TYPE_DECLARED, curr_range->left, curr_range->right, FALSE, curr->suppl1, curr->suppl2 );
         curr = curr->next;
       }
       str_link_delete_list( $5 );
-      static_expr_dealloc( $3->left, FALSE );
-      static_expr_dealloc( $3->right, FALSE );
-      free_safe( $3 );
-      curr_sig_width = NULL;
     }
   | attribute_list_opt gatetype gate_instance_list ';'
     {
@@ -1871,14 +1801,9 @@ module_item
       if( ignore_mode == 0 ) {
         if( db_add_function_task_namedblock( FUNIT_FUNCTION, $3, @3.text, @3.first_line ) ) {
           snprintf( tmp, 256, "%s", $3 );
-          db_add_signal( tmp, SSUPPL_TYPE_IMPLICIT, $2->left, $2->right, FALSE, @3.first_line, @3.first_column );
-          static_expr_dealloc( $2->left, FALSE );
-          static_expr_dealloc( $2->right, FALSE );
+          db_add_signal( tmp, SSUPPL_TYPE_IMPLICIT, curr_range->left, curr_range->right, FALSE, @3.first_line, @3.first_column );
         } else {
           ignore_mode++;
-        }
-        if( $2 != NULL ) {
-          free_safe( $2 );
         }
         if( $3 != NULL ) {
           free_safe( $3 );
@@ -2901,13 +2826,10 @@ block_item_decl
       str_link* curr = tmp;
       if( ignore_mode == 0 ) {
         while( curr != NULL ) {
-          db_add_signal( curr->str, SSUPPL_TYPE_DECLARED, $2->left, $2->right, FALSE, curr->suppl1, curr->suppl2 );
+          db_add_signal( curr->str, SSUPPL_TYPE_DECLARED, curr_range->left, curr_range->right, FALSE, curr->suppl1, curr->suppl2 );
           curr = curr->next;
         }
         str_link_delete_list( tmp );
-        static_expr_dealloc( $2->left, FALSE );
-        static_expr_dealloc( $2->right, FALSE );
-        free_safe( $2 );
       }
     }
   | K_reg register_variable_list ';'
@@ -2936,13 +2858,10 @@ block_item_decl
       str_link* curr = tmp;
       if( ignore_mode == 0 ) {
         while( curr != NULL ) {
-          db_add_signal( curr->str, SSUPPL_TYPE_DECLARED, $3->left, $3->right, FALSE, curr->suppl1, curr->suppl2 );
+          db_add_signal( curr->str, SSUPPL_TYPE_DECLARED, curr_range->left, curr_range->right, FALSE, curr->suppl1, curr->suppl2 );
           curr = curr->next;
         }
         str_link_delete_list( tmp );
-        static_expr_dealloc( $3->left, FALSE );
-        static_expr_dealloc( $3->right, FALSE );
-        free_safe( $3 );
       }
     }
   | K_reg K_signed register_variable_list ';'
@@ -3379,28 +3298,10 @@ assign
 
 range_opt
   : range
-    {
-      $$ = $1;
-    }
   |
     {
-      vector_width* tmp;
-      static_expr*  left;
-      static_expr*  right;
       if( ignore_mode == 0 ) {
-        left = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
-        left->exp = NULL;
-        left->num = 0;
-        right = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
-        right->exp = NULL;
-        right->num = 0;
-        tmp = (vector_width*)malloc_safe( sizeof( vector_width ), __FILE__, __LINE__ );
-        tmp->left  = left;
-        tmp->right = right;
-        curr_sig_width = tmp;
-        $$ = tmp;
-      } else {
-        $$ = NULL;
+        parser_implicitly_set_curr_range( 0, 0 );
       }
     }
   ;
@@ -3408,85 +3309,32 @@ range_opt
 range
   : '[' static_expr ':' static_expr ']'
     {
-      vector_width* tmp;
       if( ignore_mode == 0 ) {
-        tmp = (vector_width*)malloc_safe( sizeof( vector_width ), __FILE__, __LINE__ );
-        tmp->left  = $2;
-        tmp->right = $4;
-        curr_sig_width = tmp;
-        $$ = tmp;
-      } else {
-        $$ = NULL;
+        parser_explicitly_set_curr_range( $2, $4 );
       }
     }
   ;
 
 range_or_type_opt
   : range      
-    { 
-      $$ = $1;
-    }
   | K_integer
     {
-      vector_width* tmp;
-      static_expr*  left;
-      static_expr*  right;
       if( ignore_mode == 0 ) {
-        left = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
-        left->exp = NULL;
-        left->num = 31;
-        right = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
-        right->exp = NULL;
-        right->num = 0;
-        tmp = (vector_width*)malloc_safe( sizeof( vector_width ), __FILE__, __LINE__ );
-        tmp->left  = left;
-        tmp->right = right;
-        curr_sig_width = tmp;
-        $$ = tmp;
-      } else {
-        $$ = NULL;
+        parser_implicitly_set_curr_range( 31, 0 );
       }
     }
-  | K_real     { $$ = NULL; }
-  | K_realtime { $$ = NULL; }
+  | K_real
+  | K_realtime
   | K_time
     {
-      vector_width* tmp;
-      static_expr*  left;
-      static_expr*  right;
       if( ignore_mode == 0 ) {
-        left = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
-        left->exp = NULL;
-        left->num = 63;
-        right = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
-        right->exp = NULL;
-        right->num = 0;
-        tmp = (vector_width*)malloc_safe( sizeof( vector_width ), __FILE__, __LINE__ );
-        tmp->left  = left;
-        tmp->right = right;
-        $$ = tmp;
-      } else {
-        $$ = NULL;
+        parser_implicitly_set_curr_range( 63, 0 );
       }
     }
   |
     {
-      vector_width* tmp;
-      static_expr*  left;
-      static_expr*  right;
       if( ignore_mode == 0 ) {
-        left = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
-        left->exp = NULL;
-        left->num = 0;
-        right = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
-        right->exp = NULL;
-        right->num = 0;
-        tmp = (vector_width*)malloc_safe( sizeof( vector_width ), __FILE__, __LINE__ );
-        tmp->left  = left;
-        tmp->right = right;
-        $$ = tmp;
-      } else {
-        $$ = NULL;
+        parser_implicitly_set_curr_range( 0, 0 );
       }
     }
   ;
@@ -3586,14 +3434,10 @@ task_item
         str_link* tmp  = $3;
         str_link* curr = tmp;
         while( curr != NULL ) {
-          db_add_signal( curr->str, $1, $2->left, $2->right, FALSE, curr->suppl1, curr->suppl2 );
+          db_add_signal( curr->str, $1, curr_range->left, curr_range->right, FALSE, curr->suppl1, curr->suppl2 );
           curr = curr->next;
         }
         str_link_delete_list( $3 );
-        static_expr_dealloc( $2->left, FALSE );
-        static_expr_dealloc( $2->right, FALSE );
-        free_safe( $2 );
-        curr_sig_width = NULL;
       }
     }
   ;
@@ -3635,8 +3479,8 @@ net_decl_assign
     {
       expression* tmp;
       statement*  stmt;
-      if( (ignore_mode == 0) && ($1 != NULL) && (curr_sig_width != NULL) && !flag_exclude_assign ) {
-        db_add_signal( $1, SSUPPL_TYPE_DECLARED, curr_sig_width->left, curr_sig_width->right, FALSE, @1.first_line, @1.first_column );
+      if( (ignore_mode == 0) && ($1 != NULL) && (curr_range != NULL) && !flag_exclude_assign ) {
+        db_add_signal( $1, SSUPPL_TYPE_DECLARED, curr_range->left, curr_range->right, FALSE, @1.first_line, @1.first_column );
         if( $3 != NULL ) {
           tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
           tmp  = db_create_expression( $3, tmp, EXP_OP_DASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
@@ -3661,8 +3505,8 @@ net_decl_assign
     {
       expression* tmp;
       statement*  stmt;
-      if( (ignore_mode == 0) && ($2 != NULL) && (curr_sig_width != NULL) && !flag_exclude_assign ) {
-        db_add_signal( $2, SSUPPL_TYPE_DECLARED, curr_sig_width->left, curr_sig_width->right, FALSE, @2.first_line, @2.first_column );
+      if( (ignore_mode == 0) && ($2 != NULL) && (curr_range != NULL) && !flag_exclude_assign ) {
+        db_add_signal( $2, SSUPPL_TYPE_DECLARED, curr_range->left, curr_range->right, FALSE, @2.first_line, @2.first_column );
         if( $4 != NULL ) {
           tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @2.first_line, @2.first_column, (@2.last_column - 1), $2 );
           tmp  = db_create_expression( $4, tmp, EXP_OP_DASSIGN, FALSE, @2.first_line, @2.first_column, (@4.last_column - 1), NULL );
@@ -3851,12 +3695,6 @@ defparam_assign_list
     }
   | range defparam_assign
     {
-      if( $1 != NULL ) {
-        static_expr_dealloc( $1->left,  FALSE );
-        static_expr_dealloc( $1->right, FALSE );
-        free_safe( $1 );
-        curr_sig_width = NULL;
-      }
       $$ = 0;
     }
   | defparam_assign_list ',' defparam_assign
@@ -4029,14 +3867,10 @@ function_item
         str_link* tmp  = $3;
         str_link* curr = tmp;
         while( curr != NULL ) {
-          db_add_signal( curr->str, SSUPPL_TYPE_INPUT, $2->left, $2->right, FALSE, curr->suppl1, curr->suppl2 );
+          db_add_signal( curr->str, SSUPPL_TYPE_INPUT, curr_range->left, curr_range->right, FALSE, curr->suppl1, curr->suppl2 );
           curr = curr->next;
         }
         str_link_delete_list( $3 );
-        static_expr_dealloc( $2->left, FALSE );
-        static_expr_dealloc( $2->right, FALSE );
-        free_safe( $2 );
-        curr_sig_width = NULL;
       }
     }
   | block_item_decl
@@ -4044,14 +3878,6 @@ function_item
 
 parameter_assign_decl
   : signed_opt range_opt parameter_assign_list
-    {
-      if( $2 != NULL ) {
-        static_expr_dealloc( $2->left,  FALSE );
-        static_expr_dealloc( $2->right, FALSE );
-        free_safe( $2 );
-        curr_sig_width = NULL;
-      }
-    }
   ;
 
 parameter_assign_list
@@ -4062,7 +3888,11 @@ parameter_assign_list
 parameter_assign
   : IDENTIFIER '=' expression
     {
-      db_add_declared_param( $1, curr_sig_width->left, curr_sig_width->right, $3, FALSE );
+      /* If the size was not set by the user, the left number will be set to 0 but we need to change this to 31 */
+      if( curr_range->implicit ) {
+        curr_range->left->num = 31;
+      }
+      db_add_declared_param( $1, curr_range->left, curr_range->right, $3, FALSE );
       free_safe( $1 );
     }
   | UNUSED_IDENTIFIER '=' expression
@@ -4070,14 +3900,6 @@ parameter_assign
 
 localparam_assign_decl
   : signed_opt range_opt localparam_assign_list
-    {
-      if( $2 != NULL ) {
-        static_expr_dealloc( $2->left,  FALSE );
-        static_expr_dealloc( $2->right, FALSE );
-        free_safe( $2 );
-        curr_sig_width = NULL;
-      }
-    }
   ;
 
 localparam_assign_list
@@ -4088,7 +3910,11 @@ localparam_assign_list
 localparam_assign
   : IDENTIFIER '=' expression
     {
-      db_add_declared_param( $1, curr_sig_width->left, curr_sig_width->right, $3, TRUE );
+      /* If the size was not set by the user, the left number will be set to 0 but we need to change this to 31 */
+      if( curr_range->implicit ) {
+        curr_range->left->num = 31;
+      }
+      db_add_declared_param( $1, curr_range->left, curr_range->right, $3, TRUE );
       free_safe( $1 );
     }
   | UNUSED_IDENTIFIER '=' expression
