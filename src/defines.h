@@ -1590,6 +1590,8 @@ struct statistic_s {
 
 struct mod_parm_s {
   char*        name;                 /*!< Name of parameter */
+  static_expr* msb;                  /*!< Static expression containing the MSB of the module parameter */
+  static_expr* lsb;                  /*!< Static expression containing the LSB of the module parameter */
   expression*  expr;                 /*!< Expression tree containing value of parameter */
   psuppl       suppl;                /*!< Supplemental field */
   exp_link*    exp_head;             /*!< Pointer to head of expression list for dependents */
@@ -1600,9 +1602,8 @@ struct mod_parm_s {
 };
 
 struct inst_parm_s {
-  char*        name;                 /*!< Name of associated parameter */
+  vsignal*     sig;                  /*!< Name, MSB, LSB and vector value for this instance parameter */
   char*        inst_name;            /*!< Name of instance to which this structure belongs to */
-  vector*      value;                /*!< Pointer to value of instance parameter */
   mod_parm*    mparm;                /*!< Pointer to base module parameter */
   inst_parm*   next;                 /*!< Pointer to next instance parameter in list */
 };
@@ -1796,6 +1797,10 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.174  2006/01/31 16:41:00  phase1geo
+ Adding initial support and diagnostics for the variable multi-bit select
+ operators +: and -:.  More to come but full regression passes.
+
  Revision 1.173  2006/01/25 22:13:46  phase1geo
  Adding LXT-style dumpfile parsing support.  Everything is wired in but I still
  need to look at a problem at the end of the dumpfile -- I'm getting coredumps

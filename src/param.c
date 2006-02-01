@@ -117,6 +117,8 @@ void mod_parm_find_expr_and_remove( expression* exp, mod_parm* parm ) {
 
 /*!
  \param scope      Full hierarchical name of parameter value.
+ \param msb        Static expression containing the MSB of this module parameter.
+ \param lsb        Static expression containing the LSB of this module parameter.
  \param expr       Expression tree for current module parameter.
  \param type       Specifies type of module parameter (declared/override).
  \param funit      Functional unit to add this module parameter to.
@@ -127,7 +129,7 @@ void mod_parm_find_expr_and_remove( expression* exp, mod_parm* parm ) {
  Creates a new module parameter with the specified information and adds 
  it to the module parameter list.
 */
-mod_parm* mod_parm_add( char* scope, expression* expr, int type, func_unit* funit, char* inst_name ) {
+mod_parm* mod_parm_add( char* scope, static_expr* msb, static_expr* lsb, expression* expr, int type, func_unit* funit, char* inst_name ) {
 
   mod_parm*  parm;       /* Temporary pointer to instance parameter */
   mod_parm*  curr;       /* Pointer to current module parameter for ordering purposes */
@@ -180,6 +182,20 @@ mod_parm* mod_parm_add( char* scope, expression* expr, int type, func_unit* funi
   } else {
     parm->inst_name = NULL;
   }
+  if( msb != NULL ) {
+    parm->msb      = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
+    parm->msb->num = msb->num;
+    parm->msb->exp = msb->exp;
+  } else {
+    parm->msb = NULL;
+  }
+  if( lsb != NULL ) {
+    parm->lsb      = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
+    parm->lsb->num = lsb->num;
+    parm->lsb->exp = lsb->exp;
+  } else {
+    parm->lsb = NULL;
+  }
   parm->expr                  = expr;
   parm->expr->suppl.part.root = 1;
   parm->suppl.all             = 0;
@@ -227,8 +243,8 @@ void mod_parm_display( mod_parm* mparm ) {
 /*******************************************************************************/
 
 /*!
- \param name  Name of parameter value to find.
- \param parm  Pointer to head of instance parameter list to search.
+ \param name   Name of parameter value to find.
+ \param iparm  Pointer to head of instance parameter list to search.
 
  \return Returns pointer to found instance parameter or NULL if instance parameter is not
          found.
@@ -238,21 +254,23 @@ void mod_parm_display( mod_parm* mparm ) {
  the found instance parameter is returned to the calling function; otherwise, a value of NULL
  is returned if no match was found.
 */
-inst_parm* inst_parm_find( char* name, inst_parm* parm ) {
+inst_parm* inst_parm_find( char* name, inst_parm* iparm ) {
 
   assert( name != NULL );
 
-  while( (parm != NULL) && ((parm->name == NULL) || (strcmp( parm->name, name ) != 0)) ) {
-    parm = parm->next;
+  while( (iparm != NULL) && ((iparm->sig == NULL) || (iparm->sig->name == NULL) || (strcmp( iparm->sig->name, name ) != 0)) ) {
+    iparm = iparm->next;
   }
 
-  return( parm );
+  return( iparm );
  
 }
 
 /*!
  \param name       Name of parameter
  \param inst_name  Name of instance containing this parameter name
+ \param msb        Static expression containing the MSB of this instance parameter
+ \param lsb        Static expression containing the LSB of this instance parameter
  \param scope      Full hierarchical name of parameter value.
  \param value      Vector value of specified instance parameter.
  \param mparm      Pointer to module instance that this instance parameter is derived from.
@@ -264,39 +282,53 @@ inst_parm* inst_parm_find( char* name, inst_parm* parm ) {
  Creates a new instance parameter with the specified information and adds 
  it to the instance parameter list.
 */
-inst_parm* inst_parm_add( char* name, char* inst_name, vector* value, mod_parm* mparm, inst_parm** head, inst_parm** tail ) {
+inst_parm* inst_parm_add( char* name, char* inst_name, static_expr* msb, static_expr* lsb, vector* value,
+                          mod_parm* mparm, inst_parm** head, inst_parm** tail ) {
 
-  inst_parm* parm;    /* Temporary pointer to instance parameter */
+  inst_parm* iparm;      /* Temporary pointer to instance parameter */
+  int        sig_width;  /* Width of this parameter signal */
+  int        sig_lsb;    /* LSB of this parameter signal */
   
   assert( value != NULL );
 
   /* Create new signal/expression binding */
-  parm = (inst_parm*)malloc_safe( sizeof( inst_parm ), __FILE__, __LINE__ );
-  if( name != NULL ) {
-    parm->name = strdup_safe( name, __FILE__, __LINE__ );
-  } else {
-    parm->name = NULL;
-  }
+  iparm = (inst_parm*)malloc_safe( sizeof( inst_parm ), __FILE__, __LINE__ );
+
   if( inst_name != NULL ) {
-    parm->inst_name = strdup_safe( inst_name, __FILE__, __LINE__ );
+    iparm->inst_name = strdup_safe( inst_name, __FILE__, __LINE__ );
   } else {
-    parm->inst_name = NULL;
+    iparm->inst_name = NULL;
+  }
+
+  /* Get the width and LSB from the given MSB/LSB information */
+  static_expr_calc_lsb_and_width( msb, lsb, &sig_width, &sig_lsb );
+
+  /* If the parameter is sized too big, panic */
+  assert( sig_width <= MAX_BIT_WIDTH );
+
+  /* Create instance parameter signal */
+  if( (sig_lsb != -1) && (sig_width != -1) ) {
+    // iparm->sig = vsignal_create( name, SSUPPL_TYPE_DECLARED, sig_width, sig_lsb, 0, 0 );
+    iparm->sig = vsignal_create( name, SSUPPL_TYPE_DECLARED, value->width, 0, 0, 0 );
+  } else {
+    iparm->sig = vsignal_create( name, SSUPPL_TYPE_DECLARED, value->width, 0, 0, 0 );
   }
   
-  /* Create new value vector, copying the contents of the specified vector value */
-  vector_copy( value, &(parm->value) );
-  parm->mparm = mparm;
-  parm->next  = NULL;
+  /* Copy the contents of the specified vector value to the signal */
+  vector_set_value_only( iparm->sig->value, value->value, value->width, 0, 0 );
+
+  iparm->mparm = mparm;
+  iparm->next  = NULL;
 
   /* Now add the parameter to the current expression */
   if( *head == NULL ) {
-    *head = *tail = parm;
+    *head = *tail = iparm;
   } else {
-    (*tail)->next = parm;
-    *tail         = parm;
+    (*tail)->next = iparm;
+    *tail         = iparm;
   }
 
-  return( parm );
+  return( iparm );
 
 }
 
@@ -313,11 +345,21 @@ inst_parm* inst_parm_add( char* name, char* inst_name, vector* value, mod_parm* 
 */
 void defparam_add( char* scope, vector* value ) {
 
+  static_expr msb;  /* MSB of this defparam (forced to be 31) */
+  static_expr lsb;  /* LSB of this defparam (forced to be 0) */
+
   assert( scope != NULL );
 
   if( inst_parm_find( scope, defparam_head ) == NULL ) {
 
-    inst_parm_add( scope, NULL, value, NULL, &defparam_head, &defparam_tail );
+    /* Generate MSB and LSB information */
+    msb.num = 31;
+    msb.exp = NULL;
+    lsb.num = 0;
+    lsb.exp = NULL;
+
+    inst_parm_add( scope, NULL, &msb, &lsb, value, NULL, &defparam_head, &defparam_tail );
+
     vector_dealloc( value );
 
   } else {
@@ -381,7 +423,12 @@ void param_find_and_set_expr_value( expression* expr, funit_inst* inst ) {
     } else {
   
       /* Set the found instance parameter value to this expression */
-      expression_set_value( expr, icurr->value );
+      expression_set_value( expr, icurr->sig->value );
+
+      /* Cause expression/signal to point to each other */
+      expr->sig = icurr->sig;
+      
+      exp_link_add( expr, &(icurr->sig->exp_head), &(icurr->sig->exp_tail) );
 
     }
 
@@ -407,7 +454,7 @@ bool param_set_sig_size( vsignal* sig, inst_parm* icurr ) {
   assert( sig != NULL );
   assert( sig->name != NULL );
 
-  bit_sel = vector_to_int( icurr->value );
+  bit_sel = vector_to_int( icurr->sig->value );
 
   /* LSB gets set to first value found, we may adjust this later. */
   if( sig->lsb == -1 ) {
@@ -549,7 +596,8 @@ inst_parm* param_has_override( mod_parm* mparm, funit_inst* inst ) {
     while( (icurr != NULL) && 
            !((icurr->mparm->suppl.part.type == PARAM_TYPE_OVERRIDE) &&
              (mparm->suppl.part.type != PARAM_TYPE_DECLARED_LOCAL) &&
-             ((icurr->name != NULL) ? (strcmp( icurr->name, mparm->name ) == 0) : (mparm->suppl.part.order == icurr->mparm->suppl.part.order )) &&
+             ((icurr->sig->name != NULL) ? (strcmp( icurr->sig->name, mparm->name ) == 0) :
+                                           (mparm->suppl.part.order == icurr->mparm->suppl.part.order )) &&
              (strcmp( mod_inst->name, icurr->inst_name ) == 0)) ) {
       icurr = icurr->next;
     }
@@ -560,7 +608,7 @@ inst_parm* param_has_override( mod_parm* mparm, funit_inst* inst ) {
   if( icurr != NULL ) {
 
     /* Add new instance parameter to current instance */
-    parm = inst_parm_add( mparm->name, NULL, icurr->value, mparm, &(inst->param_head), &(inst->param_tail) );
+    parm = inst_parm_add( mparm->name, NULL, mparm->msb, mparm->lsb, icurr->sig->value, mparm, &(inst->param_head), &(inst->param_tail) );
 
   }
 
@@ -601,7 +649,7 @@ inst_parm* param_has_defparam( mod_parm* mparm, funit_inst* inst ) {
 
   icurr = defparam_head;
   while( (icurr != NULL) &&
-         !((strcmp( icurr->name, parm_scope ) == 0) &&
+         !((strcmp( icurr->sig->name, parm_scope ) == 0) &&
            (mparm->suppl.part.type != PARAM_TYPE_DECLARED_LOCAL)) ) {
     icurr = icurr->next;
   }
@@ -609,7 +657,7 @@ inst_parm* param_has_defparam( mod_parm* mparm, funit_inst* inst ) {
   if( icurr != NULL ) {
 
     /* Defparam found, use its value to create new instance parameter */
-    parm = inst_parm_add( mparm->name, NULL, icurr->value, mparm, &(inst->param_head), &(inst->param_tail) );
+    parm = inst_parm_add( mparm->name, NULL, mparm->msb, mparm->lsb, icurr->sig->value, mparm, &(inst->param_head), &(inst->param_tail) );
 
   }
 
@@ -651,7 +699,7 @@ void param_resolve_declared( mod_parm* mparm, funit_inst* inst ) {
     param_expr_eval( mparm->expr, inst );
 
     /* Now add the new instance parameter */
-    inst_parm_add( mparm->name, NULL, mparm->expr->value, mparm, &(inst->param_head), &(inst->param_tail) );
+    inst_parm_add( mparm->name, NULL, mparm->msb, mparm->lsb, mparm->expr->value, mparm, &(inst->param_head), &(inst->param_tail) );
 
   }
 
@@ -676,7 +724,7 @@ void param_resolve_override( mod_parm* oparm, funit_inst* inst ) {
   param_expr_eval( oparm->expr, inst );
 
   /* Add the new instance override parameter */
-  inst_parm_add( oparm->name, oparm->inst_name, oparm->expr->value, oparm, &(inst->param_head), &(inst->param_tail) );
+  inst_parm_add( oparm->name, oparm->inst_name, oparm->msb, oparm->lsb, oparm->expr->value, oparm, &(inst->param_head), &(inst->param_tail) );
 
 }
 
@@ -725,21 +773,22 @@ void param_resolve( funit_inst* inst ) {
 */
 void param_db_write( inst_parm* iparm, FILE* file, bool parse_mode ) {
 
-  exp_link* curr;      /* Pointer to current expression link element */
+  exp_link* curr;  /* Pointer to current expression link element */
 
   /*
    If the parameter does not have a name, it will not be used in expressions;
    therefore, there is no reason to output this parameter to the CDD file.
   */
-  if( iparm->name != NULL ) {
+  if( iparm->sig->name != NULL ) {
 
     /* Display identification and value information first */
-    fprintf( file, "%d #%s 0 0 0 ",
+    fprintf( file, "%d #%s %d 0 0 ",
       DB_TYPE_SIGNAL,
-      iparm->name
+      iparm->sig->name,
+      iparm->sig->lsb
     );
 
-    vector_db_write( iparm->value, file, TRUE );
+    vector_db_write( iparm->sig->value, file, TRUE );
 
     curr = iparm->mparm->exp_head;
     while( curr != NULL ) {
@@ -774,6 +823,10 @@ void mod_parm_dealloc( mod_parm* parm, bool recursive ) {
       mod_parm_dealloc( parm->next, recursive );
     }
 
+    /* Deallocate MSB and LSB static expressions */
+    static_expr_dealloc( parm->msb, FALSE );
+    static_expr_dealloc( parm->lsb, FALSE );
+
     /* Remove the attached expression tree */
     expression_dealloc( parm->expr, FALSE );
 
@@ -791,37 +844,32 @@ void mod_parm_dealloc( mod_parm* parm, bool recursive ) {
 }
 
 /*!
- \param parm       Pointer to instance parameter to remove
+ \param iparm      Pointer to instance parameter to remove
  \param recursive  If TRUE, removes entire instance parameter list; otherwise, just remove me.
 
  Deallocates allocated memory from heap for the specified instance parameter.  If
  the value of recursive is set to TRUE, perform this deallocation for the entire
  list of instance parameters.
 */
-void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
+void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
-  if( parm != NULL ) {
+  if( iparm != NULL ) {
 
     /* If the user wants to deallocate the entire module parameter list, do so now */
     if( recursive ) {
-      inst_parm_dealloc( parm->next, recursive );
+      inst_parm_dealloc( iparm->next, recursive );
     }
 
-    /* Deallocate parameter name, if specified */
-    if( parm->name != NULL ) {
-      free_safe( parm->name );
-    }
+    /* Deallocate parameter signal */
+    vsignal_dealloc( iparm->sig );
 
     /* Deallocate instance name, if specified */
-    if( parm->inst_name != NULL ) {
-      free_safe( parm->inst_name );
+    if( iparm->inst_name != NULL ) {
+      free_safe( iparm->inst_name );
     }
     
-    /* Deallocate parameter value */
-    vector_dealloc( parm->value );
-    
     /* Deallocate parameter itself */
-    free_safe( parm );
+    free_safe( iparm );
 
   }
 
@@ -830,6 +878,10 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.53  2006/01/31 16:41:00  phase1geo
+ Adding initial support and diagnostics for the variable multi-bit select
+ operators +: and -:.  More to come but full regression passes.
+
  Revision 1.52  2006/01/25 04:32:47  phase1geo
  Fixing bug with latest checkins.  Full regression is now passing for IV simulated
  diagnostics.

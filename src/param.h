@@ -20,7 +20,7 @@ mod_parm* mod_parm_find( char* name, mod_parm* parm );
 void mod_parm_find_expr_and_remove( expression* exp, mod_parm* parm );
 
 /*! \brief Creates new module parameter and adds it to the specified list. */
-mod_parm* mod_parm_add( char* scope, expression* expr, int type, func_unit* funit, char* inst_name );
+mod_parm* mod_parm_add( char* scope, static_expr* msb, static_expr* lsb, expression* expr, int type, func_unit* funit, char* inst_name );
 
 /*! \brief Outputs contents of module parameter list to standard output. */
 void mod_parm_display( mod_parm* mparm );
@@ -29,7 +29,8 @@ void mod_parm_display( mod_parm* mparm );
 inst_parm* inst_parm_find( char* name, inst_parm* parm );
 
 /*! \brief Creates and adds new instance parameter to specified instance parameter list. */
-inst_parm* inst_parm_add( char* name, char* inst_name, vector* value, mod_parm* mparm, inst_parm** head, inst_parm** tail );
+inst_parm* inst_parm_add( char* name, char* inst_name, static_expr* msb, static_expr* lsb, vector* value,
+                          mod_parm* mparm, inst_parm** head, inst_parm** tail );
 
 /*! \brief Adds parameter override to defparam list. */
 void defparam_add( char* scope, vector* expr );
@@ -64,6 +65,11 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive );
 
 /*
  $Log$
+ Revision 1.20  2006/01/24 23:24:38  phase1geo
+ More updates to handle static functions properly.  I have redone quite a bit
+ of code here which has regressions pretty broke at the moment.  More work
+ to do but I'm checkpointing.
+
  Revision 1.19  2006/01/20 22:44:51  phase1geo
  Moving parameter resolution to post-bind stage to allow static functions to
  be considered.  Regression passes without static function testing.  Static

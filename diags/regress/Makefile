@@ -100,7 +100,8 @@ IVONLYDIAGS4  =
 
 VCSONLYDIAGS1 = always7.1       assign2.4       assign2.5       assign2.6       assign2.7 \
                 event1          exponent1       gate1.1         implicit2.1     mbit_sel5 \
-                mbit_sel5.1     mbit_sel5.2     mbit_sel5.3     mbit_sel6       real1 \
+                mbit_sel5.1     mbit_sel5.2     mbit_sel5.3     mbit_sel5.4     mbit_sel6 \
+                real1 \
                 static_func1    static_func1.1  triand          trior           trireg \
                 wand            wor
 VCSONLYDIAGS2 = 

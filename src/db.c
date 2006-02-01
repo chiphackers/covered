@@ -618,6 +618,8 @@ void db_end_function_task_namedblock( int end_line ) {
 
 /*!
  \param name   Name of declared parameter to add.
+ \param msb    Static expression containing MSB of this declared parameter
+ \param lsb    Static expression containing LSB of this declared parameter
  \param expr   Expression containing value of this parameter.
  \param local  If TRUE, specifies that this parameter is a local parameter.
 
@@ -625,7 +627,7 @@ void db_end_function_task_namedblock( int end_line ) {
  used in the module.  If the parameter name has not been found, it is created added to
  the current module's parameter list.
 */
-void db_add_declared_param( char* name, expression* expr, bool local ) {
+void db_add_declared_param( char* name, static_expr* msb, static_expr* lsb, expression* expr, bool local ) {
 
   mod_parm* mparm;  /* Pointer to added module parameter */
 
@@ -642,7 +644,7 @@ void db_add_declared_param( char* name, expression* expr, bool local ) {
     if( mod_parm_find( name, curr_funit->param_head ) == NULL ) {
 
       /* Add parameter to module parameter list */
-      mparm = mod_parm_add( name, expr, (local ? PARAM_TYPE_DECLARED_LOCAL : PARAM_TYPE_DECLARED), curr_funit, NULL );
+      mparm = mod_parm_add( name, msb, lsb, expr, (local ? PARAM_TYPE_DECLARED_LOCAL : PARAM_TYPE_DECLARED), curr_funit, NULL );
 
     }
 
@@ -672,7 +674,7 @@ void db_add_override_param( char* inst_name, expression* expr, char* param_name 
 #endif
 
   /* Add override parameter to module parameter list */
-  mparm = mod_parm_add( param_name, expr, PARAM_TYPE_OVERRIDE, curr_funit, inst_name );
+  mparm = mod_parm_add( param_name, NULL, NULL, expr, PARAM_TYPE_OVERRIDE, curr_funit, inst_name );
 
 }
 
@@ -697,7 +699,7 @@ void db_add_vector_param( vsignal* sig, expression* parm_exp, int type ) {
 #endif
 
   /* Add signal vector parameter to module parameter list */
-  mparm = mod_parm_add( NULL, parm_exp, type, curr_funit, NULL );
+  mparm = mod_parm_add( NULL, NULL, NULL, parm_exp, type, curr_funit, NULL );
 
   /* Add signal to module parameter list */
   mparm->sig = sig;
@@ -1648,6 +1650,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.171  2006/01/31 16:41:00  phase1geo
+ Adding initial support and diagnostics for the variable multi-bit select
+ operators +: and -:.  More to come but full regression passes.
+
  Revision 1.170  2006/01/26 22:40:13  phase1geo
  Fixing last LXT bug.
 

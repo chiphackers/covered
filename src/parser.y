@@ -3026,8 +3026,8 @@ block_item_decl
       }
       str_link_delete_list( $2 );
     }
-  | K_parameter parameter_assign_list ';'
-  | K_localparam localparam_assign_list ';'
+  | K_parameter parameter_assign_decl ';'
+  | K_localparam localparam_assign_decl ';'
   | K_reg error ';'
     {
       VLerror( "Syntax error in reg variable list" );
@@ -3380,7 +3380,6 @@ assign
 range_opt
   : range
     {
-      curr_sig_width = $1;
       $$ = $1;
     }
   |
@@ -3414,6 +3413,7 @@ range
         tmp = (vector_width*)malloc_safe( sizeof( vector_width ), __FILE__, __LINE__ );
         tmp->left  = $2;
         tmp->right = $4;
+        curr_sig_width = tmp;
         $$ = tmp;
       } else {
         $$ = NULL;
@@ -4042,47 +4042,53 @@ function_item
   | block_item_decl
   ;
 
-parameter_assign_list
-  : parameter_assign
-  | range parameter_assign
+parameter_assign_decl
+  : signed_opt range_opt parameter_assign_list
     {
-      if( $1 != NULL ) {
-        static_expr_dealloc( $1->left,  FALSE );
-        static_expr_dealloc( $1->right, FALSE );
-        free_safe( $1 );
+      if( $2 != NULL ) {
+        static_expr_dealloc( $2->left,  FALSE );
+        static_expr_dealloc( $2->right, FALSE );
+        free_safe( $2 );
         curr_sig_width = NULL;
       }
     }
+  ;
+
+parameter_assign_list
+  : parameter_assign
   | parameter_assign_list ',' parameter_assign
   ;
 
 parameter_assign
   : IDENTIFIER '=' expression
     {
-      db_add_declared_param( $1, $3, FALSE );
+      db_add_declared_param( $1, curr_sig_width->left, curr_sig_width->right, $3, FALSE );
       free_safe( $1 );
     }
   | UNUSED_IDENTIFIER '=' expression
   ;
 
-localparam_assign_list
-  : localparam_assign
-  | range localparam_assign
+localparam_assign_decl
+  : signed_opt range_opt localparam_assign_list
     {
-      if( $1 != NULL ) {
-        static_expr_dealloc( $1->left,  FALSE );
-        static_expr_dealloc( $1->right, FALSE );
-        free_safe( $1 );
+      if( $2 != NULL ) {
+        static_expr_dealloc( $2->left,  FALSE );
+        static_expr_dealloc( $2->right, FALSE );
+        free_safe( $2 );
         curr_sig_width = NULL;
       }
     }
+  ;
+
+localparam_assign_list
+  : localparam_assign
   | localparam_assign_list ',' localparam_assign
   ;
 
 localparam_assign
   : IDENTIFIER '=' expression
     {
-      db_add_declared_param( $1, $3, TRUE );
+      db_add_declared_param( $1, curr_sig_width->left, curr_sig_width->right, $3, TRUE );
       free_safe( $1 );
     }
   | UNUSED_IDENTIFIER '=' expression

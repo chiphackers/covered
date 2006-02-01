@@ -78,7 +78,7 @@ vsignal* vsignal_create( char* name, int type, int width, int lsb, int line, int
 
   new_sig = (vsignal*)malloc_safe( sizeof( vsignal ), __FILE__, __LINE__ );
 
-  vsignal_init( new_sig, strdup_safe( name, __FILE__, __LINE__ ), type, vector_create( width, TRUE ), lsb, line, col );
+  vsignal_init( new_sig, ((name != NULL) ? strdup_safe( name, __FILE__, __LINE__ ) : NULL), type, vector_create( width, TRUE ), lsb, line, col );
 
   return( new_sig );
 
@@ -535,6 +535,10 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.19  2006/01/31 16:41:00  phase1geo
+ Adding initial support and diagnostics for the variable multi-bit select
+ operators +: and -:.  More to come but full regression passes.
+
  Revision 1.18  2006/01/23 17:23:28  phase1geo
  Fixing scope issues that came up when port assignment was added.  Full regression
  now passes.
