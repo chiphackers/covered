@@ -20,7 +20,8 @@ mod_parm* mod_parm_find( char* name, mod_parm* parm );
 void mod_parm_find_expr_and_remove( expression* exp, mod_parm* parm );
 
 /*! \brief Creates new module parameter and adds it to the specified list. */
-mod_parm* mod_parm_add( char* scope, static_expr* msb, static_expr* lsb, expression* expr, int type, func_unit* funit, char* inst_name );
+mod_parm* mod_parm_add( char* scope, static_expr* msb, static_expr* lsb, bool is_signed,
+                        expression* expr, int type, func_unit* funit, char* inst_name );
 
 /*! \brief Outputs contents of module parameter list to standard output. */
 void mod_parm_display( mod_parm* mparm );
@@ -29,7 +30,8 @@ void mod_parm_display( mod_parm* mparm );
 inst_parm* inst_parm_find( char* name, inst_parm* parm );
 
 /*! \brief Creates and adds new instance parameter to specified instance parameter list. */
-inst_parm* inst_parm_add( char* name, char* inst_name, static_expr* msb, static_expr* lsb, vector* value, mod_parm* mparm, funit_inst* inst );
+inst_parm* inst_parm_add( char* name, char* inst_name, static_expr* msb, static_expr* lsb, bool is_signed,
+                          vector* value, mod_parm* mparm, funit_inst* inst );
 
 /*! \brief Adds parameter override to defparam list. */
 void defparam_add( char* scope, vector* expr );
@@ -67,6 +69,12 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive );
 
 /*
  $Log$
+ Revision 1.22  2006/02/01 19:58:28  phase1geo
+ More updates to allow parsing of various parameter formats.  At this point
+ I believe full parameter support is functional.  Regression has been updated
+ which now completely passes.  A few new diagnostics have been added to the
+ testsuite to verify additional functionality that is supported.
+
  Revision 1.21  2006/02/01 15:13:11  phase1geo
  Added support for handling bit selections in RHS parameter calculations.  New
  mbit_sel5.4 diagnostic added to verify this change.  Added the start of a

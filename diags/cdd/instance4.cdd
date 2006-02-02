@@ -1,15 +1,15 @@
 5 1 * 6 0 0 0 0
 3 0 main main instance4.v 1 21
-1 b 0 3 3000a 1 0 102
 1 a 0 3 30007 1 0 1102
+1 b 0 3 3000a 1 0 102
 3 0 foobar main.foo instance4.v 24 33
 2 1 29 f000f 2 1 c 0 0 c
 2 2 29 b000b 3 1 c 0 0 b
 2 3 29 b000f 3 9 201cc 1 2 1 0 102
 2 4 29 70007 0 1 400 0 0 a
 2 5 29 7000f 2 35 f00e 3 4
-1 c 0 26 a 1 0 102
 1 b 0 26 7 1 0 1102
+1 c 0 26 a 1 0 102
 1 a 0 27 30007 1 0 102
 4 5 5 5
 3 0 fooman main.foo.foo instance4.v 36 44

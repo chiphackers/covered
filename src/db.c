@@ -617,17 +617,18 @@ void db_end_function_task_namedblock( int end_line ) {
 }
 
 /*!
- \param name   Name of declared parameter to add.
- \param msb    Static expression containing MSB of this declared parameter
- \param lsb    Static expression containing LSB of this declared parameter
- \param expr   Expression containing value of this parameter.
- \param local  If TRUE, specifies that this parameter is a local parameter.
+ \param is_signed  Specified if the declared parameter needs to be handled as a signed value
+ \param msb        Static expression containing MSB of this declared parameter
+ \param lsb        Static expression containing LSB of this declared parameter
+ \param name       Name of declared parameter to add.
+ \param expr       Expression containing value of this parameter.
+ \param local      If TRUE, specifies that this parameter is a local parameter.
 
  Searches current module to verify that specified parameter name has not been previously
  used in the module.  If the parameter name has not been found, it is created added to
  the current module's parameter list.
 */
-void db_add_declared_param( char* name, static_expr* msb, static_expr* lsb, expression* expr, bool local ) {
+void db_add_declared_param( bool is_signed, static_expr* msb, static_expr* lsb, char* name, expression* expr, bool local ) {
 
   mod_parm* mparm;  /* Pointer to added module parameter */
 
@@ -644,7 +645,7 @@ void db_add_declared_param( char* name, static_expr* msb, static_expr* lsb, expr
     if( mod_parm_find( name, curr_funit->param_head ) == NULL ) {
 
       /* Add parameter to module parameter list */
-      mparm = mod_parm_add( name, msb, lsb, expr, (local ? PARAM_TYPE_DECLARED_LOCAL : PARAM_TYPE_DECLARED), curr_funit, NULL );
+      mparm = mod_parm_add( name, msb, lsb, is_signed, expr, (local ? PARAM_TYPE_DECLARED_LOCAL : PARAM_TYPE_DECLARED), curr_funit, NULL );
 
     }
 
@@ -674,7 +675,7 @@ void db_add_override_param( char* inst_name, expression* expr, char* param_name 
 #endif
 
   /* Add override parameter to module parameter list */
-  mparm = mod_parm_add( param_name, NULL, NULL, expr, PARAM_TYPE_OVERRIDE, curr_funit, inst_name );
+  mparm = mod_parm_add( param_name, NULL, NULL, FALSE, expr, PARAM_TYPE_OVERRIDE, curr_funit, inst_name );
 
 }
 
@@ -699,7 +700,7 @@ void db_add_vector_param( vsignal* sig, expression* parm_exp, int type ) {
 #endif
 
   /* Add signal vector parameter to module parameter list */
-  mparm = mod_parm_add( NULL, NULL, NULL, parm_exp, type, curr_funit, NULL );
+  mparm = mod_parm_add( NULL, NULL, NULL, FALSE, parm_exp, type, curr_funit, NULL );
 
   /* Add signal to module parameter list */
   mparm->sig = sig;
@@ -727,13 +728,14 @@ void db_add_defparam( char* name, expression* expr ) {
 }
 
 /*!
- \param name    Name of signal being added.
- \param type    Type of signal being added.
- \param left    Specifies constant value for calculation of left-hand vector value.
- \param right   Specifies constant value for calculation of right-hand vector value.
- \param mba     Set to TRUE if specified signal must be assigned by simulated results.
- \param line    Line number where signal was declared.
- \param col     Starting column where signal was declared.
+ \param name       Name of signal being added.
+ \param type       Type of signal being added.
+ \param left       Specifies constant value for calculation of left-hand vector value.
+ \param right      Specifies constant value for calculation of right-hand vector value.
+ \param is_signed  Specifies that this signal is signed (TRUE) or not (FALSE)
+ \param mba        Set to TRUE if specified signal must be assigned by simulated results.
+ \param line       Line number where signal was declared.
+ \param col        Starting column where signal was declared.
 
  Creates a new signal with the specified parameter information and adds this
  to the signal list if it does not already exist.  If width == 0, the sig_msb
@@ -741,7 +743,7 @@ void db_add_defparam( char* name, expression* expr ) {
  add to the current module's parameter list and all associated instances are
  updated to contain new value.
 */
-void db_add_signal( char* name, int type, static_expr* left, static_expr* right, bool mba, int line, int col ) {
+void db_add_signal( char* name, int type, static_expr* left, static_expr* right, bool is_signed, bool mba, int line, int col ) {
 
   vsignal  tmpsig;  /* Temporary signal for signal searching */
   vsignal* sig;     /* Container for newly created signal */
@@ -791,6 +793,9 @@ void db_add_signal( char* name, int type, static_expr* left, static_expr* right,
       sig->value->suppl.part.mba      = 1;
       sig->value->suppl.part.assigned = 1;
     }
+
+    /* Indicate signed attribute */
+    sig->value->suppl.part.is_signed = is_signed;
 
   }
   
@@ -1650,6 +1655,11 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.172  2006/02/01 15:13:10  phase1geo
+ Added support for handling bit selections in RHS parameter calculations.  New
+ mbit_sel5.4 diagnostic added to verify this change.  Added the start of a
+ regression utility that will eventually replace the old Makefile system.
+
  Revision 1.171  2006/01/31 16:41:00  phase1geo
  Adding initial support and diagnostics for the variable multi-bit select
  operators +: and -:.  More to come but full regression passes.

@@ -297,10 +297,12 @@ bool arc_set_states( char* arcs, int start, vector* left, vector* right ) {
         pos         = (arc_get_width( arcs ) + ARC_ENTRY_SUPPL_SIZE) % 8;
         curr        = (start * entry_size) + ((arc_get_width( arcs ) + ARC_ENTRY_SUPPL_SIZE) / 8) + ARC_STATUS_SIZE;
         value.value = left->value;
+        value.suppl = left->suppl;
       } else {
         pos         = ARC_ENTRY_SUPPL_SIZE;
         curr        = (start * entry_size) + ARC_STATUS_SIZE;
         value.value = right->value;
+        value.suppl = right->suppl;
       }
 
       value.width = (arc_get_width( arcs ) > (8 - pos)) ? (8 - pos) : arc_get_width( arcs );
@@ -1258,6 +1260,11 @@ void arc_dealloc( char* arcs ) {
 
 /*
  $Log$
+ Revision 1.27  2005/12/21 22:30:54  phase1geo
+ More updates to memory leak fix list.  We are getting close!  Added some helper
+ scripts/rules to more easily debug valgrind memory leak errors.  Also added suppression
+ file for valgrind for a memory leak problem that exists in lex-generated code.
+
  Revision 1.26  2005/02/05 04:13:27  phase1geo
  Started to add reporting capabilities for race condition information.  Modified
  race condition reason calculation and handling.  Ran -Wall on all code and cleaned

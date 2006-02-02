@@ -1592,6 +1592,7 @@ struct mod_parm_s {
   char*        name;                 /*!< Name of parameter */
   static_expr* msb;                  /*!< Static expression containing the MSB of the module parameter */
   static_expr* lsb;                  /*!< Static expression containing the LSB of the module parameter */
+  bool         is_signed;            /*!< Specifies if the module parameter was labeled as signed */
   expression*  expr;                 /*!< Expression tree containing value of parameter */
   psuppl       suppl;                /*!< Supplemental field */
   exp_link*    exp_head;             /*!< Pointer to head of expression list for dependents */
@@ -1798,6 +1799,12 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.176  2006/02/01 19:58:28  phase1geo
+ More updates to allow parsing of various parameter formats.  At this point
+ I believe full parameter support is functional.  Regression has been updated
+ which now completely passes.  A few new diagnostics have been added to the
+ testsuite to verify additional functionality that is supported.
+
  Revision 1.175  2006/02/01 15:13:11  phase1geo
  Added support for handling bit selections in RHS parameter calculations.  New
  mbit_sel5.4 diagnostic added to verify this change.  Added the start of a

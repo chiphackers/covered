@@ -124,6 +124,7 @@ void mod_parm_find_expr_and_remove( expression* exp, mod_parm* parm ) {
  \param scope      Full hierarchical name of parameter value.
  \param msb        Static expression containing the MSB of this module parameter.
  \param lsb        Static expression containing the LSB of this module parameter.
+ \param is_signed  Specifies if this parameter needs to be handled as a signed value.
  \param expr       Expression tree for current module parameter.
  \param type       Specifies type of module parameter (declared/override).
  \param funit      Functional unit to add this module parameter to.
@@ -134,7 +135,8 @@ void mod_parm_find_expr_and_remove( expression* exp, mod_parm* parm ) {
  Creates a new module parameter with the specified information and adds 
  it to the module parameter list.
 */
-mod_parm* mod_parm_add( char* scope, static_expr* msb, static_expr* lsb, expression* expr, int type, func_unit* funit, char* inst_name ) {
+mod_parm* mod_parm_add( char* scope, static_expr* msb, static_expr* lsb, bool is_signed,
+                        expression* expr, int type, func_unit* funit, char* inst_name ) {
 
   mod_parm*  parm;       /* Temporary pointer to instance parameter */
   mod_parm*  curr;       /* Pointer to current module parameter for ordering purposes */
@@ -207,6 +209,7 @@ mod_parm* mod_parm_add( char* scope, static_expr* msb, static_expr* lsb, express
   } else {
     parm->lsb = NULL;
   }
+  parm->is_signed             = is_signed;
   parm->expr                  = expr;
   parm->expr->suppl.part.root = 1;
   parm->suppl.all             = 0;
@@ -306,7 +309,8 @@ inst_parm* inst_parm_find( char* name, inst_parm* iparm ) {
  Creates a new instance parameter with the specified information and adds 
  it to the instance parameter list.
 */
-inst_parm* inst_parm_add( char* name, char* inst_name, static_expr* msb, static_expr* lsb, vector* value, mod_parm* mparm, funit_inst* inst ) {
+inst_parm* inst_parm_add( char* name, char* inst_name, static_expr* msb, static_expr* lsb, bool is_signed,
+                          vector* value, mod_parm* mparm, funit_inst* inst ) {
 
   inst_parm* iparm;      /* Temporary pointer to instance parameter */
   int        sig_width;  /* Width of this parameter signal */
@@ -368,6 +372,9 @@ inst_parm* inst_parm_add( char* name, char* inst_name, static_expr* msb, static_
 
   /* Create instance parameter signal */
   iparm->sig = vsignal_create( name, SSUPPL_TYPE_DECLARED, sig_width, sig_lsb, 0, 0 );
+
+  /* Store signed attribute for this vector */
+  iparm->sig->value->suppl.part.is_signed = is_signed;
   
   /* Copy the contents of the specified vector value to the signal */
   vector_set_value_only( iparm->sig->value, value->value, value->width, 0, 0 );
@@ -420,7 +427,7 @@ void defparam_add( char* scope, vector* value ) {
     lsb.num = 0;
     lsb.exp = NULL;
 
-    inst_parm_add( scope, NULL, &msb, &lsb, value, NULL, defparam_list );
+    inst_parm_add( scope, NULL, &msb, &lsb, FALSE, value, NULL, defparam_list );
 
     vector_dealloc( value );
 
@@ -678,7 +685,7 @@ inst_parm* param_has_override( mod_parm* mparm, funit_inst* inst ) {
   if( icurr != NULL ) {
 
     /* Add new instance parameter to current instance */
-    parm = inst_parm_add( mparm->name, NULL, mparm->msb, mparm->lsb, icurr->sig->value, mparm, inst );
+    parm = inst_parm_add( mparm->name, NULL, mparm->msb, mparm->lsb, mparm->is_signed, icurr->sig->value, mparm, inst );
 
   }
 
@@ -730,7 +737,7 @@ inst_parm* param_has_defparam( mod_parm* mparm, funit_inst* inst ) {
     if( icurr != NULL ) {
 
       /* Defparam found, use its value to create new instance parameter */
-      parm = inst_parm_add( mparm->name, NULL, mparm->msb, mparm->lsb, icurr->sig->value, mparm, inst );
+      parm = inst_parm_add( mparm->name, NULL, mparm->msb, mparm->lsb, mparm->is_signed, icurr->sig->value, mparm, inst );
 
     }
 
@@ -774,7 +781,7 @@ void param_resolve_declared( mod_parm* mparm, funit_inst* inst ) {
     param_expr_eval( mparm->expr, inst );
 
     /* Now add the new instance parameter */
-    inst_parm_add( mparm->name, NULL, mparm->msb, mparm->lsb, mparm->expr->value, mparm, inst );
+    inst_parm_add( mparm->name, NULL, mparm->msb, mparm->lsb, mparm->is_signed, mparm->expr->value, mparm, inst );
 
   }
 
@@ -799,7 +806,7 @@ void param_resolve_override( mod_parm* oparm, funit_inst* inst ) {
   param_expr_eval( oparm->expr, inst );
 
   /* Add the new instance override parameter */
-  inst_parm_add( oparm->name, oparm->inst_name, oparm->msb, oparm->lsb, oparm->expr->value, oparm, inst );
+  inst_parm_add( oparm->name, oparm->inst_name, oparm->msb, oparm->lsb, oparm->is_signed, oparm->expr->value, oparm, inst );
 
 }
 
@@ -953,6 +960,12 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.55  2006/02/01 19:58:28  phase1geo
+ More updates to allow parsing of various parameter formats.  At this point
+ I believe full parameter support is functional.  Regression has been updated
+ which now completely passes.  A few new diagnostics have been added to the
+ testsuite to verify additional functionality that is supported.
+
  Revision 1.54  2006/02/01 15:13:11  phase1geo
  Added support for handling bit selections in RHS parameter calculations.  New
  mbit_sel5.4 diagnostic added to verify this change.  Added the start of a

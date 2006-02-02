@@ -939,6 +939,13 @@ int vector_to_int( vector* vec ) {
     }
   }
 
+  /* If the vector is signed, sign-extend the integer */
+  if( vec->suppl.part.is_signed == 1 ) {
+    for( i=width; i<(SIZEOF_INT * 8); i++ ) {
+      retval = (retval << 1) | vec->value[width-1].part.value;
+    }
+  }
+
   return( retval );
 
 }
@@ -964,6 +971,9 @@ void vector_from_int( vector* vec, int value ) {
     vec->value[i].part.value = (value & 0x1);
     value >>= 1;
   }
+
+  /* Because this value came from an integer, specify that the vector is signed */
+  vec->suppl.part.is_signed = 1;
 
 }
 
@@ -1139,9 +1149,13 @@ char* vector_to_string( vector* vec ) {
     tmp[pos] = '\0';
 
     snprintf( width_str, 20, "%d", vec->width );
-    str_size = strlen( width_str ) + 2 + strlen( tmp ) + 1;
+    str_size = strlen( width_str ) + 2 + strlen( tmp ) + 1 + vec->suppl.part.is_signed;
     str      = (char*)malloc_safe( str_size, __FILE__, __LINE__ );
-    snprintf( str, str_size, "%d'%c%s", vec->width, type_char, tmp );
+    if( vec->suppl.part.is_signed == 0 ) {
+      snprintf( str, str_size, "%d'%c%s", vec->width, type_char, tmp );
+    } else {
+      snprintf( str, str_size, "%d's%c%s", vec->width, type_char, tmp );
+    }
 
     free_safe( tmp );
 
@@ -1240,6 +1254,8 @@ vector* vector_from_string( char** str, bool quoted ) {
     } else if( sscanf( *str, "%[0-9_]%n", value, &chars_read ) == 1 ) {
       bits_per_char = 10;
       type          = DECIMAL;
+      stype[0]      = 's';       
+      stype[1]      = '\0';
       size          = 32;
       *str          = *str + chars_read;
     } else {
@@ -1256,13 +1272,18 @@ vector* vector_from_string( char** str, bool quoted ) {
 
       /* Create vector */
       vec = vector_create( size, TRUE );
-
       vec->suppl.part.base = type;
-
       if( type == DECIMAL ) {
         vector_from_int( vec, atol( value ) );
       } else {
         vector_set_static( vec, value, bits_per_char ); 
+      }
+
+      /* Set the signed bit to the appropriate value based on the signed indicator in the vector string */
+      if( (stype[0] == 's') || (stype [0] == 'S') ) {
+        vec->suppl.part.is_signed = 1;
+      } else {
+        vec->suppl.part.is_signed = 0;
       }
 
     }
@@ -1914,6 +1935,11 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.70  2006/01/24 23:24:38  phase1geo
+ More updates to handle static functions properly.  I have redone quite a bit
+ of code here which has regressions pretty broke at the moment.  More work
+ to do but I'm checkpointing.
+
  Revision 1.69  2006/01/10 05:12:48  phase1geo
  Added arithmetic left and right shift operators.  Added ashift1 diagnostic
  to verify their correct operation.
