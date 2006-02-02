@@ -14,6 +14,7 @@
 
 @SET_MAKE@
 
+
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
 VPATH = @srcdir@
@@ -44,11 +45,19 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
-am__installdirs = "$(DESTDIR)$(tcldir)"
+am__installdirs = "$(DESTDIR)$(tcldir)" "$(DESTDIR)$(cfgdir)"
 tclSCRIPT_INSTALL = $(INSTALL_SCRIPT)
 SCRIPTS = $(tcl_SCRIPTS)
 SOURCES =
 DIST_SOURCES =
+am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
+am__vpath_adj = case $$p in \
+    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
+    *) f=$$p;; \
+  esac;
+am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
+cfgDATA_INSTALL = $(INSTALL_DATA)
+DATA = $(cfg_DATA)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMDEP_FALSE = @AMDEP_FALSE@
@@ -138,7 +147,6 @@ tcldir = $(datadir)/covered/scripts
 tcl_SCRIPTS = banner.gif \
               comb.tcl \
               cov_create.tcl \
-              .coveredrc \
               help.tcl \
               main_view.tcl \
               menu_create.tcl \
@@ -147,6 +155,8 @@ tcl_SCRIPTS = banner.gif \
 	      summary.tcl \
               toggle.tcl
 
+cfgdir = $(datadir)/covered
+cfg_DATA = .coveredrc
 all: all-am
 
 .SUFFIXES:
@@ -199,6 +209,23 @@ uninstall-tclSCRIPTS:
 	  rm -f "$(DESTDIR)$(tcldir)/$$f"; \
 	done
 uninstall-info-am:
+install-cfgDATA: $(cfg_DATA)
+	@$(NORMAL_INSTALL)
+	test -z "$(cfgdir)" || $(mkdir_p) "$(DESTDIR)$(cfgdir)"
+	@list='$(cfg_DATA)'; for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  f=$(am__strip_dir) \
+	  echo " $(cfgDATA_INSTALL) '$$d$$p' '$(DESTDIR)$(cfgdir)/$$f'"; \
+	  $(cfgDATA_INSTALL) "$$d$$p" "$(DESTDIR)$(cfgdir)/$$f"; \
+	done
+
+uninstall-cfgDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(cfg_DATA)'; for p in $$list; do \
+	  f=$(am__strip_dir) \
+	  echo " rm -f '$(DESTDIR)$(cfgdir)/$$f'"; \
+	  rm -f "$(DESTDIR)$(cfgdir)/$$f"; \
+	done
 tags: TAGS
 TAGS:
 
@@ -235,9 +262,9 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(SCRIPTS)
+all-am: Makefile $(SCRIPTS) $(DATA)
 installdirs:
-	for dir in "$(DESTDIR)$(tcldir)"; do \
+	for dir in "$(DESTDIR)$(tcldir)" "$(DESTDIR)$(cfgdir)"; do \
 	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
 	done
 install: install-am
@@ -282,7 +309,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-tclSCRIPTS
+install-data-am: install-cfgDATA install-tclSCRIPTS
 
 install-exec-am:
 
@@ -308,16 +335,17 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-info-am uninstall-tclSCRIPTS
+uninstall-am: uninstall-cfgDATA uninstall-info-am uninstall-tclSCRIPTS
 
 .PHONY: all all-am check check-am clean clean-generic distclean \
 	distclean-generic distdir dvi dvi-am html html-am info info-am \
-	install install-am install-data install-data-am install-exec \
-	install-exec-am install-info install-info-am install-man \
-	install-strip install-tclSCRIPTS installcheck installcheck-am \
-	installdirs maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-generic pdf pdf-am ps ps-am uninstall \
-	uninstall-am uninstall-info-am uninstall-tclSCRIPTS
+	install install-am install-cfgDATA install-data \
+	install-data-am install-exec install-exec-am install-info \
+	install-info-am install-man install-strip install-tclSCRIPTS \
+	installcheck installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-generic pdf \
+	pdf-am ps ps-am uninstall uninstall-am uninstall-cfgDATA \
+	uninstall-info-am uninstall-tclSCRIPTS
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

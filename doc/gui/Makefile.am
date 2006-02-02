@@ -11,11 +11,16 @@ doc_DATA = comb.html \
            main_menu.html \
            mod_inst_lb.html \
            pref_menu.html \
+           preferences.html \
            report_menu.html \
+           summary.html \
            summary_bar.html \
            toggle.html \
-           welcome.html \
-           images/banner.gif \
+           welcome.html
+
+imgdir   = $(datadir)/covered/doc/gui/images
+img_DATA = images/banner.gif \
+           images/dn_button.png \
            images/file_view.jpg \
            images/main_info.jpg \
            images/main_summary.jpg \
@@ -29,4 +34,7 @@ doc_DATA = comb.html \
            images/main_cov.jpg \
            images/main_menu.jpg \
            images/main_window.jpg \
-           images/pref_view.jpg
+           images/pref_window.png \
+           images/pref_view.jpg \
+           images/summary_window.png \
+           images/toggle_full.png

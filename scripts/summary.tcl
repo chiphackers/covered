@@ -77,10 +77,22 @@ proc create_summary {} {
     pack .sumwin.sf.rbd -side left
     pack .sumwin.sf.rbi -side left
 
-    ;# Create button
-    button .sumwin.b -text "Close" -command {
+    #############################
+    # Create Close/Help buttons #
+    #############################
+
+    frame .sumwin.bf
+
+    button .sumwin.bf.close -width 10 -text "Close" -command {
       destroy .sumwin
     }
+
+    button .sumwin.bf.help -width 10 -text "Help" -command {
+      help_show_manual summary
+    }
+
+    pack .sumwin.bf.help  -side right -padx 8 -pady 4
+    pack .sumwin.bf.close -side right -padx 8 -pady 4
 
   }
 
@@ -104,7 +116,7 @@ proc create_summary {} {
   if {$create == 1} {
     pack .sumwin.f -fill both -expand yes
     pack .sumwin.sf
-    pack .sumwin.b
+    pack .sumwin.bf
   }
 
   ;# Bring the window to the top

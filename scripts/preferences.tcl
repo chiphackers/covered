@@ -30,8 +30,6 @@ proc read_coveredrc {} {
   global line_low_limit toggle_low_limit comb_low_limit fsm_low_limit
   global HOME USER_HOME rc_file_to_write
 
-  puts "$HOME/scripts/.coveredrc"
-
   # Find the correct configuration file to read and eventually write
   if {[file exists ".coveredrc"] == 1} {
     set rc [open ".coveredrc" r]
@@ -39,13 +37,12 @@ proc read_coveredrc {} {
   } elseif {[file exists "$USER_HOME/.coveredrc"] == 1} {
     set rc [open "$USER_HOME/.coveredrc" r]
     set rc_file_to_write "$USER_HOME/.coveredrc"
-  } elseif {[file exists "$HOME/scripts/.coveredrc"] == 1} {
-    set rc [open "$HOME/scripts/.coveredrc" r]
+  } elseif {[file exists "$HOME/.coveredrc"] == 1} {
+    set rc [open "$HOME/.coveredrc" r]
     set rc_file_to_write "$USER_HOME/.coveredrc"
   } else {
     set rc -1
     set rc_file_to_write ""
-    puts "Unable to find configuration file to read"
   }
 
   if {$rc != -1} {
@@ -292,9 +289,9 @@ proc create_preferences {} {
       grid .prefwin.limits.fl -row 4 -column 0 -sticky news
       grid .prefwin.limits.fs -row 4 -column 1 -sticky news
 
-    ############################
-    # Create OK/Cancel buttons #
-    ############################
+    #################################
+    # Create OK/Cancel/Help buttons #
+    #################################
 
       frame .prefwin.bbar -relief raised -borderwidth 1
 
@@ -377,6 +374,11 @@ proc create_preferences {} {
         destroy .prefwin
       }
 
+      button .prefwin.bbar.help -width 10 -text "Help" -command {
+        help_show_manual preferences      
+      }
+
+      pack .prefwin.bbar.help   -side right -padx 8 -pady 4
       pack .prefwin.bbar.cancel -side right -padx 8 -pady 4
       pack .prefwin.bbar.ok     -side right -padx 8 -pady 4
 
