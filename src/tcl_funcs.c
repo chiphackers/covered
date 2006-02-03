@@ -42,11 +42,7 @@ int tcl_func_get_race_reason_msgs( ClientData d, Tcl_Interp* tcl, int argc, cons
 
   for( i=0; i<RACE_TYPE_NUM; i++ ) {
     strcpy( user_msg, race_msgs[i] );
-    if( i == 0 ) {
-      Tcl_SetVar( tcl, "race_msgs", user_msg, (TCL_GLOBAL_ONLY | TCL_LIST_ELEMENT) );
-    } else {
-      Tcl_SetVar( tcl, "race_msgs", user_msg, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
-    }
+    Tcl_SetVar( tcl, "race_msgs", user_msg, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
   }
 
   return( retval );
@@ -176,11 +172,7 @@ int tcl_func_collect_uncovered_lines( ClientData d, Tcl_Interp* tcl, int argc, c
 
     for( i=0; i<line_cnt; i++ ) {
       snprintf( line, 20, "%d", lines[i] );
-      if( i == 0 ) {
-        Tcl_SetVar( tcl, "uncovered_lines", line, (TCL_GLOBAL_ONLY | TCL_LIST_ELEMENT) );
-      } else {
-        Tcl_SetVar( tcl, "uncovered_lines", line, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
-      }
+      Tcl_SetVar( tcl, "uncovered_lines", line, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
     }
 
     free_safe( lines );
@@ -217,11 +209,7 @@ int tcl_func_collect_covered_lines( ClientData d, Tcl_Interp* tcl, int argc, con
 
     for( i=0; i<line_cnt; i++ ) {
       snprintf( line, 20, "%d", lines[i] );
-      if( i == 0 ) {
-        Tcl_SetVar( tcl, "covered_lines", line, (TCL_GLOBAL_ONLY | TCL_LIST_ELEMENT) );
-      } else {
-        Tcl_SetVar( tcl, "covered_lines", line, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
-      }
+      Tcl_SetVar( tcl, "covered_lines", line, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
     }
 
     free_safe( lines );
@@ -261,13 +249,8 @@ int tcl_func_collect_race_lines( ClientData d, Tcl_Interp* tcl, int argc, const 
     for( i=0; i<line_cnt; i++ ) {
       snprintf( line,   20, "%d", lines[i]   );
       snprintf( reason, 20, "%d", reasons[i] );
-      if( i == 0 ) {
-	Tcl_SetVar( tcl, "race_lines",   line,   (TCL_GLOBAL_ONLY | TCL_LIST_ELEMENT) );
-        Tcl_SetVar( tcl, "race_reasons", reason, (TCL_GLOBAL_ONLY | TCL_LIST_ELEMENT) );
-      } else {
-	Tcl_SetVar( tcl, "race_lines",   line,   (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
-	Tcl_SetVar( tcl, "race_reasons", reason, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
-      }
+      Tcl_SetVar( tcl, "race_lines",   line,   (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+      Tcl_SetVar( tcl, "race_reasons", reason, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
     }
 
     free_safe( lines );
@@ -489,11 +472,7 @@ int tcl_func_collect_combs( ClientData d, Tcl_Interp* tcl, int argc, const char*
       snprintf( str, 85, "%d.%d %d.%d %d", (uncovs[i]->line - (startline - 1)), (((uncovs[i]->col >> 16) & 0xffff) + 9),
                                            (last->line      - (startline - 1)), ((last->col              & 0xffff) + 10),
                                            uncovs[i]->id );
-      if( i == 0 ) {
-        Tcl_SetVar( tcl, "uncovered_combs", str, (TCL_GLOBAL_ONLY | TCL_LIST_ELEMENT) );
-      } else {
-        Tcl_SetVar( tcl, "uncovered_combs", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
-      }
+      Tcl_SetVar( tcl, "uncovered_combs", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
     }
 
     /* Load covered statements into Tcl */
@@ -501,11 +480,7 @@ int tcl_func_collect_combs( ClientData d, Tcl_Interp* tcl, int argc, const char*
       last = expression_get_last_line_expr( covs[i] );
       snprintf( str, 85, "%d.%d %d.%d", (covs[i]->line - (startline - 1)), (((covs[i]->col >> 16) & 0xffff) + 9),
                                            (last->line    - (startline - 1)), ((last->col            & 0xffff) + 10) );
-      if( i == 0 ) {
-        Tcl_SetVar( tcl, "covered_combs", str, (TCL_GLOBAL_ONLY | TCL_LIST_ELEMENT) );
-      } else {
-        Tcl_SetVar( tcl, "covered_combs", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
-      }
+      Tcl_SetVar( tcl, "covered_combs", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
     }
 
     /* Deallocate memory */
@@ -557,24 +532,14 @@ int tcl_func_get_comb_expression( ClientData d, Tcl_Interp* tcl, int argc, const
   if( combination_get_expression( funit_name, funit_type, expr_id, &code, &uline_groups, &code_size, &ulines, &uline_size ) ) {
 
     for( i=0; i<code_size; i++ ) {
-      if( i == 0 ) {
-        Tcl_SetVar( tcl, "comb_code",         code[i], (TCL_GLOBAL_ONLY | TCL_LIST_ELEMENT) );
-        snprintf( tmp, 20, "%d", uline_groups[i] );
-        Tcl_SetVar( tcl, "comb_uline_groups", tmp,     (TCL_GLOBAL_ONLY | TCL_LIST_ELEMENT) );
-      } else {
-        Tcl_SetVar( tcl, "comb_code",         code[i], (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
-        snprintf( tmp, 20, "%d", uline_groups[i] );
-        Tcl_SetVar( tcl, "comb_uline_groups", tmp,     (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
-      }
+      Tcl_SetVar( tcl, "comb_code", code[i], (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+      snprintf( tmp, 20, "%d", uline_groups[i] );
+      Tcl_SetVar( tcl, "comb_uline_groups", tmp, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
       free_safe( code[i] );
     }
 
     for( i=0; i<uline_size; i++ ) {
-      if( i == 0 ) {
-        Tcl_SetVar( tcl, "comb_ulines", ulines[i], (TCL_GLOBAL_ONLY | TCL_LIST_ELEMENT) );
-      } else {
-        Tcl_SetVar( tcl, "comb_ulines", ulines[i], (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
-      }
+      Tcl_SetVar( tcl, "comb_ulines", ulines[i], (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
       free_safe( ulines[i] );
     }
 
@@ -630,11 +595,7 @@ int tcl_func_get_comb_coverage( ClientData d, Tcl_Interp* tcl, int argc, const c
     if( info_size > 0 ) {
 
       for( i=0; i<info_size; i++ ) {
-        if( i == 0 ) {
-          Tcl_SetVar( tcl, "comb_expr_cov", info[i], (TCL_GLOBAL_ONLY | TCL_LIST_ELEMENT) );
-        } else {
-          Tcl_SetVar( tcl, "comb_expr_cov", info[i], (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
-        }
+        Tcl_SetVar( tcl, "comb_expr_cov", info[i], (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
         free_safe( info[i] );
       }
 
@@ -912,6 +873,10 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.26  2006/01/28 06:42:53  phase1geo
+ Added configuration read/write functionality for tool preferences and integrated
+ the preferences.tcl file into Covered's GUI.  This is now functioning correctly.
+
  Revision 1.25  2006/01/23 03:53:30  phase1geo
  Adding support for input/output ports of tasks/functions.  Regressions are not
  running cleanly at this point so there is still some work to do here.  Checkpointing.

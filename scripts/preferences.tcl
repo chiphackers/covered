@@ -456,28 +456,3 @@ proc percent_spinner {w showval} {
 
 }
 
-#######################################################################
-# All code below here is just for testing in a stand-alone environment
-#######################################################################
-
-proc display_settings {title} {
-
-  global cov_fgColor   cov_bgColor
-  global uncov_fgColor uncov_bgColor
-  global race_fgColor  race_bgColor
-  global line_low_limit toggle_low_limit comb_low_limit fsm_low_limit
-
-  puts "\n$title"
-  puts "Uncovered Foreground: $uncov_fgColor"
-  puts "Uncovered Background: $uncov_bgColor"
-  puts "Covered Foreground:   $cov_fgColor"
-  puts "Covered Background:   $cov_bgColor"
-  puts "Race Foreground:      $race_fgColor"
-  puts "Race Background:      $race_bgColor"
-  puts "Line Lower Limit:     $line_low_limit"
-  puts "Toggle Lower Limit:   $toggle_low_limit"
-  puts "Comb Lower Limit:     $comb_low_limit"
-  puts "FSM Lower Limit:      $fsm_low_limit"
-
-}
-
