@@ -22,6 +22,9 @@ expression* expression_create( expression* right, expression* left, exp_op_type 
 /*! \brief Sets the specified expression value to the specified vector value. */
 void expression_set_value( expression* exp, vector* vec );
 
+/*! \brief Sets the signed bit for all appropriate parent expressions */
+void expression_set_signed( expression* exp );
+
 /*! \brief Recursively resizes specified expression tree leaf node. */
 void expression_resize( expression* expr, bool recursive );
 
@@ -79,6 +82,11 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.39  2006/01/24 23:24:37  phase1geo
+ More updates to handle static functions properly.  I have redone quite a bit
+ of code here which has regressions pretty broke at the moment.  More work
+ to do but I'm checkpointing.
+
  Revision 1.38  2006/01/10 23:13:50  phase1geo
  Completed support for implicit event sensitivity list.  Added diagnostics to verify
  this new capability.  Also started support for parsing inline parameters and port

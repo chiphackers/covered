@@ -24,7 +24,7 @@ CDD_DIR       = ../cdd
 
 LOGFILE = regress.log
 
-DIAGS1        = always1         always2         always3         always3.1.11A   always4 \
+DIAGS1        = add1            always1         always2         always3         always3.1.11A   always4 \
                 always5         always6         always7         always8         always9 \
                 always10        always11        always11.1      always11.2      always12 \
                 always13        ashift1         ashift2         assign2         assign2.1 \
@@ -67,7 +67,7 @@ DIAGS1        = always1         always2         always3         always3.1.11A   
                 param10.3       param10.4       param10.5       param11         port1 \
                 port2           pulldown1 \
                 pullup1         repeat1         repeat2         sbit_sel1       sbit_sel1.1 \
-                slist1          slist1.1        slist1.2        slist1.3        slist2 \
+                signed1         signed3         slist1          slist1.1        slist1.2        slist1.3        slist2 \
                 static1         string1         supply0         supply1         task1 \
                 task1.1         task2           task2.1         task2.2         task2.3 \
                 task3           task3.1         task4           task4.1         toggle \

@@ -634,6 +634,7 @@ typedef enum exp_op_type_e {
   EXP_OP_MBIT_NEG,        /*!< 74:0x4a.  Specifies negative variable multi-bit select (a[b-:3]) */
   EXP_OP_PARAM_MBIT_POS,  /*!< 75:0x4b.  Specifies positive variable multi-bit parameter select */
   EXP_OP_PARAM_MBIT_NEG,  /*!< 76:0x4c.  Specifies negative variable multi-bit parameter select */
+  EXP_OP_NEGATE,          /*!< 77:0x4d.  Specifies the unary negate operator (-) */
   EXP_OP_NUM              /*!< The total number of defines for expression values */
 } exp_op_type;
 
@@ -1799,6 +1800,13 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.177  2006/02/02 22:37:40  phase1geo
+ Starting to put in support for signed values and inline register initialization.
+ Also added support for more attribute locations in code.  Regression updated for
+ these changes.  Interestingly, with the changes that were made to the parser,
+ signals are output to reports in order (before they were completely reversed).
+ This is a nice surprise...  Full regression passes.
+
  Revision 1.176  2006/02/01 19:58:28  phase1geo
  More updates to allow parsing of various parameter formats.  At this point
  I believe full parameter support is functional.  Regression has been updated

@@ -592,6 +592,14 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
 
         snprintf( code_fmt, 300, "%d", vector_to_int( exp->value ) );
         *size = strlen( code_fmt );
+
+        /*
+         If the size of this decimal value is only 1, make it two so that we don't
+         have problems with negates and the like later.
+        */
+        if( *size == 1 ) {
+          *size = 2;
+        }
       
       } else {
 
@@ -826,6 +834,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
               strcat( code_fmt, "  %s  " );
               free_safe( tmpname );
               break;
+            case EXP_OP_NEGATE   :  *size = l_size + r_size + 1;  strcpy( code_fmt, " %s"              );  break;
             default              :
               snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  Unknown expression type in combination_underline_tree (%d)",
                         exp->op );
@@ -1560,6 +1569,7 @@ void combination_get_missed_expr( char*** info, int* info_size, expression* exp,
           case EXP_OP_AEDGE          :  combination_event( info, info_size, exp, "" );         break;
           case EXP_OP_SLIST          :  combination_event( info, info_size, exp, "@*" );       break;
           case EXP_OP_TRIGGER        :  combination_event( info, info_size, exp, "->" );       break;
+          case EXP_OP_NEGATE         :  combination_unary( info, info_size, exp, "-" );        break;
           default                    :  break;
         }
 
@@ -2054,6 +2064,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.126  2006/01/31 16:41:00  phase1geo
+ Adding initial support and diagnostics for the variable multi-bit select
+ operators +: and -:.  More to come but full regression passes.
+
  Revision 1.125  2006/01/25 16:51:26  phase1geo
  Fixing performance/output issue with hierarchical references.  Added support
  for hierarchical references to parser.  Full regression passes.

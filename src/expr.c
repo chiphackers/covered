@@ -193,6 +193,7 @@ static bool expression_op_func__exponent( expression*, thread* );
 static bool expression_op_func__passign( expression*, thread* );
 static bool expression_op_func__mbit_pos( expression*, thread* );
 static bool expression_op_func__mbit_neg( expression*, thread* );
+static bool expression_op_func__negate( expression*, thread* );
 
 
 /*!
@@ -275,7 +276,8 @@ const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",         expression_op_func
                                            {"MBIT_POS",       expression_op_func__mbit_pos,  {0, 0, 0, 1, 1, 0} },
                                            {"MBIT_NEG",       expression_op_func__mbit_neg,  {0, 0, 0, 1, 1, 0} },
                                            {"PARAM_MBIT_POS", expression_op_func__mbit_pos,  {0, 1, 0, 1, 0, 0} },
-                                           {"PARAM_MBIT_NEG", expression_op_func__mbit_neg,  {0, 1, 0, 1, 0, 0} } };
+                                           {"PARAM_MBIT_NEG", expression_op_func__mbit_neg,  {0, 1, 0, 1, 0, 0} },
+                                           {"NEGATE",         expression_op_func__negate,    {0, 0, 0, 1, 1, 0} } };
 
 /*!
  \param exp    Pointer to expression to add value to.
@@ -473,7 +475,8 @@ void expression_set_value( expression* exp, vector* vec ) {
   assert( exp->value != NULL );
   assert( vec != NULL );
 
-  // printf( "In expression_set_value, exp %s line %d, vec %p, vec->value %p\n", expression_string_op( exp->op ), exp->line, vec, vec->value );
+  /* Regardless of the type, set the supplemental field */
+  exp->value->suppl = vec->suppl;
   
   switch( exp->op ) {
     case EXP_OP_SIG       :
@@ -524,6 +527,56 @@ void expression_set_value( expression* exp, vector* vec ) {
 }
 
 /*!
+ \param exp  Pointer to current expression
+
+ Recursively sets the signed bit for all parent expressions if both the left and
+ right expressions have the signed bit set.  This function is called by the bind()
+ function after an expression has been set to a signal.
+*/
+void expression_set_signed( expression* exp ) {
+
+  if( exp != NULL ) {
+
+    /*
+     If this expression is attached to a signal that has the signed bit set (which is not a bit select) or
+     the valid left and right expressions have the signed bit set, set our is_signed bit
+     and continue traversing up expression tree.
+    */
+    if( ((exp->sig != NULL) && (exp->sig->value->suppl.part.is_signed == 1) &&
+         (exp->op != EXP_OP_SBIT_SEL)   &&
+         (exp->op != EXP_OP_MBIT_SEL)   &&
+         (exp->op != EXP_OP_PARAM_SBIT) &&
+         (exp->op != EXP_OP_PARAM_MBIT)) ||
+        ((((exp->left  != NULL) && (exp->left->value->suppl.part.is_signed  == 1)) || (exp->left  == NULL)) &&
+         (((exp->right != NULL) && (exp->right->value->suppl.part.is_signed == 1)) || (exp->right == NULL)) &&
+         ((exp->op == EXP_OP_ADD)      ||
+          (exp->op == EXP_OP_SUBTRACT) ||
+          (exp->op == EXP_OP_MULTIPLY) ||
+          (exp->op == EXP_OP_DIVIDE)   ||
+          (exp->op == EXP_OP_MOD)      ||
+          (exp->op == EXP_OP_STATIC)   ||
+          (exp->op == EXP_OP_LT)       ||
+          (exp->op == EXP_OP_GT)       ||
+          (exp->op == EXP_OP_LE)       ||
+          (exp->op == EXP_OP_GE)       ||
+          (exp->op == EXP_OP_EQ)       ||
+          (exp->op == EXP_OP_NE))) ||
+        (exp->value->suppl.part.is_signed == 1) ) {
+
+      exp->value->suppl.part.is_signed = 1;
+
+      /* If we are not the root expression, traverse up */
+      if( ESUPPL_IS_ROOT( exp->suppl ) == 0 ) {
+        expression_set_signed( exp->parent->expr );
+      }
+
+    }
+    
+  }
+
+}
+
+/*!
  \param expr       Pointer to expression to potentially resize.
  \param recursive  Specifies if we should perform a recursive depth-first resize
 
@@ -534,7 +587,8 @@ void expression_set_value( expression* exp, vector* vec ) {
 */
 void expression_resize( expression* expr, bool recursive ) {
 
-  int  largest_width;  /* Holds larger width of left and right children */
+  int    largest_width;  /* Holds larger width of left and right children */
+  nibble old_vec_suppl;  /* Holds original vector supplemental field as this will be erased */
 
   if( expr != NULL ) {
 
@@ -542,6 +596,9 @@ void expression_resize( expression* expr, bool recursive ) {
       expression_resize( expr->left, recursive );
       expression_resize( expr->right, recursive );
     }
+
+    /* Get vector supplemental field */
+    old_vec_suppl = expr->value->suppl.all;
 
     switch( expr->op ) {
 
@@ -676,6 +733,9 @@ void expression_resize( expression* expr, bool recursive ) {
         break;
 
     }
+
+    /* Reapply original supplemental field now that expression has been resized */
+    expr->value->suppl.all = old_vec_suppl;
 
   }
 
@@ -1184,7 +1244,11 @@ void expression_display( expression* expr ) {
           left_id, 
           right_id );
 
-  vector_display_value( expr->value->value, expr->value->width );
+  if( expr->value->value == NULL ) {
+    printf( "NO DATA VECTOR" );
+  } else {
+    vector_display_value( expr->value->value, expr->value->width );
+  }
   printf( "\n" );
 
 }
@@ -2478,6 +2542,20 @@ bool expression_op_func__mbit_neg( expression* expr, thread* thr ) {
 }
 
 /*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a negate of the specified expression.
+*/
+bool expression_op_func__negate( expression* expr, thread* thr ) {
+
+  return( vector_op_negate( expr->value, expr->right->value ) );
+
+}
+
+/*!
  \param expr  Pointer to expression to set value to.
  \param thr   Pointer to current thread being simulated. 
 
@@ -2980,6 +3058,13 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.168  2006/02/02 22:37:41  phase1geo
+ Starting to put in support for signed values and inline register initialization.
+ Also added support for more attribute locations in code.  Regression updated for
+ these changes.  Interestingly, with the changes that were made to the parser,
+ signals are output to reports in order (before they were completely reversed).
+ This is a nice surprise...  Full regression passes.
+
  Revision 1.167  2006/01/31 16:41:00  phase1geo
  Adding initial support and diagnostics for the variable multi-bit select
  operators +: and -:.  More to come but full regression passes.

@@ -673,6 +673,7 @@ expression
   | '+' expr_primary %prec UNARY_PREC
     {
       if( ignore_mode == 0 ) {
+        $2->value->suppl.part.is_signed = 1;
         $$ = $2;
       } else {
         $$ = NULL;
@@ -680,8 +681,11 @@ expression
     }
   | '-' expr_primary %prec UNARY_PREC
     {
+      expression* exp;
       if( ignore_mode == 0 ) {
-        $$ = $2;
+        exp = db_create_expression( $2, NULL, EXP_OP_NEGATE, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+        exp->value->suppl.part.is_signed = 1;
+        $$ = exp;
       } else {
         $$ = NULL;
       }

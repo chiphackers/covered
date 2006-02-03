@@ -118,6 +118,9 @@ bool vector_op_arshift( vector* tgt, vector* left, vector* right );
 /*! \brief Performs addition operation on left and right expression values. */
 bool vector_op_add( vector* tgt, vector* left, vector* right );
 
+/*! \brief Performs a twos complement of the src vector and stores the new vector in tgt. */
+bool vector_op_negate( vector* tgt, vector* src );
+
 /*! \brief Performs subtraction operation on left and right expression values. */
 bool vector_op_subtract( vector* tgt, vector* left, vector* right );
 
@@ -139,6 +142,10 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.32  2006/01/10 05:12:48  phase1geo
+ Added arithmetic left and right shift operators.  Added ashift1 diagnostic
+ to verify their correct operation.
+
  Revision 1.31  2005/11/21 22:21:58  phase1geo
  More regression updates.  Also made some updates to debugging output.
 

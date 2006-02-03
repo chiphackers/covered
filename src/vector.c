@@ -655,7 +655,7 @@ void vector_display( vector* vec ) {
 
   assert( vec != NULL );
 
-  printf( "Vector => width: %d, ", vec->width );
+  printf( "Vector => width: %d, suppl: %x\n", vec->width, vec->suppl.all );
 
   if( (vec->width > 0) && (vec->value != NULL) ) {
     vector_display_nibble( vec->value, vec->width );
@@ -1425,28 +1425,49 @@ bool vector_op_compare( vector* tgt, vector* left, vector* right, int comp_type 
   int      pos;             /* Loop iterator */
   nibble   lbit   = 0;      /* Current left expression bit value */
   nibble   rbit   = 0;      /* Current right expression bit value */
+  nibble   tmp;             /* Temporary nibble holder */
   bool     done   = FALSE;  /* Specifies continuation of comparison */
   vec_data value;           /* Result to be stored in tgt */
+  bool     is_signed;       /* Specifies if we are doing a signed compare */
 
-  /* Determine at which bit position to begin comparing, start at MSB of smallest vector */
+  /* Determine at which bit position to begin comparing, start at MSB of largest vector */
   if( left->width > right->width ) {
-    pos = right->width - 1;
-  } else {
     pos = left->width - 1;
+  } else {
+    pos = right->width - 1;
+  }
+
+  /* Calculate if we are doing a signed compare */
+  is_signed = (left->suppl.part.is_signed == 1) && (right->suppl.part.is_signed == 1);
+
+  /* Initialize lbit/rbit values */
+  if( left->value[left->width-1].part.value < 2 ) {
+    lbit = is_signed ? left->value[left->width-1].part.value : 0;
+  } else {
+    lbit = 2;
+  }
+  if( right->value[right->width-1].part.value < 2 ) {
+    rbit = is_signed ? right->value[right->width-1].part.value : 0;
+  } else {
+    rbit = 2;
+  }
+
+  /* If we are signed and the MSBs are different values, don't go further and reverse the lbit/rbit values */
+  if( is_signed && (lbit != rbit) ) {
+    done = TRUE;
+    tmp  = lbit;
+    lbit = rbit;
+    rbit = tmp;
   }
 
   while( (pos >= 0) && !done ) {
 
     if( pos < left->width ) {
       lbit = left->value[pos].part.value;
-    } else {
-      lbit = 0;
     }
 
     if( pos < right->width ) {
       rbit = right->value[pos].part.value;
-    } else {
-      rbit = 0;
     }
 
     if( comp_type == COMP_CXEQ ) {
@@ -1690,6 +1711,41 @@ bool vector_op_add( vector* tgt, vector* left, vector* right ) {
 }
 
 /*!
+ \param tgt  Pointer to vector that will be assigned the new value.
+ \param src  Pointer to vector that will be negated.
+
+ \return Returns TRUE if assigned value differs from original value; otherwise, returns FALSE.
+
+ Performs a twos complement of the src vector and stores the result in the tgt vector.
+*/
+bool vector_op_negate( vector* tgt, vector* src ) {
+
+  bool    retval = FALSE;  /* Return value for this function */
+  vector* vec1;            /* Temporary vector holder */
+  vector* vec2;            /* Temporary vector holder */
+
+  /* Create temp vectors */
+  vec1 = vector_create( src->width, TRUE );
+  vec2 = vector_create( tgt->width, TRUE );
+
+  /* Create vector with a value of 1 */
+  vec2->value[0].part.value = 1;
+
+  /* Perform twos complement inversion on right expression */
+  vector_unary_inv( vec1, src );
+
+  /* Add one to the inverted value */
+  retval = vector_op_add( tgt, vec1, vec2 );
+
+  /* Deallocate vectors */
+  vector_dealloc( vec1 );
+  vector_dealloc( vec2 );
+
+  return( retval );
+
+}
+
+/*!
  \param tgt    Target vector for storage of results.
  \param left   Expression value on left side of - sign.
  \param right  Expression value on right side of - sign.
@@ -1703,31 +1759,19 @@ bool vector_op_add( vector* tgt, vector* left, vector* right ) {
 bool vector_op_subtract( vector* tgt, vector* left, vector* right ) {
 
   bool    retval = FALSE;  /* Return value for this function */
-  vector* vec1;            /* Temporary vector holder */
-  vector* vec2;            /* Temporary vector holder */
-  vector* vec3;            /* Temporary vector holder */
+  vector* vec;             /* Temporary vector holder */
 
   /* Create temp vectors */
-  vec1 = vector_create( tgt->width, TRUE );
-  vec2 = vector_create( tgt->width, TRUE );
-  vec3 = vector_create( tgt->width, TRUE );
+  vec = vector_create( tgt->width, TRUE );
 
-  /* Create vector with a value of 1 */
-  vec1->value[0].part.value = 1;
-
-  /* Perform twos complement inversion on right expression */
-  vector_unary_inv( vec2, right );
-
-  /* Add one to the inverted value */
-  vector_op_add( vec3, vec2, vec1 );  
+  /* Negate the value on the right */
+  vector_op_negate( vec, right );
 
   /* Add new value to left value */
-  retval = vector_op_add( tgt, left, vec3 );
+  retval = vector_op_add( tgt, left, vec );
 
   /* Deallocate used memory */ 
-  vector_dealloc( vec1 );
-  vector_dealloc( vec2 );
-  vector_dealloc( vec3 );
+  vector_dealloc( vec );
 
   return( retval );
 
@@ -1935,6 +1979,13 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.71  2006/02/02 22:37:41  phase1geo
+ Starting to put in support for signed values and inline register initialization.
+ Also added support for more attribute locations in code.  Regression updated for
+ these changes.  Interestingly, with the changes that were made to the parser,
+ signals are output to reports in order (before they were completely reversed).
+ This is a nice surprise...  Full regression passes.
+
  Revision 1.70  2006/01/24 23:24:38  phase1geo
  More updates to handle static functions properly.  I have redone quite a bit
  of code here which has regressions pretty broke at the moment.  More work

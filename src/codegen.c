@@ -293,6 +293,9 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
       if( expr->value->suppl.part.base == DECIMAL ) {
 
         snprintf( code_format, 20, "%d", vector_to_int( expr->value ) );
+        if( strlen( code_format ) == 1 ) {
+          strcat( code_format, " " );
+        }
         (*code)[0] = strdup_safe( code_format, __FILE__, __LINE__ );
 
       } else if( expr->value->suppl.part.base == QSTRING ) {
@@ -710,6 +713,10 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
           codegen_create_expr( code, code_depth, expr->line, "while( ", right_code, right_code_depth, expr->right->line, " )",
                                NULL, 0, 0, NULL );
           break;
+        case EXP_OP_NEGATE   :
+          codegen_create_expr( code, code_depth, expr->line, "-", right_code, right_code_depth, expr->right->line, NULL,
+                               NULL, 0, 0, NULL );
+          break;
         default:  break;
       }
 
@@ -735,6 +742,10 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.60  2006/01/31 16:41:00  phase1geo
+ Adding initial support and diagnostics for the variable multi-bit select
+ operators +: and -:.  More to come but full regression passes.
+
  Revision 1.59  2006/01/25 16:51:26  phase1geo
  Fixing performance/output issue with hierarchical references.  Added support
  for hierarchical references to parser.  Full regression passes.
