@@ -594,10 +594,10 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
         *size = strlen( code_fmt );
 
         /*
-         If the size of this decimal value is only 1, make it two so that we don't
-         have problems with negates and the like later.
+         If the size of this decimal value is only 1 and its parent is a NEGATE op,
+         make it two so that we don't have problems with negates and the like later.
         */
-        if( *size == 1 ) {
+        if( (*size == 1) && (exp->parent->expr->op == EXP_OP_NEGATE) ) {
           *size = 2;
         }
       
@@ -2064,6 +2064,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.127  2006/02/03 23:49:38  phase1geo
+ More fixes to support signed comparison and propagation.  Still more testing
+ to do here before I call it good.  Regression may fail at this point.
+
  Revision 1.126  2006/01/31 16:41:00  phase1geo
  Adding initial support and diagnostics for the variable multi-bit select
  operators +: and -:.  More to come but full regression passes.

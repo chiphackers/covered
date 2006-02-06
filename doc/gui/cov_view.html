@@ -15,30 +15,64 @@
 <h1><a href="main.html">Main Window</a> - The Coverage File Viewer</h1>
 <hr>
 
-<p>Figure 1 shows the area of the main window where the coverage file viewer window is located.</p>
+<p>
+Figure 1 shows the area of the main window where the coverage file viewer window is 
+located.
+</p>
 
 <div align="center">
 <p><strong>Figure 1.  Covered Main Window Highlighting the Coverage File Viewer</strong></p>
-<img src="images/main_viewer.jpg" width="601" height="394" alt="Covered Main Coverage File Viewer" align="absmiddle">
+<img src="images/main_viewer.png" alt="Covered Main Coverage File Viewer" align="absmiddle">
 </div>
 
-<p>The coverage file viewer shows the currently selected module (indicated in the <a href="info_bar.html">information bar</a>) Verilog source.  The coverage file viewer provides a read-only view of the original source code so all editing of the file must be done in a separate editor.  Each source code line in the viewer window is numbered to the left of the line to aid in debugging and finding the lines in an editor.</p>
+<p>
+The coverage file viewer shows the currently selected module (indicated in the 
+<a href="info_bar.html">information bar</a>) Verilog source.  The coverage file viewer 
+provides a read-only view of the original source code so all editing of the file must 
+be done in a separate editor.  Each source code line in the viewer window is numbered 
+to the left of the line to aid in debugging and finding the lines in an editor.
+</p>
 
-<p>Depending on the coverage metric currently selected in the <a href="cov_bar.html">coverage metric bar</a> and the covered/uncovered/race condition selections in the <a href="report_menu.html">report menu</a>, the lines that are found to be uncovered, covered, and/or considered a race condition are highlighted in their respective color schemes in the coverage file viewer window.  Using the scrollbars to the right and below the coverage file viewer, the user can find the missed/hit lines quickly for further analysis.</p>
+<p>
+Depending on the coverage metric currently selected in the 
+<a href="cov_bar.html">coverage metric bar</a> and the covered/uncovered/race condition 
+selections in the <a href="report_menu.html">report menu</a>, the lines that are found 
+to be uncovered, covered, and/or considered a race condition are highlighted in their 
+respective color schemes in the coverage file viewer window.  Using the scrollbars to 
+the right and below the coverage file viewer, the user can find the missed/hit lines 
+quickly for further analysis.
+</p>
 
-<p>The coverage file viewer is the place where the user can invoke the toggle and combinational logic detail windows.  To view one of these windows, do the following:
+<p>
+The coverage file viewer is the place where the user can invoke the toggle and 
+combinational logic detail windows.  To view one of these windows, do the following:
 <ol>
 	<li>Select either the "Toggle" or "Logic" coverage metric radio button in the <a href="cov_bar.html">Coverage Type Bar</a>.</li>
 	<li>Select a module/instance that contains uncovered code in the <a href="mod_inst_lb.html">Module/Instance Listbox</a>.</li>
 	<li>In the coverage file viewer, find code that is highlighted as being uncovered.</li>
 	<li>Left click on the uncovered piece of logic.  Doing so will automatically bring up either the <a href="toggle.html">Toggle Coverage Detail Window</a> or the <a href="comb.html">Combinational Logic Detail Window</a>.
-</ol></p>
+</ol>
+</p>
 
-<p>Additionally, the logical blocks that have been disregarded by Covered due to a potential race condition existing are highlighted.  By placing the cursor over one of these logical blocks, the reason for why the logical block was disregarded is output in the <a href="info_bar.html">information bar</a>.</p>
+<p>
+Additionally, the logical blocks that have been disregarded by Covered due to a 
+potential race condition existing are highlighted.  By placing the cursor over one of 
+these logical blocks, the reason for why the logical block was disregarded is output 
+in the <a href="info_bar.html">information bar</a>.
+</p>
 
-<p>To view a new module/instance, simply left click on one in the Module/Instance Listbox.  The source code for the selected module/instance will be immediately loaded into the coverage file viewer in the currently selected coverage metric.</p>
+<p>
+To view a new module/instance, simply left click on one in the Module/Instance Listbox.  
+The source code for the selected module/instance will be immediately loaded into the 
+coverage file viewer in the currently selected coverage metric.
+</p>
 
-<p>To view a new coverage metric, simply left click on one of the coverage metrics in the Coverage Type Bar.  The currently selected module/instance will be immediately updated in the coverage file viewer, highlighting the uncovered/covered code for the current metric.</p>
+<p>
+To view a new coverage metric, simply left click on one of the coverage metrics in 
+the Coverage Type Bar.  The currently selected module/instance will be immediately 
+updated in the coverage file viewer, highlighting the uncovered/covered code for the 
+current metric.
+</p>
 
 </body>
 </html>

@@ -2693,7 +2693,7 @@ void expression_operate_recursively( expression* expr ) {
  \return Returns TRUE if expression contains only static expressions; otherwise, returns FALSE.
  
  Recursively iterates through specified expression tree and returns TRUE if all of
- the children expressions are static expressions (STATIC or parameters).
+ the leaf expressions are static expressions (STATIC or parameters).
 */
 bool expression_is_static_only( expression* expr ) {
 
@@ -2703,13 +2703,16 @@ bool expression_is_static_only( expression* expr ) {
       return( TRUE );
     } else {
       return( (expr->op != EXP_OP_MBIT_SEL)           &&
+              (expr->op != EXP_OP_SBIT_SEL)           &&
+              (expr->op != EXP_OP_SIG)                &&
+              (expr->op != EXP_OP_FUNC_CALL)          &&
               expression_is_static_only( expr->left ) &&
               expression_is_static_only( expr->right ) );
     }
 
   } else {
 
-    return( FALSE );
+    return( TRUE );
 
   }
 
@@ -3058,6 +3061,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.169  2006/02/03 23:49:38  phase1geo
+ More fixes to support signed comparison and propagation.  Still more testing
+ to do here before I call it good.  Regression may fail at this point.
+
  Revision 1.168  2006/02/02 22:37:41  phase1geo
  Starting to put in support for signed values and inline register initialization.
  Also added support for more attribute locations in code.  Regression updated for

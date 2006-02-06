@@ -15,18 +15,40 @@
 <h1><a href="main.html">Main Window</a> - The Module/Instance Listbox</h1>
 <hr>
 
-<p>After a CDD file has been opened in the GUI, the module/instance selection box (shown in Figure 1 below) will contain either a list of all of the modules within the specified design or a list of all of the instances within the design, based on the type of report selected in the <a href="report_menu.html">Report menu</a>.  Left-clicking on a module/instance name within this box will cause that file to be output in the <a href="cov_view.html">File Viewer Window</a> to the right of the selection box.</p>
+<p>
+After a CDD file has been opened in the GUI, the module/instance selection box 
+(shown in Figure 1 below) will contain either a list of all of the modules within 
+the specified design or a list of all of the instances within the design, based 
+on the type of report selected in the <a href="report_menu.html">Report menu</a>.  
+Left-clicking on a module/instance name within this box will cause that file to be 
+output in the <a href="cov_view.html">File Viewer Window</a> to the right of the 
+selection box.
+</p>
 
 <div align="center">
 <p><strong>Figure 1.  Covered Main Window Highlighting the Module/Instance Listbox</strong></p>
-<img src="images/main_lb.jpg" width="601" height="394" alt="Covered Main Module/Instance Listbox" align="absmiddle">
+<img src="images/main_lb.png" alt="Covered Main Module/Instance Listbox" align="absmiddle">
 </div>
 
-<p>Depending on the selected coverage metric (specified in the <a href="cov_bar.html">Coverage Type View Bar</a>) and the coverage results for each module/instance, a module/instance item will be highlighted in the uncovered logic color if the corresponding module/instance was found to have uncovered logic within that module/instance.  If the specified module/instance was found to be fully covered for the currently selected metric, the name will remain unhighlighted.  This can help the user quickly identify modules/instances that contain uncovered logic cases without having to systematically click on each name in the selection box and look at the summary coverage information to find these cases.  Note that when a different coverage metric is selected, the highlights will be recalculated for that metric.  Figure 2 below shows what the module/instance selection box looks like when populated with a CDD file.  Note the names in the box that are highlighted (yellow) vs. not highlighted.</p>
+<p>
+Depending on the selected coverage metric (specified in the 
+<a href="cov_bar.html">Coverage Type View Bar</a>) and the coverage results for each 
+module/instance, a module/instance item will be highlighted in the uncovered logic 
+color if the corresponding module/instance was found to have uncovered logic within 
+that module/instance.  If the specified module/instance was found to be fully covered 
+for the currently selected metric, the name will remain unhighlighted.  This can help 
+the user quickly identify modules/instances that contain uncovered logic cases 
+without having to systematically click on each name in the selection box and look at 
+the summary coverage information to find these cases.  Note that when a different 
+coverage metric is selected, the highlights will be recalculated for that metric.  
+Figure 2 below shows what the module/instance selection box looks like when populated 
+with a CDD file.  Note the names in the box that are highlighted (yellow) vs. not 
+highlighted.
+</p>
 
 <div align="center">
 <p><strong>Figure 2.  Populated Module/Instance Selection Box</strong></p>
-<img src="images/populated_lb.jpg" width="716" height="515" alt="Populated Module/Instance Selection Box">
+<img src="images/populated_lb.png" alt="Populated Module/Instance Selection Box">
 </div>
 
 </body>

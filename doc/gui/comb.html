@@ -15,7 +15,181 @@
 <h1>Navigating the Combinational Logic Window</h1>
 <hr>
 
-<p>No documentation currently available</p>
+<p>
+The Verbose Combinational Logic viewer allows the user to look at the subexpressions of
+a selected statement to determine exactly why a statement did not achieve 100% coverage.
+The window is split up into two text frames.  The top frame displays the selected
+statement, underlining and numbering subexpressions that were found to not achieve full
+coverage.  The bottom frame displays which combinations of a selected subexpression
+were hit/missed, allowing the user to discern which combinations of logic are still in
+need of verification.  Figure 1 shows a snapshot of the Verbose Combinational Logic
+viewer window.
+</p>
+
+<h2>Navigating a Statement</h2>
+
+<p>
+To understand what subexpressions of a statement caused it to not achieve 100% coverage,
+the viewer window allows the user to traverse uncovered subexpressions, displaying the
+coverage information for each subexpression in the lower frame.  To see an uncovered
+subexpression in the lower frame, simply left click on the underlined subexpression.  If
+the subexpression has one or more children subexpressions, these will be individually
+underlined and numbered.  If the subexpression is a leaf subexpression of the statement,
+only its coverage information will be displayed in the lower pane.  To traverse upward
+in a subexpression, simply click on the right button.  This will cause the parent
+subexpression to be underlined and its parent (if one exists) will have its coverage
+information displayed in the lower frame.
+</p>
+
+<h2>Understanding the Coverage Information</h2>
+
+<p>
+The coverage information for a selected subexpression can be one of four different
+types:</p>
+
+<p>
+<ol>
+  <li><b>Event Subexpression</b>
+    <p>These subexpressions do not have any children expressions.  Their coverage is
+    in terms of:</p>
+    <p><ul>
+      <li>Did this event occur?</li>
+    </ul></p>
+    <p>The following operators are considered events:</p>
+    <p><ul>
+      <li><b>At-event operators</b>:<br>
+          &nbsp;&nbsp;<b>@(posedge</b> <i>expression</i> <b>)</b><br>
+          &nbsp;&nbsp;<b>@(negedge</b> <i>expression</i> <b>)</b><br>
+          &nbsp;&nbsp;<b>@(</b> <i>expression</i> <b>)</b><br>
+          &nbsp;&nbsp;<b>@*</b></li>
+      <li><b>Event trigger operator</b>:<br>
+          &nbsp;&nbsp;<b>-></b> <i>event_variable</i></li>
+    </ul></p>
+    <div align="center">
+      <p><b>Figure 3.  Example Coverage Output for an Uncovered Event Subexpression</b></p>
+      <img src="images/comb_event.png" alt="Uncovered Event Subexpression Output">
+    </div>
+    <p>In this diagram, we see that a certain @(posedge clock) expression never 
+    occured.</p>
+  </li>
+  
+  <li><b>Unary Subexpression</b>
+    <p>These subexpressions do not have any children expressions.  Their coverage is
+    in terms of:</p>
+    <p><ul>
+      <li>Did this expression evaluate to a value of 0?</li>
+      <li>Did this expression evaluate to a a non-zero value?</li>
+    </ul></p>
+    <p>The following operators are considered unary subexpressions:</p>
+    <p><ul>
+      <li><b>Signal/Bit Selectors</b>:<br>
+          &nbsp;&nbsp;<i>signal_value</i><br>
+          &nbsp;&nbsp;<i>signal_value</i> <b>[</b> <i>expression</i> <b>]</b><br>
+          &nbsp;&nbsp;<i>signal_value</i> <b>[</b> <i>value</i> <b>:</b> <i>value</i> <b>]</b><br>
+          &nbsp;&nbsp;<i>signal_value</i> <b>[</b> <i>expression</i> <b>+:</b> <i>value</i> <b>]</b><br>
+          &nbsp;&nbsp;<i>signal_value</i> <b>[</b> <i>expression</i> <b>-:</b> <i>value</i> <b>]</b></li>
+      <li><b>Function call</b>:<br>
+          &nbsp;&nbsp;<i>function_name</i> <b>( ... )</b></li>
+      <li><b>Mathematical operators</b>:<br>
+          &nbsp;&nbsp;<i>expression</i> <b>*</b> <i>expression</i><br>
+          &nbsp;&nbsp;<i>expression</i> <b>/</b> <i>expression</i><br>
+          &nbsp;&nbsp;<i>expression</i> <b>%</b> <i>expression</i><br>
+          &nbsp;&nbsp;<i>expression</i> <b>**</b> <i>expression</i><br>
+          &nbsp;&nbsp;<b>-</b> <i>expression</i></li>
+      <li><b>Relational operators</b>:<br>
+          &nbsp;&nbsp;<b>!</b> <i>expression</i><br>
+          &nbsp;&nbsp;<i>expression</i> <b>&lt;</b> <i>expression</i><br>
+          &nbsp;&nbsp;<i>expression</i> <b>&gt;</b> <i>expression</i><br>
+          &nbsp;&nbsp;<i>expression</i> <b>&lt;=</b> <i>expression</i><br>
+          &nbsp;&nbsp;<i>expression</i> <b>&gt;=</b> <i>expression</i><br>
+          &nbsp;&nbsp;<i>expression</i> <b>==</b> <i>expression</i><br>
+          &nbsp;&nbsp;<i>expression</i> <b>!=</b> <i>expression</i><br>
+          &nbsp;&nbsp;<i>expression</i> <b>===</b> <i>expression</i><br>
+          &nbsp;&nbsp;<i>expression</i> <b>!==</b> <i>expression</i></li>
+      <li><b>Shift operators</b>:<br>
+          &nbsp;&nbsp;<i>expression</i> <b>&lt;&lt;</b> <i>value</i><br>
+          &nbsp;&nbsp;<i>expression</i> <b>&gt;&gt;</b> <i>value</i><br>
+          &nbsp;&nbsp;<i>expression</i> <b>&lt;&lt;&lt;</b> <i>value</i><br>
+          &nbsp;&nbsp;<i>expression</i> <b>&gt;&gt;&gt;</b> <i>value</i></li>
+      <li><b>Conditional operator</b>:<br>
+          &nbsp;&nbsp;<i>expression</i> <b>?</b> <i>expression</i> <b>:</b> <i>expression</i></li>
+      <li><b>Unary operators</b>:<br>
+          &nbsp;&nbsp;<b>~</b> <i>expression</i><br>
+          &nbsp;&nbsp;<b>&</b> <i>expression</i><br>
+          &nbsp;&nbsp;<b>|</b> <i>expression</i><br>
+          &nbsp;&nbsp;<b>^</b> <i>expression</i><br>
+          &nbsp;&nbsp;<b>~&</b> <i>expression</i><br>
+          &nbsp;&nbsp;<b>~|</b> <i>expression</i><br>
+          &nbsp;&nbsp;<b>~^</b> <i>expression</i></li>
+      <li><b>Concatenation operators</b>:<br>
+          &nbsp;&nbsp;<b>{</b> <i>value</i> <b>{</b> <i>expression</i> <b>} }</b><br>
+          &nbsp;&nbsp;<b>{</b> <i>expression</i> <b>,</b> <i>expression</i> <b>, ... }</b></li>
+      <li><b>Case equality</b></li>
+    </ul></p>
+    <div align="center">
+      <p><b>Figure 4.  Example Coverage Output for an Uncovered Unary Subexpression</b></p>
+      <img src="images/comb_unary.png" alt="Uncovered Unary Subexpression Output">
+    </div>
+  </li>
+  
+  <li><b>Simple Combinational Subexpression</b>
+    <p>These subexpressions have two child expressions (L=left and R=right).  Their
+    coverage is in terms of:</p>
+    <p><ul>
+      <li>Did the left expression evaluate to 0 when the right expression evaluated to 0?</li>
+      <li>Did the left expression evaluate to 0 when the right expression evaluated to 1?</li>
+      <li>Did the left expression evaluate to 1 when the right expression evaluated to 0?</li>
+      <li>Did the left expression evaluate to 1 when the right expression evaluated to 1?</li>
+    </ul></p>
+    <p>The following operators are considered simple combinational subexpressions:</p>
+    <p><ul>
+      <li><b>Mathematical operators</b>:<br>
+          &nbsp;&nbsp;<i>expression</i> <b>+</b> <i>expression</i><br>
+          &nbsp;&nbsp;<i>expression</i> <b>-</b> <i>expression</i></li>
+      <li><b>Logical operators</b>:<br>
+          &nbsp;&nbsp;<i>expression</i> <b>&</b> <i>expression</i><br>
+          &nbsp;&nbsp;<i>expression</i> <b>|</b> <i>expression</i><br>
+          &nbsp;&nbsp;<i>expression</i> <b>^</b> <i>expression</i><br>
+          &nbsp;&nbsp;<i>expression</i> <b>~&</b> <i>expression</i><br>
+          &nbsp;&nbsp;<i>expression</i> <b>~|</b> <i>expression</i><br>
+          &nbsp;&nbsp;<i>expression</i> <b>~^</b> <i>expression</i><br>
+          &nbsp;&nbsp;<i>expression</i> <b>||</b> <i>expression</i><br>
+          &nbsp;&nbsp;<i>expression</i> <b>&&</b> expression</li>
+    </ul></p>
+    <div align="center">
+      <p><b>Figure 5.  Example Coverage Output for an Uncovered Simple Combinational Subexpression</b></p>
+      <img src="images/comb_simple.png" alt="Uncovered Simple Combinational Subexpression Output">
+    </div>
+  </li>
+  
+  <li><b>Complex Combinational Subexpression</b>
+    <p>These subexpression have three or more child expressions that all are connected
+    by the same operator.  For example, the statement a = (b & c & d) would contain the
+    complex combinational subexpression of (b & c & d) where b, c and d are the three
+    child expressions all combined using the bitwise AND operator.</p>
+    <p>The effect of each subexpression on the value of the entire subexpression as well 
+    as the combination of each child toward the parent is displayed.  For example, if the
+    combinational operator is a bitwise OR, each child is checked to see if it evaluated 
+    to TRUE (in an OR operation, only one subexpression needs to evaluate to TRUE for 
+    the entire subexpression to be TRUE).  Additionally, all child subexpressions are 
+    checked to see if all evaluated to 0 simultaneously (this is the only way to get the 
+    whole subexpression to evaluate to 0).</p>
+    <p>The unique identifier below each subexpression is used in the displayed coverage
+    information for these types of subexpressions for identifying which subexpression
+    did not behave correctly.</p>
+    <p>All simple combinational subexpressions can be output as complex combinational
+    subexpressions if there are three or more child subexpressions to the operation.</p>
+    <div align="center">
+      <p><b>Figure 6.  Example Coverage Output for an Uncovered Complex Combinational Subexpression</b></p>
+      <img src="images/comb_complex.png" alt="Uncovered Complex Combinational Subexpression Output">
+    </div>
+    <p>In this example, subexpression 1 never evaluated to a value of TRUE (which would
+    have made the entire expression TRUE) and all three subexpressions 1, 2, and 3
+    were never a value of 0 simultaneously (which would have made the entire expression
+    FALSE).  However, subexpressions 2 and 3 both evaluated to TRUE at some point.</p>
+  </li>
+</ol>
+</p>
 
 </body>
 </html>
