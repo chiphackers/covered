@@ -37,6 +37,9 @@ expression* expression_get_last_line_expr( expression* expr );
 /*! \brief Finds all RHS signals in given expression tree */
 void expression_find_rhs_sigs( expression* expr, str_link** head, str_link** tail );
 
+/*! \brief Finds the expression in this expression tree with the specified underline id. */
+expression* expression_find_uline_id( expression* expr, int ulid );
+
 /*! \brief Finds the root statement for the given expression */
 statement* expression_get_root_statement( expression* exp );
 
@@ -82,6 +85,10 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.40  2006/02/03 23:49:38  phase1geo
+ More fixes to support signed comparison and propagation.  Still more testing
+ to do here before I call it good.  Regression may fail at this point.
+
  Revision 1.39  2006/01/24 23:24:37  phase1geo
  More updates to handle static functions properly.  I have redone quite a bit
  of code here which has regressions pretty broke at the moment.  More work

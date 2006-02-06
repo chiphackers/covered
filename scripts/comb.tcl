@@ -1,5 +1,6 @@
 set comb_ul_ip         0
 set comb_curr_uline_id 0
+set comb_curr_exp_id   0
 set comb_bheight       -1
 
 proc K {x y} {
@@ -47,7 +48,7 @@ proc display_comb_info {} {
   global comb_code comb_uline_groups comb_ulines
   global comb_uline_indexes comb_first_uline
   global comb_gen_ulines comb_curr_uline_id
-  global comb_curr_cursor
+  global comb_curr_cursor comb_curr_info
   global uncov_fgColor
 
   set curr_uline 0
@@ -97,12 +98,13 @@ proc display_comb_info {} {
     .combwin.f.top.t tag bind comb_enter <Enter> {
       set comb_curr_cursor [.combwin.f.top.t cget -cursor]
       .combwin.f.top.t configure -cursor hand2
+      .combwin.info configure -text "Click left button for coverage info / Click right button to see parent expression"
     }
     .combwin.f.top.t tag bind comb_leave <Leave> {
       .combwin.f.top.t configure -cursor $comb_curr_cursor
+      .combwin.info configure -text $comb_curr_info
     }
     .combwin.f.top.t tag bind comb_bp1 <ButtonPress-1> {
-      .combwin.f.top.t configure -cursor $comb_curr_cursor
       set selected_range [.combwin.f.top.t tag prevrange comb_bp1 {current + 1 chars}]
       set redraw [move_display_down [get_expr_index_from_range $selected_range 1]]
       if {$redraw == 1} {
@@ -114,7 +116,6 @@ proc display_comb_info {} {
       } 
     }
     .combwin.f.top.t tag bind comb_bp3 <ButtonPress-3> {
-      .combwin.f.top.t configure -cursor $comb_curr_cursor
       set selected_range [.combwin.f.top.t tag prevrange comb_bp3 {current + 1 chars}]
       set redraw [move_display_up [get_expr_index_from_range $selected_range 0]]
       if {$redraw == 1} {
@@ -131,7 +132,7 @@ proc display_comb_info {} {
 
 proc display_comb_coverage {ulid} {
 
-  global curr_funit_name curr_funit_type comb_expr_cov
+  global curr_funit_name curr_funit_type comb_expr_cov comb_curr_exp_id
 
   # Allow us to clear out text box and repopulate
   .combwin.f.bot.t configure -state normal
@@ -141,7 +142,7 @@ proc display_comb_coverage {ulid} {
 
   # Get combinational coverage information
   set comb_expr_cov ""
-  tcl_func_get_comb_coverage $curr_funit_name $curr_funit_type $ulid
+  tcl_func_get_comb_coverage $curr_funit_name $curr_funit_type $comb_curr_exp_id $ulid
 
   # Display coverage information
   .combwin.f.bot.t insert end "\n\n"
@@ -451,9 +452,13 @@ proc generate_underlines {} {
 
 }
 
-proc create_comb_window {funit_name funit_type expr_id} {
+# Creates the verbose combinational logic coverage viewer window.  If this window already exists,
+# the window is raised to the top of all windows for viewing.  All events in this window are also
+# bound here.
+proc create_comb_window {funit_name funit_type expr_id sline} {
 
-  global comb_code comb_uline_groups comb_ulines
+  global comb_code comb_uline_groups comb_ulines comb_curr_exp_id
+  global file_name comb_curr_info
 
   # Now create the window and set the grab to this window
   if {[winfo exists .combwin] == 0} {
@@ -462,11 +467,13 @@ proc create_comb_window {funit_name funit_type expr_id} {
     toplevel .combwin
     wm title .combwin "Combinational Logic Coverage - Verbose"
 
+    # Create all frames for the window
     frame .combwin.f -bg grey -width 700 -height 350
-    frame .combwin.f.top
-    frame .combwin.f.bot
+    frame .combwin.f.top -relief raised -borderwidth 1
+    frame .combwin.f.bot -relief raised -borderwidth 1
     frame .combwin.f.handle -borderwidth 2 -relief raised -cursor sb_v_double_arrow
 
+    # Create frame slider
     place .combwin.f.top -relwidth 1 -height -1
     place .combwin.f.bot -relwidth 1 -rely 1 -anchor sw -height -1
     place .combwin.f.handle -relx 0.8 -anchor e -width 8 -height 8
@@ -497,10 +504,23 @@ proc create_comb_window {funit_name funit_type expr_id} {
     scrollbar .combwin.f.bot.hb -orient horizontal -command ".combwin.f.bot.t xview"
     scrollbar .combwin.f.bot.vb -orient vertical   -command ".combwin.f.bot.t yview"
 
-    # Create bottom information bar
-    label .combwin.info -anchor w
+    # Create information bar
+    label .combwin.info -anchor w -relief raised -borderwidth 1
 
-    # Pack the widgets into the top and bottom frames
+    # Create button frame with close/help buttons at the very bottom of the window
+    frame .combwin.bf -relief raised -borderwidth 1
+    button .combwin.bf.close -text "Close" -width 10 -command {
+      destroy .combwin
+    }
+    button .combwin.bf.help -text "Help" -width 10 -command {
+      help_show_manual comb
+    }
+    
+    # Pack the button widgets into button frame
+    pack .combwin.bf.help -side right -padx 8 -pady 4
+    pack .combwin.bf.close -side right -padx 8 -pady 4
+
+    # Pack the widgets into the top frame
     grid rowconfigure    .combwin.f.top 1 -weight 1
     grid columnconfigure .combwin.f.top 0 -weight 1
     grid .combwin.f.top.l  -row 0 -column 0 -sticky nsew
@@ -508,6 +528,7 @@ proc create_comb_window {funit_name funit_type expr_id} {
     grid .combwin.f.top.hb -row 2 -column 0 -sticky ew
     grid .combwin.f.top.vb -row 1 -column 1 -sticky ns
 
+    # Pack the widgets into the bottom frame
     grid rowconfigure    .combwin.f.bot 1 -weight 1
     grid columnconfigure .combwin.f.bot 0 -weight 1
     grid .combwin.f.bot.l  -row 0 -column 0 -sticky nsew
@@ -515,8 +536,10 @@ proc create_comb_window {funit_name funit_type expr_id} {
     grid .combwin.f.bot.hb -row 2 -column 0 -sticky ew
     grid .combwin.f.bot.vb -row 1 -column 1 -sticky ns
 
+    # Pack the frame, informational bar, and button frame into the window
     pack .combwin.f    -fill both -expand yes
     pack .combwin.info -fill both
+    pack .combwin.bf   -fill both
 
   } else {
 
@@ -531,12 +554,20 @@ proc create_comb_window {funit_name funit_type expr_id} {
   set comb_code         "" 
   set comb_uline_groups "" 
   set comb_ulines       ""
+  set comb_curr_exp_id  $expr_id
   tcl_func_get_comb_expression $funit_name $funit_type $expr_id
+
+  # Initialize text in information bar
+  set comb_curr_info "Filename: $file_name, module: $funit_name, line: $sline"
+  .combwin.info configure -text $comb_curr_info
 
   organize_underlines
 
   # Write combinational logic with level 0 underline information in text box
   display_comb_info
+
+  # Raise this window to the foreground
+  raise .combwin
 
 }
 

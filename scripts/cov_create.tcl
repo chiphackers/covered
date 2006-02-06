@@ -1,11 +1,14 @@
 set cov_rb      line
 set last_cov_rb line
 
-proc cov_create {.covbox} {
+proc cov_create {f} {
 
   global cov_rb file_name start_line end_line last_cov_rb
 
-  radiobutton .covbox.line -variable cov_rb -value line   -text "Line" -command { 
+  # Create frame for the radio buttons
+  frame $f.m -relief raised -borderwidth 1
+
+  radiobutton $f.m.line -variable cov_rb -value line -text "Line" -command { 
     if {$file_name != 0} {
       set text_x [.bot.right.txt xview]
       set text_y [.bot.right.txt yview]
@@ -21,7 +24,7 @@ proc cov_create {.covbox} {
       .bot.right.txt yview moveto [lindex $text_y 0]
     } 
   }
-  radiobutton .covbox.tog  -variable cov_rb -value toggle -text "Toggle" -command {
+  radiobutton $f.m.tog  -variable cov_rb -value toggle -text "Toggle" -command {
     if {$file_name != 0} {
       set text_x [.bot.right.txt xview]
       set text_y [.bot.right.txt yview]
@@ -37,7 +40,7 @@ proc cov_create {.covbox} {
       .bot.right.txt yview moveto [lindex $text_y 0]
     }
   }
-  radiobutton .covbox.comb -variable cov_rb -value comb   -text "Logic" -command {
+  radiobutton $f.m.comb -variable cov_rb -value comb -text "Logic" -command {
     if {$file_name != 0} {
       set text_x [.bot.right.txt xview]
       set text_y [.bot.right.txt yview]
@@ -53,7 +56,7 @@ proc cov_create {.covbox} {
       .bot.right.txt yview moveto [lindex $text_y 0]
     }
   }
-  radiobutton .covbox.fsm  -variable cov_rb -value fsm    -text "FSM" -command {
+  radiobutton $f.m.fsm  -variable cov_rb -value fsm -text "FSM" -command {
     if {$file_name != 0} {
       set text_x [.bot.right.txt xview]
       set text_y [.bot.right.txt yview]
@@ -70,23 +73,50 @@ proc cov_create {.covbox} {
     }
   } -state disabled
 
-  label .covbox.l -text "Summary Information:"
-  label .covbox.ht -relief sunken -width 10 -anchor e -text "0"
-  label .covbox.h -text "hit out of"
-  label .covbox.tt -relief sunken -width 10 -anchor e -text "0"
-
   # Cause line coverage to be the default
-  .covbox.line select
+  $f.m.line select
 
-  # Pack the .covbox frame
-  pack .covbox -side top -fill both
-  pack .covbox.line -side left
-  pack .covbox.tog  -side left
-  pack .covbox.comb -side left
-  pack .covbox.fsm  -side left
-  pack .covbox.tt   -side right
-  pack .covbox.h    -side right
-  pack .covbox.ht   -side right
-  pack .covbox.l    -side right
+  # Pack radiobuttons
+  pack $f.m.line -side left
+  pack $f.m.tog  -side left
+  pack $f.m.comb -side left
+  pack $f.m.fsm  -side left
+
+  # Create summary frame and widgets
+  frame $f.s -relief raised -borderwidth 1
+  label $f.s.l -text "Summary Information:"
+  label $f.s.ht -width 40 -anchor e
+
+  # Pack the summary frame
+  pack $f.s.l  -side left
+  pack $f.s.ht -side left -fill both
+
+  # Pack the coverage box frame
+  pack $f.m -side left -fill both
+  pack $f.s -side left -fill both
+
+  # Pack the metric selection and summary frames into the current window
+  pack $f -side top -fill x
+
+}
+
+proc cov_display_summary {hit total} {
+
+  global cov_rb
+
+  # Create summary information text
+  if {$cov_rb == "line"} {
+    set info "$hit out of $total lines executed"
+  } elseif {$cov_rb == "toggle"} {
+    set info "$hit out of $total signals fully toggled"
+  } elseif {$cov_rb == "comb"} {
+    set info "$hit out of $total logical combinations hit"
+  } elseif {$cov_rb == "fsm"} {
+    set info "$hit out of $total FSM states hit"
+  } else {
+  }
+
+  # Display text to GUI
+  .covbox.s.ht configure -text $info
 
 }

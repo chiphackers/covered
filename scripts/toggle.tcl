@@ -14,17 +14,29 @@ proc create_toggle_window {funit_name funit_type signal} {
     toplevel .togwin
     wm title .togwin "Toggle Coverage - Verbose"
 
-    frame .togwin.f
+    frame .togwin.f -relief raised -borderwidth 1
 
     # Add toggle information
     label .togwin.f.l_01 -anchor w -text "Toggle 0->1"
     label .togwin.f.l_10 -anchor w -text "Toggle 1->0"
     text  .togwin.f.t -height 2 -width 32 -xscrollcommand ".togwin.f.hb set" -wrap none -spacing1 2 -spacing3 3
-
     scrollbar .togwin.f.hb -orient horizontal -command ".togwin.f.t xview"
 
     # Create bottom information bar
     label .togwin.f.info -anchor e
+
+    # Create bottom button bar
+    frame .togwin.bf -relief raised -borderwidth 1
+    button .togwin.bf.close -text "Close" -width 10 -command {
+      destroy .togwin
+    }
+    button .togwin.bf.help -text "Help" -width 10 -command {
+      help_show_manual toggle
+    }
+
+    # Pack the buttons into the button frame
+    pack .togwin.bf.help  -side right -padx 8 -pady 4
+    pack .togwin.bf.close -side right -padx 8 -pady 4
 
     # Pack the widgets into the bottom frame
     grid rowconfigure    .togwin.f 1 -weight 1
@@ -36,7 +48,8 @@ proc create_toggle_window {funit_name funit_type signal} {
     grid .togwin.f.hb   -row 2 -column 0 -sticky ew
     grid .togwin.f.info -row 3 -column 0 -sticky ew
 
-    pack .togwin.f
+    pack .togwin.f  -fill both
+    pack .togwin.bf -fill x
 
   }
 
@@ -84,5 +97,8 @@ proc create_toggle_window {funit_name funit_type signal} {
   }
 
   .togwin.f.info configure -text "$sig_name\[$toggle_msb:$toggle_lsb\]"
+
+  # Raise this window to the foreground
+  raise .togwin
 
 }

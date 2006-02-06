@@ -147,8 +147,7 @@ proc display_line_cov {} {
     if {$end_line != 0} {
 
       # First, populate the summary information
-      .covbox.ht configure -text "$line_summary_hit"
-      .covbox.tt configure -text "$line_summary_total"
+      cov_display_summary $line_summary_hit $line_summary_total
 
       # Next, populate text box with file contents including highlights for covered/uncovered lines
       foreach phrase $contents {
@@ -269,8 +268,7 @@ proc display_toggle_cov {} {
     if {$end_line != 0} {
 
       # First, populate the summary information
-      .covbox.ht configure -text "$toggle_summary_hit"
-      .covbox.tt configure -text "$toggle_summary_total"
+      cov_display_summary $toggle_summary_hit $toggle_summary_total
 
       # Next, populate text box with file contents including highlights for covered/uncovered lines
       foreach phrase $contents {
@@ -420,8 +418,7 @@ proc display_comb_cov {} {
     if {$end_line != 0} {
 
       # First, populate the summary information
-      .covbox.ht configure -text "$comb_summary_hit"
-      .covbox.tt configure -text "$comb_summary_total"
+      cov_display_summary $comb_summary_hit $comb_summary_total
 
       # Next, populate text box with file contents including highlights for covered/uncovered lines
       foreach phrase $contents {
@@ -493,7 +490,8 @@ proc display_comb_cov {} {
           set my_range   [.bot.right.txt tag prevrange uncov_highlight {current + 1 chars}]
           set index [expr [lsearch -exact $all_ranges [lindex $my_range 0]] / 2]
           set expr_id [lindex [lindex $uncovered_combs $index] 2]
-          create_comb_window $curr_funit_name $curr_funit_type $expr_id
+          set sline [expr [lindex [split [lindex $my_range 0] "."] 0] + $start_line - 1]
+          create_comb_window $curr_funit_name $curr_funit_type $expr_id $sline
         }
       }
 

@@ -24,7 +24,7 @@ proc main_view {} {
   tcl_func_get_race_reason_msgs
 
   # Create the frame for menubar creation
-  frame .menubar -width 710 -height 20 
+  frame .menubar -width 710 -relief raised -borderwidth 1
   menu_create .menubar
 
   # Create the information frame
@@ -35,8 +35,8 @@ proc main_view {} {
   frame .bot -width 120 -height 300
 
   # Create frames for pane handle
-  frame .bot.left
-  frame .bot.right
+  frame .bot.left -relief raised -borderwidth 1
+  frame .bot.right -relief raised -borderwidth 1
   frame .bot.handle -borderwidth 2 -relief raised -cursor sb_h_double_arrow
 
   place .bot.left  -relheight 1 -width -1
@@ -75,7 +75,7 @@ proc main_view {} {
   scrollbar .bot.right.hb -orient horizontal -command ".bot.right.txt xview"
 
   # Create bottom information bar
-  label .info -anchor w
+  label .info -anchor w -relief raised -borderwidth 1
 
   # Pack the widgets into the bottom left and right frames
   grid rowconfigure    .bot.left 1 -weight 1

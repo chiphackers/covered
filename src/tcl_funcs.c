@@ -35,6 +35,18 @@ extern char        user_msg[USER_MSG_LENGTH];
 extern const char* race_msgs[RACE_TYPE_NUM];
 
 
+/*!
+ \param d     TBD
+ \param tcl   Pointer to the Tcl interpreter
+ \param argc  Number of arguments in the argv list
+ \param argv  Array of arguments passed to this function
+
+ \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
+         TCL_ERROR.
+
+ Retrieves all of the race condition messages for all possible race conditions and stores them into
+ the "race_msgs" global array.
+*/
 int tcl_func_get_race_reason_msgs( ClientData d, Tcl_Interp* tcl, int argc, const char *argv[] ) {
 
   int retval = TCL_OK;  /* Return value of this function */
@@ -49,6 +61,18 @@ int tcl_func_get_race_reason_msgs( ClientData d, Tcl_Interp* tcl, int argc, cons
 
 }
 
+/*!
+ \param d     TBD
+ \param tcl   Pointer to the Tcl interpreter
+ \param argc  Number of arguments in the argv list
+ \param argv  Array of arguments passed to this function
+
+ \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
+         TCL_ERROR.
+
+ Populates the global variables "funit_names" and "funit_types" with all of the functional units from the
+ design.
+*/
 int tcl_func_get_funit_list( ClientData d, Tcl_Interp* tcl, int argc, const char *argv[] ) {
 
   char** funit_names;      /* List of functional unit names in design */
@@ -73,6 +97,16 @@ int tcl_func_get_funit_list( ClientData d, Tcl_Interp* tcl, int argc, const char
 
 }
 
+/*!
+ \param tcl   Pointer to the Tcl interpreter
+ \param root  Pointer to current root instance to output
+
+ \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
+         TCL_ERROR.
+
+ Populates the global variables "inst_list", "funit_names", and "funit_types" with all of the instances
+ from the design.
+*/
 int tcl_func_get_instances( Tcl_Interp* tcl, funit_inst* root ) {
 
   funit_inst* curr;         /* Pointer to current functional unit instance */
@@ -97,6 +131,18 @@ int tcl_func_get_instances( Tcl_Interp* tcl, funit_inst* root ) {
 
 }
 
+/*!
+ \param d     TBD
+ \param tcl   Pointer to the Tcl interpreter
+ \param argc  Number of arguments in the argv list
+ \param argv  Array of arguments passed to this function
+
+ \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
+         TCL_ERROR.
+
+ Populates the global variables "inst_list", "funit_names", and "funit_types" with all of the instances 
+ from the design.
+*/
 int tcl_func_get_instance_list( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
   int retval = TCL_OK;  /* Return value for this function */
@@ -578,19 +624,21 @@ int tcl_func_get_comb_expression( ClientData d, Tcl_Interp* tcl, int argc, const
 */
 int tcl_func_get_comb_coverage( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
-  int    retval = TCL_OK;  /* Return value for this function                          */
+  int    retval = TCL_OK;  /* Return value for this function */
   char*  funit_name;       /* Name of functional unit containing expression to lookup */
   int    funit_type;       /* Type of functional unit containing expression to lookup */
-  int    ulid;             /* Underline ID of expression to find                      */
-  char** info;             /* Array containing lines of coverage information text     */
-  int    info_size;        /* Specifies number of elements in info array              */
-  int    i;                /* Loop iterator                                           */
+  int    expid;            /* Expression ID of statement containing desired subexpression */
+  int    ulid;             /* Underline ID of expression to find */
+  char** info;             /* Array containing lines of coverage information text */
+  int    info_size;        /* Specifies number of elements in info array */
+  int    i;                /* Loop iterator */
 
   funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
   funit_type = atoi( argv[2] );
-  ulid       = atoi( argv[3] );
+  expid      = atoi( argv[3] );
+  ulid       = atoi( argv[4] );
 
-  if( combination_get_coverage( funit_name, funit_type, ulid, &info, &info_size ) ) {
+  if( combination_get_coverage( funit_name, funit_type, expid, ulid, &info, &info_size ) ) {
 
     if( info_size > 0 ) {
 
@@ -873,6 +921,10 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.27  2006/02/03 03:11:15  phase1geo
+ Fixing errors in GUI display of combinational logic coverage.  I still see
+ a few problems here that need to be taken care of, however.
+
  Revision 1.26  2006/01/28 06:42:53  phase1geo
  Added configuration read/write functionality for tool preferences and integrated
  the preferences.tcl file into Covered's GUI.  This is now functioning correctly.

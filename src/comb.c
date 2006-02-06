@@ -1972,32 +1972,47 @@ bool combination_get_expression( char* funit_name, int funit_type, int expr_id, 
 
 }
 
-bool combination_get_coverage( char* funit_name, int funit_type, int uline_id, char*** info, int* info_size ) {
+/*!
+ \param funit_name  Name of functional unit containing subexpression to get coverage detail for
+ \param funit_type  Type of functional unit containing subexpression to get coverage detail for
+ \param exp_id      Expression ID of statement containing subexpression to get coverage detail for
+ \param uline_id    Underline ID of subexpression to get coverage detail for
+ \param info        Pointer to string array that will be populated with the coverage detail
+ \param info_size   Number of entries in info array
 
-  bool        retval = TRUE;  /* Return value for this function                */
-  func_unit   funit;          /* Module used to find specified functional unit */
-  funit_link* funitl;         /* Pointer to found functional unit link         */
-  exp_link*   expl;           /* Pointer to current expression link            */
+ \return Returns TRUE if we were successful in obtaining coverage detail for the specified information;
+         otherwise, returns FALSE to indicate an error.
+
+ Calculates the coverage detail for the specified subexpression and stores this in string format in the
+ info and info_size arguments.  The coverage detail created matches the coverage detail output format that
+ is used in the ASCII reports.
+*/
+bool combination_get_coverage( char* funit_name, int funit_type, int exp_id, int uline_id, char*** info, int* info_size ) {
+
+  bool        retval = FALSE;  /* Return value for this function */
+  func_unit   funit;           /* Module used to find specified functional unit */
+  funit_link* funitl;          /* Pointer to found functional unit link */
+  exp_link*   expl;            /* Pointer to current expression link */
+  expression* exp;             /* Pointer to found expression */
+  expression  tmpexp;          /* Temporary expression used for searching */
 
   funit.name = funit_name;
   funit.type = funit_type;
 
+  /* Find the functional unit containing this subexpression */
   if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
 
-    expl = funitl->funit->exp_head;
-    while( (expl != NULL) && (expl->exp->ulid != uline_id) ) {
-      expl = expl->next;
+    /* Find statement containing this expression */
+    tmpexp.id = exp_id;
+    if( (expl = exp_link_find( &tmpexp, funitl->funit->exp_head )) != NULL ) {
+
+      /* Now find the subexpression that matches the given underline ID */
+      if( (exp = expression_find_uline_id( expl->exp, uline_id )) != NULL ) {
+        combination_get_missed_expr( info, info_size, exp, 0 );
+        retval = TRUE;
+      }
+
     }
-
-    if( expl != NULL ) {
-      combination_get_missed_expr( info, info_size, expl->exp, 0 );
-    } else {
-      retval = FALSE;
-    }
-
-  } else {
-
-    retval = FALSE;
 
   }
 
@@ -2064,6 +2079,12 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.128  2006/02/06 05:07:26  phase1geo
+ Fixed expression_set_static_only function to consider static expressions
+ properly.  Updated regression as a result of this change.  Added files
+ for signed3 diagnostic.  Documentation updates for GUI (these are not quite
+ complete at this time yet).
+
  Revision 1.127  2006/02/03 23:49:38  phase1geo
  More fixes to support signed comparison and propagation.  Still more testing
  to do here before I call it good.  Regression may fail at this point.
