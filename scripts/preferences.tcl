@@ -289,85 +289,21 @@ proc create_preferences {} {
       grid .prefwin.limits.fl -row 4 -column 0 -sticky news
       grid .prefwin.limits.fs -row 4 -column 1 -sticky news
 
-    #################################
-    # Create OK/Cancel/Help buttons #
-    #################################
+    #######################################
+    # Create Apply/OK/Cancel/Help buttons #
+    #######################################
 
       frame .prefwin.bbar -relief raised -borderwidth 1
 
+      button .prefwin.bbar.apply -width 10 -text "Apply" -command {
+        apply_preferences
+      }
+
       button .prefwin.bbar.ok -width 10 -text "OK" -command {
-
-        set changed 0
-
-        if {$cov_fgColor != $tmp_cov_fgColor} {
-          set cov_fgColor $tmp_cov_fgColor
-          set changed 1
-        }
-        if {$cov_bgColor != $tmp_cov_bgColor} {
-          set cov_bgColor $tmp_cov_bgColor
-          set changed 1
-        }
-        if {$uncov_fgColor != $tmp_uncov_fgColor} {
-          set uncov_fgColor $tmp_uncov_fgColor
-          set changed 1
-        }
-        if {$uncov_bgColor != $tmp_uncov_bgColor} {
-          set uncov_bgColor $tmp_uncov_bgColor
-          set changed 1
-        }
-        if {$race_fgColor != $tmp_race_fgColor} {
-          set race_fgColor $tmp_race_fgColor
-          set changed 1
-        }
-        if {$race_bgColor != $tmp_race_bgColor} {
-          set race_bgColor $tmp_race_bgColor
-          set changed 1
-        }
-        if {$line_low_limit != [expr 100 - [.prefwin.limits.ls.l nearest 0]]} {
-          set line_low_limit [expr 100 - [.prefwin.limits.ls.l nearest 0]]
-          set changed 1
-        }
-        if {$toggle_low_limit != [expr 100 - [.prefwin.limits.ts.l nearest 0]]} {
-          set toggle_low_limit [expr 100 - [.prefwin.limits.ts.l nearest 0]]
-          set changed 1
-        }
-        if {$comb_low_limit != [expr 100 - [.prefwin.limits.cs.l nearest 0]]} {
-          set comb_low_limit [expr 100 - [.prefwin.limits.cs.l nearest 0]]
-          set changed 1
-        }
-        if {$fsm_low_limit != [expr 100 - [.prefwin.limits.fs.l nearest 0]]} {
-          set fsm_low_limit    [expr 100 - [.prefwin.limits.fs.l nearest 0]]
-          set changed 1
-        }
-
         destroy .prefwin
-
-        if {$changed == 1} {
-
-          # Write configuration file with new values
+        if {[apply_preferences] == 1} {
           write_coveredrc
-
-          # Redisplay with new settings
-          set text_x [.bot.right.txt xview]
-          set text_y [.bot.right.txt yview]
-          if {$cov_rb == "line"} {
-            display_line_cov
-          } elseif {$cov_rb == "toggle"} {
-            display_toggle_cov
-          } elseif {$cov_rb == "comb"} {
-            display_comb_cov
-          } else {
-            # Error
-          }
-          .bot.right.txt xview moveto [lindex $text_x 0]
-          .bot.right.txt yview moveto [lindex $text_y 0]
-
-          if {[.menubar.tools.menu entrycget 0 -state] != "disabled"} {
-            create_summary
-          }
-
         }
-
       }
 
       button .prefwin.bbar.cancel -width 10 -text "Cancel" -command {
@@ -381,6 +317,7 @@ proc create_preferences {} {
       pack .prefwin.bbar.help   -side right -padx 8 -pady 4
       pack .prefwin.bbar.cancel -side right -padx 8 -pady 4
       pack .prefwin.bbar.ok     -side right -padx 8 -pady 4
+      pack .prefwin.bbar.apply  -side right -padx 8 -pady 4
 
     ####################################
     # Pack all widgets into the window #
@@ -394,6 +331,98 @@ proc create_preferences {} {
 
   # Bring the window to the top
   raise .prefwin
+
+}
+
+# Checks to see if any of the global preferences have been modified in the preferences window.
+# If changes have occurred, the displays are immediately updated to reflect these new values.
+# A value of 0 is returned if no changes were found; otherwise, a value of 1 is returned.
+proc apply_preferences {} {
+
+  global cov_fgColor tmp_cov_fgColor
+  global cov_bgColor tmp_cov_bgColor
+  global uncov_fgColor tmp_uncov_fgColor
+  global uncov_bgColor tmp_uncov_bgColor
+  global race_fgColor tmp_race_fgColor
+  global race_bgColor tmp_race_bgColor
+  global line_low_limit toggle_low_limit comb_low_limit fsm_low_limit
+  global cov_rb
+
+  set changed 0
+
+  # Check for changes and update global preference variables accordingly
+  if {$cov_fgColor != $tmp_cov_fgColor} {
+    set cov_fgColor $tmp_cov_fgColor
+    set changed 1
+  }
+  if {$cov_bgColor != $tmp_cov_bgColor} {
+    set cov_bgColor $tmp_cov_bgColor
+    set changed 1
+  }
+  if {$uncov_fgColor != $tmp_uncov_fgColor} {
+    set uncov_fgColor $tmp_uncov_fgColor
+    set changed 1
+  }
+  if {$uncov_bgColor != $tmp_uncov_bgColor} {
+    set uncov_bgColor $tmp_uncov_bgColor
+    set changed 1
+  }
+  if {$race_fgColor != $tmp_race_fgColor} {
+    set race_fgColor $tmp_race_fgColor
+    set changed 1
+  }
+  if {$race_bgColor != $tmp_race_bgColor} {
+    set race_bgColor $tmp_race_bgColor
+    set changed 1
+  }
+  if {$line_low_limit != [expr 100 - [.prefwin.limits.ls.l nearest 0]]} {
+    set line_low_limit [expr 100 - [.prefwin.limits.ls.l nearest 0]]
+    set changed 1
+  }
+  if {$toggle_low_limit != [expr 100 - [.prefwin.limits.ts.l nearest 0]]} {
+    set toggle_low_limit [expr 100 - [.prefwin.limits.ts.l nearest 0]]
+    set changed 1
+  }
+  if {$comb_low_limit != [expr 100 - [.prefwin.limits.cs.l nearest 0]]} {
+    set comb_low_limit [expr 100 - [.prefwin.limits.cs.l nearest 0]]
+    set changed 1
+  }
+  if {$fsm_low_limit != [expr 100 - [.prefwin.limits.fs.l nearest 0]]} {
+    set fsm_low_limit    [expr 100 - [.prefwin.limits.fs.l nearest 0]]
+    set changed 1
+  }
+
+  # Update the display if necessary
+  if {$changed == 1} {
+
+    # Redisplay with new settings
+    set text_x [.bot.right.txt xview]
+    set text_y [.bot.right.txt yview]
+
+    if {$cov_rb == "line"} {
+      display_line_cov
+    } elseif {$cov_rb == "toggle"} {
+      display_toggle_cov
+    } elseif {$cov_rb == "comb"} {
+      display_comb_cov
+    } else {
+      # Error
+    }
+
+    .bot.right.txt xview moveto [lindex $text_x 0]
+    .bot.right.txt yview moveto [lindex $text_y 0]
+
+    # Update the listbox
+    populate_listbox .bot.left.l
+
+    # Update the summary window, if it currently exists
+    if {[winfo exists .sumwin] == 1} {
+      create_summary
+    }
+
+  }
+
+  return $changed
 
 }
 

@@ -3,7 +3,7 @@ set curr_toggle_ptr ""
 
 proc display_toggle {curr_index} {
 
-  global prev_index next_index
+  global prev_index next_index curr_toggle_ptr
 
   # Get range of current signal
   set curr_range [.bot.right.txt tag prevrange uncov_button "$curr_index + 1 chars"]
@@ -12,7 +12,7 @@ proc display_toggle {curr_index} {
   set curr_signal [string trim [lindex [split [.bot.right.txt get [lindex $curr_range 0] [lindex $curr_range 1]] "\["] 0]]
 
   # Make sure that the selected signal is visible in the text box and is shown as selected
-  set_toggle_pointer [lindex [split [lindex $curr_range 0] .] 0]
+  set_pointer curr_toggle_ptr [lindex [split [lindex $curr_range 0] .] 0]
 
   # Get range of previous signal
   set prev_index [lindex [.bot.right.txt tag prevrange uncov_button [lindex $curr_index 0]] 0]

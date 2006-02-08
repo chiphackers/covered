@@ -84,6 +84,14 @@ proc process_funit_line_cov {} {
     # Get line summary information and display this now
     tcl_func_get_line_summary $curr_funit_name $curr_funit_type
 
+    # If we have some uncovered values, enable the "next" pointer
+    if {$line_summary_total != $line_summary_hit} {
+      .bot.right.h.next configure -state normal
+    } else {
+      .bot.right.h.next configure -state disabled
+    }
+    .bot.right.h.prev configure -state disabled
+
     calc_and_display_line_cov
 
   }
@@ -209,6 +217,14 @@ proc process_funit_toggle_cov {} {
     # Get line summary information and display this now
     tcl_func_get_toggle_summary $curr_funit_name $curr_funit_type
 
+    # If we have some uncovered values, enable the "next" pointer
+    if {$toggle_summary_total != $toggle_summary_hit} {
+      .bot.right.h.next configure -state normal
+    } else {
+      .bot.right.h.next configure -state disabled
+    }
+    .bot.right.h.prev configure -state disabled
+
     calc_and_display_toggle_cov
 
   }
@@ -332,6 +348,7 @@ proc process_funit_comb_cov {} {
 
   global fileContent file_name start_line end_line
   global curr_funit_name curr_funit_type
+  global comb_summary_total comb_summary_hit
 
   if {$curr_funit_name != 0} {
 
@@ -355,6 +372,14 @@ proc process_funit_comb_cov {} {
 
     # Get line summary information and display this now
     tcl_func_get_comb_summary $curr_funit_name $curr_funit_type
+
+    # If we have found uncovered combinations in this module, enable the next button
+    if {$comb_summary_total != $comb_summary_hit} {
+      .bot.right.h.next configure -state normal
+    } else {
+      .bot.right.h.next configure -state disabled
+    }
+    .bot.right.h.prev configure -state disabled
 
     calc_and_display_comb_cov
 

@@ -10,8 +10,9 @@ source $HOME/scripts/help.tcl
 source $HOME/scripts/summary.tcl
 source $HOME/scripts/preferences.tcl
 
-set last_lb_index ""
-set lwidth        -1 
+set last_lb_index      ""
+set lwidth             -1 
+set start_search_index 1.0
 
 proc main_view {} {
 
@@ -58,10 +59,37 @@ proc main_view {} {
   }
 
   # Create the listbox label
-  label .bot.left.ll -text "Modules/Instances" -anchor w
+  label .bot.left.ll -text "Modules" -anchor w
 
-  # Create the textbox label
-  label .bot.right.tl -text "Cur   Line #       Verilog Source" -anchor w
+  # Create the textbox header frame
+  frame .bot.right.h
+  label .bot.right.h.tl -text "Cur   Line #       Verilog Source" -anchor w
+  button .bot.right.h.prev -text "<--" -state disabled -command {
+    puts "Clicked on previous uncovered"
+  }
+  button .bot.right.h.next -text "-->" -state disabled -command {
+    puts "Clicked on next uncovered"
+  }
+  button .bot.right.h.find -text "Find:" -state disabled -command {
+    perform_search [.bot.right.h.e get]
+  }
+  entry .bot.right.h.e -width 15 -relief sunken -state disabled
+  bind .bot.right.h.e <Return> {
+    perform_search [.bot.right.h.e get]
+  }
+  button .bot.right.h.clear -text "Clear" -state disabled -command {
+    .bot.right.txt tag delete search_found
+    .bot.right.h.e delete 0 end
+    set start_search_index 1.0
+  }
+
+  # Pack the textbox header frame
+  pack .bot.right.h.tl    -side left  -fill both
+  pack .bot.right.h.clear -side right -fill both
+  pack .bot.right.h.e     -side right -fill both
+  pack .bot.right.h.find  -side right -fill both
+  pack .bot.right.h.next  -side right -fill both
+  pack .bot.right.h.prev  -side right -fill both
 
   # Create the listbox widget to display file names
   listbox .bot.left.l -yscrollcommand ".bot.left.lvb set" -xscrollcommand ".bot.left.lhb set" -width 30
@@ -87,7 +115,7 @@ proc main_view {} {
 
   grid rowconfigure    .bot.right 1 -weight 1
   grid columnconfigure .bot.right 0 -weight 1
-  grid .bot.right.tl  -row 0 -column 0 -sticky nsew
+  grid .bot.right.h   -row 0 -column 0 -columnspan 2 -sticky nsew
   grid .bot.right.txt -row 1 -column 0 -sticky nsew
   grid .bot.right.vb  -row 1 -column 1 -sticky ns
   grid .bot.right.hb  -row 2 -column 0 -sticky ew
@@ -128,20 +156,24 @@ proc populate_listbox {listbox_w} {
     set lb_size [$listbox_w size]
     $listbox_w delete 0 $lb_size
 
+    # Clear funit_names and funit_types values
+    set funit_names ""
+    set funit_types ""
+
     # If we are in module mode, list modules (otherwise, list instances)
     if {$mod_inst_type == "module"} {
-      set funit_names ""
-      set funit_types ""
       tcl_func_get_funit_list 
       foreach funit_name $funit_names {
         $listbox_w insert end $funit_name
       }
+      .bot.left.ll configure -text "Modules"
     } else {
       set inst_list ""
       tcl_func_get_instance_list
       foreach inst_name $inst_list {
         $listbox_w insert end $inst_name
       }
+      .bot.left.ll configure -text "Instances"
     }
 
     # Get default colors of listbox
@@ -165,7 +197,6 @@ proc highlight_listbox {} {
   if {$file_name != 0} {
 
     # If we are in module mode, list modules (otherwise, list instances)
-    set curr_line 0
     set funits [llength $funit_names]
     for {set i 0} {$i < $funits} {incr i} {
       if {$cov_rb == "line"} {
@@ -182,11 +213,10 @@ proc highlight_listbox {} {
         # ERROR
       }
       if {$fully_covered == 0} {
-        .bot.left.l itemconfigure $curr_line -foreground $uncov_fgColor -background $uncov_bgColor
+        .bot.left.l itemconfigure $i -foreground $uncov_fgColor -background $uncov_bgColor
       } else {
-        .bot.left.l itemconfigure $curr_line -foreground $lb_fgColor -background $lb_bgColor
+        .bot.left.l itemconfigure $i -foreground $lb_fgColor -background $lb_bgColor
       }
-      incr curr_line
     }
 
   }
@@ -197,6 +227,7 @@ proc populate_text {} {
 
   global cov_rb mod_inst_type funit_names funit_types
   global curr_funit_name curr_funit_type last_lb_index
+  global start_search_index
   global curr_toggle_ptr
 
   set index [.bot.left.l curselection]
@@ -222,9 +253,88 @@ proc populate_text {} {
         # ERROR
       }
 
+      # Enable widgets
+      .bot.right.h.e     configure -state normal -bg white
+      .bot.right.h.find  configure -state normal
+      .bot.right.h.clear configure -state normal
+
+      # Reset starting search index
+      set start_search_index 1.0
+
     }
 
   }
+
+}
+
+proc perform_search {value} {
+
+  global start_search_index
+
+  set index [.bot.right.txt search $value $start_search_index]
+
+  # Delete search_found tag
+  .bot.right.txt tag delete search_found
+
+  if {$index != ""} {
+
+    # Highlight found text
+    set value_len [string length $value]
+    .bot.right.txt tag add search_found $index "$index + $value_len chars"
+    .bot.right.txt tag configure search_found -background orange1
+
+    # Make the text visible
+    .bot.right.txt see $index 
+
+    # Calculate next starting index
+    set indices [split $index .]
+    set start_search_index [lindex $indices 0].[expr [lindex $indices 1] + 1]
+
+  } else {
+
+    # Output a message specifying that the searched string could not be found
+    tk_messageBox -message "String \"$value\" not found" -type ok -parent .
+
+    # Clear the contents of the search entry box
+    .bot.right.h.e delete 0 end
+
+    # Reset search index
+    set start_search_index 1.0
+
+  }
+
+  # Set focus to text box
+  focus .bot.right.txt
+
+  return 1
+
+}
+
+proc set_pointer {curr_ptr line} {
+
+  upvar $curr_ptr ptr
+
+  # Allow the textbox to be changed
+  .bot.right.txt configure -state normal
+
+  # Delete old cursor, it if is displayed
+  if {$ptr != ""} {
+    .bot.right.txt delete $ptr.0 $ptr.3
+    .bot.right.txt insert $ptr.0 "   "
+  }
+
+  # Display new pointer
+  .bot.right.txt delete $line.0 $line.3
+  .bot.right.txt insert $line.0 "-->"
+
+  # Set the textbox to not be changed
+  .bot.right.txt configure -state disabled
+
+  # Make sure that we can see the current toggle pointer in the textbox
+  .bot.right.txt see $line.0
+
+  # Set the current pointer to the specified line
+  set ptr $line
 
 }
 

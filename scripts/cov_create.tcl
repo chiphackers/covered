@@ -85,7 +85,7 @@ proc cov_create {f} {
   # Create summary frame and widgets
   frame $f.s -relief raised -borderwidth 1
   label $f.s.l -text "Summary Information:"
-  label $f.s.ht -width 40 -anchor e
+  label $f.s.ht -width 45 -anchor w
 
   # Pack the summary frame
   pack $f.s.l  -side left
@@ -93,10 +93,10 @@ proc cov_create {f} {
 
   # Pack the coverage box frame
   pack $f.m -side left -fill both
-  pack $f.s -side left -fill both
+  pack $f.s -side left -fill both -expand yes
 
   # Pack the metric selection and summary frames into the current window
-  pack $f -side top -fill x
+  pack $f -side top -fill both
 
 }
 

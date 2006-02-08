@@ -36,7 +36,7 @@ proc create_summary {} {
     toplevel .sumwin
 
     ;# Create frame to hold grid
-    frame .sumwin.f
+    frame .sumwin.f -relief raised -borderwidth 1
 
     ;# Create first row labels
     label .sumwin.f.fl -anchor w -text "Functional Block" -width 30
@@ -65,7 +65,7 @@ proc create_summary {} {
     grid .sumwin.f.vb  -row 1 -column 2 -sticky news
 
     ;# Create sort order label and radio buttons and pack them
-    frame .sumwin.sf
+    frame .sumwin.sf -relief raised -borderwidth 1
     label .sumwin.sf.l -text "Sort percentages by:"
     radiobutton .sumwin.sf.rbd -text "Decreasing order" -variable summary_sort -value "dec" -command {
       populate_summary .sumwin.f
@@ -81,7 +81,7 @@ proc create_summary {} {
     # Create Close/Help buttons #
     #############################
 
-    frame .sumwin.bf
+    frame .sumwin.bf -relief raised -borderwidth 1
 
     button .sumwin.bf.close -width 10 -text "Close" -command {
       destroy .sumwin
@@ -114,9 +114,9 @@ proc create_summary {} {
 
   ;# Display the window if we are creating it
   if {$create == 1} {
-    pack .sumwin.f -fill both -expand yes
-    pack .sumwin.sf
-    pack .sumwin.bf
+    pack .sumwin.f  -fill both -expand yes
+    pack .sumwin.sf -fill both
+    pack .sumwin.bf -fill both
   }
 
   ;# Bring the window to the top

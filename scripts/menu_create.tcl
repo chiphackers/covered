@@ -19,7 +19,7 @@ proc do_keybind {.menubar} {
 proc menu_create {.menubar} {
 
   global start_line end_line
-  global file_name file_types
+  global file_name
   global BROWSER
 
   # Create the menu-buttons for File, Preferences and About
@@ -34,17 +34,8 @@ proc menu_create {.menubar} {
 
   # Now add open and close options
   $tfm add command -label "Open Initial CDD..." -command {
-    set file_name [tk_getOpenFile -filetypes $file_types]
-    if {$file_name != ""} {
-      message .status -text "Opening $file_name..." -width 500 -relief raised
-      place .status -in . -relx 0.33 -rely 0.5
-      after 100 {
-        tcl_func_open_cdd $file_name
-        populate_listbox .bot.left.l
-        destroy .status
-        .info configure -text "Select a module/instance at left for coverage details"
-      }
-      ;# Disable ourselves and allow user to replace or merge new CDD and view summary window
+    if {[open_file open] != ""} {
+      # Disable ourselves and allow user to replace or merge new CDD and view summary window
       .menubar.file.menu entryconfigure 0 -state disabled
       .menubar.file.menu entryconfigure 1 -state normal
       .menubar.file.menu entryconfigure 2 -state normal
@@ -52,30 +43,10 @@ proc menu_create {.menubar} {
     }
   }
   $tfm add command -label "Open Related CDD..." -state disabled -command {
-    set file_name [tk_getOpenFile -filetypes $file_types]
-    if {$file_name != ""} {
-      message .status -text "Opening $file_name..." -width 500 -relief raised
-      place .status -in . -relx 0.33 -rely 0.5
-      after 100 {
-        tcl_func_replace_cdd $file_name
-        populate_listbox .bot.left.l
-        destroy .status
-        .info configure -text "Select a module/instance at left for coverage details"
-      }
-    }
+    open_file open
   }
   $tfm add command -label "Merge Related CDD..." -state disabled -command {
-    set file_name [tk_getOpenFile -filetypes $file_types]
-    if {$file_name != ""} {
-      message .status -text "Merging $file_name..." -width 500 -relief raised
-      place .status -in . -relx 0.33 -rely 0.5
-      after 100 {
-        tcl_func_merge_cdd $file_name
-        populate_listbox .bot.left.l
-        destroy .status
-        .info configure -text "Select a module/instance at left for coverage details"
-      }
-    }
+    open_file merge
   }
   $tfm add separator
   $tfm add command -label Exit -command exit
@@ -188,5 +159,61 @@ proc menu_create {.menubar} {
 
   # Do key bindings for the Top Level Menus
   do_keybind .menubar
+
+}
+
+# Opens/merges a CDD file and handles the GUI cursors and listbox initialization.
+proc open_file {type} {
+
+  global file_types file_name global open_type
+  global win_cursor txt_cursor e_cursor
+
+  # Set the open type
+  set open_type $type
+
+  # Get a file to open
+  set file_name [tk_getOpenFile -filetypes $file_types]
+
+  if {$file_name != ""} {
+
+    if {$type == "open"} {
+      .info configure -text "Opening $file_name..."
+    } else {
+      .info configure -text "Merging $file_name..."
+    }
+
+    # Get all cursor values from various widgets (so we can properly restore them after the open)
+    set win_cursor [. cget -cursor]
+    set txt_cursor [.bot.right.txt cget -cursor]
+    set e_cursor   [.bot.right.h.e cget -cursor]
+
+    # Set all widget cursors to the watch
+    .              configure -cursor watch
+    .bot.right.txt configure -cursor watch
+    .bot.right.h.e configure -cursor watch
+
+    after 100 {
+
+      # Open the CDD file
+      if {$open_type == "open"} {
+        tcl_func_open_cdd $file_name
+      } else {
+        tcl_func_merge_cdd $file_name
+      }
+
+      # Populate the listbox
+      populate_listbox .bot.left.l
+
+      # Place new information in the info box
+      .info configure -text "Select a module/instance at left for coverage details"
+
+      # Reset the cursors
+      .              configure -cursor $win_cursor
+      .bot.right.txt configure -cursor $txt_cursor
+      .bot.right.h.e configure -cursor $e_cursor
+
+    }
+
+  }
 
 }
