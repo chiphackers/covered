@@ -152,7 +152,7 @@ proc display_line_cov {} {
       # Next, populate text box with file contents including highlights for covered/uncovered lines
       foreach phrase $contents {
         if [expr [expr $start_line <= $linecount] && [expr $end_line >= $linecount]] {
-          set line [format {%7d  %s} $linecount [append phrase "\n"]]
+          set line [format {%3s  %7u  %s} "   " $linecount [append phrase "\n"]]
           if {[expr $uncov_type == 1] && [expr [lsearch $uncovered_lines $linecount] != -1]} {
             .bot.right.txt insert end $line uncov_colorMap
           } elseif {[expr $cov_type == 1] && [expr [lsearch $covered_lines $linecount] != -1]} {
@@ -273,7 +273,7 @@ proc display_toggle_cov {} {
       # Next, populate text box with file contents including highlights for covered/uncovered lines
       foreach phrase $contents {
         if [expr [expr $start_line <= $linecount] && [expr $end_line >= $linecount]] {
-          set line [format {%7d  %s} $linecount [append phrase "\n"]]
+          set line [format {%3s  %7u  %s} "   " $linecount [append phrase "\n"]]
           .bot.right.txt insert end $line
         }
         incr linecount
@@ -304,8 +304,7 @@ proc display_toggle_cov {} {
           .info configure -text $curr_info
         }
         .bot.right.txt tag bind uncov_button <ButtonPress-1> {
-          set range [.bot.right.txt tag prevrange uncov_button {current + 1 chars}]
-          create_toggle_window $curr_funit_name $curr_funit_type [string trim [lindex [split [.bot.right.txt get [lindex $range 0] [lindex $range 1]] "\["] 0]]
+          display_toggle current
         }
       } 
 
@@ -423,7 +422,7 @@ proc display_comb_cov {} {
       # Next, populate text box with file contents including highlights for covered/uncovered lines
       foreach phrase $contents {
         if [expr [expr $start_line <= $linecount] && [expr $end_line >= $linecount]] {
-          set line [format {%7d  %s} $linecount [append phrase "\n"]]
+          set line [format {%3s  %7u  %s} "   " $linecount [append phrase "\n"]]
           if {[expr $race_type == 1] && [expr [lsearch $race_lines $linecount] != -1]} {
             .bot.right.txt insert end $line race_colorMap
           } else {

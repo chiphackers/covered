@@ -61,7 +61,7 @@ proc main_view {} {
   label .bot.left.ll -text "Modules/Instances" -anchor w
 
   # Create the textbox label
-  label .bot.right.tl -text "Line #       Verilog Source" -anchor w
+  label .bot.right.tl -text "Cur   Line #       Verilog Source" -anchor w
 
   # Create the listbox widget to display file names
   listbox .bot.left.l -yscrollcommand ".bot.left.lvb set" -xscrollcommand ".bot.left.lhb set" -width 30
@@ -197,6 +197,7 @@ proc populate_text {} {
 
   global cov_rb mod_inst_type funit_names funit_types
   global curr_funit_name curr_funit_type last_lb_index
+  global curr_toggle_ptr
 
   set index [.bot.left.l curselection]
 
@@ -207,6 +208,7 @@ proc populate_text {} {
       set last_lb_index $index
       set curr_funit_name [lindex $funit_names $index]
       set curr_funit_type [lindex $funit_types $index]
+      set curr_toggle_ptr ""
 
       if {$cov_rb == "line"} {
         process_funit_line_cov

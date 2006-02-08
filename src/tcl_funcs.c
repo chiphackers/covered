@@ -351,8 +351,8 @@ int tcl_func_collect_uncovered_toggles( ClientData d, Tcl_Interp* tcl, int argc,
     sigl = sig_head;
     while( sigl != NULL ) {
       snprintf( tmp, 85, "%d.%d %d.%d",
-                (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + 9),
-                (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + (strlen( sigl->sig->name ) - 1) + 10) );
+                (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + 14),
+                (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + (strlen( sigl->sig->name ) - 1) + 15) );
       Tcl_SetVar( tcl, "uncovered_toggles", tmp, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
       sigl = sigl->next;
     }
@@ -406,8 +406,8 @@ int tcl_func_collect_covered_toggles( ClientData d, Tcl_Interp* tcl, int argc, c
     sigl = sig_head;
     while( sigl != NULL ) {
       snprintf( tmp, 85, "%d.%d %d.%d",
-                (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + 9),
-                (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + (strlen( sigl->sig->name ) - 1) + 10) );
+                (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + 14),
+                (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + (strlen( sigl->sig->name ) - 1) + 15) );
       Tcl_SetVar( tcl, "covered_toggles", tmp, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
       sigl = sigl->next;
     }
@@ -515,8 +515,8 @@ int tcl_func_collect_combs( ClientData d, Tcl_Interp* tcl, int argc, const char*
     /* Load uncovered statements into Tcl */
     for( i=0; i<uncov_cnt; i++ ) {
       last = expression_get_last_line_expr( uncovs[i] );
-      snprintf( str, 85, "%d.%d %d.%d %d", (uncovs[i]->line - (startline - 1)), (((uncovs[i]->col >> 16) & 0xffff) + 9),
-                                           (last->line      - (startline - 1)), ((last->col              & 0xffff) + 10),
+      snprintf( str, 85, "%d.%d %d.%d %d", (uncovs[i]->line - (startline - 1)), (((uncovs[i]->col >> 16) & 0xffff) + 14),
+                                           (last->line      - (startline - 1)), ((last->col              & 0xffff) + 15),
                                            uncovs[i]->id );
       Tcl_SetVar( tcl, "uncovered_combs", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
     }
@@ -524,8 +524,8 @@ int tcl_func_collect_combs( ClientData d, Tcl_Interp* tcl, int argc, const char*
     /* Load covered statements into Tcl */
     for( i=0; i<cov_cnt; i++ ) {
       last = expression_get_last_line_expr( covs[i] );
-      snprintf( str, 85, "%d.%d %d.%d", (covs[i]->line - (startline - 1)), (((covs[i]->col >> 16) & 0xffff) + 9),
-                                           (last->line    - (startline - 1)), ((last->col            & 0xffff) + 10) );
+      snprintf( str, 85, "%d.%d %d.%d", (covs[i]->line - (startline - 1)), (((covs[i]->col >> 16) & 0xffff) + 14),
+                                        (last->line    - (startline - 1)), ((last->col            & 0xffff) + 15) );
       Tcl_SetVar( tcl, "covered_combs", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
     }
 
@@ -921,6 +921,10 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.28  2006/02/06 22:48:34  phase1geo
+ Several enhancements to GUI look and feel.  Fixed error in combinational logic
+ window.
+
  Revision 1.27  2006/02/03 03:11:15  phase1geo
  Fixing errors in GUI display of combinational logic coverage.  I still see
  a few problems here that need to be taken care of, however.
