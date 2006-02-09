@@ -2,6 +2,7 @@ set comb_ul_ip         0
 set comb_curr_uline_id 0
 set comb_curr_exp_id   0
 set comb_bheight       -1
+set curr_comb_ptr      "" 
 
 proc K {x y} {
   set x
@@ -452,12 +453,44 @@ proc generate_underlines {} {
 
 }
 
+proc display_comb {curr_index} {
+
+  global prev_comb_index next_comb_index curr_comb_ptr
+
+  # Calculate expression ID and line number
+  set all_ranges [.bot.right.txt tag ranges uncov_highlight]
+  set my_range   [.bot.right.txt tag prevrange uncov_highlight "$curr_index + 1 chars"]
+  set index [expr [lsearch -exact $all_ranges [lindex $my_range 0]] / 2]
+  set expr_id [lindex [lindex $uncovered_combs $index] 2]
+  set sline [expr [lindex [split [lindex $my_range 0] "."] 0] + $start_line - 1]
+
+  # Get range of current signal
+  set curr_range [.bot.right.txt tag prevrange uncov_button "$curr_index + 1 chars"]
+
+  # Calculate the current signal string
+  set curr_signal [string trim [lindex [split [.bot.right.txt get [lindex $curr_range 0] [lindex $curr_range 1]] "\["] 0]]
+
+  # Make sure that the selected signal is visible in the text box and is shown as selected
+  set_pointer curr_comb_ptr [lindex [split [lindex $my_range 0] .] 0]
+
+  # Get range of previous signal
+  set prev_comb_index [lindex [.bot.right.txt tag prevrange uncov_button [lindex $curr_index 0]] 0]
+
+  # Get range of next signal
+  set next_comb_index [lindex [.bot.right.txt tag nextrange uncov_button [lindex $curr_range 1]] 0]
+
+  # Now create the toggle window
+  create_toggle_window $expr_id $sline
+
+}
+
 # Creates the verbose combinational logic coverage viewer window.  If this window already exists,
 # the window is raised to the top of all windows for viewing.  All events in this window are also
 # bound here.
-proc create_comb_window {funit_name funit_type expr_id sline} {
+proc create_comb_window {expr_id sline} {
 
   global comb_code comb_uline_groups comb_ulines comb_curr_exp_id
+  global curr_funit_name curr_funit_type
   global file_name comb_curr_info
 
   # Now create the window and set the grab to this window
@@ -515,9 +548,17 @@ proc create_comb_window {funit_name funit_type expr_id sline} {
     button .combwin.bf.help -text "Help" -width 10 -command {
       help_show_manual comb
     }
+    button .combwin.bf.prev -text "<--" -command {
+      puts "Previous combination"
+    }
+    button .combwin.bf.next -text "-->" -command {
+      puts "Next combination"
+    }
     
     # Pack the button widgets into button frame
-    pack .combwin.bf.help -side right -padx 8 -pady 4
+    pack .combwin.bf.prev  -side left  -padx 8 -pady 4
+    pack .combwin.bf.next  -side left  -padx 8 -pady 4
+    pack .combwin.bf.help  -side right -padx 8 -pady 4
     pack .combwin.bf.close -side right -padx 8 -pady 4
 
     # Pack the widgets into the top frame
@@ -555,10 +596,10 @@ proc create_comb_window {funit_name funit_type expr_id sline} {
   set comb_uline_groups "" 
   set comb_ulines       ""
   set comb_curr_exp_id  $expr_id
-  tcl_func_get_comb_expression $funit_name $funit_type $expr_id
+  tcl_func_get_comb_expression $curr_funit_name $curr_funit_type $expr_id
 
   # Initialize text in information bar
-  set comb_curr_info "Filename: $file_name, module: $funit_name, line: $sline"
+  set comb_curr_info "Filename: $file_name, module: $curr_funit_name, line: $sline"
   .combwin.info configure -text $comb_curr_info
 
   organize_underlines

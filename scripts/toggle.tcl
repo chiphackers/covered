@@ -25,34 +25,6 @@ proc display_toggle {curr_index} {
 
 }
 
-proc set_toggle_pointer {line} {
-
-  global curr_toggle_ptr
-
-  # Allow the textbox to be changed
-  .bot.right.txt configure -state normal
-
-  # Delete old cursor, it if is displayed
-  if {$curr_toggle_ptr != ""} {
-    .bot.right.txt delete $curr_toggle_ptr.0 $curr_toggle_ptr.3
-    .bot.right.txt insert $curr_toggle_ptr.0 "   "
-  }
-
-  # Display new pointer
-  .bot.right.txt delete $line.0 $line.3
-  .bot.right.txt insert $line.0 "-->"
-
-  # Set the textbox to not be changed
-  .bot.right.txt configure -state disabled
-
-  # Make sure that we can see the current toggle pointer in the textbox
-  .bot.right.txt see $line.0
-
-  # Update curr_toggle_ptr
-  set curr_toggle_ptr $line
-
-}
-
 proc create_toggle_window {signal} {
 
   global toggle01_verbose toggle10_verbose toggle_msb toggle_lsb
