@@ -84,13 +84,16 @@ proc process_funit_line_cov {} {
     # Get line summary information and display this now
     tcl_func_get_line_summary $curr_funit_name $curr_funit_type
 
-    # If we have some uncovered values, enable the "next" pointer
+    # If we have some uncovered values, enable the "next" pointer and menu item
     if {$line_summary_total != $line_summary_hit} {
       .bot.right.h.next configure -state normal
+      .menubar.view.menu entryconfigure 2 -state normal
     } else {
       .bot.right.h.next configure -state disabled
+      .menubar.view.menu entryconfigure 2 -state disabled
     }
     .bot.right.h.prev configure -state disabled
+    .menubar.view.menu entryconfigure 3 -state disabled
 
     calc_and_display_line_cov
 
@@ -510,12 +513,7 @@ proc display_comb_cov {} {
           .info configure -text $curr_info
         }
         .bot.right.txt tag bind uncov_button <ButtonPress-1> {
-          set all_ranges [.bot.right.txt tag ranges uncov_highlight]
-          set my_range   [.bot.right.txt tag prevrange uncov_highlight {current + 1 chars}]
-          set index [expr [lsearch -exact $all_ranges [lindex $my_range 0]] / 2]
-          set expr_id [lindex [lindex $uncovered_combs $index] 2]
-          set sline [expr [lindex [split [lindex $my_range 0] "."] 0] + $start_line - 1]
-          create_comb_window $curr_funit_name $curr_funit_type $expr_id $sline
+          display_comb current
         }
       }
 

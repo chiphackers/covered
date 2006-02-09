@@ -12,7 +12,10 @@ set file_types {
 
 proc do_keybind {.menubar} {
 
-  bind all <Alt-f> {.menubar.file invoke}
+  bind all <Control-x> {.menubar.file.menu invoke 4}
+  bind all <Control-n> {.menubar.view.menu invoke 2}
+  bind all <Control-p> {.menubar.view.menu invoke 3}
+  bind all <Control-c> {.menubar.view.menu invoke 4}
 
 }
 
@@ -21,11 +24,12 @@ proc menu_create {.menubar} {
   global start_line end_line
   global file_name
   global BROWSER
+  global prev_uncov_index next_uncov_index
 
   # Create the menu-buttons for File, Preferences and About
   menubutton .menubar.file   -text "File"        -underline 0
   menubutton .menubar.report -text "Report"      -underline 0
-  menubutton .menubar.tools  -text "Tools"       -underline 0
+  menubutton .menubar.view   -text "View"        -underline 0
   menubutton .menubar.help   -text "Help"        -underline 0
 
   # Configure the file option
@@ -39,7 +43,7 @@ proc menu_create {.menubar} {
       .menubar.file.menu entryconfigure 0 -state disabled
       .menubar.file.menu entryconfigure 1 -state normal
       .menubar.file.menu entryconfigure 2 -state normal
-      .menubar.tools.menu entryconfigure 0 -state normal
+      .menubar.view.menu entryconfigure 0 -state normal
     }
   }
   $tfm add command -label "Open Related CDD..." -state disabled -command {
@@ -49,7 +53,7 @@ proc menu_create {.menubar} {
     open_file merge
   }
   $tfm add separator
-  $tfm add command -label Exit -command exit
+  $tfm add command -label Exit -accelerator "Ctrl-x" -command exit
 
   # Configure the report option
   .menubar.report config -menu .menubar.report.menu
@@ -114,12 +118,30 @@ proc menu_create {.menubar} {
   set mod_inst_type  "module"
 
   # Configure the color options
-  .menubar.tools config -menu .menubar.tools.menu
-  set m [menu .menubar.tools.menu -tearoff false]
+  .menubar.view config -menu .menubar.view.menu
+  set m [menu .menubar.view.menu -tearoff false]
 
   # Summary window
-  $m add command -label "Summary Window..." -state disabled -command {
+  $m add command -label "Summary..." -state disabled -command {
     create_summary
+  }
+  $m add separator
+  $m add command -label "Next Uncovered" -state disabled -accelerator "Ctrl-n" -command {
+    goto_uncov $next_uncov_index
+  }
+  $m add command -label "Previous Uncovered" -state disabled -accelerator "Ctrl-p" -command {
+    goto_uncov $prev_uncov_index
+  }
+  $m add command -label "Show Current Selection" -state disabled -accelerator "Ctrl-c" -command {
+    if {$cov_rb == "toggle"} {
+      if {$curr_toggle_ptr != ""} {
+        .bot.right.txt see $curr_toggle_ptr
+      }
+    } elseif {$cov_rb == "comb"} {
+      if {$curr_comb_ptr != ""} {
+        .bot.right.txt see $curr_comb_ptr
+      }
+    }
   }
   $m add separator
   $m add command -label "Preferences..." -command {
@@ -150,7 +172,7 @@ proc menu_create {.menubar} {
   # Pack the menu-buttons
   pack .menubar.file   -side left
   pack .menubar.report -side left
-  pack .menubar.tools  -side left
+  pack .menubar.view   -side left
   pack .menubar.help   -side right
 
   # Create a 3D Seperator 

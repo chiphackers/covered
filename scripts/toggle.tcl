@@ -3,7 +3,7 @@ set curr_toggle_ptr ""
 
 proc display_toggle {curr_index} {
 
-  global prev_index next_index curr_toggle_ptr
+  global prev_toggle_index next_toggle_index curr_toggle_ptr
 
   # Get range of current signal
   set curr_range [.bot.right.txt tag prevrange uncov_button "$curr_index + 1 chars"]
@@ -13,12 +13,13 @@ proc display_toggle {curr_index} {
 
   # Make sure that the selected signal is visible in the text box and is shown as selected
   set_pointer curr_toggle_ptr [lindex [split [lindex $curr_range 0] .] 0]
+  goto_uncov [lindex $curr_range 0]
 
   # Get range of previous signal
-  set prev_index [lindex [.bot.right.txt tag prevrange uncov_button [lindex $curr_index 0]] 0]
+  set prev_toggle_index [lindex [.bot.right.txt tag prevrange uncov_button [lindex $curr_index 0]] 0]
 
   # Get range of next signal
-  set next_index [lindex [.bot.right.txt tag nextrange uncov_button [lindex $curr_range 1]] 0]
+  set next_toggle_index [lindex [.bot.right.txt tag nextrange uncov_button [lindex $curr_range 1]] 0]
 
   # Now create the toggle window
   create_toggle_window $curr_signal
@@ -28,7 +29,7 @@ proc display_toggle {curr_index} {
 proc create_toggle_window {signal} {
 
   global toggle01_verbose toggle10_verbose toggle_msb toggle_lsb
-  global sig_name prev_index next_index
+  global sig_name prev_toggle_index next_toggle_index
   global curr_funit_name curr_funit_type
 
   set sig_name $signal
@@ -60,10 +61,10 @@ proc create_toggle_window {signal} {
       help_show_manual toggle
     }
     button .togwin.bf.prev -text "<--" -command {
-      display_toggle $prev_index
+      display_toggle $prev_toggle_index
     }
     button .togwin.bf.next -text "-->" -command {
-      display_toggle $next_index
+      display_toggle $next_toggle_index
     }
 
     # Pack the buttons into the button frame
@@ -73,27 +74,27 @@ proc create_toggle_window {signal} {
     pack .togwin.bf.close -side right -padx 8 -pady 4
 
     # Pack the widgets into the bottom frame
-    grid rowconfigure    .togwin.f 1 -weight 1
+    grid rowconfigure    .togwin.f 3 -weight 1
     grid columnconfigure .togwin.f 0 -weight 1
     grid columnconfigure .togwin.f 1 -weight 0
-    grid .togwin.f.t    -row 0 -rowspan 2 -column 0 -sticky nsew
-    grid .togwin.f.l_01 -row 0 -column 1 -sticky nsew
-    grid .togwin.f.l_10 -row 1 -column 1 -sticky nsew
-    grid .togwin.f.hb   -row 2 -column 0 -sticky ew
-    grid .togwin.f.info -row 3 -column 0 -sticky ew
+    grid .togwin.f.t    -row 0 -rowspan 2 -column 0 -sticky new
+    grid .togwin.f.l_01 -row 0 -column 1 -sticky new
+    grid .togwin.f.l_10 -row 1 -column 1 -sticky new
+    grid .togwin.f.hb   -row 2 -column 0 -sticky new
+    grid .togwin.f.info -row 3 -column 0 -sticky new
 
-    pack .togwin.f  -fill both
+    pack .togwin.f  -fill both -expand yes
     pack .togwin.bf -fill x
 
   }
 
   # Disable next or previous buttons if valid
-  if {$prev_index == ""} {
+  if {$prev_toggle_index == ""} {
     .togwin.bf.prev configure -state disabled
   } else {
     .togwin.bf.prev configure -state normal
   }
-  if {$next_index == ""} {
+  if {$next_toggle_index == ""} {
     .togwin.bf.next configure -state disabled
   } else {
     .togwin.bf.next configure -state normal
@@ -146,5 +147,43 @@ proc create_toggle_window {signal} {
 
   # Raise this window to the foreground
   raise .togwin
+
+}
+
+# Updates the GUI elements of the toggle window when some type of event causes the
+# current metric mode to change.
+proc update_toggle {} {
+
+  global cov_rb prev_toggle_index next_toggle_index curr_toggle_ptr
+
+  # If the combinational window exists, update the GUI
+  if {[winfo exists .togwin] == 1} {
+
+    # If the current metric mode is not toggle, disable the prev/next buttons
+    if {$cov_rb != "toggle"} {
+
+      .togwin.bf.prev configure -state disabled
+      .togwin.bf.next configure -state disabled
+
+    } else {
+
+      # Restore the pointer if it is set
+      set_pointer curr_toggle_ptr $curr_toggle_ptr
+
+      # Restore the previous/next button enables
+      if {$prev_toggle_index != ""} {
+        .togwin.bf.prev configure -state normal
+      } else {
+        .togwin.bf.prev configure -state disabled
+      }
+      if {$next_toggle_index != ""} {
+        .togwin.bf.next configure -state normal
+      } else {
+        .togwin.bf.next configure -state disabled
+      }
+
+    }
+
+  }
 
 }

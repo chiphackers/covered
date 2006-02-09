@@ -453,9 +453,14 @@ proc generate_underlines {} {
 
 }
 
+# This is the main function to call when a combinational logic expression is selected from
+# the main window.  Using the currently selected index, this function gets the expression ID of
+# the selected expression, sets the current pointer to point to this line and calls the create_comb_window
+# function to display the selected expression.
 proc display_comb {curr_index} {
 
   global prev_comb_index next_comb_index curr_comb_ptr
+  global uncovered_combs start_line
 
   # Calculate expression ID and line number
   set all_ranges [.bot.right.txt tag ranges uncov_highlight]
@@ -472,6 +477,7 @@ proc display_comb {curr_index} {
 
   # Make sure that the selected signal is visible in the text box and is shown as selected
   set_pointer curr_comb_ptr [lindex [split [lindex $my_range 0] .] 0]
+  goto_uncov [lindex $my_range 0]
 
   # Get range of previous signal
   set prev_comb_index [lindex [.bot.right.txt tag prevrange uncov_button [lindex $curr_index 0]] 0]
@@ -480,7 +486,7 @@ proc display_comb {curr_index} {
   set next_comb_index [lindex [.bot.right.txt tag nextrange uncov_button [lindex $curr_range 1]] 0]
 
   # Now create the toggle window
-  create_toggle_window $expr_id $sline
+  create_comb_window $expr_id $sline
 
 }
 
@@ -492,6 +498,7 @@ proc create_comb_window {expr_id sline} {
   global comb_code comb_uline_groups comb_ulines comb_curr_exp_id
   global curr_funit_name curr_funit_type
   global file_name comb_curr_info
+  global prev_comb_index next_comb_index
 
   # Now create the window and set the grab to this window
   if {[winfo exists .combwin] == 0} {
@@ -549,10 +556,10 @@ proc create_comb_window {expr_id sline} {
       help_show_manual comb
     }
     button .combwin.bf.prev -text "<--" -command {
-      puts "Previous combination"
+      display_comb $prev_comb_index
     }
     button .combwin.bf.next -text "-->" -command {
-      puts "Next combination"
+      display_comb $next_comb_index
     }
     
     # Pack the button widgets into button frame
@@ -591,6 +598,18 @@ proc create_comb_window {expr_id sline} {
 
   }
 
+  # Disable next or previous buttons if valid
+  if {$prev_comb_index == ""} {
+    .combwin.bf.prev configure -state disabled
+  } else {
+    .combwin.bf.prev configure -state normal
+  }
+  if {$next_comb_index == ""} {
+    .combwin.bf.next configure -state disabled
+  } else {
+    .combwin.bf.next configure -state normal
+  }
+
   # Get verbose combinational logic information
   set comb_code         "" 
   set comb_uline_groups "" 
@@ -617,5 +636,43 @@ proc comb_place {height value} {
   place .combwin.f.top    -height [expr $height - $value]
   place .combwin.f.handle -y [expr $height - $value]
   place .combwin.f.bot    -height $value
+
+}
+
+# Updates the GUI elements of the combinational logic window when some type of event causes the
+# current metric mode to change.
+proc update_comb {} {
+
+  global cov_rb prev_comb_index next_comb_index curr_comb_ptr
+
+  # If the combinational window exists, update the GUI
+  if {[winfo exists .combwin] == 1} {
+
+    # If the current metric mode is not combinational logic, disable the prev/next buttons
+    if {$cov_rb != "comb"} {
+
+      .combwin.bf.prev configure -state disabled
+      .combwin.bf.next configure -state disabled
+
+    } else {
+
+      # Restore curr_pointer if it has been set
+      set_pointer curr_comb_ptr $curr_comb_ptr
+
+      # Restore previous/next button enables
+      if {$prev_comb_index != ""} {
+        .combwin.bf.prev configure -state normal
+      } else {
+        .combwin.bf.prev configure -state disabled
+      }
+      if {$next_comb_index != ""} {
+        .combwin.bf.next configure -state normal
+      } else {
+        .combwin.bf.next configure -state disabled
+      }
+
+    }
+
+  }
 
 }

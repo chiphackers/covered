@@ -13,10 +13,13 @@ source $HOME/scripts/preferences.tcl
 set last_lb_index      ""
 set lwidth             -1 
 set start_search_index 1.0
+set curr_uncov_index   ""
+set prev_uncov_index   ""
+set next_uncov_index   ""
 
 proc main_view {} {
 
-  global race_msgs
+  global race_msgs prev_uncov_index next_uncov_index
 
   # Start off 
 
@@ -65,10 +68,10 @@ proc main_view {} {
   frame .bot.right.h
   label .bot.right.h.tl -text "Cur   Line #       Verilog Source" -anchor w
   button .bot.right.h.prev -text "<--" -state disabled -command {
-    puts "Clicked on previous uncovered"
+    goto_uncov $prev_uncov_index
   }
   button .bot.right.h.next -text "-->" -state disabled -command {
-    puts "Clicked on next uncovered"
+    goto_uncov $next_uncov_index
   }
   button .bot.right.h.find -text "Find:" -state disabled -command {
     perform_search [.bot.right.h.e get]
@@ -253,13 +256,17 @@ proc populate_text {} {
         # ERROR
       }
 
+      # Reset starting search index
+      set start_search_index 1.0
+      set curr_uncov_index   ""
+
+      # Run initial goto_uncov to initialize previous and next pointers
+      goto_uncov $curr_uncov_index
+
       # Enable widgets
       .bot.right.h.e     configure -state normal -bg white
       .bot.right.h.find  configure -state normal
       .bot.right.h.clear configure -state normal
-
-      # Reset starting search index
-      set start_search_index 1.0
 
     }
 
@@ -335,6 +342,70 @@ proc set_pointer {curr_ptr line} {
 
   # Set the current pointer to the specified line
   set ptr $line
+
+}
+
+proc goto_uncov {curr_index} {
+
+  global prev_uncov_index next_uncov_index curr_uncov_index
+  global cov_rb
+
+  # Calculate the name of the tag to use
+  if {$cov_rb == "line"} {
+    set tag_name "uncov_colorMap"
+  } else {
+    set tag_name "uncov_button"
+  }
+
+  # Display the given index, if it has been specified
+  if {$curr_index != ""} {
+    .bot.right.txt see $curr_index
+    set curr_uncov_index $curr_index
+  } else {
+    set curr_uncov_index 1.0
+  }
+
+  # Get previous uncovered index
+  set prev_uncov_index [lindex [.bot.right.txt tag prevrange $tag_name $curr_uncov_index] 0]
+
+  # Disable/enable previous button
+  if {$prev_uncov_index != ""} {
+    .bot.right.h.prev configure -state normal
+    .menubar.view.menu entryconfigure 3 -state normal
+  } else {
+    .bot.right.h.prev configure -state disabled
+    .menubar.view.menu entryconfigure 3 -state disabled
+  }
+
+  # Get next uncovered index
+  set next_uncov_index [lindex [.bot.right.txt tag nextrange $tag_name "$curr_uncov_index + 1 chars"] 0]
+
+  # Disable/enable next button
+  if {$next_uncov_index != ""} {
+    .bot.right.h.next configure -state normal
+    .menubar.view.menu entryconfigure 2 -state normal
+  } else {
+    .bot.right.h.next configure -state disabled
+    .menubar.view.menu entryconfigure 2 -state disabled
+  }
+
+}
+
+proc update_all_windows {} {
+
+  global curr_uncov_index
+
+  # Update the main window
+  goto_uncov $curr_uncov_index
+
+  # Update the summary window
+  update_summary
+
+  # Update the toggle window
+  update_toggle
+
+  # Update the combinational logic window
+  update_comb
 
 }
 
