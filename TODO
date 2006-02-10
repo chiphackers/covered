@@ -29,9 +29,9 @@ X	! explicitly named parameters
 X	- make sure that localparams cannot be modified by a defparam or SDF
 	- generate command (extremely low priority)
 X	! wildcard sensitivity list (@*)
-	- Add signed capability (unsigned zero-fills unused bits while sign fills with MSB)
+X	- Add signed capability (unsigned zero-fills unused bits while sign fills with MSB)
 	- register assignment
-	- variable multi-bit selects
+X	- variable multi-bit selects
 X	- exponential power operator (**)
 X	- >>> (fills sign bit with its value) and <<< (same as <<)
 X	- pre-port parameter listing
@@ -70,4 +70,4 @@ GUI
 
    2.  Add ability to turn on/off assertions and have coverage information automatically adjusted.
   
-   3.  Add summary report for entire design (window)
+X  3.  Add summary report for entire design (window)

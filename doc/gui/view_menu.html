@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>Covered Report Viewer User Manual - View Menu</title>
+</head>
+<body bgcolor="#ffffff">
+<div align="center"><img src="images/banner.gif" width="258" height="105" alt="Covered - The Verilog Code Coverage Analyzer"></div>
+<br>
+<div align="center">
+  <a href="report_menu.html">&lt; Prev</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="welcome.html">Table of Contents</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="help_menu.html">Next &gt;</a>
+</div>
+<hr>
+<h1><a href="main.html">Main Window</a> - <a href="main_menu.html">Main Menu</a> - The View Menu</h1>
+<hr>
+
+<p>
+The View menu allows the user to select or change the current way the information in
+Covered is viewed.  Figure 1 shows the contents of the View menu.
+</p>
+
+<div align="center">
+<p><strong>Figure 1.  The View Menu</strong></p>
+<img src="images/view_menu.png" alt="The View Menu">
+</div>
+
+<ul>
+	<li><b>Summary...</b>
+		<p>
+		Displays the <a href="summary.html">Summary Window</a> if this window does not
+		exist or forces it to the foreground if it currently does.</p></li>
+		
+	<li><b>Next Uncovered</b>
+		<p>
+		Causes the line containing the next uncovered metric to be visible in the
+		<a href="cov_view.html">Coverage Viewer</a>.  If the next uncovered line is
+		already visible, this menu item will have no visible effect.  The search for the
+		next uncovered line starts at (a) the top of the module (when the module is first
+		displayed in the the Coverage Viewer), (b) from the last uncovered line searched
+		for with the "Next Uncovered" or "Previous Uncovered" calls, or (c) from the
+		last currently selected line (only valid for toggle and combinational logic 
+		views).</p>
+		<p>
+		This menu item is only enabled when another uncovered line exists after the
+		current uncovered line.  It can also be accessed with the accelerator keystroke
+		&lt;Control-n&gt; or the "-->" button in the Main Window.</p></li>
+		
+	<li><b>Previous Uncovered</b>
+		<p>
+		Causes the line containing the previous uncovered metric to be visible in the
+		<a href="cov_view.html">Coverage Viewer</a>.  If the previous uncovered line is
+		already visible, this menu item will have no visible effect.  The search for the
+		previous uncovered line starts at (a) the top of the module (when the module is 
+		first displayed in the the Coverage Viewer), (b) from the last uncovered line 
+		searched for with the "Next Uncovered" or "Previous Uncovered" calls, or (c) from 
+		the last currently selected line (only valid for toggle and combinational logic 
+		views).
+		</p>
+		<p>
+		This menu item is only enabled when another uncovered line exists before the
+		current uncovered line.  It can also be accessed with the accelerator keystroke
+		&lt;Control-p&gt; or the "<--" button in the Main Window.
+		</p></li>
+		
+	<li><b>Show Current Selection</b>
+		<p>
+		This menu item is only available if the current metric mode is "Toggle" or 
+		"Logic", the user has clicked on an uncovered segment of code, and the associated
+		<a href="toggle.html">Verbose Toggle Window</a> or
+		<a href="comb.html">Verbose Combinational Logic Window</a> exists.  The currently
+		selected line is visually identified in the <a href="cov_view.html">Coverage
+		Viewer</a> area on the left-hand-side of the line containing the uncovered code.
+		If this line is not currently visible in the Coverage Viewer, selecting this menu
+		item will cause it to be visible.</p>
+		<p>
+		An accelerator keystroke &lt;Control-c&gt; will also invoke this menu item.</p></li>
+		
+	<li><b>Preferences...</b>
+		<p>
+		Causes the <a href="preferences.html">Preferences Window</a> to be created if it
+		currently does not exist or forces it into the foreground if it does exist.</p>
+</ul>
+
+</body>
+</html>

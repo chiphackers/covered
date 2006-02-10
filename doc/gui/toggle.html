@@ -17,8 +17,15 @@
 
 <p>
 The verbose toggle window allows the user to see which bits for a given signal have
-toggled from a 0->1 or a 1->0 during simulation.  Figure 1 shows a 4-bit signal called
-"value1" in which bit 0 has successfully toggled from a 0->1.
+toggled from a 0->1 or a 1->0 during simulation.  To display this window, simply click
+on a highlighted/underlined uncovered signal in the 
+<a href="cov_view.html">Coverage Viewer</a> of the main window.  This will cause the 
+verbose toggle viewer to be created for the specified signal as well as display a 
+"-->" symbol in the Coverage Viewer on the same line as the selected signal.  This
+symbol is simply meant to help the user identify in the Coverage Viewer which signal
+is currently displayed in the Toggle Viewer window.  Figure 1 shows the Toggle Viewer
+loaded with a 4-bit signal called "err_vec" in which bits 3:2 have successfully toggled 
+from a 0->1.
 </p>
 
 <div align="center">
@@ -45,8 +52,8 @@ left and right to view the rest of the toggle information.
 </p>
 
 <p>
-To exit this window, simply click on the window manager X button in the upper right-hand
-corner of the window.
+To exit this window, simply click on "Close" button.  To see this help page from the
+toggle window, click on the "Help" button.
 </p>
 
 <h2>Displaying a New Signal</h2>
@@ -57,6 +64,14 @@ select a new signal in the <a href="cov_view.html">Coverage File Viewer</a> of t
 window.  When a new signal is selected, its value immediately replaces the currently
 selecting signal value.  This feature allows many different signals to be viewed one
 after the other without having to create/destroy a new window for each signal.
+</p>
+
+<p>
+The user may also see the previous or next uncovered signal in the main viewer by clicking
+either the "<--" button (for previous signal viewing) or the "-->" button (for next signal
+viewing).  Note that the "<--" button will be disabled if there is not a signal previous
+to the current signal in the given module and the "--> button will be disabled if there is
+not a signal after the current signal in the given module.
 </p>
 
 </body>

@@ -10,31 +10,36 @@ doc_DATA = comb.html \
            main.html \
            main_menu.html \
            mod_inst_lb.html \
-           pref_menu.html \
            preferences.html \
            report_menu.html \
            summary.html \
            summary_bar.html \
            toggle.html \
+           view_menu.html \
            welcome.html
 
 imgdir   = $(datadir)/covered/doc/gui/images
 img_DATA = images/banner.gif \
+           images/color.png \
+           images/comb_complex.png \
+           images/comb_event.png \
+           images/comb_simple.png \
+           images/comb_unary.png \
            images/dn_button.png \
-           images/file_view.jpg \
-           images/main_info.jpg \
-           images/main_summary.jpg \
-           images/open_cdd.jpg \
-           images/report_view.jpg \
-           images/color.jpg \
-           images/help_view.jpg \
-           images/main_lb.jpg \
-           images/main_viewer.jpg \
-           images/populated_lb.jpg \
-           images/main_cov.jpg \
-           images/main_menu.jpg \
-           images/main_window.jpg \
+           images/file_menu.png \
+           images/help_menu.png \
+           images/main_cov.png \
+           images/main_info.png \
+           images/main_lb.png \
+           images/main_menu.png \
+           images/main_summary.png \
+           images/main_viewer.png \
+           images/main_window.png \
+           images/open_cdd.png \
+           images/populated_lb.png \
            images/pref_window.png \
-           images/pref_view.jpg \
+           images/report_menu.png \
            images/summary_window.png \
-           images/toggle_full.png
+           images/toggle_full.png \
+           images/up_button.png \
+           images/view_menu.png
