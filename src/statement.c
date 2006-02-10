@@ -324,7 +324,6 @@ bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) {
       */
       if( ESUPPL_STMT_IS_CALLED( stmt->exp->suppl ) == 0 ) {
         thr = sim_add_thread( NULL, stmt );
-        // printf( "CALLED sim_add_thread for statement %d, funit %s, thread %p\n", stmt->exp->id, curr_funit->name, thr );
       }
 
     }
@@ -631,6 +630,11 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.72  2006/01/24 23:24:38  phase1geo
+ More updates to handle static functions properly.  I have redone quite a bit
+ of code here which has regressions pretty broke at the moment.  More work
+ to do but I'm checkpointing.
+
  Revision 1.71  2006/01/13 23:27:02  phase1geo
  Initial attempt to fix problem with handling functions/tasks/named blocks with
  the same name in the design.  Still have a few diagnostics failing in regressions

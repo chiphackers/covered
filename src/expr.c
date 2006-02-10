@@ -65,6 +65,10 @@
  expand the amount of code that can be covered by allowing several "zero-time" assignments to
  occur while maintaining accurate coverage information.
 
+ \par EXP_OP_RASSIGN
+ The register assignment operator is executed in the same manner as the BASSIGN expression operator
+ with the exception that the RASSIGN must be executed prior to any simulation.
+
  \par EXP_OP_PASSIGN
  The port assignment operator is like the blocking assignment operator, in that Covered will perform
  the assignment.  The signal pointer points to the port signal of the function/task, the vector pointer
@@ -272,7 +276,7 @@ const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",         expression_op_func
                                            {"SLIST",          expression_op_func__slist,     {1, 0, 0, 0, 1, 1} },
                                            {"EXPONENT",       expression_op_func__exponent,  {0, 0, 0, 1, 1, 0} },
                                            {"PASSIGN",        expression_op_func__passign,   {0, 0, 0, 1, 0, 0} },
-                                           {"RASSIGN",        expression_op_func__null,      {0, 0, 0, 1, 0, 0} },
+                                           {"RASSIGN",        expression_op_func__bassign,   {0, 0, 0, 1, 0, 0} },
                                            {"MBIT_POS",       expression_op_func__mbit_pos,  {0, 0, 0, 1, 1, 0} },
                                            {"MBIT_NEG",       expression_op_func__mbit_neg,  {0, 0, 0, 1, 1, 0} },
                                            {"PARAM_MBIT_POS", expression_op_func__mbit_pos,  {0, 1, 0, 1, 0, 0} },
@@ -712,7 +716,8 @@ void expression_resize( expression* expr, bool recursive ) {
             ((expr->parent->expr->op != EXP_OP_ASSIGN) &&
              (expr->parent->expr->op != EXP_OP_DASSIGN) &&
              (expr->parent->expr->op != EXP_OP_BASSIGN) &&
-             (expr->parent->expr->op != EXP_OP_NASSIGN)) ) {
+             (expr->parent->expr->op != EXP_OP_NASSIGN) &&
+             (expr->parent->expr->op != EXP_OP_RASSIGN)) ) {
           if( (expr->left != NULL) && ((expr->right == NULL) || (expr->left->value->width > expr->right->value->width)) ) {
             largest_width = expr->left->value->width;
           } else if( expr->right != NULL ) {
@@ -1059,6 +1064,7 @@ bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) {
       if( (op == EXP_OP_ASSIGN)  ||
           (op == EXP_OP_DASSIGN) ||
           (op == EXP_OP_BASSIGN) ||
+          (op == EXP_OP_RASSIGN) ||
           (op == EXP_OP_NASSIGN) ||
           (op == EXP_OP_IF)      ||
           (op == EXP_OP_WHILE) ) {
@@ -2767,11 +2773,11 @@ bool expression_is_assigned( expression* expr ) {
               (expr->op == EXP_OP_MBIT_POS) ||
               (expr->op == EXP_OP_MBIT_NEG)) ) {
 
-    while( (expr != NULL) && (ESUPPL_IS_ROOT( expr->suppl ) == 0) && (expr->op != EXP_OP_BASSIGN) ) {
+    while( (expr != NULL) && (ESUPPL_IS_ROOT( expr->suppl ) == 0) && (expr->op != EXP_OP_BASSIGN) && (expr->op != EXP_OP_RASSIGN) ) {
       expr = expr->parent->expr;
     }
 
-    retval = (expr != NULL) && (expr->op == EXP_OP_BASSIGN);
+    retval = (expr != NULL) && ((expr->op == EXP_OP_BASSIGN) || (expr->op == EXP_OP_RASSIGN)) ;
 
   }
 
@@ -2822,7 +2828,7 @@ void expression_set_assigned( expression* expr ) {
   if( ESUPPL_IS_LHS( expr->suppl ) == 1 ) {
 
     curr = expr;
-    while( (ESUPPL_IS_ROOT( curr->suppl ) == 0) && (curr->op != EXP_OP_BASSIGN) ) {
+    while( (ESUPPL_IS_ROOT( curr->suppl ) == 0) && (curr->op != EXP_OP_BASSIGN) && (curr->op != EXP_OP_RASSIGN) ) {
       curr = curr->parent->expr;
     }
 
@@ -2830,7 +2836,7 @@ void expression_set_assigned( expression* expr ) {
      If we are on the LHS of a BASSIGN operator, set the assigned bit to indicate that
      this signal will be assigned by Covered and not the dumpfile.
     */
-    if( curr->op == EXP_OP_BASSIGN ) {
+    if( (curr->op == EXP_OP_BASSIGN) || (curr->op == EXP_OP_RASSIGN) ) {
       expr->sig->value->suppl.part.assigned = 1;
     }
 
@@ -3022,6 +3028,7 @@ void expression_dealloc( expression* expr, bool exp_only ) {
       if( (op != EXP_OP_ASSIGN)  &&
           (op != EXP_OP_DASSIGN) &&
           (op != EXP_OP_BASSIGN) &&
+          (op != EXP_OP_RASSIGN) &&
           (op != EXP_OP_NASSIGN) &&
           (op != EXP_OP_IF)      &&
           (op != EXP_OP_WHILE)   &&
@@ -3091,6 +3098,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.171  2006/02/06 22:48:34  phase1geo
+ Several enhancements to GUI look and feel.  Fixed error in combinational logic
+ window.
+
  Revision 1.170  2006/02/06 05:07:26  phase1geo
  Fixed expression_set_static_only function to consider static expressions
  properly.  Updated regression as a result of this change.  Added files

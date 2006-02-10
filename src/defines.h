@@ -653,6 +653,7 @@ typedef enum exp_op_type_e {
                                        (x->parent->expr->op != EXP_OP_DASSIGN) && \
                                        (x->parent->expr->op != EXP_OP_BASSIGN) && \
                                        (x->parent->expr->op != EXP_OP_NASSIGN) && \
+                                       (x->parent->expr->op != EXP_OP_RASSIGN) && \
                                        (x->parent->expr->op != EXP_OP_IF) && \
                                        (x->parent->expr->op != EXP_OP_WHILE) && \
                                        (x->parent->expr->op != EXP_OP_COND)) && \
@@ -701,6 +702,7 @@ typedef enum exp_op_type_e {
                                          (o != EXP_OP_DASSIGN)        && \
                                          (o != EXP_OP_BASSIGN)        && \
                                          (o != EXP_OP_NASSIGN)        && \
+                                         (o != EXP_OP_RASSIGN)        && \
                                          (o != EXP_OP_IF)             && \
                                          (o != EXP_OP_WHILE)          && \
                                          (o != EXP_OP_FUNC_CALL)      && \
@@ -1800,6 +1802,10 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.178  2006/02/03 23:49:38  phase1geo
+ More fixes to support signed comparison and propagation.  Still more testing
+ to do here before I call it good.  Regression may fail at this point.
+
  Revision 1.177  2006/02/02 22:37:40  phase1geo
  Starting to put in support for signed values and inline register initialization.
  Also added support for more attribute locations in code.  Regression updated for

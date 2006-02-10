@@ -418,7 +418,9 @@ void race_check_one_block_assignment( func_unit* mod ) {
         */
 	switch( expl->exp->op ) {
           case EXP_OP_SIG :
-            curr_race = vsignal_set_assigned( sigl->sig, ((sigl->sig->value->width - 1) + sigl->sig->lsb), sigl->sig->lsb );
+            if( (ESUPPL_IS_ROOT( expl->exp->suppl ) == 0) && (expl->exp->parent->expr->op != EXP_OP_RASSIGN) ) {
+              curr_race = vsignal_set_assigned( sigl->sig, ((sigl->sig->value->width - 1) + sigl->sig->lsb), sigl->sig->lsb );
+            }
 	    break;
           case EXP_OP_SBIT_SEL :
             if( expl->exp->left->op == EXP_OP_STATIC ) {
@@ -462,8 +464,12 @@ void race_check_one_block_assignment( func_unit* mod ) {
 
         assert( exp_funit != NULL );
 
-        /* Get expression's head statement */
-        if( (curr_stmt = race_get_head_statement( exp_funit, expl->exp )) != NULL ) {
+        /*
+         Get expression's head statement and if the statement is not a register assignment, check for
+         race conditions (the way that RASSIGNs are treated, they will not cause race conditions so omit
+         them from being checked.
+        */
+        if( ((curr_stmt = race_get_head_statement( exp_funit, expl->exp )) != NULL) && (curr_stmt->exp->op != EXP_OP_RASSIGN) ) {
 
           /* Check to see if the current signal is already being assigned in another statement */
           if( sig_stmt == -1 ) {
@@ -891,6 +897,10 @@ void race_blk_delete_list( race_blk* rb ) {
 
 /*
  $Log$
+ Revision 1.35  2006/01/31 16:41:00  phase1geo
+ Adding initial support and diagnostics for the variable multi-bit select
+ operators +: and -:.  More to come but full regression passes.
+
  Revision 1.34  2006/01/23 17:23:28  phase1geo
  Fixing scope issues that came up when port assignment was added.  Full regression
  now passes.

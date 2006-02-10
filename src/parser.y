@@ -3264,7 +3264,21 @@ register_variable
   | UNUSED_IDENTIFIER
   | IDENTIFIER '=' expression
     {
+      expression* exp;
+      statement*  stmt;
       db_add_signal( $1, curr_sig_type, curr_range->left, curr_range->right, curr_signed, curr_mba, @1.first_line, @1.first_column );
+      if( $3 != NULL ) {
+        exp = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
+        exp = db_create_expression( $3, exp, EXP_OP_RASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        vector_dealloc( exp->value );
+        exp->value = $3->value;
+        stmt = db_create_statement( exp );
+        stmt->exp->suppl.part.stmt_head       = 1;
+        stmt->exp->suppl.part.stmt_stop_true  = 1;
+        stmt->exp->suppl.part.stmt_stop_false = 1;
+        db_add_expression( exp );
+        db_add_statement( stmt, stmt );
+      }
       free_safe( $1 );
     }
   | UNUSED_IDENTIFIER '=' expression

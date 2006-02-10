@@ -30,7 +30,7 @@ X	- make sure that localparams cannot be modified by a defparam or SDF
 	- generate command (extremely low priority)
 X	! wildcard sensitivity list (@*)
 X	- Add signed capability (unsigned zero-fills unused bits while sign fills with MSB)
-	- register assignment
+X	- register assignment
 X	- variable multi-bit selects
 X	- exponential power operator (**)
 X	- >>> (fills sign bit with its value) and <<< (same as <<)
