@@ -135,11 +135,11 @@ proc menu_create {.menubar} {
   $m add command -label "Show Current Selection" -state disabled -accelerator "Ctrl-c" -command {
     if {$cov_rb == "toggle"} {
       if {$curr_toggle_ptr != ""} {
-        .bot.right.txt see $curr_toggle_ptr
+        .bot.right.txt see $curr_toggle_ptr.0
       }
     } elseif {$cov_rb == "comb"} {
       if {$curr_comb_ptr != ""} {
-        .bot.right.txt see $curr_comb_ptr
+        .bot.right.txt see $curr_comb_ptr.0
       }
     }
   }

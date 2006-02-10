@@ -31,6 +31,7 @@ proc create_toggle_window {signal} {
   global toggle01_verbose toggle10_verbose toggle_msb toggle_lsb
   global sig_name prev_toggle_index next_toggle_index
   global curr_funit_name curr_funit_type
+  global curr_toggle_ptr
 
   set sig_name $signal
 
@@ -55,6 +56,7 @@ proc create_toggle_window {signal} {
     # Create bottom button bar
     frame .togwin.bf -relief raised -borderwidth 1
     button .togwin.bf.close -text "Close" -width 10 -command {
+      rm_pointer curr_toggle_ptr
       destroy .togwin
     }
     button .togwin.bf.help -text "Help" -width 10 -command {

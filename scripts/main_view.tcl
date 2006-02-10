@@ -317,18 +317,39 @@ proc perform_search {value} {
 
 }
 
-proc set_pointer {curr_ptr line} {
+proc rm_pointer {curr_ptr} {
 
   upvar $curr_ptr ptr
 
   # Allow the textbox to be changed
   .bot.right.txt configure -state normal
 
-  # Delete old cursor, it if is displayed
+  # Delete old cursor, if it is displayed
   if {$ptr != ""} {
     .bot.right.txt delete $ptr.0 $ptr.3
     .bot.right.txt insert $ptr.0 "   "
   }
+
+  # Disable textbox
+  .bot.right.txt configure -state disabled
+
+  # Disable "Show current selection" menu item
+  .menubar.view.menu entryconfigure 4 -state disabled
+
+  # Clear current pointer
+  set ptr ""
+
+}
+
+proc set_pointer {curr_ptr line} {
+
+  upvar $curr_ptr ptr
+
+  # Remove old pointer
+  rm_pointer ptr
+
+  # Allow the textbox to be changed
+  .bot.right.txt configure -state normal
 
   # Display new pointer
   .bot.right.txt delete $line.0 $line.3
@@ -339,6 +360,9 @@ proc set_pointer {curr_ptr line} {
 
   # Make sure that we can see the current toggle pointer in the textbox
   .bot.right.txt see $line.0
+
+  # Enable the "Show current selection" menu option
+  .menubar.view.menu entryconfigure 4 -state normal
 
   # Set the current pointer to the specified line
   set ptr $line
@@ -397,6 +421,7 @@ proc update_all_windows {} {
 
   # Update the main window
   goto_uncov $curr_uncov_index
+  .menubar.view.menu entryconfigure 4 -state disabled
 
   # Update the summary window
   update_summary

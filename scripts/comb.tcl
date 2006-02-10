@@ -499,6 +499,7 @@ proc create_comb_window {expr_id sline} {
   global curr_funit_name curr_funit_type
   global file_name comb_curr_info
   global prev_comb_index next_comb_index
+  global curr_comb_ptr
 
   # Now create the window and set the grab to this window
   if {[winfo exists .combwin] == 0} {
@@ -550,6 +551,7 @@ proc create_comb_window {expr_id sline} {
     # Create button frame with close/help buttons at the very bottom of the window
     frame .combwin.bf -relief raised -borderwidth 1
     button .combwin.bf.close -text "Close" -width 10 -command {
+      rm_pointer curr_comb_ptr
       destroy .combwin
     }
     button .combwin.bf.help -text "Help" -width 10 -command {
