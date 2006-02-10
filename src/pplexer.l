@@ -68,6 +68,7 @@ static struct include_stack_t* standby = 0;
 %x IFDEF_FALSE
 %s IFDEF_TRUE
 %x IFDEF_SUPR
+%x ELSIF_FALSE
 
 %x PPTIMESCALE
 
@@ -183,32 +184,59 @@ WSPACE [ \t\b\f]+
      }
  }
 
+  /* elsif directive after unused block */
+<IFDEF_FALSE>`elsif{WSPACE}[a-zA-Z_][a-zA-Z0-9_]*.* {
+     char* name = strchr( yytext, '`' );
+     assert( name );
+     name += 6;
+     name += strspn( name, " \t\b\f" );
+     name[ strcspn( name, " \t\b\f" ) ] = '\0';
+     if( is_defined( name ) ) {
+       BEGIN( IFDEF_TRUE );
+     } else {
+       BEGIN( IFDEF_FALSE );
+     }
+ }
+
   /* nested ifdef directive in unused block */
 <IFDEF_FALSE,IFDEF_SUPR>^{WSPACE}?`ifdef{WSPACE}.* { yy_push_state( IFDEF_SUPR ); }
 
   /* nested ifndef directive in unused block */
 <IFDEF_FALSE,IFDEF_SUPR>^{WSPACE}?`ifndef{WSPACE}.* { yy_push_state( IFDEF_SUPR ); }
 
+  /* elsif directive after used block */
+<IFDEF_TRUE,ELSIF_FALSE>^{WSPACE}?`elsif{WSPACE}.* { BEGIN( ELSIF_FALSE ); }
+
   /* else directive after used block */
 <IFDEF_TRUE>^{WSPACE}?`else.* { BEGIN( IFDEF_FALSE ); }
 
-  /* else directive after unused block */
+  /* else directive after unused if block */
 <IFDEF_FALSE>^{WSPACE}?`else.* { BEGIN( IFDEF_TRUE ); }
+
+  /* else directive after unused elsif block */
+<ELSIF_FALSE>^{WSPACE}?`else.* { BEGIN( IFDEF_FALSE ); }
+
+  /* elsif directive in unused block */
+<IFDEF_SUPR>^{WSPACE}?`elsif.* { }
 
   /* else directive in unused block */
 <IFDEF_SUPR>^{WSPACE}?`else.* { }
-<IFDEF_FALSE,IFDEF_SUPR>.     { }
-<IFDEF_FALSE,IFDEF_SUPR>\n    {
+
+  /* ignore anything in an unused block */
+<IFDEF_FALSE,IFDEF_SUPR,ELSIF_FALSE>.     { }
+
+  /* increment the line number when in an unused block and a newline is seen */
+<IFDEF_FALSE,IFDEF_SUPR,ELSIF_FALSE>\n    {
      istack->lineno += 1;
      fputc( '\n', yyout );
  }
 
   /* endif directive */
-<IFDEF_FALSE,IFDEF_TRUE,IFDEF_SUPR>^{WSPACE}?`endif.* { yy_pop_state(); }
+<IFDEF_FALSE,IFDEF_TRUE,IFDEF_SUPR,ELSIF_FALSE>^{WSPACE}?`endif.* { yy_pop_state(); }
 
   /* Timescale directive -- we ignore this information */
 `timescale { comment_enter = YY_START;  BEGIN( PPTIMESCALE );  ECHO; }
-<PPTIMESCALE>.       {                                                   ECHO; }
+<PPTIMESCALE>.       { ECHO; }
 <PPTIMESCALE>\n      {
      istack->lineno += 1;
      BEGIN( comment_enter );

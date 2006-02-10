@@ -19,7 +19,7 @@ Score command
 
    4.  Add more Verilog-2001 constructs to parser.
 X	- `ifndef
-	- `elsif
+X	- `elsif
 	- `file
 X	- `line
 X	- task/function argument list

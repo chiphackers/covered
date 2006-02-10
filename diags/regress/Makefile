@@ -101,11 +101,12 @@ IVONLYDIAGS3  =
 IVONLYDIAGS4  = 
 
 VCSONLYDIAGS1 = always7.1       assign2.4       assign2.5       assign2.6       assign2.7 \
-                event1          exponent1       gate1.1         implicit2.1     mbit_sel5 \
-                mbit_sel5.1     mbit_sel5.2     mbit_sel5.3     mbit_sel5.4     mbit_sel6 \
-                mbit_sel6.1     mbit_sel6.2     mbit_sel6.3     mbit_sel6.4     param8.2 \
-                real1           static_func1    static_func1.1  triand          trior \
-                trireg          wand            wor
+                elsif1          elsif1.1        elsif1.2        elsif1.3        elsif1.4 \
+                elsif2          elsif2.1        event1          exponent1       gate1.1 \
+                implicit2.1     mbit_sel5       mbit_sel5.1     mbit_sel5.2     mbit_sel5.3 \
+                mbit_sel5.4     mbit_sel6       mbit_sel6.1     mbit_sel6.2     mbit_sel6.3 \
+                mbit_sel6.4     param8.2        real1           static_func1    static_func1.1 \
+                triand          trior           trireg          wand            wor
 VCSONLYDIAGS2 = 
 VCSONLYDIAGS3 = 
 VCSONLYDIAGS4 = 
