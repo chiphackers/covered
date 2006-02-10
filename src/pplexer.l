@@ -264,6 +264,7 @@ WSPACE [ \t\b\f]+
 `suppress_faults{WSPACE}?.*        { ECHO; }
 `unconnected_drive{WSPACE}?.*      { ECHO; }
 `uselib{WSPACE}?.*                 { ECHO; }
+`line{WSPACE}?.*                   { ECHO; }
 
   /* Macro identifier */
 `[a-zA-Z_][a-zA-Z0-9_]* { def_match(); }
