@@ -1,0 +1,64 @@
+#!/usr/bin/perl
+
+# Name:     run
+# Author:   Trevor Williams  <trevorw(sgi.com)>
+# Date:     2/11/2005
+# Brief:    Script used for running both regressions and single diagnostics.
+# Usage:    run <list_of_groups>
+
+sub parse_diag_header_line {
+
+  my @line = split( $_[0] );
+
+  if( $line[0] eq "GROUPS:" ) {
+    
+    # Parse groups
+
+  } elsif( $line[0] eq "IV:" ) {
+
+    # Parse Icarus Verilog command-line
+
+  } elsif( $line[0] eq "VCS:" ) {
+
+    # Parse VCS command-line
+
+  } elsif( $line[0] eq "SCORE:" ) {
+
+    # Parse score command
+
+  } elsif( $line[0] eq "MERGE:" ) {
+
+    # Parse merge command
+
+  } elsif( $line[0] eq "REPORT:" ) {
+
+    # Parse report command
+
+  } else {
+
+    die "ERROR:  Unknown command in header of diagnostic";
+
+  }
+
+}
+
+sub read_diag_header {
+
+  my $diag_name = $_[0];
+
+  open( DIAG, $diag_name ) || die "ERROR:  Unable to diagnostic $diag_name: $!\n";
+
+  while( $line = <DIAG> ) {
+    chomp( $line );
+    if( $in_header == 0 {
+      if( $line ~= /^\s*\/\*\s*HEADER/ ) {
+        $in_comment = 1;
+      }
+    } else {
+      &parse_diag_header_line( $line );
+    }
+  }
+
+  close( DIAG );
+
+}
