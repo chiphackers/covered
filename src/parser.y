@@ -1411,7 +1411,6 @@ expression_list
     {
       param_oride* po;
       if( (ignore_mode == 0) && (param_mode == 1) ) {
-        printf( "HERE A\n" );
         po = (param_oride*)malloc_safe( sizeof( param_oride ), __FILE__, __LINE__ );
         po->name = NULL;
         po->expr = NULL;
@@ -1429,7 +1428,6 @@ expression_list
     {
       param_oride* po;
       if( (ignore_mode == 0) && (param_mode == 1) ) {
-        printf( "HERE B\n" );
         po = (param_oride*)malloc_safe( sizeof( param_oride ), __FILE__, __LINE__ );
         po->name = NULL;
         po->expr = NULL;
