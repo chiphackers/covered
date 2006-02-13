@@ -143,7 +143,7 @@ mod_parm* mod_parm_add( char* scope, static_expr* msb, static_expr* lsb, bool is
   int        order = 0;  /* Current order of parameter */
   func_unit* mod_funit;  /* Pointer to module containing this functional unit (used for ordering purposes) */
   
-  assert( expr != NULL );
+  assert( (type == PARAM_TYPE_OVERRIDE) || (expr != NULL) );  /* An expression can be NULL if we are an override type */
   assert( (type == PARAM_TYPE_DECLARED)       || 
           (type == PARAM_TYPE_DECLARED_LOCAL) ||
           (type == PARAM_TYPE_OVERRIDE)       ||
@@ -211,7 +211,9 @@ mod_parm* mod_parm_add( char* scope, static_expr* msb, static_expr* lsb, bool is
   }
   parm->is_signed             = is_signed;
   parm->expr                  = expr;
-  parm->expr->suppl.part.root = 1;
+  if( expr != NULL ) {
+    parm->expr->suppl.part.root = 1;
+  }
   parm->suppl.all             = 0;
   parm->suppl.part.type       = type;
   parm->suppl.part.order      = order;
@@ -243,7 +245,6 @@ void mod_parm_display( mod_parm* mparm ) {
   char type_str[30];  /* String version of module parameter type */
 
   while( mparm != NULL ) {
-    assert( mparm->expr != NULL );
     switch( mparm->suppl.part.type ) {
       case PARAM_TYPE_DECLARED       :  strcpy( type_str, "DECLARED" );        break;
       case PARAM_TYPE_OVERRIDE       :  strcpy( type_str, "OVERRIDE" );        break;
@@ -255,9 +256,14 @@ void mod_parm_display( mod_parm* mparm ) {
       default                        :  strcpy( type_str, "UNKNOWN" );         break;
     }
     if( mparm->name == NULL ) {
-      printf( "  mparam => type: %s, order: %d, exp_id: %d\n", type_str, mparm->suppl.part.order, mparm->expr->id );
+      printf( "  mparam => type: %s, order: %d", type_str, mparm->suppl.part.order );
     } else {
-      printf( "  mparam =>  name: %s, type: %s, order: %d, exp_id: %d\n", mparm->name, type_str, mparm->suppl.part.order, mparm->expr->id );
+      printf( "  mparam => name: %s, type: %s, order: %d, exp_id: %d\n", mparm->name, type_str, mparm->suppl.part.order );
+    }
+    if( mparm->expr != NULL ) {
+      printf( ", exp_id: %d\n", mparm->expr->id );
+    } else {
+      printf( "\n" );
     }
     if( mparm->sig != NULL ) {
       printf( "    " );  vsignal_display( mparm->sig );
@@ -799,14 +805,18 @@ void param_resolve_declared( mod_parm* mparm, funit_inst* inst ) {
 */
 void param_resolve_override( mod_parm* oparm, funit_inst* inst ) {
 
-  assert( oparm       != NULL );
-  assert( oparm->expr != NULL );
+  assert( oparm != NULL );
 
-  /* Evaluate module override parameter */
-  param_expr_eval( oparm->expr, inst );
+  /* If this is a NULL parameter, don't attempt an expression evaluation */
+  if( oparm->expr != NULL ) {
 
-  /* Add the new instance override parameter */
-  inst_parm_add( oparm->name, oparm->inst_name, oparm->msb, oparm->lsb, oparm->is_signed, oparm->expr->value, oparm, inst );
+    /* Evaluate module override parameter */
+    param_expr_eval( oparm->expr, inst );
+
+    /* Add the new instance override parameter */
+    inst_parm_add( oparm->name, oparm->inst_name, oparm->msb, oparm->lsb, oparm->is_signed, oparm->expr->value, oparm, inst );
+
+  }
 
 }
 
@@ -960,6 +970,13 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.56  2006/02/02 22:37:41  phase1geo
+ Starting to put in support for signed values and inline register initialization.
+ Also added support for more attribute locations in code.  Regression updated for
+ these changes.  Interestingly, with the changes that were made to the parser,
+ signals are output to reports in order (before they were completely reversed).
+ This is a nice surprise...  Full regression passes.
+
  Revision 1.55  2006/02/01 19:58:28  phase1geo
  More updates to allow parsing of various parameter formats.  At this point
  I believe full parameter support is functional.  Regression has been updated

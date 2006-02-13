@@ -1409,19 +1409,39 @@ expression_list
     }
   |
     {
+      param_oride* po;
+      if( (ignore_mode == 0) && (param_mode == 1) ) {
+        printf( "HERE A\n" );
+        po = (param_oride*)malloc_safe( sizeof( param_oride ), __FILE__, __LINE__ );
+        po->name = NULL;
+        po->expr = NULL;
+        po->next = NULL;
+        if( param_oride_head == NULL ) {
+          param_oride_head = param_oride_tail = po;
+        } else {
+          param_oride_tail->next = po;
+          param_oride_tail       = po;
+        }
+      }
       $$ = NULL;
     }
   | expression_list ','
     {
-      if( ignore_mode == 0 ) {
-        if( param_mode == 0 ) {
-          $$ = $1;
+      param_oride* po;
+      if( (ignore_mode == 0) && (param_mode == 1) ) {
+        printf( "HERE B\n" );
+        po = (param_oride*)malloc_safe( sizeof( param_oride ), __FILE__, __LINE__ );
+        po->name = NULL;
+        po->expr = NULL;
+        po->next = NULL;
+        if( param_oride_head == NULL ) {
+          param_oride_head = param_oride_tail = po;
         } else {
-          $$ = NULL;
+          param_oride_tail->next = po;
+          param_oride_tail       = po;
         }
-      } else {
-        $$ = NULL;
       }
+      $$ = $1;
     }
   ;
 
