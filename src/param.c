@@ -149,8 +149,8 @@ mod_parm* mod_parm_add( char* scope, static_expr* msb, static_expr* lsb, bool is
           (type == PARAM_TYPE_OVERRIDE)       ||
           (type == PARAM_TYPE_SIG_LSB)        ||
           (type == PARAM_TYPE_SIG_MSB)        ||
-          (type == PARAM_TYPE_EXP_LSB)        ||
-          (type == PARAM_TYPE_EXP_MSB) );
+          (type == PARAM_TYPE_INST_LSB)       ||
+          (type == PARAM_TYPE_INST_MSB) );
 
   /* Find module containing this functional unit */
   mod_funit = funit_get_curr_module( funit );
@@ -250,8 +250,8 @@ void mod_parm_display( mod_parm* mparm ) {
       case PARAM_TYPE_OVERRIDE       :  strcpy( type_str, "OVERRIDE" );        break;
       case PARAM_TYPE_SIG_LSB        :  strcpy( type_str, "SIG_LSB"  );        break;
       case PARAM_TYPE_SIG_MSB        :  strcpy( type_str, "SIG_MSB"  );        break;
-      case PARAM_TYPE_EXP_LSB        :  strcpy( type_str, "EXP_LSB"  );        break;
-      case PARAM_TYPE_EXP_MSB        :  strcpy( type_str, "EXP_MSB"  );        break;
+      case PARAM_TYPE_INST_LSB       :  strcpy( type_str, "INST_LSB" );        break;
+      case PARAM_TYPE_INST_MSB       :  strcpy( type_str, "INST_MSB" );        break;
       case PARAM_TYPE_DECLARED_LOCAL :  strcpy( type_str, "DECLARED_LOCAL" );  break;
       default                        :  strcpy( type_str, "UNKNOWN" );         break;
     }
@@ -596,6 +596,7 @@ void param_expr_eval( expression* expr, funit_inst* inst ) {
 
     /* For constant functions, resolve parameters and resize the functional unit first */
     if( expr->op == EXP_OP_FUNC_CALL ) {
+      assert( expr->stmt != NULL );
       funit = funit_find_by_id( expr->stmt->exp->id );
       assert( funit != NULL );
       funiti = instance_find_by_funit( inst, funit, &ignore );
@@ -611,6 +612,7 @@ void param_expr_eval( expression* expr, funit_inst* inst ) {
     switch( expr->op ) {
       case EXP_OP_STATIC    :
       case EXP_OP_FUNC_CALL :
+      case EXP_OP_PASSIGN   :
         break;
       case EXP_OP_PARAM          :
       case EXP_OP_PARAM_SBIT     :
@@ -831,6 +833,8 @@ void param_resolve( funit_inst* inst ) {
   mod_parm*   mparm;  /* Pointer to current module parameter in functional unit */
   funit_inst* child;  /* Pointer to child instance of this instance */
 
+  assert( inst != NULL );
+
   /* Resolve this instance */
   mparm = inst->funit->param_head;
   while( mparm != NULL ) {
@@ -928,6 +932,9 @@ void mod_parm_dealloc( mod_parm* parm, bool recursive ) {
     /* Remove the parameter name */
     free_safe( parm->name );
 
+    /* Remove instance name, if specified */
+    free_safe( parm->inst_name );
+
     /* Remove the parameter itself */
     free_safe( parm );
 
@@ -970,6 +977,11 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.57  2006/02/13 15:43:01  phase1geo
+ Adding support for NULL expressions in parameter override expression lists.  In VCS,
+ this simply skips overriding the Nth parameter -- Covered does the same.  Full
+ regression now passes.
+
  Revision 1.56  2006/02/02 22:37:41  phase1geo
  Starting to put in support for signed values and inline register initialization.
  Also added support for more attribute locations in code.  Regression updated for

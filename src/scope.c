@@ -102,6 +102,7 @@ bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, 
       snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined signal hierarchy (%s) in %s %s, file %s, line %d",
                 name, get_funit_type( curr_funit->type ), curr_funit->name, curr_funit->filename, line );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      assert( 0 );
       exit( 1 );
  
     }
@@ -263,6 +264,10 @@ func_unit* scope_get_parent_module( char* scope ) {
 
 /*
  $Log$
+ Revision 1.8  2006/01/23 17:23:28  phase1geo
+ Fixing scope issues that came up when port assignment was added.  Full regression
+ now passes.
+
  Revision 1.7  2006/01/13 23:27:02  phase1geo
  Initial attempt to fix problem with handling functions/tasks/named blocks with
  the same name in the design.  Still have a few diagnostics failing in regressions

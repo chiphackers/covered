@@ -11,6 +11,9 @@
 #include "defines.h"
 
 
+/*! \brief Displays the current state of the instance tree */
+void instance_display_tree( funit_inst* root );
+
 /*! \brief Builds full hierarchy from leaf node to root. */
 void instance_gen_scope( char* scope, funit_inst* leaf );
 
@@ -21,7 +24,7 @@ funit_inst* instance_find_scope( funit_inst* root, char* scope );
 funit_inst* instance_find_by_funit( funit_inst* root, func_unit* funit, int* ignore );
 
 /*! \brief Adds new instance to specified instance tree during parse. */
-void instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child, char* inst_name );
+void instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child, char* inst_name, vector_width* range );
 
 /*! \brief Adds new instance to specified instance tree during CDD read. */
 void instance_read_add( funit_inst** root, char* parent, func_unit* child, char* inst_name );
@@ -35,6 +38,10 @@ void instance_dealloc( funit_inst* root, char* scope );
 
 /*
  $Log$
+ Revision 1.10  2005/11/08 23:12:09  phase1geo
+ Fixes for function/task additions.  Still a lot of testing on these structures;
+ however, regressions now pass again so we are checkpointing here.
+
  Revision 1.9  2002/11/05 00:20:07  phase1geo
  Adding development documentation.  Fixing problem with combinational logic
  output in report command and updating full regression.

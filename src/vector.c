@@ -42,13 +42,13 @@
 #include "util.h"
 
 
-nibble xor_optab[OPTAB_SIZE]  = { XOR_OP_TABLE  };  /*!< XOR operation table  */
-nibble and_optab[OPTAB_SIZE]  = { AND_OP_TABLE  };  /*!< AND operation table  */
-nibble or_optab[OPTAB_SIZE]   = { OR_OP_TABLE   };  /*!< OR operation table   */
+nibble xor_optab[OPTAB_SIZE]  = { XOR_OP_TABLE  };  /*!< XOR operation table */
+nibble and_optab[OPTAB_SIZE]  = { AND_OP_TABLE  };  /*!< AND operation table */
+nibble or_optab[OPTAB_SIZE]   = { OR_OP_TABLE   };  /*!< OR operation table */
 nibble nand_optab[OPTAB_SIZE] = { NAND_OP_TABLE };  /*!< NAND operation table */
-nibble nor_optab[OPTAB_SIZE]  = { NOR_OP_TABLE  };  /*!< NOR operation table  */
+nibble nor_optab[OPTAB_SIZE]  = { NOR_OP_TABLE  };  /*!< NOR operation table */
 nibble nxor_optab[OPTAB_SIZE] = { NXOR_OP_TABLE };  /*!< NXOR operation table */
-nibble add_optab[OPTAB_SIZE]  = { ADD_OP_TABLE  };  /*!< ADD operation table  */
+nibble add_optab[OPTAB_SIZE]  = { ADD_OP_TABLE  };  /*!< ADD operation table */
 
 extern char user_msg[USER_MSG_LENGTH];
 
@@ -1979,6 +1979,10 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.72  2006/02/03 23:49:38  phase1geo
+ More fixes to support signed comparison and propagation.  Still more testing
+ to do here before I call it good.  Regression may fail at this point.
+
  Revision 1.71  2006/02/02 22:37:41  phase1geo
  Starting to put in support for signed values and inline register initialization.
  Also added support for more attribute locations in code.  Regression updated for

@@ -11,6 +11,6 @@
 2 6 18 4001a 0 23 c00 0 5 static_func
 2 7 18 40021 1 37 82a 4 6
 1 static_func 0 14 50010 32 16 aa 1aa aa aa aa aa aa aa
-1 bit_to_set 0 15 e 5 0 aa 2
+1 bit_to_set 0 15 e 5 16 aa 2
 4 7 0 0
 4 3 7 7

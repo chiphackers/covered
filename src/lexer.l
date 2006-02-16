@@ -263,7 +263,7 @@ WSPACE [ \t\b\f]+
 <UDPTABLE>[01\?\*\-] { yylloc.last_column += strlen( yytext );  return yytext[0]; }
 
   /* Keyword and signal identifiers */
-[a-zA-Z_][a-zA-Z0-9$_]* {
+[a-zA-Z_][a-zA-Z0-9$_]*(\[[0-9]+\].[a-zA-Z_][a-zA-Z0-9$_]*)? {
      str_link* foundmod;
      int rc = lexer_keyword_code( yytext, yyleng );
      yylloc.first_column = yylloc.last_column;

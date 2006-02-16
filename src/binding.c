@@ -352,12 +352,13 @@ void bind_rm_stmt( int id ) {
 }
 
 /*!
- \param name              String name of signal to bind to specified expression.
- \param exp               Pointer to expression to bind.
- \param funit_exp         Pointer to functional unit containing expression.
- \param fsm_bind          If set to TRUE, handling binding for FSM binding.
- \param clear_assigned    If set to TRUE, clears signal assigned bit.
- \param exp_line          Line of specified expression (when expression is NULL)
+ \param name            String name of signal to bind to specified expression.
+ \param exp             Pointer to expression to bind.
+ \param funit_exp       Pointer to functional unit containing expression.
+ \param fsm_bind        If set to TRUE, handling binding for FSM binding.
+ \param clear_assigned  If set to TRUE, clears signal assigned bit.
+ \param exp_line        Line of specified expression (when expression is NULL)
+ \param bind_locally    If TRUE, only search for specified signal within the same functional unit as this expression
 
  \return Returns TRUE if bind occurred successfully; otherwise, returns FALSE.
  
@@ -369,7 +370,8 @@ void bind_rm_stmt( int id ) {
  signal neither exists or is an unused signal, it is considered to be an implicit signal
  and a 1-bit signal is created.
 */
-bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bind, bool cdd_reading, bool clear_assigned, int exp_line ) {
+bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bind, bool cdd_reading,
+                  bool clear_assigned, int exp_line, bool bind_locally ) {
 
   bool       retval = TRUE;  /* Return value for this function */
   char*      tmpname;        /* Temporary name containing unused signal character */
@@ -378,120 +380,128 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
   statement* stmt;           /* Pointer to root statement for the given expression */
   exp_link*  expl;           /* Pointer to current expression link */
 
-  /* Search for specified signal in current functional unit */
-  if( !scope_find_signal( name, funit_exp, &found_sig, &found_funit, exp_line ) ) {
+  /* Skip signal binding if the name is not local and we are binding locally */
+  if( scope_local( name ) || !bind_locally || (exp->op == EXP_OP_PASSIGN) ) {
 
-    /* Check to see if it is an unused signal */
-    tmpname = (char*)malloc_safe( (strlen( name ) + 2), __FILE__, __LINE__ );
-    snprintf( tmpname, (strlen( name ) + 2), "!%s", name );
+    /* Search for specified signal in current functional unit */
+    if( !scope_find_signal( name, funit_exp, &found_sig, &found_funit, exp_line ) ) {
 
-    if( !scope_find_signal( tmpname, found_funit, &found_sig, &found_funit, exp_line ) ) {
+      /* Check to see if it is an unused signal */
+      tmpname = (char*)malloc_safe( (strlen( name ) + 2), __FILE__, __LINE__ );
+      snprintf( tmpname, (strlen( name ) + 2), "!%s", name );
 
-      /* If we are binding an FSM, output an error message */
-      if( fsm_bind ) {
-        snprintf( user_msg, USER_MSG_LENGTH, "Unable to find specified FSM signal \"%s\" in module \"%s\" in file %s",
-                  name,
-                  funit_exp->name,
-                  funit_exp->filename );
-        print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      if( !scope_find_signal( tmpname, found_funit, &found_sig, &found_funit, exp_line ) ) {
+
+        /* If we are binding an FSM, output an error message */
+        if( fsm_bind ) {
+          snprintf( user_msg, USER_MSG_LENGTH, "Unable to find specified FSM signal \"%s\" in module \"%s\" in file %s",
+                    name,
+                    funit_exp->name,
+                    funit_exp->filename );
+          print_output( user_msg, FATAL, __FILE__, __LINE__ );
+          retval = FALSE;
+
+        /* Otherwise, implicitly create the signal and bind to it */
+        } else {
+          assert( exp != NULL );
+          snprintf( user_msg, USER_MSG_LENGTH, "Implicit declaration of signal \"%s\", creating 1-bit version of signal", name );
+          print_output( user_msg, WARNING, __FILE__, __LINE__ );
+          found_sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT, 1, 0, exp->line, ((exp->col >> 16) & 0xffff) );
+          sig_link_add( found_sig, &(found_funit->sig_head), &(found_funit->sig_tail) );
+        }
+
+      } else {
+
         retval = FALSE;
 
-      /* Otherwise, implicitly create the signal and bind to it */
-      } else {
-        assert( exp != NULL );
-        snprintf( user_msg, USER_MSG_LENGTH, "Implicit declaration of signal \"%s\", creating 1-bit version of signal", name );
-        print_output( user_msg, WARNING, __FILE__, __LINE__ );
-        found_sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT, 1, 0, exp->line, ((exp->col >> 16) & 0xffff) );
-        sig_link_add( found_sig, &(found_funit->sig_head), &(found_funit->sig_tail) );
       }
 
-    } else {
-
-      retval = FALSE;
+      free_safe( tmpname );
 
     }
 
-    free_safe( tmpname );
+    if( retval ) {
 
-  }
-
-  if( retval ) {
-
-    /* Bind signal and expression if we are not clearing or this is an MBA */
-    if( !clear_assigned ) {
-
-      /* Add expression to signal expression list */
-      exp_link_add( exp, &(found_sig->exp_head), &(found_sig->exp_tail) );
-
-      /* Set expression to point at signal */
-      exp->sig = found_sig;
-
-      /* If this is a port assignment, we need to link the expression and signal together immediately */
-      if( exp->op == EXP_OP_PASSIGN ) {
-        vector_dealloc( exp->value );
-        exp->value = found_sig->value;
-      }
-
-    }
-
-    if( cdd_reading ) {
-
-      if( (exp->op == EXP_OP_SIG)            ||
-          (exp->op == EXP_OP_SBIT_SEL)       ||
-          (exp->op == EXP_OP_MBIT_SEL)       ||
-          (exp->op == EXP_OP_MBIT_POS)       ||
-          (exp->op == EXP_OP_MBIT_NEG)       ||
-          (exp->op == EXP_OP_PARAM)          ||
-          (exp->op == EXP_OP_PARAM_SBIT)     ||
-          (exp->op == EXP_OP_PARAM_MBIT)     ||
-          (exp->op == EXP_OP_PARAM_MBIT_POS) ||
-          (exp->op == EXP_OP_PARAM_MBIT_NEG) ||
-          (exp->op == EXP_OP_TRIGGER) ) {
-        expression_set_value( exp, found_sig->value );
-      }
-
-    } else {
-
-      /* Check to see if this signal should be assigned by Covered or the dumpfile */
-      if( clear_assigned ) {
-        found_sig->value->suppl.part.assigned = 0;
-      }
-
-      if( !clear_assigned &&
-          ((exp->op == EXP_OP_SIG)      ||
-           (exp->op == EXP_OP_SBIT_SEL) ||
-           (exp->op == EXP_OP_MBIT_SEL) ||
-           (exp->op == EXP_OP_MBIT_POS) ||
-           (exp->op == EXP_OP_MBIT_NEG)) ) {
-        expression_set_assigned( exp );
-      }
-
-      /* Set signed bits */
+      /* Bind signal and expression if we are not clearing or this is an MBA */
       if( !clear_assigned ) {
-        expression_set_signed( exp );
-      }
 
-      /*
-       If the signal is found for the given expression but the signal is marked as "must be assigned" but is also marked as
-       "won't be assigned", we need to remove all statement blocks that contain this signal from coverage consideration.
-      */
-      if( (found_sig->value->suppl.part.assigned == 0) && (found_sig->value->suppl.part.mba == 1) ) {
-        expl = found_sig->exp_head;
-        while( expl != NULL ) {
-          if( (stmt = expression_get_root_statement( expl->exp )) != NULL ) {
-#ifdef DEBUG_MODE
-            snprintf( user_msg, USER_MSG_LENGTH, "Removing statement block %d, line %d because it needed to be assigned but would not be",
-                      stmt->exp->id, stmt->exp->line );
-            print_output( user_msg, DEBUG, __FILE__, __LINE__ );
-#endif
-            stmt_blk_add_to_remove_list( stmt );
-          }
-          expl = expl->next;
+        /* Add expression to signal expression list */
+        exp_link_add( exp, &(found_sig->exp_head), &(found_sig->exp_tail) );
+
+        /* Set expression to point at signal */
+        exp->sig = found_sig;
+
+        /* If this is a port assignment, we need to link the expression and signal together immediately */
+        if( exp->op == EXP_OP_PASSIGN ) {
+          vector_dealloc( exp->value );
+          exp->value = found_sig->value;
         }
+
       }
 
+      if( cdd_reading ) {
+
+        if( (exp->op == EXP_OP_SIG)            ||
+            (exp->op == EXP_OP_SBIT_SEL)       ||
+            (exp->op == EXP_OP_MBIT_SEL)       ||
+            (exp->op == EXP_OP_MBIT_POS)       ||
+            (exp->op == EXP_OP_MBIT_NEG)       ||
+            (exp->op == EXP_OP_PARAM)          ||
+            (exp->op == EXP_OP_PARAM_SBIT)     ||
+            (exp->op == EXP_OP_PARAM_MBIT)     ||
+            (exp->op == EXP_OP_PARAM_MBIT_POS) ||
+            (exp->op == EXP_OP_PARAM_MBIT_NEG) ||
+            (exp->op == EXP_OP_TRIGGER) ) {
+          expression_set_value( exp, found_sig->value );
+        }
+
+      } else {
+
+        /* Check to see if this signal should be assigned by Covered or the dumpfile */
+        if( clear_assigned ) {
+          found_sig->value->suppl.part.assigned = 0;
+        }
+
+        if( !clear_assigned &&
+            ((exp->op == EXP_OP_SIG)      ||
+             (exp->op == EXP_OP_SBIT_SEL) ||
+             (exp->op == EXP_OP_MBIT_SEL) ||
+             (exp->op == EXP_OP_MBIT_POS) ||
+             (exp->op == EXP_OP_MBIT_NEG)) ) {
+          expression_set_assigned( exp );
+        }
+
+        /* Set signed bits */
+        if( !clear_assigned ) {
+          expression_set_signed( exp );
+        }
+
+        /*
+         If the signal is found for the given expression but the signal is marked as "must be assigned" but is also marked as
+         "won't be assigned", we need to remove all statement blocks that contain this signal from coverage consideration.
+        */
+        if( (found_sig->value->suppl.part.assigned == 0) && (found_sig->value->suppl.part.mba == 1) ) {
+          expl = found_sig->exp_head;
+          while( expl != NULL ) {
+            if( (stmt = expression_get_root_statement( expl->exp )) != NULL ) {
+#ifdef DEBUG_MODE
+              snprintf( user_msg, USER_MSG_LENGTH, "Removing statement block %d, line %d because it needed to be assigned but would not be",
+                        stmt->exp->id, stmt->exp->line );
+              print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+#endif
+              stmt_blk_add_to_remove_list( stmt );
+            }
+            expl = expl->next;
+          }
+        }
+
+      }
 
     }
+
+  } else {
+
+    retval = FALSE;
 
   }
 
@@ -500,15 +510,27 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
 }
 
 /*!
+ \param id            ID of statement to bind to.
+ \param exp           Pointer to expression to bind to given statement ID
+ \param funit_exp     Pointer to functional unit containing the given expression to bind
+ \param cdd_reading   Set to TRUE if we are binding after reading from the CDD file
+ \param rm_stmt       Set to TRUE if we need to remove the statement block (instead of bind to it)
+ \param bind_locally  If TRUE, only attempt to bind to a statement in the same functional unit as this expression.
 */
-bool bind_statement( int id, expression* exp, func_unit* funit_exp, bool cdd_reading, bool rm_stmt ) {
+bool bind_statement( int id, expression* exp, func_unit* funit_exp, bool cdd_reading, bool rm_stmt, bool bind_locally ) {
 
   bool       retval = FALSE;  /* Return value for this function */
   func_unit* found_funit;     /* Pointer to functional unit containing the specified statement */
   stmt_link* found_stmtl;     /* Pointer to found statement */
 
-  if( ((found_funit = funit_find_by_id( id )) != NULL) &&
-      ((found_stmtl = stmt_link_find( id, found_funit->stmt_head )) != NULL) ) {
+  /* Get functional unit to search in */
+  if( bind_locally ) {
+    found_funit = funit_exp;
+  } else {
+    found_funit = funit_find_by_id( id );
+  }
+
+  if( (found_funit != NULL) && ((found_stmtl = stmt_link_find( id, found_funit->stmt_head )) != NULL) ) {
 
     /* Bind the expression to the specified statement */
     if( !rm_stmt ) {
@@ -612,19 +634,21 @@ bool bind_task_function_ports( expression* expr, func_unit* funit, char* name, i
 }
 
 /*!
- \param type         Type of functional unit to bind
- \param name         Name of functional unit to bind
- \param exp          Pointer to expression containing FUNC_CALL/TASK_CALL operation type to bind
- \param funit_exp    Pointer to functional unit containing exp
- \param cdd_reading  Set to TRUE when we are reading from the CDD file (FALSE when parsing)
- \param exp_line     Line number of expression that is being bound (used when exp is NULL)
+ \param type          Type of functional unit to bind
+ \param name          Name of functional unit to bind
+ \param exp           Pointer to expression containing FUNC_CALL/TASK_CALL operation type to bind
+ \param funit_exp     Pointer to functional unit containing exp
+ \param cdd_reading   Set to TRUE when we are reading from the CDD file (FALSE when parsing)
+ \param exp_line      Line number of expression that is being bound (used when exp is NULL)
+ \param bind_locally  If set to TRUE, only attempt to bind a task/function local to the expression functional unit
 
  \return Returns TRUE if there were no errors in binding the specified expression to the needed
          functional unit; otherwise, returns FALSE to indicate that we had an error.
 
  Binds an expression to a function/task/named block.
 */
-bool bind_task_function_namedblock( int type, char* name, expression* exp, func_unit* funit_exp, bool cdd_reading, int exp_line ) {
+bool bind_task_function_namedblock( int type, char* name, expression* exp, func_unit* funit_exp,
+                                    bool cdd_reading, int exp_line, bool bind_locally ) {
 
   bool       retval = TRUE;  /* Return value for this function */
   stmt_iter  si;             /* Statement iterator used to find the head statement */
@@ -642,54 +666,64 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
   /* Search the no_score list to make sure that this function is not being manually excluded */
   if( str_link_find( name, no_score_head ) == NULL ) {
 
-    if( !scope_find_task_function_namedblock( name, type, funit_exp, &found_funit, exp_line ) ) {
+    /* Don't continue if the name is not local and we are told to bind locally */
+    if( scope_local( name ) || !bind_locally ) {
 
-      retval = FALSE;
+      if( !scope_find_task_function_namedblock( name, type, funit_exp, &found_funit, exp_line ) ) {
 
-    } else if( found_funit->stmt_head != NULL ) {
+        retval = FALSE;
 
-      assert( found_funit->stmt_head->stmt != NULL );
+      } else if( found_funit->stmt_head != NULL ) {
 
-      /* Set expression to point at task/function's first head statement */
-      stmt_iter_reset( &si, found_funit->stmt_tail );
-      stmt_iter_find_head( &si, FALSE );
-      assert( si.curr->stmt != NULL );
-      exp->stmt = si.curr->stmt;
+        assert( found_funit->stmt_head->stmt != NULL );
 
-      /* If this is a function, also bind the return value signal vector to the expression's vector */
-      if( type == FUNIT_FUNCTION ) {
+        /* Set expression to point at task/function's first head statement */
+        stmt_iter_reset( &si, found_funit->stmt_tail );
+        stmt_iter_find_head( &si, FALSE );
+        assert( si.curr->stmt != NULL );
+        exp->stmt = si.curr->stmt;
 
-        scope_extract_back( found_funit->name, back, rest );
-        sig.name = back;
-        sigl     = sig_link_find( &sig, found_funit->sig_head );
+        /* If this is a function, also bind the return value signal vector to the expression's vector */
+        if( type == FUNIT_FUNCTION ) {
 
-        assert( sigl != NULL );
+          scope_extract_back( found_funit->name, back, rest );
+          sig.name = back;
+          sigl     = sig_link_find( &sig, found_funit->sig_head );
 
-        /* Add expression to signal expression list */
-        exp_link_add( exp, &(sigl->sig->exp_head), &(sigl->sig->exp_tail) );
+          assert( sigl != NULL );
 
-        /* Set expression to point at signal */
-        exp->sig = sigl->sig;
+          /* Add expression to signal expression list */
+          exp_link_add( exp, &(sigl->sig->exp_head), &(sigl->sig->exp_tail) );
 
-        /* Attach the signal's value to our expression value */
-        expression_set_value( exp, sigl->sig->value );
+          /* Set expression to point at signal */
+          exp->sig = sigl->sig;
 
-      }
+          /* Attach the signal's value to our expression value */
+          expression_set_value( exp, sigl->sig->value );
 
-      /* If this is a function or task, bind the ports as well */
-      if( ((type == FUNIT_FUNCTION) || (type == FUNIT_TASK)) && !cdd_reading ) {
-
-        /* First, bind the ports */
-        port_order = 0;
-        bind_task_function_ports( exp->left, found_funit, name, &port_order, funit_exp );
-
-        /* Check to see if the call port count matches the actual port count */
-        if( (port_cnt = funit_get_port_count( found_funit )) != port_order ) {
-          snprintf( user_msg, USER_MSG_LENGTH, "Number of arguments in %s call (%d) does not match its %s port list (%d), file %s, line %d",
-                    get_funit_type( type ), port_order, get_funit_type( type ), port_cnt, funit_exp->filename, exp->line );
-          print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          exit( 1 );
         }
+
+        /* If this is a function or task, bind the ports as well */
+        if( ((type == FUNIT_FUNCTION) || (type == FUNIT_TASK)) && !cdd_reading ) {
+
+          /* First, bind the ports */
+          port_order = 0;
+          bind_task_function_ports( exp->left, found_funit, name, &port_order, funit_exp );
+
+          /* Check to see if the call port count matches the actual port count */
+          if( (port_cnt = funit_get_port_count( found_funit )) != port_order ) {
+            snprintf( user_msg, USER_MSG_LENGTH, "Number of arguments in %s call (%d) does not match its %s port list (%d), file %s, line %d",
+                      get_funit_type( type ), port_order, get_funit_type( type ), port_cnt, funit_exp->filename, exp->line );
+            print_output( user_msg, FATAL, __FILE__, __LINE__ );
+            exit( 1 );
+          }
+
+        }
+
+      } else {
+
+        /* Binding did not occur */
+        retval = FALSE;
 
       }
 
@@ -702,7 +736,6 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
 
   } else {
 
-    /* Binding did not occur */
     retval = FALSE;
 
   }
@@ -735,96 +768,108 @@ void bind( bool cdd_reading ) {
   bool        bound;         /* Specifies if the current expression was successfully bound or not */
   statement*  tmp_stmt;      /* Pointer to temporary statement */
   exp_link*   tmp_expl;      /* Pointer to current expression link in signal's expression list */
+  int         pass;          /* Loop iterator */
     
-  curr_eb = eb_head;
+  /* Make two passes through binding list, 0=local bindings, 1=remote bindings */
+  for( pass=0; pass<2; pass++ ) {
 
-  while( curr_eb != NULL ) {
+    curr_eb = eb_head;
+    while( curr_eb != NULL ) {
 
-    if( curr_eb->stmt_id == 0 ) {
+      if( curr_eb->stmt_id == 0 ) {
 
-      /* Figure out ID to clear from the binding list after the bind occurs */
-      if( curr_eb->clear_assigned == 0 ) {
-        id = curr_eb->exp->id;
-      } else {
-        id = curr_eb->clear_assigned;
-      }
-
-      /* Handle signal binding */
-      if( curr_eb->type == 0 ) {
-
-        /*
-         Bind the signal.  If it is unsuccessful, we need to remove the statement that this expression
-         is a part of.
-        */
-        bound = bind_signal( curr_eb->name, curr_eb->exp, curr_eb->funit, FALSE, cdd_reading, (curr_eb->clear_assigned > 0), curr_eb->line );
-
-        /* If an FSM expression is attached, size it now */
-        if( curr_eb->fsm != NULL ) {
-          curr_eb->fsm->value = vector_create( curr_eb->exp->value->width, TRUE );
+        /* Figure out ID to clear from the binding list after the bind occurs */
+        if( curr_eb->clear_assigned == 0 ) {
+          id = curr_eb->exp->id;
+        } else {
+          id = curr_eb->clear_assigned;
         }
 
-      /* Otherwise, handle disable binding */
-      } else if( curr_eb->type == 1 ) {
+        /* Handle signal binding */
+        if( curr_eb->type == 0 ) {
 
-        /* Attempt to bind a named block -- if unsuccessful, attempt to bind with a task */
-        if( !(bound = bind_task_function_namedblock( FUNIT_NAMED_BLOCK, curr_eb->name, curr_eb->exp, curr_eb->funit, cdd_reading, curr_eb->line )) ) {
-          bound = bind_task_function_namedblock( FUNIT_TASK, curr_eb->name, curr_eb->exp, curr_eb->funit, cdd_reading, curr_eb->line );
+          /*
+           Bind the signal.  If it is unsuccessful, we need to remove the statement that this expression
+           is a part of.
+          */
+          bound = bind_signal( curr_eb->name, curr_eb->exp, curr_eb->funit, FALSE, cdd_reading,
+                               (curr_eb->clear_assigned > 0), curr_eb->line, (pass == 0) );
+
+          /* If an FSM expression is attached, size it now */
+          if( curr_eb->fsm != NULL ) {
+            curr_eb->fsm->value = vector_create( curr_eb->exp->value->width, TRUE );
+          }
+
+        /* Otherwise, handle disable binding */
+        } else if( curr_eb->type == 1 ) {
+
+          /* Attempt to bind a named block -- if unsuccessful, attempt to bind with a task */
+          if( !(bound = bind_task_function_namedblock( FUNIT_NAMED_BLOCK, curr_eb->name, curr_eb->exp, curr_eb->funit,
+                                                       cdd_reading, curr_eb->line, (pass == 0) )) ) {
+            bound = bind_task_function_namedblock( FUNIT_TASK, curr_eb->name, curr_eb->exp, curr_eb->funit,
+                                                   cdd_reading, curr_eb->line, (pass == 0) );
+          }
+
+        /* Otherwise, handle function/task binding */
+        } else {
+
+          /*
+           Bind the expression to the task/function.  If it is unsuccessful, we need to remove the statement
+           that this expression is a part of.
+          */
+          bound = bind_task_function_namedblock( curr_eb->type, curr_eb->name, curr_eb->exp, curr_eb->funit,
+                                                 cdd_reading, curr_eb->line, (pass == 0) );
+
         }
 
-      /* Otherwise, handle function/task binding */
+        /* If we have bound successfully, copy the name of this exp_bind to the expression */
+        if( bound && (curr_eb->exp != NULL) ) {
+          curr_eb->exp->name = strdup_safe( curr_eb->name, __FILE__, __LINE__ );
+        }
+
       } else {
 
-        /*
-         Bind the expression to the task/function.  If it is unsuccessful, we need to remove the statement
-         that this expression is a part of.
-        */
-        bound = bind_task_function_namedblock( curr_eb->type, curr_eb->name, curr_eb->exp, curr_eb->funit, cdd_reading, curr_eb->line );
+        /* Figure out ID to clear from the binding list after the bind occurs */
+        if( curr_eb->rm_stmt > 0 ) {
+          id = curr_eb->rm_stmt;
+        } else {
+          id = curr_eb->exp->id;
+        }
+
+        /* Handle statement binding */
+        bound = bind_statement( curr_eb->stmt_id, curr_eb->exp, curr_eb->funit, cdd_reading, curr_eb->rm_stmt, (pass == 0) );
 
       }
 
-      /* If we have bound successfully, copy the name of this exp_bind to the expression */
-      if( bound && (curr_eb->exp != NULL) ) {
-        curr_eb->exp->name = strdup_safe( curr_eb->name, __FILE__, __LINE__ );
-      }
-
-    } else {
-
-      /* Figure out ID to clear from the binding list after the bind occurs */
-      if( curr_eb->rm_stmt > 0 ) {
-        id = curr_eb->rm_stmt;
-      } else {
-        id = curr_eb->exp->id;
-      }
-
-      /* Handle statement binding */
-      bound = bind_statement( curr_eb->stmt_id, curr_eb->exp, curr_eb->funit, cdd_reading, curr_eb->rm_stmt );
-
-    }
-
-    /*
-     If the expression was unable to be bound, put its statement block in a list to be removed after
-     binding has been completed.
-    */
-    if( !bound && (curr_eb->clear_assigned == 0) ) {
-      if( (tmp_stmt = expression_get_root_statement( curr_eb->exp )) != NULL ) {
+      /*
+       If the expression was unable to be bound, put its statement block in a list to be removed after
+       binding has been completed.
+      */
+      if( !bound && (curr_eb->clear_assigned == 0) && (pass == 1) ) {
+        if( (tmp_stmt = expression_get_root_statement( curr_eb->exp )) != NULL ) {
 #ifdef DEBUG_MODE
-        snprintf( user_msg, USER_MSG_LENGTH, "Removing statement block containing line %d because it was unbindable", curr_eb->exp->line );
-        print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+          snprintf( user_msg, USER_MSG_LENGTH, "Removing statement block containing line %d because it was unbindable",
+                    curr_eb->exp->line );
+          print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif        
-        stmt_blk_add_to_remove_list( tmp_stmt );
+          stmt_blk_add_to_remove_list( tmp_stmt );
+        }
       }
+
+      curr_eb = curr_eb->next;
+
+      /* Remove this from the binding list */
+      if( bound ) {
+        bind_remove( id, FALSE );
+      }
+
     }
 
-    curr_eb = curr_eb->next;
+    /* If we are in parse mode, resolve all parameters and arrays of instances now */
+    if( !cdd_reading && (pass == 0) ) {
+      param_resolve( instance_root );
+    }
 
-    /* Remove this from the binding list */
-    bind_remove( id, FALSE );
-
-  }
-
-  /* If we are in parse mode, resolve all parameters now */
-  if( !cdd_reading ) {
-    param_resolve( instance_root );
   }
 
 }
@@ -858,6 +903,10 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.68  2006/02/03 23:49:38  phase1geo
+ More fixes to support signed comparison and propagation.  Still more testing
+ to do here before I call it good.  Regression may fail at this point.
+
  Revision 1.67  2006/01/31 16:41:00  phase1geo
  Adding initial support and diagnostics for the variable multi-bit select
  operators +: and -:.  More to come but full regression passes.

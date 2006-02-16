@@ -177,7 +177,7 @@ int yydebug = 1;
 %token KK_attribute
 
 %type <integer>   net_type net_type_opt var_type
-%type <statexp>   static_expr static_expr_primary
+%type <statexp>   static_expr static_expr_primary static_expr_list
 %type <text>      identifier
 %type <expr>      expr_primary expression_list expression
 %type <expr>      lavalue lpvalue
@@ -185,8 +185,7 @@ int yydebug = 1;
 %type <text>      udp_port_list
 %type <expr>      delay_value delay_value_simple
 %type <text>      defparam_assign_list defparam_assign
-%type <text>      gate_instance
-%type <strlink>   gate_instance_list
+%type <strlink>   gate_instance gate_instance_list
 %type <text>      named_begin_end_block fork_statement
 %type <state>     statement statement_list statement_opt 
 %type <state>     if_statement_error
@@ -456,6 +455,40 @@ port_reference_list
   | port_reference_list ',' port_reference
   ;
 		
+static_expr_list
+  : static_expr_list ',' static_expr
+    {
+      static_expr* tmp = $3;
+      if( ignore_mode == 0 ) {
+        if( $3 != NULL ) {
+          if( port_mode == 1 ) {
+            tmp = static_expr_gen_unary( $3, EXP_OP_PASSIGN, @3.first_line, @3.first_column, (@3.last_column - 1) );
+          }
+          tmp = static_expr_gen( tmp, $1, EXP_OP_LIST, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+          $$ = tmp;
+        } else {
+          $$ = $1;
+        }
+      } else {
+        $$ = NULL;
+      }
+    }
+  | static_expr
+    {
+      static_expr* tmp = $1;
+      if( ignore_mode == 0 ) {
+        if( $1 != NULL ) {
+          if( port_mode == 1 ) {
+            tmp = static_expr_gen_unary( $1, EXP_OP_PASSIGN, @1.first_line, @1.first_column, (@1.last_column - 1) );
+          }
+        }
+        $$ = tmp;
+      } else {
+        $$ = NULL;
+      }
+    }
+  ;
+
 static_expr
   : static_expr_primary
     {
@@ -532,85 +565,85 @@ static_expr
   | static_expr '^' static_expr
     {
       static_expr* tmp;
-      tmp = static_expr_gen( $3, $1, EXP_OP_XOR, @1.first_line, @1.first_column, (@3.last_column - 1) );
+      tmp = static_expr_gen( $3, $1, EXP_OP_XOR, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
       $$ = tmp;
     }
   | static_expr '*' static_expr
     {
       static_expr* tmp;
-      tmp = static_expr_gen( $3, $1, EXP_OP_MULTIPLY, @1.first_line, @1.first_column, (@3.last_column - 1) );
+      tmp = static_expr_gen( $3, $1, EXP_OP_MULTIPLY, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
       $$ = tmp;
     }
   | static_expr '/' static_expr
     {
       static_expr* tmp;
-      tmp = static_expr_gen( $3, $1, EXP_OP_DIVIDE, @1.first_line, @1.first_column, (@3.last_column - 1) );
+      tmp = static_expr_gen( $3, $1, EXP_OP_DIVIDE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
       $$ = tmp;
     }
   | static_expr '%' static_expr
     {
       static_expr* tmp;
-      tmp = static_expr_gen( $3, $1, EXP_OP_MOD, @1.first_line, @1.first_column, (@3.last_column - 1) );
+      tmp = static_expr_gen( $3, $1, EXP_OP_MOD, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
       $$ = tmp;
     }
   | static_expr '+' static_expr
     {
       static_expr* tmp;
-      tmp = static_expr_gen( $3, $1, EXP_OP_ADD, @1.first_line, @1.first_column, (@3.last_column - 1) );
+      tmp = static_expr_gen( $3, $1, EXP_OP_ADD, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
       $$ = tmp;
     }
   | static_expr '-' static_expr
     {
       static_expr* tmp;
-      tmp = static_expr_gen( $3, $1, EXP_OP_SUBTRACT, @1.first_line, @1.first_column, (@3.last_column - 1) );
+      tmp = static_expr_gen( $3, $1, EXP_OP_SUBTRACT, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
       $$ = tmp;
     }
   | static_expr '*' '*' static_expr
     {
       static_expr* tmp;
-      tmp = static_expr_gen( $4, $1, EXP_OP_EXPONENT, @1.first_line, @1.first_column, (@4.last_column - 1) );
+      tmp = static_expr_gen( $4, $1, EXP_OP_EXPONENT, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
       $$ = tmp;
     }
   | static_expr '&' static_expr
     {
       static_expr* tmp;
-      tmp = static_expr_gen( $3, $1, EXP_OP_AND, @1.first_line, @1.first_column, (@3.last_column - 1) );
+      tmp = static_expr_gen( $3, $1, EXP_OP_AND, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
       $$ = tmp;
     }
   | static_expr '|' static_expr
     {
       static_expr* tmp;
-      tmp = static_expr_gen( $3, $1, EXP_OP_OR, @1.first_line, @1.first_column, (@3.last_column - 1) );
+      tmp = static_expr_gen( $3, $1, EXP_OP_OR, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
       $$ = tmp;
     }
   | static_expr K_NOR static_expr
     {
       static_expr* tmp;
-      tmp = static_expr_gen( $3, $1, EXP_OP_NOR, @1.first_line, @1.first_column, (@3.last_column - 1) );
+      tmp = static_expr_gen( $3, $1, EXP_OP_NOR, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
       $$ = tmp;
     }
   | static_expr K_NAND static_expr
     {
       static_expr* tmp;
-      tmp = static_expr_gen( $3, $1, EXP_OP_NAND, @1.first_line, @1.first_column, (@3.last_column - 1) );
+      tmp = static_expr_gen( $3, $1, EXP_OP_NAND, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
       $$ = tmp;
     }
   | static_expr K_NXOR static_expr
     {
       static_expr* tmp;
-      tmp = static_expr_gen( $3, $1, EXP_OP_NXOR, @1.first_line, @1.first_column, (@3.last_column - 1) );
+      tmp = static_expr_gen( $3, $1, EXP_OP_NXOR, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
       $$ = tmp;
     }
   | static_expr K_LS static_expr
     {
       static_expr* tmp;
-      tmp = static_expr_gen( $3, $1, EXP_OP_LSHIFT, @1.first_line, @1.first_column, (@3.last_column - 1) );
+      tmp = static_expr_gen( $3, $1, EXP_OP_LSHIFT, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
       $$ = tmp;
     }
   | static_expr K_RS static_expr
     {
       static_expr* tmp;
-      tmp = static_expr_gen( $3, $1, EXP_OP_RSHIFT, @1.first_line, @1.first_column, (@3.last_column - 1) );
+      tmp = static_expr_gen( $3, $1, EXP_OP_RSHIFT, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
       $$ = tmp;
     }
   ;
@@ -662,6 +695,21 @@ static_expr_primary
   | '(' static_expr ')'
     {
       $$ = $2;
+    }
+  | IDENTIFIER '(' { port_mode++; } static_expr_list { port_mode--; } ')'
+    {
+      static_expr* tmp;
+      if( ignore_mode == 0 ) {
+        tmp = static_expr_gen( NULL, $4, EXP_OP_FUNC_CALL, @1.first_line, @1.first_column, (@6.last_column - 1), $1 );
+        $$  = tmp;
+      } else {
+        $$ = NULL;
+      }
+      free_safe( $1 );
+    }
+  | UNUSED_IDENTIFIER '(' { port_mode++; } static_expr_list { port_mode--; } ')'
+    {
+      static_expr_dealloc( $4, TRUE );
     }
   ;
 
@@ -1740,7 +1788,7 @@ module_item
           }
           free_safe( po );
         }
-        db_add_instance( curr->str, $2, FUNIT_MODULE );
+        db_add_instance( curr->str, $2, FUNIT_MODULE, curr->range );
         curr = curr->next;
       }
       str_link_delete_list( tmp );
@@ -3800,24 +3848,17 @@ parameter_value_byname
 gate_instance_list
   : gate_instance_list ',' gate_instance
     {
-      str_link* tmp;
-      if( ignore_mode == 0 ) {
-        tmp = (str_link*)malloc( sizeof( str_link ) );
-        tmp->str  = $3;
-        tmp->next = $1;
-        $$ = tmp;
+      if( (ignore_mode == 0) && ($3 != NULL) ) {
+        $3->next = $1;
+        $$ = $3;
       } else {
         $$ = NULL;
       }
     }
   | gate_instance
     {
-      str_link* tmp;
       if( ignore_mode == 0 ) {
-        tmp = (str_link*)malloc( sizeof( str_link ) );
-        tmp->str  = $1;
-        tmp->next = NULL;
-        $$ = tmp;
+        $$ = $1;
       } else {
         $$ = NULL;
       }
@@ -3829,33 +3870,58 @@ gate_instance_list
 gate_instance
   : IDENTIFIER ignore_more '(' expression_list ')' ignore_less
     {
-      if( ignore_mode == 0 ) {
-        $$ = $1;
-      } else {
-        $$ = NULL;
-      }
+      str_link* tmp;
+      tmp        = (str_link*)malloc_safe( sizeof( str_link ), __FILE__, __LINE__ );
+      tmp->str   = $1;
+      tmp->range = NULL;
+      tmp->next  = NULL;
+      $$ = tmp;
     }
   | UNUSED_IDENTIFIER ignore_more '(' expression_list ')' ignore_less
     {
       $$ = NULL;
     }
-  | IDENTIFIER ignore_more range '(' expression_list ')' ignore_less
+  | IDENTIFIER range ignore_more '(' expression_list ')' ignore_less
     {
-      if( ignore_mode == 0 ) {
-        $$ = $1;
-      } else {
-        $$ = NULL;
-      }
+      str_link* tmp;
+      tmp        = (str_link*)malloc_safe( sizeof( str_link ), __FILE__, __LINE__ );
+      tmp->str   = $1;
+      tmp->range = curr_range;
+      tmp->next  = NULL;
+      $$ = tmp;
     }
-  | '(' ignore_more expression_list ignore_less ')'
+  | UNUSED_IDENTIFIER range ignore_more '(' expression_list ')' ignore_less
     {
       $$ = NULL;
     }
+
   | IDENTIFIER ignore_more '(' port_name_list ')' ignore_less
     {
-      $$ = $1;
+      str_link* tmp;
+      tmp        = (str_link*)malloc_safe( sizeof( str_link ), __FILE__, __LINE__ );
+      tmp->str   = $1;
+      tmp->range = NULL;
+      tmp->next  = NULL;
+      $$ = tmp;
     }
   | UNUSED_IDENTIFIER ignore_more '(' port_name_list ')' ignore_less
+    {
+      $$ = NULL;
+    }
+  | IDENTIFIER range ignore_more '(' port_name_list ')' ignore_less
+    {
+      str_link* tmp;
+      tmp        = (str_link*)malloc_safe( sizeof( str_link ), __FILE__, __LINE__ );
+      tmp->str   = $1;
+      tmp->range = curr_range;
+      tmp->next  = NULL;
+      $$ = tmp;
+    }
+  | UNUSED_IDENTIFIER range ignore_more '(' port_name_list ')' ignore_less
+    {
+      $$ = NULL;
+    }
+  | '(' ignore_more expression_list ignore_less ')'
     {
       $$ = NULL;
     }

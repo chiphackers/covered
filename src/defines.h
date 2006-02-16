@@ -502,16 +502,16 @@
 #define PARAM_TYPE_SIG_MSB              3
 
 /*!
- Specifies that the current module parameter specifies the value for an expression
- LSB value.
+ Specifies that the current module parameter specifies the value for an instance
+ instantiation LSB value.
 */
-#define PARAM_TYPE_EXP_LSB              4
+#define PARAM_TYPE_INST_LSB             4
 
 /*!
- Specifies that the current module parameter specifies the value for an expression
- MSB value.
+ Specifies that the current module parameter specifies the value for an instance
+ instantiation MSB value.
 */
-#define PARAM_TYPE_EXP_MSB              5
+#define PARAM_TYPE_INST_MSB             5
 
 /*!
  Specifies that the current module parameter is a declared type (belongs to current
@@ -1474,10 +1474,10 @@ struct exp_info_s {
 };
 
 struct str_link_s {
-  char*     str;                     /*!< String to store */
-  control   suppl1;                  /*!< 32-bit additional information */
-  control   suppl2;                  /*!< 32-bit additional information */
-  str_link* next;                    /*!< Pointer to next str_link element */
+  char*         str;                 /*!< String to store */
+  control       suppl;               /*!< 32-bit additional information */
+  vector_width* range;               /*!< Pointer to optional range information */
+  str_link*     next;                /*!< Pointer to next str_link element */
 };
 
 struct vector_s {
@@ -1707,15 +1707,16 @@ struct case_stmt_s {
 };
 
 struct funit_inst_s {
-  char*       name;                  /*!< Instance name of this functional unit instance */
-  func_unit*  funit;                 /*!< Pointer to functional unit this instance represents */
-  statistic*  stat;                  /*!< Pointer to statistic holder */
-  inst_parm*  param_head;            /*!< Head pointer to list of parameter overrides in this functional unit if it is a module */
-  inst_parm*  param_tail;            /*!< Tail pointer to list of parameter overrides in this functional unit if it is a module */
-  funit_inst* parent;                /*!< Pointer to parent instance -- used for convenience only */
-  funit_inst* child_head;            /*!< Pointer to head of child list */
-  funit_inst* child_tail;            /*!< Pointer to tail of child list */
-  funit_inst* next;                  /*!< Pointer to next child in parents list */
+  char*         name;                /*!< Instance name of this functional unit instance */
+  func_unit*    funit;               /*!< Pointer to functional unit this instance represents */
+  statistic*    stat;                /*!< Pointer to statistic holder */
+  vector_width* range;               /*!< Used to create an array of instances */
+  inst_parm*    param_head;          /*!< Head pointer to list of parameter overrides in this functional unit if it is a module */
+  inst_parm*    param_tail;          /*!< Tail pointer to list of parameter overrides in this functional unit if it is a module */
+  funit_inst*   parent;              /*!< Pointer to parent instance -- used for convenience only */
+  funit_inst*   child_head;          /*!< Pointer to head of child list */
+  funit_inst*   child_tail;          /*!< Pointer to tail of child list */
+  funit_inst*   next;                /*!< Pointer to next child in parents list */
 };
 
 struct tnode_s {
@@ -1802,6 +1803,11 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.179  2006/02/10 16:44:28  phase1geo
+ Adding support for register assignment.  Added diagnostic to regression suite
+ to verify its implementation.  Updated TODO.  Full regression passes at this
+ point.
+
  Revision 1.178  2006/02/03 23:49:38  phase1geo
  More fixes to support signed comparison and propagation.  Still more testing
  to do here before I call it good.  Regression may fail at this point.

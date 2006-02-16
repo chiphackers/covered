@@ -279,38 +279,35 @@ bool db_read( char* file, int read_mode ) {
 
         } else if( type == DB_TYPE_FUNIT ) {
 
-          if( !merge_mode ) {
-
-            /* Finish handling last functional unit read from CDD file */
-            if( curr_funit != NULL ) {
+          /* Finish handling last functional unit read from CDD file */
+          if( curr_funit != NULL ) {
               
-              if( instance_root == NULL ) {
+            if( instance_root == NULL ) {
                 
-                instance_read_add( &instance_root, NULL, curr_funit, funit_scope );
+              instance_read_add( &instance_root, NULL, curr_funit, funit_scope );
                 
-              } else {
+            } else {
                 
-                /* Add functional unit to instance tree and functional unit list */
-                scope_extract_back( funit_scope, back, parent_scope );
+              /* Add functional unit to instance tree and functional unit list */
+              scope_extract_back( funit_scope, back, parent_scope );
 
-                /* Make sure that functional unit in database was not written before its parent functional unit */
-                assert( instance_find_scope( instance_root, parent_scope ) != NULL );
+              /* Make sure that functional unit in database was not written before its parent functional unit */
+              assert( instance_find_scope( instance_root, parent_scope ) != NULL );
 
-                /* Add functional unit to instance tree and functional unit list */
-                instance_read_add( &instance_root, parent_scope, curr_funit, back );
+              /* Add functional unit to instance tree and functional unit list */
+              instance_read_add( &instance_root, parent_scope, curr_funit, back );
                 
-              }
+            }
               
+            /* If the current functional unit is a merged unit, don't add it to the funit list again */
+            if( !merge_mode ) {
               funit_link_add( curr_funit, &funit_head, &funit_tail );
-              curr_funit = NULL;
-
             }
 
-          } else {
-
-            merge_mode = FALSE;
-
           }
+
+          /* Reset merge mode */
+          merge_mode = FALSE;
 
           /* Now finish reading functional unit line */
           if( (retval = funit_db_read( &tmpfunit, funit_scope, &rest_line )) == TRUE ) {
@@ -383,8 +380,8 @@ bool db_read( char* file, int read_mode ) {
 
   }
 
-  /* If the last functional unit was being read and not merged, add it now */
-  if( !merge_mode && (curr_funit != NULL) ) {
+  /* If the last functional unit was being read, add it now */
+  if( curr_funit != NULL ) {
 
     if( instance_root == NULL ) {
       
@@ -410,10 +407,21 @@ bool db_read( char* file, int read_mode ) {
       
     }
     
-    funit_link_add( curr_funit, &funit_head, &funit_tail );
+    /* If the current functional unit was being merged, don't add it to the functional unit list again */
+    if( !merge_mode ) {
+      funit_link_add( curr_funit, &funit_head, &funit_tail );
+    }
+
     curr_funit = NULL;
 
   }
+
+#ifdef DEBUG_MODE
+  /* Display the instance tree, if we are debugging */
+  if( debug_mode ) {
+    instance_display_tree( instance_root );
+  }
+#endif
 
   return( retval );
 
@@ -423,6 +431,7 @@ bool db_read( char* file, int read_mode ) {
  \param scope  Name of functional unit instance being added.
  \param name   Name of functional unit being instantiated.
  \param type   Type of functional unit being instantiated.
+ \param range  Optional range (used for arrays of instances).
 
  \return Returns a pointer to the created functional unit if the instance was added to the hierarchy;
          otherwise, returns NULL.
@@ -431,7 +440,7 @@ bool db_read( char* file, int read_mode ) {
  functional unit hasn't been created previously, create it now without a filename associated (NULL).
  Add functional unit node to tree if there are no problems in doing so.
 */
-func_unit* db_add_instance( char* scope, char* name, int type ) {
+func_unit* db_add_instance( char* scope, char* name, int type, vector_width* range ) {
 
   func_unit*  funit = NULL;      /* Pointer to functional unit */
   funit_link* found_funit_link;  /* Pointer to found funit_link in functional unit list */
@@ -452,6 +461,16 @@ func_unit* db_add_instance( char* scope, char* name, int type ) {
     funit->name = strdup_safe( name, __FILE__, __LINE__ );
     funit->type = type;
 
+    /* If a range has been specified, calculate its width and lsb now */
+    if( range != NULL ) {
+      if( (range->left != NULL) && (range->left->exp != NULL) ) {
+        mod_parm_add( NULL, NULL, NULL, FALSE, range->left->exp, PARAM_TYPE_INST_MSB, curr_funit, scope );
+      }
+      if( (range->right != NULL) && (range->right->exp != NULL) ) {
+        mod_parm_add( NULL, NULL, NULL, FALSE, range->right->exp, PARAM_TYPE_INST_LSB, curr_funit, scope );
+      }
+    }
+
     if( (found_funit_link = funit_link_find( funit, funit_head )) != NULL ) {
 
       if( type != FUNIT_MODULE ) {
@@ -461,7 +480,7 @@ func_unit* db_add_instance( char* scope, char* name, int type ) {
         exit( 1 );
       }
 
-      instance_parse_add( &instance_root, curr_funit, found_funit_link->funit, scope );
+      instance_parse_add( &instance_root, curr_funit, found_funit_link->funit, scope, range );
 
       funit_dealloc( funit );
 
@@ -471,7 +490,7 @@ func_unit* db_add_instance( char* scope, char* name, int type ) {
       funit_link_add( funit, &funit_head, &funit_tail );
 
       /* Add instance. */
-      instance_parse_add( &instance_root, curr_funit, funit, scope );
+      instance_parse_add( &instance_root, curr_funit, funit, scope, range );
 
       if( (type == FUNIT_MODULE) && (str_link_find( name, modlist_head ) == NULL) ) {
         str_link_add( strdup_safe( name, __FILE__, __LINE__ ), &modlist_head, &modlist_tail );
@@ -574,7 +593,7 @@ bool db_add_function_task_namedblock( int type, char* name, char* file, int star
   full_name = funit_gen_task_function_namedblock_name( name, curr_funit );
 
   /* Add this as an instance so we can get scope */
-  if( (tf = db_add_instance( name, full_name, type )) != NULL ) {
+  if( (tf = db_add_instance( name, full_name, type, NULL )) != NULL ) {
 
     /* Get parent */
     parent = funit_get_curr_module( curr_funit );
@@ -760,7 +779,7 @@ void db_add_signal( char* name, int type, static_expr* left, static_expr* right,
   /* Add signal to current module's signal list if it does not already exist */
   if( sig_link_find( &tmpsig, curr_funit->sig_head ) == NULL ) {
 
-    static_expr_calc_lsb_and_width( left, right, &width, &lsb );
+    static_expr_calc_lsb_and_width_pre( left, right, &width, &lsb );
 
     /* Check to make sure that signal width does not exceed maximum size */
     if( width > MAX_BIT_WIDTH ) {
@@ -1655,6 +1674,13 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.173  2006/02/02 22:37:40  phase1geo
+ Starting to put in support for signed values and inline register initialization.
+ Also added support for more attribute locations in code.  Regression updated for
+ these changes.  Interestingly, with the changes that were made to the parser,
+ signals are output to reports in order (before they were completely reversed).
+ This is a nice surprise...  Full regression passes.
+
  Revision 1.172  2006/02/01 15:13:10  phase1geo
  Added support for handling bit selections in RHS parameter calculations.  New
  mbit_sel5.4 diagnostic added to verify this change.  Added the start of a

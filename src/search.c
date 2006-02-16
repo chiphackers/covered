@@ -71,12 +71,12 @@ void search_init() {
   /* Initialize instance tree */
   if( top_instance == NULL ) {
     top_instance = strdup_safe( top_module, __FILE__, __LINE__ );
-    instance_parse_add( &instance_root, NULL, mod, top_instance );
+    instance_parse_add( &instance_root, NULL, mod, top_instance, NULL );
     leading_hierarchy[0] = '*';
     leading_hierarchy[1] = '\0';
   } else {
     scope_extract_back( top_instance, dutname, leading_hierarchy );
-    instance_parse_add( &instance_root, NULL, mod, dutname );
+    instance_parse_add( &instance_root, NULL, mod, dutname, NULL );
     if( leading_hierarchy[0] == '\0' ) {
       leading_hierarchy[0] = '*';
       leading_hierarchy[1] = '\0';
@@ -251,6 +251,11 @@ void search_free_lists() {
 
 /*
  $Log$
+ Revision 1.21  2006/01/14 04:17:23  phase1geo
+ Adding is_func_unit function to check to see if a -e value is a valid module, function,
+ task or named begin/end block.  Updated regression accordingly.  We are getting closer
+ but still have a few diagnostics to figure out yet.
+
  Revision 1.20  2005/12/12 23:25:37  phase1geo
  Fixing memory faults.  This is a work in progress.
 

@@ -15,10 +15,13 @@
 static_expr* static_expr_gen_unary( static_expr* stexp, int op, int line, int first, int last );
 
 /*! \brief Calculates new values for static expression and returns the new static expression. */
-static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int line, int first, int last );
+static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int line, int first, int last, char* func_name );
 
-/*! \brief Calculates LSB and width for specified left/right pair for vector. */
-void static_expr_calc_lsb_and_width( static_expr* left, static_expr* right, int* width, int* lsb );
+/*! \brief Calculates LSB and width for specified left/right pair for vector (used before parameter resolve). */
+void static_expr_calc_lsb_and_width_pre( static_expr* left, static_expr* right, int* width, int* lsb );
+
+/*! \brief Calculates LSB and width for specified left/right pair for vector (used after parameter resolve). */
+void static_expr_calc_lsb_and_width_post( static_expr* left, static_expr* right, int* width, int* lsb );
 
 /*! \brief Deallocates static_expr memory from heap. */
 void static_expr_dealloc( static_expr* stexp, bool rm_exp );
@@ -26,6 +29,10 @@ void static_expr_dealloc( static_expr* stexp, bool rm_exp );
 
 /*
  $Log$
+ Revision 1.7  2004/04/19 04:54:56  phase1geo
+ Adding first and last column information to expression and related code.  This is
+ not working correctly yet.
+
  Revision 1.6  2002/11/05 00:20:08  phase1geo
  Adding development documentation.  Fixing problem with combinational logic
  output in report command and updating full regression.

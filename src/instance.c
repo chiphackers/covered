@@ -26,15 +26,56 @@ extern int curr_expr_id;
 
 
 /*!
+ \param root    Pointer to functional unit instance to display
+ \param prefix  Prefix string to be used when outputting (used to indent children)
+
+ Helper function for the \ref instance_display_tree function.
+*/
+void instance_display_tree_helper( funit_inst* root, char* prefix ) {
+
+  char        sp[4096];  /* Contains prefix for children */
+  funit_inst* curr;      /* Pointer to current child instance */
+
+  assert( root != NULL );
+
+  /* Display ourselves */
+  printf( "%s%s (%s)\n", prefix, root->name, root->funit->name );
+
+  /* Calculate prefix */
+  snprintf( sp, 4096, "%s   ", prefix );
+
+  /* Display our children */
+  curr = root->child_head;
+  while( curr != NULL ) {
+    instance_display_tree_helper( curr, sp );
+    curr = curr->next;
+  }
+
+}
+
+/*!
+ \param root  Pointer to root instance to display
+
+ Displays the given instance tree to standard output in a hierarchical format.  Shows
+ instance names as well as associated module name.
+*/
+void instance_display_tree( funit_inst* root ) {
+
+  instance_display_tree_helper( root, "" );
+
+}
+
+/*!
  \param funit      Pointer to functional unit to store in this instance.
  \param inst_name  Instantiated name of this instance.
+ \param range      For arrays of instances, contains range information for this array.
 
  \return Returns pointer to newly created functional unit instance.
 
  Creates a new functional unit instance from heap, initializes its data and
  returns a pointer to it.
 */
-funit_inst* instance_create( func_unit* funit, char* inst_name ) {
+funit_inst* instance_create( func_unit* funit, char* inst_name, vector_width* range ) {
 
   funit_inst* new_inst;  /* Pointer to new functional unit instance */
 
@@ -48,6 +89,21 @@ funit_inst* instance_create( func_unit* funit, char* inst_name ) {
   new_inst->child_head = NULL;
   new_inst->child_tail = NULL;
   new_inst->next       = NULL;
+
+  /* Create range (get a copy since this memory is managed by the parser) */
+  if( range == NULL ) {
+    new_inst->range = NULL;
+  } else {
+    assert( range->left  != NULL );
+    assert( range->right != NULL );
+    new_inst->range             = (vector_width*)malloc_safe( sizeof( vector_width ), __FILE__, __LINE__ );
+    new_inst->range->left       = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
+    new_inst->range->left->num  = range->left->num;
+    new_inst->range->left->exp  = range->left->exp;
+    new_inst->range->right      = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
+    new_inst->range->right->num = range->right->num;
+    new_inst->range->right->exp = range->right->exp;
+  }
 
   return( new_inst );
 
@@ -80,6 +136,53 @@ void instance_gen_scope( char* scope, funit_inst* leaf ) {
 }
 
 /*!
+ \param inst_name  Instance name to compare to this instance's name (may contain array information)
+ \param inst       Pointer to instance to compare name against.
+
+ \return Returns TRUE if the given instance name and instance match.  If the specified instance is
+         a part of an array of instances and the base name matches the base name of inst_name, we
+         also check to make sure that the index of inst_name falls within the legal range of this
+         instance.
+*/
+bool instance_compare( char* inst_name, funit_inst* inst ) {
+
+  bool retval = FALSE;  /* Return value of this function */
+  char bname[4096];     /* Base name of inst_name */
+  int  index;           /* Index of inst_name */
+  int  width;           /* Width of instance range */
+  int  lsb;             /* LSB of instance range */
+
+  /* If this instance has a range, handle it */
+  if( inst->range != NULL ) {
+
+    /* Extract the index portion of inst_name if there is one */
+    if( sscanf( inst_name, "%[a-zA-Z0-9_]\[%d]", bname, &index ) == 2 ) {
+      
+      /* If the base names compare, check that the given index falls within this instance range */
+      if( strcmp( bname, inst->name ) == 0 ) {
+
+        /* Get range information from instance */
+        static_expr_calc_lsb_and_width_post( inst->range->left, inst->range->right, &width, &lsb );
+        assert( width != -1 );
+        assert( lsb   != -1 );
+
+        retval = (index >= lsb) && (index < (lsb + width));
+
+      }
+      
+    }
+
+  } else {
+
+    retval = (strcmp( inst_name, inst->name ) == 0);
+
+  }
+
+  return( retval );
+
+}
+
+/*!
  \param root        Root of funit_inst tree to parse for scope.
  \param curr_scope  Scope name (instance name) of current instance.
  \param rest_scope  Rest of scope name.
@@ -101,7 +204,7 @@ funit_inst* instance_find_scope_helper( funit_inst* root, char* curr_scope, char
 
     assert( curr_scope != NULL );
 
-    if( strcmp( curr_scope, root->name ) == 0 ) {
+    if( instance_compare( curr_scope, root ) ) {
       if( rest_scope[0] == '\0' ) {
         return( root );
       } else {
@@ -143,7 +246,7 @@ funit_inst* instance_find_scope( funit_inst* root, char* scope ) {
   char tmp_scope[4096];  /* Rest of scope value */
   
   assert( root != NULL );
-      
+
   /* Strip root name from scope */
   if( strncmp( scope, root->name, strlen( root->name ) ) == 0 ) {
     
@@ -212,18 +315,19 @@ funit_inst* instance_find_by_funit( funit_inst* root, func_unit* funit, int* ign
  \param inst   Pointer to instance to add child instance to.
  \param child  Pointer to child functional unit to create instance for.
  \param name   Name of instance to add.
+ \param range  For arrays of instances, contains the range of the instance array
  
  \return Returns pointer to newly created functional unit instance.
  
  Generates new instance, adds it to the child list of the inst functional unit
  instance, and resolves any parameters.
 */
-funit_inst* instance_add_child( funit_inst* inst, func_unit* child, char* name ) {
+funit_inst* instance_add_child( funit_inst* inst, func_unit* child, char* name, vector_width* range ) {
 
   funit_inst* new_inst;  /* Pointer to newly created instance to add */
 
   /* Generate new instance */
-  new_inst = instance_create( child, name );
+  new_inst = instance_create( child, name, range );
 
   /* Add new instance to inst child instance list */
   if( inst->child_head == NULL ) {
@@ -245,11 +349,12 @@ funit_inst* instance_add_child( funit_inst* inst, func_unit* child, char* name )
  \param from_inst  Pointer to instance tree to copy.
  \param to_inst    Pointer to instance to copy tree to.
  \param name       Instance name of current instance being copied.
+ \param range      For arrays of instances, indicates the array range.
  
  Recursively copies the instance tree of from_inst to the instance 
  to_inst, allocating memory for the new instances and resolving parameters.
 */
-void instance_copy( funit_inst* from_inst, funit_inst* to_inst, char* name ) {
+void instance_copy( funit_inst* from_inst, funit_inst* to_inst, char* name, vector_width* range ) {
 
   funit_inst* curr;      /* Pointer to current functional unit instance to copy */
   funit_inst* new_inst;  /* Pointer to newly created functional unit instance */
@@ -259,12 +364,12 @@ void instance_copy( funit_inst* from_inst, funit_inst* to_inst, char* name ) {
   assert( name      != NULL );
 
   /* Add new child instance */
-  new_inst = instance_add_child( to_inst, from_inst->funit, name );
+  new_inst = instance_add_child( to_inst, from_inst->funit, name, range );
 
   /* Iterate through rest of current child's list of children */
   curr = from_inst->child_head;
   while( curr != NULL ) {
-    instance_copy( curr, new_inst, curr->name );
+    instance_copy( curr, new_inst, curr->name, range );
     curr = curr->next;
   }
 
@@ -275,13 +380,14 @@ void instance_copy( funit_inst* from_inst, funit_inst* to_inst, char* name ) {
  \param parent     Pointer to parent functional unit of specified child.
  \param child      Pointer to child functional unit to add.
  \param inst_name  Name of new functional unit instance.
+ \param range      For array of instances, specifies the name range.
  
  Adds the child functional unit to the child functional unit pointer list located in
  the functional unit specified by the scope of parent in the functional unit instance
  tree pointed to by root.  This function is used by the db_add_instance
  function during the parsing stage.
 */
-void instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child, char* inst_name ) {
+void instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child, char* inst_name, vector_width* range ) {
   
   funit_inst* inst;    /* Temporary pointer to functional unit instance to add to */
   funit_inst* cinst;   /* Pointer to instance of child functional unit */
@@ -290,7 +396,7 @@ void instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child,
 
   if( *root == NULL ) {
 
-    *root = instance_create( child, inst_name );
+    *root = instance_create( child, inst_name, range );
 
   } else {
 
@@ -310,7 +416,7 @@ void instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child,
 
       ignore = 0;
       while( (inst = instance_find_by_funit( *root, parent, &ignore )) != NULL ) {
-        instance_copy( cinst, inst, inst_name );
+        instance_copy( cinst, inst, inst_name, range );
         i++;
         ignore = i;
       }
@@ -319,7 +425,7 @@ void instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child,
 
       ignore = 0;
       while( (inst = instance_find_by_funit( *root, parent, &ignore )) != NULL ) {
-        instance_add_child( inst, child, inst_name );
+        instance_add_child( inst, child, inst_name, range );
         i++;
         ignore = i;
       }
@@ -349,7 +455,7 @@ void instance_read_add( funit_inst** root, char* parent, func_unit* child, char*
   funit_inst* inst;      /* Temporary pointer to functional unit instance to add to */
   funit_inst* new_inst;  /* Pointer to new functional unit instance to add */
 
-  new_inst = instance_create( child, inst_name );
+  new_inst = instance_create( child, inst_name, NULL );
 
   if( *root == NULL ) {
 
@@ -396,34 +502,58 @@ void instance_read_add( funit_inst** root, char* parent, func_unit* child, char*
 */
 void instance_db_write( funit_inst* root, FILE* file, char* scope, bool parse_mode ) {
 
-  char        full_scope[4096];  /* Full scope of functional unit to write */
-  funit_inst* curr;              /* Pointer to current child functional unit instance */
-  exp_link*   expl;              /* Pointer to current expression link */
+  char        tscope1[4096];   /* New scope of functional unit to write */
+  char        tscope2[4096];   /* New scope of functional unit to write */
+  funit_inst* curr;            /* Pointer to current child functional unit instance */
+  exp_link*   expl;            /* Pointer to current expression link */
+  int         width = 1;       /* If the current instance is an array of instances, this is the width of the array */
+  int         lsb;             /* If the current instance is an array of instances, this is the LSB of the array */
+  int         i;               /* Loop iterator */
 
   assert( scope != NULL );
 
   curr = parse_mode ? root : NULL;
 
-  /* If we are in parse mode, re-issue expression IDs (we use the ulid field since it is not used in parse mode) */
-  if( parse_mode ) {
-    expl = root->funit->exp_head;
-    while( expl != NULL ) {
-      expl->exp->ulid = curr_expr_id;
-      curr_expr_id++;
-      expl = expl->next;
-    }
+  if( root->range != NULL ) {
+
+    /* Get LSB and width information */
+    static_expr_calc_lsb_and_width_post( root->range->left, root->range->right, &width, &lsb );
+    assert( width != -1 );
+    assert( lsb   != -1 );
+
   }
 
-  /* Display root functional unit */
-  funit_db_write( root->funit, scope, file, curr );
+  /* Add this instance (or array of instances) to the CDD file */
+  for( i=0; i<width; i++ ) {
 
-  /* Display children */
-  curr = root->child_head;
-  while( curr != NULL ) {
-    assert( (strlen( scope ) + strlen( curr->name ) + 1) <= 4096 );
-    snprintf( full_scope, 4096, "%s.%s", scope, curr->name );
-    instance_db_write( curr, file, full_scope, parse_mode );
-    curr = curr->next;
+    /* If we are in parse mode, re-issue expression IDs (we use the ulid field since it is not used in parse mode) */
+    if( parse_mode ) {
+      expl = root->funit->exp_head;
+      while( expl != NULL ) {
+        expl->exp->ulid = curr_expr_id;
+        curr_expr_id++;
+        expl = expl->next;
+      }
+    }
+
+    /* Calculate this instance's name */
+    if( root->range != NULL ) {
+      snprintf( tscope1, 4096, "%s[%d]", scope, i );
+    } else {
+      strcpy( tscope1, scope );
+    }
+
+    /* Display root functional unit */
+    funit_db_write( root->funit, tscope1, file, curr );
+
+    /* Display children */
+    curr = root->child_head;
+    while( curr != NULL ) {
+      snprintf( tscope2, 4096, "%s.%s", tscope1, curr->name );
+      instance_db_write( curr, file, tscope2, parse_mode );
+      curr = curr->next;
+    }
+
   }
 
 }
@@ -455,6 +585,13 @@ void instance_dealloc_tree( funit_inst* root ) {
     /* Free up memory allocated for statistic, if necessary */
     if( root->stat != NULL ) {
       free_safe( root->stat );
+    }
+
+    /* Free up memory for range, if necessary */
+    if( root->range != NULL ) {
+      static_expr_dealloc( root->range->left,  FALSE );
+      static_expr_dealloc( root->range->right, FALSE );
+      free_safe( root->range );
     }
 
     /* Deallocate memory for instance parameter list */
@@ -532,6 +669,11 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.37  2006/01/24 23:24:38  phase1geo
+ More updates to handle static functions properly.  I have redone quite a bit
+ of code here which has regressions pretty broke at the moment.  More work
+ to do but I'm checkpointing.
+
  Revision 1.36  2006/01/20 22:50:50  phase1geo
  Code cleanup.
 

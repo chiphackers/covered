@@ -35,8 +35,8 @@ X	- exponential power operator (**)
 X	- >>> (fills sign bit with its value) and <<< (same as <<)
 X	- pre-port parameter listing
 X	- inline port declaration listing
-	- NULL task/function ports (?)
-	- arrays of instances
+X	- NULL task/function ports (?)
+X	- arrays of instances
 	- MAKE SURE THAT WE DOCUMENT IN THE USER'S GUIDE WHAT VERILOG-2001 CONSTRUCTS ARE
 	  SUPPORTED AND NOT SUPPORTED!
 
@@ -67,6 +67,6 @@ GUI
 
    1.  Add FSM coverage output
 
-   2.  Add ability to turn on/off assertions and have coverage information automatically adjusted.
+   2.  Add ability to turn on/off coverage points and have coverage information automatically adjusted.
   
 X  3.  Add summary report for entire design (window)

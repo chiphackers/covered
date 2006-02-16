@@ -44,6 +44,11 @@
 #include "db.h"
 #include "util.h"
 #include "vector.h"
+#include "binding.h"
+
+
+extern func_unit* curr_funit;
+extern int        curr_expr_id;
 
 
 /*!
@@ -67,13 +72,14 @@
 static_expr* static_expr_gen_unary( static_expr* stexp, int op, int line, int first, int last ) {
 
   expression* tmpexp;  /* Container for newly created expression */
-  int uop;             /* Temporary bit holder                   */
-  int i;               /* Loop iterator                          */
+  int uop;             /* Temporary bit holder */
+  int i;               /* Loop iterator */
 
   if( stexp != NULL ) {
 
     assert( (op == EXP_OP_UINV)  || (op == EXP_OP_UAND) || (op == EXP_OP_UOR)   || (op == EXP_OP_UXOR)  ||
-            (op == EXP_OP_UNAND) || (op == EXP_OP_UNOR) || (op == EXP_OP_UNXOR) || (op == EXP_OP_UNOT) );
+            (op == EXP_OP_UNAND) || (op == EXP_OP_UNOR) || (op == EXP_OP_UNXOR) || (op == EXP_OP_UNOT)  ||
+            (op == EXP_OP_PASSIGN) );
 
     if( stexp->exp == NULL ) {
 
@@ -116,12 +122,24 @@ static_expr* static_expr_gen_unary( static_expr* stexp, int op, int line, int fi
           stexp->num = (stexp->num == 0) ? 1 : 0;
           break;
 
+        case EXP_OP_PASSIGN :
+          tmpexp = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, line, first, last, FALSE );
+          curr_expr_id++;
+          vector_init( tmpexp->value, (vec_data*)malloc_safe( (sizeof( vec_data ) * 32), __FILE__, __LINE__ ), 32 );
+          printf( "Creating STATIC expression for value: %d\n", stexp->num );
+          vector_from_int( tmpexp->value, stexp->num );
+        
+          stexp->exp = expression_create( tmpexp, NULL, op, FALSE, curr_expr_id, line, first, last, FALSE );
+          curr_expr_id++;
+          tmpexp->parent->expr = stexp->exp;
+          break;
         default :  break;
       }
 
     } else {
 
-      tmpexp = expression_create( stexp->exp, NULL, op, FALSE, 0, line, first, last, FALSE );
+      tmpexp = expression_create( stexp->exp, NULL, op, FALSE, curr_expr_id, line, first, last, FALSE );
+      curr_expr_id++;
       stexp->exp->parent->expr = tmpexp;
       stexp->exp = tmpexp;
 
@@ -134,12 +152,13 @@ static_expr* static_expr_gen_unary( static_expr* stexp, int op, int line, int fi
 }
 
 /*!
- \param right  Pointer to right static expression.
- \param left   Pointer to left static expression.
- \param op     Static expression operation.
- \param line   Line number that static expression operation found on.
- \param first  Column index of first character in expression.
- \param last   Column index of last character in expression.
+ \param right      Pointer to right static expression.
+ \param left       Pointer to left static expression.
+ \param op         Static expression operation.
+ \param line       Line number that static expression operation found on.
+ \param first      Column index of first character in expression.
+ \param last       Column index of last character in expression.
+ \param func_name  Name of function to call (only valid when op == EXP_OP_FUNC_CALL)
 
  \return Returns pointer to new static_expr structure.
 
@@ -153,16 +172,16 @@ static_expr* static_expr_gen_unary( static_expr* stexp, int op, int line, int fi
  consisting of those two expressions and specified operator.  Store the newly create
  expression in the original right static_expr and deallocate the left static_expr.
 */
-static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int line, int first, int last ) {
+static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int line, int first, int last, char* func_name ) {
 
   expression* tmpexp;     /* Temporary expression for holding newly created parent expression */
   int         i;          /* Loop iterator */
   int         value = 1;  /* Temporary value */
   
-  assert( (op == EXP_OP_XOR) || (op == EXP_OP_MULTIPLY) || (op == EXP_OP_DIVIDE) || (op == EXP_OP_MOD) ||
-          (op == EXP_OP_ADD) || (op == EXP_OP_SUBTRACT) || (op == EXP_OP_AND)    || (op == EXP_OP_OR)  ||
-          (op == EXP_OP_NOR) || (op == EXP_OP_NAND)     || (op == EXP_OP_NXOR)   || (op == EXP_OP_EXPONENT) ||
-          (op == EXP_OP_LSHIFT) || (op == EXP_OP_RSHIFT) );
+  assert( (op == EXP_OP_XOR)    || (op == EXP_OP_MULTIPLY) || (op == EXP_OP_DIVIDE) || (op == EXP_OP_MOD)       ||
+          (op == EXP_OP_ADD)    || (op == EXP_OP_SUBTRACT) || (op == EXP_OP_AND)    || (op == EXP_OP_OR)        ||
+          (op == EXP_OP_NOR)    || (op == EXP_OP_NAND)     || (op == EXP_OP_NXOR)   || (op == EXP_OP_EXPONENT)  ||
+          (op == EXP_OP_LSHIFT) || (op == EXP_OP_RSHIFT)   || (op == EXP_OP_LIST)   || (op == EXP_OP_FUNC_CALL) );
 
   if( (right != NULL) && (left != NULL) ) {
 
@@ -195,11 +214,13 @@ static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int
 
       } else {
 
-        right->exp = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, 0, line, first, last, FALSE );
+        right->exp = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, line, first, last, FALSE );
+        curr_expr_id++;
         vector_init( right->exp->value, (vec_data*)malloc_safe( (sizeof( vec_data ) * 32), __FILE__, __LINE__ ), 32 );  
         vector_from_int( right->exp->value, right->num );
 
-        tmpexp = expression_create( right->exp, left->exp, op, FALSE, 0, line, first, last, FALSE );
+        tmpexp = expression_create( right->exp, left->exp, op, FALSE, curr_expr_id, line, first, last, FALSE );
+        curr_expr_id++;
         right->exp->parent->expr = tmpexp;
         left->exp->parent->expr  = tmpexp;
         right->exp = tmpexp;
@@ -210,17 +231,20 @@ static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int
 
       if( left->exp == NULL ) {
 
-        left->exp = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, 0, line, first, last, FALSE );
+        left->exp = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, line, first, last, FALSE );
+        curr_expr_id++;
         vector_init( left->exp->value, (vec_data*)malloc_safe( (sizeof( vec_data ) * 32), __FILE__, __LINE__ ), 32 );
         vector_from_int( left->exp->value, left->num );
 
-        tmpexp = expression_create( right->exp, left->exp, op, FALSE, 0, line, first, last, FALSE );
+        tmpexp = expression_create( right->exp, left->exp, op, FALSE, curr_expr_id, line, first, last, FALSE );
+        curr_expr_id++;
         right->exp->parent->expr = tmpexp;
         right->exp = tmpexp;
 
       } else {
 
-        tmpexp = expression_create( right->exp, left->exp, op, FALSE, 0, line, first, last, FALSE );
+        tmpexp = expression_create( right->exp, left->exp, op, FALSE, curr_expr_id, line, first, last, FALSE );
+        curr_expr_id++;
         right->exp->parent->expr = tmpexp;
         left->exp->parent->expr  = tmpexp;
         right->exp = tmpexp;
@@ -228,6 +252,24 @@ static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int
       }
 
     }
+
+  } else if( op == EXP_OP_FUNC_CALL ) {
+
+    /*
+     If this is a function call, only the left expression will be a valid expression (so we need to special
+     handle this)
+    */
+
+    assert( right == NULL );
+    assert( left  != NULL );
+
+    right = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
+    right->exp = expression_create( NULL, left->exp, op, FALSE, curr_expr_id, line, first, last, FALSE );
+    curr_expr_id++;
+    left->exp->parent->expr = right->exp;
+
+    /* Make sure that we bind this later */
+    bind_add( FUNIT_FUNCTION, func_name, right->exp, curr_funit );
 
   }
 
@@ -242,25 +284,25 @@ static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int
  \param right  Pointer to static expression on right of vector.
  \param width  Calculated width of combined right/left static expressions.
  \param lsb    Calculated lsb of combined right/left static expressions.
- 
+
  Calculates the LSB and width of a vector defined by the specified left and right
  static expressions.  If the width cannot be obtained immediately (parameter in static
  expression), set width to -1.  If the LSB cannot be obtained immediately (parameter in
  static expression), set LSB to -1.  The returned width and lsb parameters can be used
  to size a vector instantiation.
 */
-void static_expr_calc_lsb_and_width( static_expr* left, static_expr* right, int* width, int* lsb ) {
-  
+void static_expr_calc_lsb_and_width_pre( static_expr* left, static_expr* right, int* width, int* lsb ) {
+
   *width = -1;
   *lsb   = -1;
-  
+
   if( (right != NULL) && (right->exp == NULL) ) {
     *lsb = right->num;
     assert( *lsb >= 0 );
   }
 
   if( (left != NULL) && (left->exp == NULL) ) {
-    if( *lsb != -1 ) { 
+    if( *lsb != -1 ) {
       if( *lsb <= left->num ) {
         *width = (left->num - *lsb) + 1;
         assert( *width > 0 );
@@ -274,6 +316,51 @@ void static_expr_calc_lsb_and_width( static_expr* left, static_expr* right, int*
       *lsb = left->num;
       assert( *lsb >= 0 );
     }
+  }
+
+}
+
+/*!
+ \param left   Pointer to static expression on left of vector.
+ \param right  Pointer to static expression on right of vector.
+ \param width  Calculated width of combined right/left static expressions.
+ \param lsb    Calculated lsb of combined right/left static expressions.
+ 
+ Calculates the LSB and width of a vector defined by the specified left and right
+ static expressions.  This function assumes that any expressions have been calculated for
+ a legal value.
+*/
+void static_expr_calc_lsb_and_width_post( static_expr* left, static_expr* right, int* width, int* lsb ) {
+  
+  assert( left  != NULL );
+  assert( right != NULL );
+
+  *width = 1;
+  *lsb   = -1;
+
+  /* If the right static expression contains an expression, get its integer value and place it in the num field */
+  if( right->exp != NULL ) {
+    right->num = vector_to_int( right->exp->value );
+  }
+
+  /* If the left static expression contains an expression, get its integer value and place it in the num field */
+  if( left->exp != NULL ) {
+    left->num = vector_to_int( left->exp->value );
+  }
+  
+  /* Get initial value for LSB */
+  *lsb = right->num;
+  assert( *lsb >= 0 );
+
+  /* Calculate width and make sure that LSB is the lower of the two values */
+  if( *lsb <= left->num ) {
+    *width = (left->num - *lsb) + 1;
+    assert( *width > 0 );
+  } else {
+    *width = (*lsb - left->num) + 1;
+    *lsb   = left->num;
+    assert( *width > 0 );
+    assert( *lsb >= 0 );
   }
 
 }
@@ -301,6 +388,13 @@ void static_expr_dealloc( static_expr* stexp, bool rm_exp ) {
 
 /*
  $Log$
+ Revision 1.15  2006/01/19 00:01:09  phase1geo
+ Lots of changes/additions.  Summary report window work is now complete (with the
+ exception of adding extra features).  Added support for parsing left and right
+ shift operators and the exponent operator in static expression scenarios.  Fixed
+ issues related to GUI (due to recent changes in the score command).  Things seem
+ to be generally working as expected with the GUI now.
+
  Revision 1.14  2006/01/13 04:01:04  phase1geo
  Adding support for exponential operation.  Added exponent1 diagnostic to verify
  but Icarus does not support this currently.
