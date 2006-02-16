@@ -6,59 +6,309 @@
 # Brief:    Script used for running both regressions and single diagnostics.
 # Usage:    run <list_of_groups>
 
-sub parse_diag_header_line {
+# Defines
+$covered = "../../src/covered";
 
-  my @line = split( $_[0] );
+# Global variables
+$gflag         = "-Q";
+%groups_plus   = ();
+%groups_minus  = ();
+%groups_to_run = ();
+%comp_cmds     = ();  %comp_group   = ();
+%sim_cmds      = ();  %sim_group    = ();
+%score_cmds    = ();  %score_group  = ();
+%merge_cmds    = ();  %merge_group  = ();
+%report_cmds   = ();  %report_group = ();
+@passed_diags  = ();
+@failed_diags  = ();
 
-  if( $line[0] eq "GROUPS:" ) {
-    
-    # Parse groups
+if( $env{"COVERED_GFLAG"} ne "" ) {
+  $gflag = $env{"COVERED_GFLAG"};
+}
 
-  } elsif( $line[0] eq "IV:" ) {
+# Parse command-line arguments
+&parse_args;
 
-    # Parse Icarus Verilog command-line
+# Run diagnostics
+&run_diags;
 
-  } elsif( $line[0] eq "VCS:" ) {
+# Output the results
+&output_results;
 
-    # Parse VCS command-line
+###################################################################3
 
-  } elsif( $line[0] eq "SCORE:" ) {
+sub parse_args {
 
-    # Parse score command
-
-  } elsif( $line[0] eq "MERGE:" ) {
-
-    # Parse merge command
-
-  } elsif( $line[0] eq "REPORT:" ) {
-
-    # Parse report command
-
-  } else {
-
-    die "ERROR:  Unknown command in header of diagnostic";
-
+  foreach $arg (@ARGV) {
+    if( $arg =~ /^\+(.*)/ ) {
+      $groups_plus{$1};
+    } elsif( $arg =~ /^\-(.*)/ ) {
+      $groups_minus{$1};
+    } else {
+      &usage;
+    }
   }
 
 }
 
-sub read_diag_header {
+sub usage {
+
+  print "Usage:  run <list_of_groups>\n";
+  die;
+
+}
+
+sub parse_groups {
+
+  my @line = @_;
+  my $run  = 0;
+
+  for( $i=1; $i<@line; $i++ ) {
+    if( ($groups_plus{$line[$i]} eq "1") && ($groups_minus{$line[$i]} eq "") ) {
+      $groups_to_run{$line[$i]} = 1;
+      $run = 1;
+    }
+  }
+
+  return( $run );
+
+}
+
+sub parse_cmd {
+
+  my @line = @_;
+  my $group, $name, $cmd, $run;
+
+  $run   = 1;
+  $cmd   = shift( @line );
+  $name  = shift( @line );
+  $group = shift( @line );
+  while( ($group ne "") && ($group ne ":") ) {
+    if( $groups_to_run{$group} == 1 ) {
+      if( $cmd == "COMP" ) {
+        $comp_group{$group} = $name;
+      } elsif( $cmd == "SIM" ) {
+        $sim_group{$group} = $name;
+      } elsif( $cmd == "SCORE" ) {
+        $score_group{$group} = $name;
+      } elsif( $cmd == "MERGE" ) {
+        $merge_group{$group} = $name;
+      } elsif( $cmd == "REPORT" ) {
+        $report_group{$group} = $name;
+      } else {
+        $run = 0;
+      }
+    }
+    $group = shift( @line );
+  }
+
+  if( $cmd == "COMP" ) {
+    $comp_cmds{$name} = "@line";
+  } elsif( $cmd == "SIM" ) {
+    $sim_cmds{$name} = "@line";
+  } elsif( $cmd == "SCORE" ) {
+    $score_cmds{$name} = "@line";
+  } elsif( $cmd == "MERGE" ) {
+    $merge_cmds{$name} = "@line";
+  } elsif( $cmd == "REPORT" ) {
+    $report_cmds{$name} = "@line";
+  } else {
+    $run = 0;
+  }
+
+  return( $run );
+
+}
+
+sub parse_diag_header_line {
+
+  my @line = split( $_[0] );
+  my $run;
+
+  if( $line[0] eq "GROUPS" ) {
+    $run = &parse_groups( @line );
+  } else {
+    $run = &parse_cmd( @line );
+  }
+
+  return( $run );
+
+}
+
+sub read_diag_info {
 
   my $diag_name = $_[0];
+  my $run = 1;
+  my $in_header, $in_cdd, $in_rpt, $name;
 
-  open( DIAG, $diag_name ) || die "ERROR:  Unable to diagnostic $diag_name: $!\n";
+  # Clear global variables
+  @groups_to_run = ();
+  %comp_cmds     = ();  %comp_group   = ();
+  %sim_cmds      = ();  %sim_group    = ();
+  %score_cmds    = ();  %score_group  = ();
+  %merge_cmds    = ();  %merge_group  = ();
+  %report_cmds   = ();  %report_group = ();
 
-  while( $line = <DIAG> ) {
+  open( DIAG, $diag_name ) || die "ERROR:  Unable to read diagnostic $diag_name: $!\n";
+
+  while( ($line = <DIAG>) && ($run == 1) ) {
     chomp( $line );
-    if( $in_header == 0 {
-      if( $line ~= /^\s*\/\*\s*HEADER/ ) {
-        $in_comment = 1;
+    if( ($in_header == 0) && ($in_cdd == 0) && ($in_rpt == 0) ) {
+      if( $line =~ /^\s*\/\*\s*HEADER/ ) {
+        $in_header = 1;
+      } elsif( $line =~ /^\s*\/\*\s*CDD\s+(\w+)/ ) {
+        $name = $1;
+        $in_cdd   = 1;
+        open( CDD, ">$diag_name.$name.cdd" );
+      } elsif( $line =~ /^\s*\/\*\s*RPT\s+(\w+)/ ) {
+        $name = $1;
+        $in_rpt   = 1;
+        open( RPT, ">$diag_name.$name.rpt" );
       }
-    } else {
-      &parse_diag_header_line( $line );
+    } elsif( $line =~ /^\s*\*\// ) {
+      if( $in_header == 1 ) {
+        $in_header = 0;
+      } elsif( $in_cdd == 1 ) {
+        $in_cdd = 0;
+        close( CDD );
+      } elsif( $in_rpt == 1 ) {
+        $in_rpt = 0;
+        close( RPT );
+      } 
+    } elsif( $in_header == 1 ) {
+      $run = &parse_diag_header_line( $line );
+    } elsif( $in_cdd == 1 ) {
+      print CDD "$line\n";
+    } elsif( $in_rpt == 1 ) {
+      print RPT "$line\n";
     }
   }
 
   close( DIAG );
+
+  return( $run );
+
+}
+
+sub run_current_diag {
+
+  my $diag_name = $_[0];
+  my $group, $cmd, $error, $run;
+
+  if( @groups_to_run > 0 ) {
+    $run = 1;
+    print "Running $diag_name\n";
+  } else {
+    $run = 0;
+  }
+
+  foreach $group (@groups_to_run) {
+
+    $error = 0;
+
+    # Compile.
+    if( $error == 0 ) {
+      $cmd = $comp_cmds{ $comp_group{ $group } };
+      if( $cmd ne "" ) {
+        $error = system( "$cmd" );
+      } else {
+        $error = 1;
+      }
+    }
+
+    # Simulate.
+    if( $error == 0 ) {
+      $cmd = $sim_cmds{ $sim_group{ $group } };
+      if( $cmd ne "" ) {
+        $error = system( "$cmd" );
+      } else {
+        $error = 1;
+      } 
+    }
+
+    # Score (needed).
+    if( $error == 0 ) {
+      $cmd = $score_cmds{ $score_group{ $group } };
+      if( $cmd ne "" ) {
+        $error = system( "${covered} ${gflag} score ${cmd}" );
+        if( ($error == 0) && (-e "$diag_name.${score_group{$group}}") ) {
+          $error = system( "diff $diag_name.score.cdd $diag_name.${score_group{$group}}.cdd" );
+        }
+      } else {
+        $error = 1;
+      }
+    }
+
+    # Merge (optional).
+    if( $error == 0 ) {
+      $cmd = $merge_cmds{ $merge_group{ $group } };
+      if( $cmd ne "" ) {
+        $error = system( "${covered} ${gflag} merge ${cmd}" );
+        if( ($error == 0) && (-e "$diag_name.${score_group{$group}}") ) {
+          $error = system( "diff $diag_name.merge.cdd $diag_name.${score_group{$group}}.cdd" );
+        }
+      }
+    }
+
+    # Report (optional).
+    if( $error == 0 ) {
+      $cmd = $merge_cmds{ $merge_group{ $group } };
+      if( $cmd ne "" ) {
+        $error = system( "${covered} ${gflag} report ${cmd}" );
+        if( ($error == 0) && (-e "$diag_name.${score_group{$group}}") ) {
+          $error = system( "diff $diag_name.merge.cdd $diag_name.${score_group{$group}}.rpt" );
+        }
+      }
+    }
+
+  }
+
+  return( ($ran, $error) );
+
+}
+
+sub run_diags {
+
+  my $run, $diag_name;
+
+  opendir( VDIR, "." );
+
+  while( $file = readdir( VDIR ) ) {
+    chomp( $file );
+    if( $file =~ /(.*)\.v/ ) {
+      $diag_name = $1;
+      $run = &read_diag_info( "$diag_name.v" );
+      if( $run == 1 ) {
+        ($ran, $failed) = &run_current_diag( "$diag_name.v" );
+        if( $ran == 1 ) {
+          if( $failed == 1 ) {
+            $failed_diags[@failed_diags] = $diag_name;
+          } else {
+            $passed_diags[@passed_diags] = $diag_name;
+          }
+        }
+      }
+    }
+  }
+
+  closedir( VDIR );
+
+}
+
+sub output_results {
+
+  my $diag;
+
+  print "\nPassed: " . @passed_diags . ", Failed: " . @failed_diags . "\n";
+
+  if( @failed_diags > 0 ) {
+    print "\n";
+    print "Failing diagnostics:\n";
+    foreach $diag (@failed_diags) {
+      print "   $diag\n";
+    }
+  }
+
+  print "\n";
 
 }
