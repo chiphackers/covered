@@ -55,6 +55,12 @@ void scope_extract_back( char* scope, char* back, char* rest );
 /*! \brief Extracts rest of scope not included in front. */
 void scope_extract_scope( char* scope, char* front, char* back );
 
+/*! \brief Generates printable version of given signal/instance string */
+char* scope_gen_printable( char* str );
+
+/*! \brief Compares two signal names or two instance names. */
+bool scope_compare( char* str1, char* str2 );
+
 /*! \brief Returns TRUE if specified scope is local (contains no periods). */
 bool scope_local( char* scope );
 
@@ -93,6 +99,11 @@ const char* get_funit_type( int type );
 
 /*
  $Log$
+ Revision 1.19  2006/01/14 04:17:23  phase1geo
+ Adding is_func_unit function to check to see if a -e value is a valid module, function,
+ task or named begin/end block.  Updated regression accordingly.  We are getting closer
+ but still have a few diagnostics to figure out yet.
+
  Revision 1.18  2005/11/10 23:27:37  phase1geo
  Adding scope files to handle scope searching.  The functions are complete (not
  debugged) but are not as of yet used anywhere in the code.  Added new func2 diagnostic

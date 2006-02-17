@@ -35,11 +35,17 @@ void instance_display_tree_helper( funit_inst* root, char* prefix ) {
 
   char        sp[4096];  /* Contains prefix for children */
   funit_inst* curr;      /* Pointer to current child instance */
+  char*       piname;    /* Printable version of this instance */
+  char*       pfname;    /* Printable version of this instance functional unit */
 
   assert( root != NULL );
 
+  /* Get printable version of this instance and functional unit name */
+  piname = scope_gen_printable( root->name );
+  pfname = scope_gen_printable( root->funit->name );
+
   /* Display ourselves */
-  printf( "%s%s (%s)\n", prefix, root->name, root->funit->name );
+  printf( "%s%s (%s)\n", prefix, piname, pfname );
 
   /* Calculate prefix */
   snprintf( sp, 4096, "%s   ", prefix );
@@ -159,7 +165,7 @@ bool instance_compare( char* inst_name, funit_inst* inst ) {
     if( sscanf( inst_name, "%[a-zA-Z0-9_]\[%d]", bname, &index ) == 2 ) {
       
       /* If the base names compare, check that the given index falls within this instance range */
-      if( strcmp( bname, inst->name ) == 0 ) {
+      if( scope_compare( bname, inst->name ) ) {
 
         /* Get range information from instance */
         static_expr_calc_lsb_and_width_post( inst->range->left, inst->range->right, &width, &lsb );
@@ -174,7 +180,7 @@ bool instance_compare( char* inst_name, funit_inst* inst ) {
 
   } else {
 
-    retval = (strcmp( inst_name, inst->name ) == 0);
+    retval = scope_compare( inst_name, inst->name );
 
   }
 
@@ -623,7 +629,7 @@ void instance_dealloc( funit_inst* root, char* scope ) {
   assert( root  != NULL );
   assert( scope != NULL );
   
-  if( strcmp( root->name, scope ) == 0 ) {
+  if( scope_compare( root->name, scope ) ) {
     
     /* We are the root so just remove the whole tree */
     instance_dealloc_tree( root );
@@ -642,7 +648,7 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
     curr = inst->child_head;
     last = NULL;
-    while( (curr != NULL) && (strcmp( curr->name, scope ) != 0) ) {
+    while( (curr != NULL) && !scope_compare( curr->name, scope ) ) {
       last = curr;
       curr = curr->next;
     }
@@ -669,6 +675,11 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.38  2006/02/16 21:19:26  phase1geo
+ Adding support for arrays of instances.  Also fixing some memory problems for
+ constant functions and fixed binding problems when hierarchical references are
+ made to merged modules.  Full regression now passes.
+
  Revision 1.37  2006/01/24 23:24:38  phase1geo
  More updates to handle static functions properly.  I have redone quite a bit
  of code here which has regressions pretty broke at the moment.  More work

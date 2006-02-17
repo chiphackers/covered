@@ -508,12 +508,23 @@ bool util_readline( FILE* file, char** line ) {
 */
 void scope_extract_front( char* scope, char* front, char* rest ) {
   
-  char* ptr;   /* Pointer to current character */
+  char* ptr;      /* Pointer to current character */
+  char  endchar;  /* Set to the character we are searching for */
   
   ptr = scope;
+
+  /* Figure out if we are looking for a '.' or a ' ' character */
+  endchar = (*ptr == '\\') ? ' ' : '.';
   
-  while( (*ptr != '\0') && (*ptr != '.') ) {
+  while( (*ptr != '\0') && (*ptr != endchar) ) {
     ptr++;
+  }
+
+  /* If this is a literal, keep going until we see the '.' character */
+  if( endchar == ' ' ) {
+    while( (*ptr != '\0') && (*ptr != '.') ) {
+      ptr++;
+    }
   }
   
   strncpy( front, scope, (ptr - scope) );
@@ -587,6 +598,58 @@ void scope_extract_scope( char* scope, char* front, char* back ) {
 
 }
 
+/*!
+ \param str  String to create printable version of
+
+ \return Returns printable version of the given string (with any escaped sequences removed)
+
+ Allocates memory for and generates a printable version of the given string (a signal or
+ instance name).  The calling function is responsible for deallocating the string returned.
+*/
+char* scope_gen_printable( char* str ) {
+
+  char* new_str;  /* New version of string with escaped sequences removed */
+
+  /* Allocate memory for new string */
+  new_str = strdup_safe( str, __FILE__, __LINE__ );
+
+  /* Remove escape sequences, if any */
+  if( str[0] == '\\' ) {
+    sscanf( str, "\\%[^ \n\t\r\b]", new_str );
+  }
+
+  return( new_str );
+
+} 
+
+/*!
+ \param str1  Pointer to signal/instance name
+ \param str2  Pointer to signal/instance name
+
+ \return Returns TRUE if the two strings are equal, properly handling the case where one or
+         both are escaped names (start with an escape character and end with a space).
+*/
+bool scope_compare( char* str1, char* str2 ) {
+
+  bool  retval;    /* Return value for this function */
+  char* new_str1;  /* New form of str1 with escaped sequences removed */
+  char* new_str2;  /* New form of str1 with escaped sequences removed */
+
+  /* Create printable versions of the strings */
+  new_str1 = scope_gen_printable( str1 );
+  new_str2 = scope_gen_printable( str2 );
+
+  /* Perform the compare */
+  retval = (strcmp( new_str1, new_str2 ) == 0);
+
+  /* Deallocate the memory */
+  free_safe( new_str1 );
+  free_safe( new_str2 );
+
+  return( retval );
+
+}
+
 /*
  \param scope  Scope of some signal.
 
@@ -598,8 +661,8 @@ void scope_extract_scope( char* scope, char* front, char* back ) {
 */
 bool scope_local( char* scope ) {
 
-  char* ptr;             /* Pointer to current character                */
-  bool  esc;             /* Set to TRUE if current is escaped           */
+  char* ptr;             /* Pointer to current character */
+  bool  esc;             /* Set to TRUE if current is escaped */
   bool  wspace = FALSE;  /* Set if last character seen was a whitespace */
 
   assert( scope != NULL );
@@ -912,6 +975,11 @@ const char* get_funit_type( int type ) {
 
 /*
  $Log$
+ Revision 1.42  2006/02/16 21:19:26  phase1geo
+ Adding support for arrays of instances.  Also fixing some memory problems for
+ constant functions and fixed binding problems when hierarchical references are
+ made to merged modules.  Full regression now passes.
+
  Revision 1.41  2006/01/25 22:13:46  phase1geo
  Adding LXT-style dumpfile parsing support.  Everything is wired in but I still
  need to look at a problem at the end of the dumpfile -- I'm getting coredumps

@@ -263,7 +263,7 @@ WSPACE [ \t\b\f]+
 <UDPTABLE>[01\?\*\-] { yylloc.last_column += strlen( yytext );  return yytext[0]; }
 
   /* Keyword and signal identifiers */
-[a-zA-Z_][a-zA-Z0-9$_]*(\[[0-9]+\].[a-zA-Z_][a-zA-Z0-9$_]*)? {
+[a-zA-Z_][a-zA-Z0-9$_]*(\[[0-9]+\].[a-zA-Z_][a-zA-Z0-9$_]*)* {
      str_link* foundmod;
      int rc = lexer_keyword_code( yytext, yyleng );
      yylloc.first_column = yylloc.last_column;
@@ -310,7 +310,8 @@ WSPACE [ \t\b\f]+
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
      if( ignore_mode == 0 ) {
-       yylval.text = strdup_safe( yytext, __FILE__, __LINE__ );
+       yylval.text = (char*)malloc_safe( (strlen( yytext ) + 2), __FILE__, __LINE__ );
+       snprintf( yylval.text, (strlen( yytext ) + 2), "%s ", yytext );
        return IDENTIFIER; 
      } else {
        return UNUSED_IDENTIFIER;

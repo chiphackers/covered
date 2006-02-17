@@ -205,9 +205,10 @@ bool line_get_funit_summary( char* funit_name, int funit_type, int* total, int* 
 bool line_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst ) {
 
   funit_inst* curr;           /* Pointer to current child functional unit instance of this node */
-  float       percent;        /* Percentage of lines hit                                        */
-  float       miss;           /* Number of lines missed                                         */
-  char        tmpname[4096];  /* Temporary holder of instance name                              */
+  float       percent;        /* Percentage of lines hit */
+  float       miss;           /* Number of lines missed */
+  char        tmpname[4096];  /* Temporary holder of instance name */
+  char*       pname;          /* Printable version of instance name */
 
   assert( root != NULL );
   assert( root->stat != NULL );
@@ -217,14 +218,20 @@ bool line_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst ) {
   } else {
     percent = ((root->stat->line_hit / root->stat->line_total) * 100);
   }
-  miss    = (root->stat->line_total - root->stat->line_hit);
 
+  miss = (root->stat->line_total - root->stat->line_hit);
+
+  /* Get printable version of the instance name */
+  pname = scope_gen_printable( root->name );
+  
   /* Calculate instance name */
   if( strcmp( parent_inst, "*" ) == 0 ) {
-    strcpy( tmpname, root->name );
+    strcpy( tmpname, pname );
   } else {
-    snprintf( tmpname, 4096, "%s.%s", parent_inst, root->name );
+    snprintf( tmpname, 4096, "%s.%s", parent_inst, pname );
   }
+
+  free_safe( pname );
 
   fprintf( ofile, "  %-43.43s    %5d/%5.0f/%5.0f      %3.0f%%\n",
            tmpname,
@@ -255,9 +262,10 @@ bool line_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst ) {
 */
 bool line_funit_summary( FILE* ofile, funit_link* head ) {
 
-  float percent;             /* Percentage of lines hit                    */
-  float miss;                /* Number of lines missed                     */
+  float percent;             /* Percentage of lines hit */
+  float miss;                /* Number of lines missed */
   bool  miss_found = FALSE;  /* Set to TRUE if line was found to be missed */
+  char* pname;               /* Printable version of functional unit name */
 
   while( head != NULL ) {
 
@@ -270,13 +278,18 @@ bool line_funit_summary( FILE* ofile, funit_link* head ) {
     miss       = (head->funit->stat->line_total - head->funit->stat->line_hit);
     miss_found = (miss > 0) ? TRUE : miss_found;
 
+    /* Get printable version of functional unit name */
+    pname = scope_gen_printable( head->funit->name );
+
     fprintf( ofile, "  %-20.20s    %-20.20s   %5d/%5.0f/%5.0f      %3.0f%%\n", 
-             head->funit->name,
+             pname,
              get_basename( head->funit->filename ),
              head->funit->stat->line_hit,
              miss,
              head->funit->stat->line_total,
              percent );
+
+    free_safe( pname );
 
     head = head->next;
 
@@ -295,11 +308,11 @@ bool line_funit_summary( FILE* ofile, funit_link* head ) {
 */
 void line_display_verbose( FILE* ofile, func_unit* funit ) {
 
-  stmt_iter   stmti;       /* Statement list iterator                    */
-  expression* unexec_exp;  /* Pointer to current unexecuted expression   */
+  stmt_iter   stmti;       /* Statement list iterator */
+  expression* unexec_exp;  /* Pointer to current unexecuted expression */
   char**      code;        /* Pointer to code string from code generator */
-  int         code_depth;  /* Depth of code array                        */
-  int         i;           /* Loop iterator                              */
+  int         code_depth;  /* Depth of code array */
+  int         i;           /* Loop iterator */
 
   if( report_covered ) {
     fprintf( ofile, "    Hit Lines\n\n" );
@@ -360,18 +373,27 @@ void line_display_verbose( FILE* ofile, func_unit* funit ) {
 void line_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst ) {
 
   funit_inst* curr_inst;      /* Pointer to current instance being evaluated */
-  char        tmpname[4096];  /* Temporary name holder for instance          */
+  char        tmpname[4096];  /* Temporary name holder for instance */
+  char*       pname;          /* Printable version of functional unit name */
 
   assert( root != NULL );
 
+  /* Get printable version of instance name */
+  pname = scope_gen_printable( root->name );
+
   if( strcmp( parent_inst, "*" ) == 0 ) {
-    strcpy( tmpname, root->name );
+    strcpy( tmpname, pname );
   } else {
-    snprintf( tmpname, 4096, "%s.%s", parent_inst, root->name );
+    snprintf( tmpname, 4096, "%s.%s", parent_inst, pname );
   }
+
+  free_safe( pname );
 
   if( ((root->stat->line_hit < root->stat->line_total) && !report_covered) ||
         ((root->stat->line_hit > 0) && report_covered) ) {
+
+    /* Get printable version of functional unit name */
+    pname = scope_gen_printable( root->funit->name );
 
     fprintf( ofile, "\n" );
     switch( root->funit->type ) {
@@ -381,8 +403,10 @@ void line_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst ) {
       case FUNIT_TASK        :  fprintf( ofile, "    Task: " );         break;
       default                :  fprintf( ofile, "    UNKNOWN: " );      break;
     }
-    fprintf( ofile, "%s, File: %s, Instance: %s\n", root->funit->name, root->funit->filename, tmpname );
+    fprintf( ofile, "%s, File: %s, Instance: %s\n", pname, root->funit->filename, tmpname );
     fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
+
+    free_safe( pname );
 
     line_display_verbose( ofile, root->funit );
 
@@ -407,10 +431,15 @@ void line_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst ) {
 */
 void line_funit_verbose( FILE* ofile, funit_link* head ) {
 
+  char* pname;  /* Printable version of functional unit name */
+
   while( head != NULL ) {
 
     if( ((head->funit->stat->line_hit < head->funit->stat->line_total) && !report_covered) ||
         ((head->funit->stat->line_hit > 0) && report_covered) ) {
+
+      /* Get printable version of functional unit name */
+      pname = scope_gen_printable( head->funit->name );
 
       fprintf( ofile, "\n" );
       switch( head->funit->type ) {
@@ -420,8 +449,10 @@ void line_funit_verbose( FILE* ofile, funit_link* head ) {
         case FUNIT_TASK        :  fprintf( ofile, "    Task: " );         break;
         default                :  fprintf( ofile, "    UNKNOWN: " );      break;
       }
-      fprintf( ofile, "%s, File: %s\n", head->funit->name, head->funit->filename );
+      fprintf( ofile, "%s, File: %s\n", pname, head->funit->filename );
       fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
+
+      free_safe( pname );
 
       line_display_verbose( ofile, head->funit );
   
@@ -489,6 +520,11 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.54  2005/12/31 05:00:57  phase1geo
+ Updating regression due to recent changes in adding exec_num field in expression
+ and removing the executed bit in the expression supplemental field.  This will eventually
+ allow us to get information on where the simulator is spending the most time.
+
  Revision 1.53  2005/12/06 15:42:11  phase1geo
  Added disable2.1 diagnostic to regression suite.  Fixed bad output from line
  coverage reports.  Full regression passes.

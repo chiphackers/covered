@@ -1049,14 +1049,15 @@ bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) {
         bind_add_stmt( tmpid, expr, curr_funit );
 
       /* Check to see if we are bound to a signal or functional unit */
-      } else if( sscanf( *line, "%s%n", tmpname, &chars_read ) == 1 ) {
-        *line = *line + chars_read;
+      // } else if( sscanf( *line, "%s%n", tmpname, &chars_read ) == 1 ) {
+      } else if( ((*line)[0] != '\n') && ((*line)[0] != '\0') ) {
+        (*line)++;   /* Remove space */
         switch( op ) {
-          case EXP_OP_FUNC_CALL :  bind_add( FUNIT_FUNCTION,    tmpname, expr, curr_funit );  break;
-          case EXP_OP_TASK_CALL :  bind_add( FUNIT_TASK,        tmpname, expr, curr_funit );  break;
-          case EXP_OP_NB_CALL   :  bind_add( FUNIT_NAMED_BLOCK, tmpname, expr, curr_funit );  break;
-          case EXP_OP_DISABLE   :  bind_add( 1,                 tmpname, expr, curr_funit );  break;
-          default               :  bind_add( 0,                 tmpname, expr, curr_funit );  break;
+          case EXP_OP_FUNC_CALL :  bind_add( FUNIT_FUNCTION,    *line, expr, curr_funit );  break;
+          case EXP_OP_TASK_CALL :  bind_add( FUNIT_TASK,        *line, expr, curr_funit );  break;
+          case EXP_OP_NB_CALL   :  bind_add( FUNIT_NAMED_BLOCK, *line, expr, curr_funit );  break;
+          case EXP_OP_DISABLE   :  bind_add( 1,                 *line, expr, curr_funit );  break;
+          default               :  bind_add( 0,                 *line, expr, curr_funit );  break;
         }
       }
 
@@ -3098,6 +3099,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.172  2006/02/10 16:44:28  phase1geo
+ Adding support for register assignment.  Added diagnostic to regression suite
+ to verify its implementation.  Updated TODO.  Full regression passes at this
+ point.
+
  Revision 1.171  2006/02/06 22:48:34  phase1geo
  Several enhancements to GUI look and feel.  Fixed error in combinational logic
  window.

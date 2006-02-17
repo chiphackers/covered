@@ -40,14 +40,20 @@ if( $env{"COVERED_GFLAG"} ne "" ) {
 sub parse_args {
 
   foreach $arg (@ARGV) {
+    print "arg: $arg\n";
     if( $arg =~ /^\+(.*)/ ) {
-      $groups_plus{$1};
+      $groups_plus{$1} = 1;
     } elsif( $arg =~ /^\-(.*)/ ) {
-      $groups_minus{$1};
+      $groups_minus{$1} = 1;
     } else {
       &usage;
     }
   }
+
+  @foo = keys( %groups_plus );
+  print "groups_plus: @foo\n";
+  @foo = keys( %groups_minus );
+  print "groups_minus: @foo\n";
 
 }
 
@@ -122,14 +128,18 @@ sub parse_cmd {
 
 sub parse_diag_header_line {
 
-  my @line = split( $_[0] );
+  my @line = split( /\s+/, $_[0] );
   my $run;
+
+  print "line: @line\n";
 
   if( $line[0] eq "GROUPS" ) {
     $run = &parse_groups( @line );
   } else {
     $run = &parse_cmd( @line );
   }
+
+  print "run: $run\n";
 
   return( $run );
 
@@ -156,6 +166,7 @@ sub read_diag_info {
     if( ($in_header == 0) && ($in_cdd == 0) && ($in_rpt == 0) ) {
       if( $line =~ /^\s*\/\*\s*HEADER/ ) {
         $in_header = 1;
+        print "In HEADER...\n";
       } elsif( $line =~ /^\s*\/\*\s*CDD\s+(\w+)/ ) {
         $name = $1;
         $in_cdd   = 1;
@@ -176,6 +187,7 @@ sub read_diag_info {
         close( RPT );
       } 
     } elsif( $in_header == 1 ) {
+      print "Parsing header line $line\n";
       $run = &parse_diag_header_line( $line );
     } elsif( $in_cdd == 1 ) {
       print CDD "$line\n";
@@ -277,6 +289,7 @@ sub run_diags {
     chomp( $file );
     if( $file =~ /(.*)\.v/ ) {
       $diag_name = $1;
+      print "Reading diagnostic ${diag_name}\n";
       $run = &read_diag_info( "$diag_name.v" );
       if( $run == 1 ) {
         ($ran, $failed) = &run_current_diag( "$diag_name.v" );

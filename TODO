@@ -27,6 +27,7 @@ X	- constant functions (this needs support of the above for it to work)
 X	! explicitly named parameters
 X	- make sure that localparams cannot be modified by a defparam or SDF
 	- generate command (extremely low priority)
+	- config command
 X	! wildcard sensitivity list (@*)
 X	- Add signed capability (unsigned zero-fills unused bits while sign fills with MSB)
 X	- register assignment
@@ -37,7 +38,7 @@ X	- pre-port parameter listing
 X	- inline port declaration listing
 X	- NULL task/function ports (?)
 X	- arrays of instances
-	- MAKE SURE THAT WE DOCUMENT IN THE USER'S GUIDE WHAT VERILOG-2001 CONSTRUCTS ARE
+X	- MAKE SURE THAT WE DOCUMENT IN THE USER'S GUIDE WHAT VERILOG-2001 CONSTRUCTS ARE
 	  SUPPORTED AND NOT SUPPORTED!
 
    5.  Allow Covered to run simulation phases in parallel to increase performance.

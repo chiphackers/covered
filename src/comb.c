@@ -548,32 +548,35 @@ void combination_draw_centered_line( char* line, int size, int exp_id, bool left
 }
 
 /*!
- \param exp              Pointer to expression to create underline for.
- \param curr_depth       Specifies current depth in expression tree.
- \param lines            Stack of lines for left child.
- \param depth            Pointer to top of left child stack.
- \param size             Pointer to character width of this node.
- \param parent_op        Expression operation of parent used for calculating parenthesis.
- \param center           Specifies if expression IDs should be centered in underlines or at beginning.
+ \param exp         Pointer to expression to create underline for.
+ \param curr_depth  Specifies current depth in expression tree.
+ \param lines       Stack of lines for left child.
+ \param depth       Pointer to top of left child stack.
+ \param size        Pointer to character width of this node.
+ \param parent_op   Expression operation of parent used for calculating parenthesis.
+ \param center      Specifies if expression IDs should be centered in underlines or at beginning.
+ \param funit       Pointer to current functional unit containing this expression
 
  Recursively parses specified expression tree, underlining and labeling each
  measurable expression.
 */
-void combination_underline_tree( expression* exp, unsigned int curr_depth, char*** lines, int* depth, int* size, int parent_op, bool center, func_unit* funit ) {
+void combination_underline_tree( expression* exp, unsigned int curr_depth, char*** lines, int* depth, int* size,
+                                 int parent_op, bool center, func_unit* funit ) {
 
-  char** l_lines;       /* Pointer to left underline stack              */
-  char** r_lines;       /* Pointer to right underline stack             */
-  int    l_depth = 0;   /* Index to top of left stack                   */
-  int    r_depth = 0;   /* Index to top of right stack                  */
-  int    l_size;        /* Number of characters for left expression     */
-  int    r_size;        /* Number of characters for right expression    */
-  int    i;             /* Loop iterator                                */
-  char*  exp_sp;        /* Space to take place of missing expression(s) */
-  char   code_fmt[300]; /* Contains format string for rest of stack     */
-  char*  tmpstr;        /* Temporary string value                       */
-  int    comb_missed;   /* If set to 1, current combination was missed  */
-  char*  tmpname;       /* Temporary pointer to current signal name     */
-  func_unit* tfunit;     /* Temporary pointer to found functional unit   */
+  char**     l_lines;        /* Pointer to left underline stack */
+  char**     r_lines;        /* Pointer to right underline stack */
+  int        l_depth = 0;    /* Index to top of left stack */
+  int        r_depth = 0;    /* Index to top of right stack */
+  int        l_size;         /* Number of characters for left expression */
+  int        r_size;         /* Number of characters for right expression */
+  int        i;              /* Loop iterator */
+  char*      exp_sp;         /* Space to take place of missing expression(s) */
+  char       code_fmt[300];  /* Contains format string for rest of stack */
+  char*      tmpstr;         /* Temporary string value */
+  int        comb_missed;    /* If set to 1, current combination was missed */
+  char*      tmpname;        /* Temporary pointer to current signal name */
+  char*      pname;          /* Printable version of signal/function/task name */
+  func_unit* tfunit;         /* Temporary pointer to found functional unit */
   
   *depth  = 0;
   *size   = 0;
@@ -624,9 +627,9 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
       if( (exp->op == EXP_OP_SIG) || (exp->op == EXP_OP_PARAM) ) {
 
         if( exp->sig->name[0] == '#' ) {
-          tmpname = exp->sig->name + 1;
+          tmpname = scope_gen_printable( exp->sig->name + 1 );
         } else {
-          tmpname = exp->name;
+          tmpname = scope_gen_printable( exp->name );
         }
 
         *size = strlen( tmpname );
@@ -636,6 +639,8 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
           case 2 :  *size = 3;  strcpy( code_fmt, " %s" );   break;
           default:  strcpy( code_fmt, "%s" );                break;
         }
+
+        free_safe( tmpname );
         
       } else {
 
@@ -724,9 +729,9 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
             case EXP_OP_PARAM_SBIT :
             case EXP_OP_SBIT_SEL   :  
               if( exp->sig->name[0] == '#' ) {
-                tmpname = exp->sig->name + 1;
+                tmpname = scope_gen_printable( exp->sig->name + 1 );
               } else {
-                tmpname = exp->name;
+                tmpname = scope_gen_printable( exp->name );
               }
               *size = l_size + r_size + strlen( tmpname ) + 2;
               for( i=0; i<strlen( tmpname ); i++ ) {
@@ -734,13 +739,14 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
               }
               code_fmt[i] = '\0';
               strcat( code_fmt, " %s " );
+              free_safe( tmpname );
               break;
             case EXP_OP_PARAM_MBIT :
             case EXP_OP_MBIT_SEL   :  
               if( exp->sig->name[0] == '#' ) {
-                tmpname = exp->sig->name + 1;
+                tmpname = scope_gen_printable( exp->sig->name + 1 );
               } else {
-                tmpname = exp->name;
+                tmpname = scope_gen_printable( exp->name );
               }
               *size = l_size + r_size + strlen( tmpname ) + 3;  
               for( i=0; i<strlen( tmpname ); i++ ) {
@@ -748,15 +754,16 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
               }
               code_fmt[i] = '\0';
               strcat( code_fmt, " %s %s " );
+              free_safe( tmpname );
               break;
             case EXP_OP_PARAM_MBIT_POS :
             case EXP_OP_PARAM_MBIT_NEG :
             case EXP_OP_MBIT_POS       :
             case EXP_OP_MBIT_NEG       :
               if( exp->sig->name[0] == '#' ) {
-                tmpname = exp->sig->name + 1;
+                tmpname = scope_gen_printable( exp->sig->name + 1 );
               } else {
-                tmpname = exp->name;
+                tmpname = scope_gen_printable( exp->name );
               }
               *size = l_size + r_size + strlen( tmpname ) + 4;
               for( i=0; i<strlen( tmpname ); i++ ) {
@@ -764,14 +771,17 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
               }
               code_fmt[i] = '\0';
               strcat( code_fmt, " %s  %s " );
+              free_safe( tmpname );
               break;
             case EXP_OP_TRIGGER  :
-              tmpname = exp->name;
+              tmpname = scope_gen_printable( exp->name );
               *size = l_size + r_size + strlen( tmpname ) + 2;
               for( i=0; i<strlen( tmpname ) + 2; i++ ) {
                 code_fmt[i] = ' ';
               }
               code_fmt[i] = '\0';
+              free_safe( tmpname );
+              break;
             case EXP_OP_EXPAND   :  *size = l_size + r_size + 4;  strcpy( code_fmt, " %s %s  "         );  break;
             case EXP_OP_CONCAT   :  *size = l_size + r_size + 2;  strcpy( code_fmt, " %s "             );  break;
             case EXP_OP_LIST     :  *size = l_size + r_size + 2;  strcpy( code_fmt, "%s  %s"           );  break;
@@ -820,19 +830,21 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
               if( (tfunit = funit_find_by_id( exp->stmt->exp->id )) != NULL ) {
                 tmpname = strdup_safe( tfunit->name, __FILE__, __LINE__ );
                 scope_extract_back( tfunit->name, tmpname, user_msg );
+                pname = scope_gen_printable( tmpname );
               } else {
                 snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  Could not find statement %d in module %s",
                           exp->stmt->exp->id, funit->name );
                 print_output( user_msg, FATAL, __FILE__, __LINE__ );
                 exit( 1 );
               }
-              *size = l_size + r_size + strlen( tmpname ) + 4;
-              for( i=0; i<strlen( tmpname ); i++ ) {
+              *size = l_size + r_size + strlen( pname ) + 4;
+              for( i=0; i<strlen( pname ); i++ ) {
                 code_fmt[i] = ' ';
               }
               code_fmt[i] = '\0';
               strcat( code_fmt, "  %s  " );
               free_safe( tmpname );
+              free_safe( pname );
               break;
             case EXP_OP_NEGATE   :  *size = l_size + r_size + 1;  strcpy( code_fmt, " %s"              );  break;
             default              :
@@ -957,17 +969,18 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
          the current line.  If there is no underline information to return, a value of
          NULL is returned.
 
+ TBD
 */
 char* combination_prep_line( char* line, int start, int len ) {
 
-  char* str;                /* Prepared line to return                           */
-  int   exp_id;             /* Expression ID of current line                     */
-  int   chars_read;         /* Number of characters read from sscanf function    */
-  int   i;                  /* Loop iterator                                     */
-  int   curr_index;         /* Index current character in str to set             */
-  bool  line_ip   = FALSE;  /* Specifies if a line is currently in progress      */
+  char* str;                /* Prepared line to return */
+  int   exp_id;             /* Expression ID of current line */
+  int   chars_read;         /* Number of characters read from sscanf function */
+  int   i;                  /* Loop iterator */
+  int   curr_index;         /* Index current character in str to set */
+  bool  line_ip   = FALSE;  /* Specifies if a line is currently in progress */
   bool  line_seen = FALSE;  /* Specifies that a line has been seen for this line */
-  int   start_ul  = 0;      /* Index of starting underline                       */
+  int   start_ul  = 0;      /* Index of starting underline */
 
   /* Allocate memory for string to return */
   str = (char*)malloc_safe( (len + 2), __FILE__, __LINE__ );
@@ -1051,13 +1064,13 @@ char* combination_prep_line( char* line, int start, int len ) {
 */
 void combination_underline( FILE* ofile, char** code, int code_depth, expression* exp, func_unit* funit ) {
 
-  char** lines;    /* Pointer to a stack of lines     */
-  int    depth;    /* Depth of underline stack        */
-  int    size;     /* Width of stack in characters    */
-  int    i;        /* Loop iterator                   */
-  int    j;        /* Loop iterator                   */
-  char*  tmpstr;   /* Temporary string variable       */
-  int    start;    /* Starting index                  */
+  char** lines;    /* Pointer to a stack of lines */
+  int    depth;    /* Depth of underline stack */
+  int    size;     /* Width of stack in characters */
+  int    i;        /* Loop iterator */
+  int    j;        /* Loop iterator */
+  char*  tmpstr;   /* Temporary string variable */
+  int    start;    /* Starting index */
 
   start = 0;
 
@@ -1355,6 +1368,13 @@ void combination_multi_var_exprs( char** line1, char** line2, char** line3, expr
 
 }
 
+/*!
+ \param line1  First line of multi-variable expression output
+ \param line2  Second line of multi-variable expression output
+ \param line3  Third line of multi-variable expression output
+
+ \return TBD
+*/
 int combination_multi_expr_output_length( char* line1, char* line2, char* line3 ) {
 
   int start  = 0;
@@ -1486,6 +1506,16 @@ void combination_multi_vars( char*** info, int* info_size, expression* exp ) {
 
 }
 
+/*!
+ \param info        Pointer to an array of strings containing expression coverage detail
+ \param info_size   Pointer to a value that will be set to indicate the number of valid elements in the info array
+ \param exp         Pointer to the expression to get the coverage detail for
+ \param curr_depth  Current expression depth (used to figure out when to stop getting coverage information -- if
+                    the user has specified a maximum depth)
+
+ Calculates the missed coverage detail output for the given expression, placing the output to the info array.  This
+ array can then be sent to an ASCII report file or the GUI.
+*/
 void combination_get_missed_expr( char*** info, int* info_size, expression* exp, unsigned int curr_depth ) {
 
   assert( exp != NULL );
@@ -1594,8 +1624,8 @@ void combination_get_missed_expr( char*** info, int* info_size, expression* exp,
 void combination_list_missed( FILE* ofile, expression* exp, unsigned int curr_depth ) {
 
   char** info;       /* String array containing combination coverage information for this expression */
-  int    info_size;  /* Specifies the number of valid entries in the info array                      */
-  int    i;          /* Loop iterator                                                                */
+  int    info_size;  /* Specifies the number of valid entries in the info array */
+  int    i;          /* Loop iterator */
   
   if( exp != NULL ) {
     
@@ -1674,11 +1704,11 @@ void combination_output_expr( expression* expr, unsigned int curr_depth, int* an
 */
 void combination_display_verbose( FILE* ofile, func_unit* funit ) {
 
-  stmt_iter   stmti;           /* Statement list iterator                                                   */
-  expression* unexec_exp;      /* Pointer to current unexecuted expression                                  */
-  char**      code;            /* Code string from code generator                                           */
-  int         code_depth;      /* Depth of code array                                                       */
-  int         any_missed;      /* Specifies if any of the subexpressions were missed in this expression     */
+  stmt_iter   stmti;           /* Statement list iterator */
+  expression* unexec_exp;      /* Pointer to current unexecuted expression */
+  char**      code;            /* Code string from code generator */
+  int         code_depth;      /* Depth of code array */
+  int         any_missed;      /* Specifies if any of the subexpressions were missed in this expression */
   int         any_measurable;  /* Specifies if any of the subexpressions were measurable in this expression */
 
   if( report_covered ) {
@@ -1737,18 +1767,27 @@ void combination_display_verbose( FILE* ofile, func_unit* funit ) {
 void combination_instance_verbose( FILE* ofile, funit_inst* root, char* parent ) {
 
   funit_inst* curr_inst;      /* Pointer to current instance being evaluated */
-  char        tmpname[4096];  /* Temporary name holder of instance           */
+  char        tmpname[4096];  /* Temporary name holder of instance */
+  char*       pname;          /* Printable version of instance name */
 
   assert( root != NULL );
 
+  /* Get printable version of instance name */
+  pname = scope_gen_printable( root->name );
+
   if( strcmp( parent, "*" ) == 0 ) {
-    strcpy( tmpname, root->name );
+    strcpy( tmpname, pname );
   } else {
-    snprintf( tmpname, 4096, "%s.%s", parent, root->name );
+    snprintf( tmpname, 4096, "%s.%s", parent, pname );
   }
+
+  free_safe( pname );
 
   if( ((root->stat->comb_hit < root->stat->comb_total) && !report_covered) ||
       ((root->stat->comb_hit > 0) && report_covered) ) {
+
+    /* Get printable version of functional unit name */
+    pname = scope_gen_printable( root->funit->name );
 
     fprintf( ofile, "\n" );
     switch( root->funit->type ) {
@@ -1758,8 +1797,10 @@ void combination_instance_verbose( FILE* ofile, funit_inst* root, char* parent )
       case FUNIT_TASK        :  fprintf( ofile, "    Task: " );         break;
       default                :  fprintf( ofile, "    UNKNOWN: " );      break;
     }
-    fprintf( ofile, "%s, File: %s, Instance: %s\n", root->funit->name, root->funit->filename, tmpname );
+    fprintf( ofile, "%s, File: %s, Instance: %s\n", pname, root->funit->filename, tmpname );
     fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
+
+    free_safe( pname );
 
     combination_display_verbose( ofile, root->funit );
 
@@ -1782,10 +1823,15 @@ void combination_instance_verbose( FILE* ofile, funit_inst* root, char* parent )
 */
 void combination_funit_verbose( FILE* ofile, funit_link* head ) {
 
+  char* pname;  /* Printable version of functional unit name */
+
   while( head != NULL ) {
 
     if( ((head->funit->stat->comb_hit < head->funit->stat->comb_total) && !report_covered) ||
         ((head->funit->stat->comb_hit > 0) && report_covered) ) {
+
+      /* Get printable version of functional unit name */
+      pname = scope_gen_printable( head->funit->name );
 
       fprintf( ofile, "\n" );
       switch( head->funit->type ) {
@@ -1795,8 +1841,10 @@ void combination_funit_verbose( FILE* ofile, funit_link* head ) {
         case FUNIT_TASK        :  fprintf( ofile, "    Task: " );         break;
         default                :  fprintf( ofile, "    UNKNOWN: " );      break;
       }
-      fprintf( ofile, "%s, File: %s\n", head->funit->name, head->funit->filename );
+      fprintf( ofile, "%s, File: %s\n", pname, head->funit->filename );
       fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
+
+      free_safe( pname );
 
       combination_display_verbose( ofile, head->funit );
 
@@ -1808,16 +1856,29 @@ void combination_funit_verbose( FILE* ofile, funit_link* head ) {
 
 }
 
+/*!
+ \param funit_name  Name of functional unit to collect combinational logic coverage information for
+ \param funit_type  Type of functional unit to collect combinational logic coverage information for
+ \param covs        Pointer to an array of expression pointers that contain all fully covered expressions
+ \param cov_cnt     Pointer to a value that will be set to indicate the number of expressions in covs array
+ \param uncovs      Pointer to an array of expression pointers that contain uncovered expressions
+ \param uncov_cnt   Pointer to a value that will be set to indicate the number of expressions in uncovs array
+
+ \return Returns TRUE if combinational coverage information was found for the given functional unit; otherwise,
+         returns FALSE to indicate that an error occurred.
+
+ TBD
+*/
 bool combination_collect( char* funit_name, int funit_type, expression*** covs, int* cov_cnt, expression*** uncovs, int* uncov_cnt ) {
 
-  bool        retval = TRUE;   /* Return value of this function                                             */
-  func_unit   funit;           /* Functional unit used for searching                                        */
-  funit_link* funitl;          /* Pointer to found functional unit link                                     */
-  stmt_iter   stmti;           /* Statement list iterator                                                   */
-  int         any_missed;      /* Specifies if any of the subexpressions were missed in this expression     */
+  bool        retval = TRUE;   /* Return value of this function */
+  func_unit   funit;           /* Functional unit used for searching */
+  funit_link* funitl;          /* Pointer to found functional unit link */
+  stmt_iter   stmti;           /* Statement list iterator */
+  int         any_missed;      /* Specifies if any of the subexpressions were missed in this expression */
   int         any_measurable;  /* Specifies if any of the subexpressions were measurable in this expression */
-  int         cov_size;        /* Current maximum allocated space in covs array                             */
-  int         uncov_size;      /* Current maximum allocated space in uncovs array                           */
+  int         cov_size;        /* Current maximum allocated space in covs array */
+  int         uncov_size;      /* Current maximum allocated space in uncovs array */
  
   /* First, find functional unit in functional unit array */
   funit.name = funit_name;
@@ -1883,6 +1944,20 @@ bool combination_collect( char* funit_name, int funit_type, expression*** covs, 
 
 }
 
+/*!
+ \param funit_name  Name of functional unit to get combinational expression for.
+ \param funit_type  Type of functional unit to get combinational expression for.
+ \param expr_id     Expression ID to retrieve information for
+ \param code        Pointer to an array of strings containing generated code for this expression
+ \param uline_groups  Pointer to an array of integers used for underlined missed subexpressions in this expression
+ \param code_size     Pointer to value that will be set to indicate the number of elements in the code array
+ \param ulines        Pointer to an array of strings that contain underlines of missed subexpressions
+ \param uline_size    Pointer to value that will be set to indicate the number of elements in the ulines array
+ 
+ \return Returns TRUE if the given expression was found; otherwise, returns FALSE to indicate an error occurred.
+
+ TBD 
+*/
 bool combination_get_expression( char* funit_name, int funit_type, int expr_id, char*** code, int** uline_groups, int* code_size,
                                  char*** ulines, int* uline_size ) {
 
@@ -1952,9 +2027,6 @@ bool combination_get_expression( char* funit_name, int funit_type, int expr_id, 
       if( tmp_uline_size > 0 ) {
         free_safe( tmp_ulines );
       }
-
-      /* Output logical combinations that missed complete coverage */
-      // combination_list_missed( ofile, unexec_exp, 0 );
 
     } else {
 
@@ -2079,6 +2151,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.129  2006/02/06 22:48:33  phase1geo
+ Several enhancements to GUI look and feel.  Fixed error in combinational logic
+ window.
+
  Revision 1.128  2006/02/06 05:07:26  phase1geo
  Fixed expression_set_static_only function to consider static expressions
  properly.  Updated regression as a result of this change.  Added files

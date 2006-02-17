@@ -135,11 +135,11 @@ bool toggle_collect( char* funit_name, int funit_type, int cov, sig_link** sig_h
 */
 bool toggle_get_coverage( char* funit_name, int funit_type, char* sig_name, int* msb, int* lsb, char** tog01, char** tog10 ) {
 
-  bool        retval = TRUE;  /* Return value for this function        */
-  func_unit   funit;          /* Functional unit used for searching    */
+  bool        retval = TRUE;  /* Return value for this function */
+  func_unit   funit;          /* Functional unit used for searching */
   funit_link* funitl;         /* Pointer to found functional unit link */
-  vsignal     sig;            /* Signal used for searching             */
-  sig_link*   sigl;           /* Pointer to found signal link          */
+  vsignal     sig;            /* Signal used for searching */
+  sig_link*   sigl;           /* Pointer to found signal link */
 
   funit.name = funit_name;
   funit.type = funit_type;
@@ -249,11 +249,12 @@ bool toggle_get_funit_summary( char* funit_name, int funit_type, int* total, int
 bool toggle_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst ) {
 
   funit_inst* curr;           /* Pointer to current child functional unit instance of this node */
-  float       percent01;      /* Percentage of bits toggling from 0 -> 1               */
-  float       percent10;      /* Percentage of bits toggling from 1 -> 0               */
-  float       miss01;         /* Number of bits that did not toggle from 0 -> 1        */
-  float       miss10;         /* Number of bits that did not toggle from 1 -> 0        */
-  char        tmpname[4096];  /* Temporary name holder for instance                    */
+  float       percent01;      /* Percentage of bits toggling from 0 -> 1 */
+  float       percent10;      /* Percentage of bits toggling from 1 -> 0 */
+  float       miss01;         /* Number of bits that did not toggle from 0 -> 1 */
+  float       miss10;         /* Number of bits that did not toggle from 1 -> 0 */
+  char        tmpname[4096];  /* Temporary name holder for instance */
+  char*       pname;          /* Printable version of instance name */
 
   assert( root != NULL );
   assert( root->stat != NULL );
@@ -274,11 +275,16 @@ bool toggle_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst )
   }
   miss10    = (root->stat->tog_total - root->stat->tog10_hit);
 
+  /* Get printable version of this instance */
+  pname = scope_gen_printable( root->name );
+
   if( strcmp( parent_inst, "*" ) == 0 ) {
-    strcpy( tmpname, root->name );
+    strcpy( tmpname, pname );
   } else {
-    snprintf( tmpname, 4096, "%s.%s", parent_inst, root->name );
+    snprintf( tmpname, 4096, "%s.%s", parent_inst, pname );
   }
+
+  free_safe( pname );
 
   fprintf( ofile, "  %-43.43s    %5d/%5.0f/%5.0f      %3.0f%%         %5d/%5.0f/%5.0f      %3.0f%%\n",
            tmpname,
@@ -312,11 +318,12 @@ bool toggle_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst )
 */
 bool toggle_funit_summary( FILE* ofile, funit_link* head ) {
 
-  float percent01;           /* Percentage of bits that toggled from 0 to 1    */
-  float percent10;           /* Percentage of bits that toggled from 1 to 0    */
+  float percent01;           /* Percentage of bits that toggled from 0 to 1 */
+  float percent10;           /* Percentage of bits that toggled from 1 to 0 */
   float miss01;              /* Number of bits that did not toggle from 0 to 1 */
   float miss10;              /* Number of bits that did not toggle from 1 to 0 */
-  float miss_found = FALSE;  /* Set to TRUE if missing toggles were found      */
+  float miss_found = FALSE;  /* Set to TRUE if missing toggles were found */
+  char* pname;               /* Printable version of the functional unit name */
 
   while( head != NULL ) {
 
@@ -338,8 +345,11 @@ bool toggle_funit_summary( FILE* ofile, funit_link* head ) {
 
     miss_found = ((miss01 > 0) || (miss10 > 0)) ? TRUE : miss_found;
 
+    /* Get printable version of functional unit name */
+    pname = scope_gen_printable( head->funit->name );
+
     fprintf( ofile, "  %-20.20s    %-20.20s   %5d/%5.0f/%5.0f      %3.0f%%         %5d/%5.0f/%5.0f      %3.0f%%\n", 
-             head->funit->name,
+             pname,
              get_basename( head->funit->filename ),
              head->funit->stat->tog01_hit,
              miss01,
@@ -351,6 +361,8 @@ bool toggle_funit_summary( FILE* ofile, funit_link* head ) {
              percent10 );
 
     head = head->next;
+
+    free_safe( pname );
 
   }
 
@@ -368,8 +380,9 @@ bool toggle_funit_summary( FILE* ofile, funit_link* head ) {
 void toggle_display_verbose( FILE* ofile, sig_link* sigl ) {
 
   sig_link* curr_sig;   /* Pointer to current signal link being evaluated */
-  int       hit01;      /* Number of bits that toggled from 0 to 1        */
-  int       hit10;      /* Number of bits that toggled from 1 to 0        */
+  int       hit01;      /* Number of bits that toggled from 0 to 1 */
+  int       hit10;      /* Number of bits that toggled from 1 to 0 */
+  char*     pname;      /* Printable version of signal name */
 
   if( report_covered ) {
     fprintf( ofile, "    Signals getting 100%% toggle coverage\n\n" );
@@ -387,6 +400,9 @@ void toggle_display_verbose( FILE* ofile, sig_link* sigl ) {
     hit01 = 0;
     hit10 = 0;
 
+    /* Get printable version of the signal name */
+    pname = scope_gen_printable( curr_sig->sig->name );
+
     if( (curr_sig->sig->name[0] != '#') && (curr_sig->sig->value->suppl.part.mba == 0) ) {
 
       vector_toggle_count( curr_sig->sig->value, &hit01, &hit10 );
@@ -395,7 +411,7 @@ void toggle_display_verbose( FILE* ofile, sig_link* sigl ) {
 
         if( (hit01 == curr_sig->sig->value->width) && (hit10 == curr_sig->sig->value->width) ) {
         
-          fprintf( ofile, "      %-24s\n", curr_sig->sig->name );
+          fprintf( ofile, "      %-24s\n", pname );
 
         }
 
@@ -403,7 +419,7 @@ void toggle_display_verbose( FILE* ofile, sig_link* sigl ) {
 
         if( (hit01 < curr_sig->sig->value->width) || (hit10 < curr_sig->sig->value->width) ) {
 
-          fprintf( ofile, "      %-24s  0->1: ", curr_sig->sig->name );
+          fprintf( ofile, "      %-24s  0->1: ", pname );
           vector_display_toggle01( curr_sig->sig->value->value, curr_sig->sig->value->width, ofile );      
           fprintf( ofile, "\n      ......................... 1->0: " );
           vector_display_toggle10( curr_sig->sig->value->value, curr_sig->sig->value->width, ofile );      
@@ -414,6 +430,8 @@ void toggle_display_verbose( FILE* ofile, sig_link* sigl ) {
       }
 
     }
+
+    free_safe( pname );
 
     curr_sig = curr_sig->next;
 
@@ -433,15 +451,21 @@ void toggle_display_verbose( FILE* ofile, sig_link* sigl ) {
 void toggle_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst ) {
 
   funit_inst* curr_inst;      /* Pointer to current instance being evaluated */
-  char        tmpname[4096];  /* Temporary name holder of instance           */
+  char        tmpname[4096];  /* Temporary name holder of instance */
+  char*       pname;          /* Printable version of the name */
 
   assert( root != NULL );
 
+  /* Get printable version of the signal */
+  pname = scope_gen_printable( root->name );
+
   if( strcmp( parent_inst, "*" ) == 0 ) {
-    strcpy( tmpname, root->name );
+    strcpy( tmpname, pname );
   } else {
-    snprintf( tmpname, 4096, "%s.%s", parent_inst, root->name );
+    snprintf( tmpname, 4096, "%s.%s", parent_inst, pname );
   }
+
+  free_safe( pname );
 
   if( (root->stat->tog01_hit < root->stat->tog_total) ||
       (root->stat->tog10_hit < root->stat->tog_total) ) {
@@ -454,8 +478,10 @@ void toggle_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst )
       case FUNIT_TASK        :  fprintf( ofile, "    Task: " );         break;
       default                :  fprintf( ofile, "    UNKNOWN: " );      break;
     }
-    fprintf( ofile, "%s, File: %s, Instance: %s\n", root->funit->name, root->funit->filename, tmpname );
+    pname = scope_gen_printable( root->funit->name );
+    fprintf( ofile, "%s, File: %s, Instance: %s\n", pname, root->funit->filename, tmpname );
     fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
+    free_safe( pname );
 
     toggle_display_verbose( ofile, root->funit->sig_head );
 
@@ -564,6 +590,12 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.32  2006/01/19 23:10:38  phase1geo
+ Adding line and starting column information to vsignal structure (and associated CDD
+ files).  Regression has been fully updated for this change which now fully passes.  Final
+ changes to summary GUI.  Fixed signal underlining for toggle coverage to work for both
+ explicit and implicit signals.  Getting things ready for a preferences window.
+
  Revision 1.31  2006/01/19 00:01:09  phase1geo
  Lots of changes/additions.  Summary report window work is now complete (with the
  exception of adding extra features).  Added support for parsing left and right

@@ -102,7 +102,6 @@ bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, 
       snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined signal hierarchy (%s) in %s %s, file %s, line %d",
                 name, get_funit_type( curr_funit->type ), curr_funit->name, curr_funit->filename, line );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      assert( 0 );
       exit( 1 );
  
     }
@@ -178,7 +177,7 @@ bool scope_find_task_function_namedblock( char* name, int type, func_unit* curr_
   funitl = (*found_funit)->tf_head;
   while( (funitl != NULL) && !found ) {
     scope_extract_back( funitl->funit->name, back, rest );
-    if( strcmp( back, name ) == 0 ) {
+    if( scope_compare( back, name ) ) {
       found        = TRUE;
       *found_funit = funitl->funit;
     } else {
@@ -264,6 +263,11 @@ func_unit* scope_get_parent_module( char* scope ) {
 
 /*
  $Log$
+ Revision 1.9  2006/02/16 21:19:26  phase1geo
+ Adding support for arrays of instances.  Also fixing some memory problems for
+ constant functions and fixed binding problems when hierarchical references are
+ made to merged modules.  Full regression now passes.
+
  Revision 1.8  2006/01/23 17:23:28  phase1geo
  Fixing scope issues that came up when port assignment was added.  Full regression
  now passes.

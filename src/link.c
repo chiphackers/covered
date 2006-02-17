@@ -402,7 +402,7 @@ sig_link* sig_link_find( vsignal* sig, sig_link* head ) {
   sig_link* curr;    /* Pointer to current sig_link link */
 
   curr = head;
-  while( (curr != NULL) && (strcmp( curr->sig->name, sig->name ) != 0) ) {
+  while( (curr != NULL) && !scope_compare( curr->sig->name, sig->name ) ) {
     curr = curr->next;
   }
 
@@ -448,7 +448,7 @@ funit_link* funit_link_find( func_unit* funit, funit_link* head ) {
   funit_link* curr;    /* Pointer to current funit_link link */
 
   curr = head;
-  while( (curr != NULL) && ((strcmp( curr->funit->name, funit->name ) != 0) || (curr->funit->type != funit->type)) ) {
+  while( (curr != NULL) && (!scope_compare( curr->funit->name, funit->name ) || (curr->funit->type != funit->type)) ) {
     curr = curr->next;
   }
 
@@ -785,6 +785,11 @@ void funit_link_delete_list( funit_link* head, bool rm_funit ) {
 
 /*
  $Log$
+ Revision 1.41  2006/02/16 21:19:26  phase1geo
+ Adding support for arrays of instances.  Also fixing some memory problems for
+ constant functions and fixed binding problems when hierarchical references are
+ made to merged modules.  Full regression now passes.
+
  Revision 1.40  2006/01/19 23:10:38  phase1geo
  Adding line and starting column information to vsignal structure (and associated CDD
  files).  Regression has been fully updated for this change which now fully passes.  Final

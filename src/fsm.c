@@ -179,14 +179,14 @@ bool fsm_db_write( fsm* table, FILE* file, bool parse_mode ) {
 */
 bool fsm_db_read( char** line, func_unit* funit ) {
 
-  bool       retval = TRUE;    /* Return value for this function                     */
-  expression iexp;             /* Temporary signal used for finding state variable   */
-  expression oexp;             /* Temporary signal used for finding state variable   */
-  exp_link*  iexpl;            /* Pointer to found state variable                    */
-  exp_link*  oexpl;            /* Pointer to found state variable                    */
-  int        chars_read;       /* Number of characters read from sscanf              */
-  fsm*       table;            /* Pointer to newly created FSM structure from CDD    */
-  int        is_table;         /* Holds value of is_table entry of FSM output        */
+  bool       retval = TRUE;  /* Return value for this function */
+  expression iexp;           /* Temporary signal used for finding state variable */
+  expression oexp;           /* Temporary signal used for finding state variable */
+  exp_link*  iexpl;          /* Pointer to found state variable */
+  exp_link*  oexpl;          /* Pointer to found state variable */
+  int        chars_read;     /* Number of characters read from sscanf */
+  fsm*       table;          /* Pointer to newly created FSM structure from CDD */
+  int        is_table;       /* Holds value of is_table entry of FSM output */
  
   if( sscanf( *line, "%d %d %d%n", &(iexp.id), &(oexp.id), &is_table, &chars_read ) == 3 ) {
 
@@ -319,11 +319,11 @@ bool fsm_db_merge( fsm* base, char** line, bool same ) {
 */
 bool fsm_db_replace( fsm* base, char** line ) {
 
-  bool   retval = TRUE;  /* Return value of this function       */
-  int    iid;            /* Input state variable expression ID  */
+  bool   retval = TRUE;  /* Return value of this function */
+  int    iid;            /* Input state variable expression ID */
   int    oid;            /* Output state variable expression ID */
   int    chars_read;     /* Number of characters read from line */
-  int    is_table;       /* Holds value of is_table signifier   */
+  int    is_table;       /* Holds value of is_table signifier */
 
   assert( base != NULL );
   assert( base->from_state != NULL );
@@ -379,7 +379,7 @@ void fsm_table_set( fsm* table ) {
 */
 void fsm_get_stats( fsm_link* table, float* state_total, int* state_hit, float* arc_total, int* arc_hit ) {
 
-  fsm_link* curr;   /* Pointer to current FSM in table list             */
+  fsm_link* curr;   /* Pointer to current FSM in table list */
 
   curr = table;
   while( curr != NULL ) {
@@ -401,11 +401,12 @@ void fsm_get_stats( fsm_link* table, float* state_total, int* state_hit, float* 
 bool fsm_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst ) {
 
   funit_inst* curr;            /* Pointer to current child functional unit instance of this node */
-  float       state_percent;   /* Percentage of states hit                                       */
-  float       arc_percent;     /* Percentage of arcs hit                                         */
-  float       state_miss;      /* Number of states missed                                        */
-  float       arc_miss;        /* Number of arcs missed                                          */
-  char        tmpname[4096];   /* Temporary name holder for instance                             */
+  float       state_percent;   /* Percentage of states hit */
+  float       arc_percent;     /* Percentage of arcs hit */
+  float       state_miss;      /* Number of states missed */
+  float       arc_miss;        /* Number of arcs missed */
+  char        tmpname[4096];   /* Temporary name holder for instance */
+  char*       pname;           /* Printable version of instance name */
 
   assert( root != NULL );
   assert( root->stat != NULL );
@@ -424,11 +425,16 @@ bool fsm_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst ) {
   }
   arc_miss   = (root->stat->arc_total - root->stat->arc_hit);
 
+  /* Generate printable version of instance name */
+  pname = scope_gen_printable( root->name );
+
   if( strcmp( parent_inst, "*" ) == 0 ) {
-    strcpy( tmpname, root->name );
+    strcpy( tmpname, pname );
   } else {
-    snprintf( tmpname, 4096, "%s.%s", parent_inst, root->name ); 
+    snprintf( tmpname, 4096, "%s.%s", parent_inst, pname ); 
   }
+
+  free_safe( pname );
 
   if( (root->stat->state_total == -1) || (root->stat->arc_total == -1) ) {
     fprintf( ofile, "  %-43.43s    %4d/  ? /  ?        ? %%         %4d/  ? /  ?        ? %%\n",
@@ -468,11 +474,12 @@ bool fsm_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst ) {
 */
 bool fsm_funit_summary( FILE* ofile, funit_link* head ) {
 
-  float state_percent;       /* Percentage of states hit                        */
-  float arc_percent;         /* Percentage of arcs hit                          */
-  float state_miss;          /* Number of states missed                         */
-  float arc_miss;            /* Number of arcs missed                           */
+  float state_percent;       /* Percentage of states hit */
+  float arc_percent;         /* Percentage of arcs hit */
+  float state_miss;          /* Number of states missed */
+  float arc_miss;            /* Number of arcs missed */
   bool  miss_found = FALSE;  /* Set to TRUE if state/arc was found to be missed */
+  char* pname;               /* Printable version of functional unit name */
 
   while( head != NULL ) {
 
@@ -492,15 +499,18 @@ bool fsm_funit_summary( FILE* ofile, funit_link* head ) {
     arc_miss   = (head->funit->stat->arc_total   - head->funit->stat->arc_hit);
     miss_found = ((state_miss != 0) || (arc_miss != 0)) ? TRUE : miss_found;
 
+    /* Get printable version of functional unit name */
+    pname = scope_gen_printable( head->funit->name );
+
     if( (head->funit->stat->state_total == -1) || (head->funit->stat->arc_total == -1) ) {
       fprintf( ofile, "  %-20.20s    %-20.20s   %4d/  ? /  ?        ? %%         %4d/  ? /  ?        ? %%\n",
-           head->funit->name,
+           pname,
            get_basename( head->funit->filename ),
            head->funit->stat->state_hit,
            head->funit->stat->arc_hit );
     } else {
       fprintf( ofile, "  %-20.20s    %-20.20s   %4d/%4.0f/%4.0f      %3.0f%%         %4d/%4.0f/%4.0f      %3.0f%%\n",
-             head->funit->name,
+             pname,
              get_basename( head->funit->filename ),
              head->funit->stat->state_hit,
              state_miss,
@@ -511,6 +521,8 @@ bool fsm_funit_summary( FILE* ofile, funit_link* head ) {
              head->funit->stat->arc_total,
              arc_percent );
     }
+
+    free_safe( pname );
 
     head = head->next;
 
@@ -609,11 +621,11 @@ void fsm_display_arc_verbose( FILE* ofile, fsm* table ) {
 */
 void fsm_display_verbose( FILE* ofile, fsm_link* head ) {
 
-  char** icode;        /* Verilog output of input state variable expression  */
-  int    icode_depth;  
+  char** icode;        /* Verilog output of input state variable expression */
+  int    icode_depth;  /* Number of valid entries in the icode array */
   char** ocode;        /* Verilog output of output state variable expression */
-  int    ocode_depth;
-  int    i;            /* Loop iterator                                      */
+  int    ocode_depth;  /* Number of valid entries in the ocode array */
+  int    i;            /* Loop iterator */
 
   while( head != NULL ) {
 
@@ -661,20 +673,29 @@ void fsm_display_verbose( FILE* ofile, fsm_link* head ) {
 void fsm_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst ) {
 
   funit_inst* curr_inst;      /* Pointer to current instance being evaluated */
-  char        tmpname[4096];  /* Temporary name holder for instance          */
+  char        tmpname[4096];  /* Temporary name holder for instance */
+  char*       pname;          /* Printable version of instance name */
 
   assert( root != NULL );
 
+  /* Get printable version of instance name */
+  pname = scope_gen_printable( root->name );
+
   if( strcmp( parent_inst, "*" ) == 0 ) {
-    strcpy( tmpname, root->name );
+    strcpy( tmpname, pname );
   } else {
-    snprintf( tmpname, 4096, "%s.%s", parent_inst, root->name );
+    snprintf( tmpname, 4096, "%s.%s", parent_inst, pname );
   }
+
+  free_safe( pname );
 
   if( (((root->stat->state_hit < root->stat->state_total) || (root->stat->arc_hit < root->stat->arc_total)) && !report_covered) ||
         (root->stat->state_total == -1) ||
         (root->stat->arc_total   == -1) ||
       (((root->stat->state_hit > 0) || (root->stat->arc_hit > 0)) && report_covered) ) {
+
+    /* Get printable version of functional unit name */
+    pname = scope_gen_printable( root->funit->name );
 
     fprintf( ofile, "\n" );
     switch( root->funit->type ) {
@@ -684,8 +705,10 @@ void fsm_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst ) {
       case FUNIT_TASK        :  fprintf( ofile, "    Task: " );         break;
       default                :  fprintf( ofile, "    UNKNOWN: " );      break;
     }
-    fprintf( ofile, "%s, File: %s, Instance: %s\n", root->funit->name, root->funit->filename, tmpname );
+    fprintf( ofile, "%s, File: %s, Instance: %s\n", pname, root->funit->filename, tmpname );
     fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
+
+    free_safe( pname );
 
     fsm_display_verbose( ofile, root->funit->fsm_head );
 
@@ -707,6 +730,8 @@ void fsm_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst ) {
 */
 void fsm_funit_verbose( FILE* ofile, funit_link* head ) {
 
+  char* pname;  /* Printable version of functional unit name */
+
   while( head != NULL ) {
 
     if( (((head->funit->stat->state_hit < head->funit->stat->state_total) || 
@@ -714,6 +739,9 @@ void fsm_funit_verbose( FILE* ofile, funit_link* head ) {
           (head->funit->stat->state_total == -1) ||
           (head->funit->stat->arc_total   == -1) ||
         (((head->funit->stat->state_hit > 0) || (head->funit->stat->arc_hit > 0)) && report_covered) ) {
+
+      /* Get printable version of functional unit name */
+      pname = scope_gen_printable( head->funit->name );
 
       fprintf( ofile, "\n" );
       switch( head->funit->type ) {
@@ -723,8 +751,10 @@ void fsm_funit_verbose( FILE* ofile, funit_link* head ) {
         case FUNIT_TASK        :  fprintf( ofile, "    Task: " );         break;
         default                :  fprintf( ofile, "    UNKNOWN: " );      break;
       }
-      fprintf( ofile, "%s, File: %s\n", head->funit->name, head->funit->filename );
+      fprintf( ofile, "%s, File: %s\n", pname, head->funit->filename );
       fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
+
+      free_safe( pname );
 
       fsm_display_verbose( ofile, head->funit->fsm_head );
 
@@ -748,7 +778,7 @@ void fsm_funit_verbose( FILE* ofile, funit_link* head ) {
 void fsm_report( FILE* ofile, bool verbose ) {
 
   bool missed_found;  /* If set to TRUE, FSM cases were found to be missed */
-  char tmp[4096];     /* Temporary string value                            */
+  char tmp[4096];     /* Temporary string value */
 
   fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
   fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   FINITE STATE MACHINE COVERAGE RESULTS   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
@@ -838,6 +868,11 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.48  2006/01/24 23:24:37  phase1geo
+ More updates to handle static functions properly.  I have redone quite a bit
+ of code here which has regressions pretty broke at the moment.  More work
+ to do but I'm checkpointing.
+
  Revision 1.47  2006/01/16 17:27:41  phase1geo
  Fixing binding issues when designs have modules/tasks/functions that are either used
  more than once in a design or have the same name.  Full regression now passes.

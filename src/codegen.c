@@ -270,6 +270,7 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
   char*      before;
   char*      after;
   func_unit* tfunit;
+  char*      pname;                 /* Printable version of signal name */
 
   if( expr != NULL ) {
 
@@ -316,9 +317,9 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
       assert( expr->sig != NULL );
 
       if( expr->sig->name[0] == '#' ) {
-        tmpstr = expr->sig->name + 1;
+        tmpstr = scope_gen_printable( expr->sig->name + 1 );
       } else {
-        tmpstr = expr->name;
+        tmpstr = scope_gen_printable( expr->name );
       }
 
       switch( strlen( tmpstr ) ) {
@@ -342,33 +343,38 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
           break;
       }
 
+      free_safe( tmpstr );
+
     } else if( (expr->op == EXP_OP_SBIT_SEL) || (expr->op == EXP_OP_PARAM_SBIT) ) {
 
       assert( expr->sig != NULL );
 
       if( expr->sig->name[0] == '#' ) {
-        tmpstr = (char*)malloc_safe( (strlen( expr->sig->name ) + 1), __FILE__, __LINE__ );
-        snprintf( tmpstr, (strlen( expr->sig->name ) + 1), "%s[", (expr->sig->name + 1) );
+        pname = scope_gen_printable( expr->sig->name + 1 );
       } else {
-        tmpstr = (char*)malloc_safe( (strlen( expr->name ) + 2), __FILE__, __LINE__ );
-        snprintf( tmpstr, (strlen( expr->name ) + 2), "%s[", expr->name );
+        pname = scope_gen_printable( expr->name );
       }
+
+      tmpstr = (char*)malloc_safe( (strlen( pname ) + 2), __FILE__, __LINE__ );
+      snprintf( tmpstr, (strlen( pname ) + 2), "%s[", pname );
 
       codegen_create_expr( code, code_depth, expr->line, tmpstr, left_code, left_code_depth, expr->left->line, "]", NULL, 0, 0, NULL );
 
       free_safe( tmpstr );
+      free_safe( pname );
 
     } else if( (expr->op == EXP_OP_MBIT_SEL) || (expr->op == EXP_OP_PARAM_MBIT) ) {
 
       assert( expr->sig != NULL );
 
       if( expr->sig->name[0] == '#' ) {
-        tmpstr = (char*)malloc_safe( (strlen( expr->sig->name ) + 1), __FILE__, __LINE__ );
-        snprintf( tmpstr, (strlen( expr->sig->name ) + 1), "%s[", (expr->sig->name + 1) );
+        pname = scope_gen_printable( expr->sig->name + 1 );
       } else {
-        tmpstr = (char*)malloc_safe( (strlen( expr->name ) + 2), __FILE__, __LINE__ );
-        snprintf( tmpstr, (strlen( expr->name ) + 2), "%s[", expr->name );
+        pname = scope_gen_printable( expr->name );
       }
+
+      tmpstr = (char*)malloc_safe( (strlen( pname ) + 2), __FILE__, __LINE__ );
+      snprintf( tmpstr, (strlen( pname ) + 2), "%s[", pname );
 
       if( ESUPPL_WAS_SWAPPED( expr->suppl ) ) {
         codegen_create_expr( code, code_depth, expr->line, tmpstr, right_code, right_code_depth, expr->right->line, ":",
@@ -379,40 +385,45 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
       }
 
       free_safe( tmpstr );
+      free_safe( pname );
 
     } else if( (expr->op == EXP_OP_MBIT_POS) || (expr->op == EXP_OP_PARAM_MBIT_POS) ) {
 
       assert( expr->sig != NULL );
 
       if( expr->sig->name[0] == '#' ) {
-        tmpstr = (char*)malloc_safe( (strlen( expr->sig->name ) + 1), __FILE__, __LINE__ );
-        snprintf( tmpstr, (strlen( expr->sig->name ) + 1), "%s[", (expr->sig->name + 1) );
+        pname = scope_gen_printable( expr->sig->name + 1 );
       } else {
-        tmpstr = (char*)malloc_safe( (strlen( expr->name ) + 2), __FILE__, __LINE__ );
-        snprintf( tmpstr, (strlen( expr->name ) + 2), "%s[", expr->name );
+        pname = scope_gen_printable( expr->name );
       }
+
+      tmpstr = (char*)malloc_safe( (strlen( pname ) + 2), __FILE__, __LINE__ );
+      snprintf( tmpstr, (strlen( pname ) + 2), "%s[", pname );
 
       codegen_create_expr( code, code_depth, expr->line, tmpstr, left_code, left_code_depth, expr->left->line, "+:",
                            right_code, right_code_depth, expr->right->line, "]" );
 
       free_safe( tmpstr );
+      free_safe( pname );
 
     } else if( (expr->op == EXP_OP_MBIT_NEG) || (expr->op == EXP_OP_PARAM_MBIT_NEG) ) {
 
       assert( expr->sig != NULL );
 
       if( expr->sig->name[0] == '#' ) {
-        tmpstr = (char*)malloc_safe( (strlen( expr->sig->name ) + 1), __FILE__, __LINE__ );
-        snprintf( tmpstr, (strlen( expr->sig->name ) + 1), "%s[", (expr->sig->name + 1) );
+        pname = scope_gen_printable( expr->sig->name + 1 );
       } else {
-        tmpstr = (char*)malloc_safe( (strlen( expr->name ) + 2), __FILE__, __LINE__ );
-        snprintf( tmpstr, (strlen( expr->name ) + 2), "%s[", expr->name );
+        pname = scope_gen_printable( expr->name );
       }
+
+      tmpstr = (char*)malloc_safe( (strlen( pname ) + 2), __FILE__, __LINE__ );
+      snprintf( tmpstr, (strlen( pname ) + 2), "%s[", pname );
 
       codegen_create_expr( code, code_depth, expr->line, tmpstr, left_code, left_code_depth, expr->left->line, "-:",
                            right_code, right_code_depth, expr->right->line, "]" );
 
       free_safe( tmpstr );
+      free_safe( pname );
 
     } else if( (expr->op == EXP_OP_FUNC_CALL) || (expr->op == EXP_OP_TASK_CALL) ) {
 
@@ -421,17 +432,19 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
       if( (tfunit = funit_find_by_id( expr->stmt->exp->id )) != NULL ) {
         after = (char*)malloc_safe( (strlen( tfunit->name ) + 1), __FILE__, __LINE__ );
         scope_extract_back( tfunit->name, after, user_msg );
+        pname = scope_gen_printable( after );
         if( (expr->op == EXP_OP_TASK_CALL) && (expr->left == NULL) ) {
           *code       = (char**)malloc_safe( sizeof( char* ), __FILE__, __LINE__ );
-          (*code)[0]  = strdup_safe( after, __FILE__, __LINE__ );
+          (*code)[0]  = strdup_safe( pname, __FILE__, __LINE__ );
           *code_depth = 1;
         } else {
-          tmpstr = (char*)malloc_safe( (strlen( after ) + 3), __FILE__, __LINE__ );
-          snprintf( tmpstr, (strlen( after ) + 3), "%s( ", after );
+          tmpstr = (char*)malloc_safe( (strlen( pname ) + 3), __FILE__, __LINE__ );
+          snprintf( tmpstr, (strlen( pname ) + 3), "%s( ", pname );
           codegen_create_expr( code, code_depth, expr->line, tmpstr, left_code, left_code_depth, expr->left->line, " )", NULL, 0, 0, NULL );
           free_safe( tmpstr );
         }
         free_safe( after );
+        free_safe( pname );
       } else {
         snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find statement %d in module %s's task/function list",
                   expr->stmt->exp->id, funit->name );
@@ -443,14 +456,16 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
       assert( expr->sig != NULL );
 
-      tmpstr = (char*)malloc_safe( (strlen( expr->name ) + 3), __FILE__, __LINE__ );
-      snprintf( tmpstr, (strlen( expr->name ) + 3), "->%s", expr->name );
+      pname  = scope_gen_printable( expr->name );
+      tmpstr = (char*)malloc_safe( (strlen( pname ) + 3), __FILE__, __LINE__ );
+      snprintf( tmpstr, (strlen( pname ) + 3), "->%s", pname );
 
       *code       = (char**)malloc_safe( sizeof( char* ), __FILE__, __LINE__ );
       (*code)[0]  = strdup_safe( tmpstr, __FILE__, __LINE__ );
       *code_depth = 1;
 
       free_safe( tmpstr );
+      free_safe( pname );
 
     } else if( expr->op == EXP_OP_DEFAULT ) {
 
@@ -742,6 +757,12 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.62  2006/02/06 05:07:26  phase1geo
+ Fixed expression_set_static_only function to consider static expressions
+ properly.  Updated regression as a result of this change.  Added files
+ for signed3 diagnostic.  Documentation updates for GUI (these are not quite
+ complete at this time yet).
+
  Revision 1.61  2006/02/03 23:49:38  phase1geo
  More fixes to support signed comparison and propagation.  Still more testing
  to do here before I call it good.  Regression may fail at this point.
