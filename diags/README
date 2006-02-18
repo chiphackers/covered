@@ -9,6 +9,13 @@ portions of Verilog code to verify that the Covered utility generates the correc
 coverage numbers for the specified design.
 
 
+What do I do now that I have untar'ed this package?
+---------------------------------------------------
+
+Simply move the main "diags" directory into the main covered directory that is associated
+with this release.
+
+
 How do I run a regression?
 --------------------------
 
