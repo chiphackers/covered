@@ -1,3 +1,489 @@
+2006-02-17 17:19  phase1geo
+
+	More updates to run script -- this is still not working exactly the
+	way that I would like it to but I may need to rethink the
+	diagnostic header stuff more.
+
+2006-02-17 13:50  phase1geo
+
+	Added full support for escaped names.  Full regression passes.
+
+2006-02-16 15:19  phase1geo
+
+	Adding support for arrays of instances.  Also fixing some memory
+	problems for constant functions and fixed binding problems when
+	hierarchical references are made to merged modules.  Full
+	regression now passes.
+
+2006-02-15 23:33  phase1geo
+
+	More additions to regression script.  Need to do lots of debugging.
+	 add1.v diagnostic contains initial support for new regression
+	style.
+
+2006-02-13 10:19  phase1geo
+
+	Code cleanup.
+
+2006-02-13 09:42  phase1geo
+
+	Adding support for NULL expressions in parameter override
+	expression lists.  In VCS, this simply skips overriding the Nth
+	parameter -- Covered does the same.  Full regression now passes.
+
+2006-02-13 08:23  phase1geo
+
+	Started work on Perl run script for regressions and single
+	diagnostic runs.
+
+2006-02-10 16:10  phase1geo
+
+	Added support for initially parsing files with the `line directive.
+	 Added diagnostic to verify this functionality.  Updated TODO. 
+	Full regression passes.
+
+2006-02-10 15:05  phase1geo
+
+	Added support for `elsif directive.  Diagnostics added to verify
+	functionality.	Full regression passes.
+
+2006-02-10 10:44  phase1geo
+
+	Adding support for register assignment.  Added diagnostic to
+	regression suite to verify its implementation.	Updated TODO.  Full
+	regression passes at this point.
+
+2006-02-10 00:57  phase1geo
+
+	Final updates to GUI documentation and images for current GUI.	All
+	GUI documentation has been verified to install correctly and
+	accurately reflects the current state of the GUI.  Whew!  Updated
+	TODO.  Cleaned up a bunch of unused GUI documentation files and
+	images.
+
+2006-02-09 21:08  phase1geo
+
+	More fixes to navigational buttons and adding functionality to
+	"Show current selection" menu item in view menu.  Now everything
+	seems to be working as wanted.	We should now be ready to finish
+	the GUI documentation.
+
+2006-02-09 17:23  phase1geo
+
+	Fixing more GUI bugs.  Added navigational menu items and put in
+	functional support for this navigation.  Things seem to be working
+	now for the most part.
+
+2006-02-09 08:23  phase1geo
+
+	Adding next and previous buttons to combinational logic detail
+	window.  Functionality not complete at this time.
+
+2006-02-08 17:34  phase1geo
+
+	Lots of enhancements and bug fixes to GUI.  Added next and previous
+	buttons in main window for finding uncovered metrics quickly
+	(although there is no functionality to these buttons currently).
+
+2006-02-08 07:54  phase1geo
+
+	Adding previous and next buttons to toggle window.  Added currently
+	selected cursor output to main textbox with associated
+	functionality.
+
+2006-02-07 21:57  phase1geo
+
+	Adding new signed diagnostics to test >, <, >=, <=, == and !=
+	operations on signed values.  Full regression passes at this point.
+
+2006-02-06 16:48  phase1geo
+
+	Several enhancements to GUI look and feel.  Fixed error in
+	combinational logic window.
+
+2006-02-06 09:35  phase1geo
+
+	Fixing bug with -f option when the file is empty (previously
+	segfaulted).
+
+2006-02-05 23:10  phase1geo
+
+	Adding *.png files for GUI documentation.
+
+2006-02-05 23:07  phase1geo
+
+	Fixed expression_set_static_only function to consider static
+	expressions properly.  Updated regression as a result of this
+	change.  Added files for signed3 diagnostic.  Documentation updates
+	for GUI (these are not quite complete at this time yet).
+
+2006-02-03 17:49  phase1geo
+
+	More fixes to support signed comparison and propagation.  Still
+	more testing to do here before I call it good.	Regression may fail
+	at this point.
+
+2006-02-02 21:11  phase1geo
+
+	Fixing errors in GUI display of combinational logic coverage.  I
+	still see a few problems here that need to be taken care of,
+	however.
+
+2006-02-02 16:36  phase1geo
+
+	Starting to put in support for signed values and inline register
+	initialization.  Also added support for more attribute locations in
+	code.  Regression updated for these changes.  Interestingly, with
+	the changes that were made to the parser, signals are output to
+	reports in order (before they were completely reversed).  This is a
+	nice surprise...  Full regression passes.
+
+2006-02-01 23:42  phase1geo
+
+	Adding missing documentation and image files from last checkin.
+
+2006-02-01 23:40  phase1geo
+
+	Several documentation updates as well as added help buttons to
+	preferences and summary windows.
+
+2006-02-01 14:42  phase1geo
+
+	Adding more diagnostics to regression suite.  Full regression
+	passes.
+
+2006-02-01 13:58  phase1geo
+
+	More updates to allow parsing of various parameter formats.  At
+	this point I believe full parameter support is functional. 
+	Regression has been updated which now completely passes.  A few new
+	diagnostics have been added to the testsuite to verify additional
+	functionality that is supported.
+
+2006-02-01 09:13  phase1geo
+
+	Added support for handling bit selections in RHS parameter
+	calculations.  New mbit_sel5.4 diagnostic added to verify this
+	change.  Added the start of a regression utility that will
+	eventually replace the old Makefile system.
+
+2006-01-31 10:40  phase1geo
+
+	Adding initial support and diagnostics for the variable multi-bit
+	select operators +: and -:.  More to come but full regression
+	passes.
+
+2006-01-30 00:03  phase1geo
+
+	Documentation updates for LXT dumpfile option and Verilog-2001
+	supported constructs.
+
+2006-01-28 00:42  phase1geo
+
+	Added configuration read/write functionality for tool preferences
+	and integrated the preferences.tcl file into Covered's GUI.  This
+	is now functioning correctly.
+
+2006-01-27 21:04  phase1geo
+
+	Updating Makefile.in in scripts directory to include the
+	preferences.tcl file.
+
+2006-01-27 17:46  phase1geo
+
+	Adding initial preferences window.  Looks good at this point but we
+	still need to properly tie this into the main program.
+
+2006-01-27 09:43  phase1geo
+
+	Added ifdefs for HAVE_ZLIB define to allow Covered to compile
+	correctly when zlib.h and associated library is unavailable.  Also
+	handle dumpfile reading appropriately for this condition.  Moved
+	report file opening after the CDD file has been read in to avoid
+	empty report files when a problem is detected in the CDD file.
+
+2006-01-27 08:19  phase1geo
+
+	Updating configuration files.
+
+2006-01-26 17:43  phase1geo
+
+	Fixing coredump problem when we have a problem reading the LXT
+	file.
+
+2006-01-26 17:20  phase1geo
+
+	Reworking diagnostic Makefiles to include the ability to test LXT
+	support in regressions.
+
+2006-01-26 16:40  phase1geo
+
+	Fixing last LXT bug.
+
+2006-01-26 11:34  phase1geo
+
+	Finished work on lxt2_read.c and fixed bug in LXT-based simulator. 
+	Also adding missing lxt.h header file.
+
+2006-01-26 00:07  phase1geo
+
+	Build updates.
+
+2006-01-26 00:06  phase1geo
+
+	Starting to work on formatting the lxt2_read file and improving
+	error output to conform to Covered's error-reporting mechanism.
+
+2006-01-25 16:48  phase1geo
+
+	Updating TODO status.
+
+2006-01-25 16:13  phase1geo
+
+	Adding LXT-style dumpfile parsing support.  Everything is wired in
+	but I still need to look at a problem at the end of the dumpfile --
+	I'm getting coredumps when using the new -lxt option.  I also need
+	to disable LXT code if the z library is missing along with
+	documenting the new feature in the user's guide and man page.
+
+2006-01-25 10:51  phase1geo
+
+	Fixing performance/output issue with hierarchical references. 
+	Added support for hierarchical references to parser.  Full
+	regression passes.
+
+2006-01-24 22:33  phase1geo
+
+	Updating TODO.
+
+2006-01-24 22:32  phase1geo
+
+	Fixing bug with latest checkins.  Full regression is now passing
+	for IV simulated diagnostics.
+
+2006-01-24 17:33  phase1geo
+
+	A few cleanups.
+
+2006-01-24 17:24  phase1geo
+
+	More updates to handle static functions properly.  I have redone
+	quite a bit of code here which has regressions pretty broke at the
+	moment.  More work to do but I'm checkpointing.
+
+2006-01-23 16:57  phase1geo
+
+	Updating TODO file.
+
+2006-01-23 16:55  phase1geo
+
+	Updates to fix constant function support.  There is some issues to
+	resolve here but full regression is passing with the exception of
+	the newly added static_func1.1 diagnostic.  Fixed problem where
+	expand and multi-bit expressions were getting coverage numbers
+	calculated for them before they were simulated.
+
+2006-01-23 11:23  phase1geo
+
+	Fixing scope issues that came up when port assignment was added. 
+	Full regression now passes.
+
+2006-01-22 21:53  phase1geo
+
+	Adding support for input/output ports of tasks/functions. 
+	Regressions are not running cleanly at this point so there is still
+	some work to do here.  Checkpointing.
+
+2006-01-20 16:50  phase1geo
+
+	Code cleanup.
+
+2006-01-20 16:44  phase1geo
+
+	Moving parameter resolution to post-bind stage to allow static
+	functions to be considered.  Regression passes without static
+	function testing.  Static function support still has some work to
+	go.  Checkpointing.
+
+2006-01-20 13:27  phase1geo
+
+	Fixing compile warning.
+
+2006-01-20 13:15  phase1geo
+
+	Fixed bug to properly handle the scoping of parameters when
+	parameters are created/used in non-module functional units.  Added
+	param10*.v diagnostics to regression suite to verify the behavior
+	is correct now.
+
+2006-01-19 23:52  phase1geo
+
+	Adding new diagnostic to test suite to test parameter usage
+	situation that has not been tested to this point.
+
+2006-01-19 17:29  phase1geo
+
+	Fixing bug from last checkin in tcl_funcs.c (infinite looping). 
+	Small updates to menu.
+
+2006-01-19 17:08  phase1geo
+
+	Adding line and starting column information to vsignal structure
+	(and associated CDD files).  Regression has been fully updated for
+	this change which now fully passes.  Final changes to summary GUI. 
+	Fixed signal underlining for toggle coverage to work for both
+	explicit and implicit signals.	Getting things ready for a
+	preferences window.
+
+2006-01-18 18:01  phase1geo
+
+	Lots of changes/additions.  Summary report window work is now
+	complete (with the exception of adding extra features).  Added
+	support for parsing left and right shift operators and the exponent
+	operator in static expression scenarios.  Fixed issues related to
+	GUI (due to recent changes in the score command).  Things seem to
+	be generally working as expected with the GUI now.
+
+2006-01-17 23:39  phase1geo
+
+	More updates to summary.tcl.  Still not there yet.
+
+2006-01-17 17:38  phase1geo
+
+	Adding very beginning of a summary window.  This is totally
+	incomplete at this point.
+
+2006-01-17 17:08  phase1geo
+
+	Updating VCS version of regression per last weeks changes.  Full
+	regression now passes.
+
+2006-01-16 12:10  phase1geo
+
+	Causing all error information to get sent to stderr no matter what
+	mode we are in.  Updating error diagnostics for this change.  Full
+	regression now passes.
+
+2006-01-16 11:27  phase1geo
+
+	Fixing binding issues when designs have modules/tasks/functions
+	that are either used more than once in a design or have the same
+	name.  Full regression now passes.
+
+2006-01-13 22:17  phase1geo
+
+	Adding is_func_unit function to check to see if a -e value is a
+	valid module, function, task or named begin/end block.	Updated
+	regression accordingly.  We are getting closer but still have a few
+	diagnostics to figure out yet.
+
+2006-01-13 17:27  phase1geo
+
+	Initial attempt to fix problem with handling functions/tasks/named
+	blocks with the same name in the design.  Still have a few
+	diagnostics failing in regressions to contend with.  Updating
+	regression with these changes.
+
+2006-01-13 07:42  phase1geo
+
+	Added task4 diagnostic to recreate bug found in the field.
+
+2006-01-12 22:01  phase1geo
+
+	Adding support for exponential operation.  Added exponent1
+	diagnostic to verify but Icarus does not support this currently.
+
+2006-01-12 17:14  phase1geo
+
+	Added test to verify defparam overridding of localparams cannot
+	occur.	Updated TODO file to list which Verilog-2001 constructs are
+	currently supported.  Full regression passes.
+
+2006-01-12 16:52  phase1geo
+
+	Adding support for localparam construct.  Added tests to regression
+	suite to verify correct functionality.	Full regression passes.
+
+2006-01-12 16:14  phase1geo
+
+	Completed code for handling parameter value pass by name
+	Verilog-2001 syntax.  Added diagnostics to regression suite and
+	updated regression files for this change.  Full regression now
+	passes.
+
+2006-01-11 13:57  phase1geo
+
+	Added diagnostics to verify proper handling of inline parameters,
+	inline port declarations and added is_signed bit to vector
+	supplemental field (though we still do not handle signed values
+	appropriately).
+
+2006-01-11 13:50  phase1geo
+
+	Added diagnostics to verify proper handling of inline parameters,
+	inline port declarations and added is_signed bit to vector
+	supplemental field (though we still do not handle signed values
+	appropriately).
+
+2006-01-10 23:38  phase1geo
+
+	Fixing Verilog-2001 inline port declaration.  This now seems to be
+	working properly.  Started adding support for register assignment
+	to inline port declaration -- not finished yet but can parse.
+
+2006-01-10 17:13  phase1geo
+
+	Completed support for implicit event sensitivity list.	Added
+	diagnostics to verify this new capability.  Also started support
+	for parsing inline parameters and port declarations (though this is
+	probably not complete and not passing at this point). 
+	Checkpointing.
+
+2006-01-09 23:56  phase1geo
+
+	In the middle of adding support for event sensitivity lists to
+	score command.	Regressions should pass but this code is not
+	complete at this time.
+
+2006-01-09 23:18  phase1geo
+
+	Adding ashift2 diagnostic to regression suite to verify report
+	output of arithmetic shift operations.
+
+2006-01-09 23:12  phase1geo
+
+	Added arithmetic left and right shift operators.  Added ashift1
+	diagnostic to verify their correct operation.
+
+2006-01-09 13:00  phase1geo
+
+	Updating NEWS file for cleanup function adds.
+
+2006-01-09 12:58  phase1geo
+
+	Updating regression for VCS runs.  Added cleanup function at exit
+	to remove the tmp* file (if it exists) regardless of the internal
+	state of Covered at the time of exit (removes the need for the user
+	to remove this file when things go awry).  Documentation updates
+	for this feature.
+
+2006-01-09 00:11  phase1geo
+
+	Adding -S option documentation to man page for score command.
+
+2006-01-09 00:08  phase1geo
+
+	More documentation updates for release dates.
+
+2006-01-09 00:01  phase1geo
+
+	Updating NEWS for the next release.
+
+2006-01-08 23:20  phase1geo
+
+	Updates for next development release of Covered.  Still need to run
+	vcs regression and update these files before we can fully release.
+
 2006-01-08 22:52  phase1geo
 
 	Updating regression.  Full regression now passes.

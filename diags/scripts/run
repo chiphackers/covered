@@ -14,7 +14,6 @@ $gflag         = "-Q";
 %groups_plus   = ();
 %groups_minus  = ();
 %groups_to_run = ();
-%comp_cmds     = ();
 %sim_cmds      = ();
 %score_cmds    = ();
 %score_output  = ();
@@ -89,37 +88,28 @@ sub parse_cmd {
 
   my $line = $_[0];
   my $run, $cmd;
-  my $group_list, $cmd_list, $output, @list;
+  my $prereq_list, $cmd_list, $output, @list;
 
   # Split line based on the colon character
-  ($group_list,$cmd_list,$output) = split( /:/, $line );
+  ($prereq_list,$cmd_list,$output) = split( /:/, $line );
 
-  # Parse group list
-  @list = split( /\s+/, $group_list );
+  # Parse prerequisite list
+  @list = split( /\s+/, $prereq_list );
   $run  = 1;
   $cmd  = shift( @list );
 
-  if( $cmd eq "COMP" ) {
-    $comp_cmds{" @list "}     = "$cmd_list;";
-  } elsif( $cmd eq "SIM" ) {
+  if( $cmd eq "SIM" ) {
     $sim_cmds{" @list "}      = "$cmd_list;";
+    $sim_output{"@list"}    = $output;
   } elsif( $cmd eq "SCORE" ) {
-    $score_cmds{" @list "}    = "$covered $gflags score $cmd_list;";
-    $score_output{" @list "}  = $output;
+    $score_cmds{" @list "}    = "$covered $gflag score $cmd_list;";
+    $score_output{"@list"}  = $output;
   } elsif( $cmd eq "MERGE" ) {
-    if( $merge_set == 0 ) {
-      %merge_cmds = ();
-      $merge_set  = 1;
-    }
-    $merge_cmds{" @list "}    = "$covered $gflags merge $cmd_list;";
-    $merge_output{" @list "}  = $output;
+    $merge_cmds{" @list "}    = "$covered $gflag merge $cmd_list;";
+    $merge_output{"@list"}  = $output;
   } elsif( $cmd eq "REPORT" ) {
-    if( $report_set == 0 ) {
-      %report_cmds = ();
-      $report_set  = 1;
-    }
-    $report_cmds{" @list "}   = "$covered $gflags report $cmd_list;";
-    $report_output{" @list "} = $output;
+    $report_cmds{" @list "}   = "$covered $gflag report $cmd_list;";
+    $report_output{"@list"} = $output;
   } else {
     $run = 0;
   }
@@ -151,7 +141,6 @@ sub read_diag_info {
 
   # Clear global variables
   %groups_to_run = ();
-  %comp_cmds     = ();
   %sim_cmds      = ();
   %score_cmds    = ();
   %score_output  = ();
@@ -192,69 +181,55 @@ sub read_diag_info {
 
 }
 
-sub contains_minus_group {
-
-  my $key = $_[0];
-  my $group, $retval;
-
-  $retval = 0;
-
-  foreach $group (keys( %groups_minus )) {
-    if( index( $key, " ${group} " ) != -1 ) {
-      $retval = 1;
-    }
-  }
-
-  print "key ${key} contains a minus group\n";
-
-  return( $retval );
-
-}
-
 sub run_current_diag {
 
   my $diag_name = $_[0];
   my $group, $cmd, $error, $ran;
-  my $comp, $sim, $score, $merge, $report;
+  my $sim, $score, $merge, $report;
   my %commands = ();
 
   $ran = 0;
 
-  if( keys( %groups_to_run ) > 0 ) {
+  @prereqs = keys( %groups_to_run );
 
-    $ran = 1;
-    print "Running $diag_name\n";
+  $run = 0;
+  foreach $sim (keys( %sim_cmds )) {
+    foreach $prereq (@prereqs) {
+    if( index( $sim, " ${prereq} " ) != -1 ) {
+      $run = 1;
+    }
+  }
+    if( $sim_cmds{$sim}
+    foreach $prereq (keys( &prereqs )) {
+      if( index( $sim, 
 
-    # Put together all combinations of possible commands
-    foreach $group (keys( %groups_to_run )) {
-      foreach $comp (keys( %comp_cmds )) {
-        if( (index( $comp, " ${group} " ) != -1) && (&contains_minus_group( $comp ) == 0) ) {
-          foreach $sim (keys( %sim_cmds )) {
-            if( (index( $sim, " ${group} " ) != -1) && (&contains_minus_group( $sim ) == 0) ) {
-              foreach $score (keys( %score_cmds )) {
-                if( (index( $score, " ${group} " ) != -1) && (&contains_minus_group( $score ) == 0) ) {
-                  foreach $merge (keys( %merge_cmds )) {
-                    if( (index( $merge, " ${group} " ) != -1) && (&contains_minus_group( $merge ) == 0) ) {
-                      foreach $report (keys( %report_cmds )) {
-                        if( (index( $report, " ${group} " ) != -1) && (&contains_minus_group( $report ) == 0) ) {
-                          $cmd = "${comp_cmds{$comp}} ${sim_cmds{$sim}} ${score_cmds{$score}} ${merge_cmds{$merge}} ${report_cmds{$report}}";
-                          print "cmd: $cmd";
-                          if( $commands{$cmd} eq "" ) {
-                            $commands{$cmd} = 1;
-                            $error = system( "$cmd" );
-                            if( ($error == 0) && ($score_output{$score} ne "") ) {
-                              $error = system( "diff ${score_output{$score}} ${score_output{$score}}.diag" );
-                            }
-                            if( ($error == 0) && ($merge_output{$merge} ne "") ) {
-                              $error = system( "diff ${merge_output{$merge}} ${merge_output{$merge}}.diag" );
-                            }
-                            if( ($error == 0) && ($report_output{$merge} ne "") ) {
-                              $error = system( "diff ${report_output{$report}} ${report_output{$report}}.diag" );
-                            }
-                            if( $error != 0 ) {
-                              return( 1, 1, $cmd );
-                            }
-                          }
+  # Put together all combinations of possible commands
+  foreach $group (keys( %groups_to_run )) {
+      foreach $sim (keys( %sim_cmds )) {
+        if( (index( $sim, " ${group} " ) != -1) && (&contains_minus_group( $sim ) == 0) ) {
+          foreach $score (keys( %score_cmds )) {
+            if( (index( $score, " ${group} " ) != -1) && (&contains_minus_group( $score ) == 0) ) {
+              foreach $merge (keys( %merge_cmds )) {
+                if( (index( $merge, " ${group} " ) != -1) && (&contains_minus_group( $merge ) == 0) ) {
+                  foreach $report (keys( %report_cmds )) {
+                    if( (index( $report, " ${group} " ) != -1) && (&contains_minus_group( $report ) == 0) ) {
+                      $cmd = "${sim_cmds{$sim}} ${score_cmds{$score}} ${merge_cmds{$merge}} ${report_cmds{$report}}";
+                      if( $commands{$cmd} eq "" ) {
+                        $commands{$cmd} = 1;
+                        print "cmd: $cmd";
+                        $error = system( "$cmd" );
+                        if( ($error == 0) && ($score_output{$score} ne "") ) {
+                          print "Checking for differences with ${score_output{$score}}\n";
+                          $error = system( "diff ${score_output{$score}} ${score_output{$score}}.diag" );
+                        }
+                        if( ($error == 0) && ($merge_output{$merge} ne "") ) {
+                          $error = system( "diff ${merge_output{$merge}} ${merge_output{$merge}}.diag" );
+                        }
+                        if( ($error == 0) && ($report_output{$merge} ne "") ) {
+                          $error = system( "diff ${report_output{$report}} ${report_output{$report}}.diag" );
+                        }
+                        if( $error != 0 ) {
+                          return( 1, 1, $cmd );
                         }
                       }
                     }
@@ -266,7 +241,6 @@ sub run_current_diag {
         }
       }
     }
-
   }
 
   return( ($ran, 0, "") );
@@ -281,7 +255,7 @@ sub run_diags {
 
   while( $file = readdir( VDIR ) ) {
     chomp( $file );
-    if( $file =~ /(.*)\.v/ ) {
+    if( $file =~ /(.*)\.v$/ ) {
       $diag_name = $1;
       $run = &read_diag_info( "$diag_name.v" );
       if( $run == 1 ) {

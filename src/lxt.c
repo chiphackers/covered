@@ -61,6 +61,8 @@ void vcd_callback(struct lxt2_rd_trace **lt, lxtint64_t *pnt_time, lxtint32_t *p
 
   struct lxt2_rd_geometry *g = lxt2_rd_get_fac_geometry( *lt, *pnt_facidx );
 
+  printf( "In vcd_callback, vcd_prevtime: %lld, pnt_time: %lld\n", vcd_prevtime, *pnt_time );
+
   /* If this is a new timestamp, perform a simulation */
   if( vcd_prevtime != *pnt_time ) {
     if( vcd_prevtime >= 0 ) {
@@ -215,6 +217,13 @@ void lxt_parse( char* lxt_file ) {
 
 /*
  $Log$
+ Revision 1.4  2006/01/27 15:43:57  phase1geo
+ Added ifdefs for HAVE_ZLIB define to allow Covered to compile correctly when
+ zlib.h and associated library is unavailable.  Also handle dumpfile reading
+ appropriately for this condition.  Moved report file opening after the CDD file
+ has been read in to avoid empty report files when a problem is detected in the
+ CDD file.
+
  Revision 1.3  2006/01/26 22:40:13  phase1geo
  Fixing last LXT bug.
 

@@ -1,6 +1,71 @@
 Covered-Related NEWS
 ====================
 
+    * 2/18/2006
+
+Development release covered-20060218 made.  A lot of work has gone into adding a lot more Verilog-2001
+support, added Verilog-1995 support, GUI improvements/fixes, user documentation additions/updates,
+adding LXT dumpfile support and the usual bug fixes.  I have also removed the diagnostic directory from
+the Covered tarball and am making it available as its own tarball since it is growing by leaps and bounds
+these days.   The following is a list of the changes in this release from the past release.
+
+  - Added support for the following Verilog 2001 constructs:
+    - `ifndef, `elsif and `line preprocessor directives
+    - Constant function support
+    - Explicitly named parameter overrides
+    - Correct support for localparam
+    - Implicit (wildcard) sensitivity lists (@*)
+    - Support for signed values (integers are now treated as signed values) and proper handling of
+      signed expressions
+    - Immediate register assignment (ex. reg a = 1'b0)
+    - Variable multi-bit selects (ex. a[b+:10] or a[b-:2])
+    - Exponential power operator (**)
+    - Arithmetic shift operators (>>> and <<<)
+    - Inline parameters (i.e., parameters placed before a module port list)
+    - Inline port declarations (ex.  module foo ( input wire [1:0] a, ... );)
+    - "Null" parameter overrides (ex.  foo #(0,,2) bar (...);)
+    - Arrays of instances
+    - Added more support for attribute locations
+  - Added support for using LXT/LXT2 -style dumpfiles instead of just VCD files
+  - Fixing bug to properly bind to the appropriate task, function or named block when there
+    are two or more of this functional units with the same name.
+  - Changed all error information to get sent to stderr regardless of the output mode we are in
+  - Added left shift, right shift, exponential power, and constant function call operators to list
+    of valid operators to be used in constant expressions.
+  - Fixed bug for resolving parameter values that are used in tasks, functions or named blocks but
+    are not declared there (they are declared in the parent module).
+  - Added full support for hierarchical referencing
+  - Added full support for escaped names (ex. wire \some_name[0] ;)
+  - Added support for performing bit selection on RHS of parameter assignments
+  - Added full support for sizing parameters (ex. "parameter [2:0] foo = 0;")
+  - Fixed ASCII report output to display uncovered toggle signals in line order (this was inverted
+    for some reason).
+  - Fixed bug in score command-line parser to not segfault if file given in -f option is empty
+  - Fixed several bugs in GUI
+  - Added additional features for report GUI
+    - Added summary report window with ability to see modules/instances ordered by coverage
+      percentage for a given metric in either increasing or decreasing order (coverage information
+      is also color-coded to make it easy to tell which modules are "fully covered", "covered well
+      enough", or "not covered well enough").
+    - Added preferences window and removed preferences menu -- improved method of color selection
+      and added a coverage "good enough" selector used in the summary window
+    - Changed toggle coverage source code browser to only underline one instance of an uncovered
+      signal (this position is first implicit or explicit declaration of the signal) to improve
+      readability.
+    - Added configuration file read/write support for storage of Covered's preferences
+    - Added help buttons to toggle detail, combinational logic detail, preferences and summary window
+      to allow online help pages to be displayed for the current window
+    - Added GUI online help pages for toggle window, combinational logic window, preferences window
+      and summary window as well as updated all out-of-date information.
+    - Added navigational GUI elements to help the user find the next/previous uncovered line from any
+      window.  Also added a search GUI element for finding any string in the source code window.
+  - Updates to user guide and development documentaiton to bring things up-to-date.
+
+  In summary, there have been lots of features added to both the score command and GUI report tool.
+  The CDD files generated from this release are not backward compatible with older releases.  I plan
+  to make this version the next stable release once it has had some more test time applied to it.
+  So please submit those bugs!
+
     * 1/9/2006
 
 Development release covered-20060109 made.  It has been almost a year since the last development
