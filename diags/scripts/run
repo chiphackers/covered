@@ -13,7 +13,7 @@ $covered = "../../src/covered";
 $gflag         = "-Q";
 %groups_plus   = ();
 %groups_minus  = ();
-%groups_to_run = ();
+@groups_to_run = ();
 %sim_cmds      = ();
 %score_cmds    = ();
 %score_output  = ();
@@ -66,19 +66,14 @@ sub parse_groups {
 
   my @line = split( /\s+/, $_[0] );
   my $run  = 0;
+  my $group;
 
   foreach $group (@line) {
-    if( ($groups_plus{$group} eq "1") && ($groups_minus{$group} eq "") ) {
-      $groups_to_run{$group} = 1;
+    if( $groups_plus{$group} ne "" ) {
+      $groups_to_run[@groups_to_run] = $group;
       $run = 1;
     }
   }
-
-  @groups = keys( %groups_to_run );
-  $merge_cmds{" @groups "}  = "";
-  $merge_set                = 0;
-  $report_cmds{" @groups "} = "";
-  $report_set               = 0;
 
   return( $run );
 
@@ -93,22 +88,27 @@ sub parse_cmd {
   # Split line based on the colon character
   ($prereq_list,$cmd_list,$output) = split( /:/, $line );
 
+  # Remove unnecessary spaces from cmd_list
+  $cmd_list =~ s/^ +//g;
+  $cmd_list =~ s/; +/; /g;
+  $cmd_list =~ s/ +$//g;
+
   # Parse prerequisite list
   @list = split( /\s+/, $prereq_list );
   $run  = 1;
   $cmd  = shift( @list );
 
   if( $cmd eq "SIM" ) {
-    $sim_cmds{" @list "}      = "$cmd_list;";
+    $sim_cmds{"@list"}      = "$cmd_list;";
     $sim_output{"@list"}    = $output;
   } elsif( $cmd eq "SCORE" ) {
-    $score_cmds{" @list "}    = "$covered $gflag score $cmd_list;";
+    $score_cmds{"@list"}    = "$covered $gflag score $cmd_list;";
     $score_output{"@list"}  = $output;
   } elsif( $cmd eq "MERGE" ) {
-    $merge_cmds{" @list "}    = "$covered $gflag merge $cmd_list;";
+    $merge_cmds{"@list"}    = "$covered $gflag merge $cmd_list;";
     $merge_output{"@list"}  = $output;
   } elsif( $cmd eq "REPORT" ) {
-    $report_cmds{" @list "}   = "$covered $gflag report $cmd_list;";
+    $report_cmds{"@list"}   = "$covered $gflag report $cmd_list;";
     $report_output{"@list"} = $output;
   } else {
     $run = 0;
@@ -140,7 +140,7 @@ sub read_diag_info {
   my $in_header, $in_output, $name;
 
   # Clear global variables
-  %groups_to_run = ();
+  @groups_to_run = ();
   %sim_cmds      = ();
   %score_cmds    = ();
   %score_output  = ();
@@ -156,7 +156,7 @@ sub read_diag_info {
     if( ($in_header == 0) && ($in_output == 0) ) {
       if( $line =~ /^\s*\/\*\s*HEADER/ ) {
         $in_header = 1;
-      } elsif( $line =~ /^\s*\/\*\s*OUTPUT\s+(\w+)/ ) {
+      } elsif( $line =~ /^\s*\/\*\s*OUTPUT\s+(.*)/ ) {
         $name      = $1;
         $in_output = 1;
         open( OFILE, ">${name}.diag" );
@@ -181,64 +181,101 @@ sub read_diag_info {
 
 }
 
+sub prereqs_contain_a_minus {
+
+  my @prereqs = split( /\s+/, $_[0] );
+  my $prereq, $a_minus;
+
+  $a_minus = 0;
+  foreach $prereq (@prereqs) {
+    if( $groups_minus{$prereq} ne "" ) {
+      $a_minus = 1;
+    }
+  }
+
+  return( $a_minus )
+
+}
+
 sub run_current_diag {
 
   my $diag_name = $_[0];
-  my $group, $cmd, $error, $ran;
-  my $sim, $score, $merge, $report;
-  my %commands = ();
+  my $output_to_rm = "";
+  my $prereqs, $prereq, $ran, %cmds, %output, $i, $error;
 
-  $ran = 0;
+  $ran   = 0;
+  $error = 0;
 
-  @prereqs = keys( %groups_to_run );
+  # Initialize prerequisites with the specified groups to run
+  $prereqs = join( " ", @groups_to_run );
 
-  $run = 0;
-  foreach $sim (keys( %sim_cmds )) {
-    foreach $prereq (@prereqs) {
-    if( index( $sim, " ${prereq} " ) != -1 ) {
-      $run = 1;
+  # Run diagnostic
+  for( $i=0; $i<4; $i++ ) {
+
+    if( $i == 0 ) {             # Compilation/simulation
+      %cmds    = %sim_cmds;
+      %output  = %sim_output;
+    } elsif( $i == 1 ) {        # Score
+      %cmds    = %score_cmds;
+      %output  = %score_output;
+    } elsif( $i == 2 ) {        # Merge
+      %cmds    = %merge_cmds;
+      %output  = %merge_output;
+    } elsif( $i == 3 ) {        # Report
+      %cmds    = %report_cmds;
+      %output  = %report_output;
     }
-  }
-    if( $sim_cmds{$sim}
-    foreach $prereq (keys( &prereqs )) {
-      if( index( $sim, 
 
-  # Put together all combinations of possible commands
-  foreach $group (keys( %groups_to_run )) {
-      foreach $sim (keys( %sim_cmds )) {
-        if( (index( $sim, " ${group} " ) != -1) && (&contains_minus_group( $sim ) == 0) ) {
-          foreach $score (keys( %score_cmds )) {
-            if( (index( $score, " ${group} " ) != -1) && (&contains_minus_group( $score ) == 0) ) {
-              foreach $merge (keys( %merge_cmds )) {
-                if( (index( $merge, " ${group} " ) != -1) && (&contains_minus_group( $merge ) == 0) ) {
-                  foreach $report (keys( %report_cmds )) {
-                    if( (index( $report, " ${group} " ) != -1) && (&contains_minus_group( $report ) == 0) ) {
-                      $cmd = "${sim_cmds{$sim}} ${score_cmds{$score}} ${merge_cmds{$merge}} ${report_cmds{$report}}";
-                      if( $commands{$cmd} eq "" ) {
-                        $commands{$cmd} = 1;
-                        print "cmd: $cmd";
-                        $error = system( "$cmd" );
-                        if( ($error == 0) && ($score_output{$score} ne "") ) {
-                          print "Checking for differences with ${score_output{$score}}\n";
-                          $error = system( "diff ${score_output{$score}} ${score_output{$score}}.diag" );
-                        }
-                        if( ($error == 0) && ($merge_output{$merge} ne "") ) {
-                          $error = system( "diff ${merge_output{$merge}} ${merge_output{$merge}}.diag" );
-                        }
-                        if( ($error == 0) && ($report_output{$merge} ne "") ) {
-                          $error = system( "diff ${report_output{$report}} ${report_output{$report}}.diag" );
-                        }
-                        if( $error != 0 ) {
-                          return( 1, 1, $cmd );
-                        }
-                      }
-                    }
-                  }
-                }
+    @prereq_list = split( /\s+/, $prereqs );
+
+    foreach $prereq (@prereq_list) {
+      foreach $cmd (keys( %cmds )) {
+        if( (index( " ${cmd} ", " ${prereq} " ) != -1) && (&prereqs_contain_a_minus( $cmd ) == 0) ) {
+          $found_cmd = 0;
+          foreach $cmdline (keys( %cmdlines )) {
+            if( (index( " $cmdlines{$cmdline} ", " $prereq ") != -1) && ($found == 0) ) {
+              $cmdlines_to_run{$cmdline} = 0;
+              foreach $outfile (split( /\s+/, $output{$cmd} )) {
+                $cmdlines{"$cmdline $cmds{$cmd}"}        = $outfile;
+                $cmdlines_to_run{"$cmdline $cmds{$cmd}"} = 1;
+                $output_files{$outfile}                  = 1;
               }
+              $found_cmd = 1;
             }
           }
+          if( $found_cmd == 0 ) {
+            foreach $outfile (split( /\s+/, $output{$cmd} )) {
+              $cmdlines{"$cmds{$cmd}"}        = $outfile;
+              $cmdlines_to_run{"$cmds{$cmd}"} = 1;
+              $output_files{$outfile}         = 1;
+            }
+          }
+          $prereqs = join( " ", $prereqs, $output{$cmd} );
         }
+      }
+    }
+
+  }
+
+  # Run each command-line
+  foreach $cmdline (keys( %cmdlines_to_run )) {
+    if( $cmdlines_to_run{$cmdline} == 1 ) {
+      print "COMMAND: $cmdline\n";
+      $error = system( "$cmdline" );
+      $ran   = 1;
+      if( $error == 0 ) {
+        foreach $outfile (keys( %output_files )) {
+          if( -e "$outfile.diag" ) {
+            $error = system( "diff ${outfile} ${outfile}.diag" );
+          }
+          if( $error == 0 ) {
+            system( "rm -f ${outfile}" );
+          } else {
+            return( 1, 1, "diff ${outfile} ${outfile}.diag" );
+          }
+        }
+      } else {
+        return( 1, 1, $cmdline );
       }
     }
   }
@@ -262,7 +299,7 @@ sub run_diags {
         ($ran, $failed, $failing_cmd) = &run_current_diag( "$diag_name.v" );
         if( $ran == 1 ) {
           if( $failed == 1 ) {
-            $failed_diags[@failed_diags] = "$diag_name  $failing_cmd";
+            $failed_diags[@failed_diags] = "$diag_name  ($failing_cmd)";
           } else {
             $passed_diags[@passed_diags] = $diag_name;
           }
