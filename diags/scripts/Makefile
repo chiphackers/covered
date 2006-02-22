@@ -1,7 +1,31 @@
+ifndef DIAGNAME
+DIAGNAME = test
+endif
+
+ifndef DIAGTYPE
+DIAGTYPE = diags1
+endif
+
 -include ../regress/Makefile
 
 convert: convert_diags1 convert_diags2 convert_diags3 convert_diags4 convert_merge1 convert_racelist \
          convert_errscore convert_errreport convert_ivonly convert_vcsonly
+
+new:
+	./gen_test $(DIAGNAME)
+	cp $(DIAGNAME).v ../verilog/$(DIAGNAME).v
+	touch ../cdd/$(DIAGNAME).cdd
+	touch ../rpt/$(DIAGNAME).rptM
+	touch ../rpt/$(DIAGNAME).rptWM
+	touch ../rpt/$(DIAGNAME).rptI
+	touch ../rpt/$(DIAGNAME).rptWI
+	./convert $(DIAGNAME) $(DIAGTYPE) 
+	rm ../regress/$(DIAGNAME).cfg
+	rm ../cdd/$(DIAGNAME).cdd
+	rm ../rpt/$(DIAGNAME).rptM
+	rm ../rpt/$(DIAGNAME).rptWM
+	rm ../rpt/$(DIAGNAME).rptI
+	rm ../rpt/$(DIAGNAME).rptWI
 
 convert_diags1: $(DIAGS1)
 

@@ -7,7 +7,15 @@
 $diag_name = $ARGV[0];
 $diag_type = $ARGV[1];
 
+# Read in all pertinent files
 &read_in_files;
+
+# If this is a new diagnostic, create a bit value for it now
+if( $diag{$diag_name} == 0x2 ) {
+  $diag{$diag_name} = 0xff;
+}
+
+# Generate the new diagnostic file
 &create_new_files( $diag_name, $diag_type );
 
 sub get_cfg {
