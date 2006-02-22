@@ -14,11 +14,11 @@ convert: convert_diags1 convert_diags2 convert_diags3 convert_diags4 convert_mer
 new:
 	./gen_test $(DIAGNAME)
 	cp $(DIAGNAME).v ../verilog/$(DIAGNAME).v
-	touch ../cdd/$(DIAGNAME).cdd
-	touch ../rpt/$(DIAGNAME).rptM
-	touch ../rpt/$(DIAGNAME).rptWM
-	touch ../rpt/$(DIAGNAME).rptI
-	touch ../rpt/$(DIAGNAME).rptWI
+	echo "EMPTY-$(DIAGNAME).cdd" > ../cdd/$(DIAGNAME).cdd
+	echo "EMPTY-$(DIAGNAME).rptM" > ../rpt/$(DIAGNAME).rptM
+	echo "EMPTY-$(DIAGNAME).rptWM" > ../rpt/$(DIAGNAME).rptWM
+	echo "EMPTY-$(DIAGNAME).rptI" > ../rpt/$(DIAGNAME).rptI
+	echo "EMPTY-$(DIAGNAME).rptWI" > ../rpt/$(DIAGNAME).rptWI
 	./convert $(DIAGNAME) $(DIAGTYPE) 
 	rm ../regress/$(DIAGNAME).cfg
 	rm ../cdd/$(DIAGNAME).cdd

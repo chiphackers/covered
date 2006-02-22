@@ -213,16 +213,43 @@ sub prereqs_contain_a_minus {
 
 }
 
+sub add_output_file {
+
+  my ($diag_name, $outfile) = @_;
+  my $line, $tmp;
+
+  open( IFILE, "${diag_name}.v" ) || die "ERROR:  Unable to open ${diag_name}.v for reading: $!\n";
+  open( OFILE, ">${diag_name}.v.new" ) || die "ERROR:  Unable to open ${diag_name}.v.new for writing: $!\n";
+
+  while( $line = <IFILE> ) {
+    chomp( $line );
+    if( $line eq "EMPTY-${outfile}" ) {
+      $tmp = `cat ${outfile}`;
+      print OFILE $tmp;
+    } else {
+      print OFILE $line . "\n";
+    }
+  }
+
+  close( OFILE );
+  close( IFILE );
+
+  system( "mv ${diag_name}.v.new ${diag_name}.v" ) && die;
+
+}
+
 sub run_current_diag {
 
   my $diag_name = $_[0];
   my $output_to_rm = "";
-  my $prereqs, $prereq, $ran, %cmds, %output, %retval, $i, $error;
+  my $prereqs, $prereq, $ran, %cmds, %output, %retval, $i;
+  my $reason, $error, $failed;
   my $cmdline, %cmdlines, %cmdlines_to_run;
   my @prereq_list, $found_cmd, $cmd, $outfile, %output_files;
 
   $ran             = 0;
-  $error           = 0;
+  $failed          = 0;
+  $reason          = "";
   %cmdlines        = ();
   %cmdlines_to_run = ();
   %output_files    = ();
@@ -306,23 +333,39 @@ sub run_current_diag {
           if( $error == 0 ) {
             system( "rm -f ${outfile}" );
           } else {
-            return( 1, 1, "diff ${outfile} ${outfile}.diag" );
+            if( -e "$outfile.diag" ) {
+              $tmp = `cat $outfile.diag`;  chomp( $tmp );
+              if( $tmp eq "EMPTY-${outfile}" ) {
+                $reason = "UNTESTED DIAGNOSTIC";
+                if( -e $outfile ) {
+                  &add_output_file( $diag_name, $outfile );
+                }
+              } else {
+                $reason = "diff ${outfile} ${outfile}.diag";
+              }
+            } else { 
+              $reason = "diff ${outfile} ${outfile}.diag";
+            }
+            $failed = 1;
           }
         }
       } else {
-        return( 1, 1, $cmdline );
+        $failed = 1;
+        $reason = $cmdline;
       }
     }
   }
 
   # Remove diagnostic output files if there were no errors
-  foreach $outfiles (keys( %output_files )) {
-    foreach $outfile (split( /\s+/, $output_files{$outfiles})) {
-      system( "rm -f $outfile.diag" );
+  if( $failed == 0 ) {
+    foreach $outfiles (keys( %output_files )) {
+      foreach $outfile (split( /\s+/, $output_files{$outfiles})) {
+        system( "rm -f $outfile.diag" );
+      }
     }
   }
 
-  return( ($ran, 0, "") );
+  return( ($ran, $failed, $reason) );
 
 }
 
@@ -338,7 +381,7 @@ sub run_diags {
       $diag_name = $1;
       $run = &read_diag_info( "$diag_name.v" );
       if( $run == 1 ) {
-        ($ran, $failed, $failing_cmd) = &run_current_diag( "$diag_name.v" );
+        ($ran, $failed, $failing_cmd) = &run_current_diag( $diag_name );
         if( $ran == 1 ) {
           if( $failed == 1 ) {
             print "  -- FAILED\n";

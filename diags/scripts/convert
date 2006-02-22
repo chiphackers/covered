@@ -160,12 +160,21 @@ sub create_new_files {
       }
 
       # Display SIM
-      if( $type ne "vcsonly" ) {
-        print DIAG "SIM    ${d} all iv vcd  : iverilog ${d}.v; ./a.out                             : ${d}.vcd\n";
-        print DIAG "SIM    ${d} all iv lxt  : iverilog ${d}.v; ./a.out -lxt2; mv ${d}.vcd ${d}.lxt : ${d}.lxt\n";
-      }
-      if( $type ne "ivonly" ) {
-        print DIAG "SIM    ${d} all vcs vcd : vcs ${d}.v; ./simv                                   : ${d}.vcd\n";
+      if( $type eq "merge1" ) {
+        print DIAG "SIM    ${d} all iv vcd  : iverilog ${d}a.v; ./a.out                               : ${d}a.vcd\n";
+        print DIAG "SIM    ${d} all iv lxt  : iverilog ${d}a.v; ./a.out -lxt2; mv ${d}a.vcd ${d}a.lxt : ${d}a.lxt\n";
+        print DIAG "SIM    ${d} all vcs vcd : vcs ${d}a.v; ./simv                                     : ${d}a.vcd\n";
+        print DIAG "SIM    ${d} all iv vcd  : iverilog ${d}b.v; ./a.out                               : ${d}b.vcd\n";
+        print DIAG "SIM    ${d} all iv lxt  : iverilog ${d}b.v; ./a.out -lxt2; mv ${d}b.vcd ${d}b.lxt : ${d}b.lxt\n";
+        print DIAG "SIM    ${d} all vcs vcd : vcs ${d}b.v; ./simv                                     : ${d}b.vcd\n";
+      } else {
+        if( $type ne "vcsonly" ) {
+          print DIAG "SIM    ${d} all iv vcd  : iverilog ${d}.v; ./a.out                             : ${d}.vcd\n";
+          print DIAG "SIM    ${d} all iv lxt  : iverilog ${d}.v; ./a.out -lxt2; mv ${d}.vcd ${d}.lxt : ${d}.lxt\n";
+        }
+        if( $type ne "ivonly" ) {
+          print DIAG "SIM    ${d} all vcs vcd : vcs ${d}.v; ./simv                                   : ${d}.vcd\n";
+        }
       }
 
       # Display SCORE
@@ -189,7 +198,7 @@ sub create_new_files {
           $tmp = `cat ../regress/${d}.cfg`;
           chomp( $tmp );
           if( ($type eq "errscore") && (($diag{$d} & 0x80) != 0) ) {
-            $tmp .= " 2> ${d}.err : ${d}.err : 1";
+            $tmp .= " >& ${d}.err : ${d}.err : 1";
           } else {
             $tmp .= " : ${d}.cdd";
           }
@@ -210,7 +219,7 @@ sub create_new_files {
           if( $type eq "racelist" ) {
             print DIAG "REPORT ${d}.cdd 1   : -d v -m ltcfr -o ${d}.rptM ${d}.cdd                : ${d}.rptM\n";
           } elsif( $type eq "errreport" ) {
-            print DIAG "REPORT ${d}.cdd 1   : -d v ${d}.cdd 2> ${d}.err                          : ${d}.err : 1\n";
+            print DIAG "REPORT ${d}.cdd 1   : -d v ${d}.cdd >& ${d}.err                          : ${d}.err : 1\n";
           } else {
             print DIAG "REPORT ${d}.cdd 1   : -d v -o ${d}.rptM ${d}.cdd                         : ${d}.rptM\n";
           }
@@ -283,8 +292,6 @@ sub create_new_files {
       }
 
       close( DIAG );
-
-      die;
 
     } 
 
