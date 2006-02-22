@@ -2,8 +2,12 @@
 
 # Conversion script to change old-style regression files to new-style
 
+# Global variables
+%diag      = ();
+$diag_name = $ARGV[0];
+
 &read_in_files;
-&create_new_files;
+&create_new_files( $diag_name );
 
 sub get_cfg {
 
@@ -21,8 +25,6 @@ sub get_cfg {
 }
 
 sub get_verilog {
-
-  my $diag_name;
 
   opendir( VDIR, "../verilog" );
 
@@ -110,7 +112,16 @@ sub read_in_files {
 
 sub create_new_files {
 
-  foreach $d (keys( %diag )) {
+  my $d = $_[0];
+  my @diags_to_convert = ();
+
+  if( $d eq "" ) {
+    @diags_to_convert = keys( %diag );
+  } else {
+    $diags_to_convert[@diags_to_convert] = $d;
+  }
+
+  foreach $d (@diags_to_convert) {
 
     if( ($diag{$d} & 0xfd) != 0 ) {
 
@@ -125,10 +136,10 @@ sub create_new_files {
 
       print DIAG "\n";
       print DIAG "/* HEADER\n";
-      print DIAG "GROUPS ${d} iv vcs vcd lxt\n";
-      print DIAG "SIM    ${d} iv vcd  : iverilog ${d}.v; ./a.out                             : ${d}.vcd\n";
-      print DIAG "SIM    ${d} iv lxt  : iverilog ${d}.v; ./a.out -lxt2; mv ${d}.vcd ${d}.lxt : ${d}.lxt\n";
-      print DIAG "SIM    ${d} vcs vcd : vcs ${d}.v; ./simv                                   : ${d}.vcd\n";
+      print DIAG "GROUPS ${d} iv vcs vcd lxt all\n";
+      print DIAG "SIM    ${d} all iv vcd  : iverilog ${d}.v; ./a.out                             : ${d}.vcd\n";
+      print DIAG "SIM    ${d} all iv lxt  : iverilog ${d}.v; ./a.out -lxt2; mv ${d}.vcd ${d}.lxt : ${d}.lxt\n";
+      print DIAG "SIM    ${d} all vcs vcd : vcs ${d}.v; ./simv                                   : ${d}.vcd\n";
       if( ($diag{$d} & 0x1) != 0 ) {
         $tmp = `cat ../regress/${d}.cfg`;
         chomp( $tmp );
@@ -140,16 +151,16 @@ sub create_new_files {
         print DIAG "SCORE  ${d}.lxt     : ${tmp} : ${d}.cdd\n";
       }
       if( ($diag{$d} & 0x8) != 0 ) {
-        print DIAG "REPORT ${d}.cdd     : -d v -o ${d}.rptM ${d}.cdd                         : ${d}.rptM\n";
+        print DIAG "REPORT ${d}.cdd 1   : -d v -o ${d}.rptM ${d}.cdd                         : ${d}.rptM\n";
       }
       if( ($diag{$d} & 0x10) != 0 ) {
-        print DIAG "REPORT ${d}.cdd     : -d v -w -o ${d}.rptWM ${d}.cdd                     : ${d}.rptWM\n";
+        print DIAG "REPORT ${d}.cdd 2   : -d v -w -o ${d}.rptWM ${d}.cdd                     : ${d}.rptWM\n";
       }
       if( ($diag{$d} & 0x20) != 0 ) {
-        print DIAG "REPORT ${d}.cdd     : -d v -i -o ${d}.rptI ${d}.cdd                      : ${d}.rptI\n";
+        print DIAG "REPORT ${d}.cdd 3   : -d v -i -o ${d}.rptI ${d}.cdd                      : ${d}.rptI\n";
       }
       if( ($diag{$d} & 0x40) != 0 ) {
-        print DIAG "REPORT ${d}.cdd     : -d v -w -i -o ${d}.rptWI ${d}.cdd                  : ${d}.rptWI\n";
+        print DIAG "REPORT ${d}.cdd 4   : -d v -w -i -o ${d}.rptWI ${d}.cdd                  : ${d}.rptWI\n";
       }
       print DIAG "*/\n";
 

@@ -142,6 +142,7 @@ sub read_diag_info {
   # Clear global variables
   @groups_to_run = ();
   %sim_cmds      = ();
+  %sim_output    = ();
   %score_cmds    = ();
   %score_output  = ();
   %merge_cmds    = ();
@@ -202,9 +203,14 @@ sub run_current_diag {
   my $diag_name = $_[0];
   my $output_to_rm = "";
   my $prereqs, $prereq, $ran, %cmds, %output, $i, $error;
+  my $cmdline, %cmdlines, %cmdlines_to_run;
+  my @prereq_list, $found_cmd, $cmd, $outfile, %output_files;
 
-  $ran   = 0;
-  $error = 0;
+  $ran             = 0;
+  $error           = 0;
+  %cmdlines        = ();
+  %cmdlines_to_run = ();
+  %output_files    = ();
 
   # Initialize prerequisites with the specified groups to run
   $prereqs = join( " ", @groups_to_run );
@@ -236,18 +242,22 @@ sub run_current_diag {
             if( (index( " $cmdlines{$cmdline} ", " $prereq ") != -1) && ($found == 0) ) {
               $cmdlines_to_run{$cmdline} = 0;
               foreach $outfile (split( /\s+/, $output{$cmd} )) {
-                $cmdlines{"$cmdline $cmds{$cmd}"}        = $outfile;
-                $cmdlines_to_run{"$cmdline $cmds{$cmd}"} = 1;
-                $output_files{$outfile}                  = 1;
+                if( $outfile ne "" ) {
+                  $cmdlines{"$cmdline $cmds{$cmd}"}        = $outfile;
+                  $cmdlines_to_run{"$cmdline $cmds{$cmd}"} = 1;
+                  $output_files{"$cmdline $cmds{$cmd}"}    = "$output_files{$cmdline} $outfile";
+                }
               }
               $found_cmd = 1;
             }
           }
           if( $found_cmd == 0 ) {
             foreach $outfile (split( /\s+/, $output{$cmd} )) {
-              $cmdlines{"$cmds{$cmd}"}        = $outfile;
-              $cmdlines_to_run{"$cmds{$cmd}"} = 1;
-              $output_files{$outfile}         = 1;
+              if( $outfile ne "" ) {
+                $cmdlines{$cmds{$cmd}}        = $outfile;
+                $cmdlines_to_run{$cmds{$cmd}} = 1;
+                $output_files{$cmds{$cmd}}    = $outfile;
+              }
             }
           }
           $prereqs = join( " ", $prereqs, $output{$cmd} );
@@ -257,14 +267,18 @@ sub run_current_diag {
 
   }
 
+  if( keys( %cmdlines_to_run ) > 0 ) {
+    print "Running ${diag_name}\n";
+  }
+
   # Run each command-line
   foreach $cmdline (keys( %cmdlines_to_run )) {
     if( $cmdlines_to_run{$cmdline} == 1 ) {
-      print "Command: $cmdline\n";
+      print "COMMAND: $cmdline\n";
       $error = system( "$cmdline" );
       $ran   = 1;
       if( $error == 0 ) {
-        foreach $outfile (keys( %output_files )) {
+        foreach $outfile (split( /\s+/, $output_files{$cmdline} )) {
           if( -e "$outfile.diag" ) {
             $error = system( "diff ${outfile} ${outfile}.diag" );
           }
@@ -281,8 +295,10 @@ sub run_current_diag {
   }
 
   # Remove diagnostic output files if there were no errors
-  foreach $outfile (keys( %output_files )) {
-    system( "rm -f ${outfile}.diag" );
+  foreach $outfiles (keys( %output_files )) {
+    foreach $outfile (split( /\s+/, $output_files{$outfiles})) {
+      system( "rm -f $outfile.diag" );
+    }
   }
 
   return( ($ran, 0, "") );
@@ -304,8 +320,10 @@ sub run_diags {
         ($ran, $failed, $failing_cmd) = &run_current_diag( "$diag_name.v" );
         if( $ran == 1 ) {
           if( $failed == 1 ) {
+            print "  -- FAILED\n";
             $failed_diags[@failed_diags] = "$diag_name  ($failing_cmd)";
           } else {
+            print "  -- PASSED\n";
             $passed_diags[@passed_diags] = $diag_name;
           }
         }
