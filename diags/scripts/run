@@ -260,6 +260,7 @@ sub run_current_diag {
   # Run each command-line
   foreach $cmdline (keys( %cmdlines_to_run )) {
     if( $cmdlines_to_run{$cmdline} == 1 ) {
+      print "Command: $cmdline\n";
       $error = system( "$cmdline" );
       $ran   = 1;
       if( $error == 0 ) {
