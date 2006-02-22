@@ -83,15 +83,22 @@ sub parse_cmd {
 
   my $line = $_[0];
   my $run, $cmd;
-  my $prereq_list, $cmd_list, $output, @list;
+  my $prereq_list, $cmd_list, $output, $retval, @list;
 
   # Split line based on the colon character
-  ($prereq_list,$cmd_list,$output) = split( /:/, $line );
+  ($prereq_list,$cmd_list,$output,$retval) = split( /:/, $line );
 
   # Remove unnecessary spaces from cmd_list
   $cmd_list =~ s/^ +//g;
   $cmd_list =~ s/; +/; /g;
   $cmd_list =~ s/ +$//g;
+
+  # Remove unnecessary spaces from return value
+  if( $retval eq "" ) {
+    $retval = 0;
+  } else {
+    $retval =~ s/ //g;
+  }
 
   # Parse prerequisite list
   @list = split( /\s+/, $prereq_list );
@@ -101,15 +108,19 @@ sub parse_cmd {
   if( $cmd eq "SIM" ) {
     $sim_cmds{"@list"}      = "$cmd_list;";
     $sim_output{"@list"}    = $output;
+    $sim_return{"@list"}    = $retval;
   } elsif( $cmd eq "SCORE" ) {
     $score_cmds{"@list"}    = "$covered $gflag score $cmd_list;";
     $score_output{"@list"}  = $output;
+    $score_return{"@list"}  = $retval;
   } elsif( $cmd eq "MERGE" ) {
     $merge_cmds{"@list"}    = "$covered $gflag merge $cmd_list;";
     $merge_output{"@list"}  = $output;
+    $merge_return{"@list"}  = $retval;
   } elsif( $cmd eq "REPORT" ) {
     $report_cmds{"@list"}   = "$covered $gflag report $cmd_list;";
     $report_output{"@list"} = $output;
+    $report_return{"@list"} = $retval;
   } else {
     $run = 0;
   }
@@ -143,12 +154,16 @@ sub read_diag_info {
   @groups_to_run = ();
   %sim_cmds      = ();
   %sim_output    = ();
+  %sim_return    = ();
   %score_cmds    = ();
   %score_output  = ();
+  %score_return  = ();
   %merge_cmds    = ();
   %merge_output  = ();
+  %merge_return  = ();
   %report_cmds   = ();
   %report_output = ();
+  %report_return = ();
 
   open( DIAG, $diag_name ) || die "ERROR:  Unable to read diagnostic $diag_name: $!\n";
 
@@ -202,7 +217,7 @@ sub run_current_diag {
 
   my $diag_name = $_[0];
   my $output_to_rm = "";
-  my $prereqs, $prereq, $ran, %cmds, %output, $i, $error;
+  my $prereqs, $prereq, $ran, %cmds, %output, %retval, $i, $error;
   my $cmdline, %cmdlines, %cmdlines_to_run;
   my @prereq_list, $found_cmd, $cmd, $outfile, %output_files;
 
@@ -221,15 +236,19 @@ sub run_current_diag {
     if( $i == 0 ) {             # Compilation/simulation
       %cmds    = %sim_cmds;
       %output  = %sim_output;
+      %retval  = %sim_return;
     } elsif( $i == 1 ) {        # Score
       %cmds    = %score_cmds;
       %output  = %score_output;
+      %retval  = %score_return;
     } elsif( $i == 2 ) {        # Merge
       %cmds    = %merge_cmds;
       %output  = %merge_output;
+      %retval  = %merge_return;
     } elsif( $i == 3 ) {        # Report
       %cmds    = %report_cmds;
       %output  = %report_output;
+      %retval  = %report_return;
     }
 
     @prereq_list = split( /\s+/, $prereqs );
@@ -240,14 +259,14 @@ sub run_current_diag {
           $found_cmd = 0;
           foreach $cmdline (keys( %cmdlines )) {
             if( (index( " $cmdlines{$cmdline} ", " $prereq ") != -1) && ($found == 0) ) {
-              $cmdlines_to_run{$cmdline} = 0;
               foreach $outfile (split( /\s+/, $output{$cmd} )) {
                 if( $outfile ne "" ) {
                   $cmdlines{"$cmdline $cmds{$cmd}"}        = $outfile;
-                  $cmdlines_to_run{"$cmdline $cmds{$cmd}"} = 1;
+                  $cmdlines_to_run{"$cmdline $cmds{$cmd}"} = (($cmdlines_to_run{$cmdline} > 1) || ($retval{$cmd} > 0)) ? 2 : 1;
                   $output_files{"$cmdline $cmds{$cmd}"}    = "$output_files{$cmdline} $outfile";
                 }
               }
+              $cmdlines_to_run{$cmdline} = 0;
               $found_cmd = 1;
             }
           }
@@ -255,7 +274,7 @@ sub run_current_diag {
             foreach $outfile (split( /\s+/, $output{$cmd} )) {
               if( $outfile ne "" ) {
                 $cmdlines{$cmds{$cmd}}        = $outfile;
-                $cmdlines_to_run{$cmds{$cmd}} = 1;
+                $cmdlines_to_run{$cmds{$cmd}} = ($retval{$cmd} > 0) ? 2 : 1;
                 $output_files{$cmds{$cmd}}    = $outfile;
               }
             }
@@ -273,11 +292,13 @@ sub run_current_diag {
 
   # Run each command-line
   foreach $cmdline (keys( %cmdlines_to_run )) {
-    if( $cmdlines_to_run{$cmdline} == 1 ) {
+    if( $cmdlines_to_run{$cmdline} > 0 ) {
       print "COMMAND: $cmdline\n";
       $error = system( "$cmdline" );
       $ran   = 1;
-      if( $error == 0 ) {
+      if( (($cmdlines_to_run{$cmdline} == 1) && ($error == 0)) ||
+          (($cmdlines_to_run{$cmdline} == 2) && ($error != 0)) ) {
+        $error = 0;
         foreach $outfile (split( /\s+/, $output_files{$cmdline} )) {
           if( -e "$outfile.diag" ) {
             $error = system( "diff ${outfile} ${outfile}.diag" );
