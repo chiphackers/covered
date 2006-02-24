@@ -52,6 +52,11 @@ convert_merge1 : $(MERGE1)
 $(MERGE1) :
 	./convert $@ merge1
 
+convert_racelist : $(RACELIST)
+
+$(RACELIST) :
+	./convert $@ racelist
+
 convert_errscore : $(ERRSCORE)
 
 $(ERRSCORE) :

@@ -83,3 +83,17 @@ always @(state or head or valid or tail)
   end
 
 endmodule
+
+/* HEADER
+GROUPS err1.0 all iv vcs vcd lxt
+SIM    err1.0 all iv vcd  : iverilog err1.0.v; ./a.out                             : err1.0.vcd
+SIM    err1.0 all iv lxt  : iverilog err1.0.v; ./a.out -lxt2; mv err1.0.vcd err1.0.lxt : err1.0.lxt
+SIM    err1.0 all vcs vcd : vcs err1.0.v; ./simv                                   : err1.0.vcd
+SCORE  err1.0.vcd     : -t main -vcd err1.0.vcd -o err1.0.cdd -v err1.0.v >& err1.0.err : err1.0.err : 1
+SCORE  err1.0.lxt     : -t main -lxt err1.0.lxt -o err1.0.cdd -v err1.0.v >& err1.0.err : err1.0.err : 1
+*/
+
+/* OUTPUT err1.0.err
+ERROR!  Unable to find specified FSM signal "foo" in module "fsma" in file err1.0.v
+ERROR!  Unable to bind FSM-specified signal (foo) to expression (87) in module (fsma)
+*/
