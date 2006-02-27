@@ -254,6 +254,51 @@ sub run_current_diag {
   %cmdlines_to_run = ();
   %output_files    = ();
 
+  @sim_cmds_to_run = ();
+
+  for( $i=0; $i<4; $i++ ) {
+
+    if( $i == 0 ) {             # Compilation/simulation
+      %cmds    = %sim_cmds;
+      %output  = %sim_output;
+      %retval  = %sim_return;
+    } elsif( $i == 1 ) {        # Score
+      %cmds    = %score_cmds;
+      %output  = %score_output;
+      %retval  = %score_return;
+    } elsif( $i == 2 ) {        # Merge
+      %cmds    = %merge_cmds;
+      %output  = %merge_output;
+      %retval  = %merge_return;
+    } elsif( $i == 3 ) {        # Report
+      %cmds    = %report_cmds;
+      %output  = %report_output;
+      %retval  = %report_return;
+    }
+
+    # Get all simulation commands that can be run based on user-selected values
+    foreach $prereq (@groups_to_run) {
+      foreach $cmd (keys( %cmds )) {
+        if( (index( " ${cmd} ", " ${prereq} " ) != -1) && (&prereqs_contain_a_minus( $cmd ) == 0) ) {
+          $run_cmds[@run_cmds]     = $cmds{$cmd};
+          $run_output[@run_output] = $output{$cmd};
+          $run_next[@run_next]     = -1;
+        }
+      }
+    }
+
+    if( @sim_cmds_to_run == 0 ) {
+
+      # Construct command sequences for this diagnostic based on the starting simulation commands
+      foreach $sim_cmd (@sim_cmds_to_run) {
+
+            
+
+      }
+
+    }
+
+
   # Initialize prerequisites with the specified groups to run
   $prereqs = join( " ", @groups_to_run );
 
