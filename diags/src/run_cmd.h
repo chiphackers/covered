@@ -10,27 +10,52 @@
 
 
 #include "list.h"
+#include "diag.h"
 
 
-typedef struct run_cmd_s {
-  char*             step;     /*!< Specifies what step this command is for (SIM, SCORE, etc.) */
-  char*             cmd;      /*!< Specifies the command string to run */
-  list*             inputs;   /*!< Specifies the list of inputs needed for this command */
-  list*             outputs;  /*!< Specifies the list of output needed for this command */
-  int               error;    /*!< Specifies if this command is supposed to produce and error */
-  struct run_cmd_s* next;     /*!< Pointer to next run command in the list */
-} run_cmd;
+#ifndef __DIAG_S__
+#define __DIAG_S__
+struct diag_s;
+typedef struct diag_s diag;
+#endif
+
+#ifndef __RUN_CMD_S__
+#define __RUN_CMD_S__
+struct run_cmd_s;
+typedef struct run_cmd_s run_cmd;
+#endif
+
+struct run_cmd_s {
+  int               step;      /*!< Specifies what step this command is for (SIM, SCORE, etc.) */
+  char*             cmd;       /*!< Specifies the command string to run */
+  list*             inputs;    /*!< Specifies the list of inputs needed for this command */
+  list*             outputs;   /*!< Specifies the list of output needed for this command */
+  int               error;     /*!< Specifies if this command is supposed to produce and error */
+  int               start;     /*!< Specifies if this is a starting run command */
+  int               executed;  /*!< Set to a value of 1 when this run command has been executed */
+  struct run_cmd_s* next;      /*!< Pointer to next run command in the list */
+};
 
 
 /*! \brief Adds the current line to the run-time command list */
-void run_cmd_add( char* line );
+void run_cmd_add( char* line, run_cmd** rc_head, run_cmd** rc_tail );
+
+/*! \brief Executes the specified run command */
+int run_cmd_execute( run_cmd* rc, diag* d );
+
+/*! \brief Removes all output files generated from the given run command */
+void run_cmd_remove_outputs( run_cmd* rc );
 
 /*! \brief Deallocates the run-time command list */
-void run_cmd_dealloc_list();
+void run_cmd_dealloc_list( run_cmd* rc_head );
 
 
 /*
  $Log$
+ Revision 1.1  2006/02/27 23:22:10  phase1geo
+ Working on C-version of run command.  Initial version only -- does not work
+ at this point.
+
 */
 
 #endif

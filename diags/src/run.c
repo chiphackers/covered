@@ -24,16 +24,6 @@ list* plus_groups = NULL;
 */
 list* minus_groups = NULL;
 
-/*!
- List of diagnostics that failed along with the command that caused it to fail.
-*/
-list* failed_diags = NULL;
-
-/*!
- The number of diagnostics that passed.
-*/
-int    passed_diags_size;
-
 
 /*!
  Displays usage information to standard output.
@@ -58,15 +48,14 @@ void parse_args( int argc, char** argv ) {
   while( i < argc ) {
 
     argvptr = argv[i];
-    printf( "argvptr: %s\n", argvptr );
 
     if( strncmp( "+", argvptr, 1 ) == 0 ) {
 
-      list_add( (argvptr + 1), &plus_groups );
+      list_add( (argvptr + 1), 0, &plus_groups );
 
     } else if( strncmp( "-", argvptr, 1 ) == 0 ) {
 
-      list_add( (argvptr + 1), &minus_groups );
+      list_add( (argvptr + 1), 0, &minus_groups );
 
     } else {
 
@@ -96,8 +85,9 @@ void run_diags() {
   int            failed;             /* Specifies if diagnostic was run and failed */
   char           failing_cmd[4096];  /* If failed is set to 1, this will contain the command that failed */
   char           failing_msg[4096];  /* Diagnostic failure message */
+  diag*          d;                  /* Newly allocated diagnostic structure */
 
-  if( (dir_handle = opendir( "../verilog" )) == NULL ) {
+  if( (dir_handle = opendir( "." )) == NULL ) {
 
     printf( "Unable to read directory ../verilog\n" );
     exit( 1 );
@@ -108,20 +98,12 @@ void run_diags() {
 
       if( (sscanf( dirp->d_name, "%[a-zA-Z0-9_]%s", diag_name, extension ) == 2) && (strcmp( ".v", extension ) == 0) ) {
 
-        if( read_diag_info( diag_name ) == 1 ) {
+        /* Create diagnostic structure */
+        d = diag_add( diag_name );
 
-          run_current_diag( diag_name, &ran, &failed, &failing_cmd );
+        if( read_diag_info( d ) == 1 ) {
 
-          if( ran == 1 ) {
-            if( failed == 1 ) {
-              printf( "  -- FAILED\n" );
-              snprintf( failing_msg, 4096, "%s  (%s)", diag_name, failing_cmd );
-              list_add( failing_msg, &failed_diags );
-            } else {
-              printf( "  -- PASSED\n" );
-              passed_diags_size++;
-            }
-          }
+          run_current_diag( d );
 
         }
 
@@ -140,14 +122,7 @@ void run_diags() {
 */
 void output_results() {
 
-  printf( "\nPassed: %d,  Failed: %d\n", passed_diags_size, failed_diags->num );
-
-  if( failed_diags != NULL ) {
-    printf( "\nFailing diagnostics:\n" );
-    list_display( failed_diags );
-  }
-    
-  printf( "\n" );
+  diag_output_results();
 
 }
 
@@ -158,7 +133,7 @@ void cleanup() {
 
   list_dealloc( plus_groups );
   list_dealloc( minus_groups );
-  list_dealloc( failed_diags );
+  diag_dealloc_list();
 
 }
 
@@ -187,4 +162,8 @@ main( int argc, char** argv ) {
 
 /*
  $Log$
+ Revision 1.1  2006/02/27 23:22:10  phase1geo
+ Working on C-version of run command.  Initial version only -- does not work
+ at this point.
+
 */

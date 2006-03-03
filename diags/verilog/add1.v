@@ -17,18 +17,6 @@ end
 endmodule
 
 /* HEADER
-GROUPS add1 iv vcs vcd lxt
-COMP   iv : iverilog add1.v
-COMP   vcs : vcs add1.v
-SIM    iv : ./a.out
-SIM    lxt : ./a.out -lxt2
-SIM    vcs : ./simv
-SCORE  add1 iv vcs vcd : -t main -vcd add1.vcd -v add1.v -o add1.cdd
-SCORE  add1 iv lxt : -t main -lxt add1.vcd -v add1.v -o add1.cdd
-REPORT add1 iv vcs vcd lxt : -d v -o add1.v.rpt add1.cdd
-*/
-
-/* HEADER
 GROUPS add1 all iv vcs vcd lxt
 SIM    add1 all iv vcd  : iverilog add1.v; ./a.out                             : add1.vcd
 SIM    add1 all iv lxt  : iverilog add1.v; ./a.out -lxt2; mv add1.vcd add1.lxt : add1.lxt
