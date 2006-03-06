@@ -20,13 +20,31 @@ extern list* plus_groups;
 extern list* minus_groups;
 
 
+char* run_cmd_get_block( char** line ) {
+
+  char* start;  /* Pointer to start of current line */
+  char* ptr;    /* Pointer to start of separating string */
+
+  start = *line;
+
+  if( (ptr = strstr( *line, " : " )) != NULL ) {
+    *ptr = '\0';
+    *line = ptr + 3;
+  } else {
+    *line = NULL;
+  }
+
+  return( start );
+
+}
+
 void run_cmd_add_step_and_inputs( char** line, run_cmd* rc ) {
 
   char* str;          /* Pointer to step and inputs line */
   char  group[4096];  /* Name of group */
   int   chars_read;   /* Number of characters read from line */
 
-  str = strsep( line, ":" );
+  str = run_cmd_get_block( line );
 
   if( sscanf( str, "%s%n", group, &chars_read ) == 1 ) {
 
@@ -61,7 +79,7 @@ void run_cmd_add_cmd( char** line, run_cmd* rc ) {
 
   char* str;  /* Pointer to command portion of line */
 
-  str = strsep( line, ":" );
+  str = run_cmd_get_block( line );
 
   if( *str != '\0' ) {
     rc->cmd = strdup( str );
@@ -75,7 +93,7 @@ void run_cmd_add_outputs( char** line, run_cmd* rc ) {
   char  output[4096];  /* Name of output file */
   int   chars_read;    /* Number of characters read from line */
 
-  str = strsep( line, ":" );
+  str = run_cmd_get_block( line );
 
   while( sscanf( str, "%s%n", output, &chars_read ) == 1 ) {
     str = str + chars_read;
@@ -303,6 +321,10 @@ void run_cmd_dealloc_list( run_cmd* rc_head ) {
 
 /*
  $Log$
+ Revision 1.2  2006/03/03 23:24:53  phase1geo
+ Fixing C-based run script.  This is now working for all but one diagnostic to this
+ point.  There is still some work to do here, however.
+
  Revision 1.1  2006/02/27 23:22:10  phase1geo
  Working on C-version of run command.  Initial version only -- does not work
  at this point.
