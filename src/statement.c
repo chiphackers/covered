@@ -104,10 +104,14 @@ extern char     user_msg[USER_MSG_LENGTH];
 extern exp_info exp_op_info[EXP_OP_NUM];
 
 /*!
- Pointer to statement loop stack structure.  See description of \ref stmt_loop_link
- for more information on this stack structure usage.
+ Pointer to head of statement loop list.
 */
-stmt_loop_link* stmt_loop_stack = NULL;
+stmt_loop_link* stmt_loop_head = NULL;
+
+/*!
+ Pointer to tail of statement loop list.
+*/
+stmt_loop_link* stmt_loop_tail = NULL;
 
 
 /*!
@@ -141,11 +145,11 @@ statement* statement_create( expression* exp ) {
  \param id    ID of statement to be read out later.
 
  Creates a new statement loop link for the specified parameters and adds this
- element to the top of the statement loop stack.
+ element to the top of the statement loop queue.
 */
-void statement_stack_push( statement* stmt, int id ) {
+void statement_queue_add( statement* stmt, int id ) {
 
-  stmt_loop_link* sll;     /* Pointer to newly created statement loop link */
+  stmt_loop_link* sll;  /* Pointer to newly created statement loop link */
 
   /* Create statement loop link element */
   sll = (stmt_loop_link*)malloc_safe( sizeof( stmt_loop_link ), __FILE__, __LINE__ );
@@ -155,12 +159,12 @@ void statement_stack_push( statement* stmt, int id ) {
   sll->id   = id;
   sll->next = NULL;
 
-  /* Add to top of statement loop stack */
-  if( stmt_loop_stack == NULL ) {
-    stmt_loop_stack = sll;
+  /* Add to top of statement loop queue */
+  if( stmt_loop_head == NULL ) {
+    stmt_loop_head = stmt_loop_tail = sll;
   } else {
-    sll->next       = stmt_loop_stack;
-    stmt_loop_stack = sll;
+    stmt_loop_tail->next = sll;
+    stmt_loop_tail       = sll;
   }
 
 }
@@ -168,33 +172,58 @@ void statement_stack_push( statement* stmt, int id ) {
 /*!
  \param stmt  Pointer to statement being read out of the CDD.
  
- Compares the specified statement against the top of the statement loop stack.  If
- the ID at the top of the stack matches this statement's ID, the top of the stack is
- popped and the next_true and next_false pointers of the stored statement are pointed
+ Compares the specified statement against the top of the statement loop queue.  If
+ an ID in the queue matches this statement's ID, the element is removed and the
+ next_true and next_false pointers of the stored statement are pointed
  to the specified statement.  The next head is also compared against this statement
- and the process is repeated until a match is not found.  Once an ID at the top of the
- stack does not match, no further action is taken.
+ and the process is repeated until a match is not found.
 */
-void statement_stack_compare( statement* stmt ) {
+void statement_queue_compare( statement* stmt ) {
 
-  stmt_loop_link* sll;    /* Pointer to top of stack */
+  stmt_loop_link* sll;       /* Pointer to current element in statement loop list */
+  stmt_loop_link* tsll;      /* Temporary pointer to current element in statement loop list */
+  stmt_loop_link* last_sll;  /* Pointer to last parsed element in statement loop list */
 
-  while( (stmt_loop_stack != NULL) && (stmt->exp->id == stmt_loop_stack->id) ) {
+  sll      = stmt_loop_head;
+  last_sll = NULL;
 
-    /* Perform the link */
-    if( stmt_loop_stack->stmt->next_true == NULL ) {
-      stmt_loop_stack->stmt->next_true  = stmt;
+  while( sll != NULL ) {
+
+    /* If we have a match */
+    if( stmt->exp->id == sll->id ) {
+
+      /* Set next_true and next_false pointers */
+      if( sll->stmt->next_true == NULL ) {
+        sll->stmt->next_true = stmt;
+      }
+      if( (sll->stmt->next_false == NULL) && !EXPR_IS_CONTEXT_SWITCH( sll->stmt->exp ) ) {
+        sll->stmt->next_false = stmt;
+      }
+       
+      /* Remove this element from the list */
+      if( stmt_loop_head == sll ) {
+        if( stmt_loop_tail == sll ) {
+          stmt_loop_head = stmt_loop_tail = NULL;
+        } else {
+          stmt_loop_head = sll->next;
+        }
+      } else if( stmt_loop_tail == sll ) {
+        stmt_loop_tail = last_sll;
+      } else {
+        last_sll->next = sll->next;
+      }
+
+      /* Deallocate the current element */
+      tsll = sll;
+      sll  = sll->next;
+      free_safe( tsll );
+
+    } else {
+
+      last_sll = sll;
+      sll      = sll->next;
+
     }
-    if( (stmt_loop_stack->stmt->next_false == NULL) && !EXPR_IS_CONTEXT_SWITCH( stmt_loop_stack->stmt->exp ) ) {
-      stmt_loop_stack->stmt->next_false = stmt;
-    }
-
-    /* Pop the top off of the stack */
-    sll             = stmt_loop_stack;
-    stmt_loop_stack = stmt_loop_stack->next;
-
-    /* Deallocate the memory for the link */
-    free_safe( sll );
 
   }
 
@@ -288,13 +317,13 @@ bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) {
       } else if( true_id != 0 ) {
         stmtl = stmt_link_find( true_id, curr_funit->stmt_head );
         if( stmtl == NULL ) {
-          /* Add to statement loop stack */
-          statement_stack_push( stmt, true_id );
+          /* Add to statement loop queue */
+          statement_queue_add( stmt, true_id );
         } else {
-          /* Check against statement stack */
-          statement_stack_compare( stmt );
           stmt->next_true = stmtl->stmt;
         }
+        /* Check against statement queue */
+        statement_queue_compare( stmt );
       }
 
       /* Find and link next_false */
@@ -303,11 +332,11 @@ bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) {
       } else if( false_id != 0 ) {
         stmtl = stmt_link_find( false_id, curr_funit->stmt_head );
         if( stmtl == NULL ) {
-          statement_stack_push( stmt, false_id );
+          statement_queue_add( stmt, false_id );
         } else {
-          statement_stack_compare( stmt );
           stmt->next_false = stmtl->stmt;
         }
+        statement_queue_compare( stmt );
       }
 
       /* Add statement to functional unit statement list */
@@ -373,7 +402,7 @@ bool statement_connect( statement* curr_stmt, statement* next_stmt, int conn_id 
 
   /* If both paths go to the same destination, only parse one path */
   if( curr_stmt->next_true == curr_stmt->next_false ) {
-
+    
     /* If the TRUE path is NULL, connect it to the new statement */
     if( curr_stmt->next_true == NULL ) {
       curr_stmt->next_true  = next_stmt;
@@ -630,6 +659,11 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.73  2006/02/10 16:44:29  phase1geo
+ Adding support for register assignment.  Added diagnostic to regression suite
+ to verify its implementation.  Updated TODO.  Full regression passes at this
+ point.
+
  Revision 1.72  2006/01/24 23:24:38  phase1geo
  More updates to handle static functions properly.  I have redone quite a bit
  of code here which has regressions pretty broke at the moment.  More work
