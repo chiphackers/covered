@@ -67,7 +67,7 @@ void run_cmd_add_step_and_inputs( char** line, run_cmd* rc ) {
         rc->start = 1;
       }
       if( list_find_str( group, minus_groups ) != -1 ) {
-        rc->start = 0;
+        rc->okay = 0;
       }
     }
 
@@ -144,6 +144,7 @@ void run_cmd_add( char* line, run_cmd** rc_head, run_cmd** rc_tail ) {
   rc->outputs  = NULL;
   rc->error    = 0;
   rc->start    = 0;
+  rc->okay     = 1;
   rc->executed = 0;
   rc->next     = NULL;
 
@@ -321,6 +322,9 @@ void run_cmd_dealloc_list( run_cmd* rc_head ) {
 
 /*
  $Log$
+ Revision 1.3  2006/03/06 22:55:47  phase1geo
+ Fixing command-line parser.
+
  Revision 1.2  2006/03/03 23:24:53  phase1geo
  Fixing C-based run script.  This is now working for all but one diagnostic to this
  point.  There is still some work to do here, however.

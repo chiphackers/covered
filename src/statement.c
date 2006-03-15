@@ -419,27 +419,12 @@ bool statement_connect( statement* curr_stmt, statement* next_stmt, int conn_id 
     } else if( curr_stmt->next_true->conn_id == conn_id ) {
       curr_stmt->exp->suppl.part.stmt_stop_true  = 1;
       curr_stmt->exp->suppl.part.stmt_stop_false = 1;
-    /* Otherwise, continue to traverse the TRUE path */
+    /* Continue to traverse the TRUE path if the next_stmt does not match this statement */
     } else if( curr_stmt->next_true != next_stmt ) {
       retval |= statement_connect( curr_stmt->next_true, next_stmt, conn_id );
     }
 
   } else {
-
-    /* Traverse TRUE path */
-    if( curr_stmt->next_true == NULL ) {
-      curr_stmt->next_true = next_stmt;
-      if( curr_stmt->next_true->conn_id == conn_id ) {
-        curr_stmt->exp->suppl.part.stmt_stop_true = 1;
-      }
-      retval = TRUE;
-    /* If the TRUE path leads to a loop/merge, set the stop bit and stop traversing */
-    } else if( curr_stmt->next_true->conn_id == conn_id ) {
-      curr_stmt->exp->suppl.part.stmt_stop_true = 1;
-    /* Otherwise, continue to traverse the TRUE path */
-    } else if( curr_stmt->next_true != next_stmt ) {
-      retval |= statement_connect( curr_stmt->next_true, next_stmt, conn_id );
-    }
 
     /* Traverse FALSE path */
     if( curr_stmt->next_false == NULL ) {
@@ -453,9 +438,24 @@ bool statement_connect( statement* curr_stmt, statement* next_stmt, int conn_id 
     /* If the FALSE path leads to a loop/merge, set the stop bit and stop traversing */
     } else if( curr_stmt->next_false->conn_id == conn_id ) {
       curr_stmt->exp->suppl.part.stmt_stop_false = 1;
-    /* Otherwise, continue to traverse the FALSE path */
+    /* Continue to traverse the FALSE path if the next statement does not match this statement */
     } else if( (curr_stmt->next_false != next_stmt) ) {
       retval |= statement_connect( curr_stmt->next_false, next_stmt, conn_id );
+    }
+
+    /* Traverse TRUE path */
+    if( curr_stmt->next_true == NULL ) {
+      curr_stmt->next_true = next_stmt;
+      if( curr_stmt->next_true->conn_id == conn_id ) {
+        curr_stmt->exp->suppl.part.stmt_stop_true = 1;
+      }
+      retval = TRUE;
+    /* If the TRUE path leads to a loop/merge, set the stop bit and stop traversing */
+    } else if( curr_stmt->next_true->conn_id == conn_id ) {
+      curr_stmt->exp->suppl.part.stmt_stop_true = 1;
+    /* Continue to traverse the TRUE path if the next statement does not match this statement */
+    } else if( curr_stmt->next_true != next_stmt ) {
+      retval |= statement_connect( curr_stmt->next_true, next_stmt, conn_id );
     }
 
   }
@@ -659,6 +659,10 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.74  2006/03/13 21:10:06  phase1geo
+ Fixing statement connection issue when reading in a CDD file.  There were cases
+ that would cause connection lossage due to the statement reconnection algorithm.
+
  Revision 1.73  2006/02/10 16:44:29  phase1geo
  Adding support for register assignment.  Added diagnostic to regression suite
  to verify its implementation.  Updated TODO.  Full regression passes at this

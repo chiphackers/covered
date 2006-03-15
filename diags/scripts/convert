@@ -217,32 +217,32 @@ sub create_new_files {
       if( $type ne "errscore" ) {
         if( ($diag{$d} & 0x8) != 0 ) {
           if( $type eq "racelist" ) {
-            print DIAG "REPORT ${d}.cdd 1   : -d v -m ltcfr -o ${d}.rptM ${d}.cdd                : ${d}.rptM\n";
+            print DIAG "REPORT ${d}.cdd   : -d v -m ltcfr -o ${d}.rptM ${d}.cdd                : ${d}.rptM\n";
           } elsif( $type eq "errreport" ) {
-            print DIAG "REPORT ${d}.cdd 1   : -d v ${d}.cdd >& ${d}.err                          : ${d}.err : 1\n";
+            print DIAG "REPORT ${d}.cdd   : -d v ${d}.cdd >& ${d}.err                          : ${d}.err : 1\n";
           } else {
-            print DIAG "REPORT ${d}.cdd 1   : -d v -o ${d}.rptM ${d}.cdd                         : ${d}.rptM\n";
+            print DIAG "REPORT ${d}.cdd   : -d v -o ${d}.rptM ${d}.cdd                         : ${d}.rptM\n";
           }
         }
         if( ($diag{$d} & 0x10) != 0 ) {
           if( $type eq "racelist" ) {
-            print DIAG "REPORT ${d}.cdd 2   : -d v -m ltcfr -w -o ${d}.rptWM ${d}.cdd            : ${d}.rptWM\n";
+            print DIAG "REPORT ${d}.cdd   : -d v -m ltcfr -w -o ${d}.rptWM ${d}.cdd            : ${d}.rptWM\n";
           } elsif( $type ne "errreport" ) {
-            print DIAG "REPORT ${d}.cdd 2   : -d v -w -o ${d}.rptWM ${d}.cdd                     : ${d}.rptWM\n";
+            print DIAG "REPORT ${d}.cdd   : -d v -w -o ${d}.rptWM ${d}.cdd                     : ${d}.rptWM\n";
           }
         }
         if( ($diag{$d} & 0x20) != 0 ) {
           if( $type eq "racelist" ) {
-            print DIAG "REPORT ${d}.cdd 3   : -d v -m ltcfr -i -o ${d}.rptI ${d}.cdd             : ${d}.rptI\n";
+            print DIAG "REPORT ${d}.cdd   : -d v -m ltcfr -i -o ${d}.rptI ${d}.cdd             : ${d}.rptI\n";
           } elsif( $type ne "errreport" ) {
-            print DIAG "REPORT ${d}.cdd 3   : -d v -i -o ${d}.rptI ${d}.cdd                      : ${d}.rptI\n";
+            print DIAG "REPORT ${d}.cdd   : -d v -i -o ${d}.rptI ${d}.cdd                      : ${d}.rptI\n";
           }
         }
         if( ($diag{$d} & 0x40) != 0 ) {
           if( $type eq "racelist" ) {
-            print DIAG "REPORT ${d}.cdd 4   : -d v -m ltcfr -w -i -o ${d}.rptWI ${d}.cdd         : ${d}.rptWI\n";
+            print DIAG "REPORT ${d}.cdd   : -d v -m ltcfr -w -i -o ${d}.rptWI ${d}.cdd         : ${d}.rptWI\n";
           } elsif( $type ne "errreport" ) {
-            print DIAG "REPORT ${d}.cdd 4   : -d v -w -i -o ${d}.rptWI ${d}.cdd                  : ${d}.rptWI\n";
+            print DIAG "REPORT ${d}.cdd   : -d v -w -i -o ${d}.rptWI ${d}.cdd                  : ${d}.rptWI\n";
           }
         }
       }

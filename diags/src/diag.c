@@ -6,6 +6,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "diag.h"
 #include "list.h"
@@ -163,14 +164,18 @@ int read_diag_info( diag* d ) {
 /*!
  \param d   Pointer to current diagnostic to run
  \param rc  Pointer to current run command that needs to be executed
+
+ \return Returns 1 if the run command was executed; otherwise, returns 0.
 */
-void diag_execute_rc_reverse( diag* d, run_cmd* rc ) {
+int diag_execute_rc_reverse( diag* d, run_cmd* rc ) {
 
-  run_cmd* next_rc;     /* Pointer to next run command */
-  int      i;           /* Loop iterator */
-  int      next_index;  /* Index of next run command */
+  run_cmd* next_rc;                /* Pointer to next run command */
+  int      i;                      /* Loop iterator */
+  int      next_index;             /* Index of next run command */
+  int      prereqs_satisfied = 0;  /* Return value for this function */
+  int      executed;               /* Set to 1 if reversed run-command was executed */
 
-  // printf( "In diag_execute_rc_reverse, cmd: %s\n", rc->cmd );
+  printf( "In diag_execute_rc_reverse, cmd: %s, start: %d\n", rc->cmd, rc->start );
 
   /* Iterate through the list of inputs, executing all required commands */
   for( i=0; i<list_get_size( rc->inputs ); i++ ) {
@@ -179,20 +184,29 @@ void diag_execute_rc_reverse( diag* d, run_cmd* rc ) {
     if( list_get_num( i, rc->inputs ) == 0 ) {
 
       /* Find all commands that meet the needed input criteria */
-      next_rc = d->rc_head;
-      while( next_rc != NULL ) {
-        if( (next_index = list_find_str( list_get_str( i, rc->inputs ), next_rc->outputs )) != -1 ) {
-          diag_execute_rc_reverse( d, next_rc );
+      next_rc  = d->rc_head;
+      executed = 0;
+      while( (next_rc != NULL) && (prereqs_satisfied == i) ) {
+        if( (next_rc->okay == 1) && (rc->start == 0) && ((next_index = list_find_str( list_get_str( i, rc->inputs ), next_rc->outputs )) != -1) ) {
+          prereqs_satisfied += diag_execute_rc_reverse( d, next_rc );
         }
         next_rc = next_rc->next;
       }
+
+    } else {
+
+      prereqs_satisfied++;
 
     }
 
   }
 
   /* Finally, execute the current command */
-  run_cmd_execute( rc, d );
+  if( prereqs_satisfied == list_get_size( rc->inputs ) ) {
+    run_cmd_execute( rc, d );
+  }
+
+  return( (prereqs_satisfied == list_get_size( rc->inputs )) ? 1 : 0 );
 
 }
 
@@ -204,7 +218,7 @@ void diag_execute_rc_forward( diag* d, run_cmd* rc ) {
   int      next_index;  /* List index of the next command to run */
   char     cmd[4096];   /* Command to execute */
 
-  // printf( "In diag_execute_rc_forward, cmd: %s\n", rc->cmd );
+  printf( "In diag_execute_rc_forward, cmd: %s, start: %d\n", rc->cmd, rc->start );
 
   /* First, execute the current command */
   if( run_cmd_execute( rc, d ) == 0 ) {
@@ -219,7 +233,7 @@ void diag_execute_rc_forward( diag* d, run_cmd* rc ) {
           while( (j < list_get_size( next_rc->inputs )) && (list_get_num( j, next_rc->inputs ) == 1) ) j++;
           if( j == list_get_size( next_rc->inputs ) ) {
             diag_execute_rc_forward( d, next_rc );    /* All prerequisites have been satisfied, run this command */
-          } else {
+          } else if( next_rc->okay == 1 ) {
             diag_execute_rc_reverse( d, next_rc );    /* Go back and execute all preliminary commands first */
           } 
         }
@@ -258,7 +272,7 @@ void run_current_diag( diag* d ) {
 
   rc = d->rc_head;
   while( rc != NULL ) {
-    if( (rc->start == 1) && (rc->executed == 0) ) {
+    if( (rc->start == 1) && (rc->okay == 1) && (rc->executed == 0) ) {
       if( first == 1 ) {
         first = 0;
         printf( "Running %s\n", d->name );
@@ -358,6 +372,10 @@ void diag_dealloc_list() {
 
 /*
  $Log$
+ Revision 1.2  2006/03/03 23:24:53  phase1geo
+ Fixing C-based run script.  This is now working for all but one diagnostic to this
+ point.  There is still some work to do here, however.
+
  Revision 1.1  2006/02/27 23:22:10  phase1geo
  Working on C-version of run command.  Initial version only -- does not work
  at this point.

@@ -32,6 +32,7 @@ struct run_cmd_s {
   list*             outputs;   /*!< Specifies the list of output needed for this command */
   int               error;     /*!< Specifies if this command is supposed to produce and error */
   int               start;     /*!< Specifies if this is a starting run command */
+  int               okay;      /*!< Specifies that this command is okay to run */
   int               executed;  /*!< Set to a value of 1 when this run command has been executed */
   struct run_cmd_s* next;      /*!< Pointer to next run command in the list */
 };
@@ -52,6 +53,10 @@ void run_cmd_dealloc_list( run_cmd* rc_head );
 
 /*
  $Log$
+ Revision 1.2  2006/03/03 23:24:53  phase1geo
+ Fixing C-based run script.  This is now working for all but one diagnostic to this
+ point.  There is still some work to do here, however.
+
  Revision 1.1  2006/02/27 23:22:10  phase1geo
  Working on C-version of run command.  Initial version only -- does not work
  at this point.
