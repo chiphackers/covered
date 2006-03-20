@@ -31,6 +31,9 @@ void expression_resize( expression* expr, bool recursive );
 /*! \brief Returns expression ID of this expression. */
 int expression_get_id( expression* expr, bool parse_mode );
 
+/*! \brief Returns first line in this expression tree. */
+expression* expression_get_first_line_expr( expression* expr );
+
 /*! \brief Returns last line in this expression tree. */
 expression* expression_get_last_line_expr( expression* expr );
 
@@ -85,6 +88,10 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.41  2006/02/06 22:48:34  phase1geo
+ Several enhancements to GUI look and feel.  Fixed error in combinational logic
+ window.
+
  Revision 1.40  2006/02/03 23:49:38  phase1geo
  More fixes to support signed comparison and propagation.  Still more testing
  to do here before I call it good.  Regression may fail at this point.

@@ -35,6 +35,7 @@
 #include "util.h"
 #include "vector.h"
 #include "func_unit.h"
+#include "expr.h"
 
 
 extern bool flag_use_line_width;
@@ -69,15 +70,23 @@ void codegen_create_expr_helper( char** code,
                                  bool   last_same_line,
                                  char*  last ) {
 
-  char* tmpstr;         /* Temporary string holder              */
+  char* tmpstr;         /* Temporary string holder */
   int   code_size = 0;  /* Length of current string to generate */
-  int   i;              /* Loop iterator                        */
+  int   i;              /* Loop iterator */
 
   assert( left_depth > 0 );
 
 /*
   printf( "code_index: %d, first: %s, left_depth: %d, first_same: %d, middle: %s, right_depth: %d, last_same: %d, last: %s\n",
           code_index, first, left_depth, first_same_line, middle, right_depth, last_same_line, last );
+  printf( "left code:\n" );
+  for( i=0; i<left_depth; i++ ) {
+    printf( "  %s\n", left[i] );
+  }
+  printf( "right_code:\n" );
+  for( i=0; i<right_depth; i++ ) {
+    printf( "  %s\n", right[i] );
+  }
 */
 
   if( first != NULL ) {
@@ -176,21 +185,27 @@ void codegen_create_expr_helper( char** code,
  Allocates enough memory in code array to store all code lines for the current expression.
  Calls the helper function to actually generate code lines (to populate the code array).
 */
-void codegen_create_expr( char*** code,
-                          int*    code_depth,
-                          int     curr_line,
-                          char*   first,
-                          char**  left,
-                          int     left_depth,
-                          int     left_line,
-                          char*   middle,
-                          char**  right,
-                          int     right_depth,
-                          int     right_line,
-                          char*   last ) {
+void codegen_create_expr( char***     code,
+                          int*        code_depth,
+                          int         curr_line,
+                          char*       first,
+                          char**      left,
+                          int         left_depth,
+                          expression* left_exp,
+                          char*       middle,
+                          char**      right,
+                          int         right_depth,
+                          expression* right_exp,
+                          char*       last ) {
 
-  int total_len = 0;  /* Total length of first, left, middle, right, and last strings */
-  int i;              /* Loop iterator                                                */ 
+  int         total_len = 0;  /* Total length of first, left, middle, right, and last strings */
+  int         i;              /* Loop iterator */ 
+  expression* last_exp;       /* Last expression of left expression tree */
+  expression* first_exp;      /* First expression of right expression tree */
+  int         left_line;      /* Line number of last expression of left expression tree */
+  int         right_line;     /* Line number of first expression of right expression tree */
+
+  // printf( "codegen_create_expr, code_depth: %d, curr_line: %d, first: %s, middle: %s, last: %s\n", *code_depth, curr_line, first, middle, last );
 
   *code_depth = 0;
 
@@ -202,6 +217,20 @@ void codegen_create_expr( char*** code,
     }
     if( right_depth > 0 ) {
       *code_depth += right_depth;
+    }
+
+    /* Calculate last and first expression values */
+    if( left_exp != NULL ) {
+      last_exp  = expression_get_last_line_expr( left_exp );
+      left_line = last_exp->line;
+    } else {
+      left_line = 0;
+    }
+    if( right_exp != NULL ) {
+      first_exp  = expression_get_first_line_expr( right_exp );
+      right_line = first_exp->line;
+    } else {
+      right_line = 0;
     }
 
     if( flag_use_line_width ) {
@@ -358,7 +387,8 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
       tmpstr = (char*)malloc_safe( (strlen( pname ) + 2), __FILE__, __LINE__ );
       snprintf( tmpstr, (strlen( pname ) + 2), "%s[", pname );
 
-      codegen_create_expr( code, code_depth, expr->line, tmpstr, left_code, left_code_depth, expr->left->line, "]", NULL, 0, 0, NULL );
+      codegen_create_expr( code, code_depth, expr->line, tmpstr, left_code, left_code_depth,
+                           expr->left, "]", NULL, 0, NULL, NULL );
 
       free_safe( tmpstr );
       free_safe( pname );
@@ -377,11 +407,13 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
       snprintf( tmpstr, (strlen( pname ) + 2), "%s[", pname );
 
       if( ESUPPL_WAS_SWAPPED( expr->suppl ) ) {
-        codegen_create_expr( code, code_depth, expr->line, tmpstr, right_code, right_code_depth, expr->right->line, ":",
-                             left_code, left_code_depth, expr->left->line, "]" );
+        codegen_create_expr( code, code_depth, expr->line, tmpstr,
+                             right_code, right_code_depth, expr->right, ":",
+                             left_code, left_code_depth, expr->left, "]" );
       } else {
-        codegen_create_expr( code, code_depth, expr->line, tmpstr, left_code, left_code_depth, expr->left->line, ":",
-                             right_code, right_code_depth, expr->right->line, "]" );
+        codegen_create_expr( code, code_depth, expr->line, tmpstr,
+                             left_code, left_code_depth, expr->left, ":",
+                             right_code, right_code_depth, expr->right, "]" );
       }
 
       free_safe( tmpstr );
@@ -400,8 +432,8 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
       tmpstr = (char*)malloc_safe( (strlen( pname ) + 2), __FILE__, __LINE__ );
       snprintf( tmpstr, (strlen( pname ) + 2), "%s[", pname );
 
-      codegen_create_expr( code, code_depth, expr->line, tmpstr, left_code, left_code_depth, expr->left->line, "+:",
-                           right_code, right_code_depth, expr->right->line, "]" );
+      codegen_create_expr( code, code_depth, expr->line, tmpstr, left_code, left_code_depth, expr->left, "+:",
+                           right_code, right_code_depth, expr->right, "]" );
 
       free_safe( tmpstr );
       free_safe( pname );
@@ -419,8 +451,8 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
       tmpstr = (char*)malloc_safe( (strlen( pname ) + 2), __FILE__, __LINE__ );
       snprintf( tmpstr, (strlen( pname ) + 2), "%s[", pname );
 
-      codegen_create_expr( code, code_depth, expr->line, tmpstr, left_code, left_code_depth, expr->left->line, "-:",
-                           right_code, right_code_depth, expr->right->line, "]" );
+      codegen_create_expr( code, code_depth, expr->line, tmpstr, left_code, left_code_depth, expr->left, "-:",
+                           right_code, right_code_depth, expr->right, "]" );
 
       free_safe( tmpstr );
       free_safe( pname );
@@ -440,7 +472,7 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
         } else {
           tmpstr = (char*)malloc_safe( (strlen( pname ) + 3), __FILE__, __LINE__ );
           snprintf( tmpstr, (strlen( pname ) + 3), "%s( ", pname );
-          codegen_create_expr( code, code_depth, expr->line, tmpstr, left_code, left_code_depth, expr->left->line, " )", NULL, 0, 0, NULL );
+          codegen_create_expr( code, code_depth, expr->line, tmpstr, left_code, left_code_depth, expr->left, " )", NULL, 0, NULL, NULL );
           free_safe( tmpstr );
         }
         free_safe( after );
@@ -489,227 +521,228 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
         after  = strdup_safe( ")", __FILE__, __LINE__ );
       }
 
+
       switch( expr->op ) {
         case EXP_OP_XOR      :
-          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left->line, " ^ ",
-                               right_code, right_code_depth, expr->right->line, after );
+          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left, " ^ ",
+                               right_code, right_code_depth, expr->right, after );
           break;
         case EXP_OP_MULTIPLY :
-          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left->line, " * ",
-                               right_code, right_code_depth, expr->right->line, after );
+          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left, " * ",
+                               right_code, right_code_depth, expr->right, after );
           break;
         case EXP_OP_DIVIDE   :
-          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left->line, " / ",
-                               right_code, right_code_depth, expr->right->line, after );
+          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left, " / ",
+                               right_code, right_code_depth, expr->right, after );
           break;
         case EXP_OP_MOD      :
-          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left->line, " %% ",
-                               right_code, right_code_depth, expr->right->line, after );
+          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left, " %% ",
+                               right_code, right_code_depth, expr->right, after );
           break;
         case EXP_OP_ADD      :
-          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left->line, " + ",
-                               right_code, right_code_depth, expr->right->line, after );
+          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left, " + ",
+                               right_code, right_code_depth, expr->right, after );
           break;
         case EXP_OP_SUBTRACT :
-          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left->line, " - ",
-                               right_code, right_code_depth, expr->right->line, after );
+          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left, " - ",
+                               right_code, right_code_depth, expr->right, after );
           break;
         case EXP_OP_EXPONENT :
-          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left->line, " ** ",
-                               right_code, right_code_depth, expr->right->line, after );
+          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left, " ** ",
+                               right_code, right_code_depth, expr->right, after );
           break;
         case EXP_OP_AND      :
-          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left->line, " & ",
-                               right_code, right_code_depth, expr->right->line, after );
+          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left, " & ",
+                               right_code, right_code_depth, expr->right, after );
           break;
         case EXP_OP_OR       :
-          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left->line, " | ",
-                               right_code, right_code_depth, expr->right->line, after );
+          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left, " | ",
+                               right_code, right_code_depth, expr->right, after );
           break;
         case EXP_OP_NAND     :
-          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left->line, " ~& ",
-                               right_code, right_code_depth, expr->right->line, after );
+          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left, " ~& ",
+                               right_code, right_code_depth, expr->right, after );
           break;
         case EXP_OP_NOR      :
-          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left->line, " ~| ",
-                               right_code, right_code_depth, expr->right->line, after );
+          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left, " ~| ",
+                               right_code, right_code_depth, expr->right, after );
           break;
         case EXP_OP_NXOR     :
-          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left->line, " ~^ ",
-                               right_code, right_code_depth, expr->right->line, after );
+          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left, " ~^ ",
+                               right_code, right_code_depth, expr->right, after );
           break;
         case EXP_OP_LT       :
-          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left->line, " < ",
-                               right_code, right_code_depth, expr->right->line, after );
+          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left, " < ",
+                               right_code, right_code_depth, expr->right, after );
           break;
         case EXP_OP_GT       :
-          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left->line, " > ",
-                               right_code, right_code_depth, expr->right->line, after );
+          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left, " > ",
+                               right_code, right_code_depth, expr->right, after );
           break;
         case EXP_OP_LSHIFT   :
-          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left->line, " << ",
-                               right_code, right_code_depth, expr->right->line, after );
+          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left, " << ",
+                               right_code, right_code_depth, expr->right, after );
           break;
         case EXP_OP_ALSHIFT  :
-          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left->line, " <<< ",
-                               right_code, right_code_depth, expr->right->line, after );
+          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left, " <<< ",
+                               right_code, right_code_depth, expr->right, after );
           break;
         case EXP_OP_RSHIFT   :
-          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left->line, " >> ",
-                               right_code, right_code_depth, expr->right->line, after );
+          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left, " >> ",
+                               right_code, right_code_depth, expr->right, after );
           break;
         case EXP_OP_ARSHIFT   :
-          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left->line, " >>> ",
-                               right_code, right_code_depth, expr->right->line, after );
+          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left, " >>> ",
+                               right_code, right_code_depth, expr->right, after );
           break;
         case EXP_OP_EQ       :
-          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left->line, " == ",
-                               right_code, right_code_depth, expr->right->line, after );
+          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left, " == ",
+                               right_code, right_code_depth, expr->right, after );
           break;
         case EXP_OP_CEQ      :
-          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left->line, " === ",
-                               right_code, right_code_depth, expr->right->line, after );
+          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left, " === ",
+                               right_code, right_code_depth, expr->right, after );
           break;
         case EXP_OP_LE       :
-          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left->line, " <= ",
-                               right_code, right_code_depth, expr->right->line, after );
+          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left, " <= ",
+                               right_code, right_code_depth, expr->right, after );
           break;
         case EXP_OP_GE       :
-          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left->line, " >= ",
-                               right_code, right_code_depth, expr->right->line, after );
+          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left, " >= ",
+                               right_code, right_code_depth, expr->right, after );
           break;
         case EXP_OP_NE       :
-          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left->line, " != ",
-                               right_code, right_code_depth, expr->right->line, after );
+          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left, " != ",
+                               right_code, right_code_depth, expr->right, after );
           break;
         case EXP_OP_CNE      :
-          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left->line, " !== ",
-                               right_code, right_code_depth, expr->right->line, after );
+          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left, " !== ",
+                               right_code, right_code_depth, expr->right, after );
           break;
         case EXP_OP_LOR      :
-          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left->line, " || ",
-                               right_code, right_code_depth, expr->right->line, after );
+          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left, " || ",
+                               right_code, right_code_depth, expr->right, after );
           break;
         case EXP_OP_LAND     :
-          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left->line, " && ",
-                               right_code, right_code_depth, expr->right->line, after );
+          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left, " && ",
+                               right_code, right_code_depth, expr->right, after );
           break;
         case EXP_OP_COND     :
-          codegen_create_expr( code, code_depth, expr->line, NULL, left_code, left_code_depth, expr->left->line, " ? ",
-                               right_code, right_code_depth, expr->right->line, NULL );
+          codegen_create_expr( code, code_depth, expr->line, NULL, left_code, left_code_depth, expr->left, " ? ",
+                               right_code, right_code_depth, expr->right, NULL );
           break;
         case EXP_OP_COND_SEL :
-          codegen_create_expr( code, code_depth, expr->line, NULL, left_code, left_code_depth, expr->left->line, " : ",
-                               right_code, right_code_depth, expr->right->line, NULL );
+          codegen_create_expr( code, code_depth, expr->line, NULL, left_code, left_code_depth, expr->left, " : ",
+                               right_code, right_code_depth, expr->right, NULL );
           break;
         case EXP_OP_UINV     :
-          codegen_create_expr( code, code_depth, expr->line, "~", right_code, right_code_depth, expr->right->line, NULL,
-                               NULL, 0, 0, NULL );
+          codegen_create_expr( code, code_depth, expr->line, "~", right_code, right_code_depth, expr->right, NULL,
+                               NULL, 0, NULL, NULL );
           break;
         case EXP_OP_UAND     :
-          codegen_create_expr( code, code_depth, expr->line, "&", right_code, right_code_depth, expr->right->line, NULL,
-                               NULL, 0, 0, NULL );
+          codegen_create_expr( code, code_depth, expr->line, "&", right_code, right_code_depth, expr->right, NULL,
+                               NULL, 0, NULL, NULL );
           break;
         case EXP_OP_UNOT     :
-          codegen_create_expr( code, code_depth, expr->line, "!", right_code, right_code_depth, expr->right->line, NULL,
-                               NULL, 0, 0, NULL );
+          codegen_create_expr( code, code_depth, expr->line, "!", right_code, right_code_depth, expr->right, NULL,
+                               NULL, 0, NULL, NULL );
           break;
         case EXP_OP_UOR      :
-          codegen_create_expr( code, code_depth, expr->line, "|", right_code, right_code_depth, expr->right->line, NULL,
-                               NULL, 0, 0, NULL );
+          codegen_create_expr( code, code_depth, expr->line, "|", right_code, right_code_depth, expr->right, NULL,
+                               NULL, 0, NULL, NULL );
           break;
         case EXP_OP_UXOR     :
-          codegen_create_expr( code, code_depth, expr->line, "^", right_code, right_code_depth, expr->right->line, NULL,
-                               NULL, 0, 0, NULL );
+          codegen_create_expr( code, code_depth, expr->line, "^", right_code, right_code_depth, expr->right, NULL,
+                               NULL, 0, NULL, NULL );
           break;
         case EXP_OP_UNAND    :
-          codegen_create_expr( code, code_depth, expr->line, "~&", right_code, right_code_depth, expr->right->line, NULL,
-                               NULL, 0, 0, NULL );
+          codegen_create_expr( code, code_depth, expr->line, "~&", right_code, right_code_depth, expr->right, NULL,
+                               NULL, 0, NULL, NULL );
           break;
         case EXP_OP_UNOR     :
-          codegen_create_expr( code, code_depth, expr->line, "~|", right_code, right_code_depth, expr->right->line, NULL,
-                               NULL, 0, 0, NULL );
+          codegen_create_expr( code, code_depth, expr->line, "~|", right_code, right_code_depth, expr->right, NULL,
+                               NULL, 0, NULL, NULL );
           break;
         case EXP_OP_UNXOR    :
-          codegen_create_expr( code, code_depth, expr->line, "~^", right_code, right_code_depth, expr->right->line, NULL,
-                               NULL, 0, 0, NULL );
+          codegen_create_expr( code, code_depth, expr->line, "~^", right_code, right_code_depth, expr->right, NULL,
+                               NULL, 0, NULL, NULL );
           break;
         case EXP_OP_EXPAND   :
-          codegen_create_expr( code, code_depth, expr->line, "{", left_code, left_code_depth, expr->left->line, "{",
-                               right_code, right_code_depth, expr->right->line, "}}" );
+          codegen_create_expr( code, code_depth, expr->line, "{", left_code, left_code_depth, expr->left, "{",
+                               right_code, right_code_depth, expr->right, "}}" );
           break;
         case EXP_OP_LIST     :
-          codegen_create_expr( code, code_depth, expr->line, NULL, left_code, left_code_depth, expr->left->line, ", ",
-                               right_code, right_code_depth, expr->right->line, NULL );
+          codegen_create_expr( code, code_depth, expr->line, NULL, left_code, left_code_depth, expr->left, ", ",
+                               right_code, right_code_depth, expr->right, NULL );
           break;
         case EXP_OP_CONCAT   :
-          codegen_create_expr( code, code_depth, expr->line, "{", right_code, right_code_depth, expr->right->line, "}",
-                               NULL, 0, 0, NULL );
+          codegen_create_expr( code, code_depth, expr->line, "{", right_code, right_code_depth, expr->right, "}",
+                               NULL, 0, NULL, NULL );
           break;
         case EXP_OP_PEDGE    :
           if( ESUPPL_IS_ROOT( expr->suppl ) == 1 ) {
-            codegen_create_expr( code, code_depth, expr->line, "@(posedge ", right_code, right_code_depth, expr->right->line, ")",
-                                 NULL, 0, 0, NULL );
+            codegen_create_expr( code, code_depth, expr->line, "@(posedge ", right_code, right_code_depth, expr->right, ")",
+                                 NULL, 0, NULL, NULL );
           } else {
-            codegen_create_expr( code, code_depth, expr->line, "posedge ", right_code, right_code_depth, expr->right->line, NULL,
-                                 NULL, 0, 0, NULL );
+            codegen_create_expr( code, code_depth, expr->line, "posedge ", right_code, right_code_depth, expr->right, NULL,
+                                 NULL, 0, NULL, NULL );
           }
           break;
         case EXP_OP_NEDGE    :
           if( ESUPPL_IS_ROOT( expr->suppl ) == 1 ) {
-            codegen_create_expr( code, code_depth, expr->line, "@(negedge ", right_code, right_code_depth, expr->right->line, ")",
-                                 NULL, 0, 0, NULL );
+            codegen_create_expr( code, code_depth, expr->line, "@(negedge ", right_code, right_code_depth, expr->right, ")",
+                                 NULL, 0, NULL, NULL );
           } else {
-            codegen_create_expr( code, code_depth, expr->line, "negedge ", right_code, right_code_depth, expr->right->line, NULL,
-                                 NULL, 0, 0, NULL );
+            codegen_create_expr( code, code_depth, expr->line, "negedge ", right_code, right_code_depth, expr->right, NULL,
+                                 NULL, 0, NULL, NULL );
           }
           break;
         case EXP_OP_AEDGE    :
           if( ESUPPL_IS_ROOT( expr->suppl ) == 1 ) {
-            codegen_create_expr( code, code_depth, expr->line, "@(", right_code, right_code_depth, expr->right->line, ")",
-                                 NULL, 0, 0, NULL );
+            codegen_create_expr( code, code_depth, expr->line, "@(", right_code, right_code_depth, expr->right, ")",
+                                 NULL, 0, NULL, NULL );
           } else {
-            codegen_create_expr( code, code_depth, expr->line, NULL, right_code, right_code_depth, expr->right->line, NULL,
-                                 NULL, 0, 0, NULL );
+            codegen_create_expr( code, code_depth, expr->line, NULL, right_code, right_code_depth, expr->right, NULL,
+                                 NULL, 0, NULL, NULL );
           }
           break;
         case EXP_OP_EOR      :
           if( ESUPPL_IS_ROOT( expr->suppl ) == 1 ) {
-            codegen_create_expr( code, code_depth, expr->line, "@(", left_code, left_code_depth, expr->left->line, " or ",
-                                 right_code, right_code_depth, expr->right->line, ")" );
+            codegen_create_expr( code, code_depth, expr->line, "@(", left_code, left_code_depth, expr->left, " or ",
+                                 right_code, right_code_depth, expr->right, ")" );
           } else {
-            codegen_create_expr( code, code_depth, expr->line, NULL, left_code, left_code_depth, expr->left->line, " or ",
-                                 right_code, right_code_depth, expr->right->line, NULL );
+            codegen_create_expr( code, code_depth, expr->line, NULL, left_code, left_code_depth, expr->left, " or ",
+                                 right_code, right_code_depth, expr->right, NULL );
           }
           break;
         case EXP_OP_CASE     :
-          codegen_create_expr( code, code_depth, expr->line, "case( ", left_code, left_code_depth, expr->left->line, " ) ",
-                               right_code, right_code_depth, expr->right->line, " :" );
+          codegen_create_expr( code, code_depth, expr->line, "case( ", left_code, left_code_depth, expr->left, " ) ",
+                               right_code, right_code_depth, expr->right, " :" );
           break;
         case EXP_OP_CASEX    :
-          codegen_create_expr( code, code_depth, expr->line, "casex( ", left_code, left_code_depth, expr->left->line, " ) ",
-                               right_code, right_code_depth, expr->right->line, " :" );
+          codegen_create_expr( code, code_depth, expr->line, "casex( ", left_code, left_code_depth, expr->left, " ) ",
+                               right_code, right_code_depth, expr->right, " :" );
           break;
         case EXP_OP_CASEZ    :
-          codegen_create_expr( code, code_depth, expr->line, "casez( ", left_code, left_code_depth, expr->left->line, " ) ",
-                               right_code, right_code_depth, expr->right->line, " :" );
+          codegen_create_expr( code, code_depth, expr->line, "casez( ", left_code, left_code_depth, expr->left, " ) ",
+                               right_code, right_code_depth, expr->right, " :" );
           break;
         case EXP_OP_DELAY    :
-          codegen_create_expr( code, code_depth, expr->line, "#(", right_code, right_code_depth, expr->right->line, ")",
-                               NULL, 0, 0, NULL );
+          codegen_create_expr( code, code_depth, expr->line, "#(", right_code, right_code_depth, expr->right, ")",
+                               NULL, 0, NULL, NULL );
           break;
         case EXP_OP_ASSIGN   :
-          codegen_create_expr( code, code_depth, expr->line, "assign ", left_code, left_code_depth, expr->left->line, " = ",
-                               right_code, right_code_depth, expr->right->line, NULL );
+          codegen_create_expr( code, code_depth, expr->line, "assign ", left_code, left_code_depth, expr->left, " = ",
+                               right_code, right_code_depth, expr->right, NULL );
           break;
         case EXP_OP_DASSIGN  :
         case EXP_OP_BASSIGN  :
-          codegen_create_expr( code, code_depth, expr->line, NULL, left_code, left_code_depth, expr->left->line, " = ",
-                               right_code, right_code_depth, expr->right->line, NULL );
+          codegen_create_expr( code, code_depth, expr->line, NULL, left_code, left_code_depth, expr->left, " = ",
+                               right_code, right_code_depth, expr->right, NULL );
           break;
         case EXP_OP_NASSIGN  :
-          codegen_create_expr( code, code_depth, expr->line, NULL, left_code, left_code_depth, expr->left->line, " <= ",
-                               right_code, right_code_depth, expr->right->line, NULL );
+          codegen_create_expr( code, code_depth, expr->line, NULL, left_code, left_code_depth, expr->left, " <= ",
+                               right_code, right_code_depth, expr->right, NULL );
           break;
         case EXP_OP_PASSIGN  :
           *code            = right_code;
@@ -717,20 +750,20 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
           right_code_depth = 0;
           break;
         case EXP_OP_IF       :
-          codegen_create_expr( code, code_depth, expr->line, "if( ", right_code, right_code_depth, expr->right->line, " )",
-                               NULL, 0, 0, NULL );
+          codegen_create_expr( code, code_depth, expr->line, "if( ", right_code, right_code_depth, expr->right, " )",
+                               NULL, 0, NULL, NULL );
           break;
         case EXP_OP_REPEAT   :
-          codegen_create_expr( code, code_depth, expr->line, "repeat( ", right_code, right_code_depth, expr->right->line, " )",
-                               NULL, 0, 0, NULL );
+          codegen_create_expr( code, code_depth, expr->line, "repeat( ", right_code, right_code_depth, expr->right, " )",
+                               NULL, 0, NULL, NULL );
           break;
         case EXP_OP_WHILE    :
-          codegen_create_expr( code, code_depth, expr->line, "while( ", right_code, right_code_depth, expr->right->line, " )",
-                               NULL, 0, 0, NULL );
+          codegen_create_expr( code, code_depth, expr->line, "while( ", right_code, right_code_depth, expr->right, " )",
+                               NULL, 0, NULL, NULL );
           break;
         case EXP_OP_NEGATE   :
-          codegen_create_expr( code, code_depth, expr->line, "-", right_code, right_code_depth, expr->right->line, NULL,
-                               NULL, 0, 0, NULL );
+          codegen_create_expr( code, code_depth, expr->line, "-", right_code, right_code_depth, expr->right, NULL,
+                               NULL, 0, NULL, NULL );
           break;
         default:  break;
       }
@@ -757,6 +790,9 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.63  2006/02/17 19:50:47  phase1geo
+ Added full support for escaped names.  Full regression passes.
+
  Revision 1.62  2006/02/06 05:07:26  phase1geo
  Fixed expression_set_static_only function to consider static expressions
  properly.  Updated regression as a result of this change.  Added files

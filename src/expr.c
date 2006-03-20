@@ -767,6 +767,28 @@ int expression_get_id( expression* expr, bool parse_mode ) {
 }
 
 /*!
+ \param expr  Pointer to root expression to extract first line from
+
+ \return Returns the line number of the first line in this expression.
+*/
+expression* expression_get_first_line_expr( expression* expr ) {
+
+  expression* first = NULL;
+
+  if( expr != NULL ) {
+
+    first = expression_get_first_line_expr( expr->left );
+    if( (first == NULL) || (first->line > expr->line) ) {
+      first = expr;
+    }
+
+  }
+
+  return( first );
+
+}
+
+/*!
  \param expr  Pointer to root expression to extract last line from
 
  \return Returns the line number of the last line in this expression. 
@@ -3099,6 +3121,9 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.173  2006/02/17 19:50:47  phase1geo
+ Added full support for escaped names.  Full regression passes.
+
  Revision 1.172  2006/02/10 16:44:28  phase1geo
  Adding support for register assignment.  Added diagnostic to regression suite
  to verify its implementation.  Updated TODO.  Full regression passes at this

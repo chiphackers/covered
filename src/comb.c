@@ -1994,7 +1994,6 @@ bool combination_get_expression( char* funit_name, int funit_type, int expr_id, 
 
       for( i=0; i<*code_size; i++ ) {
 
-        printf( "code: %s\n", (*code)[i] );
         assert( (*code)[i] != NULL );
 
         (*uline_groups)[i] = 0;
@@ -2152,6 +2151,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.131  2006/03/15 22:48:29  phase1geo
+ Updating run program.  Fixing bugs in statement_connect algorithm.  Updating
+ regression files.
+
  Revision 1.130  2006/02/17 19:50:47  phase1geo
  Added full support for escaped names.  Full regression passes.
 

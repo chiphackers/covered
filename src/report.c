@@ -246,7 +246,7 @@ bool report_parse_args( int argc, int last_arg, char** argv ) {
 #ifdef HAVE_TCLTK
       report_gui          = TRUE;
       report_comb_depth   = REPORT_VERBOSE;
-      flag_use_line_width = TRUE;
+//      flag_use_line_width = TRUE;
 #else
       print_output( "The -view option is not available with this build", FATAL, __FILE__, __LINE__ );
       retval = FALSE;
@@ -748,6 +748,10 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.54  2006/01/28 06:42:53  phase1geo
+ Added configuration read/write functionality for tool preferences and integrated
+ the preferences.tcl file into Covered's GUI.  This is now functioning correctly.
+
  Revision 1.53  2006/01/27 15:43:58  phase1geo
  Added ifdefs for HAVE_ZLIB define to allow Covered to compile correctly when
  zlib.h and associated library is unavailable.  Also handle dumpfile reading
