@@ -198,14 +198,18 @@ void codegen_create_expr( char***     code,
                           expression* right_exp,
                           char*       last ) {
 
-  int         total_len = 0;  /* Total length of first, left, middle, right, and last strings */
-  int         i;              /* Loop iterator */ 
-  expression* last_exp;       /* Last expression of left expression tree */
-  expression* first_exp;      /* First expression of right expression tree */
-  int         left_line;      /* Line number of last expression of left expression tree */
-  int         right_line;     /* Line number of first expression of right expression tree */
+  int         total_len = 0;    /* Total length of first, left, middle, right, and last strings */
+  int         i;                /* Loop iterator */ 
+  expression* last_exp;         /* Last expression of left expression tree */
+  expression* first_exp;        /* First expression of right expression tree */
+  int         left_line_start;  /* Line number of first expression of left expression tree */
+  int         left_line_end;    /* Line number of last expression of left expression tree */
+  int         right_line;       /* Line number of first expression of right expression tree */
 
-  // printf( "codegen_create_expr, code_depth: %d, curr_line: %d, first: %s, middle: %s, last: %s\n", *code_depth, curr_line, first, middle, last );
+/*
+  printf( "-----------------------------------------------------------------\n" );
+  printf( "codegen_create_expr, curr_line: %d, first: %s, middle: %s, last: %s\n", curr_line, first, middle, last );
+*/
 
   *code_depth = 0;
 
@@ -221,10 +225,13 @@ void codegen_create_expr( char***     code,
 
     /* Calculate last and first expression values */
     if( left_exp != NULL ) {
-      last_exp  = expression_get_last_line_expr( left_exp );
-      left_line = last_exp->line;
+      first_exp       = expression_get_first_line_expr( left_exp );
+      left_line_start = first_exp->line;
+      last_exp        = expression_get_last_line_expr( left_exp );
+      left_line_end   = last_exp->line;
     } else {
-      left_line = 0;
+      left_line_start = 0;
+      left_line_end   = 0;
     }
     if( right_exp != NULL ) {
       first_exp  = expression_get_first_line_expr( right_exp );
@@ -247,10 +254,10 @@ void codegen_create_expr( char***     code,
 
     } else {
 
-      if( (left_depth > 0) && (right_depth > 0) && (left_line == right_line) ) {
+      if( (left_depth > 0) && (right_depth > 0) && (left_line_end == right_line) ) {
         *code_depth -= 1;
       }
-      if( (left_depth > 0) && (left_line > curr_line) ) {
+      if( (left_depth > 0) && (left_line_start > curr_line) ) {
         *code_depth += 1;
       }
       if( (left_depth == 0) && (right_depth > 0) && (right_line != curr_line) ) {
@@ -269,9 +276,16 @@ void codegen_create_expr( char***     code,
       codegen_create_expr_helper( *code, 0, first, left, left_depth, TRUE, middle,
                                   right, right_depth, (total_len <= line_width), last );
     } else {
-      codegen_create_expr_helper( *code, 0, first, left, left_depth, (curr_line >= left_line), middle,
-                                  right, right_depth, (left_line == right_line), last );
+      codegen_create_expr_helper( *code, 0, first, left, left_depth, (curr_line >= left_line_start), middle,
+                                  right, right_depth, (left_line_end == right_line), last );
     }
+
+/*
+    printf( "CODE:\n" );
+    for( i=0; i<(*code_depth); i++ ) {
+      printf( "%s\n", (*code)[i] );
+    }
+*/
 
   }
 
@@ -790,6 +804,10 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.64  2006/03/20 16:43:38  phase1geo
+ Fixing code generator to properly display expressions based on lines.  Regression
+ still needs to be updated for these changes.
+
  Revision 1.63  2006/02/17 19:50:47  phase1geo
  Added full support for escaped names.  Full regression passes.
 
