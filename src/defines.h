@@ -722,6 +722,8 @@ typedef enum exp_op_type_e {
 #define EXPR_COMB_MISSED(x)        (EXPR_IS_MEASURABLE( x ) && \
                                     !expression_is_static_only( x ) && \
 				    ((EXPR_IS_COMB( x ) && \
+                                      !expression_is_static_only( x->left ) && \
+                                      !expression_is_static_only( x->right ) && \
 				      (!x->suppl.part.eval_00 || \
                                        !x->suppl.part.eval_01 || \
                                        !x->suppl.part.eval_10 || \
@@ -1803,6 +1805,11 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.180  2006/02/16 21:19:26  phase1geo
+ Adding support for arrays of instances.  Also fixing some memory problems for
+ constant functions and fixed binding problems when hierarchical references are
+ made to merged modules.  Full regression now passes.
+
  Revision 1.179  2006/02/10 16:44:28  phase1geo
  Adding support for register assignment.  Added diagnostic to regression suite
  to verify its implementation.  Updated TODO.  Full regression passes at this
