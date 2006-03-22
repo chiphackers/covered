@@ -9,6 +9,7 @@ source $HOME/scripts/comb.tcl
 source $HOME/scripts/help.tcl
 source $HOME/scripts/summary.tcl
 source $HOME/scripts/preferences.tcl
+source $HOME/scripts/cdd_view.tcl
 
 set last_lb_index      ""
 set lwidth             -1 

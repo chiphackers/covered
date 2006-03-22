@@ -157,171 +157,58 @@ proc display_comb_coverage {ulid} {
 
 proc get_expr_index_from_range {selected_range get_uline_id} {
 
-  global comb_uline_exprs comb_curr_uline_id
+  global comb_uline_expr comb_curr_uline_id
   global curr_funit_name curr_funit_type
 
   # Get range information
-  set start_info [split [lindex $selected_range 0] .]
+  set line       [lindex [split [lindex $selected_range 0] .] 0]
+  set start_char [lindex [split [lindex $selected_range 0] .] 1]
+  set end_char   [expr [lindex [split [lindex $selected_range 1] .] 1] - 1]
 
-  set i     0
-  set found 0
+  # Get ID from string
+  set id [regexp -inline -- {\d+} [.combwin.f.top.t get [lindex $selected_range 0] [lindex $selected_range 1]]]
 
-  while {[expr $i < [llength $comb_uline_exprs]] && [expr $found == 0]} {
-  
-    set curr_expr [lindex $comb_uline_exprs $i]
-
-    # If the current expression is being displayed
-    if {[lindex $curr_expr 0] == 1} {
-
-      set j         0
-      set lines     [lindex $curr_expr 3]
-      set line_num  [llength $lines]
-      set curr_line [lindex $lines 0]
-   
-      while {[expr $j < $line_num] && [expr $found == 0]} {
-        if {[lindex $curr_line 3] == [expr [lindex $start_info 0] / 3]} {
-          if {[lindex $curr_line 1] == [lindex $start_info 1]} {
-            set found 1
-          }
-        }
-        incr j
-        set curr_line [lindex $lines $j]
-      }
-  
-    }
-
-    if {$found == 0} {
-      incr i
-    }
-
-  }
-
-  if {$found == 1} {
+  if {$id != -1} {
 
     if {$get_uline_id == 1} {
 
       # Get current expression underline ID for lookup purposes
-      set comb_curr_uline_id [lindex $curr_expr 2]
+      set comb_curr_uline_id $id
 
-      # Output current expression in information bar
-      if {$comb_curr_uline_id != 0} {
-
-        # Display information in textbox
-        display_comb_coverage $comb_curr_uline_id
-
-      }
+      # Display information in textbox
+      display_comb_coverage $comb_curr_uline_id
 
     }
 
-    return $i
-
-  } else {
-    return -1
   }
 
-}
-
-proc get_underline_expressions {parent} {
-
-  global comb_uline_exprs comb_uline_groups
-  global comb_ulines
-
-  # Get information from parent expression
-  set parent_expr  [lindex $comb_uline_exprs $parent]
-  set parent_level [lindex $parent_expr 1]
-  set parent_ulid  [lindex $parent_expr 2]
-
-  # Calculate the current level by adding one to the parent expression
-  set child_level [expr $parent_level + 1]
-
-  # Iterate through list of lines that parent consumes getting children
-  set parent_lines    [lindex $parent_expr 3]
-  set parent_line_num [llength $parent_lines]
-  set uline_ip        0
-  set child_ids       [list]
-
-  for {set i 0} {$i < $parent_line_num} {incr i} {
-
-    # Get current line
-    set line [lindex $parent_lines $i]
-
-    # Get current parent line information
-    set index      [lindex $line 0]
-    set start_char [lindex $line 1]
-    set end_char   [lindex $line 2]
-    set code_index [lindex $line 3]
-
-    if {$child_level < [lindex $comb_uline_groups $code_index]} {
-
-      # Extract children from this line
-      set curr_uline [lindex $comb_ulines [expr $index - 1]]
-      set curr_char  0
-
-      if {$uline_ip == 1} {
-        set curr_char [string first "-" $curr_uline $curr_char] 
-        set uline_ip  0
-      } else {
-        set curr_char [string first "|" $curr_uline $curr_char] 
-      }
-
-      while {[expr $curr_char != -1] && [expr $curr_char <= $end_char]} {
-        if {$uline_ip == 0} {
-          set uline_ip 1
-          set start_char $curr_char
-          set child_ulid [regexp -inline -start $curr_char -- {\d+} $curr_uline]
-        } else {
-          set uline_ip 0
-          set child_line [list [expr $index - 1] $start_char [expr $curr_char + 1] $code_index]
-          lappend child_lines $child_line
-
-          # This child is done so add it to the expression list now
-          lappend comb_uline_exprs [list 0 $child_level $child_ulid $child_lines $parent]
-          set child_lines [list]
-          lappend child_ids [expr [llength $comb_uline_exprs] - 1]
-
-        }
-        set curr_char [string first "|" $curr_uline [expr $curr_char + 1]]
-        # set child_ulid [regexp -inline -start [expr $curr_char + 1] -- {\d+} $curr_uline]
-      }
-
-      if {$uline_ip == 1} { 
-        set child_line [list [expr $index - 1] $start_char [string length $curr_uline] $code_index]
-        lappend child_lines $child_line
-      }
-
-    }
-    
-  }
-
-  # Set child IDs to this parent
-  lappend parent_expr $child_ids
-  set comb_uline_exprs [lreplace [K $comb_uline_exprs [set comb_uline_exprs ""]] $parent $parent $parent_expr]
-
+  return $id
+ 
 }
 
 proc move_display_down {parent_index} {
 
-  global comb_uline_exprs
+  global comb_uline_expr
 
   set redraw 0
 
   # Get children list from parent expression
-  set parent_expr [lindex $comb_uline_exprs $parent_index]
-  set children    [lindex $parent_expr 5]
+  if {[info exists comb_uline_expr($parent_index,children)]} {
 
-  # Iterate through all children, setting the display variable to 1
-  foreach child $children {
-    set child_expr       [lindex $comb_uline_exprs $child]
-    set child_expr       [lreplace [K $child_expr [set child_expr ""]] 0 0 1]
-    set comb_uline_exprs [lreplace [K $comb_uline_exprs [set comb_uline_exprs ""]] $child $child $child_expr]
-  }
+    set children $comb_uline_expr($parent_index,children)
 
-  if {[llength $children] > 0} {
+    # Iterate through all children, setting the display variable to 1
+    foreach child $children {
+      set comb_uline_expr($child,displayed) 1
+    }
 
-    # Set parent display variable to 0
-    set parent_expr      [lreplace [K $parent_expr [set parent_expr ""]] 0 0 0]
-    set comb_uline_exprs [lreplace [K $comb_uline_exprs [set comb_uline_exprs ""]] $parent_index $parent_index $parent_expr]
-    set redraw 1
+    if {[llength $children] > 0} {
+
+      # Set parent display variable to 0
+      set comb_uline_expr($parent_index,displayed) 0
+      set redraw 1
+
+    }
 
   }
 
@@ -331,40 +218,37 @@ proc move_display_down {parent_index} {
 
 proc zero_display_children {parent_index} {
 
-  global comb_uline_exprs
+  global comb_uline_expr
 
-  set parent_expr [lindex $comb_uline_exprs $parent_index]
+  if {[info exists comb_uline_expr($parent_index,children)]} {
 
-  foreach child [lindex $parent_expr 5] {
+    foreach child $comb_uline_expr($parent_index,children) {
 
-    # Clear child
-    set child_expr       [lindex $comb_uline_exprs $child]
-    set child_expr       [lreplace [K $child_expr [set child_expr ""]] 0 0 0]
-    set comb_uline_exprs [lreplace [K $comb_uline_exprs [set comb_uline_exprs ""]] $child $child $child_expr]
+      # Clear child
+      set comb_uline_expr($child,displayed) 0
 
-    # Clear grandchild
-    zero_display_children $child
+      # Clear grandchild
+      zero_display_children $child
     
+    }
+
   }
 
 }
 
 proc move_display_up {child_index} {
 
-  global comb_uline_exprs
+  global comb_uline_expr
 
   set redraw 0
 
   # Get parent expression from child
-  set child_expr [lindex $comb_uline_exprs $child_index]
-  set parent     [lindex $child_expr 4]
+  set parent $comb_uline_expr($child_index,parent)
 
-  if {$parent != 0} {
+  if {$parent != -1} {
 
     # Set parent display to 1
-    set parent_expr      [lindex $comb_uline_exprs $parent]
-    set parent_expr      [lreplace [K $parent_expr [set parent_expr ""]] 0 0 1]
-    set comb_uline_exprs [lreplace [K $comb_uline_exprs [set comb_uline_exprs ""]] $parent $parent $parent_expr]
+    set comb_uline_expr($parent,displayed) 1
 
     # Zero out display value for all children expressions
     zero_display_children $parent
@@ -376,7 +260,68 @@ proc move_display_up {child_index} {
   return $redraw
 
 }
+
+proc comb_find_parent_expr {start_char end_char expr_line uline} {
+
+  global comb_uline_expr
+
+  set parent -1
+
+  # Get the number of expressions in this expression line
+  while {[expr [llength [set expr_list [array get comb_uline_expr "*,$expr_line,$uline,output"]]] > 0] && [expr $parent == -1]} {
+    set i 0
+    while {[expr $i < [llength $expr_list]] && [expr $parent == -1]} {
+      set other_start [lindex [lindex $expr_list [expr $i + 1]] 0]
+      set other_end   [lindex [lindex $expr_list [expr $i + 1]] 1]
+      if {[expr $start_char >= $other_start] && [expr $end_char <= $other_end]} {
+        set parent [lindex [split [lindex $expr_list $i] ,] 0]
+      }
+      incr i 2
+    }
+    incr uline
+  }
+
+  return $parent
+
+}
  
+# Calculates the current line index based on the specified expression line and underline
+proc comb_calc_line_index {expr_line uline} {
+
+  global comb_uline_groups
+
+  set line_index 0
+
+  for {set i 0} {$i < $expr_line} {incr i} {
+    set line_index [expr $line_index + [lindex $comb_uline_groups $i]]
+  }
+
+  set line_index [expr $line_index + $uline]
+
+  return $line_index
+
+}
+
+# Calculates the expression line and underline line from the given line index
+proc comb_calc_from_line_index {line_index} {
+
+  global comb_uline_groups
+
+  set expr_line 0
+  set uline     0
+
+  for {set i 0} {$i < $line_index} {incr i} {
+    if {$uline == [lindex $comb_uline_groups $expr_line]} {
+      set uline 0
+      incr expr_line 
+    }
+    incr uline
+  }
+
+  return [list $expr_line [incr uline -1]]
+
+}
+
 # Create a list containing locations of underlined expressions in the comb_ulines list
 # Each entry in the list will be organized as follows:
 #   displayed level uline_id {{index start_char end_char code_linenum}*} parent_id {children_ids...}
@@ -384,35 +329,84 @@ proc move_display_up {child_index} {
 # id is based on index in list
 proc organize_underlines {} {
 
-  global comb_ulines comb_uline_groups comb_uline_exprs
+  global comb_ulines comb_uline_groups
+  global comb_uline_expr
 
-  set code_len  [llength $comb_uline_groups]
-  set curr_line 0
+  set code_len     [llength $comb_uline_groups]
+  set uline_ip     0
 
-  for {set i 0} {$i < $code_len} {incr i} {
-    set index [expr [lindex $comb_uline_groups $i] + $curr_line]
-    lappend line_info [list $index 0 [string length [lindex $comb_ulines [expr $index - 1]]] $i]
-    set curr_line [expr $curr_line + [lindex $comb_uline_groups $i]]
-  }
+  # Clear the contents of the underline expression array
+  array unset comb_uline_expr
 
-  set comb_uline_exprs ""
-  lappend comb_uline_exprs [list 0 -1 -1 $line_info -1]
-
-  # Get all child expressions
-  set i 0
-  while {$i < [llength $comb_uline_exprs]} {
-    get_underline_expressions $i
-    incr i
+  # Decompose each underline and store it in the comb_uline_expr array
+  for {set i 0} {$i < [llength $comb_uline_groups]} {incr i} {
+    for {set j [expr [lindex $comb_uline_groups $i] - 1]} {$j >= 0} {incr j -1} {
+      set curr_uline [lindex $comb_ulines [comb_calc_line_index $i $j]]
+      set vbar [string first "|" $curr_uline 0]
+      set hbar [string first "-" $curr_uline 0]
+      if {[expr $vbar < $hbar] && [expr $vbar != -1]} {
+        set curr_char $vbar
+      } else {
+        set curr_char $hbar
+      }
+      while {[expr $curr_char != -1] && [expr $curr_char <= [string length $curr_uline]]} {
+        if {$uline_ip == 0} {
+          set uline_ip 1
+          set start_char $curr_char
+          set ulid [regexp -inline -start $curr_char -- {\d+} $curr_uline]
+        } else {
+          set uline_ip 0
+          set comb_uline_expr($ulid,$i,$j,output) [list $start_char $curr_char [string range $curr_uline $start_char $curr_char]]
+          set comb_uline_expr($ulid,displayed) 0
+          set parent [comb_find_parent_expr $start_char $curr_char $i [expr $j + 1]]
+          set comb_uline_expr($ulid,parent) $parent
+          if {[expr [info exists comb_uline_expr($parent,children)] == 0] || [expr [lsearch -exact $comb_uline_expr($parent,children) $ulid] == -1]} {
+            lappend comb_uline_expr($comb_uline_expr($ulid,parent),children) $ulid
+          }
+        }
+        set curr_char [string first "|" $curr_uline [expr $curr_char + 1]]
+      }
+      if {$uline_ip == 1} {
+        set uline_ip 0
+        if {$curr_char == -1} { 
+          set curr_char [string last "-" $curr_uline]
+        }
+        set comb_uline_expr($ulid,$i,$j,output) [list $start_char $curr_char [string range $curr_uline $start_char $curr_char]]
+        set comb_uline_expr($ulid,displayed) 0
+        set parent [comb_find_parent_expr $start_char $curr_char $i [expr $j + 1]]
+        set comb_uline_expr($ulid,parent) $parent
+        if {[expr [info exists comb_uline_expr($parent,children)] == 0] || [expr [lsearch -exact $comb_uline_expr($parent,children) $ulid] == -1]} {
+          lappend comb_uline_expr($comb_uline_expr($ulid,parent),children) $ulid
+        }
+      }
+    } 
   }
 
   # Set the display value in the children of the top-level
-  move_display_down 0
+  move_display_down -1 
 
 }
 
+proc comb_calc_line_index {expr_line uline} {
+
+  global comb_uline_groups
+
+  set line_index 0
+
+  for {set i 0} {$i < $expr_line} {incr i} {
+    set line_index [expr $line_index + [lindex $comb_uline_groups $i]]
+  }
+
+  set line_index [expr $line_index + $uline]
+
+  return $line_index
+
+}
+
+# Calculates underline strings and stores them in the comb_gen_ulines global array.
 proc generate_underlines {} {
 
-  global comb_uline_exprs comb_ulines comb_code
+  global comb_uline_expr comb_ulines comb_code
   global comb_gen_ulines
 
   # Clear comb_gen_ulines
@@ -423,28 +417,31 @@ proc generate_underlines {} {
     lappend comb_gen_ulines [string repeat " " [string length $code_line]]
   }
 
-  set expr_num [llength $comb_uline_exprs]
+  set exprs [array get comb_uline_expr *,displayed]
 
-  foreach curr_expr $comb_uline_exprs {
-
+  for {set i 0} {$i < [llength $exprs]} {incr i 2} {
+    
     # If this expression is to be displayed, generate the output now
-    if {[lindex $curr_expr 0] == 1} {
+    if {[lindex $exprs [expr $i + 1]] == 1} {
 
-      set lines [lindex $curr_expr 3]
+      set id [lindex [split [lindex $exprs $i] ,] 0]
 
-      foreach line $lines {
+      # Get all line information for the given expression ID
+      set lines [array get comb_uline_expr "$id,*,*,output"]
 
-        # Extract information from current expression line
-        set uline_index [lindex $line 0]
-        set uline_start [lindex $line 1]
-        set uline_end   [lindex $line 2]
-        set code_index  [lindex $line 3]
+      for {set j 0} {$j < [llength $lines]} {incr j 2} {
+
+        # Extract line information
+        set uline_start [lindex [lindex $lines [expr $j + 1]] 0]
+        set uline_end   [lindex [lindex $lines [expr $j + 1]] 1]
+        set uline_str   [lindex [lindex $lines [expr $j + 1]] 2]
+        set code_index  [lindex [split [lindex $lines $j] ,] 1]
 
         # Replace spaces with underline information
         set uline [lindex $comb_gen_ulines $code_index]
-        set uline [string replace $uline $uline_start $uline_end [string range [lindex $comb_ulines $uline_index] $uline_start $uline_end]]
+        set uline [string replace $uline $uline_start $uline_end $uline_str]
         set comb_gen_ulines [lreplace [K $comb_gen_ulines [set comb_gen_ulines ""]] $code_index $code_index $uline]
-
+        
       }
 
     }

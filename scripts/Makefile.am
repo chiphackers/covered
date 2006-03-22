@@ -1,5 +1,6 @@
 tcldir      = $(datadir)/covered/scripts
 tcl_SCRIPTS = banner.gif \
+              cdd_view.tcl \
               comb.tcl \
               cov_create.tcl \
               help.tcl \

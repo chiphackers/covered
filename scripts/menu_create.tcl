@@ -43,6 +43,7 @@ proc menu_create {.menubar} {
       .menubar.file.menu entryconfigure 0 -state disabled
       .menubar.file.menu entryconfigure 1 -state normal
       .menubar.file.menu entryconfigure 2 -state normal
+      .menubar.file.menu entryconfigure 4 -state normal
       .menubar.view.menu entryconfigure 0 -state normal
     }
   }
@@ -51,6 +52,10 @@ proc menu_create {.menubar} {
   }
   $tfm add command -label "Merge Related CDD..." -state disabled -command {
     open_file merge
+  }
+  $tfm add separator
+  $tfm add command -label "View Loaded CDD(s)..." -state disabled -command {
+    create_cdd_viewer
   }
   $tfm add separator
   $tfm add command -label Exit -accelerator "Ctrl-x" -command exit
@@ -200,8 +205,10 @@ proc open_file {type} {
 
     if {$type == "open"} {
       .info configure -text "Opening $file_name..."
+      add_cdd_to_filelist $file_name 1
     } else {
       .info configure -text "Merging $file_name..."
+      add_cdd_to_filelist $file_name 0
     }
 
     # Get all cursor values from various widgets (so we can properly restore them after the open)
@@ -225,6 +232,9 @@ proc open_file {type} {
 
       # Populate the listbox
       populate_listbox .bot.left.l
+
+      # Update the summary window
+      update_summary
 
       # Place new information in the info box
       .info configure -text "Select a module/instance at left for coverage details"
