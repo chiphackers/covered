@@ -543,7 +543,7 @@ proc create_comb_window {expr_id sline} {
     scrollbar .combwin.f.bot.vb -orient vertical   -command ".combwin.f.bot.t yview"
 
     # Create information bar
-    label .combwin.info -anchor w -relief raised -borderwidth 1
+    label .combwin.info -anchor w -relief raised -borderwidth 1 -width 100
 
     # Create button frame with close/help buttons at the very bottom of the window
     frame .combwin.bf -relief raised -borderwidth 1
