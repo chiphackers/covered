@@ -1,3 +1,114 @@
+2006-03-22 16:00  phase1geo
+
+	Fixing bug in missed combinational logic determination where a
+	static expression on the left/right of a combination expression
+	should cause the entire expression to be considered fully covered. 
+	Regressions have not been run which may contain some miscompares
+	due to this change.
+
+2006-03-22 15:34  phase1geo
+
+	Fixing code generation bug.
+
+2006-03-22 15:20  phase1geo
+
+	Fixing the info field size in combinational logic detail window to
+	keep it from constantly changing sizes dependent upon the location
+	of the cursor.
+
+2006-03-22 14:11  phase1geo
+
+	Adding CDD file viewer window to aid in knowing which CDD files are
+	currently opened/merged in the coverage GUI.
+
+2006-03-20 10:43  phase1geo
+
+	Fixing code generator to properly display expressions based on
+	lines.	Regression still needs to be updated for these changes.
+
+2006-03-15 16:48  phase1geo
+
+	Updating run program.  Fixing bugs in statement_connect algorithm. 
+	Updating regression files.
+
+2006-03-13 15:10  phase1geo
+
+	Fixing statement connection issue when reading in a CDD file. 
+	There were cases that would cause connection lossage due to the
+	statement reconnection algorithm.
+
+2006-03-06 16:55  phase1geo
+
+	Fixing command-line parser.
+
+2006-03-03 17:24  phase1geo
+
+	Fixing C-based run script.  This is now working for all but one
+	diagnostic to this point.  There is still some work to do here,
+	however.
+
+2006-02-27 17:22  phase1geo
+
+	Working on C-version of run command.  Initial version only -- does
+	not work at this point.
+
+2006-02-24 15:14  phase1geo
+
+	Updating most of the diagnostics for the new regression running
+	style.	All IV tests have been proved to pass, running both the old
+	and the new styles.
+
+2006-02-22 17:32  phase1geo
+
+	More fixes to regression scripts.
+
+2006-02-22 12:48  phase1geo
+
+	Adding gen_test script to this directory.  More changes to support
+	the creation of a new diagnostic from scratch using the convert and
+	Makefile scripts.
+
+2006-02-22 12:33  phase1geo
+
+	Adding Makefile that will manage converting over files and creating
+	new ones.
+
+2006-02-22 12:32  phase1geo
+
+	Adding diagnostic type information to make conversion more correct.
+
+2006-02-22 10:39  phase1geo
+
+	More fixes to run script and convert script.  Things are working
+	properly at this time now.
+
+2006-02-21 22:23  phase1geo
+
+	Initial start to diagnostic conversion script.	This seems to be
+	working but needs more testing (and possibly some more smarts).
+
+2006-02-21 17:32  phase1geo
+
+	Adding add1.v diagnostic for example purposes.
+
+2006-02-21 17:26  phase1geo
+
+	Working on regression script.  This now works for the add1.v
+	example.
+
+2006-02-18 00:41  phase1geo
+
+	Two more updates to files.
+
+2006-02-18 00:38  phase1geo
+
+	Fixing small syntax error in lexer.  We are now ready for that
+	release.
+
+2006-02-18 00:26  phase1geo
+
+	Final file updates prior to covered-20060218 development release.
+
 2006-02-17 17:19  phase1geo
 
 	More updates to run script -- this is still not working exactly the

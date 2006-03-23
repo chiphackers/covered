@@ -69,7 +69,7 @@ Instance                                                                    Logi
                     |-1--|
 
         Expression 1   (0/1)
-        ^^^^^^^^^^^^^ - 
+        ^^^^^^^^^^^^^ - anyedge
          * Event did not occur
 
 

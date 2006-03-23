@@ -58,7 +58,7 @@ Instance                                                   Toggle 0 -> 1        
 Instance                                                                    Logic Combinations
                                                                       Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                                             4/   1/   5       80%
+  <NA>.main                                                             0/   1/   1        0%
 ---------------------------------------------------------------------------------------------------------------------
 
     Module: main, File: ashift2.v, Instance: <NA>.main
@@ -72,7 +72,7 @@ Instance                                                                    Logi
                     |-1--|
 
         Expression 1   (0/1)
-        ^^^^^^^^^^^^^ - 
+        ^^^^^^^^^^^^^ - anyedge
          * Event did not occur
 
 

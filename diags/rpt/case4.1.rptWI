@@ -90,15 +90,15 @@ Instance                                                                    Logi
                     |----3----|                 
 
         Expression 1   (0/1)
-        ^^^^^^^^^^^^^ - 
+        ^^^^^^^^^^^^^ - anyedge
          * Event did not occur
 
         Expression 2   (0/1)
-        ^^^^^^^^^^^^^ - 
+        ^^^^^^^^^^^^^ - anyedge
          * Event did not occur
 
         Expression 3   (0/1)
-        ^^^^^^^^^^^^^ - 
+        ^^^^^^^^^^^^^ - anyedge
          * Event did not occur
 
       =========================================================================================================

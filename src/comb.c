@@ -252,40 +252,34 @@ void combination_get_tree_stats( expression* exp, int* ulid, unsigned int curr_d
                (exp->op == EXP_OP_LOR)) ) {
             combination_multi_expr_calc( exp, ulid, FALSE, hit, total );
           } else {
-            if( expression_is_static_only( exp ) ) {
-              *total = *total + 2;
-              *hit   = *hit + 2;
-            } else if( EXPR_IS_COMB( exp ) == 1 ) {
-              if( expression_is_static_only( exp->left ) || expression_is_static_only( exp->right ) ) {
-                *total = *total + 2;
-                *hit   = *hit + 2;
-              } else {
-                *total  = *total + 4;
+            if( !expression_is_static_only( exp ) ) {
+              if( EXPR_IS_COMB( exp ) == 1 ) {
+                *total = *total + 4;
                 num_hit = exp->suppl.part.eval_00 +
                           exp->suppl.part.eval_01 +
                           exp->suppl.part.eval_10 +
                           exp->suppl.part.eval_11;
-                *hit    = *hit + num_hit;
+                *hit = *hit + num_hit;
                 if( (num_hit != 4) && (exp->ulid == -1) && !combination_is_expr_multi_node( exp ) ) {
                   exp->ulid = *ulid;
                   (*ulid)++;
                 }
-              }
-            } else if( EXPR_IS_EVENT( exp ) == 1 ) {
-              *total  = *total + 1;
-              num_hit = ESUPPL_WAS_TRUE( exp->suppl );
-              *hit    = *hit + num_hit;
-              if( (num_hit != 1) && (exp->ulid == -1) && !combination_is_expr_multi_node( exp ) ) {
-                exp->ulid = *ulid;
-                (*ulid)++;
-              }
-            } else {
-              *total  = *total + 2;
-              num_hit = ESUPPL_WAS_TRUE( exp->suppl ) + ESUPPL_WAS_FALSE( exp->suppl );
-              *hit    = *hit + num_hit;
-              if( (num_hit != 2) && (exp->ulid == -1) && !combination_is_expr_multi_node( exp ) ) {
-                exp->ulid = *ulid;
-                (*ulid)++;
+              } else if( EXPR_IS_EVENT( exp ) == 1 ) {
+                *total  = *total + 1;
+                num_hit = ESUPPL_WAS_TRUE( exp->suppl );
+                *hit    = *hit + num_hit;
+                if( (num_hit != 1) && (exp->ulid == -1) && !combination_is_expr_multi_node( exp ) ) {
+                  exp->ulid = *ulid;
+                  (*ulid)++;
+                }
+              } else {
+                *total  = *total + 2;
+                num_hit = ESUPPL_WAS_TRUE( exp->suppl ) + ESUPPL_WAS_FALSE( exp->suppl );
+                *hit    = *hit + num_hit;
+                if( (num_hit != 2) && (exp->ulid == -1) && !combination_is_expr_multi_node( exp ) ) {
+                  exp->ulid = *ulid;
+                  (*ulid)++;
+                }
               }
             }
           }
@@ -1548,64 +1542,12 @@ void combination_get_missed_expr( char*** info, int* info_size, expression* exp,
       } else {
 
         /* Create combination table */
-        switch( exp->op ) {
-          case EXP_OP_SIG            :  combination_unary( info, info_size, exp, "" );         break;
-          case EXP_OP_FUNC_CALL      :  combination_unary( info, info_size, exp, "" );         break;
-          case EXP_OP_XOR            :  combination_two_vars( info, info_size, exp, "^" );     break;
-          case EXP_OP_ADD            :  combination_two_vars( info, info_size, exp, "+" );     break;
-          case EXP_OP_SUBTRACT       :  combination_two_vars( info, info_size, exp, "-" );     break;
-          case EXP_OP_MULTIPLY       :  combination_unary( info, info_size, exp, "*" );        break;
-          case EXP_OP_DIVIDE         :  combination_unary( info, info_size, exp, "/" );        break;
-          case EXP_OP_MOD            :  combination_unary( info, info_size, exp, "%%" );       break;
-          case EXP_OP_EXPONENT       :  combination_unary( info, info_size, exp, "**" );       break;
-          case EXP_OP_AND            :  combination_two_vars( info, info_size, exp, "&" );     break;
-          case EXP_OP_OR             :  combination_two_vars( info, info_size, exp, "|" );     break;
-          case EXP_OP_NAND           :  combination_two_vars( info, info_size, exp, "~&" );    break;
-          case EXP_OP_NOR            :  combination_two_vars( info, info_size, exp, "~|" );    break;
-          case EXP_OP_NXOR           :  combination_two_vars( info, info_size, exp, "~^" );    break;
-          case EXP_OP_LT             :  combination_unary( info, info_size, exp, "<" );        break;
-          case EXP_OP_GT             :  combination_unary( info, info_size, exp, ">" );        break;
-          case EXP_OP_LSHIFT         :  combination_unary( info, info_size, exp, "<<" );       break;
-          case EXP_OP_ALSHIFT        :  combination_unary( info, info_size, exp, "<<<" );      break;
-          case EXP_OP_RSHIFT         :  combination_unary( info, info_size, exp, ">>" );       break;
-          case EXP_OP_ARSHIFT        :  combination_unary( info, info_size, exp, ">>>" );      break;
-          case EXP_OP_EQ             :  combination_unary( info, info_size, exp, "==" );       break;
-          case EXP_OP_CEQ            :  combination_unary( info, info_size, exp, "===" );      break;
-          case EXP_OP_LE             :  combination_unary( info, info_size, exp, "<=" );       break;
-          case EXP_OP_GE             :  combination_unary( info, info_size, exp, ">=" );       break;
-          case EXP_OP_NE             :  combination_unary( info, info_size, exp, "!=" );       break;
-          case EXP_OP_CNE            :  combination_unary( info, info_size, exp, "!==" );      break;
-          case EXP_OP_COND           :  combination_unary( info, info_size, exp, "?:" );       break;
-          case EXP_OP_LOR            :  combination_two_vars( info, info_size, exp, "||" );    break;
-          case EXP_OP_LAND           :  combination_two_vars( info, info_size, exp, "&&" );    break;
-          case EXP_OP_UINV           :  combination_unary( info, info_size, exp, "~" );        break;
-          case EXP_OP_UAND           :  combination_unary( info, info_size, exp, "&" );        break;
-          case EXP_OP_UNOT           :  combination_unary( info, info_size, exp, "!" );        break;
-          case EXP_OP_UOR            :  combination_unary( info, info_size, exp, "|" );        break;
-          case EXP_OP_UXOR           :  combination_unary( info, info_size, exp, "^" );        break;
-          case EXP_OP_UNAND          :  combination_unary( info, info_size, exp, "~&" );       break;
-          case EXP_OP_UNOR           :  combination_unary( info, info_size, exp, "~|" );       break;
-          case EXP_OP_UNXOR          :  combination_unary( info, info_size, exp, "~^" );       break;
-          case EXP_OP_PARAM_SBIT     :
-          case EXP_OP_SBIT_SEL       :  combination_unary( info, info_size, exp, "[]" );       break;
-          case EXP_OP_PARAM_MBIT     :
-          case EXP_OP_MBIT_SEL       :  combination_unary( info, info_size, exp, "[:]" );      break;
-          case EXP_OP_PARAM_MBIT_POS :
-          case EXP_OP_MBIT_POS       :  combination_unary( info, info_size, exp, "[+:]" );     break;
-          case EXP_OP_PARAM_MBIT_NEG :
-          case EXP_OP_MBIT_NEG       :  combination_unary( info, info_size, exp, "[-:]" );     break;
-          case EXP_OP_EXPAND         :  combination_unary( info, info_size, exp, "{{}}" );     break;
-          case EXP_OP_CONCAT         :  combination_unary( info, info_size, exp, "{}" );       break;
-          case EXP_OP_CASE           :  combination_unary( info, info_size, exp, "" );         break;
-          case EXP_OP_CASEX          :  combination_unary( info, info_size, exp, "" );         break;
-          case EXP_OP_CASEZ          :  combination_unary( info, info_size, exp, "" );         break;
-          case EXP_OP_PEDGE          :  combination_event( info, info_size, exp, "posedge" );  break;
-          case EXP_OP_NEDGE          :  combination_event( info, info_size, exp, "negedge" );  break;
-          case EXP_OP_AEDGE          :  combination_event( info, info_size, exp, "" );         break;
-          case EXP_OP_SLIST          :  combination_event( info, info_size, exp, "@*" );       break;
-          case EXP_OP_TRIGGER        :  combination_event( info, info_size, exp, "->" );       break;
-          case EXP_OP_NEGATE         :  combination_unary( info, info_size, exp, "-" );        break;
-          default                    :  break;
+        if( EXPR_IS_COMB( exp ) ) {
+          combination_two_vars( info, info_size, exp, exp_op_info[exp->op].op_str );
+        } else if( EXPR_IS_EVENT( exp ) ) {
+          combination_event( info, info_size, exp, exp_op_info[exp->op].op_str );
+        } else {
+          combination_unary( info, info_size, exp, exp_op_info[exp->op].op_str );
         }
 
       }
@@ -2156,6 +2098,12 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.133  2006/03/22 22:00:43  phase1geo
+ Fixing bug in missed combinational logic determination where a static expression
+ on the left/right of a combination expression should cause the entire expression to
+ be considered fully covered.  Regressions have not been run which may contain some
+ miscompares due to this change.
+
  Revision 1.132  2006/03/20 16:43:38  phase1geo
  Fixing code generator to properly display expressions based on lines.  Regression
  still needs to be updated for these changes.

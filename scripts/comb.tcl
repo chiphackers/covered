@@ -477,10 +477,10 @@ proc display_comb {curr_index} {
   goto_uncov [lindex $my_range 0]
 
   # Get range of previous signal
-  set prev_comb_index [lindex [.bot.right.txt tag prevrange uncov_button [lindex $curr_index 0]] 0]
+  set prev_comb_index [lindex [.bot.right.txt tag prevrange uncov_highlight [lindex $curr_index 0]] 0]
 
   # Get range of next signal
-  set next_comb_index [lindex [.bot.right.txt tag nextrange uncov_button [lindex $curr_range 1]] 0]
+  set next_comb_index [lindex [.bot.right.txt tag nextrange uncov_highlight [lindex $curr_range 1]] 0]
 
   # Now create the toggle window
   create_comb_window $expr_id $sline

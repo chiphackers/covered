@@ -93,17 +93,59 @@ void stmt_iter_find_head( stmt_iter* si, bool skip ) {
 */
 void stmt_iter_get_next_in_order( stmt_iter* si ) {
 
+  stmt_iter lsi;                  /* Points to lowest statement iterator */
+  int       lowest = 0x7fffffff;  /* Line number of the lowest statement */
+
+  /* If the current statement is not a head, go back to the head */
+  if( ESUPPL_IS_STMT_HEAD( si->curr->stmt->exp->suppl ) == 0 ) {
+    stmt_iter_reverse( si );
+    stmt_iter_find_head( si, FALSE );
+  }
+
+  /* Capture the lowest statement iterator */
+  lsi.curr = NULL;
+  lsi.last = NULL;
+
+  /* Advance to the next statement */
   stmt_iter_next( si );
   
-  if( (si->curr == NULL) || (si->curr->stmt->exp->line < si->last->stmt->exp->line) || (si->curr->stmt->exp->line == 0) ) {
+  /* Search for a statement that has not been traversed yet within this statement block */
+  while( (si->curr != NULL) && (ESUPPL_IS_STMT_HEAD( si->curr->stmt->exp->suppl ) == 0) ) {
+    if( (si->curr->stmt->exp->suppl.part.stmt_added == 0) &&
+        (si->curr->stmt->exp->line != 0) &&
+        (si->curr->stmt->exp->line < lowest) ) {
+      lowest   = si->curr->stmt->exp->line;
+      lsi.curr = si->curr;
+      lsi.last = si->last;
+    }
+    stmt_iter_next( si );
+  }
+
+  /*
+    If we were unable to find an untraversed statement, go to the next statement block,
+    resetting the stmt_added supplemental value as we go.
+  */
+  if( (lsi.curr == NULL) && (lsi.last == NULL) ) {
     stmt_iter_reverse( si );
+    while( (si->curr != NULL) && (ESUPPL_IS_STMT_HEAD( si->curr->stmt->exp->suppl ) == 0) ) {
+      si->curr->stmt->exp->suppl.part.stmt_added = 0;
+      stmt_iter_next( si );
+    }
     stmt_iter_find_head( si, TRUE );
+  } else {
+    si->curr = lsi.curr;
+    si->last = lsi.last;
+    si->curr->stmt->exp->suppl.part.stmt_added = 1;
   }
 
 }
 
 /*
  $Log$
+ Revision 1.10  2005/01/24 13:21:44  phase1geo
+ Modifying unlinking algorithm for statement links.  Still getting
+ segmentation fault at this time.
+
  Revision 1.9  2005/01/11 14:24:16  phase1geo
  Intermediate checkin.
 
