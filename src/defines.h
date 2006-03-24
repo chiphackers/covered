@@ -669,7 +669,7 @@ typedef enum exp_op_type_e {
  Returns a value of true if the specified expression ks considered a combination expression by
  the combinational logic report generator.
 */
-#define EXPR_IS_COMB(x)          (exp_op_info[x->op].suppl.is_comb && \
+#define EXPR_IS_COMB(x)          ((exp_op_info[x->op].suppl.is_comb > 0) && \
                                   !expression_is_static_only( x->left ) && \
                                   !expression_is_static_only( x->right))
 
@@ -721,16 +721,28 @@ typedef enum exp_op_type_e {
  Returns a value of 1 if the specified expression was measurable for combinational 
  coverage but not fully covered during simulation.
 */
+#define EXPR_COMB_MISSED(x)     (EXPR_IS_MEASURABLE( x ) && (x->ulid != -1))
+/*
 #define EXPR_COMB_MISSED(x)        (EXPR_IS_MEASURABLE( x ) && \
                                     !expression_is_static_only( x ) && \
 				    ((EXPR_IS_COMB( x ) && \
-				      (!x->suppl.part.eval_00 || \
-                                       !x->suppl.part.eval_01 || \
-                                       !x->suppl.part.eval_10 || \
-                                       !x->suppl.part.eval_11)) || \
-				     !ESUPPL_WAS_TRUE( x->suppl ) || \
-				     (!ESUPPL_WAS_FALSE( x->suppl ) && \
-                                      !EXPR_IS_EVENT( x ))))
+                                      ((exp_op_info[x->op].suppl.is_comb == AND_COMB) && \
+                                       ((!x->suppl.part.eval_00 & !x->suppl.part.eval_01) || \
+                                       ((!x->suppl.part.eval_00 & !x->suppl.part.eval_10) || \
+                                       !x->suppl.part.eval_11))) || \
+                                      ((exp_op_info[x->op].suppl.is_comb == OR_COMB) && \
+                                       ((!x->suppl.part.eval_10 & !x->suppl.part.eval_11) || \
+                                       ((!x->suppl.part.eval_01 & !x->suppl.part.eval_11) || \
+                                       !x->suppl.part.eval_00))) || \
+                                      ((exp_op_info[x->op].suppl.is_comb == OTHER_COMB) && \
+  				       (!x->suppl.part.eval_00 || \
+                                        !x->suppl.part.eval_01 || \
+                                        !x->suppl.part.eval_10 || \
+                                        !x->suppl.part.eval_11))) || \
+				    !ESUPPL_WAS_TRUE( x->suppl ) || \
+				    (!ESUPPL_WAS_FALSE( x->suppl ) && \
+                                     !EXPR_IS_EVENT( x ))))
+*/
 
 /*!
  \addtogroup op_tables
@@ -865,6 +877,29 @@ typedef enum exp_op_type_e {
 
 /*! Total number of race condition checks in this list */
 #define RACE_TYPE_NUM                        8
+
+/*! @} */
+
+/*!
+ \addtogroup comb_types Combinational Logic Output Types
+
+ The following group of defines specify the combinational logic output types (these are stored in the is_comb
+ variable in the exp_info structure.
+
+ @{
+*/
+
+/*! Specifies that the expression is not a two variable combinational expression */
+#define NOT_COMB	0
+
+/*! Specifies that the expression is an AND type two variable combinational expression */
+#define AND_COMB	1
+
+/*! Specifies that the expression is an OR type two variable combinational expression */
+#define OR_COMB		2
+
+/*! Specifies that the expression is a two variable combinational expression that is neither an AND or OR type */
+#define OTHER_COMB	3
 
 /*! @} */
 
@@ -1469,7 +1504,7 @@ struct exp_info_s {
   struct {
     nibble is_event:1;                    /*!< Specifies if operation is an event */
     nibble is_static:1;                   /*!< Specifies if operation is a static value (does not change during simulation) */
-    nibble is_comb:1;                     /*!< Specifies if operation is combinational (both left/right expressions valid) */
+    nibble is_comb:2;                     /*!< Specifies if operation is combinational (both left/right expressions valid) */
     nibble is_unary:1;                    /*!< Specifies if operation is unary (left expression valid only) */
     nibble measurable:1;                  /*!< Specifies if this operation type can be measured */
     nibble is_context_switch:1;           /*!< Specifies if this operation will cause a context switch */
@@ -1806,6 +1841,13 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.182  2006/03/23 22:42:54  phase1geo
+ Changed two variable combinational expressions that have a constant value in either the
+ left or right expression tree to unary expressions.  Removed expressions containing only
+ static values from coverage totals.  Fixed bug in stmt_iter_get_next_in_order for looping
+ cases (the verbose output was not being emitted for these cases).  Updated regressions for
+ these changes -- full regression passes.
+
  Revision 1.181  2006/03/22 22:00:43  phase1geo
  Fixing bug in missed combinational logic determination where a static expression
  on the left/right of a combination expression should cause the entire expression to

@@ -222,6 +222,7 @@ bool combination_is_expr_multi_node( expression* exp ) {
 void combination_get_tree_stats( expression* exp, int* ulid, unsigned int curr_depth, float* total, int* hit ) {
 
   int num_hit = 0;  /* Number of expression value hits for the current expression */
+  int tot_num;      /* Total number of combinations for the current expression */
 
   if( exp != NULL ) {
 
@@ -254,13 +255,26 @@ void combination_get_tree_stats( expression* exp, int* ulid, unsigned int curr_d
           } else {
             if( !expression_is_static_only( exp ) ) {
               if( EXPR_IS_COMB( exp ) == 1 ) {
-                *total = *total + 4;
-                num_hit = exp->suppl.part.eval_00 +
-                          exp->suppl.part.eval_01 +
-                          exp->suppl.part.eval_10 +
-                          exp->suppl.part.eval_11;
-                *hit = *hit + num_hit;
-                if( (num_hit != 4) && (exp->ulid == -1) && !combination_is_expr_multi_node( exp ) ) {
+                if( exp_op_info[exp->op].suppl.is_comb == AND_COMB ) {
+                  tot_num = 3;
+                  num_hit = (((exp->suppl.part.eval_00 + exp->suppl.part.eval_01) > 0) ? 1 : 0) +
+                            (((exp->suppl.part.eval_00 + exp->suppl.part.eval_10) > 0) ? 1 : 0) +
+                            exp->suppl.part.eval_11;
+                } else if( exp_op_info[exp->op].suppl.is_comb == OR_COMB ) {
+                  tot_num = 3;
+                  num_hit = (((exp->suppl.part.eval_10 + exp->suppl.part.eval_11) > 0) ? 1 : 0) +
+                            (((exp->suppl.part.eval_01 + exp->suppl.part.eval_11) > 0) ? 1 : 0) +
+                            exp->suppl.part.eval_00;
+                } else {
+                  tot_num = 4;
+                  num_hit = exp->suppl.part.eval_00 +
+                            exp->suppl.part.eval_01 +
+                            exp->suppl.part.eval_10 +
+                            exp->suppl.part.eval_11;
+                }
+                *total = *total + tot_num;
+                *hit   = *hit   + num_hit;
+                if( (num_hit != tot_num) && (exp->ulid == -1) && !combination_is_expr_multi_node( exp ) ) {
                   exp->ulid = *ulid;
                   (*ulid)++;
                 }
@@ -325,7 +339,7 @@ void combination_reset_counted_exprs( exp_link* expl ) {
 void combination_get_stats( exp_link* expl, float* total, int* hit ) {
 
   exp_link* curr_exp;  /* Pointer to the current expression link in the list */
-  int       ulid;      /* Current underline ID for this expression           */
+  int       ulid;      /* Current underline ID for this expression */
   
   curr_exp = expl;
 
@@ -339,12 +353,22 @@ void combination_get_stats( exp_link* expl, float* total, int* hit ) {
 
 }
 
+/*!
+ \param funit_name  Name of functional unit to retrieve summary information for
+ \param funit_type  Type of functional unit to retrieve summary information for
+ \param total       Pointer to location to store the total number of combinations for the specified functional unit
+ \param hit         Pointer to location to store the number of hit combinations for the specified functional unit
+
+ \return Returns TRUE if the specified module was found; otherwise, returns FALSE.
+
+ Retrieves the combinational logic summary information for the specified functional unit
+*/
 bool combination_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit ) {
 
-  bool        retval = TRUE;  /* Return value of this function         */
-  func_unit   funit;          /* Functional unit used for searching    */
+  bool        retval = TRUE;  /* Return value of this function */
+  func_unit   funit;          /* Functional unit used for searching */
   funit_link* funitl;         /* Pointer to found functional unit link */
-  char        tmp[21];        /* Temporary string for total            */
+  char        tmp[21];        /* Temporary string for total */
 
   funit.name = funit_name;
   funit.type = funit_type;
@@ -383,9 +407,9 @@ bool combination_get_funit_summary( char* funit_name, int funit_type, int* total
 bool combination_instance_summary( FILE* ofile, funit_inst* root, char* parent ) {
 
   funit_inst* curr;           /* Pointer to current child functional unit instance of this node */
-  float       percent;        /* Percentage of lines hit                               */
-  float       miss;           /* Number of lines missed                                */
-  char        tmpname[4096];  /* Temporary name holder of instance                     */
+  float       percent;        /* Percentage of lines hit */
+  float       miss;           /* Number of lines missed */
+  char        tmpname[4096];  /* Temporary name holder of instance */
 
   assert( root != NULL );
   assert( root->stat != NULL );
@@ -436,8 +460,8 @@ bool combination_instance_summary( FILE* ofile, funit_inst* root, char* parent )
 */
 bool combination_funit_summary( FILE* ofile, funit_link* head ) {
 
-  float percent;             /* Percentage of lines hit                        */
-  float miss;                /* Number of lines missed                         */
+  float percent;             /* Percentage of lines hit */
+  float miss;                /* Number of lines missed */
   float miss_found = FALSE;  /* Set to TRUE if missing combinations were found */
 
   while( head != NULL ) {
@@ -479,9 +503,9 @@ bool combination_funit_summary( FILE* ofile, funit_link* head ) {
 */
 void combination_draw_line( char* line, int size, int exp_id ) {
 
-  char str_exp_id[12];   /* String containing value of exp_id        */
+  char str_exp_id[12];   /* String containing value of exp_id */
   int  exp_id_size;      /* Number of characters exp_id is in length */
-  int  i;                /* Loop iterator                            */
+  int  i;                /* Loop iterator */
 
   /* Calculate size of expression ID */
   snprintf( str_exp_id, 12, "%d", exp_id );
@@ -512,9 +536,9 @@ void combination_draw_line( char* line, int size, int exp_id ) {
 */
 void combination_draw_centered_line( char* line, int size, int exp_id, bool left_bar, bool right_bar ) {
 
-  char str_exp_id[12];   /* String containing value of exp_id        */
+  char str_exp_id[12];   /* String containing value of exp_id */
   int  exp_id_size;      /* Number of characters exp_id is in length */
-  int  i;                /* Loop iterator                            */
+  int  i;                /* Loop iterator */
 
   /* Calculate size of expression ID */
   snprintf( str_exp_id, 12, "%d", exp_id );
@@ -1122,43 +1146,47 @@ void combination_underline( FILE* ofile, char** code, int code_depth, expression
  \param info       Pointer to array of strings that will contain the coverage information for this expression
  \param info_size  Pointer to integer containing number of elements in info array 
  \param exp        Pointer to expression to evaluate.
- \param op         String showing current expression operation type.
 
  Displays the missed unary combination(s) that keep the combination coverage for
  the specified expression from achieving 100% coverage.
 */
-void combination_unary( char*** info, int* info_size, expression* exp, char* op ) {
+void combination_unary( char*** info, int* info_size, expression* exp ) {
 
-  int  hit = 0;
-  char tmp[20]; 
-  int  length; 
+  int   hit = 0;                           /* Number of combinations hit for this expression */
+  char  tmp[20]; 
+  int   length; 
+  char* op = exp_op_info[exp->op].op_str;  /* Operations string */
 
   assert( exp != NULL );
 
   /* Get hit information */
   hit = ESUPPL_WAS_FALSE( exp->suppl ) + ESUPPL_WAS_TRUE( exp->suppl );
 
-  assert( exp->ulid != -1 );
+  if( hit != 2 ) {
 
-  /* Allocate memory for info array */
-  *info_size = 5;
-  *info      = (char**)malloc_safe( sizeof( char* ) * (*info_size), __FILE__, __LINE__ );
+    assert( exp->ulid != -1 );
 
-  /* Allocate lines and assign values */ 
-  length = 27;  snprintf( tmp, 20, "%d", exp->ulid );  length += strlen( tmp );  snprintf( tmp, 20, "%d", hit );  length += strlen( tmp );
-  (*info)[0] = (char*)malloc_safe( length, __FILE__, __LINE__ );
-  snprintf( (*info)[0], length, "        Expression %d   (%d/2)", exp->ulid, hit );
+    /* Allocate memory for info array */
+    *info_size = 5;
+    *info      = (char**)malloc_safe( sizeof( char* ) * (*info_size), __FILE__, __LINE__ );
 
-  length  = 25 + strlen( op );  (*info)[1] = (char*)malloc_safe( length, __FILE__, __LINE__ );
-  snprintf( (*info)[1], length, "        ^^^^^^^^^^^^^ - %s", op );
+    /* Allocate lines and assign values */ 
+    length = 27;  snprintf( tmp, 20, "%d", exp->ulid );  length += strlen( tmp );  snprintf( tmp, 20, "%d", hit );  length += strlen( tmp );
+    (*info)[0] = (char*)malloc_safe( length, __FILE__, __LINE__ );
+    snprintf( (*info)[0], length, "        Expression %d   (%d/2)", exp->ulid, hit );
 
-  (*info)[2] = strdup( "         E | E" );
-  (*info)[3] = strdup( "        =0=|=1=" );
+    length  = 25 + strlen( op );  (*info)[1] = (char*)malloc_safe( length, __FILE__, __LINE__ );
+    snprintf( (*info)[1], length, "        ^^^^^^^^^^^^^ - %s", op );
 
-  length = 15;  (*info)[4] = (char*)malloc_safe( length, __FILE__, __LINE__ );
-  snprintf( (*info)[4], length, "         %c   %c",
-		  ((ESUPPL_WAS_FALSE( exp->suppl ) == 1) ? ' ' : '*'),
-		  ((ESUPPL_WAS_TRUE( exp->suppl )  == 1) ? ' ' : '*') );
+    (*info)[2] = strdup( "         E | E" );
+    (*info)[3] = strdup( "        =0=|=1=" );
+
+    length = 15;  (*info)[4] = (char*)malloc_safe( length, __FILE__, __LINE__ );
+    snprintf( (*info)[4], length, "         %c   %c",
+              ((ESUPPL_WAS_FALSE( exp->suppl ) == 1) ? ' ' : '*'),
+              ((ESUPPL_WAS_TRUE( exp->suppl )  == 1) ? ' ' : '*') );
+
+  }
 
 }
 
@@ -1166,32 +1194,37 @@ void combination_unary( char*** info, int* info_size, expression* exp, char* op 
  \param info       Pointer to array of strings that will contain the coverage information for this expression
  \param info_size  Pointer to integer containing number of elements in info array
  \param exp        Pointer to expression to evaluate.
- \param op         String showing current expression operation type.
 
  Displays the missed unary combination(s) that keep the combination coverage for
  the specified expression from achieving 100% coverage.
 */
-void combination_event( char*** info, int* info_size, expression* exp, char* op ) {
+void combination_event( char*** info, int* info_size, expression* exp ) {
 
-  char tmp[20];
-  int  length;
+  char  tmp[20];
+  int   length;
+  char* op = exp_op_info[exp->op].op_str;  /* Operation string */
 
   assert( exp != NULL );
-  assert( exp->ulid != -1 );
 
-  /* Allocate memory for info array */
-  *info_size = 3;
-  *info      = (char**)malloc_safe( sizeof( char* ) * (*info_size), __FILE__, __LINE__ );
+  if( !ESUPPL_WAS_TRUE( exp->suppl ) ) {
 
-  /* Allocate lines and assign values */
-  length = 28;  snprintf( tmp, 20, "%d", exp->ulid );  length += strlen( tmp );
-  (*info)[0] = (char*)malloc_safe( length, __FILE__, __LINE__ );
-  snprintf( (*info)[0], length, "        Expression %d   (0/1)", exp->ulid );
+    assert( exp->ulid != -1 );
 
-  length  = 25 + strlen( op );  (*info)[1] = (char*)malloc_safe( length, __FILE__, __LINE__ );
-  snprintf( (*info)[1], length, "        ^^^^^^^^^^^^^ - %s", op );
+    /* Allocate memory for info array */
+    *info_size = 3;
+    *info      = (char**)malloc_safe( sizeof( char* ) * (*info_size), __FILE__, __LINE__ );
 
-  (*info)[2] = strdup( "         * Event did not occur" );
+    /* Allocate lines and assign values */
+    length = 28;  snprintf( tmp, 20, "%d", exp->ulid );  length += strlen( tmp );
+    (*info)[0] = (char*)malloc_safe( length, __FILE__, __LINE__ );
+    snprintf( (*info)[0], length, "        Expression %d   (0/1)", exp->ulid );
+
+    length  = 25 + strlen( op );  (*info)[1] = (char*)malloc_safe( length, __FILE__, __LINE__ );
+    snprintf( (*info)[1], length, "        ^^^^^^^^^^^^^ - %s", op );
+
+    (*info)[2] = strdup( "         * Event did not occur" );
+
+  }
 
 }
 
@@ -1199,16 +1232,17 @@ void combination_event( char*** info, int* info_size, expression* exp, char* op 
  \param info       Pointer to array of strings that will contain the coverage information for this expression
  \param info_size  Pointer to integer containing number of elements in info array 
  \param exp        Pointer to expression to evaluate.
- \param op         String showing current expression operation type.
 
  Displays the missed combinational sequences for the specified expression to the
  specified output stream in tabular form.
 */
-void combination_two_vars( char*** info, int* info_size, expression* exp, char* op ) {
+void combination_two_vars( char*** info, int* info_size, expression* exp ) {
 
-  int  hit = 0;
-  char tmp[20];
-  int  length; 
+  int   hit;      /* Number of combinations hit for this expression */
+  int   total;    /* Total number of combinations for this expression */
+  char  tmp[20];
+  int   length; 
+  char* op = exp_op_info[exp->op].op_str;  /* Operation string */
 
   assert( exp != NULL );
 
@@ -1219,36 +1253,81 @@ void combination_two_vars( char*** info, int* info_size, expression* exp, char* 
   assert( exp->right != NULL );
 
   /* Get hit information */
-  hit = exp->suppl.part.eval_00 +
-        exp->suppl.part.eval_01 +
-        exp->suppl.part.eval_10 +
-        exp->suppl.part.eval_11;
+  if( exp_op_info[exp->op].suppl.is_comb == AND_COMB ) {
+    hit   = (((exp->suppl.part.eval_00 + exp->suppl.part.eval_01) > 0) ? 1 : 0) +
+            (((exp->suppl.part.eval_00 + exp->suppl.part.eval_10) > 0) ? 1 : 0) +
+            exp->suppl.part.eval_11;
+    total = 3;
+  } else if( exp_op_info[exp->op].suppl.is_comb == OR_COMB ) {
+    hit   = (((exp->suppl.part.eval_10 + exp->suppl.part.eval_11) > 0) ? 1 : 0) +
+            (((exp->suppl.part.eval_01 + exp->suppl.part.eval_11) > 0) ? 1 : 0) +
+            exp->suppl.part.eval_00;
+    total = 3;
+  } else {
+    hit = exp->suppl.part.eval_00 +
+          exp->suppl.part.eval_01 +
+          exp->suppl.part.eval_10 +
+          exp->suppl.part.eval_11;
+    total = 4;
+  }
 
-  assert( exp->ulid != -1 );
+  if( hit != total ) {
 
-  /* Allocate memory for info array */
-  *info_size = 5;
-  *info      = (char**)malloc_safe( sizeof( char* ) * (*info_size), __FILE__, __LINE__ );
+    assert( exp->ulid != -1 );
 
-  /* Allocate lines and assign values */ 
-  length = 27;  snprintf( tmp, 20, "%d", exp->ulid );  length += strlen( tmp );  snprintf( tmp, 20, "%d", hit );  length += strlen( tmp );
-  (*info)[0] = (char*)malloc_safe( length, __FILE__, __LINE__ );
-  snprintf( (*info)[0], length, "        Expression %d   (%d/4)", exp->ulid, hit );
+    /* Allocate memory for info array */
+    *info_size = 5;
+    *info      = (char**)malloc_safe( sizeof( char* ) * (*info_size), __FILE__, __LINE__ );
 
-  length = 25 + strlen( op );
-  (*info)[1] = (char*)malloc_safe( length, __FILE__, __LINE__ );
-  snprintf( (*info)[1], length, "        ^^^^^^^^^^^^^ - %s", op );
+    /* Allocate lines and assign values */ 
+    length = 27;  snprintf( tmp, 20, "%d", exp->ulid );  length += strlen( tmp );  snprintf( tmp, 20, "%d", hit );  length += strlen( tmp );
+    (*info)[0] = (char*)malloc_safe( length, __FILE__, __LINE__ );
+    snprintf( (*info)[0], length, "        Expression %d   (%d/%d)", exp->ulid, hit, total );
 
-  (*info)[2] = strdup( "         LR | LR | LR | LR " );
-  (*info)[3] = strdup( "        =00=|=01=|=10=|=11=" );
+    length = 25 + strlen( op );
+    (*info)[1] = (char*)malloc_safe( length, __FILE__, __LINE__ );
+    snprintf( (*info)[1], length, "        ^^^^^^^^^^^^^ - %s", op );
 
-  length = 26;
-  (*info)[4] = (char*)malloc_safe( length, __FILE__, __LINE__ );
-  snprintf( (*info)[4], length, "         %c    %c    %c    %c",
-                  ((exp->suppl.part.eval_00 == 1) ? ' ' : '*'),
-                  ((exp->suppl.part.eval_01 == 1) ? ' ' : '*'),
-                  ((exp->suppl.part.eval_10 == 1) ? ' ' : '*'),
-                  ((exp->suppl.part.eval_11 == 1) ? ' ' : '*') );
+    if( exp_op_info[exp->op].suppl.is_comb == AND_COMB ) {
+
+      (*info)[2] = strdup( "         LR | LR | LR " );
+      (*info)[3] = strdup( "        =0-=|=-0=|=11=" );
+
+      length = 21;
+      (*info)[4] = (char*)malloc_safe( length, __FILE__, __LINE__ );
+      snprintf( (*info)[4], length, "         %c    %c    %c",
+                (((exp->suppl.part.eval_00 + exp->suppl.part.eval_01) > 0) ? ' ' : '*'),
+                (((exp->suppl.part.eval_00 + exp->suppl.part.eval_10) > 0) ? ' ' : '*'),
+                ((exp->suppl.part.eval_11 > 0) ? ' ' : '*') );
+
+    } else if( exp_op_info[exp->op].suppl.is_comb == OR_COMB ) {
+
+      (*info)[2] = strdup( "         LR | LR | LR " );
+      (*info)[3] = strdup( "        =1-=|=-1=|=00=" );
+
+      length = 21;
+      (*info)[4] = (char*)malloc_safe( length, __FILE__, __LINE__ );
+      snprintf( (*info)[4], length, "         %c    %c    %c",
+                (((exp->suppl.part.eval_10 + exp->suppl.part.eval_11) > 0) ? ' ' : '*'),
+                (((exp->suppl.part.eval_01 + exp->suppl.part.eval_11) > 0) ? ' ' : '*'),
+                ((exp->suppl.part.eval_00 > 0) ? ' ' : '*') );
+
+    } else {
+
+      (*info)[2] = strdup( "         LR | LR | LR | LR " );
+      (*info)[3] = strdup( "        =00=|=01=|=10=|=11=" );
+
+      length = 26;
+      (*info)[4] = (char*)malloc_safe( length, __FILE__, __LINE__ );
+      snprintf( (*info)[4], length, "         %c    %c    %c    %c",
+                ((exp->suppl.part.eval_00 == 1) ? ' ' : '*'),
+                ((exp->suppl.part.eval_01 == 1) ? ' ' : '*'),
+                ((exp->suppl.part.eval_10 == 1) ? ' ' : '*'),
+                ((exp->suppl.part.eval_11 == 1) ? ' ' : '*') );
+
+    }
+
+  }
 
 }
 
@@ -1464,42 +1543,46 @@ void combination_multi_vars( char*** info, int* info_size, expression* exp ) {
   /* Only output this expression if we are missing coverage. */
   if( exp->ulid != -1 ) {
 
-    /* Gather report output for this expression */
-    combination_multi_var_exprs( &line1, &line2, &line3, exp );
-
-    /* Calculate the array needed to store the output information and allocate this memory */
-    *info_size = combination_multi_expr_output_length( line1, line2, line3 ) + 2;
-    *info      = (char**)malloc_safe( sizeof( char* ) * (*info_size), __FILE__, __LINE__ );
-
     /* Calculate hit and total values for this sub-expression */
     combination_multi_expr_calc( exp, &ulid, FALSE, &hit, &total );
 
-    /* Calculate needed line length */
-    snprintf( tmp, 20, "%d", exp->ulid );
-    line_size += strlen( tmp );
-    snprintf( tmp, 20, "%d", hit );
-    line_size += strlen( tmp );
-    snprintf( tmp, 20, "%.0f", total );
-    line_size += strlen( tmp );
-    line_size += 27;                   /* Number of additional characters in line below */
-    (*info)[0] = (char*)malloc_safe( line_size, __FILE__, __LINE__ );
+    if( hit != (int)total ) {
+
+      /* Gather report output for this expression */
+      combination_multi_var_exprs( &line1, &line2, &line3, exp );
+
+      /* Calculate the array needed to store the output information and allocate this memory */
+      *info_size = combination_multi_expr_output_length( line1, line2, line3 ) + 2;
+      *info      = (char**)malloc_safe( sizeof( char* ) * (*info_size), __FILE__, __LINE__ );
+
+      /* Calculate needed line length */
+      snprintf( tmp, 20, "%d", exp->ulid );
+      line_size += strlen( tmp );
+      snprintf( tmp, 20, "%d", hit );
+      line_size += strlen( tmp );
+      snprintf( tmp, 20, "%.0f", total );
+      line_size += strlen( tmp );
+      line_size += 27;                   /* Number of additional characters in line below */
+      (*info)[0] = (char*)malloc_safe( line_size, __FILE__, __LINE__ );
     
-    snprintf( (*info)[0], line_size, "        Expression %d   (%d/%.0f)", exp->ulid, hit, total );
+      snprintf( (*info)[0], line_size, "        Expression %d   (%d/%.0f)", exp->ulid, hit, total );
     
-    switch( exp->op ) {
-      case EXP_OP_AND  :  (*info)[1] = strdup( "        ^^^^^^^^^^^^^ - &" );   break;
-      case EXP_OP_OR   :  (*info)[1] = strdup( "        ^^^^^^^^^^^^^ - |" );   break;
-      case EXP_OP_LAND :  (*info)[1] = strdup( "        ^^^^^^^^^^^^^ - &&" );  break;
-      case EXP_OP_LOR  :  (*info)[1] = strdup( "        ^^^^^^^^^^^^^ - ||" );  break;
-      default          :  break;
+      switch( exp->op ) {
+        case EXP_OP_AND  :  (*info)[1] = strdup( "        ^^^^^^^^^^^^^ - &" );   break;
+        case EXP_OP_OR   :  (*info)[1] = strdup( "        ^^^^^^^^^^^^^ - |" );   break;
+        case EXP_OP_LAND :  (*info)[1] = strdup( "        ^^^^^^^^^^^^^ - &&" );  break;
+        case EXP_OP_LOR  :  (*info)[1] = strdup( "        ^^^^^^^^^^^^^ - ||" );  break;
+        default          :  break;
+      }
+
+      /* Output the lines paying attention to the current line width */
+      combination_multi_expr_output( *info, line1, line2, line3 );
+
+      free_safe( line1 );
+      free_safe( line2 );
+      free_safe( line3 );
+
     }
-
-    /* Output the lines paying attention to the current line width */
-    combination_multi_expr_output( *info, line1, line2, line3 );
-
-    free_safe( line1 );
-    free_safe( line2 );
-    free_safe( line3 );
 
   }
 
@@ -1521,7 +1604,7 @@ void combination_get_missed_expr( char*** info, int* info_size, expression* exp,
 
   *info_size = 0;
 
-  if( (EXPR_COMB_MISSED( exp ) == 1) &&
+  if( EXPR_COMB_MISSED( exp ) &&
       (((report_comb_depth == REPORT_DETAILED) && (curr_depth <= report_comb_depth)) ||
         (report_comb_depth == REPORT_VERBOSE)) ) {
 
@@ -1543,11 +1626,11 @@ void combination_get_missed_expr( char*** info, int* info_size, expression* exp,
 
         /* Create combination table */
         if( EXPR_IS_COMB( exp ) ) {
-          combination_two_vars( info, info_size, exp, exp_op_info[exp->op].op_str );
+          combination_two_vars( info, info_size, exp );
         } else if( EXPR_IS_EVENT( exp ) ) {
-          combination_event( info, info_size, exp, exp_op_info[exp->op].op_str );
+          combination_event( info, info_size, exp );
         } else {
-          combination_unary( info, info_size, exp, exp_op_info[exp->op].op_str );
+          combination_unary( info, info_size, exp );
         }
 
       }
@@ -2098,6 +2181,13 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.134  2006/03/23 22:42:54  phase1geo
+ Changed two variable combinational expressions that have a constant value in either the
+ left or right expression tree to unary expressions.  Removed expressions containing only
+ static values from coverage totals.  Fixed bug in stmt_iter_get_next_in_order for looping
+ cases (the verbose output was not being emitted for these cases).  Updated regressions for
+ these changes -- full regression passes.
+
  Revision 1.133  2006/03/22 22:00:43  phase1geo
  Fixing bug in missed combinational logic determination where a static expression
  on the left/right of a combination expression should cause the entire expression to

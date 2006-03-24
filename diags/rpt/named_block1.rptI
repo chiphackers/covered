@@ -80,7 +80,7 @@ Instance                                                                    Logi
   <NA>.main                                                             0/   0/   0      100%
   <NA>.main.foobar                                                      0/   0/   0      100%
   <NA>.main.barfoo                                                      0/   0/   0      100%
-  <NA>.main.fooey                                                       2/   6/   8       25%
+  <NA>.main.fooey                                                       2/   4/   6       33%
   <NA>.main.barry                                                       2/   6/   8       25%
 ---------------------------------------------------------------------------------------------------------------------
 
@@ -94,11 +94,11 @@ Instance                                                                    Logi
              17:     c  <= ( a  &  b )
                            |----1----|
 
-        Expression 1   (1/4)
+        Expression 1   (1/3)
         ^^^^^^^^^^^^^ - &
-         LR | LR | LR | LR 
-        =00=|=01=|=10=|=11=
-         *         *    *
+         LR | LR | LR 
+        =0-=|=-0=|=11=
+              *    *
 
       =========================================================================================================
        Line #     Expression
@@ -106,11 +106,11 @@ Instance                                                                    Logi
              18:     d  <= ( a  |  b )
                            |----1----|
 
-        Expression 1   (1/4)
+        Expression 1   (1/3)
         ^^^^^^^^^^^^^ - |
-         LR | LR | LR | LR 
-        =00=|=01=|=10=|=11=
-         *         *    *
+         LR | LR | LR 
+        =1-=|=-1=|=00=
+         *         *
 
 
     Named Block: main.barry, File: named_block1.v, Instance: <NA>.main.barry

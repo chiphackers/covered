@@ -56,7 +56,7 @@ Module/Task/Function      Filename                         Toggle 0 -> 1        
 Module/Task/Function                Filename                                Logic Combinations
                                                                       Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  depth1                            instance1.v                         4/   0/   4      100%
+  depth1                            instance1.v                         3/   0/   3      100%
   depth2                            instance1.v                         4/   0/   4      100%
 
 

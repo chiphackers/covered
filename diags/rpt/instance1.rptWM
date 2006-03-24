@@ -68,7 +68,7 @@ Module/Task/Function                Filename                                Logi
                                                                       Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
   main                              instance1.v                         0/   0/   0      100%
-  depth1                            instance1.v                         4/   0/   4      100%
+  depth1                            instance1.v                         3/   0/   3      100%
   depth2                            instance1.v                         4/   0/   4      100%
 
 

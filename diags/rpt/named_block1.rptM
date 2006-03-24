@@ -80,7 +80,7 @@ Module/Task/Function                Filename                                Logi
   main                              named_block1.v                      0/   0/   0      100%
   main.foobar                       named_block1.v                      0/   0/   0      100%
   main.barfoo                       named_block1.v                      0/   0/   0      100%
-  main.fooey                        named_block1.v                      2/   6/   8       25%
+  main.fooey                        named_block1.v                      2/   4/   6       33%
   main.barry                        named_block1.v                      2/   6/   8       25%
 ---------------------------------------------------------------------------------------------------------------------
 
@@ -94,11 +94,11 @@ Module/Task/Function                Filename                                Logi
              17:     c  <= ( a  &  b )
                            |----1----|
 
-        Expression 1   (1/4)
+        Expression 1   (1/3)
         ^^^^^^^^^^^^^ - &
-         LR | LR | LR | LR 
-        =00=|=01=|=10=|=11=
-         *         *    *
+         LR | LR | LR 
+        =0-=|=-0=|=11=
+              *    *
 
       =========================================================================================================
        Line #     Expression
@@ -106,11 +106,11 @@ Module/Task/Function                Filename                                Logi
              18:     d  <= ( a  |  b )
                            |----1----|
 
-        Expression 1   (1/4)
+        Expression 1   (1/3)
         ^^^^^^^^^^^^^ - |
-         LR | LR | LR | LR 
-        =00=|=01=|=10=|=11=
-         *         *    *
+         LR | LR | LR 
+        =1-=|=-1=|=00=
+         *         *
 
 
     Named Block: main.barry, File: named_block1.v
