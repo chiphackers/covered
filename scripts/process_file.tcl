@@ -25,26 +25,40 @@ set curr_funit_type       0
 # print the total listing will be a bit too-much. As of now, we are 
 # using lsearch, but will certainly optimize later.
 
+proc get_race_reason_from_start_line {start_line} {
+
+  global race_reasons race_msgs race_lines
+
+  set i 0
+  while {[expr $i < [llength $race_lines]] && [expr [string compare [lindex [lindex $race_lines $i] 0] $start_line] == 0]} {
+    incr i
+  }
+
+  return [lindex $race_msgs [lindex $race_reasons $i]]
+
+}
+
 proc create_race_tags {} {
 
   global race_type race_reasons race_lines
+  global race_fgColor race_bgColor
 
   # Set race condition information
   if {[expr $race_type == 1] && [expr [llength $race_reasons] > 0]} {
     set cmd_enter ".bot.right.txt tag add race_enter"
     set cmd_leave ".bot.right.txt tag add race_leave"
     foreach entry $race_lines {
-      set cmd_enter [concat $cmd_enter "$entry.0" "$entry.end"]
-      set cmd_leave [concat $cmd_leave "$entry.0" "$entry.end"]
+      set cmd_enter [concat $cmd_enter $entry]
+      set cmd_leave [concat $cmd_leave $entry]
     }
     eval $cmd_enter
     eval $cmd_leave
+    .bot.right.txt tag configure race_enter -foreground $race_fgColor -background $race_bgColor
     .bot.right.txt tag bind race_enter <Enter> {
       set curr_info   [.info cget -text]
       set curr_cursor [.bot.right.txt cget -cursor]
       .bot.right.txt configure -cursor question_arrow
-      set curr_line [lindex [split [.bot.right.txt index {current + 1 chars}] .] 0]
-      set reason    [lindex $race_msgs [lindex $race_reasons [lsearch $race_lines $curr_line]]]
+      set reason [get_race_reason_from_start_line [lindex [.bot.right.txt tag prevrange race_enter {current + 1 chars}] 0]]
       .info configure -text "Race condition reason: $reason"
     }
     .bot.right.txt tag bind race_leave <Leave> {
@@ -103,19 +117,20 @@ proc process_funit_line_cov {} {
 
 proc calc_and_display_line_cov {} {
 
-  global cov_type uncov_type race_type mod_inst_type funit_names funit_types
-  global uncovered_lines covered_lines race_lines
-  global curr_funit_name curr_funit_type
+  global cov_type uncov_type mod_inst_type funit_names funit_types
+  global uncovered_lines covered_lines race_lines race_reasons
+  global curr_funit_name curr_funit_type start_line
 
   if {$curr_funit_name != 0} {
 
     # Get list of uncovered/covered lines
     set uncovered_lines 0
     set covered_lines   0
-    set race_lines      0
+    set race_lines      ""
+    set race_reasons    ""
     tcl_func_collect_uncovered_lines $curr_funit_name $curr_funit_type
     tcl_func_collect_covered_lines   $curr_funit_name $curr_funit_type
-    tcl_func_collect_race_lines      $curr_funit_name $curr_funit_type
+    tcl_func_collect_race_lines      $curr_funit_name $curr_funit_type $start_line
 
     display_line_cov
 
@@ -128,9 +143,8 @@ proc display_line_cov {} {
   global fileContent file_name
   global uncov_fgColor uncov_bgColor
   global cov_fgColor cov_bgColor
-  global race_fgColor race_bgColor
   global uncovered_lines covered_lines race_lines
-  global uncov_type cov_type race_type
+  global uncov_type cov_type
   global start_line end_line
   global line_summary_total line_summary_hit
   global curr_funit_name curr_funit_type
@@ -144,7 +158,6 @@ proc display_line_cov {} {
 
     .bot.right.txt tag configure uncov_colorMap -foreground $uncov_fgColor -background $uncov_bgColor
     .bot.right.txt tag configure cov_colorMap   -foreground $cov_fgColor   -background $cov_bgColor
-    .bot.right.txt tag configure race_colorMap  -foreground $race_fgColor  -background $race_bgColor
 
     # Allow us to write to the text box
     .bot.right.txt configure -state normal
@@ -168,8 +181,6 @@ proc display_line_cov {} {
             .bot.right.txt insert end $line uncov_colorMap
           } elseif {[expr $cov_type == 1] && [expr [lsearch $covered_lines $linecount] != -1]} {
             .bot.right.txt insert end $line cov_colorMap
-          } elseif {[expr $race_type == 1] && [expr [lsearch $race_lines $linecount] != -1]} {
-            .bot.right.txt insert end $line race_colorMap
           } else {
             .bot.right.txt insert end $line
           }
@@ -298,6 +309,9 @@ proc display_toggle_cov {} {
         incr linecount
       }
 
+      # Create race condition tags
+      create_race_tags
+
       # Finally, set toggle information
       if {[expr $uncov_type == 1] && [expr [llength $uncovered_toggles] > 0]} {
         set cmd_enter  ".bot.right.txt tag add uncov_enter"
@@ -392,8 +406,8 @@ proc process_funit_comb_cov {} {
 
 proc calc_and_display_comb_cov {} {
 
-  global cov_type uncov_type race_type mod_inst_type
-  global uncovered_combs covered_combs race_lines
+  global cov_type uncov_type mod_inst_type
+  global uncovered_combs covered_combs race_lines race_reasons
   global curr_funit_name curr_funit_type start_line
 
   if {$curr_funit_name != 0} {
@@ -402,8 +416,9 @@ proc calc_and_display_comb_cov {} {
     set uncovered_combs ""
     set covered_combs   ""
     set race_lines      ""
+    set race_reasons    ""
     tcl_func_collect_combs $curr_funit_name $curr_funit_type $start_line
-    tcl_func_collect_race_lines $curr_funit_name $curr_funit_type
+    tcl_func_collect_race_lines $curr_funit_name $curr_funit_type $start_line
 
     display_comb_cov
 
@@ -416,9 +431,8 @@ proc display_comb_cov {} {
   global fileContent file_name
   global uncov_fgColor uncov_bgColor
   global cov_fgColor cov_bgColor
-  global race_fgColor race_bgColor
   global uncovered_combs covered_combs race_lines
-  global uncov_type cov_type race_type
+  global uncov_type cov_type
   global start_line end_line
   global comb_summary_total comb_summary_hit
   global cov_rb mod_inst_type
@@ -431,7 +445,6 @@ proc display_comb_cov {} {
 
     .bot.right.txt tag configure uncov_colorMap -foreground $uncov_fgColor -background $uncov_bgColor
     .bot.right.txt tag configure cov_colorMap   -foreground $cov_fgColor   -background $cov_bgColor
-    .bot.right.txt tag configure race_colorMap  -foreground $race_fgColor  -background $race_bgColor
 
     # Allow us to write to the text box
     .bot.right.txt configure -state normal
@@ -451,11 +464,7 @@ proc display_comb_cov {} {
       foreach phrase $contents {
         if [expr [expr $start_line <= $linecount] && [expr $end_line >= $linecount]] {
           set line [format {%3s  %7u  %s} "   " $linecount [append phrase "\n"]]
-          if {[expr $race_type == 1] && [expr [lsearch $race_lines $linecount] != -1]} {
-            .bot.right.txt insert end $line race_colorMap
-          } else {
-            .bot.right.txt insert end $line
-          }
+          .bot.right.txt insert end $line
         }
         incr linecount
       }

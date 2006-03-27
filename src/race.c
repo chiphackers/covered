@@ -251,8 +251,9 @@ void race_calc_assignments( statement* stmt, int sb_index ) {
 */
 void race_handle_race_condition( expression* expr, func_unit* mod, statement* stmt, statement* base, int reason ) {
 
-  race_blk* rb;  /* Pointer to race condition block to add to specified module */
-  int       i;   /* Loop iterator                                              */
+  race_blk* rb;         /* Pointer to race condition block to add to specified module */
+  int       i;          /* Loop iterator */
+  int       last_line;  /* Holds the line number of the last line in the specified statement */
 
   /* If the base pointer is NULL, the stmt refers to a statement block that conflicts with an input port */
   if( base == NULL ) {
@@ -325,15 +326,29 @@ void race_handle_race_condition( expression* expr, func_unit* mod, statement* st
 
   }
 
-  /* Create a race condition block and add it to current module */
-  rb = race_blk_create( reason, stmt->exp->line, statement_get_last_line( stmt ) );
+  /* Calculate the last line of this statement so that we are not constantly doing it */
+  last_line = statement_get_last_line( stmt );
 
-  /* Add the newly created race condition block to the current module */
-  if( mod->race_head == NULL ) {
-    mod->race_head = mod->race_tail = rb;
-  } else {
-    mod->race_tail->next = rb;
-    mod->race_tail       = rb;
+  /* Search this module's race list to see if this statement block already exists */
+  rb = mod->race_head;
+  while( (rb != NULL) && (rb->start_line != stmt->exp->line) && (rb->end_line != last_line) ) {
+    rb = rb->next;
+  }  
+
+  /* If a matching statement block was not found, go ahead and create it */
+  if( rb == NULL ) {
+
+    /* Create a race condition block and add it to current module */
+    rb = race_blk_create( reason, stmt->exp->line, last_line );
+
+    /* Add the newly created race condition block to the current module */
+    if( mod->race_head == NULL ) {
+      mod->race_head = mod->race_tail = rb;
+    } else {
+      mod->race_tail->next = rb;
+      mod->race_tail       = rb;
+    }
+
   }
 
   /* Set remove flag in stmt_blk array to remove this module from memory */
@@ -653,12 +668,12 @@ bool race_db_write( race_blk* rb, FILE* file ) {
 */
 bool race_db_read( char** line, func_unit* curr_mod ) {
 
-  bool      retval = TRUE;  /* Return value for this function                 */
-  int       start_line;     /* Starting line for race condition block         */
-  int       end_line;       /* Ending line for race condition block           */
+  bool      retval = TRUE;  /* Return value for this function */
+  int       start_line;     /* Starting line for race condition block */
+  int       end_line;       /* Ending line for race condition block */
   int       reason;         /* Reason for why the race condition block exists */
-  int       chars_read;     /* Number of characters read via sscanf           */
-  race_blk* rb;             /* Pointer to newly created race condition block  */
+  int       chars_read;     /* Number of characters read via sscanf */
+  race_blk* rb;             /* Pointer to newly created race condition block */
 
   if( sscanf( *line, "%d %d %d%n", &reason, &start_line, &end_line, &chars_read ) == 3 ) {
 
@@ -821,7 +836,8 @@ void race_report( FILE* ofile, bool verbose ) {
 /*!
  \param funit_name  Name of funtional unit to search for
  \param funit_type  Type of funtional unit to search for
- \param lines       Pointer to an array of lines that contain line numbers of race condition statements
+ \param slines      Pointer to an array of starting line numbers that contain line numbers of race condition statements
+ \param elines      Pointer to an array of ending line numbers that contain line numbers of race condition statements
  \param reasons     Pointer to an array of race condition reason integers, one for each line in the lines array
  \param line_cnt    Pointer to number of elements that exist in lines array
 
@@ -830,14 +846,14 @@ void race_report( FILE* ofile, bool verbose ) {
  Collects all of the line numbers in the specified module that were ignored from coverage due to
  detecting a race condition.  This function is primarily used by the GUI for outputting purposes.
 */
-bool race_collect_lines( char* funit_name, int funit_type, int** lines, int** reasons, int* line_cnt ) {
+bool race_collect_lines( char* funit_name, int funit_type, int** slines, int** elines, int** reasons, int* line_cnt ) {
 
-  bool        retval    = TRUE;  /* Return value for this function                           */
-  func_unit   mod;               /* Temporary module used to search for module name          */
+  bool        retval    = TRUE;  /* Return value for this function */
+  func_unit   mod;               /* Temporary module used to search for module name */
   funit_link* modl;              /* Pointer to found module link containing specified module */
-  race_blk*   curr_race = NULL;  /* Pointer to current race condition block                  */
-  int         i;                 /* Loop iterator                                            */
-  int         line_size = 20;    /* Current number of lines allocated in lines array         */
+  race_blk*   curr_race = NULL;  /* Pointer to current race condition block */
+  int         i;                 /* Loop iterator */
+  int         line_size = 20;    /* Current number of lines allocated in lines array */
 
   mod.name = strdup_safe( funit_name, __FILE__, __LINE__ );
   mod.type = funit_type;
@@ -845,22 +861,23 @@ bool race_collect_lines( char* funit_name, int funit_type, int** lines, int** re
   if( (modl = funit_link_find( &mod, funit_head )) != NULL ) {
 
     /* Begin by allocating some memory for the lines */
-    *lines    = (int*)malloc_safe( (sizeof( int ) * line_size), __FILE__, __LINE__ );
+    *slines   = (int*)malloc_safe( (sizeof( int ) * line_size), __FILE__, __LINE__ );
+    *elines   = (int*)malloc_safe( (sizeof( int ) * line_size), __FILE__, __LINE__ );
     *reasons  = (int*)malloc_safe( (sizeof( int ) * line_size), __FILE__, __LINE__ );
     *line_cnt = 0;
 
     curr_race = modl->funit->race_head;
     while( curr_race != NULL ) {
-      for( i=curr_race->start_line; i<=curr_race->end_line; i++ ) {
-	if( *line_cnt == line_size ) {
-          line_size += 20;
-	  *lines   = (int*)realloc( *lines, (sizeof( int ) * line_size) );
-	  *reasons = (int*)realloc( *lines, (sizeof( int ) * line_size) );
-	}
-        (*lines)[*line_cnt]   = i;
-        (*reasons)[*line_cnt] = curr_race->reason;
-	(*line_cnt)++;
+      if( *line_cnt == line_size ) {
+        line_size += 20;
+        *slines  = (int*)realloc( *slines,  (sizeof( int ) * line_size) );
+        *elines  = (int*)realloc( *elines,  (sizeof( int ) * line_size) );
+        *reasons = (int*)realloc( *reasons, (sizeof( int ) * line_size) );
       }
+      (*slines)[*line_cnt]  = curr_race->start_line;
+      (*elines)[*line_cnt]  = curr_race->end_line;
+      (*reasons)[*line_cnt] = curr_race->reason;
+      (*line_cnt)++;
       curr_race = curr_race->next;
     }
 
@@ -897,6 +914,11 @@ void race_blk_delete_list( race_blk* rb ) {
 
 /*
  $Log$
+ Revision 1.36  2006/02/10 16:44:29  phase1geo
+ Adding support for register assignment.  Added diagnostic to regression suite
+ to verify its implementation.  Updated TODO.  Full regression passes at this
+ point.
+
  Revision 1.35  2006/01/31 16:41:00  phase1geo
  Adding initial support and diagnostics for the variable multi-bit select
  operators +: and -:.  More to come but full regression passes.

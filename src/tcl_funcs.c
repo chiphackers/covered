@@ -50,7 +50,7 @@ extern const char* race_msgs[RACE_TYPE_NUM];
 int tcl_func_get_race_reason_msgs( ClientData d, Tcl_Interp* tcl, int argc, const char *argv[] ) {
 
   int retval = TCL_OK;  /* Return value of this function */
-  int i;                /* Loop iterator                 */
+  int i;                /* Loop iterator */
 
   for( i=0; i<RACE_TYPE_NUM; i++ ) {
     strcpy( user_msg, race_msgs[i] );
@@ -275,31 +275,47 @@ int tcl_func_collect_covered_lines( ClientData d, Tcl_Interp* tcl, int argc, con
 
 }
 
+/*!
+ \param d     TBD
+ \param tcl   Pointer to the Tcl interpreter
+ \param argc  Number of arguments in the argv list
+ \param argv  Array of arguments passed to this function
+
+ \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
+         TCL_ERROR.
+
+ Populates the global variables "race_lines" and "race_reasons" with the race condition information for
+ the specified functional unit.
+*/
 int tcl_func_collect_race_lines( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
-  int   retval  = TCL_OK;
-  char* funit_name;
-  int   funit_type;
-  int*  lines;
-  int*  reasons;
-  int   line_cnt;
-  int   i       = 0;
-  char  line[20]; 
-  char  reason[20];
+  int   retval = TCL_OK;  /* Return value for this function */
+  char* funit_name;       /* Name of functional unit to get race condition information for */
+  int   funit_type;       /* Type of functional unit to get race condition information for */
+  int   start_line;       /* Starting line of specified functional unit */
+  int*  slines;           /* Starting line numbers of statement blocks containing race condition(s) */
+  int*  elines;           /* Ending line numbers of statement blocks containing race conditions(s) */
+  int*  reasons;          /* Reason for race condition for a specified statement block */
+  int   line_cnt;         /* Number of valid entries in the slines, elines and reasons arrays */
+  int   i      = 0;       /* Loop iterator */
+  char  line[50];         /* Temporary string containing line information */
+  char  reason[20];       /* Temporary string containing reason information */
 
   funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
   funit_type = atoi( argv[2] );
+  start_line = atoi( argv[3] );
 
-  if( race_collect_lines( funit_name, funit_type, &lines, &reasons, &line_cnt ) ) {
+  if( race_collect_lines( funit_name, funit_type, &slines, &elines, &reasons, &line_cnt ) ) {
 
     for( i=0; i<line_cnt; i++ ) {
-      snprintf( line,   20, "%d", lines[i]   );
+      snprintf( line,   50, "%d.0 %d.end", (slines[i] - (start_line - 1)), (elines[i] - (start_line - 1)) );
       snprintf( reason, 20, "%d", reasons[i] );
       Tcl_SetVar( tcl, "race_lines",   line,   (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
       Tcl_SetVar( tcl, "race_reasons", reason, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
     }
 
-    free_safe( lines );
+    free_safe( slines );
+    free_safe( elines );
     free_safe( reasons );
 
   } else {
@@ -383,6 +399,9 @@ int tcl_func_collect_uncovered_toggles( ClientData d, Tcl_Interp* tcl, int argc,
  
  \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
          TCL_ERROR.
+
+ Populates the global variable "covered_toggles" with the names of all signals of the given functional unit
+ that achieved 100% toggle coverage.
 */
 int tcl_func_collect_covered_toggles( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
@@ -438,18 +457,21 @@ int tcl_func_collect_covered_toggles( ClientData d, Tcl_Interp* tcl, int argc, c
 
  \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
          TCL_ERROR.
+
+ Populates the global variables "toggle_msb", "toggle_lsb", "toggle01_verbose", and "toggle10_verbose" with
+ the verbose coverage information for the specified signal in the specified functional unit.
 */
 int tcl_func_get_toggle_coverage( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
-  int   retval = TCL_OK;
-  char* funit_name;
-  int   funit_type;
-  char* signame;
-  int   msb;
-  int   lsb; 
-  char* tog01;
-  char* tog10;
-  char  tmp[20];
+  int   retval = TCL_OK;  /* Return value for this function */
+  char* funit_name;       /* Name of functional unit containing the signal to get verbose toggle information for */
+  int   funit_type;       /* Type of functional unit containing the signal to get verbose toggle information for */
+  char* signame;          /* Name of signal to get verbose toggle information for */
+  int   msb;              /* Most-significant bit position of the specified signal */
+  int   lsb;              /* Least-significant bit position of the specified signal */
+  char* tog01;            /* Toggle 0->1 information for this signal */
+  char* tog10;            /* Toggle 1->0 information for this signal */
+  char  tmp[20];          /* Temporary string for conversion purposes */
 
   funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
   funit_type = atoi( argv[2] );
@@ -921,6 +943,10 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.29  2006/02/08 13:54:23  phase1geo
+ Adding previous and next buttons to toggle window.  Added currently selected
+ cursor output to main textbox with associated functionality.
+
  Revision 1.28  2006/02/06 22:48:34  phase1geo
  Several enhancements to GUI look and feel.  Fixed error in combinational logic
  window.
