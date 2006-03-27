@@ -270,15 +270,15 @@ int arc_get_suppl( const char* arcs, int type ) {
 */
 bool arc_set_states( char* arcs, int start, vector* left, vector* right ) {
 
-  bool   retval = TRUE;  /* Return value of this function                  */
-  char   mask;           /* Mask to apply to current bit select            */
-  vector value;          /* Vector to hold current bit select              */
-  int    pos;            /* Current 8-bit boundary bit position            */
-  int    i;              /* Loop iterator                                  */
-  int    j;              /* Loop iterator                                  */
-  int    curr;           /* Current index of arc array to set              */
+  bool   retval = TRUE;  /* Return value of this function */
+  char   mask;           /* Mask to apply to current bit select */
+  vector value;          /* Vector to hold current bit select */
+  int    pos;            /* Current 8-bit boundary bit position */
+  int    i;              /* Loop iterator */
+  int    j;              /* Loop iterator */
+  int    curr;           /* Current index of arc array to set */
   int    entry_size;     /* Number of characters needed to store one entry */
-  int    index;          /* Current index of vector to extract             */
+  int    index;          /* Current index of vector to extract */
 
   /* Check specified vector for unknown information */
   if( vector_is_unknown( left ) || vector_is_unknown( right ) ) {
@@ -386,12 +386,12 @@ int arc_get_entry_suppl( const char* arcs, int curr, int type ) {
 */
 int arc_find( const char* arcs, vector* from_st, vector* to_st, int* ptr ) {
 
-  char  tmp[264];    /* Temporary arc array entry for comparison purposes              */
-  int   curr_size;   /* Current number of entries in this arc array                    */
-  int   entry_size;  /* Number of characters for a given entry                         */
-  int   i;           /* Loop iterator                                                  */
-  int   j;           /* Loop iterator                                                  */
-  int   k;           /* Loop iterator                                                  */
+  char  tmp[264];    /* Temporary arc array entry for comparison purposes */
+  int   curr_size;   /* Current number of entries in this arc array */
+  int   entry_size;  /* Number of characters for a given entry */
+  int   i;           /* Loop iterator */
+  int   j;           /* Loop iterator */
+  int   k;           /* Loop iterator */
   int   type;        /* Search type (0 = match bidir only if bidir set, 1 = match all) */
 
   type       = *ptr;
@@ -466,7 +466,7 @@ int arc_find( const char* arcs, vector* from_st, vector* to_st, int* ptr ) {
 char* arc_create( int width ) {
 
   char* arcs;  /* Pointer to newly create state transition array */
-  int   i;     /* Loop iterator                                  */
+  int   i;     /* Loop iterator */
 
   /* The arcs char array is not allocated, allocate the default space here */
   arcs = (char*)malloc_safe( ((arc_get_entry_width( width ) * width) + ARC_STATUS_SIZE + 1), __FILE__, __LINE__ );
@@ -501,10 +501,10 @@ char* arc_create( int width ) {
 */
 void arc_add( char** arcs, vector* fr_st, vector* to_st, int hit ) {
 
-  char* tmp;          /* Temporary char array holder              */
+  char* tmp;          /* Temporary char array holder */
   int   entry_width;  /* Width of a signal entry in the arc array */
-  int   i;            /* Loop iterator                            */
-  int   ptr;          /* Pointer to entry index of matched entry  */
+  int   i;            /* Loop iterator */
+  int   ptr;          /* Pointer to entry index of matched entry */
   int   side;         /* Specifies the direction of matched entry */
 
   assert( *arcs != NULL );
@@ -624,14 +624,14 @@ bool arc_compare_states( const char* arcs, int index1, int pos1, int index2, int
 */
 void arc_compare_all_states( char* arcs, int start, bool left ) {
 
-  int state1_pos;    /* Bit position of current state        */
-  int state1_index;  /* Character position of current state  */
-  int state2_pos;    /* Bit position of state to check       */
+  int state1_pos;    /* Bit position of current state */
+  int state1_index;  /* Character position of current state */
+  int state2_pos;    /* Bit position of state to check */
   int state2_index;  /* Character position of state to check */
   int entry_size;    /* Characters needed to store one entry */
-  int i;             /* Loop iterator                        */
-  int j;             /* Loop iterator                        */
-  int hit_forward;   /* Set to 1 if start has a forward hit  */
+  int i;             /* Loop iterator */
+  int j;             /* Loop iterator */
+  int hit_forward;   /* Set to 1 if start has a forward hit */
 
   entry_size  = arc_get_entry_width( arc_get_width( arcs ) );
   hit_forward = arc_get_entry_suppl( arcs, start, ARC_HIT_F );
@@ -698,7 +698,7 @@ void arc_compare_all_states( char* arcs, int start, bool left ) {
 float arc_state_total( const char* arcs ) {
 
   float total = 0;  /* Total number of states hit during simulation */
-  int   i;          /* Loop iterator                                */
+  int   i;          /* Loop iterator */
 
   for( i=0; i<arc_get_curr_size( arcs ); i++ ) {
     if( arc_get_entry_suppl( arcs, i, ARC_NOT_UNIQUE_L ) == 0 ) {
@@ -727,9 +727,9 @@ float arc_state_total( const char* arcs ) {
 */
 int arc_state_hits( char* arcs ) {
 
-  int hit = 0;     /* Number of states hit */
-  int i;           /* Loop iterator        */
-  int j;           /* Loop iterator        */
+  int hit = 0;  /* Number of states hit */
+  int i;        /* Loop iterator */
+  int j;        /* Loop iterator */
 
   for( i=0; i<arc_get_curr_size( arcs ); i++ ) {
     for( j=0; j<2; j++ ) {
@@ -776,7 +776,7 @@ int arc_state_hits( char* arcs ) {
 float arc_transition_total( const char* arcs ) {
 
   float total;  /* Number of total state transitions in arc array */
-  int   i;      /* Loop iterator                                  */
+  int   i;      /* Loop iterator */
 
   /* To start, get the current number of entries in the arc */
   total = arc_get_curr_size( arcs );
@@ -803,8 +803,8 @@ float arc_transition_total( const char* arcs ) {
 */
 int arc_transition_hits( const char* arcs ) {
 
-  int hit = 0;     /* Number of arcs hit        */
-  int i;           /* Loop iterator             */
+  int hit = 0;     /* Number of arcs hit */
+  int i;           /* Loop iterator */
   int curr_size;   /* Current size of arc array */
 
   /* Get some size values */
@@ -821,7 +821,7 @@ int arc_transition_hits( const char* arcs ) {
 }
 
 /*!
- \param arcs  Pointer to state transition arc array.
+ \param arcs         Pointer to state transition arc array.
  \param state_total  Pointer to total number of states in table.
  \param state_hits   Pointer to total number of states hit during simulation.
  \param arc_total    Pointer to total number of state transitions in table.
@@ -864,7 +864,7 @@ void arc_get_stats( char* arcs, float* state_total, int* state_hits, float* arc_
 bool arc_db_write( const char* arcs, FILE* file ) {
 
   bool retval = TRUE;  /* Return value for this function */
-  int  i;              /* Loop iterator                  */
+  int  i;              /* Loop iterator */
 
   for( i=0; i<(arc_get_curr_size( arcs ) * arc_get_entry_width( arc_get_width( arcs ) )) + ARC_STATUS_SIZE; i++ ) {
     /* printf( "arcs[%d]; %x\n", i, (int)arcs[i] & 0xff ); */
@@ -928,11 +928,11 @@ int arc_read_get_next_value( char** line ) {
 bool arc_db_read( char** arcs, char** line ) {
 
   bool retval = TRUE;  /* Return value for this function */
-  int  i;              /* Loop iterator                  */
-  int  val;            /* Current character value        */
-  int  width;          /* Arc signal width               */
-  int  curr_size;      /* Current size of arc array      */
-  int  suppl;          /* Supplemental field             */
+  int  i;              /* Loop iterator */
+  int  val;            /* Current character value */
+  int  width;          /* Arc signal width */
+  int  curr_size;      /* Current size of arc array */
+  int  suppl;          /* Supplemental field */
 
   /* Get sizing information */
   width     =  (arc_read_get_next_value( line ) & 0xff) | 
@@ -981,12 +981,12 @@ bool arc_db_read( char** arcs, char** line ) {
 */
 void arc_state_to_string( const char* arcs, int index, bool left, char* str ) {
 
-  char tmp[2];       /* Temporary string holder                       */
+  char tmp[2];       /* Temporary string holder */
   int  val;          /* Temporary storage for integer value of 4-bits */
-  int  str_index;    /* Index to store next character into str        */
-  int  pos;          /* Specifies current bit position to extract     */
-  int  entry_width;  /* Character width to store one arc entry        */
-  int  i;            /* Loop iterator                                 */
+  int  str_index;    /* Index to store next character into str */
+  int  pos;          /* Specifies current bit position to extract */
+  int  entry_width;  /* Character width to store one arc entry */
+  int  i;            /* Loop iterator */
 
   /* Initialize variables */
   str_index   = ((arc_get_width( arcs ) % 4) == 0) ? (arc_get_width( arcs ) / 4) : ((arc_get_width( arcs ) / 4) + 1);
@@ -1037,19 +1037,20 @@ void arc_state_to_string( const char* arcs, int index, bool left, char* str ) {
 
  \return Returns TRUE if line was read in correctly; otherwise, returns FALSE.
 
+ Merges the specified FSM arc information from the current line into the base FSM arc information.
 */
 bool arc_db_merge( char** base, char** line, bool same ) {
 
-  bool    retval = TRUE;  /* Return value for this function     */
-  char*   arcs;           /* Read arc array                     */
-  char*   strl;           /* Left state value string            */
-  char*   strr;           /* Right state value string           */
-  char*   tmpl;           /* Temporary left state value string  */
+  bool    retval = TRUE;  /* Return value for this function */
+  char*   arcs;           /* Read arc array */
+  char*   strl;           /* Left state value string */
+  char*   strr;           /* Right state value string */
+  char*   tmpl;           /* Temporary left state value string */
   char*   tmpr;           /* Temporary right state value string */
-  vector* vecl;           /* Left state vector value            */
-  vector* vecr;           /* Right state vector value           */
-  int     i;              /* Loop iterator                      */
-  char    str_width[20];  /* Temporary string holder            */
+  vector* vecl;           /* Left state vector value */
+  vector* vecr;           /* Right state vector value */
+  int     i;              /* Loop iterator */
+  char    str_width[20];  /* Temporary string holder */
 
   if( arc_db_read( &arcs, line ) ) {
 
@@ -1123,11 +1124,12 @@ bool arc_db_merge( char** base, char** line, bool same ) {
 
  \return Returns TRUE if line was read in correctly; otherwise, returns FALSE.
 
+ Replaces the base FSM arc information with the information extracted from the current line.
 */
 bool arc_db_replace( char** base, char** line ) {
 
-  bool    retval = TRUE;  /* Return value for this function     */
-  char*   arcs;           /* Read arc array                     */
+  bool  retval = TRUE;  /* Return value for this function */
+  char* arcs;           /* Read arc array */
 
   if( arc_db_read( &arcs, line ) ) {
 
@@ -1168,8 +1170,8 @@ bool arc_db_replace( char** base, char** line ) {
 void arc_display_states( FILE* ofile, const char* fstr, const char* arcs, bool hit ) {
 
   char* str;  /* Holder for string value of current state */
-  int   i;    /* Loop iterator                            */
-  int   j;    /* Loop iterator                            */
+  int   i;    /* Loop iterator */
+  int   j;    /* Loop iterator */
 
   str = (char*)malloc_safe( ((arc_get_width( arcs ) / 4) + 2), __FILE__, __LINE__ );
 
@@ -1213,8 +1215,8 @@ void arc_display_states( FILE* ofile, const char* fstr, const char* arcs, bool h
 */
 void arc_display_transitions( FILE* ofile, const char* fstr, const char* arcs, bool hit ) {
 
-  char* strl;
-  char* strr;
+  char* strl;  /* String containing from_state information */
+  char* strr;  /* String containing to_state information */
   int   i;     /* Loop iterator */
 
   strl = (char*)malloc_safe( ((arc_get_width( arcs ) / 4) + 2), __FILE__, __LINE__ );
@@ -1260,6 +1262,13 @@ void arc_dealloc( char* arcs ) {
 
 /*
  $Log$
+ Revision 1.28  2006/02/02 22:37:40  phase1geo
+ Starting to put in support for signed values and inline register initialization.
+ Also added support for more attribute locations in code.  Regression updated for
+ these changes.  Interestingly, with the changes that were made to the parser,
+ signals are output to reports in order (before they were completely reversed).
+ This is a nice surprise...  Full regression passes.
+
  Revision 1.27  2005/12/21 22:30:54  phase1geo
  More updates to memory leak fix list.  We are getting close!  Added some helper
  scripts/rules to more easily debug valgrind memory leak errors.  Also added suppression

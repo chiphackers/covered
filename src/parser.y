@@ -40,24 +40,66 @@ extern bool flag_exclude_initial;
 extern void lex_start_udp_table();
 extern void lex_end_udp_table();
 
+/*!
+ If set to a value > 0, specifies that we are currently parsing code that should be ignored by
+ Covered; otherwise, evaluate parsed code.
+*/
 int  ignore_mode = 0;
+
+/*!
+ If set to a value > 0, specifies that we are parsing a parameter expression
+*/
 int  param_mode  = 0;
+
+/*!
+ If set to a value > 0, specifies that we are parsing an attribute
+*/
 int  attr_mode   = 0;
+
+/*!
+ If set to a value > 0, specifies that we are parsing a port
+*/
 int  port_mode   = 0;
+
+/*!
+ Array storing the depth that a given fork block is at.
+*/
 int* fork_block_depth;
+
+/*!
+ Current fork depth position in the fork_block_depth array.
+*/
 int  fork_depth  = -1;
+
+/*!
+ Specifies the current block depth (for embedded blocks).
+*/
 int  block_depth = 0; 
+
+/*!
+ If set to TRUE, specifies that we are currently parsing syntax on the left-hand-side of an
+ assignment.
+*/
 bool lhs_mode    = FALSE;
 
+/*!
+ Pointer to head of parameter override list.
+*/
 param_oride* param_oride_head = NULL;
+
+/*!
+ Pointer to tail of parameter override list.
+*/
 param_oride* param_oride_tail = NULL;
 
-#ifdef OBSOLETE
-exp_link* param_exp_head = NULL;
-exp_link* param_exp_tail = NULL;
-#endif
-
+/*!
+ Pointer to head of signal list
+*/
 sig_link* dummy_head    = NULL;
+
+/*!
+ Pointer to tail of signal list
+*/
 sig_link* dummy_tail    = NULL;
 
 /*!

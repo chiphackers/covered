@@ -1,5 +1,5 @@
 /*!
- \file     module.c
+ \file     func_unit.c
  \author   Trevor Williams  (trevorw@charter.net)
  \date     12/7/2001
 */
@@ -830,6 +830,11 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.16  2006/02/01 15:13:11  phase1geo
+ Added support for handling bit selections in RHS parameter calculations.  New
+ mbit_sel5.4 diagnostic added to verify this change.  Added the start of a
+ regression utility that will eventually replace the old Makefile system.
+
  Revision 1.15  2006/01/24 23:24:37  phase1geo
  More updates to handle static functions properly.  I have redone quite a bit
  of code here which has regressions pretty broke at the moment.  More work

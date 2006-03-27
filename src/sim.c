@@ -13,8 +13,8 @@
  The operation of the simulation engine is as follows.  When a signal is found
  in the VCD file, the expressions to which it is a part of the RHS are looked up
  in the design tree.  The expression tree is then parsed from the expression to
- the root, setting the #ESUPPL_LSB_LEFT_CHANGED or #ESUPPL_LSB_RIGHT_CHANGED as it 
- makes its way to the root.  When at the root expression, the #ESUPPL_LSB_STMT_HEAD 
+ the root, setting the #ESUPPL_IS_LEFT_CHANGED or #ESUPPL_IS_RIGHT_CHANGED as it 
+ makes its way to the root.  When at the root expression, the #ESUPPL_IS_STMT_HEAD 
  bit is interrogated.  If this bit is a 1, the expression's statement is loaded 
  into the pre-simulation statement queue.  If the bit is a 0, no further action is 
  taken.
@@ -27,9 +27,9 @@
  is empty.  This signifies that the timestep has been completed.
 
  \par
- When a statement is placed into the statement simulation engine, the #ESUPPL_LSB_STMT_HEAD 
+ When a statement is placed into the statement simulation engine, the #ESUPPL_IS_STMT_HEAD 
  bit is cleared in the root expression.  Additionally, the root expression pointed to by 
- the statement is interrogated to see if the #ESUPPL_LSB_LEFT_CHANGED or #ESUPPL_LSB_RIGHT_CHANGED 
+ the statement is interrogated to see if the #ESUPPL_IS_LEFT_CHANGED or #ESUPPL_IS_RIGHT_CHANGED 
  bits are set.  If one or both of the bits are found to be set, the root expression 
  is placed into the expression simulation engine for further processing.  When the 
  statement's expression has completed its simulation, the value of the root expression 
@@ -37,7 +37,7 @@
  of the root expression is true, the next_true statement is loaded into the statement 
  simulation engine.  If the value of the root expression is false and the next_false 
  pointer is NULL, this signifies that the current statement tree has completed for this 
- timestep.  At this point, the current statement will set the #ESUPPL_LSB_STMT_HEAD bit in 
+ timestep.  At this point, the current statement will set the #ESUPPL_IS_STMT_HEAD bit in 
  its root expression and is removed from the statement simulation engine.  The next statement 
  at the head of the pre-simulation statement queue is then loaded into the statement 
  simulation engine.  If next_false statement is not NULL, it is loaded into the statement 
@@ -45,16 +45,16 @@
 
  \par
  When a root expression is placed into the expression simulation engine, the tree is
- traversed, following the paths that have set #ESUPPL_LSB_LEFT_CHANGED or 
- #ESUPPL_LSB_RIGHT_CHANGED bits set.  Each expression tree is traversed depth first.  When an 
+ traversed, following the paths that have set #ESUPPL_IS_LEFT_CHANGED or 
+ #ESUPPL_IS_RIGHT_CHANGED bits set.  Each expression tree is traversed depth first.  When an 
  expression is reached that does not have either of these bits set, we have reached the expression
  whose value has changed.  When this expression is found, it is evaluated and the
  resulting value is stored into its value vector.  Once this has occurred, the parent
  expression checks to see if the other child expression has changed value.  If so,
  that child expression's tree is traversed.  Once both child expressions contain the
  current value for the current timestep, the parent expression evaluates its
- expression with the values of its children and clears both the #ESUPPL_LSB_LEFT_CHANGED and
- #ESUPPL_LSB_RIGHT_CHANGED bits to indicate that both children were evaluated.  The resulting
+ expression with the values of its children and clears both the #ESUPPL_IS_LEFT_CHANGED and
+ #ESUPPL_IS_RIGHT_CHANGED bits to indicate that both children were evaluated.  The resulting
  value is stored into the current expression's value vector and the parent expression
  of the current expression is worked on.  This evaluation process continues until the
  root expression of the tree has been evaluated.  At this point the expression tree
@@ -103,11 +103,22 @@ thread* thread_head = NULL;
 */
 thread* thread_tail = NULL;
 
+/*!
+ Pointer to head of thread list containing threads that are currently waiting for a delay period to be
+ completed.
+*/
 thread* delay_head  = NULL;
+
+/*!
+ Pointer to tail of thread list containing threads that are currently waiting for a delay period to be
+ completed.
+*/
 thread* delay_tail  = NULL;
 
 
 /*!
+ \param head  Pointer to head of thread queue to display
+
  Displays the current state of the thread queue
 */
 void sim_display_thread_queue( thread** head ) {
@@ -511,8 +522,8 @@ void sim_add_statics() {
  \return Returns TRUE if this expression has changed value from previous sim; otherwise,
          returns FALSE.
 
- Recursively traverses specified expression tree, following the #ESUPPL_LSB_LEFT_CHANGED 
- and #ESUPPL_LSB_RIGHT_CHANGED bits in the supplemental field.  Once an expression is
+ Recursively traverses specified expression tree, following the #ESUPPL_IS_LEFT_CHANGED 
+ and #ESUPPL_IS_RIGHT_CHANGED bits in the supplemental field.  Once an expression is
  found that has neither bit set, perform the expression operation and move back up
  the tree.  Once both left and right children have calculated values, perform the
  expression operation for the current expression, clear both changed bits and
@@ -582,12 +593,7 @@ bool sim_expression( expression* expr, thread* thr ) {
 }
 
 /*!
- \param head_stmt  Pointer to head statement to simulate.
- \param last_stmt  Pointer to last statement simulated during this run (if non-NULL, this
-                   statement should be first statement to execute the next time this is run).
-
- \return Returns TRUE if this statement block has executed at least one statement; otherwise,
-         returns FALSE to indicate that this statement block had no simulation effect.
+ \param thr  Pointer to current thread to simulate.
 
  Performs statement simulation as described above.  Calls expression simulator if
  the associated root expression is specified that signals have changed value within
@@ -705,6 +711,10 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.66  2006/01/23 17:23:28  phase1geo
+ Fixing scope issues that came up when port assignment was added.  Full regression
+ now passes.
+
  Revision 1.65  2006/01/09 04:15:25  phase1geo
  Attempting to fix one last problem with latest changes.  Regression runs are
  currently running.  Checkpointing.

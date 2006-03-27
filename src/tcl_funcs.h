@@ -16,7 +16,7 @@
 #include <tcl.h>
 #include <tk.h>
 
-/*! \brief TBD */
+/*! \brief Gathers the list of all functional units within the design */
 int tcl_func_get_funit_list( ClientData d, Tcl_Interp* tcl, int argc, const char *argv[] );
 
 /*! \brief Initializes TCL interface */
@@ -24,6 +24,10 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 #endif
 
 /* $Log$
+/* Revision 1.9  2006/01/28 06:42:53  phase1geo
+/* Added configuration read/write functionality for tool preferences and integrated
+/* the preferences.tcl file into Covered's GUI.  This is now functioning correctly.
+/*
 /* Revision 1.8  2005/12/02 05:46:50  phase1geo
 /* Fixing compile errors when HAVE_TCLTK is defined in config.h.
 /*

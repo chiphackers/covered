@@ -34,7 +34,14 @@
 #include "func_unit.h"
 
 
+/*!
+ Pointer to array of statement blocks for the specified design.
+*/
 stmt_blk* sb = NULL;
+
+/*!
+ Number of entries loaded in the sb array.
+*/
 int       sb_size;
 
 /*!
@@ -84,6 +91,17 @@ race_blk* race_blk_create( int reason, int start_line, int end_line ) {
 
 }
 
+/*!
+ \param curr     Pointer to current statement to check
+ \param to_find  Pointer to statement to find
+
+ \return Returns TRUE if the specified to_find statement was found in the statement block specified
+         by curr; otherwise, returns FALSE.
+
+ Recursively iterates through specified statement block, searching for statement pointed to by to_find.
+ If the statement is found, a value of TRUE is returned to the calling function; otherwise, a value of
+ FALSE is returned.
+*/
 bool race_find_head_statement_containing_statement_helper( statement* curr, statement* to_find ) {
 
   bool retval = FALSE;  /* Return value for this function */
@@ -122,6 +140,16 @@ bool race_find_head_statement_containing_statement_helper( statement* curr, stat
 
 }
 
+/*!
+ \param stmt  Pointer to statement to search for matching statement block
+
+ \return Returns a pointer to the statement block containing the given statement (if one is found); otherwise,
+         returns a value of NULL.
+
+ Searches all statement blocks for one that contains the given statement within it.  Once it is found, a pointer
+ to the head statement block is returned to the calling function.  If it is not found, a value of NULL is returned,
+ indicating that the statement block could not be found for the given statement.
+*/
 statement* race_find_head_statement_containing_statement( statement* stmt ) {
 
   int i = 0;   /* Loop iterator */
@@ -177,7 +205,11 @@ int race_find_head_statement( statement* stmt ) {
 }
 
 /*!
- TBD
+ \param expr      Pointer to expression to check for statement block type (sequential/combinational)
+ \param sb_index  Current statement block index containing the given expression.
+
+ Recursively iterates down expression tree, searching for an expression which will indicate that
+ its statement block is a sequential always block or a combinational always block.
 */
 void race_calc_stmt_blk_type( expression* expr, int sb_index ) {
 
@@ -200,7 +232,12 @@ void race_calc_stmt_blk_type( expression* expr, int sb_index ) {
 }
 
 /*!
- TBD
+ \param exp       Pointer to expression to check for expression assignment type
+ \param sb_index  Current statement block index containing the given expression
+
+ Checks the given expression for its assignment type and sets the given statement block
+ structure to the appropriate assign type value.  If the given expression is a named block,
+ iterate through that block searching for an assignment type.
 */
 void race_calc_expr_assignment( expression* exp, int sb_index ) {
 
@@ -218,7 +255,11 @@ void race_calc_expr_assignment( expression* exp, int sb_index ) {
 }
 
 /*!
- TBD
+ \param stmt      Pointer to statement to get assign type from
+ \param sb_index  Current statement block index containing the given statement
+
+ Recursively iterates through the given statement block, searching for all assignment types used
+ within the block.
 */
 void race_calc_assignments( statement* stmt, int sb_index ) {
 
@@ -544,8 +585,6 @@ void race_check_race_count() {
 }
 
 /*!
- \param Returns TRUE if calling function should continue with scoring.
-
  Performs race checking for the currently loaded module.  This function should be called when
  the endmodule keyword is detected in the current module.
 */
@@ -914,6 +953,9 @@ void race_blk_delete_list( race_blk* rb ) {
 
 /*
  $Log$
+ Revision 1.37  2006/03/27 17:37:23  phase1geo
+ Fixing race condition output.  Some regressions may fail due to these changes.
+
  Revision 1.36  2006/02/10 16:44:29  phase1geo
  Adding support for register assignment.  Added diagnostic to regression suite
  to verify its implementation.  Updated TODO.  Full regression passes at this

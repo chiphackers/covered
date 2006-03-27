@@ -18,7 +18,22 @@
  field will be set.  If the expression has evaluated to 1 or a value greater than 1, the
  WAS_TRUE bit of the expression's supplemental field will be set.  If both the WAS_FALSE and
  the WAS_TRUE bits are set after scoring, the expression is considered to be fully covered.
- 
+
+ \par
+ If the expression is an event type, only the WAS_TRUE bit is examined.  It it was set during
+ simulation, the event is completely covered; otherwise, the event was not covered during simulation.
+
+ \par
+ For combinational logic, four other expression supplemental bits are used to determine which logical
+ combinations of its two children have occurred during simulation.  These four bits are EVAL_00, EVAL_01,
+ EVAL_10, and EVAL_11.  If the left and right expressions simultaneously evaluated to 0 during simulation,
+ the EVAL_00 bit is set.  If the left and right expressions simultaneously evaluated to 0 and 1, respectively,
+ the EVAL_01 bit is set.  If the left and right expressions simultaneously evaluated to 1 and 0, respectively,
+ the EVAL_10 bit is set.  If the left and right expression simultaneously evaluated to 1 during simulation,
+ the EVAL_11 bit is set.  For an AND-type operation, full coverage is achieved if (EVAL_00 || EVAL_01) &&
+ (EVAL_00 || EVAL10) && EVAL_11.  For an OR-type operation, full coverage is achieved if (EVAL_10 || EVAL_11) &&
+ (EVAL_01 || EVAL11) && EVAL_00.  For any other combinational expression (where both the left and right
+ expression trees are non-NULL), full coverage is achieved if all four EVAL_xx bits are set.
 */
 
 #ifdef HAVE_CONFIG_H
@@ -992,7 +1007,9 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
          the current line.  If there is no underline information to return, a value of
          NULL is returned.
 
- TBD
+ Formats the specified underline line to line wrap according to the generated code.  This
+ function must be called after the underline lines have been calculated prior to being
+ output to the ASCII report or the GUI.
 */
 char* combination_prep_line( char* line, int start, int len ) {
 
@@ -1079,6 +1096,7 @@ char* combination_prep_line( char* line, int start, int len ) {
  \param code        Array of strings containing code to output.
  \param code_depth  Number of entries in code array.
  \param exp         Pointer to parent expression to create underline for.
+ \param funit       Pointer to the functional unit containing the expression to underline.
 
  Traverses through the expression tree that is on the same line as the parent,
  creating underline strings.  An underline is created for each expression that
@@ -1337,6 +1355,8 @@ void combination_two_vars( char*** info, int* info_size, expression* exp ) {
  \param line3  Pointer to third line of multi-variable expression output.
  \param exp    Pointer to current expression to output.
 
+ Creates the verbose report information for a multi-variable expression, storing its output in
+ the line1, line2, and line3 strings.
 */
 void combination_multi_var_exprs( char** line1, char** line2, char** line3, expression* exp ) {
 
@@ -1451,7 +1471,8 @@ void combination_multi_var_exprs( char** line1, char** line2, char** line3, expr
  \param line2  Second line of multi-variable expression output
  \param line3  Third line of multi-variable expression output
 
- \return TBD
+ \return Returns the number of lines required to store the multi-variable expression output
+         contained in line1, line2, and line3.
 */
 int combination_multi_expr_output_length( char* line1, char* line2, char* line3 ) {
 
@@ -1474,10 +1495,12 @@ int combination_multi_expr_output_length( char* line1, char* line2, char* line3 
 }
 
 /*!
- \param ofile  Pointer to file to output report contents to.
+ \param info   Pointer string to output report contents to.
  \param line1  First line of multi-variable expression output.
  \param line2  Second line of multi-variable expression output.
  \param line3  Third line of multi-variable expression output.
+
+ Stores the information from line1, line2 and line3 in the string array info.
 */
 void combination_multi_expr_output( char** info, char* line1, char* line2, char* line3 ) {
 
@@ -1722,7 +1745,7 @@ void combination_output_expr( expression* expr, unsigned int curr_depth, int* an
 
 /*!
  \param ofile  Pointer to file to output results to.
- \param stmtl  Pointer to statement list head.
+ \param funit  Pointer to functional unit to display verbose combinational logic output for.
 
  Displays the expressions (and groups of expressions) that were considered 
  to be measurable (evaluates to a value of TRUE (1) or FALSE (0) but were 
@@ -1897,7 +1920,8 @@ void combination_funit_verbose( FILE* ofile, funit_link* head ) {
  \return Returns TRUE if combinational coverage information was found for the given functional unit; otherwise,
          returns FALSE to indicate that an error occurred.
 
- TBD
+ Gathers the covered and uncovered combinational logic information, storing their expressions in the covs and uncovs
+ expression arrays.  Used by the GUI for verbose combinational logic output.
 */
 bool combination_collect( char* funit_name, int funit_type, expression*** covs, int* cov_cnt, expression*** uncovs, int* uncov_cnt ) {
 
@@ -1986,7 +2010,8 @@ bool combination_collect( char* funit_name, int funit_type, expression*** covs, 
  
  \return Returns TRUE if the given expression was found; otherwise, returns FALSE to indicate an error occurred.
 
- TBD 
+ Gets the combinational logic coverage information for the specified expression ID, storing the output in the
+ code and ulines arrays.  Used by the GUI for displaying an expression's coverage information.
 */
 bool combination_get_expression( char* funit_name, int funit_type, int expr_id, char*** code, int** uline_groups, int* code_size,
                                  char*** ulines, int* uline_size ) {
@@ -2181,6 +2206,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.135  2006/03/24 19:01:44  phase1geo
+ Changed two variable report output to be as concise as possible.  Updating
+ regressions per these changes.
+
  Revision 1.134  2006/03/23 22:42:54  phase1geo
  Changed two variable combinational expressions that have a constant value in either the
  left or right expression tree to unary expressions.  Removed expressions containing only

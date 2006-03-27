@@ -15,24 +15,21 @@
  \par
  Additionally, the expression structure contains a pointer to the signal from which
  it receives its value.  However, not all expressions point to signals.  Only the
- expressions which have an operation type of EXP_OP_SIG, EXP_OP_SBIT_SEL, and
- EXP_OP_MBIT_SEL have pointers to signals.  These pointers are used for quick
+ expressions which have an operation type of EXP_OP_SIG, EXP_OP_SBIT_SEL, EXP_OP_MBIT_SEL,
+ and EXP_OP_FUNC_CALL have pointers to signals.  These pointers are used for quick
  retrieval of the signal name when outputting expressions.
 
  \par
  Because both signals and expressions point to each other, we say that signals and
- expressions need to be bound to each other.  The process of binding takes place at
- two different points in the scoring process:
-
- \par
- -# When an expression is parsed and the signal that it needs to point to is
-    a signal that is local to the current module that the expression exists in.
-    If the signal is not local (a hierarchical reference), we cannot bind at this
-    time because the signal may be referring to a signal in a module which has not
-    been parsed yet.  Because of this, binding also occurs in the second point of
-    the score command.
- -# After all parsing has been performed, all signals and expressions which have
-    not been bound at point 1 are now bound.
+ expressions need to be bound to each other.  The process of binding takes place after
+ all design file parsing has been completed, allowing an expression to be bound to a signal
+ elsewhere in the design.  Binding is performed twice at this point in the score command (occurs
+ once for the merge and report commands).  The first binding pass binds all expressions to local
+ signals/parameters.  This local binding is required to allow parameters and constant function
+ calls in parameter assignments to be calculated correctly.  As each binding is performed, it is
+ removed from the list of all bindings that need to be performed for the design.  After the first
+ binding pass is performed, all parameters are resolved for their values, after which all other
+ expressions that still need to bound are handled.
 
  \par Implicit Signal Creation
  In several Verilog simulators, the automatic creation of one-bit wires is allowed.
@@ -96,10 +93,10 @@ exp_bind* eb_tail;
 
 
 /*!
- \param type  Type of thing being bound with the specified expression (0=signal, 1=functional unit)
- \param name  Signal/Function/Task scope to bind.
- \param exp   Expression ID to bind.
- \param mod   Pointer to module containing specified expression.
+ \param type   Type of thing being bound with the specified expression (0=signal, 1=functional unit)
+ \param name   Signal/Function/Task scope to bind.
+ \param exp    Expression ID to bind.
+ \param funit  Pointer to module containing specified expression.
 
  Adds the specified signal/function/task and expression to the bindings linked list.
  This bindings list will be handled after all input Verilog has been
@@ -250,7 +247,8 @@ void bind_display_list() {
 }
 
 /*!
- \param id  Expression ID of binding to remove.
+ \param id              Expression ID of binding to remove.
+ \param clear_assigned  If set to TRUE, clears the assigned bit in the specified expression.
 
  Removes the binding containing the expression ID of id.  This needs to
  be called before an expression is removed.
@@ -356,6 +354,7 @@ void bind_rm_stmt( int id ) {
  \param exp             Pointer to expression to bind.
  \param funit_exp       Pointer to functional unit containing expression.
  \param fsm_bind        If set to TRUE, handling binding for FSM binding.
+ \param cdd_reading     If set to TRUE, specifies that we are binding after reading a design from a CDD file (instead of the design files).
  \param clear_assigned  If set to TRUE, clears signal assigned bit.
  \param exp_line        Line of specified expression (when expression is NULL)
  \param bind_locally    If TRUE, only search for specified signal within the same functional unit as this expression
@@ -516,6 +515,10 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
  \param cdd_reading   Set to TRUE if we are binding after reading from the CDD file
  \param rm_stmt       Set to TRUE if we need to remove the statement block (instead of bind to it)
  \param bind_locally  If TRUE, only attempt to bind to a statement in the same functional unit as this expression.
+
+ \return Returns TRUE if statement was properly bound to the specified expression; otherwise, returns FALSE.
+
+ Binds a statement to an expression (occurs for EXP_OP_FUNC_CALL, EXP_OP_TASK_CALL and EXP_OP_NB_CALL expressions).
 */
 bool bind_statement( int id, expression* exp, func_unit* funit_exp, bool cdd_reading, bool rm_stmt, bool bind_locally ) {
 
@@ -566,7 +569,7 @@ bool bind_statement( int id, expression* exp, func_unit* funit_exp, bool cdd_rea
  Binds a given task/function call port parameter to the matching signal in the specified
  task/function.
 */
-bool bind_task_function_ports( expression* expr, func_unit* funit, char* name, int* order, func_unit* funit_exp ) {
+void bind_task_function_ports( expression* expr, func_unit* funit, char* name, int* order, func_unit* funit_exp ) {
 
   sig_link* sigl;            /* Pointer to current signal link to examine */
   int       i;               /* Loop iterator */
@@ -903,6 +906,11 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.69  2006/02/16 21:19:26  phase1geo
+ Adding support for arrays of instances.  Also fixing some memory problems for
+ constant functions and fixed binding problems when hierarchical references are
+ made to merged modules.  Full regression now passes.
+
  Revision 1.68  2006/02/03 23:49:38  phase1geo
  More fixes to support signed comparison and propagation.  Still more testing
  to do here before I call it good.  Regression may fail at this point.

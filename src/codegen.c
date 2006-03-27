@@ -169,18 +169,18 @@ void codegen_create_expr_helper( char** code,
 }
 
 /*!
- \param code             Pointer to an array of strings which will contain generated code lines.
- \param code_depth       Pointer to number of strings contained in code array.
- \param curr_line        Line number of current expression.
- \param first            String value coming before left expression string.
- \param left             Array of strings for left expression code.
- \param left_depth       Number of strings contained in left array.
- \param left_line        Line number of left expression.
- \param middle           String value coming after left expression string.
- \param right            Array of strings for right expression code.
- \param right_depth      Number of strings contained in right array.
- \param right_line       Line number of right expression.
- \param last             String value coming after right expression string.
+ \param code         Pointer to an array of strings which will contain generated code lines.
+ \param code_depth   Pointer to number of strings contained in code array.
+ \param curr_line    Line number of current expression.
+ \param first        String value coming before left expression string.
+ \param left         Array of strings for left expression code.
+ \param left_depth   Number of strings contained in left array.
+ \param left_exp     Pointer to left expression
+ \param middle       String value coming after left expression string.
+ \param right        Array of strings for right expression code.
+ \param right_depth  Number of strings contained in right array.
+ \param right_exp    Pointer to right expression
+ \param last         String value coming after right expression string.
 
  Allocates enough memory in code array to store all code lines for the current expression.
  Calls the helper function to actually generate code lines (to populate the code array).
@@ -296,6 +296,7 @@ void codegen_create_expr( char***     code,
  \param parent_op   Operation of parent.  If our op is the same, no surrounding parenthesis is needed.
  \param code        Pointer to array of strings that will contain code lines for the supplied expression.
  \param code_depth  Pointer to number of strings contained in code array.
+ \param funit       Pointer to functional unit containing the specified expression.
 
  Generates Verilog code from specified expression tree.  This Verilog
  snippet is used by the verbose coverage reporting functions for showing
@@ -804,6 +805,9 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.65  2006/03/22 21:34:26  phase1geo
+ Fixing code generation bug.
+
  Revision 1.64  2006/03/20 16:43:38  phase1geo
  Fixing code generator to properly display expressions based on lines.  Regression
  still needs to be updated for these changes.

@@ -68,6 +68,9 @@ unsigned long largest_malloc_size = 0;
 */
 char user_msg[USER_MSG_LENGTH];
 
+/*!
+ Array of functional unit names used for output purposes.
+*/
 const char* funit_types[FUNIT_TYPES+1] = { "module", "named block", "function", "task", "UNKNOWN" };
 
 
@@ -975,6 +978,9 @@ const char* get_funit_type( int type ) {
 
 /*
  $Log$
+ Revision 1.43  2006/02/17 19:50:47  phase1geo
+ Added full support for escaped names.  Full regression passes.
+
  Revision 1.42  2006/02/16 21:19:26  phase1geo
  Adding support for arrays of instances.  Also fixing some memory problems for
  constant functions and fixed binding problems when hierarchical references are

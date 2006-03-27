@@ -138,6 +138,15 @@ void vector_copy( vector* from_vec, vector** to_vec ) {
 
 }
 
+/*!
+ \param dat0  Data nibble 0
+ \param dat1  Data nibble 1
+ \param dat2  Data nibble 2
+ \param dat3  Data nibble 3
+
+ \return Returns an unsigned integer containing the values of dat0, dat1, dat2 and dat3
+         in an encoded, packed manner.
+*/
 unsigned int vector_nibbles_to_uint( nibble dat0, nibble dat1, nibble dat2, nibble dat3 ) {
 
   unsigned int d[4];  /* Array of unsigned int format of dat0,1,2,3 */
@@ -162,6 +171,12 @@ unsigned int vector_nibbles_to_uint( nibble dat0, nibble dat1, nibble dat2, nibb
 
 }
 
+/*!
+ \param data  Unsigned integer value containing the data to be nibble-ized
+ \param dat   Array of four nibbles to populate
+
+ Decodes and unpacks the given unsigned integer value into the specified nibble array.
+*/
 void vector_uint_to_nibbles( unsigned int data, nibble* dat ) {
 
   int i;  /* Loop iterator */
@@ -715,7 +730,7 @@ void vector_logic_count( vector* vec, int* false_cnt, int* true_cnt ) {
  \return Returns TRUE if assigned bit that is being set to 1 in this function was
          found to be previously set; otherwise, returns FALSE.
 
- This function is called by the \rel vsignal_set_assigned function.
+ This function is called by the \ref vsignal_set_assigned function.
 */
 bool vector_set_assigned( vector* vec, int msb, int lsb ) {
 
@@ -848,6 +863,7 @@ bool vector_set_value_only( vector* vec, vec_data* value, int width, int from_id
 
 /*!
  \param vec  Pointer to vector to bit-fill
+ \param msb  Most-significant bit to end bit-filling on
  \param lsb  Least-significant bit to start bit-filling
 
  \return Returns TRUE if any of the bits in the bit-fill range have changed
@@ -1529,7 +1545,7 @@ bool vector_op_compare( vector* tgt, vector* left, vector* right, int comp_type 
  \param left   Expression value being shifted left.
  \param right  Expression containing number of bit positions to shift.
 
- \param Returns TRUE if assigned value differs from original value; otherwise, returns FALSE.
+ \return Returns TRUE if assigned value differs from original value; otherwise, returns FALSE.
 
  Converts right expression into an integer value and left shifts the left
  expression the specified number of bit locations, zero-filling the LSB.
@@ -1979,6 +1995,11 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.73  2006/02/16 21:19:26  phase1geo
+ Adding support for arrays of instances.  Also fixing some memory problems for
+ constant functions and fixed binding problems when hierarchical references are
+ made to merged modules.  Full regression now passes.
+
  Revision 1.72  2006/02/03 23:49:38  phase1geo
  More fixes to support signed comparison and propagation.  Still more testing
  to do here before I call it good.  Regression may fail at this point.

@@ -17,6 +17,16 @@ extern funit_link* funit_head;
 extern funit_inst* instance_root;
 
 
+/*!
+ \param funit  Pointer to functional unit to generate performance statistics for
+
+ \return Returns a pointer to the perf_stat structure containing the performance statistics
+         for the given functional unit
+
+ Allocates and initializes the contents of a performance structure to display the total number
+ of expressions in the given functional unit and the number of times these expressions that
+ were executed during simulation.
+*/
 perf_stat* perf_gen_stats( func_unit* funit ) {
 
   exp_link*  expl;   /* Pointer to current expression link */
@@ -42,6 +52,12 @@ perf_stat* perf_gen_stats( func_unit* funit ) {
 
 }
 
+/*!
+ \param ofile  Pointer to file to output performance results to
+ \param funit  Pointer to functional unit to output performance metrics for
+
+ Outputs the expression performance statistics to the given output stream.
+*/
 void perf_output_mod_stats( FILE* ofile, func_unit* funit ) {
 
   perf_stat* pstat;     /* Pointer to performance statistic structure for this funit */
@@ -109,4 +125,8 @@ void perf_output_inst_report( FILE* ofile ) {
 
 /*
  $Log$
+ Revision 1.1  2006/01/02 21:35:36  phase1geo
+ Added simulation performance statistical information to end of score command
+ when we are in debug mode.
+
 */

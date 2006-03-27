@@ -148,10 +148,13 @@
  @{
 */
 
+/*! Specifies that the contents of this CDD file have not gone through a merge process */
 #define INFO_NOT_MERGED      0
 
+/*! Specifies that the contents of this CDD file have been merged with one file */
 #define INFO_ONE_MERGED      1
 
+/*! Specifies that the contents of this CDD file is the result of merging two other CDD files */
 #define INFO_TWO_MERGED      2
 
 /*! @} */
@@ -280,7 +283,7 @@
 /*!
  Used for merging two supplemental fields from two expressions.  Both expression
  supplemental fields are ANDed with this mask and ORed together to perform the
- merge.  See \ref esuppl_u for information on which bits are masked.
+ merge.  See esuppl_u for information on which bits are masked.
 */
 #define ESUPPL_MERGE_MASK            0x3ffff
 
@@ -932,9 +935,7 @@ typedef unsigned long control;
 #endif
 
 /*------------------------------------------------------------------------------*/
-/*!
- A vec_data is an 8-bit value that represents one bit of data in a signal or expression/subexpression
-*/
+
 union vec_data_u;
 
 /*!
@@ -942,6 +943,9 @@ union vec_data_u;
 */
 typedef union vec_data_u vec_data;
 
+/*!
+ A vec_data is an 8-bit value that represents one bit of data in a signal or expression/subexpression
+*/
 union vec_data_u {
   nibble all;        /*!< Reference to all bits in this union                         */
   struct {
@@ -956,9 +960,7 @@ union vec_data_u {
 };
 
 /*------------------------------------------------------------------------------*/
-/*!
- A esuppl is a 32-bit value that represents the supplemental field of an expression.
-*/
+
 union esuppl_u;
 
 /*!
@@ -966,6 +968,9 @@ union esuppl_u;
 */
 typedef union esuppl_u esuppl;
 
+/*!
+ A esuppl is a 32-bit value that represents the supplemental field of an expression.
+*/
 union esuppl_u {
   control   all;               /*!< Controls all bits within this union */
   struct {
@@ -1026,9 +1031,8 @@ union esuppl_u {
   } part;
 };
 
-/*!
- Supplemental signal information.
-*/
+/*------------------------------------------------------------------------------*/
+
 union ssuppl_u;
 
 /*!
@@ -1036,17 +1040,19 @@ union ssuppl_u;
 */
 typedef union ssuppl_u ssuppl;
 
+/*!
+ Supplemental signal information.
+*/
 union ssuppl_u {
   control all;
   struct {
     control col            :16; /*!< Specifies the starting column this signal is declared on */
-    control type           :3;  /*!< Specifies signal type (see \ref ssuppl_types for legal values) */
+    control type           :3;  /*!< Specifies signal type (see \ref ssuppl_type for legal values) */
   } part;
 };
 
-/*!
- Supplemental module parameter information.
-*/
+/*------------------------------------------------------------------------------*/
+
 union psuppl_u;
 
 /*!
@@ -1054,6 +1060,9 @@ union psuppl_u;
 */
 typedef union psuppl_u psuppl;
 
+/*!
+ Supplemental module parameter information.
+*/
 union psuppl_u {
   control all;
   struct {
@@ -1065,238 +1074,47 @@ union psuppl_u {
 /*------------------------------------------------------------------------------*/
 /*  STRUCTURE/UNION DECLARATIONS  */
 
-/*!
- Allows the parent pointer of an expression to point to either another expression
- or a statement.
-*/
-union expr_stmt_u;
-
-/*!
- Contains static information about each expression operation type.
-*/
+union  expr_stmt_u;
 struct exp_info_s;
-
-/*!
- Specifies an element in a linked list containing string values.  This data
- structure allows us to add new elements to the list without resizing, this
- optimizes performance with small amount of overhead.
-*/
 struct str_link_s;
-
-/*!
- Contains information for signal value.  This value is represented as
- a generic vector.  The vector.h/.c files contain the functions that
- manipulate this information.
-*/
 struct vector_s;
-
-/*!
- An expression is defined to be a logical combination of signals/values.  Expressions may
- contain subexpressions (which are expressions in and of themselves).  An measurable expression
- may only evaluate to TRUE (1) or FALSE (0).  If the parent expression of this expression is
- NULL, then this expression is considered a root expression.  The nibble suppl contains the
- run-time information for its expression.
-*/
 struct expression_s;
-
-/*!
- Stores all information needed to represent a signal.  If value of value element is non-zero at the
- end of the run, this signal has been simulated.
-*/
 struct vsignal_s;
-
-/*!
- TBD
-*/
 struct fsm_s;
-
-/*!
- A statement is defined to be the structure connected to the root of an expression tree.
- Statements are sequentially run in the run-time engine, starting at the root statement.
- After a statements expression tree has been checked for changes and possibly placed into
- the run-time expression queue, the statements calls the next statement to be run.
- If the value of the root expression of the associated expression tree is a non-zero value,
- the next_true statement will be executed (if next_true is not NULL); otherwise, the
- next_false statement is run.  If next_true and next_false point to the same structure, we
- have hit the end of the statement sequence; executing the next statement will be executing
- the first statement of the statement sequence (next_true and next_false should both point
- to the first statement in the sequence).
-*/
 struct statement_s;
-
-/*!
- Linked list element that stores a signal.
-*/
 struct sig_link_s;
-
-/*!
- Statement link iterator.
-*/
 struct stmt_iter_s;
-
-/*!
- Expression link element.  Stores pointer to an expression.
-*/
 struct exp_link_s;
-
-/*!
- Statement link element.  Stores pointer to a statement.
-*/
 struct stmt_link_s;
-
-/*!
- Special statement link that stores the ID of the statement that the specified
- statement pointer needs to traverse when it has completed.  These structure types
- are used by the statement CDD reader.  When a statement is read that points to a
- statement that hasn't been read out of the CDD, the read statement is stored into
- one of these link types that is linked like a stack (pushed/popped at the head).
- The head of this stack is interrogated by future statements being read out.  When
- a statement's ID matches the ID at the head of the stack, the element is popped and
- the two statements are linked accordingly.  This sequence is used to handle statement
- looping.
-*/
 struct stmt_loop_link_s;
-
-/*!
- Contains statistics for coverage results which is stored in a functional unit instance.
-*/
 struct statistic_s;
-
-/*!
- Structure containing parts for a module parameter definition.
-*/
 struct mod_parm_s;
-
-/*!
- Structure containing parts for an instance parameter.
-*/
 struct inst_parm_s;
-
-/*!
- TBD
-*/
 struct fsm_arc_s;
-
-/*!
- Linked list element that stores an FSM structure.
-*/
 struct fsm_link_s;
-
-/*!
- Contains information for storing race condition information
-*/
 struct race_blk_s;
-
-/*!
- Contains information for a functional unit (i.e., module, named block, function or task).
-*/
 struct func_unit_s;
-
-/*!
- Linked list element that stores a functional unit (no scope).
-*/
 struct funit_link_s;
-
-/*!
- For each signal within a symtable entry, an independent MSB and LSB needs to be
- stored along with the signal pointer that it references to properly assign the
- VCD signal value to the appropriate signal.  This structure is setup to hold these
- three key pieces of information in a list-style data structure.
-*/
 struct sym_sig_s;
-
-/*!
- Stores symbol name of signal along with pointer to signal itself into a lookup table
-*/
 struct symtable_s;
-
-/*!
- Specifies possible values for a static expression (constant value).
-*/
 struct static_expr_s;
-
-/*!
- Specifies bit range of a signal or expression.
-*/
 struct vector_width_s;
-
-/*!
- Binds a signal to an expression.
-*/
 struct exp_bind_s;
-
-/*!
- Binds an expression to a statement.  This is used when constructing a case
- structure.
-*/
 struct case_stmt_s;
-
-/*!
- A functional unit instance element in the functional unit instance tree.
-*/
 struct funit_inst_s;
-
-/*!
- Node for a tree that carries two strings:  a key and a value.  The tree is a binary
- tree that is sorted by key.
-*/
 struct tnode_s;
 
 #ifdef HAVE_SYS_TIMES_H
-/*!
- Structure for holding code timing data.  This information can be useful for optimizing
- code segments.  To use a timer, create a pointer to a timer structure in global
- memory and assign the pointer to the value NULL.  Then simply call timer_start to
- start timing and timer_stop to stop timing.  You may call as many timer_start/timer_stop
- pairs as needed and the total timed time will be kept in the structure's total variable.
- To clear the total for a timer, call timer_clear.
-*/
 struct timer_s;
 #endif
 
-/*!
- TBD
-*/
 struct fsm_var_s;
-
-/*!
- TBD
-*/
 struct fv_bind_s;
-
-/*!
- TBD
-*/
 struct attr_param_s;
-
-/*!
- The stmt_blk structure contains extra information for a given signal that is only used during
- the parsing stage (therefore, the information does not need to be specified in the vsignal
- structure itself) and is used to keep track of information about that signal's use in the current
- functional unit.  It is used for race condition checking.
-*/
 struct stmt_blk_s;
-
-/*!
- Simulator feature that keeps track of head pointer for a given thread along with pointers to the
- parent and children thread of this thread.  Threads allow us to handle task calls and fork/join
- statements.
-*/
 struct thread_s;
-
-/*!
- Performance statistic container used for simulation-time performance characteristics.
-*/
 struct perf_stat_s;
-
-/*!
- Container for port-specific information.
-*/
 struct port_info_s;
-
-/*!
- Container for holding information pertinent for parameter overriding.
-*/
 struct param_oride_s;
 
 /*------------------------------------------------------------------------------*/
@@ -1497,6 +1315,9 @@ typedef struct param_oride_s param_oride;
 /*------------------------------------------------------------------------------*/
 /*  STRUCTURE/UNION DEFINITIONS  */
 
+/*!
+ Contains static information about each expression operation type.
+*/
 struct exp_info_s {
   char* name;                             /*!< Operation name */
   char* op_str;                           /*!< Operation string name for report output purposes */
@@ -1511,6 +1332,11 @@ struct exp_info_s {
   } suppl;                                /*!< Supplemental information about this expression */
 };
 
+/*!
+ Specifies an element in a linked list containing string values.  This data
+ structure allows us to add new elements to the list without resizing, this
+ optimizes performance with small amount of overhead.
+*/
 struct str_link_s {
   char*         str;                 /*!< String to store */
   control       suppl;               /*!< 32-bit additional information */
@@ -1518,6 +1344,11 @@ struct str_link_s {
   str_link*     next;                /*!< Pointer to next str_link element */
 };
 
+/*!
+ Contains information for signal value.  This value is represented as
+ a generic vector.  The vector.h/.c files contain the functions that
+ manipulate this information.
+*/
 struct vector_s {
   int        width;                  /*!< Bit width of this vector */
   union {
@@ -1534,11 +1365,22 @@ struct vector_s {
   vec_data*  value;                  /*!< 4-state current value and toggle history */
 };
 
+/*!
+ Allows the parent pointer of an expression to point to either another expression
+ or a statement.
+*/
 union expr_stmt_u {
   expression* expr;                  /*!< Pointer to expression */
   statement*  stmt;                  /*!< Pointer to statement */
 };
 
+/*!
+ An expression is defined to be a logical combination of signals/values.  Expressions may
+ contain subexpressions (which are expressions in and of themselves).  An measurable expression
+ may only evaluate to TRUE (1) or FALSE (0).  If the parent expression of this expression is
+ NULL, then this expression is considered a root expression.  The nibble suppl contains the
+ run-time information for its expression.
+*/
 struct expression_s {
   vector*     value;                /*!< Current value and toggle information of this expression */
   exp_op_type op;                   /*!< Expression operation type */
@@ -1558,6 +1400,10 @@ struct expression_s {
   statement*  stmt;                 /*!< Pointer to starting task/function statement to be called by this expression */
 };
 
+/*!
+ Stores all information needed to represent a signal.  If value of value element is non-zero at the
+ end of the run, this signal has been simulated.
+*/
 struct vsignal_s {
   char*      name;                   /*!< Full hierarchical name of signal in design */
   int        line;                   /*!< Specifies line number that this signal was declared on */
@@ -1568,6 +1414,9 @@ struct vsignal_s {
   exp_link*  exp_tail;               /*!< Tail pointer to list of expressions */
 };
 
+/*!
+ Stores information for an FSM within the design.
+*/
 struct fsm_s {
   char*       name;                  /*!< User-defined name that this FSM pertains to */
   expression* from_state;            /*!< Pointer to from_state expression */
@@ -1577,6 +1426,18 @@ struct fsm_s {
   char*       table;                 /*!< FSM arc traversal table */
 };
 
+/*!
+ A statement is defined to be the structure connected to the root of an expression tree.
+ Statements are sequentially run in the run-time engine, starting at the root statement.
+ After a statements expression tree has been checked for changes and possibly placed into
+ the run-time expression queue, the statements calls the next statement to be run.
+ If the value of the root expression of the associated expression tree is a non-zero value,
+ the next_true statement will be executed (if next_true is not NULL); otherwise, the
+ next_false statement is run.  If next_true and next_false point to the same structure, we
+ have hit the end of the statement sequence; executing the next statement will be executing
+ the first statement of the statement sequence (next_true and next_false should both point
+ to the first statement in the sequence).
+*/
 struct statement_s {
   expression* exp;                   /*!< Pointer to associated expression tree */
   statement*  next_true;             /*!< Pointer to next statement to run if expression tree non-zero */
@@ -1587,32 +1448,58 @@ struct statement_s {
   thread*     static_thr;            /*!< Pointer to thread that originally called this statement */
 };
 
+/*!
+ Linked list element that stores a signal.
+*/
 struct sig_link_s {
   vsignal*  sig;                     /*!< Pointer to signal in list */
   sig_link* next;                    /*!< Pointer to next signal link element in list */
 };
 
+/*!
+ Statement link iterator.
+*/
 struct stmt_iter_s {
   stmt_link* curr;                   /*!< Pointer to current statement link */
   stmt_link* last;                   /*!< Two-way pointer to next/previous statement link */
 };
 
+/*!
+ Expression link element.  Stores pointer to an expression.
+*/
 struct exp_link_s {
   expression* exp;                   /*!< Pointer to expression */
   exp_link*   next;                  /*!< Pointer to next expression element in list */
 };
 
+/*!
+ Statement link element.  Stores pointer to a statement.
+*/
 struct stmt_link_s {
   statement* stmt;                   /*!< Pointer to statement */
   stmt_link* ptr;                    /*!< Pointer to next statement element in list */
 };
 
+/*!
+ Special statement link that stores the ID of the statement that the specified
+ statement pointer needs to traverse when it has completed.  These structure types
+ are used by the statement CDD reader.  When a statement is read that points to a
+ statement that hasn't been read out of the CDD, the read statement is stored into
+ one of these link types that is linked like a stack (pushed/popped at the head).
+ The head of this stack is interrogated by future statements being read out.  When
+ a statement's ID matches the ID at the head of the stack, the element is popped and
+ the two statements are linked accordingly.  This sequence is used to handle statement
+ looping.
+*/
 struct stmt_loop_link_s {
   statement*      stmt;              /*!< Pointer to last statement in loop */
   int             id;                /*!< ID of next statement after last */
   stmt_loop_link* next;              /*!< Pointer to next statement in stack */
 };
 
+/*!
+ Contains statistics for coverage results which is stored in a functional unit instance.
+*/
 struct statistic_s {
   float line_total;                  /*!< Total number of lines parsed */
   int   line_hit;                    /*!< Number of lines executed during simulation */
@@ -1629,6 +1516,9 @@ struct statistic_s {
   int   rtype_total[RACE_TYPE_NUM];  /*!< Total number of each race condition type found */
 };
 
+/*!
+ Structure containing parts for a module parameter definition.
+*/
 struct mod_parm_s {
   char*        name;                 /*!< Name of parameter */
   static_expr* msb;                  /*!< Static expression containing the MSB of the module parameter */
@@ -1643,6 +1533,9 @@ struct mod_parm_s {
   mod_parm*    next;                 /*!< Pointer to next module parameter in list */
 };
 
+/*!
+ Structure containing parts for an instance parameter.
+*/
 struct inst_parm_s {
   vsignal*     sig;                  /*!< Name, MSB, LSB and vector value for this instance parameter */
   char*        inst_name;            /*!< Name of instance to which this structure belongs to */
@@ -1650,17 +1543,26 @@ struct inst_parm_s {
   inst_parm*   next;                 /*!< Pointer to next instance parameter in list */
 };
 
+/*!
+ Contains information for a single state transition arc in an FSM within the design.
+*/
 struct fsm_arc_s {
   expression* from_state;            /*!< Pointer to expression that represents the state we are transferring from */
   expression* to_state;              /*!< Pointer to expression that represents the state we are transferring to */
   fsm_arc*    next;                  /*!< Pointer to next fsm_arc in this list */
 };
 
+/*!
+ Linked list element that stores an FSM structure.
+*/
 struct fsm_link_s {
   fsm*      table;                   /*!< Pointer to FSM structure to store */
   fsm_link* next;                    /*!< Pointer to next element in fsm_link list */
 };
 
+/*!
+ Contains information for storing race condition information
+*/
 struct race_blk_s {
   int       start_line;              /*!< Starting line number of statement block that was found to be a race condition */
   int       end_line;                /*!< Ending line number of statement block that was found to be a race condition */
@@ -1668,6 +1570,9 @@ struct race_blk_s {
   race_blk* next;                    /*!< Pointer to next race block in list */
 };
 
+/*!
+ Contains information for a functional unit (i.e., module, named block, function or task).
+*/
 struct func_unit_s {
   int         type;                  /*!< Specifies the type of functional unit this structure represents.
                                           Legal values are defined in \ref func_unit_types */
@@ -1693,11 +1598,20 @@ struct func_unit_s {
   funit_link* tf_tail;               /*!< Tail pointer to list of task/function functional units if we are a module */
  };
 
+/*!
+ Linked list element that stores a functional unit (no scope).
+*/
 struct funit_link_s {
   func_unit*  funit;                 /*!< Pointer to functional unit in list */
   funit_link* next;                  /*!< Next functional unit link in list */
 };
 
+/*!
+ For each signal within a symtable entry, an independent MSB and LSB needs to be
+ stored along with the signal pointer that it references to properly assign the
+ VCD signal value to the appropriate signal.  This structure is setup to hold these
+ three key pieces of information in a list-style data structure.
+*/
 struct sym_sig_s {
   vsignal* sig;                      /*!< Pointer to signal that this symtable entry refers to */
   int      msb;                      /*!< Most significant bit of value to set */
@@ -1705,6 +1619,9 @@ struct sym_sig_s {
   sym_sig* next;                     /*!< Pointer to next sym_sig link in list */
 };
 
+/*!
+ Stores symbol name of signal along with pointer to signal itself into a lookup table
+*/
 struct symtable_s {
   sym_sig*  sig_head;                /*!< Pointer to head of sym_sig list */
   sym_sig*  sig_tail;                /*!< Pointer to tail of sym_sig list */
@@ -1713,17 +1630,26 @@ struct symtable_s {
   symtable* table[256];              /*!< Array of symbol tables for next level */
 };
 
+/*!
+ Specifies possible values for a static expression (constant value).
+*/
 struct static_expr_s {
   expression* exp;                   /*!< Specifies if static value is an expression */
   int         num;                   /*!< Specifies if static value is a numeric value */
 };
 
+/*!
+ Specifies bit range of a signal or expression.
+*/
 struct vector_width_s {
   static_expr* left;                 /*!< Specifies left bit value of bit range */
   static_expr* right;                /*!< Specifies right bit value of bit range */
   bool         implicit;             /*!< Specifies if vector width was explicitly set by user or implicitly set by parser */
 };
 
+/*!
+ Binds a signal to an expression.
+*/
 struct exp_bind_s {
   int         type;                  /*!< Specifies if name refers to a signal (0), function (FUNIT_FUNCTION) or task (FUNIT_TASK) */
   char*       name;                  /*!< Name of Verilog scoped signal/functional unit to bind */
@@ -1737,6 +1663,10 @@ struct exp_bind_s {
   exp_bind*   next;                  /*!< Pointer to next binding in list */
 };
 
+/*!
+ Binds an expression to a statement.  This is used when constructing a case
+ structure.
+*/
 struct case_stmt_s {
   expression*     expr;              /*!< Pointer to case equality expression */
   statement*      stmt;              /*!< Pointer to first statement in case statement */
@@ -1744,6 +1674,9 @@ struct case_stmt_s {
   case_statement* prev;              /*!< Pointer to previous case statement in list */
 };
 
+/*!
+ A functional unit instance element in the functional unit instance tree.
+*/
 struct funit_inst_s {
   char*         name;                /*!< Instance name of this functional unit instance */
   func_unit*    funit;               /*!< Pointer to functional unit this instance represents */
@@ -1757,6 +1690,10 @@ struct funit_inst_s {
   funit_inst*   next;                /*!< Pointer to next child in parents list */
 };
 
+/*!
+ Node for a tree that carries two strings:  a key and a value.  The tree is a binary
+ tree that is sorted by key.
+*/
 struct tnode_s {
   char*  name;                       /*!< Key value for tree node */
   char*  value;                      /*!< Value of node */
@@ -1766,12 +1703,23 @@ struct tnode_s {
 };
 
 #ifdef HAVE_SYS_TIMES_H
+/*!
+ Structure for holding code timing data.  This information can be useful for optimizing
+ code segments.  To use a timer, create a pointer to a timer structure in global
+ memory and assign the pointer to the value NULL.  Then simply call timer_start to
+ start timing and timer_stop to stop timing.  You may call as many timer_start/timer_stop
+ pairs as needed and the total timed time will be kept in the structure's total variable.
+ To clear the total for a timer, call timer_clear.
+*/
 struct timer_s {
   struct tms start;                  /*!< Contains start time of a particular timer */
   clock_t    total;                  /*!< Contains the total amount of user time accrued for this timer */
 };
 #endif
 
+/*!
+ Contains information for an FSM state variable.
+*/
 struct fsm_var_s {
   char*       funit;                 /*!< Name of functional unit containing FSM variable */
   char*       name;                  /*!< Name associated with this FSM variable */
@@ -1782,6 +1730,9 @@ struct fsm_var_s {
   fsm_var*    next;                  /*!< Pointer to next fsm_var element in list */
 };
 
+/*!
+ Binding structure for FSM variables to their expressions.
+*/
 struct fv_bind_s {
   char*       sig_name;              /*!< Name of signal to bind to expression */
   expression* expr;                  /*!< Pointer to expression to bind to signal */
@@ -1790,6 +1741,9 @@ struct fv_bind_s {
   fv_bind*    next;                  /*!< Pointer to next FSM variable bind element in list */
 };
 
+/*!
+ Container for a Verilog-2001 attribute.
+*/
 struct attr_param_s {
   char*       name;                  /*!< Name of attribute parameter identifier */
   expression* expr;                  /*!< Pointer to expression assigned to the attribute parameter identifier */
@@ -1798,6 +1752,12 @@ struct attr_param_s {
   attr_param* prev;                  /*!< Pointer to previous attribute parameter in list */
 };
 
+/*!
+ The stmt_blk structure contains extra information for a given signal that is only used during
+ the parsing stage (therefore, the information does not need to be specified in the vsignal
+ structure itself) and is used to keep track of information about that signal's use in the current
+ functional unit.  It is used for race condition checking.
+*/
 struct stmt_blk_s {
   statement* stmt;                   /*!< Pointer to top-level statement in statement tree that this signal is first found in */
   bool       remove;                 /*!< Specifies if this statement block should be removed after checking is complete */
@@ -1807,6 +1767,11 @@ struct stmt_blk_s {
   bool       nassign;                /*!< If true, at least one expression in statement block is a non-blocking assignment */
 };
 
+/*!
+ Simulator feature that keeps track of head pointer for a given thread along with pointers to the
+ parent and children thread of this thread.  Threads allow us to handle task calls and fork/join
+ statements.
+*/
 struct thread_s {
   thread*    parent;                 /*!< Pointer to parent thread that spawned this thread */
   statement* head;                   /*!< Pointer to original head statement that created this thread */
@@ -1822,17 +1787,26 @@ struct thread_s {
   thread*    next;                   /*!< Pointer to next thread in thread simulation list */
 };
 
+/*!
+ Performance statistic container used for simulation-time performance characteristics.
+*/
 struct perf_stat_s {
   control op_exec_cnt[EXP_OP_NUM];   /*!< Specifies the number of times that the associated operation was executed */
   float   op_cnt[EXP_OP_NUM];        /*!< Specifies the number of expressions containing the associated operation */
 };
 
+/*!
+ Container for port-specific information.
+*/
 struct port_info_s {
-  int           type;                /*!< Type of port (see \ref ssuppl_types for legal values) */
+  int           type;                /*!< Type of port (see \ref ssuppl_type for legal values) */
   bool          is_signed;           /*!< Set to TRUE if this port is signed */
   vector_width* range;               /*!< Contains range information for this port */
 };
 
+/*!
+ Container for holding information pertinent for parameter overriding.
+*/
 struct param_oride_s {
   char*        name;                 /*!< Specifies name of parameter being overridden (only valid for by_name syntax) */
   expression*  expr;                 /*!< Expression to override parameter with */
@@ -1841,6 +1815,10 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.183  2006/03/24 19:01:44  phase1geo
+ Changed two variable report output to be as concise as possible.  Updating
+ regressions per these changes.
+
  Revision 1.182  2006/03/23 22:42:54  phase1geo
  Changed two variable combinational expressions that have a constant value in either the
  left or right expression tree to unary expressions.  Removed expressions containing only

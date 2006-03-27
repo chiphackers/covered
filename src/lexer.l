@@ -43,12 +43,35 @@ static int   comment_enter;
 static void  line_directive();
 static void  line_directive2();
 static int   yywrap();
+
+/*!
+ Temporary string container.
+*/
 static char* tmpstr;
 
+/*!
+ Pointer to head of file list to parse.
+*/
 static str_link* filelist_head = 0;
+
+/*!
+ Pointer to tail of file list to parse.
+*/
 static str_link* filelist_curr = 0;
+
+/*!
+ Integer value of last keyword parsed.
+*/
 static int       last_keyword  = 0;
+
+/*!
+ Tree containing all found modules parsed within the design.
+*/
 static tnode*    found_modules = NULL;
+
+/*!
+ Holds the name of the file specified in a `line or #line preprocessor directive.
+*/
 char*            directive_filename = NULL;
 
 extern str_link* modlist_head;
@@ -539,18 +562,27 @@ WSPACE [ \t\b\f]+
 
 %%
 
+/*!
+ Called at the start of UDP table parsing.
+*/
 void lex_start_udp_table() {
 
   BEGIN( UDPTABLE );
 
 }
 
+/*!
+ Called at the end of UDP table parsing.
+*/
 void lex_end_udp_table() {
 
   BEGIN( INITIAL );
 
 }
 
+/*!
+ Parses and handles a line directive that is in the CPP format.
+*/
 static void line_directive() {
 
   char* qt1;
@@ -574,6 +606,9 @@ static void line_directive() {
   
 }
 
+/*!
+ Parses and handles a line directive in the Verilog-2001 format.
+*/
 static void line_directive2() {
 
   char* cp;
@@ -604,11 +639,13 @@ static void line_directive2() {
   
 }
   
-/*
- * The lexical analyzer calls this function when the current file
- * ends. Here I pop the include stack and resume the previous file. If
- * there is no previous file, then the main input is ended.
- */
+/*!
+ \return Returns 0
+
+ The lexical analyzer calls this function when the current file
+ ends.  Here I pop the include stack and resume the previous file.  If
+ there is no previous file, then the main input is ended.
+*/
 static int yywrap() {
 
   str_link* curr;
@@ -687,11 +724,13 @@ static int yywrap() {
 
 }
 
-/*
- * This function initializes the whole process. The first file is
- * opened, and the lexor is initialized. The include stack is cleared
- * and ready to go.
- */
+/*!
+ \param file_list_head  Pointer to list of files to process.
+
+ This function initializes the whole process. The first file is
+ opened, and the lexer is initialized.  The include stack is cleared
+ and ready to go.
+*/
 void reset_lexer( str_link* file_list_head ) {
 
   FILE*     out;

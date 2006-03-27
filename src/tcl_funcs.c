@@ -160,10 +160,22 @@ int tcl_func_get_instance_list( ClientData d, Tcl_Interp* tcl, int argc, const c
 
 }
 
+/*!
+ \param d     TBD
+ \param tcl   Pointer to the Tcl interpreter
+ \param argc  Number of arguments in the argv list
+ \param argv  Array of arguments passed to this function
+
+ \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
+         TCL_ERROR.
+
+ Gets the filename for the specified functional unit name and type and places this value in the "file_name"
+ global variable.
+*/
 int tcl_func_get_filename( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
-  char* filename;
-  int   retval = TCL_OK;
+  int   retval = TCL_OK;  /* Return value for this function */
+  char* filename;         /* Name of file containing the specified functional unit */
 
   if( (filename = funit_get_filename( argv[1], atoi( argv[2] ) )) != NULL ) {
     Tcl_SetVar( tcl, "file_name", filename, TCL_GLOBAL_ONLY );
@@ -178,12 +190,24 @@ int tcl_func_get_filename( ClientData d, Tcl_Interp* tcl, int argc, const char* 
 
 }
 
+/*!
+ \param d     TBD
+ \param tcl   Pointer to the Tcl interpreter
+ \param argc  Number of arguments in the argv list
+ \param argv  Array of arguments passed to this function
+
+ \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
+         TCL_ERROR.
+
+ Populates the global variables "start_line" and "end_line" with the starting and ending line numbers of the
+ specified functional unit within its file.
+*/
 int tcl_func_get_funit_start_and_end( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
   int  retval = TCL_OK;  /* Return value for this function */
-  int  start_line;
-  int  end_line;
-  char linenum[20];
+  int  start_line;       /* Starting line number of the given functional unit */
+  int  end_line;         /* Ending line number of the given functional unit */
+  char linenum[20];      /* Temporary string container */
 
   if( funit_get_start_and_end_lines( argv[1], atoi( argv[2] ), &start_line, &end_line ) ) {
     snprintf( linenum, 20, "%d", start_line );
@@ -201,15 +225,27 @@ int tcl_func_get_funit_start_and_end( ClientData d, Tcl_Interp* tcl, int argc, c
 
 }
 
+/*!
+ \param d     TBD
+ \param tcl   Pointer to the Tcl interpreter
+ \param argc  Number of arguments in the argv list
+ \param argv  Array of arguments passed to this function
+
+ \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
+         TCL_ERROR.
+
+ Populates the global variable "uncovered_lines" with the line numbers of all lines that were found to be uncovered
+ during simulation.
+*/
 int tcl_func_collect_uncovered_lines( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
-  int   retval = TCL_OK;
-  char* funit_name;
-  int   funit_type;
-  int*  lines;
-  int   line_cnt;
-  int   i;
-  char  line[20];
+  int   retval = TCL_OK;  /* Return value for this function */
+  char* funit_name;       /* Name of functional unit to get uncovered lines for */
+  int   funit_type;       /* Type of functional unit to get uncovered lines for */
+  int*  lines;            /* Array of line numbers that were found to be uncovered during simulation */
+  int   line_cnt;         /* Number of elements in the lines array */
+  int   i;                /* Loop iterator */
+  char  line[20];         /* Temporary string container */
 
   funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
   funit_type = atoi( argv[2] );
@@ -238,15 +274,27 @@ int tcl_func_collect_uncovered_lines( ClientData d, Tcl_Interp* tcl, int argc, c
 
 }
 
+/*!
+ \param d     TBD
+ \param tcl   Pointer to the Tcl interpreter
+ \param argc  Number of arguments in the argv list
+ \param argv  Array of arguments passed to this function
+
+ \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
+         TCL_ERROR.
+
+ Populates the global variable "covered_lines" with the line numbers of all lines that were found to be covered
+ during simulation.
+*/
 int tcl_func_collect_covered_lines( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
-  int   retval  = TCL_OK;
-  char* funit_name;
-  int   funit_type;
-  int*  lines;
-  int   line_cnt;
-  int   i;
-  char  line[20];
+  int   retval  = TCL_OK;  /* Return value for this function */
+  char* funit_name;        /* Name of functional unit to get covered line information for */
+  int   funit_type;        /* Type of functional unit to get covered line information for */
+  int*  lines;             /* Array of line numbers that were covered during simulation */
+  int   line_cnt;          /* Number of elements in the lines array */
+  int   i;                 /* Loop iterator */
+  char  line[20];          /* Temporary string container */
 
   funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
   funit_type = atoi( argv[2] );
@@ -513,20 +561,23 @@ int tcl_func_get_toggle_coverage( ClientData d, Tcl_Interp* tcl, int argc, const
 
  \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
          TCL_ERROR.
+
+ Populates the global variables "uncovered_combs" and "covered_combs" with the uncovered and covered combinational
+ expression line/character values for each.
 */
 int tcl_func_collect_combs( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
-  int          retval = TCL_OK;
-  char*        funit_name;
-  int          funit_type;
-  expression** covs;
-  expression** uncovs;
-  int          cov_cnt;
-  int          uncov_cnt;
-  int          i;
-  char         str[85];
-  int          startline;
-  expression*  last;
+  int          retval = TCL_OK;  /* Return value for this function */
+  char*        funit_name;       /* Name of functional unit to get combinational logic coverage info for */
+  int          funit_type;       /* Type of functional unit to get combinational logic coverage info for */
+  expression** covs;             /* Array of expression pointers to fully covered expressions */
+  expression** uncovs;           /* Array of expression pointers to uncovered expressions */
+  int          cov_cnt;          /* Number of elements in the covs array */
+  int          uncov_cnt;        /* Number of elements in the uncovs array */
+  int          i;                /* Loop iterator */
+  char         str[85];          /* Temporary string container */
+  int          startline;        /* Starting line number of this module */
+  expression*  last;             /* Pointer to expression in an expression tree that is on the last line */
 
   funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
   funit_type = atoi( argv[2] );
@@ -578,20 +629,23 @@ int tcl_func_collect_combs( ClientData d, Tcl_Interp* tcl, int argc, const char*
 
  \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
          TCL_ERROR.
+
+ Retrieves the verbose combination expression information for a given expression, populating the "comb_code",
+ "comb_uline_groups" and "comb_ulines" global variables with the code and underline information.
 */
 int tcl_func_get_comb_expression( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
-  int    retval = TCL_OK;
-  char*  funit_name;
-  int    funit_type;
-  int    expr_id;
-  char** code;
-  int*   uline_groups;
-  int    code_size;
-  char** ulines;
-  int    uline_size;
-  int    i;
-  char   tmp[20];
+  int    retval = TCL_OK;  /* Return value for this function */
+  char*  funit_name;       /* Name of functional unit containing expression to find */
+  int    funit_type;       /* Type of functional unit containing expression to find */
+  int    expr_id;          /* Expression ID of expression to find within the given functional unit */
+  char** code;             /* Array of strings containing the combinational logic code returned from the code generator */
+  int*   uline_groups;     /* Array of integers representing the number of underline lines found under each line of code */
+  int    code_size;        /* Number of elements stored in the code array */
+  char** ulines;           /* Array of strings containing the underline lines returned from the underliner */
+  int    uline_size;       /* Number of elements stored in the ulines array */
+  int    i;                /* Loop iterator */
+  char   tmp[20];          /* Temporary string container */
 
   funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
   funit_type = atoi( argv[2] );
@@ -643,6 +697,9 @@ int tcl_func_get_comb_expression( ClientData d, Tcl_Interp* tcl, int argc, const
 
  \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
          TCL_ERROR.
+
+ Populates the "comb_expr_cov" global variable with the coverage information for the specified
+ subexpression with the given underline identifier.
 */
 int tcl_func_get_comb_coverage( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
@@ -695,11 +752,13 @@ int tcl_func_get_comb_coverage( ClientData d, Tcl_Interp* tcl, int argc, const c
 
  \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
          TCL_ERROR.
+
+ Opens the specified CDD file, reading its contents into the database.
 */
 int tcl_func_open_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
-  int   retval = TCL_OK;
-  char* ifile;
+  int   retval = TCL_OK;  /* Return value for this function */
+  char* ifile;            /* Name of CDD file to open */
 
   /* If no filename was specified, the user hit cancel so just exit gracefully */
   if( argv[1][0] != '\0' ) {
@@ -729,11 +788,14 @@ int tcl_func_open_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* argv
 
  \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
          TCL_ERROR.
+
+ Replaces the current CDD database with the contents of the given CDD filename.  The CDD file replacing
+ the current CDD file must be generated from the same design or an error will occur.
 */
 int tcl_func_replace_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
-  int   retval = TCL_OK;
-  char* ifile;
+  int   retval = TCL_OK;  /* Return value for this function */
+  char* ifile;            /* Name of CDD file to replace the existing file */
 
   /* If no filename was specified, the user hit cancel so just exit gracefully */
   if( argv[1][0] != '\0' ) {
@@ -763,11 +825,13 @@ int tcl_func_replace_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* a
 
  \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
          TCL_ERROR.
+
+ Merges the specified CDD file with the current CDD database.
 */
 int tcl_func_merge_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
-  int   retval = TCL_OK;
-  char* ifile;
+  int   retval = TCL_OK;  /* Return value for this function */
+  char* ifile;            /* Name of CDD file to merge */
 
   /* If no filename was specified, the user hit cancel so just exit gracefully */
   if( argv[1][0] != '\0' ) {
@@ -797,15 +861,18 @@ int tcl_func_merge_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* arg
 
  \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
          TCL_ERROR.
+
+ Populates the "line_summary_total" and "line_summary_hit" global variables with the total number of lines
+ and total number of lines hit during simulation information for the specified functional unit.
 */
 int tcl_func_get_line_summary( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
-  int   retval = TCL_OK;  /* Return value for this function           */
-  char* funit_name;       /* Name of functional unit to lookup        */
-  int   funit_type;       /* Type of functional unit to lookup        */
+  int   retval = TCL_OK;  /* Return value for this function */
+  char* funit_name;       /* Name of functional unit to lookup */
+  int   funit_type;       /* Type of functional unit to lookup */
   int   total;            /* Contains total number of lines evaluated */
-  int   hit;              /* Contains total number of lines hit       */
-  char  value[20];        /* String version of a value                */
+  int   hit;              /* Contains total number of lines hit */
+  char  value[20];        /* String version of a value */
 
   funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
   funit_type = atoi( argv[2] );
@@ -871,6 +938,19 @@ int tcl_func_get_toggle_summary( ClientData d, Tcl_Interp* tcl, int argc, const 
 
 }
 
+/*!
+ \param d     TBD
+ \param tcl   Pointer to the Tcl interpreter
+ \param argc  Number of arguments in the argv list
+ \param argv  Array of arguments passed to this function
+
+ \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
+         TCL_ERROR.
+
+ Populates the global variables "comb_summary_total" and "comb_summary_hit" to the total number
+ of expression values evaluated for combinational logic coverage and the total number of expression values
+ with complete combinational logic coverage for the specified functional unit.
+*/
 int tcl_func_get_comb_summary( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
   int   retval = TCL_OK;  /* Return value for this function */
@@ -901,6 +981,16 @@ int tcl_func_get_comb_summary( ClientData d, Tcl_Interp* tcl, int argc, const ch
 
 }
 
+/*!
+ \param tcl        Pointer to Tcl interpreter structure
+ \param user_home  Name of user's home directory (used to store configuration file information to)
+ \param home       Name of Tcl script home directory (from running the configure script)
+ \param version    Current version of Covered being run
+ \param browser    Name of browser executable to use for displaying help information
+
+ Initializes the Tcl interpreter with all procs that are created in this file.  Also sets some global
+ variables that come from the environment, the configuration execution or the Covered define file.
+*/
 void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* version, char* browser ) {
 
   Tcl_CreateCommand( tcl, "tcl_func_get_race_reason_msgs",      (Tcl_CmdProc*)(tcl_func_get_race_reason_msgs),      0, 0 );
@@ -943,6 +1033,9 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.30  2006/03/27 17:37:23  phase1geo
+ Fixing race condition output.  Some regressions may fail due to these changes.
+
  Revision 1.29  2006/02/08 13:54:23  phase1geo
  Adding previous and next buttons to toggle window.  Added currently selected
  cursor output to main textbox with associated functionality.

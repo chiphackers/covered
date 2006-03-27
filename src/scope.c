@@ -68,11 +68,18 @@ func_unit* scope_find_funit_from_scope( char* scope, func_unit* curr_funit ) {
 }
 
 /*!
- \param name
- \param curr_funit
+ \param name         Name of signal to find in design
+ \param curr_funit   Pointer to current functional unit to start searching in
+ \param found_sig    Pointer to signal that has been found in the design
+ \param found_funit  Pointer to found signal's functional unit
+ \param line         Line number where signal is being used (used for error output)
 
- \return
+ \return Returns TRUE if specified signal was found in the design; otherwise, returns FALSE.
 
+ Searches for a given signal in the design starting with the functional unit in which the signal is being
+ accessed from.  Attempts to find the signal locally (if the signal name is not hierarchically referenced); otherwise,
+ performs relative referencing to find the signal.  If the signal is found the found_sig and found_funit pointers
+ are set to the found signal and its functional unit; otherwise, a value of FALSE is returned to the calling function.
 */
 bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, func_unit** found_funit, int line ) {
 
@@ -131,15 +138,17 @@ bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, 
 }
 
 /*!
- \param name
- \param type
- \param curr_funit
- \param found_funit
- \param line
+ \param name         Name of functional unit to find based on scope information
+ \param type         Type of functional unit to find
+ \param curr_funit   Pointer to the functional unit which needs to bind to this functional unit
+ \param found_funit  Pointer to found functional unit within the design.
+ \param line         Line number where functional unit is being used (for error output purposes only).
 
- \return TBD
+ \return Returns TRUE if the functional unit was found in the design; otherwise, returns FALSE.
 
- TBD
+ Searches the design for the specified functional unit based on its scoped name.  If the functional unit is
+ found, the found_funit pointer is set to the functional unit and the function returns TRUE; otherwise, the function
+ returns FALSE to the calling function.
 */
 bool scope_find_task_function_namedblock( char* name, int type, func_unit* curr_funit, func_unit** found_funit, int line ) {
 
@@ -263,6 +272,9 @@ func_unit* scope_get_parent_module( char* scope ) {
 
 /*
  $Log$
+ Revision 1.10  2006/02/17 19:50:47  phase1geo
+ Added full support for escaped names.  Full regression passes.
+
  Revision 1.9  2006/02/16 21:19:26  phase1geo
  Adding support for arrays of instances.  Also fixing some memory problems for
  constant functions and fixed binding problems when hierarchical references are

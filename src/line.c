@@ -301,7 +301,7 @@ bool line_funit_summary( FILE* ofile, funit_link* head ) {
 
 /*!
  \param ofile  Pointer to file to output results to.
- \param stmtl  Pointer to expression list head.
+ \param funit  Pointer to functional unit containing lines to display in verbose format.
 
  Displays the lines missed during simulation to standard output from the
  specified expression list.
@@ -520,6 +520,9 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.55  2006/02/17 19:50:47  phase1geo
+ Added full support for escaped names.  Full regression passes.
+
  Revision 1.54  2005/12/31 05:00:57  phase1geo
  Updating regression due to recent changes in adding exec_num field in expression
  and removing the executed bit in the expression supplemental field.  This will eventually

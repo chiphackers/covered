@@ -202,7 +202,7 @@ static bool expression_op_func__negate( expression*, thread* );
 
 /*!
  Array containing static information about expression operation types.  NOTE:  This structure MUST be
- updated if a new expression is added!  The third argument is an initialization to the \ref exp_info_s structure.
+ updated if a new expression is added!  The third argument is an initialization to the exp_info_s structure.
 */
 const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",         "",        expression_op_func__null,      {0, 1, NOT_COMB,   1, 0, 0} },
                                            {"SIG",            "",        expression_op_func__null,      {0, 0, NOT_COMB,   1, 1, 0} },
@@ -305,8 +305,6 @@ void expression_create_value( expression* exp, int width, bool data ) {
   vector_init( exp->value, value, width );
 
 }
-
-void expression_assign_op_func( expression* expr );
 
 /*!
  \param right  Pointer to expression on right.
@@ -3121,6 +3119,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.176  2006/03/24 19:01:44  phase1geo
+ Changed two variable report output to be as concise as possible.  Updating
+ regressions per these changes.
+
  Revision 1.175  2006/03/23 22:42:54  phase1geo
  Changed two variable combinational expressions that have a constant value in either the
  left or right expression tree to unary expressions.  Removed expressions containing only

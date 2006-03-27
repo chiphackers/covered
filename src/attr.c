@@ -2,6 +2,16 @@
  \file     attr.c
  \author   Trevor Williams  (trevorw@charter.net)
  \date     10/25/2003
+
+ \par What is an attribute?
+ An attribute is a Verilog-2001 syntatical feature that allows meta-comment-like information to
+ be stored in a Verilog file which can be used by any tool that is capable of implementing its functionality.
+ It uses the syntax (* ... *) which may be placed before just about any Verilog construct within a design.
+ Covered is able to parse attributes, implementing its functionality for all Covered-defined attribute commands.
+ Currently covered can parse the following attribute commands:
+
+ \par
+ -# \b covered_fsm - Allows FSM-specific coverage information to be embedded within a design file
 */
 
 #ifdef HAVE_CONFIG_H
@@ -96,6 +106,10 @@ void attribute_dealloc( attr_param* ap ) {
 
 /*
  $Log$
+ Revision 1.3  2005/11/08 23:12:09  phase1geo
+ Fixes for function/task additions.  Still a lot of testing on these structures;
+ however, regressions now pass again so we are checkpointing here.
+
  Revision 1.2  2004/03/16 05:45:43  phase1geo
  Checkin contains a plethora of changes, bug fixes, enhancements...
  Some of which include:  new diagnostics to verify bug fixes found in field,
