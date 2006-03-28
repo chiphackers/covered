@@ -33,6 +33,10 @@ Score command
 Merge command
 -------------
 
+   1.  Add ability to merge more than two CDD files with a single command
+
+   2.  Add ability to merge two CDDs from different parts of the same design
+
 
 Report command
 --------------

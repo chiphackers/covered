@@ -78,7 +78,7 @@ types:</p>
     in terms of:</p>
     <p><ul>
       <li>Did this expression evaluate to a value of 0?</li>
-      <li>Did this expression evaluate to a a non-zero value?</li>
+      <li>Did this expression evaluate to a non-zero value?</li>
     </ul></p>
     <p>The following operators are considered unary subexpressions:</p>
     <p><ul>
@@ -133,34 +133,70 @@ types:</p>
   </li>
   
   <li><b>Simple Combinational Subexpression</b>
-    <p>These subexpressions have two child expressions (L=left and R=right).  Their
-    coverage is in terms of:</p>
+    <p>These subexpressions have two child expressions (L=left and R=right).  There are three
+    flavors of simple combinational subexpressions:  AND-type, OR-type and other.  The differences
+    are explained below.
     <p><ul>
-      <li>Did the left expression evaluate to 0 when the right expression evaluated to 0?</li>
-      <li>Did the left expression evaluate to 0 when the right expression evaluated to 1?</li>
-      <li>Did the left expression evaluate to 1 when the right expression evaluated to 0?</li>
-      <li>Did the left expression evaluate to 1 when the right expression evaluated to 1?</li>
+      <li><b>Simple AND-type Combinational Subexpressions</b>
+          <p>These subexpressions have three possible combinational outcomes:
+          <p><ul>
+            <li>Did the left expression evaluate to 0?</li>
+            <li>Did the right expression evaluate to 0?</li>
+            <li>Did the left expression evaluate to 1 when the right expression evaluated to 1?</li>
+          </ul></p>
+          <p>The following operators are considered simple AND-like combinational subexpressions:</p>
+          <p><ul>
+            <li><b>Logical operators</b>:<br>
+                &nbsp;&nbsp;<i>expression</i> <b>&</b> <i>expression</i><br>
+                &nbsp;&nbsp;<i>expression</i> <b>~&</b> <i>expression</i><br>
+                &nbsp;&nbsp;<i>expression</i> <b>&&</b> <i>expression</i></li>
+          </ul></p>
+          <div align="center">
+            <p><b>Figure 5.  Example Coverage Output for an Uncovered Simple AND-type Combinational Subexpression</b></p>
+            <img src="images/comb_simple_and.png" alt="Uncovered Simple AND-type Combinational Subexpression Output">
+          </div></li>
+          <p></p>
+       <li><b>Simple OR-type Combinational Subexpressions</b>
+          <p>These subexpressions have three possible combinational outcomes:
+          <p><ul>
+            <li>Did the left expression evaluate to 1?</li>
+            <li>Did the right expression evaluate to 1?</li>
+            <li>Did the left expression evaluate to 0 when the right expression evaluated to 0?</li>
+          </ul></p>
+          <p>The following operators are considered simple OR-like combinational subexpressions:</p>
+          <p><ul>
+            <li><b>Logical operators</b>:<br>
+                &nbsp;&nbsp;<i>expression</i> <b>|</b> <i>expression</i><br>
+                &nbsp;&nbsp;<i>expression</i> <b>~|</b> <i>expression</i><br>
+                &nbsp;&nbsp;<i>expression</i> <b>||</b> <i>expression</i></li>
+          </ul></p>
+          <div align="center">
+            <p><b>Figure 6.  Example Coverage Output for an Uncovered Simple OR-type Combinational Subexpression</b></p>
+            <img src="images/comb_simple_or.png" alt="Uncovered Simple OR-type Combinational Subexpression Output">
+          </div></li>
+          <p></p>
+       <li><b>Simple Other-type Combinational Subexpressions</b>
+          <p>These subexpressions have three possible combinational outcomes:
+          <p><ul>
+            <li>Did the left expression evaluate to 0 when the right expression evaluated to 0?</li>
+            <li>Did the left expression evaluate to 0 when the right expression evaluated to 1?</li>
+            <li>Did the left expression evaluate to 1 when the right expression evaluated to 0?</li>
+            <li>Did the left expression evaluate to 1 when the right expression evaluated to 1?</li>
+          </ul></p>
+          <p>The following operators are considered simple combinational subexpressions:</p>
+          <p><ul>
+            <li><b>Mathematical operators</b>:<br>
+                &nbsp;&nbsp;<i>expression</i> <b>+</b> <i>expression</i><br>
+                &nbsp;&nbsp;<i>expression</i> <b>-</b> <i>expression</i></li>
+            <li><b>Logical operators</b>:<br>
+                &nbsp;&nbsp;<i>expression</i> <b>^</b> <i>expression</i><br>
+                &nbsp;&nbsp;<i>expression</i> <b>~^</b> <i>expression</i></li>
+          </ul></p>
+          <div align="center">
+            <p><b>Figure 5.  Example Coverage Output for an Uncovered Simple Combinational Subexpression</b></p>
+            <img src="images/comb_simple.png" alt="Uncovered Simple Combinational Subexpression Output">
+          </div></li>
     </ul></p>
-    <p>The following operators are considered simple combinational subexpressions:</p>
-    <p><ul>
-      <li><b>Mathematical operators</b>:<br>
-          &nbsp;&nbsp;<i>expression</i> <b>+</b> <i>expression</i><br>
-          &nbsp;&nbsp;<i>expression</i> <b>-</b> <i>expression</i></li>
-      <li><b>Logical operators</b>:<br>
-          &nbsp;&nbsp;<i>expression</i> <b>&</b> <i>expression</i><br>
-          &nbsp;&nbsp;<i>expression</i> <b>|</b> <i>expression</i><br>
-          &nbsp;&nbsp;<i>expression</i> <b>^</b> <i>expression</i><br>
-          &nbsp;&nbsp;<i>expression</i> <b>~&</b> <i>expression</i><br>
-          &nbsp;&nbsp;<i>expression</i> <b>~|</b> <i>expression</i><br>
-          &nbsp;&nbsp;<i>expression</i> <b>~^</b> <i>expression</i><br>
-          &nbsp;&nbsp;<i>expression</i> <b>||</b> <i>expression</i><br>
-          &nbsp;&nbsp;<i>expression</i> <b>&&</b> expression</li>
-    </ul></p>
-    <div align="center">
-      <p><b>Figure 5.  Example Coverage Output for an Uncovered Simple Combinational Subexpression</b></p>
-      <img src="images/comb_simple.png" alt="Uncovered Simple Combinational Subexpression Output">
-    </div>
-  </li>
   
   <li><b>Complex Combinational Subexpression</b>
     <p>These subexpression have three or more child expressions that all are connected
