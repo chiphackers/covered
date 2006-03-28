@@ -1,3 +1,18 @@
+/*
+ Copyright (c) 2006 Trevor Williams
+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by the Free Software
+ Foundation; either version 2 of the License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ See the GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License along with this program;
+ if not, write to the Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
+
 /*!
  \file     stat.c
  \author   Trevor Williams  (trevorw@charter.net)
@@ -87,6 +102,15 @@ void statistic_dealloc( statistic* stat ) {
 
 /*
  $Log$
+ Revision 1.6  2004/03/16 05:45:43  phase1geo
+ Checkin contains a plethora of changes, bug fixes, enhancements...
+ Some of which include:  new diagnostics to verify bug fixes found in field,
+ test generator script for creating new diagnostics, enhancing error reporting
+ output to include filename and line number of failing code (useful for error
+ regression testing), support for error regression testing, bug fixes for
+ segmentation fault errors found in field, additional data integrity features,
+ and code support for GUI tool (this submission does not include TCL files).
+
  Revision 1.5  2003/11/10 04:25:50  phase1geo
  Adding more FSM diagnostics to regression suite.  All major testing for
  current FSM code should be complete at this time.  A few bug fixes to files

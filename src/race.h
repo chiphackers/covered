@@ -1,6 +1,21 @@
 #ifndef __RACE_H__
 #define __RACE_H__
 
+/*
+ Copyright (c) 2006 Trevor Williams
+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by the Free Software
+ Foundation; either version 2 of the License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ See the GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License along with this program;
+ if not, write to the Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
+
 /*!
  \file     race.h
  \author   Trevor Williams  (trevorw@charter.net)
@@ -41,6 +56,9 @@ void race_blk_delete_list( race_blk* rb );
 
 /*
  $Log$
+ Revision 1.16  2006/03/27 17:37:23  phase1geo
+ Fixing race condition output.  Some regressions may fail due to these changes.
+
  Revision 1.15  2005/12/23 05:41:52  phase1geo
  Fixing several bugs in score command per bug report #1388339.  Fixed problem
  with race condition checker statement iterator to eliminate infinite looping (this

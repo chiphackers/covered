@@ -1,3 +1,18 @@
+/*
+ Copyright (c) 2006 Trevor Williams
+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by the Free Software
+ Foundation; either version 2 of the License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ See the GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License along with this program;
+ if not, write to the Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
+
 /*!
  \file     link.c
  \author   Trevor Williams  (trevorw@charter.net)
@@ -785,6 +800,9 @@ void funit_link_delete_list( funit_link* head, bool rm_funit ) {
 
 /*
  $Log$
+ Revision 1.42  2006/02/17 19:50:47  phase1geo
+ Added full support for escaped names.  Full regression passes.
+
  Revision 1.41  2006/02/16 21:19:26  phase1geo
  Adding support for arrays of instances.  Also fixing some memory problems for
  constant functions and fixed binding problems when hierarchical references are

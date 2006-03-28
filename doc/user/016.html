@@ -157,7 +157,47 @@
             <P class="blockIndentLeft">&nbsp;</P>
           </TD>
           <TD width=100% align=center>
-<table cellspacing=2 cellpadding=4 border=1> <tr> <td colspan=2 class="tableHeader"> Options to report Command </td> </tr> <tr> <td> <strong>Option</strong> </td> <td> <strong>Description</strong> <td> </tr> <tr> <td> -m [l][t][c][f][r] </td> <td> Specifies type of coverage information to report (default is to generate report for line, toggle and combinational coverage). </td> </tr> <tr> <td> -d (s|d|v) </td> <td> Level of report detail (s=summary, d=detailed, v=verbose). Default is to display summary coverage information. </td> </tr> <tr> <td> -i </td> <td> Generates report information for each instance (default is to generate per module). </td> </tr> <tr> <td> -c </td> <td> Used in conjunction with the '-d d' or '-d v' option. If set, causes covered logic to be reported instead of default behavior of reporting uncovered logic. <tr> <td> -o &lt;<i>filename</i>&gt; </td> <td> Specifies output file to stream report to (default is standard output) </td> </tr> <tr> <td> -w (&lt;number&gt;) </td> <td> Specifies the maximum line width (in characters) that can be used to output Verilog information. If this option is not specified, all Verilog code in the report will retain the same formatting as was specified in the original Verilog code. If this option is specified, Verilog code will be formatted to use as much of the current line as possible, wrapping text when the line reaches the maximum line width. The default maximum line width is 115 characters (this value is used if no number is specified with the -w option). If a number is specified with the -w option, this value is used for the maximum line width. </td> </tr> <tr> <td> -h </td> <td> Outputs usage information for the merge command </td> </tr> </table><br>
+            <table cellspacing=2 cellpadding=4 border=1>
+              <tr>
+                <td colspan=2 class="tableHeader"> Options to report Command </td>
+              </tr>
+              <tr>
+                <td> <strong>Option</strong> </td>
+                <td> <strong>Description</strong> <td>
+              </tr>
+              <tr>
+                <td> -m [l][t][c][f][r] </td>
+                <td> Specifies type of coverage information to report (default is to generate report for line, toggle and combinational coverage). </td>
+              </tr>
+              <tr>
+                <td> -d (s|d|v) </td>
+                <td> Level of report detail (s=summary, d=detailed, v=verbose). Default is to display summary coverage information. </td>
+              </tr>
+              <tr>
+                <td> -i </td>
+                <td> Generates report information for each instance (default is to generate per module). </td>
+              </tr>
+              <tr>
+                <td> -c </td>
+                <td> Used in conjunction with the '-d d' or '-d v' option. If set, causes covered logic to be reported instead of default behavior of reporting uncovered logic. </td>
+              </tr>
+              <tr>
+                <td> -o &lt;<i>filename</i>&gt; </td>
+                <td> Specifies output file to stream report to (default is standard output) </td>
+              </tr>
+              <tr>
+                <td> -w (&lt;number&gt;) </td>
+                <td> Specifies the maximum line width (in characters) that can be used to output Verilog information. If this option is not specified, all Verilog code in the report will retain the same formatting as was specified in the original Verilog code. If this option is specified, Verilog code will be formatted to use as much of the current line as possible, wrapping text when the line reaches the maximum line width. The default maximum line width is 115 characters (this value is used if no number is specified with the -w option). If a number is specified with the -w option, this value is used for the maximum line width. </td>
+              </tr>
+              <tr>
+                <td> -h </td>
+                <td> Outputs usage information for the merge command </td>
+              </tr>
+              <tr>
+                <td> -view </td>
+                <td> Starts the interactive Covered report viewer GUI. </td>
+              </tr>
+            </table><br>
           </TD>
           <TD>
             <P class="blockIndentRight">&nbsp;</P>

@@ -1,6 +1,21 @@
 #ifndef __GUI_H__
 #define __GUI_H__
 
+/*
+ Copyright (c) 2006 Trevor Williams
+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by the Free Software
+ Foundation; either version 2 of the License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ See the GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License along with this program;
+ if not, write to the Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
+
 /*!
  \file     gui.h
  \author   Trevor Williams  (trevorw@charter.net)
@@ -27,6 +42,11 @@ bool funit_get_start_and_end_lines( const char* funit_name, int funit_type, int*
 
 /*
  $Log$
+ Revision 1.6  2005/11/10 19:28:23  phase1geo
+ Updates/fixes for tasks/functions.  Also updated Tcl/Tk scripts for these changes.
+ Fixed bug with net_decl_assign statements -- the line, start column and end column
+ information was incorrect, causing problems with the GUI output.
+
  Revision 1.5  2005/11/08 23:12:09  phase1geo
  Fixes for function/task additions.  Still a lot of testing on these structures;
  however, regressions now pass again so we are checkpointing here.

@@ -1,6 +1,21 @@
 #ifndef __STATEMENT_H__
 #define __STATEMENT_H__
 
+/*
+ Copyright (c) 2006 Trevor Williams
+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by the Free Software
+ Foundation; either version 2 of the License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ See the GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License along with this program;
+ if not, write to the Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
+
 /*!
  \file     statement.h
  \author   Trevor Williams  (trevorw@charter.net)
@@ -41,6 +56,11 @@ void statement_dealloc( statement* stmt );
 
 /*
  $Log$
+ Revision 1.24  2006/01/24 23:24:38  phase1geo
+ More updates to handle static functions properly.  I have redone quite a bit
+ of code here which has regressions pretty broke at the moment.  More work
+ to do but I'm checkpointing.
+
  Revision 1.23  2006/01/10 23:13:51  phase1geo
  Completed support for implicit event sensitivity list.  Added diagnostics to verify
  this new capability.  Also started support for parsing inline parameters and port

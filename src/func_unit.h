@@ -1,6 +1,21 @@
 #ifndef __FUNC_UNIT_H__
 #define __FUNC_UNIT_H__
 
+/*
+ Copyright (c) 2006 Trevor Williams
+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by the Free Software
+ Foundation; either version 2 of the License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ See the GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License along with this program;
+ if not, write to the Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
+
 /*!
  \file     func_unit.h
  \author   Trevor Williams  (trevorw@charter.net)
@@ -65,6 +80,10 @@ void funit_dealloc( func_unit* funit );
 
 /*
  $Log$
+ Revision 1.9  2006/01/23 03:53:30  phase1geo
+ Adding support for input/output ports of tasks/functions.  Regressions are not
+ running cleanly at this point so there is still some work to do here.  Checkpointing.
+
  Revision 1.8  2006/01/20 19:15:23  phase1geo
  Fixed bug to properly handle the scoping of parameters when parameters are created/used
  in non-module functional units.  Added param10*.v diagnostics to regression suite to

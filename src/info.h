@@ -1,6 +1,21 @@
 #ifndef __INFO_H__
 #define __INFO_H__
 
+/*
+ Copyright (c) 2006 Trevor Williams
+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by the Free Software
+ Foundation; either version 2 of the License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ See the GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License along with this program;
+ if not, write to the Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
+
 /*!
  \file     info.h
  \author   Trevor Williams  (trevorw@charter.net)
@@ -23,6 +38,13 @@ bool info_db_read( char** line );
 
 /*
  $Log$
+ Revision 1.2  2004/01/31 18:58:43  phase1geo
+ Finished reformatting of reports.  Fixed bug where merged reports with
+ different leading hierarchies were outputting the leading hierarchy of one
+ which lead to confusion when interpreting reports.  Also made modification
+ to information line in CDD file for these cases.  Full regression runs clean
+ with Icarus Verilog at this point.
+
  Revision 1.1  2003/02/12 14:56:27  phase1geo
  Adding info.c and info.h files to handle new general information line in
  CDD file.  Support for this new feature is not complete at this time.

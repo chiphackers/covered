@@ -1,0 +1,27 @@
+#!/usr/bin/perl
+
+&transform( "example.v" );
+&transform( "example.rptM" );
+&transform( "example.rptI" );
+
+sub transform {
+
+  my $file = $_[0];
+
+  open( IFILE, "${file}" ) || die "Cannot open ${file} for reading: $!\n";
+  open( OFILE, ">${file}.html" ) || die "Cannot open ${file}.html for writing: $!\n";
+
+  print OFILE "<html><body><pre><code>\n";
+  $line_num = 1;
+  while( <IFILE> ) {
+    chomp;
+    print OFILE sprintf( "<a name=\"%d\">%7d</a>  %s\n", $line_num, $line_num, $_ );
+    $line_num++;
+  }
+
+  print OFILE "</code></pre></body></html>\n";
+
+  close( IFILE );
+  close( OFILE );
+
+}

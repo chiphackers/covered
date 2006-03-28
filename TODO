@@ -18,35 +18,16 @@ Score command
        without user intervention.
 
    4.  Add more Verilog-2001 constructs to parser.
-X	- `ifndef
-X	- `elsif
-X	- `line
-X	- task/function argument list
-X	- constant functions (this needs support of the above for it to work)
 	- automatic storage for functions/tasks (instead of static) - difficult!
-X	! explicitly named parameters
-X	- make sure that localparams cannot be modified by a defparam or SDF
 	- generate command (extremely low priority)
 	- config command
-X	! wildcard sensitivity list (@*)
-X	- Add signed capability (unsigned zero-fills unused bits while sign fills with MSB)
-X	- register assignment
-X	- variable multi-bit selects
-X	- exponential power operator (**)
-X	- >>> (fills sign bit with its value) and <<< (same as <<)
-X	- pre-port parameter listing
-X	- inline port declaration listing
-X	- NULL task/function ports (?)
-X	- arrays of instances
-X	- MAKE SURE THAT WE DOCUMENT IN THE USER'S GUIDE WHAT VERILOG-2001 CONSTRUCTS ARE
-	  SUPPORTED AND NOT SUPPORTED!
 
    5.  Allow Covered to run simulation phases in parallel to increase performance.
 
    6.  Add feature to cause Covered to omit the simulation phase for toggle and
        FSM coverage results.
 
-X  7.  Add support for reading LXT-style dumpfiles
+   7.  Add assertion coverage
 
 
 Merge command
@@ -55,6 +36,8 @@ Merge command
 
 Report command
 --------------
+
+   1.  Add assertion coverage
 
 
 Miscellaneous
@@ -69,5 +52,5 @@ GUI
    1.  Add FSM coverage output
 
    2.  Add ability to turn on/off coverage points and have coverage information automatically adjusted.
-  
-X  3.  Add summary report for entire design (window)
+
+   3.  Add assertion coverage output

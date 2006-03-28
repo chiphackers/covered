@@ -84,7 +84,12 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">For module-based reports, the summary table for toggle metrics includes information for the name of each module that was covered and the name of the file in which the module is described in. Lines <a href="example.rptM.html#19">19 through 25</a> of the module-based report show what this information looks like in the report. We have two modules that were scored within our DUT: main and foobar. The table shows that both modules were described in the file "test.v".</P>
+      <P class="pg">
+      For module-based reports, the summary table for toggle metrics includes information for the name of
+      each module that was covered and the name of the file in which the module is described in. Lines
+      <a href="test/example.rptM.html#36">36 through 41</a> of the module-based report show what this
+      information looks like in the report. We have three modules that were scored within our DUT: main,
+      fsma and fsmb. The table shows that all three modules were described in the file "example.v".</P>
     </TD>
   </TR>
 
@@ -106,7 +111,12 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">For instance-based reports, the summary table for toggle metrics includes information for the Verilog hierarchy pertaining to each instance on the left-hand-side of each row. Lines <a href="example.rptI.html#25">25 through 31</a> of the instance-based report show what this information looks like in the report. In our DUT example, there are two instances within the design with the Verilog hierarchies of "main" and "main.bar".</P>
+      <P class="pg">
+      For instance-based reports, the summary table for toggle metrics includes information for the Verilog
+      hierarchy pertaining to each instance on the left-hand-side of each row. Lines
+      <a href="test/example.rptI.html#36">36 through 41</a> of the instance-based report show what this
+      information looks like in the report. In our DUT example, there are three instances within the design
+      with the Verilog hierarchies of "main", "main.fsm1" and "main.fsm2".</P>
     </TD>
   </TR>
 
@@ -128,7 +138,14 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">On the right-hand side of each row in the table are the hit, miss and total numbers for the toggle 0->1 coverage, followed by a calculated percent of the signal bits that toggled from a value of 0 to a value of 1 (calculated by taking the number of bits that toggled from 0 to 1 during simulation divided by the total number of signal bits). The hit value indicates how many signal bits were toggle from a value of 0 to 1 during simulation; the miss value indicates the number of signal bits that were not toggled from a value of 0 to 1 during simulation; and the total value indicates the total number of signal bits within the specified module/instance that Covered was able to simulate.</P>
+      <P class="pg">
+      On the right-hand side of each row in the table are the hit, miss and total numbers for the
+      toggle 0->1 coverage, followed by a calculated percent of the signal bits that toggled from a value of 0
+      to a value of 1 (calculated by taking the number of bits that toggled from 0 to 1 during simulation
+      divided by the total number of signal bits). The hit value indicates how many signal bits were toggle
+      from a value of 0 to 1 during simulation; the miss value indicates the number of signal bits that were
+      not toggled from a value of 0 to 1 during simulation; and the total value indicates the total number of
+      signal bits within the specified module/instance that Covered was able to simulate.</P>
     </TD>
   </TR>
 
@@ -139,7 +156,9 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">To the right of this information is the hit, miss and total statistics for signal bits that toggled from a value of 1 to a value of 0.</P>
+      <P class="pg">
+      To the right of this information is the hit, miss and total statistics for signal bits that toggled from a
+      value of 1 to a value of 0.</P>
     </TD>
   </TR>
 
@@ -150,7 +169,13 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">If the percentage values in the right of the summary table are 100%, this indicates that all signal bits toggled from a value of 0 to 1 and back to 0 during simulating (for the module/instance of this row). If the values of the percentage are less than 100%, this indicates that some signal bits did not fully toggle during simulation and full toggle coverage was not achieved for that module/instance. Note that for a module/instance which does not contain any signals in which Covered was able to simulate, the values of hit, miss, and total will be 0 while the hit percentage value will indicate 100%.</P>
+      <P class="pg">
+      If the percentage values in the right of the summary table are 100%, this indicates that all signal bits
+      toggled from a value of 0 to 1 and back to 0 during simulating (for the module/instance of this row). If
+      the values of the percentage are less than 100%, this indicates that some signal bits did not fully toggle
+      during simulation and full toggle coverage was not achieved for that module/instance. Note that for a
+      module/instance which does not contain any signals in which Covered was able to simulate, the values of
+      hit, miss, and total will be 0 while the hit percentage value will indicate 100%.</P>
     </TD>
   </TR>
 
@@ -172,7 +197,14 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">If the miss value for a particular module/instance was not 0 (indicating that one or more signal bits did not fully toggle during simulation) and the '-d v' option was specified on the command-line (specifying to output verbose reporting information), the signals that were missed during simulation will be output below the summary information per module/instance that contained missed signal bit toggles. In our sample module-based report, there were seven signals in module "main" (a, b, c, d, e, f, and g) and two signals in module "foobar" (a and c) that were not fully toggled (see lines <a href="example.rptM.html#27>27 through 57</a>). In our sample instance-based report, there were also seven signals in instance "main" (a, b, c, d, e, f, and g) and two signals in instance "main.bar" (a and c) that were not fully toggled (see lines <a href="example.rptI.html#33">33 through 63</a>).</P>
+      <P class="pg">
+      If the miss value for a particular module/instance was not 0 (indicating that one or more signal bits
+      did not fully toggle during simulation) and the '-d v' option was specified on the command-line (specifying
+      to output verbose reporting information), the signals that were missed during simulation will be output
+      below the summary information per module/instance that contained missed signal bit toggles. In our sample
+      module-based report, there were three signals in module "main" ("go", "state", and "error"), three signals
+      in module "fsma" ("go", "state" and "next_state"), and three signals in module "fsmb" ("go", "next_state"
+      and "state") that were not fully toggled (see lines <a href="test/example.rptM.html#44>44 through 81</a>).</P>
     </TD>
   </TR>
 
@@ -194,7 +226,9 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="code">&lt;signal_name&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0-&gt;1: &lt;binary_value&gt;<br> .......................1-&gt;0: &lt;binary_value&gt;</P>
+      <P class="code"><pre>
+      &lt;signal_name&gt;          0->1: &lt;hexidecimal_value&gt;
+      .......................1->0: &lt;hexidecimal_value&gt;</pre></P>
     </TD>
   </TR>
 
@@ -205,7 +239,15 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">The name of the signal is specified in the upper left corner. The bitwise toggle information for the signal from a value of 0 to a value of 1 is specified in the upper right corner. The binary value represents bits in the signal, each bit corresponding to the matching bit of the signal. If a bit value is set to the value 1, this indicates that this bit in the signal toggled from a value of 0 to a value of 1. If a bit value is set to the value 0, this indicates that this bit in the signal did NOT toggle from a value of 0 to a value of 1; therefore, full toggle coverage was not achieved for this signal. For example, for the signal called "g" in the module/instance "main", the verbose toggle information looks like:</P>
+      <P class="pg">
+      The name of the signal is specified in the upper left corner. The bitwise toggle information for the
+      signal from a value of 0 to a value of 1 is specified in the upper right corner. The hexidecimal value
+      represents bits in the signal, each bit corresponding to the matching bit of the signal. If a bit
+      value is set to the value 1, this indicates that this bit in the signal toggled from a value of 0 to a
+      value of 1. If a bit value is set to the value 0, this indicates that this bit in the signal did NOT
+      toggle from a value of 0 to a value of 1; therefore, full toggle coverage was not achieved for this
+      signal. For example, for the signal called "go" in the module/instance "main", the verbose toggle
+      information looks like:</P>
     </TD>
   </TR>
 
@@ -216,7 +258,9 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="code">g&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0-&gt;1: 1'b1<br> ...........1-&gt;0: 1'b0</P>
+      <P class="code"><pre>
+      go         0->1: 1'b1
+      ...........1->0: 1'b0</pre></P>
     </TD>
   </TR>
 
@@ -227,7 +271,11 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">This is indicating that bit 0 of the signal called "g" successfully toggled from a value of 0 to 1 during simulation (because the bit value at bit location 0 is a value of 1). However, the signal did not toggle from a value of 0 to a value of 1 during simulation, thus the signal was not considered fully toggled.</P>
+      <P class="pg">
+      This is indicating that bit 0 of the signal called "go" successfully toggled from a value of 0 to 1
+      during simulation (because the bit value at bit location 0 is a value of 1). However, the signal did
+      not toggle from a value of 1 to a value of 0 during simulation, thus the signal was not considered
+      fully toggled.</P>
     </TD>
   </TR>
 
@@ -238,7 +286,10 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">It is important to note that the binary values are displayed with the least-significant bit of the signal being output on the far right of the value while the most-significant bit of the signal is output on the far left of the value.</P>
+      <P class="pg">
+      It is important to note that the hexidecimal values are displayed with the least-significant bit of
+      the signal being output on the far right of the value while the most-significant bit of the signal is
+      output on the far left of the value.</P>
     </TD>
   </TR>
 

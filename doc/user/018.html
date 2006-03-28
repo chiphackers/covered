@@ -84,7 +84,12 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">For module-based reports, the summary table for line metrics includes information for the name of each module that was covered and the name of the file in which the module is described in. Lines <a href="example.rptM.html#4">4 through 9</a> of the module-based report show what this information looks like in the report. We have two modules that were scored within our DUT: main and foobar. The table shows that both modules were described in the file "test.v".</P>
+      <P class="pg">
+      For module-based reports, the summary table for line metrics includes information for the name of each
+      module that was covered and the name of the file in which the module is described in. Lines 
+      <a href="test/example.rptM.html#18">18 through 22</a> of the module-based report show what this information
+      looks like in the report. We have three modules that were scored within our DUT: main, fsma and fsmb. The
+      table shows that all three modules were described in the file "example.v".</P>
     </TD>
   </TR>
 
@@ -106,7 +111,12 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">For instance-based reports, the summary table for line metrics includes information for the Verilog hierarchy pertaining to each instance on the left-hand-side of each row. Lines <a href="example.rptI.html#4">4 through 9</a> of the instance-based report show what this information looks like in the report. In our DUT example, there are two instances within the design with the Verilog hierarchies of "main" and "main.bar".</P>
+      <P class="pg">
+      For instance-based reports, the summary table for line metrics includes information for the Verilog hierarchy
+      pertaining to each instance on the left-hand-side of each row. Lines
+      <a href="test/example.rptI.html#18">18 through 22</a> of the instance-based report show what this information
+      looks like in the report. In our DUT example, there are three instances within the design with the
+      Verilog hierarchies of "main", "main.fsm1" and "main.fsm2".</P>
     </TD>
   </TR>
 
@@ -128,7 +138,13 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">On the right-hand side of each row in the table are the hit, miss and total numbers for the line coverage, followed by a calculated percent of the lines that were hit (calculated by taking the number of lines hit during simulation divided by the total number of lines that Covered simulated). The hit value indicates how many lines were executed during the simulation; the miss value indicates the number of lines not executed during simulation; and the total value indicates the total number of lines within the specified module/instance that Covered was able to simulate.</P>
+      <P class="pg">
+      On the right-hand side of each row in the table are the hit, miss and total numbers for the line coverage,
+      followed by a calculated percent of the lines that were hit (calculated by taking the number of lines hit
+      during simulation divided by the total number of lines that Covered simulated). The hit value indicates
+      how many lines were executed during the simulation; the miss value indicates the number of lines not
+      executed during simulation; and the total value indicates the total number of lines within the specified
+      module/instance that Covered was able to simulate.</P>
     </TD>
   </TR>
 
@@ -139,7 +155,13 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">If the percentage value in the far left of the summary table is 100%, this indicates that all lines that Covered was capable of simulating (for the module/instance of this row) were executed. If the value of the percentage is less than 100%, this indicates that some number of lines were not executed and full coverage was not achieved for that module/instance. Note that for a module/instance which does not contain any lines in which Covered was able to simulate, the values of hit, miss, and total will be 0 while the hit percentage value will indicate 100%.</P>
+      <P class="pg">
+      If the percentage value in the far left of the summary table is 100%, this indicates that all lines that
+      Covered was capable of simulating (for the module/instance of this row) were executed. If the value of the
+      percentage is less than 100%, this indicates that some number of lines were not executed and full coverage
+      was not achieved for that module/instance. Note that for a module/instance which does not contain any lines
+      in which Covered was able to simulate, the values of hit, miss, and total will be 0 while the hit percentage
+      value will indicate 100%.</P>
     </TD>
   </TR>
 
@@ -161,7 +183,14 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">If the miss value for a particular module was not 0 (indicating that lines were missed during simulation) and the '-d v' option was specified on the command-line (specifying to output verbose reporting information), the line that was missed during simulation will be output below the summary information per module that contained missed lines. In our sample report, there was one line that was missed during simulation (according to the summary output) for the module/instance called 'main'. The line number and Verilog line that was missed is output in lines <a href="example.rptM.html#11">11 through 16</a> of the module-based report and in lines <a href="example.rptI.html#11">11 through 22</a> of the instance-based report.</P>
+      <P class="pg">
+      If the miss value for a particular module was not 0 (indicating that lines were missed during simulation)
+      and the '-d v' option was specified on the command-line (specifying to output verbose reporting information),
+      the line that was missed during simulation will be output below the summary information per module that
+      contained missed lines. In our sample report, there was one line that was missed during simulation (according
+      to the summary output) for the module called "fsmb" (instance "main.fsmb"). The line number and Verilog line
+      that was missed is output in lines <a href="example.rptM.html#25">25 through 29</a> of the module-based report
+      and in lines <a href="example.rptI.html#25">25 through 29</a> of the instance-based report.</P>
     </TD>
   </TR>
 
@@ -172,7 +201,10 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">If a module does not contain any missed lines and the '-d v' option was specified, no verbose output will be displayed for this module. Likewise, if a module/instance does not contain any lines that Covered could execute, no verbose output will be displayed.</P>
+      <P class="pg">
+      If a module does not contain any missed lines and the '-d v' option was specified, no verbose output will be
+      displayed for this module. Likewise, if a module/instance does not contain any lines that Covered could execute, 
+      no verbose output will be displayed.</P>
     </TD>
   </TR>
 
@@ -194,7 +226,11 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">The definition of what Covered considers a line is an expression (ex. assignment, conditional, etc.). If an expression is written in such a way that it consumes multiple file lines, Covered only counts the expression as one line. The user can assume that if the beginning of an expression is labeled as missed, the entire expression was missed (not just the first line of the expression). For example, consider the following code:</P>
+      <P class="pg">
+      The definition of what Covered considers a line is a statement (ex. assignment, conditional, etc.). If a
+      statement is written in such a way that it consumes multiple file lines, Covered only counts the statement
+      as one line. The user can assume that if the beginning of a statement is labeled as missed, the entire
+      expression was missed (not just the first line of the expression). For example, consider the following code:</P>
     </TD>
   </TR>
 
@@ -205,7 +241,10 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">always @(posedge b)<br> &nbsp;&nbsp;a &lt;= (b & c) |<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(d & e);</P>
+      <P class="pg"><pre><code>
+      always @(posedge b)
+        a <= (b & c) |
+             (d & e);</code></pre></P>
     </TD>
   </TR>
 
@@ -216,7 +255,10 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">If the expression <code> a &lt;= (b & c) | (d & e);<code> is not executed during simulation, Covered will indicate that only one line was missed during execution (not two), and it will display the missing line (if verbose reporting is specified with the '-d v' option) as the following:</P>
+      <P class="pg">
+      If the expression <pre><code> a <= (b & c) | (d & e);</code></pre> is not executed during simulation,
+      Covered will indicate that only one line was missed during execution (not two), and it will display the
+      missing line (if verbose reporting is specified with the '-d v' option) as the following:</P>
     </TD>
   </TR>
 
@@ -227,7 +269,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;assign a &lt;= (b & c) ...</P>
+      <P class="pg"><pre><code>     2:      assign a <= (b & c) ...</code></pre></P>
     </TD>
   </TR>
 
@@ -238,7 +280,9 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">The "..." notation at the end of the Verilog output indicates that the expression was a multiline expression in the source code but is only considered one line.</P>
+      <P class="pg">
+      The "..." notation at the end of the Verilog output indicates that the statement was a multiline statement
+      in the source code but is only considered one line.</P>
     </TD>
   </TR>
 

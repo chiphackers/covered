@@ -24,8 +24,8 @@ doc_DATA = 001.html \
            021.html \
            022.html \
            banner.gif \
-           example.rptI.html \
-           example.rptM.html \
-           example.v.html \
+           test/example.rptI.html \
+           test/example.rptM.html \
+           test/example.v.html \
            index.html \
            styles.css
