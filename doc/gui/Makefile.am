@@ -23,6 +23,8 @@ img_DATA = images/banner.gif \
            images/color.png \
            images/comb_complex.png \
            images/comb_event.png \
+           images/comb_simple_and.png \
+           images/comb_simple_or.png \
            images/comb_simple.png \
            images/comb_unary.png \
            images/dn_button.png \
