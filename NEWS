@@ -1,6 +1,38 @@
 Covered-Related NEWS
 ====================
 
+    * 3/29/2006
+
+Stable release covered-0.4 made.  In addition to all of the features, optimizations and bug fixes
+that have gone into the development releases from the 0.3 stable release, the following features, updates
+and bug fixes have been added.
+
+  - Fixed bug with a statement connection issue that causes lines of code to be not considered for
+    coverage that should have been.
+  - Fixed bug in report command where combinational expressions were not being output to match the original
+    Verilog code.
+  - Added CDD file viewer window to GUI to allow the user to see which CDD files are currently loaded/merged.
+  - Fixed bug in combinational logic verbose viewer which caused the window to resize dependent upon
+    the location of the cursor (this was an annoyance)
+  - Changed the output of simple combinational logic to change to unary combinational logic output if either
+    the left or the right expression was a constant value (eliminates unachievable combinational logic cases
+    from being output leading to more accurate coverage results).
+  - Removed combinational expressions that contain only constant values from being considered for coverage.
+  - Updated simple combinational logic output in reports to be as concise as possible for AND and OR type
+    expressions.
+  - Removed duplication of information in CDD files for race conditions.
+  - Fixed bug in GUI dealing with showing race conditions
+  - Fixing bug in GUI pertaining to the next/previous buttons in the combinational logic detail viewer.  Previously,
+    clicking on one of these buttons would only advance you to the next uncovered line.  Now it will advance
+    you to the next uncovered statement.
+  - Updated development, user and GUI documentation to reflect the above changes and to bring them up-to-date
+    with the rest of the tool.
+
+Please see the ChangeLog file for all changes made from the 0.3 stable release to the 0.4 stable release.
+Lots of enhancements, features, optimizations, bug fixes, performance improvements and documentation improvements
+are contained in this stable release, making it very worth while for any Covered users to get their hands on
+it.
+
     * 2/18/2006
 
 Development release covered-20060218 made.  A lot of work has gone into adding a lot more Verilog-2001
