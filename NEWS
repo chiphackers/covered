@@ -1,6 +1,13 @@
 Covered-Related NEWS
 ====================
 
+    * 4/4/2006
+
+Stable release covered-0.4.1 made.  This release contains one bug fix that causes an assertion error when
+compiling designs that use a concatenation operation on the left-hand-side of assignment statements.  If
+you are experiencing this problem with the 0.4 release, it is recommended that you use this new release
+instead.
+
     * 3/29/2006
 
 Stable release covered-0.4 made.  In addition to all of the features, optimizations and bug fixes
