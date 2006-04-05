@@ -726,6 +726,7 @@ void expression_resize( expression* expr, bool recursive ) {
 
       default :
         if( (ESUPPL_IS_ROOT( expr->suppl ) == 1) ||
+            (ESUPPL_IS_LHS( expr->suppl ) == 1) ||
             ((expr->parent->expr->op != EXP_OP_ASSIGN) &&
              (expr->parent->expr->op != EXP_OP_DASSIGN) &&
              (expr->parent->expr->op != EXP_OP_BASSIGN) &&
@@ -3134,6 +3135,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.178  2006/03/28 22:28:27  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.177  2006/03/27 23:25:30  phase1geo
  Updating development documentation for 0.4 stable release.
 
