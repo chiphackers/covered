@@ -405,6 +405,231 @@ void fsm_get_stats( fsm_link* table, float* state_total, int* state_hit, float* 
 }
 
 /*!
+ \param funit_name  Name of functional unit to retrieve summary information for
+ \param funit_type  Type of functional unit to retrieve summary information for
+ \param total       Pointer to location to store the total number of state transitions for the specified functional unit
+ \param hit         Pointer to location to store the number of hit state transitions for the specified functional unit
+
+ \return Returns TRUE if the specified module was found; otherwise, returns FALSE.
+
+ Retrieves the FSM summary information for the specified functional unit.
+*/
+bool fsm_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit ) {
+
+  bool        retval = TRUE;  /* Return value of this function */
+  func_unit   funit;          /* Functional unit used for searching */
+  funit_link* funitl;         /* Pointer to found functional unit link */
+  char        tmp[21];        /* Temporary string for total */
+
+  funit.name = funit_name;
+  funit.type = funit_type;
+
+  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
+
+    snprintf( tmp, 21, "%20.0f", funitl->funit->stat->arc_total );
+    assert( sscanf( tmp, "%d", total ) == 1 );
+    *hit = funitl->funit->stat->arc_hit;
+
+  } else {
+
+    retval = FALSE;
+
+  }
+
+  return( retval );
+
+}
+
+/*!
+ \param expr          Pointer to expression to get signals from
+ \param head          Pointer to head of signal list to populate
+ \param tail          Pointer to tail of signal list to populate
+ \param expr_id       Expression ID of the statement containing this expression
+ \param expr_ids      Pointer to expression ID array
+ \param expr_id_size  Number of elements currently stored in expr_ids array
+
+ Recursively iterates through specified expression, adding the signal of each expression that
+ points to one to the specified signal list.  Also captures the expression ID of the statement
+ containing this signal for each signal found (if expr_id is a non-negative value).
+*/
+void fsm_gather_signals( expression* expr, sig_link** head, sig_link** tail, int expr_id, int** expr_ids, int* expr_id_size ) {
+
+  if( expr != NULL ) {
+
+    if( expr->sig != NULL ) {
+
+      /* Add this signal to the list */
+      sig_link_add( expr->sig, head, tail );
+
+      /* Add specified expression ID to the expression IDs array, if needed */
+      if( expr_id >= 0 ) {
+        (*expr_ids)                  = (int*)realloc( *expr_ids, (sizeof( int ) * ((*expr_id_size) + 1)) );
+        (*expr_ids)[(*expr_id_size)] = expr_id;
+        (*expr_id_size)++;
+      }
+
+    } else {
+
+      fsm_gather_signals( expr->left,  head, tail, expr_id, expr_ids, expr_id_size );
+      fsm_gather_signals( expr->right, head, tail, expr_id, expr_ids, expr_id_size );
+
+    }
+
+  }
+
+}
+
+/*!
+ \param funit_name  Name of functional unit to collect combinational logic coverage information for
+ \param funit_type  Type of functional unit to collect combinational logic coverage information for
+ \param cov_head    Pointer to the head of the signal list of covered FSM output states
+ \param cov_tail    Pointer to the tail of the signal list of covered FSM output states
+ \param uncov_head  Pointer to the head of the signal list of uncovered FSM output states
+ \param uncov_tail  Pointer to the tail of the signal list of uncovered FSM output states
+ \param expr_ids    Pointer to array of expression IDs for each uncovered signal
+
+ \return Returns TRUE if FSM coverage information was found for the given functional unit; otherwise,
+         returns FALSE to indicate that an error occurred.
+
+ Gathers the covered and uncovered FSM information, storing their expressions in the cov and uncov signal lists.
+ Used by the GUI for verbose FSM output.
+*/
+bool fsm_collect( char* funit_name, int funit_type, sig_link** cov_head, sig_link** cov_tail,
+                  sig_link** uncov_head, sig_link** uncov_tail, int** expr_ids ) {
+
+  bool        retval = TRUE;   /* Return value for this function */
+  func_unit   funit;           /* Functional unit used for searching */
+  funit_link* funitl;          /* Pointer to found functional unit link */
+  fsm_link*   curr_fsm;        /* Pointer to current FSM link being evaluated */
+  float       state_total;     /* Total number of states in current FSM */
+  int         state_hit;       /* Number of states in current FSM hit */
+  float       arc_total;       /* Total number of arcs in current FSM */
+  int         arc_hit;         /* Number of arcs in current FSM hit */
+  int         uncov_size = 0;  /* Number of expressions IDs stored in expr_ids array */
+
+  /* First, find functional unit in functional unit array */
+  funit.name = funit_name;
+  funit.type = funit_type;
+
+  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
+
+    /* Initialize list pointers */
+    *cov_tail   = *cov_head   = NULL;
+    *uncov_tail = *uncov_head = NULL;
+    *expr_ids   = NULL;
+
+    curr_fsm = funitl->funit->fsm_head;
+    while( curr_fsm != NULL ) {
+
+      /* Get the state and arc statistics */
+      arc_get_stats( curr_fsm->table->table, &state_total, &state_hit, &arc_total, &arc_hit );
+
+      /* If the total number of arcs is not known, consider this FSM as uncovered */
+      if( (arc_total == -1) || (arc_total != arc_hit) ) {
+        fsm_gather_signals( curr_fsm->table->to_state, uncov_head, uncov_tail, curr_fsm->table->to_state->id, expr_ids, &uncov_size );
+      } else {
+        fsm_gather_signals( curr_fsm->table->to_state, cov_head, cov_tail, -1, expr_ids, &uncov_size );
+      }
+
+      curr_fsm = curr_fsm->next;
+
+    }
+
+  } else {
+
+    retval = FALSE;
+
+  }
+
+  return( retval );
+
+}
+
+/*!
+ \param funit_name       Name of functional unit containing FSM
+ \param funit_type       Type of functional unit containing FSM
+ \param expr_id          Expression ID of output state expression to find
+ \param width            Pointer to width of FSM output state variable
+ \param total_states     Pointer to a string array containing all possible states in this FSM
+ \param total_state_num  Pointer to the number of elements in the total_states array
+ \param hit_states       Pointer to a string array containing the hit states in this FSM
+ \param hit_state_num    Pointer to the number of elements in the hit_states array
+ \param total_from_arcs  Pointer to a string array containing all possible state transition from states
+ \param total_to_arcs    Pointer to a string array containing all possible state transition to states
+ \param total_arc_num    Pointer to the number of elements in both the total_from_arcs and total_to_arcs arrays
+ \param total_from_arcs  Pointer to a string array containing the hit state transition from states
+ \param total_to_arcs    Pointer to a string array containing the hit state transition to states
+ \param total_arc_num    Pointer to the number of elements in both the hit_from_arcs and hit_to_arcs arrays
+ \param input_state      Pointer to a string array containing the code for the input state expression
+ \param input_size       Pointer to the number of elements stored in the input state array
+ \param output_state     Pointer to a string array containing the code for the output state expression
+ \param output_size      Pointer to the number of elements stored in the output state array
+
+ \return Returns TRUE if the specified functional unit was found; otherwise, returns FALSE.
+
+ TBD
+*/
+bool fsm_get_coverage( char* funit_name, int funit_type, int expr_id, int* width,
+                       char*** total_states, int* total_state_num,
+                       char*** hit_states, int* hit_state_num,
+                       char*** total_from_arcs, char*** total_to_arcs, int* total_arc_num,
+                       char*** hit_from_arcs, char*** hit_to_arcs, int* hit_arc_num,
+                       char*** input_state, int* input_size, char*** output_state, int* output_size ) {
+
+  bool        retval = TRUE;  /* Return value for this function */
+  func_unit   funit;          /* Functional unit structure used for searching */
+  funit_link* funitl;         /* Pointer to found functional unit link */
+  fsm_link*   curr_fsm;       /* Pointer to current FSM link */
+
+  /* First, find functional unit in functional unit array */
+  funit.name = funit_name;
+  funit.type = funit_type;
+
+  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
+
+    curr_fsm = funitl->funit->fsm_head;
+    while( (curr_fsm != NULL) && (curr_fsm->table->to_state->id != expr_id) ) {
+      curr_fsm = curr_fsm->next; 
+    }
+
+    /* If we found a matching FSM, store values */
+    if( curr_fsm != NULL ) {
+
+      /* Get width */
+      *width = curr_fsm->table->to_state->value->width;
+
+      /* Get state information */
+      arc_get_states( total_states, total_state_num, curr_fsm->table->table, TRUE, TRUE ); 
+      arc_get_states( hit_states,   hit_state_num,   curr_fsm->table->table, TRUE, FALSE );
+
+      /* Get state transition information */
+      arc_get_transitions( total_from_arcs, total_to_arcs, total_arc_num, curr_fsm->table->table, TRUE, TRUE );
+      arc_get_transitions( hit_from_arcs,   hit_to_arcs,   hit_arc_num,   curr_fsm->table->table, TRUE, FALSE );
+
+      /* Get input state code */
+      codegen_gen_expr( curr_fsm->table->from_state, curr_fsm->table->from_state->op, input_state, input_size, NULL );
+
+      /* Get output state code */
+      codegen_gen_expr( curr_fsm->table->to_state, curr_fsm->table->to_state->op, output_state, output_size, NULL );
+
+    } else {
+
+      retval = FALSE;
+
+    }
+
+  } else {
+
+    retval = FALSE;
+
+  }
+
+  return( retval );
+
+}
+
+
+/*!
  \param ofile        Pointer to output file to display report contents to.
  \param root         Pointer to current root of instance tree to report.
  \param parent_inst  String containing Verilog hierarchy of this instance's parent.
@@ -556,9 +781,12 @@ bool fsm_funit_summary( FILE* ofile, funit_link* head ) {
 */
 void fsm_display_state_verbose( FILE* ofile, fsm* table ) {
 
-  bool trans_known;
+  bool   trans_known;  /* Set to TRUE if all legal arc transitions are known */
+  char** states;       /* String array of all states */
+  int    state_size;   /* Contains the number of elements in the states array */
+  int    i;            /* Loop iterator */
 
-  /* Figure out if transactions were known */
+  /* Figure out if transitions were known */
   trans_known = (arc_get_suppl( table->table, ARC_TRANS_KNOWN ) == 0) ? TRUE : FALSE;
 
   if( report_covered || trans_known ) {
@@ -571,9 +799,21 @@ void fsm_display_state_verbose( FILE* ofile, fsm* table ) {
   fprintf( ofile, "          States\n" );
   fprintf( ofile, "          ======\n" );
 
-  arc_display_states( ofile, "          %d'h%s\n", table->table, (report_covered || trans_known) );
+  /* Get all of the states in string form */
+  arc_get_states( &states, &state_size, table->table, (report_covered || trans_known), FALSE );
+
+  /* Display all of the found states */
+  for( i=0; i<state_size; i++ ) {
+    fprintf( ofile, "          %d'h%s\n", arc_get_width( table->table ), states[i] );
+    free_safe( states[i] );
+  }
 
   fprintf( ofile, "\n" );
+
+  /* Deallocate the states array */
+  if( state_size > 0 ) {
+    free_safe( states );
+  }
 
 }
 
@@ -586,12 +826,16 @@ void fsm_display_state_verbose( FILE* ofile, fsm* table ) {
 */
 void fsm_display_arc_verbose( FILE* ofile, fsm* table ) {
 
-  bool trans_known;
-  char fstr[100];
-  char tmp[20];
-  int  width;
-  int  val_width;
-  int  len_width;
+  bool   trans_known;  /* Set to TRUE if the number of state transitions is known */
+  char   fstr[100];    /* Format string */
+  char   tmp[20];      /* Temporary string */
+  int    width;        /* Width (in characters) of the entire output value */
+  int    val_width;    /* Number of bits in output state expression */
+  int    len_width;    /* Number of characters needed to store the width of the output state expression */
+  char** from_states;  /* String array containing from_state information */
+  char** to_states;    /* String array containing to_state information */
+  int    arc_size;     /* Number of elements in the from_states and to_states arrays */
+  int    i;            /* Loop iterator */
 
   /* Figure out if transactions were known */
   trans_known = (arc_get_suppl( table->table, ARC_TRANS_KNOWN ) == 0) ? TRUE : FALSE;
@@ -619,11 +863,24 @@ void fsm_display_arc_verbose( FILE* ofile, fsm* table ) {
 
   /* Get formatting string for states */
   width = width - len_width - 2;
-  snprintf( fstr, 100, "          %d'h%%-%d.%ds -> %d'h%%-%d.%ds\n", val_width, width, width, val_width, width, width );
 
-  arc_display_transitions( ofile, fstr, table->table, (report_covered || trans_known) );
+  /* Get the state transition information */
+  arc_get_transitions( &from_states, &to_states, &arc_size, table->table, (report_covered || trans_known), FALSE );
+
+  /* Output the information to the specified output stream */
+  for( i=0; i<arc_size; i++ ) {
+    fprintf( ofile, fstr, from_states[i], to_states[i] );
+    free_safe( from_states[i] );
+    free_safe( to_states[i] );
+  }
 
   fprintf( ofile, "\n" );
+
+  /* Deallocate memory */
+  if( arc_size > 0 ) {
+    free_safe( from_states );
+    free_safe( to_states );
+  }
 
 }
 
@@ -883,6 +1140,11 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.50  2006/03/28 22:28:27  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.49  2006/02/17 19:50:47  phase1geo
  Added full support for escaped names.  Full regression passes.
 

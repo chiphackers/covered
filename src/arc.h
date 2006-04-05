@@ -52,17 +52,22 @@ bool arc_db_merge( char** arcs, char** line, bool same );
 /*! \brief Replaces contents of arc table from line to specified base array. */
 bool arc_db_replace( char** arcs, char** line );
 
-/*! \brief Outputs arc array state values to specified output stream. */
-void arc_display_states( FILE* ofile, const char* fstr, const char* arcs, bool hit );
+/*! \brief Stores arc array state values to specified string array. */
+void arc_get_states( char*** states, int* state_size, const char* arcs, bool hit, bool any );
 
 /*! \brief Outputs arc array state transition values to specified output stream. */
-void arc_display_transitions( FILE* ofile, const char* fstr, const char* arcs, bool hit );
+void arc_get_transitions( char*** from_states, char*** to_states, int* arc_size, const char* arcs, bool hit, bool any );
 
 /*! \brief Deallocates memory for specified arcs array. */
 void arc_dealloc( char* arcs );
 
 /*
  $Log$
+ Revision 1.11  2006/03/28 22:28:27  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.10  2004/04/05 12:30:52  phase1geo
  Adding *db_replace functions to allow a design to be opened with new CDD
  results (for GUI purposes only).

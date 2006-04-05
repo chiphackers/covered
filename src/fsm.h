@@ -54,6 +54,21 @@ void fsm_table_set( fsm* table );
 /*! \brief Gathers statistics about the current FSM */
 void fsm_get_stats( fsm_link* table, float* state_total, int* state_hit, float* arc_total, int* arc_hit );
 
+/*! \brief Retrieves the FSM summary information for the specified functional unit. */
+bool fsm_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit );
+
+/*! \brief Retrieves covered and uncovered FSMs from the specified functional unit. */
+bool fsm_collect( char* funit_name, int funit_type, sig_link** cov_head, sig_link** cov_tail,
+                  sig_link** uncov_head, sig_link** uncov_tail, int** expr_ids );
+
+/*! \brief Collects all coverage information for the specified FSM */
+bool fsm_get_coverage( char* funit_name, int funit_type, int expr_id, int* width,
+                       char*** total_states, int* total_state_num,
+                       char*** hit_states, int* hit_state_num,
+                       char*** total_from_arcs, char*** total_to_arcs, int* total_arc_num,
+                       char*** hit_from_arcs, char*** hit_to_arcs, int* hit_arc_num,
+                       char*** input_state, int* input_size, char*** output_state, int* output_size );
+
 /*! \brief Generates report output for FSM coverage. */
 void fsm_report( FILE* ofile, bool verbose );
 
@@ -62,6 +77,11 @@ void fsm_dealloc( fsm* table );
 
 /*
  $Log$
+ Revision 1.16  2006/03/28 22:28:27  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.15  2006/01/24 23:24:37  phase1geo
  More updates to handle static functions properly.  I have redone quite a bit
  of code here which has regressions pretty broke at the moment.  More work

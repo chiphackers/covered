@@ -16,6 +16,8 @@ set toggle_summary_total  0
 set toggle_summary_hit    0
 set comb_summary_total    0
 set comb_summary_hit      0
+set fsm_summary_total     0
+set fsm_summary_hit       0
 set curr_funit_name       0
 set curr_funit_type       0
 
@@ -283,9 +285,6 @@ proc display_toggle_cov {} {
     # Populate information bar
     .info configure -text "Filename: $file_name"
 
-    .bot.right.txt tag configure uncov_colorMap -foreground $uncov_fgColor -background $uncov_bgColor
-    .bot.right.txt tag configure cov_colorMap   -foreground $cov_fgColor   -background $cov_bgColor
-
     # Allow us to write to the text box
     .bot.right.txt configure -state normal
 
@@ -300,7 +299,7 @@ proc display_toggle_cov {} {
       # First, populate the summary information
       cov_display_summary $toggle_summary_hit $toggle_summary_total
 
-      # Next, populate text box with file contents including highlights for covered/uncovered lines
+      # Next, populate text box with file contents
       foreach phrase $contents {
         if [expr [expr $start_line <= $linecount] && [expr $end_line >= $linecount]] {
           set line [format {%3s  %7u  %s} "   " $linecount [append phrase "\n"]]
@@ -443,9 +442,6 @@ proc display_comb_cov {} {
     # Populate information bar
     .info configure -text "Filename: $file_name"
 
-    .bot.right.txt tag configure uncov_colorMap -foreground $uncov_fgColor -background $uncov_bgColor
-    .bot.right.txt tag configure cov_colorMap   -foreground $cov_fgColor   -background $cov_bgColor
-
     # Allow us to write to the text box
     .bot.right.txt configure -state normal
 
@@ -548,20 +544,169 @@ proc display_comb_cov {} {
 
 proc process_funit_fsm_cov {} {
 
-  global start_line end_line
+  global fileContent file_name start_line end_line
+  global curr_funit_name curr_funit_type
+  global fsm_summary_hit fsm_summary_total
 
-  display_fsm_cov
+  if {$curr_funit_name != 0} {
+
+    tcl_func_get_filename $curr_funit_name $curr_funit_type
+
+    if {[catch {set fileText $fileContent($file_name)}]} {
+      if {[catch {set fp [open $file_name "r"]}]} {
+        tk_messageBox -message "File $file_name Not Found!" \
+                      -title "No File" -icon error
+        return
+      }
+      set fileText [read $fp]
+      set fileContent($file_name) $fileText
+      close $fp
+    }
+
+    # Get start and end line numbers of this functional unit
+    set start_line 0
+    set end_line   0
+    tcl_func_get_funit_start_and_end $curr_funit_name $curr_funit_type
+
+    # Get line summary information and display this now
+    tcl_func_get_fsm_summary $curr_funit_name $curr_funit_type
+
+    # If we have some uncovered values, enable the "next" pointer and menu item
+    if {$fsm_summary_total != $fsm_summary_hit} {
+      .bot.right.h.next configure -state normal
+      .menubar.view.menu entryconfigure 2 -state normal
+    } else {
+      .bot.right.h.next configure -state disabled
+      .menubar.view.menu entryconfigure 2 -state disabled
+    }
+    .bot.right.h.prev configure -state disabled
+    .menubar.view.menu entryconfigure 3 -state disabled
+
+    calc_and_display_fsm_cov
+
+  }
+
+}
+
+proc calc_and_display_fsm_cov {} {
+
+  global cov_type uncov_type mod_inst_type funit_names funit_types
+  global uncovered_fsms covered_fsms race_lines race_reasons
+  global curr_funit_name curr_funit_type start_line
+
+  if {$curr_funit_name != 0} {
+
+    # Get list of uncovered/covered FSMs
+    set uncovered_fsms ""
+    set covered_fsms   ""
+    set race_lines     ""
+    set race_reasons   ""
+    tcl_func_collect_fsms       $curr_funit_name $curr_funit_type $start_line
+    tcl_func_collect_race_lines $curr_funit_name $curr_funit_type $start_line
+
+    display_fsm_cov
+
+  }
 
 }
 
 proc display_fsm_cov {} {
 
-  global fgColor bgColor
+  global uncov_fgColor uncov_bgColor
+  global cov_fgColor cov_bgColor
+  global curr_funit_name file_name fileContent
+  global fsm_summary_hit fsm_summary_total uncov_type cov_type
+  global covered_fsms uncovered_fsms
+  global start_line end_line
 
-  # Configure text area
-  .bot.right.txt tag configure colorMap -foreground $fgColor -background $bgColor
+  if {$curr_funit_name != 0} {
 
-  # Clear the text-box before any insertion is being made
-  .bot.right.txt delete 1.0 end
+    # Populate information bar
+    if {$file_name != 0} {
+      .info configure -text "Filename: $file_name"
+    }
+
+    # Allow us to write to the text box
+    .bot.right.txt configure -state normal
+
+    # Clear the text-box before any insertion is being made
+    .bot.right.txt delete 1.0 end
+
+    set contents [split $fileContent($file_name) \n]
+    set linecount 1
+
+    if {$end_line != 0} {
+
+      # First, populate the summary information
+      cov_display_summary $fsm_summary_hit $fsm_summary_total
+
+      # Next, populate text box with file contents including highlights for covered/uncovered lines
+      foreach phrase $contents {
+        if [expr [expr $start_line <= $linecount] && [expr $end_line >= $linecount]] {
+          set line [format {%3s  %7u  %s} "   " $linecount [append phrase "\n"]]
+          .bot.right.txt insert end $line
+        }
+        incr linecount
+      }
+
+      # Create race condition tags
+      create_race_tags
+
+      # Finally, set FSM information
+      if {[expr $uncov_type == 1] && [expr [llength $uncovered_fsms] > 0]} {
+        set cmd_enter  ".bot.right.txt tag add uncov_enter"
+        set cmd_button ".bot.right.txt tag add uncov_button"
+        set cmd_leave  ".bot.right.txt tag add uncov_leave"
+        foreach entry $uncovered_fsms {
+          set cmd_enter  [concat $cmd_enter  [lindex $entry 0] [lindex $entry 1]]
+          set cmd_button [concat $cmd_button [lindex $entry 0] [lindex $entry 1]]
+          set cmd_leave  [concat $cmd_leave  [lindex $entry 0] [lindex $entry 1]]
+        }
+        eval $cmd_enter
+        eval $cmd_button
+        eval $cmd_leave
+        .bot.right.txt tag configure uncov_button -underline true -foreground $uncov_fgColor -background $uncov_bgColor
+        .bot.right.txt tag bind uncov_enter <Enter> {
+          set curr_cursor [.bot.right.txt cget -cursor]
+          set curr_info   [.info cget -text]
+          .bot.right.txt configure -cursor hand2
+          .info configure -text "Click left button for detailed FSM coverage information"
+        }
+        .bot.right.txt tag bind uncov_leave <Leave> {
+          .bot.right.txt configure -cursor $curr_cursor
+          .info configure -text $curr_info
+        }
+        .bot.right.txt tag bind uncov_button <ButtonPress-1> {
+          display_fsm current
+        }
+      }
+
+      if {[expr $cov_type == 1] && [expr [llength $covered_fsms] > 0]} {
+        set cmd_cov ".bot.right.txt tag add cov_highlight"
+        foreach entry $covered_fsms {
+          set cmd_cov [concat $cmd_cov [lindex $entry 0] [lindex $entry 1]]
+        }
+        eval $cmd_cov
+        .bot.right.txt tag configure cov_highlight -foreground $cov_fgColor -background $cov_bgColor
+      }
+
+    }
+
+    # Now cause the text box to be read-only again
+    .bot.right.txt configure -state disabled
+
+  }
+
+}
+
+proc process_funit_assert_cov {} {
+
+  puts "In process_funit_assert_cov"
+
+}
+
+proc display_assert_cov {} {
+
+  puts "In display_assert_cov"
 
 }

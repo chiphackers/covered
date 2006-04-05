@@ -27,6 +27,7 @@
 
  \par
  -# \b covered_fsm - Allows FSM-specific coverage information to be embedded within a design file
+ -# \b covered_assert - Allows assertion coverage information to be embedded within a design file
 */
 
 #ifdef HAVE_CONFIG_H
@@ -44,6 +45,7 @@
 #include "func_unit.h"
 #include "util.h"
 #include "fsm_arg.h"
+#include "assertion.h"
 
 
 /*!
@@ -87,6 +89,8 @@ void attribute_parse( attr_param* ap, func_unit* funit ) {
     } else {
       if( strcmp( ap->name, "covered_fsm" ) == 0 ) {
         fsm_arg_parse_attr( ap->prev, funit );
+      } else if( strcmp( ap->name, "covered_assert" ) == 0 ) {
+        assertion_parse_attr( ap->prev, funit );
       }
     }
 
@@ -121,6 +125,11 @@ void attribute_dealloc( attr_param* ap ) {
 
 /*
  $Log$
+ Revision 1.5  2006/03/28 22:28:27  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.4  2006/03/27 23:25:30  phase1geo
  Updating development documentation for 0.4 stable release.
 

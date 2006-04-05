@@ -95,6 +95,12 @@ bool report_fsm          = TRUE;
 bool report_race         = FALSE;
 
 /*!
+ If set to a boolean value of TRUE, reports the assertion coverage for the specified
+ database file; otherwise, omits assertion coverage from the report output.
+*/
+bool report_assertion    = FALSE;
+
+/*!
  If set to a boolean value of TRUE, provides a coverage information for individual
  functional unit instances.  If set to a value of FALSE, reports coverage information on a
  functional unit basis, merging results from all instances of same functional unit.
@@ -169,8 +175,8 @@ void report_usage() {
   printf( "   -h                         Displays this help information.\n" );
   printf( "\n" );
   printf( "   Options:\n" );
-  printf( "      -m [l][t][c][f][r]      Type(s) of metrics to report.  l=line, t=toggle, c=combinational logic,\n" );
-  printf( "                               f=FSM state/arc, r=race condition.  Default is ltcf.\n" );
+  printf( "      -m [l][t][c][f][r][a]   Type(s) of metrics to report.  l=line, t=toggle, c=combinational logic,\n" );
+  printf( "                               f=FSM state/arc, r=race condition, a=assertion.  Default is ltcf.\n" );
   printf( "      -d (s|d|v)              Level of report detail (s=summary, d=detailed, v=verbose).\n" );
   printf( "                               Default is to display summary coverage information.\n" );
   printf( "      -i                      Provides coverage information for instances instead of module/task/function.\n" );
@@ -204,6 +210,7 @@ void report_parse_metrics( char* metrics ) {
   report_combination = FALSE;
   report_fsm         = FALSE;
   report_race        = FALSE;
+  report_assertion   = FALSE;
 
   for( ptr=metrics; ptr<(metrics + strlen( metrics )); ptr++ ) {
 
@@ -218,6 +225,8 @@ void report_parse_metrics( char* metrics ) {
       case 'F' :  report_fsm         = TRUE;  break;
       case 'r' :
       case 'R' :  report_race        = TRUE;  break;
+      case 'a' :
+      case 'A' :  report_assertion   = TRUE;  break;
       default  :
         snprintf( user_msg, USER_MSG_LENGTH, "Unknown metric specified '%c'...  Ignoring.", *ptr );
         print_output( user_msg, WARNING, __FILE__, __LINE__ );
@@ -402,6 +411,14 @@ void report_gather_instance_stats( funit_inst* root ) {
                    &(root->stat->arc_hit) );
   }
 
+  if( report_assertion ) {
+/* TBD
+    assertion_get_stats( root->funit->assert_head,
+                         &(root->stat->assert_total),
+                         &(root->stat->assert_hit) );
+*/
+  }
+
   /* Only get race condition statistics for this instance module if the module hasn't been gathered yet */
   if( report_race && (root->funit->stat == NULL) ) {
     root->funit->stat = statistic_create();
@@ -448,6 +465,14 @@ void report_gather_funit_stats( funit_link* head ) {
                      &(head->funit->stat->state_hit),
                      &(head->funit->stat->arc_total),
                      &(head->funit->stat->arc_hit) );
+    }
+
+    if( report_assertion ) {
+/* TBD
+      assertion_get_stats( head->funit->assert_head,
+                           &(head->funit->stat->assert_total),
+                           &(head->funit->stat->assert_hit) );
+*/
     }
 
     if( report_race ) {
@@ -586,6 +611,12 @@ void report_generate( FILE* ofile ) {
 
   if( report_fsm ) {
     fsm_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
+  }
+
+  if( report_assertion ) {
+/* TBD
+    assertion_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
+*/
   }
 
   if( report_race ) {
@@ -767,6 +798,11 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.57  2006/03/28 22:28:28  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.56  2006/03/27 23:25:30  phase1geo
  Updating development documentation for 0.4 stable release.
 

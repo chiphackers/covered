@@ -1172,23 +1172,25 @@ bool arc_db_replace( char** base, char** line ) {
 }
 
 /*!
- \param ofile  Pointer to file handle for report output.
- \param fstr   Formatting string for string output.
- \param arcs   Pointer to state transition arc array.
- \param hit    Specifies if hit or missed transitions should be displayed.
+ \param states      Pointer to string array containing stringified state information
+ \param state_size  Pointer to number of elements stored in states array
+ \param arcs        Pointer to state transition arc array.
+ \param hit         Specifies if hit or missed transitions should be gathered.
+ \param any         Specifies if we should gather any transition or only the type specified by hit.
 
- Traverses entire arc array, displaying all states that were hit
- during simulation (if hit parameter is true) or missed during simulation
- (if hit parameter is false).  All output is sent to the file ofile using
- the formatting string specified by fstr.
+ Traverses entire arc array, storing all states that were hit
+ during simulation (if hit parameter is true or the any parameter is true) or missed during simulation
+ (if hit parameter is false or the any parameter is true).
 */
-void arc_display_states( FILE* ofile, const char* fstr, const char* arcs, bool hit ) {
+void arc_get_states( char*** states, int* state_size, const char* arcs, bool hit, bool any ) {
 
   char* str;  /* Holder for string value of current state */
   int   i;    /* Loop iterator */
   int   j;    /* Loop iterator */
 
-  str = (char*)malloc_safe( ((arc_get_width( arcs ) / 4) + 2), __FILE__, __LINE__ );
+  /* Initialize states array to NULL */
+  *states     = NULL;
+  *state_size = 0;
 
   for( i=0; i<arc_get_curr_size( arcs ); i++ ) {
     for( j=0; j<2; j++ ) {
@@ -1196,16 +1198,20 @@ void arc_display_states( FILE* ofile, const char* fstr, const char* arcs, bool h
       /* Check left first */
       if( j == 0 ) {
         if( arc_get_entry_suppl( arcs, i, ARC_NOT_UNIQUE_L ) == 0 ) {
-          if( arc_get_entry_suppl( arcs, i, ARC_HIT_F ) == hit ) {
-            arc_state_to_string( arcs, i, TRUE, str );
-            fprintf( ofile, fstr, arc_get_width( arcs ), str );
+          if( (arc_get_entry_suppl( arcs, i, ARC_HIT_F ) == hit) || any ) {
+            *states                  = (char**)realloc( *states, (sizeof( char* ) * ((*state_size) + 1)) );
+            (*states)[(*state_size)] = (char*)malloc_safe( ((arc_get_width( arcs ) / 4) + 2), __FILE__, __LINE__ );
+            arc_state_to_string( arcs, i, TRUE, (*states)[(*state_size)] );
+            (*state_size)++;
           }
         }
       } else {
         if( arc_get_entry_suppl( arcs, i, ARC_NOT_UNIQUE_R ) == 0 ) {
-          if( arc_get_entry_suppl( arcs, i, ARC_HIT_F ) == hit ) {
-            arc_state_to_string( arcs, i, FALSE, str );
-            fprintf( ofile, fstr, arc_get_width( arcs ), str );
+          if( (arc_get_entry_suppl( arcs, i, ARC_HIT_F ) == hit) || any ) {
+            *states                  = (char**)realloc( *states, (sizeof( char* ) * ((*state_size) + 1)) );
+            (*states)[(*state_size)] = (char*)malloc_safe( ((arc_get_width( arcs ) / 4) + 2), __FILE__, __LINE__ );
+            arc_state_to_string( arcs, i, FALSE, (*states)[(*state_size)] );
+            (*state_size)++;
           }
         }
       }    
@@ -1213,26 +1219,29 @@ void arc_display_states( FILE* ofile, const char* fstr, const char* arcs, bool h
     }
   }
 
-  free_safe( str );
-
 }
 
 /*!
- \param ofile  Pointer to file handle for report output.
- \param fstr   Formatting string for string output.
- \param arcs   Pointer to state transition arc array.
- \param hit    Specifies if hit or missed transitions should be displayed.
+ \param from_states  Pointer to string array containing from_state values
+ \param to_states    Pointer to string array containing to_state values
+ \param arc_size     Number of elements in both the from_states and to_states arrays.
+ \param arcs         Pointer to state transition arc array.
+ \param hit          Specifies if hit or missed transitions should be gathered.
+ \param any          Specifies if all arc transitions or just the ones that meet the hit criteria should be gathered
 
- Traverses entire arc array, displaying all state transitions that were hit
- during simulation (if hit parameter is true) or missed during simulation
- (if hit parameter is false).  All output is sent to the file ofile using
- the formatting string specified by fstr.
+ Traverses entire arc array, storing all state transitions that were hit
+ during simulation (if hit parameter is true or the any parameter is true) or missed during simulation
+ (if hit parameter is false or the any parameter is true).
 */
-void arc_display_transitions( FILE* ofile, const char* fstr, const char* arcs, bool hit ) {
+void arc_get_transitions( char*** from_states, char*** to_states, int* arc_size, const char* arcs, bool hit, bool any ) {
 
   char* strl;  /* String containing from_state information */
   char* strr;  /* String containing to_state information */
   int   i;     /* Loop iterator */
+
+  /* Initialize state arrays and arc_size */
+  *from_states = *to_states = NULL;
+  *arc_size    = 0;
 
   strl = (char*)malloc_safe( ((arc_get_width( arcs ) / 4) + 2), __FILE__, __LINE__ );
   strr = (char*)malloc_safe( ((arc_get_width( arcs ) / 4) + 2), __FILE__, __LINE__ );
@@ -1240,17 +1249,25 @@ void arc_display_transitions( FILE* ofile, const char* fstr, const char* arcs, b
   for( i=0; i<arc_get_curr_size( arcs ); i++ ) {
 
     /* Check forward first */
-    if( arc_get_entry_suppl( arcs, i, ARC_HIT_F ) == hit ) {
-      arc_state_to_string( arcs, i, TRUE, strl );
-      arc_state_to_string( arcs, i, FALSE, strr );
-      fprintf( ofile, fstr, strl, strr );
+    if( (arc_get_entry_suppl( arcs, i, ARC_HIT_F ) == hit) || any ) {
+      *from_states                = (char**)realloc( *from_states, (sizeof( char* ) * (*arc_size + 1)) );
+      (*from_states)[(*arc_size)] = (char*)malloc_safe( ((arc_get_width( arcs ) / 4) + 2), __FILE__, __LINE__ );
+      *to_states                  = (char**)realloc( *to_states,   (sizeof( char* ) * (*arc_size + 1)) );
+      (*to_states)[(*arc_size)]   = (char*)malloc_safe( ((arc_get_width( arcs ) / 4) + 2), __FILE__, __LINE__ );
+      arc_state_to_string( arcs, i, TRUE,  (*from_states)[(*arc_size)] );
+      arc_state_to_string( arcs, i, FALSE, (*to_states)[(*arc_size)] );
+      (*arc_size)++;
     }
 
-    if( (arc_get_entry_suppl( arcs, i, ARC_HIT_R ) == hit) &&
+    if( ((arc_get_entry_suppl( arcs, i, ARC_HIT_R ) == hit) || any) &&
         (arc_get_entry_suppl( arcs, i, ARC_BIDIR ) == 1) ) {
-      arc_state_to_string( arcs, i, TRUE,  strl );
-      arc_state_to_string( arcs, i, FALSE, strr );
-      fprintf( ofile, fstr, strr, strl );
+      *from_states                = (char**)realloc( *from_states, (sizeof( char* ) * (*arc_size + 1)) );
+      (*from_states)[(*arc_size)] = (char*)malloc_safe( ((arc_get_width( arcs ) / 4) + 2), __FILE__, __LINE__ );
+      *to_states                  = (char**)realloc( *to_states,   (sizeof( char* ) * (*arc_size + 1)) );
+      (*to_states)[(*arc_size)]   = (char*)malloc_safe( ((arc_get_width( arcs ) / 4) + 2), __FILE__, __LINE__ );
+      arc_state_to_string( arcs, i, FALSE, (*from_states)[(*arc_size)] );
+      arc_state_to_string( arcs, i, TRUE,  (*to_states)[(*arc_size)] );
+      (*arc_size)++;
     }
 
   }
@@ -1277,6 +1294,11 @@ void arc_dealloc( char* arcs ) {
 
 /*
  $Log$
+ Revision 1.30  2006/03/28 22:28:27  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.29  2006/03/27 23:25:30  phase1geo
  Updating development documentation for 0.4 stable release.
 

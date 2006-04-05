@@ -105,6 +105,7 @@ void score_usage() {
   printf( "      -F <module>=(<ivar>,)<ovar>  Module, input state variable and output state variable of\n" );
   printf( "                                    an FSM state variable.  If input variable (ivar) is not specified,\n" );
   printf( "                                    the output variable (ovar) is also used as the input variable.\n" ); 
+  printf( "      -A <module>=<expression>     Module and assertion expression to check for in the design.\n" );
   printf( "      -y <directory>               Directory to find unspecified Verilog files.\n" );
   printf( "      -v <filename>                Name of specific Verilog file to score.\n" );
   printf( "      -D <define_name>(=<value>)   Defines the specified name to 1 or the specified value.\n" );
@@ -559,6 +560,11 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.64  2006/03/28 22:28:28  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.63  2006/02/06 15:35:36  phase1geo
  Fixing bug with -f option when the file is empty (previously segfaulted).
 

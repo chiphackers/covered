@@ -188,7 +188,7 @@ fsm_var* fsm_var_is_output_state( expression* expr ) {
 */
 bool fsm_var_bind_expr( char* sig_name, expression* expr, char* funit_name ) {
 
-  bool        retval = TRUE;  /* Return value for this function                */
+  bool        retval = TRUE;  /* Return value for this function */
   funit_link* funitl;         /* Pointer to found functional unit link element */
   func_unit   funit;          /* Temporary functional unit used for searching  */
 
@@ -483,6 +483,11 @@ void fsm_var_remove( fsm_var* fv ) {
 
 /*
  $Log$
+ Revision 1.24  2006/03/28 22:28:27  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.23  2006/02/16 21:19:26  phase1geo
  Adding support for arrays of instances.  Also fixing some memory problems for
  constant functions and fixed binding problems when hierarchical references are

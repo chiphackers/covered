@@ -768,6 +768,209 @@ int tcl_func_get_comb_coverage( ClientData d, Tcl_Interp* tcl, int argc, const c
  \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
          TCL_ERROR.
 
+ Populates the global variables "uncovered_fsms" and "covered_fsms" with the uncovered and covered FSM
+ expression line/character values for each.
+*/
+int tcl_func_collect_fsms( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+
+  int          retval = TCL_OK;  /* Return value for this function */
+  char*        funit_name;       /* Name of functional unit to get combinational logic coverage info for */
+  int          funit_type;       /* Type of functional unit to get combinational logic coverage info for */
+  sig_link*    cov_head;         /* Pointer to head of covered signals */
+  sig_link*    cov_tail;         /* Pointer to tail of covered signals */
+  sig_link*    uncov_head;       /* Pointer to head of uncovered signals */
+  sig_link*    uncov_tail;       /* Pointer to tail of uncovered signals */
+  sig_link*    sigl;             /* Pointer to current signal link being evaluated */
+  char         str[85];          /* Temporary string container */
+  int          start_line;       /* Starting line number of this module */
+  int*         expr_ids;         /* Array containing the statement IDs of all uncovered FSM signals */
+  int          i;                /* Loop iterator */
+
+  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_type = atoi( argv[2] );
+  start_line = atoi( argv[3] );
+
+  if( fsm_collect( funit_name, funit_type, &cov_head, &cov_tail, &uncov_head, &uncov_tail, &expr_ids ) ) {
+
+    /* Load uncovered FSMs into Tcl */
+    sigl = uncov_head;
+    i    = 0;
+    while( sigl != NULL ) {
+      snprintf( str, 85, "%d.%d %d.%d %d", (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + 14),
+                                           (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + (strlen( sigl->sig->name ) - 1) + 15),
+                                           expr_ids[i] );
+      Tcl_SetVar( tcl, "uncovered_fsms", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+      sigl = sigl->next;
+      i++;
+    }
+
+    /* Load covered FSMs into Tcl */
+    sigl = cov_head;
+    while( sigl != NULL ) {
+      snprintf( str, 85, "%d.%d %d.%d", (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + 14),
+                                        (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + (strlen( sigl->sig->name ) - 1) + 15) );
+      Tcl_SetVar( tcl, "covered_fsms", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+      sigl = sigl->next;
+    }
+
+    /* Deallocate memory */
+    sig_link_delete_list( cov_head,   FALSE );
+    sig_link_delete_list( uncov_head, FALSE );
+
+    /* If the expr_ids array has one or more elements, deallocate the array */
+    if( i > 0 ) {
+      free_safe( expr_ids );
+    }
+
+  } else {
+
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find functional unit %s in design", argv[1] );
+    Tcl_AddErrorInfo( tcl, user_msg );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    retval = TCL_ERROR;
+
+  }
+
+  free_safe( funit_name );
+
+  return( retval );
+
+}
+
+/*!
+ \param d     TBD
+ \param tcl   Pointer to the Tcl interpreter
+ \param argc  Number of arguments in the argv list
+ \param argv  Array of arguments passed to this function
+
+ \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
+         TCL_ERROR.
+
+ Populates the "fsm_states", "fsm_hit_states", "fsm_arcs", "fsm_hit_arcs", "fsm_in_state" and "fsm_out_state"
+ global variables with the FSM coverage information from the specified output state expression.
+*/
+int tcl_func_get_fsm_coverage( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+
+  int          retval = TCL_OK;  /* Return value for this function */
+  char*        funit_name;       /* Name of functional unit to get combinational logic coverage info for */
+  int          funit_type;       /* Type of functional unit to get combinational logic coverage info for */
+  int          expr_id;          /* Expression ID of output state expression */
+  int          width;            /* Width of output state expression */
+  char**       total_states;     /* String array containing all possible states for this FSM */
+  int          total_state_num;  /* Number of elements in the total_states array */
+  char**       hit_states;       /* String array containing hit states for this FSM */
+  int          hit_state_num;    /* Number of elements in the hit_states array */
+  char**       total_from_arcs;  /* String array containing all possible state transition input states */
+  char**       total_to_arcs;    /* String array containing all possible state transition output states */
+  int          total_arc_num;    /* Number of elements in both the total_from_arcs and total_to_arcs arrays */
+  char**       hit_from_arcs;    /* String array containing hit state transition input states */
+  char**       hit_to_arcs;      /* String array containing hit state transition output states */
+  int          hit_arc_num;      /* Number of elements in both the hit_from_arcs and hit_to_arcs arrays */
+  char**       input_state;      /* String containing the input state code */
+  int          input_size;       /* Number of elements in the input_state array */
+  char**       output_state;     /* String containing the output state code */
+  int          output_size;      /* Number of elements in the output_state array */
+  char         str[4096];        /* Temporary string container */
+  int          i;                /* Loop iterator */
+
+  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_type = atoi( argv[2] );
+  expr_id    = atoi( argv[3] );
+
+  if( fsm_get_coverage( funit_name, funit_type, expr_id, &width, &total_states, &total_state_num, &hit_states, &hit_state_num,
+                        &total_from_arcs, &total_to_arcs, &total_arc_num, &hit_from_arcs, &hit_to_arcs, &hit_arc_num,
+                        &input_state, &input_size, &output_state, &output_size ) ) {
+
+    /* Load FSM total states into Tcl */
+    for( i=0; i<total_state_num; i++ ) {
+      snprintf( str, 4096, "%d'h%s", width, total_states[i] );
+      Tcl_SetVar( tcl, "fsm_states", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+      free_safe( total_states[i] );
+    }
+
+    if( total_state_num > 0 ) {
+      free_safe( total_states );
+    }
+
+    /* Load FSM hit states into Tcl */
+    for( i=0; i<hit_state_num; i++ ) {
+      snprintf( str, 4096, "%d'h%s", width, hit_states[i] );
+      Tcl_SetVar( tcl, "fsm_hit_states", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+      free_safe( hit_states[i] );
+    }
+
+    if( hit_state_num > 0 ) {
+      free_safe( hit_states );
+    }
+
+    /* Load FSM total arcs into Tcl */
+    for( i=0; i<total_arc_num; i++ ) {
+      snprintf( str, 4096, "%d'h%s %d'h%s", width, total_from_arcs[i], width, total_to_arcs[i] );
+      Tcl_SetVar( tcl, "fsm_arcs", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+      free_safe( total_from_arcs[i] );
+      free_safe( total_to_arcs[i] );
+    }
+
+    if( total_arc_num > 0 ) {
+      free_safe( total_from_arcs );
+      free_safe( total_to_arcs );
+    }
+
+    /* Load FSM hit arcs into Tcl */
+    for( i=0; i<hit_arc_num; i++ ) {
+      snprintf( str, 4096, "%d'h%s %d'h%s", width, hit_from_arcs[i], width, hit_to_arcs[i] );
+      Tcl_SetVar( tcl, "fsm_hit_arcs", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+      free_safe( hit_from_arcs[i] );
+      free_safe( hit_to_arcs[i] );
+    }
+
+    if( hit_arc_num > 0 ) {
+      free_safe( hit_from_arcs );
+      free_safe( hit_to_arcs );
+    }
+
+    /* Load FSM input state into Tcl */
+    if( input_size > 0 ) {
+      Tcl_SetVar( tcl, "fsm_in_state", input_state[0], TCL_GLOBAL_ONLY );
+      for( i=0; i<input_size; i++ ) {
+        free_safe( input_state[i] );
+      }
+      free_safe( input_state );
+    }
+
+    /* Load FSM output state into Tcl */
+    if( output_size > 0 ) {
+      Tcl_SetVar( tcl, "fsm_out_state", output_state[0], TCL_GLOBAL_ONLY );
+      for( i=0; i<output_size; i++ ) {
+        free_safe( output_state[i] );
+      }
+      free_safe( output_state );
+    }
+
+  } else {
+
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find functional unit %s in design", argv[1] );
+    Tcl_AddErrorInfo( tcl, user_msg );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    retval = TCL_ERROR;
+
+  }
+
+  free_safe( funit_name );
+
+  return( retval );
+
+}
+
+/*!
+ \param d     TBD
+ \param tcl   Pointer to the Tcl interpreter
+ \param argc  Number of arguments in the argv list
+ \param argv  Array of arguments passed to this function
+
+ \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
+         TCL_ERROR.
+
  Opens the specified CDD file, reading its contents into the database.
 */
 int tcl_func_open_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
@@ -997,6 +1200,49 @@ int tcl_func_get_comb_summary( ClientData d, Tcl_Interp* tcl, int argc, const ch
 }
 
 /*!
+ \param d     TBD
+ \param tcl   Pointer to the Tcl interpreter
+ \param argc  Number of arguments in the argv list
+ \param argv  Array of arguments passed to this function
+
+ \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
+         TCL_ERROR.
+
+ Populates the global variables "fsm_summary_total" and "fsm_summary_hit" to the total number
+ of state transitions evaluated for FSM coverage and the total number of state transitions
+ with complete FSM state transition coverage for the specified functional unit.
+*/
+int tcl_func_get_fsm_summary( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+
+  int   retval = TCL_OK;  /* Return value for this function */
+  char* funit_name;       /* Name of functional unit to lookup */
+  int   funit_type;       /* Type of functional unit to lookup */
+  int   total;            /* Contains total number of expressions evaluated */
+  int   hit;              /* Contains total number of expressions hit */
+  char  value[20];        /* String version of a value */
+
+  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_type = atoi( argv[2] );
+
+  if( fsm_get_funit_summary( funit_name, funit_type, &total, &hit ) ) {
+    snprintf( value, 20, "%d", total );
+    Tcl_SetVar( tcl, "fsm_summary_total", value, TCL_GLOBAL_ONLY );
+    snprintf( value, 20, "%d", hit );
+    Tcl_SetVar( tcl, "fsm_summary_hit", value, TCL_GLOBAL_ONLY );
+  } else {
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find functional unit %s", funit_name );
+    Tcl_AddErrorInfo( tcl, user_msg );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    retval = TCL_ERROR;
+  }
+
+  free_safe( funit_name );
+
+  return( retval );
+
+}
+
+/*!
  \param tcl        Pointer to Tcl interpreter structure
  \param user_home  Name of user's home directory (used to store configuration file information to)
  \param home       Name of Tcl script home directory (from running the configure script)
@@ -1018,16 +1264,19 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
   Tcl_CreateCommand( tcl, "tcl_func_collect_uncovered_toggles", (Tcl_CmdProc*)(tcl_func_collect_uncovered_toggles), 0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_collect_covered_toggles",   (Tcl_CmdProc*)(tcl_func_collect_covered_toggles),   0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_collect_combs",             (Tcl_CmdProc*)(tcl_func_collect_combs),             0, 0 );
+  Tcl_CreateCommand( tcl, "tcl_func_collect_fsms",              (Tcl_CmdProc*)(tcl_func_collect_fsms),              0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_funit_start_and_end",   (Tcl_CmdProc*)(tcl_func_get_funit_start_and_end),   0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_toggle_coverage",       (Tcl_CmdProc*)(tcl_func_get_toggle_coverage),       0, 0 ); 
   Tcl_CreateCommand( tcl, "tcl_func_get_comb_expression",       (Tcl_CmdProc*)(tcl_func_get_comb_expression),       0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_comb_coverage",         (Tcl_CmdProc*)(tcl_func_get_comb_coverage),         0, 0 );
+  Tcl_CreateCommand( tcl, "tcl_func_get_fsm_coverage",          (Tcl_CmdProc*)(tcl_func_get_fsm_coverage),          0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_open_cdd",                  (Tcl_CmdProc*)(tcl_func_open_cdd),                  0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_replace_cdd",               (Tcl_CmdProc*)(tcl_func_replace_cdd),               0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_merge_cdd",                 (Tcl_CmdProc*)(tcl_func_merge_cdd),                 0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_line_summary",          (Tcl_CmdProc*)(tcl_func_get_line_summary),          0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_toggle_summary",        (Tcl_CmdProc*)(tcl_func_get_toggle_summary),        0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_comb_summary",          (Tcl_CmdProc*)(tcl_func_get_comb_summary),          0, 0 );
+  Tcl_CreateCommand( tcl, "tcl_func_get_fsm_summary",           (Tcl_CmdProc*)(tcl_func_get_fsm_summary),           0, 0 );
 
   /* Set the USER_HOME variable to location of user's home directory */
   Tcl_SetVar( tcl, "USER_HOME", user_home, TCL_GLOBAL_ONLY );
@@ -1048,6 +1297,11 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.32  2006/03/28 22:28:28  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.31  2006/03/27 23:25:30  phase1geo
  Updating development documentation for 0.4 stable release.
 

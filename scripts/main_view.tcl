@@ -6,6 +6,7 @@ source $HOME/scripts/cov_create.tcl
 source $HOME/scripts/process_file.tcl
 source $HOME/scripts/toggle.tcl
 source $HOME/scripts/comb.tcl
+source $HOME/scripts/fsm.tcl
 source $HOME/scripts/help.tcl
 source $HOME/scripts/summary.tcl
 source $HOME/scripts/preferences.tcl
@@ -197,6 +198,7 @@ proc highlight_listbox {} {
   global line_summary_total line_summary_hit
   global toggle_summary_total toggle_summary_hit
   global comb_summary_total comb_summary_hit
+  global fsm_summary_total fsm_summary_hit
 
   if {$file_name != 0} {
 
@@ -213,6 +215,8 @@ proc highlight_listbox {} {
         tcl_func_get_comb_summary [lindex $funit_names $i] [lindex $funit_types $i]
         set fully_covered [expr $comb_summary_total == $comb_summary_hit]
       } elseif {$cov_rb == "fsm"} {
+        tcl_func_get_fsm_summary [lindex $funit_names $i] [lindex $funit_types $i]
+        set fully_covered [expr $fsm_summary_total == $fsm_summary_hit]
       } else {
         # ERROR
       }
@@ -432,6 +436,9 @@ proc update_all_windows {} {
 
   # Update the combinational logic window
   update_comb
+
+  # Update the FSM window
+  update_fsm
 
 }
 

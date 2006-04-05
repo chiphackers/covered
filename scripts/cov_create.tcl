@@ -71,16 +71,33 @@ proc cov_create {f} {
       .bot.right.txt xview moveto [lindex $text_x 0]
       .bot.right.txt yview moveto [lindex $text_y 0]
     }
+  }
+  radiobutton $f.m.assert -variable cov_rb -value assert -text "Assert" -command {
+    if {$file_name != 0} {
+      set text_x [.bot.right.txt xview]
+      set text_y [.bot.right.txt yview]
+      if {$last_cov_rb != $cov_rb} {
+        set last_cov_rb $cov_rb
+        highlight_listbox
+        process_funit_assert_cov
+        update_all_windows
+      } else {
+        display_assert_cov
+      }
+      .bot.right.txt xview moveto [lindex $text_x 0]
+      .bot.right.txt yview moveto [lindex $text_y 0]
+    }
   } -state disabled
 
   # Cause line coverage to be the default
   $f.m.line select
 
   # Pack radiobuttons
-  pack $f.m.line -side left
-  pack $f.m.tog  -side left
-  pack $f.m.comb -side left
-  pack $f.m.fsm  -side left
+  pack $f.m.line   -side left
+  pack $f.m.tog    -side left
+  pack $f.m.comb   -side left
+  pack $f.m.fsm    -side left
+  pack $f.m.assert -side left
 
   # Create summary frame and widgets
   frame $f.s -relief raised -borderwidth 1
@@ -112,7 +129,11 @@ proc cov_display_summary {hit total} {
   } elseif {$cov_rb == "comb"} {
     set info "$hit out of $total logical combinations hit"
   } elseif {$cov_rb == "fsm"} {
-    set info "$hit out of $total FSM states hit"
+    if {$total == -1} {
+      set info "$hit FSM state transitions hit"
+    } else {
+      set info "$hit out of $total FSM state transitions hit"
+    }
   } else {
   }
 

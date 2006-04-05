@@ -3,6 +3,7 @@ tcl_SCRIPTS = banner.gif \
               cdd_view.tcl \
               comb.tcl \
               cov_create.tcl \
+              fsm.tcl \
               help.tcl \
               main_view.tcl \
               menu_create.tcl \

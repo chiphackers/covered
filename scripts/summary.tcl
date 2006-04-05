@@ -138,7 +138,7 @@ proc populate_summary { w } {
   global line_summary_hit line_summary_total line_low_limit
   global toggle_summary_hit toggle_summary_total toggle_low_limit
   global comb_summary_hit comb_summary_total comb_low_limit
-  global fsm_low_limit
+  global fsm_summary_hit fsm_summary_total fsm_low_limit
   global summary_sort
 
   for {set i 0} {$i < [llength $funit_names]} {incr i} {
@@ -160,7 +160,8 @@ proc populate_summary { w } {
       set total     $comb_summary_total
       set low_limit $comb_low_limit
     } elseif {$cov_rb == "fsm"} {
-      set percent 0
+      set hit       $fsm_summary_hit
+      set total     $fsm_summary_total
       set low_limit $fsm_low_limit
     } else {
       ;# ERROR
@@ -169,6 +170,8 @@ proc populate_summary { w } {
     ;# Calculate hit percent
     if {$total == 0} {
       set percent 100
+    } elseif {$total < 0} {
+      set percent " ? "
     } else {
       set percent [expr round((($hit * 1.0) / $total) * 100)]
     }
