@@ -43,6 +43,8 @@ Report command
 
    1.  Add assertion coverage
 
+   2.  Add ability to see combinational logic output on a bit-by-bit basis for bussed expressions.
+
 
 Miscellaneous
 -------------
@@ -53,7 +55,7 @@ IP 1.  Add regression that produces known, achievable error conditions in the co
 GUI
 ---
 
-   1.  Add FSM coverage output
+X  1.  Add FSM coverage output
 
    2.  Add ability to turn on/off coverage points and have coverage information automatically adjusted.
 
