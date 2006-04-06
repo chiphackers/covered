@@ -308,7 +308,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM AWK SET_MAKE CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE RANLIB ac_ct_RANLIB XGPERF TCLTK_LIBS TCLTK_CPPFLAGS TCL_CONFIG TK_CONFIG CPP EGREP X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS use_tcltk COVERED_BROWSER LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM AWK SET_MAKE CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE RANLIB ac_ct_RANLIB XGPERF TCLTK_LIBS TCLTK_CPPFLAGS TCL_CONFIG TK_CONFIG CPP EGREP X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS use_tcltk COVERED_BROWSER IVLIB VCSLIB CVERLIB LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -869,6 +869,16 @@ Optional Packages:
   --with-tk-config=TK_CONFIG
                           specify location of tkConfig.sh []
   --with-x                use the X Window System
+  --with-iv=IV_INCLUDE_DIR
+                          Create covered.vpi module for the Icarus Verilog
+                          simulator with the specified include directory
+                          []
+  --with-vcs=VCS_INCLUDE_DIR
+                          Create covered.vcs.so file for the VCS simulator
+                          with the specified include directory []
+  --with-cver=CVER_INCLUDE_DIR
+                          Create covered.cver.so file for the CVER simulator
+                          with the specified include directory []
 
 Some influential environment variables:
   CC          C compiler command
@@ -5721,6 +5731,67 @@ if test "${enable_debug+set}" = set; then
   CFLAGS="$CFLAGS -DDEBUG_MODE"
 fi;
 
+## Simulators supported
+
+# Check whether --with-iv or --without-iv was given.
+if test "${with_iv+set}" = set; then
+  withval="$with_iv"
+  if test "${withval}" = no; then
+  want_iv=no
+elif test "${withval}" = yes; then
+  want_iv=yes
+else
+  want_iv=yes
+  iv_prefix="${withval}"
+fi
+else
+  want_iv=no
+fi;
+if test "$want_iv" = yes; then
+  IVLIB='covered.vpi${EXEEXT}'
+
+fi
+
+
+# Check whether --with-vcs or --without-vcs was given.
+if test "${with_vcs+set}" = set; then
+  withval="$with_vcs"
+  if test "${withval}" = no; then
+  want_vcs=no
+elif test "${withval}" = yes; then
+  want_vcs=yes
+else
+  want_vcs=yes
+  vcs_prefix="${withval}"
+fi
+else
+  want_vcs=no
+fi;
+if test "$want_vcs" = yes; then
+  VCSLIB='covered.vcs.so${EXEEXT}'
+
+fi
+
+
+# Check whether --with-cver or --without-cver was given.
+if test "${with_cver+set}" = set; then
+  withval="$with_cver"
+  if test "${withval}" = no; then
+  want_cver=no
+elif test "${withval}" = yes; then
+  want_cver=yes
+else
+  want_cver=yes
+  cver_prefix="${withval}"
+fi
+else
+  want_cver=no
+fi;
+if test "$want_cver" = yes; then
+  CVERLIB='covered.cver.so${EXEEXT}'
+
+fi
+
 
 for ac_header in string.h
 do
@@ -7468,7 +7539,7 @@ _ACEOF
 fi
 
 
-                                                            ac_config_files="$ac_config_files Makefile src/Makefile scripts/Makefile doc/Makefile doc/user/Makefile doc/gui/Makefile"
+                                                                      ac_config_files="$ac_config_files Makefile src/Makefile lib/Makefile scripts/Makefile doc/Makefile doc/user/Makefile doc/gui/Makefile"
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -8012,6 +8083,7 @@ do
   # Handling of arguments.
   "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile" ;;
   "src/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
+  "lib/Makefile" ) CONFIG_FILES="$CONFIG_FILES lib/Makefile" ;;
   "scripts/Makefile" ) CONFIG_FILES="$CONFIG_FILES scripts/Makefile" ;;
   "doc/Makefile" ) CONFIG_FILES="$CONFIG_FILES doc/Makefile" ;;
   "doc/user/Makefile" ) CONFIG_FILES="$CONFIG_FILES doc/user/Makefile" ;;
@@ -8149,6 +8221,9 @@ s,@X_LIBS@,$X_LIBS,;t t
 s,@X_EXTRA_LIBS@,$X_EXTRA_LIBS,;t t
 s,@use_tcltk@,$use_tcltk,;t t
 s,@COVERED_BROWSER@,$COVERED_BROWSER,;t t
+s,@IVLIB@,$IVLIB,;t t
+s,@VCSLIB@,$VCSLIB,;t t
+s,@CVERLIB@,$CVERLIB,;t t
 s,@LIBOBJS@,$LIBOBJS,;t t
 s,@LTLIBOBJS@,$LTLIBOBJS,;t t
 CEOF

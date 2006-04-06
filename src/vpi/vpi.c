@@ -1116,12 +1116,14 @@ void vpi_generate_top_module( char* vpi_file, char* output_db, char* top_inst ) 
 
 }
 
-#ifdef CVER
+#ifndef VCS
 void (*vlog_startup_routines[])() = {
 	covered_register,
 	0
 };
+#endif
 
+#ifdef CVER
 void vpi_compat_bootstrap(void)
 {
  int i;

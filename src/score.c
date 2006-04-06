@@ -42,6 +42,7 @@
 #include "fsm_var.h"
 #include "info.h"
 #include "perf.h"
+#include "vpi.h"
 
 
 char* top_module             = NULL;                /*!< Name of top-level module to score */
@@ -89,13 +90,11 @@ void score_usage() {
   printf( "      will be displayed if both options are present on the command-line.\n" );
   printf( "\n" );
   printf( "   Options:\n" );
-#ifdef TBD
   printf( "      -vpi (<name>)                Generates Verilog module called <name> which contains code to\n" );
   printf( "                                    allow Covered to run as a VPI during simulation.  If <name>\n" );
   printf( "                                    is not specified, the module file is called %s\n", DFLT_VPI_NAME );
   printf( "                                    If the -vcd option is specified along with this option, this\n" );
   printf( "                                    option will not be used.\n" );
-#endif
   printf( "      -i <instance_name>           Verilog hierarchical scope of top-level module to score.\n" );
   printf( "                                    Necessary if module to verify coverage is not the top-level\n" );
   printf( "                                    module in the design.  If not specified, -t value is used.\n" );
@@ -138,6 +137,55 @@ void score_usage() {
   printf( "\n" );
 
 }
+
+/*!
+ \param vpi_file   Name of VPI module to create
+ \param output_db  Name of output CDD database file
+ \param top_inst   Name of top-level instance
+
+ \return Returns TRUE if specified filename was written without error; otherwise, returns FALSE.
+
+ Creates a Verilog file that calls the Covered VPI system task.
+*/
+void score_generate_top_vpi_module( char* vpi_file, char* output_db, char* top_inst ) {
+
+  FILE* vfile;     /* File handle to VPI top-level module */
+  char* mod_name;  /* Name of VPI module */
+  char* ext;       /* Extension of VPI module */
+
+  /* Extract the name of the module from the given filename */
+  mod_name = strdup_safe( vpi_file, __FILE__, __LINE__ );
+  ext      = strdup_safe( vpi_file, __FILE__, __LINE__ );
+  scope_extract_front( vpi_file, mod_name, ext );
+
+  if( ext[0] != '\0' ) {
+
+    if( (vfile = fopen( vpi_file, "w" )) != NULL ) {
+  
+      fprintf( vfile, "module %s;\ninitial $covered_sim( \"%s\", %s );\nendmodule\n", mod_name, output_db, top_inst );
+      fclose( vfile );
+
+    } else {
+
+      snprintf( user_msg, USER_MSG_LENGTH, "Unable to open %s for writing", vpi_file );
+      print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      exit( 1 );
+
+    }
+
+  } else {
+
+    print_output( "Specified -vpi filename did not contain a file extension", FATAL, __FILE__, __LINE__ );
+    exit( 1 );
+
+  }
+
+  /* Deallocate memory */
+  free_safe( mod_name );
+  free_safe( ext );
+
+}
+
 /*!
  \param cmd_file Name of file to read commands from.
  \param arg_list List of arguments found in specified command file.
@@ -356,7 +404,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
     } else if( strncmp( "-vpi", argv[i], 4 ) == 0 ) {
 
       i++;
-      if( argv[i][0] != '-' ) {
+      if( (i < argc) && (argv[i][0] != '-') ) {
         vpi_file = strdup_safe( argv[i], __FILE__, __LINE__ );
       } else {
         vpi_file = strdup_safe( DFLT_VPI_NAME, __FILE__, __LINE__ );
@@ -500,9 +548,9 @@ int command_score( int argc, int last_arg, char** argv ) {
     /* Generate VPI-based top module */
     if( vpi_file != NULL ) {
 
-      snprintf( user_msg, USER_MSG_LENGTH, "Outputting VPI file %s.v...", vpi_file );
+      snprintf( user_msg, USER_MSG_LENGTH, "Outputting VPI file %s...", vpi_file );
       print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-      // vpi_generate_top_module( vpi_file, output_db, top_instance );
+      score_generate_top_vpi_module( vpi_file, output_db, top_instance );
 
     /* Read dumpfile and score design */
     } else if( dump_mode != DUMP_FMT_NONE ) {
@@ -560,6 +608,11 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.65  2006/04/05 15:19:18  phase1geo
+ Adding support for FSM coverage output in the GUI.  Started adding components
+ for assertion coverage to GUI and report functions though there is no functional
+ support for this at this time.
+
  Revision 1.64  2006/03/28 22:28:28  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

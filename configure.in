@@ -60,6 +60,55 @@ COVERED_PROG_BROWSER
 dnl Specify debug enabling
 COVERED_DEBUG
 
+## Simulators supported
+AC_ARG_WITH([iv],
+[AC_HELP_STRING([--with-iv=IV_INCLUDE_DIR],
+                [Create covered.vpi module for the Icarus Verilog simulator with the specified include directory @<:@@:>@])],
+[if test "${withval}" = no; then
+  want_iv=no
+elif test "${withval}" = yes; then
+  want_iv=yes
+else
+  want_iv=yes
+  iv_prefix="${withval}"
+fi],
+[want_iv=no])
+if test "$want_iv" = yes; then
+  AC_SUBST([IVLIB], ['covered.vpi${EXEEXT}'])
+fi
+
+AC_ARG_WITH([vcs],
+[AC_HELP_STRING([--with-vcs=VCS_INCLUDE_DIR],
+                [Create covered.vcs.so file for the VCS simulator with the specified include directory @<:@@:>@])],
+[if test "${withval}" = no; then
+  want_vcs=no
+elif test "${withval}" = yes; then
+  want_vcs=yes
+else
+  want_vcs=yes
+  vcs_prefix="${withval}"
+fi],
+[want_vcs=no])
+if test "$want_vcs" = yes; then
+  AC_SUBST([VCSLIB], ['covered.vcs.so${EXEEXT}'])
+fi
+
+AC_ARG_WITH([cver],
+[AC_HELP_STRING([--with-cver=CVER_INCLUDE_DIR],
+                [Create covered.cver.so file for the CVER simulator with the specified include directory @<:@@:>@])],
+[if test "${withval}" = no; then
+  want_cver=no
+elif test "${withval}" = yes; then
+  want_cver=yes
+else
+  want_cver=yes
+  cver_prefix="${withval}"
+fi],
+[want_cver=no])
+if test "$want_cver" = yes; then
+  AC_SUBST([CVERLIB], ['covered.cver.so${EXEEXT}'])
+fi
+
 dnl AC_CHECK_HEADERS(getopt.h)
 AC_CHECK_HEADERS(string.h)
 AC_CHECK_HEADERS(sys/times.h)
@@ -80,7 +129,7 @@ dnl Checks for library functions.
 AC_TYPE_SIGNAL
 AC_TYPE_SIZE_T
 
-AC_OUTPUT(Makefile src/Makefile scripts/Makefile doc/Makefile doc/user/Makefile doc/gui/Makefile)
+AC_OUTPUT(Makefile src/Makefile lib/Makefile scripts/Makefile doc/Makefile doc/user/Makefile doc/gui/Makefile)
 
 if test -n "${warn_tcltk_version}"; then
   AC_MSG_WARN([${warn_tcltk_version}])
