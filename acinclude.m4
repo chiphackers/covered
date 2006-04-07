@@ -389,4 +389,4 @@ AC_DEFINE_UNQUOTED(COVERED_BROWSER, "$COVERED_BROWSER", [Browser to view help pa
 AC_DEFUN([COVERED_DEBUG],
 [AC_ARG_ENABLE(debug,
                AC_HELP_STRING([--enable-debug],[Enables debugging output to be generated]),
-               CFLAGS="$CFLAGS -DDEBUG_MODE")])
+               AC_SUBST([DEBUGDEF],["-DDEBUG_MODE"]))])

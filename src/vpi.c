@@ -37,7 +37,6 @@
 char        in_db_name[1024];
 char        out_db_name[1024];
 int         last_time            = -1;
-funit_inst* vpi_curr_funit       = NULL;
 
 /* These are needed for compile purposes only */
 char*       merge_in0            = NULL;
@@ -70,7 +69,7 @@ extern int          vcd_symtab_size;
 extern symtable**   timestep_tab;
 extern char*        curr_inst_scope;
 extern funit_inst*  curr_instance;
-extern char*        user_msg[USER_MSG_LENGTH];
+extern char         user_msg[USER_MSG_LENGTH];
 
 
 PLI_INT32 covered_value_change( p_cb_data cb ) {
@@ -81,9 +80,10 @@ PLI_INT32 covered_value_change( p_cb_data cb ) {
   value.format = vpiBinStrVal;
   vpi_get_value( cb->obj, &value );
 
-#ifdef VPI_DEBUG
-  vpi_printf( "In covered_value_change, name: %s, time: %d, value: %s\n",
-              vpi_get_str( vpiFullName, cb->obj ), cb->time->low, value.value.str );
+#ifdef DEBUG_MODE
+  snprintf( user_msg, USER_MSG_LENGTH, "In covered_value_change, name: %s, time: %d, value: %s",
+            vpi_get_str( vpiFullName, cb->obj ), cb->time->low, value.value.str );
+  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
   if( cb->time->low != last_time ) {
@@ -102,10 +102,6 @@ PLI_INT32 covered_value_change( p_cb_data cb ) {
 
 PLI_INT32 covered_end_of_sim( p_cb_data cb ) {
 
-#ifdef VPI_DEBUG
-  vpi_printf( "At end of simulation, writing CDD contents\n" );
-#endif
-
   /* Flush any pending statement trees that are waiting for delay */
   db_do_timestep( -1 );
 
@@ -114,7 +110,7 @@ PLI_INT32 covered_end_of_sim( p_cb_data cb ) {
 
   /* Write contents to database file */
   if( !db_write( out_db_name, FALSE ) ) {
-    vpi_printf( "Unable to write database file" );
+    vpi_printf( "covered VPI: Unable to write database file" );
     exit( 1 );
   } else {
     vpi_printf( "covered VPI:  Output coverage information to %s\n", out_db_name );
@@ -149,12 +145,12 @@ PLI_INT32 covered_cb_error_handler( p_cb_data cb ) {
     strcpy( s1, "**unknown**" );
   }
 
-  vpi_printf( "**ERR(%s) %s (level %d) at **%s(%d):\n  %s\n",
+  vpi_printf( "covered VPI: ERR(%s) %s (level %d) at **%s(%d):\n  %s\n",
     einfop->code, s1, einfop->level, einfop->file, einfop->line, einfop->message );
 
   /* If serious error give up */
   if( (einfop->level == vpiError) || (einfop->level == vpiSystem) || (einfop->level == vpiInternal) ) {
-    vpi_printf( "**FATAL: encountered error - giving up\n" );
+    vpi_printf( "covered VPI: FATAL: encountered error - giving up\n" );
     vpi_control( vpiFinish, 0 );
   }
 
@@ -193,15 +189,17 @@ void covered_create_value_change_cb( vpiHandle sig ) {
 
   /* Find current signal in coverage database */
   vsig.name = vpi_get_str( vpiName, sig );
-  if( (vsigl = sig_link_find( &vsig, vpi_curr_funit->funit->sig_head )) != NULL ) {
 
-#ifdef VPI_DEBUG
-    vpi_printf( "In covered_create_value_change_cb, adding callback for signal: %s\n", vsigl->sig->name );
+  if( (vsigl = sig_link_find( &vsig, curr_instance->funit->sig_head )) != NULL ) {
+
+#ifdef DEBUG_MODE
+    snprintf( user_msg, USER_MSG_LENGTH, "Adding callback for signal: %s", vsigl->sig->name );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
     /* Generate new symbol */
     if( (symbol = gen_next_symbol()) == NULL ) {
-      vpi_printf( "INTERNAL ERROR:  Unable to generate unique symbol name\n" );
+      vpi_printf( "covered VPI: INTERNAL ERROR:  Unable to generate unique symbol name\n" );
       /* Need to increase number of characters in symbol array */
       vpi_control( vpiFinish, 0 );
     }
@@ -235,32 +233,34 @@ void covered_parse_task_func( vpiHandle mod ) {
 
   vpiHandle   iter, handle;
   vpiHandle   liter, scope;
-  funit_inst* tmp_funit;
 	
   /* Parse all internal scopes for tasks and functions */
   if( (iter = vpi_iterate( vpiInternalScope, mod )) != NULL ) {
 
     while( (scope = vpi_scan( iter )) != NULL ) {
       
-#ifdef VPI_DEBUG
-      vpi_printf( "Parsing task/function %s\n", vpi_get_str( vpiFullName, scope ) );
+#ifdef DEBUG_MODE
+      snprintf( user_msg, USER_MSG_LENGTH, "Parsing task/function %s", vpi_get_str( vpiFullName, scope ) );
+      print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
-      tmp_funit = vpi_curr_funit;
+      /* Set current scope in database */
+      if( curr_inst_scope != NULL ) {
+        free_safe( curr_inst_scope );
+      }
+      curr_inst_scope = strdup_safe( vpi_get_str( vpiFullName, scope ), __FILE__, __LINE__ );
 
-      if( (vpi_curr_funit = instance_find_scope( instance_root, vpi_get_str( vpiFullName, scope ) )) != NULL ) {
+      /* Synchronize curr_instance to point to curr_inst_scope */
+      db_sync_curr_instance();
 
-        /* Set current scope in database */
-        if( curr_inst_scope != NULL ) {
-          free_safe( curr_inst_scope );
-        }
-        curr_inst_scope = strdup_safe( vpi_get_str( vpiFullName, scope ), __FILE__, __LINE__ );
+      if( curr_instance != NULL ) {
 
         /* Parse signals */
         if( (liter = vpi_iterate( vpiReg, scope )) != NULL ) {
           while( (handle = vpi_scan( liter )) != NULL ) {
-#ifdef VPI_DEBUG
-            vpi_printf( "  Found reg %s\n", vpi_get_str( vpiFullName, handle ) );
+#ifdef DEBUG_MODE
+            snprintf( user_msg, USER_MSG_LENGTH, "Found reg %s", vpi_get_str( vpiFullName, handle ) );
+            print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
             covered_create_value_change_cb( handle );
           }
@@ -275,8 +275,6 @@ void covered_parse_task_func( vpiHandle mod ) {
 
       }
 
-      vpi_curr_funit = tmp_funit;
- 
     }
 
   }
@@ -292,8 +290,9 @@ void covered_parse_signals( vpiHandle mod ) {
 
     while( (handle = vpi_scan( iter )) != NULL ) {
 
-#ifdef VPI_DEBUG
-      vpi_printf( "  Found net: %s\n", vpi_get_str( vpiName, handle ) );
+#ifdef DEBUG_MODE
+      snprintf( user_msg, USER_MSG_LENGTH, "Found net: %s", vpi_get_str( vpiName, handle ) );
+      print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
       covered_create_value_change_cb( handle );
@@ -307,8 +306,9 @@ void covered_parse_signals( vpiHandle mod ) {
 
     while( (handle = vpi_scan( iter )) != NULL ) {
 
-#ifdef VPI_DEBUG
-      vpi_printf( "  Found reg: %s\n", vpi_get_str( vpiName, handle ) );
+#ifdef DEBUG_MODE
+      snprintf( user_msg, USER_MSG_LENGTH, "Found reg: %s", vpi_get_str( vpiName, handle ) );
+      print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
       covered_create_value_change_cb( handle );
@@ -321,25 +321,30 @@ void covered_parse_signals( vpiHandle mod ) {
 
 void covered_parse_instance( vpiHandle inst ) {
 
-  vpiHandle  iter, handle;
-  PLI_BYTE8* funit_path = vpi_get_str( vpiFullName, inst );
+  vpiHandle iter, handle;
 
-  /* Find current module in stored design */
-  if( (vpi_curr_funit = instance_find_scope( instance_root, (char*)funit_path )) != NULL ) {
+  /* Set current scope in database */
+  if( curr_inst_scope != NULL ) {
+    free_safe( curr_inst_scope );
+  }
+  curr_inst_scope = strdup_safe( vpi_get_str( vpiFullName, inst ), __FILE__, __LINE__ );
 
-#ifdef VPI_DEBUG
-    vpi_printf( "Found module to be covered: %s, full name: %s\n", vpi_get_str( vpiName, inst ), funit_path );
+  /* Synchronize curr_instance to point to curr_inst_scope */
+  db_sync_curr_instance();
+
+  /* If current instance is known, parse this instance */
+  if( curr_instance != NULL ) {
+
+#ifdef DEBUG_MODE
+    snprintf( user_msg, USER_MSG_LENGTH, "Found module to be covered: %s, hierarchy: %s", vpi_get_str( vpiName, inst ), curr_inst_scope );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
-    /* Set database curr_instance */
-    curr_instance      = vpi_curr_funit;
+    /*
+     Set one_instance_found to TRUE to indicate that we were successful in
+     matching our design to the actual design
+    */
     one_instance_found = TRUE;
-
-    /* Set current scope in database */
-    if( curr_inst_scope != NULL ) {
-      free_safe( curr_inst_scope );
-    }
-    curr_inst_scope = strdup_safe( vpi_get_str( vpiFullName, inst ), __FILE__, __LINE__ );
 
     /* Parse all signals */
     covered_parse_signals( inst );
@@ -349,6 +354,7 @@ void covered_parse_instance( vpiHandle inst ) {
 
   }
 
+  /* Search children modules */
   if( (iter = vpi_iterate( vpiModule, inst )) != NULL ) {
 
     while( (handle = vpi_scan( iter )) != NULL ) {
@@ -367,11 +373,6 @@ PLI_INT32 covered_sim_calltf( PLI_BYTE8* name ) {
   p_cb_data       cb;
   int             i;
   char*           argvptr;
-
-#ifdef VPI_DEBUG
-  vpi_printf( "In covered_sim_calltf, name: %s\n", name );
-  debug_mode = TRUE;
-#endif
 
   systf_handle = vpi_handle( vpiSysTfCall, NULL );
   arg_iterator = vpi_iterate( vpiArgument, systf_handle );
@@ -406,7 +407,7 @@ PLI_INT32 covered_sim_calltf( PLI_BYTE8* name ) {
     strcpy( in_db_name, data.value.str );
   }
 
-  /* Get name of CDD database to write to (default is cov.cdd) */
+  /* Get name of CDD database to write to (default is cov.cdd) and debug mode */
   strcpy( out_db_name, "cov.cdd" );
   if( vpi_get_vlog_info( &info ) ) {
     for( i=1; i<info.argc; i++ ) {
@@ -414,23 +415,22 @@ PLI_INT32 covered_sim_calltf( PLI_BYTE8* name ) {
       if( strncmp( "+covered_cdd=", argvptr, 13 ) == 0 ) {
         argvptr += 13;
         strcpy( out_db_name, argvptr );
+      } else if( strncmp( "+covered_debug", argvptr, 14 ) == 0 ) {
+        vpi_printf( "covered VPI: Turning debug mode on\n" );
+        debug_mode = TRUE;
       }
     }
   }
-
-#ifdef VPI_DEBUG
-  vpi_printf( "========  Reading in database %s  ========\n", in_db_name );
-#endif
 
   /* Initialize all global information variables */
   info_initialize();
     
   /* Read in contents of specified database file */
   if( !db_read( in_db_name, READ_MODE_MERGE_NO_MERGE ) ) {
-    vpi_printf( "Unable to read database file" );
+    vpi_printf( "covered VPI: Unable to read database file" );
     exit( 1 );
   } else {
-    vpi_printf( "covered VPI:  Read design information from %s\n", in_db_name );
+    vpi_printf( "covered VPI: Read design information from %s\n", in_db_name );
   }
 
   /* Bind expressions to signals/functional units */
@@ -451,10 +451,6 @@ PLI_INT32 covered_sim_calltf( PLI_BYTE8* name ) {
   if( vcd_symtab_size > 0 ) {
     timestep_tab = malloc_safe_nolimit( (sizeof( symtable*) * vcd_symtab_size), __FILE__, __LINE__ );
   }
-
-#ifdef VPI_DEBUG
-  vpi_printf( "\n*************************************************************\n\n" );
-#endif
 
   return 0;
 

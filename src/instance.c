@@ -269,6 +269,7 @@ funit_inst* instance_find_scope( funit_inst* root, char* scope ) {
   assert( root != NULL );
 
   /* Strip root name from scope */
+  printf( "scope: %s, root->name: %s\n", scope, root->name );
   if( strncmp( scope, root->name, strlen( root->name ) ) == 0 ) {
     
     strcpy( tmp_scope, scope );
@@ -690,6 +691,11 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.40  2006/03/28 22:28:27  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.39  2006/02/17 19:50:47  phase1geo
  Added full support for escaped names.  Full regression passes.
 

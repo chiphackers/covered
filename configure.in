@@ -91,6 +91,7 @@ fi],
 [want_vcs=no])
 if test "$want_vcs" = yes; then
   AC_SUBST([VCSLIB], ['covered.vcs.so${EXEEXT}'])
+  AC_SUBST([VCSINC], ["${vcs_prefix}"])
 fi
 
 AC_ARG_WITH([cver],
@@ -107,6 +108,7 @@ fi],
 [want_cver=no])
 if test "$want_cver" = yes; then
   AC_SUBST([CVERLIB], ['covered.cver.so${EXEEXT}'])
+  AC_SUBST([CVERINC], ["${cver_prefix}"])
 fi
 
 dnl AC_CHECK_HEADERS(getopt.h)

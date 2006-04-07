@@ -143,8 +143,6 @@ void score_usage() {
  \param output_db  Name of output CDD database file
  \param top_inst   Name of top-level instance
 
- \return Returns TRUE if specified filename was written without error; otherwise, returns FALSE.
-
  Creates a Verilog file that calls the Covered VPI system task.
 */
 void score_generate_top_vpi_module( char* vpi_file, char* output_db, char* top_inst ) {
@@ -162,12 +160,58 @@ void score_generate_top_vpi_module( char* vpi_file, char* output_db, char* top_i
 
     if( (vfile = fopen( vpi_file, "w" )) != NULL ) {
   
-      fprintf( vfile, "module %s;\ninitial $covered_sim( \"%s\", %s );\nendmodule\n", mod_name, output_db, top_inst );
+      fprintf( vfile, "`timescale 1 ns / 1 ps\nmodule %s;\ninitial $covered_sim( \"%s\", %s );\nendmodule\n", mod_name, output_db, top_inst );
       fclose( vfile );
 
     } else {
 
       snprintf( user_msg, USER_MSG_LENGTH, "Unable to open %s for writing", vpi_file );
+      print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      exit( 1 );
+
+    }
+
+  } else {
+
+    print_output( "Specified -vpi filename did not contain a file extension", FATAL, __FILE__, __LINE__ );
+    exit( 1 );
+
+  }
+
+  /* Deallocate memory */
+  free_safe( mod_name );
+  free_safe( ext );
+
+}
+
+/*!
+ \param tab_file  Name of PLI tab file to create
+ \param top_mod   Name of top-level module
+
+ Creates a PLI table file.
+*/
+void score_generate_pli_tab_file( char* tab_file, char* top_mod ) {
+
+  FILE* tfile;     /* File handle of VPI tab file - only necessary for VCS */
+  char* mod_name;  /* Name of VPI module */
+  char* ext;       /* Extension of VPI module */
+
+  /* Extract the name of the module from the given filename */
+  mod_name = (char*)malloc_safe( strlen( tab_file ) + 5, __FILE__, __LINE__ );
+  ext      = strdup_safe( tab_file, __FILE__, __LINE__ );
+  scope_extract_front( tab_file, mod_name, ext );
+
+  if( ext[0] != '\0' ) {
+
+    strcat( mod_name, ".tab" );
+    if( (tfile = fopen( mod_name, "w" )) != NULL ) {
+
+      fprintf( tfile, "$covered_sim  call=covered_sim_calltf  acc+=r,cbk:%s+\n", top_mod );
+      fclose( tfile );
+
+    } else {
+  
+      snprintf( user_msg, USER_MSG_LENGTH, "Unable to open %s for writing", mod_name );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       exit( 1 );
 
@@ -195,13 +239,13 @@ void score_generate_top_vpi_module( char* vpi_file, char* output_db, char* top_i
 */
 bool read_command_file( char* cmd_file, char*** arg_list, int* arg_num ) {
 
-  bool      retval  = TRUE;  /* Return value for this function      */
+  bool      retval  = TRUE;  /* Return value for this function */
   str_link* head    = NULL;  /* Pointer to head element of arg list */
   str_link* tail    = NULL;  /* Pointer to tail element of arg list */
-  FILE*     cmd_handle;      /* Pointer to command file             */
-  char      tmp_str[1024];   /* Temporary holder for read argument  */
+  FILE*     cmd_handle;      /* Pointer to command file */
+  char      tmp_str[1024];   /* Temporary holder for read argument */
   str_link* curr;            /* Pointer to current str_link element */
-  int       tmp_num = 0;     /* Temporary argument number holder    */
+  int       tmp_num = 0;     /* Temporary argument number holder */
 
   if( file_exists( cmd_file ) ) {
 
@@ -272,11 +316,11 @@ bool read_command_file( char* cmd_file, char*** arg_list, int* arg_num ) {
 */
 bool score_parse_args( int argc, int last_arg, char** argv ) {
 
-  bool   retval  = TRUE;          /* Return value for this function                */
-  int    i       = last_arg + 1;  /* Loop iterator                                 */
-  char** arg_list;                /* List of command_line arguments                */
-  int    arg_num;                 /* Number of arguments in arg_list               */
-  int    j;                       /* Loop iterator 2                               */
+  bool   retval  = TRUE;          /* Return value for this function */
+  int    i       = last_arg + 1;  /* Loop iterator */
+  char** arg_list;                /* List of command_line arguments */
+  int    arg_num;                 /* Number of arguments in arg_list */
+  int    j;                       /* Loop iterator */
   char*  ptr;                     /* Pointer to current character in defined value */
 
   while( (i < argc) && retval ) {
@@ -551,6 +595,7 @@ int command_score( int argc, int last_arg, char** argv ) {
       snprintf( user_msg, USER_MSG_LENGTH, "Outputting VPI file %s...", vpi_file );
       print_output( user_msg, NORMAL, __FILE__, __LINE__ );
       score_generate_top_vpi_module( vpi_file, output_db, top_instance );
+      score_generate_pli_tab_file( vpi_file, top_module );
 
     /* Read dumpfile and score design */
     } else if( dump_mode != DUMP_FMT_NONE ) {
@@ -608,6 +653,10 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.66  2006/04/06 22:30:03  phase1geo
+ Adding VPI capability back and integrating into autoconf/automake scheme.  We
+ are getting close but still have a ways to go.
+
  Revision 1.65  2006/04/05 15:19:18  phase1geo
  Adding support for FSM coverage output in the GUI.  Started adding components
  for assertion coverage to GUI and report functions though there is no functional

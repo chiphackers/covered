@@ -32,24 +32,21 @@ libcovered_a_SOURCES = ../src/arc.c \
                        ../src/vsignal.c
 
 INCLUDES=	-I..
-AM_CPPFLAGS=-DVPI_ONLY -DINSTALL_DIR=\"@datadir@/covered\" $(TCLTK_CPPFLAGS)
+AM_CPPFLAGS=-DVPI_ONLY -DINSTALL_DIR=\"@datadir@/covered\" $(TCLTK_CPPFLAGS) $(DEBUGDEF)
 
 covered.vcs.so: vpi.vcs.o libcovered.a
-	ld -G -shared -export-dynamic vpi.vcs.o -L. -lcovered -o covered.so
+	ld -G -shared -export-dynamic vpi.vcs.o -L. -lcovered -o covered.vcs.so
 
 covered.cver.so: vpi.cver.o libcovered.a
-	ld -G -shared -export-dynamic vpi.cver.o -L. -lcovered -o covered.so
+	ld -G -shared -export-dynamic vpi.cver.o -L. -lcovered -o covered.cver.so
 
 vpi.vcs.o: ../src/vpi.c
-	gcc -fPIC -g -DVCS -I$(VCS_INC) -I.. -c -o vpi.vcs.o ../src/vpi.c
-	rm -f vpi.vcs.o
+	gcc -fPIC -g -DVCS $(DEBUGDEF) -I$(VCSINC) -I.. -c -o vpi.vcs.o ../src/vpi.c
 
 vpi.cver.o: ../src/vpi.c
-	gcc -fPIC -g -DCVER -I$(CVER_INC) -I.. -c -o vpi.cver.o ../src/vpi.c
-	rm -f vpi.cver.o
+	gcc -fPIC -g -DCVER $(DEBUGDEF) -I$(CVERINC) -I.. -c -o vpi.cver.o ../src/vpi.c
 
 covered.vpi: $(libcovered_a_OBJECTS) ../src/vpi.c
 	iverilog-vpi --name=covered $(libcovered_a_OBJECTS) ../src/vpi.c
-	rm -f vpi.o
 
-CLEANFILES = covered.vcs.so covered.cver.so covered.vpi
+CLEANFILES = vpi.o vpi.vcs.o vpi.cver.o covered.vcs.so covered.cver.so covered.vpi

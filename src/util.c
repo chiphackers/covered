@@ -129,7 +129,7 @@ void print_output( char* msg, int type, char* file, int line ) {
     case DEBUG:
       if( debug_mode ) {
 #ifdef VPI_ONLY
-        vpi_printf( "%s\n", msg );
+        vpi_printf( "covered VPI: %s\n", msg );
 #else
         printf( "%s\n", msg );
 #endif
@@ -138,7 +138,7 @@ void print_output( char* msg, int type, char* file, int line ) {
     case NORMAL:
       if( !output_suppressed || debug_mode ) {
 #ifdef VPI_ONLY
-        vpi_printf( "%s\n", msg );
+        vpi_printf( "covered VPI: %s\n", msg );
 #else
         printf( "%s\n", msg );
 #endif
@@ -1005,6 +1005,9 @@ const char* get_funit_type( int type ) {
 
 /*
  $Log$
+ Revision 1.46  2006/04/07 03:47:50  phase1geo
+ Fixing run-time issues with VPI.  Things are running correctly now with IV.
+
  Revision 1.45  2006/03/28 22:28:28  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the
