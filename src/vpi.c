@@ -32,6 +32,7 @@
 #include "util.h"
 #include "instance.h"
 #include "symtable.h"
+#include "binding.h"
 
 char        in_db_name[1024];
 char        out_db_name[1024];
@@ -74,9 +75,15 @@ extern char*        user_msg[USER_MSG_LENGTH];
 
 PLI_INT32 covered_value_change( p_cb_data cb ) {
 
+  s_vpi_value value;
+
+  /* Setup value */
+  value.format = vpiBinStrVal;
+  vpi_get_value( cb->obj, &value );
+
 #ifdef VPI_DEBUG
   vpi_printf( "In covered_value_change, name: %s, time: %d, value: %s\n",
-              vpi_get_str( vpiFullName, cb->obj ), cb->time->low, cb->value->value.str );
+              vpi_get_str( vpiFullName, cb->obj ), cb->time->low, value.value.str );
 #endif
 
   if( cb->time->low != last_time ) {
@@ -87,7 +94,7 @@ PLI_INT32 covered_value_change( p_cb_data cb ) {
   }
   
   /* Set symbol value */
-  db_set_symbol_string( cb->user_data, cb->value->value.str );
+  db_set_symbol_string( cb->user_data, value.value.str );
 
   return( 0 );
 
@@ -109,6 +116,8 @@ PLI_INT32 covered_end_of_sim( p_cb_data cb ) {
   if( !db_write( out_db_name, FALSE ) ) {
     vpi_printf( "Unable to write database file" );
     exit( 1 );
+  } else {
+    vpi_printf( "covered VPI:  Output coverage information to %s\n", out_db_name );
   }
 
   /* Deallocate memory */
@@ -209,9 +218,12 @@ void covered_create_value_change_cb( vpiHandle sig ) {
     cb->time->type       = vpiSimTime;
     cb->time->high       = 0;
     cb->time->low        = 0;
+/*
     cb->value            = (p_vpi_value)malloc( sizeof( s_vpi_value ) );
     cb->value->format    = vpiBinStrVal;
     cb->value->value.str = NULL;
+*/
+    cb->value            = NULL;
     cb->user_data        = symbol;
     vpi_register_cb( cb );
 
@@ -248,8 +260,7 @@ void covered_parse_task_func( vpiHandle mod ) {
         if( (liter = vpi_iterate( vpiReg, scope )) != NULL ) {
           while( (handle = vpi_scan( liter )) != NULL ) {
 #ifdef VPI_DEBUG
-            vpi_printf( "  Found reg %s, file: %s, line: %d\n",
-              vpi_get_str( vpiFullName, handle ), vpi_get_str( vpiFile, handle ), vpi_get( vpiLineNo, handle ) );
+            vpi_printf( "  Found reg %s\n", vpi_get_str( vpiFullName, handle ) );
 #endif
             covered_create_value_change_cb( handle );
           }
@@ -400,8 +411,8 @@ PLI_INT32 covered_sim_calltf( PLI_BYTE8* name ) {
   if( vpi_get_vlog_info( &info ) ) {
     for( i=1; i<info.argc; i++ ) {
       argvptr = info.argv[i];
-      if( strncmp( "+covered_outdb=", argvptr, 15 ) == 0 ) {
-        argvptr += 15;
+      if( strncmp( "+covered_cdd=", argvptr, 13 ) == 0 ) {
+        argvptr += 13;
         strcpy( out_db_name, argvptr );
       }
     }
@@ -418,10 +429,12 @@ PLI_INT32 covered_sim_calltf( PLI_BYTE8* name ) {
   if( !db_read( in_db_name, READ_MODE_MERGE_NO_MERGE ) ) {
     vpi_printf( "Unable to read database file" );
     exit( 1 );
-  }   
+  } else {
+    vpi_printf( "covered VPI:  Read design information from %s\n", in_db_name );
+  }
 
   /* Bind expressions to signals/functional units */
-  bind( TRUE );
+  bind_perform( TRUE );
 
   /* Add static values to simulator */
   sim_add_statics();

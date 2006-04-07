@@ -127,10 +127,22 @@ void print_output( char* msg, int type, char* file, int line ) {
 
   switch( type ) {
     case DEBUG:
-      if( debug_mode ) { printf( "%s\n", msg ); }
+      if( debug_mode ) {
+#ifdef VPI_ONLY
+        vpi_printf( "%s\n", msg );
+#else
+        printf( "%s\n", msg );
+#endif
+      }
       break;
     case NORMAL:
-      if( !output_suppressed || debug_mode ) { printf( "%s\n", msg ); }
+      if( !output_suppressed || debug_mode ) {
+#ifdef VPI_ONLY
+        vpi_printf( "%s\n", msg );
+#else
+        printf( "%s\n", msg );
+#endif
+      }
       break;
     case WARNING:
       if( !output_suppressed ) {
@@ -993,6 +1005,11 @@ const char* get_funit_type( int type ) {
 
 /*
  $Log$
+ Revision 1.45  2006/03/28 22:28:28  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.44  2006/03/27 23:25:30  phase1geo
  Updating development documentation for 0.4 stable release.
 

@@ -169,7 +169,7 @@ int command_merge( int argc, int last_arg, char** argv ) {
 
     /* Read in base database */
     db_read( merge_in0, READ_MODE_MERGE_NO_MERGE );
-    bind( TRUE );
+    bind_perform( TRUE );
     sim_add_statics();
 
     /* Read in database to merge */
@@ -196,6 +196,10 @@ int command_merge( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.22  2006/01/06 23:39:10  phase1geo
+ Started working on removing the need to simulate more than is necessary.  Things
+ are pretty broken at this point, but all of the code should be in -- debugging.
+
  Revision 1.21  2006/01/02 21:35:36  phase1geo
  Added simulation performance statistical information to end of score command
  when we are in debug mode.

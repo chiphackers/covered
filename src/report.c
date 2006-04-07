@@ -646,7 +646,7 @@ bool report_read_cdd_and_ready( char* ifile, int read_mode ) {
   } else {
 
     if( (retval = db_read( ifile, read_mode )) ) {
-      bind( TRUE );
+      bind_perform( TRUE );
       report_gather_funit_stats( funit_head );
     }
 
@@ -699,7 +699,7 @@ int command_report( int argc, int last_arg, char** argv ) {
         if( db_read( input_db, (report_instance ? READ_MODE_REPORT_NO_MERGE : READ_MODE_REPORT_MOD_MERGE) ) ) {
 
           /* Perform binding */
-          bind( TRUE );
+          bind_perform( TRUE );
 
           /* Open output stream */
           if( output_file != NULL ) {
@@ -798,6 +798,11 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.58  2006/04/05 15:19:18  phase1geo
+ Adding support for FSM coverage output in the GUI.  Started adding components
+ for assertion coverage to GUI and report functions though there is no functional
+ support for this at this time.
+
  Revision 1.57  2006/03/28 22:28:28  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

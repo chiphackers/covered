@@ -53,7 +53,7 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
                                     bool cdd_reading, int exp_line, bool bind_locally );
 
 /*! \brief Performs vsignal/expression bind (performed after parse completed). */
-void bind( bool cdd_reading );
+void bind_perform( bool cdd_reading );
 
 /*! \brief Deallocates memory used for binding */
 void bind_dealloc();
@@ -61,6 +61,11 @@ void bind_dealloc();
 
 /* 
  $Log$
+ Revision 1.26  2006/03/28 22:28:27  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.25  2006/02/16 21:19:26  phase1geo
  Adding support for arrays of instances.  Also fixing some memory problems for
  constant functions and fixed binding problems when hierarchical references are
