@@ -74,6 +74,7 @@ extern char         user_msg[USER_MSG_LENGTH];
 
 PLI_INT32 covered_value_change( p_cb_data cb ) {
 
+#ifndef NOIV
   s_vpi_value value;
 
   /* Setup value */
@@ -95,6 +96,23 @@ PLI_INT32 covered_value_change( p_cb_data cb ) {
   
   /* Set symbol value */
   db_set_symbol_string( cb->user_data, value.value.str );
+#else
+#ifdef DEBUG_MODE
+  snprintf( user_msg, USER_MSG_LENGTH, "In covered_value_change, name: %s, time: %d, value: %s",
+            vpi_get_str( vpiFullName, cb->obj ), cb->time->low, cb->value->value.str );
+  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+#endif
+
+  if( cb->time->low != last_time ) {
+    if( last_time >= 0 ) {
+      db_do_timestep( last_time );
+    }
+    last_time = cb->time->low;
+  }
+
+  /* Set symbol value */
+  db_set_symbol_string( cb->user_data, cb->value->value.str );
+#endif
 
   return( 0 );
 
@@ -113,7 +131,7 @@ PLI_INT32 covered_end_of_sim( p_cb_data cb ) {
     vpi_printf( "covered VPI: Unable to write database file" );
     exit( 1 );
   } else {
-    vpi_printf( "covered VPI:  Output coverage information to %s\n", out_db_name );
+    vpi_printf( "covered VPI: Output coverage information to %s\n", out_db_name );
   }
 
   /* Deallocate memory */
@@ -216,12 +234,13 @@ void covered_create_value_change_cb( vpiHandle sig ) {
     cb->time->type       = vpiSimTime;
     cb->time->high       = 0;
     cb->time->low        = 0;
-/*
+#ifdef NOIV
     cb->value            = (p_vpi_value)malloc( sizeof( s_vpi_value ) );
     cb->value->format    = vpiBinStrVal;
     cb->value->value.str = NULL;
-*/
+#else
     cb->value            = NULL;
+#endif
     cb->user_data        = symbol;
     vpi_register_cb( cb );
 

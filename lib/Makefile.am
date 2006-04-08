@@ -41,10 +41,10 @@ covered.cver.so: vpi.cver.o libcovered.a
 	ld -G -shared -export-dynamic vpi.cver.o -L. -lcovered -o covered.cver.so
 
 vpi.vcs.o: ../src/vpi.c
-	gcc -fPIC -g -DVCS $(DEBUGDEF) -I$(VCSINC) -I.. -c -o vpi.vcs.o ../src/vpi.c
+	gcc -fPIC -g -DVCS -DNOIV $(DEBUGDEF) -I$(VCSINC) -I.. -c -o vpi.vcs.o ../src/vpi.c
 
 vpi.cver.o: ../src/vpi.c
-	gcc -fPIC -g -DCVER $(DEBUGDEF) -I$(CVERINC) -I.. -c -o vpi.cver.o ../src/vpi.c
+	gcc -fPIC -g -DCVER -DNOIV $(DEBUGDEF) -I$(CVERINC) -I.. -c -o vpi.cver.o ../src/vpi.c
 
 covered.vpi: $(libcovered_a_OBJECTS) ../src/vpi.c
 	iverilog-vpi --name=covered $(libcovered_a_OBJECTS) ../src/vpi.c

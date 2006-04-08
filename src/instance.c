@@ -269,7 +269,6 @@ funit_inst* instance_find_scope( funit_inst* root, char* scope ) {
   assert( root != NULL );
 
   /* Strip root name from scope */
-  printf( "scope: %s, root->name: %s\n", scope, root->name );
   if( strncmp( scope, root->name, strlen( root->name ) ) == 0 ) {
     
     strcpy( tmp_scope, scope );
@@ -691,6 +690,10 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.41  2006/04/07 22:31:07  phase1geo
+ Fixes to get VPI to work with VCS.  Getting close but still some work to go to
+ get the callbacks to start working.
+
  Revision 1.40  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the
