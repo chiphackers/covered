@@ -120,8 +120,8 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      Covered is currently primarily developed on Fedora Core 3 but has been known to 
-      compile with 32-bit and 64-bit compilers that contain the general GNU library of 
+      Covered is primarily developed on Fedora Core 3 but has been known to compile 
+      with both 32-bit and 64-bit compilers that contain the general GNU library of 
       tools.</P>
     </TD>
   </TR>
@@ -220,8 +220,28 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      This will create a directory called <tt>covered-<i>version</i></tt>. Change your 
-      current directory to this directory and enter the following command:</P>
+      This will create a directory called <tt>covered-<i>version</i></tt>. At this point,
+      you are ready to configure the build environment to create the executables,
+      libraries and/or documentation for Covered.  However, before you configure the
+      build environment, you will need to make a few decisions which will lead to
+      different options given to the configure script.  These questions are the 
+      following:</P>
+    </TD>
+  </TR>
+  
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      <ol>
+        <li>Do you need to debug Covered?</li>
+        <li>Will you being using Covered as a VPI module and, if so, what simulator(s)
+            will you need VPI modules built for?</li>
+      </ol></P>
     </TD>
   </TR>
 
@@ -232,7 +252,56 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="code">> ./configure</P>
+      <P class="pg">
+      If the answer to question (1) is yes, configure the build environment with the
+      <b>--enable-debug</b> option to the configure script.  Doing so will allow you 
+      to use the global -D option for debugging; however, it will also have the side 
+      effect of causing the score command to run slower.  For normal usage of Covered, 
+      this option should not be specified when configuring.</P>
+    </TD>
+  </TR>
+  
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      If the answer to question (2) is yes and you need to build a VPI module for
+      the Icarus Verilog simulation tool, simply add <b>--with-iv</b> on the configure
+      command-line.  If a VPI shared object module is needed for the Cver simulator,
+      simply add <b>--with-cver=<i>cver_include_dir</i></b> on the configure command
+      line, where <i>cver_include_dir</i> specifies the directory that contains the
+      <i>vpi_user.h</i> file.  If a VPI shared object module is needed for the VCS
+      simulator, simply add <b>--with-vcs=<i>vcs_include_dir</i></b> on the configure
+      command line, where <i>vcs_include_dir</i> specifies the directory that
+      contains the <i>vpi_user.h</i> file.</P>
+    </TD>
+  </TR>
+  
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      Once you have determined which configuration options you need, simply
+      enter the following command:</P>
+    </TD>
+  </TR>
+  
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="code">> ./configure <i>options</i></P>
     </TD>
   </TR>
 
@@ -245,13 +314,12 @@
     <TD valign=top>
       <P class="pg">
       This command will create the Makefiles/include files necessary for your 
-      machine to compile the source code correctly (without the ability to use the 
-      global debugging -D option to covered -- use the --enable-debug option to 
-      configure to get this ability). If any errors are generated during this command 
-      run, it is usually an indication that some program or library is missing from 
-      your computer that is necessary for Covered to compile/run. Please install any 
-      missing programs/libraries and type this command again. If the configure script 
-      completes successfully, you may compile the source with the following command:</P>
+      machine to compile the source code correctly. If any errors are generated 
+      during this command run, it is usually an indication that some program or 
+      library is missing from your computer that is necessary for Covered to 
+      compile/run. Please install any missing programs/libraries and type this 
+      command again. If the configure script completes successfully, you may compile 
+      the source with the following command:</P>
     </TD>
   </TR>
 

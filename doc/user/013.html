@@ -3,7 +3,7 @@
 <HEAD>
   <TITLE>Covered - Inline Attributes</TITLE>
   <META name="GENERATOR" content="ManStyle">
-  <META name="AUTHOR" content="Trevor Williams">
+  <meta name="author" content="Trevor Williams">
   <LINK rel=stylesheet type="text/css" href="styles.css">
 </HEAD>
 <BODY text="#000000"
@@ -95,7 +95,13 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">Covered uses the Verilog-2001 attribute for allowing users to specify coverage-specific information about embedded objects within a particular design. When an attribute is found, it is interrogated to see if it is a Covered attribute. If the attribute is a Covered attribute, its contents are parsed. If the attribute is not found to be a Covered attribute, it is ignored and parsing continues normally.</P>
+      <P class="pg">
+      Covered uses the Verilog-2001 attribute for allowing users to specify 
+      coverage-specific information about embedded objects within a particular 
+      design. When an attribute is found, it is interrogated to see if it is a 
+      Covered attribute. If the attribute is a Covered attribute, its contents are 
+      parsed. If the attribute is not found to be a Covered attribute, it is ignored 
+      and parsing continues normally.</P>
     </TD>
   </TR>
 
@@ -106,7 +112,9 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">The rest of this page specifies the attributes that Covered is capable of handling, along with their use and syntax.</P>
+      <P class="pg">
+      The rest of this page specifies the attributes that Covered is capable of 
+      handling, along with their use and syntax.</P>
     </TD>
   </TR>
 
@@ -128,7 +136,16 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">There are two ways that Covered currently allows the user to specify the location of and information about FSMs embedded in a particular design. The first way to specify an FSM is on the score command-line. The benefit to specifying the location of a state machine this way is that the source code does not need to be modified. The potential disadvantage to this method is that the FSM location and coverage information can get lost if the FSM is used in a different testbench (or even a different project if the FSM code is reused in a later project). For more information on specifying an FSM on the score command-line, please refer to "Section 8.5 Scoring FSMs".</P>
+      <P class="pg">
+      There are two ways that Covered currently allows the user to specify the location 
+      of and information about FSMs embedded in a particular design. The first way to 
+      specify an FSM is on the score command-line. The benefit to specifying the 
+      location of a state machine this way is that the source code does not need to be 
+      modified. The potential disadvantage to this method is that the FSM location and 
+      coverage information can get lost if the FSM is used in a different testbench (or 
+      even a different project if the FSM code is reused in a later project). For more 
+      information on specifying an FSM on the score command-line, please refer to 
+      "Section 8.5 Scoring FSMs".</P>
     </TD>
   </TR>
 
@@ -139,7 +156,17 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">The second way that an FSM can be specified to Covered is through the use of the Verilog-2001 attribute. The advantages to using this method are that the FSM information specified in an attribute stays embedded in the design (for ease of reusing the FSM and still retaining information relevent to coverage). Additionally, at the current release of Covered, using attributes to specify an FSM is the only way to tell Covered what all of the valid states and state-transitions are for a specific FSM (the command-line specification does not allow for this). This provides a unique advantage of this method over the command-line method. The potential disadvantage of this method for specifying FSM information is that source code needs to be modified.</P>
+      <P class="pg">
+      The second way that an FSM can be specified to Covered is through the use of the 
+      Verilog-2001 attribute. The advantages to using this method are that the FSM 
+      information specified in an attribute stays embedded in the design (for ease of 
+      reusing the FSM and still retaining information relevent to coverage). 
+      Additionally, at the current release of Covered, using attributes to specify an 
+      FSM is the only way to tell Covered what all of the valid states and 
+      state-transitions are for a specific FSM (the command-line specification does not 
+      allow for this). This provides a unique advantage of this method over the 
+      command-line method. The potential disadvantage of this method for specifying FSM 
+      information is that source code needs to be modified.</P>
     </TD>
   </TR>
 
@@ -150,7 +177,9 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">To learn how to specify an FSM attribute within a design, let's use an example of an FSM that is embedded in a design.</P>
+      <P class="pg">
+      To learn how to specify an FSM attribute within a design, let's use an example of 
+      an FSM that is embedded in a design.</P>
     </TD>
   </TR>
 
@@ -161,7 +190,37 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="code">module foo (<br> &nbsp;&nbsp; clk,<br> &nbsp;&nbsp; reset,<br> &nbsp;&nbsp; head,<br> &nbsp;&nbsp; tail,<br> &nbsp;&nbsp; valid<br> );<br> <br> input&nbsp;&nbsp; clk;<br> input&nbsp;&nbsp; reset;<br> input&nbsp;&nbsp; head;<br> input&nbsp;&nbsp; tail;<br> input&nbsp;&nbsp; valid;<br> <br> parameter STATE_IDLE = 2'b00,<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; STATE_HEAD = 2'b01,<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; STATE_DATA = 2'b10,<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; STATE_TAIL = 2'b11;<br> <br> reg [1:0] state;<br> reg [1:0] next_state;<br> <br> always @(posedge clock)<br> &nbsp; state <= reset ? STATE_IDLE : next_state;<br> <br> always @(reset or state or head or valid or tail)<br> &nbsp; begin<br> &nbsp;&nbsp; case( state )<br> &nbsp;&nbsp;&nbsp;&nbsp; STATE_IDLE: next_state = (valid & head) ? STATE_HEAD :<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; STATE_IDLE;<br> &nbsp;&nbsp;&nbsp;&nbsp; STATE_HEAD: next_state = (valid & tail) ? STATE_TAIL :<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; STATE_DATA;<br> &nbsp;&nbsp;&nbsp;&nbsp; STATE_DATA: next_state = (valid & tail) ? STATE_TAIL :<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; STATE_DATA;<br> &nbsp;&nbsp;&nbsp;&nbsp; STATE_TAIL: next_state = (valid & head) ? STATE_HEAD :<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; STATE_IDLE;<br> &nbsp;&nbsp; endcase<br> &nbsp; end<br> <br> endmodule</P>
+      <P class="code"><pre>
+      module foo (
+        input clk,
+        input reset,
+        input head,
+        input tail,
+        input valid
+      );
+      
+      parameter STATE_IDLE = 2'b00,
+                STATE_HEAD = 2'b01,
+                STATE_DATA = 2'b10,
+                STATE_TAIL = 2'b11;
+                
+      reg [1:0] state;
+      reg [1:0] next_state;
+      
+      always @(posedge clock)
+        state <= reset ? STATE_IDLE : next_state;
+        
+      always @(reset or state or head or valid or tail)
+        begin
+          case( state )
+            STATE_IDLE: next_state = (valid & head) ? STATE_HEAD : STATE_IDLE;
+            STATE_HEAD: next_state = (valid & tail) ? STATE_TAIL : STATE_DATA;
+            STATE_DATA: next_state = (valid & tail) ? STATE_TAIL : STATE_DATA;
+            STATE_TAIL: next_state = (valid & head) ? STATE_HEAD : STATE_IDLE;
+          endcase
+        end
+        
+      endmodule</PRE></P>
     </TD>
   </TR>
 
@@ -172,7 +231,12 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">This example shows an FSM that has an input FSM variable called "state" and an output FSM variable called "next_state". There are four states in the state machine that are represented with the parameters located in this module (STATE_IDLE, STATE_HEAD, STATE_DATA, STATE_TAIL). There are a total of eight (8) state transitions that this FSM can take. They are the following:</P>
+      <P class="pg">
+      This example shows an FSM that has an input FSM variable called "state" and an 
+      output FSM variable called "next_state". There are four states in the state 
+      machine that are represented with the parameters located in this module 
+      (STATE_IDLE, STATE_HEAD, STATE_DATA, STATE_TAIL). There are a total of eight (8) 
+      state transitions that this FSM can take. They are the following:</P>
     </TD>
   </TR>
 
@@ -183,7 +247,17 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg"><ol> <li> STATE_IDLE -> STATE_IDLE (loopback) </li> <li> STATE_IDLE -> STATE_HEAD </li> <li> STATE_HEAD -> STATE_DATA </li> <li> STATE_HEAD -> STATE_TAIL </li> <li> STATE_DATA -> STATE_DATA (loopback) </li> <li> STATE_DATA -> STATE_TAIL </li> <li> STATE_TAIL -> STATE_HEAD </li> <li> STATE_TAIL -> STATE_IDLE </li> </ol></P>
+      <P class="pg">
+      <ol> 
+        <li> STATE_IDLE -> STATE_IDLE (loopback) </li> 
+        <li> STATE_IDLE -> STATE_HEAD </li> 
+        <li> STATE_HEAD -> STATE_DATA </li> 
+        <li> STATE_HEAD -> STATE_TAIL </li> 
+        <li> STATE_DATA -> STATE_DATA (loopback) </li> 
+        <li> STATE_DATA -> STATE_TAIL </li> 
+        <li> STATE_TAIL -> STATE_HEAD </li> 
+        <li> STATE_TAIL -> STATE_IDLE </li> 
+      </ol></P>
     </TD>
   </TR>
 
@@ -194,7 +268,9 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">All attributes that specify information for an FSM are a comma-separated list of values that contain the following information:</P>
+      <P class="pg">
+      All attributes that specify information for an FSM are a comma-separated list of 
+      values that contain the following information:</P>
     </TD>
   </TR>
 
@@ -205,7 +281,53 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg"><ol> <li> "covered_fsm" attribute keyword <ul> <li> MUST be first value in the attribute list </li> <li> Specifies to Covered that this attribute contains information for an FSM that Covered needs to handle. </li> </ul></li> <li> FSM identifier <ul> <li> MUST be second value in the attribute list </li> <li> Specifies a alphanumeric name for this FSM. </li> <li> The name will eventually be used to tie individual attributes that specify information for the same FSM. </li> </ul></li> <li> Input state expression (optional) <ul> <li> Syntax: <code>is="</code><i>expression</i><code>"</code> </li> <li> If this is specified, MUST be specified third in the list. </li> <li> Specifies the input state expression. </li> <li> Can be a combination of signal names, signal bit selects, and concatenation operators. </li> <li> See "Section 8.5. Specifying an FSM" for more information on the specification of an input state expression. </li> </ul></li> <li> Output state expression <ul> <li> Syntax: <code>os="</code><i>expression</i><code>"</code> </li> <li> If the input state expression is specified, MUST be fourth value in list; otherwise, MUST be third value in list. </li> <li> Specifies the output state expression of the FSM. </li> <li> Can be a combination of signal names, signal bit selects, and concatenation operators. </li> <li> See "Section 8.5. Specifying an FSM" for more information on the specification of an output state expression. </li> </ul></li> <li> State-transition specifiers (optional) <ul> <li> Syntax: <code>trans="</code><i>from_state</i><code>-&gt;</code><i>to_state</i><code>"</code> </li> <li> MUST be specified after the above has been specified in the list. </li> <li> Arguments MUST be constant values (parameters; numerical values -- binary, octal, decimal, hexidecimal; and defines that equate to one of these two types of values).</li> <li> Each transition that is specified is a unique value in the attribute list. </li> </ul></li> </ol> </P>
+      <P class="pg">
+      <ol> 
+        <li> "covered_fsm" attribute keyword 
+          <ul> 
+            <li> MUST be first value in the attribute list </li> 
+            <li> Specifies to Covered that this attribute contains information for an 
+                 FSM that Covered needs to handle. </li> 
+          </ul></li> 
+        <li> FSM identifier 
+          <ul> 
+            <li> MUST be second value in the attribute list </li> 
+            <li> Specifies a alphanumeric name for this FSM. </li> 
+            <li> The name will eventually be used to tie individual attributes that specify 
+                 information for the same FSM. </li> 
+        </ul></li> 
+        <li> Input state expression (optional) 
+          <ul> 
+            <li> Syntax: <code>is="</code><i>expression</i><code>"</code> </li> 
+            <li> If this is specified, MUST be specified third in the list. </li> 
+            <li> Specifies the input state expression. </li> 
+            <li> Can be a combination of signal names, signal bit selects, and 
+                 concatenation operators. </li> 
+            <li> See "Section 8.5. Specifying an FSM" for more information on the 
+                 specification of an input state expression. </li> 
+          </ul></li> 
+        <li> Output state expression 
+          <ul> 
+            <li> Syntax: <code>os="</code><i>expression</i><code>"</code> </li> 
+            <li> If the input state expression is specified, MUST be fourth value in 
+                 list; otherwise, MUST be third value in list. </li> 
+            <li> Specifies the output state expression of the FSM. </li> 
+            <li> Can be a combination of signal names, signal bit selects, and 
+                 concatenation operators. </li> 
+            <li> See "Section 8.5. Specifying an FSM" for more information on the 
+                 specification of an output state expression. </li> 
+          </ul></li> 
+        <li> State-transition specifiers (optional) 
+          <ul> 
+            <li> Syntax: <code>trans="</code><i>from_state</i><code>-&gt;</code><i>to_state</i><code>"</code> </li> 
+            <li> MUST be specified after the above has been specified in the list. </li> 
+            <li> Arguments MUST be constant values (parameters; numerical values -- 
+                 binary, octal, decimal, hexidecimal; and defines that equate to one of 
+                 these two types of values).</li> 
+            <li> Each transition that is specified is a unique value in the attribute 
+                 list. </li> 
+          </ul></li> 
+      </ol> </P>
     </TD>
   </TR>
 
@@ -216,7 +338,9 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">To specify the FSM attribute in the above example, including input state, output state and all state transitions, the code would be modified to look like:</P>
+      <P class="pg">
+      To specify the FSM attribute in the above example, including input state, 
+      output state and all state transitions, the code would be modified to look like:</P>
     </TD>
   </TR>
 
@@ -227,7 +351,20 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="code">...<br> <br> (* covered_fsm, channel, is="state", os="next_state",<br> &nbsp;&nbsp; trans="STATE_IDLE-&gt;STATE_IDLE",<br> &nbsp;&nbsp; trans="STATE_IDLE-&gt;STATE_HEAD",<br> &nbsp;&nbsp; trans="STATE_HEAD-&gt;STATE_DATA",<br> &nbsp;&nbsp; trans="STATE_HEAD-&gt;STATE_TAIL",<br> &nbsp;&nbsp; trans="STATE_DATA-&gt;STATE_DATA",<br> &nbsp;&nbsp; trans="STATE_DATA-&gt;STATE_TAIL",<br> &nbsp;&nbsp; trans="STATE_TAIL-&gt;STATE_HEAD",<br> &nbsp;&nbsp; trans="STATE_TAIL-&gt;STATE_IDLE" *)<br> always @(reset or state or head or tail or valid)<br> ...</P>
+      <P class="code"><PRE>
+      ...
+      
+      (* covered_fsm, channel, is="state", os="next_state",
+                               trans="STATE_IDLE-&gt;STATE_IDLE",
+                               trans="STATE_IDLE-&gt;STATE_HEAD",
+                               trans="STATE_HEAD-&gt;STATE_DATA",
+                               trans="STATE_HEAD-&gt;STATE_TAIL",
+                               trans="STATE_DATA-&gt;STATE_DATA",
+                               trans="STATE_DATA-&gt;STATE_TAIL",
+                               trans="STATE_TAIL-&gt;STATE_HEAD",
+                               trans="STATE_TAIL-&gt;STATE_IDLE" *)
+       always @(reset or state or head or tail or valid)
+         ...</PRE></P>
     </TD>
   </TR>
 

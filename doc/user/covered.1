@@ -1,4 +1,4 @@
-.TH "Covered" "1" "covered-0.4.1" "Trevor Williams" "Code Analysis"
+.TH "Covered" "1" "covered-20060430" "Trevor Williams" "Code Analysis"
 .SH "NAME"
 .LP 
 Covered \- Verilog Code Coverage Analyzer
@@ -11,7 +11,7 @@ Covered \- Verilog Code Coverage Analyzer
 \fBcovered\fR [<options>] report [<options>] <database_file>
 .SH "DESCRIPTION"
 .LP 
-\fICovered\fR is a Verilog code coverage analysis tool that can be useful for determining how well a diagnostic test suite is covering the design under test. Covered reads in the Verilog design files and a VCD or LXT formatted dumpfile from a diagnostic run and generates a database file called a Coverage Description Database (CDD) file, using the score command.  This file can be merged with other CDD files from the same design to create accummulated coverage, using the merge command.  Once a CDD file is created, the user can use Covered to generate various human\-readable coverage reports in an ASCII format or use Covered's GUI to interactively look at coverage results, using the report command.  Additionally, as part of Covered's score command, race condition possibilities are found in the design files and can be either ignored, flagged as warnings or flagged as errors.  By specifying race conditions as errors, Covered can also be used as a race condition checker.
+\fICovered\fR is a Verilog code coverage analysis tool that can be useful for determining how well a diagnostic test suite is covering the design under test. Covered reads in the Verilog design files and a VCD or LXT formatted dumpfile from a diagnostic run and generates a database file called a Coverage Description Database (CDD) file, using the score command. Covered's score command can alternatively be used to generate a CDD file and a Verilog module for using Covered as a VPI module in a testbench which can obtain coverage information in parallel with simulation (see \fIUSING COVERED AS A VPI MODULE\fR). The resulting CDD file can be merged with other CDD files from the same design to create accummulated coverage, using the merge command.  Once a CDD file is created, the user can use Covered to generate various human\-readable coverage reports in an ASCII format or use Covered's GUI to interactively look at coverage results, using the report command.  Additionally, as part of Covered's score command, race condition possibilities are found in the design files and can be either ignored, flagged as warnings or flagged as errors.  By specifying race conditions as errors, Covered can also be used as a race condition checker.
 .SH "GLOBAL OPTIONS"
 .LP 
 These options are placed immediately after the keyword \fIcovered\fR in the command\-line.  They can be used for any command (with the exception of \fI\-v\fR and \fI\-h\fR) and have the same effect in each case.
@@ -34,7 +34,7 @@ Version.  Display current Covered version.
 Parses Verilog files and VCD/LXT dumpfiles to create database file used for merging and reporting.
 .TP 
 \fBmerge\fR
-Merges two database files into one.
+Merges two or more database files into one.
 .TP 
 \fBreport\fR
 Generates human\-readable coverage reports from database file or starts the coverage report GUI.
@@ -109,7 +109,7 @@ Name of specific Verilog file to score.
 Name of VCD dumpfile to score design with.  If this or the \-lxt option is not used, Covered will only create an initial CDD file from the design and will not attempt to score the design.
 .TP 
 \fB\-vpi\fR (\fIfilename\fR)
-If this option is specified without the \-vcd or \-lxt options, the design is parsed, a CDD file is created and a top\-level Verilog module named \fIfilename\fR (if this value is specified) or "covered_vpi.v" (if \fIfilename\fR is not specified) is created along with a PLI table file called \fIfilename\fR.tab or "covered_vpi.v.tab".  Both of these files are used in the compilation of the simulator to use Covered as a VPI module.  If either the \-vcd or \-lxt options are specified, this option has no effect.
+If this option is specified without the \-vcd or \-lxt options, the design is parsed, a CDD file is created and a top\-level Verilog module named \fIfilename\fR (if this value is specified) or "covered_vpi.v" (if \fIfilename\fR is not specified) is created along with a PLI table file called \fIfilename\fR.ta b or "covered_vpi.v.ta b".  Both of these files are used in the compilation of the simulator to use Covered as a VPI module.  If either the \-vcd or \-lxt options are specified, this option has no effect.
 .TP 
 \fB\-y\fR \fIdirectory\fR
 Directory to find unspecified Verilog files.
@@ -161,7 +161,7 @@ In addition to using Covered's score command to parse a VCD or LXT file to abstr
 .TP 
 To automatically build the VPI\-ready library files when generating Covered from source, simply specify one or more of the following when running the "configure" utility in the base Covered directory:  \-\-with\-iv, \-\-with\-vcs=<VCS include path>, \-\-with\-cver=<CVER include path>.  After Covered has been configured, simply type 'make' and 'make install'.  This will install the VPI\-ready library files in the installation libexec directory (by default this path will be /usr/local/libexec).
 .TP 
-Before you are ready to compile the design, you must first create a CDD file, a top\-level Verilog file, and a PLI table file (the last file is only needed for the VCS compiler).  This is done by specifying the \fB\-vpi\fR  (\fIfilename\fR) option to Covered's score command.  If no filename is specified after \-vpi, the files covered_vpi.v and covered_vpi.v.tab will be created along with the generated coverage file.  Note that this step only needs to be performed once unless the design files change.  You are now ready to compile the simulator.
+Before you are ready to compile the design, you must first create a CDD file, a top\-level Verilog file, and a PLI table file (the last file is only needed for the VCS compiler).  This is done by specifying the \fB\-vpi\fR  (\fIfilename\fR) option to Covered's score command.  If no filename is specified after \-vpi, the files covered_vpi.v and covered_vpi.v.ta b will be created along with the generated coverage file.  Note that this step only needs to be performed once unless the design files change.  You are now ready to compile the simulator.
 .TP 
 If you are compiling an Icarus Verilog simulation, simply add '\-m /usr/local/libexec/covered.vpi covered_pli.v' to the 'iverilog' command\-line.  Once compilation is complete, run the generated executable file as you normally would.
 .TP 
