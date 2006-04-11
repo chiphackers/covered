@@ -35,11 +35,12 @@
 #include "util.h"
 
 
-extern char* merge_in0;
-extern char* merge_in1;
-extern bool  flag_exclude_assign;
-extern bool  flag_exclude_always;
-extern bool  flag_exclude_initial;
+extern char** merge_in;
+extern int    merge_in_num;
+extern bool   flag_exclude_assign;
+extern bool   flag_exclude_always;
+extern bool   flag_exclude_initial;
+
 
 /*!
  If this flag is set to a value of 1, it indicates that the current CDD file has
@@ -52,27 +53,23 @@ bool flag_scored = FALSE;
  This string specifies the Verilog hierarchy leading up to the DUT.  This value is
  taken from the -i value (or is a value of '*' if the -t option is only specified).
 */
-char leading_hierarchy[4096];
+char** leading_hierarchies;
 
 /*!
- If we have merged and the leading hierarchy of the merged CDDs don't match, the value
- contains the leading hierarchy of the other merged CDD file.  This value will be used
- in the SPECIAL NOTES section of the report to indicate to the user that this case
- occurred and that the leading hierarchy value should not be used in the report output.
+ Specifies the number of hierarchies stored in the leading_hierarchies array.
 */
-char second_hierarchy[4096];
+int leading_hier_num;
+
+/*!
+ Set to TRUE if more than one leading hierarchy exists and it differs with the first leading hierarchy.
+*/
+bool leading_hiers_differ;
 
 /*!
  Contains the CDD version number of all CDD files that this version of Covered can write
  and read.
 */
-int  cdd_version = CDD_VERSION;
-
-/*!
- If this value is set to INFO_ONE_MERGED or INFO_TWO_MERGED, specifies that this CDD file
- was generated from a merge command (not from a score command).
-*/
-int merged_code = INFO_NOT_MERGED;
+int cdd_version = CDD_VERSION;
 
 
 /*!
@@ -80,8 +77,8 @@ int merged_code = INFO_NOT_MERGED;
 */
 void info_initialize() {
 
-  leading_hierarchy[0] = '\0';
-  second_hierarchy[0]  = '\0';
+  leading_hier_num     = 0;
+  leading_hiers_differ = FALSE;
 
 }
 
@@ -92,31 +89,27 @@ void info_initialize() {
 */
 void info_db_write( FILE* file ) {
 
+  int i;  /* Loop iterator */
+
+  assert( leading_hier_num > 0 );
+
   fprintf( file, "%d %d %s %d %d %d %d %d",
            DB_TYPE_INFO,
            flag_scored,
-           leading_hierarchy,
+           leading_hierarchies[0],
            CDD_VERSION,
            flag_exclude_assign,
            flag_exclude_always,
            flag_exclude_initial,
-           merged_code );
+           merge_in_num );
 
-  switch( merged_code ) {
-    case INFO_NOT_MERGED :
-      fprintf( file, "\n" );
-      break;
-    case INFO_ONE_MERGED :
-      assert( merge_in0 != NULL );
-      fprintf( file, " %s %s\n", merge_in0, second_hierarchy );
-      break;
-    case INFO_TWO_MERGED :
-      assert( merge_in0 != NULL );
-      assert( merge_in1 != NULL );
-      fprintf( file, " %s %s %s\n", merge_in0, merge_in1, second_hierarchy );
-      break;
-    default :  break;
+  assert( (leading_hier_num - 1) == merge_in_num );
+
+  for( i=0; i<merge_in_num; i++ ) {
+    fprintf( file, " %s %s", merge_in[i], leading_hierarchies[i+1] );
   }
+
+  fprintf( file, "\n" );
 
 }
 
@@ -127,14 +120,17 @@ void info_db_write( FILE* file ) {
 */
 bool info_db_read( char** line ) {
 
-  bool retval = TRUE;  /* Return value for this function                 */
+  bool retval = TRUE;  /* Return value for this function */
   int  chars_read;     /* Number of characters scanned in from this line */
-  int  scored;         /* Indicates if this file contains scored data    */
-  int  version;        /* Contains CDD version from file                 */
-  int  mcode;          /* Temporary merge code                           */
-  char tmp[4096];      /* Temporary string                               */
+  int  scored;         /* Indicates if this file contains scored data */
+  int  version;        /* Contains CDD version from file */
+  int  mnum;           /* Temporary merge num */
+  char tmp1[4096];     /* Temporary string */
+  char tmp2[4096];     /* Temporary string */
+  int  i;              /* Loop iterator */
 
-  if( sscanf( *line, "%d %s %d %d %d %d %d%n", &scored, tmp, &version, &flag_exclude_assign, &flag_exclude_always, &flag_exclude_initial, &mcode, &chars_read ) == 7 ) {
+  if( sscanf( *line, "%d %s %d %d %d %d %d%n", &scored, tmp1, &version, &flag_exclude_assign, &flag_exclude_always,
+                                               &flag_exclude_initial, &mnum, &chars_read ) == 7 ) {
 
     *line = *line + chars_read;
 
@@ -143,47 +139,46 @@ bool info_db_read( char** line ) {
       retval = FALSE;
     }
 
-    /* If we have not assigned leading hierarchy yet, do it now; otherwise, assign second hierarchy */
-    if( leading_hierarchy[0] == '\0' ) {
-      strcpy( leading_hierarchy, tmp );
-    } else {
-      strcpy( second_hierarchy, tmp );
+    /* Set leading_hiers_differ to TRUE if this is not the first hierarchy and it differs from the first */
+    if( (leading_hier_num > 0) && (strcmp( leading_hierarchies[0], tmp1 ) != 0) ) {
+      leading_hiers_differ = TRUE;
     }
 
-    if( mcode != INFO_NOT_MERGED ) {
-      if( sscanf( *line, "%s%n", tmp, &chars_read ) == 1 ) {
-        if( merge_in0 == NULL ) {
-          merge_in0 = strdup_safe( tmp, __FILE__, __LINE__ );
-        }
+    /* Assign this hierarchy to the leading hierarchies array */
+    leading_hierarchies = (char**)realloc( leading_hierarchies, (sizeof( char* ) * (leading_hier_num + 1)) );
+    leading_hierarchies[leading_hier_num] = strdup_safe( tmp1, __FILE__, __LINE__ );
+    leading_hier_num++;
+
+    for( i=0; i<mnum; i++ ) {
+
+      if( sscanf( *line, "%s %s%n", tmp1, tmp2, &chars_read ) == 2 ) {
+
         *line = *line + chars_read;
-        if( mcode == INFO_TWO_MERGED ) {
-          if( sscanf( *line, "%s%n", tmp, &chars_read ) == 1 ) {
-            if( merge_in1 == NULL ) {
-              merge_in1 = strdup_safe( tmp, __FILE__, __LINE__ );
-            }
-            *line = *line + chars_read;
-          } else {
-            print_output( "CDD file being read is incompatible with this version of Covered", FATAL, __FILE__, __LINE__ );
-            retval = FALSE;
-          }
+
+        /* Add merged file */
+        merge_in = (char**)realloc( merge_in, (sizeof( char* ) * merge_in_num) );
+        merge_in[merge_in_num] = strdup_safe( tmp1, __FILE__, __LINE__ );
+        merge_in_num++;
+
+        /* Set leading_hiers_differ to TRUE if this is not the first hierarchy and it differs from the first */
+        if( strcmp( leading_hierarchies[0], tmp2 ) != 0 ) {
+          leading_hiers_differ = TRUE;
         }
-        if( sscanf( *line, "%s%n", tmp, &chars_read ) == 1 ) {
-          if( second_hierarchy[0] == '\0' ) {
-            strcpy( second_hierarchy, tmp );
-          }
-          *line = *line + chars_read;
-        } else {
-          print_output( "CDD file being read is incompatible with this version of Covered", FATAL, __FILE__, __LINE__ );
-          retval = FALSE;
-        }
+
+        /* Add its hierarchy */
+        leading_hierarchies = (char**)realloc( leading_hierarchies, (sizeof( char* ) * (leading_hier_num + 1)) );
+        leading_hierarchies[leading_hier_num] = strdup_safe( tmp2, __FILE__, __LINE__ );
+        leading_hier_num++;
+
       } else {
         print_output( "CDD file being read is incompatible with this version of Covered", FATAL, __FILE__, __LINE__ );
         retval = FALSE;
       }
+
     }
 
+    /* Set scored flag */
     flag_scored = (scored == TRUE) ? TRUE : flag_scored;
-    merged_code = (merged_code == INFO_NOT_MERGED) ? mcode : merged_code;
 
   } else {
 
@@ -199,6 +194,11 @@ bool info_db_read( char** line ) {
 
 /*
  $Log$
+ Revision 1.10  2006/03/28 22:28:27  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.9  2005/12/12 03:46:14  phase1geo
  Adding exclusion to score command to improve performance.  Updated regression
  which now fully passes.

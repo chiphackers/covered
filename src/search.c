@@ -38,27 +38,29 @@
 #include "instance.h"
 
 
-str_link* inc_paths_head = NULL;    /*!< Pointer to head element of include paths list          */
-str_link* inc_paths_tail = NULL;    /*!< Pointer to tail element of include paths list          */
+str_link* inc_paths_head  = NULL;   /*!< Pointer to head element of include paths list */
+str_link* inc_paths_tail  = NULL;   /*!< Pointer to tail element of include paths list */
 
-str_link* use_files_head = NULL;    /*!< Pointer to head element of used files list             */
-str_link* use_files_tail = NULL;    /*!< Pointer to tail element of used files list             */
+str_link* use_files_head  = NULL;   /*!< Pointer to head element of used files list */
+str_link* use_files_tail  = NULL;   /*!< Pointer to tail element of used files list */
 
-str_link* no_score_head = NULL;     /*!< Pointer to head element of functional units not-to-score list   */
-str_link* no_score_tail = NULL;     /*!< Pointer to tail element of functional units not-to-score list   */
+str_link* no_score_head   = NULL;   /*!< Pointer to head element of functional units not-to-score list */
+str_link* no_score_tail   = NULL;   /*!< Pointer to tail element of functional units not-to-score list */
 
-str_link* extensions_head = NULL;   /*!< Pointer to head element of extensions list             */
-str_link* extensions_tail = NULL;   /*!< Pointer to tail element of extensions list             */
+str_link* extensions_head = NULL;   /*!< Pointer to head element of extensions list */
+str_link* extensions_tail = NULL;   /*!< Pointer to tail element of extensions list */
 
-funit_link* funit_head       = NULL;    /*!< Pointer to head element of functional unit list */
-funit_link* funit_tail       = NULL;    /*!< Pointer to tail element of functional unit list */
+funit_link* funit_head    = NULL;   /*!< Pointer to head element of functional unit list */
+funit_link* funit_tail    = NULL;   /*!< Pointer to tail element of functional unit list */
 
-funit_inst* instance_root = NULL;     /*!< Pointer to root of functional unit instance tree */
+funit_inst* instance_root = NULL;   /*!< Pointer to root of functional unit instance tree */
 
-extern char* top_module;
-extern char* top_instance;
-extern char  user_msg[USER_MSG_LENGTH];
-extern char  leading_hierarchy[4096];
+extern char*  top_module;
+extern char*  top_instance;
+extern char   user_msg[USER_MSG_LENGTH];
+extern char** leading_hierarchies;
+extern int    leading_hier_num;
+extern bool   leading_hiers_differ;
 
 /*!
  Creates root module for module_node tree.  If a module_node points to this node as its parent,
@@ -67,7 +69,8 @@ extern char  leading_hierarchy[4096];
 void search_init() {
 
   func_unit* mod;            /* Pointer to newly created module node from top module */
-  char       dutname[4096];  /* Instance name of top-level DUT module                */
+  char       dutname[4096];  /* Instance name of top-level DUT module */
+  char       lhier[4096];    /* Temporary storage of leading hierarchy */
 
   mod       = funit_create();
   mod->type = FUNIT_MODULE;
@@ -87,14 +90,20 @@ void search_init() {
   if( top_instance == NULL ) {
     top_instance = strdup_safe( top_module, __FILE__, __LINE__ );
     instance_parse_add( &instance_root, NULL, mod, top_instance, NULL );
-    leading_hierarchy[0] = '*';
-    leading_hierarchy[1] = '\0';
+    leading_hierarchies = (char**)realloc( leading_hierarchies, (sizeof( char* ) * (leading_hier_num + 1)) );
+    leading_hierarchies[leading_hier_num] = strdup_safe( "*", __FILE__, __LINE__ );
+    leading_hier_num++;
   } else {
-    scope_extract_back( top_instance, dutname, leading_hierarchy );
+    scope_extract_back( top_instance, dutname, lhier );
     instance_parse_add( &instance_root, NULL, mod, dutname, NULL );
-    if( leading_hierarchy[0] == '\0' ) {
-      leading_hierarchy[0] = '*';
-      leading_hierarchy[1] = '\0';
+    if( lhier[0] == '\0' ) {
+      leading_hierarchies = (char**)realloc( leading_hierarchies, (sizeof( char* ) * (leading_hier_num + 1)) );
+      leading_hierarchies[leading_hier_num] = strdup_safe( "*", __FILE__, __LINE__ );
+      leading_hier_num++;
+    } else {
+      leading_hierarchies = (char**)realloc( leading_hierarchies, (sizeof( char* ) * (leading_hier_num + 1)) );
+      leading_hierarchies[leading_hier_num] = strdup_safe( lhier, __FILE__, __LINE__ );
+      leading_hier_num++;
     }
   }
 
@@ -266,6 +275,11 @@ void search_free_lists() {
 
 /*
  $Log$
+ Revision 1.23  2006/03/28 22:28:28  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.22  2006/02/16 21:19:26  phase1geo
  Adding support for arrays of instances.  Also fixing some memory problems for
  constant functions and fixed binding problems when hierarchical references are

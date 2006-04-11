@@ -54,11 +54,11 @@
 extern char        user_msg[USER_MSG_LENGTH];
 extern funit_inst* instance_root;
 extern funit_link* funit_head;
-extern int         merged_code;
-extern char*       merge_in0;
-extern char*       merge_in1;
-extern char        leading_hierarchy[4096];
-extern char        second_hierarchy[4096];
+extern int         merge_in_num;
+extern char**      merge_in;
+extern char**      leading_hierarchies;
+extern int         leading_hier_num;
+extern bool        leading_hiers_differ;
 extern bool        flag_exclude_assign;
 extern bool        flag_exclude_always;
 extern bool        flag_exclude_initial;
@@ -494,6 +494,8 @@ void report_gather_funit_stats( funit_link* head ) {
 */
 void report_print_header( FILE* ofile ) {
 
+  int i;  /* Loop iterator */
+
   switch( report_comb_depth ) {
     case REPORT_SUMMARY  :
       fprintf( ofile, "                            :::::::::::::::::::::::::::::::::::::::::::::::::::::\n" );
@@ -545,29 +547,31 @@ void report_print_header( FILE* ofile ) {
     fprintf( ofile, "\n" );
   }
 
-  if( merged_code != INFO_NOT_MERGED ) {
+  if( merge_in_num > 0 ) {
 
-    if( merged_code == INFO_ONE_MERGED ) {
+    if( merge_in_num == 1 ) {
 
       fprintf( ofile, "* Report generated from CDD file that was merged from the following files with the following leading hierarchies:\n" );
       fprintf( ofile, "    Filename                                           Leading Hierarchy\n" );
       fprintf( ofile, "    -----------------------------------------------------------------------------------------------------------------\n" );
-      fprintf( ofile, "    %-49.49s  %-62.62s\n", input_db,  leading_hierarchy );
-      fprintf( ofile, "    %-49.49s  %-62.62s\n\n", merge_in0, second_hierarchy  ); 
+      fprintf( ofile, "    %-49.49s  %-62.62s\n",   input_db,    leading_hierarchies[0] );
+      fprintf( ofile, "    %-49.49s  %-62.62s\n\n", merge_in[0], leading_hierarchies[1] ); 
 
-      if( report_instance && (strcmp( leading_hierarchy, second_hierarchy ) != 0) ) {
+      if( report_instance && leading_hiers_differ ) {
         fprintf( ofile, "* Merged CDD files contain different leading hierarchies, will use value \"<NA>\" to represent leading hierarchy.\n\n" );
       }
 
-    } else if( merged_code == INFO_TWO_MERGED ) {
+    } else {
 
       fprintf( ofile, "* Report generated from CDD file that was merged from the following files:\n" );
       fprintf( ofile, "    Filename                                           Leading Hierarchy\n" );
       fprintf( ofile, "    -----------------------------------------------------------------------------------------------------------------\n" );
-      fprintf( ofile, "    %-49.49s  %-62.62s\n", merge_in0, leading_hierarchy );
-      fprintf( ofile, "    %-49.49s  %-62.62s\n\n", merge_in1, second_hierarchy  ); 
 
-      if( report_instance && (strcmp( leading_hierarchy, second_hierarchy ) != 0) ) {
+      for( i=0; i<merge_in_num; i++ ) {
+        fprintf( ofile, "    %-49.49s  %-62.62s\n", merge_in[i], leading_hierarchies[i+1] );
+      }
+
+      if( report_instance && leading_hiers_differ ) {
         fprintf( ofile, "* Merged CDD files contain different leading hierarchies, will use value \"<NA>\" to represent leading hierarchy.\n\n" );
       }
 
@@ -798,6 +802,9 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.59  2006/04/07 03:47:50  phase1geo
+ Fixing run-time issues with VPI.  Things are running correctly now with IV.
+
  Revision 1.58  2006/04/05 15:19:18  phase1geo
  Adding support for FSM coverage output in the GUI.  Started adding components
  for assertion coverage to GUI and report functions though there is no functional

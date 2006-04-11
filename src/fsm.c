@@ -52,8 +52,9 @@ extern funit_link*  funit_head;
 extern bool         report_covered; 
 extern unsigned int report_comb_depth;
 extern bool         report_instance;
-extern char         leading_hierarchy[4096];
-extern char         second_hierarchy[4096];
+extern char**       leading_hierarchies;
+extern int          leading_hier_num;
+extern bool         leading_hiers_differ;
 extern char         user_msg[USER_MSG_LENGTH];
 
 
@@ -1058,10 +1059,11 @@ void fsm_report( FILE* ofile, bool verbose ) {
 
   if( report_instance ) {
 
-    if( strcmp( leading_hierarchy, second_hierarchy ) != 0 ) {
+    if( leading_hiers_differ ) {
       strcpy( tmp, "<NA>" );
     } else {
-      strcpy( tmp, leading_hierarchy );
+      assert( leading_hier_num > 0 );
+      strcpy( tmp, leading_hierarchies[0] );
     }
 
     fprintf( ofile, "                                                               State                             Arc\n" );
@@ -1140,6 +1142,11 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.51  2006/04/05 15:19:18  phase1geo
+ Adding support for FSM coverage output in the GUI.  Started adding components
+ for assertion coverage to GUI and report functions though there is no functional
+ support for this at this time.
+
  Revision 1.50  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

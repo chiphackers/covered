@@ -81,10 +81,11 @@
  in a functional unit instance instead of individual head and tail pointers.  The defparams in this functional
  unit can refer to any functional unit instance, however.
 */
-funit_inst* defparam_list = NULL;
+funit_inst*   defparam_list = NULL;
 
-extern char user_msg[USER_MSG_LENGTH];
-extern char leading_hierarchy[4096];
+extern char   user_msg[USER_MSG_LENGTH];
+extern char** leading_hierarchies;
+extern int    leading_hier_num;
 
 
 /*!
@@ -743,11 +744,13 @@ inst_parm* param_has_defparam( mod_parm* mparm, funit_inst* inst ) {
     scope[0] = '\0';
     instance_gen_scope( scope, inst );
 
+    assert( leading_hier_num > 0 );
+
     /* Generate full hierarchy of this parameter */
-    if( strcmp( leading_hierarchy, "*" ) == 0 ) {
+    if( strcmp( leading_hierarchies[0], "*" ) == 0 ) {
       snprintf( parm_scope, 4096, "%s.%s", scope, mparm->name );
     } else {
-      snprintf( parm_scope, 4096, "%s.%s.%s", leading_hierarchy, scope, mparm->name );
+      snprintf( parm_scope, 4096, "%s.%s.%s", leading_hierarchies[0], scope, mparm->name );
     }
 
     icurr = defparam_list->param_head;
@@ -992,6 +995,11 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.60  2006/03/28 22:28:27  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.59  2006/03/27 23:25:30  phase1geo
  Updating development documentation for 0.4 stable release.
 

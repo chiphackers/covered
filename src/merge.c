@@ -30,17 +30,16 @@ extern int merged_code;
 char* merged_file = NULL;
 
 /*!
- Specifies the name of the input CDD file that will be read in first.  If the user
- does not specify an output CDD filename (i.e., no -o option is specified), the name
- of merge_in0 will be used for merged_file.
+ Specifies the names of the input CDD files.  If the user does not specify an output
+ CDD filename (i.e., no -o option is specified), the name of merge_in[0] will be used
+ for merged_file.
 */
-char* merge_in0   = NULL;
+char** merge_in   = NULL;
 
 /*!
- Specifies the name of the input CDD file that will be read in second (this data
- is merged into the first CDD input.
+ Specifies the number of valid entries in the merge_in array.
 */
-char* merge_in1   = NULL;
+int merge_in_num  = 0;
 
 extern char user_msg[USER_MSG_LENGTH];
 
@@ -50,7 +49,7 @@ extern char user_msg[USER_MSG_LENGTH];
 void merge_usage() {
 
   printf( "\n" );
-  printf( "Usage:  covered merge [<options>] <existing_database> <database_to_merge>\n" );
+  printf( "Usage:  covered merge [<options>] <existing_database> <database_to_merge>+\n" );
   printf( "\n" );
   printf( "   Options:\n" );
   printf( "      -o <filename>           File to output new database to.  If this argument is not\n" );
@@ -77,7 +76,7 @@ void merge_usage() {
 bool merge_parse_args( int argc, int last_arg, char** argv ) {
 
   bool retval = TRUE;  /* Return value for this function */
-  int  i;              /* Loop iterator                  */
+  int  i;              /* Loop iterator */
 
   i = last_arg + 1;
 
@@ -99,43 +98,40 @@ bool merge_parse_args( int argc, int last_arg, char** argv ) {
         retval = FALSE;
       }
 
-    } else if( (i + 2) == argc ) {
-
-      /* Second to last argument.  This must be filename */
-      if( file_exists( argv[i] ) ) {
-        if( merged_file == NULL ) {
-          merged_file = strdup_safe( argv[i], __FILE__, __LINE__ );
-          merged_code = INFO_ONE_MERGED;
-        } else {
-          merged_code = INFO_TWO_MERGED;
-        }
-        merge_in0 = strdup_safe( argv[i], __FILE__, __LINE__ );
-      } else {
-        snprintf( user_msg, USER_MSG_LENGTH, "First CDD (%s) file does not exist", argv[i] );
-        print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        retval = FALSE;
-      }
-
-    } else if( (i + 1) == argc ) {
-
-      /* Last argument.  This must be filename */
-      if( file_exists( argv[i] ) ) {
-        merge_in1 = strdup_safe( argv[i], __FILE__, __LINE__ );
-      } else {
-        snprintf( user_msg, USER_MSG_LENGTH, "Second CDD (%s) file does not exist", argv[i] );
-        print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        retval = FALSE;
-      }
-
     } else {
 
-       snprintf( user_msg, USER_MSG_LENGTH, "Unknown merge command option \"%s\".  See \"covered -h\" for more information.", argv[i] );
-       print_output( user_msg, FATAL, __FILE__, __LINE__ );
-       retval = FALSE;
+      /* The name of a file to merge */
+      if( file_exists( argv[i] ) ) {
+
+        /* If we have not specified a merge file explicitly, set it implicitly to the first CDD file found */
+        if( (merge_in_num == 0) && (merged_file == NULL) ) {
+          merged_file = strdup_safe( argv[i], __FILE__, __LINE__ );
+        }
+
+        /* Add the specified merge file to the list */
+        merge_in               = (char**)realloc( merge_in, (sizeof( char* ) * merge_in_num) );
+        merge_in[merge_in_num] = strdup_safe( argv[i], __FILE__, __LINE__ );
+        merge_in_num++;
+
+      } else {
+
+        snprintf( user_msg, USER_MSG_LENGTH, "CDD file (%s) does not exist", argv[i] );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        retval = FALSE;
+
+      }
 
     }
 
     i++;
+
+  }
+
+  /* Check to make sure that the user specified at least two files to merge */
+  if( retval && (merge_in_num < 2) ) {
+
+    print_output( "Must specify at least two CDD files to merge", FATAL, __FILE__, __LINE__ );
+    retval = FALSE;
 
   }
 
@@ -155,6 +151,7 @@ bool merge_parse_args( int argc, int last_arg, char** argv ) {
 int command_merge( int argc, int last_arg, char** argv ) {
 
   int retval = 0;  /* Return value of this function */
+  int i;           /* Loop iterator */
 
   /* Parse score command-line */
   if( merge_parse_args( argc, last_arg, argv ) ) {
@@ -168,12 +165,14 @@ int command_merge( int argc, int last_arg, char** argv ) {
     info_initialize();
 
     /* Read in base database */
-    db_read( merge_in0, READ_MODE_MERGE_NO_MERGE );
+    db_read( merge_in[0], READ_MODE_MERGE_NO_MERGE );
     bind_perform( TRUE );
     sim_add_statics();
 
-    /* Read in database to merge */
-    db_read( merge_in1, READ_MODE_MERGE_INST_MERGE );
+    /* Read in databases to merge */
+    for( i=1; i<merge_in_num; i++ ) {
+      db_read( merge_in[i], READ_MODE_MERGE_INST_MERGE );
+    }
 
     /* Write out new database to output file */
     db_write( merged_file, FALSE );
@@ -183,12 +182,14 @@ int command_merge( int argc, int last_arg, char** argv ) {
     /* Close database */
     db_close();
 
-    /* Deallocate memory */
-    free_safe( merged_file );
-    free_safe( merge_in0 );
-    free_safe( merge_in1 );
-
   }
+
+  /* Deallocate memory */
+  free_safe( merged_file );
+  for( i=0; i<merge_in_num; i++ ) {
+    free_safe( merge_in[i] );
+  }
+  free_safe( merge_in );
 
   return( retval );
 
@@ -196,6 +197,9 @@ int command_merge( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.23  2006/04/07 03:47:50  phase1geo
+ Fixing run-time issues with VPI.  Things are running correctly now with IV.
+
  Revision 1.22  2006/01/06 23:39:10  phase1geo
  Started working on removing the need to simulate more than is necessary.  Things
  are pretty broken at this point, but all of the code should be in -- debugging.

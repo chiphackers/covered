@@ -78,8 +78,9 @@ extern funit_link*    funit_head;
 extern bool           report_covered;
 extern unsigned int   report_comb_depth;
 extern bool           report_instance;
-extern char           leading_hierarchy[4096];
-extern char           second_hierarchy[4096];
+extern char**         leading_hierarchies;
+extern int            leading_hier_num;
+extern bool           leading_hiers_differ;
 extern int            line_width;
 extern char           user_msg[USER_MSG_LENGTH];
 extern const exp_info exp_op_info[EXP_OP_NUM];
@@ -2182,10 +2183,11 @@ void combination_report( FILE* ofile, bool verbose ) {
 
   if( report_instance ) {
 
-    if( strcmp( leading_hierarchy, second_hierarchy ) != 0 ) {
+    if( leading_hiers_differ ) {
       strcpy( tmp, "<NA>" );
     } else {
-      strcpy( tmp, leading_hierarchy );
+      assert( leading_hier_num > 0 );
+      strcpy( tmp, leading_hierarchies[0] );
     }
 
     fprintf( ofile, "Instance                                                                    Logic Combinations\n" );
@@ -2221,6 +2223,11 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.137  2006/03/28 22:28:27  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.136  2006/03/27 23:25:30  phase1geo
  Updating development documentation for 0.4 stable release.
 
