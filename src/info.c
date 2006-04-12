@@ -156,7 +156,7 @@ bool info_db_read( char** line ) {
         *line = *line + chars_read;
 
         /* Add merged file */
-        merge_in = (char**)realloc( merge_in, (sizeof( char* ) * merge_in_num) );
+        merge_in = (char**)realloc( merge_in, (sizeof( char* ) * (merge_in_num + 1)) );
         merge_in[merge_in_num] = strdup_safe( tmp1, __FILE__, __LINE__ );
         merge_in_num++;
 
@@ -194,6 +194,9 @@ bool info_db_read( char** line ) {
 
 /*
  $Log$
+ Revision 1.11  2006/04/11 22:42:16  phase1geo
+ First pass at adding multi-file merging.  Still need quite a bit of work here yet.
+
  Revision 1.10  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the
