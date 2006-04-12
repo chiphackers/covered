@@ -17,11 +17,11 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Instance                                           Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                          3/    3/    6       50%
-  <NA>.main.foobar                                   1/    0/    1      100%
+  main                                               3/    3/    6       50%
+  main.foobar                                        1/    0/    1      100%
 ---------------------------------------------------------------------------------------------------------------------
 
-    Module: main, File: always12.v, Instance: <NA>.main
+    Module: main, File: always12.v, Instance: main
     -------------------------------------------------------------------------------------------------------------
     Missed Lines
 
@@ -37,11 +37,11 @@ Instance                                           Hit/ Miss/Total    Percent hi
 Instance                                                   Toggle 0 -> 1                       Toggle 1 -> 0
                                                    Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                          0/    2/    2        0%             0/    2/    2        0%
-  <NA>.main.foobar                                   0/    2/    2        0%             0/    2/    2        0%
+  main                                               0/    2/    2        0%             0/    2/    2        0%
+  main.foobar                                        0/    2/    2        0%             0/    2/    2        0%
 ---------------------------------------------------------------------------------------------------------------------
 
-    Module: main, File: always12.v, Instance: <NA>.main
+    Module: main, File: always12.v, Instance: main
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -52,7 +52,7 @@ Instance                                                   Toggle 0 -> 1        
       b                         0->1: 1'h0
       ......................... 1->0: 1'h0 ...
 
-    Task: main.foobar, File: always12.v, Instance: <NA>.main.foobar
+    Task: main.foobar, File: always12.v, Instance: main.foobar
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -70,11 +70,11 @@ Instance                                                   Toggle 0 -> 1        
 Instance                                                                    Logic Combinations
                                                                       Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                                             2/   3/   5       40%
-  <NA>.main.foobar                                                      1/   1/   2       50%
+  main                                                                  2/   3/   5       40%
+  main.foobar                                                           1/   1/   2       50%
 ---------------------------------------------------------------------------------------------------------------------
 
-    Module: main, File: always12.v, Instance: <NA>.main
+    Module: main, File: always12.v, Instance: main
     -------------------------------------------------------------------------------------------------------------
     Missed Combinations  (* = missed value)
 
@@ -103,7 +103,7 @@ Instance                                                                    Logi
          *   *
 
 
-    Task: main.foobar, File: always12.v, Instance: <NA>.main.foobar
+    Task: main.foobar, File: always12.v, Instance: main.foobar
     -------------------------------------------------------------------------------------------------------------
     Missed Combinations  (* = missed value)
 
@@ -127,7 +127,7 @@ Instance                                                                    Logi
                                                                State                             Arc
 Instance                                          Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                         0/   0/   0      100%            0/   0/   0      100%
-  <NA>.main.foobar                                  0/   0/   0      100%            0/   0/   0      100%
+  main                                              0/   0/   0      100%            0/   0/   0      100%
+  main.foobar                                       0/   0/   0      100%            0/   0/   0      100%
 
 

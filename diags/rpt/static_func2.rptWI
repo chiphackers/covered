@@ -17,24 +17,24 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Instance                                           Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                          0/    0/    0      100%
-  <NA>.main.bar[0]                                   1/    0/    1      100%
-  <NA>.main.bar[1]                                   1/    0/    1      100%
-  <NA>.main.bar[2]                                   1/    0/    1      100%
-  <NA>.main.bar[3]                                   1/    0/    1      100%
-  <NA>.main.bar[4]                                   1/    0/    1      100%
-  <NA>.main.bar[5]                                   1/    0/    1      100%
-  <NA>.main.bar[6]                                   1/    0/    1      100%
-  <NA>.main.bar[7]                                   1/    0/    1      100%
-  <NA>.main.bar[8]                                   1/    0/    1      100%
-  <NA>.main.bar[9]                                   1/    0/    1      100%
-  <NA>.main.bar[10]                                  1/    0/    1      100%
-  <NA>.main.bar[11]                                  1/    0/    1      100%
-  <NA>.main.bar[12]                                  1/    0/    1      100%
-  <NA>.main.bar[13]                                  1/    0/    1      100%
-  <NA>.main.bar[14]                                  1/    0/    1      100%
-  <NA>.main.bar[15]                                  1/    0/    1      100%
-  <NA>.main.const_func                               2/    0/    2      100%
+  main                                               0/    0/    0      100%
+  main.bar[0]                                        1/    0/    1      100%
+  main.bar[1]                                        1/    0/    1      100%
+  main.bar[2]                                        1/    0/    1      100%
+  main.bar[3]                                        1/    0/    1      100%
+  main.bar[4]                                        1/    0/    1      100%
+  main.bar[5]                                        1/    0/    1      100%
+  main.bar[6]                                        1/    0/    1      100%
+  main.bar[7]                                        1/    0/    1      100%
+  main.bar[8]                                        1/    0/    1      100%
+  main.bar[9]                                        1/    0/    1      100%
+  main.bar[10]                                       1/    0/    1      100%
+  main.bar[11]                                       1/    0/    1      100%
+  main.bar[12]                                       1/    0/    1      100%
+  main.bar[13]                                       1/    0/    1      100%
+  main.bar[14]                                       1/    0/    1      100%
+  main.bar[15]                                       1/    0/    1      100%
+  main.const_func                                    2/    0/    2      100%
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -43,27 +43,27 @@ Instance                                           Hit/ Miss/Total    Percent hi
 Instance                                                   Toggle 0 -> 1                       Toggle 1 -> 0
                                                    Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                          0/   16/   16        0%             0/   16/   16        0%
-  <NA>.main.bar[0]                                   0/    2/    2        0%             0/    2/    2        0%
-  <NA>.main.bar[1]                                   0/    2/    2        0%             0/    2/    2        0%
-  <NA>.main.bar[2]                                   0/    2/    2        0%             0/    2/    2        0%
-  <NA>.main.bar[3]                                   0/    2/    2        0%             0/    2/    2        0%
-  <NA>.main.bar[4]                                   0/    2/    2        0%             0/    2/    2        0%
-  <NA>.main.bar[5]                                   0/    2/    2        0%             0/    2/    2        0%
-  <NA>.main.bar[6]                                   0/    2/    2        0%             0/    2/    2        0%
-  <NA>.main.bar[7]                                   0/    2/    2        0%             0/    2/    2        0%
-  <NA>.main.bar[8]                                   0/    2/    2        0%             0/    2/    2        0%
-  <NA>.main.bar[9]                                   0/    2/    2        0%             0/    2/    2        0%
-  <NA>.main.bar[10]                                  0/    2/    2        0%             0/    2/    2        0%
-  <NA>.main.bar[11]                                  0/    2/    2        0%             0/    2/    2        0%
-  <NA>.main.bar[12]                                  0/    2/    2        0%             0/    2/    2        0%
-  <NA>.main.bar[13]                                  0/    2/    2        0%             0/    2/    2        0%
-  <NA>.main.bar[14]                                  0/    2/    2        0%             0/    2/    2        0%
-  <NA>.main.bar[15]                                  0/    2/    2        0%             0/    2/    2        0%
-  <NA>.main.const_func                               1/   63/   64        2%             1/   63/   64        2%
+  main                                               0/   16/   16        0%             0/   16/   16        0%
+  main.bar[0]                                        0/    2/    2        0%             0/    2/    2        0%
+  main.bar[1]                                        0/    2/    2        0%             0/    2/    2        0%
+  main.bar[2]                                        0/    2/    2        0%             0/    2/    2        0%
+  main.bar[3]                                        0/    2/    2        0%             0/    2/    2        0%
+  main.bar[4]                                        0/    2/    2        0%             0/    2/    2        0%
+  main.bar[5]                                        0/    2/    2        0%             0/    2/    2        0%
+  main.bar[6]                                        0/    2/    2        0%             0/    2/    2        0%
+  main.bar[7]                                        0/    2/    2        0%             0/    2/    2        0%
+  main.bar[8]                                        0/    2/    2        0%             0/    2/    2        0%
+  main.bar[9]                                        0/    2/    2        0%             0/    2/    2        0%
+  main.bar[10]                                       0/    2/    2        0%             0/    2/    2        0%
+  main.bar[11]                                       0/    2/    2        0%             0/    2/    2        0%
+  main.bar[12]                                       0/    2/    2        0%             0/    2/    2        0%
+  main.bar[13]                                       0/    2/    2        0%             0/    2/    2        0%
+  main.bar[14]                                       0/    2/    2        0%             0/    2/    2        0%
+  main.bar[15]                                       0/    2/    2        0%             0/    2/    2        0%
+  main.const_func                                    1/   63/   64        2%             1/   63/   64        2%
 ---------------------------------------------------------------------------------------------------------------------
 
-    Module: main, File: static_func2.v, Instance: <NA>.main
+    Module: main, File: static_func2.v, Instance: main
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -72,7 +72,7 @@ Instance                                                   Toggle 0 -> 1        
       a                         0->1: 16'h0000
       ......................... 1->0: 16'h0000 ...
 
-    Module: foo, File: static_func2.v, Instance: <NA>.main.bar[0]
+    Module: foo, File: static_func2.v, Instance: main.bar[0]
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -83,7 +83,7 @@ Instance                                                   Toggle 0 -> 1        
       b                         0->1: 1'h0
       ......................... 1->0: 1'h0 ...
 
-    Module: foo, File: static_func2.v, Instance: <NA>.main.bar[1]
+    Module: foo, File: static_func2.v, Instance: main.bar[1]
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -94,7 +94,7 @@ Instance                                                   Toggle 0 -> 1        
       b                         0->1: 1'h0
       ......................... 1->0: 1'h0 ...
 
-    Module: foo, File: static_func2.v, Instance: <NA>.main.bar[2]
+    Module: foo, File: static_func2.v, Instance: main.bar[2]
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -105,7 +105,7 @@ Instance                                                   Toggle 0 -> 1        
       b                         0->1: 1'h0
       ......................... 1->0: 1'h0 ...
 
-    Module: foo, File: static_func2.v, Instance: <NA>.main.bar[3]
+    Module: foo, File: static_func2.v, Instance: main.bar[3]
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -116,7 +116,7 @@ Instance                                                   Toggle 0 -> 1        
       b                         0->1: 1'h0
       ......................... 1->0: 1'h0 ...
 
-    Module: foo, File: static_func2.v, Instance: <NA>.main.bar[4]
+    Module: foo, File: static_func2.v, Instance: main.bar[4]
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -127,7 +127,7 @@ Instance                                                   Toggle 0 -> 1        
       b                         0->1: 1'h0
       ......................... 1->0: 1'h0 ...
 
-    Module: foo, File: static_func2.v, Instance: <NA>.main.bar[5]
+    Module: foo, File: static_func2.v, Instance: main.bar[5]
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -138,7 +138,7 @@ Instance                                                   Toggle 0 -> 1        
       b                         0->1: 1'h0
       ......................... 1->0: 1'h0 ...
 
-    Module: foo, File: static_func2.v, Instance: <NA>.main.bar[6]
+    Module: foo, File: static_func2.v, Instance: main.bar[6]
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -149,7 +149,7 @@ Instance                                                   Toggle 0 -> 1        
       b                         0->1: 1'h0
       ......................... 1->0: 1'h0 ...
 
-    Module: foo, File: static_func2.v, Instance: <NA>.main.bar[7]
+    Module: foo, File: static_func2.v, Instance: main.bar[7]
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -160,7 +160,7 @@ Instance                                                   Toggle 0 -> 1        
       b                         0->1: 1'h0
       ......................... 1->0: 1'h0 ...
 
-    Module: foo, File: static_func2.v, Instance: <NA>.main.bar[8]
+    Module: foo, File: static_func2.v, Instance: main.bar[8]
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -171,7 +171,7 @@ Instance                                                   Toggle 0 -> 1        
       b                         0->1: 1'h0
       ......................... 1->0: 1'h0 ...
 
-    Module: foo, File: static_func2.v, Instance: <NA>.main.bar[9]
+    Module: foo, File: static_func2.v, Instance: main.bar[9]
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -182,7 +182,7 @@ Instance                                                   Toggle 0 -> 1        
       b                         0->1: 1'h0
       ......................... 1->0: 1'h0 ...
 
-    Module: foo, File: static_func2.v, Instance: <NA>.main.bar[10]
+    Module: foo, File: static_func2.v, Instance: main.bar[10]
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -193,7 +193,7 @@ Instance                                                   Toggle 0 -> 1        
       b                         0->1: 1'h0
       ......................... 1->0: 1'h0 ...
 
-    Module: foo, File: static_func2.v, Instance: <NA>.main.bar[11]
+    Module: foo, File: static_func2.v, Instance: main.bar[11]
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -204,7 +204,7 @@ Instance                                                   Toggle 0 -> 1        
       b                         0->1: 1'h0
       ......................... 1->0: 1'h0 ...
 
-    Module: foo, File: static_func2.v, Instance: <NA>.main.bar[12]
+    Module: foo, File: static_func2.v, Instance: main.bar[12]
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -215,7 +215,7 @@ Instance                                                   Toggle 0 -> 1        
       b                         0->1: 1'h0
       ......................... 1->0: 1'h0 ...
 
-    Module: foo, File: static_func2.v, Instance: <NA>.main.bar[13]
+    Module: foo, File: static_func2.v, Instance: main.bar[13]
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -226,7 +226,7 @@ Instance                                                   Toggle 0 -> 1        
       b                         0->1: 1'h0
       ......................... 1->0: 1'h0 ...
 
-    Module: foo, File: static_func2.v, Instance: <NA>.main.bar[14]
+    Module: foo, File: static_func2.v, Instance: main.bar[14]
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -237,7 +237,7 @@ Instance                                                   Toggle 0 -> 1        
       b                         0->1: 1'h0
       ......................... 1->0: 1'h0 ...
 
-    Module: foo, File: static_func2.v, Instance: <NA>.main.bar[15]
+    Module: foo, File: static_func2.v, Instance: main.bar[15]
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -248,7 +248,7 @@ Instance                                                   Toggle 0 -> 1        
       b                         0->1: 1'h0
       ......................... 1->0: 1'h0 ...
 
-    Function: main.const_func, File: static_func2.v, Instance: <NA>.main.const_func
+    Function: main.const_func, File: static_func2.v, Instance: main.const_func
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -266,27 +266,27 @@ Instance                                                   Toggle 0 -> 1        
 Instance                                                                    Logic Combinations
                                                                       Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                                             0/   0/   0      100%
-  <NA>.main.bar[0]                                                      0/   2/   2        0%
-  <NA>.main.bar[1]                                                      0/   2/   2        0%
-  <NA>.main.bar[2]                                                      0/   2/   2        0%
-  <NA>.main.bar[3]                                                      0/   2/   2        0%
-  <NA>.main.bar[4]                                                      0/   2/   2        0%
-  <NA>.main.bar[5]                                                      0/   2/   2        0%
-  <NA>.main.bar[6]                                                      0/   2/   2        0%
-  <NA>.main.bar[7]                                                      0/   2/   2        0%
-  <NA>.main.bar[8]                                                      0/   2/   2        0%
-  <NA>.main.bar[9]                                                      0/   2/   2        0%
-  <NA>.main.bar[10]                                                     0/   2/   2        0%
-  <NA>.main.bar[11]                                                     0/   2/   2        0%
-  <NA>.main.bar[12]                                                     0/   2/   2        0%
-  <NA>.main.bar[13]                                                     0/   2/   2        0%
-  <NA>.main.bar[14]                                                     0/   2/   2        0%
-  <NA>.main.bar[15]                                                     0/   2/   2        0%
-  <NA>.main.const_func                                                  0/   0/   0      100%
+  main                                                                  0/   0/   0      100%
+  main.bar[0]                                                           0/   2/   2        0%
+  main.bar[1]                                                           0/   2/   2        0%
+  main.bar[2]                                                           0/   2/   2        0%
+  main.bar[3]                                                           0/   2/   2        0%
+  main.bar[4]                                                           0/   2/   2        0%
+  main.bar[5]                                                           0/   2/   2        0%
+  main.bar[6]                                                           0/   2/   2        0%
+  main.bar[7]                                                           0/   2/   2        0%
+  main.bar[8]                                                           0/   2/   2        0%
+  main.bar[9]                                                           0/   2/   2        0%
+  main.bar[10]                                                          0/   2/   2        0%
+  main.bar[11]                                                          0/   2/   2        0%
+  main.bar[12]                                                          0/   2/   2        0%
+  main.bar[13]                                                          0/   2/   2        0%
+  main.bar[14]                                                          0/   2/   2        0%
+  main.bar[15]                                                          0/   2/   2        0%
+  main.const_func                                                       0/   0/   0      100%
 ---------------------------------------------------------------------------------------------------------------------
 
-    Module: foo, File: static_func2.v, Instance: <NA>.main.bar[0]
+    Module: foo, File: static_func2.v, Instance: main.bar[0]
     -------------------------------------------------------------------------------------------------------------
     Missed Combinations  (* = missed value)
 
@@ -303,7 +303,7 @@ Instance                                                                    Logi
          *   *
 
 
-    Module: foo, File: static_func2.v, Instance: <NA>.main.bar[1]
+    Module: foo, File: static_func2.v, Instance: main.bar[1]
     -------------------------------------------------------------------------------------------------------------
     Missed Combinations  (* = missed value)
 
@@ -320,7 +320,7 @@ Instance                                                                    Logi
          *   *
 
 
-    Module: foo, File: static_func2.v, Instance: <NA>.main.bar[2]
+    Module: foo, File: static_func2.v, Instance: main.bar[2]
     -------------------------------------------------------------------------------------------------------------
     Missed Combinations  (* = missed value)
 
@@ -337,7 +337,7 @@ Instance                                                                    Logi
          *   *
 
 
-    Module: foo, File: static_func2.v, Instance: <NA>.main.bar[3]
+    Module: foo, File: static_func2.v, Instance: main.bar[3]
     -------------------------------------------------------------------------------------------------------------
     Missed Combinations  (* = missed value)
 
@@ -354,7 +354,7 @@ Instance                                                                    Logi
          *   *
 
 
-    Module: foo, File: static_func2.v, Instance: <NA>.main.bar[4]
+    Module: foo, File: static_func2.v, Instance: main.bar[4]
     -------------------------------------------------------------------------------------------------------------
     Missed Combinations  (* = missed value)
 
@@ -371,7 +371,7 @@ Instance                                                                    Logi
          *   *
 
 
-    Module: foo, File: static_func2.v, Instance: <NA>.main.bar[5]
+    Module: foo, File: static_func2.v, Instance: main.bar[5]
     -------------------------------------------------------------------------------------------------------------
     Missed Combinations  (* = missed value)
 
@@ -388,7 +388,7 @@ Instance                                                                    Logi
          *   *
 
 
-    Module: foo, File: static_func2.v, Instance: <NA>.main.bar[6]
+    Module: foo, File: static_func2.v, Instance: main.bar[6]
     -------------------------------------------------------------------------------------------------------------
     Missed Combinations  (* = missed value)
 
@@ -405,7 +405,7 @@ Instance                                                                    Logi
          *   *
 
 
-    Module: foo, File: static_func2.v, Instance: <NA>.main.bar[7]
+    Module: foo, File: static_func2.v, Instance: main.bar[7]
     -------------------------------------------------------------------------------------------------------------
     Missed Combinations  (* = missed value)
 
@@ -422,7 +422,7 @@ Instance                                                                    Logi
          *   *
 
 
-    Module: foo, File: static_func2.v, Instance: <NA>.main.bar[8]
+    Module: foo, File: static_func2.v, Instance: main.bar[8]
     -------------------------------------------------------------------------------------------------------------
     Missed Combinations  (* = missed value)
 
@@ -439,7 +439,7 @@ Instance                                                                    Logi
          *   *
 
 
-    Module: foo, File: static_func2.v, Instance: <NA>.main.bar[9]
+    Module: foo, File: static_func2.v, Instance: main.bar[9]
     -------------------------------------------------------------------------------------------------------------
     Missed Combinations  (* = missed value)
 
@@ -456,7 +456,7 @@ Instance                                                                    Logi
          *   *
 
 
-    Module: foo, File: static_func2.v, Instance: <NA>.main.bar[10]
+    Module: foo, File: static_func2.v, Instance: main.bar[10]
     -------------------------------------------------------------------------------------------------------------
     Missed Combinations  (* = missed value)
 
@@ -473,7 +473,7 @@ Instance                                                                    Logi
          *   *
 
 
-    Module: foo, File: static_func2.v, Instance: <NA>.main.bar[11]
+    Module: foo, File: static_func2.v, Instance: main.bar[11]
     -------------------------------------------------------------------------------------------------------------
     Missed Combinations  (* = missed value)
 
@@ -490,7 +490,7 @@ Instance                                                                    Logi
          *   *
 
 
-    Module: foo, File: static_func2.v, Instance: <NA>.main.bar[12]
+    Module: foo, File: static_func2.v, Instance: main.bar[12]
     -------------------------------------------------------------------------------------------------------------
     Missed Combinations  (* = missed value)
 
@@ -507,7 +507,7 @@ Instance                                                                    Logi
          *   *
 
 
-    Module: foo, File: static_func2.v, Instance: <NA>.main.bar[13]
+    Module: foo, File: static_func2.v, Instance: main.bar[13]
     -------------------------------------------------------------------------------------------------------------
     Missed Combinations  (* = missed value)
 
@@ -524,7 +524,7 @@ Instance                                                                    Logi
          *   *
 
 
-    Module: foo, File: static_func2.v, Instance: <NA>.main.bar[14]
+    Module: foo, File: static_func2.v, Instance: main.bar[14]
     -------------------------------------------------------------------------------------------------------------
     Missed Combinations  (* = missed value)
 
@@ -541,7 +541,7 @@ Instance                                                                    Logi
          *   *
 
 
-    Module: foo, File: static_func2.v, Instance: <NA>.main.bar[15]
+    Module: foo, File: static_func2.v, Instance: main.bar[15]
     -------------------------------------------------------------------------------------------------------------
     Missed Combinations  (* = missed value)
 
@@ -565,23 +565,23 @@ Instance                                                                    Logi
                                                                State                             Arc
 Instance                                          Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                         0/   0/   0      100%            0/   0/   0      100%
-  <NA>.main.bar[0]                                  0/   0/   0      100%            0/   0/   0      100%
-  <NA>.main.bar[1]                                  0/   0/   0      100%            0/   0/   0      100%
-  <NA>.main.bar[2]                                  0/   0/   0      100%            0/   0/   0      100%
-  <NA>.main.bar[3]                                  0/   0/   0      100%            0/   0/   0      100%
-  <NA>.main.bar[4]                                  0/   0/   0      100%            0/   0/   0      100%
-  <NA>.main.bar[5]                                  0/   0/   0      100%            0/   0/   0      100%
-  <NA>.main.bar[6]                                  0/   0/   0      100%            0/   0/   0      100%
-  <NA>.main.bar[7]                                  0/   0/   0      100%            0/   0/   0      100%
-  <NA>.main.bar[8]                                  0/   0/   0      100%            0/   0/   0      100%
-  <NA>.main.bar[9]                                  0/   0/   0      100%            0/   0/   0      100%
-  <NA>.main.bar[10]                                 0/   0/   0      100%            0/   0/   0      100%
-  <NA>.main.bar[11]                                 0/   0/   0      100%            0/   0/   0      100%
-  <NA>.main.bar[12]                                 0/   0/   0      100%            0/   0/   0      100%
-  <NA>.main.bar[13]                                 0/   0/   0      100%            0/   0/   0      100%
-  <NA>.main.bar[14]                                 0/   0/   0      100%            0/   0/   0      100%
-  <NA>.main.bar[15]                                 0/   0/   0      100%            0/   0/   0      100%
-  <NA>.main.const_func                              0/   0/   0      100%            0/   0/   0      100%
+  main                                              0/   0/   0      100%            0/   0/   0      100%
+  main.bar[0]                                       0/   0/   0      100%            0/   0/   0      100%
+  main.bar[1]                                       0/   0/   0      100%            0/   0/   0      100%
+  main.bar[2]                                       0/   0/   0      100%            0/   0/   0      100%
+  main.bar[3]                                       0/   0/   0      100%            0/   0/   0      100%
+  main.bar[4]                                       0/   0/   0      100%            0/   0/   0      100%
+  main.bar[5]                                       0/   0/   0      100%            0/   0/   0      100%
+  main.bar[6]                                       0/   0/   0      100%            0/   0/   0      100%
+  main.bar[7]                                       0/   0/   0      100%            0/   0/   0      100%
+  main.bar[8]                                       0/   0/   0      100%            0/   0/   0      100%
+  main.bar[9]                                       0/   0/   0      100%            0/   0/   0      100%
+  main.bar[10]                                      0/   0/   0      100%            0/   0/   0      100%
+  main.bar[11]                                      0/   0/   0      100%            0/   0/   0      100%
+  main.bar[12]                                      0/   0/   0      100%            0/   0/   0      100%
+  main.bar[13]                                      0/   0/   0      100%            0/   0/   0      100%
+  main.bar[14]                                      0/   0/   0      100%            0/   0/   0      100%
+  main.bar[15]                                      0/   0/   0      100%            0/   0/   0      100%
+  main.const_func                                   0/   0/   0      100%            0/   0/   0      100%
 
 

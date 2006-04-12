@@ -17,13 +17,13 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Instance                                           Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                          0/    0/    0      100%
-  <NA>.main.a                                        2/    0/    2      100%
-  <NA>.main.a.foo_begin                              1/    0/    1      100%
-  <NA>.main.b                                        2/    0/    2      100%
-  <NA>.main.b.foo_begin                              1/    0/    1      100%
-  <NA>.main.c                                        2/    0/    2      100%
-  <NA>.main.c.foo_begin                              1/    0/    1      100%
+  main                                               0/    0/    0      100%
+  main.a                                             2/    0/    2      100%
+  main.a.foo_begin                                   1/    0/    1      100%
+  main.b                                             2/    0/    2      100%
+  main.b.foo_begin                                   1/    0/    1      100%
+  main.c                                             2/    0/    2      100%
+  main.c.foo_begin                                   1/    0/    1      100%
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -32,16 +32,16 @@ Instance                                           Hit/ Miss/Total    Percent hi
 Instance                                                   Toggle 0 -> 1                       Toggle 1 -> 0
                                                    Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                          0/    0/    0      100%             0/    0/    0      100%
-  <NA>.main.a                                        1/   33/   34        3%             0/   34/   34        0%
-  <NA>.main.a.foo_begin                              0/    5/    5        0%             0/    5/    5        0%
-  <NA>.main.b                                        2/   33/   35        6%             0/   35/   35        0%
-  <NA>.main.b.foo_begin                              0/    4/    4        0%             0/    4/    4        0%
-  <NA>.main.c                                        1/   32/   33        3%             0/   33/   33        0%
-  <NA>.main.c.foo_begin                              0/    6/    6        0%             0/    6/    6        0%
+  main                                               0/    0/    0      100%             0/    0/    0      100%
+  main.a                                             1/   33/   34        3%             0/   34/   34        0%
+  main.a.foo_begin                                   0/    5/    5        0%             0/    5/    5        0%
+  main.b                                             2/   33/   35        6%             0/   35/   35        0%
+  main.b.foo_begin                                   0/    4/    4        0%             0/    4/    4        0%
+  main.c                                             1/   32/   33        3%             0/   33/   33        0%
+  main.c.foo_begin                                   0/    6/    6        0%             0/    6/    6        0%
 ---------------------------------------------------------------------------------------------------------------------
 
-    Module: foo, File: param10.5.v, Instance: <NA>.main.a
+    Module: foo, File: param10.5.v, Instance: main.a
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -52,7 +52,7 @@ Instance                                                   Toggle 0 -> 1        
       c                         0->1: 32'h0000_0002
       ......................... 1->0: 32'h0000_0000 ...
 
-    Named Block: foo.foo_begin, File: param10.5.v, Instance: <NA>.main.a.foo_begin
+    Named Block: foo.foo_begin, File: param10.5.v, Instance: main.a.foo_begin
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -61,7 +61,7 @@ Instance                                                   Toggle 0 -> 1        
       a                         0->1: 5'h00
       ......................... 1->0: 5'h00 ...
 
-    Module: foo, File: param10.5.v, Instance: <NA>.main.b
+    Module: foo, File: param10.5.v, Instance: main.b
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -72,7 +72,7 @@ Instance                                                   Toggle 0 -> 1        
       c                         0->1: 32'h0000_0003
       ......................... 1->0: 32'h0000_0000 ...
 
-    Named Block: foo.foo_begin, File: param10.5.v, Instance: <NA>.main.b.foo_begin
+    Named Block: foo.foo_begin, File: param10.5.v, Instance: main.b.foo_begin
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -81,7 +81,7 @@ Instance                                                   Toggle 0 -> 1        
       a                         0->1: 4'h0
       ......................... 1->0: 4'h0 ...
 
-    Module: foo, File: param10.5.v, Instance: <NA>.main.c
+    Module: foo, File: param10.5.v, Instance: main.c
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -92,7 +92,7 @@ Instance                                                   Toggle 0 -> 1        
       c                         0->1: 32'h0000_0001
       ......................... 1->0: 32'h0000_0000 ...
 
-    Named Block: foo.foo_begin, File: param10.5.v, Instance: <NA>.main.c.foo_begin
+    Named Block: foo.foo_begin, File: param10.5.v, Instance: main.c.foo_begin
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -108,13 +108,13 @@ Instance                                                   Toggle 0 -> 1        
 Instance                                                                    Logic Combinations
                                                                       Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                                             0/   0/   0      100%
-  <NA>.main.a                                                           0/   0/   0      100%
-  <NA>.main.a.foo_begin                                                 0/   0/   0      100%
-  <NA>.main.b                                                           0/   0/   0      100%
-  <NA>.main.b.foo_begin                                                 0/   0/   0      100%
-  <NA>.main.c                                                           0/   0/   0      100%
-  <NA>.main.c.foo_begin                                                 0/   0/   0      100%
+  main                                                                  0/   0/   0      100%
+  main.a                                                                0/   0/   0      100%
+  main.a.foo_begin                                                      0/   0/   0      100%
+  main.b                                                                0/   0/   0      100%
+  main.b.foo_begin                                                      0/   0/   0      100%
+  main.c                                                                0/   0/   0      100%
+  main.c.foo_begin                                                      0/   0/   0      100%
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -123,12 +123,12 @@ Instance                                                                    Logi
                                                                State                             Arc
 Instance                                          Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                         0/   0/   0      100%            0/   0/   0      100%
-  <NA>.main.a                                       0/   0/   0      100%            0/   0/   0      100%
-  <NA>.main.a.foo_begin                             0/   0/   0      100%            0/   0/   0      100%
-  <NA>.main.b                                       0/   0/   0      100%            0/   0/   0      100%
-  <NA>.main.b.foo_begin                             0/   0/   0      100%            0/   0/   0      100%
-  <NA>.main.c                                       0/   0/   0      100%            0/   0/   0      100%
-  <NA>.main.c.foo_begin                             0/   0/   0      100%            0/   0/   0      100%
+  main                                              0/   0/   0      100%            0/   0/   0      100%
+  main.a                                            0/   0/   0      100%            0/   0/   0      100%
+  main.a.foo_begin                                  0/   0/   0      100%            0/   0/   0      100%
+  main.b                                            0/   0/   0      100%            0/   0/   0      100%
+  main.b.foo_begin                                  0/   0/   0      100%            0/   0/   0      100%
+  main.c                                            0/   0/   0      100%            0/   0/   0      100%
+  main.c.foo_begin                                  0/   0/   0      100%            0/   0/   0      100%
 
 

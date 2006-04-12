@@ -827,16 +827,18 @@ void fsm_display_state_verbose( FILE* ofile, fsm* table ) {
 */
 void fsm_display_arc_verbose( FILE* ofile, fsm* table ) {
 
-  bool   trans_known;  /* Set to TRUE if the number of state transitions is known */
-  char   fstr[100];    /* Format string */
-  char   tmp[20];      /* Temporary string */
-  int    width;        /* Width (in characters) of the entire output value */
-  int    val_width;    /* Number of bits in output state expression */
-  int    len_width;    /* Number of characters needed to store the width of the output state expression */
-  char** from_states;  /* String array containing from_state information */
-  char** to_states;    /* String array containing to_state information */
-  int    arc_size;     /* Number of elements in the from_states and to_states arrays */
-  int    i;            /* Loop iterator */
+  bool   trans_known;   /* Set to TRUE if the number of state transitions is known */
+  char   fstr[100];     /* Format string */
+  char   tmp[20];       /* Temporary string */
+  int    width;         /* Width (in characters) of the entire output value */
+  int    val_width;     /* Number of bits in output state expression */
+  int    len_width;     /* Number of characters needed to store the width of the output state expression */
+  char** from_states;   /* String array containing from_state information */
+  char** to_states;     /* String array containing to_state information */
+  int    arc_size;      /* Number of elements in the from_states and to_states arrays */
+  int    i;             /* Loop iterator */
+  char   tmpfst[4096];  /* Temporary string holder for from_state value */
+  char   tmptst[4096];  /* Temporary string holder for to_state value */
 
   /* Figure out if transactions were known */
   trans_known = (arc_get_suppl( table->table, ARC_TRANS_KNOWN ) == 0) ? TRUE : FALSE;
@@ -862,15 +864,15 @@ void fsm_display_arc_verbose( FILE* ofile, fsm* table ) {
   fprintf( ofile, fstr, "From State", "To State" );
   fprintf( ofile, fstr, "==========", "==========" );
 
-  /* Get formatting string for states */
-  width = width - len_width - 2;
-
   /* Get the state transition information */
   arc_get_transitions( &from_states, &to_states, &arc_size, table->table, (report_covered || trans_known), FALSE );
 
   /* Output the information to the specified output stream */
+  snprintf( fstr, 100, "          %%-%d.%ds -> %%-%d.%ds\n", width, width, width, width );
   for( i=0; i<arc_size; i++ ) {
-    fprintf( ofile, fstr, from_states[i], to_states[i] );
+    snprintf( tmpfst, 4096, "%d'h%s", arc_get_width( table->table ), from_states[i] );
+    snprintf( tmptst, 4096, "%d'h%s", arc_get_width( table->table ), to_states[i] );
+    fprintf( ofile, fstr, tmpfst, tmptst );
     free_safe( from_states[i] );
     free_safe( to_states[i] );
   }
@@ -1142,6 +1144,9 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.52  2006/04/11 22:42:16  phase1geo
+ First pass at adding multi-file merging.  Still need quite a bit of work here yet.
+
  Revision 1.51  2006/04/05 15:19:18  phase1geo
  Adding support for FSM coverage output in the GUI.  Started adding components
  for assertion coverage to GUI and report functions though there is no functional

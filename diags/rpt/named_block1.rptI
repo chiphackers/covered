@@ -17,11 +17,11 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Instance                                           Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                          0/    0/    0      100%
-  <NA>.main.foobar                                   1/    0/    1      100%
-  <NA>.main.barfoo                                   1/    0/    1      100%
-  <NA>.main.fooey                                    2/    0/    2      100%
-  <NA>.main.barry                                    2/    0/    2      100%
+  main                                               0/    0/    0      100%
+  main.foobar                                        1/    0/    1      100%
+  main.barfoo                                        1/    0/    1      100%
+  main.fooey                                         2/    0/    2      100%
+  main.barry                                         2/    0/    2      100%
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -30,14 +30,14 @@ Instance                                           Hit/ Miss/Total    Percent hi
 Instance                                                   Toggle 0 -> 1                       Toggle 1 -> 0
                                                    Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                          0/    2/    2        0%             0/    2/    2        0%
-  <NA>.main.foobar                                   0/    0/    0      100%             0/    0/    0      100%
-  <NA>.main.barfoo                                   0/    0/    0      100%             0/    0/    0      100%
-  <NA>.main.fooey                                    0/    2/    2        0%             0/    2/    2        0%
-  <NA>.main.barry                                    0/    2/    2        0%             0/    2/    2        0%
+  main                                               0/    2/    2        0%             0/    2/    2        0%
+  main.foobar                                        0/    0/    0      100%             0/    0/    0      100%
+  main.barfoo                                        0/    0/    0      100%             0/    0/    0      100%
+  main.fooey                                         0/    2/    2        0%             0/    2/    2        0%
+  main.barry                                         0/    2/    2        0%             0/    2/    2        0%
 ---------------------------------------------------------------------------------------------------------------------
 
-    Module: main, File: named_block1.v, Instance: <NA>.main
+    Module: main, File: named_block1.v, Instance: main
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -48,7 +48,7 @@ Instance                                                   Toggle 0 -> 1        
       b                         0->1: 1'h0
       ......................... 1->0: 1'h0 ...
 
-    Named Block: main.fooey, File: named_block1.v, Instance: <NA>.main.fooey
+    Named Block: main.fooey, File: named_block1.v, Instance: main.fooey
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -59,7 +59,7 @@ Instance                                                   Toggle 0 -> 1        
       d                         0->1: 1'h0
       ......................... 1->0: 1'h0 ...
 
-    Named Block: main.barry, File: named_block1.v, Instance: <NA>.main.barry
+    Named Block: main.barry, File: named_block1.v, Instance: main.barry
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -77,14 +77,14 @@ Instance                                                   Toggle 0 -> 1        
 Instance                                                                    Logic Combinations
                                                                       Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                                             0/   0/   0      100%
-  <NA>.main.foobar                                                      0/   0/   0      100%
-  <NA>.main.barfoo                                                      0/   0/   0      100%
-  <NA>.main.fooey                                                       2/   4/   6       33%
-  <NA>.main.barry                                                       2/   6/   8       25%
+  main                                                                  0/   0/   0      100%
+  main.foobar                                                           0/   0/   0      100%
+  main.barfoo                                                           0/   0/   0      100%
+  main.fooey                                                            2/   4/   6       33%
+  main.barry                                                            2/   6/   8       25%
 ---------------------------------------------------------------------------------------------------------------------
 
-    Named Block: main.fooey, File: named_block1.v, Instance: <NA>.main.fooey
+    Named Block: main.fooey, File: named_block1.v, Instance: main.fooey
     -------------------------------------------------------------------------------------------------------------
     Missed Combinations  (* = missed value)
 
@@ -113,7 +113,7 @@ Instance                                                                    Logi
          *         *
 
 
-    Named Block: main.barry, File: named_block1.v, Instance: <NA>.main.barry
+    Named Block: main.barry, File: named_block1.v, Instance: main.barry
     -------------------------------------------------------------------------------------------------------------
     Missed Combinations  (* = missed value)
 
@@ -149,10 +149,10 @@ Instance                                                                    Logi
                                                                State                             Arc
 Instance                                          Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                         0/   0/   0      100%            0/   0/   0      100%
-  <NA>.main.foobar                                  0/   0/   0      100%            0/   0/   0      100%
-  <NA>.main.barfoo                                  0/   0/   0      100%            0/   0/   0      100%
-  <NA>.main.fooey                                   0/   0/   0      100%            0/   0/   0      100%
-  <NA>.main.barry                                   0/   0/   0      100%            0/   0/   0      100%
+  main                                              0/   0/   0      100%            0/   0/   0      100%
+  main.foobar                                       0/   0/   0      100%            0/   0/   0      100%
+  main.barfoo                                       0/   0/   0      100%            0/   0/   0      100%
+  main.fooey                                        0/   0/   0      100%            0/   0/   0      100%
+  main.barry                                        0/   0/   0      100%            0/   0/   0      100%
 
 

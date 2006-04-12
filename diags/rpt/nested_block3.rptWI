@@ -17,11 +17,11 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Instance                                           Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                          1/    0/    1      100%
-  <NA>.main.foo                                      0/    0/    0      100%
-  <NA>.main.foo.foo_block                            3/    0/    3      100%
-  <NA>.main.bar                                      0/    0/    0      100%
-  <NA>.main.bar.bar_block                            2/    0/    2      100%
+  main                                               1/    0/    1      100%
+  main.foo                                           0/    0/    0      100%
+  main.foo.foo_block                                 3/    0/    3      100%
+  main.bar                                           0/    0/    0      100%
+  main.bar.bar_block                                 2/    0/    2      100%
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -30,14 +30,14 @@ Instance                                           Hit/ Miss/Total    Percent hi
 Instance                                                   Toggle 0 -> 1                       Toggle 1 -> 0
                                                    Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                          1/    0/    1      100%             0/    1/    1        0%
-  <NA>.main.foo                                      0/    1/    1        0%             0/    1/    1        0%
-  <NA>.main.foo.foo_block                            0/    1/    1        0%             0/    1/    1        0%
-  <NA>.main.bar                                      0/    0/    0      100%             0/    0/    0      100%
-  <NA>.main.bar.bar_block                            0/    0/    0      100%             0/    0/    0      100%
+  main                                               1/    0/    1      100%             0/    1/    1        0%
+  main.foo                                           0/    1/    1        0%             0/    1/    1        0%
+  main.foo.foo_block                                 0/    1/    1        0%             0/    1/    1        0%
+  main.bar                                           0/    0/    0      100%             0/    0/    0      100%
+  main.bar.bar_block                                 0/    0/    0      100%             0/    0/    0      100%
 ---------------------------------------------------------------------------------------------------------------------
 
-    Module: main, File: nested_block3.v, Instance: <NA>.main
+    Module: main, File: nested_block3.v, Instance: main
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -46,7 +46,7 @@ Instance                                                   Toggle 0 -> 1        
       a                         0->1: 1'h1
       ......................... 1->0: 1'h0 ...
 
-    Task: main.foo, File: nested_block3.v, Instance: <NA>.main.foo
+    Task: main.foo, File: nested_block3.v, Instance: main.foo
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -55,7 +55,7 @@ Instance                                                   Toggle 0 -> 1        
       a                         0->1: 1'h0
       ......................... 1->0: 1'h0 ...
 
-    Named Block: main.foo.foo_block, File: nested_block3.v, Instance: <NA>.main.foo.foo_block
+    Named Block: main.foo.foo_block, File: nested_block3.v, Instance: main.foo.foo_block
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -71,11 +71,11 @@ Instance                                                   Toggle 0 -> 1        
 Instance                                                                    Logic Combinations
                                                                       Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                                             0/   0/   0      100%
-  <NA>.main.foo                                                         0/   0/   0      100%
-  <NA>.main.foo.foo_block                                               0/   0/   0      100%
-  <NA>.main.bar                                                         0/   0/   0      100%
-  <NA>.main.bar.bar_block                                               0/   0/   0      100%
+  main                                                                  0/   0/   0      100%
+  main.foo                                                              0/   0/   0      100%
+  main.foo.foo_block                                                    0/   0/   0      100%
+  main.bar                                                              0/   0/   0      100%
+  main.bar.bar_block                                                    0/   0/   0      100%
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -84,10 +84,10 @@ Instance                                                                    Logi
                                                                State                             Arc
 Instance                                          Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                         0/   0/   0      100%            0/   0/   0      100%
-  <NA>.main.foo                                     0/   0/   0      100%            0/   0/   0      100%
-  <NA>.main.foo.foo_block                           0/   0/   0      100%            0/   0/   0      100%
-  <NA>.main.bar                                     0/   0/   0      100%            0/   0/   0      100%
-  <NA>.main.bar.bar_block                           0/   0/   0      100%            0/   0/   0      100%
+  main                                              0/   0/   0      100%            0/   0/   0      100%
+  main.foo                                          0/   0/   0      100%            0/   0/   0      100%
+  main.foo.foo_block                                0/   0/   0      100%            0/   0/   0      100%
+  main.bar                                          0/   0/   0      100%            0/   0/   0      100%
+  main.bar.bar_block                                0/   0/   0      100%            0/   0/   0      100%
 
 

@@ -17,11 +17,11 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Instance                                           Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                          1/    0/    1      100%
-  <NA>.main.bar                                      1/    1/    2       50%
+  main                                               1/    0/    1      100%
+  main.bar                                           1/    1/    2       50%
 ---------------------------------------------------------------------------------------------------------------------
 
-    Module: foobar, File: multi_exp2.v, Instance: <NA>.main.bar
+    Module: foobar, File: multi_exp2.v, Instance: main.bar
     -------------------------------------------------------------------------------------------------------------
     Missed Lines
 
@@ -35,11 +35,11 @@ Instance                                           Hit/ Miss/Total    Percent hi
 Instance                                                   Toggle 0 -> 1                       Toggle 1 -> 0
                                                    Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                          3/    4/    7       43%             0/    7/    7        0%
-  <NA>.main.bar                                      0/    2/    2        0%             0/    2/    2        0%
+  main                                               3/    4/    7       43%             0/    7/    7        0%
+  main.bar                                           0/    2/    2        0%             0/    2/    2        0%
 ---------------------------------------------------------------------------------------------------------------------
 
-    Module: main, File: multi_exp2.v, Instance: <NA>.main
+    Module: main, File: multi_exp2.v, Instance: main
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -60,7 +60,7 @@ Instance                                                   Toggle 0 -> 1        
       a                         0->1: 1'h1
       ......................... 1->0: 1'h0 ...
 
-    Module: foobar, File: multi_exp2.v, Instance: <NA>.main.bar
+    Module: foobar, File: multi_exp2.v, Instance: main.bar
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -78,11 +78,11 @@ Instance                                                   Toggle 0 -> 1        
 Instance                                                                    Logic Combinations
                                                                       Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                                             9/   7/  16       56%
-  <NA>.main.bar                                                         0/   1/   1        0%
+  main                                                                  9/   7/  16       56%
+  main.bar                                                              0/   1/   1        0%
 ---------------------------------------------------------------------------------------------------------------------
 
-    Module: main, File: multi_exp2.v, Instance: <NA>.main
+    Module: main, File: multi_exp2.v, Instance: main
     -------------------------------------------------------------------------------------------------------------
     Missed Combinations  (* = missed value)
 
@@ -125,7 +125,7 @@ Instance                                                                    Logi
          *               
 
 
-    Module: foobar, File: multi_exp2.v, Instance: <NA>.main.bar
+    Module: foobar, File: multi_exp2.v, Instance: main.bar
     -------------------------------------------------------------------------------------------------------------
     Missed Combinations  (* = missed value)
 
@@ -147,7 +147,7 @@ Instance                                                                    Logi
                                                                State                             Arc
 Instance                                          Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                         0/   0/   0      100%            0/   0/   0      100%
-  <NA>.main.bar                                     0/   0/   0      100%            0/   0/   0      100%
+  main                                              0/   0/   0      100%            0/   0/   0      100%
+  main.bar                                          0/   0/   0      100%            0/   0/   0      100%
 
 

@@ -17,18 +17,18 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Instance                                           Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                          3/    1/    4       75%
-  <NA>.main.delay_for_awhile                         4/    1/    5       80%
+  main                                               3/    1/    4       75%
+  main.delay_for_awhile                              4/    1/    5       80%
 ---------------------------------------------------------------------------------------------------------------------
 
-    Module: main, File: task2.2.v, Instance: <NA>.main
+    Module: main, File: task2.2.v, Instance: main
     -------------------------------------------------------------------------------------------------------------
     Missed Lines
 
             7:     a  = 1'b0
 
 
-    Task: main.delay_for_awhile, File: task2.2.v, Instance: <NA>.main.delay_for_awhile
+    Task: main.delay_for_awhile, File: task2.2.v, Instance: main.delay_for_awhile
     -------------------------------------------------------------------------------------------------------------
     Missed Lines
 
@@ -42,11 +42,11 @@ Instance                                           Hit/ Miss/Total    Percent hi
 Instance                                                   Toggle 0 -> 1                       Toggle 1 -> 0
                                                    Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                          1/    1/    2       50%             0/    2/    2        0%
-  <NA>.main.delay_for_awhile                         1/    0/    1      100%             0/    1/    1        0%
+  main                                               1/    1/    2       50%             0/    2/    2        0%
+  main.delay_for_awhile                              1/    0/    1      100%             0/    1/    1        0%
 ---------------------------------------------------------------------------------------------------------------------
 
-    Module: main, File: task2.2.v, Instance: <NA>.main
+    Module: main, File: task2.2.v, Instance: main
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -57,7 +57,7 @@ Instance                                                   Toggle 0 -> 1        
       c                         0->1: 1'h1
       ......................... 1->0: 1'h0 ...
 
-    Task: main.delay_for_awhile, File: task2.2.v, Instance: <NA>.main.delay_for_awhile
+    Task: main.delay_for_awhile, File: task2.2.v, Instance: main.delay_for_awhile
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -73,11 +73,11 @@ Instance                                                   Toggle 0 -> 1        
 Instance                                                                    Logic Combinations
                                                                       Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                                             0/   0/   0      100%
-  <NA>.main.delay_for_awhile                                            1/   1/   2       50%
+  main                                                                  0/   0/   0      100%
+  main.delay_for_awhile                                                 1/   1/   2       50%
 ---------------------------------------------------------------------------------------------------------------------
 
-    Task: main.delay_for_awhile, File: task2.2.v, Instance: <NA>.main.delay_for_awhile
+    Task: main.delay_for_awhile, File: task2.2.v, Instance: main.delay_for_awhile
     -------------------------------------------------------------------------------------------------------------
     Missed Combinations  (* = missed value)
 
@@ -99,7 +99,7 @@ Instance                                                                    Logi
                                                                State                             Arc
 Instance                                          Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                         0/   0/   0      100%            0/   0/   0      100%
-  <NA>.main.delay_for_awhile                        0/   0/   0      100%            0/   0/   0      100%
+  main                                              0/   0/   0      100%            0/   0/   0      100%
+  main.delay_for_awhile                             0/   0/   0      100%            0/   0/   0      100%
 
 

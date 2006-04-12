@@ -17,10 +17,10 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Instance                                           Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                          0/    0/    0      100%
-  <NA>.main.bar                                      1/    0/    1      100%
-  <NA>.main.bar.foo_named_block                      1/    0/    1      100%
-  <NA>.main.bar.foo_func                             1/    0/    1      100%
+  main                                               0/    0/    0      100%
+  main.bar                                           1/    0/    1      100%
+  main.bar.foo_named_block                           1/    0/    1      100%
+  main.bar.foo_func                                  1/    0/    1      100%
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -29,13 +29,13 @@ Instance                                           Hit/ Miss/Total    Percent hi
 Instance                                                   Toggle 0 -> 1                       Toggle 1 -> 0
                                                    Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                          0/    0/    0      100%             0/    0/    0      100%
-  <NA>.main.bar                                      0/    4/    4        0%             0/    4/    4        0%
-  <NA>.main.bar.foo_named_block                      0/    0/    0      100%             0/    0/    0      100%
-  <NA>.main.bar.foo_func                             0/    2/    2        0%             0/    2/    2        0%
+  main                                               0/    0/    0      100%             0/    0/    0      100%
+  main.bar                                           0/    4/    4        0%             0/    4/    4        0%
+  main.bar.foo_named_block                           0/    0/    0      100%             0/    0/    0      100%
+  main.bar.foo_func                                  0/    2/    2        0%             0/    2/    2        0%
 ---------------------------------------------------------------------------------------------------------------------
 
-    Module: foo_module, File: ./lib/foo_module.v, Instance: <NA>.main.bar
+    Module: foo_module, File: ./lib/foo_module.v, Instance: main.bar
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -50,7 +50,7 @@ Instance                                                   Toggle 0 -> 1        
       foo_d                     0->1: 1'h0
       ......................... 1->0: 1'h0 ...
 
-    Function: foo_module.foo_func, File: ./lib/foo_module.v, Instance: <NA>.main.bar.foo_func
+    Function: foo_module.foo_func, File: ./lib/foo_module.v, Instance: main.bar.foo_func
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -68,13 +68,13 @@ Instance                                                   Toggle 0 -> 1        
 Instance                                                                    Logic Combinations
                                                                       Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                                             0/   0/   0      100%
-  <NA>.main.bar                                                         1/   1/   2       50%
-  <NA>.main.bar.foo_named_block                                         0/   0/   0      100%
-  <NA>.main.bar.foo_func                                                1/   1/   2       50%
+  main                                                                  0/   0/   0      100%
+  main.bar                                                              1/   1/   2       50%
+  main.bar.foo_named_block                                              0/   0/   0      100%
+  main.bar.foo_func                                                     1/   1/   2       50%
 ---------------------------------------------------------------------------------------------------------------------
 
-    Module: foo_module, File: ./lib/foo_module.v, Instance: <NA>.main.bar
+    Module: foo_module, File: ./lib/foo_module.v, Instance: main.bar
     -------------------------------------------------------------------------------------------------------------
     Missed Combinations  (* = missed value)
 
@@ -91,7 +91,7 @@ Instance                                                                    Logi
          *    
 
 
-    Function: foo_module.foo_func, File: ./lib/foo_module.v, Instance: <NA>.main.bar.foo_func
+    Function: foo_module.foo_func, File: ./lib/foo_module.v, Instance: main.bar.foo_func
     -------------------------------------------------------------------------------------------------------------
     Missed Combinations  (* = missed value)
 
@@ -115,9 +115,9 @@ Instance                                                                    Logi
                                                                State                             Arc
 Instance                                          Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                         0/   0/   0      100%            0/   0/   0      100%
-  <NA>.main.bar                                     0/   0/   0      100%            0/   0/   0      100%
-  <NA>.main.bar.foo_named_block                     0/   0/   0      100%            0/   0/   0      100%
-  <NA>.main.bar.foo_func                            0/   0/   0      100%            0/   0/   0      100%
+  main                                              0/   0/   0      100%            0/   0/   0      100%
+  main.bar                                          0/   0/   0      100%            0/   0/   0      100%
+  main.bar.foo_named_block                          0/   0/   0      100%            0/   0/   0      100%
+  main.bar.foo_func                                 0/   0/   0      100%            0/   0/   0      100%
 
 

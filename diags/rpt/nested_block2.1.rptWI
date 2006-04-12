@@ -17,9 +17,9 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Instance                                           Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                          1/    0/    1      100%
-  <NA>.main.foo                                      1/    0/    1      100%
-  <NA>.main.foo.foo_block                            1/    0/    1      100%
+  main                                               1/    0/    1      100%
+  main.foo                                           1/    0/    1      100%
+  main.foo.foo_block                                 1/    0/    1      100%
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -28,12 +28,12 @@ Instance                                           Hit/ Miss/Total    Percent hi
 Instance                                                   Toggle 0 -> 1                       Toggle 1 -> 0
                                                    Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                          0/    2/    2        0%             0/    2/    2        0%
-  <NA>.main.foo                                      0/    3/    3        0%             0/    3/    3        0%
-  <NA>.main.foo.foo_block                            0/    0/    0      100%             0/    0/    0      100%
+  main                                               0/    2/    2        0%             0/    2/    2        0%
+  main.foo                                           0/    3/    3        0%             0/    3/    3        0%
+  main.foo.foo_block                                 0/    0/    0      100%             0/    0/    0      100%
 ---------------------------------------------------------------------------------------------------------------------
 
-    Module: main, File: nested_block2.1.v, Instance: <NA>.main
+    Module: main, File: nested_block2.1.v, Instance: main
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -44,7 +44,7 @@ Instance                                                   Toggle 0 -> 1        
       a                         0->1: 1'h0
       ......................... 1->0: 1'h0 ...
 
-    Function: main.foo, File: nested_block2.1.v, Instance: <NA>.main.foo
+    Function: main.foo, File: nested_block2.1.v, Instance: main.foo
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -64,12 +64,12 @@ Instance                                                   Toggle 0 -> 1        
 Instance                                                                    Logic Combinations
                                                                       Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                                             1/   1/   2       50%
-  <NA>.main.foo                                                         1/   1/   2       50%
-  <NA>.main.foo.foo_block                                               0/   0/   0      100%
+  main                                                                  1/   1/   2       50%
+  main.foo                                                              1/   1/   2       50%
+  main.foo.foo_block                                                    0/   0/   0      100%
 ---------------------------------------------------------------------------------------------------------------------
 
-    Module: main, File: nested_block2.1.v, Instance: <NA>.main
+    Module: main, File: nested_block2.1.v, Instance: main
     -------------------------------------------------------------------------------------------------------------
     Missed Combinations  (* = missed value)
 
@@ -86,7 +86,7 @@ Instance                                                                    Logi
          *    
 
 
-    Function: main.foo, File: nested_block2.1.v, Instance: <NA>.main.foo
+    Function: main.foo, File: nested_block2.1.v, Instance: main.foo
     -------------------------------------------------------------------------------------------------------------
     Missed Combinations  (* = missed value)
 
@@ -110,8 +110,8 @@ Instance                                                                    Logi
                                                                State                             Arc
 Instance                                          Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                         0/   0/   0      100%            0/   0/   0      100%
-  <NA>.main.foo                                     0/   0/   0      100%            0/   0/   0      100%
-  <NA>.main.foo.foo_block                           0/   0/   0      100%            0/   0/   0      100%
+  main                                              0/   0/   0      100%            0/   0/   0      100%
+  main.foo                                          0/   0/   0      100%            0/   0/   0      100%
+  main.foo.foo_block                                0/   0/   0      100%            0/   0/   0      100%
 
 

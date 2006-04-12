@@ -17,9 +17,9 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Instance                                           Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                          0/    0/    0      100%
-  <NA>.main.foo                                      0/    0/    0      100%
-  <NA>.main.foo.bar                                  3/    0/    3      100%
+  main                                               0/    0/    0      100%
+  main.foo                                           0/    0/    0      100%
+  main.foo.bar                                       3/    0/    3      100%
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -28,12 +28,12 @@ Instance                                           Hit/ Miss/Total    Percent hi
 Instance                                                   Toggle 0 -> 1                       Toggle 1 -> 0
                                                    Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                          0/    1/    1        0%             0/    1/    1        0%
-  <NA>.main.foo                                      0/    1/    1        0%             0/    1/    1        0%
-  <NA>.main.foo.bar                                  0/    1/    1        0%             0/    1/    1        0%
+  main                                               0/    1/    1        0%             0/    1/    1        0%
+  main.foo                                           0/    1/    1        0%             0/    1/    1        0%
+  main.foo.bar                                       0/    1/    1        0%             0/    1/    1        0%
 ---------------------------------------------------------------------------------------------------------------------
 
-    Module: main, File: nested_block1.v, Instance: <NA>.main
+    Module: main, File: nested_block1.v, Instance: main
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -42,7 +42,7 @@ Instance                                                   Toggle 0 -> 1        
       a                         0->1: 1'h0
       ......................... 1->0: 1'h0 ...
 
-    Named Block: main.foo, File: nested_block1.v, Instance: <NA>.main.foo
+    Named Block: main.foo, File: nested_block1.v, Instance: main.foo
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -51,7 +51,7 @@ Instance                                                   Toggle 0 -> 1        
       b                         0->1: 1'h0
       ......................... 1->0: 1'h0 ...
 
-    Named Block: main.foo.bar, File: nested_block1.v, Instance: <NA>.main.foo.bar
+    Named Block: main.foo.bar, File: nested_block1.v, Instance: main.foo.bar
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -67,9 +67,9 @@ Instance                                                   Toggle 0 -> 1        
 Instance                                                                    Logic Combinations
                                                                       Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                                             0/   0/   0      100%
-  <NA>.main.foo                                                         0/   0/   0      100%
-  <NA>.main.foo.bar                                                     0/   0/   0      100%
+  main                                                                  0/   0/   0      100%
+  main.foo                                                              0/   0/   0      100%
+  main.foo.bar                                                          0/   0/   0      100%
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -78,8 +78,8 @@ Instance                                                                    Logi
                                                                State                             Arc
 Instance                                          Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                         0/   0/   0      100%            0/   0/   0      100%
-  <NA>.main.foo                                     0/   0/   0      100%            0/   0/   0      100%
-  <NA>.main.foo.bar                                 0/   0/   0      100%            0/   0/   0      100%
+  main                                              0/   0/   0      100%            0/   0/   0      100%
+  main.foo                                          0/   0/   0      100%            0/   0/   0      100%
+  main.foo.bar                                      0/   0/   0      100%            0/   0/   0      100%
 
 

@@ -17,12 +17,12 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Instance                                           Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                          3/    0/    3      100%
-  <NA>.main.fsm1                                     4/    0/    4      100%
-  <NA>.main.fsm2                                     3/    1/    4       75%
+  main                                               3/    0/    3      100%
+  main.fsm1                                          4/    0/    4      100%
+  main.fsm2                                          3/    1/    4       75%
 ---------------------------------------------------------------------------------------------------------------------
 
-    Module: fsmb, File: example.v, Instance: <NA>.main.fsm2
+    Module: fsmb, File: example.v, Instance: main.fsm2
     -------------------------------------------------------------------------------------------------------------
     Missed Lines
 
@@ -36,12 +36,12 @@ Instance                                           Hit/ Miss/Total    Percent hi
 Instance                                                   Toggle 0 -> 1                       Toggle 1 -> 0
                                                    Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                          4/    2/    6       67%             3/    3/    6       50%
-  <NA>.main.fsm1                                     5/    3/    8       62%             4/    4/    8       50%
-  <NA>.main.fsm2                                     4/    4/    8       50%             3/    5/    8       38%
+  main                                               4/    2/    6       67%             3/    3/    6       50%
+  main.fsm1                                          5/    3/    8       62%             4/    4/    8       50%
+  main.fsm2                                          4/    4/    8       50%             3/    5/    8       38%
 ---------------------------------------------------------------------------------------------------------------------
 
-    Module: main, File: example.v, Instance: <NA>.main
+    Module: main, File: example.v, Instance: main
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -54,7 +54,7 @@ Instance                                                   Toggle 0 -> 1        
       error                     0->1: 1'h0
       ......................... 1->0: 1'h0 ...
 
-    Module: fsma, File: example.v, Instance: <NA>.main.fsm1
+    Module: fsma, File: example.v, Instance: main.fsm1
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -67,7 +67,7 @@ Instance                                                   Toggle 0 -> 1        
       next_state                0->1: 3'h2
       ......................... 1->0: 3'h1 ...
 
-    Module: fsmb, File: example.v, Instance: <NA>.main.fsm2
+    Module: fsmb, File: example.v, Instance: main.fsm2
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -87,12 +87,12 @@ Instance                                                   Toggle 0 -> 1        
 Instance                                                                    Logic Combinations
                                                                       Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                                            10/   8/  18       56%
-  <NA>.main.fsm1                                                        8/   4/  12       67%
-  <NA>.main.fsm2                                                        8/   4/  12       67%
+  main                                                                 10/   8/  18       56%
+  main.fsm1                                                             8/   4/  12       67%
+  main.fsm2                                                             8/   4/  12       67%
 ---------------------------------------------------------------------------------------------------------------------
 
-    Module: main, File: example.v, Instance: <NA>.main
+    Module: main, File: example.v, Instance: main
     -------------------------------------------------------------------------------------------------------------
     Missed Combinations  (* = missed value)
 
@@ -134,7 +134,7 @@ Instance                                                                    Logi
          *   *   *   *       
 
 
-    Module: fsma, File: example.v, Instance: <NA>.main.fsm1
+    Module: fsma, File: example.v, Instance: main.fsm1
     -------------------------------------------------------------------------------------------------------------
     Missed Combinations  (* = missed value)
 
@@ -183,7 +183,7 @@ Instance                                                                    Logi
          *    
 
 
-    Module: fsmb, File: example.v, Instance: <NA>.main.fsm2
+    Module: fsmb, File: example.v, Instance: main.fsm2
     -------------------------------------------------------------------------------------------------------------
     Missed Combinations  (* = missed value)
 
@@ -239,12 +239,12 @@ Instance                                                                    Logi
                                                                State                             Arc
 Instance                                          Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                         0/   0/   0      100%            0/   0/   0      100%
-  <NA>.main.fsm1                                    3/  ? /  ?        ? %            4/  ? /  ?        ? %
-  <NA>.main.fsm2                                    2/   1/   3       67%            3/   2/   5       60%
+  main                                              0/   0/   0      100%            0/   0/   0      100%
+  main.fsm1                                         3/  ? /  ?        ? %            4/  ? /  ?        ? %
+  main.fsm2                                         2/   1/   3       67%            3/   2/   5       60%
 ---------------------------------------------------------------------------------------------------------------------
 
-    Module: fsma, File: example.v, Instance: <NA>.main.fsm1
+    Module: fsma, File: example.v, Instance: main.fsm1
     -------------------------------------------------------------------------------------------------------------
       FSM input state (state), output state (next_state)
 
@@ -266,7 +266,7 @@ Instance                                          Hit/Miss/Total    Percent hit 
           3'h2       -> 3'h2      
 
 
-    Module: fsmb, File: example.v, Instance: <NA>.main.fsm2
+    Module: fsmb, File: example.v, Instance: main.fsm2
     -------------------------------------------------------------------------------------------------------------
       FSM input state (state), output state (next_state)
 
