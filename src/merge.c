@@ -34,12 +34,12 @@ char* merged_file = NULL;
  CDD filename (i.e., no -o option is specified), the name of merge_in[0] will be used
  for merged_file.
 */
-char** merge_in   = NULL;
+char** merge_in = NULL;
 
 /*!
  Specifies the number of valid entries in the merge_in array.
 */
-int merge_in_num  = 0;
+int merge_in_num = 0;
 
 extern char user_msg[USER_MSG_LENGTH];
 
@@ -109,7 +109,7 @@ bool merge_parse_args( int argc, int last_arg, char** argv ) {
         }
 
         /* Add the specified merge file to the list */
-        merge_in               = (char**)realloc( merge_in, (sizeof( char* ) * merge_in_num) );
+        merge_in               = (char**)realloc( merge_in, (sizeof( char* ) * (merge_in_num + 1)) );
         merge_in[merge_in_num] = strdup_safe( argv[i], __FILE__, __LINE__ );
         merge_in_num++;
 
@@ -152,6 +152,7 @@ int command_merge( int argc, int last_arg, char** argv ) {
 
   int retval = 0;  /* Return value of this function */
   int i;           /* Loop iterator */
+  int mnum;        /* Number of merge files to read */
 
   /* Parse score command-line */
   if( merge_parse_args( argc, last_arg, argv ) ) {
@@ -159,18 +160,23 @@ int command_merge( int argc, int last_arg, char** argv ) {
     snprintf( user_msg, USER_MSG_LENGTH, COVERED_HEADER );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 
-    print_output( "Merging databases...", NORMAL, __FILE__, __LINE__ );
-
     /* Initialize all global information */
     info_initialize();
 
+    /* Get a copy of the number of merge files to read */
+    mnum = merge_in_num;
+
     /* Read in base database */
+    snprintf( user_msg, USER_MSG_LENGTH, "Reading CDD file \"%s\"", merge_in[0] );
+    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
     db_read( merge_in[0], READ_MODE_MERGE_NO_MERGE );
     bind_perform( TRUE );
     sim_add_statics();
 
     /* Read in databases to merge */
-    for( i=1; i<merge_in_num; i++ ) {
+    for( i=1; i<mnum; i++ ) {
+      snprintf( user_msg, USER_MSG_LENGTH, "Merging CDD file \"%s\"", merge_in[i] );
+      print_output( user_msg, NORMAL, __FILE__, __LINE__ );
       db_read( merge_in[i], READ_MODE_MERGE_INST_MERGE );
     }
 
@@ -197,6 +203,9 @@ int command_merge( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.24  2006/04/11 22:42:16  phase1geo
+ First pass at adding multi-file merging.  Still need quite a bit of work here yet.
+
  Revision 1.23  2006/04/07 03:47:50  phase1geo
  Fixing run-time issues with VPI.  Things are running correctly now with IV.
 

@@ -65,7 +65,7 @@ LOGFILE = regress.log
 
 .PHONY:	view_vg_errs
 
-regress:	$(COVERED) $(DIAGLIST) $(RACELIST) $(MERGELIST) $(ERRSCORELIST) $(ERRMERGELIST)
+regress:	$(COVERED) $(DIAGLIST) $(RACELIST) $(MERGELIST) $(MERGE3LIST) $(ERRSCORELIST) $(ERRMERGELIST)
 
 $(DIAGLIST):
 	@if test ! -f $@.done; then \
@@ -153,6 +153,70 @@ $(MERGELIST):
 			$(VG_COVERED) $(COVERED_GFLAG) merge -o $@.cdd $@a.cdd $@b.cdd; \
 		else \
 			$(COVERED) $(COVERED_GFLAG) merge -o $@.cdd $@a.cdd $@b.cdd; \
+		fi; \
+		$(COVERED) $(COVERED_GFLAG) report -d v -o $@.rptM $@.cdd; \
+		$(COVERED) $(COVERED_GFLAG) report -d v -i -o $@.rptI $@.cdd; \
+		$(COVERED) $(COVERED_GFLAG) report -w -d v -o $@.rptWM $@.cdd; \
+		$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $@.rptWI $@.cdd; \
+		./check_test $@ 1 $(CHK_CODE); \
+	else \
+		echo Skipping $@; \
+		./check_test $@ 1 2; \
+	fi
+
+$(MERGE3LIST):
+	@if test ! -f $@.done; then \
+		echo Running $@; \
+		$(VERILOG) $(VERILOG_FLAGS) $@a.v; \
+		$(VERILOG_CMD); \
+		$(CFG_COPY_CMD) ../regress/$@a.cfg > $@a.cfg; \
+		vg_exists=`which $(VG_EXEC) | wc -w`; \
+		if test "$$vg_exists" = "1"; then \
+			$(VG_COVERED) $(COVERED_GFLAG) score -f $@a.cfg; \
+			$(VG_COVERED) $(COVERED_GFLAG) report -d v -o $@a.rptM $@a.cdd; \
+		else \
+			$(COVERED) $(COVERED_GFLAG) score -f $@a.cfg; \
+			$(COVERED) $(COVERED_GFLAG) report -d v -o $@a.rptM $@a.cdd; \
+		fi; \
+		$(COVERED) $(COVERED_GFLAG) report -d v -i -o $@a.rptI $@a.cdd; \
+		$(COVERED) $(COVERED_GFLAG) report -w -d v -o $@a.rptWM $@a.cdd; \
+		$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $@a.rptWI $@a.cdd; \
+		rm -f $@a.cfg; \
+		./check_test $@a 0 $(CHK_CODE); \
+		$(VERILOG) $(VERILOG_FLAGS) $@b.v; \
+		$(VERILOG_CMD); \
+		$(CFG_COPY_CMD) ../regress/$@b.cfg > $@b.cfg; \
+		if test "$$vg_exists" = "1"; then \
+			$(VG_COVERED) $(COVERED_GFLAG) score -f $@b.cfg; \
+			$(VG_COVERED) $(COVERED_GFLAG) report -d v -o $@b.rptM $@b.cdd; \
+		else \
+			$(COVERED) $(COVERED_GFLAG) score -f $@b.cfg; \
+			$(COVERED) $(COVERED_GFLAG) report -d v -o $@b.rptM $@b.cdd; \
+		fi; \
+		$(COVERED) $(COVERED_GFLAG) report -d v -i -o $@b.rptI $@b.cdd; \
+		$(COVERED) $(COVERED_GFLAG) report -w -d v -o $@b.rptWM $@b.cdd; \
+		$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $@b.rptWI $@b.cdd; \
+		rm -f $@b.cfg; \
+		./check_test $@b 0 $(CHK_CODE); \
+		$(VERILOG) $(VERILOG_FLAGS) $@c.v; \
+		$(VERILOG_CMD); \
+		$(CFG_COPY_CMD) ../regress/$@c.cfg > $@c.cfg; \
+		if test "$$vg_exists" = "1"; then \
+			$(VG_COVERED) $(COVERED_GFLAG) score -f $@c.cfg; \
+			$(VG_COVERED) $(COVERED_GFLAG) report -d v -o $@c.rptM $@c.cdd; \
+		else \
+			$(COVERED) $(COVERED_GFLAG) score -f $@c.cfg; \
+			$(COVERED) $(COVERED_GFLAG) report -d v -o $@c.rptM $@c.cdd; \
+		fi; \
+		$(COVERED) $(COVERED_GFLAG) report -d v -i -o $@c.rptI $@c.cdd; \
+		$(COVERED) $(COVERED_GFLAG) report -w -d v -o $@c.rptWM $@c.cdd; \
+		$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $@c.rptWI $@c.cdd; \
+		rm -f $@c.cfg; \
+		./check_test $@c 0 $(CHK_CODE); \
+		if test "$$vg_exists" = "1"; then \
+			$(VG_COVERED) $(COVERED_GFLAG) merge -o $@.cdd $@a.cdd $@b.cdd $@c.cdd; \
+		else \
+			$(COVERED) $(COVERED_GFLAG) merge -o $@.cdd $@a.cdd $@b.cdd $@c.cdd; \
 		fi; \
 		$(COVERED) $(COVERED_GFLAG) report -d v -o $@.rptM $@.cdd; \
 		$(COVERED) $(COVERED_GFLAG) report -d v -i -o $@.rptI $@.cdd; \
