@@ -45,22 +45,23 @@
 #include "vpi.h"
 
 
-char* top_module             = NULL;                /*!< Name of top-level module to score */
-char* top_instance           = NULL;                /*!< Name of top-level instance name */
-char* output_db              = NULL;                /*!< Name of output score database file to generate */
-char* dump_file              = NULL;                /*!< Name of dumpfile to parse */
-int   dump_mode              = DUMP_FMT_NONE;       /*!< Specifies dumpfile format to parse */
-char* lxt_file               = NULL;                /*!< Name of LXT dumpfile to parse */
-char* vpi_file               = NULL;                /*!< Name of VPI output file to write contents to */
-int   delay_expr_type        = DELAY_EXPR_DEFAULT;  /*!< Value to use when a delay expression with min:typ:max */
-char* ppfilename             = NULL;                /*!< Name of preprocessor filename to use */
-bool  instance_specified     = FALSE;               /*!< Specifies if -i option was specified */
-int   timestep_update        = 0;                   /*!< Specifies timestep increment to display current time */
-int   flag_race_check        = WARNING;             /*!< Specifies how race conditions should be handled */
-bool  flag_exclude_assign    = FALSE;               /*!< Specifies if continuous assignments blocks should be sim'd */
-bool  flag_exclude_always    = FALSE;               /*!< Specifies if always blocks should be sim'd */
-bool  flag_exclude_initial   = FALSE;               /*!< Specifies if initial blocks should be sim'd */
-bool  flag_display_sim_stats = FALSE;               /*!< Specifies if simulation performance information should be output */
+char* top_module                = NULL;                /*!< Name of top-level module to score */
+char* top_instance              = NULL;                /*!< Name of top-level instance name */
+char* output_db                 = NULL;                /*!< Name of output score database file to generate */
+char* dump_file                 = NULL;                /*!< Name of dumpfile to parse */
+int   dump_mode                 = DUMP_FMT_NONE;       /*!< Specifies dumpfile format to parse */
+char* lxt_file                  = NULL;                /*!< Name of LXT dumpfile to parse */
+char* vpi_file                  = NULL;                /*!< Name of VPI output file to write contents to */
+int   delay_expr_type           = DELAY_EXPR_DEFAULT;  /*!< Value to use when a delay expression with min:typ:max */
+char* ppfilename                = NULL;                /*!< Name of preprocessor filename to use */
+bool  instance_specified        = FALSE;               /*!< Specifies if -i option was specified */
+int   timestep_update           = 0;                   /*!< Specifies timestep increment to display current time */
+int   flag_race_check           = WARNING;             /*!< Specifies how race conditions should be handled */
+bool  flag_exclude_assign       = FALSE;               /*!< Specifies if continuous assignments blocks should be sim'd */
+bool  flag_exclude_always       = FALSE;               /*!< Specifies if always blocks should be sim'd */
+bool  flag_exclude_initial      = FALSE;               /*!< Specifies if initial blocks should be sim'd */
+bool  flag_display_sim_stats    = FALSE;               /*!< Specifies if simulation performance information should be output */
+bool  flag_check_ovl_assertions = FALSE;               /*!< Specifies if OVL assertion modules should be added for assertion coverage */
 
 extern unsigned long largest_malloc_size;
 extern unsigned long curr_malloc_size;
@@ -106,7 +107,9 @@ void score_usage() {
   printf( "                                    the output variable (ovar) is also used as the input variable.\n" ); 
   printf( "      -a ovl                       Specifies that any OVL assertion found in the design should be\n" );
   printf( "                                    automatically included for assertion coverage.\n" );
+#ifdef TBD
   printf( "      -A <module>=<expression>     Module and assertion expression to check for in the design.\n" );
+#endif
   printf( "      -y <directory>               Directory to find unspecified Verilog files.\n" );
   printf( "      -v <filename>                Name of specific Verilog file to score.\n" );
   printf( "      -D <define_name>(=<value>)   Defines the specified name to 1 or the specified value.\n" );
@@ -542,6 +545,18 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
     } else if( strncmp( "-S", argv[i], 2 ) == 0 ) {
 
       flag_display_sim_stats = TRUE;
+
+    } else if( strncmp( "-a", argv[i], 2 ) == 0 ) {
+
+      i++;
+
+      if( strncmp( argv[i], "ovl", 3 ) == 0 ) {
+        flag_check_ovl_assertions = TRUE;
+      } else {
+        snprintf( user_msg, USER_MSG_LENGTH, "Unknown -a value (%s).  Please specify ovl.", argv[i] );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        retval = FALSE;
+      }
         
     } else {
 
@@ -570,7 +585,8 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 */
 int command_score( int argc, int last_arg, char** argv ) {
 
-  int retval = 0;  /* Return value for this function */
+  int  retval       = 0;      /* Return value for this function */
+  bool need_newline = FALSE;  /* Specifies if a newline character is needed for display purposes */
 
   /* Parse score command-line */
   if( score_parse_args( argc, last_arg, argv ) ) {
@@ -580,6 +596,15 @@ int command_score( int argc, int last_arg, char** argv ) {
 
     if( output_db == NULL ) {
       output_db = strdup_safe( DFLT_OUTPUT_CDD, __FILE__, __LINE__ );
+    }
+
+    /* Output any needed user-specified settings information */
+    if( flag_check_ovl_assertions ) {
+      print_output( "* Auto-extracting embedded OVL assertion modules for coverage", NORMAL, __FILE__, __LINE__ );
+      need_newline = TRUE;
+    }
+    if( need_newline ) {
+      print_output( "", NORMAL, __FILE__, __LINE__ );
     }
 
     /* Parse design */
@@ -655,6 +680,11 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.68  2006/04/13 21:04:24  phase1geo
+ Adding NOOP expression and allowing $display system calls to not cause its
+ statement block to be excluded from coverage.  Updating regressions which fully
+ pass.
+
  Revision 1.67  2006/04/07 22:31:07  phase1geo
  Fixes to get VPI to work with VCS.  Getting close but still some work to go to
  get the callbacks to start working.
