@@ -104,6 +104,8 @@ void score_usage() {
   printf( "      -F <module>=(<ivar>,)<ovar>  Module, input state variable and output state variable of\n" );
   printf( "                                    an FSM state variable.  If input variable (ivar) is not specified,\n" );
   printf( "                                    the output variable (ovar) is also used as the input variable.\n" ); 
+  printf( "      -a ovl                       Specifies that any OVL assertion found in the design should be\n" );
+  printf( "                                    automatically included for assertion coverage.\n" );
   printf( "      -A <module>=<expression>     Module and assertion expression to check for in the design.\n" );
   printf( "      -y <directory>               Directory to find unspecified Verilog files.\n" );
   printf( "      -v <filename>                Name of specific Verilog file to score.\n" );
@@ -653,6 +655,10 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.67  2006/04/07 22:31:07  phase1geo
+ Fixes to get VPI to work with VCS.  Getting close but still some work to go to
+ get the callbacks to start working.
+
  Revision 1.66  2006/04/06 22:30:03  phase1geo
  Adding VPI capability back and integrating into autoconf/automake scheme.  We
  are getting close but still have a ways to go.

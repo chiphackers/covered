@@ -117,6 +117,11 @@
  an EOR attached list of AEDGE operations.  The SLIST expression works like an EOR but only checks
  the right child.  When outputting an expression tree whose root expression is an SLIST, the rest
  of the expression should be ignored for outputting purposes.
+
+ \par EXP_OP_NOOP
+ This expression does nothing.  It is not measurable but is simply a placeholder for a statement that
+ Covered will not handle (i.e., standard system calls that only contain inputs) but will not dismiss
+ the statement block that the statement exists in.
 */
 
 #include <stdio.h>
@@ -213,6 +218,7 @@ static bool expression_op_func__passign( expression*, thread* );
 static bool expression_op_func__mbit_pos( expression*, thread* );
 static bool expression_op_func__mbit_neg( expression*, thread* );
 static bool expression_op_func__negate( expression*, thread* );
+static bool expression_op_func__noop( expression*, thread* );
 
 
 /*!
@@ -296,7 +302,8 @@ const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",         "",        express
                                            {"MBIT_NEG",       "[-:]",    expression_op_func__mbit_neg,  {0, 0, NOT_COMB,   1, 1, 0} },
                                            {"PARAM_MBIT_POS", "[+:]",    expression_op_func__mbit_pos,  {0, 1, NOT_COMB,   1, 0, 0} },
                                            {"PARAM_MBIT_NEG", "[-:]",    expression_op_func__mbit_neg,  {0, 1, NOT_COMB,   1, 0, 0} },
-                                           {"NEGATE",         "-",       expression_op_func__negate,    {0, 0, NOT_COMB,   1, 1, 0} } };
+                                           {"NEGATE",         "-",       expression_op_func__negate,    {0, 0, NOT_COMB,   1, 1, 0} },
+                                           {"NOOP",           "",        expression_op_func__null,      {0, 0, NOT_COMB,   0, 0, 0} } };
 
 /*!
  \param exp    Pointer to expression to add value to.
@@ -3135,6 +3142,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.179  2006/04/05 04:20:10  phase1geo
+ Fixing bug expression_resize function to properly handle the sizing of a
+ concatenation on the left-hand-side of an expression.  Added diagnostic to
+ regression suite to duplicate this scenario and verify the fix.
+
  Revision 1.178  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

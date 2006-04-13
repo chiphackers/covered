@@ -361,6 +361,7 @@ WSPACE [ \t\b\f]+
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
      if( ignore_mode == 0 ) {
+       yylval.text = strdup_safe( yytext, __FILE__, __LINE__ );
        return SYSTEM_IDENTIFIER; 
      } else {
        return UNUSED_SYSTEM_IDENTIFIER;

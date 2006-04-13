@@ -197,12 +197,12 @@ int yydebug = 1;
   port_info*      portinfo;
 };
 
-%token <text>     IDENTIFIER
+%token <text>     IDENTIFIER SYSTEM_IDENTIFIER
 %token <text>     PATHPULSE_IDENTIFIER
 %token <number>   NUMBER
 %token <realtime> REALTIME
 %token <number>   STRING
-%token SYSTEM_IDENTIFIER IGNORE
+%token IGNORE
 %token UNUSED_IDENTIFIER
 %token UNUSED_PATHPULSE_IDENTIFIER
 %token UNUSED_NUMBER
@@ -1304,7 +1304,19 @@ expr_primary
     }
   | SYSTEM_IDENTIFIER
     {
-      $$ = NULL;
+      if( (ignore_mode == 0) && ($1 != NULL) ) {
+        if( strncmp( $1, "$display", 8 ) == 0 ) {
+          $$ = db_create_expression( NULL, NULL, EXP_OP_NOOP, lhs_mode, 0, 0, 0, NULL );
+        } else {
+          $$ = NULL;
+        }
+        free_safe( $1 );
+      } else {
+        if( $1 != NULL ) {
+          free_safe( $1 );
+        }
+        $$ = NULL;
+      }
     }
   | UNUSED_SYSTEM_IDENTIFIER
     {
@@ -1404,10 +1416,21 @@ expr_primary
         $$ = NULL;
       }
     }
-  | SYSTEM_IDENTIFIER '(' expression_list ')'
+  | SYSTEM_IDENTIFIER '(' ignore_more expression_list ignore_less ')'
     {
-      expression_dealloc( $3, FALSE );
-      $$ = NULL;
+      if( (ignore_mode == 0) && ($1 != NULL) ) {
+        if( strncmp( $1, "$display", 8 ) == 0 ) {
+          $$ = db_create_expression( NULL, NULL, EXP_OP_NOOP, lhs_mode, 0, 0, 0, NULL );
+        } else {
+          $$ = NULL;
+        }
+        free_safe( $1 );
+      } else {
+        if( $1 != NULL ) {
+          free_safe( $1 );
+        }
+        $$ = NULL;
+      }
     }
   | UNUSED_SYSTEM_IDENTIFIER '(' expression_list ')'
     {
@@ -2586,7 +2609,24 @@ statement
     }
   | SYSTEM_IDENTIFIER { ignore_mode++; } '(' expression_list ')' ';' { ignore_mode--; }
     {
-      $$ = NULL;
+      expression* exp;
+      statement*  stmt;
+      if( (ignore_mode == 0) && ($1 != NULL) ) {
+        if( strncmp( $1, "$display", 8 ) == 0 ) {
+          exp  = db_create_expression( NULL, NULL, EXP_OP_NOOP, lhs_mode, 0, 0, 0, NULL );
+          stmt = db_create_statement( exp );
+          db_add_expression( exp );
+          $$   = stmt;
+        } else {
+          $$   = NULL;
+        }
+        free_safe( $1 );
+      } else {
+        if( $1 != NULL ) {
+          free_safe( $1 );
+        }
+        $$ = NULL;
+      }
     }
   | UNUSED_SYSTEM_IDENTIFIER '(' expression_list ')' ';'
     {
@@ -2594,7 +2634,24 @@ statement
     }
   | SYSTEM_IDENTIFIER ';'
     {
-      $$ = NULL;
+      expression* exp;
+      statement*  stmt;
+      if( (ignore_mode == 0) && ($1 != NULL) ) {
+        if( strncmp( $1, "$display", 8 ) == 0 ) {
+          exp  = db_create_expression( NULL, NULL, EXP_OP_NOOP, lhs_mode, 0, 0, 0, NULL );
+          stmt = db_create_statement( exp );
+          db_add_expression( exp );
+          $$   = stmt;
+        } else {
+          $$   = NULL;
+        }
+        free_safe( $1 );
+      } else {
+        if( $1 != NULL ) {
+          free_safe( $1 );
+        }
+        $$ = NULL;
+      }
     }
   | UNUSED_SYSTEM_IDENTIFIER ';'
     {
