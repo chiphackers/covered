@@ -45,6 +45,7 @@ static int  comment_enter;
 
 static void def_match();
 static void def_start();
+static int  def_is_done();
 static void def_finish();
 static void def_undefine();
 static void do_define();
@@ -160,10 +161,12 @@ WSPACE [ \t\b\f]+
      do_define();
  }
 <DEFINE>(\n|"\r\n"|"\n\r") {
+   if( def_is_done() ) {
      def_finish();
      istack->lineno += 1;
-     fputc( '\n', yyout );
      yy_pop_state();
+   }
+   fputc( '\n', yyout );
  }
 
   /* Undefine directive */
@@ -298,6 +301,23 @@ WSPACE [ \t\b\f]+
 tnode* def_table = NULL;
 
 /*!
+ Specifies if the current definition is complete or that the next line is a
+ continuation of the current definition.
+*/
+static int define_continue_flag = 0;
+
+/*!
+ String that contains the current definition value.
+*/
+static char* define_text = NULL;
+
+/*!
+ Specifies the size of the current define string.
+*/
+static size_t define_cnt = 0;
+
+
+/*!
  \param name  Name of define to lookup in table
  
  \return Pointer to defined value.
@@ -392,6 +412,8 @@ static void do_define() {
 
   char *cp;        /* Pointer to current token */
 
+  define_continue_flag = 0;
+
   if( (cp = strstr(yytext, "//")) != NULL ) {
     *cp = 0;
   }
@@ -404,9 +426,36 @@ static void do_define() {
     *cp = '\0';
   }
 
-  define_macro( def_name, yytext );
+  /*
+   Detect the continuation sequence. If I find it, remove it
+   and the white space that preceeds it, then replace all that
+   with a single newline.
+  */
+  if( (cp > yytext) && (cp[-1] == '\\') ) {
+    cp -= 1;
+    cp[0] = 0;
+    while( (cp > yytext) && isspace(cp[-1]) ) {
+      cp -= 1;
+      *cp = 0;
+    }
+    *cp++ = '\n';
+    *cp = 0;
+    define_continue_flag = 1;
+  }
 
-  def_name[0] = '\0';
+  /* Accumulate this text into the define_text string. */
+  define_text = (char*)realloc( define_text, (define_cnt + (cp-yytext) + 1) );
+  strcpy( (define_text + define_cnt), yytext );
+  define_cnt += cp - yytext;
+
+}
+
+/*!
+ \return Returns true if the definition text is done; otherwise, returns false.
+*/
+static int def_is_done() {
+
+  return( define_continue_flag ? 0 : 1 );
 
 }
 
@@ -415,8 +464,21 @@ static void do_define() {
 */
 static void def_finish() {
 
+  define_continue_flag = 0;
+
   if( def_name[0] ) {
-    define_macro( def_name, "1" );
+
+    if( define_text ) {
+      define_macro( def_name, define_text );
+      free_safe( define_text );
+      define_text = NULL;
+      define_cnt  = 0;
+    } else {
+      define_macro( def_name, "1" );
+    }
+
+    def_name[0] = 0;
+
   }
 
 }
