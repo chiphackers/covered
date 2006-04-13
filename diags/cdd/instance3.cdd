@@ -1,4 +1,4 @@
-5 1 * 6 0 0 0 0
+5 1 * 7 0 0 0 0
 3 0 main main instance3.v 1 10
 3 0 foo main.bar instance3.v 12 31
 2 1 17 160019 1 0 20008 0 0 1 1 1

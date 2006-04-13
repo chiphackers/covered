@@ -1,4 +1,4 @@
-5 1 * 6 0 0 0 0
+5 1 * 7 0 0 0 0
 3 0 main main localparam2.v 1 12
 1 #SIZE 0 0 0 32 0 44 0 0 0 0 0 0 0
 3 0 foo main.bar localparam2.v 15 21

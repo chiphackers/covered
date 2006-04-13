@@ -50,7 +50,7 @@
  Contains the CDD version number of all CDD files that this version of Covered can write
  and read.
 */
-#define CDD_VERSION        6
+#define CDD_VERSION        7
 
 /*!
  This contains the header information specified when executing this tool.
@@ -1811,6 +1811,9 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.186  2006/04/11 22:42:16  phase1geo
+ First pass at adding multi-file merging.  Still need quite a bit of work here yet.
+
  Revision 1.185  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

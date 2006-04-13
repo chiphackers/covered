@@ -1,4 +1,4 @@
-5 1 * 6 0 0 0 0
+5 1 * 7 0 0 0 0
 3 0 main main param10.1.v 1 12
 3 0 foo main.a param10.1.v 15 23
 2 1 17 8000c 2 3d 2100a 0 0 1 0 2 foo_begin
