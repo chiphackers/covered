@@ -1,4 +1,4 @@
-5 1 * 7 0 0 0 0
+5 7 1 * 0
 3 0 main main port2.v 1 14
 1 a 0 3 30005 1 0 2
 3 0 foo main.bar port2.v 17 21

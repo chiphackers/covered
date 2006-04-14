@@ -1,4 +1,4 @@
-5 1 main1 7 0 0 0 3 merge2a.cdd main1 merge2b.cdd main2 merge2c.cdd main3
+5 7 1 main1 3 merge2a.cdd main1 merge2b.cdd main2 merge2c.cdd main3
 3 0 dut_and dut ./lib/dut_and.v 1 9
 2 1 7 f000f 1 1 c 0 0 c
 2 2 7 b000b 1 1 c 0 0 b

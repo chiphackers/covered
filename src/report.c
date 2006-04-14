@@ -59,9 +59,7 @@ extern char**      merge_in;
 extern char**      leading_hierarchies;
 extern int         leading_hier_num;
 extern bool        leading_hiers_differ;
-extern bool        flag_exclude_assign;
-extern bool        flag_exclude_always;
-extern bool        flag_exclude_initial;
+extern isuppl      info_suppl;
 
 /*!
  If set to a boolean value of TRUE, reports the line coverage for the specified database
@@ -533,15 +531,15 @@ void report_print_header( FILE* ofile ) {
     fprintf( ofile, "* Reported by                    : Module\n\n" );
   }
 
-  if( flag_exclude_assign || flag_exclude_always || flag_exclude_initial ) {
+  if( (info_suppl.part.excl_assign == 1) || (info_suppl.part.excl_always == 1) || (info_suppl.part.excl_init == 1) ) {
     fprintf( ofile, "* CDD file excludes the following block types:\n" );
-    if( flag_exclude_assign ) {
+    if( info_suppl.part.excl_assign == 1 ) {
       fprintf( ofile, "    assign - Continuous Assigments\n" );
     }
-    if( flag_exclude_always ) {
+    if( info_suppl.part.excl_always == 1 ) {
       fprintf( ofile, "    always - Always Statements\n" );
     }
-    if( flag_exclude_initial ) {
+    if( info_suppl.part.excl_init == 1 ) {
       fprintf( ofile, "    initial - Initial Statements\n" );
     }
     fprintf( ofile, "\n" );
@@ -802,6 +800,12 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.61  2006/04/12 18:06:24  phase1geo
+ Updating regressions for changes that were made to support multi-file merging.
+ Also fixing output of FSM state transitions to be what they were.
+ Regressions now pass; however, the support for multi-file merging (beyond two
+ files) has not been tested to this point.
+
  Revision 1.60  2006/04/11 22:42:16  phase1geo
  First pass at adding multi-file merging.  Still need quite a bit of work here yet.
 

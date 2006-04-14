@@ -44,12 +44,10 @@
 #include "static.h"
 #include "util.h"
 
-extern char user_msg[USER_MSG_LENGTH];
-extern int  delay_expr_type;
-extern int  stmt_conn_id;
-extern bool flag_exclude_assign;
-extern bool flag_exclude_always;
-extern bool flag_exclude_initial;
+extern char   user_msg[USER_MSG_LENGTH];
+extern int    delay_expr_type;
+extern int    stmt_conn_id;
+extern isuppl info_suppl;
 
 /* Functions from lexer */
 extern void lex_start_udp_table();
@@ -1883,7 +1881,7 @@ module_item
     {
       statement* stmt = $3;
       if( stmt != NULL ) {
-        if( db_statement_connect( stmt, stmt ) && !flag_exclude_always ) {
+        if( db_statement_connect( stmt, stmt ) && (info_suppl.part.excl_always == 0) ) {
           stmt->exp->suppl.part.stmt_head = 1;
           db_add_statement( stmt, stmt );
         } else {
@@ -1896,7 +1894,7 @@ module_item
     {
       statement* stmt = $3;
       if( stmt != NULL ) {
-        if( !flag_exclude_initial ) {
+        if( info_suppl.part.excl_init == 0 ) {
           stmt->exp->suppl.part.stmt_head = 1;
           db_add_statement( stmt, stmt );
         } else {
@@ -3366,7 +3364,7 @@ assign
     {
       expression* tmp;
       statement*  stmt;
-      if( ($1 != NULL) && ($3 != NULL) && !flag_exclude_assign ) {
+      if( ($1 != NULL) && ($3 != NULL) && (info_suppl.part.excl_assign == 0) ) {
         tmp  = db_create_expression( $3, $1, EXP_OP_ASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
         vector_dealloc( tmp->value );
         tmp->value = $3->value;
@@ -3688,7 +3686,7 @@ net_decl_assign
     {
       expression* tmp;
       statement*  stmt;
-      if( (ignore_mode == 0) && ($1 != NULL) && (curr_range != NULL) && !flag_exclude_assign ) {
+      if( (ignore_mode == 0) && ($1 != NULL) && (curr_range != NULL) && (info_suppl.part.excl_assign == 0) ) {
         db_add_signal( $1, SSUPPL_TYPE_DECLARED, curr_range->left, curr_range->right, FALSE, FALSE, @1.first_line, @1.first_column );
         if( $3 != NULL ) {
           tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
@@ -3714,7 +3712,7 @@ net_decl_assign
     {
       expression* tmp;
       statement*  stmt;
-      if( (ignore_mode == 0) && ($2 != NULL) && (curr_range != NULL) && !flag_exclude_assign ) {
+      if( (ignore_mode == 0) && ($2 != NULL) && (curr_range != NULL) && (info_suppl.part.excl_assign == 0) ) {
         db_add_signal( $2, SSUPPL_TYPE_DECLARED, curr_range->left, curr_range->right, FALSE, FALSE, @2.first_line, @2.first_column );
         if( $4 != NULL ) {
           tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @2.first_line, @2.first_column, (@2.last_column - 1), $2 );

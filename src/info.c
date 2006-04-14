@@ -37,17 +37,12 @@
 
 extern char** merge_in;
 extern int    merge_in_num;
-extern bool   flag_exclude_assign;
-extern bool   flag_exclude_always;
-extern bool   flag_exclude_initial;
 
 
 /*!
- If this flag is set to a value of 1, it indicates that the current CDD file has
- been scored and is available for coverage reporting (if CDD file has not been scored,
- errors will occur when trying to get coverage numbers).
+ Informational line for the CDD file.
 */
-bool flag_scored = FALSE;
+isuppl info_suppl = {0};
 
 /*!
  This string specifies the Verilog hierarchy leading up to the DUT.  This value is
@@ -89,21 +84,17 @@ void info_initialize() {
 */
 void info_db_write( FILE* file ) {
 
-  int i;  /* Loop iterator */
+  int     i;      /* Loop iterator */
+  control suppl;  /* 32-bit supplemental value */
 
   assert( leading_hier_num > 0 );
 
-  fprintf( file, "%d %d %s %d %d %d %d %d",
+  fprintf( file, "%d %x %x %s %d",
            DB_TYPE_INFO,
-           flag_scored,
-           leading_hierarchies[0],
            CDD_VERSION,
-           flag_exclude_assign,
-           flag_exclude_always,
-           flag_exclude_initial,
+           info_suppl.all,
+           leading_hierarchies[0],
            merge_in_num );
-
-  // printf( "merge_in_num: %d, leading_hier_num: %d\n", merge_in_num, leading_hier_num );
 
   /* Display any merge filename information */
   if( leading_hier_num == merge_in_num ) {
@@ -128,17 +119,19 @@ void info_db_write( FILE* file ) {
 */
 bool info_db_read( char** line ) {
 
-  bool retval = TRUE;  /* Return value for this function */
-  int  chars_read;     /* Number of characters scanned in from this line */
-  int  scored;         /* Indicates if this file contains scored data */
-  int  version;        /* Contains CDD version from file */
-  int  mnum;           /* Temporary merge num */
-  char tmp1[4096];     /* Temporary string */
-  char tmp2[4096];     /* Temporary string */
-  int  i;              /* Loop iterator */
+  bool    retval = TRUE;  /* Return value for this function */
+  int     chars_read;     /* Number of characters scanned in from this line */
+  control scored;         /* Indicates if this file contains scored data */
+  int     version;        /* Contains CDD version from file */
+  int     mnum;           /* Temporary merge num */
+  char    tmp1[4096];     /* Temporary string */
+  char    tmp2[4096];     /* Temporary string */
+  int     i;              /* Loop iterator */
 
-  if( sscanf( *line, "%d %s %d %d %d %d %d%n", &scored, tmp1, &version, &flag_exclude_assign, &flag_exclude_always,
-                                               &flag_exclude_initial, &mnum, &chars_read ) == 7 ) {
+  /* Save off original scored value */
+  scored = info_suppl.part.scored;
+
+  if( sscanf( *line, "%x %x %s %d%n", &version, &(info_suppl.all), tmp1, &mnum, &chars_read ) == 4 ) {
 
     *line = *line + chars_read;
 
@@ -185,8 +178,10 @@ bool info_db_read( char** line ) {
 
     }
 
-    /* Set scored flag */
-    flag_scored = (scored == TRUE) ? TRUE : flag_scored;
+    /* Set scored flag to correct value */
+    if( info_suppl.part.scored == 0 ) {
+      info_suppl.part.scored = scored;
+    }
 
   } else {
 
@@ -202,6 +197,10 @@ bool info_db_read( char** line ) {
 
 /*
  $Log$
+ Revision 1.14  2006/04/12 21:22:51  phase1geo
+ Fixing problems with multi-file merging.  This now seems to be working
+ as needed.  We just need to document this new feature.
+
  Revision 1.13  2006/04/12 18:06:24  phase1geo
  Updating regressions for changes that were made to support multi-file merging.
  Also fixing output of FSM state transitions to be what they were.

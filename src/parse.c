@@ -44,7 +44,7 @@ extern str_link* use_files_head;
 extern str_link* modlist_head;
 extern str_link* modlist_tail;
 extern char      user_msg[USER_MSG_LENGTH];
-extern bool      flag_scored;
+extern isuppl    info_suppl;
 extern bool      flag_race_check;
 
 /*!
@@ -211,7 +211,7 @@ bool parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) {
 #endif
 
   /* Indicate that this CDD contains scored information */
-  flag_scored = TRUE;
+  info_suppl.part.scored = 1;
 
   /* Write contents to database file */
   if( !db_write( db, FALSE ) ) {
@@ -225,6 +225,9 @@ bool parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) {
 
 /*
  $Log$
+ Revision 1.39  2006/04/07 03:47:50  phase1geo
+ Fixing run-time issues with VPI.  Things are running correctly now with IV.
+
  Revision 1.38  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

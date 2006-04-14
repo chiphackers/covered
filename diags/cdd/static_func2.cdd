@@ -1,4 +1,4 @@
-5 1 * 7 0 0 0 0
+5 7 1 * 0
 3 0 main main static_func2.v 1 24
 1 a 0 3 30018 16 0 aa aa aa aa
 3 0 foo main.bar[0] static_func2.v 27 31

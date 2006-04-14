@@ -1,4 +1,4 @@
-5 1 * 7 0 0 0 0
+5 7 1 * 0
 3 0 main main case4.1.v 1 93
 2 1 31 e0028 1 1 0 0 0 display_tagto_current_state
 2 2 31 4000a 0 1 400 0 0 next_st

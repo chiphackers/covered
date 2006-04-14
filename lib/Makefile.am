@@ -12,12 +12,13 @@ libcovered_a_SOURCES = ../src/arc.c \
                        ../src/fsm.c \
                        ../src/fsm_arg.c \
                        ../src/fsm_var.c \
-                       ../src/link.c \
+                       ../src/func_unit.c \
                        ../src/info.c \
                        ../src/instance.c \
                        ../src/iter.c \
+                       ../src/link.c \
+                       ../src/ovl.c \
                        ../src/param.c \
-                       ../src/func_unit.c \
                        ../src/race.c \
                        ../src/scope.c \
                        ../src/sim.c \

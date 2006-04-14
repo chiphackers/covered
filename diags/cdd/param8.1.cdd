@@ -1,4 +1,4 @@
-5 1 * 7 0 0 0 0
+5 7 1 * 0
 3 0 main main param8.1.v 1 17
 1 a 0 3 3000a 3 0 2a
 3 0 foo main.bar param8.1.v 20 30

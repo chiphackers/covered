@@ -39,8 +39,6 @@ char        out_db_name[1024];
 int         last_time            = -1;
 
 /* These are needed for compile purposes only */
-char*       merge_in0            = NULL;
-char*       merge_in1            = NULL;
 bool        report_gui           = FALSE;
 funit_inst* instance_root        = NULL;
 funit_link* funit_head           = NULL;
@@ -58,18 +56,17 @@ tnode*      def_table            = NULL;
 int         fork_depth           = -1;
 int*        fork_block_depth;
 int         block_depth          = 0;
-bool        flag_exclude_initial = FALSE;
-bool        flag_exclude_always  = FALSE;
-bool        flag_exclude_assign  = FALSE;
+int         merge_in_num;
+char**      merge_in             = NULL;
 
-extern bool         flag_scored;
-extern bool         debug_mode;
-extern symtable*    vcd_symtab;
-extern int          vcd_symtab_size;
-extern symtable**   timestep_tab;
-extern char*        curr_inst_scope;
-extern funit_inst*  curr_instance;
-extern char         user_msg[USER_MSG_LENGTH];
+extern bool        debug_mode;
+extern symtable*   vcd_symtab;
+extern int         vcd_symtab_size;
+extern symtable**  timestep_tab;
+extern char*       curr_inst_scope;
+extern funit_inst* curr_instance;
+extern char        user_msg[USER_MSG_LENGTH];
+extern isuppl      info_suppl;
 
 
 PLI_INT32 covered_value_change( p_cb_data cb ) {
@@ -124,7 +121,7 @@ PLI_INT32 covered_end_of_sim( p_cb_data cb ) {
   db_do_timestep( -1 );
 
   /* Indicate that this CDD contains scored information */
-  flag_scored = TRUE;
+  info_suppl.part.scored = 1;
 
   /* Write contents to database file */
   if( !db_write( out_db_name, FALSE ) ) {

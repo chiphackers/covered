@@ -1,4 +1,4 @@
-5 1 * 7 0 0 0 0
+5 7 1 * 0
 3 0 main main nested_block2.v 1 30
 2 1 4 e000e 1 1 4 0 0 b
 2 2 4 e000e 1 47 4 1 0 foo.a
