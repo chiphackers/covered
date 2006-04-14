@@ -3,7 +3,7 @@
 <HEAD>
   <TITLE>Covered - The merge Command</TITLE>
   <META name="GENERATOR" content="ManStyle">
-  <META name="AUTHOR" content="Trevor Williams">
+  <meta name="author" content="Trevor Williams">
   <LINK rel=stylesheet type="text/css" href="styles.css">
 </HEAD>
 <BODY text="#000000"
@@ -95,7 +95,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="code">covered merge [&lt;options&gt;] &lt;existing_CDD&gt; &lt;CDD_to_merge&gt;</P>
+      <P class="code">covered merge [&lt;options&gt;] &lt;existing_CDD&gt; &lt;CDD_to_merge&gt;+</P>
     </TD>
   </TR>
 
@@ -106,7 +106,12 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">The <i>existing_CDD</i> specifier relates to any existing CDD. If the -o option is not specified (see below for details), this file will be replaced with the merged CDD created by the merge. This is important to remember since merging is an irreversible operation (apart from the generating a brand-new CDD from the design and dumpfile using the score command).</P>
+      <P class="pg">
+      The <i>existing_CDD</i> specifier relates to any existing CDD. If the -o option 
+      is not specified (see below for details), this file will be replaced with the 
+      merged CDD created by the merge. This is important to remember since merging 
+      is an irreversible operation (apart from generating a brand-new CDD from 
+      the design and dumpfile using the score command).</P>
     </TD>
   </TR>
 
@@ -117,7 +122,13 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">The <i>CDD_to_merge</i> specifier relates to any existing CDD that is not the <i>existing_CDD</i>. Though it is not illegal to merge the same CDD to itself, the result is the same as the original CDD. Note that the <i>CDD_to_merge</i> is a file which is guaranteed to not be modified by the merge command. The contents of the file are literally read-only by Covered and are merged into the information contained in the <i>existing_CDD</i>.</P>
+      <P class="pg">
+      The <i>CDD_to_merge</i> specifier relates to any existing CDD that is not 
+      the <i>existing_CDD</i>. Though it is not illegal to merge the same CDD to 
+      itself, the result is the same as the original CDD. Note that all files
+      treated as <i>CDD_to_merge</i> are guaranteed not to be modified by the 
+      merge command. These files are only read by Covered and then merged into the 
+      information contained in the <i>existing_CDD</i>.</P>
     </TD>
   </TR>
 
@@ -139,7 +150,8 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">The following table lists the options available for the merge command.</P>
+      <P class="pg">
+      The following table lists the options available for the merge command.</P>
     </TD>
   </TR>
 
@@ -157,7 +169,24 @@
             <P class="blockIndentLeft">&nbsp;</P>
           </TD>
           <TD width=100% align=center>
-<table cellspacing=2 cellpadding=4 border=1> <tr> <td colspan=2 class="tableHeader"> Options to merge Command </td> </tr> <tr> <td> <strong>Option</strong> </td> <td> <strong>Description</strong> <td> </tr> <tr> <td> -o &lt;<i>filename</i>&gt; </td> <td> Name of CDD to write merged coverage information to (if not specified, the &lt;<i>existing_CDD</i>&gt; is overwritten with merged CDD). </td> </tr> <tr> <td> -h </td> <td> Outputs usage information for the merge command </td> </tr> </table><br>
+    <table cellspacing=2 cellpadding=4 border=1> 
+    <tr> 
+    <td colspan=2 class="tableHeader"> Options to merge Command </td> 
+    </tr> 
+    <tr> 
+    <td> <strong>Option</strong> </td> 
+    <td> <strong>Description</strong> </td> 
+    </tr> 
+    <tr> 
+    <td> -o &lt;<i>filename</i>&gt; </td> 
+    <td> Name of CDD to write merged coverage information to (if not specified, the 
+    &lt;<i>existing_CDD</i>&gt; is overwritten with merged CDD). </td> 
+    </tr> 
+    <tr> 
+    <td> -h </td> 
+    <td> Outputs usage information for the merge command </td> 
+    </tr> 
+    </table><br>
           </TD>
           <TD>
             <P class="blockIndentRight">&nbsp;</P>
