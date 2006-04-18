@@ -48,7 +48,6 @@ extern bool         report_instance;
 extern char**       leading_hierarchies;
 extern int          leading_hier_num;
 extern bool         leading_hiers_differ;
-extern char         second_hierarchy[4096];
 
 /*!
  \param stmtl  Pointer to current statement list to explore.
@@ -538,6 +537,9 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.58  2006/04/11 22:42:16  phase1geo
+ First pass at adding multi-file merging.  Still need quite a bit of work here yet.
+
  Revision 1.57  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

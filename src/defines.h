@@ -722,27 +722,6 @@ typedef enum exp_op_type_e {
  coverage but not fully covered during simulation.
 */
 #define EXPR_COMB_MISSED(x)     (EXPR_IS_MEASURABLE( x ) && (x->ulid != -1))
-/*
-#define EXPR_COMB_MISSED(x)        (EXPR_IS_MEASURABLE( x ) && \
-                                    !expression_is_static_only( x ) && \
-				    ((EXPR_IS_COMB( x ) && \
-                                      ((exp_op_info[x->op].suppl.is_comb == AND_COMB) && \
-                                       ((!x->suppl.part.eval_00 & !x->suppl.part.eval_01) || \
-                                       ((!x->suppl.part.eval_00 & !x->suppl.part.eval_10) || \
-                                       !x->suppl.part.eval_11))) || \
-                                      ((exp_op_info[x->op].suppl.is_comb == OR_COMB) && \
-                                       ((!x->suppl.part.eval_10 & !x->suppl.part.eval_11) || \
-                                       ((!x->suppl.part.eval_01 & !x->suppl.part.eval_11) || \
-                                       !x->suppl.part.eval_00))) || \
-                                      ((exp_op_info[x->op].suppl.is_comb == OTHER_COMB) && \
-  				       (!x->suppl.part.eval_00 || \
-                                        !x->suppl.part.eval_01 || \
-                                        !x->suppl.part.eval_10 || \
-                                        !x->suppl.part.eval_11))) || \
-				    !ESUPPL_WAS_TRUE( x->suppl ) || \
-				    (!ESUPPL_WAS_FALSE( x->suppl ) && \
-                                     !EXPR_IS_EVENT( x ))))
-*/
 
 /*!
  \addtogroup op_tables
@@ -1534,6 +1513,8 @@ struct statistic_s {
   int   arc_hit;                     /*!< Number of FSM arcs traversed */
   int   race_total;                  /*!< Total number of race conditions found */
   int   rtype_total[RACE_TYPE_NUM];  /*!< Total number of each race condition type found */
+  float assert_total;                /*!< Total number of assertions */
+  int   assert_hit;                  /*!< Number of assertions covered during simulation */
 };
 
 /*!
@@ -1835,6 +1816,11 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.189  2006/04/14 17:05:13  phase1geo
+ Reorganizing info line to make it more succinct and easier for future needs.
+ Fixed problems with VPI library with recent merge changes.  Regression has
+ been completely updated for these changes.
+
  Revision 1.188  2006/04/13 21:04:24  phase1geo
  Adding NOOP expression and allowing $display system calls to not cause its
  statement block to be excluded from coverage.  Updating regressions which fully

@@ -49,6 +49,7 @@
 #include "info.h"
 #include "race.h"
 #include "binding.h"
+#include "assertion.h"
 
 
 extern char        user_msg[USER_MSG_LENGTH];
@@ -410,11 +411,9 @@ void report_gather_instance_stats( funit_inst* root ) {
   }
 
   if( report_assertion ) {
-/* TBD
-    assertion_get_stats( root->funit->assert_head,
+    assertion_get_stats( root->funit,
                          &(root->stat->assert_total),
                          &(root->stat->assert_hit) );
-*/
   }
 
   /* Only get race condition statistics for this instance module if the module hasn't been gathered yet */
@@ -466,11 +465,9 @@ void report_gather_funit_stats( funit_link* head ) {
     }
 
     if( report_assertion ) {
-/* TBD
-      assertion_get_stats( head->funit->assert_head,
+      assertion_get_stats( head->funit,
                            &(head->funit->stat->assert_total),
                            &(head->funit->stat->assert_hit) );
-*/
     }
 
     if( report_race ) {
@@ -616,9 +613,7 @@ void report_generate( FILE* ofile ) {
   }
 
   if( report_assertion ) {
-/* TBD
     assertion_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
-*/
   }
 
   if( report_race ) {
@@ -800,6 +795,11 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.62  2006/04/14 17:05:13  phase1geo
+ Reorganizing info line to make it more succinct and easier for future needs.
+ Fixed problems with VPI library with recent merge changes.  Regression has
+ been completely updated for these changes.
+
  Revision 1.61  2006/04/12 18:06:24  phase1geo
  Updating regressions for changes that were made to support multi-file merging.
  Also fixing output of FSM state transitions to be what they were.

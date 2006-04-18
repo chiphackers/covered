@@ -24,6 +24,8 @@
 */
 
 
+#include <stdio.h>
+
 #include "defines.h"
 
 
@@ -33,8 +35,19 @@ void assertion_parse( char* arg );
 /*! \brief Parses an in-line attribute for assertion coverage information */
 void assertion_parse_attr( attr_param* ap, func_unit* funit );
 
+/*! Gather statistics for assertion coverage */
+void assertion_get_stats( func_unit* funit, float* total, int* hit );
+
+/*! Generates report output for assertion coverage */
+void assertion_report( FILE* ofile, bool verbose );
+
+
 /*
  $Log$
+ Revision 1.2  2006/04/06 22:30:03  phase1geo
+ Adding VPI capability back and integrating into autoconf/automake scheme.  We
+ are getting close but still have a ways to go.
+
  Revision 1.1  2006/04/05 15:19:18  phase1geo
  Adding support for FSM coverage output in the GUI.  Started adding components
  for assertion coverage to GUI and report functions though there is no functional

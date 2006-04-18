@@ -30,6 +30,7 @@
 #include <unistd.h>
 #include <assert.h>
 #include <dirent.h>
+#include <ctype.h>
 #ifdef HAVE_STRING_H
 #include <string.h>
 #endif
@@ -528,6 +529,60 @@ bool util_readline( FILE* file, char** line ) {
 }
 
 /*!
+ \param value  Input string that will be searched for environment variables
+
+ \return Returns the given value with environment variables substituted in.  This value should
+         be freed by the calling function.
+*/
+char* substitute_env_vars( char* value ) {
+
+  char* newvalue    = NULL;   /* New value */
+  int   newvalue_index;       /* Current index into newvalue */
+  char* ptr;                  /* Pointer to current character in value */
+  char  env_var[4096];        /* Name of found environment variable */
+  int   env_var_index;        /* Current index to write into env_var string */
+  bool  parsing_var = FALSE;  /* Set to TRUE when we are parsing an environment variable */
+  char* env_value;            /* Environment variable value */
+
+  ptr            = value;
+  newvalue_index = 0;
+
+  while( *ptr != '\0' || parsing_var ) {
+    if( parsing_var ) {
+      if( isalnum( *ptr ) || (*ptr == '_') ) {
+        env_var[env_var_index] = *ptr;
+        env_var_index++;
+      } else {
+        env_var[env_var_index] = '\0';
+        if( (env_value = getenv( env_var )) != NULL ) {
+          newvalue = (char*)realloc( newvalue, (newvalue_index + strlen( env_value ) + 1) );
+          strcat( newvalue, env_value );
+          newvalue_index += strlen( env_value );
+          parsing_var = FALSE;
+          ptr--;
+        } else {
+          snprintf( user_msg, USER_MSG_LENGTH, "Unknown environment variable $%s in string \"%s\"", env_var, value );
+          print_output( user_msg, FATAL, __FILE__, __LINE__ );
+          exit( 1 );
+        }
+      }
+    } else if( *ptr == '$' ) {
+      parsing_var   = TRUE;
+      env_var_index = 0;
+    } else {
+      newvalue = (char*)realloc( newvalue, (newvalue_index + 2) );
+      newvalue[newvalue_index]   = *ptr;
+      newvalue[newvalue_index+1] = '\0';
+      newvalue_index++;
+    }
+    ptr++;
+  }
+
+  return( newvalue );
+
+}
+
+/*!
  \param scope   Full scope to extract from.
  \param front   Highest level of hierarchy extracted.
  \param rest    Hierarchy left after extraction.
@@ -1005,6 +1060,10 @@ const char* get_funit_type( int type ) {
 
 /*
  $Log$
+ Revision 1.47  2006/04/07 22:31:07  phase1geo
+ Fixes to get VPI to work with VCS.  Getting close but still some work to go to
+ get the callbacks to start working.
+
  Revision 1.46  2006/04/07 03:47:50  phase1geo
  Fixing run-time issues with VPI.  Things are running correctly now with IV.
 

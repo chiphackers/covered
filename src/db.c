@@ -50,6 +50,7 @@
 #include "attr.h"
 #include "race.h"
 #include "scope.h"
+#include "ovl.h"
 
 
 extern char*       top_module;
@@ -508,7 +509,9 @@ func_unit* db_add_instance( char* scope, char* name, int type, vector_width* ran
       /* Add instance. */
       instance_parse_add( &instance_root, curr_funit, funit, scope, range );
 
-      if( (type == FUNIT_MODULE) && (str_link_find( name, modlist_head ) == NULL) ) {
+      if( (type == FUNIT_MODULE) &&
+          (str_link_find( name, modlist_head ) == NULL) &&
+          ((info_suppl.part.assert_ovl == 1) || !ovl_is_assertion_name( name )) ) {
         str_link_add( strdup_safe( name, __FILE__, __LINE__ ), &modlist_head, &modlist_tail );
       }
       
@@ -1692,6 +1695,11 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.177  2006/04/14 17:05:13  phase1geo
+ Reorganizing info line to make it more succinct and easier for future needs.
+ Fixed problems with VPI library with recent merge changes.  Regression has
+ been completely updated for these changes.
+
  Revision 1.176  2006/04/11 22:42:16  phase1geo
  First pass at adding multi-file merging.  Still need quite a bit of work here yet.
 

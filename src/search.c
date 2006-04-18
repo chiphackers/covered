@@ -209,52 +209,48 @@ bool search_add_no_score_funit( char* funit ) {
 
 /*!
  \param ext_list String containing extensions to allow in search.
+
  \return Returns TRUE if the specified string is in the correct format;
          otherwise, returns FALSE.
 
+ Parses the given +libext argument, extracting all extensions listed and storing them into
+ the globally accessible extensions list.
 */
 bool search_add_extensions( char* ext_list ) {
 
   bool  retval    = TRUE;      /* Return value for this function */
-  char  ext[30];               /* holder for extension           */
-  int   ext_index = 0;         /* Index to ext array             */
-  char* tmp       = ext_list;  /* Temporary extension name       */
+  char  ext[30];               /* Holder for extension */
+  int   ext_index = 0;         /* Index to ext array */
+  char* tmp       = ext_list;  /* Temporary extension name */
 
-  if( ext_list != NULL ) {
+  assert( ext_list != NULL );
 
-    while( (*tmp != '\0') && retval ) {
-      assert( ext_index < 30 );
-      if( *tmp == '+' ) { 
-        ext[ext_index] = '\0';
-        ext_index      = 0;
-        str_link_add( strdup_safe( ext, __FILE__, __LINE__ ), &extensions_head, &extensions_tail );
-      } else if( *tmp == '.' ) {
-        if( ext_index > 0 ) {
-          retval = FALSE;
-        }
-      } else {
-        ext[ext_index] = *tmp;
-        ext_index++;
+  while( (*tmp != '\0') && retval ) {
+    assert( ext_index < 30 );
+    if( *tmp == '+' ) { 
+      ext[ext_index] = '\0';
+      ext_index      = 0;
+      str_link_add( strdup_safe( ext, __FILE__, __LINE__ ), &extensions_head, &extensions_tail );
+    } else if( *tmp == '.' ) {
+      if( ext_index > 0 ) {
+        retval = FALSE;
       }
-      tmp++;
+    } else {
+      ext[ext_index] = *tmp;
+      ext_index++;
     }
-
-    /* If extension list is not empty, we have hit a parsing error */
-    if( strlen( tmp ) > 0 ) {
-      retval = FALSE;
-    }
-
-  } else {
-
-    retval = FALSE;
-
+    tmp++;
   }
 
-  /* If we had a parsing error, output the problem here */
-  if( !retval ) {
-    snprintf( user_msg, USER_MSG_LENGTH, "Bad library extension specified (+libext+%s)\n", ext_list );
+  /* If extension list is not empty, we have hit a parsing error */
+  if( (strlen( tmp ) > 0) || (ext_index > 0) ) {
+    snprintf( user_msg, USER_MSG_LENGTH, "Parsing error in +libext+%s  ", ext_list );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
-  } 
+    gen_space( user_msg, (25 + (strlen( ext_list ) - strlen( tmp ))) );
+    strcat( user_msg, "^" );
+    print_output( user_msg, FATAL_WRAP, __FILE__, __LINE__ );
+    retval = FALSE;
+  }
 
   return( retval );
 
@@ -275,6 +271,9 @@ void search_free_lists() {
 
 /*
  $Log$
+ Revision 1.24  2006/04/11 22:42:16  phase1geo
+ First pass at adding multi-file merging.  Still need quite a bit of work here yet.
+
  Revision 1.23  2006/03/28 22:28:28  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

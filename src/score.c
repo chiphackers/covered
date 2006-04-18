@@ -102,11 +102,8 @@ void score_usage() {
   printf( "      -F <module>=(<ivar>,)<ovar>  Module, input state variable and output state variable of\n" );
   printf( "                                    an FSM state variable.  If input variable (ivar) is not specified,\n" );
   printf( "                                    the output variable (ovar) is also used as the input variable.\n" ); 
-  printf( "      -a ovl                       Specifies that any OVL assertion found in the design should be\n" );
+  printf( "      -A ovl                       Specifies that any OVL assertion found in the design should be\n" );
   printf( "                                    automatically included for assertion coverage.\n" );
-#ifdef TBD
-  printf( "      -A <module>=<expression>     Module and assertion expression to check for in the design.\n" );
-#endif
   printf( "      -y <directory>               Directory to find unspecified Verilog files.\n" );
   printf( "      -v <filename>                Name of specific Verilog file to score.\n" );
   printf( "      -D <define_name>(=<value>)   Defines the specified name to 1 or the specified value.\n" );
@@ -245,7 +242,7 @@ bool read_command_file( char* cmd_file, char*** arg_list, int* arg_num ) {
   str_link* head    = NULL;  /* Pointer to head element of arg list */
   str_link* tail    = NULL;  /* Pointer to tail element of arg list */
   FILE*     cmd_handle;      /* Pointer to command file */
-  char      tmp_str[1024];   /* Temporary holder for read argument */
+  char      tmp_str[4096];   /* Temporary holder for read argument */
   str_link* curr;            /* Pointer to current str_link element */
   int       tmp_num = 0;     /* Temporary argument number holder */
 
@@ -254,7 +251,7 @@ bool read_command_file( char* cmd_file, char*** arg_list, int* arg_num ) {
     if( (cmd_handle = fopen( cmd_file, "r" )) != NULL ) {
 
       while( fscanf( cmd_handle, "%s", tmp_str ) == 1 ) {
-        str_link_add( strdup_safe( tmp_str, __FILE__, __LINE__ ), &head, &tail );
+        str_link_add( substitute_env_vars( tmp_str ), &head, &tail );
         tmp_num++;
       }
 
@@ -543,14 +540,14 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 
       flag_display_sim_stats = TRUE;
 
-    } else if( strncmp( "-a", argv[i], 2 ) == 0 ) {
+    } else if( strncmp( "-A", argv[i], 2 ) == 0 ) {
 
       i++;
 
       if( strncmp( argv[i], "ovl", 3 ) == 0 ) {
         info_suppl.part.assert_ovl = 1;
       } else {
-        snprintf( user_msg, USER_MSG_LENGTH, "Unknown -a value (%s).  Please specify ovl.", argv[i] );
+        snprintf( user_msg, USER_MSG_LENGTH, "Unknown -A value (%s).  Please specify ovl.", argv[i] );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         retval = FALSE;
       }
@@ -667,6 +664,11 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.70  2006/04/14 17:05:13  phase1geo
+ Reorganizing info line to make it more succinct and easier for future needs.
+ Fixed problems with VPI library with recent merge changes.  Regression has
+ been completely updated for these changes.
+
  Revision 1.69  2006/04/13 22:17:47  phase1geo
  Adding the beginning of the OVL assertion extractor.  So far the -a option is
  parsed and the race condition checker is turned off for all detectable

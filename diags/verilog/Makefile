@@ -37,14 +37,14 @@ CHK_CODE      = 0
 endif
 
 IVERILOG       = iverilog
-IVERILOG_FLAGS = -y ./lib -I ./include -DRUNTEST
+IVERILOG_FLAGS = -c config_file -y ./lib -y $(OVL_HOME) -I $(OVL_HOME) -I ./include -DRUNTEST
 IVERILOG_EXEC  = a.out
 IVERILOG_INTER = vvp
 
 VCS       = vcs
 #VCS_FLAGS = +libext+.v+ -y ./lib +incdir+./include +define+RUNTEST +define+VCS +vpi -load ../../src/vpi/covered.so:covered_register -P ../../src/vpi/covered.tab covered_top.v
-VCS_FLAGS = +libext+.v+ -y ./lib +incdir+./include +define+RUNTEST +v2k
-VCS_EXEC  = ./simv +covered_outdb=out.cdd
+VCS_FLAGS = +libext+.v+.vlib+ -y ./lib -y $(OVL_HOME) +incdir+$(OVL_HOME) +incdir+./include +define+RUNTEST +v2k
+VCS_EXEC  = ./simv +covered_cdd=out.cdd
 
 ifdef USE_VCS
 VERILOG       = $(VCS)
@@ -63,11 +63,16 @@ RPT_DIR       = ../rpt
 
 LOGFILE = regress.log
 
-.PHONY:	view_vg_errs
+.PHONY:	view_vg_errs check-ovl
 
 regress:	$(COVERED) $(DIAGLIST) $(RACELIST) $(MERGELIST) $(MERGE3LIST) $(ERRSCORELIST) $(ERRMERGELIST)
 
-$(DIAGLIST):
+check-ovl:
+ifndef OVL_HOME
+        @echo "Set OVL_HOME environment variable to point to base OVL vlib directory"; exit 1
+endif
+
+$(DIAGLIST): check-ovl
 	@if test ! -f $@.done; then \
 		echo Running $@; \
 		$(VERILOG) $(VERILOG_FLAGS) $@.v; \

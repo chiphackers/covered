@@ -61,6 +61,9 @@ bool file_exists( char* file );
 /*! \brief Reads line from file and returns it in string form. */
 bool util_readline( FILE* file, char** line );
 
+/*! \brief Searches the specified string for environment variables and substitutes their value if found */
+char* substitute_env_vars( char* value );
+
 /*! \brief Extracts highest level of hierarchy from specified scope. */
 void scope_extract_front( char* scope, char* front, char* rest );
 
@@ -114,6 +117,11 @@ const char* get_funit_type( int type );
 
 /*
  $Log$
+ Revision 1.21  2006/03/28 22:28:28  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.20  2006/02/17 19:50:47  phase1geo
  Added full support for escaped names.  Full regression passes.
 
