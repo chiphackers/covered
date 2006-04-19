@@ -110,29 +110,34 @@ bool assertion_instance_summary( FILE* ofile, funit_inst* root, char* parent_ins
 
   miss = (root->stat->assert_total - root->stat->assert_hit);
 
-  /* Get printable version of the instance name */
-  pname = scope_gen_printable( root->name );
+  /* If this is an assertion module, don't output any further */
+  if( (info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit ) ) {
 
-  /* Calculate instance name */
-  if( strcmp( parent_inst, "*" ) == 0 ) {
-    strcpy( tmpname, pname );
-  } else {
-    snprintf( tmpname, 4096, "%s.%s", parent_inst, pname );
-  }
+    /* Get printable version of the instance name */
+    pname = scope_gen_printable( root->name );
 
-  free_safe( pname );
+    /* Calculate instance name */
+    if( strcmp( parent_inst, "*" ) == 0 ) {
+      strcpy( tmpname, pname );
+    } else {
+      snprintf( tmpname, 4096, "%s.%s", parent_inst, pname );
+    }
 
-  fprintf( ofile, "  %-43.43s    %5d/%5.0f/%5.0f      %3.0f%%\n",
-           tmpname,
-           root->stat->assert_hit,
-           miss,
-           root->stat->assert_total,
-           percent );
+    free_safe( pname );
 
-  curr = root->child_head;
-  while( curr != NULL ) {
-    miss = miss + assertion_instance_summary( ofile, curr, tmpname );
-    curr = curr->next;
+    fprintf( ofile, "  %-43.43s    %5d/%5.0f/%5.0f      %3.0f%%\n",
+             tmpname,
+             root->stat->assert_hit,
+             miss,
+             root->stat->assert_total,
+             percent );
+
+    curr = root->child_head;
+    while( curr != NULL ) {
+      miss = miss + assertion_instance_summary( ofile, curr, tmpname );
+      curr = curr->next;
+    }
+
   }
 
   return( miss > 0 );
@@ -167,18 +172,23 @@ bool assertion_funit_summary( FILE* ofile, funit_link* head ) {
     miss       = (head->funit->stat->assert_total - head->funit->stat->assert_hit);
     miss_found = (miss > 0) ? TRUE : miss_found;
 
-    /* Get printable version of functional unit name */
-    pname = scope_gen_printable( head->funit->name );
+    /* If this is an assertion module, don't output any further */
+    if( (info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( head->funit ) ) {
 
-    fprintf( ofile, "  %-20.20s    %-20.20s   %5d/%5.0f/%5.0f      %3.0f%%\n",
-             pname,
-             get_basename( head->funit->filename ),
-             head->funit->stat->assert_hit,
-             miss,
-             head->funit->stat->assert_total,
-             percent );
+      /* Get printable version of functional unit name */
+      pname = scope_gen_printable( head->funit->name );
 
-    free_safe( pname );
+      fprintf( ofile, "  %-20.20s    %-20.20s   %5d/%5.0f/%5.0f      %3.0f%%\n",
+               pname,
+               get_basename( head->funit->filename ),
+               head->funit->stat->assert_hit,
+               miss,
+               head->funit->stat->assert_total,
+               percent );
+
+      free_safe( pname );
+
+    }
 
     head = head->next;
 
@@ -270,6 +280,11 @@ void assertion_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.3  2006/04/18 21:59:54  phase1geo
+ Adding support for environment variable substitution in configuration files passed
+ to the score command.  Adding ovl.c/ovl.h files.  Working on support for assertion
+ coverage in report command.  Still have a bit to go here yet.
+
  Revision 1.2  2006/04/06 22:30:03  phase1geo
  Adding VPI capability back and integrating into autoconf/automake scheme.  We
  are getting close but still have a ways to go.

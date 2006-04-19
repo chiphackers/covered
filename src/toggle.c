@@ -44,6 +44,7 @@ extern bool   report_instance;
 extern char** leading_hierarchies;
 extern int    leading_hier_num;
 extern bool   leading_hiers_differ;
+extern isuppl info_suppl;
 
 
 /*!
@@ -291,32 +292,37 @@ bool toggle_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst )
   }
   miss10    = (root->stat->tog_total - root->stat->tog10_hit);
 
-  /* Get printable version of this instance */
-  pname = scope_gen_printable( root->name );
+  /* If this is an assertion module, don't output any further */
+  if( (info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit ) ) {
 
-  if( strcmp( parent_inst, "*" ) == 0 ) {
-    strcpy( tmpname, pname );
-  } else {
-    snprintf( tmpname, 4096, "%s.%s", parent_inst, pname );
-  }
+    /* Get printable version of this instance */
+    pname = scope_gen_printable( root->name );
 
-  free_safe( pname );
+    if( strcmp( parent_inst, "*" ) == 0 ) {
+      strcpy( tmpname, pname );
+    } else {
+      snprintf( tmpname, 4096, "%s.%s", parent_inst, pname );
+    }
 
-  fprintf( ofile, "  %-43.43s    %5d/%5.0f/%5.0f      %3.0f%%         %5d/%5.0f/%5.0f      %3.0f%%\n",
-           tmpname,
-           root->stat->tog01_hit,
-           miss01,
-           root->stat->tog_total,
-           percent01,
-           root->stat->tog10_hit,
-           miss10,
-           root->stat->tog_total,
-           percent10 );
+    free_safe( pname );
 
-  curr = root->child_head;
-  while( curr != NULL ) {
-    miss01 = miss01 + toggle_instance_summary( ofile, curr, tmpname );
-    curr = curr->next;
+    fprintf( ofile, "  %-43.43s    %5d/%5.0f/%5.0f      %3.0f%%         %5d/%5.0f/%5.0f      %3.0f%%\n",
+             tmpname,
+             root->stat->tog01_hit,
+             miss01,
+             root->stat->tog_total,
+             percent01,
+             root->stat->tog10_hit,
+             miss10,
+             root->stat->tog_total,
+             percent10 );
+
+    curr = root->child_head;
+    while( curr != NULL ) {
+      miss01 = miss01 + toggle_instance_summary( ofile, curr, tmpname );
+      curr = curr->next;
+    }
+
   }
 
   return( (miss01 > 0) || (miss10 > 0) );
@@ -361,24 +367,29 @@ bool toggle_funit_summary( FILE* ofile, funit_link* head ) {
 
     miss_found = ((miss01 > 0) || (miss10 > 0)) ? TRUE : miss_found;
 
-    /* Get printable version of functional unit name */
-    pname = scope_gen_printable( head->funit->name );
+    /* If this is an assertion module, don't output any further */
+    if( (info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( head->funit ) ) {
 
-    fprintf( ofile, "  %-20.20s    %-20.20s   %5d/%5.0f/%5.0f      %3.0f%%         %5d/%5.0f/%5.0f      %3.0f%%\n", 
-             pname,
-             get_basename( head->funit->filename ),
-             head->funit->stat->tog01_hit,
-             miss01,
-             head->funit->stat->tog_total,
-             percent01,
-             head->funit->stat->tog10_hit,
-             miss10,
-             head->funit->stat->tog_total,
-             percent10 );
+      /* Get printable version of functional unit name */
+      pname = scope_gen_printable( head->funit->name );
+
+      fprintf( ofile, "  %-20.20s    %-20.20s   %5d/%5.0f/%5.0f      %3.0f%%         %5d/%5.0f/%5.0f      %3.0f%%\n", 
+               pname,
+               get_basename( head->funit->filename ),
+               head->funit->stat->tog01_hit,
+               miss01,
+               head->funit->stat->tog_total,
+               percent01,
+               head->funit->stat->tog10_hit,
+               miss10,
+               head->funit->stat->tog_total,
+               percent10 );
+
+      free_safe( pname );
+
+    }
 
     head = head->next;
-
-    free_safe( pname );
 
   }
 
@@ -607,6 +618,9 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.36  2006/04/11 22:42:16  phase1geo
+ First pass at adding multi-file merging.  Still need quite a bit of work here yet.
+
  Revision 1.35  2006/03/28 22:28:28  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

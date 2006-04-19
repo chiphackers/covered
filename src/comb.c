@@ -84,6 +84,8 @@ extern bool           leading_hiers_differ;
 extern int            line_width;
 extern char           user_msg[USER_MSG_LENGTH];
 extern const exp_info exp_op_info[EXP_OP_NUM];
+extern isuppl         info_suppl;
+
 
 /*!
  \param exp         Pointer to current expression.
@@ -452,23 +454,28 @@ bool combination_instance_summary( FILE* ofile, funit_inst* root, char* parent )
   }
   miss    = (root->stat->comb_total - root->stat->comb_hit);
 
-  if( strcmp( parent, "*" ) == 0 ) {
-    strcpy( tmpname, root->name );
-  } else {
-    snprintf( tmpname, 4096, "%s.%s", parent, root->name );
-  }
+  /* If this is an assertion module, don't output any further */
+  if( (info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit ) ) {
 
-  fprintf( ofile, "  %-63.63s    %4d/%4.0f/%4.0f      %3.0f%%\n",
-           tmpname,
-           root->stat->comb_hit,
-           miss,
-           root->stat->comb_total,
-           percent );
+    if( strcmp( parent, "*" ) == 0 ) {
+      strcpy( tmpname, root->name );
+    } else {
+      snprintf( tmpname, 4096, "%s.%s", parent, root->name );
+    }
 
-  curr = root->child_head;
-  while( curr != NULL ) {
-    miss = miss + combination_instance_summary( ofile, curr, tmpname );
-    curr = curr->next;
+    fprintf( ofile, "  %-63.63s    %4d/%4.0f/%4.0f      %3.0f%%\n",
+             tmpname,
+             root->stat->comb_hit,
+             miss,
+             root->stat->comb_total,
+             percent );
+
+    curr = root->child_head;
+    while( curr != NULL ) {
+      miss = miss + combination_instance_summary( ofile, curr, tmpname );
+      curr = curr->next;
+    }
+
   }
 
   return( miss > 0 );
@@ -507,13 +514,18 @@ bool combination_funit_summary( FILE* ofile, funit_link* head ) {
       miss_found = TRUE;
     }
 
-    fprintf( ofile, "  %-30.30s    %-30.30s   %4d/%4.0f/%4.0f      %3.0f%%\n", 
-             head->funit->name,
-             get_basename( head->funit->filename ),
-             head->funit->stat->comb_hit,
-             miss,
-             head->funit->stat->comb_total,
-             percent );
+    /* If this is an assertion module, don't output any further */
+    if( (info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( head->funit ) ) {
+
+      fprintf( ofile, "  %-30.30s    %-30.30s   %4d/%4.0f/%4.0f      %3.0f%%\n", 
+               head->funit->name,
+               get_basename( head->funit->filename ),
+               head->funit->stat->comb_hit,
+               miss,
+               head->funit->stat->comb_total,
+               percent );
+
+    }
 
     head = head->next;
 
@@ -2223,6 +2235,9 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.138  2006/04/11 22:42:16  phase1geo
+ First pass at adding multi-file merging.  Still need quite a bit of work here yet.
+
  Revision 1.137  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

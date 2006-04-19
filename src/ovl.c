@@ -34,11 +34,26 @@
 #include "link.h"
 #include "instance.h"
 #include "iter.h"
+#include "search.h"
 
+/*!
+ Specifies the number of assertion modules that need to exist in the ovl_assertions string array.
+*/
+#define OVL_ASSERT_NUM 27
 
 extern bool        flag_check_ovl_assertions;
 extern funit_inst* instance_root;
 
+/*!
+ Specifies the module names of all OVL assertions that contain functional coverage task calls.
+*/
+char* ovl_assertions[OVL_ASSERT_NUM] = { "assert_change",      "assert_cycle_sequence", "assert_decrement",     "assert_delta",
+                                         "assert_even_parity", "assert_fifo_index",     "assert_frame",         "assert_handshake",
+                                         "assert_implication", "assert_increment",      "assert_never_unknown", "assert_next",
+                                         "assert_no_overflow", "assert_no_transition",  "assert_no_underflow",  "assert_odd_parity",
+                                         "assert_one_cold",    "assert_one_hot",        "assert_range",         "assert_time",
+                                         "assert_transition",  "assert_unchange",       "assert_width",         "assert_win_change",
+                                         "assert_window",      "assert_win_unchange",   "assert_zero_one_hot" };
 
 /*!
  \param name  Name of assertion module to check
@@ -48,43 +63,19 @@ extern funit_inst* instance_root;
 */
 bool ovl_is_assertion_name( char* name ) {
 
-  bool retval = FALSE;  /* Return value for this function */
+  int i = OVL_ASSERT_NUM;  /* Loop iterator */
 
   /* Rule out the possibility if the first 7 characters does not start with "assert" */
   if( strncmp( name, "assert_", 7 ) == 0 ) {
 
-    /* Check the name against the supported OVL assertion module names */
-    if(      strcmp( (name + 7), "change"         ) == 0 ) { retval = TRUE; }
-    else if( strcmp( (name + 7), "cycle_sequence" ) == 0 ) { retval = TRUE; }
-    else if( strcmp( (name + 7), "decrement"      ) == 0 ) { retval = TRUE; }
-    else if( strcmp( (name + 7), "delta"          ) == 0 ) { retval = TRUE; }
-    else if( strcmp( (name + 7), "even_parity"    ) == 0 ) { retval = TRUE; }
-    else if( strcmp( (name + 7), "fifo_index"     ) == 0 ) { retval = TRUE; }
-    else if( strcmp( (name + 7), "frame"          ) == 0 ) { retval = TRUE; }
-    else if( strcmp( (name + 7), "handshake"      ) == 0 ) { retval = TRUE; }
-    else if( strcmp( (name + 7), "implication"    ) == 0 ) { retval = TRUE; }
-    else if( strcmp( (name + 7), "increment"      ) == 0 ) { retval = TRUE; }
-    else if( strcmp( (name + 7), "never_unknown"  ) == 0 ) { retval = TRUE; }
-    else if( strcmp( (name + 7), "next"           ) == 0 ) { retval = TRUE; }
-    else if( strcmp( (name + 7), "no_overflow"    ) == 0 ) { retval = TRUE; }
-    else if( strcmp( (name + 7), "no_transition"  ) == 0 ) { retval = TRUE; }
-    else if( strcmp( (name + 7), "no_underflow"   ) == 0 ) { retval = TRUE; }
-    else if( strcmp( (name + 7), "odd_parity"     ) == 0 ) { retval = TRUE; }
-    else if( strcmp( (name + 7), "one_cold"       ) == 0 ) { retval = TRUE; }
-    else if( strcmp( (name + 7), "one_hot"        ) == 0 ) { retval = TRUE; }
-    else if( strcmp( (name + 7), "range"          ) == 0 ) { retval = TRUE; }
-    else if( strcmp( (name + 7), "time"           ) == 0 ) { retval = TRUE; }
-    else if( strcmp( (name + 7), "transition"     ) == 0 ) { retval = TRUE; }
-    else if( strcmp( (name + 7), "unchange"       ) == 0 ) { retval = TRUE; }
-    else if( strcmp( (name + 7), "width"          ) == 0 ) { retval = TRUE; }
-    else if( strcmp( (name + 7), "win_change"     ) == 0 ) { retval = TRUE; }
-    else if( strcmp( (name + 7), "window"         ) == 0 ) { retval = TRUE; }
-    else if( strcmp( (name + 7), "win_unchange"   ) == 0 ) { retval = TRUE; }
-    else if( strcmp( (name + 7), "zero_one_hot"   ) == 0 ) { retval = TRUE; }
+    i = 0;
+    while( (i < OVL_ASSERT_NUM) && (strncmp( (name + 7), (ovl_assertions[i] + 7), strlen( ovl_assertions[i] + 7 ) ) != 0) ) {
+      i++;
+    }
 
   }
 
-  return( retval );
+  return( i < OVL_ASSERT_NUM );
 
 }
 
@@ -116,6 +107,31 @@ bool ovl_is_assertion_module( func_unit* funit ) {
   }
 
   return( retval );
+
+}
+
+/*!
+ \param rm_tasks  Removes extraneous tasks only that are not used for coverage
+
+ Adds all OVL assertions to the no_score list.
+*/
+void ovl_add_assertions_to_no_score_list( bool rm_tasks ) {
+
+  int  i;          /* Loop iterator */
+  char tmp[4096];  /* Temporary string holder */
+
+  for( i=0; i<OVL_ASSERT_NUM; i++ ) {
+    if( rm_tasks ) {
+      snprintf( tmp, 4096, "%s.ovl_error_t", ovl_assertions[i] );
+      search_add_no_score_funit( tmp );
+      snprintf( tmp, 4096, "%s.ovl_finish_t", ovl_assertions[i] );
+      search_add_no_score_funit( tmp );
+      snprintf( tmp, 4096, "%s.ovl_init_msg_t", ovl_assertions[i] );
+      search_add_no_score_funit( tmp );
+    } else {
+      search_add_no_score_funit( ovl_assertions[i] );
+    }
+  }
 
 }
 
@@ -153,9 +169,9 @@ void ovl_get_funit_stats( func_unit* funit, float* total, int* hit ) {
 
           /* If this statement is a task call to the task "ovl_cover_t", get its total and hit information */
           if( (si.curr->stmt->exp->op == EXP_OP_TASK_CALL) && (strcmp( si.curr->stmt->exp->name, "ovl_cover_t" ) == 0) ) {
-            total++;
+            *total = *total + 1;
             if( si.curr->stmt->exp->exec_num > 0 ) {
-              hit++;
+              (*hit)++;
             }
           }
 
@@ -176,5 +192,10 @@ void ovl_get_funit_stats( func_unit* funit, float* total, int* hit ) {
 
 /*
  $Log$
+ Revision 1.1  2006/04/18 21:59:54  phase1geo
+ Adding support for environment variable substitution in configuration files passed
+ to the score command.  Adding ovl.c/ovl.h files.  Working on support for assertion
+ coverage in report command.  Still have a bit to go here yet.
+
 */
 

@@ -12,7 +12,7 @@ VG_FLAGS      = --tool=memcheck --leak-check=yes --show-reachable=yes --num-call
 
 COVERED_SRC   = ../../src
 COVERED       = $(COVERED_SRC)/covered
-COVERED_GFLAG = -D
+COVERED_GFLAG = 
 
 ifdef CHECK_MEM
 VG_COVERED    = $(VG_EXEC) $(VG_FLAGS) $(COVERED)
@@ -81,12 +81,12 @@ $(DIAGLIST): check-ovl
 		vg_exists=`which $(VG_EXEC) | wc -w`; \
 		if test "$$vg_exists" = "1"; then \
 			$(VG_COVERED) $(COVERED_GFLAG) score -f $@.cfg; \
-			$(VG_COVERED) $(COVERED_GFLAG) report -d v -o $@.rptM $@.cdd; \
+			$(VG_COVERED) $(COVERED_GFLAG) report -d v -m ltcfa -o $@.rptM $@.cdd; \
 		else \
 			$(COVERED) $(COVERED_GFLAG) score -f $@.cfg; \
-			$(COVERED) $(COVERED_GFLAG) report -d v -o $@.rptM $@.cdd; \
+			$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfa -o $@.rptM $@.cdd; \
 		fi; \
-		$(COVERED) $(COVERED_GFLAG) report -d v -i -o $@.rptI $@.cdd; \
+		$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfa -i -o $@.rptI $@.cdd; \
 		$(COVERED) $(COVERED_GFLAG) report -w -d v -o $@.rptWM $@.cdd; \
 		$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $@.rptWI $@.cdd; \
 		rm -f $@.cfg; \

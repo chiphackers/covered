@@ -509,9 +509,7 @@ func_unit* db_add_instance( char* scope, char* name, int type, vector_width* ran
       /* Add instance. */
       instance_parse_add( &instance_root, curr_funit, funit, scope, range );
 
-      if( (type == FUNIT_MODULE) &&
-          (str_link_find( name, modlist_head ) == NULL) &&
-          ((info_suppl.part.assert_ovl == 1) || !ovl_is_assertion_name( name )) ) {
+      if( (type == FUNIT_MODULE) && (str_link_find( name, modlist_head ) == NULL) ) {
         str_link_add( strdup_safe( name, __FILE__, __LINE__ ), &modlist_head, &modlist_tail );
       }
       
@@ -1695,6 +1693,11 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.178  2006/04/18 21:59:54  phase1geo
+ Adding support for environment variable substitution in configuration files passed
+ to the score command.  Adding ovl.c/ovl.h files.  Working on support for assertion
+ coverage in report command.  Still have a bit to go here yet.
+
  Revision 1.177  2006/04/14 17:05:13  phase1geo
  Reorganizing info line to make it more succinct and easier for future needs.
  Fixed problems with VPI library with recent merge changes.  Regression has

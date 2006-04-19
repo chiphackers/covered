@@ -56,6 +56,7 @@ extern char**       leading_hierarchies;
 extern int          leading_hier_num;
 extern bool         leading_hiers_differ;
 extern char         user_msg[USER_MSG_LENGTH];
+extern isuppl       info_suppl;
 
 
 /*!
@@ -666,40 +667,45 @@ bool fsm_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst ) {
   }
   arc_miss   = (root->stat->arc_total - root->stat->arc_hit);
 
-  /* Generate printable version of instance name */
-  pname = scope_gen_printable( root->name );
+  /* If this is an assertion module, don't output any further */
+  if( (info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit ) ) {
 
-  if( strcmp( parent_inst, "*" ) == 0 ) {
-    strcpy( tmpname, pname );
-  } else {
-    snprintf( tmpname, 4096, "%s.%s", parent_inst, pname ); 
+    /* Generate printable version of instance name */
+    pname = scope_gen_printable( root->name );
+
+    if( strcmp( parent_inst, "*" ) == 0 ) {
+      strcpy( tmpname, pname );
+    } else {
+      snprintf( tmpname, 4096, "%s.%s", parent_inst, pname ); 
+    }
+
+    free_safe( pname );
+
+    if( (root->stat->state_total == -1) || (root->stat->arc_total == -1) ) {
+      fprintf( ofile, "  %-43.43s    %4d/  ? /  ?        ? %%         %4d/  ? /  ?        ? %%\n",
+             tmpname,
+             root->stat->state_hit,
+             root->stat->arc_hit );
+    } else {
+      fprintf( ofile, "  %-43.43s    %4d/%4.0f/%4.0f      %3.0f%%         %4d/%4.0f/%4.0f      %3.0f%%\n",
+             tmpname,
+             root->stat->state_hit,
+             state_miss,
+             root->stat->state_total,
+             state_percent,
+             root->stat->arc_hit,
+             arc_miss,
+             root->stat->arc_total,
+             arc_percent );
+    }
+
+    curr = root->child_head;
+    while( curr != NULL ) {
+      arc_miss = arc_miss + fsm_instance_summary( ofile, curr, tmpname );
+      curr = curr->next;
+    }
+
   }
-
-  free_safe( pname );
-
-  if( (root->stat->state_total == -1) || (root->stat->arc_total == -1) ) {
-    fprintf( ofile, "  %-43.43s    %4d/  ? /  ?        ? %%         %4d/  ? /  ?        ? %%\n",
-           tmpname,
-           root->stat->state_hit,
-           root->stat->arc_hit );
-  } else {
-    fprintf( ofile, "  %-43.43s    %4d/%4.0f/%4.0f      %3.0f%%         %4d/%4.0f/%4.0f      %3.0f%%\n",
-           tmpname,
-           root->stat->state_hit,
-           state_miss,
-           root->stat->state_total,
-           state_percent,
-           root->stat->arc_hit,
-           arc_miss,
-           root->stat->arc_total,
-           arc_percent );
-  }
-
-  curr = root->child_head;
-  while( curr != NULL ) {
-    arc_miss = arc_miss + fsm_instance_summary( ofile, curr, tmpname );
-    curr = curr->next;
-  } 
 
   return( (state_miss != 0) || (arc_miss != 0) );
 
@@ -740,30 +746,35 @@ bool fsm_funit_summary( FILE* ofile, funit_link* head ) {
     arc_miss   = (head->funit->stat->arc_total   - head->funit->stat->arc_hit);
     miss_found = ((state_miss != 0) || (arc_miss != 0)) ? TRUE : miss_found;
 
-    /* Get printable version of functional unit name */
-    pname = scope_gen_printable( head->funit->name );
+    /* If this is an assertion module, don't output any further */
+    if( (info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( head->funit ) ) {
 
-    if( (head->funit->stat->state_total == -1) || (head->funit->stat->arc_total == -1) ) {
-      fprintf( ofile, "  %-20.20s    %-20.20s   %4d/  ? /  ?        ? %%         %4d/  ? /  ?        ? %%\n",
-           pname,
-           get_basename( head->funit->filename ),
-           head->funit->stat->state_hit,
-           head->funit->stat->arc_hit );
-    } else {
-      fprintf( ofile, "  %-20.20s    %-20.20s   %4d/%4.0f/%4.0f      %3.0f%%         %4d/%4.0f/%4.0f      %3.0f%%\n",
+      /* Get printable version of functional unit name */
+      pname = scope_gen_printable( head->funit->name );
+
+      if( (head->funit->stat->state_total == -1) || (head->funit->stat->arc_total == -1) ) {
+        fprintf( ofile, "  %-20.20s    %-20.20s   %4d/  ? /  ?        ? %%         %4d/  ? /  ?        ? %%\n",
              pname,
              get_basename( head->funit->filename ),
              head->funit->stat->state_hit,
-             state_miss,
-             head->funit->stat->state_total,
-             state_percent,
-             head->funit->stat->arc_hit,
-             arc_miss,
-             head->funit->stat->arc_total,
-             arc_percent );
-    }
+             head->funit->stat->arc_hit );
+      } else {
+        fprintf( ofile, "  %-20.20s    %-20.20s   %4d/%4.0f/%4.0f      %3.0f%%         %4d/%4.0f/%4.0f      %3.0f%%\n",
+               pname,
+               get_basename( head->funit->filename ),
+               head->funit->stat->state_hit,
+               state_miss,
+               head->funit->stat->state_total,
+               state_percent,
+               head->funit->stat->arc_hit,
+               arc_miss,
+               head->funit->stat->arc_total,
+               arc_percent );
+      }
 
-    free_safe( pname );
+      free_safe( pname );
+
+    }
 
     head = head->next;
 
@@ -1144,6 +1155,12 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.53  2006/04/12 18:06:24  phase1geo
+ Updating regressions for changes that were made to support multi-file merging.
+ Also fixing output of FSM state transitions to be what they were.
+ Regressions now pass; however, the support for multi-file merging (beyond two
+ files) has not been tested to this point.
+
  Revision 1.52  2006/04/11 22:42:16  phase1geo
  First pass at adding multi-file merging.  Still need quite a bit of work here yet.
 

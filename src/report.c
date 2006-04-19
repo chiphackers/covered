@@ -370,7 +370,7 @@ bool report_parse_args( int argc, int last_arg, char** argv ) {
 */
 void report_gather_instance_stats( funit_inst* root ) {
 
-  funit_inst* curr;  /* Pointer to current instance being evaluated */
+  funit_inst* curr;        /* Pointer to current instance being evaluated */
 
   /* Create a statistics structure for this instance */
   assert( root->stat == NULL );
@@ -384,44 +384,49 @@ void report_gather_instance_stats( funit_inst* root ) {
     curr = curr->next;
   }
 
-  /* Get coverage results for this instance */
-  if( report_line ) {
-    line_get_stats( root->funit->stmt_head, &(root->stat->line_total), &(root->stat->line_hit) );
-  }
+  /* If this module is an OVL module, don't get coverage statistics */
+  if( (info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit ) ) {
 
-  if( report_toggle ) {
-    toggle_get_stats( root->funit->sig_head, 
-                      &(root->stat->tog_total), 
-                      &(root->stat->tog01_hit), 
-                      &(root->stat->tog10_hit) );
-  }
+    /* Get coverage results for this instance */
+    if( report_line ) {
+      line_get_stats( root->funit->stmt_head, &(root->stat->line_total), &(root->stat->line_hit) );
+    }
 
-  if( report_combination ) {
-    combination_get_stats( root->funit->exp_head,
-                           &(root->stat->comb_total),
-                           &(root->stat->comb_hit) );
-  }
+    if( report_toggle ) {
+      toggle_get_stats( root->funit->sig_head, 
+                        &(root->stat->tog_total), 
+                        &(root->stat->tog01_hit), 
+                        &(root->stat->tog10_hit) );
+    }
 
-  if( report_fsm ) {
-    fsm_get_stats( root->funit->fsm_head,
-                   &(root->stat->state_total),
-                   &(root->stat->state_hit),
-                   &(root->stat->arc_total),
-                   &(root->stat->arc_hit) );
-  }
+    if( report_combination ) {
+      combination_get_stats( root->funit->exp_head,
+                             &(root->stat->comb_total),
+                             &(root->stat->comb_hit) );
+    }
 
-  if( report_assertion ) {
-    assertion_get_stats( root->funit,
-                         &(root->stat->assert_total),
-                         &(root->stat->assert_hit) );
-  }
+    if( report_fsm ) {
+      fsm_get_stats( root->funit->fsm_head,
+                     &(root->stat->state_total),
+                     &(root->stat->state_hit),
+                     &(root->stat->arc_total),
+                     &(root->stat->arc_hit) );
+    }
 
-  /* Only get race condition statistics for this instance module if the module hasn't been gathered yet */
-  if( report_race && (root->funit->stat == NULL) ) {
-    root->funit->stat = statistic_create();
-    race_get_stats( root->funit->race_head,
-                    &(root->funit->stat->race_total),
-                    &(root->funit->stat->rtype_total) );
+    if( report_assertion ) {
+      assertion_get_stats( root->funit,
+                           &(root->stat->assert_total),
+                           &(root->stat->assert_hit) );
+    }
+
+    /* Only get race condition statistics for this instance module if the module hasn't been gathered yet */
+    if( report_race && (root->funit->stat == NULL) ) {
+      root->funit->stat = statistic_create();
+      race_get_stats( root->funit->race_head,
+                      &(root->funit->stat->race_total),
+                      &(root->funit->stat->rtype_total) );
+    }
+
   }
 
 }
@@ -438,42 +443,47 @@ void report_gather_funit_stats( funit_link* head ) {
 
     head->funit->stat = statistic_create();
 
-    /* Get coverage results for this instance */
-    if( report_line ) {
-      line_get_stats( head->funit->stmt_head, &(head->funit->stat->line_total), &(head->funit->stat->line_hit) );
-    }
+    /* If this module is an OVL assertion module, don't get statistics for it */
+    if( (info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( head->funit ) ) {
 
-    if( report_toggle ) {
-      toggle_get_stats( head->funit->sig_head, 
-                        &(head->funit->stat->tog_total), 
-                        &(head->funit->stat->tog01_hit), 
-                        &(head->funit->stat->tog10_hit) );
-    }
+      /* Get coverage results for this instance */
+      if( report_line ) {
+        line_get_stats( head->funit->stmt_head, &(head->funit->stat->line_total), &(head->funit->stat->line_hit) );
+      }
 
-    if( report_combination ) {
-      combination_get_stats( head->funit->exp_head,
-                             &(head->funit->stat->comb_total),
-                             &(head->funit->stat->comb_hit) );
-    }
+      if( report_toggle ) {
+        toggle_get_stats( head->funit->sig_head, 
+                          &(head->funit->stat->tog_total), 
+                          &(head->funit->stat->tog01_hit), 
+                          &(head->funit->stat->tog10_hit) );
+      }
 
-    if( report_fsm ) {
-      fsm_get_stats( head->funit->fsm_head,
-                     &(head->funit->stat->state_total),
-                     &(head->funit->stat->state_hit),
-                     &(head->funit->stat->arc_total),
-                     &(head->funit->stat->arc_hit) );
-    }
+      if( report_combination ) {
+        combination_get_stats( head->funit->exp_head,
+                               &(head->funit->stat->comb_total),
+                               &(head->funit->stat->comb_hit) );
+      }
 
-    if( report_assertion ) {
-      assertion_get_stats( head->funit,
-                           &(head->funit->stat->assert_total),
-                           &(head->funit->stat->assert_hit) );
-    }
+      if( report_fsm ) {
+        fsm_get_stats( head->funit->fsm_head,
+                       &(head->funit->stat->state_total),
+                       &(head->funit->stat->state_hit),
+                       &(head->funit->stat->arc_total),
+                       &(head->funit->stat->arc_hit) );
+      }
 
-    if( report_race ) {
-      race_get_stats( head->funit->race_head,
-                      &(head->funit->stat->race_total),
-                      &(head->funit->stat->rtype_total) );
+      if( report_assertion ) {
+        assertion_get_stats( head->funit,
+                             &(head->funit->stat->assert_total),
+                             &(head->funit->stat->assert_hit) );
+      }
+
+      if( report_race ) {
+        race_get_stats( head->funit->race_head,
+                        &(head->funit->stat->race_total),
+                        &(head->funit->stat->rtype_total) );
+      }
+
     }
 
     head = head->next;
@@ -795,6 +805,11 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.63  2006/04/18 21:59:54  phase1geo
+ Adding support for environment variable substitution in configuration files passed
+ to the score command.  Adding ovl.c/ovl.h files.  Working on support for assertion
+ coverage in report command.  Still have a bit to go here yet.
+
  Revision 1.62  2006/04/14 17:05:13  phase1geo
  Reorganizing info line to make it more succinct and easier for future needs.
  Fixed problems with VPI library with recent merge changes.  Regression has

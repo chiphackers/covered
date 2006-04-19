@@ -48,6 +48,7 @@ extern bool         report_instance;
 extern char**       leading_hierarchies;
 extern int          leading_hier_num;
 extern bool         leading_hiers_differ;
+extern isuppl       info_suppl;
 
 /*!
  \param stmtl  Pointer to current statement list to explore.
@@ -61,7 +62,7 @@ extern bool         leading_hiers_differ;
 */
 void line_get_stats( stmt_link* stmtl, float* total, int* hit ) {
 
-  stmt_iter curr;          /* Statement list iterator               */
+  stmt_iter curr;          /* Statement list iterator */
   int       last_hit = 0;  /* Tracks the last line number evaluated */
 
   stmt_iter_reset( &curr, stmtl );
@@ -182,10 +183,10 @@ bool line_collect( char* funit_name, int funit_type, int cov, int** lines, int* 
 */
 bool line_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit ) {
 
-  bool        retval = TRUE;  /* Return value for this function        */
-  func_unit   funit;          /* Functional unit used for searching    */
+  bool        retval = TRUE;  /* Return value for this function */
+  func_unit   funit;          /* Functional unit used for searching */
   funit_link* funitl;         /* Pointer to found functional unit link */
-  char        tmp[21];        /* Temporary string for total            */
+  char        tmp[21];        /* Temporary string for total */
 
   funit.name = funit_name;
   funit.type = funit_type;
@@ -222,7 +223,7 @@ bool line_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst ) {
 
   funit_inst* curr;           /* Pointer to current child functional unit instance of this node */
   float       percent;        /* Percentage of lines hit */
-  float       miss;           /* Number of lines missed */
+  float       miss = 0;       /* Number of lines missed */
   char        tmpname[4096];  /* Temporary holder of instance name */
   char*       pname;          /* Printable version of instance name */
 
@@ -237,29 +238,34 @@ bool line_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst ) {
 
   miss = (root->stat->line_total - root->stat->line_hit);
 
-  /* Get printable version of the instance name */
-  pname = scope_gen_printable( root->name );
+  /* If this is an assertion module, don't output any further */
+  if( (info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit ) ) {
+
+    /* Get printable version of the instance name */
+    pname = scope_gen_printable( root->name );
   
-  /* Calculate instance name */
-  if( strcmp( parent_inst, "*" ) == 0 ) {
-    strcpy( tmpname, pname );
-  } else {
-    snprintf( tmpname, 4096, "%s.%s", parent_inst, pname );
-  }
+    /* Calculate instance name */
+    if( strcmp( parent_inst, "*" ) == 0 ) {
+      strcpy( tmpname, pname );
+    } else {
+      snprintf( tmpname, 4096, "%s.%s", parent_inst, pname );
+    }
 
-  free_safe( pname );
+    free_safe( pname );
 
-  fprintf( ofile, "  %-43.43s    %5d/%5.0f/%5.0f      %3.0f%%\n",
-           tmpname,
-           root->stat->line_hit,
-           miss,
-           root->stat->line_total,
-           percent );
+    fprintf( ofile, "  %-43.43s    %5d/%5.0f/%5.0f      %3.0f%%\n",
+             tmpname,
+             root->stat->line_hit,
+             miss,
+             root->stat->line_total,
+             percent );
 
-  curr = root->child_head;
-  while( curr != NULL ) {
-    miss = miss + line_instance_summary( ofile, curr, tmpname );
-    curr = curr->next;
+    curr = root->child_head;
+    while( curr != NULL ) {
+      miss = miss + line_instance_summary( ofile, curr, tmpname );
+      curr = curr->next;
+    }
+
   }
 
   return( miss > 0 );
@@ -294,18 +300,23 @@ bool line_funit_summary( FILE* ofile, funit_link* head ) {
     miss       = (head->funit->stat->line_total - head->funit->stat->line_hit);
     miss_found = (miss > 0) ? TRUE : miss_found;
 
-    /* Get printable version of functional unit name */
-    pname = scope_gen_printable( head->funit->name );
+    /* If this is an assertion module, don't output any further */
+    if( (info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( head->funit ) ) {
 
-    fprintf( ofile, "  %-20.20s    %-20.20s   %5d/%5.0f/%5.0f      %3.0f%%\n", 
-             pname,
-             get_basename( head->funit->filename ),
-             head->funit->stat->line_hit,
-             miss,
-             head->funit->stat->line_total,
-             percent );
+      /* Get printable version of functional unit name */
+      pname = scope_gen_printable( head->funit->name );
 
-    free_safe( pname );
+      fprintf( ofile, "  %-20.20s    %-20.20s   %5d/%5.0f/%5.0f      %3.0f%%\n", 
+               pname,
+               get_basename( head->funit->filename ),
+               head->funit->stat->line_hit,
+               miss,
+               head->funit->stat->line_total,
+               percent );
+
+      free_safe( pname );
+
+    }
 
     head = head->next;
 
@@ -492,7 +503,7 @@ void line_funit_verbose( FILE* ofile, funit_link* head ) {
 void line_report( FILE* ofile, bool verbose ) {
 
   bool missed_found;  /* If set to TRUE, lines were found to be missed */
-  char tmp[4096];     /* Temporary string value                        */
+  char tmp[4096];     /* Temporary string value */
 
   fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
   fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   LINE COVERAGE RESULTS   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
@@ -537,6 +548,11 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.59  2006/04/18 21:59:54  phase1geo
+ Adding support for environment variable substitution in configuration files passed
+ to the score command.  Adding ovl.c/ovl.h files.  Working on support for assertion
+ coverage in report command.  Still have a bit to go here yet.
+
  Revision 1.58  2006/04/11 22:42:16  phase1geo
  First pass at adding multi-file merging.  Still need quite a bit of work here yet.
 

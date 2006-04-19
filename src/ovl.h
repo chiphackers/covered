@@ -33,12 +33,20 @@ bool ovl_is_assertion_name( char* name );
 /*! \brief Returns TRUE if specified functional unit is an OVL assertion module. */
 bool ovl_is_assertion_module( func_unit* funit );
 
+/*! \brief Adds all assertion modules to no score list */
+void ovl_add_assertions_to_no_score_list( bool rm_tasks );
+
 /*! \brief Gathers the OVL assertion coverage summary statistics for the given functional unit. */
 void ovl_get_funit_stats( func_unit* funit, float* total, int* hit );
 
 
 /*
  $Log$
+ Revision 1.1  2006/04/18 21:59:54  phase1geo
+ Adding support for environment variable substitution in configuration files passed
+ to the score command.  Adding ovl.c/ovl.h files.  Working on support for assertion
+ coverage in report command.  Still have a bit to go here yet.
+
 */
 
 #endif

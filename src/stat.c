@@ -36,17 +36,19 @@ statistic* statistic_create() {
 
   stat = (statistic*)malloc_safe( sizeof( statistic ), __FILE__, __LINE__ );
 
-  stat->line_total  = 0;
-  stat->line_hit    = 0;
-  stat->tog_total   = 0;
-  stat->tog01_hit   = 0;
-  stat->tog10_hit   = 0;
-  stat->comb_total  = 0;
-  stat->comb_hit    = 0;
-  stat->state_total = 0;
-  stat->state_hit   = 0;
-  stat->arc_total   = 0;
-  stat->arc_hit     = 0;
+  stat->line_total   = 0;
+  stat->line_hit     = 0;
+  stat->tog_total    = 0;
+  stat->tog01_hit    = 0;
+  stat->tog10_hit    = 0;
+  stat->comb_total   = 0;
+  stat->comb_hit     = 0;
+  stat->state_total  = 0;
+  stat->state_hit    = 0;
+  stat->arc_total    = 0;
+  stat->arc_hit      = 0;
+  stat->assert_total = 0;
+  stat->assert_hit   = 0;
 
   return( stat );
 
@@ -80,7 +82,9 @@ void statistic_merge( statistic* stat_to, statistic* stat_from ) {
   } else {
     stat_to->arc_total = -1;
   }
-  stat_to->arc_hit     += stat_from->arc_hit;
+  stat_to->arc_hit      += stat_from->arc_hit;
+  stat_to->assert_total += stat_from->assert_total;
+  stat_to->assert_hit   += stat_from->assert_hit;
 
 }
 
@@ -102,6 +106,11 @@ void statistic_dealloc( statistic* stat ) {
 
 /*
  $Log$
+ Revision 1.7  2006/03/28 22:28:28  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.6  2004/03/16 05:45:43  phase1geo
  Checkin contains a plethora of changes, bug fixes, enhancements...
  Some of which include:  new diagnostics to verify bug fixes found in field,
