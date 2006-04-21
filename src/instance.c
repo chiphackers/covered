@@ -172,6 +172,7 @@ bool instance_compare( char* inst_name, funit_inst* inst ) {
   int  index;           /* Index of inst_name */
   int  width;           /* Width of instance range */
   int  lsb;             /* LSB of instance range */
+  int  big_endian;      /* Specifies endianness */
 
   /* If this instance has a range, handle it */
   if( inst->range != NULL ) {
@@ -183,7 +184,7 @@ bool instance_compare( char* inst_name, funit_inst* inst ) {
       if( scope_compare( bname, inst->name ) ) {
 
         /* Get range information from instance */
-        static_expr_calc_lsb_and_width_post( inst->range->left, inst->range->right, &width, &lsb );
+        static_expr_calc_lsb_and_width_post( inst->range->left, inst->range->right, &width, &lsb, &big_endian );
         assert( width != -1 );
         assert( lsb   != -1 );
 
@@ -529,6 +530,7 @@ void instance_db_write( funit_inst* root, FILE* file, char* scope, bool parse_mo
   exp_link*   expl;            /* Pointer to current expression link */
   int         width = 1;       /* If the current instance is an array of instances, this is the width of the array */
   int         lsb;             /* If the current instance is an array of instances, this is the LSB of the array */
+  int         big_endian;      /* If the current instance is an array of instances, this is the endianness of the array */
   int         i;               /* Loop iterator */
 
   assert( scope != NULL );
@@ -538,7 +540,7 @@ void instance_db_write( funit_inst* root, FILE* file, char* scope, bool parse_mo
   if( root->range != NULL ) {
 
     /* Get LSB and width information */
-    static_expr_calc_lsb_and_width_post( root->range->left, root->range->right, &width, &lsb );
+    static_expr_calc_lsb_and_width_post( root->range->left, root->range->right, &width, &lsb, &big_endian );
     assert( width != -1 );
     assert( lsb   != -1 );
 
@@ -690,9 +692,19 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.42  2006/04/08 03:23:28  phase1geo
+ Adding support for CVER simulator VPI support.  I think I may have also fixed
+ support for VCS also.  Recreated configuration/Makefiles with newer version of
+ auto* tools.
+
  Revision 1.41  2006/04/07 22:31:07  phase1geo
  Fixes to get VPI to work with VCS.  Getting close but still some work to go to
  get the callbacks to start working.
+
+ Revision 1.40.4.1  2006/04/20 21:55:16  phase1geo
+ Adding support for big endian signals.  Added new endian1 diagnostic to regression
+ suite to verify this new functionality.  Full regression passes.  We may want to do
+ some more testing on variants of this before calling it ready for stable release 0.4.3.
 
  Revision 1.40  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the

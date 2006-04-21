@@ -1024,6 +1024,7 @@ union ssuppl_u {
   struct {
     control col            :16; /*!< Specifies the starting column this signal is declared on */
     control type           :3;  /*!< Specifies signal type (see \ref ssuppl_type for legal values) */
+    control big_endian     :1;  /*!< Specifies if this signal is in big or little endianness */
   } part;
 };
 
@@ -1353,12 +1354,12 @@ struct vector_s {
   union {
     nibble   all;                    /*!< Allows us to set all bits in the suppl field */
     struct {
-      nibble base     :3;            /*!< Base-type of this data when originally parsed */
-      nibble inport   :1;            /*!< Specifies if this vector is part of an input port */
-      nibble assigned :1;            /*!< Specifies that this vector will be assigned from simulated results (instead of dumpfile) */
-      nibble mba      :1;            /*!< Specifies that this vector MUST be assigned from simulated results because this information
+      nibble base      :3;           /*!< Base-type of this data when originally parsed */
+      nibble inport    :1;           /*!< Specifies if this vector is part of an input port */
+      nibble assigned  :1;           /*!< Specifies that this vector will be assigned from simulated results (instead of dumpfile) */
+      nibble mba       :1;           /*!< Specifies that this vector MUST be assigned from simulated results because this information
                                           is NOT provided in the dumpfile */
-      nibble is_signed:1;            /*!< Specifies that this vector should be treated as a signed value */
+      nibble is_signed :1;           /*!< Specifies that this vector should be treated as a signed value */
     } part;
   } suppl;                           /*!< Supplemental field */
   vec_data*  value;                  /*!< 4-state current value and toggle history */
@@ -1816,6 +1817,11 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.190  2006/04/18 21:59:54  phase1geo
+ Adding support for environment variable substitution in configuration files passed
+ to the score command.  Adding ovl.c/ovl.h files.  Working on support for assertion
+ coverage in report command.  Still have a bit to go here yet.
+
  Revision 1.189  2006/04/14 17:05:13  phase1geo
  Reorganizing info line to make it more succinct and easier for future needs.
  Fixed problems with VPI library with recent merge changes.  Regression has
@@ -1832,6 +1838,11 @@ struct param_oride_s {
 
  Revision 1.186  2006/04/11 22:42:16  phase1geo
  First pass at adding multi-file merging.  Still need quite a bit of work here yet.
+
+ Revision 1.185.4.1  2006/04/20 21:55:16  phase1geo
+ Adding support for big endian signals.  Added new endian1 diagnostic to regression
+ suite to verify this new functionality.  Full regression passes.  We may want to do
+ some more testing on variants of this before calling it ready for stable release 0.4.3.
 
  Revision 1.185  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the

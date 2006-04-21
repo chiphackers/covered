@@ -24,22 +24,23 @@ CDD_DIR       = ../cdd
 
 LOGFILE = regress.log
 
-DIAGS1        = add1            always1         always2         always3         always3.1.11A   always4 \
-                always5         always6         always7         always8         always9 \
-                always10        always11        always11.1      always11.2      always12 \
-                always13        ashift1         ashift2         assign2         assign2.1 \
-                assign2.2       assign2.3 \
-                assign2.9       assign3.2A      bassign1        bassign2        bassign3 \
-                block1          case1           case1.1         case1.2         case1.3 \
-                case2           case3           case3.1         case3.2         case3.3 \
-                case3.4         case4           case4.1         casex1          casex1.1 \
-                casex1.2        casex1.3        casex1.4        casez1          casez1.1 \
-                casez1.2        casez1.3        casez1.4        casez2          concat1 \
-                concat2         concat3         concat4.1       concat4.2       concat5 \
-                concat6         cond1           cond2           delay1          delay2 \
-                define1         define1.1       define1.2       define2         define2.1 \
-                define3         define4         define5         disable1        disable1.1      disable2 \
-                disable2.1      event1.1        exclude1        exclude2        exclude3 \
+DIAGS1        = add1            always1         always2         always3         always3.1.11A \
+                always4         always5         always6         always7         always8 \
+                always9         always10        always11        always11.1      always11.2 \
+                always12        always13        ashift1         ashift2         assign2 \
+                assign2.1       assign2.2       assign2.3       assign2.9       assign3.2A \
+                bassign1        bassign2        bassign3        block1          case1 \
+                case1.1         case1.2         case1.3         case2           case3 \
+                case3.1         case3.2         case3.3         case3.4         case4 \
+                case4.1         casex1          casex1.1        casex1.2        casex1.3 \
+                casex1.4        casez1          casez1.1        casez1.2        casez1.3 \
+                casez1.4        casez2          concat1         concat2         concat3 \
+                concat4.1       concat4.2       concat5         concat6         cond1 \
+                cond2           delay1          delay2          define1         define1.1 \
+                define1.2       define2         define2.1       define3         define4 \
+                define5         disable1        disable1.1      disable2        disable2.1 \
+                endian1         endian2         endian3         event1.1        exclude1 \
+                exclude2        exclude3 \
                 exclude4        exclude5        exclude5.1      exclude5.2      expand1 \
                 expand2         expand3         expand4         expand4.1       expand4.2 \
                 expand4.3       expand4.4       for1            for2            forever1 \

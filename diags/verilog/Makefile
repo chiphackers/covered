@@ -37,7 +37,7 @@ CHK_CODE      = 0
 endif
 
 IVERILOG       = iverilog
-IVERILOG_FLAGS = -c config_file -y ./lib -y $(OVL_HOME) -I $(OVL_HOME) -I ./include -DRUNTEST
+IVERILOG_FLAGS = -cconfig_file -y ./lib -y $(OVL_HOME) -I$(OVL_HOME) -I./include -DRUNTEST
 IVERILOG_EXEC  = a.out
 IVERILOG_INTER = vvp
 
@@ -69,11 +69,11 @@ regress:	$(COVERED) $(DIAGLIST) $(RACELIST) $(MERGELIST) $(MERGE3LIST) $(ERRSCOR
 
 check-ovl:
 ifndef OVL_HOME
-        @echo "Set OVL_HOME environment variable to point to base OVL vlib directory"; exit 1
+	@echo "Set OVL_HOME environment variable to point to base OVL vlib directory"; exit 1
 endif
 
 $(DIAGLIST): check-ovl
-	@if test ! -f $@.done; then \
+	if test ! -f $@.done; then \
 		echo Running $@; \
 		$(VERILOG) $(VERILOG_FLAGS) $@.v; \
 		$(VERILOG_CMD); \

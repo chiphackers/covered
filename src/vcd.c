@@ -91,6 +91,7 @@ void vcd_parse_def_var( FILE* vcd ) {
   char tmp[15];       /* Temporary string holder */
   int  msb = -1;      /* Most significant bit */
   int  lsb = -1;      /* Least significant bit */
+  int  tmplsb;        /* Temporary LSB if swapping is needed */
 
   if( fscanf( vcd, "%s %d %s %s %s", type, &size, id_code, ref, tmp ) == 5 ) {
 
@@ -137,6 +138,13 @@ void vcd_parse_def_var( FILE* vcd ) {
       msb = size - 1;
       lsb = 0;
 
+    }
+
+    /* If the signal is output in big endian format, swap the lsb and msb values accordingly */
+    if( lsb > msb ) {
+      tmplsb = lsb;
+      lsb    = msb;
+      msb    = tmplsb;
     }
 
     /* For now we will let any type and size slide */
@@ -404,6 +412,16 @@ void vcd_parse( char* vcd_file ) {
 
 /*
  $Log$
+ Revision 1.20.4.1  2006/04/20 21:55:16  phase1geo
+ Adding support for big endian signals.  Added new endian1 diagnostic to regression
+ suite to verify this new functionality.  Full regression passes.  We may want to do
+ some more testing on variants of this before calling it ready for stable release 0.4.3.
+
+ Revision 1.20  2006/03/28 22:28:28  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.19  2006/01/25 22:13:46  phase1geo
  Adding LXT-style dumpfile parsing support.  Everything is wired in but I still
  need to look at a problem at the end of the dumpfile -- I'm getting coredumps

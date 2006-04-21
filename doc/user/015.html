@@ -169,24 +169,25 @@
             <P class="blockIndentLeft">&nbsp;</P>
           </TD>
           <TD width=100% align=center>
-    <table cellspacing=2 cellpadding=4 border=1> 
-    <tr> 
-    <td colspan=2 class="tableHeader"> Options to merge Command </td> 
-    </tr> 
-    <tr> 
-    <td> <strong>Option</strong> </td> 
-    <td> <strong>Description</strong> </td> 
-    </tr> 
-    <tr> 
-    <td> -o &lt;<i>filename</i>&gt; </td> 
-    <td> Name of CDD to write merged coverage information to (if not specified, the 
-    &lt;<i>existing_CDD</i>&gt; is overwritten with merged CDD). </td> 
-    </tr> 
-    <tr> 
-    <td> -h </td> 
-    <td> Outputs usage information for the merge command </td> 
-    </tr> 
-    </table><br>
+            <table cellspacing=2 cellpadding=4 border=1> 
+              <tr> 
+                <td colspan=2 class="tableHeader"> Options to merge Command </td> 
+              </tr> 
+              <tr> 
+                <td> <strong>Option</strong> </td> 
+                <td> <strong>Description</strong> </td> 
+              </tr> 
+              <tr> 
+                <td> -o &lt;<i>filename</i>&gt; </td> 
+                <td> Name of CDD to write merged coverage information to (if not 
+                     specified, the &lt;<i>existing_CDD</i>&gt; is overwritten with 
+                     merged CDD). </td> 
+              </tr> 
+              <tr> 
+                <td> -h </td> 
+                <td> Outputs usage information for the merge command </td> 
+              </tr> 
+            </table><br>
           </TD>
           <TD>
             <P class="blockIndentRight">&nbsp;</P>
@@ -196,95 +197,6 @@
 
     </TD>
   </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="header2">10.3&nbsp; <A name="10_3"></A>Merging Three or More CDDs</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">Note that it is currently only possible to merge two CDDs at a time per merge command, the output CDD of which may be stored in the first of the two CDDs or a new CDD.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">To merge three or more CDDs, it is recommended that one uniquely named CDD file (possibly merged.cov or something like it) be created by an initial merge command (using the -o option -- see below). Then all subsequent merge commands would specify the merged CDD file first followed by the next CDD to merge. This would create one CDD file containing the merged contents of all CDDs created for the specified design.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">An example of how to merge four CDDs called "run1.cov", "run2.cov", "run3.cov" and "run4.cov" into a resulting CDD called "merged.cov" is as follows:</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin">Example 1</P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="code">&gt; ls<br> run1.cov<br> run2.cov<br> run3.cov<br> run4.cov<br> <br> &gt; covered merge -o merged.cov run1.cov run2.cov<br> <br> &gt; covered merge merged.cov run3.cov<br> <br> &gt; covered merge merged.cov run4.cov</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">Another possible way to merge these files would be to use a tree-structured merge algorithm that uses intermediate CDDs to form the final CDD. This method will use fewer merge calls but will take slightly more disk space.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin">Example 2</P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="code">&gt; covered merge -o temp1.cov run1.cov run2.cov<br> <br> &gt; covered merge -o temp2.cov run3.cov run4.cov<br> <br> &gt; covered merge -o merged.cov temp1.cov temp2.cov<br> </P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">There are, obviously, many more ways to generate a merged report but are too numerous to list here. The examples above both achieve the same result in a fairly optimal manner and provide a good understanding of how to use the merge command on a large number of CDDs.</P>
-    </TD>
-  </TR>
-
 
   <TR>
     <TD></TD>

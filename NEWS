@@ -1,6 +1,22 @@
 Covered-Related NEWS
 ====================
 
+    *
+
+Stable release covered-0.4.3 made.  This release contains a bug fix to the statement connection function that
+caused segmentation faults during the score command.  Also added support for big endian wires/regs.  This 
+information was being ignored by the parser and, consequently, was not being handled correctly by Covered's
+internal simulator, leading to incorrect coverage information.  The lack of this support was also causing
+an internal error in the memory allocation routine when scoring the dumpfile.
+
+    * 4/17/2006
+
+Stable release covered-0.4.2 made.  This release contains a bug fix that caused an assertion error in the
+binding.c source file to occur.  The reason for this assertion was a syntax error in the parser that caused
+problems when more than one task call was made in a statement block.  Also added support for multi-line
+definitions (i.e., a '\' character used at the end of a definition line).  This was missing but was not meant
+to be missing.
+
     * 4/4/2006
 
 Stable release covered-0.4.1 made.  This release contains one bug fix that causes an assertion error when

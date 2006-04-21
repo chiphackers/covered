@@ -32,11 +32,11 @@ static_expr* static_expr_gen_unary( static_expr* stexp, int op, int line, int fi
 /*! \brief Calculates new values for static expression and returns the new static expression. */
 static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int line, int first, int last, char* func_name );
 
-/*! \brief Calculates LSB and width for specified left/right pair for vector (used before parameter resolve). */
-void static_expr_calc_lsb_and_width_pre( static_expr* left, static_expr* right, int* width, int* lsb );
+/*! \brief Calculates LSB, width and endianness for specified left/right pair for vector (used before parameter resolve). */
+void static_expr_calc_lsb_and_width_pre( static_expr* left, static_expr* right, int* width, int* lsb, int* big_endian );
 
-/*! \brief Calculates LSB and width for specified left/right pair for vector (used after parameter resolve). */
-void static_expr_calc_lsb_and_width_post( static_expr* left, static_expr* right, int* width, int* lsb );
+/*! \brief Calculates LSB, width and endianness for specified left/right pair for vector (used after parameter resolve). */
+void static_expr_calc_lsb_and_width_post( static_expr* left, static_expr* right, int* width, int* lsb, int* big_endian );
 
 /*! \brief Deallocates static_expr memory from heap. */
 void static_expr_dealloc( static_expr* stexp, bool rm_exp );
@@ -44,6 +44,16 @@ void static_expr_dealloc( static_expr* stexp, bool rm_exp );
 
 /*
  $Log$
+ Revision 1.9.4.1  2006/04/20 21:55:16  phase1geo
+ Adding support for big endian signals.  Added new endian1 diagnostic to regression
+ suite to verify this new functionality.  Full regression passes.  We may want to do
+ some more testing on variants of this before calling it ready for stable release 0.4.3.
+
+ Revision 1.9  2006/03/28 22:28:28  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.8  2006/02/16 21:19:26  phase1geo
  Adding support for arrays of instances.  Also fixing some memory problems for
  constant functions and fixed binding problems when hierarchical references are

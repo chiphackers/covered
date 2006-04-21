@@ -45,40 +45,43 @@ extern char   user_msg[USER_MSG_LENGTH];
 
 
 /*!
- \param sig    Pointer to vsignal to initialize.
- \param name   Pointer to vsignal name string.
- \param type   Type of signal to create
- \param value  Pointer to vsignal value.
- \param lsb    Least-significant bit position in this string.
- \param line   Line number that this signal is declared on.
- \param col    Starting column that this signal is declared on.
+ \param sig         Pointer to vsignal to initialize.
+ \param name        Pointer to vsignal name string.
+ \param type        Type of signal to create
+ \param value       Pointer to vsignal value.
+ \param lsb         Least-significant bit position in this string.
+ \param line        Line number that this signal is declared on.
+ \param col         Starting column that this signal is declared on.
+ \param big_endian  Set to 1 if the MSB is less than the LSB.
  
  Initializes the specified vsignal with the values of name, value and lsb.  This
  function is called by the vsignal_create routine and is also useful for
  creating temporary vsignals (reduces the need for dynamic memory allocation).
  for performance enhancing purposes.
 */
-void vsignal_init( vsignal* sig, char* name, int type, vector* value, int lsb, int line, int col ) {
+void vsignal_init( vsignal* sig, char* name, int type, vector* value, int lsb, int line, int col, int big_endian ) {
 
-  sig->name            = name;
-  sig->suppl.all       = 0;
-  sig->suppl.part.type = type;
-  sig->suppl.part.col  = col;
-  sig->value           = value;
-  sig->lsb             = lsb;
-  sig->line            = line;
-  sig->exp_head        = NULL;
-  sig->exp_tail        = NULL;
+  sig->name                  = name;
+  sig->suppl.all             = 0;
+  sig->suppl.part.type       = type;
+  sig->suppl.part.col        = col;
+  sig->suppl.part.big_endian = big_endian;
+  sig->value                 = value;
+  sig->lsb                   = lsb;
+  sig->line                  = line;
+  sig->exp_head              = NULL;
+  sig->exp_tail              = NULL;
 
 }
 
 /*!
- \param name   Full hierarchical name of this vsignal.
- \param type   Type of signal to create
- \param width  Bit width of this vsignal.
- \param lsb    Bit position of least significant bit.
- \param line   Line number that this signal is declared on.
- \param col    Starting column that this signal is declared on.
+ \param name        Full hierarchical name of this vsignal.
+ \param type        Type of signal to create
+ \param width       Bit width of this vsignal.
+ \param lsb         Bit position of least significant bit.
+ \param line        Line number that this signal is declared on.
+ \param col         Starting column that this signal is declared on.
+ \param big_endian  Set to 1 if the MSB is less than the LSB.
 
  \returns Pointer to newly created vsignal.
 
@@ -87,13 +90,14 @@ void vsignal_init( vsignal* sig, char* name, int type, vector* value, int lsb, i
  values for a vsignal and returns a pointer to this newly created
  vsignal.
 */
-vsignal* vsignal_create( char* name, int type, int width, int lsb, int line, int col ) {
+vsignal* vsignal_create( char* name, int type, int width, int lsb, int line, int col, int big_endian ) {
 
   vsignal* new_sig;  /* Pointer to newly created vsignal */
 
   new_sig = (vsignal*)malloc_safe( sizeof( vsignal ), __FILE__, __LINE__ );
 
-  vsignal_init( new_sig, ((name != NULL) ? strdup_safe( name, __FILE__, __LINE__ ) : NULL), type, vector_create( width, TRUE ), lsb, line, col );
+  vsignal_init( new_sig, ((name != NULL) ? strdup_safe( name, __FILE__, __LINE__ ) : NULL),
+                type, vector_create( width, TRUE ), lsb, line, col, big_endian );
 
   return( new_sig );
 
@@ -166,7 +170,7 @@ bool vsignal_db_read( char** line, func_unit* curr_funit ) {
     if( vector_db_read( &vec, line ) ) {
 
       /* Create new vsignal */
-      sig = vsignal_create( name, suppl.part.type, vec->width, lsb, sline, suppl.part.col );
+      sig = vsignal_create( name, suppl.part.type, vec->width, lsb, sline, suppl.part.col, suppl.part.big_endian );
 
       /* Copy over vector value */
       vector_dealloc( sig->value );
@@ -481,24 +485,36 @@ vsignal* vsignal_from_string( char** str ) {
 
   vsignal* sig;         /* Pointer to newly created vsignal */
   char     name[4096];  /* Signal name */
-  int      msb;         /* MSB of vsignal */
-  int      lsb;         /* LSB of vsignal */
+  int      left;        /* Left selection value of the signal */
+  int      right;       /* Right selection value of the signal */
+  int      width;       /* Width of the signal */
+  int      lsb;         /* LSB of the signal */
+  int      big_endian;  /* Endianness of the signal */
   int      chars_read;  /* Number of characters read from string */
 
-  if( sscanf( *str, "%[a-zA-Z0-9_]\[%d:%d]%n", name, &msb, &lsb, &chars_read ) == 3 ) {
-    sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT, ((msb - lsb) + 1), lsb, 0, 0 );
+  if( sscanf( *str, "%[a-zA-Z0-9_]\[%d:%d]%n", name, &left, &right, &chars_read ) == 3 ) {
+    if( right > left ) {
+      width      = (right - left) + 1;
+      lsb        = left;
+      big_endian = 1;
+    } else {
+      width      = (left - right) + 1;
+      lsb        = right;
+      big_endian = 0;
+    }
+    sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT, width, lsb, 0, 0, big_endian );
     *str += chars_read;
-  } else if( sscanf( *str, "%[a-zA-Z0-9_]\[%d+:%d]%n", name, &msb, &lsb, &chars_read ) == 3 ) {
-    sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT_POS, lsb, msb, 0, 0 );
+  } else if( sscanf( *str, "%[a-zA-Z0-9_]\[%d+:%d]%n", name, &left, &right, &chars_read ) == 3 ) {
+    sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT_POS, right, left, 0, 0, 0 );
     *str += chars_read;
-  } else if( sscanf( *str, "%[a-zA-Z0-9_]\[%d-:%d]%n", name, &msb, &lsb, &chars_read ) == 3 ) {
-    sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT_NEG, lsb, ((msb - lsb) + 1), 0, 0 );
+  } else if( sscanf( *str, "%[a-zA-Z0-9_]\[%d-:%d]%n", name, &left, &right, &chars_read ) == 3 ) {
+    sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT_NEG, right, ((left - right) + 1), 0, 0, 0 );
     *str += chars_read;
-  } else if( sscanf( *str, "%[a-zA-Z0-9_]\[%d]%n", name, &lsb, &chars_read ) == 2 ) {
-    sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT, 1, lsb, 0, 0 );
+  } else if( sscanf( *str, "%[a-zA-Z0-9_]\[%d]%n", name, &right, &chars_read ) == 2 ) {
+    sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT, 1, right, 0, 0, 0 );
     *str += chars_read;
   } else if( sscanf( *str, "%[a-zA-Z0-9_]%n", name, &chars_read ) == 1 ) {
-    sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT, 1, 0, 0, 0 );
+    sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT, 1, 0, 0, 0, 0 );
     /* Specify that this width is unknown */
     sig->value->width = 0;
     *str += chars_read;
@@ -550,6 +566,16 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.22.4.1  2006/04/20 21:55:16  phase1geo
+ Adding support for big endian signals.  Added new endian1 diagnostic to regression
+ suite to verify this new functionality.  Full regression passes.  We may want to do
+ some more testing on variants of this before calling it ready for stable release 0.4.3.
+
+ Revision 1.22  2006/03/28 22:28:28  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.21  2006/02/17 19:50:47  phase1geo
  Added full support for escaped names.  Full regression passes.
 

@@ -1,7 +1,45 @@
-2006-04-04 23:20  phase1geo
+2006-04-16 23:06  phase1geo
 
-	Fixing bug expression_resize function to properly handle the sizing
-	of a concatenation on the left-hand-side of an expression.  Added
-	diagnostic to regression suite to duplicate this scenario and
-	verify the fix.
+	More updates for upcoming 0.4.2 stable release.
+
+2006-04-14 18:16  phase1geo
+
+	Fixing bug in task call parser and adding support for multi-line
+	definitions.  Added diagnostic to verify multi-line definition
+	support.
+
+2006-04-14 12:03  phase1geo
+
+	file define5.cdd was added on branch covered-0_4_1-branch on
+	2006-04-14 23:16:07 +0000
+
+2006-04-13 11:02  phase1geo
+
+	file define5.rptWI was added on branch covered-0_4_1-branch on
+	2006-04-14 23:16:08 +0000
+
+2006-04-13 11:02  phase1geo
+
+	file define5.rptI was added on branch covered-0_4_1-branch on
+	2006-04-14 23:16:08 +0000
+
+2006-04-13 11:02  phase1geo
+
+	file define5.rptM was added on branch covered-0_4_1-branch on
+	2006-04-14 23:16:08 +0000
+
+2006-04-13 11:02  phase1geo
+
+	file define5.cfg was added on branch covered-0_4_1-branch on
+	2006-04-14 23:16:08 +0000
+
+2006-04-13 11:02  phase1geo
+
+	file define5.rptWM was added on branch covered-0_4_1-branch on
+	2006-04-14 23:16:08 +0000
+
+2006-04-13 11:02  phase1geo
+
+	file define5.v was added on branch covered-0_4_1-branch on
+	2006-04-14 23:16:08 +0000
 

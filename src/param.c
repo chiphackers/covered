@@ -337,6 +337,7 @@ inst_parm* inst_parm_add( char* name, char* inst_name, static_expr* msb, static_
   inst_parm* iparm;      /* Temporary pointer to instance parameter */
   int        sig_width;  /* Width of this parameter signal */
   int        sig_lsb;    /* LSB of this parameter signal */
+  int        sig_be;     /* Big endianness of this parameter signal */
   int        left_val;   /* Value of left (msb) static expression */
   int        right_val;  /* Value of right (lsb) static expression */
   
@@ -377,15 +378,18 @@ inst_parm* inst_parm_add( char* name, char* inst_name, static_expr* msb, static_
     if( right_val > left_val ) {
       sig_lsb   = left_val;
       sig_width = (right_val - left_val) + 1;
+      sig_be    = 1;
     } else {
       sig_lsb   = right_val;
       sig_width = (left_val - right_val) + 1;
+      sig_be    = 0;
     }
 
   } else {
 
     sig_lsb   = 0;
     sig_width = value->width;
+    sig_be    = 0;
 
   }
 
@@ -393,7 +397,7 @@ inst_parm* inst_parm_add( char* name, char* inst_name, static_expr* msb, static_
   assert( (sig_width <= MAX_BIT_WIDTH) && (sig_width >= 0) );
 
   /* Create instance parameter signal */
-  iparm->sig = vsignal_create( name, SSUPPL_TYPE_DECLARED, sig_width, sig_lsb, 0, 0 );
+  iparm->sig = vsignal_create( name, SSUPPL_TYPE_DECLARED, sig_width, sig_lsb, 0, 0, sig_be );
 
   /* Store signed attribute for this vector */
   iparm->sig->value->suppl.part.is_signed = is_signed;
@@ -896,10 +900,11 @@ void param_db_write( inst_parm* iparm, FILE* file, bool parse_mode ) {
   if( iparm->sig->name != NULL ) {
 
     /* Display identification and value information first */
-    fprintf( file, "%d #%s %d 0 0 ",
+    fprintf( file, "%d #%s %d 0 %x ",
       DB_TYPE_SIGNAL,
       iparm->sig->name,
-      iparm->sig->lsb
+      iparm->sig->lsb,
+      iparm->sig->suppl.all
     );
 
     vector_db_write( iparm->sig->value, file, TRUE );
@@ -995,6 +1000,19 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.61  2006/04/11 22:42:16  phase1geo
+ First pass at adding multi-file merging.  Still need quite a bit of work here yet.
+
+ Revision 1.60.4.2  2006/04/21 04:42:02  phase1geo
+ Adding endian2 and endian3 diagnostics to regression suite to verify other
+ endianness related code.  Made small fix to parameter CDD output function
+ to include the supplemental field output.  Full regression passes.
+
+ Revision 1.60.4.1  2006/04/20 21:55:16  phase1geo
+ Adding support for big endian signals.  Added new endian1 diagnostic to regression
+ suite to verify this new functionality.  Full regression passes.  We may want to do
+ some more testing on variants of this before calling it ready for stable release 0.4.3.
+
  Revision 1.60  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

@@ -294,21 +294,23 @@ static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int
 }
 
 /*!
- \param left   Pointer to static expression on left of vector.
- \param right  Pointer to static expression on right of vector.
- \param width  Calculated width of combined right/left static expressions.
- \param lsb    Calculated lsb of combined right/left static expressions.
+ \param left        Pointer to static expression on left of vector.
+ \param right       Pointer to static expression on right of vector.
+ \param width       Calculated width of combined right/left static expressions.
+ \param lsb         Calculated lsb of combined right/left static expressions.
+ \param big_endian  Set to 1 if the MSB/LSB is specified in big endian order.
 
- Calculates the LSB and width of a vector defined by the specified left and right
+ Calculates the LSB, width and endianness of a vector defined by the specified left and right
  static expressions.  If the width cannot be obtained immediately (parameter in static
  expression), set width to -1.  If the LSB cannot be obtained immediately (parameter in
- static expression), set LSB to -1.  The returned width and lsb parameters can be used
- to size a vector instantiation.
+ static expression), set LSB to -1.  The endianness can only be used if the width is known.
+ The returned width and lsb parameters can be used to size a vector instantiation.
 */
-void static_expr_calc_lsb_and_width_pre( static_expr* left, static_expr* right, int* width, int* lsb ) {
+void static_expr_calc_lsb_and_width_pre( static_expr* left, static_expr* right, int* width, int* lsb, int* big_endian ) {
 
-  *width = -1;
-  *lsb   = -1;
+  *width      = -1;
+  *lsb        = -1;
+  *big_endian = 0;
 
   if( (right != NULL) && (right->exp == NULL) ) {
     *lsb = right->num;
@@ -321,8 +323,9 @@ void static_expr_calc_lsb_and_width_pre( static_expr* left, static_expr* right, 
         *width = (left->num - *lsb) + 1;
         assert( *width > 0 );
       } else {
-        *width = (*lsb - left->num) + 1;
-        *lsb   = left->num;
+        *width      = (*lsb - left->num) + 1;
+        *lsb        = left->num;
+        *big_endian = 1;
         assert( *width > 0 );
         assert( *lsb >= 0 );
       }
@@ -335,22 +338,24 @@ void static_expr_calc_lsb_and_width_pre( static_expr* left, static_expr* right, 
 }
 
 /*!
- \param left   Pointer to static expression on left of vector.
- \param right  Pointer to static expression on right of vector.
- \param width  Calculated width of combined right/left static expressions.
- \param lsb    Calculated lsb of combined right/left static expressions.
+ \param left        Pointer to static expression on left of vector.
+ \param right       Pointer to static expression on right of vector.
+ \param width       Calculated width of combined right/left static expressions.
+ \param lsb         Calculated lsb of combined right/left static expressions.
+ \param big_endian  Set to 1 if the left expression is less than the right expression.
  
  Calculates the LSB and width of a vector defined by the specified left and right
  static expressions.  This function assumes that any expressions have been calculated for
  a legal value.
 */
-void static_expr_calc_lsb_and_width_post( static_expr* left, static_expr* right, int* width, int* lsb ) {
+void static_expr_calc_lsb_and_width_post( static_expr* left, static_expr* right, int* width, int* lsb, int* big_endian ) {
   
   assert( left  != NULL );
   assert( right != NULL );
 
-  *width = 1;
-  *lsb   = -1;
+  *width      = 1;
+  *lsb        = -1;
+  *big_endian = 0;
 
   /* If the right static expression contains an expression, get its integer value and place it in the num field */
   if( right->exp != NULL ) {
@@ -371,8 +376,9 @@ void static_expr_calc_lsb_and_width_post( static_expr* left, static_expr* right,
     *width = (left->num - *lsb) + 1;
     assert( *width > 0 );
   } else {
-    *width = (*lsb - left->num) + 1;
-    *lsb   = left->num;
+    *width      = (*lsb - left->num) + 1;
+    *lsb        = left->num;
+    *big_endian = 1;
     assert( *width > 0 );
     assert( *lsb >= 0 );
   }
@@ -402,6 +408,15 @@ void static_expr_dealloc( static_expr* stexp, bool rm_exp ) {
 
 /*
  $Log$
+ Revision 1.18  2006/04/13 14:59:25  phase1geo
+ Updating CDD version from 6 to 7 due to changes in the merge facility.  Full
+ regression now passes.
+
+ Revision 1.17.4.1  2006/04/20 21:55:16  phase1geo
+ Adding support for big endian signals.  Added new endian1 diagnostic to regression
+ suite to verify this new functionality.  Full regression passes.  We may want to do
+ some more testing on variants of this before calling it ready for stable release 0.4.3.
+
  Revision 1.17  2006/03/28 22:28:28  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

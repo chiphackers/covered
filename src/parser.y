@@ -516,7 +516,7 @@ static_expr_list
       static_expr* tmp = $3;
       if( ignore_mode == 0 ) {
         if( $3 != NULL ) {
-          if( port_mode != 0 ) {
+          if( port_mode > 0 ) {
             tmp = static_expr_gen_unary( $3, EXP_OP_PASSIGN, @3.first_line, @3.first_column, (@3.last_column - 1) );
           }
           tmp = static_expr_gen( tmp, $1, EXP_OP_LIST, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
@@ -533,7 +533,7 @@ static_expr_list
       static_expr* tmp = $1;
       if( ignore_mode == 0 ) {
         if( $1 != NULL ) {
-          if( port_mode != 0 ) {
+          if( port_mode > 0 ) {
             tmp = static_expr_gen_unary( $1, EXP_OP_PASSIGN, @1.first_line, @1.first_column, (@1.last_column - 1) );
           }
         }
@@ -1477,7 +1477,7 @@ expression_list
       if( ignore_mode == 0 ) {
         if( param_mode == 0 ) {
           if( $3 != NULL ) {
-            if( port_mode != 0 ) {
+            if( port_mode > 0 ) {
               exp = db_create_expression( $3, NULL, EXP_OP_PASSIGN, 0, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
             }
             tmp = db_create_expression( exp, $1, EXP_OP_LIST, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
@@ -1510,7 +1510,7 @@ expression_list
       param_oride* po;
       if( ignore_mode == 0 ) {
         if( param_mode == 0 ) {
-          if( port_mode != 0 ) {
+          if( port_mode > 0 ) {
             exp = db_create_expression( $1, NULL, EXP_OP_PASSIGN, 0, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
           }
           $$ = exp;

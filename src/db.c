@@ -781,10 +781,11 @@ void db_add_defparam( char* name, expression* expr ) {
 */
 void db_add_signal( char* name, int type, static_expr* left, static_expr* right, bool is_signed, bool mba, int line, int col ) {
 
-  vsignal  tmpsig;  /* Temporary signal for signal searching */
-  vsignal* sig;     /* Container for newly created signal */
-  int      lsb;     /* Signal LSB */
-  int      width;   /* Signal width */
+  vsignal  tmpsig;      /* Temporary signal for signal searching */
+  vsignal* sig;         /* Container for newly created signal */
+  int      lsb;         /* Signal LSB */
+  int      width;       /* Signal width */
+  int      big_endian;  /* Signal endianness */
 
 #ifdef DEBUG_MODE
   snprintf( user_msg, USER_MSG_LENGTH, "In db_add_signal, signal: %s, line: %d, col: %d", name, line, col );
@@ -796,7 +797,7 @@ void db_add_signal( char* name, int type, static_expr* left, static_expr* right,
   /* Add signal to current module's signal list if it does not already exist */
   if( sig_link_find( &tmpsig, curr_funit->sig_head ) == NULL ) {
 
-    static_expr_calc_lsb_and_width_pre( left, right, &width, &lsb );
+    static_expr_calc_lsb_and_width_pre( left, right, &width, &lsb, &big_endian );
 
     /* Check to make sure that signal width does not exceed maximum size */
     if( width > MAX_BIT_WIDTH ) {
@@ -808,10 +809,11 @@ void db_add_signal( char* name, int type, static_expr* left, static_expr* right,
     }  
 
     if( (lsb != -1) && (width != -1) ) { 
-      sig = vsignal_create( name, type, width, lsb, line, col );
+      sig = vsignal_create( name, type, width, lsb, line, col, big_endian );
     } else {
       sig = (vsignal*)malloc_safe( sizeof( vsignal ), __FILE__, __LINE__ );
-      vsignal_init( sig, strdup_safe( name, __FILE__, __LINE__ ), type, (vector*)malloc_safe( sizeof( vector ), __FILE__, __LINE__ ), lsb, line, col );
+      vsignal_init( sig, strdup_safe( name, __FILE__, __LINE__ ), type,
+                    (vector*)malloc_safe( sizeof( vector ), __FILE__, __LINE__ ), lsb, line, col, big_endian );
       vector_init( sig->value, NULL, width );
       if( (left != NULL) && (left->exp != NULL) ) {
         db_add_vector_param( sig, left->exp, PARAM_TYPE_SIG_MSB );
@@ -1693,6 +1695,11 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.179  2006/04/19 22:21:33  phase1geo
+ More updates to properly support assertion coverage.  Removing assertion modules
+ from line, toggle, combinational logic, FSM and race condition output so that there
+ won't be any overlap of information here.
+
  Revision 1.178  2006/04/18 21:59:54  phase1geo
  Adding support for environment variable substitution in configuration files passed
  to the score command.  Adding ovl.c/ovl.h files.  Working on support for assertion
@@ -1705,6 +1712,11 @@ void db_dealloc_global_vars() {
 
  Revision 1.176  2006/04/11 22:42:16  phase1geo
  First pass at adding multi-file merging.  Still need quite a bit of work here yet.
+
+ Revision 1.175.4.1  2006/04/20 21:55:16  phase1geo
+ Adding support for big endian signals.  Added new endian1 diagnostic to regression
+ suite to verify this new functionality.  Full regression passes.  We may want to do
+ some more testing on variants of this before calling it ready for stable release 0.4.3.
 
  Revision 1.175  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the

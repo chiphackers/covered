@@ -420,7 +420,7 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
           assert( exp != NULL );
           snprintf( user_msg, USER_MSG_LENGTH, "Implicit declaration of signal \"%s\", creating 1-bit version of signal", name );
           print_output( user_msg, WARNING, __FILE__, __LINE__ );
-          found_sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT, 1, 0, exp->line, ((exp->col >> 16) & 0xffff) );
+          found_sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT, 1, 0, exp->line, ((exp->col >> 16) & 0xffff), 0 );
           sig_link_add( found_sig, &(found_funit->sig_head), &(found_funit->sig_tail) );
         }
 
@@ -921,6 +921,14 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.72  2006/04/07 03:47:50  phase1geo
+ Fixing run-time issues with VPI.  Things are running correctly now with IV.
+
+ Revision 1.71.4.1  2006/04/20 21:55:16  phase1geo
+ Adding support for big endian signals.  Added new endian1 diagnostic to regression
+ suite to verify this new functionality.  Full regression passes.  We may want to do
+ some more testing on variants of this before calling it ready for stable release 0.4.3.
+
  Revision 1.71  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

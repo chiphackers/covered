@@ -186,9 +186,10 @@ void symtable_add_sym_sig( symtable* symtab, vsignal* sig, int msb, int lsb ) {
 */
 void symtable_init( symtable* symtab, int msb, int lsb ) {
 
-  symtab->value    = (char*)malloc_safe( ((msb - lsb) + 2), __FILE__, __LINE__ );
-  symtab->value[0] = '\0';
+  /* Allocate and initialize the entry */
   symtab->size     = (msb - lsb) + 2;
+  symtab->value    = (char*)malloc_safe( symtab->size, __FILE__, __LINE__ );
+  symtab->value[0] = '\0';
 
 }
 
@@ -201,7 +202,7 @@ void symtable_init( symtable* symtab, int msb, int lsb ) {
 symtable* symtable_create() {
 
   symtable* symtab;  /* Pointer to new symtable entry */
-  int       i;       /* Loop iterator                 */
+  int       i;       /* Loop iterator */
 
   symtab           = (symtable*)malloc_safe( sizeof( symtable ), __FILE__, __LINE__ ); 
   symtab->sig_head = NULL;
@@ -226,7 +227,7 @@ symtable* symtable_create() {
 */
 void symtable_add( char* sym, vsignal* sig, int msb, int lsb ) {
 
-  symtable* curr;  /* Pointer to current symtable entry   */
+  symtable* curr;  /* Pointer to current symtable entry */
   char*     ptr;   /* Pointer to current character in sym */
 
   assert( vcd_symtab != NULL );
@@ -310,9 +311,9 @@ void symtable_set_value( char* sym, char* value ) {
 */
 void symtable_assign() {
 
-  symtable* curr;  /* Pointer to current symtable entry  */
+  symtable* curr;  /* Pointer to current symtable entry */
   sym_sig*  sig;   /* Pointer to current sym_sig in list */
-  int       i;     /* Loop iterator                      */
+  int       i;     /* Loop iterator */
 
   for( i=0; i<postsim_size; i++ ) {
     curr = timestep_tab[i];
@@ -335,8 +336,8 @@ void symtable_assign() {
 void symtable_dealloc( symtable* symtab ) {
 
   sym_sig* curr;  /* Pointer to current sym_sig in list */
-  sym_sig* tmp;   /* Temporary pointer to sym_sig       */
-  int      i;     /* Loop iterator                      */
+  sym_sig* tmp;   /* Temporary pointer to sym_sig */
+  int      i;     /* Loop iterator */
 
   if( symtab != NULL ) {
 
@@ -364,6 +365,16 @@ void symtable_dealloc( symtable* symtab ) {
 
 /*
  $Log$
+ Revision 1.22.4.1  2006/04/20 21:55:16  phase1geo
+ Adding support for big endian signals.  Added new endian1 diagnostic to regression
+ suite to verify this new functionality.  Full regression passes.  We may want to do
+ some more testing on variants of this before calling it ready for stable release 0.4.3.
+
+ Revision 1.22  2006/03/28 22:28:28  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.21  2006/01/26 06:06:37  phase1geo
  Starting to work on formatting the lxt2_read file and improving error output
  to conform to Covered's error-reporting mechanism.

@@ -126,9 +126,9 @@ void vcd_callback(struct lxt2_rd_trace **lt, lxtint64_t *pnt_time, lxtint32_t *p
 */
 void lxt_parse( char* lxt_file ) {
 
-  struct lxt2_rd_trace*    lt;       /* LXT read structure */
-  int                      i;        /* Loop iterator */
-  int                      numfacs;  /* Number of symbols in design */
+  struct lxt2_rd_trace*    lt;             /* LXT read structure */
+  int                      i;              /* Loop iterator */
+  int                      numfacs;        /* Number of symbols in design */
   struct lxt2_rd_geometry* g;
   lxtint32_t               newindx;
   char                     netname[4096];  /* Name of current signal */
@@ -174,7 +174,7 @@ void lxt_parse( char* lxt_file ) {
             db_assign_symbol( netname, vcdid( newindx ), 0, 0 );
           }
         } else {
-          db_assign_symbol( netname, vcdid( newindx ), g->msb, g->lsb );
+          db_assign_symbol( netname, vcdid( newindx ), ((g->lsb > g->msb) ? g->lsb : g->msb), ((g->lsb > g->msb) ? g->msb : g->lsb) );
         }
 
       }
@@ -232,6 +232,16 @@ void lxt_parse( char* lxt_file ) {
 
 /*
  $Log$
+ Revision 1.6.4.1  2006/04/20 21:55:16  phase1geo
+ Adding support for big endian signals.  Added new endian1 diagnostic to regression
+ suite to verify this new functionality.  Full regression passes.  We may want to do
+ some more testing on variants of this before calling it ready for stable release 0.4.3.
+
+ Revision 1.6  2006/03/28 22:28:27  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.5  2006/02/18 06:26:15  phase1geo
  Final file updates prior to covered-20060218 development release.
 

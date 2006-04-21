@@ -524,9 +524,9 @@ void expression_set_value( expression* exp, vector* vec ) {
       if( lbit <= rbit ) {
         exp->value->width = ((rbit - lbit) + 1);
         if( exp->op == EXP_OP_PARAM_MBIT ) {
-          exp->value->value = vec->value + lbit;
+          exp->value->value = vec->value + ((vec->width - exp->value->width) - lbit);
         } else {
-          exp->value->value = vec->value + (lbit - exp->sig->lsb);
+          exp->value->value = vec->value + (((vec->width - exp->value->width) - lbit) - exp->sig->lsb);
         }
       } else {
         exp->value->width = ((lbit - rbit) + 1);
@@ -1950,7 +1950,12 @@ bool expression_op_func__sbit( expression* expr, thread* thr ) {
     intval = vector_to_int( expr->left->value ) - expr->sig->lsb;
     assert( intval >= 0 );
     assert( intval < expr->sig->value->width );
-    expr->value->value = expr->sig->value->value + intval;
+
+    if( expr->sig->suppl.part.big_endian == 1 ) {
+      expr->value->value = expr->sig->value->value + ((expr->sig->value->width - intval) - 1);
+    } else {
+      expr->value->value = expr->sig->value->value + intval;
+    }
 
   }
 
@@ -2931,7 +2936,11 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
             intval1 = vector_to_int( lhs->left->value ) - lhs->sig->lsb;
             assert( intval1 >= 0 );
             assert( intval1 < lhs->sig->value->width );
-            lhs->value->value = lhs->sig->value->value + intval1;
+            if( lhs->sig->suppl.part.big_endian == 1 ) {
+              lhs->value->value = lhs->sig->value->value + ((lhs->sig->value->width - intval1) - 1);
+            } else {
+              lhs->value->value = lhs->sig->value->value + intval1;
+            }
           }
           vector_set_value( lhs->value, rhs->value->value, 1, *lsb, 0 );
 	  vsignal_propagate( lhs->sig );
@@ -3142,6 +3151,16 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.180  2006/04/13 21:04:24  phase1geo
+ Adding NOOP expression and allowing $display system calls to not cause its
+ statement block to be excluded from coverage.  Updating regressions which fully
+ pass.
+
+ Revision 1.179.4.1  2006/04/20 21:55:16  phase1geo
+ Adding support for big endian signals.  Added new endian1 diagnostic to regression
+ suite to verify this new functionality.  Full regression passes.  We may want to do
+ some more testing on variants of this before calling it ready for stable release 0.4.3.
+
  Revision 1.179  2006/04/05 04:20:10  phase1geo
  Fixing bug expression_resize function to properly handle the sizing of a
  concatenation on the left-hand-side of an expression.  Added diagnostic to

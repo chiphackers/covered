@@ -1,4 +1,4 @@
-.TH "Covered" "1" "covered-20060430" "Trevor Williams" "Code Analysis"
+.TH "Covered" "1" "covered-0.4.3" "Trevor Williams" "Code Analysis"
 .SH "NAME"
 .LP 
 Covered \- Verilog Code Coverage Analyzer
@@ -167,7 +167,7 @@ If you are compiling an Icarus Verilog simulation, simply add '\-m /usr/local/li
 .TP 
 If you are compiling a CVER simulation, simply add '+loadvpi=/usr/local/libexec/covered.cver.so:vpi_compat_bootstrap covered_vpi.v' to the 'cver' command\-line.
 .TP 
-If you are compiling a VCS simulation, simply add '+vpi \-load /usr/local/libexec/covered.vcs.so:covered_register \-P covered_pli.v.tab covered_pli.v' to the 'vcs' command\-line.  Once compilation is complete, run the generated executable file as you normally would.
+If you are compiling a VCS simulation, simply add '+vpi \-load /usr/local/libexec/covered.vcs.so:covered_register \-P covered_pli.v.ta b covered_pli.v' to the 'vcs' command\-line.  Once compilation is complete, run the generated executable file as you normally would.
 .TP 
 There are two plusargs that can be passed to the generated executable when it is run that Covered will parse.  The '+covered_cdd=<filename>' option will cause Covered to output the scored design contents to the CDD file specified by <filename>.  This allows multiple runs of the simulator to generate several different CDD files without needed a recompile to occur.  The '+covered_debug' option will cause Covered to dump a lot of excessive output about its internal run\-time state during simulation.  This output will only be generated if Covered was configured with the \-\-enable\-debug option.  This plusarg option should not be used by regular users as it is primarily intended to aid the developers of Covered in debugging.
 .SH "AUTHORS"

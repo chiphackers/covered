@@ -65,7 +65,7 @@
       <P class="header1">6&nbsp;&nbsp; <A name="6"></A>Getting Started<BR><IMG src="img/12568c.gif" height=2 width=460></P>
     </TD>
   </TR>
-
+  
   <TR>
     <TD></TD>
     <TD valign=top>
@@ -73,7 +73,41 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="header2">6.1&nbsp; <A name="6_1"></A>What do you need?</P>
+      <P class="pg">
+      Before you are ready to being scoring, merging and generating coverage reports from
+      the design, you will first need to decide whether you want to post-process
+      VCD/LXT -formatted dumpfiles generated from simulation or whether you want to 
+      accummulate coverage information alongside the simulator using the simulator's VPI
+      interface.  There are advantages and disadvantages to either method, so select
+      the method that will best work for you.
+      </P>
+    </TD>
+  </TR>
+  
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      Generating coverage information from VCD/LXT -formatted dumpfiles requires three
+      steps:  (1) compile the simulator to dump in the specified format, (2) run the
+      simulation, (3) run Covered's score command using the dumpfile as input along with
+      the design.  Performing these steps will generate the needed CDD file that can
+      be used for merging or reporting.  The advantages to this approach is that
+      the steps are fairly simple and are compiler/simulator -independent.  However, 
+      there are two main drawbacks.  First, compiling with dumping enabled often slows
+      simulation by some significant factor.  Second, the dumpfiles generated from
+      simulation can often be quite large (especially for VCD dumping), consuming a lot
+      of disk space.  Additionally, if your simulator dumps in a format different from
+      VCD or LXT, you will need to perform an additional step in transforming the
+      original dumpfile into one of these formats.  This is often a time-consuming task
+      if the design and/or dumpfile is significantly large.  If you are generating lots
+      of dumpfiles for coverage (say from running a regression), the amount of disk
+      space needed to store these files can be tremendous, making this approach almost
+      not feasible.</P>
     </TD>
   </TR>
 
@@ -85,13 +119,49 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      Before Covered can be invoked, you must have a simulatable Verilog design and 
-      a VCD or LXT dumpfile containing information from a simulation run of the design 
-      that dumps the module(s) that you want to check for coverage. The VCD dumpfile 
-      style was chosen due to its universal support by Verilog simulators while the LXT
-      dumpfile style was chosen due to its compactness and growing support by other
-      open source simulators and dumpfile readers.  Once you have these two parts, you 
-      are ready to begin generating coverage results.</P>
+      Generating coverage information using the VPI interface of the simulator requires
+      three main steps:  (1) create a base CDD file from the design along with a top-level
+      Verilog module and PLI table file (this second file is needed for the 
+      commercial VCS compiler), (2) compile the simulator using the Covered VPI module
+      (or shared object), (3) run the simulation.  The end result of these steps is the
+      same CDD file that results from using the dumpfile method described above.  The
+      primary advantage of this approach is that no dumpfiles are required, saving on
+      disk space and dumpfile processing time.  The drawbacks of this approach are the
+      following:  (1) simulation runs much slower using the VPI and Covered (most likely
+      slower than creating dumpfiles from the simulator), (2) Covered VPI modules are
+      only available for certain compilers (Icarus Verilog, Cver and VCS currently);
+      however, adding support for other compilers should not be a difficult thing to do,
+      (3) the VPI modules will only work for compilers that support the VPI interface
+      (a Verilog-2001 feature).
+    </TD>
+  </TR>
+  
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header2">6.1&nbsp; <A name="6_1"></A>What do you need for dumpfile scoring?</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      Before Covered can be invoked for dumpfile scoring, you must have a simulatable 
+      Verilog design and a VCD or LXT dumpfile containing information from a simulation 
+      run of the design that dumps the module(s) that you want to check for coverage. 
+      The VCD dumpfile style was chosen due to its universal support by Verilog 
+      simulators while the LXT dumpfile style was chosen due to its compactness and 
+      growing support by other open source simulators and dumpfile readers.  Once you 
+      have these two parts, you are ready to begin generating coverage results.</P>
     </TD>
   </TR>
 
