@@ -70,8 +70,8 @@ void assertion_get_stats( func_unit* funit, float* total, int* hit ) {
   assert( funit != NULL );
 
   /* Initialize total and hit values */
-  total = 0;
-  hit   = 0;
+  *total = 0;
+  *hit   = 0;
 
   /* If OVL assertion coverage is needed, check this functional unit */
   if( info_suppl.part.assert_ovl == 1 ) {
@@ -199,16 +199,89 @@ bool assertion_funit_summary( FILE* ofile, funit_link* head ) {
 }
 
 /*!
- \param ofile  Pointer to the file to output the instance verbose information to
- \param root   Pointer to the current functional unit instance to look at
- \param scope  Current scope of this functional unit instance
+ \param ofile  Pointer to the file to output the verbose information to
+ \param funit  Pointer to the functional unit to display
+
+ Displays the verbose hit/miss assertion information for the given functional unit.
+*/
+void assertion_display_verbose( FILE* ofile, func_unit* funit ) {
+
+  stmt_iter   stmti;       /* Statement list iterator */
+  expression* unexec_exp;  /* Pointer to current unexecuted expression */
+  char**      code;        /* Pointer to code string from code generator */
+  int         code_depth;  /* Depth of code array */
+  int         i;           /* Loop iterator */
+
+  if( report_covered ) {
+    fprintf( ofile, "    Hit Assertions\n\n" );
+  } else {
+    fprintf( ofile, "    Missed Assertions\n\n" );
+  }
+
+  /* If OVL assertion coverage is needed, output it in the OVL style */
+  if( info_suppl.part.assert_ovl == 1 ) {
+    ovl_display_verbose( ofile, funit );
+  }
+
+  fprintf( ofile, "\n" );
+
+}
+
+/*!
+ \param ofile        Pointer to the file to output the instance verbose information to
+ \param root         Pointer to the current functional unit instance to look at
+ \param parent_inst  Scope of parent of this functional unit instance
 
  Outputs the instance verbose assertion coverage information for the given functional
  unit instance to the given output file.
 */
-void assertion_instance_verbose( FILE* ofile, funit_inst* root, char* scope ) {
+void assertion_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst ) {
 
-  /* TBD */
+  funit_inst* curr_inst;      /* Pointer to current instance being evaluated */
+  char        tmpname[4096];  /* Temporary name holder for instance */
+  char*       pname;          /* Printable version of functional unit name */
+
+  assert( root != NULL );
+
+  /* Get printable version of instance name */
+  pname = scope_gen_printable( root->name );
+
+  if( strcmp( parent_inst, "*" ) == 0 ) {
+    strcpy( tmpname, pname );
+  } else {
+    snprintf( tmpname, 4096, "%s.%s", parent_inst, pname );
+  }
+
+  free_safe( pname );
+
+  if( ((root->stat->assert_hit < root->stat->assert_total) && !report_covered) ||
+      ((root->stat->assert_hit > 0) && report_covered) ) {
+
+    /* Get printable version of functional unit name */
+    pname = scope_gen_printable( root->funit->name );
+
+    fprintf( ofile, "\n" );
+    switch( root->funit->type ) {
+      case FUNIT_MODULE      :  fprintf( ofile, "    Module: " );       break;
+      case FUNIT_NAMED_BLOCK :  fprintf( ofile, "    Named Block: " );  break;
+      case FUNIT_FUNCTION    :  fprintf( ofile, "    Function: " );     break;
+      case FUNIT_TASK        :  fprintf( ofile, "    Task: " );         break;
+      default                :  fprintf( ofile, "    UNKNOWN: " );      break;
+    }
+    fprintf( ofile, "%s, File: %s, Instance: %s\n", pname, root->funit->filename, tmpname );
+    fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
+
+    free_safe( pname );
+
+    assertion_display_verbose( ofile, root->funit );
+
+  }
+
+  curr_inst = root->child_head;
+  while( curr_inst != NULL ) {
+    assertion_instance_verbose( ofile, curr_inst, tmpname );
+    curr_inst = curr_inst->next;
+  }
 
 }
 
@@ -221,7 +294,36 @@ void assertion_instance_verbose( FILE* ofile, funit_inst* root, char* scope ) {
 */
 void assertion_funit_verbose( FILE* ofile, funit_link* head ) {
 
-  /* TBD */
+  char* pname;  /* Printable version of functional unit name */
+
+  while( head != NULL ) {
+
+    if( ((head->funit->stat->assert_hit < head->funit->stat->assert_total) && !report_covered) ||
+        ((head->funit->stat->assert_hit > 0) && report_covered) ) {
+
+      /* Get printable version of functional unit name */
+      pname = scope_gen_printable( head->funit->name );
+
+      fprintf( ofile, "\n" );
+      switch( head->funit->type ) {
+        case FUNIT_MODULE      :  fprintf( ofile, "    Module: " );       break;
+        case FUNIT_NAMED_BLOCK :  fprintf( ofile, "    Named Block: " );  break;
+        case FUNIT_FUNCTION    :  fprintf( ofile, "    Function: " );     break;
+        case FUNIT_TASK        :  fprintf( ofile, "    Task: " );         break;
+        default                :  fprintf( ofile, "    UNKNOWN: " );      break;
+      }
+      fprintf( ofile, "%s, File: %s\n", pname, head->funit->filename );
+      fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
+
+      free_safe( pname );
+
+      assertion_display_verbose( ofile, head->funit );
+
+    }
+
+    head = head->next;
+
+  }
 
 }
 
@@ -280,6 +382,11 @@ void assertion_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.4  2006/04/19 22:21:33  phase1geo
+ More updates to properly support assertion coverage.  Removing assertion modules
+ from line, toggle, combinational logic, FSM and race condition output so that there
+ won't be any overlap of information here.
+
  Revision 1.3  2006/04/18 21:59:54  phase1geo
  Adding support for environment variable substitution in configuration files passed
  to the score command.  Adding ovl.c/ovl.h files.  Working on support for assertion

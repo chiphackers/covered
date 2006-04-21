@@ -12,7 +12,7 @@ VG_FLAGS      = --tool=memcheck --leak-check=yes --show-reachable=yes --num-call
 
 COVERED_SRC   = ../../src
 COVERED       = $(COVERED_SRC)/covered
-COVERED_GFLAG = 
+COVERED_GFLAG = -D
 
 ifdef CHECK_MEM
 VG_COVERED    = $(VG_EXEC) $(VG_FLAGS) $(COVERED)
@@ -43,7 +43,7 @@ IVERILOG_INTER = vvp
 
 VCS       = vcs
 #VCS_FLAGS = +libext+.v+ -y ./lib +incdir+./include +define+RUNTEST +define+VCS +vpi -load ../../src/vpi/covered.so:covered_register -P ../../src/vpi/covered.tab covered_top.v
-VCS_FLAGS = +libext+.v+.vlib+ -y ./lib -y $(OVL_HOME) +incdir+$(OVL_HOME) +incdir+./include +define+RUNTEST +v2k
+VCS_FLAGS = +libext+.v+.vlib+ -y ./lib -y $(OVL_HOME) +incdir+$(OVL_HOME) +incdir+./include +define+RUNTEST +define+OVL_VERILOG +define+OVL_COVER_ON +v2k
 VCS_EXEC  = ./simv +covered_cdd=out.cdd
 
 ifdef USE_VCS
@@ -73,7 +73,7 @@ ifndef OVL_HOME
 endif
 
 $(DIAGLIST): check-ovl
-	if test ! -f $@.done; then \
+	@if test ! -f $@.done; then \
 		echo Running $@; \
 		$(VERILOG) $(VERILOG_FLAGS) $@.v; \
 		$(VERILOG_CMD); \
