@@ -1,8 +1,10 @@
 docdir   = $(datadir)/covered/doc/gui
-doc_DATA = comb.html \
+doc_DATA = assert.html \
+           comb.html \
            cov_bar.html \
            cov_view.html \
            file_menu.html \
+           fsm.html \
            help_menu.html \
            info_bar.html \
            intro.html \
