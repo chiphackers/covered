@@ -87,7 +87,7 @@ proc cov_create {f} {
       .bot.right.txt xview moveto [lindex $text_x 0]
       .bot.right.txt yview moveto [lindex $text_y 0]
     }
-  } -state disabled
+  }
 
   # Cause line coverage to be the default
   $f.m.line select
@@ -134,6 +134,8 @@ proc cov_display_summary {hit total} {
     } else {
       set info "$hit out of $total FSM state transitions hit"
     }
+  } elseif {$cov_rb == "assert"} {
+    set info "$hit out of $total assertion coverage points hit"
   } else {
   }
 

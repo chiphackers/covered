@@ -1,5 +1,6 @@
 tcldir      = $(datadir)/covered/scripts
-tcl_SCRIPTS = banner.gif \
+tcl_SCRIPTS = assert.tcl \
+              banner.gif \
               cdd_view.tcl \
               comb.tcl \
               cov_create.tcl \
@@ -9,7 +10,7 @@ tcl_SCRIPTS = banner.gif \
               menu_create.tcl \
               preferences.tcl \
               process_file.tcl \
-	      summary.tcl \
+	            summary.tcl \
               toggle.tcl
 
 cfgdir      = $(datadir)/covered

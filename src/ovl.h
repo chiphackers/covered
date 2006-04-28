@@ -42,9 +42,18 @@ void ovl_get_funit_stats( func_unit* funit, float* total, int* hit );
 /*! \brief Displays the verbose hit/miss information to the given output file for the given functional unit. */
 void ovl_display_verbose( FILE* ofile, func_unit* funit );
 
+/*! \brief Finds the instance names of all uncovered and covered assertions in the specified functional unit. */
+void ovl_collect( func_unit* funit, char*** uncov_inst_names, int* uncov_inst_size, char*** cov_inst_names, int* cov_inst_size );
+
 
 /*
  $Log$
+ Revision 1.3  2006/04/21 22:03:58  phase1geo
+ Adding ovl1 and ovl1.1 diagnostics to testsuite.  ovl1 passes while ovl1.1
+ currently fails due to a problem with outputting parameters to the CDD file
+ (need to look into this further).  Added OVL assertion verbose output support
+ which seems to be working for the moment.
+
  Revision 1.2  2006/04/19 22:21:33  phase1geo
  More updates to properly support assertion coverage.  Removing assertion modules
  from line, toggle, combinational logic, FSM and race condition output so that there

@@ -18,6 +18,8 @@ set comb_summary_total    0
 set comb_summary_hit      0
 set fsm_summary_total     0
 set fsm_summary_hit       0
+set assert_summary_total  0
+set assert_summary_hit    0
 set curr_funit_name       0
 set curr_funit_type       0
 
@@ -701,12 +703,164 @@ proc display_fsm_cov {} {
 
 proc process_funit_assert_cov {} {
 
-  puts "In process_funit_assert_cov"
+  global fileContent file_name start_line end_line
+  global curr_funit_name curr_funit_type
+  global assert_summary_hit assert_summary_total
 
+  if {$curr_funit_name != 0} {
+
+    tcl_func_get_filename $curr_funit_name $curr_funit_type
+
+    if {[catch {set fileText $fileContent($file_name)}]} {
+      if {[catch {set fp [open $file_name "r"]}]} {
+        tk_messageBox -message "File $file_name Not Found!" \
+                      -title "No File" -icon error
+        return
+      }
+      set fileText [read $fp]
+      set fileContent($file_name) $fileText
+      close $fp
+    }
+
+    # Get start and end line numbers of this functional unit
+    set start_line 0
+    set end_line   0
+    tcl_func_get_funit_start_and_end $curr_funit_name $curr_funit_type
+
+    # Get assertion summary information and display this now
+    tcl_func_get_assert_summary $curr_funit_name $curr_funit_type
+
+    # If we have some uncovered values, enable the "next" pointer and menu item
+    if {$assert_summary_total != $assert_summary_hit} {
+      .bot.right.h.next configure -state normal
+      .menubar.view.menu entryconfigure 2 -state normal
+    } else {
+      .bot.right.h.next configure -state disabled
+      .menubar.view.menu entryconfigure 2 -state disabled
+    }
+    .bot.right.h.prev configure -state disabled
+    .menubar.view.menu entryconfigure 3 -state disabled
+
+    calc_and_display_assert_cov
+
+  }
+
+}
+
+proc calc_and_display_assert_cov {} {
+
+  global cov_type uncov_type mod_inst_type funit_names funit_types
+  global uncovered_asserts covered_asserts race_lines race_reasons
+  global curr_funit_name curr_funit_type start_line
+
+  if {$curr_funit_name != 0} {
+
+    # Get list of uncovered/covered assertions
+    set uncovered_asserts ""
+    set covered_asserts   ""
+    set race_lines        ""
+    set race_reasons      ""
+    tcl_func_collect_assertions $curr_funit_name $curr_funit_type
+    tcl_func_collect_race_lines $curr_funit_name $curr_funit_type $start_line
+
+    display_assert_cov
+
+  }
 }
 
 proc display_assert_cov {} {
 
-  puts "In display_assert_cov"
+  global uncov_fgColor uncov_bgColor
+  global cov_fgColor cov_bgColor
+  global curr_funit_name file_name fileContent
+  global assert_summary_hit assert_summary_total uncov_type cov_type
+  global covered_asserts uncovered_asserts
+  global start_line end_line
+
+  if {$curr_funit_name != 0} {
+
+    # Populate information bar
+    if {$file_name != 0} {
+      .info configure -text "Filename: $file_name"
+    }
+
+    # Allow us to write to the text box
+    .bot.right.txt configure -state normal
+
+    # Clear the text-box before any insertion is being made
+    .bot.right.txt delete 1.0 end
+
+    set contents [split $fileContent($file_name) \n]
+    set linecount 1
+
+    if {$end_line != 0} {
+
+      # First, populate the summary information
+      cov_display_summary $assert_summary_hit $assert_summary_total
+
+      # Next, populate text box with file contents including highlights for covered/uncovered lines
+      foreach phrase $contents {
+        if [expr [expr $start_line <= $linecount] && [expr $end_line >= $linecount]] {
+          set line [format {%3s  %7u  %s} "   " $linecount [append phrase "\n"]]
+          .bot.right.txt insert end $line
+        }
+        incr linecount
+      }
+
+      # Create race condition tags
+      create_race_tags
+
+      # Finally, set assertion information
+      if {[expr $uncov_type == 1] && [expr [llength $uncovered_asserts] > 0]} {
+        set cmd_enter  ".bot.right.txt tag add uncov_enter"
+        set cmd_button ".bot.right.txt tag add uncov_button"
+        set cmd_leave  ".bot.right.txt tag add uncov_leave"
+        foreach entry $uncovered_asserts {
+          set match_str ""
+          append match_str {[^a-zA-Z0-9_]} $entry {[^a-zA-Z0-9_]}
+          set start_index [.bot.right.txt index "[.bot.right.txt search -count matching_chars -regexp $match_str 1.0] + 1 chars"]
+          set end_index   [.bot.right.txt index "$start_index + [expr $matching_chars - 2] chars"]
+          set cmd_enter  [concat $cmd_enter  $start_index $end_index]
+          set cmd_button [concat $cmd_button $start_index $end_index]
+          set cmd_leave  [concat $cmd_leave  $start_index $end_index]
+        }
+        eval $cmd_enter
+        eval $cmd_button
+        eval $cmd_leave
+        .bot.right.txt tag configure uncov_button -underline true -foreground $uncov_fgColor -background $uncov_bgColor
+        .bot.right.txt tag bind uncov_enter <Enter> {
+          set curr_cursor [.bot.right.txt cget -cursor]
+          set curr_info   [.info cget -text]
+          .bot.right.txt configure -cursor hand2
+          .info configure -text "Click left button for detailed assertion coverage information"
+        }
+        .bot.right.txt tag bind uncov_leave <Leave> {
+          .bot.right.txt configure -cursor $curr_cursor
+          .info configure -text $curr_info
+        }
+        .bot.right.txt tag bind uncov_button <ButtonPress-1> {
+          display_assert current
+        }
+      }
+
+      if {[expr $cov_type == 1] && [expr [llength $covered_asserts] > 0]} {
+        set cmd_cov ".bot.right.txt tag add cov_highlight"
+        foreach entry $covered_asserts {
+          set match_str ""
+          append match_str {[^a-zA-Z0-9_]} $entry {[^a-zA-Z0-9_]}
+          set start_index [.bot.right.txt index "[.bot.right.txt search -count matching_chars -regexp $match_str 1.0] + 1 chars"]
+          set end_index   [.bot.right.txt index "$start_index + [expr $matching_chars - 2] chars"]
+          set cmd_cov [concat $cmd_cov $start_index $end_index]
+        }
+        eval $cmd_cov
+        .bot.right.txt tag configure cov_highlight -foreground $cov_fgColor -background $cov_bgColor
+      }
+
+    }
+
+    # Now cause the text box to be read-only again
+    .bot.right.txt configure -state disabled
+
+  }
 
 }

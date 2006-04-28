@@ -27,6 +27,7 @@
 #include "assertion.h"
 #include "ovl.h"
 #include "util.h"
+#include "link.h"
 
 
 extern funit_inst* instance_root;
@@ -377,11 +378,105 @@ void assertion_report( FILE* ofile, bool verbose ) {
 
   fprintf( ofile, "\n\n" );
 
+}
 
+/*!
+ \param funit_name  Name of functional unit to search for
+ \param funit_type  Type of functional unit to search for
+ \param total       Pointer to the total number of assertions in the specified functional unit
+ \param hit         Pointer to the number of hit assertions in the specified functional unit
+ 
+ \return Returns TRUE if the specified functional unit was found in the design; otherwise, returns FALSE.
+ 
+ Counts the total number and number of hit assertions for the specified functional unit.
+*/
+bool assertion_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit ) {
+	
+	bool        retval = TRUE;  /* Return value for this function */
+  func_unit   funit;          /* Functional unit used for searching */
+  funit_link* funitl;         /* Pointer to found functional unit link */
+  float       ftotal;         /* Float version of total */
+  
+  funit.name = funit_name;
+  funit.type = funit_type;
+  
+  /* Initialize total and hit counts */
+  ftotal = 0;
+  *hit    = 0;
+  
+  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
+    
+    if( info_suppl.part.assert_ovl == 1 ) {
+      ovl_get_funit_stats( funitl->funit, &ftotal, hit );
+    }
+    
+  } else {
+    
+    retval = FALSE;
+    
+  }
+  
+  /* Convert the floating point value to an integer value */
+  *total = (int)ftotal;
+  
+  return( retval );
+  
+}
+
+/*!
+ \param funit_name  Name of functional unit to collect assertion information for
+ \param funit_type  Type of functional unit to collect assertion information for
+ \param uncov_inst_names  Pointer to array of uncovered instance names found within the specified functional unit
+ \param uncov_inst_size   Number of valid elements in the uncov_inst_names array
+ \param cov_inst_names    Pointer to array of covered instance names found within the specified functional unit
+ \param cov_inst_size     Number of valid elements in the cov_inst_names array
+ 
+ \return Returns TRUE if the specified functional unit exists in the design; otherwise, returns FALSE.
+ 
+ Searches the specified functional unit, collecting all uncovered and covered assertion module instance names.
+*/
+bool assertion_collect( char* funit_name, int funit_type, char*** uncov_inst_names, int* uncov_inst_size, char*** cov_inst_names, int* cov_inst_size ) {
+  
+  bool        retval = TRUE;  /* Return value for this function */
+  func_unit   funit;          /* Temporary functional unit used for searching */
+  funit_link* funitl;         /* Pointer to found functional unit */
+  
+  /* Initialize functional unit to search for */
+  funit.name = funit_name;
+  funit.type = funit_type;
+  
+  /* Find functional unit */
+  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
+    
+    /* Initialize outputs */
+    *uncov_inst_names = NULL;
+    *uncov_inst_size  = 0;
+    *cov_inst_names   = NULL;
+    *cov_inst_size    = 0;
+    
+    /* If OVL assertion coverage is needed, get this information */
+    if( info_suppl.part.assert_ovl == 1 ) {
+      ovl_collect( funitl->funit, uncov_inst_names, uncov_inst_size, cov_inst_names, cov_inst_size );
+    }
+    
+  } else {
+    
+    retval = FALSE;
+    
+  }
+  
+  return( retval );
+  
 }
 
 /*
  $Log$
+ Revision 1.5  2006/04/21 22:03:58  phase1geo
+ Adding ovl1 and ovl1.1 diagnostics to testsuite.  ovl1 passes while ovl1.1
+ currently fails due to a problem with outputting parameters to the CDD file
+ (need to look into this further).  Added OVL assertion verbose output support
+ which seems to be working for the moment.
+
  Revision 1.4  2006/04/19 22:21:33  phase1geo
  More updates to properly support assertion coverage.  Removing assertion modules
  from line, toggle, combinational logic, FSM and race condition output so that there

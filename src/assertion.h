@@ -41,9 +41,17 @@ void assertion_get_stats( func_unit* funit, float* total, int* hit );
 /*! Generates report output for assertion coverage */
 void assertion_report( FILE* ofile, bool verbose );
 
+/*! Retrieves the total and hit counts of assertions for the specified functional unit */
+bool assertion_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit );
+
 
 /*
  $Log$
+ Revision 1.3  2006/04/18 21:59:54  phase1geo
+ Adding support for environment variable substitution in configuration files passed
+ to the score command.  Adding ovl.c/ovl.h files.  Working on support for assertion
+ coverage in report command.  Still have a bit to go here yet.
+
  Revision 1.2  2006/04/06 22:30:03  phase1geo
  Adding VPI capability back and integrating into autoconf/automake scheme.  We
  are getting close but still have a ways to go.

@@ -11,6 +11,7 @@ source $HOME/scripts/help.tcl
 source $HOME/scripts/summary.tcl
 source $HOME/scripts/preferences.tcl
 source $HOME/scripts/cdd_view.tcl
+source $HOME/scripts/assert.tcl
 
 set last_lb_index      ""
 set lwidth             -1 
@@ -199,6 +200,7 @@ proc highlight_listbox {} {
   global toggle_summary_total toggle_summary_hit
   global comb_summary_total comb_summary_hit
   global fsm_summary_total fsm_summary_hit
+  global assert_summary_total assert_summary_hit
 
   if {$file_name != 0} {
 
@@ -217,6 +219,9 @@ proc highlight_listbox {} {
       } elseif {$cov_rb == "fsm"} {
         tcl_func_get_fsm_summary [lindex $funit_names $i] [lindex $funit_types $i]
         set fully_covered [expr $fsm_summary_total == $fsm_summary_hit]
+      } elseif {$cov_rb == "assert"} {
+        tcl_func_get_assert_summary [lindex $funit_names $i] [lindex $funit_types $i]
+        set fully_covered [expr $assert_summary_total == $assert_summary_hit]
       } else {
         # ERROR
       }
@@ -257,6 +262,8 @@ proc populate_text {} {
         process_funit_comb_cov
       } elseif {$cov_rb == "fsm"} {
         process_funit_fsm_cov
+      } elseif {$cov_rb == "assert"} {
+        process_funit_assert_cov
       } else {
         # ERROR
       }
@@ -439,6 +446,9 @@ proc update_all_windows {} {
 
   # Update the FSM window
   update_fsm
+
+  # Update the assertion window
+  update_assert
 
 }
 

@@ -42,6 +42,8 @@
 #include "instance.h"
 #include "report.h"
 #include "race.h"
+#include "fsm.h"
+#include "assertion.h"
 
 
 extern funit_link* funit_head;
@@ -971,6 +973,69 @@ int tcl_func_get_fsm_coverage( ClientData d, Tcl_Interp* tcl, int argc, const ch
  \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
          TCL_ERROR.
 
+ Populates the global variables "uncovered_asserts" and "covered_asserts" with the uncovered and covered assertion
+ module instance names.
+*/
+int tcl_func_collect_assertions( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+
+  int    retval = TCL_OK;   /* Return value for this function */
+  char*  funit_name;        /* Name of functional unit to get combinational logic coverage info for */
+  int    funit_type;        /* Type of functional unit to get combinational logic coverage info for */
+  char** uncov_inst_names;  /* Array of instance names for all uncovered assertions in the specified functional unit */
+  int    uncov_inst_size;   /* Number of valid elements in the uncov_inst_names array */
+  char** cov_inst_names;    /* Array of instance names for all covered assertions in the specified functional unit */
+  int    cov_inst_size;     /* Number of valid elements in the cov_inst_names array */
+  int    i;                 /* Loop iterator */
+
+  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_type = atoi( argv[2] );
+
+  if( assertion_collect( funit_name, funit_type, &uncov_inst_names, &uncov_inst_size, &cov_inst_names, &cov_inst_size ) ) {
+
+    /* Load uncovered assertions into Tcl */
+    for( i=0; i<uncov_inst_size; i++ ) {
+      Tcl_SetVar( tcl, "uncovered_asserts", uncov_inst_names[i], (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+      free_safe( uncov_inst_names[i] );
+    }
+
+    if( uncov_inst_size > 0 ) {
+      free_safe( uncov_inst_names );
+    }
+
+    /* Load covered assertions into Tcl */
+    for( i=0; i<cov_inst_size; i++ ) {
+      Tcl_SetVar( tcl, "covered_asserts", cov_inst_names[i], (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+      free_safe( cov_inst_names[i] );
+    }
+    
+    if( cov_inst_size > 0 ) {
+      free_safe( cov_inst_names );
+    }
+
+  } else {
+
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find functional unit %s in design", argv[1] );
+    Tcl_AddErrorInfo( tcl, user_msg );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    retval = TCL_ERROR;
+
+  }
+
+  free_safe( funit_name );
+  
+  return( retval );
+  
+}
+
+/*!
+ \param d     TBD
+ \param tcl   Pointer to the Tcl interpreter
+ \param argc  Number of arguments in the argv list
+ \param argv  Array of arguments passed to this function
+
+ \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
+         TCL_ERROR.
+
  Opens the specified CDD file, reading its contents into the database.
 */
 int tcl_func_open_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
@@ -1243,6 +1308,48 @@ int tcl_func_get_fsm_summary( ClientData d, Tcl_Interp* tcl, int argc, const cha
 }
 
 /*!
+ \param d     TBD
+ \param tcl   Pointer to the Tcl interpreter
+ \param argc  Number of arguments in the argv list
+ \param argv  Array of arguments passed to this function
+
+ \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
+         TCL_ERROR.
+
+ Populates the global variables "assert_summary_total" and "assert_summary_hit" to the total number
+ of assertions evaluated for coverage and the total number of hit assertions for the specified functional unit.
+*/
+int tcl_func_get_assert_summary( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+
+  int   retval = TCL_OK;  /* Return value for this function */
+  char* funit_name;       /* Name of functional unit to lookup */
+  int   funit_type;       /* Type of functional unit to lookup */
+  int   total;            /* Contains total number of expressions evaluated */
+  int   hit;              /* Contains total number of expressions hit */
+  char  value[20];        /* String version of a value */
+
+  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_type = atoi( argv[2] );
+
+  if( assertion_get_funit_summary( funit_name, funit_type, &total, &hit ) ) {
+    snprintf( value, 20, "%d", total );
+    Tcl_SetVar( tcl, "assert_summary_total", value, TCL_GLOBAL_ONLY );
+    snprintf( value, 20, "%d", hit );
+    Tcl_SetVar( tcl, "assert_summary_hit", value, TCL_GLOBAL_ONLY );
+  } else {
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find functional unit %s", funit_name );
+    Tcl_AddErrorInfo( tcl, user_msg );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    retval = TCL_ERROR;
+  }
+
+  free_safe( funit_name );
+
+  return( retval );
+
+}
+
+/*!
  \param tcl        Pointer to Tcl interpreter structure
  \param user_home  Name of user's home directory (used to store configuration file information to)
  \param home       Name of Tcl script home directory (from running the configure script)
@@ -1265,6 +1372,7 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
   Tcl_CreateCommand( tcl, "tcl_func_collect_covered_toggles",   (Tcl_CmdProc*)(tcl_func_collect_covered_toggles),   0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_collect_combs",             (Tcl_CmdProc*)(tcl_func_collect_combs),             0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_collect_fsms",              (Tcl_CmdProc*)(tcl_func_collect_fsms),              0, 0 );
+  Tcl_CreateCommand( tcl, "tcl_func_collect_assertions",        (Tcl_CmdProc*)(tcl_func_collect_assertions),        0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_funit_start_and_end",   (Tcl_CmdProc*)(tcl_func_get_funit_start_and_end),   0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_toggle_coverage",       (Tcl_CmdProc*)(tcl_func_get_toggle_coverage),       0, 0 ); 
   Tcl_CreateCommand( tcl, "tcl_func_get_comb_expression",       (Tcl_CmdProc*)(tcl_func_get_comb_expression),       0, 0 );
@@ -1277,6 +1385,7 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
   Tcl_CreateCommand( tcl, "tcl_func_get_toggle_summary",        (Tcl_CmdProc*)(tcl_func_get_toggle_summary),        0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_comb_summary",          (Tcl_CmdProc*)(tcl_func_get_comb_summary),          0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_fsm_summary",           (Tcl_CmdProc*)(tcl_func_get_fsm_summary),           0, 0 );
+  Tcl_CreateCommand( tcl, "tcl_func_get_assert_summary",        (Tcl_CmdProc*)(tcl_func_get_assert_summary),        0, 0 );
 
   /* Set the USER_HOME variable to location of user's home directory */
   Tcl_SetVar( tcl, "USER_HOME", user_home, TCL_GLOBAL_ONLY );
@@ -1297,6 +1406,11 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.33  2006/04/05 15:19:18  phase1geo
+ Adding support for FSM coverage output in the GUI.  Started adding components
+ for assertion coverage to GUI and report functions though there is no functional
+ support for this at this time.
+
  Revision 1.32  2006/03/28 22:28:28  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the
