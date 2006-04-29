@@ -343,13 +343,13 @@ void ovl_collect( func_unit* funit, char*** uncov_inst_names, int* uncov_inst_si
     
     /* If there are uncovered coverage points, add this instance to the uncov array */
     if( hit < total ) {
-      *uncov_inst_names = (char**)realloc( *uncov_inst_names, (*uncov_inst_size + 1) );
+      *uncov_inst_names = (char**)realloc( *uncov_inst_names, (sizeof( char** ) * (*uncov_inst_size + 1)) );
       (*uncov_inst_names)[*uncov_inst_size] = strdup_safe( curr_child->name, __FILE__, __LINE__ );
       (*uncov_inst_size)++;
       
     /* Otherwise, populate the cov array */
     } else {
-      *cov_inst_names = (char**)realloc( *cov_inst_names, (*cov_inst_size + 1) );
+      *cov_inst_names = (char**)realloc( *cov_inst_names, (sizeof( char** ) * (*cov_inst_size + 1)) );
       (*cov_inst_names)[*cov_inst_size] = strdup_safe( curr_child->name, __FILE__, __LINE__ );
       (*cov_inst_size)++;
     }
@@ -361,9 +361,62 @@ void ovl_collect( func_unit* funit, char*** uncov_inst_names, int* uncov_inst_si
 
 }
 
+/*!
+ \param funit   Pointer to functional unit to get assertion information from.
+ \param inst_name  Name of assertion instance to get coverage points from.
+ \param cov_points  Pointer to array to store missed coverage points for.
+ \param cov_num     Pointer to number of valid entries in the cov_points array.
+
+ Retrieves the coverage point strings that were missed during simulation.
+*/
+void ovl_get_coverage( func_unit* funit, char* inst_name, char*** cov_points, int* cov_num ) {
+
+  funit_inst* funiti;      /* Pointer to found functional unit instance */
+  funit_inst* curr_child;  /* Pointer to current child functional instance */
+  int         ignore = 0;  /* Number of functional units to ignore */
+  stmt_iter   si;          /* Statement iterator */
+  int         total;       /* Total number of coverage points for a given assertion module */
+  int         hit;         /* Number of hit coverage points for a given assertion module */
+
+  /* Get one instance of this module from the design */
+  funiti = instance_find_by_funit( instance_root, funit, &ignore );
+  assert( funiti != NULL );
+
+  /* Find child instance */
+  curr_child = funiti->child_head;
+  while( (curr_child != NULL) && (strcmp( curr_child->name, inst_name ) != 0) ) {
+    curr_child = curr_child->next;
+  }
+  assert( curr_child != NULL );
+
+  /* Gather all missed coverage points */
+  stmt_iter_reset( &si, curr_child->funit->stmt_head );
+  while( si.curr != NULL ) {
+
+    /* If this statement is a task call to the task "ovl_cover_t", get its total and hit information */
+    if( (si.curr->stmt->exp->op == EXP_OP_TASK_CALL) && (strcmp( si.curr->stmt->exp->name, "ovl_cover_t" ) == 0) ) {
+
+      /* Output the coverage verbose results to the specified output file */
+      if( si.curr->stmt->exp->exec_num == 0 ) {
+        *cov_points             = (char**)realloc( *cov_points, (sizeof( char** ) * (*cov_num + 1)) );
+        (*cov_points)[*cov_num] = ovl_get_coverage_point( si.curr->stmt );
+        (*cov_num)++;
+      }
+
+    }
+
+    stmt_iter_next( &si );
+
+  }
+
+}
+
 
 /*
  $Log$
+ Revision 1.4  2006/04/28 17:10:19  phase1geo
+ Adding GUI support for assertion coverage.  Halfway there.
+
  Revision 1.3  2006/04/21 22:03:58  phase1geo
  Adding ovl1 and ovl1.1 diagnostics to testsuite.  ovl1 passes while ovl1.1
  currently fails due to a problem with outputting parameters to the CDD file

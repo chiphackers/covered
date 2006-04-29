@@ -45,9 +45,14 @@ void ovl_display_verbose( FILE* ofile, func_unit* funit );
 /*! \brief Finds the instance names of all uncovered and covered assertions in the specified functional unit. */
 void ovl_collect( func_unit* funit, char*** uncov_inst_names, int* uncov_inst_size, char*** cov_inst_names, int* cov_inst_size );
 
+/*! \brief Gets missed coverage points for the given assertion */
+void ovl_get_coverage( func_unit* funit, char* inst_name, char*** cov_points, int* cov_num );
 
 /*
  $Log$
+ Revision 1.4  2006/04/28 17:10:19  phase1geo
+ Adding GUI support for assertion coverage.  Halfway there.
+
  Revision 1.3  2006/04/21 22:03:58  phase1geo
  Adding ovl1 and ovl1.1 diagnostics to testsuite.  ovl1 passes while ovl1.1
  currently fails due to a problem with outputting parameters to the CDD file

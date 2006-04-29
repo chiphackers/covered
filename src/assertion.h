@@ -44,9 +44,15 @@ void assertion_report( FILE* ofile, bool verbose );
 /*! Retrieves the total and hit counts of assertions for the specified functional unit */
 bool assertion_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit );
 
+/*! Gets missed coverage point descriptions for the given assertion module */
+bool assertion_get_coverage( char* funit_name, int funit_type, char* inst_name, char*** cov_points, int* cov_num );
+
 
 /*
  $Log$
+ Revision 1.4  2006/04/28 17:10:19  phase1geo
+ Adding GUI support for assertion coverage.  Halfway there.
+
  Revision 1.3  2006/04/18 21:59:54  phase1geo
  Adding support for environment variable substitution in configuration files passed
  to the score command.  Adding ovl.c/ovl.h files.  Working on support for assertion

@@ -1036,6 +1036,52 @@ int tcl_func_collect_assertions( ClientData d, Tcl_Interp* tcl, int argc, const 
  \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
          TCL_ERROR.
 
+ Populates the "assert_cov_points" global variable with the missed coverage points from the
+ given instance.
+*/
+int tcl_func_get_assert_coverage( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+
+  int    retval = TCL_OK;  /* Return value for this function */
+  char*  funit_name;       /* Name of functional unit to find */
+  int    funit_type;       /* Type of functional unit to find */
+  char*  inst_name;        /* Name of assertion module instance to get coverage information for */
+  char** cov_points;       /* Array containing the missed coverage point descriptions */
+  int    cov_num;          /* Number of valid entries in the cov_points array */
+  int    i;                /* Loop iterator */
+
+  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_type = atoi( argv[2] );
+  inst_name  = strdup_safe( argv[3], __FILE__, __LINE__ );
+
+  if( assertion_get_coverage( funit_name, funit_type, inst_name, &cov_points, &cov_num ) ) {
+
+    for( i=0; i<cov_num; i++ ) {
+      Tcl_SetVar( tcl, "assert_cov_points", cov_points[i], (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+      free_safe( cov_points[i] );
+    }
+
+    if( cov_num > 0 ) {
+      free_safe( cov_points );
+    }
+
+  }
+
+  free_safe( funit_name );
+  free_safe( inst_name );
+
+  return( retval );
+
+}
+
+/*!
+ \param d     TBD
+ \param tcl   Pointer to the Tcl interpreter
+ \param argc  Number of arguments in the argv list
+ \param argv  Array of arguments passed to this function
+
+ \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
+         TCL_ERROR.
+
  Opens the specified CDD file, reading its contents into the database.
 */
 int tcl_func_open_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
@@ -1378,6 +1424,7 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
   Tcl_CreateCommand( tcl, "tcl_func_get_comb_expression",       (Tcl_CmdProc*)(tcl_func_get_comb_expression),       0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_comb_coverage",         (Tcl_CmdProc*)(tcl_func_get_comb_coverage),         0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_fsm_coverage",          (Tcl_CmdProc*)(tcl_func_get_fsm_coverage),          0, 0 );
+  Tcl_CreateCommand( tcl, "tcl_func_get_assert_coverage",       (Tcl_CmdProc*)(tcl_func_get_assert_coverage),       0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_open_cdd",                  (Tcl_CmdProc*)(tcl_func_open_cdd),                  0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_replace_cdd",               (Tcl_CmdProc*)(tcl_func_replace_cdd),               0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_merge_cdd",                 (Tcl_CmdProc*)(tcl_func_merge_cdd),                 0, 0 );
@@ -1406,6 +1453,9 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.34  2006/04/28 17:10:19  phase1geo
+ Adding GUI support for assertion coverage.  Halfway there.
+
  Revision 1.33  2006/04/05 15:19:18  phase1geo
  Adding support for FSM coverage output in the GUI.  Started adding components
  for assertion coverage to GUI and report functions though there is no functional
