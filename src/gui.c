@@ -30,9 +30,12 @@
 #include "gui.h"
 #include "util.h"
 #include "link.h"
+#include "func_unit.h"
+#include "ovl.h"
 
 
 extern funit_link* funit_head;
+extern isuppl      info_suppl;
 
 
 /*!
@@ -57,7 +60,9 @@ bool funit_get_list( char*** funit_names, char*** funit_types, int* funit_size )
   /* Count the number of functional units */
   curr = funit_head;
   while( curr != NULL ) {
-    (*funit_size)++;
+    if( (info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( funit_get_curr_module( curr->funit ) ) ) {
+      (*funit_size)++;
+    }
     curr = curr->next;
   }
 
@@ -72,10 +77,12 @@ bool funit_get_list( char*** funit_names, char*** funit_types, int* funit_size )
     i    = 0;
     curr = funit_head;
     while( curr != NULL ) {
-      (*funit_names)[i] = strdup_safe( curr->funit->name, __FILE__, __LINE__ );
-      snprintf( tmpstr, 10, "%d", curr->funit->type );
-      (*funit_types)[i] = strdup_safe( tmpstr, __FILE__, __LINE__ );
-      i++;
+      if( (info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( funit_get_curr_module( curr->funit ) ) ) {
+        (*funit_names)[i] = strdup_safe( curr->funit->name, __FILE__, __LINE__ );
+        snprintf( tmpstr, 10, "%d", curr->funit->type );
+        (*funit_types)[i] = strdup_safe( tmpstr, __FILE__, __LINE__ );
+        i++;
+      }
       curr = curr->next;
     }
 
@@ -157,6 +164,11 @@ bool funit_get_start_and_end_lines( const char* funit_name, int funit_type, int*
 
 /*
  $Log$
+ Revision 1.7  2006/03/28 22:28:27  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.6  2005/11/10 19:28:23  phase1geo
  Updates/fixes for tasks/functions.  Also updated Tcl/Tk scripts for these changes.
  Fixed bug with net_decl_assign statements -- the line, start column and end column

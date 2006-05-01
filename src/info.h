@@ -35,9 +35,17 @@ void info_db_write( FILE* file );
 /*! \brief  Reads info line from specified line and stores information. */
 bool info_db_read( char** line );
 
+/*! \brief Reads score args line from specified line and stores information. */
+bool args_db_read( char** line )
+
 
 /*
  $Log$
+ Revision 1.3  2006/03/28 22:28:27  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.2  2004/01/31 18:58:43  phase1geo
  Finished reformatting of reports.  Fixed bug where merged reports with
  different leading hierarchies were outputting the leading hierarchy of one

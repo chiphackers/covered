@@ -362,14 +362,15 @@ void ovl_collect( func_unit* funit, char*** uncov_inst_names, int* uncov_inst_si
 }
 
 /*!
- \param funit      Pointer to functional unit to get assertion information from.
- \param inst_name  Name of assertion instance to get coverage points from.
- \param cp_head    Pointer to head of coverage point list.
- \param cp_tail    Pointer to tail of coverage point list.
+ \param funit       Pointer to functional unit to get assertion information from.
+ \param inst_name   Name of assertion instance to get coverage points from.
+ \param assert_mod  Pointer to the assertion module name of instance being retrieved
+ \param cp_head     Pointer to head of coverage point list.
+ \param cp_tail     Pointer to tail of coverage point list.
 
  Retrieves the coverage point strings and execution counts from the specified assertion module.
 */
-void ovl_get_coverage( func_unit* funit, char* inst_name, str_link** cp_head, str_link** cp_tail ) {
+void ovl_get_coverage( func_unit* funit, char* inst_name, char** assert_mod, str_link** cp_head, str_link** cp_tail ) {
 
   funit_inst* funiti;      /* Pointer to found functional unit instance */
   funit_inst* curr_child;  /* Pointer to current child functional instance */
@@ -386,6 +387,9 @@ void ovl_get_coverage( func_unit* funit, char* inst_name, str_link** cp_head, st
     curr_child = curr_child->next;
   }
   assert( curr_child != NULL );
+  
+  /* Get the module name and store it in assert_mod */
+  *assert_mod = strdup_safe( curr_child->funit->name, __FILE__, __LINE__ );
 
   /* Gather all missed coverage points */
   stmt_iter_reset( &si, curr_child->funit->stmt_head );
@@ -409,6 +413,10 @@ void ovl_get_coverage( func_unit* funit, char* inst_name, str_link** cp_head, st
 
 /*
  $Log$
+ Revision 1.6  2006/05/01 13:19:07  phase1geo
+ Enhancing the verbose assertion window.  Still need to fix a few bugs and add
+ a few more enhancements.
+
  Revision 1.5  2006/04/29 05:12:14  phase1geo
  Adding initial version of assertion verbose window.  This is currently working; however,
  I think that I want to enhance this window a bit more before calling it good.

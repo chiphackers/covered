@@ -11,7 +11,8 @@ tcl_SCRIPTS = assert.tcl \
               preferences.tcl \
               process_file.tcl \
 	            summary.tcl \
-              toggle.tcl
+              toggle.tcl \
+              verilog.tcl
 
 cfgdir      = $(datadir)/covered
 cfg_DATA    = .coveredrc

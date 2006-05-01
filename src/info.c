@@ -66,6 +66,21 @@ bool leading_hiers_differ;
 */
 int cdd_version = CDD_VERSION;
 
+/*!
+ Specifes the pathname where the score command was originally run from.
+*/
+char* score_run_path;
+
+/*!
+ Pointer to head of string list containing command-line arguments from score command
+*/
+str_link* score_arg_head;
+
+/*!
+ Pointer to tail of string list containing command-line arguments from score command
+*/
+str_link* score_arg_tail;
+
 
 /*!
  Initializes all variables used for information.
@@ -109,6 +124,15 @@ void info_db_write( FILE* file ) {
   }
 
   fprintf( file, "\n" );
+  
+  /* Display score arguments */
+  fprintf( file, "%d %s", DB_TYPE_SCORE_ARGS, score_run_path );
+  
+  strl = score_arg_head;
+  while( strl != NULL ) {
+    fprintf( file, " %s", strl->str );
+    strl = strl->next;
+  }
 
 }
 
@@ -194,9 +218,54 @@ bool info_db_read( char** line ) {
 
 }
 
+/*!
+ \param line  Pointer to string containing information line to parse.
+ 
+ \return Returns TRUE if there were no errors while parsing the score args line; otherwise, returns FALSE.
+
+ Reads score command-line args line from specified string and stores its information.
+*/
+bool args_db_read( char** line ) {
+
+  bool    retval = TRUE;  /* Return value for this function */
+  int     chars_read;     /* Number of characters scanned in from this line */
+  control scored;         /* Indicates if this file contains scored data */
+  int     version;        /* Contains CDD version from file */
+  int     mnum;           /* Temporary merge num */
+  char    tmp1[4096];     /* Temporary string */
+  char    tmp2[4096];     /* Temporary string */
+  int     i;              /* Loop iterator */
+
+  if( sscanf( *line, "%s%n", tmp1, &chars_read ) == 1 ) {
+
+    *line = *line + chars_read;
+    
+    /* Populate the score run pathname */
+    score_run_path = strdup_safe( tmp1, __FILE__, __LINE__ );
+    
+    /* Store score command-line arguments */
+    while( sscanf( *line, "%s%n", tmp1, &chars_read ) == 1 ) {
+      str_link_add( tmp1, &score_arg_head, &score_arg_tail );
+    }
+
+  } else {
+
+    print_output( "CDD file being read is incompatible with this version of Covered", FATAL, __FILE__, __LINE__ );
+    retval = FALSE;
+
+  }
+
+  return( retval );
+
+}
 
 /*
  $Log$
+ Revision 1.15  2006/04/14 17:05:13  phase1geo
+ Reorganizing info line to make it more succinct and easier for future needs.
+ Fixed problems with VPI library with recent merge changes.  Regression has
+ been completely updated for these changes.
+
  Revision 1.14  2006/04/12 21:22:51  phase1geo
  Fixing problems with multi-file merging.  This now seems to be working
  as needed.  We just need to document this new feature.

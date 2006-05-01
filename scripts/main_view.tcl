@@ -12,6 +12,7 @@ source $HOME/scripts/summary.tcl
 source $HOME/scripts/preferences.tcl
 source $HOME/scripts/cdd_view.tcl
 source $HOME/scripts/assert.tcl
+source $HOME/scripts/verilog.tcl
 
 set last_lb_index      ""
 set lwidth             -1 

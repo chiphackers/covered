@@ -29,6 +29,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "defines.h"
 #include "tcl_funcs.h"
@@ -50,7 +51,8 @@ extern funit_link* funit_head;
 extern funit_inst* instance_root;
 extern char        user_msg[USER_MSG_LENGTH];
 extern const char* race_msgs[RACE_TYPE_NUM];
-
+extern void        reset_pplexer( const char* filename, FILE* out );
+extern int         PPVLlex( void );
 
 /*!
  \param d     TBD
@@ -1036,7 +1038,7 @@ int tcl_func_collect_assertions( ClientData d, Tcl_Interp* tcl, int argc, const 
  \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
          TCL_ERROR.
 
- Populates the "assert_cov_points" global variable with the coverage points from the
+ Populates the "assert_cov_mod" and "assert_cov_points" global variables with the coverage points from the
  given instance.
 */
 int tcl_func_get_assert_coverage( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
@@ -1045,6 +1047,7 @@ int tcl_func_get_assert_coverage( ClientData d, Tcl_Interp* tcl, int argc, const
   char*     funit_name;       /* Name of functional unit to find */
   int       funit_type;       /* Type of functional unit to find */
   char*     inst_name;        /* Name of assertion module instance to get coverage information for */
+  char*     assert_mod;       /* Name of assertion module for the given instance name */
   str_link* cp_head;          /* Pointer to head of coverage point list */
   str_link* cp_tail;          /* Pointer to tail of coverage point list */
   str_link* curr_cp;          /* Pointer to current coverage point to write */
@@ -1054,7 +1057,10 @@ int tcl_func_get_assert_coverage( ClientData d, Tcl_Interp* tcl, int argc, const
   funit_type = atoi( argv[2] );
   inst_name  = strdup_safe( argv[3], __FILE__, __LINE__ );
 
-  if( assertion_get_coverage( funit_name, funit_type, inst_name, &cp_head, &cp_tail ) ) {
+  if( assertion_get_coverage( funit_name, funit_type, inst_name, &assert_mod, &cp_head, &cp_tail ) ) {
+
+    Tcl_SetVar( tcl, "assert_cov_mod", assert_mod, TCL_GLOBAL_ONLY );
+    free_safe( assert_mod );
 
     curr_cp = cp_head;
     while( curr_cp != NULL ) {
@@ -1398,6 +1404,49 @@ int tcl_func_get_assert_summary( ClientData d, Tcl_Interp* tcl, int argc, const 
 }
 
 /*!
+ \param d     TBD
+ \param tcl   Pointer to the Tcl interpreter
+ \param argc  Number of arguments in the argv list
+ \param argv  Array of arguments passed to this function
+
+ \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
+         TCL_ERROR.
+
+ Preprocesses the specified filename, outputting the contents into a temporary file whose name is passed back
+ to the calling function.
+*/
+int tcl_func_preprocess_verilog( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+
+  int   retval = TCL_OK;  /* Return value for this function */
+  char* ppfilename;       /* Preprocessed filename to return to calling function */
+  FILE* out;              /* File handle to preprocessed file */
+
+  /* Create temporary output filename */
+  ppfilename = Tcl_Alloc( 10 );
+  snprintf( ppfilename, 10, "tmpXXXXXX" );
+  assert( mkstemp( ppfilename ) != 0 );
+
+  out = fopen( ppfilename, "w" );
+  if( out == NULL ) {
+    snprintf( user_msg, USER_MSG_LENGTH, "Unable to open temporary file %s for writing", ppfilename );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    exit( 1 );
+  }
+
+  /* Now the preprocessor on this file first */
+  reset_pplexer( argv[1], out );
+  PPVLlex();
+
+  fclose( out );
+  
+  /* Set the return value to the name of the temporary file */
+  Tcl_SetResult( tcl, ppfilename, TCL_DYNAMIC );
+
+  return( retval );
+  
+}
+
+/*!
  \param tcl        Pointer to Tcl interpreter structure
  \param user_home  Name of user's home directory (used to store configuration file information to)
  \param home       Name of Tcl script home directory (from running the configure script)
@@ -1435,7 +1484,8 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
   Tcl_CreateCommand( tcl, "tcl_func_get_comb_summary",          (Tcl_CmdProc*)(tcl_func_get_comb_summary),          0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_fsm_summary",           (Tcl_CmdProc*)(tcl_func_get_fsm_summary),           0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_assert_summary",        (Tcl_CmdProc*)(tcl_func_get_assert_summary),        0, 0 );
-
+  Tcl_CreateCommand( tcl, "tcl_func_preprocess_verilog",        (Tcl_CmdProc*)(tcl_func_preprocess_verilog),        0, 0 );
+  
   /* Set the USER_HOME variable to location of user's home directory */
   Tcl_SetVar( tcl, "USER_HOME", user_home, TCL_GLOBAL_ONLY );
 
@@ -1455,6 +1505,10 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.36  2006/05/01 13:19:07  phase1geo
+ Enhancing the verbose assertion window.  Still need to fix a few bugs and add
+ a few more enhancements.
+
  Revision 1.35  2006/04/29 05:12:14  phase1geo
  Adding initial version of assertion verbose window.  This is currently working; however,
  I think that I want to enhance this window a bit more before calling it good.

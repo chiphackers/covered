@@ -3,7 +3,7 @@ set curr_assert_ptr ""
 proc assert_yset {args} {
 
   eval [linsert $args 0 .assertwin.f.vb set]
-  summary_yview moveto [lindex [.assertwin.f.vb get] 0]
+  assert_yview moveto [lindex [.assertwin.f.vb get] 0]
 
 }
 
@@ -29,7 +29,7 @@ proc display_assert {curr_index} {
   goto_uncov [lindex $curr_range 0]
 
   # Get range of previous instance
-  set prev_assert_index [lindex [.bot.right.txt tag prevrange uncov_button [lindex $curr_index 0]] 0]
+  set prev_assert_index [lindex [.bot.right.txt tag prevrange uncov_button [lindex $curr_range 0]] 0]
 
   # Get range of next instance
   set next_assert_index [lindex [.bot.right.txt tag nextrange uncov_button [lindex $curr_range 1]] 0]
@@ -43,7 +43,7 @@ proc create_assert_window {inst} {
 
   global prev_assert_index next_assert_index
   global curr_funit_name curr_funit_type
-  global curr_assert_ptr assert_cov_points
+  global curr_assert_ptr assert_cov_points assert_cov_mod
   global uncov_bgColor uncov_fgColor
   global cov_bgColor cov_fgColor
 
@@ -57,15 +57,19 @@ proc create_assert_window {inst} {
     frame .assertwin.f -relief raised -borderwidth 1
 
     # Add toggle information
-    label .assertwin.f.l -anchor w -text "Missed assertion coverage points"
-    text  .assertwin.f.td -height 5 -width 40 -xscrollcommand ".assertwin.f.hb set" \
+    label .assertwin.f.ld -anchor w -text "Coverage point description"
+    label .assertwin.f.lc -anchor w -text "# of hits"
+    text  .assertwin.f.td -height 5 -width 40 -borderwidth 0 -xscrollcommand ".assertwin.f.hb set" \
           -yscrollcommand assert_yset -wrap none -spacing1 2 -spacing3 3
-    text  .assertwin.f.tc -height 5 -width 10 -yscrollcommand assert_yset -wrap none -spacing1 2 -spacing3 3
+    text  .assertwin.f.tc -height 5 -width 10 -borderwidth 0 -yscrollcommand assert_yset -wrap none -spacing1 2 -spacing3 3
     scrollbar .assertwin.f.hb -orient horizontal -command ".assertwin.f.td xview"
     scrollbar .assertwin.f.vb -command assert_yview
+    button .assertwin.f.b -text "Show Code" -command {
+      display_assertion_module $assert_cov_mod
+    }
 
     # Create bottom information bar
-    label .assertwin.f.info -anchor e
+    label .assertwin.f.info -anchor w
 
     # Create bottom button bar
     frame .assertwin.bf -relief raised -borderwidth 1
@@ -93,11 +97,13 @@ proc create_assert_window {inst} {
     grid rowconfigure    .assertwin.f 1 -weight 1
     grid columnconfigure .assertwin.f 0 -weight 1
     grid columnconfigure .assertwin.f 1 -weight 0
-    grid .assertwin.f.l    -row 0 -column 0 -sticky nsew
+    grid .assertwin.f.ld   -row 0 -column 0 -sticky nsew
+    grid .assertwin.f.lc   -row 0 -column 1 -sticky nsew
     grid .assertwin.f.td   -row 1 -column 0 -sticky nsew
     grid .assertwin.f.tc   -row 1 -column 1 -sticky nsew
     grid .assertwin.f.vb   -row 1 -column 2 -sticky nsew
     grid .assertwin.f.hb   -row 2 -column 0 -sticky nsew
+    grid .assertwin.f.b    -row 2 -column 1 -sticky nsew
     grid .assertwin.f.info -row 3 -column 0 -columnspan 3 -sticky new
 
     pack .assertwin.f  -fill both -expand yes
@@ -118,6 +124,7 @@ proc create_assert_window {inst} {
   }
 
   # Get verbose toggle information
+  set assert_cov_mod    ""
   set assert_cov_points ""
   tcl_func_get_assert_coverage $curr_funit_name $curr_funit_type $inst
 
@@ -149,6 +156,9 @@ proc create_assert_window {inst} {
   # Keep user from writing in text boxes
   .assertwin.f.td configure -state disabled
   .assertwin.f.tc configure -state disabled
+  
+  # Update informational bar
+  .assertwin.f.info configure -text "Assertion module: $assert_cov_mod"
 
   # Raise this window to the foreground
   raise .assertwin
@@ -191,4 +201,93 @@ proc update_assert {} {
 
   }
 
+}
+
+proc display_assertion_module {mod} {
+  
+  global file_name fileContent
+
+  # Store original filename
+  set tmp_name $file_name
+
+  # Get filename
+  tcl_func_get_filename $mod 0
+  
+  if {[winfo exists .amodwin] == 0} {
+
+    if {[catch {set fileText $fileContent($file_name)}]} {
+      set tmpf [tcl_func_preprocess_verilog $file_name]
+      if {[catch {set fp [open $tmpf "r"]}]} {
+        tk_messageBox -message "File $file_name Not Found!" -title "No File" -icon error
+        return
+      }
+      set fileText [read $fp]
+      set fileContent($file_name) $fileText
+      close $fp
+      file delete -force $tmpf
+    }
+    
+    # Create the window viewer
+    toplevel .amodwin
+    wm title .amodwin "Assertion Module - $mod"
+
+    # Create text viewer windows
+    frame .amodwin.f -relief raised -borderwidth 1
+    text .amodwin.f.t -height 30 -width 50 -xscrollcommand ".amodwin.f.hb set" -yscrollcommand ".amodwin.f.vb set" -state disabled
+    scrollbar .amodwin.f.hb -orient horizontal -command ".amodwin.f.t xview"
+    scrollbar .amodwin.f.vb -command ".amodwin.f.t yview"
+    
+    # Layout the text viewer windows
+    grid rowconfigure    .amodwin.f 0 -weight 1
+    grid columnconfigure .amodwin.f 0 -weight 1
+    grid .amodwin.f.t  -row 0 -column 0 -sticky news
+    grid .amodwin.f.vb -row 0 -column 1 -sticky news
+    grid .amodwin.f.hb -row 1 -column 0 -sticky news
+    
+    # Create the button bar
+    frame .amodwin.bf -relief raised -borderwidth 1
+    button .amodwin.bf.close -text "Close" -width 10 -command {
+      destroy .amodwin
+    }
+    
+    # Pack the button bar
+    pack .amodwin.bf.close
+    
+    # Pack the frames
+    pack .amodwin.f -fill both -expand yes
+    pack .amodwin.bf -fill x
+    
+  }
+
+  # Allow us to write to the text box
+  .amodwin.f.t configure -state normal
+
+  # Clear the text-box before any insertion is being made
+  .amodwin.f.t delete 1.0 end
+
+  set contents [preprocess_assertion $file_name]
+
+  # Populate text box with file contents
+  foreach phrase $contents {
+    .amodwin.f.t insert end [append phrase "\n"]
+  }
+  
+  # Set state back to disabled for read-only access
+  .amodwin.f.t configure -state disabled
+  
+  # Restore global file_name
+  set file_name $tmp_name
+  
+  # Raise this window to the foreground
+  raise .amodwin
+
+}
+
+proc preprocess_assertion {fname} {
+  
+  global fileContent
+  
+  # Preprocess the specified Verilog file
+  tcl_funcs_preprocess_verilog $fname
+  
 }
