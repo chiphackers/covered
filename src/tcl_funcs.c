@@ -1036,33 +1036,35 @@ int tcl_func_collect_assertions( ClientData d, Tcl_Interp* tcl, int argc, const 
  \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
          TCL_ERROR.
 
- Populates the "assert_cov_points" global variable with the missed coverage points from the
+ Populates the "assert_cov_points" global variable with the coverage points from the
  given instance.
 */
 int tcl_func_get_assert_coverage( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
-  int    retval = TCL_OK;  /* Return value for this function */
-  char*  funit_name;       /* Name of functional unit to find */
-  int    funit_type;       /* Type of functional unit to find */
-  char*  inst_name;        /* Name of assertion module instance to get coverage information for */
-  char** cov_points;       /* Array containing the missed coverage point descriptions */
-  int    cov_num;          /* Number of valid entries in the cov_points array */
-  int    i;                /* Loop iterator */
+  int       retval = TCL_OK;  /* Return value for this function */
+  char*     funit_name;       /* Name of functional unit to find */
+  int       funit_type;       /* Type of functional unit to find */
+  char*     inst_name;        /* Name of assertion module instance to get coverage information for */
+  str_link* cp_head;          /* Pointer to head of coverage point list */
+  str_link* cp_tail;          /* Pointer to tail of coverage point list */
+  str_link* curr_cp;          /* Pointer to current coverage point to write */
+  char      str[4096];        /* Temporary string holder */
 
   funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
   funit_type = atoi( argv[2] );
   inst_name  = strdup_safe( argv[3], __FILE__, __LINE__ );
 
-  if( assertion_get_coverage( funit_name, funit_type, inst_name, &cov_points, &cov_num ) ) {
+  if( assertion_get_coverage( funit_name, funit_type, inst_name, &cp_head, &cp_tail ) ) {
 
-    for( i=0; i<cov_num; i++ ) {
-      Tcl_SetVar( tcl, "assert_cov_points", cov_points[i], (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
-      free_safe( cov_points[i] );
+    curr_cp = cp_head;
+    while( curr_cp != NULL ) {
+      snprintf( str, 4096, "{%s} %d", curr_cp->str, curr_cp->suppl );
+      Tcl_SetVar( tcl, "assert_cov_points", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+      curr_cp = curr_cp->next;
     }
 
-    if( cov_num > 0 ) {
-      free_safe( cov_points );
-    }
+    /* Deallocate the string list */
+    str_link_delete_list( cp_head );
 
   }
 
@@ -1453,6 +1455,10 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.35  2006/04/29 05:12:14  phase1geo
+ Adding initial version of assertion verbose window.  This is currently working; however,
+ I think that I want to enhance this window a bit more before calling it good.
+
  Revision 1.34  2006/04/28 17:10:19  phase1geo
  Adding GUI support for assertion coverage.  Halfway there.
 

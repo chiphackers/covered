@@ -362,21 +362,19 @@ void ovl_collect( func_unit* funit, char*** uncov_inst_names, int* uncov_inst_si
 }
 
 /*!
- \param funit   Pointer to functional unit to get assertion information from.
+ \param funit      Pointer to functional unit to get assertion information from.
  \param inst_name  Name of assertion instance to get coverage points from.
- \param cov_points  Pointer to array to store missed coverage points for.
- \param cov_num     Pointer to number of valid entries in the cov_points array.
+ \param cp_head    Pointer to head of coverage point list.
+ \param cp_tail    Pointer to tail of coverage point list.
 
- Retrieves the coverage point strings that were missed during simulation.
+ Retrieves the coverage point strings and execution counts from the specified assertion module.
 */
-void ovl_get_coverage( func_unit* funit, char* inst_name, char*** cov_points, int* cov_num ) {
+void ovl_get_coverage( func_unit* funit, char* inst_name, str_link** cp_head, str_link** cp_tail ) {
 
   funit_inst* funiti;      /* Pointer to found functional unit instance */
   funit_inst* curr_child;  /* Pointer to current child functional instance */
   int         ignore = 0;  /* Number of functional units to ignore */
   stmt_iter   si;          /* Statement iterator */
-  int         total;       /* Total number of coverage points for a given assertion module */
-  int         hit;         /* Number of hit coverage points for a given assertion module */
 
   /* Get one instance of this module from the design */
   funiti = instance_find_by_funit( instance_root, funit, &ignore );
@@ -396,12 +394,9 @@ void ovl_get_coverage( func_unit* funit, char* inst_name, char*** cov_points, in
     /* If this statement is a task call to the task "ovl_cover_t", get its total and hit information */
     if( (si.curr->stmt->exp->op == EXP_OP_TASK_CALL) && (strcmp( si.curr->stmt->exp->name, "ovl_cover_t" ) == 0) ) {
 
-      /* Output the coverage verbose results to the specified output file */
-      if( si.curr->stmt->exp->exec_num == 0 ) {
-        *cov_points             = (char**)realloc( *cov_points, (sizeof( char** ) * (*cov_num + 1)) );
-        (*cov_points)[*cov_num] = ovl_get_coverage_point( si.curr->stmt );
-        (*cov_num)++;
-      }
+      /* Store the coverage point string and execution count */
+      str_link_add( ovl_get_coverage_point( si.curr->stmt ), cp_head, cp_tail );
+      (*cp_tail)->suppl = si.curr->stmt->exp->exec_num;
 
     }
 
@@ -414,6 +409,10 @@ void ovl_get_coverage( func_unit* funit, char* inst_name, char*** cov_points, in
 
 /*
  $Log$
+ Revision 1.5  2006/04/29 05:12:14  phase1geo
+ Adding initial version of assertion verbose window.  This is currently working; however,
+ I think that I want to enhance this window a bit more before calling it good.
+
  Revision 1.4  2006/04/28 17:10:19  phase1geo
  Adding GUI support for assertion coverage.  Halfway there.
 

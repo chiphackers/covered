@@ -473,15 +473,15 @@ bool assertion_collect( char* funit_name, int funit_type, char*** uncov_inst_nam
  \param funit_name  Name of functional unit to retrieve missed coverage points for
  \param funit_type  Type of functional unit to retrieve missed coverage points for
  \param inst_name   Name of assertion module instance to retrieve
- \param cov_points  Pointer to array of coverage point descriptions that were missed
- \param cov_num     Pointer to number of elements in the cov_points array
+ \param cp_head     Pointer to head of list of strings/integers containing coverage point information
+ \param cp_head     Pointer to tail of list of strings/integers containing coverage point information
 
  \return Returns TRUE if the specified functional unit was found; otherwise, returns FALSE.
 
- Finds all of the missed coverage points for the given assertion instance and stores their
- string descriptions in the cov_points array.
+ Finds all of the coverage points for the given assertion instance and stores their
+ string descriptions and execution counts in the cp list.
 */
-bool assertion_get_coverage( char* funit_name, int funit_type, char* inst_name, char*** cov_points, int* cov_num ) {
+bool assertion_get_coverage( char* funit_name, int funit_type, char* inst_name, str_link** cp_head, str_link** cp_tail ) {
 
   bool        retval = TRUE;  /* Return value for this function */
   func_unit   funit;          /* Temporary functional unit used for searching */
@@ -493,13 +493,11 @@ bool assertion_get_coverage( char* funit_name, int funit_type, char* inst_name, 
   /* Find functional unit */
   if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
 
-    /* Initialize outputs */
-    *cov_points = NULL;
-    *cov_num    = 0;
+    *cp_head = *cp_tail = NULL;
 
     /* If OVL assertion coverage is needed, get this information */
     if( info_suppl.part.assert_ovl == 1 ) {
-      ovl_get_coverage( funitl->funit, inst_name, cov_points, cov_num );
+      ovl_get_coverage( funitl->funit, inst_name, cp_head, cp_tail );
     }
 
   } else {
@@ -515,6 +513,10 @@ bool assertion_get_coverage( char* funit_name, int funit_type, char* inst_name, 
 
 /*
  $Log$
+ Revision 1.7  2006/04/29 05:12:14  phase1geo
+ Adding initial version of assertion verbose window.  This is currently working; however,
+ I think that I want to enhance this window a bit more before calling it good.
+
  Revision 1.6  2006/04/28 17:10:19  phase1geo
  Adding GUI support for assertion coverage.  Halfway there.
 
