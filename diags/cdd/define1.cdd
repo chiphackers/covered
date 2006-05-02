@@ -1,4 +1,5 @@
 5 7 1 * 0
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd define1.vcd -o define1.cdd -v define1.v -D RUNTEST
 3 0 main main define1.v 2 21
 2 1 9 120012 2 1 c 0 0 b
 2 2 9 b000e 1 0 20004 0 0 1 1 0

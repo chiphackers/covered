@@ -1,4 +1,5 @@
 5 7 1 * 0
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd race1.vcd -o race1.cdd -v race1.v
 3 0 main main race1.v 1 14
 1 a 0 3 30005 1 0 2
 3 0 foobar main.bar race1.v 17 23

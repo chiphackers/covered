@@ -1,4 +1,5 @@
 5 7 1 * 0
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd mbit_sel1.vcd -o mbit_sel1.cdd -v mbit_sel1.v
 3 0 main main mbit_sel1.v 1 29
 2 1 8 f000f 1 0 20008 0 0 32 64 1 0 0 0 0 0 0 0
 2 2 8 d000d 5 0 20008 0 0 32 64 4 0 0 0 0 0 0 0

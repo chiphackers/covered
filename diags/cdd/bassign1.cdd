@@ -1,4 +1,5 @@
 5 7 1 * 0
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd bassign1.vcd -o bassign1.cdd -v bassign1.v
 3 0 main main bassign1.v 1 23
 2 1 5 a000a 2 1 c 0 0 a
 2 2 5 90009 2 1b 2000c 1 0 1 0 1002

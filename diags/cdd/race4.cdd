@@ -1,4 +1,5 @@
 5 7 1 * 0
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd race4.vcd -o race4.cdd -v race4.v
 3 0 main main race4.v 1 22
 2 1 18 9000c 1 0 20004 0 0 1 1 0
 2 2 18 10005 0 1 400 0 0 clock

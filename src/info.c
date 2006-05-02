@@ -69,17 +69,17 @@ int cdd_version = CDD_VERSION;
 /*!
  Specifes the pathname where the score command was originally run from.
 */
-char* score_run_path;
+char score_run_path[4096];
 
 /*!
- Pointer to head of string list containing command-line arguments from score command
+ Array containing all of the score arguments.
 */
-str_link* score_arg_head;
+char** score_args = NULL;
 
 /*!
- Pointer to tail of string list containing command-line arguments from score command
+ Number of valid elements in the score args array.
 */
-str_link* score_arg_tail;
+int score_arg_num = 0;
 
 
 /*!
@@ -124,15 +124,15 @@ void info_db_write( FILE* file ) {
   }
 
   fprintf( file, "\n" );
-  
+
   /* Display score arguments */
   fprintf( file, "%d %s", DB_TYPE_SCORE_ARGS, score_run_path );
-  
-  strl = score_arg_head;
-  while( strl != NULL ) {
-    fprintf( file, " %s", strl->str );
-    strl = strl->next;
+
+  for( i=0; i<score_arg_num; i++ ) {
+    fprintf( file, " %s", score_args[i] );
   }
+
+  fprintf( file, "\n" );
 
 }
 
@@ -236,16 +236,16 @@ bool args_db_read( char** line ) {
   char    tmp2[4096];     /* Temporary string */
   int     i;              /* Loop iterator */
 
-  if( sscanf( *line, "%s%n", tmp1, &chars_read ) == 1 ) {
+  if( sscanf( *line, "%s%n", score_run_path, &chars_read ) == 1 ) {
 
     *line = *line + chars_read;
-    
-    /* Populate the score run pathname */
-    score_run_path = strdup_safe( tmp1, __FILE__, __LINE__ );
-    
+
     /* Store score command-line arguments */
     while( sscanf( *line, "%s%n", tmp1, &chars_read ) == 1 ) {
-      str_link_add( tmp1, &score_arg_head, &score_arg_tail );
+      *line                     = *line + chars_read;
+      score_args                = (char**)realloc( score_args, (sizeof( char* ) * (score_arg_num + 1)) );
+      score_args[score_arg_num] = strdup_safe( tmp1, __FILE__, __LINE__ );
+      score_arg_num++;
     }
 
   } else {
@@ -261,6 +261,9 @@ bool args_db_read( char** line ) {
 
 /*
  $Log$
+ Revision 1.16  2006/05/01 22:27:37  phase1geo
+ More updates with assertion coverage window.  Still have a ways to go.
+
  Revision 1.15  2006/04/14 17:05:13  phase1geo
  Reorganizing info line to make it more succinct and easier for future needs.
  Fixed problems with VPI library with recent merge changes.  Regression has

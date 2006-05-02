@@ -51,6 +51,7 @@ extern funit_link* funit_head;
 extern funit_inst* instance_root;
 extern char        user_msg[USER_MSG_LENGTH];
 extern const char* race_msgs[RACE_TYPE_NUM];
+extern char        score_run_path[4096];
 extern void        reset_pplexer( const char* filename, FILE* out );
 extern int         PPVLlex( void );
 
@@ -1494,6 +1495,9 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
   /* Set VERSION variable */
   Tcl_SetVar( tcl, "VERSION", version, TCL_GLOBAL_ONLY );
+  
+  /* Set SCORE_DIR variable */
+  Tcl_SetVar( tcl, "SCORE_DIR", score_run_path, TCL_GLOBAL_ONLY );
 
   /* Set BROWSER variable to locate browser to use for help pages if one has been specified */
   if( browser != NULL ) {
@@ -1505,6 +1509,9 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.37  2006/05/01 22:27:37  phase1geo
+ More updates with assertion coverage window.  Still have a ways to go.
+
  Revision 1.36  2006/05/01 13:19:07  phase1geo
  Enhancing the verbose assertion window.  Still need to fix a few bugs and add
  a few more enhancements.

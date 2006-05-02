@@ -1,4 +1,5 @@
 5 7 1 * 0
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd define3.vcd -o define3.cdd -v define3.v
 3 0 main main define3.v 1 24
 2 1 9 120012 2 1 8 0 0 e
 2 2 9 b000e 1 0 20008 0 0 32 0 44 0 0 0 0 0 0 0

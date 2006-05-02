@@ -1,4 +1,5 @@
 5 7 1 * 0
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd instance4.vcd -o instance4.cdd -v instance4.v
 3 0 main main instance4.v 1 21
 1 a 0 3 30007 1 0 1102
 1 b 0 3 3000a 1 0 102

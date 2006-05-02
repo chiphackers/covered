@@ -1,4 +1,5 @@
 5 7 1 * 0
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd always12.vcd -o always12.cdd -v always12.v
 3 0 main main always12.v 1 36
 2 1 7 b000e 1 0 20004 0 0 1 1 0
 2 2 7 b000e 1 47 4 1 0 foobar.b

@@ -1,4 +1,5 @@
 5 7 1 * 0
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd gate1.1.vcd -o gate1.1.cdd -v gate1.1.v
 3 0 main main gate1.1.v 1 50
 1 qo 0 3 30008 1 0 2
 1 ro 0 3 3000c 1 0 2

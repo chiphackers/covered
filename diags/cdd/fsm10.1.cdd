@@ -1,4 +1,5 @@
 5 7 1 * 0
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd fsm10.1.vcd -o fsm10.1.cdd -y lib -v fsm10.1.v
 3 0 main main fsm10.1.v 1 56
 2 1 52 7000a 1 0 20004 0 0 1 1 0
 2 2 52 10003 0 1 400 0 0 clk

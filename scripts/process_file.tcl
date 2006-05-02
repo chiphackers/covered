@@ -75,24 +75,15 @@ proc create_race_tags {} {
 
 proc process_funit_line_cov {} {
 
-  global fileContent file_name start_line end_line
+  global file_name start_line end_line
   global curr_funit_name curr_funit_type
   global line_summary_hit line_summary_total
 
   if {$curr_funit_name != 0} {
 
+    # Get the filename of the currently selected functional unit and read it in
     tcl_func_get_filename $curr_funit_name $curr_funit_type
-
-    if {[catch {set fileText $fileContent($file_name)}]} {
-      if {[catch {set fp [open $file_name "r"]}]} {
-        tk_messageBox -message "File $file_name Not Found!" \
-                      -title "No File" -icon error
-        return
-      } 
-      set fileText [read $fp]
-      set fileContent($file_name) $fileText
-      close $fp
-    }
+    load_verilog $file_name
 
     # Get start and end line numbers of this functional unit
     set start_line 0
@@ -214,18 +205,9 @@ proc process_funit_toggle_cov {} {
 
   if {$curr_funit_name != 0} {
 
+    # Get the file name of the currently selected functional unit and read it in
     tcl_func_get_filename $curr_funit_name $curr_funit_type
-
-    if {[catch {set fileText $fileContent($file_name)}]} {
-      if {[catch {set fp [open $file_name "r"]}]} {
-        tk_messageBox -message "File $file_name Not Found!" \
-                      -title "No File" -icon error
-        return
-      } 
-      set fileText [read $fp]
-      set fileContent($file_name) $fileText
-      close $fp
-    }
+    load_verilog $file_name
 
     # Get start and end line numbers of this functional unit
     set start_line 0
@@ -370,18 +352,9 @@ proc process_funit_comb_cov {} {
 
   if {$curr_funit_name != 0} {
 
-    tcl_func_get_filename $curr_funit_name $curr_funit_type
-
-    if {[catch {set fileText $fileContent($file_name)}]} {
-      if {[catch {set fp [open $file_name "r"]}]} {
-        tk_messageBox -message "File $file_name Not Found!" \
-                      -title "No File" -icon error
-        return
-      }
-      set fileText [read $fp]
-      set fileContent($file_name) $fileText
-      close $fp
-    }
+    # Get the filename of the currently selected functional unit and read it in
+    tcl_func_get_filename $curr_funit_name $c  load_verilog $file_name
+    load_verilog $file_name
 
     # Get start and end line numbers of this functional unit
     set start_line 0
@@ -552,18 +525,9 @@ proc process_funit_fsm_cov {} {
 
   if {$curr_funit_name != 0} {
 
+    # Get the filename of the currently selected functional unit and read it in
     tcl_func_get_filename $curr_funit_name $curr_funit_type
-
-    if {[catch {set fileText $fileContent($file_name)}]} {
-      if {[catch {set fp [open $file_name "r"]}]} {
-        tk_messageBox -message "File $file_name Not Found!" \
-                      -title "No File" -icon error
-        return
-      }
-      set fileText [read $fp]
-      set fileContent($file_name) $fileText
-      close $fp
-    }
+    load_verilog $file_name
 
     # Get start and end line numbers of this functional unit
     set start_line 0
@@ -709,18 +673,9 @@ proc process_funit_assert_cov {} {
 
   if {$curr_funit_name != 0} {
 
+    # Get the filename of the currently selected functional unit and read it in
     tcl_func_get_filename $curr_funit_name $curr_funit_type
-
-    if {[catch {set fileText $fileContent($file_name)}]} {
-      if {[catch {set fp [open $file_name "r"]}]} {
-        tk_messageBox -message "File $file_name Not Found!" \
-                      -title "No File" -icon error
-        return
-      }
-      set fileText [read $fp]
-      set fileContent($file_name) $fileText
-      close $fp
-    }
+    load_verilog $file_name
 
     # Get start and end line numbers of this functional unit
     set start_line 0

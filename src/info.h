@@ -36,11 +36,14 @@ void info_db_write( FILE* file );
 bool info_db_read( char** line );
 
 /*! \brief Reads score args line from specified line and stores information. */
-bool args_db_read( char** line )
+bool args_db_read( char** line );
 
 
 /*
  $Log$
+ Revision 1.4  2006/05/01 22:27:37  phase1geo
+ More updates with assertion coverage window.  Still have a ways to go.
+
  Revision 1.3  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

@@ -70,6 +70,8 @@ extern int*        fork_block_depth;
 extern int         fork_depth;
 extern int         block_depth;
 extern tnode*      def_table;
+extern char**      score_args;
+extern int         score_arg_num;
 
 /*!
  Specifies the string Verilog scope that is currently specified in the VCD file.
@@ -143,11 +145,17 @@ void db_close() {
 
     /* Deallocate the binding list */
     bind_dealloc();
+    
+    if( score_arg_num > 0 ) {
+      free_safe( score_args );
+    }
 
     instance_root = NULL;
     funit_head    = NULL;
     funit_tail    = NULL;
     def_table     = NULL;
+    score_args    = NULL;
+    score_arg_num = 0;
 
   }
 
@@ -258,6 +266,13 @@ bool db_read( char* file, int read_mode ) {
             print_output( "Attempting to generate report on non-scored design.  Not supported.", FATAL, __FILE__, __LINE__ );
             retval = FALSE;
           }
+          
+        } else if( type == DB_TYPE_SCORE_ARGS ) {
+          
+          assert( !merge_mode );
+          
+          /* Parse rest of line for argument info */
+          retval = args_db_read( &rest_line );
           
         } else if( type == DB_TYPE_SIGNAL ) {
 
@@ -1695,6 +1710,11 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.180  2006/04/21 06:14:45  phase1geo
+ Merged in changes from 0.4.3 stable release.  Updated all regression files
+ for inclusion of OVL library.  More documentation updates for next development
+ release (but there is more to go here).
+
  Revision 1.179  2006/04/19 22:21:33  phase1geo
  More updates to properly support assertion coverage.  Removing assertion modules
  from line, toggle, combinational logic, FSM and race condition output so that there

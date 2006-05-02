@@ -1,4 +1,5 @@
 5 7 1 * 0
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd static2.1.vcd -o static2.1.cdd -v static2.1.v
 3 0 main main static2.1.v 1 16
 2 1 6 120012 1 1 0 0 0 c
 2 2 6 b000e 1 0 20004 0 0 1 1 0

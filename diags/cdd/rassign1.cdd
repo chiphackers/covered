@@ -1,4 +1,5 @@
 5 7 1 * 0
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd rassign1.vcd -o rassign1.cdd -v rassign1.v
 3 0 main main rassign1.v 1 21
 2 1 6 e0011 1 32 4 0 0 #ZERO
 2 2 6 8000a 1 32 8 0 0 #ONE

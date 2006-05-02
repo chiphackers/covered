@@ -205,28 +205,23 @@ proc update_assert {} {
 
 proc display_assertion_module {mod} {
   
-  global file_name fileContent
+  global file_name fileContent SCORE_DIR
 
-  # Store original filename
+  # Store original filename and working directory
   set tmp_name $file_name
+  set tmp_cwd  [pwd]
+  
+  # Change to the scoring directory
+  cd $SCORE_DIR
 
   # Get filename
   tcl_func_get_filename $mod 0
   
   if {[winfo exists .amodwin] == 0} {
 
-    if {[catch {set fileText $fileContent($file_name)}]} {
-      set tmpf [tcl_func_preprocess_verilog $file_name]
-      if {[catch {set fp [open $tmpf "r"]}]} {
-        tk_messageBox -message "File $file_name Not Found!" -title "No File" -icon error
-        return
-      }
-      set fileText [read $fp]
-      set fileContent($file_name) $fileText
-      close $fp
-      file delete -force $tmpf
-    }
-    
+    # Read in the current filename
+    load_verilog $file_name
+
     # Create the window viewer
     toplevel .amodwin
     wm title .amodwin "Assertion Module - $mod"

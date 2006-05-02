@@ -29,6 +29,7 @@
 #include <string.h>
 #endif
 #include <sys/times.h>
+#include <unistd.h>
 
 #include "defines.h"
 #include "score.h"
@@ -66,6 +67,9 @@ extern char          user_msg[USER_MSG_LENGTH];
 extern char*         directive_filename;
 extern bool          debug_mode;
 extern isuppl        info_suppl;
+extern char          score_run_path[4096];
+extern char**        score_args;
+extern int           score_arg_num;
 
 
 void define_macro( const char* name, const char* value );
@@ -303,6 +307,19 @@ bool read_command_file( char* cmd_file, char*** arg_list, int* arg_num ) {
 }
 
 /*!
+ \param arg  Argument from score command.
+ 
+ Adds the specified argument to the list of score arguments that will be written to the CDD file.
+*/
+void score_add_arg( char* arg ) {
+
+  score_args = (char**)realloc( score_args, (sizeof( char* ) * (score_arg_num + 1)) );
+  score_args[score_arg_num] = strdup_safe( arg, __FILE__, __LINE__ );
+  score_arg_num++;
+
+}
+
+/*!
  \param argc      Number of arguments specified in argv parameter list.
  \param last_arg  Index of last parsed argument in list.
  \param argv      List of arguments to parse.
@@ -333,6 +350,8 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 
       i++;
       top_instance       = strdup_safe( argv[i], __FILE__, __LINE__ );
+      score_add_arg( argv[i-1] );
+      score_add_arg( argv[i] );
       instance_specified = TRUE;
 
     } else if( strncmp( "-o", argv[i], 2 ) == 0 ) {
@@ -340,6 +359,8 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
       i++;
       if( is_directory( argv[i] ) ) {
         output_db = strdup_safe( argv[i], __FILE__, __LINE__ );
+        score_add_arg( argv[i-1] );
+        score_add_arg( argv[i] );
       } else {
         snprintf( user_msg, USER_MSG_LENGTH, "Illegal output directory specified \"%s\"", argv[i] );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -350,12 +371,16 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 
       i++;
       timestep_update = atol( argv[i] );
+      score_add_arg( argv[i-1] );
+      score_add_arg( argv[i] );
 
     } else if( strncmp( "-t", argv[i], 2 ) == 0 ) {
 
       i++;
       if( is_variable( argv[i] ) ) {
         top_module = strdup_safe( argv[i], __FILE__, __LINE__ );
+        score_add_arg( argv[i-1] );
+        score_add_arg( argv[i] );
       } else {
         snprintf( user_msg, USER_MSG_LENGTH, "Illegal top-level module name specified \"%s\"", argv[i] );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -365,17 +390,26 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
     } else if( strncmp( "-I", argv[i], 2 ) == 0 ) {
 
       i++;
-      retval = search_add_include_path( argv[i] );
+      if( retval = search_add_include_path( argv[i] ) ) {
+        score_add_arg( argv[i-1] );
+        score_add_arg( argv[i] );
+      }
 
     } else if( strncmp( "-y", argv[i], 2 ) == 0 ) {
 
       i++;
-      retval = search_add_directory_path( argv[i] );
+      if( retval = search_add_directory_path( argv[i] ) ) {
+        score_add_arg( argv[i-1] );
+        score_add_arg( argv[i] );
+      }
 
     } else if( strncmp( "-F", argv[i], 2 ) == 0 ) {
 
       i++;
-      retval = fsm_arg_parse( argv[i] );
+      if( retval = fsm_arg_parse( argv[i] ) ) {
+        score_add_arg( argv[i-1] );
+        score_add_arg( argv[i] );
+      }
       
     } else if( strncmp( "-f", argv[i], 2 ) == 0 ) {
 
@@ -396,19 +430,25 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
     } else if( strncmp( "-ec", argv[i], 3 ) == 0 ) {
 
       info_suppl.part.excl_assign = 1;
+      score_add_arg( argv[i] );
 
     } else if( strncmp( "-ea", argv[i], 3 ) == 0 ) {
 
       info_suppl.part.excl_always = 1;
+      score_add_arg( argv[i] );
 
     } else if( strncmp( "-ei", argv[i], 3 ) == 0 ) {
 
       info_suppl.part.excl_init = 1;
+      score_add_arg( argv[i] );
 
     } else if( strncmp( "-e", argv[i], 2 ) == 0 ) {
 
       i++;
-      retval = search_add_no_score_funit( argv[i] );
+      if( retval = search_add_no_score_funit( argv[i] ) ) {
+        score_add_arg( argv[i-1] );
+        score_add_arg( argv[i] );
+      }
 
     } else if( strncmp( "-vcd", argv[i], 4 ) == 0 ) {
 
@@ -417,6 +457,8 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
         if( file_exists( argv[i] ) ) {
           dump_file = strdup_safe( argv[i], __FILE__, __LINE__ );
           dump_mode = DUMP_FMT_VCD;
+          score_add_arg( argv[i-1] );
+          score_add_arg( argv[i] );
         } else {
           snprintf( user_msg, USER_MSG_LENGTH, "VCD dumpfile not found \"%s\"", argv[i] );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -434,6 +476,8 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
         if( file_exists( argv[i] ) ) {
           dump_file = strdup_safe( argv[i], __FILE__, __LINE__ );
           dump_mode = DUMP_FMT_LXT;
+          score_add_arg( argv[i-1] );
+          score_add_arg( argv[i] );
         } else {
           snprintf( user_msg, USER_MSG_LENGTH, "LXT dumpfile not found \"%s\"", argv[i] );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -449,19 +493,27 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
       i++;
       if( (i < argc) && (argv[i][0] != '-') ) {
         vpi_file = strdup_safe( argv[i], __FILE__, __LINE__ );
+        score_add_arg( argv[i-1] );
+        score_add_arg( argv[i] );
       } else {
         vpi_file = strdup_safe( DFLT_VPI_NAME, __FILE__, __LINE__ );
         i--;
+        score_add_arg( argv[i] );
       }
 
     } else if( strncmp( "-v", argv[i], 2 ) == 0 ) {
 
       i++;
-      retval = search_add_file( argv[i] );
+      if( retval = search_add_file( argv[i] ) ) {
+        score_add_arg( argv[i-1] );
+        score_add_arg( argv[i] );
+      }
 
     } else if( strncmp( "+libext+", argv[i], 8 ) == 0 ) {
 
-      retval = search_add_extensions( argv[i] + 8 );
+      if( retval = search_add_extensions( argv[i] + 8 ) ) {
+        score_add_arg( argv[i] );
+      }
 
     } else if( strncmp( "-D", argv[i], 2 ) == 0 ) {
 
@@ -477,12 +529,16 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
       } else {
         define_macro( argv[i], "1" );
       }
+      score_add_arg( argv[i-1] );
+      score_add_arg( argv[i] );
 
     } else if( strncmp( "-p", argv[i], 2 ) == 0 ) {
       
       i++;
       if( is_variable( argv[i] ) ) {
         ppfilename = strdup_safe( argv[i], __FILE__, __LINE__ );
+        score_add_arg( argv[i-1] );
+        score_add_arg( argv[i] );
       } else {
         snprintf( user_msg, USER_MSG_LENGTH, "Unrecognizable filename %s specified for -p option.", argv[i] );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -504,6 +560,8 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
         *ptr = '\0';
         ptr++;
         defparam_add( argv[i], vector_from_string( &ptr, FALSE ) );
+        score_add_arg( argv[i-1] );
+        score_add_arg( argv[i] );
       }
       
     } else if( strncmp( "-T", argv[i], 2 ) == 0 ) {
@@ -512,10 +570,16 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
       
       if( strcmp( argv[i], "min" ) == 0 ) {
         delay_expr_type = DELAY_EXPR_MIN;
+        score_add_arg( argv[i-1] );
+        score_add_arg( argv[i] );
       } else if( strcmp( argv[i], "max" ) == 0 ) {
         delay_expr_type = DELAY_EXPR_MAX;
+        score_add_arg( argv[i-1] );
+        score_add_arg( argv[i] );
       } else if( strcmp( argv[i], "typ" ) == 0 ) {
         delay_expr_type = DELAY_EXPR_TYP;
+        score_add_arg( argv[i-1] );
+        score_add_arg( argv[i] );
       } else {
         snprintf( user_msg, USER_MSG_LENGTH, "Unknown -T value (%s).  Please specify min, max or typ.", argv[i] );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -535,10 +599,14 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
           retval = FALSE;
           break;
       }
+      if( retval ) {
+        score_add_arg( argv[i] );
+      }
 
     } else if( strncmp( "-S", argv[i], 2 ) == 0 ) {
 
       flag_display_sim_stats = TRUE;
+      score_add_arg( argv[i] );
 
     } else if( strncmp( "-A", argv[i], 2 ) == 0 ) {
 
@@ -548,6 +616,8 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
         info_suppl.part.assert_ovl = 1;
         define_macro( "OVL_VERILOG",  "1" );
         define_macro( "OVL_COVER_ON", "1" );
+        score_add_arg( argv[i-1] );
+        score_add_arg( argv[i] );
       } else {
         snprintf( user_msg, USER_MSG_LENGTH, "Unknown -A value (%s).  Please specify ovl.", argv[i] );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -566,9 +636,14 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 
   }
 
-  /* If there were no errors found and the -A option was not specified, add all OVL modules to list of no-score modules */
   if( retval ) {
+    
+    /* If the -A option was not specified, add all OVL modules to list of no-score modules */
     ovl_add_assertions_to_no_score_list( info_suppl.part.assert_ovl );
+    
+    /* Get the current directory */
+    assert( getcwd( score_run_path, 4096 ) != NULL );
+
   }
 
   return( retval );
@@ -671,6 +746,11 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.72  2006/04/19 22:21:33  phase1geo
+ More updates to properly support assertion coverage.  Removing assertion modules
+ from line, toggle, combinational logic, FSM and race condition output so that there
+ won't be any overlap of information here.
+
  Revision 1.71  2006/04/18 21:59:54  phase1geo
  Adding support for environment variable substitution in configuration files passed
  to the score command.  Adding ovl.c/ovl.h files.  Working on support for assertion

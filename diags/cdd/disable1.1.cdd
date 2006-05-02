@@ -1,4 +1,5 @@
 5 7 1 * 0
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd disable1.1.vcd -o disable1.1.cdd -v disable1.1.v
 3 0 main main disable1.1.v 1 22
 2 1 5 8000c 2 3d 2100a 0 0 1 0 2 foobar
 1 a 0 3 30004 1 16 102

@@ -1,3 +1,4 @@
 5 7 1 * 0
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd always7.vcd -o always7.cdd -v always7.v
 3 0 main main always7.v 1 17
 1 a 0 3 40006 1 32 2

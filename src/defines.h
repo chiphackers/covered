@@ -199,6 +199,11 @@
 */
 #define DB_TYPE_RACE         7
 
+/*!
+ Specifies the arguments specified to the score command.
+*/
+#define DB_TYPE_SCORE_ARGS   8
+
 /*! @} */
 
 /*!
@@ -1817,6 +1822,11 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.191  2006/04/21 06:14:45  phase1geo
+ Merged in changes from 0.4.3 stable release.  Updated all regression files
+ for inclusion of OVL library.  More documentation updates for next development
+ release (but there is more to go here).
+
  Revision 1.190  2006/04/18 21:59:54  phase1geo
  Adding support for environment variable substitution in configuration files passed
  to the score command.  Adding ovl.c/ovl.h files.  Working on support for assertion
