@@ -52,6 +52,8 @@ extern funit_inst* instance_root;
 extern char        user_msg[USER_MSG_LENGTH];
 extern const char* race_msgs[RACE_TYPE_NUM];
 extern char        score_run_path[4096];
+extern char**      score_args;
+extern int         score_arg_num;
 extern void        reset_pplexer( const char* filename, FILE* out );
 extern int         PPVLlex( void );
 
@@ -1469,6 +1471,50 @@ int tcl_func_get_score_path( ClientData d, Tcl_Interp* tcl, int argc, const char
 }
 
 /*!
+ \param d     TBD
+ \param tcl   Pointer to the Tcl interpreter
+ \param argc  Number of arguments in the argv list
+ \param argv  Array of arguments passed to this function
+
+ \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
+         TCL_ERROR.
+
+ Returns the full pathname of the specified included file.  Uses the -I options specified in the CDD file
+ for reference.
+*/
+int tcl_func_get_include_pathname( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+
+  int  retval = TCL_OK;  /* Return value for this function */
+  char incpath[4096];    /* Contains full included pathname */
+  int  i      = 0;       /* Loop iterator */
+  
+  strcpy( incpath, argv[1] );
+
+  while( !file_exists( incpath ) && (retval == TCL_OK) ) {
+    
+    /* Find an include path from the score args */
+    while( (i < score_arg_num) && (strcmp( "-I", score_args[i] ) != 0) ) i++;
+    if( i == score_arg_num ) {
+      snprintf( user_msg, USER_MSG_LENGTH, "Unable to find included file" );
+      Tcl_AddErrorInfo( tcl, user_msg );
+      print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      retval = TCL_ERROR;
+    } else {
+      i++;
+      snprintf( incpath, 4096, "%s/%s", score_args[i], argv[1] );
+    }
+
+  }
+
+  if( retval == TCL_OK ) {
+    Tcl_SetResult( tcl, incpath, TCL_STATIC );
+  }
+
+  return( retval );
+
+}
+
+/*!
  \param tcl        Pointer to Tcl interpreter structure
  \param user_home  Name of user's home directory (used to store configuration file information to)
  \param home       Name of Tcl script home directory (from running the configure script)
@@ -1508,6 +1554,7 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
   Tcl_CreateCommand( tcl, "tcl_func_get_assert_summary",        (Tcl_CmdProc*)(tcl_func_get_assert_summary),        0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_preprocess_verilog",        (Tcl_CmdProc*)(tcl_func_preprocess_verilog),        0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_score_path",            (Tcl_CmdProc*)(tcl_func_get_score_path),            0, 0 );
+  Tcl_CreateCommand( tcl, "tcl_func_get_include_pathname",      (Tcl_CmdProc*)(tcl_func_get_include_pathname),      0, 0 );
   
   /* Set the USER_HOME variable to location of user's home directory */
   Tcl_SetVar( tcl, "USER_HOME", user_home, TCL_GLOBAL_ONLY );
@@ -1528,6 +1575,9 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.39  2006/05/02 22:06:11  phase1geo
+ Fixing problem with passing score path to Tcl from C.
+
  Revision 1.38  2006/05/02 21:49:41  phase1geo
  Updating regression files -- all but three diagnostics pass (due to known problems).
  Added SCORE_ARGS line type to CDD format which stores the directory that the score

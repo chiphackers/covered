@@ -1,4 +1,5 @@
 5 7 11 * 0
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd ovl1.vcd -o ovl1.cdd -v ovl1.v -A ovl +libext+.vlib+ -y /home/ultrav/trevorw/std_ovl -I /home/ultrav/trevorw/std_ovl -I /home/ultrav/trevorw/std_ovl/vlog95
 3 0 main main ovl1.v 1 28
 2 1 24 9000c 1 0 20004 0 0 1 1 0
 2 2 24 10005 0 1 400 0 0 clock

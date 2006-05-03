@@ -317,7 +317,7 @@ bool is_func_unit( char* token ) {
 */
 bool is_directory( char* token ) {
 
-  bool retval  = TRUE;    /* Return value of this function   */
+  bool retval  = TRUE;    /* Return value of this function */
   int  periods = 0;       /* Number of periods seen in a row */
 
   if( token != NULL ) {
@@ -385,7 +385,7 @@ char* get_basename( char* str ) {
 */
 bool directory_exists( char* dir ) {
 
-  bool        retval = FALSE;  /* Return value for this function    */
+  bool        retval = FALSE;  /* Return value for this function */
   struct stat filestat;        /* Statistics of specified directory */
 
   if( stat( dir, &filestat ) == 0 ) {
@@ -416,12 +416,12 @@ bool directory_exists( char* dir ) {
 */
 void directory_load( char* dir, str_link* ext_head, str_link** file_head, str_link** file_tail ) {
 
-  DIR*           dir_handle;  /* Pointer to opened directory                                 */
-  struct dirent* dirp;        /* Pointer to current directory entry                          */
-  str_link*      curr_ext;    /* Pointer to current extension string                         */
-  char*          ptr;         /* Pointer to current character in filename                    */
+  DIR*           dir_handle;  /* Pointer to opened directory */
+  struct dirent* dirp;        /* Pointer to current directory entry */
+  str_link*      curr_ext;    /* Pointer to current extension string */
+  char*          ptr;         /* Pointer to current character in filename */
   int            tmpchars;    /* Number of characters needed to store full pathname for file */
-  char*          tmpfile;     /* Temporary string holder for full pathname of file           */
+  char*          tmpfile;     /* Temporary string holder for full pathname of file */
 
   if( (dir_handle = opendir( dir )) == NULL ) {
 
@@ -471,7 +471,7 @@ void directory_load( char* dir, str_link* ext_head, str_link** file_head, str_li
 */
 bool file_exists( char* file ) {
 
-  bool        retval = FALSE;  /* Return value for this function    */
+  bool        retval = FALSE;  /* Return value for this function */
   struct stat filestat;        /* Statistics of specified directory */
 
   if( stat( file, &filestat ) == 0 ) {
@@ -1060,6 +1060,11 @@ const char* get_funit_type( int type ) {
 
 /*
  $Log$
+ Revision 1.48  2006/04/18 21:59:54  phase1geo
+ Adding support for environment variable substitution in configuration files passed
+ to the score command.  Adding ovl.c/ovl.h files.  Working on support for assertion
+ coverage in report command.  Still have a bit to go here yet.
+
  Revision 1.47  2006/04/07 22:31:07  phase1geo
  Fixes to get VPI to work with VCS.  Getting close but still some work to go to
  get the callbacks to start working.

@@ -76,6 +76,7 @@ proc create_assert_window {inst} {
     button .assertwin.bf.close -text "Close" -width 10 -command {
       rm_pointer curr_assert_ptr
       destroy .assertwin
+      destroy .amodwin
     }
     button .assertwin.bf.help -text "Help" -width 10 -command {
       help_show_manual assert
@@ -204,23 +205,18 @@ proc update_assert {} {
 }
 
 proc display_assertion_module {mod} {
-  
-  global file_name fileContent SCORE_DIR
+
+  global open_files file_name
 
   # Store original filename and working directory
   set tmp_name $file_name
-  set tmp_cwd  [pwd]
-  
-  # Change to the scoring directory
-  cd $SCORE_DIR
 
   # Get filename
   tcl_func_get_filename $mod 0
-  
+
   if {[winfo exists .amodwin] == 0} {
 
-    # Read in the current filename
-    load_verilog $file_name
+    set open_files ""
 
     # Create the window viewer
     toplevel .amodwin
@@ -228,31 +224,71 @@ proc display_assertion_module {mod} {
 
     # Create text viewer windows
     frame .amodwin.f -relief raised -borderwidth 1
-    text .amodwin.f.t -height 30 -width 50 -xscrollcommand ".amodwin.f.hb set" -yscrollcommand ".amodwin.f.vb set" -state disabled
+    text .amodwin.f.t -height 30 -width 80 -xscrollcommand ".amodwin.f.hb set" -yscrollcommand ".amodwin.f.vb set" -state disabled
     scrollbar .amodwin.f.hb -orient horizontal -command ".amodwin.f.t xview"
     scrollbar .amodwin.f.vb -command ".amodwin.f.t yview"
-    
+    label .amodwin.f.info -anchor w
+
     # Layout the text viewer windows
     grid rowconfigure    .amodwin.f 0 -weight 1
     grid columnconfigure .amodwin.f 0 -weight 1
-    grid .amodwin.f.t  -row 0 -column 0 -sticky news
-    grid .amodwin.f.vb -row 0 -column 1 -sticky news
-    grid .amodwin.f.hb -row 1 -column 0 -sticky news
-    
+    grid .amodwin.f.t    -row 0 -column 0 -sticky news
+    grid .amodwin.f.vb   -row 0 -column 1 -sticky news
+    grid .amodwin.f.hb   -row 1 -column 0 -sticky news
+    grid .amodwin.f.info -row 2 -column 0 -columnspan 2 -sticky we
+
     # Create the button bar
     frame .amodwin.bf -relief raised -borderwidth 1
+    button .amodwin.bf.back -text "Back" -width 10 -command {
+      set fname [lindex $open_files 1]
+      set open_files [lreplace $open_files 0 1]
+      populate_assertion_text $fname
+    } -state disabled
     button .amodwin.bf.close -text "Close" -width 10 -command {
       destroy .amodwin
     }
-    
+    button .amodwin.bf.help -text "Help" -width 10 -command {
+      help_show_manual src_view
+    }
+
     # Pack the button bar
-    pack .amodwin.bf.close
-    
+    pack .amodwin.bf.back  -side left  -padx 8 -pady 4
+    pack .amodwin.bf.help  -side right -padx 8 -pady 4
+    pack .amodwin.bf.close -side right -padx 8 -pady 4
+
     # Pack the frames
     pack .amodwin.f -fill both -expand yes
     pack .amodwin.bf -fill x
     
   }
+
+  # Write the module information
+  populate_assertion_text $file_name
+
+  # Restore global file_name
+  set file_name $tmp_name
+
+  # Raise this window to the foreground
+  raise .amodwin
+
+}
+
+proc populate_assertion_text {fname} {
+
+  global fileContent open_files
+
+  # Add the specified file name to the open_files array
+  set open_files [linsert $open_files 0 $fname]
+
+  # Set the state of the back button accordingly
+  if {[llength $open_files] < 2} {
+    .amodwin.bf.back configure -state disabled
+  } else {
+    .amodwin.bf.back configure -state normal
+  }
+
+  # Read in the specified filename
+  load_verilog $fname
 
   # Allow us to write to the text box
   .amodwin.f.t configure -state normal
@@ -260,29 +296,17 @@ proc display_assertion_module {mod} {
   # Clear the text-box before any insertion is being made
   .amodwin.f.t delete 1.0 end
 
-  set contents [preprocess_assertion $file_name]
+  set contents [split $fileContent($fname) \n]
 
   # Populate text box with file contents
   foreach phrase $contents {
     .amodwin.f.t insert end [append phrase "\n"]
   }
-  
+
+  # Take care of any included files
+  handle_verilog_includes .amodwin.f.t .amodwin.f.info populate_assertion_text
+
   # Set state back to disabled for read-only access
   .amodwin.f.t configure -state disabled
-  
-  # Restore global file_name
-  set file_name $tmp_name
-  
-  # Raise this window to the foreground
-  raise .amodwin
 
-}
-
-proc preprocess_assertion {fname} {
-  
-  global fileContent
-  
-  # Preprocess the specified Verilog file
-  tcl_funcs_preprocess_verilog $fname
-  
 }

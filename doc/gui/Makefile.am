@@ -14,6 +14,7 @@ doc_DATA = assert.html \
            mod_inst_lb.html \
            preferences.html \
            report_menu.html \
+           src_view.html \
            summary.html \
            summary_bar.html \
            toggle.html \
