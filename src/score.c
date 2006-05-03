@@ -307,6 +307,31 @@ bool read_command_file( char* cmd_file, char*** arg_list, int* arg_num ) {
 }
 
 /*!
+ \param def  Define value to parse
+ 
+ Parses the specified define from the command-line, storing the define value in the
+ define tree according to its value.
+*/
+void score_parse_define( char* def ) {
+
+  char* ptr;  /* Pointer to current character in define */
+
+  ptr = def;
+  while( (*ptr != '\0') && (*ptr != '=') ) {
+    ptr++;
+  }
+
+  if( *ptr == '=' ) {
+    *ptr = '\0';
+    ptr++;
+    define_macro( def, ptr );
+  } else {
+    define_macro( def, "1" );
+  }
+
+}
+
+/*!
  \param arg  Argument from score command.
  
  Adds the specified argument to the list of score arguments that will be written to the CDD file.
@@ -518,17 +543,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
     } else if( strncmp( "-D", argv[i], 2 ) == 0 ) {
 
       i++;
-      ptr = argv[i];
-      while( (*ptr != '\0') && (*ptr != '=') ) {
-        ptr++;
-      }
-      if( *ptr == '=' ) {
-        *ptr = '\0';
-        ptr++;
-        define_macro( argv[i], ptr );
-      } else {
-        define_macro( argv[i], "1" );
-      }
+      score_parse_define( argv[i] );
       score_add_arg( argv[i-1] );
       score_add_arg( argv[i] );
 
@@ -746,6 +761,12 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.73  2006/05/02 21:49:41  phase1geo
+ Updating regression files -- all but three diagnostics pass (due to known problems).
+ Added SCORE_ARGS line type to CDD format which stores the directory that the score
+ command was executed from as well as the command-line arguments to the score
+ command.
+
  Revision 1.72  2006/04/19 22:21:33  phase1geo
  More updates to properly support assertion coverage.  Removing assertion modules
  from line, toggle, combinational logic, FSM and race condition output so that there

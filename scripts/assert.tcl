@@ -288,7 +288,7 @@ proc populate_assertion_text {fname} {
   }
 
   # Read in the specified filename
-  load_verilog $fname
+  load_verilog $fname 0
 
   # Allow us to write to the text box
   .amodwin.f.t configure -state normal

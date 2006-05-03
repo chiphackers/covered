@@ -6,13 +6,17 @@ proc regsub-eval {re string cmd} {
 }
 
 # Preprocesses a specified Verilog file, performing 
-proc preprocess_verilog {fname args} {
+proc preprocess_verilog {txt} {
+  
+  puts $txt
+  
+  return $txt
 
 }
 
 # Main function called to read in the contents of the specified filename into
 # the fileContent array.
-proc load_verilog {fname} {
+proc load_verilog {fname pp} {
 
   global fileContent
 
@@ -25,14 +29,23 @@ proc load_verilog {fname} {
   cd [tcl_func_get_score_path]
 
   if {[catch {set fileText $fileContent($fname)}]} {
-    if {[catch {set fp [open $fname "r"]}]} {
+    if {$pp} {
+      set tmpname [tcl_func_preprocess_verilog $fname]
+    } else {
+      set tmpname $fname
+    }
+    if {[catch {set fp [open $tmpname "r"]}]} {
       tk_messageBox -message "File $fname Not Found!" -title "No File" -icon error
       set retval 0
     }
-    set fileText [read $fp]
-    set fileContent($fname) $fileText
+    set fileContent($fname) [read $fp]
     close $fp
+    if {$pp} {
+      file delete -force $tmpname
+    }
   }
+
+
 
   # Return current working directory
   cd $cwd

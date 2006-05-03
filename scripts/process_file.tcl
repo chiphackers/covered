@@ -83,7 +83,7 @@ proc process_funit_line_cov {} {
 
     # Get the filename of the currently selected functional unit and read it in
     tcl_func_get_filename $curr_funit_name $curr_funit_type
-    load_verilog $file_name
+    load_verilog $file_name 1
 
     # Get start and end line numbers of this functional unit
     set start_line 0
@@ -207,7 +207,7 @@ proc process_funit_toggle_cov {} {
 
     # Get the file name of the currently selected functional unit and read it in
     tcl_func_get_filename $curr_funit_name $curr_funit_type
-    load_verilog $file_name
+    load_verilog $file_name 1
 
     # Get start and end line numbers of this functional unit
     set start_line 0
@@ -353,8 +353,8 @@ proc process_funit_comb_cov {} {
   if {$curr_funit_name != 0} {
 
     # Get the filename of the currently selected functional unit and read it in
-    tcl_func_get_filename $curr_funit_name $c  load_verilog $file_name
-    load_verilog $file_name
+    tcl_func_get_filename $curr_funit_name $curr_funit_type
+    load_verilog $file_name 1
 
     # Get start and end line numbers of this functional unit
     set start_line 0
@@ -527,7 +527,7 @@ proc process_funit_fsm_cov {} {
 
     # Get the filename of the currently selected functional unit and read it in
     tcl_func_get_filename $curr_funit_name $curr_funit_type
-    load_verilog $file_name
+    load_verilog $file_name 1
 
     # Get start and end line numbers of this functional unit
     set start_line 0
@@ -675,7 +675,7 @@ proc process_funit_assert_cov {} {
 
     # Get the filename of the currently selected functional unit and read it in
     tcl_func_get_filename $curr_funit_name $curr_funit_type
-    load_verilog $file_name
+    load_verilog $file_name 1
 
     # Get start and end line numbers of this functional unit
     set start_line 0

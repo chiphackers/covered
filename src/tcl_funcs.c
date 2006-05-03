@@ -45,6 +45,8 @@
 #include "race.h"
 #include "fsm.h"
 #include "assertion.h"
+#include "search.h"
+#include "score.h"
 
 
 extern funit_link* funit_head;
@@ -1423,6 +1425,16 @@ int tcl_func_preprocess_verilog( ClientData d, Tcl_Interp* tcl, int argc, const 
   int   retval = TCL_OK;  /* Return value for this function */
   char* ppfilename;       /* Preprocessed filename to return to calling function */
   FILE* out;              /* File handle to preprocessed file */
+  int   i;                /* Loop iterator */
+  
+  /* Add all of the include and define score arguments before calling the preprocessor */
+  for( i=0; i<score_arg_num; i++ ) {
+    if( strcmp( "-D", score_args[i] ) == 0 ) {
+      score_parse_define( score_args[i+1] );
+    } else if( strcmp( "-I", score_args[i] ) == 0 ) {
+      search_add_include_path( score_args[i] );
+    }
+  }
 
   /* Create temporary output filename */
   ppfilename = Tcl_Alloc( 10 );
@@ -1575,6 +1587,11 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.40  2006/05/03 21:17:49  phase1geo
+ Finishing assertion source code viewer functionality.  We just need to add documentation
+ to the GUI user's guide and we should be set here (though we may want to consider doing
+ some syntax highlighting at some point).
+
  Revision 1.39  2006/05/02 22:06:11  phase1geo
  Fixing problem with passing score path to Tcl from C.
 
