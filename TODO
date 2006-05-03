@@ -27,7 +27,7 @@ Score command
    6.  Add feature to cause Covered to omit the simulation phase for toggle and
        FSM coverage results.
 
-   7.  Add assertion coverage
+X  7.  Add assertion coverage
 
 X  8.  Add full support for VPI usage
 
@@ -35,7 +35,7 @@ X  8.  Add full support for VPI usage
 Merge command
 -------------
 
-   1.  Add ability to merge more than two CDD files with a single command
+X  1.  Add ability to merge more than two CDD files with a single command
 
    2.  Add ability to merge two CDDs from different parts of the same design
 
@@ -43,7 +43,7 @@ Merge command
 Report command
 --------------
 
-   1.  Add assertion coverage
+X  1.  Add assertion coverage
 
    2.  Add ability to see combinational logic output on a bit-by-bit basis for bussed expressions.
 
@@ -61,4 +61,8 @@ X  1.  Add FSM coverage output
 
    2.  Add ability to turn on/off coverage points and have coverage information automatically adjusted.
 
-   3.  Add assertion coverage output
+X  3.  Add assertion coverage output
+
+   4.  Add Verilog syntax highlighting features
+
+   5.  Replace `<value> strings with their defined values (this is actually a bug)
