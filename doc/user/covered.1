@@ -42,6 +42,9 @@ Generates human\-readable coverage reports from database file or starts the cove
 .LP 
 The following options are valid for the score command:
 .TP 
+\fB\-A ovl\fR
+Causes OVL assertions to be used for assertion coverage.  This flag must be given to the score command if assertion coverage metrics are needed in the report command.
+.TP 
 \fB\-D\fR \fIdefine_name\fR
 Defines the specified name to 1.
 .TP 
@@ -141,8 +144,8 @@ Displays this help information.
 \fB\-i\fR
 Provides coverage information for instances instead of module.
 .TP 
-\fB\-m\fR \fI[l][t][c][f][r]\fR
-Type(s) of metrics to report.  Default is \fIltcf\fR.
+\fB\-m\fR \fI[l][t][c][f][r][a]\fR
+Type(s) of metrics to report.  l=line, t=toggle, c=combinational logic, f=FSM state and state transition, r=race conditions, a=assertion.  Default is \fIltcf\fR.
 .TP 
 \fB\-o\fR \fIfilename\fR
 File to output report information to.  Default is standard output.
