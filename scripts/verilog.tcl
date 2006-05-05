@@ -1,3 +1,10 @@
+# Highlight color values (this will need to be configurable via the preferences window
+set vlog_hl_ppkeyword_color red
+set vlog_hl_keyword_color   purple
+set vlog_hl_comment_color   blue
+set vlog_hl_value_color     ForestGreen
+set vlog_hl_string_color    ForestGreen
+
 # Performs substitution using a user-specified command
 proc regsub-eval {re string cmd} {
   
@@ -7,9 +14,9 @@ proc regsub-eval {re string cmd} {
 
 # Preprocesses a specified Verilog file, performing 
 proc preprocess_verilog {txt} {
-  
+
   puts $txt
-  
+
   return $txt
 
 }
@@ -44,8 +51,6 @@ proc load_verilog {fname pp} {
       file delete -force $tmpname
     }
   }
-
-
 
   # Return current working directory
   cd $cwd
@@ -94,7 +99,7 @@ proc handle_verilog_includes {tb inform cmd} {
     eval "$tb tag add include_leave  $include_indices"
 
     # Configure the include_button tag
-    $tb tag configure include_button -underline true -foreground $cov_fgColor
+    $tb tag configure include_button -underline true
     
     # Bind the include_enter tag
     $tb tag bind include_enter <Enter> {
@@ -118,5 +123,197 @@ proc handle_verilog_includes {tb inform cmd} {
     }
     
   }
+
+}
+
+# Finds all comments in the specified textbox and highlights them with the given color
+proc verilog_highlight_comments {tb color} {
+
+  set start_index 1.0
+  set ilist       ""
+
+  # Handle all single line comments first
+  while 1 {
+    set start_index [$tb search "//" $start_index end]
+    if {$start_index != ""} {
+      set end_index [$tb index "[lindex [split $start_index .] 0].end"]
+      lappend ilist $start_index $end_index
+      set start_index "$end_index + 1 chars"
+    } else {
+      break
+    }
+  }
+
+  # Handle all multi-line comments
+  set start_index 1.0
+  while 1 {
+    set start_index [$tb search "/*" $start_index end]
+    if {$start_index != ""} {
+      set end_index [$tb search "*/" "$start_index + 1 chars" end]
+      if {$end_index == ""} {
+        set end_index [$tb index end]
+      }
+      lappend ilist $start_index $end_index
+      set start_index "$end_index + 1 chars"
+    } else {
+      break
+    }
+  }
+
+  if {$ilist != ""} {
+
+    eval "$tb tag add comment_highlights $ilist"
+
+    # Configure the comment_highlights tag
+    $tb tag configure comment_highlights -foreground $color
+
+  }
+
+}
+
+# Finds all preprocessor keywords in the specified textbox and highlights them with the given color
+proc verilog_highlight_ppkeywords {tb color} {
+
+  # Create list of all preprocessor directives
+  set directives [list "`line" "`define" "`include" "`ifdef" "`ifndef" "`undef" "`else" "`elseif" "`timescale" "`endif"]
+  set ilist      ""
+
+  foreach directive $directives {
+
+    set start_index 1.0
+    set len         [string length $directive]
+    set match_str   ""
+    append match_str $directive {($|[^a-zA-Z0-9_])}
+
+    # Find all preprocessor directives and add their indices to the list
+    while 1 {
+      set start_index [$tb search -regexp $match_str $start_index end]
+      if {$start_index != ""} {
+        set end_index [$tb index "$start_index + $len chars"]
+        lappend ilist $start_index $end_index
+        set start_index "$start_index + 1 chars"
+      } else {
+        break
+      }
+    }
+
+  }
+
+  if {$ilist != ""} {
+
+    eval "$tb tag add ppkeyword_highlights $ilist"
+
+    # Configure the ppkeyword_highlights tag
+    $tb tag configure ppkeyword_highlights -foreground $color
+
+  }
+
+}
+
+# Finds all preprocessor keywords in the specified textbox and highlights them with the given color
+proc verilog_highlight_keywords {tb color} {
+
+  # Create list of all preprocessor directives
+  set keywords [list always and assign begin buf bufif0 bufif1 case casex casez cmos deassign default defparam disable edge else end endcase \
+                     endfunction endmodule endprimitive endspecify endtable endtask event for force forever fork function highz0 highz1 if \
+                     initial inout input integer join large localparam macromodule medium module nand negedge nmos nor not notif0 notif1 or \
+                     output parameter pmos posedge primitive pull0 pull1 pulldown pullup rcmos real realtime reg release repeat rnmos rpmos rtran \
+                     rtranif0 rtranif1 scalered signed small specify specparam strong0 strong1 supply0 supply1 table task time tran tranif0 tranif1 \
+                     tri tri0 tri1 triand trior trireg vectored wait wand weak0 weak1 while wire wor xnor xor]
+  set ilist    ""
+
+  foreach keyword $keywords {
+
+    set start_index 1.0
+    set len         [string length $keyword]
+    set match_str   ""
+    append match_str {(^|[^a-zA-Z0-9_`])} $keyword {($|[^a-zA-Z0-9_])}
+
+    # Find all preprocessor directives and add their indices to the list
+    while 1 {
+      set start_index [$tb search -count matching_chars -regexp $match_str $start_index end]
+      if {$start_index != ""} {
+        if {[$tb get $start_index] != [string index $keyword 0]} {
+          set start_index [$tb index "$start_index + 1 chars"]
+        }
+        set end_index   [$tb index "$start_index + $len chars"]
+        lappend ilist $start_index $end_index
+        set start_index "$start_index + 1 chars"
+      } else {
+        break
+      }
+    }
+
+  }
+
+  if {$ilist != ""} {
+
+    eval "$tb tag add keyword_highlights $ilist"
+
+    # Configure the keyword_highlights tag
+    $tb tag configure keyword_highlights -foreground $color
+
+  }
+
+}
+
+# Finds all defined and constant values in the specified textbox and highlights them with the given color
+proc verilog_highlight_values {tb color} {
+
+}
+
+# Finds all string values in the specified textbox and highlights them with the given color
+proc verilog_highlight_strings {tb color} {
+
+  set start_index 1.0
+  set ilist       ""
+
+  while 1 {
+    set start_index [$tb search \" $start_index end]
+    if {$start_index != ""} {
+      set end_index [$tb search \" "$start_index + 1 chars" end]
+      if {$end_index == ""} {
+        set end_index end
+      } else {
+        set end_index [$tb index "$end_index + 1 chars"]
+      }
+      lappend ilist $start_index $end_index
+      set start_index "$end_index + 1 chars"
+    } else {
+      break
+    }
+  }
+
+  if {$ilist != ""} {
+
+    eval "$tb tag add string_highlights $ilist"
+
+    # Configure the comment_highlights tag
+    $tb tag configure string_highlights -foreground $color
+
+  }
+
+}
+
+# Main function to highlight all Verilog syntax for the given textbox
+proc verilog_highlight {tb} {
+  
+  global vlog_hl_keyword_color vlog_hl_comment_color vlog_hl_ppkeyword_color
+  global vlog_hl_value_color   vlog_hl_string_color
+
+  # Highlight all preprocessor keywords
+  verilog_highlight_ppkeywords $tb $vlog_hl_ppkeyword_color
+
+  # Highlight all keywords
+  verilog_highlight_keywords $tb $vlog_hl_keyword_color
+
+  # Highlight all values
+  verilog_highlight_values $tb $vlog_hl_value_color
+
+  # Highlight all string
+  verilog_highlight_strings $tb $vlog_hl_string_color
+
+  # Highlight all comments
+  verilog_highlight_comments $tb $vlog_hl_comment_color
 
 }

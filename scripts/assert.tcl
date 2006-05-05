@@ -303,6 +303,9 @@ proc populate_assertion_text {fname} {
     .amodwin.f.t insert end [append phrase "\n"]
   }
 
+  # Perform highlighting
+  verilog_highlight .amodwin.f.t
+
   # Take care of any included files
   handle_verilog_includes .amodwin.f.t .amodwin.f.info populate_assertion_text
 
