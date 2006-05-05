@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
 <HTML>
 <HEAD>
-  <TITLE>Covered - Coverage Boundaries</TITLE>
+  <TITLE>Covered - Assertion Coverage</TITLE>
   <META name="GENERATOR" content="ManStyle">
   <meta name="author" content="Trevor Williams">
   <LINK rel=stylesheet type="text/css" href="styles.css">
@@ -36,7 +36,14 @@
         <TR>
           <TD width=460 align=center valign=top class="navigator">
             <P class="navigator"><IMG src="img/000000.gif" height=2 width=460><BR>
-            <IMG src="img/toolbar_left.png" border=0><A href="001.html" alt="Contents"><IMG src="img/toolbar_cont.png" border=0></A><A href="index.html" alt="First Page"><IMG src="img/toolbar_first.png" border=0></A><A href="007.html" alt="Previous Page"><IMG src="img/toolbar_prev.png" border=0></A><A href="index.html" alt="Home"><IMG src="img/toolbar_home.png" border=0></A><A href="009.html" alt="Next Page"><IMG src="img/toolbar_next.png" border=0></A><A href="023.html" alt="Last Page"><IMG src="img/toolbar_last.png" border=0></A><IMG src="img/toolbar_right.png" border=0>
+            <IMG src="img/toolbar_left.png" border=0>
+            <A href="001.html" alt="Contents"><IMG src="img/toolbar_cont.png" border=0></A>
+            <A href="index.html" alt="First Page"><IMG src="img/toolbar_first.png" border=0></A>
+            <A href="007.html" alt="Previous Page"><IMG src="img/toolbar_prev.png" border=0></A>
+            <A href="index.html" alt="Home"><IMG src="img/toolbar_home.png" border=0></A>
+            <A href="009.html" alt="Next Page"><IMG src="img/toolbar_next.png" border=0></A>
+            <A href="025.html" alt="Last Page"><IMG src="img/toolbar_last.png" border=0></A>
+            <IMG src="img/toolbar_right.png" border=0>
             <BR><IMG src="img/000000.gif" height=2 width=460></P>
           </TD>
         </TR>
@@ -62,7 +69,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="header1">3&nbsp;&nbsp; <A name="3"></A>Coverage Boundaries<BR><IMG src="img/12568c.gif" height=2 width=460></P>
+      <P class="header2">2.4&nbsp; <A name="2_4"></A>Assertion Coverage</P>
     </TD>
   </TR>
 
@@ -74,217 +81,7 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      To properly evaluate the effectiveness of any coverage tool, it is necessary to 
-      understand what kinds of logic are able to be analyzed and which kinds of logic 
-      are unable to be analyzed (along with a reason for why the logic cannot be 
-      adequately covered). Understanding the limitations of tools up front can often 
-      guide the user of those tools to make better decisions in their usage. In the 
-      case of Covered and the open source community, it may also help drive ideas to 
-      how to correct or get around these limitations.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      For these reasons, a list of what type of logic can be analyzed and what type of 
-      logic cannot be currently analyzed is listed below. Note that both of these lists 
-      may not be exhaustive and are subject to change between releases of the tool. Also
-      note that it is the goal of Covered to be able to parse all of the Verilog-1995
-      and Verilog-2001 constructs though some portions of it may be ignored for
-      coverage purposes.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="header2">3.1&nbsp; <A name="3_1"></A>What logic can be analyzed?</P>
-    </TD>
-  </TR>
-  
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="header3">3.1.1&nbsp; <A name="3_1_1"></A>Verilog-1995 constructs</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      <ol>
-      	<li>
-      	All expressional logic which is comprised of the following data types and operators
-      	which exist in an assign block, always block, initial block, task, function or
-      	named begin/end block:
-      		<ul>
-      			<li>Nets: wire, tri, tri0, tri1, wor, wand, trior, triand, supply0, suppl1</li>
-      			<li>Triregs: trireg</li>
-      			<li>Registers: reg</li>
-      			<li>Parameter values</li>
-      			<li>String values</li>
-      			<li>Integer values</li>
-      			<li>Unary operators: +, -, ~, &, |, ^, ~&, ~|, ~^</li>
-      			<li>Arithmetic operators: +, -, *, /, %</li>
-      			<li>Logical operators: &&, ||, !</li>
-      			<li>Relational operators: &gt; &lt; &gt;= &lt;=</li>
-      			<li>Equality operators: ==, ===, !=, !==</li>
-      			<li>Bitwise operators: &, |, ^, ~&, ~|, ~^</li>
-      			<li>Shift operators: &lt;&lt; &gt;&gt;</li>
-      			<li>Concatentation/replication operators: {}, {{}}</li>
-      			<li>Bit select operators: [], [:]</li>
-      			<li>Conditional operator: ?:</li>
-      		</ul></li>
-      	<li>case, casex, casez statements</li>
-      	<li>if, if/else statements</li>
-      	<li>Delays when delay value is integer</li>
-      	<li>Event waits and triggers: wait, @(posedge), @(negedge), @(), -></li>
-      	<li>Repetition statements (for, while and repeat)</li>
-      	<li>Fork/join statements</li>
-      </ol></P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="header3">3.1.2&nbsp; <A name="3_1_2"></A>Verilog-2001 constructs</P>
-    </TD>
-  </TR>
-  
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      <ol>
-      	<li>`ifndef and `elsif directives</li>
-      	<li>`file and `line directives</li>
-         <li>Constant functions calls</li>
-         <li>Inline parameter passing by name</li>
-         <li>Localparam support</li>
-         <li>Implicit event sensitivity lists (@*)</li>
-         <li>Comma-separated event lists (alternative to the "or" keyword)</li>
-         <li>Signed value support</li>
-         <li>Immediate register assignment (reg a = 1'b0)</li>
-         <li>Variable multi-bit selects (a[b+:3], a[b-:3]</li>
-         <li>Exponential power operator (a**b)</li>
-         <li>The "<<<" and ">>>" shift operators</li>
-         <li>Pre-port parameter listing (module foo #(parameter a=0) (...);)</li>
-         <li>Inline port listing (module foo (input wire a, output reg b);)</li>
-         <li>Attributes (note: Covered only performs attributes that it recognizes)</li>
-      	 <li>Arrays of instances</li>
-      </ol></P>
-    </TD>
-  </TR>
-  
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="header2">3.2&nbsp; <A name="3_2"></A>What logic cannot be currently analyzed?</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="header3">3.2.1&nbsp; <A name="3_2_1"></A>Verilog-1995 constructs</P>
-    </TD>
-  </TR>
-  
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      <ol>
-      	<li>All gate types (i.e., buf, not, or, and, etc.)</li>
-      	<li>All user defined primitives (UDPs)</li>
-      	<li>Memories</li>
-      	<li>All expressions containing types: time, real, realtime</li>
-      	<li>System task calls (or any ... call)</li>
-      </ol></P>
-    </TD>
-  </TR>
-  
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="header3">3.2.2&nbsp; <A name="3_2_2"></A>Verilog-2001 constructs</P>
-    </TD>
-  </TR>
-  
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      <ol>
-      	<li>Generate statements</li>
-      	<li>Configuration statements</li>
-      	<li>Multidimensional arrays</li>
-      	<li>"Automatic" or reentrant tasks/recursive functions</li>
-      </ol></P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      When logic is encountered that cannot be analyzed within an always, initial,
-      task, function or named block, Covered will disregard the entire always block. 
-      If the entire block cannot be analyzed, it does not try to get coverage 
-      statistics as these will most likely be incorrect (i.e., disregarded logic could 
-      affect the state of the logic that is being covered).</P>
+      TBD</P>
     </TD>
   </TR>
 
@@ -300,9 +97,33 @@
        <A href="007.html">Previous Page</A>&nbsp;&nbsp;|&nbsp;
        <A href="index.html">Home</A>&nbsp;
        &nbsp;|&nbsp;<A href="009.html">Next Page</A>&nbsp;&nbsp;|&nbsp;
-       <A href="023.html">Last Page</A>&nbsp;
+       <A href="025.html">Last Page</A>&nbsp;
        ]<BR>
-       [&nbsp; <A href="001.html">1</A>&nbsp;|&nbsp;<A href="002.html">2</A>&nbsp;|&nbsp;<A href="003.html">3</A>&nbsp;|&nbsp;<A href="004.html">4</A>&nbsp;|&nbsp;<A href="005.html">5</A>&nbsp;|&nbsp;<A href="006.html">6</A>&nbsp;|&nbsp;<A href="007.html">7</A>&nbsp;|&nbsp;<A href="008.html">8</A>&nbsp;|&nbsp;<A href="009.html">9</A>&nbsp;|&nbsp;<A href="010.html">10</A>&nbsp;|&nbsp;<A href="011.html">11</A>&nbsp;|&nbsp;<A href="012.html">12</A>&nbsp;|&nbsp;<A href="013.html">13</A>&nbsp;|&nbsp;<A href="014.html">14</A>&nbsp;|&nbsp;<A href="015.html">15</A>&nbsp;|&nbsp;<A href="016.html">16</A>&nbsp;|&nbsp;<A href="017.html">17</A>&nbsp;|&nbsp;<A href="018.html">18</A>&nbsp;|&nbsp;<A href="019.html">19</A>&nbsp;|&nbsp;<A href="020.html">20</A>&nbsp;|&nbsp;<A href="021.html">21</A>&nbsp;|&nbsp;<A href="022.html">22</A>&nbsp;|&nbsp;<A href="023.html">23</A> &nbsp;]
+       [&nbsp;<A href="001.html">1</A>&nbsp;|
+        &nbsp;<A href="002.html">2</A>&nbsp;|
+        &nbsp;<A href="003.html">3</A>&nbsp;|
+        &nbsp;<A href="004.html">4</A>&nbsp;|
+        &nbsp;<A href="005.html">5</A>&nbsp;|
+        &nbsp;<A href="006.html">6</A>&nbsp;|
+        &nbsp;<A href="007.html">7</A>&nbsp;|
+        &nbsp;<A href="008.html">8</A>&nbsp;|
+        &nbsp;<A href="009.html">9</A>&nbsp;|
+        &nbsp;<A href="010.html">10</A>&nbsp;|
+        &nbsp;<A href="011.html">11</A>&nbsp;|
+        &nbsp;<A href="012.html">12</A>&nbsp;|
+        &nbsp;<A href="013.html">13</A>&nbsp;|
+        &nbsp;<A href="014.html">14</A>&nbsp;|
+        &nbsp;<A href="015.html">15</A>&nbsp;|
+        &nbsp;<A href="016.html">16</A>&nbsp;|
+        &nbsp;<A href="017.html">17</A>&nbsp;|
+        &nbsp;<A href="018.html">18</A>&nbsp;|
+        &nbsp;<A href="019.html">19</A>&nbsp;|
+        &nbsp;<A href="020.html">20</A>&nbsp;|
+        &nbsp;<A href="021.html">21</A>&nbsp;|
+        &nbsp;<A href="022.html">22</A>&nbsp;|
+        &nbsp;<A href="023.html">23</A>&nbsp;|
+        &nbsp;<A href="024.html">24</A>&nbsp;|
+        &nbsp;<A href="025.html">25</A>&nbsp;]
        <BR>
        <B>License: GPL</B><BR>
        This Manual was created with <A HREF="http://manstyle.sourceforge.net">ManStyle</A>.

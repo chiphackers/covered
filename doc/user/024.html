@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
 <HTML>
 <HEAD>
-  <TITLE>Covered - Installation</TITLE>
+  <TITLE>Covered - FAQ</TITLE>
   <META name="GENERATOR" content="ManStyle">
   <meta name="author" content="Trevor Williams">
   <LINK rel=stylesheet type="text/css" href="styles.css">
@@ -23,7 +23,7 @@
     </TD>
     <TD width=460>
       <IMG src="img/space.gif" width=460 height=1 border=0><BR>
-      <P class="pageNumber">&nbsp;11&nbsp;</P>
+      <P class="pageNumber">&nbsp;24&nbsp;</P>
     </TD>
   </TR>
 
@@ -39,9 +39,9 @@
             <IMG src="img/toolbar_left.png" border=0>
             <A href="001.html" alt="Contents"><IMG src="img/toolbar_cont.png" border=0></A>
             <A href="index.html" alt="First Page"><IMG src="img/toolbar_first.png" border=0></A>
-            <A href="010.html" alt="Previous Page"><IMG src="img/toolbar_prev.png" border=0></A>
+            <A href="023.html" alt="Previous Page"><IMG src="img/toolbar_prev.png" border=0></A>
             <A href="index.html" alt="Home"><IMG src="img/toolbar_home.png" border=0></A>
-            <A href="012.html" alt="Next Page"><IMG src="img/toolbar_next.png" border=0></A>
+            <A href="025.html" alt="Next Page"><IMG src="img/toolbar_next.png" border=0></A>
             <A href="025.html" alt="Last Page"><IMG src="img/toolbar_last.png" border=0></A>
             <IMG src="img/toolbar_right.png" border=0>
             <BR><IMG src="img/000000.gif" height=2 width=460></P>
@@ -69,18 +69,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="header1">5&nbsp;&nbsp; <A name="5"></A>Installation<BR><IMG src="img/12568c.gif" height=2 width=460></P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="header2">5.1&nbsp; <A name="5_1"></A>Prerequisites</P>
+      <P class="header1">13&nbsp;&nbsp; <A name="13"></A>FAQ<BR><IMG src="img/12568c.gif" height=2 width=460></P>
     </TD>
   </TR>
 
@@ -92,11 +81,119 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      The goal of Covered was to create a tool that has very few requirements to allow 
-      it to be compiled and run on all platforms. The following is a list of all 
-      utilities/resources required to compile Covered. However, Covered is primarily 
-      developed on RedHat/Fedora Core Linux and as such is primarily tested by the 
-      developers on that platform.</P>
+      This page contains a list of accummulated Frequently Asked Questions. If you are having difficulties using
+      Covered or have questions that are not answered in the User's Guide, please check this list for answers.
+      If you do not find the information that you are looking for in the User's Guide or this FAQ, please send
+      an e-mail to:</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg"><a href="mailto:trevorw@charter.net">Trevor Williams</a></P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin">Question</P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      <strong>Is a CDD file generated from a newer version of Covered compatible with a CDD file generated from
+      an older version?</strong></P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      The answer to this question is, "Well, that depends...". Since the format of the CDD file is only used by
+      Covered, the contents and format of this file may be changed to suit the needs of Covered. This means that
+      it is possible for a CDD file created from an older version of Covered to be incompatible with a newer
+      version. Additionally, the developers of Covered will not make any attempts to make sure that older CDD
+      files can be properly read by a newer version of Covered. It is suggested that any CDD files generated
+      from a particular version of Covered be merged and/or reported on by that same version, and if Covered is
+      upgraded, new CDD files should be generated.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      This being said, it is also a possibility that between versions of Covered a "backwards compatibility" may
+      be maintained if a change to this file's format is not required.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin">Question</P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      <strong>When I run the score command, Covered seems to take a long time to run. Is there anything that I can
+      do to speed up scoring?</strong></P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      While Covered is continuously being enhanced to provide better performance for all commands (especially the
+      score command), it may still take a while to complete scoring if one or more of the following is true:</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      <ol> 
+      	<li>The design being scored is sufficiently large</li> 
+      	<li>The VCD/LXT dumpfile is sufficiently large</li> 
+      	<li>The VCD/LXT dumpfile contains dump information for a part of 
+      	the design not being scored</li> 
+      </ol></P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin">1.</P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">If reason (1) is true, speeding up each run can be achieved by one of the following suggestions:</P>
     </TD>
   </TR>
 
@@ -109,13 +206,41 @@
     <TD valign=top>
       <P class="pg">
       <ul>
-      	<li>gcc (Version 2.96 or higher)</li>
-      	<li>flex (Version 2.5.4 or higher)</li>
-      	<li>bison (Version 1.28 or higher)</li>
-      	<li>GNU make (Version 3.27.1 or higher)</li>
-      	<li>GNU gperf (Version 2.7.2 or higher)</li>
-      	<li>tcl and tk (Versions 8.4 or higher)</li>
-      </ul> </P>
+        <li> Reduce the scored design in size by eliminating modules or constructs from its design tree. (See
+             <a href="014.html#9_3">Section 9.3 Specifying What To Cover</a> for more information on how to accomplish
+             this) </li>
+        <li> Split up the design into smaller parts along module boundaries and generate coverage for those parts.
+             Note: it is not currently possible to append these modules into one file. Merging and reporting must be
+             done on these smaller pieces independently from one another.</li>
+        </ul></P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin">2.</P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      If reason (2) is true, nothing can be done except to shorten the run time of 
+      the diagnostics to produce shorter dumpfiles.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin">3.</P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      If reason (3) is true, the $dumpvars call in the simulator should be modified 
+      to only generate VCD/LXT dump information for the modules included in scoring. 
+      If there are modules not being scored which are included in the $dumpvars 
+      calls, please remove these unnecessary modules from dumpfile output.</P>
     </TD>
   </TR>
 
@@ -127,43 +252,23 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      Covered is primarily developed on Fedora Core 3 but has been known to compile 
-      with both 32-bit and 64-bit compilers that contain the general GNU library of 
-      tools.</P>
+      If you believe that you have a situation which is void of these prevailing 
+      reasons and Covered is still running slowly, please send an e-mail to 
+      <a href="mailto:trevorw@charter.net">me</a>. I will consider these problems 
+      to be of lower priority than actual bugs but will look into the situation to 
+      see where code can be optimized.</P>
     </TD>
   </TR>
 
   <TR>
     <TD></TD>
     <TD valign=top>
-      <P class="margin"></P>
+      <P class="margin">Question</P>
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="header2">5.2&nbsp; <A name="5_2"></A>Downloading source</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      To download the source files in .tar.gz format, go to the following URL:</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg"><a href="http://covered.sourceforge.net/downloads">http://covered.sourceforge.net/downloads</a></P>
+      <P class="pg"><strong>
+      I get an assertion error when running Covered, what should I do?</strong></P>
     </TD>
   </TR>
 
@@ -175,47 +280,15 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      Double-click on the .tar.gz version that you wish to install. The browser should 
-      immediately bring up a window asking if you would like to save to disk or open 
-      immediately. Choose the "Save to Disk" option. Another window will pop up, 
-      allowing you to choose the directory to store the tarball in. After selecting a 
-      directory, click the "Save" button. The download utility will begin downloading 
-      the tarball to the selected directory.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="header2">5.3&nbsp; <A name="5_3"></A>Installing from source</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      Once you have downloaded a tarball, enter the following to unzip and untar 
-      the package:</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="code">> gzip -dc <i>tarball_filename</i> | tar xvf -</P>
+      Covered uses C assertions to make sure that internal pointers are not be 
+      referenced when NULL and that certain internal situations do not arise. If you 
+      receive some type of assertion error when running Covered, it means that 
+      something went wrong internally in Covered. The error is NOT due to user 
+      error. Please submit a bug report containing the assertion error message, 
+      file and line number. Additionally, run the Covered command with the -D 
+      global option (covered -D &lt;command&gt;) and provide the output from doing 
+      this with the bug report (please only specify tail of output if the output is 
+      too lengthy).</P>
     </TD>
   </TR>
 
@@ -227,28 +300,23 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      This will create a directory called <tt>covered-<i>version</i></tt>. At this point,
-      you are ready to configure the build environment to create the executables,
-      libraries and/or documentation for Covered.  However, before you configure the
-      build environment, you will need to make a few decisions which will lead to
-      different options given to the configure script.  These questions are the 
-      following:</P>
+      If Covered provides any other type of error message (something other than a 
+      core dump), Covered has found a user error that must be fixed by the user. Please 
+      do not submit bug reports if these errors are encountered, unless you wish to 
+      add a question about it to the FAQ.</P>
     </TD>
   </TR>
-  
+
   <TR>
     <TD></TD>
     <TD valign=top>
-      <P class="margin"></P>
+      <P class="margin">Question</P>
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">
-      <ol>
-        <li>Do you need to debug Covered?</li>
-        <li>Will you being using Covered as a VPI module and, if so, what simulator(s)
-            will you need VPI modules built for?</li>
-      </ol></P>
+      <P class="pg"><strong>
+      Covered is giving me a parser error for Verilog code that seems to be 
+      syntactically correct. What is wrong?</strong></P>
     </TD>
   </TR>
 
@@ -260,55 +328,21 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      If the answer to question (1) is yes, configure the build environment with the
-      <b>--enable-debug</b> option to the configure script.  Doing so will allow you 
-      to use the global -D option for debugging; however, it will also have the side 
-      effect of causing the score command to run slower.  For normal usage of Covered, 
-      this option should not be specified when configuring.</P>
+      If Covered displays a syntax (parse) error during the score command and the 
+      Verilog code is written correctly, it is because Covered's parser is incomplete. 
+      Please submit a bug or send an e-mail containing a code snippet of the 
+      unsupported Verilog. </P>
     </TD>
   </TR>
-  
+
   <TR>
     <TD></TD>
     <TD valign=top>
-      <P class="margin"></P>
+      <P class="margin">Question</P>
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">
-      If the answer to question (2) is yes and you need to build a VPI module for
-      the Icarus Verilog simulation tool, simply add <b>--with-iv</b> on the configure
-      command-line.  If a VPI shared object module is needed for the Cver simulator,
-      simply add <b>--with-cver=<i>cver_include_dir</i></b> on the configure command
-      line, where <i>cver_include_dir</i> specifies the directory that contains the
-      <i>vpi_user.h</i> file.  If a VPI shared object module is needed for the VCS
-      simulator, simply add <b>--with-vcs=<i>vcs_include_dir</i></b> on the configure
-      command line, where <i>vcs_include_dir</i> specifies the directory that
-      contains the <i>vpi_user.h</i> file.</P>
-    </TD>
-  </TR>
-  
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      Once you have determined which configuration options you need, simply
-      enter the following command:</P>
-    </TD>
-  </TR>
-  
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="code">> ./configure <i>options</i></P>
+      <P class="pg"><strong>Is Covered's Verilog parser Verilog-2001 compliant?</strong></P>
     </TD>
   </TR>
 
@@ -320,65 +354,10 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      This command will create the Makefiles/include files necessary for your 
-      machine to compile the source code correctly. If any errors are generated 
-      during this command run, it is usually an indication that some program or 
-      library is missing from your computer that is necessary for Covered to 
-      compile/run. Please install any missing programs/libraries and type this 
-      command again. If the configure script completes successfully, you may compile 
-      the source with the following command:</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="code">> make</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      This will begin the process of compiling/linking the source code for Covered. 
-      This stage may take a while. When the source files have been compiled, the 
-      <tt>covered</tt> executable file will have been created. To install this 
-      executable in your <tt>/usr/local/bin</tt> directory, enter the following 
-      command:</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="code">> make install</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      This will install the covered executable and manpage help files. Once covered 
-      is installed, make sure that <tt>/usr/local/bin</tt> is in your environment 
-      path. You are now ready to run Covered.</P>
+      This is currently being worked on.  The parser should properly parse all code;
+      however, not all Verilog-2001 constructs are considered for coverage due to lack
+      of support for them in Covered's core.  If there is code that will not parse
+      that should, please submit a bug report for this.</P>
     </TD>
   </TR>
 
@@ -392,9 +371,9 @@
        [&nbsp;
        <A href="001.html">Contents</A>&nbsp;&nbsp;|&nbsp;
        <A href="index.html">First Page</A>&nbsp;&nbsp;|&nbsp;
-       <A href="010.html">Previous Page</A>&nbsp;&nbsp;|&nbsp;
+       <A href="023.html">Previous Page</A>&nbsp;&nbsp;|&nbsp;
        <A href="index.html">Home</A>&nbsp;
-       &nbsp;|&nbsp;<A href="012.html">Next Page</A>&nbsp;&nbsp;|&nbsp;
+       &nbsp;|&nbsp;<A href="025.html">Next Page</A>&nbsp;&nbsp;|&nbsp;
        <A href="025.html">Last Page</A>&nbsp;
        ]<BR>
        [&nbsp;<A href="001.html">1</A>&nbsp;|

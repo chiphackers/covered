@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
 <HTML>
 <HEAD>
-  <TITLE>Covered - FAQ</TITLE>
+  <TITLE>Covered - Reading FSM Coverage</TITLE>
   <META name="GENERATOR" content="ManStyle">
   <meta name="author" content="Trevor Williams">
   <LINK rel=stylesheet type="text/css" href="styles.css">
@@ -36,7 +36,14 @@
         <TR>
           <TD width=460 align=center valign=top class="navigator">
             <P class="navigator"><IMG src="img/000000.gif" height=2 width=460><BR>
-            <IMG src="img/toolbar_left.png" border=0><A href="001.html" alt="Contents"><IMG src="img/toolbar_cont.png" border=0></A><A href="index.html" alt="First Page"><IMG src="img/toolbar_first.png" border=0></A><A href="021.html" alt="Previous Page"><IMG src="img/toolbar_prev.png" border=0></A><A href="index.html" alt="Home"><IMG src="img/toolbar_home.png" border=0></A><A href="023.html" alt="Next Page"><IMG src="img/toolbar_next.png" border=0></A><A href="023.html" alt="Last Page"><IMG src="img/toolbar_last.png" border=0></A><IMG src="img/toolbar_right.png" border=0>
+            <IMG src="img/toolbar_left.png" border=0>
+            <A href="001.html" alt="Contents"><IMG src="img/toolbar_cont.png" border=0></A>
+            <A href="index.html" alt="First Page"><IMG src="img/toolbar_first.png" border=0></A>
+            <A href="021.html" alt="Previous Page"><IMG src="img/toolbar_prev.png" border=0></A>
+            <A href="index.html" alt="Home"><IMG src="img/toolbar_home.png" border=0></A>
+            <A href="023.html" alt="Next Page"><IMG src="img/toolbar_next.png" border=0></A>
+            <A href="025.html" alt="Last Page"><IMG src="img/toolbar_last.png" border=0></A>
+            <IMG src="img/toolbar_right.png" border=0>
             <BR><IMG src="img/000000.gif" height=2 width=460></P>
           </TD>
         </TR>
@@ -62,7 +69,18 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="header1">13&nbsp;&nbsp; <A name="13"></A>FAQ<BR><IMG src="img/12568c.gif" height=2 width=460></P>
+      <P class="header2">12.4&nbsp; <A name="12_4"></A>Reading FSM Coverage</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header3">12.4.1 <A name="12_4_1"></A>Summary Information Description - Module-based</P>
     </TD>
   </TR>
 
@@ -74,10 +92,11 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      This page contains a list of accummulated Frequently Asked Questions. If you are having difficulties using
-      Covered or have questions that are not answered in the User's Guide, please check this list for answers.
-      If you do not find the information that you are looking for in the User's Guide or this FAQ, please send
-      an e-mail to:</P>
+      For module-based reports, the summary table for FSM metrics includes information for the name of each
+      module that was covered and the name of the file in which the module is described in. Lines
+      <a href="test/example.rptM.html#239">239 through 244</a> of the module-based report show what this
+      information looks like in the report. We have three modules that were scored within our DUT: main,
+      fsma and fsmb. The table shows that all three modules were described in the file "example.v".</P>
     </TD>
   </TR>
 
@@ -88,20 +107,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg"><a href="mailto:trevorw@charter.net">Trevor Williams</a></P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin">Question</P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      <strong>Is a CDD file generated from a newer version of Covered compatible with a CDD file generated from
-      an older version?</strong></P>
+      <P class="header3">12.4.2 <A name="12_4_2"></A>Summary Information Description - Instance-based</P>
     </TD>
   </TR>
 
@@ -113,13 +119,22 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      The answer to this question is, "Well, that depends...". Since the format of the CDD file is only used by
-      Covered, the contents and format of this file may be changed to suit the needs of Covered. This means that
-      it is possible for a CDD file created from an older version of Covered to be incompatible with a newer
-      version. Additionally, the developers of Covered will not make any attempts to make sure that older CDD
-      files can be properly read by a newer version of Covered. It is suggested that any CDD files generated
-      from a particular version of Covered be merged and/or reported on by that same version, and if Covered is
-      upgraded, new CDD files should be generated.</P>
+      For instance-based reports, the summary table for FSM metrics includes information for the Verilog
+      hierarchy pertaining to each instance on the left-hand-side of each row. Lines
+      <a href="test/example.rptI.html#239">239 through 244</a> of the instance-based report show what this
+      information looks like in the report. In our DUT example, there are three instances within the design
+      with the Verilog hierarchies of "main", "main.fsm1" and "main.fsm2".</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header3">12.4.3 <A name="12_4_3"></A>Summary Information Description - Both</P>
     </TD>
   </TR>
 
@@ -131,21 +146,12 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      This being said, it is also a possibility that between versions of Covered a "backwards compatibility" may
-      be maintained if a change to this file's format is not required.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin">Question</P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      <strong>When I run the score command, Covered seems to take a long time to run. Is there anything that I can
-      do to speed up scoring?</strong></P>
+      On the right-hand side of each row in the table are the hit, miss and total numbers for the FSM state
+      coverage, followed by a calculated percent of the FSM states that were hit (calculated by taking the
+      number of FSM states hit during simulation divided by the total number of FSM states that Covered could
+      have simulated). The hit value indicates how many FSM states were executed during the simulation; the
+      miss value indicates the number of FSM states not executed during simulation; and the total value
+      indicates the total number of FSM states within the specified module/instance that Covered can simulate.</P>
     </TD>
   </TR>
 
@@ -157,8 +163,8 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      While Covered is continuously being enhanced to provide better performance for all commands (especially the
-      score command), it may still take a while to complete scoring if one or more of the following is true:</P>
+      To the right of the FSM state summary information is the FSM state-transition hit, miss, total and
+      percentage hit summary information for each module/instance.</P>
     </TD>
   </TR>
 
@@ -170,23 +176,23 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      <ol> 
-      	<li>The design being scored is sufficiently large</li> 
-      	<li>The VCD/LXT dumpfile is sufficiently large</li> 
-      	<li>The VCD/LXT dumpfile contains dump information for a part of 
-      	the design not being scored</li> 
-      </ol></P>
+      If the percentage value in the far left of the summary table is 100%, this indicates that all FSM states
+      and state-transitions that Covered was capable of simulating (for the module/instance of this row) were
+      executed. If the value of the percentage is less than 100%, this indicates that some number of FSM states
+      and/or FSM state-transitions were not executed and full coverage was not achieved for that module/instance.
+      Note that for a module/instance which does not contain any FSMs in which Covered was able to simulate, the
+      values of hit, miss, and total will be 0 while the hit percentage value will indicate 100%.</P>
     </TD>
   </TR>
 
   <TR>
     <TD></TD>
     <TD valign=top>
-      <P class="margin">1.</P>
+      <P class="margin"></P>
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">If reason (1) is true, speeding up each run can be achieved by one of the following suggestions:</P>
+      <P class="header3">12.4.4 <A name="12_4_4"></A>Verbose Information Description - Both</P>
     </TD>
   </TR>
 
@@ -198,42 +204,21 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      <ul>
-        <li> Reduce the scored design in size by eliminating modules or constructs from its design tree. (See
-             <a href="014.html#9_3">Section 9.3 Specifying What To Cover</a> for more information on how to accomplish
-             this) </li>
-        <li> Split up the design into smaller parts along module boundaries and generate coverage for those parts.
-             Note: it is not currently possible to append these modules into one file. Merging and reporting must be
-             done on these smaller pieces independently from one another.</li>
-        </ul></P>
+      The verbose output for FSM coverage is split into the state coverage information and the state transition
+      coverage information. When an FSM is found to be not fully covered (i.e., the number of hit states/state
+      transitions is not equal to the number of attainable states/state transitions), the missed states are
+      output to the report as a list of state values in hexidecimal format as follows:</P>
     </TD>
   </TR>
 
   <TR>
     <TD></TD>
     <TD valign=top>
-      <P class="margin">2.</P>
+      <P class="margin"></P>
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">
-      If reason (2) is true, nothing can be done except to shorten the run time of 
-      the diagnostics to produce shorter dumpfiles.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin">3.</P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      If reason (3) is true, the $dumpvars call in the simulator should be modified 
-      to only generate VCD/LXT dump information for the modules included in scoring. 
-      If there are modules not being scored which are included in the $dumpvars 
-      calls, please remove these unnecessary modules from dumpfile output.</P>
+      <P class="pg">&lt;<i>hexidecimal value</i>&gt;</P>
     </TD>
   </TR>
 
@@ -245,23 +230,19 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      If you believe that you have a situation which is void of these prevailing 
-      reasons and Covered is still running slowly, please send an e-mail to 
-      <a href="mailto:trevorw@charter.net">me</a>. I will consider these problems 
-      to be of lower priority than actual bugs but will look into the situation to 
-      see where code can be optimized.</P>
+      When an FSM is found to be not fully covered, the missed state transitions are output to the report as a
+      list of state transitions in the format below:</P>
     </TD>
   </TR>
 
   <TR>
     <TD></TD>
     <TD valign=top>
-      <P class="margin">Question</P>
+      <P class="margin"></P>
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg"><strong>
-      I get an assertion error when running Covered, what should I do?</strong></P>
+      <P class="pg">&lt;<i>hexidecimal input state value</i>&gt; -&gt; &lt;<i>hexidecimal output state value</i>&gt;</P>
     </TD>
   </TR>
 
@@ -273,84 +254,12 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      Covered uses C assertions to make sure that internal pointers are not be 
-      referenced when NULL and that certain internal situations do not arise. If you 
-      receive some type of assertion error when running Covered, it means that 
-      something went wrong internally in Covered. The error is NOT due to user 
-      error. Please submit a bug report containing the assertion error message, 
-      file and line number. Additionally, run the Covered command with the -D 
-      global option (covered -D &lt;command&gt;) and provide the output from doing 
-      this with the bug report (please only specify tail of output if the output is 
-      too lengthy).</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      If Covered provides any other type of error message (something other than a 
-      core dump), Covered has found a user error that must be fixed by the user. Please 
-      do not submit bug reports if these errors are encountered, unless you wish to 
-      add a question about it to the FAQ.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin">Question</P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg"><strong>
-      Covered is giving me a parser error for Verilog code that seems to be 
-      syntactically correct. What is wrong?</strong></P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      If Covered displays a syntax (parse) error during the score command and the 
-      Verilog code is written correctly, it is because Covered's parser is incomplete. 
-      Please submit a bug or send an e-mail containing a code snippet of the 
-      unsupported Verilog. </P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin">Question</P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg"><strong>Is Covered's Verilog parser Verilog-2001 compliant?</strong></P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      This is currently being worked on.  The parser should properly parse all code;
-      however, not all Verilog-2001 constructs are considered for coverage due to lack
-      of support for them in Covered's core.  If there is code that will not parse
-      that should, please submit a bug report for this.</P>
+      If the -c option is used or the number of attainable state/state transitions are unknown for the specified
+      FSM, Covered outputs this information in the same way as the missed cases except that the title of the 
+      output is "Hit cases". If the number of attainable states/state transitions is unknown, providing the
+      cases that were hit during simulation is useful in aiding the user in determining coverage. In this case,
+      the summary report will output question marks in the missed and total categories, showing the user that
+      this information was not known by Covered.</P>
     </TD>
   </TR>
 
@@ -367,9 +276,33 @@
        <A href="021.html">Previous Page</A>&nbsp;&nbsp;|&nbsp;
        <A href="index.html">Home</A>&nbsp;
        &nbsp;|&nbsp;<A href="023.html">Next Page</A>&nbsp;&nbsp;|&nbsp;
-       <A href="023.html">Last Page</A>&nbsp;
+       <A href="025.html">Last Page</A>&nbsp;
        ]<BR>
-       [&nbsp; <A href="001.html">1</A>&nbsp;|&nbsp;<A href="002.html">2</A>&nbsp;|&nbsp;<A href="003.html">3</A>&nbsp;|&nbsp;<A href="004.html">4</A>&nbsp;|&nbsp;<A href="005.html">5</A>&nbsp;|&nbsp;<A href="006.html">6</A>&nbsp;|&nbsp;<A href="007.html">7</A>&nbsp;|&nbsp;<A href="008.html">8</A>&nbsp;|&nbsp;<A href="009.html">9</A>&nbsp;|&nbsp;<A href="010.html">10</A>&nbsp;|&nbsp;<A href="011.html">11</A>&nbsp;|&nbsp;<A href="012.html">12</A>&nbsp;|&nbsp;<A href="013.html">13</A>&nbsp;|&nbsp;<A href="014.html">14</A>&nbsp;|&nbsp;<A href="015.html">15</A>&nbsp;|&nbsp;<A href="016.html">16</A>&nbsp;|&nbsp;<A href="017.html">17</A>&nbsp;|&nbsp;<A href="018.html">18</A>&nbsp;|&nbsp;<A href="019.html">19</A>&nbsp;|&nbsp;<A href="020.html">20</A>&nbsp;|&nbsp;<A href="021.html">21</A>&nbsp;|&nbsp;<A href="022.html">22</A>&nbsp;|&nbsp;<A href="023.html">23</A> &nbsp;]
+       [&nbsp;<A href="001.html">1</A>&nbsp;|
+        &nbsp;<A href="002.html">2</A>&nbsp;|
+        &nbsp;<A href="003.html">3</A>&nbsp;|
+        &nbsp;<A href="004.html">4</A>&nbsp;|
+        &nbsp;<A href="005.html">5</A>&nbsp;|
+        &nbsp;<A href="006.html">6</A>&nbsp;|
+        &nbsp;<A href="007.html">7</A>&nbsp;|
+        &nbsp;<A href="008.html">8</A>&nbsp;|
+        &nbsp;<A href="009.html">9</A>&nbsp;|
+        &nbsp;<A href="010.html">10</A>&nbsp;|
+        &nbsp;<A href="011.html">11</A>&nbsp;|
+        &nbsp;<A href="012.html">12</A>&nbsp;|
+        &nbsp;<A href="013.html">13</A>&nbsp;|
+        &nbsp;<A href="014.html">14</A>&nbsp;|
+        &nbsp;<A href="015.html">15</A>&nbsp;|
+        &nbsp;<A href="016.html">16</A>&nbsp;|
+        &nbsp;<A href="017.html">17</A>&nbsp;|
+        &nbsp;<A href="018.html">18</A>&nbsp;|
+        &nbsp;<A href="019.html">19</A>&nbsp;|
+        &nbsp;<A href="020.html">20</A>&nbsp;|
+        &nbsp;<A href="021.html">21</A>&nbsp;|
+        &nbsp;<A href="022.html">22</A>&nbsp;|
+        &nbsp;<A href="023.html">23</A>&nbsp;|
+        &nbsp;<A href="024.html">24</A>&nbsp;|
+        &nbsp;<A href="025.html">25</A>&nbsp;]
        <BR>
        <B>License: GPL</B><BR>
        This Manual was created with <A HREF="http://manstyle.sourceforge.net">ManStyle</A>.

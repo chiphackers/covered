@@ -3,7 +3,7 @@
 <HEAD>
   <TITLE>Covered - FSM Coverage</TITLE>
   <META name="GENERATOR" content="ManStyle">
-  <META name="AUTHOR" content="Trevor Williams">
+  <meta name="author" content="Trevor Williams">
   <LINK rel=stylesheet type="text/css" href="styles.css">
 </HEAD>
 <BODY text="#000000"
@@ -36,7 +36,14 @@
         <TR>
           <TD width=460 align=center valign=top class="navigator">
             <P class="navigator"><IMG src="img/000000.gif" height=2 width=460><BR>
-            <IMG src="img/toolbar_left.png" border=0><A href="001.html" alt="Contents"><IMG src="img/toolbar_cont.png" border=0></A><A href="index.html" alt="First Page"><IMG src="img/toolbar_first.png" border=0></A><A href="006.html" alt="Previous Page"><IMG src="img/toolbar_prev.png" border=0></A><A href="index.html" alt="Home"><IMG src="img/toolbar_home.png" border=0></A><A href="008.html" alt="Next Page"><IMG src="img/toolbar_next.png" border=0></A><A href="023.html" alt="Last Page"><IMG src="img/toolbar_last.png" border=0></A><IMG src="img/toolbar_right.png" border=0>
+            <IMG src="img/toolbar_left.png" border=0>
+            <A href="001.html" alt="Contents"><IMG src="img/toolbar_cont.png" border=0></A>
+            <A href="index.html" alt="First Page"><IMG src="img/toolbar_first.png" border=0></A>
+            <A href="006.html" alt="Previous Page"><IMG src="img/toolbar_prev.png" border=0></A>
+            <A href="index.html" alt="Home"><IMG src="img/toolbar_home.png" border=0></A>
+            <A href="008.html" alt="Next Page"><IMG src="img/toolbar_next.png" border=0></A>
+            <A href="025.html" alt="Last Page"><IMG src="img/toolbar_last.png" border=0></A>
+            <IMG src="img/toolbar_right.png" border=0>
             <BR><IMG src="img/000000.gif" height=2 width=460></P>
           </TD>
         </TR>
@@ -73,7 +80,9 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">Finite state machine (FSM) coverage answers the question, "Did I reach all of the states and traverse all possible paths through a given state machine?"</P>
+      <P class="pg">
+      Finite state machine (FSM) coverage answers the question, "Did I reach all of the 
+      states and traverse all possible paths through a given state machine?"</P>
     </TD>
   </TR>
 
@@ -84,7 +93,8 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">There are two types of coverage detail for FSMs that Covered can handle:</P>
+      <P class="pg">
+      There are two types of coverage detail for FSMs that Covered can handle:</P>
     </TD>
   </TR>
 
@@ -95,7 +105,13 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg"><OL> <LI>State coverage - answers the question "Were all states of an FSM hit during simulation?" <LI>State transition coverage - answers the question "Did the FSM transition between all states (that are achievable) in simulation?" </OL></P>
+      <P class="pg">
+      <OL> 
+        <LI>State coverage - answers the question "Were all states of an FSM hit during 
+            simulation?"</LI>
+        <LI>State transition coverage - answers the question "Did the FSM transition 
+            between all states (that are achievable) in simulation?"</LI>
+      </OL></P>
     </TD>
   </TR>
 
@@ -139,7 +155,8 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">To help visualize this state machine, let's also display it as a digraph.</P>
+      <P class="pg">
+      To help visualize this state machine, let's also display it as a digraph.</P>
     </TD>
   </TR>
 
@@ -161,7 +178,11 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">This state machine has four states: IDLE, REQ, WAIT, GNT. During simulation, 75% of the states were hit (3 out of 4) including IDLE, REQ and GNT. You can see that the WAIT state was never hit during simulation since the gnt signal was asserted the clock period after the req signal asserted. </P>
+      <P class="pg">
+      This state machine has four states: IDLE, REQ, WAIT, GNT. During simulation, 75% 
+      of the states were hit (3 out of 4) including IDLE, REQ and GNT. You can see that 
+      the WAIT state was never hit during simulation since the gnt signal was asserted 
+      the clock period after the req signal asserted. </P>
     </TD>
   </TR>
 
@@ -172,7 +193,9 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">Additionally, this state machine contains 7 state "arcs" which are represented in the digraph as arrowed lines. They are the following:</P>
+      <P class="pg">
+      Additionally, this state machine contains 7 state "arcs" which are represented in 
+      the digraph as arrowed lines. They are the following:</P>
     </TD>
   </TR>
 
@@ -183,7 +206,16 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg"><ol> <li>IDLE -> IDLE&nbsp; (HIT) <li>IDLE -> REQ&nbsp;&nbsp; (HIT) <li>REQ&nbsp; -> WAIT&nbsp; (MISSED) <li>REQ&nbsp; -> GNT&nbsp;&nbsp; (HIT) <li>WAIT -> WAIT&nbsp; (MISSED) <li>WAIT -> GNT&nbsp;&nbsp; (MISSED) <li>GNT&nbsp; -> IDLE&nbsp; (HIT) </ol></P>
+      <P class="pg">
+      <ol> 
+        <li>IDLE -> IDLE&nbsp; (HIT)</li>
+        <li>IDLE -> REQ&nbsp;&nbsp; (HIT)</li>
+        <li>REQ&nbsp; -> WAIT&nbsp; (MISSED)</li>
+        <li>REQ&nbsp; -> GNT&nbsp;&nbsp; (HIT)</li>
+        <li>WAIT -> WAIT&nbsp; (MISSED)</li>
+        <li>WAIT -> GNT&nbsp;&nbsp; (MISSED)</li>
+        <li>GNT&nbsp; -> IDLE&nbsp; (HIT)</li>
+      </ol></P>
     </TD>
   </TR>
 
@@ -194,7 +226,9 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">Counting the number of traversed arcs during simulation, we can see that we have covered 4 out of 7 (or 57%) of the possible arcs in this state machine.</P>
+      <P class="pg">
+      Counting the number of traversed arcs during simulation, we can see that we have 
+      covered 4 out of 7 (or 57%) of the possible arcs in this state machine.</P>
     </TD>
   </TR>
 
@@ -216,7 +250,13 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">For a design to pass full coverage, it is recommended that the FSM coverage for all finite state machines in the design to receive 100% coverage for the state coverage and 100% for all achievable state transitions. Since Covered will not determine which state transitions are achievable, it is up to the verification engineer to examine the executed state transitions to determine if 100% of possible transitions occurred.</P>
+      <P class="pg">
+      For a design to pass full coverage, it is recommended that the FSM coverage for 
+      all finite state machines in the design to receive 100% coverage for the state 
+      coverage and 100% for all achievable state transitions. Since Covered will not 
+      determine which state transitions are achievable, it is up to the verification 
+      engineer to examine the executed state transitions to determine if 100% of 
+      possible transitions occurred.</P>
     </TD>
   </TR>
 
@@ -233,9 +273,33 @@
        <A href="006.html">Previous Page</A>&nbsp;&nbsp;|&nbsp;
        <A href="index.html">Home</A>&nbsp;
        &nbsp;|&nbsp;<A href="008.html">Next Page</A>&nbsp;&nbsp;|&nbsp;
-       <A href="023.html">Last Page</A>&nbsp;
+       <A href="025.html">Last Page</A>&nbsp;
        ]<BR>
-       [&nbsp; <A href="001.html">1</A>&nbsp;|&nbsp;<A href="002.html">2</A>&nbsp;|&nbsp;<A href="003.html">3</A>&nbsp;|&nbsp;<A href="004.html">4</A>&nbsp;|&nbsp;<A href="005.html">5</A>&nbsp;|&nbsp;<A href="006.html">6</A>&nbsp;|&nbsp;<A href="007.html">7</A>&nbsp;|&nbsp;<A href="008.html">8</A>&nbsp;|&nbsp;<A href="009.html">9</A>&nbsp;|&nbsp;<A href="010.html">10</A>&nbsp;|&nbsp;<A href="011.html">11</A>&nbsp;|&nbsp;<A href="012.html">12</A>&nbsp;|&nbsp;<A href="013.html">13</A>&nbsp;|&nbsp;<A href="014.html">14</A>&nbsp;|&nbsp;<A href="015.html">15</A>&nbsp;|&nbsp;<A href="016.html">16</A>&nbsp;|&nbsp;<A href="017.html">17</A>&nbsp;|&nbsp;<A href="018.html">18</A>&nbsp;|&nbsp;<A href="019.html">19</A>&nbsp;|&nbsp;<A href="020.html">20</A>&nbsp;|&nbsp;<A href="021.html">21</A>&nbsp;|&nbsp;<A href="022.html">22</A>&nbsp;|&nbsp;<A href="023.html">23</A> &nbsp;]
+       [&nbsp;<A href="001.html">1</A>&nbsp;|
+        &nbsp;<A href="002.html">2</A>&nbsp;|
+        &nbsp;<A href="003.html">3</A>&nbsp;|
+        &nbsp;<A href="004.html">4</A>&nbsp;|
+        &nbsp;<A href="005.html">5</A>&nbsp;|
+        &nbsp;<A href="006.html">6</A>&nbsp;|
+        &nbsp;<A href="007.html">7</A>&nbsp;|
+        &nbsp;<A href="008.html">8</A>&nbsp;|
+        &nbsp;<A href="009.html">9</A>&nbsp;|
+        &nbsp;<A href="010.html">10</A>&nbsp;|
+        &nbsp;<A href="011.html">11</A>&nbsp;|
+        &nbsp;<A href="012.html">12</A>&nbsp;|
+        &nbsp;<A href="013.html">13</A>&nbsp;|
+        &nbsp;<A href="014.html">14</A>&nbsp;|
+        &nbsp;<A href="015.html">15</A>&nbsp;|
+        &nbsp;<A href="016.html">16</A>&nbsp;|
+        &nbsp;<A href="017.html">17</A>&nbsp;|
+        &nbsp;<A href="018.html">18</A>&nbsp;|
+        &nbsp;<A href="019.html">19</A>&nbsp;|
+        &nbsp;<A href="020.html">20</A>&nbsp;|
+        &nbsp;<A href="021.html">21</A>&nbsp;|
+        &nbsp;<A href="022.html">22</A>&nbsp;|
+        &nbsp;<A href="023.html">23</A>&nbsp;|
+        &nbsp;<A href="024.html">24</A>&nbsp;|
+        &nbsp;<A href="025.html">25</A>&nbsp;]
        <BR>
        <B>License: GPL</B><BR>
        This Manual was created with <A HREF="http://manstyle.sourceforge.net">ManStyle</A>.

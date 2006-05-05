@@ -1,9 +1,9 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
 <HTML>
 <HEAD>
-  <TITLE>Covered - Reading the Report</TITLE>
+  <TITLE>Covered - The report Command</TITLE>
   <META name="GENERATOR" content="ManStyle">
-  <META name="AUTHOR" content="Trevor Williams">
+  <meta name="author" content="Trevor Williams">
   <LINK rel=stylesheet type="text/css" href="styles.css">
 </HEAD>
 <BODY text="#000000"
@@ -36,7 +36,14 @@
         <TR>
           <TD width=460 align=center valign=top class="navigator">
             <P class="navigator"><IMG src="img/000000.gif" height=2 width=460><BR>
-            <IMG src="img/toolbar_left.png" border=0><A href="001.html" alt="Contents"><IMG src="img/toolbar_cont.png" border=0></A><A href="index.html" alt="First Page"><IMG src="img/toolbar_first.png" border=0></A><A href="016.html" alt="Previous Page"><IMG src="img/toolbar_prev.png" border=0></A><A href="index.html" alt="Home"><IMG src="img/toolbar_home.png" border=0></A><A href="018.html" alt="Next Page"><IMG src="img/toolbar_next.png" border=0></A><A href="023.html" alt="Last Page"><IMG src="img/toolbar_last.png" border=0></A><IMG src="img/toolbar_right.png" border=0>
+            <IMG src="img/toolbar_left.png" border=0>
+            <A href="001.html" alt="Contents"><IMG src="img/toolbar_cont.png" border=0></A>
+            <A href="index.html" alt="First Page"><IMG src="img/toolbar_first.png" border=0></A>
+            <A href="016.html" alt="Previous Page"><IMG src="img/toolbar_prev.png" border=0></A>
+            <A href="index.html" alt="Home"><IMG src="img/toolbar_home.png" border=0></A>
+            <A href="018.html" alt="Next Page"><IMG src="img/toolbar_next.png" border=0></A>
+            <A href="025.html" alt="Last Page"><IMG src="img/toolbar_last.png" border=0></A>
+            <IMG src="img/toolbar_right.png" border=0>
             <BR><IMG src="img/000000.gif" height=2 width=460></P>
           </TD>
         </TR>
@@ -62,7 +69,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="header1">12&nbsp;&nbsp; <A name="12"></A>Reading the Report<BR><IMG src="img/12568c.gif" height=2 width=460></P>
+      <P class="header1">11&nbsp;&nbsp; <A name="11"></A>The report Command<BR><IMG src="img/12568c.gif" height=2 width=460></P>
     </TD>
   </TR>
 
@@ -84,7 +91,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">This chapter describes the meanings of the textual report output that Covered generates when the report command is issued. It is well understood by the developers of Covered that a code coverage tool is only as good as the output that it generates, and this, of course, includes the ability to discern the information provided by the report.</P>
+      <P class="header2">11.1&nbsp; <A name="11_1"></A>Usage</P>
     </TD>
   </TR>
 
@@ -95,7 +102,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">To help describe the various sections of a Covered report, we will use a relatively small Verilog file containing our DUT, generating the two main types of reports (module and instance) based on the CDD generated for this file. This example file is provided <a href="test/example.v.html">here</a>.</P>
+      <P class="pg">The report command is initiated with the following call:</P>
     </TD>
   </TR>
 
@@ -106,18 +113,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">After being compiled and run, this module is scored with the following Covered command:</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin">Score Command</P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="code">covered score -t main -v example.v -o example.cdd -vcd example.vcd</P>
+      <P class="code">covered report [&lt;options&gt;] &lt;CDD_filename&gt;</P>
     </TD>
   </TR>
 
@@ -128,18 +124,9 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">The module-based verbose report can be viewed in its entirety <a href="example.rptM.html">here</a> and is generated with the following command:</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin">Module-base report command</P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="code">covered report -d v example.cdd</P>
+      <P class="pg">
+      The <i>CDD_filename</i> refers to the name of the CDD to generate the report for. 
+      This CDD may be either the result of a score or the result of merging CDDs.</P>
     </TD>
   </TR>
 
@@ -150,18 +137,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">The instance-based verbose report can be viewed in its entirety <a href="example.rptI.html">here</a> and is generated with the following command:</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin">Instance-based report command</P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="code">covered report -i -d v example.cdd</P>
+      <P class="header2">11.2&nbsp; <A name="11_2"></A>Options</P>
     </TD>
   </TR>
 
@@ -172,7 +148,8 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">The instructions for analyzing each of the four types of coverage information from the report can be found on the following pages.</P>
+      <P class="pg">
+      The following table lists the options available for use with the report command.</P>
     </TD>
   </TR>
 
@@ -183,7 +160,76 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg"><ol> <li><A href="018.html">Reading Line Coverage</A></li> <li><A href="019.html">Reading Toggle Coverage</A></li> <li><A href="020.html">Reading Combinational Logic Coverage</A></li> <li><A href="021.html">Reading FSM Coverage</A></li> </ol></P>
+      
+      <TABLE cellpadding=0 cellspacing=0 border=0 width=100%>
+        <TR>
+          <TD>
+            <P class="blockIndentLeft">&nbsp;</P>
+          </TD>
+          <TD width=100% align=center>
+            <table cellspacing=2 cellpadding=4 border=1>
+              <tr>
+                <td colspan=2 class="tableHeader"> Options to report Command </td>
+              </tr>
+              <tr>
+                <td> <strong>Option</strong> </td>
+                <td> <strong>Description</strong> <td>
+              </tr>
+              <tr>
+                <td> -m [l][t][c][f][r] </td>
+                <td> Specifies type of coverage information to report (default is to 
+                     generate report for line, toggle and combinational coverage). </td>
+              </tr>
+              <tr>
+                <td> -d (s|d|v) </td>
+                <td> Level of report detail (s=summary, d=detailed, v=verbose). Default 
+                     is to display summary coverage information. </td>
+              </tr>
+              <tr>
+                <td> -i </td>
+                <td> Generates report information for each instance (default is to 
+                     generate per module). </td>
+              </tr>
+              <tr>
+                <td> -c </td>
+                <td> Used in conjunction with the '-d d' or '-d v' option. If set, causes 
+                     covered logic to be reported instead of default behavior of 
+                     reporting uncovered logic. </td>
+              </tr>
+              <tr>
+                <td> -o &lt;<i>filename</i>&gt; </td>
+                <td> Specifies output file to stream report to (default is standard 
+                     output) </td>
+              </tr>
+              <tr>
+                <td> -w (&lt;number&gt;) </td>
+                <td> Specifies the maximum line width (in characters) that can be used 
+                     to output Verilog information. If this option is not specified, all 
+                     Verilog code in the report will retain the same formatting as was 
+                     specified in the original Verilog code. If this option is specified, 
+                     Verilog code will be formatted to use as much of the current line 
+                     as possible, wrapping text when the line reaches the maximum line 
+                     width. The default maximum line width is 115 characters (this value 
+                     is used if no number is specified with the -w option). If a number 
+                     is specified with the -w option, this value is used for the maximum 
+                     line width. </td>
+              </tr>
+              <tr>
+                <td> -h </td>
+                <td> Outputs usage information for the merge command </td>
+              </tr>
+              <tr>
+                <td> -view </td>
+                <td> Starts the interactive Covered report viewer GUI. </td>
+              </tr>
+            </table><br>
+          </TD>
+          <TD>
+            <P class="blockIndentRight">&nbsp;</P>
+          </TD>
+        </TR>
+      </TABLE>
+
     </TD>
   </TR>
 
@@ -194,7 +240,247 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">For information on reading race condition information in the report, please see the user guide page detailing race conditions and viewing the reports.</P>
+      <P class="header2">11.3&nbsp; <A name="11_3"></A>Summary Vs. Detailed Vs. Verbose</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      There are three forms of reports that can be generated by the Covered report 
+      function: summary, detailed, and verbose. The three forms are described below.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header3">11.3.1 <A name="11_3_1"></A>Summary Report</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      A summary report shows at a very high-level what the coverage for a specific 
+      module (or instance) is in terms of line, toggle, combinational and/or FSM 
+      coverage (depending on which types are selected on the command line). Each 
+      coverage metric for the module is given a percentage of items covered for that 
+      metric as well as the total number of items per metric, the number of items "hit" 
+      during simulation and the number of items "missed" during execution. See the 
+      chapter on "Reading the Report" for more information on understanding the formats 
+      of line, toggle, combinational logic, and FSM summary information.</P>
+    </TD>&nbsp;<A href="024.html">24</A>&nbsp;|
+        &nbsp;<A href="025.html">25</A>&nbsp;
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      The summary report is useful for understanding exactly which modules are missing 
+      coverage (and what type(s) of coverage are missing) as well as what modules are 
+      fully covered. This can help guide you more easily in understanding where you need 
+      to improve your code coverage without getting lost in all of the details that the 
+      verbose reporting provides.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header3">11.3.2 <A name="11_3_2"></A>Detailed Report</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      The detailed report is useful for understanding where logic was found to be 
+      uncovered in the design along with some higher-level information to understand why 
+      it was considered to be uncovered. This amount of detail is between the minimum 
+      (summary coverage) and the maximum (verbose coverage) and should be used as the 
+      first detailed report to be looked at since it is easier to read and comprehend 
+      the coverage results.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header3">11.3.3 <A name="11_3_3"></A>Verbose Report</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      The verbose report contains all of the data that the summary report contains; 
+      however, in addition to the summary information for a module (or instance), a 
+      more in-depth look at the exact cases that were "missed" during simulation are 
+      provided. This report outputting option is useful for combinational logic report 
+      information when a more in-depth look at why certain expressions did not reach 
+      full coverage is needed. This option allows the user to look at all subexpressions 
+      of an expression that were not fully covered.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header2">11.4&nbsp; <A name="11_4"></A>Module Vs. Instance</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      Any report can be calculated by module or by instance. Both reports are of 
+      interest for verification purposes and the differences are described as follows.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      Module reporting combines the results of all instances that come from the same 
+      module. That is, when a module is instantiated multiple times in a design, the 
+      coverage results from all covered instances are merged together and output as one 
+      combined module. This reporting format allows a test writer to see if any logic 
+      within a module has not been touched during simulation.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      Instance reporting displays each instance in the covered design separately (no 
+      combining occurs). This reporting format is useful for determining if certain 
+      instances within a design are being neglected. For instance, if a module is 
+      instantiated four times (i.e., four instances of the same buffer), it may be that 
+      the first buffer is used more often than the other three buffers. This could 
+      indicate controller errors or just an indication that there was not enough 
+      activity during simulation to fill the other buffers (need to bolster diagnostics 
+      or possibly some buffers could be removed?) This type of information would not 
+      be viewable if only module reporting were performed.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header2">11.5&nbsp; <A name="11_5"></A>Covered Vs. Uncovered</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      Covered has the ability the generate reports from any given CDD file that displays 
+      either uncovered logic (the default behavior) or covered logic. It is 
+      understandable why one would want to generate reports displaying uncovered 
+      logic (this is probably the reason why you are interested in this tool in the 
+      first place). However, why would anyone be interested in reporting covered 
+      logic?</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      The reason for having this option is two-fold (and maybe there are other reasons). 
+      First, this option is useful in debugging the report command since it let's the 
+      user evaluate whether a particular signal or portion of logic was actually fully 
+      covered or not. Second, it may be useful for user's of the tool to understand 
+      what logic is being evaluated for coverage and what logic is not. If only 
+      uncovered logic was supplied for evaluation of the tool, one could not evaluate 
+      the effectiveness of the tool. However, by allowing the user to see what logic 
+      is covered and uncovered, a more full picture of the tool's capability can be 
+      understood.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      To generate a report that specifies what logic is not covered (output only 
+      available in verbose reporting mode), no further options are needed. To generate 
+      a report that specifies what logic is being covered, simply specify the -c option 
+      along with the -v option when calling the report command.</P>
     </TD>
   </TR>
 
@@ -211,9 +497,33 @@
        <A href="016.html">Previous Page</A>&nbsp;&nbsp;|&nbsp;
        <A href="index.html">Home</A>&nbsp;
        &nbsp;|&nbsp;<A href="018.html">Next Page</A>&nbsp;&nbsp;|&nbsp;
-       <A href="023.html">Last Page</A>&nbsp;
+       <A href="025.html">Last Page</A>&nbsp;
        ]<BR>
-       [&nbsp; <A href="001.html">1</A>&nbsp;|&nbsp;<A href="002.html">2</A>&nbsp;|&nbsp;<A href="003.html">3</A>&nbsp;|&nbsp;<A href="004.html">4</A>&nbsp;|&nbsp;<A href="005.html">5</A>&nbsp;|&nbsp;<A href="006.html">6</A>&nbsp;|&nbsp;<A href="007.html">7</A>&nbsp;|&nbsp;<A href="008.html">8</A>&nbsp;|&nbsp;<A href="009.html">9</A>&nbsp;|&nbsp;<A href="010.html">10</A>&nbsp;|&nbsp;<A href="011.html">11</A>&nbsp;|&nbsp;<A href="012.html">12</A>&nbsp;|&nbsp;<A href="013.html">13</A>&nbsp;|&nbsp;<A href="014.html">14</A>&nbsp;|&nbsp;<A href="015.html">15</A>&nbsp;|&nbsp;<A href="016.html">16</A>&nbsp;|&nbsp;<A href="017.html">17</A>&nbsp;|&nbsp;<A href="018.html">18</A>&nbsp;|&nbsp;<A href="019.html">19</A>&nbsp;|&nbsp;<A href="020.html">20</A>&nbsp;|&nbsp;<A href="021.html">21</A>&nbsp;|&nbsp;<A href="022.html">22</A>&nbsp;|&nbsp;<A href="023.html">23</A> &nbsp;]
+       [&nbsp;<A href="001.html">1</A>&nbsp;|
+        &nbsp;<A href="002.html">2</A>&nbsp;|
+        &nbsp;<A href="003.html">3</A>&nbsp;|
+        &nbsp;<A href="004.html">4</A>&nbsp;|
+        &nbsp;<A href="005.html">5</A>&nbsp;|
+        &nbsp;<A href="006.html">6</A>&nbsp;|
+        &nbsp;<A href="007.html">7</A>&nbsp;|
+        &nbsp;<A href="008.html">8</A>&nbsp;|
+        &nbsp;<A href="009.html">9</A>&nbsp;|
+        &nbsp;<A href="010.html">10</A>&nbsp;|
+        &nbsp;<A href="011.html">11</A>&nbsp;|
+        &nbsp;<A href="012.html">12</A>&nbsp;|
+        &nbsp;<A href="013.html">13</A>&nbsp;|
+        &nbsp;<A href="014.html">14</A>&nbsp;|
+        &nbsp;<A href="015.html">15</A>&nbsp;|
+        &nbsp;<A href="016.html">16</A>&nbsp;|
+        &nbsp;<A href="017.html">17</A>&nbsp;|
+        &nbsp;<A href="018.html">18</A>&nbsp;|
+        &nbsp;<A href="019.html">19</A>&nbsp;|
+        &nbsp;<A href="020.html">20</A>&nbsp;|
+        &nbsp;<A href="021.html">21</A>&nbsp;|
+        &nbsp;<A href="022.html">22</A>&nbsp;|
+        &nbsp;<A href="023.html">23</A>&nbsp;|
+        &nbsp;<A href="024.html">24</A>&nbsp;|
+        &nbsp;<A href="025.html">25</A>&nbsp;]
        <BR>
        <B>License: GPL</B><BR>
        This Manual was created with <A HREF="http://manstyle.sourceforge.net">ManStyle</A>.

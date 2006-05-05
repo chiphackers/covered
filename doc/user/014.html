@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
 <HTML>
 <HEAD>
-  <TITLE>Covered - The score Command</TITLE>
+  <TITLE>Covered - Inline Attributes</TITLE>
   <META name="GENERATOR" content="ManStyle">
   <meta name="author" content="Trevor Williams">
   <LINK rel=stylesheet type="text/css" href="styles.css">
@@ -36,7 +36,14 @@
         <TR>
           <TD width=460 align=center valign=top class="navigator">
             <P class="navigator"><IMG src="img/000000.gif" height=2 width=460><BR>
-            <IMG src="img/toolbar_left.png" border=0><A href="001.html" alt="Contents"><IMG src="img/toolbar_cont.png" border=0></A><A href="index.html" alt="First Page"><IMG src="img/toolbar_first.png" border=0></A><A href="013.html" alt="Previous Page"><IMG src="img/toolbar_prev.png" border=0></A><A href="index.html" alt="Home"><IMG src="img/toolbar_home.png" border=0></A><A href="015.html" alt="Next Page"><IMG src="img/toolbar_next.png" border=0></A><A href="023.html" alt="Last Page"><IMG src="img/toolbar_last.png" border=0></A><IMG src="img/toolbar_right.png" border=0>
+            <IMG src="img/toolbar_left.png" border=0>
+            <A href="001.html" alt="Contents"><IMG src="img/toolbar_cont.png" border=0></A>
+            <A href="index.html" alt="First Page"><IMG src="img/toolbar_first.png" border=0></A>
+            <A href="013.html" alt="Previous Page"><IMG src="img/toolbar_prev.png" border=0></A>
+            <A href="index.html" alt="Home"><IMG src="img/toolbar_home.png" border=0></A>
+            <A href="015.html" alt="Next Page"><IMG src="img/toolbar_next.png" border=0></A>
+            <A href="025.html" alt="Last Page"><IMG src="img/toolbar_last.png" border=0></A>
+            <IMG src="img/toolbar_right.png" border=0>
             <BR><IMG src="img/000000.gif" height=2 width=460></P>
           </TD>
         </TR>
@@ -62,7 +69,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="header1">9&nbsp;&nbsp; <A name="9"></A>The score Command<BR><IMG src="img/12568c.gif" height=2 width=460></P>
+      <P class="header1">8&nbsp;&nbsp; <A name="8"></A>Inline Attributes<BR><IMG src="img/12568c.gif" height=2 width=460></P>
     </TD>
   </TR>
 
@@ -73,29 +80,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="header2">9.1&nbsp; <A name="9_1"></A>Usage</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">The score command is initiated with the following call:</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="code">covered score -t &lt;top_module&gt; [&lt;options&gt;]</P>
+      <P class="header2">8.1&nbsp; <A name="8_1"></A>What are inline attributes?</P>
     </TD>
   </TR>
 
@@ -107,22 +92,12 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      The <i>top_module</i> parameter is required for the scoring purposes and 
-      represents the top-most module that will be covered. It is important to note 
-      that Covered does not need to parse the entire DUT. It only parses that part 
-      of the design which will receive coverage results. More on this will be described 
-      in section 9.3 below.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="header2">9.2&nbsp; <A name="9_2"></A>Options</P>
+      In the IEEE Verilog 1364-2001 standard, an attribute is a way to add information 
+      to a Verilog object, statement or groups of statements that is tool-specific and 
+      does not affect simulation of that design. All Verilog-2001 attributes begin with 
+      the token <strong>(*</strong> and end with the token <strong>*)</strong>. An 
+      attribute can be multi-line and is "attached" to the Verilog object, statement, 
+      or group of statements that is specified immediately beneath the attribute.</P>
     </TD>
   </TR>
 
@@ -134,12 +109,12 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      The following table describes the additional options that can be passed to 
-      the score command. Note that it is optional in how you tell Covered where 
-      to find the Verilog design files; however, it is not optional to exclude 
-      the Verilog files. If no Verilog can be found that contains at least the top 
-      instance, Covered will generate an error message to the user specifying that 
-      it was unable to find the required Verilog modules.</P>
+      Covered uses the Verilog-2001 attribute for allowing users to specify 
+      coverage-specific information about embedded objects within a particular 
+      design. When an attribute is found, it is interrogated to see if it is a 
+      Covered attribute. If the attribute is a Covered attribute, its contents are 
+      parsed. If the attribute is not found to be a Covered attribute, it is ignored 
+      and parsing continues normally.</P>
     </TD>
   </TR>
 
@@ -150,155 +125,115 @@
     </TD>
     <TD></TD>
     <TD valign=top>
+      <P class="pg">
+      The rest of this page specifies the attributes that Covered is capable of 
+      handling, along with their use and syntax.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header2">8.2&nbsp; <A name="8_2"></A>Adding FSM attributes</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      There are two ways that Covered currently allows the user to specify the location 
+      of and information about FSMs embedded in a particular design. The first way to 
+      specify an FSM is on the score command-line. The benefit to specifying the 
+      location of a state machine this way is that the source code does not need to be 
+      modified. The potential disadvantage to this method is that the FSM location and 
+      coverage information can get lost if the FSM is used in a different testbench (or 
+      even a different project if the FSM code is reused in a later project). For more 
+      information on specifying an FSM on the score command-line, please refer to 
+      "Section 8.5 Scoring FSMs".</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      The second way that an FSM can be specified to Covered is through the use of the 
+      Verilog-2001 attribute. The advantages to using this method are that the FSM 
+      information specified in an attribute stays embedded in the design (for ease of 
+      reusing the FSM and still retaining information relevent to coverage). 
+      Additionally, at the current release of Covered, using attributes to specify an 
+      FSM is the only way to tell Covered what all of the valid states and 
+      state-transitions are for a specific FSM (the command-line specification does not 
+      allow for this). This provides a unique advantage of this method over the 
+      command-line method. The potential disadvantage of this method for specifying FSM 
+      information is that source code needs to be modified.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      To learn how to specify an FSM attribute within a design, let's use an example of 
+      an FSM that is embedded in a design.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin">Example FSM</P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="code"><pre>
+      module foo (
+        input clk,
+        input reset,
+        input head,
+        input tail,
+        input valid
+      );
       
-      <TABLE cellpadding=0 cellspacing=0 border=0 width=100%>
-        <TR>
-          <TD>
-            <P class="blockIndentLeft">&nbsp;</P>
-          </TD>
-          <TD width=100% align=center>
-				<table cellspacing=2 cellpadding=4 border=1> 
-					<tr> 
-						<td colspan=2 class="tableHeader"> Options to score Command </td> </tr> 
-					<tr> 
-						<td> <strong>Option</strong> </td> 
-						<td> <strong>Description</strong> </td> </tr> 
-					<tr> 
-						<td> -vcd &lt;dumpfile&gt; </td> 
-						<td> 
-						Name of VCD dumpfile to score design with. If this option or the -lxt
-						option is not used, Covered will only create an initial CDD file 
-						from the design and will not attempt to score the design. </td> </tr>
-					<tr>
-						<td> -lxt &lt;dumpfile&gt; </td>
-						<td>
-						Name of LXT/LXT2 dumpfile to score design with. If this option or
-						the -vcd option is not used, Covered will only create an initial
-						CDD file from the design and will not attempt to score the
-						design. </td></tr> 
-					<tr> 
-						<td> -i &lt;instance&gt; </td> 
-						<td>
-						Instance name of top-level module. Necessary if module to verify 
-						coverage is not the top-level module in the design. If not 
-						specified, -t value is used. </td> </tr> 
-					<tr> 
-						<td> -o &lt;<i>filename</i>&gt; </td> 
-						<td> Name of CDD to write coverage information to </td> </tr> 
-					<tr> 
-						<td> -I &lt;<i>directory</i>&gt; </td> 
-						<td> 
-						Directory to find included Verilog files. You may use this option 
-						as many times as necessary on the command-line, one for each 
-						directory. </td> </tr> 
-					<tr> 
-						<td> -f &lt;<i>filename</i>&gt; </td> 
-						<td> 
-						Name of file containing additional arguments to parse. You may 
-						specify this option more than once on a command-line. </td> </tr> 
-					<tr> 
-						<td> -y &lt;<i>directory</i>&gt; </td> 
-						<td> 
-						Directory to find unspecified Verilog files. You may specify this 
-						option more than once on a command-line; one for each directory 
-						required. </td> </tr> 
-					<tr> 
-						<td> -v &lt;<i>filename</i>&gt; </td> 
-						<td> 
-						Name of specific Verilog file to score. You may specify this option 
-						more than once on a command-line; one for each filename to parse. </td> </tr> 
-					<tr> 
-						<td> -e &lt;<i>module</i>&gt; </td> 
-						<td> 
-						Name of module, task, function or named begin/end block to not score. You may 
-						specify this option more than once on a command-line; one for each 
-						block to remove from coverage. </td> </tr>
-					<tr>
-						<td> -ea </td>
-						<td>
-						Specifies that all always blocks in the design should be excluded from
-						coverage consideration.  This option may help to increase performance
-						of the score command if all always blocks in the design do not need to
-						be checked for coverage.  By default, always blocks are considered for
-						coverage. </td> </tr>
-					<tr>
-						<td> -ec </td>
-						<td>
-						Specifies that all continuous assignments in the design should be
-						excluded from coverage consideration.  This option may help to increase
-						performance of the score command if all assign blocks in the design do
-						not need to be checked for coverage.  By default, continuous assignments
-						are considered for coverage. </td> </tr>
-					<tr>
-						<td> -ei </td>
-						<td>
-						Specifies that all initial blocks in the design should be excluded
-						from coverage consideration.  This option may help to increase
-						performance of the score command if all initial blocks in the design
-						do not need to be checked for coverage.  By default, initial blocks
-						are considered for coverage. </td> </tr>
-					<tr> 
-						<td> -D &lt;name&gt;(=&lt;value&gt;) </td> 
-						<td> Defines the specified name to 1 or the specified value. </td> </tr> 
-					<tr> 
-						<td> -p &lt;filename&gt; </td> 
-						<td> 
-						Overrides filename used for outputting intermediate preprocessor 
-						output. See "Other Notes" section below for more information. </td> </tr> 
-					<tr> 
-						<td> -P &lt;parameter_scope&gt;=&lt;value&gt; </td> 
-						<td> Performs a defparam on the specified parameter with value. </td> </tr> 
-					<tr> 
-						<td> -T min|typ|max </td> 
-						<td> 
-						Specifies which value to use in min:typ:max delay expressions. Default 
-						is typ. </td> </tr> 
-					<tr> 
-						<td> -ts &lt;number&gt; </td> 
-						<td> 
-						When scoring occurs, this option allows the user to see how far the 
-						simulator has progressed by outputting the current timestep to standard 
-						output. The value of &lt;number&gt; specifies how many timesteps are 
-						allowed to be simulated before outputting the current timestep 
-						(results in less calls to output stream). </td> </tr> 
-					<tr> 
-						<td> -F &lt;module&gt;=(&lt;in_expr&gt;,)&lt;out_expr&gt; </td> 
-						<td> 
-						Specifies the location to find an FSM to score where <i>module</i> 
-						is the Verilog module containing the FSM, <i>in_expr</i> is the 
-						input state expression and <i>out_expr</i> is the output state 
-						expression. If <i>in_expr</i> is not specified, <i>out_expr</i> is 
-						used as both the input and output state expression. </td> </tr> 
-					<tr> 
-						<td> -r(S|W|E) </td> 
-						<td>
-						Determines Covered's behavior for handling found race conditions 
-						in design (-rS = do not output information but continue scoring 
-						design, -rW = output information and continue scoring design, 
-						-rE = output information and immediately exit the scoring 
-						process). </td> </tr> 
-					<tr> 
-						<td> -h </td> 
-						<td> Outputs usage information for the score command </td> </tr> 
-				</table><br>
-          </TD>
-          <TD>
-            <P class="blockIndentRight">&nbsp;</P>
-          </TD>
-        </TR>
-      </TABLE>
-
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="header2">9.3&nbsp; <A name="9_3"></A>Specifying What to Cover</P>
+      parameter STATE_IDLE = 2'b00,
+                STATE_HEAD = 2'b01,
+                STATE_DATA = 2'b10,
+                STATE_TAIL = 2'b11;
+                
+      reg [1:0] state;
+      reg [1:0] next_state;
+      
+      always @(posedge clock)
+        state <= reset ? STATE_IDLE : next_state;
+        
+      always @(reset or state or head or valid or tail)
+        begin
+          case( state )
+            STATE_IDLE: next_state = (valid & head) ? STATE_HEAD : STATE_IDLE;
+            STATE_HEAD: next_state = (valid & tail) ? STATE_TAIL : STATE_DATA;
+            STATE_DATA: next_state = (valid & tail) ? STATE_TAIL : STATE_DATA;
+            STATE_TAIL: next_state = (valid & head) ? STATE_HEAD : STATE_IDLE;
+          endcase
+        end
+        
+      endmodule</PRE></P>
     </TD>
   </TR>
 
@@ -310,479 +245,31 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      Covered is not a logic simulator and, therefore, is not required to parse the 
-      entire DUT. True simulation is performed by the Verilog simulator used to 
-      generate the VCD/LXT dumpfile. Covered, therefore, is given the ability to parse 
-      only the part of the DUT that is to be scored for coverage. Having this ability 
-      to ignore parts of the DUT has several advantages in the way of performance. 
-      Less memory is necessary for coverage simulation/calculation. Additionally, 
-      less processing is also required which leads to faster turnaround. On the 
-      other hand, since Covered ignores the parts of the design not being scored, 
-      some information is not automatically extracted by Covered that is required 
-      for scoring the specified part of the DUT. The <i>defparam</i> statement is 
-      one such statement. More on this is mentioned in the following section. </P>
+      This example shows an FSM that has an input FSM variable called "state" and an 
+      output FSM variable called "next_state". There are four states in the state 
+      machine that are represented with the parameters located in this module 
+      (STATE_IDLE, STATE_HEAD, STATE_DATA, STATE_TAIL). There are a total of eight (8) 
+      state transitions that this FSM can take. They are the following:</P>
     </TD>
   </TR>
 
   <TR>
     <TD></TD>
     <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      The following example describes a complete DUT and how to cause Covered 
-      to score various parts of the DUT.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin">Figure</P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg"><img src="img/vhier.png"></P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      Assume that the following Verilog modules are used to create this tree.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      <ul> 
-      	<li>module "test" instantiated as "test" in the above figure</li> 
-      	<li>module "foomod" instantiated as "foo"</li> 
-      	<li>module "barmod" instantiated as "bar"</li> 
-      	<li>module "amod" instantiated as "a"</li> 
-      	<li>module "bmod" instantiated as "b"</li> 
-      </ul></P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      To get coverage for the entire design, the covered command line would be:</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin">Command</P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="code">covered score -t test -i test (rest of command-line)</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      Because both the -t and -i options are the same value (the module name is 
-      the same as the instance name), only the -t option needs to be specified. 
-      If the -i option is not specified, Covered will assume that the instance 
-      name of the top module is the same name as the top module itself. Note that 
-      the -t option always needs to be specified for the score command.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      To get coverage for the instance foo and all modules below it, the 
-      covered command line would be:</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin">Command</P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="code">covered score -t foomod -i test.foo (rest of command-line)</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      In this case, we do not wish to score the module test (the top-level file 
-      for the design) but rather wish to gain coverage information for module 
-      foomod and all instantiated modules underneath it. Since foomod is not 
-      the top-level design file, the -i option must be specified to tell Covered 
-      what the hierarchical scope of the top-level score file is in relation to 
-      the entire design. The main reason why this is necessary is so that Covered 
-      will be able to locate the dumpfile information for the modules/instances 
-      that need to be scored.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      To get coverage for only the instance foo (and none of the modules 
-      instantiated below it in the hierarchy), Covered command-line would look 
-      like the following:</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin">Command</P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="code">covered score -t foomod -i test.foo -e amod -e bmod</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      Here we see the use of the -e option, it takes a module name as its 
-      value. When a module with the matching name is found in the 
-      hierarchy, it and all of its submodules are removed from coverage. You 
-      may specify as many -e arguments as necessary to select the appropriate 
-      modules to cover.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      To get coverage for the instance foo and all modules below it, in 
-      addition to the instance bar, you would have to run Covered twice (once 
-      for each top instance).</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      The -vcd &lt;<i>vcd_dumpfile</i>&gt; or -lxt &lt;<i>lxt_dumpfile</i>&gt;
-      parameter is simply the name of the VCD/LXT dumpfile that contains all of 
-      the module instances selected by the -t parameter (in combination with the 
-      -e option -- see below).</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="header2">9.4&nbsp; <A name="9_4"></A>Overriding Parameters (-P option)</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      As mentioned in Section 9.3, Covered does not pay attention to the entire 
-      DUT. This allows it to be more flexible and more efficient in memory and 
-      processing requirements. This also has a down-side in that certain parts of 
-      the DUT are not parsed which can affect other parts of the DUT (parts 
-      needing to be scored). More specifically, parameter overriding which are 
-      accomplished with the <i>defparam</i> command.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      The <i>defparam</i> statement can override any parameter specified in 
-      the DUT from any module in the DUT. Since parameter information is not 
-      typically specified in VCD/LXT dumpfiles, Covered needs to know about all 
-      parameter values at score time. Since all defparam statements are ignored 
-      by the Covered parser (even those in the DUT being scored), the user must 
-      inform Covered of any parameters that need to be overridden. This is 
-      accomplished with the -P option to the score command.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      The first value in the -P option is the hierarchical reference to the 
-      parameter that needs to be overridden. The second value (following the 
-      '=' sign) specifies the value to assign the parameter to. This will 
-      override any default value assigned to that parameter. The user may not 
-      override the same parameter value twice on the command-line. Additionally, 
-      if the parameter is already being overridden in the design via an inline 
-      parameter override (parameter overrides specified in the '#(...)' part 
-      of the module instantiation).</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      As an example of how to override a parameter value on the score 
-      command-line, let's assume that there is a parameter called 'google' 
-      in the module called 'amod' used in the example in Section 9.3. The 
-      parameter definition in this module looks like the following:</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="code">parameter google = 4'hf;</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      To override this value to a new value of 18, use the following option 
-      in the score command:</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin">Option Example</P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="code">-P test.foo.a.google=18</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      In this example, notice that we have not only changed the value 
-      of google, but we have also changed the bit-width of google from 
-      4 bits to 32 bits (the size of an integer). This is considered legal 
-      behavior by Covered.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      It is also possible to specify non-integer values to the parameter 
-      override option. Decimal, binary, octal and hexidecimal values may 
-      also be specified, using the same syntax as they are specified in 
-      Verilog. The following examples would also be other ways to override 
-      the value to 18.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="code">-P test.foo.a.google=5'b10010<br> -P test.foo.a.google=4'o22<br> -P test.foo.a.google=12'h12<br> -P test.foo.a.google='d18<br></P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      In fact, you may specify any value (with the exception of real numbers) 
-      to override a parameter, including the following value types: 'x', 'X', 
-      'z', 'Z', '_', '?'. This means that unknowns may be specified in a 
-      parameter. Note that this may generate user reported errors if parameters 
-      overridden to unknown values are used in mathematical equations or are 
-      used to specify the width of wires, regs, etc.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      If a defparam statement is encountered in the DUT being scored, a warning 
-      message will be output to the user specifying that it has encountered a 
-      defparam statement. The defparam statement is ignored by Covered; however, 
-      if the parameter that it is overridding is used in the DUT being scored, 
-      the results of Covered may differ from actual simulation results. As such, 
-      please review all of these warning types to determine if the parameter 
-      should be overridden or not. If defparams are not parsed (seen by Covered), 
-      no such warning will be output. Please review the DUT for defparams which 
-      affect the DUT being scored.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="header2">9.5&nbsp; <A name="9_5"></A>Scoring FSMs</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      At this time Covered does not have the ability to automatically 
-      extract FSM information from the design. As a result, it is up to 
-      the user to specify FSM information for Covered to use in scoring FSMs. 
-      The ability to automatically extract FSM information is planned to be 
-      supported in the future; however, it is always a good idea to allow the 
-      user to specify and potentially override Covered's automatic extraction 
-      in the case where Covered either misses an FSM or incorrectly determines 
-      logic to be an FSM in cases where none exists. The information specified 
-      in this section describes how to tell Covered where an FSM exists within 
-      the design as of the current development version of Covered.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      First, we need to make a few assumptions about the type of FSMs that Covered 
-      will be able to handle and, in the future, identify.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
+      <P class="margin">FSM state transitions</P>
     </TD>
     <TD></TD>
     <TD valign=top>
       <P class="pg">
       <ol> 
-      	<li>The FSM is a synchronous design with edge-triggered flip-flops.</li> 
-      	<li>There are no FSMs embedded in another FSM.</li> 
-      	<li>The FSM is not a pipe-lined system.</li> 
-      	<li>The entire FSM must exist within the same module.</li> 
-      	<li>All state registers/variables must be less than 2^16 bits in width.</li>
+        <li> STATE_IDLE -> STATE_IDLE (loopback) </li> 
+        <li> STATE_IDLE -> STATE_HEAD </li> 
+        <li> STATE_HEAD -> STATE_DATA </li> 
+        <li> STATE_HEAD -> STATE_TAIL </li> 
+        <li> STATE_DATA -> STATE_DATA (loopback) </li> 
+        <li> STATE_DATA -> STATE_TAIL </li> 
+        <li> STATE_TAIL -> STATE_HEAD </li> 
+        <li> STATE_TAIL -> STATE_IDLE </li> 
       </ol></P>
     </TD>
   </TR>
@@ -795,11 +282,8 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      There is currently only one way, via the command-line, to specify to 
-      Covered where to find FSMs within the design. In the future, the inline 
-      Verilog-2001 "$attribute" function will be used to also allow the user to 
-      specify to Covered where an FSM is located. Using the command-line method, 
-      no changes need to be to source Verilog code for Covered's purposes.</P>
+      All attributes that specify information for an FSM are a comma-separated list of 
+      values that contain the following information:</P>
     </TD>
   </TR>
 
@@ -811,74 +295,52 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      To specify where an FSM exists within the design, the -F option must be 
-      specified to Covered's score command. Each -F option specifies one FSM 
-      within the design. Multiple -F options to the score command are allowed, 
-      allowing more than one FSM to be scored simultaneously. The -F option 
-      takes one argument that is subdivided into two or three parts:</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin">FSM score option</P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">-F &lt;module&gt;=(&lt;input_state_expression&gt;,)&lt;output_state_expression&gt;</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      The &lt;module&gt; specifies the Verilog module where the FSM state 
-      variables exist. The &lt;input_state_expression&gt; specifies the name 
-      of the variable(s) that represent the input state of the state machine. 
-      The &lt;output_state_expression&gt; specifies the name of the variable(s) 
-      that represent the output state of the state machine. Most FSMs have one 
-      variable as the input state (in most cases a registered version of the 
-      output state) such that the input variable is different than the output 
-      variable of the state machine. Specifying both variables in the -F option 
-      provides the user to more accurately specify to Covered the FSM. In the 
-      case that an FSM has the same variable for the input and output state, 
-      the user must specify only the output state variable (omitting the 
-      &lt;input_state_expression&gt; and comma character in the argument).</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      The input and output expression to the -F command can represent any 
-      signals, parts of signals, or combinations of signals. Constant values or 
-      parameters in the specification of the input/output expression is 
-      currently not supported (in fact, there are no future plans to support 
-      this behavior unless user-feedback demands it). The following examples 
-      show various legal ways to specify input/output expressions. The syntax 
-      is limited to what it shown in these examples.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin">Example 1</P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="code">-F foobar=a</P>
+      <ol> 
+        <li> "covered_fsm" attribute keyword 
+          <ul> 
+            <li> MUST be first value in the attribute list </li> 
+            <li> Specifies to Covered that this attribute contains information for an 
+                 FSM that Covered needs to handle. </li> 
+          </ul></li> 
+        <li> FSM identifier 
+          <ul> 
+            <li> MUST be second value in the attribute list </li> 
+            <li> Specifies a alphanumeric name for this FSM. </li> 
+            <li> The name will eventually be used to tie individual attributes that specify 
+                 information for the same FSM. </li> 
+        </ul></li> 
+        <li> Input state expression (optional) 
+          <ul> 
+            <li> Syntax: <code>is="</code><i>expression</i><code>"</code> </li> 
+            <li> If this is specified, MUST be specified third in the list. </li> 
+            <li> Specifies the input state expression. </li> 
+            <li> Can be a combination of signal names, signal bit selects, and 
+                 concatenation operators. </li> 
+            <li> See "Section 8.5. Specifying an FSM" for more information on the 
+                 specification of an input state expression. </li> 
+          </ul></li> 
+        <li> Output state expression 
+          <ul> 
+            <li> Syntax: <code>os="</code><i>expression</i><code>"</code> </li> 
+            <li> If the input state expression is specified, MUST be fourth value in 
+                 list; otherwise, MUST be third value in list. </li> 
+            <li> Specifies the output state expression of the FSM. </li> 
+            <li> Can be a combination of signal names, signal bit selects, and 
+                 concatenation operators. </li> 
+            <li> See "Section 8.5. Specifying an FSM" for more information on the 
+                 specification of an output state expression. </li> 
+          </ul></li> 
+        <li> State-transition specifiers (optional) 
+          <ul> 
+            <li> Syntax: <code>trans="</code><i>from_state</i><code>-&gt;</code><i>to_state</i><code>"</code> </li> 
+            <li> MUST be specified after the above has been specified in the list. </li> 
+            <li> Arguments MUST be constant values (parameters; numerical values -- 
+                 binary, octal, decimal, hexidecimal; and defines that equate to one of 
+                 these two types of values).</li> 
+            <li> Each transition that is specified is a unique value in the attribute 
+                 list. </li> 
+          </ul></li> 
+      </ol> </P>
     </TD>
   </TR>
 
@@ -890,180 +352,32 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      Example 1 specifies that the entire vector called "a" should be considered 
-      both the input and output state variable.</P>
+      To specify the FSM attribute in the above example, including input state, 
+      output state and all state transitions, the code would be modified to look like:</P>
     </TD>
   </TR>
 
   <TR>
     <TD></TD>
     <TD valign=top>
-      <P class="margin">Example 2</P>
+      <P class="margin">Modified Example</P>
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="code">-F foobar=a[2]</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      Example 2 specifies that bit 2 of the vector called "a" should be considered 
-      both the input and output state variable.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin">Example 3</P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="code">-F foobar=a[3:1]</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      Example 3 specifies that bits 3:1 of the vector called "a" should be 
-      considered both the input and output state variable.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin">Example 4</P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="code">-F foobar={a,b}</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      Example 4 specifies that vectors "a" and "b" should be concatenated to 
-      form the input/output state variable. Only one set of curly brackets may 
-      be used to specify a concatenated state expression; however, 2 or more 
-      signals may be specified within those brackets.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      Any combination of the above four examples can be used to formalate the 
-      input state expression or the output state expression.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      If the user specifies an FSM that Covered is not able to find (either the 
-      module was not included in the design that Covered is scoring or the FSM 
-      uses Verilog code that Covered is not able to handle), an error message 
-      is displayed to the user. It is then up to the user to determine if the 
-      FSM was incorrectly specified to Covered or otherwise. This warning is 
-      not considered to be a bug in Covered (unless of course, it can be proven 
-      that the FSM should have been found).</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      At the current time, Covered does not have the ability to extract the 
-      states and state transitions of the specified FSM from the design. 
-      Currently, it also doesn't have the ability to specify this information 
-      in other ways. To provide meaningful coverage information for the FSM, 
-      Covered outputs all hit states and state transitions in the report when 
-      all achievable states and state transitions are not known. This 
-      information will be able to be specified by the user in future versions 
-      of Covered, with the ability to automatically extract this information 
-      also in the works.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="header2">9.6&nbsp; <A name="9_6"></A>Other Notes</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      When the Verilog files are parsed, a preprocessor is run on each file that 
-      is to be read in by Covered. The preprocessor generates an intermediate 
-      form of each file, resolving defined values and included files. The 
-      intermediate form is output to a file which is called "tmpXXXXXX" where 
-      XXXXXX represents some alphanumeric sequence chosen by the OS via 
-      the mkstemp() function. The file is guaranteed to be unique to all other 
-      files in the directory and it is automatically removed by Covered when 
-      parsing is completed.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      If the user does not want Covered to use this naming convention for 
-      specifying this file, the user may use the -p option (see Options section 
-      above) to override the default name. Covered will then use this filename 
-      instead of generating a unique name. Make sure that the file specified 
-      does not contain any useful data since Covered will overwrite this file 
-      when the score command is run.</P>
+      <P class="code"><PRE>
+      ...
+      
+      (* covered_fsm, channel, is="state", os="next_state",
+                               trans="STATE_IDLE-&gt;STATE_IDLE",
+                               trans="STATE_IDLE-&gt;STATE_HEAD",
+                               trans="STATE_HEAD-&gt;STATE_DATA",
+                               trans="STATE_HEAD-&gt;STATE_TAIL",
+                               trans="STATE_DATA-&gt;STATE_DATA",
+                               trans="STATE_DATA-&gt;STATE_TAIL",
+                               trans="STATE_TAIL-&gt;STATE_HEAD",
+                               trans="STATE_TAIL-&gt;STATE_IDLE" *)
+       always @(reset or state or head or tail or valid)
+         ...</PRE></P>
     </TD>
   </TR>
 
@@ -1080,9 +394,33 @@
        <A href="013.html">Previous Page</A>&nbsp;&nbsp;|&nbsp;
        <A href="index.html">Home</A>&nbsp;
        &nbsp;|&nbsp;<A href="015.html">Next Page</A>&nbsp;&nbsp;|&nbsp;
-       <A href="023.html">Last Page</A>&nbsp;
+       <A href="025.html">Last Page</A>&nbsp;
        ]<BR>
-       [&nbsp; <A href="001.html">1</A>&nbsp;|&nbsp;<A href="002.html">2</A>&nbsp;|&nbsp;<A href="003.html">3</A>&nbsp;|&nbsp;<A href="004.html">4</A>&nbsp;|&nbsp;<A href="005.html">5</A>&nbsp;|&nbsp;<A href="006.html">6</A>&nbsp;|&nbsp;<A href="007.html">7</A>&nbsp;|&nbsp;<A href="008.html">8</A>&nbsp;|&nbsp;<A href="009.html">9</A>&nbsp;|&nbsp;<A href="010.html">10</A>&nbsp;|&nbsp;<A href="011.html">11</A>&nbsp;|&nbsp;<A href="012.html">12</A>&nbsp;|&nbsp;<A href="013.html">13</A>&nbsp;|&nbsp;<A href="014.html">14</A>&nbsp;|&nbsp;<A href="015.html">15</A>&nbsp;|&nbsp;<A href="016.html">16</A>&nbsp;|&nbsp;<A href="017.html">17</A>&nbsp;|&nbsp;<A href="018.html">18</A>&nbsp;|&nbsp;<A href="019.html">19</A>&nbsp;|&nbsp;<A href="020.html">20</A>&nbsp;|&nbsp;<A href="021.html">21</A>&nbsp;|&nbsp;<A href="022.html">22</A>&nbsp;|&nbsp;<A href="023.html">23</A> &nbsp;]
+       [&nbsp;<A href="001.html">1</A>&nbsp;|
+        &nbsp;<A href="002.html">2</A>&nbsp;|
+        &nbsp;<A href="003.html">3</A>&nbsp;|
+        &nbsp;<A href="004.html">4</A>&nbsp;|
+        &nbsp;<A href="005.html">5</A>&nbsp;|
+        &nbsp;<A href="006.html">6</A>&nbsp;|
+        &nbsp;<A href="007.html">7</A>&nbsp;|
+        &nbsp;<A href="008.html">8</A>&nbsp;|
+        &nbsp;<A href="009.html">9</A>&nbsp;|
+        &nbsp;<A href="010.html">10</A>&nbsp;|
+        &nbsp;<A href="011.html">11</A>&nbsp;|
+        &nbsp;<A href="012.html">12</A>&nbsp;|
+        &nbsp;<A href="013.html">13</A>&nbsp;|
+        &nbsp;<A href="014.html">14</A>&nbsp;|
+        &nbsp;<A href="015.html">15</A>&nbsp;|
+        &nbsp;<A href="016.html">16</A>&nbsp;|
+        &nbsp;<A href="017.html">17</A>&nbsp;|
+        &nbsp;<A href="018.html">18</A>&nbsp;|
+        &nbsp;<A href="019.html">19</A>&nbsp;|
+        &nbsp;<A href="020.html">20</A>&nbsp;|
+        &nbsp;<A href="021.html">21</A>&nbsp;|
+        &nbsp;<A href="022.html">22</A>&nbsp;|
+        &nbsp;<A href="023.html">23</A>&nbsp;|
+        &nbsp;<A href="024.html">24</A>&nbsp;|
+        &nbsp;<A href="025.html">25</A>&nbsp;]
        <BR>
        <B>License: GPL</B><BR>
        This Manual was created with <A HREF="http://manstyle.sourceforge.net">ManStyle</A>.
