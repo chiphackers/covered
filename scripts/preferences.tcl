@@ -5,17 +5,25 @@
 ##################################
 
 # Global variables (eventually we will want to get/save these to a configuration file!)
-set uncov_fgColor    blue
-set uncov_bgColor    yellow
-set cov_fgColor      black
-set cov_bgColor      white
-set race_fgColor     white
-set race_bgColor     blue
-set line_low_limit   90
-set toggle_low_limit 90
-set comb_low_limit   90
-set fsm_low_limit    90
-set rc_file_to_write ""
+set uncov_fgColor           blue
+set uncov_bgColor           yellow
+set cov_fgColor             black
+set cov_bgColor             white
+set race_fgColor            white
+set race_bgColor            blue
+set line_low_limit          90
+set toggle_low_limit        90
+set comb_low_limit          90
+set fsm_low_limit           90
+set vlog_hl_mode            on
+set vlog_hl_ppkeyword_color ForestGreen
+set vlog_hl_keyword_color   purple
+set vlog_hl_comment_color   blue
+set vlog_hl_value_color     red
+set vlog_hl_string_color    red
+set vlog_hl_symbol_color    coral
+set rc_file_to_write        ""
+set hl_mode                 0
 
 # Create a list from 100 to 0
 for {set i 100} {$i >= 0} {incr i -1} {
@@ -79,6 +87,20 @@ proc read_coveredrc {} {
           set comb_low_limit $value
         } elseif {$field == "AcceptableFsmPercentage"} {
           set fsm_low_limit $value
+        } elseif {$field == "HighlightingMode"} {
+          set vlog_hl_mode $value
+        } elseif {$field == "HighlightPreprocessorKeywordColor"} {
+          set vlog_hl_ppkeyword_color $value
+        } elseif {$field == "HighlightKeywordColor"} {
+          set vlog_hl_keyword_color $value
+        } elseif {$field == "HighlightCommentColor"} {
+          set vlog_hl_comment_color $value
+        } elseif {$field == "HighlightValueColor"} {
+          set vlog_hl_value_color $value
+        } elseif {$field == "HighlightStringColor"} {
+          set vlog_hl_string_color $value
+        } elseif {$field == "HighlightSymbolColor"} {
+          set vlog_hl_symbol_color $value
         }
 
       }
@@ -107,71 +129,109 @@ proc write_coveredrc {} {
     puts $rc "#--------------------------------"
     puts $rc "# All variable assignments below are in the form of \"variable = value\""
     puts $rc "# where whitespace must be present between the variable, the \"=\" character"
-    puts $rc "# and the value.  Comment lines start with the \"#\" character."
+    puts $rc "# and the value.  Comment lines start with the \"#\" character.\n"
 
     puts $rc "# Sets the foreground color for all source code that is found"
     puts $rc "# to be uncovered during simulation.  The value can be any legal color"
-    puts $rc "# value accepted by Tcl."
+    puts $rc "# value accepted by Tcl.\n"
 
-    puts $rc "UncoveredForegroundColor = $uncov_fgColor"
+    puts $rc "UncoveredForegroundColor = $uncov_fgColor\n"
 
     puts $rc "# Sets the background color for all source code that is found"
     puts $rc "# to be uncovered during simulation.  The value can be any legal color"
     puts $rc "# value accepted by Tcl.\n"
 
-    puts $rc "UncoveredBackgroundColor = $uncov_bgColor"
+    puts $rc "UncoveredBackgroundColor = $uncov_bgColor\n"
 
     puts $rc "# Sets the foreground color for all source code that is found"
     puts $rc "# to be covered during simulation.  The value can be any legal color value"
     puts $rc "# accepted by Tcl.\n"
 
-    puts $rc "CoveredForegroundColor = $cov_fgColor"
+    puts $rc "CoveredForegroundColor = $cov_fgColor\n"
 
     puts $rc "# Sets the background color for all source code that is found"
     puts $rc "# to be covered during simulation.  The value can be any legal color value."
-    puts $rc "# accepted by Tcl."
+    puts $rc "# accepted by Tcl.\n"
 
-    puts $rc "CoveredBackgroundColor = $cov_bgColor"
+    puts $rc "CoveredBackgroundColor = $cov_bgColor\n"
 
     puts $rc "# Sets the foreground color for all source code that has been detected as"
     puts $rc "# containing a race condition situation.  This code is not analyzed by Covered."
     puts $rc "# The value can be any legal color value accepted by Tcl.\n"
 
-    puts $rc "RaceConditionForegroundColor = $race_fgColor"
+    puts $rc "RaceConditionForegroundColor = $race_fgColor\n"
 
     puts $rc "# Sets the background color for all source code that has been detected as"
     puts $rc "# containing a race condition situation.  This code is not analyzed by Covered."
     puts $rc "# The value can be any legal color value accepted by Tcl.\n"
 
-    puts $rc "RaceConditionBackgroundColor = $race_bgColor"
+    puts $rc "RaceConditionBackgroundColor = $race_bgColor\n"
 
     puts $rc "# Causes the summary color for a module/instance that has achieved a line"
     puts $rc "# coverage percentage greater than or equal to this value (but not 100%) to be"
     puts $rc "# colored \"yellow\", indicating that the line coverage can possibly be deemed"
     puts $rc "# \"good enough\".  This value must be in the range of 0 - 100.\n"
 
-    puts $rc "AcceptableLinePercentage = $line_low_limit"
+    puts $rc "AcceptableLinePercentage = $line_low_limit\n"
 
     puts $rc "# Causes the summary color for a module/instance that has achieved a toggle"
     puts $rc "# coverage percentage greater than or equal to this value (but not 100%) to be"
     puts $rc "# colored \"yellow\", indicating that the toggle coverage can possibly be deemed"
     puts $rc "# \"good enough\".  This value must be in the range of 0 - 100.\n"
 
-    puts $rc "AcceptableTogglePercentage = $toggle_low_limit"
+    puts $rc "AcceptableTogglePercentage = $toggle_low_limit\n"
 
     puts $rc "# Causes the summary color for a module/instance that has achieved a combinational"
     puts $rc "# logic coverage percentage greater than or equal to this value (but not 100%) to be"
     puts $rc "# colored \"yellow\", indicating that the combinational logic coverage can possibly be"
     puts $rc "# deemed \"good enough\".  This value must be in the range of 0 - 100.\n"
 
-    puts $rc "AcceptableCombinationalLogicPercentage = $comb_low_limit"
+    puts $rc "AcceptableCombinationalLogicPercentage = $comb_low_limit\n"
 
     puts $rc "# Causes the summary color for a module/instance that has achieved an FSM state/arc"
     puts $rc "# coverage percentage greater than or equal to this value (but not 100%) to be"
     puts $rc "# colored \"yellow\", indicating that the FSM coverage can possibly be deemed"
     puts $rc "# \"good enough\".  This value must be in the range of 0 - 100.\n"
 
-    puts $rc "AcceptableFsmPercentage = $fsm_low_limit"
+    puts $rc "AcceptableFsmPercentage = $fsm_low_limit\n"
+
+    puts $rc "# Causes syntax highlighting to be turned on or off.  This value should either be"
+    puts $rc "# 'on' or 'off'.\n"
+
+    puts $rc "HighlightingMode = $vlog_hl_mode\n"
+
+    puts $rc "# When the syntax highlighting mode is on, causes the preprocessor directive keywords"
+    puts $rc "# to be highlighted with the specified color.  The value may be any color value that"
+    puts $rc "# is acceptable to Tk.\n"
+
+    puts $rc "HighlightPreprocessorKeywordColor = $vlog_hl_ppkeyword_color\n"
+
+    puts $rc "# When the syntax highlighting mode is on, causes the Verilog keywords to be highlighted"
+    puts $rc "# with the specified color.  The value may be any color value that is acceptable to Tk.\n"
+
+    puts $rc "HighlightKeywordColor = $vlog_hl_keyword_color\n"
+
+    puts $rc "# When the syntax highlighting mode is on, causes any single or multi-line comments to"
+    puts $rc "# be highlighted with the specified color.  The value may be any color value that is"
+    puts $rc "# acceptable to Tk.\n"
+
+    puts $rc "HighlightCommentColor = $vlog_hl_comment_color\n"
+
+    puts $rc "# When the syntax highlighting mode is on, causes any defined, binary, octal, decimal or"
+    puts $rc "# hexidecimal value to be highlighted with the specified color.  The value may be any"
+    puts $rc "# color value that is acceptable to Tk.\n"
+
+    puts $rc "HighlightValueColor = $vlog_hl_value_color\n"
+
+    puts $rc "# When the syntax highlighting mode is on, causes any quoted string to be highlighted with"
+    puts $rc "# the specified color.  The value may be any color value that is acceptable to Tk.\n"
+
+    puts $rc "HighlightStringColor = $vlog_hl_string_color\n"
+
+    puts $rc "# When the syntax highlighting mode is on, causes any Verilog symbol to be highlighted with"
+    puts $rc "# the specified color.  The value may be any color value that is acceptable to Tk.\n"
+
+    puts $rc "HighlightSymbolColor = $vlog_hl_symbol_color\n"
 
     flush $rc
     close $rc
@@ -189,6 +249,15 @@ proc create_preferences {} {
   global toggle_low_limit tmp_toggle_low_limit
   global comb_low_limit   tmp_comb_low_limit
   global fsm_low_limit    tmp_fsm_low_limit
+  global vlog_hl_mode            tmp_vlog_hl_mode
+  global vlog_hl_ppkeyword_color tmp_vlog_hl_ppkeyword_color
+  global vlog_hl_keyword_color   tmp_vlog_hl_keyword_color
+  global vlog_hl_comment_color   tmp_vlog_hl_comment_color
+  global vlog_hl_value_color     tmp_vlog_hl_value_color
+  global vlog_hl_string_color    tmp_vlog_hl_string_color
+  global vlog_hl_symbol_color    tmp_vlog_hl_symbol_color
+  global hl_mode
+
 
   # Now create the window and set the grab to this window
   if {[winfo exists .prefwin] == 0} {
@@ -199,12 +268,19 @@ proc create_preferences {} {
     set bpady   4
 
     # Initialize all temporary preference values
-    set tmp_cov_fgColor      $cov_fgColor
-    set tmp_cov_bgColor      $cov_bgColor
-    set tmp_uncov_fgColor    $uncov_fgColor
-    set tmp_uncov_bgColor    $uncov_bgColor
-    set tmp_race_fgColor     $race_fgColor
-    set tmp_race_bgColor     $race_bgColor
+    set tmp_cov_fgColor             $cov_fgColor
+    set tmp_cov_bgColor             $cov_bgColor
+    set tmp_uncov_fgColor           $uncov_fgColor
+    set tmp_uncov_bgColor           $uncov_bgColor
+    set tmp_race_fgColor            $race_fgColor
+    set tmp_race_bgColor            $race_bgColor
+    set tmp_vlog_hl_mode            $vlog_hl_mode
+    set tmp_vlog_hl_ppkeyword_color $vlog_hl_ppkeyword_color
+    set tmp_vlog_hl_keyword_color   $vlog_hl_keyword_color
+    set tmp_vlog_hl_comment_color   $vlog_hl_comment_color
+    set tmp_vlog_hl_value_color     $vlog_hl_value_color
+    set tmp_vlog_hl_string_color    $vlog_hl_string_color
+    set tmp_vlog_hl_symbol_color    $vlog_hl_symbol_color
 
     # Create new window
     toplevel .prefwin
@@ -289,6 +365,91 @@ proc create_preferences {} {
       grid .prefwin.limits.fl -row 4 -column 0 -sticky news
       grid .prefwin.limits.fs -row 4 -column 1 -sticky news
 
+    ####################################
+    # Create Syntax Highlighting Frame #
+    ####################################
+
+      # Create widgets
+      frame .prefwin.syntax -relief raised -borderwidth 1
+      label .prefwin.syntax.l -anchor w -text "Set Syntax Highlighting Options"
+
+      checkbutton .prefwin.syntax.mcb -variable tmp_vlog_hl_mode -onvalue on -offvalue off -anchor e \
+                                      -text "Turn on syntax highlighting mode" -command {
+        if {$tmp_vlog_hl_mode == on} {
+          .prefwin.syntax.ppcl configure -state normal
+          .prefwin.syntax.ppcb configure -state normal
+          .prefwin.syntax.pcl  configure -state normal
+          .prefwin.syntax.pcb  configure -state normal
+          .prefwin.syntax.ccl  configure -state normal
+          .prefwin.syntax.ccb  configure -state normal
+          .prefwin.syntax.vcl  configure -state normal
+          .prefwin.syntax.vcb  configure -state normal
+          .prefwin.syntax.stcl configure -state normal
+          .prefwin.syntax.stcb configure -state normal
+          .prefwin.syntax.sycl configure -state normal
+          .prefwin.syntax.sycb configure -state normal
+        } else {
+          .prefwin.syntax.ppcl configure -state disabled
+          .prefwin.syntax.ppcb configure -state disabled
+          .prefwin.syntax.pcl  configure -state disabled
+          .prefwin.syntax.pcb  configure -state disabled
+          .prefwin.syntax.ccl  configure -state disabled
+          .prefwin.syntax.ccb  configure -state disabled
+          .prefwin.syntax.vcl  configure -state disabled
+          .prefwin.syntax.vcb  configure -state disabled
+          .prefwin.syntax.stcl configure -state disabled
+          .prefwin.syntax.stcb configure -state disabled
+          .prefwin.syntax.sycl configure -state disabled
+          .prefwin.syntax.sycb configure -state disabled
+        }
+      }
+
+      label .prefwin.syntax.ppcl -anchor e -text "Preprocessor keyword highlight color:"
+      button .prefwin.syntax.ppcb -bg $vlog_hl_ppkeyword_color -activebackground $vlog_hl_ppkeyword_color -command {
+        set tmp_vlog_hl_ppkeyword_color [pref_set_button_color .prefwin.syntax.ppcb .prefwin.syntax.ppcb bg $tmp_vlog_hl_ppkeyword_color "Choose Preprocessor Keyword Highlight Color"] 
+      }
+
+      label .prefwin.syntax.pcl -anchor e -text "Keyword highlight color:"
+      button .prefwin.syntax.pcb -bg $vlog_hl_keyword_color -activebackground $vlog_hl_keyword_color -command {
+        set tmp_vlog_hl_keyword_color [pref_set_button_color .prefwin.syntax.pcb .prefwin.syntax.pcb bg $tmp_vlog_hl_keyword_color "Choose Keyword Highlight Color"]
+      }
+
+      label .prefwin.syntax.ccl -anchor e -text "Comment highlight color:"
+      button .prefwin.syntax.ccb -bg $vlog_hl_comment_color -activebackground $vlog_hl_comment_color -command {
+        set tmp_vlog_hl_comment_color [pref_set_button_color .prefwin.syntax.ccb .prefwin.syntax.ccb bg $tmp_vlog_hl_comment_color "Choose Comment Highlight Color"]
+      }
+
+      label .prefwin.syntax.vcl -anchor e -text "Value highlight color:"
+      button .prefwin.syntax.vcb -bg $vlog_hl_value_color -activebackground $vlog_hl_value_color -command {
+        set tmp_vlog_hl_value_color [pref_set_button_color .prefwin.syntax.vcb .prefwin.syntax.vcb bg $tmp_vlog_hl_value_color "Choose Value Highlight Color"]
+      }
+
+      label .prefwin.syntax.stcl -anchor e -text "String highlight color:"
+      button .prefwin.syntax.stcb -bg $vlog_hl_string_color -activebackground $vlog_hl_string_color -command {
+        set tmp_vlog_hl_string_color [pref_set_button_color .prefwin.syntax.stcb .prefwin.syntax.stcb bg $tmp_vlog_hl_string_color "Choose String Highlight Color"]
+      }
+
+      label .prefwin.syntax.sycl -anchor e -text "Symbol highlight color:"
+      button .prefwin.syntax.sycb -bg $vlog_hl_symbol_color -activebackground $vlog_hl_symbol_color -command {
+        set tmp_vlog_hl_symbol_color [pref_set_button_color .prefwin.syntax.sycb .prefwin.syntax.sycb bg $tmp_vlog_hl_symbol_color "Choose Symbol Highlight Color"]
+      }
+
+      grid columnconfigure .prefwin.syntax 2 -weight 1
+      grid .prefwin.syntax.l    -row 0 -column 0 -sticky news -pady 4
+      grid .prefwin.syntax.mcb  -row 1 -column 0 -sticky news -pady 4
+      grid .prefwin.syntax.ppcl -row 2 -column 0 -sticky news
+      grid .prefwin.syntax.ppcb -row 2 -column 1 -sticky news
+      grid .prefwin.syntax.pcl  -row 3 -column 0 -sticky news
+      grid .prefwin.syntax.pcb  -row 3 -column 1 -sticky news
+      grid .prefwin.syntax.ccl  -row 4 -column 0 -sticky news
+      grid .prefwin.syntax.ccb  -row 4 -column 1 -sticky news
+      grid .prefwin.syntax.vcl  -row 5 -column 0 -sticky news
+      grid .prefwin.syntax.vcb  -row 5 -column 1 -sticky news
+      grid .prefwin.syntax.stcl -row 6 -column 0 -sticky news
+      grid .prefwin.syntax.stcb -row 6 -column 1 -sticky news
+      grid .prefwin.syntax.sycl -row 7 -column 0 -sticky news
+      grid .prefwin.syntax.sycb -row 7 -column 1 -sticky news
+
     #######################################
     # Create Apply/OK/Cancel/Help buttons #
     #######################################
@@ -325,6 +486,7 @@ proc create_preferences {} {
 
       pack .prefwin.c      -fill x -anchor w
       pack .prefwin.limits -fill x -anchor w
+      pack .prefwin.syntax -fill x -anchor w
       pack .prefwin.bbar   -fill x -side bottom
 
   }
@@ -347,6 +509,13 @@ proc apply_preferences {} {
   global race_bgColor tmp_race_bgColor
   global line_low_limit toggle_low_limit comb_low_limit fsm_low_limit
   global cov_rb
+  global vlog_hl_mode            tmp_vlog_hl_mode
+  global vlog_hl_ppkeyword_color tmp_vlog_hl_ppkeyword_color
+  global vlog_hl_keyword_color   tmp_vlog_hl_keyword_color
+  global vlog_hl_comment_color   tmp_vlog_hl_comment_color
+  global vlog_hl_value_color     tmp_vlog_hl_value_color
+  global vlog_hl_string_color    tmp_vlog_hl_string_color
+  global vlog_hl_symbol_color    tmp_vlog_hl_symbol_color
 
   set changed 0
 
@@ -391,6 +560,34 @@ proc apply_preferences {} {
     set fsm_low_limit    [expr 100 - [.prefwin.limits.fs.l nearest 0]]
     set changed 1
   }
+  if {$vlog_hl_mode != $tmp_vlog_hl_mode} {
+    set vlog_hl_mode $tmp_vlog_hl_mode
+    set changed 1
+  }
+  if {$vlog_hl_ppkeyword_color != $tmp_vlog_hl_ppkeyword_color} {
+    set vlog_hl_ppkeyword_color $tmp_vlog_hl_ppkeyword_color
+    set changed 1
+  }
+  if {$vlog_hl_keyword_color != $tmp_vlog_hl_keyword_color} {
+    set vlog_hl_keyword_color $tmp_vlog_hl_keyword_color
+    set changed 1
+  }
+  if {$vlog_hl_comment_color != $tmp_vlog_hl_comment_color} {
+    set vlog_hl_comment_color $tmp_vlog_hl_comment_color
+    set changed 1
+  }
+  if {$vlog_hl_value_color != $tmp_vlog_hl_value_color} {
+    set vlog_hl_value_color $tmp_vlog_hl_value_color
+    set changed 1
+  }
+  if {$vlog_hl_string_color != $tmp_vlog_hl_string_color} {
+    set vlog_hl_string_color $tmp_vlog_hl_string_color
+    set changed 1
+  }
+  if {$vlog_hl_symbol_color != $tmp_vlog_hl_symbol_color} {
+    set vlog_hl_symbol_color $tmp_vlog_hl_symbol_color
+    set changed 1
+  }
 
   # Update the display if necessary
   if {$changed == 1} {
@@ -405,6 +602,10 @@ proc apply_preferences {} {
       display_toggle_cov
     } elseif {$cov_rb == "comb"} {
       display_comb_cov
+    } elseif {$cov_rb == "fsm"} {
+      display_fsm_cov
+    } elseif {$cov_rb == "assert"} {
+      display_assert_cov
     } else {
       # Error
     }

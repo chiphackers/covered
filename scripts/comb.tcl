@@ -86,6 +86,9 @@ proc display_comb_info {} {
     incr curr_line
   }
 
+  # Perform syntax highlighting
+  verilog_highlight .combwin.f.top.t
+
   # Keep user from writing in text box
   .combwin.f.top.t configure -state disabled
 

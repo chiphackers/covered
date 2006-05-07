@@ -183,6 +183,9 @@ proc display_line_cov {} {
         incr linecount
       }
 
+      # Perform syntax highlighting
+      verilog_highlight .bot.right.txt
+
       # Create race condition tags
       create_race_tags
 
@@ -291,6 +294,9 @@ proc display_toggle_cov {} {
         }
         incr linecount
       }
+
+      # Perform syntax highlighting
+      verilog_highlight .bot.right.txt
 
       # Create race condition tags
       create_race_tags
@@ -439,6 +445,9 @@ proc display_comb_cov {} {
         }
         incr linecount
       }
+
+      # Perform syntax highlighting
+      verilog_highlight .bot.right.txt
 
       # Create race condition tags
       create_race_tags
@@ -615,6 +624,9 @@ proc display_fsm_cov {} {
         incr linecount
       }
 
+      # Perform syntax highlighting
+      verilog_highlight .bot.right.txt
+
       # Create race condition tags
       create_race_tags
 
@@ -761,6 +773,9 @@ proc display_assert_cov {} {
         }
         incr linecount
       }
+
+      # Perform syntax highlighting
+      verilog_highlight .bot.right.txt
 
       # Create race condition tags
       create_race_tags

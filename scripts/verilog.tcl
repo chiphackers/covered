@@ -1,9 +1,11 @@
 # Highlight color values (this will need to be configurable via the preferences window
-set vlog_hl_ppkeyword_color red
+set vlog_hl_mode            on
+set vlog_hl_ppkeyword_color ForestGreen
 set vlog_hl_keyword_color   purple
 set vlog_hl_comment_color   blue
-set vlog_hl_value_color     ForestGreen
-set vlog_hl_string_color    ForestGreen
+set vlog_hl_value_color     red
+set vlog_hl_string_color    red
+set vlog_hl_symbol_color    coral
 
 # Performs substitution using a user-specified command
 proc regsub-eval {re string cmd} {
@@ -260,6 +262,56 @@ proc verilog_highlight_keywords {tb color} {
 # Finds all defined and constant values in the specified textbox and highlights them with the given color
 proc verilog_highlight_values {tb color} {
 
+  set ilist ""
+
+  # Highlight all numeric values
+  set start_index 1.0
+  while 1 {
+    set start_index [$tb search -count matching_chars -regexp {(^|[^a-zA-Z0-9_])[0-9]+($|[^a-zA-Z0-9_])} $start_index end]
+    if {$start_index != ""} {
+      set start_index [$tb index "$start_index + 1 chars"]
+      set end_index   [$tb index "$start_index + [expr $matching_chars - 2] chars"]
+      lappend ilist $start_index $end_index
+      set start_index "$end_index + 1 chars"
+    } else {
+      break
+    }
+  }
+
+  set start_index 1.0
+  while 1 {
+    set start_index [$tb search -count matching_chars -regexp {[0-9_]*[ \t]*'[sS]?[dDbBoOhH][0-9_a-fA-F]+} $start_index end]
+    if {$start_index != ""} {
+      set end_index [$tb index "$start_index + $matching_chars chars"]
+      lappend ilist $start_index $end_index
+      set start_index "$end_index + 1 chars"
+    } else {
+      break
+    }
+  }
+
+  # Highlight all defined values
+  set start_index 1.0
+  while 1 {
+    set start_index [$tb search -count matching_chars -regexp {`[a-zA-Z0-9_]+} $start_index end]
+    if {$start_index != ""} {
+      set end_index [$tb index "$start_index + $matching_chars chars"]
+      lappend ilist $start_index $end_index
+      set start_index "$end_index + 1 chars"
+    } else {
+      break
+    }
+  }
+
+  if {$ilist != ""} {
+
+    eval "$tb tag add value_highlights $ilist"
+
+    # Configure the value_highlights tag
+    $tb tag configure value_highlights -foreground $color
+
+  }
+
 }
 
 # Finds all string values in the specified textbox and highlights them with the given color
@@ -295,25 +347,61 @@ proc verilog_highlight_strings {tb color} {
 
 }
 
+# Highlights all symbols in the specified textbox with the given color
+proc verilog_highlight_symbols {tb color} {
+
+  set start_index 1.0
+  set ilist       ""
+
+  while 1 {
+    set start_index [$tb search -regexp {[\}\{;:\[\],()#=.@&!?<>%|^~+*/-]} $start_index end]
+    if {$start_index != ""} {
+      set end_index [$tb index "$start_index + 1 chars"]
+      lappend ilist $start_index $end_index
+      set start_index $end_index
+    } else {
+      break
+    }
+  }
+
+  if {$ilist != ""} {
+
+    eval "$tb tag add symbol_highlights $ilist"
+
+    # Configure the symbol_highlights tag
+    $tb tag configure symbol_highlights -foreground $color
+
+  }
+
+}
+
 # Main function to highlight all Verilog syntax for the given textbox
 proc verilog_highlight {tb} {
   
+  global vlog_hl_mode
   global vlog_hl_keyword_color vlog_hl_comment_color vlog_hl_ppkeyword_color
-  global vlog_hl_value_color   vlog_hl_string_color
+  global vlog_hl_value_color   vlog_hl_string_color  vlog_hl_symbol_color
 
-  # Highlight all preprocessor keywords
-  verilog_highlight_ppkeywords $tb $vlog_hl_ppkeyword_color
+  if {$vlog_hl_mode == on} {
 
-  # Highlight all keywords
-  verilog_highlight_keywords $tb $vlog_hl_keyword_color
+    # Highlight all keywords
+    verilog_highlight_keywords $tb $vlog_hl_keyword_color
 
-  # Highlight all values
-  verilog_highlight_values $tb $vlog_hl_value_color
+    # Highlight all values
+    verilog_highlight_values $tb $vlog_hl_value_color
 
-  # Highlight all string
-  verilog_highlight_strings $tb $vlog_hl_string_color
+    # Highlight all preprocessor keywords
+    verilog_highlight_ppkeywords $tb $vlog_hl_ppkeyword_color
 
-  # Highlight all comments
-  verilog_highlight_comments $tb $vlog_hl_comment_color
+    # Highlight all symbols
+    verilog_highlight_symbols $tb $vlog_hl_symbol_color
+
+    # Highlight all string
+    verilog_highlight_strings $tb $vlog_hl_string_color
+
+    # Highlight all comments
+    verilog_highlight_comments $tb $vlog_hl_comment_color
+
+  }
 
 }
