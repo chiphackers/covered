@@ -36,6 +36,9 @@ proc read_coveredrc {} {
   global cov_fgColor   cov_bgColor
   global race_fgColor  race_bgColor
   global line_low_limit toggle_low_limit comb_low_limit fsm_low_limit
+  global vlog_hl_mode vlog_hl_ppkeyword_color vlog_hl_keyword_color
+  global vlog_hl_comment_color vlog_hl_string_color vlog_hl_value_color
+  global vlog_hl_symbol_color
   global HOME USER_HOME rc_file_to_write
 
   # Find the correct configuration file to read and eventually write
@@ -119,6 +122,9 @@ proc write_coveredrc {} {
   global cov_fgColor   cov_bgColor
   global race_fgColor  race_bgColor
   global line_low_limit toggle_low_limit comb_low_limit fsm_low_limit
+  global vlog_hl_mode vlog_hl_ppkeyword_color vlog_hl_keyword_color
+  global vlog_hl_comment_color vlog_hl_string_color vlog_hl_value_color
+  global vlog_hl_symbol_color
   global rc_file_to_write
 
   if {$rc_file_to_write != ""} {
@@ -375,33 +381,7 @@ proc create_preferences {} {
 
       checkbutton .prefwin.syntax.mcb -variable tmp_vlog_hl_mode -onvalue on -offvalue off -anchor e \
                                       -text "Turn on syntax highlighting mode" -command {
-        if {$tmp_vlog_hl_mode == on} {
-          .prefwin.syntax.ppcl configure -state normal
-          .prefwin.syntax.ppcb configure -state normal
-          .prefwin.syntax.pcl  configure -state normal
-          .prefwin.syntax.pcb  configure -state normal
-          .prefwin.syntax.ccl  configure -state normal
-          .prefwin.syntax.ccb  configure -state normal
-          .prefwin.syntax.vcl  configure -state normal
-          .prefwin.syntax.vcb  configure -state normal
-          .prefwin.syntax.stcl configure -state normal
-          .prefwin.syntax.stcb configure -state normal
-          .prefwin.syntax.sycl configure -state normal
-          .prefwin.syntax.sycb configure -state normal
-        } else {
-          .prefwin.syntax.ppcl configure -state disabled
-          .prefwin.syntax.ppcb configure -state disabled
-          .prefwin.syntax.pcl  configure -state disabled
-          .prefwin.syntax.pcb  configure -state disabled
-          .prefwin.syntax.ccl  configure -state disabled
-          .prefwin.syntax.ccb  configure -state disabled
-          .prefwin.syntax.vcl  configure -state disabled
-          .prefwin.syntax.vcb  configure -state disabled
-          .prefwin.syntax.stcl configure -state disabled
-          .prefwin.syntax.stcb configure -state disabled
-          .prefwin.syntax.sycl configure -state disabled
-          .prefwin.syntax.sycb configure -state disabled
-        }
+        synchronize_syntax_widgets $tmp_vlog_hl_mode
       }
 
       label .prefwin.syntax.ppcl -anchor e -text "Preprocessor keyword highlight color:"
@@ -461,10 +441,10 @@ proc create_preferences {} {
       }
 
       button .prefwin.bbar.ok -width 10 -text "OK" -command {
-        destroy .prefwin
         if {[apply_preferences] == 1} {
           write_coveredrc
         }
+        destroy .prefwin
       }
 
       button .prefwin.bbar.cancel -width 10 -text "Cancel" -command {
@@ -489,11 +469,50 @@ proc create_preferences {} {
       pack .prefwin.syntax -fill x -anchor w
       pack .prefwin.bbar   -fill x -side bottom
 
+    ####################################
+    # Initialize any necessary widgets #
+    ####################################
+
+      synchronize_syntax_widgets $tmp_vlog_hl_mode
+
   }
 
   # Bring the window to the top
   raise .prefwin
 
+}
+
+# Causes the state of the syntax color widgets to get set according to the current hl_mode value.
+proc synchronize_syntax_widgets {hl_mode} {
+  
+  if {$hl_mode == "on"} {
+    .prefwin.syntax.ppcl configure -state normal
+    .prefwin.syntax.ppcb configure -state normal
+    .prefwin.syntax.pcl  configure -state normal
+    .prefwin.syntax.pcb  configure -state normal
+    .prefwin.syntax.ccl  configure -state normal
+    .prefwin.syntax.ccb  configure -state normal
+    .prefwin.syntax.vcl  configure -state normal
+    .prefwin.syntax.vcb  configure -state normal
+    .prefwin.syntax.stcl configure -state normal
+    .prefwin.syntax.stcb configure -state normal
+    .prefwin.syntax.sycl configure -state normal
+    .prefwin.syntax.sycb configure -state normal
+  } else {
+    .prefwin.syntax.ppcl configure -state disabled
+    .prefwin.syntax.ppcb configure -state disabled
+    .prefwin.syntax.pcl  configure -state disabled
+    .prefwin.syntax.pcb  configure -state disabled
+    .prefwin.syntax.ccl  configure -state disabled
+    .prefwin.syntax.ccb  configure -state disabled
+    .prefwin.syntax.vcl  configure -state disabled
+    .prefwin.syntax.vcb  configure -state disabled
+    .prefwin.syntax.stcl configure -state disabled
+    .prefwin.syntax.stcb configure -state disabled
+    .prefwin.syntax.sycl configure -state disabled
+    .prefwin.syntax.sycb configure -state disabled
+  }
+        
 }
 
 # Checks to see if any of the global preferences have been modified in the preferences window.
@@ -596,6 +615,7 @@ proc apply_preferences {} {
     set text_x [.bot.right.txt xview]
     set text_y [.bot.right.txt yview]
 
+    # Redisplay the information in the main file viewer
     if {$cov_rb == "line"} {
       display_line_cov
     } elseif {$cov_rb == "toggle"} {
@@ -608,6 +628,11 @@ proc apply_preferences {} {
       display_assert_cov
     } else {
       # Error
+    }
+
+    # Redisplay the combinational logic window, if it exists
+    if {[winfo exists .combwin] != 0} {
+      display_comb_info
     }
 
     .bot.right.txt xview moveto [lindex $text_x 0]

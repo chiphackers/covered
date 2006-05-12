@@ -382,7 +382,7 @@ proc verilog_highlight {tb} {
   global vlog_hl_keyword_color vlog_hl_comment_color vlog_hl_ppkeyword_color
   global vlog_hl_value_color   vlog_hl_string_color  vlog_hl_symbol_color
 
-  if {$vlog_hl_mode == on} {
+  if {$vlog_hl_mode == "on"} {
 
     # Highlight all keywords
     verilog_highlight_keywords $tb $vlog_hl_keyword_color
@@ -401,6 +401,16 @@ proc verilog_highlight {tb} {
 
     # Highlight all comments
     verilog_highlight_comments $tb $vlog_hl_comment_color
+
+  } else {
+
+    # Delete any current syntax highlighting tags
+    $tb tag delete ppkeyword_highlights
+    $tb tag delete keyword_highlights
+    $tb tag delete comment_highlights
+    $tb tag delete string_highlights
+    $tb tag delete value_highlights
+    $tb tag delete symbol_highlights
 
   }
 
