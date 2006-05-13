@@ -63,6 +63,6 @@ X  1.  Add FSM coverage output
 
 X  3.  Add assertion coverage output
 
-   4.  Add Verilog syntax highlighting features
+X  4.  Add Verilog syntax highlighting features
 
-   5.  Replace `<value> strings with their defined values (this is actually a bug)
+X  5.  Replace `<value> strings with their defined values (this is actually a bug)
