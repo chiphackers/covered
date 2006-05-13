@@ -21,6 +21,7 @@ libcovered_a_SOURCES = ../src/arc.c \
                        ../src/param.c \
                        ../src/race.c \
                        ../src/scope.c \
+                       ../src/search.c \
                        ../src/sim.c \
                        ../src/stat.c \
                        ../src/statement.c \

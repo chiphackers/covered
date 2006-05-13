@@ -60,10 +60,11 @@ am_libcovered_a_OBJECTS = arc.$(OBJEXT) assertion.$(OBJEXT) \
 	db.$(OBJEXT) expr.$(OBJEXT) fsm.$(OBJEXT) fsm_arg.$(OBJEXT) \
 	fsm_var.$(OBJEXT) func_unit.$(OBJEXT) info.$(OBJEXT) \
 	instance.$(OBJEXT) iter.$(OBJEXT) link.$(OBJEXT) ovl.$(OBJEXT) \
-	param.$(OBJEXT) race.$(OBJEXT) scope.$(OBJEXT) sim.$(OBJEXT) \
-	stat.$(OBJEXT) statement.$(OBJEXT) static.$(OBJEXT) \
-	stmt_blk.$(OBJEXT) symtable.$(OBJEXT) tree.$(OBJEXT) \
-	util.$(OBJEXT) vector.$(OBJEXT) vsignal.$(OBJEXT)
+	param.$(OBJEXT) race.$(OBJEXT) scope.$(OBJEXT) \
+	search.$(OBJEXT) sim.$(OBJEXT) stat.$(OBJEXT) \
+	statement.$(OBJEXT) static.$(OBJEXT) stmt_blk.$(OBJEXT) \
+	symtable.$(OBJEXT) tree.$(OBJEXT) util.$(OBJEXT) \
+	vector.$(OBJEXT) vsignal.$(OBJEXT)
 libcovered_a_OBJECTS = $(am_libcovered_a_OBJECTS)
 am__EXEEXT_1 = @IVLIB@
 am__EXEEXT_2 = @VCSLIB@
@@ -204,6 +205,7 @@ libcovered_a_SOURCES = ../src/arc.c \
                        ../src/param.c \
                        ../src/race.c \
                        ../src/scope.c \
+                       ../src/search.c \
                        ../src/sim.c \
                        ../src/stat.c \
                        ../src/statement.c \
@@ -310,6 +312,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/param.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/race.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/scope.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/search.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sim.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stat.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/statement.Po@am__quote@
@@ -600,6 +603,20 @@ scope.obj: ../src/scope.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='../src/scope.c' object='scope.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o scope.obj `if test -f '../src/scope.c'; then $(CYGPATH_W) '../src/scope.c'; else $(CYGPATH_W) '$(srcdir)/../src/scope.c'; fi`
+
+search.o: ../src/search.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT search.o -MD -MP -MF "$(DEPDIR)/search.Tpo" -c -o search.o `test -f '../src/search.c' || echo '$(srcdir)/'`../src/search.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/search.Tpo" "$(DEPDIR)/search.Po"; else rm -f "$(DEPDIR)/search.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='../src/search.c' object='search.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o search.o `test -f '../src/search.c' || echo '$(srcdir)/'`../src/search.c
+
+search.obj: ../src/search.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT search.obj -MD -MP -MF "$(DEPDIR)/search.Tpo" -c -o search.obj `if test -f '../src/search.c'; then $(CYGPATH_W) '../src/search.c'; else $(CYGPATH_W) '$(srcdir)/../src/search.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/search.Tpo" "$(DEPDIR)/search.Po"; else rm -f "$(DEPDIR)/search.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='../src/search.c' object='search.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o search.obj `if test -f '../src/search.c'; then $(CYGPATH_W) '../src/search.c'; else $(CYGPATH_W) '$(srcdir)/../src/search.c'; fi`
 
 sim.o: ../src/sim.c
 @am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sim.o -MD -MP -MF "$(DEPDIR)/sim.Tpo" -c -o sim.o `test -f '../src/sim.c' || echo '$(srcdir)/'`../src/sim.c; \

@@ -173,6 +173,9 @@ doc_DATA = 001.html \
            020.html \
            021.html \
            022.html \
+           023.html \
+           024.html \
+           025.html \
            banner.gif \
            test/example.rptI.html \
            test/example.rptM.html \
