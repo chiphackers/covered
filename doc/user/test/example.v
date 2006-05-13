@@ -53,6 +53,8 @@ always @(state or go)
     `ST_SLOW :  next_state = `ST_STOP;
   endcase
 
+assert_one_hot #(.width(3)) zzz_check_state ( clk, 1'b1, state );
+
 endmodule
 
 module fsmb( clk, go );
@@ -79,5 +81,7 @@ always @(state or go)
     `ST_GO   :  next_state = go ? `ST_GO : `ST_SLOW;
     `ST_SLOW :  next_state = `ST_STOP;
   endcase
+
+assert_one_hot #(.width(3)) zzz_check_state ( clk, 1'b1, state );
 
 endmodule

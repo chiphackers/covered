@@ -54,32 +54,36 @@
 <a name="53">     53</a>      `ST_SLOW :  next_state = `ST_STOP;
 <a name="54">     54</a>    endcase
 <a name="55">     55</a>  
-<a name="56">     56</a>  endmodule
+<a name="56">     56</a>  assert_one_hot #(.width(3)) zzz_check_state ( clk, 1'b1, state );
 <a name="57">     57</a>  
-<a name="58">     58</a>  module fsmb( clk, go );
+<a name="58">     58</a>  endmodule
 <a name="59">     59</a>  
-<a name="60">     60</a>  input     clk;
-<a name="61">     61</a>  input     go;
-<a name="62">     62</a>  
-<a name="63">     63</a>  reg [2:0] next_state;
-<a name="64">     64</a>  reg [2:0] state;
-<a name="65">     65</a>  
-<a name="66">     66</a>  initial begin
-<a name="67">     67</a>          state = `ST_STOP;
-<a name="68">     68</a>  end
-<a name="69">     69</a>  
-<a name="70">     70</a>  always @(posedge clk) state <= next_state;
+<a name="60">     60</a>  module fsmb( clk, go );
+<a name="61">     61</a>  
+<a name="62">     62</a>  input     clk;
+<a name="63">     63</a>  input     go;
+<a name="64">     64</a>  
+<a name="65">     65</a>  reg [2:0] next_state;
+<a name="66">     66</a>  reg [2:0] state;
+<a name="67">     67</a>  
+<a name="68">     68</a>  initial begin
+<a name="69">     69</a>          state = `ST_STOP;
+<a name="70">     70</a>  end
 <a name="71">     71</a>  
-<a name="72">     72</a>  (* covered_fsm, lights, is="state", os="next_state",
-<a name="73">     73</a>                          trans="3'b001->3'b010",
-<a name="74">     74</a>                          trans="3'b010->3'b100",
-<a name="75">     75</a>                          trans="3'b100->3'b001" *)
-<a name="76">     76</a>  always @(state or go)
-<a name="77">     77</a>    case( state )
-<a name="78">     78</a>      `ST_STOP :  next_state = go ? `ST_GO : `ST_STOP;
-<a name="79">     79</a>      `ST_GO   :  next_state = go ? `ST_GO : `ST_SLOW;
-<a name="80">     80</a>      `ST_SLOW :  next_state = `ST_STOP;
-<a name="81">     81</a>    endcase
-<a name="82">     82</a>  
-<a name="83">     83</a>  endmodule
+<a name="72">     72</a>  always @(posedge clk) state <= next_state;
+<a name="73">     73</a>  
+<a name="74">     74</a>  (* covered_fsm, lights, is="state", os="next_state",
+<a name="75">     75</a>                          trans="3'b001->3'b010",
+<a name="76">     76</a>                          trans="3'b010->3'b100",
+<a name="77">     77</a>                          trans="3'b100->3'b001" *)
+<a name="78">     78</a>  always @(state or go)
+<a name="79">     79</a>    case( state )
+<a name="80">     80</a>      `ST_STOP :  next_state = go ? `ST_GO : `ST_STOP;
+<a name="81">     81</a>      `ST_GO   :  next_state = go ? `ST_GO : `ST_SLOW;
+<a name="82">     82</a>      `ST_SLOW :  next_state = `ST_STOP;
+<a name="83">     83</a>    endcase
+<a name="84">     84</a>  
+<a name="85">     85</a>  assert_one_hot #(.width(3)) zzz_check_state ( clk, 1'b1, state );
+<a name="86">     86</a>  
+<a name="87">     87</a>  endmodule
 </code></pre></body></html>

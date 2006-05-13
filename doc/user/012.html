@@ -150,7 +150,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="header2">6.1&nbsp; <A name="6_1"></A>What do you need for dumpfile scoring?</P>
+      <P class="header2">6.1&nbsp; <A name="6_1"></A>What is needed for dumpfile scoring?</P>
     </TD>
   </TR>
 
@@ -179,7 +179,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="header2">6.2&nbsp; <A name="6_2"></A>Creating a VCD dumpfile</P>
+      <P class="header3">6.1.1&nbsp; <A name="6_1_1"></A>Creating a VCD dumpfile</P>
     </TD>
   </TR>
 
@@ -295,7 +295,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="header2">6.3&nbsp; <A name="6_3"></A>Creating an LXT dumpfile</P>
+      <P class="header3">6.1.2&nbsp; <A name="6_1_2"></A>Creating an LXT dumpfile</P>
     </TD>
   </TR>
 
@@ -331,6 +331,139 @@
       You can also transform many different dumpfile formats into an LXT style
       dumpfile with the helper programs that come with the 
       <a href="http://home.nc.rr.com/gtkwave/">GtkWave</a> waveform viewer.</P>
+    </TD>
+  </TR>
+  
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header2">6.2&nbsp; <A name="6_2"></A>What is needed for VPI scoring?</P>
+    </TD>
+  </TR>
+  
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      After Covered has been configured and built to include the creation of a VPI
+      loadable module or shared object file (see 
+      <A href="011.html#5_3">Installing from Source</A> for details), Covered is capable
+      of scoring during a simulation run by using the VPI (Verilog Procedural Interface)
+      access mechanism.  This is done by loading the Covered VPI module (or shared object)
+      into the simulator executable prior to running (depending on the simulator being
+      used).  The following steps should be taken to create a scored CDD file using
+      this method.</P>
+    </TD>
+  </TR>
+  
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      <OL>
+        <LI>Create the Verilog file that will be compiled as a top-level module in
+            the design (alongside the actual top-level(s)).
+            <P>
+            This is done by running the score command with the -vpi option.  The following
+            example command-line shows how this step is done, creating a file called
+            "covered_vpi.v".</P>
+            <P>
+            <CODE>covered score -t top -vpi</CODE></P> </LI>
+        <LI>Compile the simulator executable, including the previously generated file
+            and the Covered VPI module.  See the compile instructions for the
+            <A href="012.html#6_2_1">Icarus Verilog</A>, 
+            <A href="012.html#6_2_2">Cver</A> or
+            <A href="012.html#6_2_3">VCS</A> simulators below.</LI>
+        <LI>Run the simulation.  Once simulation is complete, the resulting CDD file will
+            be a completely scored database, ready to be merged with other CDD files from
+            the same design or reported on.</li>
+      </OL> </P>
+    </TD>
+  </TR>
+  
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header3">6.2.1&nbsp; <A name="6_2_1"></A>Compiling for Icarus Verilog</P>
+    </TD>
+  </TR>
+  
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      If you are compiling an Icarus Verilog simulation, simply add 
+      <b>-m /usr/local/libexec/covered.vpi covered_pli.v</b> to the command-line.</P>  
+    </TD>
+  </TR>
+  
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header3">6.2.2&nbsp; <A name="6_2_2"></A>Compiling for Cver</P>
+    </TD>
+  </TR>
+  
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      If you are compiling a Cver simulation, simply add 
+      <b>+loadvpi=/usr/local/libexec/covered.cver.so:vpi_compat_bootstrap covered_vpi.v</b> 
+      to the command-line.</P>
+    </TD>
+  </TR>
+  
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header3">6.2.3&nbsp; <A name="6_2_3"></A>Compiling for VCS</P>
+    </TD>
+  </TR>
+  
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      If you are compiling a VCS simulation, simply add 
+      <b>+vpi -load /usr/local/libexec/covered.vcs.so:covered_register -P covered_pli.v.tab covered_pli.v</b>
+      to the command-line.</P>
     </TD>
   </TR>
   

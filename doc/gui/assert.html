@@ -16,7 +16,83 @@
 <hr>
 
 <p>
-TBD
+The Verbose Assertion Coverage window allows the user to see exactly which coverage points
+were hit or missed for a selected assertion instantiation in the design and, if hit, how
+many times the assertion coverage point (ACP) was hit during simulation.  Additionally, this
+window allows you to bring up the <a href="src_view.html">Assertion Source File Viewer</a>
+to view the internal assertion module code for the currently selected assertion instance.
+This lets the user view the code to determine what logically needs to occur to hit a
+given ACP.
+</p>
+
+<p>
+To view this window, select the "Assert" mode in the <a href="cov_bar.html">Coverage
+Selection Bar</a> in the main window and click on an underlined assertion instance name in 
+the <a href="cov_view.html">File Viewer</a>.  Note that both covered and uncovered
+assertion instance names can be selected.  Doing so will cause the Verbose Assertion
+Coverage Window to be displayed for the selected assertion instantiation.  Figure 1 shows
+an example of a zero_one_hot assertion that had none of its coverage points hit during
+simulation.
+</p>
+
+<div align="center">
+<p><strong>Figure 1.  Verbose Assertion Coverage Window</strong></p>
+<img src="images/assert_window.png" alt="Covered - Verbose Assertion Coverage Window">
+</div>
+
+<h2>Navigating the Assertion Coverage Window</h2>
+
+<p>
+The window is made up of a simple table which contains the coverage point names within
+the selected assertion on the left and the number of times each of these coverage points
+were hit during simulation on the right.  If a coverage point has not been hit, both the
+coverage point name and the number of hits (0) will be highlighted with the "uncovered"
+color selection as selected in the <a href="preferences.html">Preferences window</a>.  If
+a coverage point has been hit at least once, both the coverage point name and the number
+of hits will be highlighted with the "covered" color selection as selected in the
+Preferences window.
+</p>
+
+<p>
+Below the table the name of the currently selected assertion type is named.  To view the
+source code for this assertion, simply click on the <b>Show Code</b> button at the bottom
+right-hand portion of the coverage table.  This will cause the source code for this
+assertion to be displayed in a new <a href="src_view.html">Assertion Source Viewer 
+window</a>.
+</p>
+
+<h2>Displaying a New Assertion Instance</h2>
+
+<p>
+If the Verbose Assertion Coverage window is currently displayed, the user may select a 
+new assertion in the <a href="cov_view.html">Coverage File Viewer</a> of the Main
+window.  When a new assertion is selected, its information immediately replaces the 
+currently selected assertion.  This feature allows many different assertions to be viewed 
+one after the other without having to create/destroy a new window for each.
+</p>
+
+<p>
+The user may also see the previous or next uncovered assertion in the main viewer by 
+clicking either the "<--" button (for previous signal viewing) or the "-->" button 
+(for next signal viewing).  Note that the "<--" button will be disabled if there is 
+not a signal previous to the current signal in the given module and the "-->" button 
+will be disabled if there is not a signal after the current signal in the given module.
+</p>
+
+<h2>Close Button</h2>
+
+<p>
+Clicking the <b>Close</b> button will cause the Verbose Assertion Coverage window (and
+the <a href="src_view.html">Assertion Source Viewer window</a> if it is currently displayed)
+to close and the current selection identifier to be removed from the Coverage Viewer
+in the main window.
+</p>
+
+<h2>Help Button</h2>
+
+<p>
+Clicking the <b>Help</b> button will cause this help page to be displayed in a web
+brower.
 </p>
 
 </body>

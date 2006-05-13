@@ -81,10 +81,72 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      TBD</P>
+      Assertion coverage answers the question, "Did I hit all of the possible
+      coverage points of the assertions that I included in the design?"</P>
+    </TD>
+  </TR>
+  
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      Currently, Covered is capable of finding all OVL (Open Verification Language)
+      assertion modules instantiated within the design (when the <b>-A ovl</b> option
+      has been specified to the score command).  Within most OVL assertion
+      modules are one or more built-in coverage points.  When the user has specified
+      a particular assertion instance to check for a coverage point, Covered
+      simulates this assertion module, keeping track of which coverage points within
+      the assertion have been hit during simulation (and how many times each coverage
+      point has been hit) and which have not.  This allows the user to check for more
+      complex coverage scenarios within the design.</P>
+    </TD>
+  </TR>
+  
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      Currently, only <A href="http://www.accellera.org/activities/ovl">OVL version 1.6</A>
+      (and newer) are supported.  Older versions of the OVL may not work and are not 
+      planned to be supported.</P>
     </TD>
   </TR>
 
+    <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header3">2.4.1 <A name="2_4_1"></A>Recommendations</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin">Recommendations</P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      For a design to pass full coverage, it is recommended that the assertion coverage 
+      for all modules in a design receive 100% coverage. If an assertion coverage point
+      is not hit during simulation, the design has not been fully exercised. Assertion
+      coverage is useful for determining more specific corner case holes in the test 
+      suite.</P>
+    </TD>
+  </TR>
+  
   <TR>
     <TD></TD>
     <TD></TD>

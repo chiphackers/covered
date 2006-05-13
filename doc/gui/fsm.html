@@ -16,6 +16,119 @@
 <hr>
 
 <p>
+The Verbose FSM State/State Transition Coverage window allows the user to see which
+states and state transitions of a currently selected FSM have been covered or are
+uncovered.  To view this window, simply select the "FSM" coverage metric mode in the
+<a href="cov_bar.html">Coverage Metric Bar</a> in the main window and select an
+underlined FSM state variable in the <a href="cov_view.html">Coverage File Viewer</a>.
+This will cause the FSM Coverage window to be displayed with the currently selected
+FSM information loaded.  Figure 1 below shows an example of this window.
+</p>
+
+<div align="center">
+<p><strong>Figure 1.  Verbose FSM Coverage Window</strong></p>
+<img src="images/fsm_window.png" alt="Covered - Verbose FSM Coverage Window">
+</div>
+
+<h2>Navigating the Window</h2>
+
+<p>
+The Verbose FSM window is split into two main frames.  The top frame contains the
+expressions that make up the input and output states of the selected FSM.  The bottom
+frame contains a two-dimensional table showing the covered and/or uncovered states and
+state transitions.
+</p>
+
+<p>
+The state/state transition table is a two-dimensional table with all possible values of the
+input states in the left-most column, the output states in the upper-most row, and
+the state transitions in the rest of the table.
+</p>
+
+<p>
+To determine which states have been uncovered in the table, simply find all state values
+in the input column or output row (both show the same information) which are highlighted 
+with the "Uncovered" color selection specified in the
+<a href="preferences.html">Preferences window</a>.  To determine which states have been
+covered in the table, simply find all state values in the input column or output row which
+are highlighted with the "Covered" color selection.  All other state values which are
+not highlighted are either impossible values (if all of the state transitions were
+specified in the Verilog file) or are unknown for coverage (if not all of the state
+transitions were specified in the Verilog file).
+</p>
+
+<p>
+To determine which state transitions have been uncovered in the table, simply find all
+empty boxes in the table that are highlighted with the "Uncovered" background color.  If
+one of these exist, it specifies that the transition of "input state" (the value
+specified in the left-most column in the same row) to "output state" (the value specified
+in the upper-most row in the same column) did not occur.  In the example above, we can
+see that the following state transitions did not occur:
+</p>
+
+<p>
+<ul>
+  <li>1 -> 2</li>
+  <li>3 -> 1</li>
+  <li>2 -> 3</li>
+  <li>2 -> 2 (loopback case)</li>
+</ul>
+</p>
+
+<p>
+Follow the same procedure for finding all covered state transitions in the table except
+that these boxes will be highlighted with the "Covered" background color.  In the example
+above, we can see that the following state transitions occurred:
+</p>
+
+<p>
+<ul>
+  <li>0 -> 0 (loopback case)</li>
+  <li>0 -> 1</li>
+  <li>1 -> 3</li>
+  <li>3 -> 0</li>
+</ul>
+</p>
+
+<p>
+All other state transition boxes that are not highlighted are either impossible state
+transitions (if all state transitions were specified in the Verilog source code) or
+are unknown in their coverage (either not hit or impossible transition if all state
+transitions were not specified in the Verilog source code).
+</p>
+
+<h2>Displaying a New FSM</h2>
+
+<p>
+If the Verbose FSM Coverage window is currently displayed, the user may select a 
+new FSM state variable in the <a href="cov_view.html">Coverage File Viewer</a> of the Main
+window.  When a new FSM is selected, its information immediately replaces the 
+currently selected FSM.  This feature allows many different FSMs to be viewed 
+one after the other without having to create/destroy a new window for each.
+</p>
+
+<p>
+The user may also see the previous or next uncovered FSM in the main viewer by 
+clicking either the "<--" button (for previous signal viewing) or the "-->" button 
+(for next signal viewing).  Note that the "<--" button will be disabled if there is 
+not a signal previous to the current signal in the given module and the "-->" button 
+will be disabled if there is not a signal after the current signal in the given module.
+</p>
+
+<h2>Close Button</h2>
+
+<p>
+Clicking the <b>Close</b> button will cause the Verbose FSM Coverage window
+to close and the current selection identifier to be removed from the Coverage Viewer
+in the main window.
+</p>
+
+<h2>Help Button</h2>
+
+<p>
+Clicking the <b>Help</b> button will cause this help page to be displayed in a web
+brower.
+</p>
 
 </body>
 </html>
