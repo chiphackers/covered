@@ -340,6 +340,7 @@ inst_parm* inst_parm_add( char* name, char* inst_name, static_expr* msb, static_
   int        sig_be;     /* Big endianness of this parameter signal */
   int        left_val;   /* Value of left (msb) static expression */
   int        right_val;  /* Value of right (lsb) static expression */
+  exp_link*  expl;       /* Pointer to current expression link */
   
   assert( value != NULL );
   assert( ((msb == NULL) && (lsb == NULL)) || ((msb != NULL) && (lsb != NULL)) );
@@ -397,7 +398,7 @@ inst_parm* inst_parm_add( char* name, char* inst_name, static_expr* msb, static_
   assert( (sig_width <= MAX_BIT_WIDTH) && (sig_width >= 0) );
 
   /* Create instance parameter signal */
-  iparm->sig = vsignal_create( name, SSUPPL_TYPE_DECLARED, sig_width, sig_lsb, 0, 0, sig_be );
+  iparm->sig = vsignal_create( name, SSUPPL_TYPE_PARAM, sig_width, sig_lsb, 0, 0, sig_be );
 
   /* Store signed attribute for this vector */
   iparm->sig->value->suppl.part.is_signed = is_signed;
@@ -407,6 +408,15 @@ inst_parm* inst_parm_add( char* name, char* inst_name, static_expr* msb, static_
 
   iparm->mparm = mparm;
   iparm->next  = NULL;
+
+  /* Bind the module parameter expression list to this signal */
+  if( mparm != NULL ) {
+    expl = mparm->exp_head;
+    while( expl != NULL ) {
+      expl->exp->sig = iparm->sig;
+      expl = expl->next;
+    }
+  }
 
   /* Now add the parameter to the current expression */
   if( inst->param_head == NULL ) {
@@ -900,7 +910,7 @@ void param_db_write( inst_parm* iparm, FILE* file, bool parse_mode ) {
   if( iparm->sig->name != NULL ) {
 
     /* Display identification and value information first */
-    fprintf( file, "%d #%s %d 0 %x ",
+    fprintf( file, "%d %s %d 0 %x ",
       DB_TYPE_SIGNAL,
       iparm->sig->name,
       iparm->sig->lsb,
@@ -908,14 +918,6 @@ void param_db_write( inst_parm* iparm, FILE* file, bool parse_mode ) {
     );
 
     vector_db_write( iparm->sig->value, file, TRUE );
-
-    curr = iparm->mparm->exp_head;
-    while( curr != NULL ) {
-      if( curr->exp->line != 0 ) {
-        fprintf( file, " %d", expression_get_id( curr->exp, parse_mode ) );
-      }
-      curr = curr->next;
-    }
 
     fprintf( file, "\n" );
 
@@ -1000,8 +1002,27 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.62  2006/04/21 06:14:45  phase1geo
+ Merged in changes from 0.4.3 stable release.  Updated all regression files
+ for inclusion of OVL library.  More documentation updates for next development
+ release (but there is more to go here).
+
  Revision 1.61  2006/04/11 22:42:16  phase1geo
  First pass at adding multi-file merging.  Still need quite a bit of work here yet.
+
+ Revision 1.60.4.2  2006/04/21 04:42:02  phase1geo
+ Adding endian2 and endian3 diagnostics to regression suite to verify other
+ endianness related code.  Made small fix to parameter CDD output function
+ to include the supplemental field output.  Full regression passes.
+
+ Revision 1.60.4.1  2006/04/20 21:55:16  phase1geo
+ Adding support for big endian signals.  Added new endian1 diagnostic to regression
+ suite to verify this new functionality.  Full regression passes.  We may want to do
+ some more testing on variants of this before calling it ready for stable release 0.4.3.
+
+ Revision 1.60.4.2.4.1  2006/05/25 10:59:35  phase1geo
+ Adding bug fix for hierarchically referencing parameters.  Added param13 and
+ param13.1 diagnostics to verify this functionality.  Updated regressions.
 
  Revision 1.60.4.2  2006/04/21 04:42:02  phase1geo
  Adding endian2 and endian3 diagnostics to regression suite to verify other

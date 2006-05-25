@@ -949,6 +949,7 @@ expression* db_create_expression( expression* right, expression* left, int op, b
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
+#ifdef OBSOLETE
   /* Check to see if signal is a parameter in this module */
   if( sig_name != NULL ) {
     if( (mparm = funit_find_param( sig_name, curr_funit )) != NULL ) {
@@ -969,6 +970,7 @@ expression* db_create_expression( expression* right, expression* left, int op, b
 #endif
     }
   }
+#endif
 
   /* Check to see if current expression is in a function */
   func_funit = funit_get_curr_function( curr_funit );
@@ -1011,6 +1013,7 @@ expression* db_create_expression( expression* right, expression* left, int op, b
   /* Add expression and signal to binding list */
   if( sig_name != NULL ) {
 
+#ifdef OBSOLETE
     /* Check to see if we are attaching to a parameter */
     if( sig_is_parm ) {
 
@@ -1018,6 +1021,7 @@ expression* db_create_expression( expression* right, expression* left, int op, b
       exp_link_add( expr, &(mparm->exp_head), &(mparm->exp_tail) );
 
     } else {
+#endif
 
       switch( op ) {
         case EXP_OP_FUNC_CALL :  bind_add( FUNIT_FUNCTION,    sig_name, expr, curr_funit );  break;
@@ -1027,7 +1031,9 @@ expression* db_create_expression( expression* right, expression* left, int op, b
         default               :  bind_add( 0,                 sig_name, expr, curr_funit );  break;
       }
 
+#ifdef OBSOLETE
     }
+#endif
 
   }
  
@@ -1710,6 +1716,12 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.181  2006/05/02 21:49:41  phase1geo
+ Updating regression files -- all but three diagnostics pass (due to known problems).
+ Added SCORE_ARGS line type to CDD format which stores the directory that the score
+ command was executed from as well as the command-line arguments to the score
+ command.
+
  Revision 1.180  2006/04/21 06:14:45  phase1geo
  Merged in changes from 0.4.3 stable release.  Updated all regression files
  for inclusion of OVL library.  More documentation updates for next development
@@ -1732,6 +1744,15 @@ void db_dealloc_global_vars() {
 
  Revision 1.176  2006/04/11 22:42:16  phase1geo
  First pass at adding multi-file merging.  Still need quite a bit of work here yet.
+
+ Revision 1.175.4.1  2006/04/20 21:55:16  phase1geo
+ Adding support for big endian signals.  Added new endian1 diagnostic to regression
+ suite to verify this new functionality.  Full regression passes.  We may want to do
+ some more testing on variants of this before calling it ready for stable release 0.4.3.
+
+ Revision 1.175.4.1.4.1  2006/05/25 10:59:35  phase1geo
+ Adding bug fix for hierarchically referencing parameters.  Added param13 and
+ param13.1 diagnostics to verify this functionality.  Updated regressions.
 
  Revision 1.175.4.1  2006/04/20 21:55:16  phase1geo
  Adding support for big endian signals.  Added new endian1 diagnostic to regression

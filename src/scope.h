@@ -32,6 +32,9 @@
 func_unit* scope_find_funit_from_scope( char* scope, func_unit* curr_funit );
 
 /*! \brief  Find the given signal in the provided scope */
+bool scope_find_param( char* name, func_unit* curr_funit, mod_parm** found_parm, func_unit** found_funit, int line );
+
+/*! \brief  Find the given signal in the provided scope */
 bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, func_unit** found_funit, int line );
 
 /*! \brief  Finds the given task or function in the provided scope. */
@@ -46,6 +49,15 @@ func_unit* scope_get_parent_module( char* scope );
 
 /*
  $Log$
+ Revision 1.7.8.1  2006/05/25 10:59:35  phase1geo
+ Adding bug fix for hierarchically referencing parameters.  Added param13 and
+ param13.1 diagnostics to verify this functionality.  Updated regressions.
+
+ Revision 1.7  2006/03/28 22:28:28  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.6  2006/01/13 23:27:02  phase1geo
  Initial attempt to fix problem with handling functions/tasks/named blocks with
  the same name in the design.  Still have a few diagnostics failing in regressions

@@ -53,6 +53,8 @@ X  1.  Add assertion coverage
 
    2.  Add ability to see combinational logic output on a bit-by-bit basis for bussed expressions.
 
+   3.  Add HTML report output
+
 
 Miscellaneous
 -------------
@@ -74,3 +76,5 @@ X  4.  Add Verilog syntax highlighting features
 X  5.  Replace `<value> strings with their defined values (this is actually a bug)
 
    6.  Change file selection window to allow multiple files to be chosen (also just enhance the overall usage)
+
+   7.  Add HTML/ASCII report output

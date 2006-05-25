@@ -426,6 +426,9 @@
 /*! This signal was implicitly created (this signal was created from a negative variable multi-bit expression) */
 #define SSUPPL_TYPE_IMPLICIT_NEG  7
 
+/*! This signal is a parameter */
+#define SSUPPL_TYPE_PARAM         8
+
 /*! @} */
      
 /*!
@@ -1028,7 +1031,7 @@ union ssuppl_u {
   control all;
   struct {
     control col            :16; /*!< Specifies the starting column this signal is declared on */
-    control type           :3;  /*!< Specifies signal type (see \ref ssuppl_type for legal values) */
+    control type           :4;  /*!< Specifies signal type (see \ref ssuppl_type for legal values) */
     control big_endian     :1;  /*!< Specifies if this signal is in big or little endianness */
   } part;
 };
@@ -1822,6 +1825,12 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.192  2006/05/02 21:49:41  phase1geo
+ Updating regression files -- all but three diagnostics pass (due to known problems).
+ Added SCORE_ARGS line type to CDD format which stores the directory that the score
+ command was executed from as well as the command-line arguments to the score
+ command.
+
  Revision 1.191  2006/04/21 06:14:45  phase1geo
  Merged in changes from 0.4.3 stable release.  Updated all regression files
  for inclusion of OVL library.  More documentation updates for next development
@@ -1848,6 +1857,15 @@ struct param_oride_s {
 
  Revision 1.186  2006/04/11 22:42:16  phase1geo
  First pass at adding multi-file merging.  Still need quite a bit of work here yet.
+
+ Revision 1.185.4.1  2006/04/20 21:55:16  phase1geo
+ Adding support for big endian signals.  Added new endian1 diagnostic to regression
+ suite to verify this new functionality.  Full regression passes.  We may want to do
+ some more testing on variants of this before calling it ready for stable release 0.4.3.
+
+ Revision 1.185.4.1.4.1  2006/05/25 10:59:35  phase1geo
+ Adding bug fix for hierarchically referencing parameters.  Added param13 and
+ param13.1 diagnostics to verify this functionality.  Updated regressions.
 
  Revision 1.185.4.1  2006/04/20 21:55:16  phase1geo
  Adding support for big endian signals.  Added new endian1 diagnostic to regression

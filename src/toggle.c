@@ -65,7 +65,7 @@ void toggle_get_stats( sig_link* sigl, float* total, int* hit01, int* hit10 ) {
   
   /* Search signal list */
   while( curr_sig != NULL ) {
-    if( (curr_sig->sig->name[0] != '#') && (curr_sig->sig->value->suppl.part.mba == 0) ) {
+    if( (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_PARAM) && (curr_sig->sig->value->suppl.part.mba == 0) ) {
       *total = *total + curr_sig->sig->value->width;
       vector_toggle_count( curr_sig->sig->value, hit01, hit10 );
     }
@@ -110,7 +110,7 @@ bool toggle_collect( char* funit_name, int funit_type, int cov, sig_link** sig_h
       hit01 = 0;
       hit10 = 0;
 
-      if( (curr_sig->sig->name[0] != '#') && (curr_sig->sig->value->suppl.part.mba == 0) ) {
+      if( (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_PARAM) && (curr_sig->sig->value->suppl.part.mba == 0) ) {
 
         vector_toggle_count( curr_sig->sig->value, &hit01, &hit10 );
 
@@ -225,7 +225,7 @@ bool toggle_get_funit_summary( char* funit_name, int funit_type, int* total, int
       hit01 = 0;
       hit10 = 0;
 
-      if( (curr_sig->sig->name[0] != '#') && (curr_sig->sig->value->suppl.part.mba == 0) ) {
+      if( (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_PARAM) && (curr_sig->sig->value->suppl.part.mba == 0) ) {
 
         /* We have found a valid signal to look at; therefore, increment the total */
         (*total)++;
@@ -430,7 +430,7 @@ void toggle_display_verbose( FILE* ofile, sig_link* sigl ) {
     /* Get printable version of the signal name */
     pname = scope_gen_printable( curr_sig->sig->name );
 
-    if( (curr_sig->sig->name[0] != '#') && (curr_sig->sig->value->suppl.part.mba == 0) ) {
+    if( (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_PARAM) && (curr_sig->sig->value->suppl.part.mba == 0) ) {
 
       vector_toggle_count( curr_sig->sig->value, &hit01, &hit10 );
 
@@ -618,8 +618,17 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.37  2006/04/19 22:21:33  phase1geo
+ More updates to properly support assertion coverage.  Removing assertion modules
+ from line, toggle, combinational logic, FSM and race condition output so that there
+ won't be any overlap of information here.
+
  Revision 1.36  2006/04/11 22:42:16  phase1geo
  First pass at adding multi-file merging.  Still need quite a bit of work here yet.
+
+ Revision 1.35.8.1  2006/05/25 10:59:35  phase1geo
+ Adding bug fix for hierarchically referencing parameters.  Added param13 and
+ param13.1 diagnostics to verify this functionality.  Updated regressions.
 
  Revision 1.35  2006/03/28 22:28:28  phase1geo
  Updates to user guide and added copyright information to each source file in the

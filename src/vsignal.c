@@ -127,7 +127,7 @@ void vsignal_db_write( vsignal* sig, FILE* file ) {
       sig->suppl.all
     );
 
-    vector_db_write( sig->value, file, (sig->name[0] == '#') );
+    vector_db_write( sig->value, file, (sig->suppl.part.type == SSUPPL_TYPE_PARAM) );
 
     fprintf( file, "\n" );
 
@@ -182,61 +182,6 @@ bool vsignal_db_read( char** line, func_unit* curr_funit ) {
         retval = FALSE;
       } else {
         sig_link_add( sig, &(curr_funit->sig_head), &(curr_funit->sig_tail) );
-      }
-
-      /* Read in expressions */
-      while( sscanf( *line, "%d%n", &exp_id, &chars_read ) == 1 ) {
-
-        *line = *line + chars_read;
-
-        /* Find expression in current (or last if funit is a function) functional unit and add it to vsignal list */
-        texp.id = exp_id;
-        expl    = NULL;
-
-        if( (curr_funit->type == FUNIT_FUNCTION) && scope_compare( curr_funit->name, sig->name ) ) {
-          parent_mod = funit_get_curr_module( curr_funit );
-          expl       = exp_link_find( &texp, parent_mod->exp_head );
-        }
-
-        if( expl == NULL ) {
-          expl = exp_link_find( &texp, curr_funit->exp_head );
-        }
-
-        if( expl != NULL ) {
-
-          exp_link_add( expl->exp, &(sig->exp_head), &(sig->exp_tail) );
-          
-          expl->exp->sig = sig;
-          
-          /*
-           If expression is a vsignal holder, we need to set the expression's vector to point
-           to our vector and set its vsignal pointer to point to us.
-          */
-          if( (expl->exp->op == EXP_OP_SIG)            ||
-              (expl->exp->op == EXP_OP_SBIT_SEL)       ||
-              (expl->exp->op == EXP_OP_MBIT_SEL)       ||
-              (expl->exp->op == EXP_OP_MBIT_POS)       ||
-              (expl->exp->op == EXP_OP_MBIT_NEG)       ||
-              (expl->exp->op == EXP_OP_PARAM)          ||
-              (expl->exp->op == EXP_OP_PARAM_SBIT)     ||
-              (expl->exp->op == EXP_OP_PARAM_MBIT)     ||
-              (expl->exp->op == EXP_OP_PARAM_MBIT_POS) ||
-              (expl->exp->op == EXP_OP_PARAM_MBIT_NEG) ||
-              (expl->exp->op == EXP_OP_FUNC_CALL) ) {
-            expression_set_value( expl->exp, sig->value );
-          }
-
-        } else {
-
-          if( name[0] != '#' ) {
-            snprintf( user_msg, USER_MSG_LENGTH, "Expression %d not found for vsignal %s", texp.id, sig->name );
-            print_output( user_msg, FATAL, __FILE__, __LINE__ );
-            retval = FALSE;
-            exit( 1 );
-          }
-
-        }
-
       }
 
     } else {
@@ -566,6 +511,20 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.23  2006/04/21 06:14:45  phase1geo
+ Merged in changes from 0.4.3 stable release.  Updated all regression files
+ for inclusion of OVL library.  More documentation updates for next development
+ release (but there is more to go here).
+
+ Revision 1.22.4.1  2006/04/20 21:55:16  phase1geo
+ Adding support for big endian signals.  Added new endian1 diagnostic to regression
+ suite to verify this new functionality.  Full regression passes.  We may want to do
+ some more testing on variants of this before calling it ready for stable release 0.4.3.
+
+ Revision 1.22.4.1.4.1  2006/05/25 10:59:35  phase1geo
+ Adding bug fix for hierarchically referencing parameters.  Added param13 and
+ param13.1 diagnostics to verify this functionality.  Updated regressions.
+
  Revision 1.22.4.1  2006/04/20 21:55:16  phase1geo
  Adding support for big endian signals.  Added new endian1 diagnostic to regression
  suite to verify this new functionality.  Full regression passes.  We may want to do

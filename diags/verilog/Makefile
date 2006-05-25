@@ -37,7 +37,7 @@ CHK_CODE      = 0
 endif
 
 IVERILOG       = iverilog
-IVERILOG_FLAGS = -cconfig_file -y ./lib -y $(OVL_HOME) -I$(OVL_HOME) -I./include -DRUNTEST
+IVERILOG_FLAGS = -cconfig_file -y ./lib -I$(OVL_HOME) -I./include -DRUNTEST
 IVERILOG_EXEC  = a.out
 IVERILOG_INTER = vvp
 

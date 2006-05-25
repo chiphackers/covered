@@ -1,1 +1,3 @@
-+libext+vlib+v
++libext+.vlib
++libext+.v
+-y $(OVL_HOME)

@@ -83,6 +83,62 @@ func_unit* scope_find_funit_from_scope( char* scope, func_unit* curr_funit ) {
 }
 
 /*!
+ \param name         Name of parameter to find in design
+ \param curr_funit   Pointer to current functional unit to start searching in
+ \param found_parm   Pointer to module parameter that has been found in the design
+ \param found_funit  Pointer to found signal's functional unit
+ \param line         Line number where signal is being used (used for error output)
+
+ \return Returns TRUE if specified signal was found in the design; otherwise, returns FALSE.
+
+ Searches for a given parameter in the design starting with the functional unit in which the parameter is being
+ accessed from.  Attempts to find the parameter locally (if the name is not hierarchically referenced); otherwise,
+ performs relative referencing to find the parameter.  If the parameter is found, the found_parm and found_funit pointers
+ are set to the found module parameter and its functional unit; otherwise, a value of FALSE is returned to the
+ calling function.
+*/
+bool scope_find_param( char* name, func_unit* curr_funit, mod_parm** found_parm, func_unit** found_funit, int line ) {
+
+  char* parm_name;  /* Parameter basename holder */
+  char* scope;      /* Parameter scope holder */
+
+  assert( curr_funit != NULL );
+
+  *found_funit = curr_funit;
+  parm_name    = strdup_safe( name, __FILE__, __LINE__ );
+
+  /* If there is a hierarchical reference being made, adjust the signal name and current functional unit */
+  if( !scope_local( name ) ) {
+
+    scope = (char *)malloc_safe( strlen( name ) + 1, __FILE__, __LINE__ );
+
+    /* Extract the signal name from its scope */
+    scope_extract_back( name, parm_name, scope );
+
+    /* Get the functional unit that contains this signal */
+    if( (*found_funit = scope_find_funit_from_scope( scope, curr_funit )) == NULL ) {
+
+      snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined signal hierarchy (%s) in %s %s, file %s, line %d",
+                name, get_funit_type( curr_funit->type ), curr_funit->name, curr_funit->filename, line );
+      print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      exit( 1 );
+ 
+    }
+
+    free_safe( scope );
+
+  }
+
+  /* Get the module parameter, if it exists */
+  *found_parm = funit_find_param( parm_name, *found_funit );
+
+  free_safe( parm_name );
+
+  return( *found_parm != NULL );
+
+}
+
+/*!
  \param name         Name of signal to find in design
  \param curr_funit   Pointer to current functional unit to start searching in
  \param found_sig    Pointer to signal that has been found in the design
@@ -287,6 +343,15 @@ func_unit* scope_get_parent_module( char* scope ) {
 
 /*
  $Log$
+ Revision 1.12.8.1  2006/05/25 10:59:35  phase1geo
+ Adding bug fix for hierarchically referencing parameters.  Added param13 and
+ param13.1 diagnostics to verify this functionality.  Updated regressions.
+
+ Revision 1.12  2006/03/28 22:28:28  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.11  2006/03/27 23:25:30  phase1geo
  Updating development documentation for 0.4 stable release.
 

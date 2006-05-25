@@ -373,13 +373,17 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
     } else if( (expr->op == EXP_OP_SIG) || (expr->op == EXP_OP_PARAM) ) {
 
+#ifdef OBSOLETE
       assert( expr->sig != NULL );
 
-      if( expr->sig->name[0] == '#' ) {
-        tmpstr = scope_gen_printable( expr->sig->name + 1 );
+      if( expr->sig->suppl.part.type == SSUPPL_TYPE_PARAM ) {
+        tmpstr = scope_gen_printable( expr->sig->name );
       } else {
+#endif
         tmpstr = scope_gen_printable( expr->name );
+#ifdef OBSOLETE
       }
+#endif
 
       switch( strlen( tmpstr ) ) {
         case 0 :  assert( strlen( tmpstr ) > 0 );  break;
@@ -406,13 +410,17 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
     } else if( (expr->op == EXP_OP_SBIT_SEL) || (expr->op == EXP_OP_PARAM_SBIT) ) {
 
+#ifdef OBSOLETE
       assert( expr->sig != NULL );
 
-      if( expr->sig->name[0] == '#' ) {
-        pname = scope_gen_printable( expr->sig->name + 1 );
+      if( expr->sig->suppl.part.type == SSUPPL_TYPE_PARAM ) {
+        pname = scope_gen_printable( expr->sig->name );
       } else {
+#endif
         pname = scope_gen_printable( expr->name );
+#ifdef OBSOLETE
       }
+#endif
 
       tmpstr = (char*)malloc_safe( (strlen( pname ) + 2), __FILE__, __LINE__ );
       snprintf( tmpstr, (strlen( pname ) + 2), "%s[", pname );
@@ -425,13 +433,17 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
     } else if( (expr->op == EXP_OP_MBIT_SEL) || (expr->op == EXP_OP_PARAM_MBIT) ) {
 
+#ifdef OBSOLETE
       assert( expr->sig != NULL );
 
-      if( expr->sig->name[0] == '#' ) {
-        pname = scope_gen_printable( expr->sig->name + 1 );
+      if( expr->sig->suppl.part.type == SSUPPL_TYPE_PARAM ) {
+        pname = scope_gen_printable( expr->sig->name );
       } else {
+#endif
         pname = scope_gen_printable( expr->name );
+#ifdef OBSOLETE
       }
+#endif
 
       tmpstr = (char*)malloc_safe( (strlen( pname ) + 2), __FILE__, __LINE__ );
       snprintf( tmpstr, (strlen( pname ) + 2), "%s[", pname );
@@ -451,13 +463,17 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
     } else if( (expr->op == EXP_OP_MBIT_POS) || (expr->op == EXP_OP_PARAM_MBIT_POS) ) {
 
+#ifdef OBSOLETE
       assert( expr->sig != NULL );
 
-      if( expr->sig->name[0] == '#' ) {
-        pname = scope_gen_printable( expr->sig->name + 1 );
+      if( expr->sig->suppl.part.type == SSUPPL_TYPE_PARAM ) {
+        pname = scope_gen_printable( expr->sig->name );
       } else {
+#endif
         pname = scope_gen_printable( expr->name );
+#ifdef OBSOLETE
       }
+#endif
 
       tmpstr = (char*)malloc_safe( (strlen( pname ) + 2), __FILE__, __LINE__ );
       snprintf( tmpstr, (strlen( pname ) + 2), "%s[", pname );
@@ -470,13 +486,17 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
     } else if( (expr->op == EXP_OP_MBIT_NEG) || (expr->op == EXP_OP_PARAM_MBIT_NEG) ) {
 
+#ifdef OBSOLETE
       assert( expr->sig != NULL );
 
-      if( expr->sig->name[0] == '#' ) {
-        pname = scope_gen_printable( expr->sig->name + 1 );
+      if( expr->sig->suppl.part.type == SSUPPL_TYPE_PARAM ) {
+        pname = scope_gen_printable( expr->sig->name );
       } else {
+#endif
         pname = scope_gen_printable( expr->name );
+#ifdef OBSOLETE
       }
+#endif
 
       tmpstr = (char*)malloc_safe( (strlen( pname ) + 2), __FILE__, __LINE__ );
       snprintf( tmpstr, (strlen( pname ) + 2), "%s[", pname );
@@ -820,6 +840,15 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.67.8.1  2006/05/25 10:59:35  phase1geo
+ Adding bug fix for hierarchically referencing parameters.  Added param13 and
+ param13.1 diagnostics to verify this functionality.  Updated regressions.
+
+ Revision 1.67  2006/03/28 22:28:27  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.66  2006/03/27 23:25:30  phase1geo
  Updating development documentation for 0.4 stable release.
 

@@ -692,11 +692,15 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
 
       if( (exp->op == EXP_OP_SIG) || (exp->op == EXP_OP_PARAM) ) {
 
-        if( exp->sig->name[0] == '#' ) {
-          tmpname = scope_gen_printable( exp->sig->name + 1 );
+#ifdef OBSOLETE
+        if( exp->sig->suppl.part.type == SSUPPL_TYPE_PARAM ) {
+          tmpname = scope_gen_printable( exp->sig->name );
         } else {
+#endif
           tmpname = scope_gen_printable( exp->name );
+#ifdef OBSOLETE
         }
+#endif
 
         *size = strlen( tmpname );
         switch( *size ) {
@@ -794,11 +798,15 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
             case EXP_OP_UNXOR      :  *size = l_size + r_size + 2;  strcpy( code_fmt, "  %s"             );  break;
             case EXP_OP_PARAM_SBIT :
             case EXP_OP_SBIT_SEL   :  
-              if( exp->sig->name[0] == '#' ) {
-                tmpname = scope_gen_printable( exp->sig->name + 1 );
+#ifdef OBSOLETE
+              if( exp->sig->suppl.part.type == SSUPPL_TYPE_PARAM ) {
+                tmpname = scope_gen_printable( exp->sig->name );
               } else {
+#endif
                 tmpname = scope_gen_printable( exp->name );
+#ifdef OBSOLETE
               }
+#endif
               *size = l_size + r_size + strlen( tmpname ) + 2;
               for( i=0; i<strlen( tmpname ); i++ ) {
                 code_fmt[i] = ' ';
@@ -809,11 +817,15 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
               break;
             case EXP_OP_PARAM_MBIT :
             case EXP_OP_MBIT_SEL   :  
-              if( exp->sig->name[0] == '#' ) {
-                tmpname = scope_gen_printable( exp->sig->name + 1 );
+#ifdef OBSOLETE
+              if( exp->sig->suppl.part.type == SSUPPL_TYPE_PARAM ) {
+                tmpname = scope_gen_printable( exp->sig->name );
               } else {
+#endif
                 tmpname = scope_gen_printable( exp->name );
+#ifdef OBSOLETE
               }
+#endif
               *size = l_size + r_size + strlen( tmpname ) + 3;  
               for( i=0; i<strlen( tmpname ); i++ ) {
                 code_fmt[i] = ' ';
@@ -826,11 +838,15 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
             case EXP_OP_PARAM_MBIT_NEG :
             case EXP_OP_MBIT_POS       :
             case EXP_OP_MBIT_NEG       :
-              if( exp->sig->name[0] == '#' ) {
-                tmpname = scope_gen_printable( exp->sig->name + 1 );
+#ifdef OBSOLETE
+              if( exp->sig->suppl.part.type == SSUPPL_TYPE_PARAM ) {
+                tmpname = scope_gen_printable( exp->sig->name );
               } else {
+#endif
                 tmpname = scope_gen_printable( exp->name );
+#ifdef OBSOLETE
               }
+#endif
               *size = l_size + r_size + strlen( tmpname ) + 4;
               for( i=0; i<strlen( tmpname ); i++ ) {
                 code_fmt[i] = ' ';
@@ -2235,8 +2251,17 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.139  2006/04/19 22:21:33  phase1geo
+ More updates to properly support assertion coverage.  Removing assertion modules
+ from line, toggle, combinational logic, FSM and race condition output so that there
+ won't be any overlap of information here.
+
  Revision 1.138  2006/04/11 22:42:16  phase1geo
  First pass at adding multi-file merging.  Still need quite a bit of work here yet.
+
+ Revision 1.137.8.1  2006/05/25 10:59:35  phase1geo
+ Adding bug fix for hierarchically referencing parameters.  Added param13 and
+ param13.1 diagnostics to verify this functionality.  Updated regressions.
 
  Revision 1.137  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the
