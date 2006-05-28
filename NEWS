@@ -1,7 +1,46 @@
 Covered-Related NEWS
 ====================
 
-    *
+    * 5/30/2006
+
+Development release covered-20060530 made.  This new development release for the future 0.5 stable
+release contains a lot of new features and enhancements over the 0.4.x releases.  The changes are listed
+below (Note:  the major feature additions are noted with an asterisk (*)).  Please note that all bug fixes
+that were made to the stable releases (up and including 0.4.4) are included in this development release
+as well.
+
+  * Added support for FSM coverage output in the GUI
+  * Added support for assertion coverage in the GUI and ASCII report mechanism
+  * Added Covered VPI module which can now allow Covered to score a design while the simulation is
+    executing (only the Icarus Verilog, Cver and VCS simulators are supported at this time).
+  * Added support to Covered merge command to merge two or more CDD files with one command (previously
+    only two CDD files could be merged at a time).
+  - Added support to allow coverage handling of blocks that contain the $display system call (previously
+    any block containing one of these system calls was disregarded for coverage).
+  - Added ability for Covered to automatically remove the need for OVL assertions when the "-A ovl" option
+    is not specified to Covered's score command.
+  - Added support for environment variable substitution in the configuration file that is passed to
+    Covered's score command with the -f option.
+  - Added support to allow Covered's GUI to be started from any directory and work properly (previously
+    Covered's GUI had to be started in the same directory as the design was scored from).
+  * Added syntax highlighting to all Verilog source code in the GUI (added support in Preferences window
+    to allow the user to specify different colors for the syntax highlighter).
+  * Causing all Verilog source code to be preprocessed before being displayed in the file viewer (fixed
+    bugs with defined values not being highlighted correctly).
+  - Updated all user guide, GUI and man documentation to match the current state of Covered.
+  - Added many new diagnostics to the test suite to verify the new functionality.
+
+Lots of cool new features to give a go.  You can consider these new features to be a beta version -- not
+all features have been completely verified to work at this point.  So please report any bugs that you find
+with this new version.  Have fun!
+
+    * 5/27/2006
+
+Stable release covered-0.4.4 made.  This release contains a bug fix to proper handle hierarchical
+referencing of parameter values.  This feature was technically not supported in the past but caused
+an internal assertion error when this was performed.  The feature is now fully supported.
+
+    * 4/21/2006
 
 Stable release covered-0.4.3 made.  This release contains a bug fix to the statement connection function that
 caused segmentation faults during the score command.  Also added support for big endian wires/regs.  This 

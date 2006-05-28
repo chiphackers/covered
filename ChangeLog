@@ -1,3 +1,453 @@
+2006-05-27 21:43  phase1geo
+
+	Integrating stable release 0.4.4 changes into main branch.  Updated
+	regressions appropriately.
+
+2006-05-27 00:56  phase1geo
+
+	Fixing last problem with bug fix.  Updated date on NEWS.
+
+2006-05-26 17:35  phase1geo
+
+	More fixes to parameter binding to fix broken diagnostic run. 
+	Updated vcs diagnostics.
+
+2006-05-25 20:36  phase1geo
+
+	Fixing check_test script to ignore the "8" lines in the CDD files
+	when performing the diff between them.
+
+2006-05-25 07:25  phase1geo
+
+	Adding ovl1.1 diagnostic information.
+
+2006-05-25 07:23  phase1geo
+
+	Adding missing defines to get OVL coverage information to be
+	correct.
+
+2006-05-25 07:10  phase1geo
+
+	Including bug fix from 0.4.4 stable release and updating
+	regressions.
+
+2006-05-25 06:51  phase1geo
+
+	Updating NEWS and configuration/Makefile scripts.
+
+2006-05-25 05:59  phase1geo
+
+	file param13.1.rptI was initially added on branch
+	covered-0_4_3-branch2.
+
+2006-05-25 05:59  phase1geo
+
+	file param13.1.rptWM was initially added on branch
+	covered-0_4_3-branch2.
+
+2006-05-25 05:59  phase1geo
+
+	file param13.1.rptWI was initially added on branch
+	covered-0_4_3-branch2.
+
+2006-05-25 05:59  phase1geo
+
+	file param13.1.v was initially added on branch
+	covered-0_4_3-branch2.
+
+2006-05-25 05:59  phase1geo
+
+	file param13.1.rptM was initially added on branch
+	covered-0_4_3-branch2.
+
+2006-05-25 05:59  phase1geo
+
+	file param13.1.cdd was initially added on branch
+	covered-0_4_3-branch2.
+
+2006-05-25 05:59  phase1geo
+
+	file param13.1.cfg was initially added on branch
+	covered-0_4_3-branch2.
+
+2006-05-25 05:59  phase1geo
+
+	Adding bug fix for hierarchically referencing parameters.  Added
+	param13 and param13.1 diagnostics to verify this functionality. 
+	Updated regressions.
+
+2006-05-15 08:56  phase1geo
+
+	Updating TODO.
+
+2006-05-12 22:26  phase1geo
+
+	Updating TODO.
+
+2006-05-12 22:24  phase1geo
+
+	More documentation updates with Makefiles and fixing a few run-time
+	issues with the VPI since we have added assertion coverage.
+
+2006-05-12 21:56  phase1geo
+
+	Adding documentation updates.
+
+2006-05-12 17:54  phase1geo
+
+	Small fixes to preferences and verilog Tcl/Tk scripts.
+
+2006-05-06 23:04  phase1geo
+
+	Added symbol highlighting and added syntax highlighting to
+	preferences window.  Still some work to do here to make sure that
+	combinational logic verbose window gets updated when preferences
+	are changed here.
+
+2006-05-05 17:56  phase1geo
+
+	Partially complete with Verilog syntax highlighting feature.  Still
+	need to handle values and add stuff to preferences window for
+	configuration of this feature.	Also need to tie syntax
+	highlighting into the main source file viewer window.
+
+2006-05-05 00:16  phase1geo
+
+	Modifying format and rearranging user guide for addition of
+	assertion coverage information.  This information still needs to be
+	written at this time.
+
+2006-05-03 20:54  phase1geo
+
+	Updating configuration files and man documentation.
+
+2006-05-03 17:49  phase1geo
+
+	Causing all files to be preprocessed when written to the file
+	viewer.  I'm sure that I am breaking all kinds of things at this
+	point, but things do work properly on a few select test cases so
+	I'm checkpointing here.
+
+2006-05-03 16:21  phase1geo
+
+	Updating TODO file.
+
+2006-05-03 16:17  phase1geo
+
+	Finishing assertion source code viewer functionality.  We just need
+	to add documentation to the GUI user's guide and we should be set
+	here (though we may want to consider doing some syntax highlighting
+	at some point).
+
+2006-05-02 17:06  phase1geo
+
+	Fixing problem with passing score path to Tcl from C.
+
+2006-05-02 16:49  phase1geo
+
+	Updating regression files -- all but three diagnostics pass (due to
+	known problems).  Added SCORE_ARGS line type to CDD format which
+	stores the directory that the score command was executed from as
+	well as the command-line arguments to the score command.
+
+2006-05-02 09:14  phase1geo
+
+	Updating configuration.
+
+2006-05-01 17:27  phase1geo
+
+	More updates with assertion coverage window.  Still have a ways to
+	go.
+
+2006-05-01 08:19  phase1geo
+
+	Adding verbose assertion coverage file.
+
+2006-05-01 08:19  phase1geo
+
+	Enhancing the verbose assertion window.  Still need to fix a few
+	bugs and add a few more enhancements.
+
+2006-04-29 00:12  phase1geo
+
+	Adding initial version of assertion verbose window.  This is
+	currently working; however, I think that I want to enhance this
+	window a bit more before calling it good.
+
+2006-04-28 12:09  phase1geo
+
+	Adding GUI support for assertion coverage.  Halfway there.
+
+2006-04-24 23:55  phase1geo
+
+	file param13.rptM was added on branch covered-0_4_3-branch2 on
+	2006-05-25 10:59:35 +0000
+
+2006-04-24 23:55  phase1geo
+
+	file param13.rptWM was added on branch covered-0_4_3-branch2 on
+	2006-05-25 10:59:35 +0000
+
+2006-04-24 23:55  phase1geo
+
+	file param13.rptI was initially added on branch
+	covered-0_4_3-branch.
+
+2006-04-24 23:55  phase1geo
+
+	file param13.rptM was initially added on branch
+	covered-0_4_3-branch.
+
+2006-04-24 23:55  phase1geo
+
+	file param13.rptWI was initially added on branch
+	covered-0_4_3-branch.
+
+2006-04-24 23:55  phase1geo
+
+	file param13.rptI was added on branch covered-0_4_3-branch2 on
+	2006-05-25 10:59:35 +0000
+
+2006-04-24 23:55  phase1geo
+
+	file param13.rptWM was initially added on branch
+	covered-0_4_3-branch.
+
+2006-04-24 23:55  phase1geo
+
+	file param13.rptWI was added on branch covered-0_4_3-branch2 on
+	2006-05-25 10:59:35 +0000
+
+2006-04-24 23:53  phase1geo
+
+	More work on the bug fix for parameter binding.  We are getting
+	close, just need to debug a few problems from regression.  Also
+	added is_constant bit to expression supplemental field to avoid
+	displaying parameters in combinational logic (and this can be
+	expanded for all expressions containing things like signals which
+	do not change value during simulation.
+
+2006-04-24 23:53  phase1geo
+
+	file param13.cdd was added on branch covered-0_4_3-branch2 on
+	2006-05-25 10:59:34 +0000
+
+2006-04-24 23:53  phase1geo
+
+	file param13.cdd was initially added on branch
+	covered-0_4_3-branch.
+
+2006-04-24 17:54  phase1geo
+
+	Checkpointing work on parameter binding.  In the debug phase.
+
+2006-04-23 22:30  phase1geo
+
+	Adding the start of the FSM and assertion window documentation for
+	the GUI.  Neither of these pages contain any pertinent information
+	yet.
+
+2006-04-23 22:01  phase1geo
+
+	Starting to redo parameter/expression binding process.	We are not
+	complete at this time, however.  Also adding param13.v diagnostic
+	to test suite.
+
+2006-04-21 17:09  phase1geo
+
+	file param13.cfg was added on branch covered-0_4_3-branch on
+	2006-04-24 03:01:27 +0000
+
+2006-04-21 17:09  phase1geo
+
+	file param13.cfg was added on branch covered-0_4_3-branch2 on
+	2006-05-25 10:59:34 +0000
+
+2006-04-21 17:09  phase1geo
+
+	file param13.v was added on branch covered-0_4_3-branch on
+	2006-04-24 03:01:28 +0000
+
+2006-04-21 17:09  phase1geo
+
+	Adding diagnostic that brings out a bug in the parameter output
+	handler.
+
+2006-04-21 17:09  phase1geo
+
+	file param13.v was added on branch covered-0_4_3-branch2 on
+	2006-05-25 10:59:35 +0000
+
+2006-04-21 17:03  phase1geo
+
+	Adding ovl1 and ovl1.1 diagnostics to testsuite.  ovl1 passes while
+	ovl1.1 currently fails due to a problem with outputting parameters
+	to the CDD file (need to look into this further).  Added OVL
+	assertion verbose output support which seems to be working for the
+	moment.
+
+2006-04-21 01:14  phase1geo
+
+	Merged in changes from 0.4.3 stable release.  Updated all
+	regression files for inclusion of OVL library.	More documentation
+	updates for next development release (but there is more to go
+	here).
+
+2006-04-21 01:10  phase1geo
+
+	Merged in changes from 0.4.3 stable release.  Updated all
+	regression files for inclusion of OVL library.	More documentation
+	updates for next development release (but there is more to go
+	here).
+
+2006-04-20 23:42  phase1geo
+
+	file endian2.rptWM was initially added on branch
+	covered-0_4_2-branch.
+
+2006-04-20 23:42  phase1geo
+
+	file endian3.rptM was initially added on branch
+	covered-0_4_2-branch.
+
+2006-04-20 23:42  phase1geo
+
+	file endian3.rptI was initially added on branch
+	covered-0_4_2-branch.
+
+2006-04-20 23:42  phase1geo
+
+	file endian3.rptWI was initially added on branch
+	covered-0_4_2-branch.
+
+2006-04-20 23:42  phase1geo
+
+	file endian2.rptI was initially added on branch
+	covered-0_4_2-branch.
+
+2006-04-20 23:42  phase1geo
+
+	file endian3.v was initially added on branch covered-0_4_2-branch.
+
+2006-04-20 23:42  phase1geo
+
+	file endian3.rptWM was initially added on branch
+	covered-0_4_2-branch.
+
+2006-04-20 23:42  phase1geo
+
+	file endian2.rptWI was initially added on branch
+	covered-0_4_2-branch.
+
+2006-04-20 23:42  phase1geo
+
+	file endian2.v was initially added on branch covered-0_4_2-branch.
+
+2006-04-20 23:42  phase1geo
+
+	file endian2.rptM was initially added on branch
+	covered-0_4_2-branch.
+
+2006-04-20 23:42  phase1geo
+
+	file endian2.cfg was initially added on branch
+	covered-0_4_2-branch.
+
+2006-04-20 23:42  phase1geo
+
+	file endian3.cfg was initially added on branch
+	covered-0_4_2-branch.
+
+2006-04-20 23:42  phase1geo
+
+	file endian3.cdd was initially added on branch
+	covered-0_4_2-branch.
+
+2006-04-20 23:42  phase1geo
+
+	Adding endian2 and endian3 diagnostics to regression suite to
+	verify other endianness related code.  Made small fix to parameter
+	CDD output function to include the supplemental field output.  Full
+	regression passes.
+
+2006-04-20 23:42  phase1geo
+
+	file endian2.cdd was initially added on branch
+	covered-0_4_2-branch.
+
+2006-04-20 17:04  phase1geo
+
+	Updating NEWS.
+
+2006-04-20 17:01  phase1geo
+
+	Version updates for upcoming 0.4.3 stable release.
+
+2006-04-20 16:55  phase1geo
+
+	file endian1.rptWI was initially added on branch
+	covered-0_4_2-branch.
+
+2006-04-20 16:55  phase1geo
+
+	file endian1.rptI was initially added on branch
+	covered-0_4_2-branch.
+
+2006-04-20 16:55  phase1geo
+
+	file endian1.rptWM was initially added on branch
+	covered-0_4_2-branch.
+
+2006-04-20 16:55  phase1geo
+
+	file endian1.v was initially added on branch covered-0_4_2-branch.
+
+2006-04-20 16:55  phase1geo
+
+	file endian1.cfg was initially added on branch
+	covered-0_4_2-branch.
+
+2006-04-20 16:55  phase1geo
+
+	file endian1.rptM was initially added on branch
+	covered-0_4_2-branch.
+
+2006-04-20 16:55  phase1geo
+
+	file endian1.cdd was initially added on branch
+	covered-0_4_2-branch.
+
+2006-04-20 16:55  phase1geo
+
+	Adding support for big endian signals.	Added new endian1
+	diagnostic to regression suite to verify this new functionality. 
+	Full regression passes.  We may want to do some more testing on
+	variants of this before calling it ready for stable release 0.4.3.
+
+2006-04-20 13:48  phase1geo
+
+	Fixing bug in statement_connect function to force the last
+	statement of a true path to get the stop_true and stop_false bits
+	get set.
+
+2006-04-19 17:21  phase1geo
+
+	More updates to properly support assertion coverage.  Removing
+	assertion modules from line, toggle, combinational logic, FSM and
+	race condition output so that there won't be any overlap of
+	information here.
+
+2006-04-18 16:59  phase1geo
+
+	Adding support for environment variable substitution in
+	configuration files passed to the score command.  Adding
+	ovl.c/ovl.h files.  Working on support for assertion coverage in
+	report command.  Still have a bit to go here yet.
+
+2006-04-17 21:15  phase1geo
+
+	Updating NEWS and ChangeLog for new 0.4.2 stable release.
+
 2006-04-16 23:06  phase1geo
 
 	More updates for upcoming 0.4.2 stable release.
@@ -12,6 +462,35 @@
 
 	file define5.cdd was added on branch covered-0_4_1-branch on
 	2006-04-14 23:16:07 +0000
+
+2006-04-14 12:03  phase1geo
+
+	Reorganizing info line to make it more succinct and easier for
+	future needs.  Fixed problems with VPI library with recent merge
+	changes.  Regression has been completely updated for these changes.
+
+2006-04-13 23:40  phase1geo
+
+	Updating configuration and Makefiles.
+
+2006-04-13 17:17  phase1geo
+
+	Adding the beginning of the OVL assertion extractor.  So far the -a
+	option is parsed and the race condition checker is turned off for
+	all detectable OVL assertion modules (we will trust that these
+	modules don't have race conditions inherent in them).
+
+2006-04-13 16:04  phase1geo
+
+	Adding NOOP expression and allowing $display system calls to not
+	cause its statement block to be excluded from coverage.  Updating
+	regressions which fully pass.
+
+2006-04-13 14:40  phase1geo
+
+	Fixing bug in task_call parser that keeps subsequent task calls
+	from causing a binding error.  This bug needs to be fixed in the
+	stable release also.
 
 2006-04-13 11:02  phase1geo
 
@@ -43,3 +522,81 @@
 	file define5.v was added on branch covered-0_4_1-branch on
 	2006-04-14 23:16:08 +0000
 
+2006-04-13 11:02  phase1geo
+
+	Adding support for multi-line definitions.  Added define5
+	diagnostic to verify its usage.  Full regression passes.
+
+2006-04-13 09:58  phase1geo
+
+	Updating CDD version from 6 to 7 due to changes in the merge
+	facility.  Full regression now passes.
+
+2006-04-12 16:22  phase1geo
+
+	Fixing problems with multi-file merging.  This now seems to be
+	working as needed.  We just need to document this new feature.
+
+2006-04-12 13:05  phase1geo
+
+	Updating regressions for changes that were made to support
+	multi-file merging.  Also fixing output of FSM state transitions to
+	be what they were.  Regressions now pass; however, the support for
+	multi-file merging (beyond two files) has not been tested to this
+	point.
+
+2006-04-12 08:28  phase1geo
+
+	Fixing problem with memory allocation for merged files.
+
+2006-04-11 17:42  phase1geo
+
+	First pass at adding multi-file merging.  Still need quite a bit of
+	work here yet.
+
+2006-04-09 23:47  phase1geo
+
+	Documentation updates for VPI module additions.
+
+2006-04-07 23:10  phase1geo
+
+	Updating man documentation to describe usage of VPI.
+
+2006-04-07 22:22  phase1geo
+
+	Adding support for CVER simulator VPI support.	I think I may have
+	also fixed support for VCS also.  Recreated configuration/Makefiles
+	with newer version of auto* tools.
+
+2006-04-07 17:30  phase1geo
+
+	Fixes to get VPI to work with VCS.  Getting close but still some
+	work to go to get the callbacks to start working.
+
+2006-04-06 22:47  phase1geo
+
+	Fixing run-time issues with VPI.  Things are running correctly now
+	with IV.
+
+2006-04-06 17:32  phase1geo
+
+	Adding lib directory to CVS.
+
+2006-04-06 17:31  phase1geo
+
+	Adding vpi.c and vpi.h to src directory.
+
+2006-04-06 17:29  phase1geo
+
+	Adding VPI capability back and integrating into autoconf/automake
+	scheme.  We are getting close but still have a ways to go.
+
+2006-04-05 22:08  phase1geo
+
+	Updating TODO file.
+
+2006-04-05 10:19  phase1geo
+
+	Adding support for FSM coverage output in the GUI.  Started adding
+	components for assertion coverage to GUI and report functions
+	though there is no functional support for this at this time.
