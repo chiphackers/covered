@@ -1,7 +1,7 @@
 5 7 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd param3.3.vcd -o param3.3.cdd -v param3.3.v
+8 /ptmp/cvs/covered/diags/verilog -t main -vcd param3.3.vcd -o param3.3.cdd -v param3.3.v
 3 0 main main param3.3.v 3 23
-1 #xsize 0 0 30000 32 0 4 0 0 0 0 0 0 0
+1 xsize 0 0 80000 32 0 4 0 0 0 0 0 0 0
 1 x 0 7 30011 2 0 110a
 3 0 foo main.bar1 param3.3.v 26 35
 2 1 33 f0012 1 0 20004 0 0 2 1 0
@@ -9,7 +9,7 @@
 2 3 33 b0012 4 2 2014c 1 2 2 0 110a
 2 4 33 70007 0 1 400 0 0 a
 2 5 33 70012 4 35 f00e 3 4
-1 #bsize 0 0 30000 32 0 4 0 0 0 0 0 0 0
+1 bsize 0 0 80000 32 0 4 0 0 0 0 0 0 0
 1 b 0 30 12 2 0 110a
 1 a 0 31 30012 2 0 110a
 4 5 5 5

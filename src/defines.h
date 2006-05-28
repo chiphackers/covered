@@ -1825,6 +1825,9 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.193  2006/05/25 12:11:00  phase1geo
+ Including bug fix from 0.4.4 stable release and updating regressions.
+
  Revision 1.192  2006/05/02 21:49:41  phase1geo
  Updating regression files -- all but three diagnostics pass (due to known problems).
  Added SCORE_ARGS line type to CDD format which stores the directory that the score
@@ -1857,11 +1860,6 @@ struct param_oride_s {
 
  Revision 1.186  2006/04/11 22:42:16  phase1geo
  First pass at adding multi-file merging.  Still need quite a bit of work here yet.
-
- Revision 1.185.4.1  2006/04/20 21:55:16  phase1geo
- Adding support for big endian signals.  Added new endian1 diagnostic to regression
- suite to verify this new functionality.  Full regression passes.  We may want to do
- some more testing on variants of this before calling it ready for stable release 0.4.3.
 
  Revision 1.185.4.1.4.1  2006/05/25 10:59:35  phase1geo
  Adding bug fix for hierarchically referencing parameters.  Added param13 and

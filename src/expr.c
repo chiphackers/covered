@@ -3151,6 +3151,9 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.182  2006/05/25 12:11:01  phase1geo
+ Including bug fix from 0.4.4 stable release and updating regressions.
+
  Revision 1.181  2006/04/21 06:14:45  phase1geo
  Merged in changes from 0.4.3 stable release.  Updated all regression files
  for inclusion of OVL library.  More documentation updates for next development
@@ -3160,11 +3163,6 @@ void expression_dealloc( expression* expr, bool exp_only ) {
  Adding NOOP expression and allowing $display system calls to not cause its
  statement block to be excluded from coverage.  Updating regressions which fully
  pass.
-
- Revision 1.179.4.1  2006/04/20 21:55:16  phase1geo
- Adding support for big endian signals.  Added new endian1 diagnostic to regression
- suite to verify this new functionality.  Full regression passes.  We may want to do
- some more testing on variants of this before calling it ready for stable release 0.4.3.
 
  Revision 1.179.4.1  2006/04/20 21:55:16  phase1geo
  Adding support for big endian signals.  Added new endian1 diagnostic to regression

@@ -1,9 +1,9 @@
 5 7 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd fsm5.3.vcd -o fsm5.3.cdd -v fsm5.3.v -F main
+8 /ptmp/cvs/covered/diags/verilog -t main -vcd fsm5.3.vcd -o fsm5.3.cdd -v fsm5.3.v -F main
 3 0 main main fsm5.3.v 1 50
 2 1 14 410041 5 0 20008 0 0 32 64 1 0 0 0 0 0 0 0
 2 2 14 360042 5 23 c 0 1 next_state
-2 3 14 290032 1 32 4 0 0 #STATE_IDLE
+2 3 14 290032 1 32 4 0 0 STATE_IDLE
 2 4 14 210032 6 1a 200cc 2 3 32 0 11aa aa aa aa aa aa aa aa
 2 5 14 210025 2 1 c 0 0 reset
 2 6 14 210042 6 19 201cc 4 5 1 0 1102
@@ -12,15 +12,15 @@
 2 9 14 110015 2c 1 c 0 0 clock
 2 10 14 9000f 0 2a 20000 0 0 2 0 a
 2 11 14 90015 43 27 2100a 9 10 1 0 2
-2 12 19 280031 1 32 4 0 0 #STATE_IDLE
+2 12 19 280031 1 32 4 0 0 STATE_IDLE
 2 13 19 1b0024 0 1 400 0 0 next_state
 2 14 19 1b0031 2 37 6006 12 13
 2 15 20 59005c 1 0 20008 0 0 1 1 1
-2 16 20 4e0057 1 32 4 0 0 #STATE_IDLE
+2 16 20 4e0057 1 32 4 0 0 STATE_IDLE
 2 17 20 4e005c 1 31 20088 15 16 33 0 aa aa aa aa aa aa aa aa 2
 2 18 20 4d005d 1 26 20008 17 0 33 0 aa aa aa aa aa aa aa aa 2
 2 19 20 450048 1 0 20004 0 0 1 1 0
-2 20 20 3a0043 1 32 8 0 0 #STATE_SEND
+2 20 20 3a0043 1 32 8 0 0 STATE_SEND
 2 21 20 3a0048 1 31 20108 19 20 33 0 aa aa aa aa aa aa aa aa 2
 2 22 20 390049 1 26 20008 21 0 33 0 aa aa aa aa aa aa aa aa 2
 2 23 20 280049 2 1a 20208 18 22 33 0 21aa aa aa aa aa aa aa aa 2
@@ -31,11 +31,11 @@
 2 28 20 1b0024 0 1 400 0 0 next_state
 2 29 20 1b005d 2 37 600a 27 28
 2 30 21 59005c 1 0 20008 0 0 1 1 1
-2 31 21 4e0057 1 32 4 0 0 #STATE_IDLE
+2 31 21 4e0057 1 32 4 0 0 STATE_IDLE
 2 32 21 4e005c 1 31 20088 30 31 33 0 aa aa aa aa aa aa aa aa 2
 2 33 21 4d005d 1 26 20008 32 0 33 0 aa aa aa aa aa aa aa aa 2
 2 34 21 450048 1 0 20004 0 0 1 1 0
-2 35 21 3a0043 1 32 8 0 0 #STATE_SEND
+2 35 21 3a0043 1 32 8 0 0 STATE_SEND
 2 36 21 3a0048 1 31 20108 34 35 33 0 aa aa aa aa aa aa aa aa 2
 2 37 21 390049 1 26 20008 36 0 33 0 aa aa aa aa aa aa aa aa 2
 2 38 21 290049 1 1a 20208 33 37 33 0 aa aa aa aa aa aa aa aa 2
@@ -43,7 +43,7 @@
 2 40 21 29005d 1 19 20088 38 39 2 0 a
 2 41 21 1b0024 0 1 400 0 0 next_state
 2 42 21 1b005d 1 37 600a 40 41
-2 43 21 c0015 1 32 8 0 0 #STATE_SEND
+2 43 21 c0015 1 32 8 0 0 STATE_SEND
 2 44 21 60009 1 0 20004 0 0 1 1 0
 2 45 21 60015 1 31 20088 43 44 33 0 aa aa aa aa aa aa aa aa 2
 2 46 21 50016 1 26 20008 45 0 33 0 aa aa aa aa aa aa aa aa 2
@@ -52,7 +52,7 @@
 2 49 18 b0016 5 31 201cc 47 48 2 0 310a
 2 50 18 a0017 9 26 2000e 49 0 2 0 310a
 2 51 21 0 1 2f 2420a 46 50 1 0 2
-2 52 20 c0015 1 32 4 0 0 #STATE_IDLE
+2 52 20 c0015 1 32 4 0 0 STATE_IDLE
 2 53 20 60009 1 0 20004 0 0 1 1 0
 2 54 20 60015 1 31 20044 52 53 33 0 aa aa aa aa aa aa aa aa 2
 2 55 20 50016 1 26 20004 54 0 33 0 aa aa aa aa aa aa aa aa 2
@@ -94,8 +94,8 @@
 2 91 0 0 2 1 c 0 0 reset
 2 92 0 0 5 31 201cc 90 91 2 0 310a
 2 93 0 0 5 26 2f00e 92 0 2 0 310a
-1 #STATE_IDLE 0 0 30000 32 0 0 0 0 0 0 0 0 0
-1 #STATE_SEND 0 0 30000 32 0 1 0 0 0 0 0 0 0
+1 STATE_IDLE 0 0 80000 32 0 0 0 0 0 0 0 0 0
+1 STATE_SEND 0 0 80000 32 0 1 0 0 0 0 0 0 0
 1 clock 0 6 3000f 1 16 1102
 1 reset 0 7 3000f 1 0 1002
 1 state 0 8 3000f 1 0 1102

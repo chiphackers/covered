@@ -11,7 +11,7 @@
 2 8 25 a000a 1 0 20008 0 0 32 64 1 0 0 0 0 0 0 0
 2 9 25 a000a 1 0 20008 0 0 32 64 55 55 55 55 55 55 55 55
 2 10 25 9000a 3d 2c 2000a 8 9 32 0 aa aa aa aa aa aa aa aa
-1 #width 0 0 30000 32 0 10 0 0 0 0 0 0 0
+1 width 0 0 80000 32 0 10 0 0 0 0 0 0 0
 1 clock 0 3 3000a 1 16 1102
 1 reset_n 0 3 30011 1 0 102
 1 a 0 4 3000a 4 0 aa
@@ -28,7 +28,7 @@
 2 17 13 3e0041 1 0 20008 0 0 1 1 1
 2 18 13 37003a 1 0 20004 0 0 1 1 0
 2 19 13 350035 1 0 20008 0 0 32 64 1 0 0 0 0 0 0 0
-2 20 13 2f0033 1 32 8 0 0 #width
+2 20 13 2f0033 1 32 8 0 0 width
 2 21 13 2f0035 1 7 20208 19 20 32 0 aa aa aa aa aa aa aa aa
 2 22 13 2e003c 1 25 20104 18 21 3 0 2a
 2 23 13 2e0041 1 31 20088 17 22 4 0 aa
@@ -38,12 +38,12 @@
 2 27 13 13001d 0 1 400 0 0 test_expr_1
 2 28 13 130042 2 36 f00a 26 27
 2 29 44 230026 1 0 20004 0 0 1 1 0
-2 30 44 1d0021 1 32 8 0 0 #width
+2 30 44 1d0021 1 32 8 0 0 width
 2 31 44 1c0028 1 25 20104 29 30 4 0 aa
 2 32 44 40013 0 1 400 0 0 one_hots_checked
 2 33 44 40028 1 37 1006 31 32
 2 34 45 230026 1 0 20004 0 0 1 1 0
-2 35 45 1d0021 1 32 8 0 0 #width
+2 35 45 1d0021 1 32 8 0 0 width
 2 36 45 1c0028 1 25 20104 34 35 4 0 aa
 2 37 45 40018 0 1 400 0 0 prev_one_hots_checked
 2 38 45 40028 1 37 6 36 37
@@ -61,12 +61,12 @@
 2 50 57 140030 0 47 20 49 0 ovl_cover_t.cvr_msg
 2 51 57 80032 0 3b 26012 0 50 512 0 aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa ovl_cover_t
 2 52 56 410044 1 0 20004 0 0 1 1 0
-2 53 56 3b003f 1 32 8 0 0 #width
+2 53 56 3b003f 1 32 8 0 0 width
 2 54 56 3a0046 1 25 20104 52 53 4 0 aa
 2 55 56 2d0035 1 1 4 0 0 test_expr
 2 56 56 2d0046 1 11 20048 54 55 1 0 2
 2 57 56 230026 1 0 20004 0 0 1 1 0
-2 58 56 1d0021 1 32 8 0 0 #width
+2 58 56 1d0021 1 32 8 0 0 width
 2 59 56 1c0028 1 25 20104 57 58 4 0 aa
 2 60 56 a0017 1 1 4 0 0 prev_test_expr
 2 61 56 a0028 1 15 20044 59 60 1 0 2
@@ -78,7 +78,7 @@
 2 67 62 a0019 0 1 400 0 0 one_hots_checked
 2 68 62 a0039 a 38 6006 66 67
 2 69 61 300033 1 0 20004 0 0 1 1 0
-2 70 61 2a002e 1 32 8 0 0 #width
+2 70 61 2a002e 1 32 8 0 0 width
 2 71 61 290035 1 25 20104 69 70 4 0 aa
 2 72 61 190023 1 1 8 0 0 test_expr_1
 2 73 61 d0015 1 1 4 0 0 test_expr
@@ -86,7 +86,7 @@
 2 75 61 c0035 1 11 20048 71 74 1 0 2
 2 76 61 80036 a 39 400a 75 0
 2 77 60 2a002d 1 0 20004 0 0 1 1 0
-2 78 60 240028 1 32 8 0 0 #width
+2 78 60 240028 1 32 8 0 0 width
 2 79 60 23002f 1 25 20104 77 78 4 0 aa
 2 80 60 17001f 1 1 4 0 0 test_expr
 2 81 60 b0013 1 1 4 0 0 test_expr
@@ -100,7 +100,7 @@
 2 89 70 140031 0 47 20 88 0 ovl_cover_t.cvr_msg
 2 90 70 80033 0 3b 26012 0 89 512 0 aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa ovl_cover_t
 2 91 69 27002a 1 0 20008 0 0 1 1 1
-2 92 69 210025 1 32 8 0 0 #width
+2 92 69 210025 1 32 8 0 0 width
 2 93 69 20002c 1 25 20208 91 92 4 0 aa
 2 94 69 c001b 1 1 4 0 0 one_hots_checked
 2 95 69 c002c 1 11 20084 93 94 1 0 2
@@ -110,7 +110,7 @@
 2 99 68 b002d 1 18 20044 95 98 1 0 2
 2 100 68 6002f a 39 4006 99 0
 2 101 49 2d002d 1 0 20004 0 0 32 64 0 0 0 0 0 0 0 0
-2 102 49 1b0028 1 32 8 0 0 #coverage_level
+2 102 49 1b0028 1 32 8 0 0 coverage_level
 2 103 49 1b002d 1 15 20108 101 102 1 0 2
 2 104 49 130016 1 0 20004 0 0 1 1 0
 2 105 49 8000e 2 1 c 0 0 reset_n
@@ -120,12 +120,12 @@
 2 109 48 130015 1e 1 c 0 0 clk
 2 110 48 b0011 0 2a 20000 0 0 2 0 a
 2 111 48 b0015 2e 27 2100a 109 110 1 0 2
-1 #severity_level 0 0 30000 32 0 1 0 0 0 0 0 0 0
-1 #width 0 0 30000 32 0 10 0 0 0 0 0 0 0
-1 #property_type 0 0 30000 32 0 0 0 0 0 0 0 0 0
-1 #msg 0 0 30000 32 0 54 10 55 10 41 10 10 11
-1 #coverage_level 0 0 30000 32 0 55 55 55 55 55 55 55 55
-1 #assert_name 0 0 30000 32 0 10 11 55 10 40 10 55 11
+1 severity_level 0 0 80000 32 0 1 0 0 0 0 0 0 0
+1 width 0 0 80000 32 0 10 0 0 0 0 0 0 0
+1 property_type 0 0 80000 32 0 0 0 0 0 0 0 0 0
+1 msg 0 0 80000 32 0 54 10 55 10 41 10 10 11
+1 coverage_level 0 0 80000 32 0 55 55 55 55 55 55 55 55
+1 assert_name 0 0 80000 32 0 10 11 55 10 40 10 55 11
 1 clk 0 12 8 1 0 1102
 1 reset_n 0 12 d 1 0 102
 1 test_expr 0 13 14 4 0 aa
@@ -165,7 +165,7 @@
 2 120 86 f0012 0 0 20010 0 0 1 1 1
 2 121 86 c000d 0 0 20018 0 0 32 64 0 4 0 0 0 0 0 0
 2 122 86 b0014 0 25 20030 120 121 32 0 aa aa aa aa aa aa aa aa
-2 123 84 f001c 0 32 12 0 0
+2 123 84 f001c 0 32 12 0 0 coverage_level
 2 124 86 0 0 2d 20022 122 123 1 0 2
 2 125 85 b000b 0 0 20010 0 0 32 64 0 0 0 0 0 0 0 0
 2 126 85 0 0 2d 20022 125 123 1 0 2

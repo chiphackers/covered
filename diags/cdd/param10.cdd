@@ -1,8 +1,8 @@
 5 7 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd param10.vcd -o param10.cdd -v param10.v
+8 /ptmp/cvs/covered/diags/verilog -t main -vcd param10.vcd -o param10.cdd -v param10.v
 3 0 main main param10.v 1 17
 2 1 5 8000c 2 3d 2100a 0 0 1 0 2 bar
-1 #foo 0 0 30000 32 0 11 0 0 0 0 0 0 0
+1 foo 0 0 80000 32 0 11 0 0 0 0 0 0 0
 4 1 0 0
 3 1 main.bar main.bar param10.v 5 8
 2 2 7 50008 1 0 20004 0 0 5 3 0 0

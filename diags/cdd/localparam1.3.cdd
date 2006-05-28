@@ -1,10 +1,10 @@
 5 7 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd localparam1.3.vcd -o localparam1.3.cdd -v localparam1.3.v
+8 /ptmp/cvs/covered/diags/verilog -t main -vcd localparam1.3.vcd -o localparam1.3.cdd -v localparam1.3.v
 3 0 main main localparam1.3.v 1 12
 3 0 foo main.bar localparam1.3.v 15 25
-1 #SIZEG1 0 0 30000 32 0 44 0 0 0 0 0 0 0
-1 #SIZEL 0 0 30000 32 0 11 0 0 0 0 0 0 0
-1 #SIZEG2 0 0 30000 32 0 10 1 0 0 0 0 0 0
+1 SIZEG1 0 0 80000 32 0 44 0 0 0 0 0 0 0
+1 SIZEL 0 0 80000 32 0 11 0 0 0 0 0 0 0
+1 SIZEG2 0 0 80000 32 0 10 1 0 0 0 0 0 0
 1 a 0 21 30014 5 0 aa 2
 1 b 0 22 30014 10 0 aa aa a
 1 c 0 23 30014 20 0 aa aa aa aa aa

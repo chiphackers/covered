@@ -408,6 +408,10 @@ void static_expr_dealloc( static_expr* stexp, bool rm_exp ) {
 
 /*
  $Log$
+<<<<<<< static.c
+ Revision 1.20  2006/05/25 12:11:02  phase1geo
+ Including bug fix from 0.4.4 stable release and updating regressions.
+
  Revision 1.19  2006/04/21 06:14:45  phase1geo
  Merged in changes from 0.4.3 stable release.  Updated all regression files
  for inclusion of OVL library.  More documentation updates for next development
@@ -417,10 +421,8 @@ void static_expr_dealloc( static_expr* stexp, bool rm_exp ) {
  Updating CDD version from 6 to 7 due to changes in the merge facility.  Full
  regression now passes.
 
- Revision 1.17.4.1  2006/04/20 21:55:16  phase1geo
- Adding support for big endian signals.  Added new endian1 diagnostic to regression
- suite to verify this new functionality.  Full regression passes.  We may want to do
- some more testing on variants of this before calling it ready for stable release 0.4.3.
+ Revision 1.17.4.1.4.1  2006/05/27 05:56:14  phase1geo
+ Fixing last problem with bug fix.  Updated date on NEWS.
 
  Revision 1.17.4.1  2006/04/20 21:55:16  phase1geo
  Adding support for big endian signals.  Added new endian1 diagnostic to regression
