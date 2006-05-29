@@ -133,8 +133,8 @@
 1 cover_count 0 72 3000a 32 112 aa aa aa aa aa aa aa aa
 1 test_expr_1 0 13 30013 4 0 aa
 1 prev_test_expr 0 38 30012 4 0 aa
-1 one_hots_checked 0 40 30012 4 16 aa
-1 prev_one_hots_checked 0 41 30012 4 16 aa
+1 one_hots_checked 0 40 30012 4 0 aa
+1 prev_one_hots_checked 0 41 30012 4 0 aa
 4 13 0 0
 4 16 0 0
 4 28 28 28

@@ -536,7 +536,8 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
              (exp->op == EXP_OP_SBIT_SEL) ||
              (exp->op == EXP_OP_MBIT_SEL) ||
              (exp->op == EXP_OP_MBIT_POS) ||
-             (exp->op == EXP_OP_MBIT_NEG)) ) {
+             (exp->op == EXP_OP_MBIT_NEG)) &&
+            !ovl_is_assertion_module( funit_exp ) ) {
           expression_set_assigned( exp );
         }
 
@@ -975,6 +976,10 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.75  2006/05/28 02:43:49  phase1geo
+ Integrating stable release 0.4.4 changes into main branch.  Updated regressions
+ appropriately.
+
  Revision 1.74  2006/05/25 12:10:57  phase1geo
  Including bug fix from 0.4.4 stable release and updating regressions.
 

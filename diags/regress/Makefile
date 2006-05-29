@@ -60,8 +60,8 @@ DIAGS1        = add1            always1         always2         always3         
                 multi_exp1.8    multi_exp1.9    multi_exp1.10   multi_exp1.11   multi_exp1.12 \
                 multi_exp1.13   multi_exp1.14   multi_exp1.15   multi_exp2      multi_exp2.1 \
                 multi_exp3      named_block1    nested_block1   nested_block2   nested_block2.1 \
-                nested_block3   ovl1            ovl1.1          param1          param1.1 \
-                param1.2        param1.3 \
+                nested_block3   ovl1            ovl1.1          ovl1.2          ovl1.3 \
+                param1          param1.1        param1.2        param1.3 \
                 param3          param3.1        param3.2        param3.3        param3.4 \
                 param3.5        param4          param4.1        param5          param6 \
                 param6.1        param7          param8          param8.1        param9 \
