@@ -3,5 +3,5 @@
 +define+OVL_COVER_NONE 
 +define+OVL_COVER_ON
 +define+OVL_VERILOG
-+incdir+$(OVL_HOME)
--y $(OVL_HOME)
++incdir+./ovl
+-y ./ovl

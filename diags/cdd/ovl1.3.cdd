@@ -1,5 +1,5 @@
 5 7 11 * 0
-8 /ptmp/cvs/covered/diags/verilog -t main -vcd ovl1.3.vcd -o ovl1.3.cdd -v ovl1.3.v -A ovl +libext+.vlib+ -y /home/trevorw/std_ovl -I /home/trevorw/std_ovl -I /home/trevorw/std_ovl/vlog95
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd ovl1.3.vcd -o ovl1.3.cdd -v ovl1.3.v -A ovl +libext+.vlib+ -y ./ovl -I ./ovl -I ./ovl/vlog95
 3 0 main main ovl1.3.v 1 32
 1 width 0 0 80000 32 0 10 0 0 0 0 0 0 0
 1 clock 0 3 3000a 1 0 1102
@@ -20,7 +20,7 @@
 4 7 10 10
 4 10 7 0
 4 3 10 10
-3 0 assert_zero_one_hot main.foo /home/trevorw/std_ovl/assert_zero_one_hot.vlib 6 26
+3 0 assert_zero_one_hot main.foo ./ovl/assert_zero_one_hot.vlib 6 26
 2 11 5 180018 1 0 20004 0 0 32 64 0 0 0 0 0 0 0 0
 2 12 5 a0014 0 1 400 0 0 error_count
 2 13 5 a0018 1 37 1006 11 12

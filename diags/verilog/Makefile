@@ -43,7 +43,7 @@ IVERILOG_INTER = vvp
 
 VCS       = vcs
 #VCS_FLAGS = +libext+.v+ -y ./lib +incdir+./include +define+RUNTEST +define+VCS +vpi -load ../../src/vpi/covered.so:covered_register -P ../../src/vpi/covered.tab covered_top.v
-VCS_FLAGS = +libext+.v+.vlib+ -y ./lib -y $(OVL_HOME) +incdir+$(OVL_HOME) +incdir+./include +define+RUNTEST +define+OVL_VERILOG +define+OVL_COVER_ON +v2k
+VCS_FLAGS = +libext+.v+.vlib+ -y ./lib -y ./ovl +incdir+./ovl +incdir+./include +define+RUNTEST +define+OVL_VERILOG +define+OVL_COVER_ON +v2k
 VCS_EXEC  = ./simv +covered_cdd=out.cdd
 
 ifdef USE_VCS
@@ -68,9 +68,10 @@ LOGFILE = regress.log
 regress:	$(COVERED) $(DIAGLIST) $(RACELIST) $(MERGELIST) $(MERGE3LIST) $(ERRSCORELIST) $(ERRMERGELIST)
 
 check-ovl:
-ifndef OVL_HOME
-	@echo "Set OVL_HOME environment variable to point to base OVL vlib directory"; exit 1
-endif
+	@if test ! -h ovl; then \
+		echo "Create symlink called \"ovl\" in the diags/verilog directory to point to base OVL vlib directory"; \
+		exit 1; \
+	fi
 
 $(DIAGLIST): check-ovl
 	@if test ! -f $@.done; then \

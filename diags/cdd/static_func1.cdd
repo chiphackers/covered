@@ -1,7 +1,7 @@
 5 7 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd static_func1.vcd -o static_func1.cdd -v static_func1.v
 3 0 main main static_func1.v 1 22
-1 #FOO 0 0 30000 32 0 0 101 0 0 0 0 0 0
+1 FOO 0 0 80000 32 0 0 101 0 0 0 0 0 0
 1 a 0 5 30011 16 0 aa aa aa aa
 3 2 main.static_func main.static_func static_func1.v 14 20
 2 1 17 1e001e 0 0 20810 0 0 32 64 0 0 0 0 0 0 0 0
