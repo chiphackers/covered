@@ -189,3 +189,17 @@ proc update_toggle {} {
   }
 
 }
+
+# This is called when the current CDD is closed.  It resets all associated variables
+# and destroys the window (if it is currently opened).
+proc clear_toggle {} {
+
+  global curr_toggle_ptr
+
+  # Clear the current toggle pointer value
+  set curr_toggle_ptr ""
+
+  # Destroy the window
+  destroy .togwin
+
+}

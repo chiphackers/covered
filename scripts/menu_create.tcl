@@ -12,7 +12,11 @@ set file_types {
 
 proc do_keybind {.menubar} {
 
-  bind all <Control-x> {.menubar.file.menu invoke 4}
+  bind all <Control-o> {.menubar.file.menu invoke 0}
+  bind all <Control-s> {.menubar.file.menu invoke 4}
+  bind all <Control-w> {.menubar.file.menu invoke 6}
+  bind all <Control-x> {.menubar.file.menu invoke 8}
+
   bind all <Control-n> {.menubar.view.menu invoke 2}
   bind all <Control-p> {.menubar.view.menu invoke 3}
   bind all <Control-c> {.menubar.view.menu invoke 4}
@@ -37,25 +41,35 @@ proc menu_create {.menubar} {
   set tfm [menu .menubar.file.menu -tearoff false]
 
   # Now add open and close options
-  $tfm add command -label "Open Initial CDD..." -command {
+  $tfm add command -label "Open/Merge CDDs..." -accelerator "Ctrl-o" -command {
     if {[open_file open] != ""} {
-      # Disable ourselves and allow user to replace or merge new CDD and view summary window
-      .menubar.file.menu entryconfigure 0 -state disabled
       .menubar.file.menu entryconfigure 1 -state normal
-      .menubar.file.menu entryconfigure 2 -state normal
-      .menubar.file.menu entryconfigure 4 -state normal
+      .menubar.file.menu entryconfigure 6 -state normal
       .menubar.view.menu entryconfigure 0 -state normal
     }
   }
-  $tfm add command -label "Open Related CDD..." -state disabled -command {
-    open_file open
-  }
-  $tfm add command -label "Merge Related CDD..." -state disabled -command {
-    open_file merge
-  }
-  $tfm add separator
   $tfm add command -label "View Loaded CDD(s)..." -state disabled -command {
     create_cdd_viewer
+  }
+  $tfm add separator
+  $tfm add command -label "Save CDD As..." -state disabled -command {
+    # TBD
+  }
+  $tfm add command -label "Save CDD" -accelerator "Ctrl-s" -state disabled -command {
+    puts "Saving"
+  }
+  $tfm add separator
+  $tfm add command -label "Close CDD" -accelerator "Ctrl-w" -state disabled -command {
+    tcl_func_close_cdd
+    set file_name 0
+    clear_cdd_filelist
+    populate_listbox .bot.left.l
+    clear_all_windows
+    .info configure -text ""
+    .menubar.file.menu entryconfigure 1 -state disabled
+    .menubar.file.menu entryconfigure 3 -state disabled
+    .menubar.file.menu entryconfigure 4 -state disabled
+    .menubar.file.menu entryconfigure 6 -state disabled
   }
   $tfm add separator
   $tfm add command -label Exit -accelerator "Ctrl-x" -command exit

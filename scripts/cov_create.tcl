@@ -143,3 +143,9 @@ proc cov_display_summary {hit total} {
   .covbox.s.ht configure -text $info
 
 }
+
+proc cov_clear_summary {} {
+
+  .covbox.s.ht configure -text ""
+
+}

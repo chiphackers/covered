@@ -1131,6 +1131,32 @@ int tcl_func_open_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* argv
  \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
          TCL_ERROR.
 
+ Closes the current CDD file, freeing all associated memory with it.
+*/
+int tcl_func_close_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+
+  int retval = TCL_OK;  /* Return value for this function */
+
+  if( !report_close_cdd() ) {
+    snprintf( user_msg, USER_MSG_LENGTH, "Unable to close CDD file" );
+    Tcl_AddErrorInfo( tcl, user_msg );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    retval = TCL_ERROR;
+  }
+
+  return( retval );
+
+}
+
+/*!
+ \param d     TBD
+ \param tcl   Pointer to the Tcl interpreter
+ \param argc  Number of arguments in the argv list
+ \param argv  Array of arguments passed to this function
+
+ \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
+         TCL_ERROR.
+
  Replaces the current CDD database with the contents of the given CDD filename.  The CDD file replacing
  the current CDD file must be generated from the same design or an error will occur.
 */
@@ -1557,6 +1583,7 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
   Tcl_CreateCommand( tcl, "tcl_func_get_fsm_coverage",          (Tcl_CmdProc*)(tcl_func_get_fsm_coverage),          0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_assert_coverage",       (Tcl_CmdProc*)(tcl_func_get_assert_coverage),       0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_open_cdd",                  (Tcl_CmdProc*)(tcl_func_open_cdd),                  0, 0 );
+  Tcl_CreateCommand( tcl, "tcl_func_close_cdd",                 (Tcl_CmdProc*)(tcl_func_close_cdd),                 0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_replace_cdd",               (Tcl_CmdProc*)(tcl_func_replace_cdd),               0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_merge_cdd",                 (Tcl_CmdProc*)(tcl_func_merge_cdd),                 0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_line_summary",          (Tcl_CmdProc*)(tcl_func_get_line_summary),          0, 0 );
@@ -1587,6 +1614,11 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.41  2006/05/03 22:49:42  phase1geo
+ Causing all files to be preprocessed when written to the file viewer.  I'm sure that
+ I am breaking all kinds of things at this point, but things do work properly on a few
+ select test cases so I'm checkpointing here.
+
  Revision 1.40  2006/05/03 21:17:49  phase1geo
  Finishing assertion source code viewer functionality.  We just need to add documentation
  to the GUI user's guide and we should be set here (though we may want to consider doing

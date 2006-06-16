@@ -157,15 +157,15 @@ proc populate_listbox {listbox_w} {
   global uncov_fgColor uncov_bgColor
   global lb_fgColor lb_bgColor
  
+  # Remove contents currently in listbox
+  set lb_size [$listbox_w size]
+  $listbox_w delete 0 $lb_size
+
+  # Clear funit_names and funit_types values
+  set funit_names ""
+  set funit_types ""
+
   if {$file_name != 0} {
-
-    # Remove contents currently in listbox
-    set lb_size [$listbox_w size]
-    $listbox_w delete 0 $lb_size
-
-    # Clear funit_names and funit_types values
-    set funit_names ""
-    set funit_types ""
 
     # If we are in module mode, list modules (otherwise, list instances)
     if {$mod_inst_type == "module"} {
@@ -284,6 +284,23 @@ proc populate_text {} {
     }
 
   }
+
+}
+
+proc clear_text {} {
+
+  global last_lb_index
+
+  # Clear the textbox
+  .bot.right.txt configure -state normal
+  .bot.right.txt delete 1.0 end
+  .bot.right.txt configure -state disabled
+
+  # Clear the summary info
+  cov_clear_summary
+
+  # Reset the last_lb_index
+  set last_lb_index ""
 
 }
 
@@ -450,6 +467,28 @@ proc update_all_windows {} {
 
   # Update the assertion window
   update_assert
+
+}
+
+proc clear_all_windows {} {
+
+  # Clear the main window
+  clear_text
+
+  # Clear the summary window
+  clear_summary
+
+  # Clear the toggle window
+  clear_toggle
+
+  # Clear the combinational logic window
+  clear_comb
+
+  # Clear the FSM window
+  clear_fsm
+
+  # Clear the assertion window
+  clear_assert
 
 }
 

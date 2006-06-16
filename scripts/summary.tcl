@@ -132,6 +132,12 @@ proc update_summary {} {
 
 }
 
+proc clear_summary {} {
+
+  destroy .sumwin
+
+}
+
 proc populate_summary { w } {
 
   global mod_inst_type funit_names funit_types cov_rb

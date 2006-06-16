@@ -433,3 +433,16 @@ proc update_fsm {} {
   }
 
 }
+
+proc clear_fsm {} {
+
+  global curr_fsm_ptr
+
+  # Reset the variables
+  set curr_fsm_ptr ""
+  set fsm_bheight  -1
+
+  # Destroy the window
+  destroy .fsmwin
+
+}

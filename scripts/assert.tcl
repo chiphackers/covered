@@ -204,6 +204,18 @@ proc update_assert {} {
 
 }
 
+proc clear_assert {} {
+
+  global curr_assert_ptr
+
+  # Reset the variables
+  set curr_assert_ptr ""
+
+  # Destroy the window
+  destroy .assertwin
+
+}
+
 proc display_assertion_module {mod} {
 
   global open_files file_name

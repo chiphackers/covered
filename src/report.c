@@ -664,6 +664,19 @@ bool report_read_cdd_and_ready( char* ifile, int read_mode ) {
 }
 
 /*!
+ \return Returns TRUE if CDD file was closed properly; otherwise, returns FALSE.
+
+ Closes the currently loaded CDD file.
+*/
+bool report_close_cdd() {
+
+  db_close();
+
+  return( TRUE );
+
+}
+
+/*!
  \param argc      Number of arguments in report command-line.
  \param last_arg  Index of last parsed argument from list.
  \param argv      Arguments passed to report command to parse.
@@ -805,6 +818,11 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.64  2006/04/19 22:21:33  phase1geo
+ More updates to properly support assertion coverage.  Removing assertion modules
+ from line, toggle, combinational logic, FSM and race condition output so that there
+ won't be any overlap of information here.
+
  Revision 1.63  2006/04/18 21:59:54  phase1geo
  Adding support for environment variable substitution in configuration files passed
  to the score command.  Adding ovl.c/ovl.h files.  Working on support for assertion

@@ -17,6 +17,18 @@ proc add_cdd_to_filelist {name clear} {
 
 }
 
+proc clear_cdd_filelist {} {
+
+  global cdd_files
+
+  # Clear the list
+  set cdd_files [list]
+
+  # Update the CDD file viewer window
+  update_cdd_viewer
+
+}
+
 proc create_cdd_viewer {} {
 
   global cdd_files

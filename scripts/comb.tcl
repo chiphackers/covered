@@ -678,3 +678,20 @@ proc update_comb {} {
   }
 
 }
+
+proc clear_comb {} {
+
+  global comb_ul_ip comb_curr_uline_id comb_curr_exp_id comb_bheight 
+  global curr_comb_ptr
+
+  # Reset the variables
+  set curr_comb_ptr      ""
+  set comb_ul_ip         0
+  set comb_curr_uline_id 0
+  set comb_curr_exp_id   0
+  set comb_bheight       -1
+
+  # Destroy the combinational logic window
+  destroy .combwin
+
+}
