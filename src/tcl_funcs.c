@@ -1157,6 +1157,39 @@ int tcl_func_close_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* arg
  \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
          TCL_ERROR.
 
+ Saves the current CDD file with the specified name.
+*/
+int tcl_func_save_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+
+  int   retval = TCL_OK;  /* Return value for this function */
+  char* filename;         /* Name of file to save as */
+
+  printf( "Saving CDD file %s\n", argv[1] );
+
+  filename = strdup_safe( argv[1], __FILE__, __LINE__ );
+
+  if( !report_save_cdd( filename ) ) {
+    snprintf( user_msg, USER_MSG_LENGTH, "Unable to save CDD file \"%s\"", argv[1] );
+    Tcl_AddErrorInfo( tcl, user_msg );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    retval = TCL_ERROR;
+  }
+
+  free_safe( filename );
+
+  return( retval );
+
+}
+
+/*!
+ \param d     TBD
+ \param tcl   Pointer to the Tcl interpreter
+ \param argc  Number of arguments in the argv list
+ \param argv  Array of arguments passed to this function
+
+ \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
+         TCL_ERROR.
+
  Replaces the current CDD database with the contents of the given CDD filename.  The CDD file replacing
  the current CDD file must be generated from the same design or an error will occur.
 */
@@ -1584,6 +1617,7 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
   Tcl_CreateCommand( tcl, "tcl_func_get_assert_coverage",       (Tcl_CmdProc*)(tcl_func_get_assert_coverage),       0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_open_cdd",                  (Tcl_CmdProc*)(tcl_func_open_cdd),                  0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_close_cdd",                 (Tcl_CmdProc*)(tcl_func_close_cdd),                 0, 0 );
+  Tcl_CreateCommand( tcl, "tcl_func_save_cdd",                  (Tcl_CmdProc*)(tcl_func_save_cdd),                  0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_replace_cdd",               (Tcl_CmdProc*)(tcl_func_replace_cdd),               0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_merge_cdd",                 (Tcl_CmdProc*)(tcl_func_merge_cdd),                 0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_line_summary",          (Tcl_CmdProc*)(tcl_func_get_line_summary),          0, 0 );
@@ -1614,6 +1648,10 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.42  2006/06/16 22:44:19  phase1geo
+ Beginning to add ability to open/close CDD files without needing to close Covered's
+ GUI.  This seems to work but does cause some segfaults yet.
+
  Revision 1.41  2006/05/03 22:49:42  phase1geo
  Causing all files to be preprocessed when written to the file viewer.  I'm sure that
  I am breaking all kinds of things at this point, but things do work properly on a few

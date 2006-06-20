@@ -42,8 +42,9 @@ proc menu_create {.menubar} {
 
   # Now add open and close options
   $tfm add command -label "Open/Merge CDDs..." -accelerator "Ctrl-o" -command {
-    if {[open_file open] != ""} {
+    if {[open_files] != ""} {
       .menubar.file.menu entryconfigure 1 -state normal
+      .menubar.file.menu entryconfigure 3 -state normal
       .menubar.file.menu entryconfigure 6 -state normal
       .menubar.view.menu entryconfigure 0 -state normal
     }
@@ -53,15 +54,20 @@ proc menu_create {.menubar} {
   }
   $tfm add separator
   $tfm add command -label "Save CDD As..." -state disabled -command {
-    # TBD
+    set save_name "[tk_getSaveFile -filetypes $file_types].cdd"
+    if {$save_name != ".cdd"} {
+      tcl_func_save_cdd $save_name
+      .menubar.file.menu entryconfigure 4 -state disabled
+    }
   }
   $tfm add command -label "Save CDD" -accelerator "Ctrl-s" -state disabled -command {
-    puts "Saving"
+    tcl_func_save_cdd $file_name
+    .menubar.file.menu entryconfigure 4 -state disabled
   }
   $tfm add separator
-  $tfm add command -label "Close CDD" -accelerator "Ctrl-w" -state disabled -command {
+  $tfm add command -label "Close CDD(s)" -accelerator "Ctrl-w" -state disabled -command {
     tcl_func_close_cdd
-    set file_name 0
+    set file_name ""
     clear_cdd_filelist
     populate_listbox .bot.left.l
     clear_all_windows
@@ -204,25 +210,27 @@ proc menu_create {.menubar} {
 }
 
 # Opens/merges a CDD file and handles the GUI cursors and listbox initialization.
-proc open_file {type} {
+proc open_files {} {
 
-  global file_types file_name global open_type
+  global file_types file_name fname global open_type
   global win_cursor txt_cursor e_cursor
+  global tk_version
 
-  # Set the open type
-  set open_type $type
+  # Get a list of files to open
+  if {[catch [tk_getOpenFile -multiple 1 -filetypes $file_types] fnames]} {
+    set fnames [tk_getOpenFile -filetypes $file_types]
+  }
 
-  # Get a file to open
-  set file_name [tk_getOpenFile -filetypes $file_types]
+  foreach fname $fnames {
 
-  if {$file_name != ""} {
-
-    if {$type == "open"} {
-      .info configure -text "Opening $file_name..."
-      add_cdd_to_filelist $file_name 1
+    if {$file_name == ""} {
+      set open_type "open"
+      .info configure -text "Opening $fname..."
+      add_cdd_to_filelist $fname 1
     } else {
-      .info configure -text "Merging $file_name..."
-      add_cdd_to_filelist $file_name 0
+      set open_type "merge"
+      .info configure -text "Merging $fname..."
+      add_cdd_to_filelist $fname 0
     }
 
     # Get all cursor values from various widgets (so we can properly restore them after the open)
@@ -239,9 +247,11 @@ proc open_file {type} {
 
       # Open the CDD file
       if {$open_type == "open"} {
-        tcl_func_open_cdd $file_name
+        tcl_func_open_cdd $fname
       } else {
-        tcl_func_merge_cdd $file_name
+        tcl_func_merge_cdd $fname
+        .menubar.file.menu entryconfigure 3 -state normal
+        .menubar.file.menu entryconfigure 4 -state normal
       }
 
       # Populate the listbox
@@ -261,5 +271,12 @@ proc open_file {type} {
     }
 
   }
+
+  # Now set the global file_name
+  if {[lindex $fnames 0] != ""} {
+    set file_name [lindex $fnames 0]
+  }
+
+  return $file_name
 
 }

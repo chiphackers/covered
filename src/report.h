@@ -33,9 +33,16 @@ bool report_read_cdd_and_ready( char* ifile, int read_mode );
 /*! \brief Closes the currently loaded CDD */
 bool report_close_cdd();
 
+/*! \brief Saves the currently loaded CDD as the specified filename */
+bool report_save_cdd( char* filename );
+
 
 /*
  $Log$
+ Revision 1.9  2006/06/16 22:44:19  phase1geo
+ Beginning to add ability to open/close CDD files without needing to close Covered's
+ GUI.  This seems to work but does cause some segfaults yet.
+
  Revision 1.8  2006/03/28 22:28:28  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

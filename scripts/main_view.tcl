@@ -165,7 +165,7 @@ proc populate_listbox {listbox_w} {
   set funit_names ""
   set funit_types ""
 
-  if {$file_name != 0} {
+  if {$file_name != ""} {
 
     # If we are in module mode, list modules (otherwise, list instances)
     if {$mod_inst_type == "module"} {
@@ -203,7 +203,7 @@ proc highlight_listbox {} {
   global fsm_summary_total fsm_summary_hit
   global assert_summary_total assert_summary_hit
 
-  if {$file_name != 0} {
+  if {$file_name != ""} {
 
     # If we are in module mode, list modules (otherwise, list instances)
     set funits [llength $funit_names]

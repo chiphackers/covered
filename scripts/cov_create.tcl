@@ -9,7 +9,7 @@ proc cov_create {f} {
   frame $f.m -relief raised -borderwidth 1
 
   radiobutton $f.m.line -variable cov_rb -value line -text "Line" -command { 
-    if {$file_name != 0} {
+    if {$file_name != ""} {
       set text_x [.bot.right.txt xview]
       set text_y [.bot.right.txt yview]
       if {$last_cov_rb != $cov_rb} {
@@ -25,7 +25,7 @@ proc cov_create {f} {
     } 
   }
   radiobutton $f.m.tog  -variable cov_rb -value toggle -text "Toggle" -command {
-    if {$file_name != 0} {
+    if {$file_name != ""} {
       set text_x [.bot.right.txt xview]
       set text_y [.bot.right.txt yview]
       if {$last_cov_rb != $cov_rb} {
@@ -41,7 +41,7 @@ proc cov_create {f} {
     }
   }
   radiobutton $f.m.comb -variable cov_rb -value comb -text "Logic" -command {
-    if {$file_name != 0} {
+    if {$file_name != ""} {
       set text_x [.bot.right.txt xview]
       set text_y [.bot.right.txt yview]
       if {$last_cov_rb != $cov_rb} {
@@ -57,7 +57,7 @@ proc cov_create {f} {
     }
   }
   radiobutton $f.m.fsm  -variable cov_rb -value fsm -text "FSM" -command {
-    if {$file_name != 0} {
+    if {$file_name != ""} {
       set text_x [.bot.right.txt xview]
       set text_y [.bot.right.txt yview]
       if {$last_cov_rb != $cov_rb} {
@@ -73,7 +73,7 @@ proc cov_create {f} {
     }
   }
   radiobutton $f.m.assert -variable cov_rb -value assert -text "Assert" -command {
-    if {$file_name != 0} {
+    if {$file_name != ""} {
       set text_x [.bot.right.txt xview]
       set text_y [.bot.right.txt yview]
       if {$last_cov_rb != $cov_rb} {

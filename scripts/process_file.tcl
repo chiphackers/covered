@@ -7,7 +7,7 @@
 # part of the global filecontent hashtable.
 
 set fileContent(0)        0
-set file_name             0
+set file_name             ""
 set start_line            0
 set end_line              0
 set line_summary_total    0
@@ -147,7 +147,7 @@ proc display_line_cov {} {
   if {$curr_funit_name != 0} {
 
     # Populate information bar
-    if {$file_name != 0} {
+    if {$file_name != ""} {
       .info configure -text "Filename: $file_name"
     }
 
@@ -747,7 +747,7 @@ proc display_assert_cov {} {
   if {$curr_funit_name != 0} {
 
     # Populate information bar
-    if {$file_name != 0} {
+    if {$file_name != ""} {
       .info configure -text "Filename: $file_name"
     }
 
