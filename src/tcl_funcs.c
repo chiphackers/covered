@@ -58,6 +58,8 @@ extern char**      score_args;
 extern int         score_arg_num;
 extern void        reset_pplexer( const char* filename, FILE* out );
 extern int         PPVLlex( void );
+extern char**      merge_in;
+extern int         merge_in_num;
 
 /*!
  \param d     TBD
@@ -1239,14 +1241,17 @@ int tcl_func_merge_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* arg
 
     ifile = strdup_safe( argv[1], __FILE__, __LINE__ );
 
+    /* Add the specified merge file to the list */
+    merge_in               = (char**)realloc( merge_in, (sizeof( char* ) * (merge_in_num + 1)) );
+    merge_in[merge_in_num] = ifile;
+    merge_in_num++;
+
     if( !report_read_cdd_and_ready( ifile, READ_MODE_REPORT_MOD_MERGE ) ) {
       snprintf( user_msg, USER_MSG_LENGTH, "Unable to merge current CDD with \"%s\"", ifile );
       Tcl_AddErrorInfo( tcl, user_msg );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       retval = TCL_ERROR;
     }
-
-    free_safe( ifile );
 
   }
 
@@ -1648,6 +1653,11 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.43  2006/06/20 22:14:32  phase1geo
+ Adding support for saving CDD files (needed for file merging and saving exclusion
+ information for a CDD file) in the GUI.  Still have a bit to go as I am getting core
+ dumps to occur.
+
  Revision 1.42  2006/06/16 22:44:19  phase1geo
  Beginning to add ability to open/close CDD files without needing to close Covered's
  GUI.  This seems to work but does cause some segfaults yet.
