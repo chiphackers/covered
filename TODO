@@ -33,27 +33,17 @@ Score command
    6.  Add feature to cause Covered to omit the simulation phase for toggle and
        FSM coverage results.
 
-X  7.  Add assertion coverage
-
-X  8.  Add full support for VPI usage
-
 
 Merge command
 -------------
 
-X  1.  Add ability to merge more than two CDD files with a single command
-
-   2.  Add ability to merge two CDDs from different parts of the same design
+   1.  Add ability to merge two CDDs from different parts of the same design
 
 
 Report command
 --------------
 
-X  1.  Add assertion coverage
-
-   2.  Add ability to see combinational logic output on a bit-by-bit basis for bussed expressions.
-
-   3.  Add HTML report output
+   1.  Add ability to see combinational logic output on a bit-by-bit basis for bussed expressions.
 
 
 Miscellaneous
@@ -65,16 +55,12 @@ IP 1.  Add regression that produces known, achievable error conditions in the co
 GUI
 ---
 
-X  1.  Add FSM coverage output
+IP 1.  Add ability to turn on/off coverage points and have coverage information automatically adjusted.
 
-   2.  Add ability to turn on/off coverage points and have coverage information automatically adjusted.
+X  2.  Change file selection window to allow multiple files to be chosen (also just enhance the overall usage)
 
-X  3.  Add assertion coverage output
+   3.  Add ASCII report output
+ 
+X  4.  Allow CDD to be closed and a new one opened without requiring the user to exit the GUI.
 
-X  4.  Add Verilog syntax highlighting features
-
-X  5.  Replace `<value> strings with their defined values (this is actually a bug)
-
-   6.  Change file selection window to allow multiple files to be chosen (also just enhance the overall usage)
-
-   7.  Add HTML/ASCII report output
+X  5.  Add save CDD feature (supports item #1 as well as allows the user to perform CDD merging with the GUI)
