@@ -23,6 +23,11 @@ For Development documentation...
   1.  cd doc/devel/latex
   2.  make pdf   (the PDF file will be called refman.pdf)
 
+For GUI documentation...
+
+* The GUI User's Guide is available in HTML form at ./doc/gui/welcome.html.
+* This documentation can also be accessed by clicking on the "Help->User Guide" menu item 
+
 The Covered website is located... 
 
 * For members of SourceForge, you can get the project page at
