@@ -214,29 +214,30 @@ proc open_files {} {
 
   global file_types file_name fname global open_type
   global win_cursor txt_cursor e_cursor
-  global tk_version
 
   # Get a list of files to open
-  if {[catch [tk_getOpenFile -multiple 1 -filetypes $file_types] fnames]} {
+  if {[catch {tk_getOpenFile -multiple 1 -filetypes $file_types} fnames]} {
     set fnames [tk_getOpenFile -filetypes $file_types]
   }
+
+  # Get all cursor values from various widgets (so we can properly restore them after the open)
+  set win_cursor [. cget -cursor]
+  set txt_cursor [.bot.right.txt cget -cursor]
+  set e_cursor   [.bot.right.h.e cget -cursor]
 
   foreach fname $fnames {
 
     if {$file_name == ""} {
       set open_type "open"
       .info configure -text "Opening $fname..."
+      puts "Opening $fname..."
       add_cdd_to_filelist $fname 1
     } else {
       set open_type "merge"
       .info configure -text "Merging $fname..."
+      puts "Merging $fname..."
       add_cdd_to_filelist $fname 0
     }
-
-    # Get all cursor values from various widgets (so we can properly restore them after the open)
-    set win_cursor [. cget -cursor]
-    set txt_cursor [.bot.right.txt cget -cursor]
-    set e_cursor   [.bot.right.h.e cget -cursor]
 
     # Set all widget cursors to the watch
     .              configure -cursor watch
@@ -260,22 +261,21 @@ proc open_files {} {
       # Update the summary window
       update_summary
 
-      # Place new information in the info box
-      .info configure -text "Select a module/instance at left for coverage details"
+    }
 
-      # Reset the cursors
-      .              configure -cursor $win_cursor
-      .bot.right.txt configure -cursor $txt_cursor
-      .bot.right.h.e configure -cursor $e_cursor
-
+    if {$file_name == ""} {
+      set file_name $fname
     }
 
   }
 
-  # Now set the global file_name
-  if {[lindex $fnames 0] != ""} {
-    set file_name [lindex $fnames 0]
-  }
+  # Place new information in the info box
+  .info configure -text "Select a module/instance at left for coverage details"
+
+  # Reset the cursors
+  .              configure -cursor $win_cursor
+  .bot.right.txt configure -cursor $txt_cursor
+  .bot.right.h.e configure -cursor $e_cursor
 
   return $file_name
 
