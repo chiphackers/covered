@@ -1,4 +1,4 @@
-5 7 11 * 0
+5 8 11 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd ovl1.1.vcd -o ovl1.1.cdd -v ovl1.1.v -A ovl +libext+.vlib+ -y ./ovl -I ./ovl -I ./ovl/vlog95
 3 0 main main ovl1.1.v 1 28
 1 width 0 0 80000 32 0 10 0 0 0 0 0 0 0

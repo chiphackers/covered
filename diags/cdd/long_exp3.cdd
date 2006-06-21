@@ -1,4 +1,4 @@
-5 7 1 * 0
+5 8 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd long_exp3.vcd -o long_exp3.cdd -v long_exp3.v
 3 0 main main long_exp3.v 1 18
 2 1 6 d000d 1 1 4 0 0 d

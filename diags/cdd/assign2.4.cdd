@@ -1,4 +1,4 @@
-5 7 1 * 0
+5 8 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd assign2.4.vcd -o assign2.4.cdd -v assign2.4.v
 3 0 main main assign2.4.v 1 23
 2 1 5 160016 2 1 c 0 0 b

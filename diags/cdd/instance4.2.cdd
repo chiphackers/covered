@@ -1,4 +1,4 @@
-5 7 1 main.foo 0
+5 8 1 main.foo 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t fooman -i main.foo.foo -vcd instance4.vcd -o instance4.2.cdd -v instance4.v
 3 0 fooman foo instance4.v 36 44
 2 1 42 f000f 2 1 c 0 0 c

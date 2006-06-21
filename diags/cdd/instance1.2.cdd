@@ -1,4 +1,4 @@
-5 7 1 main.inst0 0
+5 8 1 main.inst0 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t depth2 -i main.inst0.inst1 -vcd instance1.vcd -o instance1.2.cdd -v instance1.v
 3 0 depth2 inst1 instance1.v 37 46
 2 1 44 110012 2 1 c 0 0 b2

@@ -1,5 +1,5 @@
-5 7 1 * 0
-8 /ptmp/cvs/covered/diags/verilog -t main -vcd localparam1.3.vcd -o localparam1.3.cdd -v localparam1.3.v
+5 8 1 * 0
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd localparam1.3.vcd -o localparam1.3.cdd -v localparam1.3.v
 3 0 main main localparam1.3.v 1 12
 3 0 foo main.bar localparam1.3.v 15 25
 1 SIZEG1 0 0 80000 32 0 44 0 0 0 0 0 0 0

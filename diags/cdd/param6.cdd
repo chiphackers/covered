@@ -1,5 +1,5 @@
-5 7 1 * 0
-8 /ptmp/cvs/covered/diags/verilog -t main -vcd param6.vcd -o param6.cdd -v param6.v
+5 8 1 * 0
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd param6.vcd -o param6.cdd -v param6.v
 3 0 main main param6.v 1 19
 2 1 9 1f001f 1 0 20008 0 0 32 64 1 0 0 0 0 0 0 0
 2 2 9 19001d 1 32 8 0 0 SIZE0

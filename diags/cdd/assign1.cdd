@@ -1,5 +1,5 @@
-5 7 1 * 0
-8 /ptmp/cvs/covered/diags/verilog -t main -vcd assign1.vcd -o assign1.cdd -v assign1.v
+5 8 1 * 0
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd assign1.vcd -o assign1.cdd -v assign1.v
 3 0 main main assign1.v 1 88
 2 1 24 c000c 1 0 20004 0 0 32 64 0 0 0 0 0 0 0 0
 2 2 24 70008 0 1 400 0 0 w0

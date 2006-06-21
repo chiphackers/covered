@@ -1,5 +1,5 @@
-5 7 1 * 0
-8 /ptmp/cvs/covered/diags/verilog -t main -vcd fsm4.1.vcd -o fsm4.1.cdd -y lib -v fsm4.1.v -F main
+5 8 1 * 0
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd fsm4.1.vcd -o fsm4.1.cdd -y lib -v fsm4.1.v -F main
 3 0 main main fsm4.1.v 1 62
 2 1 17 d0016 1 32 8 0 0 STATE_IDLE
 2 2 17 40008 0 1 400 0 0 state

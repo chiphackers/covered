@@ -1,5 +1,5 @@
-5 7 1 * 0
-8 /ptmp/cvs/covered/diags/verilog -t main -vcd param3.4.vcd -o param3.4.cdd -v param3.4.v
+5 8 1 * 0
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd param3.4.vcd -o param3.4.cdd -v param3.4.v
 3 0 main main param3.4.v 1 22
 1 x 0 3 3000b 2 0 130a
 1 y 0 4 3000b 3 0 2a

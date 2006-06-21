@@ -50,7 +50,7 @@
  Contains the CDD version number of all CDD files that this version of Covered can write
  and read.
 */
-#define CDD_VERSION        7
+#define CDD_VERSION        8
 
 /*!
  This contains the header information specified when executing this tool.
@@ -286,7 +286,7 @@
  supplemental fields are ANDed with this mask and ORed together to perform the
  merge.  See esuppl_u for information on which bits are masked.
 */
-#define ESUPPL_MERGE_MASK            0x3ffff
+#define ESUPPL_MERGE_MASK            0x7ffff
 
 /*!
  Returns a value of 1 if the specified supplemental value has the SWAPPED
@@ -391,6 +391,12 @@
  shares it with someone else.
 */
 #define ESUPPL_OWNS_VEC(x)           x.part.owns_vec
+
+/*!
+ Returns a value of 1 if the specified expression should be excluded from coverage
+ consideration.
+*/
+#define ESUPPL_EXCLUDED(x)           x.part.excluded
 
 /*! @} */
 
@@ -931,15 +937,15 @@ typedef union vec_data_u vec_data;
  A vec_data is an 8-bit value that represents one bit of data in a signal or expression/subexpression
 */
 union vec_data_u {
-  nibble all;        /*!< Reference to all bits in this union                         */
+  nibble all;        /*!< Reference to all bits in this union */
   struct {
-    nibble value:2;  /*!< 4-state value                                               */
-    nibble tog01:1;  /*!< Indicator if bit was toggled from 0->1                      */
-    nibble tog10:1;  /*!< Indicator if bit was toggled from 1->0                      */
+    nibble value:2;  /*!< 4-state value */
+    nibble tog01:1;  /*!< Indicator if bit was toggled from 0->1 */
+    nibble tog10:1;  /*!< Indicator if bit was toggled from 1->0 */
     nibble set  :1;  /*!< Indicator if bit has been previously assigned this timestep */
-    nibble false:1;  /*!< Indicator if bit was set to a value of 0 (FALSE)            */
-    nibble true :1;  /*!< Indicator if bit was set to a value of 1 (TRUE)             */
-    nibble misc :1;  /*!< Miscellaneous indicator bit                                 */
+    nibble false:1;  /*!< Indicator if bit was set to a value of 0 (FALSE) */
+    nibble true :1;  /*!< Indicator if bit was set to a value of 1 (TRUE) */
+    nibble misc :1;  /*!< Miscellaneous indicator bit */
   } part;
 };
 
@@ -999,16 +1005,20 @@ union esuppl_u {
                                      be automatically placed in the thread queue at time 0. */
     control owns_vec       :1;  /*!< Bit 17.  Mask bit = 1.  Indicates that this expression either owns its vector
                                      structure or shares it with someone else. */
+    control excluded       :1;  /*!< Bit 18.  Mask bit = 1.  Indicates that this expression should be excluded from
+                                     coverage results.  If a parent expression has been excluded, all children expressions
+                                     within its tree are also considered excluded (even if their excluded bits are not
+                                     set. */
  
     /* UNMASKED BITS */
-    control eval_t         :1;  /*!< Bit 18.  Mask bit = 0.  Indicates that the value of the current expression is
+    control eval_t         :1;  /*!< Bit 19.  Mask bit = 0.  Indicates that the value of the current expression is
                                      currently set to TRUE (temporary value). */
-    control eval_f         :1;  /*!< Bit 19.  Mask bit = 0.  Indicates that the value of the current expression is
+    control eval_f         :1;  /*!< Bit 20.  Mask bit = 0.  Indicates that the value of the current expression is
                                      currently set to FALSE (temporary value). */
-    control comb_cntd      :1;  /*!< Bit 20.  Mask bit = 0.  Indicates that the current expression has been previously
+    control comb_cntd      :1;  /*!< Bit 21.  Mask bit = 0.  Indicates that the current expression has been previously
                                      counted for combinational coverage.  Only set by report command (therefore this bit
                                      will always be a zero when written to CDD file. */
-    control stmt_added     :1;  /*!< Bit 21.  Temporary bit value used by the score command but not displayed to the CDD
+    control stmt_added     :1;  /*!< Bit 22.  Temporary bit value used by the score command but not displayed to the CDD
                                      file.  When this bit is set to a one, it indicates to the db_add_statement
                                      function that this statement and all children statements have already been
                                      added to the functional unit statement list and should not be added again. */
@@ -1825,6 +1835,10 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.194  2006/05/28 02:43:49  phase1geo
+ Integrating stable release 0.4.4 changes into main branch.  Updated regressions
+ appropriately.
+
  Revision 1.193  2006/05/25 12:11:00  phase1geo
  Including bug fix from 0.4.4 stable release and updating regressions.
 

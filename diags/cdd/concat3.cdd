@@ -1,4 +1,4 @@
-5 7 1 * 0
+5 8 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd concat3.vcd -o concat3.cdd -v concat3.v
 3 0 main main concat3.v 1 26
 2 1 8 130013 5 1 c 0 0 d

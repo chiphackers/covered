@@ -1,4 +1,4 @@
-5 7 1 * 0
+5 8 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd ashift1.vcd -o ashift1.cdd -v ashift1.v
 3 0 main main ashift1.v 1 27
 2 1 6 50008 1 0 20004 0 0 4 3 0

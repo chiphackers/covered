@@ -1,4 +1,4 @@
-5 7 1 * 0
+5 8 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd elsif2.vcd -o elsif2.cdd -v elsif2.v
 3 0 main main elsif2.v 3 30
 2 1 19 50008 1 0 20004 0 0 1 1 0

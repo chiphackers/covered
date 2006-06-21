@@ -1,4 +1,4 @@
-5 7 1 * 0
+5 8 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd exclude4.vcd -o exclude4.cdd -v exclude4.v -y ./lib -e foo_module.foo_named_block
 3 0 main main exclude4.v 1 12
 3 0 foo_module main.bar ./lib/foo_module.v 1 34

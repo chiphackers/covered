@@ -1,4 +1,4 @@
-5 7 1 * 0
+5 8 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd slist1.3.vcd -o slist1.3.cdd -v slist1.3.v
 3 0 main main slist1.3.v 1 27
 2 1 7 c000c 2 1 c 0 0 c

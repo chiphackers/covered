@@ -1,4 +1,4 @@
-5 7 1 * 0
+5 8 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd toggle.vcd -o toggle.cdd -v toggle.v
 3 0 main main toggle.v 1 20
 1 a 0 3 3000e 18 0 55aa 55aa 55aa 55aa 10a
