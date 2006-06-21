@@ -15,6 +15,7 @@ set line_low_limit          90
 set toggle_low_limit        90
 set comb_low_limit          90
 set fsm_low_limit           90
+set assert_low_limit        90
 set vlog_hl_mode            on
 set vlog_hl_ppkeyword_color ForestGreen
 set vlog_hl_keyword_color   purple
@@ -35,7 +36,7 @@ proc read_coveredrc {} {
   global uncov_fgColor uncov_bgColor
   global cov_fgColor   cov_bgColor
   global race_fgColor  race_bgColor
-  global line_low_limit toggle_low_limit comb_low_limit fsm_low_limit
+  global line_low_limit toggle_low_limit comb_low_limit fsm_low_limit assert_low_limit
   global vlog_hl_mode vlog_hl_ppkeyword_color vlog_hl_keyword_color
   global vlog_hl_comment_color vlog_hl_string_color vlog_hl_value_color
   global vlog_hl_symbol_color
@@ -90,6 +91,8 @@ proc read_coveredrc {} {
           set comb_low_limit $value
         } elseif {$field == "AcceptableFsmPercentage"} {
           set fsm_low_limit $value
+        } elseif {$field == "AcceptableAssertionPercentage"} {
+          set assert_low_limit $value
         } elseif {$field == "HighlightingMode"} {
           set vlog_hl_mode $value
         } elseif {$field == "HighlightPreprocessorKeywordColor"} {
@@ -121,7 +124,7 @@ proc write_coveredrc {} {
   global uncov_fgColor uncov_bgColor
   global cov_fgColor   cov_bgColor
   global race_fgColor  race_bgColor
-  global line_low_limit toggle_low_limit comb_low_limit fsm_low_limit
+  global line_low_limit toggle_low_limit comb_low_limit fsm_low_limit assert_low_limit
   global vlog_hl_mode vlog_hl_ppkeyword_color vlog_hl_keyword_color
   global vlog_hl_comment_color vlog_hl_string_color vlog_hl_value_color
   global vlog_hl_symbol_color
@@ -201,6 +204,13 @@ proc write_coveredrc {} {
 
     puts $rc "AcceptableFsmPercentage = $fsm_low_limit\n"
 
+    puts $rc "# Causes the summary color for a module/instance that has achieved an assertion"
+    puts $rc "# coverage percentage greater than or equal to this value (but not 100%) to be"
+    puts $rc "# colored \"yellow\", indicating that the assertion coverage can possibly be deemed"
+    puts $rc "# \"good enough\".  This value must be in the range of 0 - 100.\n"
+
+    puts $rc "AcceptableAssertionPercentage = $assert_low_limit\n"
+
     puts $rc "# Causes syntax highlighting to be turned on or off.  This value should either be"
     puts $rc "# 'on' or 'off'.\n"
 
@@ -251,10 +261,7 @@ proc create_preferences {} {
   global cov_fgColor   cov_bgColor   tmp_cov_fgColor   tmp_cov_bgColor
   global uncov_fgColor uncov_bgColor tmp_uncov_fgColor tmp_uncov_bgColor
   global race_fgColor  race_bgColor  tmp_race_fgColor  tmp_race_bgColor
-  global line_low_limit   tmp_line_low_limit
-  global toggle_low_limit tmp_toggle_low_limit
-  global comb_low_limit   tmp_comb_low_limit
-  global fsm_low_limit    tmp_fsm_low_limit
+  global line_low_limit toggle_low_limit comb_low_limit fsm_low_limit assert_low_limit
   global vlog_hl_mode            tmp_vlog_hl_mode
   global vlog_hl_ppkeyword_color tmp_vlog_hl_ppkeyword_color
   global vlog_hl_keyword_color   tmp_vlog_hl_keyword_color
@@ -263,7 +270,6 @@ proc create_preferences {} {
   global vlog_hl_string_color    tmp_vlog_hl_string_color
   global vlog_hl_symbol_color    tmp_vlog_hl_symbol_color
   global hl_mode
-
 
   # Now create the window and set the grab to this window
   if {[winfo exists .prefwin] == 0} {
@@ -358,6 +364,9 @@ proc create_preferences {} {
 
       label .prefwin.limits.fl -anchor e -text "FSM State/Arc Coverage %:"
       percent_spinner .prefwin.limits.fs $fsm_low_limit
+
+      label .prefwin.limits.al -anchor e -text "Assertion Coverage %:"
+      percent_spinner .prefwin.limits.as $assert_low_limit
      
       # Pack widgets into grid
       grid columnconfigure .prefwin.limits 2 -weight 1
@@ -370,6 +379,8 @@ proc create_preferences {} {
       grid .prefwin.limits.cs -row 3 -column 1 -sticky news
       grid .prefwin.limits.fl -row 4 -column 0 -sticky news
       grid .prefwin.limits.fs -row 4 -column 1 -sticky news
+      grid .prefwin.limits.al -row 5 -column 0 -sticky news
+      grid .prefwin.limits.as -row 5 -column 1 -sticky news
 
     ####################################
     # Create Syntax Highlighting Frame #
@@ -526,7 +537,7 @@ proc apply_preferences {} {
   global uncov_bgColor tmp_uncov_bgColor
   global race_fgColor tmp_race_fgColor
   global race_bgColor tmp_race_bgColor
-  global line_low_limit toggle_low_limit comb_low_limit fsm_low_limit
+  global line_low_limit toggle_low_limit comb_low_limit fsm_low_limit assert_low_limit
   global cov_rb
   global vlog_hl_mode            tmp_vlog_hl_mode
   global vlog_hl_ppkeyword_color tmp_vlog_hl_ppkeyword_color
@@ -577,6 +588,10 @@ proc apply_preferences {} {
   }
   if {$fsm_low_limit != [expr 100 - [.prefwin.limits.fs.l nearest 0]]} {
     set fsm_low_limit    [expr 100 - [.prefwin.limits.fs.l nearest 0]]
+    set changed 1
+  }
+  if {$assert_low_limit != [expr 100 - [.prefwin.limits.as.l nearest 0]]} {
+    set assert_low_limit [expr 100 - [.prefwin.limits.as.l nearest 0]]
     set changed 1
   }
   if {$vlog_hl_mode != $tmp_vlog_hl_mode} {

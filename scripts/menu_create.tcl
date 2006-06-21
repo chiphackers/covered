@@ -13,9 +13,9 @@ set file_types {
 proc do_keybind {.menubar} {
 
   bind all <Control-o> {.menubar.file.menu invoke 0}
-  bind all <Control-s> {.menubar.file.menu invoke 4}
-  bind all <Control-w> {.menubar.file.menu invoke 6}
-  bind all <Control-x> {.menubar.file.menu invoke 8}
+  bind all <Control-s> {.menubar.file.menu invoke 3}
+  bind all <Control-w> {.menubar.file.menu invoke 5}
+  bind all <Control-x> {.menubar.file.menu invoke 7}
 
   bind all <Control-n> {.menubar.view.menu invoke 2}
   bind all <Control-p> {.menubar.view.menu invoke 3}
@@ -44,8 +44,7 @@ proc menu_create {.menubar} {
   $tfm add command -label "Open/Merge CDDs..." -accelerator "Ctrl-o" -command {
     if {[open_files] != ""} {
       .menubar.file.menu entryconfigure 1 -state normal
-      .menubar.file.menu entryconfigure 3 -state normal
-      .menubar.file.menu entryconfigure 6 -state normal
+      .menubar.file.menu entryconfigure 5 -state normal
       .menubar.view.menu entryconfigure 0 -state normal
     }
   }
@@ -53,16 +52,15 @@ proc menu_create {.menubar} {
     create_cdd_viewer
   }
   $tfm add separator
-  $tfm add command -label "Save CDD As..." -state disabled -command {
-    set save_name "[tk_getSaveFile -filetypes $file_types].cdd"
-    if {$save_name != ".cdd"} {
+  $tfm add command -label "Save CDD..." -accelerator "Ctrl-s" -state disabled -command {
+    set save_name [tk_getSaveFile -filetypes $file_types -initialfile [file tail $file_name] -title "Save CDD As"]
+    if {$save_name != ""} {
+      if {[file extension $save_name] != ".cdd"} {
+        set save_name "$save_name.cdd"
+      } 
       tcl_func_save_cdd $save_name
-      .menubar.file.menu entryconfigure 4 -state disabled
+      .menubar.file.menu entryconfigure 3 -state disabled
     }
-  }
-  $tfm add command -label "Save CDD" -accelerator "Ctrl-s" -state disabled -command {
-    tcl_func_save_cdd $file_name
-    .menubar.file.menu entryconfigure 4 -state disabled
   }
   $tfm add separator
   $tfm add command -label "Close CDD(s)" -accelerator "Ctrl-w" -state disabled -command {
@@ -74,8 +72,7 @@ proc menu_create {.menubar} {
     .info configure -text ""
     .menubar.file.menu entryconfigure 1 -state disabled
     .menubar.file.menu entryconfigure 3 -state disabled
-    .menubar.file.menu entryconfigure 4 -state disabled
-    .menubar.file.menu entryconfigure 6 -state disabled
+    .menubar.file.menu entryconfigure 5 -state disabled
   }
   $tfm add separator
   $tfm add command -label Exit -accelerator "Ctrl-x" -command exit
@@ -200,10 +197,6 @@ proc menu_create {.menubar} {
   pack .menubar.view   -side left
   pack .menubar.help   -side right
 
-  # Create a 3D Seperator 
-  # Separator .seperator 
-  # pack .seperator -fill x
-
   # Do key bindings for the Top Level Menus
   do_keybind .menubar
 
@@ -252,7 +245,6 @@ proc open_files {} {
       } else {
         tcl_func_merge_cdd $fname
         .menubar.file.menu entryconfigure 3 -state normal
-        .menubar.file.menu entryconfigure 4 -state normal
       }
 
       # Populate the listbox

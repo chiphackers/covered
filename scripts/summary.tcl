@@ -5,6 +5,7 @@ set line_low_limit   90
 set toggle_low_limit 90
 set comb_low_limit   90
 set fsm_low_limit    90
+set assert_low_limit 90
 set summary_sort     "dec"
 
 proc summary_yset {args} {
@@ -105,6 +106,8 @@ proc create_summary {} {
     wm title .sumwin "Combinational Logic Coverage Summary"
   } elseif {$cov_rb == "fsm"} {
     wm title .sumwin "FSM State/Arc Coverage Summary"
+  } elseif {$cov_rb == "assert"} {
+    wm title .sumwin "Assertion Coverage Summary"
   } else {
     ;# ERROR!
   }
@@ -145,6 +148,7 @@ proc populate_summary { w } {
   global toggle_summary_hit toggle_summary_total toggle_low_limit
   global comb_summary_hit comb_summary_total comb_low_limit
   global fsm_summary_hit fsm_summary_total fsm_low_limit
+  global assert_summary_hit assert_summary_total assert_low_limit
   global summary_sort
 
   for {set i 0} {$i < [llength $funit_names]} {incr i} {
@@ -169,6 +173,10 @@ proc populate_summary { w } {
       set hit       $fsm_summary_hit
       set total     $fsm_summary_total
       set low_limit $fsm_low_limit
+    } elseif {$cov_rb == "assert"} {
+      set hit       $assert_summary_hit
+      set total     $assert_summary_total
+      set low_limit $assert_low_limit
     } else {
       ;# ERROR
     }

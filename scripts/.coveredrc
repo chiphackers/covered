@@ -6,52 +6,109 @@
 # Sets the foreground color for all source code that is found
 # to be uncovered during simulation.  The value can be any legal color
 # value accepted by Tcl.
+
 UncoveredForegroundColor = blue
+
 # Sets the background color for all source code that is found
 # to be uncovered during simulation.  The value can be any legal color
 # value accepted by Tcl.
 
 UncoveredBackgroundColor = yellow
+
 # Sets the foreground color for all source code that is found
 # to be covered during simulation.  The value can be any legal color value
 # accepted by Tcl.
 
 CoveredForegroundColor = black
+
 # Sets the background color for all source code that is found
 # to be covered during simulation.  The value can be any legal color value.
 # accepted by Tcl.
+
 CoveredBackgroundColor = white
+
 # Sets the foreground color for all source code that has been detected as
 # containing a race condition situation.  This code is not analyzed by Covered.
 # The value can be any legal color value accepted by Tcl.
 
 RaceConditionForegroundColor = white
+
 # Sets the background color for all source code that has been detected as
 # containing a race condition situation.  This code is not analyzed by Covered.
 # The value can be any legal color value accepted by Tcl.
 
 RaceConditionBackgroundColor = blue
+
 # Causes the summary color for a module/instance that has achieved a line
 # coverage percentage greater than or equal to this value (but not 100%) to be
 # colored "yellow", indicating that the line coverage can possibly be deemed
 # "good enough".  This value must be in the range of 0 - 100.
 
 AcceptableLinePercentage = 90
+
 # Causes the summary color for a module/instance that has achieved a toggle
 # coverage percentage greater than or equal to this value (but not 100%) to be
 # colored "yellow", indicating that the toggle coverage can possibly be deemed
 # "good enough".  This value must be in the range of 0 - 100.
 
 AcceptableTogglePercentage = 90
+
 # Causes the summary color for a module/instance that has achieved a combinational
 # logic coverage percentage greater than or equal to this value (but not 100%) to be
 # colored "yellow", indicating that the combinational logic coverage can possibly be
 # deemed "good enough".  This value must be in the range of 0 - 100.
 
 AcceptableCombinationalLogicPercentage = 90
+
 # Causes the summary color for a module/instance that has achieved an FSM state/arc
 # coverage percentage greater than or equal to this value (but not 100%) to be
 # colored "yellow", indicating that the FSM coverage can possibly be deemed
 # "good enough".  This value must be in the range of 0 - 100.
 
 AcceptableFsmPercentage = 90
+
+# Causes the summary color for a module/instance that has achieved an assertion
+# coverage percentage greater than or equal to this value (but not 100%) to be
+# colored "yellow", indicating that the assertion coverage can possibly be deemed
+# "good enough".  This value must be in the range of 0 - 100.
+
+AcceptableAssertionPercentage = 90
+
+# Causes syntax highlighting to be turned on or off.  This value should either be
+# 'on' or 'off'.
+
+HighlightingMode = on
+
+# When the syntax highlighting mode is on, causes the preprocessor directive keywords
+# to be highlighted with the specified color.  The value may be any color value that
+# is acceptable to Tk.
+
+HighlightPreprocessorKeywordColor = ForestGreen
+
+# When the syntax highlighting mode is on, causes the Verilog keywords to be highlighted
+# with the specified color.  The value may be any color value that is acceptable to Tk.
+
+HighlightKeywordColor = purple
+
+# When the syntax highlighting mode is on, causes any single or multi-line comments to
+# be highlighted with the specified color.  The value may be any color value that is
+# acceptable to Tk.
+
+HighlightCommentColor = blue
+
+# When the syntax highlighting mode is on, causes any defined, binary, octal, decimal or
+# hexidecimal value to be highlighted with the specified color.  The value may be any
+# color value that is acceptable to Tk.
+
+HighlightValueColor = red
+
+# When the syntax highlighting mode is on, causes any quoted string to be highlighted with
+# the specified color.  The value may be any color value that is acceptable to Tk.
+
+HighlightStringColor = red
+
+# When the syntax highlighting mode is on, causes any Verilog symbol to be highlighted with
+# the specified color.  The value may be any color value that is acceptable to Tk.
+
+HighlightSymbolColor = coral
+
