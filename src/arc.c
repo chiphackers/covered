@@ -62,8 +62,9 @@
    <tr> <td> 2 </td> <td> Set to 1 if this entry is bidirectional (reverse is a transition); otherwise, only forward is valid. </td> </tr>
    <tr> <td> 3 </td> <td> Set to 1 if the output state of the forward transition is a new state in the arc array. </td> </tr>
    <tr> <td> 4 </td> <td> Set to 1 if the input state of the forward transition is a new state in the arc array. </td> </tr>
-   <tr> <td> (width + 5):5 </td> <td> Bit value of output state of the forward transition. </td> </tr>
-   <tr> <td> ((width * 2) + 5):(width + 5) </td> <td> Bit value of input state of the forward transition. </td> </tr>
+   <tr> <td> 5 </td> <td> Set to 1 if the state transition is excluded from coverage. </td> </tr>
+   <tr> <td> (width + 6):6 </td> <td> Bit value of output state of the forward transition. </td> </tr>
+   <tr> <td> ((width * 2) + 6):(width + 6) </td> <td> Bit value of input state of the forward transition. </td> </tr>
  </table>
 
  \par Adding State Transitions
@@ -716,10 +717,12 @@ float arc_state_total( const char* arcs ) {
   int   i;          /* Loop iterator */
 
   for( i=0; i<arc_get_curr_size( arcs ); i++ ) {
-    if( arc_get_entry_suppl( arcs, i, ARC_NOT_UNIQUE_L ) == 0 ) {
+    if( (arc_get_entry_suppl( arcs, i, ARC_NOT_UNIQUE_L ) == 0) &&
+        (arc_get_entry_suppl( arcs, i, ARC_EXCLUDED ) == 0) ) {
       total++;
     }
-    if( arc_get_entry_suppl( arcs, i, ARC_NOT_UNIQUE_R ) == 0 ) {
+    if( (arc_get_entry_suppl( arcs, i, ARC_NOT_UNIQUE_R ) == 0) &&
+        (arc_get_entry_suppl( arcs, i, ARC_EXCLUDED ) == 0) ) {
       total++;
     }
   }
@@ -753,7 +756,8 @@ int arc_state_hits( char* arcs ) {
       if( j == 0 ) {
         if( arc_get_entry_suppl( arcs, i, ARC_NOT_UNIQUE_L ) == 0 ) {
           arc_compare_all_states( arcs, i, TRUE );
-          if( arc_get_entry_suppl( arcs, i, ARC_HIT_F ) == 1 ) {
+          if( (arc_get_entry_suppl( arcs, i, ARC_HIT_F ) == 1) &&
+              (arc_get_entry_suppl( arcs, i, ARC_EXCLUDED ) == 0) ) {
             hit++;
           }
         }
@@ -762,7 +766,8 @@ int arc_state_hits( char* arcs ) {
           if( (i + 1) < arc_get_curr_size( arcs ) ) {
             arc_compare_all_states( arcs, i, FALSE );
           }
-          if( arc_get_entry_suppl( arcs, i, ARC_HIT_F ) == 1 ) {
+          if( (arc_get_entry_suppl( arcs, i, ARC_HIT_F ) == 1) &&
+              (arc_get_entry_suppl( arcs, i, ARC_EXCLUDED ) == 0) ) {
             hit++;
           }
         }
@@ -796,10 +801,14 @@ float arc_transition_total( const char* arcs ) {
   /* To start, get the current number of entries in the arc */
   total = arc_get_curr_size( arcs );
 
-  /* Now just add to it the number of bidirectional entries */
+  /* Now just add to it the number of bidirectional entries and subtract the number of excluded state transitions */
   for( i=0; i<arc_get_curr_size( arcs ); i++ ) {
-    if( arc_get_entry_suppl( arcs, i, ARC_BIDIR ) == 1 ) {
-      total++;
+    if( arc_get_entry_suppl( arcs, i, ARC_EXCLUDED ) == 0 ) {
+      if( arc_get_entry_suppl( arcs, i, ARC_BIDIR ) == 1 ) {
+        total++;
+      }
+    } else {
+      total--;
     }
   }
 
@@ -827,8 +836,10 @@ int arc_transition_hits( const char* arcs ) {
 
   /* Count the number of hits in the FSM arc */
   for( i=0; i<curr_size; i++ ) {
-    hit += arc_get_entry_suppl( arcs, i, ARC_HIT_F );
-    hit += arc_get_entry_suppl( arcs, i, ARC_HIT_R );
+    if( arc_get_entry_suppl( arcs, i, ARC_EXCLUDED ) == 0 ) {
+      hit += arc_get_entry_suppl( arcs, i, ARC_HIT_F );
+      hit += arc_get_entry_suppl( arcs, i, ARC_HIT_R );
+    }
   }
 
   return( hit );
@@ -1294,6 +1305,11 @@ void arc_dealloc( char* arcs ) {
 
 /*
  $Log$
+ Revision 1.31  2006/04/05 15:19:18  phase1geo
+ Adding support for FSM coverage output in the GUI.  Started adding components
+ for assertion coverage to GUI and report functions though there is no functional
+ support for this at this time.
+
  Revision 1.30  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

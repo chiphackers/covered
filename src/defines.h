@@ -770,16 +770,16 @@ typedef enum exp_op_type_e {
  @{
 */
 
-#define COMP_LT         0       /*!< Less than                */
-#define COMP_GT         1       /*!< Greater than             */
-#define COMP_LE         2       /*!< Less than or equal to    */
+#define COMP_LT         0       /*!< Less than */
+#define COMP_GT         1       /*!< Greater than */
+#define COMP_LE         2       /*!< Less than or equal to */
 #define COMP_GE         3       /*!< Greater than or equal to */
-#define COMP_EQ         4       /*!< Equal to                 */
-#define COMP_NE         5       /*!< Not equal to             */
-#define COMP_CEQ        6       /*!< Case equality            */
-#define COMP_CNE        7       /*!< Case inequality          */
-#define COMP_CXEQ       8       /*!< Casex equality           */
-#define COMP_CZEQ       9       /*!< Casez equality           */
+#define COMP_EQ         4       /*!< Equal to */
+#define COMP_NE         5       /*!< Not equal to */
+#define COMP_CEQ        6       /*!< Case equality */
+#define COMP_CNE        7       /*!< Case inequality */
+#define COMP_CXEQ       8       /*!< Casex equality */
+#define COMP_CZEQ       9       /*!< Casez equality */
 
 /*! @} */
 
@@ -793,11 +793,11 @@ typedef enum exp_op_type_e {
 */
 
 #define MAX_BIT_WIDTH           1024    /*!< Maximum number of bits that a vector can hold */
-#define DECIMAL			0	/*!< String in format [dD][0-9]+                   */
-#define BINARY			1	/*!< String in format [bB][01xXzZ_\?]+             */
-#define OCTAL			2	/*!< String in format [oO][0-7xXzZ_\?]+            */
-#define HEXIDECIMAL		3	/*!< String in format [hH][0-9a-fA-FxXzZ_\?]+      */
-#define QSTRING                 4       /*!< Quoted string                                 */
+#define DECIMAL			0	/*!< String in format [dD][0-9]+ */
+#define BINARY			1	/*!< String in format [bB][01xXzZ_\?]+ */
+#define OCTAL			2	/*!< String in format [oO][0-7xXzZ_\?]+ */
+#define HEXIDECIMAL		3	/*!< String in format [hH][0-9a-fA-FxXzZ_\?]+ */
+#define QSTRING                 4       /*!< Quoted string */
 
 /*! @} */
 
@@ -809,16 +809,17 @@ typedef enum exp_op_type_e {
  @{
 */
 
-#define ARC_HIT_F               0       /*!< From state -> to state hit - forward               */
-#define ARC_HIT_R               1       /*!< To state -> from state hit - reverse               */
-#define ARC_BIDIR               2       /*!< Entry is bidirectional                             */
-#define ARC_NOT_UNIQUE_R        3       /*!< Right state is not unique                          */
-#define ARC_NOT_UNIQUE_L        4       /*!< Left state is not unique                           */
-#define ARC_ENTRY_SUPPL_SIZE    5       /*!< Number of bits comprising entry supplemental field */
+#define ARC_HIT_F               0       /*!< From state -> to state hit - forward */
+#define ARC_HIT_R               1       /*!< To state -> from state hit - reverse */
+#define ARC_BIDIR               2       /*!< Entry is bidirectional */
+#define ARC_NOT_UNIQUE_R        3       /*!< Right state is not unique */
+#define ARC_NOT_UNIQUE_L        4       /*!< Left state is not unique */
+#define ARC_EXCLUDED            5       /*!< Specifies if this transition is excluded or not */
+#define ARC_ENTRY_SUPPL_SIZE    6       /*!< Number of bits comprising entry supplemental field */
 
-#define ARC_STATUS_SIZE         7       /*!< Number of characters comprising arc status         */
+#define ARC_STATUS_SIZE         7       /*!< Number of characters comprising arc status */
 
-#define ARC_TRANS_KNOWN         0       /*!< Bit position of transitions known field in suppl   */
+#define ARC_TRANS_KNOWN         0       /*!< Bit position of transitions known field in suppl */
 
 /*! @} */
 
@@ -831,7 +832,7 @@ typedef enum exp_op_type_e {
 */
 
 #define ATTRIBUTE_UNKNOWN       0       /*!< This attribute is not recognized by Covered */
-#define ATTRIBUTE_FSM           1       /*!< FSM attribute                               */
+#define ATTRIBUTE_FSM           1       /*!< FSM attribute */
 
 /*! @} */
 
@@ -1043,6 +1044,7 @@ union ssuppl_u {
     control col            :16; /*!< Specifies the starting column this signal is declared on */
     control type           :4;  /*!< Specifies signal type (see \ref ssuppl_type for legal values) */
     control big_endian     :1;  /*!< Specifies if this signal is in big or little endianness */
+    control excluded       :1;  /*!< Specifies if this signal should be excluded for toggle coverage */
   } part;
 };
 
@@ -1835,6 +1837,11 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.195  2006/06/21 19:44:45  phase1geo
+ Adding exclusion bit to expression supplemental field and incrementing
+ CDD version number as a result.  No functionality to support excluding
+ has been added at this point.  Full regression now passes.
+
  Revision 1.194  2006/05/28 02:43:49  phase1geo
  Integrating stable release 0.4.4 changes into main branch.  Updated regressions
  appropriately.

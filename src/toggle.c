@@ -65,7 +65,9 @@ void toggle_get_stats( sig_link* sigl, float* total, int* hit01, int* hit10 ) {
   
   /* Search signal list */
   while( curr_sig != NULL ) {
-    if( (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_PARAM) && (curr_sig->sig->value->suppl.part.mba == 0) ) {
+    if( (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_PARAM) &&
+        (curr_sig->sig->value->suppl.part.mba == 0) &&
+        (curr_sig->sig->suppl.part.excluded == 0) ) {
       *total = *total + curr_sig->sig->value->width;
       vector_toggle_count( curr_sig->sig->value, hit01, hit10 );
     }
@@ -618,6 +620,9 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.38  2006/05/25 12:11:02  phase1geo
+ Including bug fix from 0.4.4 stable release and updating regressions.
+
  Revision 1.37  2006/04/19 22:21:33  phase1geo
  More updates to properly support assertion coverage.  Removing assertion modules
  from line, toggle, combinational logic, FSM and race condition output so that there

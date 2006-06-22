@@ -144,7 +144,7 @@ bool combination_multi_expr_calc( expression* exp, int* ulid, bool ul, int* hit,
 
   bool and_op;  /* Specifies if current expression is an AND or LAND operation */
 
-  if( exp != NULL ) {
+  if( (exp != NULL) && (ESUPPL_EXCLUDED( exp->suppl ) == 0) ) {
 
     /* Figure out if this is an AND/LAND operation */
     and_op = (exp->op == EXP_OP_AND) || (exp->op == EXP_OP_LAND);
@@ -257,7 +257,7 @@ void combination_get_tree_stats( expression* exp, int* ulid, unsigned int curr_d
   int num_hit = 0;  /* Number of expression value hits for the current expression */
   int tot_num;      /* Total number of combinations for the current expression */
 
-  if( exp != NULL ) {
+  if( (exp != NULL) && (ESUPPL_EXCLUDED( exp->suppl ) == 0) ) {
 
     /* Calculate children */
     combination_get_tree_stats( exp->left,  ulid, combination_calc_depth( exp, curr_depth, TRUE ),  total, hit );
@@ -2251,6 +2251,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.141  2006/05/28 02:43:49  phase1geo
+ Integrating stable release 0.4.4 changes into main branch.  Updated regressions
+ appropriately.
+
  Revision 1.140  2006/05/25 12:10:57  phase1geo
  Including bug fix from 0.4.4 stable release and updating regressions.
 

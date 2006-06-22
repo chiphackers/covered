@@ -75,7 +75,8 @@ void line_get_stats( stmt_link* stmtl, float* total, int* hit ) {
         (curr.curr->stmt->exp->op != EXP_OP_CASEZ)   &&
         (curr.curr->stmt->exp->op != EXP_OP_DEFAULT) &&
         (curr.curr->stmt->exp->op != EXP_OP_NB_CALL) &&
-        (curr.curr->stmt->exp->line != 0) ) {
+        (curr.curr->stmt->exp->line != 0) &&
+        (ESUPPL_EXCLUDED( curr.curr->stmt->exp->suppl ) == 0) ) {
       *total = *total + 1;
       if( curr.curr->stmt->exp->exec_num > 0 ) {
         (*hit)++;
@@ -548,6 +549,11 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.60  2006/04/19 22:21:33  phase1geo
+ More updates to properly support assertion coverage.  Removing assertion modules
+ from line, toggle, combinational logic, FSM and race condition output so that there
+ won't be any overlap of information here.
+
  Revision 1.59  2006/04/18 21:59:54  phase1geo
  Adding support for environment variable substitution in configuration files passed
  to the score command.  Adding ovl.c/ovl.h files.  Working on support for assertion

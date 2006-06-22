@@ -176,7 +176,9 @@ void ovl_get_funit_stats( func_unit* funit, float* total, int* hit ) {
         while( si.curr != NULL ) {
 
           /* If this statement is a task call to the task "ovl_cover_t", get its total and hit information */
-          if( (si.curr->stmt->exp->op == EXP_OP_TASK_CALL) && (strcmp( si.curr->stmt->exp->name, "ovl_cover_t" ) == 0) ) {
+          if( (si.curr->stmt->exp->op == EXP_OP_TASK_CALL) &&
+              (strcmp( si.curr->stmt->exp->name, "ovl_cover_t" ) == 0) &&
+              (ESUPPL_EXCLUDED( si.curr->stmt->exp->suppl ) == 0) ) {
             *total = *total + 1;
             if( si.curr->stmt->exp->exec_num > 0 ) {
               (*hit)++;
@@ -413,6 +415,9 @@ void ovl_get_coverage( func_unit* funit, char* inst_name, char** assert_mod, str
 
 /*
  $Log$
+ Revision 1.7  2006/05/01 22:27:37  phase1geo
+ More updates with assertion coverage window.  Still have a ways to go.
+
  Revision 1.6  2006/05/01 13:19:07  phase1geo
  Enhancing the verbose assertion window.  Still need to fix a few bugs and add
  a few more enhancements.
