@@ -74,7 +74,7 @@ void exclude_expr_assign_and_recalc( expression* expr, funit_inst* inst, bool ex
   }
 
   /* Set the exclude bit in the expression supplemental field */
-  expr->suppl.part.exclude = excluded ? 1 : 0;
+  expr->suppl.part.excluded = excluded ? 1 : 0;
 
 }
 
@@ -86,13 +86,13 @@ void exclude_expr_assign_and_recalc( expression* expr, funit_inst* inst, bool ex
  Sets the specified expression's exclude bit to the given value and recalculates all
  affected coverage information for this instance.
 */
-void exclude_sig_assign_and_recalc( signal* sig, funit_inst* inst, bool excluded ) {
+void exclude_sig_assign_and_recalc( vsignal* sig, funit_inst* inst, bool excluded ) {
 
   int hit01;  /* Number of bits transitioning from 0 -> 1 */
   int hit10;  /* Number of bits transitioning from 1 -> 0 */
 
   /* First, set the exclude bit in the signal supplemental field */
-  sig->suppl.part.exclude = excluded ? 1 : 0;
+  sig->suppl.part.excluded = excluded ? 1 : 0;
 
   /* Get the total hit01 and hit10 information */
   vector_toggle_count( sig->value, &hit01, &hit10 );
@@ -112,5 +112,11 @@ void exclude_sig_assign_and_recalc( signal* sig, funit_inst* inst, bool excluded
 
 /*
  $Log$
+ Revision 1.1  2006/06/22 21:56:21  phase1geo
+ Adding excluded bits to signal and arc structures and changed statistic gathering
+ functions to not gather coverage for excluded structures.  Started to work on
+ exclude.c file which will quickly adjust coverage information from GUI modifications.
+ Regression has been updated for this change and it fully passes.
+
 */
 

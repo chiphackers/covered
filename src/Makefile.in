@@ -52,19 +52,19 @@ binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am_covered_OBJECTS = arc.$(OBJEXT) assertion.$(OBJEXT) attr.$(OBJEXT) \
 	parser.$(OBJEXT) binding.$(OBJEXT) codegen.$(OBJEXT) \
-	comb.$(OBJEXT) db.$(OBJEXT) expr.$(OBJEXT) fsm.$(OBJEXT) \
-	fsm_arg.$(OBJEXT) fsm_var.$(OBJEXT) func_unit.$(OBJEXT) \
-	gui.$(OBJEXT) info.$(OBJEXT) instance.$(OBJEXT) iter.$(OBJEXT) \
-	keywords.$(OBJEXT) pplexer.$(OBJEXT) lexer.$(OBJEXT) \
-	line.$(OBJEXT) link.$(OBJEXT) lxt.$(OBJEXT) \
-	lxt2_read.$(OBJEXT) main.$(OBJEXT) merge.$(OBJEXT) \
-	ovl.$(OBJEXT) param.$(OBJEXT) parse.$(OBJEXT) \
-	parser_misc.$(OBJEXT) perf.$(OBJEXT) race.$(OBJEXT) \
-	report.$(OBJEXT) scope.$(OBJEXT) score.$(OBJEXT) \
-	search.$(OBJEXT) sim.$(OBJEXT) stat.$(OBJEXT) static.$(OBJEXT) \
-	statement.$(OBJEXT) stmt_blk.$(OBJEXT) symtable.$(OBJEXT) \
-	tcl_funcs.$(OBJEXT) toggle.$(OBJEXT) tree.$(OBJEXT) \
-	util.$(OBJEXT) vcd.$(OBJEXT) vector.$(OBJEXT) \
+	comb.$(OBJEXT) db.$(OBJEXT) exclude.$(OBJEXT) expr.$(OBJEXT) \
+	fsm.$(OBJEXT) fsm_arg.$(OBJEXT) fsm_var.$(OBJEXT) \
+	func_unit.$(OBJEXT) gui.$(OBJEXT) info.$(OBJEXT) \
+	instance.$(OBJEXT) iter.$(OBJEXT) keywords.$(OBJEXT) \
+	pplexer.$(OBJEXT) lexer.$(OBJEXT) line.$(OBJEXT) \
+	link.$(OBJEXT) lxt.$(OBJEXT) lxt2_read.$(OBJEXT) \
+	main.$(OBJEXT) merge.$(OBJEXT) ovl.$(OBJEXT) param.$(OBJEXT) \
+	parse.$(OBJEXT) parser_misc.$(OBJEXT) perf.$(OBJEXT) \
+	race.$(OBJEXT) report.$(OBJEXT) scope.$(OBJEXT) \
+	score.$(OBJEXT) search.$(OBJEXT) sim.$(OBJEXT) stat.$(OBJEXT) \
+	static.$(OBJEXT) statement.$(OBJEXT) stmt_blk.$(OBJEXT) \
+	symtable.$(OBJEXT) tcl_funcs.$(OBJEXT) toggle.$(OBJEXT) \
+	tree.$(OBJEXT) util.$(OBJEXT) vcd.$(OBJEXT) vector.$(OBJEXT) \
 	vsignal.$(OBJEXT)
 covered_OBJECTS = $(am_covered_OBJECTS)
 am__DEPENDENCIES_1 =
@@ -179,6 +179,7 @@ covered_SOURCES = arc.c \
 		  codegen.c \
 		  comb.c \
 		  db.c \
+                  exclude.c \
 		  expr.c \
 		  fsm.c \
                   fsm_arg.c \
@@ -298,6 +299,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/codegen.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/comb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/db.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/exclude.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/expr.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fsm.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fsm_arg.Po@am__quote@
