@@ -1591,6 +1591,222 @@ int tcl_func_get_include_pathname( ClientData d, Tcl_Interp* tcl, int argc, cons
 }
 
 /*!
+ \param d     TBD
+ \param tcl   Pointer to the Tcl interpreter
+ \param argc  Number of arguments in the argv list
+ \param argv  Array of arguments passed to this function
+
+ \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
+         TCL_ERROR.
+
+ Sets the exclusion value for a specified line.  This function is called whenever the user changes
+ the exclusion for a specified line.  The tcl_func_get_line_summary function should be called
+ immediately after to get the new line summary information.
+*/
+int tcl_func_set_line_exclude( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+
+  int   retval = TCL_OK;  /* Return value for this function */
+  char* funit_name;       /* Name of current functional unit */
+  int   funit_type;       /* Type of current functional unit */
+  int   line;             /* Line number that is being set */
+  int   value;            /* Value to set the exclusion value to */
+
+  /* Get argument values */
+  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_type = atoi( argv[2] );
+  line       = atoi( argv[3] );
+  value      = atoi( argv[4] );
+
+  /* TBD - Set exclusion bit for the given line */
+  if( 1 /* TBD */ ) {
+  } else {
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find functional unit %s", funit_name );
+    Tcl_AddErrorInfo( tcl, user_msg );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    retval = TCL_ERROR;
+  }
+
+  /* Free used memory */
+  free_safe( funit_name );
+
+  return( retval );
+
+}
+
+/*!
+ \param d     TBD
+ \param tcl   Pointer to the Tcl interpreter
+ \param argc  Number of arguments in the argv list
+ \param argv  Array of arguments passed to this function
+
+ \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
+         TCL_ERROR.
+
+ Sets the exclusion value for a specified line.  This function is called whenever the user changes
+ the exclusion for a specified line.  The tcl_func_get_line_summary function should be called
+ immediately after to get the new line summary information.
+*/
+int tcl_func_set_toggle_exclude( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+
+  int   retval = TCL_OK;  /* Return value for this function */
+  char* funit_name;       /* Name of current functional unit */
+  int   funit_type;       /* Type of current functional unit */
+  char* sig_name;         /* Name of signal being excluded/included */
+  int   value;            /* Value to set the exclusion value to */
+
+  /* Get argument values */
+  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_type = atoi( argv[2] );
+  sig_name   = strdup_safe( argv[3], __FILE__, __LINE__ );
+  value      = atoi( argv[4] );
+
+  /* TBD - Set exclusion bit for the given toggle */
+  if( 1 /* TBD */ ) {
+  } else {
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find functional unit %s", funit_name );
+    Tcl_AddErrorInfo( tcl, user_msg );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    retval = TCL_ERROR;
+  }
+
+  /* Free used memory */
+  free_safe( funit_name );
+  free_safe( sig_name );
+
+  return( retval );
+
+}
+
+/*!
+ \param d     TBD
+ \param tcl   Pointer to the Tcl interpreter
+ \param argc  Number of arguments in the argv list
+ \param argv  Array of arguments passed to this function
+
+ \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
+         TCL_ERROR.
+
+ Sets the exclusion value for a specified line.  This function is called whenever the user changes
+ the exclusion for a specified line.  The tcl_func_get_line_summary function should be called
+ immediately after to get the new line summary information.
+*/
+int tcl_func_set_comb_exclude( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+
+  int   retval = TCL_OK;  /* Return value for this function */
+  char* funit_name;       /* Name of current functional unit */
+  int   funit_type;       /* Type of current functional unit */
+  int   expr_id;          /* Expression ID of expression to exclude/include */
+  int   value;            /* Value to set the exclusion value to */
+
+  /* Get argument values */
+  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_type = atoi( argv[2] );
+  expr_id    = atoi( argv[3] );
+  value      = atoi( argv[4] );
+
+  /* TBD - Set exclusion bit for the given expression */
+  if( 1 /* TBD */ ) {
+  } else {
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find functional unit %s", funit_name );
+    Tcl_AddErrorInfo( tcl, user_msg );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    retval = TCL_ERROR;
+  }
+
+  /* Free used memory */
+  free_safe( funit_name );
+
+  return( retval );
+
+}
+
+/*!
+ \param d     TBD
+ \param tcl   Pointer to the Tcl interpreter
+ \param argc  Number of arguments in the argv list
+ \param argv  Array of arguments passed to this function
+
+ \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
+         TCL_ERROR.
+
+ Sets the exclusion value for a specified line.  This function is called whenever the user changes
+ the exclusion for a specified line.  The tcl_func_get_line_summary function should be called
+ immediately after to get the new line summary information.
+*/
+int tcl_func_set_fsm_exclude( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+
+  int   retval = TCL_OK;  /* Return value for this function */
+  char* funit_name;       /* Name of current functional unit */
+  int   funit_type;       /* Type of current functional unit */
+  int   line;             /* Line number that is being set */
+  int   value;            /* Value to set the exclusion value to */
+
+  /* Get argument values */
+  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_type = atoi( argv[2] );
+  line       = atoi( argv[3] );
+  value      = atoi( argv[4] );
+
+  /* TBD - Set exclusion bit for the given line */
+  if( 1 /* TBD */ ) {
+  } else {
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find functional unit %s", funit_name );
+    Tcl_AddErrorInfo( tcl, user_msg );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    retval = TCL_ERROR;
+  }
+
+  /* Free used memory */
+  free_safe( funit_name );
+
+  return( retval );
+
+}
+
+/*!
+ \param d     TBD
+ \param tcl   Pointer to the Tcl interpreter
+ \param argc  Number of arguments in the argv list
+ \param argv  Array of arguments passed to this function
+
+ \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
+         TCL_ERROR.
+
+ Sets the exclusion value for a specified line.  This function is called whenever the user changes
+ the exclusion for a specified line.  The tcl_func_get_line_summary function should be called
+ immediately after to get the new line summary information.
+*/
+int tcl_func_set_assert_exclude( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+
+  int   retval = TCL_OK;  /* Return value for this function */
+  char* funit_name;       /* Name of current functional unit */
+  int   funit_type;       /* Type of current functional unit */
+  int   line;             /* Line number that is being set */
+  int   value;            /* Value to set the exclusion value to */
+
+  /* Get argument values */
+  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_type = atoi( argv[2] );
+  line       = atoi( argv[3] );
+  value      = atoi( argv[4] );
+
+  /* TBD - Set exclusion bit for the given expression */
+  if( 1 /* TBD */ ) {
+  } else {
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find functional unit %s", funit_name );
+    Tcl_AddErrorInfo( tcl, user_msg );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    retval = TCL_ERROR;
+  }
+
+  /* Free used memory */
+  free_safe( funit_name );
+
+  return( retval );
+
+}
+
+/*!
  \param tcl        Pointer to Tcl interpreter structure
  \param user_home  Name of user's home directory (used to store configuration file information to)
  \param home       Name of Tcl script home directory (from running the configure script)
@@ -1633,6 +1849,11 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
   Tcl_CreateCommand( tcl, "tcl_func_preprocess_verilog",        (Tcl_CmdProc*)(tcl_func_preprocess_verilog),        0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_score_path",            (Tcl_CmdProc*)(tcl_func_get_score_path),            0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_include_pathname",      (Tcl_CmdProc*)(tcl_func_get_include_pathname),      0, 0 );
+  Tcl_CreateCommand( tcl, "tcl_func_set_line_exclude",          (Tcl_CmdProc*)(tcl_func_set_line_exclude),          0, 0 );
+  Tcl_CreateCommand( tcl, "tcl_func_set_toggle_exclude",        (Tcl_CmdProc*)(tcl_func_set_toggle_exclude),        0, 0 );
+  Tcl_CreateCommand( tcl, "tcl_func_set_comb_exclude",          (Tcl_CmdProc*)(tcl_func_set_comb_exclude),          0, 0 );
+  Tcl_CreateCommand( tcl, "tcl_func_set_fsm_exclude",           (Tcl_CmdProc*)(tcl_func_set_fsm_exclude),           0, 0 );
+  Tcl_CreateCommand( tcl, "tcl_func_set_assert_exclude",        (Tcl_CmdProc*)(tcl_func_set_assert_exclude),        0, 0 );
   
   /* Set the USER_HOME variable to location of user's home directory */
   Tcl_SetVar( tcl, "USER_HOME", user_home, TCL_GLOBAL_ONLY );
@@ -1653,6 +1874,9 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.44  2006/06/21 02:56:37  phase1geo
+ Fixing assertion error in info.c for merged file writing.
+
  Revision 1.43  2006/06/20 22:14:32  phase1geo
  Adding support for saving CDD files (needed for file merging and saving exclusion
  information for a CDD file) in the GUI.  Still have a bit to go as I am getting core
