@@ -227,7 +227,9 @@ bool toggle_get_funit_summary( char* funit_name, int funit_type, int* total, int
       hit01 = 0;
       hit10 = 0;
 
-      if( (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_PARAM) && (curr_sig->sig->value->suppl.part.mba == 0) ) {
+      if( (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_PARAM) &&
+          (curr_sig->sig->value->suppl.part.mba == 0) &&
+          (curr_sig->sig->suppl.part.excluded == 0) ) {
 
         /* We have found a valid signal to look at; therefore, increment the total */
         (*total)++;
@@ -620,6 +622,12 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.39  2006/06/22 21:56:21  phase1geo
+ Adding excluded bits to signal and arc structures and changed statistic gathering
+ functions to not gather coverage for excluded structures.  Started to work on
+ exclude.c file which will quickly adjust coverage information from GUI modifications.
+ Regression has been updated for this change and it fully passes.
+
  Revision 1.38  2006/05/25 12:11:02  phase1geo
  Including bug fix from 0.4.4 stable release and updating regressions.
 

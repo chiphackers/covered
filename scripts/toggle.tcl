@@ -1,5 +1,6 @@
 set sig_name        ""
 set curr_toggle_ptr ""
+set toggle_exclude  0
 
 proc display_toggle {curr_index} {
 
@@ -22,18 +23,20 @@ proc display_toggle {curr_index} {
   set next_toggle_index [lindex [.bot.right.txt tag nextrange uncov_button [lindex $curr_range 1]] 0]
 
   # Now create the toggle window
-  create_toggle_window $curr_signal
+  create_toggle_window $curr_signal 0
 
 }
 
-proc create_toggle_window {signal} {
+proc create_toggle_window {signal excluded} {
 
   global toggle01_verbose toggle10_verbose toggle_msb toggle_lsb
   global sig_name prev_toggle_index next_toggle_index
   global curr_funit_name curr_funit_type
   global curr_toggle_ptr
+  global toggle_exclude
 
-  set sig_name $signal
+  set sig_name       $signal
+  set toggle_exclude $excluded
 
   # Now create the window and set the grab to this window
   if {[winfo exists .togwin] == 0} {
@@ -52,6 +55,13 @@ proc create_toggle_window {signal} {
 
     # Create bottom information bar
     label .togwin.f.info -anchor e
+
+    # Create exclude checkbutton
+    checkbutton .togwin.f.excl -text "Exclude" -variable toggle_exclude -command {
+      tcl_func_set_toggle_exclude $curr_funit_name $curr_funit_type $sig_name $toggle_exclude
+      tcl_func_get_toggle_summary $curr_funit_name $curr_funit_type
+      cov_display_summary $toggle_summary_hit $toggle_summary_total
+    }
 
     # Create bottom button bar
     frame .togwin.bf -relief raised -borderwidth 1
@@ -84,6 +94,7 @@ proc create_toggle_window {signal} {
     grid .togwin.f.l_10 -row 1 -column 1 -sticky new
     grid .togwin.f.hb   -row 2 -column 0 -sticky new
     grid .togwin.f.info -row 3 -column 0 -sticky new
+    grid .togwin.f.excl -row 3 -column 1 -sticky new
 
     pack .togwin.f  -fill both -expand yes
     pack .togwin.bf -fill x

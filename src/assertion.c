@@ -392,7 +392,7 @@ void assertion_report( FILE* ofile, bool verbose ) {
 */
 bool assertion_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit ) {
 	
-	bool        retval = TRUE;  /* Return value for this function */
+  bool        retval = TRUE;  /* Return value for this function */
   func_unit   funit;          /* Functional unit used for searching */
   funit_link* funitl;         /* Pointer to found functional unit link */
   float       ftotal;         /* Float version of total */
@@ -402,7 +402,7 @@ bool assertion_get_funit_summary( char* funit_name, int funit_type, int* total, 
   
   /* Initialize total and hit counts */
   ftotal = 0;
-  *hit    = 0;
+  *hit   = 0;
   
   if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
     
@@ -514,6 +514,9 @@ bool assertion_get_coverage( char* funit_name, int funit_type, char* inst_name, 
 
 /*
  $Log$
+ Revision 1.9  2006/05/01 22:27:37  phase1geo
+ More updates with assertion coverage window.  Still have a ways to go.
+
  Revision 1.8  2006/05/01 13:19:05  phase1geo
  Enhancing the verbose assertion window.  Still need to fix a few bugs and add
  a few more enhancements.
