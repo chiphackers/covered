@@ -56,10 +56,11 @@ void str_link_add( char* str, str_link** head, str_link** tail ) {
 
   tmp = (str_link*)malloc_safe( sizeof( str_link ), __FILE__, __LINE__ );
 
-  tmp->str   = str;
-  tmp->suppl = 0x0;
-  tmp->range = NULL;
-  tmp->next  = NULL;
+  tmp->str    = str;
+  tmp->suppl  = 0x0;
+  tmp->suppl2 = 0x0;
+  tmp->range  = NULL;
+  tmp->next   = NULL;
 
   if( *head == NULL ) {
     *head = *tail = tmp;
@@ -800,6 +801,11 @@ void funit_link_delete_list( funit_link* head, bool rm_funit ) {
 
 /*
  $Log$
+ Revision 1.43  2006/03/28 22:28:27  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.42  2006/02/17 19:50:47  phase1geo
  Added full support for escaped names.  Full regression passes.
 

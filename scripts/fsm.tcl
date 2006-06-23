@@ -344,7 +344,7 @@ proc display_fsm_window {expr_id} {
   global fsm_arcs fsm_hit_arcs
   global fsm_in_state fsm_out_state
 
-  # Get information from design for this expression ID - TBD
+  # Get information from design for this expression ID
   set fsm_states     ""
   set fsm_hit_states ""
   set fsm_arcs       ""

@@ -47,6 +47,7 @@
 #include "assertion.h"
 #include "search.h"
 #include "score.h"
+#include "exclude.h"
 
 
 extern funit_link* funit_head;
@@ -1071,7 +1072,7 @@ int tcl_func_get_assert_coverage( ClientData d, Tcl_Interp* tcl, int argc, const
 
     curr_cp = cp_head;
     while( curr_cp != NULL ) {
-      snprintf( str, 4096, "{%s} %d", curr_cp->str, curr_cp->suppl );
+      snprintf( str, 4096, "{%s} %d %d", curr_cp->str, curr_cp->suppl, curr_cp->suppl2 );
       Tcl_SetVar( tcl, "assert_cov_points", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
       curr_cp = curr_cp->next;
     }
@@ -1617,9 +1618,8 @@ int tcl_func_set_line_exclude( ClientData d, Tcl_Interp* tcl, int argc, const ch
   line       = atoi( argv[3] );
   value      = atoi( argv[4] );
 
-  /* TBD - Set exclusion bit for the given line */
-  if( 1 /* TBD */ ) {
-  } else {
+  /* Set exclusion bit for the given line */
+  if( !exclude_set_line_exclude( funit_name, funit_type, line, value ) ) {
     snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find functional unit %s", funit_name );
     Tcl_AddErrorInfo( tcl, user_msg );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -1660,9 +1660,8 @@ int tcl_func_set_toggle_exclude( ClientData d, Tcl_Interp* tcl, int argc, const 
   sig_name   = strdup_safe( argv[3], __FILE__, __LINE__ );
   value      = atoi( argv[4] );
 
-  /* TBD - Set exclusion bit for the given toggle */
-  if( 1 /* TBD */ ) {
-  } else {
+  /* Set exclusion bit for the given toggle */
+  if( !exclude_set_toggle_exclude( funit_name, funit_type, sig_name, value ) ) {
     snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find functional unit %s", funit_name );
     Tcl_AddErrorInfo( tcl, user_msg );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -1704,9 +1703,8 @@ int tcl_func_set_comb_exclude( ClientData d, Tcl_Interp* tcl, int argc, const ch
   expr_id    = atoi( argv[3] );
   value      = atoi( argv[4] );
 
-  /* TBD - Set exclusion bit for the given expression */
-  if( 1 /* TBD */ ) {
-  } else {
+  /* Set exclusion bit for the given expression */
+  if( !exclude_set_comb_assert_exclude( funit_name, funit_type, expr_id, value ) ) {
     snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find functional unit %s", funit_name );
     Tcl_AddErrorInfo( tcl, user_msg );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -1738,18 +1736,21 @@ int tcl_func_set_fsm_exclude( ClientData d, Tcl_Interp* tcl, int argc, const cha
   int   retval = TCL_OK;  /* Return value for this function */
   char* funit_name;       /* Name of current functional unit */
   int   funit_type;       /* Type of current functional unit */
-  int   line;             /* Line number that is being set */
+  int   expr_id;          /* Expression ID of output state variable */
+  char* from_state;       /* Value of input state */
+  char* to_state;         /* Value of output state */
   int   value;            /* Value to set the exclusion value to */
 
   /* Get argument values */
   funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
   funit_type = atoi( argv[2] );
-  line       = atoi( argv[3] );
-  value      = atoi( argv[4] );
+  expr_id    = atoi( argv[3] );
+  from_state = strdup_safe( argv[4], __FILE__, __LINE__ );
+  to_state   = strdup_safe( argv[5], __FILE__, __LINE__ );
+  value      = atoi( argv[6] );
 
-  /* TBD - Set exclusion bit for the given line */
-  if( 1 /* TBD */ ) {
-  } else {
+  /* Set exclusion bit for the given line */
+  if( !exclude_set_fsm_exclude( funit_name, funit_type, expr_id, from_state, to_state, value ) ) {
     snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find functional unit %s", funit_name );
     Tcl_AddErrorInfo( tcl, user_msg );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -1758,6 +1759,8 @@ int tcl_func_set_fsm_exclude( ClientData d, Tcl_Interp* tcl, int argc, const cha
 
   /* Free used memory */
   free_safe( funit_name );
+  free_safe( from_state );
+  free_safe( to_state );
 
   return( retval );
 
@@ -1781,18 +1784,17 @@ int tcl_func_set_assert_exclude( ClientData d, Tcl_Interp* tcl, int argc, const 
   int   retval = TCL_OK;  /* Return value for this function */
   char* funit_name;       /* Name of current functional unit */
   int   funit_type;       /* Type of current functional unit */
-  int   line;             /* Line number that is being set */
+  int   expr_id;          /* Expression ID of expression calling cover task */
   int   value;            /* Value to set the exclusion value to */
 
   /* Get argument values */
   funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
   funit_type = atoi( argv[2] );
-  line       = atoi( argv[3] );
+  expr_id    = atoi( argv[3] );
   value      = atoi( argv[4] );
 
-  /* TBD - Set exclusion bit for the given expression */
-  if( 1 /* TBD */ ) {
-  } else {
+  /* Set exclusion bit for the given assertion */
+  if( !exclude_set_comb_assert_exclude( funit_name, funit_type, expr_id, value ) ) {
     snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find functional unit %s", funit_name );
     Tcl_AddErrorInfo( tcl, user_msg );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -1874,6 +1876,10 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.45  2006/06/23 04:24:03  phase1geo
+ Adding functions to tcl_funcs to allow us to change the exclusion property
+ for each coverage metric.
+
  Revision 1.44  2006/06/21 02:56:37  phase1geo
  Fixing assertion error in info.c for merged file writing.
 

@@ -33,6 +33,9 @@ bool ovl_is_assertion_name( char* name );
 /*! \brief Returns TRUE if specified functional unit is an OVL assertion module. */
 bool ovl_is_assertion_module( func_unit* funit );
 
+/*! \brief Returns TRUE if specified expression corresponds to a functional coverage point. */
+bool ovl_is_coverage_point( expression* exp );
+
 /*! \brief Adds all assertion modules to no score list */
 void ovl_add_assertions_to_no_score_list( bool rm_tasks );
 
@@ -50,6 +53,9 @@ void ovl_get_coverage( func_unit* funit, char* inst_name, char** assert_mod, str
 
 /*
  $Log$
+ Revision 1.7  2006/05/01 22:27:37  phase1geo
+ More updates with assertion coverage window.  Still have a ways to go.
+
  Revision 1.6  2006/05/01 13:19:07  phase1geo
  Enhancing the verbose assertion window.  Still need to fix a few bugs and add
  a few more enhancements.

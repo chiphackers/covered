@@ -814,8 +814,9 @@ typedef enum exp_op_type_e {
 #define ARC_BIDIR               2       /*!< Entry is bidirectional */
 #define ARC_NOT_UNIQUE_R        3       /*!< Right state is not unique */
 #define ARC_NOT_UNIQUE_L        4       /*!< Left state is not unique */
-#define ARC_EXCLUDED            5       /*!< Specifies if this transition is excluded or not */
-#define ARC_ENTRY_SUPPL_SIZE    6       /*!< Number of bits comprising entry supplemental field */
+#define ARC_EXCLUDED_F          5       /*!< Specifies if the forward transition is excluded or not */
+#define ARC_EXCLUDED_R          6       /*!< Specifies if the backward transition is excluded or not */
+#define ARC_ENTRY_SUPPL_SIZE    7       /*!< Number of bits comprising entry supplemental field */
 
 #define ARC_STATUS_SIZE         7       /*!< Number of characters comprising arc status */
 
@@ -1360,6 +1361,7 @@ struct exp_info_s {
 struct str_link_s {
   char*         str;                 /*!< String to store */
   control       suppl;               /*!< 32-bit additional information */
+  control       suppl2;              /*!< 32-bit additional information */
   vector_width* range;               /*!< Pointer to optional range information */
   str_link*     next;                /*!< Pointer to next str_link element */
 };
@@ -1837,6 +1839,12 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.196  2006/06/22 21:56:21  phase1geo
+ Adding excluded bits to signal and arc structures and changed statistic gathering
+ functions to not gather coverage for excluded structures.  Started to work on
+ exclude.c file which will quickly adjust coverage information from GUI modifications.
+ Regression has been updated for this change and it fully passes.
+
  Revision 1.195  2006/06/21 19:44:45  phase1geo
  Adding exclusion bit to expression supplemental field and incrementing
  CDD version number as a result.  No functionality to support excluding

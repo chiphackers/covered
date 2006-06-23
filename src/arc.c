@@ -717,12 +717,10 @@ float arc_state_total( const char* arcs ) {
   int   i;          /* Loop iterator */
 
   for( i=0; i<arc_get_curr_size( arcs ); i++ ) {
-    if( (arc_get_entry_suppl( arcs, i, ARC_NOT_UNIQUE_L ) == 0) &&
-        (arc_get_entry_suppl( arcs, i, ARC_EXCLUDED ) == 0) ) {
+    if( arc_get_entry_suppl( arcs, i, ARC_NOT_UNIQUE_L ) == 0 ) {
       total++;
     }
-    if( (arc_get_entry_suppl( arcs, i, ARC_NOT_UNIQUE_R ) == 0) &&
-        (arc_get_entry_suppl( arcs, i, ARC_EXCLUDED ) == 0) ) {
+    if( arc_get_entry_suppl( arcs, i, ARC_NOT_UNIQUE_R ) == 0 ) {
       total++;
     }
   }
@@ -757,7 +755,7 @@ int arc_state_hits( char* arcs ) {
         if( arc_get_entry_suppl( arcs, i, ARC_NOT_UNIQUE_L ) == 0 ) {
           arc_compare_all_states( arcs, i, TRUE );
           if( (arc_get_entry_suppl( arcs, i, ARC_HIT_F ) == 1) &&
-              (arc_get_entry_suppl( arcs, i, ARC_EXCLUDED ) == 0) ) {
+              (arc_get_entry_suppl( arcs, i, ARC_EXCLUDED_F ) == 0) ) {
             hit++;
           }
         }
@@ -767,7 +765,7 @@ int arc_state_hits( char* arcs ) {
             arc_compare_all_states( arcs, i, FALSE );
           }
           if( (arc_get_entry_suppl( arcs, i, ARC_HIT_F ) == 1) &&
-              (arc_get_entry_suppl( arcs, i, ARC_EXCLUDED ) == 0) ) {
+              (arc_get_entry_suppl( arcs, i, ARC_EXCLUDED_F ) == 0) ) {
             hit++;
           }
         }
@@ -803,8 +801,9 @@ float arc_transition_total( const char* arcs ) {
 
   /* Now just add to it the number of bidirectional entries and subtract the number of excluded state transitions */
   for( i=0; i<arc_get_curr_size( arcs ); i++ ) {
-    if( arc_get_entry_suppl( arcs, i, ARC_EXCLUDED ) == 0 ) {
-      if( arc_get_entry_suppl( arcs, i, ARC_BIDIR ) == 1 ) {
+    if( arc_get_entry_suppl( arcs, i, ARC_EXCLUDED_F ) == 0 ) {
+      if( (arc_get_entry_suppl( arcs, i, ARC_BIDIR ) == 1) &&
+          (arc_get_entry_suppl( arcs, i, ARC_EXCLUDED_R ) == 0) ) {
         total++;
       }
     } else {
@@ -836,8 +835,10 @@ int arc_transition_hits( const char* arcs ) {
 
   /* Count the number of hits in the FSM arc */
   for( i=0; i<curr_size; i++ ) {
-    if( arc_get_entry_suppl( arcs, i, ARC_EXCLUDED ) == 0 ) {
+    if( arc_get_entry_suppl( arcs, i, ARC_EXCLUDED_F ) == 0 ) {
       hit += arc_get_entry_suppl( arcs, i, ARC_HIT_F );
+    }
+    if( arc_get_entry_suppl( arcs, i, ARC_EXCLUDED_R ) == 0 ) {
       hit += arc_get_entry_suppl( arcs, i, ARC_HIT_R );
     }
   }
@@ -1305,6 +1306,12 @@ void arc_dealloc( char* arcs ) {
 
 /*
  $Log$
+ Revision 1.32  2006/06/22 21:56:21  phase1geo
+ Adding excluded bits to signal and arc structures and changed statistic gathering
+ functions to not gather coverage for excluded structures.  Started to work on
+ exclude.c file which will quickly adjust coverage information from GUI modifications.
+ Regression has been updated for this change and it fully passes.
+
  Revision 1.31  2006/04/05 15:19:18  phase1geo
  Adding support for FSM coverage output in the GUI.  Started adding components
  for assertion coverage to GUI and report functions though there is no functional

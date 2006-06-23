@@ -31,6 +31,9 @@
 /*! \brief Resets combination counted bits in expression list */
 void combination_reset_counted_exprs( exp_link* expl );
 
+/*! \brief Calculates combination logic statistics for a single expression tree */
+void combination_get_tree_stats( expression* exp, int* ulid, unsigned int curr_depth, float* total, int* hit );
+
 /*! \brief Calculates combination logic statistics for summary output */
 void combination_get_stats( exp_link* expl, float* total, int* hit );
 
@@ -52,6 +55,11 @@ void combination_report( FILE* ofile, bool verbose );
 
 /*
  $Log$
+ Revision 1.15  2006/03/28 22:28:27  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.14  2006/02/06 22:48:34  phase1geo
  Several enhancements to GUI look and feel.  Fixed error in combinational logic
  window.
