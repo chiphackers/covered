@@ -25,10 +25,11 @@ CDD_DIR       = ../cdd
 LOGFILE = regress.log
 
 DIAGS1        = add1            always1         always2         always3         always3.1.11A \
-                always4         always5         always6         always7         always8 \
-                always9         always10        always11        always11.1      always11.2 \
-                always12        always13        ashift1         ashift2         assign2 \
-                assign2.1       assign2.2       assign2.3       assign2.9       assign3.2A \
+                always4         always5         always6         always7         always7.1 \
+                always8         always9         always10        always11        always11.1 \
+                always11.2      always12        always13        ashift1         ashift2 \
+                assign2         assign2.1       assign2.2       assign2.3       assign2.4 \
+                assign2.5       assign2.6       assign2.7       assign2.9       assign3.2A \
                 bassign1        bassign2        bassign3        block1          case1 \
                 case1.1         case1.2         case1.3         case2           case3 \
                 case3.1         case3.2         case3.3         case3.4         case4 \
@@ -39,43 +40,45 @@ DIAGS1        = add1            always1         always2         always3         
                 cond2           delay1          delay2          define1         define1.1 \
                 define1.2       define2         define2.1       define3         define4 \
                 define5         disable1        disable1.1      disable2        disable2.1 \
-                endian1         endian2         endian3         event1.1        exclude1 \
-                exclude2        exclude3 \
-                exclude4        exclude5        exclude5.1      exclude5.2      expand1 \
-                expand2         expand3         expand4         expand4.1       expand4.2 \
-                expand4.3       expand4.4       for1            for2            forever1 \
-                fork1           fork2           fsm3            fsm4            fsm4.1 \
-                fsm5            fsm5.1          fsm5.2          fsm5.3          func1 \
-                func2           gate1           hier1           ifdef1          ifdef1.2 \
-                ifdef2.1        ifdef2.2        ifdef2.3        ifelse1         include1 \
-                include1.1      include2        initial1        instance1       instance1.1 \
-                instance1.2     instance2       instance3       instance4       instance4.1 \
-                instance4.2     instance5       instance6       instance6.1     instance6.2 \
-                instance7       localparam1     localparam1.1   localparam1.2   localparam1.3 \
-                localparam2     localparam3     long_exp1       long_exp2 \
-                long_exp3       long_sig        mbit_sel1       mbit_sel2       mbit_sel3 \
-                mbit_sel3.1     mbit_sel4       mbit_sel4.1     mbit_sel4.2     mbit_sel4.3 \
-                mem1            mult1           multi_exp1      multi_exp1.1    multi_exp1.2 \
-                multi_exp1.3    multi_exp1.4    multi_exp1.5    multi_exp1.6    multi_exp1.7 \
-                multi_exp1.8    multi_exp1.9    multi_exp1.10   multi_exp1.11   multi_exp1.12 \
-                multi_exp1.13   multi_exp1.14   multi_exp1.15   multi_exp2      multi_exp2.1 \
-                multi_exp3      named_block1    nested_block1   nested_block2   nested_block2.1 \
-                nested_block3   ovl1            ovl1.1          ovl1.2          ovl1.3 \
-                param1          param1.1        param1.2        param1.3 \
+                endian1         endian2         endian3         event1          event1.1 \
+                exclude1        exclude2        exclude3        exclude4        exclude5 \
+                exclude5.1      exclude5.2      expand1         expand2         expand3 \
+                expand4         expand4.1       expand4.2       expand4.3       expand4.4 \
+                for1            for2            forever1        fork1           fork2 \
+                fsm3            fsm4            fsm4.1          fsm5            fsm5.1 \
+                fsm5.2          fsm5.3          func1           func2           gate1 \
+                hier1           ifdef1          ifdef1.2        ifdef2.1        ifdef2.2 \
+                ifdef2.3        ifelse1         implicit2.1     include1        include1.1 \
+                include2        initial1        instance1       instance1.1     instance1.2 \
+                instance2       instance3       instance4       instance4.1     instance4.2 \
+                instance5       instance6       instance6.1     instance6.2     instance7 \
+                localparam1     localparam1.1   localparam1.2   localparam1.3   localparam2 \
+                localparam3     long_exp1       long_exp2       long_exp3       long_sig \
+                mbit_sel1       mbit_sel2       mbit_sel3       mbit_sel3.1     mbit_sel4 \
+                mbit_sel4.1     mbit_sel4.2     mbit_sel4.3     mbit_sel5       mbit_sel5.1 \
+                mbit_sel5.2     mbit_sel5.3     mbit_sel6       mbit_sel6.1     mbit_sel6.2 \
+                mbit_sel6.3     mem1            mult1           multi_exp1      multi_exp1.1 \
+                multi_exp1.2    multi_exp1.3    multi_exp1.4    multi_exp1.5    multi_exp1.6 \
+                multi_exp1.7    multi_exp1.8    multi_exp1.9    multi_exp1.10   multi_exp1.11 \
+                multi_exp1.12   multi_exp1.13   multi_exp1.14   multi_exp1.15   multi_exp2 \
+                multi_exp2.1    multi_exp3      named_block1    nested_block1   nested_block2 \
+                nested_block2.1 nested_block3   ovl1            ovl1.1          ovl1.2 \
+                ovl1.3          param1          param1.1        param1.2        param1.3 \
                 param3          param3.1        param3.2        param3.3        param3.4 \
                 param3.5        param4          param4.1        param5          param6 \
                 param6.1        param7          param8          param8.1        param9 \
                 param9.1        param9.2        param10         param10.1       param10.2 \
                 param10.3       param10.4       param10.5       param11         param13 \
                 param13.1       port1           port2           pulldown1       pullup1 \
-                rassign1        repeat1         repeat2 \
-                sbit_sel1       sbit_sel1.1     signed1         signed3         signed3.1 \
-                signed3.2       signed3.3       signed3.4       signed3.5       signed3.6 \
-                slist1          slist1.1        slist1.2        slist1.3        slist2 \
-                static1         string1         supply0         supply1         task1 \
-                task1.1         task2           task2.1         task2.2         task2.3 \
-                task3           task3.1         task4           task4.1         toggle \
-                tri             tri0            tri1            while1          while1.1
+                rassign1        real1           repeat1         repeat2         sbit_sel1 \
+                sbit_sel1.1     signed1         signed3         signed3.1       signed3.2 \
+                signed3.3       signed3.4       signed3.5       signed3.6       slist1 \
+                slist1.1        slist1.2        slist1.3        slist2          static1 \
+                string1         supply0         supply1         task1           task1.1 \
+                task2           task2.1         task2.2         task2.3         task3 \
+                task3.1         task4           task4.1         toggle          tri \
+                tri0            tri1            triand          trior           wand \
+                while1          while1.1        wor
 DIAGS2        = delay1.1
 DIAGS3        = delay1.2
 DIAGS4        = delay1.3
@@ -104,14 +107,11 @@ IVONLYDIAGS2  =
 IVONLYDIAGS3  = 
 IVONLYDIAGS4  = 
 
-VCSONLYDIAGS1 = always7.1       assign2.4       assign2.5       assign2.6       assign2.7 \
-                elsif1          elsif1.1        elsif1.2        elsif1.3        elsif1.4 \
-                elsif2          elsif2.1        event1          exponent1       gate1.1 \
-                hier1.1         implicit2.1     line1           mbit_sel5       mbit_sel5.1     mbit_sel5.2 \
-                mbit_sel5.3     mbit_sel5.4     mbit_sel6       mbit_sel6.1     mbit_sel6.2 \
-                mbit_sel6.3     mbit_sel6.4     param8.2        param12         param12.1 \
-                real1           static_func1    static_func1.1  static_func2    static_func2.1 \
-                static_func2.2  triand          trior           trireg          wand            wor
+VCSONLYDIAGS1 = elsif1          elsif1.1        elsif1.2        elsif1.3        elsif1.4 \
+                elsif2          elsif2.1        exponent1       gate1.1         hier1.1 \
+                line1           mbit_sel5.4     mbit_sel6.4     param8.2        param12 \
+                param12.1       static_func1    static_func1.1  static_func2    static_func2.1 \
+                static_func2.2  trireg
 VCSONLYDIAGS2 = 
 VCSONLYDIAGS3 = 
 VCSONLYDIAGS4 = 
