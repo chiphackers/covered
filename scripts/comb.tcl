@@ -160,7 +160,6 @@ proc display_comb_coverage {ulid} {
   # Set excluded checkbutton correctly
   .combwin.f.bot.e configure -state normal
   set comb_curr_excluded [lindex $comb_exp_excludes $ulid]
-  puts "comb_exp_excludes: $comb_exp_excludes"
 
 }
 
@@ -549,9 +548,12 @@ proc create_comb_window {expr_id sline} {
     # Add expression coverage information
     label .combwin.f.bot.l -anchor w -text "Coverage Information:  ('*' represents a case that was not hit)"
     checkbutton .combwin.f.bot.e -anchor e -text "Excluded" -state disabled -variable comb_curr_excluded -command {
-      tcl_func_set_comb_exclude $curr_funit_name $curr_funit_type $comb_curr_exp_id $comb_curr_excluded
-      lreplace $comb_exp_excludes $comb_curr_uline_id $comb_curr_uline_id $comb_curr_excluded
-      puts $comb_exp_excludes
+      tcl_func_set_comb_exclude $curr_funit_name $curr_funit_type $comb_curr_exp_id $comb_curr_uline_id $comb_curr_excluded
+      set comb_exp_excludes [lreplace $comb_exp_excludes $comb_curr_uline_id $comb_curr_uline_id $comb_curr_excluded]
+      tcl_func_get_comb_summary $curr_funit_name $curr_funit_type
+      cov_display_summary $comb_summary_hit $comb_summary_total
+      update_summary
+      enable_cdd_save
     }
     text  .combwin.f.bot.t -height 10 -width 100 -xscrollcommand ".combwin.f.bot.hb set" -yscrollcommand ".combwin.f.bot.vb set" -wrap none -state disabled
     scrollbar .combwin.f.bot.hb -orient horizontal -command ".combwin.f.bot.t xview"
@@ -564,6 +566,7 @@ proc create_comb_window {expr_id sline} {
     frame .combwin.bf -relief raised -borderwidth 1
     button .combwin.bf.close -text "Close" -width 10 -command {
       rm_pointer curr_comb_ptr
+      set comb_curr_excluded 0
       destroy .combwin
     }
     button .combwin.bf.help -text "Help" -width 10 -command {

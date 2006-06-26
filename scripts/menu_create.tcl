@@ -23,6 +23,12 @@ proc do_keybind {.menubar} {
 
 }
 
+proc enable_cdd_save {} {
+
+  .menubar.file.menu entryconfigure 3 -state normal
+
+}
+
 proc menu_create {.menubar} {
 
   global start_line end_line

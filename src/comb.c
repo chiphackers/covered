@@ -1815,7 +1815,7 @@ void combination_display_verbose( FILE* ofile, func_unit* funit ) {
   }
 
   /* Display current instance missed lines */
-  stmt_iter_reset( &stmti, funit->stmt_tail );
+  stmt_iter_reset( &stmti, funit->stmt_head );
   stmt_iter_find_head( &stmti, FALSE );
 
   while( stmti.curr != NULL ) {
@@ -1996,7 +1996,7 @@ bool combination_collect( char* funit_name, int funit_type, expression*** covs, 
     *uncovs    = (expression**)malloc_safe( (sizeof( expression* ) * uncov_size), __FILE__, __LINE__ );
 
     /* Display current instance missed lines */
-    stmt_iter_reset( &stmti, funitl->funit->stmt_tail );
+    stmt_iter_reset( &stmti, funitl->funit->stmt_head );
     stmt_iter_find_head( &stmti, FALSE );
 
     while( stmti.curr != NULL ) {
@@ -2063,7 +2063,6 @@ void combination_get_exclude_list( expression* exp, int** excludes, int* exclude
       if( exp->ulid > *exclude_size ) {
         *excludes     = (int*)realloc( *excludes, (sizeof( int ) * (exp->ulid + 1)) );
         *exclude_size = exp->ulid + 1;
-        printf( "exclude_size: %d\n", *exclude_size );
       }
 
       (*excludes)[exp->ulid] = ESUPPL_EXCLUDED( exp->suppl );
@@ -2295,6 +2294,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.143  2006/06/26 04:12:55  phase1geo
+ More updates for supporting coverage exclusion.  Still a bit more to go
+ before this is working properly.
+
  Revision 1.142  2006/06/22 21:56:21  phase1geo
  Adding excluded bits to signal and arc structures and changed statistic gathering
  functions to not gather coverage for excluded structures.  Started to work on

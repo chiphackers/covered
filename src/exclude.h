@@ -21,15 +21,24 @@ bool exclude_set_toggle_exclude( char* funit_name, int funit_type, char* sig_nam
 
 /*! \brief Sets the excluded bit for the specified expression in the given functional unit
            and recalculates the summary coverage information. */
-bool exclude_set_comb_assert_exclude( char* funit_name, int funit_type, int expr_id, int value );
+bool exclude_set_comb_exclude( char* funit_name, int funit_type, int expr_id, int uline_id, int value );
 
 /*! \brief Sets the excluded bit for the specified state transition in the given functional unit
            and recalculates the summary coverage information. */
 bool exclude_set_fsm_exclude( char* funit_name, int funit_type, int expr_id, char* from_state, char* to_state, int value );
 
+/*! \brief Sets the excluded bit for the specified expression in the given functional unit
+           and recalculates the summary coverage information. */
+bool exclude_set_assert_exclude( char* funit_name, int funit_type, int expr_id, int value );
+
 
 /*
  $Log$
+ Revision 1.3  2006/06/23 19:45:27  phase1geo
+ Adding full C support for excluding/including coverage points.  Fixed regression
+ suite failures -- full regression now passes.  We just need to start adding support
+ to the Tcl/Tk files for full user-specified exclusion support.
+
  Revision 1.2  2006/06/23 04:03:30  phase1geo
  Updating build files and removing syntax errors in exclude.h and exclude.c
  (though this code doesn't do anything meaningful at this point).

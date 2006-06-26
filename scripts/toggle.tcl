@@ -62,6 +62,7 @@ proc create_toggle_window {signal excluded} {
       tcl_func_get_toggle_summary $curr_funit_name $curr_funit_type
       cov_display_summary $toggle_summary_hit $toggle_summary_total
       update_summary
+      enable_cdd_save
     }
 
     # Create bottom button bar

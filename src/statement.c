@@ -355,11 +355,11 @@ bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) {
       }
 
       /* Add statement to functional unit statement list */
-      if( (read_mode == READ_MODE_MERGE_NO_MERGE) || (read_mode == READ_MODE_MERGE_INST_MERGE) ) {
+      // if( (read_mode == READ_MODE_MERGE_NO_MERGE) || (read_mode == READ_MODE_MERGE_INST_MERGE) ) {
         stmt_link_add_tail( stmt, &(curr_funit->stmt_head), &(curr_funit->stmt_tail) );
-      } else {
-        stmt_link_add_head( stmt, &(curr_funit->stmt_head), &(curr_funit->stmt_tail) );
-      }
+      // } else {
+      //   stmt_link_add_head( stmt, &(curr_funit->stmt_head), &(curr_funit->stmt_tail) );
+      // }
 
       /*
        Possibly add statement to presimulation queue (if the current functional unit is a task
@@ -693,6 +693,10 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.79  2006/05/28 02:43:49  phase1geo
+ Integrating stable release 0.4.4 changes into main branch.  Updated regressions
+ appropriately.
+
  Revision 1.78  2006/05/25 12:11:01  phase1geo
  Including bug fix from 0.4.4 stable release and updating regressions.
 

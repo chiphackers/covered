@@ -251,7 +251,8 @@ bool exclude_set_toggle_exclude( char* funit_name, int funit_type, char* sig_nam
 /*!
  \param funit_name  Name of functional unit containing expression to set combination/assertion exclusioo for
  \param funit_type  Type of functional unit containing expression to set combination/assertion exclusion for
- \param expr_id     Expression ID of expression to set exclude value for
+ \param expr_id     Expression ID of root expression to set exclude value for
+ \param uline_id    Underline ID of expression to set exclude value for
  \param value       Specifies if we should exclude (1) or include (0) the specified line
 
  \return Returns TRUE if we successfully set the appropriate expression(s); otherwise, returns FALSE.
@@ -260,13 +261,14 @@ bool exclude_set_toggle_exclude( char* funit_name, int funit_type, char* sig_nam
  the exclude_expr_assign_and_recalc function for the matching expression, setting the excluded bit
  of the expression and recalculating the summary coverage information.
 */
-bool exclude_set_comb_assert_exclude( char* funit_name, int funit_type, int expr_id, int value ) {
+bool exclude_set_comb_exclude( char* funit_name, int funit_type, int expr_id, int uline_id, int value ) {
 
   bool        retval = FALSE;  /* Return value for this function */
   func_unit   funit;           /* Temporary functional unit used for searching */
   funit_link* funitl;          /* Pointer to found functional unit link */
   expression  exp;             /* Temporary expression used for searching */
   exp_link*   expl;            /* Pointer to current expression link */
+  expression* subexp;          /* Pointer to found subexpression */
 
   funit.name = funit_name;
   funit.type = funit_type;
@@ -277,8 +279,10 @@ bool exclude_set_comb_assert_exclude( char* funit_name, int funit_type, int expr
     /* Find the signal that matches the given signal name and sets its excluded bit */
     exp.id = expr_id;
     if( (expl = exp_link_find( &exp, funitl->funit->exp_head )) != NULL ) {
-      exclude_expr_assign_and_recalc( expl->exp, funitl->funit, (value == 1) );
-      retval = TRUE;
+      if( (subexp = expression_find_uline_id( expl->exp, uline_id )) != NULL ) {
+        exclude_expr_assign_and_recalc( subexp, funitl->funit, (value == 1) );
+        retval = TRUE;
+      }
     }
 
   }
@@ -341,9 +345,52 @@ bool exclude_set_fsm_exclude( char* funit_name, int funit_type, int expr_id, cha
 
 }
 
+/*!
+ \param funit_name  Name of functional unit containing expression to set combination/assertion exclusioo for
+ \param funit_type  Type of functional unit containing expression to set combination/assertion exclusion for
+ \param expr_id     Expression ID of expression to set exclude value for
+ \param value       Specifies if we should exclude (1) or include (0) the specified line
+
+ \return Returns TRUE if we successfully set the appropriate expression(s); otherwise, returns FALSE.
+
+ Finds the expression and functional unit instance for the given name, type and sig_name and calls
+ the exclude_expr_assign_and_recalc function for the matching expression, setting the excluded bit
+ of the expression and recalculating the summary coverage information.
+*/
+bool exclude_set_assert_exclude( char* funit_name, int funit_type, int expr_id, int value ) {
+
+  bool        retval = FALSE;  /* Return value for this function */
+  func_unit   funit;           /* Temporary functional unit used for searching */
+  funit_link* funitl;          /* Pointer to found functional unit link */
+  expression  exp;             /* Temporary expression used for searching */
+  exp_link*   expl;            /* Pointer to current expression link */
+
+  funit.name = funit_name;
+  funit.type = funit_type;
+
+  /* Find the functional unit that matches the description */
+  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
+
+    /* Find the signal that matches the given signal name and sets its excluded bit */
+    exp.id = expr_id;
+    if( (expl = exp_link_find( &exp, funitl->funit->exp_head )) != NULL ) {
+      exclude_expr_assign_and_recalc( expl->exp, funitl->funit, (value == 1) );
+      retval = TRUE;
+    }
+
+  }
+
+  return( retval );
+
+}
+
 
 /*
  $Log$
+ Revision 1.4  2006/06/26 04:12:55  phase1geo
+ More updates for supporting coverage exclusion.  Still a bit more to go
+ before this is working properly.
+
  Revision 1.3  2006/06/23 19:45:27  phase1geo
  Adding full C support for excluding/including coverage points.  Fixed regression
  suite failures -- full regression now passes.  We just need to start adding support

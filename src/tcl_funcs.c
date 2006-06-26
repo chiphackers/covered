@@ -1719,16 +1719,18 @@ int tcl_func_set_comb_exclude( ClientData d, Tcl_Interp* tcl, int argc, const ch
   char* funit_name;       /* Name of current functional unit */
   int   funit_type;       /* Type of current functional unit */
   int   expr_id;          /* Expression ID of expression to exclude/include */
+  int   uline_id;         /* Underline ID of subexpression to exclude/include */
   int   value;            /* Value to set the exclusion value to */
 
   /* Get argument values */
   funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
   funit_type = atoi( argv[2] );
   expr_id    = atoi( argv[3] );
-  value      = atoi( argv[4] );
+  uline_id   = atoi( argv[4] );
+  value      = atoi( argv[5] );
 
   /* Set exclusion bit for the given expression */
-  if( !exclude_set_comb_assert_exclude( funit_name, funit_type, expr_id, value ) ) {
+  if( !exclude_set_comb_exclude( funit_name, funit_type, expr_id, uline_id, value ) ) {
     snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find functional unit %s", funit_name );
     Tcl_AddErrorInfo( tcl, user_msg );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -1818,7 +1820,7 @@ int tcl_func_set_assert_exclude( ClientData d, Tcl_Interp* tcl, int argc, const 
   value      = atoi( argv[4] );
 
   /* Set exclusion bit for the given assertion */
-  if( !exclude_set_comb_assert_exclude( funit_name, funit_type, expr_id, value ) ) {
+  if( !exclude_set_assert_exclude( funit_name, funit_type, expr_id, value ) ) {
     snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find functional unit %s", funit_name );
     Tcl_AddErrorInfo( tcl, user_msg );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -1900,6 +1902,10 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.47  2006/06/26 04:12:55  phase1geo
+ More updates for supporting coverage exclusion.  Still a bit more to go
+ before this is working properly.
+
  Revision 1.46  2006/06/23 19:45:27  phase1geo
  Adding full C support for excluding/including coverage points.  Fixed regression
  suite failures -- full regression now passes.  We just need to start adding support
