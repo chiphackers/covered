@@ -59,20 +59,22 @@ proc menu_create {.menubar} {
         set save_name "$save_name.cdd"
       } 
       tcl_func_save_cdd $save_name
+      .info configure -text "$save_name successfully saved"
       .menubar.file.menu entryconfigure 3 -state disabled
     }
   }
   $tfm add separator
   $tfm add command -label "Close CDD(s)" -accelerator "Ctrl-w" -state disabled -command {
     tcl_func_close_cdd
+    .info configure -text "$file_name closed"
     set file_name ""
     clear_cdd_filelist
     populate_listbox .bot.left.l
     clear_all_windows
-    .info configure -text ""
     .menubar.file.menu entryconfigure 1 -state disabled
     .menubar.file.menu entryconfigure 3 -state disabled
     .menubar.file.menu entryconfigure 5 -state disabled
+    .menubar.view.menu entryconfigure 0 -state disabled
   }
   $tfm add separator
   $tfm add command -label Exit -accelerator "Ctrl-x" -command exit

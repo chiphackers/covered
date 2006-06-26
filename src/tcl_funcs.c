@@ -270,21 +270,25 @@ int tcl_func_collect_uncovered_lines( ClientData d, Tcl_Interp* tcl, int argc, c
   char* funit_name;       /* Name of functional unit to get uncovered lines for */
   int   funit_type;       /* Type of functional unit to get uncovered lines for */
   int*  lines;            /* Array of line numbers that were found to be uncovered during simulation */
-  int   line_cnt;         /* Number of elements in the lines array */
+  int*  excludes;         /* Array of exclude values */
+  int   line_cnt;         /* Number of elements in the lines and excludes arrays */
   int   i;                /* Loop iterator */
-  char  line[20];         /* Temporary string container */
+  char  str[20];          /* Temporary string container */
 
   funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
   funit_type = atoi( argv[2] );
 
-  if( line_collect( funit_name, funit_type, 0, &lines, &line_cnt ) ) {
+  if( line_collect( funit_name, funit_type, 0, &lines, &excludes, &line_cnt ) ) {
 
     for( i=0; i<line_cnt; i++ ) {
-      snprintf( line, 20, "%d", lines[i] );
-      Tcl_SetVar( tcl, "uncovered_lines", line, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+      snprintf( str, 20, "%d", lines[i] );
+      Tcl_SetVar( tcl, "uncovered_lines", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+      snprintf( str, 20, "%d", excludes[i] );
+      Tcl_SetVar( tcl, "line_excludes", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
     }
 
     free_safe( lines );
+    free_safe( excludes );
 
   } else {
 
@@ -319,21 +323,25 @@ int tcl_func_collect_covered_lines( ClientData d, Tcl_Interp* tcl, int argc, con
   char* funit_name;        /* Name of functional unit to get covered line information for */
   int   funit_type;        /* Type of functional unit to get covered line information for */
   int*  lines;             /* Array of line numbers that were covered during simulation */
-  int   line_cnt;          /* Number of elements in the lines array */
+  int*  excludes;          /* Array of exclusion values */
+  int   line_cnt;          /* Number of elements in the lines and excludes arrays */
   int   i;                 /* Loop iterator */
-  char  line[20];          /* Temporary string container */
+  char  str[20];           /* Temporary string container */
 
   funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
   funit_type = atoi( argv[2] );
 
-  if( line_collect( funit_name, funit_type, 1, &lines, &line_cnt ) ) {
+  if( line_collect( funit_name, funit_type, 1, &lines, &excludes, &line_cnt ) ) {
 
     for( i=0; i<line_cnt; i++ ) {
-      snprintf( line, 20, "%d", lines[i] );
-      Tcl_SetVar( tcl, "covered_lines", line, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+      snprintf( str, 20, "%d", lines[i] );
+      Tcl_SetVar( tcl, "covered_lines", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+      snprintf( str, 20, "%d", excludes[i] );
+      Tcl_SetVar( tcl, "line_excludes", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
     }
 
     free_safe( lines );
+    free_safe( excludes );
 
   } else {
 
@@ -445,6 +453,8 @@ int tcl_func_collect_uncovered_toggles( ClientData d, Tcl_Interp* tcl, int argc,
                 (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + 14),
                 (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + (strlen( sigl->sig->name ) - 1) + 15) );
       Tcl_SetVar( tcl, "uncovered_toggles", tmp, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+      snprintf( tmp, 85, "%d", sigl->sig->suppl.part.excluded );
+      Tcl_SetVar( tcl, "toggle_excludes", tmp, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
       sigl = sigl->next;
     }
 
@@ -503,6 +513,8 @@ int tcl_func_collect_covered_toggles( ClientData d, Tcl_Interp* tcl, int argc, c
                 (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + 14),
                 (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + (strlen( sigl->sig->name ) - 1) + 15) );
       Tcl_SetVar( tcl, "covered_toggles", tmp, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+      snprintf( tmp, 85, "%d", sigl->sig->suppl.part.excluded );
+      Tcl_SetVar( tcl, "toggle_excludes", tmp, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
       sigl = sigl->next;
     }
 
@@ -615,9 +627,9 @@ int tcl_func_collect_combs( ClientData d, Tcl_Interp* tcl, int argc, const char*
     /* Load uncovered statements into Tcl */
     for( i=0; i<uncov_cnt; i++ ) {
       last = expression_get_last_line_expr( uncovs[i] );
-      snprintf( str, 85, "%d.%d %d.%d %d", (uncovs[i]->line - (startline - 1)), (((uncovs[i]->col >> 16) & 0xffff) + 14),
-                                           (last->line      - (startline - 1)), ((last->col              & 0xffff) + 15),
-                                           uncovs[i]->id );
+      snprintf( str, 85, "%d.%d %d.%d %d %d", (uncovs[i]->line - (startline - 1)), (((uncovs[i]->col >> 16) & 0xffff) + 14),
+                                              (last->line      - (startline - 1)), ((last->col              & 0xffff) + 15),
+                                              uncovs[i]->id, ESUPPL_EXCLUDED( uncovs[i]->suppl ) );
       Tcl_SetVar( tcl, "uncovered_combs", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
     }
 
@@ -671,6 +683,8 @@ int tcl_func_get_comb_expression( ClientData d, Tcl_Interp* tcl, int argc, const
   int    code_size;        /* Number of elements stored in the code array */
   char** ulines;           /* Array of strings containing the underline lines returned from the underliner */
   int    uline_size;       /* Number of elements stored in the ulines array */
+  int*   excludes;         /* Array of integers containing the exclude value for a given underlined expression */
+  int    exclude_size;     /* Number of elements stored in the excludes array */
   int    i;                /* Loop iterator */
   char   tmp[20];          /* Temporary string container */
 
@@ -678,7 +692,8 @@ int tcl_func_get_comb_expression( ClientData d, Tcl_Interp* tcl, int argc, const
   funit_type = atoi( argv[2] );
   expr_id    = atoi( argv[3] );
 
-  if( combination_get_expression( funit_name, funit_type, expr_id, &code, &uline_groups, &code_size, &ulines, &uline_size ) ) {
+  if( combination_get_expression( funit_name, funit_type, expr_id, &code, &uline_groups, &code_size, &ulines, &uline_size,
+                                  &excludes, &exclude_size ) ) {
 
     for( i=0; i<code_size; i++ ) {
       Tcl_SetVar( tcl, "comb_code", code[i], (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
@@ -692,6 +707,11 @@ int tcl_func_get_comb_expression( ClientData d, Tcl_Interp* tcl, int argc, const
       free_safe( ulines[i] );
     }
 
+    for( i=0; i<exclude_size; i++ ) {
+      snprintf( tmp, 20, "%d", excludes[i] );
+      Tcl_SetVar( tcl, "comb_exp_excludes", tmp, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+    }
+
     /* Free up allocated memory */
     if( code_size > 0 ) {
       free_safe( code );
@@ -700,6 +720,10 @@ int tcl_func_get_comb_expression( ClientData d, Tcl_Interp* tcl, int argc, const
 
     if( uline_size > 0 ) {
       free_safe( ulines );
+    }
+
+    if( exclude_size > 0 ) {
+      free_safe( excludes );
     }
 
   } else {
@@ -1876,6 +1900,11 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.46  2006/06/23 19:45:27  phase1geo
+ Adding full C support for excluding/including coverage points.  Fixed regression
+ suite failures -- full regression now passes.  We just need to start adding support
+ to the Tcl/Tk files for full user-specified exclusion support.
+
  Revision 1.45  2006/06/23 04:24:03  phase1geo
  Adding functions to tcl_funcs to allow us to change the exclusion property
  for each coverage metric.

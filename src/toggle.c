@@ -66,10 +66,13 @@ void toggle_get_stats( sig_link* sigl, float* total, int* hit01, int* hit10 ) {
   /* Search signal list */
   while( curr_sig != NULL ) {
     if( (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_PARAM) &&
-        (curr_sig->sig->value->suppl.part.mba == 0) &&
-        (curr_sig->sig->suppl.part.excluded == 0) ) {
-      *total = *total + curr_sig->sig->value->width;
-      vector_toggle_count( curr_sig->sig->value, hit01, hit10 );
+        (curr_sig->sig->value->suppl.part.mba == 0) ) {
+      *total += curr_sig->sig->value->width;
+      if( curr_sig->sig->suppl.part.excluded == 1 ) {
+        *hit01 += curr_sig->sig->value->width;
+      } else {
+        vector_toggle_count( curr_sig->sig->value, hit01, hit10 );
+      }
     }
     curr_sig = curr_sig->next;
   }
@@ -151,7 +154,8 @@ bool toggle_collect( char* funit_name, int funit_type, int cov, sig_link** sig_h
 
  \return Returns TRUE if the specified functional unit and signal exists; otherwise, returns FALSE.
 
- TBD
+ Returns toggle coverage information for a specified signal in a specified functional unit.  This
+ is needed by the GUI for verbose toggle coverage display.
 */
 bool toggle_get_coverage( char* funit_name, int funit_type, char* sig_name, int* msb, int* lsb, char** tog01, char** tog10 ) {
 
@@ -228,15 +232,15 @@ bool toggle_get_funit_summary( char* funit_name, int funit_type, int* total, int
       hit10 = 0;
 
       if( (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_PARAM) &&
-          (curr_sig->sig->value->suppl.part.mba == 0) &&
-          (curr_sig->sig->suppl.part.excluded == 0) ) {
+          (curr_sig->sig->value->suppl.part.mba == 0) ) {
 
         /* We have found a valid signal to look at; therefore, increment the total */
         (*total)++;
 
         vector_toggle_count( curr_sig->sig->value, &hit01, &hit10 );
 
-        if( (hit01 == curr_sig->sig->value->width) && (hit10 == curr_sig->sig->value->width) ) {
+        if( ((hit01 == curr_sig->sig->value->width) && (hit10 == curr_sig->sig->value->width)) ||
+            (curr_sig->sig->suppl.part.excluded == 1) ) {
           (*hit)++;
         }
 
@@ -622,6 +626,10 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.40  2006/06/23 21:43:53  phase1geo
+ More updates to include toggle exclusion (this does not work correctly at
+ this time).
+
  Revision 1.39  2006/06/22 21:56:21  phase1geo
  Adding excluded bits to signal and arc structures and changed statistic gathering
  functions to not gather coverage for excluded structures.  Started to work on

@@ -31,7 +31,7 @@
 void line_get_stats( stmt_link* stmtl, float* total, int* hit );
 
 /*! \brief Gathers line numbers from specified functional unit that were not hit during simulation. */
-bool line_collect( char* funit_name, int funit_type, int cov, int** lines, int* line_cnt );
+bool line_collect( char* funit_name, int funit_type, int cov, int** lines, int** excludes, int* line_cnt );
 
 /*! \brief Generates report output for line coverage. */
 void line_report( FILE* ofile, bool verbose );
@@ -39,6 +39,11 @@ void line_report( FILE* ofile, bool verbose );
 
 /*
  $Log$
+ Revision 1.13  2006/03/28 22:28:27  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.12  2005/11/10 19:28:23  phase1geo
  Updates/fixes for tasks/functions.  Also updated Tcl/Tk scripts for these changes.
  Fixed bug with net_decl_assign statements -- the line, start column and end column

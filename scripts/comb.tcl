@@ -50,7 +50,7 @@ proc display_comb_info {} {
   global comb_uline_indexes comb_first_uline
   global comb_gen_ulines comb_curr_uline_id
   global comb_curr_cursor comb_curr_info
-  global uncov_fgColor
+  global uncov_fgColor uncov_bgColor
 
   set curr_uline 0
 
@@ -98,7 +98,7 @@ proc display_comb_info {} {
     eval ".combwin.f.top.t tag add comb_leave $comb_uline_indexes"
     eval ".combwin.f.top.t tag add comb_bp1 $comb_uline_indexes"
     eval ".combwin.f.top.t tag add comb_bp3 $comb_uline_indexes"
-    .combwin.f.top.t tag configure comb_bp1 -foreground $uncov_fgColor
+    .combwin.f.top.t tag configure comb_bp1 -foreground $uncov_fgColor -background $uncov_bgColor
     .combwin.f.top.t tag bind comb_enter <Enter> {
       set comb_curr_cursor [.combwin.f.top.t cget -cursor]
       .combwin.f.top.t configure -cursor hand2
@@ -137,6 +137,7 @@ proc display_comb_info {} {
 proc display_comb_coverage {ulid} {
 
   global curr_funit_name curr_funit_type comb_expr_cov comb_curr_exp_id
+  global comb_curr_excluded comb_exp_excludes
 
   # Allow us to clear out text box and repopulate
   .combwin.f.bot.t configure -state normal
@@ -155,6 +156,11 @@ proc display_comb_coverage {ulid} {
   }
 
   .combwin.f.bot.t configure -state disabled
+
+  # Set excluded checkbutton correctly
+  .combwin.f.bot.e configure -state normal
+  set comb_curr_excluded [lindex $comb_exp_excludes $ulid]
+  puts "comb_exp_excludes: $comb_exp_excludes"
 
 }
 
@@ -499,7 +505,8 @@ proc create_comb_window {expr_id sline} {
   global curr_funit_name curr_funit_type
   global file_name comb_curr_info
   global prev_comb_index next_comb_index
-  global curr_comb_ptr
+  global curr_comb_ptr comb_curr_excluded
+  global comb_exp_excludes
 
   # Now create the window and set the grab to this window
   if {[winfo exists .combwin] == 0} {
@@ -541,6 +548,11 @@ proc create_comb_window {expr_id sline} {
 
     # Add expression coverage information
     label .combwin.f.bot.l -anchor w -text "Coverage Information:  ('*' represents a case that was not hit)"
+    checkbutton .combwin.f.bot.e -anchor e -text "Excluded" -state disabled -variable comb_curr_excluded -command {
+      tcl_func_set_comb_exclude $curr_funit_name $curr_funit_type $comb_curr_exp_id $comb_curr_excluded
+      lreplace $comb_exp_excludes $comb_curr_uline_id $comb_curr_uline_id $comb_curr_excluded
+      puts $comb_exp_excludes
+    }
     text  .combwin.f.bot.t -height 10 -width 100 -xscrollcommand ".combwin.f.bot.hb set" -yscrollcommand ".combwin.f.bot.vb set" -wrap none -state disabled
     scrollbar .combwin.f.bot.hb -orient horizontal -command ".combwin.f.bot.t xview"
     scrollbar .combwin.f.bot.vb -orient vertical   -command ".combwin.f.bot.t yview"
@@ -582,9 +594,10 @@ proc create_comb_window {expr_id sline} {
     grid rowconfigure    .combwin.f.bot 1 -weight 1
     grid columnconfigure .combwin.f.bot 0 -weight 1
     grid .combwin.f.bot.l  -row 0 -column 0 -sticky nsew
-    grid .combwin.f.bot.t  -row 1 -column 0 -sticky nsew
+    grid .combwin.f.bot.e  -row 0 -column 1 -sticky nsew
+    grid .combwin.f.bot.t  -row 1 -column 0 -columnspan 2 -sticky nsew
+    grid .combwin.f.bot.vb -row 1 -column 2 -sticky ns
     grid .combwin.f.bot.hb -row 2 -column 0 -sticky ew
-    grid .combwin.f.bot.vb -row 1 -column 1 -sticky ns
 
     # Pack the frame, informational bar, and button frame into the window
     pack .combwin.f    -fill both -expand yes
@@ -616,6 +629,7 @@ proc create_comb_window {expr_id sline} {
   set comb_code         "" 
   set comb_uline_groups "" 
   set comb_ulines       ""
+  set comb_exp_excludes ""
   set comb_curr_exp_id  $expr_id
   tcl_func_get_comb_expression $curr_funit_name $curr_funit_type $expr_id
 

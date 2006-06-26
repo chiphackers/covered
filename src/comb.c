@@ -2043,22 +2043,61 @@ bool combination_collect( char* funit_name, int funit_type, expression*** covs, 
 }
 
 /*!
- \param funit_name  Name of functional unit to get combinational expression for.
- \param funit_type  Type of functional unit to get combinational expression for.
- \param expr_id     Expression ID to retrieve information for
- \param code        Pointer to an array of strings containing generated code for this expression
+ \param exp           Pointer to current expression
+ \param excludes      Array of exclude values for each underlined expression in this tree
+ \param exclude_size  Number of elements in the excludes array.
+
+ Recursively iterates through the specified expression tree, storing the exclude values
+ for each underlined expression within the tree.  The values are stored in the excludes
+ parameter and its size is stored in the exclude_size parameter.
+*/
+void combination_get_exclude_list( expression* exp, int** excludes, int* exclude_size ) {
+
+  int i;  /* Loop iterator */
+
+  if( exp != NULL ) {
+
+    /* Store the exclude value for this expression */
+    if( exp->ulid != -1 ) {
+     
+      if( exp->ulid > *exclude_size ) {
+        *excludes     = (int*)realloc( *excludes, (sizeof( int ) * (exp->ulid + 1)) );
+        *exclude_size = exp->ulid + 1;
+        printf( "exclude_size: %d\n", *exclude_size );
+      }
+
+      (*excludes)[exp->ulid] = ESUPPL_EXCLUDED( exp->suppl );
+
+    }
+
+    /* Get exclude values for children */
+    combination_get_exclude_list( exp->left,  excludes, exclude_size );
+    combination_get_exclude_list( exp->right, excludes, exclude_size );
+
+  }
+
+}
+
+/*!
+ \param funit_name    Name of functional unit to get combinational expression for.
+ \param funit_type    Type of functional unit to get combinational expression for.
+ \param expr_id       Expression ID to retrieve information for
+ \param code          Pointer to an array of strings containing generated code for this expression
  \param uline_groups  Pointer to an array of integers used for underlined missed subexpressions in this expression
  \param code_size     Pointer to value that will be set to indicate the number of elements in the code array
  \param ulines        Pointer to an array of strings that contain underlines of missed subexpressions
  \param uline_size    Pointer to value that will be set to indicate the number of elements in the ulines array
+ \param excludes      Pointer to an array of values that determine if the associated subexpression is currently
+                      excluded or not from coverage
+ \param exclude_size  Pointer to value that will be set to indicate the number of elements in excludes
  
  \return Returns TRUE if the given expression was found; otherwise, returns FALSE to indicate an error occurred.
 
  Gets the combinational logic coverage information for the specified expression ID, storing the output in the
  code and ulines arrays.  Used by the GUI for displaying an expression's coverage information.
 */
-bool combination_get_expression( char* funit_name, int funit_type, int expr_id, char*** code, int** uline_groups, int* code_size,
-                                 char*** ulines, int* uline_size ) {
+bool combination_get_expression( char* funit_name, int funit_type, int expr_id, char*** code, int** uline_groups,
+                                 int* code_size, char*** ulines, int* uline_size, int** excludes, int* exclude_size ) {
 
   bool        retval    = TRUE;  /* Return value for this function */
   func_unit   funit;             /* Functional unit used for searching */
@@ -2084,6 +2123,11 @@ bool combination_get_expression( char* funit_name, int funit_type, int expr_id, 
       /* Generate line of code that missed combinational coverage */
       codegen_gen_expr( expl->exp, expl->exp->op, code, code_size, funitl->funit );
       *uline_groups = (int*)malloc_safe( sizeof( int ) * (*code_size), __FILE__, __LINE__ );
+
+      /* Generate exclude information */
+      *excludes     = NULL;
+      *exclude_size = 0;
+      combination_get_exclude_list( expl->exp, excludes, exclude_size );
 
       /* Output underlining feature for missed expressions */
       combination_underline_tree( expl->exp, 0, &tmp_ulines, &tmp_uline_size, &tmp, expl->exp->op, (*code_size == 1), funitl->funit );
@@ -2251,6 +2295,12 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.142  2006/06/22 21:56:21  phase1geo
+ Adding excluded bits to signal and arc structures and changed statistic gathering
+ functions to not gather coverage for excluded structures.  Started to work on
+ exclude.c file which will quickly adjust coverage information from GUI modifications.
+ Regression has been updated for this change and it fully passes.
+
  Revision 1.141  2006/05/28 02:43:49  phase1geo
  Integrating stable release 0.4.4 changes into main branch.  Updated regressions
  appropriately.

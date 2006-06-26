@@ -44,7 +44,8 @@ bool combination_collect( char* funit_name, int funit_type, expression*** covs, 
 bool combination_get_module_summary( char* funit_name, int funit_type, int* total, int* hit );
 
 /*! \brief Gets output for specified expression including underlines and code */
-bool combination_get_expression( char* funit_name, int funit_type, int expr_id, char*** code, int** uline_groups, int* code_size, char*** ulines, int* uline_size );
+bool combination_get_expression( char* funit_name, int funit_type, int expr_id, char*** code, int** uline_groups,
+                                 int* code_size, char*** ulines, int* uline_size, int** excludes, int* exclude_size );
 
 /*! \brief Gets output for specified expression including coverage information */
 bool combination_get_coverage( char* funit_name, int funit_type, int exp_id, int uline_id, char*** info, int* info_size );
@@ -55,6 +56,11 @@ void combination_report( FILE* ofile, bool verbose );
 
 /*
  $Log$
+ Revision 1.16  2006/06/23 19:45:26  phase1geo
+ Adding full C support for excluding/including coverage points.  Fixed regression
+ suite failures -- full regression now passes.  We just need to start adding support
+ to the Tcl/Tk files for full user-specified exclusion support.
+
  Revision 1.15  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

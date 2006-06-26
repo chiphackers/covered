@@ -26,54 +26,52 @@ extern isuppl      info_suppl;
 
 /*!
  \param expr      Pointer to expression that is being excluded/included.
- \param inst      Pointer to functional unit instance that contains this expression.
+ \param funit     Pointer to functional unit containing this expression
  \param excluded  Specifies if expression is being excluded or included.
 
  Sets the specified expression's exclude bit to the given value and recalculates all
  affected coverage information for this instance.
 */
-void exclude_expr_assign_and_recalc( expression* expr, funit_inst* inst, bool excluded ) {
+void exclude_expr_assign_and_recalc( expression* expr, func_unit* funit, bool excluded ) {
 
   float comb_total = 0;  /* Total number of combinational logic coverage points within this tree */
   int   comb_hit   = 0;  /* Total number of hit combinations within this tree */
   int   ulid       = 0;  /* Temporary value */
 
   /* Now recalculate the coverage information for all metrics if this module is not an OVL module */
-  if( (info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( inst->funit ) ) {
+  if( (info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( funit ) ) {
 
     /* If this expression is a root expression, recalculate line coverage */
     if( ESUPPL_IS_ROOT( expr->suppl ) == 1 ) {
-      if( excluded ) {
-        inst->stat->line_total--;
-        inst->stat->line_hit--;
-      } else {
-        inst->stat->line_total++;
-        inst->stat->line_hit++;
+      if( expr->exec_num == 0 ) {
+        if( excluded ) {
+          funit->stat->line_hit++;
+        } else {
+          funit->stat->line_hit--;
+        }
       }
     }
 
     /* Always recalculate combinational coverage */
     if( excluded ) {
       combination_get_tree_stats( expr, &ulid, 0, &comb_total, &comb_hit );
-      inst->stat->comb_total -= comb_total;
-      inst->stat->comb_hit   -= comb_hit;
+      funit->stat->comb_hit += (comb_total - comb_hit);
     } else {
       expr->suppl.part.excluded = 0;
       combination_get_tree_stats( expr, &ulid, 0, &comb_total, &comb_hit );
-      inst->stat->comb_total += comb_total;
-      inst->stat->comb_hit   += comb_hit;
+      funit->stat->comb_hit -= (comb_total - comb_hit);
     }
 
   } else {
 
     /* If the expression is a coverage point, recalculate the assertion coverage */
-    if( ovl_is_assertion_module( inst->funit ) && ovl_is_coverage_point( expr ) ) {
-      if( excluded ) {
-        inst->stat->assert_total--;
-        inst->stat->assert_hit--;
-      } else {
-        inst->stat->assert_total++;
-        inst->stat->assert_hit++;
+    if( ovl_is_assertion_module( funit ) && ovl_is_coverage_point( expr ) ) {
+      if( expr->exec_num == 0 ) {
+        if( excluded ) {
+          funit->stat->assert_hit++;
+        } else {
+          funit->stat->assert_hit--;
+        }
       }
     }
 
@@ -86,13 +84,13 @@ void exclude_expr_assign_and_recalc( expression* expr, funit_inst* inst, bool ex
 
 /*!
  \param sig       Pointer to signal that is being excluded/included.
- \param inst      Pointer to functional unit instance that contains this expression.
- \param excluded  Specifies if expression is being excluded or included.
+ \param funit     Pointer to functional unit that contains this signal.
+ \param excluded  Specifies if signal is being excluded or included.
 
  Sets the specified signal's exclude bit to the given value and recalculates all
  affected coverage information for this instance.
 */
-void exclude_sig_assign_and_recalc( vsignal* sig, funit_inst* inst, bool excluded ) {
+void exclude_sig_assign_and_recalc( vsignal* sig, func_unit* funit, bool excluded ) {
 
   int hit01;  /* Number of bits transitioning from 0 -> 1 */
   int hit10;  /* Number of bits transitioning from 1 -> 0 */
@@ -105,13 +103,11 @@ void exclude_sig_assign_and_recalc( vsignal* sig, funit_inst* inst, bool exclude
 
   /* Recalculate the total and hit values for toggle coverage */
   if( excluded ) {
-    inst->stat->tog_total -= sig->value->width;
-    inst->stat->tog01_hit -= hit01;
-    inst->stat->tog10_hit -= hit10;
+    funit->stat->tog01_hit += (sig->value->width - hit01);
+    funit->stat->tog10_hit += (sig->value->width - hit10);
   } else {
-    inst->stat->tog_total += sig->value->width;
-    inst->stat->tog01_hit += hit01;
-    inst->stat->tog10_hit += hit10;
+    funit->stat->tog01_hit -= (sig->value->width - hit01);
+    funit->stat->tog10_hit -= (sig->value->width - hit10);
   }
 
 }
@@ -120,24 +116,24 @@ void exclude_sig_assign_and_recalc( vsignal* sig, funit_inst* inst, bool exclude
  \param arcs       Pointer to arc array.
  \param arc_index  Specifies the index of the entry containing the transition
  \param forward    Specifies if the direction of the transition is forward or backward for the given arc entry
- \param inst       Pointer to functional unit instance containing the FSM
+ \param funit      Pointer to functional unit containing the FSM
  \param excluded   Specifies if we are excluding or including coverage.
 
  Sets the specified arc entry's exclude bit to the given value and recalculates all
  affected coverage information for this instance.
 */
-void exclude_arc_assign_and_recalc( char* arcs, int arc_index, bool forward, funit_inst* inst, bool excluded ) {
+void exclude_arc_assign_and_recalc( char* arcs, int arc_index, bool forward, func_unit* funit, bool excluded ) {
 
   /* Set the excluded bit in the specified entry */
   arc_set_entry_suppl( arcs, arc_index, (forward ? ARC_EXCLUDED_F : ARC_EXCLUDED_R), (excluded ? 1 : 0) );
 
   /* Adjust arc coverage numbers */
-  if( excluded ) {
-    inst->stat->arc_total--;
-    inst->stat->arc_hit--;
-  } else {
-    inst->stat->arc_total++;
-    inst->stat->arc_hit++;
+  if( arc_get_entry_suppl( arcs, arc_index, (forward ? ARC_HIT_F : ARC_HIT_R) ) == 0 ) {
+    if( excluded ) {
+      funit->stat->arc_hit++;
+    } else {
+      funit->stat->arc_hit--;
+    }
   }
 
 }
@@ -185,20 +181,24 @@ funit_inst* exclude_find_instance_from_funit_info( char* funit_name, int funit_t
 bool exclude_set_line_exclude( char* funit_name, int funit_type, int line, int value ) {
 
   bool        retval = FALSE;  /* Return value for this function */
-  funit_inst* inst;            /* Found functional unit instance */
+  func_unit   funit;           /* Temporary functional unit used for searching */
+  funit_link* funitl;          /* Pointer to found functional unit link */
   exp_link*   expl;            /* Pointer to current expression link */
 
-  /* Find the functional unit instance that matches the functional unit description */ 
-  if( (inst = exclude_find_instance_from_funit_info( funit_name, funit_type )) != NULL ) {
+  funit.name = funit_name;
+  funit.type = funit_type;
+
+  /* Find the functional unit that matches the description */
+  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
 
     /* Find the expression(s) that match the given line number */
-    expl = inst->funit->exp_head;
+    expl = funitl->funit->exp_head;
     do {
       while( (expl != NULL) && ((expl->exp->line != line) || (ESUPPL_IS_ROOT( expl->exp->suppl ) == 0)) ) {
         expl = expl->next;
       }
       if( expl != NULL ) {
-        exclude_expr_assign_and_recalc( expl->exp, inst, (value == 1) );      
+        exclude_expr_assign_and_recalc( expl->exp, funitl->funit, (value == 1) );      
         retval = TRUE;
       }
     } while( expl != NULL );
@@ -224,17 +224,21 @@ bool exclude_set_line_exclude( char* funit_name, int funit_type, int line, int v
 bool exclude_set_toggle_exclude( char* funit_name, int funit_type, char* sig_name, int value ) {
 
   bool        retval = FALSE;  /* Return value for this function */
-  funit_inst* inst;            /* Found functional unit instance */
+  func_unit   funit;           /* Temporary functional unit used for searching */
+  funit_link* funitl;          /* Pointer to found functional unit link */
   vsignal     sig;             /* Temporary signal used for searching */
   sig_link*   sigl;            /* Pointer to current signal link */
 
-  /* Find the functional unit instance that matches the functional unit description */
-  if( (inst = exclude_find_instance_from_funit_info( funit_name, funit_type )) != NULL ) {
+  funit.name = funit_name;
+  funit.type = funit_type;
+
+  /* Find the functional unit that matches the description */
+  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
 
     /* Find the signal that matches the given signal name and sets its excluded bit */
     sig.name = sig_name;
-    if( (sigl = sig_link_find( &sig, inst->funit->sig_head )) != NULL ) {
-      exclude_sig_assign_and_recalc( sigl->sig, inst, (value == 1) );
+    if( (sigl = sig_link_find( &sig, funitl->funit->sig_head )) != NULL ) {
+      exclude_sig_assign_and_recalc( sigl->sig, funitl->funit, (value == 1) );
       retval = TRUE;
     }
       
@@ -245,7 +249,7 @@ bool exclude_set_toggle_exclude( char* funit_name, int funit_type, char* sig_nam
 }
 
 /*!
- \param funit_name  Name of functional unit containing expression to set combination/assertion exclusion for
+ \param funit_name  Name of functional unit containing expression to set combination/assertion exclusioo for
  \param funit_type  Type of functional unit containing expression to set combination/assertion exclusion for
  \param expr_id     Expression ID of expression to set exclude value for
  \param value       Specifies if we should exclude (1) or include (0) the specified line
@@ -259,17 +263,21 @@ bool exclude_set_toggle_exclude( char* funit_name, int funit_type, char* sig_nam
 bool exclude_set_comb_assert_exclude( char* funit_name, int funit_type, int expr_id, int value ) {
 
   bool        retval = FALSE;  /* Return value for this function */
-  funit_inst* inst;            /* Found functional unit instance */
+  func_unit   funit;           /* Temporary functional unit used for searching */
+  funit_link* funitl;          /* Pointer to found functional unit link */
   expression  exp;             /* Temporary expression used for searching */
   exp_link*   expl;            /* Pointer to current expression link */
 
-  /* Find the functional unit instance that matches the functional unit description */
-  if( (inst = exclude_find_instance_from_funit_info( funit_name, funit_type )) != NULL ) {
+  funit.name = funit_name;
+  funit.type = funit_type;
+
+  /* Find the functional unit that matches the description */
+  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
 
     /* Find the signal that matches the given signal name and sets its excluded bit */
     exp.id = expr_id;
-    if( (expl = exp_link_find( &exp, inst->funit->exp_head )) != NULL ) {
-      exclude_expr_assign_and_recalc( expl->exp, inst, (value == 1) );
+    if( (expl = exp_link_find( &exp, funitl->funit->exp_head )) != NULL ) {
+      exclude_expr_assign_and_recalc( expl->exp, funitl->funit, (value == 1) );
       retval = TRUE;
     }
 
@@ -293,18 +301,22 @@ bool exclude_set_comb_assert_exclude( char* funit_name, int funit_type, int expr
 bool exclude_set_fsm_exclude( char* funit_name, int funit_type, int expr_id, char* from_state, char* to_state, int value ) {
 
   bool        retval = FALSE;  /* Return value for this function */
-  funit_inst* inst;            /* Found functional unit instance */
+  func_unit   funit;           /* Temporary functional unit used for searching */
+  funit_link* funitl;          /* Pointer to found functional unit link */
   int         find_val;        /* Value from return of arc_find function */
   int         found_index;     /* Index of found arc entry */
   vector*     from_vec;        /* Vector form of from_state */
   vector*     to_vec;          /* Vector form of to_state */
   fsm_link*   curr_fsm;        /* Pointer to the current FSM to search on */
 
+  funit.name = funit_name;
+  funit.type = funit_type;
+
   /* Find the functional unit instance that matches the functional unit description */
-  if( (inst = exclude_find_instance_from_funit_info( funit_name, funit_type )) != NULL ) {
+  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
 
     /* Find the corresponding table */
-    curr_fsm = inst->funit->fsm_head;
+    curr_fsm = funitl->funit->fsm_head;
     while( (curr_fsm != NULL) && (curr_fsm->table->to_state->id != expr_id) ) {
       curr_fsm = curr_fsm->next;
     }
@@ -317,7 +329,7 @@ bool exclude_set_fsm_exclude( char* funit_name, int funit_type, int expr_id, cha
 
       /* Find the arc entry and perform the exclusion assignment and coverage recalculation */
       if( (find_val = arc_find( curr_fsm->table->table, from_vec, to_vec, &found_index )) != 2 ) {
-        exclude_arc_assign_and_recalc( curr_fsm->table->table, found_index, (find_val == 0), inst, (value == 1) );
+        exclude_arc_assign_and_recalc( curr_fsm->table->table, found_index, (find_val == 0), funitl->funit, (value == 1) );
         retval = TRUE;
       }
 
@@ -332,6 +344,11 @@ bool exclude_set_fsm_exclude( char* funit_name, int funit_type, int expr_id, cha
 
 /*
  $Log$
+ Revision 1.3  2006/06/23 19:45:27  phase1geo
+ Adding full C support for excluding/including coverage points.  Fixed regression
+ suite failures -- full regression now passes.  We just need to start adding support
+ to the Tcl/Tk files for full user-specified exclusion support.
+
  Revision 1.2  2006/06/23 04:03:30  phase1geo
  Updating build files and removing syntax errors in exclude.h and exclude.c
  (though this code doesn't do anything meaningful at this point).

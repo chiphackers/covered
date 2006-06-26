@@ -62,8 +62,7 @@ extern isuppl       info_suppl;
 */
 void line_get_stats( stmt_link* stmtl, float* total, int* hit ) {
 
-  stmt_iter curr;          /* Statement list iterator */
-  int       last_hit = 0;  /* Tracks the last line number evaluated */
+  stmt_iter curr;  /* Statement list iterator */
 
   stmt_iter_reset( &curr, stmtl );
   
@@ -75,12 +74,10 @@ void line_get_stats( stmt_link* stmtl, float* total, int* hit ) {
         (curr.curr->stmt->exp->op != EXP_OP_CASEZ)   &&
         (curr.curr->stmt->exp->op != EXP_OP_DEFAULT) &&
         (curr.curr->stmt->exp->op != EXP_OP_NB_CALL) &&
-        (curr.curr->stmt->exp->line != 0) &&
-        (ESUPPL_EXCLUDED( curr.curr->stmt->exp->suppl ) == 0) ) {
+        (curr.curr->stmt->exp->line != 0) ) {
       *total = *total + 1;
-      if( curr.curr->stmt->exp->exec_num > 0 ) {
+      if( (curr.curr->stmt->exp->exec_num > 0) || (ESUPPL_EXCLUDED( curr.curr->stmt->exp->suppl ) == 1) ) {
         (*hit)++;
-        last_hit = curr.curr->stmt->exp->line;
       }
     }
 
@@ -94,8 +91,9 @@ void line_get_stats( stmt_link* stmtl, float* total, int* hit ) {
  \param funit_name  Name of functional unit to get missed line number array from.
  \param funit_type  Type of functional unit to get missed line number array from.
  \param cov         If set to 1, gets covered lines, if 0 retrieves uncovered lines; otherwise, gets all lines
- \param lines       Pointer to array of integers that will contain the missed lines.
- \param line_cnt    Pointer to size of lines array.
+ \param lines       Pointer to array of integers that will contain the line numbers.
+ \param excludes    Pointer to array of integers that will contain the exclude values.
+ \param line_cnt    Pointer to size of lines and excludes arrays.
 
  \return Returns TRUE if the functional unit specified was found; otherwise, returns FALSE.
 
@@ -104,7 +102,7 @@ void line_get_stats( stmt_link* stmtl, float* total, int* hit ) {
  not hit during simulation and a value of TRUE is returned.  If the functional unit name was
  not found, a value of FALSE is returned.
 */
-bool line_collect( char* funit_name, int funit_type, int cov, int** lines, int* line_cnt ) {
+bool line_collect( char* funit_name, int funit_type, int cov, int** lines, int** excludes, int* line_cnt ) {
 
   bool        retval = TRUE;  /* Return value for this function */
   stmt_iter   stmti;          /* Statement list iterator */
@@ -124,6 +122,7 @@ bool line_collect( char* funit_name, int funit_type, int cov, int** lines, int* 
     line_size = 20;
     *line_cnt = 0;
     *lines    = (int*)malloc_safe( (sizeof( int ) * line_size), __FILE__, __LINE__ );
+    *excludes = (int*)malloc_safe( (sizeof( int ) * line_size), __FILE__, __LINE__ );
 
     stmt_iter_reset( &stmti, funitl->funit->stmt_tail );
     stmt_iter_find_head( &stmti, FALSE );
@@ -143,9 +142,11 @@ bool line_collect( char* funit_name, int funit_type, int cov, int** lines, int* 
           for( i=stmti.curr->stmt->exp->line; i<=last_line; i++ ) {
             if( *line_cnt == line_size ) {
               line_size += 20;
-              *lines = (int*)realloc( *lines, (sizeof( int ) * line_size) );
+              *lines    = (int*)realloc( *lines,    (sizeof( int ) * line_size) );
+              *excludes = (int*)realloc( *excludes, (sizeof( int ) * line_size) );
             }
-            (*lines)[(*line_cnt)] = i;
+            (*lines)[(*line_cnt)]    = i;
+            (*excludes)[(*line_cnt)] = ESUPPL_EXCLUDED( stmti.curr->stmt->exp->suppl );
             (*line_cnt)++;
           }
 
@@ -549,6 +550,12 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.61  2006/06/22 21:56:21  phase1geo
+ Adding excluded bits to signal and arc structures and changed statistic gathering
+ functions to not gather coverage for excluded structures.  Started to work on
+ exclude.c file which will quickly adjust coverage information from GUI modifications.
+ Regression has been updated for this change and it fully passes.
+
  Revision 1.60  2006/04/19 22:21:33  phase1geo
  More updates to properly support assertion coverage.  Removing assertion modules
  from line, toggle, combinational logic, FSM and race condition output so that there
