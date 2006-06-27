@@ -181,7 +181,7 @@ int command_merge( int argc, int last_arg, char** argv ) {
     }
 
     /* Write out new database to output file */
-    db_write( merged_file, FALSE );
+    db_write( merged_file, FALSE, FALSE );
 
     print_output( "\n***  Merging completed successfully!  ***", NORMAL, __FILE__, __LINE__ );
 
@@ -203,6 +203,10 @@ int command_merge( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.25  2006/04/12 21:22:51  phase1geo
+ Fixing problems with multi-file merging.  This now seems to be working
+ as needed.  We just need to document this new feature.
+
  Revision 1.24  2006/04/11 22:42:16  phase1geo
  First pass at adding multi-file merging.  Still need quite a bit of work here yet.
 

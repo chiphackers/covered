@@ -45,7 +45,7 @@ void instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child,
 void instance_read_add( funit_inst** root, char* parent, func_unit* child, char* inst_name );
 
 /*! \brief Displays contents of functional unit instance tree to specified file. */
-void instance_db_write( funit_inst* root, FILE* file, char* scope, bool parse_mode );
+void instance_db_write( funit_inst* root, FILE* file, char* scope, bool parse_mode, bool report_save );
 
 /*! \brief Removes specified instance from tree. */
 void instance_dealloc( funit_inst* root, char* scope );
@@ -53,6 +53,11 @@ void instance_dealloc( funit_inst* root, char* scope );
 
 /*
  $Log$
+ Revision 1.12  2006/03/28 22:28:27  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.11  2006/02/16 21:19:26  phase1geo
  Adding support for arrays of instances.  Also fixing some memory problems for
  constant functions and fixed binding problems when hierarchical references are

@@ -1815,7 +1815,7 @@ void combination_display_verbose( FILE* ofile, func_unit* funit ) {
   }
 
   /* Display current instance missed lines */
-  stmt_iter_reset( &stmti, funit->stmt_head );
+  stmt_iter_reset( &stmti, funit->stmt_tail );
   stmt_iter_find_head( &stmti, FALSE );
 
   while( stmti.curr != NULL ) {
@@ -1996,7 +1996,7 @@ bool combination_collect( char* funit_name, int funit_type, expression*** covs, 
     *uncovs    = (expression**)malloc_safe( (sizeof( expression* ) * uncov_size), __FILE__, __LINE__ );
 
     /* Display current instance missed lines */
-    stmt_iter_reset( &stmti, funitl->funit->stmt_head );
+    stmt_iter_reset( &stmti, funitl->funit->stmt_tail );
     stmt_iter_find_head( &stmti, FALSE );
 
     while( stmti.curr != NULL ) {
@@ -2294,6 +2294,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.144  2006/06/26 22:48:59  phase1geo
+ More updates for exclusion of combinational logic.  Also updates to properly
+ support CDD saving; however, this change causes regression errors, currently.
+
  Revision 1.143  2006/06/26 04:12:55  phase1geo
  More updates for supporting coverage exclusion.  Still a bit more to go
  before this is working properly.

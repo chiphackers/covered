@@ -121,7 +121,7 @@ PLI_INT32 covered_end_of_sim( p_cb_data cb ) {
   info_suppl.part.scored = 1;
 
   /* Write contents to database file */
-  if( !db_write( out_db_name, FALSE ) ) {
+  if( !db_write( out_db_name, FALSE, FALSE ) ) {
     vpi_printf( "covered VPI: Unable to write database file" );
     exit( 1 );
   } else {

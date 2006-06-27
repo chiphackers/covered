@@ -685,7 +685,7 @@ bool report_close_cdd() {
 */
 bool report_save_cdd( char* filename ) {
 
-  return( db_write( filename, FALSE ) );
+  return( db_write( filename, FALSE, TRUE ) );
 
 }
 
@@ -831,6 +831,11 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.66  2006/06/20 22:14:32  phase1geo
+ Adding support for saving CDD files (needed for file merging and saving exclusion
+ information for a CDD file) in the GUI.  Still have a bit to go as I am getting core
+ dumps to occur.
+
  Revision 1.65  2006/06/16 22:44:19  phase1geo
  Beginning to add ability to open/close CDD files without needing to close Covered's
  GUI.  This seems to work but does cause some segfaults yet.

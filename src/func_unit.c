@@ -281,10 +281,12 @@ void funit_size_elements( func_unit* funit, funit_inst* inst ) {
 }
 
 /*!
- \param funit  Pointer to functional unit to write to output.
- \param scope  String version of functional unit scope in hierarchy.
- \param file   Pointer to specified output file to write contents.
- \param inst   Pointer to the current functional unit instance.
+ \param funit        Pointer to functional unit to write to output.
+ \param scope        String version of functional unit scope in hierarchy.
+ \param file         Pointer to specified output file to write contents.
+ \param inst         Pointer to the current functional unit instance.
+ \param report_save  Specifies that we are attempting to save a CDD after modifying the database in
+                     the report command.
 
  \return Returns TRUE if file output was successful; otherwise, returns FALSE.
 
@@ -292,7 +294,7 @@ void funit_size_elements( func_unit* funit, funit_inst* inst ) {
  file.  If there are any problems with the write, returns FALSE; otherwise,
  returns TRUE.
 */
-bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst ) {
+bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst, bool report_save ) {
 
   bool       retval = TRUE;  /* Return value for this function */
   sig_link*  curr_sig;       /* Pointer to current functional unit sig_link element */
@@ -356,7 +358,11 @@ bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
   }
 
   /* Now print all statements in functional unit */
-  stmt_iter_reset( &curr_stmt, funit->stmt_head );
+  if( report_save ) {
+    stmt_iter_reset( &curr_stmt, funit->stmt_tail );
+  } else {
+    stmt_iter_reset( &curr_stmt, funit->stmt_head );
+  }
   while( curr_stmt.curr != NULL ) {
     statement_db_write( curr_stmt.curr->stmt, file, (inst != NULL) );
     stmt_iter_next( &curr_stmt );
@@ -845,6 +851,11 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.18  2006/03/28 22:28:27  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.17  2006/03/27 23:25:30  phase1geo
  Updating development documentation for 0.4 stable release.
 

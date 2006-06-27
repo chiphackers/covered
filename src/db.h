@@ -31,7 +31,7 @@
 void db_close();
 
 /*! \brief Writes contents of expressions, functional units and vsignals to database file. */
-bool db_write( char* file, bool parse_mode );
+bool db_write( char* file, bool parse_mode, bool report_save );
 
 /*! \brief Reads contents of database file and stores into internal lists. */
 bool db_read( char* file, int read_mode );
@@ -140,6 +140,11 @@ void db_dealloc_design();
 
 /*
  $Log$
+ Revision 1.57  2006/03/28 22:28:27  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.56  2006/02/16 21:19:26  phase1geo
  Adding support for arrays of instances.  Also fixing some memory problems for
  constant functions and fixed binding problems when hierarchical references are

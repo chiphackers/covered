@@ -162,8 +162,9 @@ void db_close() {
 }
 
 /*!
- \param file        Name of database file to output contents to.
- \param parse_mode  Specifies if we are outputting parse data or score data.
+ \param file         Name of database file to output contents to.
+ \param parse_mode   Specifies if we are outputting parse data or score data.
+ \param report_save  Specifies if we are attempting to "save" a CDD file modified in the report command
 
  \return Returns TRUE if database write was successful; otherwise, returns FALSE.
 
@@ -172,7 +173,7 @@ void db_close() {
  to the database file.  If database write successful, returns TRUE; otherwise,
  returns FALSE to the calling function.
 */
-bool db_write( char* file, bool parse_mode ) {
+bool db_write( char* file, bool parse_mode, bool report_save ) {
 
   bool  retval = TRUE;  /* Return value for this function */
   FILE* db_handle;      /* Pointer to database file being written */
@@ -185,7 +186,7 @@ bool db_write( char* file, bool parse_mode ) {
     /* Iterate through instance tree */
     assert( instance_root != NULL );
     info_db_write( db_handle );
-    instance_db_write( instance_root, db_handle, instance_root->name, parse_mode );
+    instance_db_write( instance_root, db_handle, instance_root->name, parse_mode, report_save );
     fclose( db_handle );
 
   } else {
@@ -1716,6 +1717,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.183  2006/05/28 02:43:49  phase1geo
+ Integrating stable release 0.4.4 changes into main branch.  Updated regressions
+ appropriately.
+
  Revision 1.182  2006/05/25 12:10:57  phase1geo
  Including bug fix from 0.4.4 stable release and updating regressions.
 

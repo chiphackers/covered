@@ -512,17 +512,18 @@ void instance_read_add( funit_inst** root, char* parent, func_unit* child, char*
 }
 
 /*!
- \param root        Root of functional unit instance tree to write.
- \param file        Output file to display contents to.
- \param scope       Scope of this functional unit.
- \param parse_mode  Specifies if we are parsing or scoring.
+ \param root         Root of functional unit instance tree to write.
+ \param file         Output file to display contents to.
+ \param scope        Scope of this functional unit.
+ \param parse_mode   Specifies if we are parsing or scoring.
+ \param report_save  Specifies if we are saving a CDD file after modifying it with the report command
 
  Calls each functional unit display function in instance tree, starting with
  the root functional unit and ending when all of the leaf functional units are output.
  Note:  the function that calls this function originally should set
  the value of scope to NULL.
 */
-void instance_db_write( funit_inst* root, FILE* file, char* scope, bool parse_mode ) {
+void instance_db_write( funit_inst* root, FILE* file, char* scope, bool parse_mode, bool report_save ) {
 
   char        tscope1[4096];   /* New scope of functional unit to write */
   char        tscope2[4096];   /* New scope of functional unit to write */
@@ -567,13 +568,13 @@ void instance_db_write( funit_inst* root, FILE* file, char* scope, bool parse_mo
     }
 
     /* Display root functional unit */
-    funit_db_write( root->funit, tscope1, file, curr );
+    funit_db_write( root->funit, tscope1, file, curr, report_save );
 
     /* Display children */
     curr = root->child_head;
     while( curr != NULL ) {
       snprintf( tscope2, 4096, "%s.%s", tscope1, curr->name );
-      instance_db_write( curr, file, tscope2, parse_mode );
+      instance_db_write( curr, file, tscope2, parse_mode, report_save );
       curr = curr->next;
     }
 
@@ -692,6 +693,10 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.45  2006/05/28 02:43:49  phase1geo
+ Integrating stable release 0.4.4 changes into main branch.  Updated regressions
+ appropriately.
+
  Revision 1.44  2006/05/25 12:11:01  phase1geo
  Including bug fix from 0.4.4 stable release and updating regressions.
 

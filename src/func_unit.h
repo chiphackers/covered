@@ -50,7 +50,7 @@ mod_parm* funit_find_param( char* name, func_unit* funit );
 char* funit_gen_task_function_namedblock_name( char* orig_name, func_unit* parent );
 
 /*! \brief Writes contents of provided functional unit to specified output. */
-bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst );
+bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst, bool report_save );
 
 /*! \brief Read contents of current line from specified file, creates functional unit
            and adds to functional unit list. */
@@ -80,6 +80,11 @@ void funit_dealloc( func_unit* funit );
 
 /*
  $Log$
+ Revision 1.10  2006/03/28 22:28:27  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.9  2006/01/23 03:53:30  phase1geo
  Adding support for input/output ports of tasks/functions.  Regressions are not
  running cleanly at this point so there is still some work to do here.  Checkpointing.
