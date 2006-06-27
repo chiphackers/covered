@@ -566,7 +566,6 @@ proc create_comb_window {expr_id sline} {
     frame .combwin.bf -relief raised -borderwidth 1
     button .combwin.bf.close -text "Close" -width 10 -command {
       rm_pointer curr_comb_ptr
-      set comb_curr_excluded 0
       destroy .combwin
     }
     button .combwin.bf.help -text "Help" -width 10 -command {
@@ -613,6 +612,10 @@ proc create_comb_window {expr_id sline} {
     .combwin.f.bot.t configure -state normal
     .combwin.f.bot.t delete 1.0 end
     .combwin.f.bot.t configure -state disabled
+
+    # Reset the excluded checkbutton
+    .combwin.f.bot.e configure -state disabled
+    set comb_curr_excluded 0
 
   }
 

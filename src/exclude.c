@@ -25,6 +25,20 @@ extern isuppl      info_suppl;
 
 
 /*!
+ \param expr  Pointer to current expression to evaluate.
+
+ \return Returns TRUE if a parent expression of this expression was found to be excluded from
+         coverage; otherwise, returns FALSE.
+*/
+bool exclude_is_parent_excluded( expression* expr ) {
+
+  return( (expr != NULL) &&
+          ((ESUPPL_EXCLUDED( expr->suppl ) == 1) ||
+           ((ESUPPL_IS_ROOT( expr->suppl ) == 0) && exclude_is_parent_excluded( expr->parent->expr ))) );
+
+}
+
+/*!
  \param expr      Pointer to expression that is being excluded/included.
  \param funit     Pointer to functional unit containing this expression
  \param excluded  Specifies if expression is being excluded or included.
@@ -53,12 +67,13 @@ void exclude_expr_assign_and_recalc( expression* expr, func_unit* funit, bool ex
     }
 
     /* Always recalculate combinational coverage */
+    combination_reset_counted_expr_tree( expr );
     if( excluded ) {
-      combination_get_tree_stats( expr, &ulid, 0, &comb_total, &comb_hit );
+      combination_get_tree_stats( expr, &ulid, 0, exclude_is_parent_excluded( expr ), &comb_total, &comb_hit );
       funit->stat->comb_hit += (comb_total - comb_hit);
     } else {
       expr->suppl.part.excluded = 0;
-      combination_get_tree_stats( expr, &ulid, 0, &comb_total, &comb_hit );
+      combination_get_tree_stats( expr, &ulid, 0, exclude_is_parent_excluded( expr ), &comb_total, &comb_hit );
       funit->stat->comb_hit -= (comb_total - comb_hit);
     }
 
@@ -387,6 +402,10 @@ bool exclude_set_assert_exclude( char* funit_name, int funit_type, int expr_id, 
 
 /*
  $Log$
+ Revision 1.5  2006/06/26 22:49:00  phase1geo
+ More updates for exclusion of combinational logic.  Also updates to properly
+ support CDD saving; however, this change causes regression errors, currently.
+
  Revision 1.4  2006/06/26 04:12:55  phase1geo
  More updates for supporting coverage exclusion.  Still a bit more to go
  before this is working properly.

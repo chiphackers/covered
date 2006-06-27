@@ -303,18 +303,33 @@ proc display_toggle_cov {} {
 
       # Finally, set toggle information
       if {[expr $uncov_type == 1] && [expr [llength $uncovered_toggles] > 0]} {
-        set cmd_enter  ".bot.right.txt tag add uncov_enter"
-        set cmd_button ".bot.right.txt tag add uncov_button"
-        set cmd_leave  ".bot.right.txt tag add uncov_leave"
-        foreach entry $uncovered_toggles {
+        set cmd_enter      ".bot.right.txt tag add uncov_enter"
+        set cmd_button     ".bot.right.txt tag add uncov_button"
+        set cmd_leave      ".bot.right.txt tag add uncov_leave"
+        set cmd_ucov_uline ".bot.right.txt tag add uncov_uline"
+        set cmd_excl_uline ".bot.right.txt tag add excl_uline"
+        for {set i 0} {$i<[llength $uncovered_toggles]} {incr i} {
+          set entry      [lindex $uncovered_toggles $i]
           set cmd_enter  [concat $cmd_enter  $entry]
           set cmd_button [concat $cmd_button $entry]
           set cmd_leave  [concat $cmd_leave  $entry]
+          if {[lindex $toggle_excludes $i] == 0} {
+            set cmd_ucov_uline [concat $cmd_ucov_uline $entry]
+          } else {
+            set cmd_excl_uline [concat $cmd_excl_uline $entry]
+          } 
         }
         eval $cmd_enter
         eval $cmd_button
         eval $cmd_leave
-        .bot.right.txt tag configure uncov_button -underline true -foreground $uncov_fgColor -background $uncov_bgColor
+        if {[llength $cmd_ucov_uline] > 4} {
+          eval $cmd_ucov_uline
+          .bot.right.txt tag configure uncov_uline -underline true -foreground $uncov_fgColor -background $uncov_bgColor
+        }
+        if {[llength $cmd_excl_uline] > 4} {
+          eval $cmd_excl_uline
+          .bot.right.txt tag configure excl_uline  -underline true -foreground $cov_fgColor   -background $cov_bgColor
+        }
         .bot.right.txt tag bind uncov_enter <Enter> {
           set curr_cursor [.bot.right.txt cget -cursor]
           set curr_info   [.info cget -text]
@@ -454,12 +469,17 @@ proc display_comb_cov {} {
 
       # Finally, set combinational logic information
       if {[expr $uncov_type == 1] && [expr [llength $uncovered_combs] > 0]} {
-        set cmd_enter     ".bot.right.txt tag add uncov_enter"
-        set cmd_button    ".bot.right.txt tag add uncov_button"
-        set cmd_leave     ".bot.right.txt tag add uncov_leave"
-        set cmd_highlight ".bot.right.txt tag add uncov_highlight"
+        set cmd_enter   ".bot.right.txt tag add uncov_enter"
+        set cmd_button  ".bot.right.txt tag add uncov_button"
+        set cmd_leave   ".bot.right.txt tag add uncov_leave"
+        set cmd_ucov_hl ".bot.right.txt tag add uncov_highlight"
+        set cmd_excl_hl ".bot.right.txt tag add excl_highlight"
         foreach entry $uncovered_combs {
-          set cmd_highlight [concat $cmd_highlight [lindex $entry 0] [lindex $entry 1]]
+          if {[lindex $entry 3] == 0} {
+            set cmd_ucov_hl [concat $cmd_ucov_hl [lindex $entry 0] [lindex $entry 1]]
+          } else {
+            set cmd_excl_hl [concat $cmd_excl_hl [lindex $entry 0] [lindex $entry 1]]
+          }
           set sline [lindex [split [lindex $entry 0] .] 0]
           set eline [lindex [split [lindex $entry 1] .] 0]
           if {$sline != $eline} {
@@ -488,8 +508,14 @@ proc display_comb_cov {} {
         eval $cmd_enter
         eval $cmd_button
         eval $cmd_leave
-        eval $cmd_highlight
-        .bot.right.txt tag configure uncov_highlight -foreground $uncov_fgColor -background $uncov_bgColor
+        if {[llength $cmd_ucov_hl] > 4} {
+          eval $cmd_ucov_hl
+          .bot.right.txt tag configure uncov_highlight -foreground $uncov_fgColor -background $uncov_bgColor
+        }
+        if {[llength $cmd_excl_hl] > 4} {
+          eval $cmd_excl_hl
+          .bot.right.txt tag configure excl_highlight -foreground $cov_fgColor   -background $cov_bgColor
+        }
         .bot.right.txt tag configure uncov_button -underline true
         .bot.right.txt tag bind uncov_enter <Enter> {
           set curr_cursor [.bot.right.txt cget -cursor]

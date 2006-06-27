@@ -129,22 +129,26 @@ int combination_calc_depth( expression* exp, unsigned int curr_depth, bool left 
 }
 
 /*!
- \param exp    Pointer to expression to calculate hit and total of multi-expression subtrees.
- \param ulid   Pointer to current underline ID.
- \param ul     If TRUE, parent expressions were found to be missing so force the underline.
- \param hit    Pointer to value containing number of hit expression values in this expression.
- \param total  Pointer to value containing total number of expression values in this expression.
+ \param exp       Pointer to expression to calculate hit and total of multi-expression subtrees.
+ \param ulid      Pointer to current underline ID.
+ \param ul        If TRUE, parent expressions were found to be missing so force the underline.
+ \param excluded  If TRUE, parent expressions were found to be excluded
+ \param hit       Pointer to value containing number of hit expression values in this expression.
+ \param total     Pointer to value containing total number of expression values in this expression.
 
  \return Returns TRUE if child expressions were found to be missed; otherwise, returns FALSE.
 
  Parses the specified expression tree, calculating the hit and total values of all
  sub-expressions that are the same operation types as their left children.
 */
-bool combination_multi_expr_calc( expression* exp, int* ulid, bool ul, int* hit, float* total ) {
+bool combination_multi_expr_calc( expression* exp, int* ulid, bool ul, bool excluded, int* hit, float* total ) {
 
   bool and_op;  /* Specifies if current expression is an AND or LAND operation */
 
-  if( (exp != NULL) && (ESUPPL_EXCLUDED( exp->suppl ) == 0) ) {
+  if( exp != NULL ) {
+
+    /* Calculate this expression's exclusion */
+    excluded |= ESUPPL_EXCLUDED( exp->suppl );
 
     /* Figure out if this is an AND/LAND operation */
     and_op = (exp->op == EXP_OP_AND) || (exp->op == EXP_OP_LAND);
@@ -159,10 +163,14 @@ bool combination_multi_expr_calc( expression* exp, int* ulid, bool ul, int* hit,
     }
 
     if( (exp->left != NULL) && (exp->op != exp->left->op) ) {
-      if( and_op ) {
-        *hit += ESUPPL_WAS_FALSE( exp->left->suppl );
+      if( excluded ) {
+        (*hit)++;
       } else {
-        *hit += ESUPPL_WAS_TRUE( exp->left->suppl );
+        if( and_op ) {
+          *hit += ESUPPL_WAS_FALSE( exp->left->suppl );
+        } else {
+          *hit += ESUPPL_WAS_TRUE( exp->left->suppl );
+        }
       }
       if( (exp->left->ulid == -1) && ul ) { 
         exp->left->ulid = *ulid;
@@ -170,14 +178,18 @@ bool combination_multi_expr_calc( expression* exp, int* ulid, bool ul, int* hit,
       }
       (*total)++;
     } else {
-      ul = combination_multi_expr_calc( exp->left, ulid, ul, hit, total );
+      ul = combination_multi_expr_calc( exp->left, ulid, ul, excluded, hit, total );
     }
 
     if( (exp->right != NULL) && (exp->op != exp->right->op) ) {
-      if( and_op ) {
-        *hit += ESUPPL_WAS_FALSE( exp->right->suppl );
+      if( excluded ) {
+        (*hit)++;
       } else {
-        *hit += ESUPPL_WAS_TRUE( exp->right->suppl );
+        if( and_op ) {
+          *hit += ESUPPL_WAS_FALSE( exp->right->suppl );
+        } else {
+          *hit += ESUPPL_WAS_TRUE( exp->right->suppl );
+        }
       }
       if( (exp->right->ulid == -1) && ul ) {
         exp->right->ulid = *ulid;
@@ -185,14 +197,18 @@ bool combination_multi_expr_calc( expression* exp, int* ulid, bool ul, int* hit,
       }
       (*total)++;
     } else {
-      ul = combination_multi_expr_calc( exp->right, ulid, ul, hit, total );
+      ul = combination_multi_expr_calc( exp->right, ulid, ul, excluded, hit, total );
     }
 
     if( (ESUPPL_IS_ROOT( exp->suppl ) == 1) || (exp->op != exp->parent->expr->op) ) {
-      if( and_op ) {
-        *hit += exp->suppl.part.eval_11;
+      if( excluded ) {
+        (*hit)++;
       } else {
-        *hit += exp->suppl.part.eval_00;
+        if( and_op ) {
+          *hit += exp->suppl.part.eval_11;
+        } else {
+          *hit += exp->suppl.part.eval_00;
+        }
       }
       if( (exp->ulid == -1) && ul ) {
         exp->ulid = *ulid;
@@ -244,6 +260,8 @@ bool combination_is_expr_multi_node( expression* exp ) {
  \param exp         Pointer to expression tree to traverse.
  \param ulid        Pointer to current underline ID.
  \param curr_depth  Current search depth in given expression tree.
+ \param excluded    Specifies that this expression should be excluded for hit information because one
+                    or more of its parent expressions have been excluded.
  \param total       Pointer to total number of logical combinations.
  \param hit         Pointer to number of logical combinations hit during simulation.
 
@@ -252,16 +270,19 @@ bool combination_is_expr_multi_node( expression* exp ) {
  hit during the course of simulation.  An expression can be considered for
  combinational coverage if the "measured" bit is set in the expression.
 */
-void combination_get_tree_stats( expression* exp, int* ulid, unsigned int curr_depth, float* total, int* hit ) {
+void combination_get_tree_stats( expression* exp, int* ulid, unsigned int curr_depth, bool excluded, float* total, int* hit ) {
 
   int num_hit = 0;  /* Number of expression value hits for the current expression */
   int tot_num;      /* Total number of combinations for the current expression */
 
-  if( (exp != NULL) && (ESUPPL_EXCLUDED( exp->suppl ) == 0) ) {
+  if( exp != NULL ) {
+
+    /* Calculate excluded value for this expression */
+    excluded |= ESUPPL_EXCLUDED( exp->suppl );
 
     /* Calculate children */
-    combination_get_tree_stats( exp->left,  ulid, combination_calc_depth( exp, curr_depth, TRUE ),  total, hit );
-    combination_get_tree_stats( exp->right, ulid, combination_calc_depth( exp, curr_depth, FALSE ), total, hit );
+    combination_get_tree_stats( exp->left,  ulid, combination_calc_depth( exp, curr_depth, TRUE ),  excluded, total, hit );
+    combination_get_tree_stats( exp->right, ulid, combination_calc_depth( exp, curr_depth, FALSE ), excluded, total, hit );
 
     if( ((report_comb_depth == REPORT_DETAILED) && (curr_depth <= report_comb_depth)) ||
          (report_comb_depth == REPORT_VERBOSE) ||
@@ -284,7 +305,7 @@ void combination_get_tree_stats( expression* exp, int* ulid, unsigned int curr_d
                (exp->op == EXP_OP_OR)   ||
                (exp->op == EXP_OP_LAND) ||
                (exp->op == EXP_OP_LOR)) ) {
-            combination_multi_expr_calc( exp, ulid, FALSE, hit, total );
+            combination_multi_expr_calc( exp, ulid, FALSE, excluded, hit, total );
           } else {
             if( !expression_is_static_only( exp ) ) {
               if( EXPR_IS_COMB( exp ) == 1 ) {
@@ -305,16 +326,24 @@ void combination_get_tree_stats( expression* exp, int* ulid, unsigned int curr_d
                             exp->suppl.part.eval_10 +
                             exp->suppl.part.eval_11;
                 }
-                *total = *total + tot_num;
-                *hit   = *hit   + num_hit;
+                *total += tot_num;
+                if( excluded ) {
+                  *hit += tot_num;
+                } else {
+                  *hit += num_hit;
+                }
                 if( (num_hit != tot_num) && (exp->ulid == -1) && !combination_is_expr_multi_node( exp ) ) {
                   exp->ulid = *ulid;
                   (*ulid)++;
                 }
               } else if( EXPR_IS_EVENT( exp ) == 1 ) {
-                *total  = *total + 1;
+                (*total)++;
                 num_hit = ESUPPL_WAS_TRUE( exp->suppl );
-                *hit    = *hit + num_hit;
+                if( excluded ) {
+                  (*hit)++;
+                } else {
+                  *hit += num_hit;
+                }
                 if( (num_hit != 1) && (exp->ulid == -1) && !combination_is_expr_multi_node( exp ) ) {
                   exp->ulid = *ulid;
                   (*ulid)++;
@@ -322,7 +351,11 @@ void combination_get_tree_stats( expression* exp, int* ulid, unsigned int curr_d
               } else {
                 *total  = *total + 2;
                 num_hit = ESUPPL_WAS_TRUE( exp->suppl ) + ESUPPL_WAS_FALSE( exp->suppl );
-                *hit    = *hit + num_hit;
+                if( excluded ) {
+                  *hit += 2;
+                } else {
+                  *hit += num_hit;
+                }
                 if( (num_hit != 2) && (exp->ulid == -1) && !combination_is_expr_multi_node( exp ) ) {
                   exp->ulid = *ulid;
                   (*ulid)++;
@@ -361,6 +394,26 @@ void combination_reset_counted_exprs( exp_link* expl ) {
 }
 
 /*!
+ \param exp  Pointer to expression tree to reset.
+
+ Recursively iterates through specified expression tree, clearing the combination
+ counted bit in the supplemental field of each child expression.  This functions
+ needs to get called whenever the excluded bit of an expression is changed.
+*/
+void combination_reset_counted_expr_tree( expression* exp ) {
+
+  if( exp != NULL ) {
+
+    exp->suppl.part.comb_cntd = 0;
+
+    combination_reset_counted_expr_tree( exp->left );
+    combination_reset_counted_expr_tree( exp->right );
+
+  }
+
+}
+
+/*!
  \param expl   Pointer to current expression link to evaluate.
  \param total  Pointer to total number of logical combinations.
  \param hit    Pointer to number of logical combinations hit during simulation.
@@ -379,7 +432,7 @@ void combination_get_stats( exp_link* expl, float* total, int* hit ) {
   while( curr_exp != NULL ) {
     if( ESUPPL_IS_ROOT( curr_exp->exp->suppl ) == 1 ) {
       ulid = 1;
-      combination_get_tree_stats( curr_exp->exp, &ulid, 0, total, hit );
+      combination_get_tree_stats( curr_exp->exp, &ulid, 0, FALSE, total, hit );
     }
     curr_exp = curr_exp->next;
   }
@@ -1611,7 +1664,7 @@ void combination_multi_vars( char*** info, int* info_size, expression* exp ) {
   if( exp->ulid != -1 ) {
 
     /* Calculate hit and total values for this sub-expression */
-    combination_multi_expr_calc( exp, &ulid, FALSE, &hit, &total );
+    combination_multi_expr_calc( exp, &ulid, FALSE, FALSE, &hit, &total );
 
     if( hit != (int)total ) {
 
@@ -2294,6 +2347,9 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.145  2006/06/27 19:34:42  phase1geo
+ Permanent fix for the CDD save feature.
+
  Revision 1.144  2006/06/26 22:48:59  phase1geo
  More updates for exclusion of combinational logic.  Also updates to properly
  support CDD saving; however, this change causes regression errors, currently.

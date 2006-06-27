@@ -336,8 +336,6 @@ int tcl_func_collect_covered_lines( ClientData d, Tcl_Interp* tcl, int argc, con
     for( i=0; i<line_cnt; i++ ) {
       snprintf( str, 20, "%d", lines[i] );
       Tcl_SetVar( tcl, "covered_lines", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
-      snprintf( str, 20, "%d", excludes[i] );
-      Tcl_SetVar( tcl, "line_excludes", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
     }
 
     free_safe( lines );
@@ -513,8 +511,6 @@ int tcl_func_collect_covered_toggles( ClientData d, Tcl_Interp* tcl, int argc, c
                 (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + 14),
                 (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + (strlen( sigl->sig->name ) - 1) + 15) );
       Tcl_SetVar( tcl, "covered_toggles", tmp, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
-      snprintf( tmp, 85, "%d", sigl->sig->suppl.part.excluded );
-      Tcl_SetVar( tcl, "toggle_excludes", tmp, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
       sigl = sigl->next;
     }
 
@@ -1902,6 +1898,10 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.48  2006/06/26 22:49:00  phase1geo
+ More updates for exclusion of combinational logic.  Also updates to properly
+ support CDD saving; however, this change causes regression errors, currently.
+
  Revision 1.47  2006/06/26 04:12:55  phase1geo
  More updates for supporting coverage exclusion.  Still a bit more to go
  before this is working properly.
