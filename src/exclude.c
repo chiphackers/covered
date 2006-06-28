@@ -214,6 +214,7 @@ bool exclude_set_line_exclude( char* funit_name, int funit_type, int line, int v
       }
       if( expl != NULL ) {
         exclude_expr_assign_and_recalc( expl->exp, funitl->funit, (value == 1) );      
+        expl   = expl->next;
         retval = TRUE;
       }
     } while( expl != NULL );
@@ -402,6 +403,12 @@ bool exclude_set_assert_exclude( char* funit_name, int funit_type, int expr_id, 
 
 /*
  $Log$
+ Revision 1.6  2006/06/27 22:06:26  phase1geo
+ Fixing more code related to exclusion.  The detailed combinational expression
+ window now works correctly.  I am currently working on getting the main window
+ text viewer to display exclusion correctly for all coverage metrics.  Still
+ have a ways to go here.
+
  Revision 1.5  2006/06/26 22:49:00  phase1geo
  More updates for exclusion of combinational logic.  Also updates to properly
  support CDD saving; however, this change causes regression errors, currently.

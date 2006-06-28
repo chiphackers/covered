@@ -1830,7 +1830,7 @@ void combination_output_expr( expression* expr, unsigned int curr_depth, int* an
       if( expr->ulid != -1 ) {
         *any_missed = 1;
       }
-      if( EXPR_IS_MEASURABLE( expr ) == 1 ) {
+      if( (EXPR_IS_MEASURABLE( expr ) == 1) && (ESUPPL_EXCLUDED( expr->suppl ) == 0) ) {
         *any_measurable = 1;
       }
 
@@ -1878,7 +1878,7 @@ void combination_display_verbose( FILE* ofile, func_unit* funit ) {
 
     combination_output_expr( stmti.curr->stmt->exp, 0, &any_missed, &any_measurable );
 
-    if( ((report_covered == 0) && (any_missed == 1)) ||
+    if( ((report_covered == 0) && (any_missed == 1) && (any_measurable == 1)) ||
         ((report_covered == 1) && (any_missed == 0) && (any_measurable == 1)) ) {
  
       stmti.curr->stmt->exp->suppl.part.comb_cntd = 0;
@@ -2012,7 +2012,8 @@ void combination_funit_verbose( FILE* ofile, funit_link* head ) {
  \param covs        Pointer to an array of expression pointers that contain all fully covered expressions
  \param cov_cnt     Pointer to a value that will be set to indicate the number of expressions in covs array
  \param uncovs      Pointer to an array of expression pointers that contain uncovered expressions
- \param uncov_cnt   Pointer to a value that will be set to indicate the number of expressions in uncovs array
+ \param excludes    Pointer to an array of integers indicating exclusion property of each uncovered expression
+ \param uncov_cnt   Pointer to a value that will be set to indicate the number of expressions in uncovs/excludes arrays
 
  \return Returns TRUE if combinational coverage information was found for the given functional unit; otherwise,
          returns FALSE to indicate that an error occurred.
@@ -2020,7 +2021,8 @@ void combination_funit_verbose( FILE* ofile, funit_link* head ) {
  Gathers the covered and uncovered combinational logic information, storing their expressions in the covs and uncovs
  expression arrays.  Used by the GUI for verbose combinational logic output.
 */
-bool combination_collect( char* funit_name, int funit_type, expression*** covs, int* cov_cnt, expression*** uncovs, int* uncov_cnt ) {
+bool combination_collect( char* funit_name, int funit_type, expression*** covs, int* cov_cnt,
+                          expression*** uncovs, int** excludes, int* uncov_cnt ) {
 
   bool        retval = TRUE;   /* Return value of this function */
   func_unit   funit;           /* Functional unit used for searching */
@@ -2047,6 +2049,7 @@ bool combination_collect( char* funit_name, int funit_type, expression*** covs, 
     *uncov_cnt = 0;
     *covs      = (expression**)malloc_safe( (sizeof( expression* ) * cov_size),   __FILE__, __LINE__ );
     *uncovs    = (expression**)malloc_safe( (sizeof( expression* ) * uncov_size), __FILE__, __LINE__ );
+    *excludes  = (int*)malloc_safe( (sizeof( expression* ) * uncov_size), __FILE__, __LINE__ );
 
     /* Display current instance missed lines */
     stmt_iter_reset( &stmti, funitl->funit->stmt_tail );
@@ -2065,8 +2068,10 @@ bool combination_collect( char* funit_name, int funit_type, expression*** covs, 
           if( *uncov_cnt == uncov_size ) {
             uncov_size += 20;
             *uncovs     = (expression**)realloc( *uncovs, (sizeof( expression* ) * uncov_size) );
+            *excludes   = (int*)realloc( *excludes, (sizeof( int* ) * uncov_size) );
           }
-          (*uncovs)[(*uncov_cnt)] = stmti.curr->stmt->exp;
+          (*uncovs)[(*uncov_cnt)]   = stmti.curr->stmt->exp;
+          (*excludes)[(*uncov_cnt)] = any_measurable ? 0 : 1;
           (*uncov_cnt)++;
         }
         stmti.curr->stmt->exp->suppl.part.comb_cntd = 0;
@@ -2347,6 +2352,12 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.146  2006/06/27 22:06:25  phase1geo
+ Fixing more code related to exclusion.  The detailed combinational expression
+ window now works correctly.  I am currently working on getting the main window
+ text viewer to display exclusion correctly for all coverage metrics.  Still
+ have a ways to go here.
+
  Revision 1.145  2006/06/27 19:34:42  phase1geo
  Permanent fix for the CDD save feature.
 

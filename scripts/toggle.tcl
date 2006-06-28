@@ -59,8 +59,11 @@ proc create_toggle_window {signal excluded} {
     # Create exclude checkbutton
     checkbutton .togwin.f.excl -text "Exclude" -variable toggle_exclude -command {
       tcl_func_set_toggle_exclude $curr_funit_name $curr_funit_type $sig_name $toggle_exclude
-      tcl_func_get_toggle_summary $curr_funit_name $curr_funit_type
-      cov_display_summary $toggle_summary_hit $toggle_summary_total
+      set text_x [.bot.right.txt xview]
+      set text_y [.bot.right.txt yview]
+      process_funit_toggle_cov
+      .bot.right.txt xview moveto [lindex $text_x 0]
+      .bot.right.txt yview moveto [lindex $text_y 0]
       update_summary
       enable_cdd_save
     }

@@ -113,14 +113,15 @@ proc process_funit_line_cov {} {
 proc calc_and_display_line_cov {} {
 
   global cov_type uncov_type mod_inst_type funit_names funit_types
-  global uncovered_lines covered_lines race_lines race_reasons
+  global uncovered_lines line_excludes covered_lines race_lines race_reasons
   global curr_funit_name curr_funit_type start_line
 
   if {$curr_funit_name != 0} {
 
     # Get list of uncovered/covered lines
-    set uncovered_lines 0
-    set covered_lines   0
+    set uncovered_lines ""
+    set line_excludes   ""
+    set covered_lines   ""
     set race_lines      ""
     set race_reasons    ""
     tcl_func_collect_uncovered_lines $curr_funit_name $curr_funit_type
@@ -138,7 +139,7 @@ proc display_line_cov {} {
   global fileContent file_name
   global uncov_fgColor uncov_bgColor
   global cov_fgColor cov_bgColor
-  global uncovered_lines covered_lines race_lines
+  global uncovered_lines line_excludes covered_lines race_lines
   global uncov_type cov_type
   global start_line end_line
   global line_summary_total line_summary_hit
@@ -172,8 +173,15 @@ proc display_line_cov {} {
       foreach phrase $contents {
         if [expr [expr $start_line <= $linecount] && [expr $end_line >= $linecount]] {
           set line [format {%3s  %7u  %s} "   " $linecount [append phrase "\n"]]
-          if {[expr $uncov_type == 1] && [expr [lsearch $uncovered_lines $linecount] != -1]} {
-            .bot.right.txt insert end $line uncov_colorMap
+          set uncov_index [lsearch $uncovered_lines $linecount]
+          if {[expr $uncov_type == 1] && [expr $uncov_index != -1]} {
+            if {[lindex $line_excludes $uncov_index] == 0} {
+              set line [string replace $line 1 1 "I"]
+              .bot.right.txt insert end $line uncov_colorMap
+            } else {
+              set line [string replace $line 1 1 "E"]
+              .bot.right.txt insert end $line cov_colorMap
+            }
           } elseif {[expr $cov_type == 1] && [expr [lsearch $covered_lines $linecount] != -1]} {
             .bot.right.txt insert end $line cov_colorMap
           } else {
@@ -188,6 +196,50 @@ proc display_line_cov {} {
 
       # Create race condition tags
       create_race_tags
+
+      # Finally, set line information
+      if {[expr $uncov_type == 1] && [expr [llength $uncovered_lines] > 0]} {
+        set cmd_enter  ".bot.right.txt tag add uncov_enter"
+        set cmd_button ".bot.right.txt tag add uncov_button"
+        set cmd_leave  ".bot.right.txt tag add uncov_leave"
+        foreach entry $uncovered_lines {
+          set tb_line [expr ($entry - $start_line) + 1]
+          set cmd_enter  [concat $cmd_enter  "$tb_line.1 $tb_line.2"]
+          set cmd_button [concat $cmd_button "$tb_line.1 $tb_line.2"]
+          set cmd_leave  [concat $cmd_leave  "$tb_line.1 $tb_line.2"]
+        }
+        eval $cmd_enter
+        eval $cmd_button
+        eval $cmd_leave
+        .bot.right.txt tag configure uncov_button -underline true
+        .bot.right.txt tag bind uncov_enter <Enter> {
+          set curr_cursor [.bot.right.txt cget -cursor]
+          set curr_info   [.info cget -text]
+          .bot.right.txt configure -cursor hand2
+          .info configure -text "Click left button to exclude/include line"
+        }
+        .bot.right.txt tag bind uncov_leave <Leave> {
+          .bot.right.txt configure -cursor $curr_cursor
+          .info configure -text $curr_info
+        }
+        .bot.right.txt tag bind uncov_button <ButtonPress-1> {
+          set selected_line [lindex [split [.bot.right.txt index current] .] 0]
+          if {[.bot.right.txt get current] == "E"} {
+            set excl_value 0
+          } else {
+            set excl_value 1
+          }
+          tcl_func_set_line_exclude $curr_funit_name $curr_funit_type $selected_line $excl_value
+          set text_x [.bot.right.txt xview]
+          set text_y [.bot.right.txt yview]
+          process_funit_line_cov
+          .bot.right.txt xview moveto [lindex $text_x 0]
+          .bot.right.txt yview moveto [lindex $text_y 0]
+          update_summary
+          enable_cdd_save
+        }
+
+      }
 
     }
 
@@ -237,13 +289,14 @@ proc process_funit_toggle_cov {} {
 proc calc_and_display_toggle_cov {} {
 
   global cov_type uncov_type mod_inst_type
-  global uncovered_toggles covered_toggles race_toggles
+  global uncovered_toggles covered_toggles race_toggles toggle_excludes
   global curr_funit_name curr_funit_type start_line
 
   if {$curr_funit_name != 0} {
 
     # Get list of uncovered/covered lines
     set uncovered_toggles ""
+    set toggle_excludes   ""
     set covered_toggles   ""
     tcl_func_collect_uncovered_toggles $curr_funit_name $curr_funit_type $start_line
     tcl_func_collect_covered_toggles   $curr_funit_name $curr_funit_type $start_line
@@ -259,7 +312,7 @@ proc display_toggle_cov {} {
   global fileContent file_name
   global uncov_fgColor uncov_bgColor
   global cov_fgColor cov_bgColor
-  global uncovered_toggles covered_toggles
+  global uncovered_toggles covered_toggles toggle_excludes
   global uncov_type cov_type
   global start_line end_line
   global toggle_summary_total toggle_summary_hit

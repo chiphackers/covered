@@ -151,7 +151,7 @@ proc main_place {width value} {
  
 proc populate_listbox {listbox_w} {
 
-  global mod_inst_type funit_names funit_types inst_list cov_rb file_name
+  global mod_inst_type funit_names funit_types inst_list cov_rb cdd_name
   global line_summary_total line_summary_hit
   global toggle_summary_total toggle_summary_hit
   global uncov_fgColor uncov_bgColor
@@ -165,7 +165,7 @@ proc populate_listbox {listbox_w} {
   set funit_names ""
   set funit_types ""
 
-  if {$file_name != ""} {
+  if {$cdd_name != ""} {
 
     # If we are in module mode, list modules (otherwise, list instances)
     if {$mod_inst_type == "module"} {
@@ -195,7 +195,7 @@ proc populate_listbox {listbox_w} {
 
 proc highlight_listbox {} {
 
-  global file_name funit_names funit_types cov_rb
+  global cdd_name funit_names funit_types cov_rb
   global uncov_fgColor uncov_bgColor lb_fgColor lb_bgColor
   global line_summary_total line_summary_hit
   global toggle_summary_total toggle_summary_hit
@@ -203,7 +203,7 @@ proc highlight_listbox {} {
   global fsm_summary_total fsm_summary_hit
   global assert_summary_total assert_summary_hit
 
-  if {$file_name != ""} {
+  if {$cdd_name != ""} {
 
     # If we are in module mode, list modules (otherwise, list instances)
     set funits [llength $funit_names]

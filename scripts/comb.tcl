@@ -468,8 +468,8 @@ proc display_comb {curr_index} {
   global uncovered_combs start_line
 
   # Calculate expression ID and line number
-  set all_ranges [.bot.right.txt tag ranges uncov_highlight]
-  set my_range   [.bot.right.txt tag prevrange uncov_highlight "$curr_index + 1 chars"]
+  set all_ranges [.bot.right.txt tag ranges uncov_button]
+  set my_range   [.bot.right.txt tag prevrange uncov_button "$curr_index + 1 chars"]
   set index [expr [lsearch -exact $all_ranges [lindex $my_range 0]] / 2]
   set expr_id [lindex [lindex $uncovered_combs $index] 2]
   set sline [expr [lindex [split [lindex $my_range 0] "."] 0] + $start_line - 1]
@@ -485,10 +485,10 @@ proc display_comb {curr_index} {
   goto_uncov [lindex $my_range 0]
 
   # Get range of previous signal
-  set prev_comb_index [lindex [.bot.right.txt tag prevrange uncov_highlight [lindex $curr_index 0]] 0]
+  set prev_comb_index [lindex [.bot.right.txt tag prevrange uncov_button [lindex $curr_index 0]] 0]
 
   # Get range of next signal
-  set next_comb_index [lindex [.bot.right.txt tag nextrange uncov_highlight [lindex $curr_range 1]] 0]
+  set next_comb_index [lindex [.bot.right.txt tag nextrange uncov_button [lindex $curr_range 1]] 0]
 
   # Now create the toggle window
   create_comb_window $expr_id $sline
@@ -506,6 +506,9 @@ proc create_comb_window {expr_id sline} {
   global prev_comb_index next_comb_index
   global curr_comb_ptr comb_curr_excluded
   global comb_exp_excludes
+
+  # Clear the comb_curr_excluded global variable
+  set comb_curr_excluded 0
 
   # Now create the window and set the grab to this window
   if {[winfo exists .combwin] == 0} {
@@ -550,8 +553,11 @@ proc create_comb_window {expr_id sline} {
     checkbutton .combwin.f.bot.e -anchor e -text "Excluded" -state disabled -variable comb_curr_excluded -command {
       tcl_func_set_comb_exclude $curr_funit_name $curr_funit_type $comb_curr_exp_id $comb_curr_uline_id $comb_curr_excluded
       set comb_exp_excludes [lreplace $comb_exp_excludes $comb_curr_uline_id $comb_curr_uline_id $comb_curr_excluded]
-      tcl_func_get_comb_summary $curr_funit_name $curr_funit_type
-      cov_display_summary $comb_summary_hit $comb_summary_total
+      set text_x [.bot.right.txt xview]
+      set text_y [.bot.right.txt yview]
+      process_funit_comb_cov
+      .bot.right.txt xview moveto [lindex $text_x 0]
+      .bot.right.txt yview moveto [lindex $text_y 0]
       update_summary
       enable_cdd_save
     }
@@ -615,7 +621,6 @@ proc create_comb_window {expr_id sline} {
 
     # Reset the excluded checkbutton
     .combwin.f.bot.e configure -state disabled
-    set comb_curr_excluded 0
 
   }
 

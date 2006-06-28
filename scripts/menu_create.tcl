@@ -1,5 +1,6 @@
 #!/usr/bin/env wish
 
+set cdd_name      ""
 set uncov_type    1
 set cov_type      0
 set race_type     0
@@ -32,7 +33,7 @@ proc enable_cdd_save {} {
 proc menu_create {.menubar} {
 
   global start_line end_line
-  global file_name
+  global cdd_name
   global BROWSER
   global prev_uncov_index next_uncov_index
 
@@ -59,7 +60,7 @@ proc menu_create {.menubar} {
   }
   $tfm add separator
   $tfm add command -label "Save CDD..." -accelerator "Ctrl-s" -state disabled -command {
-    set save_name [tk_getSaveFile -filetypes $file_types -initialfile [file tail $file_name] -title "Save CDD As"]
+    set save_name [tk_getSaveFile -filetypes $file_types -initialfile [file tail $cdd_name] -title "Save CDD As"]
     if {$save_name != ""} {
       if {[file extension $save_name] != ".cdd"} {
         set save_name "$save_name.cdd"
@@ -71,9 +72,18 @@ proc menu_create {.menubar} {
   }
   $tfm add separator
   $tfm add command -label "Close CDD(s)" -accelerator "Ctrl-w" -state disabled -command {
+    if {[.menubar.file.menu entrycget 3 -state] == "normal"} {
+      set exit_status [tk_messageBox -message "Opened database has changed.  Would you like to save before closing?" \
+                       -type yesnocancel -icon warning]
+      if {$exit_status == "yes"} {
+        .menubar.file.menu invoke 3
+      } elseif {$exit_status == "cancel"} {
+        return
+      }
+    }
     tcl_func_close_cdd
-    .info configure -text "$file_name closed"
-    set file_name ""
+    .info configure -text "$cdd_name closed"
+    set cdd_name ""
     clear_cdd_filelist
     populate_listbox .bot.left.l
     clear_all_windows
@@ -83,7 +93,18 @@ proc menu_create {.menubar} {
     .menubar.view.menu entryconfigure 0 -state disabled
   }
   $tfm add separator
-  $tfm add command -label Exit -accelerator "Ctrl-x" -command exit
+  $tfm add command -label Exit -accelerator "Ctrl-x" -command {
+    if {[.menubar.file.menu entrycget 3 -state] == "normal"} {
+      set exit_status [tk_messageBox -message "Opened database has changed.  Would you like to save before exiting?" \
+                                     -type yesnocancel -icon warning]
+      if {$exit_status == "yes"} {
+        .menubar.file.menu invoke 3
+      } elseif {$exit_status == "cancel"} {
+        return
+      }
+    }
+    exit
+  }
 
   # Configure the report option
   .menubar.report config -menu .menubar.report.menu
@@ -213,7 +234,7 @@ proc menu_create {.menubar} {
 # Opens/merges a CDD file and handles the GUI cursors and listbox initialization.
 proc open_files {} {
 
-  global file_types file_name fname global open_type
+  global file_types cdd_name fname global open_type
   global win_cursor txt_cursor e_cursor
 
   # Get a list of files to open
@@ -228,7 +249,7 @@ proc open_files {} {
 
   foreach fname $fnames {
 
-    if {$file_name == ""} {
+    if {$cdd_name == ""} {
       set open_type "open"
       .info configure -text "Opening $fname..."
       puts "Opening $fname..."
@@ -263,8 +284,8 @@ proc open_files {} {
 
     }
 
-    if {$file_name == ""} {
-      set file_name $fname
+    if {$cdd_name == ""} {
+      set cdd_name $fname
     }
 
   }
@@ -277,6 +298,6 @@ proc open_files {} {
   .bot.right.txt configure -cursor $txt_cursor
   .bot.right.h.e configure -cursor $e_cursor
 
-  return $file_name
+  return $cdd_name
 
 }

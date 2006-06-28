@@ -607,8 +607,9 @@ int tcl_func_collect_combs( ClientData d, Tcl_Interp* tcl, int argc, const char*
   int          funit_type;       /* Type of functional unit to get combinational logic coverage info for */
   expression** covs;             /* Array of expression pointers to fully covered expressions */
   expression** uncovs;           /* Array of expression pointers to uncovered expressions */
+  int*         excludes;         /* Array of integers indicating exclude status */
   int          cov_cnt;          /* Number of elements in the covs array */
-  int          uncov_cnt;        /* Number of elements in the uncovs array */
+  int          uncov_cnt;        /* Number of elements in the uncovs/excludes array */
   int          i;                /* Loop iterator */
   char         str[85];          /* Temporary string container */
   int          startline;        /* Starting line number of this module */
@@ -618,14 +619,14 @@ int tcl_func_collect_combs( ClientData d, Tcl_Interp* tcl, int argc, const char*
   funit_type = atoi( argv[2] );
   startline  = atoi( argv[3] );
 
-  if( combination_collect( funit_name, funit_type, &covs, &cov_cnt, &uncovs, &uncov_cnt ) ) {
+  if( combination_collect( funit_name, funit_type, &covs, &cov_cnt, &uncovs, &excludes, &uncov_cnt ) ) {
 
     /* Load uncovered statements into Tcl */
     for( i=0; i<uncov_cnt; i++ ) {
       last = expression_get_last_line_expr( uncovs[i] );
       snprintf( str, 85, "%d.%d %d.%d %d %d", (uncovs[i]->line - (startline - 1)), (((uncovs[i]->col >> 16) & 0xffff) + 14),
                                               (last->line      - (startline - 1)), ((last->col              & 0xffff) + 15),
-                                              uncovs[i]->id, ESUPPL_EXCLUDED( uncovs[i]->suppl ) );
+                                              uncovs[i]->id, excludes[i] );
       Tcl_SetVar( tcl, "uncovered_combs", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
     }
 
@@ -639,7 +640,8 @@ int tcl_func_collect_combs( ClientData d, Tcl_Interp* tcl, int argc, const char*
 
     /* Deallocate memory */
     free_safe( uncovs );
-    free_safe( covs   );
+    free_safe( excludes );
+    free_safe( covs );
 
   } else {
 
@@ -1898,6 +1900,12 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.49  2006/06/27 22:06:26  phase1geo
+ Fixing more code related to exclusion.  The detailed combinational expression
+ window now works correctly.  I am currently working on getting the main window
+ text viewer to display exclusion correctly for all coverage metrics.  Still
+ have a ways to go here.
+
  Revision 1.48  2006/06/26 22:49:00  phase1geo
  More updates for exclusion of combinational logic.  Also updates to properly
  support CDD saving; however, this change causes regression errors, currently.

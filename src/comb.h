@@ -41,7 +41,8 @@ void combination_get_tree_stats( expression* exp, int* ulid, unsigned int curr_d
 void combination_get_stats( exp_link* expl, float* total, int* hit );
 
 /*! \brief Collects all toggle expressions that match the specified coverage indication. */
-bool combination_collect( char* funit_name, int funit_type, expression*** covs, int* cov_cnt, expression*** uncovs, int* uncov_cnt );
+bool combination_collect( char* funit_name, int funit_type, expression*** covs, int* cov_cnt,
+                          expression*** uncovs, int** excludes, int* uncov_cnt );
 
 /*! \brief Gets combinational logic summary statistics for specified module. */
 bool combination_get_module_summary( char* funit_name, int funit_type, int* total, int* hit );
@@ -59,6 +60,12 @@ void combination_report( FILE* ofile, bool verbose );
 
 /*
  $Log$
+ Revision 1.18  2006/06/27 22:06:26  phase1geo
+ Fixing more code related to exclusion.  The detailed combinational expression
+ window now works correctly.  I am currently working on getting the main window
+ text viewer to display exclusion correctly for all coverage metrics.  Still
+ have a ways to go here.
+
  Revision 1.17  2006/06/26 04:12:55  phase1geo
  More updates for supporting coverage exclusion.  Still a bit more to go
  before this is working properly.
