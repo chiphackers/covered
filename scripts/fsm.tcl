@@ -304,8 +304,25 @@ proc display_fsm_table {} {
       }
 
       # Create square
-      .fsmwin.f.t.c create rect $x $y [expr $x + $xwidth] [expr $y + $ywidth] \
-                              -outline black -fill $fillcolor -tags rect
+      if {$fillcolor == $uncov_bgColor && [expr $row != 0] && [expr $col != 0]} {
+        .fsmwin.f.t.c create rect $x $y [expr $x + $xwidth] [expr $y + $ywidth] \
+                                -outline black -fill $fillcolor -tags uncov_rect
+        puts "Creating uncovered rectangle"
+      } else {
+        .fsmwin.f.t.c create rect $x $y [expr $x + $xwidth] [expr $y + $ywidth] \
+                                -outline black -fill $fillcolor -tags rect
+      } 
+
+      # Bind each square
+      .fsmwin.f.t.c bind uncov_rect <Enter> {
+        puts "Entering uncovered rectangle"
+      }
+      .fsmwin.f.t.c bind uncov_rect <Leave> {
+        puts "Leaving uncovered rectangle"
+      }
+      .fsmwin.f.t.c bind uncov_rect <Button-1> {
+        puts "Clicked on uncovered rectangle"
+      }
 
       # Create text
       if {$t != ""} {
