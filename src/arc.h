@@ -65,13 +65,18 @@ bool arc_db_replace( char** arcs, char** line );
 void arc_get_states( char*** states, int* state_size, const char* arcs, bool hit, bool any );
 
 /*! \brief Outputs arc array state transition values to specified output stream. */
-void arc_get_transitions( char*** from_states, char*** to_states, int* arc_size, const char* arcs, bool hit, bool any );
+void arc_get_transitions( char*** from_states, char*** to_states, int** excludes, int* arc_size, const char* arcs, bool hit, bool any );
 
 /*! \brief Deallocates memory for specified arcs array. */
 void arc_dealloc( char* arcs );
 
 /*
  $Log$
+ Revision 1.13  2006/06/23 19:45:26  phase1geo
+ Adding full C support for excluding/including coverage points.  Fixed regression
+ suite failures -- full regression now passes.  We just need to start adding support
+ to the Tcl/Tk files for full user-specified exclusion support.
+
  Revision 1.12  2006/04/05 15:19:18  phase1geo
  Adding support for FSM coverage output in the GUI.  Started adding components
  for assertion coverage to GUI and report functions though there is no functional

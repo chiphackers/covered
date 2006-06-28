@@ -183,13 +183,12 @@ proc fsm_calc_state_fillcolor {idx} {
 
 }
 
-proc fsm_calc_arc_fillcolor {in out dfltColor} {
+proc fsm_calc_arc_coverage {in out} {
 
-  global uncov_bgColor cov_bgColor
-  global fsm_arcs fsm_hit_arcs
-  global fsm_states
+  global fsm_arcs fsm_hit_arcs fsm_states
 
-  set found 0
+  set found    0
+  set coverage -1
 
   # First search the fsm_arcs list to see if the current in/out state is even a valid transition
   set i 0
@@ -199,6 +198,9 @@ proc fsm_calc_arc_fillcolor {in out dfltColor} {
 
     if {[expr [string compare [lindex $arc 0] [lindex $fsm_states $in]] == 0] && \
         [expr [string compare [lindex $arc 1] [lindex $fsm_states $out]] == 0]} {
+      if {[lindex $arc 2] == 1} {
+        set coverage 3
+      }
       set found 1
     }
 
@@ -209,7 +211,7 @@ proc fsm_calc_arc_fillcolor {in out dfltColor} {
   # If this wasn't even a valid state transition, set the fill color to the specified default color
   if {$found == 0} {
 
-    set fillcolor $dfltColor
+    set coverage 0
 
   } else {
 
@@ -222,7 +224,7 @@ proc fsm_calc_arc_fillcolor {in out dfltColor} {
 
       set arc [lindex $fsm_hit_arcs $i]
 
-      if {[expr [string compare [lindex $arc 0] [lindex $fsm_states $in]] == 0] && \
+      if {[expr [string compare [lindex $arc 0] [lindex $fsm_states $in]] == 0]  && \
           [expr [string compare [lindex $arc 1] [lindex $fsm_states $out]] == 0]} {
         set found 1
       }
@@ -232,26 +234,50 @@ proc fsm_calc_arc_fillcolor {in out dfltColor} {
     }
 
     if {$found == 0} {
-      set fillcolor $uncov_bgColor
+      if {$coverage == -1} {
+        set coverage 2
+      }
     } else {
-      set fillcolor $cov_bgColor
+      set coverage 1
     }
 
+  }
+
+  return $coverage
+
+}
+
+proc fsm_calc_arc_fillcolor {in out dfltColor} {
+
+  global uncov_bgColor cov_bgColor
+
+  set coverage [fsm_calc_arc_coverage $in $out]
+
+  if {$coverage == 0} {
+    set fillcolor $dfltColor
+  } elseif {$coverage == 2} {
+    set fillcolor $uncov_bgColor
+  } else {
+    set fillcolor $cov_bgColor
   }
 
   return $fillcolor
 
 }
 
-proc display_fsm_table {} {
+proc display_fsm_table {expr_id} {
 
   global fsm_hit_states fsm_states fsm_hit_arcs fsm_arcs
   global uncov_bgColor cov_bgColor
+  global curr_fsm_expr_id
 
   # Initialize padding values
   set tpad 10
   set xpad 20
   set ypad 20
+
+  # Initialize current expression ID
+  set curr_fsm_expr_id $expr_id
 
   # Calculate the width of a horizontal FSM state value
   .fsmwin.f.t.c create text 1c 1c -text [lindex $fsm_states 1] -anchor nw -tags htext
@@ -285,43 +311,89 @@ proc display_fsm_table {} {
           set xwidth [fsm_calc_xwidth $hstate_coords [expr $tpad * 2]]
           set ywidth [fsm_calc_ywidth $vstate_coords [expr $tpad * 2]]
           set fillcolor [.fsmwin.f.t.c cget -bg]
+          set tagname "title"
         } else {
           set t [fsm_gen_vertical_text [lindex $fsm_states [expr $col - 1]]]
           set xwidth [fsm_calc_xwidth $vstate_coords [expr $tpad * 2]]
           set ywidth [fsm_calc_ywidth $vstate_coords [expr $tpad * 2]]
           set fillcolor [fsm_calc_state_fillcolor [expr $col - 1]]
+          set tagname "to_state"
         }
       } elseif {$col == 0} {
         set t [lindex $fsm_states [expr $row - 1]]
         set xwidth [fsm_calc_xwidth $hstate_coords [expr $tpad * 2]]
         set ywidth [fsm_calc_ywidth $hstate_coords [expr $tpad * 2]]
         set fillcolor [fsm_calc_state_fillcolor [expr $row - 1]]
+        set tagname "from_state"
       } else {
-        set t ""
+        set coverage [fsm_calc_arc_coverage [expr $row - 1] [expr $col - 1]]
+        if {$coverage == 2} {
+          set tagname "uncov_arc"
+          set t       "I"
+        } elseif {$coverage == 3} {
+          set tagname "uncov_arc"
+          set t       "E"
+        } else {
+          set tagname "arc"
+          set t       ""
+        }
         set xwidth [fsm_calc_xwidth $vstate_coords [expr $tpad * 2]]
         set ywidth [fsm_calc_ywidth $hstate_coords [expr $tpad * 2]]
         set fillcolor [fsm_calc_arc_fillcolor [expr $row - 1] [expr $col - 1] [.fsmwin.f.t.c cget -bg]]
       }
 
       # Create square
-      if {$fillcolor == $uncov_bgColor && [expr $row != 0] && [expr $col != 0]} {
-        .fsmwin.f.t.c create rect $x $y [expr $x + $xwidth] [expr $y + $ywidth] \
-                                -outline black -fill $fillcolor -tags uncov_rect
-        puts "Creating uncovered rectangle"
-      } else {
-        .fsmwin.f.t.c create rect $x $y [expr $x + $xwidth] [expr $y + $ywidth] \
-                                -outline black -fill $fillcolor -tags rect
-      } 
+      .fsmwin.f.t.c create rect $x $y [expr $x + $xwidth] [expr $y + $ywidth] \
+                                -outline black -fill $fillcolor -tags $tagname
 
       # Bind each square
-      .fsmwin.f.t.c bind uncov_rect <Enter> {
-        puts "Entering uncovered rectangle"
+      .fsmwin.f.t.c bind uncov_arc <Enter> {
+        set curr_cursor [.fsmwin.f.t.c cget -cursor]
+        set curr_info   [.fsmwin.info cget -text]
+        .fsmwin.f.t.c configure -cursor hand2
+        .fsmwin.info configure -text "Click the left button to exclude/include state transition"
       }
-      .fsmwin.f.t.c bind uncov_rect <Leave> {
-        puts "Leaving uncovered rectangle"
+      .fsmwin.f.t.c bind uncov_arc <Leave> {
+        .fsmwin.f.t.c configure -cursor $curr_cursor
+        .fsmwin.info configure -text $curr_info
       }
-      .fsmwin.f.t.c bind uncov_rect <Button-1> {
-        puts "Clicked on uncovered rectangle"
+      .fsmwin.f.t.c bind uncov_arc <Button-1> {
+        set coord [.fsmwin.f.t.c coords current]
+        set fsl [.fsmwin.f.t.c find withtag from_state]
+        for {set i 0} {$i < [llength $fsl]} {incr i} {
+          set fcoord [.fsmwin.f.t.c coords [lindex $fsl $i]]
+          if {[expr [lindex $coord 1] == [lindex $fcoord 1]] && [expr [lindex $coord 3] == [lindex $fcoord 3]]} {
+            set from_st [lindex $fsm_states $i]
+            puts "from_st: $from_st"
+            break
+          }
+        }
+        set tsl [.fsmwin.f.t.c find withtag to_state]
+        for {set i 0} {$i < [llength $tsl]} {incr i} {
+          set tcoord [.fsmwin.f.t.c coords [lindex $tsl $i]]
+          if {[expr [lindex $coord 0] == [lindex $tcoord 0]] && [expr [lindex $coord 2] == [lindex $tcoord 2]]} {
+            set to_st [lindex $fsm_states $i]
+            puts "to_st: $to_st"
+            break
+          }
+        }
+        if {[.fsmwin.f.t.c itemcget [.fsmwin.f.t.c find enclosed current] -text] == "E"} {
+          set exclude 0
+          .fsmwin.f.t.c itemconfigure current -fill $cov_bgColor
+          .fsmwin.f.t.c itemconfigure [.fsmwin.f.t.c find enclosed current] -text "I"
+        } else {
+          set exclude 1
+          .fsmwin.f.t.c itemconfigure current -fill $uncov_bgColor
+          .fsmwin.f.t.c itemconfigure [.fsmwin.f.t.c find enclosed current] -text "E"
+        }
+        tcl_func_set_fsm_exclude $curr_funit_name $curr_funit_type $curr_fsm_expr_id $from_st $to_st $exclude
+        set text_x [.bot.right.txt xview]
+        set text_y [.bot.right.txt yview]
+        process_funit_fsm_cov
+        .bot.right.txt xview moveto [lindex $text_x 0]
+        .bot.right.txt yview moveto [lindex $text_y 0]
+        update_summary
+        enable_cdd_save
       }
 
       # Create text
@@ -374,7 +446,7 @@ proc display_fsm_window {expr_id} {
   display_fsm_state_exprs
 
   # Display the state transition table
-  display_fsm_table
+  display_fsm_table $expr_id
 
   # Display the information in the information bar
   set fsm_curr_info "Filename: $file_name, module: $curr_funit_name"

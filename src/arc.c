@@ -1236,6 +1236,7 @@ void arc_get_states( char*** states, int* state_size, const char* arcs, bool hit
 /*!
  \param from_states  Pointer to string array containing from_state values
  \param to_states    Pointer to string array containing to_state values
+ \param excludes     Pointer to integer array containing exclude values
  \param arc_size     Number of elements in both the from_states and to_states arrays.
  \param arcs         Pointer to state transition arc array.
  \param hit          Specifies if hit or missed transitions should be gathered.
@@ -1245,7 +1246,7 @@ void arc_get_states( char*** states, int* state_size, const char* arcs, bool hit
  during simulation (if hit parameter is true or the any parameter is true) or missed during simulation
  (if hit parameter is false or the any parameter is true).
 */
-void arc_get_transitions( char*** from_states, char*** to_states, int* arc_size, const char* arcs, bool hit, bool any ) {
+void arc_get_transitions( char*** from_states, char*** to_states, int** excludes, int* arc_size, const char* arcs, bool hit, bool any ) {
 
   char* strl;  /* String containing from_state information */
   char* strr;  /* String containing to_state information */
@@ -1253,6 +1254,7 @@ void arc_get_transitions( char*** from_states, char*** to_states, int* arc_size,
 
   /* Initialize state arrays and arc_size */
   *from_states = *to_states = NULL;
+  *excludes    = NULL;
   *arc_size    = 0;
 
   strl = (char*)malloc_safe( ((arc_get_width( arcs ) / 4) + 2), __FILE__, __LINE__ );
@@ -1266,6 +1268,10 @@ void arc_get_transitions( char*** from_states, char*** to_states, int* arc_size,
       (*from_states)[(*arc_size)] = (char*)malloc_safe( ((arc_get_width( arcs ) / 4) + 2), __FILE__, __LINE__ );
       *to_states                  = (char**)realloc( *to_states,   (sizeof( char* ) * (*arc_size + 1)) );
       (*to_states)[(*arc_size)]   = (char*)malloc_safe( ((arc_get_width( arcs ) / 4) + 2), __FILE__, __LINE__ );
+      if( any ) {
+        *excludes = (int*)realloc( *excludes, (sizeof( int ) * (*arc_size + 1)) );
+        (*excludes)[(*arc_size)] = arc_get_entry_suppl( arcs, i, ARC_EXCLUDED_F );
+      }
       arc_state_to_string( arcs, i, TRUE,  (*from_states)[(*arc_size)] );
       arc_state_to_string( arcs, i, FALSE, (*to_states)[(*arc_size)] );
       (*arc_size)++;
@@ -1277,6 +1283,10 @@ void arc_get_transitions( char*** from_states, char*** to_states, int* arc_size,
       (*from_states)[(*arc_size)] = (char*)malloc_safe( ((arc_get_width( arcs ) / 4) + 2), __FILE__, __LINE__ );
       *to_states                  = (char**)realloc( *to_states,   (sizeof( char* ) * (*arc_size + 1)) );
       (*to_states)[(*arc_size)]   = (char*)malloc_safe( ((arc_get_width( arcs ) / 4) + 2), __FILE__, __LINE__ );
+      if( any ) {
+        *excludes = (int*)realloc( *excludes, (sizeof( int ) * (*arc_size + 1)) );
+        (*excludes)[(*arc_size)] = arc_get_entry_suppl( arcs, i, ARC_EXCLUDED_R );
+      }
       arc_state_to_string( arcs, i, FALSE, (*from_states)[(*arc_size)] );
       arc_state_to_string( arcs, i, TRUE,  (*to_states)[(*arc_size)] );
       (*arc_size)++;
@@ -1306,6 +1316,11 @@ void arc_dealloc( char* arcs ) {
 
 /*
  $Log$
+ Revision 1.33  2006/06/23 19:45:26  phase1geo
+ Adding full C support for excluding/including coverage points.  Fixed regression
+ suite failures -- full regression now passes.  We just need to start adding support
+ to the Tcl/Tk files for full user-specified exclusion support.
+
  Revision 1.32  2006/06/22 21:56:21  phase1geo
  Adding excluded bits to signal and arc structures and changed statistic gathering
  functions to not gather coverage for excluded structures.  Started to work on

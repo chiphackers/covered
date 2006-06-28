@@ -65,7 +65,7 @@ bool fsm_collect( char* funit_name, int funit_type, sig_link** cov_head, sig_lin
 bool fsm_get_coverage( char* funit_name, int funit_type, int expr_id, int* width,
                        char*** total_states, int* total_state_num,
                        char*** hit_states, int* hit_state_num,
-                       char*** total_from_arcs, char*** total_to_arcs, int* total_arc_num,
+                       char*** total_from_arcs, char*** total_to_arcs, int** excludes, int* total_arc_num,
                        char*** hit_from_arcs, char*** hit_to_arcs, int* hit_arc_num,
                        char*** input_state, int* input_size, char*** output_state, int* output_size );
 
@@ -77,6 +77,11 @@ void fsm_dealloc( fsm* table );
 
 /*
  $Log$
+ Revision 1.17  2006/04/05 15:19:18  phase1geo
+ Adding support for FSM coverage output in the GUI.  Started adding components
+ for assertion coverage to GUI and report functions though there is no functional
+ support for this at this time.
+
  Revision 1.16  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

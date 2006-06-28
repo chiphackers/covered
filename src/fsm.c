@@ -558,7 +558,8 @@ bool fsm_collect( char* funit_name, int funit_type, sig_link** cov_head, sig_lin
  \param hit_state_num    Pointer to the number of elements in the hit_states array
  \param total_from_arcs  Pointer to a string array containing all possible state transition from states
  \param total_to_arcs    Pointer to a string array containing all possible state transition to states
- \param total_arc_num    Pointer to the number of elements in both the total_from_arcs and total_to_arcs arrays
+ \param excludes         Pointer to an integer array containing the exclude values for each state transition
+ \param total_arc_num    Pointer to the number of elements in both the total_from_arcs, total_to_arcs and excludes arrays
  \param total_from_arcs  Pointer to a string array containing the hit state transition from states
  \param total_to_arcs    Pointer to a string array containing the hit state transition to states
  \param total_arc_num    Pointer to the number of elements in both the hit_from_arcs and hit_to_arcs arrays
@@ -574,7 +575,7 @@ bool fsm_collect( char* funit_name, int funit_type, sig_link** cov_head, sig_lin
 bool fsm_get_coverage( char* funit_name, int funit_type, int expr_id, int* width,
                        char*** total_states, int* total_state_num,
                        char*** hit_states, int* hit_state_num,
-                       char*** total_from_arcs, char*** total_to_arcs, int* total_arc_num,
+                       char*** total_from_arcs, char*** total_to_arcs, int** excludes, int* total_arc_num,
                        char*** hit_from_arcs, char*** hit_to_arcs, int* hit_arc_num,
                        char*** input_state, int* input_size, char*** output_state, int* output_size ) {
 
@@ -605,8 +606,8 @@ bool fsm_get_coverage( char* funit_name, int funit_type, int expr_id, int* width
       arc_get_states( hit_states,   hit_state_num,   curr_fsm->table->table, TRUE, FALSE );
 
       /* Get state transition information */
-      arc_get_transitions( total_from_arcs, total_to_arcs, total_arc_num, curr_fsm->table->table, TRUE, TRUE );
-      arc_get_transitions( hit_from_arcs,   hit_to_arcs,   hit_arc_num,   curr_fsm->table->table, TRUE, FALSE );
+      arc_get_transitions( total_from_arcs, total_to_arcs, excludes, total_arc_num, curr_fsm->table->table, TRUE, TRUE );
+      arc_get_transitions( hit_from_arcs,   hit_to_arcs,   excludes, hit_arc_num,   curr_fsm->table->table, TRUE, FALSE );
 
       /* Get input state code */
       codegen_gen_expr( curr_fsm->table->from_state, curr_fsm->table->from_state->op, input_state, input_size, NULL );
@@ -846,6 +847,7 @@ void fsm_display_arc_verbose( FILE* ofile, fsm* table ) {
   int    len_width;     /* Number of characters needed to store the width of the output state expression */
   char** from_states;   /* String array containing from_state information */
   char** to_states;     /* String array containing to_state information */
+  int*   excludes;      /* Temporary container (not used in this functio) */
   int    arc_size;      /* Number of elements in the from_states and to_states arrays */
   int    i;             /* Loop iterator */
   char   tmpfst[4096];  /* Temporary string holder for from_state value */
@@ -876,7 +878,7 @@ void fsm_display_arc_verbose( FILE* ofile, fsm* table ) {
   fprintf( ofile, fstr, "==========", "==========" );
 
   /* Get the state transition information */
-  arc_get_transitions( &from_states, &to_states, &arc_size, table->table, (report_covered || trans_known), FALSE );
+  arc_get_transitions( &from_states, &to_states, &excludes, &arc_size, table->table, (report_covered || trans_known), FALSE );
 
   /* Output the information to the specified output stream */
   snprintf( fstr, 100, "          %%-%d.%ds -> %%-%d.%ds\n", width, width, width, width );
@@ -1155,6 +1157,11 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.54  2006/04/19 22:21:33  phase1geo
+ More updates to properly support assertion coverage.  Removing assertion modules
+ from line, toggle, combinational logic, FSM and race condition output so that there
+ won't be any overlap of information here.
+
  Revision 1.53  2006/04/12 18:06:24  phase1geo
  Updating regressions for changes that were made to support multi-file merging.
  Also fixing output of FSM state transitions to be what they were.

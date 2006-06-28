@@ -896,6 +896,7 @@ int tcl_func_get_fsm_coverage( ClientData d, Tcl_Interp* tcl, int argc, const ch
   int          hit_state_num;    /* Number of elements in the hit_states array */
   char**       total_from_arcs;  /* String array containing all possible state transition input states */
   char**       total_to_arcs;    /* String array containing all possible state transition output states */
+  int*         excludes;         /* Integer array containing exclude values for each state transition */
   int          total_arc_num;    /* Number of elements in both the total_from_arcs and total_to_arcs arrays */
   char**       hit_from_arcs;    /* String array containing hit state transition input states */
   char**       hit_to_arcs;      /* String array containing hit state transition output states */
@@ -912,7 +913,7 @@ int tcl_func_get_fsm_coverage( ClientData d, Tcl_Interp* tcl, int argc, const ch
   expr_id    = atoi( argv[3] );
 
   if( fsm_get_coverage( funit_name, funit_type, expr_id, &width, &total_states, &total_state_num, &hit_states, &hit_state_num,
-                        &total_from_arcs, &total_to_arcs, &total_arc_num, &hit_from_arcs, &hit_to_arcs, &hit_arc_num,
+                        &total_from_arcs, &total_to_arcs, &excludes, &total_arc_num, &hit_from_arcs, &hit_to_arcs, &hit_arc_num,
                         &input_state, &input_size, &output_state, &output_size ) ) {
 
     /* Load FSM total states into Tcl */
@@ -939,7 +940,7 @@ int tcl_func_get_fsm_coverage( ClientData d, Tcl_Interp* tcl, int argc, const ch
 
     /* Load FSM total arcs into Tcl */
     for( i=0; i<total_arc_num; i++ ) {
-      snprintf( str, 4096, "%d'h%s %d'h%s", width, total_from_arcs[i], width, total_to_arcs[i] );
+      snprintf( str, 4096, "%d'h%s %d'h%s %d", width, total_from_arcs[i], width, total_to_arcs[i], excludes[i] );
       Tcl_SetVar( tcl, "fsm_arcs", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
       free_safe( total_from_arcs[i] );
       free_safe( total_to_arcs[i] );
@@ -948,6 +949,7 @@ int tcl_func_get_fsm_coverage( ClientData d, Tcl_Interp* tcl, int argc, const ch
     if( total_arc_num > 0 ) {
       free_safe( total_from_arcs );
       free_safe( total_to_arcs );
+      free_safe( excludes );
     }
 
     /* Load FSM hit arcs into Tcl */
@@ -1900,6 +1902,12 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.50  2006/06/28 04:35:47  phase1geo
+ Adding support for line coverage and fixing toggle and combinational coverage
+ to redisplay main textbox to reflect exclusion changes.  Also added messageBox
+ for close and exit menu options when a CDD has been changed but not saved to
+ allow the user to do so before continuing on.
+
  Revision 1.49  2006/06/27 22:06:26  phase1geo
  Fixing more code related to exclusion.  The detailed combinational expression
  window now works correctly.  I am currently working on getting the main window
