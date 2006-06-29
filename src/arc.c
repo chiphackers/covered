@@ -575,12 +575,12 @@ void arc_add( char** arcs, vector* fr_st, vector* to_st, int hit ) {
 
       /* printf( "Setting reverse state now, hit: %d, ptr: %d\n", hit, ptr ); */
       arc_set_entry_suppl( *arcs, ptr, ARC_BIDIR, 1 );
-      arc_set_entry_suppl( *arcs, ptr, ARC_HIT_R, hit );
+      arc_set_entry_suppl( *arcs, ptr, ARC_HIT_R, (arc_get_entry_suppl( *arcs, ptr, ARC_HIT_R ) | hit) );
 
     } else if( side == 0 ) {
 
       /* printf( "Setting forward state now, hit: %d, ptr: %d\n", hit, ptr ); */
-      arc_set_entry_suppl( *arcs, ptr, ARC_HIT_F, hit );
+      arc_set_entry_suppl( *arcs, ptr, ARC_HIT_F, (arc_get_entry_suppl( *arcs, ptr, ARC_HIT_F ) | hit) );
 
     }
 
@@ -1327,6 +1327,9 @@ void arc_dealloc( char* arcs ) {
 
 /*
  $Log$
+ Revision 1.36  2006/06/29 16:48:14  phase1geo
+ FSM exclusion code now complete.
+
  Revision 1.35  2006/06/29 04:26:02  phase1geo
  More updates for FSM coverage.  We are getting close but are just not to fully
  working order yet.

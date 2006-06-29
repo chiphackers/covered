@@ -34,8 +34,9 @@ void toggle_get_stats( sig_link* sigl, float* total, int* hit01, int* hit10 );
 /*! \brief Collects all toggle expressions that match the specified coverage indication. */
 bool toggle_collect( char* funit_name, int funit_type, int cov, sig_link** sig_head, sig_link** sig_tail );
 
-/*! \brief TBD */
-bool toggle_get_coverage( char* funit_name, int funit_type, char* sig_name, int* msb, int* lsb, char** tog01, char** tog10 );
+/*! \brief Gets toggle coverage information for a single signal in the specified functional unit */
+bool toggle_get_coverage( char* funit_name, int funit_type, char* sig_name, int* msb, int* lsb,
+                          char** tog01, char** tog10, int* excluded );
 
 /*! \brief Gets total and hit toggle signal status for the specified functional unit */
 bool toggle_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit );
@@ -46,6 +47,11 @@ void toggle_report( FILE* ofile, bool verbose );
 
 /*
  $Log$
+ Revision 1.13  2006/03/28 22:28:28  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.12  2006/01/19 23:10:38  phase1geo
  Adding line and starting column information to vsignal structure (and associated CDD
  files).  Regression has been fully updated for this change which now fully passes.  Final

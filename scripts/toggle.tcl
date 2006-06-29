@@ -1,6 +1,5 @@
 set sig_name        ""
 set curr_toggle_ptr ""
-set toggle_exclude  0
 
 proc display_toggle {curr_index} {
 
@@ -23,20 +22,18 @@ proc display_toggle {curr_index} {
   set next_toggle_index [lindex [.bot.right.txt tag nextrange uncov_button [lindex $curr_range 1]] 0]
 
   # Now create the toggle window
-  create_toggle_window $curr_signal 0
+  create_toggle_window $curr_signal
 
 }
 
-proc create_toggle_window {signal excluded} {
+proc create_toggle_window {signal} {
 
   global toggle01_verbose toggle10_verbose toggle_msb toggle_lsb
   global sig_name prev_toggle_index next_toggle_index
   global curr_funit_name curr_funit_type
   global curr_toggle_ptr
-  global toggle_exclude
 
   set sig_name       $signal
-  set toggle_exclude $excluded
 
   # Now create the window and set the grab to this window
   if {[winfo exists .togwin] == 0} {
@@ -57,8 +54,8 @@ proc create_toggle_window {signal excluded} {
     label .togwin.f.info -anchor e
 
     # Create exclude checkbutton
-    checkbutton .togwin.f.excl -text "Exclude" -variable toggle_exclude -command {
-      tcl_func_set_toggle_exclude $curr_funit_name $curr_funit_type $sig_name $toggle_exclude
+    checkbutton .togwin.f.excl -text "Exclude" -variable toggle_excluded -command {
+      tcl_func_set_toggle_exclude $curr_funit_name $curr_funit_type $sig_name $toggle_excluded
       set text_x [.bot.right.txt xview]
       set text_y [.bot.right.txt yview]
       process_funit_toggle_cov
@@ -66,6 +63,7 @@ proc create_toggle_window {signal excluded} {
       .bot.right.txt yview moveto [lindex $text_y 0]
       update_summary
       enable_cdd_save
+      set_pointer curr_toggle_ptr $curr_toggle_ptr
     }
 
     # Create bottom button bar

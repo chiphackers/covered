@@ -554,13 +554,14 @@ int tcl_func_get_toggle_coverage( ClientData d, Tcl_Interp* tcl, int argc, const
   int   lsb;              /* Least-significant bit position of the specified signal */
   char* tog01;            /* Toggle 0->1 information for this signal */
   char* tog10;            /* Toggle 1->0 information for this signal */
+  int   excluded;         /* Specifies if signal should be excluded */
   char  tmp[20];          /* Temporary string for conversion purposes */
 
   funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
   funit_type = atoi( argv[2] );
   signame    = strdup_safe( argv[3], __FILE__, __LINE__ );
 
-  if( toggle_get_coverage( funit_name, funit_type, signame, &msb, &lsb, &tog01, &tog10 ) ) {
+  if( toggle_get_coverage( funit_name, funit_type, signame, &msb, &lsb, &tog01, &tog10, &excluded ) ) {
 
     snprintf( tmp, 20, "%d", msb );
     Tcl_SetVar( tcl, "toggle_msb", tmp, TCL_GLOBAL_ONLY );
@@ -568,6 +569,8 @@ int tcl_func_get_toggle_coverage( ClientData d, Tcl_Interp* tcl, int argc, const
     Tcl_SetVar( tcl, "toggle_lsb", tmp, TCL_GLOBAL_ONLY );
     Tcl_SetVar( tcl, "toggle01_verbose", tog01, TCL_GLOBAL_ONLY );
     Tcl_SetVar( tcl, "toggle10_verbose", tog10, TCL_GLOBAL_ONLY );
+    snprintf( tmp, 20, "%d", excluded );
+    Tcl_SetVar( tcl, "toggle_excluded", tmp, TCL_GLOBAL_ONLY );
 
     /* Free up allocated memory */
     free_safe( tog01 );
@@ -1911,6 +1914,11 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.53  2006/06/29 20:06:33  phase1geo
+ Adding assertion exclusion code.  Things seem to be working properly with this
+ now.  This concludes the initial version of code exclusion.  There are some
+ things to clean up (and maybe make better looking).
+
  Revision 1.52  2006/06/29 04:26:02  phase1geo
  More updates for FSM coverage.  We are getting close but are just not to fully
  working order yet.

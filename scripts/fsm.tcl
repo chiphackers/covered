@@ -402,6 +402,7 @@ proc display_fsm_table {expr_id} {
         .bot.right.txt yview moveto [lindex $text_y 0]
         update_summary
         enable_cdd_save
+        set_pointer curr_fsm_ptr $curr_fsm_ptr
       }
 
       # If we are in row 0, column 0, draw the special output

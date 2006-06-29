@@ -151,13 +151,14 @@ bool toggle_collect( char* funit_name, int funit_type, int cov, sig_link** sig_h
  \param lsb         Least-significant bit position of the requested signal
  \param tog01       Toggle vector of bits transitioning from a 0 to a 1
  \param tog10       Toggle vector of bits transitioning from a 1 to a 0
+ \param excluded    Pointer to integer specifying if this signal should be excluded or not
 
  \return Returns TRUE if the specified functional unit and signal exists; otherwise, returns FALSE.
 
  Returns toggle coverage information for a specified signal in a specified functional unit.  This
  is needed by the GUI for verbose toggle coverage display.
 */
-bool toggle_get_coverage( char* funit_name, int funit_type, char* sig_name, int* msb, int* lsb, char** tog01, char** tog10 ) {
+bool toggle_get_coverage( char* funit_name, int funit_type, char* sig_name, int* msb, int* lsb, char** tog01, char** tog10, int* excluded ) {
 
   bool        retval = TRUE;  /* Return value for this function */
   func_unit   funit;          /* Functional unit used for searching */
@@ -173,10 +174,11 @@ bool toggle_get_coverage( char* funit_name, int funit_type, char* sig_name, int*
     sig.name = sig_name;
 
     if( (sigl = sig_link_find( &sig, funitl->funit->sig_head )) != NULL ) {
-      *msb = sigl->sig->lsb + (sigl->sig->value->width - 1);
-      *lsb = sigl->sig->lsb; 
-      *tog01 = vector_get_toggle01( sigl->sig->value->value, sigl->sig->value->width );
-      *tog10 = vector_get_toggle10( sigl->sig->value->value, sigl->sig->value->width );
+      *msb      = sigl->sig->lsb + (sigl->sig->value->width - 1);
+      *lsb      = sigl->sig->lsb; 
+      *tog01    = vector_get_toggle01( sigl->sig->value->value, sigl->sig->value->width );
+      *tog10    = vector_get_toggle10( sigl->sig->value->value, sigl->sig->value->width );
+      *excluded = sigl->sig->suppl.part.excluded;
     } else {
       retval = FALSE;
     }
@@ -626,6 +628,10 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.41  2006/06/26 04:12:55  phase1geo
+ More updates for supporting coverage exclusion.  Still a bit more to go
+ before this is working properly.
+
  Revision 1.40  2006/06/23 21:43:53  phase1geo
  More updates to include toggle exclusion (this does not work correctly at
  this time).

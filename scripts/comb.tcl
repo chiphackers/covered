@@ -560,6 +560,7 @@ proc create_comb_window {expr_id sline} {
       .bot.right.txt yview moveto [lindex $text_y 0]
       update_summary
       enable_cdd_save
+      set_pointer curr_comb_ptr $curr_comb_ptr
     }
     text  .combwin.f.bot.t -height 10 -width 100 -xscrollcommand ".combwin.f.bot.hb set" -yscrollcommand ".combwin.f.bot.vb set" -wrap none -state disabled
     scrollbar .combwin.f.bot.hb -orient horizontal -command ".combwin.f.bot.t xview"

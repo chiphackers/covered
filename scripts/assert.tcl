@@ -191,6 +191,7 @@ proc create_assert_window {inst} {
     .bot.right.txt yview moveto [lindex $text_y 0]
     update_summary
     enable_cdd_save
+    set_pointer curr_assert_ptr $curr_assert_ptr
     create_assert_window $curr_assert_inst
   }
 
