@@ -39,14 +39,15 @@ bool exclude_is_parent_excluded( expression* expr ) {
 }
 
 /*!
- \param expr      Pointer to expression that is being excluded/included.
+ \param expr      Pointer to expression that is being excluded/included
  \param funit     Pointer to functional unit containing this expression
- \param excluded  Specifies if expression is being excluded or included.
+ \param excluded  Specifies if expression is being excluded or included
+ \param set_line  Set to TRUE when this function is being called for line exclusion
 
  Sets the specified expression's exclude bit to the given value and recalculates all
  affected coverage information for this instance.
 */
-void exclude_expr_assign_and_recalc( expression* expr, func_unit* funit, bool excluded ) {
+void exclude_expr_assign_and_recalc( expression* expr, func_unit* funit, bool excluded, bool set_line ) {
 
   float comb_total = 0;  /* Total number of combinational logic coverage points within this tree */
   int   comb_hit   = 0;  /* Total number of hit combinations within this tree */
@@ -92,8 +93,9 @@ void exclude_expr_assign_and_recalc( expression* expr, func_unit* funit, bool ex
 
   }
 
-  /* Set the exclude bit in the expression supplemental field */
-  expr->suppl.part.excluded = excluded ? 1 : 0;
+  /* Set the exclude bits in the expression supplemental field */
+  expr->suppl.part.excluded      = excluded ? 1 : 0;
+  expr->suppl.part.stmt_excluded = (excluded && set_line) ? 1 : 0;
 
 }
 
@@ -213,7 +215,7 @@ bool exclude_set_line_exclude( char* funit_name, int funit_type, int line, int v
         expl = expl->next;
       }
       if( expl != NULL ) {
-        exclude_expr_assign_and_recalc( expl->exp, funitl->funit, (value == 1) );      
+        exclude_expr_assign_and_recalc( expl->exp, funitl->funit, (value == 1), TRUE );
         expl   = expl->next;
         retval = TRUE;
       }
@@ -296,7 +298,7 @@ bool exclude_set_comb_exclude( char* funit_name, int funit_type, int expr_id, in
     exp.id = expr_id;
     if( (expl = exp_link_find( &exp, funitl->funit->exp_head )) != NULL ) {
       if( (subexp = expression_find_uline_id( expl->exp, uline_id )) != NULL ) {
-        exclude_expr_assign_and_recalc( subexp, funitl->funit, (value == 1) );
+        exclude_expr_assign_and_recalc( subexp, funitl->funit, (value == 1), FALSE );
         retval = TRUE;
       }
     }
@@ -394,7 +396,7 @@ bool exclude_set_assert_exclude( char* funit_name, int funit_type, char* inst_na
     /* Find the signal that matches the given signal name and sets its excluded bit */
     exp.id = expr_id;
     if( (expl = exp_link_find( &exp, curr_child->funit->exp_head )) != NULL ) {
-      exclude_expr_assign_and_recalc( expl->exp, curr_child->funit, (value == 1) );
+      exclude_expr_assign_and_recalc( expl->exp, curr_child->funit, (value == 1), FALSE );
       retval = TRUE;
     }
 
@@ -407,6 +409,11 @@ bool exclude_set_assert_exclude( char* funit_name, int funit_type, char* inst_na
 
 /*
  $Log$
+ Revision 1.8  2006/06/29 20:06:33  phase1geo
+ Adding assertion exclusion code.  Things seem to be working properly with this
+ now.  This concludes the initial version of code exclusion.  There are some
+ things to clean up (and maybe make better looking).
+
  Revision 1.7  2006/06/28 04:35:47  phase1geo
  Adding support for line coverage and fixing toggle and combinational coverage
  to redisplay main textbox to reflect exclusion changes.  Also added messageBox

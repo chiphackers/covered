@@ -432,7 +432,7 @@ void combination_get_stats( exp_link* expl, float* total, int* hit ) {
   while( curr_exp != NULL ) {
     if( ESUPPL_IS_ROOT( curr_exp->exp->suppl ) == 1 ) {
       ulid = 1;
-      combination_get_tree_stats( curr_exp->exp, &ulid, 0, FALSE, total, hit );
+      combination_get_tree_stats( curr_exp->exp, &ulid, 0, ESUPPL_STMT_EXCLUDED( curr_exp->exp->suppl ), total, hit );
     }
     curr_exp = curr_exp->next;
   }
@@ -2071,7 +2071,7 @@ bool combination_collect( char* funit_name, int funit_type, expression*** covs, 
             *excludes   = (int*)realloc( *excludes, (sizeof( int* ) * uncov_size) );
           }
           (*uncovs)[(*uncov_cnt)]   = stmti.curr->stmt->exp;
-          (*excludes)[(*uncov_cnt)] = any_measurable ? 0 : 1;
+          (*excludes)[(*uncov_cnt)] = (any_measurable && (ESUPPL_STMT_EXCLUDED( stmti.curr->stmt->exp->suppl ) == 0)) ? 0 : 1;
           (*uncov_cnt)++;
         }
         stmti.curr->stmt->exp->suppl.part.comb_cntd = 0;
@@ -2352,6 +2352,12 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.147  2006/06/28 04:35:47  phase1geo
+ Adding support for line coverage and fixing toggle and combinational coverage
+ to redisplay main textbox to reflect exclusion changes.  Also added messageBox
+ for close and exit menu options when a CDD has been changed but not saved to
+ allow the user to do so before continuing on.
+
  Revision 1.146  2006/06/27 22:06:25  phase1geo
  Fixing more code related to exclusion.  The detailed combinational expression
  window now works correctly.  I am currently working on getting the main window

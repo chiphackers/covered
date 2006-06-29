@@ -286,7 +286,7 @@
  supplemental fields are ANDed with this mask and ORed together to perform the
  merge.  See esuppl_u for information on which bits are masked.
 */
-#define ESUPPL_MERGE_MASK            0x7ffff
+#define ESUPPL_MERGE_MASK            0xfffff
 
 /*!
  Returns a value of 1 if the specified supplemental value has the SWAPPED
@@ -397,6 +397,12 @@
  consideration.
 */
 #define ESUPPL_EXCLUDED(x)           x.part.excluded
+
+/*!
+ Returns a value of 1 if the specified statement should be excluded from coverage
+ consideration.
+*/
+#define ESUPPL_STMT_EXCLUDED(x)      x.part.stmt_excluded
 
 /*! @} */
 
@@ -1012,16 +1018,18 @@ union esuppl_u {
                                      coverage results.  If a parent expression has been excluded, all children expressions
                                      within its tree are also considered excluded (even if their excluded bits are not
                                      set. */
+    control stmt_excluded  :1;  /*!< Bit 19.  Mask bit = 1.  Indicates that this statement (and its associated expression
+                                     tree) should be excluded from coverage results. */
  
     /* UNMASKED BITS */
-    control eval_t         :1;  /*!< Bit 19.  Mask bit = 0.  Indicates that the value of the current expression is
+    control eval_t         :1;  /*!< Bit 20.  Mask bit = 0.  Indicates that the value of the current expression is
                                      currently set to TRUE (temporary value). */
-    control eval_f         :1;  /*!< Bit 20.  Mask bit = 0.  Indicates that the value of the current expression is
+    control eval_f         :1;  /*!< Bit 21.  Mask bit = 0.  Indicates that the value of the current expression is
                                      currently set to FALSE (temporary value). */
-    control comb_cntd      :1;  /*!< Bit 21.  Mask bit = 0.  Indicates that the current expression has been previously
+    control comb_cntd      :1;  /*!< Bit 22.  Mask bit = 0.  Indicates that the current expression has been previously
                                      counted for combinational coverage.  Only set by report command (therefore this bit
                                      will always be a zero when written to CDD file. */
-    control stmt_added     :1;  /*!< Bit 22.  Temporary bit value used by the score command but not displayed to the CDD
+    control stmt_added     :1;  /*!< Bit 23.  Temporary bit value used by the score command but not displayed to the CDD
                                      file.  When this bit is set to a one, it indicates to the db_add_statement
                                      function that this statement and all children statements have already been
                                      added to the functional unit statement list and should not be added again. */
@@ -1841,6 +1849,11 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.199  2006/06/29 20:06:33  phase1geo
+ Adding assertion exclusion code.  Things seem to be working properly with this
+ now.  This concludes the initial version of code exclusion.  There are some
+ things to clean up (and maybe make better looking).
+
  Revision 1.198  2006/06/29 04:26:02  phase1geo
  More updates for FSM coverage.  We are getting close but are just not to fully
  working order yet.

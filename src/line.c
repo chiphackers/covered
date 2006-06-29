@@ -76,7 +76,7 @@ void line_get_stats( stmt_link* stmtl, float* total, int* hit ) {
         (curr.curr->stmt->exp->op != EXP_OP_NB_CALL) &&
         (curr.curr->stmt->exp->line != 0) ) {
       *total = *total + 1;
-      if( (curr.curr->stmt->exp->exec_num > 0) || (ESUPPL_EXCLUDED( curr.curr->stmt->exp->suppl ) == 1) ) {
+      if( (curr.curr->stmt->exp->exec_num > 0) || (ESUPPL_STMT_EXCLUDED( curr.curr->stmt->exp->suppl ) == 1) ) {
         (*hit)++;
       }
     }
@@ -550,6 +550,10 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.62  2006/06/26 04:12:55  phase1geo
+ More updates for supporting coverage exclusion.  Still a bit more to go
+ before this is working properly.
+
  Revision 1.61  2006/06/22 21:56:21  phase1geo
  Adding excluded bits to signal and arc structures and changed statistic gathering
  functions to not gather coverage for excluded structures.  Started to work on
