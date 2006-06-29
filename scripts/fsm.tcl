@@ -329,7 +329,7 @@ proc display_fsm_table {expr_id} {
         set coverage [fsm_calc_arc_coverage [expr $row - 1] [expr $col - 1]]
         if {$coverage == 2} {
           set tagname "uncov_arc"
-          set t       "I"
+          set t       "_"
         } elseif {$coverage == 3} {
           set tagname "uncov_arc"
           set t       "E"
@@ -388,7 +388,7 @@ proc display_fsm_table {expr_id} {
         if {[.fsmwin.f.t.c itemcget current -text] == "E"} {
           set exclude 0
           .fsmwin.f.t.c itemconfigure $rid -fill $uncov_bgColor
-          .fsmwin.f.t.c itemconfigure current -text "I"
+          .fsmwin.f.t.c itemconfigure current -text "_"
         } else {
           set exclude 1
           .fsmwin.f.t.c itemconfigure $rid -fill $cov_bgColor

@@ -361,7 +361,7 @@ void arc_set_entry_suppl( char* arcs, int curr, int type, char val ) {
   int entry_size = arc_get_entry_width( arc_get_width( arcs ) );
 
   /* Make sure that we don't access outside the range of the arc array */
-  arcs[(curr * entry_size) + ARC_STATUS_SIZE] = arcs[(curr * entry_size) + ARC_STATUS_SIZE] | ((val & 0x1) << type);
+  arcs[(curr * entry_size) + ARC_STATUS_SIZE] = (arcs[(curr * entry_size) + ARC_STATUS_SIZE] & ~(0x1 << type)) | ((val & 0x1) << type);
 
 }
 
@@ -801,13 +801,8 @@ float arc_transition_total( const char* arcs ) {
 
   /* Now just add to it the number of bidirectional entries and subtract the number of excluded state transitions */
   for( i=0; i<arc_get_curr_size( arcs ); i++ ) {
-    if( arc_get_entry_suppl( arcs, i, ARC_EXCLUDED_F ) == 0 ) {
-      if( (arc_get_entry_suppl( arcs, i, ARC_BIDIR ) == 1) &&
-          (arc_get_entry_suppl( arcs, i, ARC_EXCLUDED_R ) == 0) ) {
-        total++;
-      }
-    } else {
-      total--;
+    if( arc_get_entry_suppl( arcs, i, ARC_BIDIR ) == 1 ) {
+      total++;
     }
   }
 
@@ -826,21 +821,17 @@ float arc_transition_total( const char* arcs ) {
 */
 int arc_transition_hits( const char* arcs ) {
 
-  int hit = 0;     /* Number of arcs hit */
-  int i;           /* Loop iterator */
-  int curr_size;   /* Current size of arc array */
+  int hit = 0;    /* Number of arcs hit */
+  int i;          /* Loop iterator */
+  int curr_size;  /* Current size of arc array */
 
   /* Get some size values */
-  curr_size  = arc_get_curr_size( arcs );
+  curr_size = arc_get_curr_size( arcs );
 
   /* Count the number of hits in the FSM arc */
   for( i=0; i<curr_size; i++ ) {
-    if( arc_get_entry_suppl( arcs, i, ARC_EXCLUDED_F ) == 0 ) {
-      hit += arc_get_entry_suppl( arcs, i, ARC_HIT_F );
-    }
-    if( arc_get_entry_suppl( arcs, i, ARC_EXCLUDED_R ) == 0 ) {
-      hit += arc_get_entry_suppl( arcs, i, ARC_HIT_R );
-    }
+    hit += arc_get_entry_suppl( arcs, i, ARC_HIT_F ) | arc_get_entry_suppl( arcs, i, ARC_EXCLUDED_F );
+    hit += arc_get_entry_suppl( arcs, i, ARC_HIT_R ) | arc_get_entry_suppl( arcs, i, ARC_EXCLUDED_R );
   }
 
   return( hit );
@@ -1336,6 +1327,10 @@ void arc_dealloc( char* arcs ) {
 
 /*
  $Log$
+ Revision 1.35  2006/06/29 04:26:02  phase1geo
+ More updates for FSM coverage.  We are getting close but are just not to fully
+ working order yet.
+
  Revision 1.34  2006/06/28 22:15:19  phase1geo
  Adding more code to support FSM coverage.  Still a ways to go before this
  is completed.

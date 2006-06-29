@@ -525,6 +525,10 @@ bool fsm_collect( char* funit_name, int funit_type, sig_link** cov_head, sig_lin
     while( curr_fsm != NULL ) {
 
       /* Get the state and arc statistics */
+      state_total = 0;
+      state_hit   = 0;
+      arc_total   = 0;
+      arc_hit     = 0;
       arc_get_stats( curr_fsm->table->table, &state_total, &state_hit, &arc_total, &arc_hit );
 
       /* Allocate some more memory for the excluded array */
@@ -535,8 +539,12 @@ bool fsm_collect( char* funit_name, int funit_type, sig_link** cov_head, sig_lin
         (*excludes)[uncov_size] = 0;
         fsm_gather_signals( curr_fsm->table->to_state, uncov_head, uncov_tail, curr_fsm->table->to_state->id, expr_ids, &uncov_size );
       } else {
-        (*excludes)[uncov_size] = arc_are_any_excluded( curr_fsm->table->table ) ? 1 : 0;
-        fsm_gather_signals( curr_fsm->table->to_state, cov_head, cov_tail, -1, expr_ids, &uncov_size );
+        if( arc_are_any_excluded( curr_fsm->table->table ) ) {
+          fsm_gather_signals( curr_fsm->table->to_state, uncov_head, uncov_tail, curr_fsm->table->to_state->id, expr_ids, &uncov_size );
+          (*excludes)[uncov_size] = 1;
+        } else {
+          fsm_gather_signals( curr_fsm->table->to_state, cov_head, cov_tail, -1, expr_ids, &uncov_size );
+        }
       }
 
       curr_fsm = curr_fsm->next;
@@ -1158,6 +1166,10 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.56  2006/06/29 04:26:02  phase1geo
+ More updates for FSM coverage.  We are getting close but are just not to fully
+ working order yet.
+
  Revision 1.55  2006/06/28 22:15:19  phase1geo
  Adding more code to support FSM coverage.  Still a ways to go before this
  is completed.
