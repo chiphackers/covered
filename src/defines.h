@@ -817,6 +817,7 @@ typedef enum exp_op_type_e {
 #define ARC_EXCLUDED_F          5       /*!< Specifies if the forward transition is excluded or not */
 #define ARC_EXCLUDED_R          6       /*!< Specifies if the backward transition is excluded or not */
 #define ARC_ENTRY_SUPPL_SIZE    7       /*!< Number of bits comprising entry supplemental field */
+#define ARC_ENTRY_SUPPL_MASK    0x7f    /*!< Value to mask off entry supplement field */
 
 #define ARC_STATUS_SIZE         7       /*!< Number of characters comprising arc status */
 
@@ -1839,6 +1840,11 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.197  2006/06/23 19:45:26  phase1geo
+ Adding full C support for excluding/including coverage points.  Fixed regression
+ suite failures -- full regression now passes.  We just need to start adding support
+ to the Tcl/Tk files for full user-specified exclusion support.
+
  Revision 1.196  2006/06/22 21:56:21  phase1geo
  Adding excluded bits to signal and arc structures and changed statistic gathering
  functions to not gather coverage for excluded structures.  Started to work on

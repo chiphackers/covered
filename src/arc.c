@@ -430,7 +430,7 @@ int arc_find( const char* arcs, vector* from_st, vector* to_st, int* ptr ) {
         while( (j < curr_size) && (*ptr == -1) ) {
           k = 0;
           while( (k < entry_size) &&
-                 (((k == 0) && ((arcs[(((j * entry_size) + k) + ARC_STATUS_SIZE)] & 0xe0) == (tmp[k + ARC_STATUS_SIZE] & 0xe0))) ||
+                 (((k == 0) && ((arcs[(((j * entry_size) + k) + ARC_STATUS_SIZE)] & ~ARC_ENTRY_SUPPL_MASK) == (tmp[k + ARC_STATUS_SIZE] & ~ARC_ENTRY_SUPPL_MASK))) ||
                   ((k != 0) &&  (arcs[(((j * entry_size) + k) + ARC_STATUS_SIZE)]         ==  tmp[k + ARC_STATUS_SIZE]))) ) {
             k++;
           }
@@ -448,7 +448,7 @@ int arc_find( const char* arcs, vector* from_st, vector* to_st, int* ptr ) {
           if( (type == 1) || ((type == 0) && (arc_get_entry_suppl( arcs, j, ARC_BIDIR ) == 1)) ) {
             k = 0;
             while( (k < entry_size) && 
-                   (((k == 0) && ((arcs[(((j * entry_size) + k) + ARC_STATUS_SIZE)] & 0xe0) == (tmp[k + ARC_STATUS_SIZE] & 0xe0))) ||
+                   (((k == 0) && ((arcs[(((j * entry_size) + k) + ARC_STATUS_SIZE)] & ~ARC_ENTRY_SUPPL_MASK) == (tmp[k + ARC_STATUS_SIZE] & ~ARC_ENTRY_SUPPL_MASK))) ||
                     ((k != 0) &&  (arcs[(((j * entry_size) + k) + ARC_STATUS_SIZE)]         ==  tmp[k + ARC_STATUS_SIZE]))) ) {
               k++;
             }
@@ -1303,6 +1303,26 @@ void arc_get_transitions( char*** from_states, char*** to_states, int** excludes
 /*!
  \param arcs  Pointer to state transition arc array.
 
+ \return Returns TRUE if any state transitions were excluded from coverage; otherwise,
+         returns FALSE.
+*/
+bool arc_are_any_excluded( const char* arcs ) {
+
+  int i = 0;  /* Loop iterator */
+
+  while( (i < arc_get_curr_size( arcs )) &&
+         (arc_get_entry_suppl( arcs, i, ARC_EXCLUDED_F ) == 0) &&
+         (arc_get_entry_suppl( arcs, i, ARC_EXCLUDED_R ) == 0) ) {
+    i++;
+  }
+
+  return( i < arc_get_curr_size( arcs ) );
+
+}
+
+/*!
+ \param arcs  Pointer to state transition arc array.
+
  Deallocates all allocated memory for the specified state transition
  arc array.
 */
@@ -1316,6 +1336,10 @@ void arc_dealloc( char* arcs ) {
 
 /*
  $Log$
+ Revision 1.34  2006/06/28 22:15:19  phase1geo
+ Adding more code to support FSM coverage.  Still a ways to go before this
+ is completed.
+
  Revision 1.33  2006/06/23 19:45:26  phase1geo
  Adding full C support for excluding/including coverage points.  Fixed regression
  suite failures -- full regression now passes.  We just need to start adding support

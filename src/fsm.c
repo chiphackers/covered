@@ -489,6 +489,7 @@ void fsm_gather_signals( expression* expr, sig_link** head, sig_link** tail, int
  \param uncov_head  Pointer to the head of the signal list of uncovered FSM output states
  \param uncov_tail  Pointer to the tail of the signal list of uncovered FSM output states
  \param expr_ids    Pointer to array of expression IDs for each uncovered signal
+ \param excludes    Pointer to array of exclude values for each uncovered signal
 
  \return Returns TRUE if FSM coverage information was found for the given functional unit; otherwise,
          returns FALSE to indicate that an error occurred.
@@ -497,7 +498,7 @@ void fsm_gather_signals( expression* expr, sig_link** head, sig_link** tail, int
  Used by the GUI for verbose FSM output.
 */
 bool fsm_collect( char* funit_name, int funit_type, sig_link** cov_head, sig_link** cov_tail,
-                  sig_link** uncov_head, sig_link** uncov_tail, int** expr_ids ) {
+                  sig_link** uncov_head, sig_link** uncov_tail, int** expr_ids, int** excludes ) {
 
   bool        retval = TRUE;   /* Return value for this function */
   func_unit   funit;           /* Functional unit used for searching */
@@ -518,7 +519,7 @@ bool fsm_collect( char* funit_name, int funit_type, sig_link** cov_head, sig_lin
     /* Initialize list pointers */
     *cov_tail   = *cov_head   = NULL;
     *uncov_tail = *uncov_head = NULL;
-    *expr_ids   = NULL;
+    *expr_ids   = *excludes   = NULL;
 
     curr_fsm = funitl->funit->fsm_head;
     while( curr_fsm != NULL ) {
@@ -526,10 +527,15 @@ bool fsm_collect( char* funit_name, int funit_type, sig_link** cov_head, sig_lin
       /* Get the state and arc statistics */
       arc_get_stats( curr_fsm->table->table, &state_total, &state_hit, &arc_total, &arc_hit );
 
+      /* Allocate some more memory for the excluded array */
+      *excludes = (int*)realloc( *excludes, (sizeof( int ) * (uncov_size + 1)) );
+
       /* If the total number of arcs is not known, consider this FSM as uncovered */
       if( (arc_total == -1) || (arc_total != arc_hit) ) {
+        (*excludes)[uncov_size] = 0;
         fsm_gather_signals( curr_fsm->table->to_state, uncov_head, uncov_tail, curr_fsm->table->to_state->id, expr_ids, &uncov_size );
       } else {
+        (*excludes)[uncov_size] = arc_are_any_excluded( curr_fsm->table->table ) ? 1 : 0;
         fsm_gather_signals( curr_fsm->table->to_state, cov_head, cov_tail, -1, expr_ids, &uncov_size );
       }
 
@@ -579,10 +585,11 @@ bool fsm_get_coverage( char* funit_name, int funit_type, int expr_id, int* width
                        char*** hit_from_arcs, char*** hit_to_arcs, int* hit_arc_num,
                        char*** input_state, int* input_size, char*** output_state, int* output_size ) {
 
-  bool        retval = TRUE;  /* Return value for this function */
-  func_unit   funit;          /* Functional unit structure used for searching */
-  funit_link* funitl;         /* Pointer to found functional unit link */
-  fsm_link*   curr_fsm;       /* Pointer to current FSM link */
+  bool        retval = FALSE;  /* Return value for this function */
+  func_unit   funit;           /* Functional unit structure used for searching */
+  funit_link* funitl;          /* Pointer to found functional unit link */
+  fsm_link*   curr_fsm;        /* Pointer to current FSM link */
+  int*        tmp;             /* Temporary integer array */
 
   /* First, find functional unit in functional unit array */
   funit.name = funit_name;
@@ -607,7 +614,7 @@ bool fsm_get_coverage( char* funit_name, int funit_type, int expr_id, int* width
 
       /* Get state transition information */
       arc_get_transitions( total_from_arcs, total_to_arcs, excludes, total_arc_num, curr_fsm->table->table, TRUE, TRUE );
-      arc_get_transitions( hit_from_arcs,   hit_to_arcs,   excludes, hit_arc_num,   curr_fsm->table->table, TRUE, FALSE );
+      arc_get_transitions( hit_from_arcs,   hit_to_arcs,   &tmp,     hit_arc_num,   curr_fsm->table->table, TRUE, FALSE );
 
       /* Get input state code */
       codegen_gen_expr( curr_fsm->table->from_state, curr_fsm->table->from_state->op, input_state, input_size, NULL );
@@ -615,15 +622,9 @@ bool fsm_get_coverage( char* funit_name, int funit_type, int expr_id, int* width
       /* Get output state code */
       codegen_gen_expr( curr_fsm->table->to_state, curr_fsm->table->to_state->op, output_state, output_size, NULL );
 
-    } else {
-
-      retval = FALSE;
+      retval = TRUE;
 
     }
-
-  } else {
-
-    retval = FALSE;
 
   }
 
@@ -1157,6 +1158,10 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.55  2006/06/28 22:15:19  phase1geo
+ Adding more code to support FSM coverage.  Still a ways to go before this
+ is completed.
+
  Revision 1.54  2006/04/19 22:21:33  phase1geo
  More updates to properly support assertion coverage.  Removing assertion modules
  from line, toggle, combinational logic, FSM and race condition output so that there

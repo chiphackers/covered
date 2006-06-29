@@ -818,21 +818,22 @@ int tcl_func_collect_fsms( ClientData d, Tcl_Interp* tcl, int argc, const char* 
   char         str[85];          /* Temporary string container */
   int          start_line;       /* Starting line number of this module */
   int*         expr_ids;         /* Array containing the statement IDs of all uncovered FSM signals */
+  int*         excludes;         /* Array containing exclude values of all uncovered FSM signals */
   int          i;                /* Loop iterator */
 
   funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
   funit_type = atoi( argv[2] );
   start_line = atoi( argv[3] );
 
-  if( fsm_collect( funit_name, funit_type, &cov_head, &cov_tail, &uncov_head, &uncov_tail, &expr_ids ) ) {
+  if( fsm_collect( funit_name, funit_type, &cov_head, &cov_tail, &uncov_head, &uncov_tail, &expr_ids, &excludes ) ) {
 
     /* Load uncovered FSMs into Tcl */
     sigl = uncov_head;
     i    = 0;
     while( sigl != NULL ) {
-      snprintf( str, 85, "%d.%d %d.%d %d", (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + 14),
-                                           (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + (strlen( sigl->sig->name ) - 1) + 15),
-                                           expr_ids[i] );
+      snprintf( str, 85, "%d.%d %d.%d %d %d", (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + 14),
+                                              (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + (strlen( sigl->sig->name ) - 1) + 15),
+                                              expr_ids[i], excludes[i] );
       Tcl_SetVar( tcl, "uncovered_fsms", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
       sigl = sigl->next;
       i++;
@@ -1902,6 +1903,10 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.51  2006/06/28 22:15:19  phase1geo
+ Adding more code to support FSM coverage.  Still a ways to go before this
+ is completed.
+
  Revision 1.50  2006/06/28 04:35:47  phase1geo
  Adding support for line coverage and fixing toggle and combinational coverage
  to redisplay main textbox to reflect exclusion changes.  Also added messageBox

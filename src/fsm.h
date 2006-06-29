@@ -59,7 +59,7 @@ bool fsm_get_funit_summary( char* funit_name, int funit_type, int* total, int* h
 
 /*! \brief Retrieves covered and uncovered FSMs from the specified functional unit. */
 bool fsm_collect( char* funit_name, int funit_type, sig_link** cov_head, sig_link** cov_tail,
-                  sig_link** uncov_head, sig_link** uncov_tail, int** expr_ids );
+                  sig_link** uncov_head, sig_link** uncov_tail, int** expr_ids, int** excludes );
 
 /*! \brief Collects all coverage information for the specified FSM */
 bool fsm_get_coverage( char* funit_name, int funit_type, int expr_id, int* width,
@@ -77,6 +77,10 @@ void fsm_dealloc( fsm* table );
 
 /*
  $Log$
+ Revision 1.18  2006/06/28 22:15:19  phase1geo
+ Adding more code to support FSM coverage.  Still a ways to go before this
+ is completed.
+
  Revision 1.17  2006/04/05 15:19:18  phase1geo
  Adding support for FSM coverage output in the GUI.  Started adding components
  for assertion coverage to GUI and report functions though there is no functional

@@ -344,7 +344,12 @@ proc display_fsm_table {expr_id} {
 
       # Create square
       .fsmwin.f.t.c create rect $x $y [expr $x + $xwidth] [expr $y + $ywidth] \
-                                -outline black -fill $fillcolor -tags $tagname
+                                -outline black -fill $fillcolor -tags rect
+
+      # Create text
+      if {$t != ""} {
+        .fsmwin.f.t.c create text [expr $x + $tpad] [expr $y + $tpad] -text $t -anchor nw -tags $tagname
+      }
 
       # Bind each square
       .fsmwin.f.t.c bind uncov_arc <Enter> {
@@ -358,33 +363,36 @@ proc display_fsm_table {expr_id} {
         .fsmwin.info configure -text $curr_info
       }
       .fsmwin.f.t.c bind uncov_arc <Button-1> {
-        set coord [.fsmwin.f.t.c coords current]
+        set coord [.fsmwin.f.t.c coords [.fsmwin.f.t.c find withtag current]]
+        foreach rid [.fsmwin.f.t.c find overlapping [lindex $coord 0] [lindex $coord 1] [lindex $coord 0] [lindex $coord 1]] {
+          if {[.fsmwin.f.t.c type $rid] == "rectangle"} {
+            break
+          }
+        }
         set fsl [.fsmwin.f.t.c find withtag from_state]
         for {set i 0} {$i < [llength $fsl]} {incr i} {
           set fcoord [.fsmwin.f.t.c coords [lindex $fsl $i]]
-          if {[expr [lindex $coord 1] == [lindex $fcoord 1]] && [expr [lindex $coord 3] == [lindex $fcoord 3]]} {
+          if {[lindex $coord 1] == [lindex $fcoord 1]} {
             set from_st [lindex $fsm_states $i]
-            puts "from_st: $from_st"
             break
           }
         }
         set tsl [.fsmwin.f.t.c find withtag to_state]
         for {set i 0} {$i < [llength $tsl]} {incr i} {
           set tcoord [.fsmwin.f.t.c coords [lindex $tsl $i]]
-          if {[expr [lindex $coord 0] == [lindex $tcoord 0]] && [expr [lindex $coord 2] == [lindex $tcoord 2]]} {
+          if {[lindex $coord 0] == [lindex $tcoord 0]} {
             set to_st [lindex $fsm_states $i]
-            puts "to_st: $to_st"
             break
           }
         }
-        if {[.fsmwin.f.t.c itemcget [.fsmwin.f.t.c find enclosed current] -text] == "E"} {
+        if {[.fsmwin.f.t.c itemcget current -text] == "E"} {
           set exclude 0
-          .fsmwin.f.t.c itemconfigure current -fill $cov_bgColor
-          .fsmwin.f.t.c itemconfigure [.fsmwin.f.t.c find enclosed current] -text "I"
+          .fsmwin.f.t.c itemconfigure $rid -fill $uncov_bgColor
+          .fsmwin.f.t.c itemconfigure current -text "I"
         } else {
           set exclude 1
-          .fsmwin.f.t.c itemconfigure current -fill $uncov_bgColor
-          .fsmwin.f.t.c itemconfigure [.fsmwin.f.t.c find enclosed current] -text "E"
+          .fsmwin.f.t.c itemconfigure $rid -fill $cov_bgColor
+          .fsmwin.f.t.c itemconfigure current -text "E"
         }
         tcl_func_set_fsm_exclude $curr_funit_name $curr_funit_type $curr_fsm_expr_id $from_st $to_st $exclude
         set text_x [.bot.right.txt xview]
@@ -394,11 +402,6 @@ proc display_fsm_table {expr_id} {
         .bot.right.txt yview moveto [lindex $text_y 0]
         update_summary
         enable_cdd_save
-      }
-
-      # Create text
-      if {$t != ""} {
-        .fsmwin.f.t.c create text [expr $x + $tpad] [expr $y + $tpad] -text $t -anchor nw -tags text
       }
 
       # If we are in row 0, column 0, draw the special output
