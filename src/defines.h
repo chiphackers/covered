@@ -1363,6 +1363,7 @@ struct str_link_s {
   char*         str;                 /*!< String to store */
   control       suppl;               /*!< 32-bit additional information */
   control       suppl2;              /*!< 32-bit additional information */
+  nibble        suppl3;              /*!< 8-bit additional information */
   vector_width* range;               /*!< Pointer to optional range information */
   str_link*     next;                /*!< Pointer to next str_link element */
 };
@@ -1840,6 +1841,10 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.198  2006/06/29 04:26:02  phase1geo
+ More updates for FSM coverage.  We are getting close but are just not to fully
+ working order yet.
+
  Revision 1.197  2006/06/23 19:45:26  phase1geo
  Adding full C support for excluding/including coverage points.  Fixed regression
  suite failures -- full regression now passes.  We just need to start adding support

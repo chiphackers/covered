@@ -811,13 +811,14 @@ proc process_funit_assert_cov {} {
 proc calc_and_display_assert_cov {} {
 
   global cov_type uncov_type mod_inst_type funit_names funit_types
-  global uncovered_asserts covered_asserts race_lines race_reasons
+  global uncovered_asserts covered_asserts race_lines race_reasons assert_excludes
   global curr_funit_name curr_funit_type start_line
 
   if {$curr_funit_name != 0} {
 
     # Get list of uncovered/covered assertions
     set uncovered_asserts ""
+    set assert_excludes   ""
     set covered_asserts   ""
     set race_lines        ""
     set race_reasons      ""
@@ -835,7 +836,7 @@ proc display_assert_cov {} {
   global cov_fgColor cov_bgColor
   global curr_funit_name file_name fileContent
   global assert_summary_hit assert_summary_total uncov_type cov_type
-  global covered_asserts uncovered_asserts
+  global covered_asserts uncovered_asserts assert_excludes
   global start_line end_line
 
   if {$curr_funit_name != 0} {
@@ -876,22 +877,37 @@ proc display_assert_cov {} {
 
       # Finally, set assertion information
       if {[expr $uncov_type == 1] && [expr [llength $uncovered_asserts] > 0]} {
-        set cmd_enter  ".bot.right.txt tag add uncov_enter"
-        set cmd_button ".bot.right.txt tag add uncov_button"
-        set cmd_leave  ".bot.right.txt tag add uncov_leave"
-        foreach entry $uncovered_asserts {
+        set cmd_enter    ".bot.right.txt tag add uncov_enter"
+        set cmd_button   ".bot.right.txt tag add uncov_button"
+        set cmd_leave    ".bot.right.txt tag add uncov_leave"
+        set cmd_uncov_hl ".bot.right.txt tag add uncov_highlight"
+        set cmd_excl_hl  ".bot.right.txt tag add excl_highlight"
+        for {set i 0} {$i < [llength $uncovered_asserts]} {incr i} {
           set match_str ""
-          append match_str {[^a-zA-Z0-9_]} $entry {[^a-zA-Z0-9_]}
+          append match_str {[^a-zA-Z0-9_]} [lindex $uncovered_asserts $i] {[^a-zA-Z0-9_]}
           set start_index [.bot.right.txt index "[.bot.right.txt search -count matching_chars -regexp $match_str 1.0] + 1 chars"]
           set end_index   [.bot.right.txt index "$start_index + [expr $matching_chars - 2] chars"]
           set cmd_enter  [concat $cmd_enter  $start_index $end_index]
           set cmd_button [concat $cmd_button $start_index $end_index]
           set cmd_leave  [concat $cmd_leave  $start_index $end_index]
+          if {[lindex $assert_excludes $i] == 0} {
+            set cmd_uncov_hl [concat $cmd_uncov_hl $start_index $end_index]
+          } else {
+            set cmd_excl_hl  [concat $cmd_excl_hl  $start_index $end_index]
+          }
         }
         eval $cmd_enter
         eval $cmd_button
         eval $cmd_leave
-        .bot.right.txt tag configure uncov_button -underline true -foreground $uncov_fgColor -background $uncov_bgColor
+        if {[llength $cmd_uncov_hl] > 4} {
+          eval $cmd_uncov_hl
+          .bot.right.txt tag configure uncov_highlight -foreground $uncov_fgColor -background $uncov_bgColor
+        }
+        if {[llength $cmd_excl_hl] > 4} {
+          eval $cmd_excl_hl
+          .bot.right.txt tag configure excl_highlight -foreground $cov_fgColor -background $cov_bgColor
+        }
+        .bot.right.txt tag configure uncov_button -underline true
         .bot.right.txt tag bind uncov_enter <Enter> {
           set curr_cursor [.bot.right.txt cget -cursor]
           set curr_info   [.info cget -text]

@@ -16,13 +16,13 @@ proc assert_yview {args} {
 
 proc display_assert {curr_index} {
 
-  global prev_assert_index next_assert_index curr_assert_ptr
+  global prev_assert_index next_assert_index curr_assert_ptr curr_assert_inst
 
   # Get range of current instance
   set curr_range [.bot.right.txt tag prevrange uncov_button "$curr_index + 1 chars"]
 
   # Calculate the current instance string
-  set curr_inst [string trim [lindex [split [.bot.right.txt get [lindex $curr_range 0] [lindex $curr_range 1]] "\["] 0]]
+  set curr_assert_inst [string trim [lindex [split [.bot.right.txt get [lindex $curr_range 0] [lindex $curr_range 1]] "\["] 0]]
 
   # Make sure that the selected instance is visible in the text box and is shown as selected
   set_pointer curr_assert_ptr [lindex [split [lindex $curr_range 0] .] 0]
@@ -35,7 +35,7 @@ proc display_assert {curr_index} {
   set next_assert_index [lindex [.bot.right.txt tag nextrange uncov_button [lindex $curr_range 1]] 0]
 
   # Now create the assertion window
-  create_assert_window $curr_inst
+  create_assert_window $curr_assert_inst
 
 }
 
@@ -137,21 +137,61 @@ proc create_assert_window {inst} {
   .assertwin.f.td delete 1.0 end
   .assertwin.f.tc delete 1.0 end
 
-  # Create covered/uncovered tags
+  # Delete any existing tags
+  .assertwin.f.td tag delete td_uncov_colorMap td_cov_colorMap
+  .assertwin.f.tc tag delete tc_uncov_colorMap tc_cov_colorMap tc_excl_colorMap
+
+  # Create covered/uncovered/underline tags
   .assertwin.f.td tag configure td_uncov_colorMap -foreground $uncov_fgColor -background $uncov_bgColor
   .assertwin.f.td tag configure td_cov_colorMap   -foreground $cov_fgColor   -background $cov_bgColor
   .assertwin.f.tc tag configure tc_uncov_colorMap -foreground $uncov_fgColor -background $uncov_bgColor
   .assertwin.f.tc tag configure tc_cov_colorMap   -foreground $cov_fgColor   -background $cov_bgColor
+  .assertwin.f.tc tag configure tc_uncov_uline    -underline true
 
   # Write assertion coverage point information in text boxes
   foreach cov_point $assert_cov_points {
     if {[lindex $cov_point 1] == 0} {
-      .assertwin.f.td insert end "[lindex $cov_point 0]\n" td_uncov_colorMap
-      .assertwin.f.tc insert end "[lindex $cov_point 1]\n" tc_uncov_colorMap
+      if {[lindex $cov_point 3] == 1} {
+        .assertwin.f.td insert end "[lindex $cov_point 0]\n" td_cov_colorMap
+        .assertwin.f.tc insert end "E\n" {tc_cov_colorMap tc_uncov_uline}
+      } else {
+        .assertwin.f.td insert end "[lindex $cov_point 0]\n" td_uncov_colorMap
+        .assertwin.f.tc insert end "[lindex $cov_point 1]\n" {tc_uncov_colorMap tc_uncov_uline}
+      }
     } else {
       .assertwin.f.td insert end "[lindex $cov_point 0]\n" td_cov_colorMap
       .assertwin.f.tc insert end "[lindex $cov_point 1]\n" tc_cov_colorMap
     }
+  }
+
+  # Bind uncovered coverage points
+  .assertwin.f.tc tag bind tc_uncov_uline <Enter> {
+    set curr_cursor [.assertwin.f.tc cget -cursor]
+    set curr_info   [.assertwin.f.info cget -text]
+    .assertwin.f.tc   configure -cursor hand2
+    .assertwin.f.info configure -text "Click the left button to exclude/include coverage point"
+  }
+  .assertwin.f.tc tag bind tc_uncov_uline <Leave> {
+    .assertwin.f.tc   configure -cursor $curr_cursor
+    .assertwin.f.info configure -text $curr_info
+  }
+  .assertwin.f.tc tag bind tc_uncov_uline <Button-1> {
+    set curr_index [expr [lindex [split [.assertwin.f.tc index current] .] 0] - 1]
+    set curr_exp   [lindex [lindex $assert_cov_points $curr_index] 2]
+    if {[lindex [lindex $assert_cov_points $curr_index] 3] == 0} {
+      set curr_excl 1
+    } else {
+      set curr_excl 0
+    }
+    tcl_func_set_assert_exclude $curr_funit_name $curr_funit_type $curr_assert_inst $curr_exp $curr_excl
+    set text_x [.bot.right.txt xview]
+    set text_y [.bot.right.txt yview]
+    process_funit_assert_cov
+    .bot.right.txt xview moveto [lindex $text_x 0]
+    .bot.right.txt yview moveto [lindex $text_y 0]
+    update_summary
+    enable_cdd_save
+    create_assert_window $curr_assert_inst
   }
 
   # Keep user from writing in text boxes

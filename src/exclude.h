@@ -29,11 +29,15 @@ bool exclude_set_fsm_exclude( char* funit_name, int funit_type, int expr_id, cha
 
 /*! \brief Sets the excluded bit for the specified expression in the given functional unit
            and recalculates the summary coverage information. */
-bool exclude_set_assert_exclude( char* funit_name, int funit_type, int expr_id, int value );
+bool exclude_set_assert_exclude( char* funit_name, int funit_type, char* inst_name, int expr_id, int value );
 
 
 /*
  $Log$
+ Revision 1.4  2006/06/26 22:49:00  phase1geo
+ More updates for exclusion of combinational logic.  Also updates to properly
+ support CDD saving; however, this change causes regression errors, currently.
+
  Revision 1.3  2006/06/23 19:45:27  phase1geo
  Adding full C support for excluding/including coverage points.  Fixed regression
  suite failures -- full regression now passes.  We just need to start adding support

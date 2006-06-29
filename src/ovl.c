@@ -187,9 +187,9 @@ void ovl_get_funit_stats( func_unit* funit, float* total, int* hit ) {
         while( si.curr != NULL ) {
 
           /* If this statement is a task call to the task "ovl_cover_t", get its total and hit information */
-          if( ovl_is_coverage_point( si.curr->stmt->exp ) && (ESUPPL_EXCLUDED( si.curr->stmt->exp->suppl ) == 0) ) {
+          if( ovl_is_coverage_point( si.curr->stmt->exp ) ) {
             *total = *total + 1;
-            if( si.curr->stmt->exp->exec_num > 0 ) {
+            if( (si.curr->stmt->exp->exec_num > 0) || (ESUPPL_EXCLUDED( si.curr->stmt->exp->suppl ) == 1) ) {
               (*hit)++;
             }
           }
@@ -302,8 +302,9 @@ void ovl_display_verbose( FILE* ofile, func_unit* funit ) {
 }
 
 /*!
- \param funit  Pointer to functional unit to gather uncovered/covered assertion instances from
+ \param funit             Pointer to functional unit to gather uncovered/covered assertion instances from
  \param uncov_inst_names  Pointer to array of uncovered instance names in the specified functional unit
+ \param excludes          Pointer to array of integers indicating exclusion of associated uncovered instance name
  \param uncov_inst_size   Number of valid elements in the uncov_inst_names array
  \param cov_inst_names    Pointer to array of covered instance names in the specified functional unit
  \param cov_inst_size     Number of valid elements in the cov_inst_names array
@@ -311,14 +312,16 @@ void ovl_display_verbose( FILE* ofile, func_unit* funit ) {
  Populates the uncovered and covered string arrays with the instance names of child modules that match the
  respective coverage level.
 */
-void ovl_collect( func_unit* funit, char*** uncov_inst_names, int* uncov_inst_size, char*** cov_inst_names, int* cov_inst_size ) {
+void ovl_collect( func_unit* funit, char*** uncov_inst_names, int** excludes, int* uncov_inst_size,
+                  char*** cov_inst_names, int* cov_inst_size ) {
   
-  funit_inst* funiti;      /* Pointer to found functional unit instance containing this functional unit */
-  funit_inst* curr_child;  /* Current child of this functional unit's instance */
-  int         ignore = 0;  /* Number of functional units to ignore */
-  stmt_iter   si;          /* Statement iterator */
-  int         total;       /* Total number of coverage points for a given assertion module */
-  int         hit;         /* Number of hit coverage points for a given assertion module */
+  funit_inst* funiti;             /* Pointer to found functional unit instance containing this functional unit */
+  funit_inst* curr_child;         /* Current child of this functional unit's instance */
+  int         ignore        = 0;  /* Number of functional units to ignore */
+  stmt_iter   si;                 /* Statement iterator */
+  int         total;              /* Total number of coverage points for a given assertion module */
+  int         hit;                /* Number of hit coverage points for a given assertion module */
+  int         exclude_found = 0;  /* Set to a value of 1 if at least one excluded coverage point was found */
 
   /* Get one instance of this module from the design */
   funiti = instance_find_by_funit( instance_root, funit, &ignore );
@@ -341,8 +344,9 @@ void ovl_collect( func_unit* funit, char*** uncov_inst_names, int* uncov_inst_si
         /* If this statement is a task call to the task "ovl_cover_t", get its total and hit information */
         if( ovl_is_coverage_point( si.curr->stmt->exp ) ) {
           total = total + 1;
-          if( si.curr->stmt->exp->exec_num > 0 ) {
+          if( (si.curr->stmt->exp->exec_num > 0) || (ESUPPL_EXCLUDED( si.curr->stmt->exp->suppl ) == 1) ) {
             hit++;
+            exclude_found |= ESUPPL_EXCLUDED( si.curr->stmt->exp->suppl );
           }
         }
 
@@ -355,14 +359,24 @@ void ovl_collect( func_unit* funit, char*** uncov_inst_names, int* uncov_inst_si
     /* If there are uncovered coverage points, add this instance to the uncov array */
     if( hit < total ) {
       *uncov_inst_names = (char**)realloc( *uncov_inst_names, (sizeof( char** ) * (*uncov_inst_size + 1)) );
+      *excludes         = (int*)  realloc( *excludes,         (sizeof( int )    * (*uncov_inst_size + 1)) );
       (*uncov_inst_names)[*uncov_inst_size] = strdup_safe( curr_child->name, __FILE__, __LINE__ );
+      (*excludes)[*uncov_inst_size]         = 0;
       (*uncov_inst_size)++;
       
     /* Otherwise, populate the cov array */
     } else {
-      *cov_inst_names = (char**)realloc( *cov_inst_names, (sizeof( char** ) * (*cov_inst_size + 1)) );
-      (*cov_inst_names)[*cov_inst_size] = strdup_safe( curr_child->name, __FILE__, __LINE__ );
-      (*cov_inst_size)++;
+      if( exclude_found == 1 ) {
+        *uncov_inst_names = (char**)realloc( *uncov_inst_names, (sizeof( char** ) * (*uncov_inst_size + 1)) );
+        *excludes         = (int*)  realloc( *excludes,         (sizeof( int )    * (*uncov_inst_size + 1)) );
+        (*uncov_inst_names)[*uncov_inst_size] = strdup_safe( curr_child->name, __FILE__, __LINE__ );
+        (*excludes)[*uncov_inst_size]         = 1;
+        (*uncov_inst_size)++;
+      } else {
+        *cov_inst_names = (char**)realloc( *cov_inst_names, (sizeof( char** ) * (*cov_inst_size + 1)) );
+        (*cov_inst_names)[*cov_inst_size] = strdup_safe( curr_child->name, __FILE__, __LINE__ );
+        (*cov_inst_size)++;
+      }
     }
 
     /* Advance child pointer to next child instance */
@@ -413,6 +427,7 @@ void ovl_get_coverage( func_unit* funit, char* inst_name, char** assert_mod, str
       str_link_add( ovl_get_coverage_point( si.curr->stmt ), cp_head, cp_tail );
       (*cp_tail)->suppl  = si.curr->stmt->exp->exec_num;
       (*cp_tail)->suppl2 = si.curr->stmt->exp->id;
+      (*cp_tail)->suppl3 = ESUPPL_EXCLUDED( si.curr->stmt->exp->suppl );
 
     }
 
@@ -425,6 +440,11 @@ void ovl_get_coverage( func_unit* funit, char* inst_name, char** assert_mod, str
 
 /*
  $Log$
+ Revision 1.9  2006/06/23 19:45:27  phase1geo
+ Adding full C support for excluding/including coverage points.  Fixed regression
+ suite failures -- full regression now passes.  We just need to start adding support
+ to the Tcl/Tk files for full user-specified exclusion support.
+
  Revision 1.8  2006/06/22 21:56:21  phase1geo
  Adding excluded bits to signal and arc structures and changed statistic gathering
  functions to not gather coverage for excluded structures.  Started to work on

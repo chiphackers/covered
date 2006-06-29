@@ -46,13 +46,19 @@ void ovl_get_funit_stats( func_unit* funit, float* total, int* hit );
 void ovl_display_verbose( FILE* ofile, func_unit* funit );
 
 /*! \brief Finds the instance names of all uncovered and covered assertions in the specified functional unit. */
-void ovl_collect( func_unit* funit, char*** uncov_inst_names, int* uncov_inst_size, char*** cov_inst_names, int* cov_inst_size );
+void ovl_collect( func_unit* funit, char*** uncov_inst_names, int** excludes, int* uncov_inst_size,
+                  char*** cov_inst_names, int* cov_inst_size );
 
 /*! \brief Gets missed coverage points for the given assertion */
 void ovl_get_coverage( func_unit* funit, char* inst_name, char** assert_mod, str_link** cp_head, str_link** cp_tail );
 
 /*
  $Log$
+ Revision 1.8  2006/06/23 19:45:27  phase1geo
+ Adding full C support for excluding/including coverage points.  Fixed regression
+ suite failures -- full regression now passes.  We just need to start adding support
+ to the Tcl/Tk files for full user-specified exclusion support.
+
  Revision 1.7  2006/05/01 22:27:37  phase1geo
  More updates with assertion coverage window.  Still have a ways to go.
 

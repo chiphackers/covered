@@ -373,24 +373,28 @@ bool exclude_set_fsm_exclude( char* funit_name, int funit_type, int expr_id, cha
  the exclude_expr_assign_and_recalc function for the matching expression, setting the excluded bit
  of the expression and recalculating the summary coverage information.
 */
-bool exclude_set_assert_exclude( char* funit_name, int funit_type, int expr_id, int value ) {
+bool exclude_set_assert_exclude( char* funit_name, int funit_type, char* inst_name, int expr_id, int value ) {
 
   bool        retval = FALSE;  /* Return value for this function */
-  func_unit   funit;           /* Temporary functional unit used for searching */
-  funit_link* funitl;          /* Pointer to found functional unit link */
+  funit_inst* inst;          /* Pointer to found functional unit instance */
+  funit_inst* curr_child;      /* Pointer to current child functional instance */
   expression  exp;             /* Temporary expression used for searching */
   exp_link*   expl;            /* Pointer to current expression link */
 
-  funit.name = funit_name;
-  funit.type = funit_type;
+  /* Find the functional unit instance that matches the description */
+  if( (inst = exclude_find_instance_from_funit_info( funit_name, funit_type )) != NULL ) {
 
-  /* Find the functional unit that matches the description */
-  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
+    /* Find child instance */
+    curr_child = inst->child_head;
+    while( (curr_child != NULL) && (strcmp( curr_child->name, inst_name ) != 0) ) {
+      curr_child = curr_child->next;
+    }
+    assert( curr_child != NULL );
 
     /* Find the signal that matches the given signal name and sets its excluded bit */
     exp.id = expr_id;
-    if( (expl = exp_link_find( &exp, funitl->funit->exp_head )) != NULL ) {
-      exclude_expr_assign_and_recalc( expl->exp, funitl->funit, (value == 1) );
+    if( (expl = exp_link_find( &exp, curr_child->funit->exp_head )) != NULL ) {
+      exclude_expr_assign_and_recalc( expl->exp, curr_child->funit, (value == 1) );
       retval = TRUE;
     }
 
@@ -403,6 +407,12 @@ bool exclude_set_assert_exclude( char* funit_name, int funit_type, int expr_id, 
 
 /*
  $Log$
+ Revision 1.7  2006/06/28 04:35:47  phase1geo
+ Adding support for line coverage and fixing toggle and combinational coverage
+ to redisplay main textbox to reflect exclusion changes.  Also added messageBox
+ for close and exit menu options when a CDD has been changed but not saved to
+ allow the user to do so before continuing on.
+
  Revision 1.6  2006/06/27 22:06:26  phase1geo
  Fixing more code related to exclusion.  The detailed combinational expression
  window now works correctly.  I am currently working on getting the main window

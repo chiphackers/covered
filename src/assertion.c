@@ -424,9 +424,10 @@ bool assertion_get_funit_summary( char* funit_name, int funit_type, int* total, 
 }
 
 /*!
- \param funit_name  Name of functional unit to collect assertion information for
- \param funit_type  Type of functional unit to collect assertion information for
+ \param funit_name        Name of functional unit to collect assertion information for
+ \param funit_type        Type of functional unit to collect assertion information for
  \param uncov_inst_names  Pointer to array of uncovered instance names found within the specified functional unit
+ \param excludes          Pointer to array of integers that contain the exclude information for the given instance names
  \param uncov_inst_size   Number of valid elements in the uncov_inst_names array
  \param cov_inst_names    Pointer to array of covered instance names found within the specified functional unit
  \param cov_inst_size     Number of valid elements in the cov_inst_names array
@@ -435,7 +436,8 @@ bool assertion_get_funit_summary( char* funit_name, int funit_type, int* total, 
  
  Searches the specified functional unit, collecting all uncovered and covered assertion module instance names.
 */
-bool assertion_collect( char* funit_name, int funit_type, char*** uncov_inst_names, int* uncov_inst_size, char*** cov_inst_names, int* cov_inst_size ) {
+bool assertion_collect( char* funit_name, int funit_type, char*** uncov_inst_names, int** excludes, int* uncov_inst_size,
+                        char*** cov_inst_names, int* cov_inst_size ) {
   
   bool        retval = TRUE;  /* Return value for this function */
   func_unit   funit;          /* Temporary functional unit used for searching */
@@ -450,13 +452,14 @@ bool assertion_collect( char* funit_name, int funit_type, char*** uncov_inst_nam
     
     /* Initialize outputs */
     *uncov_inst_names = NULL;
+    *excludes         = NULL;
     *uncov_inst_size  = 0;
     *cov_inst_names   = NULL;
     *cov_inst_size    = 0;
     
     /* If OVL assertion coverage is needed, get this information */
     if( info_suppl.part.assert_ovl == 1 ) {
-      ovl_collect( funitl->funit, uncov_inst_names, uncov_inst_size, cov_inst_names, cov_inst_size );
+      ovl_collect( funitl->funit, uncov_inst_names, excludes, uncov_inst_size, cov_inst_names, cov_inst_size );
     }
     
   } else {
@@ -514,6 +517,10 @@ bool assertion_get_coverage( char* funit_name, int funit_type, char* inst_name, 
 
 /*
  $Log$
+ Revision 1.10  2006/06/23 21:43:53  phase1geo
+ More updates to include toggle exclusion (this does not work correctly at
+ this time).
+
  Revision 1.9  2006/05/01 22:27:37  phase1geo
  More updates with assertion coverage window.  Still have a ways to go.
 

@@ -1017,24 +1017,29 @@ int tcl_func_collect_assertions( ClientData d, Tcl_Interp* tcl, int argc, const 
   char*  funit_name;        /* Name of functional unit to get combinational logic coverage info for */
   int    funit_type;        /* Type of functional unit to get combinational logic coverage info for */
   char** uncov_inst_names;  /* Array of instance names for all uncovered assertions in the specified functional unit */
-  int    uncov_inst_size;   /* Number of valid elements in the uncov_inst_names array */
+  int*   excludes;          /* Array of integers specifying the exclude information for an assertion instance */
+  int    uncov_inst_size;   /* Number of valid elements in the uncov_inst_names/excludes arrays */
   char** cov_inst_names;    /* Array of instance names for all covered assertions in the specified functional unit */
   int    cov_inst_size;     /* Number of valid elements in the cov_inst_names array */
   int    i;                 /* Loop iterator */
+  char   str[20];           /* Temporary string holder */
 
   funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
   funit_type = atoi( argv[2] );
 
-  if( assertion_collect( funit_name, funit_type, &uncov_inst_names, &uncov_inst_size, &cov_inst_names, &cov_inst_size ) ) {
+  if( assertion_collect( funit_name, funit_type, &uncov_inst_names, &excludes, &uncov_inst_size, &cov_inst_names, &cov_inst_size ) ) {
 
     /* Load uncovered assertions into Tcl */
     for( i=0; i<uncov_inst_size; i++ ) {
       Tcl_SetVar( tcl, "uncovered_asserts", uncov_inst_names[i], (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+      snprintf( str, 20, "%d", excludes[i] );
+      Tcl_SetVar( tcl, "assert_excludes", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
       free_safe( uncov_inst_names[i] );
     }
 
     if( uncov_inst_size > 0 ) {
       free_safe( uncov_inst_names );
+      free_safe( excludes );
     }
 
     /* Load covered assertions into Tcl */
@@ -1097,7 +1102,7 @@ int tcl_func_get_assert_coverage( ClientData d, Tcl_Interp* tcl, int argc, const
 
     curr_cp = cp_head;
     while( curr_cp != NULL ) {
-      snprintf( str, 4096, "{%s} %d %d", curr_cp->str, curr_cp->suppl, curr_cp->suppl2 );
+      snprintf( str, 4096, "{%s} %d %d %d", curr_cp->str, curr_cp->suppl, curr_cp->suppl2, curr_cp->suppl3 );
       Tcl_SetVar( tcl, "assert_cov_points", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
       curr_cp = curr_cp->next;
     }
@@ -1811,17 +1816,19 @@ int tcl_func_set_assert_exclude( ClientData d, Tcl_Interp* tcl, int argc, const 
   int   retval = TCL_OK;  /* Return value for this function */
   char* funit_name;       /* Name of current functional unit */
   int   funit_type;       /* Type of current functional unit */
+  char* inst_name;        /* Name of assertion instance */
   int   expr_id;          /* Expression ID of expression calling cover task */
   int   value;            /* Value to set the exclusion value to */
 
   /* Get argument values */
   funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
   funit_type = atoi( argv[2] );
-  expr_id    = atoi( argv[3] );
-  value      = atoi( argv[4] );
+  inst_name  = strdup_safe( argv[3], __FILE__, __LINE__ );
+  expr_id    = atoi( argv[4] );
+  value      = atoi( argv[5] );
 
   /* Set exclusion bit for the given assertion */
-  if( !exclude_set_assert_exclude( funit_name, funit_type, expr_id, value ) ) {
+  if( !exclude_set_assert_exclude( funit_name, funit_type, inst_name, expr_id, value ) ) {
     snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find functional unit %s", funit_name );
     Tcl_AddErrorInfo( tcl, user_msg );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -1830,6 +1837,7 @@ int tcl_func_set_assert_exclude( ClientData d, Tcl_Interp* tcl, int argc, const 
 
   /* Free used memory */
   free_safe( funit_name );
+  free_safe( inst_name );
 
   return( retval );
 
@@ -1903,6 +1911,10 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.52  2006/06/29 04:26:02  phase1geo
+ More updates for FSM coverage.  We are getting close but are just not to fully
+ working order yet.
+
  Revision 1.51  2006/06/28 22:15:19  phase1geo
  Adding more code to support FSM coverage.  Still a ways to go before this
  is completed.
