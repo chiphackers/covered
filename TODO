@@ -55,7 +55,7 @@ IP 1.  Add regression that produces known, achievable error conditions in the co
 GUI
 ---
 
-IP 1.  Add ability to turn on/off coverage points and have coverage information automatically adjusted.
+X  1.  Add ability to turn on/off coverage points and have coverage information automatically adjusted.
 
 X  2.  Change file selection window to allow multiple files to be chosen (also just enhance the overall usage)
 

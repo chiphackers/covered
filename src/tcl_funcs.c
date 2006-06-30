@@ -1858,6 +1858,8 @@ int tcl_func_set_assert_exclude( ClientData d, Tcl_Interp* tcl, int argc, const 
 */
 void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* version, char* browser ) {
 
+  char str[20];  /* Temporary string */
+
   Tcl_CreateCommand( tcl, "tcl_func_get_race_reason_msgs",      (Tcl_CmdProc*)(tcl_func_get_race_reason_msgs),      0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_funit_list",            (Tcl_CmdProc*)(tcl_func_get_funit_list),            0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_instance_list",         (Tcl_CmdProc*)(tcl_func_get_instance_list),         0, 0 );
@@ -1909,11 +1911,25 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
     Tcl_SetVar( tcl, "BROWSER", browser, TCL_GLOBAL_ONLY );
   }
 
+  /* Set REPORT defines */
+  snprintf( str, 20, "%d", REPORT_SUMMARY );
+  Tcl_SetVar( tcl, "REPORT_SUMMARY", str, TCL_GLOBAL_ONLY );
+  snprintf( str, 20, "%d", REPORT_DETAILED );
+  Tcl_SetVar( tcl, "REPORT_DETAILED", str, TCL_GLOBAL_ONLY );
+  snprintf( str, 20, "%d", REPORT_VERBOSE );
+  Tcl_SetVar( tcl, "REPORT_VERBOSE", str, TCL_GLOBAL_ONLY );
+
 }
 #endif
 
 /*
  $Log$
+ Revision 1.54  2006/06/29 22:44:57  phase1geo
+ Fixing newly introduced bug in FSM report handler.  Also adding pointers back
+ to main text window when exclusion properties are changed.  Fixing toggle
+ coverage retension.  This is partially working but doesn't seem to want to
+ save/restore properly at this point.
+
  Revision 1.53  2006/06/29 20:06:33  phase1geo
  Adding assertion exclusion code.  Things seem to be working properly with this
  now.  This concludes the initial version of code exclusion.  There are some
