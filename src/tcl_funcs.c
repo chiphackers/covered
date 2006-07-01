@@ -61,6 +61,15 @@ extern void        reset_pplexer( const char* filename, FILE* out );
 extern int         PPVLlex( void );
 extern char**      merge_in;
 extern int         merge_in_num;
+extern char*       output_file;
+extern int         report_comb_depth; 
+extern bool        report_line;
+extern bool        report_toggle;
+extern bool        report_combination;
+extern bool        report_fsm;
+extern bool        report_assertion;
+extern bool        report_race;
+
 
 /*!
  \param d     TBD
@@ -1847,6 +1856,79 @@ int tcl_func_set_assert_exclude( ClientData d, Tcl_Interp* tcl, int argc, const 
 }
 
 /*!
+ \param d     TBD
+ \param tcl   Pointer to the Tcl interpreter
+ \param argc  Number of arguments in the argv list
+ \param argv  Array of arguments passed to this function
+
+ \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
+         TCL_ERROR.
+
+ Generates an ASCII report based on the provided parameters.
+*/
+int tcl_func_generate_report( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+
+  int   retval = TCL_OK;  /* Return value for this function */
+  FILE* ofile;            /* Pointer to opened report file */
+
+  /* Get arguments */
+  if( report_parse_args( argc, 0, argv ) ) {
+
+    /* Open output stream */
+    if( output_file != NULL ) {
+      if( (ofile = fopen( output_file, "w" )) == NULL ) {
+        snprintf( user_msg, USER_MSG_LENGTH, "Unable to open report output file %s for writing", output_file );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      } else {
+        free_safe( output_file );
+      }
+    } else {
+      ofile = stdout;
+    }
+
+    report_print_header( ofile );
+
+    /* Call out the proper reports for the specified metrics to report */
+    if( report_line ) {
+      line_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
+    }
+
+    if( report_toggle ) {
+      toggle_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
+    }
+
+    if( report_combination ) {
+      combination_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
+    }
+
+    if( report_fsm ) {
+      fsm_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
+    }
+
+    if( report_assertion ) {
+      assertion_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
+    }
+
+    if( report_race ) {
+      race_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
+    }
+
+    fclose( ofile );
+
+  } else {
+
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Incorrect parameters to report command" );
+    Tcl_AddErrorInfo( tcl, user_msg );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    retval = TCL_ERROR;
+
+  }
+
+  return( retval );
+
+}
+
+/*!
  \param tcl        Pointer to Tcl interpreter structure
  \param user_home  Name of user's home directory (used to store configuration file information to)
  \param home       Name of Tcl script home directory (from running the configure script)
@@ -1857,8 +1939,6 @@ int tcl_func_set_assert_exclude( ClientData d, Tcl_Interp* tcl, int argc, const 
  variables that come from the environment, the configuration execution or the Covered define file.
 */
 void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* version, char* browser ) {
-
-  char str[20];  /* Temporary string */
 
   Tcl_CreateCommand( tcl, "tcl_func_get_race_reason_msgs",      (Tcl_CmdProc*)(tcl_func_get_race_reason_msgs),      0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_funit_list",            (Tcl_CmdProc*)(tcl_func_get_funit_list),            0, 0 );
@@ -1896,6 +1976,7 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
   Tcl_CreateCommand( tcl, "tcl_func_set_comb_exclude",          (Tcl_CmdProc*)(tcl_func_set_comb_exclude),          0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_set_fsm_exclude",           (Tcl_CmdProc*)(tcl_func_set_fsm_exclude),           0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_set_assert_exclude",        (Tcl_CmdProc*)(tcl_func_set_assert_exclude),        0, 0 );
+  Tcl_CreateCommand( tcl, "tcl_func_generate_report",           (Tcl_CmdProc*)(tcl_func_generate_report),           0, 0 );
   
   /* Set the USER_HOME variable to location of user's home directory */
   Tcl_SetVar( tcl, "USER_HOME", user_home, TCL_GLOBAL_ONLY );
@@ -1911,19 +1992,16 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
     Tcl_SetVar( tcl, "BROWSER", browser, TCL_GLOBAL_ONLY );
   }
 
-  /* Set REPORT defines */
-  snprintf( str, 20, "%d", REPORT_SUMMARY );
-  Tcl_SetVar( tcl, "REPORT_SUMMARY", str, TCL_GLOBAL_ONLY );
-  snprintf( str, 20, "%d", REPORT_DETAILED );
-  Tcl_SetVar( tcl, "REPORT_DETAILED", str, TCL_GLOBAL_ONLY );
-  snprintf( str, 20, "%d", REPORT_VERBOSE );
-  Tcl_SetVar( tcl, "REPORT_VERBOSE", str, TCL_GLOBAL_ONLY );
-
 }
 #endif
 
 /*
  $Log$
+ Revision 1.55  2006/06/30 21:05:49  phase1geo
+ Updating TODO and adding the ASCII report generation window.  Still some work
+ to do here before this completely works.  Right now I am wrestling with the
+ window manager to place the components where I want them...
+
  Revision 1.54  2006/06/29 22:44:57  phase1geo
  Fixing newly introduced bug in FSM report handler.  Also adding pointers back
  to main text window when exclusion properties are changed.  Fixing toggle

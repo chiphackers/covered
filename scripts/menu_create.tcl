@@ -330,7 +330,6 @@ proc create_report_selection_window {} {
   global rsel_sdv rsel_mi rsel_cu
   global rsel_l rsel_t rsel_c rsel_f rsel_a rsel_r
   global rsel_width rsel_wsel
-  global REPORT_SUMMARY REPORT_DETAILED REPORT_VERBOSE
   global rsel_fname cdd_name
 
   toplevel .rselwin
@@ -340,64 +339,68 @@ proc create_report_selection_window {} {
   grab set .rselwin
 
   # Set default values for radio/check buttons
-  set rsel_sdv   $REPORT_SUMMARY
-  set rsel_mi    0
-  set rsel_cu    0
-  set rsel_l     1
-  set rsel_t     1
-  set rsel_c     1
-  set rsel_f     1
-  set rsel_a     0
-  set rsel_r     0
+  set rsel_sdv   "s"
+  set rsel_mi    ""
+  set rsel_cu    ""
+  set rsel_l     "l"
+  set rsel_t     "t"
+  set rsel_c     "c"
+  set rsel_f     "f"
+  set rsel_a     ""
+  set rsel_r     ""
   set rsel_wsel  0
   set rsel_width "80"
-  set rsel_fname "[file rootname [file tail $cdd_name]].rpt"
+  set rsel_fname "[file rootname $cdd_name].rpt"
 
   # Create detail selection frame
   frame .rselwin.sdv -relief raised -borderwidth 1
   label .rselwin.sdv.lbl -text "Level of detail" -anchor w
-  radiobutton .rselwin.sdv.s -text "Summary"  -variable rsel_sdv -value $REPORT_SUMMARY  -anchor e
-  radiobutton .rselwin.sdv.d -text "Detailed" -variable rsel_sdv -value $REPORT_DETAILED -anchor e
-  radiobutton .rselwin.sdv.v -text "Verbose"  -variable rsel_sdv -value $REPORT_VERBOSE  -anchor e
-  grid .rselwin.sdv.lbl -row 0 -column 0 -sticky news -pady 4
-  grid .rselwin.sdv.s   -row 1 -column 0 -sticky news
-  grid .rselwin.sdv.d   -row 1 -column 1 -sticky news
-  grid .rselwin.sdv.v   -row 1 -column 2 -sticky news
+  radiobutton .rselwin.sdv.s -text "Summary"  -variable rsel_sdv -value "s" -anchor e
+  radiobutton .rselwin.sdv.d -text "Detailed" -variable rsel_sdv -value "d" -anchor e
+  radiobutton .rselwin.sdv.v -text "Verbose"  -variable rsel_sdv -value "v" -anchor e
+  grid .rselwin.sdv.lbl -row 0 -column 0 -sticky nw -pady 4
+  grid .rselwin.sdv.s   -row 1 -column 0 -sticky nw
+  grid .rselwin.sdv.d   -row 2 -column 0 -sticky nw
+  grid .rselwin.sdv.v   -row 3 -column 0 -sticky nw
+  grid rowconfigure .rselwin.sdv 3 -weight 1
 
   # Create module/instance selection frame
   frame .rselwin.mi -relief raised -borderwidth 1
   label .rselwin.mi.lbl -text "Report by" -anchor w
-  radiobutton .rselwin.mi.m -text "Module"   -variable rsel_mi -value 0 -anchor e
-  radiobutton .rselwin.mi.i -text "Instance" -variable rsel_mi -value 1 -anchor e
-  grid .rselwin.mi.lbl -row 0 -column 0 -sticky news -pady 4
-  grid .rselwin.mi.m   -row 1 -column 0 -sticky news
-  grid .rselwin.mi.i   -row 1 -column 1 -sticky news
+  radiobutton .rselwin.mi.m -text "Module"   -variable rsel_mi -value ""   -anchor e
+  radiobutton .rselwin.mi.i -text "Instance" -variable rsel_mi -value "-i" -anchor e
+  grid .rselwin.mi.lbl -row 0 -column 0 -sticky nw -pady 4
+  grid .rselwin.mi.m   -row 1 -column 0 -sticky nw
+  grid .rselwin.mi.i   -row 2 -column 0 -sticky nw
+  grid rowconfigure .rselwin.mi 2 -weight 1
 
   # Create metric selection frame
   frame .rselwin.metric -relief raised -borderwidth 1
   label .rselwin.metric.lbl -text "Metrics" -anchor w
-  checkbutton .rselwin.metric.l -text "Line"            -variable rsel_l -anchor e
-  checkbutton .rselwin.metric.t -text "Toggle"          -variable rsel_t -anchor e
-  checkbutton .rselwin.metric.c -text "Logic"           -variable rsel_c -anchor e
-  checkbutton .rselwin.metric.f -text "FSM"             -variable rsel_f -anchor e
-  checkbutton .rselwin.metric.a -text "Assertion"       -variable rsel_a -anchor e
-  checkbutton .rselwin.metric.r -text "Race Conditions" -variable rsel_r -anchor e
-  grid .rselwin.metric.lbl -row 0 -column 0 -sticky w -pady 4
-  grid .rselwin.metric.l   -row 1 -column 0 -sticky w
-  grid .rselwin.metric.t   -row 1 -column 1 -sticky w
-  grid .rselwin.metric.c   -row 1 -column 2 -sticky w
-  grid .rselwin.metric.f   -row 2 -column 0 -sticky w
-  grid .rselwin.metric.a   -row 2 -column 1 -sticky w
-  grid .rselwin.metric.r   -row 2 -column 2 -sticky w
+  checkbutton .rselwin.metric.l -text "Line"            -variable rsel_l -onvalue "l" -offvalue "" -anchor e
+  checkbutton .rselwin.metric.t -text "Toggle"          -variable rsel_t -onvalue "t" -offvalue "" -anchor e
+  checkbutton .rselwin.metric.c -text "Logic"           -variable rsel_c -onvalue "c" -offvalue "" -anchor e
+  checkbutton .rselwin.metric.f -text "FSM"             -variable rsel_f -onvalue "f" -offvalue "" -anchor e
+  checkbutton .rselwin.metric.a -text "Assertion"       -variable rsel_a -onvalue "a" -offvalue "" -anchor e
+  checkbutton .rselwin.metric.r -text "Race Conditions" -variable rsel_r -onvalue "r" -offvalue "" -anchor e
+  grid .rselwin.metric.lbl -row 0 -column 0 -sticky nw -pady 4
+  grid .rselwin.metric.l   -row 1 -column 0 -sticky nw
+  grid .rselwin.metric.t   -row 2 -column 0 -sticky nw
+  grid .rselwin.metric.c   -row 3 -column 0 -sticky nw
+  grid .rselwin.metric.f   -row 4 -column 0 -sticky nw
+  grid .rselwin.metric.a   -row 5 -column 0 -sticky nw
+  grid .rselwin.metric.r   -row 6 -column 0 -sticky nw
+  grid rowconfigure .rselwin.metric 6 -weight 1
 
   # Create covered/uncovered selection frame
   frame .rselwin.cu -relief raised -borderwidth 1
   label .rselwin.cu.lbl -text "Show coverage" -anchor w
-  radiobutton .rselwin.cu.u -text "Uncovered" -variable rsel_cu -value 0 -anchor e
-  radiobutton .rselwin.cu.c -text "Covered"   -variable rsel_cu -value 1 -anchor e
-  grid .rselwin.cu.lbl -row 0 -column 0 -sticky news -pady 4
-  grid .rselwin.cu.u   -row 1 -column 0 -sticky news
-  grid .rselwin.cu.c   -row 1 -column 1 -sticky news
+  radiobutton .rselwin.cu.u -text "Uncovered" -variable rsel_cu -value ""   -anchor e
+  radiobutton .rselwin.cu.c -text "Covered"   -variable rsel_cu -value "-c" -anchor e
+  grid .rselwin.cu.lbl -row 0 -column 0 -sticky nw -pady 4
+  grid .rselwin.cu.u   -row 1 -column 0 -sticky nw
+  grid .rselwin.cu.c   -row 2 -column 0 -sticky nw
+  grid rowconfigure .rselwin.cu 2 -weight 1
 
   # Create width frame
   frame .rselwin.width -relief raised -borderwidth 1
@@ -417,16 +420,24 @@ proc create_report_selection_window {} {
   label .rselwin.fname.lbl -text "Save to file:" -anchor e
   entry .rselwin.fname.e -textvariable rsel_fname
   button .rselwin.fname.b -text "Browse..." -anchor e -command {
-    set rsel_fname [tk_getSaveFile -filetypes $rpt_file_types -initialfile $rpt_name -title "Save Report As"]
+    set rsel_fname [tk_getSaveFile -filetypes $rpt_file_types -initialfile $rsel_fname -title "Save Generated Report As"]
   }
   grid .rselwin.fname.lbl -row 0 -column 0 -sticky news
   grid .rselwin.fname.e   -row 0 -column 1 -sticky news
   grid .rselwin.fname.b   -row 0 -column 2 -sticky news
+  grid columnconfigure .rselwin.fname 1 -weight 1
 
   # Create button frame
   frame .rselwin.bf -relief raised -borderwidth 1
   button .rselwin.bf.create -width 10 -text "Create" -command {
-    puts "Creating report..."
+    # Create command-line to report command of Covered
+    if {$rsel_wsel == 0} {
+      set w ""
+    } else {
+      set w "-w $rsel_width"
+    }
+    set cmd "-d $rsel_sdv $rsel_mi $rsel_cu -m $rsel_l$rsel_t$rsel_c$rsel_f$rsel_a$rsel_r $w -o $rsel_fname $cdd_name"
+    eval "tcl_func_generate_report $cmd"
     destroy .rselwin
   }
   button .rselwin.bf.cancel -width 10 -text "Cancel" -command {
@@ -440,13 +451,13 @@ proc create_report_selection_window {} {
   pack .rselwin.bf.create -side right -padx 8 -pady 4
 
   # Now pack all of the frames
-  grid .rselwin.sdv    -row 0 -column 0 -sticky w
-  grid .rselwin.mi     -row 1 -column 0 -sticky w
-  grid .rselwin.metric -row 2 -column 0 -sticky w
-  grid .rselwin.cu     -row 3 -column 0 -sticky w
-  grid .rselwin.width  -row 4 -column 0 -sticky w
-  grid .rselwin.fname  -row 5 -column 0 -sticky w
-  grid .rselwin.bf     -row 6 -column 0 -sticky w
+  grid .rselwin.sdv    -row 0 -column 0 -sticky news
+  grid .rselwin.mi     -row 0 -column 1 -sticky news
+  grid .rselwin.metric -row 0 -column 2 -sticky news
+  grid .rselwin.cu     -row 0 -column 3 -sticky news
+  grid .rselwin.width  -row 1 -column 0 -columnspan 4 -sticky news
+  grid .rselwin.fname  -row 2 -column 0 -columnspan 4 -sticky news
+  grid .rselwin.bf     -row 3 -column 0 -columnspan 4 -sticky news
 
   # Finally, raise this window
   raise .rselwin
