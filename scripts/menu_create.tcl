@@ -399,7 +399,7 @@ proc create_report_selection_window {} {
     destroy .rselwin
   }
   button .rselwin.bf.help -width 10 -text "Help" -command {
-    help_show_manual gen_rpt
+    help_show_manual report_gen
   }
   pack .rselwin.bf.help   -side right -padx 8 -pady 4
   pack .rselwin.bf.cancel -side right -padx 8 -pady 4

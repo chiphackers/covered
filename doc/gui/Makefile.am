@@ -17,6 +17,7 @@ doc_DATA = assert.html \
            pref_main.html \
            pref_report.html \
            pref_syntax.html \
+           report_gen.html \
            report_menu.html \
            src_view.html \
            summary.html \
@@ -49,7 +50,12 @@ img_DATA = images/assert_window.png \
            images/main_window.png \
            images/open_cdd.png \
            images/populated_lb.png \
-           images/pref_window.png \
+           images/pref_main.png \
+           images/pref_color.png \
+           images/pref_goals.png \
+           images/pref_syntax.png \
+           images/pref_report.png \
+           images/report_gen.png \
            images/report_menu.png \
            images/summary_window.png \
            images/toggle_full.png \
