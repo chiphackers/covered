@@ -25,6 +25,7 @@ set vlog_hl_string_color    red
 set vlog_hl_symbol_color    coral
 set rc_file_to_write        ""
 set hl_mode                 0
+set last_pref_index         -1
 
 # Create a list from 100 to 0
 for {set i 100} {$i >= 0} {incr i -1} {
@@ -261,7 +262,11 @@ proc create_preferences {} {
   global cov_fgColor   cov_bgColor   tmp_cov_fgColor   tmp_cov_bgColor
   global uncov_fgColor uncov_bgColor tmp_uncov_fgColor tmp_uncov_bgColor
   global race_fgColor  race_bgColor  tmp_race_fgColor  tmp_race_bgColor
-  global line_low_limit toggle_low_limit comb_low_limit fsm_low_limit assert_low_limit
+  global line_low_limit          tmp_line_low_limit
+  global toggle_low_limit        tmp_toggle_low_limit
+  global comb_low_limit          tmp_comb_low_limit
+  global fsm_low_limit           tmp_fsm_low_limit
+  global assert_low_limit        tmp_assert_low_limit
   global vlog_hl_mode            tmp_vlog_hl_mode
   global vlog_hl_ppkeyword_color tmp_vlog_hl_ppkeyword_color
   global vlog_hl_keyword_color   tmp_vlog_hl_keyword_color
@@ -274,11 +279,6 @@ proc create_preferences {} {
   # Now create the window and set the grab to this window
   if {[winfo exists .prefwin] == 0} {
 
-    # Setup common color widget values
-    set brelief "groove"
-    set bpadx   8
-    set bpady   4
-
     # Initialize all temporary preference values
     set tmp_cov_fgColor             $cov_fgColor
     set tmp_cov_bgColor             $cov_bgColor
@@ -286,6 +286,11 @@ proc create_preferences {} {
     set tmp_uncov_bgColor           $uncov_bgColor
     set tmp_race_fgColor            $race_fgColor
     set tmp_race_bgColor            $race_bgColor
+    set tmp_line_low_limit          $line_low_limit
+    set tmp_toggle_low_limit        $toggle_low_limit
+    set tmp_comb_low_limit          $comb_low_limit
+    set tmp_fsm_low_limit           $fsm_low_limit
+    set tmp_assert_low_limit        $assert_low_limit
     set tmp_vlog_hl_mode            $vlog_hl_mode
     set tmp_vlog_hl_ppkeyword_color $vlog_hl_ppkeyword_color
     set tmp_vlog_hl_keyword_color   $vlog_hl_keyword_color
@@ -298,193 +303,56 @@ proc create_preferences {} {
     toplevel .prefwin
     wm title .prefwin "Covered - Preferences"
     wm resizable .prefwin 0 0
+    wm geometry .prefwin =500x350
 
-    ###############################
-    # Create color selection area #
-    ###############################
+    # Create listbox frame
+    frame .prefwin.lbf -relief raised -borderwidth 1
+    label .prefwin.lbf.l -text "Option Categories"
+    listbox .prefwin.lbf.lb
+    bind .prefwin.lbf.lb <<ListboxSelect>> populate_pref
 
-      frame .prefwin.c -relief raised -borderwidth 1
-      label .prefwin.c.l -anchor w -text "Select Highlight Color"
+    # Populate listbox with various options
+    .prefwin.lbf.lb insert end "Colors"
+    .prefwin.lbf.lb insert end "Coverage Goals"
+    .prefwin.lbf.lb insert end "Syntax Highlighting"
+    .prefwin.lbf.lb insert end "ASCII Report Options"
 
-      # Uncovered selectors
-      button .prefwin.c.ufb -bg $uncov_bgColor -fg $uncov_fgColor -activebackground $uncov_bgColor -activeforeground $uncov_fgColor \
-             -text "Change Uncovered Foreground" -relief $brelief -command {
-        set tmp_uncov_fgColor [pref_set_button_color .prefwin.c.ufb .prefwin.c.ubb fg $tmp_uncov_fgColor "Choose Uncovered Foreground"]
+    pack .prefwin.lbf.l  -pady 4
+    pack .prefwin.lbf.lb -fill y -expand 1
+
+    # Create preference frame
+    frame .prefwin.pf -relief raised -borderwidth 1
+    frame .prefwin.pf.f
+    pack .prefwin.pf.f -fill both
+
+    # Create button frame
+    frame .prefwin.bf -relief raised -borderwidth 1
+    button .prefwin.bf.apply -width 10 -text "Apply" -command {
+      apply_preferences
+    }
+    button .prefwin.bf.ok -width 10 -text "OK" -command {
+      if {[apply_preferences] == 1} {
+        write_coveredrc
       }
-      button .prefwin.c.ubb -bg $uncov_bgColor -fg $uncov_fgColor -activebackground $uncov_bgColor -activeforeground $uncov_fgColor \
-             -text "Change Uncovered Background" -relief $brelief -command {
-        set tmp_uncov_bgColor [pref_set_button_color .prefwin.c.ufb .prefwin.c.ubb bg $tmp_uncov_bgColor "Choose Uncovered Background"]
-      }
+      destroy .prefwin
+    }
+    button .prefwin.bf.cancel -width 10 -text "Cancel" -command {
+      destroy .prefwin
+    }
+    button .prefwin.bf.help -width 10 -text "Help" -command {
+      help_show_manual preferences
+    }
+    pack .prefwin.bf.help   -side right -padx 8 -pady 4
+    pack .prefwin.bf.cancel -side right -padx 8 -pady 4
+    pack .prefwin.bf.ok     -side right -padx 8 -pady 4
+    pack .prefwin.bf.apply  -side right -padx 8 -pady 4
 
-      # Covered selectors
-      button .prefwin.c.cfb -bg $cov_bgColor -fg $cov_fgColor -activebackground $cov_bgColor -activeforeground $cov_fgColor \
-             -text "Change Covered Foreground" -relief $brelief -command {
-        set tmp_cov_fgColor [pref_set_button_color .prefwin.c.cfb .prefwin.c.cbb fg $tmp_cov_fgColor "Choose Covered Foreground"]
-      }
-      button .prefwin.c.cbb -bg $cov_bgColor -fg $cov_fgColor -activebackground $cov_bgColor -activeforeground $cov_fgColor \
-             -text "Change Covered Background" -relief $brelief -command {
-        set tmp_cov_bgColor [pref_set_button_color .prefwin.c.cfb .prefwin.c.cbb bg $tmp_cov_bgColor "Choose Covered Background"]
-      }
-
-      # Race selectors
-      button .prefwin.c.rfb -bg $race_bgColor -fg $race_fgColor -activebackground $race_bgColor -activeforeground $race_fgColor \
-             -text "Change Race Condition Foreground" -relief $brelief -command {
-        set tmp_race_fgColor [pref_set_button_color .prefwin.c.rfb .prefwin.c.rbb fg $tmp_race_fgColor "Choose Race Condition Foreground"]
-      }
-      button .prefwin.c.rbb -bg $race_bgColor -fg $race_fgColor -activebackground $race_bgColor -activeforeground $race_fgColor \
-             -text "Change Race Condition Background" -relief $brelief -command {
-        set tmp_race_bgColor [pref_set_button_color .prefwin.c.rfb .prefwin.c.rbb bg $tmp_race_bgColor "Choose Race Condition Background"]
-      } 
-
-      # Pack the color widgets into the color frame
-      grid .prefwin.c.l   -row 0 -column 0 -sticky news -pady 4
-      grid .prefwin.c.ufb -row 1 -column 0 -sticky news -padx $bpadx -pady $bpady
-      grid .prefwin.c.ubb -row 1 -column 1 -sticky news -padx $bpadx -pady $bpady
-      grid .prefwin.c.cfb -row 2 -column 0 -sticky news -padx $bpadx -pady $bpady
-      grid .prefwin.c.cbb -row 2 -column 1 -sticky news -padx $bpadx -pady $bpady
-      grid .prefwin.c.rfb -row 3 -column 0 -sticky news -padx $bpadx -pady $bpady
-      grid .prefwin.c.rbb -row 3 -column 1 -sticky news -padx $bpadx -pady $bpady
-
-    #########################
-    # Create hit limit area #
-    #########################
-
-      # Create widgets
-      frame .prefwin.limits -relief raised -borderwidth 1
-      label .prefwin.limits.l -anchor w -text "Set Acceptable Coverage Goals"
-
-      label .prefwin.limits.ll -anchor e -text "Line Coverage %:"
-      percent_spinner .prefwin.limits.ls $line_low_limit
-
-      label .prefwin.limits.tl -anchor e -text "Toggle Coverage %:"
-      percent_spinner .prefwin.limits.ts $toggle_low_limit
-
-      label .prefwin.limits.cl -anchor e -text "Combinational Logic Coverage %:"
-      percent_spinner .prefwin.limits.cs $comb_low_limit
-
-      label .prefwin.limits.fl -anchor e -text "FSM State/Arc Coverage %:"
-      percent_spinner .prefwin.limits.fs $fsm_low_limit
-
-      label .prefwin.limits.al -anchor e -text "Assertion Coverage %:"
-      percent_spinner .prefwin.limits.as $assert_low_limit
-     
-      # Pack widgets into grid
-      grid columnconfigure .prefwin.limits 2 -weight 1
-      grid .prefwin.limits.l  -row 0 -column 0 -sticky news -pady 4
-      grid .prefwin.limits.ll -row 1 -column 0 -sticky news
-      grid .prefwin.limits.ls -row 1 -column 1 -sticky news
-      grid .prefwin.limits.tl -row 2 -column 0 -sticky news
-      grid .prefwin.limits.ts -row 2 -column 1 -sticky news
-      grid .prefwin.limits.cl -row 3 -column 0 -sticky news
-      grid .prefwin.limits.cs -row 3 -column 1 -sticky news
-      grid .prefwin.limits.fl -row 4 -column 0 -sticky news
-      grid .prefwin.limits.fs -row 4 -column 1 -sticky news
-      grid .prefwin.limits.al -row 5 -column 0 -sticky news
-      grid .prefwin.limits.as -row 5 -column 1 -sticky news
-
-    ####################################
-    # Create Syntax Highlighting Frame #
-    ####################################
-
-      # Create widgets
-      frame .prefwin.syntax -relief raised -borderwidth 1
-      label .prefwin.syntax.l -anchor w -text "Set Syntax Highlighting Options"
-
-      checkbutton .prefwin.syntax.mcb -variable tmp_vlog_hl_mode -onvalue on -offvalue off -anchor e \
-                                      -text "Turn on syntax highlighting mode" -command {
-        synchronize_syntax_widgets $tmp_vlog_hl_mode
-      }
-
-      label .prefwin.syntax.ppcl -anchor e -text "Preprocessor keyword highlight color:"
-      button .prefwin.syntax.ppcb -bg $vlog_hl_ppkeyword_color -activebackground $vlog_hl_ppkeyword_color -command {
-        set tmp_vlog_hl_ppkeyword_color [pref_set_button_color .prefwin.syntax.ppcb .prefwin.syntax.ppcb bg $tmp_vlog_hl_ppkeyword_color "Choose Preprocessor Keyword Highlight Color"] 
-      }
-
-      label .prefwin.syntax.pcl -anchor e -text "Keyword highlight color:"
-      button .prefwin.syntax.pcb -bg $vlog_hl_keyword_color -activebackground $vlog_hl_keyword_color -command {
-        set tmp_vlog_hl_keyword_color [pref_set_button_color .prefwin.syntax.pcb .prefwin.syntax.pcb bg $tmp_vlog_hl_keyword_color "Choose Keyword Highlight Color"]
-      }
-
-      label .prefwin.syntax.ccl -anchor e -text "Comment highlight color:"
-      button .prefwin.syntax.ccb -bg $vlog_hl_comment_color -activebackground $vlog_hl_comment_color -command {
-        set tmp_vlog_hl_comment_color [pref_set_button_color .prefwin.syntax.ccb .prefwin.syntax.ccb bg $tmp_vlog_hl_comment_color "Choose Comment Highlight Color"]
-      }
-
-      label .prefwin.syntax.vcl -anchor e -text "Value highlight color:"
-      button .prefwin.syntax.vcb -bg $vlog_hl_value_color -activebackground $vlog_hl_value_color -command {
-        set tmp_vlog_hl_value_color [pref_set_button_color .prefwin.syntax.vcb .prefwin.syntax.vcb bg $tmp_vlog_hl_value_color "Choose Value Highlight Color"]
-      }
-
-      label .prefwin.syntax.stcl -anchor e -text "String highlight color:"
-      button .prefwin.syntax.stcb -bg $vlog_hl_string_color -activebackground $vlog_hl_string_color -command {
-        set tmp_vlog_hl_string_color [pref_set_button_color .prefwin.syntax.stcb .prefwin.syntax.stcb bg $tmp_vlog_hl_string_color "Choose String Highlight Color"]
-      }
-
-      label .prefwin.syntax.sycl -anchor e -text "Symbol highlight color:"
-      button .prefwin.syntax.sycb -bg $vlog_hl_symbol_color -activebackground $vlog_hl_symbol_color -command {
-        set tmp_vlog_hl_symbol_color [pref_set_button_color .prefwin.syntax.sycb .prefwin.syntax.sycb bg $tmp_vlog_hl_symbol_color "Choose Symbol Highlight Color"]
-      }
-
-      grid columnconfigure .prefwin.syntax 2 -weight 1
-      grid .prefwin.syntax.l    -row 0 -column 0 -sticky news -pady 4
-      grid .prefwin.syntax.mcb  -row 1 -column 0 -sticky news -pady 4
-      grid .prefwin.syntax.ppcl -row 2 -column 0 -sticky news
-      grid .prefwin.syntax.ppcb -row 2 -column 1 -sticky news
-      grid .prefwin.syntax.pcl  -row 3 -column 0 -sticky news
-      grid .prefwin.syntax.pcb  -row 3 -column 1 -sticky news
-      grid .prefwin.syntax.ccl  -row 4 -column 0 -sticky news
-      grid .prefwin.syntax.ccb  -row 4 -column 1 -sticky news
-      grid .prefwin.syntax.vcl  -row 5 -column 0 -sticky news
-      grid .prefwin.syntax.vcb  -row 5 -column 1 -sticky news
-      grid .prefwin.syntax.stcl -row 6 -column 0 -sticky news
-      grid .prefwin.syntax.stcb -row 6 -column 1 -sticky news
-      grid .prefwin.syntax.sycl -row 7 -column 0 -sticky news
-      grid .prefwin.syntax.sycb -row 7 -column 1 -sticky news
-
-    #######################################
-    # Create Apply/OK/Cancel/Help buttons #
-    #######################################
-
-      frame .prefwin.bbar -relief raised -borderwidth 1
-
-      button .prefwin.bbar.apply -width 10 -text "Apply" -command {
-        apply_preferences
-      }
-
-      button .prefwin.bbar.ok -width 10 -text "OK" -command {
-        if {[apply_preferences] == 1} {
-          write_coveredrc
-        }
-        destroy .prefwin
-      }
-
-      button .prefwin.bbar.cancel -width 10 -text "Cancel" -command {
-        destroy .prefwin
-      }
-
-      button .prefwin.bbar.help -width 10 -text "Help" -command {
-        help_show_manual preferences      
-      }
-
-      pack .prefwin.bbar.help   -side right -padx 8 -pady 4
-      pack .prefwin.bbar.cancel -side right -padx 8 -pady 4
-      pack .prefwin.bbar.ok     -side right -padx 8 -pady 4
-      pack .prefwin.bbar.apply  -side right -padx 8 -pady 4
-
-    ####################################
-    # Pack all widgets into the window #
-    ####################################
-
-      pack .prefwin.c      -fill x -anchor w
-      pack .prefwin.limits -fill x -anchor w
-      pack .prefwin.syntax -fill x -anchor w
-      pack .prefwin.bbar   -fill x -side bottom
-
-    ####################################
-    # Initialize any necessary widgets #
-    ####################################
-
-      synchronize_syntax_widgets $tmp_vlog_hl_mode
+    # Pack frames
+    grid rowconfigure    .prefwin 0 -weight 1
+    grid columnconfigure .prefwin 1 -weight 1
+    grid .prefwin.lbf -row 0 -column 0 -sticky news
+    grid .prefwin.pf  -row 0 -column 1 -sticky news
+    grid .prefwin.bf  -row 1 -column 0 -columnspan 2 -sticky news
 
   }
 
@@ -497,31 +365,31 @@ proc create_preferences {} {
 proc synchronize_syntax_widgets {hl_mode} {
   
   if {$hl_mode == "on"} {
-    .prefwin.syntax.ppcl configure -state normal
-    .prefwin.syntax.ppcb configure -state normal
-    .prefwin.syntax.pcl  configure -state normal
-    .prefwin.syntax.pcb  configure -state normal
-    .prefwin.syntax.ccl  configure -state normal
-    .prefwin.syntax.ccb  configure -state normal
-    .prefwin.syntax.vcl  configure -state normal
-    .prefwin.syntax.vcb  configure -state normal
-    .prefwin.syntax.stcl configure -state normal
-    .prefwin.syntax.stcb configure -state normal
-    .prefwin.syntax.sycl configure -state normal
-    .prefwin.syntax.sycb configure -state normal
+    .prefwin.pf.f.ppcl configure -state normal
+    .prefwin.pf.f.ppcb configure -state normal
+    .prefwin.pf.f.pcl  configure -state normal
+    .prefwin.pf.f.pcb  configure -state normal
+    .prefwin.pf.f.ccl  configure -state normal
+    .prefwin.pf.f.ccb  configure -state normal
+    .prefwin.pf.f.vcl  configure -state normal
+    .prefwin.pf.f.vcb  configure -state normal
+    .prefwin.pf.f.stcl configure -state normal
+    .prefwin.pf.f.stcb configure -state normal
+    .prefwin.pf.f.sycl configure -state normal
+    .prefwin.pf.f.sycb configure -state normal
   } else {
-    .prefwin.syntax.ppcl configure -state disabled
-    .prefwin.syntax.ppcb configure -state disabled
-    .prefwin.syntax.pcl  configure -state disabled
-    .prefwin.syntax.pcb  configure -state disabled
-    .prefwin.syntax.ccl  configure -state disabled
-    .prefwin.syntax.ccb  configure -state disabled
-    .prefwin.syntax.vcl  configure -state disabled
-    .prefwin.syntax.vcb  configure -state disabled
-    .prefwin.syntax.stcl configure -state disabled
-    .prefwin.syntax.stcb configure -state disabled
-    .prefwin.syntax.sycl configure -state disabled
-    .prefwin.syntax.sycb configure -state disabled
+    .prefwin.pf.f.ppcl configure -state disabled
+    .prefwin.pf.f.ppcb configure -state disabled
+    .prefwin.pf.f.pcl  configure -state disabled
+    .prefwin.pf.f.pcb  configure -state disabled
+    .prefwin.pf.f.ccl  configure -state disabled
+    .prefwin.pf.f.ccb  configure -state disabled
+    .prefwin.pf.f.vcl  configure -state disabled
+    .prefwin.pf.f.vcb  configure -state disabled
+    .prefwin.pf.f.stcl configure -state disabled
+    .prefwin.pf.f.stcb configure -state disabled
+    .prefwin.pf.f.sycl configure -state disabled
+    .prefwin.pf.f.sycb configure -state disabled
   }
         
 }
@@ -531,13 +399,17 @@ proc synchronize_syntax_widgets {hl_mode} {
 # A value of 0 is returned if no changes were found; otherwise, a value of 1 is returned.
 proc apply_preferences {} {
 
-  global cov_fgColor tmp_cov_fgColor
-  global cov_bgColor tmp_cov_bgColor
-  global uncov_fgColor tmp_uncov_fgColor
-  global uncov_bgColor tmp_uncov_bgColor
-  global race_fgColor tmp_race_fgColor
-  global race_bgColor tmp_race_bgColor
-  global line_low_limit toggle_low_limit comb_low_limit fsm_low_limit assert_low_limit
+  global cov_fgColor      tmp_cov_fgColor
+  global cov_bgColor      tmp_cov_bgColor
+  global uncov_fgColor    tmp_uncov_fgColor
+  global uncov_bgColor    tmp_uncov_bgColor
+  global race_fgColor     tmp_race_fgColor
+  global race_bgColor     tmp_race_bgColor
+  global line_low_limit   tmp_line_low_limit
+  global toggle_low_limit tmp_toggle_low_limit
+  global comb_low_limit   tmp_comb_low_limit
+  global fsm_low_limit    tmp_fsm_low_limit
+  global assert_low_limit tmp_assert_low_limit
   global cov_rb
   global vlog_hl_mode            tmp_vlog_hl_mode
   global vlog_hl_ppkeyword_color tmp_vlog_hl_ppkeyword_color
@@ -546,6 +418,9 @@ proc apply_preferences {} {
   global vlog_hl_value_color     tmp_vlog_hl_value_color
   global vlog_hl_string_color    tmp_vlog_hl_string_color
   global vlog_hl_symbol_color    tmp_vlog_hl_symbol_color
+
+  # Save spinner values to temporary storage items
+  save_spinners [.prefwin.lbf.lb curselection]
 
   set changed 0
 
@@ -574,24 +449,24 @@ proc apply_preferences {} {
     set race_bgColor $tmp_race_bgColor
     set changed 1
   }
-  if {$line_low_limit != [expr 100 - [.prefwin.limits.ls.l nearest 0]]} {
-    set line_low_limit [expr 100 - [.prefwin.limits.ls.l nearest 0]]
+  if {$line_low_limit != $tmp_line_low_limit} {
+    set line_low_limit $tmp_line_low_limit
     set changed 1
   }
-  if {$toggle_low_limit != [expr 100 - [.prefwin.limits.ts.l nearest 0]]} {
-    set toggle_low_limit [expr 100 - [.prefwin.limits.ts.l nearest 0]]
+  if {$toggle_low_limit != $tmp_toggle_low_limit} {
+    set toggle_low_limit $tmp_toggle_low_limit
     set changed 1
   }
-  if {$comb_low_limit != [expr 100 - [.prefwin.limits.cs.l nearest 0]]} {
-    set comb_low_limit [expr 100 - [.prefwin.limits.cs.l nearest 0]]
+  if {$comb_low_limit != $tmp_comb_low_limit} {
+    set comb_low_limit $tmp_comb_low_limit
     set changed 1
   }
-  if {$fsm_low_limit != [expr 100 - [.prefwin.limits.fs.l nearest 0]]} {
-    set fsm_low_limit    [expr 100 - [.prefwin.limits.fs.l nearest 0]]
+  if {$fsm_low_limit != $tmp_fsm_low_limit} {
+    set fsm_low_limit $tmp_fsm_low_limit
     set changed 1
   }
-  if {$assert_low_limit != [expr 100 - [.prefwin.limits.as.l nearest 0]]} {
-    set assert_low_limit [expr 100 - [.prefwin.limits.as.l nearest 0]]
+  if {$assert_low_limit != $tmp_assert_low_limit} {
+    set assert_low_limit $tmp_assert_low_limit
     set changed 1
   }
   if {$vlog_hl_mode != $tmp_vlog_hl_mode} {
@@ -726,3 +601,324 @@ proc percent_spinner {w showval} {
 
 }
 
+proc populate_pref {} {
+
+  global last_pref_index
+
+  # Save spinner values before proceeding
+  save_spinners $last_pref_index
+
+  # Get the current selection
+  set index [.prefwin.lbf.lb curselection]
+
+  if {$index != $last_pref_index} {
+
+    # Destroy the preference information pane
+    destroy .prefwin.pf.f
+
+    # Display the new preference information pane
+    if {$index == 0} {
+      create_color_pref
+    } elseif {$index == 1} {
+      create_cov_goal_pref
+    } elseif {$index == 2} {
+      create_syntax_pref
+    } elseif {$index == 3} {
+      create_report_pref
+    }
+
+    set last_pref_index $index
+
+  }
+
+}
+
+proc create_color_pref {} {
+
+  global cov_fgColor   cov_bgColor   tmp_cov_fgColor   tmp_cov_bgColor
+  global uncov_fgColor uncov_bgColor tmp_uncov_fgColor tmp_uncov_bgColor
+  global race_fgColor  race_bgColor  tmp_race_fgColor  tmp_race_bgColor
+
+  # Create main frame
+  frame .prefwin.pf.f
+  label .prefwin.pf.f.l -anchor w -text "Set Highlight Color"
+
+  # Uncovered selectors
+  button .prefwin.pf.f.ufb -bg $tmp_uncov_bgColor -fg $tmp_uncov_fgColor \
+         -activebackground $tmp_uncov_bgColor -activeforeground $tmp_uncov_fgColor \
+         -text "Change Uncovered Foreground" -relief groove -command {
+    set tmp_uncov_fgColor \
+        [pref_set_button_color .prefwin.pf.f.ufb .prefwin.pf.f.ubb fg $tmp_uncov_fgColor "Choose Uncovered Foreground"]
+  }
+  button .prefwin.pf.f.ubb -bg $tmp_uncov_bgColor -fg $tmp_uncov_fgColor \
+         -activebackground $tmp_uncov_bgColor -activeforeground $tmp_uncov_fgColor \
+         -text "Change Uncovered Background" -relief groove -command {
+    set tmp_uncov_bgColor \
+        [pref_set_button_color .prefwin.pf.f.ufb .prefwin.pf.f.ubb bg $tmp_uncov_bgColor "Choose Uncovered Background"]
+  }
+
+  # Covered selectors
+  button .prefwin.pf.f.cfb -bg $tmp_cov_bgColor -fg $tmp_cov_fgColor \
+         -activebackground $tmp_cov_bgColor -activeforeground $tmp_cov_fgColor \
+         -text "Change Covered Foreground" -relief groove -command {
+    set tmp_cov_fgColor \
+        [pref_set_button_color .prefwin.pf.f.cfb .prefwin.pf.f.cbb fg $tmp_cov_fgColor "Choose Covered Foreground"]
+  }
+  button .prefwin.pf.f.cbb -bg $tmp_cov_bgColor -fg $tmp_cov_fgColor \
+         -activebackground $tmp_cov_bgColor -activeforeground $tmp_cov_fgColor \
+         -text "Change Covered Background" -relief groove -command {
+    set tmp_cov_bgColor \
+        [pref_set_button_color .prefwin.pf.f.cfb .prefwin.pf.f.cbb bg $tmp_cov_bgColor "Choose Covered Background"]
+  }
+
+  # Race selectors
+  button .prefwin.pf.f.rfb -bg $tmp_race_bgColor -fg $tmp_race_fgColor \
+         -activebackground $tmp_race_bgColor -activeforeground $tmp_race_fgColor \
+         -text "Change Race Condition Foreground" -relief groove -command {
+    set tmp_race_fgColor \
+        [pref_set_button_color .prefwin.pf.f.rfb .prefwin.pf.f.rbb fg $tmp_race_fgColor "Choose Race Condition Foreground"]
+  }
+  button .prefwin.pf.f.rbb -bg $tmp_race_bgColor -fg $tmp_race_fgColor \
+         -activebackground $tmp_race_bgColor -activeforeground $tmp_race_fgColor \
+         -text "Change Race Condition Background" -relief groove -command {
+    set tmp_race_bgColor \
+        [pref_set_button_color .prefwin.pf.f.rfb .prefwin.pf.f.rbb bg $tmp_race_bgColor "Choose Race Condition Background"]
+  }
+
+  # Pack the color widgets into the color frame
+  grid columnconfigure .prefwin.pf.f 1 -weight 1
+  grid .prefwin.pf.f.l   -row 0 -column 0 -sticky news -pady 4
+  grid .prefwin.pf.f.ufb -row 1 -column 0 -sticky news -padx 8
+  grid .prefwin.pf.f.ubb -row 2 -column 0 -sticky news -padx 8
+  grid .prefwin.pf.f.cfb -row 3 -column 0 -sticky news -padx 8
+  grid .prefwin.pf.f.cbb -row 4 -column 0 -sticky news -padx 8
+  grid .prefwin.pf.f.rfb -row 5 -column 0 -sticky news -padx 8
+  grid .prefwin.pf.f.rbb -row 6 -column 0 -sticky news -padx 8
+
+  # Pack the frame
+  pack .prefwin.pf.f -fill both
+
+}
+
+proc create_cov_goal_pref {} {
+
+  global tmp_line_low_limit tmp_toggle_low_limit tmp_comb_low_limit tmp_fsm_low_limit tmp_assert_low_limit
+
+  # Create widgets
+  frame .prefwin.pf.f
+  label .prefwin.pf.f.l -anchor w -text "Set Acceptable Coverage Goals"
+
+  label .prefwin.pf.f.ll -anchor e -text "Line Coverage %:"
+  percent_spinner .prefwin.pf.f.ls $tmp_line_low_limit
+
+  label .prefwin.pf.f.tl -anchor e -text "Toggle Coverage %:"
+  percent_spinner .prefwin.pf.f.ts $tmp_toggle_low_limit
+
+  label .prefwin.pf.f.cl -anchor e -text "Combinational Logic Coverage %:"
+  percent_spinner .prefwin.pf.f.cs $tmp_comb_low_limit
+
+  label .prefwin.pf.f.fl -anchor e -text "FSM State/Arc Coverage %:"
+  percent_spinner .prefwin.pf.f.fs $tmp_fsm_low_limit
+
+  label .prefwin.pf.f.al -anchor e -text "Assertion Coverage %:"
+  percent_spinner .prefwin.pf.f.as $tmp_assert_low_limit
+
+  # Pack widgets into grid
+  grid columnconfigure .prefwin.pf.f 2 -weight 1
+  grid .prefwin.pf.f.l  -row 0 -column 0 -sticky news -pady 4
+  grid .prefwin.pf.f.ll -row 1 -column 0 -sticky news
+  grid .prefwin.pf.f.ls -row 1 -column 1 -sticky news
+  grid .prefwin.pf.f.tl -row 2 -column 0 -sticky news
+  grid .prefwin.pf.f.ts -row 2 -column 1 -sticky news
+  grid .prefwin.pf.f.cl -row 3 -column 0 -sticky news
+  grid .prefwin.pf.f.cs -row 3 -column 1 -sticky news
+  grid .prefwin.pf.f.fl -row 4 -column 0 -sticky news
+  grid .prefwin.pf.f.fs -row 4 -column 1 -sticky news
+  grid .prefwin.pf.f.al -row 5 -column 0 -sticky news
+  grid .prefwin.pf.f.as -row 5 -column 1 -sticky news
+
+  # Pack the frame
+  pack .prefwin.pf.f -fill both
+
+}
+
+proc create_syntax_pref {} {
+
+  global vlog_hl_mode            tmp_vlog_hl_mode
+  global vlog_hl_ppkeyword_color tmp_vlog_hl_ppkeyword_color
+  global vlog_hl_keyword_color   tmp_vlog_hl_keyword_color
+  global vlog_hl_comment_color   tmp_vlog_hl_comment_color
+  global vlog_hl_value_color     tmp_vlog_hl_value_color
+  global vlog_hl_string_color    tmp_vlog_hl_string_color
+  global vlog_hl_symbol_color    tmp_vlog_hl_symbol_color
+  global hl_mode
+
+  # Create widgets
+  frame .prefwin.pf.f
+  label .prefwin.pf.f.l -anchor w -text "Set Syntax Highlighting Options"
+
+  checkbutton .prefwin.pf.f.mcb -variable tmp_vlog_hl_mode -onvalue on -offvalue off -anchor e \
+                                  -text "Turn on syntax highlighting mode" -command {
+    synchronize_syntax_widgets $tmp_vlog_hl_mode
+  }
+
+  label .prefwin.pf.f.ppcl -anchor e -text "Preprocessor keyword highlight color:"
+  button .prefwin.pf.f.ppcb -bg $vlog_hl_ppkeyword_color -activebackground $vlog_hl_ppkeyword_color -command {
+    set tmp_vlog_hl_ppkeyword_color \
+        [pref_set_button_color .prefwin.pf.f.ppcb .prefwin.pf.f.ppcb bg $tmp_vlog_hl_ppkeyword_color "Choose Preprocessor Keyword Highlight Color"]
+  }
+
+  label .prefwin.pf.f.pcl -anchor e -text "Keyword highlight color:"
+  button .prefwin.pf.f.pcb -bg $vlog_hl_keyword_color -activebackground $vlog_hl_keyword_color -command {
+    set tmp_vlog_hl_keyword_color \
+        [pref_set_button_color .prefwin.pf.f.pcb .prefwin.pf.f.pcb bg $tmp_vlog_hl_keyword_color "Choose Keyword Highlight Color"]
+  }
+
+  label .prefwin.pf.f.ccl -anchor e -text "Comment highlight color:"
+  button .prefwin.pf.f.ccb -bg $vlog_hl_comment_color -activebackground $vlog_hl_comment_color -command {
+    set tmp_vlog_hl_comment_color \
+        [pref_set_button_color .prefwin.pf.f.ccb .prefwin.pf.f.ccb bg $tmp_vlog_hl_comment_color "Choose Comment Highlight Color"]
+  }
+
+  label .prefwin.pf.f.vcl -anchor e -text "Value highlight color:"
+  button .prefwin.pf.f.vcb -bg $vlog_hl_value_color -activebackground $vlog_hl_value_color -command {
+    set tmp_vlog_hl_value_color \
+        [pref_set_button_color .prefwin.pf.f.vcb .prefwin.pf.f.vcb bg $tmp_vlog_hl_value_color "Choose Value Highlight Color"]
+  }
+
+  label .prefwin.pf.f.stcl -anchor e -text "String highlight color:"
+  button .prefwin.pf.f.stcb -bg $vlog_hl_string_color -activebackground $vlog_hl_string_color -command {
+    set tmp_vlog_hl_string_color \
+        [pref_set_button_color .prefwin.pf.f.stcb .prefwin.pf.f.stcb bg $tmp_vlog_hl_string_color "Choose String Highlight Color"]
+  }
+
+  label .prefwin.pf.f.sycl -anchor e -text "Symbol highlight color:"
+  button .prefwin.pf.f.sycb -bg $vlog_hl_symbol_color -activebackground $vlog_hl_symbol_color -command {
+    set tmp_vlog_hl_symbol_color \
+        [pref_set_button_color .prefwin.pf.f.sycb .prefwin.pf.f.sycb bg $tmp_vlog_hl_symbol_color "Choose Symbol Highlight Color"]
+  }
+
+  grid columnconfigure .prefwin.pf.f 2 -weight 1
+  grid .prefwin.pf.f.l    -row 0 -column 0 -sticky news -pady 4
+  grid .prefwin.pf.f.mcb  -row 1 -column 0 -sticky news -pady 4
+  grid .prefwin.pf.f.ppcl -row 2 -column 0 -sticky news
+  grid .prefwin.pf.f.ppcb -row 2 -column 1 -sticky news
+  grid .prefwin.pf.f.pcl  -row 3 -column 0 -sticky news
+  grid .prefwin.pf.f.pcb  -row 3 -column 1 -sticky news
+  grid .prefwin.pf.f.ccl  -row 4 -column 0 -sticky news
+  grid .prefwin.pf.f.ccb  -row 4 -column 1 -sticky news
+  grid .prefwin.pf.f.vcl  -row 5 -column 0 -sticky news
+  grid .prefwin.pf.f.vcb  -row 5 -column 1 -sticky news
+  grid .prefwin.pf.f.stcl -row 6 -column 0 -sticky news
+  grid .prefwin.pf.f.stcb -row 6 -column 1 -sticky news
+  grid .prefwin.pf.f.sycl -row 7 -column 0 -sticky news
+  grid .prefwin.pf.f.sycb -row 7 -column 1 -sticky news
+
+  pack .prefwin.pf.f -fill both
+
+  synchronize_syntax_widgets $tmp_vlog_hl_mode
+
+}
+
+proc create_report_pref {} {
+
+  global rsel_sdv rsel_mi rsel_cu
+  global rsel_l rsel_t rsel_c rsel_f rsel_a rsel_r
+  global rsel_width rsel_wsel
+  global rsel_fname
+
+  # Set default values for radio/check buttons - TBD
+  set rsel_sdv   "s"
+  set rsel_mi    ""
+  set rsel_cu    ""
+  set rsel_l     "l"
+  set rsel_t     "t"
+  set rsel_c     "c"
+  set rsel_f     "f"
+  set rsel_a     ""
+  set rsel_r     ""
+  set rsel_wsel  0
+  set rsel_width "80"
+
+  frame .prefwin.pf.f
+  label .prefwin.pf.f.l -anchor w -text "Set ASCII Report Generation Options"
+
+  # Create width area
+  checkbutton .prefwin.pf.f.width_val -text "Limit line width to:" -variable rsel_wsel -anchor w -command {
+    if {$rsel_wsel == 0} {
+      .prefwin.pf.f.width_w configure -state disabled
+    } else {
+      .prefwin.pf.f.width_w configure -state normal
+    }
+  }
+  entry .prefwin.pf.f.width_w -textvariable rsel_width -width 3 -validate key -vcmd {string is int %P} -invalidcommand bell -state disabled
+  label .prefwin.pf.f.width_lbl -text "characters" -anchor w
+
+  # Create detail selection area
+  label .prefwin.pf.f.sdv_lbl -text "Level of detail" -anchor w
+  radiobutton .prefwin.pf.f.sdv_s -text "Summary"  -variable rsel_sdv -value "s" -anchor w
+  radiobutton .prefwin.pf.f.sdv_d -text "Detailed" -variable rsel_sdv -value "d" -anchor w
+  radiobutton .prefwin.pf.f.sdv_v -text "Verbose"  -variable rsel_sdv -value "v" -anchor w
+
+  # Create module/instance selection area
+  label .prefwin.pf.f.mi_lbl -text "Report by" -anchor w
+  radiobutton .prefwin.pf.f.mi_m -text "Module"   -variable rsel_mi -value ""   -anchor w
+  radiobutton .prefwin.pf.f.mi_i -text "Instance" -variable rsel_mi -value "-i" -anchor w
+
+  # Create metric selection area
+  label .prefwin.pf.f.metric_lbl -text "Metrics" -anchor w
+  checkbutton .prefwin.pf.f.metric_l -text "Line"            -variable rsel_l -onvalue "l" -offvalue "" -anchor w
+  checkbutton .prefwin.pf.f.metric_t -text "Toggle"          -variable rsel_t -onvalue "t" -offvalue "" -anchor w
+  checkbutton .prefwin.pf.f.metric_c -text "Logic"           -variable rsel_c -onvalue "c" -offvalue "" -anchor w
+  checkbutton .prefwin.pf.f.metric_f -text "FSM"             -variable rsel_f -onvalue "f" -offvalue "" -anchor w
+  checkbutton .prefwin.pf.f.metric_a -text "Assertion"       -variable rsel_a -onvalue "a" -offvalue "" -anchor w
+  checkbutton .prefwin.pf.f.metric_r -text "Race Conditions" -variable rsel_r -onvalue "r" -offvalue "" -anchor w
+
+  # Create covered/uncovered selection area
+  label .prefwin.pf.f.cu_lbl -text "Coverage Type" -anchor w
+  radiobutton .prefwin.pf.f.cu_u -text "Uncovered" -variable rsel_cu -value ""   -anchor w
+  radiobutton .prefwin.pf.f.cu_c -text "Covered"   -variable rsel_cu -value "-c" -anchor w
+
+  # Now pack all of the windows
+  grid columnconfigure .prefwin.pf.f 2 -weight 1
+  grid .prefwin.pf.f.l          -row 0  -column 0 -columnspan 3 -sticky news -pady 4
+  grid .prefwin.pf.f.width_val  -row 1  -column 0 -sticky news -pady 4
+  grid .prefwin.pf.f.width_w    -row 1  -column 1 -sticky news -pady 4
+  grid .prefwin.pf.f.width_lbl  -row 1  -column 2 -sticky news -pady 4
+  grid .prefwin.pf.f.sdv_lbl    -row 2  -column 0 -sticky news -pady 4
+  grid .prefwin.pf.f.mi_lbl     -row 2  -column 2 -sticky news -pady 4
+  grid .prefwin.pf.f.sdv_s      -row 3  -column 0 -sticky news -padx 12
+  grid .prefwin.pf.f.mi_m       -row 3  -column 2 -sticky news -padx 12
+  grid .prefwin.pf.f.sdv_d      -row 4  -column 0 -sticky news -padx 12
+  grid .prefwin.pf.f.mi_i       -row 4  -column 2 -sticky news -padx 12
+  grid .prefwin.pf.f.sdv_v      -row 5  -column 0 -sticky news -padx 12
+  grid .prefwin.pf.f.metric_lbl -row 6  -column 0 -sticky news -pady 4
+  grid .prefwin.pf.f.cu_lbl     -row 6  -column 2 -sticky news -pady 4
+  grid .prefwin.pf.f.metric_l   -row 7  -column 0 -sticky news -padx 12
+  grid .prefwin.pf.f.cu_u       -row 7  -column 2 -sticky news -padx 12
+  grid .prefwin.pf.f.metric_t   -row 8  -column 0 -sticky news -padx 12
+  grid .prefwin.pf.f.cu_c       -row 8  -column 2 -sticky news -padx 12
+  grid .prefwin.pf.f.metric_c   -row 9  -column 0 -sticky news -padx 12
+  grid .prefwin.pf.f.metric_f   -row 10 -column 0 -sticky news -padx 12
+  grid .prefwin.pf.f.metric_a   -row 11 -column 0 -sticky news -padx 12
+  grid .prefwin.pf.f.metric_r   -row 12 -column 0 -sticky news -padx 12
+
+  pack .prefwin.pf.f -fill both
+
+}
+
+proc save_spinners {index} {
+
+  global tmp_line_low_limit tmp_toggle_low_limit tmp_comb_low_limit tmp_fsm_low_limit tmp_assert_low_limit
+
+  if {$index == 1} {
+
+    set tmp_line_low_limit   [expr 100 - [.prefwin.pf.f.ls.l nearest 0]]
+    set tmp_toggle_low_limit [expr 100 - [.prefwin.pf.f.ts.l nearest 0]]
+    set tmp_comb_low_limit   [expr 100 - [.prefwin.pf.f.cs.l nearest 0]]
+    set tmp_fsm_low_limit    [expr 100 - [.prefwin.pf.f.fs.l nearest 0]]
+    set tmp_assert_low_limit [expr 100 - [.prefwin.pf.f.as.l nearest 0]]
+
+  }
+
+}
