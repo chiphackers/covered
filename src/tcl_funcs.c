@@ -1874,46 +1874,53 @@ int tcl_func_generate_report( ClientData d, Tcl_Interp* tcl, int argc, const cha
   /* Get arguments */
   if( report_parse_args( argc, 0, argv ) ) {
 
+    assert( output_file != NULL );
+
     /* Open output stream */
-    if( output_file != NULL ) {
-      if( (ofile = fopen( output_file, "w" )) == NULL ) {
-        snprintf( user_msg, USER_MSG_LENGTH, "Unable to open report output file %s for writing", output_file );
-        print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      } else {
-        free_safe( output_file );
-      }
+    if( (ofile = fopen( output_file, "w" )) == NULL ) {
+
+      snprintf( user_msg, USER_MSG_LENGTH, "Unable to open report output file %s for writing", output_file );
+      Tcl_AddErrorInfo( tcl, user_msg );
+      print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      retval = TCL_ERROR;
+
     } else {
-      ofile = stdout;
+
+      report_print_header( ofile );
+
+      /* Call out the proper reports for the specified metrics to report */
+      if( report_line ) {
+        line_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
+      }
+
+      if( report_toggle ) {
+        toggle_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
+      }
+
+      if( report_combination ) {
+        combination_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
+      }
+
+      if( report_fsm ) {
+        fsm_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
+      }
+
+      if( report_assertion ) {
+        assertion_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
+      }
+
+      if( report_race ) {
+        race_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
+      }
+
+      fclose( ofile );
+
+      snprintf( user_msg, USER_MSG_LENGTH, "Successfully generated report file %s", output_file );
+      print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+
+      free_safe( output_file );
+
     }
-
-    report_print_header( ofile );
-
-    /* Call out the proper reports for the specified metrics to report */
-    if( report_line ) {
-      line_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
-    }
-
-    if( report_toggle ) {
-      toggle_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
-    }
-
-    if( report_combination ) {
-      combination_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
-    }
-
-    if( report_fsm ) {
-      fsm_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
-    }
-
-    if( report_assertion ) {
-      assertion_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
-    }
-
-    if( report_race ) {
-      race_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
-    }
-
-    fclose( ofile );
 
   } else {
 
@@ -1997,6 +2004,10 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.56  2006/07/01 03:16:18  phase1geo
+ Completed work on ASCII report generation.  This has not been entirely
+ tested out at this time.
+
  Revision 1.55  2006/06/30 21:05:49  phase1geo
  Updating TODO and adding the ASCII report generation window.  Still some work
  to do here before this completely works.  Right now I am wrestling with the

@@ -26,6 +26,18 @@ set vlog_hl_symbol_color    coral
 set rc_file_to_write        ""
 set hl_mode                 0
 set last_pref_index         -1
+set rsel_sdv                "s"
+set rsel_mi                 ""
+set rsel_cu                 ""
+set rsel_l                  "l"
+set rsel_t                  "t"
+set rsel_c                  "c"
+set rsel_f                  "f"
+set rsel_a                  ""
+set rsel_r                  ""
+set rsel_wsel               0
+set rsel_width              "80"
+
 
 # Create a list from 100 to 0
 for {set i 100} {$i >= 0} {incr i -1} {
@@ -41,6 +53,7 @@ proc read_coveredrc {} {
   global vlog_hl_mode vlog_hl_ppkeyword_color vlog_hl_keyword_color
   global vlog_hl_comment_color vlog_hl_string_color vlog_hl_value_color
   global vlog_hl_symbol_color
+  global rsel_sdv rsel_mi rsel_cu rsel_l rsel_t rsel_c rsel_f rsel_a rsel_r rsel_wsel rsel_width
   global HOME USER_HOME rc_file_to_write
 
   # Find the correct configuration file to read and eventually write
@@ -108,6 +121,58 @@ proc read_coveredrc {} {
           set vlog_hl_string_color $value
         } elseif {$field == "HighlightSymbolColor"} {
           set vlog_hl_symbol_color $value
+        } elseif {$field == "ReportDetailLevel"} {
+          switch $value {
+            summary  { set rsel_sdv "s" }
+            detailed { set rsel_sdv "d" }
+            verbose  { set rsel_sdv "v" }
+          }
+        } elseif {$field == "ReportAccumulateBy"} {
+          switch $value {
+            module   { set rsel_mi "" }
+            instance { set rsel_mi "-i" }
+          }
+        } elseif {$field == "ReportShowMetrics"} {
+          if {[string first "l" $value] != -1} {
+            set rsel_l "l"
+          } else {
+            set rsel_l ""
+          }
+          if {[string first "t" $value] != -1} {
+            set rsel_t "t"
+          } else {
+            set rsel_t ""
+          }
+          if {[string first "c" $value] != -1} {
+            set rsel_c "c"
+          } else {
+            set rsel_c ""
+          }
+          if {[string first "f" $value] != -1} {
+            set rsel_f "f"
+          } else {
+            set rsel_f ""
+          }
+          if {[string first "a" $value] != -1} {
+            set rsel_a "a"
+          } else {
+            set rsel_a ""
+          }
+          if {[string first "r" $value] != -1} {
+            set rsel_r "r"
+          } else {
+            set rsel_r ""
+          }
+        } elseif {$field == "ReportCoverageType"} {
+          switch $value {
+            uncovered { set rsel_cu "" }
+            covered   { set rsel_cu "-c" }
+          }
+        } elseif {$field == "ReportLineWidth"} {
+          switch $value {
+            preformatted { set rsel_wsel 0 }
+            default      { set rsel_wsel 1; set rsel_width $value }
+          }
         }
 
       }
@@ -129,6 +194,7 @@ proc write_coveredrc {} {
   global vlog_hl_mode vlog_hl_ppkeyword_color vlog_hl_keyword_color
   global vlog_hl_comment_color vlog_hl_string_color vlog_hl_value_color
   global vlog_hl_symbol_color
+  global rsel_sdv rsel_mi rsel_cu rsel_wsel rsel_width rsel_l rsel_t rsel_c rsel_f rsel_a rsel_r
   global rc_file_to_write
 
   if {$rc_file_to_write != ""} {
@@ -250,6 +316,53 @@ proc write_coveredrc {} {
 
     puts $rc "HighlightSymbolColor = $vlog_hl_symbol_color\n"
 
+    puts $rc "# When an ASCII report is generated, this option specifies the amount of detail contained"
+    puts $rc "# in the report.  Legal values are 'summary', 'detailed' or 'verbose'.\n"
+
+    switch $rsel_sdv {
+      s { puts $rc "ReportDetailLevel = summary\n" }
+      d { puts $rc "ReportDetailLevel = detailed\n" }
+      v { puts $rc "ReportDetailLevel = verbose\n" }
+    }
+
+    puts $rc "# When an ASCII report is generated, this option specifies whether the report should"
+    puts $rc "# accumulate coverage statistics on a module or instance basis.  Legal values are 'module'"
+    puts $rc "# or 'instance'.\n"
+
+    if {$rsel_mi == ""} {
+      puts $rc "ReportAccumulateBy = module\n"
+    } else {
+      puts $rc "ReportAccumulateBy = instance\n"
+    }
+
+    puts $rc "# When an ASCII report is generated, this option specifies which metrics should be"
+    puts $rc "# output.  Legal values are any of the following combinations of letters (without spaces)"
+    puts $rc "# 'l' (line), 't' (toggle), 'c' (combinational logic), 'f' (FSM), 'a' (assertion) and/or"
+    puts $rc "# 'r' (race condition).\n"
+
+    puts $rc "ReportShowMetrics = $rsel_l$rsel_t$rsel_c$rsel_f$rsel_a$rsel_r\n"
+
+    puts $rc "# When an ASCII report is generated, this option specifies whether uncovered or covered"
+    puts $rc "# information will be displayed to the report file.  Legal values are 'uncovered' or"
+    puts $rc "# 'covered'.\n"
+
+    if {$rsel_cu == ""} {
+      puts $rc "ReportCoverageType = uncovered\n"
+    } else {
+      puts $rc "ReportCoverageType = covered\n"
+    }
+
+    puts $rc "# When an ASCII report is generated, this option specifies whether the width of the file"
+    puts $rc "# should be set to a certain number of characters or just retain the formatting that is"
+    puts $rc "# specified in the source file.  Legal values are 'preformatted' or any positive integer"
+    puts $rc "# value.\n"
+
+    if {$rsel_wsel == 0} {
+      puts $rc "ReportLineWidth = preformatted\n"
+    } else {
+      puts $rc "ReportLineWidth = $rsel_width\n"
+    }
+
     flush $rc
     close $rc
 
@@ -257,7 +370,7 @@ proc write_coveredrc {} {
 
 }
 
-proc create_preferences {} {
+proc create_preferences {start_index} {
 
   global cov_fgColor   cov_bgColor   tmp_cov_fgColor   tmp_cov_bgColor
   global uncov_fgColor uncov_bgColor tmp_uncov_fgColor tmp_uncov_bgColor
@@ -274,7 +387,18 @@ proc create_preferences {} {
   global vlog_hl_value_color     tmp_vlog_hl_value_color
   global vlog_hl_string_color    tmp_vlog_hl_string_color
   global vlog_hl_symbol_color    tmp_vlog_hl_symbol_color
-  global hl_mode
+  global rsel_sdv                tmp_rsel_sdv
+  global rsel_mi                 tmp_rsel_mi
+  global rsel_cu                 tmp_rsel_cu
+  global rsel_wsel               tmp_rsel_wsel
+  global rsel_width              tmp_rsel_width
+  global rsel_l                  tmp_rsel_l
+  global rsel_t                  tmp_rsel_t
+  global rsel_c                  tmp_rsel_c
+  global rsel_f                  tmp_rsel_f
+  global rsel_a                  tmp_rsel_a
+  global rsel_r                  tmp_rsel_r
+  global hl_mode last_pref_index
 
   # Now create the window and set the grab to this window
   if {[winfo exists .prefwin] == 0} {
@@ -298,11 +422,25 @@ proc create_preferences {} {
     set tmp_vlog_hl_value_color     $vlog_hl_value_color
     set tmp_vlog_hl_string_color    $vlog_hl_string_color
     set tmp_vlog_hl_symbol_color    $vlog_hl_symbol_color
+    set tmp_rsel_sdv                $rsel_sdv
+    set tmp_rsel_mi                 $rsel_mi
+    set tmp_rsel_cu                 $rsel_cu
+    set tmp_rsel_wsel               $rsel_wsel
+    set tmp_rsel_width              $rsel_width
+    set tmp_rsel_l                  $rsel_l
+    set tmp_rsel_t                  $rsel_t
+    set tmp_rsel_c                  $rsel_c
+    set tmp_rsel_f                  $rsel_f
+    set tmp_rsel_a                  $rsel_a
+    set tmp_rsel_r                  $rsel_r
+
+    # Specify that there was no last index selected
+    set last_pref_index -1
 
     # Create new window
     toplevel .prefwin
     wm title .prefwin "Covered - Preferences"
-    wm resizable .prefwin 0 0
+    # wm resizable .prefwin 0 0
     wm geometry .prefwin =500x350
 
     # Create listbox frame
@@ -323,6 +461,8 @@ proc create_preferences {} {
     # Create preference frame
     frame .prefwin.pf -relief raised -borderwidth 1
     frame .prefwin.pf.f
+    label .prefwin.pf.f.l -text "Select an option category on the left to view/edit.\nClick the \"Apply button\" to apply all preference options\nto the rest of the GUI.  Click the \"OK\" button to apply\nand save the changes to the Covered configuration file\nand exit this window.  Click the \"Cancel\" button to\nforget all preference changes made the exit this\nwindow.  Click the \"Help\" button to get help for the\nshown option window." -justify left
+    pack .prefwin.pf.f.l -fill y -padx 8 -pady 10 
     pack .prefwin.pf.f -fill both
 
     # Create button frame
@@ -340,7 +480,13 @@ proc create_preferences {} {
       destroy .prefwin
     }
     button .prefwin.bf.help -width 10 -text "Help" -command {
-      help_show_manual preferences
+      switch [.prefwin.lbf.lb curselection] {
+        0 { help_show_manual pref_color }
+        1 { help_show_manual pref_goals }
+        2 { help_show_manual pref_syntax }
+        3 { help_show_manual pref_report }
+        default { help_show_manual pref_main }
+      }
     }
     pack .prefwin.bf.help   -side right -padx 8 -pady 4
     pack .prefwin.bf.cancel -side right -padx 8 -pady 4
@@ -354,6 +500,12 @@ proc create_preferences {} {
     grid .prefwin.pf  -row 0 -column 1 -sticky news
     grid .prefwin.bf  -row 1 -column 0 -columnspan 2 -sticky news
 
+  }
+
+  # If the user specified a starting index value, activate it.
+  if {[expr $start_index >= 0] && [expr $start_index <= 3]} {
+    .prefwin.lbf.lb selection set $start_index
+    populate_pref
   }
 
   # Bring the window to the top
@@ -418,6 +570,17 @@ proc apply_preferences {} {
   global vlog_hl_value_color     tmp_vlog_hl_value_color
   global vlog_hl_string_color    tmp_vlog_hl_string_color
   global vlog_hl_symbol_color    tmp_vlog_hl_symbol_color
+  global rsel_sdv                tmp_rsel_sdv
+  global rsel_mi                 tmp_rsel_mi
+  global rsel_cu                 tmp_rsel_cu
+  global rsel_wsel               tmp_rsel_wsel
+  global rsel_width              tmp_rsel_width
+  global rsel_l                  tmp_rsel_l
+  global rsel_t                  tmp_rsel_t
+  global rsel_c                  tmp_rsel_c
+  global rsel_f                  tmp_rsel_f
+  global rsel_a                  tmp_rsel_a
+  global rsel_r                  tmp_rsel_r
 
   # Save spinner values to temporary storage items
   save_spinners [.prefwin.lbf.lb curselection]
@@ -497,6 +660,50 @@ proc apply_preferences {} {
     set vlog_hl_symbol_color $tmp_vlog_hl_symbol_color
     set changed 1
   }
+  if {$rsel_sdv != $tmp_rsel_sdv} {
+    set rsel_sdv $tmp_rsel_sdv
+    set changed 1
+  }
+  if {$rsel_mi != $tmp_rsel_mi} {
+    set rsel_mi $tmp_rsel_mi
+    set changed 1
+  }
+  if {$rsel_cu != $tmp_rsel_cu} {
+    set rsel_cu $tmp_rsel_cu
+    set changed 1
+  }
+  if {$rsel_wsel != $tmp_rsel_wsel} {
+    set rsel_wsel $tmp_rsel_wsel
+    set changed 1
+  }
+  if {$rsel_width != $tmp_rsel_width} {
+    set rsel_width $tmp_rsel_width
+    set changed 1
+  }
+  if {$rsel_l != $tmp_rsel_l} {
+    set rsel_l $tmp_rsel_l
+    set changed 1
+  }
+  if {$rsel_t != $tmp_rsel_t} {
+    set rsel_t $tmp_rsel_t
+    set changed 1
+  }
+  if {$rsel_c != $tmp_rsel_c} {
+    set rsel_c $tmp_rsel_c
+    set changed 1
+  }
+  if {$rsel_f != $tmp_rsel_f} {
+    set rsel_f $tmp_rsel_f
+    set changed 1
+  }
+  if {$rsel_a != $tmp_rsel_a} {
+    set rsel_a $tmp_rsel_a
+    set changed 1
+  }
+  if {$rsel_r != $tmp_rsel_r} {
+    set rsel_r $tmp_rsel_r
+    set changed 1
+  }
 
   # Update the display if necessary
   if {$changed == 1} {
@@ -535,6 +742,9 @@ proc apply_preferences {} {
     if {[winfo exists .sumwin] == 1} {
       create_summary
     }
+
+    # Update the report selection window
+    update_report_select
 
   }
 
@@ -822,62 +1032,48 @@ proc create_syntax_pref {} {
 
 proc create_report_pref {} {
 
-  global rsel_sdv rsel_mi rsel_cu
-  global rsel_l rsel_t rsel_c rsel_f rsel_a rsel_r
-  global rsel_width rsel_wsel
-  global rsel_fname
-
-  # Set default values for radio/check buttons - TBD
-  set rsel_sdv   "s"
-  set rsel_mi    ""
-  set rsel_cu    ""
-  set rsel_l     "l"
-  set rsel_t     "t"
-  set rsel_c     "c"
-  set rsel_f     "f"
-  set rsel_a     ""
-  set rsel_r     ""
-  set rsel_wsel  0
-  set rsel_width "80"
+  global tmp_rsel_sdv tmp_rsel_mi tmp_rsel_cu
+  global tmp_rsel_l tmp_rsel_t tmp_rsel_c tmp_rsel_f tmp_rsel_a tmp_rsel_r
+  global tmp_rsel_width tmp_rsel_wsel
 
   frame .prefwin.pf.f
   label .prefwin.pf.f.l -anchor w -text "Set ASCII Report Generation Options"
 
   # Create width area
-  checkbutton .prefwin.pf.f.width_val -text "Limit line width to:" -variable rsel_wsel -anchor w -command {
-    if {$rsel_wsel == 0} {
+  checkbutton .prefwin.pf.f.width_val -text "Limit line width to:" -variable tmp_rsel_wsel -anchor w -command {
+    if {$tmp_rsel_wsel == 0} {
       .prefwin.pf.f.width_w configure -state disabled
     } else {
       .prefwin.pf.f.width_w configure -state normal
     }
   }
-  entry .prefwin.pf.f.width_w -textvariable rsel_width -width 3 -validate key -vcmd {string is int %P} -invalidcommand bell -state disabled
+  entry .prefwin.pf.f.width_w -textvariable tmp_rsel_width -width 3 -validate key -vcmd {string is int %P} -invalidcommand bell -state disabled
   label .prefwin.pf.f.width_lbl -text "characters" -anchor w
 
   # Create detail selection area
-  label .prefwin.pf.f.sdv_lbl -text "Level of detail" -anchor w
-  radiobutton .prefwin.pf.f.sdv_s -text "Summary"  -variable rsel_sdv -value "s" -anchor w
-  radiobutton .prefwin.pf.f.sdv_d -text "Detailed" -variable rsel_sdv -value "d" -anchor w
-  radiobutton .prefwin.pf.f.sdv_v -text "Verbose"  -variable rsel_sdv -value "v" -anchor w
+  label .prefwin.pf.f.sdv_lbl -text "Level of Detail" -anchor w
+  radiobutton .prefwin.pf.f.sdv_s -text "Summary"  -variable tmp_rsel_sdv -value "s" -anchor w
+  radiobutton .prefwin.pf.f.sdv_d -text "Detailed" -variable tmp_rsel_sdv -value "d" -anchor w
+  radiobutton .prefwin.pf.f.sdv_v -text "Verbose"  -variable tmp_rsel_sdv -value "v" -anchor w
 
   # Create module/instance selection area
-  label .prefwin.pf.f.mi_lbl -text "Report by" -anchor w
-  radiobutton .prefwin.pf.f.mi_m -text "Module"   -variable rsel_mi -value ""   -anchor w
-  radiobutton .prefwin.pf.f.mi_i -text "Instance" -variable rsel_mi -value "-i" -anchor w
+  label .prefwin.pf.f.mi_lbl -text "Accumulate By" -anchor w
+  radiobutton .prefwin.pf.f.mi_m -text "Module"   -variable tmp_rsel_mi -value ""   -anchor w
+  radiobutton .prefwin.pf.f.mi_i -text "Instance" -variable tmp_rsel_mi -value "-i" -anchor w
 
   # Create metric selection area
-  label .prefwin.pf.f.metric_lbl -text "Metrics" -anchor w
-  checkbutton .prefwin.pf.f.metric_l -text "Line"            -variable rsel_l -onvalue "l" -offvalue "" -anchor w
-  checkbutton .prefwin.pf.f.metric_t -text "Toggle"          -variable rsel_t -onvalue "t" -offvalue "" -anchor w
-  checkbutton .prefwin.pf.f.metric_c -text "Logic"           -variable rsel_c -onvalue "c" -offvalue "" -anchor w
-  checkbutton .prefwin.pf.f.metric_f -text "FSM"             -variable rsel_f -onvalue "f" -offvalue "" -anchor w
-  checkbutton .prefwin.pf.f.metric_a -text "Assertion"       -variable rsel_a -onvalue "a" -offvalue "" -anchor w
-  checkbutton .prefwin.pf.f.metric_r -text "Race Conditions" -variable rsel_r -onvalue "r" -offvalue "" -anchor w
+  label .prefwin.pf.f.metric_lbl -text "Show Metrics" -anchor w
+  checkbutton .prefwin.pf.f.metric_l -text "Line"            -variable tmp_rsel_l -onvalue "l" -offvalue "" -anchor w
+  checkbutton .prefwin.pf.f.metric_t -text "Toggle"          -variable tmp_rsel_t -onvalue "t" -offvalue "" -anchor w
+  checkbutton .prefwin.pf.f.metric_c -text "Logic"           -variable tmp_rsel_c -onvalue "c" -offvalue "" -anchor w
+  checkbutton .prefwin.pf.f.metric_f -text "FSM"             -variable tmp_rsel_f -onvalue "f" -offvalue "" -anchor w
+  checkbutton .prefwin.pf.f.metric_a -text "Assertion"       -variable tmp_rsel_a -onvalue "a" -offvalue "" -anchor w
+  checkbutton .prefwin.pf.f.metric_r -text "Race Conditions" -variable tmp_rsel_r -onvalue "r" -offvalue "" -anchor w
 
   # Create covered/uncovered selection area
   label .prefwin.pf.f.cu_lbl -text "Coverage Type" -anchor w
-  radiobutton .prefwin.pf.f.cu_u -text "Uncovered" -variable rsel_cu -value ""   -anchor w
-  radiobutton .prefwin.pf.f.cu_c -text "Covered"   -variable rsel_cu -value "-c" -anchor w
+  radiobutton .prefwin.pf.f.cu_u -text "Uncovered" -variable tmp_rsel_cu -value ""   -anchor w
+  radiobutton .prefwin.pf.f.cu_c -text "Covered"   -variable tmp_rsel_cu -value "-c" -anchor w
 
   # Now pack all of the windows
   grid columnconfigure .prefwin.pf.f 2 -weight 1
@@ -907,6 +1103,8 @@ proc create_report_pref {} {
 
 }
 
+# If the specified index is pointing to the coverage goals menu option, save off the limit
+# values of each spinner box.
 proc save_spinners {index} {
 
   global tmp_line_low_limit tmp_toggle_low_limit tmp_comb_low_limit tmp_fsm_low_limit tmp_assert_low_limit

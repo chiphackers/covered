@@ -113,3 +113,34 @@ HighlightStringColor = red
 
 HighlightSymbolColor = coral
 
+# When an ASCII report is generated, this option specifies the amount of detail contained
+# in the report.  Legal values are 'summary', 'detailed' or 'verbose'.
+
+ReportDetailLevel = summary
+
+# When an ASCII report is generated, this option specifies whether the report should
+# accumulate coverage statistics on a module or instance basis.  Legal values are 'module'
+# or 'instance'.
+
+ReportAccumulateBy = module
+
+# When an ASCII report is generated, this option specifies which metrics should be
+# output.  Legal values are any of the following combinations of letters (without spaces)
+# 'l' (line), 't' (toggle), 'c' (combinational logic), 'f' (FSM), 'a' (assertion) and/or
+# 'r' (race condition).
+
+ReportShowMetrics = ltcf
+
+# When an ASCII report is generated, this option specifies whether uncovered or covered
+# information will be displayed to the report file.  Legal values are 'uncovered' or
+# 'covered'.
+
+ReportCoverageType = covered
+
+# When an ASCII report is generated, this option specifies whether the width of the file
+# should be set to a certain number of characters or just retain the formatting that is
+# specified in the source file.  Legal values are 'preformatted' or any positive integer
+# value.
+
+ReportLineWidth = preformatted
+

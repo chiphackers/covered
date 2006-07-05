@@ -12,7 +12,11 @@ doc_DATA = assert.html \
            main.html \
            main_menu.html \
            mod_inst_lb.html \
-           preferences.html \
+           pref_color.html \
+           pref_goals.html \
+           pref_main.html \
+           pref_report.html \
+           pref_syntax.html \
            report_menu.html \
            src_view.html \
            summary.html \

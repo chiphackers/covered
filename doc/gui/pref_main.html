@@ -1,0 +1,131 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>Covered Report Viewer User Manual - Main Preferences Window</title>
+</head>
+<body bgcolor="#ffffff">
+<div align="center"><img src="images/banner.gif" width="258" height="105" alt="Covered - The Verilog Code Coverage Analyzer"></div>
+<br>
+<div align="center">
+  <a href="summary.html">&lt; Prev</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="welcome.html">Table of Contents</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="pref_color.html">Next &gt;</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</div>
+<hr>
+<h1><a href="preferences.html">Navigating the Preferences Window</a></h1>
+<hr>
+
+<p>
+The preferences window allows the user to adjust the view of some of the GUI elements 
+for the purpose of more easily analyzing coverage information for a specific user.
+Figure 1 shows the preferences window that is created when the user selects the
+<strong>Tools > Preferences...</strong> menu option from the main window.
+</p>
+
+<div align="center">
+<p><strong>Figure 1.  The Main Preferences Window</strong></p>
+<img src="images/pref_main.png" alt="Covered - Main Preferences Window">
+</div>
+
+<h2>Option Categories</h2>
+
+<p>
+On the left side of the preferences window is a list of option categories that can be
+modified.  Selecting any one of the items in the listbox will display the modifiable
+options to the frame to the right of the listbox.  The following option categories
+exist:
+</p>
+
+<ul>
+  <li><a href "pref_color.html">Colors</a></li>
+  <li><a href "pref_goals.html">Coverage Goals</a></li>
+  <li><a href "pref_syntax.html">Syntax Highlighting</a></li>
+  <li><a href "pref_report.html">ASCII Report Options</a></li>
+</ul>
+
+<h2>Apply Button</h2>
+
+<p>
+Clicking on the <b>Apply</b> button will cause the currently selected preference options
+to be immediately updated in Covered but will not update the preference option values
+in the .coveredrc file.  This has the effect of changing the preferences for the current
+application only.  Clicking on this button will not close the Preferences window.
+</p>
+
+<h2>OK Button</h2>
+
+<p>
+Clicking on the <b>OK</b> button will cause the currently selected preference options
+to be immediately updated in Covered and will update the .coveredrc file with the new
+values.  This also causes the Preferences window to close.
+</p>
+
+<h2>Cancel Button</h2>
+
+<p>
+Clicking on the <b>Cancel</b> button will cause the the Preferences window to close
+without updating Covered with the currently selected values and without updating the
+.coveredrc file.
+</p>
+
+<h2>Help Button</h2>
+
+<p>
+Clicking on the <strong>Help</strong> button will cause the help page for the currently
+selected 'Option Category'.
+</p>
+
+<h2>Preferences Configuration File</h2>
+
+<p>
+User preferences are loaded from the ".coveredrc" file that is searched for in the 
+following order:</p>
+
+<p>
+<ol>
+  <li>Current directory that the 'covered report -view' command was executed from.</li>
+  <li>The user's home directory.</li>
+  <li>The installation directory (by default this is /usr/local/share/covered).</li>
+</ol>
+</p>
+
+<p>
+If user preferences are changed in this window and the <strong>OK</strong> button is
+pressed, the settings are immediately saved back to a configuration file and the GUI
+is immediately updated to reflect the new user changes.  If the <strong>Cancel</strong> 
+button is pressed, all changes are thrown away and the configuration file remains
+unchanged.  The location of the stored configuration file depends on which configuration 
+file location was initially loaded.  The following table describes this correlation.
+</p>
+
+<p>
+<div align="center">
+<p><strong>Table 1.  Location of Written .coveredrc File According to the 
+Location of Read .coveredrc File</strong></p>
+<table border>
+  <tr>
+    <td><strong>Loaded config file location</strong></td>
+    <td><strong>Stored config file location</strong></td>
+  </tr>
+  <tr>
+    <td>Current directory</td>
+    <td>Current directory</td>
+  </tr>
+  <tr>
+    <td>Home directory</td>
+    <td>Home directory</td>
+  </tr>
+  <tr>
+    <td>Install directory</td>
+    <td>Current directory</td>
+  </tr>
+  <tr>
+    <td>None found</td>
+    <td>Current directory</td>
+  </tr>
+</table>
+</div>
+</p>
+
+</body>
+</html>

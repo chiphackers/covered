@@ -219,7 +219,7 @@ proc menu_create {.menubar} {
   }
   $m add separator
   $m add command -label "Preferences..." -underline 0 -command {
-    create_preferences
+    create_preferences -1
   }
 
   # Configure the help option
@@ -333,87 +333,42 @@ proc create_report_selection_window {} {
   global rsel_fname cdd_name
 
   toplevel .rselwin
-  wm title .rselwin "Select report generation options"
-  # wm resizable .rselwin 0 0
-  wm transient .rselwin .
-  grab set .rselwin
+  wm title .rselwin "Create ASCII report"
+  wm resizable .rselwin 0 0
+  wm geometry .rselwin =450x220
 
-  # Set default values for radio/check buttons
-  set rsel_sdv   "s"
-  set rsel_mi    ""
-  set rsel_cu    ""
-  set rsel_l     "l"
-  set rsel_t     "t"
-  set rsel_c     "c"
-  set rsel_f     "f"
-  set rsel_a     ""
-  set rsel_r     ""
-  set rsel_wsel  0
-  set rsel_width "80"
+  # Create default report filename
   set rsel_fname "[file rootname $cdd_name].rpt"
 
-  # Create detail selection frame
-  frame .rselwin.sdv -relief raised -borderwidth 1
-  label .rselwin.sdv.lbl -text "Level of detail" -anchor w
-  radiobutton .rselwin.sdv.s -text "Summary"  -variable rsel_sdv -value "s" -anchor e
-  radiobutton .rselwin.sdv.d -text "Detailed" -variable rsel_sdv -value "d" -anchor e
-  radiobutton .rselwin.sdv.v -text "Verbose"  -variable rsel_sdv -value "v" -anchor e
-  grid .rselwin.sdv.lbl -row 0 -column 0 -sticky nw -pady 4
-  grid .rselwin.sdv.s   -row 1 -column 0 -sticky nw
-  grid .rselwin.sdv.d   -row 2 -column 0 -sticky nw
-  grid .rselwin.sdv.v   -row 3 -column 0 -sticky nw
-  grid rowconfigure .rselwin.sdv 3 -weight 1
-
-  # Create module/instance selection frame
-  frame .rselwin.mi -relief raised -borderwidth 1
-  label .rselwin.mi.lbl -text "Report by" -anchor w
-  radiobutton .rselwin.mi.m -text "Module"   -variable rsel_mi -value ""   -anchor e
-  radiobutton .rselwin.mi.i -text "Instance" -variable rsel_mi -value "-i" -anchor e
-  grid .rselwin.mi.lbl -row 0 -column 0 -sticky nw -pady 4
-  grid .rselwin.mi.m   -row 1 -column 0 -sticky nw
-  grid .rselwin.mi.i   -row 2 -column 0 -sticky nw
-  grid rowconfigure .rselwin.mi 2 -weight 1
-
-  # Create metric selection frame
-  frame .rselwin.metric -relief raised -borderwidth 1
-  label .rselwin.metric.lbl -text "Metrics" -anchor w
-  checkbutton .rselwin.metric.l -text "Line"            -variable rsel_l -onvalue "l" -offvalue "" -anchor e
-  checkbutton .rselwin.metric.t -text "Toggle"          -variable rsel_t -onvalue "t" -offvalue "" -anchor e
-  checkbutton .rselwin.metric.c -text "Logic"           -variable rsel_c -onvalue "c" -offvalue "" -anchor e
-  checkbutton .rselwin.metric.f -text "FSM"             -variable rsel_f -onvalue "f" -offvalue "" -anchor e
-  checkbutton .rselwin.metric.a -text "Assertion"       -variable rsel_a -onvalue "a" -offvalue "" -anchor e
-  checkbutton .rselwin.metric.r -text "Race Conditions" -variable rsel_r -onvalue "r" -offvalue "" -anchor e
-  grid .rselwin.metric.lbl -row 0 -column 0 -sticky nw -pady 4
-  grid .rselwin.metric.l   -row 1 -column 0 -sticky nw
-  grid .rselwin.metric.t   -row 2 -column 0 -sticky nw
-  grid .rselwin.metric.c   -row 3 -column 0 -sticky nw
-  grid .rselwin.metric.f   -row 4 -column 0 -sticky nw
-  grid .rselwin.metric.a   -row 5 -column 0 -sticky nw
-  grid .rselwin.metric.r   -row 6 -column 0 -sticky nw
-  grid rowconfigure .rselwin.metric 6 -weight 1
-
-  # Create covered/uncovered selection frame
-  frame .rselwin.cu -relief raised -borderwidth 1
-  label .rselwin.cu.lbl -text "Show coverage" -anchor w
-  radiobutton .rselwin.cu.u -text "Uncovered" -variable rsel_cu -value ""   -anchor e
-  radiobutton .rselwin.cu.c -text "Covered"   -variable rsel_cu -value "-c" -anchor e
-  grid .rselwin.cu.lbl -row 0 -column 0 -sticky nw -pady 4
-  grid .rselwin.cu.u   -row 1 -column 0 -sticky nw
-  grid .rselwin.cu.c   -row 2 -column 0 -sticky nw
-  grid rowconfigure .rselwin.cu 2 -weight 1
-
-  # Create width frame
-  frame .rselwin.width -relief raised -borderwidth 1
-  checkbutton .rselwin.width.val -text "Limit line width to:" -variable rsel_wsel -anchor e -command {
-    if {$rsel_wsel == 0} {
-      .rselwin.width.w configure -state disabled
-    } else {
-      .rselwin.width.w configure -state normal
-    }
+  # Create selected options window
+  frame .rselwin.of -relief raised -borderwidth 1
+  label .rselwin.of.lbl -text "Selected ASCII Report Options" -anchor w
+  button .rselwin.of.b -text "Edit Options..." -command {
+    create_preferences 3
   }
-  entry .rselwin.width.w -textvariable rsel_width -width 3 -validate key -vcmd "check_width" -invalidcommand bell -state disabled
-  grid .rselwin.width.val -row 0 -column 0 -sticky news
-  grid .rselwin.width.w   -row 0 -column 1 -sticky news
+  label .rselwin.of.sdv_lbl    -anchor w -text "Level of Detail:"
+  label .rselwin.of.sdv_val    -anchor w -text ""
+  label .rselwin.of.mi_lbl     -anchor w -text "Accumulated By:"
+  label .rselwin.of.mi_val     -anchor w -text ""
+  label .rselwin.of.metric_lbl -anchor w -text "Show Metrics:"
+  label .rselwin.of.metric_val -anchor w -text ""
+  label .rselwin.of.cu_lbl     -anchor w -text "Coverage Type:"
+  label .rselwin.of.cu_val     -anchor w -text ""
+  label .rselwin.of.width_lbl  -anchor w -text "Line Width:"
+  label .rselwin.of.width_val  -anchor w -text ""
+  grid columnconfigure .rselwin.of 1 -weight 1
+  grid .rselwin.of.lbl         -row 0 -column 0 -columnspan 2 -sticky news -pady 4
+  grid .rselwin.of.b           -row 0 -column 2 -sticky news
+  grid .rselwin.of.sdv_lbl     -row 1 -column 0 -sticky news -padx 12
+  grid .rselwin.of.sdv_val     -row 1 -column 1 -columnspan 2 -sticky news
+  grid .rselwin.of.mi_lbl      -row 2 -column 0 -sticky news -padx 12
+  grid .rselwin.of.mi_val      -row 2 -column 1 -columnspan 2 -sticky news
+  grid .rselwin.of.metric_lbl  -row 3 -column 0 -sticky news -padx 12
+  grid .rselwin.of.metric_val  -row 3 -column 1 -columnspan 2 -sticky news
+  grid .rselwin.of.cu_lbl      -row 4 -column 0 -sticky news -padx 12
+  grid .rselwin.of.cu_val      -row 4 -column 1 -columnspan 2 -sticky news
+  grid .rselwin.of.width_lbl   -row 5 -column 0 -sticky news -padx 12
+  grid .rselwin.of.width_val   -row 5 -column 1 -columnspan 2 -sticky news
 
   # Create filename frame
   frame .rselwin.fname -relief raised -borderwidth 1
@@ -422,9 +377,9 @@ proc create_report_selection_window {} {
   button .rselwin.fname.b -text "Browse..." -anchor e -command {
     set rsel_fname [tk_getSaveFile -filetypes $rpt_file_types -initialfile $rsel_fname -title "Save Generated Report As"]
   }
-  grid .rselwin.fname.lbl -row 0 -column 0 -sticky news
-  grid .rselwin.fname.e   -row 0 -column 1 -sticky news
-  grid .rselwin.fname.b   -row 0 -column 2 -sticky news
+  grid .rselwin.fname.lbl -row 0 -column 0 -sticky news -pady 4
+  grid .rselwin.fname.e   -row 0 -column 1 -sticky news -pady 4
+  grid .rselwin.fname.b   -row 0 -column 2 -sticky news -pady 4
   grid columnconfigure .rselwin.fname 1 -weight 1
 
   # Create button frame
@@ -451,21 +406,76 @@ proc create_report_selection_window {} {
   pack .rselwin.bf.create -side right -padx 8 -pady 4
 
   # Now pack all of the frames
-  grid .rselwin.sdv    -row 0 -column 0 -sticky news
-  grid .rselwin.mi     -row 0 -column 1 -sticky news
-  grid .rselwin.metric -row 0 -column 2 -sticky news
-  grid .rselwin.cu     -row 0 -column 3 -sticky news
-  grid .rselwin.width  -row 1 -column 0 -columnspan 4 -sticky news
-  grid .rselwin.fname  -row 2 -column 0 -columnspan 4 -sticky news
-  grid .rselwin.bf     -row 3 -column 0 -columnspan 4 -sticky news
+  pack .rselwin.of    -fill both -side top
+  pack .rselwin.fname -fill both -expand 1
+  pack .rselwin.bf    -fill both -side bottom
+
+  # Populate the report select window
+  update_report_select
 
   # Finally, raise this window
   raise .rselwin
 
 }
 
-proc check_width {} {
+proc update_report_select {} {
 
-  return 1
+  global rsel_sdv rsel_mi rsel_cu
+  global rsel_l rsel_t rsel_c rsel_f rsel_a rsel_r
+  global rsel_width rsel_wsel
+  global rsel_fname cdd_name
+
+  if {[winfo exists .rselwin] == 1} {
+
+    # Create human-readable versions of these values
+    switch $rsel_sdv {
+      s { set sdv_name "Summary" }
+      d { set sdv_name "Detailed" }
+      v { set sdv_name "Verbose" }
+    }
+    switch -- $rsel_mi {
+      ""   { set mi_name "Module" }
+      "-i" { set mi_name "Instance" }
+    }
+    switch -- $rsel_cu {
+      ""   { set cu_name "Uncovered" }
+      "-c" { set cu_name "Covered" }
+    }
+    if {$rsel_l == "l"} {
+      lappend metric_list "Line"
+    }
+    if {$rsel_t == "t"} {
+      lappend metric_list "Toggle"
+    }
+    if {$rsel_c == "c"} {
+      lappend metric_list "Logic"
+    }
+    if {$rsel_f == "f"} {
+      lappend metric_list "FSM"
+    }
+    if {$rsel_a == "a"} {
+      lappend metric_list "Assertion"
+    }
+    if {$rsel_r == "r"} {
+      lappend metric_list "Race Conditions"
+    }
+    if {[llength metric_list] == 0} {
+      set metric_list [list None]
+    }
+    if {$rsel_wsel == 1} {
+      set width_name "$rsel_width characters"
+    } else {
+      set width_name "Preformatted"
+    }
+
+    # Set the labels with the appropriate values
+    .rselwin.of.sdv_val    configure -text $sdv_name
+    .rselwin.of.mi_val     configure -text $mi_name
+    .rselwin.of.metric_val configure -text [join $metric_list ,]
+    .rselwin.of.cu_val     configure -text $cu_name
+    .rselwin.of.width_val  configure -text $width_name
+
+  }
 
 }
+
