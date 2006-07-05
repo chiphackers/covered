@@ -59,7 +59,7 @@ X  1.  Add ability to turn on/off coverage points and have coverage information 
 
 X  2.  Change file selection window to allow multiple files to be chosen (also just enhance the overall usage)
 
-   3.  Add ASCII report output
+X  3.  Add ASCII report output
  
 X  4.  Allow CDD to be closed and a new one opened without requiring the user to exit the GUI.
 
