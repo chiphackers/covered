@@ -66,6 +66,44 @@ line.  This line represents a line that was found to not be hit during the simul
 of this module/instance.
 </p>
 
+<h4>Excluding/Included Uncovered Lines from Line Coverage</h4>
+
+<p>
+Any uncovered line in the design may be included/excluded from coverage consideration.  To the left of
+each uncovered line is an underlined <u>I</u> (line is included in coverage) or <u>E</u> (line is excluded in coverage).
+Clicking on this character will change the coverage exclusion property of the line by recalculating the
+summary line coverage information, redisplaying it in the <a href="summary_bar.html">Main Window Summary Bar</a>,
+changing the background color of the line from the uncovered background color to the covered background color, and
+changing the leftmost character of the line to the opposite value to indicate its current status.  Figure 1 shows
+an uncovered line that is included for coverage consideration.  Figure 2 shows the same line which is now excluded
+from coverage consideration.
+</p>
+
+<div align="center">
+   <p><b>Figure 1.  Example of uncovered line included for line coverage consideration</b></p>
+   <img src="images/line_incl.png" alt="Uncovered, included line">
+</div>
+
+<div align="center">
+   <p><b>Figure 2.  Example of uncovered line excluded for line coverage consideration</b></p>
+   <img src="images/line_excl.png" alt="Uncovered, excluded line">
+</div>
+
+<p>
+In addition to changing the line coverage information, the combinational logic coverage information for an uncovered
+statement on that line will also be implicitly excluded from coverage (though the exclude properties for each subexpression
+of the statement will not change).
+</p>
+
+<p>
+If the user excludes any line in the design, the "Save CDD..." option in the
+<a href="file_menu.html">File Menu</a> will be enabled.  This allows the user to save the excluded property
+either back to the CDD file (or to a newly named CDD file).  Doing so will allow the user to load the
+CDD file at a different time and retain the knowledge of which lines have been excluded/included
+for coverage.  Additionally, if a saved CDD file with coverage exclusion is merged with another CDD file,
+the excluded line information is preserved for the resulting merged CDD file.
+</p>
+
 <h3>Viewing Covered Lines</h3>
 
 <p>

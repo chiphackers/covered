@@ -226,6 +226,45 @@ types:</p>
 </ol>
 </p>
 
+<h2>Excluding/Including a Subexpression</h2>
+
+<p>
+For any displayed subexpression within a statement, the user may choose to disregard the coverage information
+for that subexpression by clicking on the 'Excluded' checkbutton on the right side of the window.  If this
+option is checked, Covered will recalculate combinational logic summary coverage information
+for the current module/instance by adding to the "Hit" count the number of uncovered combinational logic values
+for the given subexpression (and all subexpressions below this expression within the expression tree).  This
+new summary information will be redisplayed on the <a href="summary_bar.html">Main Window Summary Bar</a>.  The
+subexpression background color in the top frame will also change from the uncovered background color to the
+covered background color.  However, the subexpression will still contain an underline that may be clicked on
+at any time to view its coverage information or the coverage information for any subexpressions that are
+uncovered.  To include a previously excluded subexpression, simply uncheck the "Excluded" checkbutton.  This
+will automatically cause the summary information and background color to be updated for the given subexpression.
+Figure 7 below shows an example of a subexpression that has been excluded from coverage consideration.
+</p>
+
+<div align="center">
+<p><strong>Figure 7.  Example of an excluded subexpression</strong></p>
+<img src="images/exit_warn.png" alt="Exit Warning Window">
+</div>
+
+<p>
+If an expression tree has been entirely excluded from coverage (all subexpressions have the "Excluded"
+checkbutton checked), the background color in the <a href="cov_view.html">Main Coverage File Viewer frame</a> 
+will change from an uncovered background color to the covered background color to indicate at the top-level 
+that this entire statement has been excluded from coverage.  However, the statement will still be underlined
+in the Main Coverage File Viewer to allow the user to view the statement, if necessary.
+</p>
+
+<p>
+If the user excludes any subexpression in the design, the "Save CDD..." option in the
+<a href="file_menu.html">File Menu</a> will be enabled.  This allows the user to save the excluded property
+either back to the CDD file (or to a newly named CDD file).  Doing so will allow the user to load the
+CDD file at a different time and retain the knowledge of which subexpressions have been excluded/included
+for coverage.  Additionally, if a saved CDD file with coverage exclusion is merged with another CDD file,
+the excluded subexpression information is preserved for the resulting merged CDD file.
+</p>
+
 <h2>Displaying a New Statement</h2>
 
 <p>

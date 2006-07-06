@@ -31,8 +31,8 @@ Selection Bar</a> in the main window and click on an underlined assertion instan
 the <a href="cov_view.html">File Viewer</a>.  Note that both covered and uncovered
 assertion instance names can be selected.  Doing so will cause the Verbose Assertion
 Coverage Window to be displayed for the selected assertion instantiation.  Figure 1 shows
-an example of a zero_one_hot assertion that had none of its coverage points hit during
-simulation.
+an example of a zero_one_hot assertion that had the "test_expr_change covered" ACP covered
+(hit twice during simulation) and the other two ACPs uncovered during simulation.
 </p>
 
 <div align="center">
@@ -59,6 +59,44 @@ source code for this assertion, simply click on the <b>Show Code</b> button at t
 right-hand portion of the coverage table.  This will cause the source code for this
 assertion to be displayed in a new <a href="src_view.html">Assertion Source Viewer 
 window</a>.
+</p>
+
+<h2>Excluding/Including Assertion Coverage Points</h2>
+
+<p>
+Individual ACPs can be excluded/included for coverage consideration using the verbose assertion
+coverage window.  This is accomplished by clicking on the <u>0</u> (ACP is currently included
+in coverage) or <u>E</u> (ACP is current excluded from coverage) value in the "# of hits"
+column.  Changing an ACP from <u>0</u> to <u>E</u> (excluding the ACP from coverage consideration)
+will cause the summary assertion coverage information to be recalculated and redisplayed in the 
+<a href="summary_bar.html">Main Window Summary Bar</a> and the background color of the ACP will 
+change from the uncovered to the covered background color.  Changing an ACP from <u>E</u> to <u>0</u>
+(including the ACP for coverage consideration) will cause the summary assertion coverage information
+to be recalculated and redisplayed in the Main Window Summary Bar and background color of the ACP
+will change from the covered to the uncovered background color.  Figure 2 below shows the above
+assertion instance with the last coverage point excluded from coverage. 
+</p>
+
+<div align="center">
+<p><strong>Figure 2.  Example of excluded ACP</strong></p>
+<img src="images/assert_excl.png" alt="Example of excluded ACP">
+</div>
+
+<p>
+If all ACPs for a given assertion instance have been excluded from coverage consideration, the
+<a href="cov_view.html">Main Window File Viewer</a> will automatically change the background color
+of the assertion instance name from the uncovered to the covered background color.  The assertion
+instance name will still be underlined, allowing the user to still see the coverage information
+for that given assertion instance.
+</p>
+
+<p>
+If the user excludes any ACP in the design, the "Save CDD..." option in the
+<a href="file_menu.html">File Menu</a> will be enabled.  This allows the user to save the excluded property
+either back to the CDD file (or to a newly named CDD file).  Doing so will allow the user to load the
+CDD file at a different time and retain the knowledge of which ACPs have been excluded/included
+for coverage.  Additionally, if a saved CDD file with coverage exclusion is merged with another CDD file,
+the excluded ACP information is preserved for the resulting merged CDD file.
 </p>
 
 <h2>Displaying a New Assertion Instance</h2>

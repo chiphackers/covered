@@ -93,6 +93,7 @@ proc menu_create {.menubar} {
       }
     }
     tcl_func_close_cdd
+    puts "Closed all opened/merged CDD files"
     .info configure -text "$cdd_name closed"
     set cdd_name ""
     clear_cdd_filelist

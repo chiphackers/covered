@@ -27,7 +27,8 @@ doc_DATA = assert.html \
            welcome.html
 
 imgdir   = $(datadir)/covered/doc/gui/images
-img_DATA = images/assert_window.png \
+img_DATA = images/assert_excl.png \
+           images/assert_window.png \
            images/assert_src.png \
            images/banner.gif \
            images/close_warn.png \
@@ -41,9 +42,13 @@ img_DATA = images/assert_window.png \
            images/dn_button.png \
            images/exit_warn.png \
            images/file_menu.png \
+           images/file_viewer.png \
+           images/fsm_excl.png \
            images/fsm_window.png \
            images/gen_menu.png \
            images/help_menu.png \
+           images/line_excl.png \
+           images/line_incl.png \
            images/main_cov.png \
            images/main_info.png \
            images/main_lb.png \

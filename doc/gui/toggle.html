@@ -56,6 +56,29 @@ To exit this window, simply click on "Close" button.  To see this help page from
 toggle window, click on the "Help" button.
 </p>
 
+<h2>Excluding/Including a Signal for Toggle Coverage</h2>
+
+<p>
+The user may exclude/include any uncovered signal in the design for toggle coverage by simply clicking
+on the "Excluded" checkbutton.  If this checkbutton is checked, the summary coverage information
+will automatically be recalculated and redisplayed in the <a href="summary_bar.html">Main Window
+Summary Bar</a> and the background color of the underlined signal in the
+<a href="cov_view.html">Main Window File Viewer</a> will change from the uncovered background color to the
+covered background color.  However, the signal will still remain underlined, allowing the user to see
+the verbose toggle coverage information, if necessary.  If the "Excluded" checkbutton is unchecked,
+the summary coverage information and background colors will be readjusted to include the coverage information
+for this signal.
+</p>
+
+<p>
+If the user excludes any signal for toggle coverage in the design, the "Save CDD..." option in the
+<a href="file_menu.html">File Menu</a> will be enabled.  This allows the user to save the excluded property
+either back to the CDD file (or to a newly named CDD file).  Doing so will allow the user to load the
+CDD file at a different time and retain the knowledge of which signals have been excluded/included
+for toggle coverage.  Additionally, if a saved CDD file with coverage exclusion is merged with another CDD file,
+the excluded signal information is preserved for the resulting merged CDD file.
+</p>
+
 <h2>Displaying a New Signal</h2>
 
 <p>

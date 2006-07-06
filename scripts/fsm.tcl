@@ -312,12 +312,14 @@ proc display_fsm_table {expr_id} {
           set ywidth [fsm_calc_ywidth $vstate_coords [expr $tpad * 2]]
           set fillcolor [.fsmwin.f.t.c cget -bg]
           set tagname "title"
+          set uline 0
         } else {
           set t [fsm_gen_vertical_text [lindex $fsm_states [expr $col - 1]]]
           set xwidth [fsm_calc_xwidth $vstate_coords [expr $tpad * 2]]
           set ywidth [fsm_calc_ywidth $vstate_coords [expr $tpad * 2]]
           set fillcolor [fsm_calc_state_fillcolor [expr $col - 1]]
           set tagname "to_state"
+          set uline 0
         }
       } elseif {$col == 0} {
         set t [lindex $fsm_states [expr $row - 1]]
@@ -325,17 +327,21 @@ proc display_fsm_table {expr_id} {
         set ywidth [fsm_calc_ywidth $hstate_coords [expr $tpad * 2]]
         set fillcolor [fsm_calc_state_fillcolor [expr $row - 1]]
         set tagname "from_state"
+        set uline 0
       } else {
         set coverage [fsm_calc_arc_coverage [expr $row - 1] [expr $col - 1]]
         if {$coverage == 2} {
           set tagname "uncov_arc"
-          set t       "_"
+          set t       "I"
+          set uline   1
         } elseif {$coverage == 3} {
           set tagname "uncov_arc"
           set t       "E"
+          set uline   1
         } else {
           set tagname "arc"
           set t       ""
+          set uline   0
         }
         set xwidth [fsm_calc_xwidth $vstate_coords [expr $tpad * 2]]
         set ywidth [fsm_calc_ywidth $hstate_coords [expr $tpad * 2]]
@@ -348,7 +354,10 @@ proc display_fsm_table {expr_id} {
 
       # Create text
       if {$t != ""} {
-        .fsmwin.f.t.c create text [expr $x + $tpad] [expr $y + $tpad] -text $t -anchor nw -tags $tagname
+        set tid [.fsmwin.f.t.c create text [expr $x + $tpad] [expr $y + $tpad] -text $t -anchor nw -tags $tagname]
+        if {$uline == 1} {
+          .fsmwin.f.t.c itemconfigure $tid -font "[.fsmwin.f.t.c itemcget $tid -font] underline"
+        }
       }
 
       # Bind each square
@@ -388,7 +397,7 @@ proc display_fsm_table {expr_id} {
         if {[.fsmwin.f.t.c itemcget current -text] == "E"} {
           set exclude 0
           .fsmwin.f.t.c itemconfigure $rid -fill $uncov_bgColor
-          .fsmwin.f.t.c itemconfigure current -text "_"
+          .fsmwin.f.t.c itemconfigure current -text "I"
         } else {
           set exclude 1
           .fsmwin.f.t.c itemconfigure $rid -fill $cov_bgColor
