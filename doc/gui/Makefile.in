@@ -179,6 +179,7 @@ imgdir = $(datadir)/covered/doc/gui/images
 img_DATA = images/assert_window.png \
            images/assert_src.png \
            images/banner.gif \
+           images/close_warn.png \
            images/color.png \
            images/comb_complex.png \
            images/comb_event.png \
@@ -187,8 +188,10 @@ img_DATA = images/assert_window.png \
            images/comb_simple.png \
            images/comb_unary.png \
            images/dn_button.png \
+           images/exit_warn.png \
            images/file_menu.png \
            images/fsm_window.png \
+           images/gen_menu.png \
            images/help_menu.png \
            images/main_cov.png \
            images/main_info.png \
