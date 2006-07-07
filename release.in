@@ -8,7 +8,7 @@
 rm -rf ./doc/htdocs
 rm -rf ./doc/manstyle
 rm -rf ./src/vpi
-rm -rf ./rpm.spec
+rm -rf ./covered.spec
 ./configure
 cd ./doc; make devel_doc
 cd ./doc/devel/html; tar cvlf ../../../../devel.tar *; gzip ../../../../devel.tar
