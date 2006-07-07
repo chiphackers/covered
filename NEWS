@@ -1,7 +1,35 @@
 Covered-Related NEWS
 ====================
 
-    * 5/30/2006
+    * 07/08/2006
+
+Development release covered-20060708 made.  This new development release for the future 0.5 stable
+release contains several enhancements to the GUI.  The primary differences are the changes to the File
+menu, the ability to exclude/include coverage cases for all metrics, and a new look for the preferences
+window.  See the following notes regarding GUI changes made.
+
+  - Added ability to open/merge more than one file at a time (only available if Tk version is >= 8.4)
+  - Added ability to save a changed/merged CDD.
+  - Added ability to close all opened CDD files so that new CDD(s) can be opened/merged regardless of
+    the design without needing to exit and restart the GUI.
+  - Added ability to generate ASCII reports from the GUI (includes the ability to set reporting options)
+  - Added ability to exclude/include coverage cases for all metrics
+  - Changed the look of the preferences window to be more tabular for purposes of minimizing desktop
+    space for this window even as the number of options increases.
+  - Added missing GUI elements to preferences window and summary window for assertion coverage
+  - Updated README file to inform where to find documentation for the GUI.
+  - Moved some VCS-only diagnostics to shared simulator diagnostic pool due to enhancements in IV
+  - Updated all GUI documentation and images to match the current state of the GUI.
+  - Added an RPM spec file to the CVS tree which will be used to generate RPMs for future stable releases
+
+The coverage exclusion/inclusion work is the primary reason for creating this development release.
+All coverage information and GUI elements are automatically updated whenever a coverage case for a metric
+is changed to either exclude it from coverage consideration or include it (because it was previously
+excluded).  The file menu changes were badly needed as well and are required to properly support the
+exclusion/inclusion work (this allows exclusions to be saved/merged).  Please report any bugs that crop
+up in this area.  Thanks!
+
+    * 05/30/2006
 
 Development release covered-20060530 made.  This new development release for the future 0.5 stable
 release contains a lot of new features and enhancements over the 0.4.x releases.  The changes are listed

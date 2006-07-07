@@ -1,3 +1,5 @@
+%define version 0.4.4
+
 Summary: Verilog code coverage analyzer
 Name: covered
 Version: %{version}
@@ -7,8 +9,9 @@ Group: Applications/Engineering
 Source: covered-%{version}.tar.gz
 BuildRoot: /tmp/%{name}-buildroot
 URL: http://covered.sourceforge.net
-Prefix: /usr/local
 Provides: covered
+Requires: tcl >= 8.3
+Requires: tk >= 8.3
 
 %description
 Covered is a Verilog code-coverage utility using VCD/LXT style dumpfiles and the
@@ -19,12 +22,12 @@ reports. Covered also contains a built-in race condition checker and GUI report 
 %setup
 
 %build
-./configure --prefix=$RPM_BUILD_ROOT/usr/local
+./configure
 make
 
 %install
 rm -rf $RPM_BUILD_ROOT
-make install
+make install prefix=$RPM_BUILD_ROOT/usr/local
 
 %clean
 make clean
