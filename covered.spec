@@ -27,10 +27,9 @@ rm -rf $RPM_BUILD_ROOT
 make install
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+make clean
 
 %files
-%doc README TODO COPYING ChangeLog
 %defattr(-,root,root)
 
 /usr/local/share/covered/.coveredrc
