@@ -1033,6 +1033,8 @@ union esuppl_u {
                                      file.  When this bit is set to a one, it indicates to the db_add_statement
                                      function that this statement and all children statements have already been
                                      added to the functional unit statement list and should not be added again. */
+    control owned          :1;  /*!< Bit 24.  Mask bit = 0.  Temporary value used by the score command to indicate
+                                     if this expression is already owned by a mod_parm structure. */
   } part;
 };
 
@@ -1075,6 +1077,7 @@ union psuppl_u {
   struct {
     control order    : 16;      /*!< Specifies the parameter order number in its module */
     control type     : 3;       /*!< Specifies the parameter type (see \ref param_suppl_types for legal value) */
+    control owns_expr: 1;       /*!< Specifies the parameter is the owner of the associated expression */
   } part;
 };
 
@@ -1849,6 +1852,12 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.200  2006/06/29 20:57:24  phase1geo
+ Added stmt_excluded bit to expression to allow us to individually control line
+ and combinational logic exclusion.  This also allows us to exclude combinational
+ logic within excluded lines.  Also fixing problem with highlighting the listbox
+ (due to recent changes).
+
  Revision 1.199  2006/06/29 20:06:33  phase1geo
  Adding assertion exclusion code.  Things seem to be working properly with this
  now.  This concludes the initial version of code exclusion.  There are some
