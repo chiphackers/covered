@@ -1,3 +1,17 @@
+2006-07-07 21:06  phase1geo
+
+	Updating build scripts for next development release and fixing a
+	bug in the score command that caused segfaults for signals that
+	used the same parameters in their range declaration.  Added
+	diagnostic to regression to test this fix.  Full regression passes.
+
+2006-07-07 12:53  phase1geo
+
+	Updates to build files, changelog and NEWS for upcoming
+	covered-20060708 development release.  Removed the ability for the
+	covered RPM to be relocatable as this would cause problems with
+	locating the Tcl/Tk scripts and GUI documentation.
+
 2006-07-06 22:15  phase1geo
 
 	More updates to the RPM spec file (this is not working well with

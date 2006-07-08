@@ -21,6 +21,8 @@ window.  See the following notes regarding GUI changes made.
   - Moved some VCS-only diagnostics to shared simulator diagnostic pool due to enhancements in IV
   - Updated all GUI documentation and images to match the current state of the GUI.
   - Added an RPM spec file to the CVS tree which will be used to generate RPMs for future stable releases
+  - Fixed bug in score command that caused a segfault when two or more signals were declared using
+    the same parameter in their range description (i.e., reg [FOO:0] a, b;).
 
 The coverage exclusion/inclusion work is the primary reason for creating this development release.
 All coverage information and GUI elements are automatically updated whenever a coverage case for a metric
