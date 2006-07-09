@@ -33,9 +33,10 @@ DIAGS1        = add1            always1         always2         always3         
                 bassign1        bassign2        bassign3        block1          case1 \
                 case1.1         case1.2         case1.3         case2           case3 \
                 case3.1         case3.2         case3.3         case3.4         case4 \
-                case4.1         casex1          casex1.1        casex1.2        casex1.3 \
-                casex1.4        casez1          casez1.1        casez1.2        casez1.3 \
-                casez1.4        casez2          concat1         concat2         concat3 \
+                case4.1         case5           casex1          casex1.1        casex1.2 \
+                casex1.3        casex1.4        casex2          casez1          casez1.1 \
+                casez1.2        casez1.3        casez1.4        casez2          casez3 \
+                concat1         concat2         concat3 \
                 concat4.1       concat4.2       concat5         concat6         cond1 \
                 cond2           delay1          delay2          define1         define1.1 \
                 define1.2       define2         define2.1       define3         define4 \

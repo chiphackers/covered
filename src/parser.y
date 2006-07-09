@@ -2171,6 +2171,9 @@ statement
           c_stmt    = c_stmt->prev;
           free_safe( tc_stmt );
         }
+        if( stmt != NULL ) {
+          stmt->exp->suppl.part.owned = 1;
+        }
         $$ = stmt;
       } else {
         expression_dealloc( $3, FALSE );
@@ -2212,6 +2215,9 @@ statement
           c_stmt    = c_stmt->prev;
           free_safe( tc_stmt );
         }
+        if( stmt != NULL ) {
+          stmt->exp->suppl.part.owned = 1;
+        }
         $$ = stmt;
       } else {
         expression_dealloc( $3, FALSE );
@@ -2252,6 +2258,9 @@ statement
           tc_stmt   = c_stmt;
           c_stmt    = c_stmt->prev;
           free_safe( tc_stmt );
+        }
+        if( stmt != NULL ) {
+          stmt->exp->suppl.part.owned = 1;
         }
         $$ = stmt;
       } else {

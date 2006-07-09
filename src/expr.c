@@ -3133,12 +3133,16 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
     if( !exp_only ) {
 
-      expression_dealloc( expr->right, FALSE );
-      expr->right = NULL;
+      if( EXPR_RIGHT_DEALLOCABLE( expr ) ) {
+        expression_dealloc( expr->right, FALSE );
+        expr->right = NULL;
+      }
 
-      expression_dealloc( expr->left, FALSE );
-      expr->left = NULL;
-  
+      if( EXPR_LEFT_DEALLOCABLE( expr ) ) {
+        expression_dealloc( expr->left, FALSE );
+        expr->left = NULL;
+      }
+
     }
 
     /* Remove this expression memory */
@@ -3151,6 +3155,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.183  2006/05/28 02:43:49  phase1geo
+ Integrating stable release 0.4.4 changes into main branch.  Updated regressions
+ appropriately.
+
  Revision 1.182  2006/05/25 12:11:01  phase1geo
  Including bug fix from 0.4.4 stable release and updating regressions.
 
