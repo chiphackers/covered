@@ -75,6 +75,16 @@ int  attr_mode   = 0;
 int  port_mode   = 0;
 
 /*!
+ If set to a value > 0, specifies that we are parsing a generate block
+*/
+int  generate_mode = 0;
+
+/*!
+ If set to a value > 0, specifies that we are parsing the body of a generate loop
+*/
+int  generate_for_mode = 0;
+
+/*!
  Array storing the depth that a given fork block is at.
 */
 int* fork_block_depth;
@@ -1754,41 +1764,40 @@ udp_sequ_entry
   : udp_input_list ':' udp_input_sym ':' udp_output_sym ';'
   ;
 
-  /* Generate block support */
-generate_block
+  /* Generate support */
+generate_item_list_opt
+  : generate_item_list
+  |
+  ;
+
+generate_item_list
+  : generate_item_list generate_item
+  | generate_item
+  ;
+
+  /* Similar to module_item but is more restrictive */
+generate_item
   : module_item
-  | K_begin inc_block_depth module_item_list_opt dec_block_depth K_end
-  | K_begin inc_block_depth ':' IDENTIFIER
-    {
-      if( (ignore_mode == 0) && ($4 != NULL) ) {
-        if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $4, @4.text, @4.first_line ) ) {
-          ignore_mode++;
-        }
-      } else {
-        ignore_mode++;
-      }
-    }
-    module_item_list_opt dec_block_depth K_end
-    {
-      if( ignore_mode == 0 ) {
-        db_end_function_task_namedblock( @8.first_line );
-      } else {
-        ignore_mode--;
-      }
-    }
+  | K_begin generate_item_list_opt K_end
+  | K_begin ':' IDENTIFIER generate_item_list_opt K_end
+  | K_for '(' IDENTIFIER '=' expression ';' expression ';' IDENTIFIER '=' expression ')'
+    K_begin ':' IDENTIFIER { generate_for_mode++; } generate_item_list_opt { generate_for_mode--; } K_end
+  | K_if '(' expression ')' inc_block_depth generate_item dec_block_depth %prec less_than_K_else
+  | K_if '(' expression ')' inc_block_depth generate_item dec_block_depth K_else generate_item
+  | K_case '(' expression ')' inc_block_depth generate_case_items dec_block_depth K_endcase
   ;
 
 generate_case_item
-  : expression_list ':' generate_block
+  : expression_list ':' generate_item
     {
     }
-  | K_default ':' generate_block
+  | K_default ':' generate_item
     {
     }
-  | K_default generate_block
+  | K_default generate_item
     {
     }
-  | error { ignore_mode++; } ':' generate_block { ignore_mode--; }
+  | error { ignore_mode++; } ':' generate_item { ignore_mode--; }
     {
       VLerror( "Illegal generate case expression" );
     }
@@ -1833,19 +1842,41 @@ module_item
       curr_mba     = FALSE;
       curr_signed  = FALSE;
       curr_handled = TRUE;
+      if( generate_mode > 0 ) {
+        ignore_mode++;
+        VLerror( "Port declaration not allowed within a generate block" );
+      }
     }
-    list_of_variables ';'
+    list_of_variables
+    {
+      if( generate_mode > 0 ) {
+        ignore_mode--;
+      }
+    } ';'
   /* Handles Verilog-2001 port of type:  input wire [m:l] <list>; */
   | attribute_list_opt port_type net_type range_opt
     {
       curr_mba     = FALSE;
       curr_signed  = FALSE;
       curr_handled = TRUE;
+      if( generate_mode > 0 ) {
+        ignore_mode++;
+        VLerror( "Port declaration not allowed within a generate block" );
+      }
     }
-    list_of_variables ';'
+    list_of_variables
+    {
+      if( generate_mode > 0 ) {
+        ignore_mode--;
+      }
+    } ';'
   | attribute_list_opt port_type range_opt error ';'
     {
-      VLerror( "Invalid variable list in port declaration" );
+      if( generate_mode > 0 ) {
+        VLerror( "Port declaration not allowed within a generate block" );
+      } else {
+        VLerror( "Invalid variable list in port declaration" );
+      }
     }
   | attribute_list_opt K_trireg charge_strength_opt range_opt delay3_opt
     {
@@ -1853,8 +1884,17 @@ module_item
       curr_signed   = FALSE;
       curr_handled  = TRUE;
       curr_sig_type = SSUPPL_TYPE_DECLARED;
+      if( generate_mode > 0 ) {
+        ignore_mode++;
+        VLerror( "Port declaration not allowed within a generate block" );
+      }
     }
-    list_of_variables ';'
+    list_of_variables
+    {
+      if( generate_mode > 0 ) {
+        ignore_mode--;
+      }
+    } ';'
   | attribute_list_opt gatetype gate_instance_list ';'
     {
       str_link_delete_list( $3 );
@@ -1958,6 +1998,10 @@ module_item
   | attribute_list_opt
     K_task IDENTIFIER ';'
     {
+      if( generate_for_mode > 0 ) {
+        VLerror( "Task definition not allowed within a generate loop" );
+        ignore_mode++;
+      }
       if( ignore_mode == 0 ) {
         if( !db_add_function_task_namedblock( FUNIT_TASK, $3, @3.text, @3.first_line ) ) {
           ignore_mode++;
@@ -1985,6 +2029,10 @@ module_item
   | attribute_list_opt
     K_function range_or_type_opt IDENTIFIER ';'
     {
+      if( generate_for_mode > 0 ) {
+        VLerror( "Function definition not allowed within a generate loop" );
+        ignore_mode++;
+      }
       if( ignore_mode == 0 ) {
         if( db_add_function_task_namedblock( FUNIT_FUNCTION, $4, @4.text, @4.first_line ) ) {
           db_add_signal( $4, SSUPPL_TYPE_IMPLICIT, curr_range->left, curr_range->right, FALSE, FALSE, @4.first_line, @4.first_column );
@@ -2013,7 +2061,19 @@ module_item
         ignore_mode--;
       }
     }
-  | K_generate module_item_list_opt K_endgenerate
+  | K_generate
+    {
+      if( generate_mode == 0 ) {
+        generate_mode = 1;
+      } else {
+        VLerror( "Found generate keyword inside of a generate block" );
+      }
+    }
+    generate_item_list_opt
+    {
+      generate_mode = 0;
+    }
+    K_endgenerate
   | K_genvar
     {
       curr_signed   = FALSE;
@@ -2023,31 +2083,31 @@ module_item
       parser_implicitly_set_curr_range( 31, 0 );
     }
     list_of_variables ';'
-  | K_for '(' IDENTIFIER '=' expression ';' expression ';' IDENTIFIER '=' expression ')'
-    {
-      printf( "Found generate for loop\n" );
-    }
-    generate_block
-  | K_if '(' expression ')' inc_block_depth generate_block dec_block_depth %prec less_than_K_else
-    {
-      printf( "Found generate if statement\n" );
-    }
-  | K_if '(' expression ')' inc_block_depth generate_block dec_block_depth K_else generate_block
-    {
-      printf( "Found generate if/else statement\n" );
-    }
-  | K_case '(' expression ')' inc_block_depth generate_case_items dec_block_depth K_endcase
-    {
-      printf( "Found generate case statement\n" );
-    }
-
 
   | attribute_list_opt
-    K_specify ignore_more specify_item_list ignore_less K_endspecify
+    K_specify
+    {
+      if( generate_mode > 0 ) {
+        VLerror( "Specify block not allowed within a generate block" );
+      }
+    }
+    ignore_more specify_item_list ignore_less K_endspecify
   | attribute_list_opt
-    K_specify K_endspecify
+    K_specify
+    {
+      if( generate_mode > 0 ) {
+        VLerror( "Specify block not allowed within a generate block" );
+      }
+    }
+    K_endspecify
   | attribute_list_opt
-    K_specify error K_endspecify
+    K_specify
+    {
+      if( generate_mode > 0 ) {
+        VLerror( "Specify block not allowed within a generate block" );
+      }
+    }
+    error K_endspecify
   | error ';'
     {
       VLerror( "Invalid module item.  Did you forget an initial or always?" );
@@ -2065,6 +2125,9 @@ module_item
   | attribute_list_opt
     K_function error K_endfunction
     {
+      if( generate_for_mode > 0 ) {
+        VLerror( "Function definition not allowed within generate block" );
+      }
       VLerror( "Syntax error in function description" );
     }
   | KK_attribute '(' { ignore_mode++; } UNUSED_IDENTIFIER ',' UNUSED_STRING ',' UNUSED_STRING { ignore_mode--; }')' ';'
