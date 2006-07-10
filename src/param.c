@@ -227,6 +227,9 @@ mod_parm* mod_parm_add( char* scope, static_expr* msb, static_expr* lsb, bool is
   }
   parm->is_signed             = is_signed;
   parm->expr                  = expr;
+  parm->suppl.all             = 0;
+  parm->suppl.part.type       = type;
+  parm->suppl.part.order      = order;
   if( expr != NULL ) {
     parm->expr->suppl.part.root = 1;
     if( expr->suppl.part.owned == 0 ) {
@@ -234,9 +237,6 @@ mod_parm* mod_parm_add( char* scope, static_expr* msb, static_expr* lsb, bool is
       expr->suppl.part.owned = 1;
     }
   }
-  parm->suppl.all             = 0;
-  parm->suppl.part.type       = type;
-  parm->suppl.part.order      = order;
   parm->exp_head              = NULL;
   parm->exp_tail              = NULL;
   parm->sig                   = NULL;
@@ -276,14 +276,16 @@ void mod_parm_display( mod_parm* mparm ) {
       default                        :  strcpy( type_str, "UNKNOWN" );         break;
     }
     if( mparm->name == NULL ) {
-      printf( "  mparam => type: %s, order: %d", type_str, mparm->suppl.part.order );
+      printf( "  mparam => type: %s, order: %d, owns_exp: %d",
+              type_str, mparm->suppl.part.order, mparm->suppl.part.owns_expr );
     } else {
-      printf( "  mparam => name: %s, type: %s, order: %d, exp_id: %d\n", mparm->name, type_str, mparm->suppl.part.order );
+      printf( "  mparam => name: %s, type: %s, order: %d, owns_exp: %d",
+               mparm->name, type_str, mparm->suppl.part.order, mparm->suppl.part.owns_expr );
     }
     if( mparm->expr != NULL ) {
       printf( ", exp_id: %d\n", mparm->expr->id );
     } else {
-      printf( "\n" );
+      printf( ", no_expr\n" );
     }
     if( mparm->sig != NULL ) {
       printf( "    " );  vsignal_display( mparm->sig );
@@ -1008,6 +1010,12 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.65  2006/07/08 02:06:54  phase1geo
+ Updating build scripts for next development release and fixing a bug in
+ the score command that caused segfaults for signals that used the same
+ parameters in their range declaration.  Added diagnostic to regression
+ to test this fix.  Full regression passes.
+
  Revision 1.64  2006/05/28 02:43:49  phase1geo
  Integrating stable release 0.4.4 changes into main branch.  Updated regressions
  appropriately.

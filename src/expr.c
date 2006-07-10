@@ -2659,7 +2659,7 @@ bool expression_operate( expression* expr, thread* thr ) {
   vec_data bit;             /* Bit holder for some ops */
   control  lf, lt, rf, rt;  /* Specify left and right WAS_TRUE/WAS_FALSE values */
 
-  if( (expr != NULL) && (ESUPPL_IS_LHS( expr->suppl ) == 0) ) {
+  if( expr != NULL ) {
 
 #ifdef DEBUG_MODE
     snprintf( user_msg, USER_MSG_LENGTH, "      In expression_operate, id: %d, op: %s, line: %d, addr: %p",
@@ -2737,7 +2737,7 @@ bool expression_operate( expression* expr, thread* thr ) {
 */
 void expression_operate_recursively( expression* expr ) {
     
-  if( (expr != NULL) && (expr->suppl.part.lhs == 0) ) {
+  if( expr != NULL ) {
     
     /*
      Non-static expression found where static expression required.  Simulator
@@ -3155,6 +3155,13 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.184  2006/07/09 01:40:39  phase1geo
+ Removing the vpi directory (again).  Also fixing a bug in Covered's expression
+ deallocator where a case statement contains an unbindable signal.  Previously
+ the case test expression was being deallocated twice.  This submission fixes
+ this bug (bug was also fixed in the 0.4.5 stable release).  Added new tests
+ to verify fix.  Full regression passes.
+
  Revision 1.183  2006/05/28 02:43:49  phase1geo
  Integrating stable release 0.4.4 changes into main branch.  Updated regressions
  appropriately.

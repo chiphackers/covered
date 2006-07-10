@@ -214,6 +214,7 @@ int yydebug = 1;
 %token K_edge K_else K_end K_endcase K_endfunction K_endmodule I_endmodule
 %token K_endprimitive K_endspecify K_endtable K_endtask K_event K_for
 %token K_force K_forever K_fork K_function K_highz0 K_highz1 K_if
+%token K_generate K_endgenerate K_genvar
 %token K_initial K_inout K_input K_integer K_join K_large K_localparam
 %token K_macromodule
 %token K_medium K_module K_nand K_negedge K_nmos K_nor K_not K_notif0
@@ -409,6 +410,7 @@ port_declaration
         pi->type      = curr_sig_type;
         pi->is_signed = curr_signed;
         pi->range     = parser_copy_curr_range();
+        free_safe( $6 );
         $$ = pi;
       } else {
         $$ = NULL;
@@ -423,6 +425,7 @@ port_declaration
         pi->type      = SSUPPL_TYPE_OUTPUT;
         pi->is_signed = curr_signed;
         pi->range     = parser_copy_curr_range();
+        free_safe( $6 );
         $$ = pi;
       } else {
         $$ = NULL;
@@ -438,6 +441,7 @@ port_declaration
         pi->type       = SSUPPL_TYPE_OUTPUT;
         pi->is_signed  = curr_signed;
         pi->range      = parser_copy_curr_range();
+        free_safe( $6 );
         $$ = pi;
       } else {
         $$ = NULL;
@@ -1750,6 +1754,18 @@ udp_sequ_entry
   : udp_input_list ':' udp_input_sym ':' udp_output_sym ';'
   ;
 
+  /* Generate block support */
+generate_block
+  : module_item
+  | K_begin inc_block_depth module_item_list_opt dec_block_depth K_end
+  | K_begin inc_block_depth ':' IDENTIFIER module_item_list_opt dec_block_depth K_end
+    {
+      if( ignore_mode == 0 ) {
+        /* Add generate scope */
+      }
+    }
+  ;
+
   /* This is the start of a module body */
 module_item_list_opt
   : module_item_list
@@ -1960,6 +1976,30 @@ module_item
         ignore_mode--;
       }
     }
+  | K_generate module_item_list_opt K_endgenerate
+  | K_genvar
+    {
+      curr_signed   = FALSE;
+      curr_mba      = TRUE;
+      curr_handled  = TRUE;
+      curr_sig_type = SSUPPL_TYPE_GENVAR;
+      parser_implicitly_set_curr_range( 31, 0 );
+    }
+    list_of_variables ';'
+  | K_for '(' IDENTIFIER '=' expression ';' expression ';' IDENTIFIER '=' expression ')'
+    {
+      printf( "Found generate for loop\n" );
+    }
+    generate_block
+  | K_if '(' expression ')' inc_block_depth generate_block dec_block_depth %prec less_than_K_else
+    {
+      printf( "Found generate if statement\n" );
+    }
+  | K_if '(' expression ')' inc_block_depth generate_block dec_block_depth K_else generate_block
+    {
+      printf( "Found generate if/else statement\n" );
+    }
+
   | attribute_list_opt
     K_specify ignore_more specify_item_list ignore_less K_endspecify
   | attribute_list_opt
@@ -3478,6 +3518,7 @@ register_variable
         snprintf( name, (strlen( $1 ) + 2), "!%s", $1 );
         db_add_signal( name, curr_sig_type, curr_range->left, curr_range->right, curr_signed, curr_mba, @1.first_line, @1.first_column );
         free_safe( $1 );
+        free_safe( name );
       }
     }
   | UNUSED_IDENTIFIER '[' static_expr ':' static_expr ']'

@@ -72,6 +72,10 @@ void instance_display_tree_helper( funit_inst* root, char* prefix ) {
     curr = curr->next;
   }
 
+  /* Deallocate memory */
+  free_safe( piname );
+  free_safe( pfname );
+
 }
 
 /*!
@@ -693,6 +697,9 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.46  2006/06/27 19:34:43  phase1geo
+ Permanent fix for the CDD save feature.
+
  Revision 1.45  2006/05/28 02:43:49  phase1geo
  Integrating stable release 0.4.4 changes into main branch.  Updated regressions
  appropriately.

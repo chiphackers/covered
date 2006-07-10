@@ -9,8 +9,6 @@ IP  = In Progress
 Build process
 -------------
 
-X  1.  Create an RPM for Covered
-
 
 Score command
 -------------
@@ -55,12 +53,3 @@ IP 1.  Add regression that produces known, achievable error conditions in the co
 GUI
 ---
 
-X  1.  Add ability to turn on/off coverage points and have coverage information automatically adjusted.
-
-X  2.  Change file selection window to allow multiple files to be chosen (also just enhance the overall usage)
-
-X  3.  Add ASCII report output
- 
-X  4.  Allow CDD to be closed and a new one opened without requiring the user to exit the GUI.
-
-X  5.  Add save CDD feature (supports item #1 as well as allows the user to perform CDD merging with the GUI)

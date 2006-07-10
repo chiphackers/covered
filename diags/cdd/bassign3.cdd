@@ -1,5 +1,5 @@
 5 8 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd bassign3.vcd -o bassign3.cdd -v bassign3.v
+8 /ptmp/cvs/covered/diags/verilog -t main -vcd bassign3.vcd -o bassign3.cdd -v bassign3.v
 3 0 main main bassign3.v 1 18
 2 1 6 50008 1 0 20004 0 0 2 1 0
 2 2 6 10001 0 1 400 0 0 a
@@ -10,8 +10,8 @@
 2 7 8 9000f 1 0 20008 0 0 4 1 14
 2 8 8 40004 0 1 400 0 0 b
 2 9 8 20002 0 1 400 0 0 a
-2 10 8 20004 0 31 400 8 9
-2 11 8 10005 0 26 400 10 0
+2 10 8 20004 0 31 20400 8 9 4 0 aa
+2 11 8 10005 0 26 20400 10 0 4 0 aa
 2 12 8 1000f 1 37 a 7 11
 1 a 0 3 3000a 2 16 10a
 1 b 0 3 3000d 2 16 20a
