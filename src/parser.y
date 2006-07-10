@@ -1758,11 +1758,48 @@ udp_sequ_entry
 generate_block
   : module_item
   | K_begin inc_block_depth module_item_list_opt dec_block_depth K_end
-  | K_begin inc_block_depth ':' IDENTIFIER module_item_list_opt dec_block_depth K_end
+  | K_begin inc_block_depth ':' IDENTIFIER
+    {
+      if( (ignore_mode == 0) && ($4 != NULL) ) {
+        if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $4, @4.text, @4.first_line ) ) {
+          ignore_mode++;
+        }
+      } else {
+        ignore_mode++;
+      }
+    }
+    module_item_list_opt dec_block_depth K_end
     {
       if( ignore_mode == 0 ) {
-        /* Add generate scope */
+        db_end_function_task_namedblock( @8.first_line );
+      } else {
+        ignore_mode--;
       }
+    }
+  ;
+
+generate_case_item
+  : expression_list ':' generate_block
+    {
+    }
+  | K_default ':' generate_block
+    {
+    }
+  | K_default generate_block
+    {
+    }
+  | error { ignore_mode++; } ':' generate_block { ignore_mode--; }
+    {
+      VLerror( "Illegal generate case expression" );
+    }
+  ;
+
+generate_case_items
+  : generate_case_items generate_case_item
+    {
+    }
+  | generate_case_item
+    {
     }
   ;
 
@@ -1999,6 +2036,11 @@ module_item
     {
       printf( "Found generate if/else statement\n" );
     }
+  | K_case '(' expression ')' inc_block_depth generate_case_items dec_block_depth K_endcase
+    {
+      printf( "Found generate case statement\n" );
+    }
+
 
   | attribute_list_opt
     K_specify ignore_more specify_item_list ignore_less K_endspecify
