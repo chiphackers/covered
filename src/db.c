@@ -132,6 +132,8 @@ int       stmt_conn_id    = 1;
  Deallocates all memory associated with the database.
 */
 void db_close() {
+  
+  int i;  /* Loop iterator */
 
   if( instance_root != NULL ) {
 
@@ -146,6 +148,9 @@ void db_close() {
     /* Deallocate the binding list */
     bind_dealloc();
     
+    for( i=0; i<score_arg_num; i++ ) {
+      free_safe( score_args[i] );
+    }
     if( score_arg_num > 0 ) {
       free_safe( score_args );
     }
@@ -1717,6 +1722,9 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.184  2006/06/27 19:34:42  phase1geo
+ Permanent fix for the CDD save feature.
+
  Revision 1.183  2006/05/28 02:43:49  phase1geo
  Integrating stable release 0.4.4 changes into main branch.  Updated regressions
  appropriately.
