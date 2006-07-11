@@ -466,6 +466,108 @@ void instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child,
 }
 
 /*!
+ \param root  Pointer to root of instance tree
+ \param curr  Pointer to current instance
+
+ Recursively iterates through the entire instance tree
+*/
+bool instance_resolve_helper( funit_inst* root, funit_inst* curr ) {
+
+  int         width = -1;        /* Width of range to create */
+  int         lsb;               /* LSB of range to create */
+  int         big_endian;        /* Specifies if range was in big endian mode */
+  char*       name_copy;         /* Copied name of instance */
+  char*       new_name;          /* New name of instance */
+  int         i;                 /* Loop iterator */
+  funit_inst* curr_child;        /* Pointer to current child */
+  bool        resolve_occurred;  /* Set to true if a child instance has a resolution occur */
+
+  if( curr != NULL ) {
+
+    printf( "Resolving instance: %s\n", curr->name );
+
+    if( curr->range != NULL ) {
+
+      /* Get LSB and width information */
+      static_expr_calc_lsb_and_width_post( curr->range->left, curr->range->right, &width, &lsb, &big_endian );
+      assert( width != -1 );
+      assert( lsb   != -1 );
+
+      printf( "  width: %d, lsb: %d\n", width, lsb );
+
+      /* Remove the range information from this instance */
+      static_expr_dealloc( curr->range->left );
+      static_expr_dealloc( curr->range->right );
+      free_safe( curr->range );
+      curr->range = NULL;
+
+      /* Copy and deallocate instance name */
+      name_copy = strdup_safe( curr->name, __FILE__, __LINE__ );
+      free_safe( curr->name );
+
+      /* For the first instance, just modify the name */
+      new_name   = (char*)malloc_safe( (strlen( curr->name ) + 23), __FILE__, __LINE__ );
+      snprintf( new_name, (strlen( curr->name ) + 23), "%s[%d]", name_copy, lsb );
+      curr->name = strdup_safe( new_name, __FILE__, __LINE__ );
+
+      /* For all of the rest of the instances, do the instance_parse_add function call */
+      for( i=1; i<width; i++ ) {
+
+        /* Create the new name */
+        snprintf( new_name, (strlen( curr->name ) + 23), "%s[%d]", name_copy, (lsb + i) );
+
+        /* Add the instance */
+        instance_parse_add( &root, ((curr->parent == NULL) ? NULL : curr->parent->funit), curr->funit, new_name, NULL );
+
+      }
+
+      /* Deallocate the new_name and name_copy pointers */
+      free_safe( name_copy );
+      free_safe( new_name );
+
+      /* Go back to the parent and re-resolve */
+      if( curr->parent != NULL ) {
+        instance_resolve_helper( root, curr->parent );
+      }
+
+    }
+
+    if( width == -1 ) {
+
+      /* Resolve all children */
+      do {
+        resolve_occurred = FALSE;
+        curr_child = curr->child_head;
+        while( (curr_child != NULL) && !resolve_occurred ) {
+          resolve_occurred = instance_resolve_helper( root, curr_child );
+          curr_child = curr->next;
+        }
+      } while( resolve_occurred );
+
+    }
+
+  }
+
+  return( width != -1 );
+
+}
+
+/*!
+ \param root  Pointer to current functional unit instance to resolve.
+
+ Recursively iterates through entire instance tree, resolving any instance arrays that are found.
+*/
+void instance_resolve( funit_inst* root ) {
+
+  /* Resolve all instance names */
+  instance_resolve_helper( root, root );
+
+  /* Now resolve all of the rest of the parameters */
+  // param_resolve( root );
+
+}
+
+/*!
  \param root       Pointer to root instance of functional unit instance tree.
  \param parent     String scope of parent instance.
  \param child      Pointer to child functional unit to add to specified parent's child list.
@@ -529,59 +631,33 @@ void instance_read_add( funit_inst** root, char* parent, func_unit* child, char*
 */
 void instance_db_write( funit_inst* root, FILE* file, char* scope, bool parse_mode, bool report_save ) {
 
-  char        tscope1[4096];   /* New scope of functional unit to write */
-  char        tscope2[4096];   /* New scope of functional unit to write */
-  funit_inst* curr;            /* Pointer to current child functional unit instance */
-  exp_link*   expl;            /* Pointer to current expression link */
-  int         width = 1;       /* If the current instance is an array of instances, this is the width of the array */
-  int         lsb;             /* If the current instance is an array of instances, this is the LSB of the array */
-  int         big_endian;      /* If the current instance is an array of instances, this is the endianness of the array */
-  int         i;               /* Loop iterator */
+  char        tscope[4096];  /* New scope of functional unit to write */
+  funit_inst* curr;          /* Pointer to current child functional unit instance */
+  exp_link*   expl;          /* Pointer to current expression link */
 
   assert( scope != NULL );
 
   curr = parse_mode ? root : NULL;
 
-  if( root->range != NULL ) {
-
-    /* Get LSB and width information */
-    static_expr_calc_lsb_and_width_post( root->range->left, root->range->right, &width, &lsb, &big_endian );
-    assert( width != -1 );
-    assert( lsb   != -1 );
-
+  /* If we are in parse mode, re-issue expression IDs (we use the ulid field since it is not used in parse mode) */
+  if( parse_mode ) {
+    expl = root->funit->exp_head;
+    while( expl != NULL ) {
+      expl->exp->ulid = curr_expr_id;
+      curr_expr_id++;
+      expl = expl->next;
+    }
   }
 
-  /* Add this instance (or array of instances) to the CDD file */
-  for( i=0; i<width; i++ ) {
+  /* Display root functional unit */
+  funit_db_write( root->funit, scope, file, curr, report_save );
 
-    /* If we are in parse mode, re-issue expression IDs (we use the ulid field since it is not used in parse mode) */
-    if( parse_mode ) {
-      expl = root->funit->exp_head;
-      while( expl != NULL ) {
-        expl->exp->ulid = curr_expr_id;
-        curr_expr_id++;
-        expl = expl->next;
-      }
-    }
-
-    /* Calculate this instance's name */
-    if( root->range != NULL ) {
-      snprintf( tscope1, 4096, "%s[%d]", scope, (i + lsb) );
-    } else {
-      strcpy( tscope1, scope );
-    }
-
-    /* Display root functional unit */
-    funit_db_write( root->funit, tscope1, file, curr, report_save );
-
-    /* Display children */
-    curr = root->child_head;
-    while( curr != NULL ) {
-      snprintf( tscope2, 4096, "%s.%s", tscope1, curr->name );
-      instance_db_write( curr, file, tscope2, parse_mode, report_save );
-      curr = curr->next;
-    }
-
+  /* Display children */
+  curr = root->child_head;
+  while( curr != NULL ) {
+    snprintf( tscope, 4096, "%s.%s", scope, curr->name );
+    instance_db_write( curr, file, tscope, parse_mode, report_save );
+    curr = curr->next;
   }
 
 }
@@ -697,6 +773,12 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.48  2006/07/10 19:30:55  phase1geo
+ Fixing bug in instance.c that ignored the LSB information for an instance
+ array (this also needs to be fixed for the 0.4.6 stable release).  Added
+ diagnostic to verify correctness of this behavior.  Also added case statement
+ to the generate parser.
+
  Revision 1.47  2006/07/10 03:05:04  phase1geo
  Contains bug fixes for memory leaks and segmentation faults.  Also contains
  some starting code to support generate blocks.  There is absolutely no

@@ -116,7 +116,7 @@ void vsignal_db_write( vsignal* sig, FILE* file ) {
   exp_link* curr;  /* Pointer to current expression link element */
 
   /* Don't write this vsignal if it isn't usable by Covered */
-  if( (sig->name[0] != '!') && (sig->value->width != -1) ) {
+  if( (sig->name[0] != '!') && (sig->value->width != -1) && (sig->suppl.part.type != SSUPPL_TYPE_GENVAR) ) {
 
     /* Display identification and value information first */
     fprintf( file, "%d %s %d %d %x ",
@@ -511,6 +511,10 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.25  2006/05/28 02:43:49  phase1geo
+ Integrating stable release 0.4.4 changes into main branch.  Updated regressions
+ appropriately.
+
  Revision 1.24  2006/05/25 12:11:02  phase1geo
  Including bug fix from 0.4.4 stable release and updating regressions.
 

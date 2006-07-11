@@ -41,6 +41,9 @@ funit_inst* instance_find_by_funit( funit_inst* root, func_unit* funit, int* ign
 /*! \brief Adds new instance to specified instance tree during parse. */
 void instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child, char* inst_name, vector_width* range );
 
+/*! \brief Resolves all instance arrays.
+void instance_resolve( funit_inst* root );
+
 /*! \brief Adds new instance to specified instance tree during CDD read. */
 void instance_read_add( funit_inst** root, char* parent, func_unit* child, char* inst_name );
 
@@ -53,6 +56,9 @@ void instance_dealloc( funit_inst* root, char* scope );
 
 /*
  $Log$
+ Revision 1.13  2006/06/27 19:34:43  phase1geo
+ Permanent fix for the CDD save feature.
+
  Revision 1.12  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

@@ -19,9 +19,9 @@
  \date     10/02/2002
  
  \par
- To accommodate the need for parameters (variables) in static expressions, the static_expr
+ To accommodate the need for parameters/genvars (variables) in static expressions, the static_expr
  structure and supporting code was created to maintain the efficiency of static expressions
- that consist of known values while being able to keep track of parameter uses in
+ that consist of known values while being able to keep track of parameter/genvar uses in
  static expressions.
  
  \par
@@ -30,22 +30,22 @@
  it is assumed that the static_expr structure contains a valid, known value that can be
  used in immediate computations.  If the expression pointer is not NULL, it is assumed
  that the static_expr structure contains an expression tree that needs to be evaluated at
- a later time (when parameters are being elaborated).
+ a later time (when parameters/genvars are being elaborated).
  
  \par
  When a static expression is being parsed and a static value (integer value) is encountered,
  a new static_expr is allocated from heap memory and the number field is assigned to this
  integer value.  The new static_expr structure is then passed up the tree to be used in
  further calculations, if necessary.  If a static expression is being parsed and an identifier
- (parameter) is encountered, an expression is created with an operation type of EXP_OP_SIG
- to indicate that a parameter is required during elaboration.  The name of the necessary
- parameter is bound to the newly created expression.
+ (parameter/genvar) is encountered, an expression is created with an operation type of EXP_OP_SIG
+ to indicate that a parameter/genvar is required during elaboration.  The name of the necessary
+ parameter/genvar is bound to the newly created expression.
  
  \par
  Using this strategy for handling static expressions, it becomes evident that we retain
  the efficiency of calculating static expression that consists entirely of known values (the
  only overhead is the allocation/deallocation of a static_expr structure from the heap).
- If a parameter is found during the parse stage, more effort is required to calculate the
+ If a parameter/genvar is found during the parse stage, more effort is required to calculate the
  static_expr, but this is considered necessary in the larger scope of things so we will not
  concern ourselves with this overhead (which is fairly minimal anyways).
 */
@@ -195,7 +195,9 @@ static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int
   assert( (op == EXP_OP_XOR)    || (op == EXP_OP_MULTIPLY) || (op == EXP_OP_DIVIDE) || (op == EXP_OP_MOD)       ||
           (op == EXP_OP_ADD)    || (op == EXP_OP_SUBTRACT) || (op == EXP_OP_AND)    || (op == EXP_OP_OR)        ||
           (op == EXP_OP_NOR)    || (op == EXP_OP_NAND)     || (op == EXP_OP_NXOR)   || (op == EXP_OP_EXPONENT)  ||
-          (op == EXP_OP_LSHIFT) || (op == EXP_OP_RSHIFT)   || (op == EXP_OP_LIST)   || (op == EXP_OP_FUNC_CALL) );
+          (op == EXP_OP_LSHIFT) || (op == EXP_OP_RSHIFT)   || (op == EXP_OP_LIST)   || (op == EXP_OP_FUNC_CALL) ||
+          (op == EXP_OP_GE)     || (op == EXP_OP_LE)       || (op == EXP_OP_EQ)     || (op == EXP_OP_GT)        ||
+          (op == EXP_OP_LT) );
 
   if( (right != NULL) && (left != NULL) ) {
 
@@ -223,6 +225,11 @@ static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int
           case EXP_OP_NXOR     :  right->num = ~(left->num ^ right->num);  break;
           case EXP_OP_LSHIFT   :  right->num = left->num << right->num;    break;
           case EXP_OP_RSHIFT   :  right->num = left->num >> right->num;    break;
+          case EXP_OP_GE       :  right->num = (left->num >= right->num) ? 1 : 0;  break;
+          case EXP_OP_LE       :  right->num = (left->num <= right->num) ? 1 : 0;  break;
+          case EXP_OP_EQ       :  right->num = (left->num == right->num) ? 1 : 0;  break;
+          case EXP_OP_GT       :  right->num = (left->num > right->num)  ? 1 : 0;  break;
+          case EXP_OP_LT       :  right->num = (left->num < right->num)  ? 1 : 0;  break;
           default              :  break;
         }
 
@@ -408,7 +415,10 @@ void static_expr_dealloc( static_expr* stexp, bool rm_exp ) {
 
 /*
  $Log$
-<<<<<<< static.c
+ Revision 1.21  2006/05/28 02:43:49  phase1geo
+ Integrating stable release 0.4.4 changes into main branch.  Updated regressions
+ appropriately.
+
  Revision 1.20  2006/05/25 12:11:02  phase1geo
  Including bug fix from 0.4.4 stable release and updating regressions.
 

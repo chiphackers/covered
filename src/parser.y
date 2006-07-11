@@ -715,6 +715,36 @@ static_expr
       tmp = static_expr_gen( $3, $1, EXP_OP_RSHIFT, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
       $$ = tmp;
     }
+  | static_expr K_GE static_expr
+    {
+      static_expr* tmp;
+      tmp = static_expr_gen( $3, $1, EXP_OP_GE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+      $$ = tmp;
+    }
+  | static_expr K_LE static_expr
+    {
+      static_expr* tmp;
+      tmp = static_expr_gen( $3, $1, EXP_OP_LE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+      $$ = tmp;
+    }
+  | static_expr K_EQ static_expr
+    {
+      static_expr* tmp;
+      tmp = static_expr_gen( $3, $1, EXP_OP_EQ, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+      $$ = tmp;
+    }
+  | static_expr '>' static_expr
+    {
+      static_expr* tmp;
+      tmp = static_expr_gen( $3, $1, EXP_OP_GT, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+      $$ = tmp;
+    }
+  | static_expr '<' static_expr
+    {
+      static_expr* tmp;
+      tmp = static_expr_gen( $3, $1, EXP_OP_LT, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+      $$ = tmp;
+    }
   ;
 
 static_expr_primary
@@ -1780,7 +1810,7 @@ generate_item
   : module_item
   | K_begin generate_item_list_opt K_end
   | K_begin ':' IDENTIFIER generate_item_list_opt K_end
-  | K_for '(' IDENTIFIER '=' expression ';' expression ';' IDENTIFIER '=' expression ')'
+  | K_for '(' IDENTIFIER '=' static_expr ';' static_expr ';' IDENTIFIER '=' static_expr ')'
     K_begin ':' IDENTIFIER { generate_for_mode++; } generate_item_list_opt { generate_for_mode--; } K_end
   | K_if '(' expression ')' inc_block_depth generate_item dec_block_depth %prec less_than_K_else
   | K_if '(' expression ')' inc_block_depth generate_item dec_block_depth K_else generate_item

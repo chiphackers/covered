@@ -11,10 +11,10 @@ endgenerate
 initial begin
         $dumpfile( "generate1.vcd" );
         $dumpvars( 0, main );
-	//U[0].a = 2'h0;
-	//U[1].a = 2'h1;
-	//U[2].a = 2'h2;
-	//U[3].a = 2'h3;
+	\U[0] .a = 2'h0;
+	\U[1] .a = 2'h1;
+	\U[2] .a = 2'h2;
+	\U[3] .a = 2'h3;
         #10;
         $finish;
 end
