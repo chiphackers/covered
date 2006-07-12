@@ -39,9 +39,9 @@ funit_inst* instance_find_scope( funit_inst* root, char* scope );
 funit_inst* instance_find_by_funit( funit_inst* root, func_unit* funit, int* ignore );
 
 /*! \brief Adds new instance to specified instance tree during parse. */
-void instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child, char* inst_name, vector_width* range );
+void instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child, char* inst_name, vector_width* range, bool resolve );
 
-/*! \brief Resolves all instance arrays.
+/*! \brief Resolves all instance arrays. */
 void instance_resolve( funit_inst* root );
 
 /*! \brief Adds new instance to specified instance tree during CDD read. */
@@ -56,6 +56,11 @@ void instance_dealloc( funit_inst* root, char* scope );
 
 /*
  $Log$
+ Revision 1.14  2006/07/11 04:59:08  phase1geo
+ Reworking the way that instances are being generated.  This is to fix a bug and
+ pave the way for generate loops for instances.  Code not working at this point
+ and may cause serious problems for regression runs.
+
  Revision 1.13  2006/06/27 19:34:43  phase1geo
  Permanent fix for the CDD save feature.
 

@@ -518,7 +518,7 @@ func_unit* db_add_instance( char* scope, char* name, int type, vector_width* ran
         exit( 1 );
       }
 
-      instance_parse_add( &instance_root, curr_funit, found_funit_link->funit, scope, range );
+      instance_parse_add( &instance_root, curr_funit, found_funit_link->funit, scope, range, FALSE );
 
       funit_dealloc( funit );
 
@@ -528,7 +528,7 @@ func_unit* db_add_instance( char* scope, char* name, int type, vector_width* ran
       funit_link_add( funit, &funit_head, &funit_tail );
 
       /* Add instance. */
-      instance_parse_add( &instance_root, curr_funit, funit, scope, range );
+      instance_parse_add( &instance_root, curr_funit, funit, scope, range, FALSE );
 
       if( (type == FUNIT_MODULE) && (str_link_find( name, modlist_head ) == NULL) ) {
         str_link_add( strdup_safe( name, __FILE__, __LINE__ ), &modlist_head, &modlist_tail );
@@ -1722,6 +1722,9 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.185  2006/07/11 02:32:47  phase1geo
+ Fixing memory leak problem in db_close function (with score_args).
+
  Revision 1.184  2006/06/27 19:34:42  phase1geo
  Permanent fix for the CDD save feature.
 

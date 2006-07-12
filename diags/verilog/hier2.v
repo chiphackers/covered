@@ -2,7 +2,7 @@ module main;
 
 reg b;
 
-foo a[1:0] ();
+foo a[3:0] ();
 
 initial b = \a[1] . \b[2] . c;
 

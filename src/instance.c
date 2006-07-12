@@ -37,7 +37,12 @@
 #include "param.h"
 
 
-extern int curr_expr_id;
+extern int         curr_expr_id;
+extern funit_inst* instance_root;
+extern char        user_msg[USER_MSG_LENGTH];
+
+
+bool instance_resolve_inst( funit_inst* root, funit_inst* curr );
 
 
 /*!
@@ -338,17 +343,18 @@ funit_inst* instance_find_by_funit( funit_inst* root, func_unit* funit, int* ign
 }
 
 /*!
- \param inst   Pointer to instance to add child instance to.
- \param child  Pointer to child functional unit to create instance for.
- \param name   Name of instance to add.
- \param range  For arrays of instances, contains the range of the instance array
+ \param inst     Pointer to instance to add child instance to.
+ \param child    Pointer to child functional unit to create instance for.
+ \param name     Name of instance to add.
+ \param range    For arrays of instances, contains the range of the instance array
+ \param resolve  Set to TRUE if newly added instance should be immediately resolved
  
  \return Returns pointer to newly created functional unit instance.
  
  Generates new instance, adds it to the child list of the inst functional unit
  instance, and resolves any parameters.
 */
-funit_inst* instance_add_child( funit_inst* inst, func_unit* child, char* name, vector_width* range ) {
+funit_inst* instance_add_child( funit_inst* inst, func_unit* child, char* name, vector_width* range, bool resolve ) {
 
   funit_inst* new_inst;  /* Pointer to newly created instance to add */
 
@@ -367,6 +373,11 @@ funit_inst* instance_add_child( funit_inst* inst, func_unit* child, char* name, 
   /* Point this instance's parent pointer to its parent */
   new_inst->parent = inst;
 
+  /* If the new instance needs to be resolved now, do so */
+  if( resolve ) {
+    instance_resolve_inst( instance_root, new_inst );
+  }
+
   return( new_inst );
 
 }
@@ -376,11 +387,12 @@ funit_inst* instance_add_child( funit_inst* inst, func_unit* child, char* name, 
  \param to_inst    Pointer to instance to copy tree to.
  \param name       Instance name of current instance being copied.
  \param range      For arrays of instances, indicates the array range.
+ \param resolve    Set to TRUE if newly added instance should be immediately resolved.
  
  Recursively copies the instance tree of from_inst to the instance 
  to_inst, allocating memory for the new instances and resolving parameters.
 */
-void instance_copy( funit_inst* from_inst, funit_inst* to_inst, char* name, vector_width* range ) {
+void instance_copy( funit_inst* from_inst, funit_inst* to_inst, char* name, vector_width* range, bool resolve ) {
 
   funit_inst* curr;      /* Pointer to current functional unit instance to copy */
   funit_inst* new_inst;  /* Pointer to newly created functional unit instance */
@@ -390,12 +402,12 @@ void instance_copy( funit_inst* from_inst, funit_inst* to_inst, char* name, vect
   assert( name      != NULL );
 
   /* Add new child instance */
-  new_inst = instance_add_child( to_inst, from_inst->funit, name, range );
+  new_inst = instance_add_child( to_inst, from_inst->funit, name, range, resolve );
 
   /* Iterate through rest of current child's list of children */
   curr = from_inst->child_head;
   while( curr != NULL ) {
-    instance_copy( curr, new_inst, curr->name, range );
+    instance_copy( curr, new_inst, curr->name, curr->range, resolve );
     curr = curr->next;
   }
 
@@ -407,13 +419,14 @@ void instance_copy( funit_inst* from_inst, funit_inst* to_inst, char* name, vect
  \param child      Pointer to child functional unit to add.
  \param inst_name  Name of new functional unit instance.
  \param range      For array of instances, specifies the name range.
+ \param resolve    If set to TRUE, resolve any added instance.
  
  Adds the child functional unit to the child functional unit pointer list located in
  the functional unit specified by the scope of parent in the functional unit instance
  tree pointed to by root.  This function is used by the db_add_instance
  function during the parsing stage.
 */
-void instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child, char* inst_name, vector_width* range ) {
+void instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child, char* inst_name, vector_width* range, bool resolve ) {
   
   funit_inst* inst;    /* Temporary pointer to functional unit instance to add to */
   funit_inst* cinst;   /* Pointer to instance of child functional unit */
@@ -442,7 +455,7 @@ void instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child,
 
       ignore = 0;
       while( (inst = instance_find_by_funit( *root, parent, &ignore )) != NULL ) {
-        instance_copy( cinst, inst, inst_name, range );
+        instance_copy( cinst, inst, inst_name, range, resolve );
         i++;
         ignore = i;
       }
@@ -451,7 +464,7 @@ void instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child,
 
       ignore = 0;
       while( (inst = instance_find_by_funit( *root, parent, &ignore )) != NULL ) {
-        instance_add_child( inst, child, inst_name, range );
+        instance_add_child( inst, child, inst_name, range, resolve );
         i++;
         ignore = i;
       }
@@ -466,89 +479,92 @@ void instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child,
 }
 
 /*!
+ \param root  Pointer to top-level functional unit instance
+ \param curr  Pointer to current instance to resolve
+
+ \return Returns TRUE if instance was resolved; otherwise, returns FALSE.
+
+ Checks the given instance to see if a range was specified in its instantiation.  If
+ a range was found, create all of the instances for this range and add them to the instance
+ tree.
+*/
+bool instance_resolve_inst( funit_inst* root, funit_inst* curr ) {
+
+  int   width = -1;  /* Width of the instance range */
+  int   lsb;         /* LSB of the instance range */
+  int   big_endian;  /* Unused */
+  char* name_copy;   /* Copy of the instance name being resolved */
+  char* new_name;    /* New hierarchical name of the instance(s) being resolved */
+  int   i;           /* Loop iterator */
+
+  assert( curr != NULL );
+
+  if( curr->range != NULL ) {
+
+    /* Get LSB and width information */
+    static_expr_calc_lsb_and_width_post( curr->range->left, curr->range->right, &width, &lsb, &big_endian );
+    assert( width != -1 );
+    assert( lsb   != -1 );
+
+    /* Remove the range information from this instance */
+    static_expr_dealloc( curr->range->left );
+    static_expr_dealloc( curr->range->right );
+    free_safe( curr->range );
+    curr->range = NULL;
+
+    /* Copy and deallocate instance name */
+    name_copy = strdup_safe( curr->name, __FILE__, __LINE__ );
+    free_safe( curr->name );
+
+    /* For the first instance, just modify the name */
+    new_name   = (char*)malloc_safe( (strlen( curr->name ) + 23), __FILE__, __LINE__ );
+    snprintf( new_name, (strlen( curr->name ) + 23), "%s[%d]", name_copy, lsb );
+    curr->name = strdup_safe( new_name, __FILE__, __LINE__ );
+
+    /* For all of the rest of the instances, do the instance_parse_add function call */
+    for( i=1; i<width; i++ ) {
+
+      /* Create the new name */
+      snprintf( new_name, (strlen( curr->name ) + 23), "%s[%d]", name_copy, (lsb + i) );
+
+      /* Add the instance */
+      instance_parse_add( &root, ((curr->parent == NULL) ? NULL : curr->parent->funit), curr->funit, new_name, NULL, TRUE );
+
+    }
+
+    /* Deallocate the new_name and name_copy pointers */
+    free_safe( name_copy );
+    free_safe( new_name );
+
+  }
+  
+  return( width != -1 );
+
+}
+
+/*!
  \param root  Pointer to root of instance tree
  \param curr  Pointer to current instance
 
  Recursively iterates through the entire instance tree
 */
-bool instance_resolve_helper( funit_inst* root, funit_inst* curr ) {
+void instance_resolve_helper( funit_inst* root, funit_inst* curr ) {
 
-  int         width = -1;        /* Width of range to create */
-  int         lsb;               /* LSB of range to create */
-  int         big_endian;        /* Specifies if range was in big endian mode */
-  char*       name_copy;         /* Copied name of instance */
-  char*       new_name;          /* New name of instance */
-  int         i;                 /* Loop iterator */
-  funit_inst* curr_child;        /* Pointer to current child */
-  bool        resolve_occurred;  /* Set to true if a child instance has a resolution occur */
+  funit_inst* curr_child;  /* Pointer to current child */
 
   if( curr != NULL ) {
 
-    printf( "Resolving instance: %s\n", curr->name );
-
-    if( curr->range != NULL ) {
-
-      /* Get LSB and width information */
-      static_expr_calc_lsb_and_width_post( curr->range->left, curr->range->right, &width, &lsb, &big_endian );
-      assert( width != -1 );
-      assert( lsb   != -1 );
-
-      printf( "  width: %d, lsb: %d\n", width, lsb );
-
-      /* Remove the range information from this instance */
-      static_expr_dealloc( curr->range->left );
-      static_expr_dealloc( curr->range->right );
-      free_safe( curr->range );
-      curr->range = NULL;
-
-      /* Copy and deallocate instance name */
-      name_copy = strdup_safe( curr->name, __FILE__, __LINE__ );
-      free_safe( curr->name );
-
-      /* For the first instance, just modify the name */
-      new_name   = (char*)malloc_safe( (strlen( curr->name ) + 23), __FILE__, __LINE__ );
-      snprintf( new_name, (strlen( curr->name ) + 23), "%s[%d]", name_copy, lsb );
-      curr->name = strdup_safe( new_name, __FILE__, __LINE__ );
-
-      /* For all of the rest of the instances, do the instance_parse_add function call */
-      for( i=1; i<width; i++ ) {
-
-        /* Create the new name */
-        snprintf( new_name, (strlen( curr->name ) + 23), "%s[%d]", name_copy, (lsb + i) );
-
-        /* Add the instance */
-        instance_parse_add( &root, ((curr->parent == NULL) ? NULL : curr->parent->funit), curr->funit, new_name, NULL );
-
-      }
-
-      /* Deallocate the new_name and name_copy pointers */
-      free_safe( name_copy );
-      free_safe( new_name );
-
-      /* Go back to the parent and re-resolve */
-      if( curr->parent != NULL ) {
-        instance_resolve_helper( root, curr->parent );
-      }
-
+    /* Resolve all children first */
+    curr_child = curr->child_head;
+    while( curr_child != NULL ) {
+      instance_resolve_helper( root, curr_child );
+      curr_child = curr_child->next;
     }
 
-    if( width == -1 ) {
-
-      /* Resolve all children */
-      do {
-        resolve_occurred = FALSE;
-        curr_child = curr->child_head;
-        while( (curr_child != NULL) && !resolve_occurred ) {
-          resolve_occurred = instance_resolve_helper( root, curr_child );
-          curr_child = curr->next;
-        }
-      } while( resolve_occurred );
-
-    }
+    /* Now resolve this instance */
+    instance_resolve_inst( root, curr );
 
   }
-
-  return( width != -1 );
 
 }
 
@@ -773,6 +789,11 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.49  2006/07/11 04:59:08  phase1geo
+ Reworking the way that instances are being generated.  This is to fix a bug and
+ pave the way for generate loops for instances.  Code not working at this point
+ and may cause serious problems for regression runs.
+
  Revision 1.48  2006/07/10 19:30:55  phase1geo
  Fixing bug in instance.c that ignored the LSB information for an instance
  array (this also needs to be fixed for the 0.4.6 stable release).  Added
