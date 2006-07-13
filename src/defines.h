@@ -85,6 +85,25 @@
 #define DEFAULT_LINE_WIDTH 105
 
 /*!
+ \addtogroup generations Supported Generations
+
+ The following defines are used by Covered to specify the supported Verilog generations
+
+ @{
+*/
+
+/*! Verilog-1995 */
+#define GENERATION_1995		0
+
+/*! Verilog-2001 */
+#define GENERATION_2001 	1
+
+/*! SystemVerilog */
+#define GENERATION_SV		2
+
+/*! @} */
+
+/*!
  \addtogroup dumpfile_fmt Dumpfile Format
 
  The following defines are used by Covered to determine what dumpfile parsing mode we are in
@@ -1870,6 +1889,11 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.203  2006/07/10 03:05:04  phase1geo
+ Contains bug fixes for memory leaks and segmentation faults.  Also contains
+ some starting code to support generate blocks.  There is absolutely no
+ functionality here, however.
+
  Revision 1.202  2006/07/09 01:40:39  phase1geo
  Removing the vpi directory (again).  Also fixing a bug in Covered's expression
  deallocator where a case statement contains an unbindable signal.  Previously

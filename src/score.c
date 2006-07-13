@@ -59,6 +59,7 @@ bool  instance_specified        = FALSE;               /*!< Specifies if -i opti
 int   timestep_update           = 0;                   /*!< Specifies timestep increment to display current time */
 int   flag_race_check           = WARNING;             /*!< Specifies how race conditions should be handled */
 bool  flag_display_sim_stats    = FALSE;               /*!< Specifies if simulation performance information should be output */
+int   flag_global_generation    = GENERATION_SV;       /*!< Specifies the supported global generation value */
 
 extern unsigned long largest_malloc_size;
 extern unsigned long curr_malloc_size;
@@ -122,6 +123,11 @@ void score_usage() {
   printf( "                                     -rE = Error.  Report race condition information and stop scoring.)\n" );
   printf( "      -S                           Outputs simulation performance information after scoring has completed.  This\n" );
   printf( "                                    information is currently only useful for the developers of Covered.\n" );
+  printf( "      -g (<module>=)[1|2|3]        Selects generation of Verilog syntax that the parser will handle.  If\n" );
+  printf( "                                    <module>= is present, only the specified module will use the provided\n" );
+  printf( "                                    generation.  If <module>= is not specified, the entire design will use\n" );
+  printf( "                                    the provided generation.  1=Verilog-1995, 2=Verilog-2001, 3=SystemVerilog\n" );
+  printf( "                                    By default, the latest generation is parsed.\n" );
   printf( "      -h                           Displays this help information.\n" );
   printf( "\n" );
   printf( "      +libext+.<extension>(+.<extension>)+\n" );
@@ -638,7 +644,42 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         retval = FALSE;
       }
-        
+
+    } else if( strncmp( "-g", argv[i], 2 ) == 0 ) {
+
+      int  generation;
+      char tmp[256];
+
+      i++;
+
+      if( argv[i][(strlen( argv[i] ) - 1)] == '1' ) {
+        generation = GENERATION_1995;
+      } else if( argv[i][(strlen( argv[i] ) - 1)] == '2' ) {
+        generation = GENERATION_2001;
+      } else if( argv[i][(strlen( argv[i] ) - 1)] == '3' ) {
+        generation = GENERATION_SV;
+      } else {
+        snprintf( user_msg, USER_MSG_LENGTH, "Unknown generation value '%c'.  Legal values are 1, 2 or 3.\n", argv[i][(strlen( argv[i] ) - 1)] );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ ); 
+        retval = FALSE;
+      }
+      if( retval ) {
+        if( strlen( argv[i] ) == 1 ) {
+          flag_global_generation = generation;
+        } else {
+          strcpy( tmp, argv[i] );
+          if( tmp[(strlen( tmp ) - 2)] == '=' ) {
+            tmp[(strlen( tmp ) - 2)] = '\0';
+            // TBD str_link_add( 
+          } else {
+            snprintf( user_msg, USER_MSG_LENGTH, "Illegal -g syntax \"%s\".  See \"covered score -h\" for correct syntax.",
+                      tmp );
+            print_output( user_msg, FATAL, __FILE__, __LINE__ );
+            retval = FALSE;
+          }
+        }
+      }
+
     } else {
 
       snprintf( user_msg, USER_MSG_LENGTH, "Unknown score command option \"%s\".  See \"covered score -h\" for more information.", argv[i] );
@@ -761,6 +802,11 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.74  2006/05/03 22:49:42  phase1geo
+ Causing all files to be preprocessed when written to the file viewer.  I'm sure that
+ I am breaking all kinds of things at this point, but things do work properly on a few
+ select test cases so I'm checkpointing here.
+
  Revision 1.73  2006/05/02 21:49:41  phase1geo
  Updating regression files -- all but three diagnostics pass (due to known problems).
  Added SCORE_ARGS line type to CDD format which stores the directory that the score
