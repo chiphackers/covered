@@ -240,6 +240,10 @@ int yydebug = 1;
 %token K_wor K_xnor K_xor
 %token K_Shold K_Speriod K_Srecovery K_Ssetup K_Swidth K_Ssetuphold
 
+%token K_automatic K_cell K_use K_library K_config K_endconfig K_design K_liblist K_instance
+%token K_showcancelled K_noshowcancelled K_pulsestyle_onevent K_pulsestyle_ondetect
+%token K_bool K_logic K_unique
+
 %token KK_attribute
 
 %type <integer>   net_type net_type_opt var_type

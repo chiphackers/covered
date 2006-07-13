@@ -27,7 +27,7 @@
 
 
 /*! \brief Adds specified string to str_link element at the end of the list. */
-void str_link_add( char* str, str_link** head, str_link** tail );
+str_link* str_link_add( char* str, str_link** head, str_link** tail );
 
 /*! \brief Adds specified statement to stmt_link element at the beginning of the list. */
 void stmt_link_add_head( statement* stmt, stmt_link** head, stmt_link** tail );
@@ -114,6 +114,11 @@ void funit_link_delete_list( funit_link* head, bool rm_funit );
 
 /*
  $Log$
+ Revision 1.17  2006/03/28 22:28:27  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.16  2005/12/14 23:03:24  phase1geo
  More updates to remove memory faults.  Still a work in progress but full
  regression passes.

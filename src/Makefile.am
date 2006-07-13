@@ -18,7 +18,9 @@ covered_SOURCES = arc.c \
 		  info.c \
 		  instance.c \
  		  iter.c \
-		  keywords.c \
+		  keywords_1995.c \
+		  keywords_2001.c \
+		  keywords_sv.c \
                   pplexer.c \
 		  lexer.c \
 		  line.c \
@@ -65,7 +67,13 @@ pplexer.c: $(srcdir)/pplexer.l
 lexer.c:  $(srcdir)/lexer.l
 	flex -PVL -olexer.c $(srcdir)/lexer.l
 
-keywords.c:  keywords.gperf
-	gperf -o -i 7 -C -k 1-3,$$ -L ANSI-C -H keyword_hash -N check_identifier -t $(srcdir)/keywords.gperf > keywords.c || (rm -f keywords.c ; false)
+keywords_1995.c:  keywords_1995.gperf
+	gperf -o -i 7 -C -k 1-3,$$ -L ANSI-C -H keyword_hash_1995 -N check_identifier_1995 -t $(srcdir)/keywords_1995.gperf > keywords_1995.c || (rm -f keywords_1995.c ; false)
 
-CLEANFILES = pplexer.c lexer.c keywords.c parser.c parser.h parser.output
+keywords_2001.c:  keywords_2001.gperf
+	gperf -o -i 7 -C -k 1-3,$$ -L ANSI-C -H keyword_hash_2001 -N check_identifier_2001 -t $(srcdir)/keywords_2001.gperf > keywords_2001.c || (rm -f keywords_2001.c ; false)
+
+keywords_sv.c:  keywords_sv.gperf
+	gperf -o -i 7 -C -k 1-3,$$ -L ANSI-C -H keyword_hash_sv -N check_identifier_sv -t $(srcdir)/keywords_sv.gperf > keywords_sv.c || (rm -f keywords_sv.c ; false)
+
+CLEANFILES = pplexer.c lexer.c keywords_1995.c keywords_2001.c keywords_sv.c parser.c parser.h parser.output

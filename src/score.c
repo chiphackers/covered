@@ -46,20 +46,22 @@
 #include "vpi.h"
 
 
-char* top_module                = NULL;                /*!< Name of top-level module to score */
-char* top_instance              = NULL;                /*!< Name of top-level instance name */
-char* output_db                 = NULL;                /*!< Name of output score database file to generate */
-char* dump_file                 = NULL;                /*!< Name of dumpfile to parse */
-int   dump_mode                 = DUMP_FMT_NONE;       /*!< Specifies dumpfile format to parse */
-char* lxt_file                  = NULL;                /*!< Name of LXT dumpfile to parse */
-char* vpi_file                  = NULL;                /*!< Name of VPI output file to write contents to */
-int   delay_expr_type           = DELAY_EXPR_DEFAULT;  /*!< Value to use when a delay expression with min:typ:max */
-char* ppfilename                = NULL;                /*!< Name of preprocessor filename to use */
-bool  instance_specified        = FALSE;               /*!< Specifies if -i option was specified */
-int   timestep_update           = 0;                   /*!< Specifies timestep increment to display current time */
-int   flag_race_check           = WARNING;             /*!< Specifies how race conditions should be handled */
-bool  flag_display_sim_stats    = FALSE;               /*!< Specifies if simulation performance information should be output */
-int   flag_global_generation    = GENERATION_SV;       /*!< Specifies the supported global generation value */
+char*     top_module             = NULL;                /*!< Name of top-level module to score */
+char*     top_instance           = NULL;                /*!< Name of top-level instance name */
+char*     output_db              = NULL;                /*!< Name of output score database file to generate */
+char*     dump_file              = NULL;                /*!< Name of dumpfile to parse */
+int       dump_mode              = DUMP_FMT_NONE;       /*!< Specifies dumpfile format to parse */
+char*     lxt_file               = NULL;                /*!< Name of LXT dumpfile to parse */
+char*     vpi_file               = NULL;                /*!< Name of VPI output file to write contents to */
+int       delay_expr_type        = DELAY_EXPR_DEFAULT;  /*!< Value to use when a delay expression with min:typ:max */
+char*     ppfilename             = NULL;                /*!< Name of preprocessor filename to use */
+bool      instance_specified     = FALSE;               /*!< Specifies if -i option was specified */
+int       timestep_update        = 0;                   /*!< Specifies timestep increment to display current time */
+int       flag_race_check        = WARNING;             /*!< Specifies how race conditions should be handled */
+bool      flag_display_sim_stats = FALSE;               /*!< Specifies if simulation performance information should be output */
+int       flag_global_generation = GENERATION_SV;       /*!< Specifies the supported global generation value */
+str_link* gen_mod_head           = NULL;                /*!< Pointer to the head of the generation module list */
+str_link* gen_mod_tail           = NULL;                /*!< Pointer to the tail of the generation module list */
 
 extern unsigned long largest_malloc_size;
 extern unsigned long curr_malloc_size;
@@ -669,8 +671,10 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
         } else {
           strcpy( tmp, argv[i] );
           if( tmp[(strlen( tmp ) - 2)] == '=' ) {
+            str_link* strl;
             tmp[(strlen( tmp ) - 2)] = '\0';
-            // TBD str_link_add( 
+            strl        = str_link_add( tmp, &gen_mod_head, &gen_mod_tail );
+            strl->suppl = generation;
           } else {
             snprintf( user_msg, USER_MSG_LENGTH, "Illegal -g syntax \"%s\".  See \"covered score -h\" for correct syntax.",
                       tmp );
@@ -802,6 +806,10 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.75  2006/07/13 05:31:52  phase1geo
+ Adding -g option to score command parser/usage information.  Still a lot of
+ work to go before this feature is complete.
+
  Revision 1.74  2006/05/03 22:49:42  phase1geo
  Causing all files to be preprocessed when written to the file viewer.  I'm sure that
  I am breaking all kinds of things at this point, but things do work properly on a few

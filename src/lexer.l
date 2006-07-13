@@ -46,10 +46,16 @@ extern YYLTYPE yylloc;
 extern void reset_pplexer( char* filename, FILE* out );
 extern int PPVLlex( void );
 
-extern int   ignore_mode;
-extern int   attr_mode;
-extern char  user_msg[USER_MSG_LENGTH];
-extern char* ppfilename;
+extern int        ignore_mode;
+extern int        attr_mode;
+extern char       user_msg[USER_MSG_LENGTH];
+extern char*      ppfilename;
+extern int        flag_global_generation;
+extern str_link*  gen_mod_head;
+extern str_link*  gen_mod_tail;
+extern str_link*  modlist_head;
+extern str_link*  modlist_tail;
+extern func_unit* curr_funit;
 
 /*!
  Contains state before entering comment block.
@@ -88,9 +94,6 @@ static tnode*    found_modules = NULL;
  Holds the name of the file specified in a `line or #line preprocessor directive.
 */
 char*            directive_filename = NULL;
-
-extern str_link* modlist_head;
-extern str_link* modlist_tail;
 
 %}
 
@@ -303,9 +306,20 @@ WSPACE [ \t\b\f]+
   /* Keyword and signal identifiers */
 [a-zA-Z_][a-zA-Z0-9$_]*(\[[0-9]+\]\.[a-zA-Z_][a-zA-Z0-9$_]*)* {
      str_link* foundmod;
-     int rc = lexer_keyword_code( yytext, yyleng );
+     int       rc   = lexer_keyword_1995_code( yytext, yyleng );
+     printf( "rc=%d for %s\n", rc, yytext );
+     str_link* strl = str_link_find( curr_funit->name, gen_mod_head );
+     if( (((flag_global_generation >= GENERATION_2001) && (strl == NULL)) || (strl->suppl >= GENERATION_2001)) && (rc == IDENTIFIER) ) {
+       printf( "Checking %s in 2001 keyword list\n", yytext );
+       rc = lexer_keyword_2001_code( yytext, yyleng );
+     }
+     if( (((flag_global_generation >= GENERATION_SV) && (strl == NULL)) || (strl->suppl >= GENERATION_SV)) && (rc == IDENTIFIER) ) {
+       printf( "Checking %s in SV keyword list\n", yytext );
+       rc = lexer_keyword_sv_code( yytext, yyleng );
+     }
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
+     printf( "rc=%d\n", rc );
      if( rc == IDENTIFIER ) {
        if( ignore_mode == 0 ) {
          yylval.text = strdup_safe( yytext, __FILE__, __LINE__ );
