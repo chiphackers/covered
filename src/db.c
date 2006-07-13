@@ -351,10 +351,12 @@ bool db_read( char* file, int read_mode ) {
           if( (retval = funit_db_read( &tmpfunit, funit_scope, &rest_line )) == TRUE ) {
             if( (read_mode == READ_MODE_MERGE_INST_MERGE) && ((foundinst = instance_find_scope( instance_root, funit_scope )) != NULL) ) {
               merge_mode = TRUE;
+              curr_funit = foundinst->funit;
               funit_db_merge( foundinst->funit, db_handle, TRUE );
             } else if( read_mode == READ_MODE_REPORT_MOD_REPLACE ) {
               if( (foundfunit = funit_link_find( &tmpfunit, funit_head )) != NULL ) {
                 merge_mode = TRUE;
+                curr_funit = foundfunit->funit;
                 /*
                  If this functional unit has been assigned a stat, remove it and replace it with the new functional unit contents;
                  otherwise, merge the results of the new functional unit with the old.
@@ -371,6 +373,7 @@ bool db_read( char* file, int read_mode ) {
               }
             } else if( (read_mode == READ_MODE_REPORT_MOD_MERGE) && ((foundfunit = funit_link_find( &tmpfunit, funit_head )) != NULL) ) {
               merge_mode = TRUE;
+              curr_funit = foundfunit->funit;
               funit_db_merge( foundfunit->funit, db_handle, FALSE );
             } else {
               curr_funit             = funit_create();
@@ -1722,6 +1725,11 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.186  2006/07/12 22:16:18  phase1geo
+ Fixing hierarchical referencing for instance arrays.  Also attempted to fix
+ a problem found with unary1; however, the generated report coverage information
+ does not look correct at this time.  Checkpointing what I have done for now.
+
  Revision 1.185  2006/07/11 02:32:47  phase1geo
  Fixing memory leak problem in db_close function (with score_args).
 
