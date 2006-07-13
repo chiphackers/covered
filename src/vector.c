@@ -1979,7 +1979,13 @@ bool vector_unary_op( vector* tgt, vector* src, nibble* optab ) {
 */
 bool vector_unary_not( vector* tgt, vector* src ) {
 
-  return( vector_unary_op( tgt, src, nor_optab ) );
+  vector   vec;      /* Temporary vector value */
+  vec_data vec_val;  /* Temporary value */
+
+  vector_init( &vec, &vec_val, 1 );
+  vector_unary_op( &vec, src, or_optab );
+
+  return( vector_unary_inv( tgt, &vec ) );
 
 }
 
@@ -2013,6 +2019,11 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.76  2006/07/12 22:16:18  phase1geo
+ Fixing hierarchical referencing for instance arrays.  Also attempted to fix
+ a problem found with unary1; however, the generated report coverage information
+ does not look correct at this time.  Checkpointing what I have done for now.
+
  Revision 1.75  2006/03/28 22:28:28  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the
