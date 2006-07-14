@@ -673,7 +673,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
           if( tmp[(strlen( tmp ) - 2)] == '=' ) {
             str_link* strl;
             tmp[(strlen( tmp ) - 2)] = '\0';
-            strl        = str_link_add( tmp, &gen_mod_head, &gen_mod_tail );
+            strl        = str_link_add( strdup_safe( tmp, __FILE__, __LINE__ ), &gen_mod_head, &gen_mod_tail );
             strl->suppl = generation;
           } else {
             snprintf( user_msg, USER_MSG_LENGTH, "Illegal -g syntax \"%s\".  See \"covered score -h\" for correct syntax.",
@@ -806,6 +806,10 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.76  2006/07/13 22:24:57  phase1geo
+ We are really broke at this time; however, more code has been added to support
+ the -g score option.
+
  Revision 1.75  2006/07/13 05:31:52  phase1geo
  Adding -g option to score command parser/usage information.  Still a lot of
  work to go before this feature is complete.

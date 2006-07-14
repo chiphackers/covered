@@ -42,6 +42,7 @@
 
 extern char        user_msg[USER_MSG_LENGTH];
 extern funit_link* funit_head;
+extern func_unit*  curr_funit;
 
 
 /*!
@@ -100,10 +101,10 @@ fv_bind* fsm_var_stmt_tail = NULL;
 */
 fsm_var* fsm_var_add( char* funit_name, expression* in_state, expression* out_state, char* name ) {
 
-  fsm_var*    new_var = NULL;  /* Pointer to newly created FSM variable          */
-  funit_link* funitl;          /* Pointer to functional unit link found          */
-  func_unit   funit;           /* Temporary functional unit used for searching   */
-  fsm*        table;           /* Pointer to newly create FSM                    */
+  fsm_var*    new_var = NULL;  /* Pointer to newly created FSM variable */
+  funit_link* funitl;          /* Pointer to functional unit link found */
+  func_unit   funit;           /* Temporary functional unit used for searching */
+  fsm*        table;           /* Pointer to newly create FSM */
 
   /* If we have not parsed, design add new FSM variable to list */
   if( funit_head == NULL ) {
@@ -225,12 +226,18 @@ void fsm_var_add_expr( expression* expr, func_unit* funit ) {
 
     if( exp_link_find( expr, funit->exp_head ) == NULL ) {
 
+      /* Set the global curr_funit to the expression's functional unit */
+      curr_funit = funit;
+
       /* Add expression's children first. */
       db_add_expression( expr->right );
       db_add_expression( expr->left );
 
       /* Now add this expression to the list. */
       exp_link_add( expr, &(funit->exp_head), &(funit->exp_tail) );
+
+      /* Now clear the curr_funit */
+      curr_funit = NULL;
 
     }
 
@@ -255,10 +262,10 @@ void fsm_var_add_expr( expression* expr, func_unit* funit ) {
 */
 bool fsm_var_bind_stmt( statement* stmt, char* funit_name ) {
 
-  bool        retval = FALSE;  /* Return value for this function                */
+  bool        retval = FALSE;  /* Return value for this function */
   funit_link* funitl;          /* Pointer to found functional unit link element */
-  func_unit   funit;           /* Temporary functional unit used for searching  */
-  fsm_var*    fv;              /* Pointer to found FSM variable                 */
+  func_unit   funit;           /* Temporary functional unit used for searching */
+  fsm_var*    fv;              /* Pointer to found FSM variable */
 
   funit.name = funit_name;
   funit.type = FUNIT_MODULE;  /* TBD */
@@ -375,8 +382,8 @@ void fsm_var_stmt_add( statement* stmt, char* funit_name ) {
 */
 void fsm_var_bind() {
 
-  fv_bind*  curr;           /* Pointer to current FSM variable                               */
-  fv_bind*  tmp;            /* Temporary pointer to FSM bind structure                       */
+  fv_bind*  curr;           /* Pointer to current FSM variable */
+  fv_bind*  tmp;            /* Temporary pointer to FSM bind structure */
   bool      error = FALSE;  /* Specifies if an error occurred during the FSM binding process */
 
   curr = fsm_var_bind_head;
@@ -451,7 +458,7 @@ void fsm_var_dealloc( fsm_var* fv ) {
 void fsm_var_remove( fsm_var* fv ) {
 
   fsm_var* curr;  /* Pointer to current FSM variable structure in list */
-  fsm_var* last;  /* Pointer to last FSM variable structure evaluated  */
+  fsm_var* last;  /* Pointer to last FSM variable structure evaluated */
 
   /* Find matching FSM variable structure */
   curr = fsm_var_head;
@@ -483,6 +490,11 @@ void fsm_var_remove( fsm_var* fv ) {
 
 /*
  $Log$
+ Revision 1.25  2006/04/05 15:19:18  phase1geo
+ Adding support for FSM coverage output in the GUI.  Started adding components
+ for assertion coverage to GUI and report functions though there is no functional
+ support for this at this time.
+
  Revision 1.24  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

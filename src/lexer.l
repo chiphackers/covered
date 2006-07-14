@@ -307,19 +307,18 @@ WSPACE [ \t\b\f]+
 [a-zA-Z_][a-zA-Z0-9$_]*(\[[0-9]+\]\.[a-zA-Z_][a-zA-Z0-9$_]*)* {
      str_link* foundmod;
      int       rc   = lexer_keyword_1995_code( yytext, yyleng );
-     printf( "rc=%d for %s\n", rc, yytext );
-     str_link* strl = str_link_find( curr_funit->name, gen_mod_head );
-     if( (((flag_global_generation >= GENERATION_2001) && (strl == NULL)) || (strl->suppl >= GENERATION_2001)) && (rc == IDENTIFIER) ) {
-       printf( "Checking %s in 2001 keyword list\n", yytext );
+     str_link* strl = (curr_funit != NULL) ? str_link_find( curr_funit->name, gen_mod_head ) : NULL;
+     if( (((flag_global_generation >= GENERATION_2001) && (strl == NULL)) ||
+          ((strl != NULL) && (strl->suppl >= GENERATION_2001))) &&
+         (rc == IDENTIFIER) ) {
        rc = lexer_keyword_2001_code( yytext, yyleng );
      }
-     if( (((flag_global_generation >= GENERATION_SV) && (strl == NULL)) || (strl->suppl >= GENERATION_SV)) && (rc == IDENTIFIER) ) {
-       printf( "Checking %s in SV keyword list\n", yytext );
+     if( (((flag_global_generation >= GENERATION_SV) && (strl == NULL)) ||
+          ((strl != NULL) && (strl->suppl >= GENERATION_SV))) && (rc == IDENTIFIER) ) {
        rc = lexer_keyword_sv_code( yytext, yyleng );
      }
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
-     printf( "rc=%d\n", rc );
      if( rc == IDENTIFIER ) {
        if( ignore_mode == 0 ) {
          yylval.text = strdup_safe( yytext, __FILE__, __LINE__ );

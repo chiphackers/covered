@@ -488,14 +488,14 @@ funit_link* funit_link_find( func_unit* funit, funit_link* head ) {
 void str_link_remove( char* str, str_link** head, str_link** tail ) {
 
   str_link* curr;  /* Pointer to current string link */
-  str_link* last;  /* Pointer to last string link    */
+  str_link* last;  /* Pointer to last string link */
 
   curr = *head;
   last = NULL;
   while( (curr != NULL) && (strcmp( str, curr->str ) != 0) ) {
     last = curr;
     curr = curr->next;
-    assert( curr->str != NULL );
+    assert( (curr == NULL) || (curr->str != NULL) );
   }
 
   if( curr != NULL ) {
@@ -540,7 +540,7 @@ void str_link_remove( char* str, str_link** head, str_link** tail ) {
 void exp_link_remove( expression* exp, exp_link** head, exp_link** tail, bool recursive ) {
 
   exp_link* curr;  /* Pointer to current expression link */
-  exp_link* last;  /* Pointer to last expression link    */
+  exp_link* last;  /* Pointer to last expression link */
 
   assert( exp != NULL );
 
@@ -622,11 +622,20 @@ void str_link_delete_list( str_link* head ) {
 
 }
 
+/*!
+ \param stmt  Pointer to the statement to unlink from the given statement list
+ \param head  Pointer to the head of a statement list
+ \param tail  Pointer to the tail of a statement list
+
+ Iterates through given statement list searching for the given statement.  When
+ the statement link is found that matches, removes that link from the list and repairs
+ the list.
+*/
 void stmt_link_unlink( statement* stmt, stmt_link** head, stmt_link** tail ) {
 
-  stmt_iter  curr;   /* Statement list iterator                       */
-  stmt_link* next;   /* Pointer to next stmt_link in list             */
-  stmt_link* next2;  /* Pointer to next after next stmt_link in list  */
+  stmt_iter  curr;   /* Statement list iterator */
+  stmt_link* next;   /* Pointer to next stmt_link in list */
+  stmt_link* next2;  /* Pointer to next after next stmt_link in list */
   stmt_link* last2;  /* Pointer to last before last stmt_link in list */
 
   stmt_iter_reset( &curr, *head );
@@ -806,6 +815,10 @@ void funit_link_delete_list( funit_link* head, bool rm_funit ) {
 
 /*
  $Log$
+ Revision 1.47  2006/07/13 22:24:57  phase1geo
+ We are really broke at this time; however, more code has been added to support
+ the -g score option.
+
  Revision 1.46  2006/07/09 01:40:39  phase1geo
  Removing the vpi directory (again).  Also fixing a bug in Covered's expression
  deallocator where a case statement contains an unbindable signal.  Previously

@@ -595,6 +595,8 @@ void db_end_module( int end_line ) {
 
   str_link_remove( curr_funit->name, &modlist_head, &modlist_tail );
 
+  curr_funit = NULL;
+
 }
 
 /*!
@@ -1725,6 +1727,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.187  2006/07/13 21:03:44  phase1geo
+ Fixing bug in db_read function to set curr_funit to the correct structure
+ when merging functional units.  Updated regressions per this fix.
+
  Revision 1.186  2006/07/12 22:16:18  phase1geo
  Fixing hierarchical referencing for instance arrays.  Also attempted to fix
  a problem found with unary1; however, the generated report coverage information
