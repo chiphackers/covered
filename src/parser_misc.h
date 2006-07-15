@@ -68,8 +68,16 @@ void parser_explicitly_set_curr_range( static_expr* left, static_expr* right );
 /*! \brief Deallocates and sets the curr_range variable from implicitly set values */
 void parser_implicitly_set_curr_range( int left_num, int right_num );
 
+/*! \brief Checks the specified generation value to see if it holds in the specified module */
+bool parser_check_generation( int gen );
+
 /*
  $Log$
+ Revision 1.7  2006/03/28 22:28:27  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.6  2006/02/01 19:58:28  phase1geo
  More updates to allow parsing of various parameter formats.  At this point
  I believe full parameter support is functional.  Regression has been updated

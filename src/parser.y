@@ -289,21 +289,42 @@ main
      variety of different objects. The syntax inside the (* *) is a
      comma separated list of names or names with assigned values. */
 attribute_list_opt
-  : K_PSTAR attribute_list K_STARP
+  : K_PSTAR
     {
-      db_parse_attribute( $2 );
+      if( (ignore_mode == 0) && !parser_check_generation( GENERATION_2001 ) ) {
+        VLerror( "attribute syntax found in block that is specified to not allow Verilog-2001 syntax." );
+        ignore_mode++;
+      }
     }
-  | K_PSTAR K_STARP
+    attribute_list K_STARP
+    {
+      if( !parser_check_generation( GENERATION_2001 ) ) {
+        ignore_mode--;
+      } else if( ignore_mode == 0 ) {
+        db_parse_attribute( $3 );
+      }
+    }
+  | K_PSTAR
+    {
+      if( (ignore_mode == 0) && !parser_check_generation( GENERATION_2001 ) ) {
+        VLerror( "attribute syntax found in block that is specified to not allow Verilog-2001 syntax." );
+      }
+    }
+    K_STARP
   |
   ;
 
 attribute_list
   : attribute_list ',' attribute
     {
-      $3->next  = $1;
-      $1->prev  = $3;
-      $3->index = $1->index + 1;
-      $$ = $3;
+      if( (ignore_mode == 0) && ($3 != NULL) && ($1 != NULL) ) {
+        $3->next  = $1;
+        $1->prev  = $3;
+        $3->index = $1->index + 1;
+        $$ = $3;
+      } else {
+        $$ = NULL;
+      }
     } 
   | attribute
     {
@@ -314,15 +335,25 @@ attribute_list
 attribute
   : IDENTIFIER
     {
-      attr_param* ap = db_create_attr_param( $1, NULL );
+      attr_param* ap;
+      if( ignore_mode == 0 ) {
+        ap = db_create_attr_param( $1, NULL );
+        $$ = ap;
+      } else {
+        $$ = NULL;
+      }
       free_safe( $1 );
-      $$ = ap;
     }
   | IDENTIFIER '=' {attr_mode++;} expression {attr_mode--;}
     {
-      attr_param* ap = db_create_attr_param( $1, $4 );
+      attr_param* ap;
+      if( ignore_mode == 0 ) {
+        ap = db_create_attr_param( $1, $4 );
+        $$ = ap;
+      } else {
+        $$ = NULL;
+      }
       free_safe( $1 );
-      $$ = ap;
     }
   ;
 
@@ -359,7 +390,19 @@ module_start
   ;
 
 module_parameter_port_list_opt
-  : '#' '(' module_parameter_port_list ')'
+  : '#'
+    {
+      if( !parser_check_generation( GENERATION_2001 ) ) {
+        VLerror( "pre-module parameter declaration syntax found in block that is specified to not allow Verilog-2001 syntax." );
+        ignore_mode++;
+      }
+    }
+    '(' module_parameter_port_list ')'
+    {
+      if( !parser_check_generation( GENERATION_2001 ) ) {
+        ignore_mode--;
+      }
+    }
   |
   ;
 
@@ -413,57 +456,83 @@ port_declaration
   : attribute_list_opt port_type net_type_opt signed_opt range_opt IDENTIFIER
     {
       port_info* pi;
-      if( ignore_mode == 0 ) {
-        db_add_signal( $6, curr_sig_type, curr_range->left, curr_range->right, curr_signed, FALSE, @6.first_line, @6.first_column );
-        pi = (port_info*)malloc_safe( sizeof( port_info ), __FILE__, __LINE__ );
-        pi->type      = curr_sig_type;
-        pi->is_signed = curr_signed;
-        pi->range     = parser_copy_curr_range();
+      if( !parser_check_generation( GENERATION_2001 ) ) {
+        VLerror( "inline port declaration syntax found in block that is specified to not allow Verilog-2001 syntax." );
         free_safe( $6 );
-        $$ = pi;
-      } else {
         $$ = NULL;
+      } else {
+        if( ignore_mode == 0 ) {
+          db_add_signal( $6, curr_sig_type, curr_range->left, curr_range->right, curr_signed, FALSE, @6.first_line, @6.first_column );
+          pi = (port_info*)malloc_safe( sizeof( port_info ), __FILE__, __LINE__ );
+          pi->type      = curr_sig_type;
+          pi->is_signed = curr_signed;
+          pi->range     = parser_copy_curr_range();
+          free_safe( $6 );
+          $$ = pi;
+        } else {
+          $$ = NULL;
+        }
       }
     }
   | attribute_list_opt K_output var_type signed_opt range_opt IDENTIFIER
     {
       port_info* pi;
-      if( ignore_mode == 0 ) {
-        db_add_signal( $6, SSUPPL_TYPE_OUTPUT, curr_range->left, curr_range->right, curr_signed, FALSE, @6.first_line, @6.first_column );
-        pi = (port_info*)malloc_safe( sizeof( port_info ), __FILE__, __LINE__ );
-        pi->type      = SSUPPL_TYPE_OUTPUT;
-        pi->is_signed = curr_signed;
-        pi->range     = parser_copy_curr_range();
+      if( !parser_check_generation( GENERATION_2001 ) ) {
+        VLerror( "inline port declaration syntax found in block that is specified to not allow Verilog-2001 syntax." );
         free_safe( $6 );
-        $$ = pi;
-      } else {
         $$ = NULL;
+      } else {
+        if( ignore_mode == 0 ) {
+          db_add_signal( $6, SSUPPL_TYPE_OUTPUT, curr_range->left, curr_range->right, curr_signed, FALSE, @6.first_line, @6.first_column );
+          pi = (port_info*)malloc_safe( sizeof( port_info ), __FILE__, __LINE__ );
+          pi->type      = SSUPPL_TYPE_OUTPUT;
+          pi->is_signed = curr_signed;
+          pi->range     = parser_copy_curr_range();
+          free_safe( $6 );
+          $$ = pi;
+        } else {
+          $$ = NULL;
+        }
       }
     }
   /* We just need to parse the static register assignment as this signal will get its value from the dumpfile */
   | attribute_list_opt K_output var_type signed_opt range_opt IDENTIFIER '=' ignore_more static_expr ignore_less
     {
       port_info* pi;
-      if( ignore_mode == 0 ) {
-        db_add_signal( $6, SSUPPL_TYPE_OUTPUT, curr_range->left, curr_range->right, curr_signed, FALSE, @6.first_line, @6.first_column );
-        pi = (port_info*)malloc_safe( sizeof( port_info ), __FILE__, __LINE__ );
-        pi->type       = SSUPPL_TYPE_OUTPUT;
-        pi->is_signed  = curr_signed;
-        pi->range      = parser_copy_curr_range();
+      if( !parser_check_generation( GENERATION_2001 ) ) {
+        VLerror( "inline port declaration syntax found in block that is specified to not allow Verilog-2001 syntax." );
         free_safe( $6 );
-        $$ = pi;
-      } else {
         $$ = NULL;
+      } else {
+        if( ignore_mode == 0 ) {
+          db_add_signal( $6, SSUPPL_TYPE_OUTPUT, curr_range->left, curr_range->right, curr_signed, FALSE, @6.first_line, @6.first_column );
+          pi = (port_info*)malloc_safe( sizeof( port_info ), __FILE__, __LINE__ );
+          pi->type       = SSUPPL_TYPE_OUTPUT;
+          pi->is_signed  = curr_signed;
+          pi->range      = parser_copy_curr_range();
+          free_safe( $6 );
+          $$ = pi;
+        } else {
+          $$ = NULL;
+        }
       }
     }
   | attribute_list_opt port_type net_type_opt signed_opt range_opt error
     {
-      VLerror( "Invalid variable list in port declaration" );
+      if( !parser_check_generation( GENERATION_2001 ) ) {
+        VLerror( "inline port declaration syntax found in block that is specified to not allow Verilog-2001 syntax." );
+      } else if( ignore_mode == 0 ) {
+        VLerror( "Invalid variable list in port declaration" );
+      }
       $$ = NULL;
     }
   | attribute_list_opt K_output var_type signed_opt range_opt error
     {
-      VLerror( "Invalid variable list in port declaration" );
+      if( !parser_check_generation( GENERATION_2001 ) ) {
+        VLerror( "inline port declaration syntax found in block that is specified to not allow Verilog-2001 syntax." );
+      } else if( ignore_mode == 0 ) {
+        VLerror( "Invalid variable list in port declaration" );
+      }
       $$ = NULL;
     }
 
@@ -665,8 +734,15 @@ static_expr
   | static_expr '*' '*' static_expr
     {
       static_expr* tmp;
-      tmp = static_expr_gen( $4, $1, EXP_OP_EXPONENT, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
-      $$ = tmp;
+      if( !parser_check_generation( GENERATION_2001 ) ) {
+        VLerror( "Exponential power operation found in block that is specified to not allow Verilog-2001 syntax." );
+        static_expr_dealloc( $1, TRUE );
+        static_expr_dealloc( $4, TRUE );
+        $$ = NULL;
+      } else {
+        tmp = static_expr_gen( $4, $1, EXP_OP_EXPONENT, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
+        $$ = tmp;
+      }
     }
   | static_expr '&' static_expr
     {
@@ -1043,13 +1119,20 @@ expression
   | expression '*' '*' expression
     {
       expression* tmp;
-      if( (ignore_mode == 0) && ($1 != NULL) && ($4 != NULL) ) {
-        tmp = db_create_expression( $4, $1, EXP_OP_EXPONENT, lhs_mode, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
-        $$ = tmp;
-      } else {
+      if( !parser_check_generation( GENERATION_2001 ) ) {
+        VLerror( "Exponential power operator found in block that is specified to not allow Verilog-2001 syntax." );
         expression_dealloc( $1, FALSE );
         expression_dealloc( $4, FALSE );
         $$ = NULL;
+      } else {
+        if( (ignore_mode == 0) && ($1 != NULL) && ($4 != NULL) ) {
+          tmp = db_create_expression( $4, $1, EXP_OP_EXPONENT, lhs_mode, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
+          $$ = tmp;
+        } else {
+          expression_dealloc( $1, FALSE );
+          expression_dealloc( $4, FALSE );
+          $$ = NULL;
+        }
       }
     }
   | expression '&' expression
@@ -1151,13 +1234,20 @@ expression
   | expression K_LSS expression
     {
       expression* tmp;
-      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp = db_create_expression( $3, $1, EXP_OP_ALSHIFT, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-        $$ = tmp;
-      } else {
+      if( !parser_check_generation( GENERATION_2001 ) ) {
+        VLerror( "arithmetic left shift operation found in block that is specified to not allow Verilog-2001 syntax." );
         expression_dealloc( $1, FALSE );
         expression_dealloc( $3, FALSE );
         $$ = NULL;
+      } else {
+        if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
+          tmp = db_create_expression( $3, $1, EXP_OP_ALSHIFT, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+          $$ = tmp;
+        } else {
+          expression_dealloc( $1, FALSE );
+          expression_dealloc( $3, FALSE );
+          $$ = NULL;
+        }
       }
     }
   | expression K_RS expression
@@ -1175,13 +1265,20 @@ expression
   | expression K_RSS expression
     {
       expression* tmp;
-      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp = db_create_expression( $3, $1, EXP_OP_ARSHIFT, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-        $$ = tmp;
-      } else {
+      if( !parser_check_generation( GENERATION_2001 ) ) {
+        VLerror( "arithmetic right shift operation found in block that is specified to not allow Verilog-2001 syntax." );
         expression_dealloc( $1, FALSE );
         expression_dealloc( $3, FALSE );
         $$ = NULL;
+      } else {
+        if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
+          tmp = db_create_expression( $3, $1, EXP_OP_ARSHIFT, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+          $$ = tmp;
+        } else {
+          expression_dealloc( $1, FALSE );
+          expression_dealloc( $3, FALSE );
+          $$ = NULL;
+        }
       }
     }
   | expression K_EQ expression
@@ -1393,49 +1490,63 @@ expr_primary
   | identifier '[' expression K_PO_POS static_expr ']'
     {
       expression* tmp;
-      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) && ($5 != NULL) ) {
-        if( $5->exp == NULL ) {
-          tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-          vector_dealloc( tmp->value );
-          tmp->value = vector_create( 32, TRUE );
-          vector_from_int( tmp->value, $5->num );
-          tmp = db_create_expression( tmp, $3, EXP_OP_MBIT_POS, lhs_mode, @1.first_line, @1.first_column, (@6.last_column - 1), $1 );
-        } else {
-          tmp = db_create_expression( $5->exp, $3, EXP_OP_MBIT_POS, lhs_mode, @1.first_line, @1.first_column, (@6.last_column - 1), $1 );
-        }
-        $$  = tmp;
+      if( !parser_check_generation( GENERATION_2001 ) ) {
+        VLerror( "indexed vector part select found in block that is specified to not allow Verilog-2001 syntax." );
         free_safe( $1 );
-      } else {
-        if( $1 != NULL ) {
-          free_safe( $1 );
-        }
         expression_dealloc( $3, FALSE );
         static_expr_dealloc( $5, FALSE );
         $$ = NULL;
+      } else {
+        if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) && ($5 != NULL) ) {
+          if( $5->exp == NULL ) {
+            tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+            vector_dealloc( tmp->value );
+            tmp->value = vector_create( 32, TRUE );
+            vector_from_int( tmp->value, $5->num );
+            tmp = db_create_expression( tmp, $3, EXP_OP_MBIT_POS, lhs_mode, @1.first_line, @1.first_column, (@6.last_column - 1), $1 );
+          } else {
+            tmp = db_create_expression( $5->exp, $3, EXP_OP_MBIT_POS, lhs_mode, @1.first_line, @1.first_column, (@6.last_column - 1), $1 );
+          }
+          $$  = tmp;
+          free_safe( $1 );
+        } else {
+          if( $1 != NULL ) {
+            free_safe( $1 );
+          }
+          expression_dealloc( $3, FALSE );
+          static_expr_dealloc( $5, FALSE );
+          $$ = NULL;
+        }
       }
     }
   | identifier '[' expression K_PO_NEG static_expr ']'
     {
       expression* tmp;
-      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) && ($5 != NULL) ) {
-        if( $5->exp == NULL ) {
-          tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-          vector_dealloc( tmp->value );
-          tmp->value = vector_create( 32, TRUE );
-          vector_from_int( tmp->value, $5->num );
-          tmp = db_create_expression( tmp, $3, EXP_OP_MBIT_NEG, lhs_mode, @1.first_line, @1.first_column, (@6.last_column - 1), $1 );
-        } else {
-          tmp = db_create_expression( $5->exp, $3, EXP_OP_MBIT_NEG, lhs_mode, @1.first_line, @1.first_column, (@6.last_column - 1), $1 );
-        }
-        $$  = tmp;
+      if( !parser_check_generation( GENERATION_2001 ) ) {
+        VLerror( "indexed vector part select found in block that is specified to not allow Verilog-2001 syntax." );
         free_safe( $1 );
-      } else {
-        if( $1 != NULL ) {
-          free_safe( $1 );
-        }
         expression_dealloc( $3, FALSE );
         static_expr_dealloc( $5, FALSE );
         $$ = NULL;
+      } else {
+        if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) && ($5 != NULL) ) {
+          if( $5->exp == NULL ) {
+            tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+            vector_dealloc( tmp->value );
+            tmp->value = vector_create( 32, TRUE );
+            vector_from_int( tmp->value, $5->num );
+            tmp = db_create_expression( tmp, $3, EXP_OP_MBIT_NEG, lhs_mode, @1.first_line, @1.first_column, (@6.last_column - 1), $1 );
+          } else {
+            tmp = db_create_expression( $5->exp, $3, EXP_OP_MBIT_NEG, lhs_mode, @1.first_line, @1.first_column, (@6.last_column - 1), $1 );
+          }
+          $$  = tmp;
+          free_safe( $1 );
+        } else {
+          free_safe( $1 );
+          expression_dealloc( $3, FALSE );
+          static_expr_dealloc( $5, FALSE );
+          $$ = NULL;
+        }
       }
     }
   | identifier '(' expression_port_list ')'
@@ -1904,17 +2015,22 @@ module_item
   /* Handles Verilog-2001 port of type:  input wire [m:l] <list>; */
   | attribute_list_opt port_type net_type range_opt
     {
-      curr_mba     = FALSE;
-      curr_signed  = FALSE;
-      curr_handled = TRUE;
-      if( generate_mode > 0 ) {
+      if( !parser_check_generation( GENERATION_2001 ) ) {
+        VLerror( "ANSI-C port declaration used in a block that is specified to not allow Verilog-2001 syntax." );
         ignore_mode++;
-        VLerror( "Port declaration not allowed within a generate block" );
+      } else {
+        curr_mba     = FALSE;
+        curr_signed  = FALSE;
+        curr_handled = TRUE;
+        if( generate_mode > 0 ) {
+          ignore_mode++;
+          VLerror( "Port declaration not allowed within a generate block" );
+        }
       }
     }
     list_of_variables
     {
-      if( generate_mode > 0 ) {
+      if( !parser_check_generation( GENERATION_2001 ) || (generate_mode > 0) ) {
         ignore_mode--;
       }
     } ';'
@@ -2111,10 +2227,15 @@ module_item
     }
   | K_generate
     {
-      if( generate_mode == 0 ) {
-        generate_mode = 1;
+      if( !parser_check_generation( GENERATION_2001 ) ) {
+        VLerror( "generate syntax found in block that is specified to not allow Verilog-2001 syntax." );
+        ignore_mode++;
       } else {
-        VLerror( "Found generate keyword inside of a generate block" );
+        if( generate_mode == 0 ) {
+          generate_mode = 1;
+        } else {
+          VLerror( "Found generate keyword inside of a generate block" );
+        }
       }
     }
     generate_item_list_opt
@@ -2122,16 +2243,30 @@ module_item
       generate_mode = 0;
     }
     K_endgenerate
+    {
+      if( !parser_check_generation( GENERATION_2001 ) ) {
+        ignore_mode--;
+      }
+    }
   | K_genvar
     {
-      curr_signed   = FALSE;
-      curr_mba      = TRUE;
-      curr_handled  = TRUE;
-      curr_sig_type = SSUPPL_TYPE_GENVAR;
-      parser_implicitly_set_curr_range( 31, 0 );
+      if( !parser_check_generation( GENERATION_2001 ) ) {
+        VLerror( "genvar syntax found in block that is specified to not allow Verilog-2001 syntax." );
+        ignore_mode++;
+      } else {
+        curr_signed   = FALSE;
+        curr_mba      = TRUE;
+        curr_handled  = TRUE;
+        curr_sig_type = SSUPPL_TYPE_GENVAR;
+        parser_implicitly_set_curr_range( 31, 0 );
+      }
     }
     list_of_variables ';'
-
+    {
+      if( !parser_check_generation( GENERATION_2001 ) ) {
+        ignore_mode--;
+      }
+    }
   | attribute_list_opt
     K_specify
     {
@@ -2664,20 +2799,26 @@ statement
     {
       expression* expr;
       statement*  stmt;
-      if( (ignore_mode == 0) && ($4 != NULL) ) {
-        expr = db_create_sensitivity_list( $4 );
-        expr = db_create_expression( expr, NULL, EXP_OP_SLIST, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), NULL ); 
-        stmt = db_create_statement( expr );
-        db_add_expression( expr );
-        if( !db_statement_connect( stmt, $4 ) ) {
-          db_remove_statement( stmt );
-          db_remove_statement( $4 );
-          stmt = NULL;
-        }
-        $$ = stmt;
-      } else {
+      if( !parser_check_generation( GENERATION_2001 ) ) {
+        VLerror( "wildcard combinational logic sensitivity list found in block that is specified to not allow Verilog-2001 syntax." );
         db_remove_statement( $4 );
         $$ = NULL;
+      } else {
+        if( (ignore_mode == 0) && ($4 != NULL) ) {
+          expr = db_create_sensitivity_list( $4 );
+          expr = db_create_expression( expr, NULL, EXP_OP_SLIST, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), NULL ); 
+          stmt = db_create_statement( expr );
+          db_add_expression( expr );
+          if( !db_statement_connect( stmt, $4 ) ) {
+            db_remove_statement( stmt );
+            db_remove_statement( $4 );
+            stmt = NULL;
+          }
+          $$ = stmt;
+        } else {
+          db_remove_statement( $4 );
+          $$ = NULL;
+        }
       }
     }
   | lpvalue '=' expression ';'
@@ -3240,7 +3381,19 @@ block_item_decl
     }
     list_of_variables ';'
   | attribute_list_opt K_parameter parameter_assign_decl ';'
-  | attribute_list_opt K_localparam localparam_assign_decl ';'
+  | attribute_list_opt K_localparam
+    {
+      if( !parser_check_generation( GENERATION_2001 ) ) {
+        VLerror( "localparam syntax found in block that is specified to not allow Verilog-2001 syntax." );
+        ignore_mode++;
+      }
+    }
+    localparam_assign_decl ';'
+    {
+      if( !parser_check_generation( GENERATION_2001 ) ) {
+        ignore_mode--;
+      }
+    }
   | attribute_list_opt K_reg error ';'
     {
       VLerror( "Syntax error in reg variable list" );
@@ -3249,9 +3402,17 @@ block_item_decl
     {
       VLerror( "Syntax error in parameter variable list" );
     }
-  | attribute_list_opt K_localparam error ';'
+  | attribute_list_opt K_localparam
     {
-      VLerror( "Syntax error in localparam list" );
+      if( !parser_check_generation( GENERATION_2001 ) ) {
+        VLerror( "localparam syntax found in block that is specified to not allow Verilog-2001 syntax." );
+      }
+    }
+    error ';'
+    {
+      if( parser_check_generation( GENERATION_2001 ) ) {
+        VLerror( "Syntax error in localparam list" );
+      }
     }
   ;	
 
@@ -3649,20 +3810,26 @@ register_variable
     {
       expression* exp;
       statement*  stmt;
-      db_add_signal( $1, curr_sig_type, curr_range->left, curr_range->right, curr_signed, curr_mba, @1.first_line, @1.first_column );
-      if( $3 != NULL ) {
-        exp = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
-        exp = db_create_expression( $3, exp, EXP_OP_RASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-        vector_dealloc( exp->value );
-        exp->value = $3->value;
-        stmt = db_create_statement( exp );
-        stmt->exp->suppl.part.stmt_head       = 1;
-        stmt->exp->suppl.part.stmt_stop_true  = 1;
-        stmt->exp->suppl.part.stmt_stop_false = 1;
-        db_add_expression( exp );
-        db_add_statement( stmt, stmt );
+      if( !parser_check_generation( GENERATION_2001 ) ) {
+        VLerror( "register declaration with initialization found in block that is specified to not allow Verilog-2001 syntax." );
+        free_safe( $1 );
+        expression_dealloc( $3, FALSE );
+      } else {
+        db_add_signal( $1, curr_sig_type, curr_range->left, curr_range->right, curr_signed, curr_mba, @1.first_line, @1.first_column );
+        if( $3 != NULL ) {
+          exp = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
+          exp = db_create_expression( $3, exp, EXP_OP_RASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+          vector_dealloc( exp->value );
+          exp->value = $3->value;
+          stmt = db_create_statement( exp );
+          stmt->exp->suppl.part.stmt_head       = 1;
+          stmt->exp->suppl.part.stmt_stop_true  = 1;
+          stmt->exp->suppl.part.stmt_stop_false = 1;
+          db_add_expression( exp );
+          db_add_statement( stmt, stmt );
+        }
+        free_safe( $1 );
       }
-      free_safe( $1 );
     }
   | UNUSED_IDENTIFIER '=' expression
   | IDENTIFIER '[' ignore_more static_expr ':' static_expr ignore_less ']'
@@ -4020,13 +4187,20 @@ event_expression_list
   | event_expression_list ',' event_expression
     {
       expression* tmp;
-      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp = db_create_expression( $3, $1, EXP_OP_EOR, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-        $$ = tmp;
-      } else {
+      if( !parser_check_generation( GENERATION_2001 ) ) {
+        VLerror( "comma-separated combinational logic sensitivity list found in block that is specified to not allow Verilog-2001 syntax." );
         expression_dealloc( $1, FALSE );
         expression_dealloc( $3, FALSE );
         $$ = NULL;
+      } else {
+        if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
+          tmp = db_create_expression( $3, $1, EXP_OP_EOR, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+          $$ = tmp;
+        } else {
+          expression_dealloc( $1, FALSE );
+          expression_dealloc( $3, FALSE );
+          $$ = NULL;
+        }
       }
     }
   ;
@@ -4144,20 +4318,29 @@ parameter_value_byname
   : '.' IDENTIFIER '(' expression ')'
     {
       param_oride* po;
-      po = (param_oride*)malloc_safe( sizeof( param_oride ), __FILE__, __LINE__ );
-      po->name = $2;
-      po->expr = $4;
-      po->next = NULL;
-      if( param_oride_head == NULL ) {
-        param_oride_head = param_oride_tail = po;
+      if( !parser_check_generation( GENERATION_2001 ) ) {
+        VLerror( "explicit in-line parameter passing syntax found in block that is specified to not allow Verilog-2001 syntax." );
+        free_safe( $2 );
+        expression_dealloc( $4, FALSE );
       } else {
-        param_oride_tail->next = po;
-        param_oride_tail       = po;
+        po = (param_oride*)malloc_safe( sizeof( param_oride ), __FILE__, __LINE__ );
+        po->name = $2;
+        po->expr = $4;
+        po->next = NULL;
+        if( param_oride_head == NULL ) {
+          param_oride_head = param_oride_tail = po;
+        } else {
+          param_oride_tail->next = po;
+          param_oride_tail       = po;
+        }
       }
     }
   | '.' UNUSED_IDENTIFIER '(' expression ')'
   | '.' IDENTIFIER '(' ')'
     {
+      if( !parser_check_generation( GENERATION_2001 ) ) {
+        VLerror( "explicit in-line parameter passing syntax found in block that is specified to not allow Verilog-2001 syntax." );
+      }
       free_safe( $2 );
     }
   | '.' UNUSED_IDENTIFIER '(' ')'
@@ -4202,11 +4385,17 @@ gate_instance
   | IDENTIFIER range ignore_more '(' expression_list ')' ignore_less
     {
       str_link* tmp;
-      tmp        = (str_link*)malloc_safe( sizeof( str_link ), __FILE__, __LINE__ );
-      tmp->str   = $1;
-      tmp->range = curr_range;
-      tmp->next  = NULL;
-      $$ = tmp;
+      if( !parser_check_generation( GENERATION_2001 ) ) {
+        VLerror( "arrayed instantiation syntax found in block that is specified to not allow Verilog-2001 syntax." );
+        free_safe( $1 );
+        $$ = NULL;
+      } else {
+        tmp        = (str_link*)malloc_safe( sizeof( str_link ), __FILE__, __LINE__ );
+        tmp->str   = $1;
+        tmp->range = curr_range;
+        tmp->next  = NULL;
+        $$ = tmp;
+      }
     }
   | UNUSED_IDENTIFIER range ignore_more '(' expression_list ')' ignore_less
     {
@@ -4229,11 +4418,17 @@ gate_instance
   | IDENTIFIER range ignore_more '(' port_name_list ')' ignore_less
     {
       str_link* tmp;
-      tmp        = (str_link*)malloc_safe( sizeof( str_link ), __FILE__, __LINE__ );
-      tmp->str   = $1;
-      tmp->range = curr_range;
-      tmp->next  = NULL;
-      $$ = tmp;
+      if( !parser_check_generation( GENERATION_2001 ) ) {
+        VLerror( "arrayed instantiation syntax found in block that is specified to not allow Verilog-2001 syntax." );
+        free_safe( $1 );
+        $$ = NULL;
+      } else {
+        tmp        = (str_link*)malloc_safe( sizeof( str_link ), __FILE__, __LINE__ );
+        tmp->str   = $1;
+        tmp->range = curr_range;
+        tmp->next  = NULL;
+        $$ = tmp;
+      }
     }
   | UNUSED_IDENTIFIER range ignore_more '(' port_name_list ')' ignore_less
     {

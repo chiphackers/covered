@@ -50,9 +50,6 @@ extern int        ignore_mode;
 extern int        attr_mode;
 extern char       user_msg[USER_MSG_LENGTH];
 extern char*      ppfilename;
-extern int        flag_global_generation;
-extern str_link*  gen_mod_head;
-extern str_link*  gen_mod_tail;
 extern str_link*  modlist_head;
 extern str_link*  modlist_tail;
 extern func_unit* curr_funit;
@@ -307,14 +304,10 @@ WSPACE [ \t\b\f]+
 [a-zA-Z_][a-zA-Z0-9$_]*(\[[0-9]+\]\.[a-zA-Z_][a-zA-Z0-9$_]*)* {
      str_link* foundmod;
      int       rc   = lexer_keyword_1995_code( yytext, yyleng );
-     str_link* strl = (curr_funit != NULL) ? str_link_find( curr_funit->name, gen_mod_head ) : NULL;
-     if( (((flag_global_generation >= GENERATION_2001) && (strl == NULL)) ||
-          ((strl != NULL) && (strl->suppl >= GENERATION_2001))) &&
-         (rc == IDENTIFIER) ) {
+     if( (rc == IDENTIFIER) && parser_check_generation( GENERATION_2001 ) ) {
        rc = lexer_keyword_2001_code( yytext, yyleng );
      }
-     if( (((flag_global_generation >= GENERATION_SV) && (strl == NULL)) ||
-          ((strl != NULL) && (strl->suppl >= GENERATION_SV))) && (rc == IDENTIFIER) ) {
+     if( (rc == IDENTIFIER) && parser_check_generation( GENERATION_SV ) ) {
        rc = lexer_keyword_sv_code( yytext, yyleng );
      }
      yylloc.first_column = yylloc.last_column;
