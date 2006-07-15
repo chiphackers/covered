@@ -15,7 +15,7 @@
 */
 
 /*
- Command-line: gperf -o -i 1 -C -k 1-3,$ -L C -H keyword_hash -N check_identifier -tT keywords.gperf
+ Command-line: gperf -o -i 1 -C -k 1-3,$ -L C -H keyword_hash_1995 -N check_identifier_1995 -tT keywords_1995.gperf
  */
 
 #include <string.h>
@@ -47,7 +47,6 @@ else,           K_else
 end,            K_end
 endcase,        K_endcase
 endfunction,    K_endfunction
-endgenerate,    K_endgenerate
 endmodule,      K_endmodule
 endprimitive,   K_endprimitive
 endspecify,     K_endspecify
@@ -59,8 +58,6 @@ force,          K_force
 forever,        K_forever
 fork,           K_fork
 function,       K_function
-generate,       K_generate
-genvar,         K_genvar
 highz0,         K_highz0
 highz1,         K_highz1
 if,             K_if
@@ -70,7 +67,6 @@ input,          K_input
 integer,        K_integer
 join,           K_join
 large,          K_large
-localparam,     K_localparam
 macromodule,    K_macromodule
 medium,         K_medium
 module,         K_module
@@ -135,9 +131,9 @@ xnor,           K_xnor
 xor,            K_xor
 %%
 
-int lexer_keyword_code( const char* str, int length ) {
+int lexer_keyword_1995_code( const char* str, int length ) {
 
-  const struct keyword* rc   = check_identifier(str, length);
+  const struct keyword* rc   = check_identifier_1995(str, length);
   int                   type = IDENTIFIER;
 
   if( rc != 0 ) {

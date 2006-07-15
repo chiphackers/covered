@@ -459,7 +459,7 @@ bool db_read( char* file, int read_mode ) {
 
 #ifdef DEBUG_MODE
   /* Display the instance tree, if we are debugging */
-  if( debug_mode ) {
+  if( debug_mode && retval ) {
     instance_display_tree( instance_root );
   }
 #endif
@@ -1727,6 +1727,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.188  2006/07/14 18:53:32  phase1geo
+ Fixing -g option for keywords.  This seems to be working and I believe that
+ regressions are passing here as well.
+
  Revision 1.187  2006/07/13 21:03:44  phase1geo
  Fixing bug in db_read function to set curr_funit to the correct structure
  when merging functional units.  Updated regressions per this fix.

@@ -1,0 +1,47 @@
+%{
+/*
+ Copyright (c) 2006 Trevor Williams
+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by the Free Software
+ Foundation; either version 2 of the License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ See the GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License along with this program;
+ if not, write to the Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
+
+/*
+ Command-line: gperf -o -i 1 -C -k 1-3,$ -L C -H keyword_hash_sv -N check_identifier_sv -tT keywords_sv.gperf
+ */
+
+#include <string.h>
+#include "keywords.h"
+#include "defines.h"
+#include "vsignal.h"
+#include "parser.h"
+
+%}
+struct keyword { char *name; int type; };
+%%
+bool,         K_bool
+logic,        K_logic
+unique,       K_unique
+%%
+
+int lexer_keyword_sv_code( const char* str, int length ) {
+
+  const struct keyword* rc   = check_identifier_sv(str, length);
+  int                   type = IDENTIFIER;
+
+  if( rc != 0 ) {
+    type = rc->type;
+  }
+
+  return( type );
+
+}
+

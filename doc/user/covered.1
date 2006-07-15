@@ -1,4 +1,4 @@
-.TH "Covered" "1" "covered-20060708" "Trevor Williams" "Code Analysis"
+.TH "Covered" "1" "covered-20060805" "Trevor Williams" "Code Analysis"
 .SH "NAME"
 .LP 
 Covered \- Verilog Code Coverage Analyzer
@@ -6,7 +6,7 @@ Covered \- Verilog Code Coverage Analyzer
 .LP 
 \fBcovered\fR [<options>] score [<options>]
 .br 
-\fBcovered\fR [<options>] merge [<options>] <existing_database> <database_to_merge>
+\fBcovered\fR [<options>] merge [<options>] <existing_database> <database_to_merge>+
 .br 
 \fBcovered\fR [<options>] report [<options>] <database_file>
 .SH "DESCRIPTION"
@@ -68,6 +68,9 @@ Indicates to the parser where to find the FSM located in module \fImodule_name\f
 .TP 
 \fB\-f\fR \fIfilename\fR
 Name of file containing additional arguments to parse.
+.TP 
+\fB\-g\fR \fI(module_name=)[1|2|3]\fR
+Allows the user to limit the parser to a specific generation of the Verilog standard for a specific module or the entire design, where 1=Verilog\-1995, 2=Verilog\-2001, 3=SystemVerilog.  If \fImodule_name=\fR is specified, the parser uses the specified Verilog standard for that module only, allowing the rest of the design to use the global standard.  By default, the global standard is set to the most recent version (3).  This option can be specified more than once for a given call to the score command; however, if the \-g option specifies more than global value (i.e., without the \fImodule=\fR prefix), only the last option value will be used.
 .TP 
 \fB\-h\fR
 Displays this help information.
@@ -176,8 +179,6 @@ There are two plusargs that can be passed to the generated executable when it is
 .SH "AUTHORS"
 .LP 
 Trevor Williams <trevorw@charter.net>
-.LP 
-Arpan Sen <arpan_sen@yahoo.com>
 .SH "SEE ALSO"
 .LP 
 For more information on how to use the Covered code coverage tool, please consult the on\-line User's Guide at http://covered.sourceforge.net/user/index.html.

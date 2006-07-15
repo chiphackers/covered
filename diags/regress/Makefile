@@ -62,7 +62,7 @@ DIAGS1        = add1            always1         always2         always3         
                 multi_exp1.2    multi_exp1.3    multi_exp1.4    multi_exp1.5    multi_exp1.6 \
                 multi_exp1.7    multi_exp1.8    multi_exp1.9    multi_exp1.10   multi_exp1.11 \
                 multi_exp1.12   multi_exp1.13   multi_exp1.14   multi_exp1.15   multi_exp2 \
-                multi_exp2.1    multi_exp3      named_block1    nested_block1   nested_block2 \
+                multi_exp2.1    multi_exp3      named_block1    named_block2    nested_block1   nested_block2 \
                 nested_block2.1 nested_block3   ovl1            ovl1.1          ovl1.2 \
                 ovl1.3          param1          param1.1        param1.2        param1.3 \
                 param3          param3.1        param3.2        param3.3        param3.4 \
@@ -70,7 +70,8 @@ DIAGS1        = add1            always1         always2         always3         
                 param6.1        param7          param8          param8.1        param9 \
                 param9.1        param9.2        param10         param10.1       param10.2 \
                 param10.3       param10.4       param10.5       param11         param13 \
-                param13.1       param14         port1           port2           pulldown1       pullup1 \
+                param13.1       param14         port1           port2           port3 \
+                pulldown1       pullup1 \
                 rassign1        real1           repeat1         repeat2         sbit_sel1 \
                 sbit_sel1.1     signed1         signed3         signed3.1       signed3.2 \
                 signed3.3       signed3.4       signed3.5       signed3.6       slist1 \
@@ -96,6 +97,9 @@ ERRSCORE      = err1.0          err2.0          func3           func3.1         
                 func4.6         task5
 ERRMERGE      =
 ERRREPORT     = err2.1
+
+GENLIST       = gen1            gen1.1
+GENERRLIST    = gen1.2
            
 IVONLYDIAGS1  = always5.1       assign1         assign2.8       example         fsm1 \
                 fsm1.1          fsm1.2          fsm1.3          fsm1.4          fsm6 \
@@ -126,7 +130,7 @@ endif
 
 iverilog:
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q VERILOG=$(IVERILOG) VERILOG_FLAGS="$(IVERILOG_FLAGS1)" VERILOG_CMD="vvp $(IVERILOG_EXEC) $(DUMP_FMT)" VERILOG_EXEC=$(IVERILOG_EXEC) DIAGLIST="$(DIAGS1) $(IVONLYDIAGS1)" MERGELIST="$(MERGE1)" MERGE3LIST="$(MERGE3)" ERRSCORELIST="$(ERRSCORE)" ERRMERGELIST="$(ERRMERGE)" ERRREPORTLIST="$(ERRREPORT)" RACELIST="$(RACELIST)" regress
+	$(MAKE) COVERED_GFLAG=-Q VERILOG=$(IVERILOG) VERILOG_FLAGS="$(IVERILOG_FLAGS1)" VERILOG_CMD="vvp $(IVERILOG_EXEC) $(DUMP_FMT)" VERILOG_EXEC=$(IVERILOG_EXEC) DIAGLIST="$(DIAGS1) $(IVONLYDIAGS1)" MERGELIST="$(MERGE1)" MERGE3LIST="$(MERGE3)" ERRSCORELIST="$(ERRSCORE)" ERRMERGELIST="$(ERRMERGE)" ERRREPORTLIST="$(ERRREPORT)" RACELIST="$(RACELIST)" GENLIST="$(GENLIST)" GENERRLIST="$(GENERRLIST)" regress
 	@cd ../verilog; \
 	$(MAKE) COVERED_GFLAG=-Q VERILOG=$(IVERILOG) VERILOG_FLAGS="$(IVERILOG_FLAGS2)" VERILOG_CMD="vvp $(IVERILOG_EXEC) $(DUMP_FMT)" VERILOG_EXEC=$(IVERILOG_EXEC) DIAGLIST="$(DIAGS2) $(IVONLYDIAGS2)" regress
 	@cd ../verilog; \

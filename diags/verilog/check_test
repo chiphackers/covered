@@ -115,7 +115,7 @@ if( ($mode == 3) || ($mode == 4) ) {
     print RPT_FAILED "${test}\n";
     $failed++;
   } else {
-    if( ($mode == 0) || ($mode == 5) ) {
+    if( ($mode == 0) || ($mode == 1) || ($mode == 5) ) {
       print "  Checking output results         -- PASSED\n";
     }
     $passed++;

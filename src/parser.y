@@ -70,11 +70,6 @@ int  param_mode  = 0;
 int  attr_mode   = 0;
 
 /*!
- If set to a value > 0, specifies that we are parsing a port
-*/
-int  port_mode   = 0;
-
-/*!
  If set to a value > 0, specifies that we are parsing a generate block
 */
 int  generate_mode = 0;
@@ -247,9 +242,9 @@ int yydebug = 1;
 %token KK_attribute
 
 %type <integer>   net_type net_type_opt var_type
-%type <statexp>   static_expr static_expr_primary static_expr_list
+%type <statexp>   static_expr static_expr_primary static_expr_port_list
 %type <text>      identifier
-%type <expr>      expr_primary expression_list expression
+%type <expr>      expr_primary expression_list expression expression_port_list
 %type <expr>      lavalue lpvalue
 %type <expr>      event_control event_expression_list event_expression
 %type <text>      udp_port_list
@@ -528,15 +523,13 @@ port_reference_list
   | port_reference_list ',' port_reference
   ;
 		
-static_expr_list
-  : static_expr_list ',' static_expr
+static_expr_port_list
+  : static_expr_port_list ',' static_expr
     {
       static_expr* tmp = $3;
       if( ignore_mode == 0 ) {
         if( $3 != NULL ) {
-          if( port_mode > 0 ) {
-            tmp = static_expr_gen_unary( $3, EXP_OP_PASSIGN, @3.first_line, @3.first_column, (@3.last_column - 1) );
-          }
+          tmp = static_expr_gen_unary( $3, EXP_OP_PASSIGN, @3.first_line, @3.first_column, (@3.last_column - 1) );
           tmp = static_expr_gen( tmp, $1, EXP_OP_LIST, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
           $$ = tmp;
         } else {
@@ -551,9 +544,7 @@ static_expr_list
       static_expr* tmp = $1;
       if( ignore_mode == 0 ) {
         if( $1 != NULL ) {
-          if( port_mode > 0 ) {
-            tmp = static_expr_gen_unary( $1, EXP_OP_PASSIGN, @1.first_line, @1.first_column, (@1.last_column - 1) );
-          }
+          tmp = static_expr_gen_unary( $1, EXP_OP_PASSIGN, @1.first_line, @1.first_column, (@1.last_column - 1) );
         }
         $$ = tmp;
       } else {
@@ -799,20 +790,20 @@ static_expr_primary
     {
       $$ = $2;
     }
-  | IDENTIFIER '(' { port_mode++; } static_expr_list { port_mode--; } ')'
+  | IDENTIFIER '(' static_expr_port_list ')'
     {
       static_expr* tmp;
       if( ignore_mode == 0 ) {
-        tmp = static_expr_gen( NULL, $4, EXP_OP_FUNC_CALL, @1.first_line, @1.first_column, (@6.last_column - 1), $1 );
+        tmp = static_expr_gen( NULL, $3, EXP_OP_FUNC_CALL, @1.first_line, @1.first_column, (@4.last_column - 1), $1 );
         $$  = tmp;
       } else {
         $$ = NULL;
       }
       free_safe( $1 );
     }
-  | UNUSED_IDENTIFIER '(' { port_mode++; } static_expr_list { port_mode--; } ')'
+  | UNUSED_IDENTIFIER '(' static_expr_port_list ')'
     {
-      static_expr_dealloc( $4, TRUE );
+      static_expr_dealloc( $3, TRUE );
     }
   ;
 
@@ -1447,22 +1438,22 @@ expr_primary
         $$ = NULL;
       }
     }
-  | identifier '(' { port_mode++; } expression_list { port_mode--; } ')'
+  | identifier '(' expression_port_list ')'
     {
       expression* tmp;
-      if( (ignore_mode == 0) && ($1 != NULL) && ($4 != NULL ) ) {
-        tmp = db_create_expression( NULL, $4, EXP_OP_FUNC_CALL, lhs_mode, @1.first_line, @1.first_column, (@6.last_column - 1), $1 );
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL ) ) {
+        tmp = db_create_expression( NULL, $3, EXP_OP_FUNC_CALL, lhs_mode, @1.first_line, @1.first_column, (@4.last_column - 1), $1 );
         $$  = tmp;
         free_safe( $1 );
       } else {
         if( $1 != NULL ) {
           free_safe( $1 );
         }
-        expression_dealloc( $4, FALSE );
+        expression_dealloc( $3, FALSE );
         $$ = NULL;
       }
     }
-  | SYSTEM_IDENTIFIER '(' ignore_more expression_list ignore_less ')'
+  | SYSTEM_IDENTIFIER '(' ignore_more expression_port_list ignore_less ')'
     {
       if( (ignore_mode == 0) && ($1 != NULL) ) {
         if( strncmp( $1, "$display", 8 ) == 0 ) {
@@ -1478,7 +1469,7 @@ expr_primary
         $$ = NULL;
       }
     }
-  | UNUSED_SYSTEM_IDENTIFIER '(' expression_list ')'
+  | UNUSED_SYSTEM_IDENTIFIER '(' expression_port_list ')'
     {
       $$ = NULL;
     }
@@ -1515,7 +1506,7 @@ expr_primary
     }
   ;
 
-  /* Expression lists are used in function/task calls, concatenations, and parameter overrides */
+  /* Expression lists are used in concatenations and parameter overrides */
 expression_list
   : expression_list ',' expression
     {
@@ -1525,9 +1516,6 @@ expression_list
       if( ignore_mode == 0 ) {
         if( param_mode == 0 ) {
           if( $3 != NULL ) {
-            if( port_mode > 0 ) {
-              exp = db_create_expression( $3, NULL, EXP_OP_PASSIGN, 0, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
-            }
             tmp = db_create_expression( exp, $1, EXP_OP_LIST, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
             $$ = tmp;
           } else {
@@ -1558,9 +1546,6 @@ expression_list
       param_oride* po;
       if( ignore_mode == 0 ) {
         if( param_mode == 0 ) {
-          if( port_mode > 0 ) {
-            exp = db_create_expression( $1, NULL, EXP_OP_PASSIGN, 0, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-          }
           $$ = exp;
         } else {
           if( $1 != NULL ) {
@@ -1614,6 +1599,35 @@ expression_list
         }
       }
       $$ = $1;
+    }
+  ;
+
+  /* Expression port lists are used in function/task calls */
+expression_port_list
+  : expression_port_list ',' expression
+    {
+      expression*  tmp;
+      if( ignore_mode == 0 ) {
+        if( $3 != NULL ) {
+          tmp = db_create_expression( $3, NULL, EXP_OP_PASSIGN, 0, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
+          tmp = db_create_expression( tmp, $1, EXP_OP_LIST, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+          $$ = tmp;
+        } else {
+          $$ = $1;
+        }
+      } else {
+        $$ = NULL;
+      }
+    }
+  | expression
+    {
+      expression* exp = $1;
+      if( ignore_mode == 0 ) {
+        exp = db_create_expression( $1, NULL, EXP_OP_PASSIGN, 0, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+        $$ = exp;
+      } else {
+        $$ = NULL;
+      }
     }
   ;
 
@@ -2205,7 +2219,9 @@ statement
         free_safe( $4 );
         $$ = stmt;
       } else {
-        ignore_mode--;
+        if( ignore_mode > 0 ) {
+          ignore_mode--;
+        }
         $$ = NULL;
       }
     }
@@ -2793,7 +2809,7 @@ statement
         $$ = NULL;
       }
     }
-  | SYSTEM_IDENTIFIER { ignore_mode++; } '(' expression_list ')' ';' { ignore_mode--; }
+  | SYSTEM_IDENTIFIER { ignore_mode++; } '(' expression_port_list ')' ';' { ignore_mode--; }
     {
       expression* exp;
       statement*  stmt;
@@ -2814,7 +2830,7 @@ statement
         $$ = NULL;
       }
     }
-  | UNUSED_SYSTEM_IDENTIFIER '(' expression_list ')' ';'
+  | UNUSED_SYSTEM_IDENTIFIER '(' expression_port_list ')' ';'
     {
       $$ = NULL;
     }
@@ -2843,12 +2859,12 @@ statement
     {
       $$ = NULL;
     }
-  | identifier '(' { port_mode++; } expression_list { port_mode--; } ')' ';'
+  | identifier '(' expression_port_list ')' ';'
     {
       expression* exp;
       statement*  stmt;
-      if( (ignore_mode == 0) && ($1 != NULL) && ($4 != NULL) ) {
-        exp  = db_create_expression( NULL, $4, EXP_OP_TASK_CALL, FALSE, @1.first_line, @1.first_column, (@7.last_column - 1), $1 );
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
+        exp  = db_create_expression( NULL, $3, EXP_OP_TASK_CALL, FALSE, @1.first_line, @1.first_column, (@5.last_column - 1), $1 );
         stmt = db_create_statement( exp );
         db_add_expression( exp );
         $$   = stmt;
@@ -2979,14 +2995,15 @@ named_begin_end_block
     {
       $$ = NULL;
     }
-  | IDENTIFIER K_end 
+  | IDENTIFIER
     {
       if( $1 != NULL ) {
         free_safe( $1 );
       }
+      ignore_mode++;
       $$ = NULL;
     }
-  | UNUSED_IDENTIFIER K_end
+  | UNUSED_IDENTIFIER
     {
       $$ = NULL;
     }

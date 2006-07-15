@@ -65,7 +65,7 @@ LOGFILE = regress.log
 
 .PHONY:	view_vg_errs check-ovl
 
-regress:	$(COVERED) $(DIAGLIST) $(RACELIST) $(MERGELIST) $(MERGE3LIST) $(ERRSCORELIST) $(ERRMERGELIST)
+regress:	$(COVERED) $(DIAGLIST) $(RACELIST) $(MERGELIST) $(MERGE3LIST) $(ERRSCORELIST) $(ERRMERGELIST) $(GENLIST) $(GENERRLIST)
 
 check-ovl:
 	@if test ! -h ovl; then \
@@ -280,7 +280,33 @@ $(ERRREPORTLIST):
 		$(COVERED) $(COVERED_GFLAG) report -d v $@.cdd 2> $@.err; \
 		rm -f $@.cfg; \
 		cat $@.err; \
-		./check_test $@ 1 1 || \
+		./check_test $@ 1 1; \
+	else \
+		echo Skipping $@; \
+		./check_test $@ 1 2; \
+	fi
+
+$(GENLIST):
+	@if test ! -f $@.done; then \
+		echo Running $@; \
+		$(CFG_COPY_CMD) ../regress/$@.cfg > $@.cfg; \
+		$(COVERED) $(COVERED_GFLAG) score -f $@.cfg 2> $@.err; \
+		rm -f $@.cfg; \
+		cat $@.err; \
+		./check_test $@ 1 1; \
+	else \
+		echo Skipping $@; \
+		./check_test $@ 1 2; \
+	fi
+
+$(GENERRLIST):
+	@if test ! -f $@.done; then \
+		echo Running $@ -- should see an error message; \
+		$(CFG_COPY_CMD) ../regress/$@.cfg > $@.cfg; \
+		$(COVERED) $(COVERED_GFLAG) score -f $@.cfg 2> $@.err; \
+		rm -f $@.cfg; \
+		cat $@.err; \
+		./check_test $@ 1 1; \
 	else \
 		echo Skipping $@; \
 		./check_test $@ 1 2; \

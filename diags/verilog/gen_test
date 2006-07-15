@@ -8,12 +8,13 @@
 #
 #	Purpose:	Generates templated diagnostic and configuration file for new diagnostic.
 #
-#	Usage:		gen_test <diagnostic_name>
+#	Usage:		gen_test <diagnostic_name> (<type>)
 
 $diag = $ARGV[0];
+$type = $ARGV[1];
 
 if( $diag eq "" ) {
-  print "Usage:  gen_test <diagnostic_name>\n";
+  print "Usage:  gen_test <diagnostic_name> (<type>)\n";
   exit( 1 );
 }
 
@@ -28,17 +29,27 @@ print "Generating test ${diag}...\n";
 open( DIAG, ">${diag}.v" ) || die "Can't open ${diag}: $!\n";
 print DIAG "module main;\n";
 print DIAG "\n";
-print DIAG "initial begin\n";
-print DIAG "        \$dumpfile( \"${diag}.vcd\" );\n";
-print DIAG "        \$dumpvars( 0, main );\n";
-print DIAG "        #10;\n";
-print DIAG "        \$finish;\n";
-print DIAG "end\n";
-print DIAG "\n";
+
+if( $type ne "gen" ) {
+  print DIAG "initial begin\n";
+  print DIAG "        \$dumpfile( \"${diag}.vcd\" );\n";
+  print DIAG "        \$dumpvars( 0, main );\n";
+  print DIAG "        #10;\n";
+  print DIAG "        \$finish;\n";
+  print DIAG "end\n";
+  print DIAG "\n";
+}
+
 print DIAG "endmodule\n";
 close( DIAG );
 
 # Generate configuration file
 open( CONF, ">../regress/${diag}.cfg" ) || die "Can't open ${diag}.cfg: $!\n";
-print CONF "-t main -vcd ${diag}.vcd -o ${diag}.cdd -v ${diag}.v\n";
+
+if( $type eq "gen" ) {
+  print CONF "-t main -o ${diag}.cdd -v ${diag}.v -g 1\n";
+} else {
+  print CONF "-t main -vcd ${diag}.vcd -o ${diag}.cdd -v ${diag}.v\n";
+}
+
 close( CONF );
