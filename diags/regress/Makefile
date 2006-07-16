@@ -98,8 +98,15 @@ ERRSCORE      = err1.0          err2.0          func3           func3.1         
 ERRMERGE      =
 ERRREPORT     = err2.1
 
-GENLIST       = gen1            gen1.1
-GENERRLIST    = gen1.2
+GENLIST       = gen1            gen1.1          gen1.3          gen2.1          gen3.1 \
+                gen4.1          gen5.1          gen6.1          gen7.1          gen8.1 \
+                gen9.1          gen10.1         gen11.1         gen12.1         gen13.1 \
+                gen14.1         gen15.1         gen16.1         gen17.1         gen18.1
+
+GENERRLIST    = gen1.2          gen1.4          gen1.5          gen2            gen3 \
+                gen4            gen5            gen6            gen7            gen8 \
+                gen9            gen10           gen11           gen12           gen13 \
+                gen14           gen15           gen16           gen17           gen18
            
 IVONLYDIAGS1  = always5.1       assign1         assign2.8       example         fsm1 \
                 fsm1.1          fsm1.2          fsm1.3          fsm1.4          fsm6 \

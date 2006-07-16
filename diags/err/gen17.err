@@ -1,0 +1,2 @@
+ERROR!  Explicit in-line parameter passing syntax found in block that is specified to not allow Verilog-2001 syntax,   file: gen17.v, line: 3, col: 12
+ERROR!  Error in parsing design

@@ -292,7 +292,7 @@ attribute_list_opt
   : K_PSTAR
     {
       if( (ignore_mode == 0) && !parser_check_generation( GENERATION_2001 ) ) {
-        VLerror( "attribute syntax found in block that is specified to not allow Verilog-2001 syntax." );
+        VLerror( "Attribute syntax found in block that is specified to not allow Verilog-2001 syntax" );
         ignore_mode++;
       }
     }
@@ -307,7 +307,7 @@ attribute_list_opt
   | K_PSTAR
     {
       if( (ignore_mode == 0) && !parser_check_generation( GENERATION_2001 ) ) {
-        VLerror( "attribute syntax found in block that is specified to not allow Verilog-2001 syntax." );
+        VLerror( "Attribute syntax found in block that is specified to not allow Verilog-2001 syntax" );
       }
     }
     K_STARP
@@ -344,6 +344,10 @@ attribute
       }
       free_safe( $1 );
     }
+  | UNUSED_IDENTIFIER
+    {
+      $$ = NULL;
+    }
   | IDENTIFIER '=' {attr_mode++;} expression {attr_mode--;}
     {
       attr_param* ap;
@@ -354,6 +358,10 @@ attribute
         $$ = NULL;
       }
       free_safe( $1 );
+    }
+  | UNUSED_IDENTIFIER '=' expression
+    {
+      $$ = NULL;
     }
   ;
 
@@ -393,7 +401,7 @@ module_parameter_port_list_opt
   : '#'
     {
       if( !parser_check_generation( GENERATION_2001 ) ) {
-        VLerror( "pre-module parameter declaration syntax found in block that is specified to not allow Verilog-2001 syntax." );
+        VLerror( "Pre-module parameter declaration syntax found in block that is specified to not allow Verilog-2001 syntax" );
         ignore_mode++;
       }
     }
@@ -457,7 +465,7 @@ port_declaration
     {
       port_info* pi;
       if( !parser_check_generation( GENERATION_2001 ) ) {
-        VLerror( "inline port declaration syntax found in block that is specified to not allow Verilog-2001 syntax." );
+        VLerror( "Inline port declaration syntax found in block that is specified to not allow Verilog-2001 syntax" );
         free_safe( $6 );
         $$ = NULL;
       } else {
@@ -478,7 +486,7 @@ port_declaration
     {
       port_info* pi;
       if( !parser_check_generation( GENERATION_2001 ) ) {
-        VLerror( "inline port declaration syntax found in block that is specified to not allow Verilog-2001 syntax." );
+        VLerror( "Inline port declaration syntax found in block that is specified to not allow Verilog-2001 syntax" );
         free_safe( $6 );
         $$ = NULL;
       } else {
@@ -500,7 +508,7 @@ port_declaration
     {
       port_info* pi;
       if( !parser_check_generation( GENERATION_2001 ) ) {
-        VLerror( "inline port declaration syntax found in block that is specified to not allow Verilog-2001 syntax." );
+        VLerror( "Inline port declaration syntax found in block that is specified to not allow Verilog-2001 syntax" );
         free_safe( $6 );
         $$ = NULL;
       } else {
@@ -520,7 +528,7 @@ port_declaration
   | attribute_list_opt port_type net_type_opt signed_opt range_opt error
     {
       if( !parser_check_generation( GENERATION_2001 ) ) {
-        VLerror( "inline port declaration syntax found in block that is specified to not allow Verilog-2001 syntax." );
+        VLerror( "Inline port declaration syntax found in block that is specified to not allow Verilog-2001 syntax" );
       } else if( ignore_mode == 0 ) {
         VLerror( "Invalid variable list in port declaration" );
       }
@@ -529,7 +537,7 @@ port_declaration
   | attribute_list_opt K_output var_type signed_opt range_opt error
     {
       if( !parser_check_generation( GENERATION_2001 ) ) {
-        VLerror( "inline port declaration syntax found in block that is specified to not allow Verilog-2001 syntax." );
+        VLerror( "Inline port declaration syntax found in block that is specified to not allow Verilog-2001 syntax" );
       } else if( ignore_mode == 0 ) {
         VLerror( "Invalid variable list in port declaration" );
       }
@@ -735,7 +743,7 @@ static_expr
     {
       static_expr* tmp;
       if( !parser_check_generation( GENERATION_2001 ) ) {
-        VLerror( "Exponential power operation found in block that is specified to not allow Verilog-2001 syntax." );
+        VLerror( "Exponential power operation found in block that is specified to not allow Verilog-2001 syntax" );
         static_expr_dealloc( $1, TRUE );
         static_expr_dealloc( $4, TRUE );
         $$ = NULL;
@@ -1120,7 +1128,7 @@ expression
     {
       expression* tmp;
       if( !parser_check_generation( GENERATION_2001 ) ) {
-        VLerror( "Exponential power operator found in block that is specified to not allow Verilog-2001 syntax." );
+        VLerror( "Exponential power operator found in block that is specified to not allow Verilog-2001 syntax" );
         expression_dealloc( $1, FALSE );
         expression_dealloc( $4, FALSE );
         $$ = NULL;
@@ -1235,7 +1243,7 @@ expression
     {
       expression* tmp;
       if( !parser_check_generation( GENERATION_2001 ) ) {
-        VLerror( "arithmetic left shift operation found in block that is specified to not allow Verilog-2001 syntax." );
+        VLerror( "Arithmetic left shift operation found in block that is specified to not allow Verilog-2001 syntax" );
         expression_dealloc( $1, FALSE );
         expression_dealloc( $3, FALSE );
         $$ = NULL;
@@ -1266,7 +1274,7 @@ expression
     {
       expression* tmp;
       if( !parser_check_generation( GENERATION_2001 ) ) {
-        VLerror( "arithmetic right shift operation found in block that is specified to not allow Verilog-2001 syntax." );
+        VLerror( "Arithmetic right shift operation found in block that is specified to not allow Verilog-2001 syntax" );
         expression_dealloc( $1, FALSE );
         expression_dealloc( $3, FALSE );
         $$ = NULL;
@@ -1491,7 +1499,7 @@ expr_primary
     {
       expression* tmp;
       if( !parser_check_generation( GENERATION_2001 ) ) {
-        VLerror( "indexed vector part select found in block that is specified to not allow Verilog-2001 syntax." );
+        VLerror( "Indexed vector part select found in block that is specified to not allow Verilog-2001 syntax" );
         free_safe( $1 );
         expression_dealloc( $3, FALSE );
         static_expr_dealloc( $5, FALSE );
@@ -1523,7 +1531,7 @@ expr_primary
     {
       expression* tmp;
       if( !parser_check_generation( GENERATION_2001 ) ) {
-        VLerror( "indexed vector part select found in block that is specified to not allow Verilog-2001 syntax." );
+        VLerror( "Indexed vector part select found in block that is specified to not allow Verilog-2001 syntax" );
         free_safe( $1 );
         expression_dealloc( $3, FALSE );
         static_expr_dealloc( $5, FALSE );
@@ -2016,12 +2024,34 @@ module_item
   | attribute_list_opt port_type net_type range_opt
     {
       if( !parser_check_generation( GENERATION_2001 ) ) {
-        VLerror( "ANSI-C port declaration used in a block that is specified to not allow Verilog-2001 syntax." );
+        VLerror( "ANSI-C port declaration used in a block that is specified to not allow Verilog-2001 syntax" );
         ignore_mode++;
       } else {
         curr_mba     = FALSE;
         curr_signed  = FALSE;
         curr_handled = TRUE;
+        if( generate_mode > 0 ) {
+          ignore_mode++;
+          VLerror( "Port declaration not allowed within a generate block" );
+        }
+      }
+    }
+    list_of_variables
+    {
+      if( !parser_check_generation( GENERATION_2001 ) || (generate_mode > 0) ) {
+        ignore_mode--;
+      }
+    } ';'
+  | attribute_list_opt K_output var_type range_opt
+    {
+      if( !parser_check_generation( GENERATION_2001 ) ) {
+        VLerror( "ANSI-C port declaration used in a block that is specified to not allow Verilog-2001 syntax" );
+        ignore_mode++;
+      } else {
+        curr_mba      = FALSE;
+        curr_signed   = FALSE;
+        curr_handled  = TRUE;
+        curr_sig_type = SSUPPL_TYPE_OUTPUT;
         if( generate_mode > 0 ) {
           ignore_mode++;
           VLerror( "Port declaration not allowed within a generate block" );
@@ -2228,7 +2258,7 @@ module_item
   | K_generate
     {
       if( !parser_check_generation( GENERATION_2001 ) ) {
-        VLerror( "generate syntax found in block that is specified to not allow Verilog-2001 syntax." );
+        VLerror( "Generate syntax found in block that is specified to not allow Verilog-2001 syntax" );
         ignore_mode++;
       } else {
         if( generate_mode == 0 ) {
@@ -2239,11 +2269,9 @@ module_item
       }
     }
     generate_item_list_opt
-    {
-      generate_mode = 0;
-    }
     K_endgenerate
     {
+      generate_mode = 0;
       if( !parser_check_generation( GENERATION_2001 ) ) {
         ignore_mode--;
       }
@@ -2251,7 +2279,7 @@ module_item
   | K_genvar
     {
       if( !parser_check_generation( GENERATION_2001 ) ) {
-        VLerror( "genvar syntax found in block that is specified to not allow Verilog-2001 syntax." );
+        VLerror( "Genvar syntax found in block that is specified to not allow Verilog-2001 syntax" );
         ignore_mode++;
       } else {
         curr_signed   = FALSE;
@@ -2800,7 +2828,7 @@ statement
       expression* expr;
       statement*  stmt;
       if( !parser_check_generation( GENERATION_2001 ) ) {
-        VLerror( "wildcard combinational logic sensitivity list found in block that is specified to not allow Verilog-2001 syntax." );
+        VLerror( "Wildcard combinational logic sensitivity list found in block that is specified to not allow Verilog-2001 syntax" );
         db_remove_statement( $4 );
         $$ = NULL;
       } else {
@@ -3384,7 +3412,7 @@ block_item_decl
   | attribute_list_opt K_localparam
     {
       if( !parser_check_generation( GENERATION_2001 ) ) {
-        VLerror( "localparam syntax found in block that is specified to not allow Verilog-2001 syntax." );
+        VLerror( "Localparam syntax found in block that is specified to not allow Verilog-2001 syntax" );
         ignore_mode++;
       }
     }
@@ -3405,7 +3433,7 @@ block_item_decl
   | attribute_list_opt K_localparam
     {
       if( !parser_check_generation( GENERATION_2001 ) ) {
-        VLerror( "localparam syntax found in block that is specified to not allow Verilog-2001 syntax." );
+        VLerror( "Localparam syntax found in block that is specified to not allow Verilog-2001 syntax" );
       }
     }
     error ';'
@@ -3811,7 +3839,7 @@ register_variable
       expression* exp;
       statement*  stmt;
       if( !parser_check_generation( GENERATION_2001 ) ) {
-        VLerror( "register declaration with initialization found in block that is specified to not allow Verilog-2001 syntax." );
+        VLerror( "Register declaration with initialization found in block that is specified to not allow Verilog-2001 syntax" );
         free_safe( $1 );
         expression_dealloc( $3, FALSE );
       } else {
@@ -4188,7 +4216,7 @@ event_expression_list
     {
       expression* tmp;
       if( !parser_check_generation( GENERATION_2001 ) ) {
-        VLerror( "comma-separated combinational logic sensitivity list found in block that is specified to not allow Verilog-2001 syntax." );
+        VLerror( "Comma-separated combinational logic sensitivity list found in block that is specified to not allow Verilog-2001 syntax" );
         expression_dealloc( $1, FALSE );
         expression_dealloc( $3, FALSE );
         $$ = NULL;
@@ -4319,7 +4347,7 @@ parameter_value_byname
     {
       param_oride* po;
       if( !parser_check_generation( GENERATION_2001 ) ) {
-        VLerror( "explicit in-line parameter passing syntax found in block that is specified to not allow Verilog-2001 syntax." );
+        VLerror( "Explicit in-line parameter passing syntax found in block that is specified to not allow Verilog-2001 syntax" );
         free_safe( $2 );
         expression_dealloc( $4, FALSE );
       } else {
@@ -4339,7 +4367,7 @@ parameter_value_byname
   | '.' IDENTIFIER '(' ')'
     {
       if( !parser_check_generation( GENERATION_2001 ) ) {
-        VLerror( "explicit in-line parameter passing syntax found in block that is specified to not allow Verilog-2001 syntax." );
+        VLerror( "Explicit in-line parameter passing syntax found in block that is specified to not allow Verilog-2001 syntax" );
       }
       free_safe( $2 );
     }
@@ -4386,7 +4414,7 @@ gate_instance
     {
       str_link* tmp;
       if( !parser_check_generation( GENERATION_2001 ) ) {
-        VLerror( "arrayed instantiation syntax found in block that is specified to not allow Verilog-2001 syntax." );
+        VLerror( "Arrayed instantiation syntax found in block that is specified to not allow Verilog-2001 syntax" );
         free_safe( $1 );
         $$ = NULL;
       } else {
@@ -4419,7 +4447,7 @@ gate_instance
     {
       str_link* tmp;
       if( !parser_check_generation( GENERATION_2001 ) ) {
-        VLerror( "arrayed instantiation syntax found in block that is specified to not allow Verilog-2001 syntax." );
+        VLerror( "Arrayed instantiation syntax found in block that is specified to not allow Verilog-2001 syntax" );
         free_safe( $1 );
         $$ = NULL;
       } else {

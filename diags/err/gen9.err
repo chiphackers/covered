@@ -1,0 +1,2 @@
+ERROR!  Arithmetic right shift operation found in block that is specified to not allow Verilog-2001 syntax,   file: gen9.v, line: 7, col: 12
+ERROR!  Error in parsing design

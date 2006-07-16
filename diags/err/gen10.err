@@ -1,0 +1,2 @@
+ERROR!  Indexed vector part select found in block that is specified to not allow Verilog-2001 syntax,   file: gen10.v, line: 9, col: 11
+ERROR!  Error in parsing design
