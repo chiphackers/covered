@@ -47,6 +47,9 @@ void fsm_link_add( fsm* table, fsm_link** head, fsm_link** tail );
 /*! \brief Adds specified functional unit to funit_link element at the end of the list. */
 void funit_link_add( func_unit* funit, funit_link** head, funit_link** tail );
 
+/*! \brief Adds specified generate item to the end of specified gitem list. */
+void gitem_link_add( gen_item* gi, gitem_link** head, gitem_link** tail );
+
 
 /*! \brief Displays specified string list to standard output. */
 void str_link_display( str_link* head );
@@ -62,6 +65,9 @@ void sig_link_display( sig_link* head );
 
 /*! \brief Displays specified functional unit list to standard output. */
 void funit_link_display( funit_link* head );
+
+/*! \brief Displays specified generate item list to standard output. */
+void gitem_link_display( gitem_link* head );
 
 
 /*! \brief Finds specified string in the given str_link list. */
@@ -81,6 +87,9 @@ fsm_link* fsm_link_find( fsm* table, fsm_link* head );
 
 /*! \brief Finds specified functional unit in given funit_link list. */
 funit_link* funit_link_find( func_unit* funit, funit_link* head );
+
+/*! \brief Finds specified generate item in given gitem_link list. */
+gitem_link* gitem_link_find( gen_item* gi, gitem_link* head );
 
 
 /*! \brief Searches for and removes specified string link from list. */
@@ -111,9 +120,16 @@ void fsm_link_delete_list( fsm_link* head );
 /*! \brief Deletes entire list specified by head pointer. */
 void funit_link_delete_list( funit_link* head, bool rm_funit );
 
+/*! \brief Deletes entire list specified by head pointer. */
+void gitem_link_delete_list( gitem_link* head, bool rm_elems );
+
 
 /*
  $Log$
+ Revision 1.18  2006/07/13 22:24:57  phase1geo
+ We are really broke at this time; however, more code has been added to support
+ the -g score option.
+
  Revision 1.17  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

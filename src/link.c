@@ -39,6 +39,7 @@
 #include "statement.h"
 #include "iter.h"
 #include "fsm.h"
+#include "gen_item.h"
 
 
 /*!
@@ -240,6 +241,33 @@ void funit_link_add( func_unit* funit, funit_link** head, funit_link** tail ) {
 }
 
 /*!
+ \param gi     Generate item to add to specified gitem_link list.
+ \param head   Pointer to head gitem_link element of list.
+ \param tail   Pointer to tail gitem_link element of list.
+
+ Creates a new gitem_link element with the value specified for generate item.
+ Sets next pointer of element to NULL, sets the tail element to point
+ to the new element and sets the tail value to the new element.
+*/
+void gitem_link_add( gen_item* gi, gitem_link** head, gitem_link** tail ) {
+
+  gitem_link* tmp;  /* Temporary pointer to newly created gitem_link element */
+
+  tmp = (gitem_link*)malloc_safe( sizeof( gitem_link ), __FILE__, __LINE__ );
+
+  tmp->gi   = gi;
+  tmp->next = NULL;
+
+  if( *head == NULL ) {
+    *head = *tail = tmp;
+  } else {
+    (*tail)->next = tmp;
+    *tail         = tmp;
+  }
+
+}
+
+/*!
  \param head  Pointer to head of str_link list.
 
  Displays the string contents of the str_link list pointed to by head
@@ -336,6 +364,26 @@ void funit_link_display( funit_link* head ) {
   curr = head;
   while( curr != NULL ) {
     printf( "  name: %s, type: %d\n", curr->funit->name, curr->funit->type );
+    curr = curr->next;
+  }
+
+}
+
+/*!
+ \param head  Pointer to head of funit_link list.
+
+ Displays the string contents of the funit_link list pointed to by head
+ to standard output.  This function is mainly used for debugging purposes.
+*/
+void gitem_link_display( gitem_link* head ) {
+
+  gitem_link* curr;  /* Pointer to current gitem_link to display */
+
+  printf( "Generate item list:\n" );
+
+  curr = head;
+  while( curr != NULL ) {
+    gen_item_display( curr->gi );
     curr = curr->next;
   }
 
@@ -470,6 +518,29 @@ funit_link* funit_link_find( func_unit* funit, funit_link* head ) {
 
   curr = head;
   while( (curr != NULL) && (!scope_compare( curr->funit->name, funit->name ) || (curr->funit->type != funit->type)) ) {
+    curr = curr->next;
+  }
+
+  return( curr );
+
+}
+
+/*!
+ \param gi    Pointer to generate item to find.
+ \param head  Pointer to head of gitem_link list to search.
+
+ \return Returns the pointer to the found gitem_link or NULL if the search was unsuccessful.
+
+ Iteratively searches the gitem_link list specified by the head gitem_link element.  If
+ a matching generate item is found, the pointer to this element is returned.  If the specified
+ generate item could not be matched, the value of NULL is returned.
+*/
+gitem_link* gitem_link_find( gen_item* gi, gitem_link* head ) {
+
+  gitem_link* curr;  /* Pointer to current gitem_link */
+
+  curr = head;
+  while( (curr != NULL) && !gen_item_compare( curr->gi, gi ) ) {
     curr = curr->next;
   }
 
@@ -812,9 +883,38 @@ void funit_link_delete_list( funit_link* head, bool rm_funit ) {
 
 }
 
+/*!
+ \param head      Pointer to head gitem_link element of list.
+ \param rm_elems  If TRUE, deallocates specified generate item.
+
+ Deletes each element of the specified list.
+*/
+void gitem_link_delete_list( gitem_link* head, bool rm_elems ) {
+
+  gitem_link* tmp;  /* Temporary pointer to current link in list */
+
+  while( head != NULL ) {
+
+    tmp  = head;
+    head = tmp->next;
+
+    /* Deallocate generate item */
+    gen_item_dealloc( tmp->gi, rm_elems );
+
+    /* Deallocate gitem_link element itself */
+    free_safe( tmp );
+
+  }
+
+}
+
 
 /*
  $Log$
+ Revision 1.48  2006/07/14 18:53:32  phase1geo
+ Fixing -g option for keywords.  This seems to be working and I believe that
+ regressions are passing here as well.
+
  Revision 1.47  2006/07/13 22:24:57  phase1geo
  We are really broke at this time; however, more code has been added to support
  the -g score option.

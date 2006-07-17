@@ -72,6 +72,8 @@ void funit_init( func_unit* funit ) {
   funit->race_tail  = NULL;
   funit->param_head = NULL;
   funit->param_tail = NULL;
+  funit->gitem_head = NULL;
+  funit->gitem_tail = NULL;
   funit->tf_head    = NULL;
   funit->tf_tail    = NULL;
   funit->parent     = NULL;
@@ -851,6 +853,9 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.19  2006/06/27 19:34:42  phase1geo
+ Permanent fix for the CDD save feature.
+
  Revision 1.18  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

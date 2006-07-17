@@ -563,6 +563,32 @@
 /*! @} */
 
 /*!
+ \addtogroup generate_item_types Generate Block Item Types
+
+ The following defines specify the different types of elements that can be stored in
+ a generate item structure.
+
+ @{
+*/
+
+/*! Holds an expression that is used in either a generate FOR, IF or CASE statement */
+#define GI_TYPE_EXPR            0
+
+/*! Holds a signal instantiation */
+#define GI_TYPE_SIG             1
+
+/*! Holds a statement block (initial, assign, always) */
+#define GI_TYPE_STMT            2
+
+/*! Holds an module instantiation */
+#define GI_TYPE_INST            3
+
+/*! Holds a task, function, named begin/end block */
+#define GI_TYPE_TFN             4
+
+/*! @} */
+
+/*!
  \addtogroup delay_expr_types  Delay expression types.
  
  The following defines are used select a delay expression type in the form min:typ:max
@@ -1186,6 +1212,8 @@ struct thread_s;
 struct perf_stat_s;
 struct port_info_s;
 struct param_oride_s;
+struct gen_item_s;
+struct gitem_link_s;
 
 /*------------------------------------------------------------------------------*/
 /*  STRUCTURE/UNION TYPEDEFS  */
@@ -1381,6 +1409,16 @@ typedef struct port_info_s port_info;
  Renaming param_orides_s structure for convenience.
 */
 typedef struct param_oride_s param_oride;
+
+/*!
+ Renaming gen_item_s structure for convenience.
+*/
+typedef struct gen_item_s gen_item;
+
+/*!
+ Renaming gitem_link_s structure for convenience.
+*/
+typedef struct gitem_link_s gitem_link;
 
 /*------------------------------------------------------------------------------*/
 /*  STRUCTURE/UNION DEFINITIONS  */
@@ -1667,6 +1705,8 @@ struct func_unit_s {
   race_blk*   race_tail;             /*!< Tail pointer to list of race condition blocks in this functional unit if we are a module */
   mod_parm*   param_head;            /*!< Head pointer to list of parameters in this functional unit if we are a module */
   mod_parm*   param_tail;            /*!< Tail pointer to list of parameters in this functional unit if we are a module */
+  gitem_link* gitem_head;            /*!< Head pointer to list of generate items within this module */
+  gitem_link* gitem_tail;            /*!< Tail pointer to list of generate items within this module */
   func_unit*  parent;                /*!< Pointer to parent functional unit (only valid for functions, tasks and named blocks */
   funit_link* tf_head;               /*!< Head pointer to list of task/function functional units if we are a module */
   funit_link* tf_tail;               /*!< Tail pointer to list of task/function functional units if we are a module */
@@ -1758,6 +1798,8 @@ struct funit_inst_s {
   vector_width* range;               /*!< Used to create an array of instances */
   inst_parm*    param_head;          /*!< Head pointer to list of parameter overrides in this functional unit if it is a module */
   inst_parm*    param_tail;          /*!< Tail pointer to list of parameter overrides in this functional unit if it is a module */
+  gitem_link*   gitem_head;          /*!< Head pointer to list of generate items used for this instance */
+  gitem_link*   gitem_tail;          /*!< Tail pointer to list of generate items used for this instance */
   funit_inst*   parent;              /*!< Pointer to parent instance -- used for convenience only */
   funit_inst*   child_head;          /*!< Pointer to head of child list */
   funit_inst*   child_tail;          /*!< Pointer to tail of child list */
@@ -1887,8 +1929,35 @@ struct param_oride_s {
   param_oride* next;                 /*!< Pointer to next parameter override structure in list */
 };
 
+/*!
+ Container holding a generate block item.
+*/
+struct gen_item_s {
+  union {
+    expression* expr;                /*!< Pointer to an expression */
+    vsignal*    sig;                 /*!< Pointer to signal */
+    statement*  stmt;                /*!< Pointer to statement */
+    funit_inst* inst;                /*!< Pointer to instance */
+  } elem;                            /*!< Union of various pointers this generate item is pointing at */
+  int           type;                /*!< Specifies which element pointer is valid */
+  gen_item*     next_true;           /*!< Pointer to the next generate item if expr is true */
+  gen_item*     next_false;          /*!< Pointer to the next generate item if expr is false */
+};
+
+/*!
+ Generate item link element.  Stores pointer to a generate item.
+*/
+struct gitem_link_s {
+  gen_item*   gi;                    /*!< Pointer to a generate item */
+  gitem_link* next;                  /*!< Pointer to next generate item element in list */
+};
+
 /*
  $Log$
+ Revision 1.204  2006/07/13 05:31:52  phase1geo
+ Adding -g option to score command parser/usage information.  Still a lot of
+ work to go before this feature is complete.
+
  Revision 1.203  2006/07/10 03:05:04  phase1geo
  Contains bug fixes for memory leaks and segmentation faults.  Also contains
  some starting code to support generate blocks.  There is absolutely no

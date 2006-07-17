@@ -51,6 +51,7 @@
 #include "race.h"
 #include "scope.h"
 #include "ovl.h"
+#include "gen_item.h"
 
 
 extern char*       top_module;
@@ -72,6 +73,7 @@ extern int         block_depth;
 extern tnode*      def_table;
 extern char**      score_args;
 extern int         score_arg_num;
+extern int         generate_mode;
 
 /*!
  Specifies the string Verilog scope that is currently specified in the VCD file.
@@ -521,17 +523,33 @@ func_unit* db_add_instance( char* scope, char* name, int type, vector_width* ran
         exit( 1 );
       }
 
-      instance_parse_add( &instance_root, curr_funit, found_funit_link->funit, scope, range, FALSE );
+      /* If we are currently within a generate block, create a generate item for this instance to resolve it later */
+      if( generate_mode > 0 ) {
+        gitem_link_add( gen_item_create_inst( instance_create( found_funit_link->funit, scope, range ) ),
+                        &(curr_funit->gitem_head), &(curr_funit->gitem_tail) );
+      } else {
+        instance_parse_add( &instance_root, curr_funit, found_funit_link->funit, scope, range, FALSE );
+      }
 
       funit_dealloc( funit );
 
     } else {
 
-      /* Add new functional unit to functional unit list. */
-      funit_link_add( funit, &funit_head, &funit_tail );
+      /* If we are currently within a generate block, create a generate item for this instance to resolve it later */
+      if( generate_mode > 0 ) {
+      
+        gitem_link_add( gen_item_create_inst( instance_create( funit, scope, range ) ),
+                        &(curr_funit->gitem_head), &(curr_funit->gitem_tail) );
 
-      /* Add instance. */
-      instance_parse_add( &instance_root, curr_funit, funit, scope, range, FALSE );
+      } else {
+
+        /* Add new functional unit to functional unit list. */
+        funit_link_add( funit, &funit_head, &funit_tail );
+
+        /* Add instance. */
+        instance_parse_add( &instance_root, curr_funit, funit, scope, range, FALSE );
+
+      }
 
       if( (type == FUNIT_MODULE) && (str_link_find( name, modlist_head ) == NULL) ) {
         str_link_add( strdup_safe( name, __FILE__, __LINE__ ), &modlist_head, &modlist_tail );
@@ -641,8 +659,12 @@ bool db_add_function_task_namedblock( int type, char* name, char* file, int star
     /* Get parent */
     parent = funit_get_curr_module( curr_funit );
 
-    /* Store this functional unit in the parent module list */
-    funit_link_add( tf, &(parent->tf_head), &(parent->tf_tail) );
+    if( generate_mode > 0 ) {
+      /* Add this tfn as a generate item to the parent module list - TBD */
+    } else {
+      /* Store this functional unit in the parent module list */
+      funit_link_add( tf, &(parent->tf_head), &(parent->tf_tail) );
+    }
 
     /* Set our parent pointer to the current functional unit */
     tf->parent = curr_funit;
@@ -849,8 +871,13 @@ void db_add_signal( char* name, int type, static_expr* left, static_expr* right,
       }
     }
 
-    /* Add signal to current module's signal list */
-    sig_link_add( sig, &(curr_funit->sig_head), &(curr_funit->sig_tail) );
+    if( generate_mode > 0 ) {
+      /* Add signal to current module's generate item list */
+      gitem_link_add( gen_item_create_sig( sig ), &(curr_funit->gitem_head), &(curr_funit->gitem_tail) );
+    } else {
+      /* Add signal to current module's signal list */
+      sig_link_add( sig, &(curr_funit->sig_head), &(curr_funit->sig_tail) );
+    }
 
     /* Indicate if signal must be assigned by simulated results or not */
     if( mba ) {
@@ -1024,27 +1051,13 @@ expression* db_create_expression( expression* right, expression* left, int op, b
   /* Add expression and signal to binding list */
   if( sig_name != NULL ) {
 
-#ifdef OBSOLETE
-    /* Check to see if we are attaching to a parameter */
-    if( sig_is_parm ) {
-
-      /* Add to module parameter list */
-      exp_link_add( expr, &(mparm->exp_head), &(mparm->exp_tail) );
-
-    } else {
-#endif
-
-      switch( op ) {
-        case EXP_OP_FUNC_CALL :  bind_add( FUNIT_FUNCTION,    sig_name, expr, curr_funit );  break;
-        case EXP_OP_TASK_CALL :  bind_add( FUNIT_TASK,        sig_name, expr, curr_funit );  break;
-        case EXP_OP_NB_CALL   :  bind_add( FUNIT_NAMED_BLOCK, sig_name, expr, curr_funit );  break;
-        case EXP_OP_DISABLE   :  bind_add( 1,                 sig_name, expr, curr_funit );  break;
-        default               :  bind_add( 0,                 sig_name, expr, curr_funit );  break;
-      }
-
-#ifdef OBSOLETE
+    switch( op ) {
+      case EXP_OP_FUNC_CALL :  bind_add( FUNIT_FUNCTION,    sig_name, expr, curr_funit );  break;
+      case EXP_OP_TASK_CALL :  bind_add( FUNIT_TASK,        sig_name, expr, curr_funit );  break;
+      case EXP_OP_NB_CALL   :  bind_add( FUNIT_NAMED_BLOCK, sig_name, expr, curr_funit );  break;
+      case EXP_OP_DISABLE   :  bind_add( 1,                 sig_name, expr, curr_funit );  break;
+      default               :  bind_add( 0,                 sig_name, expr, curr_funit );  break;
     }
-#endif
 
   }
  
@@ -1069,12 +1082,21 @@ void db_add_expression( expression* root ) {
       print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
-      /* Add expression's children first. */
-      db_add_expression( root->right );
-      db_add_expression( root->left );
+      if( generate_mode > 0 ) {
 
-      /* Now add this expression to the list. */
-      exp_link_add( root, &(curr_funit->exp_head), &(curr_funit->exp_tail) );
+        /* Add root expression to the generate item list for the current functional unit */
+        gitem_link_add( gen_item_create_expr( root ), &(curr_funit->gitem_head), &(curr_funit->gitem_tail) );
+
+      } else {
+
+        /* Add expression's children first. */
+        db_add_expression( root->right );
+        db_add_expression( root->left );
+
+        /* Now add this expression to the list. */
+        exp_link_add( root, &(curr_funit->exp_head), &(curr_funit->exp_tail) );
+
+      }
 
     }
 
@@ -1727,6 +1749,17 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.189  2006/07/15 05:49:04  phase1geo
+ Removed the old manstyle documentation directory as this tool is no longer
+ used to generate user documentation.  Created new keywords files to break
+ out 1995, 2001 and SystemVerilog syntax.  Added several new diagnostics
+ to regression suite to verify this new feature (still more parser code to
+ add to completely support this feature).  Also fixed several bugs that
+ existed in the 0.4.5 stable release and added those tests.  Full regression
+ is passing.  Finally, updated the manpage for the new -g option to the score
+ command.  Still need to document this new option in the user's guide.  Added
+ ability to verify the -g option diagnostics to the regression suite.
+
  Revision 1.188  2006/07/14 18:53:32  phase1geo
  Fixing -g option for keywords.  This seems to be working and I believe that
  regressions are passing here as well.

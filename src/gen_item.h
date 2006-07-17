@@ -11,31 +11,36 @@
 
 #include "defines.h"
 
-#define GI_TYPE_EXPR	0
-#define GI_TYPE_SIG     1
-#define GI_TYPE_STMT    2
-#define GI_TYPE_INST    3
 
-struct gen_item_s;
+/*! \brief Displays the specified generate item to standard output */
+void gen_item_display( gen_item* gi );
 
-typedef struct gen_item_s gen_item;
+/*! \brief Creates a generate item for an expression */
+gen_item* gen_item_create_expr( expression* expr );
 
-struct gen_item_s {
-  union {
-    expression* expr;        /*!< Pointer to an expression */
-    vsignal*    sig;         /*!< Pointer to signal */
-    statement*  stmt;        /*!< Pointer to statement */
-    funit_inst* inst;        /*!< Pointer to instance */
-  } elem;                    /*!< Union of various pointers this generate item is pointing at */
-  int           type;        /*!< Specifies which element pointer is valid */
-  gen_item*     next_true;   /*!< Pointer to the next generate item if expr is true */
-  gen_item*     next_false;  /*!< Pointer to the next generate item if expr is false */
-};
+/*! \brief Creates a generate item for a signal */
+gen_item* gen_item_create_sig( vsignal* sig );
 
+/*! \brief Creates a generate item for a statement */
+gen_item* gen_item_create_stmt( statement* stmt );
 
+/*! \brief Creates a generate item for an instance */
+gen_item* gen_item_create_inst( funit_inst* inst );
+
+/*! \brief Creates a generate item for a namespace */
+gen_item* gen_item_create_tfn( funit_inst* inst );
+
+/*! \brief Resolves a generate block */
+void gen_item_resolve( gen_item* gi, funit_inst* inst );
+
+/*! \brief Deallocates all associated memory for the given generate item */
+void gen_item_dealloc( gen_item* gi, bool rm_elem );
 
 /*
  $Log$
+ Revision 1.1  2006/07/10 22:37:14  phase1geo
+ Missed the actual gen_item files in the last submission.
+
 */
 
 #endif
