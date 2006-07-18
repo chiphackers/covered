@@ -216,55 +216,6 @@ bool instance_compare( char* inst_name, funit_inst* inst ) {
 }
 
 /*!
- \param root        Root of funit_inst tree to parse for scope.
- \param curr_scope  Scope name (instance name) of current instance.
- \param rest_scope  Rest of scope name.
- 
- \return Returns pointer to functional unit instance found by scope.
- 
- Searches the specified functional unit instance tree for the specified
- scope.  When the functional unit instance is found, a pointer to that
- functional unit instance is passed back to the calling function.
-*/
-funit_inst* instance_find_scope_helper( funit_inst* root, char* curr_scope, char* rest_scope ) {
- 
-  char        front[256];   /* Highest level of hierarchy in hierarchical reference */
-  char        rest[4096];   /* Rest of scope value */
-  funit_inst* inst = NULL;  /* Pointer to found instance */
-  funit_inst* child;        /* Pointer to child instance of this functional unit instance */
-    
-  if( root != NULL ) {
-
-    assert( curr_scope != NULL );
-
-    if( instance_compare( curr_scope, root ) ) {
-      if( rest_scope[0] == '\0' ) {
-        return( root );
-      } else {
-        scope_extract_front( rest_scope, front, rest );
-        child = root->child_head;
-        while( (child != NULL) && ((inst = instance_find_scope_helper( child, front, rest )) == NULL) ) {
-          child = child->next;
-        }
-        if( child == NULL ) {
-          return( NULL );
-        } else {
-          return( inst );
-        }
-      }
-    } else {
-      return( NULL );
-    }
-
-  } else {
-
-    return( NULL );
-
-  }
-				
-}
-
-/*!
  \param root   Root of funit_inst tree to parse for scope.
  \param scope  Scope to search for.
  
@@ -276,28 +227,29 @@ funit_inst* instance_find_scope_helper( funit_inst* root, char* curr_scope, char
 */
 funit_inst* instance_find_scope( funit_inst* root, char* scope ) {
  
-  char tmp_scope[4096];  /* Rest of scope value */
-  
+  char        front[256];   /* Front of scope value */
+  char        rest[4096];   /* Rest of scope value */
+  funit_inst* inst = NULL;  /* Pointer to found instance */
+  funit_inst* child;        /* Pointer to current child instance being traversed */
+
   assert( root != NULL );
 
-  /* Strip root name from scope */
-  if( strncmp( scope, root->name, strlen( root->name ) ) == 0 ) {
-    
-    strcpy( tmp_scope, scope );
-    
-    if( strlen( root->name ) == strlen( scope ) ) {
-      return( instance_find_scope_helper( root, tmp_scope, tmp_scope + strlen( root->name ) ) );
+  /* First extract the front scope */
+  scope_extract_front( scope, front, rest );
+
+  if( instance_compare( front, root ) ) {
+    if( rest[0] == '\0' ) {
+      inst = root;
     } else {
-      tmp_scope[ strlen( root->name ) ] = '\0';
-      return( instance_find_scope_helper( root, tmp_scope, tmp_scope + strlen( root->name ) + 1 ) );
+      child = root->child_head;
+      while( (child != NULL) && ((inst = instance_find_scope( child, rest )) == NULL) ) {
+        child = child->next;
+      }
     }
-    
-  } else {
-    
-    return( NULL );
-    
   }
-  
+
+  return( inst );
+
 }
 
 /*!
@@ -791,6 +743,10 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.51  2006/07/17 22:12:42  phase1geo
+ Adding more code for generate block support.  Still just adding code at this
+ point -- hopefully I haven't broke anything that doesn't use generate blocks.
+
  Revision 1.50  2006/07/12 22:16:18  phase1geo
  Fixing hierarchical referencing for instance arrays.  Also attempted to fix
  a problem found with unary1; however, the generated report coverage information

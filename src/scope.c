@@ -48,18 +48,22 @@ extern char        user_msg[USER_MSG_LENGTH];
 */
 func_unit* scope_find_funit_from_scope( char* scope, func_unit* curr_funit ) {
 
-  funit_inst* funiti;
-  func_unit*  funit;            /* Pointer to parent functional unit */
-  int         ignore = 0;
-  char        rel_scope[4096];  /* Scope to use when checking for relative path */
+  funit_inst* curr_inst;      /* Pointer to current instance */
+  funit_inst* funiti = NULL;  /* Pointer to functional unit instance found */
+  func_unit*  funit;          /* Pointer to parent functional unit */
+  int         ignore = 0;     /* Used for functional unit instance search */
+  char        tscope1[4096];  /* Temporary scope value */
+  char        tscope2[4096];  /* Temporary scope value */
 
   assert( curr_funit != NULL );
 
+  /* Get current instance */
+  curr_inst = instance_find_by_funit( instance_root, curr_funit, &ignore );
+  assert( curr_inst != NULL );
+
   /* First check scope based on a relative path */
-  if( (funiti = instance_find_by_funit( instance_root, curr_funit, &ignore )) != NULL ) {
-    snprintf( rel_scope, 4096, "%s.%s", funiti->name, scope );
-    funiti = instance_find_scope( funiti, rel_scope );
-  }
+  snprintf( tscope1, 4096, "%s.%s", curr_inst->name, scope );
+  funiti = instance_find_scope( curr_inst, tscope1 );
 
   /*
    If we did not find the functional unit yet, check the scope relative to the parent module
@@ -67,15 +71,28 @@ func_unit* scope_find_funit_from_scope( char* scope, func_unit* curr_funit ) {
   */
   if( (funiti == NULL) && (curr_funit->type != FUNIT_MODULE) ) {
     funit = funit_get_curr_module( curr_funit );
-    if( (funiti = instance_find_by_funit( instance_root, funit, &ignore )) != NULL ) {
-      snprintf( rel_scope, 4096, "%s.%s", funiti->name, scope );
-      funiti = instance_find_scope( funiti, rel_scope );
-    }
+    curr_inst = instance_find_by_funit( instance_root, funit, &ignore );
+    assert( curr_inst != NULL );
+    snprintf( tscope1, 4096, "%s.%s", curr_inst->name, scope );
+    funiti = instance_find_scope( curr_inst, tscope1 );
   }
 
-  /* If we still did not find the functional unit, check the scope from top-of-tree */
+  /*
+   If we still did not find the functional unit, iterate up the scope tree looking for a module
+   that matches.
+  */
   if( funiti == NULL ) {
-    funiti = instance_find_scope( instance_root, scope );
+    do {
+      if( curr_inst->parent == NULL ) {
+        strcpy( tscope1, scope );
+        funiti = instance_find_scope( curr_inst, tscope1 );
+        curr_inst = curr_inst->parent;
+      } else {
+        curr_inst = curr_inst->parent;
+        snprintf( tscope1, 4096, "%s.%s", curr_inst->name, scope );
+        funiti = instance_find_scope( curr_inst, tscope1 );
+      }
+    } while( (curr_inst != NULL) && (funiti == NULL) );
   }
 
   return( (funiti == NULL) ? NULL : funiti->funit );
@@ -343,6 +360,18 @@ func_unit* scope_get_parent_module( char* scope ) {
 
 /*
  $Log$
+ Revision 1.13  2006/05/25 12:11:01  phase1geo
+ Including bug fix from 0.4.4 stable release and updating regressions.
+
+ Revision 1.12.8.1.4.2  2006/07/18 17:22:34  phase1geo
+ Fixed upwards name referencing bug (1524705) and reshaped some of the code associated
+ with this functionality.  Added diagnostics to regression suite to fully
+ test this new behavior.  Full regression passes.
+
+ Revision 1.12.8.1.4.1  2006/07/18 04:16:34  phase1geo
+ Attempting to fix upwards scope referencing issue.  Still looks like there
+ is a problem in the instance_find_scope routine.  Checkpointing work.
+
  Revision 1.12.8.1  2006/05/25 10:59:35  phase1geo
  Adding bug fix for hierarchically referencing parameters.  Added param13 and
  param13.1 diagnostics to verify this functionality.  Updated regressions.
