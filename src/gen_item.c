@@ -33,16 +33,15 @@ void gen_item_display( gen_item* gi ) {
       vsignal_display( gi->elem.sig );
       break;
     case GI_TYPE_STMT :
-      printf( "  type: STMT\n" );
-      statement_display( gi->elem.stmt );
+      printf( "  type: STMT, id: %d\n", gi->elem.stmt->exp->id );
       break;
     case GI_TYPE_INST :
       printf( "  type: INST\n" );
-      instance_display( gi->elem.inst );
+      instance_display_tree( gi->elem.inst );
       break;
     case GI_TYPE_TFN :
       printf( "  type: TFN\n" );
-      instance_display( gi->elem.inst );
+      instance_display_tree( gi->elem.inst );
       break;
     default :
       break;
@@ -290,6 +289,10 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.2  2006/07/17 22:12:42  phase1geo
+ Adding more code for generate block support.  Still just adding code at this
+ point -- hopefully I haven't broke anything that doesn't use generate blocks.
+
  Revision 1.1  2006/07/10 22:37:14  phase1geo
  Missed the actual gen_item files in the last submission.
 
