@@ -72,6 +72,9 @@ void db_end_function_task( int end_line );
 /*! \brief Finds specified signal in functional unit and returns pointer to the signal structure.  Called by parser. */
 vsignal* db_find_signal( char* name );
 
+/*! \brief Find specified generate item in the current functional unit.  Called by parser. */
+gen_item* db_find_gen_item( gen_item* gi );
+
 /*! \brief Creates new expression from specified information.  Called by parser and db_add_expression. */
 expression* db_create_expression( expression* right, expression* left, int op, bool lhs, int line, int first, int last, char* sig_name );
 
@@ -140,6 +143,9 @@ void db_dealloc_design();
 
 /*
  $Log$
+ Revision 1.58  2006/06/27 19:34:42  phase1geo
+ Permanent fix for the CDD save feature.
+
  Revision 1.57  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

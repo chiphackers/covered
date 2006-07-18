@@ -923,6 +923,31 @@ vsignal* db_find_signal( char* name ) {
 }
 
 /*!
+ \param gi  Pointer to created generate item to search for
+
+ \return Returns pointer to found matching generate item (NULL if not found)
+
+ Searches the current functional unit for the generate item that matches the
+ specified generate item.  If it is found, a pointer to the stored generate
+ item is returned.  If it is not found, a value of NULL is returned.  Additionally,
+ the specified generate item is automatically deallocated on behalf of the caller.
+ This function should only be called during the parsing stage.
+*/
+gen_item* db_find_gen_item( gen_item* gi ) {
+
+  gitem_link* gil;  /* Pointer to found generate item */
+
+  /* Search for the specified generate item */
+  gil = gitem_link_find( gi, curr_funit->gitem_head );
+
+  /* Deallocate the user-specified generate item */
+  gen_item_dealloc( gi, FALSE );
+
+  return( (gil == NULL) ? NULL : gil->gi );
+
+}
+
+/*!
  \return Returns the number of signals in the current function unit.
 */
 int db_curr_signal_count() {
@@ -985,29 +1010,6 @@ expression* db_create_expression( expression* right, expression* left, int op, b
               right_id, left_id, curr_expr_id, expression_string_op( op ), lhs, line, first, last, sig_name );
   }
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
-#endif
-
-#ifdef OBSOLETE
-  /* Check to see if signal is a parameter in this module */
-  if( sig_name != NULL ) {
-    if( (mparm = funit_find_param( sig_name, curr_funit )) != NULL ) {
-      sig_is_parm = TRUE;
-      switch( op ) {
-        case EXP_OP_SIG      :  op = EXP_OP_PARAM;           break;
-        case EXP_OP_SBIT_SEL :  op = EXP_OP_PARAM_SBIT;      break;
-        case EXP_OP_MBIT_SEL :  op = EXP_OP_PARAM_MBIT;      break;
-        case EXP_OP_MBIT_POS :  op = EXP_OP_PARAM_MBIT_POS;  break;
-        case EXP_OP_MBIT_NEG :  op = EXP_OP_PARAM_MBIT_NEG;  break;
-        default :  
-          assert( (op == EXP_OP_SIG) || (op == EXP_OP_SBIT_SEL) || (op == EXP_OP_MBIT_SEL) );
-          break;
-      }
-#ifdef DEBUG_MODE
-      snprintf( user_msg, USER_MSG_LENGTH, "  Switching to parameter operation: %d", op );
-      print_output( user_msg, DEBUG, __FILE__, __LINE__ );
-#endif
-    }
-  }
 #endif
 
   /* Check to see if current expression is in a function */
@@ -1261,7 +1263,11 @@ void db_add_statement( statement* stmt, statement* start ) {
     stmt->exp->suppl.part.stmt_added = 1;
 
     /* Now add current statement */
-    stmt_link_add_tail( stmt, &(curr_funit->stmt_head), &(curr_funit->stmt_tail) );
+    if( generate_mode > 0 ) {
+      gitem_link_add( gen_item_create_stmt( stmt ), &(curr_funit->gitem_head), &(curr_funit->gitem_tail) );
+    } else {
+      stmt_link_add_tail( stmt, &(curr_funit->stmt_head), &(curr_funit->stmt_tail) );
+    }
 
   }
 
@@ -1749,6 +1755,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.190  2006/07/17 22:12:42  phase1geo
+ Adding more code for generate block support.  Still just adding code at this
+ point -- hopefully I haven't broke anything that doesn't use generate blocks.
+
  Revision 1.189  2006/07/15 05:49:04  phase1geo
  Removed the old manstyle documentation directory as this tool is no longer
  used to generate user documentation.  Created new keywords files to break

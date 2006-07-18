@@ -41,6 +41,7 @@
 #include "iter.h"
 #include "fsm.h"
 #include "race.h"
+#include "gen_item.h"
 
 
 extern char        user_msg[USER_MSG_LENGTH];
@@ -298,13 +299,14 @@ void funit_size_elements( func_unit* funit, funit_inst* inst ) {
 */
 bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst, bool report_save ) {
 
-  bool       retval = TRUE;  /* Return value for this function */
-  sig_link*  curr_sig;       /* Pointer to current functional unit sig_link element */
-  exp_link*  curr_exp;       /* Pointer to current functional unit exp_link element */
-  stmt_iter  curr_stmt;      /* Statement list iterator */
-  inst_parm* curr_parm;      /* Pointer to current instance parameter */
-  fsm_link*  curr_fsm;       /* Pointer to current functional unit fsm_link element */
-  race_blk*  curr_race;      /* Pointer to current race condition block */
+  bool        retval = TRUE;  /* Return value for this function */
+  sig_link*   curr_sig;       /* Pointer to current functional unit sig_link element */
+  exp_link*   curr_exp;       /* Pointer to current functional unit exp_link element */
+  stmt_iter   curr_stmt;      /* Statement list iterator */
+  inst_parm*  curr_parm;      /* Pointer to current instance parameter */
+  fsm_link*   curr_fsm;       /* Pointer to current functional unit fsm_link element */
+  race_blk*   curr_race;      /* Pointer to current race condition block */
+  gitem_link* curr_gi;        /* Pointer to current gitem_link element */
 
 #ifdef DEBUG_MODE
   switch( funit->type ) {
@@ -359,6 +361,13 @@ bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
     curr_sig = curr_sig->next; 
   }
 
+  /* Now print any generated signals in the current instance */
+  curr_gi = inst->gitem_head;
+  while( curr_gi != NULL ) {
+    gen_item_db_write( curr_gi->gi, GI_TYPE_SIG, file );
+    curr_gi = curr_gi->next;
+  }
+
   /* Now print all statements in functional unit */
   if( report_save ) {
     stmt_iter_reset( &curr_stmt, funit->stmt_tail );
@@ -368,6 +377,13 @@ bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
   while( curr_stmt.curr != NULL ) {
     statement_db_write( curr_stmt.curr->stmt, file, (inst != NULL) );
     stmt_iter_next( &curr_stmt );
+  }
+
+  /* Now print any generated statements in the current instance */
+  curr_gi = inst->gitem_head;
+  while( curr_gi != NULL ) {
+    gen_item_db_write( curr_gi->gi, GI_TYPE_STMT, file );
+    curr_gi = curr_gi->next;
   }
 
   /* Now print all FSM structures in functional unit */
@@ -853,6 +869,10 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.20  2006/07/17 22:12:42  phase1geo
+ Adding more code for generate block support.  Still just adding code at this
+ point -- hopefully I haven't broke anything that doesn't use generate blocks.
+
  Revision 1.19  2006/06/27 19:34:42  phase1geo
  Permanent fix for the CDD save feature.
 

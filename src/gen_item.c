@@ -49,6 +49,13 @@ void gen_item_display( gen_item* gi ) {
 
 }
 
+/*!
+ \param gi1  Pointer to first generate item to compare
+ \param gi2  Pointer to second generate item to compare
+
+ \return Returns TRUE if the two specified generate items are equivalent; otherwise,
+         returns FALSE.
+*/
 bool gen_item_compare( gen_item* gi1, gen_item* gi2 ) {
 
   bool retval = FALSE;  /* Return value for this function */
@@ -81,6 +88,9 @@ gen_item* gen_item_create_expr( expression* expr ) {
 
   gen_item* gi;
 
+  printf( "In gen_item_create_expr, id: %d, op: %s, line: %d\n",
+          expr->id, expression_string_op( expr->op ), expr->line );
+
   /* Create the generate item for an expression */
   gi = (gen_item*)malloc_safe( sizeof( gen_item ), __FILE__, __LINE__ );
   gi->elem.expr  = expr;
@@ -102,6 +112,8 @@ gen_item* gen_item_create_expr( expression* expr ) {
 gen_item* gen_item_create_sig( vsignal* sig ) {
 
   gen_item* gi;
+
+  printf( "In gen_item_create_sig, name: %s\n", sig->name );
 
   /* Create the generate item for a signal */
   gi = (gen_item*)malloc_safe( sizeof( gen_item ), __FILE__, __LINE__ );
@@ -125,6 +137,8 @@ gen_item* gen_item_create_stmt( statement* stmt ) {
 
   gen_item* gi;
 
+  printf( "In gen_item_create_stmt, id: %d, line: %d\n", stmt->exp->id, stmt->exp->line );
+
   /* Create the generate item for a statement */
   gi = (gen_item*)malloc_safe( sizeof( gen_item ), __FILE__, __LINE__ );
   gi->elem.stmt  = stmt;
@@ -146,6 +160,8 @@ gen_item* gen_item_create_stmt( statement* stmt ) {
 gen_item* gen_item_create_inst( funit_inst* inst ) {
 
   gen_item* gi;
+
+  printf( "In gen_item_create_inst, name: %s\n", inst->name );
 
   /* Create the generate item for an instance */
   gi = (gen_item*)malloc_safe( sizeof( gen_item ), __FILE__, __LINE__ );
@@ -169,6 +185,8 @@ gen_item* gen_item_create_tfn( funit_inst* inst ) {
 
   gen_item* gi;
 
+  printf( "In gen_item_create_tfn, name: %s\n", inst->name );
+
   /* Create the generate item for a namespace */
   gi = (gen_item*)malloc_safe( sizeof( gen_item ), __FILE__, __LINE__ );
   gi->elem.inst  = inst;
@@ -181,12 +199,44 @@ gen_item* gen_item_create_tfn( funit_inst* inst ) {
 }
 
 /*!
+ \param gi    Pointer to current generate item to test and output
+ \param type  Specifies the type of the generate item to output
+ \param file  Output file to display generate item to
+
+ Checks the given generate item against the supplied type.  If they match,
+ outputs the given generate item to the specified output file.  If they do
+ not match, nothing is done.
+*/
+void gen_item_db_write( gen_item* gi, int type, FILE* ofile ) {
+
+  /* If the types match, output based on type */
+  if( gi->type == type ) {
+
+    switch( type ) {
+      case GI_TYPE_SIG :
+        vsignal_db_write( gi->elem.sig, ofile );
+        break;
+      case GI_TYPE_STMT :
+        statement_db_write( gi->elem.stmt, ofile, TRUE );
+        break;
+      default :  /* Should never be called */
+        assert( (type == GI_TYPE_SIG) || (type == GI_TYPE_STMT) );
+        break;
+    }
+
+  }
+
+}
+
+/*!
  \param gi    Pointer to current generate item to resolve
  \param inst  Pointer to instance to store results to
 */
 void gen_item_resolve( gen_item* gi, funit_inst* inst ) {
 
   if( gi != NULL ) {
+
+    printf( "Resolving generate item, type: %d for inst: %s\n", gi->type, inst->name );
 
     switch( gi->type ) {
   
@@ -235,12 +285,17 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst ) {
 */
 void generate_resolve( funit_inst* root ) {
 
-  gen_item*   gi;          /* Pointer to current generate item to resolve for */
+  gitem_link* curr_gi;     /* Pointer to current gitem_link element to resolve for */
   funit_inst* curr_child;  /* Pointer to current child to resolve for */
 
   if( root != NULL ) {
 
-    /* Resolve ourself - TBD */
+    /* Resolve ourself */
+    curr_gi = root->funit->gitem_head;
+    while( curr_gi != NULL ) {
+      gen_item_resolve( curr_gi->gi, root );
+      curr_gi = curr_gi->next;
+    }
 
     /* Resolve children */
     curr_child = root->child_head;
@@ -289,6 +344,9 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.3  2006/07/18 13:37:47  phase1geo
+ Fixing compile issues.
+
  Revision 1.2  2006/07/17 22:12:42  phase1geo
  Adding more code for generate block support.  Still just adding code at this
  point -- hopefully I haven't broke anything that doesn't use generate blocks.

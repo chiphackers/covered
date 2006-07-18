@@ -1946,9 +1946,84 @@ generate_item_list
 generate_item
   : module_item
   | K_begin generate_item_list_opt K_end
-  | K_begin ':' IDENTIFIER generate_item_list_opt K_end
+  | K_begin ':' IDENTIFIER
+    {
+      if( (ignore_mode == 0) && ($3 != NULL) ) {
+        if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $3, @3.text, @3.first_line ) ) {
+          ignore_mode++;
+        }
+      } else {
+        ignore_mode++;
+      }
+    }
+    generate_item_list_opt K_end
+    {
+      expression* exp;
+      statement*  stmt;
+      if( $3 != NULL ) {
+        db_end_function_task_namedblock( @6.first_line );
+        free_safe( $3 );
+      } else {
+        if( ignore_mode > 0 ) {
+          ignore_mode--;
+        }
+      }
+    }
   | K_for '(' IDENTIFIER '=' static_expr ';' static_expr ';' IDENTIFIER '=' static_expr ')'
-    K_begin ':' IDENTIFIER { generate_for_mode++; } generate_item_list_opt { generate_for_mode--; } K_end
+    K_begin ':' IDENTIFIER
+    {
+      expression* expr;
+      expression* expr2;
+      vector*     vec;
+      generate_for_mode++;
+      if( (ignore_mode == 0) && ($3 != NULL) && ($5 != NULL) &&
+          ($7 != NULL) && ($9 != NULL) && ($11 != NULL) && ($15 != NULL) ) {
+        block_depth++;
+        expr = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @3.first_line, @3.first_column, (@3.last_column - 1), $3 );
+        free_safe( $3 );
+        if( $5->exp == NULL ) {
+          expr2 = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, @5.first_line, @5.first_column, (@5.last_column - 1), NULL );
+          vector_from_int( vec, $5->num );
+          assert( expr2->value->value == NULL );
+          free_safe( expr->value );
+          expr2->value = vec; 
+        } else {
+          expr2 = $5->exp;
+        }
+        expr = db_create_expression( expr2, expr, EXP_OP_BASSIGN, FALSE, @3.first_line, @3.first_column, (@5.last_column - 1), NULL );
+        vector_dealloc( expr->value );
+        expr->value = expr2->value;
+        // stmt1 = db_create_statement( expr );
+        db_add_expression( expr );
+        // stmt2 = db_create_statement( $7 );
+        db_add_expression( $7 );
+        // db_statement_connect( stmt1, stmt2 );
+        // db_connect_statement_true( stmt2, stmt4 );
+        expr = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @7.first_line, @7.first_column, (@7.last_column - 1), $7 );
+        free_safe( $7 );
+        expr = db_create_expression( $11, $9, EXP_OP_BASSIGN, FALSE, @7.first_line, @7.first_column, (@9.last_column - 1), NULL );
+        vector_dealloc( expr->value );
+        expr->value = $11->value;
+        // stmt3 = db_create_statement( expr );
+        db_add_expression( expr );
+        // db_statement_connect( stmt4, stmt3 );
+        // stmt2->conn_id = stmt_conn_id;   /* This will cause the STOP bit to be set for the stmt3 */
+        // db_statement_connect( stmt3, stmt2 );
+        block_depth--;
+      } else {
+        expression_dealloc( $3, FALSE );
+        expression_dealloc( $5, FALSE );
+        expression_dealloc( $7, FALSE );
+        expression_dealloc( $9, FALSE );
+        expression_dealloc( $11, FALSE );
+        // db_remove_statement( stmt4 );
+      }
+    }
+    generate_item_list_opt
+    {
+      generate_for_mode--;
+    }
+    K_end
   | K_if '(' expression ')' inc_block_depth generate_item dec_block_depth %prec less_than_K_else
   | K_if '(' expression ')' inc_block_depth generate_item dec_block_depth K_else generate_item
   | K_case '(' expression ')' inc_block_depth generate_case_items dec_block_depth K_endcase
