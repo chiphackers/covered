@@ -198,6 +198,7 @@ int yydebug = 1;
   attr_param*     attr_parm;
   exp_bind*       expbind;
   port_info*      portinfo;
+  gen_item*       gitem;
 };
 
 %token <text>     IDENTIFIER SYSTEM_IDENTIFIER
@@ -258,6 +259,7 @@ int yydebug = 1;
 %type <expr>      delay1 delay3 delay3_opt
 %type <attr_parm> attribute attribute_list
 %type <portinfo>  port_declaration list_of_port_declarations
+%type <gitem>     generate_item generate_item_list generate_item_list_opt
 
 %token K_TAND
 %right '?' ':'
@@ -1934,18 +1936,36 @@ udp_sequ_entry
   /* Generate support */
 generate_item_list_opt
   : generate_item_list
+    {
+      $$ = $1;
+    }
   |
+    {
+      $$ = NULL;
+    }
   ;
 
 generate_item_list
   : generate_item_list generate_item
+    {
+      db_gen_item_connect( $1, $2 );
+    }
   | generate_item
+    {
+      $$ = $1;
+    }
   ;
 
   /* Similar to module_item but is more restrictive */
 generate_item
   : module_item
+    {
+      $$ = db_find_last_gen_item();
+    }
   | K_begin generate_item_list_opt K_end
+    {
+      $$ = $2;
+    }
   | K_begin ':' IDENTIFIER
     {
       if( (ignore_mode == 0) && ($3 != NULL) ) {
@@ -1968,65 +1988,101 @@ generate_item
           ignore_mode--;
         }
       }
+      $$ = $5;
     }
   | K_for '(' IDENTIFIER '=' static_expr ';' static_expr ';' IDENTIFIER '=' static_expr ')'
     K_begin ':' IDENTIFIER
     {
+      generate_for_mode++;
+    }
+    generate_item_list_opt K_end
+    {
       expression* expr;
       expression* expr2;
-      vector*     vec;
-      generate_for_mode++;
+      gen_item*   gi1;
+      gen_item*   gi2;
+      gen_item*   gi3;
+      generate_for_mode--;
       if( (ignore_mode == 0) && ($3 != NULL) && ($5 != NULL) &&
-          ($7 != NULL) && ($9 != NULL) && ($11 != NULL) && ($15 != NULL) ) {
+          ($7 != NULL) && ($9 != NULL) && ($11 != NULL) && ($15 != NULL) && ($17 != NULL) ) {
         block_depth++;
-        expr = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @3.first_line, @3.first_column, (@3.last_column - 1), $3 );
+        /* Create first statement */
+        expr  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @3.first_line, @3.first_column, (@3.last_column - 1), $3 );
         free_safe( $3 );
-        if( $5->exp == NULL ) {
-          expr2 = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, @5.first_line, @5.first_column, (@5.last_column - 1), NULL );
-          vector_from_int( vec, $5->num );
-          assert( expr2->value->value == NULL );
-          free_safe( expr->value );
-          expr2->value = vec; 
-        } else {
-          expr2 = $5->exp;
-        }
-        expr = db_create_expression( expr2, expr, EXP_OP_BASSIGN, FALSE, @3.first_line, @3.first_column, (@5.last_column - 1), NULL );
-        vector_dealloc( expr->value );
-        expr->value = expr2->value;
-        // stmt1 = db_create_statement( expr );
+        expr2 = db_create_expr_from_static( $5, @5.first_line, @5.first_column, (@5.last_column - 1) );
+        expr  = db_create_expression( expr2, expr, EXP_OP_BASSIGN, FALSE, @3.first_line, @3.first_column, (@5.last_column - 1), NULL );
         db_add_expression( expr );
-        // stmt2 = db_create_statement( $7 );
-        db_add_expression( $7 );
-        // db_statement_connect( stmt1, stmt2 );
-        // db_connect_statement_true( stmt2, stmt4 );
-        expr = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @7.first_line, @7.first_column, (@7.last_column - 1), $7 );
-        free_safe( $7 );
-        expr = db_create_expression( $11, $9, EXP_OP_BASSIGN, FALSE, @7.first_line, @7.first_column, (@9.last_column - 1), NULL );
-        vector_dealloc( expr->value );
-        expr->value = $11->value;
-        // stmt3 = db_create_statement( expr );
+        gi1 = db_find_last_gen_item();
+        /* Create second statement and attach it to the first statement */
+        expr = db_create_expr_from_static( $7, @7.first_line, @7.first_column, (@7.last_column - 1) );
         db_add_expression( expr );
-        // db_statement_connect( stmt4, stmt3 );
-        // stmt2->conn_id = stmt_conn_id;   /* This will cause the STOP bit to be set for the stmt3 */
-        // db_statement_connect( stmt3, stmt2 );
+        gi2 = db_find_last_gen_item();
+        gi1->next_true  = gi2;
+        gi1->next_false = gi2;
+        /* Connect next_true of gi2 and connect it to the first statement of the generate block */
+        gi2->next_true  = $17;
+        /* Create third statement and attach it to the generate block */
+        expr = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @9.first_line, @9.first_column, (@9.last_column - 1), $9 );
+        free_safe( $9 );
+        expr2 = db_create_expr_from_static( $11, @11.first_line, @11.first_column, (@11.last_column - 1) );
+        expr = db_create_expression( expr2, expr, EXP_OP_BASSIGN, FALSE, @7.first_line, @7.first_column, (@9.last_column - 1), NULL );
+        db_add_expression( expr );
+        gi3 = db_find_last_gen_item();
+        db_gen_item_connect( $17, gi3 );
+        gi3->next_false = gi2;
+        $$ = gi1;
         block_depth--;
       } else {
-        expression_dealloc( $3, FALSE );
-        expression_dealloc( $5, FALSE );
-        expression_dealloc( $7, FALSE );
-        expression_dealloc( $9, FALSE );
-        expression_dealloc( $11, FALSE );
-        // db_remove_statement( stmt4 );
+        free_safe( $3 );
+        static_expr_dealloc( $5, TRUE );
+        static_expr_dealloc( $7, TRUE );
+        free_safe( $9 );
+        static_expr_dealloc( $11, FALSE );
+        free_safe( $15 );
+        /* TBD - Deallocate generate block */
+        $$ = NULL;
       }
     }
-    generate_item_list_opt
+  | K_if '(' static_expr ')' inc_block_depth generate_item dec_block_depth %prec less_than_K_else
     {
-      generate_for_mode--;
+      expression* expr;
+      gen_item*   gi1;
+      if( (ignore_mode == 0) && ($3 != NULL) && ($6 != NULL) ) {
+        expr = db_create_expr_from_static( $3, @3.first_line, @3.first_column, (@3.last_column - 1) );
+        expr = db_create_expression( expr, NULL, EXP_OP_IF, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
+        db_add_expression( expr );
+        gi1 = db_find_last_gen_item();
+        gi1->next_true = $6;
+        $$ = gi1;
+      } else {
+        static_expr_dealloc( $3, TRUE );
+        /* TBD - Deallocate generate block */
+        $$ = NULL;
+      }
     }
-    K_end
-  | K_if '(' expression ')' inc_block_depth generate_item dec_block_depth %prec less_than_K_else
-  | K_if '(' expression ')' inc_block_depth generate_item dec_block_depth K_else generate_item
+  | K_if '(' static_expr ')' inc_block_depth generate_item dec_block_depth K_else generate_item
+    {
+      expression* expr;
+      gen_item*   gi1;
+      if( (ignore_mode == 0) && ($3 != NULL) && ($6 != NULL) && ($9 != NULL) ) {
+        expr = db_create_expr_from_static( $3, @3.first_line, @3.first_column, (@3.last_column - 1) );
+        expr = db_create_expression( expr, NULL, EXP_OP_IF, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
+        db_add_expression( expr );
+        gi1 = db_find_last_gen_item();
+        gi1->next_true  = $6;
+        gi1->next_false = $9;
+        $$ = gi1;
+      } else {
+        static_expr_dealloc( $3, TRUE );
+        /* TBD - Deallocate generate blocks */
+        $$ = NULL;
+      }
+    }
   | K_case '(' expression ')' inc_block_depth generate_case_items dec_block_depth K_endcase
+    { 
+      /* TBD */
+      $$ = NULL;
+    }
   ;
 
 generate_case_item
@@ -2785,8 +2841,6 @@ statement
           ($9 != NULL) && ($11 != NULL) && ($14 != NULL) ) {
         block_depth++;
         expr = db_create_expression( $5, $3, EXP_OP_BASSIGN, FALSE, @3.first_line, @3.first_column, (@5.last_column - 1), NULL );
-        vector_dealloc( expr->value );
-        expr->value = $5->value;
         stmt1 = db_create_statement( expr );
         db_add_expression( expr );
         stmt2 = db_create_statement( $7 );
@@ -2794,8 +2848,6 @@ statement
         db_statement_connect( stmt1, stmt2 );
         db_connect_statement_true( stmt2, stmt4 );
         expr = db_create_expression( $11, $9, EXP_OP_BASSIGN, FALSE, @7.first_line, @7.first_column, (@9.last_column - 1), NULL );
-        vector_dealloc( expr->value );
-        expr->value = $11->value;
         stmt3 = db_create_statement( expr );
         db_add_expression( expr );
         db_statement_connect( stmt4, stmt3 );
@@ -2930,8 +2982,6 @@ statement
       statement*  stmt;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
         tmp  = db_create_expression( $3, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-        vector_dealloc( tmp->value );
-        tmp->value = $3->value;
         stmt = db_create_statement( tmp );
         db_add_expression( tmp );
         $$ = stmt;
@@ -2965,8 +3015,6 @@ statement
       expression_dealloc( $3, FALSE );
       if( (ignore_mode == 0) && ($1 != NULL) && ($4 != NULL) ) {
         tmp  = db_create_expression( $4, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
-        vector_dealloc( tmp->value );
-        tmp->value = $4->value;
         stmt = db_create_statement( tmp );
         db_add_expression( tmp );
         $$ = stmt;
@@ -3001,8 +3049,6 @@ statement
       expression_dealloc( $3, FALSE );
       if( (ignore_mode == 0) && ($1 != NULL) && ($4 != NULL) ) {
         tmp  = db_create_expression( $4, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
-        vector_dealloc( tmp->value );
-        tmp->value = $4->value;
         stmt = db_create_statement( tmp );
         db_add_expression( tmp );
         $$ = stmt;

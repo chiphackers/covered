@@ -948,6 +948,15 @@ gen_item* db_find_gen_item( gen_item* gi ) {
 }
 
 /*!
+ \return Returns a pointer to the last generate item added to the current functional unit.
+*/
+gen_item* db_find_last_gen_item() {
+
+  return( (curr_funit->gitem_tail == NULL) ? NULL : curr_funit->gitem_tail->gi );
+
+}
+
+/*!
  \return Returns the number of signals in the current function unit.
 */
 int db_curr_signal_count() {
@@ -1041,13 +1050,21 @@ expression* db_create_expression( expression* right, expression* left, int op, b
     assert( right->parent->expr == NULL );
     right->parent->expr = expr;
   }
-
   if( (left != NULL) &&
       (expr->op != EXP_OP_CASE) &&
       (expr->op != EXP_OP_CASEX) &&
       (expr->op != EXP_OP_CASEZ) ) {
     assert( left->parent->expr == NULL );
     left->parent->expr = expr;
+  }
+
+  /*
+   If this is some kind of assignment expression operator, set the left expression vector to that of
+   the right expression.
+  */
+  if( (expr->op == EXP_OP_BASSIGN) ) {
+    vector_dealloc( left->value );
+    left->value = right->value;
   }
 
   /* Add expression and signal to binding list */
@@ -1063,6 +1080,39 @@ expression* db_create_expression( expression* right, expression* left, int op, b
 
   }
  
+  return( expr );
+
+}
+
+/*!
+ \param se  Pointer to static expression structure
+ 
+ \return Returns a pointer to an expression that represents the static expression specified
+*/
+expression* db_create_expr_from_static( static_expr* se, int line, int first_col, int last_col ) {
+
+  expression* expr;  /* Return value for this function */
+  vector*     vec;   /* Temporary vector */
+
+  if( se->exp == NULL ) {
+
+    /* This static expression is a static value so create a static expression from its value */
+    expr = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, line, first_col, last_col, NULL );
+    vector_from_int( vec, se->num );
+    assert( expr->value->value == NULL );
+    free_safe( expr->value );
+    expr->value = vec;
+
+  } else {
+
+    /* The static expression is unresolved, so just get its expression */
+    expr = se->exp;
+
+  }
+
+  /* Deallocate static expression */
+  static_expr_dealloc( se, FALSE );
+
   return( expr );
 
 }
@@ -1385,6 +1435,12 @@ void db_connect_statement_false( statement* stmt, statement* next_false ) {
     stmt->next_false = next_false;
 
   }
+
+}
+
+bool db_gen_item_connect( gen_item* gi1, gen_item* gi2 ) {
+
+  /* TBD */
 
 }
 
@@ -1755,6 +1811,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.191  2006/07/18 21:52:49  phase1geo
+ More work on generate blocks.  Currently working on assembling generate item
+ statements in the parser.  Still a lot of work to go here.
+
  Revision 1.190  2006/07/17 22:12:42  phase1geo
  Adding more code for generate block support.  Still just adding code at this
  point -- hopefully I haven't broke anything that doesn't use generate blocks.

@@ -75,8 +75,14 @@ vsignal* db_find_signal( char* name );
 /*! \brief Find specified generate item in the current functional unit.  Called by parser. */
 gen_item* db_find_gen_item( gen_item* gi );
 
+/*! \brief Returns a pointer to the last generate item added to the current functional unit.  Called by parser. */
+gen_item* db_find_last_gen_item();
+
 /*! \brief Creates new expression from specified information.  Called by parser and db_add_expression. */
 expression* db_create_expression( expression* right, expression* left, int op, bool lhs, int line, int first, int last, char* sig_name );
+
+/*! \brief Creates an expression from the specified static expression */
+expression* db_create_expr_from_static( static_expr* se, int line, int first_col, int last_col );
 
 /*! \brief Adds specified expression to expression list.  Called by parser. */
 void db_add_expression( expression* root );
@@ -98,6 +104,9 @@ void db_remove_statement_from_current_funit( statement* stmt );
 
 /*! \brief Removes specified statement and associated expression from list and memory. */
 void db_remove_statement( statement* stmt );
+
+/*! \brief Connects one generate item block to another. */
+bool db_gen_item_connect( gen_item* gi1, gen_item* gi2 );
 
 /*! \brief Connects one statement block to another. */
 bool db_statement_connect( statement* curr_stmt, statement* next_stmt );
@@ -143,6 +152,10 @@ void db_dealloc_design();
 
 /*
  $Log$
+ Revision 1.59  2006/07/18 21:52:49  phase1geo
+ More work on generate blocks.  Currently working on assembling generate item
+ statements in the parser.  Still a lot of work to go here.
+
  Revision 1.58  2006/06/27 19:34:42  phase1geo
  Permanent fix for the CDD save feature.
 
