@@ -420,6 +420,10 @@ inst_parm* inst_parm_add( char* name, char* inst_name, static_expr* msb, static_
     expl = mparm->exp_head;
     while( expl != NULL ) {
       expl->exp->sig = iparm->sig;
+      /* Set the expression's vector to this signal's vector if we are part of a generate expression */
+      if( expl->exp->suppl.part.gen_expr == 1 ) {
+        expression_set_value( expl->exp, iparm->sig->value );
+      }
       expl = expl->next;
     }
   }
@@ -1010,6 +1014,11 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.66  2006/07/10 03:05:04  phase1geo
+ Contains bug fixes for memory leaks and segmentation faults.  Also contains
+ some starting code to support generate blocks.  There is absolutely no
+ functionality here, however.
+
  Revision 1.65  2006/07/08 02:06:54  phase1geo
  Updating build scripts for next development release and fixing a bug in
  the score command that caused segfaults for signals that used the same

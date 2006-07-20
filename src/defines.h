@@ -1098,6 +1098,8 @@ union esuppl_u {
                                      added to the functional unit statement list and should not be added again. */
     control owned          :1;  /*!< Bit 24.  Mask bit = 0.  Temporary value used by the score command to indicate
                                      if this expression is already owned by a mod_parm structure. */
+    control gen_expr       :1;  /*!< Bit 25.  Mask bit = 0.  Temporary value used by the score command to indicate
+                                     that this expression is a part of a generate expression. */
   } part;
 };
 
@@ -1939,8 +1941,11 @@ struct gen_item_s {
     statement*  stmt;                /*!< Pointer to statement */
     funit_inst* inst;                /*!< Pointer to instance */
   } elem;                            /*!< Union of various pointers this generate item is pointing at */
-  int           type;                /*!< Specifies which element pointer is valid */
-  int           conn_id;             /*!< Connection ID (used for connecting) */
+  struct {
+    control     type    : 3;         /*!< Specifies which element pointer is valid */
+    control     conn_id : 1;         /*!< Connection ID (used for connecting) */
+  } suppl;
+  vsignal*      genvar;              /*!< Specifies a genvar to use for this type (only valid for TFN) */
   gen_item*     next_true;           /*!< Pointer to the next generate item if expr is true */
   gen_item*     next_false;          /*!< Pointer to the next generate item if expr is false */
 };
@@ -1955,6 +1960,10 @@ struct gitem_link_s {
 
 /*
  $Log$
+ Revision 1.206  2006/07/20 04:55:18  phase1geo
+ More updates to support generate blocks.  We seem to be passing the parser
+ stage now.  Getting segfaults in the generate_resolve code, presently.
+
  Revision 1.205  2006/07/17 22:12:42  phase1geo
  Adding more code for generate block support.  Still just adding code at this
  point -- hopefully I haven't broke anything that doesn't use generate blocks.

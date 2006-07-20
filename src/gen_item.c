@@ -23,7 +23,7 @@ extern funit_inst* instance_root;
 */
 void gen_item_display( gen_item* gi ) {
 
-  switch( gi->type ) {
+  switch( gi->suppl.type ) {
     case GI_TYPE_EXPR :
       printf( "  type: EXPR\n" );
       expression_display( gi->elem.expr );
@@ -60,9 +60,9 @@ bool gen_item_compare( gen_item* gi1, gen_item* gi2 ) {
 
   bool retval = FALSE;  /* Return value for this function */
 
-  if( (gi1 != NULL) && (gi2 != NULL) && (gi1->type == gi2->type) ) {
+  if( (gi1 != NULL) && (gi2 != NULL) && (gi1->suppl.type == gi2->suppl.type) ) {
 
-    switch( gi1->type ) {
+    switch( gi1->suppl.type ) {
       case GI_TYPE_EXPR :  retval = (gi1->elem.expr->id == gi2->elem.expr->id) ? TRUE : FALSE;  break;
       case GI_TYPE_SIG  :  retval = scope_compare( gi1->elem.sig->name, gi2->elem.sig->name );  break;
       case GI_TYPE_STMT :  retval = (gi1->elem.stmt->exp->id == gi2->elem.stmt->exp->id) ? TRUE : FALSE;  break;
@@ -93,10 +93,12 @@ gen_item* gen_item_create_expr( expression* expr ) {
 
   /* Create the generate item for an expression */
   gi = (gen_item*)malloc_safe( sizeof( gen_item ), __FILE__, __LINE__ );
-  gi->elem.expr  = expr;
-  gi->type       = GI_TYPE_EXPR;
-  gi->next_true  = NULL;
-  gi->next_false = NULL;
+  gi->elem.expr     = expr;
+  gi->suppl.type    = GI_TYPE_EXPR;
+  gi->suppl.conn_id = 0;
+  gi->genvar        = NULL;
+  gi->next_true     = NULL;
+  gi->next_false    = NULL;
 
   return( gi );
 
@@ -117,10 +119,12 @@ gen_item* gen_item_create_sig( vsignal* sig ) {
 
   /* Create the generate item for a signal */
   gi = (gen_item*)malloc_safe( sizeof( gen_item ), __FILE__, __LINE__ );
-  gi->elem.sig   = sig;
-  gi->type       = GI_TYPE_SIG;
-  gi->next_true  = NULL;
-  gi->next_false = NULL;
+  gi->elem.sig      = sig;
+  gi->suppl.type    = GI_TYPE_SIG;
+  gi->suppl.conn_id = 0;
+  gi->genvar        = NULL;
+  gi->next_true     = NULL;
+  gi->next_false    = NULL;
 
   return( gi );
 
@@ -141,10 +145,12 @@ gen_item* gen_item_create_stmt( statement* stmt ) {
 
   /* Create the generate item for a statement */
   gi = (gen_item*)malloc_safe( sizeof( gen_item ), __FILE__, __LINE__ );
-  gi->elem.stmt  = stmt;
-  gi->type       = GI_TYPE_STMT;
-  gi->next_true  = NULL;
-  gi->next_false = NULL;
+  gi->elem.stmt     = stmt;
+  gi->suppl.type    = GI_TYPE_STMT;
+  gi->suppl.conn_id = 0;
+  gi->genvar        = NULL;
+  gi->next_true     = NULL;
+  gi->next_false    = NULL;
 
   return( gi );
 
@@ -165,10 +171,12 @@ gen_item* gen_item_create_inst( funit_inst* inst ) {
 
   /* Create the generate item for an instance */
   gi = (gen_item*)malloc_safe( sizeof( gen_item ), __FILE__, __LINE__ );
-  gi->elem.inst  = inst;
-  gi->type       = GI_TYPE_INST;
-  gi->next_true  = NULL;
-  gi->next_false = NULL;
+  gi->elem.inst     = inst;
+  gi->suppl.type    = GI_TYPE_INST;
+  gi->suppl.conn_id = 0;
+  gi->genvar        = NULL;
+  gi->next_true     = NULL;
+  gi->next_false    = NULL;
 
   return( gi );
 
@@ -189,10 +197,12 @@ gen_item* gen_item_create_tfn( funit_inst* inst ) {
 
   /* Create the generate item for a namespace */
   gi = (gen_item*)malloc_safe( sizeof( gen_item ), __FILE__, __LINE__ );
-  gi->elem.inst  = inst;
-  gi->type       = GI_TYPE_TFN;
-  gi->next_true  = NULL;
-  gi->next_false = NULL;
+  gi->elem.inst     = inst;
+  gi->suppl.type    = GI_TYPE_TFN;
+  gi->suppl.conn_id = 0;
+  gi->genvar        = NULL;
+  gi->next_true     = NULL;
+  gi->next_false    = NULL;
 
   return( gi );
 
@@ -207,10 +217,10 @@ gen_item* gen_item_create_tfn( funit_inst* inst ) {
  outputs the given generate item to the specified output file.  If they do
  not match, nothing is done.
 */
-void gen_item_db_write( gen_item* gi, int type, FILE* ofile ) {
+void gen_item_db_write( gen_item* gi, control type, FILE* ofile ) {
 
   /* If the types match, output based on type */
-  if( gi->type == type ) {
+  if( gi->suppl.type == type ) {
 
     switch( type ) {
       case GI_TYPE_SIG :
@@ -240,7 +250,7 @@ bool gen_item_connect( gen_item* gi1, gen_item* gi2, int conn_id ) {
   bool retval;  /* Return value for this function */
 
   /* Set the connection ID */
-  gi1->conn_id = conn_id;
+  gi1->suppl.conn_id = conn_id;
 
   /* If both paths go to the same destination, only parse one path */
   if( gi1->next_true == gi1->next_false ) {
@@ -251,7 +261,7 @@ bool gen_item_connect( gen_item* gi1, gen_item* gi2, int conn_id ) {
       gi1->next_false = gi2;
       retval = TRUE;
     /* If the TRUE path leads to a loop/merge, stop traversing */
-    } else if( (gi1->next_true->conn_id != conn_id) && (gi1->next_true != gi2) ) {
+    } else if( (gi1->next_true->suppl.conn_id != conn_id) && (gi1->next_true != gi2) ) {
       retval |= gen_item_connect( gi1->next_true, gi2, conn_id );
     }
 
@@ -260,11 +270,11 @@ bool gen_item_connect( gen_item* gi1, gen_item* gi2, int conn_id ) {
     /* Traverse FALSE path */
     if( gi1->next_false == NULL ) {
       gi1->next_false = gi2;
-      if( gi1->next_false->conn_id != conn_id ) {
-        gi1->next_false->conn_id = conn_id;
+      if( gi1->next_false->suppl.conn_id != conn_id ) {
+        gi1->next_false->suppl.conn_id = conn_id;
       }
       retval = TRUE;
-    } else if( (gi1->next_false->conn_id != conn_id) && (gi1->next_false != gi2) ) {
+    } else if( (gi1->next_false->suppl.conn_id != conn_id) && (gi1->next_false != gi2) ) {
       retval |= gen_item_connect( gi1->next_false, gi2, conn_id );
     }
 
@@ -272,7 +282,7 @@ bool gen_item_connect( gen_item* gi1, gen_item* gi2, int conn_id ) {
     if( gi1->next_true == NULL ) {
       gi1->next_true = gi2;
       retval = TRUE;
-    } else if( (gi1->next_true->conn_id == conn_id) && (gi1->next_true != gi2) ) {
+    } else if( (gi1->next_true->suppl.conn_id == conn_id) && (gi1->next_true != gi2) ) {
       retval |= gen_item_connect( gi1->next_true, gi2, conn_id );
     }
 
@@ -290,12 +300,16 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst ) {
 
   if( gi != NULL ) {
 
-    printf( "Resolving generate item, type: %d for inst: %s\n", gi->type, inst->name );
+    printf( "Resolving generate item, type: %d for inst: %s\n", gi->suppl.type, inst->name );
 
-    switch( gi->type ) {
+    switch( gi->suppl.type ) {
   
       case GI_TYPE_EXPR :
-        expression_operate_recursively( gi->elem.expr );
+        /* Recursively resize the expression tree if we have not already done this */
+        if( gi->elem.expr->exec_num == 0 ) {
+          expression_resize( gi->elem.expr, TRUE );
+        }
+        expression_operate_recursively( gi->elem.expr, FALSE );
         if( ESUPPL_IS_TRUE( gi->elem.expr->suppl ) ) {
           gen_item_resolve( gi->next_true, inst );
         } else {
@@ -305,24 +319,33 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst ) {
 
       case GI_TYPE_SIG :
         gitem_link_add( gen_item_create_sig( gi->elem.sig ), &(inst->gitem_head), &(inst->gitem_tail) );
+        gen_item_resolve( gi->next_true, inst );
         break;
 
       case GI_TYPE_STMT :
         gitem_link_add( gen_item_create_stmt( gi->elem.stmt ), &(inst->gitem_head), &(inst->gitem_tail) );
+        gen_item_resolve( gi->next_true, inst );
         break;
 
       case GI_TYPE_INST :
         instance_parse_add( &instance_root, inst->funit, gi->elem.inst->funit, gi->elem.inst->name, gi->elem.inst->range, FALSE );
+        gen_item_resolve( gi->next_true, inst );
         break;
 
       case GI_TYPE_TFN :
-        gitem_link_add( gen_item_create_tfn( gi->elem.inst ), &(inst->gitem_head), &(inst->gitem_tail) );
+        if( gi->genvar != NULL ) {
+          char inst_name[4096];
+          snprintf( inst_name, 4096, "%s[%d]", gi->elem.inst->name, vector_to_int( gi->genvar->value ) );
+          instance_parse_add( &instance_root, inst->funit, gi->elem.inst->funit, inst_name, NULL, FALSE );
+        }
+        gen_item_resolve( gi->next_true, gi->elem.inst );
+        gen_item_resolve( gi->next_false, inst );
         break;
 
       default :
-        assert( (gi->type == GI_TYPE_EXPR) || (gi->type == GI_TYPE_SIG) ||
-                (gi->type == GI_TYPE_STMT) || (gi->type == GI_TYPE_INST) ||
-                (gi->type == GI_TYPE_TFN) );
+        assert( (gi->suppl.type == GI_TYPE_EXPR) || (gi->suppl.type == GI_TYPE_SIG) ||
+                (gi->suppl.type == GI_TYPE_STMT) || (gi->suppl.type == GI_TYPE_INST) ||
+                (gi->suppl.type == GI_TYPE_TFN) );
         break;
 
     }
@@ -378,7 +401,7 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
     /* If we need to remove the current element, do so now */
     if( rm_elem ) {
-      switch( gi->type ) {
+      switch( gi->suppl.type ) {
         case GI_TYPE_EXPR :  expression_dealloc( gi->elem.expr, FALSE );    break;
         case GI_TYPE_SIG  :  vsignal_dealloc( gi->elem.sig );               break;
         case GI_TYPE_STMT :  statement_dealloc_recursive( gi->elem.stmt );  break;
@@ -398,6 +421,10 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.5  2006/07/20 04:55:18  phase1geo
+ More updates to support generate blocks.  We seem to be passing the parser
+ stage now.  Getting segfaults in the generate_resolve code, presently.
+
  Revision 1.4  2006/07/18 21:52:49  phase1geo
  More work on generate blocks.  Currently working on assembling generate item
  statements in the parser.  Still a lot of work to go here.

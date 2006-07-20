@@ -230,8 +230,8 @@ void fsm_var_add_expr( expression* expr, func_unit* funit ) {
       curr_funit = funit;
 
       /* Add expression's children first. */
-      db_add_expression( expr->right );
-      db_add_expression( expr->left );
+      db_add_expression( expr->right, NULL );
+      db_add_expression( expr->left, NULL );
 
       /* Now add this expression to the list. */
       exp_link_add( expr, &(funit->exp_head), &(funit->exp_tail) );
@@ -490,6 +490,10 @@ void fsm_var_remove( fsm_var* fv ) {
 
 /*
  $Log$
+ Revision 1.26  2006/07/14 18:53:32  phase1geo
+ Fixing -g option for keywords.  This seems to be working and I believe that
+ regressions are passing here as well.
+
  Revision 1.25  2006/04/05 15:19:18  phase1geo
  Adding support for FSM coverage output in the GUI.  Started adding components
  for assertion coverage to GUI and report functions though there is no functional

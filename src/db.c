@@ -75,6 +75,7 @@ extern tnode*      def_table;
 extern char**      score_args;
 extern int         score_arg_num;
 extern int         generate_mode;
+extern int         generate_expr_mode;
 
 /*!
  Specifies the string Verilog scope that is currently specified in the VCD file.
@@ -129,6 +130,11 @@ int       last_sim_update = 0;
  to the statement_connect function and incremented immediately after.
 */
 int       stmt_conn_id    = 1;
+
+/*!
+ Specifies current connection ID to use for connecting generate items.
+*/
+int       gi_conn_id      = 1;
 
 
 /*!
@@ -476,6 +482,7 @@ bool db_read( char* file, int read_mode ) {
  \param name   Name of functional unit being instantiated.
  \param type   Type of functional unit being instantiated.
  \param range  Optional range (used for arrays of instances).
+ \param gi     Pointer to created generate item
 
  \return Returns a pointer to the created functional unit if the instance was added to the hierarchy;
          otherwise, returns NULL.
@@ -484,7 +491,7 @@ bool db_read( char* file, int read_mode ) {
  functional unit hasn't been created previously, create it now without a filename associated (NULL).
  Add functional unit node to tree if there are no problems in doing so.
 */
-func_unit* db_add_instance( char* scope, char* name, int type, vector_width* range ) {
+func_unit* db_add_instance( char* scope, char* name, int type, vector_width* range, gen_item** gi ) {
 
   func_unit*  funit = NULL;      /* Pointer to functional unit */
   funit_link* found_funit_link;  /* Pointer to found funit_link in functional unit list */
@@ -526,8 +533,7 @@ func_unit* db_add_instance( char* scope, char* name, int type, vector_width* ran
 
       /* If we are currently within a generate block, create a generate item for this instance to resolve it later */
       if( generate_mode > 0 ) {
-        gitem_link_add( gen_item_create_inst( instance_create( found_funit_link->funit, scope, range ) ),
-                        &(curr_funit->gitem_head), &(curr_funit->gitem_tail) );
+        *gi = gen_item_create_inst( instance_create( found_funit_link->funit, scope, range ) );
       } else {
         instance_parse_add( &instance_root, curr_funit, found_funit_link->funit, scope, range, FALSE );
       }
@@ -539,8 +545,7 @@ func_unit* db_add_instance( char* scope, char* name, int type, vector_width* ran
       /* If we are currently within a generate block, create a generate item for this instance to resolve it later */
       if( generate_mode > 0 ) {
       
-        gitem_link_add( gen_item_create_inst( instance_create( funit, scope, range ) ),
-                        &(curr_funit->gitem_head), &(curr_funit->gitem_tail) );
+        *gi = gen_item_create_inst( instance_create( funit, scope, range ) );
 
       } else {
 
@@ -627,7 +632,7 @@ void db_end_module( int end_line ) {
  \return Returns TRUE if specified function, task or named block was added to the design.  If
          it was not, returns FALSE to indicate that this block should be ignored.
 */
-bool db_add_function_task_namedblock( int type, char* name, char* file, int start_line ) {
+bool db_add_function_task_namedblock( int type, char* name, char* file, int start_line, gen_item** gi ) {
 
   func_unit* tf;         /* Pointer to created functional unit */
   func_unit* parent;     /* Pointer to parent module for the newly created functional unit */
@@ -655,13 +660,14 @@ bool db_add_function_task_namedblock( int type, char* name, char* file, int star
   full_name = funit_gen_task_function_namedblock_name( name, curr_funit );
 
   /* Add this as an instance so we can get scope */
-  if( (tf = db_add_instance( name, full_name, type, NULL )) != NULL ) {
+  if( (tf = db_add_instance( name, full_name, type, NULL, gi )) != NULL ) {
 
     /* Get parent */
     parent = funit_get_curr_module( curr_funit );
 
     if( generate_mode > 0 ) {
-      /* Add this tfn as a generate item to the parent module list - TBD */
+      /* Change the recently created instance generate item to a TFN item */
+      (*gi)->suppl.type = GI_TYPE_TFN;
     } else {
       /* Store this functional unit in the parent module list */
       funit_link_add( tf, &(parent->tf_head), &(parent->tf_tail) );
@@ -821,6 +827,7 @@ void db_add_defparam( char* name, expression* expr ) {
  \param mba        Set to TRUE if specified signal must be assigned by simulated results.
  \param line       Line number where signal was declared.
  \param col        Starting column where signal was declared.
+ \param gi         Pointer to created generate item
 
  Creates a new signal with the specified parameter information and adds this
  to the signal list if it does not already exist.  If width == 0, the sig_msb
@@ -828,7 +835,7 @@ void db_add_defparam( char* name, expression* expr ) {
  add to the current module's parameter list and all associated instances are
  updated to contain new value.
 */
-void db_add_signal( char* name, int type, static_expr* left, static_expr* right, bool is_signed, bool mba, int line, int col ) {
+void db_add_signal( char* name, int type, static_expr* left, static_expr* right, bool is_signed, bool mba, int line, int col, gen_item** gi ) {
 
   vsignal  tmpsig;      /* Temporary signal for signal searching */
   vsignal* sig;         /* Container for newly created signal */
@@ -873,8 +880,7 @@ void db_add_signal( char* name, int type, static_expr* left, static_expr* right,
     }
 
     if( (generate_mode > 0) && (type != SSUPPL_TYPE_GENVAR) ) {
-      /* Add signal to current module's generate item list */
-      gitem_link_add( gen_item_create_sig( sig ), &(curr_funit->gitem_head), &(curr_funit->gitem_tail) );
+      *gi = gen_item_create_sig( sig );
     } else {
       /* Add signal to current module's signal list */
       sig_link_add( sig, &(curr_funit->sig_head), &(curr_funit->sig_tail) );
@@ -939,7 +945,7 @@ gen_item* db_find_gen_item( gen_item* gi ) {
   gitem_link* gil;  /* Pointer to found generate item */
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_find_gen_item, type %d", gi->type );
+  snprintf( user_msg, USER_MSG_LENGTH, "In db_find_gen_item, type %d", gi->suppl.type );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
@@ -1143,11 +1149,12 @@ expression* db_create_expr_from_static( static_expr* se, int line, int first_col
 }
 
 /*!
- \param root      Pointer to root expression to add to module expression list.
+ \param root  Pointer to root expression to add to module expression list.
+ \param gi    Pointer to created generate item
 
  Adds the specified expression to the current module's expression list.
 */
-void db_add_expression( expression* root ) {
+void db_add_expression( expression* root, gen_item** gi ) {
 
   if( root != NULL ) {
 
@@ -1161,14 +1168,17 @@ void db_add_expression( expression* root ) {
 
       if( generate_mode > 0 ) {
 
+        /* Set the root bit */
+        root->suppl.part.root = 1;
+
         /* Add root expression to the generate item list for the current functional unit */
-        gitem_link_add( gen_item_create_expr( root ), &(curr_funit->gitem_head), &(curr_funit->gitem_tail) );
+        *gi = gen_item_create_expr( root );
 
       } else {
 
         /* Add expression's children first. */
-        db_add_expression( root->right );
-        db_add_expression( root->left );
+        db_add_expression( root->right, NULL );
+        db_add_expression( root->left, NULL );
 
         /* Now add this expression to the list. */
         exp_link_add( root, &(curr_funit->exp_head), &(curr_funit->exp_tail) );
@@ -1256,7 +1266,7 @@ statement* db_parallelize_statement( statement* stmt ) {
     /* Create a thread block for this statement block */
     stmt->exp->suppl.part.stmt_head      = 1;
     stmt->exp->suppl.part.stmt_is_called = 1;
-    db_add_statement( stmt, stmt );
+    db_add_statement( stmt, stmt, NULL );
 
     /* Create FORK expression */
     exp = db_create_expression( NULL, NULL, EXP_OP_FORK, FALSE, stmt->exp->line, ((stmt->exp->col & 0xffff0000) >> 16), (stmt->exp->col & 0xffff), NULL );
@@ -1270,7 +1280,7 @@ statement* db_parallelize_statement( statement* stmt ) {
 
     /* Create FORK statement and add the expression */
     stmt = db_create_statement( exp );
-    db_add_expression( exp );
+    db_add_expression( exp, NULL );
 
     /* Restore fork and block depth values for parser */
     fork_depth++;
@@ -1312,11 +1322,12 @@ statement* db_create_statement( expression* exp ) {
 /*!
  \param stmt   Pointer to statement add to current module's statement list.
  \param start  Pointer to starting statement of statement tree.
+ \param gi     Pointer to newly created generate item.
 
  Adds the specified statement tree to the tail of the current module's statement list.
  The start statement is specified to avoid infinite looping.
 */
-void db_add_statement( statement* stmt, statement* start ) {
+void db_add_statement( statement* stmt, statement* start, gen_item** gi ) {
  
   if( (stmt != NULL) && (stmt->exp->suppl.part.stmt_added == 0) ) {
 
@@ -1327,11 +1338,11 @@ void db_add_statement( statement* stmt, statement* start ) {
 
     /* Add TRUE and FALSE statement paths to list */
     if( (ESUPPL_IS_STMT_STOP_FALSE( stmt->exp->suppl ) == 0) && (stmt->next_false != start) ) {
-      db_add_statement( stmt->next_false, start );
+      db_add_statement( stmt->next_false, start, gi );
     }
 
     if( (ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0) && (stmt->next_true != stmt->next_false) && (stmt->next_true != start) ) {
-      db_add_statement( stmt->next_true, start );
+      db_add_statement( stmt->next_true, start, gi );
     }
 
     /* Set ADDED bit of this statement */
@@ -1339,7 +1350,7 @@ void db_add_statement( statement* stmt, statement* start ) {
 
     /* Now add current statement */
     if( generate_mode > 0 ) {
-      gitem_link_add( gen_item_create_stmt( stmt ), &(curr_funit->gitem_head), &(curr_funit->gitem_tail) );
+      *gi = gen_item_create_stmt( stmt );
     } else {
       stmt_link_add_tail( stmt, &(curr_funit->stmt_head), &(curr_funit->stmt_tail) );
     }
@@ -1475,15 +1486,15 @@ bool db_gen_item_connect( gen_item* gi1, gen_item* gi2 ) {
   bool retval;  /* Return value for this function */
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_gen_item_connect, type1: %d, type2: %d", gi1->type, gi2->type );
+  snprintf( user_msg, USER_MSG_LENGTH, "In db_gen_item_connect, type1: %d, type2: %d", gi1->suppl.type, gi2->suppl.type );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
   /* Connect generate items */
-  retval = gen_item_connect( gi1, gi2, stmt_conn_id );
+  retval = gen_item_connect( gi1, gi2, gi_conn_id );
 
-  /* Increment stmt_conn_id for next connection */
-  stmt_conn_id++;
+  /* Increment gi_conn_id for next connection */
+  gi_conn_id = (gi_conn_id + 1) & 0x1;
 
   return( retval );
 
@@ -1856,6 +1867,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.193  2006/07/20 04:55:18  phase1geo
+ More updates to support generate blocks.  We seem to be passing the parser
+ stage now.  Getting segfaults in the generate_resolve code, presently.
+
  Revision 1.192  2006/07/19 22:30:45  phase1geo
  More work done for generate support.  Still have a ways to go.
 

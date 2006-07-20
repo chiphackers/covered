@@ -154,6 +154,7 @@ extern exp_link* static_expr_head;
 extern exp_link* static_expr_tail;
 
 extern bool debug_mode;
+extern int  generate_expr_mode;
 
 static bool expression_op_func__xor( expression*, thread* );
 static bool expression_op_func__multiply( expression*, thread* );
@@ -319,7 +320,7 @@ void expression_create_value( expression* exp, int width, bool data ) {
 
   vec_data* value = NULL;  /* Temporary storage of vector nibble array */
 
-  if( data == TRUE ) {
+  if( (data == TRUE) || ((exp->suppl.part.gen_expr == 1) && (width > 0)) ) {
     value = (vec_data*)malloc_safe( (sizeof( vec_data ) * width), __FILE__, __LINE__ );
   }
 
@@ -356,6 +357,7 @@ expression* expression_create( expression* right, expression* left, exp_op_type 
   new_expr->suppl.all           = 0;
   new_expr->suppl.part.lhs      = (nibble)lhs & 0x1;
   new_expr->suppl.part.owns_vec = EXPR_OWNS_VEC( op, new_expr->suppl );
+  new_expr->suppl.part.gen_expr = (generate_expr_mode > 0) ? 1 : 0;
   new_expr->op                  = op;
   new_expr->id                  = id;
   new_expr->ulid                = -1;
@@ -475,7 +477,7 @@ expression* expression_create( expression* right, expression* left, exp_op_type 
 
   }
 
-  if( data == FALSE ) {
+  if( (data == FALSE) && (generate_expr_mode == 0) ) {
     assert( new_expr->value->value == NULL );
   }
 
@@ -517,8 +519,8 @@ void expression_set_value( expression* exp, vector* vec ) {
       break;
     case EXP_OP_MBIT_SEL   :
     case EXP_OP_PARAM_MBIT :
-      expression_operate_recursively( exp->left  );
-      expression_operate_recursively( exp->right );
+      expression_operate_recursively( exp->left,  TRUE );
+      expression_operate_recursively( exp->right, TRUE );
       lbit = vector_to_int( exp->left->value  );
       rbit = vector_to_int( exp->right->value );
       if( lbit <= rbit ) {
@@ -541,7 +543,7 @@ void expression_set_value( expression* exp, vector* vec ) {
     case EXP_OP_MBIT_NEG :
     case EXP_OP_PARAM_MBIT_POS :
     case EXP_OP_PARAM_MBIT_NEG :
-      expression_operate_recursively( exp->right );
+      expression_operate_recursively( exp->right, TRUE );
       exp->value->value = vec->value;
       exp->value->width = vector_to_int( exp->right->value );
       break;
@@ -709,7 +711,7 @@ void expression_resize( expression* expr, bool recursive ) {
        the left child and the bit-width of the right child.
       */
       case EXP_OP_EXPAND :
-        expression_operate_recursively( expr->left );
+        expression_operate_recursively( expr->left, TRUE );
         if( (expr->value->width != (vector_to_int( expr->left->value ) * expr->right->value->width)) ||
             (expr->value->value == NULL) ) {
           assert( expr->value->value == NULL );
@@ -2728,45 +2730,54 @@ bool expression_operate( expression* expr, thread* thr ) {
 }
 
 /*!
- \param expr  Pointer to top of expression tree to perform recursive operations.
+ \param expr    Pointer to top of expression tree to perform recursive operations.
+ \param sizing  Set to TRUE if we are evaluating for purposes of sizing.
  
  Recursively performs the proper operations to cause the top-level expression to
  be set to a value.  This function is called during the parse stage to derive 
  pre-CDD widths of multi-bit expressions.  Each MSB/LSB is an expression tree that 
  needs to be evaluated to set the width properly on the MBIT_SEL expression.
 */
-void expression_operate_recursively( expression* expr ) {
+void expression_operate_recursively( expression* expr, bool sizing ) {
     
   if( expr != NULL ) {
     
-    /*
-     Non-static expression found where static expression required.  Simulator
-     should catch this error before us, so no user error (too much work to find
-     expression in functional unit expression list for now.
-    */
-    assert( (expr->op != EXP_OP_SIG)      &&
-            (expr->op != EXP_OP_SBIT_SEL) &&
-            (expr->op != EXP_OP_MBIT_SEL) &&
-            (expr->op != EXP_OP_MBIT_POS) &&
-            (expr->op != EXP_OP_MBIT_NEG) );
-
     /* Evaluate children */
-    expression_operate_recursively( expr->left  );
-    expression_operate_recursively( expr->right );
+    expression_operate_recursively( expr->left,  sizing );
+    expression_operate_recursively( expr->right, sizing );
     
-    /* Resize current expression only */
-    expression_resize( expr, FALSE );
+    if( sizing ) {
+
+      /*
+       Non-static expression found where static expression required.  Simulator
+       should catch this error before us, so no user error (too much work to find
+       expression in functional unit expression list for now.
+      */
+      assert( (expr->op != EXP_OP_SIG)      &&
+              (expr->op != EXP_OP_SBIT_SEL) &&
+              (expr->op != EXP_OP_MBIT_SEL) &&
+              (expr->op != EXP_OP_MBIT_POS) &&
+              (expr->op != EXP_OP_MBIT_NEG) );
+
+      /* Resize current expression only */
+      expression_resize( expr, FALSE );
     
-    /* Create vector value to store operation information */
-    if( expr->value->value == NULL ) {
-      expression_create_value( expr, expr->value->width, TRUE );
+      /* Create vector value to store operation information */
+      if( expr->value->value == NULL ) {
+        expression_create_value( expr, expr->value->width, TRUE );
+      }
+
     }
     
     /* Perform operation */
     expression_operate( expr, NULL );
 
-    /* Clear out the execution number value since we aren't really simulating this */
-    expr->exec_num = 0;
+    if( sizing ) {
+
+      /* Clear out the execution number value since we aren't really simulating this */
+      expr->exec_num = 0;
+
+    }
     
   }
   
@@ -3155,6 +3166,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.185  2006/07/10 03:05:04  phase1geo
+ Contains bug fixes for memory leaks and segmentation faults.  Also contains
+ some starting code to support generate blocks.  There is absolutely no
+ functionality here, however.
+
  Revision 1.184  2006/07/09 01:40:39  phase1geo
  Removing the vpi directory (again).  Also fixing a bug in Covered's expression
  deallocator where a case statement contains an unbindable signal.  Previously

@@ -37,13 +37,13 @@ bool db_write( char* file, bool parse_mode, bool report_save );
 bool db_read( char* file, int read_mode );
 
 /*! \brief Adds specified functional unit node to functional unit tree.  Called by parser. */
-func_unit* db_add_instance( char* scope, char* name, int type, vector_width* range );
+func_unit* db_add_instance( char* scope, char* name, int type, vector_width* range, gen_item** gi );
 
 /*! \brief Adds specified module to module list.  Called by parser. */
 void db_add_module( char* name, char* file, int start_line );
 
 /*! \brief Adds specified task/function to functional unit list.  Called by parser. */
-bool db_add_function_task_namedblock( int type, char* name, char* file, int start_line );
+bool db_add_function_task_namedblock( int type, char* name, char* file, int start_line, gen_item** gi );
 
 /*! \brief Adds specified declared parameter to parameter list.  Called by parser. */
 void db_add_declared_param( bool is_signed, static_expr* msb, static_expr* lsb, char* name, expression* expr, bool local );
@@ -58,7 +58,7 @@ void db_add_vector_param( vsignal* sig, expression* parm_exp, int type );
 void db_add_defparam( char* name, expression* expr );
 
 /*! \brief Adds specified vsignal to vsignal list.  Called by parser. */
-void db_add_signal( char* name, int type, static_expr* left, static_expr* right, bool is_signed, bool mba, int line, int col );
+void db_add_signal( char* name, int type, static_expr* left, static_expr* right, bool is_signed, bool mba, int line, int col, gen_item** gi );
 
 /*! \brief Creates statement block that acts like a fork join block from a standard statement block */
 statement* db_add_fork_join( statement* stmt );
@@ -85,7 +85,7 @@ expression* db_create_expression( expression* right, expression* left, int op, b
 expression* db_create_expr_from_static( static_expr* se, int line, int first_col, int last_col );
 
 /*! \brief Adds specified expression to expression list.  Called by parser. */
-void db_add_expression( expression* root );
+void db_add_expression( expression* root, gen_item** gi );
 
 /*! \brief Creates an expression tree sensitivity list for the given statement block */
 expression* db_create_sensitivity_list( statement* stmt );
@@ -97,7 +97,7 @@ statement* db_parallelize_statement( statement* stmt );
 statement* db_create_statement( expression* exp );
 
 /*! \brief Adds specified statement to current functional unit's statement list.  Called by parser. */
-void db_add_statement( statement* stmt, statement* start );
+void db_add_statement( statement* stmt, statement* start, gen_item** gi );
 
 /*! \brief Removes specified statement from current functional unit. */
 void db_remove_statement_from_current_funit( statement* stmt );
@@ -152,6 +152,9 @@ void db_dealloc_design();
 
 /*
  $Log$
+ Revision 1.60  2006/07/19 22:30:46  phase1geo
+ More work done for generate support.  Still have a ways to go.
+
  Revision 1.59  2006/07/18 21:52:49  phase1geo
  More work on generate blocks.  Currently working on assembling generate item
  statements in the parser.  Still a lot of work to go here.

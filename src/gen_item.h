@@ -32,7 +32,7 @@ gen_item* gen_item_create_inst( funit_inst* inst );
 gen_item* gen_item_create_tfn( funit_inst* inst );
 
 /*! \brief Outputs the current generate item to the given output file if it matches the type specified */
-void gen_item_db_write( gen_item* gi, int type, FILE* file );
+void gen_item_db_write( gen_item* gi, control type, FILE* file );
 
 /*! \brief Connects a generate item block to a new generate item */
 bool gen_item_connect( gen_item* gi1, gen_item* gi2, int conn_id );
@@ -48,6 +48,10 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem );
 
 /*
  $Log$
+ Revision 1.4  2006/07/20 04:55:18  phase1geo
+ More updates to support generate blocks.  We seem to be passing the parser
+ stage now.  Getting segfaults in the generate_resolve code, presently.
+
  Revision 1.3  2006/07/18 21:52:49  phase1geo
  More work on generate blocks.  Currently working on assembling generate item
  statements in the parser.  Still a lot of work to go here.

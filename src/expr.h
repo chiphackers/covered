@@ -83,7 +83,7 @@ void expression_display( expression* expr );
 bool expression_operate( expression* expr, thread* thr );
 
 /*! \brief Performs recursive expression operation (parse mode only). */
-void expression_operate_recursively( expression* expr );
+void expression_operate_recursively( expression* expr, bool sizing );
 
 /*! \brief Returns TRUE if specified expression is found to contain all static leaf expressions. */
 bool expression_is_static_only( expression* expr );
@@ -103,6 +103,11 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.43  2006/03/28 22:28:27  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.42  2006/03/20 16:43:38  phase1geo
  Fixing code generator to properly display expressions based on lines.  Regression
  still needs to be updated for these changes.
