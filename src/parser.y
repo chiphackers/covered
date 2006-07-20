@@ -1948,7 +1948,14 @@ generate_item_list_opt
 generate_item_list
   : generate_item_list generate_item
     {
-      db_gen_item_connect( $1, $2 );
+      if( $1 == NULL ) {
+        $$ = $2;
+      } else if( $2 == NULL ) {
+        $$ = $1;
+      } else {
+        db_gen_item_connect( $1, $2 );
+        $$ = $1;
+      }
     }
   | generate_item
     {

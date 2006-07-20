@@ -1940,6 +1940,7 @@ struct gen_item_s {
     funit_inst* inst;                /*!< Pointer to instance */
   } elem;                            /*!< Union of various pointers this generate item is pointing at */
   int           type;                /*!< Specifies which element pointer is valid */
+  int           conn_id;             /*!< Connection ID (used for connecting) */
   gen_item*     next_true;           /*!< Pointer to the next generate item if expr is true */
   gen_item*     next_false;          /*!< Pointer to the next generate item if expr is false */
 };
@@ -1954,6 +1955,10 @@ struct gitem_link_s {
 
 /*
  $Log$
+ Revision 1.205  2006/07/17 22:12:42  phase1geo
+ Adding more code for generate block support.  Still just adding code at this
+ point -- hopefully I haven't broke anything that doesn't use generate blocks.
+
  Revision 1.204  2006/07/13 05:31:52  phase1geo
  Adding -g option to score command parser/usage information.  Still a lot of
  work to go before this feature is complete.

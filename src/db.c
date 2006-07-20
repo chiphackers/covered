@@ -52,6 +52,7 @@
 #include "scope.h"
 #include "ovl.h"
 #include "gen_item.h"
+#include "vector.h"
 
 
 extern char*       top_module;
@@ -871,7 +872,7 @@ void db_add_signal( char* name, int type, static_expr* left, static_expr* right,
       }
     }
 
-    if( generate_mode > 0 ) {
+    if( (generate_mode > 0) && (type != SSUPPL_TYPE_GENVAR) ) {
       /* Add signal to current module's generate item list */
       gitem_link_add( gen_item_create_sig( sig ), &(curr_funit->gitem_head), &(curr_funit->gitem_tail) );
     } else {
@@ -937,6 +938,11 @@ gen_item* db_find_gen_item( gen_item* gi ) {
 
   gitem_link* gil;  /* Pointer to found generate item */
 
+#ifdef DEBUG_MODE
+  snprintf( user_msg, USER_MSG_LENGTH, "In db_find_gen_item, type %d", gi->type );
+  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+#endif
+
   /* Search for the specified generate item */
   gil = gitem_link_find( gi, curr_funit->gitem_head );
 
@@ -952,7 +958,21 @@ gen_item* db_find_gen_item( gen_item* gi ) {
 */
 gen_item* db_find_last_gen_item() {
 
-  return( (curr_funit->gitem_tail == NULL) ? NULL : curr_funit->gitem_tail->gi );
+  static gen_item* last_item  = NULL;  /* Last retrieved item */
+  gen_item*        found_item = NULL;  /* Found last item */
+
+#ifdef DEBUG_MODE
+  print_output( "In db_find_last_gen_item", DEBUG, __FILE__, __LINE__ );
+#endif
+
+  found_item = ((curr_funit->gitem_tail == NULL) || (curr_funit->gitem_tail->gi == last_item)) ? NULL :
+               curr_funit->gitem_tail->gi;
+
+  if( (curr_funit->gitem_tail != NULL) && (curr_funit->gitem_tail->gi != last_item) ) {
+    last_item = found_item;
+  }
+
+  return( found_item );
 
 }
 
@@ -1063,8 +1083,8 @@ expression* db_create_expression( expression* right, expression* left, int op, b
    the right expression.
   */
   if( (expr->op == EXP_OP_BASSIGN) ) {
-    vector_dealloc( left->value );
-    left->value = right->value;
+    vector_dealloc( expr->value );
+    expr->value = right->value;
   }
 
   /* Add expression and signal to binding list */
@@ -1098,7 +1118,12 @@ expression* db_create_expr_from_static( static_expr* se, int line, int first_col
 
     /* This static expression is a static value so create a static expression from its value */
     expr = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, line, first_col, last_col, NULL );
+
+    /* Create the new vector */
+    vec = vector_create( 32, TRUE );
     vector_from_int( vec, se->num );
+
+    /* Assign the new vector to the expression's vector (after deallocating the expression's old vector) */
     assert( expr->value->value == NULL );
     free_safe( expr->value );
     expr->value = vec;
@@ -1438,9 +1463,29 @@ void db_connect_statement_false( statement* stmt, statement* next_false ) {
 
 }
 
+/*!
+ \param gi1  Pointer to generate item block to connect to gi2
+ \param gi2  Pointer to generate item that will be connected to gi1
+
+ \return Returns TRUE if a generate item connection was properly established; otherwise,
+         returns FALSE.
+*/
 bool db_gen_item_connect( gen_item* gi1, gen_item* gi2 ) {
 
-  /* TBD */
+  bool retval;  /* Return value for this function */
+
+#ifdef DEBUG_MODE
+  snprintf( user_msg, USER_MSG_LENGTH, "In db_gen_item_connect, type1: %d, type2: %d", gi1->type, gi2->type );
+  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+#endif
+
+  /* Connect generate items */
+  retval = gen_item_connect( gi1, gi2, stmt_conn_id );
+
+  /* Increment stmt_conn_id for next connection */
+  stmt_conn_id++;
+
+  return( retval );
 
 }
 
@@ -1811,6 +1856,9 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.192  2006/07/19 22:30:45  phase1geo
+ More work done for generate support.  Still have a ways to go.
+
  Revision 1.191  2006/07/18 21:52:49  phase1geo
  More work on generate blocks.  Currently working on assembling generate item
  statements in the parser.  Still a lot of work to go here.

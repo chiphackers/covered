@@ -229,6 +229,60 @@ void gen_item_db_write( gen_item* gi, int type, FILE* ofile ) {
 }
 
 /*!
+ \param gi1      Pointer to generate item block to connect to gi2
+ \param gi2      Pointer to generate item to connect to gi1
+ \param conn_id  Connection ID
+
+ \return Returns TRUE if the connection was successful; otherwise, returns FALSE.
+*/
+bool gen_item_connect( gen_item* gi1, gen_item* gi2, int conn_id ) {
+
+  bool retval;  /* Return value for this function */
+
+  /* Set the connection ID */
+  gi1->conn_id = conn_id;
+
+  /* If both paths go to the same destination, only parse one path */
+  if( gi1->next_true == gi1->next_false ) {
+
+    /* If the TRUE path is NULL, connect it to the new statement */
+    if( gi1->next_true == NULL ) {
+      gi1->next_true  = gi2;
+      gi1->next_false = gi2;
+      retval = TRUE;
+    /* If the TRUE path leads to a loop/merge, stop traversing */
+    } else if( (gi1->next_true->conn_id != conn_id) && (gi1->next_true != gi2) ) {
+      retval |= gen_item_connect( gi1->next_true, gi2, conn_id );
+    }
+
+  } else {
+
+    /* Traverse FALSE path */
+    if( gi1->next_false == NULL ) {
+      gi1->next_false = gi2;
+      if( gi1->next_false->conn_id != conn_id ) {
+        gi1->next_false->conn_id = conn_id;
+      }
+      retval = TRUE;
+    } else if( (gi1->next_false->conn_id != conn_id) && (gi1->next_false != gi2) ) {
+      retval |= gen_item_connect( gi1->next_false, gi2, conn_id );
+    }
+
+    /* Traverse TRUE path */
+    if( gi1->next_true == NULL ) {
+      gi1->next_true = gi2;
+      retval = TRUE;
+    } else if( (gi1->next_true->conn_id == conn_id) && (gi1->next_true != gi2) ) {
+      retval |= gen_item_connect( gi1->next_true, gi2, conn_id );
+    }
+
+  }
+
+  return( retval );
+
+}
+
+/*!
  \param gi    Pointer to current generate item to resolve
  \param inst  Pointer to instance to store results to
 */
@@ -344,6 +398,10 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.4  2006/07/18 21:52:49  phase1geo
+ More work on generate blocks.  Currently working on assembling generate item
+ statements in the parser.  Still a lot of work to go here.
+
  Revision 1.3  2006/07/18 13:37:47  phase1geo
  Fixing compile issues.
 
