@@ -24,7 +24,13 @@
 */
 
 /*! \brief Returns the defined value of the keyword or IDENTIFIER if this is not a Verilog keyword. */
-extern int lexer_keyword_code( const char* str, int length );
+extern int lexer_keyword_1995_code( const char* str, int length );
+
+/*! \brief Returns the defined value of the keyword or IDENTIFIER if this is not a Verilog keyword. */
+extern int lexer_keyword_2001_code( const char* str, int length );
+
+/*! \brief Returns the defined value of the keyword or IDENTIFIER if this is not a Verilog keyword. */
+extern int lexer_keyword_sv_code( const char* str, int length );
 
 #endif
 
