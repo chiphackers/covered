@@ -619,6 +619,7 @@ void instance_db_write( funit_inst* root, FILE* file, char* scope, bool parse_mo
   char        tscope[4096];  /* New scope of functional unit to write */
   funit_inst* curr;          /* Pointer to current child functional unit instance */
   exp_link*   expl;          /* Pointer to current expression link */
+  gitem_link* gil;           /* Pointer to current generate item link */
 
   assert( scope != NULL );
 
@@ -626,12 +627,22 @@ void instance_db_write( funit_inst* root, FILE* file, char* scope, bool parse_mo
 
   /* If we are in parse mode, re-issue expression IDs (we use the ulid field since it is not used in parse mode) */
   if( parse_mode ) {
+
+    /* First issue IDs to the expressions within the functional unit */
     expl = root->funit->exp_head;
     while( expl != NULL ) {
       expl->exp->ulid = curr_expr_id;
       curr_expr_id++;
       expl = expl->next;
     }
+
+    /* Then issue IDs to any generated expressions */
+    gil = root->gitem_head;
+    while( gil != NULL ) {
+      gen_item_assign_expr_ids( gil->gi );
+      gil = gil->next;
+    }
+
   }
 
   /* Display root functional unit */
@@ -758,6 +769,11 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.53  2006/07/21 20:12:46  phase1geo
+ Fixing code to get generated instances and generated array of instances to
+ work.  Added diagnostics to verify correct functionality.  Full regression
+ passes.
+
  Revision 1.52  2006/07/18 19:03:21  phase1geo
  Sync'ing up to the scoping fixes from the 0.4.6 stable release.
 

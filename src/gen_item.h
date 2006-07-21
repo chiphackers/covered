@@ -34,8 +34,14 @@ gen_item* gen_item_create_inst( funit_inst* inst );
 /*! \brief Creates a generate item for a namespace */
 gen_item* gen_item_create_tfn( funit_inst* inst );
 
+/*! \brief Assigns unique expression IDs to all expressions for specified statement block */
+void gen_item_assign_expr_ids( gen_item* gi );
+
 /*! \brief Outputs the current generate item to the given output file if it matches the type specified */
 void gen_item_db_write( gen_item* gi, control type, FILE* file );
+
+/*! \brief Outputs the entire expression tree from the given generate statement */
+void gen_item_db_write_expr_tree( gen_item* gi, FILE* file );
 
 /*! \brief Connects a generate item block to a new generate item */
 bool gen_item_connect( gen_item* gi1, gen_item* gi2, int conn_id );
@@ -51,6 +57,12 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem );
 
 /*
  $Log$
+ Revision 1.6  2006/07/21 05:47:42  phase1geo
+ More code additions for generate functionality.  At this point, we seem to
+ be creating proper generate item blocks and are creating the generate loop
+ namespace appropriately.  However, the binder is still unable to find a signal
+ created by a generate block.
+
  Revision 1.5  2006/07/20 20:11:09  phase1geo
  More work on generate statements.  Trying to figure out a methodology for
  handling namespaces.  Still a lot of work to go...

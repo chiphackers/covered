@@ -271,6 +271,65 @@ void statement_db_write( statement* stmt, FILE* ofile, bool parse_mode ) {
 }
 
 /*!
+ \param stmt   Pointer to root of statement tree to output
+ \param ofile  Pointer to output file to write statements to
+
+ Traverses specified statement tree, outputting all statements within that tree.
+*/
+void statement_db_write_tree( statement* stmt, FILE* ofile ) {
+
+  if( stmt != NULL ) {
+
+    /* Output ourselves first */
+    statement_db_write( stmt, ofile, TRUE );
+
+    /* Traverse down the rest of the statement block */
+    if( (stmt->next_true == stmt->next_false) && (ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0) ) {
+      statement_db_write_tree( stmt->next_true, ofile );
+    } else {
+      if( ESUPPL_IS_STMT_STOP_FALSE( stmt->exp->suppl ) == 0 ) {
+        statement_db_write_tree( stmt->next_false, ofile );
+      }
+      if( ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0 ) {
+        statement_db_write_tree( stmt->next_true, ofile );
+      }
+    }
+
+  }
+
+}
+
+/*!
+ \param stmt   Pointer to specified statement tree to display
+ \param ofile  Pointer to output file to write
+
+ Traverses the specified statement block, writing all expression trees to specified output file.
+*/
+void statement_db_write_expr_tree( statement* stmt, FILE* ofile ) {
+
+  if( stmt != NULL ) {
+
+    /* Output ourselves first */
+    expression_db_write_tree( stmt->exp, ofile );
+
+    /* Traverse down the rest of the statement block */
+    if( (stmt->next_true == stmt->next_false) && (ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0) ) {
+      statement_db_write_expr_tree( stmt->next_true, ofile );
+    } else {
+      if( ESUPPL_IS_STMT_STOP_FALSE( stmt->exp->suppl ) == 0 ) {
+        statement_db_write_expr_tree( stmt->next_false, ofile );
+      }
+      if( ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0 ) {
+        statement_db_write_expr_tree( stmt->next_true, ofile );
+      }
+    }
+
+  }
+
+
+}
+
+/*!
  \param line        Pointer to current line of file being read.
  \param curr_funit  Pointer to current module.
  \param read_mode   If set to REPORT, adds statement to head of list; otherwise, adds statement to tail.
@@ -308,6 +367,7 @@ bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) {
       /* Find associated root expression */
       tmpexp.id = id;
       expl = exp_link_find( &tmpexp, curr_funit->exp_head );
+      assert( expl != NULL );
 
       stmt = statement_create( expl->exp );
 
@@ -365,6 +425,35 @@ bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) {
   }
 
   return( retval );
+
+}
+
+/*!
+ \param stmt  Pointer to statement block to traverse
+
+ Recursively traverses the entire statement block and assigns unique expression IDs for each
+ expression tree that it finds.
+*/
+void statement_assign_expr_ids( statement* stmt ) {
+
+  if( stmt != NULL ) {
+
+    /* Assign unique expression IDs */
+    expression_assign_expr_ids( stmt->exp );
+
+    /* Traverse down the rest of the statement block */
+    if( (stmt->next_true == stmt->next_false) && (ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0) ) {
+      statement_assign_expr_ids( stmt->next_true );
+    } else {
+      if( ESUPPL_IS_STMT_STOP_FALSE( stmt->exp->suppl ) == 0 ) {
+        statement_assign_expr_ids( stmt->next_false );
+      }
+      if( ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0 ) {
+        statement_assign_expr_ids( stmt->next_true );
+      }
+    }
+
+  }
 
 }
 
@@ -678,6 +767,10 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.82  2006/07/18 21:52:49  phase1geo
+ More work on generate blocks.  Currently working on assembling generate item
+ statements in the parser.  Still a lot of work to go here.
+
  Revision 1.81  2006/06/27 19:34:43  phase1geo
  Permanent fix for the CDD save feature.
 

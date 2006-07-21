@@ -61,8 +61,14 @@ expression* expression_find_uline_id( expression* expr, int ulid );
 /*! \brief Finds the root statement for the given expression */
 statement* expression_get_root_statement( expression* exp );
 
+/*! \brief Assigns each expression in the given tree a unique identifier */
+void expression_assign_expr_ids( expression* root );
+
 /*! \brief Writes this expression to the specified database file. */
 void expression_db_write( expression* expr, FILE* file, bool parse_mode );
+
+/*! \brief Writes the entire expression tree to the specified data file. */
+void expression_db_write_tree( expression* root, FILE* file );
 
 /*! \brief Reads current line of specified file and parses for expression information. */
 bool expression_db_read( char** line, func_unit* curr_mod, bool eval );
@@ -103,6 +109,10 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.44  2006/07/20 20:11:09  phase1geo
+ More work on generate statements.  Trying to figure out a methodology for
+ handling namespaces.  Still a lot of work to go...
+
  Revision 1.43  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

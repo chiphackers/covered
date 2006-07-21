@@ -155,6 +155,7 @@ extern exp_link* static_expr_tail;
 
 extern bool debug_mode;
 extern int  generate_expr_mode;
+extern int  curr_expr_id;
 
 static bool expression_op_func__xor( expression*, thread* );
 static bool expression_op_func__multiply( expression*, thread* );
@@ -940,6 +941,27 @@ statement* expression_get_root_statement( expression* exp ) {
 }
 
 /*!
+ \param root  Pointer to root of the expression tree to assign unique IDs for
+
+ Recursively iterates down the specified expression tree assigning unique IDs to each expression.
+*/
+void expression_assign_expr_ids( expression* root ) {
+
+  if( root != NULL ) {
+
+    /* Traverse children first */
+    expression_assign_expr_ids( root->left );
+    expression_assign_expr_ids( root->right );
+
+    /* Assign our expression a unique ID value */
+    root->ulid = curr_expr_id;
+    curr_expr_id++;
+
+  }
+
+}
+
+/*!
  \param expr        Pointer to expression to write to database file.
  \param file        Pointer to database file to write to.
  \param parse_mode  Set to TRUE when we are writing after just parsing the design (causes ulid value to be
@@ -978,6 +1000,28 @@ void expression_db_write( expression* expr, FILE* file, bool parse_mode ) {
   }
 
   fprintf( file, "\n" );
+
+}
+
+/*!
+ \param root   Pointer to the root expression to display
+ \param ofile  Output file to write expression tree to
+
+ Recursively iterates through the specified expression tree, outputting the expressions
+ to the specified file.
+*/
+void expression_db_write_tree( expression* root, FILE* ofile ) {
+
+  if( root != NULL ) {
+
+    /* Print children first */
+    expression_db_write_tree( root->left, ofile );
+    expression_db_write_tree( root->right, ofile );
+
+    /* Now write ourselves */
+    expression_db_write( root, ofile, TRUE );
+
+  }
 
 }
 
@@ -3166,6 +3210,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.186  2006/07/20 20:11:09  phase1geo
+ More work on generate statements.  Trying to figure out a methodology for
+ handling namespaces.  Still a lot of work to go...
+
  Revision 1.185  2006/07/10 03:05:04  phase1geo
  Contains bug fixes for memory leaks and segmentation faults.  Also contains
  some starting code to support generate blocks.  There is absolutely no

@@ -32,8 +32,17 @@ statement* statement_create( expression* exp );
 /*! \brief Writes specified statement to the specified output file. */
 void statement_db_write( statement* stmt, FILE* ofile, bool parse_mode );
 
+/*! \brief Writes specified statement tree to the specified output file. */
+void statement_db_write_tree( statement* stmt, FILE* ofile );
+
+/*! \brief Writes specified expression trees for given statement block to specified output file. */
+void statement_db_write_expr_tree( statement* stmt, FILE* ofile );
+
 /*! \brief Reads in statement line from specified string and stores statement in specified functional unit. */
 bool statement_db_read( char** line, func_unit* curr_funit, int read_mode );
+
+/*! \brief Assigns unique expression IDs to each expression in the given statement block. */
+void statement_assign_expr_ids( statement* stmt );
 
 /*! \brief Connects statement sequence to next statement and sets stop bit. */
 bool statement_connect( statement* curr_stmt, statement* next_stmt, int conn_id );
@@ -56,6 +65,11 @@ void statement_dealloc( statement* stmt );
 
 /*
  $Log$
+ Revision 1.25  2006/03/28 22:28:28  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.24  2006/01/24 23:24:38  phase1geo
  More updates to handle static functions properly.  I have redone quite a bit
  of code here which has regressions pretty broke at the moment.  More work

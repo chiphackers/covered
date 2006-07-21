@@ -321,6 +321,21 @@ gen_item* gen_item_create_end( funit_inst* inst ) {
 }
 
 /*!
+ \param gi  Pointer to generate item to check and assign expression IDs for
+
+ Assigns unique expression IDs to each expression in the tree given for a generated statement.
+*/
+void gen_item_assign_expr_ids( gen_item* gi ) {
+
+  if( gi->suppl.type == GI_TYPE_STMT ) {
+
+    statement_assign_expr_ids( gi->elem.stmt );
+
+  }
+
+}
+
+/*!
  \param gi    Pointer to current generate item to test and output
  \param type  Specifies the type of the generate item to output
  \param file  Output file to display generate item to
@@ -339,12 +354,29 @@ void gen_item_db_write( gen_item* gi, control type, FILE* ofile ) {
         vsignal_db_write( gi->elem.sig, ofile );
         break;
       case GI_TYPE_STMT :
-        statement_db_write( gi->elem.stmt, ofile, TRUE );
+        statement_db_write_tree( gi->elem.stmt, ofile );
         break;
       default :  /* Should never be called */
         assert( (type == GI_TYPE_SIG) || (type == GI_TYPE_STMT) );
         break;
     }
+
+  }
+
+}
+
+/*!
+ \param gi     Pointer to current generate item to test and output
+ \param ofile  Output file to display generate item to
+
+ Outputs all expressions for the statement contained in the specified generate item.
+*/
+void gen_item_db_write_expr_tree( gen_item* gi, FILE* ofile ) {
+
+  /* Only do this for statements */
+  if( gi->suppl.type == GI_TYPE_STMT ) {
+
+    statement_db_write_expr_tree( gi->elem.stmt, ofile );
 
   }
 
@@ -575,6 +607,11 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.10  2006/07/21 20:12:46  phase1geo
+ Fixing code to get generated instances and generated array of instances to
+ work.  Added diagnostics to verify correct functionality.  Full regression
+ passes.
+
  Revision 1.9  2006/07/21 17:47:09  phase1geo
  Simple if and if-else generate statements are now working.  Added diagnostics
  to regression suite to verify these.  More testing to follow.

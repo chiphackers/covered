@@ -75,7 +75,6 @@ extern tnode*      def_table;
 extern char**      score_args;
 extern int         score_arg_num;
 extern int         generate_mode;
-extern int         generate_expr_mode;
 
 /*!
  Specifies the string Verilog scope that is currently specified in the VCD file.
@@ -1185,11 +1184,15 @@ void db_add_expression( expression* root ) {
 
       if( generate_mode > 0 ) {
 
-        /* Set the root bit */
-        root->suppl.part.root = 1;
+        if( root->suppl.part.gen_expr == 1 ) {
 
-        /* Add root expression to the generate item list for the current functional unit */
-        last_gi = gen_item_create_expr( root );
+          /* Set the root bit */
+          root->suppl.part.root = 1;
+
+          /* Add root expression to the generate item list for the current functional unit */
+          last_gi = gen_item_create_expr( root );
+
+        }
 
       } else {
 
@@ -1921,6 +1924,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.196  2006/07/21 17:47:09  phase1geo
+ Simple if and if-else generate statements are now working.  Added diagnostics
+ to regression suite to verify these.  More testing to follow.
+
  Revision 1.195  2006/07/21 05:47:42  phase1geo
  More code additions for generate functionality.  At this point, we seem to
  be creating proper generate item blocks and are creating the generate loop
