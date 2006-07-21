@@ -16,6 +16,9 @@
 /*! \brief Displays the specified generate item to standard output */
 void gen_item_display( gen_item* gi );
 
+/*! \brief Searches for a generate item in the generate block of root that matches gi */
+gen_item* gen_item_find( gen_item* root, gen_item* gi );
+
 /*! \brief Creates a generate item for an expression */
 gen_item* gen_item_create_expr( expression* expr );
 
@@ -48,6 +51,10 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem );
 
 /*
  $Log$
+ Revision 1.5  2006/07/20 20:11:09  phase1geo
+ More work on generate statements.  Trying to figure out a methodology for
+ handling namespaces.  Still a lot of work to go...
+
  Revision 1.4  2006/07/20 04:55:18  phase1geo
  More updates to support generate blocks.  We seem to be passing the parser
  stage now.  Getting segfaults in the generate_resolve code, presently.

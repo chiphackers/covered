@@ -151,6 +151,11 @@ bool curr_mba = FALSE;
 */
 int curr_sig_type = SSUPPL_TYPE_DECLARED;
 
+/*!
+ Stores the contents of a generate item that we want to refer to later.
+*/
+gen_item* save_gi;
+
 #define YYERROR_VERBOSE 1
 
 /* Uncomment these lines to turn debugging on */
@@ -460,7 +465,7 @@ list_of_port_declarations
   | list_of_port_declarations ',' IDENTIFIER
     {
       if( $1 != NULL ) {
-        db_add_signal( $3, $1->type, $1->range->left, $1->range->right, curr_signed, curr_mba, @3.first_line, @3.first_column, NULL );
+        db_add_signal( $3, $1->type, $1->range->left, $1->range->right, curr_signed, curr_mba, @3.first_line, @3.first_column );
       }
       $$ = $1;
     }
@@ -477,7 +482,7 @@ port_declaration
         $$ = NULL;
       } else {
         if( ignore_mode == 0 ) {
-          db_add_signal( $6, curr_sig_type, curr_range->left, curr_range->right, curr_signed, FALSE, @6.first_line, @6.first_column, NULL );
+          db_add_signal( $6, curr_sig_type, curr_range->left, curr_range->right, curr_signed, FALSE, @6.first_line, @6.first_column );
           pi = (port_info*)malloc_safe( sizeof( port_info ), __FILE__, __LINE__ );
           pi->type      = curr_sig_type;
           pi->is_signed = curr_signed;
@@ -498,7 +503,7 @@ port_declaration
         $$ = NULL;
       } else {
         if( ignore_mode == 0 ) {
-          db_add_signal( $6, SSUPPL_TYPE_OUTPUT, curr_range->left, curr_range->right, curr_signed, FALSE, @6.first_line, @6.first_column, NULL );
+          db_add_signal( $6, SSUPPL_TYPE_OUTPUT, curr_range->left, curr_range->right, curr_signed, FALSE, @6.first_line, @6.first_column );
           pi = (port_info*)malloc_safe( sizeof( port_info ), __FILE__, __LINE__ );
           pi->type      = SSUPPL_TYPE_OUTPUT;
           pi->is_signed = curr_signed;
@@ -520,7 +525,7 @@ port_declaration
         $$ = NULL;
       } else {
         if( ignore_mode == 0 ) {
-          db_add_signal( $6, SSUPPL_TYPE_OUTPUT, curr_range->left, curr_range->right, curr_signed, FALSE, @6.first_line, @6.first_column, NULL );
+          db_add_signal( $6, SSUPPL_TYPE_OUTPUT, curr_range->left, curr_range->right, curr_signed, FALSE, @6.first_line, @6.first_column );
           pi = (port_info*)malloc_safe( sizeof( port_info ), __FILE__, __LINE__ );
           pi->type       = SSUPPL_TYPE_OUTPUT;
           pi->is_signed  = curr_signed;
@@ -1795,7 +1800,7 @@ list_of_variables
       } else {
         snprintf( str, 256, "!%s", $1 );
       }
-      db_add_signal( str, curr_sig_type, curr_range->left, curr_range->right, curr_signed, curr_mba, @1.first_line, @1.first_column, NULL );
+      db_add_signal( str, curr_sig_type, curr_range->left, curr_range->right, curr_signed, curr_mba, @1.first_line, @1.first_column );
       free_safe( $1 );
     }
   | UNUSED_IDENTIFIER
@@ -1807,7 +1812,7 @@ list_of_variables
       } else {
         snprintf( str, 256, "!%s", $3 );
       }
-      db_add_signal( str, curr_sig_type, curr_range->left, curr_range->right, curr_signed, curr_mba, @3.first_line, @3.first_column, NULL );
+      db_add_signal( str, curr_sig_type, curr_range->left, curr_range->right, curr_signed, curr_mba, @3.first_line, @3.first_column );
       free_safe( $3 );
     }
   | list_of_variables ',' UNUSED_IDENTIFIER
@@ -1981,7 +1986,7 @@ generate_item
   | K_begin ':' IDENTIFIER
     {
       if( (ignore_mode == 0) && ($3 != NULL) ) {
-        if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $3, @3.text, @3.first_line, NULL ) ) {
+        if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $3, @3.text, @3.first_line ) ) {
           ignore_mode++;
         }
       } else {
@@ -2006,10 +2011,12 @@ generate_item
     }
     '(' IDENTIFIER '=' static_expr ';' static_expr ';' IDENTIFIER '=' static_expr ')' K_begin ':' IDENTIFIER
     {
-      generate_for_mode++;
+      generate_for_mode--;
       if( (ignore_mode == 0) && ($16 != NULL) ) {
-        if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $16, @16.text, @16.first_line, NULL ) ) {
+        if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $16, @16.text, @16.first_line ) ) {
           ignore_mode++;
+        } else {
+          save_gi = db_find_last_gen_item();
         }
       } else {
         ignore_mode++;
@@ -2036,25 +2043,31 @@ generate_item
         block_depth++;
         /* Create first statement */
         expr  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @4.first_line, @4.first_column, (@4.last_column - 1), $4 );
+        save_gi->genvar = db_find_signal( $4 );
         free_safe( $4 );
         expr2 = db_create_expr_from_static( $6, @6.first_line, @6.first_column, (@6.last_column - 1) );
         expr  = db_create_expression( expr2, expr, EXP_OP_BASSIGN, FALSE, @4.first_line, @4.first_column, (@6.last_column - 1), NULL );
-        db_add_expression( expr, &gi1 );
+        db_add_expression( expr );
+        gi1 = db_find_last_gen_item();
         /* Create second statement and attach it to the first statement */
         expr = db_create_expr_from_static( $8, @8.first_line, @8.first_column, (@8.last_column - 1) );
-        db_add_expression( expr, &gi2 );
-        gi1->next_true  = gi2;
-        gi1->next_false = gi2;
-        /* Connect next_true of gi2 and connect it to the first statement of the generate block */
-        gi2->next_true  = $18;
+        db_add_expression( expr );
+        gi2 = db_find_last_gen_item();
+        db_gen_item_connect( gi1, gi2 );
+        /* Add genvar to the new scope */
+        /* Connect next_true of gi2 to the new scope */
+        db_gen_item_connect_true( gi2, save_gi );
+        /* Connect the generate block to the new scope */
+        db_gen_item_connect_true( save_gi, $18 );
         /* Create third statement and attach it to the generate block */
         expr = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @10.first_line, @10.first_column, (@10.last_column - 1), $10 );
         free_safe( $10 );
         expr2 = db_create_expr_from_static( $12, @12.first_line, @12.first_column, (@12.last_column - 1) );
         expr = db_create_expression( expr2, expr, EXP_OP_BASSIGN, FALSE, @8.first_line, @8.first_column, (@10.last_column - 1), NULL );
-        db_add_expression( expr, &gi3 );
-        db_gen_item_connect( $18, gi3 );
-        gi3->next_false = gi2;
+        db_add_expression( expr );
+        gi3 = db_find_last_gen_item();
+        db_gen_item_connect_false( save_gi, gi3 );
+        db_gen_item_connect( gi3, gi2 );
         block_depth--;
         $$ = gi1;
       } else {
@@ -2077,8 +2090,9 @@ generate_item
         generate_expr_mode++;
         expr = db_create_expr_from_static( $4, @4.first_line, @4.first_column, (@4.last_column - 1) );
         expr = db_create_expression( expr, NULL, EXP_OP_IF, FALSE, @1.first_line, @1.first_column, (@5.last_column - 1), NULL );
-        db_add_expression( expr, &gi1 );
-        gi1->next_true = $8;
+        db_add_expression( expr );
+        gi1 = db_find_last_gen_item();
+        db_gen_item_connect_true( gi1, $8 );
         generate_expr_mode--;
         $$ = gi1;
       } else {
@@ -2095,9 +2109,10 @@ generate_item
         generate_expr_mode++;
         expr = db_create_expr_from_static( $4, @4.first_line, @4.first_column, (@4.last_column - 1) );
         expr = db_create_expression( expr, NULL, EXP_OP_IF, FALSE, @1.first_line, @1.first_column, (@5.last_column - 1), NULL );
-        db_add_expression( expr, &gi1 );
-        gi1->next_true  = $8;
-        gi1->next_false = $11;
+        db_add_expression( expr );
+        gi1 = db_find_last_gen_item();
+        db_gen_item_connect_true( gi1, $8 );
+        db_gen_item_connect_false( gi1, $11 );
         generate_expr_mode--;
         $$ = gi1;
       } else {
@@ -2312,7 +2327,7 @@ module_item
           }
           free_safe( po );
         }
-        db_add_instance( curr->str, $2, FUNIT_MODULE, curr->range, NULL );
+        db_add_instance( curr->str, $2, FUNIT_MODULE, curr->range );
         curr = curr->next;
       }
       str_link_delete_list( tmp );
@@ -2329,7 +2344,7 @@ module_item
       if( stmt != NULL ) {
         if( db_statement_connect( stmt, stmt ) && (info_suppl.part.excl_always == 0) ) {
           stmt->exp->suppl.part.stmt_head = 1;
-          db_add_statement( stmt, stmt, NULL );
+          db_add_statement( stmt, stmt );
         } else {
           db_remove_statement( stmt );
         }
@@ -2342,7 +2357,7 @@ module_item
       if( stmt != NULL ) {
         if( info_suppl.part.excl_init == 0 ) {
           stmt->exp->suppl.part.stmt_head = 1;
-          db_add_statement( stmt, stmt, NULL );
+          db_add_statement( stmt, stmt );
         } else {
           db_remove_statement( stmt );
         }
@@ -2356,7 +2371,7 @@ module_item
         ignore_mode++;
       }
       if( ignore_mode == 0 ) {
-        if( !db_add_function_task_namedblock( FUNIT_TASK, $3, @3.text, @3.first_line, NULL ) ) {
+        if( !db_add_function_task_namedblock( FUNIT_TASK, $3, @3.text, @3.first_line ) ) {
           ignore_mode++;
         }
       }
@@ -2368,7 +2383,7 @@ module_item
       if( (ignore_mode == 0) && (stmt != NULL) ) {
         stmt->exp->suppl.part.stmt_head      = 1;
         stmt->exp->suppl.part.stmt_is_called = 1;
-        db_add_statement( stmt, stmt, NULL );
+        db_add_statement( stmt, stmt );
       }
     }
     K_endtask
@@ -2387,8 +2402,8 @@ module_item
         ignore_mode++;
       }
       if( ignore_mode == 0 ) {
-        if( db_add_function_task_namedblock( FUNIT_FUNCTION, $4, @4.text, @4.first_line, NULL ) ) {
-          db_add_signal( $4, SSUPPL_TYPE_IMPLICIT, curr_range->left, curr_range->right, FALSE, FALSE, @4.first_line, @4.first_column, NULL );
+        if( db_add_function_task_namedblock( FUNIT_FUNCTION, $4, @4.text, @4.first_line ) ) {
+          db_add_signal( $4, SSUPPL_TYPE_IMPLICIT, curr_range->left, curr_range->right, FALSE, FALSE, @4.first_line, @4.first_column );
         } else {
           ignore_mode++;
         }
@@ -2403,7 +2418,7 @@ module_item
       if( (ignore_mode == 0) && (stmt != NULL) ) {
         stmt->exp->suppl.part.stmt_head      = 1;
         stmt->exp->suppl.part.stmt_is_called = 1;
-        db_add_statement( stmt, stmt, NULL );
+        db_add_statement( stmt, stmt );
       }
     }
     K_endfunction
@@ -2433,6 +2448,8 @@ module_item
       generate_mode = 0;
       if( !parser_check_generation( GENERATION_2001 ) ) {
         ignore_mode--;
+      } else {
+        db_add_gen_item_block( $3 );
       }
     }
   | K_genvar
@@ -2537,7 +2554,7 @@ statement
         db_end_function_task_namedblock( @6.first_line );
         exp  = db_create_expression( NULL, NULL, EXP_OP_NB_CALL, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), $4 );
         stmt = db_create_statement( exp );
-        db_add_expression( exp, NULL );
+        db_add_expression( exp );
         free_safe( $4 );
         $$ = stmt;
       } else {
@@ -2564,7 +2581,7 @@ statement
         db_end_function_task_namedblock( @4.first_line );
         exp  = db_create_expression( NULL, NULL, EXP_OP_NB_CALL, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), $3 );
         stmt = db_create_statement( exp );
-        db_add_expression( exp, NULL );
+        db_add_expression( exp );
         free_safe( $3 );
         $$ = stmt;
       } else {
@@ -2579,7 +2596,7 @@ statement
       if( (ignore_mode == 0) && ($2 != NULL) ) {
         exp  = db_create_expression( NULL, NULL, EXP_OP_DISABLE, FALSE, @1.first_line, @1.first_column, (@2.last_column - 1), $2 );
         stmt = db_create_statement( exp );
-        db_add_expression( exp, NULL );
+        db_add_expression( exp );
         free_safe( $2 );
         $$ = stmt;
       } else {
@@ -2595,7 +2612,7 @@ statement
       statement*  stmt;
       if( (ignore_mode == 0) && ($2 != NULL) ) {
         expr = db_create_expression( NULL, NULL, EXP_OP_TRIGGER, FALSE, @1.first_line, @1.first_column, (@2.last_column - 1), $2 );
-        db_add_expression( expr, NULL );
+        db_add_expression( expr );
         stmt = db_create_statement( expr );
         free_safe( $2 );
         $$ = stmt;
@@ -2625,7 +2642,7 @@ statement
         expr = db_create_expression( NULL, NULL, EXP_OP_JOIN, FALSE, @5.first_line, @5.first_column, (@5.last_column - 1), NULL );
         stmt = db_create_statement( expr );
         if( db_statement_connect( $3, stmt ) ) {
-          db_add_expression( expr, NULL );
+          db_add_expression( expr );
           $$ = $3;
         } else {
           db_remove_statement( $3 );
@@ -2650,7 +2667,7 @@ statement
         expr->value = vec;
         expr = db_create_expression( $3, expr, EXP_OP_REPEAT, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
         stmt = db_create_statement( expr );
-        db_add_expression( expr, NULL );
+        db_add_expression( expr );
         db_connect_statement_true( stmt, $6 );
         stmt->conn_id = stmt_conn_id;   /* This will cause the STOP bit to be set for all statements connecting to stmt */
         assert( db_statement_connect( $6, stmt ) );
@@ -2677,7 +2694,7 @@ statement
           } else {
             expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, lhs_mode, c_stmt->line, 0, 0, NULL );
           }
-          db_add_expression( expr, NULL );
+          db_add_expression( expr );
           stmt = db_create_statement( expr );
           db_connect_statement_true( stmt, c_stmt->stmt );
           db_connect_statement_false( stmt, last_stmt );
@@ -2721,7 +2738,7 @@ statement
           } else {
             expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, lhs_mode, c_stmt->line, 0, 0, NULL );
           }
-          db_add_expression( expr, NULL );
+          db_add_expression( expr );
           stmt = db_create_statement( expr );
           db_connect_statement_true( stmt, c_stmt->stmt );
           db_connect_statement_false( stmt, last_stmt );
@@ -2765,7 +2782,7 @@ statement
           } else {
             expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, lhs_mode, c_stmt->line, 0, 0, NULL );
           }
-          db_add_expression( expr, NULL );
+          db_add_expression( expr );
           stmt = db_create_statement( expr );
           db_connect_statement_true( stmt, c_stmt->stmt );
           db_connect_statement_false( stmt, last_stmt );
@@ -2826,7 +2843,7 @@ statement
         vector_dealloc( tmp->value );
         tmp->value = $3->value;
         stmt = db_create_statement( tmp );
-        db_add_expression( tmp, NULL );
+        db_add_expression( tmp );
         db_connect_statement_true( stmt, $6 );
         $$ = stmt;
       } else {
@@ -2843,7 +2860,7 @@ statement
         vector_dealloc( tmp->value );
         tmp->value = $3->value;
         stmt = db_create_statement( tmp );
-        db_add_expression( tmp, NULL );
+        db_add_expression( tmp );
         db_connect_statement_true( stmt, $6 );
         db_connect_statement_false( stmt, $9 );
         $$ = stmt;
@@ -2870,14 +2887,14 @@ statement
         block_depth++;
         expr = db_create_expression( $5, $3, EXP_OP_BASSIGN, FALSE, @3.first_line, @3.first_column, (@5.last_column - 1), NULL );
         stmt1 = db_create_statement( expr );
-        db_add_expression( expr, NULL );
+        db_add_expression( expr );
         stmt2 = db_create_statement( $7 );
-        db_add_expression( $7, NULL );
+        db_add_expression( $7 );
         db_statement_connect( stmt1, stmt2 );
         db_connect_statement_true( stmt2, stmt4 );
         expr = db_create_expression( $11, $9, EXP_OP_BASSIGN, FALSE, @7.first_line, @7.first_column, (@9.last_column - 1), NULL );
         stmt3 = db_create_statement( expr );
-        db_add_expression( expr, NULL );
+        db_add_expression( expr );
         db_statement_connect( stmt4, stmt3 );
         stmt2->conn_id = stmt_conn_id;   /* This will cause the STOP bit to be set for the stmt3 */
         db_statement_connect( stmt3, stmt2 );
@@ -2924,7 +2941,7 @@ statement
         vector_dealloc( expr->value );
         expr->value = $3->value;
         stmt = db_create_statement( expr );
-        db_add_expression( expr, NULL );
+        db_add_expression( expr );
         db_connect_statement_true( stmt, $6 );
         stmt->conn_id = stmt_conn_id;   /* This will cause the STOP bit to be set for all statements connecting to stmt */
         assert( db_statement_connect( $6, stmt ) );
@@ -2945,7 +2962,7 @@ statement
       statement* stmt;
       if( (ignore_mode == 0) && ($1 != NULL) ) {
         stmt = db_create_statement( $1 );
-        db_add_expression( $1, NULL );
+        db_add_expression( $1 );
         if( $3 != NULL ) {
           if( !db_statement_connect( stmt, $3 ) ) {
             db_remove_statement( stmt );
@@ -2964,7 +2981,7 @@ statement
       statement* stmt;
       if( (ignore_mode == 0) && ($1 != NULL) ) {
         stmt = db_create_statement( $1 );
-        db_add_expression( $1, NULL );
+        db_add_expression( $1 );
         if( $3 != NULL ) {
           if( !db_statement_connect( stmt, $3 ) ) {
             db_remove_statement( stmt );
@@ -2991,7 +3008,7 @@ statement
           expr = db_create_sensitivity_list( $4 );
           expr = db_create_expression( expr, NULL, EXP_OP_SLIST, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), NULL ); 
           stmt = db_create_statement( expr );
-          db_add_expression( expr, NULL );
+          db_add_expression( expr );
           if( !db_statement_connect( stmt, $4 ) ) {
             db_remove_statement( stmt );
             db_remove_statement( $4 );
@@ -3011,7 +3028,7 @@ statement
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
         tmp  = db_create_expression( $3, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
         stmt = db_create_statement( tmp );
-        db_add_expression( tmp, NULL );
+        db_add_expression( tmp );
         $$ = stmt;
       } else {
         expression_dealloc( $1, FALSE );
@@ -3028,7 +3045,7 @@ statement
         vector_dealloc( tmp->value );
         tmp->value = $3->value;
         stmt = db_create_statement( tmp );
-        db_add_expression( tmp, NULL );
+        db_add_expression( tmp );
         $$ = stmt;
       } else {
         expression_dealloc( $1, FALSE );
@@ -3044,7 +3061,7 @@ statement
       if( (ignore_mode == 0) && ($1 != NULL) && ($4 != NULL) ) {
         tmp  = db_create_expression( $4, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
         stmt = db_create_statement( tmp );
-        db_add_expression( tmp, NULL );
+        db_add_expression( tmp );
         $$ = stmt;
       } else {
         expression_dealloc( $1, FALSE );
@@ -3062,7 +3079,7 @@ statement
         vector_dealloc( tmp->value );
         tmp->value = $4->value;
         stmt = db_create_statement( tmp );
-        db_add_expression( tmp, NULL );
+        db_add_expression( tmp );
         $$ = stmt;
       } else {
         expression_dealloc( $1, FALSE );
@@ -3078,7 +3095,7 @@ statement
       if( (ignore_mode == 0) && ($1 != NULL) && ($4 != NULL) ) {
         tmp  = db_create_expression( $4, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
         stmt = db_create_statement( tmp );
-        db_add_expression( tmp, NULL );
+        db_add_expression( tmp );
         $$ = stmt;
       } else {
         expression_dealloc( $1, FALSE );
@@ -3096,7 +3113,7 @@ statement
         vector_dealloc( tmp->value );
         tmp->value = $4->value;
         stmt = db_create_statement( tmp );
-        db_add_expression( tmp, NULL );
+        db_add_expression( tmp );
         $$ = stmt;
       } else {
         expression_dealloc( $1, FALSE );
@@ -3119,7 +3136,7 @@ statement
       statement* stmt;
       if( (ignore_mode == 0) && ($3 != NULL) ) {
         stmt = db_create_statement( $3 );
-        db_add_expression( $3, NULL );
+        db_add_expression( $3 );
         db_connect_statement_true( stmt, $6 );
         $$ = stmt;
       } else {
@@ -3135,7 +3152,7 @@ statement
         if( strncmp( $1, "$display", 8 ) == 0 ) {
           exp  = db_create_expression( NULL, NULL, EXP_OP_NOOP, lhs_mode, 0, 0, 0, NULL );
           stmt = db_create_statement( exp );
-          db_add_expression( exp, NULL );
+          db_add_expression( exp );
           $$   = stmt;
         } else {
           $$   = NULL;
@@ -3160,7 +3177,7 @@ statement
         if( strncmp( $1, "$display", 8 ) == 0 ) {
           exp  = db_create_expression( NULL, NULL, EXP_OP_NOOP, lhs_mode, 0, 0, 0, NULL );
           stmt = db_create_statement( exp );
-          db_add_expression( exp, NULL );
+          db_add_expression( exp );
           $$   = stmt;
         } else {
           $$   = NULL;
@@ -3184,7 +3201,7 @@ statement
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
         exp  = db_create_expression( NULL, $3, EXP_OP_TASK_CALL, FALSE, @1.first_line, @1.first_column, (@5.last_column - 1), $1 );
         stmt = db_create_statement( exp );
-        db_add_expression( exp, NULL );
+        db_add_expression( exp );
         $$   = stmt;
         free_safe( $1 );
       } else {
@@ -3201,7 +3218,7 @@ statement
       if( (ignore_mode == 0) && ($1 != NULL) ) {
         exp  = db_create_expression( NULL, NULL, EXP_OP_TASK_CALL, FALSE, @1.first_line, @1.first_column, (@2.last_column - 1), $1 );
         stmt = db_create_statement( exp );
-        db_add_expression( exp, NULL );
+        db_add_expression( exp );
         $$   = stmt;
         free_safe( $1 );
       } else {
@@ -3222,7 +3239,7 @@ fork_statement
   : ':' IDENTIFIER
     {
       if( (ignore_mode == 0) && ($2 != NULL) ) {
-        if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $2, @2.text, @2.first_line, NULL ) ) {
+        if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $2, @2.text, @2.first_line ) ) {
           ignore_mode++;
         }
       } else {
@@ -3238,11 +3255,11 @@ fork_statement
           expr = db_create_expression( NULL, NULL, EXP_OP_JOIN, FALSE, @5.first_line, @5.first_column, (@5.last_column - 1), NULL );
           stmt = db_create_statement( expr );
           if( db_statement_connect( $5, stmt ) ) {
-            db_add_expression( expr, NULL );
+            db_add_expression( expr );
             stmt = $5;
             stmt->exp->suppl.part.stmt_head      = 1;
             stmt->exp->suppl.part.stmt_is_called = 1;
-            db_add_statement( stmt, stmt, NULL );
+            db_add_statement( stmt, stmt );
             $$ = $2;
           } else {
             db_remove_statement( $5 );
@@ -3280,7 +3297,7 @@ named_begin_end_block
   : IDENTIFIER
     {
       if( (ignore_mode == 0) && ($1 != NULL) ) {
-        if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $1, @1.text, @1.first_line, NULL ) ) {
+        if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $1, @1.text, @1.first_line ) ) {
           ignore_mode++;
         }
       } else {
@@ -3294,7 +3311,7 @@ named_begin_end_block
         if( stmt != NULL ) {
           stmt->exp->suppl.part.stmt_head      = 1;
           stmt->exp->suppl.part.stmt_is_called = 1;
-          db_add_statement( stmt, stmt, NULL );
+          db_add_statement( stmt, stmt );
           $$ = $1;
         } else {
           if( $1 != NULL ) {
@@ -3919,8 +3936,8 @@ assign
         /* Statement will be looped back to itself */
         db_connect_statement_true( stmt, stmt );
         db_connect_statement_false( stmt, stmt );
-        db_add_expression( tmp, NULL );
-        db_add_statement( stmt, stmt, NULL );
+        db_add_expression( tmp );
+        db_add_statement( stmt, stmt );
       } else {
         expression_dealloc( $1, FALSE );
         expression_dealloc( $3, FALSE );
@@ -3979,7 +3996,7 @@ range_or_type_opt
 register_variable
   : IDENTIFIER
     {
-      db_add_signal( $1, curr_sig_type, curr_range->left, curr_range->right, curr_signed, curr_mba, @1.first_line, @1.first_column, NULL );
+      db_add_signal( $1, curr_sig_type, curr_range->left, curr_range->right, curr_signed, curr_mba, @1.first_line, @1.first_column );
       free_safe( $1 );
     }
   | UNUSED_IDENTIFIER
@@ -3992,7 +4009,7 @@ register_variable
         free_safe( $1 );
         expression_dealloc( $3, FALSE );
       } else {
-        db_add_signal( $1, curr_sig_type, curr_range->left, curr_range->right, curr_signed, curr_mba, @1.first_line, @1.first_column, NULL );
+        db_add_signal( $1, curr_sig_type, curr_range->left, curr_range->right, curr_signed, curr_mba, @1.first_line, @1.first_column );
         if( $3 != NULL ) {
           exp = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
           exp = db_create_expression( $3, exp, EXP_OP_RASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
@@ -4002,8 +4019,8 @@ register_variable
           stmt->exp->suppl.part.stmt_head       = 1;
           stmt->exp->suppl.part.stmt_stop_true  = 1;
           stmt->exp->suppl.part.stmt_stop_false = 1;
-          db_add_expression( exp, NULL );
-          db_add_statement( stmt, stmt, NULL );
+          db_add_expression( exp );
+          db_add_statement( stmt, stmt );
         }
         free_safe( $1 );
       }
@@ -4016,7 +4033,7 @@ register_variable
       if( $1 != NULL ) {
         name = (char*)malloc_safe( (strlen( $1 ) + 2), __FILE__, __LINE__ );
         snprintf( name, (strlen( $1 ) + 2), "!%s", $1 );
-        db_add_signal( name, curr_sig_type, curr_range->left, curr_range->right, curr_signed, curr_mba, @1.first_line, @1.first_column, NULL );
+        db_add_signal( name, curr_sig_type, curr_range->left, curr_range->right, curr_signed, curr_mba, @1.first_line, @1.first_column );
         free_safe( $1 );
         free_safe( name );
       }
@@ -4237,7 +4254,7 @@ net_decl_assign
       expression* tmp;
       statement*  stmt;
       if( (ignore_mode == 0) && ($1 != NULL) && (curr_range != NULL) && (info_suppl.part.excl_assign == 0) ) {
-        db_add_signal( $1, SSUPPL_TYPE_DECLARED, curr_range->left, curr_range->right, FALSE, FALSE, @1.first_line, @1.first_column, NULL );
+        db_add_signal( $1, SSUPPL_TYPE_DECLARED, curr_range->left, curr_range->right, FALSE, FALSE, @1.first_line, @1.first_column );
         if( $3 != NULL ) {
           tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
           tmp  = db_create_expression( $3, tmp, EXP_OP_DASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
@@ -4251,8 +4268,8 @@ net_decl_assign
           /* Statement will be looped back to itself */
           db_connect_statement_true( stmt, stmt );
           db_connect_statement_false( stmt, stmt );
-          db_add_expression( tmp, NULL );
-          db_add_statement( stmt, stmt, NULL );
+          db_add_expression( tmp );
+          db_add_statement( stmt, stmt );
         }
         free_safe( $1 );
       }
@@ -4263,7 +4280,7 @@ net_decl_assign
       expression* tmp;
       statement*  stmt;
       if( (ignore_mode == 0) && ($2 != NULL) && (curr_range != NULL) && (info_suppl.part.excl_assign == 0) ) {
-        db_add_signal( $2, SSUPPL_TYPE_DECLARED, curr_range->left, curr_range->right, FALSE, FALSE, @2.first_line, @2.first_column, NULL );
+        db_add_signal( $2, SSUPPL_TYPE_DECLARED, curr_range->left, curr_range->right, FALSE, FALSE, @2.first_line, @2.first_column );
         if( $4 != NULL ) {
           tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @2.first_line, @2.first_column, (@2.last_column - 1), $2 );
           tmp  = db_create_expression( $4, tmp, EXP_OP_DASSIGN, FALSE, @2.first_line, @2.first_column, (@4.last_column - 1), NULL );
@@ -4277,8 +4294,8 @@ net_decl_assign
           /* Statement will be looped back to itself */
           db_connect_statement_true( stmt, stmt );
           db_connect_statement_false( stmt, stmt );
-          db_add_expression( tmp, NULL );
-          db_add_statement( stmt, stmt, NULL );
+          db_add_expression( tmp );
+          db_add_statement( stmt, stmt );
         }
         free_safe( $2 );
       }

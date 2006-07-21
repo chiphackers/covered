@@ -540,7 +540,7 @@ gitem_link* gitem_link_find( gen_item* gi, gitem_link* head ) {
   gitem_link* curr;  /* Pointer to current gitem_link */
 
   curr = head;
-  while( (curr != NULL) && !gen_item_compare( curr->gi, gi ) ) {
+  while( (curr != NULL) && (gen_item_find( curr->gi, gi ) == NULL) ) {
     curr = curr->next;
   }
 
@@ -911,6 +911,10 @@ void gitem_link_delete_list( gitem_link* head, bool rm_elems ) {
 
 /*
  $Log$
+ Revision 1.49  2006/07/17 22:12:42  phase1geo
+ Adding more code for generate block support.  Still just adding code at this
+ point -- hopefully I haven't broke anything that doesn't use generate blocks.
+
  Revision 1.48  2006/07/14 18:53:32  phase1geo
  Fixing -g option for keywords.  This seems to be working and I believe that
  regressions are passing here as well.

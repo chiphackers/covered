@@ -37,13 +37,13 @@ bool db_write( char* file, bool parse_mode, bool report_save );
 bool db_read( char* file, int read_mode );
 
 /*! \brief Adds specified functional unit node to functional unit tree.  Called by parser. */
-func_unit* db_add_instance( char* scope, char* name, int type, vector_width* range, gen_item** gi );
+func_unit* db_add_instance( char* scope, char* name, int type, vector_width* range );
 
 /*! \brief Adds specified module to module list.  Called by parser. */
 void db_add_module( char* name, char* file, int start_line );
 
 /*! \brief Adds specified task/function to functional unit list.  Called by parser. */
-bool db_add_function_task_namedblock( int type, char* name, char* file, int start_line, gen_item** gi );
+bool db_add_function_task_namedblock( int type, char* name, char* file, int start_line );
 
 /*! \brief Adds specified declared parameter to parameter list.  Called by parser. */
 void db_add_declared_param( bool is_signed, static_expr* msb, static_expr* lsb, char* name, expression* expr, bool local );
@@ -58,7 +58,7 @@ void db_add_vector_param( vsignal* sig, expression* parm_exp, int type );
 void db_add_defparam( char* name, expression* expr );
 
 /*! \brief Adds specified vsignal to vsignal list.  Called by parser. */
-void db_add_signal( char* name, int type, static_expr* left, static_expr* right, bool is_signed, bool mba, int line, int col, gen_item** gi );
+void db_add_signal( char* name, int type, static_expr* left, static_expr* right, bool is_signed, bool mba, int line, int col );
 
 /*! \brief Creates statement block that acts like a fork join block from a standard statement block */
 statement* db_add_fork_join( statement* stmt );
@@ -73,7 +73,7 @@ void db_end_function_task( int end_line );
 vsignal* db_find_signal( char* name );
 
 /*! \brief Find specified generate item in the current functional unit.  Called by parser. */
-gen_item* db_find_gen_item( gen_item* gi );
+gen_item* db_find_gen_item( gen_item* root, gen_item* gi );
 
 /*! \brief Returns a pointer to the last generate item added to the current functional unit.  Called by parser. */
 gen_item* db_find_last_gen_item();
@@ -85,7 +85,7 @@ expression* db_create_expression( expression* right, expression* left, int op, b
 expression* db_create_expr_from_static( static_expr* se, int line, int first_col, int last_col );
 
 /*! \brief Adds specified expression to expression list.  Called by parser. */
-void db_add_expression( expression* root, gen_item** gi );
+void db_add_expression( expression* root );
 
 /*! \brief Creates an expression tree sensitivity list for the given statement block */
 expression* db_create_sensitivity_list( statement* stmt );
@@ -97,13 +97,19 @@ statement* db_parallelize_statement( statement* stmt );
 statement* db_create_statement( expression* exp );
 
 /*! \brief Adds specified statement to current functional unit's statement list.  Called by parser. */
-void db_add_statement( statement* stmt, statement* start, gen_item** gi );
+void db_add_statement( statement* stmt, statement* start );
 
 /*! \brief Removes specified statement from current functional unit. */
 void db_remove_statement_from_current_funit( statement* stmt );
 
 /*! \brief Removes specified statement and associated expression from list and memory. */
 void db_remove_statement( statement* stmt );
+
+/*! \brief Connects gi2 to the true path of gi1 */
+void db_gen_item_connect_true( gen_item* gi1, gen_item* gi2 );
+
+/*! \brief Connects gi2 to the false path of gi1 */
+void db_gen_item_connect_false( gen_item* gi1, gen_item* gi2 );
 
 /*! \brief Connects one generate item block to another. */
 bool db_gen_item_connect( gen_item* gi1, gen_item* gi2 );
@@ -152,6 +158,10 @@ void db_dealloc_design();
 
 /*
  $Log$
+ Revision 1.61  2006/07/20 20:11:08  phase1geo
+ More work on generate statements.  Trying to figure out a methodology for
+ handling namespaces.  Still a lot of work to go...
+
  Revision 1.60  2006/07/19 22:30:46  phase1geo
  More work done for generate support.  Still have a ways to go.
 

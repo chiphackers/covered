@@ -28,6 +28,7 @@
 #include "instance.h"
 #include "util.h"
 #include "func_unit.h"
+#include "gen_item.h"
 
 
 extern funit_inst* instance_root;
@@ -46,7 +47,7 @@ extern char        user_msg[USER_MSG_LENGTH];
  a top-of-tree search.  The specified scope should only be for a functional unit.  If the user is attempting
  to get the functional unit for a signal, the signal name should be removed prior to calling this function.
 */
-func_unit* scope_find_funit_from_scope( char* scope, func_unit* curr_funit ) {
+funit_inst* scope_find_inst_from_scope( char* scope, func_unit* curr_funit ) {
 
   funit_inst* curr_inst;      /* Pointer to current instance */
   funit_inst* funiti = NULL;  /* Pointer to functional unit instance found */
@@ -95,7 +96,7 @@ func_unit* scope_find_funit_from_scope( char* scope, func_unit* curr_funit ) {
     } while( (curr_inst != NULL) && (funiti == NULL) );
   }
 
-  return( (funiti == NULL) ? NULL : funiti->funit );
+  return( funiti );
 
 }
 
@@ -116,8 +117,9 @@ func_unit* scope_find_funit_from_scope( char* scope, func_unit* curr_funit ) {
 */
 bool scope_find_param( char* name, func_unit* curr_funit, mod_parm** found_parm, func_unit** found_funit, int line ) {
 
-  char* parm_name;  /* Parameter basename holder */
-  char* scope;      /* Parameter scope holder */
+  char*       parm_name;   /* Parameter basename holder */
+  char*       scope;       /* Parameter scope holder */
+  funit_inst* found_inst;  /* Pointer to found instance */
 
   assert( curr_funit != NULL );
 
@@ -133,7 +135,7 @@ bool scope_find_param( char* name, func_unit* curr_funit, mod_parm** found_parm,
     scope_extract_back( name, parm_name, scope );
 
     /* Get the functional unit that contains this signal */
-    if( (*found_funit = scope_find_funit_from_scope( scope, curr_funit )) == NULL ) {
+    if( (found_inst = scope_find_inst_from_scope( scope, curr_funit )) == NULL ) {
 
       snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined signal hierarchy (%s) in %s %s, file %s, line %d",
                 name, get_funit_type( curr_funit->type ), curr_funit->name, curr_funit->filename, line );
@@ -141,6 +143,8 @@ bool scope_find_param( char* name, func_unit* curr_funit, mod_parm** found_parm,
       exit( 1 );
  
     }
+
+    *found_funit = found_inst->funit;
 
     free_safe( scope );
 
@@ -171,11 +175,12 @@ bool scope_find_param( char* name, func_unit* curr_funit, mod_parm** found_parm,
 */
 bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, func_unit** found_funit, int line ) {
 
-  vsignal    sig;       /* Temporary holder for signal */
-  sig_link*  sigl;      /* Pointer to current signal link */
-  char*      sig_name;  /* Signal basename holder */
-  char*      scope;     /* Signal scope holder */
-  func_unit* parent;    /* Pointer to parent functional unit */
+  vsignal     sig;         /* Temporary holder for signal */
+  sig_link*   sigl;        /* Pointer to current signal link */
+  char*       sig_name;    /* Signal basename holder */
+  char*       scope;       /* Signal scope holder */
+  func_unit*  parent;      /* Pointer to parent functional unit */
+  funit_inst* found_inst;  /* Pointer to found instance */
 
   assert( curr_funit != NULL );
 
@@ -192,7 +197,7 @@ bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, 
     scope_extract_back( name, sig_name, scope );
 
     /* Get the functional unit that contains this signal */
-    if( (*found_funit = scope_find_funit_from_scope( scope, curr_funit )) == NULL ) {
+    if( (found_inst = scope_find_inst_from_scope( scope, curr_funit )) == NULL ) {
 
       snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined signal hierarchy (%s) in %s %s, file %s, line %d",
                 name, get_funit_type( curr_funit->type ), curr_funit->name, curr_funit->filename, line );
@@ -200,6 +205,8 @@ bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, 
       exit( 1 );
  
     }
+
+    *found_funit = found_inst->funit;
 
     free_safe( scope );
 
@@ -216,12 +223,29 @@ bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, 
 
   }
 
+  /* If we haven't found the signal yet, look in the generate items list */
+  if( sigl == NULL ) {
+
+    gen_item*   gi = gen_item_create_sig( &sig );
+    gen_item*   found_gi;
+    gitem_link* gil;
+    
+    if( ((gil = gitem_link_find( gi, curr_funit->gitem_head )) != NULL) &&
+        ((found_gi = gen_item_find( gil->gi, gi )) != NULL) ) {
+      *found_sig = found_gi->elem.sig;
+    } else {
+      *found_sig = NULL;
+    }
+
+  } else {
+
+    *found_sig = (sigl == NULL) ? NULL : sigl->sig;
+
+  }
+
   free_safe( sig_name );
 
-  /* Get found signal pointer if it can be found */
-  *found_sig = (sigl == NULL) ? NULL : sigl->sig;
-
-  return( sigl != NULL );
+  return( *found_sig != NULL );
 
 }
 
@@ -244,6 +268,7 @@ bool scope_find_task_function_namedblock( char* name, int type, func_unit* curr_
   char        rest[4096];     /* Temporary string */
   char        back[4096];     /* Temporary string */
   bool        found = FALSE;  /* Specifies if function unit has been found */
+  funit_inst* found_inst;     /* Found instance from scope */
 
   assert( (type == FUNIT_FUNCTION) || (type == FUNIT_TASK) || (type == FUNIT_NAMED_BLOCK) );
   assert( curr_funit != NULL );
@@ -256,7 +281,7 @@ bool scope_find_task_function_namedblock( char* name, int type, func_unit* curr_
   */
   if( !scope_local( name ) ) {
 
-    if( (*found_funit = scope_find_funit_from_scope( name, curr_funit )) == NULL ) {
+    if( (found_inst = scope_find_inst_from_scope( name, curr_funit )) == NULL ) {
 
       snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined %s hierarchy in %s %s, file %s, line %d",
                 get_funit_type( type ), get_funit_type( curr_funit->type ), name, curr_funit->filename, line );
@@ -264,6 +289,8 @@ bool scope_find_task_function_namedblock( char* name, int type, func_unit* curr_
       exit( 1 );
 
     }
+
+    *found_funit = found_inst->funit;
 
   }
 
@@ -360,6 +387,9 @@ func_unit* scope_get_parent_module( char* scope ) {
 
 /*
  $Log$
+ Revision 1.14  2006/07/18 19:03:21  phase1geo
+ Sync'ing up to the scoping fixes from the 0.4.6 stable release.
+
  Revision 1.13  2006/05/25 12:11:01  phase1geo
  Including bug fix from 0.4.4 stable release and updating regressions.
 

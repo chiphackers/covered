@@ -4,6 +4,9 @@
  \date     7/10/2006
 */
 
+#include <string.h>
+#include <stdio.h>
+
 #include "defines.h"
 #include "gen_item.h"
 #include "expr.h"
@@ -25,23 +28,24 @@ void gen_item_display( gen_item* gi ) {
 
   switch( gi->suppl.type ) {
     case GI_TYPE_EXPR :
-      printf( "  type: EXPR\n" );
+      printf( "  EXPR\n" );
       expression_display( gi->elem.expr );
       break;
     case GI_TYPE_SIG :
-      printf( "  type: SIG\n" );
+      printf( "  SIG\n" );
       vsignal_display( gi->elem.sig );
       break;
     case GI_TYPE_STMT :
-      printf( "  type: STMT, id: %d\n", gi->elem.stmt->exp->id );
+      printf( "  STMT, id: %d\n", gi->elem.stmt->exp->id );
       break;
     case GI_TYPE_INST :
-      printf( "  type: INST\n" );
-      instance_display_tree( gi->elem.inst );
+      printf( "  INST, name: %s\n", gi->elem.inst->name );
       break;
     case GI_TYPE_TFN :
-      printf( "  type: TFN\n" );
-      instance_display_tree( gi->elem.inst );
+      printf( "  TFN, name: %s, type: %d\n", gi->elem.inst->name, gi->elem.inst->funit->type );
+      break;
+    case GI_TYPE_END :
+      printf( "  END, upscope: %s\n", gi->elem.inst->name );
       break;
     default :
       break;
@@ -67,13 +71,63 @@ bool gen_item_compare( gen_item* gi1, gen_item* gi2 ) {
       case GI_TYPE_SIG  :  retval = scope_compare( gi1->elem.sig->name, gi2->elem.sig->name );  break;
       case GI_TYPE_STMT :  retval = (gi1->elem.stmt->exp->id == gi2->elem.stmt->exp->id) ? TRUE : FALSE;  break;
       case GI_TYPE_INST :
-      case GI_TYPE_TFN  :  /* TBD */  break;
+      case GI_TYPE_TFN  :  retval = (strcmp( gi1->elem.inst->name, gi2->elem.inst->name ) == 0) ? TRUE : FALSE;  break;
+      case GI_TYPE_END  :  break;
       default           :  break;
     }
 
   }
 
   return( retval );
+
+}
+
+/*!
+ \param root  Pointer to root of generate item block to search in
+ \param gi    Pointer to generate item to search for
+
+ \return Returns a pointer to the generate item that matches the given generate item
+         in the given generate item block.  Returns NULL if it was not able to find
+         a matching item.
+
+ Recursively traverses the specified generate item block searching for a generate item
+ that matches the specified generate item.
+*/
+gen_item* gen_item_find( gen_item* root, gen_item* gi ) {
+
+  gen_item* found = NULL;  /* Return value for this function */
+
+  assert( gi != NULL );
+
+  if( root != NULL ) {
+
+    if( gen_item_compare( root, gi ) ) {
+
+      found = root;
+
+    } else {
+
+      /* If both true and false paths lead to same item, just traverse the true path */
+      if( root->next_true == root->next_false ) {
+
+        if( root->suppl.stop_true == 0 ) {
+          found = gen_item_find( root->next_true, gi );
+        }
+
+      /* Otherwise, traverse both true and false paths */
+      } else if( (root->suppl.stop_true == 0) && ((found = gen_item_find( root->next_true, gi )) == NULL) ) {
+
+        if( root->suppl.stop_false == 0 ) {
+          found = gen_item_find( root->next_false, gi );
+        }
+
+      }
+
+    }
+
+  }
+
+  return( found );
 
 }
 
@@ -88,9 +142,6 @@ gen_item* gen_item_create_expr( expression* expr ) {
 
   gen_item* gi;
 
-  printf( "In gen_item_create_expr, id: %d, op: %s, line: %d\n",
-          expr->id, expression_string_op( expr->op ), expr->line );
-
   /* Create the generate item for an expression */
   gi = (gen_item*)malloc_safe( sizeof( gen_item ), __FILE__, __LINE__ );
   gi->elem.expr     = expr;
@@ -99,6 +150,9 @@ gen_item* gen_item_create_expr( expression* expr ) {
   gi->genvar        = NULL;
   gi->next_true     = NULL;
   gi->next_false    = NULL;
+
+  printf( "In gen_item_create_expr, id: %d, op: %s, line: %d, %p\n",
+          expr->id, expression_string_op( expr->op ), expr->line, gi );
 
   return( gi );
 
@@ -115,8 +169,6 @@ gen_item* gen_item_create_sig( vsignal* sig ) {
 
   gen_item* gi;
 
-  printf( "In gen_item_create_sig, name: %s\n", sig->name );
-
   /* Create the generate item for a signal */
   gi = (gen_item*)malloc_safe( sizeof( gen_item ), __FILE__, __LINE__ );
   gi->elem.sig      = sig;
@@ -125,6 +177,8 @@ gen_item* gen_item_create_sig( vsignal* sig ) {
   gi->genvar        = NULL;
   gi->next_true     = NULL;
   gi->next_false    = NULL;
+
+  printf( "In gen_item_create_sig, name: %s, %p\n", sig->name, gi );
 
   return( gi );
 
@@ -141,8 +195,6 @@ gen_item* gen_item_create_stmt( statement* stmt ) {
 
   gen_item* gi;
 
-  printf( "In gen_item_create_stmt, id: %d, line: %d\n", stmt->exp->id, stmt->exp->line );
-
   /* Create the generate item for a statement */
   gi = (gen_item*)malloc_safe( sizeof( gen_item ), __FILE__, __LINE__ );
   gi->elem.stmt     = stmt;
@@ -151,6 +203,8 @@ gen_item* gen_item_create_stmt( statement* stmt ) {
   gi->genvar        = NULL;
   gi->next_true     = NULL;
   gi->next_false    = NULL;
+
+  printf( "In gen_item_create_stmt, id: %d, line: %d, %p\n", stmt->exp->id, stmt->exp->line, gi );
 
   return( gi );
 
@@ -167,8 +221,6 @@ gen_item* gen_item_create_inst( funit_inst* inst ) {
 
   gen_item* gi;
 
-  printf( "In gen_item_create_inst, name: %s\n", inst->name );
-
   /* Create the generate item for an instance */
   gi = (gen_item*)malloc_safe( sizeof( gen_item ), __FILE__, __LINE__ );
   gi->elem.inst     = inst;
@@ -177,6 +229,8 @@ gen_item* gen_item_create_inst( funit_inst* inst ) {
   gi->genvar        = NULL;
   gi->next_true     = NULL;
   gi->next_false    = NULL;
+
+  printf( "In gen_item_create_inst, name: %s, %p\n", inst->name, gi );
 
   return( gi );
 
@@ -193,8 +247,6 @@ gen_item* gen_item_create_tfn( funit_inst* inst ) {
 
   gen_item* gi;
 
-  printf( "In gen_item_create_tfn, name: %s\n", inst->name );
-
   /* Create the generate item for a namespace */
   gi = (gen_item*)malloc_safe( sizeof( gen_item ), __FILE__, __LINE__ );
   gi->elem.inst     = inst;
@@ -203,6 +255,34 @@ gen_item* gen_item_create_tfn( funit_inst* inst ) {
   gi->genvar        = NULL;
   gi->next_true     = NULL;
   gi->next_false    = NULL;
+
+  printf( "In gen_item_create_tfn, name: %s, %p\n", inst->name, gi );
+
+  return( gi );
+
+}
+
+/*!
+ \param inst  Pointer to namespace to create a generate item for (upscope)
+
+ \return Returns a pointer to create generate item.
+
+ Create a new generate item for the end of a scope.
+*/
+gen_item* gen_item_create_end( funit_inst* inst ) {
+
+  gen_item* gi;
+
+  /* Create the generate item for a namespace */
+  gi = (gen_item*)malloc_safe( sizeof( gen_item ), __FILE__, __LINE__ );
+  gi->elem.inst     = inst;
+  gi->suppl.type    = GI_TYPE_END;
+  gi->suppl.conn_id = 0;
+  gi->genvar        = NULL;
+  gi->next_true     = NULL;
+  gi->next_false    = NULL;
+
+  printf( "In gen_item_create_end, name: %s, %p\n", inst->name, gi );
 
   return( gi );
 
@@ -259,9 +339,17 @@ bool gen_item_connect( gen_item* gi1, gen_item* gi2, int conn_id ) {
     if( gi1->next_true == NULL ) {
       gi1->next_true  = gi2;
       gi1->next_false = gi2;
+      if( gi1->next_true->suppl.conn_id == conn_id ) {
+        gi1->suppl.stop_true  = 1;
+        gi1->suppl.stop_false = 1;
+      }
       retval = TRUE;
+    } else if( gi1->next_true->suppl.conn_id == conn_id ) {
+      gi1->suppl.stop_true  = 1;
+      gi1->suppl.stop_false = 1;
+
     /* If the TRUE path leads to a loop/merge, stop traversing */
-    } else if( (gi1->next_true->suppl.conn_id != conn_id) && (gi1->next_true != gi2) ) {
+    } else if( gi1->next_true != gi2 ) {
       retval |= gen_item_connect( gi1->next_true, gi2, conn_id );
     }
 
@@ -270,19 +358,28 @@ bool gen_item_connect( gen_item* gi1, gen_item* gi2, int conn_id ) {
     /* Traverse FALSE path */
     if( gi1->next_false == NULL ) {
       gi1->next_false = gi2;
-      if( gi1->next_false->suppl.conn_id != conn_id ) {
+      if( gi1->next_false->suppl.conn_id == conn_id ) {
+        gi1->suppl.stop_false = 1;
+      } else {
         gi1->next_false->suppl.conn_id = conn_id;
       }
       retval = TRUE;
-    } else if( (gi1->next_false->suppl.conn_id != conn_id) && (gi1->next_false != gi2) ) {
+    } else if( gi1->next_false->suppl.conn_id == conn_id ) {
+      gi1->suppl.stop_false = 1;
+    } else if( gi1->next_false != gi2 ) {
       retval |= gen_item_connect( gi1->next_false, gi2, conn_id );
     }
 
     /* Traverse TRUE path */
     if( gi1->next_true == NULL ) {
       gi1->next_true = gi2;
+      if( gi1->next_true->suppl.conn_id == conn_id ) {
+        gi1->suppl.stop_true = 1;
+      }
       retval = TRUE;
-    } else if( (gi1->next_true->suppl.conn_id == conn_id) && (gi1->next_true != gi2) ) {
+    } else if( gi1->next_true->suppl.conn_id == conn_id ) {
+      gi1->suppl.stop_true = 1;
+    } else if( (gi1->next_true != gi2) && ((gi1->suppl.type != GI_TYPE_TFN) || (gi1->genvar == NULL)) ) {
       retval |= gen_item_connect( gi1->next_true, gi2, conn_id );
     }
 
@@ -337,15 +434,20 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst ) {
           char inst_name[4096];
           snprintf( inst_name, 4096, "%s[%d]", gi->elem.inst->name, vector_to_int( gi->genvar->value ) );
           instance_parse_add( &instance_root, inst->funit, gi->elem.inst->funit, inst_name, NULL, FALSE );
+          instance_display_tree( instance_root );
         }
         gen_item_resolve( gi->next_true, gi->elem.inst );
         gen_item_resolve( gi->next_false, inst );
         break;
 
+      case GI_TYPE_END :
+        gen_item_resolve( gi->next_true, gi->elem.inst );
+        break;
+
       default :
         assert( (gi->suppl.type == GI_TYPE_EXPR) || (gi->suppl.type == GI_TYPE_SIG) ||
                 (gi->suppl.type == GI_TYPE_STMT) || (gi->suppl.type == GI_TYPE_INST) ||
-                (gi->suppl.type == GI_TYPE_TFN) );
+                (gi->suppl.type == GI_TYPE_TFN)  || (gi->suppl.type == GI_TYPE_END) );
         break;
 
     }
@@ -396,8 +498,18 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
   if( gi != NULL ) {
 
     /* Deallocate children first */
-    gen_item_dealloc( gi->next_true,  rm_elem );
-    gen_item_dealloc( gi->next_false, rm_elem );
+    if( gi->next_true == gi->next_false ) {
+      if( gi->suppl.stop_true == 0 ) {
+        gen_item_dealloc( gi->next_true, rm_elem );
+      }
+    } else {
+      if( gi->suppl.stop_false == 0 ) {
+        gen_item_dealloc( gi->next_false, rm_elem );
+      }
+      if( gi->suppl.stop_true == 0 ) {
+        gen_item_dealloc( gi->next_true, rm_elem );
+      }
+    }
 
     /* If we need to remove the current element, do so now */
     if( rm_elem ) {
@@ -421,6 +533,10 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.6  2006/07/20 20:11:09  phase1geo
+ More work on generate statements.  Trying to figure out a methodology for
+ handling namespaces.  Still a lot of work to go...
+
  Revision 1.5  2006/07/20 04:55:18  phase1geo
  More updates to support generate blocks.  We seem to be passing the parser
  stage now.  Getting segfaults in the generate_resolve code, presently.

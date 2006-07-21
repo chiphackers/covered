@@ -586,6 +586,9 @@
 /*! Holds a task, function, named begin/end block */
 #define GI_TYPE_TFN             4
 
+/*! Specifies the end of the current scope */
+#define GI_TYPE_END             5
+
 /*! @} */
 
 /*!
@@ -1942,8 +1945,10 @@ struct gen_item_s {
     funit_inst* inst;                /*!< Pointer to instance */
   } elem;                            /*!< Union of various pointers this generate item is pointing at */
   struct {
-    control     type    : 3;         /*!< Specifies which element pointer is valid */
-    control     conn_id : 1;         /*!< Connection ID (used for connecting) */
+    control     type       : 3;      /*!< Specifies which element pointer is valid */
+    control     conn_id    : 1;      /*!< Connection ID (used for connecting) */
+    control     stop_true  : 1;      /*!< Specifies that we should stop traversing the true path */
+    control     stop_false : 1;      /*!< Specifies that we should stop traversing the false path */
   } suppl;
   vsignal*      genvar;              /*!< Specifies a genvar to use for this type (only valid for TFN) */
   gen_item*     next_true;           /*!< Pointer to the next generate item if expr is true */
@@ -1960,6 +1965,10 @@ struct gitem_link_s {
 
 /*
  $Log$
+ Revision 1.207  2006/07/20 20:11:09  phase1geo
+ More work on generate statements.  Trying to figure out a methodology for
+ handling namespaces.  Still a lot of work to go...
+
  Revision 1.206  2006/07/20 04:55:18  phase1geo
  More updates to support generate blocks.  We seem to be passing the parser
  stage now.  Getting segfaults in the generate_resolve code, presently.

@@ -230,8 +230,8 @@ void fsm_var_add_expr( expression* expr, func_unit* funit ) {
       curr_funit = funit;
 
       /* Add expression's children first. */
-      db_add_expression( expr->right, NULL );
-      db_add_expression( expr->left, NULL );
+      db_add_expression( expr->right );
+      db_add_expression( expr->left );
 
       /* Now add this expression to the list. */
       exp_link_add( expr, &(funit->exp_head), &(funit->exp_tail) );
@@ -490,6 +490,10 @@ void fsm_var_remove( fsm_var* fv ) {
 
 /*
  $Log$
+ Revision 1.27  2006/07/20 20:11:09  phase1geo
+ More work on generate statements.  Trying to figure out a methodology for
+ handling namespaces.  Still a lot of work to go...
+
  Revision 1.26  2006/07/14 18:53:32  phase1geo
  Fixing -g option for keywords.  This seems to be working and I believe that
  regressions are passing here as well.
