@@ -117,9 +117,9 @@ funit_inst* scope_find_inst_from_scope( char* scope, func_unit* curr_funit ) {
 */
 bool scope_find_param( char* name, func_unit* curr_funit, mod_parm** found_parm, func_unit** found_funit, int line ) {
 
-  char*       parm_name;   /* Parameter basename holder */
-  char*       scope;       /* Parameter scope holder */
-  funit_inst* found_inst;  /* Pointer to found instance */
+  char*       parm_name;          /* Parameter basename holder */
+  char*       scope;              /* Parameter scope holder */
+  funit_inst* found_inst = NULL;  /* Pointer to found instance */
 
   assert( curr_funit != NULL );
 
@@ -175,12 +175,12 @@ bool scope_find_param( char* name, func_unit* curr_funit, mod_parm** found_parm,
 */
 bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, func_unit** found_funit, int line ) {
 
-  vsignal     sig;         /* Temporary holder for signal */
-  sig_link*   sigl;        /* Pointer to current signal link */
-  char*       sig_name;    /* Signal basename holder */
-  char*       scope;       /* Signal scope holder */
-  func_unit*  parent;      /* Pointer to parent functional unit */
-  funit_inst* found_inst;  /* Pointer to found instance */
+  vsignal     sig;                /* Temporary holder for signal */
+  sig_link*   sigl;               /* Pointer to current signal link */
+  char*       sig_name;           /* Signal basename holder */
+  char*       scope;              /* Signal scope holder */
+  func_unit*  parent;             /* Pointer to parent functional unit */
+  funit_inst* found_inst = NULL;  /* Pointer to found instance */
 
   assert( curr_funit != NULL );
 
@@ -224,18 +224,20 @@ bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, 
   }
 
   /* If we haven't found the signal yet, look in the generate items list */
-  if( sigl == NULL ) {
+  if( (sigl == NULL) && (found_inst != NULL) && (found_inst->gitem_head != NULL) ) {
 
     gen_item*   gi = gen_item_create_sig( &sig );
     gen_item*   found_gi;
     gitem_link* gil;
     
-    if( ((gil = gitem_link_find( gi, curr_funit->gitem_head )) != NULL) &&
+    if( ((gil = gitem_link_find( gi, found_inst->gitem_head )) != NULL) &&
         ((found_gi = gen_item_find( gil->gi, gi )) != NULL) ) {
       *found_sig = found_gi->elem.sig;
     } else {
       *found_sig = NULL;
     }
+
+    gen_item_dealloc( gi, FALSE );
 
   } else {
 
@@ -387,6 +389,12 @@ func_unit* scope_get_parent_module( char* scope ) {
 
 /*
  $Log$
+ Revision 1.15  2006/07/21 05:47:42  phase1geo
+ More code additions for generate functionality.  At this point, we seem to
+ be creating proper generate item blocks and are creating the generate loop
+ namespace appropriately.  However, the binder is still unable to find a signal
+ created by a generate block.
+
  Revision 1.14  2006/07/18 19:03:21  phase1geo
  Sync'ing up to the scoping fixes from the 0.4.6 stable release.
 

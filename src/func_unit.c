@@ -362,10 +362,12 @@ bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
   }
 
   /* Now print any generated signals in the current instance */
-  curr_gi = inst->gitem_head;
-  while( curr_gi != NULL ) {
-    gen_item_db_write( curr_gi->gi, GI_TYPE_SIG, file );
-    curr_gi = curr_gi->next;
+  if( inst != NULL ) {
+    curr_gi = inst->gitem_head;
+    while( curr_gi != NULL ) {
+      gen_item_db_write( curr_gi->gi, GI_TYPE_SIG, file );
+      curr_gi = curr_gi->next;
+    }
   }
 
   /* Now print all statements in functional unit */
@@ -380,10 +382,12 @@ bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
   }
 
   /* Now print any generated statements in the current instance */
-  curr_gi = inst->gitem_head;
-  while( curr_gi != NULL ) {
-    gen_item_db_write( curr_gi->gi, GI_TYPE_STMT, file );
-    curr_gi = curr_gi->next;
+  if( inst != NULL ) {
+    curr_gi = inst->gitem_head;
+    while( curr_gi != NULL ) {
+      gen_item_db_write( curr_gi->gi, GI_TYPE_STMT, file );
+      curr_gi = curr_gi->next;
+    }
   }
 
   /* Now print all FSM structures in functional unit */
@@ -869,6 +873,10 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.21  2006/07/18 21:52:49  phase1geo
+ More work on generate blocks.  Currently working on assembling generate item
+ statements in the parser.  Still a lot of work to go here.
+
  Revision 1.20  2006/07/17 22:12:42  phase1geo
  Adding more code for generate block support.  Still just adding code at this
  point -- hopefully I haven't broke anything that doesn't use generate blocks.

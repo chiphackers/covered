@@ -1,0 +1,21 @@
+5 8 1 * 0
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd generate1.vcd -o generate1.cdd -v generate1.v
+3 0 main main generate1.v 1 21
+3 0 foo main.bar generate1.v 23 35
+1 max 0 0 80000 32 0 40 0 0 0 0 0 0 0
+3 1 foo.U main.bar.U[0] generate1.v 30 32
+1 a 0 31 30010 2 0 a
+3 1 foo.U main.bar.U[1] generate1.v 30 32
+1 a 0 31 30010 2 0 10a
+3 1 foo.U main.bar.U[2] generate1.v 30 32
+1 a 0 31 30010 2 0 20a
+3 1 foo.U main.bar.U[3] generate1.v 30 32
+1 a 0 31 30010 2 0 30a
+3 1 foo.U main.bar.U[4] generate1.v 30 32
+1 a 0 31 30010 2 0 a
+3 1 foo.U main.bar.U[5] generate1.v 30 32
+1 a 0 31 30010 2 0 a
+3 1 foo.U main.bar.U[6] generate1.v 30 32
+1 a 0 31 30010 2 0 a
+3 1 foo.U main.bar.U[7] generate1.v 30 32
+1 a 0 31 30010 2 0 a

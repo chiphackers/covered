@@ -17,6 +17,8 @@
 
 
 extern funit_inst* instance_root;
+extern char        user_msg[USER_MSG_LENGTH];
+extern bool        debug_mode;
 
 
 /*!
@@ -151,8 +153,13 @@ gen_item* gen_item_create_expr( expression* expr ) {
   gi->next_true     = NULL;
   gi->next_false    = NULL;
 
-  printf( "In gen_item_create_expr, id: %d, op: %s, line: %d, %p\n",
-          expr->id, expression_string_op( expr->op ), expr->line, gi );
+#ifdef DEBUG_MODE
+  if( debug_mode ) {
+    snprintf( user_msg, USER_MSG_LENGTH, "In gen_item_create_expr, id: %d, op: %s, line: %d, %p\n",
+              expr->id, expression_string_op( expr->op ), expr->line, gi );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  }
+#endif
 
   return( gi );
 
@@ -178,7 +185,12 @@ gen_item* gen_item_create_sig( vsignal* sig ) {
   gi->next_true     = NULL;
   gi->next_false    = NULL;
 
-  printf( "In gen_item_create_sig, name: %s, %p\n", sig->name, gi );
+#ifdef DEBUG_MODE
+  if( debug_mode ) {
+    snprintf( user_msg, USER_MSG_LENGTH, "In gen_item_create_sig, name: %s, %p\n", sig->name, gi );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  }
+#endif
 
   return( gi );
 
@@ -204,7 +216,12 @@ gen_item* gen_item_create_stmt( statement* stmt ) {
   gi->next_true     = NULL;
   gi->next_false    = NULL;
 
-  printf( "In gen_item_create_stmt, id: %d, line: %d, %p\n", stmt->exp->id, stmt->exp->line, gi );
+#ifdef DEBUG_MODE
+  if( debug_mode ) {
+    snprintf( user_msg, USER_MSG_LENGTH, "In gen_item_create_stmt, id: %d, line: %d, %p\n", stmt->exp->id, stmt->exp->line, gi );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  }
+#endif
 
   return( gi );
 
@@ -230,7 +247,12 @@ gen_item* gen_item_create_inst( funit_inst* inst ) {
   gi->next_true     = NULL;
   gi->next_false    = NULL;
 
-  printf( "In gen_item_create_inst, name: %s, %p\n", inst->name, gi );
+#ifdef DEBUG_MODE
+  if( debug_mode ) {
+    snprintf( user_msg, USER_MSG_LENGTH, "In gen_item_create_inst, name: %s, %p\n", inst->name, gi );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  }
+#endif
 
   return( gi );
 
@@ -256,7 +278,12 @@ gen_item* gen_item_create_tfn( funit_inst* inst ) {
   gi->next_true     = NULL;
   gi->next_false    = NULL;
 
-  printf( "In gen_item_create_tfn, name: %s, %p\n", inst->name, gi );
+#ifdef DEBUG_MODE
+  if( debug_mode ) {
+    snprintf( user_msg, USER_MSG_LENGTH, "In gen_item_create_tfn, name: %s, %p\n", inst->name, gi );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  }
+#endif
 
   return( gi );
 
@@ -282,7 +309,12 @@ gen_item* gen_item_create_end( funit_inst* inst ) {
   gi->next_true     = NULL;
   gi->next_false    = NULL;
 
-  printf( "In gen_item_create_end, name: %s, %p\n", inst->name, gi );
+#ifdef DEBUG_MODE
+  if( debug_mode ) {
+    snprintf( user_msg, USER_MSG_LENGTH, "In gen_item_create_end, name: %s, %p\n", inst->name, gi );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  }
+#endif
 
   return( gi );
 
@@ -395,9 +427,16 @@ bool gen_item_connect( gen_item* gi1, gen_item* gi2, int conn_id ) {
 */
 void gen_item_resolve( gen_item* gi, funit_inst* inst ) {
 
+  funit_inst* child;  /* Pointer to child instance of this instance to resolve */
+
   if( gi != NULL ) {
 
-    printf( "Resolving generate item, type: %d for inst: %s\n", gi->suppl.type, inst->name );
+#ifdef DEBUG_MODE 
+    if( debug_mode ) {
+      snprintf( user_msg, USER_MSG_LENGTH, "Resolving generate item, type: %d for inst: %s\n", gi->suppl.type, inst->name );
+      print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    }
+#endif
 
     switch( gi->suppl.type ) {
   
@@ -434,9 +473,10 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst ) {
           char inst_name[4096];
           snprintf( inst_name, 4096, "%s[%d]", gi->elem.inst->name, vector_to_int( gi->genvar->value ) );
           instance_parse_add( &instance_root, inst->funit, gi->elem.inst->funit, inst_name, NULL, FALSE );
-          instance_display_tree( instance_root );
+          snprintf( inst_name, 4096, "%s.%s[%d]", inst->name, gi->elem.inst->name, vector_to_int( gi->genvar->value ) );
+          child = instance_find_scope( inst, inst_name );
         }
-        gen_item_resolve( gi->next_true, gi->elem.inst );
+        gen_item_resolve( gi->next_true, child );
         gen_item_resolve( gi->next_false, inst );
         break;
 
@@ -533,6 +573,12 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.7  2006/07/21 05:47:42  phase1geo
+ More code additions for generate functionality.  At this point, we seem to
+ be creating proper generate item blocks and are creating the generate loop
+ namespace appropriately.  However, the binder is still unable to find a signal
+ created by a generate block.
+
  Revision 1.6  2006/07/20 20:11:09  phase1geo
  More work on generate statements.  Trying to figure out a methodology for
  handling namespaces.  Still a lot of work to go...
