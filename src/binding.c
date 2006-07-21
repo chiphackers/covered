@@ -944,8 +944,8 @@ void bind_perform( bool cdd_reading ) {
     /* If we are in parse mode, resolve all parameters and arrays of instances now */
     if( !cdd_reading && (pass == 0) ) {
       param_resolve( instance_root );
-      instance_resolve( instance_root );
       generate_resolve( instance_root );
+      instance_resolve( instance_root );
     }
 
   }
@@ -981,6 +981,10 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.79  2006/07/20 20:11:08  phase1geo
+ More work on generate statements.  Trying to figure out a methodology for
+ handling namespaces.  Still a lot of work to go...
+
  Revision 1.78  2006/07/17 22:12:42  phase1geo
  Adding more code for generate block support.  Still just adding code at this
  point -- hopefully I haven't broke anything that doesn't use generate blocks.

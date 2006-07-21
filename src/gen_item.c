@@ -464,7 +464,8 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst ) {
         break;
 
       case GI_TYPE_INST :
-        instance_parse_add( &instance_root, inst->funit, gi->elem.inst->funit, gi->elem.inst->name, gi->elem.inst->range, FALSE );
+        instance_add_child( inst, gi->elem.inst->funit, gi->elem.inst->name, gi->elem.inst->range, FALSE );
+        instance_display_tree( instance_root );
         gen_item_resolve( gi->next_true, inst );
         break;
 
@@ -472,7 +473,8 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst ) {
         if( gi->genvar != NULL ) {
           char inst_name[4096];
           snprintf( inst_name, 4096, "%s[%d]", gi->elem.inst->name, vector_to_int( gi->genvar->value ) );
-          instance_parse_add( &instance_root, inst->funit, gi->elem.inst->funit, inst_name, NULL, FALSE );
+          instance_add_child( inst, gi->elem.inst->funit, inst_name, NULL, FALSE );
+          // instance_parse_add( &instance_root, inst->funit, gi->elem.inst->funit, inst_name, NULL, FALSE );
           snprintf( inst_name, 4096, "%s.%s[%d]", inst->name, gi->elem.inst->name, vector_to_int( gi->genvar->value ) );
           child = instance_find_scope( inst, inst_name );
         }
@@ -573,6 +575,10 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.9  2006/07/21 17:47:09  phase1geo
+ Simple if and if-else generate statements are now working.  Added diagnostics
+ to regression suite to verify these.  More testing to follow.
+
  Revision 1.8  2006/07/21 15:52:41  phase1geo
  Checking in an initial working version of the generate structure.  Diagnostic
  generate1 passes.  Still a lot of work to go before we fully support generate

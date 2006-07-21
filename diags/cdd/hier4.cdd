@@ -1,0 +1,13 @@
+5 8 1 * 0
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd hier4.vcd -o hier4.cdd -v hier4.v
+3 0 main main hier4.v 1 13
+3 0 foo main.a hier4.v 17 21
+3 0 bar main.a.x[0] hier4.v 25 29
+1 z 0 27 30004 1 0 2
+3 0 bar main.a.x[1] hier4.v 25 29
+1 z 0 27 30004 1 0 2
+3 0 foo main.b hier4.v 17 21
+3 0 bar main.b.x[0] hier4.v 25 29
+1 z 0 27 30004 1 0 2
+3 0 bar main.b.x[1] hier4.v 25 29
+1 z 0 27 30004 1 0 2

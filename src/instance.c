@@ -303,7 +303,8 @@ funit_inst* instance_find_by_funit( funit_inst* root, func_unit* funit, int* ign
  \param range    For arrays of instances, contains the range of the instance array
  \param resolve  Set to TRUE if newly added instance should be immediately resolved
  
- \return Returns pointer to newly created functional unit instance.
+ \return Returns pointer to newly created functional unit instance if this instance name isn't already in
+         use in the current instance; otherwise, returns NULL.
  
  Generates new instance, adds it to the child list of the inst functional unit
  instance, and resolves any parameters.
@@ -312,24 +313,39 @@ funit_inst* instance_add_child( funit_inst* inst, func_unit* child, char* name, 
 
   funit_inst* new_inst;  /* Pointer to newly created instance to add */
 
-  /* Generate new instance */
-  new_inst = instance_create( child, name, range );
-
-  /* Add new instance to inst child instance list */
-  if( inst->child_head == NULL ) {
-    inst->child_head       = new_inst;
-    inst->child_tail       = new_inst;
-  } else {
-    inst->child_tail->next = new_inst;
-    inst->child_tail       = new_inst;
+  /* Check to see if this instance already exists */
+  new_inst = inst->child_head;
+  while( (new_inst != NULL) && (strcmp( new_inst->name, name ) != 0) ) {
+    new_inst = new_inst->next;
   }
 
-  /* Point this instance's parent pointer to its parent */
-  new_inst->parent = inst;
+  /* If this instance already exists, don't add it again */
+  if( new_inst == NULL ) {
 
-  /* If the new instance needs to be resolved now, do so */
-  if( resolve ) {
-    instance_resolve_inst( instance_root, new_inst );
+    /* Generate new instance */
+    new_inst = instance_create( child, name, range );
+
+    /* Add new instance to inst child instance list */
+    if( inst->child_head == NULL ) {
+      inst->child_head       = new_inst;
+      inst->child_tail       = new_inst;
+    } else {
+      inst->child_tail->next = new_inst;
+      inst->child_tail       = new_inst;
+    }
+
+    /* Point this instance's parent pointer to its parent */
+    new_inst->parent = inst;
+
+    /* If the new instance needs to be resolved now, do so */
+    if( resolve ) {
+      instance_resolve_inst( instance_root, new_inst );
+    }
+
+  } else {
+
+    new_inst = NULL;
+
   }
 
   return( new_inst );
@@ -433,7 +449,6 @@ void instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child,
 }
 
 /*!
- \param root  Pointer to top-level functional unit instance
  \param curr  Pointer to current instance to resolve
 
  \return Returns TRUE if instance was resolved; otherwise, returns FALSE.
@@ -743,6 +758,9 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.52  2006/07/18 19:03:21  phase1geo
+ Sync'ing up to the scoping fixes from the 0.4.6 stable release.
+
  Revision 1.51  2006/07/17 22:12:42  phase1geo
  Adding more code for generate block support.  Still just adding code at this
  point -- hopefully I haven't broke anything that doesn't use generate blocks.

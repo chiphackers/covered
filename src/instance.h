@@ -41,6 +41,9 @@ funit_inst* instance_find_scope( funit_inst* root, char* scope );
 /*! \brief Returns instance that points to specified functional unit for each instance. */
 funit_inst* instance_find_by_funit( funit_inst* root, func_unit* funit, int* ignore );
 
+/*! \brief Adds an instance to the specified parent instance */
+funit_inst* instance_add_child( funit_inst* inst, func_unit* child, char* name, vector_width* range, bool resolve );
+
 /*! \brief Adds new instance to specified instance tree during parse. */
 void instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child, char* inst_name, vector_width* range, bool resolve );
 
@@ -59,6 +62,9 @@ void instance_dealloc( funit_inst* root, char* scope );
 
 /*
  $Log$
+ Revision 1.16  2006/07/18 13:37:47  phase1geo
+ Fixing compile issues.
+
  Revision 1.15  2006/07/12 22:16:18  phase1geo
  Fixing hierarchical referencing for instance arrays.  Also attempted to fix
  a problem found with unary1; however, the generated report coverage information

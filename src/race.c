@@ -477,99 +477,104 @@ void race_check_one_block_assignment( func_unit* mod ) {
 
     sig_stmt = -1;
 
-    /* Iterate through expressions */
-    expl = sigl->sig->exp_head;
-    while( expl != NULL ) {
+    /* Skip checking the expressions of genvar signals */
+    if( sigl->sig->suppl.part.type != SSUPPL_TYPE_GENVAR ) {
+
+      /* Iterate through expressions */
+      expl = sigl->sig->exp_head;
+      while( expl != NULL ) {
 					      
-      /* Only look at expressions that are part of LHS and they are not part of a bit select */
-      if( (ESUPPL_IS_LHS( expl->exp->suppl ) == 1) && !expression_is_bit_select( expl->exp ) ) {
+        /* Only look at expressions that are part of LHS and they are not part of a bit select */
+        if( (ESUPPL_IS_LHS( expl->exp->suppl ) == 1) && !expression_is_bit_select( expl->exp ) ) {
 
-	/*
-	 If the signal was a part select, set the appropriate misc bits to indicate what
-	 bits have been assigned.
-        */
-	switch( expl->exp->op ) {
-          case EXP_OP_SIG :
-            if( (ESUPPL_IS_ROOT( expl->exp->suppl ) == 0) && (expl->exp->parent->expr->op != EXP_OP_RASSIGN) ) {
-              curr_race = vsignal_set_assigned( sigl->sig, ((sigl->sig->value->width - 1) + sigl->sig->lsb), sigl->sig->lsb );
-            }
-	    break;
-          case EXP_OP_SBIT_SEL :
-            if( expl->exp->left->op == EXP_OP_STATIC ) {
-              curr_race = vsignal_set_assigned( sigl->sig, vector_to_int( expl->exp->left->value ), vector_to_int( expl->exp->left->value ) );
-	    } else { 
-              curr_race = vsignal_set_assigned( sigl->sig, ((sigl->sig->value->width - 1) + sigl->sig->lsb), sigl->sig->lsb );
-            }
-	    break;
-          case EXP_OP_MBIT_SEL :
-	    if( (expl->exp->left->op == EXP_OP_STATIC) && (expl->exp->right->op == EXP_OP_STATIC) ) {
-              curr_race = vsignal_set_assigned( sigl->sig, vector_to_int( expl->exp->left->value ), vector_to_int( expl->exp->right->value ) );
-            } else {
-              curr_race = vsignal_set_assigned( sigl->sig, ((sigl->sig->value->width - 1) + sigl->sig->lsb), sigl->sig->lsb );
-            }
-	    break;
-          case EXP_OP_MBIT_POS :
-            if( expl->exp->left->op == EXP_OP_STATIC ) {
-              lval = vector_to_int( expl->exp->left->value );
-              rval = vector_to_int( expl->exp->right->value );
-              curr_race = vsignal_set_assigned( sigl->sig, ((lval + rval) - 1), lval );
-            } else {
-              curr_race = vsignal_set_assigned( sigl->sig, ((sigl->sig->value->width - 1) + sigl->sig->lsb), sigl->sig->lsb );
-            }
-            break;
-          case EXP_OP_MBIT_NEG :
-            if( expl->exp->left->op == EXP_OP_STATIC ) {
-              lval = vector_to_int( expl->exp->left->value );
-              rval = vector_to_int( expl->exp->right->value );
-              curr_race = vsignal_set_assigned( sigl->sig, lval, ((lval - rval) + 1) );
-            } else {
-              curr_race = vsignal_set_assigned( sigl->sig, ((sigl->sig->value->width - 1) + sigl->sig->lsb), sigl->sig->lsb );
-            }
-            break;
-          default :
-            curr_race = FALSE;
-	    break;	
-        }
+          /*
+           If the signal was a part select, set the appropriate misc bits to indicate what
+           bits have been assigned.
+          */
+	  switch( expl->exp->op ) {
+            case EXP_OP_SIG :
+              if( (ESUPPL_IS_ROOT( expl->exp->suppl ) == 0) && (expl->exp->parent->expr->op != EXP_OP_RASSIGN) ) {
+                curr_race = vsignal_set_assigned( sigl->sig, ((sigl->sig->value->width - 1) + sigl->sig->lsb), sigl->sig->lsb );
+              }
+	      break;
+            case EXP_OP_SBIT_SEL :
+              if( expl->exp->left->op == EXP_OP_STATIC ) {
+                curr_race = vsignal_set_assigned( sigl->sig, vector_to_int( expl->exp->left->value ), vector_to_int( expl->exp->left->value ) );
+	      } else { 
+                curr_race = vsignal_set_assigned( sigl->sig, ((sigl->sig->value->width - 1) + sigl->sig->lsb), sigl->sig->lsb );
+              }
+	      break;
+            case EXP_OP_MBIT_SEL :
+	      if( (expl->exp->left->op == EXP_OP_STATIC) && (expl->exp->right->op == EXP_OP_STATIC) ) {
+                curr_race = vsignal_set_assigned( sigl->sig, vector_to_int( expl->exp->left->value ), vector_to_int( expl->exp->right->value ) );
+              } else {
+                curr_race = vsignal_set_assigned( sigl->sig, ((sigl->sig->value->width - 1) + sigl->sig->lsb), sigl->sig->lsb );
+              }
+	      break;
+            case EXP_OP_MBIT_POS :
+              if( expl->exp->left->op == EXP_OP_STATIC ) {
+                lval = vector_to_int( expl->exp->left->value );
+                rval = vector_to_int( expl->exp->right->value );
+                curr_race = vsignal_set_assigned( sigl->sig, ((lval + rval) - 1), lval );
+              } else {
+                curr_race = vsignal_set_assigned( sigl->sig, ((sigl->sig->value->width - 1) + sigl->sig->lsb), sigl->sig->lsb );
+              }
+              break;
+            case EXP_OP_MBIT_NEG :
+              if( expl->exp->left->op == EXP_OP_STATIC ) {
+                lval = vector_to_int( expl->exp->left->value );
+                rval = vector_to_int( expl->exp->right->value );
+                curr_race = vsignal_set_assigned( sigl->sig, lval, ((lval - rval) + 1) );
+              } else {
+                curr_race = vsignal_set_assigned( sigl->sig, ((sigl->sig->value->width - 1) + sigl->sig->lsb), sigl->sig->lsb );
+              }
+              break;
+            default :
+              curr_race = FALSE;
+	      break;	
+          }
 
-        /* Get the functional unit containing this expression */
-        exp_funit = funit_find_by_id( expl->exp->id );
+          /* Get the functional unit containing this expression */
+          exp_funit = funit_find_by_id( expl->exp->id );
 
-        assert( exp_funit != NULL );
+          assert( exp_funit != NULL );
 
-        /*
-         Get expression's head statement and if the statement is not a register assignment, check for
-         race conditions (the way that RASSIGNs are treated, they will not cause race conditions so omit
-         them from being checked.
-        */
-        if( ((curr_stmt = race_get_head_statement( exp_funit, expl->exp )) != NULL) && (curr_stmt->exp->op != EXP_OP_RASSIGN) ) {
+          /*
+           Get expression's head statement and if the statement is not a register assignment, check for
+           race conditions (the way that RASSIGNs are treated, they will not cause race conditions so omit
+           them from being checked.
+          */
+          if( ((curr_stmt = race_get_head_statement( exp_funit, expl->exp )) != NULL) && (curr_stmt->exp->op != EXP_OP_RASSIGN) ) {
 
-          /* Check to see if the current signal is already being assigned in another statement */
-          if( sig_stmt == -1 ) {
+            /* Check to see if the current signal is already being assigned in another statement */
+            if( sig_stmt == -1 ) {
 
-  	    /* Get index of base signal statement in sb array */
-            sig_stmt = race_find_head_statement( curr_stmt );
-	    assert( sig_stmt != -1 );
+  	      /* Get index of base signal statement in sb array */
+              sig_stmt = race_find_head_statement( curr_stmt );
+	      assert( sig_stmt != -1 );
 
-            /* Check to see if current signal is also an input port */ 
-            if( (sigl->sig->suppl.part.type == SSUPPL_TYPE_INPUT) ||
-                (sigl->sig->suppl.part.type == SSUPPL_TYPE_INOUT) || curr_race ) {
-              race_handle_race_condition( expl->exp, mod, curr_stmt, NULL, RACE_TYPE_ASSIGN_IN_ONE_BLOCK2 );
+              /* Check to see if current signal is also an input port */ 
+              if( (sigl->sig->suppl.part.type == SSUPPL_TYPE_INPUT) ||
+                  (sigl->sig->suppl.part.type == SSUPPL_TYPE_INOUT) || curr_race ) {
+                race_handle_race_condition( expl->exp, mod, curr_stmt, NULL, RACE_TYPE_ASSIGN_IN_ONE_BLOCK2 );
+	        sb[sig_stmt].remove = TRUE;
+              }
+
+            } else if( (sb[sig_stmt].stmt != curr_stmt) && curr_race ) {
+
+              race_handle_race_condition( expl->exp, mod, curr_stmt, sb[sig_stmt].stmt, RACE_TYPE_ASSIGN_IN_ONE_BLOCK1 );
 	      sb[sig_stmt].remove = TRUE;
+	      race_found = TRUE;
+
             }
-
-          } else if( (sb[sig_stmt].stmt != curr_stmt) && curr_race ) {
-
-            race_handle_race_condition( expl->exp, mod, curr_stmt, sb[sig_stmt].stmt, RACE_TYPE_ASSIGN_IN_ONE_BLOCK1 );
-	    sb[sig_stmt].remove = TRUE;
-	    race_found = TRUE;
 
           }
 
         }
 
-      }
+        expl = expl->next;
 
-      expl = expl->next;
+      }
 
     }
 
@@ -969,6 +974,11 @@ void race_blk_delete_list( race_blk* rb ) {
 
 /*
  $Log$
+ Revision 1.41  2006/04/14 17:05:13  phase1geo
+ Reorganizing info line to make it more succinct and easier for future needs.
+ Fixed problems with VPI library with recent merge changes.  Regression has
+ been completely updated for these changes.
+
  Revision 1.40  2006/04/13 22:17:47  phase1geo
  Adding the beginning of the OVL assertion extractor.  So far the -a option is
  parsed and the race condition checker is turned off for all detectable

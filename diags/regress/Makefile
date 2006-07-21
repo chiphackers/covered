@@ -48,8 +48,9 @@ DIAGS1        = add1            always1         always2         always3         
                 for1            for2            forever1        fork1           fork2 \
                 fsm3            fsm4            fsm4.1          fsm5            fsm5.1 \
                 fsm5.2          fsm5.3          func1           func2           gate1 \
-                generate1       hier1           hier2           hier3           hier3.1         hier3.2 \
-                hier3.3         hier3.4         ifdef1          ifdef1.2        ifdef2.1        ifdef2.2 \
+                generate1       hier1           hier2           hier3           hier3.1 \
+                hier3.2         hier3.3         hier3.4         hier4           ifdef1 \
+                ifdef1.2        ifdef2.1        ifdef2.2 \
                 ifdef2.3        ifelse1         implicit2.1     include1        include1.1 \
                 include2        initial1        instance1       instance1.1     instance1.2 \
                 instance2       instance3       instance4       instance4.1     instance4.2 \
@@ -122,7 +123,8 @@ IVONLYDIAGS4  =
 
 VCSONLYDIAGS1 = elsif1          elsif1.1        elsif1.2        elsif1.3        elsif1.4 \
                 elsif2          elsif2.1        exponent1       gate1.1         generate2 \
-                generate2.1     generate3       generate3.1     hier1.1 \
+                generate2.1     generate3       generate3.1     generate4       generate4.1 \
+                hier1.1 \
                 line1           mbit_sel5.4     mbit_sel6.4     param8.2        param12 \
                 param12.1       static_func1    static_func1.1  static_func2    static_func2.1 \
                 static_func2.2  static_func2.3  trireg
