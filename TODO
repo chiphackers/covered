@@ -23,7 +23,7 @@ Score command
 
    4.  Add more Verilog-2001 constructs to parser.
 	- automatic storage for functions/tasks (instead of static) - difficult!
-	- generate command (extremely low priority)
+IP	- generate command
 	- config command
 
    5.  Allow Covered to run simulation phases in parallel to increase performance.

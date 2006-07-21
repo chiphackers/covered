@@ -155,7 +155,7 @@ gen_item* gen_item_create_expr( expression* expr ) {
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {
-    snprintf( user_msg, USER_MSG_LENGTH, "In gen_item_create_expr, id: %d, op: %s, line: %d, %p\n",
+    snprintf( user_msg, USER_MSG_LENGTH, "In gen_item_create_expr, id: %d, op: %s, line: %d, %p",
               expr->id, expression_string_op( expr->op ), expr->line, gi );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
   }
@@ -187,7 +187,7 @@ gen_item* gen_item_create_sig( vsignal* sig ) {
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {
-    snprintf( user_msg, USER_MSG_LENGTH, "In gen_item_create_sig, name: %s, %p\n", sig->name, gi );
+    snprintf( user_msg, USER_MSG_LENGTH, "In gen_item_create_sig, name: %s, %p", sig->name, gi );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
   }
 #endif
@@ -218,7 +218,7 @@ gen_item* gen_item_create_stmt( statement* stmt ) {
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {
-    snprintf( user_msg, USER_MSG_LENGTH, "In gen_item_create_stmt, id: %d, line: %d, %p\n", stmt->exp->id, stmt->exp->line, gi );
+    snprintf( user_msg, USER_MSG_LENGTH, "In gen_item_create_stmt, id: %d, line: %d, %p", stmt->exp->id, stmt->exp->line, gi );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
   }
 #endif
@@ -249,7 +249,7 @@ gen_item* gen_item_create_inst( funit_inst* inst ) {
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {
-    snprintf( user_msg, USER_MSG_LENGTH, "In gen_item_create_inst, name: %s, %p\n", inst->name, gi );
+    snprintf( user_msg, USER_MSG_LENGTH, "In gen_item_create_inst, name: %s, %p", inst->name, gi );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
   }
 #endif
@@ -280,7 +280,7 @@ gen_item* gen_item_create_tfn( funit_inst* inst ) {
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {
-    snprintf( user_msg, USER_MSG_LENGTH, "In gen_item_create_tfn, name: %s, %p\n", inst->name, gi );
+    snprintf( user_msg, USER_MSG_LENGTH, "In gen_item_create_tfn, name: %s, %p", inst->name, gi );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
   }
 #endif
@@ -311,7 +311,7 @@ gen_item* gen_item_create_end( funit_inst* inst ) {
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {
-    snprintf( user_msg, USER_MSG_LENGTH, "In gen_item_create_end, name: %s, %p\n", inst->name, gi );
+    snprintf( user_msg, USER_MSG_LENGTH, "In gen_item_create_end, name: %s, %p", inst->name, gi );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
   }
 #endif
@@ -433,7 +433,7 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst ) {
 
 #ifdef DEBUG_MODE 
     if( debug_mode ) {
-      snprintf( user_msg, USER_MSG_LENGTH, "Resolving generate item, type: %d for inst: %s\n", gi->suppl.type, inst->name );
+      snprintf( user_msg, USER_MSG_LENGTH, "Resolving generate item, type: %d for inst: %s", gi->suppl.type, inst->name );
       print_output( user_msg, DEBUG, __FILE__, __LINE__ );
     }
 #endif
@@ -573,6 +573,12 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.8  2006/07/21 15:52:41  phase1geo
+ Checking in an initial working version of the generate structure.  Diagnostic
+ generate1 passes.  Still a lot of work to go before we fully support generate
+ statements, but this marks a working version to enhance on.  Full regression
+ passes as well.
+
  Revision 1.7  2006/07/21 05:47:42  phase1geo
  More code additions for generate functionality.  At this point, we seem to
  be creating proper generate item blocks and are creating the generate loop

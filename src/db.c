@@ -546,19 +546,14 @@ func_unit* db_add_instance( char* scope, char* name, int type, vector_width* ran
 
     } else {
 
+      /* Add new functional unit to functional unit list. */
+      funit_link_add( funit, &funit_head, &funit_tail );
+
       /* If we are currently within a generate block, create a generate item for this instance to resolve it later */
       if( generate_mode > 0 ) {
-      
         last_gi = gen_item_create_inst( instance_create( funit, scope, range ) );
-
       } else {
-
-        /* Add new functional unit to functional unit list. */
-        funit_link_add( funit, &funit_head, &funit_tail );
-
-        /* Add instance. */
         instance_parse_add( &instance_root, curr_funit, funit, scope, range, FALSE );
-
       }
 
       if( (type == FUNIT_MODULE) && (str_link_find( name, modlist_head ) == NULL) ) {
@@ -1109,7 +1104,8 @@ expression* db_create_expression( expression* right, expression* left, int op, b
    If this is some kind of assignment expression operator, set the left expression vector to that of
    the right expression.
   */
-  if( (expr->op == EXP_OP_BASSIGN) ) {
+  if( (expr->op == EXP_OP_BASSIGN) ||
+      (expr->op == EXP_OP_IF) ) {
     vector_dealloc( expr->value );
     expr->value = right->value;
   }
@@ -1925,6 +1921,12 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.195  2006/07/21 05:47:42  phase1geo
+ More code additions for generate functionality.  At this point, we seem to
+ be creating proper generate item blocks and are creating the generate loop
+ namespace appropriately.  However, the binder is still unable to find a signal
+ created by a generate block.
+
  Revision 1.194  2006/07/20 20:11:08  phase1geo
  More work on generate statements.  Trying to figure out a methodology for
  handling namespaces.  Still a lot of work to go...

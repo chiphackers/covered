@@ -2840,8 +2840,6 @@ statement
       statement*  stmt;
       if( (ignore_mode == 0) && ($3 != NULL) ) {
         tmp  = db_create_expression( $3, NULL, EXP_OP_IF, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
-        vector_dealloc( tmp->value );
-        tmp->value = $3->value;
         stmt = db_create_statement( tmp );
         db_add_expression( tmp );
         db_connect_statement_true( stmt, $6 );
@@ -2857,8 +2855,6 @@ statement
       statement*  stmt;
       if( (ignore_mode == 0) && ($3 != NULL) ) {
         tmp  = db_create_expression( $3, NULL, EXP_OP_IF, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
-        vector_dealloc( tmp->value );
-        tmp->value = $3->value;
         stmt = db_create_statement( tmp );
         db_add_expression( tmp );
         db_connect_statement_true( stmt, $6 );

@@ -5,6 +5,11 @@ foo #(8) bar();
 initial begin
         $dumpfile( "generate1.vcd" );
         $dumpvars( 0, main );
+	#20;
+	$finish;
+end
+
+initial begin
 	bar. \U[0] .a = 2'h0;
 	bar. \U[1] .a = 2'h0;
 	bar. \U[2] .a = 2'h0;
@@ -14,8 +19,6 @@ initial begin
 	bar. \U[1] .a = 2'h1;
 	bar. \U[2] .a = 2'h2;
 	bar. \U[3] .a = 2'h3;
-        #10;
-        $finish;
 end
 
 endmodule
