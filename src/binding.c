@@ -95,6 +95,7 @@ extern funit_inst* instance_root;
 extern funit_link* funit_head;
 extern char        user_msg[USER_MSG_LENGTH];
 extern str_link*   no_score_head;
+extern bool        debug_mode;
 
 
 /*!
@@ -943,8 +944,23 @@ void bind_perform( bool cdd_reading ) {
 
     /* If we are in parse mode, resolve all parameters and arrays of instances now */
     if( !cdd_reading && (pass == 0) ) {
+#ifdef DEBUG_MODE
+      if( debug_mode ) {
+        print_output( "Resolving parameters...", DEBUG, __FILE__, __LINE__ );
+      }
+#endif
       param_resolve( instance_root );
+#ifdef DEBUG_MODE
+      if( debug_mode ) {
+        print_output( "Resolving generate statements...", DEBUG, __FILE__, __LINE__ );
+      }
+#endif
       generate_resolve( instance_root );
+#ifdef DEBUG_MODE
+      if( debug_mode ) {
+        print_output( "Resolving arrays of instances...", DEBUG, __FILE__, __LINE__ );
+      }
+#endif
       instance_resolve( instance_root );
     }
 
@@ -981,6 +997,11 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.80  2006/07/21 20:12:46  phase1geo
+ Fixing code to get generated instances and generated array of instances to
+ work.  Added diagnostics to verify correct functionality.  Full regression
+ passes.
+
  Revision 1.79  2006/07/20 20:11:08  phase1geo
  More work on generate statements.  Trying to figure out a methodology for
  handling namespaces.  Still a lot of work to go...

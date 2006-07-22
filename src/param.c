@@ -661,14 +661,17 @@ void param_expr_eval( expression* expr, funit_inst* inst ) {
       case EXP_OP_PARAM_MBIT_NEG :
         param_find_and_set_expr_value( expr, inst );
         break;
+      case EXP_OP_SIG :
+        assert( expr->sig != NULL );
+        assert( expr->sig->suppl.part.type == SSUPPL_TYPE_GENVAR );
+        break;
       default :
         /*
          Since we are not a parameter identifier, let's allocate some data for us 
          if we don't have some already.
         */
         assert( expr->value != NULL );
-        assert( (expr->op != EXP_OP_SIG)      &&
-                (expr->op != EXP_OP_SBIT_SEL) &&
+        assert( (expr->op != EXP_OP_SBIT_SEL) &&
                 (expr->op != EXP_OP_MBIT_SEL) &&
                 (expr->op != EXP_OP_MBIT_POS) &&
                 (expr->op != EXP_OP_MBIT_NEG) );
@@ -1014,6 +1017,10 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.67  2006/07/20 20:11:09  phase1geo
+ More work on generate statements.  Trying to figure out a methodology for
+ handling namespaces.  Still a lot of work to go...
+
  Revision 1.66  2006/07/10 03:05:04  phase1geo
  Contains bug fixes for memory leaks and segmentation faults.  Also contains
  some starting code to support generate blocks.  There is absolutely no

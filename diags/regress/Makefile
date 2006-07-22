@@ -122,9 +122,10 @@ IVONLYDIAGS3  =
 IVONLYDIAGS4  = 
 
 VCSONLYDIAGS1 = elsif1          elsif1.1        elsif1.2        elsif1.3        elsif1.4 \
-                elsif2          elsif2.1        exponent1       gate1.1         generate2 \
-                generate2.1     generate3       generate3.1     generate4       generate4.1 \
-                generate5       hier1.1 \
+                elsif2          elsif2.1        exponent1       gate1.1         generate1.1 \
+                generate2       generate2.1     generate3       generate3.1     generate4 \
+                generate4.1     generate5       generate5.1     generate5.2     generate5.3 \
+                hier1.1 \
                 line1           mbit_sel5.4     mbit_sel6.4     param8.2        param12 \
                 param12.1       static_func1    static_func1.1  static_func2    static_func2.1 \
                 static_func2.2  static_func2.3  trireg
