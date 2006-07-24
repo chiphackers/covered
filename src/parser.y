@@ -2378,6 +2378,7 @@ module_item
         }
       }
       free_safe( $3 );
+      generate_mode--;
     }
     task_item_list_opt statement_opt
     {
@@ -2390,6 +2391,7 @@ module_item
     }
     K_endtask
     {
+      generate_mode++;
       if( ignore_mode == 0 ) {
         db_end_function_task_namedblock( @9.first_line );
       } else {
@@ -2413,6 +2415,7 @@ module_item
           free_safe( $4 );
         }
       }
+      generate_mode--;
     }
     function_item_list statement
     {
@@ -2425,6 +2428,7 @@ module_item
     }
     K_endfunction
     {
+      generate_mode++;
       if( ignore_mode == 0 ) {
         db_end_function_task_namedblock( @10.first_line );
       } else {
@@ -3301,6 +3305,7 @@ named_begin_end_block
       } else {
         ignore_mode++;
       }
+//      generate_mode--;
     }
     block_item_decls_opt statement_list
     {
@@ -3323,6 +3328,7 @@ named_begin_end_block
         }
         $$ = NULL;
       }
+//      generate_mode++;
     }
   | UNUSED_IDENTIFIER block_item_decls_opt statement_list
     {

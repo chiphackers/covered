@@ -46,6 +46,9 @@ int funit_get_port_count( func_unit* funit );
 /*! \brief Finds specified module parameter given the current functional unit and its scope */
 mod_parm* funit_find_param( char* name, func_unit* funit );
 
+/*! \brief Finds specified signal given in the current functional unit */
+vsignal* funit_find_signal( char* name, func_unit* funit );
+
 /*! \brief Generates the internally used task/function/named-block name for the specified functional unit */
 char* funit_gen_task_function_namedblock_name( char* orig_name, func_unit* parent );
 
@@ -80,6 +83,9 @@ void funit_dealloc( func_unit* funit );
 
 /*
  $Log$
+ Revision 1.11  2006/06/27 19:34:43  phase1geo
+ Permanent fix for the CDD save feature.
+
  Revision 1.10  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

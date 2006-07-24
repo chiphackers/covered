@@ -1949,6 +1949,7 @@ struct gen_item_s {
     control     conn_id    : 1;      /*!< Connection ID (used for connecting) */
     control     stop_true  : 1;      /*!< Specifies that we should stop traversing the true path */
     control     stop_false : 1;      /*!< Specifies that we should stop traversing the false path */
+    control     resolved   : 1;      /*!< Specifies if this generate item has been resolved */
   } suppl;
   vsignal*      genvar;              /*!< Specifies a genvar to use for this type (only valid for TFN) */
   gen_item*     next_true;           /*!< Pointer to the next generate item if expr is true */
@@ -1965,6 +1966,12 @@ struct gitem_link_s {
 
 /*
  $Log$
+ Revision 1.208  2006/07/21 05:47:42  phase1geo
+ More code additions for generate functionality.  At this point, we seem to
+ be creating proper generate item blocks and are creating the generate loop
+ namespace appropriately.  However, the binder is still unable to find a signal
+ created by a generate block.
+
  Revision 1.207  2006/07/20 20:11:09  phase1geo
  More work on generate statements.  Trying to figure out a methodology for
  handling namespaces.  Still a lot of work to go...

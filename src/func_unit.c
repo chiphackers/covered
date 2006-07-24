@@ -42,10 +42,12 @@
 #include "fsm.h"
 #include "race.h"
 #include "gen_item.h"
+#include "instance.h"
 
 
 extern char        user_msg[USER_MSG_LENGTH];
 extern funit_link* funit_head;
+extern funit_inst* instance_root;
 
 
 /*!
@@ -187,6 +189,71 @@ mod_parm* funit_find_param( char* name, func_unit* funit ) {
   }
 
   return( mparm );
+
+}
+
+/*!
+ \param name   Name of the signal that we are searching for
+ \param funit  Pointer to functional unit to search in
+
+ \return Returns a pointer to the found signal in the given functional unit; otherwise,
+         returns NULL if the signal could not be found.
+
+ Searches the signal list in the given functional unit for the specified signal name.  If
+ it isn't found there, we look in the generate item list for the same signal.
+*/
+vsignal* funit_find_signal( char* name, func_unit* funit ) {
+
+  vsignal*    found_sig = NULL;  /* Pointer to the found signal */
+  vsignal     sig;               /* Holder for signal to search for */
+  sig_link*   sigl;              /* Pointer to signal link */
+  gen_item*   gi;                /* Pointer to temporary generate item */
+  gen_item*   found_gi;          /* Pointer to found generate item */
+  gitem_link* gil;               /* Pointer to found generate item link */
+  int         ignore;            /* Value to use for ignore purposes */
+  int         i         = 0;     /* Loop iterator */
+  funit_inst* inst;              /* Pointer to current functional unit instance */
+
+  printf( "Searching for signal %s in functional unit %s\n", name, funit->name );
+
+  /* Populate a signal structure for searching purposes */
+  sig.name = name;
+
+  /* Search for signal in given functional unit signal list */
+  if( (sigl = sig_link_find( &sig, funit->sig_head )) != NULL ) {
+
+    found_sig = sigl->sig;
+
+  } else {
+
+    printf( "Unable to find signal %s in functional unit %s, searching generate items...\n", name, funit->name );
+
+    /* If it was not found, search in the functional unit generate item list */
+    gi = gen_item_create_sig( &sig );
+
+    ignore = i;
+    while( (found_sig == NULL) && ((inst = instance_find_by_funit( instance_root, funit, &ignore )) != NULL) ) {
+
+      user_msg[0] = '\0';
+      instance_gen_scope( user_msg, inst );
+      printf( "Searching instance %s\n", user_msg );
+
+      if( ((gil = gitem_link_find( gi, inst->gitem_head )) != NULL) && ((found_gi = gen_item_find( gil->gi, gi )) != NULL) ) {
+        found_sig = found_gi->elem.sig;
+        printf( "FOUND SIGNAL!!!\n" );
+      }
+
+      i++;
+      ignore = i;
+
+    }
+
+    /* Deallocate temporary generate item */
+    gen_item_dealloc( gi, FALSE );
+
+  }
+
+  return( found_sig );
 
 }
 
@@ -736,6 +803,8 @@ func_unit* funit_find_by_id( int id ) {
 
   exp.id = id;
 
+  funit_link_display( funit_head );
+
   funitl = funit_head;
   while( (funitl != NULL) && (expl == NULL) ) {
     if( (expl = exp_link_find( &exp, funitl->funit->exp_head )) == NULL ) {
@@ -882,6 +951,11 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.23  2006/07/21 22:39:01  phase1geo
+ Started adding support for generated statements.  Still looks like I have
+ some loose ends to tie here before I can call it good.  Added generate5
+ diagnostic to regression suite -- this does not quite pass at this point, however.
+
  Revision 1.22  2006/07/21 15:52:41  phase1geo
  Checking in an initial working version of the generate structure.  Diagnostic
  generate1 passes.  Still a lot of work to go before we fully support generate

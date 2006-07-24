@@ -957,6 +957,9 @@ void expression_assign_expr_ids( expression* root ) {
     root->ulid = curr_expr_id;
     curr_expr_id++;
 
+    /* Resize ourselves */
+    expression_resize( root, FALSE );
+
   }
 
 }
@@ -973,6 +976,8 @@ void expression_assign_expr_ids( expression* root ) {
 void expression_db_write( expression* expr, FILE* file, bool parse_mode ) {
 
   func_unit* funit;  /* Pointer to functional unit containing the statement attached to this expression */
+
+  printf( "Writing expression %d (%s line %d)\n", expr->id, expression_string_op( expr->op ), expr->line );
 
   fprintf( file, "%d %d %d %x %x %x %x %d %d",
     DB_TYPE_EXPRESSION,
@@ -3210,6 +3215,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.187  2006/07/21 22:39:00  phase1geo
+ Started adding support for generated statements.  Still looks like I have
+ some loose ends to tie here before I can call it good.  Added generate5
+ diagnostic to regression suite -- this does not quite pass at this point, however.
+
  Revision 1.186  2006/07/20 20:11:09  phase1geo
  More work on generate statements.  Trying to figure out a methodology for
  handling namespaces.  Still a lot of work to go...

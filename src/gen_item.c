@@ -149,12 +149,13 @@ gen_item* gen_item_create_expr( expression* expr ) {
 
   /* Create the generate item for an expression */
   gi = (gen_item*)malloc_safe( sizeof( gen_item ), __FILE__, __LINE__ );
-  gi->elem.expr     = expr;
-  gi->suppl.type    = GI_TYPE_EXPR;
-  gi->suppl.conn_id = 0;
-  gi->genvar        = NULL;
-  gi->next_true     = NULL;
-  gi->next_false    = NULL;
+  gi->elem.expr      = expr;
+  gi->suppl.type     = GI_TYPE_EXPR;
+  gi->suppl.conn_id  = 0;
+  gi->suppl.resolved = 0;
+  gi->genvar         = NULL;
+  gi->next_true      = NULL;
+  gi->next_false     = NULL;
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {
@@ -181,12 +182,13 @@ gen_item* gen_item_create_sig( vsignal* sig ) {
 
   /* Create the generate item for a signal */
   gi = (gen_item*)malloc_safe( sizeof( gen_item ), __FILE__, __LINE__ );
-  gi->elem.sig      = sig;
-  gi->suppl.type    = GI_TYPE_SIG;
-  gi->suppl.conn_id = 0;
-  gi->genvar        = NULL;
-  gi->next_true     = NULL;
-  gi->next_false    = NULL;
+  gi->elem.sig       = sig;
+  gi->suppl.type     = GI_TYPE_SIG;
+  gi->suppl.conn_id  = 0;
+  gi->suppl.resolved = 0;
+  gi->genvar         = NULL;
+  gi->next_true      = NULL;
+  gi->next_false     = NULL;
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {
@@ -212,12 +214,13 @@ gen_item* gen_item_create_stmt( statement* stmt ) {
 
   /* Create the generate item for a statement */
   gi = (gen_item*)malloc_safe( sizeof( gen_item ), __FILE__, __LINE__ );
-  gi->elem.stmt     = stmt;
-  gi->suppl.type    = GI_TYPE_STMT;
-  gi->suppl.conn_id = 0;
-  gi->genvar        = NULL;
-  gi->next_true     = NULL;
-  gi->next_false    = NULL;
+  gi->elem.stmt      = stmt;
+  gi->suppl.type     = GI_TYPE_STMT;
+  gi->suppl.conn_id  = 0;
+  gi->suppl.resolved = 0;
+  gi->genvar         = NULL;
+  gi->next_true      = NULL;
+  gi->next_false     = NULL;
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {
@@ -243,12 +246,13 @@ gen_item* gen_item_create_inst( funit_inst* inst ) {
 
   /* Create the generate item for an instance */
   gi = (gen_item*)malloc_safe( sizeof( gen_item ), __FILE__, __LINE__ );
-  gi->elem.inst     = inst;
-  gi->suppl.type    = GI_TYPE_INST;
-  gi->suppl.conn_id = 0;
-  gi->genvar        = NULL;
-  gi->next_true     = NULL;
-  gi->next_false    = NULL;
+  gi->elem.inst      = inst;
+  gi->suppl.type     = GI_TYPE_INST;
+  gi->suppl.conn_id  = 0;
+  gi->suppl.resolved = 0;
+  gi->genvar         = NULL;
+  gi->next_true      = NULL;
+  gi->next_false     = NULL;
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {
@@ -274,12 +278,13 @@ gen_item* gen_item_create_tfn( funit_inst* inst ) {
 
   /* Create the generate item for a namespace */
   gi = (gen_item*)malloc_safe( sizeof( gen_item ), __FILE__, __LINE__ );
-  gi->elem.inst     = inst;
-  gi->suppl.type    = GI_TYPE_TFN;
-  gi->suppl.conn_id = 0;
-  gi->genvar        = NULL;
-  gi->next_true     = NULL;
-  gi->next_false    = NULL;
+  gi->elem.inst      = inst;
+  gi->suppl.type     = GI_TYPE_TFN;
+  gi->suppl.conn_id  = 0;
+  gi->suppl.resolved = 0;
+  gi->genvar         = NULL;
+  gi->next_true      = NULL;
+  gi->next_false     = NULL;
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {
@@ -305,12 +310,13 @@ gen_item* gen_item_create_end( funit_inst* inst ) {
 
   /* Create the generate item for a namespace */
   gi = (gen_item*)malloc_safe( sizeof( gen_item ), __FILE__, __LINE__ );
-  gi->elem.inst     = inst;
-  gi->suppl.type    = GI_TYPE_END;
-  gi->suppl.conn_id = 0;
-  gi->genvar        = NULL;
-  gi->next_true     = NULL;
-  gi->next_false    = NULL;
+  gi->elem.inst      = inst;
+  gi->suppl.type     = GI_TYPE_END;
+  gi->suppl.conn_id  = 0;
+  gi->suppl.resolved = 0;
+  gi->genvar         = NULL;
+  gi->next_true      = NULL;
+  gi->next_false     = NULL;
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {
@@ -459,13 +465,14 @@ bool gen_item_connect( gen_item* gi1, gen_item* gi2, int conn_id ) {
 /*!
  \param gi    Pointer to current generate item to resolve
  \param inst  Pointer to instance to store results to
+ \param add   If set to TRUE, adds the current generate item to the functional unit pointed to be inst
 */
-void gen_item_resolve( gen_item* gi, funit_inst* inst ) {
+void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
 
   funit_inst* child;   /* Pointer to child instance of this instance to resolve */
   func_unit*  parent;  /* Pointer to parent functional unit of the current instance */
 
-  if( gi != NULL ) {
+  if( (gi != NULL) && (gi->suppl.resolved == 0) ) {
 
 #ifdef DEBUG_MODE 
     if( debug_mode ) {
@@ -473,6 +480,15 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst ) {
       print_output( user_msg, DEBUG, __FILE__, __LINE__ );
     }
 #endif
+
+    /* If we need to add the current generate item to the given functional unit, do so now */
+    if( add ) {
+      printf( "ADDING GENERATE ITEM %d to functional unit %s\n", gi->suppl.type, inst->funit->name );
+      gitem_link_add( gi, &(inst->funit->gitem_head), &(inst->funit->gitem_tail) );
+    }
+
+    /* Specify that this generate item has been resolved */
+    gi->suppl.resolved = 1;
 
     switch( gi->suppl.type ) {
   
@@ -483,26 +499,26 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst ) {
         }
         expression_operate_recursively( gi->elem.expr, FALSE );
         if( ESUPPL_IS_TRUE( gi->elem.expr->suppl ) ) {
-          gen_item_resolve( gi->next_true, inst );
+          gen_item_resolve( gi->next_true, inst, FALSE );
         } else {
-          gen_item_resolve( gi->next_false, inst );
+          gen_item_resolve( gi->next_false, inst, FALSE );
         }
         break;
 
       case GI_TYPE_SIG :
         gitem_link_add( gen_item_create_sig( gi->elem.sig ), &(inst->gitem_head), &(inst->gitem_tail) );
-        gen_item_resolve( gi->next_true, inst );
+        gen_item_resolve( gi->next_true, inst, FALSE );
         break;
 
       case GI_TYPE_STMT :
         gitem_link_add( gen_item_create_stmt( gi->elem.stmt ), &(inst->gitem_head), &(inst->gitem_tail) );
-        gen_item_resolve( gi->next_true, inst );
+        gen_item_resolve( gi->next_true, inst, FALSE );
         break;
 
       case GI_TYPE_INST :
         instance_add_child( inst, gi->elem.inst->funit, gi->elem.inst->name, gi->elem.inst->range, FALSE );
         instance_display_tree( instance_root );
-        gen_item_resolve( gi->next_true, inst );
+        gen_item_resolve( gi->next_true, inst, FALSE );
         break;
 
       case GI_TYPE_TFN :
@@ -520,12 +536,12 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst ) {
         if( funit_link_find( gi->elem.inst->funit, parent->tf_head ) == NULL ) {
           funit_link_add( gi->elem.inst->funit, &(parent->tf_head), &(parent->tf_tail) );
         }
-        gen_item_resolve( gi->next_true, child );
-        gen_item_resolve( gi->next_false, inst );
+        gen_item_resolve( gi->next_true, child, TRUE );
+        gen_item_resolve( gi->next_false, inst, FALSE );
         break;
 
       case GI_TYPE_END :
-        gen_item_resolve( gi->next_true, gi->elem.inst );
+        gen_item_resolve( gi->next_true, gi->elem.inst, FALSE );
         break;
 
       default :
@@ -553,10 +569,13 @@ void generate_resolve( funit_inst* root ) {
 
   if( root != NULL ) {
 
+    printf( "*****  RESOLVING functional unit %s\n", root->funit->name );
+    gitem_link_display( root->funit->gitem_head );
+
     /* Resolve ourself */
     curr_gi = root->funit->gitem_head;
     while( curr_gi != NULL ) {
-      gen_item_resolve( curr_gi->gi, root );
+      gen_item_resolve( curr_gi->gi, root, FALSE );
       curr_gi = curr_gi->next;
     }
 
@@ -617,6 +636,9 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.13  2006/07/24 13:35:36  phase1geo
+ More generate updates.
+
  Revision 1.12  2006/07/22 03:57:07  phase1geo
  Adding support for parameters within generate blocks.  Adding more diagnostics
  to verify statement support and parameter usage (signal sizing).

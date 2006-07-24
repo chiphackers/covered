@@ -47,7 +47,7 @@ void gen_item_db_write_expr_tree( gen_item* gi, FILE* file );
 bool gen_item_connect( gen_item* gi1, gen_item* gi2, int conn_id );
 
 /*! \brief Resolves a generate block */
-void gen_item_resolve( gen_item* gi, funit_inst* inst );
+void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add );
 
 /*! \brief Resolves all generate items in the design */
 void generate_resolve( funit_inst* inst );
@@ -57,6 +57,11 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem );
 
 /*
  $Log$
+ Revision 1.7  2006/07/21 22:39:01  phase1geo
+ Started adding support for generated statements.  Still looks like I have
+ some loose ends to tie here before I can call it good.  Added generate5
+ diagnostic to regression suite -- this does not quite pass at this point, however.
+
  Revision 1.6  2006/07/21 05:47:42  phase1geo
  More code additions for generate functionality.  At this point, we seem to
  be creating proper generate item blocks and are creating the generate loop

@@ -472,13 +472,15 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
           retval = FALSE;
 
-        /* Otherwise, implicitly create the signal and bind to it */
-        } else {
+        /* Otherwise, implicitly create the signal and bind to it if we are in the last pass of binding */
+        } else if( !bind_locally ) {
           assert( exp != NULL );
           snprintf( user_msg, USER_MSG_LENGTH, "Implicit declaration of signal \"%s\", creating 1-bit version of signal", name );
           print_output( user_msg, WARNING, __FILE__, __LINE__ );
           found_sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT, 1, 0, exp->line, ((exp->col >> 16) & 0xffff), 0 );
           sig_link_add( found_sig, &(found_funit->sig_head), &(found_funit->sig_tail) );
+        } else {
+          retval = FALSE;
         }
 
       } else {
@@ -492,6 +494,8 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
     }
 
     if( retval ) {
+
+      printf( "SIGNAL WAS SUCCESSFULLY FOUND!!!!!!!!!!\n" );
 
       /* Bind signal and expression if we are not clearing or this is an MBA */
       if( !clear_assigned ) {
@@ -578,6 +582,8 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
     retval = FALSE;
 
   }
+
+  printf( "RETURN VALUE: %d\n", retval );
 
   return( retval );
 
@@ -728,16 +734,16 @@ void bind_task_function_ports( expression* expr, func_unit* funit, char* name, i
 bool bind_task_function_namedblock( int type, char* name, expression* exp, func_unit* funit_exp,
                                     bool cdd_reading, int exp_line, bool bind_locally ) {
 
-  bool       retval = TRUE;  /* Return value for this function */
-  stmt_iter  si;             /* Statement iterator used to find the head statement */
-  vsignal    sig;            /* Temporary signal for comparison purposes */
-  sig_link*  sigl;           /* Temporary signal link holder */
-  func_unit* found_funit;    /* Pointer to found task/function functional unit */
-  statement* stmt;           /* Pointer to root statement for expression calling a function */
-  char       rest[4096];     /* Temporary string */
-  char       back[4096];     /* Temporary string */
-  int        port_order;     /* Port order value */
-  int        port_cnt;       /* Number of ports in the found function/task's port list */
+  bool       retval = FALSE;  /* Return value for this function */
+  stmt_iter  si;              /* Statement iterator used to find the head statement */
+  vsignal    sig;             /* Temporary signal for comparison purposes */
+  sig_link*  sigl;            /* Temporary signal link holder */
+  func_unit* found_funit;     /* Pointer to found task/function functional unit */
+  statement* stmt;            /* Pointer to root statement for expression calling a function */
+  char       rest[4096];      /* Temporary string */
+  char       back[4096];      /* Temporary string */
+  int        port_order;      /* Port order value */
+  int        port_cnt;        /* Number of ports in the found function/task's port list */
 
   assert( (type == FUNIT_FUNCTION) || (type == FUNIT_TASK) || (type == FUNIT_NAMED_BLOCK) );
 
@@ -747,74 +753,81 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
     /* Don't continue if the name is not local and we are told to bind locally */
     if( scope_local( name ) || !bind_locally ) {
 
-      if( !scope_find_task_function_namedblock( name, type, funit_exp, &found_funit, exp_line ) ) {
+      if( scope_find_task_function_namedblock( name, type, funit_exp, &found_funit, exp_line ) ) {
 
-        retval = FALSE;
+        if( found_funit->stmt_head != NULL ) {
 
-      } else if( found_funit->stmt_head != NULL ) {
+          assert( found_funit->stmt_head->stmt != NULL );
 
-        assert( found_funit->stmt_head->stmt != NULL );
+          /* Set expression to point at task/function's first head statement */
+          stmt_iter_reset( &si, found_funit->stmt_tail );
+          stmt_iter_find_head( &si, FALSE );
 
-        /* Set expression to point at task/function's first head statement */
-        stmt_iter_reset( &si, found_funit->stmt_tail );
-        stmt_iter_find_head( &si, FALSE );
-        assert( si.curr->stmt != NULL );
-        exp->stmt = si.curr->stmt;
-
-        /* If this is a function, also bind the return value signal vector to the expression's vector */
-        if( type == FUNIT_FUNCTION ) {
-
-          scope_extract_back( found_funit->name, back, rest );
-          sig.name = back;
-          sigl     = sig_link_find( &sig, found_funit->sig_head );
-
-          assert( sigl != NULL );
-
-          /* Add expression to signal expression list */
-          exp_link_add( exp, &(sigl->sig->exp_head), &(sigl->sig->exp_tail) );
-
-          /* Set expression to point at signal */
-          exp->sig = sigl->sig;
-
-          /* Attach the signal's value to our expression value */
-          expression_set_value( exp, sigl->sig->value );
-
-        }
-
-        /* If this is a function or task, bind the ports as well */
-        if( ((type == FUNIT_FUNCTION) || (type == FUNIT_TASK)) && !cdd_reading ) {
-
-          /* First, bind the ports */
-          port_order = 0;
-          bind_task_function_ports( exp->left, found_funit, name, &port_order, funit_exp );
-
-          /* Check to see if the call port count matches the actual port count */
-          if( (port_cnt = funit_get_port_count( found_funit )) != port_order ) {
-            snprintf( user_msg, USER_MSG_LENGTH, "Number of arguments in %s call (%d) does not match its %s port list (%d), file %s, line %d",
-                      get_funit_type( type ), port_order, get_funit_type( type ), port_cnt, funit_exp->filename, exp->line );
-            print_output( user_msg, FATAL, __FILE__, __LINE__ );
-            exit( 1 );
+          if( si.curr->stmt != NULL ) {
+            exp->stmt = si.curr->stmt;
+            retval = TRUE;
           }
 
         }
 
-      } else {
+        /* If we did not find the head statement in the functional unit's statement list, check the generate items */
+        if( !retval ) {
+          gitem_link* gil;
+          printf( "Checking functional unit %s for statement\n", found_funit->name );
+          gil = found_funit->gitem_head;
+          while( (gil != NULL) && (gil->gi->suppl.type != GI_TYPE_STMT) ) {
+            gil = gil->next;
+          }
+          if( gil != NULL ) {
+            exp->stmt = gil->gi->elem.stmt;
+            retval = TRUE;
+          }
+        }
 
-        /* Binding did not occur */
-        retval = FALSE;
+        if( retval ) {
+
+          /* If this is a function, also bind the return value signal vector to the expression's vector */
+          if( type == FUNIT_FUNCTION ) {
+
+            scope_extract_back( found_funit->name, back, rest );
+            sig.name = back;
+            sigl     = sig_link_find( &sig, found_funit->sig_head );
+
+            assert( sigl != NULL );
+
+            /* Add expression to signal expression list */
+            exp_link_add( exp, &(sigl->sig->exp_head), &(sigl->sig->exp_tail) );
+
+            /* Set expression to point at signal */
+            exp->sig = sigl->sig;
+
+            /* Attach the signal's value to our expression value */
+            expression_set_value( exp, sigl->sig->value );
+
+          }
+
+          /* If this is a function or task, bind the ports as well */
+          if( ((type == FUNIT_FUNCTION) || (type == FUNIT_TASK)) && !cdd_reading ) {
+
+            /* First, bind the ports */
+            port_order = 0;
+            bind_task_function_ports( exp->left, found_funit, name, &port_order, funit_exp );
+
+            /* Check to see if the call port count matches the actual port count */
+            if( (port_cnt = funit_get_port_count( found_funit )) != port_order ) {
+              snprintf( user_msg, USER_MSG_LENGTH, "Number of arguments in %s call (%d) does not match its %s port list (%d), file %s, line %d",
+                        get_funit_type( type ), port_order, get_funit_type( type ), port_cnt, funit_exp->filename, exp->line );
+              print_output( user_msg, FATAL, __FILE__, __LINE__ );
+              exit( 1 );
+            }
+
+          }
+
+        }
 
       }
 
-    } else {
-
-      /* Binding did not occur */
-      retval = FALSE;
-
     }
-
-  } else {
-
-    retval = FALSE;
 
   }
 
@@ -918,6 +931,8 @@ void bind_perform( bool cdd_reading ) {
 
       }
 
+      printf( "bound: %d, name: %s, curr_funit: %s, type: %d\n", bound, curr_eb->name, curr_eb->funit->name, curr_eb->type );
+
       /*
        If the expression was unable to be bound, put its statement block in a list to be removed after
        binding has been completed.
@@ -997,6 +1012,10 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.81  2006/07/22 03:57:07  phase1geo
+ Adding support for parameters within generate blocks.  Adding more diagnostics
+ to verify statement support and parameter usage (signal sizing).
+
  Revision 1.80  2006/07/21 20:12:46  phase1geo
  Fixing code to get generated instances and generated array of instances to
  work.  Added diagnostics to verify correct functionality.  Full regression

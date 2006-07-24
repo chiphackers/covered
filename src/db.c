@@ -75,6 +75,7 @@ extern tnode*      def_table;
 extern char**      score_args;
 extern int         score_arg_num;
 extern int         generate_mode;
+extern int         generate_expr_mode;
 
 /*!
  Specifies the string Verilog scope that is currently specified in the VCD file.
@@ -663,7 +664,7 @@ bool db_add_function_task_namedblock( int type, char* name, char* file, int star
     /* Get parent */
     parent = funit_get_curr_module( curr_funit );
 
-    if( generate_mode > 0 ) {
+    if( generate_expr_mode > 0 ) {
       /* Change the recently created instance generate item to a TFN item */
       last_gi->suppl.type = GI_TYPE_TFN;
     } else {
@@ -1924,6 +1925,11 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.197  2006/07/21 22:39:00  phase1geo
+ Started adding support for generated statements.  Still looks like I have
+ some loose ends to tie here before I can call it good.  Added generate5
+ diagnostic to regression suite -- this does not quite pass at this point, however.
+
  Revision 1.196  2006/07/21 17:47:09  phase1geo
  Simple if and if-else generate statements are now working.  Added diagnostics
  to regression suite to verify these.  More testing to follow.
