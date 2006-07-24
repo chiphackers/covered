@@ -15,6 +15,8 @@
 #include "instance.h"
 #include "statement.h"
 #include "param.h"
+#include "link.h"
+#include "func_unit.h"
 
 
 extern funit_inst* instance_root;
@@ -460,7 +462,8 @@ bool gen_item_connect( gen_item* gi1, gen_item* gi2, int conn_id ) {
 */
 void gen_item_resolve( gen_item* gi, funit_inst* inst ) {
 
-  funit_inst* child;  /* Pointer to child instance of this instance to resolve */
+  funit_inst* child;   /* Pointer to child instance of this instance to resolve */
+  func_unit*  parent;  /* Pointer to parent functional unit of the current instance */
 
   if( gi != NULL ) {
 
@@ -506,11 +509,16 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst ) {
         if( gi->genvar != NULL ) {
           char inst_name[4096];
           snprintf( inst_name, 4096, "%s[%d]", gi->elem.inst->name, vector_to_int( gi->genvar->value ) );
-          instance_add_child( inst, gi->elem.inst->funit, inst_name, NULL, FALSE );
-          // instance_parse_add( &instance_root, inst->funit, gi->elem.inst->funit, inst_name, NULL, FALSE );
+          // instance_add_child( inst, gi->elem.inst->funit, inst_name, NULL, FALSE );
+          instance_parse_add( &instance_root, inst->funit, gi->elem.inst->funit, inst_name, NULL, FALSE );
+          instance_display_tree( instance_root );
           snprintf( inst_name, 4096, "%s.%s[%d]", inst->name, gi->elem.inst->name, vector_to_int( gi->genvar->value ) );
           child = instance_find_scope( inst, inst_name );
           param_resolve( child );
+        }
+        parent = funit_get_curr_module( gi->elem.inst->funit->parent );
+        if( funit_link_find( gi->elem.inst->funit, parent->tf_head ) == NULL ) {
+          funit_link_add( gi->elem.inst->funit, &(parent->tf_head), &(parent->tf_tail) );
         }
         gen_item_resolve( gi->next_true, child );
         gen_item_resolve( gi->next_false, inst );
@@ -609,6 +617,10 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.12  2006/07/22 03:57:07  phase1geo
+ Adding support for parameters within generate blocks.  Adding more diagnostics
+ to verify statement support and parameter usage (signal sizing).
+
  Revision 1.11  2006/07/21 22:39:01  phase1geo
  Started adding support for generated statements.  Still looks like I have
  some loose ends to tie here before I can call it good.  Added generate5

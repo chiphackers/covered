@@ -2011,7 +2011,7 @@ generate_item
     }
     '(' IDENTIFIER '=' static_expr ';' static_expr ';' IDENTIFIER '=' static_expr ')' K_begin ':' IDENTIFIER
     {
-      generate_for_mode--;
+      generate_for_mode++;
       if( (ignore_mode == 0) && ($16 != NULL) ) {
         if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $16, @16.text, @16.first_line ) ) {
           ignore_mode++;
@@ -2021,6 +2021,7 @@ generate_item
       } else {
         ignore_mode++;
       }
+      generate_expr_mode--;
     }
     generate_item_list_opt K_end
     {
@@ -2038,6 +2039,7 @@ generate_item
         }
       }
       generate_for_mode--;
+      generate_expr_mode++;
       if( (ignore_mode == 0) && ($4 != NULL) && ($6 != NULL) &&
           ($8 != NULL) && ($10 != NULL) && ($12 != NULL) && ($18 != NULL) ) {
         block_depth++;
