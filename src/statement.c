@@ -702,6 +702,51 @@ statement* statement_find_head_statement( statement* stmt, stmt_link* head ) {
 }
 
 /*!
+ \param curr  Pointer to current statement in statement block being evaluated
+ \param id    Statement ID to find
+
+ \return Returns a pointer to the found statement found within the given statement block.
+         If the statement ID could not be found, returns NULL.
+
+ Recursively searches the given statement block for the expression that matches the given
+ ID.
+*/
+statement* statement_find_statement( statement* curr, int id ) {
+
+  statement* found = NULL;  /* Pointer to found statement */
+
+  if( curr != NULL ) {
+
+    if( curr->exp->id == id ) {
+
+      found = curr;
+
+    } else {
+
+      /* If both true and false paths lead to same item, just traverse the true path */
+      if( curr->next_true == curr->next_false ) {
+
+        if( ESUPPL_IS_STMT_STOP_TRUE( curr->exp->suppl ) == 0 ) {
+          found = statement_find_statement( curr->next_true, id );
+        }
+
+      /* Otherwise, traverse both true and false paths */
+      } else if( (ESUPPL_IS_STMT_STOP_TRUE( curr->exp->suppl ) == 0) &&
+                 ((found = statement_find_statement( curr->next_true, id )) == NULL) ) {
+
+        if( ESUPPL_IS_STMT_STOP_FALSE( curr->exp->suppl ) == 0 ) {
+          found = statement_find_statement( curr->next_false, id );
+        }
+
+      }
+
+    }
+
+  }
+
+}
+
+/*!
  \param stmt  Pointer to head of statement tree to deallocate.
  
  Recursively deallocates specified statement tree.
@@ -767,6 +812,10 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.84  2006/07/22 01:17:22  phase1geo
+ Fixing generate statement output function to output statements in the correct order.
+ Diagnostic generate5.v should now work correctly with VCS.
+
  Revision 1.83  2006/07/21 22:39:01  phase1geo
  Started adding support for generated statements.  Still looks like I have
  some loose ends to tie here before I can call it good.  Added generate5

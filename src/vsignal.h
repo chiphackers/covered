@@ -34,6 +34,9 @@ void vsignal_init( vsignal* sig, char* name, int type, vector* value, int lsb, i
 /*! \brief Creates a new vsignal based on the information passed to this function. */
 vsignal* vsignal_create( char* name, int type, int width, int lsb, int line, int col, int big_endian );
 
+/*! \brief Duplicates the given signal and returns a newly allocated signal */
+vsignal* vsignal_duplicate( vsignal* sig );
+
 /*! \brief Outputs this vsignal information to specified file. */
 void vsignal_db_write( vsignal* sig, FILE* file );
 
@@ -70,6 +73,10 @@ void vsignal_dealloc( vsignal* sig );
 
 /*
  $Log$
+ Revision 1.14  2006/05/28 02:43:49  phase1geo
+ Integrating stable release 0.4.4 changes into main branch.  Updated regressions
+ appropriately.
+
  Revision 1.13  2006/05/25 12:11:03  phase1geo
  Including bug fix from 0.4.4 stable release and updating regressions.
 

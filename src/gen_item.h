@@ -19,6 +19,9 @@ void gen_item_display( gen_item* gi );
 /*! \brief Searches for a generate item in the generate block of root that matches gi */
 gen_item* gen_item_find( gen_item* root, gen_item* gi );
 
+/*! \brief Searches for a statement
+statement* gen_item_find_stmt( gen_item* root, int id );
+
 /*! \brief Creates a generate item for an expression */
 gen_item* gen_item_create_expr( expression* expr );
 
@@ -57,6 +60,11 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem );
 
 /*
  $Log$
+ Revision 1.8  2006/07/24 22:20:23  phase1geo
+ Things are quite hosed at the moment -- trying to come up with a scheme to
+ handle embedded hierarchy in generate blocks.  Chances are that a lot of
+ things are currently broken at the moment.
+
  Revision 1.7  2006/07/21 22:39:01  phase1geo
  Started adding support for generated statements.  Still looks like I have
  some loose ends to tie here before I can call it good.  Added generate5

@@ -472,7 +472,7 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
   funit_inst* child;   /* Pointer to child instance of this instance to resolve */
   func_unit*  parent;  /* Pointer to parent functional unit of the current instance */
 
-  if( (gi != NULL) && (gi->suppl.resolved == 0) ) {
+  if( gi != NULL ) {
 
 #ifdef DEBUG_MODE 
     if( debug_mode ) {
@@ -480,15 +480,6 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
       print_output( user_msg, DEBUG, __FILE__, __LINE__ );
     }
 #endif
-
-    /* If we need to add the current generate item to the given functional unit, do so now */
-    if( add ) {
-      printf( "ADDING GENERATE ITEM %d to functional unit %s\n", gi->suppl.type, inst->funit->name );
-      gitem_link_add( gi, &(inst->funit->gitem_head), &(inst->funit->gitem_tail) );
-    }
-
-    /* Specify that this generate item has been resolved */
-    gi->suppl.resolved = 1;
 
     switch( gi->suppl.type ) {
   
@@ -525,16 +516,12 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
         if( gi->genvar != NULL ) {
           char inst_name[4096];
           snprintf( inst_name, 4096, "%s[%d]", gi->elem.inst->name, vector_to_int( gi->genvar->value ) );
-          // instance_add_child( inst, gi->elem.inst->funit, inst_name, NULL, FALSE );
           instance_parse_add( &instance_root, inst->funit, gi->elem.inst->funit, inst_name, NULL, FALSE );
-          instance_display_tree( instance_root );
           snprintf( inst_name, 4096, "%s.%s[%d]", inst->name, gi->elem.inst->name, vector_to_int( gi->genvar->value ) );
           child = instance_find_scope( inst, inst_name );
+          printf( "Adding generate variable %s to instance %s\n", gi->genvar->name, child->name );
+          inst_parm_add_genvar( gi->genvar, child );
           param_resolve( child );
-        }
-        parent = funit_get_curr_module( gi->elem.inst->funit->parent );
-        if( funit_link_find( gi->elem.inst->funit, parent->tf_head ) == NULL ) {
-          funit_link_add( gi->elem.inst->funit, &(parent->tf_head), &(parent->tf_tail) );
         }
         gen_item_resolve( gi->next_true, child, TRUE );
         gen_item_resolve( gi->next_false, inst, FALSE );
@@ -551,6 +538,24 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
         break;
 
     }
+
+    /* If we need to add the current generate item to the given functional unit, do so now */
+    if( add ) {
+      if( inst->funit->type == FUNIT_MODULE ) {
+        funit_link* funitl;
+        char        front[4096];
+        char        back[4096];
+        funitl = inst->funit->tf_head;
+        while( funitl != NULL ) {
+          scope_extract_back( funitl->funit->name, back, front );
+          printf( "Creating instance %s\n", back );
+          instance_parse_add( &instance_root, funitl->funit->parent, funitl->funit, back, NULL, FALSE );
+          instance_display_tree( instance_root );
+          funitl = funitl->next;
+        }
+      }
+    }
+
 
   }
 
@@ -575,7 +580,7 @@ void generate_resolve( funit_inst* root ) {
     /* Resolve ourself */
     curr_gi = root->funit->gitem_head;
     while( curr_gi != NULL ) {
-      gen_item_resolve( curr_gi->gi, root, FALSE );
+      gen_item_resolve( curr_gi->gi, root, TRUE );
       curr_gi = curr_gi->next;
     }
 
@@ -636,6 +641,11 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.14  2006/07/24 22:20:23  phase1geo
+ Things are quite hosed at the moment -- trying to come up with a scheme to
+ handle embedded hierarchy in generate blocks.  Chances are that a lot of
+ things are currently broken at the moment.
+
  Revision 1.13  2006/07/24 13:35:36  phase1geo
  More generate updates.
 

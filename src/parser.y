@@ -3305,7 +3305,7 @@ named_begin_end_block
       } else {
         ignore_mode++;
       }
-//      generate_mode--;
+      generate_mode--;
     }
     block_item_decls_opt statement_list
     {
@@ -3328,7 +3328,7 @@ named_begin_end_block
         }
         $$ = NULL;
       }
-//      generate_mode++;
+      generate_mode++;
     }
   | UNUSED_IDENTIFIER block_item_decls_opt statement_list
     {

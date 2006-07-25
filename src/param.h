@@ -48,6 +48,9 @@ inst_parm* inst_parm_find( char* name, inst_parm* parm );
 inst_parm* inst_parm_add( char* name, char* inst_name, static_expr* msb, static_expr* lsb, bool is_signed,
                           vector* value, mod_parm* mparm, funit_inst* inst );
 
+/*! \brief Creates a new instance parameter for a generate variable */
+void inst_parm_add_genvar( vsignal* sig, funit_inst* inst );
+
 /*! \brief Adds parameter override to defparam list. */
 void defparam_add( char* scope, vector* expr );
 
@@ -84,6 +87,11 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive );
 
 /*
  $Log$
+ Revision 1.24  2006/03/28 22:28:27  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.23  2006/02/02 22:37:41  phase1geo
  Starting to put in support for signed values and inline register initialization.
  Also added support for more attribute locations in code.  Regression updated for
