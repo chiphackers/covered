@@ -242,6 +242,7 @@ bool scope_find_task_function_namedblock( char* name, int type, func_unit* curr_
   char        rest[4096];     /* Temporary string */
   char        back[4096];     /* Temporary string */
   bool        found = FALSE;  /* Specifies if function unit has been found */
+  func_unit*  parent;         /* Pointer to the parent module */
 
   assert( (type == FUNIT_FUNCTION) || (type == FUNIT_TASK) || (type == FUNIT_NAMED_BLOCK) );
   assert( curr_funit != NULL );
@@ -265,18 +266,34 @@ bool scope_find_task_function_namedblock( char* name, int type, func_unit* curr_
 
   }
 
-  /* Get the current module */
-  *found_funit = funit_get_curr_module( *found_funit );
+  printf( "Starting at functional unit %s\n", (*found_funit)->name );
 
-  /* Search for functional unit in the module's tf_head list */
-  funitl = (*found_funit)->tf_head;
+  /* Get the current module */
+  parent = funit_get_curr_module( *found_funit );
+
+  /* First, attempt to find the functional unit relative to the current functional unit */
+  funitl = parent->tf_head;
   while( (funitl != NULL) && !found ) {
-    scope_extract_back( funitl->funit->name, back, rest );
-    if( scope_compare( back, name ) ) {
-      found        = TRUE;
+    snprintf( rest, 4096, "%s.%s", (*found_funit)->name, name );
+    if( strcmp( funitl->funit->name, rest ) == 0 ) {
+      found = TRUE;
       *found_funit = funitl->funit;
     } else {
       funitl = funitl->next;
+    }
+  }
+  
+  /* Search for functional unit in the module's tf_head list */
+  if( !found ) {
+    funitl = parent->tf_head;
+    while( (funitl != NULL) && !found ) {
+      scope_extract_back( funitl->funit->name, back, rest );
+      if( scope_compare( back, name ) ) {
+        found        = TRUE;
+        *found_funit = funitl->funit;
+      } else {
+        funitl = funitl->next;
+      }
     }
   }
 
@@ -358,6 +375,12 @@ func_unit* scope_get_parent_module( char* scope ) {
 
 /*
  $Log$
+ Revision 1.18  2006/07/25 21:35:54  phase1geo
+ Fixing nested namespace problem with generate blocks.  Also adding support
+ for using generate values in expressions.  Still not quite working correctly
+ yet, but the format of the CDD file looks good as far as I can tell at this
+ point.
+
  Revision 1.17  2006/07/24 22:20:23  phase1geo
  Things are quite hosed at the moment -- trying to come up with a scheme to
  handle embedded hierarchy in generate blocks.  Chances are that a lot of
