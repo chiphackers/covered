@@ -977,8 +977,6 @@ void expression_db_write( expression* expr, FILE* file, bool parse_mode ) {
 
   func_unit* funit;  /* Pointer to functional unit containing the statement attached to this expression */
 
-  printf( "Writing expression %d (%s line %d)\n", expr->id, expression_string_op( expr->op ), expr->line );
-
   fprintf( file, "%d %d %d %x %x %x %x %d %d",
     DB_TYPE_EXPRESSION,
     expression_get_id( expr, parse_mode ),
@@ -3215,6 +3213,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.188  2006/07/24 22:20:23  phase1geo
+ Things are quite hosed at the moment -- trying to come up with a scheme to
+ handle embedded hierarchy in generate blocks.  Chances are that a lot of
+ things are currently broken at the moment.
+
  Revision 1.187  2006/07/21 22:39:00  phase1geo
  Started adding support for generated statements.  Still looks like I have
  some loose ends to tie here before I can call it good.  Added generate5

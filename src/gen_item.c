@@ -519,7 +519,6 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
           instance_parse_add( &instance_root, inst->funit, gi->elem.inst->funit, inst_name, NULL, FALSE );
           snprintf( inst_name, 4096, "%s.%s[%d]", inst->name, gi->elem.inst->name, vector_to_int( gi->genvar->value ) );
           child = instance_find_scope( inst, inst_name );
-          printf( "Adding generate variable %s to instance %s\n", gi->genvar->name, child->name );
           inst_parm_add_genvar( gi->genvar, child );
           param_resolve( child );
         }
@@ -548,9 +547,7 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
         funitl = inst->funit->tf_head;
         while( funitl != NULL ) {
           scope_extract_back( funitl->funit->name, back, front );
-          printf( "Creating instance %s\n", back );
           instance_parse_add( &instance_root, funitl->funit->parent, funitl->funit, back, NULL, FALSE );
-          instance_display_tree( instance_root );
           funitl = funitl->next;
         }
       }
@@ -573,9 +570,6 @@ void generate_resolve( funit_inst* root ) {
   funit_inst* curr_child;  /* Pointer to current child to resolve for */
 
   if( root != NULL ) {
-
-    printf( "*****  RESOLVING functional unit %s\n", root->funit->name );
-    gitem_link_display( root->funit->gitem_head );
 
     /* Resolve ourself */
     curr_gi = root->funit->gitem_head;
@@ -641,6 +635,12 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.15  2006/07/25 21:35:54  phase1geo
+ Fixing nested namespace problem with generate blocks.  Also adding support
+ for using generate values in expressions.  Still not quite working correctly
+ yet, but the format of the CDD file looks good as far as I can tell at this
+ point.
+
  Revision 1.14  2006/07/24 22:20:23  phase1geo
  Things are quite hosed at the moment -- trying to come up with a scheme to
  handle embedded hierarchy in generate blocks.  Chances are that a lot of

@@ -364,6 +364,8 @@ bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
   fsm_link*   curr_fsm;       /* Pointer to current functional unit fsm_link element */
   race_blk*   curr_race;      /* Pointer to current race condition block */
   gitem_link* curr_gi;        /* Pointer to current gitem_link element */
+  char        modname[4096];  /* Name of module */
+  char        tmp[4096];      /* Temporary string holder */
 
 #ifdef DEBUG_MODE
   switch( funit->type ) {
@@ -380,10 +382,25 @@ bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
+  /* Calculate module name to display */
+  if( scope_local( funit->name ) || (inst == NULL) ) {
+    strcpy( modname, funit->name );
+  } else {
+    funit_inst* parent_inst = inst->parent;
+    strcpy( modname, inst->name );
+    while( parent_inst->funit->type != FUNIT_MODULE ) {
+      snprintf( tmp, 4096, "%s.%s", parent_inst->name, modname );
+      strcpy( modname, tmp );
+      parent_inst = parent_inst->parent;
+    }
+    snprintf( tmp, 4096, "%s.%s", parent_inst->funit->name, modname );
+    strcpy( modname, tmp );
+  }
+
   fprintf( file, "%d %d %s %s %s %d %d\n",
     DB_TYPE_FUNIT,
     funit->type,
-    funit->name,
+    modname,
     scope,
     funit->filename,
     funit->start_line,
@@ -941,6 +958,12 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.25  2006/07/25 21:35:54  phase1geo
+ Fixing nested namespace problem with generate blocks.  Also adding support
+ for using generate values in expressions.  Still not quite working correctly
+ yet, but the format of the CDD file looks good as far as I can tell at this
+ point.
+
  Revision 1.24  2006/07/24 22:20:23  phase1geo
  Things are quite hosed at the moment -- trying to come up with a scheme to
  handle embedded hierarchy in generate blocks.  Chances are that a lot of

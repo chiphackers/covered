@@ -266,8 +266,6 @@ bool scope_find_task_function_namedblock( char* name, int type, func_unit* curr_
 
   }
 
-  printf( "Starting at functional unit %s\n", (*found_funit)->name );
-
   /* Get the current module */
   parent = funit_get_curr_module( *found_funit );
 
@@ -375,6 +373,11 @@ func_unit* scope_get_parent_module( char* scope ) {
 
 /*
  $Log$
+ Revision 1.19  2006/07/26 03:33:20  phase1geo
+ Update to named block scoping function.  Searching relatively before searching
+ broadly; however, this is not working quite as expected yet.  More work to
+ come.
+
  Revision 1.18  2006/07/25 21:35:54  phase1geo
  Fixing nested namespace problem with generate blocks.  Also adding support
  for using generate values in expressions.  Still not quite working correctly
