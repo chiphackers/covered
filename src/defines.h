@@ -586,9 +586,6 @@
 /*! Holds a task, function, named begin/end block */
 #define GI_TYPE_TFN             4
 
-/*! Specifies the end of the current scope */
-#define GI_TYPE_END             5
-
 /*! @} */
 
 /*!
@@ -1986,6 +1983,10 @@ struct gitem_link_s {
 
 /*
  $Log$
+ Revision 1.211  2006/07/27 16:08:46  phase1geo
+ Fixing several memory leak bugs, cleaning up output and fixing regression
+ bugs.  Full regression now passes (including all current generate diagnostics).
+
  Revision 1.210  2006/07/27 04:34:39  phase1geo
  Adding initial support for generate case statements.  This has only been
  verified to compile at this point.

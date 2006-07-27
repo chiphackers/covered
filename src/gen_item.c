@@ -31,30 +31,89 @@ extern bool        debug_mode;
 */
 void gen_item_display( gen_item* gi ) {
 
-  switch( gi->suppl.part.type ) {
-    case GI_TYPE_EXPR :
-      printf( "  EXPR\n" );
-      expression_display( gi->elem.expr );
-      break;
-    case GI_TYPE_SIG :
-      printf( "  SIG\n" );
-      vsignal_display( gi->elem.sig );
-      break;
-    case GI_TYPE_STMT :
-      printf( "  STMT, id: %d\n", gi->elem.stmt->exp->id );
-      break;
-    case GI_TYPE_INST :
-      printf( "  INST, name: %s\n", gi->elem.inst->name );
-      break;
-    case GI_TYPE_TFN :
-      printf( "  TFN, name: %s, type: %d\n", gi->elem.inst->name, gi->elem.inst->funit->type );
-      break;
-    case GI_TYPE_END :
-      printf( "  END, upscope: %s\n", gi->elem.inst->name );
-      break;
-    default :
-      break;
+  if( gi != NULL ) {
+
+    printf( "- %p, suppl: %x ", gi, gi->suppl.all );
+
+    switch( gi->suppl.part.type ) {
+      case GI_TYPE_EXPR :
+        printf( "EXPR\n" );
+        expression_display( gi->elem.expr );
+        break;
+      case GI_TYPE_SIG :
+        printf( "SIG\n" );
+        vsignal_display( gi->elem.sig );
+        break;
+      case GI_TYPE_STMT :
+        printf( "STMT, id: %d\n", gi->elem.stmt->exp->id );
+        break;
+      case GI_TYPE_INST :
+        printf( "INST, name: %s\n", gi->elem.inst->name );
+        break;
+      case GI_TYPE_TFN :
+        printf( "TFN, name: %s, type: %d\n", gi->elem.inst->name, gi->elem.inst->funit->type );
+        break;
+      default :
+        printf( "UNKNOWN!\n" );
+        break;
+    }
+
+    printf( "   next_true: %p, next_false: %p", gi->next_true, gi->next_false );
+
+    if( gi->genvar != NULL ) {
+      printf( ", genvar: %s\n", gi->genvar->name );
+    } else {
+      printf( "\n" );
+    }
+
   }
+
+}
+
+/*!
+ \param root  Pointer to starting generate item to display
+
+ Displays an entire generate block to standard output (used for debugging purposes).
+*/
+void gen_item_display_block_helper( gen_item* root ) {
+
+  if( root != NULL ) {
+
+    /* Display ourselves */
+    gen_item_display( root );
+
+    if( root->next_true == root->next_false ) {
+
+      if( root->suppl.part.stop_true == 0 ) {
+        gen_item_display_block_helper( root->next_true );
+      }
+
+    } else {
+
+      if( root->suppl.part.stop_false == 0 ) {
+        gen_item_display_block_helper( root->next_false );
+      }
+
+      if( root->suppl.part.stop_true == 0 ) {
+        gen_item_display_block_helper( root->next_true );
+      }
+
+    }
+
+  }
+
+}
+
+/*!
+ \param root  Pointer to starting generate item to display
+
+ Displays an entire generate block to standard output (used for debugging purposes).
+*/
+void gen_item_display_block( gen_item* root ) {
+
+  printf( "Generate block:\n" );
+
+  gen_item_display_block_helper( root );
 
 }
 
@@ -77,7 +136,6 @@ bool gen_item_compare( gen_item* gi1, gen_item* gi2 ) {
       case GI_TYPE_STMT :  retval = (gi1->elem.stmt->exp->id == gi2->elem.stmt->exp->id) ? TRUE : FALSE;  break;
       case GI_TYPE_INST :
       case GI_TYPE_TFN  :  retval = (strcmp( gi1->elem.inst->name, gi2->elem.inst->name ) == 0) ? TRUE : FALSE;  break;
-      case GI_TYPE_END  :  break;
       default           :  break;
     }
 
@@ -487,14 +545,10 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
         gen_item_resolve( gi->next_false, inst, FALSE );
         break;
 
-      case GI_TYPE_END :
-        gen_item_resolve( gi->next_true, gi->elem.inst, FALSE );
-        break;
-
       default :
         assert( (gi->suppl.part.type == GI_TYPE_EXPR) || (gi->suppl.part.type == GI_TYPE_SIG) ||
                 (gi->suppl.part.type == GI_TYPE_STMT) || (gi->suppl.part.type == GI_TYPE_INST) ||
-                (gi->suppl.part.type == GI_TYPE_TFN)  || (gi->suppl.part.type == GI_TYPE_END) );
+                (gi->suppl.part.type == GI_TYPE_TFN) );
         break;
 
     }
@@ -532,9 +586,12 @@ void generate_resolve( funit_inst* root ) {
 
   if( root != NULL ) {
 
+    gitem_link_display( root->funit->gitem_head );
+
     /* Resolve ourself */
     curr_gi = root->funit->gitem_head;
     while( curr_gi != NULL ) {
+      gen_item_display_block( curr_gi->gi );
       gen_item_resolve( curr_gi->gi, root, TRUE );
       curr_gi = curr_gi->next;
     }
@@ -596,6 +653,10 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.18  2006/07/27 16:08:46  phase1geo
+ Fixing several memory leak bugs, cleaning up output and fixing regression
+ bugs.  Full regression now passes (including all current generate diagnostics).
+
  Revision 1.17  2006/07/27 02:04:30  phase1geo
  Fixing problem with parameter usage in a generate block for signal sizing.
 
