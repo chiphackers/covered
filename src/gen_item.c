@@ -586,12 +586,12 @@ void generate_resolve( funit_inst* root ) {
 
   if( root != NULL ) {
 
-    gitem_link_display( root->funit->gitem_head );
+    // gitem_link_display( root->funit->gitem_head );
 
     /* Resolve ourself */
     curr_gi = root->funit->gitem_head;
     while( curr_gi != NULL ) {
-      gen_item_display_block( curr_gi->gi );
+      // gen_item_display_block( curr_gi->gi );
       gen_item_resolve( curr_gi->gi, root, TRUE );
       curr_gi = curr_gi->next;
     }
@@ -653,6 +653,11 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.19  2006/07/27 18:02:22  phase1geo
+ More diagnostic additions and upgraded the generate item display functionality
+ for better debugging using this feature.  We are about to forge into some new
+ territory with regard to generate blocks, so we will tag at this point.
+
  Revision 1.18  2006/07/27 16:08:46  phase1geo
  Fixing several memory leak bugs, cleaning up output and fixing regression
  bugs.  Full regression now passes (including all current generate diagnostics).

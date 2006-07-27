@@ -1,240 +1,1043 @@
-2006-07-07 21:06  phase1geo
+2006-07-27 13:02  phase1geo
 
-	Updating build scripts for next development release and fixing a
-	bug in the score command that caused segfaults for signals that
-	used the same parameters in their range declaration.  Added
-	diagnostic to regression to test this fix.  Full regression passes.
-
-2006-07-07 12:53  phase1geo
-
-	Updates to build files, changelog and NEWS for upcoming
-	covered-20060708 development release.  Removed the ability for the
-	covered RPM to be relocatable as this would cause problems with
-	locating the Tcl/Tk scripts and GUI documentation.
-
-2006-07-06 22:15  phase1geo
-
-	More updates to the RPM spec file (this is not working well with
-	Tcl/Tk).
-
-2006-07-06 21:44  phase1geo
-
-	Updating the covered.spec RPM build file and updating the build
-	scripts.
-
-2006-07-06 16:17  phase1geo
-
-	Adding the initial version of a base RPM spec file for RPM building
-	purposes.  This is totally untested at this point but I need to
-	checkpoint.
-
-2006-07-06 15:29  phase1geo
-
-	Updating all GUI documentation to include new features added to
-	this development version of Covered.  I believe all of the
-	documentation now accurately reflects the state of the GUI.
-
-2006-07-06 00:43  phase1geo
-
-	More documentation and build script updates.
-
-2006-07-06 00:38  phase1geo
-
-	Updating documentation and adding missing image files for GUI
-	documentation.	Also updated the build files.
-
-2006-07-05 16:04  phase1geo
-
-	Adding new png files for GUI documentation and updating other
-	documentation details.
-
-2006-07-05 15:45  phase1geo
-
-	Updating TODO and fixing default option in .coveredrc file.
-
-2006-07-05 15:43  phase1geo
-
-	Finishing Tcl/Tk work on preferences window and report generator
-	window.  Started work on GUI HTML documentation for these changes. 
-	A lot of documentation left to do here, but all of the missing
-	files are now in place.
-
-2006-07-04 23:41  phase1geo
-
-	Updating preferences window to enhance its usage (and
-	expandability).  Added report options to the preferences window. 
-	Still have a little ways to go to fully complete the new
-	preferences window usage for report options.
-
-2006-06-30 22:16  phase1geo
-
-	Completed work on ASCII report generation.  This has not been
-	entirely tested out at this time.
-
-2006-06-30 16:05  phase1geo
-
-	Updating TODO and adding the ASCII report generation window.  Still
-	some work to do here before this completely works.  Right now I am
-	wrestling with the window manager to place the components where I
-	want them...
-
-2006-06-29 17:44  phase1geo
-
-	Fixing newly introduced bug in FSM report handler.  Also adding
-	pointers back to main text window when exclusion properties are
-	changed.  Fixing toggle coverage retension.  This is partially
-	working but doesn't seem to want to save/restore properly at this
+	* diags/cdd/generate8.cdd, diags/regress/Makefile,
+	diags/regress/generate8.1.cfg, diags/regress/generate8.cfg,
+	diags/rpt/generate8.rptI, diags/rpt/generate8.rptM,
+	diags/rpt/generate8.rptWI, diags/rpt/generate8.rptWM,
+	diags/verilog/generate8.1.v, diags/verilog/generate8.v,
+	src/defines.h, src/gen_item.c: More diagnostic additions and
+	upgraded the generate item display functionality for better
+	debugging using this feature.  We are about to forge into some new
+	territory with regard to generate blocks, so we will tag at this
 	point.
 
-2006-06-29 15:57  phase1geo
+2006-07-27 11:27  phase1geo
 
-	Added stmt_excluded bit to expression to allow us to individually
-	control line and combinational logic exclusion.  This also allows
-	us to exclude combinational logic within excluded lines.  Also
-	fixing problem with highlighting the listbox (due to recent
-	changes).
+	* diags/cdd/generate7.1.cdd, diags/cdd/generate7.2.cdd,
+	diags/cdd/generate7.cdd, diags/regress/Makefile,
+	diags/regress/generate7.1.cfg, diags/regress/generate7.2.cfg,
+	diags/regress/generate7.cfg, diags/rpt/generate7.1.rptI,
+	diags/rpt/generate7.1.rptM, diags/rpt/generate7.1.rptWI,
+	diags/rpt/generate7.1.rptWM, diags/rpt/generate7.2.rptI,
+	diags/rpt/generate7.2.rptM, diags/rpt/generate7.2.rptWI,
+	diags/rpt/generate7.2.rptWM, diags/rpt/generate7.rptI,
+	diags/rpt/generate7.rptM, diags/rpt/generate7.rptWI,
+	diags/rpt/generate7.rptWM, diags/verilog/generate7.1.v,
+	diags/verilog/generate7.2.v, diags/verilog/generate7.v, src/db.c,
+	src/parser.y: Adding diagnostics to verify basic generate case
+	blocks.  Full regression passes.
 
-2006-06-29 15:06  phase1geo
+2006-07-27 11:08  phase1geo
 
-	Adding assertion exclusion code.  Things seem to be working
-	properly with this now.  This concludes the initial version of code
-	exclusion.  There are some things to clean up (and maybe make
-	better looking).
+	* diags/cdd/fsm2a.cdd, diags/cdd/fsm2b.cdd,
+	diags/cdd/generate1.1.cdd, diags/cdd/generate4.1.cdd,
+	diags/cdd/generate4.cdd, diags/cdd/merge1a.cdd,
+	diags/cdd/merge1b.cdd, diags/cdd/merge2a.cdd,
+	diags/cdd/merge2b.cdd, diags/cdd/merge2c.cdd,
+	diags/rpt/generate1.1.rptI, diags/rpt/generate1.1.rptM,
+	diags/rpt/generate1.1.rptWI, diags/rpt/generate1.1.rptWM,
+	diags/rpt/generate4.1.rptM, diags/rpt/generate4.1.rptWM,
+	diags/rpt/generate4.rptM, diags/rpt/generate4.rptWM, src/db.c,
+	src/defines.h, src/func_unit.c, src/gen_item.c, src/info.c,
+	src/info.h, src/instance.c: Fixing several memory leak bugs,
+	cleaning up output and fixing regression bugs.	Full regression now
+	passes (including all current generate diagnostics).
 
-2006-06-29 11:48  phase1geo
+2006-07-26 23:34  phase1geo
 
-	FSM exclusion code now complete.
+	* src/: defines.h, parser.y: Adding initial support for generate
+	case statements.  This has only been verified to compile at this
+	point.
 
-2006-06-28 23:26  phase1geo
+2006-07-26 21:14  phase1geo
 
-	More updates for FSM coverage.	We are getting close but are just
-	not to fully working order yet.
+	* diags/cdd/generate1.cdd, diags/rpt/generate1.rptI,
+	diags/rpt/generate1.rptM, diags/rpt/generate1.rptWI,
+	diags/rpt/generate1.rptWM, src/func_unit.c, src/scope.c: Cleaning
+	up verbose output and fixing a few bugs for regression.  IV
+	regression passes at this point.
 
-2006-06-28 17:15  phase1geo
+2006-07-26 21:04  phase1geo
 
-	Adding more code to support FSM coverage.  Still a ways to go
-	before this is completed.
+	* src/: func_unit.c, gen_item.c, param.c, vsignal.c: Fixing problem
+	with parameter usage in a generate block for signal sizing.
 
-2006-06-28 00:11  phase1geo
+2006-07-26 01:22  phase1geo
 
-	Starting to work on FSM exclusion/inclusion functionality.  Bound
-	uncovered rectanges to commands at this point.
+	* diags/cdd/generate6.cdd, diags/rpt/generate6.rptI,
+	diags/rpt/generate6.rptM, diags/rpt/generate6.rptWI,
+	diags/rpt/generate6.rptWM, src/expr.c, src/func_unit.c,
+	src/gen_item.c, src/scope.c: Fixing rest of issues with generate6
+	diagnostic.  Still need to know if I have broken regressions or not
+	and there are plenty of cases in this area to test before I call
+	things good.
 
-2006-06-27 23:35  phase1geo
+2006-07-25 22:33  phase1geo
 
-	Adding support for line coverage and fixing toggle and
-	combinational coverage to redisplay main textbox to reflect
-	exclusion changes.  Also added messageBox for close and exit menu
-	options when a CDD has been changed but not saved to allow the user
-	to do so before continuing on.
+	* src/scope.c: Update to named block scoping function.	Searching
+	relatively before searching broadly; however, this is not working
+	quite as expected yet.	More work to come.
 
-2006-06-27 17:06  phase1geo
+2006-07-25 16:35  phase1geo
 
-	Fixing more code related to exclusion.	The detailed combinational
-	expression window now works correctly.	I am currently working on
-	getting the main window text viewer to display exclusion correctly
-	for all coverage metrics.  Still have a ways to go here.
+	* src/: binding.c, func_unit.c, gen_item.c, gen_item.h, param.c,
+	param.h, parser.y, scope.c, statement.c, statement.h, vsignal.c,
+	vsignal.h: Fixing nested namespace problem with generate blocks. 
+	Also adding support for using generate values in expressions. 
+	Still not quite working correctly yet, but the format of the CDD
+	file looks good as far as I can tell at this point.
 
-2006-06-27 14:34  phase1geo
+2006-07-24 17:20  phase1geo
 
-	Permanent fix for the CDD save feature.
+	* src/: binding.c, db.c, defines.h, expr.c, func_unit.c,
+	func_unit.h, gen_item.c, gen_item.h, parser.y, scope.c: Things are
+	quite hosed at the moment -- trying to come up with a scheme to
+	handle embedded hierarchy in generate blocks.  Chances are that a
+	lot of things are currently broken at the moment.
 
-2006-06-26 17:48  phase1geo
+2006-07-24 13:22  phase1geo
 
-	More updates for exclusion of combinational logic.  Also updates to
-	properly support CDD saving; however, this change causes regression
-	errors, currently.
+	* diags/verilog/check_test: Making tweak to check_test script to
+	not stop on assertion failure (prior to CDD file being created). 
+	All tests in regression pass at this point with the exception of
+	generate6.
 
-2006-06-25 23:12  phase1geo
+2006-07-24 13:13  phase1geo
 
-	More updates for supporting coverage exclusion.  Still a bit more
-	to go before this is working properly.
+	* diags/: cdd/generate1.1.cdd, cdd/generate5.1.cdd,
+	cdd/generate5.2.cdd, cdd/generate5.3.cdd, cdd/generate5.cdd,
+	rpt/generate1.1.rptI, rpt/generate1.1.rptM, rpt/generate1.1.rptWI,
+	rpt/generate1.1.rptWM, rpt/generate5.1.rptI, rpt/generate5.1.rptM,
+	rpt/generate5.1.rptWI, rpt/generate5.1.rptWM, rpt/generate5.2.rptI,
+	rpt/generate5.2.rptM, rpt/generate5.2.rptWI, rpt/generate5.2.rptWM,
+	rpt/generate5.3.rptI, rpt/generate5.3.rptM, rpt/generate5.3.rptWI,
+	rpt/generate5.3.rptWM, rpt/generate5.rptI, rpt/generate5.rptM,
+	rpt/generate5.rptWI, rpt/generate5.rptWM: Updating regression with
+	missing files.
 
-2006-06-23 16:43  phase1geo
+2006-07-24 08:35  phase1geo
 
-	More updates to include toggle exclusion (this does not work
-	correctly at this time).
+	* src/: gen_item.c, parser.y: More generate updates.
 
-2006-06-23 14:45  phase1geo
+2006-07-21 23:28  phase1geo
 
-	Adding full C support for excluding/including coverage points. 
-	Fixed regression suite failures -- full regression now passes.	We
-	just need to start adding support to the Tcl/Tk files for full
-	user-specified exclusion support.
+	* diags/: regress/Makefile, regress/generate6.cfg,
+	verilog/generate6.v: Adding generate6 diagnostic to pull out
+	problems with adding scopes inside of generate loops.  Problem
+	still exists in the code at this time.
 
-2006-06-23 00:12  phase1geo
+2006-07-21 22:57  phase1geo
 
-	Moving some of the diagnostics ear-marked VCS-only to the general
-	diagnostic pool as the newer versions of Icarus Verilog produce the
-	same result as VCS without generating any errors.
+	* diags/regress/Makefile, diags/regress/generate1.1.cfg,
+	diags/regress/generate5.1.cfg, diags/regress/generate5.2.cfg,
+	diags/regress/generate5.3.cfg, diags/verilog/generate1.1.v,
+	diags/verilog/generate5.1.v, diags/verilog/generate5.2.v,
+	diags/verilog/generate5.3.v, src/binding.c, src/gen_item.c,
+	src/param.c: Adding support for parameters within generate blocks. 
+	Adding more diagnostics to verify statement support and parameter
+	usage (signal sizing).
 
-2006-06-22 23:24  phase1geo
+2006-07-21 20:17  phase1geo
 
-	Adding functions to tcl_funcs to allow us to change the exclusion
-	property for each coverage metric.
+	* diags/verilog/generate5.v, src/statement.c: Fixing generate
+	statement output function to output statements in the correct
+	order.	Diagnostic generate5.v should now work correctly with VCS.
 
-2006-06-22 23:03  phase1geo
+2006-07-21 17:39  phase1geo
 
-	Updating build files and removing syntax errors in exclude.h and
-	exclude.c (though this code doesn't do anything meaningful at this
-	point).
+	* diags/regress/Makefile, diags/regress/generate5.cfg,
+	diags/verilog/generate5.v, src/db.c, src/expr.c, src/expr.h,
+	src/func_unit.c, src/gen_item.c, src/gen_item.h, src/instance.c,
+	src/statement.c, src/statement.h: Started adding support for
+	generated statements.  Still looks like I have some loose ends to
+	tie here before I can call it good.  Added generate5 diagnostic to
+	regression suite -- this does not quite pass at this point,
+	however.
 
-2006-06-22 16:56  phase1geo
+2006-07-21 15:12  phase1geo
 
-	Adding excluded bits to signal and arc structures and changed
-	statistic gathering functions to not gather coverage for excluded
-	structures.  Started to work on exclude.c file which will quickly
-	adjust coverage information from GUI modifications.  Regression has
-	been updated for this change and it fully passes.
+	* diags/cdd/generate4.1.cdd, diags/cdd/generate4.cdd,
+	diags/cdd/hier4.cdd, diags/regress/Makefile,
+	diags/regress/generate4.1.cfg, diags/regress/generate4.cfg,
+	diags/regress/hier4.cfg, diags/rpt/generate4.1.rptI,
+	diags/rpt/generate4.1.rptM, diags/rpt/generate4.1.rptWI,
+	diags/rpt/generate4.1.rptWM, diags/rpt/generate4.rptI,
+	diags/rpt/generate4.rptM, diags/rpt/generate4.rptWI,
+	diags/rpt/generate4.rptWM, diags/rpt/hier4.rptI,
+	diags/rpt/hier4.rptM, diags/rpt/hier4.rptWI, diags/rpt/hier4.rptWM,
+	diags/verilog/generate4.1.v, diags/verilog/generate4.v,
+	diags/verilog/hier4.v, src/binding.c, src/gen_item.c,
+	src/instance.c, src/instance.h, src/race.c: Fixing code to get
+	generated instances and generated array of instances to work. 
+	Added diagnostics to verify correct functionality.  Full regression
+	passes.
 
-2006-06-21 14:51  phase1geo
+2006-07-21 12:47  phase1geo
 
-	Updating the README to include information for where to find GUI
-	documentation.
+	* TODO, diags/cdd/generate1.cdd, diags/cdd/generate2.1.cdd,
+	diags/cdd/generate2.cdd, diags/cdd/generate3.1.cdd,
+	diags/cdd/generate3.cdd, diags/regress/Makefile,
+	diags/regress/generate2.1.cfg, diags/regress/generate2.cfg,
+	diags/regress/generate3.1.cfg, diags/regress/generate3.cfg,
+	diags/rpt/generate1.rptI, diags/rpt/generate1.rptM,
+	diags/rpt/generate1.rptWI, diags/rpt/generate1.rptWM,
+	diags/rpt/generate2.1.rptI, diags/rpt/generate2.1.rptM,
+	diags/rpt/generate2.1.rptWI, diags/rpt/generate2.1.rptWM,
+	diags/rpt/generate2.rptI, diags/rpt/generate2.rptM,
+	diags/rpt/generate2.rptWI, diags/rpt/generate2.rptWM,
+	diags/rpt/generate3.1.rptI, diags/rpt/generate3.1.rptM,
+	diags/rpt/generate3.1.rptWI, diags/rpt/generate3.1.rptWM,
+	diags/rpt/generate3.rptI, diags/rpt/generate3.rptM,
+	diags/rpt/generate3.rptWI, diags/rpt/generate3.rptWM,
+	diags/verilog/generate1.v, diags/verilog/generate2.1.v,
+	diags/verilog/generate2.v, diags/verilog/generate3.1.v,
+	diags/verilog/generate3.v, src/db.c, src/gen_item.c, src/parser.y:
+	Simple if and if-else generate statements are now working.  Added
+	diagnostics to regression suite to verify these.  More testing to
+	follow.
 
-2006-06-21 14:48  phase1geo
+2006-07-21 10:52  phase1geo
 
-	Updating TODO and incrementing version information in configure.in.
+	* diags/cdd/generate1.cdd, diags/rpt/generate1.rptI,
+	diags/rpt/generate1.rptM, diags/rpt/generate1.rptWI,
+	diags/rpt/generate1.rptWM, diags/verilog/generate1.v,
+	src/func_unit.c, src/gen_item.c, src/scope.c: Checking in an
+	initial working version of the generate structure.  Diagnostic
+	generate1 passes.  Still a lot of work to go before we fully
+	support generate statements, but this marks a working version to
+	enhance on.  Full regression passes as well.
 
-2006-06-21 14:44  phase1geo
+2006-07-21 00:47  phase1geo
 
-	Adding exclusion bit to expression supplemental field and
-	incrementing CDD version number as a result.  No functionality to
-	support excluding has been added at this point.  Full regression
+	* src/: db.c, db.h, defines.h, fsm_var.c, gen_item.c, gen_item.h,
+	link.c, parser.y, scope.c: More code additions for generate
+	functionality.	At this point, we seem to be creating proper
+	generate item blocks and are creating the generate loop namespace
+	appropriately.	However, the binder is still unable to find a
+	signal created by a generate block.
+
+2006-07-20 15:11  phase1geo
+
+	* src/: binding.c, db.c, db.h, defines.h, expr.c, expr.h,
+	fsm_var.c, gen_item.c, gen_item.h, param.c, parser.y: More work on
+	generate statements.  Trying to figure out a methodology for
+	handling namespaces.  Still a lot of work to go...
+
+2006-07-20 00:02  phase1geo
+
+	* src/keywords.h: Adding missing function declarations to
+	keywords.h.
+
+2006-07-19 23:55  phase1geo
+
+	* src/: db.c, defines.h, gen_item.c, gen_item.h, parser.y: More
+	updates to support generate blocks.  We seem to be passing the
+	parser stage now.  Getting segfaults in the generate_resolve code,
+	presently.
+
+2006-07-19 17:30  phase1geo
+
+	* src/: db.c, db.h, parser.y: More work done for generate support. 
+	Still have a ways to go.
+
+2006-07-18 16:52  phase1geo
+
+	* src/: db.c, db.h, func_unit.c, gen_item.c, gen_item.h, parser.y,
+	statement.c: More work on generate blocks.  Currently working on
+	assembling generate item statements in the parser.  Still a lot of
+	work to go here.
+
+2006-07-18 14:03  phase1geo
+
+	* diags/cdd/hier3.1.cdd, diags/cdd/hier3.2.cdd,
+	diags/cdd/hier3.3.cdd, diags/cdd/hier3.4.cdd, diags/cdd/hier3.cdd,
+	diags/regress/Makefile, diags/regress/hier3.1.cfg,
+	diags/regress/hier3.2.cfg, diags/regress/hier3.3.cfg,
+	diags/regress/hier3.4.cfg, diags/regress/hier3.cfg,
+	diags/rpt/hier3.1.rptI, diags/rpt/hier3.1.rptM,
+	diags/rpt/hier3.1.rptWI, diags/rpt/hier3.1.rptWM,
+	diags/rpt/hier3.2.rptI, diags/rpt/hier3.2.rptM,
+	diags/rpt/hier3.2.rptWI, diags/rpt/hier3.2.rptWM,
+	diags/rpt/hier3.3.rptI, diags/rpt/hier3.3.rptM,
+	diags/rpt/hier3.3.rptWI, diags/rpt/hier3.3.rptWM,
+	diags/rpt/hier3.4.rptI, diags/rpt/hier3.4.rptM,
+	diags/rpt/hier3.4.rptWI, diags/rpt/hier3.4.rptWM,
+	diags/rpt/hier3.rptI, diags/rpt/hier3.rptM, diags/rpt/hier3.rptWI,
+	diags/rpt/hier3.rptWM, diags/verilog/hier3.1.v,
+	diags/verilog/hier3.2.v, diags/verilog/hier3.3.v,
+	diags/verilog/hier3.4.v, diags/verilog/hier3.v, src/instance.c,
+	src/scope.c: Sync'ing up to the scoping fixes from the 0.4.6 stable
+	release.
+
+2006-07-18 12:41  phase1geo
+
+	* NEWS: Updated NEWS.
+
+2006-07-18 12:33  phase1geo
+
+	* ChangeLog: Updating changelog.
+
+2006-07-18 12:22  phase1geo
+
+	* diags/rpt/hier3.rptI: file hier3.rptI was initially added on
+	branch covered-0_4_5-branch.
+
+2006-07-18 12:22  phase1geo
+
+	* diags/verilog/hier3.3.v: file hier3.3.v was initially added on
+	branch covered-0_4_5-branch.
+
+2006-07-18 12:22  phase1geo
+
+	* diags/rpt/hier3.4.rptM: file hier3.4.rptM was initially added on
+	branch covered-0_4_5-branch.
+
+2006-07-18 12:22  phase1geo
+
+	* diags/rpt/hier3.rptWM: file hier3.rptWM was initially added on
+	branch covered-0_4_5-branch.
+
+2006-07-18 12:22  phase1geo
+
+	* diags/cdd/hier3.2.cdd: file hier3.2.cdd was initially added on
+	branch covered-0_4_5-branch.
+
+2006-07-18 12:22  phase1geo
+
+	* diags/rpt/hier3.1.rptI: file hier3.1.rptI was initially added on
+	branch covered-0_4_5-branch.
+
+2006-07-18 12:22  phase1geo
+
+	* diags/rpt/hier3.1.rptWI: file hier3.1.rptWI was initially added
+	on branch covered-0_4_5-branch.
+
+2006-07-18 12:22  phase1geo
+
+	* diags/regress/hier3.1.cfg: file hier3.1.cfg was initially added
+	on branch covered-0_4_5-branch.
+
+2006-07-18 12:22  phase1geo
+
+	* diags/verilog/hier3.1.v: file hier3.1.v was initially added on
+	branch covered-0_4_5-branch.
+
+2006-07-18 12:22  phase1geo
+
+	* diags/cdd/hier3.cdd: file hier3.cdd was initially added on branch
+	covered-0_4_5-branch.
+
+2006-07-18 12:22  phase1geo
+
+	* diags/rpt/hier3.4.rptI: file hier3.4.rptI was initially added on
+	branch covered-0_4_5-branch.
+
+2006-07-18 12:22  phase1geo
+
+	* diags/rpt/hier3.1.rptM: file hier3.1.rptM was initially added on
+	branch covered-0_4_5-branch.
+
+2006-07-18 12:22  phase1geo
+
+	* diags/regress/hier3.2.cfg: file hier3.2.cfg was initially added
+	on branch covered-0_4_5-branch.
+
+2006-07-18 12:22  phase1geo
+
+	* diags/rpt/hier3.4.rptWI: file hier3.4.rptWI was initially added
+	on branch covered-0_4_5-branch.
+
+2006-07-18 12:22  phase1geo
+
+	* diags/rpt/hier3.rptM: file hier3.rptM was initially added on
+	branch covered-0_4_5-branch.
+
+2006-07-18 12:22  phase1geo
+
+	* diags/verilog/hier3.4.v: file hier3.4.v was initially added on
+	branch covered-0_4_5-branch.
+
+2006-07-18 12:22  phase1geo
+
+	* diags/rpt/hier3.2.rptM: file hier3.2.rptM was initially added on
+	branch covered-0_4_5-branch.
+
+2006-07-18 12:22  phase1geo
+
+	* diags/rpt/hier3.3.rptWM: file hier3.3.rptWM was initially added
+	on branch covered-0_4_5-branch.
+
+2006-07-18 12:22  phase1geo
+
+	* diags/cdd/hier3.1.cdd: file hier3.1.cdd was initially added on
+	branch covered-0_4_5-branch.
+
+2006-07-18 12:22  phase1geo
+
+	* diags/regress/hier3.4.cfg: file hier3.4.cfg was initially added
+	on branch covered-0_4_5-branch.
+
+2006-07-18 12:22  phase1geo
+
+	* diags/rpt/hier3.rptWI: file hier3.rptWI was initially added on
+	branch covered-0_4_5-branch.
+
+2006-07-18 12:22  phase1geo
+
+	* diags/regress/hier3.3.cfg: file hier3.3.cfg was initially added
+	on branch covered-0_4_5-branch.
+
+2006-07-18 12:22  phase1geo
+
+	* diags/rpt/hier3.2.rptI: file hier3.2.rptI was initially added on
+	branch covered-0_4_5-branch.
+
+2006-07-18 12:22  phase1geo
+
+	* diags/rpt/hier3.3.rptI: file hier3.3.rptI was initially added on
+	branch covered-0_4_5-branch.
+
+2006-07-18 12:22  phase1geo
+
+	* diags/rpt/hier3.2.rptWI: file hier3.2.rptWI was initially added
+	on branch covered-0_4_5-branch.
+
+2006-07-18 12:22  phase1geo
+
+	* diags/rpt/hier3.1.rptWM: file hier3.1.rptWM was initially added
+	on branch covered-0_4_5-branch.
+
+2006-07-18 12:22  phase1geo
+
+	* diags/cdd/hier3.3.cdd: file hier3.3.cdd was initially added on
+	branch covered-0_4_5-branch.
+
+2006-07-18 12:22  phase1geo
+
+	* diags/rpt/hier3.3.rptM: file hier3.3.rptM was initially added on
+	branch covered-0_4_5-branch.
+
+2006-07-18 12:22  phase1geo
+
+	* diags/cdd/hier3.1.cdd, diags/cdd/hier3.2.cdd,
+	diags/cdd/hier3.3.cdd, diags/cdd/hier3.4.cdd, diags/cdd/hier3.cdd,
+	diags/regress/Makefile, diags/regress/hier3.1.cfg,
+	diags/regress/hier3.2.cfg, diags/regress/hier3.3.cfg,
+	diags/regress/hier3.4.cfg, diags/rpt/hier3.1.rptI,
+	diags/rpt/hier3.1.rptM, diags/rpt/hier3.1.rptWI,
+	diags/rpt/hier3.1.rptWM, diags/rpt/hier3.2.rptI,
+	diags/rpt/hier3.2.rptM, diags/rpt/hier3.2.rptWI,
+	diags/rpt/hier3.2.rptWM, diags/rpt/hier3.3.rptI,
+	diags/rpt/hier3.3.rptM, diags/rpt/hier3.3.rptWI,
+	diags/rpt/hier3.3.rptWM, diags/rpt/hier3.4.rptI,
+	diags/rpt/hier3.4.rptM, diags/rpt/hier3.4.rptWI,
+	diags/rpt/hier3.4.rptWM, diags/rpt/hier3.rptI,
+	diags/rpt/hier3.rptM, diags/rpt/hier3.rptWI, diags/rpt/hier3.rptWM,
+	diags/verilog/hier3.1.v, diags/verilog/hier3.2.v,
+	diags/verilog/hier3.3.v, diags/verilog/hier3.4.v, src/instance.c,
+	src/scope.c: Fixed upwards name referencing bug (1524705) and
+	reshaped some of the code associated with this functionality. 
+	Added diagnostics to regression suite to fully test this new
+	behavior.  Full regression passes.
+
+2006-07-18 12:22  phase1geo
+
+	* diags/rpt/hier3.4.rptWM: file hier3.4.rptWM was initially added
+	on branch covered-0_4_5-branch.
+
+2006-07-18 12:22  phase1geo
+
+	* diags/rpt/hier3.3.rptWI: file hier3.3.rptWI was initially added
+	on branch covered-0_4_5-branch.
+
+2006-07-18 12:22  phase1geo
+
+	* diags/verilog/hier3.2.v: file hier3.2.v was initially added on
+	branch covered-0_4_5-branch.
+
+2006-07-18 12:22  phase1geo
+
+	* diags/rpt/hier3.2.rptWM: file hier3.2.rptWM was initially added
+	on branch covered-0_4_5-branch.
+
+2006-07-18 12:22  phase1geo
+
+	* diags/cdd/hier3.4.cdd: file hier3.4.cdd was initially added on
+	branch covered-0_4_5-branch.
+
+2006-07-18 08:37  phase1geo
+
+	* src/: gen_item.c, instance.h: Fixing compile issues.
+
+2006-07-17 23:18  phase1geo
+
+	* diags/regress/hier3.cfg: file hier3.cfg was initially added on
+	branch covered-0_4_5-branch.
+
+2006-07-17 23:18  phase1geo
+
+	* diags/verilog/hier3.v: file hier3.v was initially added on branch
+	covered-0_4_5-branch.
+
+2006-07-17 23:18  phase1geo
+
+	* diags/: regress/Makefile, regress/hier3.cfg, verilog/hier3.v:
+	Adding hier3 diagnostic to help verify scoping rules.
+
+2006-07-17 23:18  phase1geo
+
+	* ChangeLog, configure, configure.in, covered.spec,
+	doc/user/covered.1, doc/user/index.html: Getting things prepared
+	for the 0.4.6 stable release.  Still need to fix a bug with upwards
+	scoping before I think that we are ready to release.  Updated
+	documentation for 0.4.6 stable release name.
+
+2006-07-17 23:16  phase1geo
+
+	* src/scope.c: Attempting to fix upwards scope referencing issue. 
+	Still looks like there is a problem in the instance_find_scope
+	routine.  Checkpointing work.
+
+2006-07-17 17:12  phase1geo
+
+	* src/: binding.c, db.c, defines.h, func_unit.c, gen_item.c,
+	gen_item.h, instance.c, link.c, link.h: Adding more code for
+	generate block support.  Still just adding code at this point --
+	hopefully I haven't broke anything that doesn't use generate
+	blocks.
+
+2006-07-15 23:16  phase1geo
+
+	* diags/err/gen1.3.err, diags/err/gen1.4.err, diags/err/gen1.5.err,
+	diags/err/gen10.1.err, diags/err/gen10.err, diags/err/gen11.1.err,
+	diags/err/gen11.err, diags/err/gen12.1.err, diags/err/gen12.err,
+	diags/err/gen13.1.err, diags/err/gen13.err, diags/err/gen14.1.err,
+	diags/err/gen14.err, diags/err/gen15.1.err, diags/err/gen15.err,
+	diags/err/gen16.1.err, diags/err/gen16.err, diags/err/gen17.1.err,
+	diags/err/gen17.err, diags/err/gen18.1.err, diags/err/gen18.err,
+	diags/err/gen2.1.err, diags/err/gen2.err, diags/err/gen3.1.err,
+	diags/err/gen3.err, diags/err/gen4.1.err, diags/err/gen4.err,
+	diags/err/gen5.1.err, diags/err/gen5.err, diags/err/gen6.1.err,
+	diags/err/gen6.err, diags/err/gen7.1.err, diags/err/gen7.err,
+	diags/err/gen8.1.err, diags/err/gen8.err, diags/err/gen9.1.err,
+	diags/err/gen9.err, diags/regress/Makefile,
+	diags/regress/gen1.3.cfg, diags/regress/gen1.4.cfg,
+	diags/regress/gen1.5.cfg, diags/regress/gen10.1.cfg,
+	diags/regress/gen10.cfg, diags/regress/gen11.1.cfg,
+	diags/regress/gen11.cfg, diags/regress/gen12.1.cfg,
+	diags/regress/gen12.cfg, diags/regress/gen13.1.cfg,
+	diags/regress/gen13.cfg, diags/regress/gen14.1.cfg,
+	diags/regress/gen14.cfg, diags/regress/gen15.1.cfg,
+	diags/regress/gen15.cfg, diags/regress/gen16.1.cfg,
+	diags/regress/gen16.cfg, diags/regress/gen17.1.cfg,
+	diags/regress/gen17.cfg, diags/regress/gen18.1.cfg,
+	diags/regress/gen18.cfg, diags/regress/gen2.1.cfg,
+	diags/regress/gen2.cfg, diags/regress/gen3.1.cfg,
+	diags/regress/gen3.cfg, diags/regress/gen4.1.cfg,
+	diags/regress/gen4.cfg, diags/regress/gen5.1.cfg,
+	diags/regress/gen5.cfg, diags/regress/gen6.1.cfg,
+	diags/regress/gen6.cfg, diags/regress/gen7.1.cfg,
+	diags/regress/gen7.cfg, diags/regress/gen8.1.cfg,
+	diags/regress/gen8.cfg, diags/regress/gen9.1.cfg,
+	diags/regress/gen9.cfg, diags/verilog/gen1.3.v,
+	diags/verilog/gen1.4.v, diags/verilog/gen1.5.v,
+	diags/verilog/gen10.v, diags/verilog/gen11.v,
+	diags/verilog/gen12.v, diags/verilog/gen13.v,
+	diags/verilog/gen14.v, diags/verilog/gen15.v,
+	diags/verilog/gen16.v, diags/verilog/gen17.v,
+	diags/verilog/gen18.v, diags/verilog/gen2.v, diags/verilog/gen3.v,
+	diags/verilog/gen4.v, diags/verilog/gen5.v, diags/verilog/gen6.v,
+	diags/verilog/gen7.v, diags/verilog/gen8.v, diags/verilog/gen9.v,
+	src/parser.y: Finishing testing on new -g option.  Full regression
 	now passes.
 
-2006-06-21 13:58  phase1geo
+2006-07-15 17:07  phase1geo
 
-	More updates for saving CDD files.  Also added missing support for
-	assertion coverage to preferences window and summary window.  Also
-	updated the initial .coveredrc configuration file that gets
-	installed with a Covered installation.
+	* diags/verilog/generate1.v, src/lexer.l, src/parser.y,
+	src/parser_misc.c, src/parser_misc.h: Added all code to parser to
+	check generation value to decide if a piece of syntax is allowable
+	by the parser or not.  This code compiles and has been proven to
+	not break regressions; however, none if it has been tested at this
+	point.	Many regression tests to follow...
 
-2006-06-20 21:56  phase1geo
+2006-07-15 00:49  phase1geo
 
-	Fixing assertion error in info.c for merged file writing.
+	* diags/cdd/named_block2.cdd, diags/cdd/port3.cdd,
+	diags/err/gen1.1.err, diags/err/gen1.2.err, diags/err/gen1.err,
+	diags/regress/Makefile, diags/regress/gen1.1.cfg,
+	diags/regress/gen1.2.cfg, diags/regress/gen1.cfg,
+	diags/regress/named_block2.cfg, diags/regress/port3.cfg,
+	diags/rpt/named_block2.rptI, diags/rpt/named_block2.rptM,
+	diags/rpt/named_block2.rptWI, diags/rpt/named_block2.rptWM,
+	diags/rpt/port3.rptI, diags/rpt/port3.rptM, diags/rpt/port3.rptWI,
+	diags/rpt/port3.rptWM, diags/verilog/Makefile,
+	diags/verilog/check_test, diags/verilog/gen1.1.v,
+	diags/verilog/gen1.2.v, diags/verilog/gen1.v,
+	diags/verilog/gen_test, diags/verilog/named_block2.v,
+	diags/verilog/port3.v, doc/user/covered.1, src/db.c,
+	src/keywords.gperf, src/keywords_1995.gperf,
+	src/keywords_2001.gperf, src/keywords_sv.gperf, src/parser.y:
+	Removed the old manstyle documentation directory as this tool is no
+	longer used to generate user documentation.  Created new keywords
+	files to break out 1995, 2001 and SystemVerilog syntax.  Added
+	several new diagnostics to regression suite to verify this new
+	feature (still more parser code to add to completely support this
+	feature).  Also fixed several bugs that existed in the 0.4.5 stable
+	release and added those tests.	Full regression is passing. 
+	Finally, updated the manpage for the new -g option to the score
+	command.  Still need to document this new option in the user's
+	guide.	Added ability to verify the -g option diagnostics to the
+	regression suite.
 
-2006-06-20 21:41  phase1geo
+2006-07-15 00:33  phase1geo
 
-	Fixing multi-file opening code.
+	* diags/rpt/named_block2.rptWI: file named_block2.rptWI was
+	initially added on branch covered-0_4_5-branch.
 
-2006-06-20 17:14  phase1geo
+2006-07-15 00:33  phase1geo
 
-	Adding support for saving CDD files (needed for file merging and
-	saving exclusion information for a CDD file) in the GUI.  Still
-	have a bit to go as I am getting core dumps to occur.
+	* diags/rpt/named_block2.rptI: file named_block2.rptI was initially
+	added on branch covered-0_4_5-branch.
 
-2006-06-16 17:44  phase1geo
+2006-07-15 00:33  phase1geo
 
-	Beginning to add ability to open/close CDD files without needing to
-	close Covered's GUI.  This seems to work but does cause some
-	segfaults yet.
+	* diags/rpt/named_block2.rptWM: file named_block2.rptWM was
+	initially added on branch covered-0_4_5-branch.
 
-2006-05-30 13:57  phase1geo
+2006-07-15 00:33  phase1geo
 
-	Fixing small documentation error on main page.
+	* diags/rpt/named_block2.rptM: file named_block2.rptM was initially
+	added on branch covered-0_4_5-branch.
 
-2006-05-30 13:09  phase1geo
+2006-07-15 00:33  phase1geo
 
-	Updating regressions for vcs runs.
+	* diags/verilog/named_block2.v: file named_block2.v was initially
+	added on branch covered-0_4_5-branch.
+
+2006-07-15 00:33  phase1geo
+
+	* diags/regress/named_block2.cfg: file named_block2.cfg was
+	initially added on branch covered-0_4_5-branch.
+
+2006-07-15 00:33  phase1geo
+
+	* diags/cdd/named_block2.cdd, diags/regress/Makefile,
+	diags/regress/named_block2.cfg, diags/rpt/named_block2.rptI,
+	diags/rpt/named_block2.rptM, diags/rpt/named_block2.rptWI,
+	diags/rpt/named_block2.rptWM, diags/verilog/named_block2.v,
+	src/db.c, src/parser.y: Fixing bug with empty named begin-end
+	block.	This was causing a syntax error message to be output and/or
+	other internal errors.	Added named_block2 diagnostic to regression
+	suite to verify that Covered handles this case correctly.  Full
+	regression passes.  Also fixed a small bug in the db_read function
+	that would cause Covered to flag an internal assertion error if an
+	error occurred while reading the CDD file and the -D option was
+	specified.
+
+2006-07-15 00:33  phase1geo
+
+	* diags/cdd/named_block2.cdd: file named_block2.cdd was initially
+	added on branch covered-0_4_5-branch.
+
+2006-07-14 23:15  phase1geo
+
+	* diags/rpt/port3.rptWM: file port3.rptWM was initially added on
+	branch covered-0_4_5-branch.
+
+2006-07-14 23:15  phase1geo
+
+	* diags/rpt/port3.rptWI: file port3.rptWI was initially added on
+	branch covered-0_4_5-branch.
+
+2006-07-14 23:15  phase1geo
+
+	* diags/verilog/port3.v: file port3.v was initially added on branch
+	covered-0_4_5-branch.
+
+2006-07-14 23:15  phase1geo
+
+	* diags/rpt/port3.rptM: file port3.rptM was initially added on
+	branch covered-0_4_5-branch.
+
+2006-07-14 23:15  phase1geo
+
+	* diags/regress/port3.cfg: file port3.cfg was initially added on
+	branch covered-0_4_5-branch.
+
+2006-07-14 23:15  phase1geo
+
+	* diags/rpt/port3.rptI: file port3.rptI was initially added on
+	branch covered-0_4_5-branch.
+
+2006-07-14 23:15  phase1geo
+
+	* diags/cdd/port3.cdd: file port3.cdd was initially added on branch
+	covered-0_4_5-branch.
+
+2006-07-14 23:15  phase1geo
+
+	* diags/cdd/port3.cdd, diags/regress/Makefile,
+	diags/regress/port3.cfg, diags/rpt/port3.rptI,
+	diags/rpt/port3.rptM, diags/rpt/port3.rptWI, diags/rpt/port3.rptWM,
+	diags/verilog/port3.v, src/parser.y: Fixing bug with embedded
+	concatenations within function/task parameter lists.  Added new
+	port3 diagnostic to verify the fix.  Full regression passes.
+
+2006-07-14 13:54  phase1geo
+
+	* src/link.c: Fixing assertion in link.c such that no segmentation
+	fault occurs if a string is not found in a str_link list for
+	deletion.
+
+2006-07-14 13:53  phase1geo
+
+	* src/: db.c, fsm_var.c, lexer.l, link.c, score.c: Fixing -g option
+	for keywords.  This seems to be working and I believe that
+	regressions are passing here as well.
+
+2006-07-13 17:24  phase1geo
+
+	* src/: Makefile.am, Makefile.in, lexer.l, link.c, link.h,
+	parser.y, score.c: We are really broke at this time; however, more
+	code has been added to support the -g score option.
+
+2006-07-13 17:17  phase1geo
+
+	* src/db.c: Fixing bug in db_read when a functional unit is being
+	merged to point to the used module.
+
+2006-07-13 16:03  phase1geo
+
+	* diags/cdd/static_func2.1.cdd, diags/cdd/static_func2.3.cdd,
+	diags/cdd/static_func2.cdd, diags/rpt/static_func2.1.rptI,
+	diags/rpt/static_func2.1.rptWI, diags/rpt/static_func2.3.rptI,
+	diags/rpt/static_func2.3.rptWI, diags/rpt/static_func2.rptI,
+	diags/rpt/static_func2.rptWI, src/db.c: Fixing bug in db_read
+	function to set curr_funit to the correct structure when merging
+	functional units.  Updated regressions per this fix.
+
+2006-07-13 00:31  phase1geo
+
+	* src/: defines.h, score.c: Adding -g option to score command
+	parser/usage information.  Still a lot of work to go before this
+	feature is complete.
+
+2006-07-12 23:52  phase1geo
+
+	* diags/cdd/unary1.cdd, diags/rpt/unary1.rptI,
+	diags/rpt/unary1.rptM, diags/rpt/unary1.rptWI,
+	diags/rpt/unary1.rptWM, diags/verilog/unary1.v, src/vector.c:
+	Fixing bug 1521598 having to do with reduction unary invert and
+	logical not operators not calculating correctly.  Full regression
+	passes.
+
+2006-07-12 23:35  phase1geo
+
+	* diags/cdd/unary1.cdd, diags/rpt/unary1.rptI,
+	diags/rpt/unary1.rptM, diags/rpt/unary1.rptWI,
+	diags/rpt/unary1.rptWM, src/vector.c: Fixing problem with unary
+	inversion and logical not.  Updated unary1 failures as a result. 
+	Still need to run full regression before considering this fully
+	fixed.
+
+2006-07-12 17:16  phase1geo
+
+	* diags/cdd/hier2.cdd, diags/regress/Makefile,
+	diags/rpt/hier2.rptI, diags/rpt/hier2.rptM, diags/rpt/hier2.rptWI,
+	diags/rpt/hier2.rptWM, diags/verilog/hier2.v, src/db.c,
+	src/instance.c, src/instance.h, src/search.c, src/vector.c: Fixing
+	hierarchical referencing for instance arrays.  Also attempted to
+	fix a problem found with unary1; however, the generated report
+	coverage information does not look correct at this time. 
+	Checkpointing what I have done for now.
+
+2006-07-11 09:49  phase1geo
+
+	* diags/: cdd/unary1.cdd, rpt/unary1.rptI, rpt/unary1.rptM,
+	rpt/unary1.rptWI, rpt/unary1.rptWM, verilog/unary1.v: Modifying
+	unary1 and adding a testcase to it.
+
+2006-07-10 23:59  phase1geo
+
+	* diags/regress/hier2.cfg, diags/verilog/generate1.v,
+	diags/verilog/hier2.v, src/binding.c, src/instance.c,
+	src/instance.h, src/parser.y, src/static.c, src/vsignal.c:
+	Reworking the way that instances are being generated.  This is to
+	fix a bug and pave the way for generate loops for instances.  Code
+	not working at this point and may cause serious problems for
+	regression runs.
+
+2006-07-10 21:34  phase1geo
+
+	* src/instance.c: Fixing bug 1520159 (instance array always
+	starting at 0).
+
+2006-07-10 21:32  phase1geo
+
+	* src/db.c: Fixing memory leak problem in db_close function (with
+	score_args).
+
+2006-07-10 17:39  phase1geo
+
+	* diags/: regress/generate1.cfg, verilog/generate1.v: Adding
+	generate1 diagnostic which just tests a simple generate loop.
+
+2006-07-10 17:37  phase1geo
+
+	* src/: gen_item.c, gen_item.h: Missed the actual gen_item files in
+	the last submission.
+
+2006-07-10 17:36  phase1geo
+
+	* Makefile.in, aclocal.m4, configure, doc/Makefile.in,
+	doc/gui/Makefile.in, doc/user/Makefile.in, lib/Makefile.in,
+	scripts/Makefile.in, src/Makefile.am, src/Makefile.in,
+	src/parser.y, src/parser_misc.c: Getting parser to parse generate
+	blocks appropriately.  I believe this is accurate now.	Also added
+	the beginnings of gen_item.c which is meant to hold functions which
+	handle generate items.	This is really just a brainstorm at this
+	point -- I still don't have a definite course of action on how to
+	properly handle generate blocks.
+
+2006-07-10 14:30  phase1geo
+
+	* diags/cdd/static_func2.3.cdd, diags/regress/Makefile,
+	diags/regress/static_func2.3.cfg, diags/rpt/static_func2.3.rptI,
+	diags/rpt/static_func2.3.rptM, diags/rpt/static_func2.3.rptWI,
+	diags/rpt/static_func2.3.rptWM, diags/verilog/static_func2.3.v,
+	src/instance.c, src/parser.y: Fixing bug in instance.c that ignored
+	the LSB information for an instance array (this also needs to be
+	fixed for the 0.4.6 stable release).  Added diagnostic to verify
+	correctness of this behavior.  Also added case statement to the
+	generate parser.
+
+2006-07-09 22:05  phase1geo
+
+	* TODO, diags/cdd/bassign3.cdd, diags/cdd/concat3.cdd,
+	diags/cdd/concat4.1.cdd, diags/cdd/concat4.2.cdd,
+	diags/cdd/endian1.cdd, diags/cdd/fsm2a.cdd, diags/cdd/fsm2b.cdd,
+	diags/cdd/mbit_sel2.cdd, diags/cdd/mbit_sel7.cdd,
+	diags/cdd/merge1a.cdd, diags/cdd/merge1b.cdd,
+	diags/cdd/merge2a.cdd, diags/cdd/merge2b.cdd,
+	diags/cdd/merge2c.cdd, diags/regress/Makefile,
+	diags/regress/mbit_sel7.cfg, diags/rpt/mbit_sel7.rptI,
+	diags/rpt/mbit_sel7.rptM, diags/rpt/mbit_sel7.rptWI,
+	diags/rpt/mbit_sel7.rptWM, diags/verilog/mbit_sel7.v,
+	src/defines.h, src/expr.c, src/instance.c, src/keywords.gperf,
+	src/param.c, src/parser.y: Contains bug fixes for memory leaks and
+	segmentation faults.  Also contains some starting code to support
+	generate blocks.  There is absolutely no functionality here,
+	however.
+
+2006-07-09 21:41  phase1geo
+
+	* src/: param.c, parser.y: Fixes to remove memory leaks.
+
+2006-07-09 20:14  phase1geo
+
+	* diags/verilog/mbit_sel7.v: file mbit_sel7.v was initially added
+	on branch covered-0_4_5-branch.
+
+2006-07-09 20:14  phase1geo
+
+	* diags/rpt/mbit_sel7.rptWM: file mbit_sel7.rptWM was initially
+	added on branch covered-0_4_5-branch.
+
+2006-07-09 20:14  phase1geo
+
+	* diags/rpt/mbit_sel7.rptWI: file mbit_sel7.rptWI was initially
+	added on branch covered-0_4_5-branch.
+
+2006-07-09 20:14  phase1geo
+
+	* diags/cdd/mbit_sel7.cdd: file mbit_sel7.cdd was initially added
+	on branch covered-0_4_5-branch.
+
+2006-07-09 20:14  phase1geo
+
+	* diags/rpt/mbit_sel7.rptM: file mbit_sel7.rptM was initially added
+	on branch covered-0_4_5-branch.
+
+2006-07-09 20:14  phase1geo
+
+	* diags/rpt/mbit_sel7.rptI: file mbit_sel7.rptI was initially added
+	on branch covered-0_4_5-branch.
+
+2006-07-09 20:14  phase1geo
+
+	* diags/regress/mbit_sel7.cfg: file mbit_sel7.cfg was initially
+	added on branch covered-0_4_5-branch.
+
+2006-07-09 20:14  phase1geo
+
+	* diags/cdd/bassign3.cdd, diags/cdd/concat3.cdd,
+	diags/cdd/concat4.1.cdd, diags/cdd/concat4.2.cdd,
+	diags/cdd/endian1.cdd, diags/cdd/mbit_sel2.cdd,
+	diags/cdd/mbit_sel7.cdd, diags/regress/Makefile,
+	diags/regress/mbit_sel7.cfg, diags/rpt/mbit_sel7.rptI,
+	diags/rpt/mbit_sel7.rptM, diags/rpt/mbit_sel7.rptWI,
+	diags/rpt/mbit_sel7.rptWM, diags/verilog/mbit_sel7.v,
+	src/defines.h, src/expr.c, src/instance.c: Fixing segmentation
+	fault bug which occurs when a multi-bit select on the LHS contains
+	any expression besides static values.  Updated regression for this
+	change and added mbit_sel7 diagnostic to verify is correctness.
+
+2006-07-08 20:40  phase1geo
+
+	* configure, configure.in, diags/cdd/case5.cdd,
+	diags/cdd/casex2.cdd, diags/cdd/casez3.cdd, diags/regress/Makefile,
+	diags/regress/case5.cfg, diags/regress/casex2.cfg,
+	diags/regress/casez3.cfg, diags/rpt/case5.rptI,
+	diags/rpt/case5.rptM, diags/rpt/case5.rptWI, diags/rpt/case5.rptWM,
+	diags/rpt/casex2.rptI, diags/rpt/casex2.rptM,
+	diags/rpt/casex2.rptWI, diags/rpt/casex2.rptWM,
+	diags/rpt/casez3.rptI, diags/rpt/casez3.rptM,
+	diags/rpt/casez3.rptWI, diags/rpt/casez3.rptWM,
+	diags/verilog/case5.v, diags/verilog/casex2.v,
+	diags/verilog/casez3.v, src/defines.h, src/expr.c, src/link.c,
+	src/parser.y: Removing the vpi directory (again).  Also fixing a
+	bug in Covered's expression deallocator where a case statement
+	contains an unbindable signal.	Previously the case test expression
+	was being deallocated twice.  This submission fixes this bug (bug
+	was also fixed in the 0.4.5 stable release).  Added new tests to
+	verify fix.  Full regression passes.
+
+2006-07-08 20:05  phase1geo
+
+	* diags/verilog/casez3.v: file casez3.v was initially added on
+	branch covered-0_4_4-branch.
+
+2006-07-08 20:05  phase1geo
+
+	* diags/verilog/casex2.v: file casex2.v was initially added on
+	branch covered-0_4_4-branch.
+
+2006-07-08 20:05  phase1geo
+
+	* diags/regress/casex2.cfg: file casex2.cfg was initially added on
+	branch covered-0_4_4-branch.
+
+2006-07-08 20:05  phase1geo
+
+	* diags/rpt/casez3.rptM: file casez3.rptM was initially added on
+	branch covered-0_4_4-branch.
+
+2006-07-08 20:05  phase1geo
+
+	* diags/rpt/casez3.rptWI: file casez3.rptWI was initially added on
+	branch covered-0_4_4-branch.
+
+2006-07-08 20:05  phase1geo
+
+	* diags/rpt/casez3.rptWM: file casez3.rptWM was initially added on
+	branch covered-0_4_4-branch.
+
+2006-07-08 20:05  phase1geo
+
+	* diags/rpt/case5.rptWM: file case5.rptWM was initially added on
+	branch covered-0_4_4-branch.
+
+2006-07-08 20:05  phase1geo
+
+	* diags/rpt/casex2.rptWM: file casex2.rptWM was initially added on
+	branch covered-0_4_4-branch.
+
+2006-07-08 20:05  phase1geo
+
+	* diags/cdd/casex2.cdd: file casex2.cdd was initially added on
+	branch covered-0_4_4-branch.
+
+2006-07-08 20:05  phase1geo
+
+	* diags/rpt/case5.rptI: file case5.rptI was initially added on
+	branch covered-0_4_4-branch.
+
+2006-07-08 20:05  phase1geo
+
+	* diags/regress/case5.cfg: file case5.cfg was initially added on
+	branch covered-0_4_4-branch.
+
+2006-07-08 20:05  phase1geo
+
+	* diags/cdd/case5.cdd: file case5.cdd was initially added on branch
+	covered-0_4_4-branch.
+
+2006-07-08 20:05  phase1geo
+
+	* diags/rpt/case5.rptWI: file case5.rptWI was initially added on
+	branch covered-0_4_4-branch.
+
+2006-07-08 20:05  phase1geo
+
+	* diags/rpt/casex2.rptI: file casex2.rptI was initially added on
+	branch covered-0_4_4-branch.
+
+2006-07-08 20:05  phase1geo
+
+	* diags/cdd/casez3.cdd: file casez3.cdd was initially added on
+	branch covered-0_4_4-branch.
+
+2006-07-08 20:05  phase1geo
+
+	* diags/rpt/casez3.rptI: file casez3.rptI was initially added on
+	branch covered-0_4_4-branch.
+
+2006-07-08 20:05  phase1geo
+
+	* diags/rpt/casex2.rptWI: file casex2.rptWI was initially added on
+	branch covered-0_4_4-branch.
+
+2006-07-08 20:05  phase1geo
+
+	* diags/rpt/casex2.rptM: file casex2.rptM was initially added on
+	branch covered-0_4_4-branch.
+
+2006-07-08 20:05  phase1geo
+
+	* diags/regress/casez3.cfg: file casez3.cfg was initially added on
+	branch covered-0_4_4-branch.
+
+2006-07-08 20:05  phase1geo
+
+	* diags/verilog/case5.v: file case5.v was initially added on branch
+	covered-0_4_4-branch.
+
+2006-07-08 20:05  phase1geo
+
+	* diags/rpt/case5.rptM: file case5.rptM was initially added on
+	branch covered-0_4_4-branch.
+
+2006-07-08 20:05  phase1geo
+
+	* NEWS, diags/cdd/case5.cdd, diags/cdd/casex2.cdd,
+	diags/cdd/casez3.cdd, diags/regress/Makefile,
+	diags/regress/case5.cfg, diags/regress/casex2.cfg,
+	diags/regress/casez3.cfg, diags/rpt/case5.rptI,
+	diags/rpt/case5.rptM, diags/rpt/case5.rptWI, diags/rpt/case5.rptWM,
+	diags/rpt/casex2.rptI, diags/rpt/casex2.rptM,
+	diags/rpt/casex2.rptWI, diags/rpt/casex2.rptWM,
+	diags/rpt/casez3.rptI, diags/rpt/casez3.rptM,
+	diags/rpt/casez3.rptWI, diags/rpt/casez3.rptWM,
+	diags/verilog/case5.v, diags/verilog/casex2.v,
+	diags/verilog/casez3.v, src/defines.h, src/expr.c, src/link.c,
+	src/parser.y: Fixing bug in expression deallocator where a case
+	statement that contains unbindable signals needs to be removed via
+	the stmt_blk_remove function.  The test expression is deallocated
+	more than once in this case.  Adding diagnostics to verify this
+	fix.  Full regression passes.
+
+2006-07-08 00:24  phase1geo
+
+	* covered.spec: Updating covered.spec RPM file.
+
+2006-07-08 00:03  phase1geo
+
+	* NEWS, configure, configure.in, covered.spec, release.in,
+	diags/cdd/param14.cdd, diags/regress/Makefile,
+	diags/regress/param14.cfg, diags/rpt/param14.rptI,
+	diags/rpt/param14.rptM, diags/rpt/param14.rptWI,
+	diags/rpt/param14.rptWM, diags/verilog/param14.v,
+	doc/user/covered.1, doc/user/index.html, src/defines.h,
+	src/param.c: Fixing signal declaration bug, added RPM spec file,
+	and updated all necessary files for the 0.4.5 stable release.
 
