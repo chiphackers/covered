@@ -47,7 +47,7 @@ Instance                                                   Toggle 0 -> 1        
   main.bar.U[7]                                      0/    2/    2        0%             0/    2/    2        0%
 ---------------------------------------------------------------------------------------------------------------------
 
-    Named Block: foo.U, File: generate1.v, Instance: main.bar.U[0]
+    Named Block: foo.U[0], File: generate1.v, Instance: main.bar.U[0]
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -56,7 +56,7 @@ Instance                                                   Toggle 0 -> 1        
       a                         0->1: 2'h0
       ......................... 1->0: 2'h0 ...
 
-    Named Block: foo.U, File: generate1.v, Instance: main.bar.U[1]
+    Named Block: foo.U[1], File: generate1.v, Instance: main.bar.U[1]
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -65,7 +65,7 @@ Instance                                                   Toggle 0 -> 1        
       a                         0->1: 2'h1
       ......................... 1->0: 2'h0 ...
 
-    Named Block: foo.U, File: generate1.v, Instance: main.bar.U[2]
+    Named Block: foo.U[2], File: generate1.v, Instance: main.bar.U[2]
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -74,7 +74,7 @@ Instance                                                   Toggle 0 -> 1        
       a                         0->1: 2'h2
       ......................... 1->0: 2'h0 ...
 
-    Named Block: foo.U, File: generate1.v, Instance: main.bar.U[3]
+    Named Block: foo.U[3], File: generate1.v, Instance: main.bar.U[3]
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -83,7 +83,7 @@ Instance                                                   Toggle 0 -> 1        
       a                         0->1: 2'h3
       ......................... 1->0: 2'h0 ...
 
-    Named Block: foo.U, File: generate1.v, Instance: main.bar.U[4]
+    Named Block: foo.U[4], File: generate1.v, Instance: main.bar.U[4]
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -92,7 +92,7 @@ Instance                                                   Toggle 0 -> 1        
       a                         0->1: 2'h0
       ......................... 1->0: 2'h0 ...
 
-    Named Block: foo.U, File: generate1.v, Instance: main.bar.U[5]
+    Named Block: foo.U[5], File: generate1.v, Instance: main.bar.U[5]
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -101,7 +101,7 @@ Instance                                                   Toggle 0 -> 1        
       a                         0->1: 2'h0
       ......................... 1->0: 2'h0 ...
 
-    Named Block: foo.U, File: generate1.v, Instance: main.bar.U[6]
+    Named Block: foo.U[6], File: generate1.v, Instance: main.bar.U[6]
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -110,7 +110,7 @@ Instance                                                   Toggle 0 -> 1        
       a                         0->1: 2'h0
       ......................... 1->0: 2'h0 ...
 
-    Named Block: foo.U, File: generate1.v, Instance: main.bar.U[7]
+    Named Block: foo.U[7], File: generate1.v, Instance: main.bar.U[7]
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 

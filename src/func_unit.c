@@ -835,8 +835,6 @@ func_unit* funit_find_by_id( int id ) {
 
   exp.id = id;
 
-  funit_link_display( funit_head );
-
   funitl = funit_head;
   while( (funitl != NULL) && (expl == NULL) ) {
     if( (expl = exp_link_find( &exp, funitl->funit->exp_head )) == NULL ) {
@@ -983,6 +981,9 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.27  2006/07/27 02:04:30  phase1geo
+ Fixing problem with parameter usage in a generate block for signal sizing.
+
  Revision 1.26  2006/07/26 06:22:27  phase1geo
  Fixing rest of issues with generate6 diagnostic.  Still need to know if I
  have broken regressions or not and there are plenty of cases in this area

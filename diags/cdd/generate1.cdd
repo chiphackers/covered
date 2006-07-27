@@ -1,5 +1,5 @@
 5 8 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd generate1.vcd -o generate1.cdd -v generate1.v
+8 /ptmp/cvs/covered/diags/verilog -t main -vcd generate1.vcd -o generate1.cdd -v generate1.v
 3 0 main main generate1.v 1 24
 2 1 13 110014 1 0 20004 0 0 2 3 0
 2 2 13 1000d 0 1 400 0 0 bar.\U[0] .a
@@ -39,19 +39,27 @@
 4 3 6 6
 3 0 foo main.bar generate1.v 26 38
 1 max 0 0 80000 32 0 40 0 0 0 0 0 0 0
-3 1 foo.U main.bar.U[0] generate1.v 33 35
+3 1 foo.U[0] main.bar.U[0] generate1.v 33 35
+1 i 0 0 80009 32 0 0 0 0 0 0 0 0 0
 1 a 0 34 30010 2 16 a
-3 1 foo.U main.bar.U[1] generate1.v 33 35
+3 1 foo.U[1] main.bar.U[1] generate1.v 33 35
+1 i 0 0 80009 32 0 101 0 0 0 0 0 0 0
 1 a 0 34 30010 2 16 10a
-3 1 foo.U main.bar.U[2] generate1.v 33 35
+3 1 foo.U[2] main.bar.U[2] generate1.v 33 35
+1 i 0 0 80009 32 0 1304 0 0 0 0 0 0 0
 1 a 0 34 30010 2 16 20a
-3 1 foo.U main.bar.U[3] generate1.v 33 35
+3 1 foo.U[3] main.bar.U[3] generate1.v 33 35
+1 i 0 0 80009 32 0 1305 0 0 0 0 0 0 0
 1 a 0 34 30010 2 16 30a
-3 1 foo.U main.bar.U[4] generate1.v 33 35
+3 1 foo.U[4] main.bar.U[4] generate1.v 33 35
+1 i 0 0 80009 32 0 3710 0 0 0 0 0 0 0
 1 a 0 34 30010 2 16 a
-3 1 foo.U main.bar.U[5] generate1.v 33 35
+3 1 foo.U[5] main.bar.U[5] generate1.v 33 35
+1 i 0 0 80009 32 0 3711 0 0 0 0 0 0 0
 1 a 0 34 30010 2 16 a
-3 1 foo.U main.bar.U[6] generate1.v 33 35
+3 1 foo.U[6] main.bar.U[6] generate1.v 33 35
+1 i 0 0 80009 32 0 3714 0 0 0 0 0 0 0
 1 a 0 34 30010 2 16 a
-3 1 foo.U main.bar.U[7] generate1.v 33 35
+3 1 foo.U[7] main.bar.U[7] generate1.v 33 35
+1 i 0 0 80009 32 0 3715 0 0 0 0 0 0 0
 1 a 0 34 30010 2 16 a
