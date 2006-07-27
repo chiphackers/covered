@@ -1,5 +1,5 @@
 5 8 1 main3 0
-8 /ptmp/cvs/covered/diags/verilog -t dut_and -i main3.dut -vcd merge2c.vcd -o merge2c.cdd -v merge2c.v -y ./lib
+8 /home/ultrav3/trevorw/covered/diags/verilog -t dut_and -i main3.dut -vcd merge2c.vcd -o merge2c.cdd -v merge2c.v -y ./lib
 3 0 dut_and dut ./lib/dut_and.v 1 9
 2 1 7 f000f 1 1 8 0 0 c
 2 2 7 b000b 1 1 4 0 0 b

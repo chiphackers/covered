@@ -13,7 +13,8 @@
 4 9 0 0
 4 6 9 0
 4 3 6 6
-3 1 main.U main.U[0] generate4.1.v 7 9
+3 1 main.U[0] main.U[0] generate4.1.v 7 9
+1 i 0 0 80007 32 0 0 0 0 0 0 0 0 0
 3 0 foo main.U[0].bar[0] generate4.1.v 29 33
 1 x 0 31 30004 1 16 2
 3 0 foo main.U[0].bar[1] generate4.1.v 29 33
@@ -22,7 +23,8 @@
 1 x 0 31 30004 1 16 2
 3 0 foo main.U[0].bar[3] generate4.1.v 29 33
 1 x 0 31 30004 1 16 2
-3 1 main.U main.U[1] generate4.1.v 7 9
+3 1 main.U[1] main.U[1] generate4.1.v 7 9
+1 i 0 0 80007 32 0 101 0 0 0 0 0 0 0
 3 0 foo main.U[1].bar[0] generate4.1.v 29 33
 1 x 0 31 30004 1 16 2
 3 0 foo main.U[1].bar[1] generate4.1.v 29 33

@@ -37,7 +37,7 @@ Instance                                                   Toggle 0 -> 1        
   main.U[3]                                          0/    6/    6        0%             0/    6/    6        0%
 ---------------------------------------------------------------------------------------------------------------------
 
-    Named Block: main.U, File: generate1.1.v, Instance: main.U[0]
+    Named Block: main.U[0], File: generate1.1.v, Instance: main.U[0]
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -46,7 +46,7 @@ Instance                                                   Toggle 0 -> 1        
       a                         0->1: 9'h000
       ......................... 1->0: 9'h000 ...
 
-    Named Block: main.U, File: generate1.1.v, Instance: main.U[1]
+    Named Block: main.U[1], File: generate1.1.v, Instance: main.U[1]
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -55,7 +55,7 @@ Instance                                                   Toggle 0 -> 1        
       a                         0->1: 8'h00
       ......................... 1->0: 8'h00 ...
 
-    Named Block: main.U, File: generate1.1.v, Instance: main.U[2]
+    Named Block: main.U[2], File: generate1.1.v, Instance: main.U[2]
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -64,7 +64,7 @@ Instance                                                   Toggle 0 -> 1        
       a                         0->1: 7'h00
       ......................... 1->0: 7'h00 ...
 
-    Named Block: main.U, File: generate1.1.v, Instance: main.U[3]
+    Named Block: main.U[3], File: generate1.1.v, Instance: main.U[3]
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 

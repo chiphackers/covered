@@ -1961,12 +1961,15 @@ struct gen_item_s {
     statement*  stmt;                /*!< Pointer to statement */
     funit_inst* inst;                /*!< Pointer to instance */
   } elem;                            /*!< Union of various pointers this generate item is pointing at */
-  struct {
-    control     type       : 3;      /*!< Specifies which element pointer is valid */
-    control     conn_id    : 1;      /*!< Connection ID (used for connecting) */
-    control     stop_true  : 1;      /*!< Specifies that we should stop traversing the true path */
-    control     stop_false : 1;      /*!< Specifies that we should stop traversing the false path */
-    control     resolved   : 1;      /*!< Specifies if this generate item has been resolved */
+  union {
+    control     all;                 /*!< Specifies the entire supplemental field */
+    struct {
+      control   type       : 3;      /*!< Specifies which element pointer is valid */
+      control   conn_id    : 1;      /*!< Connection ID (used for connecting) */
+      control   stop_true  : 1;      /*!< Specifies that we should stop traversing the true path */
+      control   stop_false : 1;      /*!< Specifies that we should stop traversing the false path */
+      control   resolved   : 1;      /*!< Specifies if this generate item has been resolved */
+    } part;
   } suppl;
   vsignal*      genvar;              /*!< Specifies a genvar to use for this type (only valid for TFN) */
   gen_item*     next_true;           /*!< Pointer to the next generate item if expr is true */
@@ -1983,6 +1986,10 @@ struct gitem_link_s {
 
 /*
  $Log$
+ Revision 1.210  2006/07/27 04:34:39  phase1geo
+ Adding initial support for generate case statements.  This has only been
+ verified to compile at this point.
+
  Revision 1.209  2006/07/24 22:20:23  phase1geo
  Things are quite hosed at the moment -- trying to come up with a scheme to
  handle embedded hierarchy in generate blocks.  Chances are that a lot of

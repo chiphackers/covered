@@ -1,5 +1,5 @@
 5 8 1 main 0
-8 /ptmp/cvs/covered/diags/verilog -t fsm -i main.fsm -vcd fsm2b.vcd -o fsm2b.cdd -y lib -v fsm2b.v -F fsm
+8 /home/ultrav3/trevorw/covered/diags/verilog -t fsm -i main.fsm -vcd fsm2b.vcd -o fsm2b.cdd -y lib -v fsm2b.v -F fsm
 3 0 fsm fsm lib/fsm.v 1 35
 2 1 23 36003f 5 1 c 0 0 next_state
 2 2 23 290032 1 32 4 0 0 STATE_IDLE

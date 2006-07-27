@@ -18,8 +18,9 @@
 Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
   main                    generate4.1.v              2/    0/    2      100%
-  main.U                  generate4.1.v              0/    0/    0      100%
+  main.U[0]               generate4.1.v              0/    0/    0      100%
   foo                     generate4.1.v              0/    0/    0      100%
+  main.U[1]               generate4.1.v              0/    0/    0      100%
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -29,8 +30,9 @@ Module/Task/Function      Filename                         Toggle 0 -> 1        
                                                    Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
   main                    generate4.1.v              0/    0/    0      100%             0/    0/    0      100%
-  main.U                  generate4.1.v              0/    0/    0      100%             0/    0/    0      100%
+  main.U[0]               generate4.1.v              0/    0/    0      100%             0/    0/    0      100%
   foo                     generate4.1.v              1/    0/    1      100%             0/    1/    1        0%
+  main.U[1]               generate4.1.v              0/    0/    0      100%             0/    0/    0      100%
 ---------------------------------------------------------------------------------------------------------------------
 
     Module: foo, File: generate4.1.v
@@ -50,8 +52,9 @@ Module/Task/Function                Filename                                Logi
                                                                       Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
   main                              generate4.1.v                       0/   0/   0      100%
-  main.U                            generate4.1.v                       0/   0/   0      100%
+  main.U[0]                         generate4.1.v                       0/   0/   0      100%
   foo                               generate4.1.v                       0/   0/   0      100%
+  main.U[1]                         generate4.1.v                       0/   0/   0      100%
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -61,7 +64,8 @@ Module/Task/Function                Filename                                Logi
 Module/Task/Function      Filename                Hit/Miss/Total    Percent Hit    Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
   main                    generate4.1.v             0/   0/   0      100%            0/   0/   0      100%
-  main.U                  generate4.1.v             0/   0/   0      100%            0/   0/   0      100%
+  main.U[0]               generate4.1.v             0/   0/   0      100%            0/   0/   0      100%
   foo                     generate4.1.v             0/   0/   0      100%            0/   0/   0      100%
+  main.U[1]               generate4.1.v             0/   0/   0      100%            0/   0/   0      100%
 
 

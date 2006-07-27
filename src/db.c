@@ -72,8 +72,6 @@ extern int*        fork_block_depth;
 extern int         fork_depth;
 extern int         block_depth;
 extern tnode*      def_table;
-extern char**      score_args;
-extern int         score_arg_num;
 extern int         generate_mode;
 extern int         generate_expr_mode;
 
@@ -162,19 +160,13 @@ void db_close() {
     /* Deallocate the binding list */
     bind_dealloc();
     
-    for( i=0; i<score_arg_num; i++ ) {
-      free_safe( score_args[i] );
-    }
-    if( score_arg_num > 0 ) {
-      free_safe( score_args );
-    }
+    /* Deallocate the information section memory */
+    info_dealloc();
 
     instance_root = NULL;
     funit_head    = NULL;
     funit_tail    = NULL;
     def_table     = NULL;
-    score_args    = NULL;
-    score_arg_num = 0;
 
   }
 
@@ -666,7 +658,7 @@ bool db_add_function_task_namedblock( int type, char* name, char* file, int star
 
     if( generate_expr_mode > 0 ) {
       /* Change the recently created instance generate item to a TFN item */
-      last_gi->suppl.type = GI_TYPE_TFN;
+      last_gi->suppl.part.type = GI_TYPE_TFN;
     } else {
       /* Store this functional unit in the parent module list */
       funit_link_add( tf, &(parent->tf_head), &(parent->tf_tail) );
@@ -962,7 +954,7 @@ gen_item* db_find_gen_item( gen_item* root, gen_item* gi ) {
   gen_item* found;  /* Return value for this function */
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_find_gen_item, type %d", gi->suppl.type );
+  snprintf( user_msg, USER_MSG_LENGTH, "In db_find_gen_item, type %d", gi->suppl.part.type );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
@@ -1925,6 +1917,11 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.198  2006/07/24 22:20:23  phase1geo
+ Things are quite hosed at the moment -- trying to come up with a scheme to
+ handle embedded hierarchy in generate blocks.  Chances are that a lot of
+ things are currently broken at the moment.
+
  Revision 1.197  2006/07/21 22:39:00  phase1geo
  Started adding support for generated statements.  Still looks like I have
  some loose ends to tie here before I can call it good.  Added generate5

@@ -48,6 +48,7 @@
 extern char        user_msg[USER_MSG_LENGTH];
 extern funit_link* funit_head;
 extern funit_inst* instance_root;
+extern func_unit*  curr_funit;
 
 
 /*!
@@ -297,7 +298,7 @@ void funit_size_elements( func_unit* funit, funit_inst* inst ) {
       curr_exp = curr_iparm->sig->exp_head;
       while( curr_exp != NULL ) {
         if( curr_exp->exp->suppl.part.gen_expr == 0 ) {
-          curr_exp->exp->value = curr_iparm->sig->value;
+          expression_set_value( curr_exp->exp, curr_iparm->sig->value );
           resolve = TRUE;
         }
         curr_exp = curr_exp->next;
@@ -907,6 +908,9 @@ void funit_clean( func_unit* funit ) {
 
   if( funit != NULL ) {
 
+    /* Set the global curr_funit to be the same as this funit */
+    curr_funit = funit;
+
     /* Free functional unit name */
     if( funit->name != NULL ) {
       free_safe( funit->name );
@@ -949,6 +953,11 @@ void funit_clean( func_unit* funit ) {
     funit->race_head = NULL;
     funit->race_tail = NULL;
 
+    /* Free generate item list */
+    gitem_link_delete_list( funit->gitem_head, TRUE );
+    funit->gitem_head = NULL;
+    funit->gitem_tail = NULL;
+
     /* Free statistic structure */
     statistic_dealloc( funit->stat );
 
@@ -981,6 +990,10 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.28  2006/07/27 02:14:52  phase1geo
+ Cleaning up verbose output and fixing a few bugs for regression.  IV
+ regression passes at this point.
+
  Revision 1.27  2006/07/27 02:04:30  phase1geo
  Fixing problem with parameter usage in a generate block for signal sizing.
 
