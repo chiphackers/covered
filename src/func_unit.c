@@ -279,15 +279,40 @@ char* funit_gen_task_function_namedblock_name( char* orig_name, func_unit* paren
 */
 void funit_size_elements( func_unit* funit, funit_inst* inst ) {
   
-  inst_parm* curr_iparm;   /* Pointer to current instance parameter to evaluate */
-  exp_link*  curr_exp;     /* Pointer to current expression link to evaluate */
-  fsm_link*  curr_fsm;     /* Pointer to current FSM structure to evaluate */
+  inst_parm* curr_iparm;       /* Pointer to current instance parameter to evaluate */
+  exp_link*  curr_exp;         /* Pointer to current expression link to evaluate */
+  fsm_link*  curr_fsm;         /* Pointer to current FSM structure to evaluate */
+  bool       resolve = FALSE;  /* If set to TRUE, perform one more parameter resolution */
   
   assert( funit != NULL );
   assert( inst != NULL );
+
+  /*
+   First, traverse through current instance's parameter list and resolve
+   any unresolved parameters created via generate statements.
+  */
+  curr_iparm = inst->param_head;
+  while( curr_iparm != NULL ) {
+    if( curr_iparm->mparm == NULL ) {
+      curr_exp = curr_iparm->sig->exp_head;
+      while( curr_exp != NULL ) {
+        if( curr_exp->exp->suppl.part.gen_expr == 0 ) {
+          curr_exp->exp->value = curr_iparm->sig->value;
+          resolve = TRUE;
+        }
+        curr_exp = curr_exp->next;
+      }
+    }
+    curr_iparm = curr_iparm->next;
+  }
+  
+  /* If we need to do another parameter resolution for generate blocks, do it now */
+  if( resolve ) {
+    param_resolve( inst );
+  }
   
   /* 
-   First, traverse through current instance's instance parameter list and
+   Second, traverse through current instance's instance parameter list and
    set sizes of signals and expressions.
   */
   curr_iparm = inst->param_head;
@@ -307,7 +332,7 @@ void funit_size_elements( func_unit* funit, funit_inst* inst ) {
     }
     curr_iparm = curr_iparm->next;
   }
-  
+
   /*
    Second, traverse all expressions and set expressions to specified
    signals.  Makes the assumption that all children expressions come
@@ -958,6 +983,11 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.26  2006/07/26 06:22:27  phase1geo
+ Fixing rest of issues with generate6 diagnostic.  Still need to know if I
+ have broken regressions or not and there are plenty of cases in this area
+ to test before I call things good.
+
  Revision 1.25  2006/07/25 21:35:54  phase1geo
  Fixing nested namespace problem with generate blocks.  Also adding support
  for using generate values in expressions.  Still not quite working correctly

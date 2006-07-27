@@ -520,9 +520,8 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
           snprintf( inst_name, 4096, "%s.%s[%d]", inst->name, gi->elem.inst->name, vector_to_int( gi->genvar->value ) );
           child = instance_find_scope( inst, inst_name );
           inst_parm_add_genvar( gi->genvar, child );
-          param_resolve( child );
+          gen_item_resolve( gi->next_true, child, TRUE );
         }
-        gen_item_resolve( gi->next_true, child, TRUE );
         gen_item_resolve( gi->next_false, inst, FALSE );
         break;
 
@@ -635,6 +634,11 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.16  2006/07/26 06:22:27  phase1geo
+ Fixing rest of issues with generate6 diagnostic.  Still need to know if I
+ have broken regressions or not and there are plenty of cases in this area
+ to test before I call things good.
+
  Revision 1.15  2006/07/25 21:35:54  phase1geo
  Fixing nested namespace problem with generate blocks.  Also adding support
  for using generate values in expressions.  Still not quite working correctly
