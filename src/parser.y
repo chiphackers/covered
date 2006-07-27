@@ -2127,13 +2127,13 @@ generate_item
         $$ = NULL;
       }
     }
-  | K_case inc_gen_expr_mode '(' static_expr ')' dec_gen_expr_mode inc_block_depth generate_case_items dec_block_depth K_endcase
+  | K_case inc_gen_expr_mode '(' static_expr ')' inc_block_depth generate_case_items dec_block_depth dec_gen_expr_mode K_endcase
     { 
       expression* expr;
       expression* c_expr;
       gen_item*   stmt      = NULL;
       gen_item*   last_stmt = NULL;
-      case_gitem* c_stmt    = $8;
+      case_gitem* c_stmt    = $7;
       case_gitem* tc_stmt;
       if( (ignore_mode == 0) && ($4 != NULL) ) {
         generate_expr_mode++;
@@ -2177,21 +2177,35 @@ generate_item
   ;
 
 generate_case_item
-  : expression_list ':' generate_item
+  : expression_list ':' dec_gen_expr_mode generate_item inc_gen_expr_mode
     {
       case_gitem* cstmt;
       if( ignore_mode == 0 ) {
         cstmt = (case_gitem*)malloc_safe( sizeof( case_gitem ), __FILE__, __LINE__ );
         cstmt->prev = NULL;
         cstmt->expr = $1;
-        cstmt->gi = $3;
+        cstmt->gi = $4;
         cstmt->line = @1.first_line;
         $$ = cstmt;
       } else {
         $$ = NULL;
       }
     }
-  | K_default ':' generate_item
+  | K_default ':' dec_gen_expr_mode generate_item inc_gen_expr_mode
+    {
+      case_gitem* cstmt;
+      if( ignore_mode == 0 ) {
+        cstmt = (case_gitem*)malloc_safe( sizeof( case_gitem ), __FILE__, __LINE__ );
+        cstmt->prev = NULL;
+        cstmt->expr = NULL;
+        cstmt->gi   = $4;
+        cstmt->line = @1.first_line;
+        $$ = cstmt;
+      } else {
+        $$ = NULL;
+      }
+    }
+  | K_default dec_gen_expr_mode generate_item inc_gen_expr_mode
     {
       case_gitem* cstmt;
       if( ignore_mode == 0 ) {
@@ -2205,21 +2219,7 @@ generate_case_item
         $$ = NULL;
       }
     }
-  | K_default generate_item
-    {
-      case_gitem* cstmt;
-      if( ignore_mode == 0 ) {
-        cstmt = (case_gitem*)malloc_safe( sizeof( case_gitem ), __FILE__, __LINE__ );
-        cstmt->prev = NULL;
-        cstmt->expr = NULL;
-        cstmt->gi   = $2;
-        cstmt->line = @1.first_line;
-        $$ = cstmt;
-      } else {
-        $$ = NULL;
-      }
-    }
-  | error { ignore_mode++; } ':' generate_item { ignore_mode--; }
+  | error ignore_more dec_gen_expr_mode ':' generate_item ignore_less inc_gen_expr_mode
     {
       VLerror( "Illegal generate case expression" );
     }

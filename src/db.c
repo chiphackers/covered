@@ -1494,7 +1494,7 @@ void db_connect_statement_false( statement* stmt, statement* next_false ) {
 */
 void db_gen_item_connect_true( gen_item* gi1, gen_item* gi2 ) {
 
-  assert( (gi1 != NULL) && (gi2 != NULL) );
+  assert( gi1 != NULL );
 
 #ifdef DEBUG_MODE
   snprintf( user_msg, USER_MSG_LENGTH, "In db_gen_item_connect_true, gi1: %p, gi2: %p", gi1, gi2 );
@@ -1513,7 +1513,7 @@ void db_gen_item_connect_true( gen_item* gi1, gen_item* gi2 ) {
 */
 void db_gen_item_connect_false( gen_item* gi1, gen_item* gi2 ) {
 
-  assert( (gi1 != NULL) && (gi2 != NULL) );
+  assert( gi1 != NULL );
 
 #ifdef DEBUG_MODE
   snprintf( user_msg, USER_MSG_LENGTH, "In db_gen_item_connect_false, gi1: %p, gi2: %p", gi1, gi2 );
@@ -1917,6 +1917,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.199  2006/07/27 16:08:46  phase1geo
+ Fixing several memory leak bugs, cleaning up output and fixing regression
+ bugs.  Full regression now passes (including all current generate diagnostics).
+
  Revision 1.198  2006/07/24 22:20:23  phase1geo
  Things are quite hosed at the moment -- trying to come up with a scheme to
  handle embedded hierarchy in generate blocks.  Chances are that a lot of
