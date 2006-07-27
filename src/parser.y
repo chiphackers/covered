@@ -209,6 +209,7 @@ int yydebug = 1;
   exp_bind*       expbind;
   port_info*      portinfo;
   gen_item*       gitem;
+  case_gitem*     case_gi;
 };
 
 %token <text>     IDENTIFIER SYSTEM_IDENTIFIER
@@ -270,6 +271,7 @@ int yydebug = 1;
 %type <attr_parm> attribute attribute_list
 %type <portinfo>  port_declaration list_of_port_declarations
 %type <gitem>     generate_item generate_item_list generate_item_list_opt
+%type <case_gi>   generate_case_items generate_case_item
 
 %token K_TAND
 %right '?' ':'
@@ -2119,26 +2121,103 @@ generate_item
         $$ = gi1;
       } else {
         static_expr_dealloc( $4, TRUE );
-        /* TBD - Deallocate generate blocks */
+        gen_item_dealloc( db_find_last_gen_item(), TRUE );
+        gen_item_dealloc( $8, TRUE );
+        gen_item_dealloc( $11, TRUE );
         $$ = NULL;
       }
     }
-  | K_case '(' expression ')' inc_block_depth generate_case_items dec_block_depth K_endcase
+  | K_case inc_gen_expr_mode '(' static_expr ')' dec_gen_expr_mode inc_block_depth generate_case_items dec_block_depth K_endcase
     { 
-      /* TBD */
-      $$ = NULL;
+      expression* expr;
+      expression* c_expr;
+      gen_item*   stmt      = NULL;
+      gen_item*   last_stmt = NULL;
+      case_gitem* c_stmt    = $8;
+      case_gitem* tc_stmt;
+      if( (ignore_mode == 0) && ($4 != NULL) ) {
+        generate_expr_mode++;
+        c_expr = db_create_expr_from_static( $4, @4.first_line, @4.first_column, (@4.last_column - 1) );
+        c_expr->suppl.part.root = 1;
+        while( c_stmt != NULL ) {
+          if( c_stmt->expr != NULL ) {
+            expr = db_create_expression( c_stmt->expr, c_expr, EXP_OP_CASE, lhs_mode, c_stmt->line, 0, 0, NULL );
+          } else {
+            expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, lhs_mode, c_stmt->line, 0, 0, NULL );
+          }
+          db_add_expression( expr );
+          stmt = db_find_last_gen_item();
+          db_gen_item_connect_true( stmt, c_stmt->gi );
+          db_gen_item_connect_false( stmt, last_stmt );
+          if( stmt != NULL ) {
+            last_stmt = stmt;
+          }
+          tc_stmt   = c_stmt;
+          c_stmt    = c_stmt->prev;
+          free_safe( tc_stmt );
+        }
+        if( stmt != NULL ) {
+          stmt->elem.expr->suppl.part.owned = 1;
+        }
+        generate_expr_mode--;
+        $$ = stmt;
+      } else {
+        static_expr_dealloc( $4, FALSE );
+        while( c_stmt != NULL ) {
+          expression_dealloc( c_stmt->expr, FALSE );
+          // db_remove_statement( c_stmt->stmt );
+          /* statement_dealloc_recursive( c_stmt->stmt ); */
+          tc_stmt = c_stmt;
+          c_stmt  = c_stmt->prev;
+          free_safe( tc_stmt );
+        }
+        $$ = NULL;
+      }
     }
   ;
 
 generate_case_item
   : expression_list ':' generate_item
     {
+      case_gitem* cstmt;
+      if( ignore_mode == 0 ) {
+        cstmt = (case_gitem*)malloc_safe( sizeof( case_gitem ), __FILE__, __LINE__ );
+        cstmt->prev = NULL;
+        cstmt->expr = $1;
+        cstmt->gi = $3;
+        cstmt->line = @1.first_line;
+        $$ = cstmt;
+      } else {
+        $$ = NULL;
+      }
     }
   | K_default ':' generate_item
     {
+      case_gitem* cstmt;
+      if( ignore_mode == 0 ) {
+        cstmt = (case_gitem*)malloc_safe( sizeof( case_gitem ), __FILE__, __LINE__ );
+        cstmt->prev = NULL;
+        cstmt->expr = NULL;
+        cstmt->gi   = $3;
+        cstmt->line = @1.first_line;
+        $$ = cstmt;
+      } else {
+        $$ = NULL;
+      }
     }
   | K_default generate_item
     {
+      case_gitem* cstmt;
+      if( ignore_mode == 0 ) {
+        cstmt = (case_gitem*)malloc_safe( sizeof( case_gitem ), __FILE__, __LINE__ );
+        cstmt->prev = NULL;
+        cstmt->expr = NULL;
+        cstmt->gi   = $2;
+        cstmt->line = @1.first_line;
+        $$ = cstmt;
+      } else {
+        $$ = NULL;
+      }
     }
   | error { ignore_mode++; } ':' generate_item { ignore_mode--; }
     {
@@ -2149,9 +2228,18 @@ generate_case_item
 generate_case_items
   : generate_case_items generate_case_item
     {
+      case_gitem* list = $1;
+      case_gitem* curr = $2;
+      if( ignore_mode == 0 ) {
+        curr->prev = list;
+        $$ = curr;
+      } else {
+        $$ = NULL;
+      }
     }
   | generate_case_item
     {
+      $$ = $1;
     }
   ;
 

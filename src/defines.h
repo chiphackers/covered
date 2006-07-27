@@ -1202,6 +1202,7 @@ struct static_expr_s;
 struct vector_width_s;
 struct exp_bind_s;
 struct case_stmt_s;
+struct case_gitem_s;
 struct funit_inst_s;
 struct tnode_s;
 
@@ -1357,6 +1358,11 @@ typedef struct exp_bind_s exp_bind;
  Renaming case statement structure for convenience.
 */
 typedef struct case_stmt_s case_statement;
+
+/*!
+ Renaming case generate item structure for convenience.
+*/
+typedef struct case_gitem_s case_gitem;
 
 /*!
  Renaming functional unit instance structure for convenience.
@@ -1794,6 +1800,17 @@ struct case_stmt_s {
 };
 
 /*!
+ Binds an expression to a generate item.  This is used when constructing a case structure
+ in a generate block.
+*/
+struct case_gitem_s {
+  expression*     expr;              /*!< Pointer to case equality expression */
+  gen_item*       gi;                /*!< Pointer to first generate item in case generate item */
+  int             line;              /*!< Line number of case generate item */
+  case_gitem*     prev;              /*!< Pointer to previous case generate item in list */
+};
+
+/*!
  A functional unit instance element in the functional unit instance tree.
 */
 struct funit_inst_s {
@@ -1966,6 +1983,11 @@ struct gitem_link_s {
 
 /*
  $Log$
+ Revision 1.209  2006/07/24 22:20:23  phase1geo
+ Things are quite hosed at the moment -- trying to come up with a scheme to
+ handle embedded hierarchy in generate blocks.  Chances are that a lot of
+ things are currently broken at the moment.
+
  Revision 1.208  2006/07/21 05:47:42  phase1geo
  More code additions for generate functionality.  At this point, we seem to
  be creating proper generate item blocks and are creating the generate loop
