@@ -82,6 +82,9 @@ bool expression_db_replace( expression* base, char** line );
 /*! \brief Returns user-readable name of specified expression operation. */
 const char* expression_string_op( int op );
 
+/*! \brief Returns user-readable version of the supplied expression. */
+char* expression_string( expression* exp );
+
 /*! \brief Displays the specified expression information. */
 void expression_display( expression* expr );
 
@@ -109,6 +112,11 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.45  2006/07/21 22:39:01  phase1geo
+ Started adding support for generated statements.  Still looks like I have
+ some loose ends to tie here before I can call it good.  Added generate5
+ diagnostic to regression suite -- this does not quite pass at this point, however.
+
  Revision 1.44  2006/07/20 20:11:09  phase1geo
  More work on generate statements.  Trying to figure out a methodology for
  handling namespaces.  Still a lot of work to go...

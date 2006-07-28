@@ -351,6 +351,39 @@ gen_item* gen_item_create_tfn( funit_inst* inst ) {
 }
 
 /*!
+ \param gi  Pointer to generate item block to check
+
+ Recursively iterates the the specified generate item block, resizing all statements
+ within that block.
+*/
+void gen_item_resize_statements( gen_item* gi ) {
+
+  if( gi != NULL ) {
+
+    /* Resize our statement, if we are one */
+    if( gi->suppl.part.type == GI_TYPE_STMT ) {
+      statement_size_elements( gi->elem.stmt );
+    }
+
+    /* Go to the next generate item */
+    if( gi->next_true == gi->next_false ) {
+      if( gi->suppl.part.stop_true == 0 ) {
+        gen_item_resize_statements( gi->next_true );
+      }
+    } else {
+      if( gi->suppl.part.stop_false == 0 ) {
+        gen_item_resize_statements( gi->next_false );
+      }
+      if( gi->suppl.part.stop_true == 0 ) {
+        gen_item_resize_statements( gi->next_true );
+      }
+    }
+
+  }
+
+}
+
+/*!
  \param gi  Pointer to generate item to check and assign expression IDs for
 
  Assigns unique expression IDs to each expression in the tree given for a generated statement.
@@ -653,6 +686,9 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.20  2006/07/27 21:19:27  phase1geo
+ Small updates.
+
  Revision 1.19  2006/07/27 18:02:22  phase1geo
  More diagnostic additions and upgraded the generate item display functionality
  for better debugging using this feature.  We are about to forge into some new

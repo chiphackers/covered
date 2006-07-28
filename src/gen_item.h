@@ -19,9 +19,6 @@ void gen_item_display( gen_item* gi );
 /*! \brief Searches for a generate item in the generate block of root that matches gi */
 gen_item* gen_item_find( gen_item* root, gen_item* gi );
 
-/*! \brief Searches for a statement
-statement* gen_item_find_stmt( gen_item* root, int id );
-
 /*! \brief Creates a generate item for an expression */
 gen_item* gen_item_create_expr( expression* expr );
 
@@ -36,6 +33,9 @@ gen_item* gen_item_create_inst( funit_inst* inst );
 
 /*! \brief Creates a generate item for a namespace */
 gen_item* gen_item_create_tfn( funit_inst* inst );
+
+/*! \brief Resizes all expressions in the given generate item block */
+void gen_item_resize_exprs( gen_item* gi );
 
 /*! \brief Assigns unique expression IDs to all expressions for specified statement block */
 void gen_item_assign_expr_ids( gen_item* gi );
@@ -60,6 +60,12 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem );
 
 /*
  $Log$
+ Revision 1.9  2006/07/25 21:35:54  phase1geo
+ Fixing nested namespace problem with generate blocks.  Also adding support
+ for using generate values in expressions.  Still not quite working correctly
+ yet, but the format of the CDD file looks good as far as I can tell at this
+ point.
+
  Revision 1.8  2006/07/24 22:20:23  phase1geo
  Things are quite hosed at the moment -- trying to come up with a scheme to
  handle embedded hierarchy in generate blocks.  Chances are that a lot of

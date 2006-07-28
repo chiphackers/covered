@@ -29,6 +29,9 @@
 /*! \brief Creates new statement structure. */
 statement* statement_create( expression* exp );
 
+/*! \brief Sizes all expressions for the given statement block */
+void statement_size_elements( statement* stmt );
+
 /*! \brief Writes specified statement to the specified output file. */
 void statement_db_write( statement* stmt, FILE* ofile, bool parse_mode );
 
@@ -68,6 +71,12 @@ void statement_dealloc( statement* stmt );
 
 /*
  $Log$
+ Revision 1.27  2006/07/25 21:35:54  phase1geo
+ Fixing nested namespace problem with generate blocks.  Also adding support
+ for using generate values in expressions.  Still not quite working correctly
+ yet, but the format of the CDD file looks good as far as I can tell at this
+ point.
+
  Revision 1.26  2006/07/21 22:39:01  phase1geo
  Started adding support for generated statements.  Still looks like I have
  some loose ends to tie here before I can call it good.  Added generate5

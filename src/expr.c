@@ -629,8 +629,7 @@ void expression_resize( expression* expr, bool recursive ) {
 
     switch( expr->op ) {
 
-      /* These operations will already be sized so nothing to do here */
-      case EXP_OP_STATIC         :
+      /* Only resize these values if we are recursively resizing */
       case EXP_OP_PARAM          :
       case EXP_OP_PARAM_SBIT     :
       case EXP_OP_PARAM_MBIT     :
@@ -641,6 +640,14 @@ void expression_resize( expression* expr, bool recursive ) {
       case EXP_OP_MBIT_SEL       :
       case EXP_OP_MBIT_POS       :
       case EXP_OP_MBIT_NEG       :
+        if( recursive && (expr->sig != NULL) ) {
+          expression_set_value( expr, expr->sig->value );
+          assert( expr->value->value != NULL );
+        }
+        break;
+
+      /* These operations will already be sized so nothing to do here */
+      case EXP_OP_STATIC         :
       case EXP_OP_TRIGGER        :
       case EXP_OP_ASSIGN         :
       case EXP_OP_DASSIGN        :
@@ -1334,6 +1341,20 @@ const char* expression_string_op( int op ) {
   assert( (op >= 0) && (op < EXP_OP_NUM) );
 
   return( exp_op_info[op].name );
+
+}
+
+/*!
+ \param exp  Pointer to expression to display
+
+ Returns a pointer to user_msg that will contain a user-friendly string version of
+ the given expression
+*/
+char* expression_string( expression* exp ) {
+
+  snprintf( user_msg, USER_MSG_LENGTH, "%d (%s line %d)", exp->id, expression_string_op( exp->op ), exp->line );
+
+  return( user_msg );
 
 }
 
@@ -3213,6 +3234,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.189  2006/07/26 06:22:27  phase1geo
+ Fixing rest of issues with generate6 diagnostic.  Still need to know if I
+ have broken regressions or not and there are plenty of cases in this area
+ to test before I call things good.
+
  Revision 1.188  2006/07/24 22:20:23  phase1geo
  Things are quite hosed at the moment -- trying to come up with a scheme to
  handle embedded hierarchy in generate blocks.  Chances are that a lot of

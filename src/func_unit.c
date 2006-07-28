@@ -280,10 +280,11 @@ char* funit_gen_task_function_namedblock_name( char* orig_name, func_unit* paren
 */
 void funit_size_elements( func_unit* funit, funit_inst* inst ) {
   
-  inst_parm* curr_iparm;       /* Pointer to current instance parameter to evaluate */
-  exp_link*  curr_exp;         /* Pointer to current expression link to evaluate */
-  fsm_link*  curr_fsm;         /* Pointer to current FSM structure to evaluate */
-  bool       resolve = FALSE;  /* If set to TRUE, perform one more parameter resolution */
+  inst_parm*  curr_iparm;       /* Pointer to current instance parameter to evaluate */
+  exp_link*   curr_exp;         /* Pointer to current expression link to evaluate */
+  fsm_link*   curr_fsm;         /* Pointer to current FSM structure to evaluate */
+  gitem_link* curr_gi;          /* Pointer to current generate item link to evaluate */
+  bool        resolve = FALSE;  /* If set to TRUE, perform one more parameter resolution */
   
   assert( funit != NULL );
   assert( inst != NULL );
@@ -352,8 +353,15 @@ void funit_size_elements( func_unit* funit, funit_inst* inst ) {
     curr_exp = curr_exp->next;
   }
 
+  /* Third, traverse all generate items and resize all expressions. */
+  curr_gi = inst->gitem_head;
+  while( curr_gi != NULL ) {
+    gen_item_resize_statements( curr_gi->gi );
+    curr_gi = curr_gi->next;
+  }
+
   /*
-   Third, size all FSMs.  Since the FSM structure is reliant on the size
+   Fourth, size all FSMs.  Since the FSM structure is reliant on the size
    of the state variable signal to which it is attached, its tables
    cannot be created until the state variable size can be calculated.
    Since this has been done now, size the FSMs.
@@ -995,6 +1003,9 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.30  2006/07/28 16:30:53  phase1geo
+ Fixing one last regression error.  We are now ready to make a tag.
+
  Revision 1.29  2006/07/27 16:08:46  phase1geo
  Fixing several memory leak bugs, cleaning up output and fixing regression
  bugs.  Full regression now passes (including all current generate diagnostics).
