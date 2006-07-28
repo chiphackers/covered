@@ -906,6 +906,8 @@ void funit_display_expressions( func_unit* funit ) {
 */
 void funit_clean( func_unit* funit ) {
 
+  func_unit* old_funit = curr_funit;  /* Holds the original functional unit in curr_funit */
+
   if( funit != NULL ) {
 
     /* Set the global curr_funit to be the same as this funit */
@@ -964,6 +966,9 @@ void funit_clean( func_unit* funit ) {
     /* Free tf elements */
     funit_link_delete_list( funit->tf_head, FALSE );
 
+    /* Reset curr_funit */
+    curr_funit = old_funit;
+
   }
 
 }
@@ -990,6 +995,10 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.29  2006/07/27 16:08:46  phase1geo
+ Fixing several memory leak bugs, cleaning up output and fixing regression
+ bugs.  Full regression now passes (including all current generate diagnostics).
+
  Revision 1.28  2006/07/27 02:14:52  phase1geo
  Cleaning up verbose output and fixing a few bugs for regression.  IV
  regression passes at this point.
