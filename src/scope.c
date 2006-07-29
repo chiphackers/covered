@@ -67,18 +67,6 @@ func_unit* scope_find_funit_from_scope( char* scope, func_unit* curr_funit ) {
   funiti = instance_find_scope( curr_inst, tscope1 );
 
   /*
-   If we did not find the functional unit yet, check the scope relative to the parent module
-   (if this functional unit is not a module)
-  */
-  if( (funiti == NULL) && (curr_funit->type != FUNIT_MODULE) ) {
-    funit = funit_get_curr_module( curr_funit );
-    curr_inst = instance_find_by_funit( instance_root, funit, &ignore );
-    assert( curr_inst != NULL );
-    snprintf( tscope1, 4096, "%s.%s", curr_inst->name, scope );
-    funiti = instance_find_scope( curr_inst, tscope1 );
-  }
-
-  /*
    If we still did not find the functional unit, iterate up the scope tree looking for a module
    that matches.
   */
@@ -373,6 +361,10 @@ func_unit* scope_get_parent_module( char* scope ) {
 
 /*
  $Log$
+ Revision 1.21  2006/07/27 02:14:52  phase1geo
+ Cleaning up verbose output and fixing a few bugs for regression.  IV
+ regression passes at this point.
+
  Revision 1.20  2006/07/26 06:22:27  phase1geo
  Fixing rest of issues with generate6 diagnostic.  Still need to know if I
  have broken regressions or not and there are plenty of cases in this area

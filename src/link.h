@@ -98,6 +98,9 @@ void str_link_remove( char* str, str_link** head, str_link** tail );
 /*! \brief Searches for and removes specified expression link from list. */
 void exp_link_remove( expression* exp, exp_link** head, exp_link** tail, bool recursive );
 
+/*! \brief Searches for and removes specified generate item link from list. */
+void gitem_link_remove( gen_item* gi, gitem_link** head, gitem_link** tail );
+
 
 /*! \brief Deletes entire list specified by head pointer. */
 void str_link_delete_list( str_link* head );
@@ -126,6 +129,10 @@ void gitem_link_delete_list( gitem_link* head, bool rm_elems );
 
 /*
  $Log$
+ Revision 1.19  2006/07/17 22:12:43  phase1geo
+ Adding more code for generate block support.  Still just adding code at this
+ point -- hopefully I haven't broke anything that doesn't use generate blocks.
+
  Revision 1.18  2006/07/13 22:24:57  phase1geo
  We are really broke at this time; however, more code has been added to support
  the -g score option.

@@ -658,6 +658,42 @@ void exp_link_remove( expression* exp, exp_link** head, exp_link** tail, bool re
 }
 
 /*!
+ \param gi    Pointer to specified generate item to remove
+ \param head  Pointer to head of generate item list
+ \param tail  Pointer to tail of generate item list
+
+ Deletes specified generate item from the given list, adjusting the head and
+ tail pointers accordingly.
+*/
+void gitem_link_remove( gen_item* gi, gitem_link** head, gitem_link** tail ) {
+
+  gitem_link* gil;   /* Pointer to current generate item link */
+  gitem_link* last;  /* Pointer to last generate item link traversed */
+
+  gil = *head;
+  while( (gil != NULL) && (gil->gi != gi) ) {
+    last = gil;
+    gil  = gil->next;
+  }
+
+  if( gil != NULL ) {
+
+    if( gil == *head ) {
+      *head = gil->next;
+    } else if( gil == *tail ) {
+      last->next = NULL;
+      *tail      = last;
+    } else {
+      last->next = gil->next;
+    }
+
+    free_safe( gil );
+
+  }
+
+}
+
+/*!
  \param head  Pointer to head str_link element of list.
 
  Deletes each element of the specified list.
@@ -911,6 +947,12 @@ void gitem_link_delete_list( gitem_link* head, bool rm_elems ) {
 
 /*
  $Log$
+ Revision 1.50  2006/07/21 05:47:42  phase1geo
+ More code additions for generate functionality.  At this point, we seem to
+ be creating proper generate item blocks and are creating the generate loop
+ namespace appropriately.  However, the binder is still unable to find a signal
+ created by a generate block.
+
  Revision 1.49  2006/07/17 22:12:42  phase1geo
  Adding more code for generate block support.  Still just adding code at this
  point -- hopefully I haven't broke anything that doesn't use generate blocks.

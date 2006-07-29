@@ -25,48 +25,79 @@ extern bool        debug_mode;
 
 
 /*!
+ \param gi       Pointer to generate item to stringify
+ \param str      Pointer to string to store data into
+ \param str_len  Number of available characters in the str string
+
+ Creates a user-readable version of the specified generate item and stores it in
+ the specified string.
+*/
+void gen_item_stringify( gen_item* gi, char* str, int str_len ) {
+
+  char* tmp;  /* Temporary string */
+
+  assert( str_len > 0 );
+
+  if( gi != NULL ) {
+
+    /* Allocate some memory in the tmp string */
+    tmp = (char*)malloc_safe( str_len, __FILE__, __LINE__ );
+
+    snprintf( str, str_len, "%p, suppl: %x ", gi, gi->suppl.all );
+
+    switch( gi->suppl.part.type ) {
+      case GI_TYPE_EXPR :
+        snprintf( tmp, str_len, ", EXPR, %s", expression_string( gi->elem.expr ) );
+        break;
+      case GI_TYPE_SIG :
+        snprintf( tmp, str_len, ", SIG, name: %s", gi->elem.sig->name );
+        break;
+      case GI_TYPE_STMT :
+        snprintf( tmp, str_len, ", STMT, id: %d", gi->elem.stmt->exp->id );
+        break;
+      case GI_TYPE_INST :
+        snprintf( tmp, str_len, ", INST, name: %s", gi->elem.inst->name );
+        break;
+      case GI_TYPE_TFN :
+        snprintf( tmp, str_len, ", TFN, name: %s, type: %d", gi->elem.inst->name, gi->elem.inst->funit->type );
+        break;
+      default :
+        strcpy( tmp, "UNKNOWN!\n" );
+        break;
+    }
+    strcat( str, tmp );
+
+    snprintf( tmp, str_len, ", next_true: %p, next_false: %p", gi->next_true, gi->next_false );
+    strcat( str, tmp );
+
+    if( gi->genvar != NULL ) {
+      snprintf( tmp, str_len, ", genvar: %s", gi->genvar->name );
+      strcat( str, tmp );
+    }
+
+    /* Deallocate the temporary string memory */
+    free_safe( tmp );
+
+  } else {
+
+    str[0] = '\0';
+
+  }
+
+}
+
+/*!
  \param gi  Pointer to generate item to display.
 
  Displays the contents of the specified generate item to standard output (used for debugging purposes).
 */
 void gen_item_display( gen_item* gi ) {
 
-  if( gi != NULL ) {
+  char str[4096];  /* String to store data into */
 
-    printf( "- %p, suppl: %x ", gi, gi->suppl.all );
+  gen_item_stringify( gi, str, 4096 );
 
-    switch( gi->suppl.part.type ) {
-      case GI_TYPE_EXPR :
-        printf( "EXPR\n" );
-        expression_display( gi->elem.expr );
-        break;
-      case GI_TYPE_SIG :
-        printf( "SIG\n" );
-        vsignal_display( gi->elem.sig );
-        break;
-      case GI_TYPE_STMT :
-        printf( "STMT, id: %d\n", gi->elem.stmt->exp->id );
-        break;
-      case GI_TYPE_INST :
-        printf( "INST, name: %s\n", gi->elem.inst->name );
-        break;
-      case GI_TYPE_TFN :
-        printf( "TFN, name: %s, type: %d\n", gi->elem.inst->name, gi->elem.inst->funit->type );
-        break;
-      default :
-        printf( "UNKNOWN!\n" );
-        break;
-    }
-
-    printf( "   next_true: %p, next_false: %p", gi->next_true, gi->next_false );
-
-    if( gi->genvar != NULL ) {
-      printf( ", genvar: %s\n", gi->genvar->name );
-    } else {
-      printf( "\n" );
-    }
-
-  }
+  printf( "  %s\n", str );
 
 }
 
@@ -216,8 +247,9 @@ gen_item* gen_item_create_expr( expression* expr ) {
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {
-    snprintf( user_msg, USER_MSG_LENGTH, "In gen_item_create_expr, id: %d, op: %s, line: %d, %p",
-              expr->id, expression_string_op( expr->op ), expr->line, gi );
+    char str[USER_MSG_LENGTH];
+    gen_item_stringify( gi, str, USER_MSG_LENGTH );
+    snprintf( user_msg, USER_MSG_LENGTH, "In gen_item_create_expr, %s", str );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
   }
 #endif
@@ -248,7 +280,9 @@ gen_item* gen_item_create_sig( vsignal* sig ) {
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {
-    snprintf( user_msg, USER_MSG_LENGTH, "In gen_item_create_sig, name: %s, %p", sig->name, gi );
+    char str[USER_MSG_LENGTH];
+    gen_item_stringify( gi, str, USER_MSG_LENGTH );
+    snprintf( user_msg, USER_MSG_LENGTH, "In gen_item_create_sig, %s", str );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
   }
 #endif
@@ -279,7 +313,9 @@ gen_item* gen_item_create_stmt( statement* stmt ) {
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {
-    snprintf( user_msg, USER_MSG_LENGTH, "In gen_item_create_stmt, id: %d, line: %d, %p", stmt->exp->id, stmt->exp->line, gi );
+    char str[USER_MSG_LENGTH];
+    gen_item_stringify( gi, str, USER_MSG_LENGTH );
+    snprintf( user_msg, USER_MSG_LENGTH, "In gen_item_create_stmt, %s", str );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
   }
 #endif
@@ -310,7 +346,9 @@ gen_item* gen_item_create_inst( funit_inst* inst ) {
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {
-    snprintf( user_msg, USER_MSG_LENGTH, "In gen_item_create_inst, name: %s, %p", inst->name, gi );
+    char str[USER_MSG_LENGTH];
+    gen_item_stringify( gi, str, USER_MSG_LENGTH );
+    snprintf( user_msg, USER_MSG_LENGTH, "In gen_item_create_inst, %s", str );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
   }
 #endif
@@ -341,7 +379,9 @@ gen_item* gen_item_create_tfn( funit_inst* inst ) {
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {
-    snprintf( user_msg, USER_MSG_LENGTH, "In gen_item_create_tfn, name: %s, %p", inst->name, gi );
+    char str[USER_MSG_LENGTH];
+    gen_item_stringify( gi, str, USER_MSG_LENGTH );
+    snprintf( user_msg, USER_MSG_LENGTH, "In gen_item_create_tfn, %s", str );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
   }
 #endif
@@ -530,7 +570,9 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
 
 #ifdef DEBUG_MODE 
     if( debug_mode ) {
-      snprintf( user_msg, USER_MSG_LENGTH, "Resolving generate item, type: %d for inst: %s", gi->suppl.part.type, inst->name );
+      char str[USER_MSG_LENGTH];
+      gen_item_stringify( gi, str, USER_MSG_LENGTH );
+      snprintf( user_msg, USER_MSG_LENGTH, "Resolving generate item, %s for inst: %s", str, inst->name );
       print_output( user_msg, DEBUG, __FILE__, __LINE__ );
     }
 #endif
@@ -573,8 +615,13 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
           snprintf( inst_name, 4096, "%s.%s[%d]", inst->name, gi->elem.inst->name, vector_to_int( gi->genvar->value ) );
           child = instance_find_scope( inst, inst_name );
           inst_parm_add_genvar( gi->genvar, child );
-          gen_item_resolve( gi->next_true, child, TRUE );
+        } else {
+          char inst_name[4096];
+          instance_parse_add( &instance_root, inst->funit, gi->elem.inst->funit, gi->elem.inst->name, NULL, FALSE );
+          snprintf( inst_name, 4096, "%s.%s", inst->name, gi->elem.inst->name );
+          child = instance_find_scope( inst, inst_name );
         }
+        gen_item_resolve( gi->next_true, child, TRUE );
         gen_item_resolve( gi->next_false, inst, FALSE );
         break;
 
@@ -619,12 +666,9 @@ void generate_resolve( funit_inst* root ) {
 
   if( root != NULL ) {
 
-    // gitem_link_display( root->funit->gitem_head );
-
     /* Resolve ourself */
     curr_gi = root->funit->gitem_head;
     while( curr_gi != NULL ) {
-      // gen_item_display_block( curr_gi->gi );
       gen_item_resolve( curr_gi->gi, root, TRUE );
       curr_gi = curr_gi->next;
     }
@@ -686,6 +730,10 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.21  2006/07/28 22:42:51  phase1geo
+ Updates to support expression/signal binding for expressions within a generate
+ block statement block.
+
  Revision 1.20  2006/07/27 21:19:27  phase1geo
  Small updates.
 

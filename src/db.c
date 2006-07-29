@@ -135,6 +135,11 @@ int       stmt_conn_id    = 1;
 int       gi_conn_id      = 1;
 
 /*!
+ Pointer to current implicitly connected generate item block.
+*/
+gen_item* curr_gi_block   = NULL;
+
+/*!
  Pointer to the most recently created generate item.
 */
 gen_item* last_gi         = NULL;
@@ -499,7 +504,8 @@ func_unit* db_add_instance( char* scope, char* name, int type, vector_width* ran
   if( str_link_find( name, no_score_head ) == NULL ) {
 
 #ifdef DEBUG_MODE
-    snprintf( user_msg, USER_MSG_LENGTH, "In db_add_instance, instance: %s, %s:  %s", scope, get_funit_type( type ), name );
+    snprintf( user_msg, USER_MSG_LENGTH, "In db_add_instance, instance: %s, %s: %s (curr_funit: %s)",
+              scope, get_funit_type( type ), name, curr_funit->name );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
@@ -530,6 +536,11 @@ func_unit* db_add_instance( char* scope, char* name, int type, vector_width* ran
       /* If we are currently within a generate block, create a generate item for this instance to resolve it later */
       if( generate_mode > 0 ) {
         last_gi = gen_item_create_inst( instance_create( found_funit_link->funit, scope, range ) );
+        if( curr_gi_block != NULL ) {
+          db_gen_item_connect( curr_gi_block, last_gi );
+        } else {
+          curr_gi_block = last_gi;
+        }
       } else {
         instance_parse_add( &instance_root, curr_funit, found_funit_link->funit, scope, range, FALSE );
       }
@@ -544,6 +555,11 @@ func_unit* db_add_instance( char* scope, char* name, int type, vector_width* ran
       /* If we are currently within a generate block, create a generate item for this instance to resolve it later */
       if( generate_mode > 0 ) {
         last_gi = gen_item_create_inst( instance_create( funit, scope, range ) );
+        if( curr_gi_block != NULL ) {
+          db_gen_item_connect( curr_gi_block, last_gi );
+        } else {
+          curr_gi_block = last_gi;
+        }
       } else {
         instance_parse_add( &instance_root, curr_funit, funit, scope, range, FALSE );
       }
@@ -872,6 +888,11 @@ void db_add_signal( char* name, int type, static_expr* left, static_expr* right,
 
     if( (generate_mode > 0) && (type != SSUPPL_TYPE_GENVAR) ) {
       last_gi = gen_item_create_sig( sig );
+      if( curr_gi_block != NULL ) {
+        db_gen_item_connect( curr_gi_block, last_gi );
+      } else {
+        curr_gi_block = last_gi;
+      }
     } else {
       /* Add signal to current module's signal list */
       sig_link_add( sig, &(curr_funit->sig_head), &(curr_funit->sig_tail) );
@@ -971,22 +992,19 @@ gen_item* db_find_gen_item( gen_item* root, gen_item* gi ) {
 /*!
  \return Returns a pointer to the last generate item added to the current functional unit.
 */
-gen_item* db_find_last_gen_item() {
+gen_item* db_get_curr_gen_block() {
 
-  static gen_item* last_item  = NULL;  /* Last retrieved item */
-  gen_item*        found_item = NULL;  /* Found last item */
+  gen_item* block = curr_gi_block;  /* Temporary pointer to current generate item block */
 
 #ifdef DEBUG_MODE
-  print_output( "In db_find_last_gen_item", DEBUG, __FILE__, __LINE__ );
+  print_output( "In db_get_curr_gen_block", DEBUG, __FILE__, __LINE__ );
 #endif
 
-  found_item = (last_gi == last_item) ? NULL : last_gi;
+  /* Clear the curr_gi_block and last_gi pointers */
+  curr_gi_block = NULL;
+  last_gi       = NULL;
 
-  if( last_gi != last_item ) {
-    last_item = found_item;
-  }
-
-  return( found_item );
+  return( block );
 
 }
 
@@ -1185,6 +1203,13 @@ void db_add_expression( expression* root ) {
           /* Add root expression to the generate item list for the current functional unit */
           last_gi = gen_item_create_expr( root );
 
+          /* Attach it to the curr_gi_block, if one exists */
+          if( curr_gi_block != NULL ) {
+            db_gen_item_connect( curr_gi_block, last_gi );
+          } else {
+            curr_gi_block = last_gi;
+          }
+
         }
 
       } else {
@@ -1201,8 +1226,6 @@ void db_add_expression( expression* root ) {
     }
 
   }
-
-  /* module_display_expressions( curr_funit ); */
 
 }
 
@@ -1348,23 +1371,27 @@ void db_add_statement( statement* stmt, statement* start ) {
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
-    /* Add TRUE and FALSE statement paths to list */
-    if( (ESUPPL_IS_STMT_STOP_FALSE( stmt->exp->suppl ) == 0) && (stmt->next_false != start) ) {
-      db_add_statement( stmt->next_false, start );
-    }
-
-    if( (ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0) && (stmt->next_true != stmt->next_false) && (stmt->next_true != start) ) {
-      db_add_statement( stmt->next_true, start );
-    }
-
-    /* Set ADDED bit of this statement */
-    stmt->exp->suppl.part.stmt_added = 1;
-
     /* Now add current statement */
     if( generate_mode > 0 ) {
+
       last_gi = gen_item_create_stmt( stmt );
+
     } else {
+
+      /* Add TRUE and FALSE statement paths to list */
+      if( (ESUPPL_IS_STMT_STOP_FALSE( stmt->exp->suppl ) == 0) && (stmt->next_false != start) ) {
+        db_add_statement( stmt->next_false, start );
+      }
+
+      if( (ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0) && (stmt->next_true != stmt->next_false) && (stmt->next_true != start) ) {
+        db_add_statement( stmt->next_true, start );
+      }
+
+      /* Set ADDED bit of this statement */
+      stmt->exp->suppl.part.stmt_added = 1;
+
       stmt_link_add_tail( stmt, &(curr_funit->stmt_head), &(curr_funit->stmt_tail) );
+
     }
 
   }
@@ -1544,7 +1571,7 @@ bool db_gen_item_connect( gen_item* gi1, gen_item* gi2 ) {
   retval = gen_item_connect( gi1, gi2, gi_conn_id );
 
   /* Increment gi_conn_id for next connection */
-  gi_conn_id = (gi_conn_id + 1) & 0x1;
+  gi_conn_id++;
 
   return( retval );
 
@@ -1917,6 +1944,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.200  2006/07/27 16:27:16  phase1geo
+ Adding diagnostics to verify basic generate case blocks.  Full regression
+ passes.
+
  Revision 1.199  2006/07/27 16:08:46  phase1geo
  Fixing several memory leak bugs, cleaning up output and fixing regression
  bugs.  Full regression now passes (including all current generate diagnostics).

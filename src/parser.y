@@ -47,6 +47,7 @@
 extern char   user_msg[USER_MSG_LENGTH];
 extern int    delay_expr_type;
 extern int    stmt_conn_id;
+extern int    gi_conn_id;
 extern isuppl info_suppl;
 
 /* Functions from lexer */
@@ -152,9 +153,16 @@ bool curr_mba = FALSE;
 int curr_sig_type = SSUPPL_TYPE_DECLARED;
 
 /*!
- Stores the contents of a generate item that we want to refer to later.
+ Pointer to head of stack structure that stores the contents of generate
+ items that we want to refer to later.
 */
-gen_item* save_gi;
+gitem_link* save_gi_head = NULL;
+
+/*!
+ Pointer to tail of stack structure that stores the contents of generate
+ items that we want to refer to later.
+*/
+gitem_link* save_gi_tail = NULL;
 
 #define YYERROR_VERBOSE 1
 
@@ -1979,7 +1987,7 @@ generate_item_list
 generate_item
   : module_item
     {
-      $$ = db_find_last_gen_item();
+      $$ = db_get_curr_gen_block();
     }
   | K_begin generate_item_list_opt K_end
     {
@@ -1987,13 +1995,19 @@ generate_item
     }
   | K_begin ':' IDENTIFIER
     {
+      generate_expr_mode++;
       if( (ignore_mode == 0) && ($3 != NULL) ) {
         if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $3, @3.text, @3.first_line ) ) {
           ignore_mode++;
+        } else {
+          gen_item* gi = db_get_curr_gen_block();
+          assert( gi != NULL );
+          gitem_link_add( gi, &save_gi_head, &save_gi_tail );
         }
       } else {
         ignore_mode++;
       }
+      generate_expr_mode--;
     }
     generate_item_list_opt K_end
     {
@@ -2005,7 +2019,9 @@ generate_item
           ignore_mode--;
         }
       }
-      $$ = $5;
+      db_gen_item_connect_true( save_gi_tail->gi, $5 );
+      $$ = save_gi_tail->gi;
+      gitem_link_remove( save_gi_tail->gi, &save_gi_head, &save_gi_tail );
     }
   | K_for
     {
@@ -2018,7 +2034,9 @@ generate_item
         if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $16, @16.text, @16.first_line ) ) {
           ignore_mode++;
         } else {
-          save_gi = db_find_last_gen_item();
+          gen_item* gi = db_get_curr_gen_block();
+          assert( gi != NULL );
+          gitem_link_add( gi, &save_gi_head, &save_gi_tail );
         }
       } else {
         ignore_mode++;
@@ -2047,30 +2065,32 @@ generate_item
         block_depth++;
         /* Create first statement */
         expr  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @4.first_line, @4.first_column, (@4.last_column - 1), $4 );
-        save_gi->genvar = db_find_signal( $4 );
+        save_gi_tail->gi->genvar = db_find_signal( $4 );
         free_safe( $4 );
         expr2 = db_create_expr_from_static( $6, @6.first_line, @6.first_column, (@6.last_column - 1) );
         expr  = db_create_expression( expr2, expr, EXP_OP_BASSIGN, FALSE, @4.first_line, @4.first_column, (@6.last_column - 1), NULL );
         db_add_expression( expr );
-        gi1 = db_find_last_gen_item();
+        gi1 = db_get_curr_gen_block();
         /* Create second statement and attach it to the first statement */
         expr = db_create_expr_from_static( $8, @8.first_line, @8.first_column, (@8.last_column - 1) );
         db_add_expression( expr );
-        gi2 = db_find_last_gen_item();
+        gi2 = db_get_curr_gen_block();
         db_gen_item_connect( gi1, gi2 );
         /* Add genvar to the new scope */
         /* Connect next_true of gi2 to the new scope */
-        db_gen_item_connect_true( gi2, save_gi );
+        db_gen_item_connect_true( gi2, save_gi_tail->gi );
         /* Connect the generate block to the new scope */
-        db_gen_item_connect_true( save_gi, $18 );
+        db_gen_item_connect_true( save_gi_tail->gi, $18 );
         /* Create third statement and attach it to the generate block */
         expr = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @10.first_line, @10.first_column, (@10.last_column - 1), $10 );
         free_safe( $10 );
         expr2 = db_create_expr_from_static( $12, @12.first_line, @12.first_column, (@12.last_column - 1) );
         expr = db_create_expression( expr2, expr, EXP_OP_BASSIGN, FALSE, @8.first_line, @8.first_column, (@10.last_column - 1), NULL );
         db_add_expression( expr );
-        gi3 = db_find_last_gen_item();
-        db_gen_item_connect_false( save_gi, gi3 );
+        gi3 = db_get_curr_gen_block();
+        db_gen_item_connect_false( save_gi_tail->gi, gi3 );
+        gitem_link_remove( save_gi_tail->gi, &save_gi_head, &save_gi_tail );
+        gi2->suppl.part.conn_id = gi_conn_id;
         db_gen_item_connect( gi3, gi2 );
         block_depth--;
         $$ = gi1;
@@ -2095,7 +2115,7 @@ generate_item
         expr = db_create_expr_from_static( $4, @4.first_line, @4.first_column, (@4.last_column - 1) );
         expr = db_create_expression( expr, NULL, EXP_OP_IF, FALSE, @1.first_line, @1.first_column, (@5.last_column - 1), NULL );
         db_add_expression( expr );
-        gi1 = db_find_last_gen_item();
+        gi1 = db_get_curr_gen_block();
         db_gen_item_connect_true( gi1, $8 );
         generate_expr_mode--;
         $$ = gi1;
@@ -2114,14 +2134,14 @@ generate_item
         expr = db_create_expr_from_static( $4, @4.first_line, @4.first_column, (@4.last_column - 1) );
         expr = db_create_expression( expr, NULL, EXP_OP_IF, FALSE, @1.first_line, @1.first_column, (@5.last_column - 1), NULL );
         db_add_expression( expr );
-        gi1 = db_find_last_gen_item();
+        gi1 = db_get_curr_gen_block();
         db_gen_item_connect_true( gi1, $8 );
         db_gen_item_connect_false( gi1, $11 );
         generate_expr_mode--;
         $$ = gi1;
       } else {
         static_expr_dealloc( $4, TRUE );
-        gen_item_dealloc( db_find_last_gen_item(), TRUE );
+        gen_item_dealloc( db_get_curr_gen_block(), TRUE );
         gen_item_dealloc( $8, TRUE );
         gen_item_dealloc( $11, TRUE );
         $$ = NULL;
@@ -2146,7 +2166,7 @@ generate_item
             expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, lhs_mode, c_stmt->line, 0, 0, NULL );
           }
           db_add_expression( expr );
-          stmt = db_find_last_gen_item();
+          stmt = db_get_curr_gen_block();
           db_gen_item_connect_true( stmt, c_stmt->gi );
           db_gen_item_connect_false( stmt, last_stmt );
           if( stmt != NULL ) {

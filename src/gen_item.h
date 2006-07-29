@@ -16,6 +16,9 @@
 /*! \brief Displays the specified generate item to standard output */
 void gen_item_display( gen_item* gi );
 
+/*! \brief Displays an entire generate block */
+void gen_item_display_block( gen_item* root );
+
 /*! \brief Searches for a generate item in the generate block of root that matches gi */
 gen_item* gen_item_find( gen_item* root, gen_item* gi );
 
@@ -60,6 +63,10 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem );
 
 /*
  $Log$
+ Revision 1.10  2006/07/28 22:42:51  phase1geo
+ Updates to support expression/signal binding for expressions within a generate
+ block statement block.
+
  Revision 1.9  2006/07/25 21:35:54  phase1geo
  Fixing nested namespace problem with generate blocks.  Also adding support
  for using generate values in expressions.  Still not quite working correctly
