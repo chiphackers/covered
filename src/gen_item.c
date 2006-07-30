@@ -53,7 +53,7 @@ void gen_item_stringify( gen_item* gi, char* str, int str_len ) {
         snprintf( tmp, str_len, ", SIG, name: %s", gi->elem.sig->name );
         break;
       case GI_TYPE_STMT :
-        snprintf( tmp, str_len, ", STMT, id: %d", gi->elem.stmt->exp->id );
+        snprintf( tmp, str_len, ", STMT, id: %d, line: %d", gi->elem.stmt->exp->id, gi->elem.stmt->exp->line );
         break;
       case GI_TYPE_INST :
         snprintf( tmp, str_len, ", INST, name: %s", gi->elem.inst->name );
@@ -730,6 +730,10 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.22  2006/07/29 20:53:43  phase1geo
+ Fixing some code related to generate statements; however, generate8.1 is still
+ not completely working at this point.  Full regression passes for IV.
+
  Revision 1.21  2006/07/28 22:42:51  phase1geo
  Updates to support expression/signal binding for expressions within a generate
  block statement block.
