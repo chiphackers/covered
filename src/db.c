@@ -914,30 +914,31 @@ void db_add_signal( char* name, int type, static_expr* left, static_expr* right,
 /*!
  \param name  String name of signal to find in current module.
 
- \return Returns pointer to the found signal.  If signal is not found, internal error.
+ \return Returns pointer to the found signal.
 
- Searches current module for signal matching the specified name.  If the signal is
- found, returns a pointer to the calling function for that signal.
+ Searches signal matching the specified name using normal scoping rules.  If the signal is
+ found, returns a pointer to the calling function for that signal.  If the signal is not
+ found, emits a user error and immediately halts execution.
 */
 vsignal* db_find_signal( char* name ) {
 
-  vsignal   sig;   /* Temporary signal for comparison purposes */
-  sig_link* sigl;  /* Temporary pointer to signal link element */
+  vsignal*   found_sig;    /* Pointer to found signal (return value) */
+  func_unit* found_funit;  /* Pointer to found functional unit (not used) */
 
 #ifdef DEBUG_MODE
   snprintf( user_msg, USER_MSG_LENGTH, "In db_find_signal, searching for signal %s", name );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
-  /* Create signal to find */
-  sig.name = name;
-  sigl = sig_link_find( &sig, curr_funit->sig_head );
+  if( !scope_find_signal( name, curr_funit, &found_sig, &found_funit, 0 ) ) {
 
-  if( sigl == NULL ) {
-    return( NULL );
-  } else {
-    return( sigl->sig );
+    snprintf( user_msg, USER_MSG_LENGTH, "Unable to find variable %s in module %s", name, curr_funit->name );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    exit( 1 );
+
   }
+
+  return( found_sig );
 
 }
 
@@ -1950,6 +1951,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.202  2006/07/29 21:15:08  phase1geo
+ Fixing last issue with generate8.1.v.  Full regression passes with IV.  Still
+ need to check VCS regression run.
+
  Revision 1.201  2006/07/29 20:53:42  phase1geo
  Fixing some code related to generate statements; however, generate8.1 is still
  not completely working at this point.  Full regression passes for IV.
