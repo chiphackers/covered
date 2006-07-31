@@ -2515,7 +2515,9 @@ module_item
       }
       if( ignore_mode == 0 ) {
         if( db_add_function_task_namedblock( FUNIT_FUNCTION, $4, @4.text, @4.first_line ) ) {
+          generate_mode--;
           db_add_signal( $4, SSUPPL_TYPE_IMPLICIT, curr_range->left, curr_range->right, FALSE, FALSE, @4.first_line, @4.first_column );
+          generate_mode++;
         } else {
           ignore_mode++;
         }

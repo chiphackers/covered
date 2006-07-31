@@ -58,6 +58,8 @@ func_unit* scope_find_funit_from_scope( char* scope, func_unit* curr_funit ) {
 
   assert( curr_funit != NULL );
 
+  printf( "In scope_find_funit_from_scope, scope: %s, curr_funit: %s\n", scope, curr_funit );
+
   /* Get current instance */
   curr_inst = instance_find_by_funit( instance_root, curr_funit, &ignore );
   assert( curr_inst != NULL );
@@ -186,6 +188,7 @@ bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, 
       snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined signal hierarchy (%s) in %s %s, file %s, line %d",
                 name, get_funit_type( curr_funit->type ), curr_funit->name, curr_funit->filename, line );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      assert( 0 );
       exit( 1 );
  
     }
@@ -361,6 +364,10 @@ func_unit* scope_get_parent_module( char* scope ) {
 
 /*
  $Log$
+ Revision 1.22  2006/07/29 20:53:43  phase1geo
+ Fixing some code related to generate statements; however, generate8.1 is still
+ not completely working at this point.  Full regression passes for IV.
+
  Revision 1.21  2006/07/27 02:14:52  phase1geo
  Cleaning up verbose output and fixing a few bugs for regression.  IV
  regression passes at this point.

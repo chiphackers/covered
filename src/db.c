@@ -524,7 +524,7 @@ func_unit* db_add_instance( char* scope, char* name, int type, vector_width* ran
       }
     }
 
-    if( (found_funit_link = funit_link_find( funit, funit_head )) != NULL ) {
+    if( ((found_funit_link = funit_link_find( funit, funit_head )) != NULL) && (generate_mode == 0) ) {
 
       if( type != FUNIT_MODULE ) {
         snprintf( user_msg, USER_MSG_LENGTH, "Multiple identical task/function/named-begin-end names (%s) found in module %s, file %s\n",
@@ -1951,6 +1951,13 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.203  2006/07/30 04:59:51  phase1geo
+ Modifying db_find_signal to use scope lookup function (for upwards name
+ referencing purposes).  Emits user error if specified signal could not be
+ found (we are understanding that if the db_find_signal function is used, the
+ signal better be within the current scope (no hierarchical referencing allowed).
+ Diagnostic generate8.2 should work now with VCS.
+
  Revision 1.202  2006/07/29 21:15:08  phase1geo
  Fixing last issue with generate8.1.v.  Full regression passes with IV.  Still
  need to check VCS regression run.

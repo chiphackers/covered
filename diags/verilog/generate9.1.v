@@ -1,6 +1,6 @@
 module main;
 
-localparam A = 0;
+localparam A = 1;
 
 generate
   if( A < 1 )
@@ -28,7 +28,7 @@ initial begin
 end
 
 initial begin
-        $dumpfile( "generate9.vcd" );
+        $dumpfile( "generate9.1.vcd" );
         $dumpvars( 0, main );
         #20;
         $finish;
