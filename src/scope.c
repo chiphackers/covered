@@ -58,8 +58,6 @@ func_unit* scope_find_funit_from_scope( char* scope, func_unit* curr_funit ) {
 
   assert( curr_funit != NULL );
 
-  printf( "In scope_find_funit_from_scope, scope: %s, curr_funit: %s\n", scope, curr_funit );
-
   /* Get current instance */
   curr_inst = instance_find_by_funit( instance_root, curr_funit, &ignore );
   assert( curr_inst != NULL );
@@ -220,6 +218,7 @@ bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, 
  \param curr_funit   Pointer to the functional unit which needs to bind to this functional unit
  \param found_funit  Pointer to found functional unit within the design.
  \param line         Line number where functional unit is being used (for error output purposes only).
+ \param must_find    Set to TRUE if the scope MUST be found.
 
  \return Returns TRUE if the functional unit was found in the design; otherwise, returns FALSE.
 
@@ -227,66 +226,24 @@ bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, 
  found, the found_funit pointer is set to the functional unit and the function returns TRUE; otherwise, the function
  returns FALSE to the calling function.
 */
-bool scope_find_task_function_namedblock( char* name, int type, func_unit* curr_funit, func_unit** found_funit, int line ) {
-
-  funit_link* funitl;         /* Pointer to current functional unit link */
-  char        rest[4096];     /* Temporary string */
-  char        back[4096];     /* Temporary string */
-  bool        found = FALSE;  /* Specifies if function unit has been found */
-  func_unit*  parent;         /* Pointer to the parent module */
+bool scope_find_task_function_namedblock( char* name, int type, func_unit* curr_funit, func_unit** found_funit, int line, bool must_find ) {
 
   assert( (type == FUNIT_FUNCTION) || (type == FUNIT_TASK) || (type == FUNIT_NAMED_BLOCK) );
   assert( curr_funit != NULL );
 
-  *found_funit = curr_funit;
-
   /*
-   If we are performing a hierarchical reference to a task/function/named block, find the functional unit
-   that refers to this scope.
+   Find the functional unit that refers to this scope.
   */
-  if( !scope_local( name ) ) {
+  if( ((*found_funit = scope_find_funit_from_scope( name, curr_funit )) == NULL) && must_find ) {
 
-    if( (*found_funit = scope_find_funit_from_scope( name, curr_funit )) == NULL ) {
-
-      snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined %s hierarchy in %s %s, file %s, line %d",
-                get_funit_type( type ), get_funit_type( curr_funit->type ), name, curr_funit->filename, line );
-      print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      exit( 1 );
-
-    }
+    snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined %s hierarchy in %s %s, file %s, line %d",
+              get_funit_type( type ), get_funit_type( curr_funit->type ), name, curr_funit->filename, line );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    exit( 1 );
 
   }
 
-  /* Get the current module */
-  parent = funit_get_curr_module( *found_funit );
-
-  /* First, attempt to find the functional unit relative to the current functional unit */
-  funitl = parent->tf_head;
-  while( (funitl != NULL) && !found ) {
-    snprintf( rest, 4096, "%s.%s", (*found_funit)->name, name );
-    if( strcmp( funitl->funit->name, rest ) == 0 ) {
-      found = TRUE;
-      *found_funit = funitl->funit;
-    } else {
-      funitl = funitl->next;
-    }
-  }
-  
-  /* Search for functional unit in the module's tf_head list */
-  if( !found ) {
-    funitl = parent->tf_head;
-    while( (funitl != NULL) && !found ) {
-      scope_extract_back( funitl->funit->name, back, rest );
-      if( scope_compare( back, name ) ) {
-        found        = TRUE;
-        *found_funit = funitl->funit;
-      } else {
-        funitl = funitl->next;
-      }
-    }
-  }
-
-  return( found );
+  return( *found_funit != NULL );
 
 }
 
@@ -364,6 +321,10 @@ func_unit* scope_get_parent_module( char* scope ) {
 
 /*
  $Log$
+ Revision 1.23  2006/07/31 22:11:07  phase1geo
+ Fixing bug with generated tasks.  Added diagnostic to test generate functions
+ (this is currently failing with a binding issue).
+
  Revision 1.22  2006/07/29 20:53:43  phase1geo
  Fixing some code related to generate statements; however, generate8.1 is still
  not completely working at this point.  Full regression passes for IV.

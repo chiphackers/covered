@@ -38,7 +38,7 @@ bool scope_find_param( char* name, func_unit* curr_funit, mod_parm** found_parm,
 bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, func_unit** found_funit, int line );
 
 /*! \brief  Finds the given task or function in the provided scope. */
-bool scope_find_task_function_namedblock( char* name, int type, func_unit* curr_funit, func_unit** found_funit, int line );
+bool scope_find_task_function_namedblock( char* name, int type, func_unit* curr_funit, func_unit** found_funit, int line, bool must_find );
 
 /*! \brief  Finds the parent functional unit of the functional unit with the given scope */
 func_unit* scope_get_parent_funit( char* scope );
@@ -49,6 +49,9 @@ func_unit* scope_get_parent_module( char* scope );
 
 /*
  $Log$
+ Revision 1.8  2006/05/25 12:11:01  phase1geo
+ Including bug fix from 0.4.4 stable release and updating regressions.
+
  Revision 1.7.8.1  2006/05/25 10:59:35  phase1geo
  Adding bug fix for hierarchically referencing parameters.  Added param13 and
  param13.1 diagnostics to verify this functionality.  Updated regressions.

@@ -496,83 +496,82 @@ func_unit* db_add_instance( char* scope, char* name, int type, vector_width* ran
 
   func_unit*  funit = NULL;      /* Pointer to functional unit */
   funit_link* found_funit_link;  /* Pointer to found funit_link in functional unit list */
+  bool        score;             /* Specifies if this module should be scored */
 
   /* There should always be a parent so internal error if it does not exist. */
   assert( curr_funit != NULL );
 
   /* If this functional unit name is in our list of no_score functional units, skip adding the instance */
-  if( str_link_find( name, no_score_head ) == NULL ) {
+  score = str_link_find( name, no_score_head ) == NULL;
 
 #ifdef DEBUG_MODE
-    snprintf( user_msg, USER_MSG_LENGTH, "In db_add_instance, instance: %s, %s: %s (curr_funit: %s)",
-              scope, get_funit_type( type ), name, curr_funit->name );
-    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  snprintf( user_msg, USER_MSG_LENGTH, "In db_add_instance, instance: %s, %s: %s (curr_funit: %s)",
+            scope, get_funit_type( type ), name, curr_funit->name );
+  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
-    /* Create new functional unit node */
-    funit       = funit_create();
-    funit->name = strdup_safe( name, __FILE__, __LINE__ );
-    funit->type = type;
+  /* Create new functional unit node */
+  funit       = funit_create();
+  funit->name = strdup_safe( name, __FILE__, __LINE__ );
+  funit->type = score ? type : FUNIT_NO_SCORE;
 
-    /* If a range has been specified, calculate its width and lsb now */
-    if( range != NULL ) {
-      if( (range->left != NULL) && (range->left->exp != NULL) ) {
-        mod_parm_add( NULL, NULL, NULL, FALSE, range->left->exp, PARAM_TYPE_INST_MSB, curr_funit, scope );
-      }
-      if( (range->right != NULL) && (range->right->exp != NULL) ) {
-        mod_parm_add( NULL, NULL, NULL, FALSE, range->right->exp, PARAM_TYPE_INST_LSB, curr_funit, scope );
-      }
+  /* If a range has been specified, calculate its width and lsb now */
+  if( (range != NULL) && score ) {
+    if( (range->left != NULL) && (range->left->exp != NULL) ) {
+      mod_parm_add( NULL, NULL, NULL, FALSE, range->left->exp, PARAM_TYPE_INST_MSB, curr_funit, scope );
     }
-
-    if( ((found_funit_link = funit_link_find( funit, funit_head )) != NULL) && (generate_mode == 0) ) {
-
-      if( type != FUNIT_MODULE ) {
-        snprintf( user_msg, USER_MSG_LENGTH, "Multiple identical task/function/named-begin-end names (%s) found in module %s, file %s\n",
-                  scope, curr_funit->name, curr_funit->filename );
-        print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        exit( 1 );
-      }
-
-      /* If we are currently within a generate block, create a generate item for this instance to resolve it later */
-      if( generate_mode > 0 ) {
-        last_gi = gen_item_create_inst( instance_create( found_funit_link->funit, scope, range ) );
-        if( curr_gi_block != NULL ) {
-          db_gen_item_connect( curr_gi_block, last_gi );
-        } else {
-          curr_gi_block = last_gi;
-        }
-      } else {
-        instance_parse_add( &instance_root, curr_funit, found_funit_link->funit, scope, range, FALSE );
-      }
-
-      funit_dealloc( funit );
-
-    } else {
-
-      /* Add new functional unit to functional unit list. */
-      funit_link_add( funit, &funit_head, &funit_tail );
-
-      /* If we are currently within a generate block, create a generate item for this instance to resolve it later */
-      if( generate_mode > 0 ) {
-        last_gi = gen_item_create_inst( instance_create( funit, scope, range ) );
-        if( curr_gi_block != NULL ) {
-          db_gen_item_connect( curr_gi_block, last_gi );
-        } else {
-          curr_gi_block = last_gi;
-        }
-      } else {
-        instance_parse_add( &instance_root, curr_funit, funit, scope, range, FALSE );
-      }
-
-      if( (type == FUNIT_MODULE) && (str_link_find( name, modlist_head ) == NULL) ) {
-        str_link_add( strdup_safe( name, __FILE__, __LINE__ ), &modlist_head, &modlist_tail );
-      }
-      
+    if( (range->right != NULL) && (range->right->exp != NULL) ) {
+      mod_parm_add( NULL, NULL, NULL, FALSE, range->right->exp, PARAM_TYPE_INST_LSB, curr_funit, scope );
     }
-
   }
 
-  return( funit );
+  if( ((found_funit_link = funit_link_find( funit, funit_head )) != NULL) && (generate_mode == 0) ) {
+
+    if( type != FUNIT_MODULE ) {
+      snprintf( user_msg, USER_MSG_LENGTH, "Multiple identical task/function/named-begin-end names (%s) found in module %s, file %s\n",
+                scope, curr_funit->name, curr_funit->filename );
+      print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      exit( 1 );
+    }
+
+    /* If we are currently within a generate block, create a generate item for this instance to resolve it later */
+    if( generate_mode > 0 ) {
+      last_gi = gen_item_create_inst( instance_create( found_funit_link->funit, scope, range ) );
+      if( curr_gi_block != NULL ) {
+        db_gen_item_connect( curr_gi_block, last_gi );
+      } else {
+        curr_gi_block = last_gi;
+      }
+    } else {
+      instance_parse_add( &instance_root, curr_funit, found_funit_link->funit, scope, range, FALSE );
+    }
+
+    funit_dealloc( funit );
+
+  } else {
+
+    /* Add new functional unit to functional unit list. */
+    funit_link_add( funit, &funit_head, &funit_tail );
+
+    /* If we are currently within a generate block, create a generate item for this instance to resolve it later */
+    if( generate_mode > 0 ) {
+      last_gi = gen_item_create_inst( instance_create( funit, scope, range ) );
+      if( curr_gi_block != NULL ) {
+        db_gen_item_connect( curr_gi_block, last_gi );
+      } else {
+        curr_gi_block = last_gi;
+      }
+    } else {
+      instance_parse_add( &instance_root, curr_funit, funit, scope, range, FALSE );
+    }
+
+    if( (type == FUNIT_MODULE) && score && (str_link_find( name, modlist_head ) == NULL) ) {
+      str_link_add( strdup_safe( name, __FILE__, __LINE__ ), &modlist_head, &modlist_tail );
+    }
+      
+  }
+
+  return( score ? funit : NULL );
 
 }
 
@@ -1951,6 +1950,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.204  2006/07/31 22:11:07  phase1geo
+ Fixing bug with generated tasks.  Added diagnostic to test generate functions
+ (this is currently failing with a binding issue).
+
  Revision 1.203  2006/07/30 04:59:51  phase1geo
  Modifying db_find_signal to use scope lookup function (for upwards name
  referencing purposes).  Emits user error if specified signal could not be

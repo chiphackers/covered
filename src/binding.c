@@ -94,7 +94,6 @@
 extern funit_inst* instance_root;
 extern funit_link* funit_head;
 extern char        user_msg[USER_MSG_LENGTH];
-extern str_link*   no_score_head;
 extern bool        debug_mode;
 
 
@@ -451,8 +450,6 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
   statement* stmt;           /* Pointer to root statement for the given expression */
   exp_link*  expl;           /* Pointer to current expression link */
 
-  printf( "In bind_signal, sig_name: %s, expr: %s, funit: %s\n", name, expression_string( exp ), funit_exp->name );
-
   /* Skip signal binding if the name is not local and we are binding locally */
   if( scope_local( name ) || !bind_locally || (!clear_assigned && (exp->op == EXP_OP_PASSIGN)) ) {
 
@@ -745,68 +742,62 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
 
   assert( (type == FUNIT_FUNCTION) || (type == FUNIT_TASK) || (type == FUNIT_NAMED_BLOCK) );
 
-  printf( "In bind_task_function_namedblock, name: %s, type: %d, funit_exp: %s\n", name, type, funit_exp->name );
+  /* Don't continue if the name is not local and we are told to bind locally */
+  if( scope_local( name ) || !bind_locally ) {
 
-  /* Search the no_score list to make sure that this function is not being manually excluded */
-  if( str_link_find( name, no_score_head ) == NULL ) {
+    if( scope_find_task_function_namedblock( name, type, funit_exp, &found_funit, exp_line, !bind_locally ) &&
+        (found_funit->type != FUNIT_NO_SCORE) ) {
 
-    /* Don't continue if the name is not local and we are told to bind locally */
-    if( scope_local( name ) || !bind_locally ) {
+      if( found_funit->stmt_head != NULL ) {
 
-      if( scope_find_task_function_namedblock( name, type, funit_exp, &found_funit, exp_line ) ) {
+        assert( found_funit->stmt_head->stmt != NULL );
 
-        if( found_funit->stmt_head != NULL ) {
+        /* Set expression to point at task/function's first head statement */
+        stmt_iter_reset( &si, found_funit->stmt_tail );
+        stmt_iter_find_head( &si, FALSE );
 
-          assert( found_funit->stmt_head->stmt != NULL );
+        if( si.curr->stmt != NULL ) {
+          exp->stmt = si.curr->stmt;
+          retval = TRUE;
+        }
 
-          /* Set expression to point at task/function's first head statement */
-          stmt_iter_reset( &si, found_funit->stmt_tail );
-          stmt_iter_find_head( &si, FALSE );
+      }
 
-          if( si.curr->stmt != NULL ) {
-            exp->stmt = si.curr->stmt;
-            retval = TRUE;
-          }
+      if( retval ) {
+
+        /* If this is a function, also bind the return value signal vector to the expression's vector */
+        if( type == FUNIT_FUNCTION ) {
+
+          scope_extract_back( found_funit->name, back, rest );
+          sig.name = back;
+          sigl     = sig_link_find( &sig, found_funit->sig_head );
+
+          assert( sigl != NULL );
+
+          /* Add expression to signal expression list */
+          exp_link_add( exp, &(sigl->sig->exp_head), &(sigl->sig->exp_tail) );
+
+          /* Set expression to point at signal */
+          exp->sig = sigl->sig;
+
+          /* Attach the signal's value to our expression value */
+          expression_set_value( exp, sigl->sig->value );
 
         }
 
-        if( retval ) {
+        /* If this is a function or task, bind the ports as well */
+        if( ((type == FUNIT_FUNCTION) || (type == FUNIT_TASK)) && !cdd_reading ) {
 
-          /* If this is a function, also bind the return value signal vector to the expression's vector */
-          if( type == FUNIT_FUNCTION ) {
+          /* First, bind the ports */
+          port_order = 0;
+          bind_task_function_ports( exp->left, found_funit, name, &port_order, funit_exp );
 
-            scope_extract_back( found_funit->name, back, rest );
-            sig.name = back;
-            sigl     = sig_link_find( &sig, found_funit->sig_head );
-
-            assert( sigl != NULL );
-
-            /* Add expression to signal expression list */
-            exp_link_add( exp, &(sigl->sig->exp_head), &(sigl->sig->exp_tail) );
-
-            /* Set expression to point at signal */
-            exp->sig = sigl->sig;
-
-            /* Attach the signal's value to our expression value */
-            expression_set_value( exp, sigl->sig->value );
-
-          }
-
-          /* If this is a function or task, bind the ports as well */
-          if( ((type == FUNIT_FUNCTION) || (type == FUNIT_TASK)) && !cdd_reading ) {
-
-            /* First, bind the ports */
-            port_order = 0;
-            bind_task_function_ports( exp->left, found_funit, name, &port_order, funit_exp );
-
-            /* Check to see if the call port count matches the actual port count */
-            if( (port_cnt = funit_get_port_count( found_funit )) != port_order ) {
-              snprintf( user_msg, USER_MSG_LENGTH, "Number of arguments in %s call (%d) does not match its %s port list (%d), file %s, line %d",
-                        get_funit_type( type ), port_order, get_funit_type( type ), port_cnt, funit_exp->filename, exp->line );
-              print_output( user_msg, FATAL, __FILE__, __LINE__ );
-              exit( 1 );
-            }
-
+          /* Check to see if the call port count matches the actual port count */
+          if( (port_cnt = funit_get_port_count( found_funit )) != port_order ) {
+            snprintf( user_msg, USER_MSG_LENGTH, "Number of arguments in %s call (%d) does not match its %s port list (%d), file %s, line %d",
+                      get_funit_type( type ), port_order, get_funit_type( type ), port_cnt, funit_exp->filename, exp->line );
+            print_output( user_msg, FATAL, __FILE__, __LINE__ );
+            exit( 1 );
           }
 
         }
@@ -996,6 +987,10 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.84  2006/07/31 22:11:07  phase1geo
+ Fixing bug with generated tasks.  Added diagnostic to test generate functions
+ (this is currently failing with a binding issue).
+
  Revision 1.83  2006/07/25 21:35:54  phase1geo
  Fixing nested namespace problem with generate blocks.  Also adding support
  for using generate values in expressions.  Still not quite working correctly

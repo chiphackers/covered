@@ -401,126 +401,130 @@ bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
   char        modname[4096];  /* Name of module */
   char        tmp[4096];      /* Temporary string holder */
 
+  if( funit->type != FUNIT_NO_SCORE ) {
+
 #ifdef DEBUG_MODE
-  switch( funit->type ) {
-    case FUNIT_MODULE      :  snprintf( user_msg, USER_MSG_LENGTH, "Writing module %s", funit->name );       break;
-    case FUNIT_NAMED_BLOCK :  snprintf( user_msg, USER_MSG_LENGTH, "Writing named block %s", funit->name );  break;
-    case FUNIT_FUNCTION    :  snprintf( user_msg, USER_MSG_LENGTH, "Writing function %s", funit->name );     break;
-    case FUNIT_TASK        :  snprintf( user_msg, USER_MSG_LENGTH, "Writing task %s", funit->name );         break;
-    default                :
-      snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  Unknown functional unit type %d", funit->type );
-      print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      exit( 1 );
-      break;
-  }
-  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    switch( funit->type ) {
+      case FUNIT_MODULE      :  snprintf( user_msg, USER_MSG_LENGTH, "Writing module %s", funit->name );       break;
+      case FUNIT_NAMED_BLOCK :  snprintf( user_msg, USER_MSG_LENGTH, "Writing named block %s", funit->name );  break;
+      case FUNIT_FUNCTION    :  snprintf( user_msg, USER_MSG_LENGTH, "Writing function %s", funit->name );     break;
+      case FUNIT_TASK        :  snprintf( user_msg, USER_MSG_LENGTH, "Writing task %s", funit->name );         break;
+      default                :
+        snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  Unknown functional unit type %d", funit->type );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        exit( 1 );
+        break;
+    }
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
-  /* Calculate module name to display */
-  if( scope_local( funit->name ) || (inst == NULL) ) {
-    strcpy( modname, funit->name );
-  } else {
-    funit_inst* parent_inst = inst->parent;
-    strcpy( modname, inst->name );
-    while( parent_inst->funit->type != FUNIT_MODULE ) {
-      snprintf( tmp, 4096, "%s.%s", parent_inst->name, modname );
+    /* Calculate module name to display */
+    if( scope_local( funit->name ) || (inst == NULL) ) {
+      strcpy( modname, funit->name );
+    } else {
+      funit_inst* parent_inst = inst->parent;
+      strcpy( modname, inst->name );
+      while( parent_inst->funit->type != FUNIT_MODULE ) {
+        snprintf( tmp, 4096, "%s.%s", parent_inst->name, modname );
+        strcpy( modname, tmp );
+        parent_inst = parent_inst->parent;
+      }
+      snprintf( tmp, 4096, "%s.%s", parent_inst->funit->name, modname );
       strcpy( modname, tmp );
-      parent_inst = parent_inst->parent;
     }
-    snprintf( tmp, 4096, "%s.%s", parent_inst->funit->name, modname );
-    strcpy( modname, tmp );
-  }
 
-  fprintf( file, "%d %d %s %s %s %d %d\n",
-    DB_TYPE_FUNIT,
-    funit->type,
-    modname,
-    scope,
-    funit->filename,
-    funit->start_line,
-    funit->end_line
-  );
+    fprintf( file, "%d %d %s %s %s %d %d\n",
+      DB_TYPE_FUNIT,
+      funit->type,
+      modname,
+      scope,
+      funit->filename,
+      funit->start_line,
+      funit->end_line
+    );
 
-  /* Size all elements in this functional unit if we are in parse mode */
-  if( inst != NULL ) {
-    funit_size_elements( funit, inst );
-  }
+    /* Size all elements in this functional unit if we are in parse mode */
+    if( inst != NULL ) {
+      funit_size_elements( funit, inst );
+    }
   
-  /* Now print all expressions in functional unit */
-  curr_exp = funit->exp_head;
-  while( curr_exp != NULL ) {
-    expression_db_write( curr_exp->exp, file, (inst != NULL) );
-    curr_exp = curr_exp->next;
-  }
-
-  /* Now print all expressions within generated statements in functional unit */
-  if( inst != NULL ) {
-    curr_gi = inst->gitem_head;
-    while( curr_gi != NULL ) {
-      gen_item_db_write_expr_tree( curr_gi->gi, file );
-      curr_gi = curr_gi->next;
+    /* Now print all expressions in functional unit */
+    curr_exp = funit->exp_head;
+    while( curr_exp != NULL ) {
+      expression_db_write( curr_exp->exp, file, (inst != NULL) );
+      curr_exp = curr_exp->next;
     }
-  }
 
-  /* Now print all parameters in functional unit */
-  if( inst != NULL ) {
-    curr_parm = inst->param_head;
-    while( curr_parm != NULL ) {
-      param_db_write( curr_parm, file, (inst != NULL) );
-      curr_parm = curr_parm->next;
+    /* Now print all expressions within generated statements in functional unit */
+    if( inst != NULL ) {
+      curr_gi = inst->gitem_head;
+      while( curr_gi != NULL ) {
+        gen_item_db_write_expr_tree( curr_gi->gi, file );
+        curr_gi = curr_gi->next;
+      }
     }
-  }
 
-  /* Now print all signals in functional unit */
-  curr_sig = funit->sig_head;
-  while( curr_sig != NULL ) {
-    vsignal_db_write( curr_sig->sig, file );
-    curr_sig = curr_sig->next; 
-  }
-
-  /* Now print any generated signals in the current instance */
-  if( inst != NULL ) {
-    curr_gi = inst->gitem_head;
-    while( curr_gi != NULL ) {
-      gen_item_db_write( curr_gi->gi, GI_TYPE_SIG, file );
-      curr_gi = curr_gi->next;
+    /* Now print all parameters in functional unit */
+    if( inst != NULL ) {
+      curr_parm = inst->param_head;
+      while( curr_parm != NULL ) {
+        param_db_write( curr_parm, file, (inst != NULL) );
+        curr_parm = curr_parm->next;
+      }
     }
-  }
 
-  /* Now print all statements in functional unit */
-  if( report_save ) {
-    stmt_iter_reset( &curr_stmt, funit->stmt_tail );
-  } else {
-    stmt_iter_reset( &curr_stmt, funit->stmt_head );
-  }
-  while( curr_stmt.curr != NULL ) {
-    statement_db_write( curr_stmt.curr->stmt, file, (inst != NULL) );
-    stmt_iter_next( &curr_stmt );
-  }
-
-  /* Now print any generated statements in the current instance */
-  if( inst != NULL ) {
-    curr_gi = inst->gitem_head;
-    while( curr_gi != NULL ) {
-      gen_item_db_write( curr_gi->gi, GI_TYPE_STMT, file );
-      curr_gi = curr_gi->next;
+    /* Now print all signals in functional unit */
+    curr_sig = funit->sig_head;
+    while( curr_sig != NULL ) {
+      vsignal_db_write( curr_sig->sig, file );
+      curr_sig = curr_sig->next; 
     }
-  }
 
-  /* Now print all FSM structures in functional unit */
-  curr_fsm = funit->fsm_head;
-  while( curr_fsm != NULL ) {
-    fsm_db_write( curr_fsm->table, file, (inst != NULL) );
-    curr_fsm = curr_fsm->next;
-  }
-
-  /* Now print all race condition block structures in functional unit (if we are a module) */
-  if( funit->type == FUNIT_MODULE ) {
-    curr_race = funit->race_head;
-    while( curr_race != NULL ) {
-      race_db_write( curr_race, file );
-      curr_race = curr_race->next;
+    /* Now print any generated signals in the current instance */
+    if( inst != NULL ) {
+      curr_gi = inst->gitem_head;
+      while( curr_gi != NULL ) {
+        gen_item_db_write( curr_gi->gi, GI_TYPE_SIG, file );
+        curr_gi = curr_gi->next;
+      }
     }
+
+    /* Now print all statements in functional unit */
+    if( report_save ) {
+      stmt_iter_reset( &curr_stmt, funit->stmt_tail );
+    } else {
+      stmt_iter_reset( &curr_stmt, funit->stmt_head );
+    }
+    while( curr_stmt.curr != NULL ) {
+      statement_db_write( curr_stmt.curr->stmt, file, (inst != NULL) );
+      stmt_iter_next( &curr_stmt );
+    }
+
+    /* Now print any generated statements in the current instance */
+    if( inst != NULL ) {
+      curr_gi = inst->gitem_head;
+      while( curr_gi != NULL ) {
+        gen_item_db_write( curr_gi->gi, GI_TYPE_STMT, file );
+        curr_gi = curr_gi->next;
+      }
+    }
+
+    /* Now print all FSM structures in functional unit */
+    curr_fsm = funit->fsm_head;
+    while( curr_fsm != NULL ) {
+      fsm_db_write( curr_fsm->table, file, (inst != NULL) );
+      curr_fsm = curr_fsm->next;
+    }
+
+    /* Now print all race condition block structures in functional unit (if we are a module) */
+    if( funit->type == FUNIT_MODULE ) {
+      curr_race = funit->race_head;
+      while( curr_race != NULL ) {
+        race_db_write( curr_race, file );
+        curr_race = curr_race->next;
+      }
+    }
+
   }
 
   return( retval );
@@ -1003,6 +1007,10 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.31  2006/07/28 22:42:51  phase1geo
+ Updates to support expression/signal binding for expressions within a generate
+ block statement block.
+
  Revision 1.30  2006/07/28 16:30:53  phase1geo
  Fixing one last regression error.  We are now ready to make a tag.
 

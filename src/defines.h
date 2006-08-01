@@ -246,6 +246,9 @@
 /*! Represents a Verilog task (syntax "task <name> ... endtask") */
 #define FUNIT_TASK           3
 
+/*! Represents a scope that is considered a "no score" functional unit */
+#define FUNIT_NO_SCORE       4
+
 /*! The number of valid functional unit types */
 #define FUNIT_TYPES          4
 
@@ -1983,6 +1986,10 @@ struct gitem_link_s {
 
 /*
  $Log$
+ Revision 1.213  2006/07/29 20:53:43  phase1geo
+ Fixing some code related to generate statements; however, generate8.1 is still
+ not completely working at this point.  Full regression passes for IV.
+
  Revision 1.212  2006/07/27 18:02:22  phase1geo
  More diagnostic additions and upgraded the generate item display functionality
  for better debugging using this feature.  We are about to forge into some new
