@@ -577,6 +577,9 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
     }
 #endif
 
+    /* Specify that this generate item has been resolved */
+    gi->suppl.part.resolved = 1;
+
     switch( gi->suppl.part.type ) {
   
       case GI_TYPE_EXPR :
@@ -730,6 +733,11 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.23  2006/07/30 04:30:50  phase1geo
+ Adding generate8.2 diagnostic which uses nested generate loops.  The problem
+ with Covered with this diagnostic is not in the nested for loops but rather it
+ currently does not bind generate variables with TFN generate items.
+
  Revision 1.22  2006/07/29 20:53:43  phase1geo
  Fixing some code related to generate statements; however, generate8.1 is still
  not completely working at this point.  Full regression passes for IV.
