@@ -22,6 +22,7 @@ generate
 endgenerate
 
 initial begin
+	y = 1'b0;
 	y = foo_func( 1'b0 );
 end
 

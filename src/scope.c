@@ -53,35 +53,35 @@ func_unit* scope_find_funit_from_scope( char* scope, func_unit* curr_funit ) {
   funit_inst* funiti = NULL;  /* Pointer to functional unit instance found */
   func_unit*  funit;          /* Pointer to parent functional unit */
   int         ignore = 0;     /* Used for functional unit instance search */
-  char        tscope1[4096];  /* Temporary scope value */
-  char        tscope2[4096];  /* Temporary scope value */
+  char        tscope[4096];   /* Temporary scope value */
 
   assert( curr_funit != NULL );
 
   /* Get current instance */
-  curr_inst = instance_find_by_funit( instance_root, curr_funit, &ignore );
-  assert( curr_inst != NULL );
+  if( (curr_inst = instance_find_by_funit( instance_root, curr_funit, &ignore )) != NULL ) {
 
-  /* First check scope based on a relative path */
-  snprintf( tscope1, 4096, "%s.%s", curr_inst->name, scope );
-  funiti = instance_find_scope( curr_inst, tscope1 );
+    /* First check scope based on a relative path */
+    snprintf( tscope, 4096, "%s.%s", curr_inst->name, scope );
+    funiti = instance_find_scope( curr_inst, tscope );
 
-  /*
-   If we still did not find the functional unit, iterate up the scope tree looking for a module
-   that matches.
-  */
-  if( funiti == NULL ) {
-    do {
-      if( curr_inst->parent == NULL ) {
-        strcpy( tscope1, scope );
-        funiti = instance_find_scope( curr_inst, tscope1 );
-        curr_inst = curr_inst->parent;
-      } else {
-        curr_inst = curr_inst->parent;
-        snprintf( tscope1, 4096, "%s.%s", curr_inst->name, scope );
-        funiti = instance_find_scope( curr_inst, tscope1 );
-      }
-    } while( (curr_inst != NULL) && (funiti == NULL) );
+    /*
+     If we still did not find the functional unit, iterate up the scope tree looking for a module
+     that matches.
+    */
+    if( funiti == NULL ) {
+      do {
+        if( curr_inst->parent == NULL ) {
+          strcpy( tscope, scope );
+          funiti = instance_find_scope( curr_inst, tscope );
+          curr_inst = curr_inst->parent;
+        } else {
+          curr_inst = curr_inst->parent;
+          snprintf( tscope, 4096, "%s.%s", curr_inst->name, scope );
+          funiti = instance_find_scope( curr_inst, tscope );
+        }
+      } while( (curr_inst != NULL) && (funiti == NULL) );
+    }
+
   }
 
   return( (funiti == NULL) ? NULL : funiti->funit );
@@ -321,6 +321,10 @@ func_unit* scope_get_parent_module( char* scope ) {
 
 /*
  $Log$
+ Revision 1.24  2006/08/01 04:38:20  phase1geo
+ Fixing issues with binding to non-module scope and not binding references
+ that reference a "no score" module.  Full regression passes.
+
  Revision 1.23  2006/07/31 22:11:07  phase1geo
  Fixing bug with generated tasks.  Added diagnostic to test generate functions
  (this is currently failing with a binding issue).
