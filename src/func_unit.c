@@ -293,6 +293,7 @@ void funit_size_elements( func_unit* funit, funit_inst* inst ) {
   fsm_link*   curr_fsm;         /* Pointer to current FSM structure to evaluate */
   gitem_link* curr_gi;          /* Pointer to current generate item link to evaluate */
   bool        resolve = FALSE;  /* If set to TRUE, perform one more parameter resolution */
+  bool        bind    = FALSE;  /* If set to TRUE, perform a binding */
   
   assert( funit != NULL );
   assert( inst != NULL );
@@ -320,9 +321,25 @@ void funit_size_elements( func_unit* funit, funit_inst* inst ) {
   if( resolve ) {
     param_resolve( inst );
   }
+
+  /*
+   Second, traverse through any BIND generate items and resolve them immediately
+  */
+  curr_gi = inst->gitem_head;
+  while( curr_gi != NULL ) {
+    if( gen_item_bind( curr_gi->gi, inst->funit ) ) {
+      bind = TRUE;
+    }
+    curr_gi = curr_gi->next;
+  }
+
+  /* If we need to bind, do so now */
+  if( bind ) {
+    bind_perform( FALSE, 1 );
+  }
   
   /* 
-   Second, traverse through current instance's instance parameter list and
+   Third, traverse through current instance's instance parameter list and
    set sizes of signals and expressions.
   */
   curr_iparm = inst->param_head;
@@ -344,7 +361,7 @@ void funit_size_elements( func_unit* funit, funit_inst* inst ) {
   }
 
   /*
-   Second, traverse all expressions and set expressions to specified
+   Fourth, traverse all expressions and set expressions to specified
    signals.  Makes the assumption that all children expressions come
    before the root expression in the list (this is currently the case).
   */
@@ -361,7 +378,7 @@ void funit_size_elements( func_unit* funit, funit_inst* inst ) {
     curr_exp = curr_exp->next;
   }
 
-  /* Third, traverse all generate items and resize all expressions. */
+  /* Fifth, traverse all generate items and resize all expressions. */
   curr_gi = inst->gitem_head;
   while( curr_gi != NULL ) {
     gen_item_resize_statements( curr_gi->gi );
@@ -369,7 +386,7 @@ void funit_size_elements( func_unit* funit, funit_inst* inst ) {
   }
 
   /*
-   Fourth, size all FSMs.  Since the FSM structure is reliant on the size
+   Last, size all FSMs.  Since the FSM structure is reliant on the size
    of the state variable signal to which it is attached, its tables
    cannot be created until the state variable size can be calculated.
    Since this has been done now, size the FSMs.
@@ -1015,6 +1032,11 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.33  2006/08/01 18:05:13  phase1geo
+ Adding more diagnostics to test generate item structure connectivity.  Fixing
+ bug in funit_find_signal function to search the function (instead of the instance
+ for for finding a signal to bind).
+
  Revision 1.32  2006/08/01 04:38:20  phase1geo
  Fixing issues with binding to non-module scope and not binding references
  that reference a "no score" module.  Full regression passes.

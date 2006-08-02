@@ -1123,12 +1123,21 @@ expression* db_create_expression( expression* right, expression* left, int op, b
   /* Add expression and signal to binding list */
   if( sig_name != NULL ) {
 
-    switch( op ) {
-      case EXP_OP_FUNC_CALL :  bind_add( FUNIT_FUNCTION,    sig_name, expr, curr_funit );  break;
-      case EXP_OP_TASK_CALL :  bind_add( FUNIT_TASK,        sig_name, expr, curr_funit );  break;
-      case EXP_OP_NB_CALL   :  bind_add( FUNIT_NAMED_BLOCK, sig_name, expr, curr_funit );  break;
-      case EXP_OP_DISABLE   :  bind_add( 1,                 sig_name, expr, curr_funit );  break;
-      default               :  bind_add( 0,                 sig_name, expr, curr_funit );  break;
+    if( gen_item_varname_contains_genvar( sig_name ) ) {
+      last_gi = gen_item_create_bind( sig_name, expr );
+      if( curr_gi_block != NULL ) {
+        db_gen_item_connect( curr_gi_block, last_gi );
+      } else {
+        curr_gi_block = last_gi;
+      }
+    } else {
+      switch( op ) {
+        case EXP_OP_FUNC_CALL :  bind_add( FUNIT_FUNCTION,    sig_name, expr, curr_funit );  break;
+        case EXP_OP_TASK_CALL :  bind_add( FUNIT_TASK,        sig_name, expr, curr_funit );  break;
+        case EXP_OP_NB_CALL   :  bind_add( FUNIT_NAMED_BLOCK, sig_name, expr, curr_funit );  break;
+        case EXP_OP_DISABLE   :  bind_add( 1,                 sig_name, expr, curr_funit );  break;
+        default               :  bind_add( 0,                 sig_name, expr, curr_funit );  break;
+      }
     }
 
   }
@@ -1950,6 +1959,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.205  2006/08/01 04:38:20  phase1geo
+ Fixing issues with binding to non-module scope and not binding references
+ that reference a "no score" module.  Full regression passes.
+
  Revision 1.204  2006/07/31 22:11:07  phase1geo
  Fixing bug with generated tasks.  Added diagnostic to test generate functions
  (this is currently failing with a binding issue).

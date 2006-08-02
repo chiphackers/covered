@@ -113,7 +113,7 @@ bool parse_design( char* top, char* output_db ) {
 #endif
 
     /* Perform all signal/expression binding */
-    bind_perform( FALSE );
+    bind_perform( FALSE, 0 );
     fsm_var_bind();
   
     /* Perform race condition checking */
@@ -185,7 +185,7 @@ bool parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) {
   }
   
   /* Bind expressions to signals/functional units */
-  bind_perform( TRUE );
+  bind_perform( TRUE, 0 );
 
   /* Add static values to simulator */
   sim_add_statics();
@@ -225,6 +225,9 @@ bool parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) {
 
 /*
  $Log$
+ Revision 1.41  2006/06/27 19:34:43  phase1geo
+ Permanent fix for the CDD save feature.
+
  Revision 1.40  2006/04/14 17:05:13  phase1geo
  Reorganizing info line to make it more succinct and easier for future needs.
  Fixed problems with VPI library with recent merge changes.  Regression has

@@ -17,6 +17,7 @@
 #include "param.h"
 #include "link.h"
 #include "func_unit.h"
+#include "vector.h"
 
 
 extern funit_inst* instance_root;
@@ -61,6 +62,9 @@ void gen_item_stringify( gen_item* gi, char* str, int str_len ) {
       case GI_TYPE_TFN :
         snprintf( tmp, str_len, ", TFN, name: %s, type: %d", gi->elem.inst->name, gi->elem.inst->funit->type );
         break;
+      case GI_TYPE_BIND :
+        snprintf( tmp, str_len, ", BIND, %s", expression_string( gi->elem.expr ) );
+        break;
       default :
         strcpy( tmp, "UNKNOWN!\n" );
         break;
@@ -70,8 +74,8 @@ void gen_item_stringify( gen_item* gi, char* str, int str_len ) {
     snprintf( tmp, str_len, ", next_true: %p, next_false: %p", gi->next_true, gi->next_false );
     strcat( str, tmp );
 
-    if( gi->genvar != NULL ) {
-      snprintf( tmp, str_len, ", genvar: %s", gi->genvar->name );
+    if( gi->varname != NULL ) {
+      snprintf( tmp, str_len, ", varname: %s", gi->varname );
       strcat( str, tmp );
     }
 
@@ -121,12 +125,12 @@ void gen_item_display_block_helper( gen_item* root ) {
 
     } else {
 
-      if( root->suppl.part.stop_false == 0 ) {
-        gen_item_display_block_helper( root->next_false );
-      }
-
       if( root->suppl.part.stop_true == 0 ) {
         gen_item_display_block_helper( root->next_true );
+      }
+
+      if( root->suppl.part.stop_false == 0 ) {
+        gen_item_display_block_helper( root->next_false );
       }
 
     }
@@ -167,6 +171,8 @@ bool gen_item_compare( gen_item* gi1, gen_item* gi2 ) {
       case GI_TYPE_STMT :  retval = (gi1->elem.stmt->exp->id == gi2->elem.stmt->exp->id) ? TRUE : FALSE;  break;
       case GI_TYPE_INST :
       case GI_TYPE_TFN  :  retval = (strcmp( gi1->elem.inst->name, gi2->elem.inst->name ) == 0) ? TRUE : FALSE;  break;
+      case GI_TYPE_BIND :  retval = ((gi1->elem.expr->id == gi2->elem.expr->id) &&
+                                     (strcmp( gi1->varname, gi2->varname ) == 0)) ? TRUE : FALSE;  break;
       default           :  break;
     }
 
@@ -226,6 +232,158 @@ gen_item* gen_item_find( gen_item* root, gen_item* gi ) {
 }
 
 /*!
+ \param varname  Variable name to search 
+ \param pre      Reference pointer to string preceding the generate variable
+ \param genvar   Reference pointer to found generate variable name
+ \param post     Reference pointer to string succeeding the generate variable
+
+ Searches the given variable name for a generate variable.  If one is found, pre is
+ set to point to the string preceding the generate variable, genvar is set to point
+ to the beginning of the generate variable, and post is set to point to the string
+ succeeding the ']'.
+*/
+void gen_item_get_genvar( char* varname, char** pre, char** genvar, char** post ) { 
+
+  int i = 0;  /* Loop iterator */
+
+  /* Initialize pointers */
+  *pre    = varname;
+  *genvar = NULL;
+  *post   = NULL;
+
+  /* Iterate through the variable name until we either reach the end of the string or until we have found a genvar */
+  while( (varname[i] != '\0') && (*genvar == NULL) ) {
+
+    /* Iterate through the varname until we see either a \, [ or terminating character */
+    while( (varname[i] != '\\') && (varname[i] != '[') && (varname[i] != '\0') ) {
+      i++;
+    }
+ 
+    /* If we saw a \ character, keep going until we see whitespace */
+    if( varname[i] == '\\' ) {
+      while( (varname[i] != ' ') && (varname[i] != '\n') && (varname[i] != '\t') && (varname[i] != '\r') ) {
+        i++;
+      }
+
+    /* If we saw a [, get the genvar name, stripping all whitespace from the name */
+    } else if( varname[i] == '[' ) {
+
+      varname[i] = '\0';
+      i++;
+      while( (varname[i] == ' ') || (varname[i] == '\n') || (varname[i] == '\t') || (varname[i] == '\r') ) {
+        i++;
+      }
+      *genvar = (varname + i);
+      while( (varname[i] != ' ') && (varname[i] != '\n') && (varname[i] != '\t') && (varname[i] != '\r') && (varname[i] != ']') ) {
+        i++;
+      }
+      if( varname[i] != ']' ) {
+        varname[i] = '\0';
+        i++;
+        while( varname[i] != ']' ) {
+          i++;
+        }
+      } else {
+        varname[i] = '\0';
+      }
+      i++;
+      *post = (varname + i);
+
+    }
+
+  }
+
+}
+
+/*!
+ \param name  Variable name to check
+
+ \return Returns TRUE if the specified variable name contains a generate variable within it; otherwise,
+         returns FALSE.
+
+ This function is called by db_create_expression() just before it places its signal name in the binding
+ list.  If the specified signal name contains a generate variable, we need to create a generate item
+ binding element so that we can properly substitute the generate variable name with its current value.
+*/
+bool gen_item_varname_contains_genvar( char* name ) {
+
+  bool  retval = FALSE;  /* Return value for this function */
+  char* pre;             /* String prior to the generate variable */
+  char* genvar;          /* Generate variable */
+  char* post;            /* String after the generate variable */
+  char* tmpname;         /* Copy of the given name */
+
+  /* Allocate memory */
+  tmpname = strdup_safe( name, __FILE__, __LINE__ );
+  
+  /* Find the first generate variable */
+  gen_item_get_genvar( tmpname, &pre, &genvar, &post );
+
+  if( genvar != NULL ) {
+    retval = TRUE;
+  }
+
+  /* Deallocate memory */
+  free_safe( tmpname );
+
+  return( retval );
+
+}
+
+/*!
+ \param name   Name of signal that we possibly need to convert if it contains generate variable(s)
+ \param funit  Pointer to current functional unit
+
+ \return Returns allocated string containing the signal name with embedded generate variables evaluated
+
+ Iterates through the given name, substituting any found generate variables with their current value.
+*/
+char* gen_item_calc_signal_name( char* name, func_unit* funit ) {
+
+  char*      new_name = NULL;  /* Return value of this function */
+  char*      tmpname;          /* Temporary name of current part of variable */
+  char*      pre;              /* String prior to the generate variable */
+  char*      genvar;           /* Generate variable */
+  char*      post;             /* String after the generate variable */
+  vsignal*   gvar;             /* Pointer to found generate variable in the design */
+  func_unit* found_funit;      /* Pointer to functional unit containing the found generate variable */
+  char       intstr[20];       /* String containing an integer value */
+  char*      ptr;              /* Pointer to allocated memory for name */
+
+  /* Allocate memory */
+  tmpname  = strdup_safe( name, __FILE__, __LINE__ );
+  ptr      = tmpname;
+  new_name = strdup_safe( "", __FILE__, __LINE__ );
+
+  do {
+    gen_item_get_genvar( tmpname, &pre, &genvar, &post );
+    if( genvar != NULL ) {
+      if( !scope_find_signal( genvar, funit, &gvar, &found_funit, 0 ) ) {
+        snprintf( user_msg, USER_MSG_LENGTH, "Unable to find generate variable %s in module %s", genvar, funit->name );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        exit( 1 );
+      }
+      snprintf( intstr, 20, "%d", vector_to_int( gvar->value ) );
+      new_name = (char*)realloc( new_name, (strlen( new_name ) + strlen( pre ) + strlen( intstr ) + 3) );
+      strncat( new_name, pre, strlen( pre ) );
+      strncat( new_name, "[", 1 );
+      strncat( new_name, intstr, strlen( intstr ) );
+      strncat( new_name, "]", 1 );
+      tmpname = post;
+    } else {
+      new_name = (char*)realloc( new_name, (strlen( new_name ) + strlen( pre ) + 1) );
+      strncat( new_name, pre, strlen( pre ) );
+    }
+  } while( genvar != NULL );
+
+  /* Deallocate memory */
+  free_safe( ptr );
+
+  return( new_name );
+
+}
+
+/*!
  \param expr  Pointer to root expression to create (this is an expression from a FOR, IF or CASE statement)
 
  \return Returns a pointer to created generate item.
@@ -241,7 +399,7 @@ gen_item* gen_item_create_expr( expression* expr ) {
   gi->elem.expr       = expr;
   gi->suppl.all       = 0;
   gi->suppl.part.type = GI_TYPE_EXPR;
-  gi->genvar          = NULL;
+  gi->varname         = NULL;
   gi->next_true       = NULL;
   gi->next_false      = NULL;
 
@@ -274,7 +432,7 @@ gen_item* gen_item_create_sig( vsignal* sig ) {
   gi->elem.sig        = sig;
   gi->suppl.all       = 0;
   gi->suppl.part.type = GI_TYPE_SIG;
-  gi->genvar          = NULL;
+  gi->varname         = NULL;
   gi->next_true       = NULL;
   gi->next_false      = NULL;
 
@@ -307,7 +465,7 @@ gen_item* gen_item_create_stmt( statement* stmt ) {
   gi->elem.stmt       = stmt;
   gi->suppl.all       = 0;
   gi->suppl.part.type = GI_TYPE_STMT;
-  gi->genvar          = NULL;
+  gi->varname         = NULL;
   gi->next_true       = NULL;
   gi->next_false      = NULL;
 
@@ -340,7 +498,7 @@ gen_item* gen_item_create_inst( funit_inst* inst ) {
   gi->elem.inst       = inst;
   gi->suppl.all       = 0;
   gi->suppl.part.type = GI_TYPE_INST;
-  gi->genvar          = NULL;
+  gi->varname         = NULL;
   gi->next_true       = NULL;
   gi->next_false      = NULL;
 
@@ -373,7 +531,7 @@ gen_item* gen_item_create_tfn( funit_inst* inst ) {
   gi->elem.inst       = inst;
   gi->suppl.all       = 0;
   gi->suppl.part.type = GI_TYPE_TFN;
-  gi->genvar          = NULL;
+  gi->varname         = NULL;
   gi->next_true       = NULL;
   gi->next_false      = NULL;
 
@@ -382,6 +540,39 @@ gen_item* gen_item_create_tfn( funit_inst* inst ) {
     char str[USER_MSG_LENGTH];
     gen_item_stringify( gi, str, USER_MSG_LENGTH );
     snprintf( user_msg, USER_MSG_LENGTH, "In gen_item_create_tfn, %s", str );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  }
+#endif
+
+  return( gi );
+
+}
+
+/*!
+ \param inst  Pointer to namespace to create a generate item for (named blocks, functions or tasks)
+
+ \return Returns a pointer to create generate item.
+
+ Create a new generate item for a namespace.
+*/
+gen_item* gen_item_create_bind( char* name, expression* expr ) {
+
+  gen_item* gi;
+
+  /* Create the generate item for a namespace */
+  gi = (gen_item*)malloc_safe( sizeof( gen_item ), __FILE__, __LINE__ );
+  gi->elem.expr       = expr;
+  gi->suppl.all       = 0;
+  gi->suppl.part.type = GI_TYPE_BIND;
+  gi->varname         = strdup_safe( name, __FILE__, __LINE__ );
+  gi->next_true       = NULL;
+  gi->next_false      = NULL;
+
+#ifdef DEBUG_MODE
+  if( debug_mode ) {
+    char str[USER_MSG_LENGTH];
+    gen_item_stringify( gi, str, USER_MSG_LENGTH );
+    snprintf( user_msg, USER_MSG_LENGTH, "In gen_item_create_bind, %s", str );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
   }
 #endif
@@ -546,7 +737,7 @@ bool gen_item_connect( gen_item* gi1, gen_item* gi2, int conn_id ) {
       retval = TRUE;
     } else if( gi1->next_true->suppl.part.conn_id == conn_id ) {
       gi1->suppl.part.stop_true = 1;
-    } else if( (gi1->next_true != gi2) && ((gi1->suppl.part.type != GI_TYPE_TFN) || (gi1->genvar == NULL)) ) {
+    } else if( (gi1->next_true != gi2) && ((gi1->suppl.part.type != GI_TYPE_TFN) || (gi1->varname == NULL)) ) {
       retval |= gen_item_connect( gi1->next_true, gi2, conn_id );
     }
 
@@ -557,14 +748,19 @@ bool gen_item_connect( gen_item* gi1, gen_item* gi2, int conn_id ) {
 }
 
 /*!
- \param gi    Pointer to current generate item to resolve
- \param inst  Pointer to instance to store results to
- \param add   If set to TRUE, adds the current generate item to the functional unit pointed to be inst
+ \param gi             Pointer to current generate item to resolve
+ \param inst           Pointer to instance to store results to
+ \param add            If set to TRUE, adds the current generate item to the functional unit pointed to be inst
+
+ Recursively iterates through the entire generate block specified by gi, resolving all generate items
+ within it.  This is called by the generate_resolve function (in the middle of the binding process) and
+ by the funit_size_elements function (just prior to outputting this instance to the CDD file).
 */
 void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
 
-  funit_inst* child;   /* Pointer to child instance of this instance to resolve */
-  func_unit*  parent;  /* Pointer to parent functional unit of the current instance */
+  funit_inst* child;    /* Pointer to child instance of this instance to resolve */
+  func_unit*  parent;   /* Pointer to parent functional unit of the current instance */
+  char*       varname;  /* Pointer to new, substituted name (used for BIND types) */
 
   if( gi != NULL ) {
 
@@ -611,13 +807,20 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
         break;
 
       case GI_TYPE_TFN :
-        if( gi->genvar != NULL ) {
-          char inst_name[4096];
-          snprintf( inst_name, 4096, "%s[%d]", gi->elem.inst->name, vector_to_int( gi->genvar->value ) );
+        if( gi->varname != NULL ) {
+          char       inst_name[4096];
+          vsignal*   genvar;
+          func_unit* found_funit;
+          if( !scope_find_signal( gi->varname, inst->funit, &genvar, &found_funit, 0 ) ) {
+            snprintf( user_msg, USER_MSG_LENGTH, "Unable to find variable %s in module %s", gi->varname, inst->funit->name );
+            print_output( user_msg, FATAL, __FILE__, __LINE__ );
+            exit( 1 );
+          }
+          snprintf( inst_name, 4096, "%s[%d]", gi->elem.inst->name, vector_to_int( genvar->value ) );
           instance_parse_add( &instance_root, inst->funit, gi->elem.inst->funit, inst_name, NULL, FALSE );
-          snprintf( inst_name, 4096, "%s.%s[%d]", inst->name, gi->elem.inst->name, vector_to_int( gi->genvar->value ) );
+          snprintf( inst_name, 4096, "%s.%s[%d]", inst->name, gi->elem.inst->name, vector_to_int( genvar->value ) );
           child = instance_find_scope( inst, inst_name );
-          inst_parm_add_genvar( gi->genvar, child );
+          inst_parm_add_genvar( genvar, child );
         } else {
           char inst_name[4096];
           instance_parse_add( &instance_root, inst->funit, gi->elem.inst->funit, gi->elem.inst->name, NULL, FALSE );
@@ -628,10 +831,17 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
         gen_item_resolve( gi->next_false, inst, FALSE );
         break;
 
+      case GI_TYPE_BIND :
+        varname = gen_item_calc_signal_name( gi->varname, inst->funit );
+        gitem_link_add( gen_item_create_bind( varname, gi->elem.expr ), &(inst->gitem_head), &(inst->gitem_tail) );
+        free_safe( varname ); 
+        gen_item_resolve( gi->next_true, inst, FALSE );
+        break;
+
       default :
         assert( (gi->suppl.part.type == GI_TYPE_EXPR) || (gi->suppl.part.type == GI_TYPE_SIG) ||
                 (gi->suppl.part.type == GI_TYPE_STMT) || (gi->suppl.part.type == GI_TYPE_INST) ||
-                (gi->suppl.part.type == GI_TYPE_TFN) );
+                (gi->suppl.part.type == GI_TYPE_TFN)  || (gi->suppl.part.type == GI_TYPE_BIND) );
         break;
 
     }
@@ -657,6 +867,34 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
 }
 
 /*!
+ \param gi     Pointer to generate item to examine
+ \param funit  Pointer to functional unit containing this generate item
+
+ \return Returns TRUE if binding occurs
+*/
+bool gen_item_bind( gen_item* gi, func_unit* funit ) {
+
+  bool retval = FALSE;  /* Return value for this function */
+
+  if( gi->suppl.part.type == GI_TYPE_BIND ) {
+
+    switch( gi->elem.expr->op ) {
+      case EXP_OP_FUNC_CALL :  bind_add( FUNIT_FUNCTION,    gi->varname, gi->elem.expr, funit );  break;
+      case EXP_OP_TASK_CALL :  bind_add( FUNIT_TASK,        gi->varname, gi->elem.expr, funit );  break;
+      case EXP_OP_NB_CALL   :  bind_add( FUNIT_NAMED_BLOCK, gi->varname, gi->elem.expr, funit );  break;
+      case EXP_OP_DISABLE   :  bind_add( 1,                 gi->varname, gi->elem.expr, funit );  break;
+      default               :  bind_add( 0,                 gi->varname, gi->elem.expr, funit );  break;
+    }
+
+    retval = TRUE;
+
+  }
+
+  return( retval );
+
+}
+
+/*!
  \param root  Pointer to current instance in instance tree to resolve for
 
  Recursively resolves all generate items in the design.  This is called at a specific point
@@ -668,6 +906,8 @@ void generate_resolve( funit_inst* root ) {
   funit_inst* curr_child;  /* Pointer to current child to resolve for */
 
   if( root != NULL ) {
+
+    // gitem_link_display( root->funit->gitem_head );
 
     /* Resolve ourself */
     curr_gi = root->funit->gitem_head;
@@ -714,11 +954,23 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
     /* If we need to remove the current element, do so now */
     if( rm_elem ) {
       switch( gi->suppl.part.type ) {
-        case GI_TYPE_EXPR :  expression_dealloc( gi->elem.expr, FALSE );    break;
-        case GI_TYPE_SIG  :  vsignal_dealloc( gi->elem.sig );               break;
-        case GI_TYPE_STMT :  statement_dealloc_recursive( gi->elem.stmt );  break;
+        case GI_TYPE_EXPR :
+          expression_dealloc( gi->elem.expr, FALSE );
+          break;
+        case GI_TYPE_SIG  :
+          vsignal_dealloc( gi->elem.sig );
+          break;
+        case GI_TYPE_STMT :
+          statement_dealloc_recursive( gi->elem.stmt );
+          break;
         case GI_TYPE_INST :
-        case GI_TYPE_TFN  :  instance_dealloc_tree( gi->elem.inst );        break;
+        case GI_TYPE_TFN  :
+          instance_dealloc_tree( gi->elem.inst );
+          free_safe( gi->varname );
+          break;
+        case GI_TYPE_BIND :
+          free_safe( gi->varname );
+          break;
         default           :  break;
       }
     }
@@ -733,6 +985,11 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.24  2006/08/01 18:05:13  phase1geo
+ Adding more diagnostics to test generate item structure connectivity.  Fixing
+ bug in funit_find_signal function to search the function (instead of the instance
+ for for finding a signal to bind).
+
  Revision 1.23  2006/07/30 04:30:50  phase1geo
  Adding generate8.2 diagnostic which uses nested generate loops.  The problem
  with Covered with this diagnostic is not in the nested for loops but rather it

@@ -653,7 +653,7 @@ bool report_read_cdd_and_ready( char* ifile, int read_mode ) {
   } else {
 
     if( (retval = db_read( ifile, read_mode )) ) {
-      bind_perform( TRUE );
+      bind_perform( TRUE, 0 );
       report_gather_funit_stats( funit_head );
     }
 
@@ -732,7 +732,7 @@ int command_report( int argc, int last_arg, char** argv ) {
         if( db_read( input_db, (report_instance ? READ_MODE_REPORT_NO_MERGE : READ_MODE_REPORT_MOD_MERGE) ) ) {
 
           /* Perform binding */
-          bind_perform( TRUE );
+          bind_perform( TRUE, 0 );
 
           /* Open output stream */
           if( output_file != NULL ) {
@@ -831,6 +831,9 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.67  2006/06/27 19:34:43  phase1geo
+ Permanent fix for the CDD save feature.
+
  Revision 1.66  2006/06/20 22:14:32  phase1geo
  Adding support for saving CDD files (needed for file merging and saving exclusion
  information for a CDD file) in the GUI.  Still have a bit to go as I am getting core

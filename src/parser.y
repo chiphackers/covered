@@ -2065,7 +2065,7 @@ generate_item
         block_depth++;
         /* Create first statement */
         expr  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @4.first_line, @4.first_column, (@4.last_column - 1), $4 );
-        save_gi_tail->gi->genvar = db_find_signal( $4 );
+        save_gi_tail->gi->varname = strdup_safe( $4, __FILE__, __LINE__ );
         free_safe( $4 );
         expr2 = db_create_expr_from_static( $6, @6.first_line, @6.first_column, (@6.last_column - 1) );
         expr  = db_create_expression( expr2, expr, EXP_OP_BASSIGN, FALSE, @4.first_line, @4.first_column, (@6.last_column - 1), NULL );

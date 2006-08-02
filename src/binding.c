@@ -814,13 +814,14 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
 
 /*!
  \param cdd_reading  Set to TRUE if we are binding after reading the CDD file; otherwise, set to FALSE.
+ \param pass         Specifies the starting pass to perform (setting this to 1 will bypass resolutions).
 
  In the process of binding, we go through each element of the binding list,
  finding the signal to be bound in the specified tree, adding the expression
  to the signal's expression pointer list, and setting the expression vector pointer
  to point to the signal vector.
 */
-void bind_perform( bool cdd_reading ) {
+void bind_perform( bool cdd_reading, int pass ) {
   
   funit_inst* funiti;        /* Pointer to found functional unit instance */
   exp_bind*   curr_eb;       /* Pointer to current expression binding */
@@ -836,10 +837,9 @@ void bind_perform( bool cdd_reading ) {
   bool        bound;         /* Specifies if the current expression was successfully bound or not */
   statement*  tmp_stmt;      /* Pointer to temporary statement */
   exp_link*   tmp_expl;      /* Pointer to current expression link in signal's expression list */
-  int         pass;          /* Loop iterator */
     
   /* Make three passes through binding list, 0=local signal/param bindings, 1=remote signal/param bindings */
-  for( pass=0; pass<2; pass++ ) {
+  for( ; pass<2; pass++ ) {
 
     curr_eb = eb_head;
     while( curr_eb != NULL ) {
@@ -987,6 +987,10 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.85  2006/08/01 04:38:20  phase1geo
+ Fixing issues with binding to non-module scope and not binding references
+ that reference a "no score" module.  Full regression passes.
+
  Revision 1.84  2006/07/31 22:11:07  phase1geo
  Fixing bug with generated tasks.  Added diagnostic to test generate functions
  (this is currently failing with a binding issue).

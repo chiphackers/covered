@@ -10,14 +10,14 @@ generate
   for( i=0; i<4; i=i+1 )
     begin : V
       initial begin
-              U[i].x = 2'b0;
-              U[i].x = i;
+              U[ i ].x = 2'b0;
+              U[ i ].x = i;
       end
     end
 endgenerate
 
 initial begin
-        $dumpfile( "generate11.vcd" );
+        $dumpfile( "generate11.1.vcd" );
         $dumpvars( 0, main );
         #10;
         $finish;

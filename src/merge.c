@@ -170,7 +170,7 @@ int command_merge( int argc, int last_arg, char** argv ) {
     snprintf( user_msg, USER_MSG_LENGTH, "Reading CDD file \"%s\"", merge_in[0] );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
     db_read( merge_in[0], READ_MODE_MERGE_NO_MERGE );
-    bind_perform( TRUE );
+    bind_perform( TRUE, 0 );
     sim_add_statics();
 
     /* Read in databases to merge */
@@ -203,6 +203,9 @@ int command_merge( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.26  2006/06/27 19:34:43  phase1geo
+ Permanent fix for the CDD save feature.
+
  Revision 1.25  2006/04/12 21:22:51  phase1geo
  Fixing problems with multi-file merging.  This now seems to be working
  as needed.  We just need to document this new feature.

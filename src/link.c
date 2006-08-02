@@ -383,7 +383,7 @@ void gitem_link_display( gitem_link* head ) {
 
   curr = head;
   while( curr != NULL ) {
-    gen_item_display( curr->gi );
+    gen_item_display_block( curr->gi );
     curr = curr->next;
   }
 
@@ -947,6 +947,10 @@ void gitem_link_delete_list( gitem_link* head, bool rm_elems ) {
 
 /*
  $Log$
+ Revision 1.51  2006/07/29 20:53:43  phase1geo
+ Fixing some code related to generate statements; however, generate8.1 is still
+ not completely working at this point.  Full regression passes for IV.
+
  Revision 1.50  2006/07/21 05:47:42  phase1geo
  More code additions for generate functionality.  At this point, we seem to
  be creating proper generate item blocks and are creating the generate loop

@@ -301,7 +301,7 @@ WSPACE [ \t\b\f]+
 <UDPTABLE>[01\?\*\-] { yylloc.last_column += strlen( yytext );  return yytext[0]; }
 
   /* Keyword and signal identifiers */
-[a-zA-Z_][a-zA-Z0-9$_]*(\[[a-zA-Z0-9$_]+\]\.[a-zA-Z_][a-zA-Z0-9$_]*)* {
+[a-zA-Z_][a-zA-Z0-9$_]*(\[{WSPACE}*[a-zA-Z0-9$_]+{WSPACE}*\]\.[a-zA-Z_][a-zA-Z0-9$_]*)* {
      str_link* foundmod;
      int       rc   = lexer_keyword_1995_code( yytext, yyleng );
      if( (rc == IDENTIFIER) && parser_check_generation( GENERATION_2001 ) ) {
