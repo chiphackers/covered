@@ -38,7 +38,7 @@ stmt_link* rm_stmt_head    = NULL;
 stmt_link* rm_stmt_tail    = NULL;
 
 /*! Array containing statement IDs that have been listed for removal */
-int*       rm_stmt_ids;
+int*       rm_stmt_ids     = NULL;
 
 /*! Size indicator of rm_stmt_ids array */
 int        rm_stmt_id_size = 0;
@@ -123,12 +123,18 @@ void stmt_blk_remove() {
 
   /* Now deallocate the entire rm_stmt_ids array */
   free_safe( rm_stmt_ids );
+  rm_stmt_ids     = NULL;
   rm_stmt_id_size = 0;
 
 }
 
 /*
  $Log$
+ Revision 1.3  2006/03/28 22:28:28  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.2  2005/11/29 19:04:48  phase1geo
  Adding tests to verify task functionality.  Updating failing tests and fixed
  bugs for context switch expressions at the end of a statement block, statement

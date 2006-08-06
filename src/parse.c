@@ -45,7 +45,7 @@ extern str_link* modlist_head;
 extern str_link* modlist_tail;
 extern char      user_msg[USER_MSG_LENGTH];
 extern isuppl    info_suppl;
-extern bool      flag_race_check;
+extern bool      flag_check_races;
 
 /*!
  \param file  Pointer to file to read
@@ -117,8 +117,10 @@ bool parse_design( char* top, char* output_db ) {
     fsm_var_bind();
   
     /* Perform race condition checking */
-    print_output( "\nChecking for race conditions...", NORMAL, __FILE__, __LINE__ );
-    race_check_modules();
+    if( flag_check_races ) {
+      print_output( "\nChecking for race conditions...", NORMAL, __FILE__, __LINE__ );
+      race_check_modules();
+    }
 
     /* Remove all statement blocks that cannot be considered for coverage */
     stmt_blk_remove();
@@ -225,6 +227,12 @@ bool parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) {
 
 /*
  $Log$
+ Revision 1.42  2006/08/02 22:28:32  phase1geo
+ Attempting to fix the bug pulled out by generate11.v.  We are just having an issue
+ with setting the assigned bit in a signal expression that contains a hierarchical reference
+ using a genvar reference.  Adding generate11.1 diagnostic to verify a slightly different
+ syntax style for the same code.  Note sure how badly I broke regression at this point.
+
  Revision 1.41  2006/06/27 19:34:43  phase1geo
  Permanent fix for the CDD save feature.
 

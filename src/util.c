@@ -451,6 +451,8 @@ void directory_load( char* dir, str_link* ext_head, str_link** file_head, str_li
           if( str_link_find( tmpfile, *file_head ) == NULL ) {
             str_link_add( tmpfile, file_head, file_tail );
             (*file_tail)->suppl = 0x1;
+          } else {
+            free_safe( tmpfile );
           }
         }
       }
@@ -1060,6 +1062,11 @@ const char* get_funit_type( int type ) {
 
 /*
  $Log$
+ Revision 1.49  2006/05/03 21:17:49  phase1geo
+ Finishing assertion source code viewer functionality.  We just need to add documentation
+ to the GUI user's guide and we should be set here (though we may want to consider doing
+ some syntax highlighting at some point).
+
  Revision 1.48  2006/04/18 21:59:54  phase1geo
  Adding support for environment variable substitution in configuration files passed
  to the score command.  Adding ovl.c/ovl.h files.  Working on support for assertion

@@ -58,6 +58,7 @@ char*     ppfilename             = NULL;                /*!< Name of preprocesso
 bool      instance_specified     = FALSE;               /*!< Specifies if -i option was specified */
 int       timestep_update        = 0;                   /*!< Specifies timestep increment to display current time */
 int       flag_race_check        = WARNING;             /*!< Specifies how race conditions should be handled */
+bool      flag_check_races       = TRUE;                /*!< Specifies if race condition checking should occur */
 bool      flag_display_sim_stats = FALSE;               /*!< Specifies if simulation performance information should be output */
 int       flag_global_generation = GENERATION_SV;       /*!< Specifies the supported global generation value */
 str_link* gen_mod_head           = NULL;                /*!< Pointer to the head of the generation module list */
@@ -119,10 +120,12 @@ void score_usage() {
   printf( "      -T min|typ|max               Specifies value to use in delay expressions of the form min:typ:max.\n" );
   printf( "      -ts <number>                 If design is being scored, specifying this option will output\n" );
   printf( "                                    the current timestep (by increments of <number>) to standard output.\n" );
-  printf( "      -r(S|W|E)                    Specifies action to take when race condition checking finds problems in design.\n" );
+  printf( "      -r(S|W|E|I)                  Specifies action to take when race condition checking finds problems in design.\n" );
   printf( "                                    (-rS = Silent.  Do not report condition was found, just handle it.\n" );
   printf( "                                     -rW = Warning.  Report race condition information, but just handle it.  Default.\n" );
   printf( "                                     -rE = Error.  Report race condition information and stop scoring.)\n" );
+  printf( "                                     -rI = Ignore.  Ignore all race condition errors, assuming there are no\n" );
+  printf( "                                           race conditions in the design.\n" );
   printf( "      -S                           Outputs simulation performance information after scoring has completed.  This\n" );
   printf( "                                    information is currently only useful for the developers of Covered.\n" );
   printf( "      -g (<module>=)[1|2|3]        Selects generation of Verilog syntax that the parser will handle.  If\n" );
@@ -612,10 +615,11 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
     } else if( strncmp( "-r", argv[i], 2 ) == 0 ) {
 
       switch( argv[i][2] ) {
-        case 'E'  :  flag_race_check = FATAL;    break;
-        case 'W'  :  flag_race_check = WARNING;  break;
+        case 'E'  :  flag_race_check  = FATAL;    break;
+        case 'W'  :  flag_race_check  = WARNING;  break;
+        case 'I'  :  flag_check_races = FALSE;
         case 'S'  :
-        case '\0' :  flag_race_check = NORMAL;   break;
+        case '\0' :  flag_race_check  = NORMAL;   break;
         default   :
           snprintf( user_msg, USER_MSG_LENGTH, "Unknown race condition value %c (available types are E, W or S)", argv[i][2] );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -806,6 +810,10 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.77  2006/07/14 18:53:32  phase1geo
+ Fixing -g option for keywords.  This seems to be working and I believe that
+ regressions are passing here as well.
+
  Revision 1.76  2006/07/13 22:24:57  phase1geo
  We are really broke at this time; however, more code has been added to support
  the -g score option.
