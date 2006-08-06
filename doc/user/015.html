@@ -277,13 +277,13 @@
 						expression. If <i>in_expr</i> is not specified, <i>out_expr</i> is 
 						used as both the input and output state expression. </td> </tr> 
 					<tr> 
-						<td> -r(S|W|E) </td> 
+						<td> -r(S|W|E|I) </td> 
 						<td>
 						Determines Covered's behavior for handling found race conditions 
 						in design (-rS = do not output information but continue scoring 
 						design, -rW = output information and continue scoring design, 
 						-rE = output information and immediately exit the scoring 
-						process). </td> </tr> 
+						process, -rI = skip the race condition check for all modules). </td> </tr> 
 					<tr> 
 						<td> -h </td> 
 						<td> Outputs usage information for the score command </td> </tr> 

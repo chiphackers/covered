@@ -237,7 +237,60 @@
     </TD>
   </TR>
 
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header2">4.4&nbsp; <A name="4_3"></A>Skipping Race Condition Checking</P>
+    </TD>
+  </TR>
 
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      Though highly discouraged, Covered does have a means to skip the race condition checking
+      step altogether for situations where the user does not believe race conditions to exist in
+      their design and does not want Covered to automatically throw out those procedural blocks
+      for Covered consideration.  The advantages to doing this are:
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+        <OL>
+          <LI> Better performance in scoring the design (the race condition checking step is skipped entirely)</LI>
+          <LI> For designs which do not contain any real race condition (that Covered is saying "might" exist),
+               more logic can be included for coverage. </LI>
+        </OL>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      Of course, with these advantages comes a risk.  If code is deemed to not contain any race conditions but
+      does indeed contain one or more, the coverage numbers may be flawed, and these types of "errors" are not
+      assumed to be Covered bugs.  With all of that said, to ignore race condition checking completely, simply
+      add the '-rI' option to the score command-line.
   <TR>
     <TD></TD>
     <TD></TD>

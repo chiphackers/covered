@@ -1,4 +1,4 @@
-.TH "Covered" "1" "covered-20060805" "Trevor Williams" "Code Analysis"
+.TH "Covered" "1" "covered-20060812" "Trevor Williams" "Code Analysis"
 .SH "NAME"
 .LP 
 Covered \- Verilog Code Coverage Analyzer
@@ -93,8 +93,8 @@ Overrides default filename used to store intermediate preprocessor output.
 \fB\-P\fR \fIparameter_scope=value\fR
 Performs a defparam on the specified parameter with value.
 .TP 
-\fB\-r(S|W|E)\fR
-Specifies action to take when race condition checking finds problems in design (\-rS = Silent, \-rW = Warning, \-rE = Error).
+\fB\-r(S|W|E|I)\fR
+Specifies action to take when race condition checking finds problems in design (\-rS = Silent, \-rW = Warning, \-rE = Error, \-rI = Ignore race condition checking step).
 .TP 
 \fB\-S\fR
 Outputs simulation statistics after simulation has completed.  This information is currently only useful for the developers of Covered.
