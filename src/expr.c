@@ -864,21 +864,16 @@ void expression_find_rhs_sigs( expression* expr, str_link** head, str_link** tai
         (expr->op == EXP_OP_MBIT_POS) ||
         (expr->op == EXP_OP_MBIT_NEG) ) {
  
-      /*
-       If the expression doesn't current contain the signal (i.e., it hasn't been bound yet),
-       get the signal name from the binder.
-      */
-      if( expr->sig == NULL ) {
-        sig_name = bind_find_sig_name( expr );
-      } else {
-        sig_name = expr->sig->name;
-      }
+      /* Get the signal name from the binder */
+      sig_name = bind_find_sig_name( expr );
        
       assert( sig_name != NULL );
     
       /* If the signal isn't already in the list, add it */
       if( str_link_find( sig_name, *head ) == NULL ) {
-        str_link_add( strdup_safe( sig_name, __FILE__, __LINE__ ), head, tail );
+        str_link_add( sig_name, head, tail );
+      } else {
+        free_safe( sig_name );
       }
 
     }
@@ -2997,7 +2992,6 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
 
     switch( lhs->op ) {
       case EXP_OP_SIG      :
-        printf( "assigned: %d\n", lhs->sig->value->suppl.part.assigned );
         if( lhs->sig->value->suppl.part.assigned == 1 ) {
           vector_set_value( lhs->value, rhs->value->value, rhs->value->width, *lsb, 0 );
           if( rhs->value->width < lhs->value->width ) {
@@ -3145,14 +3139,14 @@ void expression_dealloc( expression* expr, bool exp_only ) {
       /* If this is a named block call or fork statement, remove the statement that this expression points to */
       if( (expr->op == EXP_OP_NB_CALL) || (expr->op == EXP_OP_FORK) ) {
 
-        if( expr->stmt == NULL ) {
-          bind_rm_stmt( expr->id );
-        } else if( !exp_only ) {
+        if( !exp_only ) {
 #ifdef DEBUG_MODE
           snprintf( user_msg, USER_MSG_LENGTH, "Removing statement block starting at line %d because it is a NB_CALL or FORK and its calling expression is being removed", expr->stmt->exp->line );
           print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
           stmt_blk_add_to_remove_list( expr->stmt );
+        } else {
+          bind_rm_stmt( expr->id );
         }
 
       }
@@ -3237,6 +3231,12 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.192  2006/08/02 22:28:32  phase1geo
+ Attempting to fix the bug pulled out by generate11.v.  We are just having an issue
+ with setting the assigned bit in a signal expression that contains a hierarchical reference
+ using a genvar reference.  Adding generate11.1 diagnostic to verify a slightly different
+ syntax style for the same code.  Note sure how badly I broke regression at this point.
+
  Revision 1.191  2006/07/31 16:26:53  phase1geo
  Tweaking the is_static_only function to consider expressions using generate
  variables to be static.  Updating regression for changes.  Full regression

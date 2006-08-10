@@ -77,7 +77,8 @@ DIAGS1        = add1            always1         always2         always3         
                 rassign1        real1           repeat1         repeat2         sbit_sel1 \
                 sbit_sel1.1     signed1         signed3         signed3.1       signed3.2 \
                 signed3.3       signed3.4       signed3.5       signed3.6       slist1 \
-                slist1.1        slist1.2        slist1.3        slist2          static1 \
+                slist1.1        slist1.2        slist1.3        slist2          slist3 \
+                slist3.2        static1 \
                 string1         supply0         supply1         task1           task1.1 \
                 task2           task2.1         task2.2         task2.3         task3 \
                 task3.1         task4           task4.1         toggle          tri \
@@ -131,7 +132,7 @@ VCSONLYDIAGS1 = elsif1          elsif1.1        elsif1.2        elsif1.3        
                 generate9.2     generate9.3     generate10      generate10.1    generate10.2 \
                 hier1.1 \
                 line1           mbit_sel5.4     mbit_sel6.4     param8.2        param12 \
-                param12.1       static_func1    static_func1.1  static_func2    static_func2.1 \
+                param12.1       slist3.1        static_func1    static_func1.1  static_func2    static_func2.1 \
                 static_func2.2  static_func2.3  trireg
 VCSONLYDIAGS2 = 
 VCSONLYDIAGS3 = 

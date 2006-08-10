@@ -327,14 +327,43 @@ void bind_remove( int id, bool clear_assigned ) {
 */
 char* bind_find_sig_name( expression* exp ) {
 
-  exp_bind* curr;  /* Pointer to current exp_bind link */
+  exp_bind*  curr;         /* Pointer to current exp_bind link */
+  vsignal*   found_sig;    /* Placeholder */
+  func_unit* found_funit;  /* Specifies the functional unit containing this signal */
+  char*      name = NULL;  /* Specifies the signal name relative to its parent module */
+  char*      front;        /* Front part of functional unit hierarchy */
+  char*      rest;         /* Rest of functional unit hierarchy (minus front) */
  
+  /* Find matching binding element that matches the given expression */
   curr = eb_head;
   while( (curr != NULL) && (curr->exp != exp) ) {
     curr = curr->next;
   }
 
-  return( (curr == NULL) ? NULL : curr->name );
+  /*
+   If we found the matching expression, find the signal and construct its hierarchical pathname
+   relative to its parent module.
+  */
+  if( curr != NULL ) {
+    if( scope_find_signal( curr->name, curr->funit, &found_sig, &found_funit, -1 ) ) {
+      if( funit_get_curr_module( curr->funit ) == funit_get_curr_module( found_funit ) ) {
+        front = strdup_safe( found_funit->name, __FILE__, __LINE__ );
+        rest  = strdup_safe( found_funit->name, __FILE__, __LINE__ );
+        scope_extract_front( found_funit->name, front, rest );
+        if( rest[0] != '\0' ) {
+          name = (char*)malloc_safe( (strlen( curr->name ) + strlen( rest ) + 2), __FILE__, __LINE__ );
+          snprintf( name, (strlen( curr->name ) + strlen( found_funit->name ) + 2), "%s.%s", rest, curr->name );
+        }
+        free_safe( front );
+        free_safe( rest );
+      }
+    }
+    if( name == NULL ) {
+      name = strdup_safe( curr->name, __FILE__, __LINE__ );
+    }
+  }
+
+  return( name );
 
 }
 
@@ -460,7 +489,7 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
       tmpname = (char*)malloc_safe( (strlen( name ) + 2), __FILE__, __LINE__ );
       snprintf( tmpname, (strlen( name ) + 2), "!%s", name );
 
-      if( !scope_find_signal( tmpname, found_funit, &found_sig, &found_funit, exp_line ) ) {
+      if( !scope_find_signal( tmpname, funit_exp, &found_sig, &found_funit, exp_line ) ) {
 
         /* If we are binding an FSM, output an error message */
         if( fsm_bind ) {
@@ -477,7 +506,7 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
           snprintf( user_msg, USER_MSG_LENGTH, "Implicit declaration of signal \"%s\", creating 1-bit version of signal", name );
           print_output( user_msg, WARNING, __FILE__, __LINE__ );
           found_sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT, 1, 0, exp->line, ((exp->col >> 16) & 0xffff), 0 );
-          sig_link_add( found_sig, &(found_funit->sig_head), &(found_funit->sig_tail) );
+          sig_link_add( found_sig, &(funit_exp->sig_head), &(funit_exp->sig_tail) );
         } else {
           retval = FALSE;
         }
@@ -987,6 +1016,12 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.86  2006/08/02 22:28:31  phase1geo
+ Attempting to fix the bug pulled out by generate11.v.  We are just having an issue
+ with setting the assigned bit in a signal expression that contains a hierarchical reference
+ using a genvar reference.  Adding generate11.1 diagnostic to verify a slightly different
+ syntax style for the same code.  Note sure how badly I broke regression at this point.
+
  Revision 1.85  2006/08/01 04:38:20  phase1geo
  Fixing issues with binding to non-module scope and not binding references
  that reference a "no score" module.  Full regression passes.

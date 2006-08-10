@@ -1,5 +1,5 @@
 5 8 1 * 0
-8 /ptmp/cvs/covered/diags/verilog -t main -vcd param14.vcd -o param14.cdd -v param14.v
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd param14.vcd -o param14.cdd -v param14.v
 3 0 main main param14.v 1 14
 1 FOO 0 0 80000 32 0 0 0 0 0 0 0 0 0
 1 a 0 5 3000c 1 0 2

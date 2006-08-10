@@ -1203,6 +1203,7 @@ struct sym_sig_s;
 struct symtable_s;
 struct static_expr_s;
 struct vector_width_s;
+struct nb_call_s;
 struct exp_bind_s;
 struct case_stmt_s;
 struct case_gitem_s;
@@ -1351,6 +1352,11 @@ typedef struct static_expr_s static_expr;
  Renaming vector width structure for convenience.
 */
 typedef struct vector_width_s vector_width;
+
+/*!
+ Renaming named block call structure for convenience.
+*/
+typedef struct nb_call_s nb_call;
 
 /*!
  Renaming signal/functional unit to expression binding structure for convenience.
@@ -1776,6 +1782,14 @@ struct vector_width_s {
 };
 
 /*!
+ Specifies a named block calling structure for storing the head statement and block name.
+*/
+struct nb_call_s {
+  char*      name;                   /*!< Specifies the name of the named block */
+  statement* stmt;                   /*!< Pointer to the head statement of the named block */
+};
+
+/*!
  Binds a signal to an expression.
 */
 struct exp_bind_s {
@@ -1989,6 +2003,12 @@ struct gitem_link_s {
 
 /*
  $Log$
+ Revision 1.215  2006/08/02 22:28:31  phase1geo
+ Attempting to fix the bug pulled out by generate11.v.  We are just having an issue
+ with setting the assigned bit in a signal expression that contains a hierarchical reference
+ using a genvar reference.  Adding generate11.1 diagnostic to verify a slightly different
+ syntax style for the same code.  Note sure how badly I broke regression at this point.
+
  Revision 1.214  2006/08/01 04:38:20  phase1geo
  Fixing issues with binding to non-module scope and not binding references
  that reference a "no score" module.  Full regression passes.

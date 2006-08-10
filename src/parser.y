@@ -218,6 +218,7 @@ int yydebug = 1;
   port_info*      portinfo;
   gen_item*       gitem;
   case_gitem*     case_gi;
+  nb_call*        nbcall;
 };
 
 %token <text>     IDENTIFIER SYSTEM_IDENTIFIER
@@ -271,7 +272,7 @@ int yydebug = 1;
 %type <expr>      delay_value delay_value_simple
 %type <text>      defparam_assign_list defparam_assign
 %type <strlink>   gate_instance gate_instance_list
-%type <text>      named_begin_end_block fork_statement
+%type <nbcall>    named_begin_end_block fork_statement
 %type <state>     statement statement_list statement_opt 
 %type <state>     if_statement_error
 %type <case_stmt> case_items case_item
@@ -2668,10 +2669,12 @@ statement
       statement*  stmt;
       if( $4 != NULL ) {
         db_end_function_task_namedblock( @6.first_line );
-        exp  = db_create_expression( NULL, NULL, EXP_OP_NB_CALL, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), $4 );
+        exp = db_create_expression( NULL, NULL, EXP_OP_NB_CALL, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+        exp->stmt = $4->stmt;
+        exp->name = $4->name;
+        free_safe( $4 );
         stmt = db_create_statement( exp );
         db_add_expression( exp );
-        free_safe( $4 );
         $$ = stmt;
       } else {
         if( ignore_mode > 0 ) {
@@ -2695,10 +2698,12 @@ statement
       statement*  stmt;
       if( $3 != NULL ) {
         db_end_function_task_namedblock( @4.first_line );
-        exp  = db_create_expression( NULL, NULL, EXP_OP_NB_CALL, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), $3 );
+        exp = db_create_expression( NULL, NULL, EXP_OP_NB_CALL, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+        exp->stmt = $3->stmt;
+        exp->name = $3->name;
+        free_safe( $3 );
         stmt = db_create_statement( exp );
         db_add_expression( exp );
-        free_safe( $3 );
         $$ = stmt;
       } else {
         ignore_mode--;
@@ -3362,6 +3367,7 @@ fork_statement
     {
       expression* expr;
       statement*  stmt;
+      nb_call*    nbc;
       if( ignore_mode == 0 ) {
         if( $5 != NULL ) {
           expr = db_create_expression( NULL, NULL, EXP_OP_JOIN, FALSE, @5.first_line, @5.first_column, (@5.last_column - 1), NULL );
@@ -3372,22 +3378,22 @@ fork_statement
             stmt->exp->suppl.part.stmt_head      = 1;
             stmt->exp->suppl.part.stmt_is_called = 1;
             db_add_statement( stmt, stmt );
-            $$ = $2;
+            nbc = (nb_call*)malloc_safe( sizeof( nb_call ), __FILE__, __LINE__ );
+            nbc->stmt = stmt;
+            nbc->name = $2;
+            $$ = nbc;
           } else {
             db_remove_statement( $5 );
             db_remove_statement( stmt );
+            free_safe( $2 );
             $$ = NULL;
           }
         } else {
-          if( $2 != NULL ) {
-            free_safe( $2 );
-          }
+          free_safe( $2 );
           $$ = NULL;
         }
       } else {
-        if( $2 != NULL ) {
-          free_safe( $2 );
-        }
+        free_safe( $2 );
         $$ = NULL;
       }
     }
@@ -3420,22 +3426,22 @@ named_begin_end_block
     block_item_decls_opt statement_list
     {
       statement* stmt = $4;
+      nb_call*   nbc;
       if( ignore_mode == 0 ) {
         if( stmt != NULL ) {
           stmt->exp->suppl.part.stmt_head      = 1;
           stmt->exp->suppl.part.stmt_is_called = 1;
           db_add_statement( stmt, stmt );
-          $$ = $1;
+          nbc = (nb_call*)malloc_safe( sizeof( nb_call ), __FILE__, __LINE__ );
+          nbc->stmt = stmt;
+          nbc->name = $1;
+          $$ = nbc;
         } else {
-          if( $1 != NULL ) {
-            free_safe( $1 );
-          }
+          free_safe( $1 );
           $$ = NULL;
         }
       } else {
-        if( $1 != NULL ) {
-          free_safe( $1 );
-        }
+        free_safe( $1 );
         $$ = NULL;
       }
       generate_mode++;

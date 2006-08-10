@@ -1317,6 +1317,7 @@ statement* db_parallelize_statement( statement* stmt ) {
     exp = db_create_expression( NULL, NULL, EXP_OP_FORK, FALSE, stmt->exp->line, ((stmt->exp->col & 0xffff0000) >> 16), (stmt->exp->col & 0xffff), NULL );
 
     /* Bind the FORK expression to this statement */
+    exp->stmt = stmt;
     bind_add_stmt( stmt->exp->id, exp, curr_funit );
 
     /* Reduce fork and block depth for the new statement */
@@ -1959,6 +1960,12 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.206  2006/08/02 22:28:31  phase1geo
+ Attempting to fix the bug pulled out by generate11.v.  We are just having an issue
+ with setting the assigned bit in a signal expression that contains a hierarchical reference
+ using a genvar reference.  Adding generate11.1 diagnostic to verify a slightly different
+ syntax style for the same code.  Note sure how badly I broke regression at this point.
+
  Revision 1.205  2006/08/01 04:38:20  phase1geo
  Fixing issues with binding to non-module scope and not binding references
  that reference a "no score" module.  Full regression passes.

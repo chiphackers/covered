@@ -664,8 +664,16 @@ void statement_find_rhs_sigs( statement* stmt, str_link** head, str_link** tail 
 
   if( stmt != NULL ) {
 
-    /* Find all RHS signals in this statement's expression tree */
-    expression_find_rhs_sigs( stmt->exp, head, tail );
+    if( (stmt->exp->op == EXP_OP_NB_CALL) || (stmt->exp->op == EXP_OP_FORK) ) {
+
+      statement_find_rhs_sigs( stmt->exp->stmt, head, tail );
+
+    } else {
+
+      /* Find all RHS signals in this statement's expression tree */
+      expression_find_rhs_sigs( stmt->exp, head, tail );
+
+    }
 
     /* If both true and false paths lead to same statement, just traverse the true path */
     if( stmt->next_true == stmt->next_false ) {
@@ -842,6 +850,10 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.86  2006/07/28 22:42:51  phase1geo
+ Updates to support expression/signal binding for expressions within a generate
+ block statement block.
+
  Revision 1.85  2006/07/25 21:35:54  phase1geo
  Fixing nested namespace problem with generate blocks.  Also adding support
  for using generate values in expressions.  Still not quite working correctly

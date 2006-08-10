@@ -124,10 +124,12 @@ bool scope_find_param( char* name, func_unit* curr_funit, mod_parm** found_parm,
     /* Get the functional unit that contains this signal */
     if( (*found_funit = scope_find_funit_from_scope( scope, curr_funit )) == NULL ) {
 
-      snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined signal hierarchy (%s) in %s %s, file %s, line %d",
-                name, get_funit_type( curr_funit->type ), curr_funit->name, curr_funit->filename, line );
-      print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      exit( 1 );
+      if( line > 0 ) {
+        snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined signal hierarchy (%s) in %s %s, file %s, line %d",
+                  name, get_funit_type( curr_funit->type ), curr_funit->name, curr_funit->filename, line );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        exit( 1 );
+      }
  
     }
 
@@ -160,15 +162,16 @@ bool scope_find_param( char* name, func_unit* curr_funit, mod_parm** found_parm,
 */
 bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, func_unit** found_funit, int line ) {
 
-  vsignal     sig;       /* Temporary holder for signal */
-  sig_link*   sigl;      /* Pointer to current signal link */
-  char*       sig_name;  /* Signal basename holder */
-  char*       scope;     /* Signal scope holder */
-  func_unit*  parent;    /* Pointer to parent functional unit */
+  vsignal   sig;       /* Temporary holder for signal */
+  sig_link* sigl;      /* Pointer to current signal link */
+  char*     sig_name;  /* Signal basename holder */
+  char*     scope;     /* Signal scope holder */
 
   assert( curr_funit != NULL );
 
   *found_funit = curr_funit;
+  *found_sig   = NULL;
+
   sig_name     = strdup_safe( name, __FILE__, __LINE__ );
   sig.name     = sig_name;
 
@@ -183,11 +186,12 @@ bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, 
     /* Get the functional unit that contains this signal */
     if( (*found_funit = scope_find_funit_from_scope( scope, curr_funit )) == NULL ) {
 
-      snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined signal hierarchy (%s) in %s %s, file %s, line %d",
-                name, get_funit_type( curr_funit->type ), curr_funit->name, curr_funit->filename, line );
-      print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      assert( 0 );
-      exit( 1 );
+      if( line > 0 ) {
+        snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined signal hierarchy (%s) in %s %s, file %s, line %d",
+                  name, get_funit_type( curr_funit->type ), curr_funit->name, curr_funit->filename, line );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        exit( 1 );
+      }
  
     }
 
@@ -195,13 +199,17 @@ bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, 
 
   }
 
-  /* First, look in the current functional unit */
-  if( (*found_sig = funit_find_signal( sig_name, *found_funit )) == NULL ) {
+  if( *found_funit != NULL ) {
 
-    /* Continue to look in parent modules (if there are any) */
-    parent = (*found_funit)->parent;
-    while( (parent != NULL) && ((*found_sig = funit_find_signal( sig_name, parent )) == NULL) ) {
-      parent = parent->parent;
+    /* First, look in the current functional unit */
+    if( (*found_sig = funit_find_signal( sig_name, *found_funit )) == NULL ) {
+  
+      /* Continue to look in parent modules (if there are any) */
+      *found_funit = (*found_funit)->parent;
+      while( (*found_funit != NULL) && ((*found_sig = funit_find_signal( sig_name, *found_funit )) == NULL) ) {
+        *found_funit = (*found_funit)->parent;
+      }
+
     }
 
   }
@@ -321,6 +329,10 @@ func_unit* scope_get_parent_module( char* scope ) {
 
 /*
  $Log$
+ Revision 1.25  2006/08/01 16:22:34  phase1geo
+ Removed incorrect assertion in score.c and replaced it with an if statement.
+ Updated regressions for recent changes.  Full regression now passes.
+
  Revision 1.24  2006/08/01 04:38:20  phase1geo
  Fixing issues with binding to non-module scope and not binding references
  that reference a "no score" module.  Full regression passes.

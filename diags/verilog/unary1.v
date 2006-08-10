@@ -1,6 +1,6 @@
 module main;
 
-reg  [2:0] a;
+reg [2:0] a;
 
 wire b = ~a;
 wire c = !a;
