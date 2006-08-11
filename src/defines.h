@@ -709,6 +709,8 @@ typedef enum exp_op_type_e {
   EXP_OP_PARAM_MBIT_NEG,  /*!< 76:0x4c.  Specifies negative variable multi-bit parameter select */
   EXP_OP_NEGATE,          /*!< 77:0x4d.  Specifies the unary negate operator (-) */
   EXP_OP_NOOP,            /*!< 78:0x4e.  Specifies no operation is to be performed (placeholder) */
+  EXP_OP_ALWAYS_COMB,     /*!< 79:0x4f.  Specifies an always_comb statement (implicit event expression - similar to SLIST) */
+  EXP_OP_ALWAYS_LATCH,    /*!< 80:0x50.  Specifies an always_latch statement (implicit event expression - similar to SLIST) */
   EXP_OP_NUM              /*!< The total number of defines for expression values */
 } exp_op_type;
 
@@ -2004,6 +2006,10 @@ struct gitem_link_s {
 
 /*
  $Log$
+ Revision 1.217  2006/08/11 15:16:49  phase1geo
+ Joining slist3.3 diagnostic to latest development branch.  Adding changes to
+ fix memory issues from bug 1535412.
+
  Revision 1.216  2006/08/10 22:35:14  phase1geo
  Updating with fixes for upcoming 0.4.7 stable release.  Updated regressions
  for this change.  Full regression still fails due to an unrelated issue.

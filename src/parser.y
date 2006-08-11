@@ -259,6 +259,7 @@ int yydebug = 1;
 %token K_automatic K_cell K_use K_library K_config K_endconfig K_design K_liblist K_instance
 %token K_showcancelled K_noshowcancelled K_pulsestyle_onevent K_pulsestyle_ondetect
 %token K_bool K_logic K_unique
+%token K_always_comb K_always_latch K_always_ff
 
 %token KK_attribute
 
@@ -2446,6 +2447,98 @@ module_item
           db_add_statement( stmt, stmt );
         } else {
           db_remove_statement( stmt );
+        }
+      }
+    }
+  | attribute_list_opt
+    K_always_comb
+    {
+      if( !parser_check_generation( GENERATION_SV ) ) {
+        VLerror( "always_comb syntax found in block that is specified to not allow SystemVerilog syntax" );
+        ignore_mode++;
+      }
+    }
+    statement
+    {
+      statement*  stmt;
+      expression* slist;
+      if( !parser_check_generation( GENERATION_SV ) ) {
+        ignore_mode--;
+      } else {
+        if( $4 != NULL ) {
+          slist = db_create_sensitivity_list( $4 );
+          slist = db_create_expression( slist, NULL, EXP_OP_ALWAYS_COMB, lhs_mode, @2.first_line, @2.first_column, (@2.last_column - 1), NULL );
+          stmt  = db_create_statement( slist );
+          db_add_expression( slist );
+          if( !db_statement_connect( stmt, $4 ) ) {
+            db_remove_statement( stmt );
+            db_remove_statement( $4 );
+          } else {
+            if( db_statement_connect( stmt, stmt ) && (info_suppl.part.excl_always == 0) ) {
+              stmt->exp->suppl.part.stmt_head = 1;
+              db_add_statement( stmt, stmt );
+            } else {
+              db_remove_statement( stmt );
+            }
+          }
+        }
+      }
+    }
+  | attribute_list_opt
+    K_always_latch
+    {
+      if( !parser_check_generation( GENERATION_SV ) ) {
+        VLerror( "always_latch syntax found in block that is specified to not allow SystemVerilog syntax" );
+        ignore_mode++;
+      }
+    }
+    statement
+    {
+      statement*  stmt;
+      expression* slist;
+      if( !parser_check_generation( GENERATION_SV ) ) {
+        ignore_mode--;
+      } else {
+        if( $4 != NULL ) {
+          slist = db_create_sensitivity_list( $4 );
+          slist = db_create_expression( slist, NULL, EXP_OP_ALWAYS_LATCH, lhs_mode, @2.first_line, @2.first_column, (@2.last_column - 1), NULL );
+          stmt  = db_create_statement( slist );
+          db_add_expression( slist );
+          if( !db_statement_connect( stmt, $4 ) ) {
+            db_remove_statement( stmt );
+            db_remove_statement( $4 );
+          } else {
+            if( db_statement_connect( stmt, stmt ) && (info_suppl.part.excl_always == 0) ) {
+              stmt->exp->suppl.part.stmt_head = 1;
+              db_add_statement( stmt, stmt );
+            } else {
+              db_remove_statement( stmt );
+            }
+          }
+        }
+      }
+    }
+  | attribute_list_opt
+    K_always_ff
+    {
+      if( !parser_check_generation( GENERATION_SV ) ) {
+        VLerror( "always_ff syntax found in block that is specified to not allow SystemVerilog syntax" );
+        ignore_mode++;
+      }
+    }
+    statement
+    {
+      statement* stmt = $4;
+      if( !parser_check_generation( GENERATION_SV ) ) {
+        ignore_mode--;
+      } else {
+        if( stmt != NULL ) {
+          if( db_statement_connect( stmt, stmt ) && (info_suppl.part.excl_always == 0) ) {
+            stmt->exp->suppl.part.stmt_head = 1;
+            db_add_statement( stmt, stmt );
+          } else {
+            db_remove_statement( stmt );
+          }
         }
       }
     }

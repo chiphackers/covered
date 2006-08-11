@@ -235,11 +235,11 @@ void race_calc_stmt_blk_type( expression* expr, int sb_index ) {
     race_calc_stmt_blk_type( expr->left,  sb_index );
     race_calc_stmt_blk_type( expr->right, sb_index );
 
-    if( (expr->op == EXP_OP_PEDGE) || (expr->op == EXP_OP_NEDGE) ) {
+    if( (expr->op == EXP_OP_PEDGE) || (expr->op == EXP_OP_NEDGE) || (expr->op == EXP_OP_ALWAYS_LATCH) ) {
       sb[sb_index].seq = TRUE;
     }
 
-    if( expr->op == EXP_OP_AEDGE ) {
+    if( (expr->op == EXP_OP_AEDGE) || (expr->op == EXP_OP_ALWAYS_COMB) ) {
       sb[sb_index].cmb = TRUE;
     }
 
@@ -974,6 +974,11 @@ void race_blk_delete_list( race_blk* rb ) {
 
 /*
  $Log$
+ Revision 1.42  2006/07/21 20:12:46  phase1geo
+ Fixing code to get generated instances and generated array of instances to
+ work.  Added diagnostics to verify correct functionality.  Full regression
+ passes.
+
  Revision 1.41  2006/04/14 17:05:13  phase1geo
  Reorganizing info line to make it more succinct and easier for future needs.
  Fixed problems with VPI library with recent merge changes.  Regression has

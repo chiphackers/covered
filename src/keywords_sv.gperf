@@ -30,6 +30,9 @@ struct keyword { char *name; int type; };
 bool,         K_bool
 logic,        K_logic
 unique,       K_unique
+always_comb,  K_always_comb
+always_latch, K_always_latch
+always_ff,    K_always_ff
 %%
 
 int lexer_keyword_sv_code( const char* str, int length ) {

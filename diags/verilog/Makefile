@@ -43,7 +43,7 @@ IVERILOG_INTER = vvp
 
 VCS       = vcs
 #VCS_FLAGS = +libext+.v+ -y ./lib +incdir+./include +define+RUNTEST +define+VCS +vpi -load ../../src/vpi/covered.so:covered_register -P ../../src/vpi/covered.tab covered_top.v
-VCS_FLAGS = +libext+.v+.vlib+ -y ./lib -y ./ovl +incdir+./ovl +incdir+./include +define+RUNTEST +define+OVL_VERILOG +define+OVL_COVER_ON +v2k
+VCS_FLAGS = +libext+.v+.vlib+ -y ./lib -y ./ovl +incdir+./ovl +incdir+./include +define+RUNTEST +define+OVL_VERILOG +define+OVL_COVER_ON +v2k -sverilog
 VCS_EXEC  = ./simv +covered_cdd=out.cdd
 
 ifdef USE_VCS
@@ -291,7 +291,7 @@ $(GENLIST):
 		echo Running $@; \
 		$(CFG_COPY_CMD) ../regress/$@.cfg > $@.cfg; \
 		$(COVERED) $(COVERED_GFLAG) score -f $@.cfg 2> $@.err; \
-		rm -f $@.cfg; \
+		rm -f $@.cfg $@.cdd; \
 		cat $@.err; \
 		./check_test $@ 1 1; \
 	else \

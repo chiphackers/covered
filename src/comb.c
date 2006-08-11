@@ -741,6 +741,16 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
       *size = 2;
       strcpy( code_fmt, "@*" );
 
+    } else if( exp->op == EXP_OP_ALWAYS_COMB ) {
+
+      *size = 11;
+      strcpy( code_fmt, "always_comb" );
+
+    } else if( exp->op == EXP_OP_ALWAYS_LATCH ) {
+   
+      *size = 12;
+      strcpy( code_fmt, "always_latch" );
+
     } else {
 
       if( (exp->op == EXP_OP_SIG) || (exp->op == EXP_OP_PARAM) ) {
@@ -2352,6 +2362,12 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.148  2006/06/29 20:57:24  phase1geo
+ Added stmt_excluded bit to expression to allow us to individually control line
+ and combinational logic exclusion.  This also allows us to exclude combinational
+ logic within excluded lines.  Also fixing problem with highlighting the listbox
+ (due to recent changes).
+
  Revision 1.147  2006/06/28 04:35:47  phase1geo
  Adding support for line coverage and fixing toggle and combinational coverage
  to redisplay main textbox to reflect exclusion changes.  Also added messageBox

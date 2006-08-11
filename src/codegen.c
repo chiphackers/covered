@@ -333,8 +333,8 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
   if( expr != NULL ) {
 
-    /* Only traverse left and right expression trees if we are not an SLIST */
-    if( expr->op != EXP_OP_SLIST ) {
+    /* Only traverse left and right expression trees if we are not an SLIST-type */
+    if( (expr->op != EXP_OP_SLIST) && (expr->op != EXP_OP_ALWAYS_COMB) && (expr->op != EXP_OP_ALWAYS_LATCH) ) {
 
       codegen_gen_expr( expr->left,  expr->op, &left_code,  &left_code_depth,  funit );
       codegen_gen_expr( expr->right, expr->op, &right_code, &right_code_depth, funit );
@@ -559,6 +559,18 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
       *code       = (char**)malloc_safe( sizeof( char* ), __FILE__, __LINE__ );
       (*code)[0]  = strdup_safe( "@*", __FILE__, __LINE__ );
+      *code_depth = 1;
+
+    } else if( expr->op == EXP_OP_ALWAYS_COMB ) {
+ 
+      *code       = (char**)malloc_safe( sizeof( char* ), __FILE__, __LINE__ );
+      (*code)[0]  = strdup_safe( "always_comb", __FILE__, __LINE__ );
+      *code_depth = 1;
+
+    } else if( expr->op == EXP_OP_ALWAYS_LATCH ) {
+
+      *code       = (char**)malloc_safe( sizeof( char* ), __FILE__, __LINE__ );
+      (*code)[0]  = strdup_safe( "always_latch", __FILE__, __LINE__ );
       *code_depth = 1;
 
     } else {
@@ -840,6 +852,10 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.69  2006/05/28 02:43:49  phase1geo
+ Integrating stable release 0.4.4 changes into main branch.  Updated regressions
+ appropriately.
+
  Revision 1.68  2006/05/25 12:10:57  phase1geo
  Including bug fix from 0.4.4 stable release and updating regressions.
 
