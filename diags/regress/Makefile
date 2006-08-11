@@ -106,13 +106,15 @@ GENLIST       = gen1            gen1.1          gen1.3          gen2.1          
                 gen9.1          gen10.1         gen11.1         gen12.1         gen13.1 \
                 gen14.1         gen15.1         gen16.1         gen17.1         gen18.1 \
                 gen19           gen19.1         gen20           gen20.1         gen21 \
-                gen21.1
+                gen21.1         gen22           gen22.1         gen23           gen23.1 \
+                gen24           gen24.1
 
 GENERRLIST    = gen1.2          gen1.4          gen1.5          gen2            gen3 \
                 gen4            gen5            gen6            gen7            gen8 \
                 gen9            gen10           gen11           gen12           gen13 \
                 gen14           gen15           gen16           gen17           gen18 \
-                gen19.2         gen20.2         gen21.2
+                gen19.2         gen20.2         gen21.2         gen22.2         gen23.2 \
+                gen24.2
            
 IVONLYDIAGS1  = always5.1       assign1         assign2.8       example         fsm1 \
                 fsm1.1          fsm1.2          fsm1.3          fsm1.4          fsm6 \
@@ -125,8 +127,8 @@ IVONLYDIAGS2  =
 IVONLYDIAGS3  = 
 IVONLYDIAGS4  = 
 
-VCSONLYDIAGS1 = always_comb1    always_ff1      always_latch1   elsif1          elsif1.1 \
-                elsif1.2        elsif1.3        elsif1.4 \
+VCSONLYDIAGS1 = always_comb1    always_ff1      always_latch1   do_while1       do_while1.1 \
+                do_while2       elsif1          elsif1.1        elsif1.2        elsif1.3        elsif1.4 \
                 elsif2          elsif2.1        exponent1       gate1.1         generate1.1 \
                 generate2       generate2.1     generate3       generate3.1     generate4 \
                 generate4.1     generate5       generate5.1     generate5.2     generate5.3 \

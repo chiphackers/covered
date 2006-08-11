@@ -211,7 +211,7 @@ void statement_queue_compare( statement* stmt ) {
       if( sll->stmt->next_true == NULL ) {
         sll->stmt->next_true = stmt;
       }
-      if( (sll->stmt->next_false == NULL) && !EXPR_IS_CONTEXT_SWITCH( sll->stmt->exp ) ) {
+      if( (sll->stmt->next_false == NULL) && !EXPR_IS_CONTEXT_SWITCH( sll->stmt->exp ) && (sll->stmt->exp->op != EXP_OP_WHILE) ) {
         sll->stmt->next_false = stmt;
       }
        
@@ -850,6 +850,10 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.87  2006/08/10 22:35:14  phase1geo
+ Updating with fixes for upcoming 0.4.7 stable release.  Updated regressions
+ for this change.  Full regression still fails due to an unrelated issue.
+
  Revision 1.86  2006/07/28 22:42:51  phase1geo
  Updates to support expression/signal binding for expressions within a generate
  block statement block.

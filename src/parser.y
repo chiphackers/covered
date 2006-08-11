@@ -258,7 +258,7 @@ int yydebug = 1;
 
 %token K_automatic K_cell K_use K_library K_config K_endconfig K_design K_liblist K_instance
 %token K_showcancelled K_noshowcancelled K_pulsestyle_onevent K_pulsestyle_ondetect
-%token K_bool K_logic K_unique
+%token K_bool K_logic K_unique K_priority K_do
 %token K_always_comb K_always_latch K_always_ff
 
 %token KK_attribute
@@ -2880,15 +2880,15 @@ statement
         $$ = NULL;
       }
     }
-  | K_case '(' expression ')' inc_block_depth case_items dec_block_depth K_endcase
+  | cond_specifier_opt K_case '(' expression ')' inc_block_depth case_items dec_block_depth K_endcase
     {
       expression*     expr;
-      expression*     c_expr    = $3;
+      expression*     c_expr    = $4;
       statement*      stmt      = NULL;
       statement*      last_stmt = NULL;
-      case_statement* c_stmt    = $6;
+      case_statement* c_stmt    = $7;
       case_statement* tc_stmt;
-      if( (ignore_mode == 0) && ($3 != NULL) ) {
+      if( (ignore_mode == 0) && ($4 != NULL) ) {
         c_expr->suppl.part.root = 1;
         while( c_stmt != NULL ) {
           if( c_stmt->expr != NULL ) {
@@ -2912,7 +2912,7 @@ statement
         }
         $$ = stmt;
       } else {
-        expression_dealloc( $3, FALSE );
+        expression_dealloc( $4, FALSE );
         while( c_stmt != NULL ) {
           expression_dealloc( c_stmt->expr, FALSE );
           db_remove_statement( c_stmt->stmt );
@@ -2924,15 +2924,15 @@ statement
         $$ = NULL;
       }
     }
-  | K_casex '(' expression ')' inc_block_depth case_items dec_block_depth K_endcase
+  | cond_specifier_opt K_casex '(' expression ')' inc_block_depth case_items dec_block_depth K_endcase
     {
       expression*     expr;
-      expression*     c_expr    = $3;
+      expression*     c_expr    = $4;
       statement*      stmt      = NULL;
       statement*      last_stmt = NULL;
-      case_statement* c_stmt    = $6;
+      case_statement* c_stmt    = $7;
       case_statement* tc_stmt;
-      if( (ignore_mode == 0) && ($3 != NULL) ) {
+      if( (ignore_mode == 0) && ($4 != NULL) ) {
         c_expr->suppl.part.root = 1;
         while( c_stmt != NULL ) {
           if( c_stmt->expr != NULL ) {
@@ -2956,7 +2956,7 @@ statement
         }
         $$ = stmt;
       } else {
-        expression_dealloc( $3, FALSE );
+        expression_dealloc( $4, FALSE );
         while( c_stmt != NULL ) {
           expression_dealloc( c_stmt->expr, FALSE );
           db_remove_statement( c_stmt->stmt );
@@ -2968,15 +2968,15 @@ statement
         $$ = NULL;
       }
     }
-  | K_casez '(' expression ')' inc_block_depth case_items dec_block_depth K_endcase
+  | cond_specifier_opt K_casez '(' expression ')' inc_block_depth case_items dec_block_depth K_endcase
     {
       expression*     expr;
-      expression*     c_expr    = $3;
+      expression*     c_expr    = $4;
       statement*      stmt      = NULL;
       statement*      last_stmt = NULL;
-      case_statement* c_stmt    = $6;
+      case_statement* c_stmt    = $7;
       case_statement* tc_stmt;
-      if( (ignore_mode == 0) && ($3 != NULL) ) {
+      if( (ignore_mode == 0) && ($4 != NULL) ) {
         c_expr->suppl.part.root = 1;
         while( c_stmt != NULL ) {
           if( c_stmt->expr != NULL ) {
@@ -3000,7 +3000,7 @@ statement
         }
         $$ = stmt;
       } else {
-        expression_dealloc( $3, FALSE );
+        expression_dealloc( $4, FALSE );
         while( c_stmt != NULL ) {
           expression_dealloc( c_stmt->expr, FALSE );
           db_remove_statement( c_stmt->stmt );
@@ -3012,63 +3012,63 @@ statement
         $$ = NULL;
       }
     }
-  | K_case '(' expression ')' inc_block_depth error dec_block_depth K_endcase
+  | cond_specifier_opt K_case '(' expression ')' inc_block_depth error dec_block_depth K_endcase
     {
       if( ignore_mode == 0 ) {
-        expression_dealloc( $3, FALSE );
+        expression_dealloc( $4, FALSE );
       }
       VLerror( "Illegal case expression" );
       $$ = NULL;
     }
-  | K_casex '(' expression ')' inc_block_depth error dec_block_depth K_endcase
+  | cond_specifier_opt K_casex '(' expression ')' inc_block_depth error dec_block_depth K_endcase
     {
       if( ignore_mode == 0 ) {
-        expression_dealloc( $3, FALSE );
+        expression_dealloc( $4, FALSE );
       }
       VLerror( "Illegal casex expression" );
       $$ = NULL;
     }
-  | K_casez '(' expression ')' inc_block_depth error dec_block_depth K_endcase
+  | cond_specifier_opt K_casez '(' expression ')' inc_block_depth error dec_block_depth K_endcase
     {
       if( ignore_mode == 0 ) {
-        expression_dealloc( $3, FALSE );
+        expression_dealloc( $4, FALSE );
       }
       VLerror( "Illegal casez expression" );
       $$ = NULL;
     }
-  | K_if '(' expression ')' inc_block_depth statement_opt dec_block_depth %prec less_than_K_else
+  | cond_specifier_opt K_if '(' expression ')' inc_block_depth statement_opt dec_block_depth %prec less_than_K_else
     {
       expression* tmp;
       statement*  stmt;
-      if( (ignore_mode == 0) && ($3 != NULL) ) {
-        tmp  = db_create_expression( $3, NULL, EXP_OP_IF, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
+      if( (ignore_mode == 0) && ($4 != NULL) ) {
+        tmp  = db_create_expression( $4, NULL, EXP_OP_IF, FALSE, @2.first_line, @2.first_column, (@5.last_column - 1), NULL );
         stmt = db_create_statement( tmp );
         db_add_expression( tmp );
-        db_connect_statement_true( stmt, $6 );
+        db_connect_statement_true( stmt, $7 );
         $$ = stmt;
       } else {
-        db_remove_statement( $6 );
+        db_remove_statement( $7 );
         $$ = NULL;
       }
     }
-  | K_if '(' expression ')' inc_block_depth statement_opt dec_block_depth K_else statement_opt
+  | cond_specifier_opt K_if '(' expression ')' inc_block_depth statement_opt dec_block_depth K_else statement_opt
     {
       expression* tmp;
       statement*  stmt;
-      if( (ignore_mode == 0) && ($3 != NULL) ) {
-        tmp  = db_create_expression( $3, NULL, EXP_OP_IF, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
+      if( (ignore_mode == 0) && ($4 != NULL) ) {
+        tmp  = db_create_expression( $4, NULL, EXP_OP_IF, FALSE, @2.first_line, @2.first_column, (@5.last_column - 1), NULL );
         stmt = db_create_statement( tmp );
         db_add_expression( tmp );
-        db_connect_statement_true( stmt, $6 );
-        db_connect_statement_false( stmt, $9 );
+        db_connect_statement_true( stmt, $7 );
+        db_connect_statement_false( stmt, $10 );
         $$ = stmt;
       } else {
-        db_remove_statement( $6 );
-        db_remove_statement( $9 );
+        db_remove_statement( $7 );
+        db_remove_statement( $10 );
         $$ = NULL;
       }
     }
-  | K_if '(' error ')' { ignore_mode++; } if_statement_error { ignore_mode--; }
+  | cond_specifier_opt K_if '(' error ')' { ignore_mode++; } if_statement_error { ignore_mode--; }
     {
       VLerror( "Illegal conditional if expression" );
       $$ = NULL;
@@ -3154,6 +3154,26 @@ statement
     {
       db_remove_statement( $6 );
       $$ = NULL;
+    }
+  | K_do inc_block_depth statement dec_block_depth K_while '(' expression ')' ';'
+    {
+      expression* expr;
+      statement*  stmt;
+      if( (ignore_mode == 0) && ($3 != NULL) && ($7 != NULL) ) {
+        expr = db_create_expression( $7, NULL, EXP_OP_WHILE, FALSE, @5.first_line, @5.first_column, (@8.last_column - 1), NULL );
+        vector_dealloc( expr->value );
+        expr->value = $7->value;
+        stmt = db_create_statement( expr );
+        db_add_expression( expr );
+        assert( db_statement_connect( $3, stmt ) );
+        db_connect_statement_true( stmt, $3 );
+        stmt->exp->suppl.part.stmt_stop_true = 1;  /* Set STOP bit for the TRUE path */
+        $$ = $3;
+      } else {
+        expression_dealloc( $7, FALSE );
+        db_remove_statement( $3 );
+        $$ = NULL;
+      }
     }
   | delay1 inc_block_depth statement_opt dec_block_depth
     {
@@ -5070,6 +5090,16 @@ specify_delay_value_list
       assert( $1 == NULL );
     }
   | specify_delay_value_list ',' delay_value
+  ;
+
+ /*
+  These are SystemVerilog constructs that are optionally placed before if and case statements.  Covered parses
+  them but otherwise ignores them (we will not bother displaying the warning messages).
+ */
+cond_specifier_opt
+  : K_unique
+  | K_priority
+  |
   ;
 
 ignore_more
