@@ -488,39 +488,55 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
     } else if( strncmp( "-vcd", argv[i], 4 ) == 0 ) {
 
       i++;
-      if( dump_mode == DUMP_FMT_NONE ) {
-        if( file_exists( argv[i] ) ) {
-          dump_file = strdup_safe( argv[i], __FILE__, __LINE__ );
-          dump_mode = DUMP_FMT_VCD;
-          score_add_arg( argv[i-1] );
-          score_add_arg( argv[i] );
-        } else {
-          snprintf( user_msg, USER_MSG_LENGTH, "VCD dumpfile not found \"%s\"", argv[i] );
-          print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      switch( dump_mode ) {
+        case DUMP_FMT_NONE :
+          if( file_exists( argv[i] ) ) {
+            dump_file = strdup_safe( argv[i], __FILE__, __LINE__ );
+            dump_mode = DUMP_FMT_VCD;
+          } else {
+            snprintf( user_msg, USER_MSG_LENGTH, "VCD dumpfile not found \"%s\"", argv[i] );
+            print_output( user_msg, FATAL, __FILE__, __LINE__ );
+            retval = FALSE;
+          }
+          break;
+        case DUMP_FMT_VCD :
+          print_output( "Only one -vcd option is allowed on the score command-line", FATAL, __FILE__, __LINE__ );
           retval = FALSE;
-        }
-      } else {
-        print_output( "Both the -vcd and -lxt options were specified on the command-line", FATAL, __FILE__, __LINE__ );
-        retval = FALSE;
+          break;
+        case DUMP_FMT_LXT :
+          print_output( "Both the -vcd and -lxt options were specified on the command-line", FATAL, __FILE__, __LINE__ );
+          retval = FALSE;
+          break;
+        default :
+          assert( 0 );
+          break;
       }
 
     } else if( strncmp( "-lxt", argv[i], 4 ) == 0 ) {
  
       i++; 
-      if( dump_mode == DUMP_FMT_NONE ) {
-        if( file_exists( argv[i] ) ) {
-          dump_file = strdup_safe( argv[i], __FILE__, __LINE__ );
-          dump_mode = DUMP_FMT_LXT;
-          score_add_arg( argv[i-1] );
-          score_add_arg( argv[i] );
-        } else {
-          snprintf( user_msg, USER_MSG_LENGTH, "LXT dumpfile not found \"%s\"", argv[i] );
-          print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      switch( dump_mode ) {
+        case DUMP_FMT_NONE :
+          if( file_exists( argv[i] ) ) {
+            dump_file = strdup_safe( argv[i], __FILE__, __LINE__ );
+            dump_mode = DUMP_FMT_LXT;
+          } else {
+            snprintf( user_msg, USER_MSG_LENGTH, "LXT dumpfile not found \"%s\"", argv[i] );
+            print_output( user_msg, FATAL, __FILE__, __LINE__ );
+            retval = FALSE;
+          }
+          break;
+        case DUMP_FMT_VCD :
+          print_output( "Both the -vcd and -lxt options were specified on the command-line", FATAL, __FILE__, __LINE__ );
           retval = FALSE;
-        }
-      } else {
-        print_output( "Both the -vcd and -lxt options were specified on the command-line", FATAL, __FILE__, __LINE__ );
-        retval = FALSE;
+          break;
+        case DUMP_FMT_LXT :
+          print_output( "Only one -lxt option is allowed on the score command-line", FATAL, __FILE__, __LINE__ );
+          retval = FALSE;
+          break;
+        default :
+          assert( 0 );
+          break;
       }
 
     } else if( strncmp( "-vpi", argv[i], 4 ) == 0 ) {
@@ -809,6 +825,10 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.80  2006/08/10 22:35:14  phase1geo
+ Updating with fixes for upcoming 0.4.7 stable release.  Updated regressions
+ for this change.  Full regression still fails due to an unrelated issue.
+
  Revision 1.79  2006/08/06 05:02:59  phase1geo
  Documenting and adding warning message to parse.c for the -rI option.
 
