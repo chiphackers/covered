@@ -834,6 +834,7 @@ void db_add_defparam( char* name, expression* expr ) {
  \param line       Line number where signal was declared.
  \param col        Starting column where signal was declared.
  \param gi         Pointer to created generate item
+ \param handled    Specifies if this signal is handled by Covered or not.
 
  Creates a new signal with the specified parameter information and adds this
  to the signal list if it does not already exist.  If width == 0, the sig_msb
@@ -841,7 +842,8 @@ void db_add_defparam( char* name, expression* expr ) {
  add to the current module's parameter list and all associated instances are
  updated to contain new value.
 */
-void db_add_signal( char* name, int type, static_expr* left, static_expr* right, bool is_signed, bool mba, int line, int col ) {
+void db_add_signal( char* name, int type, static_expr* left, static_expr* right, bool is_signed, bool mba,
+                    int line, int col, bool handled ) {
 
   vsignal  tmpsig;      /* Temporary signal for signal searching */
   vsignal* sig;         /* Container for newly created signal */
@@ -905,6 +907,9 @@ void db_add_signal( char* name, int type, static_expr* left, static_expr* right,
 
     /* Indicate signed attribute */
     sig->value->suppl.part.is_signed = is_signed;
+
+    /* Indicate handled attribute */
+    sig->suppl.part.not_handled = handled ? 0 : 1;
 
   }
   
@@ -1960,6 +1965,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.207  2006/08/10 22:35:14  phase1geo
+ Updating with fixes for upcoming 0.4.7 stable release.  Updated regressions
+ for this change.  Full regression still fails due to an unrelated issue.
+
  Revision 1.206  2006/08/02 22:28:31  phase1geo
  Attempting to fix the bug pulled out by generate11.v.  We are just having an issue
  with setting the assigned bit in a signal expression that contains a hierarchical reference

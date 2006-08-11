@@ -476,7 +476,7 @@ list_of_port_declarations
   | list_of_port_declarations ',' IDENTIFIER
     {
       if( $1 != NULL ) {
-        db_add_signal( $3, $1->type, $1->range->left, $1->range->right, curr_signed, curr_mba, @3.first_line, @3.first_column );
+        db_add_signal( $3, $1->type, $1->range->left, $1->range->right, curr_signed, curr_mba, @3.first_line, @3.first_column, TRUE );
       }
       $$ = $1;
     }
@@ -493,7 +493,7 @@ port_declaration
         $$ = NULL;
       } else {
         if( ignore_mode == 0 ) {
-          db_add_signal( $6, curr_sig_type, curr_range->left, curr_range->right, curr_signed, FALSE, @6.first_line, @6.first_column );
+          db_add_signal( $6, curr_sig_type, curr_range->left, curr_range->right, curr_signed, FALSE, @6.first_line, @6.first_column, TRUE );
           pi = (port_info*)malloc_safe( sizeof( port_info ), __FILE__, __LINE__ );
           pi->type      = curr_sig_type;
           pi->is_signed = curr_signed;
@@ -514,7 +514,7 @@ port_declaration
         $$ = NULL;
       } else {
         if( ignore_mode == 0 ) {
-          db_add_signal( $6, SSUPPL_TYPE_OUTPUT, curr_range->left, curr_range->right, curr_signed, FALSE, @6.first_line, @6.first_column );
+          db_add_signal( $6, SSUPPL_TYPE_OUTPUT, curr_range->left, curr_range->right, curr_signed, FALSE, @6.first_line, @6.first_column, TRUE );
           pi = (port_info*)malloc_safe( sizeof( port_info ), __FILE__, __LINE__ );
           pi->type      = SSUPPL_TYPE_OUTPUT;
           pi->is_signed = curr_signed;
@@ -536,7 +536,7 @@ port_declaration
         $$ = NULL;
       } else {
         if( ignore_mode == 0 ) {
-          db_add_signal( $6, SSUPPL_TYPE_OUTPUT, curr_range->left, curr_range->right, curr_signed, FALSE, @6.first_line, @6.first_column );
+          db_add_signal( $6, SSUPPL_TYPE_OUTPUT, curr_range->left, curr_range->right, curr_signed, FALSE, @6.first_line, @6.first_column, TRUE );
           pi = (port_info*)malloc_safe( sizeof( port_info ), __FILE__, __LINE__ );
           pi->type       = SSUPPL_TYPE_OUTPUT;
           pi->is_signed  = curr_signed;
@@ -1805,25 +1805,13 @@ identifier
 list_of_variables
   : IDENTIFIER
     {
-      char str[256];
-      if( curr_handled ) {
-        strncpy( str, $1, 256 );
-      } else {
-        snprintf( str, 256, "!%s", $1 );
-      }
-      db_add_signal( str, curr_sig_type, curr_range->left, curr_range->right, curr_signed, curr_mba, @1.first_line, @1.first_column );
+      db_add_signal( $1, curr_sig_type, curr_range->left, curr_range->right, curr_signed, curr_mba, @1.first_line, @1.first_column, curr_handled );
       free_safe( $1 );
     }
   | UNUSED_IDENTIFIER
   | list_of_variables ',' IDENTIFIER
     {
-      char str[256];
-      if( curr_handled ) {
-        strncpy( str, $3, 256 );
-      } else {
-        snprintf( str, 256, "!%s", $3 );
-      }
-      db_add_signal( str, curr_sig_type, curr_range->left, curr_range->right, curr_signed, curr_mba, @3.first_line, @3.first_column );
+      db_add_signal( $3, curr_sig_type, curr_range->left, curr_range->right, curr_signed, curr_mba, @3.first_line, @3.first_column, curr_handled );
       free_safe( $3 );
     }
   | list_of_variables ',' UNUSED_IDENTIFIER
@@ -2517,7 +2505,7 @@ module_item
       if( ignore_mode == 0 ) {
         if( db_add_function_task_namedblock( FUNIT_FUNCTION, $4, @4.text, @4.first_line ) ) {
           generate_mode--;
-          db_add_signal( $4, SSUPPL_TYPE_IMPLICIT, curr_range->left, curr_range->right, FALSE, FALSE, @4.first_line, @4.first_column );
+          db_add_signal( $4, SSUPPL_TYPE_IMPLICIT, curr_range->left, curr_range->right, FALSE, FALSE, @4.first_line, @4.first_column, TRUE );
           generate_mode++;
         } else {
           ignore_mode++;
@@ -4116,7 +4104,7 @@ range_or_type_opt
 register_variable
   : IDENTIFIER
     {
-      db_add_signal( $1, curr_sig_type, curr_range->left, curr_range->right, curr_signed, curr_mba, @1.first_line, @1.first_column );
+      db_add_signal( $1, curr_sig_type, curr_range->left, curr_range->right, curr_signed, curr_mba, @1.first_line, @1.first_column, TRUE );
       free_safe( $1 );
     }
   | UNUSED_IDENTIFIER
@@ -4129,7 +4117,7 @@ register_variable
         free_safe( $1 );
         expression_dealloc( $3, FALSE );
       } else {
-        db_add_signal( $1, curr_sig_type, curr_range->left, curr_range->right, curr_signed, curr_mba, @1.first_line, @1.first_column );
+        db_add_signal( $1, curr_sig_type, curr_range->left, curr_range->right, curr_signed, curr_mba, @1.first_line, @1.first_column, TRUE );
         if( $3 != NULL ) {
           exp = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
           exp = db_create_expression( $3, exp, EXP_OP_RASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
@@ -4149,13 +4137,9 @@ register_variable
   | IDENTIFIER '[' ignore_more static_expr ':' static_expr ignore_less ']'
     {
       /* We don't support memory coverage */
-      char* name;
       if( $1 != NULL ) {
-        name = (char*)malloc_safe( (strlen( $1 ) + 2), __FILE__, __LINE__ );
-        snprintf( name, (strlen( $1 ) + 2), "!%s", $1 );
-        db_add_signal( name, curr_sig_type, curr_range->left, curr_range->right, curr_signed, curr_mba, @1.first_line, @1.first_column );
+        db_add_signal( $1, curr_sig_type, curr_range->left, curr_range->right, curr_signed, curr_mba, @1.first_line, @1.first_column, FALSE );
         free_safe( $1 );
-        free_safe( name );
       }
     }
   | UNUSED_IDENTIFIER '[' static_expr ':' static_expr ']'
@@ -4374,7 +4358,7 @@ net_decl_assign
       expression* tmp;
       statement*  stmt;
       if( (ignore_mode == 0) && ($1 != NULL) && (curr_range != NULL) && (info_suppl.part.excl_assign == 0) ) {
-        db_add_signal( $1, SSUPPL_TYPE_DECLARED, curr_range->left, curr_range->right, FALSE, FALSE, @1.first_line, @1.first_column );
+        db_add_signal( $1, SSUPPL_TYPE_DECLARED, curr_range->left, curr_range->right, FALSE, FALSE, @1.first_line, @1.first_column, TRUE );
         if( $3 != NULL ) {
           tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
           tmp  = db_create_expression( $3, tmp, EXP_OP_DASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
@@ -4400,7 +4384,7 @@ net_decl_assign
       expression* tmp;
       statement*  stmt;
       if( (ignore_mode == 0) && ($2 != NULL) && (curr_range != NULL) && (info_suppl.part.excl_assign == 0) ) {
-        db_add_signal( $2, SSUPPL_TYPE_DECLARED, curr_range->left, curr_range->right, FALSE, FALSE, @2.first_line, @2.first_column );
+        db_add_signal( $2, SSUPPL_TYPE_DECLARED, curr_range->left, curr_range->right, FALSE, FALSE, @2.first_line, @2.first_column, TRUE );
         if( $4 != NULL ) {
           tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @2.first_line, @2.first_column, (@2.last_column - 1), $2 );
           tmp  = db_create_expression( $4, tmp, EXP_OP_DASSIGN, FALSE, @2.first_line, @2.first_column, (@4.last_column - 1), NULL );

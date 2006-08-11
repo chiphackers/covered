@@ -132,8 +132,8 @@ VCSONLYDIAGS1 = elsif1          elsif1.1        elsif1.2        elsif1.3        
                 generate9.2     generate9.3     generate10      generate10.1    generate10.2 \
                 hier1.1 \
                 line1           mbit_sel5.4     mbit_sel6.4     param8.2        param12 \
-                param12.1       slist3.1        static_func1    static_func1.1  static_func2    static_func2.1 \
-                static_func2.2  static_func2.3  trireg
+                param12.1       slist3.1        slist3.3        static_func1    static_func1.1 \
+                static_func2    static_func2.1  static_func2.2  static_func2.3  trireg
 VCSONLYDIAGS2 = 
 VCSONLYDIAGS3 = 
 VCSONLYDIAGS4 = 

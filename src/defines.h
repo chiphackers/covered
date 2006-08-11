@@ -1128,6 +1128,7 @@ union ssuppl_u {
     control type           :4;  /*!< Specifies signal type (see \ref ssuppl_type for legal values) */
     control big_endian     :1;  /*!< Specifies if this signal is in big or little endianness */
     control excluded       :1;  /*!< Specifies if this signal should be excluded for toggle coverage */
+    control not_handled    :1;  /*!< Specifies if this signal is handled by Covered or not */
   } part;
 };
 
@@ -2003,6 +2004,10 @@ struct gitem_link_s {
 
 /*
  $Log$
+ Revision 1.216  2006/08/10 22:35:14  phase1geo
+ Updating with fixes for upcoming 0.4.7 stable release.  Updated regressions
+ for this change.  Full regression still fails due to an unrelated issue.
+
  Revision 1.215  2006/08/02 22:28:31  phase1geo
  Attempting to fix the bug pulled out by generate11.v.  We are just having an issue
  with setting the assigned bit in a signal expression that contains a hierarchical reference
