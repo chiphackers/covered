@@ -62,7 +62,7 @@ bool gen_item_connect( gen_item* gi1, gen_item* gi2, int conn_id );
 void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add );
 
 /*! \brief Checks generate item and if it is a bind, adds it to binding pool and returns TRUE */
-bool gen_item_bind( gen_item* gi, func_unit* funit );
+void gen_item_bind( gen_item* gi, func_unit* funit );
 
 /*! \brief Resolves all generate items in the design */
 void generate_resolve( funit_inst* inst );
@@ -72,6 +72,12 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem );
 
 /*
  $Log$
+ Revision 1.12  2006/08/02 22:28:32  phase1geo
+ Attempting to fix the bug pulled out by generate11.v.  We are just having an issue
+ with setting the assigned bit in a signal expression that contains a hierarchical reference
+ using a genvar reference.  Adding generate11.1 diagnostic to verify a slightly different
+ syntax style for the same code.  Note sure how badly I broke regression at this point.
+
  Revision 1.11  2006/07/29 20:53:43  phase1geo
  Fixing some code related to generate statements; however, generate8.1 is still
  not completely working at this point.  Full regression passes for IV.

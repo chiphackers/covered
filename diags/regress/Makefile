@@ -136,7 +136,7 @@ VCSONLYDIAGS1 = always_comb1    always_ff1      always_latch1   do_while1       
                 generate8.1     generate8.2     generate8.3     generate8.4     generate8.5 \
                 generate8.6     generate8.7     generate8.8     generate9       generate9.1 \
                 generate9.2     generate9.3     generate10      generate10.1    generate10.2 \
-                hier1.1 \
+                generate11      generate11.1    hier1.1 \
                 line1           mbit_sel5.4     mbit_sel6.4     param8.2        param12 \
                 param12.1       slist3.1        slist3.3        static_func1    static_func1.1 \
                 static_func2    static_func2.1  static_func2.2  static_func2.3  trireg

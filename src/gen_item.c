@@ -833,6 +833,13 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
 
       case GI_TYPE_BIND :
         varname = gen_item_calc_signal_name( gi->varname, inst->funit );
+        switch( gi->elem.expr->op ) {
+          case EXP_OP_FUNC_CALL :  bind_add( FUNIT_FUNCTION,    varname, gi->elem.expr, inst->funit );  break;
+          case EXP_OP_TASK_CALL :  bind_add( FUNIT_TASK,        varname, gi->elem.expr, inst->funit );  break;
+          case EXP_OP_NB_CALL   :  bind_add( FUNIT_NAMED_BLOCK, varname, gi->elem.expr, inst->funit );  break;
+          case EXP_OP_DISABLE   :  bind_add( 1,                 varname, gi->elem.expr, inst->funit );  break;
+          default               :  bind_add( 0,                 varname, gi->elem.expr, inst->funit );  break;
+        }
         gitem_link_add( gen_item_create_bind( varname, gi->elem.expr ), &(inst->gitem_head), &(inst->gitem_tail) );
         free_safe( varname ); 
         gen_item_resolve( gi->next_true, inst, FALSE );
@@ -870,27 +877,20 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
  \param gi     Pointer to generate item to examine
  \param funit  Pointer to functional unit containing this generate item
 
- \return Returns TRUE if binding occurs
+ Updates the specified expression name to be that of the generate item name
+ if the current generate item is a BIND type.
 */
-bool gen_item_bind( gen_item* gi, func_unit* funit ) {
-
-  bool retval = FALSE;  /* Return value for this function */
+void gen_item_bind( gen_item* gi, func_unit* funit ) {
 
   if( gi->suppl.part.type == GI_TYPE_BIND ) {
 
-    switch( gi->elem.expr->op ) {
-      case EXP_OP_FUNC_CALL :  bind_add( FUNIT_FUNCTION,    gi->varname, gi->elem.expr, funit );  break;
-      case EXP_OP_TASK_CALL :  bind_add( FUNIT_TASK,        gi->varname, gi->elem.expr, funit );  break;
-      case EXP_OP_NB_CALL   :  bind_add( FUNIT_NAMED_BLOCK, gi->varname, gi->elem.expr, funit );  break;
-      case EXP_OP_DISABLE   :  bind_add( 1,                 gi->varname, gi->elem.expr, funit );  break;
-      default               :  bind_add( 0,                 gi->varname, gi->elem.expr, funit );  break;
-    }
+    /* Remove the current name */
+    free_safe( gi->elem.expr->name );
 
-    retval = TRUE;
+    /* Assign the new name */
+    gi->elem.expr->name = strdup_safe( gi->varname, __FILE__, __LINE__ );
 
   }
-
-  return( retval );
 
 }
 
@@ -985,6 +985,12 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.25  2006/08/02 22:28:32  phase1geo
+ Attempting to fix the bug pulled out by generate11.v.  We are just having an issue
+ with setting the assigned bit in a signal expression that contains a hierarchical reference
+ using a genvar reference.  Adding generate11.1 diagnostic to verify a slightly different
+ syntax style for the same code.  Note sure how badly I broke regression at this point.
+
  Revision 1.24  2006/08/01 18:05:13  phase1geo
  Adding more diagnostics to test generate item structure connectivity.  Fixing
  bug in funit_find_signal function to search the function (instead of the instance
