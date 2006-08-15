@@ -1128,7 +1128,7 @@ expression* db_create_expression( expression* right, expression* left, int op, b
   /* Add expression and signal to binding list */
   if( sig_name != NULL ) {
 
-    if( gen_item_varname_contains_genvar( sig_name ) ) {
+    if( (generate_mode > 0) && gen_item_varname_contains_genvar( sig_name ) ) {
       last_gi = gen_item_create_bind( sig_name, expr );
       if( curr_gi_block != NULL ) {
         db_gen_item_connect( curr_gi_block, last_gi );
@@ -1965,6 +1965,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.208  2006/08/11 15:16:48  phase1geo
+ Joining slist3.3 diagnostic to latest development branch.  Adding changes to
+ fix memory issues from bug 1535412.
+
  Revision 1.207  2006/08/10 22:35:14  phase1geo
  Updating with fixes for upcoming 0.4.7 stable release.  Updated regressions
  for this change.  Full regression still fails due to an unrelated issue.
