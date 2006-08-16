@@ -1627,6 +1627,7 @@ struct stmt_link_s {
 struct stmt_loop_link_s {
   statement*      stmt;              /*!< Pointer to last statement in loop */
   int             id;                /*!< ID of next statement after last */
+  bool            next_true;         /*!< Specifies if the ID is for next_true or next_false */
   stmt_loop_link* next;              /*!< Pointer to next statement in stack */
 };
 
@@ -2006,6 +2007,11 @@ struct gitem_link_s {
 
 /*
  $Log$
+ Revision 1.218  2006/08/11 18:57:03  phase1geo
+ Adding support for always_comb, always_latch and always_ff statement block
+ types.  Added several diagnostics to regression suite to verify this new
+ behavior.
+
  Revision 1.217  2006/08/11 15:16:49  phase1geo
  Joining slist3.3 diagnostic to latest development branch.  Adding changes to
  fix memory issues from bug 1535412.

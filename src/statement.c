@@ -156,13 +156,14 @@ statement* statement_create( expression* exp ) {
 }
 
 /*!
- \param stmt  Pointer of statement waiting to be linked.
- \param id    ID of statement to be read out later.
+ \param stmt       Pointer of statement waiting to be linked.
+ \param id         ID of statement to be read out later.
+ \param next_true  Set to TRUE if the specified ID is for the next_true statement.
 
  Creates a new statement loop link for the specified parameters and adds this
  element to the top of the statement loop queue.
 */
-void statement_queue_add( statement* stmt, int id ) {
+void statement_queue_add( statement* stmt, int id, bool next_true ) {
 
   stmt_loop_link* sll;  /* Pointer to newly created statement loop link */
 
@@ -170,9 +171,10 @@ void statement_queue_add( statement* stmt, int id ) {
   sll = (stmt_loop_link*)malloc_safe( sizeof( stmt_loop_link ), __FILE__, __LINE__ );
 
   /* Populate statement loop link with specified parameters */
-  sll->stmt = stmt;
-  sll->id   = id;
-  sll->next = NULL;
+  sll->stmt      = stmt;
+  sll->id        = id;
+  sll->next_true = next_true;
+  sll->next      = NULL;
 
   /* Add to top of statement loop queue */
   if( stmt_loop_head == NULL ) {
@@ -208,10 +210,11 @@ void statement_queue_compare( statement* stmt ) {
     if( stmt->exp->id == sll->id ) {
 
       /* Set next_true and next_false pointers */
-      if( sll->stmt->next_true == NULL ) {
+      if( (sll->stmt->next_true == NULL) && sll->next_true ) {
         sll->stmt->next_true = stmt;
       }
-      if( (sll->stmt->next_false == NULL) && !EXPR_IS_CONTEXT_SWITCH( sll->stmt->exp ) && (sll->stmt->exp->op != EXP_OP_WHILE) ) {
+      // if( (sll->stmt->next_false == NULL) && !EXPR_IS_CONTEXT_SWITCH( sll->stmt->exp ) && !sll->next_true ) {
+      if( (sll->stmt->next_false == NULL) && !sll->next_true ) {
         sll->stmt->next_false = stmt;
       }
        
@@ -408,7 +411,7 @@ bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) {
         stmtl = stmt_link_find( true_id, curr_funit->stmt_head );
         if( stmtl == NULL ) {
           /* Add to statement loop queue */
-          statement_queue_add( stmt, true_id );
+          statement_queue_add( stmt, true_id, TRUE );
         } else {
           stmt->next_true = stmtl->stmt;
         }
@@ -422,7 +425,7 @@ bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) {
       } else if( false_id != 0 ) {
         stmtl = stmt_link_find( false_id, curr_funit->stmt_head );
         if( stmtl == NULL ) {
-          statement_queue_add( stmt, false_id );
+          statement_queue_add( stmt, false_id, FALSE );
         } else {
           stmt->next_false = stmtl->stmt;
         }
@@ -850,6 +853,13 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.88  2006/08/11 21:27:10  phase1geo
+ Adding support for unique, priority and do..while SystemVerilog constructs.
+ do_while2 diagnostic is currently failing with an issue regarding connecting its
+ false path to the top of its always block.  Otherwise, full regression should
+ be passing (with the exception of the problem with the assigned bit due to changes
+ for generate11).
+
  Revision 1.87  2006/08/10 22:35:14  phase1geo
  Updating with fixes for upcoming 0.4.7 stable release.  Updated regressions
  for this change.  Full regression still fails due to an unrelated issue.
