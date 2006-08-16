@@ -61,12 +61,11 @@ extern isuppl info_suppl;
 */
 void toggle_get_stats( sig_link* sigl, float* total, int* hit01, int* hit10 ) {
 
-  sig_link* curr_sig = sigl;    /* Current signal being evaluated     */
+  sig_link* curr_sig = sigl;  /* Current signal being evaluated */
   
   /* Search signal list */
   while( curr_sig != NULL ) {
-    if( (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_PARAM) &&
-        (curr_sig->sig->value->suppl.part.mba == 0) ) {
+    if( curr_sig->sig->suppl.part.type != SSUPPL_TYPE_PARAM ) {
       *total += curr_sig->sig->value->width;
       if( curr_sig->sig->suppl.part.excluded == 1 ) {
         *hit01 += curr_sig->sig->value->width;
@@ -115,7 +114,7 @@ bool toggle_collect( char* funit_name, int funit_type, int cov, sig_link** sig_h
       hit01 = 0;
       hit10 = 0;
 
-      if( (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_PARAM) && (curr_sig->sig->value->suppl.part.mba == 0) ) {
+      if( curr_sig->sig->suppl.part.type != SSUPPL_TYPE_PARAM ) {
 
         vector_toggle_count( curr_sig->sig->value, &hit01, &hit10 );
 
@@ -233,8 +232,7 @@ bool toggle_get_funit_summary( char* funit_name, int funit_type, int* total, int
       hit01 = 0;
       hit10 = 0;
 
-      if( (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_PARAM) &&
-          (curr_sig->sig->value->suppl.part.mba == 0) ) {
+      if( curr_sig->sig->suppl.part.type != SSUPPL_TYPE_PARAM ) {
 
         /* We have found a valid signal to look at; therefore, increment the total */
         (*total)++;
@@ -440,7 +438,7 @@ void toggle_display_verbose( FILE* ofile, sig_link* sigl ) {
     /* Get printable version of the signal name */
     pname = scope_gen_printable( curr_sig->sig->name );
 
-    if( (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_PARAM) && (curr_sig->sig->value->suppl.part.mba == 0) ) {
+    if( curr_sig->sig->suppl.part.type != SSUPPL_TYPE_PARAM ) {
 
       vector_toggle_count( curr_sig->sig->value, &hit01, &hit10 );
 
@@ -628,6 +626,12 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.42  2006/06/29 22:44:57  phase1geo
+ Fixing newly introduced bug in FSM report handler.  Also adding pointers back
+ to main text window when exclusion properties are changed.  Fixing toggle
+ coverage retension.  This is partially working but doesn't seem to want to
+ save/restore properly at this point.
+
  Revision 1.41  2006/06/26 04:12:55  phase1geo
  More updates for supporting coverage exclusion.  Still a bit more to go
  before this is working properly.

@@ -258,7 +258,9 @@ int yydebug = 1;
 
 %token K_automatic K_cell K_use K_library K_config K_endconfig K_design K_liblist K_instance
 %token K_showcancelled K_noshowcancelled K_pulsestyle_onevent K_pulsestyle_ondetect
-%token K_bool K_logic K_unique K_priority K_do
+
+%token K_bool K_bit K_byte K_logic K_char K_shortint K_int K_longint K_unsigned
+%token K_unique K_priority K_do
 %token K_always_comb K_always_latch K_always_ff
 
 %token KK_attribute
@@ -3759,13 +3761,67 @@ block_item_decl
       curr_sig_type = SSUPPL_TYPE_DECLARED;
     }
     register_variable_list ';'
-  | attribute_list_opt K_integer
+  | attribute_list_opt K_bit signed_opt range_opt
+    {
+      curr_mba      = FALSE;
+      curr_handled  = TRUE;
+      curr_sig_type = SSUPPL_TYPE_DECLARED;
+    }
+    register_variable_list ';'
+  | attribute_list_opt K_logic signed_opt range_opt
+    {
+      curr_mba      = FALSE;
+      curr_handled  = TRUE;
+      curr_sig_type = SSUPPL_TYPE_DECLARED;
+    }
+    register_variable_list ';'
+  | attribute_list_opt K_char unsigned_opt
+    {
+      curr_mba      = TRUE;
+      curr_handled  = TRUE;
+      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      parser_implicitly_set_curr_range( 7, 0 );
+    }
+    register_variable_list ';'
+  | attribute_list_opt K_byte unsigned_opt
+    {
+      curr_mba      = TRUE;
+      curr_handled  = TRUE;
+      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      parser_implicitly_set_curr_range( 7, 0 );
+    }
+    register_variable_list ';'
+  | attribute_list_opt K_shortint unsigned_opt
+    {
+      curr_mba      = TRUE;
+      curr_handled  = TRUE;
+      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      parser_implicitly_set_curr_range( 15, 0 );
+    }
+    register_variable_list ';'
+  | attribute_list_opt K_integer unsigned_opt
     {
       curr_signed   = TRUE;
       curr_mba      = TRUE;
       curr_handled  = TRUE;
       curr_sig_type = SSUPPL_TYPE_DECLARED;
       parser_implicitly_set_curr_range( 31, 0 );
+    }
+    register_variable_list ';'
+  | attribute_list_opt K_int unsigned_opt
+    {
+      curr_mba      = TRUE;
+      curr_handled  = TRUE;
+      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      parser_implicitly_set_curr_range( 31, 0 );
+    }
+    register_variable_list ';'
+  | attribute_list_opt K_longint unsigned_opt
+    {
+      curr_mba      = TRUE;
+      curr_handled  = TRUE;
+      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      parser_implicitly_set_curr_range( 63, 0 );
     }
     register_variable_list ';'
   | attribute_list_opt K_time
@@ -3812,6 +3868,50 @@ block_item_decl
   | attribute_list_opt K_reg error ';'
     {
       VLerror( "Syntax error in reg variable list" );
+    }
+  | attribute_list_opt K_bit error ';'
+    {
+      VLerror( "Syntax error in bit variable list" );
+    }
+  | attribute_list_opt K_byte error ';'
+    {
+      VLerror( "Syntax error in byte variable list" );
+    }
+  | attribute_list_opt K_logic error ';'
+    {
+      VLerror( "Syntax error in logic variable list" );
+    }
+  | attribute_list_opt K_char error ';'
+    {
+      VLerror( "Syntax error in char variable list" );
+    }
+  | attribute_list_opt K_shortint error ';'
+    {
+      VLerror( "Syntax error in shortint variable list" );
+    }
+  | attribute_list_opt K_integer error ';'
+    {
+      VLerror( "Syntax error in integer variable list" );
+    }
+  | attribute_list_opt K_int error ';'
+    {
+      VLerror( "Syntax error in int variable list" );
+    }
+  | attribute_list_opt K_longint error ';'
+    {
+      VLerror( "Syntax error in longint variable list" );
+    }
+  | attribute_list_opt K_time error ';'
+    {
+      VLerror( "Syntax error in time variable list" );
+    }
+  | attribute_list_opt K_real error ';'
+    {
+      VLerror( "Syntax error in real variable list" );
+    }
+  | attribute_list_opt K_realtime error ';'
+    {
+      VLerror( "Syntax error in realtime variable list" );
     }
   | attribute_list_opt K_parameter error ';'
     {
@@ -4285,8 +4385,15 @@ task_item
   ;
 
 signed_opt
-  : K_signed { curr_signed = TRUE;  }
-  |          { curr_signed = FALSE; }
+  : K_signed   { curr_signed = TRUE;  }
+  | K_unsigned { curr_signed = FALSE; }
+  |            { curr_signed = FALSE; }
+  ;
+
+unsigned_opt
+  : K_unsigned { curr_signed = FALSE; }
+  | K_signed   { curr_signed = TRUE;  }
+  |            { curr_signed = TRUE;  }
   ;
 
   /*

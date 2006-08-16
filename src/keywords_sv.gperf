@@ -31,10 +31,17 @@ always_comb,  K_always_comb
 always_ff,    K_always_ff
 always_latch, K_always_latch
 bool,         K_bool
+bit,          K_bit
+byte,         K_byte
+char,         K_char
 do,           K_do
+int,          K_int
 logic,        K_logic
+longint,      K_longint
 priority,     K_priority
+shortint,     K_shortint
 unique,       K_unique
+unsigned,     K_unsigned
 %%
 
 int lexer_keyword_sv_code( const char* str, int length ) {
