@@ -1,5 +1,5 @@
 5 8 11 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd ovl1.3.vcd -o ovl1.3.cdd -v ovl1.3.v -A ovl +libext+.vlib+ -y ./ovl -I ./ovl -I ./ovl/vlog95
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -o ovl1.3.cdd -v ovl1.3.v -A ovl +libext+.vlib+ -y ./ovl -I ./ovl -I ./ovl/vlog95
 3 0 main main ovl1.3.v 1 32
 1 width 0 0 80000 32 0 10 0 0 0 0 0 0 0
 1 clock 0 3 3000a 1 0 1102
@@ -131,8 +131,8 @@
 1 clk 0 12 8 1 0 1102
 1 reset_n 0 12 d 1 0 102
 1 test_expr 0 13 14 4 0 ffaa
-1 error_count 0 4 3000a 32 112 aa aa aa aa aa aa aa aa
-1 cover_count 0 72 3000a 32 112 37aa aa aa aa aa aa aa aa
+1 error_count 0 4 3000a 32 64 aa aa aa aa aa aa aa aa
+1 cover_count 0 72 3000a 32 64 37aa aa aa aa aa aa aa aa
 1 test_expr_1 0 13 30013 4 0 7faa
 1 prev_test_expr 0 38 30012 4 0 ffaa
 1 one_hots_checked 0 40 30012 4 0 faa
@@ -157,8 +157,8 @@
 4 111 108 0
 3 3 assert_zero_one_hot.ovl_cover_t main.foo.ovl_cover_t std_ovl_task.h 75 94
 2 112 78 1f001f 1 0 20008 0 0 32 64 1 0 0 0 0 0 0 0
-2 113 78 11001b 5 1 1c 0 0 cover_count
-2 114 78 11001f 5 6 20298 112 113 32 64 37aa aa aa aa aa aa aa aa
+2 113 78 11001b 4 1 1c 0 0 cover_count
+2 114 78 11001f 4 6 20298 112 113 32 64 36aa aa aa aa aa aa aa aa
 2 115 78 3000d 0 1 400 0 0 cover_count
 2 116 78 3001f 5 37 1102a 114 115
 2 117 0 0 5 4e 20002 0 0 1 0 2

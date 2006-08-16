@@ -3777,7 +3777,7 @@ block_item_decl
     register_variable_list ';'
   | attribute_list_opt K_char unsigned_opt
     {
-      curr_mba      = TRUE;
+      curr_mba      = FALSE;
       curr_handled  = TRUE;
       curr_sig_type = SSUPPL_TYPE_DECLARED;
       parser_implicitly_set_curr_range( 7, 0 );
@@ -3785,7 +3785,7 @@ block_item_decl
     register_variable_list ';'
   | attribute_list_opt K_byte unsigned_opt
     {
-      curr_mba      = TRUE;
+      curr_mba      = FALSE;
       curr_handled  = TRUE;
       curr_sig_type = SSUPPL_TYPE_DECLARED;
       parser_implicitly_set_curr_range( 7, 0 );
@@ -3793,7 +3793,7 @@ block_item_decl
     register_variable_list ';'
   | attribute_list_opt K_shortint unsigned_opt
     {
-      curr_mba      = TRUE;
+      curr_mba      = FALSE;
       curr_handled  = TRUE;
       curr_sig_type = SSUPPL_TYPE_DECLARED;
       parser_implicitly_set_curr_range( 15, 0 );
@@ -3802,7 +3802,7 @@ block_item_decl
   | attribute_list_opt K_integer unsigned_opt
     {
       curr_signed   = TRUE;
-      curr_mba      = TRUE;
+      curr_mba      = FALSE;
       curr_handled  = TRUE;
       curr_sig_type = SSUPPL_TYPE_DECLARED;
       parser_implicitly_set_curr_range( 31, 0 );
@@ -3810,7 +3810,7 @@ block_item_decl
     register_variable_list ';'
   | attribute_list_opt K_int unsigned_opt
     {
-      curr_mba      = TRUE;
+      curr_mba      = FALSE;
       curr_handled  = TRUE;
       curr_sig_type = SSUPPL_TYPE_DECLARED;
       parser_implicitly_set_curr_range( 31, 0 );
@@ -3818,7 +3818,7 @@ block_item_decl
     register_variable_list ';'
   | attribute_list_opt K_longint unsigned_opt
     {
-      curr_mba      = TRUE;
+      curr_mba      = FALSE;
       curr_handled  = TRUE;
       curr_sig_type = SSUPPL_TYPE_DECLARED;
       parser_implicitly_set_curr_range( 63, 0 );

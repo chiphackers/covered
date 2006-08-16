@@ -1,5 +1,5 @@
 5 8 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd add1.vcd -o add1.cdd -v add1.v
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -o add1.cdd -v add1.v
 3 0 main main add1.v 1 17
 2 1 6 120014 1 0 20008 0 0 32 64 14 40 0 0 0 0 0 0
 2 2 6 e000e 1 0 20008 0 0 32 64 1 0 0 0 0 0 0 0
@@ -21,7 +21,7 @@
 2 18 7 50016 1 6 20208 11 17 32 0 aa aa aa aa aa aa aa aa
 2 19 7 10001 0 1 400 0 0 j
 2 20 7 10016 1 37 a 18 19
-1 i 0 3 30008 32 112 aa aa aa aa aa aa aa aa
-1 j 0 3 3000b 32 112 aa aa aa aa aa aa aa aa
+1 i 0 3 30008 32 80 aa aa aa aa aa aa aa aa
+1 j 0 3 3000b 32 80 aa aa aa aa aa aa aa aa
 4 20 0 0
 4 9 20 20

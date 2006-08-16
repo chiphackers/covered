@@ -1,5 +1,5 @@
 5 8 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd signed1.vcd -o signed1.cdd -v signed1.v
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -o signed1.cdd -v signed1.v
 3 0 main main signed1.v 1 24
 2 1 9 50008 1 0 20004 0 0 4 3 0
 2 2 9 10001 0 1 400 0 0 a
@@ -16,7 +16,7 @@
 2 13 14 1000c 1 37 100a 11 12
 1 a 0 3 3000a 4 16 aa
 1 b 0 4 3000a 1 16 2
-1 c 0 6 30008 32 112 aa aa aa aa aa aa aa aa
+1 c 0 6 30008 32 80 aa aa aa aa aa aa aa aa
 4 7 0 0
 4 3 7 7
 4 13 0 0

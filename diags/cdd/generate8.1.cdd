@@ -1,5 +1,5 @@
 5 8 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd generate8.1.vcd -o generate8.1.cdd -v generate8.1.v
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -o generate8.1.cdd -v generate8.1.v
 3 0 main main generate8.1.v 1 26
 1 A 0 0 80000 32 0 0 0 0 0 0 0 0 0
 3 1 main.b main.b generate8.1.v 7 16
@@ -37,7 +37,7 @@
 2 24 12 1d001f 4 6 20298 22 23 32 64 37aa aa aa aa aa aa aa aa
 2 25 12 1b001b 0 1 400 0 0 i
 2 26 12 16001b 4 37 602a 24 25
-1 i 0 11 3000f 32 112 37aa aa aa aa aa aa aa aa
+1 i 0 11 3000f 32 80 37aa aa aa aa aa aa aa aa
 4 26 21 21
 4 15 26 26
 4 21 15 0

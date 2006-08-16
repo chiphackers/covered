@@ -1,5 +1,5 @@
 5 8 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd assign1.vcd -o assign1.cdd -v assign1.v
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -o assign1.cdd -v assign1.v
 3 0 main main assign1.v 1 88
 2 1 24 c000c 1 0 20004 0 0 32 64 0 0 0 0 0 0 0 0
 2 2 24 70008 0 1 400 0 0 w0
@@ -223,10 +223,10 @@
 1 y0 0 17 3000c 2 0 330a
 1 y1 0 18 3000c 2 0 330a
 1 y2 0 19 3000c 2 0 330a
-1 i 0 21 3000c 32 96 13aa aa aa aa aa aa aa aa
-1 j 0 22 3000c 32 96 13aa aa aa aa aa aa aa aa
-1 k 0 22 3000f 32 96 13aa aa aa aa aa aa aa aa
-1 l 0 22 30012 32 96 7faa aa aa aa aa aa aa aa
+1 i 0 21 3000c 32 64 13aa aa aa aa aa aa aa aa
+1 j 0 22 3000c 32 64 13aa aa aa aa aa aa aa aa
+1 k 0 22 3000f 32 64 13aa aa aa aa aa aa aa aa
+1 l 0 22 30012 32 64 7faa aa aa aa aa aa aa aa
 4 3 3 3
 4 6 6 6
 4 11 11 11
