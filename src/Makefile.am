@@ -29,6 +29,7 @@ covered_SOURCES = arc.c \
 		  lxt2_read.c \
 		  main.c \
 		  merge.c \
+                  obfuscate.c \
                   ovl.c \
 		  param.c \
 		  parse.c \
