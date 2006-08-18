@@ -37,6 +37,7 @@
 #include "merge.h"
 #include "report.h"
 #include "util.h"
+#include "obfuscate.h"
 
 
 extern char  user_msg[USER_MSG_LENGTH];
@@ -50,9 +51,9 @@ void usage() {
 
   printf( "\n" );
 #ifdef DEBUG_MODE
-  printf( "Usage:  covered (-h | -v | (-D | -Q) <command> <command_options>))\n" );
+  printf( "Usage:  covered (-h | -v | (-D | -Q) (-B) <command> <command_options>))\n" );
 #else
-  printf( "Usage:  covered (-h | -v | -Q) <command> <command_options>))\n" );
+  printf( "Usage:  covered (-h | -v | (-Q) (-B) <command> <command_options>))\n" );
 #endif
   printf( "\n" );
   printf( "   Options:\n" );
@@ -60,6 +61,7 @@ void usage() {
   printf( "      -D                      Debug.  Display information helpful for debugging tool problems\n" );
 #endif
   printf( "      -Q                      Quiet mode.  Causes all output to be suppressed\n" );
+  printf( "      -B                      Obfuscate.  Obfuscates design-sensitive names in all user-readable output\n" );
   printf( "      -v                      Version.  Display current Covered version\n" );
   printf( "      -h                      Help.  Display this usage information\n" );
   printf( "\n" );
@@ -105,6 +107,7 @@ int main( int argc, char** argv ) {
   /* Initialize error suppression value */
   set_output_suppression( FALSE );
   set_debug( FALSE );
+  obfuscate_set_mode( FALSE );
 
   /* Setup function to be called at exit */
   assert( atexit( covered_cleanup ) == 0 );
@@ -140,6 +143,11 @@ int main( int argc, char** argv ) {
 #else
           print_output( "Global command -D can only be used when Covered is configured with the --enable-debug flag when being built", FATAL, __FILE__, __LINE__ );
 #endif
+
+        } else if( strncmp( "-B", argv[curr_arg], 2 ) == 0 ) {
+
+          obfuscate_set_mode( TRUE );
+
         } else if( strncmp( "score", argv[curr_arg], 5 ) == 0 ) {
 
           retval    = command_score( argc, curr_arg, argv );
@@ -178,12 +186,20 @@ int main( int argc, char** argv ) {
 
   }
 
+  /* Deallocate obfuscation tree */
+  obfuscate_dealloc();
+
   return( retval );
 
 }
 
 /*
  $Log$
+ Revision 1.16  2006/03/28 22:28:27  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.15  2006/01/09 18:58:15  phase1geo
  Updating regression for VCS runs.  Added cleanup function at exit to remove the
  tmp* file (if it exists) regardless of the internal state of Covered at the time
