@@ -28,6 +28,7 @@
 #include "ovl.h"
 #include "util.h"
 #include "link.h"
+#include "obfuscate.h"
 
 
 extern funit_inst* instance_root;
@@ -181,7 +182,7 @@ bool assertion_funit_summary( FILE* ofile, funit_link* head ) {
 
       fprintf( ofile, "  %-20.20s    %-20.20s   %5d/%5.0f/%5.0f      %3.0f%%\n",
                pname,
-               get_basename( head->funit->filename ),
+               get_basename( obf_file( head->funit->filename ) ),
                head->funit->stat->assert_hit,
                miss,
                head->funit->stat->assert_total,
@@ -269,7 +270,7 @@ void assertion_instance_verbose( FILE* ofile, funit_inst* root, char* parent_ins
       case FUNIT_TASK        :  fprintf( ofile, "    Task: " );         break;
       default                :  fprintf( ofile, "    UNKNOWN: " );      break;
     }
-    fprintf( ofile, "%s, File: %s, Instance: %s\n", pname, root->funit->filename, tmpname );
+    fprintf( ofile, "%s, File: %s, Instance: %s\n", pname, obf_file( root->funit->filename ), tmpname );
     fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
     free_safe( pname );
@@ -313,7 +314,7 @@ void assertion_funit_verbose( FILE* ofile, funit_link* head ) {
         case FUNIT_TASK        :  fprintf( ofile, "    Task: " );         break;
         default                :  fprintf( ofile, "    UNKNOWN: " );      break;
       }
-      fprintf( ofile, "%s, File: %s\n", pname, head->funit->filename );
+      fprintf( ofile, "%s, File: %s\n", pname, obf_file( head->funit->filename ) );
       fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
       free_safe( pname );
@@ -517,6 +518,11 @@ bool assertion_get_coverage( char* funit_name, int funit_type, char* inst_name, 
 
 /*
  $Log$
+ Revision 1.11  2006/06/29 20:06:32  phase1geo
+ Adding assertion exclusion code.  Things seem to be working properly with this
+ now.  This concludes the initial version of code exclusion.  There are some
+ things to clean up (and maybe make better looking).
+
  Revision 1.10  2006/06/23 21:43:53  phase1geo
  More updates to include toggle exclusion (this does not work correctly at
  this time).

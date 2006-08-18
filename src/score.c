@@ -385,24 +385,32 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 
       if( retval = check_option_value( argc, argv, i ) ) {
         i++;
-        top_instance       = strdup_safe( argv[i], __FILE__, __LINE__ );
-        score_add_arg( argv[i-1] );
-        score_add_arg( argv[i] );
-        instance_specified = TRUE;
+        if( instance_specified ) {
+          print_output( "Only one -i option may be present on the command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
+        } else {
+          top_instance       = strdup_safe( argv[i], __FILE__, __LINE__ );
+          score_add_arg( argv[i-1] );
+          score_add_arg( argv[i] );
+          instance_specified = TRUE;
+        }
       }
 
     } else if( strncmp( "-o", argv[i], 2 ) == 0 ) {
 
       if( retval = check_option_value( argc, argv, i ) ) {
         i++;
-        if( is_directory( argv[i] ) ) {
-          output_db = strdup_safe( argv[i], __FILE__, __LINE__ );
-          score_add_arg( argv[i-1] );
-          score_add_arg( argv[i] );
+        if( output_db != NULL ) {
+          print_output( "Only one -o option may be present on the command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
         } else {
-          snprintf( user_msg, USER_MSG_LENGTH, "Illegal output directory specified \"%s\"", argv[i] );
-          print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          retval = FALSE;
+          if( is_directory( argv[i] ) ) {
+            output_db = strdup_safe( argv[i], __FILE__, __LINE__ );
+            score_add_arg( argv[i-1] );
+            score_add_arg( argv[i] );
+          } else {
+            snprintf( user_msg, USER_MSG_LENGTH, "Illegal output directory specified \"%s\"", argv[i] );
+            print_output( user_msg, FATAL, __FILE__, __LINE__ );
+            retval = FALSE;
+          }
         }
       }
 
@@ -410,23 +418,31 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 
       if( retval = check_option_value( argc, argv, i ) ) {
         i++;
-        timestep_update = atol( argv[i] );
-        score_add_arg( argv[i-1] );
-        score_add_arg( argv[i] );
+        if( timestep_update != 0 ) {
+          print_output( "Only one -ts option may be present on the command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
+        } else {
+          timestep_update = atol( argv[i] );
+          score_add_arg( argv[i-1] );
+          score_add_arg( argv[i] );
+        }
       }
 
     } else if( strncmp( "-t", argv[i], 2 ) == 0 ) {
 
       if( retval = check_option_value( argc, argv, i ) ) {
         i++;
-        if( is_variable( argv[i] ) ) {
-          top_module = strdup_safe( argv[i], __FILE__, __LINE__ );
-          score_add_arg( argv[i-1] );
-          score_add_arg( argv[i] );
+        if( top_module != NULL ) {
+          print_output( "Only one -t option may be present on the command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
         } else {
-          snprintf( user_msg, USER_MSG_LENGTH, "Illegal top-level module name specified \"%s\"", argv[i] );
-          print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          retval = FALSE;
+          if( is_variable( argv[i] ) ) {
+            top_module = strdup_safe( argv[i], __FILE__, __LINE__ );
+            score_add_arg( argv[i-1] );
+            score_add_arg( argv[i] );
+          } else {
+            snprintf( user_msg, USER_MSG_LENGTH, "Illegal top-level module name specified \"%s\"", argv[i] );
+            print_output( user_msg, FATAL, __FILE__, __LINE__ );
+            retval = FALSE;
+          }
         }
       }
 
@@ -564,14 +580,21 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
     } else if( strncmp( "-vpi", argv[i], 4 ) == 0 ) {
 
       i++;
-      if( (i < argc) && (argv[i][0] != '-') ) {
-        vpi_file = strdup_safe( argv[i], __FILE__, __LINE__ );
-        score_add_arg( argv[i-1] );
-        score_add_arg( argv[i] );
+      if( vpi_file != NULL ) {
+        print_output( "Only one -vpi option is allowed on the score command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
+        if( (i == argc) || (argv[i][0] == '-') ) {
+          i--;
+        }
       } else {
-        vpi_file = strdup_safe( DFLT_VPI_NAME, __FILE__, __LINE__ );
-        i--;
-        score_add_arg( argv[i] );
+        if( (i < argc) && (argv[i][0] != '-') ) {
+          vpi_file = strdup_safe( argv[i], __FILE__, __LINE__ );
+          score_add_arg( argv[i-1] );
+          score_add_arg( argv[i] );
+        } else {
+          vpi_file = strdup_safe( DFLT_VPI_NAME, __FILE__, __LINE__ );
+          i--;
+          score_add_arg( argv[i] );
+        }
       }
 
     } else if( strncmp( "-v", argv[i], 2 ) == 0 ) {
@@ -603,14 +626,18 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
       
       if( retval = check_option_value( argc, argv, i ) ) {
         i++;
-        if( is_variable( argv[i] ) ) {
-          ppfilename = strdup_safe( argv[i], __FILE__, __LINE__ );
-          score_add_arg( argv[i-1] );
-          score_add_arg( argv[i] );
+        if( ppfilename != NULL ) {
+          print_output( "Only one -p option is allowed on the score command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
         } else {
-          snprintf( user_msg, USER_MSG_LENGTH, "Unrecognizable filename %s specified for -p option.", argv[i] );
-          print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          exit( 1 );
+          if( is_variable( argv[i] ) ) {
+            ppfilename = strdup_safe( argv[i], __FILE__, __LINE__ );
+            score_add_arg( argv[i-1] );
+            score_add_arg( argv[i] );
+          } else {
+            snprintf( user_msg, USER_MSG_LENGTH, "Unrecognizable filename %s specified for -p option.", argv[i] );
+            print_output( user_msg, FATAL, __FILE__, __LINE__ );
+            exit( 1 );
+          }
         }
       }
         
@@ -639,22 +666,26 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
       
       if( retval = check_option_value( argc, argv, i ) ) {
         i++;
-        if( strcmp( argv[i], "min" ) == 0 ) {
-          delay_expr_type = DELAY_EXPR_MIN;
-          score_add_arg( argv[i-1] );
-          score_add_arg( argv[i] );
-        } else if( strcmp( argv[i], "max" ) == 0 ) {
-          delay_expr_type = DELAY_EXPR_MAX;
-          score_add_arg( argv[i-1] );
-          score_add_arg( argv[i] );
-        } else if( strcmp( argv[i], "typ" ) == 0 ) {
-          delay_expr_type = DELAY_EXPR_TYP;
-          score_add_arg( argv[i-1] );
-          score_add_arg( argv[i] );
+        if( delay_expr_type != DELAY_EXPR_DEFAULT ) {
+          print_output( "Only one -T option is allowed on the score command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
         } else {
-          snprintf( user_msg, USER_MSG_LENGTH, "Unknown -T value (%s).  Please specify min, max or typ.", argv[i] );
-          print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          exit( 1 );
+          if( strcmp( argv[i], "min" ) == 0 ) {
+            delay_expr_type = DELAY_EXPR_MIN;
+            score_add_arg( argv[i-1] );
+            score_add_arg( argv[i] );
+          } else if( strcmp( argv[i], "max" ) == 0 ) {
+            delay_expr_type = DELAY_EXPR_MAX;
+            score_add_arg( argv[i-1] );
+            score_add_arg( argv[i] );
+          } else if( strcmp( argv[i], "typ" ) == 0 ) {
+            delay_expr_type = DELAY_EXPR_TYP;
+            score_add_arg( argv[i-1] );
+            score_add_arg( argv[i] );
+          } else {
+            snprintf( user_msg, USER_MSG_LENGTH, "Unknown -T value (%s).  Please specify min, max or typ.", argv[i] );
+            print_output( user_msg, FATAL, __FILE__, __LINE__ );
+            exit( 1 );
+          }
         }
       }
 
@@ -858,6 +889,11 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.82  2006/08/18 04:41:14  phase1geo
+ Incorporating bug fixes 1538920 and 1541944.  Updated regressions.  Only
+ event1.1 does not currently pass (this does not pass in the stable version
+ yet either).
+
  Revision 1.81  2006/08/11 22:36:01  phase1geo
  Fixing bug 1538922.
 

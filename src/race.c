@@ -48,6 +48,7 @@
 #include "expr.h"
 #include "func_unit.h"
 #include "ovl.h"
+#include "obfuscate.h"
 
 
 /*!
@@ -320,12 +321,13 @@ void race_handle_race_condition( expression* expr, func_unit* mod, statement* st
       print_output( "", (flag_race_check + 1), __FILE__, __LINE__ );
       snprintf( user_msg, USER_MSG_LENGTH, "Possible race condition detected - %s", race_msgs[reason] );
       print_output( user_msg, flag_race_check, __FILE__, __LINE__ );
-      snprintf( user_msg, USER_MSG_LENGTH, "  Signal assigned in file: %s, line: %d", mod->filename, expr->line );
+      snprintf( user_msg, USER_MSG_LENGTH, "  Signal assigned in file: %s, line: %d", obf_file( mod->filename ), expr->line );
       print_output( user_msg, (flag_race_check + 1), __FILE__, __LINE__ );
 
       if( flag_race_check == WARNING ) {
         print_output( "  * Safely removing statement block from coverage consideration", WARNING_WRAP, __FILE__, __LINE__ );
-        snprintf( user_msg, USER_MSG_LENGTH, "    Statement block starting at file: %s, line: %d", mod->filename, stmt->exp->line );
+        snprintf( user_msg, USER_MSG_LENGTH, "    Statement block starting at file: %s, line: %d",
+                  obf_file( mod->filename ), stmt->exp->line );
         print_output( user_msg, WARNING_WRAP, __FILE__, __LINE__ );
       }
               
@@ -339,14 +341,16 @@ void race_handle_race_condition( expression* expr, func_unit* mod, statement* st
       print_output( "", (flag_race_check + 1), __FILE__, __LINE__ );
       snprintf( user_msg, USER_MSG_LENGTH, "Possible race condition detected - %s", race_msgs[reason] );
       print_output( user_msg, flag_race_check, __FILE__, __LINE__ );
-      snprintf( user_msg, USER_MSG_LENGTH, "  Signal assigned in file: %s, line: %d", mod->filename, expr->line );
+      snprintf( user_msg, USER_MSG_LENGTH, "  Signal assigned in file: %s, line: %d", obf_file( mod->filename ), expr->line );
       print_output( user_msg, (flag_race_check + 1), __FILE__, __LINE__ );
-      snprintf( user_msg, USER_MSG_LENGTH, "  Signal also assigned in statement starting at file: %s, line: %d", mod->filename, base->exp->line );
+      snprintf( user_msg, USER_MSG_LENGTH, "  Signal also assigned in statement starting at file: %s, line: %d",
+                obf_file( mod->filename ), base->exp->line );
       print_output( user_msg, (flag_race_check + 1), __FILE__, __LINE__ );
 
       if( flag_race_check == WARNING ) {
         print_output( "  * Safely removing statement block from coverage consideration", WARNING_WRAP, __FILE__, __LINE__ );
-        snprintf( user_msg, USER_MSG_LENGTH, "    Statement block starting at file: %s, line: %d", mod->filename, stmt->exp->line );
+        snprintf( user_msg, USER_MSG_LENGTH, "    Statement block starting at file: %s, line: %d",
+                  obf_file( mod->filename ), stmt->exp->line );
         print_output( user_msg, WARNING_WRAP, __FILE__, __LINE__ );
       }
 
@@ -362,7 +366,8 @@ void race_handle_race_condition( expression* expr, func_unit* mod, statement* st
         print_output( "", (flag_race_check + 1), __FILE__, __LINE__ );
 	snprintf( user_msg, USER_MSG_LENGTH, "Possible race condition detected - %s", race_msgs[reason] );
         print_output( user_msg, flag_race_check, __FILE__, __LINE__ );
-        snprintf( user_msg, USER_MSG_LENGTH, "  Statement block starting in file: %s, line: %d", mod->filename, stmt->exp->line );
+        snprintf( user_msg, USER_MSG_LENGTH, "  Statement block starting in file: %s, line: %d",
+                  obf_file( mod->filename ), stmt->exp->line );
         print_output( user_msg, (flag_race_check + 1), __FILE__, __LINE__ );
 	if( flag_race_check == WARNING ) {
 	  print_output( "  * Safely removing statement block from coverage consideration", WARNING_WRAP, __FILE__, __LINE__ );
@@ -373,7 +378,8 @@ void race_handle_race_condition( expression* expr, func_unit* mod, statement* st
 	if( flag_race_check == WARNING ) {
           print_output( "", WARNING_WRAP, __FILE__, __LINE__ );
 	  print_output( "* Safely removing statement block from coverage consideration", WARNING, __FILE__, __LINE__ );
-          snprintf( user_msg, USER_MSG_LENGTH, "  Statement block starting at file: %s, line: %d", mod->filename, stmt->exp->line );
+          snprintf( user_msg, USER_MSG_LENGTH, "  Statement block starting at file: %s, line: %d",
+                    obf_file( mod->filename ), stmt->exp->line );
           print_output( user_msg, WARNING_WRAP, __FILE__, __LINE__ );
 	}
 
@@ -807,7 +813,7 @@ bool race_report_summary( FILE* ofile, funit_link* head ) {
 
       fprintf( ofile, "  %-20.20s    %-20.20s        %d\n", 
                head->funit->name,
-  	       get_basename( head->funit->filename ),
+  	       get_basename( obf_file( head->funit->filename ) ),
   	       head->funit->stat->race_total );
 
     }
@@ -843,7 +849,7 @@ void race_report_verbose( FILE* ofile, funit_link* head ) {
         case FUNIT_TASK        :  fprintf( ofile, "    Task: " );         break;
         default                :  fprintf( ofile, "    UNKNOWN: " );      break;
       }
-      fprintf( ofile, "%s, File: %s\n", head->funit->name, head->funit->filename );
+      fprintf( ofile, "%s, File: %s\n", obf_funit( head->funit->name ), obf_file( head->funit->filename ) );
       fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
       fprintf( ofile, "      Starting Line #     Race Condition Violation Reason\n" );
@@ -974,6 +980,11 @@ void race_blk_delete_list( race_blk* rb ) {
 
 /*
  $Log$
+ Revision 1.43  2006/08/11 18:57:04  phase1geo
+ Adding support for always_comb, always_latch and always_ff statement block
+ types.  Added several diagnostics to regression suite to verify this new
+ behavior.
+
  Revision 1.42  2006/07/21 20:12:46  phase1geo
  Fixing code to get generated instances and generated array of instances to
  work.  Added diagnostics to verify correct functionality.  Full regression

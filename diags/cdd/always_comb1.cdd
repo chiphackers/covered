@@ -1,5 +1,5 @@
 5 8 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd always_comb1.vcd -o always_comb1.cdd -v always_comb1.v
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -o always_comb1.cdd -v always_comb1.v
 3 0 main main always_comb1.v 1 30
 2 1 7 c000c 2 1 c 0 0 c
 2 2 7 80008 1 1 4 0 0 b
@@ -12,16 +12,16 @@
 2 9 8 40004 0 1 400 0 0 d
 2 10 8 4000c 4 37 600e 8 9
 2 11 0 0 1 1 8 0 0 e
-2 12 0 0 0 2a 20000 0 0 2 0 a
+2 12 0 0 0 2a 20000 0 0 1 0 2
 2 13 0 0 1 29 20008 11 12 1 0 2
 2 14 0 0 2 1 c 0 0 f
-2 15 0 0 0 2a 20000 0 0 2 0 10a
+2 15 0 0 0 2a 20000 0 0 1 0 102
 2 16 0 0 2 29 20008 14 15 1 0 2
 2 17 0 0 1 1 4 0 0 b
-2 18 0 0 0 2a 20000 0 0 2 0 a
+2 18 0 0 0 2a 20000 0 0 1 0 2
 2 19 0 0 1 29 20008 17 18 1 0 2
 2 20 0 0 2 1 c 0 0 c
-2 21 0 0 0 2a 20000 0 0 2 0 100a
+2 21 0 0 0 2a 20000 0 0 1 0 1002
 2 22 0 0 2 29 20008 20 21 1 0 2
 2 23 0 0 2 2b 20008 19 22 1 0 2
 2 24 0 0 3 2b 20008 16 23 1 0 2

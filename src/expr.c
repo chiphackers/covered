@@ -2186,15 +2186,19 @@ bool expression_op_func__aedge( expression* expr, thread* thr ) {
   vec_data bit;     /* 1-bit vector value */
   bool     retval;  /* Return value of this function */
 
-  /* If our signal is an event, automatically set ourselves to true */
+  /* If our signal is an event that has been triggered, automatically set ourselves to true */
   if( (expr->right->sig != NULL) && (expr->right->sig->suppl.part.type == SSUPPL_TYPE_EVENT) ) {
 
-    if( thr->exec_first ) {
-      expr->suppl.part.true   = 1;
-      expr->suppl.part.eval_t = 1;
-      retval = TRUE;
+    if( expr->right->suppl.part.eval_t == 1 ) {
+      if( thr->exec_first ) {
+        expr->suppl.part.true   = 1;
+        expr->suppl.part.eval_t = 1;
+        retval = TRUE;
+      } else {
+        expr->suppl.part.eval_t = 0;
+        retval = FALSE;
+      }
     } else {
-      expr->suppl.part.eval_t = 0;
       retval = FALSE;
     }
 
@@ -2332,11 +2336,8 @@ bool expression_op_func__delay( expression* expr, thread* thr ) {
 */
 bool expression_op_func__trigger( expression* expr, thread* thr ) {
 
-  if( expr->value->value[0].part.value == 1 ) {
-    expr->value->value[0].part.value = 0;
-  } else {
-    expr->value->value[0].part.value = 1;
-  }
+  /* Specify that we have triggered */
+  expr->value->value[0].part.value = 1;
 
   /* Propagate event */
   vsignal_propagate( expr->sig );
@@ -3249,6 +3250,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.195  2006/08/18 04:41:14  phase1geo
+ Incorporating bug fixes 1538920 and 1541944.  Updated regressions.  Only
+ event1.1 does not currently pass (this does not pass in the stable version
+ yet either).
+
  Revision 1.194  2006/08/11 18:57:04  phase1geo
  Adding support for always_comb, always_latch and always_ff statement block
  types.  Added several diagnostics to regression suite to verify this new

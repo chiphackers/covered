@@ -43,6 +43,7 @@
 #include "statement.h"
 #include "static.h"
 #include "util.h"
+#include "obfuscate.h"
 
 extern char   user_msg[USER_MSG_LENGTH];
 extern int    delay_expr_type;
@@ -2401,7 +2402,7 @@ module_item
   | attribute_list_opt K_defparam defparam_assign_list ';'
     {
       snprintf( user_msg, USER_MSG_LENGTH, "Defparam found but not used, file: %s, line: %d.  Please use -P option to specify",
-                @1.text, @1.first_line );
+                obf_file( @1.text ), @1.first_line );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
     }
   | attribute_list_opt K_event
@@ -4155,7 +4156,7 @@ delay_value
           snprintf( user_msg,
                     USER_MSG_LENGTH,
                     "Delay expression type for min:typ:max not specified, using default of 'typ', file %s, line %d",
-                    @1.text,
+                    obf_file( @1.text ),
                     @1.first_line );
           print_output( user_msg, WARNING, __FILE__, __LINE__ );
         }

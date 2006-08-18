@@ -174,10 +174,11 @@ void sim_display_thread_queue( thread** head ) {
 void sim_thread_push( thread* thr, thread** head, thread** tail ) {
 
   // printf( "Before thread is pushed...\n" );
-  // sim_display_thread_queue( head );
 
   /* Only add the thread if it exists and it isn't already in a queue */
   if( (thr != NULL) && !thr->queued ) {
+
+    // sim_display_thread_queue( head );
 
     /* Add thread to tail-end of queue */
     if( *tail == NULL ) {
@@ -194,10 +195,10 @@ void sim_thread_push( thread* thr, thread** head, thread** tail ) {
     /* Set the queue indicator to TRUE */
     thr->queued = TRUE;
 
-  }
+    // printf( "After thread is pushed...\n" );
+    // sim_display_thread_queue( head );
 
-  // printf( "After thread is pushed...\n" );
-  // sim_display_thread_queue( head );
+  }
 
 }
 
@@ -747,6 +748,11 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.69  2006/08/11 18:57:04  phase1geo
+ Adding support for always_comb, always_latch and always_ff statement block
+ types.  Added several diagnostics to regression suite to verify this new
+ behavior.
+
  Revision 1.68  2006/03/28 22:28:28  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

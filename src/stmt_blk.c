@@ -72,7 +72,7 @@ void stmt_blk_add_to_remove_list( statement* stmt ) {
    blocks that contain expressions that call this task or function.
   */
   if( (funit->type == FUNIT_FUNCTION) || (funit->type == FUNIT_TASK) ) {
-    // printf( "Searching for all expressions that call %s...\n", funit->name );
+    // printf( "Searching for all expressions that call %s...\n", obf_funit( funit->name ) );
     if( (exp_head = db_get_exprs_with_statement( stmt )) != NULL ) {
       expl = exp_head;
       while( expl != NULL ) {
@@ -130,6 +130,10 @@ void stmt_blk_remove() {
 
 /*
  $Log$
+ Revision 1.4  2006/08/06 04:36:20  phase1geo
+ Fixing bugs 1533896 and 1533827.  Also added -rI option that will ignore
+ the race condition check altogether (has not been verified to this point, however).
+
  Revision 1.3  2006/03/28 22:28:28  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

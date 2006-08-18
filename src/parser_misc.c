@@ -26,6 +26,7 @@
 #include "util.h"
 #include "static.h"
 #include "link.h"
+#include "obfuscate.h"
 
 
 extern char          user_msg[USER_MSG_LENGTH];
@@ -55,7 +56,8 @@ void VLerror( char* msg ) {
 
   error_count += 1;
   
-  snprintf( user_msg, USER_MSG_LENGTH, "%s,   file: %s, line: %d, col: %d", msg, yylloc.text, yylloc.first_line, yylloc.first_column );
+  snprintf( user_msg, USER_MSG_LENGTH, "%s,   file: %s, line: %d, col: %d",
+            msg, obf_file( yylloc.text ), yylloc.first_line, yylloc.first_column );
   print_output( user_msg, FATAL, __FILE__, __LINE__ );
 
 }
@@ -70,7 +72,8 @@ void VLwarn( char* msg ) {
 
   warn_count += 1;
   
-  snprintf( user_msg, USER_MSG_LENGTH, "%s,   file: %s, line: %d, col: %d", msg, yylloc.text, yylloc.first_line, yylloc.first_column );
+  snprintf( user_msg, USER_MSG_LENGTH, "%s,   file: %s, line: %d, col: %d",
+            msg, obf_file( yylloc.text ), yylloc.first_line, yylloc.first_column );
   print_output( user_msg, WARNING, __FILE__, __LINE__ );
 
 }
@@ -192,6 +195,12 @@ bool parser_check_generation( int gen ) {
 
 /*
  $Log$
+ Revision 1.9  2006/07/15 22:07:14  phase1geo
+ Added all code to parser to check generation value to decide if a piece of
+ syntax is allowable by the parser or not.  This code compiles and has been
+ proven to not break regressions; however, none if it has been tested at this
+ point.  Many regression tests to follow...
+
  Revision 1.8  2006/07/10 22:36:37  phase1geo
  Getting parser to parse generate blocks appropriately.  I believe this is
  accurate now.  Also added the beginnings of gen_item.c which is meant to

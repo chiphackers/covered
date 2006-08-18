@@ -51,6 +51,7 @@
 #include "vector.h"
 #include "func_unit.h"
 #include "expr.h"
+#include "obfuscate.h"
 
 
 extern bool flag_use_line_width;
@@ -373,17 +374,7 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
     } else if( (expr->op == EXP_OP_SIG) || (expr->op == EXP_OP_PARAM) ) {
 
-#ifdef OBSOLETE
-      assert( expr->sig != NULL );
-
-      if( expr->sig->suppl.part.type == SSUPPL_TYPE_PARAM ) {
-        tmpstr = scope_gen_printable( expr->sig->name );
-      } else {
-#endif
-        tmpstr = scope_gen_printable( expr->name );
-#ifdef OBSOLETE
-      }
-#endif
+      tmpstr = scope_gen_printable( expr->name );
 
       switch( strlen( tmpstr ) ) {
         case 0 :  assert( strlen( tmpstr ) > 0 );  break;
@@ -410,18 +401,7 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
     } else if( (expr->op == EXP_OP_SBIT_SEL) || (expr->op == EXP_OP_PARAM_SBIT) ) {
 
-#ifdef OBSOLETE
-      assert( expr->sig != NULL );
-
-      if( expr->sig->suppl.part.type == SSUPPL_TYPE_PARAM ) {
-        pname = scope_gen_printable( expr->sig->name );
-      } else {
-#endif
-        pname = scope_gen_printable( expr->name );
-#ifdef OBSOLETE
-      }
-#endif
-
+      pname  = scope_gen_printable( expr->name );
       tmpstr = (char*)malloc_safe( (strlen( pname ) + 2), __FILE__, __LINE__ );
       snprintf( tmpstr, (strlen( pname ) + 2), "%s[", pname );
 
@@ -433,18 +413,7 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
     } else if( (expr->op == EXP_OP_MBIT_SEL) || (expr->op == EXP_OP_PARAM_MBIT) ) {
 
-#ifdef OBSOLETE
-      assert( expr->sig != NULL );
-
-      if( expr->sig->suppl.part.type == SSUPPL_TYPE_PARAM ) {
-        pname = scope_gen_printable( expr->sig->name );
-      } else {
-#endif
-        pname = scope_gen_printable( expr->name );
-#ifdef OBSOLETE
-      }
-#endif
-
+      pname  = scope_gen_printable( expr->name );
       tmpstr = (char*)malloc_safe( (strlen( pname ) + 2), __FILE__, __LINE__ );
       snprintf( tmpstr, (strlen( pname ) + 2), "%s[", pname );
 
@@ -463,18 +432,7 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
     } else if( (expr->op == EXP_OP_MBIT_POS) || (expr->op == EXP_OP_PARAM_MBIT_POS) ) {
 
-#ifdef OBSOLETE
-      assert( expr->sig != NULL );
-
-      if( expr->sig->suppl.part.type == SSUPPL_TYPE_PARAM ) {
-        pname = scope_gen_printable( expr->sig->name );
-      } else {
-#endif
-        pname = scope_gen_printable( expr->name );
-#ifdef OBSOLETE
-      }
-#endif
-
+      pname  = scope_gen_printable( expr->name );
       tmpstr = (char*)malloc_safe( (strlen( pname ) + 2), __FILE__, __LINE__ );
       snprintf( tmpstr, (strlen( pname ) + 2), "%s[", pname );
 
@@ -486,18 +444,7 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
     } else if( (expr->op == EXP_OP_MBIT_NEG) || (expr->op == EXP_OP_PARAM_MBIT_NEG) ) {
 
-#ifdef OBSOLETE
-      assert( expr->sig != NULL );
-
-      if( expr->sig->suppl.part.type == SSUPPL_TYPE_PARAM ) {
-        pname = scope_gen_printable( expr->sig->name );
-      } else {
-#endif
-        pname = scope_gen_printable( expr->name );
-#ifdef OBSOLETE
-      }
-#endif
-
+      pname  = scope_gen_printable( expr->name );
       tmpstr = (char*)malloc_safe( (strlen( pname ) + 2), __FILE__, __LINE__ );
       snprintf( tmpstr, (strlen( pname ) + 2), "%s[", pname );
 
@@ -529,7 +476,7 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
         free_safe( pname );
       } else {
         snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find statement %d in module %s's task/function list",
-                  expr->stmt->exp->id, funit->name );
+                  expr->stmt->exp->id, obf_funit( funit->name ) );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( 1 );
       }
@@ -852,6 +799,11 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.70  2006/08/11 18:57:03  phase1geo
+ Adding support for always_comb, always_latch and always_ff statement block
+ types.  Added several diagnostics to regression suite to verify this new
+ behavior.
+
  Revision 1.69  2006/05/28 02:43:49  phase1geo
  Integrating stable release 0.4.4 changes into main branch.  Updated regressions
  appropriately.

@@ -40,6 +40,7 @@
 #include "iter.h"
 #include "fsm.h"
 #include "gen_item.h"
+#include "obfuscate.h"
 
 
 /*!
@@ -343,7 +344,7 @@ void sig_link_display( sig_link* head ) {
 
   curr = head;
   while( curr != NULL ) {
-    printf( "  name: %s\n", curr->sig->name );
+    printf( "  name: %s\n", obf_sig( curr->sig->name ) );
     curr = curr->next;
   }
 
@@ -363,7 +364,7 @@ void funit_link_display( funit_link* head ) {
 
   curr = head;
   while( curr != NULL ) {
-    printf( "  name: %s, type: %d\n", curr->funit->name, curr->funit->type );
+    printf( "  name: %s, type: %s\n", obf_funit( curr->funit->name ), get_funit_type( curr->funit->type ) );
     curr = curr->next;
   }
 
@@ -947,6 +948,12 @@ void gitem_link_delete_list( gitem_link* head, bool rm_elems ) {
 
 /*
  $Log$
+ Revision 1.52  2006/08/02 22:28:32  phase1geo
+ Attempting to fix the bug pulled out by generate11.v.  We are just having an issue
+ with setting the assigned bit in a signal expression that contains a hierarchical reference
+ using a genvar reference.  Adding generate11.1 diagnostic to verify a slightly different
+ syntax style for the same code.  Note sure how badly I broke regression at this point.
+
  Revision 1.51  2006/07/29 20:53:43  phase1geo
  Fixing some code related to generate statements; however, generate8.1 is still
  not completely working at this point.  Full regression passes for IV.

@@ -71,6 +71,7 @@
 #include "iter.h"
 #include "link.h"
 #include "func_unit.h"
+#include "obfuscate.h"
 
 
 extern funit_inst*    instance_root;
@@ -513,7 +514,7 @@ bool combination_instance_summary( FILE* ofile, funit_inst* root, char* parent )
     if( strcmp( parent, "*" ) == 0 ) {
       strcpy( tmpname, root->name );
     } else {
-      snprintf( tmpname, 4096, "%s.%s", parent, root->name );
+      snprintf( tmpname, 4096, "%s.%s", parent, obf_inst( root->name ) );
     }
 
     fprintf( ofile, "  %-63.63s    %4d/%4.0f/%4.0f      %3.0f%%\n",
@@ -571,8 +572,8 @@ bool combination_funit_summary( FILE* ofile, funit_link* head ) {
     if( (info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( head->funit ) ) {
 
       fprintf( ofile, "  %-30.30s    %-30.30s   %4d/%4.0f/%4.0f      %3.0f%%\n", 
-               head->funit->name,
-               get_basename( head->funit->filename ),
+               obf_funit( head->funit->name ),
+               get_basename( obf_file( head->funit->filename ) ),
                head->funit->stat->comb_hit,
                miss,
                head->funit->stat->comb_total,
@@ -978,7 +979,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
                 pname = scope_gen_printable( tmpname );
               } else {
                 snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  Could not find statement %d in module %s",
-                          exp->stmt->exp->id, funit->name );
+                          exp->stmt->exp->id, obf_funit( funit->name ) );
                 print_output( user_msg, FATAL, __FILE__, __LINE__ );
                 exit( 1 );
               }
@@ -1957,7 +1958,7 @@ void combination_instance_verbose( FILE* ofile, funit_inst* root, char* parent )
       case FUNIT_TASK        :  fprintf( ofile, "    Task: " );         break;
       default                :  fprintf( ofile, "    UNKNOWN: " );      break;
     }
-    fprintf( ofile, "%s, File: %s, Instance: %s\n", pname, root->funit->filename, tmpname );
+    fprintf( ofile, "%s, File: %s, Instance: %s\n", pname, obf_file( root->funit->filename ), tmpname );
     fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
     free_safe( pname );
@@ -2001,7 +2002,7 @@ void combination_funit_verbose( FILE* ofile, funit_link* head ) {
         case FUNIT_TASK        :  fprintf( ofile, "    Task: " );         break;
         default                :  fprintf( ofile, "    UNKNOWN: " );      break;
       }
-      fprintf( ofile, "%s, File: %s\n", pname, head->funit->filename );
+      fprintf( ofile, "%s, File: %s\n", pname, obf_file( head->funit->filename ) );
       fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
       free_safe( pname );
@@ -2362,6 +2363,11 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.149  2006/08/11 18:57:03  phase1geo
+ Adding support for always_comb, always_latch and always_ff statement block
+ types.  Added several diagnostics to regression suite to verify this new
+ behavior.
+
  Revision 1.148  2006/06/29 20:57:24  phase1geo
  Added stmt_excluded bit to expression to allow us to individually control line
  and combinational logic exclusion.  This also allows us to exclude combinational

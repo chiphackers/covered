@@ -89,6 +89,7 @@
 #include "func_unit.h"
 #include "stmt_blk.h"
 #include "gen_item.h"
+#include "obfuscate.h"
 
 
 extern funit_inst* instance_root;
@@ -234,22 +235,26 @@ void bind_display_list() {
       switch( curr->type ) {
         case FUNIT_FUNCTION :
           printf( "  Expr: %d, %s, line %d;  Functional Unit: %s;  Function: %s\n",
-                  curr->exp->id, expression_string_op( curr->exp->op ), curr->exp->line, curr->funit->name, curr->name );
+                  curr->exp->id, expression_string_op( curr->exp->op ), curr->exp->line,
+                  obf_funit( curr->funit->name ), obf_sig( curr->name ) );
           break;
         case FUNIT_TASK :
           printf( "  Expr: %d, %s, line %d;  Functional Unit: %s;  Task: %s\n",
-                  curr->exp->id, expression_string_op( curr->exp->op ), curr->exp->line, curr->funit->name, curr->name );
+                  curr->exp->id, expression_string_op( curr->exp->op ), curr->exp->line,
+                  obf_funit( curr->funit->name ), obf_sig( curr->name ) );
           break;
         case FUNIT_NAMED_BLOCK :
           printf( "  Expr: %d, %s, line %d;  Functional Unit: %s;  Named Block: %s\n",
-                  curr->exp->id, expression_string_op( curr->exp->op ), curr->exp->line, curr->funit->name, curr->name );
+                  curr->exp->id, expression_string_op( curr->exp->op ), curr->exp->line,
+                  obf_funit( curr->funit->name ), obf_sig( curr->name ) );
           break;
         case 0 :
           if( curr->clear_assigned > 0 ) {
-            printf( "  Signal to be cleared: %s\n", curr->name );
+            printf( "  Signal to be cleared: %s\n", obf_sig( curr->name ) );
           } else {
             printf( "  Expr: %d, %s, line %d;  Functional Unit: %s;  Signal: %s\n",
-                    curr->exp->id, expression_string_op( curr->exp->op ), curr->exp->line, curr->funit->name, curr->name );
+                    curr->exp->id, expression_string_op( curr->exp->op ), curr->exp->line,
+                    obf_funit( curr->funit->name ), obf_sig( curr->name ) );
           }
           break;
         default :  break;
@@ -486,16 +491,16 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
       /* If we are binding an FSM, output an error message */
       if( fsm_bind ) {
         snprintf( user_msg, USER_MSG_LENGTH, "Unable to find specified FSM signal \"%s\" in module \"%s\" in file %s",
-                  name,
-                  funit_exp->name,
-                  funit_exp->filename );
+                  obf_sig( name ),
+                  obf_funit( funit_exp->name ),
+                  obf_file( funit_exp->filename ) );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         retval = FALSE;
 
       /* Otherwise, implicitly create the signal and bind to it */
       } else {
         assert( exp != NULL );
-        snprintf( user_msg, USER_MSG_LENGTH, "Implicit declaration of signal \"%s\", creating 1-bit version of signal", name );
+        snprintf( user_msg, USER_MSG_LENGTH, "Implicit declaration of signal \"%s\", creating 1-bit version of signal", obf_sig( name ) );
         print_output( user_msg, WARNING, __FILE__, __LINE__ );
         found_sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT, 1, 0, exp->line, ((exp->col >> 16) & 0xffff), 0 );
         sig_link_add( found_sig, &(funit_exp->sig_head), &(funit_exp->sig_tail) );
@@ -813,7 +818,7 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
           /* Check to see if the call port count matches the actual port count */
           if( (port_cnt = funit_get_port_count( found_funit )) != port_order ) {
             snprintf( user_msg, USER_MSG_LENGTH, "Number of arguments in %s call (%d) does not match its %s port list (%d), file %s, line %d",
-                      get_funit_type( type ), port_order, get_funit_type( type ), port_cnt, funit_exp->filename, exp->line );
+                      get_funit_type( type ), port_order, get_funit_type( type ), port_cnt, obf_file( funit_exp->filename ), exp->line );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
             exit( 1 );
           }
@@ -1005,6 +1010,10 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.88  2006/08/11 15:16:48  phase1geo
+ Joining slist3.3 diagnostic to latest development branch.  Adding changes to
+ fix memory issues from bug 1535412.
+
  Revision 1.87  2006/08/10 22:35:13  phase1geo
  Updating with fixes for upcoming 0.4.7 stable release.  Updated regressions
  for this change.  Full regression still fails due to an unrelated issue.

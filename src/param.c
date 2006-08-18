@@ -73,6 +73,7 @@
 #include "vsignal.h"
 #include "func_unit.h"
 #include "instance.h"
+#include "obfuscate.h"
 
 
 /*!
@@ -280,7 +281,7 @@ void mod_parm_display( mod_parm* mparm ) {
               type_str, mparm->suppl.part.order, mparm->suppl.part.owns_expr );
     } else {
       printf( "  mparam => name: %s, type: %s, order: %d, owns_exp: %d",
-               mparm->name, type_str, mparm->suppl.part.order, mparm->suppl.part.owns_expr );
+               obf_sig( mparm->name ), type_str, mparm->suppl.part.order, mparm->suppl.part.owns_expr );
     }
     if( mparm->expr != NULL ) {
       printf( ", exp_id: %d\n", mparm->expr->id );
@@ -529,7 +530,7 @@ void defparam_add( char* scope, vector* value ) {
 
   } else {
 
-    snprintf( user_msg, USER_MSG_LENGTH, "Parameter (%s) value is assigned more than once", scope );
+    snprintf( user_msg, USER_MSG_LENGTH, "Parameter (%s) value is assigned more than once", obf_sig( scope ) );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     exit( 1 );
 
@@ -1067,6 +1068,11 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.71  2006/07/31 16:26:53  phase1geo
+ Tweaking the is_static_only function to consider expressions using generate
+ variables to be static.  Updating regression for changes.  Full regression
+ now passes.
+
  Revision 1.70  2006/07/27 02:04:30  phase1geo
  Fixing problem with parameter usage in a generate block for signal sizing.
 

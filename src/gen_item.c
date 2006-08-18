@@ -18,6 +18,7 @@
 #include "link.h"
 #include "func_unit.h"
 #include "vector.h"
+#include "obfuscate.h"
 
 
 extern funit_inst* instance_root;
@@ -51,16 +52,16 @@ void gen_item_stringify( gen_item* gi, char* str, int str_len ) {
         snprintf( tmp, str_len, ", EXPR, %s", expression_string( gi->elem.expr ) );
         break;
       case GI_TYPE_SIG :
-        snprintf( tmp, str_len, ", SIG, name: %s", gi->elem.sig->name );
+        snprintf( tmp, str_len, ", SIG, name: %s", obf_sig( gi->elem.sig->name ) );
         break;
       case GI_TYPE_STMT :
         snprintf( tmp, str_len, ", STMT, id: %d, line: %d", gi->elem.stmt->exp->id, gi->elem.stmt->exp->line );
         break;
       case GI_TYPE_INST :
-        snprintf( tmp, str_len, ", INST, name: %s", gi->elem.inst->name );
+        snprintf( tmp, str_len, ", INST, name: %s", obf_inst( gi->elem.inst->name ) );
         break;
       case GI_TYPE_TFN :
-        snprintf( tmp, str_len, ", TFN, name: %s, type: %d", gi->elem.inst->name, gi->elem.inst->funit->type );
+        snprintf( tmp, str_len, ", TFN, name: %s, type: %s", obf_inst( gi->elem.inst->name ), get_funit_type( gi->elem.inst->funit->type ) );
         break;
       case GI_TYPE_BIND :
         snprintf( tmp, str_len, ", BIND, %s", expression_string( gi->elem.expr ) );
@@ -75,7 +76,7 @@ void gen_item_stringify( gen_item* gi, char* str, int str_len ) {
     strcat( str, tmp );
 
     if( gi->varname != NULL ) {
-      snprintf( tmp, str_len, ", varname: %s", gi->varname );
+      snprintf( tmp, str_len, ", varname: %s", obf_sig( gi->varname ) );
       strcat( str, tmp );
     }
 
@@ -359,7 +360,8 @@ char* gen_item_calc_signal_name( char* name, func_unit* funit ) {
     gen_item_get_genvar( tmpname, &pre, &genvar, &post );
     if( genvar != NULL ) {
       if( !scope_find_signal( genvar, funit, &gvar, &found_funit, 0 ) ) {
-        snprintf( user_msg, USER_MSG_LENGTH, "Unable to find generate variable %s in module %s", genvar, funit->name );
+        snprintf( user_msg, USER_MSG_LENGTH, "Unable to find generate variable %s in module %s",
+                  obf_sig( genvar ), obf_funit( funit->name ) );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( 1 );
       }
@@ -768,7 +770,7 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
     if( debug_mode ) {
       char str[USER_MSG_LENGTH];
       gen_item_stringify( gi, str, USER_MSG_LENGTH );
-      snprintf( user_msg, USER_MSG_LENGTH, "Resolving generate item, %s for inst: %s", str, inst->name );
+      snprintf( user_msg, USER_MSG_LENGTH, "Resolving generate item, %s for inst: %s", str, obf_inst( inst->name ) );
       print_output( user_msg, DEBUG, __FILE__, __LINE__ );
     }
 #endif
@@ -812,7 +814,8 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
           vsignal*   genvar;
           func_unit* found_funit;
           if( !scope_find_signal( gi->varname, inst->funit, &genvar, &found_funit, 0 ) ) {
-            snprintf( user_msg, USER_MSG_LENGTH, "Unable to find variable %s in module %s", gi->varname, inst->funit->name );
+            snprintf( user_msg, USER_MSG_LENGTH, "Unable to find variable %s in module %s",
+                      obf_sig( gi->varname ), obf_funit( inst->funit->name ) );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
             exit( 1 );
           }
@@ -985,6 +988,11 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.26  2006/08/14 04:19:56  phase1geo
+ Fixing problem with generate11* diagnostics (generate variable used in
+ signal name).  These tests pass now but full regression hasn't been verified
+ at this point.
+
  Revision 1.25  2006/08/02 22:28:32  phase1geo
  Attempting to fix the bug pulled out by generate11.v.  We are just having an issue
  with setting the assigned bit in a signal expression that contains a hierarchical reference

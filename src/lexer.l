@@ -36,6 +36,7 @@
 #include "vector.h"
 #include "keywords.h"
 #include "tree.h"
+#include "obfuscate.h"
 
 #define yylval VLlval
 #define YYDEBUG 1
@@ -335,7 +336,7 @@ WSPACE [ \t\b\f]+
          } else {
            if( filelist_curr != filelist_head ) {
              /* The module has been found, recirculate filelist */
-             snprintf( user_msg, USER_MSG_LENGTH, "Parsing file '%s'", yylloc.text );
+             snprintf( user_msg, USER_MSG_LENGTH, "Parsing file '%s'", obf_file( yylloc.text ) );
              print_output( user_msg, NORMAL, __FILE__, __LINE__ );
              filelist_curr = filelist_head;
            }
@@ -716,7 +717,7 @@ static int yywrap() {
     print_output( "Unable to find the following modules:", FATAL, __FILE__, __LINE__ );
     curr = modlist_head;
     while( curr != NULL ) {
-      fprintf( stderr, "      %s\n", curr->str );
+      fprintf( stderr, "      %s\n", obf_funit( curr->str ) );
       curr = curr->next;
     }
     assert( unlink( ppfilename ) == 0 );

@@ -53,6 +53,7 @@
 #include "ovl.h"
 #include "gen_item.h"
 #include "vector.h"
+#include "obfuscate.h"
 
 
 extern char*       top_module;
@@ -207,7 +208,7 @@ bool db_write( char* file, bool parse_mode, bool report_save ) {
 
   } else {
 
-    snprintf( user_msg, USER_MSG_LENGTH, "Could not open %s for writing", file );
+    snprintf( user_msg, USER_MSG_LENGTH, "Could not open %s for writing", obf_file( file ) );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = FALSE;
 
@@ -253,7 +254,7 @@ bool db_read( char* file, int read_mode ) {
   func_unit*   parent_mod;           /* Pointer to parent module of this functional unit */
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_read, file: %s, mode: %d", file, read_mode );
+  snprintf( user_msg, USER_MSG_LENGTH, "In db_read, file: %s, mode: %d", obf_file( file ), read_mode );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
@@ -404,7 +405,7 @@ bool db_read( char* file, int read_mode ) {
 
         } else {
 
-          snprintf( user_msg, USER_MSG_LENGTH, "Unexpected type %d when parsing database file %s", type, file );
+          snprintf( user_msg, USER_MSG_LENGTH, "Unexpected type %d when parsing database file %s", type, obf_file( file ) );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
           retval = FALSE;
 
@@ -412,7 +413,7 @@ bool db_read( char* file, int read_mode ) {
 
       } else {
 
-        snprintf( user_msg, USER_MSG_LENGTH, "Unexpected line in database file %s", file );
+        snprintf( user_msg, USER_MSG_LENGTH, "Unexpected line in database file %s", obf_file( file ) );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         retval = FALSE;
 
@@ -426,7 +427,7 @@ bool db_read( char* file, int read_mode ) {
 
   } else {
 
-    snprintf( user_msg, USER_MSG_LENGTH, "Could not open %s for reading", file );
+    snprintf( user_msg, USER_MSG_LENGTH, "Could not open %s for reading", obf_file( file ) );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = FALSE;
 
@@ -506,7 +507,7 @@ func_unit* db_add_instance( char* scope, char* name, int type, vector_width* ran
 
 #ifdef DEBUG_MODE
   snprintf( user_msg, USER_MSG_LENGTH, "In db_add_instance, instance: %s, %s: %s (curr_funit: %s)",
-            scope, get_funit_type( type ), name, curr_funit->name );
+            obf_inst( scope ), get_funit_type( type ), obf_funit( name ), obf_funit( curr_funit->name ) );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
@@ -529,7 +530,7 @@ func_unit* db_add_instance( char* scope, char* name, int type, vector_width* ran
 
     if( type != FUNIT_MODULE ) {
       snprintf( user_msg, USER_MSG_LENGTH, "Multiple identical task/function/named-begin-end names (%s) found in module %s, file %s\n",
-                scope, curr_funit->name, curr_funit->filename );
+                scope, obf_funit( curr_funit->name ), obf_file( curr_funit->filename ) );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       exit( 1 );
     }
@@ -591,7 +592,8 @@ void db_add_module( char* name, char* file, int start_line ) {
   funit_link* modl;  /* Pointer to found tree node */
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_add_module, module: %s, file: %s, start_line: %d", name, file, start_line );
+  snprintf( user_msg, USER_MSG_LENGTH, "In db_add_module, module: %s, file: %s, start_line: %d",
+            obf_funit( name ), obf_file( file ), start_line );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
@@ -647,18 +649,8 @@ bool db_add_function_task_namedblock( int type, char* name, char* file, int star
   assert( (type == FUNIT_FUNCTION) || (type == FUNIT_TASK) || (type == FUNIT_NAMED_BLOCK) );
 
 #ifdef DEBUG_MODE
-  switch( type ) {
-    case FUNIT_FUNCTION :
-      snprintf( user_msg, USER_MSG_LENGTH, "In db_add_function_task_namedblock, function: %s, file: %s, start_line: %d", name, file, start_line );
-      break;
-    case FUNIT_TASK :
-      snprintf( user_msg, USER_MSG_LENGTH, "In db_add_function_task_namedblock, task: %s, file: %s, start_line: %d", name, file, start_line );
-      break;
-    case FUNIT_NAMED_BLOCK :
-      snprintf( user_msg, USER_MSG_LENGTH, "In db_add_function_task_namedblock, named_block: %s, file: %s, start_line: %d", name, file, start_line );
-      break;
-    default :  break;
-  }
+  snprintf( user_msg, USER_MSG_LENGTH, "In db_add_function_task_namedblock, %s: %s, file: %s, start_line: %d",
+            get_funit_type( type ), obf_funit( name ), obf_file( file ), start_line );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
@@ -735,7 +727,7 @@ void db_add_declared_param( bool is_signed, static_expr* msb, static_expr* lsb, 
   if( expr != NULL ) {
 
 #ifdef DEBUG_MODE
-    snprintf( user_msg, USER_MSG_LENGTH, "In db_add_declared_param, param: %s, expr: %d, local: %d", name, expr->id, local );
+    snprintf( user_msg, USER_MSG_LENGTH, "In db_add_declared_param, param: %s, expr: %d, local: %d", obf_sig( name ), expr->id, local );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
@@ -764,9 +756,10 @@ void db_add_override_param( char* inst_name, expression* expr, char* param_name 
 
 #ifdef DEBUG_MODE
   if( param_name != NULL ) {
-    snprintf( user_msg, USER_MSG_LENGTH, "In db_add_override_param, instance: %s, param_name: %s", inst_name, param_name );
+    snprintf( user_msg, USER_MSG_LENGTH, "In db_add_override_param, instance: %s, param_name: %s",
+              obf_inst( inst_name ), obf_sig( param_name ) );
   } else {
-    snprintf( user_msg, USER_MSG_LENGTH, "In db_add_override_param, instance: %s", inst_name );
+    snprintf( user_msg, USER_MSG_LENGTH, "In db_add_override_param, instance: %s", obf_inst( inst_name ) );
   }
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
@@ -792,7 +785,7 @@ void db_add_vector_param( vsignal* sig, expression* parm_exp, int type ) {
   assert( (type == PARAM_TYPE_SIG_LSB) || (type == PARAM_TYPE_SIG_MSB) );
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_add_vector_param, signal: %s, type: %d", sig->name, type );
+  snprintf( user_msg, USER_MSG_LENGTH, "In db_add_vector_param, signal: %s, type: %d", obf_sig( sig->name ), type );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
@@ -813,7 +806,7 @@ void db_add_vector_param( vsignal* sig, expression* parm_exp, int type ) {
 void db_add_defparam( char* name, expression* expr ) {
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_add_defparam, defparam: %s", name );
+  snprintf( user_msg, USER_MSG_LENGTH, "In db_add_defparam, defparam: %s", obf_sig( name ) );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
@@ -852,7 +845,7 @@ void db_add_signal( char* name, int type, static_expr* left, static_expr* right,
   int      big_endian;  /* Signal endianness */
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_add_signal, signal: %s, line: %d, col: %d", name, line, col );
+  snprintf( user_msg, USER_MSG_LENGTH, "In db_add_signal, signal: %s, line: %d, col: %d", obf_sig( name ), line, col );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
@@ -865,7 +858,8 @@ void db_add_signal( char* name, int type, static_expr* left, static_expr* right,
 
     /* Check to make sure that signal width does not exceed maximum size */
     if( width > MAX_BIT_WIDTH ) {
-      snprintf( user_msg, USER_MSG_LENGTH, "Signal (%s) width (%d) exceeds maximum allowed by Covered (%d).  Ignoring...", name, width, MAX_BIT_WIDTH );
+      snprintf( user_msg, USER_MSG_LENGTH, "Signal (%s) width (%d) exceeds maximum allowed by Covered (%d).  Ignoring...",
+                obf_sig( name ), width, MAX_BIT_WIDTH );
       print_output( user_msg, WARNING, __FILE__, __LINE__ );
       width = -1;
       left  = NULL;
@@ -930,13 +924,13 @@ vsignal* db_find_signal( char* name ) {
   func_unit* found_funit;  /* Pointer to found functional unit (not used) */
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_find_signal, searching for signal %s", name );
+  snprintf( user_msg, USER_MSG_LENGTH, "In db_find_signal, searching for signal %s", obf_sig( name ) );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
   if( !scope_find_signal( name, curr_funit, &found_sig, &found_funit, 0 ) ) {
 
-    snprintf( user_msg, USER_MSG_LENGTH, "Unable to find variable %s in module %s", name, curr_funit->name );
+    snprintf( user_msg, USER_MSG_LENGTH, "Unable to find variable %s in module %s", obf_sig( name ), obf_funit( curr_funit->name ) );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     exit( 1 );
 
@@ -1090,7 +1084,7 @@ expression* db_create_expression( expression* right, expression* left, int op, b
        (op == EXP_OP_NEDGE)     ||
        (op == EXP_OP_AEDGE)     ||
        (op == EXP_OP_EOR)) ) {
-    snprintf( user_msg, USER_MSG_LENGTH, "Attempting to use a delay, task call, non-blocking assign or event controls in function %s, file %s, line %d", func_funit->name, curr_funit->filename, line );
+    snprintf( user_msg, USER_MSG_LENGTH, "Attempting to use a delay, task call, non-blocking assign or event controls in function %s, file %s, line %d", obf_funit( func_funit->name ), obf_file( curr_funit->filename ), line );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     exit( 1 );
   }
@@ -1431,7 +1425,7 @@ void db_remove_statement_from_current_funit( statement* stmt ) {
 
 #ifdef DEBUG_MODE
     snprintf( user_msg, USER_MSG_LENGTH, "In db_remove_statement_from_current_module %s, stmt id: %d, %s, line: %d",
-              curr_funit->name, stmt->exp->id, expression_string_op( stmt->exp->op ), stmt->exp->line );
+              obf_funit( curr_funit->name ), stmt->exp->id, expression_string_op( stmt->exp->op ), stmt->exp->line );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
@@ -1640,7 +1634,7 @@ bool db_statement_connect( statement* curr_stmt, statement* next_stmt ) {
   if( !(retval = statement_connect( curr_stmt, next_stmt, stmt_conn_id )) ) {
 
     snprintf( user_msg, USER_MSG_LENGTH, "Unreachable statement found starting at line %d in file %s.  Ignoring...",
-              next_stmt->exp->line, curr_funit->filename );
+              next_stmt->exp->line, obf_file( curr_funit->filename ) );
     print_output( user_msg, WARNING, __FILE__, __LINE__ );
 
   }
@@ -1772,7 +1766,7 @@ void db_sync_curr_instance() {
 void db_set_vcd_scope( char* scope ) {
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_set_vcd_scope, scope: %s", scope );
+  snprintf( user_msg, USER_MSG_LENGTH, "In db_set_vcd_scope, scope: %s", obf_inst( scope ) );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
@@ -1805,7 +1799,7 @@ void db_vcd_upscope() {
   char rest[4096];   /* Hierarchy up one level */
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_vcd_upscope, curr_inst_scope: %s", curr_inst_scope );
+  snprintf( user_msg, USER_MSG_LENGTH, "In db_vcd_upscope, curr_inst_scope: %s", obf_inst( curr_inst_scope ) );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );  
 #endif
 
@@ -1840,7 +1834,7 @@ void db_assign_symbol( char* name, char* symbol, int msb, int lsb ) {
 
 #ifdef DEBUG_MODE
   snprintf( user_msg, USER_MSG_LENGTH, "In db_assign_symbol, name: %s, symbol: %s, curr_inst_scope: %s, msb: %d, lsb: %d",
-            name, symbol, curr_inst_scope, msb, lsb );
+            obf_sig( name ), symbol, obf_inst( curr_inst_scope ), msb, lsb );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
@@ -1965,6 +1959,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.209  2006/08/15 16:21:53  phase1geo
+ Fixing bug for generate4 diagnostic which incorrectly added a BIND element
+ when not in a generate block.  Full regression now passes.
+
  Revision 1.208  2006/08/11 15:16:48  phase1geo
  Joining slist3.3 diagnostic to latest development branch.  Adding changes to
  fix memory issues from bug 1535412.

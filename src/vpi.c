@@ -33,6 +33,7 @@
 #include "instance.h"
 #include "symtable.h"
 #include "binding.h"
+#include "obfuscate.h"
 
 char        in_db_name[1024];
 char        out_db_name[1024];
@@ -77,7 +78,7 @@ PLI_INT32 covered_value_change( p_cb_data cb ) {
 
 #ifdef DEBUG_MODE
   snprintf( user_msg, USER_MSG_LENGTH, "In covered_value_change, name: %s, time: %d, value: %s",
-            vpi_get_str( vpiFullName, cb->obj ), cb->time->low, value.value.str );
+            obf_sig( vpi_get_str( vpiFullName, cb->obj ) ), cb->time->low, value.value.str );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
@@ -93,7 +94,7 @@ PLI_INT32 covered_value_change( p_cb_data cb ) {
 #else
 #ifdef DEBUG_MODE
   snprintf( user_msg, USER_MSG_LENGTH, "In covered_value_change, name: %s, time: %d, value: %s",
-            vpi_get_str( vpiFullName, cb->obj ), cb->time->low, cb->value->value.str );
+            obf_sig( vpi_get_str( vpiFullName, cb->obj ) ), cb->time->low, cb->value->value.str );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
@@ -158,7 +159,7 @@ PLI_INT32 covered_cb_error_handler( p_cb_data cb ) {
   }
 
   vpi_printf( "covered VPI: ERR(%s) %s (level %d) at **%s(%d):\n  %s\n",
-    einfop->code, s1, einfop->level, einfop->file, einfop->line, einfop->message );
+    einfop->code, s1, einfop->level, obf_file( einfop->file ), einfop->line, einfop->message );
 
   /* If serious error give up */
   if( (einfop->level == vpiError) || (einfop->level == vpiSystem) || (einfop->level == vpiInternal) ) {
@@ -205,7 +206,7 @@ void covered_create_value_change_cb( vpiHandle sig ) {
   if( (vsigl = sig_link_find( &vsig, curr_instance->funit->sig_head )) != NULL ) {
 
 #ifdef DEBUG_MODE
-    snprintf( user_msg, USER_MSG_LENGTH, "Adding callback for signal: %s", vsigl->sig->name );
+    snprintf( user_msg, USER_MSG_LENGTH, "Adding callback for signal: %s", obf_sig( vsigl->sig->name ) );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
@@ -253,7 +254,7 @@ void covered_parse_task_func( vpiHandle mod ) {
     while( (scope = vpi_scan( iter )) != NULL ) {
       
 #ifdef DEBUG_MODE
-      snprintf( user_msg, USER_MSG_LENGTH, "Parsing task/function %s", vpi_get_str( vpiFullName, scope ) );
+      snprintf( user_msg, USER_MSG_LENGTH, "Parsing task/function %s", obf_funit( vpi_get_str( vpiFullName, scope ) ) );
       print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
@@ -272,7 +273,7 @@ void covered_parse_task_func( vpiHandle mod ) {
         if( (liter = vpi_iterate( vpiReg, scope )) != NULL ) {
           while( (handle = vpi_scan( liter )) != NULL ) {
 #ifdef DEBUG_MODE
-            snprintf( user_msg, USER_MSG_LENGTH, "Found reg %s", vpi_get_str( vpiFullName, handle ) );
+            snprintf( user_msg, USER_MSG_LENGTH, "Found reg %s", obf_sig( vpi_get_str( vpiFullName, handle ) ) );
             print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
             covered_create_value_change_cb( handle );
@@ -304,7 +305,7 @@ void covered_parse_signals( vpiHandle mod ) {
     while( (handle = vpi_scan( iter )) != NULL ) {
 
 #ifdef DEBUG_MODE
-      snprintf( user_msg, USER_MSG_LENGTH, "Found net: %s", vpi_get_str( vpiName, handle ) );
+      snprintf( user_msg, USER_MSG_LENGTH, "Found net: %s", obf_sig( vpi_get_str( vpiName, handle ) ) );
       print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
@@ -320,7 +321,7 @@ void covered_parse_signals( vpiHandle mod ) {
     while( (handle = vpi_scan( iter )) != NULL ) {
 
 #ifdef DEBUG_MODE
-      snprintf( user_msg, USER_MSG_LENGTH, "Found reg: %s", vpi_get_str( vpiName, handle ) );
+      snprintf( user_msg, USER_MSG_LENGTH, "Found reg: %s", obf_sig( vpi_get_str( vpiName, handle ) ) );
       print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
@@ -349,7 +350,8 @@ void covered_parse_instance( vpiHandle inst ) {
   if( curr_instance != NULL ) {
 
 #ifdef DEBUG_MODE
-    snprintf( user_msg, USER_MSG_LENGTH, "Found module to be covered: %s, hierarchy: %s", vpi_get_str( vpiName, inst ), curr_inst_scope );
+    snprintf( user_msg, USER_MSG_LENGTH, "Found module to be covered: %s, hierarchy: %s",
+              obf_funit( vpi_get_str( vpiName, inst ) ), obf_inst( curr_inst_scope ) );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 

@@ -34,6 +34,7 @@
 #include "statement.h"
 #include "link.h"
 #include "param.h"
+#include "obfuscate.h"
 
 
 extern int  curr_expr_id;
@@ -454,14 +455,14 @@ void fsm_arg_parse_trans( expression* expr, fsm* table, func_unit* funit ) {
 
   if( (from_state = fsm_arg_parse_value( &str, funit )) == NULL ) {
     snprintf( user_msg, USER_MSG_LENGTH, "Left-hand side FSM transition value must be a constant value or parameter, line: %d, file: %s",
-              expr->line, funit->filename );
+              expr->line, obf_file( funit->filename ) );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     exit( 1 );
   } else {
 
     if( (str[0] != '-') || (str[1] != '>') ) {
       snprintf( user_msg, USER_MSG_LENGTH, "FSM transition values must contain the string '->' between them, line: %d, file: %s",
-                expr->line, funit->filename );
+                expr->line, obf_file( funit->filename ) );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       exit( 1 );
     } else {
@@ -470,7 +471,7 @@ void fsm_arg_parse_trans( expression* expr, fsm* table, func_unit* funit ) {
 
     if( (to_state = fsm_arg_parse_value( &str, funit )) == NULL ) {
       snprintf( user_msg, USER_MSG_LENGTH, "Right-hand side FSM transition value must be a constant value or parameter, line: %d, file: %s",
-                expr->line, funit->filename );
+                expr->line, obf_file( funit->filename ) );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       exit( 1 );
     } else {
@@ -521,14 +522,14 @@ void fsm_arg_parse_attr( attr_param* ap, func_unit* funit ) {
       if( fsml == NULL ) {
         tmp = str = vector_to_string( curr->expr->value );
         if( (in_state = fsm_arg_parse_state( &str, funit->name )) == NULL ) {
-          snprintf( user_msg, USER_MSG_LENGTH, "Illegal input state expression (%s), file: %s", str, funit->filename );
+          snprintf( user_msg, USER_MSG_LENGTH, "Illegal input state expression (%s), file: %s", str, obf_file( funit->filename ) );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
           exit( 1 );
         }
         free_safe( tmp );
       } else {
         snprintf( user_msg, USER_MSG_LENGTH, "Input state specified after output state for this FSM has already been specified, file: %s",
-                  funit->filename );
+                  obf_file( funit->filename ) );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( 1 );
       }
@@ -536,7 +537,7 @@ void fsm_arg_parse_attr( attr_param* ap, func_unit* funit ) {
       if( fsml == NULL ) {
         tmp = str = vector_to_string( curr->expr->value );
         if( (out_state = fsm_arg_parse_state( &str, funit->name )) == NULL ) {
-          snprintf( user_msg, USER_MSG_LENGTH, "Illegal output state expression (%s), file: %s", str, funit->filename );
+          snprintf( user_msg, USER_MSG_LENGTH, "Illegal output state expression (%s), file: %s", str, obf_file( funit->filename ) );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
           exit( 1 );
         } else {
@@ -546,7 +547,7 @@ void fsm_arg_parse_attr( attr_param* ap, func_unit* funit ) {
         free_safe( tmp );
       } else {
         snprintf( user_msg, USER_MSG_LENGTH, "Output state specified after output state for this FSM has already been specified, file: %s",
-                  funit->filename );
+                  obf_file( funit->filename ) );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( 1 );
       }
@@ -555,7 +556,7 @@ void fsm_arg_parse_attr( attr_param* ap, func_unit* funit ) {
       if( fsml == NULL ) {
         tmp = str = vector_to_string( curr->expr->value );
         if( (out_state = fsm_arg_parse_state( &str, funit->name )) == NULL ) {
-          snprintf( user_msg, USER_MSG_LENGTH, "Illegal output state expression (%s), file: %s", str, funit->filename );
+          snprintf( user_msg, USER_MSG_LENGTH, "Illegal output state expression (%s), file: %s", str, obf_file( funit->filename ) );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
           exit( 1 );
         } else {
@@ -565,14 +566,14 @@ void fsm_arg_parse_attr( attr_param* ap, func_unit* funit ) {
         free_safe( tmp );
       } else {
         snprintf( user_msg, USER_MSG_LENGTH, "Output state specified after output state for this FSM has already been specified, file: %s",
-                  funit->filename );
+                  obf_file( funit->filename ) );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( 1 );
       }
     } else if( (index > 1) && (strcmp( curr->name, "trans" ) == 0) && (curr->expr != NULL) ) {
       if( fsml == NULL ) {
-        snprintf( user_msg, USER_MSG_LENGTH, "Attribute FSM name (%s) has not been previously created, file: %s", table.name,
-                  funit->filename );
+        snprintf( user_msg, USER_MSG_LENGTH, "Attribute FSM name (%s) has not been previously created, file: %s",
+                  obf_sig( table.name ), obf_file( funit->filename ) );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( 1 );
       } else {
@@ -583,7 +584,7 @@ void fsm_arg_parse_attr( attr_param* ap, func_unit* funit ) {
       snprintf( user_msg, USER_MSG_LENGTH, "Invalid covered_fsm attribute parameter (%s=%s), file: %s",
                 curr->name,
                 tmp,
-                funit->filename );
+                obf_file( funit->filename ) );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       free_safe( tmp );
       exit( 1 );
@@ -600,6 +601,11 @@ void fsm_arg_parse_attr( attr_param* ap, func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.26  2006/03/28 22:28:27  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.25  2006/01/31 16:41:00  phase1geo
  Adding initial support and diagnostics for the variable multi-bit select
  operators +: and -:.  More to come but full regression passes.

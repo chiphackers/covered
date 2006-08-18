@@ -43,6 +43,7 @@
 #include "race.h"
 #include "gen_item.h"
 #include "instance.h"
+#include "obfuscate.h"
 
 
 extern char        user_msg[USER_MSG_LENGTH];
@@ -440,17 +441,9 @@ bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
   if( funit->type != FUNIT_NO_SCORE ) {
 
 #ifdef DEBUG_MODE
-    switch( funit->type ) {
-      case FUNIT_MODULE      :  snprintf( user_msg, USER_MSG_LENGTH, "Writing module %s", funit->name );       break;
-      case FUNIT_NAMED_BLOCK :  snprintf( user_msg, USER_MSG_LENGTH, "Writing named block %s", funit->name );  break;
-      case FUNIT_FUNCTION    :  snprintf( user_msg, USER_MSG_LENGTH, "Writing function %s", funit->name );     break;
-      case FUNIT_TASK        :  snprintf( user_msg, USER_MSG_LENGTH, "Writing task %s", funit->name );         break;
-      default                :
-        snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  Unknown functional unit type %d", funit->type );
-        print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        exit( 1 );
-        break;
-    }
+    assert( (funit->type == FUNIT_MODULE) || (funit->type == FUNIT_NAMED_BLOCK) ||
+            (funit->type == FUNIT_FUNCTION) || (funit->type == FUNIT_TASK) );
+    snprintf( user_msg, USER_MSG_LENGTH, "Writing %s %s", get_funit_type( funit->type ), obf_funit( funit->name ) );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
@@ -905,13 +898,7 @@ void funit_display_signals( func_unit* funit ) {
 
   sig_link* sigl;  /* Pointer to current signal link element */
 
-  switch( funit->type ) {
-    case FUNIT_MODULE      :  printf( "Module => %s\n", funit->name );       break;
-    case FUNIT_NAMED_BLOCK :  printf( "Named block => %s\n", funit->name );  break;
-    case FUNIT_FUNCTION    :  printf( "Function => %s\n", funit->name );     break;
-    case FUNIT_TASK        :  printf( "Task => %s\n", funit->name );         break;
-    default                :  printf( "UNKNOWN => %s\n", funit->name );      break;
-  }
+  printf( "%s => %s", get_funit_type( funit->type ), obf_funit( funit->name ) );
 
   sigl = funit->sig_head;
   while( sigl != NULL ) {
@@ -931,13 +918,7 @@ void funit_display_expressions( func_unit* funit ) {
 
   exp_link* expl;    /* Pointer to current expression link element */
 
-  switch( funit->type ) {
-    case FUNIT_MODULE      :  printf( "Module => %s\n", funit->name );       break;
-    case FUNIT_NAMED_BLOCK :  printf( "Named block => %s\n", funit->name );  break;
-    case FUNIT_FUNCTION    :  printf( "Function => %s\n", funit->name );     break;
-    case FUNIT_TASK        :  printf( "Task => %s\n", funit->name );         break;
-    default                :  printf( "UNKNOWN => %s\n", funit->name );      break;
-  }
+  printf( "%s => %s", get_funit_type( funit->type ), obf_funit( funit->name ) );
 
   expl = funit->exp_head;
   while( expl != NULL ) {
@@ -1043,6 +1024,11 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.35  2006/08/14 04:19:56  phase1geo
+ Fixing problem with generate11* diagnostics (generate variable used in
+ signal name).  These tests pass now but full regression hasn't been verified
+ at this point.
+
  Revision 1.34  2006/08/02 22:28:32  phase1geo
  Attempting to fix the bug pulled out by generate11.v.  We are just having an issue
  with setting the assigned bit in a signal expression that contains a hierarchical reference

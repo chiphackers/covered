@@ -45,6 +45,7 @@
 #include "expr.h"
 #include "codegen.h"
 #include "binding.h"
+#include "obfuscate.h"
 
 
 extern funit_inst*  instance_root;
@@ -765,13 +766,13 @@ bool fsm_funit_summary( FILE* ofile, funit_link* head ) {
       if( (head->funit->stat->state_total == -1) || (head->funit->stat->arc_total == -1) ) {
         fprintf( ofile, "  %-20.20s    %-20.20s   %4d/  ? /  ?        ? %%         %4d/  ? /  ?        ? %%\n",
              pname,
-             get_basename( head->funit->filename ),
+             get_basename( obf_file( head->funit->filename ) ),
              head->funit->stat->state_hit,
              head->funit->stat->arc_hit );
       } else {
         fprintf( ofile, "  %-20.20s    %-20.20s   %4d/%4.0f/%4.0f      %3.0f%%         %4d/%4.0f/%4.0f      %3.0f%%\n",
                pname,
-               get_basename( head->funit->filename ),
+               get_basename( obf_file( head->funit->filename ) ),
                head->funit->stat->state_hit,
                state_miss,
                head->funit->stat->state_total,
@@ -1002,7 +1003,7 @@ void fsm_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst ) {
       case FUNIT_TASK        :  fprintf( ofile, "    Task: " );         break;
       default                :  fprintf( ofile, "    UNKNOWN: " );      break;
     }
-    fprintf( ofile, "%s, File: %s, Instance: %s\n", pname, root->funit->filename, tmpname );
+    fprintf( ofile, "%s, File: %s, Instance: %s\n", pname, obf_file( root->funit->filename ), tmpname );
     fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
     free_safe( pname );
@@ -1048,7 +1049,7 @@ void fsm_funit_verbose( FILE* ofile, funit_link* head ) {
         case FUNIT_TASK        :  fprintf( ofile, "    Task: " );         break;
         default                :  fprintf( ofile, "    UNKNOWN: " );      break;
       }
-      fprintf( ofile, "%s, File: %s\n", pname, head->funit->filename );
+      fprintf( ofile, "%s, File: %s\n", pname, obf_file( head->funit->filename ) );
       fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
       free_safe( pname );
@@ -1166,6 +1167,9 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.57  2006/06/29 16:48:14  phase1geo
+ FSM exclusion code now complete.
+
  Revision 1.56  2006/06/29 04:26:02  phase1geo
  More updates for FSM coverage.  We are getting close but are just not to fully
  working order yet.

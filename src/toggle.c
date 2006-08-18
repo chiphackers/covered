@@ -34,6 +34,7 @@
 #include "vector.h"
 #include "util.h"
 #include "link.h"
+#include "obfuscate.h"
 
 
 extern funit_inst* instance_root;
@@ -383,7 +384,7 @@ bool toggle_funit_summary( FILE* ofile, funit_link* head ) {
 
       fprintf( ofile, "  %-20.20s    %-20.20s   %5d/%5.0f/%5.0f      %3.0f%%         %5d/%5.0f/%5.0f      %3.0f%%\n", 
                pname,
-               get_basename( head->funit->filename ),
+               get_basename( obf_file( head->funit->filename ) ),
                head->funit->stat->tog01_hit,
                miss01,
                head->funit->stat->tog_total,
@@ -514,7 +515,7 @@ void toggle_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst )
       default                :  fprintf( ofile, "    UNKNOWN: " );      break;
     }
     pname = scope_gen_printable( root->funit->name );
-    fprintf( ofile, "%s, File: %s, Instance: %s\n", pname, root->funit->filename, tmpname );
+    fprintf( ofile, "%s, File: %s, Instance: %s\n", pname, obf_file( root->funit->filename ), tmpname );
     fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
     free_safe( pname );
 
@@ -554,7 +555,7 @@ void toggle_funit_verbose( FILE* ofile, funit_link* head ) {
         case FUNIT_TASK        :  fprintf( ofile, "    Task: " );         break;
         default                :  fprintf( ofile, "    UNKNOWN: " );      break;
       }
-      fprintf( ofile, "%s, File: %s\n", head->funit->name, head->funit->filename );
+      fprintf( ofile, "%s, File: %s\n", obf_funit( head->funit->name ), obf_file( head->funit->filename ) );
       fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
       toggle_display_verbose( ofile, head->funit->sig_head );
@@ -626,6 +627,10 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.44  2006/08/16 18:00:03  phase1geo
+ Fixing things for good now (after the last submission).  Full regression
+ passes with the exception of generate11.2 and generate11.3.
+
  Revision 1.43  2006/08/16 17:20:52  phase1geo
  Adding support for SystemVerilog data types bit, logic, byte, char, shortint,
  int, and longint.  Added diagnostics to verify correct behavior.  Also added

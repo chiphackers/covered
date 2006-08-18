@@ -38,6 +38,7 @@
 #include "iter.h"
 #include "util.h"
 #include "expr.h"
+#include "obfuscate.h"
 
 extern funit_inst* instance_root;
 extern funit_link* funit_head;
@@ -310,7 +311,7 @@ bool line_funit_summary( FILE* ofile, funit_link* head ) {
 
       fprintf( ofile, "  %-20.20s    %-20.20s   %5d/%5.0f/%5.0f      %3.0f%%\n", 
                pname,
-               get_basename( head->funit->filename ),
+               get_basename( obf_file( head->funit->filename ) ),
                head->funit->stat->line_hit,
                miss,
                head->funit->stat->line_total,
@@ -432,7 +433,7 @@ void line_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst ) {
       case FUNIT_TASK        :  fprintf( ofile, "    Task: " );         break;
       default                :  fprintf( ofile, "    UNKNOWN: " );      break;
     }
-    fprintf( ofile, "%s, File: %s, Instance: %s\n", pname, root->funit->filename, tmpname );
+    fprintf( ofile, "%s, File: %s, Instance: %s\n", pname, obf_file( root->funit->filename ), tmpname );
     fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
     free_safe( pname );
@@ -478,7 +479,7 @@ void line_funit_verbose( FILE* ofile, funit_link* head ) {
         case FUNIT_TASK        :  fprintf( ofile, "    Task: " );         break;
         default                :  fprintf( ofile, "    UNKNOWN: " );      break;
       }
-      fprintf( ofile, "%s, File: %s\n", pname, head->funit->filename );
+      fprintf( ofile, "%s, File: %s\n", pname, obf_file( head->funit->filename ) );
       fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
       free_safe( pname );
@@ -550,6 +551,12 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.63  2006/06/29 20:57:24  phase1geo
+ Added stmt_excluded bit to expression to allow us to individually control line
+ and combinational logic exclusion.  This also allows us to exclude combinational
+ logic within excluded lines.  Also fixing problem with highlighting the listbox
+ (due to recent changes).
+
  Revision 1.62  2006/06/26 04:12:55  phase1geo
  More updates for supporting coverage exclusion.  Still a bit more to go
  before this is working properly.

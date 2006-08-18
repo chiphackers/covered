@@ -17,6 +17,7 @@ libcovered_a_SOURCES = ../src/arc.c \
                        ../src/instance.c \
                        ../src/iter.c \
                        ../src/link.c \
+                       ../src/obfuscate.c \
                        ../src/ovl.c \
                        ../src/param.c \
                        ../src/race.c \

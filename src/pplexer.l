@@ -30,6 +30,7 @@
 #include "defines.h"
 #include "util.h"
 #include "tree.h"
+#include "obfuscate.h"
 
 #define yylval PPVLlval
 #define YYDEBUG 1
@@ -143,7 +144,7 @@ WSPACE [ \t\b\f]+
      do_include();
  }
 <INCLUDE>.          {
-     snprintf( user_msg, USER_MSG_LENGTH, "malformed `include directive, line %d, \"%s\"", istack->lineno, istack->path );
+     snprintf( user_msg, USER_MSG_LENGTH, "malformed `include directive, line %d, \"%s\"", istack->lineno, obf_file( istack->path ) );
      print_output( user_msg, FATAL, __FILE__, __LINE__ );
      BEGIN( ERROR_LINE );
  }
@@ -356,7 +357,7 @@ static int is_defined( const char* name ) {
 static void def_match() {
 
   tnode* cur = def_lookup( yytext + 1 );  /* Pointer to define identifier node */
-  int    i;                               /* Loop iterator                     */
+  int    i;                               /* Loop iterator */
 
   if( cur ) {
 
@@ -366,7 +367,8 @@ static void def_match() {
 
   } else {
 
-    snprintf( user_msg, USER_MSG_LENGTH, "macro %s undefined (and assumed null) at this point, line %d, \"%s\"", yytext, istack->lineno, istack->path );
+    snprintf( user_msg, USER_MSG_LENGTH, "macro %s undefined (and assumed null) at this point, line %d, \"%s\"",
+              yytext, istack->lineno, obf_file( istack->path ) );
     print_output( user_msg, WARNING, __FILE__, __LINE__ );
 
   }
@@ -410,7 +412,7 @@ void define_macro( const char* name, const char* value ) {
 */
 static void do_define() {
 
-  char *cp;        /* Pointer to current token */
+  char *cp;  /* Pointer to current token */
 
   define_continue_flag = 0;
 
@@ -532,7 +534,7 @@ static void include_filename() {
 */
 static void do_include() {
 
-  char      path[4096];  /* Full pathname to include file           */
+  char      path[4096];  /* Full pathname to include file */
   str_link* curr;        /* Pointer to current include file element */
 
   if( standby->path[0] == '/') {
@@ -540,7 +542,7 @@ static void do_include() {
     standby->file = fopen(standby->path, "r");
 
     if( standby->file == 0 ) {
-      snprintf( user_msg, USER_MSG_LENGTH, "Unable to open `include file \"%s\"", standby->path );
+      snprintf( user_msg, USER_MSG_LENGTH, "Unable to open `include file \"%s\"", obf_file( standby->path ) );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
     }
 
@@ -551,14 +553,14 @@ static void do_include() {
 
     while( (curr != NULL) && (standby->file == 0) ) {
 
-      snprintf(path, 4096, "%s/%s", curr->str, standby->path);
+      snprintf( path, 4096, "%s/%s", curr->str, standby->path );
       standby->file = fopen(path, "r");
       curr = curr->next;
 
     }
 
     if( (curr == NULL) && (standby->file == 0) ) {
-      snprintf( user_msg, USER_MSG_LENGTH, "Unable to find `include file \"%s\" in include path", standby->path );
+      snprintf( user_msg, USER_MSG_LENGTH, "Unable to find `include file \"%s\" in include path", obf_file( standby->path ) );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       exit( 1 );
     }
@@ -573,7 +575,7 @@ static void do_include() {
   istack            = standby;
   standby           = 0;
 
-  snprintf( user_msg, USER_MSG_LENGTH, "Parsing include file '%s'", path );
+  snprintf( user_msg, USER_MSG_LENGTH, "Parsing include file '%s'", obf_file( path ) );
   print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 
   yy_switch_to_buffer( yy_create_buffer( istack->file, YY_BUF_SIZE ) );
@@ -621,7 +623,7 @@ static int yywrap() {
   if( istack != 0 ) {
 
     /* Otherwise, resume the input buffer that is the new stack top. */
-    snprintf( user_msg, USER_MSG_LENGTH, "Resume parsing '%s'", istack->path );
+    snprintf( user_msg, USER_MSG_LENGTH, "Resume parsing '%s'", obf_file( istack->path ) );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
     yy_switch_to_buffer( istack->yybs );
 

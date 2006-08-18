@@ -48,8 +48,10 @@
 #include "defines.h"
 #include "util.h"
 #include "link.h"
+#include "obfuscate.h"
 
 extern bool        report_gui;
+extern bool        obf_mode;
 #ifndef VPI_ONLY
 #ifdef HAVE_TCLTK
 extern Tcl_Interp* interp;
@@ -166,7 +168,7 @@ void print_output( char* msg, int type, char* file, int line ) {
 #endif
 #endif
         } else {
-          fprintf( outf, "    WARNING!  %s (file: %s, line: %d)\n", msg, file, line );
+          fprintf( outf, "    WARNING!  %s (file: %s, line: %d)\n", msg, obf_file( file ), line );
         }
       }
       break;
@@ -194,7 +196,7 @@ void print_output( char* msg, int type, char* file, int line ) {
 #endif
 #endif
         } else {
-          fprintf( stderr, "ERROR!  %s (file: %s, line: %d)\n", msg, file, line );
+          fprintf( stderr, "ERROR!  %s (file: %s, line: %d)\n", msg, obf_file( file ), line );
         }
       } else {
         if( report_gui ) {
@@ -725,7 +727,7 @@ char* scope_gen_printable( char* str ) {
   char* new_str;  /* New version of string with escaped sequences removed */
 
   /* Allocate memory for new string */
-  new_str = strdup_safe( str, __FILE__, __LINE__ );
+  new_str = strdup_safe( obf_sig( str ), __FILE__, __LINE__ );
 
   /* Remove escape sequences, if any */
   if( str[0] == '\\' ) {
@@ -1089,6 +1091,11 @@ const char* get_funit_type( int type ) {
 
 /*
  $Log$
+ Revision 1.51  2006/08/18 04:41:14  phase1geo
+ Incorporating bug fixes 1538920 and 1541944.  Updated regressions.  Only
+ event1.1 does not currently pass (this does not pass in the stable version
+ yet either).
+
  Revision 1.50  2006/08/06 04:36:20  phase1geo
  Fixing bugs 1533896 and 1533827.  Also added -rI option that will ignore
  the race condition check altogether (has not been verified to this point, however).

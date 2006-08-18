@@ -38,6 +38,7 @@
 #include "func_unit.h"
 #include "util.h"
 #include "sim.h"
+#include "obfuscate.h"
 
 
 extern nibble or_optab[OPTAB_SIZE];
@@ -403,7 +404,8 @@ void vsignal_vcd_assign( vsignal* sig, char* value, int msb, int lsb ) {
   assert( sig->value != NULL );
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "Assigning vsignal %s[%d:%d] (lsb=%d) to value %s", sig->name, msb, lsb, sig->lsb, value );
+  snprintf( user_msg, USER_MSG_LENGTH, "Assigning vsignal %s[%d:%d] (lsb=%d) to value %s",
+            obf_sig( sig->name ), msb, lsb, sig->lsb, value );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
@@ -446,7 +448,7 @@ void vsignal_display( vsignal* sig ) {
 
   assert( sig != NULL );
 
-  printf( "  Signal =>  name: %s, lsb: %d, ", sig->name, sig->lsb );
+  printf( "  Signal =>  name: %s, lsb: %d, ", obf_sig( sig->name ), sig->lsb );
   vector_display_value( sig->value->value, sig->value->width );
   printf( "\n" );
 
@@ -547,6 +549,10 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.29  2006/08/11 15:16:49  phase1geo
+ Joining slist3.3 diagnostic to latest development branch.  Adding changes to
+ fix memory issues from bug 1535412.
+
  Revision 1.28  2006/07/27 02:04:30  phase1geo
  Fixing problem with parameter usage in a generate block for signal sizing.
 
