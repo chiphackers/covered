@@ -52,6 +52,9 @@ bool is_func_unit( char* token );
 /*! \brief Extracts filename from file pathname. */
 char* get_basename( char* str );
 
+/*! \brief Extracts directory path from file pathname. */
+char* get_dirname( char* str );
+
 /*! \brief Returns TRUE if the specified directory exists. */
 bool directory_exists( char* dir );
 
@@ -120,6 +123,11 @@ const char* get_funit_type( int type );
 
 /*
  $Log$
+ Revision 1.23  2006/08/18 04:41:14  phase1geo
+ Incorporating bug fixes 1538920 and 1541944.  Updated regressions.  Only
+ event1.1 does not currently pass (this does not pass in the stable version
+ yet either).
+
  Revision 1.22  2006/04/18 21:59:54  phase1geo
  Adding support for environment variable substitution in configuration files passed
  to the score command.  Adding ovl.c/ovl.h files.  Working on support for assertion

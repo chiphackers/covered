@@ -405,6 +405,33 @@ char* get_basename( char* str ) {
 }
 
 /*!
+ \param str  String containing pathname to file.
+
+ \return Returns pointer to string containing only the directory path
+
+ Extracts the directory path from the specified filename (or returns NULL
+ if there is no directory path).
+
+ \warning
+ Modifies the given string!
+*/
+char* get_dirname( char* str ) {
+
+  char* ptr;  /* Pointer to current character in str */
+
+  ptr = (str + strlen( str )) - 1;
+
+  while( (ptr > str) && (*ptr != '/') ) {
+    ptr--;
+  }
+
+  *ptr = '\0';
+
+  return( str );
+
+}
+
+/*!
  \param dir Name of directory to check for existence.
  \return Returns TRUE if the specified directory exists; otherwise, returns FALSE.
 
@@ -1090,6 +1117,9 @@ const char* get_funit_type( int type ) {
 
 /*
  $Log$
+ Revision 1.53  2006/08/18 22:19:54  phase1geo
+ Fully integrated obfuscation into the development release.
+
  Revision 1.52  2006/08/18 22:07:45  phase1geo
  Integrating obfuscation into all user-viewable output.  Verified that these
  changes have not made an impact on regressions.  Also improved performance
