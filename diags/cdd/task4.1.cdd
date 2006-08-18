@@ -1,5 +1,5 @@
 5 8 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd task4.1.vcd -o task4.1.cdd -v task4.1.v
+8 /ptmp/cvs/covered/diags/verilog -t main -o task4.1.cdd -v task4.1.v
 3 0 main main task4.1.v 1 16
 1 c 0 3 30004 1 0 2
 3 0 mod_a main.a task4.1.v 19 33
@@ -7,7 +7,7 @@
 2 2 21 110011 1 47 4 1 0 foo.c
 2 3 21 c0014 2 3b 2600a 0 2 1 0 2 foo
 2 4 21 90009 1 1 4 0 0 c
-2 5 21 90009 0 2a 20000 0 0 2 0 a
+2 5 21 90009 0 2a 20000 0 0 1 0 2
 2 6 21 90009 3 29 2100a 4 5 1 0 2
 1 c 0 19 19 1 0 2
 4 3 6 0
@@ -33,7 +33,7 @@
 2 18 21 110011 1 47 8 17 0 foo.c
 2 19 21 c0014 2 3b 2600a 0 18 1 0 2 foo
 2 20 21 90009 1 1 8 0 0 c
-2 21 21 90009 0 2a 20000 0 0 2 0 a
+2 21 21 90009 0 2a 20000 0 0 1 0 2
 2 22 21 90009 3 29 2100a 20 21 1 0 2
 1 c 0 19 19 1 0 2
 4 19 22 0

@@ -89,13 +89,15 @@ bool merge_parse_args( int argc, int last_arg, char** argv ) {
 
     } else if( strncmp( "-o", argv[i], 2 ) == 0 ) {
     
-      i++;
-      if( is_directory( argv[i] ) ) {
-        merged_file = strdup_safe( argv[i], __FILE__, __LINE__ );
-      } else {
-        snprintf( user_msg, USER_MSG_LENGTH, "Illegal output file specified \"%s\"", argv[i] );
-        print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        retval = FALSE;
+      if( retval = check_option_value( argc, argv, i ) ) {
+        i++;
+        if( is_directory( argv[i] ) ) {
+          merged_file = strdup_safe( argv[i], __FILE__, __LINE__ );
+        } else {
+          snprintf( user_msg, USER_MSG_LENGTH, "Illegal output file specified \"%s\"", argv[i] );
+          print_output( user_msg, FATAL, __FILE__, __LINE__ );
+          retval = FALSE;
+        }
       }
 
     } else {
@@ -203,6 +205,12 @@ int command_merge( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.27  2006/08/02 22:28:32  phase1geo
+ Attempting to fix the bug pulled out by generate11.v.  We are just having an issue
+ with setting the assigned bit in a signal expression that contains a hierarchical reference
+ using a genvar reference.  Adding generate11.1 diagnostic to verify a slightly different
+ syntax style for the same code.  Note sure how badly I broke regression at this point.
+
  Revision 1.26  2006/06/27 19:34:43  phase1geo
  Permanent fix for the CDD save feature.
 

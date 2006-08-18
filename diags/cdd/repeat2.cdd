@@ -1,5 +1,5 @@
 5 8 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd repeat2.vcd -o repeat2.cdd -v repeat2.v
+8 /ptmp/cvs/covered/diags/verilog -t main -o repeat2.cdd -v repeat2.v
 3 0 main main repeat2.v 1 32
 2 1 7 50008 1 0 20004 0 0 1 1 0
 2 2 7 10001 0 1 400 0 0 a
@@ -12,7 +12,7 @@
 2 9 11 40004 0 1 400 0 0 a
 2 10 11 40009 4 37 2e 8 9
 2 11 12 d000d 4 1 c 0 0 b
-2 12 12 d000d 0 2a 20000 0 0 2 0 110a
+2 12 12 d000d 0 2a 20000 0 0 1 0 1102
 2 13 12 d000d 7 29 2600a 11 12 1 0 2
 2 14 9 90009 1 1 8 0 0 c
 2 15 9 10006 1 0 20004 0 0 32 64 10 0 0 0 0 0 0 0

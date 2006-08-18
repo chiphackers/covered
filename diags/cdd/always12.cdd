@@ -1,5 +1,5 @@
 5 8 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd always12.vcd -o always12.cdd -v always12.v
+8 /ptmp/cvs/covered/diags/verilog -t main -o always12.cdd -v always12.v
 3 0 main main always12.v 1 36
 2 1 7 b000e 1 0 20004 0 0 1 1 0
 2 2 7 b000e 1 47 4 1 0 foobar.b
@@ -15,7 +15,7 @@
 2 12 8 70007 1 1 4 0 0 a
 2 13 8 30009 1 39 4006 12 0
 2 14 5 90009 2 1 4 0 0 a
-2 15 5 90009 0 2a 20000 0 0 2 0 a
+2 15 5 90009 0 2a 20000 0 0 1 0 2
 2 16 5 90009 4 29 2100a 14 15 1 0 2
 1 a 0 3 30006 1 0 2
 1 b 0 3 30009 1 0 2

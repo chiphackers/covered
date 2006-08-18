@@ -1,8 +1,8 @@
 5 8 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd for2.vcd -o for2.cdd -v for2.v
+8 /ptmp/cvs/covered/diags/verilog -t main -o for2.cdd -v for2.v
 3 0 main main for2.v 1 35
 2 1 9 e000e 4 1 c 0 0 a
-2 2 9 e000e 0 2a 20000 0 0 2 0 a
+2 2 9 e000e 0 2a 20000 0 0 1 0 2
 2 3 9 e000e 9 29 2000a 1 2 1 0 2
 2 4 8 a000a 1 0 20004 0 0 32 64 0 0 0 0 0 0 0 0
 2 5 8 80008 0 1 400 0 0 i
@@ -18,7 +18,7 @@
 2 15 8 8000a 1 3e 21002 0 0 1 0 2 6
 2 16 10 c000c 1 3e 20002 0 0 1 0 2 19
 2 17 10 c000c 1 1 8 0 0 b
-2 18 10 c000c 0 2a 20000 0 0 2 0 a
+2 18 10 c000c 0 2a 20000 0 0 1 0 2
 2 19 10 c000c 2 29 3100a 17 18 1 0 2
 2 20 11 8000b 1 3f 20002 0 0 1 0 2
 2 21 15 20003 1 0 20008 0 0 32 64 44 0 0 0 0 0 0 0

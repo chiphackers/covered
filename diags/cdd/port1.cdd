@@ -1,5 +1,5 @@
 5 8 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd port1.vcd -o port1.cdd -v port1.v
+8 /ptmp/cvs/covered/diags/verilog -t main -o port1.cdd -v port1.v
 3 0 main main port1.v 1 26
 1 i1 0 3 3000b 1 0 2
 1 i2 0 4 3000b 2 0 a
@@ -15,7 +15,7 @@
 2 5 40 a000b 0 1 400 0 0 o2
 2 6 40 a0010 1 37 600a 4 5
 2 7 0 0 1 1 8 0 0 i2
-2 8 0 0 0 2a 20000 0 0 3 0 2a
+2 8 0 0 0 2a 20000 0 0 2 0 a
 2 9 0 0 1 29 20008 7 8 1 0 2
 2 10 40 70008 3 45 2100a 9 0 1 0 2
 1 i1 0 30 14 1 0 2

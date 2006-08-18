@@ -1,5 +1,5 @@
 5 8 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd ashift2.vcd -o ashift2.cdd -v ashift2.v
+8 /ptmp/cvs/covered/diags/verilog -t main -o ashift2.cdd -v ashift2.v
 3 0 main main ashift2.v 1 19
 2 1 8 110011 0 0 20010 0 0 32 64 4 0 0 0 0 0 0 0
 2 2 8 8000b 0 0 20010 0 0 4 3 1
@@ -12,7 +12,7 @@
 2 9 9 30003 0 1 400 0 0 c
 2 10 9 30012 0 37 6022 8 9
 2 11 6 90009 1 1 0 0 0 a
-2 12 6 90009 0 2a 20000 0 0 2 0 a
+2 12 6 90009 0 2a 20000 0 0 1 0 2
 2 13 6 90009 2 29 21002 11 12 1 0 2
 1 a 0 3 3000a 1 0 2
 1 b 0 4 3000a 4 16 aa

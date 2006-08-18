@@ -1,5 +1,5 @@
 5 8 1 * 0
-8 /ptmp/cvs/covered/diags/verilog -t main -vcd concat4.2.vcd -o concat4.2.cdd -v concat4.2.v
+8 /ptmp/cvs/covered/diags/verilog -t main -o concat4.2.cdd -v concat4.2.v
 3 0 main main concat4.2.v 1 26
 2 1 8 180018 5 1 c 0 0 d
 2 2 8 130013 0 1 400 0 0 c
@@ -10,7 +10,7 @@
 2 7 8 c0014 0 26 20400 6 0 4 0 aa
 2 8 8 c0018 5 37 600e 1 7
 2 9 8 90009 5 1 c 0 0 d
-2 10 8 90009 0 2a 20000 0 0 5 0 7faa 2
+2 10 8 90009 0 2a 20000 0 0 4 0 7faa
 2 11 8 90009 b 29 2100a 9 10 1 0 2
 1 a 0 3 3000d 2 16 130a
 1 b 0 4 3000d 1 16 1102

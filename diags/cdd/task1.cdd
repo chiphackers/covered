@@ -1,10 +1,10 @@
 5 8 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd task1.vcd -o task1.cdd -v task1.v
+8 /ptmp/cvs/covered/diags/verilog -t main -o task1.cdd -v task1.v
 3 0 main main task1.v 1 26
-2 1 6 2000a 4 3b 2600a 0 0 1 0 2 invert_a
+2 1 6 2000a 3 3b 2600a 0 0 1 0 2 invert_a
 2 2 5 90009 2 1 c 0 0 b
-2 3 5 90009 0 2a 20000 0 0 2 0 10a
-2 4 5 90009 7 29 2100a 2 3 1 0 2
+2 3 5 90009 0 2a 20000 0 0 1 0 102
+2 4 5 90009 6 29 2100a 2 3 1 0 2
 1 a 0 3 30004 1 16 1002
 1 b 0 3 30007 1 0 102
 4 1 4 0

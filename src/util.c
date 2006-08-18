@@ -227,6 +227,33 @@ void print_output( char* msg, int type, char* file, int line ) {
 }
 
 /*!
+ \param argc          Number of arguments in the argv parameter list
+ \param argv          List of arguments being parsed
+ \param option_index  Index of current option being parsed
+
+ \return Returns TRUE if the specified option has a valid argument; otherwise,
+         returns FALSE to indicate that there was an error in parsing the command-line.
+
+ This function is called whenever a command-line argument requires a value.  It verifies
+ that a value was specified (however, it does not make sure that the value is
+ the correct type).  Outputs an error message and returns a value of FALSE if a value was
+ not specified; otherwise, returns TRUE.
+*/
+bool check_option_value( int argc, char** argv, int option_index ) {
+
+  bool retval = TRUE;  /* Return value for this function */
+
+  if( ((option_index + 1) >= argc) || (argv[option_index+1][0] == '-') ) {
+    snprintf( user_msg, USER_MSG_LENGTH, "Missing option value to the right of the %s option", argv[option_index] );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    retval = FALSE;
+  }
+
+  return( retval );
+
+}
+
+/*!
  \param token String to check for valid variable name.
  \return Returns TRUE if the specified string is a legal variable name; otherwise,
          returns FALSE.
@@ -1062,6 +1089,10 @@ const char* get_funit_type( int type ) {
 
 /*
  $Log$
+ Revision 1.50  2006/08/06 04:36:20  phase1geo
+ Fixing bugs 1533896 and 1533827.  Also added -rI option that will ignore
+ the race condition check altogether (has not been verified to this point, however).
+
  Revision 1.49  2006/05/03 21:17:49  phase1geo
  Finishing assertion source code viewer functionality.  We just need to add documentation
  to the GUI user's guide and we should be set here (though we may want to consider doing

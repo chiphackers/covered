@@ -1,5 +1,5 @@
 5 8 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd casex1.2.vcd -o casex1.2.cdd -v casex1.2.v
+8 /ptmp/cvs/covered/diags/verilog -t main -o casex1.2.cdd -v casex1.2.v
 3 0 main main casex1.2.v 1 26
 2 1 7 100013 1 0 20008 0 0 1 1 1
 2 2 7 c000c 0 1 400 0 0 b
@@ -23,7 +23,7 @@
 2 20 7 40007 1 0 20004 0 0 1 1 0
 2 21 7 0 3 2e 2004a 20 14 1 0 2
 2 22 5 a000a 4 1 4 0 0 a
-2 23 5 a000a 0 2a 20000 0 0 2 0 a
+2 23 5 a000a 0 2a 20000 0 0 1 0 2
 2 24 5 a000a 8 29 2100a 22 23 1 0 2
 1 a 0 3 30004 1 0 2
 1 b 0 3 30007 1 16 2
