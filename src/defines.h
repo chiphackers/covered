@@ -711,6 +711,18 @@ typedef enum exp_op_type_e {
   EXP_OP_NOOP,            /*!< 78:0x4e.  Specifies no operation is to be performed (placeholder) */
   EXP_OP_ALWAYS_COMB,     /*!< 79:0x4f.  Specifies an always_comb statement (implicit event expression - similar to SLIST) */
   EXP_OP_ALWAYS_LATCH,    /*!< 80:0x50.  Specifies an always_latch statement (implicit event expression - similar to SLIST) */
+  EXP_OP_ADD_ASSIGN,      /*!< 81:0x51.  Specifies an add-and-assign SystemVerilog operator (+=) */
+  EXP_OP_SUB_ASSIGN,      /*!< 82:0x52.  Specifies a subtract-and-assign SystemVerilog operator (-=) */
+  EXP_OP_MLT_ASSIGN,      /*!< 83:0x53.  Specifies a multiply-and-assign SystemVerilog operator (*=) */
+  EXP_OP_DIV_ASSIGN,      /*!< 84:0x54.  Specifies a divide-and-assign SystemVerilog operator (/=) */
+  EXP_OP_MOD_ASSIGN,      /*!< 85:0x55.  Specifies a modulus-and-assign SystemVerilog operator (%=) */
+  EXP_OP_AND_ASSIGN,      /*!< 86:0x56.  Specifies a bitwise-AND-and-assign SystemVerilog operator (&=) */
+  EXP_OP_OR_ASSIGN,       /*!< 87:0x57.  Specifies a bitwise-OR-and-assign SystemVerilog operator (|=) */
+  EXP_OP_XOR_ASSIGN,      /*!< 88:0x58.  Specifies a bitwise-XOR-and-assign SystemVerilog operator (^=) */
+  EXP_OP_LS_ASSIGN,       /*!< 89:0x59.  Specifies a left-shift-and-assign SystemVerilog operator (<<=) */
+  EXP_OP_RS_ASSIGN,       /*!< 90:0x5a.  Specifies a right-shift-and-assign SystemVerilog operator (>>=) */
+  EXP_OP_ALS_ASSIGN,      /*!< 91:0x5b.  Specifies an arithmetic left-shift-and-assign SystemVerilog operator (<<<=) */
+  EXP_OP_ARS_ASSIGN,      /*!< 92:0x5c.  Specifies an arithmetic right-shift-and-assign SystemVerilog operator (>>>=) */
   EXP_OP_NUM              /*!< The total number of defines for expression values */
 } exp_op_type;
 
@@ -2007,6 +2019,9 @@ struct gitem_link_s {
 
 /*
  $Log$
+ Revision 1.219  2006/08/16 15:32:14  phase1geo
+ Fixing issues with do..while loop handling.  Full regression now passes.
+
  Revision 1.218  2006/08/11 18:57:03  phase1geo
  Adding support for always_comb, always_latch and always_ff statement block
  types.  Added several diagnostics to regression suite to verify this new
