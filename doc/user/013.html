@@ -361,6 +361,22 @@
     </TD>
     <TD></TD>
     <TD valign=top>
+      <P class="pg">
+      The -B option obfuscates all design-sensitive signal, module, task, function, instance,
+      file and parameter names when outputting them to either stdout, stderr or a file (with
+      the exception of CDD file output).  This mode is intended to be used for sharing output
+      information with others (including the developer's of Covered) which is sensitive
+      information for the purposes of debugging.
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
       <P class="header2">7.3&nbsp; <A name="7_3"></A>Covered options</P>
     </TD>
   </TR>
@@ -404,6 +420,9 @@
 					<tr> 
 						<td> -D </td> 
 						<td> Debug mode. Outputs code debug information to screen. Use in conjunction with commands. </td> </tr> 
+                                        <tr>
+                                                <td> -B </td>
+                                                <td> Obfuscate.  Obfuscates all design sensitive names before outputting them. </td> </tr>
 					<tr> 
 						<td> -h </td> 
 						<td> Generates usage output to standard output </td> </tr> 

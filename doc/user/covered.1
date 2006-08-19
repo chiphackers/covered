@@ -1,14 +1,14 @@
-.TH "Covered" "1" "covered-20060812" "Trevor Williams" "Code Analysis"
+.TH "Covered" "1" "covered-20060826" "Trevor Williams" "Code Analysis"
 .SH "NAME"
 .LP 
 Covered \- Verilog Code Coverage Analyzer
 .SH "SYNTAX"
 .LP 
-\fBcovered\fR [<options>] score [<options>]
+\fBcovered\fR [<global_options>] score [<options>]
 .br 
-\fBcovered\fR [<options>] merge [<options>] <existing_database> <database_to_merge>+
+\fBcovered\fR [<global_options>] merge [<options>] <existing_database> <database_to_merge>+
 .br 
-\fBcovered\fR [<options>] report [<options>] <database_file>
+\fBcovered\fR [<global_options>] report [<options>] <database_file>
 .SH "DESCRIPTION"
 .LP 
 \fICovered\fR is a Verilog code coverage analysis tool that can be useful for determining how well a diagnostic test suite is covering the design under test. Covered reads in the Verilog design files and a VCD or LXT formatted dumpfile from a diagnostic run and generates a database file called a Coverage Description Database (CDD) file, using the score command. Covered's score command can alternatively be used to generate a CDD file and a Verilog module for using Covered as a VPI module in a testbench which can obtain coverage information in parallel with simulation (see \fIUSING COVERED AS A VPI MODULE\fR). The resulting CDD file can be merged with other CDD files from the same design to create accummulated coverage, using the merge command.  Once a CDD file is created, the user can use Covered to generate various human\-readable coverage reports in an ASCII format or use Covered's GUI to interactively look at coverage results, using the report command.  Additionally, as part of Covered's score command, race condition possibilities are found in the design files and can be either ignored, flagged as warnings or flagged as errors.  By specifying race conditions as errors, Covered can also be used as a race condition checker.
@@ -18,6 +18,9 @@ These options are placed immediately after the keyword \fIcovered\fR in the comm
 .TP 
 \fB\-D\fR
 Debug.  Display information helpful for debugging tool problems.  Note:  This option is now only available when covered is built with the \-\-enable\-debug configuration option.
+.TP 
+\fB\-B\fR
+Obfuscate.  Obfuscates all design\-sensitive names before outputting in user\-readable format.  This option is useful when sharing output with the developers of Covered for debugging purposes.
 .TP 
 \fB\-h\fR
 Help.  Display this usage information.
