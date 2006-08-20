@@ -1,5 +1,5 @@
 5 8 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd long_exp2.vcd -o long_exp2.cdd -v long_exp2.v
+8 /ptmp/cvs/covered/diags/verilog -t main -o long_exp2.cdd -v long_exp2.v
 3 0 main main long_exp2.v 1 189
 2 1 175 15001b 0 0 20010 0 0 10 3 45 10 0
 2 2 175 f000f 0 0 20018 0 0 32 64 5 0 0 0 0 0 0 0
@@ -987,7 +987,7 @@
 2 984 11 30003 0 1 400 0 0 a
 2 985 11 3001d 0 38 6022 983 984
 2 986 9 110012 1 1 0 0 0 go
-2 987 9 9000f 0 2a 20000 0 0 2 0 a
+2 987 9 9000f 0 2a 20000 0 0 1 0 2
 2 988 9 90012 2 27 21002 986 987 1 0 2
 1 go 0 3 3000c 1 0 2
 1 a 0 4 3000c 1 0 2

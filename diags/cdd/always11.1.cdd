@@ -1,17 +1,17 @@
 5 8 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd always11.1.vcd -o always11.1.cdd -v always11.1.v
+8 /ptmp/cvs/covered/diags/verilog -t main -o always11.1.cdd -v always11.1.v
 3 0 main main always11.1.v 1 22
 2 1 7 8000b 1 0 20004 0 0 1 1 0
 2 2 7 30003 0 1 400 0 0 b
 2 3 7 3000b 1 38 6 1 2
 2 4 8 d000d 1 1 4 0 0 a
-2 5 8 5000b 0 2a 20000 0 0 2 0 a
+2 5 8 5000b 0 2a 20000 0 0 1 0 2
 2 6 8 5000d 1 28 20002 4 5 1 0 2
 2 7 9 8000b 0 0 20010 0 0 1 1 1
 2 8 9 30003 0 1 400 0 0 b
 2 9 9 3000b 0 38 6022 7 8
 2 10 5 110011 2 1 c 0 0 a
-2 11 5 9000f 0 2a 20000 0 0 2 0 a
+2 11 5 9000f 0 2a 20000 0 0 1 0 2
 2 12 5 90011 3 28 2100a 10 11 1 0 2
 1 a 0 3 30007 1 0 1002
 1 b 0 3 3000a 1 0 2

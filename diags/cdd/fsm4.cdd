@@ -1,5 +1,5 @@
 5 8 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd fsm4.vcd -o fsm4.cdd -y lib -v fsm4.v -F main
+8 /ptmp/cvs/covered/diags/verilog -t main -o fsm4.cdd -y lib -v fsm4.v -F main
 3 0 main main fsm4.v 1 62
 2 1 17 d0016 1 32 8 0 0 STATE_IDLE
 2 2 17 40008 0 1 400 0 0 state
@@ -52,7 +52,7 @@
 2 49 16 6000a 2 1 c 0 0 reset
 2 50 16 2000c 19 39 e 49 0
 2 51 15 110013 32 1 c 0 0 clk
-2 52 15 9000f 0 2a 20000 0 0 2 0 a
+2 52 15 9000f 0 2a 20000 0 0 1 0 2
 2 53 15 90013 4c 27 2100a 51 52 1 0 2
 2 54 58 7000a 1 0 20004 0 0 1 1 0
 2 55 58 10003 0 1 400 0 0 clk

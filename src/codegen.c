@@ -54,9 +54,10 @@
 #include "obfuscate.h"
 
 
-extern bool flag_use_line_width;
-extern int  line_width;
-extern char user_msg[USER_MSG_LENGTH];
+extern bool           flag_use_line_width;
+extern int            line_width;
+extern char           user_msg[USER_MSG_LENGTH];
+extern const exp_info exp_op_info[EXP_OP_NUM];
 
 
 /*!
@@ -520,6 +521,19 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
       (*code)[0]  = strdup_safe( "always_latch", __FILE__, __LINE__ );
       *code_depth = 1;
 
+    } else if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
+
+      int i;
+
+      assert( right_code_depth > 0 );
+
+      /* Copy the contents of the right code */
+      *code       = (char**)malloc_safe( (sizeof( char* ) * right_code_depth), __FILE__, __LINE__ );
+      for( i=0; i<right_code_depth; i++ ) {
+        (*code)[i]  = strdup_safe( right_code[i], __FILE__, __LINE__ );
+      }
+      *code_depth = right_code_depth;
+
     } else {
 
       if( parent_op == expr->op ) {
@@ -529,7 +543,6 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
         before = strdup_safe( "(", __FILE__, __LINE__ );
         after  = strdup_safe( ")", __FILE__, __LINE__ );
       }
-
 
       switch( expr->op ) {
         case EXP_OP_XOR      :
@@ -745,8 +758,30 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
                                right_code, right_code_depth, expr->right, NULL );
           break;
         case EXP_OP_DASSIGN  :
-        case EXP_OP_BASSIGN  :
           codegen_create_expr( code, code_depth, expr->line, NULL, left_code, left_code_depth, expr->left, " = ",
+                               right_code, right_code_depth, expr->right, NULL );
+          break;
+        case EXP_OP_BASSIGN  :
+          if( EXPR_IS_OP_AND_ASSIGN( expr->right ) == 1 ) {
+            switch( expr->right->op ) {
+              case EXP_OP_ADD      :  strcpy( code_format, " += " );    break; 
+              case EXP_OP_SUBTRACT :  strcpy( code_format, " -= " );    break; 
+              case EXP_OP_MULTIPLY :  strcpy( code_format, " *= " );    break; 
+              case EXP_OP_DIVIDE   :  strcpy( code_format, " /= " );    break; 
+              case EXP_OP_MOD      :  strcpy( code_format, " %= " );    break; 
+              case EXP_OP_AND      :  strcpy( code_format, " &= " );    break; 
+              case EXP_OP_OR       :  strcpy( code_format, " |= " );    break; 
+              case EXP_OP_XOR      :  strcpy( code_format, " ^= " );    break; 
+              case EXP_OP_LSHIFT   :  strcpy( code_format, " <<= " );   break; 
+              case EXP_OP_RSHIFT   :  strcpy( code_format, " >>= " );   break; 
+              case EXP_OP_ALSHIFT  :  strcpy( code_format, " <<<= " );  break; 
+              case EXP_OP_ARSHIFT  :  strcpy( code_format, " >>>= " );  break; 
+              default              :  assert( 0 );                      break;
+            }
+          } else {
+            strcpy( code_format, " = " );
+          }
+          codegen_create_expr( code, code_depth, expr->line, NULL, left_code, left_code_depth, expr->left, code_format,
                                right_code, right_code_depth, expr->right, NULL );
           break;
         case EXP_OP_NASSIGN  :
@@ -774,6 +809,14 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
           codegen_create_expr( code, code_depth, expr->line, "-", right_code, right_code_depth, expr->right, NULL,
                                NULL, 0, NULL, NULL );
           break;
+        case EXP_OP_INC      :
+          codegen_create_expr( code, code_depth, expr->line, NULL, left_code, left_code_depth, expr->left, "++",
+                               NULL, 0, NULL, NULL );
+          break;
+        case EXP_OP_DEC      :
+          codegen_create_expr( code, code_depth, expr->line, NULL, left_code, left_code_depth, expr->left, "--",
+                               NULL, 0, NULL, NULL );
+          break;
         default:  break;
       }
 
@@ -799,6 +842,11 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.71  2006/08/18 22:07:44  phase1geo
+ Integrating obfuscation into all user-viewable output.  Verified that these
+ changes have not made an impact on regressions.  Also improved performance
+ impact of not obfuscating output.
+
  Revision 1.70  2006/08/11 18:57:03  phase1geo
  Adding support for always_comb, always_latch and always_ff statement block
  types.  Added several diagnostics to regression suite to verify this new

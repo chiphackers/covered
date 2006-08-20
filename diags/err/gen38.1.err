@@ -1,0 +1,2 @@
+ERROR!  Decrement (--) operation found in block that is specified to not allow SystemVerilog syntax,   file: gen38.v, line: 5, col: 11
+ERROR!  Error in parsing design

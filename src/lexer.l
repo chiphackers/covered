@@ -180,30 +180,44 @@ WSPACE [ \t\b\f]+
  }
 
   /* Multi-character symbols */
-"(*"  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_PSTAR;   }
-"*)"  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_STARP;   }
-"<<"  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_LS;      }
-"<<<" { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 3;  return K_LSS;     }
-">>"  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_RS;      }
-">>>" { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 3;  return K_RSS;     }
-"<="  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_LE;      }
-">="  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_GE;      }
-"=="  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_EQ;      }
-"!="  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_NE;      }
-"===" { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 3;  return K_CEQ;     }
-"!==" { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 3;  return K_CNE;     }
-"||"  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_LOR;     }
-"&&"  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_LAND;    }
-"&&&" { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 3;  return K_TAND;    }
-"~|"  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_NOR;     }
-"~^"  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_NXOR;    }
-"^~"  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_NXOR;    }
-"~&"  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_NAND;    }
-"->"  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_TRIGGER; }
-"+:"  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_PO_POS;  }
-"-:"  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_PO_NEG;  }
-"=>"  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_EG;      }
-"*>"  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_SG;      }
+"(*"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_PSTAR;   }
+"*)"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_STARP;   }
+"<<"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_LS;      }
+"<<<"  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 3;  return K_LSS;     }
+">>"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_RS;      }
+">>>"  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 3;  return K_RSS;     }
+"<="   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_LE;      }
+">="   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_GE;      }
+"=="   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_EQ;      }
+"!="   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_NE;      }
+"==="  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 3;  return K_CEQ;     }
+"!=="  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 3;  return K_CNE;     }
+"||"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_LOR;     }
+"&&"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_LAND;    }
+"&&&"  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 3;  return K_TAND;    }
+"~|"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_NOR;     }
+"~^"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_NXOR;    }
+"^~"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_NXOR;    }
+"~&"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_NAND;    }
+"->"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_TRIGGER; }
+"+:"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_PO_POS;  }
+"-:"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_PO_NEG;  }
+"=>"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_EG;      }
+"*>"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_SG;      }
+"+="   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_ADD_A;   }
+"-="   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_SUB_A;   }
+"*="   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_MLT_A;   }
+"/="   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_DIV_A;   }
+"%="   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_MOD_A;   }
+"&="   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_AND_A;   }
+"|="   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_OR_A;    }
+"^="   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_XOR_A;   }
+"<<="  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 3;  return K_LS_A;    }
+">>="  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 3;  return K_RS_A;    }
+"<<<=" { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 4;  return K_ALS_A;   }
+">>>=" { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 4;  return K_ARS_A;   }
+"++"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_INC;     }
+"--"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_DEC;     }
 
   /* Properly handle all cases of (*) and convert it to a simple '*' */
 "("{WSPACE}*"*"{WSPACE}*")" { yylloc.first_column = yylloc.last_column;  yylloc.last_column += strlen( yytext );  return '*'; }

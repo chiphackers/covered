@@ -1,5 +1,5 @@
 5 8 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd ifelse1.vcd -o ifelse1.cdd -v ifelse1.v -y ./lib
+8 /ptmp/cvs/covered/diags/verilog -t main -o ifelse1.cdd -v ifelse1.v -y ./lib
 3 0 main main ifelse1.v 1 33
 1 clock 0 3 30004 1 0 1102
 1 reset 0 3 3000b 1 0 1002
@@ -22,7 +22,7 @@
 2 12 13 6000a 2 1 c 0 0 reset
 2 13 13 2000c 6 39 e 12 0
 2 14 12 110015 c 1 c 0 0 clock
-2 15 12 9000f 0 2a 20000 0 0 2 0 a
+2 15 12 9000f 0 2a 20000 0 0 1 0 2
 2 16 12 90015 13 27 2100a 14 15 1 0 2
 1 clock 0 3 7 1 0 1102
 1 reset 0 4 7 1 0 1002

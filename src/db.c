@@ -1114,7 +1114,13 @@ expression* db_create_expression( expression* right, expression* left, int op, b
    the right expression.
   */
   if( (expr->op == EXP_OP_BASSIGN) ||
-      (expr->op == EXP_OP_IF) ) {
+      (expr->op == EXP_OP_NASSIGN) ||
+      (expr->op == EXP_OP_RASSIGN) ||
+      (expr->op == EXP_OP_DASSIGN) ||
+      (expr->op == EXP_OP_ASSIGN)  ||
+      (expr->op == EXP_OP_IF)      ||
+      (expr->op == EXP_OP_WHILE)   ||
+      (expr->op == EXP_OP_DLY_ASSIGN) ) {
     vector_dealloc( expr->value );
     expr->value = right->value;
   }
@@ -1959,6 +1965,11 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.210  2006/08/18 22:07:44  phase1geo
+ Integrating obfuscation into all user-viewable output.  Verified that these
+ changes have not made an impact on regressions.  Also improved performance
+ impact of not obfuscating output.
+
  Revision 1.209  2006/08/15 16:21:53  phase1geo
  Fixing bug for generate4 diagnostic which incorrectly added a BIND element
  when not in a generate block.  Full regression now passes.

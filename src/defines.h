@@ -711,18 +711,9 @@ typedef enum exp_op_type_e {
   EXP_OP_NOOP,            /*!< 78:0x4e.  Specifies no operation is to be performed (placeholder) */
   EXP_OP_ALWAYS_COMB,     /*!< 79:0x4f.  Specifies an always_comb statement (implicit event expression - similar to SLIST) */
   EXP_OP_ALWAYS_LATCH,    /*!< 80:0x50.  Specifies an always_latch statement (implicit event expression - similar to SLIST) */
-  EXP_OP_ADD_ASSIGN,      /*!< 81:0x51.  Specifies an add-and-assign SystemVerilog operator (+=) */
-  EXP_OP_SUB_ASSIGN,      /*!< 82:0x52.  Specifies a subtract-and-assign SystemVerilog operator (-=) */
-  EXP_OP_MLT_ASSIGN,      /*!< 83:0x53.  Specifies a multiply-and-assign SystemVerilog operator (*=) */
-  EXP_OP_DIV_ASSIGN,      /*!< 84:0x54.  Specifies a divide-and-assign SystemVerilog operator (/=) */
-  EXP_OP_MOD_ASSIGN,      /*!< 85:0x55.  Specifies a modulus-and-assign SystemVerilog operator (%=) */
-  EXP_OP_AND_ASSIGN,      /*!< 86:0x56.  Specifies a bitwise-AND-and-assign SystemVerilog operator (&=) */
-  EXP_OP_OR_ASSIGN,       /*!< 87:0x57.  Specifies a bitwise-OR-and-assign SystemVerilog operator (|=) */
-  EXP_OP_XOR_ASSIGN,      /*!< 88:0x58.  Specifies a bitwise-XOR-and-assign SystemVerilog operator (^=) */
-  EXP_OP_LS_ASSIGN,       /*!< 89:0x59.  Specifies a left-shift-and-assign SystemVerilog operator (<<=) */
-  EXP_OP_RS_ASSIGN,       /*!< 90:0x5a.  Specifies a right-shift-and-assign SystemVerilog operator (>>=) */
-  EXP_OP_ALS_ASSIGN,      /*!< 91:0x5b.  Specifies an arithmetic left-shift-and-assign SystemVerilog operator (<<<=) */
-  EXP_OP_ARS_ASSIGN,      /*!< 92:0x5c.  Specifies an arithmetic right-shift-and-assign SystemVerilog operator (>>>=) */
+  EXP_OP_INC,             /*!< 81:0x51.  Specifies the increment SystemVerilog operator (++) */
+  EXP_OP_DEC,             /*!< 82:0x52.  Specifies the decrement SystemVerilog operator (--) */
+  EXP_OP_DLY_ASSIGN,      /*!< 83:0x53.  Specifies a delayed assignment (i.e., a = #5 b; or a = @(c) b;) */
   EXP_OP_NUM              /*!< The total number of defines for expression values */
 } exp_op_type;
 
@@ -796,7 +787,10 @@ typedef enum exp_op_type_e {
                                          (o != EXP_OP_IF)             && \
                                          (o != EXP_OP_WHILE)          && \
                                          (o != EXP_OP_FUNC_CALL)      && \
-					 (o != EXP_OP_PASSIGN))
+					 (o != EXP_OP_PASSIGN)        && \
+                                         (o != EXP_OP_INC)            && \
+                                         (o != EXP_OP_DEC)            && \
+                                         (o != EXP_OP_DLY_ASSIGN))
 
 /*!
  Returns a value of true if the specified expression is considered a unary expression by
@@ -825,6 +819,13 @@ typedef enum exp_op_type_e {
  right expression can't be deallocated.
 */
 #define EXPR_RIGHT_DEALLOCABLE(x)    (TRUE)
+
+/*!
+ Specifies if the expression is an op-and-assign operation (i.e., +=, -=, &=, etc.)
+*/
+#define EXPR_IS_OP_AND_ASSIGN(x)     ((exp_op_info[x->op].suppl.assignable == 1) && \
+                                      (x->left != NULL) && \
+                                      (x->left->op == EXP_OP_LAST))
 
 /*!
  \addtogroup op_tables
@@ -1472,6 +1473,7 @@ struct exp_info_s {
     nibble is_unary:1;                    /*!< Specifies if operation is unary (left expression valid only) */
     nibble measurable:1;                  /*!< Specifies if this operation type can be measured */
     nibble is_context_switch:1;           /*!< Specifies if this operation will cause a context switch */
+    nibble assignable:1;                  /*!< Specifies if this operation can be immediately assigned (i.e., +=) */
   } suppl;                                /*!< Supplemental information about this expression */
 };
 
@@ -2019,6 +2021,9 @@ struct gitem_link_s {
 
 /*
  $Log$
+ Revision 1.220  2006/08/18 22:41:22  phase1geo
+ Adding enumerated values for the operate-and-assign SystemVerilog operations.
+
  Revision 1.219  2006/08/16 15:32:14  phase1geo
  Fixing issues with do..while loop handling.  Full regression now passes.
 

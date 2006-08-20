@@ -1,5 +1,5 @@
 5 8 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd delay1.vcd -o delay1.1.cdd -T min -v delay1.1.v
+8 /ptmp/cvs/covered/diags/verilog -t main -o delay1.1.cdd -T min -v delay1.1.v
 3 0 main main delay1.1.v 1 26
 2 1 6 2d002d 1 0 20004 0 0 32 64 0 0 0 0 0 0 0 0
 2 2 6 2b002e 1 23 18 0 1 c
@@ -12,7 +12,7 @@
 2 9 6 16001c 1 0 20008 0 0 32 64 55 55 55 55 55 55 55 55
 2 10 6 14001d 3 2c 2000a 8 9 32 0 aa aa aa aa aa aa aa aa
 2 11 6 110011 2 1 c 0 0 b
-2 12 6 9000f 0 2a 20000 0 0 2 0 a
+2 12 6 9000f 0 2a 20000 0 0 1 0 2
 2 13 6 90011 4 27 2100a 11 12 1 0 2
 2 14 19 50009 1 0 20004 0 0 2 1 0
 2 15 19 10001 0 1 400 0 0 c

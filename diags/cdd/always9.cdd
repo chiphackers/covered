@@ -1,5 +1,5 @@
 5 8 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd always9.vcd -o always9.cdd -v always9.v
+8 /ptmp/cvs/covered/diags/verilog -t main -o always9.cdd -v always9.v
 3 0 main main always9.v 1 70
 2 1 15 b000e 1 0 20004 0 0 1 1 0
 2 2 15 60006 0 1 400 0 0 a
@@ -185,7 +185,7 @@
 2 182 13 7000b 2 1 c 0 0 reset
 2 183 13 3000d 1e 39 e 182 0
 2 184 11 110015 3d 1 c 0 0 clock
-2 185 11 9000f 0 2a 20000 0 0 2 0 a
+2 185 11 9000f 0 2a 20000 0 0 1 0 2
 2 186 11 90015 5c 27 2100a 184 185 1 0 2
 2 187 66 9000c 1 0 20004 0 0 1 1 0
 2 188 66 10005 0 1 400 0 0 clock

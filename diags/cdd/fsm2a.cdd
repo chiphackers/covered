@@ -1,5 +1,5 @@
 5 8 1 main 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t fsm -i main.fsm -o fsm2a.cdd -y lib -v fsm2a.v -F fsm
+8 /ptmp/cvs/covered/diags/verilog -t fsm -i main.fsm -o fsm2a.cdd -y lib -v fsm2a.v -F fsm
 3 0 fsm fsm lib/fsm.v 1 35
 2 1 23 36003f 7 1 c 0 0 next_state
 2 2 23 290032 1 32 4 0 0 STATE_IDLE
@@ -9,7 +9,7 @@
 2 6 23 18001c 0 1 400 0 0 state
 2 7 23 18003f 16 38 600e 5 6
 2 8 23 110015 2d 1 c 0 0 clock
-2 9 23 9000f 0 2a 20000 0 0 2 0 a
+2 9 23 9000f 0 2a 20000 0 0 1 0 2
 2 10 23 90015 44 27 2100a 8 9 1 0 2
 2 11 28 3d0046 1 32 4 0 0 STATE_IDLE
 2 12 28 300039 1 32 8 0 0 STATE_HEAD
@@ -66,7 +66,7 @@
 2 63 25 120015 0 2a 20000 0 0 1 0 1102
 2 64 25 120015 3 29 20008 62 63 1 0 2
 2 65 25 9000d 6 1 c 0 0 state
-2 66 25 9000d 0 2a 20000 0 0 2 0 330a
+2 66 25 9000d 0 2a 20000 0 0 1 0 1102
 2 67 25 9000d 6 29 20008 65 66 1 0 2
 2 68 25 90015 7 2b 20008 64 67 1 0 2
 2 69 25 9001e 7 2b 20008 61 68 1 0 2

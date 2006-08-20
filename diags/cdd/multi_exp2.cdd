@@ -1,5 +1,5 @@
 5 8 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd multi_exp2.vcd -o multi_exp2.cdd -v multi_exp2.v
+8 /ptmp/cvs/covered/diags/verilog -t main -o multi_exp2.cdd -v multi_exp2.v
 3 0 main main multi_exp2.v 1 26
 2 1 8 2d002d 2 1 c 0 0 g
 2 2 8 250028 1 0 20008 0 0 1 1 1
@@ -30,7 +30,7 @@
 2 18 34 140014 0 1 400 0 0 a
 2 19 34 14001c 0 38 6022 17 18
 2 20 34 110011 1 1 4 0 0 c
-2 21 34 9000f 0 2a 20000 0 0 2 0 a
+2 21 34 9000f 0 2a 20000 0 0 1 0 2
 2 22 34 90011 2 27 21002 20 21 1 0 2
 1 c 0 30 6 1 0 2
 1 a 0 32 30006 1 0 2

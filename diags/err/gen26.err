@@ -1,0 +1,2 @@
+ERROR!  -= operation found in block that is specified to not allow SystemVerilog syntax,   file: gen26.v, line: 5, col: 14
+ERROR!  Error in parsing design

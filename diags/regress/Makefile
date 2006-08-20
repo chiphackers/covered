@@ -107,14 +107,22 @@ GENLIST       = gen1            gen1.1          gen1.3          gen2.1          
                 gen14.1         gen15.1         gen16.1         gen17.1         gen18.1 \
                 gen19           gen19.1         gen20           gen20.1         gen21 \
                 gen21.1         gen22           gen22.1         gen23           gen23.1 \
-                gen24           gen24.1
+                gen24           gen24.1         gen25.2         gen26.2         gen27.2 \
+                gen28.2         gen29.2         gen30.2         gen31.2         gen32.2 \
+                gen33.2         gen34.2         gen35.2         gen36.2         gen37.2 \
+                gen38.2
 
 GENERRLIST    = gen1.2          gen1.4          gen1.5          gen2            gen3 \
                 gen4            gen5            gen6            gen7            gen8 \
                 gen9            gen10           gen11           gen12           gen13 \
                 gen14           gen15           gen16           gen17           gen18 \
                 gen19.2         gen20.2         gen21.2         gen22.2         gen23.2 \
-                gen24.2
+                gen24.2         gen25           gen25.1         gen26           gen26.1 \
+                gen27           gen27.1         gen28           gen28.1         gen29 \
+                gen29.1         gen30           gen30.1         gen31           gen31.1 \
+                gen32           gen32.1         gen33           gen33.1         gen34 \
+                gen34.1         gen35           gen35.1         gen36           gen36.1 \
+                gen37           gen37.1         gen38           gen38.1
            
 IVONLYDIAGS1  = always5.1       assign1         assign2.8       example         fsm1 \
                 fsm1.1          fsm1.2          fsm1.3          fsm1.4          fsm6 \
@@ -128,7 +136,8 @@ IVONLYDIAGS3  =
 IVONLYDIAGS4  = 
 
 VCSONLYDIAGS1 = always_comb1    always_ff1      always_latch1   bit1            byte1 \
-                char1           do_while1       do_while1.1     do_while2       elsif1 \
+                char1           dec1            dec1.1          dec2            do_while1 \
+                do_while1.1     do_while2       elsif1 \
                 elsif1.1        elsif1.2        elsif1.3        elsif1.4        elsif2 \
                 elsif2.1        exponent1       gate1.1         generate1.1     generate2 \
                 generate2.1     generate3       generate3.1     generate4       generate4.1 \
@@ -137,9 +146,10 @@ VCSONLYDIAGS1 = always_comb1    always_ff1      always_latch1   bit1            
                 generate8.2     generate8.3     generate8.4     generate8.5     generate8.6 \
                 generate8.7     generate8.8     generate9       generate9.1     generate9.2 \
                 generate9.3     generate10      generate10.1    generate10.2    generate11 \
-                generate11.1    generate11.2    generate11.3    hier1.1         int1 \
-                line1           logic1          longint1        mbit_sel5.4     mbit_sel6.4 \
-                param8.2        param12         param12.1       shortint1       slist3.1 \
+                generate11.1    generate11.2    generate11.3    hier1.1         inc1 \
+                inc1.1          inc2            int1            line1           logic1 \
+                longint1        mbit_sel5.4     mbit_sel6.4     op_assign1      param8.2 \
+                param12         param12.1       shortint1       slist3.1 \
                 slist3.3        static_func1    static_func1.1  static_func2    static_func2.1 \
                 static_func2.2  static_func2.3  trireg
 VCSONLYDIAGS2 = 

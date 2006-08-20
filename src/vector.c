@@ -1885,6 +1885,58 @@ bool vector_op_multiply( vector* tgt, vector* left, vector* right ) {
 }
 
 /*!
+ \param tgt  Target vector to assign data to
+
+ \return Returns TRUE (increments will always cause a value change)
+
+ Performs an increment operation on the specified vector.
+*/
+bool vector_op_inc( vector* tgt ) {
+
+  vector* tmp1;  /* Pointer to temporary vector containing the same contents as the target */
+  vector* tmp2;  /* Pointer to temporary vector containing the value of 1 */
+
+  /* Get a copy of the vector data */
+  vector_copy( tgt, &tmp1 );
+
+  /* Create a vector containing the value of 1 */
+  tmp2 = vector_create( tgt->width, TRUE );
+  tmp2->value[0].part.value = 1;
+  
+  /* Finally add the values and assign them back to the target */
+  vector_op_add( tgt, tmp1, tmp2 );
+
+  return( TRUE );
+
+}
+
+/*!
+ \param tgt  Target vector to assign data to
+
+ \return Returns TRUE (decrements will always cause a value change)
+
+ Performs an decrement operation on the specified vector.
+*/
+bool vector_op_dec( vector* tgt ) {
+
+  vector* tmp1;  /* Pointer to temporary vector containing the same contents as the target */
+  vector* tmp2;  /* Pointer to temporary vector containing the value of 1 */
+
+  /* Get a copy of the vector data */
+  vector_copy( tgt, &tmp1 );
+
+  /* Create a vector containing the value of 1 */
+  tmp2 = vector_create( tgt->width, TRUE );
+  tmp2->value[0].part.value = 1;
+
+  /* Finally add the values and assign them back to the target */
+  vector_op_subtract( tgt, tmp1, tmp2 );
+
+  return( TRUE );
+
+}
+
+/*!
  \param tgt  Target vector for operation results to be stored.
  \param src  Source vector to perform operation on.
 
@@ -2019,6 +2071,10 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.77  2006/07/13 04:35:40  phase1geo
+ Fixing problem with unary inversion and logical not.  Updated unary1 failures
+ as a result.  Still need to run full regression before considering this fully fixed.
+
  Revision 1.76  2006/07/12 22:16:18  phase1geo
  Fixing hierarchical referencing for instance arrays.  Also attempted to fix
  a problem found with unary1; however, the generated report coverage information

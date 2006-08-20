@@ -1,5 +1,5 @@
 5 8 9 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd exclude5.2.vcd -o exclude5.2.cdd -v exclude5.2.v -ei
+8 /ptmp/cvs/covered/diags/verilog -t main -o exclude5.2.cdd -v exclude5.2.v -ei
 3 0 main main exclude5.2.v 1 25
 2 1 6 d000d 2 1 c 0 0 c
 2 2 6 90009 2 1 c 0 0 b
@@ -15,7 +15,7 @@
 2 12 16 140014 0 1 400 0 0 d
 2 13 16 14001a 1 38 600a 11 12
 2 14 16 110011 2 1 c 0 0 b
-2 15 16 9000f 0 2a 20000 0 0 2 0 a
+2 15 16 9000f 0 2a 20000 0 0 1 0 2
 2 16 16 90011 4 27 2100a 14 15 1 0 2
 1 b 0 3 30005 1 0 102
 1 d 0 3 30008 1 0 2

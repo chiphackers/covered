@@ -234,6 +234,7 @@ int yydebug = 1;
 %token UNUSED_REALTIME
 %token UNUSED_STRING UNUSED_SYSTEM_IDENTIFIER
 %token K_LE K_GE K_EG K_EQ K_NE K_CEQ K_CNE K_LS K_LSS K_RS K_RSS K_SG K_EG
+%token K_ADD_A K_SUB_A K_MLT_A K_DIV_A K_MOD_A K_AND_A K_OR_A K_XOR_A K_LS_A K_RS_A K_ALS_A K_ARS_A K_INC K_DEC
 %token K_PO_POS K_PO_NEG K_STARP K_PSTAR
 %token K_LOR K_LAND K_NAND K_NOR K_NXOR K_TRIGGER
 %token K_always K_and K_assign K_begin K_buf K_bufif0 K_bufif1 K_case
@@ -3139,8 +3140,6 @@ statement
       statement*  stmt;
       if( (ignore_mode == 0) && ($3 != NULL) && ($6 != NULL) ) {
         expr = db_create_expression( $3, NULL, EXP_OP_WHILE, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
-        vector_dealloc( expr->value );
-        expr->value = $3->value;
         stmt = db_create_statement( expr );
         db_add_expression( expr );
         db_connect_statement_true( stmt, $6 );
@@ -3164,8 +3163,6 @@ statement
       statement*  stmt;
       if( (ignore_mode == 0) && ($3 != NULL) && ($7 != NULL) ) {
         expr = db_create_expression( $7, NULL, EXP_OP_WHILE, FALSE, @5.first_line, @5.first_column, (@8.last_column - 1), NULL );
-        vector_dealloc( expr->value );
-        expr->value = $7->value;
         stmt = db_create_statement( expr );
         db_add_expression( expr );
         assert( db_statement_connect( $3, stmt ) );
@@ -3257,14 +3254,340 @@ statement
         $$ = NULL;
       }
     }
+  | lpvalue K_ADD_A expression ';' 
+    {
+      expression* tmp;
+      statement*  stmt;
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
+        if( !parser_check_generation( GENERATION_SV ) ) {
+          VLerror( "+= operation found in block that is specified to not allow SystemVerilog syntax" );
+          expression_dealloc( $1, FALSE );
+          expression_dealloc( $3, FALSE );
+          $$ = NULL;
+        } else {
+          tmp = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
+          tmp = db_create_expression( $3, tmp, EXP_OP_ADD, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
+          tmp = db_create_expression( tmp, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+          stmt = db_create_statement( tmp );
+          db_add_expression( tmp );
+          $$ = stmt;
+        }
+      } else {
+        expression_dealloc( $1, FALSE );
+        expression_dealloc( $3, FALSE );
+        $$ = NULL;
+      }
+    }
+  | lpvalue K_SUB_A expression ';' 
+    {
+      expression* tmp;
+      statement*  stmt;
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
+        if( !parser_check_generation( GENERATION_SV ) ) {
+          VLerror( "-= operation found in block that is specified to not allow SystemVerilog syntax" );
+          expression_dealloc( $1, FALSE );
+          expression_dealloc( $3, FALSE );
+          $$ = NULL;
+        } else {
+          tmp = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
+          tmp = db_create_expression( $3, tmp, EXP_OP_SUBTRACT, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
+          tmp = db_create_expression( tmp, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+          stmt = db_create_statement( tmp );
+          db_add_expression( tmp );
+          $$ = stmt;
+        }
+      } else {
+        expression_dealloc( $1, FALSE );
+        expression_dealloc( $3, FALSE );
+        $$ = NULL;
+      }
+    }
+  | lpvalue K_MLT_A expression ';' 
+    {
+      expression* tmp;
+      statement*  stmt;
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
+        if( !parser_check_generation( GENERATION_SV ) ) {
+          VLerror( "*= operation found in block that is specified to not allow SystemVerilog syntax" );
+          expression_dealloc( $1, FALSE );
+          expression_dealloc( $3, FALSE );
+          $$ = NULL;
+        } else {
+          tmp = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
+          tmp = db_create_expression( $3, tmp, EXP_OP_MULTIPLY, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
+          tmp = db_create_expression( tmp, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+          stmt = db_create_statement( tmp );
+          db_add_expression( tmp );
+          $$ = stmt;
+        }
+      } else {
+        expression_dealloc( $1, FALSE );
+        expression_dealloc( $3, FALSE );
+        $$ = NULL;
+      }
+    }
+  | lpvalue K_DIV_A expression ';' 
+    {
+      expression* tmp;
+      statement*  stmt;
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
+        if( !parser_check_generation( GENERATION_SV ) ) {
+          VLerror( "/= operation found in block that is specified to not allow SystemVerilog syntax" );
+          expression_dealloc( $1, FALSE );
+          expression_dealloc( $3, FALSE );
+          $$ = NULL;
+        } else {
+          tmp = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
+          tmp = db_create_expression( $3, tmp, EXP_OP_DIVIDE, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
+          tmp = db_create_expression( tmp, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+          stmt = db_create_statement( tmp );
+          db_add_expression( tmp );
+          $$ = stmt;
+        }
+      } else {
+        expression_dealloc( $1, FALSE );
+        expression_dealloc( $3, FALSE );
+        $$ = NULL;
+      }
+    }
+  | lpvalue K_MOD_A expression ';' 
+    {
+      expression* tmp;
+      statement*  stmt;
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
+        if( !parser_check_generation( GENERATION_SV ) ) {
+          VLerror( "%= operation found in block that is specified to not allow SystemVerilog syntax" );
+          expression_dealloc( $1, FALSE );
+          expression_dealloc( $3, FALSE );
+          $$ = NULL;
+        } else {
+          tmp = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
+          tmp = db_create_expression( $3, tmp, EXP_OP_MOD, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
+          tmp = db_create_expression( tmp, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+          stmt = db_create_statement( tmp );
+          db_add_expression( tmp );
+          $$ = stmt;
+        }
+      } else {
+        expression_dealloc( $1, FALSE );
+        expression_dealloc( $3, FALSE );
+        $$ = NULL;
+      }
+    }
+  | lpvalue K_AND_A expression ';' 
+    {
+      expression* tmp;
+      statement*  stmt;
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
+        if( !parser_check_generation( GENERATION_SV ) ) {
+          VLerror( "&= operation found in block that is specified to not allow SystemVerilog syntax" );
+          expression_dealloc( $1, FALSE );
+          expression_dealloc( $3, FALSE );
+          $$ = NULL;
+        } else {
+          tmp = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
+          tmp = db_create_expression( $3, tmp, EXP_OP_AND, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
+          tmp = db_create_expression( tmp, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+          stmt = db_create_statement( tmp );
+          db_add_expression( tmp );
+          $$ = stmt;
+        }
+      } else {
+        expression_dealloc( $1, FALSE );
+        expression_dealloc( $3, FALSE );
+        $$ = NULL;
+      }
+    }
+  | lpvalue K_OR_A expression ';' 
+    {
+      expression* tmp;
+      statement*  stmt;
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
+        if( !parser_check_generation( GENERATION_SV ) ) {
+          VLerror( "|= operation found in block that is specified to not allow SystemVerilog syntax" );
+          expression_dealloc( $1, FALSE );
+          expression_dealloc( $3, FALSE );
+          $$ = NULL;
+        } else {
+          tmp = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
+          tmp = db_create_expression( $3, tmp, EXP_OP_OR, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
+          tmp = db_create_expression( tmp, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+          stmt = db_create_statement( tmp );
+          db_add_expression( tmp );
+          $$ = stmt;
+        }
+      } else {
+        expression_dealloc( $1, FALSE );
+        expression_dealloc( $3, FALSE );
+        $$ = NULL;
+      }
+    }
+  | lpvalue K_XOR_A expression ';' 
+    {
+      expression* tmp;
+      statement*  stmt;
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
+        if( !parser_check_generation( GENERATION_SV ) ) {
+          VLerror( "^= operation found in block that is specified to not allow SystemVerilog syntax" );
+          expression_dealloc( $1, FALSE );
+          expression_dealloc( $3, FALSE );
+          $$ = NULL;
+        } else {
+          tmp = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
+          tmp = db_create_expression( $3, tmp, EXP_OP_XOR, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
+          tmp = db_create_expression( tmp, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+          stmt = db_create_statement( tmp );
+          db_add_expression( tmp );
+          $$ = stmt;
+        }
+      } else {
+        expression_dealloc( $1, FALSE );
+        expression_dealloc( $3, FALSE );
+        $$ = NULL;
+      }
+    }
+  | lpvalue K_LS_A expression ';' 
+    {
+      expression* tmp;
+      statement*  stmt;
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
+        if( !parser_check_generation( GENERATION_SV ) ) {
+          VLerror( "<<= operation found in block that is specified to not allow SystemVerilog syntax" );
+          expression_dealloc( $1, FALSE );
+          expression_dealloc( $3, FALSE );
+          $$ = NULL;
+        } else {
+          tmp = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
+          tmp = db_create_expression( $3, tmp, EXP_OP_LSHIFT, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
+          tmp = db_create_expression( tmp, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+          stmt = db_create_statement( tmp );
+          db_add_expression( tmp );
+          $$ = stmt;
+        }
+      } else {
+        expression_dealloc( $1, FALSE );
+        expression_dealloc( $3, FALSE );
+        $$ = NULL;
+      }
+    }
+  | lpvalue K_RS_A expression ';' 
+    {
+      expression* tmp;
+      statement*  stmt;
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
+        if( !parser_check_generation( GENERATION_SV ) ) {
+          VLerror( ">>= operation found in block that is specified to not allow SystemVerilog syntax" );
+          expression_dealloc( $1, FALSE );
+          expression_dealloc( $3, FALSE );
+          $$ = NULL;
+        } else {
+          tmp = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
+          tmp = db_create_expression( $3, tmp, EXP_OP_RSHIFT, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
+          tmp = db_create_expression( tmp, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+          stmt = db_create_statement( tmp );
+          db_add_expression( tmp );
+          $$ = stmt;
+        }
+      } else {
+        expression_dealloc( $1, FALSE );
+        expression_dealloc( $3, FALSE );
+        $$ = NULL;
+      }
+    }
+  | lpvalue K_ALS_A expression ';' 
+    {
+      expression* tmp;
+      statement*  stmt;
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
+        if( !parser_check_generation( GENERATION_SV ) ) {
+          VLerror( "<<<= operation found in block that is specified to not allow SystemVerilog syntax" );
+          expression_dealloc( $1, FALSE );
+          expression_dealloc( $3, FALSE );
+          $$ = NULL;
+        } else {
+          tmp = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
+          tmp = db_create_expression( $3, tmp, EXP_OP_ALSHIFT, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
+          tmp = db_create_expression( tmp, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+          stmt = db_create_statement( tmp );
+          db_add_expression( tmp );
+          $$ = stmt;
+        }
+      } else {
+        expression_dealloc( $1, FALSE );
+        expression_dealloc( $3, FALSE );
+        $$ = NULL;
+      }
+    }
+  | lpvalue K_ARS_A expression ';' 
+    {
+      expression* tmp;
+      statement*  stmt;
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
+        if( !parser_check_generation( GENERATION_SV ) ) {
+          VLerror( ">>>= operation found in block that is specified to not allow SystemVerilog syntax" );
+          expression_dealloc( $1, FALSE );
+          expression_dealloc( $3, FALSE );
+          $$ = NULL;
+        } else {
+          tmp = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
+          tmp = db_create_expression( $3, tmp, EXP_OP_ARSHIFT, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
+          tmp = db_create_expression( tmp, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+          stmt = db_create_statement( tmp );
+          db_add_expression( tmp );
+          $$ = stmt;
+        }
+      } else {
+        expression_dealloc( $1, FALSE );
+        expression_dealloc( $3, FALSE );
+        $$ = NULL;
+      }
+    }
+  | lpvalue K_INC ';'
+    {
+      expression* tmp;
+      statement*  stmt;
+      if( (ignore_mode == 0) && ($1 != NULL) ) {
+        if( !parser_check_generation( GENERATION_SV ) ) {
+          VLerror( "Increment (++) operation found in block that is specified to not allow SystemVerilog syntax" );
+          expression_dealloc( $1, FALSE );
+          $$ = NULL;
+        } else {
+          tmp = db_create_expression( NULL, $1, EXP_OP_INC, FALSE, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
+          stmt = db_create_statement( tmp );
+          db_add_expression( tmp );
+          $$ = stmt;
+        }
+      } else {
+        expression_dealloc( $1, FALSE );
+        $$ = NULL;
+      }
+    }
+  | lpvalue K_DEC ';'
+    {
+      expression* tmp;
+      statement*  stmt;
+      if( (ignore_mode == 0) && ($1 != NULL) ) {
+        if( !parser_check_generation( GENERATION_SV ) ) {
+          VLerror( "Decrement (--) operation found in block that is specified to not allow SystemVerilog syntax" );
+          expression_dealloc( $1, FALSE );
+          $$ = NULL;
+        } else {
+          tmp = db_create_expression( NULL, $1, EXP_OP_DEC, FALSE, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
+          stmt = db_create_statement( tmp );
+          db_add_expression( tmp );
+          $$ = stmt;
+        }
+      } else {
+        expression_dealloc( $1, FALSE );
+        $$ = NULL;
+      }
+    }
   | lpvalue K_LE expression ';'
     {
       expression* tmp;
       statement*  stmt;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
         tmp  = db_create_expression( $3, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-        vector_dealloc( tmp->value );
-        tmp->value = $3->value;
         stmt = db_create_statement( tmp );
         db_add_expression( tmp );
         $$ = stmt;
@@ -3278,14 +3601,15 @@ statement
     {
       expression* tmp;
       statement*  stmt;
-      expression_dealloc( $3, FALSE );
-      if( (ignore_mode == 0) && ($1 != NULL) && ($4 != NULL) ) {
-        tmp  = db_create_expression( $4, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) && ($4 != NULL) ) {
+        tmp  = db_create_expression( $4, $3, EXP_OP_DLY_ASSIGN, FALSE, @3.first_line, @3.first_column, (@4.last_column - 1), NULL );
+        tmp  = db_create_expression( tmp, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
         stmt = db_create_statement( tmp );
         db_add_expression( tmp );
         $$ = stmt;
       } else {
         expression_dealloc( $1, FALSE );
+        expression_dealloc( $3, FALSE );
         expression_dealloc( $4, FALSE );
         $$ = NULL;
       }
@@ -3294,16 +3618,15 @@ statement
     {
       expression* tmp;
       statement*  stmt;
-      expression_dealloc( $3, FALSE );
-      if( (ignore_mode == 0) && ($1 != NULL) && ($4 != NULL) ) {
-        tmp  = db_create_expression( $4, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
-        vector_dealloc( tmp->value );
-        tmp->value = $4->value;
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) && ($4 != NULL) ) {
+        tmp  = db_create_expression( $4, $3, EXP_OP_DLY_ASSIGN, FALSE, @3.first_line, @3.first_column, (@4.last_column - 1), NULL );
+        tmp  = db_create_expression( tmp, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
         stmt = db_create_statement( tmp );
         db_add_expression( tmp );
         $$ = stmt;
       } else {
         expression_dealloc( $1, FALSE );
+        expression_dealloc( $3, FALSE );
         expression_dealloc( $4, FALSE );
         $$ = NULL;
       }
@@ -3313,13 +3636,15 @@ statement
       expression* tmp;
       statement*  stmt;
       expression_dealloc( $3, FALSE );
-      if( (ignore_mode == 0) && ($1 != NULL) && ($4 != NULL) ) {
-        tmp  = db_create_expression( $4, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) && ($4 != NULL) ) {
+        tmp  = db_create_expression( $4, $3, EXP_OP_DLY_ASSIGN, FALSE, @3.first_line, @3.first_column, (@4.last_column - 1), NULL );
+        tmp  = db_create_expression( tmp, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
         stmt = db_create_statement( tmp );
         db_add_expression( tmp );
         $$ = stmt;
       } else {
         expression_dealloc( $1, FALSE );
+        expression_dealloc( $3, FALSE );
         expression_dealloc( $4, FALSE );
         $$ = NULL;
       }
@@ -3328,16 +3653,15 @@ statement
     {
       expression* tmp;
       statement*  stmt;
-      expression_dealloc( $3, FALSE );
-      if( (ignore_mode == 0) && ($1 != NULL) && ($4 != NULL) ) {
-        tmp  = db_create_expression( $4, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
-        vector_dealloc( tmp->value );
-        tmp->value = $4->value;
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) && ($4 != NULL) ) {
+        tmp  = db_create_expression( $4, $3, EXP_OP_DLY_ASSIGN, FALSE, @3.first_line, @3.first_column, (@4.last_column - 1), NULL );
+        tmp  = db_create_expression( tmp, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
         stmt = db_create_statement( tmp );
         db_add_expression( tmp );
         $$ = stmt;
       } else {
         expression_dealloc( $1, FALSE );
+        expression_dealloc( $3, FALSE );
         expression_dealloc( $4, FALSE );
         $$ = NULL;
       }
@@ -4248,8 +4572,6 @@ assign
       statement*  stmt;
       if( ($1 != NULL) && ($3 != NULL) && (info_suppl.part.excl_assign == 0) ) {
         tmp  = db_create_expression( $3, $1, EXP_OP_ASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-        vector_dealloc( tmp->value );
-        tmp->value = $3->value;
         stmt = db_create_statement( tmp );
         stmt->exp->suppl.part.stmt_head       = 1;
         stmt->exp->suppl.part.stmt_stop_true  = 1;
@@ -4335,8 +4657,6 @@ register_variable
         if( $3 != NULL ) {
           exp = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
           exp = db_create_expression( $3, exp, EXP_OP_RASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-          vector_dealloc( exp->value );
-          exp->value = $3->value;
           stmt = db_create_statement( exp );
           stmt->exp->suppl.part.stmt_head       = 1;
           stmt->exp->suppl.part.stmt_stop_true  = 1;
@@ -4583,8 +4903,6 @@ net_decl_assign
         if( $3 != NULL ) {
           tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
           tmp  = db_create_expression( $3, tmp, EXP_OP_DASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-          vector_dealloc( tmp->value );
-          tmp->value = $3->value;
           stmt = db_create_statement( tmp );
           stmt->exp->suppl.part.stmt_head       = 1;
           stmt->exp->suppl.part.stmt_stop_true  = 1;
@@ -4609,8 +4927,6 @@ net_decl_assign
         if( $4 != NULL ) {
           tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @2.first_line, @2.first_column, (@2.last_column - 1), $2 );
           tmp  = db_create_expression( $4, tmp, EXP_OP_DASSIGN, FALSE, @2.first_line, @2.first_column, (@4.last_column - 1), NULL );
-          vector_dealloc( tmp->value );
-          tmp->value = $4->value;
           stmt = db_create_statement( tmp );
           stmt->exp->suppl.part.stmt_head       = 1;
           stmt->exp->suppl.part.stmt_stop_true  = 1;
@@ -4732,7 +5048,7 @@ event_expression
       if( (ignore_mode == 0) && ($2 != NULL) ) {
         /* Create 1-bit expression to hold last value of right expression */
         tmp1 = db_create_expression( NULL, NULL, EXP_OP_LAST, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-        expression_create_value( tmp1, 1, FALSE );
+        // expression_create_value( tmp1, 1, FALSE );
         tmp2 = db_create_expression( $2, tmp1, EXP_OP_PEDGE, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
         $$ = tmp2;
       } else {
@@ -4745,7 +5061,7 @@ event_expression
       expression* tmp2;
       if( (ignore_mode == 0) && ($2 != NULL) ) {
         tmp1 = db_create_expression( NULL, NULL, EXP_OP_LAST, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-        expression_create_value( tmp1, 1, FALSE );
+        // expression_create_value( tmp1, 1, FALSE );
         tmp2 = db_create_expression( $2, tmp1, EXP_OP_NEDGE, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
         $$ = tmp2;
       } else {
@@ -4760,7 +5076,7 @@ event_expression
       if( (ignore_mode == 0) && ($1 != NULL ) ) {
         tmp1 = db_create_expression( NULL, NULL, EXP_OP_LAST, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
         tmp2 = db_create_expression( expr, tmp1, EXP_OP_AEDGE, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-        expression_create_value( tmp1, expr->value->width, FALSE );
+        // expression_create_value( tmp1, expr->value->width, FALSE );
         $$ = tmp2;
       } else {
         $$ = NULL;

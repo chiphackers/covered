@@ -142,6 +142,12 @@ bool vector_op_subtract( vector* tgt, vector* left, vector* right );
 /*! \brief Performs multiplication operation on left and right expression values. */
 bool vector_op_multiply( vector* tgt, vector* left, vector* right );
 
+/*! \brief Performs increment operation on specified vector. */
+bool vector_op_inc( vector* tgt );
+
+/*! \brief Performs increment operation on specified vector. */
+bool vector_op_dec( vector* tgt );
+
 /*! \brief Performs unary bitwise inversion operation on specified vector value. */
 bool vector_unary_inv( vector* tgt, vector* src );
 
@@ -157,6 +163,11 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.34  2006/03/28 22:28:28  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.33  2006/02/03 23:49:38  phase1geo
  More fixes to support signed comparison and propagation.  Still more testing
  to do here before I call it good.  Regression may fail at this point.
