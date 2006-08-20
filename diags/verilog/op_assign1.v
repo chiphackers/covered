@@ -1,6 +1,6 @@
 module main;
 
-reg [3:0] a, b, c, d, e, f, g, h, i;
+reg [3:0] a, b, c, d, e, f, g, h, i, j, k, l;
 
 initial begin
 	a = 0;
@@ -45,6 +45,21 @@ end
 initial begin
 	i = 8;
 	i >>>= 2;
+end
+
+initial begin
+	j = 15;
+	j &= 2;
+end
+
+initial begin
+	k = 0;
+	k |= 2;
+end
+
+initial begin
+	l = 2;
+	l ^= 3;
 end
 
 initial begin
