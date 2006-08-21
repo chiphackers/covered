@@ -3602,8 +3602,8 @@ statement
       expression* tmp;
       statement*  stmt;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) && ($4 != NULL) ) {
-        tmp  = db_create_expression( $4, $3, EXP_OP_DLY_ASSIGN, FALSE, @3.first_line, @3.first_column, (@4.last_column - 1), NULL );
-        tmp  = db_create_expression( tmp, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
+        tmp  = db_create_expression( $4, $3, EXP_OP_DLY_OP, FALSE, @3.first_line, @3.first_column, (@4.last_column - 1), NULL );
+        tmp  = db_create_expression( tmp, $1, EXP_OP_DLY_ASSIGN, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
         stmt = db_create_statement( tmp );
         db_add_expression( tmp );
         $$ = stmt;
@@ -3614,15 +3614,16 @@ statement
         $$ = NULL;
       }
     }
+    /* We don't handle the non-blocking assignments ourselves, so we can just ignore the delay here */
   | lpvalue K_LE delay1 expression ';'
     {
       expression* tmp;
       statement*  stmt;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) && ($4 != NULL) ) {
-        tmp  = db_create_expression( $4, $3, EXP_OP_DLY_ASSIGN, FALSE, @3.first_line, @3.first_column, (@4.last_column - 1), NULL );
-        tmp  = db_create_expression( tmp, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
+        tmp  = db_create_expression( $4, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
         stmt = db_create_statement( tmp );
         db_add_expression( tmp );
+        expression_dealloc( $3, FALSE );
         $$ = stmt;
       } else {
         expression_dealloc( $1, FALSE );
@@ -3635,10 +3636,9 @@ statement
     {
       expression* tmp;
       statement*  stmt;
-      expression_dealloc( $3, FALSE );
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) && ($4 != NULL) ) {
-        tmp  = db_create_expression( $4, $3, EXP_OP_DLY_ASSIGN, FALSE, @3.first_line, @3.first_column, (@4.last_column - 1), NULL );
-        tmp  = db_create_expression( tmp, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
+        tmp  = db_create_expression( $4, $3, EXP_OP_DLY_OP, FALSE, @3.first_line, @3.first_column, (@4.last_column - 1), NULL );
+        tmp  = db_create_expression( tmp, $1, EXP_OP_DLY_ASSIGN, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
         stmt = db_create_statement( tmp );
         db_add_expression( tmp );
         $$ = stmt;
@@ -3649,15 +3649,16 @@ statement
         $$ = NULL;
       }
     }
+    /* We don't handle the non-blocking assignments ourselves, so we can just ignore the delay here */
   | lpvalue K_LE event_control expression ';'
     {
       expression* tmp;
       statement*  stmt;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) && ($4 != NULL) ) {
-        tmp  = db_create_expression( $4, $3, EXP_OP_DLY_ASSIGN, FALSE, @3.first_line, @3.first_column, (@4.last_column - 1), NULL );
-        tmp  = db_create_expression( tmp, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
+        tmp  = db_create_expression( $4, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
         stmt = db_create_statement( tmp );
         db_add_expression( tmp );
+        expression_dealloc( $3, FALSE );
         $$ = stmt;
       } else {
         expression_dealloc( $1, FALSE );

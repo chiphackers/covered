@@ -224,6 +224,7 @@ static bool expression_op_func__noop( expression*, thread* );
 static bool expression_op_func__inc( expression*, thread* );
 static bool expression_op_func__dec( expression*, thread* );
 static bool expression_op_func__dly_assign( expression*, thread* );
+static bool expression_op_func__dly_op( expression*, thread* );
 
 /*!
  Array containing static information about expression operation types.  NOTE:  This structure MUST be
@@ -312,7 +313,8 @@ const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",         "",             ex
                                            {"ALWAYS_LATCH",   "always_latch", expression_op_func__slist,      {1, 0, NOT_COMB,   0, 1, 1, 0} },
                                            {"INC",            "++",           expression_op_func__inc,        {1, 0, NOT_COMB,   0, 0, 0, 0} },
                                            {"DEC",            "--",           expression_op_func__dec,        {1, 0, NOT_COMB,   0, 0, 0, 0} },
-                                           {"DLY_ASSIGN",     "",             expression_op_func__dly_assign, {0, 0, NOT_COMB,   0, 0, 0, 0} } };
+                                           {"DLY_ASSIGN",     "",             expression_op_func__dly_assign, {1, 0, NOT_COMB,   0, 0, 1, 0} },
+                                           {"DLY_OP",         "",             expression_op_func__dly_op,     {1, 0, NOT_COMB,   0, 0, 0, 0} } };
 
 
 /*!
@@ -663,6 +665,7 @@ void expression_resize( expression* expr, bool recursive ) {
       case EXP_OP_NASSIGN        :
       case EXP_OP_PASSIGN        :
       case EXP_OP_RASSIGN        :
+      case EXP_OP_DLY_ASSIGN     :
       case EXP_OP_IF             :
       case EXP_OP_FUNC_CALL      :
       case EXP_OP_WHILE          :
@@ -757,7 +760,8 @@ void expression_resize( expression* expr, bool recursive ) {
              (expr->parent->expr->op != EXP_OP_DASSIGN) &&
              (expr->parent->expr->op != EXP_OP_BASSIGN) &&
              (expr->parent->expr->op != EXP_OP_NASSIGN) &&
-             (expr->parent->expr->op != EXP_OP_RASSIGN)) ) {
+             (expr->parent->expr->op != EXP_OP_RASSIGN) &&
+             (expr->parent->expr->op != EXP_OP_DLY_OP)) ) {
           if( (expr->left != NULL) && ((expr->right == NULL) || (expr->left->value->width > expr->right->value->width)) ) {
             largest_width = expr->left->value->width;
           } else if( expr->right != NULL ) {
@@ -768,6 +772,13 @@ void expression_resize( expression* expr, bool recursive ) {
           if( (expr->value->width != largest_width) || (expr->value->value == NULL) ) {
             assert( expr->value->value == NULL );
             expression_create_value( expr, largest_width, FALSE );
+          }
+
+        /* If our parent is a DLY_OP, we need to get our value from the LHS of the DLY_ASSIGN expression */
+        } else if( expr->parent->expr->op == EXP_OP_DLY_OP ) {
+          if( (expr->parent->expr->parent->expr->left->value->width != expr->value->width) || (expr->value->value == NULL) ) {
+            assert( expr->value->value == NULL );
+            expression_create_value( expr, expr->parent->expr->parent->expr->left->value->width, FALSE );
           }
 
         /* Otherwise, get our value from the size of the expression on the left-hand-side of the assignment */
@@ -2855,9 +2866,46 @@ bool expression_op_func__dec( expression* expr, thread* thr ) {
 */
 bool expression_op_func__dly_assign( expression* expr, thread* thr ) {
 
-  /* Explicitly call the delay/event */
-  exp_op_info[expr->left->op].func( expr->left, thr );
+  bool retval;      /* Return value for this function */
+  int  intval = 0;  /* Integer value */
 
+  /* If we are the first statement in the queue, perform the dly_op manually */
+  if( thr->exec_first ) {
+    expression_op_func__dly_op( expr->right, thr );
+  }
+
+  /* Check the dly_op expression.  If eval_t is set to 1, perform the assignment */
+  if( ESUPPL_IS_TRUE( expr->right->suppl ) == 1 ) {
+    expression_assign( expr->left, expr->right, &intval );
+    expr->suppl.part.eval_t = 1;
+    retval = TRUE;
+  } else {
+    expr->suppl.part.eval_t = 0;
+    retval = FALSE;
+  }
+
+  return( retval );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs an assignment and delay for a delayed assignment.
+*/
+bool expression_op_func__dly_op( expression* expr, thread* thr ) {
+
+  /* If we are not waiting for the delay to occur, copy the contents of the operation */
+  if( !thr->exec_first ) {
+    vector_set_value_only( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 );
+  }
+
+  /* Explicitly call the delay/event.  If the delay is complete, set eval_t to TRUE */
+  expr->suppl.part.eval_t = exp_op_info[expr->left->op].func( expr->left, thr );
+    
   return( TRUE );
 
 }
@@ -3312,13 +3360,14 @@ void expression_dealloc( expression* expr, bool exp_only ) {
     } else {
 
       /* Deallocate vector memory but not vector itself */
-      if( (op != EXP_OP_ASSIGN)  &&
-          (op != EXP_OP_DASSIGN) &&
-          (op != EXP_OP_BASSIGN) &&
-          (op != EXP_OP_RASSIGN) &&
-          (op != EXP_OP_NASSIGN) &&
-          (op != EXP_OP_IF)      &&
-          (op != EXP_OP_WHILE)   &&
+      if( (op != EXP_OP_ASSIGN)     &&
+          (op != EXP_OP_DASSIGN)    &&
+          (op != EXP_OP_BASSIGN)    &&
+          (op != EXP_OP_RASSIGN)    &&
+          (op != EXP_OP_NASSIGN)    &&
+          (op != EXP_OP_DLY_ASSIGN) &&
+          (op != EXP_OP_IF)         &&
+          (op != EXP_OP_WHILE)      &&
           (op != EXP_OP_PASSIGN) ) {
         free_safe( expr->value );
       }
@@ -3389,6 +3438,18 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.197  2006/08/20 03:21:00  phase1geo
+ Adding support for +=, -=, *=, /=, %=, &=, |=, ^=, <<=, >>=, <<<=, >>>=, ++
+ and -- operators.  The op-and-assign operators are currently good for
+ simulation and code generation purposes but still need work in the comb.c
+ file for proper combinational logic underline and reporting support.  The
+ increment and decrement operations should be fully supported with the exception
+ of their use in FOR loops (I'm not sure if this is supported by SystemVerilog
+ or not yet).  Also started adding support for delayed assignments; however, I
+ need to rework this completely as it currently causes segfaults.  Added lots of
+ new diagnostics to verify this new functionality and updated regression for
+ these changes.  Full IV regression now passes.
+
  Revision 1.196  2006/08/18 22:07:45  phase1geo
  Integrating obfuscation into all user-viewable output.  Verified that these
  changes have not made an impact on regressions.  Also improved performance

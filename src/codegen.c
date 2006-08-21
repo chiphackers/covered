@@ -793,6 +793,14 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
           *code_depth      = right_code_depth;
           right_code_depth = 0;
           break;
+        case EXP_OP_DLY_ASSIGN :
+          codegen_create_expr( code, code_depth, expr->line, NULL, left_code, left_code_depth, expr->left, " = ",
+                               right_code, right_code_depth, expr->right, NULL );
+          break;
+        case EXP_OP_DLY_OP   :
+          codegen_create_expr( code, code_depth, expr->line, NULL, left_code, left_code_depth, expr->left, " ",
+                               right_code, right_code_depth, expr->right, NULL );
+          break;
         case EXP_OP_IF       :
           codegen_create_expr( code, code_depth, expr->line, "if( ", right_code, right_code_depth, expr->right, " )",
                                NULL, 0, NULL, NULL );
@@ -842,6 +850,18 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.72  2006/08/20 03:20:58  phase1geo
+ Adding support for +=, -=, *=, /=, %=, &=, |=, ^=, <<=, >>=, <<<=, >>>=, ++
+ and -- operators.  The op-and-assign operators are currently good for
+ simulation and code generation purposes but still need work in the comb.c
+ file for proper combinational logic underline and reporting support.  The
+ increment and decrement operations should be fully supported with the exception
+ of their use in FOR loops (I'm not sure if this is supported by SystemVerilog
+ or not yet).  Also started adding support for delayed assignments; however, I
+ need to rework this completely as it currently causes segfaults.  Added lots of
+ new diagnostics to verify this new functionality and updated regression for
+ these changes.  Full IV regression now passes.
+
  Revision 1.71  2006/08/18 22:07:44  phase1geo
  Integrating obfuscation into all user-viewable output.  Verified that these
  changes have not made an impact on regressions.  Also improved performance

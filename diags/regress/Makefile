@@ -41,7 +41,7 @@ DIAGS1        = add1            always1         always2         always3         
                 cond2           delay1          delay2          define1         define1.1 \
                 define1.2       define2         define2.1       define3         define4 \
                 define5         disable1        disable1.1      disable2        disable2.1 \
-                endian1         endian2         endian3         event1          event1.1 \
+                dly_assign1     endian1         endian2         endian3         event1          event1.1 \
                 exclude1        exclude2        exclude3        exclude4        exclude5 \
                 exclude5.1      exclude5.2      expand1         expand2         expand3 \
                 expand4         expand4.1       expand4.2       expand4.3       expand4.4 \

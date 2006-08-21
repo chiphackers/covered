@@ -862,15 +862,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
             case EXP_OP_UNXOR      :  *size = l_size + r_size + 2;  strcpy( code_fmt, "  %s"             );  break;
             case EXP_OP_PARAM_SBIT :
             case EXP_OP_SBIT_SEL   :  
-#ifdef OBSOLETE
-              if( exp->sig->suppl.part.type == SSUPPL_TYPE_PARAM ) {
-                tmpname = scope_gen_printable( exp->sig->name );
-              } else {
-#endif
-                tmpname = scope_gen_printable( exp->name );
-#ifdef OBSOLETE
-              }
-#endif
+              tmpname = scope_gen_printable( exp->name );
               *size = l_size + r_size + strlen( tmpname ) + 2;
               for( i=0; i<strlen( tmpname ); i++ ) {
                 code_fmt[i] = ' ';
@@ -881,15 +873,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
               break;
             case EXP_OP_PARAM_MBIT :
             case EXP_OP_MBIT_SEL   :  
-#ifdef OBSOLETE
-              if( exp->sig->suppl.part.type == SSUPPL_TYPE_PARAM ) {
-                tmpname = scope_gen_printable( exp->sig->name );
-              } else {
-#endif
-                tmpname = scope_gen_printable( exp->name );
-#ifdef OBSOLETE
-              }
-#endif
+              tmpname = scope_gen_printable( exp->name );
               *size = l_size + r_size + strlen( tmpname ) + 3;  
               for( i=0; i<strlen( tmpname ); i++ ) {
                 code_fmt[i] = ' ';
@@ -902,15 +886,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
             case EXP_OP_PARAM_MBIT_NEG :
             case EXP_OP_MBIT_POS       :
             case EXP_OP_MBIT_NEG       :
-#ifdef OBSOLETE
-              if( exp->sig->suppl.part.type == SSUPPL_TYPE_PARAM ) {
-                tmpname = scope_gen_printable( exp->sig->name );
-              } else {
-#endif
-                tmpname = scope_gen_printable( exp->name );
-#ifdef OBSOLETE
-              }
-#endif
+              tmpname = scope_gen_printable( exp->name );
               *size = l_size + r_size + strlen( tmpname ) + 4;
               for( i=0; i<strlen( tmpname ); i++ ) {
                 code_fmt[i] = ' ';
@@ -962,15 +938,17 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
             case EXP_OP_CASE     :  *size = l_size + r_size + 11; strcpy( code_fmt, "      %s   %s  "  );  break;
             case EXP_OP_CASEX    :  *size = l_size + r_size + 12; strcpy( code_fmt, "       %s   %s  " );  break;
             case EXP_OP_CASEZ    :  *size = l_size + r_size + 12; strcpy( code_fmt, "       %s   %s  " );  break;
-            case EXP_OP_DELAY    :  *size = l_size + r_size + 3;  strcpy( code_fmt, "  %s " );             break;
+            case EXP_OP_DELAY    :  *size = r_size + 3;  strcpy( code_fmt, "  %s " );             break;
             case EXP_OP_ASSIGN   :  *size = l_size + r_size + 10; strcpy( code_fmt, "       %s   %s" );    break;
             case EXP_OP_DASSIGN  :
+            case EXP_OP_DLY_ASSIGN :
             case EXP_OP_BASSIGN  :  *size = l_size + r_size + 3;  strcpy( code_fmt, "%s   %s" );           break;
             case EXP_OP_NASSIGN  :  *size = l_size + r_size + 4;  strcpy( code_fmt, "%s    %s" );          break;
             case EXP_OP_PASSIGN  :  *size = r_size;               strcpy( code_fmt, "%s" );                break;
             case EXP_OP_IF       :  *size = r_size + 6;           strcpy( code_fmt, "    %s  " );          break;
             case EXP_OP_REPEAT   :  *size = r_size + 10;          strcpy( code_fmt, "        %s  " );      break;
             case EXP_OP_WHILE    :  *size = r_size + 9;           strcpy( code_fmt, "       %s  " );       break;
+            case EXP_OP_DLY_OP   :  *size = l_size + r_size + 1;  strcpy( code_fmt, "%s %s" );             break;
             case EXP_OP_TASK_CALL :
             case EXP_OP_FUNC_CALL :
               if( (tfunit = funit_find_by_id( exp->stmt->exp->id )) != NULL ) {
@@ -2363,6 +2341,11 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.150  2006/08/18 22:07:44  phase1geo
+ Integrating obfuscation into all user-viewable output.  Verified that these
+ changes have not made an impact on regressions.  Also improved performance
+ impact of not obfuscating output.
+
  Revision 1.149  2006/08/11 18:57:03  phase1geo
  Adding support for always_comb, always_latch and always_ff statement block
  types.  Added several diagnostics to regression suite to verify this new

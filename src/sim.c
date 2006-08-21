@@ -224,7 +224,8 @@ void sim_thread_pop_head() {
     tmp_head->next = tmp_head->prev = NULL;
 
     /* If the last request was a delay request, add it to the delay queue */
-    if( tmp_head->curr->exp->op == EXP_OP_DELAY ) {
+    if( (tmp_head->curr->exp->op == EXP_OP_DELAY) ||
+        (tmp_head->curr->exp->op == EXP_OP_DLY_ASSIGN) ) {
       sim_thread_push( tmp_head, &delay_head, &delay_tail );
     }
 
@@ -568,8 +569,8 @@ void sim_add_statics() {
 */
 bool sim_expression( expression* expr, thread* thr ) {
 
-  bool retval        = FALSE;  /* Return value for this function                       */
-  bool left_changed  = FALSE;  /* Signifies if left expression tree has changed value  */
+  bool retval        = FALSE;  /* Return value for this function */
+  bool left_changed  = FALSE;  /* Signifies if left expression tree has changed value */
   bool right_changed = FALSE;  /* Signifies if right expression tree has changed value */
 
   assert( expr != NULL );
@@ -582,7 +583,7 @@ bool sim_expression( expression* expr, thread* thr ) {
 
   /* Traverse left child expression if it has changed */
   if( (ESUPPL_IS_LEFT_CHANGED( expr->suppl ) == 1) ||
-      (expr->op == EXP_OP_CASE)    ||
+      (expr->op == EXP_OP_CASE)                    ||
       (expr->op == EXP_OP_CASEX)                   ||
       (expr->op == EXP_OP_CASEZ) ) {
 
@@ -601,7 +602,8 @@ bool sim_expression( expression* expr, thread* thr ) {
   }
 
   /* Traverse right child expression if it has changed */
-  if( ESUPPL_IS_RIGHT_CHANGED( expr->suppl ) == 1 ) {
+  if( (ESUPPL_IS_RIGHT_CHANGED( expr->suppl ) == 1) &&
+      ((expr->op != EXP_OP_DLY_ASSIGN) || !thr->exec_first) ) {
 
     /* Simulate the right expression if it has changed */
     if( expr->right != NULL ) {
@@ -748,6 +750,11 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.70  2006/08/18 22:07:45  phase1geo
+ Integrating obfuscation into all user-viewable output.  Verified that these
+ changes have not made an impact on regressions.  Also improved performance
+ impact of not obfuscating output.
+
  Revision 1.69  2006/08/11 18:57:04  phase1geo
  Adding support for always_comb, always_latch and always_ff statement block
  types.  Added several diagnostics to regression suite to verify this new

@@ -714,6 +714,7 @@ typedef enum exp_op_type_e {
   EXP_OP_INC,             /*!< 81:0x51.  Specifies the increment SystemVerilog operator (++) */
   EXP_OP_DEC,             /*!< 82:0x52.  Specifies the decrement SystemVerilog operator (--) */
   EXP_OP_DLY_ASSIGN,      /*!< 83:0x53.  Specifies a delayed assignment (i.e., a = #5 b; or a = @(c) b;) */
+  EXP_OP_DLY_OP,          /*!< 84:0x54.  Child expression of DLY_ASSIGN, points to the delay expr and the op expr */
   EXP_OP_NUM              /*!< The total number of defines for expression values */
 } exp_op_type;
 
@@ -733,6 +734,7 @@ typedef enum exp_op_type_e {
                                        (x->parent->expr->op != EXP_OP_BASSIGN) && \
                                        (x->parent->expr->op != EXP_OP_NASSIGN) && \
                                        (x->parent->expr->op != EXP_OP_RASSIGN) && \
+                                       (x->parent->expr->op != EXP_OP_DLY_OP) && \
                                        (x->parent->expr->op != EXP_OP_IF) && \
                                        (x->parent->expr->op != EXP_OP_WHILE) && \
                                        (x->parent->expr->op != EXP_OP_COND)) && \
@@ -2021,6 +2023,18 @@ struct gitem_link_s {
 
 /*
  $Log$
+ Revision 1.221  2006/08/20 03:21:00  phase1geo
+ Adding support for +=, -=, *=, /=, %=, &=, |=, ^=, <<=, >>=, <<<=, >>>=, ++
+ and -- operators.  The op-and-assign operators are currently good for
+ simulation and code generation purposes but still need work in the comb.c
+ file for proper combinational logic underline and reporting support.  The
+ increment and decrement operations should be fully supported with the exception
+ of their use in FOR loops (I'm not sure if this is supported by SystemVerilog
+ or not yet).  Also started adding support for delayed assignments; however, I
+ need to rework this completely as it currently causes segfaults.  Added lots of
+ new diagnostics to verify this new functionality and updated regression for
+ these changes.  Full IV regression now passes.
+
  Revision 1.220  2006/08/18 22:41:22  phase1geo
  Adding enumerated values for the operate-and-assign SystemVerilog operations.
 
