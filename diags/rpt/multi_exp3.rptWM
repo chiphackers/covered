@@ -91,11 +91,11 @@ Module/Task/Function                Filename                                Logi
         =0=|=1=
          *   *
 
-        Expression 5   (0/3)
+        Expression 5   (1/5)
         ^^^^^^^^^^^^^ - &
-         LR | LR | LR 
-        =0-=|=-0=|=11=
-         *    *    *
+         1 | 2 | 3 | 4 | All
+        =0=|=0=|=0=|=0=|==1==
+             *   *   *    *  
 
 
 

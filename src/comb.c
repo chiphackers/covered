@@ -312,13 +312,13 @@ void combination_get_tree_stats( expression* exp, int* ulid, unsigned int curr_d
               if( EXPR_IS_COMB( exp ) == 1 ) {
                 if( exp_op_info[exp->op].suppl.is_comb == AND_COMB ) {
                   tot_num = 3;
-                  num_hit = (((exp->suppl.part.eval_00 + exp->suppl.part.eval_01) > 0) ? 1 : 0) +
-                            (((exp->suppl.part.eval_00 + exp->suppl.part.eval_10) > 0) ? 1 : 0) +
+                  num_hit = ESUPPL_WAS_FALSE( exp->left->suppl )  + 
+                            ESUPPL_WAS_FALSE( exp->right->suppl ) +
                             exp->suppl.part.eval_11;
                 } else if( exp_op_info[exp->op].suppl.is_comb == OR_COMB ) {
                   tot_num = 3;
-                  num_hit = (((exp->suppl.part.eval_10 + exp->suppl.part.eval_11) > 0) ? 1 : 0) +
-                            (((exp->suppl.part.eval_01 + exp->suppl.part.eval_11) > 0) ? 1 : 0) +
+                  num_hit = ESUPPL_WAS_TRUE( exp->left->suppl )  +
+                            ESUPPL_WAS_TRUE( exp->right->suppl ) +
                             exp->suppl.part.eval_00;
                 } else {
                   tot_num = 4;
@@ -756,17 +756,8 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
 
       if( (exp->op == EXP_OP_SIG) || (exp->op == EXP_OP_PARAM) ) {
 
-#ifdef OBSOLETE
-        if( exp->sig->suppl.part.type == SSUPPL_TYPE_PARAM ) {
-          tmpname = scope_gen_printable( exp->sig->name );
-        } else {
-#endif
-          tmpname = scope_gen_printable( exp->name );
-#ifdef OBSOLETE
-        }
-#endif
-
-        *size = strlen( tmpname );
+        tmpname = scope_gen_printable( exp->name );
+        *size   = strlen( tmpname );
         switch( *size ) {
           case 0 :  assert( *size > 0 );                     break;
           case 1 :  *size = 3;  strcpy( code_fmt, " %s " );  break;
@@ -1358,14 +1349,10 @@ void combination_two_vars( char*** info, int* info_size, expression* exp ) {
 
   /* Get hit information */
   if( exp_op_info[exp->op].suppl.is_comb == AND_COMB ) {
-    hit   = (((exp->suppl.part.eval_00 + exp->suppl.part.eval_01) > 0) ? 1 : 0) +
-            (((exp->suppl.part.eval_00 + exp->suppl.part.eval_10) > 0) ? 1 : 0) +
-            exp->suppl.part.eval_11;
+    hit   = ESUPPL_WAS_FALSE( exp->left->suppl ) + ESUPPL_WAS_FALSE( exp->right->suppl ) + exp->suppl.part.eval_11;
     total = 3;
   } else if( exp_op_info[exp->op].suppl.is_comb == OR_COMB ) {
-    hit   = (((exp->suppl.part.eval_10 + exp->suppl.part.eval_11) > 0) ? 1 : 0) +
-            (((exp->suppl.part.eval_01 + exp->suppl.part.eval_11) > 0) ? 1 : 0) +
-            exp->suppl.part.eval_00;
+    hit   = ESUPPL_WAS_TRUE( exp->left->suppl ) + ESUPPL_WAS_TRUE( exp->right->suppl ) + exp->suppl.part.eval_00;
     total = 3;
   } else {
     hit = exp->suppl.part.eval_00 +
@@ -1400,8 +1387,8 @@ void combination_two_vars( char*** info, int* info_size, expression* exp ) {
       length = 21;
       (*info)[4] = (char*)malloc_safe( length, __FILE__, __LINE__ );
       snprintf( (*info)[4], length, "         %c    %c    %c",
-                (((exp->suppl.part.eval_00 + exp->suppl.part.eval_01) > 0) ? ' ' : '*'),
-                (((exp->suppl.part.eval_00 + exp->suppl.part.eval_10) > 0) ? ' ' : '*'),
+                (ESUPPL_WAS_FALSE( exp->left->suppl )  ? ' ' : '*'),
+                (ESUPPL_WAS_FALSE( exp->right->suppl ) ? ' ' : '*'),
                 ((exp->suppl.part.eval_11 > 0) ? ' ' : '*') );
 
     } else if( exp_op_info[exp->op].suppl.is_comb == OR_COMB ) {
@@ -1412,8 +1399,8 @@ void combination_two_vars( char*** info, int* info_size, expression* exp ) {
       length = 21;
       (*info)[4] = (char*)malloc_safe( length, __FILE__, __LINE__ );
       snprintf( (*info)[4], length, "         %c    %c    %c",
-                (((exp->suppl.part.eval_10 + exp->suppl.part.eval_11) > 0) ? ' ' : '*'),
-                (((exp->suppl.part.eval_01 + exp->suppl.part.eval_11) > 0) ? ' ' : '*'),
+                (ESUPPL_WAS_TRUE( exp->left->suppl )  ? ' ' : '*'),
+                (ESUPPL_WAS_TRUE( exp->right->suppl ) ? ' ' : '*'),
                 ((exp->suppl.part.eval_00 > 0) ? ' ' : '*') );
 
     } else {
@@ -1446,9 +1433,12 @@ void combination_two_vars( char*** info, int* info_size, expression* exp ) {
 */
 void combination_multi_var_exprs( char** line1, char** line2, char** line3, expression* exp ) {
 
-  char* left_line1;
-  char* left_line2;
-  char* left_line3;
+  char* left_line1  = NULL;
+  char* left_line2  = NULL;
+  char* left_line3  = NULL;
+  char* right_line1 = NULL;
+  char* right_line2 = NULL;
+  char* right_line3 = NULL;
   char  curr_id_str[20];
   int   curr_id_str_len;
   int   i;
@@ -1493,38 +1483,66 @@ void combination_multi_var_exprs( char** line1, char** line2, char** line3, expr
 
     }
 
-    /* Take left side and merge it with right side */
-    assert( left_line1 != NULL );
-    assert( exp->right->ulid != -1 );
-    snprintf( curr_id_str, 20, "%d", exp->right->ulid );
-    curr_id_str_len = strlen( curr_id_str );
-    *line1 = (char*)malloc_safe( (strlen( left_line1 ) + curr_id_str_len + 4), __FILE__, __LINE__ );
-    *line2 = (char*)malloc_safe( (strlen( left_line2 ) + curr_id_str_len + 4), __FILE__, __LINE__ );
-    *line3 = (char*)malloc_safe( (strlen( left_line3 ) + curr_id_str_len + 4), __FILE__, __LINE__ );
-    snprintf( *line1, (strlen( left_line1 ) + curr_id_str_len + 4), "%s %s |", left_line1, curr_id_str );
-    for( i=0; i<(curr_id_str_len-1); i++ ) {
-      curr_id_str[i] = '=';
-    }
-    curr_id_str[i] = '\0'; 
-    if( and_op ) {
-      snprintf( *line2, (strlen( left_line2 ) + curr_id_str_len + 4), "%s=0%s=|", left_line2, curr_id_str );
-    } else { 
-      snprintf( *line2, (strlen( left_line2 ) + curr_id_str_len + 4), "%s=1%s=|", left_line2, curr_id_str );
-    }
-    for( i=0; i<(curr_id_str_len - 1); i++ ) {
-      curr_id_str[i] = ' ';
-    }
-    curr_id_str[i] = '\0';
-    if( and_op ) {
-      snprintf( *line3, (strlen( left_line3 ) + curr_id_str_len + 4), "%s %c%s  ",
-                left_line3, ((ESUPPL_WAS_FALSE( exp->right->suppl ) == 1) ? ' ' : '*'), curr_id_str );
+    /* Get right-side information */
+    if( (exp->right != NULL) && (exp->op != exp->right->op) ) {
+
+      assert( exp->right->ulid != -1 );
+      snprintf( curr_id_str, 20, "%d", exp->right->ulid );
+      curr_id_str_len = strlen( curr_id_str );
+      right_line1 = (char*)malloc_safe( (curr_id_str_len + 4), __FILE__, __LINE__ );
+      right_line2 = (char*)malloc_safe( (curr_id_str_len + 4), __FILE__, __LINE__ );
+      right_line3 = (char*)malloc_safe( (curr_id_str_len + 4), __FILE__, __LINE__ );
+      snprintf( right_line1, (curr_id_str_len + 4), " %s |", curr_id_str );
+      for( i=0; i<(curr_id_str_len-1); i++ ) {
+        curr_id_str[i] = '=';
+      }
+      curr_id_str[i] = '\0';
+      if( and_op ) {
+        snprintf( right_line2, (curr_id_str_len + 4), "=0%s=|", curr_id_str );
+      } else {
+        snprintf( right_line2, (curr_id_str_len + 4), "=1%s=|", curr_id_str );
+      }
+      for( i=0; i<(curr_id_str_len - 1); i++ ) {
+        curr_id_str[i] = ' ';
+      }
+      curr_id_str[i] = '\0';
+      if( and_op ) {
+        snprintf( right_line3, (curr_id_str_len + 4), " %c%s  ", ((ESUPPL_WAS_FALSE( exp->right->suppl ) == 1) ? ' ' : '*'), curr_id_str );
+      } else {
+        snprintf( right_line3, (curr_id_str_len + 4), " %c%s  ", ((ESUPPL_WAS_TRUE( exp->right->suppl )  == 1) ? ' ' : '*'), curr_id_str );
+      }
+
     } else {
-      snprintf( *line3, (strlen( left_line3 ) + curr_id_str_len + 4), "%s %c%s  ",
-                left_line3, ((ESUPPL_WAS_TRUE( exp->right->suppl )  == 1) ? ' ' : '*'),  curr_id_str );
+
+      combination_multi_var_exprs( &right_line1, &right_line2, &right_line3, exp->right );
+
     }
-    free_safe( left_line1 );
-    free_safe( left_line2 );
-    free_safe( left_line3 );
+
+    if( left_line1 != NULL ) {
+      if( right_line1 != NULL ) {
+        *line1 = (char*)malloc_safe( (strlen( left_line1 ) + strlen( right_line1 ) + 1), __FILE__, __LINE__ );
+        *line2 = (char*)malloc_safe( (strlen( left_line2 ) + strlen( right_line2 ) + 1), __FILE__, __LINE__ );
+        *line3 = (char*)malloc_safe( (strlen( left_line3 ) + strlen( right_line3 ) + 1), __FILE__, __LINE__ );
+        snprintf( *line1, (strlen( left_line1 ) + strlen( right_line1 ) + 1), "%s%s", left_line1, right_line1 );
+        snprintf( *line2, (strlen( left_line2 ) + strlen( right_line2 ) + 1), "%s%s", left_line2, right_line2 );
+        snprintf( *line3, (strlen( left_line3 ) + strlen( right_line3 ) + 1), "%s%s", left_line3, right_line3 );
+        free_safe( left_line1 );
+        free_safe( left_line2 );
+        free_safe( left_line3 );
+        free_safe( right_line1 );
+        free_safe( right_line2 );
+        free_safe( right_line3 );
+      } else {
+        *line1 = left_line1;
+        *line2 = left_line2;
+        *line3 = left_line3;
+      }
+    } else {
+      assert( right_line1 != NULL );
+      *line1 = right_line1;
+      *line2 = right_line2;
+      *line3 = right_line3;
+    }
 
     /* If we are the root, output all value */
     if( (ESUPPL_IS_ROOT( exp->suppl ) == 1) || (exp->op != exp->parent->expr->op) ) {
@@ -1723,7 +1741,10 @@ void combination_get_missed_expr( char*** info, int* info_size, expression* exp,
          (exp->op != EXP_OP_OR)   &&
          (exp->op != EXP_OP_LOR)) ) {
 
-      if( (exp->left != NULL) && (exp->op == exp->left->op) &&
+      if( (((exp->left != NULL) &&
+            (exp->op == exp->left->op)) ||
+           ((exp->right != NULL) &&
+            (exp->op == exp->right->op))) &&
           ((exp->op == EXP_OP_AND)  ||
            (exp->op == EXP_OP_OR)   ||
            (exp->op == EXP_OP_LAND) ||
@@ -2341,6 +2362,12 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.151  2006/08/21 22:50:00  phase1geo
+ Adding more support for delayed assignments.  Added dly_assign1 to testsuite
+ to verify the #... type of delayed assignment.  This seems to be working for
+ this case but has a potential issue in the report generation.  Checkpointing
+ work.
+
  Revision 1.150  2006/08/18 22:07:44  phase1geo
  Integrating obfuscation into all user-viewable output.  Verified that these
  changes have not made an impact on regressions.  Also improved performance
