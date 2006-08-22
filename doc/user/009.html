@@ -164,6 +164,7 @@
       	<li>case, casex, casez statements</li>
       	<li>if, if/else statements</li>
       	<li>Delays when delay value is integer</li>
+      	<li>Delayed procedural assignments (i.e., "a = #5 b;" or "a = @(c) b;")</li>
       	<li>Event waits and triggers: wait, @(posedge), @(negedge), @(), -></li>
       	<li>Repetition statements (for, while and repeat)</li>
       	<li>Fork/join statements</li>
@@ -206,7 +207,37 @@
          <li>Pre-port parameter listing (module foo #(parameter a=0) (...);)</li>
          <li>Inline port listing (module foo (input wire a, output reg b);)</li>
          <li>Attributes (note: Covered only performs attributes that it recognizes)</li>
-      	 <li>Arrays of instances</li>
+      	<li>Arrays of instances</li>
+      	<li>Generate blocks</li>
+      </ol></P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header3">3.1.3&nbsp; <A name="3_1_2"></A>SystemVerilog constructs</P>
+    </TD>
+  </TR>
+  
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      <ol>
+      	<li>New integer types:  char, byte, bit, logic, int, shortint, longint</li>
+      	<li>Op-and-assign statements:  +=, -=, *=, /=, %=, &=, |=, ^=, <<=, >>=, <<<=, >>>=, ++, --</li>
+         <li>Proper support for always_comb, always_latch and always_ff blocks</li>
+         <li>do..while loops</li>
+         <li>Parsing support for unique and priority if/case labels</li>
       </ol></P>
     </TD>
   </TR>
@@ -271,7 +302,6 @@
     <TD valign=top>
       <P class="pg">
       <ol>
-      	<li>Generate statements</li>
       	<li>Configuration statements</li>
       	<li>Multidimensional arrays</li>
       	<li>"Automatic" or reentrant tasks/recursive functions</li>
