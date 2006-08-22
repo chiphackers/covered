@@ -346,6 +346,7 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
     if( (expr->op == EXP_OP_LAST) || (expr->op == EXP_OP_NB_CALL) ) {
 
       /* Do nothing. */
+      *code_depth = 0;
 
     } else if( expr->op == EXP_OP_STATIC ) {
 
@@ -850,6 +851,12 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.73  2006/08/21 22:49:59  phase1geo
+ Adding more support for delayed assignments.  Added dly_assign1 to testsuite
+ to verify the #... type of delayed assignment.  This seems to be working for
+ this case but has a potential issue in the report generation.  Checkpointing
+ work.
+
  Revision 1.72  2006/08/20 03:20:58  phase1geo
  Adding support for +=, -=, *=, /=, %=, &=, |=, ^=, <<=, >>=, <<<=, >>>=, ++
  and -- operators.  The op-and-assign operators are currently good for

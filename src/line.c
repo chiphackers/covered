@@ -135,6 +135,7 @@ bool line_collect( char* funit_name, int funit_type, int cov, int** lines, int**
           (stmti.curr->stmt->exp->op != EXP_OP_CASEX)   &&
           (stmti.curr->stmt->exp->op != EXP_OP_CASEZ)   &&
           (stmti.curr->stmt->exp->op != EXP_OP_DEFAULT) &&
+          (stmti.curr->stmt->exp->op != EXP_OP_NB_CALL) &&
           (stmti.curr->stmt->exp->line != 0) ) {
 
         if( ((stmti.curr->stmt->exp->exec_num > 0) ? 1 : 0) == cov ) {
@@ -361,6 +362,7 @@ void line_display_verbose( FILE* ofile, func_unit* funit ) {
         (stmti.curr->stmt->exp->op != EXP_OP_CASEX)   &&
         (stmti.curr->stmt->exp->op != EXP_OP_CASEZ)   &&
         (stmti.curr->stmt->exp->op != EXP_OP_DEFAULT) &&
+        (stmti.curr->stmt->exp->op != EXP_OP_NB_CALL) &&
         (stmti.curr->stmt->exp->line != 0) ) {
 
       if( ((stmti.curr->stmt->exp->exec_num > 0) ? 1 : 0) == report_covered ) {
@@ -551,6 +553,11 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.64  2006/08/18 22:07:45  phase1geo
+ Integrating obfuscation into all user-viewable output.  Verified that these
+ changes have not made an impact on regressions.  Also improved performance
+ impact of not obfuscating output.
+
  Revision 1.63  2006/06/29 20:57:24  phase1geo
  Added stmt_excluded bit to expression to allow us to individually control line
  and combinational logic exclusion.  This also allows us to exclude combinational
