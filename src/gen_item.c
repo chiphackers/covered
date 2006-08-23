@@ -21,6 +21,8 @@
 #include "obfuscate.h"
 
 
+extern static_expr* parse_static_expr( char* str, bool lhs, func_unit* funit, int lineno );
+
 extern funit_inst* instance_root;
 extern char        user_msg[USER_MSG_LENGTH];
 extern bool        debug_mode;
@@ -341,15 +343,16 @@ bool gen_item_varname_contains_genvar( char* name ) {
 */
 char* gen_item_calc_signal_name( char* name, func_unit* funit ) {
 
-  char*      new_name = NULL;  /* Return value of this function */
-  char*      tmpname;          /* Temporary name of current part of variable */
-  char*      pre;              /* String prior to the generate variable */
-  char*      genvar;           /* Generate variable */
-  char*      post;             /* String after the generate variable */
-  vsignal*   gvar;             /* Pointer to found generate variable in the design */
-  func_unit* found_funit;      /* Pointer to functional unit containing the found generate variable */
-  char       intstr[20];       /* String containing an integer value */
-  char*      ptr;              /* Pointer to allocated memory for name */
+  char*        new_name = NULL;  /* Return value of this function */
+  char*        tmpname;          /* Temporary name of current part of variable */
+  char*        pre;              /* String prior to the generate variable */
+  char*        genvar;           /* Generate variable */
+  char*        post;             /* String after the generate variable */
+  vsignal*     gvar;             /* Pointer to found generate variable in the design */
+  func_unit*   found_funit;      /* Pointer to functional unit containing the found generate variable */
+  char         intstr[20];       /* String containing an integer value */
+  char*        ptr;              /* Pointer to allocated memory for name */
+  static_expr* se;               /* Pointer to static expression */
 
   /* Allocate memory */
   tmpname  = strdup_safe( name, __FILE__, __LINE__ );
@@ -359,13 +362,9 @@ char* gen_item_calc_signal_name( char* name, func_unit* funit ) {
   do {
     gen_item_get_genvar( tmpname, &pre, &genvar, &post );
     if( genvar != NULL ) {
-      if( !scope_find_signal( genvar, funit, &gvar, &found_funit, 0 ) ) {
-        snprintf( user_msg, USER_MSG_LENGTH, "Unable to find generate variable %s in module %s",
-                  obf_sig( genvar ), obf_funit( funit->name ) );
-        print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        exit( 1 );
-      }
-      snprintf( intstr, 20, "%d", vector_to_int( gvar->value ) );
+      se = parse_static_expr( genvar, FALSE/*TBD*/, funit, 0/*TBD*/ );
+      assert( se->exp == NULL );
+      snprintf( intstr, 20, "%d", se->num );
       new_name = (char*)realloc( new_name, (strlen( new_name ) + strlen( pre ) + strlen( intstr ) + 3) );
       strncat( new_name, pre, strlen( pre ) );
       strncat( new_name, "[", 1 );
@@ -988,6 +987,11 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.27  2006/08/18 22:07:45  phase1geo
+ Integrating obfuscation into all user-viewable output.  Verified that these
+ changes have not made an impact on regressions.  Also improved performance
+ impact of not obfuscating output.
+
  Revision 1.26  2006/08/14 04:19:56  phase1geo
  Fixing problem with generate11* diagnostics (generate variable used in
  signal name).  These tests pass now but full regression hasn't been verified
