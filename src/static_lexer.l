@@ -241,7 +241,7 @@ static int yywrap() {
 void reset_static_lexer( char* str ) {
 
   seinputptr = str;
-  seinputlim = str + (strlen( str ) - 1);
+  seinputlim = str + strlen( str );
 
 }
 

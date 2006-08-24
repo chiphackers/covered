@@ -379,6 +379,11 @@ static_expr* parse_static_expr( char* str, bool lhs, func_unit* funit, int linen
   /* Reset the lexer with the given string */
   reset_static_lexer( str );
 
+  /* Call the parser */
+  if( SEparse() != 0 ) {
+    exit( 1 );
+  }
+
   return( se );
 
 }

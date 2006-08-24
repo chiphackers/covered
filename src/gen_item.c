@@ -335,13 +335,14 @@ bool gen_item_varname_contains_genvar( char* name ) {
 
 /*!
  \param name   Name of signal that we possibly need to convert if it contains generate variable(s)
+ \param expr   Pointer to expression containing this signal
  \param funit  Pointer to current functional unit
 
  \return Returns allocated string containing the signal name with embedded generate variables evaluated
 
  Iterates through the given name, substituting any found generate variables with their current value.
 */
-char* gen_item_calc_signal_name( char* name, func_unit* funit ) {
+char* gen_item_calc_signal_name( char* name, expression* expr, func_unit* funit ) {
 
   char*        new_name = NULL;  /* Return value of this function */
   char*        tmpname;          /* Temporary name of current part of variable */
@@ -362,8 +363,9 @@ char* gen_item_calc_signal_name( char* name, func_unit* funit ) {
   do {
     gen_item_get_genvar( tmpname, &pre, &genvar, &post );
     if( genvar != NULL ) {
-      se = parse_static_expr( genvar, FALSE/*TBD*/, funit, 0/*TBD*/ );
+      se = parse_static_expr( genvar, ESUPPL_IS_LHS( expr->suppl ), funit, expr->line );
       assert( se->exp == NULL );
+      printf( "Generate expression value: %d\n", se->num );
       snprintf( intstr, 20, "%d", se->num );
       new_name = (char*)realloc( new_name, (strlen( new_name ) + strlen( pre ) + strlen( intstr ) + 3) );
       strncat( new_name, pre, strlen( pre ) );
@@ -834,7 +836,8 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
         break;
 
       case GI_TYPE_BIND :
-        varname = gen_item_calc_signal_name( gi->varname, inst->funit );
+        varname = gen_item_calc_signal_name( gi->varname, gi->elem.expr, inst->funit );
+        printf( "varname: %s\n", varname );
         switch( gi->elem.expr->op ) {
           case EXP_OP_FUNC_CALL :  bind_add( FUNIT_FUNCTION,    varname, gi->elem.expr, inst->funit );  break;
           case EXP_OP_TASK_CALL :  bind_add( FUNIT_TASK,        varname, gi->elem.expr, inst->funit );  break;
@@ -987,6 +990,11 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.28  2006/08/23 22:18:20  phase1geo
+ Adding static expression parser/lexer for parsing generate signals.  Integrated
+ this into gen_item.  First attempt and hasn't been tested, so I'm sure its full
+ of bugs at the moment.
+
  Revision 1.27  2006/08/18 22:07:45  phase1geo
  Integrating obfuscation into all user-viewable output.  Verified that these
  changes have not made an impact on regressions.  Also improved performance
