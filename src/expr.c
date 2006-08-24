@@ -634,8 +634,6 @@ void expression_resize( expression* expr, bool recursive ) {
       expression_resize( expr->right, recursive );
     }
 
-    printf( "In expression_resize, %s\n", expression_string( expr ) );
-
     /* Get vector supplemental field */
     old_vec_suppl = expr->value->suppl.all;
 
@@ -653,7 +651,6 @@ void expression_resize( expression* expr, bool recursive ) {
       case EXP_OP_MBIT_POS       :
       case EXP_OP_MBIT_NEG       :
         if( recursive && (expr->sig != NULL) ) {
-          printf( "Setting expression value to that of signal %s (%p)\n", expr->sig->name, expr->sig->value->value );
           expression_set_value( expr, expr->sig->value );
           assert( expr->value->value != NULL );
         }
@@ -3441,6 +3438,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.199  2006/08/24 03:39:02  phase1geo
+ Fixing some issues with new static_lexer/parser.  Working on debugging issue
+ related to the generate variable mysteriously losing its vector data.
+
  Revision 1.198  2006/08/21 22:50:00  phase1geo
  Adding more support for delayed assignments.  Added dly_assign1 to testsuite
  to verify the #... type of delayed assignment.  This seems to be working for

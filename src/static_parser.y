@@ -41,20 +41,20 @@ extern void reset_static_lexer( char* str );
 
 extern char user_msg[USER_MSG_LENGTH];
 
-/*! Pointer to found static expression in given string */
-static static_expr* se;
+/*! Pointer to value of the current static expression string */
+static int  se_value;
 
 /*!
  If set to TRUE, specifies that we are currently parsing syntax on the left-hand-side of an
  assignment.
 */
-static bool       se_lhs_mode;
+static bool se_lhs_mode;
 
 /*! Set to the current filename being parsed */
-func_unit* se_funit;
+func_unit*  se_funit;
 
 /*! Set to the current line number being parsed */
-static int        se_lineno;
+int         se_lineno;
 
 
 #define YYERROR_VERBOSE 1
@@ -68,9 +68,8 @@ int yydebug = 1;
 %}
 
 %union {
-  char*        text;
-  vector*      number;
-  static_expr* statexp;
+  char* text;
+  int   number;
 };
 
 %token <text>     IDENTIFIER
@@ -79,7 +78,7 @@ int yydebug = 1;
 %token            K_LE K_GE K_EG K_EQ K_NE K_CEQ K_CNE K_LS K_LSS K_RS K_RSS K_SG K_EG
 %token            K_NAND K_NOR K_NXOR
 
-%type <statexp>   static_expr static_expr_primary static_expr_port_list
+%type <number>    static_expr static_expr_primary static_expr_port_list
 
 %left '|'
 %left '^' K_NXOR K_NOR
@@ -96,28 +95,17 @@ int yydebug = 1;
 main
   : static_expr
     {
-      se = $1;
+      se_value = $1;
     }
 		
 static_expr_port_list
   : static_expr_port_list ',' static_expr
     {
-      static_expr* tmp = $3;
-      if( $3 != NULL ) {
-        tmp = static_expr_gen_unary( $3, EXP_OP_PASSIGN, se_lineno, @3.first_column, (@3.last_column - 1) );
-        tmp = static_expr_gen( tmp, $1, EXP_OP_LIST, se_lineno, @1.first_column, (@3.last_column - 1), NULL );
-        $$ = tmp;
-      } else {
-        $$ = $1;
-      }
+      $$ = 0;  /* TBD */
     }
   | static_expr
     {
-      static_expr* tmp = $1;
-      if( $1 != NULL ) {
-        tmp = static_expr_gen_unary( $1, EXP_OP_PASSIGN, se_lineno, @1.first_column, (@1.last_column - 1) );
-      }
-      $$ = tmp;
+      $$ = 0;  /* TBD */
     }
   ;
 
@@ -128,223 +116,174 @@ static_expr
     }
   | '+' static_expr_primary %prec UNARY_PREC
     {
-      static_expr* tmp = $2;
-      if( tmp != NULL ) {
-        if( tmp->exp == NULL ) {
-          tmp->num = 0 + tmp->num;
-        }
-      }
-      $$ = tmp;
+      $$ = 0 + $2;
     }
   | '-' static_expr_primary %prec UNARY_PREC
     {
-      static_expr* tmp = $2;
-      if( tmp != NULL ) {
-        if( tmp->exp == NULL ) {
-          tmp->num = 0 - tmp->num;
-        }
-      }
-      $$ = tmp;
+      $$ = 0 - $2;
     }
   | '~' static_expr_primary %prec UNARY_PREC
     {
-      static_expr* tmp;
-      tmp = static_expr_gen_unary( $2, EXP_OP_UINV, se_lineno, @1.first_column, (@1.last_column - 1) );
-      $$ = tmp;
+      $$ = ~$2;
     }
   | '&' static_expr_primary %prec UNARY_PREC
     {
-      static_expr* tmp;
-      tmp = static_expr_gen_unary( $2, EXP_OP_UAND, se_lineno, @1.first_column, (@1.last_column - 1) );
-      $$ = tmp;
+      int val = $2 & 0x1;
+      int i;
+      for( i=1; i<(SIZEOF_INT * 8); i++ ) {
+        val &= (($2 >> i) & 0x1);
+      }
+      $$ = val;
     }
   | '!' static_expr_primary %prec UNARY_PREC
     {
-      static_expr* tmp;
-      tmp = static_expr_gen_unary( $2, EXP_OP_UNOT, se_lineno, @1.first_column, (@1.last_column - 1) );
-      $$ = tmp;
+      $$ = ($2 == 0) ? 1 : 0;
     }
   | '|' static_expr_primary %prec UNARY_PREC
     {
-      static_expr* tmp;
-      tmp = static_expr_gen_unary( $2, EXP_OP_UOR, se_lineno, @1.first_column, (@1.last_column - 1) );
-      $$ = tmp;
+      int val = $2 & 0x1;
+      int i;
+      for( i=1; i<(SIZEOF_INT * 8); i++ ) {
+        val |= (($2 >> i) & 0x1);
+      }
+      $$ = val;
     }
   | '^' static_expr_primary %prec UNARY_PREC
     {
-      static_expr* tmp;
-      tmp = static_expr_gen_unary( $2, EXP_OP_UXOR, se_lineno, @1.first_column, (@1.last_column - 1) );
-      $$ = tmp;
+      int val = $2 & 0x1;
+      int i;
+      for( i=1; i<(SIZEOF_INT * 8); i++ ) {
+        val ^= (($2 >> i) & 0x1);
+      }
+      $$ = val;
     }
   | K_NAND static_expr_primary %prec UNARY_PREC
     {
-      static_expr* tmp;
-      tmp = static_expr_gen_unary( $2, EXP_OP_UNAND, se_lineno, @1.first_column, (@1.last_column - 1) );
-      $$ = tmp;
+      int val = $2 & 0x1;
+      int i;
+      for( i=1; i<(SIZEOF_INT * 8); i++ ) {
+        val &= (($2 >> i) & 0x1);
+      }
+      $$ = (val == 0) ? 1 : 0;
     }
   | K_NOR static_expr_primary %prec UNARY_PREC
     {
-      static_expr* tmp;
-      tmp = static_expr_gen_unary( $2, EXP_OP_UNOR, se_lineno, @1.first_column, (@1.last_column - 1) );
-      $$ = tmp;
+      int val = $2 & 0x1;
+      int i;
+      for( i=1; i<(SIZEOF_INT * 8); i++ ) {
+        val |= (($2 >> i) & 0x1);
+      }
+      $$ = (val == 0) ? 1 : 0;
     }
   | K_NXOR static_expr_primary %prec UNARY_PREC
     {
-      static_expr* tmp;
-      tmp = static_expr_gen_unary( $2, EXP_OP_UNXOR, se_lineno, @1.first_column, (@1.last_column - 1) );
-      $$ = tmp;
+      int val = $2 & 0x1;
+      int i;
+      for( i=1; i<(SIZEOF_INT * 8); i++ ) {
+        val ^= (($2 >> i) & 0x1);
+      }
+      $$ = (val == 0) ? 1 : 0;
     }
   | static_expr '^' static_expr
     {
-      static_expr* tmp;
-      tmp = static_expr_gen( $3, $1, EXP_OP_XOR, se_lineno, @1.first_column, (@3.last_column - 1), NULL );
-      $$ = tmp;
+      $$ = $1 ^ $3;
     }
   | static_expr '*' static_expr
     {
-      static_expr* tmp;
-      tmp = static_expr_gen( $3, $1, EXP_OP_MULTIPLY, se_lineno, @1.first_column, (@3.last_column - 1), NULL );
-      $$ = tmp;
+      $$ = $1 * $3;
     }
   | static_expr '/' static_expr
     {
-      static_expr* tmp;
-      tmp = static_expr_gen( $3, $1, EXP_OP_DIVIDE, se_lineno, @1.first_column, (@3.last_column - 1), NULL );
-      $$ = tmp;
+      $$ = $1 / $3;
     }
   | static_expr '%' static_expr
     {
-      static_expr* tmp;
-      tmp = static_expr_gen( $3, $1, EXP_OP_MOD, se_lineno, @1.first_column, (@3.last_column - 1), NULL );
-      $$ = tmp;
+      $$ = $1 % $3;
     }
   | static_expr '+' static_expr
     {
-      static_expr* tmp;
-      tmp = static_expr_gen( $3, $1, EXP_OP_ADD, se_lineno, @1.first_column, (@3.last_column - 1), NULL );
-      $$ = tmp;
+      $$ = $1 + $3;
     }
   | static_expr '-' static_expr
     {
-      static_expr* tmp;
-      tmp = static_expr_gen( $3, $1, EXP_OP_SUBTRACT, se_lineno, @1.first_column, (@3.last_column - 1), NULL );
-      $$ = tmp;
+      $$ = $1 - $3;
     }
   | static_expr '*' '*' static_expr
     {
-      static_expr* tmp;
+      int value = 1;
+      int i;
       if( !parser_check_generation( GENERATION_2001 ) ) {
-        VLerror( "Exponential power operation found in block that is specified to not allow Verilog-2001 syntax" );
-        static_expr_dealloc( $1, TRUE );
-        static_expr_dealloc( $4, TRUE );
-        $$ = NULL;
+        SEerror( "Exponential power operation found in block that is specified to not allow Verilog-2001 syntax" );
       } else {
-        tmp = static_expr_gen( $4, $1, EXP_OP_EXPONENT, se_lineno, @1.first_column, (@4.last_column - 1), NULL );
-        $$ = tmp;
+        for( i=0; i<$4; i++ ) {
+          value *= $1;
+        }
       }
+      $$ = value;
     }
   | static_expr '&' static_expr
     {
-      static_expr* tmp;
-      tmp = static_expr_gen( $3, $1, EXP_OP_AND, se_lineno, @1.first_column, (@3.last_column - 1), NULL );
-      $$ = tmp;
+      $$ = $1 & $3;
     }
   | static_expr '|' static_expr
     {
-      static_expr* tmp;
-      tmp = static_expr_gen( $3, $1, EXP_OP_OR, se_lineno, @1.first_column, (@3.last_column - 1), NULL );
-      $$ = tmp;
+      $$ = $1 | $3;
     }
   | static_expr K_NOR static_expr
     {
-      static_expr* tmp;
-      tmp = static_expr_gen( $3, $1, EXP_OP_NOR, se_lineno, @1.first_column, (@3.last_column - 1), NULL );
-      $$ = tmp;
+      $$ = ~($1 | $3);
     }
   | static_expr K_NAND static_expr
     {
-      static_expr* tmp;
-      tmp = static_expr_gen( $3, $1, EXP_OP_NAND, se_lineno, @1.first_column, (@3.last_column - 1), NULL );
-      $$ = tmp;
+      $$ = ~($1 & $3);
     }
   | static_expr K_NXOR static_expr
     {
-      static_expr* tmp;
-      tmp = static_expr_gen( $3, $1, EXP_OP_NXOR, se_lineno, @1.first_column, (@3.last_column - 1), NULL );
-      $$ = tmp;
+      $$ = ~($1 ^ $3);
     }
   | static_expr K_LS static_expr
     {
-      static_expr* tmp;
-      tmp = static_expr_gen( $3, $1, EXP_OP_LSHIFT, se_lineno, @1.first_column, (@3.last_column - 1), NULL );
-      $$ = tmp;
+      $$ = $1 << $3;
     }
   | static_expr K_RS static_expr
     {
-      static_expr* tmp;
-      tmp = static_expr_gen( $3, $1, EXP_OP_RSHIFT, se_lineno, @1.first_column, (@3.last_column - 1), NULL );
-      $$ = tmp;
+      $$ = $1 >> $3;
     }
   | static_expr K_GE static_expr
     {
-      static_expr* tmp;
-      tmp = static_expr_gen( $3, $1, EXP_OP_GE, se_lineno, @1.first_column, (@3.last_column - 1), NULL );
-      $$ = tmp;
+      $$ = ($1 >= $3);
     }
   | static_expr K_LE static_expr
     {
-      static_expr* tmp;
-      tmp = static_expr_gen( $3, $1, EXP_OP_LE, se_lineno, @1.first_column, (@3.last_column - 1), NULL );
-      $$ = tmp;
+      $$ = ($1 <= $3);
     }
   | static_expr K_EQ static_expr
     {
-      static_expr* tmp;
-      tmp = static_expr_gen( $3, $1, EXP_OP_EQ, se_lineno, @1.first_column, (@3.last_column - 1), NULL );
-      $$ = tmp;
+      $$ = ($1 == $3);
     }
   | static_expr K_NE static_expr
     {
-      static_expr* tmp;
-      tmp = static_expr_gen( $3, $1, EXP_OP_NE, se_lineno, @1.first_column, (@3.last_column - 1), NULL );
-      $$ = tmp;
+      $$ = ($1 != $3);
     }
   | static_expr '>' static_expr
     {
-      static_expr* tmp;
-      tmp = static_expr_gen( $3, $1, EXP_OP_GT, se_lineno, @1.first_column, (@3.last_column - 1), NULL );
-      $$ = tmp;
+      $$ = ($1 > $3);
     }
   | static_expr '<' static_expr
     {
-      static_expr* tmp;
-      tmp = static_expr_gen( $3, $1, EXP_OP_LT, se_lineno, @1.first_column, (@3.last_column - 1), NULL );
-      $$ = tmp;
+      $$ = ($1 < $3);
     }
   ;
 
 static_expr_primary
   : NUMBER
     {
-      static_expr* tmp;
-      tmp = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
-      tmp->num = vector_to_int( $1 );
-      tmp->exp = NULL;
-      vector_dealloc( $1 );
-      $$ = tmp;
+      $$ = $1;
     }
   | REALTIME
     {
-      $$ = NULL;
-    }
-  | IDENTIFIER
-    {
-      static_expr* tmp;
-      tmp = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
-      tmp->num = -1;
-      tmp->exp = db_create_expression( NULL, NULL, EXP_OP_SIG, se_lhs_mode, se_lineno, @1.first_column, (@1.last_column - 1), $1 );
-      free_safe( $1 );
-      $$ = tmp;
+      SEerror( "Realtime value found in constant expression which is not currently supported" );
+      $$ = 0;
     }
   | '(' static_expr ')'
     {
@@ -352,10 +291,7 @@ static_expr_primary
     }
   | IDENTIFIER '(' static_expr_port_list ')'
     {
-      static_expr* tmp;
-      tmp = static_expr_gen( NULL, $3, EXP_OP_FUNC_CALL, se_lineno, @1.first_column, (@4.last_column - 1), $1 );
-      $$  = tmp;
-      free_safe( $1 );
+      SEerror( "Static function call used in constant expression which is not currently supported" );
     }
   ;
 
@@ -367,9 +303,9 @@ static_expr_primary
  \param fname   Filename containing this expression
  \param lineno  Line number containing this expression
 
- \return Returns an allocated static expression structure representing the given string
+ \return Returns the value of the given expression string.
 */
-static_expr* parse_static_expr( char* str, bool lhs, func_unit* funit, int lineno ) {
+int parse_static_expr( char* str, bool lhs, func_unit* funit, int lineno ) {
 
   /* Set the global values */
   se_lhs_mode = lhs;
@@ -384,7 +320,7 @@ static_expr* parse_static_expr( char* str, bool lhs, func_unit* funit, int linen
     exit( 1 );
   }
 
-  return( se );
+  return( se_value );
 
 }
 

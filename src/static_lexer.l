@@ -46,8 +46,8 @@
 static char* seinputptr;
 static char* seinputlim;
 
-extern YYLTYPE    yylloc;
 extern func_unit* se_funit;
+extern int        se_lineno;
 extern char       user_msg[USER_MSG_LENGTH];
 
 /*!
@@ -114,70 +114,88 @@ WSPACE [ \t\b\f]+
        print_output( user_msg, FATAL, __FILE__, __LINE__ );
        exit( 1 );
      }
-     yylval.number = gvar->value;
+     yylval.number = vector_to_int( gvar->value );
      return NUMBER;
  }
 
   /* Decimal number - Size indicated */
 [0-9][0-9_]*[ \t]*\'[sS]?[dD][ \t]*[0-9][0-9_]* {
-     yylval.number = vector_from_string( &yytext, FALSE );
-     assert( yylval.number != NULL );
+     vector* vec = vector_from_string( &yytext, FALSE );
+     assert( vec != NULL );
+     yylval.number = vector_to_int( vec );
+     vector_dealloc( vec );
      return NUMBER;
  }
 
   /* Binary number - Size indicated */
 [0-9][0-9_]*[ \t]*\'[sS]?[bB][ \t]*[0-1xzXZ_\?]+ {
-     yylval.number = vector_from_string( &yytext, FALSE );
-     assert( yylval.number != NULL );
+     vector* vec = vector_from_string( &yytext, FALSE );
+     assert( vec != NULL );
+     yylval.number = vector_to_int( vec );
+     vector_dealloc( vec );
      return NUMBER;
  }
 
   /* Octal number - Size indicated */
 [0-9][0-9_]*[ \t]*\'[sS]?[oO][ \t]*[0-7xzXZ_\?]+ {
-     yylval.number = vector_from_string( &yytext, FALSE );
-     assert( yylval.number != NULL );
+     vector* vec = vector_from_string( &yytext, FALSE );
+     assert( vec != NULL );
+     yylval.number = vector_to_int( vec );
+     vector_dealloc( vec );
      return NUMBER;
  }
 
   /* Hexidecimal number - Size indicated */
 [0-9][0-9_]*[ \t]*\'[sS]?[hH][ \t]*[0-9a-fA-FxzXZ_\?]+ {
-     yylval.number = vector_from_string( &yytext, FALSE );
-     assert( yylval.number != NULL );
+     vector* vec = vector_from_string( &yytext, FALSE );
+     assert( vec != NULL );
+     yylval.number = vector_to_int( vec );
+     vector_dealloc( vec );
      return NUMBER;
  }
 
   /* Decimal number - unsized */
 \'[sS]?[dD][ \t]*[0-9][0-9_]* {
-     yylval.number = vector_from_string( &yytext, FALSE );
-     assert( yylval.number != NULL );
+     vector* vec = vector_from_string( &yytext, FALSE );
+     assert( vec != NULL );
+     yylval.number = vector_to_int( vec );
+     vector_dealloc( vec );
      return NUMBER;
  }
 
   /* Binary number - unsized */
 \'[sS]?[bB][ \t]*[0-1xzXZ_\?]+ {
-     yylval.number = vector_from_string( &yytext, FALSE );
-     assert( yylval.number != NULL );
+     vector* vec = vector_from_string( &yytext, FALSE );
+     assert( vec != NULL );
+     yylval.number = vector_to_int( vec );
+     vector_dealloc( vec );
      return NUMBER;
  }
 
   /* Octal number - unsized */
 \'[sS]?[oO][ \t]*[0-7xzXZ_\?]+ {
-     yylval.number = vector_from_string( &yytext, FALSE );
-     assert( yylval.number != NULL );
+     vector* vec = vector_from_string( &yytext, FALSE );
+     assert( vec != NULL );
+     yylval.number = vector_to_int( vec );
+     vector_dealloc( vec );
      return NUMBER;
  }
 
   /* Hexidecimal number - unsized */
 \'[sS]?[hH][ \t]*[0-9a-fA-FxzXZ_\?]+ {
-     yylval.number = vector_from_string( &yytext, FALSE );
-     assert( yylval.number != NULL );
+     vector* vec = vector_from_string( &yytext, FALSE );
+     assert( vec != NULL );
+     yylval.number = vector_to_int( vec );
+     vector_dealloc( vec );
      return NUMBER;
  }
 
   /* Unsized decimal number */
 [0-9][0-9_]* {
-     yylval.number = vector_from_string( &yytext, FALSE );
-     assert( yylval.number != NULL );
+     vector* vec = vector_from_string( &yytext, FALSE );
+     assert( vec != NULL );
+     yylval.number = vector_to_int( vec );
+     vector_dealloc( vec );
      return NUMBER;
  }
 
@@ -192,7 +210,7 @@ WSPACE [ \t\b\f]+
  }
 
   /* Final catchall. something got lost or mishandled. */
-. { fprintf( stderr, "%d: unmatched character (%c)\n", SElloc.first_line, yytext[0] ); }
+. { fprintf( stderr, "%d: unmatched character (%c)\n", se_lineno, yytext[0] ); }
 
 %%
 

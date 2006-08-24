@@ -5389,6 +5389,20 @@ port_name
       free_safe( $2 );
     }
   | '.' UNUSED_IDENTIFIER '(' ')'
+  | '.' IDENTIFIER
+    {
+      if( (ignore_mode == 0) && !parser_check_generation( GENERATION_SV ) ) {
+        VLerror( "Implicit .name port list item found in block that is specified to not allow SystemVerilog syntax" );
+      }
+      free_safe( $2 );
+    }
+  | '.' UNUSED_IDENTIFIER
+  | '.' '*'
+    {
+      if( (ignore_mode == 0) && !parser_check_generation( GENERATION_SV ) ) {
+        VLerror( "Implicit .* port list item found in block that is specified to not allow SystemVerilog syntax" );
+      }
+    }
   ;
 
 specify_item_list

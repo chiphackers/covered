@@ -344,16 +344,13 @@ bool gen_item_varname_contains_genvar( char* name ) {
 */
 char* gen_item_calc_signal_name( char* name, expression* expr, func_unit* funit ) {
 
-  char*        new_name = NULL;  /* Return value of this function */
-  char*        tmpname;          /* Temporary name of current part of variable */
-  char*        pre;              /* String prior to the generate variable */
-  char*        genvar;           /* Generate variable */
-  char*        post;             /* String after the generate variable */
-  vsignal*     gvar;             /* Pointer to found generate variable in the design */
-  func_unit*   found_funit;      /* Pointer to functional unit containing the found generate variable */
-  char         intstr[20];       /* String containing an integer value */
-  char*        ptr;              /* Pointer to allocated memory for name */
-  static_expr* se;               /* Pointer to static expression */
+  char* new_name = NULL;  /* Return value of this function */
+  char* tmpname;          /* Temporary name of current part of variable */
+  char* pre;              /* String prior to the generate variable */
+  char* genvar;           /* Generate variable */
+  char* post;             /* String after the generate variable */
+  char  intstr[20];       /* String containing an integer value */
+  char* ptr;              /* Pointer to allocated memory for name */
 
   /* Allocate memory */
   tmpname  = strdup_safe( name, __FILE__, __LINE__ );
@@ -363,10 +360,8 @@ char* gen_item_calc_signal_name( char* name, expression* expr, func_unit* funit 
   do {
     gen_item_get_genvar( tmpname, &pre, &genvar, &post );
     if( genvar != NULL ) {
-      se = parse_static_expr( genvar, ESUPPL_IS_LHS( expr->suppl ), funit, expr->line );
-      assert( se->exp == NULL );
-      printf( "Generate expression value: %d\n", se->num );
-      snprintf( intstr, 20, "%d", se->num );
+      snprintf( intstr, 20, "%d", parse_static_expr( genvar, ESUPPL_IS_LHS( expr->suppl ), funit, expr->line ) );
+      // printf( "Generate expression value: %s\n", intstr );
       new_name = (char*)realloc( new_name, (strlen( new_name ) + strlen( pre ) + strlen( intstr ) + 3) );
       strncat( new_name, pre, strlen( pre ) );
       strncat( new_name, "[", 1 );
@@ -990,6 +985,10 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.29  2006/08/24 03:39:02  phase1geo
+ Fixing some issues with new static_lexer/parser.  Working on debugging issue
+ related to the generate variable mysteriously losing its vector data.
+
  Revision 1.28  2006/08/23 22:18:20  phase1geo
  Adding static expression parser/lexer for parsing generate signals.  Integrated
  this into gen_item.  First attempt and hasn't been tested, so I'm sure its full

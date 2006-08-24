@@ -225,7 +225,6 @@ vsignal* funit_find_signal( char* name, func_unit* funit ) {
   if( (sigl = sig_link_find( &sig, funit->sig_head )) != NULL ) {
 
     found_sig = sigl->sig;
-    printf( "Found signal: %s, value: %p\n", found_sig->name, found_sig->value->value );
 
   } else {
 
@@ -1025,6 +1024,10 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.37  2006/08/24 03:39:02  phase1geo
+ Fixing some issues with new static_lexer/parser.  Working on debugging issue
+ related to the generate variable mysteriously losing its vector data.
+
  Revision 1.36  2006/08/18 22:07:45  phase1geo
  Integrating obfuscation into all user-viewable output.  Verified that these
  changes have not made an impact on regressions.  Also improved performance

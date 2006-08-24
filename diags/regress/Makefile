@@ -111,7 +111,7 @@ GENLIST       = gen1            gen1.1          gen1.3          gen2.1          
                 gen24           gen24.1         gen25.2         gen26.2         gen27.2 \
                 gen28.2         gen29.2         gen30.2         gen31.2         gen32.2 \
                 gen33.2         gen34.2         gen35.2         gen36.2         gen37.2 \
-                gen38.2
+                gen38.2         gen39.2         gen40.2
 
 GENERRLIST    = gen1.2          gen1.4          gen1.5          gen2            gen3 \
                 gen4            gen5            gen6            gen7            gen8 \
@@ -123,7 +123,8 @@ GENERRLIST    = gen1.2          gen1.4          gen1.5          gen2            
                 gen29.1         gen30           gen30.1         gen31           gen31.1 \
                 gen32           gen32.1         gen33           gen33.1         gen34 \
                 gen34.1         gen35           gen35.1         gen36           gen36.1 \
-                gen37           gen37.1         gen38           gen38.1
+                gen37           gen37.1         gen38           gen38.1         gen39 \
+                gen39.1         gen40           gen40.1
            
 IVONLYDIAGS1  = always5.1       assign1         assign2.8       example         fsm1 \
                 fsm1.1          fsm1.2          fsm1.3          fsm1.4          fsm6 \
