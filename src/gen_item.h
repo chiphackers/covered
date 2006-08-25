@@ -25,6 +25,10 @@ gen_item* gen_item_find( gen_item* root, gen_item* gi );
 /*! \brief Returns TRUE if the specified variable name contains a generate variable within it */
 bool gen_item_varname_contains_genvar( char* name );
 
+/*! \brief Returns the actual signal name specified by the given signal name which references a
+           generated hierarchy */
+char* gen_item_calc_signal_name( char* name, func_unit* funit, int line, bool no_genvars );
+
 /*! \brief Creates a generate item for an expression */
 gen_item* gen_item_create_expr( expression* expr );
 
@@ -72,6 +76,11 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem );
 
 /*
  $Log$
+ Revision 1.13  2006/08/14 04:19:56  phase1geo
+ Fixing problem with generate11* diagnostics (generate variable used in
+ signal name).  These tests pass now but full regression hasn't been verified
+ at this point.
+
  Revision 1.12  2006/08/02 22:28:32  phase1geo
  Attempting to fix the bug pulled out by generate11.v.  We are just having an issue
  with setting the assigned bit in a signal expression that contains a hierarchical reference

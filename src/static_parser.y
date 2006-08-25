@@ -44,17 +44,14 @@ extern char user_msg[USER_MSG_LENGTH];
 /*! Pointer to value of the current static expression string */
 static int  se_value;
 
-/*!
- If set to TRUE, specifies that we are currently parsing syntax on the left-hand-side of an
- assignment.
-*/
-static bool se_lhs_mode;
-
 /*! Set to the current filename being parsed */
 func_unit*  se_funit;
 
 /*! Set to the current line number being parsed */
 int         se_lineno;
+
+/*! Specifies if generate variables are allowed in the parsed expression */
+bool        se_no_gvars;
 
 
 #define YYERROR_VERBOSE 1
@@ -298,19 +295,21 @@ static_expr_primary
 %%
 
 /*!
- \param str     Pointer to string to parse as a static expression.
- \param lhs     Specifies if this expression exists on the left-hand-side of an assignment expression
- \param fname   Filename containing this expression
- \param lineno  Line number containing this expression
+ \param str         Pointer to string to parse as a static expression.
+ \param fname       Filename containing this expression
+ \param lineno      Line number containing this expression
+ \param no_genvars  Specifies if generate variables can exist in the given expression string
 
  \return Returns the value of the given expression string.
+
+ Parses given static expression string and returns its calculated integer value.
 */
-int parse_static_expr( char* str, bool lhs, func_unit* funit, int lineno ) {
+int parse_static_expr( char* str, func_unit* funit, int lineno, bool no_genvars ) {
 
   /* Set the global values */
-  se_lhs_mode = lhs;
   se_funit    = funit;
   se_lineno   = lineno;
+  se_no_gvars = no_genvars;
 
   /* Reset the lexer with the given string */
   reset_static_lexer( str );

@@ -1128,6 +1128,10 @@ expression* db_create_expression( expression* right, expression* left, int op, b
   /* Add expression and signal to binding list */
   if( sig_name != NULL ) {
 
+    /*
+     If we are in a generate block and the signal name contains a generate variable/expression,
+     create a generate item to handle the binding later.
+    */
     if( (generate_mode > 0) && gen_item_varname_contains_genvar( sig_name ) ) {
       last_gi = gen_item_create_bind( sig_name, expr );
       if( curr_gi_block != NULL ) {
@@ -1160,6 +1164,12 @@ expression* db_create_expr_from_static( static_expr* se, int line, int first_col
 
   expression* expr;  /* Return value for this function */
   vector*     vec;   /* Temporary vector */
+
+#ifdef DEBUG_MODE
+  snprintf( user_msg, USER_MSG_LENGTH, "In db_create_expr_from_static, se: %p, line: %d, first_col: %d, last_col: %d",
+            se, line, first_col, last_col );
+  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+#endif
 
   if( se->exp == NULL ) {
 
@@ -1965,6 +1975,18 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.211  2006/08/20 03:20:59  phase1geo
+ Adding support for +=, -=, *=, /=, %=, &=, |=, ^=, <<=, >>=, <<<=, >>>=, ++
+ and -- operators.  The op-and-assign operators are currently good for
+ simulation and code generation purposes but still need work in the comb.c
+ file for proper combinational logic underline and reporting support.  The
+ increment and decrement operations should be fully supported with the exception
+ of their use in FOR loops (I'm not sure if this is supported by SystemVerilog
+ or not yet).  Also started adding support for delayed assignments; however, I
+ need to rework this completely as it currently causes segfaults.  Added lots of
+ new diagnostics to verify this new functionality and updated regression for
+ these changes.  Full IV regression now passes.
+
  Revision 1.210  2006/08/18 22:07:44  phase1geo
  Integrating obfuscation into all user-viewable output.  Verified that these
  changes have not made an impact on regressions.  Also improved performance

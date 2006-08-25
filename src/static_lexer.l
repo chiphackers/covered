@@ -48,6 +48,7 @@ static char* seinputlim;
 
 extern func_unit* se_funit;
 extern int        se_lineno;
+extern bool       se_no_gvars;
 extern char       user_msg[USER_MSG_LENGTH];
 
 /*!
@@ -108,13 +109,20 @@ WSPACE [ \t\b\f]+
 [a-zA-Z_][a-zA-Z0-9$_]* {
      vsignal*   gvar;
      func_unit* found_funit;
-     if( !scope_find_signal( yytext, se_funit, &gvar, &found_funit, 0 ) ) {
-       snprintf( user_msg, USER_MSG_LENGTH, "Unable to find generate variable %s in module %s",
-                 obf_sig( yytext ), obf_funit( se_funit->name ) );
+     if( !se_no_gvars ) {
+       if( !scope_find_signal( yytext, se_funit, &gvar, &found_funit, 0 ) ) {
+         snprintf( user_msg, USER_MSG_LENGTH, "Unable to find generate variable %s in module %s",
+                   obf_sig( yytext ), obf_funit( se_funit->name ) );
+         print_output( user_msg, FATAL, __FILE__, __LINE__ );
+         exit( 1 );
+       }
+       yylval.number = vector_to_int( gvar->value );
+     } else {
+       snprintf( user_msg, USER_MSG_LENGTH, "Generate variable found in constant expression outside of generate block, file: %s, line: %d",
+                 obf_file( se_funit->filename ), se_lineno );
        print_output( user_msg, FATAL, __FILE__, __LINE__ );
        exit( 1 );
      }
-     yylval.number = vector_to_int( gvar->value );
      return NUMBER;
  }
 

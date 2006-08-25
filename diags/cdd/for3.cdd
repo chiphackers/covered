@@ -1,0 +1,21 @@
+5 8 1 * 0
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -o for3.cdd -v for3.v
+3 0 main main for3.v 1 19
+2 1 6 80008 1 0 20004 0 0 32 64 0 0 0 0 0 0 0 0
+2 2 6 60006 0 1 400 0 0 i
+2 3 6 60008 1 37 1006 1 2
+2 4 6 110011 0 1 400 0 0 i
+2 5 6 110013 a 51 6002 0 4
+2 6 8 80008 a 1 1c 0 0 i
+2 7 8 40004 0 1 400 0 0 a
+2 8 8 40008 a 37 2e 6 7
+2 9 6 d000e 1 0 20008 0 0 32 64 44 0 0 0 0 0 0 0
+2 10 6 b000b b 1 c 0 0 i
+2 11 6 b000e b d 2028e 9 10 1 0 1002
+1 i 0 3 3000b 32 16 7faa aa aa aa aa aa aa aa
+1 a 0 3 3000e 32 16 7faa aa aa aa aa aa aa aa
+1 b 0 3 30011 32 0 aa aa aa aa aa aa aa aa
+4 5 11 11
+4 8 5 5
+4 11 8 0
+4 3 11 11

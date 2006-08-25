@@ -21,7 +21,7 @@
 #include "obfuscate.h"
 
 
-extern static_expr* parse_static_expr( char* str, bool lhs, func_unit* funit, int lineno );
+extern static_expr* parse_static_expr( char* str, func_unit* funit, int lineno, bool no_genvars );
 
 extern funit_inst* instance_root;
 extern char        user_msg[USER_MSG_LENGTH];
@@ -334,15 +334,17 @@ bool gen_item_varname_contains_genvar( char* name ) {
 }
 
 /*!
- \param name   Name of signal that we possibly need to convert if it contains generate variable(s)
- \param expr   Pointer to expression containing this signal
- \param funit  Pointer to current functional unit
+ \param name        Name of signal that we possibly need to convert if it contains generate variable(s)
+ \param funit       Pointer to current functional unit
+ \param line        Line number in which the signal's expression exists
+ \param no_genvars  If set to TRUE, we need to make sure that we do not see a generate variable in the
+                    generate hierarchical expression.
 
  \return Returns allocated string containing the signal name with embedded generate variables evaluated
 
  Iterates through the given name, substituting any found generate variables with their current value.
 */
-char* gen_item_calc_signal_name( char* name, expression* expr, func_unit* funit ) {
+char* gen_item_calc_signal_name( char* name, func_unit* funit, int line, bool no_genvars ) {
 
   char* new_name = NULL;  /* Return value of this function */
   char* tmpname;          /* Temporary name of current part of variable */
@@ -360,7 +362,7 @@ char* gen_item_calc_signal_name( char* name, expression* expr, func_unit* funit 
   do {
     gen_item_get_genvar( tmpname, &pre, &genvar, &post );
     if( genvar != NULL ) {
-      snprintf( intstr, 20, "%d", parse_static_expr( genvar, ESUPPL_IS_LHS( expr->suppl ), funit, expr->line ) );
+      snprintf( intstr, 20, "%d", parse_static_expr( genvar, funit, line, no_genvars ) );
       new_name = (char*)realloc( new_name, (strlen( new_name ) + strlen( pre ) + strlen( intstr ) + 3) );
       strncat( new_name, pre, strlen( pre ) );
       strncat( new_name, "[", 1 );
@@ -830,7 +832,7 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
         break;
 
       case GI_TYPE_BIND :
-        varname = gen_item_calc_signal_name( gi->varname, gi->elem.expr, inst->funit );
+        varname = gen_item_calc_signal_name( gi->varname, inst->funit, gi->elem.expr->line, FALSE );
         // printf( "varname: %s\n", varname );
         switch( gi->elem.expr->op ) {
           case EXP_OP_FUNC_CALL :  bind_add( FUNIT_FUNCTION,    varname, gi->elem.expr, inst->funit );  break;
@@ -984,6 +986,12 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.31  2006/08/25 18:25:24  phase1geo
+ Modified gen39 and gen40 to not use the Verilog-2001 port syntax.  Fixed problem
+ with detecting implicit .name and .* syntax.  Fixed op-and-assign report output.
+ Added support for 'typedef', 'struct', 'union' and 'enum' syntax for SystemVerilog.
+ Updated user documentation.  Full regression completely passes now.
+
  Revision 1.30  2006/08/24 22:25:12  phase1geo
  Fixing issue with generate expressions within signal hierarchies.  Also added
  ability to parse implicit named and * port lists.  Added diagnostics to regressions

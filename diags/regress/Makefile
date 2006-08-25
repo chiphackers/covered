@@ -141,14 +141,14 @@ VCSONLYDIAGS1 = always_comb1    always_ff1      always_latch1   bit1            
                 char1           dec1            dec1.1          dec2            do_while1 \
                 do_while1.1     do_while2       elsif1 \
                 elsif1.1        elsif1.2        elsif1.3        elsif1.4        elsif2 \
-                elsif2.1        exponent1       gate1.1         generate1.1     generate2 \
+                elsif2.1        exponent1       for3            gate1.1         generate1.1     generate2 \
                 generate2.1     generate3       generate3.1     generate4       generate4.1 \
                 generate5       generate5.1     generate5.2     generate5.3     generate6 \
                 generate7       generate7.1     generate7.2     generate8       generate8.1 \
                 generate8.2     generate8.3     generate8.4     generate8.5     generate8.6 \
                 generate8.7     generate8.8     generate9       generate9.1     generate9.2 \
                 generate9.3     generate10      generate10.1    generate10.2    generate11 \
-                generate11.1    generate11.2    generate11.3    hier1.1         inc1 \
+                generate11.1    generate11.2    generate11.3    generate11.4    hier1.1         inc1 \
                 inc1.1          inc2            int1            line1           logic1 \
                 longint1        mbit_sel5.4     mbit_sel6.4     op_assign1      param8.2 \
                 param12         param12.1       shortint1       slist3.1 \

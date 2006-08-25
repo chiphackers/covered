@@ -36,6 +36,7 @@
 #include "vector.h"
 #include "keywords.h"
 #include "tree.h"
+#include "gen_item.h"
 #include "obfuscate.h"
 
 #define yylval VLlval
@@ -48,6 +49,7 @@ extern void reset_pplexer( char* filename, FILE* out );
 extern int PPVLlex( void );
 
 extern int        ignore_mode;
+extern int        generate_mode;
 extern int        attr_mode;
 extern char       user_msg[USER_MSG_LENGTH];
 extern char*      ppfilename;
@@ -329,7 +331,11 @@ WSPACE [ \t\b\f]+
      yylloc.last_column += strlen( yytext );
      if( rc == IDENTIFIER ) {
        if( ignore_mode == 0 ) {
-         yylval.text = strdup_safe( yytext, __FILE__, __LINE__ );
+         if( (generate_mode == 0) && (strchr( yytext, '.' ) != NULL) ) {
+           yylval.text = gen_item_calc_signal_name( yytext, curr_funit, yylloc.first_line, TRUE );
+         } else {
+           yylval.text = strdup_safe( yytext, __FILE__, __LINE__ );
+         }
          // printf( "Allocated IDENTIFIER %p  %s, line %d\n", yylval.text, yylval.text, yylloc.first_line );
          if( strncmp( yylval.text, "PATHPULSE$", 10) == 0 ) {
            rc = PATHPULSE_IDENTIFIER;
