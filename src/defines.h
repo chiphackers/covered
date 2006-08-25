@@ -751,8 +751,9 @@ typedef enum exp_op_type_e {
  the combinational logic report generator.
 */
 #define EXPR_IS_COMB(x)          ((exp_op_info[x->op].suppl.is_comb > 0) && \
-                                  !expression_is_static_only( x->left ) && \
-                                  !expression_is_static_only( x->right))
+                                  (EXPR_IS_OP_AND_ASSIGN(x) || \
+                                  (!expression_is_static_only( x->left ) && \
+                                   !expression_is_static_only( x->right))))
 
 /*!
  Returns a value of true if the specified expression is considered to be an event type
@@ -2023,6 +2024,12 @@ struct gitem_link_s {
 
 /*
  $Log$
+ Revision 1.222  2006/08/21 22:50:00  phase1geo
+ Adding more support for delayed assignments.  Added dly_assign1 to testsuite
+ to verify the #... type of delayed assignment.  This seems to be working for
+ this case but has a potential issue in the report generation.  Checkpointing
+ work.
+
  Revision 1.221  2006/08/20 03:21:00  phase1geo
  Adding support for +=, -=, *=, /=, %=, &=, |=, ^=, <<=, >>=, <<<=, >>>=, ++
  and -- operators.  The op-and-assign operators are currently good for

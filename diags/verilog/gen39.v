@@ -9,9 +9,13 @@ endmodule
 //-------------------------------------------
 
 module foo(
-  input wire a,
-  input wire b,
-  input wire c
+  a,
+  b,
+  c
 );
+
+input a;
+input b;
+input c;
 
 endmodule

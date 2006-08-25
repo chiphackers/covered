@@ -35,11 +35,15 @@ bit,          K_bit
 byte,         K_byte
 char,         K_char
 do,           K_do
+enum,         K_enum
 int,          K_int
 logic,        K_logic
 longint,      K_longint
 priority,     K_priority
 shortint,     K_shortint
+struct,       K_struct
+typedef,      K_typedef
+union,        K_union
 unique,       K_unique
 unsigned,     K_unsigned
 %%

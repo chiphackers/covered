@@ -1,4 +1,4 @@
-ERROR!  Inline port declaration syntax found in block that is specified to not allow Verilog-2001 syntax,   file: gen39.v, line: 12, col: 13
-ERROR!  Inline port declaration syntax found in block that is specified to not allow Verilog-2001 syntax,   file: gen39.v, line: 13, col: 13
-ERROR!  Inline port declaration syntax found in block that is specified to not allow Verilog-2001 syntax,   file: gen39.v, line: 14, col: 13
+ERROR!  Implicit .name port list item found in block that is specified to not allow SystemVerilog syntax,   file: gen39.v, line: 5, col: 9
+ERROR!  Implicit .name port list item found in block that is specified to not allow SystemVerilog syntax,   file: gen39.v, line: 5, col: 13
+ERROR!  Implicit .name port list item found in block that is specified to not allow SystemVerilog syntax,   file: gen39.v, line: 5, col: 18
 ERROR!  Error in parsing design

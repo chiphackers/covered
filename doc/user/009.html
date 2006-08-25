@@ -103,8 +103,8 @@
       logic cannot be currently analyzed is listed below. Note that both of these lists 
       may not be exhaustive and are subject to change between releases of the tool. Also
       note that it is the goal of Covered to be able to parse all of the Verilog-1995
-      and Verilog-2001 constructs though some portions of it may be ignored for
-      coverage purposes.</P>
+      and Verilog-2001 (and a subset of SystemVerilog) constructs though some
+      portions of it may be ignored for coverage purposes.</P>
     </TD>
   </TR>
 
@@ -238,6 +238,8 @@
          <li>Proper support for always_comb, always_latch and always_ff blocks</li>
          <li>do..while loops</li>
          <li>Parsing support for unique and priority if/case labels</li>
+         <li>Parsing support for implicit named ports (ex. "foo f( .a, .b, .c );")</li>
+         <li>Parsing support for implicit * ports (ex. "foo f( .* );")</li>
       </ol></P>
     </TD>
   </TR>

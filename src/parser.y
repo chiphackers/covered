@@ -264,6 +264,7 @@ int yydebug = 1;
 %token K_bool K_bit K_byte K_logic K_char K_shortint K_int K_longint K_unsigned
 %token K_unique K_priority K_do
 %token K_always_comb K_always_latch K_always_ff
+%token K_typedef K_enum K_union K_struct
 
 %token KK_attribute
 
@@ -5205,7 +5206,7 @@ gate_instance_list
   /* A gate_instance is a module instantiation or a built in part
      type. In any case, the gate has a set of connections to ports. */
 gate_instance
-  : IDENTIFIER ignore_more '(' expression_list ')' ignore_less
+  : IDENTIFIER '(' ignore_more expression_list ignore_less ')'
     {
       str_link* tmp;
       tmp        = (str_link*)malloc_safe( sizeof( str_link ), __FILE__, __LINE__ );
@@ -5214,11 +5215,11 @@ gate_instance
       tmp->next  = NULL;
       $$ = tmp;
     }
-  | UNUSED_IDENTIFIER ignore_more '(' expression_list ')' ignore_less
+  | UNUSED_IDENTIFIER '(' ignore_more expression_list ignore_less ')'
     {
       $$ = NULL;
     }
-  | IDENTIFIER range ignore_more '(' expression_list ')' ignore_less
+  | IDENTIFIER range '(' ignore_more expression_list ignore_less ')'
     {
       str_link* tmp;
       if( !parser_check_generation( GENERATION_2001 ) ) {
@@ -5233,12 +5234,12 @@ gate_instance
         $$ = tmp;
       }
     }
-  | UNUSED_IDENTIFIER range ignore_more '(' expression_list ')' ignore_less
+  | UNUSED_IDENTIFIER range '(' ignore_more expression_list ignore_less ')'
     {
       $$ = NULL;
     }
 
-  | IDENTIFIER ignore_more '(' port_name_list ')' ignore_less
+  | IDENTIFIER '(' port_name_list ')'
     {
       str_link* tmp;
       tmp        = (str_link*)malloc_safe( sizeof( str_link ), __FILE__, __LINE__ );
@@ -5247,11 +5248,11 @@ gate_instance
       tmp->next  = NULL;
       $$ = tmp;
     }
-  | UNUSED_IDENTIFIER ignore_more '(' port_name_list ')' ignore_less
+  | UNUSED_IDENTIFIER '(' port_name_list ')'
     {
       $$ = NULL;
     }
-  | IDENTIFIER range ignore_more '(' port_name_list ')' ignore_less
+  | IDENTIFIER range '(' port_name_list ')'
     {
       str_link* tmp;
       if( !parser_check_generation( GENERATION_2001 ) ) {
@@ -5266,7 +5267,7 @@ gate_instance
         $$ = tmp;
       }
     }
-  | UNUSED_IDENTIFIER range ignore_more '(' port_name_list ')' ignore_less
+  | UNUSED_IDENTIFIER range '(' port_name_list ')'
     {
       $$ = NULL;
     }
@@ -5374,21 +5375,18 @@ port_name_list
   ;
 
 port_name
-  : '.' IDENTIFIER '(' { ignore_mode++; } expression { ignore_mode--; } ')'
+  : '.' IDENTIFIER '(' ignore_more expression ignore_less ')'
     {
       free_safe( $2 );
     }
-  | '.' UNUSED_IDENTIFIER '(' expression ')'
   | '.' IDENTIFIER '(' error ')'
     {
       free_safe( $2 );
     }
-  | '.' UNUSED_IDENTIFIER '(' error ')'
   | '.' IDENTIFIER '(' ')'
     {
       free_safe( $2 );
     }
-  | '.' UNUSED_IDENTIFIER '(' ')'
   | '.' IDENTIFIER
     {
       if( (ignore_mode == 0) && !parser_check_generation( GENERATION_SV ) ) {
@@ -5396,7 +5394,6 @@ port_name
       }
       free_safe( $2 );
     }
-  | '.' UNUSED_IDENTIFIER
   | '.' '*'
     {
       if( (ignore_mode == 0) && !parser_check_generation( GENERATION_SV ) ) {
