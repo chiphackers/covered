@@ -3760,17 +3760,17 @@ statement
       VLerror( "Illegal conditional if expression" );
       $$ = NULL;
     }
-  | K_for '(' passign ';' expression ';' passign ')' inc_block_depth statement dec_block_depth
+  | K_for inc_block_depth '(' passign ';' expression ';' passign ')' statement dec_block_depth
     {
       expression* expr;
-      statement*  stmt1 = $3;
+      statement*  stmt1 = $4;
       statement*  stmt2;
-      statement*  stmt3 = $7;
+      statement*  stmt3 = $8;
       statement*  stmt4 = $10;
-      if( (ignore_mode == 0) && ($3 != NULL) && ($5 != NULL) && ($7 != NULL) && ($10 != NULL) ) {
+      if( (ignore_mode == 0) && ($4 != NULL) && ($6 != NULL) && ($8 != NULL) && ($10 != NULL) ) {
         block_depth++;
-        stmt2 = db_create_statement( $5 );
-        db_add_expression( $5 );
+        stmt2 = db_create_statement( $6 );
+        db_add_expression( $6 );
         db_statement_connect( stmt1, stmt2 );
         db_connect_statement_true( stmt2, stmt4 );
         db_statement_connect( stmt4, stmt3 );
@@ -3780,27 +3780,27 @@ statement
         $$ = db_parallelize_statement( stmt1 );
       } else {
         db_remove_statement( stmt1 );
-        expression_dealloc( $5, FALSE );
+        expression_dealloc( $6, FALSE );
         db_remove_statement( stmt3 );
         db_remove_statement( stmt4 );
         $$ = NULL;
       }
     }
-  | K_for '(' passign ';' expression ';' error ')' inc_block_depth statement dec_block_depth
+  | K_for inc_block_depth '(' passign ';' expression ';' error ')' statement dec_block_depth
     {
-      db_remove_statement( $3 );
-      expression_dealloc( $5, FALSE );
+      db_remove_statement( $4 );
+      expression_dealloc( $6, FALSE );
       db_remove_statement( $10 );
       $$ = NULL;
     }
-  | K_for '(' passign ';' error ';' passign ')' inc_block_depth statement dec_block_depth
+  | K_for inc_block_depth '(' passign ';' error ';' passign ')' statement dec_block_depth
     {
-      db_remove_statement( $3 );
-      db_remove_statement( $7 );
+      db_remove_statement( $4 );
+      db_remove_statement( $8 );
       db_remove_statement( $10 );
       $$ = NULL;
     }
-  | K_for '(' error ')' inc_block_depth statement dec_block_depth
+  | K_for inc_block_depth '(' error ')' statement dec_block_depth
     {
       db_remove_statement( $6 );
       $$ = NULL;
