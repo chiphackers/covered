@@ -221,7 +221,11 @@ proc verilog_highlight_keywords {tb color} {
                      initial inout input integer join large localparam macromodule medium module nand negedge nmos nor not notif0 notif1 or \
                      output parameter pmos posedge primitive pull0 pull1 pulldown pullup rcmos real realtime reg release repeat rnmos rpmos rtran \
                      rtranif0 rtranif1 scalered signed small specify specparam strong0 strong1 supply0 supply1 table task time tran tranif0 tranif1 \
-                     tri tri0 tri1 triand trior trireg vectored wait wand weak0 weak1 while wire wor xnor xor]
+                     tri tri0 tri1 triand trior trireg vectored wait wand weak0 weak1 while wire wor xnor xor \
+                     automatic cell config design endconfig endgenerate generate genvar instance liblist library localparam noshowcancelled \
+                     pulsestyle_onevent pulsestyle_ondetect showcancelled use \
+                     always_comb always_ff always_latch bool bit byte char do enum int logic longint priority shortint struct typedef union \
+                     unique unsigned]
   set ilist    ""
 
   foreach keyword $keywords {

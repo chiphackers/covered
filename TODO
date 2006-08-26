@@ -23,13 +23,15 @@ Score command
 
    4.  Add more Verilog-2001 constructs to parser.
 	- automatic storage for functions/tasks (instead of static) - difficult!
-IP	- generate command
+X 	- generate command
 	- config command
 
    5.  Allow Covered to run simulation phases in parallel to increase performance.
 
    6.  Add feature to cause Covered to omit the simulation phase for toggle and
        FSM coverage results.
+
+IP 7.  Add SystemVerilog features/syntax
 
 
 Merge command
