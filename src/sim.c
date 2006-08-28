@@ -603,7 +603,7 @@ bool sim_expression( expression* expr, thread* thr ) {
 
   /* Traverse right child expression if it has changed */
   if( (ESUPPL_IS_RIGHT_CHANGED( expr->suppl ) == 1) &&
-      ((expr->op != EXP_OP_DLY_ASSIGN) || !thr->exec_first) ) {
+      ((expr->op != EXP_OP_DLY_OP) || !thr->exec_first) ) {
 
     /* Simulate the right expression if it has changed */
     if( expr->right != NULL ) {
@@ -750,6 +750,12 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.71  2006/08/21 22:50:01  phase1geo
+ Adding more support for delayed assignments.  Added dly_assign1 to testsuite
+ to verify the #... type of delayed assignment.  This seems to be working for
+ this case but has a potential issue in the report generation.  Checkpointing
+ work.
+
  Revision 1.70  2006/08/18 22:07:45  phase1geo
  Integrating obfuscation into all user-viewable output.  Verified that these
  changes have not made an impact on regressions.  Also improved performance

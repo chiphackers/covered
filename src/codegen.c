@@ -703,7 +703,9 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
                                NULL, 0, NULL, NULL );
           break;
         case EXP_OP_PEDGE    :
-          if( ESUPPL_IS_ROOT( expr->suppl ) == 1 ) {
+          if( (ESUPPL_IS_ROOT( expr->suppl ) == 1)       ||
+              (expr->parent->expr->op == EXP_OP_RPT_DLY) || 
+              (expr->parent->expr->op == EXP_OP_DLY_OP) ) {
             codegen_create_expr( code, code_depth, expr->line, "@(posedge ", right_code, right_code_depth, expr->right, ")",
                                  NULL, 0, NULL, NULL );
           } else {
@@ -712,7 +714,9 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
           }
           break;
         case EXP_OP_NEDGE    :
-          if( ESUPPL_IS_ROOT( expr->suppl ) == 1 ) {
+          if( (ESUPPL_IS_ROOT( expr->suppl ) == 1)       ||
+              (expr->parent->expr->op == EXP_OP_RPT_DLY) ||
+              (expr->parent->expr->op == EXP_OP_DLY_OP) ) {
             codegen_create_expr( code, code_depth, expr->line, "@(negedge ", right_code, right_code_depth, expr->right, ")",
                                  NULL, 0, NULL, NULL );
           } else {
@@ -721,7 +725,9 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
           }
           break;
         case EXP_OP_AEDGE    :
-          if( ESUPPL_IS_ROOT( expr->suppl ) == 1 ) {
+          if( (ESUPPL_IS_ROOT( expr->suppl ) == 1)       ||
+              (expr->parent->expr->op == EXP_OP_RPT_DLY) ||
+              (expr->parent->expr->op == EXP_OP_DLY_OP) ) {
             codegen_create_expr( code, code_depth, expr->line, "@(", right_code, right_code_depth, expr->right, ")",
                                  NULL, 0, NULL, NULL );
           } else {
@@ -730,7 +736,9 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
           }
           break;
         case EXP_OP_EOR      :
-          if( ESUPPL_IS_ROOT( expr->suppl ) == 1 ) {
+          if( (ESUPPL_IS_ROOT( expr->suppl ) == 1)       ||
+              (expr->parent->expr->op == EXP_OP_RPT_DLY) ||
+              (expr->parent->expr->op == EXP_OP_DLY_OP) ) {
             codegen_create_expr( code, code_depth, expr->line, "@(", left_code, left_code_depth, expr->left, " or ",
                                  right_code, right_code_depth, expr->right, ")" );
           } else {
@@ -799,6 +807,7 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
                                right_code, right_code_depth, expr->right, NULL );
           break;
         case EXP_OP_DLY_OP   :
+        case EXP_OP_RPT_DLY  :
           codegen_create_expr( code, code_depth, expr->line, NULL, left_code, left_code_depth, expr->left, " ",
                                right_code, right_code_depth, expr->right, NULL );
           break;
@@ -851,6 +860,9 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.74  2006/08/22 21:46:03  phase1geo
+ Updating from stable branch.
+
  Revision 1.73  2006/08/21 22:49:59  phase1geo
  Adding more support for delayed assignments.  Added dly_assign1 to testsuite
  to verify the #... type of delayed assignment.  This seems to be working for

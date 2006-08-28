@@ -58,6 +58,9 @@ void expression_find_rhs_sigs( expression* expr, str_link** head, str_link** tai
 /*! \brief Finds the expression in this expression tree with the specified underline id. */
 expression* expression_find_uline_id( expression* expr, int ulid );
 
+/*! \brief Returns TRUE if the specified expression exists within the given root expression tree */
+bool expression_find_expr( expression* root, expression* expr );
+
 /*! \brief Finds the root statement for the given expression */
 statement* expression_get_root_statement( expression* exp );
 
@@ -112,6 +115,10 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.46  2006/07/28 22:42:51  phase1geo
+ Updates to support expression/signal binding for expressions within a generate
+ block statement block.
+
  Revision 1.45  2006/07/21 22:39:01  phase1geo
  Started adding support for generated statements.  Still looks like I have
  some loose ends to tie here before I can call it good.  Added generate5

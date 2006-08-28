@@ -572,7 +572,9 @@ void str_link_remove( char* str, str_link** head, str_link** tail ) {
 
   if( curr != NULL ) {
 
-    if( curr == *head ) {
+    if( (curr == *head) && (curr == *tail) ) {
+      *head = *tail = NULL;
+    } else if( curr == *head ) {
       *head = curr->next;
     } else if( curr == *tail ) {
       last->next = NULL;
@@ -583,15 +585,6 @@ void str_link_remove( char* str, str_link** head, str_link** tail ) {
 
     /* Deallocate associated string */
     free_safe( curr->str );
-
-#ifdef OBSOLETE
-    /* Deallocate associated range, if present */
-    if( curr->range != NULL ) {
-      static_expr_dealloc( curr->range->left, FALSE );
-      static_expr_dealloc( curr->range->right, FALSE );
-      free_safe( curr->range );
-    }
-#endif
 
     /* Now deallocate this link itself */
     free_safe( curr );
@@ -638,7 +631,9 @@ void exp_link_remove( expression* exp, exp_link** head, exp_link** tail, bool re
 
   if( curr != NULL ) {
 
-    if( curr == *head ) {
+    if( (curr == *head) && (curr == *tail) ) {
+      *head = *tail = NULL;
+    } else if( curr == *head ) {
       *head = curr->next;
     } else if( curr == *tail ) {
       last->next = NULL;
@@ -679,7 +674,9 @@ void gitem_link_remove( gen_item* gi, gitem_link** head, gitem_link** tail ) {
 
   if( gil != NULL ) {
 
-    if( gil == *head ) {
+    if( (gil == *head) && (gil == *tail) ) {
+      *head = *tail = NULL;
+    } else if( gil == *head ) {
       *head = gil->next;
     } else if( gil == *tail ) {
       last->next = NULL;
@@ -689,6 +686,54 @@ void gitem_link_remove( gen_item* gi, gitem_link** head, gitem_link** tail ) {
     }
 
     free_safe( gil );
+
+  }
+
+}
+
+/*!
+ \param funit     Pointer to functional unit to find and remove
+ \param head      Pointer to head of functional unit list to remove functional unit from
+ \param tail      Pointer to tail of functional unit list to remove functional unit from
+ \param rm_funit  If set to TRUE, deallocates functional unit as well
+
+ Searches for and removes the given functional unit from the given list and adjusts list as
+ necessary.
+*/
+void funit_link_remove( func_unit* funit, funit_link** head, funit_link** tail, bool rm_funit ) {
+
+  funit_link* curr = *head;  /* Pointer to current functional unit link */
+  funit_link* last = NULL;   /* Pointer to last functional unit link traversed */
+
+  assert( funit != NULL );
+
+  /* Search for matching functional unit */
+  while( (curr != NULL) && (curr->funit != funit) ) {
+    last = curr;
+    curr = curr->next;
+  }
+
+  if( curr != NULL ) {
+
+    /* Remove the functional unit from the list */
+    if( (curr == *head) && (curr == *tail) ) {
+      *head = *tail = NULL;
+    } else if( curr == *head ) {
+      *head = curr->next;
+    } else if( curr == *tail ) {
+      last->next = NULL;
+      *tail      = last;
+    } else {
+      last->next = curr->next;
+    }
+
+    /* Remove the functional unit, if necessary */
+    if( rm_funit ) {
+      funit_dealloc( curr->funit );
+    }
+
+    /* Deallocate the link */
+    free_safe( curr );
 
   }
 
@@ -713,15 +758,6 @@ void str_link_delete_list( str_link* head ) {
       free_safe( tmp->str );
       tmp->str = NULL;
     }
-
-    /* Deallocate memory for range information, if specified */
-#ifdef OBSOLETE
-    if( tmp->range != NULL ) {
-      static_expr_dealloc( tmp->range->left, FALSE );
-      static_expr_dealloc( tmp->range->right, FALSE );
-      free_safe( tmp->range );
-    }
-#endif
 
     /* Deallocate str_link element itself */
     free_safe( tmp );
@@ -948,6 +984,11 @@ void gitem_link_delete_list( gitem_link* head, bool rm_elems ) {
 
 /*
  $Log$
+ Revision 1.53  2006/08/18 22:07:45  phase1geo
+ Integrating obfuscation into all user-viewable output.  Verified that these
+ changes have not made an impact on regressions.  Also improved performance
+ impact of not obfuscating output.
+
  Revision 1.52  2006/08/02 22:28:32  phase1geo
  Attempting to fix the bug pulled out by generate11.v.  We are just having an issue
  with setting the assigned bit in a signal expression that contains a hierarchical reference

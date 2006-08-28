@@ -715,6 +715,7 @@ typedef enum exp_op_type_e {
   EXP_OP_DEC,             /*!< 82:0x52.  Specifies the decrement SystemVerilog operator (--) */
   EXP_OP_DLY_ASSIGN,      /*!< 83:0x53.  Specifies a delayed assignment (i.e., a = #5 b; or a = @(c) b;) */
   EXP_OP_DLY_OP,          /*!< 84:0x54.  Child expression of DLY_ASSIGN, points to the delay expr and the op expr */
+  EXP_OP_RPT_DLY,         /*!< 85:0x55.  Child expression of DLY_OP, points to the delay expr and the repeat expr */
   EXP_OP_NUM              /*!< The total number of defines for expression values */
 } exp_op_type;
 
@@ -2024,6 +2025,12 @@ struct gitem_link_s {
 
 /*
  $Log$
+ Revision 1.223  2006/08/25 18:25:24  phase1geo
+ Modified gen39 and gen40 to not use the Verilog-2001 port syntax.  Fixed problem
+ with detecting implicit .name and .* syntax.  Fixed op-and-assign report output.
+ Added support for 'typedef', 'struct', 'union' and 'enum' syntax for SystemVerilog.
+ Updated user documentation.  Full regression completely passes now.
+
  Revision 1.222  2006/08/21 22:50:00  phase1geo
  Adding more support for delayed assignments.  Added dly_assign1 to testsuite
  to verify the #... type of delayed assignment.  This seems to be working for

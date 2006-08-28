@@ -138,8 +138,9 @@ IVONLYDIAGS3  =
 IVONLYDIAGS4  = 
 
 VCSONLYDIAGS1 = always_comb1    always_ff1      always_latch1   bit1            byte1 \
-                char1           dec1            dec1.1          dec2            do_while1 \
-                do_while1.1     do_while2       elsif1 \
+                char1           dec1            dec1.1          dec2            dly_assign1.1 \
+                dly_assign1.2   dly_assign1.3   dly_assign1.4   dly_assign2 \
+                dly_assign2.1   do_while1       do_while1.1     do_while2       elsif1 \
                 elsif1.1        elsif1.2        elsif1.3        elsif1.4        elsif2 \
                 elsif2.1        exponent1       for3            gate1.1         generate1.1     generate2 \
                 generate2.1     generate3       generate3.1     generate4       generate4.1 \

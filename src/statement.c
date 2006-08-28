@@ -540,6 +540,8 @@ bool statement_connect( statement* curr_stmt, statement* next_stmt, int conn_id 
         //display( "Setting stop_true and stop_false", curr_stmt, next_stmt, conn_id );
         curr_stmt->exp->suppl.part.stmt_stop_true  = 1;
         curr_stmt->exp->suppl.part.stmt_stop_false = 1;
+      } else {
+        curr_stmt->next_true->conn_id = conn_id;
       }
       retval = TRUE;
     /* If the TRUE path leads to a loop/merge, set the stop bit and stop traversing */
@@ -585,6 +587,8 @@ bool statement_connect( statement* curr_stmt, statement* next_stmt, int conn_id 
       if( curr_stmt->next_true->conn_id == conn_id ) {
         //display( "Setting stop_true", curr_stmt, next_stmt, conn_id );
         curr_stmt->exp->suppl.part.stmt_stop_true = 1;
+      } else {
+        curr_stmt->next_true->conn_id = conn_id;
       }
       retval = TRUE;
     /* If the TRUE path leads to a loop/merge, set the stop bit and stop traversing */
@@ -853,6 +857,9 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.89  2006/08/16 15:32:15  phase1geo
+ Fixing issues with do..while loop handling.  Full regression now passes.
+
  Revision 1.88  2006/08/11 21:27:10  phase1geo
  Adding support for unique, priority and do..while SystemVerilog constructs.
  do_while2 diagnostic is currently failing with an issue regarding connecting its

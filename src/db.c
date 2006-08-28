@@ -1437,6 +1437,11 @@ void db_add_statement( statement* stmt, statement* start ) {
 */
 void db_remove_statement_from_current_funit( statement* stmt ) {
 
+  funit_link* funitl;  /* Pointer to current functional unit link */
+  mod_parm*   mparm;   /* Pointer to current module parameter */
+  exp_link*   expl;    /* Pointer to current expression link */
+  exp_link*   texpl;   /* Temporary pointer to current expression link */
+
   if( (stmt != NULL) && (stmt->exp != NULL) ) {
 
 #ifdef DEBUG_MODE
@@ -1446,7 +1451,22 @@ void db_remove_statement_from_current_funit( statement* stmt ) {
 #endif
 
     /* Remove expression from any module parameter expression lists */
-    mod_parm_find_expr_and_remove( stmt->exp, curr_funit->param_head );
+    funitl = funit_head;
+    while( funitl != NULL ) {
+      mparm = funitl->funit->param_head;
+      while( mparm != NULL ) {
+        expl = mparm->exp_head;
+        while( expl != NULL ) {
+          texpl = expl;
+          expl  = expl->next;
+          if( expression_find_expr( stmt->exp, texpl->exp ) ) {
+            exp_link_remove( texpl->exp, &(mparm->exp_head), &(mparm->exp_tail), FALSE );
+          }
+        }
+        mparm = mparm->next;
+      }
+      funitl = funitl->next;
+    }
 
     /* Remove expression from current module expression list and delete expressions */
     exp_link_remove( stmt->exp, &(curr_funit->exp_head), &(curr_funit->exp_tail), TRUE );
@@ -1975,6 +1995,13 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.212  2006/08/25 22:49:45  phase1geo
+ Adding support for handling generated hierarchical names in signals that are outside
+ of generate blocks.  Added support for op-and-assigns in generate for loops as well
+ as normal for loops.  Added generate11.4 and for3 diagnostics to regression suite
+ to verify this new behavior.  Full regressions have not been verified with these
+ changes however.  Checkpointing.
+
  Revision 1.211  2006/08/20 03:20:59  phase1geo
  Adding support for +=, -=, *=, /=, %=, &=, |=, ^=, <<=, >>=, <<<=, >>>=, ++
  and -- operators.  The op-and-assign operators are currently good for

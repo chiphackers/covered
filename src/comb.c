@@ -907,28 +907,36 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
               case EXP_OP_CONCAT   :  *size = l_size + r_size + 2;  strcpy( code_fmt, " %s "             );  break;
               case EXP_OP_LIST     :  *size = l_size + r_size + 2;  strcpy( code_fmt, "%s  %s"           );  break;
               case EXP_OP_PEDGE    :
-                if( ESUPPL_IS_ROOT( exp->suppl ) == 1 ) {
+                if( (ESUPPL_IS_ROOT( exp->suppl ) == 1)       ||
+                    (exp->parent->expr->op == EXP_OP_RPT_DLY) ||
+                    (exp->parent->expr->op == EXP_OP_DLY_OP) ) {
                   *size = l_size + r_size + 11;  strcpy( code_fmt, "          %s " );
                 } else {
                   *size = l_size + r_size + 8;   strcpy( code_fmt, "        %s" );
                 }
                 break;
               case EXP_OP_NEDGE    :
-                if( ESUPPL_IS_ROOT( exp->suppl ) == 1 ) {
+                if( (ESUPPL_IS_ROOT( exp->suppl ) == 1)       ||
+                    (exp->parent->expr->op == EXP_OP_RPT_DLY) ||
+                    (exp->parent->expr->op == EXP_OP_DLY_OP) ) {
                   *size = l_size + r_size + 11;  strcpy( code_fmt, "          %s " );
                 } else {
                   *size = l_size + r_size + 8;   strcpy( code_fmt, "        %s" );
                 }
                 break;
               case EXP_OP_AEDGE    :
-                if( ESUPPL_IS_ROOT( exp->suppl ) == 1 ) {
+                if( (ESUPPL_IS_ROOT( exp->suppl ) == 1)       ||
+                    (exp->parent->expr->op == EXP_OP_RPT_DLY) ||
+                    (exp->parent->expr->op == EXP_OP_DLY_OP) ) {
                   *size = l_size + r_size + 3;  strcpy( code_fmt, "  %s " );
                 } else {
                   *size = l_size + r_size + 0;  strcpy( code_fmt, "%s" );
                 }
                 break;
               case EXP_OP_EOR      :
-                if( ESUPPL_IS_ROOT( exp->suppl ) == 1 ) {
+                if( (ESUPPL_IS_ROOT( exp->suppl ) == 1)       ||
+                    (exp->parent->expr->op == EXP_OP_RPT_DLY) ||
+                    (exp->parent->expr->op == EXP_OP_DLY_OP) ) {
                   *size = l_size + r_size + 7;  strcpy( code_fmt, "  %s    %s " );
                 } else {
                   *size = l_size + r_size + 4;  strcpy( code_fmt, "%s    %s" );
@@ -979,7 +987,8 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
               case EXP_OP_IF       :  *size = r_size + 6;           strcpy( code_fmt, "    %s  " );          break;
               case EXP_OP_REPEAT   :  *size = r_size + 10;          strcpy( code_fmt, "        %s  " );      break;
               case EXP_OP_WHILE    :  *size = r_size + 9;           strcpy( code_fmt, "       %s  " );       break;
-              case EXP_OP_DLY_OP   :  *size = l_size + r_size + 1;  strcpy( code_fmt, "%s %s" );             break;
+              case EXP_OP_DLY_OP   :
+              case EXP_OP_RPT_DLY  :  *size = l_size + r_size + 1;  strcpy( code_fmt, "%s %s" );             break;
               case EXP_OP_TASK_CALL :
               case EXP_OP_FUNC_CALL :
                 if( (tfunit = funit_find_by_id( exp->stmt->exp->id )) != NULL ) {
@@ -2413,6 +2422,12 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.153  2006/08/25 18:25:24  phase1geo
+ Modified gen39 and gen40 to not use the Verilog-2001 port syntax.  Fixed problem
+ with detecting implicit .name and .* syntax.  Fixed op-and-assign report output.
+ Added support for 'typedef', 'struct', 'union' and 'enum' syntax for SystemVerilog.
+ Updated user documentation.  Full regression completely passes now.
+
  Revision 1.152  2006/08/22 04:00:36  phase1geo
  Fixing bugs 1544322 and 1544325.  Updating regressions per these changes.
  Full IV regression now passes.

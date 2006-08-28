@@ -2380,6 +2380,8 @@ generate_item
         } else {
           gen_item* gi = db_get_curr_gen_block();
           assert( gi != NULL );
+          gi->varname = generate_varname;
+          generate_varname = NULL;
           gitem_link_add( gi, &save_gi_head, &save_gi_tail );
         }
       } else {
@@ -2405,8 +2407,6 @@ generate_item
       if( (ignore_mode == 0) && ($4 != NULL) && ($6 != NULL) && ($8 != NULL) && ($14 != NULL) ) {
         block_depth++;
         /* Create first statement */
-        save_gi_tail->gi->varname = generate_varname;
-        generate_varname = NULL;
         db_add_expression( $4 );
         gi1 = db_get_curr_gen_block();
         /* Create second statement and attach it to the first statement */
@@ -3999,15 +3999,52 @@ statement
         $$ = NULL;
       }
     }
-  | lpvalue '=' K_repeat { ignore_mode++; } '(' expression ')' event_control expression ';' { ignore_mode--; }
+  | lpvalue '=' K_repeat '(' expression ')' event_control expression ';'
     {
-      expression_dealloc( $1, FALSE );
-      $$ = NULL;
+      vector*     vec;
+      expression* tmp;
+      statement*  stmt;
+      if( (ignore_mode == 0) && ($1 != NULL) && ($5 != NULL) && ($7 != NULL) && ($8 != NULL) ) {
+        vec  = vector_create( 32, TRUE );
+        tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+        vector_from_int( vec, 0x0 );
+        assert( tmp->value->value == NULL );
+        free_safe( tmp->value );
+        tmp->value = vec;
+        tmp = db_create_expression( $5, tmp, EXP_OP_REPEAT, FALSE, @3.first_line, @3.first_column, (@6.last_column - 1), NULL );
+        tmp = db_create_expression( $7, tmp, EXP_OP_RPT_DLY, FALSE, @3.first_line, @3.first_column, (@7.last_column - 1), NULL );
+        tmp = db_create_expression( $8, tmp, EXP_OP_DLY_OP, FALSE, @3.first_line, @3.first_column, (@8.last_column - 1), NULL );
+        tmp = db_create_expression( tmp, $1, EXP_OP_DLY_ASSIGN, FALSE, @1.first_line, @1.first_column, (@8.last_column - 1), NULL );
+        stmt = db_create_statement( tmp );
+        db_add_expression( tmp );
+        $$ = stmt;
+      } else {
+        expression_dealloc( $1, FALSE );
+        expression_dealloc( $5, FALSE );
+        expression_dealloc( $7, FALSE );
+        expression_dealloc( $8, FALSE );
+        $$ = NULL;
+      }
     }
-  | lpvalue K_LE K_repeat { ignore_mode++; } '(' expression ')' event_control expression ';' { ignore_mode--; }
+    /* We don't handle the non-blocking assignments ourselves, so we can just ignore the delay here */
+  | lpvalue K_LE K_repeat '(' expression ')' event_control expression ';'
     {
-      expression_dealloc( $1, FALSE );
-      $$ = NULL;
+      expression* tmp;
+      statement*  stmt;
+      if( (ignore_mode == 0) && ($1 != NULL) && ($8 != NULL) ) {
+        tmp  = db_create_expression( $8, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, @1.first_column, (@8.last_column - 1), NULL );
+        stmt = db_create_statement( tmp );
+        db_add_expression( tmp );
+        expression_dealloc( $5, FALSE );
+        expression_dealloc( $7, FALSE );
+        $$ = stmt;
+      } else {
+        expression_dealloc( $1, FALSE );
+        expression_dealloc( $5, FALSE );
+        expression_dealloc( $7, FALSE );
+        expression_dealloc( $8, FALSE );
+        $$ = NULL;
+      }
     }
   | K_wait '(' expression ')' inc_block_depth statement_opt dec_block_depth
     {
@@ -5119,6 +5156,13 @@ net_type_opt
       $$ = 1;
     }
   | K_trior
+    {
+      curr_mba     = FALSE;
+      curr_signed  = FALSE;
+      curr_handled = TRUE;
+      $$ = 1;
+    }
+  | K_logic
     {
       curr_mba     = FALSE;
       curr_signed  = FALSE;

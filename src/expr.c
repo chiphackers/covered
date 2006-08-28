@@ -225,6 +225,7 @@ static bool expression_op_func__inc( expression*, thread* );
 static bool expression_op_func__dec( expression*, thread* );
 static bool expression_op_func__dly_assign( expression*, thread* );
 static bool expression_op_func__dly_op( expression*, thread* );
+static bool expression_op_func__repeat_dly( expression*, thread* );
 
 /*!
  Array containing static information about expression operation types.  NOTE:  This structure MUST be
@@ -314,7 +315,8 @@ const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",         "",             ex
                                            {"INC",            "++",           expression_op_func__inc,        {1, 0, NOT_COMB,   0, 0, 0, 0} },
                                            {"DEC",            "--",           expression_op_func__dec,        {1, 0, NOT_COMB,   0, 0, 0, 0} },
                                            {"DLY_ASSIGN",     "",             expression_op_func__dly_assign, {1, 0, NOT_COMB,   0, 0, 1, 0} },
-                                           {"DLY_OP",         "",             expression_op_func__dly_op,     {1, 0, NOT_COMB,   0, 0, 0, 0} } };
+                                           {"DLY_OP",         "",             expression_op_func__dly_op,     {1, 0, NOT_COMB,   0, 0, 0, 0} },
+                                           {"RPT_DLY",        "",             expression_op_func__repeat_dly, {1, 0, NOT_COMB,   0, 0, 0, 0} } };
 
 
 /*!
@@ -454,7 +456,8 @@ expression* expression_create( expression* right, expression* left, exp_op_type 
              (op == EXP_OP_CASEX)   ||
              (op == EXP_OP_CASEZ)   ||
              (op == EXP_OP_DEFAULT) ||
-             (op == EXP_OP_REPEAT) ) {
+             (op == EXP_OP_REPEAT)  ||
+             (op == EXP_OP_RPT_DLY) ) {
 
     /* If this expression will evaluate to a single bit, create vector now */
     expression_create_value( new_expr, 1, data );
@@ -698,6 +701,7 @@ void expression_resize( expression* expr, bool recursive ) {
       case EXP_OP_CASEZ   :
       case EXP_OP_DEFAULT :
       case EXP_OP_REPEAT  :
+      case EXP_OP_RPT_DLY :
         if( (expr->value->width != 1) || (expr->value->value == NULL) ) {
           assert( expr->value->value == NULL );
           expression_create_value( expr, 1, FALSE );
@@ -943,6 +947,19 @@ expression* expression_find_uline_id( expression* expr, int ulid ) {
   }
 
   return( found_exp );
+
+}
+
+/*!
+ \param root  Pointer to root of expression tree to search
+ \param expr  Pointer to expression to search for
+
+ \return Returns TRUE if the given expression exists within the given expression tree; otherwise,
+         returns FALSE
+*/
+bool expression_find_expr( expression* root, expression* expr ) {
+
+  return( (root != NULL) && ((root == expr) || expression_find_expr( root->left, expr ) || expression_find_expr( root->right, expr )) );
 
 }
 
@@ -2870,7 +2887,7 @@ bool expression_op_func__dly_assign( expression* expr, thread* thr ) {
   int  intval = 0;  /* Integer value */
 
   /* If we are the first statement in the queue, perform the dly_op manually */
-  if( thr->exec_first ) {
+  if( thr->exec_first && (expr->right->left->op == EXP_OP_DELAY) ) {
     expression_op_func__dly_op( expr->right, thr );
   }
 
@@ -2904,11 +2921,51 @@ bool expression_op_func__dly_op( expression* expr, thread* thr ) {
   }
 
   /* Explicitly call the delay/event.  If the delay is complete, set eval_t to TRUE */
-  expr->suppl.part.eval_t = exp_op_info[expr->left->op].func( expr->left, thr );
+  if( expr->left->op == EXP_OP_DELAY ) {
+    expr->suppl.part.eval_t = exp_op_info[expr->left->op].func( expr->left, thr );
+  } else {
+    expr->suppl.part.eval_t = expr->left->suppl.part.eval_t;
+  }
     
   return( TRUE );
 
 }
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a repeated delay for a given assignment.
+*/
+bool expression_op_func__repeat_dly( expression* expr, thread* thr ) {
+
+  bool retval = FALSE;  /* Return value for this function */
+
+  /* If the delay condition has been met, call the repeat operation */
+  if( exp_op_info[expr->right->op].func( expr->right, thr ) ) {
+
+    /* Execute repeat operation */
+    expression_op_func__repeat( expr->left, thr );
+
+    /* If the repeat operation evaluated to TRUE, perform delay operation */
+    if( expr->left->value->value[0].part.value == 1 ) {
+      exp_op_info[expr->right->op].func( expr->right, thr );
+      expr->suppl.part.eval_t = 0;
+
+    /* Otherwise, we are done with the repeat/delay sequence */
+    } else {
+      expr->suppl.part.eval_t = 1;
+      retval = TRUE;
+    }
+
+  }
+  
+  return( retval );
+
+}
+
 
 /*!
  \param expr  Pointer to expression to set value to.
@@ -3438,6 +3495,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.200  2006/08/24 22:25:11  phase1geo
+ Fixing issue with generate expressions within signal hierarchies.  Also added
+ ability to parse implicit named and * port lists.  Added diagnostics to regressions
+ to verify this new ability.  Full regression passes.
+
  Revision 1.199  2006/08/24 03:39:02  phase1geo
  Fixing some issues with new static_lexer/parser.  Working on debugging issue
  related to the generate variable mysteriously losing its vector data.
