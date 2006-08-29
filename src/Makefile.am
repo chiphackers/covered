@@ -8,6 +8,7 @@ covered_SOURCES = arc.c \
 		  codegen.c \
 		  comb.c \
 		  db.c \
+                  enumerate.c \
                   exclude.c \
 		  expr.c \
 		  fsm.c \

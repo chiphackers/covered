@@ -3122,7 +3122,8 @@ bool expression_is_static_only( expression* expr ) {
 
     if( (EXPR_IS_STATIC( expr ) == 1) ||
         (ESUPPL_IS_LHS( expr->suppl ) == 1) ||
-        ((expr->op == EXP_OP_SIG) && (expr->sig != NULL) && (expr->sig->suppl.part.type == SSUPPL_TYPE_PARAM)) ) {
+        ((expr->op == EXP_OP_SIG) && (expr->sig != NULL) &&
+         ((expr->sig->suppl.part.type == SSUPPL_TYPE_PARAM) || (expr->sig->suppl.part.type == SSUPPL_TYPE_ENUM))) ) {
       return( TRUE );
     } else {
       return( (expr->op != EXP_OP_MBIT_SEL)           &&
@@ -3495,6 +3496,13 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.201  2006/08/28 22:28:28  phase1geo
+ Fixing bug 1546059 to match stable branch.  Adding support for repeated delay
+ expressions (i.e., a = repeat(2) @(b) c).  Fixing support for event delayed
+ assignments (i.e., a = @(b) c).  Adding several new diagnostics to verify this
+ new level of support and updating regressions for these changes.  Also added
+ parser support for logic port types.
+
  Revision 1.200  2006/08/24 22:25:11  phase1geo
  Fixing issue with generate expressions within signal hierarchies.  Also added
  ability to parse implicit named and * port lists.  Added diagnostics to regressions

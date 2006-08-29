@@ -225,9 +225,11 @@ int yydebug = 1;
   gen_item*       gitem;
   case_gitem*     case_gi;
   nb_call*        nbcall;
+  typedef_item*   typdef;
 };
 
 %token <text>     IDENTIFIER SYSTEM_IDENTIFIER
+%token <typdef>   TYPEDEF_IDENTIFIER
 %token <text>     PATHPULSE_IDENTIFIER
 %token <number>   NUMBER
 %token <realtime> REALTIME
@@ -269,11 +271,11 @@ int yydebug = 1;
 %token K_bool K_bit K_byte K_logic K_char K_shortint K_int K_longint K_unsigned
 %token K_unique K_priority K_do
 %token K_always_comb K_always_latch K_always_ff
-%token K_typedef K_enum K_union K_struct
+%token K_typedef K_enum K_union K_struct K_packed
 
 %token KK_attribute
 
-%type <integer>   net_type net_type_opt var_type enum_var_type_opt
+%type <integer>   net_type net_type_opt var_type
 %type <statexp>   static_expr static_expr_primary static_expr_port_list
 %type <text>      identifier
 %type <expr>      expr_primary expression_list expression expression_port_list
@@ -282,7 +284,7 @@ int yydebug = 1;
 %type <text>      udp_port_list
 %type <expr>      delay_value delay_value_simple
 %type <text>      defparam_assign_list defparam_assign
-%type <strlink>   gate_instance gate_instance_list enum_variable enum_variable_list
+%type <strlink>   gate_instance gate_instance_list list_of_names
 %type <nbcall>    named_begin_end_block fork_statement
 %type <state>     statement statement_list statement_opt 
 %type <state>     if_statement_error
@@ -2619,6 +2621,18 @@ module_item
       curr_signed = FALSE;
     }
     net_decl_assigns ';'
+  | attribute_list_opt
+    TYPEDEF_IDENTIFIER
+    {
+      curr_mba          = FALSE;
+      curr_signed       = $2->is_signed;
+      curr_handled      = $2->is_handled;
+      parser_dealloc_curr_range();
+      curr_range->left  = $2->msb;
+      curr_range->right = $2->lsb;
+      free_safe( $2 );
+    }
+    register_variable_list ';'
   | attribute_list_opt port_type range_opt
     {
       curr_mba     = FALSE;
@@ -3057,7 +3071,21 @@ module_item
       VLerror( "Syntax error in function description" );
     }
   | attribute_list_opt
-    enumeration
+    enumeration list_of_names ';'
+    {
+      str_link* strl = $3;
+      while( strl != NULL ) {
+        db_add_signal( strl->str, SSUPPL_TYPE_DECLARED, curr_range->left, curr_range->right, curr_signed, FALSE, strl->suppl, strl->suppl2, TRUE );
+        strl = strl->next;
+      }
+      str_link_delete_list( $3 );
+    }
+  | attribute_list_opt
+    K_typedef enumeration IDENTIFIER ';'
+    {
+      db_add_typedef( $4, TRUE /*TBD*/, TRUE /*TBD*/, TRUE, curr_range->left, curr_range->right );
+      free_safe( $4 );
+    }
   | KK_attribute '(' { ignore_mode++; } UNUSED_IDENTIFIER ',' UNUSED_STRING ',' UNUSED_STRING { ignore_mode--; }')' ';'
   | KK_attribute '(' error ')' ';'
     {
@@ -5917,43 +5945,89 @@ cond_specifier_opt
 
  /* SystemVerilog enumeration syntax */
 enumeration
-  : K_enum enum_var_type_opt range_opt '{' enum_variable_list '}' ';'
+  : K_enum enum_var_type_range_opt '{' enum_variable_list '}'
     {
-      static_expr* left;
-      static_expr* right;
-      if( curr_range->implicit == TRUE ) {
-        curr_range->left->num  = $2 - 1;
-        curr_range->right->num = 0;
-      }
-      db_add_enum_list( curr_range->left, curr_range->right, $5 );
+      db_end_enum_list();
     }
   ;
 
- /* List of valid enumeration variable types -- each returns the natural width assuming that range is not set */
-enum_var_type_opt
-  : IDENTIFIER
+ /* List of valid enumeration variable types */
+enum_var_type_range_opt
+  : TYPEDEF_IDENTIFIER range_opt
     {
-      VLerror( "Typedef variables not currently supported" );
-      free_safe( $1 );
-      $$ = 1;
+      if( !$1->is_sizeable && !curr_range->implicit ) { 
+        VLerror( "Packed dimensions are not allowed for this type" );
+      } else {
+        if( $1->is_sizeable && !curr_range->implicit ) {
+          /* TBD - Need to multiply the size of the typedef with the size of the curr_range */
+        } else {
+          parser_explicitly_set_curr_range( $1->msb, $1->lsb );
+        }
+      }
     }
-  | K_reg       { $$ = 1;  }
-  | K_logic     { $$ = 1;  }
-  | K_int       { $$ = 32; }
-  | K_integer   { $$ = 32; }
-  | K_shortint  { $$ = 16; }
-  | K_longint   { $$ = 64; }
-  | K_byte      { $$ = 8;  }
-  |             { $$ = 32; }
+  | K_reg range_opt
+  | K_logic range_opt
+  | K_int
+    {
+      parser_implicitly_set_curr_range( 31, 0 );
+    }
+  | K_integer
+    {
+      parser_implicitly_set_curr_range( 31, 0 );
+    }
+  | K_shortint
+    {
+      parser_implicitly_set_curr_range( 15, 0 );
+    }
+  | K_longint
+    {
+      parser_implicitly_set_curr_range( 63, 0 );
+    }
+  | K_byte
+    {
+      parser_implicitly_set_curr_range( 7, 0 );
+    }
+  | range_opt
+    {
+      if( curr_range->implicit ) {
+        parser_implicitly_set_curr_range( 31, 0 );
+      }
+    }
   ;
 
  /* This is a lot like a register_variable but assigns proper value to variables with no assignment */
 enum_variable
   : IDENTIFIER
     {
+      db_add_signal( $1, SSUPPL_TYPE_ENUM, curr_range->left, curr_range->right, curr_signed, FALSE, @1.first_line, @1.first_column, TRUE );
+      db_add_enum( db_find_signal( $1 ), NULL );
+      free_safe( $1 );
+    }
+  | UNUSED_IDENTIFIER
+  | IDENTIFIER '=' static_expr
+    {
+      db_add_signal( $1, SSUPPL_TYPE_ENUM, curr_range->left, curr_range->right, curr_signed, FALSE, @1.first_line, @1.first_column, TRUE );
+      db_add_enum( db_find_signal( $1 ), $3 );
+      free_safe( $1 );
+    }
+  | UNUSED_IDENTIFIER '=' static_expr
+    {
+      static_expr_dealloc( $3, TRUE );
+    }
+  ;
+
+enum_variable_list
+  : enum_variable_list ',' enum_variable
+  | enum_variable
+  ;
+
+list_of_names
+  : IDENTIFIER
+    {
       str_link* strl = (str_link*)malloc_safe( sizeof( str_link ), __FILE__, __LINE__ );
       strl->str    = $1;
-      strl->suppl3 = 0;   /* Specifies that this enumeration variable has not been assigned a value directly */
+      strl->suppl  = @1.first_line;
+      strl->suppl2 = @1.first_column;
       strl->next   = NULL;
       $$ = strl;
     }
@@ -5961,60 +6035,22 @@ enum_variable
     {
       $$ = NULL;
     }
-  | IDENTIFIER '=' static_expr
+  | list_of_names ',' IDENTIFIER
     {
       str_link* strl = (str_link*)malloc_safe( sizeof( str_link ), __FILE__, __LINE__ );
-      if( $3 != NULL ) {
-        if( $3->exp != NULL ) {
-          VLerror( "Variables in LHS of enumeration assignments not currently supported" );
-          free_safe( $1 );
-          static_expr_dealloc( $3, TRUE );
-          $$ = NULL;
-        } else {
-          strl->str    = $1;
-          strl->suppl  = $3->num;
-          strl->suppl3 = 1;  /* Specifies that the suppl contains valid data */
-          strl->next   = NULL;
-          $$ = strl;
-        }
-      } else {
-        free_safe( $1 );
-        $$ = NULL;
-      }
+      str_link* strt = $1;
+      strl->str    = $3;
+      strl->suppl  = @3.first_line;
+      strl->suppl2 = @3.first_column;
+      strl->next   = NULL;
+      while( strt->next != NULL ) strt = strt->next;
+      strt->next = strl;
+      $$ = $1; 
     }
-  | UNUSED_IDENTIFIER '=' static_expr
+  | list_of_names ',' UNUSED_IDENTIFIER
     {
-      static_expr_dealloc( $3, TRUE );
+      str_link_delete_list( $1 );
       $$ = NULL;
-    }
-  ;
-
-enum_variable_list
-  : enum_variable_list ',' enum_variable
-    {
-      str_link* strl = $1;
-      str_link* strr = $3;
-      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        strr = strl;
-        while( strr->next != NULL ) strr = strr->next;
-        if( $3->suppl3 == 0 ) {
-          $3->suppl = (strr->suppl + 1);
-        }
-        strr->next = $3;
-        strr       = $3;
-        $$ = strl;
-      } else {
-        str_link_delete_list( $1 );
-        if( strr != NULL ) {
-          free( strr->str );
-          free( strr );
-        }
-        $$ = NULL;
-      }
-    }
-  | enum_variable
-    {
-      $$ = $1;
     }
   ;
 

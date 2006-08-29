@@ -164,7 +164,7 @@ void vsignal_db_write( vsignal* sig, FILE* file ) {
       sig->suppl.all
     );
 
-    vector_db_write( sig->value, file, (sig->suppl.part.type == SSUPPL_TYPE_PARAM) );
+    vector_db_write( sig->value, file, ((sig->suppl.part.type == SSUPPL_TYPE_PARAM) || (sig->suppl.part.type == SSUPPL_TYPE_ENUM)) );
 
     fprintf( file, "\n" );
 
@@ -549,6 +549,11 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.30  2006/08/18 22:07:46  phase1geo
+ Integrating obfuscation into all user-viewable output.  Verified that these
+ changes have not made an impact on regressions.  Also improved performance
+ impact of not obfuscating output.
+
  Revision 1.29  2006/08/11 15:16:49  phase1geo
  Joining slist3.3 diagnostic to latest development branch.  Adding changes to
  fix memory issues from bug 1535412.

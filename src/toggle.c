@@ -66,7 +66,9 @@ void toggle_get_stats( sig_link* sigl, float* total, int* hit01, int* hit10 ) {
   
   /* Search signal list */
   while( curr_sig != NULL ) {
-    if( (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_PARAM) && (curr_sig->sig->value->suppl.part.mba == 0) ) {
+    if( (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_PARAM) &&
+        (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_ENUM)  &&
+        (curr_sig->sig->value->suppl.part.mba == 0) ) {
       *total += curr_sig->sig->value->width;
       if( curr_sig->sig->suppl.part.excluded == 1 ) {
         *hit01 += curr_sig->sig->value->width;
@@ -115,7 +117,9 @@ bool toggle_collect( char* funit_name, int funit_type, int cov, sig_link** sig_h
       hit01 = 0;
       hit10 = 0;
 
-      if( (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_PARAM) && (curr_sig->sig->value->suppl.part.mba == 0) ) {
+      if( (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_PARAM) &&
+          (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_ENUM)  &&
+          (curr_sig->sig->value->suppl.part.mba == 0) ) {
 
         vector_toggle_count( curr_sig->sig->value, &hit01, &hit10 );
 
@@ -233,7 +237,9 @@ bool toggle_get_funit_summary( char* funit_name, int funit_type, int* total, int
       hit01 = 0;
       hit10 = 0;
 
-      if( (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_PARAM) && (curr_sig->sig->value->suppl.part.mba == 0) ) {
+      if( (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_PARAM) &&
+          (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_ENUM)  &&
+          (curr_sig->sig->value->suppl.part.mba == 0) ) {
 
         /* We have found a valid signal to look at; therefore, increment the total */
         (*total)++;
@@ -439,7 +445,9 @@ void toggle_display_verbose( FILE* ofile, sig_link* sigl ) {
     /* Get printable version of the signal name */
     pname = scope_gen_printable( curr_sig->sig->name );
 
-    if( (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_PARAM) && (curr_sig->sig->value->suppl.part.mba == 0) ) {
+    if( (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_PARAM) &&
+        (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_ENUM)  &&
+        (curr_sig->sig->value->suppl.part.mba == 0) ) {
 
       vector_toggle_count( curr_sig->sig->value, &hit01, &hit10 );
 
@@ -627,6 +635,11 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.45  2006/08/18 22:07:45  phase1geo
+ Integrating obfuscation into all user-viewable output.  Verified that these
+ changes have not made an impact on regressions.  Also improved performance
+ impact of not obfuscating output.
+
  Revision 1.44  2006/08/16 18:00:03  phase1geo
  Fixing things for good now (after the last submission).  Full regression
  passes with the exception of generate11.2 and generate11.3.

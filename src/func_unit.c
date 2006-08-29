@@ -44,6 +44,7 @@
 #include "gen_item.h"
 #include "instance.h"
 #include "obfuscate.h"
+#include "enumerate.h"
 
 
 extern char        user_msg[USER_MSG_LENGTH];
@@ -81,6 +82,10 @@ void funit_init( func_unit* funit ) {
   funit->gitem_tail = NULL;
   funit->tf_head    = NULL;
   funit->tf_tail    = NULL;
+  funit->tdi_head   = NULL;
+  funit->tdi_tail   = NULL;
+  funit->ei_head    = NULL;
+  funit->ei_tail    = NULL;
   funit->parent     = NULL;
 
 }
@@ -332,24 +337,6 @@ void funit_size_elements( func_unit* funit, funit_inst* inst ) {
     curr_gi = curr_gi->next;
   }
 
-#ifdef OBSOLETE
-  /*
-   Second, traverse through any BIND generate items and resolve them immediately
-  */
-  curr_gi = inst->gitem_head;
-  while( curr_gi != NULL ) {
-    if( gen_item_bind( curr_gi->gi, inst->funit ) ) {
-      bind = TRUE;
-    }
-    curr_gi = curr_gi->next;
-  }
-
-  /* If we need to bind, do so now */
-  if( bind ) {
-    bind_perform( FALSE, 1 );
-  }
-#endif
-  
   /* 
    Third, traverse through current instance's instance parameter list and
    set sizes of signals and expressions.
@@ -373,7 +360,12 @@ void funit_size_elements( func_unit* funit, funit_inst* inst ) {
   }
 
   /*
-   Fourth, traverse all expressions and set expressions to specified
+   Fourth, resolve all enumerated values for this functional unit
+  */
+  enumerate_resolve( inst );
+
+  /*
+   Fifth, traverse all expressions and set expressions to specified
    signals.  Makes the assumption that all children expressions come
    before the root expression in the list (this is currently the case).
   */
@@ -390,7 +382,7 @@ void funit_size_elements( func_unit* funit, funit_inst* inst ) {
     curr_exp = curr_exp->next;
   }
 
-  /* Fifth, traverse all generate items and resize all expressions. */
+  /* Sixth, traverse all generate items and resize all expressions. */
   curr_gi = inst->gitem_head;
   while( curr_gi != NULL ) {
     gen_item_resize_statements( curr_gi->gi );
@@ -935,7 +927,9 @@ void funit_display_expressions( func_unit* funit ) {
 */
 void funit_clean( func_unit* funit ) {
 
-  func_unit* old_funit = curr_funit;  /* Holds the original functional unit in curr_funit */
+  func_unit*    old_funit = curr_funit;  /* Holds the original functional unit in curr_funit */
+  typedef_item* tdi;                     /* Pointer to current typedef item */
+  typedef_item* ttdi;                    /* Pointer to temporary typedef item */
 
   if( funit != NULL ) {
 
@@ -995,6 +989,22 @@ void funit_clean( func_unit* funit ) {
     /* Free tf elements */
     funit_link_delete_list( funit->tf_head, FALSE );
 
+    /* Free typdef items */
+    tdi = funit->tdi_head;
+    while( tdi != NULL ) {
+      ttdi = tdi;
+      tdi  = tdi->next;
+      free_safe( ttdi->name );
+      static_expr_dealloc( ttdi->msb, FALSE );
+      static_expr_dealloc( ttdi->lsb, FALSE );
+      free_safe( ttdi );
+    }
+    funit->tdi_head = NULL;
+    funit->tdi_tail = NULL;
+
+    /* Free enumerated elements */
+    enumerate_dealloc_list( funit );
+
     /* Reset curr_funit */
     curr_funit = old_funit;
 
@@ -1024,6 +1034,11 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.38  2006/08/24 22:25:12  phase1geo
+ Fixing issue with generate expressions within signal hierarchies.  Also added
+ ability to parse implicit named and * port lists.  Added diagnostics to regressions
+ to verify this new ability.  Full regression passes.
+
  Revision 1.37  2006/08/24 03:39:02  phase1geo
  Fixing some issues with new static_lexer/parser.  Working on debugging issue
  related to the generate variable mysteriously losing its vector data.

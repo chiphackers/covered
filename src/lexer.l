@@ -38,6 +38,7 @@
 #include "tree.h"
 #include "gen_item.h"
 #include "obfuscate.h"
+#include "db.h"
 
 #define yylval VLlval
 #define YYDEBUG 1
@@ -326,6 +327,11 @@ WSPACE [ \t\b\f]+
      }
      if( (rc == IDENTIFIER) && parser_check_generation( GENERATION_SV ) ) {
        rc = lexer_keyword_sv_code( yytext, yyleng );
+       if( (rc == IDENTIFIER) && (ignore_mode == 0) ) {
+         if( (yylval.typdef = db_find_typedef( yytext )) != NULL ) {
+           rc = TYPEDEF_IDENTIFIER;
+         }
+       }
      }
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
@@ -363,7 +369,7 @@ WSPACE [ \t\b\f]+
            last_keyword = 0;
          }
        }
-     } else {
+     } else if( rc != TYPEDEF_IDENTIFIER ) {
        last_keyword = rc;
        yylval.text = '\0';
      }

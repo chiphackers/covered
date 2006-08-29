@@ -39,6 +39,7 @@ enum,         K_enum
 int,          K_int
 logic,        K_logic
 longint,      K_longint
+packed,       K_packed
 priority,     K_priority
 shortint,     K_shortint
 struct,       K_struct

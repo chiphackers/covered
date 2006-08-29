@@ -466,6 +466,9 @@
 /*! This signal is a genvar */
 #define SSUPPL_TYPE_GENVAR        9
 
+/*! This signal is an enumerated value */
+#define SSUPPL_TYPE_ENUM          10
+
 /*! @} */
      
 /*!
@@ -1244,6 +1247,8 @@ struct port_info_s;
 struct param_oride_s;
 struct gen_item_s;
 struct gitem_link_s;
+struct typedef_item_s;
+struct enum_item_s;
 
 /*------------------------------------------------------------------------------*/
 /*  STRUCTURE/UNION TYPEDEFS  */
@@ -1459,6 +1464,16 @@ typedef struct gen_item_s gen_item;
  Renaming gitem_link_s structure for convenience.
 */
 typedef struct gitem_link_s gitem_link;
+
+/*!
+ Renaming typedef_item_s structure for convenience.
+*/
+typedef struct typedef_item_s typedef_item;
+
+/*!
+ Renaming enum_item_s structure for convenience.
+*/
+typedef struct enum_item_s enum_item;
 
 /*------------------------------------------------------------------------------*/
 /*  STRUCTURE/UNION DEFINITIONS  */
@@ -1728,30 +1743,34 @@ struct race_blk_s {
  Contains information for a functional unit (i.e., module, named block, function or task).
 */
 struct func_unit_s {
-  int         type;                  /*!< Specifies the type of functional unit this structure represents.
+  int           type;                /*!< Specifies the type of functional unit this structure represents.
                                           Legal values are defined in \ref func_unit_types */
-  char*       name;                  /*!< Functional unit name */
-  char*       filename;              /*!< File name where functional unit exists */
-  int         start_line;            /*!< Starting line number of functional unit in its file */
-  int         end_line;              /*!< Ending line number of functional unit in its file */
-  statistic*  stat;                  /*!< Pointer to functional unit coverage statistics structure */
-  sig_link*   sig_head;              /*!< Head pointer to list of signals in this functional unit */
-  sig_link*   sig_tail;              /*!< Tail pointer to list of signals in this functional unit */
-  exp_link*   exp_head;              /*!< Head pointer to list of expressions in this functional unit */
-  exp_link*   exp_tail;              /*!< Tail pointer to list of expressions in this functional unit */
-  stmt_link*  stmt_head;             /*!< Head pointer to list of statements in this functional unit */
-  stmt_link*  stmt_tail;             /*!< Tail pointer to list of statements in this functional unit */
-  fsm_link*   fsm_head;              /*!< Head pointer to list of FSMs in this functional unit */
-  fsm_link*   fsm_tail;              /*!< Tail pointer to list of FSMs in this functional unit */
-  race_blk*   race_head;             /*!< Head pointer to list of race condition blocks in this functional unit if we are a module */
-  race_blk*   race_tail;             /*!< Tail pointer to list of race condition blocks in this functional unit if we are a module */
-  mod_parm*   param_head;            /*!< Head pointer to list of parameters in this functional unit if we are a module */
-  mod_parm*   param_tail;            /*!< Tail pointer to list of parameters in this functional unit if we are a module */
-  gitem_link* gitem_head;            /*!< Head pointer to list of generate items within this module */
-  gitem_link* gitem_tail;            /*!< Tail pointer to list of generate items within this module */
-  func_unit*  parent;                /*!< Pointer to parent functional unit (only valid for functions, tasks and named blocks */
-  funit_link* tf_head;               /*!< Head pointer to list of task/function functional units if we are a module */
-  funit_link* tf_tail;               /*!< Tail pointer to list of task/function functional units if we are a module */
+  char*         name;                /*!< Functional unit name */
+  char*         filename;            /*!< File name where functional unit exists */
+  int           start_line;          /*!< Starting line number of functional unit in its file */
+  int           end_line;            /*!< Ending line number of functional unit in its file */
+  statistic*    stat;                /*!< Pointer to functional unit coverage statistics structure */
+  sig_link*     sig_head;            /*!< Head pointer to list of signals in this functional unit */
+  sig_link*     sig_tail;            /*!< Tail pointer to list of signals in this functional unit */
+  exp_link*     exp_head;            /*!< Head pointer to list of expressions in this functional unit */
+  exp_link*     exp_tail;            /*!< Tail pointer to list of expressions in this functional unit */
+  stmt_link*    stmt_head;           /*!< Head pointer to list of statements in this functional unit */
+  stmt_link*    stmt_tail;           /*!< Tail pointer to list of statements in this functional unit */
+  fsm_link*     fsm_head;            /*!< Head pointer to list of FSMs in this functional unit */
+  fsm_link*     fsm_tail;            /*!< Tail pointer to list of FSMs in this functional unit */
+  race_blk*     race_head;           /*!< Head pointer to list of race condition blocks in this functional unit if we are a module */
+  race_blk*     race_tail;           /*!< Tail pointer to list of race condition blocks in this functional unit if we are a module */
+  mod_parm*     param_head;          /*!< Head pointer to list of parameters in this functional unit if we are a module */
+  mod_parm*     param_tail;          /*!< Tail pointer to list of parameters in this functional unit if we are a module */
+  gitem_link*   gitem_head;          /*!< Head pointer to list of generate items within this module */
+  gitem_link*   gitem_tail;          /*!< Tail pointer to list of generate items within this module */
+  func_unit*    parent;              /*!< Pointer to parent functional unit (only valid for functions, tasks and named blocks */
+  funit_link*   tf_head;             /*!< Head pointer to list of task/function functional units if we are a module */
+  funit_link*   tf_tail;             /*!< Tail pointer to list of task/function functional units if we are a module */
+  typedef_item* tdi_head;            /*!< Head pointer to list of typedef types for this functional unit */
+  typedef_item* tdi_tail;            /*!< Tail pointer to list of typedef types for this functional unit */
+  enum_item*    ei_head;             /*!< Head pointer to list of enumerated values for this functional unit */
+  enum_item*    ei_tail;             /*!< Tail pointer to list of enumerated values for this functional unit */
  };
 
 /*!
@@ -2023,8 +2042,39 @@ struct gitem_link_s {
   gitem_link* next;                  /*!< Pointer to next generate item element in list */
 };
 
+/*!
+ Structure to hold information for a typedef'ed type.  This information is stored within a module but is
+ not written to the CDD file.
+*/
+struct typedef_item_s {
+  char*         name;                /*!< Name of this typedef */
+  bool          is_signed;           /*!< Specifies if this typedef type is signed */
+  bool          is_handled;          /*!< Specifies if this typedef type is handled by Covered */
+  bool          is_sizeable;         /*!< Specifies if a range can be later placed on this typedef */
+  static_expr*  msb;                 /*!< Specifies MSB value for this type */
+  static_expr*  lsb;                 /*!< Specifies LSB value for this type */
+  typedef_item* next;                /*!< Pointer to next item in typedef list */
+};
+
+/*!
+ Binds a signal to a static expression for an enumerated value.
+*/
+struct enum_item_s {
+  vsignal*      sig;                 /*!< Enumerated value in the form of a signal */
+  static_expr*  value;               /*!< Value to assign to enumerated value */
+  bool          last;                /*!< Set to TRUE if this is the last enumerated value in the list */
+  enum_item*    next;                /*!< Pointer to next enumeration item in the list */
+};
+
 /*
  $Log$
+ Revision 1.224  2006/08/28 22:28:28  phase1geo
+ Fixing bug 1546059 to match stable branch.  Adding support for repeated delay
+ expressions (i.e., a = repeat(2) @(b) c).  Fixing support for event delayed
+ assignments (i.e., a = @(b) c).  Adding several new diagnostics to verify this
+ new level of support and updating regressions for these changes.  Also added
+ parser support for logic port types.
+
  Revision 1.223  2006/08/25 18:25:24  phase1geo
  Modified gen39 and gen40 to not use the Verilog-2001 port syntax.  Fixed problem
  with detecting implicit .name and .* syntax.  Fixed op-and-assign report output.

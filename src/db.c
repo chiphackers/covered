@@ -54,6 +54,7 @@
 #include "gen_item.h"
 #include "vector.h"
 #include "obfuscate.h"
+#include "enumerate.h"
 
 
 extern char*       top_module;
@@ -910,18 +911,78 @@ void db_add_signal( char* name, int type, static_expr* left, static_expr* right,
 }
 
 /*!
- \param left       Pointer to MSB of range for the given enumeration list
- \param right      Pointer to LSB of range for the given enumeration list
- \param enum_list  Pointer to string array containing the enumerated names/values
+ \param enum_sig  Pointer to signal created for the given enumerated value
+ \param value     Value to later assign to the enum_sig (during elaboration)
+
+ Allocates and adds an enum_item to the current module's list to be elaborated later.
 */
-void db_add_enum_list( static_expr* left, static_expr* right, str_link* enum_list ) {
+void db_add_enum( vsignal* enum_sig, static_expr* value ) {
+
+  assert( enum_sig != NULL );
 
 #ifdef DEBUG_MODE
-  print_output( "In db_add_enum_list", DEBUG, __FILE__, __LINE__ );
+  snprintf( user_msg, USER_MSG_LENGTH, "In db_add_enum, sig_name: %s", enum_sig->name );
+  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
-  /* TBD - For now just deallocate the enumerated memory */
-  str_link_delete_list( enum_list );
+  enumerate_add_item( enum_sig, value, curr_funit );
+
+}
+
+/*!
+ Called after an entire enum list has been parsed and added to the database.
+*/
+void db_end_enum_list() {
+
+#ifdef DEBUG_MODE
+  print_output( "In db_end_enum_list", DEBUG, __FILE__, __LINE__ );
+#endif 
+
+  enumerate_end_list( curr_funit );
+
+}
+
+/*!
+ \param name_list    List of typedef names for this type
+ \param is_signed    Specifies if this typedef is signed or not
+ \param is_handled   Specifies if this typedef is handled or not
+ \param is_sizeable  Specifies if a range can be later placed on this value
+ \param msb          Pointer to static expression containing the MSB information
+ \param lsb          Pointer to static expression containing the LSB information
+
+ Adds the given names and information to the list of typedefs for the current module.
+*/
+void db_add_typedef( char* name, bool is_signed, bool is_handled, bool is_sizeable, static_expr* msb, static_expr* lsb ) {
+
+  typedef_item* tdi;   /* Typedef item to create */
+
+#ifdef DEBUG_MODE
+  snprintf( user_msg, USER_MSG_LENGTH, "In db_add_typedef, name: %s, is_signed: %d, is_handled: %d, is_sizeable: %d",
+            name, is_signed, is_handled, is_sizeable );
+  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+#endif
+
+  /* Allocate memory and initialize the structure */
+  tdi              = (typedef_item*)malloc_safe( sizeof( typedef_item ), __FILE__, __LINE__ );
+  tdi->name        = strdup_safe( name, __FILE__, __LINE__ );
+  tdi->is_signed   = is_signed;
+  tdi->is_handled  = is_handled;
+  tdi->is_sizeable = is_sizeable;
+  tdi->msb         = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
+  tdi->msb->num    = msb->num;
+  tdi->msb->exp    = msb->exp;
+  tdi->lsb         = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
+  tdi->lsb->num    = lsb->num;
+  tdi->lsb->exp    = lsb->exp;
+  tdi->next        = NULL;
+
+  /* Add it the current module's typedef list */
+  if( curr_funit->tdi_head == NULL ) {
+    curr_funit->tdi_head = curr_funit->tdi_tail = tdi;
+  } else {
+    curr_funit->tdi_tail->next = tdi;
+    curr_funit->tdi_tail       = tdi;
+  }
 
 }
 
@@ -1001,6 +1062,33 @@ gen_item* db_find_gen_item( gen_item* root, gen_item* gi ) {
   gen_item_dealloc( gi, FALSE );
 
   return( found );
+
+}
+
+/*!
+ \param name  Name of typedef to search for
+
+ \return Returns pointer to found typedef item or NULL if none was found.
+
+ Searches for the given typedef name in the current module.
+*/
+typedef_item* db_find_typedef( const char* name ) {
+
+  func_unit*    parent;      /* Pointer to parent module */
+  typedef_item* tdi = NULL;  /* Pointer to current typedef item */
+
+  if( curr_funit != NULL ) {
+
+    parent = funit_get_curr_module( curr_funit );
+
+    tdi = parent->tdi_head;
+    while( (tdi != NULL) && (strcmp( tdi->name, name ) != 0) ) {
+      tdi = tdi->next;
+    }
+
+  }
+
+  return( tdi );
 
 }
 
@@ -2011,6 +2099,9 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.214  2006/08/29 02:51:33  phase1geo
+ Adding enumeration parsing support to parser.  No functionality at this point, however.
+
  Revision 1.213  2006/08/28 22:28:28  phase1geo
  Fixing bug 1546059 to match stable branch.  Adding support for repeated delay
  expressions (i.e., a = repeat(2) @(b) c).  Fixing support for event delayed

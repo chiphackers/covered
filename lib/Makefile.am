@@ -8,6 +8,7 @@ libcovered_a_SOURCES = ../src/arc.c \
                        ../src/binding.c \
                        ../src/codegen.c \
                        ../src/db.c \
+                       ../src/enumerate.c \
                        ../src/expr.c \
                        ../src/fsm.c \
                        ../src/fsm_arg.c \
