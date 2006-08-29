@@ -273,7 +273,7 @@ int yydebug = 1;
 
 %token KK_attribute
 
-%type <integer>   net_type net_type_opt var_type
+%type <integer>   net_type net_type_opt var_type enum_var_type_opt
 %type <statexp>   static_expr static_expr_primary static_expr_port_list
 %type <text>      identifier
 %type <expr>      expr_primary expression_list expression expression_port_list
@@ -282,7 +282,7 @@ int yydebug = 1;
 %type <text>      udp_port_list
 %type <expr>      delay_value delay_value_simple
 %type <text>      defparam_assign_list defparam_assign
-%type <strlink>   gate_instance gate_instance_list
+%type <strlink>   gate_instance gate_instance_list enum_variable enum_variable_list
 %type <nbcall>    named_begin_end_block fork_statement
 %type <state>     statement statement_list statement_opt 
 %type <state>     if_statement_error
@@ -3056,6 +3056,8 @@ module_item
       }
       VLerror( "Syntax error in function description" );
     }
+  | attribute_list_opt
+    enumeration
   | KK_attribute '(' { ignore_mode++; } UNUSED_IDENTIFIER ',' UNUSED_STRING ',' UNUSED_STRING { ignore_mode--; }')' ';'
   | KK_attribute '(' error ')' ';'
     {
@@ -5911,6 +5913,109 @@ cond_specifier_opt
   : K_unique
   | K_priority
   |
+  ;
+
+ /* SystemVerilog enumeration syntax */
+enumeration
+  : K_enum enum_var_type_opt range_opt '{' enum_variable_list '}' ';'
+    {
+      static_expr* left;
+      static_expr* right;
+      if( curr_range->implicit == TRUE ) {
+        curr_range->left->num  = $2 - 1;
+        curr_range->right->num = 0;
+      }
+      db_add_enum_list( curr_range->left, curr_range->right, $5 );
+    }
+  ;
+
+ /* List of valid enumeration variable types -- each returns the natural width assuming that range is not set */
+enum_var_type_opt
+  : IDENTIFIER
+    {
+      VLerror( "Typedef variables not currently supported" );
+      free_safe( $1 );
+      $$ = 1;
+    }
+  | K_reg       { $$ = 1;  }
+  | K_logic     { $$ = 1;  }
+  | K_int       { $$ = 32; }
+  | K_integer   { $$ = 32; }
+  | K_shortint  { $$ = 16; }
+  | K_longint   { $$ = 64; }
+  | K_byte      { $$ = 8;  }
+  |             { $$ = 32; }
+  ;
+
+ /* This is a lot like a register_variable but assigns proper value to variables with no assignment */
+enum_variable
+  : IDENTIFIER
+    {
+      str_link* strl = (str_link*)malloc_safe( sizeof( str_link ), __FILE__, __LINE__ );
+      strl->str    = $1;
+      strl->suppl3 = 0;   /* Specifies that this enumeration variable has not been assigned a value directly */
+      strl->next   = NULL;
+      $$ = strl;
+    }
+  | UNUSED_IDENTIFIER
+    {
+      $$ = NULL;
+    }
+  | IDENTIFIER '=' static_expr
+    {
+      str_link* strl = (str_link*)malloc_safe( sizeof( str_link ), __FILE__, __LINE__ );
+      if( $3 != NULL ) {
+        if( $3->exp != NULL ) {
+          VLerror( "Variables in LHS of enumeration assignments not currently supported" );
+          free_safe( $1 );
+          static_expr_dealloc( $3, TRUE );
+          $$ = NULL;
+        } else {
+          strl->str    = $1;
+          strl->suppl  = $3->num;
+          strl->suppl3 = 1;  /* Specifies that the suppl contains valid data */
+          strl->next   = NULL;
+          $$ = strl;
+        }
+      } else {
+        free_safe( $1 );
+        $$ = NULL;
+      }
+    }
+  | UNUSED_IDENTIFIER '=' static_expr
+    {
+      static_expr_dealloc( $3, TRUE );
+      $$ = NULL;
+    }
+  ;
+
+enum_variable_list
+  : enum_variable_list ',' enum_variable
+    {
+      str_link* strl = $1;
+      str_link* strr = $3;
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
+        strr = strl;
+        while( strr->next != NULL ) strr = strr->next;
+        if( $3->suppl3 == 0 ) {
+          $3->suppl = (strr->suppl + 1);
+        }
+        strr->next = $3;
+        strr       = $3;
+        $$ = strl;
+      } else {
+        str_link_delete_list( $1 );
+        if( strr != NULL ) {
+          free( strr->str );
+          free( strr );
+        }
+        $$ = NULL;
+      }
+    }
+  | enum_variable
+    {
+      $$ = $1;
+    }
   ;
 
 ignore_more

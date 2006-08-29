@@ -910,6 +910,22 @@ void db_add_signal( char* name, int type, static_expr* left, static_expr* right,
 }
 
 /*!
+ \param left       Pointer to MSB of range for the given enumeration list
+ \param right      Pointer to LSB of range for the given enumeration list
+ \param enum_list  Pointer to string array containing the enumerated names/values
+*/
+void db_add_enum_list( static_expr* left, static_expr* right, str_link* enum_list ) {
+
+#ifdef DEBUG_MODE
+  print_output( "In db_add_enum_list", DEBUG, __FILE__, __LINE__ );
+#endif
+
+  /* TBD - For now just deallocate the enumerated memory */
+  str_link_delete_list( enum_list );
+
+}
+
+/*!
  \param name  String name of signal to find in current module.
 
  \return Returns pointer to the found signal.
@@ -1995,6 +2011,13 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.213  2006/08/28 22:28:28  phase1geo
+ Fixing bug 1546059 to match stable branch.  Adding support for repeated delay
+ expressions (i.e., a = repeat(2) @(b) c).  Fixing support for event delayed
+ assignments (i.e., a = @(b) c).  Adding several new diagnostics to verify this
+ new level of support and updating regressions for these changes.  Also added
+ parser support for logic port types.
+
  Revision 1.212  2006/08/25 22:49:45  phase1geo
  Adding support for handling generated hierarchical names in signals that are outside
  of generate blocks.  Added support for op-and-assigns in generate for loops as well
