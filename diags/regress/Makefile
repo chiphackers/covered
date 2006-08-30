@@ -60,12 +60,12 @@ DIAGS1        = add1            always1         always2         always3         
                 mbit_sel1       mbit_sel2       mbit_sel3       mbit_sel3.1     mbit_sel4 \
                 mbit_sel4.1     mbit_sel4.2     mbit_sel4.3     mbit_sel5       mbit_sel5.1 \
                 mbit_sel5.2     mbit_sel5.3     mbit_sel6       mbit_sel6.1     mbit_sel6.2 \
-                mbit_sel6.3     mbit_sel7       mem1            mult1           multi_exp1      multi_exp1.1 \
-                multi_exp1.2    multi_exp1.3    multi_exp1.4    multi_exp1.5    multi_exp1.6 \
-                multi_exp1.7    multi_exp1.8    multi_exp1.9    multi_exp1.10   multi_exp1.11 \
-                multi_exp1.12   multi_exp1.13   multi_exp1.14   multi_exp1.15   multi_exp2 \
-                multi_exp2.1    multi_exp3      named_block1    named_block2    named_block3 \
-                nested_block1   nested_block2 \
+                mbit_sel6.3     mbit_sel7       mem1            mem2            mult1 \
+                multi_exp1      multi_exp1.1    multi_exp1.2    multi_exp1.3    multi_exp1.4 \
+                multi_exp1.5    multi_exp1.6    multi_exp1.7    multi_exp1.8    multi_exp1.9 \
+                multi_exp1.10   multi_exp1.11   multi_exp1.12   multi_exp1.13   multi_exp1.14 \
+                multi_exp1.15   multi_exp2      multi_exp2.1    multi_exp3      named_block1 \
+                named_block2    named_block3    nested_block1   nested_block2 \
                 nested_block2.1 nested_block3   ovl1            ovl1.1          ovl1.2 \
                 ovl1.3          param1          param1.1        param1.2        param1.3 \
                 param3          param3.1        param3.2        param3.3        param3.4 \
