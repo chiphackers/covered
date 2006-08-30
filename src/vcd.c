@@ -228,6 +228,11 @@ void vcd_parse_def( FILE* vcd ) {
   
   }
 
+  if( !enddef_found ) {
+    print_output( "Specified VCD file is not a valid VCD file", FATAL, __FILE__, __LINE__ );
+    exit( 1 );
+  }
+
   assert( enddef_found );
 
   /* Check to see that at least one instance was found */
@@ -412,6 +417,10 @@ void vcd_parse( char* vcd_file ) {
 
 /*
  $Log$
+ Revision 1.23  2006/05/28 02:43:49  phase1geo
+ Integrating stable release 0.4.4 changes into main branch.  Updated regressions
+ appropriately.
+
  Revision 1.22  2006/05/25 12:11:02  phase1geo
  Including bug fix from 0.4.4 stable release and updating regressions.
 

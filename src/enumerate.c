@@ -67,6 +67,7 @@ void enumerate_resolve( funit_inst* inst ) {
   enum_item* ei;            /* Pointer to current enumeration item in the given functional unit */
   int        last_value;    /* Value of last value for this enumeration */
   bool       first = TRUE;  /* Specifies if the current enumeration is the first */
+  bool       is_signed;     /* Contains original value of signedness of signal */
 
   assert( inst != NULL );
 
@@ -74,6 +75,9 @@ void enumerate_resolve( funit_inst* inst ) {
   while( ei != NULL ) {
 
     assert( ei->sig->value != NULL );
+
+    /* Store signedness */
+    is_signed = ei->sig->value->suppl.part.is_signed;
 
     /* If no value was assigned, we need to assign one now */
     if( ei->value == NULL ) {
@@ -95,6 +99,9 @@ void enumerate_resolve( funit_inst* inst ) {
       }
 
     }
+
+    /* Put back the original signedness */
+    ei->sig->value->suppl.part.is_signed = is_signed;
         
     /* Set the first value to indicate if the next value is the first in the list */
     first = ei->last;
@@ -140,5 +147,10 @@ void enumerate_dealloc_list( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.1  2006/08/29 22:49:31  phase1geo
+ Added enumeration support and partial support for typedefs.  Added enum1
+ diagnostic to verify initial enumeration support.  Full regression has not
+ been run at this point -- checkpointing.
+
 */
 
