@@ -96,6 +96,12 @@ static tnode*    found_modules = NULL;
 */
 char*            directive_filename = NULL;
 
+/*!
+ Specifies if the current file was previously parsed.  If it was, we need to ignore
+ all globally declared stuff.
+*/
+static bool      file_prev_parsed;
+
 %}
 
 %option stack
@@ -108,6 +114,10 @@ char*            directive_filename = NULL;
 %x INCLUDE
 %x ERROR_LINE
 %x IGNORE_MODULE
+%x IGNORE_ASSERT
+%x IGNORE_PROPERTY
+%x IGNORE_SEQUENCE
+%x IGNORE_GLOBALS
 %s UDPTABLE
 
 %x IFDEF_FALSE
@@ -129,6 +139,21 @@ WSPACE [ \t\b\f]+
 \n {
 	yylloc.first_line += 1;
 	yylloc.last_column = 0;
+ }
+
+  /* Used when we have previously parsed a file and want to ignore all global variables (SystemVerilog mode only) */
+<IGNORE_GLOBALS>\n {
+        yylloc.first_line += 1;
+ }
+<IGNORE_GLOBALS>. {
+ }
+<IGNORE_GLOBALS>module {
+	yyless( 0 );
+	BEGIN( 0 );
+ }
+<IGNORE_GLOBALS>primitive {
+	yyless( 0 );
+	BEGIN( 0 );
  }
 
   /* Handle line directives */
@@ -275,13 +300,21 @@ WSPACE [ \t\b\f]+
 <IGNORE_MODULE>endmodule    {
 	yylloc.first_column = yylloc.last_column;
 	yylloc.last_column += strlen( yytext );
-	BEGIN( 0 );
+	if( file_prev_parsed ) {
+          BEGIN( IGNORE_GLOBALS );
+        } else {
+  	  BEGIN( 0 );
+ 	}
         return I_endmodule;
  }
 <IGNORE_MODULE>endprimitive {
 	yylloc.first_column = yylloc.last_column;
 	yylloc.last_column += strlen( yytext );
-	BEGIN( 0 );
+	if( file_prev_parsed ) {
+	  BEGIN( IGNORE_GLOBALS );
+	} else {
+	  BEGIN( 0 );
+	}
         return( K_endprimitive );
  }
 <IGNORE_MODULE>\n           {
@@ -292,6 +325,57 @@ WSPACE [ \t\b\f]+
 <IGNORE_MODULE>.            {
 	yylloc.last_column += 1;
 	yymore();
+ }
+
+  /* Ignore assertion syntax */
+<IGNORE_ASSERT>; {
+	yylloc.first_column = yylloc.last_column;
+	yylloc.last_column += strlen( yytext );
+	BEGIN( 0 );
+	return ';';
+ }
+<IGNORE_ASSERT>\n {
+	yylloc.first_line += 1;
+        yylloc.last_column = 0;
+        yymore();
+ }
+<IGNORE_ASSERT>. {
+	yylloc.last_column += 1;
+        yymore();
+ }
+
+  /* Ignore property syntax */
+<IGNORE_PROPERTY>endproperty {
+        yylloc.first_column = yylloc.last_column;
+        yylloc.last_column += strlen( yytext );
+        BEGIN( 0 );
+        return K_endproperty;
+ }
+<IGNORE_PROPERTY>\n {
+        yylloc.first_line += 1;
+        yylloc.last_column = 0;
+        yymore();
+ }
+<IGNORE_PROPERTY>. {
+        yylloc.last_column += 1;
+        yymore();
+ }
+
+  /* Ignore sequence syntax */
+<IGNORE_SEQUENCE>endsequence {
+        yylloc.first_column = yylloc.last_column;
+        yylloc.last_column += strlen( yytext );
+        BEGIN( 0 );
+        return K_endsequence;
+ }
+<IGNORE_SEQUENCE>\n {
+        yylloc.first_line += 1;
+        yylloc.last_column = 0;
+        yymore();
+ }
+<IGNORE_SEQUENCE>. {
+        yylloc.last_column += 1;
+        yymore();
  }
 
   /* Entries for user defined primitive tables -- not currently supported */
@@ -369,6 +453,16 @@ WSPACE [ \t\b\f]+
            last_keyword = 0;
          }
        }
+     } else if( (rc == K_endmodule) || (rc == K_endprimitive) ) {
+       if( file_prev_parsed ) {
+         BEGIN( IGNORE_GLOBALS );
+       }
+     } else if( rc == K_assert ) {
+       BEGIN( IGNORE_ASSERT );
+     } else if( rc == K_property ) {
+       BEGIN( IGNORE_PROPERTY );
+     } else if( rc == K_sequence ) {
+       BEGIN( IGNORE_SEQUENCE );
      } else if( rc != TYPEDEF_IDENTIFIER ) {
        last_keyword = rc;
        yylval.text = '\0';
@@ -689,7 +783,7 @@ static void line_directive2() {
 }
   
 /*!
- \return Returns 0
+ \return Returns 0 if we should continue to parse or 1 if we should stop.
 
  The lexical analyzer calls this function when the current file
  ends.  Here I pop the include stack and resume the previous file.  If
@@ -728,12 +822,14 @@ static int yywrap() {
   while( (tmpm != NULL) && (fname == NULL) ) {
     if( (node = tree_find( tmpm->str, found_modules )) != NULL ) {
       fname = node->value;
+      file_prev_parsed = TRUE;
     } else {
       if( (curr = get_next_vfile( curr, tmpm->str )) == NULL ) {
         tmpm = tmpm->next;
         curr = filelist_curr;
       } else {
-        fname = curr->str;
+        fname            = curr->str;
+        file_prev_parsed = curr->suppl2;
       }
     }
   }
@@ -743,7 +839,8 @@ static int yywrap() {
     print_output( "Unable to find the following modules:", FATAL, __FILE__, __LINE__ );
     curr = modlist_head;
     while( curr != NULL ) {
-      fprintf( stderr, "      %s\n", obf_funit( curr->str ) );
+      snprintf( user_msg, USER_MSG_LENGTH, "%s", obf_funit( curr->str ) );
+      print_output( user_msg, FATAL_WRAP, __FILE__, __LINE__ );
       curr = curr->next;
     }
     assert( unlink( ppfilename ) == 0 );
@@ -754,7 +851,7 @@ static int yywrap() {
   out = fopen( ppfilename, "w" );
   assert( out != NULL );
   
-  /* Now the preprocessor on this file first */
+  /* Now run the preprocessor on this file first */
   reset_pplexer( fname, out );
   PPVLlex();
   
@@ -768,6 +865,11 @@ static int yywrap() {
   yylloc.text        = fname;
   
   filelist_curr = curr->next;
+
+  /* If the current file was previously parsed, set the start state to IGNORE_GLOBALS */
+  if( file_prev_parsed ) {
+    BEGIN( IGNORE_GLOBALS );
+  }
   
   return( 0 );
 
@@ -820,6 +922,7 @@ void reset_lexer( str_link* file_list_head ) {
   
   filelist_head = file_list_head;
   filelist_curr = file_list_head->next;
+  file_prev_parsed = FALSE;
 
 }
 

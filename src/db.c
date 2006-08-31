@@ -106,6 +106,11 @@ str_link* modlist_tail  = NULL;
 func_unit* curr_funit   = NULL;
 
 /*!
+ Pointer to the global function unit that is available in SystemVerilog.
+*/
+func_unit* global_funit = NULL;
+
+/*!
  This static value contains the current expression ID number to use for the next expression found, it
  is incremented by one when an expression is found.  This allows us to have a unique expression ID
  for each expression (since expressions have no intrinsic names).
@@ -628,7 +633,8 @@ void db_end_module( int end_line ) {
 
   str_link_remove( curr_funit->name, &modlist_head, &modlist_tail );
 
-  curr_funit = NULL;
+  /* Return the current functional unit to the global functional unit, if it exists */
+  curr_funit = global_funit;
 
 }
 
@@ -1077,6 +1083,13 @@ typedef_item* db_find_typedef( const char* name ) {
   func_unit*    parent;      /* Pointer to parent module */
   typedef_item* tdi = NULL;  /* Pointer to current typedef item */
 
+  assert( name != NULL );
+
+#ifdef DEBUG_MODE
+  snprintf( user_msg, USER_MSG_LENGTH, "In db_find_typedef, searching for name: %s", name );
+  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+#endif
+
   if( curr_funit != NULL ) {
 
     parent = funit_get_curr_module( curr_funit );
@@ -1084,6 +1097,14 @@ typedef_item* db_find_typedef( const char* name ) {
     tdi = parent->tdi_head;
     while( (tdi != NULL) && (strcmp( tdi->name, name ) != 0) ) {
       tdi = tdi->next;
+    }
+
+    /* If we could not find the typedef in the current functional unit, look in the global funit, if it exists */
+    if( (tdi == NULL) && (global_funit != NULL) ) {
+      tdi = global_funit->tdi_head;
+      while( (tdi != NULL) && (strcmp( tdi->name, name ) != 0) ) {
+        tdi = tdi->next;
+      }
     }
 
   }
@@ -2099,6 +2120,11 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.215  2006/08/29 22:49:31  phase1geo
+ Added enumeration support and partial support for typedefs.  Added enum1
+ diagnostic to verify initial enumeration support.  Full regression has not
+ been run at this point -- checkpointing.
+
  Revision 1.214  2006/08/29 02:51:33  phase1geo
  Adding enumeration parsing support to parser.  No functionality at this point, however.
 

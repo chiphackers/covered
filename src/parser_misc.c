@@ -124,6 +124,30 @@ vector_width* parser_copy_curr_range() {
 }
 
 /*!
+ \param left   Pointer to left static_expression to copy to current range
+ \param right  Pointer to right static_expression to copy to current range
+
+ Copies specifies static expressions to the current range.  Primarily used for
+ copying typedef'ed ranges to the current range.
+*/
+void parser_copy_se_to_curr_range( static_expr* left, static_expr* right ) {
+
+  /* Deallocate any memory currently associated with the curr_range variable */
+  parser_dealloc_curr_range();
+
+  /* Allocate and set curr_range */
+  curr_range             = (vector_width*)malloc_safe( sizeof( vector_width ), __FILE__, __LINE__ );
+  curr_range->left       = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
+  curr_range->left->num  = left->num;
+  curr_range->left->exp  = left->exp;
+  curr_range->right      = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
+  curr_range->right->num = right->num;
+  curr_range->right->exp = right->exp;
+  curr_range->implicit   = FALSE;
+
+}
+
+/*!
  \param left   Pointer to static expression of expression/value on the left side of the colon.
  \param right  Pointer to static expression of expression/value on the right side of the colon.
 
@@ -195,6 +219,11 @@ bool parser_check_generation( int gen ) {
 
 /*
  $Log$
+ Revision 1.10  2006/08/18 22:07:45  phase1geo
+ Integrating obfuscation into all user-viewable output.  Verified that these
+ changes have not made an impact on regressions.  Also improved performance
+ impact of not obfuscating output.
+
  Revision 1.9  2006/07/15 22:07:14  phase1geo
  Added all code to parser to check generation value to decide if a piece of
  syntax is allowable by the parser or not.  This code compiles and has been

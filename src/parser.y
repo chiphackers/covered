@@ -272,11 +272,11 @@ int yydebug = 1;
 %token K_unique K_priority K_do
 %token K_always_comb K_always_latch K_always_ff
 %token K_typedef K_enum K_union K_struct K_packed
-%token K_assert K_property K_endproperty K_cover
+%token K_assert K_property K_endproperty K_cover K_sequence K_endsequence
 
 %token KK_attribute
 
-%type <integer>   net_type net_type_opt var_type
+%type <integer>   net_type net_type_sign_range_opt var_type
 %type <statexp>   static_expr static_expr_primary static_expr_port_list
 %type <text>      identifier
 %type <expr>      expr_primary expression_list expression expression_port_list
@@ -413,6 +413,146 @@ description
   : module
   | udp_primitive
   | KK_attribute { ignore_mode++; } '(' UNUSED_IDENTIFIER ',' UNUSED_STRING ',' UNUSED_STRING ')' { ignore_mode--; }
+  | typedef_decl
+  | net_type range_opt list_of_variables ';'
+  | net_type range_opt net_decl_assigns ';'
+  | net_type drive_strength
+    {
+      if( (ignore_mode == 0) && ($1 == 1) ) {
+        parser_implicitly_set_curr_range( 0, 0 );
+      }
+      curr_signed = FALSE;
+    }
+    net_decl_assigns ';'
+  | TYPEDEF_IDENTIFIER
+    {
+      curr_mba     = FALSE;
+      curr_signed  = $1->is_signed;
+      curr_handled = $1->is_handled;
+      parser_copy_se_to_curr_range( $1->msb, $1->lsb );
+    }
+    register_variable_list ';'
+  | K_trireg charge_strength_opt range_opt delay3_opt
+    {
+      curr_mba      = FALSE;
+      curr_signed   = FALSE;
+      curr_handled  = TRUE;
+      curr_sig_type = SSUPPL_TYPE_DECLARED;
+    }
+    list_of_variables ';'
+  | gatetype gate_instance_list ';'
+    {
+      str_link_delete_list( $2 );
+    }
+  | gatetype delay3 gate_instance_list ';'
+    {
+      str_link_delete_list( $3 );
+    }
+  | gatetype drive_strength gate_instance_list ';'
+    {
+      str_link_delete_list( $3 );
+    }
+  | gatetype drive_strength delay3 gate_instance_list ';'
+    {
+      str_link_delete_list( $4 );
+    }
+  | K_pullup gate_instance_list ';'
+    {
+      str_link_delete_list( $2 );
+    }
+  | K_pulldown gate_instance_list ';'
+    {
+      str_link_delete_list( $2 );
+    }
+  | K_pullup '(' dr_strength1 ')' gate_instance_list ';'
+    {
+      str_link_delete_list( $5 );
+    }
+  | K_pulldown '(' dr_strength0 ')' gate_instance_list ';'
+    {
+      str_link_delete_list( $5 );
+    }
+  | block_item_decl
+  | K_event
+    {
+      curr_mba      = TRUE;
+      curr_signed   = FALSE;
+      curr_sig_type = SSUPPL_TYPE_EVENT;
+      curr_handled  = TRUE;
+      parser_implicitly_set_curr_range( 0, 0 );
+    }
+    list_of_variables ';'
+  | K_task IDENTIFIER ';'
+    {
+      if( ignore_mode == 0 ) {
+        if( !db_add_function_task_namedblock( FUNIT_TASK, $2, @2.text, @2.first_line ) ) {
+          ignore_mode++;
+        }
+      }
+      free_safe( $2 );
+    }
+    task_item_list_opt statement_opt
+    {
+      statement* stmt = $6;
+      if( (ignore_mode == 0) && (stmt != NULL) ) {
+        stmt->exp->suppl.part.stmt_head      = 1;
+        stmt->exp->suppl.part.stmt_is_called = 1;
+        db_add_statement( stmt, stmt );
+      }
+    }
+    K_endtask
+    {
+      if( ignore_mode == 0 ) {
+        db_end_function_task_namedblock( @8.first_line );
+      } else {
+        ignore_mode--;
+      }
+    }
+  | K_function range_or_type_opt IDENTIFIER ';'
+    {
+      if( ignore_mode == 0 ) {
+        if( db_add_function_task_namedblock( FUNIT_FUNCTION, $3, @3.text, @3.first_line ) ) {
+          db_add_signal( $3, SSUPPL_TYPE_IMPLICIT, curr_range->left, curr_range->right, FALSE, FALSE, @3.first_line, @3.first_column, TRUE );
+        } else {
+          ignore_mode++;
+        }
+        free_safe( $3 );
+      }
+    }
+    function_item_list statement
+    {
+      statement* stmt = $7;
+      if( (ignore_mode == 0) && (stmt != NULL) ) {
+        stmt->exp->suppl.part.stmt_head      = 1;
+        stmt->exp->suppl.part.stmt_is_called = 1;
+        db_add_statement( stmt, stmt );
+      }
+    }
+    K_endfunction
+    {
+      if( ignore_mode == 0 ) {
+        db_end_function_task_namedblock( @9.first_line );
+      } else {
+        ignore_mode--;
+      }
+    }
+  | error ';'
+    {
+      VLerror( "Invalid $root item" );
+    }
+  | K_function error K_endfunction
+    {
+      VLerror( "Syntax error in function description" );
+    }
+  | enumeration list_of_names ';'
+    {
+      str_link* strl = $2;
+      while( strl != NULL ) {
+        db_add_signal( strl->str, SSUPPL_TYPE_DECLARED, curr_range->left, curr_range->right, curr_signed, FALSE, strl->suppl, strl->suppl2, TRUE );
+        strl = strl->next;
+      }
+      str_link_delete_list( $2 );
+    }
   ;
 
 module
@@ -500,21 +640,21 @@ list_of_port_declarations
 
   /* Handles Verilog-2001 port of type:  input wire [m:l] <list>; */
 port_declaration
-  : attribute_list_opt port_type net_type_opt signed_opt range_opt IDENTIFIER
+  : attribute_list_opt port_type net_type_sign_range_opt IDENTIFIER
     {
       port_info* pi;
       if( !parser_check_generation( GENERATION_2001 ) ) {
         VLerror( "Inline port declaration syntax found in block that is specified to not allow Verilog-2001 syntax" );
-        free_safe( $6 );
+        free_safe( $4 );
         $$ = NULL;
       } else {
         if( ignore_mode == 0 ) {
-          db_add_signal( $6, curr_sig_type, curr_range->left, curr_range->right, curr_signed, FALSE, @6.first_line, @6.first_column, TRUE );
+          db_add_signal( $4, curr_sig_type, curr_range->left, curr_range->right, curr_signed, FALSE, @4.first_line, @4.first_column, TRUE );
           pi = (port_info*)malloc_safe( sizeof( port_info ), __FILE__, __LINE__ );
           pi->type      = curr_sig_type;
           pi->is_signed = curr_signed;
           pi->range     = parser_copy_curr_range();
-          free_safe( $6 );
+          free_safe( $4 );
           $$ = pi;
         } else {
           $$ = NULL;
@@ -564,7 +704,7 @@ port_declaration
         }
       }
     }
-  | attribute_list_opt port_type net_type_opt signed_opt range_opt error
+  | attribute_list_opt port_type net_type_sign_range_opt error
     {
       if( !parser_check_generation( GENERATION_2001 ) ) {
         VLerror( "Inline port declaration syntax found in block that is specified to not allow Verilog-2001 syntax" );
@@ -2625,13 +2765,10 @@ module_item
   | attribute_list_opt
     TYPEDEF_IDENTIFIER
     {
-      curr_mba          = FALSE;
-      curr_signed       = $2->is_signed;
-      curr_handled      = $2->is_handled;
-      parser_dealloc_curr_range();
-      curr_range->left  = $2->msb;
-      curr_range->right = $2->lsb;
-      free_safe( $2 );
+      curr_mba     = FALSE;
+      curr_signed  = $2->is_signed;
+      curr_handled = $2->is_handled;
+      parser_copy_se_to_curr_range( $2->msb, $2->lsb );
     }
     register_variable_list ';'
   | attribute_list_opt port_type range_opt
@@ -3082,17 +3219,20 @@ module_item
       str_link_delete_list( $3 );
     }
   | attribute_list_opt
-    K_typedef enumeration IDENTIFIER ';'
-    {
-      db_add_typedef( $4, curr_signed, curr_handled, TRUE, curr_range->left, curr_range->right );
-      free_safe( $4 );
-    }
+    typedef_decl
   /* SystemVerilog assertion - we don't currently support these and I don't want to worry about how to parse them either */
   | attribute_list_opt
-    IDENTIFIER ':' error ';'
-  /* SystemVerilog property - we don't currently support these but parse them */
+    IDENTIFIER ':' K_assert ';'
+    {
+      free_safe( $2 );
+    }
+  /* SystemVerilog property - we don't currently support these but crudely parse them */
   | attribute_list_opt
-    K_property error K_endproperty
+    K_property K_endproperty
+
+  /* SystemVerilog sequence - we don't currently support these but crudely will parse them */
+  | attribute_list_opt
+    K_sequence K_endsequence
   | KK_attribute '(' { ignore_mode++; } UNUSED_IDENTIFIER ',' UNUSED_STRING ',' UNUSED_STRING { ignore_mode--; }')' ';'
   | KK_attribute '(' error ')' ';'
     {
@@ -4181,7 +4321,7 @@ statement
       }
     }
    /* Immediate SystemVerilog assertions are parsed but not performed -- we will not exclude a block that contains one */
-  | K_assert '(' ignore_more expression ignore_less ')' ';'
+  | K_assert ';'
     {
       expression* exp;
       statement*  stmt;
@@ -4193,7 +4333,7 @@ statement
       }
     }
    /* Inline SystemVerilog assertion -- parsed, not performed and we will not exclude a block that contains one */
-  | IDENTIFIER ':' error ';'
+  | IDENTIFIER ':' K_assert ';'
     {
       expression* exp;
       statement*  stmt;
@@ -4203,6 +4343,7 @@ statement
         db_add_expression( exp );
         $$   = stmt;
       }
+      free_safe( $1 );
     }
   | error ';'
     {
@@ -5037,6 +5178,12 @@ range
         parser_explicitly_set_curr_range( $2, $4 );
       }
     }
+  | range '[' static_expr ':' static_expr ']'
+    {
+      VLerror( "Multi-dimensional arrays are not currently supported" );
+      static_expr_dealloc( $3, TRUE );
+      static_expr_dealloc( $5, TRUE );
+    }
   ;
 
 range_or_type_opt
@@ -5149,91 +5296,87 @@ unsigned_opt
   ;
 
   /*
-   The net_type_opt is only used in port lists so don't set the curr_sig_type field
+   The net_type_sign_range_opt is only used in port lists so don't set the curr_sig_type field
    as this will already be filled in by the port_type rule.
   */
-net_type_opt
-  : K_wire
+net_type_sign_range_opt
+  : K_wire signed_opt range_opt
     {
       curr_mba     = FALSE;
-      curr_signed  = FALSE;
       curr_handled = TRUE;
       $$ = 1;
     }
-  | K_tri
+  | K_tri signed_opt range_opt
     {
       curr_mba     = FALSE;
-      curr_signed  = FALSE;
       curr_handled = TRUE;
       $$ = 1;
     }
-  | K_tri1
+  | K_tri1 signed_opt range_opt
     {
       curr_mba     = FALSE;
-      curr_signed  = FALSE;
       curr_handled = TRUE;
       $$ = 1;
     }
-  | K_supply0
+  | K_supply0 signed_opt range_opt
     {
       curr_mba     = FALSE;
-      curr_signed  = FALSE;
       curr_handled = TRUE;
       $$ = 1;
     }
-  | K_wand
+  | K_wand signed_opt range_opt
     {
       curr_mba     = FALSE;
-      curr_signed  = FALSE;
       curr_handled = TRUE;
       $$ = 1;
     }
-  | K_triand
+  | K_triand signed_opt range_opt
     {
       curr_mba     = FALSE;
-      curr_signed  = FALSE;
       curr_handled = TRUE;
       $$ = 1;
     }
-  | K_tri0
+  | K_tri0 signed_opt range_opt
     {
       curr_mba     = FALSE;
-      curr_signed  = FALSE;
       curr_handled = TRUE;
       $$ = 1;
     }
-  | K_supply1
+  | K_supply1 signed_opt range_opt
     {
       curr_mba     = FALSE;
-      curr_signed  = FALSE;
       curr_handled = TRUE;
       $$ = 1;
     }
-  | K_wor
+  | K_wor signed_opt range_opt
     {
       curr_mba     = FALSE;
-      curr_signed  = FALSE;
       curr_handled = TRUE;
       $$ = 1;
     }
-  | K_trior
+  | K_trior signed_opt range_opt
     {
       curr_mba     = FALSE;
-      curr_signed  = FALSE;
       curr_handled = TRUE;
       $$ = 1;
     }
-  | K_logic
+  | K_logic signed_opt range_opt
     {
       curr_mba     = FALSE;
-      curr_signed  = FALSE;
       curr_handled = TRUE;
       $$ = 1;
     }
-  |
+  | TYPEDEF_IDENTIFIER
     {
       curr_mba     = FALSE;
-      curr_signed  = FALSE;
+      curr_signed  = $1->is_signed;
+      curr_handled = $1->is_handled;
+      parser_copy_se_to_curr_range( $1->msb, $1->lsb );
+      $$ = 1;
+    }
+  | signed_opt range_opt
+    {
+      curr_mba     = FALSE;
       curr_handled = TRUE;
       $$ = 0;
     }
@@ -5992,7 +6135,7 @@ enum_var_type_range_opt
         if( $1->is_sizeable && !curr_range->implicit ) {
           /* TBD - Need to multiply the size of the typedef with the size of the curr_range */
         } else {
-          parser_explicitly_set_curr_range( $1->msb, $1->lsb );
+          parser_copy_se_to_curr_range( $1->msb, $1->lsb );
         }
       }
     }
@@ -6082,6 +6225,24 @@ list_of_names
     {
       str_link_delete_list( $1 );
       $$ = NULL;
+    }
+  ;
+
+ /* Handles typedef declarations (both in module and $root space) */
+typedef_decl
+  : K_typedef enumeration IDENTIFIER ';'
+    {
+      if( ignore_mode == 0 ) {
+        db_add_typedef( $3, curr_signed, curr_handled, TRUE, curr_range->left, curr_range->right );
+        free_safe( $3 );
+      }
+    }
+  | K_typedef net_type_sign_range_opt IDENTIFIER ';'
+    {
+      if( ignore_mode == 0 ) {
+        db_add_typedef( $3, curr_signed, curr_handled, TRUE, curr_range->left, curr_range->right );
+        free_safe( $3 );
+      }
     }
   ;
 

@@ -38,6 +38,7 @@ char,         K_char
 cover,        K_cover
 do,           K_do
 endproperty,  K_endproperty
+endsequence,  K_endsequence
 enum,         K_enum
 int,          K_int
 logic,        K_logic
@@ -45,6 +46,7 @@ longint,      K_longint
 packed,       K_packed
 priority,     K_priority
 property,     K_property
+sequence,     K_sequence
 shortint,     K_shortint
 struct,       K_struct
 typedef,      K_typedef

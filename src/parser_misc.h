@@ -62,6 +62,9 @@ void parser_dealloc_curr_range();
 /*! \brief Creates a copy of the curr_range variable */
 vector_width* parser_copy_curr_range();
 
+/*! \brief Copies specifies static expressions to the current range */
+void parser_copy_se_to_curr_range( static_expr* left, static_expr* right );
+
 /*! \brief Deallocates and sets the curr_range variable from explicitly set values */
 void parser_explicitly_set_curr_range( static_expr* left, static_expr* right );
 
@@ -73,6 +76,12 @@ bool parser_check_generation( int gen );
 
 /*
  $Log$
+ Revision 1.8  2006/07/15 22:07:14  phase1geo
+ Added all code to parser to check generation value to decide if a piece of
+ syntax is allowable by the parser or not.  This code compiles and has been
+ proven to not break regressions; however, none if it has been tested at this
+ point.  Many regression tests to follow...
+
  Revision 1.7  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

@@ -55,12 +55,15 @@ funit_link* funit_tail    = NULL;   /*!< Pointer to tail element of functional u
 
 funit_inst* instance_root = NULL;   /*!< Pointer to root of functional unit instance tree */
 
-extern char*  top_module;
-extern char*  top_instance;
-extern char   user_msg[USER_MSG_LENGTH];
-extern char** leading_hierarchies;
-extern int    leading_hier_num;
-extern bool   leading_hiers_differ;
+extern char*      top_module;
+extern char*      top_instance;
+extern char       user_msg[USER_MSG_LENGTH];
+extern char**     leading_hierarchies;
+extern int        leading_hier_num;
+extern bool       leading_hiers_differ;
+extern func_unit* global_funit;
+extern func_unit* curr_funit;
+extern int        flag_global_generation;
 
 /*!
  Creates root module for module_node tree.  If a module_node points to this node as its parent,
@@ -72,6 +75,16 @@ void search_init() {
   char       dutname[4096];  /* Instance name of top-level DUT module */
   char       lhier[4096];    /* Temporary storage of leading hierarchy */
 
+  /* If the global generation type is SystemVerilog support, create the global $root module space */
+  if( flag_global_generation == GENERATION_SV ) {
+    global_funit       = funit_create();
+    global_funit->name = strdup_safe( "$root", __FILE__, __LINE__ );
+    global_funit->type = FUNIT_MODULE;
+    funit_link_add( global_funit, &funit_head, &funit_tail );
+    curr_funit = global_funit;
+  }
+
+  /* Now create top-level module of design */
   mod       = funit_create();
   mod->type = FUNIT_MODULE;
 
@@ -271,6 +284,11 @@ void search_free_lists() {
 
 /*
  $Log$
+ Revision 1.26  2006/07/12 22:16:18  phase1geo
+ Fixing hierarchical referencing for instance arrays.  Also attempted to fix
+ a problem found with unary1; however, the generated report coverage information
+ does not look correct at this time.  Checkpointing what I have done for now.
+
  Revision 1.25  2006/04/18 21:59:54  phase1geo
  Adding support for environment variable substitution in configuration files passed
  to the score command.  Adding ovl.c/ovl.h files.  Working on support for assertion

@@ -908,6 +908,11 @@ str_link* get_next_vfile( str_link* curr, char* mod ) {
     }
   }
 
+  /* Specify that the returned file will be parsed */
+  if( next != NULL ) {
+    next->suppl2 = 1;
+  }
+
   return( next );
 
 }
@@ -1117,6 +1122,9 @@ const char* get_funit_type( int type ) {
 
 /*
  $Log$
+ Revision 1.54  2006/08/18 22:32:57  phase1geo
+ Adding get_dirname routine to util.c for future use.
+
  Revision 1.53  2006/08/18 22:19:54  phase1geo
  Fully integrated obfuscation into the development release.
 
