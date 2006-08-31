@@ -11,7 +11,7 @@ initial begin
 end
 
 initial begin
-        $dumpfile( "enum1.vcd" );
+        $dumpfile( "enum1.1.vcd" );
         $dumpvars( 0, main );
         #10;
         $finish;
