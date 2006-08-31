@@ -137,9 +137,9 @@ IVONLYDIAGS2  =
 IVONLYDIAGS3  = 
 IVONLYDIAGS4  = 
 
-VCSONLYDIAGS1 = always_comb1    always_ff1      always_latch1   bit1            byte1 \
-                char1           dec1            dec1.1          dec2            dly_assign1.1 \
-                dly_assign1.2   dly_assign1.3   dly_assign1.4   dly_assign2 \
+VCSONLYDIAGS1 = always_comb1    always_ff1      always_latch1   assert1         bit1 \
+                byte1           char1           dec1            dec1.1          dec2 \
+                dly_assign1.1   dly_assign1.2   dly_assign1.3   dly_assign1.4   dly_assign2 \
                 dly_assign2.1   do_while1       do_while1.1     do_while2       elsif1 \
                 elsif1.1        elsif1.2        elsif1.3        elsif1.4        elsif2 \
                 elsif2.1        enum1           enum1.1         enum1.2         enum1.3 \
