@@ -272,6 +272,7 @@ int yydebug = 1;
 %token K_unique K_priority K_do
 %token K_always_comb K_always_latch K_always_ff
 %token K_typedef K_enum K_union K_struct K_packed
+%token K_assert K_property K_endproperty K_cover
 
 %token KK_attribute
 
@@ -3083,9 +3084,15 @@ module_item
   | attribute_list_opt
     K_typedef enumeration IDENTIFIER ';'
     {
-      db_add_typedef( $4, TRUE /*TBD*/, TRUE /*TBD*/, TRUE, curr_range->left, curr_range->right );
+      db_add_typedef( $4, curr_signed, curr_handled, TRUE, curr_range->left, curr_range->right );
       free_safe( $4 );
     }
+  /* SystemVerilog assertion - we don't currently support these and I don't want to worry about how to parse them either */
+  | attribute_list_opt
+    IDENTIFIER ':' error ';'
+  /* SystemVerilog property - we don't currently support these but parse them */
+  | attribute_list_opt
+    K_property error K_endproperty
   | KK_attribute '(' { ignore_mode++; } UNUSED_IDENTIFIER ',' UNUSED_STRING ',' UNUSED_STRING { ignore_mode--; }')' ';'
   | KK_attribute '(' error ')' ';'
     {
@@ -4171,6 +4178,30 @@ statement
           free_safe( $1 );
         }
         $$ = NULL;
+      }
+    }
+   /* Immediate SystemVerilog assertions are parsed but not performed -- we will not exclude a block that contains one */
+  | K_assert '(' ignore_more expression ignore_less ')' ';'
+    {
+      expression* exp;
+      statement*  stmt;
+      if( ignore_mode == 0 ) {
+        exp  = db_create_expression( NULL, NULL, EXP_OP_NOOP, lhs_mode, 0, 0, 0, NULL );
+        stmt = db_create_statement( exp );
+        db_add_expression( exp );
+        $$   = stmt;
+      }
+    }
+   /* Inline SystemVerilog assertion -- parsed, not performed and we will not exclude a block that contains one */
+  | IDENTIFIER ':' error ';'
+    {
+      expression* exp;
+      statement*  stmt;
+      if( ignore_mode == 0 ) {
+        exp  = db_create_expression( NULL, NULL, EXP_OP_NOOP, lhs_mode, 0, 0, 0, NULL );
+        stmt = db_create_statement( exp );
+        db_add_expression( exp );
+        $$   = stmt;
       }
     }
   | error ';'

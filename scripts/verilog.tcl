@@ -215,18 +215,31 @@ proc verilog_highlight_ppkeywords {tb color} {
 # Finds all preprocessor keywords in the specified textbox and highlights them with the given color
 proc verilog_highlight_keywords {tb color} {
 
-  # Create list of all preprocessor directives
-  set keywords [list always and assign begin buf bufif0 bufif1 case casex casez cmos deassign default defparam disable edge else end endcase \
-                     endfunction endmodule endprimitive endspecify endtable endtask event for force forever fork function highz0 highz1 if \
-                     initial inout input integer join large localparam macromodule medium module nand negedge nmos nor not notif0 notif1 or \
-                     output parameter pmos posedge primitive pull0 pull1 pulldown pullup rcmos real realtime reg release repeat rnmos rpmos rtran \
-                     rtranif0 rtranif1 scalered signed small specify specparam strong0 strong1 supply0 supply1 table task time tran tranif0 tranif1 \
-                     tri tri0 tri1 triand trior trireg vectored wait wand weak0 weak1 while wire wor xnor xor \
-                     automatic cell config design endconfig endgenerate generate genvar instance liblist library localparam noshowcancelled \
-                     pulsestyle_onevent pulsestyle_ondetect showcancelled use \
-                     always_comb always_ff always_latch bool bit byte char do enum int logic longint priority shortint struct typedef union \
-                     unique unsigned]
+  global curr_funit_name
+
+  # Create list of all language keywords
+  set v1995_keywords [list always and assign begin buf bufif0 bufif1 case casex casez cmos deassign default defparam disable edge else end \
+                           endcase endfunction endmodule endprimitive endspecify endtable endtask event for force forever fork function \
+                           highz0 highz1 if initial inout input integer join large localparam macromodule medium module nand negedge nmos \
+                           nor not notif0 notif1 or output parameter pmos posedge primitive pull0 pull1 pulldown pullup rcmos real realtime \
+                           reg release repeat rnmos rpmos rtran rtranif0 rtranif1 scalered signed small specify specparam strong0 strong1 \
+                           supply0 supply1 table task time tran tranif0 tranif1 tri tri0 tri1 triand trior trireg vectored wait wand weak0 \
+                           weak1 while wire wor xnor xor]
+  set v2001_keywords [list automatic cell config design endconfig endgenerate generate genvar instance liblist library localparam \
+                           noshowcancelled pulsestyle_onevent pulsestyle_ondetect showcancelled use]
+  set sv_keywords    [list always_comb always_ff always_latch assert bool bit byte char cover do endproperty enum int logic longint packed \
+                           priority property shortint struct typedef union unique unsigned]
   set ilist    ""
+
+  # Create full list based on user-specified generation
+  set generation [tcl_func_get_generation $curr_funit_name]
+  if {$generation == 3} {
+    set keywords [concat $v1995_keywords $v2001_keywords $sv_keywords]
+  } elseif {$generation == 2} {
+    set keywords [concat $v1995_keywords $v2001_keywords]
+  } else {
+    set keywords $v1995_keywords
+  }
 
   foreach keyword $keywords {
 

@@ -1642,6 +1642,59 @@ int tcl_func_get_include_pathname( ClientData d, Tcl_Interp* tcl, int argc, cons
  \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
          TCL_ERROR.
 
+ Returns the generation specified for the given functional unit.
+*/
+int tcl_func_get_generation( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+
+  int   retval = TCL_OK;    /* Return value for this function */
+  char  generation[2];      /* Generation to use for the specified module */
+  char* funit_name;         /* Name of functional unit to find generation for */
+  int   i;                  /* Loop iterator */
+  bool  mod_found = FALSE;  /* Set to TRUE if we found a generation for this exact module */
+
+  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  strcpy( generation, "3" );
+
+  /* Search the entire command-line */
+  i = 0;
+  while( i < score_arg_num ) {
+
+    /* Find a generation argument in the score args */
+    while( (i < score_arg_num) && (strcmp( "-g", score_args[i] ) != 0) ) i++;
+
+    if( i < score_arg_num ) {
+      i++;
+      if( (strlen( score_args[i] ) == 1) && !mod_found ) {
+        generation[0] = score_args[i][(strlen( score_args[i] ) - 1)];
+      } else if( ((strlen( score_args[i] ) - 2) == strlen( funit_name )) &&
+                 (strncmp( funit_name, score_args[i], strlen( funit_name ) ) == 0) ) {
+        generation[0] = score_args[i][(strlen( score_args[i] ) - 1)];
+        mod_found     = TRUE;
+      }
+    
+    }
+
+  }
+
+  if( retval == TCL_OK ) {
+    Tcl_SetResult( tcl, generation, TCL_STATIC );
+  }
+
+  free_safe( funit_name );
+
+  return( retval );
+
+}
+
+/*!
+ \param d     TBD
+ \param tcl   Pointer to the Tcl interpreter
+ \param argc  Number of arguments in the argv list
+ \param argv  Array of arguments passed to this function
+
+ \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
+         TCL_ERROR.
+
  Sets the exclusion value for a specified line.  This function is called whenever the user changes
  the exclusion for a specified line.  The tcl_func_get_line_summary function should be called
  immediately after to get the new line summary information.
@@ -1978,6 +2031,7 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
   Tcl_CreateCommand( tcl, "tcl_func_preprocess_verilog",        (Tcl_CmdProc*)(tcl_func_preprocess_verilog),        0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_score_path",            (Tcl_CmdProc*)(tcl_func_get_score_path),            0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_include_pathname",      (Tcl_CmdProc*)(tcl_func_get_include_pathname),      0, 0 );
+  Tcl_CreateCommand( tcl, "tcl_func_get_generation",            (Tcl_CmdProc*)(tcl_func_get_generation),            0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_set_line_exclude",          (Tcl_CmdProc*)(tcl_func_set_line_exclude),          0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_set_toggle_exclude",        (Tcl_CmdProc*)(tcl_func_set_toggle_exclude),        0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_set_comb_exclude",          (Tcl_CmdProc*)(tcl_func_set_comb_exclude),          0, 0 );
@@ -2004,6 +2058,11 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.57  2006/07/05 20:43:40  phase1geo
+ Finishing Tcl/Tk work on preferences window and report generator window.  Started
+ work on GUI HTML documentation for these changes.  A lot of documentation left to
+ do here, but all of the missing files are now in place.
+
  Revision 1.56  2006/07/01 03:16:18  phase1geo
  Completed work on ASCII report generation.  This has not been entirely
  tested out at this time.

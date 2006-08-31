@@ -765,6 +765,10 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
             }
           }
         }
+        if( retval ) {
+          score_add_arg( argv[i-1] );
+          score_add_arg( argv[i] );
+        }
       }
 
     } else {
@@ -889,6 +893,11 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.83  2006/08/18 22:07:45  phase1geo
+ Integrating obfuscation into all user-viewable output.  Verified that these
+ changes have not made an impact on regressions.  Also improved performance
+ impact of not obfuscating output.
+
  Revision 1.82  2006/08/18 04:41:14  phase1geo
  Incorporating bug fixes 1538920 and 1541944.  Updated regressions.  Only
  event1.1 does not currently pass (this does not pass in the stable version
