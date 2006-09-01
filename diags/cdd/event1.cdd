@@ -1,5 +1,6 @@
 5 8 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd event1.vcd -o event1.cdd -v event1.v
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -o event1.cdd -v event1.v
+3 0 $root $root NA 0 0
 3 0 main main event1.v 1 28
 1 a 0 3 40007 1 32 2
 1 b 0 4 40007 1 32 2

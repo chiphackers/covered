@@ -1,5 +1,6 @@
 5 8 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd hier1.1.vcd -o hier1.1.cdd -v hier1.1.v
+3 0 $root $root NA 0 0
 3 0 main main hier1.1.v 1 15
 2 1 5 2c004b 2 1 c 0 0 \this/is/some/kind/of/name[0] .a
 2 2 5 290029 1 0 20008 0 0 32 64 10 0 0 0 0 0 0 0

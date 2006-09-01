@@ -1,5 +1,6 @@
 5 8 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -o slist3.1.cdd -v slist3.1.v
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd slist3.1.vcd -o slist3.1.cdd -v slist3.1.v
+3 0 $root $root NA 0 0
 3 0 main main slist3.1.v 1 22
 2 1 6 20005 3 3d 2600a 0 0 1 0 2 foo
 2 2 0 0 1 1 8 0 0 d

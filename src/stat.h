@@ -32,12 +32,20 @@ statistic* statistic_create();
 /*! \brief Merges the results of the stat_from to the stat_to */
 void statistic_merge( statistic* stat_to, statistic* stat_from );
 
+/*! \brief Returns TRUE if the given statistic structure contains no coverage information */
+bool statistic_is_empty( statistic* stat );
+
 /*! \brief Deallocates memory for a statistic structure. */
 void statistic_dealloc( statistic* stat );
 
 
 /*
  $Log$
+ Revision 1.6  2006/03/28 22:28:28  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.5  2002/11/05 00:20:08  phase1geo
  Adding development documentation.  Fixing problem with combinational logic
  output in report command and updating full regression.

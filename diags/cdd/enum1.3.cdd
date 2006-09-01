@@ -1,5 +1,6 @@
 5 8 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -o enum1.3.cdd -v enum1.3.v
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd enum1.3.vcd -o enum1.3.cdd -v enum1.3.v
+3 0 $root $root NA 0 0
 3 0 main main enum1.3.v 1 21
 2 1 7 70007 0 1 0 0 0 A
 2 2 7 10003 0 1 400 0 0 foo

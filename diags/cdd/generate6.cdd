@@ -1,5 +1,6 @@
 5 8 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd generate6.vcd -o generate6.cdd -v generate6.v
+3 0 $root $root NA 0 0
 3 0 main main generate6.v 1 23
 3 1 main.U[0] main.U[0] generate6.v 6 13
 2 1 8 d0011 2 3d 2100a 0 0 1 0 2 V

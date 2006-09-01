@@ -1,5 +1,6 @@
 5 8 1 * 0
-8 /ptmp/cvs/covered/diags/verilog -t main -o race2.2.cdd -v race2.2.v
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd race2.2.vcd -o race2.2.cdd -v race2.2.v
+3 0 $root $root NA 0 0
 3 0 main main race2.2.v 1 21
 2 1 6 120012 3 1 c 0 0 x
 2 2 6 c000c 0 1 400 0 0 a

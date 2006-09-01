@@ -117,6 +117,7 @@
 
 extern char     user_msg[USER_MSG_LENGTH];
 extern exp_info exp_op_info[EXP_OP_NUM];
+extern func_unit* curr_funit;
 
 /*!
  Pointer to head of statement loop list.
@@ -857,6 +858,13 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.90  2006/08/28 22:28:28  phase1geo
+ Fixing bug 1546059 to match stable branch.  Adding support for repeated delay
+ expressions (i.e., a = repeat(2) @(b) c).  Fixing support for event delayed
+ assignments (i.e., a = @(b) c).  Adding several new diagnostics to verify this
+ new level of support and updating regressions for these changes.  Also added
+ parser support for logic port types.
+
  Revision 1.89  2006/08/16 15:32:15  phase1geo
  Fixing issues with do..while loop handling.  Full regression now passes.
 

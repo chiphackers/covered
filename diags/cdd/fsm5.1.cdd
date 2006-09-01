@@ -1,5 +1,6 @@
 5 8 1 * 0
-8 /ptmp/cvs/covered/diags/verilog -t main -o fsm5.1.cdd -y lib -v fsm5.1.v -F main
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd fsm5.1.vcd -o fsm5.1.cdd -y lib -v fsm5.1.v -F main
+3 0 $root $root NA 0 0
 3 0 main main fsm5.1.v 1 58
 2 1 17 580061 1 32 4 0 0 STATE_IDLE
 2 2 17 4a0053 5 1 c 0 0 next_state

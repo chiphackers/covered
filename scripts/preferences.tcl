@@ -37,6 +37,7 @@ set rsel_a                  ""
 set rsel_r                  ""
 set rsel_wsel               0
 set rsel_width              "80"
+set rsel_sup                ""
 
 
 # Create a list from 100 to 0
@@ -53,7 +54,7 @@ proc read_coveredrc {} {
   global vlog_hl_mode vlog_hl_ppkeyword_color vlog_hl_keyword_color
   global vlog_hl_comment_color vlog_hl_string_color vlog_hl_value_color
   global vlog_hl_symbol_color
-  global rsel_sdv rsel_mi rsel_cu rsel_l rsel_t rsel_c rsel_f rsel_a rsel_r rsel_wsel rsel_width
+  global rsel_sdv rsel_mi rsel_cu rsel_l rsel_t rsel_c rsel_f rsel_a rsel_r rsel_wsel rsel_width rsel_sup
   global HOME USER_HOME rc_file_to_write
 
   # Find the correct configuration file to read and eventually write
@@ -173,6 +174,11 @@ proc read_coveredrc {} {
             preformatted { set rsel_wsel 0 }
             default      { set rsel_wsel 1; set rsel_width $value }
           }
+        } elseif {$field == "ReportSuppressEmptyModules"} {
+          switch $value {
+            yes { set rsel_sup "-s" }
+            no  { set rsel_sup ""   }
+          }
         }
 
       }
@@ -194,7 +200,7 @@ proc write_coveredrc {} {
   global vlog_hl_mode vlog_hl_ppkeyword_color vlog_hl_keyword_color
   global vlog_hl_comment_color vlog_hl_string_color vlog_hl_value_color
   global vlog_hl_symbol_color
-  global rsel_sdv rsel_mi rsel_cu rsel_wsel rsel_width rsel_l rsel_t rsel_c rsel_f rsel_a rsel_r
+  global rsel_sdv rsel_mi rsel_cu rsel_wsel rsel_width rsel_l rsel_t rsel_c rsel_f rsel_a rsel_r rsel_sup
   global rc_file_to_write
 
   if {$rc_file_to_write != ""} {
@@ -363,6 +369,16 @@ proc write_coveredrc {} {
       puts $rc "ReportLineWidth = $rsel_width\n"
     }
 
+    puts $rc "# When an ASCII report is generated, this option specifies if modules/instances that"
+    puts $rc "# contain no coverage information (for all possible metrics) are suppressed from the"
+    puts $rc "# report output.  Legal values are 'yes' or 'no'.\n"
+
+    if {$rsel_sup == ""} {
+      puts $rc "ReportSuppressEmptyModules = no\n"
+    } else {
+      puts $rc "ReportSuppressEmptyModules = yes\n"
+    }
+
     flush $rc
     close $rc
 
@@ -398,6 +414,7 @@ proc create_preferences {start_index} {
   global rsel_f                  tmp_rsel_f
   global rsel_a                  tmp_rsel_a
   global rsel_r                  tmp_rsel_r
+  global rsel_sup                tmp_rsel_sup
   global hl_mode last_pref_index
 
   # Now create the window and set the grab to this window
@@ -433,6 +450,7 @@ proc create_preferences {start_index} {
     set tmp_rsel_f                  $rsel_f
     set tmp_rsel_a                  $rsel_a
     set tmp_rsel_r                  $rsel_r
+    set tmp_rsel_sup                $rsel_sup
 
     # Specify that there was no last index selected
     set last_pref_index -1
@@ -441,7 +459,7 @@ proc create_preferences {start_index} {
     toplevel .prefwin
     wm title .prefwin "Covered - Preferences"
     # wm resizable .prefwin 0 0
-    wm geometry .prefwin =500x350
+    wm geometry .prefwin =500x400
 
     # Create listbox frame
     frame .prefwin.lbf -relief raised -borderwidth 1
@@ -581,6 +599,7 @@ proc apply_preferences {} {
   global rsel_f                  tmp_rsel_f
   global rsel_a                  tmp_rsel_a
   global rsel_r                  tmp_rsel_r
+  global rsel_sup                tmp_rsel_sup
 
   # Save spinner values to temporary storage items
   save_spinners [.prefwin.lbf.lb curselection]
@@ -702,6 +721,10 @@ proc apply_preferences {} {
   }
   if {$rsel_r != $tmp_rsel_r} {
     set rsel_r $tmp_rsel_r
+    set changed 1
+  }
+  if {$rsel_sup != $tmp_rsel_sup} {
+    set rsel_sup $tmp_rsel_sup
     set changed 1
   }
 
@@ -1034,7 +1057,7 @@ proc create_report_pref {} {
 
   global tmp_rsel_sdv tmp_rsel_mi tmp_rsel_cu
   global tmp_rsel_l tmp_rsel_t tmp_rsel_c tmp_rsel_f tmp_rsel_a tmp_rsel_r
-  global tmp_rsel_width tmp_rsel_wsel
+  global tmp_rsel_width tmp_rsel_wsel tmp_rsel_sup
 
   frame .prefwin.pf.f
   label .prefwin.pf.f.l -anchor w -text "Set ASCII Report Generation Options"
@@ -1075,29 +1098,34 @@ proc create_report_pref {} {
   radiobutton .prefwin.pf.f.cu_u -text "Uncovered" -variable tmp_rsel_cu -value ""   -anchor w
   radiobutton .prefwin.pf.f.cu_c -text "Covered"   -variable tmp_rsel_cu -value "-c" -anchor w
 
+  # Create empty module/instance suppression area
+  checkbutton .prefwin.pf.f.sup_val -text "Suppress modules/instances from output if they\ncontain no coverage information" \
+                                    -variable tmp_rsel_sup -onvalue "-s" -offvalue "" -anchor w
+
   # Now pack all of the windows
   grid columnconfigure .prefwin.pf.f 2 -weight 1
   grid .prefwin.pf.f.l          -row 0  -column 0 -columnspan 3 -sticky news -pady 4
   grid .prefwin.pf.f.width_val  -row 1  -column 0 -sticky news -pady 4
   grid .prefwin.pf.f.width_w    -row 1  -column 1 -sticky news -pady 4
   grid .prefwin.pf.f.width_lbl  -row 1  -column 2 -sticky news -pady 4
-  grid .prefwin.pf.f.sdv_lbl    -row 2  -column 0 -sticky news -pady 4
-  grid .prefwin.pf.f.mi_lbl     -row 2  -column 2 -sticky news -pady 4
-  grid .prefwin.pf.f.sdv_s      -row 3  -column 0 -sticky news -padx 12
-  grid .prefwin.pf.f.mi_m       -row 3  -column 2 -sticky news -padx 12
-  grid .prefwin.pf.f.sdv_d      -row 4  -column 0 -sticky news -padx 12
-  grid .prefwin.pf.f.mi_i       -row 4  -column 2 -sticky news -padx 12
-  grid .prefwin.pf.f.sdv_v      -row 5  -column 0 -sticky news -padx 12
-  grid .prefwin.pf.f.metric_lbl -row 6  -column 0 -sticky news -pady 4
-  grid .prefwin.pf.f.cu_lbl     -row 6  -column 2 -sticky news -pady 4
-  grid .prefwin.pf.f.metric_l   -row 7  -column 0 -sticky news -padx 12
-  grid .prefwin.pf.f.cu_u       -row 7  -column 2 -sticky news -padx 12
-  grid .prefwin.pf.f.metric_t   -row 8  -column 0 -sticky news -padx 12
-  grid .prefwin.pf.f.cu_c       -row 8  -column 2 -sticky news -padx 12
-  grid .prefwin.pf.f.metric_c   -row 9  -column 0 -sticky news -padx 12
-  grid .prefwin.pf.f.metric_f   -row 10 -column 0 -sticky news -padx 12
-  grid .prefwin.pf.f.metric_a   -row 11 -column 0 -sticky news -padx 12
-  grid .prefwin.pf.f.metric_r   -row 12 -column 0 -sticky news -padx 12
+  grid .prefwin.pf.f.sup_val    -row 2  -column 0 -columnspan 3 -sticky nw -pady 4
+  grid .prefwin.pf.f.sdv_lbl    -row 3  -column 0 -sticky news -pady 4
+  grid .prefwin.pf.f.mi_lbl     -row 3  -column 2 -sticky news -pady 4
+  grid .prefwin.pf.f.sdv_s      -row 4  -column 0 -sticky news -padx 12
+  grid .prefwin.pf.f.mi_m       -row 4  -column 2 -sticky news -padx 12
+  grid .prefwin.pf.f.sdv_d      -row 5  -column 0 -sticky news -padx 12
+  grid .prefwin.pf.f.mi_i       -row 5  -column 2 -sticky news -padx 12
+  grid .prefwin.pf.f.sdv_v      -row 6  -column 0 -sticky news -padx 12
+  grid .prefwin.pf.f.metric_lbl -row 7  -column 0 -sticky news -pady 4
+  grid .prefwin.pf.f.cu_lbl     -row 7  -column 2 -sticky news -pady 4
+  grid .prefwin.pf.f.metric_l   -row 8  -column 0 -sticky news -padx 12
+  grid .prefwin.pf.f.cu_u       -row 8  -column 2 -sticky news -padx 12
+  grid .prefwin.pf.f.metric_t   -row 9  -column 0 -sticky news -padx 12
+  grid .prefwin.pf.f.cu_c       -row 9  -column 2 -sticky news -padx 12
+  grid .prefwin.pf.f.metric_c   -row 10 -column 0 -sticky news -padx 12
+  grid .prefwin.pf.f.metric_f   -row 11 -column 0 -sticky news -padx 12
+  grid .prefwin.pf.f.metric_a   -row 12 -column 0 -sticky news -padx 12
+  grid .prefwin.pf.f.metric_r   -row 13 -column 0 -sticky news -padx 12
 
   pack .prefwin.pf.f -fill both
 

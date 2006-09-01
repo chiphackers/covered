@@ -1689,6 +1689,7 @@ struct statistic_s {
   int   rtype_total[RACE_TYPE_NUM];  /*!< Total number of each race condition type found */
   float assert_total;                /*!< Total number of assertions */
   int   assert_hit;                  /*!< Number of assertions covered during simulation */
+  bool  show;                        /*!< Set to TRUE if this module should be output to the report */
 };
 
 /*!
@@ -2082,6 +2083,11 @@ struct enum_item_s {
 
 /*
  $Log$
+ Revision 1.226  2006/09/01 04:06:36  phase1geo
+ Added code to support more than one instance tree.  Currently, I am seeing
+ quite a few memory errors that are causing some major problems at the moment.
+ Checkpointing.
+
  Revision 1.225  2006/08/29 22:49:31  phase1geo
  Added enumeration support and partial support for typedefs.  Added enum1
  diagnostic to verify initial enumeration support.  Full regression has not

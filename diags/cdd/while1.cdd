@@ -1,5 +1,6 @@
 5 8 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd while1.vcd -o while1.cdd -v while1.v
+3 0 $root $root NA 0 0
 3 0 main main while1.v 1 27
 2 1 6 c000f 1 0 20004 0 0 1 1 0
 2 2 6 80008 0 1 400 0 0 a

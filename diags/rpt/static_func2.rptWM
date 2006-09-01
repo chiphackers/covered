@@ -17,6 +17,7 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
+  $root                   NA                         0/    0/    0      100%
   main                    static_func2.v             0/    0/    0      100%
   foo                     static_func2.v             1/    0/    1      100%
   main.const_func         static_func2.v             2/    0/    2      100%
@@ -28,6 +29,7 @@ Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hi
 Module/Task/Function      Filename                         Toggle 0 -> 1                       Toggle 1 -> 0
                                                    Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
+  $root                   NA                         0/    0/    0      100%             0/    0/    0      100%
   main                    static_func2.v             0/   16/   16        0%             0/   16/   16        0%
   foo                     static_func2.v             0/    2/    2        0%             0/    2/    2        0%
   main.const_func         static_func2.v             1/   63/   64        2%             1/   63/   64        2%
@@ -71,6 +73,7 @@ Module/Task/Function      Filename                         Toggle 0 -> 1        
 Module/Task/Function                Filename                                Logic Combinations
                                                                       Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
+  $root                             NA                                  0/   0/   0      100%
   main                              static_func2.v                      0/   0/   0      100%
   foo                               static_func2.v                      0/   2/   2        0%
   main.const_func                   static_func2.v                      0/   0/   0      100%
@@ -100,6 +103,7 @@ Module/Task/Function                Filename                                Logi
                                                                State                             Arc
 Module/Task/Function      Filename                Hit/Miss/Total    Percent Hit    Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
+  $root                   NA                        0/   0/   0      100%            0/   0/   0      100%
   main                    static_func2.v            0/   0/   0      100%            0/   0/   0      100%
   foo                     static_func2.v            0/   0/   0      100%            0/   0/   0      100%
   main.const_func         static_func2.v            0/   0/   0      100%            0/   0/   0      100%

@@ -1,5 +1,6 @@
 5 8 1 * 0
-8 /ptmp/cvs/covered/diags/verilog -t main -o concat4.2.cdd -v concat4.2.v
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -o concat4.2.cdd -v concat4.2.v
+3 0 $root $root NA 0 0
 3 0 main main concat4.2.v 1 26
 2 1 8 180018 5 1 c 0 0 d
 2 2 8 130013 0 1 400 0 0 c

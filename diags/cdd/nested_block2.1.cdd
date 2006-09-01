@@ -1,5 +1,6 @@
 5 8 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd nested_block2.1.vcd -o nested_block2.1.cdd -v nested_block2.1.v
+3 0 $root $root NA 0 0
 3 0 main main nested_block2.1.v 1 25
 2 1 4 e000e 1 1 4 0 0 b
 2 2 4 e000e 1 47 4 1 0 foo.a

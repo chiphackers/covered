@@ -27,6 +27,7 @@ extern inst_link* inst_head;
 extern inst_link* inst_tail;
 extern char       user_msg[USER_MSG_LENGTH];
 extern bool       debug_mode;
+extern func_unit* curr_funit;
 
 
 /*!
@@ -822,11 +823,9 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
           while( (instl != NULL) && !instance_parse_add( &(instl->inst), inst->funit, gi->elem.inst->funit, inst_name, NULL, FALSE ) ) {
             instl = instl->next;
           }
-          if( instl == NULL ) {
-            instl = inst_link_add( instance_create( gi->elem.inst->funit, inst_name, NULL ), &inst_head, &inst_tail );
-          }
+          assert( instl != NULL );
           snprintf( inst_name, 4096, "%s.%s[%d]", inst->name, gi->elem.inst->name, vector_to_int( genvar->value ) );
-          child = instance_find_scope( instl->inst, inst_name );
+          child = instance_find_scope( inst, inst_name );
           inst_parm_add_genvar( genvar, child );
         } else {
           char       inst_name[4096];
@@ -834,11 +833,9 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
           while( (instl != NULL) && !instance_parse_add( &(instl->inst), inst->funit, gi->elem.inst->funit, gi->elem.inst->name, NULL, FALSE ) ) {
             instl = instl->next;
           }
-          if( instl == NULL ) {
-            instl = inst_link_add( instance_create( gi->elem.inst->funit, gi->elem.inst->name, NULL ), &inst_head, &inst_tail );
-          }
+          assert( instl != NULL );
           snprintf( inst_name, 4096, "%s.%s", inst->name, gi->elem.inst->name );
-          child = instance_find_scope( instl->inst, inst_name );
+          child = instance_find_scope( inst, inst_name );
         }
         gen_item_resolve( gi->next_true, child, TRUE );
         gen_item_resolve( gi->next_false, inst, FALSE );
@@ -1005,6 +1002,11 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.33  2006/09/01 04:06:37  phase1geo
+ Added code to support more than one instance tree.  Currently, I am seeing
+ quite a few memory errors that are causing some major problems at the moment.
+ Checkpointing.
+
  Revision 1.32  2006/08/25 22:49:45  phase1geo
  Adding support for handling generated hierarchical names in signals that are outside
  of generate blocks.  Added support for op-and-assigns in generate for loops as well

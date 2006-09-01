@@ -1,5 +1,6 @@
 5 8 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd task2.vcd -o task2.cdd -v task2.v
+3 0 $root $root NA 0 0
 3 0 main main task2.v 1 30
 2 1 6 10011 2 3b 2100a 0 0 1 0 2 delay_for_awhile
 2 2 7 50008 1 0 20004 0 0 1 1 0

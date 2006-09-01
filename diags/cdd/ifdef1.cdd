@@ -1,5 +1,6 @@
 5 8 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd ifdef1.vcd -o ifdef1.cdd -v ifdef1.v
+3 0 $root $root NA 0 0
 3 0 main main ifdef1.v 3 25
 2 1 13 160019 1 0 20008 0 0 1 1 1
 2 2 13 f0012 1 0 20004 0 0 1 1 0

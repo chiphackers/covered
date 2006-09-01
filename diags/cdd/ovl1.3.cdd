@@ -1,5 +1,6 @@
 5 8 11 * 0
-8 /ptmp/cvs/covered/diags/verilog -t main -o ovl1.3.cdd -v ovl1.3.v -A ovl +libext+.vlib+ -y ./ovl -I ./ovl -I ./ovl/vlog95
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd ovl1.3.vcd -o ovl1.3.cdd -v ovl1.3.v -A ovl +libext+.vlib+ -y ./ovl -I ./ovl -I ./ovl/vlog95
+3 0 $root $root NA 0 0
 3 0 main main ovl1.3.v 1 32
 1 width 0 0 80000 32 0 10 0 0 0 0 0 0 0
 1 clock 0 3 3000a 1 0 1102

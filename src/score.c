@@ -528,6 +528,8 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
             if( file_exists( argv[i] ) ) {
               dump_file = strdup_safe( argv[i], __FILE__, __LINE__ );
               dump_mode = DUMP_FMT_VCD;
+              score_add_arg( argv[i-1] );
+              score_add_arg( argv[i] );
             } else {
               snprintf( user_msg, USER_MSG_LENGTH, "VCD dumpfile not found \"%s\"", argv[i] );
               print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -557,6 +559,8 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
             if( file_exists( argv[i] ) ) {
               dump_file = strdup_safe( argv[i], __FILE__, __LINE__ );
               dump_mode = DUMP_FMT_LXT;
+              score_add_arg( argv[i-1] );
+              score_add_arg( argv[i] );
             } else {
               snprintf( user_msg, USER_MSG_LENGTH, "LXT dumpfile not found \"%s\"", argv[i] );
               print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -893,6 +897,11 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.84  2006/08/31 04:02:02  phase1geo
+ Adding parsing support for assertions and properties.  Adding feature to
+ highlighting support that looks up the generation for the given module and
+ highlights accordingly.
+
  Revision 1.83  2006/08/18 22:07:45  phase1geo
  Integrating obfuscation into all user-viewable output.  Verified that these
  changes have not made an impact on regressions.  Also improved performance

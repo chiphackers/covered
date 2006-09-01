@@ -495,27 +495,26 @@ bool combination_instance_summary( FILE* ofile, funit_inst* root, char* parent )
 
   funit_inst* curr;           /* Pointer to current child functional unit instance of this node */
   float       percent;        /* Percentage of lines hit */
-  float       miss;           /* Number of lines missed */
+  float       miss = 0;       /* Number of lines missed */
   char        tmpname[4096];  /* Temporary name holder of instance */
 
   assert( root != NULL );
   assert( root->stat != NULL );
 
-  if( root->stat->comb_total == 0 ) {
-    percent = 100;
+  if( strcmp( parent, "*" ) == 0 ) {
+    strcpy( tmpname, root->name );
   } else {
-    percent = ((root->stat->comb_hit / root->stat->comb_total) * 100);
+    snprintf( tmpname, 4096, "%s.%s", parent, obf_inst( root->name ) );
   }
-  miss    = (root->stat->comb_total - root->stat->comb_hit);
 
-  /* If this is an assertion module, don't output any further */
-  if( (info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit ) ) {
+  if( root->stat->show && ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
 
-    if( strcmp( parent, "*" ) == 0 ) {
-      strcpy( tmpname, root->name );
+    if( root->stat->comb_total == 0 ) {
+      percent = 100;
     } else {
-      snprintf( tmpname, 4096, "%s.%s", parent, obf_inst( root->name ) );
+      percent = ((root->stat->comb_hit / root->stat->comb_total) * 100);
     }
+    miss    = (root->stat->comb_total - root->stat->comb_hit);
 
     fprintf( ofile, "  %-63.63s    %4d/%4.0f/%4.0f      %3.0f%%\n",
              tmpname,
@@ -523,6 +522,11 @@ bool combination_instance_summary( FILE* ofile, funit_inst* root, char* parent )
              miss,
              root->stat->comb_total,
              percent );
+
+  }
+
+  /* If this is an assertion module, don't output any further */
+  if( (info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit ) ) {
 
     curr = root->child_head;
     while( curr != NULL ) {
@@ -569,7 +573,7 @@ bool combination_funit_summary( FILE* ofile, funit_link* head ) {
     }
 
     /* If this is an assertion module, don't output any further */
-    if( (info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( head->funit ) ) {
+    if( head->funit->stat->show && ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( head->funit )) ) {
 
       fprintf( ofile, "  %-30.30s    %-30.30s   %4d/%4.0f/%4.0f      %3.0f%%\n", 
                obf_funit( head->funit->name ),
@@ -2396,7 +2400,7 @@ void combination_report( FILE* ofile, bool verbose ) {
 
     instl = inst_head;
     while( instl != NULL ) {
-      missed_found |= combination_instance_summary( ofile, instl->inst, tmp );
+      missed_found |= combination_instance_summary( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*") );
       instl = instl->next;
     }
     
@@ -2404,7 +2408,7 @@ void combination_report( FILE* ofile, bool verbose ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
       instl = inst_head;
       while( instl != NULL ) {
-        combination_instance_verbose( ofile, instl->inst, tmp );
+        combination_instance_verbose( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*") );
         instl = instl->next;
       }
     }
@@ -2431,6 +2435,11 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.155  2006/09/01 04:06:36  phase1geo
+ Added code to support more than one instance tree.  Currently, I am seeing
+ quite a few memory errors that are causing some major problems at the moment.
+ Checkpointing.
+
  Revision 1.154  2006/08/28 22:28:28  phase1geo
  Fixing bug 1546059 to match stable branch.  Adding support for repeated delay
  expressions (i.e., a = repeat(2) @(b) c).  Fixing support for event delayed

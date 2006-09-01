@@ -1,5 +1,6 @@
 5 8 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -o shortint1.cdd -v shortint1.v
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd shortint1.vcd -o shortint1.cdd -v shortint1.v
+3 0 $root $root NA 0 0
 3 0 main main shortint1.v 1 14
 2 1 3 160016 1 0 20004 0 0 32 64 0 0 0 0 0 0 0 0
 2 2 3 120012 0 1 400 0 0 a

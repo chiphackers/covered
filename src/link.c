@@ -1038,18 +1038,19 @@ void fsm_link_delete_list( fsm_link* head ) {
 
 /*!
  \param head      Pointer to head funit_link element of list.
+ \param tail      Pointer to tail funit_link element of list.
  \param rm_funit  If TRUE, deallocates specified functional unit; otherwise, just deallocates the links
 
  Deletes each element of the specified list.
 */
-void funit_link_delete_list( funit_link* head, bool rm_funit ) {
+void funit_link_delete_list( funit_link** head, funit_link** tail, bool rm_funit ) {
 
   funit_link* tmp;   /* Temporary pointer to current link in list */
 
-  while( head != NULL ) {
+  while( *head != NULL ) {
 
-    tmp  = head;
-    head = tmp->next;
+    tmp   = *head;
+    *head = tmp->next;
 
     /* Deallocate signal */
     if( rm_funit ) {
@@ -1061,6 +1062,8 @@ void funit_link_delete_list( funit_link* head, bool rm_funit ) {
     free_safe( tmp );
 
   }
+
+  *tail = NULL;
 
 }
 
@@ -1116,6 +1119,11 @@ void inst_link_delete_list( inst_link* head ) {
 
 /*
  $Log$
+ Revision 1.55  2006/09/01 04:06:37  phase1geo
+ Added code to support more than one instance tree.  Currently, I am seeing
+ quite a few memory errors that are causing some major problems at the moment.
+ Checkpointing.
+
  Revision 1.54  2006/08/28 22:28:28  phase1geo
  Fixing bug 1546059 to match stable branch.  Adding support for repeated delay
  expressions (i.e., a = repeat(2) @(b) c).  Fixing support for event delayed

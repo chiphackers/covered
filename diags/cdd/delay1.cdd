@@ -1,5 +1,6 @@
 5 8 1 * 0
-8 /ptmp/cvs/covered/diags/verilog -t main -o delay1.cdd -v delay1.v
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -o delay1.cdd -v delay1.v
+3 0 $root $root NA 0 0
 3 0 main main delay1.v 1 26
 2 1 6 2d002d 1 0 20004 0 0 32 64 0 0 0 0 0 0 0 0
 2 2 6 2b002e 1 23 4 0 1 c

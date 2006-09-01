@@ -144,3 +144,9 @@ ReportCoverageType = covered
 
 ReportLineWidth = preformatted
 
+# When an ASCII report is generated, this option specifies if modules/instances that
+# contain no coverage information (for all possible metrics) are suppressed from the
+# report output.  Legal values are 'yes' or 'no'.
+
+ReportSuppressEmptyModules = yes
+

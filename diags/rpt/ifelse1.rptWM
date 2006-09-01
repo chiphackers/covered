@@ -17,6 +17,7 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
+  $root                   NA                         0/    0/    0      100%
   main                    ifelse1.v                  0/    0/    0      100%
   mux                     mux.v                      6/    0/    6      100%
 
@@ -27,6 +28,7 @@ Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hi
 Module/Task/Function      Filename                         Toggle 0 -> 1                       Toggle 1 -> 0
                                                    Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
+  $root                   NA                         0/    0/    0      100%             0/    0/    0      100%
   main                    ifelse1.v                  4/    2/    6       67%             3/    3/    6       50%
   mux                     mux.v                      4/    2/    6       67%             3/    3/    6       50%
 ---------------------------------------------------------------------------------------------------------------------
@@ -72,6 +74,7 @@ Module/Task/Function      Filename                         Toggle 0 -> 1        
 Module/Task/Function                Filename                                Logic Combinations
                                                                       Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
+  $root                             NA                                  0/   0/   0      100%
   main                              ifelse1.v                           0/   0/   0      100%
   mux                               mux.v                               7/   2/   9       78%
 ---------------------------------------------------------------------------------------------------------------------
@@ -112,6 +115,7 @@ Module/Task/Function                Filename                                Logi
                                                                State                             Arc
 Module/Task/Function      Filename                Hit/Miss/Total    Percent Hit    Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
+  $root                   NA                        0/   0/   0      100%            0/   0/   0      100%
   main                    ifelse1.v                 0/   0/   0      100%            0/   0/   0      100%
   mux                     mux.v                     0/   0/   0      100%            0/   0/   0      100%
 

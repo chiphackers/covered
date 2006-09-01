@@ -921,18 +921,6 @@ void funit_clean( func_unit* funit ) {
     /* Set the global curr_funit to be the same as this funit */
     curr_funit = funit;
 
-    /* Free functional unit name */
-    if( funit->name != NULL ) {
-      free_safe( funit->name );
-      funit->name = NULL;
-    }
-
-    /* Free functional unit filename */
-    if( funit->filename != NULL ) {
-      free_safe( funit->filename );
-      funit->filename = NULL;
-    }
-
     /* Free signal list */
     sig_link_delete_list( funit->sig_head, TRUE );
     funit->sig_head = NULL;
@@ -972,7 +960,7 @@ void funit_clean( func_unit* funit ) {
     statistic_dealloc( funit->stat );
 
     /* Free tf elements */
-    funit_link_delete_list( funit->tf_head, FALSE );
+    funit_link_delete_list( &(funit->tf_head), &(funit->tf_tail), FALSE );
 
     /* Free typdef items */
     tdi = funit->tdi_head;
@@ -989,6 +977,18 @@ void funit_clean( func_unit* funit ) {
 
     /* Free enumerated elements */
     enumerate_dealloc_list( funit );
+
+    /* Free functional unit name */
+    if( funit->name != NULL ) {
+      free_safe( funit->name );
+      funit->name = NULL;
+    }
+
+    /* Free functional unit filename */
+    if( funit->filename != NULL ) {
+      free_safe( funit->filename );
+      funit->filename = NULL;
+    }
 
     /* Reset curr_funit */
     curr_funit = old_funit;
@@ -1019,6 +1019,11 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.40  2006/09/01 04:06:37  phase1geo
+ Added code to support more than one instance tree.  Currently, I am seeing
+ quite a few memory errors that are causing some major problems at the moment.
+ Checkpointing.
+
  Revision 1.39  2006/08/29 22:49:31  phase1geo
  Added enumeration support and partial support for typedefs.  Added enum1
  diagnostic to verify initial enumeration support.  Full regression has not

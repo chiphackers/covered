@@ -1,5 +1,6 @@
 5 8 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd cond1.vcd -o cond1.cdd -v cond1.v
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -o cond1.cdd -v cond1.v
+3 0 $root $root NA 0 0
 3 0 main main cond1.v 1 28
 2 1 7 130013 3 1 c 0 0 d
 2 2 7 f000f 3 1 c 0 0 c

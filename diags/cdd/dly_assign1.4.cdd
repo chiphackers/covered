@@ -1,5 +1,6 @@
 5 8 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -o dly_assign1.4.cdd -v dly_assign1.4.v
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd dly_assign1.4.vcd -o dly_assign1.4.cdd -v dly_assign1.4.v
+3 0 $root $root NA 0 0
 3 0 main main dly_assign1.4.v 1 28
 2 1 6 20002 1 0 20008 0 0 32 64 1 0 0 0 0 0 0 0
 2 2 6 20002 1 0 20008 0 0 32 64 55 55 55 55 55 55 55 55

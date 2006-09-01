@@ -1,5 +1,6 @@
 5 8 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd static_func2.2.vcd -o static_func2.2.cdd -v static_func2.2.v
+3 0 $root $root NA 0 0
 3 0 main main static_func2.2.v 1 23
 1 FOO 0 0 80000 32 0 10 0 0 0 0 0 0 0
 1 a 0 5 3001a 16 0 aa aa aa aa

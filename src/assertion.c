@@ -97,35 +97,34 @@ bool assertion_instance_summary( FILE* ofile, funit_inst* root, char* parent_ins
 
   funit_inst* curr;           /* Pointer to current child functional unit instance of this node */
   float       percent;        /* Percentage of assertions hit */
-  float       miss;           /* Number of assertions missed */
+  float       miss = 0;       /* Number of assertions missed */
   char        tmpname[4096];  /* Temporary holder of instance name */
   char*       pname;          /* Printable version of instance name */
 
   assert( root != NULL );
   assert( root->stat != NULL );
 
-  if( root->stat->assert_total == 0 ) {
-    percent = 100.0;
+  /* Get printable version of the instance name */
+  pname = scope_gen_printable( root->name );
+
+  /* Calculate instance name */
+  if( strcmp( parent_inst, "*" ) == 0 ) {
+    strcpy( tmpname, pname );
   } else {
-    percent = ((root->stat->assert_hit / root->stat->assert_total) * 100);
+    snprintf( tmpname, 4096, "%s.%s", parent_inst, pname );
   }
 
-  miss = (root->stat->assert_total - root->stat->assert_hit);
+  free_safe( pname );
 
-  /* If this is an assertion module, don't output any further */
-  if( (info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit ) ) {
+  if( root->stat->show && ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
 
-    /* Get printable version of the instance name */
-    pname = scope_gen_printable( root->name );
-
-    /* Calculate instance name */
-    if( strcmp( parent_inst, "*" ) == 0 ) {
-      strcpy( tmpname, pname );
+    if( root->stat->assert_total == 0 ) {
+      percent = 100.0;
     } else {
-      snprintf( tmpname, 4096, "%s.%s", parent_inst, pname );
+      percent = ((root->stat->assert_hit / root->stat->assert_total) * 100);
     }
 
-    free_safe( pname );
+    miss = (root->stat->assert_total - root->stat->assert_hit);
 
     fprintf( ofile, "  %-43.43s    %5d/%5.0f/%5.0f      %3.0f%%\n",
              tmpname,
@@ -133,6 +132,11 @@ bool assertion_instance_summary( FILE* ofile, funit_inst* root, char* parent_ins
              miss,
              root->stat->assert_total,
              percent );
+
+  }
+
+  /* If this is an assertion module, don't output any further */
+  if( (info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit ) ) {
 
     curr = root->child_head;
     while( curr != NULL ) {
@@ -175,7 +179,7 @@ bool assertion_funit_summary( FILE* ofile, funit_link* head ) {
     miss_found = (miss > 0) ? TRUE : miss_found;
 
     /* If this is an assertion module, don't output any further */
-    if( (info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( head->funit ) ) {
+    if( head->funit->stat->show && ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( head->funit )) ) {
 
       /* Get printable version of functional unit name */
       pname = scope_gen_printable( head->funit->name );
@@ -359,7 +363,7 @@ void assertion_report( FILE* ofile, bool verbose ) {
 
     instl = inst_head;
     while( instl != NULL ) {
-      missed_found |= assertion_instance_summary( ofile, instl->inst, tmp );
+      missed_found |= assertion_instance_summary( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*") );
       instl = instl->next;
     }
 
@@ -367,7 +371,7 @@ void assertion_report( FILE* ofile, bool verbose ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
       instl = inst_head;
       while( instl != NULL ) {
-        assertion_instance_verbose( ofile, instl->inst, tmp );
+        assertion_instance_verbose( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*") );
         instl = instl->next;
       }
 
@@ -528,6 +532,11 @@ bool assertion_get_coverage( char* funit_name, int funit_type, char* inst_name, 
 
 /*
  $Log$
+ Revision 1.13  2006/09/01 04:06:36  phase1geo
+ Added code to support more than one instance tree.  Currently, I am seeing
+ quite a few memory errors that are causing some major problems at the moment.
+ Checkpointing.
+
  Revision 1.12  2006/08/18 22:07:44  phase1geo
  Integrating obfuscation into all user-viewable output.  Verified that these
  changes have not made an impact on regressions.  Also improved performance

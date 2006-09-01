@@ -1,5 +1,6 @@
 5 8 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -o always_ff1.cdd -v always_ff1.v
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd always_ff1.vcd -o always_ff1.cdd -v always_ff1.v
+3 0 $root $root NA 0 0
 3 0 main main always_ff1.v 1 29
 2 1 9 9000c 1 0 20004 0 0 1 1 0
 2 2 9 40004 0 1 400 0 0 q

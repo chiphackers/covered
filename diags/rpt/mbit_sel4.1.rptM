@@ -17,6 +17,7 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
+  $root                   NA                         0/    0/    0      100%
   main                    mbit_sel4.1.v              0/    0/    0      100%
 
 
@@ -26,6 +27,7 @@ Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hi
 Module/Task/Function      Filename                         Toggle 0 -> 1                       Toggle 1 -> 0
                                                    Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
+  $root                   NA                         0/    0/    0      100%             0/    0/    0      100%
   main                    mbit_sel4.1.v              1/    3/    4       25%             1/    3/    4       25%
 ---------------------------------------------------------------------------------------------------------------------
 
@@ -45,6 +47,7 @@ Module/Task/Function      Filename                         Toggle 0 -> 1        
 Module/Task/Function                Filename                                Logic Combinations
                                                                       Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
+  $root                             NA                                  0/   0/   0      100%
   main                              mbit_sel4.1.v                       0/   0/   0      100%
 
 
@@ -54,6 +57,7 @@ Module/Task/Function                Filename                                Logi
                                                                State                             Arc
 Module/Task/Function      Filename                Hit/Miss/Total    Percent Hit    Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
+  $root                   NA                        0/   0/   0      100%            0/   0/   0      100%
   main                    mbit_sel4.1.v             0/   0/   0      100%            0/   0/   0      100%
 
 
@@ -62,6 +66,7 @@ Module/Task/Function      Filename                Hit/Miss/Total    Percent Hit 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
+  $root                   NA                         0/    0/    0      100%
   main                    mbit_sel4.1.v              0/    0/    0      100%
 
 

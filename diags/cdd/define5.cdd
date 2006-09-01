@@ -1,5 +1,6 @@
 5 8 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd define5.vcd -o define5.cdd -v define5.v
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -o define5.cdd -v define5.v
+3 0 $root $root NA 0 0
 3 0 main main define5.v 5 23
 2 1 11 d000d 1 1 4 0 0 c
 2 2 10 60006 1 1 4 0 0 b

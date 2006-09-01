@@ -1,5 +1,6 @@
 5 8 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd assign3.2A.vcd -o assign3.2A.cdd -v assign3.2A.v
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -o assign3.2A.cdd -v assign3.2A.v
+3 0 $root $root NA 0 0
 3 0 main main assign3.2A.v 21 80
 2 1 30 100010 3 0 20004 0 0 32 64 0 0 0 0 0 0 0 0
 2 2 30 b0011 3 23 8 0 1 val

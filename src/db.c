@@ -164,7 +164,7 @@ void db_close() {
 
     /* Remove memory allocated for inst_head and mod_head */
     inst_link_delete_list( inst_head );
-    funit_link_delete_list( funit_head, TRUE );
+    funit_link_delete_list( &funit_head, &funit_tail, TRUE );
 
     /* Deallocate preprocessor define tree */
     tree_dealloc( def_table );
@@ -175,11 +175,10 @@ void db_close() {
     /* Deallocate the information section memory */
     info_dealloc();
 
-    inst_head  = NULL;
-    inst_tail  = NULL;
-    funit_head = NULL;
-    funit_tail = NULL;
-    def_table  = NULL;
+    inst_head    = NULL;
+    inst_tail    = NULL;
+    def_table    = NULL;
+    global_funit = NULL;
 
   }
 
@@ -345,17 +344,21 @@ bool db_read( char* file, int read_mode ) {
           /* Finish handling last functional unit read from CDD file */
           if( curr_funit != NULL ) {
               
-            inst_link* instl = inst_head;  /* Pointer to current instance link */
+            if( read_mode != READ_MODE_MERGE_INST_MERGE ) {
 
-            /* Get the scope of the parent module */
-            scope_extract_back( funit_scope, back, parent_scope );
+              inst_link* instl = inst_head;  /* Pointer to current instance link */
 
-            /* Attempt to add it to each instance tree until a suitable one is found */
-            while( (instl != NULL) && !instance_read_add( &(instl->inst), parent_scope, curr_funit, back ) ) {
-              instl = instl->next;
-            }
-            if( instl == NULL ) {
-              inst_link_add( instance_create( curr_funit, funit_scope, NULL ), &inst_head, &inst_tail );
+              /* Get the scope of the parent module */
+              scope_extract_back( funit_scope, back, parent_scope );
+
+              /* Attempt to add it to each instance tree until a suitable one is found */
+              while( (instl != NULL) && !instance_read_add( &(instl->inst), parent_scope, curr_funit, back ) ) {
+                instl = instl->next;
+              }
+              if( instl == NULL ) {
+                inst_link_add( instance_create( curr_funit, funit_scope, NULL ), &inst_head, &inst_tail );
+              }
+
             }
 
             /* If the current functional unit is a merged unit, don't add it to the funit list again */
@@ -410,6 +413,11 @@ bool db_read( char* file, int read_mode ) {
               }
             }
 
+            /* Set global functional unit, if it has been found */
+            if( (curr_funit != NULL) && (strncmp( curr_funit->name, "$root", 5 ) == 0) ) {
+              global_funit = curr_funit;
+            }
+
           }
 
         } else {
@@ -445,22 +453,21 @@ bool db_read( char* file, int read_mode ) {
   /* If the last functional unit was being read, add it now */
   if( curr_funit != NULL ) {
 
-    inst_link* instl = inst_head;  /* Pointer to current instance link */
+    if( read_mode != READ_MODE_MERGE_INST_MERGE ) {
 
-    /* Get the scope of the parent module */
-    scope_extract_back( funit_scope, back, parent_scope );
+      inst_link* instl = inst_head;  /* Pointer to current instance link */
 
-    /* Attempt to add it to each instance tree until a suitable one is found */
-    while( (instl != NULL) && !instance_read_add( &(instl->inst), parent_scope, curr_funit, back ) ) {
-      instl = instl->next;
-    }
-    if( instl == NULL ) {
-      inst_link_add( instance_create( curr_funit, funit_scope, NULL ), &inst_head, &inst_tail );
-    }
+      /* Get the scope of the parent module */
+      scope_extract_back( funit_scope, back, parent_scope );
 
-    /* If the current functional unit is a merged unit, don't add it to the funit list again */
-    if( !merge_mode ) {
-      funit_link_add( curr_funit, &funit_head, &funit_tail );
+      /* Attempt to add it to each instance tree until a suitable one is found */
+      while( (instl != NULL) && !instance_read_add( &(instl->inst), parent_scope, curr_funit, back ) ) {
+        instl = instl->next;
+      }
+      if( instl == NULL ) {
+        inst_link_add( instance_create( curr_funit, funit_scope, NULL ), &inst_head, &inst_tail );
+      }
+
     }
 
     /* If the current functional unit was being merged, don't add it to the functional unit list again */
@@ -1579,7 +1586,7 @@ void db_remove_statement_from_current_funit( statement* stmt ) {
   if( (stmt != NULL) && (stmt->exp != NULL) ) {
 
 #ifdef DEBUG_MODE
-    snprintf( user_msg, USER_MSG_LENGTH, "In db_remove_statement_from_current_module %s, stmt id: %d, %s, line: %d",
+    snprintf( user_msg, USER_MSG_LENGTH, "In db_remove_statement_from_current_funit %s, stmt id: %d, %s, line: %d",
               obf_funit( curr_funit->name ), stmt->exp->id, expression_string_op( stmt->exp->op ), stmt->exp->line );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
@@ -2129,6 +2136,11 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.217  2006/09/01 04:06:36  phase1geo
+ Added code to support more than one instance tree.  Currently, I am seeing
+ quite a few memory errors that are causing some major problems at the moment.
+ Checkpointing.
+
  Revision 1.216  2006/08/31 22:32:17  phase1geo
  Things are in a state of flux at the moment.  I have added proper parsing support
  for assertions, properties and sequences.  Also added partial support for the $root

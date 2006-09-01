@@ -1,5 +1,6 @@
 5 8 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd disable2.1.vcd -o disable2.1.cdd -v disable2.1.v
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -o disable2.1.cdd -v disable2.1.v
+3 0 $root $root NA 0 0
 3 0 main main disable2.1.v 1 25
 2 1 4 10004 2 3b 2100a 0 0 1 0 2 foo
 4 1 0 0

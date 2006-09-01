@@ -581,17 +581,18 @@ bool instance_read_add( funit_inst** root, char* parent, func_unit* child, char*
   funit_inst* inst;           /* Temporary pointer to functional unit instance to add to */
   funit_inst* new_inst;       /* Pointer to new functional unit instance to add */
 
-  new_inst = instance_create( child, inst_name, NULL );
-
   if( *root == NULL ) {
 
-    *root = new_inst;
+    *root = instance_create( child, inst_name, NULL );
 
   } else {
 
     assert( parent != NULL );
   
     if( (inst = instance_find_scope( *root, parent )) != NULL ) {
+
+      /* Create new instance */
+      new_inst = instance_create( child, inst_name, NULL );
 
       if( inst->child_head == NULL ) {
         inst->child_head = new_inst;
@@ -787,6 +788,11 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.56  2006/09/01 04:06:37  phase1geo
+ Added code to support more than one instance tree.  Currently, I am seeing
+ quite a few memory errors that are causing some major problems at the moment.
+ Checkpointing.
+
  Revision 1.55  2006/07/27 16:08:46  phase1geo
  Fixing several memory leak bugs, cleaning up output and fixing regression
  bugs.  Full regression now passes (including all current generate diagnostics).

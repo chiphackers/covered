@@ -17,6 +17,7 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
+  $root                   NA                         0/    0/    0      100%
   depth1                  instance1.v                1/    0/    1      100%
   depth2                  instance1.v                1/    0/    1      100%
 
@@ -27,6 +28,7 @@ Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hi
 Module/Task/Function      Filename                         Toggle 0 -> 1                       Toggle 1 -> 0
                                                    Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
+  $root                   NA                         0/    0/    0      100%             0/    0/    0      100%
   depth1                  instance1.v                3/    0/    3      100%             2/    1/    3       67%
   depth2                  instance1.v                3/    0/    3      100%             2/    1/    3       67%
 ---------------------------------------------------------------------------------------------------------------------
@@ -56,6 +58,7 @@ Module/Task/Function      Filename                         Toggle 0 -> 1        
 Module/Task/Function                Filename                                Logic Combinations
                                                                       Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
+  $root                             NA                                  0/   0/   0      100%
   depth1                            instance1.v                         3/   0/   3      100%
   depth2                            instance1.v                         4/   0/   4      100%
 
@@ -66,6 +69,7 @@ Module/Task/Function                Filename                                Logi
                                                                State                             Arc
 Module/Task/Function      Filename                Hit/Miss/Total    Percent Hit    Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
+  $root                   NA                        0/   0/   0      100%            0/   0/   0      100%
   depth1                  instance1.v               0/   0/   0      100%            0/   0/   0      100%
   depth2                  instance1.v               0/   0/   0      100%            0/   0/   0      100%
 

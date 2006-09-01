@@ -283,43 +283,42 @@ bool toggle_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst )
   funit_inst* curr;           /* Pointer to current child functional unit instance of this node */
   float       percent01;      /* Percentage of bits toggling from 0 -> 1 */
   float       percent10;      /* Percentage of bits toggling from 1 -> 0 */
-  float       miss01;         /* Number of bits that did not toggle from 0 -> 1 */
-  float       miss10;         /* Number of bits that did not toggle from 1 -> 0 */
+  float       miss01 = 0;     /* Number of bits that did not toggle from 0 -> 1 */
+  float       miss10 = 0;     /* Number of bits that did not toggle from 1 -> 0 */
   char        tmpname[4096];  /* Temporary name holder for instance */
   char*       pname;          /* Printable version of instance name */
 
   assert( root != NULL );
   assert( root->stat != NULL );
 
-  /* Calculate for toggle01 information */
-  if( root->stat->tog_total == 0 ) {
-    percent01 = 100;
+  /* Get printable version of this instance */
+  pname = scope_gen_printable( root->name );
+
+  if( strcmp( parent_inst, "*" ) == 0 ) {
+    strcpy( tmpname, pname );
   } else {
-    percent01 = ((root->stat->tog01_hit / root->stat->tog_total) * 100);
+    snprintf( tmpname, 4096, "%s.%s", parent_inst, pname );
   }
-  miss01    = (root->stat->tog_total - root->stat->tog01_hit);
 
-  /* Calculate for toggle10 information */
-  if( root->stat->tog_total == 0 ) {
-    percent10 = 100;
-  } else {
-    percent10 = ((root->stat->tog10_hit / root->stat->tog_total) * 100);
-  }
-  miss10    = (root->stat->tog_total - root->stat->tog10_hit);
+  free_safe( pname );
 
-  /* If this is an assertion module, don't output any further */
-  if( (info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit ) ) {
+  if( root->stat->show && ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
 
-    /* Get printable version of this instance */
-    pname = scope_gen_printable( root->name );
-
-    if( strcmp( parent_inst, "*" ) == 0 ) {
-      strcpy( tmpname, pname );
+    /* Calculate for toggle01 information */
+    if( root->stat->tog_total == 0 ) {
+      percent01 = 100;
     } else {
-      snprintf( tmpname, 4096, "%s.%s", parent_inst, pname );
+      percent01 = ((root->stat->tog01_hit / root->stat->tog_total) * 100);
     }
+    miss01    = (root->stat->tog_total - root->stat->tog01_hit);
 
-    free_safe( pname );
+    /* Calculate for toggle10 information */
+    if( root->stat->tog_total == 0 ) {
+      percent10 = 100;
+    } else {
+      percent10 = ((root->stat->tog10_hit / root->stat->tog_total) * 100);
+    }
+    miss10    = (root->stat->tog_total - root->stat->tog10_hit);
 
     fprintf( ofile, "  %-43.43s    %5d/%5.0f/%5.0f      %3.0f%%         %5d/%5.0f/%5.0f      %3.0f%%\n",
              tmpname,
@@ -331,6 +330,11 @@ bool toggle_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst )
              miss10,
              root->stat->tog_total,
              percent10 );
+
+  }
+
+  /* If this is an assertion module, don't output any further */
+  if( (info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit ) ) {
 
     curr = root->child_head;
     while( curr != NULL ) {
@@ -383,7 +387,7 @@ bool toggle_funit_summary( FILE* ofile, funit_link* head ) {
     miss_found = ((miss01 > 0) || (miss10 > 0)) ? TRUE : miss_found;
 
     /* If this is an assertion module, don't output any further */
-    if( (info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( head->funit ) ) {
+    if( head->funit->stat->show && ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( head->funit )) ) {
 
       /* Get printable version of functional unit name */
       pname = scope_gen_printable( head->funit->name );
@@ -610,7 +614,7 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
     instl = inst_head;
     while( instl != NULL ) {
-      missed_found |= toggle_instance_summary( ofile, instl->inst, tmp );
+      missed_found |= toggle_instance_summary( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*") );
       instl = instl->next;
     }
     
@@ -618,7 +622,7 @@ void toggle_report( FILE* ofile, bool verbose ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
       instl = inst_head;
       while( instl != NULL ) {
-        toggle_instance_verbose( ofile, instl->inst, tmp );
+        toggle_instance_verbose( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*") );
         instl = instl->next;
       }
     }
@@ -644,6 +648,11 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.47  2006/09/01 04:06:37  phase1geo
+ Added code to support more than one instance tree.  Currently, I am seeing
+ quite a few memory errors that are causing some major problems at the moment.
+ Checkpointing.
+
  Revision 1.46  2006/08/29 22:49:31  phase1geo
  Added enumeration support and partial support for typedefs.  Added enum1
  diagnostic to verify initial enumeration support.  Full regression has not

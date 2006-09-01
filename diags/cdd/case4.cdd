@@ -1,5 +1,6 @@
 5 8 1 * 0
-8 /ptmp/cvs/covered/diags/verilog -t main -o case4.cdd -v case4.v
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -o case4.cdd -v case4.v
+3 0 $root $root NA 0 0
 3 0 main main case4.v 1 65
 2 1 19 d000e 6 1 8 0 0 st
 2 2 19 30009 0 1 400 0 0 next_st

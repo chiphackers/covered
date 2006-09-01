@@ -1,5 +1,6 @@
 5 8 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd instance6.1.vcd -o instance6.1.cdd -v instance6.1.v
+3 0 $root $root NA 0 0
 3 0 main main instance6.1.v 6 26
 1 a 0 8 3000a 3 0 152a
 1 b 0 8 3000d 3 0 2a

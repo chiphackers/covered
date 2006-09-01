@@ -17,6 +17,7 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
+  $root                   NA                         0/    0/    0      100%
   main                    generate11.v               0/    0/    0      100%
   main.U[0]               generate11.v               0/    0/    0      100%
   main.U[1]               generate11.v               0/    0/    0      100%
@@ -34,6 +35,7 @@ Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hi
 Module/Task/Function      Filename                         Toggle 0 -> 1                       Toggle 1 -> 0
                                                    Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
+  $root                   NA                         0/    0/    0      100%             0/    0/    0      100%
   main                    generate11.v               0/    0/    0      100%             0/    0/    0      100%
   main.U[0]               generate11.v               0/    2/    2        0%             0/    2/    2        0%
   main.U[1]               generate11.v               1/    1/    2       50%             0/    2/    2        0%
@@ -88,6 +90,7 @@ Module/Task/Function      Filename                         Toggle 0 -> 1        
 Module/Task/Function                Filename                                Logic Combinations
                                                                       Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
+  $root                             NA                                  0/   0/   0      100%
   main                              generate11.v                        0/   0/   0      100%
   main.U[0]                         generate11.v                        0/   0/   0      100%
   main.U[1]                         generate11.v                        0/   0/   0      100%
@@ -105,6 +108,7 @@ Module/Task/Function                Filename                                Logi
                                                                State                             Arc
 Module/Task/Function      Filename                Hit/Miss/Total    Percent Hit    Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
+  $root                   NA                        0/   0/   0      100%            0/   0/   0      100%
   main                    generate11.v              0/   0/   0      100%            0/   0/   0      100%
   main.U[0]               generate11.v              0/   0/   0      100%            0/   0/   0      100%
   main.U[1]               generate11.v              0/   0/   0      100%            0/   0/   0      100%
@@ -121,6 +125,7 @@ Module/Task/Function      Filename                Hit/Miss/Total    Percent Hit 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
+  $root                   NA                         0/    0/    0      100%
   main                    generate11.v               0/    0/    0      100%
   main.U[0]               generate11.v               0/    0/    0      100%
   main.U[1]               generate11.v               0/    0/    0      100%

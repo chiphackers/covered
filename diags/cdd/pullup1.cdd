@@ -1,5 +1,6 @@
 5 8 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd pullup1.vcd -o pullup1.cdd -v pullup1.v
+3 0 $root $root NA 0 0
 3 0 main main pullup1.v 1 17
 2 1 4 c000c 2 1 4 0 0 b
 2 2 4 80008 0 1 400 0 0 a

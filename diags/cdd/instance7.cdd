@@ -1,5 +1,6 @@
 5 8 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd instance7.vcd -o instance7.cdd -y ./lib -v instance7.v
+3 0 $root $root NA 0 0
 3 0 main main instance7.v 1 17
 1 a 0 3 30004 1 0 102
 3 0 foo main.f ./lib/foo.v 1 7

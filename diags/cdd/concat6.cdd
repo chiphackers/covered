@@ -1,5 +1,6 @@
 5 8 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd concat6.vcd -o concat6.cdd -v concat6.v
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -o concat6.cdd -v concat6.v
+3 0 $root $root NA 0 0
 3 0 main main concat6.v 1 14
 2 1 4 100010 1 1 4 0 0 b
 2 2 4 f0011 1 26 20004 1 0 2 0 a

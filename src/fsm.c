@@ -656,41 +656,40 @@ bool fsm_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst ) {
   funit_inst* curr;            /* Pointer to current child functional unit instance of this node */
   float       state_percent;   /* Percentage of states hit */
   float       arc_percent;     /* Percentage of arcs hit */
-  float       state_miss;      /* Number of states missed */
-  float       arc_miss;        /* Number of arcs missed */
+  float       state_miss = 0;  /* Number of states missed */
+  float       arc_miss   = 0;  /* Number of arcs missed */
   char        tmpname[4096];   /* Temporary name holder for instance */
   char*       pname;           /* Printable version of instance name */
 
   assert( root != NULL );
   assert( root->stat != NULL );
 
-  if( root->stat->state_total == 0 ) {
-    state_percent = 100.0;
+  /* Generate printable version of instance name */
+  pname = scope_gen_printable( root->name );
+
+  if( strcmp( parent_inst, "*" ) == 0 ) {
+    strcpy( tmpname, pname );
   } else {
-    state_percent = ((root->stat->state_hit / root->stat->state_total) * 100);
+    snprintf( tmpname, 4096, "%s.%s", parent_inst, pname ); 
   }
-  state_miss = (root->stat->state_total - root->stat->state_hit);
 
-  if( root->stat->arc_total == 0 ) {
-    arc_percent = 100.0;
-  } else {
-    arc_percent = ((root->stat->arc_hit / root->stat->arc_total) * 100);
-  }
-  arc_miss   = (root->stat->arc_total - root->stat->arc_hit);
+  free_safe( pname );
 
-  /* If this is an assertion module, don't output any further */
-  if( (info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit ) ) {
+  if( root->stat->show && ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
 
-    /* Generate printable version of instance name */
-    pname = scope_gen_printable( root->name );
-
-    if( strcmp( parent_inst, "*" ) == 0 ) {
-      strcpy( tmpname, pname );
+    if( root->stat->state_total == 0 ) {
+      state_percent = 100.0;
     } else {
-      snprintf( tmpname, 4096, "%s.%s", parent_inst, pname ); 
+      state_percent = ((root->stat->state_hit / root->stat->state_total) * 100);
     }
+    state_miss = (root->stat->state_total - root->stat->state_hit);
 
-    free_safe( pname );
+    if( root->stat->arc_total == 0 ) {
+      arc_percent = 100.0;
+    } else {
+      arc_percent = ((root->stat->arc_hit / root->stat->arc_total) * 100);
+    }
+    arc_miss   = (root->stat->arc_total - root->stat->arc_hit);
 
     if( (root->stat->state_total == -1) || (root->stat->arc_total == -1) ) {
       fprintf( ofile, "  %-43.43s    %4d/  ? /  ?        ? %%         %4d/  ? /  ?        ? %%\n",
@@ -709,6 +708,11 @@ bool fsm_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst ) {
              root->stat->arc_total,
              arc_percent );
     }
+
+  }
+
+  /* If this is an assertion module, don't output any further */
+  if( (info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit ) ) {
 
     curr = root->child_head;
     while( curr != NULL ) {
@@ -758,7 +762,7 @@ bool fsm_funit_summary( FILE* ofile, funit_link* head ) {
     miss_found = ((state_miss != 0) || (arc_miss != 0)) ? TRUE : miss_found;
 
     /* If this is an assertion module, don't output any further */
-    if( (info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( head->funit ) ) {
+    if( head->funit->stat->show && ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( head->funit )) ) {
 
       /* Get printable version of functional unit name */
       pname = scope_gen_printable( head->funit->name );
@@ -1098,7 +1102,7 @@ void fsm_report( FILE* ofile, bool verbose ) {
 
     instl = inst_head;
     while( instl != NULL ) {
-      missed_found |= fsm_instance_summary( ofile, instl->inst, tmp );
+      missed_found |= fsm_instance_summary( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*") );
       instl = instl->next;
     }
    
@@ -1106,7 +1110,7 @@ void fsm_report( FILE* ofile, bool verbose ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
       instl = inst_head;
       while( instl != NULL ) {
-        fsm_instance_verbose( ofile, instl->inst, tmp );
+        fsm_instance_verbose( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*") );
         instl = instl->next;
       }
     }
@@ -1176,6 +1180,11 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.59  2006/09/01 04:06:37  phase1geo
+ Added code to support more than one instance tree.  Currently, I am seeing
+ quite a few memory errors that are causing some major problems at the moment.
+ Checkpointing.
+
  Revision 1.58  2006/08/18 22:07:45  phase1geo
  Integrating obfuscation into all user-viewable output.  Verified that these
  changes have not made an impact on regressions.  Also improved performance

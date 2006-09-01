@@ -49,6 +49,7 @@ statistic* statistic_create() {
   stat->arc_hit      = 0;
   stat->assert_total = 0;
   stat->assert_hit   = 0;
+  stat->show         = TRUE;
 
   return( stat );
 
@@ -85,6 +86,26 @@ void statistic_merge( statistic* stat_to, statistic* stat_from ) {
   stat_to->arc_hit      += stat_from->arc_hit;
   stat_to->assert_total += stat_from->assert_total;
   stat_to->assert_hit   += stat_from->assert_hit;
+  stat_to->show         |= stat_from->show;
+
+}
+
+/*!
+ \param stat  Pointer to statistic structure to check
+
+ \return Returns TRUE if the given statistic structure contains values of 0 for all of its
+         metrics.
+*/
+bool statistic_is_empty( statistic* stat ) {
+
+  assert( stat != NULL );
+
+  return( (stat->line_total   == 0) &&
+          (stat->tog_total    == 0) &&
+          (stat->comb_total   == 0) &&
+          (stat->state_total  == 0) &&
+          (stat->arc_total    == 0) &&
+          (stat->assert_total == 0) );
 
 }
 
@@ -106,6 +127,11 @@ void statistic_dealloc( statistic* stat ) {
 
 /*
  $Log$
+ Revision 1.8  2006/04/19 22:21:33  phase1geo
+ More updates to properly support assertion coverage.  Removing assertion modules
+ from line, toggle, combinational logic, FSM and race condition output so that there
+ won't be any overlap of information here.
+
  Revision 1.7  2006/03/28 22:28:28  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

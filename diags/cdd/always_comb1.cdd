@@ -1,5 +1,6 @@
 5 8 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -o always_comb1.cdd -v always_comb1.v
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd always_comb1.vcd -o always_comb1.cdd -v always_comb1.v
+3 0 $root $root NA 0 0
 3 0 main main always_comb1.v 1 30
 2 1 7 c000c 2 1 c 0 0 c
 2 2 7 80008 1 1 4 0 0 b

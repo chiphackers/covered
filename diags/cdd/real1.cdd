@@ -1,5 +1,6 @@
 5 8 1 * 0
-8 /ptmp/cvs/covered/diags/verilog -t main -o real1.cdd -v real1.v
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd real1.vcd -o real1.cdd -v real1.v
+3 0 $root $root NA 0 0
 3 0 main main real1.v 1 16
 2 1 6 90009 1 1 4 0 0 b
 2 2 6 90009 0 2a 20000 0 0 1 0 2

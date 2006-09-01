@@ -330,7 +330,7 @@ proc create_report_selection_window {} {
 
   global rsel_sdv rsel_mi rsel_cu
   global rsel_l rsel_t rsel_c rsel_f rsel_a rsel_r
-  global rsel_width rsel_wsel
+  global rsel_width rsel_wsel rsel_sup
   global rsel_fname cdd_name
 
   toplevel .rselwin
@@ -357,6 +357,8 @@ proc create_report_selection_window {} {
   label .rselwin.of.cu_val     -anchor w -text ""
   label .rselwin.of.width_lbl  -anchor w -text "Line Width:"
   label .rselwin.of.width_val  -anchor w -text ""
+  label .rselwin.of.sup_lbl    -anchor w -text "Suppress Empty Modules:"
+  label .rselwin.of.sup_val    -anchor w -text ""
   grid columnconfigure .rselwin.of 1 -weight 1
   grid .rselwin.of.lbl         -row 0 -column 0 -columnspan 2 -sticky news -pady 4
   grid .rselwin.of.b           -row 0 -column 2 -sticky news
@@ -370,6 +372,8 @@ proc create_report_selection_window {} {
   grid .rselwin.of.cu_val      -row 4 -column 1 -columnspan 2 -sticky news
   grid .rselwin.of.width_lbl   -row 5 -column 0 -sticky news -padx 12
   grid .rselwin.of.width_val   -row 5 -column 1 -columnspan 2 -sticky news
+  grid .rselwin.of.sup_lbl     -row 6 -column 0 -sticky news -padx 12
+  grid .rselwin.of.sup_val     -row 6 -column 1 -columnspan 2 -sticky news
 
   # Create filename frame
   frame .rselwin.fname -relief raised -borderwidth 1
@@ -392,7 +396,8 @@ proc create_report_selection_window {} {
     } else {
       set w "-w $rsel_width"
     }
-    set cmd "-d $rsel_sdv $rsel_mi $rsel_cu -m $rsel_l$rsel_t$rsel_c$rsel_f$rsel_a$rsel_r $w -o $rsel_fname $cdd_name"
+    set cmd "-d $rsel_sdv $rsel_mi $rsel_cu -m $rsel_l$rsel_t$rsel_c$rsel_f$rsel_a$rsel_r $w -o $rsel_fname $rsel_sup $cdd_name"
+    puts "cmd: $cmd"
     eval "tcl_func_generate_report $cmd"
     destroy .rselwin
   }
@@ -423,7 +428,7 @@ proc update_report_select {} {
 
   global rsel_sdv rsel_mi rsel_cu
   global rsel_l rsel_t rsel_c rsel_f rsel_a rsel_r
-  global rsel_width rsel_wsel
+  global rsel_width rsel_wsel rsel_sup
   global rsel_fname cdd_name
 
   if {[winfo exists .rselwin] == 1} {
@@ -468,6 +473,11 @@ proc update_report_select {} {
     } else {
       set width_name "Preformatted"
     }
+    if {$rsel_sup == ""} {
+      set sup_name "No"
+    } else {
+      set sup_name "Yes"
+    }
 
     # Set the labels with the appropriate values
     .rselwin.of.sdv_val    configure -text $sdv_name
@@ -475,6 +485,7 @@ proc update_report_select {} {
     .rselwin.of.metric_val configure -text [join $metric_list ,]
     .rselwin.of.cu_val     configure -text $cu_name
     .rselwin.of.width_val  configure -text $width_name
+    .rselwin.of.sup_val    configure -text $sup_name
 
   }
 

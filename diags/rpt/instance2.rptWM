@@ -17,6 +17,7 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
+  $root                   NA                         0/    0/    0      100%
   main                    instance2.v                1/    0/    1      100%
   adder4                  adder4.v                   0/    0/    0      100%
   adder1                  adder1.v                   2/    0/    2      100%
@@ -28,6 +29,7 @@ Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hi
 Module/Task/Function      Filename                         Toggle 0 -> 1                       Toggle 1 -> 0
                                                    Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
+  $root                   NA                         0/    0/    0      100%             0/    0/    0      100%
   main                    instance2.v                9/    9/   18       50%             8/   10/   18       44%
   adder4                  adder4.v                   6/   10/   16       38%             5/   11/   16       31%
   adder1                  adder1.v                   4/    0/    4      100%             2/    2/    4       50%
@@ -89,6 +91,7 @@ Module/Task/Function      Filename                         Toggle 0 -> 1        
 Module/Task/Function                Filename                                Logic Combinations
                                                                       Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
+  $root                             NA                                  0/   0/   0      100%
   main                              instance2.v                         1/   1/   2       50%
   adder4                            adder4.v                            0/   0/   0      100%
   adder1                            adder1.v                            7/   0/   7      100%
@@ -118,6 +121,7 @@ Module/Task/Function                Filename                                Logi
                                                                State                             Arc
 Module/Task/Function      Filename                Hit/Miss/Total    Percent Hit    Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
+  $root                   NA                        0/   0/   0      100%            0/   0/   0      100%
   main                    instance2.v               0/   0/   0      100%            0/   0/   0      100%
   adder4                  adder4.v                  0/   0/   0      100%            0/   0/   0      100%
   adder1                  adder1.v                  0/   0/   0      100%            0/   0/   0      100%

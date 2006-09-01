@@ -50,6 +50,7 @@ extern char**       leading_hierarchies;
 extern int          leading_hier_num;
 extern bool         leading_hiers_differ;
 extern isuppl       info_suppl;
+extern bool         flag_suppress_empty_funits;
 
 /*!
  \param stmtl  Pointer to current statement list to explore.
@@ -234,28 +235,27 @@ bool line_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst ) {
   assert( root != NULL );
   assert( root->stat != NULL );
 
-  if( root->stat->line_total == 0 ) {
-    percent = 100.0;
+  /* Get printable version of the instance name */
+  pname = scope_gen_printable( root->name );
+  
+  /* Calculate instance name */
+  if( strcmp( parent_inst, "*" ) == 0 ) {
+    strcpy( tmpname, pname );
   } else {
-    percent = ((root->stat->line_hit / root->stat->line_total) * 100);
+    snprintf( tmpname, 4096, "%s.%s", parent_inst, pname );
   }
 
-  miss = (root->stat->line_total - root->stat->line_hit);
+  free_safe( pname );
 
-  /* If this is an assertion module, don't output any further */
-  if( (info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit ) ) {
+  if( root->stat->show && ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
 
-    /* Get printable version of the instance name */
-    pname = scope_gen_printable( root->name );
-  
-    /* Calculate instance name */
-    if( strcmp( parent_inst, "*" ) == 0 ) {
-      strcpy( tmpname, pname );
+    if( root->stat->line_total == 0 ) {
+      percent = 100.0;
     } else {
-      snprintf( tmpname, 4096, "%s.%s", parent_inst, pname );
+      percent = ((root->stat->line_hit / root->stat->line_total) * 100);
     }
 
-    free_safe( pname );
+    miss = (root->stat->line_total - root->stat->line_hit);
 
     fprintf( ofile, "  %-43.43s    %5d/%5.0f/%5.0f      %3.0f%%\n",
              tmpname,
@@ -263,6 +263,10 @@ bool line_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst ) {
              miss,
              root->stat->line_total,
              percent );
+
+  }
+
+  if( (info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit ) ) {
 
     curr = root->child_head;
     while( curr != NULL ) {
@@ -305,7 +309,7 @@ bool line_funit_summary( FILE* ofile, funit_link* head ) {
     miss_found = (miss > 0) ? TRUE : miss_found;
 
     /* If this is an assertion module, don't output any further */
-    if( (info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( head->funit ) ) {
+    if( head->funit->stat->show && ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( head->funit )) ) {
 
       /* Get printable version of functional unit name */
       pname = scope_gen_printable( head->funit->name );
@@ -529,7 +533,7 @@ void line_report( FILE* ofile, bool verbose ) {
 
     instl = inst_head;
     while( instl != NULL ) {
-      missed_found |= line_instance_summary( ofile, instl->inst, tmp );
+      missed_found |= line_instance_summary( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*") );
       instl = instl->next;
     }
     
@@ -537,7 +541,7 @@ void line_report( FILE* ofile, bool verbose ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
       instl = inst_head;
       while( instl != NULL ) {
-        line_instance_verbose( ofile, instl->inst, tmp );
+        line_instance_verbose( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*") );
         instl = instl->next;
       }
     }
@@ -562,6 +566,11 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.66  2006/09/01 04:06:37  phase1geo
+ Added code to support more than one instance tree.  Currently, I am seeing
+ quite a few memory errors that are causing some major problems at the moment.
+ Checkpointing.
+
  Revision 1.65  2006/08/22 21:46:03  phase1geo
  Updating from stable branch.
 

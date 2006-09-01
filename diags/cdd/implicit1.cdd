@@ -1,5 +1,6 @@
 5 8 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd implicit1.vcd -o implicit1.cdd -v implicit1.v
+3 0 $root $root NA 0 0
 3 0 main main implicit1.v 1 20
 2 1 6 c000c 1 1 4 0 0 a
 2 2 6 b000b 1 1b 20008 1 0 1 0 2

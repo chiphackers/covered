@@ -1,5 +1,6 @@
 5 8 1 * 0
-8 /ptmp/cvs/covered/diags/verilog -t main -o always3.cdd -v always3.v
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -o always3.cdd -v always3.v
+3 0 $root $root NA 0 0
 3 0 main main always3.v 1 20
 2 1 5 1a001a d 1 c 0 0 d
 2 2 5 190019 d 1b 2000c 1 0 1 0 1102

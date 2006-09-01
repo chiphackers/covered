@@ -1,5 +1,6 @@
 5 8 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd hier3.2.vcd -o hier3.2.cdd -v hier3.2.v
+3 0 $root $root NA 0 0
 3 0 main main hier3.2.v 1 12
 3 0 foo main.a hier3.2.v 16 24
 3 0 bar main.a.a hier3.2.v 28 32

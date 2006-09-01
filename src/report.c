@@ -149,6 +149,12 @@ char* output_file      = NULL;
 */
 char* input_db         = NULL;
 
+/*!
+ Suppresses functional units that do not contain any coverage information from being output
+ to the report file.
+*/
+bool  flag_suppress_empty_funits = FALSE;
+
 #ifdef HAVE_TCLTK
 /*!
  TCL interpreter for this application.
@@ -187,6 +193,7 @@ void report_usage() {
   printf( "                               line width of 80 is used.  If the -w option is not specified, all\n" );
   printf( "                               expressions are output in the format that the user specified in the\n" );
   printf( "                               Verilog source.\n" );
+  printf( "      -s                      Suppress outputting modules/instances that do not contain any coverage metrics.\n" );
   printf( "\n" );
 
 }
@@ -338,6 +345,10 @@ bool report_parse_args( int argc, int last_arg, char** argv ) {
         line_width = DEFAULT_LINE_WIDTH;
       }
 
+    } else if( strncmp( "-s", argv[i], 2 ) == 0 ) {
+
+      flag_suppress_empty_funits = TRUE;
+
     } else if( (i + 1) == argc ) {
 
       if( file_exists( argv[i] ) ) {
@@ -438,6 +449,11 @@ void report_gather_instance_stats( funit_inst* root ) {
 
   }
 
+  /* Set show bit */
+  if( flag_suppress_empty_funits ) {
+    root->stat->show = !statistic_is_empty( root->stat );
+  }
+
 }
 
 /*!
@@ -493,6 +509,11 @@ void report_gather_funit_stats( funit_link* head ) {
                         &(head->funit->stat->rtype_total) );
       }
 
+    }
+
+    /* Set show bit */
+    if( flag_suppress_empty_funits ) {
+      head->funit->stat->show = !statistic_is_empty( head->funit->stat );
     }
 
     head = head->next;
@@ -844,6 +865,11 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.71  2006/09/01 04:06:37  phase1geo
+ Added code to support more than one instance tree.  Currently, I am seeing
+ quite a few memory errors that are causing some major problems at the moment.
+ Checkpointing.
+
  Revision 1.70  2006/08/18 22:07:45  phase1geo
  Integrating obfuscation into all user-viewable output.  Verified that these
  changes have not made an impact on regressions.  Also improved performance

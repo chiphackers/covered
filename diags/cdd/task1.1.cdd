@@ -1,5 +1,6 @@
 5 8 1 * 0
-8 /ptmp/cvs/covered/diags/verilog -t main -o task1.1.cdd -v task1.1.v
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd task1.1.vcd -o task1.1.cdd -v task1.1.v
+3 0 $root $root NA 0 0
 3 0 main main task1.1.v 1 28
 2 1 6 c000c 2 1 c 0 0 b
 2 2 6 c000c 2 47 c 1 0 invert_a.b

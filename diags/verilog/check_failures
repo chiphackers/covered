@@ -1,0 +1,74 @@
+#!/usr/bin/perl
+
+#	Name:	check_failures
+#
+#	Author: Trevor Williams   <trevorw(sgi.com)>
+#
+#	Date:	9/1/2006
+#
+#	Brief:  Used to check regression failures in batch mode
+#
+#	Usage:	check_failures
+
+# Get a list of all of the filenames that failed in regression 
+%files = {};
+opendir( ODIR, "." ) || die "Unable to open current directory: $!\n";
+while( $file = readdir( ODIR ) ) {
+  chomp( $file );
+  if( ($file ne ".") && ($file ne "..") && ($file =~ /^(.*)\.(cdd|rptM|rptI|rptWM|rptWI|err)$/) ) {
+    $f = $1;
+    $files{$f} = 1;
+  }
+}
+closedir( ODIR );
+
+# Iterate through list of files, resolving them as we go.
+foreach $file (sort( keys( %files ) )) {
+  
+  # Check report files
+  &handle_mismatch( "${file}.rptM",  "../rpt", 1 );
+  &handle_mismatch( "${file}.rptI",  "../rpt", 1 );
+  &handle_mismatch( "${file}.rptWM", "../rpt", 1 );
+  &handle_mismatch( "${file}.rptWI", "../rpt", 1 );
+
+  # Check error file
+  &handle_mismatch( "${file}.err", "../err", 0 );
+
+  # Check CDD file
+  &handle_mismatch( "${file}.cdd", "../cdd", 0 );
+
+}
+
+##########  End of Main Subroutine  ###########
+
+sub handle_mismatch {
+ 
+  my( $file, $dir, $a ) = @_;
+  my( $response );
+
+  # Handle the report files first
+  if( -e "${file}" ) {
+    system( "diff ${file} ${dir}" );
+    if( $a == 1 ) {
+      print "Difference is for ${file} - Accept? (y|n|a|q) [y] ";
+    } else {
+      print "Difference is for ${file} - Accept? (y|n|q) [y] ";
+    }
+    $response = <STDIN>;  chomp( $response );
+    if( ($response eq "y") || ($response eq "") ) {
+      system( "mv ${file} ${dir}" ) && die;
+      print "Moved ${file} to ${dir}\n";
+    } elsif( ($a == 1) && ($response eq "a") ) {
+      if( $file =~ /^(.*)\.rpt/ ) {
+        $file = $1 . ".rpt*";
+      }
+      system( "mv ${file} ${dir}" ) && die;
+      print "Moved ${file} to ${dir}\n";
+    } elsif( $response eq "q" ) {
+      exit( 1 );
+    }
+  }
+
+  return( $user_quit );
+
+}
