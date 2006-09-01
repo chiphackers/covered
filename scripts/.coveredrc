@@ -148,5 +148,5 @@ ReportLineWidth = preformatted
 # contain no coverage information (for all possible metrics) are suppressed from the
 # report output.  Legal values are 'yes' or 'no'.
 
-ReportSuppressEmptyModules = yes
+ReportSuppressEmptyModules = no
 
