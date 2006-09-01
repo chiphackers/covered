@@ -41,6 +41,7 @@
 #include "fsm.h"
 #include "gen_item.h"
 #include "obfuscate.h"
+#include "instance.h"
 
 
 /*!
@@ -269,6 +270,39 @@ void gitem_link_add( gen_item* gi, gitem_link** head, gitem_link** tail ) {
 }
 
 /*!
+ \param inst   Functional unit instance root to add
+ \param head   Pointer to head inst_link element of list
+ \param tail   Pointer to tail inst_link element of list
+
+ \return Returns pointer to newly allocated instance link.
+
+ Creates a new inst_link element with the value specified for functional unit instance.
+ Sets next pointer of element to NULL, sets the tail element to point
+ to the new element and sets the tail value to the new element.
+*/
+inst_link* inst_link_add( funit_inst* inst, inst_link** head, inst_link** tail ) {
+
+  inst_link* tmp;  /* Temporary pointer to newly created inst_link element */
+
+  tmp = (inst_link*)malloc_safe( sizeof( inst_link ), __FILE__, __LINE__ );
+
+  tmp->inst = inst;
+  tmp->next = NULL;
+
+  if( *head == NULL ) {
+    *head = *tail = tmp;
+  } else {
+    (*tail)->next = tmp;
+    *tail         = tmp;
+  }
+
+  return( tmp );
+
+}
+
+/**************************************************************************************/
+
+/*!
  \param head  Pointer to head of str_link list.
 
  Displays the string contents of the str_link list pointed to by head
@@ -371,9 +405,9 @@ void funit_link_display( funit_link* head ) {
 }
 
 /*!
- \param head  Pointer to head of funit_link list.
+ \param head  Pointer to head of gitem_link list.
 
- Displays the string contents of the funit_link list pointed to by head
+ Displays the contents of the gitem_link list pointed to by head
  to standard output.  This function is mainly used for debugging purposes.
 */
 void gitem_link_display( gitem_link* head ) {
@@ -389,6 +423,28 @@ void gitem_link_display( gitem_link* head ) {
   }
 
 }
+
+/*!
+ \param head  Pointer to head of inst_link list.
+
+ Displays the contents of the inst_link list pointed to by head
+ to standard output.  This function is mainly used for debugging purposes.
+*/
+void inst_link_display( inst_link* head ) {
+
+  inst_link* curr;  /* Pointer to current inst_link to display */
+
+  printf( "Instance list:\n" );
+
+  curr = head;
+  while( curr != NULL ) {
+    instance_display_tree( curr->inst );
+    curr = curr->next;
+  }
+
+}
+
+/**************************************************************************************/
 
 /*!
  \param value  String to find in str_link list.
@@ -548,6 +604,56 @@ gitem_link* gitem_link_find( gen_item* gi, gitem_link* head ) {
   return( curr );
 
 }
+
+/*!
+ \param scope  Hierarchical scope to search for.
+ \param head   Pointer to head of inst_link list to search.
+
+ \return Returns the pointer to the found funit_inst or NULL if the search was unsuccessful.
+
+ Iteratively searches the inst_link list specified by the head inst_link element.  If
+ a matching instance is found, the pointer to this element is returned.  If the specified
+ generate item could not be matched, the value of NULL is returned.
+*/
+funit_inst* inst_link_find_by_scope( char* scope, inst_link* head ) {
+
+  inst_link*  curr;  /* Pointer to current inst_link */
+  funit_inst* inst;  /* Pointer to found instance */
+
+  curr = head;
+  while( (curr != NULL) && ((inst = instance_find_scope( curr->inst, scope )) == NULL) ) {
+    curr = curr->next;
+  }
+
+  return( inst );
+
+}
+
+/*!
+ \param funit  Functional unit to search for.
+ \param head   Pointer to head of inst_link list to search.
+
+ \return Returns the pointer to the found funit_inst or NULL if the search was unsuccessful.
+
+ Iteratively searches the inst_link list specified by the head inst_link element.  If
+ a matching instance is found, the pointer to this element is returned.  If the specified
+ generate item could not be matched, the value of NULL is returned.
+*/
+funit_inst* inst_link_find_by_funit( func_unit* funit, inst_link* head, int* ignore ) {
+
+  inst_link*  curr;  /* Pointer to current inst_link */
+  funit_inst* inst;  /* Pointer to found instance */
+
+  curr = head;
+  while( (curr != NULL) && ((inst = instance_find_by_funit( curr->inst, funit, ignore )) == NULL) ) {
+    curr = curr->next;
+  }
+
+  return( inst );
+
+}
+
+/**************************************************************************************/
 
 /*!
  \param str   Pointer to string to find and remove.
@@ -738,6 +844,8 @@ void funit_link_remove( func_unit* funit, funit_link** head, funit_link** tail, 
   }
 
 }
+
+/**************************************************************************************/
 
 /*!
  \param head  Pointer to head str_link element of list.
@@ -981,9 +1089,40 @@ void gitem_link_delete_list( gitem_link* head, bool rm_elems ) {
 
 }
 
+/*!
+ \param head  Pointer to head inst_link element of list.
+
+ Deletes each element of the specified list.
+*/
+void inst_link_delete_list( inst_link* head ) {
+
+  inst_link* tmp;  /* Temporary pointer to current link in list */
+
+  while( head != NULL ) {
+
+    tmp  = head;
+    head = tmp->next;
+
+    /* Deallocate generate item */
+    instance_dealloc( tmp->inst, tmp->inst->name );
+
+    /* Deallocate gitem_link element itself */
+    free_safe( tmp );
+
+  }
+
+}
+
 
 /*
  $Log$
+ Revision 1.54  2006/08/28 22:28:28  phase1geo
+ Fixing bug 1546059 to match stable branch.  Adding support for repeated delay
+ expressions (i.e., a = repeat(2) @(b) c).  Fixing support for event delayed
+ assignments (i.e., a = @(b) c).  Adding several new diagnostics to verify this
+ new level of support and updating regressions for these changes.  Also added
+ parser support for logic port types.
+
  Revision 1.53  2006/08/18 22:07:45  phase1geo
  Integrating obfuscation into all user-viewable output.  Verified that these
  changes have not made an impact on regressions.  Also improved performance

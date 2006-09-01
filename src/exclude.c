@@ -19,7 +19,7 @@
 #include "vector.h"
 
 
-extern funit_inst* instance_root;
+extern inst_link*  inst_head;
 extern funit_link* funit_head;
 extern isuppl      info_suppl;
 
@@ -176,7 +176,7 @@ funit_inst* exclude_find_instance_from_funit_info( char* funit_name, int funit_t
   funit.type = funit_type;
 
   if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
-    inst = instance_find_by_funit( instance_root, funitl->funit, &ignore );
+    inst = inst_link_find_by_funit( funitl->funit, inst_head, &ignore );
   }
 
   return( inst );
@@ -409,6 +409,12 @@ bool exclude_set_assert_exclude( char* funit_name, int funit_type, char* inst_na
 
 /*
  $Log$
+ Revision 1.9  2006/06/29 20:57:24  phase1geo
+ Added stmt_excluded bit to expression to allow us to individually control line
+ and combinational logic exclusion.  This also allows us to exclude combinational
+ logic within excluded lines.  Also fixing problem with highlighting the listbox
+ (due to recent changes).
+
  Revision 1.8  2006/06/29 20:06:33  phase1geo
  Adding assertion exclusion code.  Things seem to be working properly with this
  now.  This concludes the initial version of code exclusion.  There are some

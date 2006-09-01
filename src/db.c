@@ -58,7 +58,8 @@
 
 
 extern char*       top_module;
-extern funit_inst* instance_root;
+extern inst_link*  inst_head;
+extern inst_link*  inst_tail;
 extern str_link*   no_score_head;
 extern funit_link* funit_head;
 extern funit_link* funit_tail;
@@ -159,11 +160,10 @@ void db_close() {
   
   int i;  /* Loop iterator */
 
-  if( instance_root != NULL ) {
+  if( inst_head != NULL ) {
 
-    /* Remove memory allocated for instance_root and mod_head */
-    assert( instance_root->funit != NULL );
-    instance_dealloc( instance_root, instance_root->name );
+    /* Remove memory allocated for inst_head and mod_head */
+    inst_link_delete_list( inst_head );
     funit_link_delete_list( funit_head, TRUE );
 
     /* Deallocate preprocessor define tree */
@@ -175,10 +175,11 @@ void db_close() {
     /* Deallocate the information section memory */
     info_dealloc();
 
-    instance_root = NULL;
-    funit_head    = NULL;
-    funit_tail    = NULL;
-    def_table     = NULL;
+    inst_head  = NULL;
+    inst_tail  = NULL;
+    funit_head = NULL;
+    funit_tail = NULL;
+    def_table  = NULL;
 
   }
 
@@ -198,8 +199,9 @@ void db_close() {
 */
 bool db_write( char* file, bool parse_mode, bool report_save ) {
 
-  bool  retval = TRUE;  /* Return value for this function */
-  FILE* db_handle;      /* Pointer to database file being written */
+  bool       retval = TRUE;  /* Return value for this function */
+  FILE*      db_handle;      /* Pointer to database file being written */
+  inst_link* instl;          /* Pointer to current instance link */
 
   if( (db_handle = fopen( file, "w" )) != NULL ) {
 
@@ -207,9 +209,14 @@ bool db_write( char* file, bool parse_mode, bool report_save ) {
     curr_expr_id = 1;
 
     /* Iterate through instance tree */
-    assert( instance_root != NULL );
+    assert( inst_head != NULL );
     info_db_write( db_handle );
-    instance_db_write( instance_root, db_handle, instance_root->name, parse_mode, report_save );
+
+    instl = inst_head;
+    while( instl != NULL ) {
+      instance_db_write( instl->inst, db_handle, instl->inst->name, parse_mode, report_save );
+      instl = instl->next;
+    }
     fclose( db_handle );
 
   } else {
@@ -338,23 +345,19 @@ bool db_read( char* file, int read_mode ) {
           /* Finish handling last functional unit read from CDD file */
           if( curr_funit != NULL ) {
               
-            if( instance_root == NULL ) {
-                
-              instance_read_add( &instance_root, NULL, curr_funit, funit_scope );
-                
-            } else {
-                
-              /* Add functional unit to instance tree and functional unit list */
-              scope_extract_back( funit_scope, back, parent_scope );
+            inst_link* instl = inst_head;  /* Pointer to current instance link */
 
-              /* Make sure that functional unit in database was not written before its parent functional unit */
-              assert( instance_find_scope( instance_root, parent_scope ) != NULL );
+            /* Get the scope of the parent module */
+            scope_extract_back( funit_scope, back, parent_scope );
 
-              /* Add functional unit to instance tree and functional unit list */
-              instance_read_add( &instance_root, parent_scope, curr_funit, back );
-                
+            /* Attempt to add it to each instance tree until a suitable one is found */
+            while( (instl != NULL) && !instance_read_add( &(instl->inst), parent_scope, curr_funit, back ) ) {
+              instl = instl->next;
             }
-              
+            if( instl == NULL ) {
+              inst_link_add( instance_create( curr_funit, funit_scope, NULL ), &inst_head, &inst_tail );
+            }
+
             /* If the current functional unit is a merged unit, don't add it to the funit list again */
             if( !merge_mode ) {
               funit_link_add( curr_funit, &funit_head, &funit_tail );
@@ -367,7 +370,7 @@ bool db_read( char* file, int read_mode ) {
 
           /* Now finish reading functional unit line */
           if( (retval = funit_db_read( &tmpfunit, funit_scope, &rest_line )) == TRUE ) {
-            if( (read_mode == READ_MODE_MERGE_INST_MERGE) && ((foundinst = instance_find_scope( instance_root, funit_scope )) != NULL) ) {
+            if( (read_mode == READ_MODE_MERGE_INST_MERGE) && ((foundinst = inst_link_find_by_scope( funit_scope, inst_head )) != NULL) ) {
               merge_mode = TRUE;
               curr_funit = foundinst->funit;
               funit_db_merge( foundinst->funit, db_handle, TRUE );
@@ -442,30 +445,24 @@ bool db_read( char* file, int read_mode ) {
   /* If the last functional unit was being read, add it now */
   if( curr_funit != NULL ) {
 
-    if( instance_root == NULL ) {
-      
-      instance_read_add( &instance_root, NULL, curr_funit, funit_scope );
-      
-    } else {
-      
-      /* Add functional unit to instance tree and functional unit list */
-      scope_extract_back( funit_scope, back, parent_scope );
-    
-      /* Make sure that functional unit in database not written before its parent functional unit */
-      if( instance_find_scope( instance_root, parent_scope ) != NULL ) {
+    inst_link* instl = inst_head;  /* Pointer to current instance link */
 
-        /* Add functional unit to instance tree and functional unit list */
-        instance_read_add( &instance_root, parent_scope, curr_funit, back );
+    /* Get the scope of the parent module */
+    scope_extract_back( funit_scope, back, parent_scope );
 
-      } else {
-
-        print_output( "CDD file is not related to currently opened CDD file", FATAL, __FILE__, __LINE__ );
-        retval = FALSE;
- 
-      }
-      
+    /* Attempt to add it to each instance tree until a suitable one is found */
+    while( (instl != NULL) && !instance_read_add( &(instl->inst), parent_scope, curr_funit, back ) ) {
+      instl = instl->next;
     }
-    
+    if( instl == NULL ) {
+      inst_link_add( instance_create( curr_funit, funit_scope, NULL ), &inst_head, &inst_tail );
+    }
+
+    /* If the current functional unit is a merged unit, don't add it to the funit list again */
+    if( !merge_mode ) {
+      funit_link_add( curr_funit, &funit_head, &funit_tail );
+    }
+
     /* If the current functional unit was being merged, don't add it to the functional unit list again */
     if( !merge_mode ) {
       funit_link_add( curr_funit, &funit_head, &funit_tail );
@@ -476,9 +473,9 @@ bool db_read( char* file, int read_mode ) {
   }
 
 #ifdef DEBUG_MODE
-  /* Display the instance tree, if we are debugging */
+  /* Display the instance trees, if we are debugging */
   if( debug_mode && retval ) {
-    instance_display_tree( instance_root );
+    inst_link_display( inst_head );
   }
 #endif
 
@@ -550,7 +547,13 @@ func_unit* db_add_instance( char* scope, char* name, int type, vector_width* ran
         curr_gi_block = last_gi;
       }
     } else {
-      instance_parse_add( &instance_root, curr_funit, found_funit_link->funit, scope, range, FALSE );
+      inst_link* instl = inst_head;
+      while( (instl != NULL) && !instance_parse_add( &instl->inst, curr_funit, found_funit_link->funit, scope, range, FALSE ) ) {
+        instl = instl->next;
+      }
+      if( instl == NULL ) {
+        inst_link_add( instance_create( found_funit_link->funit, scope, range ), &inst_head, &inst_tail );
+      }
     }
 
     funit_dealloc( funit );
@@ -569,7 +572,13 @@ func_unit* db_add_instance( char* scope, char* name, int type, vector_width* ran
         curr_gi_block = last_gi;
       }
     } else {
-      instance_parse_add( &instance_root, curr_funit, funit, scope, range, FALSE );
+      inst_link* instl = inst_head;
+      while( (instl != NULL) && !instance_parse_add( &instl->inst, curr_funit, funit, scope, range, FALSE ) ) {
+        instl = instl->next;
+      }
+      if( instl == NULL ) {
+        inst_link_add( instance_create( funit, scope, range ), &inst_head, &inst_tail );
+      }
     }
 
     if( (type == FUNIT_MODULE) && score && (str_link_find( name, modlist_head ) == NULL) ) {
@@ -1908,7 +1917,7 @@ void db_sync_curr_instance() {
 
   if( stripped_scope[0] != '\0' ) {
 
-    curr_instance = instance_find_scope( instance_root, stripped_scope );
+    curr_instance = inst_link_find_by_scope( stripped_scope, inst_head );
 
     /* If we have found at least one matching instance, set the one_instance_found flag */
     if( curr_instance != NULL ) {
@@ -2120,6 +2129,14 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.216  2006/08/31 22:32:17  phase1geo
+ Things are in a state of flux at the moment.  I have added proper parsing support
+ for assertions, properties and sequences.  Also added partial support for the $root
+ space (though I need to work on figuring out how to handle it in terms of the
+ instance tree) and all that goes along with that.  Add parsing support with an
+ error message for multi-dimensional array declarations.  Regressions should not be
+ expected to run correctly at the moment.
+
  Revision 1.215  2006/08/29 22:49:31  phase1geo
  Added enumeration support and partial support for typedefs.  Added enum1
  diagnostic to verify initial enumeration support.  Full regression has not

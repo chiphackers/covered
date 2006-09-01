@@ -40,7 +40,7 @@
 #include "expr.h"
 #include "obfuscate.h"
 
-extern funit_inst* instance_root;
+extern inst_link*  inst_head;
 extern funit_link* funit_head;
 
 extern bool         report_covered;
@@ -507,8 +507,9 @@ void line_funit_verbose( FILE* ofile, funit_link* head ) {
 */
 void line_report( FILE* ofile, bool verbose ) {
 
-  bool missed_found;  /* If set to TRUE, lines were found to be missed */
-  char tmp[4096];     /* Temporary string value */
+  bool       missed_found = FALSE;  /* If set to TRUE, lines were found to be missed */
+  char       tmp[4096];             /* Temporary string value */
+  inst_link* instl;                 /* Pointer to current instance link */
 
   fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
   fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   LINE COVERAGE RESULTS   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
@@ -526,11 +527,19 @@ void line_report( FILE* ofile, bool verbose ) {
     fprintf( ofile, "Instance                                           Hit/ Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
-    missed_found = line_instance_summary( ofile, instance_root, tmp );
+    instl = inst_head;
+    while( instl != NULL ) {
+      missed_found |= line_instance_summary( ofile, instl->inst, tmp );
+      instl = instl->next;
+    }
     
     if( verbose && (missed_found || report_covered) ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
-      line_instance_verbose( ofile, instance_root, tmp );
+      instl = inst_head;
+      while( instl != NULL ) {
+        line_instance_verbose( ofile, instl->inst, tmp );
+        instl = instl->next;
+      }
     }
 
   } else {
@@ -553,6 +562,9 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.65  2006/08/22 21:46:03  phase1geo
+ Updating from stable branch.
+
  Revision 1.64  2006/08/18 22:07:45  phase1geo
  Integrating obfuscation into all user-viewable output.  Verified that these
  changes have not made an impact on regressions.  Also improved performance

@@ -50,6 +50,10 @@ void funit_link_add( func_unit* funit, funit_link** head, funit_link** tail );
 /*! \brief Adds specified generate item to the end of specified gitem list. */
 void gitem_link_add( gen_item* gi, gitem_link** head, gitem_link** tail );
 
+/*! \brief Adds specified functional unit instance to inst_link element at the end of the list. */
+inst_link* inst_link_add( funit_inst* inst, inst_link** head, inst_link** tail );
+
+/*********************************************************************************/
 
 /*! \brief Displays specified string list to standard output. */
 void str_link_display( str_link* head );
@@ -69,6 +73,10 @@ void funit_link_display( funit_link* head );
 /*! \brief Displays specified generate item list to standard output. */
 void gitem_link_display( gitem_link* head );
 
+/*! \brief Displays specified instance list to standard output. */
+void inst_link_display( inst_link* head );
+
+/*********************************************************************************/
 
 /*! \brief Finds specified string in the given str_link list. */
 str_link* str_link_find( char* value, str_link* head );
@@ -91,6 +99,13 @@ funit_link* funit_link_find( func_unit* funit, funit_link* head );
 /*! \brief Finds specified generate item in given gitem_link list. */
 gitem_link* gitem_link_find( gen_item* gi, gitem_link* head );
 
+/*! \brief Finds specified functional unit instance in given inst_link list. */
+funit_inst* inst_link_find_by_scope( char* scope, inst_link* head );
+
+/*! \brief Finds specified functional unit instance in given inst_link list. */
+funit_inst* inst_link_find_by_funit( func_unit* funit, inst_link* head, int* ignore );
+
+/*********************************************************************************/
 
 /*! \brief Searches for and removes specified string link from list. */
 void str_link_remove( char* str, str_link** head, str_link** tail );
@@ -104,6 +119,7 @@ void gitem_link_remove( gen_item* gi, gitem_link** head, gitem_link** tail );
 /*! \brief Searches for and removes specified functional unit link from list. */
 void funit_link_remove( func_unit* funit, funit_link** head, funit_link** tail, bool rm_funit );
 
+/*********************************************************************************/
 
 /*! \brief Deletes entire list specified by head pointer. */
 void str_link_delete_list( str_link* head );
@@ -129,9 +145,19 @@ void funit_link_delete_list( funit_link* head, bool rm_funit );
 /*! \brief Deletes entire list specified by head pointer. */
 void gitem_link_delete_list( gitem_link* head, bool rm_elems );
 
+/*! \brief Deletes entire list specified by head pointer. */
+void inst_link_delete_list( inst_link* head );
+
 
 /*
  $Log$
+ Revision 1.21  2006/08/28 22:28:28  phase1geo
+ Fixing bug 1546059 to match stable branch.  Adding support for repeated delay
+ expressions (i.e., a = repeat(2) @(b) c).  Fixing support for event delayed
+ assignments (i.e., a = @(b) c).  Adding several new diagnostics to verify this
+ new level of support and updating regressions for these changes.  Also added
+ parser support for logic port types.
+
  Revision 1.20  2006/07/29 20:53:43  phase1geo
  Fixing some code related to generate statements; however, generate8.1 is still
  not completely working at this point.  Full regression passes for IV.

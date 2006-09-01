@@ -1222,6 +1222,7 @@ struct fsm_link_s;
 struct race_blk_s;
 struct func_unit_s;
 struct funit_link_s;
+struct inst_link_s;
 struct sym_sig_s;
 struct symtable_s;
 struct static_expr_s;
@@ -1357,6 +1358,11 @@ typedef struct func_unit_s func_unit;
  Renaming functional unit link structure for convenience.
 */
 typedef struct funit_link_s funit_link;
+
+/*!
+ Renaming functional unit instance link structure for convenience.
+*/
+typedef struct inst_link_s inst_link;
 
 /*!
  Renaming symbol signal structure for convenience.
@@ -1782,6 +1788,14 @@ struct funit_link_s {
 };
 
 /*!
+ Linked list element that stores a functional unit instance.
+*/
+struct inst_link_s {
+  funit_inst* inst;                  /*!< Pointer to functional unit instance in list */
+  inst_link*  next;                  /*!< Next functional unit instance link in list */
+};
+
+/*!
  For each signal within a symtable entry, an independent MSB and LSB needs to be
  stored along with the signal pointer that it references to properly assign the
  VCD signal value to the appropriate signal.  This structure is setup to hold these
@@ -2068,6 +2082,11 @@ struct enum_item_s {
 
 /*
  $Log$
+ Revision 1.225  2006/08/29 22:49:31  phase1geo
+ Added enumeration support and partial support for typedefs.  Added enum1
+ diagnostic to verify initial enumeration support.  Full regression has not
+ been run at this point -- checkpointing.
+
  Revision 1.224  2006/08/28 22:28:28  phase1geo
  Fixing bug 1546059 to match stable branch.  Adding support for repeated delay
  expressions (i.e., a = repeat(2) @(b) c).  Fixing support for event delayed

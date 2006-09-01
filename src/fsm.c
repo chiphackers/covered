@@ -48,7 +48,7 @@
 #include "obfuscate.h"
 
 
-extern funit_inst*  instance_root;
+extern inst_link*   inst_head;
 extern funit_link*  funit_head;
 extern bool         report_covered; 
 extern unsigned int report_comb_depth;
@@ -1075,8 +1075,9 @@ void fsm_funit_verbose( FILE* ofile, funit_link* head ) {
 */
 void fsm_report( FILE* ofile, bool verbose ) {
 
-  bool missed_found;  /* If set to TRUE, FSM cases were found to be missed */
-  char tmp[4096];     /* Temporary string value */
+  bool       missed_found = FALSE;  /* If set to TRUE, FSM cases were found to be missed */
+  char       tmp[4096];             /* Temporary string value */
+  inst_link* instl;                 /* Pointer to current instance link */
 
   fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
   fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   FINITE STATE MACHINE COVERAGE RESULTS   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
@@ -1095,11 +1096,19 @@ void fsm_report( FILE* ofile, bool verbose ) {
     fprintf( ofile, "Instance                                          Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
-    missed_found = fsm_instance_summary( ofile, instance_root, tmp );
+    instl = inst_head;
+    while( instl != NULL ) {
+      missed_found |= fsm_instance_summary( ofile, instl->inst, tmp );
+      instl = instl->next;
+    }
    
     if( verbose && (missed_found || report_covered) ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
-      fsm_instance_verbose( ofile, instance_root, tmp );
+      instl = inst_head;
+      while( instl != NULL ) {
+        fsm_instance_verbose( ofile, instl->inst, tmp );
+        instl = instl->next;
+      }
     }
 
   } else {
@@ -1167,6 +1176,11 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.58  2006/08/18 22:07:45  phase1geo
+ Integrating obfuscation into all user-viewable output.  Verified that these
+ changes have not made an impact on regressions.  Also improved performance
+ impact of not obfuscating output.
+
  Revision 1.57  2006/06/29 16:48:14  phase1geo
  FSM exclusion code now complete.
 

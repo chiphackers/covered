@@ -51,7 +51,7 @@
 
 
 extern funit_link* funit_head;
-extern funit_inst* instance_root;
+extern inst_link*  inst_head;
 extern char        user_msg[USER_MSG_LENGTH];
 extern const char* race_msgs[RACE_TYPE_NUM];
 extern char        score_run_path[4096];
@@ -181,10 +181,15 @@ int tcl_func_get_instances( Tcl_Interp* tcl, funit_inst* root ) {
 */
 int tcl_func_get_instance_list( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
-  int retval = TCL_OK;  /* Return value for this function */
+  int        retval = TCL_OK;  /* Return value for this function */
+  inst_link* instl;            /* Pointer to current instance link */
 
-  if( instance_root != NULL ) {
-    tcl_func_get_instances( tcl, instance_root );
+  if( inst_head != NULL ) {
+    instl = inst_head;
+    while( instl != NULL ) {
+      tcl_func_get_instances( tcl, instl->inst );
+      instl = instl->next;
+    }
   } else {
     snprintf( user_msg, USER_MSG_LENGTH, "Unable to get instance list from this design" );
     Tcl_AddErrorInfo( tcl, user_msg );
@@ -2058,6 +2063,11 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.58  2006/08/31 04:02:02  phase1geo
+ Adding parsing support for assertions and properties.  Adding feature to
+ highlighting support that looks up the generation for the given module and
+ highlights accordingly.
+
  Revision 1.57  2006/07/05 20:43:40  phase1geo
  Finishing Tcl/Tk work on preferences window and report generator window.  Started
  work on GUI HTML documentation for these changes.  A lot of documentation left to

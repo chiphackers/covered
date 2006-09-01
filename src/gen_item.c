@@ -23,9 +23,10 @@
 
 extern static_expr* parse_static_expr( char* str, func_unit* funit, int lineno, bool no_genvars );
 
-extern funit_inst* instance_root;
-extern char        user_msg[USER_MSG_LENGTH];
-extern bool        debug_mode;
+extern inst_link* inst_head;
+extern inst_link* inst_tail;
+extern char       user_msg[USER_MSG_LENGTH];
+extern bool       debug_mode;
 
 
 /*!
@@ -810,6 +811,7 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
           char       inst_name[4096];
           vsignal*   genvar;
           func_unit* found_funit;
+          inst_link* instl = inst_head;
           if( !scope_find_signal( gi->varname, inst->funit, &genvar, &found_funit, 0 ) ) {
             snprintf( user_msg, USER_MSG_LENGTH, "Unable to find variable %s in module %s",
                       obf_sig( gi->varname ), obf_funit( inst->funit->name ) );
@@ -817,15 +819,26 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
             exit( 1 );
           }
           snprintf( inst_name, 4096, "%s[%d]", gi->elem.inst->name, vector_to_int( genvar->value ) );
-          instance_parse_add( &instance_root, inst->funit, gi->elem.inst->funit, inst_name, NULL, FALSE );
+          while( (instl != NULL) && !instance_parse_add( &(instl->inst), inst->funit, gi->elem.inst->funit, inst_name, NULL, FALSE ) ) {
+            instl = instl->next;
+          }
+          if( instl == NULL ) {
+            instl = inst_link_add( instance_create( gi->elem.inst->funit, inst_name, NULL ), &inst_head, &inst_tail );
+          }
           snprintf( inst_name, 4096, "%s.%s[%d]", inst->name, gi->elem.inst->name, vector_to_int( genvar->value ) );
-          child = instance_find_scope( inst, inst_name );
+          child = instance_find_scope( instl->inst, inst_name );
           inst_parm_add_genvar( genvar, child );
         } else {
-          char inst_name[4096];
-          instance_parse_add( &instance_root, inst->funit, gi->elem.inst->funit, gi->elem.inst->name, NULL, FALSE );
+          char       inst_name[4096];
+          inst_link* instl = inst_head;
+          while( (instl != NULL) && !instance_parse_add( &(instl->inst), inst->funit, gi->elem.inst->funit, gi->elem.inst->name, NULL, FALSE ) ) {
+            instl = instl->next;
+          }
+          if( instl == NULL ) {
+            instl = inst_link_add( instance_create( gi->elem.inst->funit, gi->elem.inst->name, NULL ), &inst_head, &inst_tail );
+          }
           snprintf( inst_name, 4096, "%s.%s", inst->name, gi->elem.inst->name );
-          child = instance_find_scope( inst, inst_name );
+          child = instance_find_scope( instl->inst, inst_name );
         }
         gen_item_resolve( gi->next_true, child, TRUE );
         gen_item_resolve( gi->next_false, inst, FALSE );
@@ -860,10 +873,16 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
         funit_link* funitl;
         char        front[4096];
         char        back[4096];
+        inst_link*  instl = inst_head;
         funitl = inst->funit->tf_head;
         while( funitl != NULL ) {
           scope_extract_back( funitl->funit->name, back, front );
-          instance_parse_add( &instance_root, funitl->funit->parent, funitl->funit, back, NULL, FALSE );
+          while( (instl != NULL) && !instance_parse_add( &(instl->inst), funitl->funit->parent, funitl->funit, back, NULL, FALSE ) ) {
+            instl = instl->next;
+          }
+          if( instl == NULL ) {
+            inst_link_add( instance_create( funitl->funit, back, NULL ), &inst_head, &inst_tail );
+          }
           funitl = funitl->next;
         }
       }
@@ -986,6 +1005,13 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.32  2006/08/25 22:49:45  phase1geo
+ Adding support for handling generated hierarchical names in signals that are outside
+ of generate blocks.  Added support for op-and-assigns in generate for loops as well
+ as normal for loops.  Added generate11.4 and for3 diagnostics to regression suite
+ to verify this new behavior.  Full regressions have not been verified with these
+ changes however.  Checkpointing.
+
  Revision 1.31  2006/08/25 18:25:24  phase1geo
  Modified gen39 and gen40 to not use the Verilog-2001 port syntax.  Fixed problem
  with detecting implicit .name and .* syntax.  Fixed op-and-assign report output.

@@ -45,13 +45,13 @@ funit_inst* instance_find_by_funit( funit_inst* root, func_unit* funit, int* ign
 funit_inst* instance_add_child( funit_inst* inst, func_unit* child, char* name, vector_width* range, bool resolve );
 
 /*! \brief Adds new instance to specified instance tree during parse. */
-void instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child, char* inst_name, vector_width* range, bool resolve );
+bool instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child, char* inst_name, vector_width* range, bool resolve );
 
 /*! \brief Resolves all instance arrays. */
 void instance_resolve( funit_inst* root );
 
 /*! \brief Adds new instance to specified instance tree during CDD read. */
-void instance_read_add( funit_inst** root, char* parent, func_unit* child, char* inst_name );
+bool instance_read_add( funit_inst** root, char* parent, func_unit* child, char* inst_name );
 
 /*! \brief Displays contents of functional unit instance tree to specified file. */
 void instance_db_write( funit_inst* root, FILE* file, char* scope, bool parse_mode, bool report_save );
@@ -62,6 +62,11 @@ void instance_dealloc( funit_inst* root, char* scope );
 
 /*
  $Log$
+ Revision 1.17  2006/07/21 20:12:46  phase1geo
+ Fixing code to get generated instances and generated array of instances to
+ work.  Added diagnostics to verify correct functionality.  Full regression
+ passes.
+
  Revision 1.16  2006/07/18 13:37:47  phase1geo
  Fixing compile issues.
 

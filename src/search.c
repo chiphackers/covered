@@ -53,7 +53,8 @@ str_link* extensions_tail = NULL;   /*!< Pointer to tail element of extensions l
 funit_link* funit_head    = NULL;   /*!< Pointer to head element of functional unit list */
 funit_link* funit_tail    = NULL;   /*!< Pointer to tail element of functional unit list */
 
-funit_inst* instance_root = NULL;   /*!< Pointer to root of functional unit instance tree */
+inst_link*  inst_head     = NULL;   /*!< Pointer to head element of functional unit instance list */
+inst_link*  inst_tail     = NULL;   /*!< Pointer to tail element of functional unit instance list */
 
 extern char*      top_module;
 extern char*      top_instance;
@@ -77,11 +78,17 @@ void search_init() {
 
   /* If the global generation type is SystemVerilog support, create the global $root module space */
   if( flag_global_generation == GENERATION_SV ) {
-    global_funit       = funit_create();
-    global_funit->name = strdup_safe( "$root", __FILE__, __LINE__ );
-    global_funit->type = FUNIT_MODULE;
+
+    /* Create the global functional unit */
+    global_funit           = funit_create();
+    global_funit->name     = strdup_safe( "$root", __FILE__, __LINE__ );
+    global_funit->type     = FUNIT_MODULE;
+    global_funit->filename = strdup_safe( "NA", __FILE__, __LINE__ );
     funit_link_add( global_funit, &funit_head, &funit_tail );
     curr_funit = global_funit;
+
+    /* Add it in the first instance tree */
+    inst_link_add( instance_create( global_funit, "$root", NULL ), &inst_head, &inst_tail );
   }
 
   /* Now create top-level module of design */
@@ -102,13 +109,13 @@ void search_init() {
   /* Initialize instance tree */
   if( top_instance == NULL ) {
     top_instance = strdup_safe( top_module, __FILE__, __LINE__ );
-    instance_parse_add( &instance_root, NULL, mod, top_instance, NULL, FALSE );
+    inst_link_add( instance_create( mod, top_instance, NULL ), &inst_head, &inst_tail );
     leading_hierarchies = (char**)realloc( leading_hierarchies, (sizeof( char* ) * (leading_hier_num + 1)) );
     leading_hierarchies[leading_hier_num] = strdup_safe( "*", __FILE__, __LINE__ );
     leading_hier_num++;
   } else {
     scope_extract_back( top_instance, dutname, lhier );
-    instance_parse_add( &instance_root, NULL, mod, dutname, NULL, FALSE );
+    inst_link_add( instance_create( mod, dutname, NULL ), &inst_head, &inst_tail );
     if( lhier[0] == '\0' ) {
       leading_hierarchies = (char**)realloc( leading_hierarchies, (sizeof( char* ) * (leading_hier_num + 1)) );
       leading_hierarchies[leading_hier_num] = strdup_safe( "*", __FILE__, __LINE__ );
@@ -131,7 +138,7 @@ void search_init() {
 bool search_add_include_path( char* path ) {
 
   bool  retval = TRUE;   /* Return value for this function */
-  char* tmp;             /* Temporary directory name       */
+  char* tmp;             /* Temporary directory name */
 
   if( is_directory( path ) ) {
     tmp = strdup_safe( path, __FILE__, __LINE__ );
@@ -178,7 +185,7 @@ bool search_add_directory_path( char* path ) {
 bool search_add_file( char* file ) {
 
   bool  retval = TRUE;  /* Return value for this function */
-  char* tmp;            /* Temporary filename             */
+  char* tmp;            /* Temporary filename */
 
   if( file_exists( file ) ) {
     if( str_link_find( file, use_files_head ) == NULL ) {
@@ -205,7 +212,7 @@ bool search_add_file( char* file ) {
 bool search_add_no_score_funit( char* funit ) {
 
   bool  retval = TRUE;   /* Return value for this function */
-  char* tmp;             /* Temporary module name          */
+  char* tmp;             /* Temporary module name */
 
   if( is_func_unit( funit ) ) {
     tmp = strdup_safe( funit, __FILE__, __LINE__ );
@@ -284,6 +291,14 @@ void search_free_lists() {
 
 /*
  $Log$
+ Revision 1.27  2006/08/31 22:32:18  phase1geo
+ Things are in a state of flux at the moment.  I have added proper parsing support
+ for assertions, properties and sequences.  Also added partial support for the $root
+ space (though I need to work on figuring out how to handle it in terms of the
+ instance tree) and all that goes along with that.  Add parsing support with an
+ error message for multi-dimensional array declarations.  Regressions should not be
+ expected to run correctly at the moment.
+
  Revision 1.26  2006/07/12 22:16:18  phase1geo
  Fixing hierarchical referencing for instance arrays.  Also attempted to fix
  a problem found with unary1; however, the generated report coverage information

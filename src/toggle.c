@@ -37,7 +37,7 @@
 #include "obfuscate.h"
 
 
-extern funit_inst* instance_root;
+extern inst_link*  inst_head;
 extern funit_link* funit_head;
 
 extern bool   report_covered;
@@ -587,8 +587,9 @@ void toggle_funit_verbose( FILE* ofile, funit_link* head ) {
 */
 void toggle_report( FILE* ofile, bool verbose ) {
 
-  bool missed_found;  /* If set to TRUE, indicates that untoggled bits were found */
-  char tmp[4096];     /* Temporary string value                                   */
+  bool       missed_found = FALSE;  /* If set to TRUE, indicates that untoggled bits were found */
+  char       tmp[4096];             /* Temporary string value */
+  inst_link* instl;                 /* Pointer to current instance link */
 
   fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
   fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   TOGGLE COVERAGE RESULTS   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
@@ -607,11 +608,19 @@ void toggle_report( FILE* ofile, bool verbose ) {
     fprintf( ofile, "                                                   Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
-    missed_found = toggle_instance_summary( ofile, instance_root, tmp );
+    instl = inst_head;
+    while( instl != NULL ) {
+      missed_found |= toggle_instance_summary( ofile, instl->inst, tmp );
+      instl = instl->next;
+    }
     
     if( verbose && missed_found ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
-      toggle_instance_verbose( ofile, instance_root, tmp );
+      instl = inst_head;
+      while( instl != NULL ) {
+        toggle_instance_verbose( ofile, instl->inst, tmp );
+        instl = instl->next;
+      }
     }
 
   } else {
@@ -635,6 +644,11 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.46  2006/08/29 22:49:31  phase1geo
+ Added enumeration support and partial support for typedefs.  Added enum1
+ diagnostic to verify initial enumeration support.  Full regression has not
+ been run at this point -- checkpointing.
+
  Revision 1.45  2006/08/18 22:07:45  phase1geo
  Integrating obfuscation into all user-viewable output.  Verified that these
  changes have not made an impact on regressions.  Also improved performance

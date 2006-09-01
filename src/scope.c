@@ -32,9 +32,9 @@
 #include "obfuscate.h"
 
 
-extern funit_inst* instance_root;
-extern func_unit*  global_funit;
-extern char        user_msg[USER_MSG_LENGTH];
+extern inst_link* inst_head;
+extern func_unit* global_funit;
+extern char       user_msg[USER_MSG_LENGTH];
 
 
 /*!
@@ -60,7 +60,7 @@ func_unit* scope_find_funit_from_scope( char* scope, func_unit* curr_funit ) {
   assert( curr_funit != NULL );
 
   /* Get current instance */
-  if( (curr_inst = instance_find_by_funit( instance_root, curr_funit, &ignore )) != NULL ) {
+  if( (curr_inst = inst_link_find_by_funit( curr_funit, inst_head, &ignore )) != NULL ) {
 
     /* First check scope based on a relative path */
     snprintf( tscope, 4096, "%s.%s", curr_inst->name, scope );
@@ -294,7 +294,7 @@ func_unit* scope_get_parent_funit( char* scope ) {
   assert( rest != '\0' );
 
   /* Get functional instance for the rest of the scope */
-  inst = instance_find_scope( instance_root, rest );
+  inst = inst_link_find_by_scope( rest, inst_head );
 
   assert( inst != NULL );
 
@@ -330,7 +330,7 @@ func_unit* scope_get_parent_module( char* scope ) {
     scope_extract_back( curr_scope, back, rest );
     assert( rest[0] != '\0' );
     strcpy( curr_scope, rest );
-    inst = instance_find_scope( instance_root, curr_scope );
+    inst = inst_link_find_by_scope( curr_scope, inst_head );
     assert( inst != NULL );
   } while( inst->funit->type != FUNIT_MODULE );
 
@@ -345,6 +345,14 @@ func_unit* scope_get_parent_module( char* scope ) {
 
 /*
  $Log$
+ Revision 1.28  2006/08/31 22:32:18  phase1geo
+ Things are in a state of flux at the moment.  I have added proper parsing support
+ for assertions, properties and sequences.  Also added partial support for the $root
+ space (though I need to work on figuring out how to handle it in terms of the
+ instance tree) and all that goes along with that.  Add parsing support with an
+ error message for multi-dimensional array declarations.  Regressions should not be
+ expected to run correctly at the moment.
+
  Revision 1.27  2006/08/18 22:07:45  phase1geo
  Integrating obfuscation into all user-viewable output.  Verified that these
  changes have not made an impact on regressions.  Also improved performance

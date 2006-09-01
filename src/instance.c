@@ -37,9 +37,9 @@
 #include "param.h"
 
 
-extern int         curr_expr_id;
-extern funit_inst* instance_root;
-extern char        user_msg[USER_MSG_LENGTH];
+extern int        curr_expr_id;
+extern inst_link* inst_head;
+extern char       user_msg[USER_MSG_LENGTH];
 
 
 bool instance_resolve_inst( funit_inst* root, funit_inst* curr );
@@ -339,7 +339,10 @@ funit_inst* instance_add_child( funit_inst* inst, func_unit* child, char* name, 
 
     /* If the new instance needs to be resolved now, do so */
     if( resolve ) {
-      instance_resolve_inst( instance_root, new_inst );
+      inst_link* instl = inst_head;
+      while( (instl != NULL) && !instance_resolve_inst( instl->inst, new_inst ) ) {
+        instl = instl->next;
+      }
     }
 
   } else {
@@ -390,18 +393,22 @@ void instance_copy( funit_inst* from_inst, funit_inst* to_inst, char* name, vect
  \param inst_name  Name of new functional unit instance.
  \param range      For array of instances, specifies the name range.
  \param resolve    If set to TRUE, resolve any added instance.
+
+ \return Returns TRUE if specified instance was successfully added to the specified instance tree;
+         otherwise, returns FALSE.
  
  Adds the child functional unit to the child functional unit pointer list located in
  the functional unit specified by the scope of parent in the functional unit instance
  tree pointed to by root.  This function is used by the db_add_instance
  function during the parsing stage.
 */
-void instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child, char* inst_name, vector_width* range, bool resolve ) {
+bool instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child, char* inst_name, vector_width* range, bool resolve ) {
   
-  funit_inst* inst;    /* Temporary pointer to functional unit instance to add to */
-  funit_inst* cinst;   /* Pointer to instance of child functional unit */
-  int         i;       /* Loop iterator */
-  int         ignore;  /* Number of matched instances to ignore */
+  bool        retval = TRUE;  /* Return value for this function */
+  funit_inst* inst;           /* Temporary pointer to functional unit instance to add to */
+  funit_inst* cinst;          /* Pointer to instance of child functional unit */
+  int         i;              /* Loop iterator */
+  int         ignore;         /* Number of matched instances to ignore */
 
   if( *root == NULL ) {
 
@@ -441,10 +448,12 @@ void instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child,
 
     }
 
-    /* We should have found at least one parent instance */
-    assert( i > 0 );
+    /* Everything went well with the add if we found at least one parent instance */
+    retval = (i > 0);
 
   }
+
+  return( retval );
 
 }
 
@@ -558,15 +567,19 @@ void instance_resolve( funit_inst* root ) {
  \param child      Pointer to child functional unit to add to specified parent's child list.
  \param inst_name  Instance name of this child functional unit instance.
 
+ \return Returns TRUE if instance was added to the specified functional unit instance tree; otherwise,
+         returns FALSE (indicates that the instance is from a different hierarchy).
+
  Adds the child functional unit to the child functional unit pointer list located in
  the functional unit specified by the scope of parent in the functional unit instance
  tree pointed to by root.  This function is used by the db_read
  function during the CDD reading stage.
 */ 
-void instance_read_add( funit_inst** root, char* parent, func_unit* child, char* inst_name ) {
+bool instance_read_add( funit_inst** root, char* parent, func_unit* child, char* inst_name ) {
 
-  funit_inst* inst;      /* Temporary pointer to functional unit instance to add to */
-  funit_inst* new_inst;  /* Pointer to new functional unit instance to add */
+  bool        retval = TRUE;  /* Return value for this function */
+  funit_inst* inst;           /* Temporary pointer to functional unit instance to add to */
+  funit_inst* new_inst;       /* Pointer to new functional unit instance to add */
 
   new_inst = instance_create( child, inst_name, NULL );
 
@@ -593,12 +606,14 @@ void instance_read_add( funit_inst** root, char* parent, func_unit* child, char*
 
     } else {
 
-      /* Unable to find parent of this child, something went in wrong in writing/reading CDD file. */
-      assert( inst != NULL );
+      /* Unable to find parent of this child, needs to be added to a different instance tree */
+      retval = FALSE;
 
     }
  
   }
+
+  return( retval );
 
 }
 
@@ -772,6 +787,10 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.55  2006/07/27 16:08:46  phase1geo
+ Fixing several memory leak bugs, cleaning up output and fixing regression
+ bugs.  Full regression now passes (including all current generate diagnostics).
+
  Revision 1.54  2006/07/21 22:39:01  phase1geo
  Started adding support for generated statements.  Still looks like I have
  some loose ends to tie here before I can call it good.  Added generate5

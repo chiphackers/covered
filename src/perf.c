@@ -29,7 +29,7 @@
 
 
 extern funit_link* funit_head;
-extern funit_inst* instance_root;
+extern inst_link*  inst_head;
 
 
 /*!
@@ -130,16 +130,26 @@ void perf_output_inst_report_helper( FILE* ofile, funit_inst* root ) {
 */
 void perf_output_inst_report( FILE* ofile ) {
 
-  funit_inst* curr;  /* Pointer to current functional unit instance */
+  funit_inst* curr;   /* Pointer to current functional unit instance */
+  inst_link*  instl;  /* Pointer to current instance link */
 
   fprintf( ofile, "\nSIMULATION PERFORMANCE STATISTICS:\n\n" );
 
-  perf_output_inst_report_helper( ofile, instance_root );
+  instl = inst_head;
+  while( instl != NULL ) {
+    perf_output_inst_report_helper( ofile, instl->inst );
+    instl = instl->next;
+  }
 
 }
 
 /*
  $Log$
+ Revision 1.3  2006/03/28 22:28:28  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.2  2006/03/27 23:25:30  phase1geo
  Updating development documentation for 0.4 stable release.
 

@@ -49,7 +49,6 @@
 
 extern char        user_msg[USER_MSG_LENGTH];
 extern funit_link* funit_head;
-extern funit_inst* instance_root;
 extern func_unit*  curr_funit;
 
 
@@ -239,20 +238,6 @@ vsignal* funit_find_signal( char* name, func_unit* funit ) {
     if( ((gil = gitem_link_find( gi, funit->gitem_head )) != NULL) && ((found_gi = gen_item_find( gil->gi, gi )) != NULL) ) {
       found_sig = found_gi->elem.sig;
     }
-
-#ifdef OBSOLETE
-    ignore = i;
-    while( (found_sig == NULL) && ((inst = instance_find_by_funit( instance_root, funit, &ignore )) != NULL) ) {
-
-      if( ((gil = gitem_link_find( gi, inst->gitem_head )) != NULL) && ((found_gi = gen_item_find( gil->gi, gi )) != NULL) ) {
-        found_sig = found_gi->elem.sig;
-      }
-
-      i++;
-      ignore = i;
-
-    }
-#endif
 
     /* Deallocate temporary generate item */
     gen_item_dealloc( gi, FALSE );
@@ -1034,6 +1019,11 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.39  2006/08/29 22:49:31  phase1geo
+ Added enumeration support and partial support for typedefs.  Added enum1
+ diagnostic to verify initial enumeration support.  Full regression has not
+ been run at this point -- checkpointing.
+
  Revision 1.38  2006/08/24 22:25:12  phase1geo
  Fixing issue with generate expressions within signal hierarchies.  Also added
  ability to parse implicit named and * port lists.  Added diagnostics to regressions
