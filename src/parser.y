@@ -5178,9 +5178,10 @@ range
         parser_explicitly_set_curr_range( $2, $4 );
       }
     }
+    /* Multi-dimensional arrays are not currently supported */
   | range '[' static_expr ':' static_expr ']'
     {
-      VLerror( "Multi-dimensional arrays are not currently supported" );
+      curr_handled = FALSE;
       static_expr_dealloc( $3, TRUE );
       static_expr_dealloc( $5, TRUE );
     }

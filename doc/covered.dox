@@ -23,7 +23,7 @@ PROJECT_NAME           = Covered
 # This could be handy for archiving the generated documentation or 
 # if some version control system is used.
 
-PROJECT_NUMBER         = 0.4.3
+PROJECT_NUMBER         = 20060909
 
 # The OUTPUT_DIRECTORY tag is used to specify the (relative or absolute) 
 # base path where the generated documentation will be put. 
@@ -484,7 +484,13 @@ RECURSIVE              = NO
 EXCLUDE                = lexer.c \
                          lexer.h \
                          parser.c \
-                         parser.h
+                         parser.h \
+                         pplexer.c \
+                         pplexer.h \
+                         static_parser.c \
+                         static_parser.h \
+                         static_lexer.c \
+                         static_lexer.h
 
 # The EXCLUDE_SYMLINKS tag can be used select whether or not files or 
 # directories that are symbolic links (a Unix filesystem feature) are excluded 

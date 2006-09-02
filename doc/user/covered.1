@@ -1,4 +1,4 @@
-.TH "Covered" "1" "covered-20060826" "Trevor Williams" "Code Analysis"
+.TH "Covered" "1" "covered-20060909" "Trevor Williams" "Code Analysis"
 .SH "NAME"
 .LP 
 Covered \- Verilog Code Coverage Analyzer
@@ -155,6 +155,9 @@ Type(s) of metrics to report.  l=line, t=toggle, c=combinational logic, f=FSM st
 .TP 
 \fB\-o\fR \fIfilename\fR
 File to output report information to.  Default is standard output.
+.TP 
+\fB\-s\fR
+Suppresses modules/instances that contain no coverage information from being output to the report.  Used to help eliminate potentially meaningless information from the report.
 .TP 
 \fB\-v\fR
 Deprecated.  Replaced by '\-d d' or '\-d v'.
