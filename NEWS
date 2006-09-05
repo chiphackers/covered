@@ -1,6 +1,72 @@
 Covered-Related NEWS
 ====================
 
+    * 09/04/2006
+
+Development release covered-20060904 made.  This is primarily an enhanced language support release
+containing support for the Verilog-2001 'generate' block and support for some SystemVerilog constructs.
+All bug fixes from the stable release branch have also been included in this release as well.  Some
+updates to the GUI (to match changes made on the score command side).  The following is a list of
+changes made from the last development release
+
+  - Complete parsing/simulation support for generate blocks include generate for, if/else and
+    case constructs.
+  - Fixed bug in hierarchically referencing items within an array of instances.
+  - Added -g option to score command to allow the user to specify on either a global or modular
+    level which Verilog generation to consider for that design.  This allows a block of logic written
+    with Verilog-1995 in mind to use names that would be keywords in Verilog-2001 or SystemVerilog,
+    as an example.
+  - Removed "manstyle" type documentation in user's guide as this tool is no longer used for this
+    project.  This change should be transparent to the user, however.
+  - Fixed scoping/hierarchical referencing rules to match the Verilog LRM properly.
+  - Added parsing/handling support for SystemVerilog always_comb, always_ff and always_latch blocks.
+  - Added parsing support for 'unique' and 'priority' SystemVerilog keywords before if and case
+    statements (Covered doesn't need to do anything with them, however).
+  - Added parsing/handling support for 'do .. while' SystemVerilog loops.
+  - Added parsing/handling support for new SystemVerilog data types, including:  byte, bit, logic,
+    char, shorting, int and longint.
+  - Added -rI option to the score command which allows the user to completely bypass the race
+    condition checking phase of the score command.
+  - Added -B global option which obfuscates all identifying names from Covered's output (for use
+    in providing debugging information to the developer's of Covered).
+  - Added parsing/handling support for operate-and-assign SystemVerilog operators, including:
+    +=, -=, *=, /=, %=, &=, |=, ^=, <<=, >>=, <<<=, >>>=, ++ and --.  These can be used wherever
+    their counterparts can be used (including generate for loops).
+  - Added proper handling of Verilog-1995 delayed blocking assignments (i.e., "a = #5 b;" or
+    "a = @(posedge clk) c;").  Previously, the delay was being incorrectly ignored which could
+    have lead to infinite looping of always/forever blocks or could calculate incorrect coverage
+    information.
+  - Added parsing support for SystemVerilog .name and .* port lists.
+  - Added partial parsing/handling support for SystemVerilog 'typedef' usage.  This should work for
+    enumerations but not other data types at this point.
+  - Added parsing/handling support for SystemVerilog 'enum' constructs.  These should be fully
+    supported with the exception of their built-in '.first', '.last', '.next', '.prev', '.num' and
+    '.name' methods.
+  - Added full support of handling Verilog-1995 repeated delay blocking assignments (i.e.,
+    "a = repeat(5) @(posedge clk) b;".  These were previously being treated as normal blocking
+    assignments.
+  - Added keyword highlighting support in GUI for Verilog-2001 and SystemVerilog keywords depending
+    on the -g value specified for a particular module.
+  - Added parsing support for SystemVerilog assertion, property and sequence blocks.  These constructs
+    are ignored by the parser but should not cause a parsing error now.
+  - Added parsing support for SystemVerilog multi-dimensional arrays.  These are ignored by the
+    parser but should not cause an error.
+  - Added full support for the SystemVerilog $root global space -- though limited testing has
+    been performed with this at this point.
+  - Added -s option to the report command to suppress the output for modules/instances that contain
+    no coverage information.
+  - Updated all user documentation to match changes made for this development release.
+  - Lots of new diagnostics added to regression suite to verify the majority of these changes.
+
+There you have it.  A lot of enhancements made for language support for Verilog-1995, Verilog-2001
+and SystemVerilog.  Some of the additions for SystemVerilog, especially typedefs and $root global
+space, have not been fully verified to work and may still be a bit buggy, but everything else should
+be expected to work as advertised.  Please submit any bugs that you find.  The next development
+release should contain support for some more language enhancements, including full support for
+typedef and enumeration usage, support for memories, multi-dimensional arrays, structs and unions.
+I will also be looking at adding support for bitwise coverage information (for vectored calculations).
+As always, have fun!
+
     * 07/08/2006
 
 Development release covered-20060708 made.  This new development release for the future 0.5 stable

@@ -66,13 +66,13 @@ Excludes all continuous assignments from being considered for coverage.
 \fB\-ei\fR
 Excludes all initial blocks from being considered for coverage.
 .TP 
-\fB\-F\fR \fImodule_name=(in_expr,)out_expr\fR
+\fB\-F\fR \fImodule_name=[in_expr,]out_expr\fR
 Indicates to the parser where to find the FSM located in module \fImodule_name\fR which has an input state expression called \fIin_expr\fR and output state expression called \fIout_expr\fR.  If \fIin_expr\fR is not specified, \fIout_expr\fR is used as both the input and output state expression.
 .TP 
 \fB\-f\fR \fIfilename\fR
 Name of file containing additional arguments to parse.
 .TP 
-\fB\-g\fR \fI(module_name=)[1|2|3]\fR
+\fB\-g\fR \fI[module_name=](1|2|3)\fR
 Allows the user to limit the parser to a specific generation of the Verilog standard for a specific module or the entire design, where 1=Verilog\-1995, 2=Verilog\-2001, 3=SystemVerilog.  If \fImodule_name=\fR is specified, the parser uses the specified Verilog standard for that module only, allowing the rest of the design to use the global standard.  By default, the global standard is set to the most recent version (3).  This option can be specified more than once for a given call to the score command; however, if the \-g option specifies more than global value (i.e., without the \fImodule=\fR prefix), only the last option value will be used.
 .TP 
 \fB\-h\fR
@@ -108,7 +108,7 @@ Specifies the module name of the top\-most module that will be measured.  Note t
 \fB\-ts\fR \fInumber\fR
 When scoring occurs, this option allows the user to see how far the simulator has progressed by outputting the current timestep to standard output. The value of \fInumber\fR specifies how many timesteps are allowed to be simulated before outputting the current timestep (results in less calls to output stream).
 .TP 
-\fB\-T min|typ|max\fR
+\fB\-T (min|typ|max)\fR
 Specifies which value to use when encountering a delay expression in the form:  min:typ:max.  If this option is not specified, 'typ' select is used by default.
 .TP 
 \fB\-v\fR \fIfilename\fR
@@ -117,13 +117,13 @@ Name of specific Verilog file to score.
 \fB\-vcd\fR \fIfilename\fR
 Name of VCD dumpfile to score design with.  If this or the \-lxt option is not used, Covered will only create an initial CDD file from the design and will not attempt to score the design.
 .TP 
-\fB\-vpi\fR (\fIfilename\fR)
+\fB\-vpi\fR [\fIfilename\fR]
 If this option is specified without the \-vcd or \-lxt options, the design is parsed, a CDD file is created and a top\-level Verilog module named \fIfilename\fR (if this value is specified) or "covered_vpi.v" (if \fIfilename\fR is not specified) is created along with a PLI table file called \fIfilename\fR.ta b or "covered_vpi.v.ta b".  Both of these files are used in the compilation of the simulator to use Covered as a VPI module.  If either the \-vcd or \-lxt options are specified, this option has no effect.
 .TP 
 \fB\-y\fR \fIdirectory\fR
 Directory to find unspecified Verilog files.
 .TP 
-\fB+libext+\fR\fI.extension\fR(\fB+\fR\fI.extension\fR)*\fB+\fR\fR
+\fB+libext+\fR\fI.extension\fR[\fB+\fR\fI.extension\fR]*\fB+\fR\fR
 Extensions of Verilog files to allow in scoring.
 .SH "MERGE COMMAND"
 .LP 

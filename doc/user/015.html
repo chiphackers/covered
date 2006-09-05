@@ -245,7 +245,7 @@
 						do not need to be checked for coverage.  By default, initial blocks
 						are considered for coverage. </td> </tr>
 					<tr> 
-						<td> -D &lt;name&gt;(=&lt;value&gt;) </td> 
+						<td> -D &lt;name&gt;[=&lt;value&gt;] </td> 
 						<td> Defines the specified name to 1 or the specified value. </td> </tr> 
 					<tr> 
 						<td> -p &lt;filename&gt; </td> 
@@ -269,7 +269,7 @@
 						allowed to be simulated before outputting the current timestep 
 						(results in less calls to output stream). </td> </tr> 
 					<tr> 
-						<td> -F &lt;module&gt;=(&lt;in_expr&gt;,)&lt;out_expr&gt; </td> 
+						<td> -F &lt;module&gt;=[&lt;in_expr&gt;,]&lt;out_expr&gt; </td> 
 						<td> 
 						Specifies the location to find an FSM to score where <i>module</i> 
 						is the Verilog module containing the FSM, <i>in_expr</i> is the 
@@ -284,6 +284,16 @@
 						design, -rW = output information and continue scoring design, 
 						-rE = output information and immediately exit the scoring 
 						process, -rI = skip the race condition check for all modules). </td> </tr> 
+					<tr>
+						<td> -g [&lt;module&gt;]=(1|2|3) </td>
+						<td>
+						Specifies what generation of Verilog to use for parsing the design.
+						If &lt;module&gt; is specified, uses the given generation value for
+						that module only.  If &lt;module&gt; is not specified, applies that
+						generation to the entire design.  This option may be specified multiple
+						times on the command-line, where options to the left take precedence
+						over the values to the right.  1=Verilog-1995, 2=Verilog-2001,
+						3=SystemVerilog. </td> </tr>
 					<tr> 
 						<td> -h </td> 
 						<td> Outputs usage information for the score command </td> </tr> 
