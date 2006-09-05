@@ -71,11 +71,22 @@ void gen_item_bind( gen_item* gi, func_unit* funit );
 /*! \brief Resolves all generate items in the design */
 void generate_resolve( funit_inst* inst );
 
+/*! \brief "Removes" any generate item statements that match the given statement such that they will
+           not be output to the CDD file. */
+void generate_remove_stmt( statement* stmt );
+
 /*! \brief Deallocates all associated memory for the given generate item */
 void gen_item_dealloc( gen_item* gi, bool rm_elem );
 
 /*
  $Log$
+ Revision 1.14  2006/08/25 22:49:45  phase1geo
+ Adding support for handling generated hierarchical names in signals that are outside
+ of generate blocks.  Added support for op-and-assigns in generate for loops as well
+ as normal for loops.  Added generate11.4 and for3 diagnostics to regression suite
+ to verify this new behavior.  Full regressions have not been verified with these
+ changes however.  Checkpointing.
+
  Revision 1.13  2006/08/14 04:19:56  phase1geo
  Fixing problem with generate11* diagnostics (generate variable used in
  signal name).  These tests pass now but full regression hasn't been verified

@@ -122,6 +122,10 @@
  This expression does nothing.  It is not measurable but is simply a placeholder for a statement that
  Covered will not handle (i.e., standard system calls that only contain inputs) but will not dismiss
  the statement block that the statement exists in.
+
+ \par EXP_OP_DIM
+ This expression handles a dimensional selection lookup, allowing us to properly handle multi-dimensional
+ array accesses.
 */
 
 #include <stdio.h>
@@ -226,6 +230,7 @@ static bool expression_op_func__dec( expression*, thread* );
 static bool expression_op_func__dly_assign( expression*, thread* );
 static bool expression_op_func__dly_op( expression*, thread* );
 static bool expression_op_func__repeat_dly( expression*, thread* );
+static bool expression_op_func__dimension( expression*, thread* );
 
 /*!
  Array containing static information about expression operation types.  NOTE:  This structure MUST be
@@ -316,7 +321,8 @@ const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",         "",             ex
                                            {"DEC",            "--",           expression_op_func__dec,        {1, 0, NOT_COMB,   0, 0, 0, 0} },
                                            {"DLY_ASSIGN",     "",             expression_op_func__dly_assign, {1, 0, NOT_COMB,   0, 0, 1, 0} },
                                            {"DLY_OP",         "",             expression_op_func__dly_op,     {1, 0, NOT_COMB,   0, 0, 0, 0} },
-                                           {"RPT_DLY",        "",             expression_op_func__repeat_dly, {1, 0, NOT_COMB,   0, 0, 0, 0} } };
+                                           {"RPT_DLY",        "",             expression_op_func__repeat_dly, {1, 0, NOT_COMB,   0, 0, 0, 0} },
+                                           {"DIM",            "",             expression_op_func__dimension,  {0, 0, NOT_COMB,   0, 0, 0, 0} } };
 
 
 /*!
@@ -2966,6 +2972,24 @@ bool expression_op_func__repeat_dly( expression* expr, thread* thr ) {
 
 }
 
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a dimensional array access.
+*/
+bool expression_op_func__dimension( expression* expr, thread* thr ) {
+
+  bool retval = TRUE;  /* Return value for this function */
+
+  /* TBD */
+
+  return( retval );
+
+}
+
 
 /*!
  \param expr  Pointer to expression to set value to.
@@ -3072,6 +3096,8 @@ void expression_operate_recursively( expression* expr, bool sizing ) {
     expression_operate_recursively( expr->right, sizing );
     
     if( sizing ) {
+
+      printf( "In expression_operate_recursively, expr: %s\n", expression_string( expr ) );
 
       /*
        Non-static expression found where static expression required.  Simulator
@@ -3496,6 +3522,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.202  2006/08/29 22:49:31  phase1geo
+ Added enumeration support and partial support for typedefs.  Added enum1
+ diagnostic to verify initial enumeration support.  Full regression has not
+ been run at this point -- checkpointing.
+
  Revision 1.201  2006/08/28 22:28:28  phase1geo
  Fixing bug 1546059 to match stable branch.  Adding support for repeated delay
  expressions (i.e., a = repeat(2) @(b) c).  Fixing support for event delayed

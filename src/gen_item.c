@@ -622,7 +622,7 @@ void gen_item_resize_statements( gen_item* gi ) {
 */
 void gen_item_assign_expr_ids( gen_item* gi ) {
 
-  if( gi->suppl.part.type == GI_TYPE_STMT ) {
+  if( (gi->suppl.part.type == GI_TYPE_STMT) && (gi->suppl.part.removed == 0) ) {
 
     statement_assign_expr_ids( gi->elem.stmt );
 
@@ -642,7 +642,7 @@ void gen_item_assign_expr_ids( gen_item* gi ) {
 void gen_item_db_write( gen_item* gi, control type, FILE* ofile ) {
 
   /* If the types match, output based on type */
-  if( gi->suppl.part.type == type ) {
+  if( (gi->suppl.part.type == type) && (gi->suppl.part.removed == 0) ) {
 
     switch( type ) {
       case GI_TYPE_SIG :
@@ -669,7 +669,7 @@ void gen_item_db_write( gen_item* gi, control type, FILE* ofile ) {
 void gen_item_db_write_expr_tree( gen_item* gi, FILE* ofile ) {
 
   /* Only do this for statements */
-  if( gi->suppl.part.type == GI_TYPE_STMT ) {
+  if( (gi->suppl.part.type == GI_TYPE_STMT) && (gi->suppl.part.removed == 0) ) {
 
     statement_db_write_expr_tree( gi->elem.stmt, ofile );
 
@@ -843,7 +843,7 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
 
       case GI_TYPE_BIND :
         varname = gen_item_calc_signal_name( gi->varname, inst->funit, gi->elem.expr->line, FALSE );
-        // printf( "varname: %s\n", varname );
+        printf( "varname: %s\n", varname );
         switch( gi->elem.expr->op ) {
           case EXP_OP_FUNC_CALL :  bind_add( FUNIT_FUNCTION,    varname, gi->elem.expr, inst->funit );  break;
           case EXP_OP_TASK_CALL :  bind_add( FUNIT_TASK,        varname, gi->elem.expr, inst->funit );  break;
@@ -945,6 +945,62 @@ void generate_resolve( funit_inst* root ) {
 }
 
 /*!
+ \param root  Pointer to root instance to traverse
+ \param gi    Pointer to statement generate item to find and remove
+*/
+void generate_remove_stmt_helper( funit_inst* root, gen_item* gi ) {
+
+  funit_inst* curr_child;  /* Pointer to current child to search */
+  gitem_link* gil;         /* Pointer to generate item link */
+  gen_item*   found_gi;    /* Pointer to found generate item */
+
+  /* Remove the generate item from the current instance if it exists there */
+  gil = root->gitem_head;
+  while( gil != NULL ) {
+    if( (found_gi = gen_item_find( gil->gi, gi )) != NULL ) {
+      found_gi->suppl.part.removed = 1;
+    }
+    gil = gil->next;
+  }
+
+  /* Search child instances */
+  curr_child = root->child_head;
+  while( curr_child != NULL ) {
+    generate_remove_stmt_helper( curr_child, gi );
+    curr_child = curr_child->next;
+  }
+
+}
+
+/*!
+ \param root  Pointer to root instance to search
+ \param stmt  Statement to set "remove" bit on
+
+ Iterates through the entire instance tree finding and "removing" all statement generate items
+ that match the given statement ID.  This will get called by the stmt_blk_remove() function
+ when a statement has been found that does not exist in a functional unit.
+*/
+void generate_remove_stmt( statement* stmt ) {
+
+  gen_item*  gi;     /* Generate item created for the given statement */
+  inst_link* instl;  /* Pointer to current instance list to parse */
+
+  /* Create generate item */
+  gi = gen_item_create_stmt( stmt );
+
+  /* Search for the generate item in the instance lists */
+  instl = inst_head;
+  while( instl != NULL ) {
+    generate_remove_stmt_helper( instl->inst, gi );
+    instl = instl->next;
+  }
+
+  /* Deallocate the created generate item */
+  gen_item_dealloc( gi, FALSE );
+
+}
+
+/*!
  \param gi       Pointer to gen_item structure to deallocate
  \param rm_elem  If set to TRUE, removes the associated element
 
@@ -1002,6 +1058,9 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.34  2006/09/01 23:06:02  phase1geo
+ Fixing regressions per latest round of changes.  Full regression now passes.
+
  Revision 1.33  2006/09/01 04:06:37  phase1geo
  Added code to support more than one instance tree.  Currently, I am seeing
  quite a few memory errors that are causing some major problems at the moment.

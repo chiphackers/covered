@@ -502,6 +502,9 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
         assert( exp != NULL );
         snprintf( user_msg, USER_MSG_LENGTH, "Implicit declaration of signal \"%s\", creating 1-bit version of signal", obf_sig( name ) );
         print_output( user_msg, WARNING, __FILE__, __LINE__ );
+        snprintf( user_msg, USER_MSG_LENGTH, "module \"%s\", file \"%s\", line %d",
+                  obf_funit( funit_exp->name ), obf_file( funit_exp->filename ), exp_line );
+        print_output( user_msg, WARNING_WRAP, __FILE__, __LINE__ );
         found_sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT, 1, 0, exp->line, ((exp->col >> 16) & 0xffff), 0 );
         sig_link_add( found_sig, &(funit_exp->sig_head), &(funit_exp->sig_tail) );
       }
@@ -643,7 +646,7 @@ bool bind_statement( int id, expression* exp, func_unit* funit_exp, bool cdd_rea
     } else {
 
 #ifdef DEBUG_MODE
-      snprintf( user_msg, USER_MSG_LENGTH, "Removing statement block at line %d because its calling expression was removed", found_stmtl->stmt->exp->line );
+      snprintf( user_msg, USER_MSG_LENGTH, "Removing statement block at line %d in file \"%s\" because its calling expression was removed", found_stmtl->stmt->exp->line, obf_file( funit_exp->filename ) );
       print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
       stmt_blk_add_to_remove_list( found_stmtl->stmt );
@@ -938,10 +941,11 @@ void bind_perform( bool cdd_reading, int pass ) {
       if( !bound && (curr_eb->clear_assigned == 0) && (pass == 1) ) {
         if( (tmp_stmt = expression_get_root_statement( curr_eb->exp )) != NULL ) {
 #ifdef DEBUG_MODE
-          snprintf( user_msg, USER_MSG_LENGTH, "Removing statement block containing line %d because it was unbindable",
-                    curr_eb->exp->line );
+          snprintf( user_msg, USER_MSG_LENGTH, "Removing statement block containing line %d in file \"%s\", because it was unbindable",
+                    curr_eb->exp->line, obf_file( curr_eb->funit->filename ) );
           print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif        
+          printf( "Adding statement %d to remove list\n", tmp_stmt->exp->id );
           stmt_blk_add_to_remove_list( tmp_stmt );
         }
       }
@@ -1023,6 +1027,11 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.90  2006/09/01 04:06:36  phase1geo
+ Added code to support more than one instance tree.  Currently, I am seeing
+ quite a few memory errors that are causing some major problems at the moment.
+ Checkpointing.
+
  Revision 1.89  2006/08/18 22:07:44  phase1geo
  Integrating obfuscation into all user-viewable output.  Verified that these
  changes have not made an impact on regressions.  Also improved performance

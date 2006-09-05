@@ -1297,6 +1297,40 @@ expression* db_create_expression( expression* right, expression* left, int op, b
 }
 
 /*!
+ \param root      Pointer to root of expression tree to bind
+ \param sig_name  Name of signal to bind to
+
+ Recursively iterates through the entire expression tree binding all selection expressions within that tree
+ to the given signal.
+*/
+void db_bind_expr_tree( expression* root, char* sig_name ) {
+
+  assert( sig_name != NULL );
+
+  if( root != NULL ) {
+
+#ifdef DEBUG_MODE
+    snprintf( user_msg, USER_MSG_LENGTH, "In db_bind_expr_tree, root id: %d, sig_name: %s", root->id, sig_name );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+#endif
+
+    /* Bind the children first */
+    db_bind_expr_tree( root->left,  sig_name );
+    db_bind_expr_tree( root->right, sig_name );
+
+    /* Now bind ourselves if necessary */
+    if( (root->op == EXP_OP_SBIT_SEL) ||
+        (root->op == EXP_OP_MBIT_SEL) ||
+        (root->op == EXP_OP_MBIT_POS) ||
+        (root->op == EXP_OP_MBIT_NEG) ) {
+      bind_add( 0, sig_name, root, curr_funit );
+    }
+
+  }
+
+}
+
+/*!
  \param se  Pointer to static expression structure
  
  \return Returns a pointer to an expression that represents the static expression specified
@@ -2136,6 +2170,9 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.218  2006/09/01 23:06:02  phase1geo
+ Fixing regressions per latest round of changes.  Full regression now passes.
+
  Revision 1.217  2006/09/01 04:06:36  phase1geo
  Added code to support more than one instance tree.  Currently, I am seeing
  quite a few memory errors that are causing some major problems at the moment.

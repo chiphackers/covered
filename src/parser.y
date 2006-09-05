@@ -277,26 +277,26 @@ int yydebug = 1;
 %token KK_attribute
 
 %type <integer>   net_type net_type_sign_range_opt var_type
-%type <statexp>   static_expr static_expr_primary static_expr_port_list
 %type <text>      identifier
+%type <text>      udp_port_list
+%type <text>      defparam_assign_list defparam_assign
+%type <statexp>   static_expr static_expr_primary static_expr_port_list
 %type <expr>      expr_primary expression_list expression expression_port_list
 %type <expr>      lavalue lpvalue
 %type <expr>      event_control event_expression_list event_expression
-%type <text>      udp_port_list
 %type <expr>      delay_value delay_value_simple
-%type <text>      defparam_assign_list defparam_assign
-%type <strlink>   gate_instance gate_instance_list list_of_names
-%type <nbcall>    named_begin_end_block fork_statement
+%type <expr>      delay1 delay3 delay3_opt
+%type <expr>      generate_passign index_expr single_index_expr
 %type <state>     statement statement_list statement_opt 
 %type <state>     if_statement_error
-%type <case_stmt> case_items case_item
-%type <expr>      delay1 delay3 delay3_opt
+%type <state>     passign
+%type <strlink>   gate_instance gate_instance_list list_of_names
+%type <nbcall>    named_begin_end_block fork_statement
 %type <attr_parm> attribute attribute_list
 %type <portinfo>  port_declaration list_of_port_declarations
 %type <gitem>     generate_item generate_item_list generate_item_list_opt
+%type <case_stmt> case_items case_item
 %type <case_gi>   generate_case_items generate_case_item
-%type <expr>      generate_passign
-%type <state>     passign
 
 %token K_TAND
 %right '?' ':'
@@ -1643,97 +1643,18 @@ expr_primary
     {
       $$ = NULL;
     }
-  | identifier '[' expression ']'
+  | identifier index_expr
     {
-      expression* tmp;
-      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp = db_create_expression( NULL, $3, EXP_OP_SBIT_SEL, lhs_mode, @1.first_line, @1.first_column, (@4.last_column - 1), $1 );
-        $$  = tmp;
+      if( (ignore_mode == 0) && ($1 != NULL) && ($2 != NULL) ) {
+        db_bind_expr_tree( $2, $1 );
+        $2->line = @1.first_line;
+        $2->col  = ((@1.first_column & 0xffff) << 16) | ($2->col & 0xffff);
+        $$ = $2;
         free_safe( $1 );
       } else {
-        if( $1 != NULL ) {
-          free_safe( $1 );
-        }
-        expression_dealloc( $3, FALSE );
-        $$ = NULL;
-      }
-    }
-  | identifier '[' expression ':' expression ']'
-    {		  
-      expression* tmp;
-      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) && ($5 != NULL) ) {
-        tmp = db_create_expression( $5, $3, EXP_OP_MBIT_SEL, lhs_mode, @1.first_line, @1.first_column, (@6.last_column - 1), $1 );
-        $$  = tmp;
         free_safe( $1 );
-      } else {
-        if( $1 != NULL ) {
-          free_safe( $1 );
-        }
-        expression_dealloc( $3, FALSE );
-        expression_dealloc( $5, FALSE );
+        expression_dealloc( $2, FALSE );
         $$ = NULL;
-      }
-    }
-  | identifier '[' expression K_PO_POS static_expr ']'
-    {
-      expression* tmp;
-      if( !parser_check_generation( GENERATION_2001 ) ) {
-        VLerror( "Indexed vector part select found in block that is specified to not allow Verilog-2001 syntax" );
-        free_safe( $1 );
-        expression_dealloc( $3, FALSE );
-        static_expr_dealloc( $5, FALSE );
-        $$ = NULL;
-      } else {
-        if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) && ($5 != NULL) ) {
-          if( $5->exp == NULL ) {
-            tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-            vector_dealloc( tmp->value );
-            tmp->value = vector_create( 32, TRUE );
-            vector_from_int( tmp->value, $5->num );
-            tmp = db_create_expression( tmp, $3, EXP_OP_MBIT_POS, lhs_mode, @1.first_line, @1.first_column, (@6.last_column - 1), $1 );
-          } else {
-            tmp = db_create_expression( $5->exp, $3, EXP_OP_MBIT_POS, lhs_mode, @1.first_line, @1.first_column, (@6.last_column - 1), $1 );
-          }
-          $$  = tmp;
-          free_safe( $1 );
-        } else {
-          if( $1 != NULL ) {
-            free_safe( $1 );
-          }
-          expression_dealloc( $3, FALSE );
-          static_expr_dealloc( $5, FALSE );
-          $$ = NULL;
-        }
-      }
-    }
-  | identifier '[' expression K_PO_NEG static_expr ']'
-    {
-      expression* tmp;
-      if( !parser_check_generation( GENERATION_2001 ) ) {
-        VLerror( "Indexed vector part select found in block that is specified to not allow Verilog-2001 syntax" );
-        free_safe( $1 );
-        expression_dealloc( $3, FALSE );
-        static_expr_dealloc( $5, FALSE );
-        $$ = NULL;
-      } else {
-        if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) && ($5 != NULL) ) {
-          if( $5->exp == NULL ) {
-            tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-            vector_dealloc( tmp->value );
-            tmp->value = vector_create( 32, TRUE );
-            vector_from_int( tmp->value, $5->num );
-            tmp = db_create_expression( tmp, $3, EXP_OP_MBIT_NEG, lhs_mode, @1.first_line, @1.first_column, (@6.last_column - 1), $1 );
-          } else {
-            tmp = db_create_expression( $5->exp, $3, EXP_OP_MBIT_NEG, lhs_mode, @1.first_line, @1.first_column, (@6.last_column - 1), $1 );
-          }
-          $$  = tmp;
-          free_safe( $1 );
-        } else {
-          free_safe( $1 );
-          expression_dealloc( $3, FALSE );
-          static_expr_dealloc( $5, FALSE );
-          $$ = NULL;
-        }
       }
     }
   | identifier '(' expression_port_list ')'
@@ -4523,41 +4444,22 @@ lpvalue
         free_safe( $1 );
         $$  = tmp;
       } else {
-        if( $1 != NULL ) {
-          free_safe( $1 );
-        }
+        free_safe( $1 );
         $$  = NULL;
       }
     }
-  | identifier start_lhs '[' expression ']' end_lhs
+  | identifier start_lhs index_expr end_lhs
     {
-      expression* tmp;
-      if( (ignore_mode == 0) && ($1 != NULL) && ($4 != NULL) ) {
-        tmp = db_create_expression( NULL, $4, EXP_OP_SBIT_SEL, TRUE, @1.first_line, @1.first_column, (@5.last_column - 1), $1 );
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
+        db_bind_expr_tree( $3, $1 );
+        $3->line = @1.first_line;
+        $3->col  = ((@1.first_column & 0xffff) << 16) | ($3->col & 0xffff);
         free_safe( $1 );
-        $$  = tmp;
+        $$ = $3;
       } else {
-        expression_dealloc( $4, FALSE );
-        if( $1 != NULL ) {
-          free_safe( $1 );
-        }
-        $$  = NULL;
-      }
-    }
-  | identifier start_lhs '[' expression ':' expression ']' end_lhs
-    {
-      expression* tmp;
-      if( (ignore_mode == 0) && ($1 != NULL) && ($4 != NULL) && ($6 != NULL) ) {
-        tmp = db_create_expression( $6, $4, EXP_OP_MBIT_SEL, TRUE, @1.first_line, @1.first_column, (@7.last_column - 1), $1 );
         free_safe( $1 );
-        $$  = tmp;
-      } else {
-        expression_dealloc( $4, FALSE );
-        expression_dealloc( $6, FALSE );
-        if( $1 != NULL ) {
-          free_safe( $1 );
-        }
-        $$  = NULL;
+        expression_dealloc( $3, FALSE );
+        $$ = NULL;
       }
     }
   | '{' start_lhs expression_list end_lhs '}'
@@ -4585,40 +4487,21 @@ lavalue
         free_safe( $1 );
         $$  = tmp;
       } else {
-        if( $1 != NULL ) {
-          free_safe( $1 );
-        }
+        free_safe( $1 );
         $$  = NULL;
       }
     }
-  | identifier start_lhs '[' expression ']' end_lhs
+  | identifier start_lhs index_expr end_lhs
     {
-      expression* tmp;
-      if( (ignore_mode == 0) && ($1 != NULL) && ($4 != NULL) ) {
-        tmp = db_create_expression( NULL, $4, EXP_OP_SBIT_SEL, TRUE, @1.first_line, @1.first_column, (@5.last_column - 1), $1 );
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
+        db_bind_expr_tree( $3, $1 );
+        $3->line = @1.first_line;
+        $3->col  = ((@1.first_column & 0xffff) << 16) | ($3->col & 0xffff);
         free_safe( $1 );
-        $$  = tmp;
+        $$ = $3;
       } else {
-        expression_dealloc( $4, FALSE );
-        if( $1 != NULL ) {
-          free_safe( $1 );
-        }
-        $$  = NULL;
-      }
-    }
-  | identifier start_lhs '[' expression ':' expression ']' end_lhs
-    {
-      expression* tmp;
-      if( (ignore_mode == 0) && ($1 != NULL) && ($4 != NULL) && ($6 != NULL) ) {
-        tmp = db_create_expression( $6, $4, EXP_OP_MBIT_SEL, TRUE, @1.first_line, @1.first_column, (@7.last_column - 1), $1 );
         free_safe( $1 );
-        $$  = tmp;
-      } else {
-        expression_dealloc( $4, FALSE );
-        expression_dealloc( $6, FALSE );
-        if( $1 != NULL ) {
-          free_safe( $1 );
-        }
+        expression_dealloc( $3, FALSE );
         $$  = NULL;
       }
     }
@@ -6244,6 +6127,100 @@ typedef_decl
         db_add_typedef( $3, curr_signed, curr_handled, TRUE, curr_range->left, curr_range->right );
         free_safe( $3 );
       }
+    }
+  ;
+
+single_index_expr
+  : '[' expression ']'
+    {
+      if( (ignore_mode == 0) && ($2 != NULL) ) {
+        $$ = db_create_expression( NULL, $2, EXP_OP_SBIT_SEL, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+      } else {
+        expression_dealloc( $2, FALSE );
+        $$ = NULL;
+      }
+    }
+  | '[' expression ':' expression ']'
+    {
+      if( (ignore_mode == 0) && ($2 != NULL) && ($4 != NULL) ) {
+        $$ = db_create_expression( $4, $2, EXP_OP_MBIT_SEL, lhs_mode, @1.first_line, @1.first_column, (@5.last_column - 1), NULL );
+      } else {
+        expression_dealloc( $2, FALSE );
+        expression_dealloc( $4, FALSE );
+        $$ = NULL;
+      }
+    }
+  | '[' expression K_PO_POS static_expr ']'
+    {
+      expression* tmp;
+      if( !parser_check_generation( GENERATION_2001 ) ) {
+        VLerror( "Indexed vector part select found in block that is specified to not allow Verilog-2001 syntax" );
+        expression_dealloc( $2, FALSE );
+        static_expr_dealloc( $4, FALSE );
+        $$ = NULL;
+      } else {
+        if( (ignore_mode == 0) && ($2 != NULL) && ($4 != NULL) ) {
+          if( $4->exp == NULL ) {
+            tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+            vector_dealloc( tmp->value );
+            tmp->value = vector_create( 32, TRUE );
+            vector_from_int( tmp->value, $4->num );
+            tmp = db_create_expression( tmp, $2, EXP_OP_MBIT_POS, lhs_mode, @1.first_line, @1.first_column, (@5.last_column - 1), NULL );
+          } else {
+            tmp = db_create_expression( $4->exp, $2, EXP_OP_MBIT_POS, lhs_mode, @1.first_line, @1.first_column, (@5.last_column - 1), NULL );
+          }
+          $$ = tmp;
+        } else {
+          expression_dealloc( $2, FALSE );
+          static_expr_dealloc( $4, FALSE );
+          $$ = NULL;
+        }
+      }
+    }
+  | '[' expression K_PO_NEG static_expr ']'
+    {
+      expression* tmp;
+      if( !parser_check_generation( GENERATION_2001 ) ) {
+        VLerror( "Indexed vector part select found in block that is specified to not allow Verilog-2001 syntax" );
+        expression_dealloc( $2, FALSE );
+        static_expr_dealloc( $4, FALSE );
+        $$ = NULL;
+      } else {
+        if( (ignore_mode == 0) && ($2 != NULL) && ($4 != NULL) ) {
+          if( $4->exp == NULL ) {
+            tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+            vector_dealloc( tmp->value );
+            tmp->value = vector_create( 32, TRUE );
+            vector_from_int( tmp->value, $4->num );
+            tmp = db_create_expression( tmp, $2, EXP_OP_MBIT_NEG, lhs_mode, @1.first_line, @1.first_column, (@5.last_column - 1), NULL );
+          } else {
+            tmp = db_create_expression( $4->exp, $2, EXP_OP_MBIT_NEG, lhs_mode, @1.first_line, @1.first_column, (@5.last_column - 1), NULL );
+          }
+          $$ = tmp;
+        } else {
+          expression_dealloc( $2, FALSE );
+          static_expr_dealloc( $4, FALSE );
+          $$ = NULL;
+        }
+      }
+    }
+  ;
+
+index_expr
+  : index_expr single_index_expr
+    {
+      expression* tmp;
+      if( (ignore_mode == 0) && ($1 != NULL) && ($2 != NULL) ) {
+        $$ = db_create_expression( $2, $1, EXP_OP_DIM, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
+      } else {
+        expression_dealloc( $1, FALSE );
+        expression_dealloc( $2, FALSE );
+        $$ = NULL;
+      }
+    }
+  | single_index_expr
+    {
+      $$ = $1;
     }
   ;
 

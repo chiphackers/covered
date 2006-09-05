@@ -719,6 +719,7 @@ typedef enum exp_op_type_e {
   EXP_OP_DLY_ASSIGN,      /*!< 83:0x53.  Specifies a delayed assignment (i.e., a = #5 b; or a = @(c) b;) */
   EXP_OP_DLY_OP,          /*!< 84:0x54.  Child expression of DLY_ASSIGN, points to the delay expr and the op expr */
   EXP_OP_RPT_DLY,         /*!< 85:0x55.  Child expression of DLY_OP, points to the delay expr and the repeat expr */
+  EXP_OP_DIM,             /*!< 86:0x56.  Specifies a selection dimension (right expression points to a selection expr) */
   EXP_OP_NUM              /*!< The total number of defines for expression values */
 } exp_op_type;
 
@@ -2042,6 +2043,7 @@ struct gen_item_s {
       control   stop_true  : 1;      /*!< Specifies that we should stop traversing the true path */
       control   stop_false : 1;      /*!< Specifies that we should stop traversing the false path */
       control   resolved   : 1;      /*!< Specifies if this generate item has been resolved */
+      control   removed    : 1;      /*!< Specifies if this generate item has been "removed" from the design */
     } part;
   } suppl;
   char*         varname;             /*!< Specifies genvar name (for TFN) or signal/TFN name to bind to (BIND) */
@@ -2083,6 +2085,9 @@ struct enum_item_s {
 
 /*
  $Log$
+ Revision 1.227  2006/09/01 23:06:02  phase1geo
+ Fixing regressions per latest round of changes.  Full regression now passes.
+
  Revision 1.226  2006/09/01 04:06:36  phase1geo
  Added code to support more than one instance tree.  Currently, I am seeing
  quite a few memory errors that are causing some major problems at the moment.

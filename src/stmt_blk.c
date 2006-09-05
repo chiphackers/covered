@@ -29,6 +29,7 @@
 #include "statement.h"
 #include "db.h"
 #include "expr.h"
+#include "gen_item.h"
 
 
 /*! Pointer to head of statement block list to remove */
@@ -65,40 +66,50 @@ void stmt_blk_add_to_remove_list( statement* stmt ) {
   /* Find the functional unit that contains this statement */
   funit = funit_find_by_id( stmt->exp->id );
 
-  assert( funit != NULL );
-
   /*
-   If we are removing the statement contained in a task, function or named block, we need to remove all statement
-   blocks that contain expressions that call this task, function or named block.
+   If we could not find the statement in a functional unit, look in the generate item list in each
+   instance.
   */
-  if( (funit->type == FUNIT_FUNCTION) || (funit->type == FUNIT_TASK) || (funit->type == FUNIT_NAMED_BLOCK) ) {
-    // printf( "Searching for all expressions that call %s...\n", obf_funit( funit->name ) );
-    if( (exp_head = db_get_exprs_with_statement( stmt )) != NULL ) {
-      expl = exp_head;
-      while( expl != NULL ) {
-        if( (tmp_stmt = expression_get_root_statement( expl->exp )) != NULL ) {
-          stmt_blk_add_to_remove_list( tmp_stmt );
-        }
-        expl = expl->next;
-      } 
-      exp_link_delete_list( exp_head, FALSE );
+  if( funit == NULL ) {
+
+    generate_remove_stmt( stmt );
+
+  } else {
+
+    /*
+     If we are removing the statement contained in a task, function or named block, we need to remove all statement
+     blocks that contain expressions that call this task, function or named block.
+    */
+    if( (funit->type == FUNIT_FUNCTION) || (funit->type == FUNIT_TASK) || (funit->type == FUNIT_NAMED_BLOCK) ) {
+      // printf( "Searching for all expressions that call %s...\n", obf_funit( funit->name ) );
+      if( (exp_head = db_get_exprs_with_statement( stmt )) != NULL ) {
+        expl = exp_head;
+        while( expl != NULL ) {
+          if( (tmp_stmt = expression_get_root_statement( expl->exp )) != NULL ) {
+            stmt_blk_add_to_remove_list( tmp_stmt );
+          }
+          expl = expl->next;
+        } 
+        exp_link_delete_list( exp_head, FALSE );
+      }
     }
-  }
 
-  /* Find the head statement of the statement block that contains this statement */
-  stmt = statement_find_head_statement( stmt, funit->stmt_head );
+    /* Find the head statement of the statement block that contains this statement */
+    stmt = statement_find_head_statement( stmt, funit->stmt_head );
 
-  assert( stmt != NULL );
+    assert( stmt != NULL );
 
-  /* If this statement has not been added to the removal list already, do so now */
-  i = 0;
-  while( (i < rm_stmt_id_size) && (rm_stmt_ids[i] != stmt->exp->id) ) i++;
+    /* If this statement has not been added to the removal list already, do so now */
+    i = 0;
+    while( (i < rm_stmt_id_size) && (rm_stmt_ids[i] != stmt->exp->id) ) i++;
 
-  if( i == rm_stmt_id_size ) {
-    stmt_link_add_tail( stmt, &rm_stmt_head, &rm_stmt_tail );
-    rm_stmt_ids = (int*)realloc( rm_stmt_ids, (sizeof( int ) * (rm_stmt_id_size + 1)) );
-    rm_stmt_ids[rm_stmt_id_size] = stmt->exp->id;
-    rm_stmt_id_size++;
+    if( i == rm_stmt_id_size ) {
+      stmt_link_add_tail( stmt, &rm_stmt_head, &rm_stmt_tail );
+      rm_stmt_ids = (int*)realloc( rm_stmt_ids, (sizeof( int ) * (rm_stmt_id_size + 1)) );
+      rm_stmt_ids[rm_stmt_id_size] = stmt->exp->id;
+      rm_stmt_id_size++;
+    }
+
   }
 
 }
@@ -130,6 +141,13 @@ void stmt_blk_remove() {
 
 /*
  $Log$
+ Revision 1.6  2006/08/28 22:28:28  phase1geo
+ Fixing bug 1546059 to match stable branch.  Adding support for repeated delay
+ expressions (i.e., a = repeat(2) @(b) c).  Fixing support for event delayed
+ assignments (i.e., a = @(b) c).  Adding several new diagnostics to verify this
+ new level of support and updating regressions for these changes.  Also added
+ parser support for logic port types.
+
  Revision 1.5  2006/08/18 22:07:45  phase1geo
  Integrating obfuscation into all user-viewable output.  Verified that these
  changes have not made an impact on regressions.  Also improved performance

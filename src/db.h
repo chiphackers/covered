@@ -93,6 +93,9 @@ gen_item* db_get_curr_gen_block();
 /*! \brief Creates new expression from specified information.  Called by parser and db_add_expression. */
 expression* db_create_expression( expression* right, expression* left, int op, bool lhs, int line, int first, int last, char* sig_name );
 
+/*! \brief Binds all necessary sub-expressions in the given tree to the given signal name */
+void db_bind_expr_tree( expression* root, char* sig_name );
+
 /*! \brief Creates an expression from the specified static expression */
 expression* db_create_expr_from_static( static_expr* se, int line, int first_col, int last_col );
 
@@ -170,6 +173,11 @@ void db_dealloc_design();
 
 /*
  $Log$
+ Revision 1.66  2006/08/29 22:49:31  phase1geo
+ Added enumeration support and partial support for typedefs.  Added enum1
+ diagnostic to verify initial enumeration support.  Full regression has not
+ been run at this point -- checkpointing.
+
  Revision 1.65  2006/08/29 02:51:33  phase1geo
  Adding enumeration parsing support to parser.  No functionality at this point, however.
 
