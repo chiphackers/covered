@@ -945,7 +945,6 @@ void bind_perform( bool cdd_reading, int pass ) {
                     curr_eb->exp->line, obf_file( curr_eb->funit->filename ) );
           print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif        
-          printf( "Adding statement %d to remove list\n", tmp_stmt->exp->id );
           stmt_blk_add_to_remove_list( tmp_stmt );
         }
       }
@@ -1027,6 +1026,13 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.91  2006/09/05 21:00:44  phase1geo
+ Fixing bug in removing statements that are generate items.  Also added parsing
+ support for multi-dimensional array accessing (no functionality here to support
+ these, however).  Fixing bug in race condition checker for generated items.
+ Currently hitting into problem with genvars used in SBIT_SEL or MBIT_SEL type
+ expressions -- we are hitting into an assertion error in expression_operate_recursively.
+
  Revision 1.90  2006/09/01 04:06:36  phase1geo
  Added code to support more than one instance tree.  Currently, I am seeing
  quite a few memory errors that are causing some major problems at the moment.

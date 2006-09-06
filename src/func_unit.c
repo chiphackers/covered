@@ -430,6 +430,7 @@ bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
     } else {
       funit_inst* parent_inst = inst->parent;
       strcpy( modname, inst->name );
+      assert( parent_inst != NULL );
       while( parent_inst->funit->type != FUNIT_MODULE ) {
         snprintf( tmp, 4096, "%s.%s", parent_inst->name, modname );
         strcpy( modname, tmp );
@@ -1019,6 +1020,9 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.41  2006/09/01 23:06:02  phase1geo
+ Fixing regressions per latest round of changes.  Full regression now passes.
+
  Revision 1.40  2006/09/01 04:06:37  phase1geo
  Added code to support more than one instance tree.  Currently, I am seeing
  quite a few memory errors that are causing some major problems at the moment.

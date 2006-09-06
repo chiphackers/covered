@@ -49,7 +49,7 @@ void gen_item_stringify( gen_item* gi, char* str, int str_len ) {
     /* Allocate some memory in the tmp string */
     tmp = (char*)malloc_safe( str_len, __FILE__, __LINE__ );
 
-    snprintf( str, str_len, "%p, suppl: %x ", gi, gi->suppl.all );
+    snprintf( str, str_len, "%p, suppl: %x", gi, gi->suppl.all );
 
     switch( gi->suppl.part.type ) {
       case GI_TYPE_EXPR :
@@ -843,7 +843,6 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
 
       case GI_TYPE_BIND :
         varname = gen_item_calc_signal_name( gi->varname, inst->funit, gi->elem.expr->line, FALSE );
-        printf( "varname: %s\n", varname );
         switch( gi->elem.expr->op ) {
           case EXP_OP_FUNC_CALL :  bind_add( FUNIT_FUNCTION,    varname, gi->elem.expr, inst->funit );  break;
           case EXP_OP_TASK_CALL :  bind_add( FUNIT_TASK,        varname, gi->elem.expr, inst->funit );  break;
@@ -864,26 +863,27 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
 
     }
 
+#ifdef OBSOLETE
     /* If we need to add the current generate item to the given functional unit, do so now */
     if( add ) {
       if( inst->funit->type == FUNIT_MODULE ) {
         funit_link* funitl;
         char        front[4096];
         char        back[4096];
-        inst_link*  instl = inst_head;
+        inst_link*  instl;
         funitl = inst->funit->tf_head;
         while( funitl != NULL ) {
           scope_extract_back( funitl->funit->name, back, front );
+          instl = inst_head;
           while( (instl != NULL) && !instance_parse_add( &(instl->inst), funitl->funit->parent, funitl->funit, back, NULL, FALSE ) ) {
             instl = instl->next;
           }
-          if( instl == NULL ) {
-            inst_link_add( instance_create( funitl->funit, back, NULL ), &inst_head, &inst_tail );
-          }
+          assert( instl != NULL );
           funitl = funitl->next;
         }
       }
     }
+#endif
 
 
   }
@@ -1058,6 +1058,13 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.35  2006/09/05 21:00:45  phase1geo
+ Fixing bug in removing statements that are generate items.  Also added parsing
+ support for multi-dimensional array accessing (no functionality here to support
+ these, however).  Fixing bug in race condition checker for generated items.
+ Currently hitting into problem with genvars used in SBIT_SEL or MBIT_SEL type
+ expressions -- we are hitting into an assertion error in expression_operate_recursively.
+
  Revision 1.34  2006/09/01 23:06:02  phase1geo
  Fixing regressions per latest round of changes.  Full regression now passes.
 
