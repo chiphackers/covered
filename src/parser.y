@@ -3533,15 +3533,22 @@ statement
     {
       expression* exp;
       statement*  stmt;
-      if( $4 != NULL ) {
+      if( ignore_mode == 0 ) {
         db_end_function_task_namedblock( @6.first_line );
-        exp = db_create_expression( NULL, NULL, EXP_OP_NB_CALL, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-        exp->stmt = $4->stmt;
-        exp->name = $4->name;
-        free_safe( $4 );
-        stmt = db_create_statement( exp );
-        db_add_expression( exp );
-        $$ = stmt;
+        if( $4 != NULL ) {
+          exp = db_create_expression( NULL, NULL, EXP_OP_NB_CALL, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+          exp->stmt = $4->stmt;
+          exp->name = $4->name;
+          free_safe( $4 );
+          stmt = db_create_statement( exp );
+          db_add_expression( exp );
+          $$ = stmt;
+        } else {
+          if( ignore_mode > 0 ) {
+            ignore_mode--;
+          }
+          $$ = NULL;
+        }
       } else {
         if( ignore_mode > 0 ) {
           ignore_mode--;
@@ -3562,15 +3569,20 @@ statement
     {
       expression* exp;
       statement*  stmt;
-      if( $3 != NULL ) {
+      if( ignore_mode == 0 ) {
         db_end_function_task_namedblock( @4.first_line );
-        exp = db_create_expression( NULL, NULL, EXP_OP_NB_CALL, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-        exp->stmt = $3->stmt;
-        exp->name = $3->name;
-        free_safe( $3 );
-        stmt = db_create_statement( exp );
-        db_add_expression( exp );
-        $$ = stmt;
+        if( $3 != NULL ) {
+          exp = db_create_expression( NULL, NULL, EXP_OP_NB_CALL, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+          exp->stmt = $3->stmt;
+          exp->name = $3->name;
+          free_safe( $3 );
+          stmt = db_create_statement( exp );
+          db_add_expression( exp );
+          $$ = stmt;
+        } else {
+          ignore_mode--;
+          $$ = NULL;
+        }
       } else {
         ignore_mode--;
         $$ = NULL;
