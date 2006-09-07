@@ -237,6 +237,49 @@ gen_item* gen_item_find( gen_item* root, gen_item* gi ) {
 }
 
 /*!
+ \param gi    Pointer to generate item list to search
+ \param stmt  Pointer to statement to search for
+
+*/
+void gen_item_remove_if_contains_expr_calling_stmt( gen_item* gi, statement* stmt ) {
+
+  if( gi != NULL ) {
+
+    if( gi->suppl.part.type == GI_TYPE_STMT ) {
+
+      if( statement_contains_expr_calling_stmt( gi->elem.stmt, stmt ) ) {
+        gi->suppl.part.removed = 1;
+      }
+
+    } else {
+
+      /* If both true and false paths lead to same item, just traverse the true path */
+      if( gi->next_true == gi->next_false ) {
+
+        if( gi->suppl.part.stop_true == 0 ) {
+          gen_item_remove_if_contains_expr_calling_stmt( gi->next_true, stmt );
+        }
+
+      /* Otherwise, traverse both true and false paths */
+      } else {
+
+        if( gi->suppl.part.stop_true == 0 ) {
+          gen_item_remove_if_contains_expr_calling_stmt( gi->next_true, stmt );
+        }
+
+        if( gi->suppl.part.stop_false == 0 ) {
+          gen_item_remove_if_contains_expr_calling_stmt( gi->next_false, stmt );
+        }
+
+      }
+
+    }
+
+  }
+
+}
+
+/*!
  \param varname  Variable name to search 
  \param pre      Reference pointer to string preceding the generate variable
  \param genvar   Reference pointer to found generate variable name
@@ -946,19 +989,22 @@ void generate_resolve( funit_inst* root ) {
 
 /*!
  \param root  Pointer to root instance to traverse
- \param gi    Pointer to statement generate item to find and remove
-*/
-void generate_remove_stmt_helper( funit_inst* root, gen_item* gi ) {
+ \param stmt  Pointer to statement to find and remove
 
-  funit_inst* curr_child;  /* Pointer to current child to search */
-  gitem_link* gil;         /* Pointer to generate item link */
-  gen_item*   found_gi;    /* Pointer to found generate item */
+ \return Returns TRUE if we found at least one match; otherwise, returns FALSE.
+*/
+bool generate_remove_stmt_helper( funit_inst* root, statement* stmt ) {
+
+  bool        retval   = FALSE;  /* Return value for this function */
+  funit_inst* curr_child;        /* Pointer to current child to search */
+  gitem_link* gil;               /* Pointer to generate item link */
 
   /* Remove the generate item from the current instance if it exists there */
   gil = root->gitem_head;
   while( gil != NULL ) {
-    if( (found_gi = gen_item_find( gil->gi, gi )) != NULL ) {
-      found_gi->suppl.part.removed = 1;
+    if( (gil->gi->suppl.part.type == GI_TYPE_STMT) && (statement_find_statement( gil->gi->elem.stmt, stmt->exp->id ) != NULL) ) {
+      gil->gi->suppl.part.removed = 1;
+      retval = TRUE;
     }
     gil = gil->next;
   }
@@ -966,9 +1012,11 @@ void generate_remove_stmt_helper( funit_inst* root, gen_item* gi ) {
   /* Search child instances */
   curr_child = root->child_head;
   while( curr_child != NULL ) {
-    generate_remove_stmt_helper( curr_child, gi );
+    retval |= generate_remove_stmt_helper( curr_child, stmt );
     curr_child = curr_child->next;
   }
+
+  return( retval );
 
 }
 
@@ -976,27 +1024,25 @@ void generate_remove_stmt_helper( funit_inst* root, gen_item* gi ) {
  \param root  Pointer to root instance to search
  \param stmt  Statement to set "remove" bit on
 
+ \return Returns TRUE if we found at least one match; otherwise, returns FALSE.
+
  Iterates through the entire instance tree finding and "removing" all statement generate items
  that match the given statement ID.  This will get called by the stmt_blk_remove() function
  when a statement has been found that does not exist in a functional unit.
 */
-void generate_remove_stmt( statement* stmt ) {
+bool generate_remove_stmt( statement* stmt ) {
 
-  gen_item*  gi;     /* Generate item created for the given statement */
-  inst_link* instl;  /* Pointer to current instance list to parse */
-
-  /* Create generate item */
-  gi = gen_item_create_stmt( stmt );
+  bool       retval = FALSE;  /* Return value for this function */
+  inst_link* instl;           /* Pointer to current instance list to parse */
 
   /* Search for the generate item in the instance lists */
   instl = inst_head;
   while( instl != NULL ) {
-    generate_remove_stmt_helper( instl->inst, gi );
+    retval |= generate_remove_stmt_helper( instl->inst, stmt );
     instl = instl->next;
   }
 
-  /* Deallocate the created generate item */
-  gen_item_dealloc( gi, FALSE );
+  return( retval );
 
 }
 
@@ -1058,6 +1104,11 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.36  2006/09/06 22:09:22  phase1geo
+ Fixing bug with multiply-and-op operation.  Also fixing bug in gen_item_resolve
+ function where an instance was incorrectly being placed into a new instance tree.
+ Full regression passes with these changes.  Also removed verbose output.
+
  Revision 1.35  2006/09/05 21:00:45  phase1geo
  Fixing bug in removing statements that are generate items.  Also added parsing
  support for multi-dimensional array accessing (no functionality here to support

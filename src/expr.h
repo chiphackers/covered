@@ -61,6 +61,9 @@ expression* expression_find_uline_id( expression* expr, int ulid );
 /*! \brief Returns TRUE if the specified expression exists within the given root expression tree */
 bool expression_find_expr( expression* root, expression* expr );
 
+/*! \brief Searches for an expression that calls the given statement */
+bool expression_contains_expr_calling_stmt( expression* expr, statement* stmt );
+
 /*! \brief Finds the root statement for the given expression */
 statement* expression_get_root_statement( expression* exp );
 
@@ -115,6 +118,13 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.47  2006/08/28 22:28:28  phase1geo
+ Fixing bug 1546059 to match stable branch.  Adding support for repeated delay
+ expressions (i.e., a = repeat(2) @(b) c).  Fixing support for event delayed
+ assignments (i.e., a = @(b) c).  Adding several new diagnostics to verify this
+ new level of support and updating regressions for these changes.  Also added
+ parser support for logic port types.
+
  Revision 1.46  2006/07/28 22:42:51  phase1geo
  Updates to support expression/signal binding for expressions within a generate
  block statement block.

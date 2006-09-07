@@ -970,6 +970,21 @@ bool expression_find_expr( expression* root, expression* expr ) {
 }
 
 /*!
+ \param expr  Pointer to root of expression tree to search
+ \param stmt  Pointer to statement to search for
+
+ \return Returns TRUE if the given expression tree contains an expression that calls the given statement.
+*/
+bool expression_contains_expr_calling_stmt( expression* expr, statement* stmt ) {
+
+  return( (expr != NULL) &&
+          ((expr->stmt == stmt) ||
+           expression_contains_expr_calling_stmt( expr->left, stmt ) ||
+           expression_contains_expr_calling_stmt( expr->right, stmt )) );
+
+}
+
+/*!
  \param exp  Pointer to expression to get root statement for.
 
  \return Returns a pointer to the root statement of the specified expression if one exists;
@@ -1027,6 +1042,10 @@ void expression_assign_expr_ids( expression* root ) {
 void expression_db_write( expression* expr, FILE* file, bool parse_mode ) {
 
   func_unit* funit;  /* Pointer to functional unit containing the statement attached to this expression */
+
+  assert( expr != NULL );
+
+  printf( "Writing expression %s\n", expression_string( expr ) );
 
   fprintf( file, "%d %d %d %x %x %x %x %d %d",
     DB_TYPE_EXPRESSION,
@@ -3519,6 +3538,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.204  2006/09/06 22:09:22  phase1geo
+ Fixing bug with multiply-and-op operation.  Also fixing bug in gen_item_resolve
+ function where an instance was incorrectly being placed into a new instance tree.
+ Full regression passes with these changes.  Also removed verbose output.
+
  Revision 1.203  2006/09/05 21:00:45  phase1geo
  Fixing bug in removing statements that are generate items.  Also added parsing
  support for multi-dimensional array accessing (no functionality here to support

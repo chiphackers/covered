@@ -30,6 +30,7 @@
 #include "db.h"
 #include "expr.h"
 #include "gen_item.h"
+#include "obfuscate.h"
 
 
 /*! Pointer to head of statement block list to remove */
@@ -37,12 +38,6 @@ stmt_link* rm_stmt_head    = NULL;
 
 /*! Pointer to tail of statement block list to remove */
 stmt_link* rm_stmt_tail    = NULL;
-
-/*! Array containing statement IDs that have been listed for removal */
-int*       rm_stmt_ids     = NULL;
-
-/*! Size indicator of rm_stmt_ids array */
-int        rm_stmt_id_size = 0;
 
 extern func_unit* curr_funit;
 
@@ -55,59 +50,27 @@ extern func_unit* curr_funit;
 */
 void stmt_blk_add_to_remove_list( statement* stmt ) {
 
-  func_unit* funit;     /* Functional unit containing the specified statement */
-  int        i;         /* Loop iterator */
-  exp_link*  exp_head;  /* Head of expression list containing expressions that call this statement */
-  exp_link*  expl;      /* Pointer to current expression link being examined */
-  statement* tmp_stmt;  /* Temporary pointer to root statement */
+  func_unit* funit;  /* Pointer to functional unit containing this statement */
 
   assert( stmt != NULL );
 
-  /* Find the functional unit that contains this statement */
-  funit = funit_find_by_id( stmt->exp->id );
+  if( !generate_remove_stmt( stmt ) ) {
 
-  /*
-   If we could not find the statement in a functional unit, look in the generate item list in each
-   instance.
-  */
-  if( funit == NULL ) {
+    /* If this is a head statement, don't bother looking this up again */
+    if( ESUPPL_IS_STMT_HEAD( stmt->exp->suppl ) == 0 ) {
 
-    generate_remove_stmt( stmt );
+      /* Find the functional unit that contains this statement */
+      funit = funit_find_by_id( stmt->exp->id );
+      assert( funit != NULL );
 
-  } else {
+      /* Find the head statement of the statement block that contains this statement */
+      stmt = statement_find_head_statement( stmt, funit->stmt_head );
 
-    /*
-     If we are removing the statement contained in a task, function or named block, we need to remove all statement
-     blocks that contain expressions that call this task, function or named block.
-    */
-    if( (funit->type == FUNIT_FUNCTION) || (funit->type == FUNIT_TASK) || (funit->type == FUNIT_NAMED_BLOCK) ) {
-      // printf( "Searching for all expressions that call %s...\n", obf_funit( funit->name ) );
-      if( (exp_head = db_get_exprs_with_statement( stmt )) != NULL ) {
-        expl = exp_head;
-        while( expl != NULL ) {
-          if( (tmp_stmt = expression_get_root_statement( expl->exp )) != NULL ) {
-            stmt_blk_add_to_remove_list( tmp_stmt );
-          }
-          expl = expl->next;
-        } 
-        exp_link_delete_list( exp_head, FALSE );
-      }
     }
 
-    /* Find the head statement of the statement block that contains this statement */
-    stmt = statement_find_head_statement( stmt, funit->stmt_head );
-
-    assert( stmt != NULL );
-
     /* If this statement has not been added to the removal list already, do so now */
-    i = 0;
-    while( (i < rm_stmt_id_size) && (rm_stmt_ids[i] != stmt->exp->id) ) i++;
-
-    if( i == rm_stmt_id_size ) {
+    if( stmt_link_find( stmt->exp->id, rm_stmt_head ) == NULL ) {
       stmt_link_add_tail( stmt, &rm_stmt_head, &rm_stmt_tail );
-      rm_stmt_ids = (int*)realloc( rm_stmt_ids, (sizeof( int ) * (rm_stmt_id_size + 1)) );
-      rm_stmt_ids[rm_stmt_id_size] = stmt->exp->id;
-      rm_stmt_id_size++;
     }
 
   }
@@ -115,13 +78,13 @@ void stmt_blk_add_to_remove_list( statement* stmt ) {
 }
 
 /*!
- Iterates through rm_stmt list, deallocating each statement block in that list, deallocating
- the rm_stmt list itself and the rm_stmt_ids array.  This function is only called once after
- the parsing, binding and race condition checking phases have completed.
+ Iterates through rm_stmt list, deallocating each statement block in that list.
+ This function is only called once after the parsing, binding and race condition
+ checking phases have completed.
 */
 void stmt_blk_remove() {
 
-  statement* stmt;  /* Temporary pointer to current statement to deallocate */
+  statement* stmt;      /* Temporary pointer to current statement to deallocate */
 
   /* Remove all statement blocks */
   while( rm_stmt_head != NULL ) {
@@ -129,18 +92,28 @@ void stmt_blk_remove() {
     stmt_link_unlink( stmt, &rm_stmt_head, &rm_stmt_tail );
     curr_funit = funit_find_by_id( stmt->exp->id );
     assert( curr_funit != NULL );
+    /*
+     If we are removing the statement contained in a task, function or named block, we need to remove all statement
+     blocks that contain expressions that call this task, function or named block.
+    */
+    if( (curr_funit->type == FUNIT_FUNCTION) || (curr_funit->type == FUNIT_TASK) || (curr_funit->type == FUNIT_NAMED_BLOCK) ) {
+      db_remove_stmt_blks_calling_statement( stmt );
+    }
+    /* Deallocate the statement block now */
     statement_dealloc_recursive( stmt );
   }
-
-  /* Now deallocate the entire rm_stmt_ids array */
-  free_safe( rm_stmt_ids );
-  rm_stmt_ids     = NULL;
-  rm_stmt_id_size = 0;
 
 }
 
 /*
  $Log$
+ Revision 1.7  2006/09/05 21:00:45  phase1geo
+ Fixing bug in removing statements that are generate items.  Also added parsing
+ support for multi-dimensional array accessing (no functionality here to support
+ these, however).  Fixing bug in race condition checker for generated items.
+ Currently hitting into problem with genvars used in SBIT_SEL or MBIT_SEL type
+ expressions -- we are hitting into an assertion error in expression_operate_recursively.
+
  Revision 1.6  2006/08/28 22:28:28  phase1geo
  Fixing bug 1546059 to match stable branch.  Adding support for repeated delay
  expressions (i.e., a = repeat(2) @(b) c).  Fixing support for event delayed

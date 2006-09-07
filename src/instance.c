@@ -675,6 +675,40 @@ void instance_db_write( funit_inst* root, FILE* file, char* scope, bool parse_mo
 }
 
 /*!
+ \param root  Pointer to root instance to remove statements from
+ \param stmt  Pointer to statement to match
+
+ TBD
+*/
+void instance_remove_stmt_blks_calling_stmt( funit_inst* root, statement* stmt ) {
+
+  funit_inst* curr_child;  /* Pointer to current child instance to parse */
+  gitem_link* gil;         /* Pointer to current generate item link */
+
+  if( root != NULL ) {
+
+    /* First, handle the current functional unit */
+    funit_remove_stmt_blks_calling_stmt( root->funit, stmt );
+
+    /* Second, handle all generate items in this instance */
+    gil = root->gitem_head;
+    while( gil != NULL ) {
+      gen_item_remove_if_contains_expr_calling_stmt( gil->gi, stmt );
+      gil = gil->next;
+    }
+
+    /* Parse children */
+    curr_child = root->child_head;
+    while( curr_child != NULL ) {
+      instance_remove_stmt_blks_calling_stmt( curr_child, stmt );
+      curr_child = curr_child->next;
+    }
+
+  }
+
+}
+
+/*!
  \param root  Pointer to root instance of functional unit instance tree to remove.
 
  Recursively traverses instance tree, deallocating heap memory used to store the
@@ -788,6 +822,9 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.57  2006/09/01 23:06:02  phase1geo
+ Fixing regressions per latest round of changes.  Full regression now passes.
+
  Revision 1.56  2006/09/01 04:06:37  phase1geo
  Added code to support more than one instance tree.  Currently, I am seeing
  quite a few memory errors that are causing some major problems at the moment.
