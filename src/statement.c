@@ -790,6 +790,8 @@ statement* statement_find_statement( statement* curr, int id ) {
 
   }
 
+  return( found );
+
 }
 
 /*!
@@ -877,6 +879,10 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.92  2006/09/07 21:59:24  phase1geo
+ Fixing some bugs related to statement block removal.  Also made some significant
+ optimizations to this code.
+
  Revision 1.91  2006/09/01 23:06:02  phase1geo
  Fixing regressions per latest round of changes.  Full regression now passes.
 
