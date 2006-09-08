@@ -55,6 +55,9 @@ expression* expression_get_last_line_expr( expression* expr );
 /*! \brief Finds all RHS signals in given expression tree */
 void expression_find_rhs_sigs( expression* expr, str_link** head, str_link** tail );
 
+/*! \brief Finds all parameter expressions in the given expression tree */
+void expression_find_params( expression* expr, exp_link** head, exp_link** tail );
+
 /*! \brief Finds the expression in this expression tree with the specified underline id. */
 expression* expression_find_uline_id( expression* expr, int ulid );
 
@@ -118,6 +121,10 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.48  2006/09/07 21:59:24  phase1geo
+ Fixing some bugs related to statement block removal.  Also made some significant
+ optimizations to this code.
+
  Revision 1.47  2006/08/28 22:28:28  phase1geo
  Fixing bug 1546059 to match stable branch.  Adding support for repeated delay
  expressions (i.e., a = repeat(2) @(b) c).  Fixing support for event delayed

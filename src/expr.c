@@ -927,6 +927,35 @@ void expression_find_rhs_sigs( expression* expr, str_link** head, str_link** tai
 }
 
 /*!
+ \param expr  Pointer to expression tree to search
+ \param head  Pointer to head of expression list containing expressions that use parameter values
+ \param tail  Pointer to tail of expression list containing expressions that use parameter values
+
+ Recursively traverses given expression tree, adding any expressions found that point to parameter
+ values.
+*/
+void expression_find_params( expression* expr, exp_link** head, exp_link** tail ) {
+
+  if( expr != NULL ) {
+
+    /* If we call a parameter, add ourselves to the expression list */
+    if( (expr->op == EXP_OP_PARAM)          ||
+        (expr->op == EXP_OP_PARAM_SBIT)     ||
+        (expr->op == EXP_OP_PARAM_MBIT)     ||
+        (expr->op == EXP_OP_PARAM_MBIT_POS) ||
+        (expr->op == EXP_OP_PARAM_MBIT_NEG) ) {
+      exp_link_add( expr, head, tail );
+    }
+
+    /* Search children */
+    expression_find_params( expr->left,  head, tail );
+    expression_find_params( expr->right, head, tail );
+
+  }
+
+}
+
+/*!
  \param expr  Pointer to root expression to search under
  \param ulid  Underline ID to search for
 
@@ -1044,8 +1073,6 @@ void expression_db_write( expression* expr, FILE* file, bool parse_mode ) {
   func_unit* funit;  /* Pointer to functional unit containing the statement attached to this expression */
 
   assert( expr != NULL );
-
-  printf( "Writing expression %s\n", expression_string( expr ) );
 
   fprintf( file, "%d %d %d %x %x %x %x %d %d",
     DB_TYPE_EXPRESSION,
@@ -3507,13 +3534,7 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
     }
 
-    free_safe( expr->parent );
-
-    /* If name contains data, free it */
-    if( expr->name != NULL ) {
-      free_safe( expr->name );
-    }
-
+    /* Deallocate children */
     if( !exp_only ) {
 
       if( EXPR_RIGHT_DEALLOCABLE( expr ) ) {
@@ -3528,6 +3549,14 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
     }
 
+    /* Free up memory for the parent pointer */
+    free_safe( expr->parent );
+
+    /* If name contains data, free it */
+    if( expr->name != NULL ) {
+      free_safe( expr->name );
+    }
+
     /* Remove this expression memory */
     free_safe( expr );
 
@@ -3538,6 +3567,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.205  2006/09/07 21:59:24  phase1geo
+ Fixing some bugs related to statement block removal.  Also made some significant
+ optimizations to this code.
+
  Revision 1.204  2006/09/06 22:09:22  phase1geo
  Fixing bug with multiply-and-op operation.  Also fixing bug in gen_item_resolve
  function where an instance was incorrectly being placed into a new instance tree.

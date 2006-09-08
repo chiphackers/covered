@@ -634,6 +634,7 @@ list_of_port_declarations
       if( $1 != NULL ) {
         db_add_signal( $3, $1->type, $1->range->left, $1->range->right, curr_signed, curr_mba, @3.first_line, @3.first_column, TRUE );
       }
+      free_safe( $3 );
       $$ = $1;
     }
   ;
@@ -1645,7 +1646,7 @@ expr_primary
     }
   | identifier index_expr
     {
-      if( (ignore_mode == 0) && ($1 != NULL) && ($2 != NULL) ) {
+      if( (ignore_mode == 0) && ($1 != NULL) && ($2 != NULL) && !lhs_mode ) {
         db_bind_expr_tree( $2, $1 );
         $2->line = @1.first_line;
         $2->col  = ((@1.first_column & 0xffff) << 16) | ($2->col & 0xffff);
@@ -1950,6 +1951,7 @@ udp_initial
   : K_initial IDENTIFIER '=' NUMBER ';'
     {
       free_safe( $2 );
+      vector_dealloc( $4 );
     }
   ;
 
@@ -5392,6 +5394,8 @@ net_decl_assign
           db_add_statement( stmt, stmt );
         }
         free_safe( $1 );
+      } else {
+        free_safe( $1 );
       }
     }
   | UNUSED_IDENTIFIER '=' expression
@@ -5415,6 +5419,8 @@ net_decl_assign
           db_add_expression( tmp );
           db_add_statement( stmt, stmt );
         }
+        free_safe( $2 );
+      } else {
         free_safe( $2 );
       }
     }

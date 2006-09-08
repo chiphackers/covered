@@ -162,12 +162,18 @@ void db_close() {
 
   if( inst_head != NULL ) {
 
-    /* Remove memory allocated for inst_head and mod_head */
+    /* Remove memory allocated for inst_head */
     inst_link_delete_list( inst_head );
+    inst_head = NULL;
+    inst_tail = NULL;
+
+    /* Remove memory allocated for all functional units */
     funit_link_delete_list( &funit_head, &funit_tail, TRUE );
+    global_funit = NULL;
 
     /* Deallocate preprocessor define tree */
     tree_dealloc( def_table );
+    def_table = NULL;
 
     /* Deallocate the binding list */
     bind_dealloc();
@@ -175,10 +181,8 @@ void db_close() {
     /* Deallocate the information section memory */
     info_dealloc();
 
-    inst_head    = NULL;
-    inst_tail    = NULL;
-    def_table    = NULL;
-    global_funit = NULL;
+    /* Free memory associated with current instance scope */
+    free_safe( curr_inst_scope );
 
   }
 
@@ -1612,10 +1616,7 @@ void db_add_statement( statement* stmt, statement* start ) {
 */
 void db_remove_statement_from_current_funit( statement* stmt ) {
 
-  funit_link* funitl;  /* Pointer to current functional unit link */
-  mod_parm*   mparm;   /* Pointer to current module parameter */
-  exp_link*   expl;    /* Pointer to current expression link */
-  exp_link*   texpl;   /* Temporary pointer to current expression link */
+  inst_link* instl;  /* Pointer to current functional unit instance */
 
   if( (stmt != NULL) && (stmt->exp != NULL) ) {
 
@@ -1625,22 +1626,14 @@ void db_remove_statement_from_current_funit( statement* stmt ) {
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
-    /* Remove expression from any module parameter expression lists */
-    funitl = funit_head;
-    while( funitl != NULL ) {
-      mparm = funitl->funit->param_head;
-      while( mparm != NULL ) {
-        expl = mparm->exp_head;
-        while( expl != NULL ) {
-          texpl = expl;
-          expl  = expl->next;
-          if( expression_find_expr( stmt->exp, texpl->exp ) ) {
-            exp_link_remove( texpl->exp, &(mparm->exp_head), &(mparm->exp_tail), FALSE );
-          }
-        }
-        mparm = mparm->next;
-      }
-      funitl = funitl->next;
+    /*
+     Get a list of all parameters within the given statement expression tree and remove them from
+     an instance and module parameters.
+    */
+    instl = inst_head;
+    while( instl != NULL ) {
+      instance_remove_parms_with_expr( instl->inst, stmt );
+      instl = instl->next;
     }
 
     /* Remove expression from current module expression list and delete expressions */
@@ -2143,21 +2136,13 @@ void db_do_timestep( int time ) {
 
 }
 
-/*!
- Handles the freeing of all allocated memory associated with the currently loaded design.
- This function is used when a design needs to be closed and a new one opened in the same
- process.
-*/
-void db_dealloc_global_vars() {
-
-  if( curr_inst_scope != NULL ) {
-    free_safe( curr_inst_scope );
-  }
-
-}
 
 /*
  $Log$
+ Revision 1.220  2006/09/07 21:59:24  phase1geo
+ Fixing some bugs related to statement block removal.  Also made some significant
+ optimizations to this code.
+
  Revision 1.219  2006/09/05 21:00:44  phase1geo
  Fixing bug in removing statements that are generate items.  Also added parsing
  support for multi-dimensional array accessing (no functionality here to support

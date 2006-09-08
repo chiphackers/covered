@@ -59,12 +59,19 @@ void instance_db_write( funit_inst* root, FILE* file, char* scope, bool parse_mo
 /*! \brief Removes all statement blocks that contain expressions that call the given statement */
 void instance_remove_stmt_blks_calling_stmt( funit_inst* root, statement* stmt );
 
+/*! \brief Removes expressions from instance parameters within the given instance that match the given expression */
+void instance_remove_parms_with_expr( funit_inst* root, statement* stmt );
+
 /*! \brief Removes specified instance from tree. */
 void instance_dealloc( funit_inst* root, char* scope );
 
 
 /*
  $Log$
+ Revision 1.19  2006/09/07 21:59:24  phase1geo
+ Fixing some bugs related to statement block removal.  Also made some significant
+ optimizations to this code.
+
  Revision 1.18  2006/09/01 04:06:37  phase1geo
  Added code to support more than one instance tree.  Currently, I am seeing
  quite a few memory errors that are causing some major problems at the moment.

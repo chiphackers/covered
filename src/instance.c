@@ -709,6 +709,47 @@ void instance_remove_stmt_blks_calling_stmt( funit_inst* root, statement* stmt )
 }
 
 /*!
+ \param root  Pointer to functional unit instance to remove expression from
+ \param exp   Pointer to expression to remove from list
+
+ Recursively traverses the given instance tree, removing the given expression (and its sub
+*/
+void instance_remove_parms_with_expr( funit_inst* root, statement* stmt ) {
+
+  funit_inst* curr_child;  /* Pointer to current child instance to traverse */
+  inst_parm*  iparm;       /* Pointer to current instance parameter */
+  exp_link*   expl;        /* Pointer to current expression link */
+  exp_link*   texpl;       /* Temporary pointer to current expression link */
+
+  /* Search for the given expression within the given instance parameter */
+  iparm = root->param_head;
+  while( iparm != NULL ) {
+    if( iparm->sig != NULL ) {
+      expl = iparm->sig->exp_head;
+      while( expl != NULL ) {
+        texpl = expl;
+        expl  = expl->next;
+        if( expression_find_expr( stmt->exp, texpl->exp ) ) {
+          if( iparm->mparm != NULL ) {
+            exp_link_remove( texpl->exp, &(iparm->mparm->exp_head), &(iparm->mparm->exp_tail), FALSE );
+          }
+          exp_link_remove( texpl->exp, &(iparm->sig->exp_head), &(iparm->sig->exp_tail), FALSE );
+        }
+      }
+    }
+    iparm = iparm->next;
+  }
+
+  /* Traverse children */
+  curr_child = root->child_head;
+  while( curr_child != NULL ) {
+    instance_remove_parms_with_expr( curr_child, stmt );
+    curr_child = curr_child->next;
+  }
+
+}
+
+/*!
  \param root  Pointer to root instance of functional unit instance tree to remove.
 
  Recursively traverses instance tree, deallocating heap memory used to store the
@@ -822,6 +863,10 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.58  2006/09/07 21:59:24  phase1geo
+ Fixing some bugs related to statement block removal.  Also made some significant
+ optimizations to this code.
+
  Revision 1.57  2006/09/01 23:06:02  phase1geo
  Fixing regressions per latest round of changes.  Full regression now passes.
 
