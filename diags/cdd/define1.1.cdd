@@ -1,12 +1,12 @@
-5 8 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -o define1.1.cdd -v define1.1.v
+5 9 1 * 0
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd define1.1.vcd -o define1.1.cdd -v define1.1.v
 3 0 $root $root NA 0 0
 3 0 main main define1.1.v 3 20
 2 1 8 120012 2 1 c 0 0 b
-2 2 8 b000e 1 0 20004 0 0 1 1 0
-2 3 8 b0012 3 9 200cc 1 2 1 0 102
+2 2 8 b000e 1 0 20004 0 0 1 4 0
+2 3 8 b0012 3 9 200cc 1 2 1 2 2
 2 4 8 70007 0 1 400 0 0 a
 2 5 8 70012 3 35 f00e 3 4
-1 a 0 5 30005 1 0 102
-1 b 0 6 30008 1 0 102
+1 a 0 5 30005 1 1 102
+1 b 0 6 30008 1 1 102
 4 5 5 5

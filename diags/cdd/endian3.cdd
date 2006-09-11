@@ -1,19 +1,19 @@
-5 8 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -o endian3.cdd -v endian3.v
+5 9 1 * 0
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd endian3.vcd -o endian3.cdd -v endian3.v
 3 0 $root $root NA 0 0
 3 0 main main endian3.v 1 20
-2 1 8 50008 1 0 20004 0 0 1 1 0
+2 1 8 50008 1 0 20004 0 0 1 4 0
 2 2 8 10001 0 1 400 0 0 a
 2 3 8 10008 1 37 1006 1 2
 2 4 9 20002 1 0 20008 0 0 32 64 11 0 0 0 0 0 0 0
 2 5 9 20002 1 0 20008 0 0 32 64 55 55 55 55 55 55 55 55
-2 6 9 10002 2 2c 2000a 4 5 32 0 aa aa aa aa aa aa aa aa
+2 6 9 10002 2 2c 2000a 4 5 32 2 aa aa aa aa aa aa aa aa
 2 7 10 c000c 1 0 20004 0 0 32 64 0 0 0 0 0 0 0 0
 2 8 10 5000d 1 33 4 0 7 FOOBAR
 2 9 10 10001 0 1 400 0 0 a
 2 10 10 1000d 1 37 6 8 9
-1 FOOBAR 0 0 180000 8 0 15 1
-1 a 0 5 30004 1 16 2
+1 FOOBAR 0 0 180000 8 1 15 1
+1 a 0 5 830004 1 1 2
 4 10 0 0
 4 6 10 0
 4 3 6 6

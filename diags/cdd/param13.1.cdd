@@ -1,15 +1,15 @@
-5 8 1 * 0
+5 9 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd param13.1.vcd -o param13.1.cdd -v param13.1.v
 3 0 $root $root NA 0 0
 3 0 main main param13.1.v 1 19
-2 1 8 50008 1 0 20004 0 0 1 1 0
+2 1 8 50008 1 0 20004 0 0 1 4 0
 2 2 8 10001 0 1 400 0 0 a
 2 3 8 10008 1 37 1006 1 2
 2 4 9 50009 1 32 8 0 0 bar.b
 2 5 9 10001 0 1 400 0 0 a
 2 6 9 10009 1 37 a 4 5
-1 a 0 3 30004 1 16 102
+1 a 0 3 830004 1 1 102
 4 6 0 0
 4 3 6 6
 3 0 foo main.bar param13.1.v 21 25
-1 b 0 0 80000 32 0 1 0 0 0 0 0 0 0
+1 b 0 0 80000 32 1 1 0 0 0 0 0 0 0

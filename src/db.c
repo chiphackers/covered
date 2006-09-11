@@ -899,7 +899,7 @@ void db_add_signal( char* name, int type, static_expr* left, static_expr* right,
       sig = (vsignal*)malloc_safe( sizeof( vsignal ), __FILE__, __LINE__ );
       vsignal_init( sig, strdup_safe( name, __FILE__, __LINE__ ), type,
                     (vector*)malloc_safe( sizeof( vector ), __FILE__, __LINE__ ), lsb, line, col, big_endian );
-      vector_init( sig->value, NULL, width );
+      vector_init( sig->value, NULL, width, VTYPE_SIG );
       if( (left != NULL) && (left->exp != NULL) ) {
         db_add_vector_param( sig, left->exp, PARAM_TYPE_SIG_MSB );
       }
@@ -922,8 +922,8 @@ void db_add_signal( char* name, int type, static_expr* left, static_expr* right,
 
     /* Indicate if signal must be assigned by simulated results or not */
     if( mba ) {
-      sig->value->suppl.part.mba      = 1;
-      sig->value->suppl.part.assigned = 1;
+      sig->suppl.part.mba      = 1;
+      sig->suppl.part.assigned = 1;
     }
 
     /* Indicate signed attribute */
@@ -1356,7 +1356,7 @@ expression* db_create_expr_from_static( static_expr* se, int line, int first_col
     expr = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, line, first_col, last_col, NULL );
 
     /* Create the new vector */
-    vec = vector_create( 32, TRUE );
+    vec = vector_create( 32, VTYPE_VAL, TRUE );
     vector_from_int( vec, se->num );
 
     /* Assign the new vector to the expression's vector (after deallocating the expression's old vector) */
@@ -2040,7 +2040,7 @@ void db_assign_symbol( char* name, char* symbol, int msb, int lsb ) {
     if( (slink = sig_link_find( &tmpsig, curr_instance->funit->sig_head )) != NULL ) {
 
       /* Only add the symbol if we are not going to generate this value ourselves */
-      if( slink->sig->value->suppl.part.assigned == 0 ) {
+      if( slink->sig->suppl.part.assigned == 0 ) {
 
         /* Add this signal */
         symtable_add( symbol, slink->sig, msb, lsb );
@@ -2139,6 +2139,9 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.221  2006/09/08 22:39:50  phase1geo
+ Fixes for memory problems.
+
  Revision 1.220  2006/09/07 21:59:24  phase1geo
  Fixing some bugs related to statement block removal.  Also made some significant
  optimizations to this code.

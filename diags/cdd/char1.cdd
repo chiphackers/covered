@@ -1,4 +1,4 @@
-5 8 1 * 0
+5 9 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd char1.vcd -o char1.cdd -v char1.v
 3 0 $root $root NA 0 0
 3 0 main main char1.v 1 14
@@ -11,9 +11,9 @@
 2 7 5 120012 1 0 20004 0 0 32 64 0 0 0 0 0 0 0 0
 2 8 5 e000e 0 1 400 0 0 c
 2 9 5 e0012 1 48 7006 7 8
-1 a 0 3 3000e 8 80 aa aa
-1 b 0 4 3000e 8 80 aa aa
-1 c 0 5 3000e 8 16 aa aa
+1 a 0 3 83000e 8 65 aa aa
+1 b 0 4 83000e 8 65 aa aa
+1 c 0 5 83000e 8 1 aa aa
 4 3 0 0
 4 6 0 0
 4 9 0 0

@@ -559,7 +559,7 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
 
         /* Check to see if this signal should be assigned by Covered or the dumpfile */
         if( clear_assigned ) {
-          found_sig->value->suppl.part.assigned = 0;
+          found_sig->suppl.part.assigned = 0;
         }
 
         if( !clear_assigned &&
@@ -581,7 +581,7 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
          If the signal is found for the given expression but the signal is marked as "must be assigned" but is also marked as
          "won't be assigned", we need to remove all statement blocks that contain this signal from coverage consideration.
         */
-        if( (found_sig->value->suppl.part.assigned == 0) && (found_sig->value->suppl.part.mba == 1) ) {
+        if( (found_sig->suppl.part.assigned == 0) && (found_sig->suppl.part.mba == 1) ) {
           expl = found_sig->exp_head;
           while( expl != NULL ) {
             if( (stmt = expression_get_root_statement( expl->exp )) != NULL ) {
@@ -725,7 +725,7 @@ void bind_task_function_ports( expression* expr, func_unit* funit, char* name, i
         bind_add( 0, sig_name, expr, funit_exp );
 
         /* Specify that this vector will be assigned by Covered and not the dumpfile */
-        sigl->sig->value->suppl.part.assigned = 1;
+        sigl->sig->suppl.part.assigned = 1;
 
         /* Increment the port order number */
         (*order)++;
@@ -890,7 +890,7 @@ void bind_perform( bool cdd_reading, int pass ) {
 
           /* If an FSM expression is attached, size it now */
           if( curr_eb->fsm != NULL ) {
-            curr_eb->fsm->value = vector_create( curr_eb->exp->value->width, TRUE );
+            curr_eb->fsm->value = vector_create( curr_eb->exp->value->width, VTYPE_EXP, TRUE );
           }
 
         /* Otherwise, handle disable binding */
@@ -1026,6 +1026,11 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.92  2006/09/06 22:09:22  phase1geo
+ Fixing bug with multiply-and-op operation.  Also fixing bug in gen_item_resolve
+ function where an instance was incorrectly being placed into a new instance tree.
+ Full regression passes with these changes.  Also removed verbose output.
+
  Revision 1.91  2006/09/05 21:00:44  phase1geo
  Fixing bug in removing statements that are generate items.  Also added parsing
  support for multi-dimensional array accessing (no functionality here to support

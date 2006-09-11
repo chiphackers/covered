@@ -1,18 +1,18 @@
-5 8 1 * 0
+5 9 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd static_func1.vcd -o static_func1.cdd -v static_func1.v
 3 0 $root $root NA 0 0
 3 0 main main static_func1.v 1 22
-1 FOO 0 0 80000 32 0 0 101 0 0 0 0 0 0
-1 a 0 5 30011 16 0 aa aa aa aa
+1 FOO 0 0 80000 32 1 0 1 0 0 0 0 0 0
+1 a 0 5 30011 16 1 aa aa aa aa
 3 2 main.static_func main.static_func static_func1.v 14 20
 2 1 17 1e001e 0 0 20810 0 0 32 64 0 0 0 0 0 0 0 0
 2 2 17 4000e 0 1 c00 0 0 static_func
 2 3 17 4001e 1 37 11826 1 2
-2 4 18 1e0021 0 0 20810 0 0 1 1 1
+2 4 18 1e0021 0 0 20810 0 0 1 4 1
 2 5 18 100019 0 1 c00 0 0 bit_to_set
 2 6 18 4001a 0 23 c00 0 5 static_func
 2 7 18 40021 1 37 82a 4 6
-1 static_func 0 14 50010 32 16 aa 1aa aa aa aa aa aa aa
-1 bit_to_set 0 15 e 5 16 aa 2
+1 static_func 0 14 850010 32 1 aa 1aa aa aa aa aa aa aa
+1 bit_to_set 0 15 80000e 5 1 aa 2
 4 7 0 0
 4 3 7 7

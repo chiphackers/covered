@@ -1,4 +1,4 @@
-5 8 1 * 0
+5 9 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd enum1.2.vcd -o enum1.2.cdd -v enum1.2.v
 3 0 $root $root NA 0 0
 3 0 main main enum1.2.v 1 18
@@ -7,14 +7,14 @@
 2 3 6 10007 1 37 100a 1 2
 2 4 7 20003 1 0 20008 0 0 32 64 44 0 0 0 0 0 0 0
 2 5 7 20003 1 0 20008 0 0 32 64 55 55 55 55 55 55 55 55
-2 6 7 10003 2 2c 2000a 4 5 32 0 aa aa aa aa aa aa aa aa
+2 6 7 10003 2 2c 2000a 4 5 32 2 aa aa aa aa aa aa aa aa
 2 7 8 70007 0 1 0 0 0 A
 2 8 8 10003 0 1 400 0 0 foo
 2 9 8 10007 1 37 6 7 8
-1 A 0 3 a000f 16 0 0 0 0 0
-1 B 0 3 a0012 16 0 1 0 0 0
-1 C 0 3 a0015 16 0 4 0 0 0
-1 foo 0 3 30018 16 16 10aa aa aa aa
+1 A 0 3 a000f 16 1 0 0 0 0
+1 B 0 3 a0012 16 1 1 0 0 0
+1 C 0 3 a0015 16 1 4 0 0 0
+1 foo 0 3 830018 16 1 10aa aa aa aa
 4 9 0 0
 4 6 9 0
 4 3 6 6

@@ -1,4 +1,4 @@
-5 8 1 * 0
+5 9 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd mbit_sel3.1.vcd -o mbit_sel3.1.cdd -v mbit_sel3.1.v
 3 0 $root $root NA 0 0
 3 0 main main mbit_sel3.1.v 1 16
@@ -14,12 +14,12 @@
 2 10 6 110012 1 0 20008 0 0 32 64 0 14 0 0 0 0 0 0
 2 11 6 e000f 2 0 20008 0 0 32 64 1 14 0 0 0 0 0 0
 2 12 6 c0013 2 24 208 10 11 b
-2 13 6 c001f 2 31 20208 9 12 19 0 aa aa aa aa 2a
-2 14 6 c0029 2 31 20208 6 13 46 0 aa aa aa aa aa aa aa aa aa aa aa a
-2 15 6 c0034 2 31 20208 3 14 49 0 aa aa aa aa aa aa aa aa aa aa aa aa 2
-2 16 6 b0035 2 26 20008 15 0 49 0 aa aa aa aa aa aa aa aa aa aa aa aa 2
+2 13 6 c001f 2 31 20208 9 12 19 2 aa aa aa aa 2a
+2 14 6 c0029 2 31 20208 6 13 46 2 aa aa aa aa aa aa aa aa aa aa aa a
+2 15 6 c0034 2 31 20208 3 14 49 2 aa aa aa aa aa aa aa aa aa aa aa aa 2
+2 16 6 b0035 2 26 20008 15 0 49 2 aa aa aa aa aa aa aa aa aa aa aa aa 2
 2 17 6 70007 0 1 400 0 0 a
 2 18 6 70035 2 35 f00a 16 17
-1 a 0 3 3000f 49 0 aa aa aa aa aa aa aa aa aa aa aa aa 2
-1 b 0 4 3000f 128 0 aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa
+1 a 0 3 3000f 49 1 aa aa aa aa aa aa aa aa aa aa aa aa 2
+1 b 0 4 3000f 128 1 aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa
 4 18 18 18

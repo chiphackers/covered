@@ -1,5 +1,5 @@
-5 8 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -o bassign2.cdd -v bassign2.v
+5 9 1 * 0
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd bassign2.vcd -o bassign2.cdd -v bassign2.v
 3 0 $root $root NA 0 0
 3 0 main main bassign2.v 1 18
 2 1 6 80008 1 0 20008 0 0 32 64 1 0 0 0 0 0 0 0
@@ -12,8 +12,8 @@
 2 8 8 30003 0 1 400 0 0 a
 2 9 8 10004 0 23 400 0 8 b
 2 10 8 10008 1 37 a 7 9
-1 a 0 3 3000b 32 16 aa aa aa aa aa aa aa aa
-1 b 0 3 3000e 32 16 2aa aa aa aa aa aa aa aa
+1 a 0 3 83000b 32 1 aa aa aa aa aa aa aa aa
+1 b 0 3 83000e 32 1 2aa aa aa aa aa aa aa aa
 4 10 0 0
 4 6 10 10
 4 3 6 6

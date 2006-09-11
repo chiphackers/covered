@@ -1,11 +1,11 @@
-5 8 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -o delay2.cdd -v delay2.v
+5 9 1 * 0
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd delay2.vcd -o delay2.cdd -v delay2.v
 3 0 $root $root NA 0 0
 3 0 main main delay2.v 1 27
 2 1 6 110013 4 1 c 0 0 clk
-2 2 6 9000f 0 2a 20000 0 0 1 0 2
-2 3 6 90013 7 27 2700a 1 2 1 0 2
-1 a 0 3 30006 1 0 2
-1 b 0 3 30009 1 0 102
-1 clk 0 4 30006 1 0 1102
+2 2 6 9000f 0 2a 20000 0 0 1 2 2
+2 3 6 90013 7 27 2700a 1 2 1 2 2
+1 a 0 3 30006 1 1 2
+1 b 0 3 30009 1 1 102
+1 clk 0 4 30006 1 1 1102
 4 3 3 0

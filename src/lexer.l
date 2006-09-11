@@ -115,6 +115,7 @@ static bool      file_prev_parsed;
 %s IGNORE_PROPERTY
 %s IGNORE_SEQUENCE
 %s IGNORE_GLOBALS
+%s IGNORE_PROGRAM
 %s PARSE
 %s UDPTABLE
 %x PPTIMESCALE
@@ -341,6 +342,18 @@ WSPACE [ \t\b\f]+
         yymore();
  }
 
+  /* Ignore program syntax */
+<IGNORE_SEQUENCE>endprogram {
+        yylloc.first_column = yylloc.last_column;
+        yylloc.last_column += strlen( yytext );
+        BEGIN( PARSE );
+        return K_endprogram;
+ }
+<IGNORE_SEQUENCE>. {
+        yylloc.last_column += 1;
+        yymore();
+ }
+
   /* Entries for user defined primitive tables -- not currently supported */
 <UDPTABLE>\(\?0\)    { yylloc.last_column += strlen( yytext );  return '_';       }
 <UDPTABLE>\(\?1\)    { yylloc.last_column += strlen( yytext );  return '+';       }
@@ -426,6 +439,8 @@ WSPACE [ \t\b\f]+
        BEGIN( IGNORE_PROPERTY );
      } else if( rc == K_sequence ) {
        BEGIN( IGNORE_SEQUENCE );
+     } else if( rc == K_program ) {
+       BEGIN( IGNORE_PROGRAM );
      } else if( rc != TYPEDEF_IDENTIFIER ) {
        last_keyword = rc;
        yylval.text = '\0';

@@ -140,7 +140,7 @@ static_expr* static_expr_gen_unary( static_expr* stexp, int op, int line, int fi
         case EXP_OP_PASSIGN :
           tmpexp = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, line, first, last, FALSE );
           curr_expr_id++;
-          vector_init( tmpexp->value, (vec_data*)malloc_safe( (sizeof( vec_data ) * 32), __FILE__, __LINE__ ), 32 );
+          vector_init( tmpexp->value, (vec_data*)malloc_safe( (sizeof( vec_data ) * 32), __FILE__, __LINE__ ), 32, VTYPE_EXP );
           vector_from_int( tmpexp->value, stexp->num );
         
           stexp->exp = expression_create( tmpexp, NULL, op, FALSE, curr_expr_id, line, first, last, FALSE );
@@ -237,7 +237,7 @@ static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int
 
         right->exp = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, line, first, last, FALSE );
         curr_expr_id++;
-        vector_init( right->exp->value, (vec_data*)malloc_safe( (sizeof( vec_data ) * 32), __FILE__, __LINE__ ), 32 );  
+        vector_init( right->exp->value, (vec_data*)malloc_safe( (sizeof( vec_data ) * 32), __FILE__, __LINE__ ), 32, VTYPE_EXP );  
         vector_from_int( right->exp->value, right->num );
 
         tmpexp = expression_create( right->exp, left->exp, op, FALSE, curr_expr_id, line, first, last, FALSE );
@@ -254,7 +254,7 @@ static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int
 
         left->exp = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, line, first, last, FALSE );
         curr_expr_id++;
-        vector_init( left->exp->value, (vec_data*)malloc_safe( (sizeof( vec_data ) * 32), __FILE__, __LINE__ ), 32 );
+        vector_init( left->exp->value, (vec_data*)malloc_safe( (sizeof( vec_data ) * 32), __FILE__, __LINE__ ), 32, VTYPE_EXP );
         vector_from_int( left->exp->value, left->num );
 
         tmpexp = expression_create( right->exp, left->exp, op, FALSE, curr_expr_id, line, first, last, FALSE );
@@ -415,6 +415,11 @@ void static_expr_dealloc( static_expr* stexp, bool rm_exp ) {
 
 /*
  $Log$
+ Revision 1.22  2006/07/11 04:59:08  phase1geo
+ Reworking the way that instances are being generated.  This is to fix a bug and
+ pave the way for generate loops for instances.  Code not working at this point
+ and may cause serious problems for regression runs.
+
  Revision 1.21  2006/05/28 02:43:49  phase1geo
  Integrating stable release 0.4.4 changes into main branch.  Updated regressions
  appropriately.

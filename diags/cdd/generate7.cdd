@@ -1,7 +1,7 @@
-5 8 1 * 0
+5 9 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd generate7.vcd -o generate7.cdd -v generate7.v
 3 0 $root $root NA 0 0
 3 0 main main generate7.v 1 23
-1 A 0 0 80000 32 0 0 0 0 0 0 0 0 0
+1 A 0 0 80000 32 1 0 0 0 0 0 0 0 0
 3 0 foo main.f generate7.v 27 31
-1 x 0 29 30004 1 0 102
+1 x 0 29 30004 1 1 102

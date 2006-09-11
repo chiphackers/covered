@@ -1,7 +1,7 @@
-5 8 1 * 0
+5 9 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd port2.vcd -o port2.cdd -v port2.v
 3 0 $root $root NA 0 0
 3 0 main main port2.v 1 14
-1 a 0 3 30005 1 0 2
+1 a 0 3 30005 1 1 2
 3 0 foo main.bar port2.v 17 21
-1 a 0 18 1000d 1 0 2
+1 a 0 18 1000d 1 1 2

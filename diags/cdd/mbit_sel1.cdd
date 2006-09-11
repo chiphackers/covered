@@ -1,4 +1,4 @@
-5 8 1 * 0
+5 9 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd mbit_sel1.vcd -o mbit_sel1.cdd -v mbit_sel1.v
 3 0 $root $root NA 0 0
 3 0 main main mbit_sel1.v 1 29
@@ -32,13 +32,13 @@
 2 28 13 b0010 5 24 20c 26 27 z
 2 29 13 70007 0 1 400 0 0 f
 2 30 13 70010 5 35 f00e 28 29
-1 z 1 3 30011 4 0 ccaa
-1 a 0 4 30011 2 0 a
-1 b 0 4 30014 2 0 220a
-1 c 0 4 30017 2 0 330a
-1 d 0 5 30011 3 0 442a
-1 e 0 5 30014 3 0 662a
-1 f 0 6 30011 4 0 ccaa
+1 z 1 3 30011 4 1 ccaa
+1 a 0 4 30011 2 1 a
+1 b 0 4 30014 2 1 220a
+1 c 0 4 30017 2 1 330a
+1 d 0 5 30011 3 1 442a
+1 e 0 5 30014 3 1 662a
+1 f 0 6 30011 4 1 ccaa
 4 5 5 5
 4 10 10 10
 4 15 15 15

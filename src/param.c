@@ -411,7 +411,7 @@ inst_parm* inst_parm_add( char* name, char* inst_name, static_expr* msb, static_
   iparm->sig->value->suppl.part.is_signed = is_signed;
   
   /* Copy the contents of the specified vector value to the signal */
-  vector_set_value_only( iparm->sig->value, value->value, value->width, 0, 0 );
+  vector_set_value( iparm->sig->value, value->value, value->width, 0, 0 );
 
   iparm->mparm = mparm;
   iparm->next  = NULL;
@@ -629,7 +629,7 @@ bool param_set_sig_size( vsignal* sig, inst_parm* icurr ) {
     }
 
     /* Create the vector data for this signal */
-    vec = vector_create( sig->value->width, TRUE );
+    vec = vector_create( sig->value->width, VTYPE_SIG, TRUE );
 
     /* Deallocate and reassign the new data */
     if( sig->value->value != NULL ) {
@@ -1051,6 +1051,9 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.73  2006/09/04 05:28:18  phase1geo
+ Fixing bug 1546059 last remaining issue.  Updated user documentation.
+
  Revision 1.72  2006/08/18 22:07:45  phase1geo
  Integrating obfuscation into all user-viewable output.  Verified that these
  changes have not made an impact on regressions.  Also improved performance

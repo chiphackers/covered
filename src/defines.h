@@ -50,7 +50,7 @@
  Contains the CDD version number of all CDD files that this version of Covered can write
  and read.
 */
-#define CDD_VERSION        8
+#define CDD_VERSION        9
 
 /*!
  This contains the header information specified when executing this tool.
@@ -997,6 +997,26 @@ typedef enum exp_op_type_e {
 
 /*! @} */
 
+/*!
+ \addtogroup vector_types Vector Types
+
+ The following defines specify the various flavors of vector data that we can store inside a vec_data element. 
+
+ @{
+*/
+
+/*! Used for storing 2 or 4-state value-only values (no coverage information stored) */
+#define VTYPE_VAL       0
+
+/*! Used for storing 2 or 4-state signal values */
+#define VTYPE_SIG       1
+
+/*! Used for storing 2 or 4-state expression values */
+#define VTYPE_EXP       2
+
+/*! @} */
+
+/*! Overload for the snprintf function which verifies that we don't overrun character arrays */
 #define snprintf(x,y,...)	{ int svar = snprintf( x, y, __VA_ARGS__ ); assert( svar < (y) ); }
 
 /*!
@@ -1038,15 +1058,26 @@ typedef union vec_data_u vec_data;
  A vec_data is an 8-bit value that represents one bit of data in a signal or expression/subexpression
 */
 union vec_data_u {
-  nibble all;        /*!< Reference to all bits in this union */
-  struct {
-    nibble value:2;  /*!< 4-state value */
-    nibble tog01:1;  /*!< Indicator if bit was toggled from 0->1 */
-    nibble tog10:1;  /*!< Indicator if bit was toggled from 1->0 */
-    nibble set  :1;  /*!< Indicator if bit has been previously assigned this timestep */
-    nibble false:1;  /*!< Indicator if bit was set to a value of 0 (FALSE) */
-    nibble true :1;  /*!< Indicator if bit was set to a value of 1 (TRUE) */
-    nibble misc :1;  /*!< Miscellaneous indicator bit */
+  nibble all;            /*!< Reference to all bits in this union */
+  union {
+    struct {
+      nibble value  :2;  /*!< 2 or 4-state value */
+    } val;               /*!< Static or temporary value only (no coverage information) */
+    struct {
+      nibble value  :2;  /*!< 2 or 4-state value */
+      nibble tog01  :1;  /*!< Indicator if bit was toggled from 0->1 */
+      nibble tog10  :1;  /*!< Indicator if bit was toggled from 1->0 */
+      nibble set    :1;  /*!< Indicator if bit has been previously assigned this timestep */
+      nibble misc   :1;  /*!< Miscellaneous indicator bit */
+    } sig;               /*!< Vector data for signal */
+    struct {
+      nibble value  :2;  /*!< 2 or 4-state value */
+      nibble eval_a :1;  /*!< Coverage indicator: AND-left=0; OR-left=1; OTHER-left=0, right=0 */
+      nibble eval_b :1;  /*!< Coverage indicator: AND-right=0; OR-right=1; OTHER-left=0, right=1 */
+      nibble eval_c :1;  /*!< Coverage indicator: AND-left=1, right=1; OR-left=0, right=0; OTHER-left=1, right=0 */
+      nibble eval_d :1;  /*!< Coverage indicator: AND-not used; OR-not used; OTHER-left=1, right=1 */
+      nibble set    :1;  /*!< Indicator if bit has been previously assigned this timestamp */
+    } exp;               /*!< Vector data for expression */
   } part;
 };
 
@@ -1129,6 +1160,9 @@ union esuppl_u {
                                      if this expression is already owned by a mod_parm structure. */
     control gen_expr       :1;  /*!< Bit 25.  Mask bit = 0.  Temporary value used by the score command to indicate
                                      that this expression is a part of a generate expression. */
+    control prev_called    :1;  /*!< Bit 26.  Mask bit = 0.  Temporary value used by named block and task expression
+                                     functions to indicate if we are in the middle of executing a named block or task
+                                     expression (since these cause a context switch to occur. */
   } part;
 };
 
@@ -1152,6 +1186,9 @@ union ssuppl_u {
     control big_endian     :1;  /*!< Specifies if this signal is in big or little endianness */
     control excluded       :1;  /*!< Specifies if this signal should be excluded for toggle coverage */
     control not_handled    :1;  /*!< Specifies if this signal is handled by Covered or not */
+    control assigned       :1;  /*!< Specifies that this signal will be assigned from simulated results (instead of dumpfile) */
+    control mba            :1;  /*!< Specifies that this signal MUST be assigned from simulated results because this information
+                                     is NOT provided in the dumpfile */
   } part;
 };
 
@@ -1527,12 +1564,12 @@ struct vector_s {
   union {
     nibble   all;                    /*!< Allows us to set all bits in the suppl field */
     struct {
+      nibble type      :2;           /*!< Specifies what type of information is stored in this vector
+                                          (see \ref vector_types for legal values) */
       nibble base      :3;           /*!< Base-type of this data when originally parsed */
       nibble inport    :1;           /*!< Specifies if this vector is part of an input port */
-      nibble assigned  :1;           /*!< Specifies that this vector will be assigned from simulated results (instead of dumpfile) */
-      nibble mba       :1;           /*!< Specifies that this vector MUST be assigned from simulated results because this information
-                                          is NOT provided in the dumpfile */
       nibble is_signed :1;           /*!< Specifies that this vector should be treated as a signed value */
+      nibble is_2state :1;           /*!< Specifies that this vector should be treated as a 2-state value */
     } part;
   } suppl;                           /*!< Supplemental field */
   vec_data*  value;                  /*!< 4-state current value and toggle history */
@@ -2085,6 +2122,13 @@ struct enum_item_s {
 
 /*
  $Log$
+ Revision 1.228  2006/09/05 21:00:44  phase1geo
+ Fixing bug in removing statements that are generate items.  Also added parsing
+ support for multi-dimensional array accessing (no functionality here to support
+ these, however).  Fixing bug in race condition checker for generated items.
+ Currently hitting into problem with genvars used in SBIT_SEL or MBIT_SEL type
+ expressions -- we are hitting into an assertion error in expression_operate_recursively.
+
  Revision 1.227  2006/09/01 23:06:02  phase1geo
  Fixing regressions per latest round of changes.  Full regression now passes.
 

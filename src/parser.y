@@ -273,6 +273,7 @@ int yydebug = 1;
 %token K_always_comb K_always_latch K_always_ff
 %token K_typedef K_enum K_union K_struct K_packed
 %token K_assert K_property K_endproperty K_cover K_sequence K_endsequence
+%token K_program K_endprogram K_final K_void K_return K_continue K_break
 
 %token KK_attribute
 
@@ -2972,6 +2973,20 @@ module_item
       }
     }
   | attribute_list_opt
+    K_final statement
+    {
+      statement* stmt = $3;
+      if( stmt != NULL ) {
+        if( info_suppl.part.excl_init == 0 ) {
+          stmt->exp->suppl.part.stmt_head  = 1;
+          // stmt->exp->suppl.part.stmt_final = 1;
+          db_add_statement( stmt, stmt );
+        } else {
+          db_remove_statement( stmt );
+        }
+      }
+    }
+  | attribute_list_opt
     K_task IDENTIFIER ';'
     {
       if( generate_for_mode > 0 ) {
@@ -3156,6 +3171,9 @@ module_item
   /* SystemVerilog sequence - we don't currently support these but crudely will parse them */
   | attribute_list_opt
     K_sequence K_endsequence
+  /* SystemVerilog program block - we don't currently support these but crudely will parse them */
+  | attribute_list_opt
+    K_program K_endprogram
   | KK_attribute '(' { ignore_mode++; } UNUSED_IDENTIFIER ',' UNUSED_STRING ',' UNUSED_STRING { ignore_mode--; }')' ';'
   | KK_attribute '(' error ')' ';'
     {
@@ -3660,7 +3678,7 @@ statement
       expression* expr;
       statement*  stmt;
       if( (ignore_mode == 0) && ($3 != NULL) && ($6 != NULL) ) {
-        vec  = vector_create( 32, TRUE );
+        vec  = vector_create( 32, VTYPE_VAL, TRUE );
         expr = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
         vector_from_int( vec, 0x0 );
         assert( expr->value->value == NULL );
@@ -4117,7 +4135,7 @@ statement
       expression* tmp;
       statement*  stmt;
       if( (ignore_mode == 0) && ($1 != NULL) && ($5 != NULL) && ($7 != NULL) && ($8 != NULL) ) {
-        vec  = vector_create( 32, TRUE );
+        vec  = vector_create( 32, VTYPE_VAL, TRUE );
         tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
         vector_from_int( vec, 0x0 );
         assert( tmp->value->value == NULL );
@@ -4799,7 +4817,7 @@ delay1
       expression* exp; 
       expression* tmp;
       if( (ignore_mode == 0) && ($2 != NULL) ) {
-        vec = vector_create( 32, TRUE );
+        vec = vector_create( 32, VTYPE_VAL, TRUE );
         tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @2.first_column, (@2.last_column - 1), NULL );
         vector_from_int( vec, 0xffffffff );
         assert( tmp->value->value == NULL ); 
@@ -4817,7 +4835,7 @@ delay1
       expression* exp;
       expression* tmp;
       if( (ignore_mode == 0) && ($3 != NULL) ) {
-        vec = vector_create( 32, TRUE );
+        vec = vector_create( 32, VTYPE_VAL, TRUE );
         tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @3.first_column, (@3.last_column - 1), NULL );
         vector_from_int( vec, 0xffffffff );
         assert( tmp->value->value == NULL );
@@ -4838,7 +4856,7 @@ delay3
       expression* exp; 
       expression* tmp;
       if( (ignore_mode == 0) && ($2 != NULL) ) {
-        vec = vector_create( 32, TRUE );
+        vec = vector_create( 32, VTYPE_VAL, TRUE );
         tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @2.first_column, (@2.last_column - 1), NULL );
         vector_from_int( vec, 0xffffffff );
         assert( tmp->value->value == NULL );
@@ -4856,7 +4874,7 @@ delay3
       expression* exp; 
       expression* tmp;
       if( (ignore_mode == 0) && ($3 != NULL) ) {
-        vec = vector_create( 32, TRUE );
+        vec = vector_create( 32, VTYPE_VAL, TRUE );
         tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @3.first_column, (@3.last_column - 1), NULL );
         vector_from_int( vec, 0xffffffff );
         assert( tmp->value->value == NULL );
@@ -4875,7 +4893,7 @@ delay3
       expression* tmp;
       expression_dealloc( $5, FALSE );
       if( (ignore_mode == 0) && ($3 != NULL) ) {
-        vec = vector_create( 32, TRUE );
+        vec = vector_create( 32, VTYPE_VAL, TRUE );
         tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @3.first_column, (@5.last_column - 1), NULL );
         vector_from_int( vec, 0xffffffff );
         assert( tmp->value->value == NULL );
@@ -4895,7 +4913,7 @@ delay3
       expression_dealloc( $3, FALSE );
       expression_dealloc( $7, FALSE );
       if( ignore_mode == 0 ) {
-        vec = vector_create( 32, TRUE );
+        vec = vector_create( 32, VTYPE_VAL, TRUE );
         tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @3.first_column, (@7.last_column - 1), NULL );
         vector_from_int( vec, 0xffffffff );
         assert( tmp->value->value == NULL );
@@ -4928,7 +4946,7 @@ delay_value
       if( (ignore_mode == 0) && (se != NULL) ) {
         if( se->exp == NULL ) {
           tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-          vector_init( tmp->value, (vec_data*)malloc_safe( (sizeof( vec_data ) * 32), __FILE__, __LINE__ ), 32 );  
+          vector_init( tmp->value, (vec_data*)malloc_safe( (sizeof( vec_data ) * 32), __FILE__, __LINE__ ), 32, VTYPE_VAL );
           vector_from_int( tmp->value, se->num );
           static_expr_dealloc( se, TRUE );
         } else {
@@ -4979,7 +4997,7 @@ delay_value
         if( se != NULL ) {
           if( se->exp == NULL ) {
             tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-            vector_init( tmp->value, (vec_data*)malloc_safe( (sizeof( vec_data ) * 32), __FILE__, __LINE__ ), 32 );
+            vector_init( tmp->value, (vec_data*)malloc_safe( (sizeof( vec_data ) * 32), __FILE__, __LINE__ ), 32, VTYPE_VAL );
             vector_from_int( tmp->value, se->num );
             static_expr_dealloc( se, TRUE );
           } else {
@@ -6181,7 +6199,7 @@ single_index_expr
           if( $4->exp == NULL ) {
             tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
             vector_dealloc( tmp->value );
-            tmp->value = vector_create( 32, TRUE );
+            tmp->value = vector_create( 32, VTYPE_VAL, TRUE );
             vector_from_int( tmp->value, $4->num );
             tmp = db_create_expression( tmp, $2, EXP_OP_MBIT_POS, lhs_mode, @1.first_line, @1.first_column, (@5.last_column - 1), NULL );
           } else {
@@ -6208,7 +6226,7 @@ single_index_expr
           if( $4->exp == NULL ) {
             tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
             vector_dealloc( tmp->value );
-            tmp->value = vector_create( 32, TRUE );
+            tmp->value = vector_create( 32, VTYPE_VAL, TRUE );
             vector_from_int( tmp->value, $4->num );
             tmp = db_create_expression( tmp, $2, EXP_OP_MBIT_NEG, lhs_mode, @1.first_line, @1.first_column, (@5.last_column - 1), NULL );
           } else {

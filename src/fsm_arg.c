@@ -84,7 +84,7 @@ expression* fsm_arg_parse_state( char** arg, char* funit_name ) {
           expr = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
           curr_expr_id++;
           vector_dealloc( expr->value );
-          expr->value = vector_create( 32, TRUE );
+          expr->value = vector_create( 32, VTYPE_VAL, TRUE );
           vector_from_int( expr->value, sig->lsb );
 
           expr = expression_create( NULL, expr, EXP_OP_SBIT_SEL, FALSE, curr_expr_id, 0, 0, 0, FALSE );
@@ -96,13 +96,13 @@ expression* fsm_arg_parse_state( char** arg, char* funit_name ) {
           expt = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
           curr_expr_id++;
           vector_dealloc( expt->value );
-          expt->value = vector_create( 32, TRUE );
+          expt->value = vector_create( 32, VTYPE_VAL, TRUE );
           vector_from_int( expt->value, sig->lsb );
 
           expr = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
           curr_expr_id++;
           vector_dealloc( expr->value );
-          expr->value = vector_create( 32, TRUE );
+          expr->value = vector_create( 32, VTYPE_VAL, TRUE );
           vector_from_int( expr->value, ((sig->value->width - 1) + sig->lsb) );
 
           switch( sig->suppl.part.type ) {
@@ -155,7 +155,7 @@ expression* fsm_arg_parse_state( char** arg, char* funit_name ) {
         expr = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
         curr_expr_id++;
         vector_dealloc( expr->value );
-        expr->value = vector_create( 32, TRUE );
+        expr->value = vector_create( 32, VTYPE_VAL, TRUE );
         vector_from_int( expr->value, sig->lsb );
 
         expl = expression_create( NULL, expr, EXP_OP_SBIT_SEL, FALSE, curr_expr_id, 0, 0, 0, FALSE );
@@ -166,13 +166,13 @@ expression* fsm_arg_parse_state( char** arg, char* funit_name ) {
         expt = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
         curr_expr_id++;
         vector_dealloc( expt->value );
-        expt->value = vector_create( 32, TRUE );
+        expt->value = vector_create( 32, VTYPE_VAL, TRUE );
         vector_from_int( expt->value, sig->lsb );
 
         expr = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
         curr_expr_id++;
         vector_dealloc( expr->value );
-        expr->value = vector_create( 32, TRUE );
+        expr->value = vector_create( 32, VTYPE_VAL, TRUE );
         vector_from_int( expr->value, ((sig->value->width - 1) + sig->lsb) );
 
         switch( sig->suppl.part.type ) {
@@ -324,14 +324,14 @@ expression* fsm_arg_parse_value( char** str, func_unit* funit ) {
         left = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
         curr_expr_id++;
         vector_dealloc( left->value );
-        left->value = vector_create( 32, TRUE );
+        left->value = vector_create( 32, VTYPE_VAL, TRUE );
         vector_from_int( left->value, msb );
 
         /* Generate right child expression */
         right = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
         curr_expr_id++;
         vector_dealloc( right->value );
-        right->value = vector_create( 32, TRUE );
+        right->value = vector_create( 32, VTYPE_VAL, TRUE );
         vector_from_int( right->value, lsb );
 
         /* Generate multi-bit parameter expression */
@@ -348,14 +348,14 @@ expression* fsm_arg_parse_value( char** str, func_unit* funit ) {
         left = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
         curr_expr_id++;
         vector_dealloc( left->value );
-        left->value = vector_create( 32, TRUE );
+        left->value = vector_create( 32, VTYPE_VAL, TRUE );
         vector_from_int( left->value, msb );
 
         /* Generate right child expression */
         right = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
         curr_expr_id++;
         vector_dealloc( right->value );
-        right->value = vector_create( 32, TRUE );
+        right->value = vector_create( 32, VTYPE_VAL, TRUE );
         vector_from_int( right->value, lsb );
 
         /* Generate variable positive multi-bit parameter expression */
@@ -372,14 +372,14 @@ expression* fsm_arg_parse_value( char** str, func_unit* funit ) {
         left = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
         curr_expr_id++;
         vector_dealloc( left->value );
-        left->value = vector_create( 32, TRUE );
+        left->value = vector_create( 32, VTYPE_VAL, TRUE );
         vector_from_int( left->value, msb );
 
         /* Generate right child expression */
         right = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
         curr_expr_id++;
         vector_dealloc( right->value );
-        right->value = vector_create( 32, TRUE );
+        right->value = vector_create( 32, VTYPE_VAL, TRUE );
         vector_from_int( right->value, lsb );
 
         /* Generate variable positive multi-bit parameter expression */
@@ -396,7 +396,7 @@ expression* fsm_arg_parse_value( char** str, func_unit* funit ) {
         left = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
         curr_expr_id++;
         vector_dealloc( left->value );
-        left->value = vector_create( 32, TRUE );
+        left->value = vector_create( 32, VTYPE_VAL, TRUE );
         vector_from_int( left->value, lsb );
 
         /* Generate single-bit parameter expression */
@@ -601,6 +601,11 @@ void fsm_arg_parse_attr( attr_param* ap, func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.27  2006/08/18 22:07:45  phase1geo
+ Integrating obfuscation into all user-viewable output.  Verified that these
+ changes have not made an impact on regressions.  Also improved performance
+ impact of not obfuscating output.
+
  Revision 1.26  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

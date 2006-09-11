@@ -72,18 +72,20 @@ extern char user_msg[USER_MSG_LENGTH];
  \param vec    Pointer to vector to initialize.
  \param value  Pointer to vec_data array for vector.
  \param width  Bit width of specified vector.
+ \param type   Type of vector to initialize this to.
  
  Initializes the specified vector with the contents of width
  and value (if value != NULL).  If value != NULL, initializes all contents 
  of value array to 0x2 (X-value).
 */
-void vector_init( vector* vec, vec_data* value, int width ) {
+void vector_init( vector* vec, vec_data* value, int width, int type ) {
 
   int i;  /* Loop iterator */
 
-  vec->width     = width;
-  vec->suppl.all = 0;
-  vec->value     = value;
+  vec->width           = width;
+  vec->suppl.all       = 0;
+  vec->suppl.part.type = type;
+  vec->value           = value;
 
   if( value != NULL ) {
 
@@ -99,13 +101,14 @@ void vector_init( vector* vec, vec_data* value, int width ) {
 
 /*!
  \param width  Bit width of this vector.
+ \param type   Type of vector to create (see \ref vector_types for valid values).
  \param data   If FALSE only initializes width but does not allocate a nibble array.
 
  \return Pointer to newly created vector.
 
  Creates new vector from heap memory and initializes all vector contents.
 */
-vector* vector_create( int width, bool data ) {
+vector* vector_create( int width, int type, bool data ) {
 
   vector*   new_vec;       /* Pointer to newly created vector */
   vec_data* value = NULL;  /* Temporarily stores newly created vector value */
@@ -118,7 +121,7 @@ vector* vector_create( int width, bool data ) {
     value = (vec_data*)malloc_safe( (sizeof( vec_data ) * width), __FILE__, __LINE__ );
   }
 
-  vector_init( new_vec, value, width );
+  vector_init( new_vec, value, width, type );
 
   return( new_vec );
 
@@ -142,7 +145,7 @@ void vector_copy( vector* from_vec, vector** to_vec ) {
   } else {
 
     /* Create vector */
-    *to_vec = vector_create( from_vec->width, TRUE );
+    *to_vec = vector_create( from_vec->width, from_vec->suppl.part.type, TRUE );
 
     /* Copy contents of value array */
     for( i=0; i<from_vec->width; i++ ) {
@@ -219,11 +222,13 @@ void vector_db_write( vector* vec, FILE* file, bool write_data ) {
 
   int    i;      /* Loop iterator */
   nibble mask;   /* Mask value for vector value nibbles */
+  nibble dflt;   /* Default value (based on 2 or 4 state) */
 
   assert( vec != NULL );
   assert( vec->width > 0 );
 
   mask = write_data ? 0xf : 0xc;
+  dflt = (vec->suppl.part.is_2state == 1) ? 0x0 : 0x2;
 
   /* Output vector information to specified file */
   fprintf( file, "%d %d",
@@ -239,10 +244,10 @@ void vector_db_write( vector* vec, FILE* file, bool write_data ) {
     for( i=0; i<vec->width; i+=4 ) {
       switch( vec->width - i ) {
         case 0 :  break;
-        case 1 :  fprintf( file, " %x", vector_nibbles_to_uint( 0x2, 0x0, 0x0, 0x0 ) );  break;
-        case 2 :  fprintf( file, " %x", vector_nibbles_to_uint( 0x2, 0x2, 0x0, 0x0 ) );  break;
-        case 3 :  fprintf( file, " %x", vector_nibbles_to_uint( 0x2, 0x2, 0x2, 0x0 ) );  break;
-        default:  fprintf( file, " %x", vector_nibbles_to_uint( 0x2, 0x2, 0x2, 0x2 ) );  break;
+        case 1 :  fprintf( file, " %x", vector_nibbles_to_uint( dflt, 0x0,  0x0,  0x0 ) );   break;
+        case 2 :  fprintf( file, " %x", vector_nibbles_to_uint( dflt, dflt, 0x0,  0x0 ) );   break;
+        case 3 :  fprintf( file, " %x", vector_nibbles_to_uint( dflt, dflt, dflt, 0x0 ) );   break;
+        default:  fprintf( file, " %x", vector_nibbles_to_uint( dflt, dflt, dflt, dflt ) );  break;
       }
     }
 
@@ -252,22 +257,22 @@ void vector_db_write( vector* vec, FILE* file, bool write_data ) {
       switch( vec->width - i ) {
         case 0 :  break;
         case 1 :
-          fprintf( file, " %x", vector_nibbles_to_uint( ((vec->value[i+0].all & mask) | (write_data ? 0 : 0x2)), 0, 0, 0 ) );
+          fprintf( file, " %x", vector_nibbles_to_uint( ((vec->value[i+0].all & mask) | (write_data ? 0 : dflt)), 0, 0, 0 ) );
           break;
         case 2 :
-          fprintf( file, " %x", vector_nibbles_to_uint( ((vec->value[i+0].all & mask) | (write_data ? 0 : 0x2)),
-                                                        ((vec->value[i+1].all & mask) | (write_data ? 0 : 0x2)), 0, 0 ) );
+          fprintf( file, " %x", vector_nibbles_to_uint( ((vec->value[i+0].all & mask) | (write_data ? 0 : dflt)),
+                                                        ((vec->value[i+1].all & mask) | (write_data ? 0 : dflt)), 0, 0 ) );
           break;
         case 3 :
-          fprintf( file, " %x", vector_nibbles_to_uint( ((vec->value[i+0].all & mask) | (write_data ? 0 : 0x2)), 
-                                                        ((vec->value[i+1].all & mask) | (write_data ? 0 : 0x2)),
-                                                        ((vec->value[i+2].all & mask) | (write_data ? 0 : 0x2)), 0 ) );
+          fprintf( file, " %x", vector_nibbles_to_uint( ((vec->value[i+0].all & mask) | (write_data ? 0 : dflt)), 
+                                                        ((vec->value[i+1].all & mask) | (write_data ? 0 : dflt)),
+                                                        ((vec->value[i+2].all & mask) | (write_data ? 0 : dflt)), 0 ) );
           break;
         default:
-          fprintf( file, " %x", vector_nibbles_to_uint( ((vec->value[i+0].all & mask) | (write_data ? 0 : 0x2)), 
-                                                        ((vec->value[i+1].all & mask) | (write_data ? 0 : 0x2)),
-                                                        ((vec->value[i+2].all & mask) | (write_data ? 0 : 0x2)),
-                                                        ((vec->value[i+3].all & mask) | (write_data ? 0 : 0x2)) ) );
+          fprintf( file, " %x", vector_nibbles_to_uint( ((vec->value[i+0].all & mask) | (write_data ? 0 : dflt)), 
+                                                        ((vec->value[i+1].all & mask) | (write_data ? 0 : dflt)),
+                                                        ((vec->value[i+2].all & mask) | (write_data ? 0 : dflt)),
+                                                        ((vec->value[i+3].all & mask) | (write_data ? 0 : dflt)) ) );
           break;
       }
     }
@@ -301,7 +306,7 @@ bool vector_db_read( vector** vec, char** line ) {
     *line = *line + chars_read;
 
     /* Create new vector */
-    *vec              = vector_create( width, TRUE );
+    *vec              = vector_create( width, VTYPE_VAL, TRUE );
     (*vec)->suppl.all = (char)suppl & 0xff;
 
     i = 0;
@@ -516,7 +521,7 @@ char* vector_get_toggle01( vec_data* nib, int width ) {
   char  tmp[2];
 
   for( i=(width - 1); i>=0; i-- ) {
-    snprintf( tmp, 2, "%x", nib[i].part.tog01 );
+    snprintf( tmp, 2, "%x", nib[i].part.sig.tog01 );
     bits[((width - 1) - i)] = tmp[0];
   }
 
@@ -533,7 +538,7 @@ char* vector_get_toggle10( vec_data* nib, int width ) {
   char  tmp[2];
 
   for( i=(width - 1); i>=0; i-- ) {
-    snprintf( tmp, 2, "%x", nib[i].part.tog10 );
+    snprintf( tmp, 2, "%x", nib[i].part.sig.tog10 );
     bits[((width - 1) - i)] = tmp[0];
   }
 
@@ -559,7 +564,7 @@ void vector_display_toggle01( vec_data* nib, int width, FILE* ofile ) {
   fprintf( ofile, "%d'h", width );
 
   for( i=(width - 1); i>=0; i-- ) {
-    value = value | (nib[i].part.tog01 << (i % 4));
+    value = value | (nib[i].part.sig.tog01 << (i % 4));
     if( (i % 4) == 0 ) {
       fprintf( ofile, "%1x", value );
       value = 0;
@@ -587,7 +592,7 @@ void vector_display_toggle10( vec_data* nib, int width, FILE* ofile ) {
   fprintf( ofile, "%d'h", width );
 
   for( i=(width - 1); i>=0; i-- ) {
-    value = value | (nib[i].part.tog10 << (i % 4));
+    value = value | (nib[i].part.sig.tog10 << (i % 4));
     if( (i % 4) == 0 ) {
       fprintf( ofile, "%1x", value );
       value = 0;
@@ -612,7 +617,7 @@ void vector_display_value( vec_data* nib, int width ) {
   printf( "value: %d'b", width );
 
   for( i=(width - 1); i>=0; i-- ) {
-    switch( nib[i].part.value ) {
+    switch( nib[i].part.val.value ) {
       case 0 :  printf( "0" );  break;
       case 1 :  printf( "1" );  break;
       case 2 :  printf( "x" );  break;
@@ -624,13 +629,14 @@ void vector_display_value( vec_data* nib, int width ) {
 }
 
 /*!
- \param nib    Nibble to display.
- \param width  Number of bits in nibble to display.
+ \param nib    Nibble to display
+ \param width  Number of bits in nibble to display
+ \param type   Type of vector to display
 
  Outputs the specified nibble array to standard output as described by the
  width parameter.
 */
-void vector_display_nibble( vec_data* nib, int width ) {
+void vector_display_nibble( vec_data* nib, int width, int type ) {
 
   int i;  /* Loop iterator */
 
@@ -645,33 +651,62 @@ void vector_display_nibble( vec_data* nib, int width ) {
   printf( ", " );
   vector_display_value( nib, width );
 
-  /* Display nibble toggle01 history */
-  printf( ", 0->1: " );
-  vector_display_toggle01( nib, width, stdout );
+  switch( type ) {
 
-  /* Display nibble toggle10 history */
-  printf( ", 1->0: " );
-  vector_display_toggle10( nib, width, stdout );
+    case VTYPE_SIG :
 
-  /* Display bit set information */
-  printf( ", set: %d'b", width );
+      /* Display nibble toggle01 history */
+      printf( ", 0->1: " );
+      vector_display_toggle01( nib, width, stdout );
 
-  for( i=(width - 1); i>=0; i-- ) {
-    printf( "%d", nib[i].part.set );
-  }
+      /* Display nibble toggle10 history */
+      printf( ", 1->0: " );
+      vector_display_toggle10( nib, width, stdout );
 
-  /* Display bit FALSE information */
-  printf( ", FALSE: %d'b", width );
+      /* Display bit set information */
+      printf( ", set: %d'b", width );
+      for( i=(width - 1); i>=0; i-- ) {
+        printf( "%d", nib[i].part.sig.set );
+      }
 
-  for( i=(width - 1); i>=0; i-- ) {
-    printf( "%d", nib[i].part.false );
-  }
+      break;
 
-  /* Display bit TRUE information */
-  printf( ", TRUE: %d'b", width );
+    case VTYPE_EXP :
 
-  for( i=(width - 1); i>=0; i-- ) {
-    printf( "%d", nib[i].part.true );
+      /* Display eval_a information */
+      printf( ", a: %d'b", width );
+      for( i=(width - 1); i>=0; i-- ) {
+        printf( "%d", nib[i].part.exp.eval_a );
+      }
+
+      /* Display eval_b information */
+      printf( ", b: %d'b", width );
+      for( i=(width - 1); i>=0; i-- ) {
+        printf( "%d", nib[i].part.exp.eval_b );
+      }
+
+      /* Display eval_c information */
+      printf( ", c: %d'b", width );
+      for( i=(width - 1); i>=0; i-- ) {
+        printf( "%d", nib[i].part.exp.eval_c );
+      }
+
+      /* Display eval_d information */
+      printf( ", d: %d'b", width );
+      for( i=(width - 1); i>=0; i-- ) {
+        printf( "%d", nib[i].part.exp.eval_d );
+      }
+
+      /* Display set information */
+      printf( ", set: %d'b", width );
+      for( i=(width - 1); i>=0; i-- ) {
+        printf( "%d", nib[i].part.exp.set );
+      }
+
+      break;
+
+    default : break;
+
   }
 
 }
@@ -688,7 +723,7 @@ void vector_display( vector* vec ) {
   printf( "Vector => width: %d, suppl: %x\n", vec->width, vec->suppl.all );
 
   if( (vec->width > 0) && (vec->value != NULL) ) {
-    vector_display_nibble( vec->value, vec->width );
+    vector_display_nibble( vec->value, vec->width, vec->suppl.part.type );
   } else {
     printf( "NO DATA" );
   }
@@ -710,29 +745,13 @@ void vector_toggle_count( vector* vec, int* tog01_cnt, int* tog10_cnt ) {
 
   int i;  /* Loop iterator */
 
-  for( i=0; i<vec->width; i++ ) {
-    *tog01_cnt = *tog01_cnt + vec->value[i].part.tog01;
-    *tog10_cnt = *tog10_cnt + vec->value[i].part.tog10;
-  }
+  if( vec->suppl.part.type == VTYPE_SIG ) {
 
-}
+    for( i=0; i<vec->width; i++ ) {
+      *tog01_cnt = *tog01_cnt + vec->value[i].part.sig.tog01;
+      *tog10_cnt = *tog10_cnt + vec->value[i].part.sig.tog10;
+    }
 
-/*!
- \param vec        Pointer to vector to parse.
- \param false_cnt  Number of bits in vector that was set to a value of FALSE.
- \param true_cnt   Number of bits in vector that was set to a value of TRUE.
-
- Walks through specified vector counting the number of FALSE bits that
- are set and the number of TRUE bits that are set.  Adds these values
- to the contents of false_cnt and true_cnt.
-*/
-void vector_logic_count( vector* vec, int* false_cnt, int* true_cnt ) {
-
-  int i;  /* Loop iterator */
-
-  for( i=0; i<vec->width; i++ ) {
-    *false_cnt = *false_cnt + vec->value[i].part.false;
-    *true_cnt  = *true_cnt  + vec->value[i].part.true;
   }
 
 }
@@ -754,12 +773,13 @@ bool vector_set_assigned( vector* vec, int msb, int lsb ) {
 
   assert( vec != NULL );
   assert( (msb - lsb) < vec->width );
+  assert( vec->suppl.part.type == VTYPE_SIG );
 
   for( i=lsb; i<=msb; i++ ) {
-    if( vec->value[i].part.misc == 1 ) {
+    if( vec->value[i].part.sig.misc == 1 ) {
       prev_assigned = TRUE;
     }
-    vec->value[i].part.misc = 1;
+    vec->value[i].part.sig.misc = 1;
   }
 
   return( prev_assigned );
@@ -783,14 +803,18 @@ bool vector_set_assigned( vector* vec, int msb, int lsb ) {
 */
 bool vector_set_value( vector* vec, vec_data* value, int width, int from_idx, int to_idx ) {
 
-  bool      retval = FALSE;       /* Return value for this function */
-  nibble    from_val;             /* Current bit value of value being assigned */
-  nibble    to_val;               /* Current bit value of previous value */
-  int       i;                    /* Loop iterator */
-  vec_data  set_val;              /* Value to set current vec value to */
-  vec_data* vval   = vec->value;  /* Pointer to vector value array */
+  bool      retval = FALSE;  /* Return value for this function */
+  nibble    from_val;        /* Current bit value of value being assigned */
+  nibble    to_val;          /* Current bit value of previous value */
+  int       i;               /* Loop iterator */
+  vec_data  set_val;         /* Value to set current vec value to */
+  vec_data* vval;            /* Pointer to vector value array */
+  nibble    v2st;            /* Value to AND with from value bit if the target is a 2-state value */
 
   assert( vec != NULL );
+
+  vval = vec->value;
+  v2st = vec->suppl.part.is_2state << 1;
 
   /* Verify that index is within range */
   assert( to_idx < vec->width );
@@ -799,77 +823,50 @@ bool vector_set_value( vector* vec, vec_data* value, int width, int from_idx, in
   /* Adjust width to smaller of two values */
   width = (width > (vec->width - to_idx)) ? (vec->width - to_idx) : width;
 
-  for( i=0; i<width; i++ ) {
-
-    set_val  = vval[i + to_idx];
-    from_val = value[i + from_idx].part.value;
-    to_val   = set_val.part.value;
-
-    if( (from_val != to_val) || (set_val.part.set == 0x0) ) {
-
-      if( set_val.part.set == 0x1 ) {
-
-        /* Assign toggle values if necessary */
-  
-        if( (to_val == 0) && (from_val == 1) ) {
-          set_val.part.tog01 = 1;
-        } else if( (to_val == 1) && (from_val == 0) ) {
-          set_val.part.tog10 = 1;
-        }
-
+  switch( vec->suppl.part.type ) {
+    case VTYPE_VAL :
+      for( i=0; i<width; i++ ) {
+        vval[i + to_idx].part.val.value = ((v2st & value[i + from_idx].part.val.value) > 1) ? 0 : value[i + from_idx].part.val.value;
       }
-
-      /* Assign TRUE/FALSE values if necessary */
-      if( from_val == 0 ) {
-        set_val.part.false = 1;
-      } else if( from_val == 1 ) {
-        set_val.part.true  = 1;
-      }
-
-      /* Perform value assignment */
-      set_val.part.set   = 1;
-      set_val.part.value = from_val;
-      vval[i + to_idx]   = set_val;
-
       retval = TRUE;
-
-    }
-
-  }
-
-  return( retval );
-
-}
-
-/*!
- \param vec       Pointer to vector to set value to.
- \param value     New value to set vector value to.
- \param width     Width of new value.
- \param from_idx  Starting bit index of value to start copying.
- \param to_idx    Starting bit index of value to copy to.
-
- \return Returns TRUE if assignment was performed; otherwise, returns FALSE.
-
- Allows the calling function to assign the data values from one vector to another.  This function should only
- be called for assigning vectors that will not be polled for correct toggle and true/false information.
-*/
-bool vector_set_value_only( vector* vec, vec_data* value, int width, int from_idx, int to_idx ) {
-
-  bool retval = FALSE;  /* Return value for this function */
-  int  i;               /* Loop iterator */
-
-  assert( vec != NULL );
-  assert( to_idx < vec->width );
-  assert( to_idx >= 0 );
-
-  /* Adjust width to smaller of two values */
-  width = (width > (vec->width - to_idx)) ? (vec->width - to_idx) : width;
-
-  for( i=0; i<width; i++ ) {
-
-    vec->value[i + to_idx] = value[i + from_idx];
-    retval = TRUE;
-
+      break;
+    case VTYPE_SIG :
+      for( i=0; i<width; i++ ) {
+        set_val  = vval[i + to_idx];
+        from_val = ((v2st & value[i + from_idx].part.val.value) > 1) ? 0 : value[i + from_idx].part.val.value;
+        to_val   = set_val.part.sig.value;
+        if( (from_val != to_val) || (set_val.part.sig.set == 0x0) ) {
+          if( set_val.part.sig.set == 0x1 ) {
+            /* Assign toggle values if necessary */
+            if( (to_val == 0) && (from_val == 1) ) {
+              set_val.part.sig.tog01 = 1;
+            } else if( (to_val == 1) && (from_val == 0) ) {
+              set_val.part.sig.tog10 = 1;
+            }
+          }
+          /* Perform value assignment */
+          set_val.part.sig.set   = 1;
+          set_val.part.sig.value = from_val;
+          vval[i + to_idx]       = set_val;
+          retval = TRUE;
+        }
+      }
+      break;
+    case VTYPE_EXP :
+      for( i=0; i<width; i++ ) {
+        set_val  = vval[i + to_idx];
+        from_val = ((v2st & value[i + from_idx].part.val.value) > 1) ? 0 : value[i + from_idx].part.val.value;
+        to_val   = set_val.part.exp.value;
+        if( (from_val != to_val) || (set_val.part.exp.set == 0x0) ) {
+          /* Perform value assignment */
+          set_val.part.sig.set   = 1;
+          set_val.part.exp.value = from_val;
+          vval[i + to_idx]       = set_val;
+          retval = TRUE;
+        }
+      }
+      break;
+    default : break;
   }
 
   return( retval );
@@ -897,7 +894,7 @@ bool vector_bit_fill( vector* vec, int msb, int lsb ) {
   assert( lsb > 0 ); 
   msb = (msb > vec->width) ? vec->width : msb;
 
-  switch( vec->value[lsb-1].part.value ) {
+  switch( vec->value[lsb-1].part.val.value ) {
     case 0 :  value.all = 0;  break;
     case 1 :  value.all = 0;  break;
     case 2 :  value.all = 2;  break;
@@ -932,7 +929,7 @@ bool vector_is_unknown( vector* vec ) {
   assert( vec->value != NULL );
 
   for( i=0; i<vec->width; i++ ) {
-    val = vec->value[i].part.value;
+    val = vec->value[i].part.val.value;
     if( (val == 0x2) || (val == 0x3) ) {
       unknown = TRUE;
     }
@@ -960,12 +957,12 @@ int vector_to_int( vector* vec ) {
   width = (vec->width > (SIZEOF_INT * 8)) ? 32 : vec->width;
 
   for( i=(width - 1); i>=0; i-- ) {
-    switch( vec->value[i].part.value ) {
+    switch( vec->value[i].part.val.value ) {
       case 0 :  retval = (retval << 1) | 0;  break;
       case 1 :  retval = (retval << 1) | 1;  break;
       default:
         print_output( "Vector converting to integer contains X or Z values", FATAL, __FILE__, __LINE__ );
-        assert( vec->value[i].part.value < 2 );
+        assert( vec->value[i].part.val.value < 2 );
         break;
     }
   }
@@ -973,7 +970,7 @@ int vector_to_int( vector* vec ) {
   /* If the vector is signed, sign-extend the integer */
   if( vec->suppl.part.is_signed == 1 ) {
     for( i=width; i<(SIZEOF_INT * 8); i++ ) {
-      retval = (retval << 1) | vec->value[width-1].part.value;
+      retval = (retval << 1) | vec->value[width-1].part.val.value;
     }
   }
 
@@ -999,7 +996,7 @@ void vector_from_int( vector* vec, int value ) {
   width = (vec->width < (SIZEOF_INT * 8)) ? vec->width : (SIZEOF_INT * 8);
 
   for( i=0; i<width; i++ ) {
-    vec->value[i].part.value = (value & 0x1);
+    vec->value[i].part.val.value = (value & 0x1);
     value >>= 1;
   }
 
@@ -1032,13 +1029,13 @@ void vector_set_static( vector* vec, char* str, int bits_per_char ) {
       if( (*ptr == 'x') || (*ptr == 'X') ) {
         for( i=0; i<bits_per_char; i++ ) {
           if( (i + pos) < vec->width ) { 
-            vec->value[i + pos].part.value = 0x2;
+            vec->value[i + pos].part.val.value = 0x2;
           }
         }
       } else if( (*ptr == 'z') || (*ptr == 'Z') || (*ptr == '?') ) {
         for( i=0; i<bits_per_char; i++ ) {
           if( (i + pos) < vec->width ) { 
-            vec->value[i + pos].part.value = 0x3;
+            vec->value[i + pos].part.val.value = 0x3;
           }
         }
       } else {
@@ -1052,7 +1049,7 @@ void vector_set_static( vector* vec, char* str, int bits_per_char ) {
         }
         for( i=0; i<bits_per_char; i++ ) {
           if( (i + pos) < vec->width ) {
-            vec->value[i + pos].part.value = ((val >> i) & 0x1);
+            vec->value[i + pos].part.val.value = ((val >> i) & 0x1);
           } 
         }
       }
@@ -1094,7 +1091,7 @@ char* vector_to_string( vector* vec ) {
     pos   = 0;
 
     for( i=(vec->width - 1); i>=0; i-- ) {
-      switch( vec->value[i].part.value ) {
+      switch( vec->value[i].part.val.value ) {
         case 0 :  value  = value;           break;
         case 1 :  value |= (1 << (i % 8));  break;
         default:  break;
@@ -1140,7 +1137,7 @@ char* vector_to_string( vector* vec ) {
     pos   = 0;
 
     for( i=(vec->width - 1); i>=0; i-- ) {
-      switch( vec->value[i].part.value ) {
+      switch( vec->value[i].part.val.value ) {
         case 0 :  value = value;                                              break;
         case 1 :  value = (value < 16) ? ((1 << (i%group)) | value) : value;  break;
         case 2 :  value = 16;                                                 break;
@@ -1230,14 +1227,14 @@ vector* vector_from_string( char** str, bool quoted ) {
     } else {
 
       /* Create vector */
-      vec = vector_create( size, TRUE );
+      vec = vector_create( size, VTYPE_VAL, TRUE );
 
       vec->suppl.part.base = QSTRING;
       pos                  = 0;
 
       for( i=(strlen( *str ) - 1); i>=0; i-- ) {
         for( j=0; j<8; j++ ) {
-          vec->value[pos].part.value = ((nibble)((*str)[i]) >> j) & 0x1;
+          vec->value[pos].part.val.value = ((nibble)((*str)[i]) >> j) & 0x1;
           pos++;
         }
       }
@@ -1302,7 +1299,7 @@ vector* vector_from_string( char** str, bool quoted ) {
     } else {
 
       /* Create vector */
-      vec = vector_create( size, TRUE );
+      vec = vector_create( size, VTYPE_VAL, TRUE );
       vec->suppl.part.base = type;
       if( type == DECIMAL ) {
         vector_from_int( vec, atol( value ) );
@@ -1414,23 +1411,23 @@ bool vector_bitwise_op( vector* tgt, vector* src1, vector* src2, nibble* optab )
   nibble   bit1;            /* Current bit value for src1 */
   nibble   bit2;            /* Current bit value for src2 */
 
-  vector_init( &vec, &vecval, 1 );
+  vector_init( &vec, &vecval, 1, VTYPE_VAL );
 
   for( i=0; i<tgt->width; i++ ) {
 
     if( src1->width > i ) {
-      bit1 = src1->value[i].part.value;
+      bit1 = src1->value[i].part.val.value;
     } else {
       bit1 = 0;
     }
 
     if( src2->width > i ) {
-      bit2 = src2->value[i].part.value;
+      bit2 = src2->value[i].part.val.value;
     } else {
       bit2 = 0;
     }
 
-    vec.value[0].part.value = optab[ ((bit1 << 2) | bit2) ];
+    vec.value[0].part.val.value = optab[ ((bit1 << 2) | bit2) ];
     retval |= vector_set_value( tgt, vec.value, 1, 0, i );
     
   }
@@ -1472,13 +1469,13 @@ bool vector_op_compare( vector* tgt, vector* left, vector* right, int comp_type 
   is_signed = (left->suppl.part.is_signed == 1) && (right->suppl.part.is_signed == 1);
 
   /* Initialize lbit/rbit values */
-  if( left->value[left->width-1].part.value < 2 ) {
-    lbit = is_signed ? left->value[left->width-1].part.value : 0;
+  if( left->value[left->width-1].part.val.value < 2 ) {
+    lbit = is_signed ? left->value[left->width-1].part.val.value : 0;
   } else {
     lbit = 2;
   }
-  if( right->value[right->width-1].part.value < 2 ) {
-    rbit = is_signed ? right->value[right->width-1].part.value : 0;
+  if( right->value[right->width-1].part.val.value < 2 ) {
+    rbit = is_signed ? right->value[right->width-1].part.val.value : 0;
   } else {
     rbit = 2;
   }
@@ -1494,11 +1491,11 @@ bool vector_op_compare( vector* tgt, vector* left, vector* right, int comp_type 
   while( (pos >= 0) && !done ) {
 
     if( pos < left->width ) {
-      lbit = left->value[pos].part.value;
+      lbit = left->value[pos].part.val.value;
     }
 
     if( pos < right->width ) {
-      rbit = right->value[pos].part.value;
+      rbit = right->value[pos].part.val.value;
     }
 
     if( comp_type == COMP_CXEQ ) {
@@ -1665,9 +1662,9 @@ bool vector_op_arshift( vector* tgt, vector* left, vector* right ) {
   vec_data unknown;         /* X-value for unknown fill */
   int      i;               /* Loop iterator */
 
-  sign.all        = 0;
-  sign.part.value = left->value[left->width - 1].part.value;
-  unknown.all     = 2;
+  sign.all            = 0;
+  sign.part.val.value = left->value[left->width - 1].part.val.value;
+  unknown.all         = 2;
 
   if( vector_is_unknown( right ) ) {
 
@@ -1716,13 +1713,13 @@ bool vector_op_add( vector* tgt, vector* left, vector* right ) {
   for( i=0; i<tgt->width; i++ ) {
     
     if( i < left->width ) {
-      lbit = left->value[i].part.value;
+      lbit = left->value[i].part.val.value;
     } else {
       lbit = 0;
     }
 
     if( i < right->width ) {
-      rbit = right->value[i].part.value;
+      rbit = right->value[i].part.val.value;
     } else {
       rbit = 0;
     }
@@ -1756,11 +1753,11 @@ bool vector_op_negate( vector* tgt, vector* src ) {
   vector* vec2;            /* Temporary vector holder */
 
   /* Create temp vectors */
-  vec1 = vector_create( src->width, TRUE );
-  vec2 = vector_create( tgt->width, TRUE );
+  vec1 = vector_create( src->width, VTYPE_VAL, TRUE );
+  vec2 = vector_create( tgt->width, VTYPE_VAL, TRUE );
 
   /* Create vector with a value of 1 */
-  vec2->value[0].part.value = 1;
+  vec2->value[0].part.val.value = 1;
 
   /* Perform twos complement inversion on right expression */
   vector_unary_inv( vec1, src );
@@ -1793,7 +1790,7 @@ bool vector_op_subtract( vector* tgt, vector* left, vector* right ) {
   vector* vec;             /* Temporary vector holder */
 
   /* Create temp vectors */
-  vec = vector_create( tgt->width, TRUE );
+  vec = vector_create( tgt->width, VTYPE_VAL, TRUE );
 
   /* Negate the value on the right */
   vector_op_negate( vec, right );
@@ -1833,21 +1830,21 @@ bool vector_op_multiply( vector* tgt, vector* left, vector* right ) {
   int      i;               /* Loop iterator */
 
   /* Initialize temporary vectors */
-  vector_init( &lcomp, &lcomp_val, 1 );
-  vector_init( &rcomp, &rcomp_val, 1 );
-  vector_init( &vec,   vec_val,    32 );
+  vector_init( &lcomp, &lcomp_val, 1,  VTYPE_VAL );
+  vector_init( &rcomp, &rcomp_val, 1,  VTYPE_VAL );
+  vector_init( &vec,   vec_val,    32, VTYPE_VAL );
 
   vector_unary_op( &lcomp, left,  xor_optab );
   vector_unary_op( &rcomp, right, xor_optab );
 
   /* Perform 4-state multiplication */
-  if( (lcomp.value[0].part.value == 2) && (rcomp.value[0].part.value == 2) ) {
+  if( (lcomp.value[0].part.val.value == 2) && (rcomp.value[0].part.val.value == 2) ) {
 
     for( i=0; i<vec.width; i++ ) {
-      vec.value[i].part.value = 2;
+      vec.value[i].part.val.value = 2;
     }
 
-  } else if( (lcomp.value[0].part.value != 2) && (rcomp.value[0].part.value== 2) ) {
+  } else if( (lcomp.value[0].part.val.value != 2) && (rcomp.value[0].part.val.value== 2) ) {
 
     if( vector_to_int( left ) == 0 ) {
       vector_from_int( &vec, 0 );
@@ -1855,11 +1852,11 @@ bool vector_op_multiply( vector* tgt, vector* left, vector* right ) {
       vector_set_value( &vec, right->value, right->width, 0, 0 );
     } else {
       for( i=0; i<vec.width; i++ ) {
-        vec.value[i].part.value = 2;
+        vec.value[i].part.val.value = 2;
       }
     }
 
-  } else if( (lcomp.value[0].part.value == 2) && (rcomp.value[0].part.value != 2) ) {
+  } else if( (lcomp.value[0].part.val.value == 2) && (rcomp.value[0].part.val.value != 2) ) {
 
     if( vector_to_int( right ) == 0 ) {
       vector_from_int( &vec, 0 );
@@ -1867,7 +1864,7 @@ bool vector_op_multiply( vector* tgt, vector* left, vector* right ) {
       vector_set_value( &vec, left->value, left->width, 0, 0 );
     } else {
       for( i=0; i<vec.width; i++ ) {
-        vec.value[i].part.value = 2;
+        vec.value[i].part.val.value = 2;
       }
     }
 
@@ -1900,8 +1897,8 @@ bool vector_op_inc( vector* tgt ) {
   vector_copy( tgt, &tmp1 );
 
   /* Create a vector containing the value of 1 */
-  tmp2 = vector_create( tgt->width, TRUE );
-  tmp2->value[0].part.value = 1;
+  tmp2 = vector_create( tgt->width, VTYPE_VAL, TRUE );
+  tmp2->value[0].part.val.value = 1;
   
   /* Finally add the values and assign them back to the target */
   vector_op_add( tgt, tmp1, tmp2 );
@@ -1926,8 +1923,8 @@ bool vector_op_dec( vector* tgt ) {
   vector_copy( tgt, &tmp1 );
 
   /* Create a vector containing the value of 1 */
-  tmp2 = vector_create( tgt->width, TRUE );
-  tmp2->value[0].part.value = 1;
+  tmp2 = vector_create( tgt->width, VTYPE_VAL, TRUE );
+  tmp2->value[0].part.val.value = 1;
 
   /* Finally add the values and assign them back to the target */
   vector_op_subtract( tgt, tmp1, tmp2 );
@@ -1953,18 +1950,18 @@ bool vector_unary_inv( vector* tgt, vector* src ) {
   int      i;               /* Loop iterator */
   int      swidth;          /* Smallest width between tgt and src */
 
-  vector_init( &vec, &vec_val, 1 );
+  vector_init( &vec, &vec_val, 1, VTYPE_VAL );
 
   swidth = (tgt->width < src->width) ? tgt->width : src->width;
 
   for( i=0; i<swidth; i++ ) {
 
-    bit = src->value[i].part.value;
+    bit = src->value[i].part.val.value;
 
     switch( bit ) {
-      case 0  :  vec.value[0].part.value = 1;  break;
-      case 1  :  vec.value[0].part.value = 0;  break;
-      default :  vec.value[0].part.value = 2;  break;
+      case 0  :  vec.value[0].part.val.value = 1;  break;
+      case 1  :  vec.value[0].part.val.value = 0;  break;
+      default :  vec.value[0].part.val.value = 2;  break;
     }
     retval |= vector_set_value( tgt, vec.value, 1, 0, i );
 
@@ -2000,19 +1997,19 @@ bool vector_unary_op( vector* tgt, vector* src, nibble* optab ) {
 
   } else {
 
-    vector_init( &vec, &vec_val, 1 );
+    vector_init( &vec, &vec_val, 1, VTYPE_VAL );
 
     assert( src != NULL );
     assert( src->value != NULL );
 
-    uval = src->value[0].part.value;
+    uval = src->value[0].part.val.value;
 
     for( i=1; i<src->width; i++ ) {
-      bit  = src->value[i].part.value;
+      bit  = src->value[i].part.val.value;
       uval = optab[ ((uval << 2) | bit) ]; 
     }
 
-    vec.value[0].part.value = uval;
+    vec.value[0].part.val.value = uval;
     retval = vector_set_value( tgt, vec.value, 1, 0, 0 );
 
   }
@@ -2034,7 +2031,7 @@ bool vector_unary_not( vector* tgt, vector* src ) {
   vector   vec;      /* Temporary vector value */
   vec_data vec_val;  /* Temporary value */
 
-  vector_init( &vec, &vec_val, 1 );
+  vector_init( &vec, &vec_val, 1, VTYPE_VAL );
   vector_unary_op( &vec, src, or_optab );
 
   return( vector_unary_inv( tgt, &vec ) );
@@ -2071,6 +2068,18 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.78  2006/08/20 03:21:00  phase1geo
+ Adding support for +=, -=, *=, /=, %=, &=, |=, ^=, <<=, >>=, <<<=, >>>=, ++
+ and -- operators.  The op-and-assign operators are currently good for
+ simulation and code generation purposes but still need work in the comb.c
+ file for proper combinational logic underline and reporting support.  The
+ increment and decrement operations should be fully supported with the exception
+ of their use in FOR loops (I'm not sure if this is supported by SystemVerilog
+ or not yet).  Also started adding support for delayed assignments; however, I
+ need to rework this completely as it currently causes segfaults.  Added lots of
+ new diagnostics to verify this new functionality and updated regression for
+ these changes.  Full IV regression now passes.
+
  Revision 1.77  2006/07/13 04:35:40  phase1geo
  Fixing problem with unary inversion and logical not.  Updated unary1 failures
  as a result.  Still need to run full regression before considering this fully fixed.
