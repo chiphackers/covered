@@ -1646,7 +1646,7 @@ expr_primary
     }
   | identifier index_expr
     {
-      if( (ignore_mode == 0) && ($1 != NULL) && ($2 != NULL) && !lhs_mode ) {
+      if( (ignore_mode == 0) && ($1 != NULL) && ($2 != NULL) ) {
         db_bind_expr_tree( $2, $1 );
         $2->line = @1.first_line;
         $2->col  = ((@1.first_column & 0xffff) << 16) | ($2->col & 0xffff);
