@@ -752,7 +752,7 @@ typedef enum exp_op_type_e {
 #define EXPR_IS_STATIC(x)        exp_op_info[x->op].suppl.is_static
 
 /*!
- Returns a value of true if the specified expression ks considered a combination expression by
+ Returns a value of true if the specified expression is considered a combination expression by
  the combinational logic report generator.
 */
 #define EXPR_IS_COMB(x)          ((exp_op_info[x->op].suppl.is_comb > 0) && \
@@ -2122,6 +2122,14 @@ struct enum_item_s {
 
 /*
  $Log$
+ Revision 1.229  2006/09/11 22:27:55  phase1geo
+ Starting to work on supporting bitwise coverage.  Moving bits around in supplemental
+ fields to allow this to work.  Full regression has been updated for the current changes
+ though this feature is still not fully implemented at this time.  Also added parsing support
+ for SystemVerilog program blocks (ignored) and final blocks (not handled properly at this
+ time).  Also added lexer support for the return, void, continue, break, final, program and
+ endprogram SystemVerilog keywords.  Checkpointing work.
+
  Revision 1.228  2006/09/05 21:00:44  phase1geo
  Fixing bug in removing statements that are generate items.  Also added parsing
  support for multi-dimensional array accessing (no functionality here to support

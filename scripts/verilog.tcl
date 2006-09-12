@@ -227,8 +227,9 @@ proc verilog_highlight_keywords {tb color} {
                            weak1 while wire wor xnor xor]
   set v2001_keywords [list automatic cell config design endconfig endgenerate generate genvar instance liblist library localparam \
                            noshowcancelled pulsestyle_onevent pulsestyle_ondetect showcancelled use]
-  set sv_keywords    [list always_comb always_ff always_latch assert bool bit byte char cover do endproperty endsequence enum int logic \
-                           longint packed priority property sequence shortint struct typedef union unique unsigned]
+  set sv_keywords    [list always_comb always_ff always_latch assert bool bit break byte char continue cover do endprogram endproperty \
+                           endsequence enum final int logic longint packed priority program property return sequence shortint struct \
+                           typedef union unique unsigned void]
   set ilist    ""
 
   # Create full list based on user-specified generation
