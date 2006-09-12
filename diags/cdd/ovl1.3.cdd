@@ -7,118 +7,118 @@
 1 reset_n 0 4 3000a 1 1 102
 1 a 0 5 3000a 4 1 ffaa
 3 0 clock_gen main.clkgen ovl1.3.v 35 44
-2 1 40 100013 1 0 20004 0 0 1 4 0
+2 1 40 100013 1 0 20004 0 0 1 4 100
 2 2 40 8000c 0 1 400 0 0 clock
 2 3 40 80013 1 37 1006 1 2
 2 4 41 1c0020 31 1 1c 0 0 clock
-2 5 41 1b001b 31 1b 2002c 4 0 1 2 2
+2 5 41 1b001b 31 1b 2002c 4 0 1 2 1102
 2 6 41 130017 0 1 400 0 0 clock
 2 7 41 130020 31 37 602e 5 6
-2 8 41 110011 1 0 20008 0 0 32 64 1 0 0 0 0 0 0 0
-2 9 41 110011 1 0 20008 0 0 32 64 55 55 55 55 55 55 55 55
+2 8 41 110011 1 0 20008 0 0 32 64 1e01 f00 f00 f00 f00 f00 f00 f00
+2 9 41 110011 1 0 20008 0 0 32 64 f055 f055 f055 f055 f055 f055 f055 f055
 2 10 41 100011 63 2c 2000a 8 9 32 2 aa aa aa aa aa aa aa aa
 1 clock 0 36 81000d 1 1 1102
 4 7 10 10
 4 10 7 0
 4 3 10 10
 3 0 assert_zero_one_hot main.foo ./ovl/assert_zero_one_hot.vlib 6 26
-2 11 5 180018 1 0 20004 0 0 32 64 0 0 0 0 0 0 0 0
+2 11 5 180018 1 0 20004 0 0 32 64 f00 f00 f00 f00 f00 f00 f00 f00
 2 12 5 a0014 0 1 400 0 0 error_count
 2 13 5 a0018 1 37 1006 11 12
-2 14 73 180018 1 0 20004 0 0 32 64 0 0 0 0 0 0 0 0
+2 14 73 180018 1 0 20004 0 0 32 64 f00 f00 f00 f00 f00 f00 f00 f00
 2 15 73 a0014 0 1 400 0 0 cover_count
 2 16 73 a0018 1 37 1006 14 15
-2 17 13 3e0041 1 0 20008 0 0 1 4 1
-2 18 13 37003a 1 0 20004 0 0 1 4 0
-2 19 13 350035 1 0 20008 0 0 32 64 1 0 0 0 0 0 0 0
+2 17 13 3e0041 1 0 20008 0 0 1 4 1001
+2 18 13 37003a 1 0 20004 0 0 1 4 100
+2 19 13 350035 1 0 20008 0 0 32 64 1e01 f00 f00 f00 f00 f00 f00 f00
 2 20 13 2f0033 1 32 8 0 0 width
-2 21 13 2f0035 1 7 20208 19 20 32 2 aa aa aa aa aa aa aa aa
-2 22 13 2e003c 1 25 20104 18 21 3 2 2a
-2 23 13 2e0041 1 31 20088 17 22 4 2 aa
-2 24 13 2d0042 1 26 20008 23 0 4 2 aa
+2 21 13 2f0035 1 7 20208 19 20 32 2 1aaa faa faa faa faa faa faa faa
+2 22 13 2e003c 1 25 20104 18 21 3 2 72a
+2 23 13 2e0041 1 31 20088 17 22 4 2 1eaa
+2 24 13 2d0042 1 26 20008 23 0 4 2 1eaa
 2 25 13 210029 6 1 c 0 0 test_expr
-2 26 13 210042 7 7 2028c 24 25 4 2 aa
+2 26 13 210042 7 7 2028c 24 25 4 2 1eaa
 2 27 13 13001d 0 1 400 0 0 test_expr_1
 2 28 13 130042 7 36 f00e 26 27
-2 29 44 230026 1 0 20004 0 0 1 4 0
+2 29 44 230026 1 0 20004 0 0 1 4 100
 2 30 44 1d0021 1 32 8 0 0 width
-2 31 44 1c0028 1 25 20104 29 30 4 2 aa
+2 31 44 1c0028 1 25 20104 29 30 4 2 faa
 2 32 44 40013 0 1 400 0 0 one_hots_checked
 2 33 44 40028 1 37 1006 31 32
-2 34 45 230026 1 0 20004 0 0 1 4 0
+2 34 45 230026 1 0 20004 0 0 1 4 100
 2 35 45 1d0021 1 32 8 0 0 width
-2 36 45 1c0028 1 25 20104 34 35 4 2 aa
+2 36 45 1c0028 1 25 20104 34 35 4 2 faa
 2 37 45 40018 0 1 400 0 0 prev_one_hots_checked
 2 38 45 40028 1 37 6 36 37
-2 39 52 14002d 1 0 20008 0 0 192 16 10 14 11 14 4 15 11 14 14 15 55 14 5 14 0 4 11 14 15 14 54 14 1 14 40 14 5 14 55 11 4 15 0 15 40 15 11 14 55 11 10 15 5 15 11 14 10 15
+2 39 52 14002d 1 0 20008 0 0 192 16 4b10 6914 5a11 6914 2d04 7815 5a11 6914 6914 7815 f055 6914 3c05 6914 f00 2d04 5a11 6914 7815 6914 e154 6914 1e01 6914 8740 6914 3c05 6914 f055 5a11 2d04 7815 f00 7815 8740 7815 5a11 6914 f055 5a11 4b10 7815 3c05 7815 5a11 6914 4b10 7815
 2 40 52 14002d 1 47 8 39 0 ovl_cover_t.cvr_msg
-2 41 52 8002f 6 3b 2600a 0 40 512 2 aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa ovl_cover_t
+2 41 52 8002f 6 3b 2600a 0 40 512 2 11aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa ovl_cover_t
 2 42 51 170024 6 1 c 0 0 prev_test_expr
 2 43 51 a0012 6 1 c 0 0 test_expr
-2 44 51 a0024 7 15 202cc 42 43 1 2 2
+2 44 51 a0024 7 15 202cc 42 43 1 2 1102
 2 45 51 60025 13 39 e 44 0
 2 46 54 180020 6 1 c 0 0 test_expr
 2 47 54 60013 0 1 400 0 0 prev_test_expr
 2 48 54 60020 13 38 e 46 47
-2 49 57 140030 1 0 20008 0 0 216 16 10 14 11 14 4 15 11 14 14 15 55 14 5 14 0 4 5 15 55 14 4 15 11 14 44 15 55 11 50 14 50 14 1 14 55 11 4 15 0 15 40 15 11 14 55 11 10 15 5 15 11 14 10 15
+2 49 57 140030 1 0 20008 0 0 216 16 4b10 6914 5a11 6914 2d04 7815 5a11 6914 6914 7815 f055 6914 3c05 6914 f00 2d04 3c05 7815 f055 6914 2d04 7815 5a11 6914 a544 7815 f055 5a11 c350 6914 c350 6914 1e01 6914 f055 5a11 2d04 7815 f00 7815 8740 7815 5a11 6914 f055 5a11 4b10 7815 3c05 7815 5a11 6914 4b10 7815
 2 50 57 140030 1 47 8 49 0 ovl_cover_t.cvr_msg
-2 51 57 80032 2 3b 2600a 0 50 512 2 aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa ovl_cover_t
-2 52 56 410044 1 0 20004 0 0 1 4 0
+2 51 57 80032 2 3b 2600a 0 50 512 2 11aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa ovl_cover_t
+2 52 56 410044 1 0 20004 0 0 1 4 100
 2 53 56 3b003f 1 32 8 0 0 width
-2 54 56 3a0046 1 25 20104 52 53 4 2 aa
+2 54 56 3a0046 1 25 20104 52 53 4 2 faa
 2 55 56 2d0035 6 1 c 0 0 test_expr
-2 56 56 2d0046 6 11 2014c 54 55 1 2 2
-2 57 56 230026 1 0 20004 0 0 1 4 0
+2 56 56 2d0046 6 11 2014c 54 55 1 2 1102
+2 57 56 230026 1 0 20004 0 0 1 4 100
 2 58 56 1d0021 1 32 8 0 0 width
-2 59 56 1c0028 1 25 20104 57 58 4 2 aa
+2 59 56 1c0028 1 25 20104 57 58 4 2 faa
 2 60 56 a0017 6 1 c 0 0 prev_test_expr
-2 61 56 a0028 6 15 2014c 59 60 1 2 2
-2 62 56 a0046 7 18 2038c 56 61 1 2 2
+2 61 56 a0028 6 15 2014c 59 60 1 2 1102
+2 62 56 a0046 7 18 2038c 56 61 1 2 1102
 2 63 56 60047 13 39 e 62 0
 2 64 62 310039 6 1 c 0 0 test_expr
 2 65 62 1e002d 4 1 8 0 0 one_hots_checked
-2 66 62 1e0039 6 9 20308 64 65 4 2 aa
+2 66 62 1e0039 6 9 20308 64 65 4 2 ffaa
 2 67 62 a0019 0 1 400 0 0 one_hots_checked
 2 68 62 a0039 13 38 600a 66 67
-2 69 61 300033 1 0 20004 0 0 1 4 0
+2 69 61 300033 1 0 20004 0 0 1 4 100
 2 70 61 2a002e 1 32 8 0 0 width
-2 71 61 290035 1 25 20104 69 70 4 2 aa
+2 71 61 290035 1 25 20104 69 70 4 2 faa
 2 72 61 190023 6 1 c 0 0 test_expr_1
 2 73 61 d0015 6 1 c 0 0 test_expr
-2 74 61 d0023 6 8 20384 72 73 4 2 aa
-2 75 61 c0035 6 11 20048 71 74 1 2 2
+2 74 61 d0023 6 8 20384 72 73 4 2 ffaa
+2 75 61 c0035 6 11 20048 71 74 1 2 1002
 2 76 61 80036 13 39 400a 75 0
-2 77 60 2a002d 1 0 20004 0 0 1 4 0
+2 77 60 2a002d 1 0 20004 0 0 1 4 100
 2 78 60 240028 1 32 8 0 0 width
-2 79 60 23002f 1 25 20104 77 78 4 2 aa
+2 79 60 23002f 1 25 20104 77 78 4 2 faa
 2 80 60 17001f 6 1 c 0 0 test_expr
 2 81 60 b0013 6 1 c 0 0 test_expr
-2 82 60 b001f 6 2 20244 80 81 4 2 aa
-2 83 60 a002f 6 11 20048 79 82 1 2 2
+2 82 60 b001f 6 2 20244 80 81 4 2 faa
+2 83 60 a002f 6 11 20048 79 82 1 2 1002
 2 84 60 60030 13 39 a 83 0
 2 85 66 1f002e 4 1 8 0 0 one_hots_checked
 2 86 66 6001a 0 1 400 0 0 prev_one_hots_checked
 2 87 66 6002e 13 38 a 85 86
-2 88 70 140031 1 0 20008 0 0 224 16 10 14 11 14 4 15 11 14 14 15 55 14 5 14 0 4 10 14 11 14 45 14 5 14 11 14 40 14 5 14 55 11 5 15 10 15 55 14 40 14 55 11 11 14 54 14 55 14 55 11 50 14 50 14 1 14
+2 88 70 140031 1 0 20008 0 0 224 16 4b10 6914 5a11 6914 2d04 7815 5a11 6914 6914 7815 f055 6914 3c05 6914 f00 2d04 4b10 6914 5a11 6914 b445 6914 3c05 6914 5a11 6914 8740 6914 3c05 6914 f055 5a11 3c05 7815 4b10 7815 f055 6914 8740 6914 f055 5a11 5a11 6914 e154 6914 f055 6914 f055 5a11 c350 6914 c350 6914 1e01 6914
 2 89 70 140031 1 47 8 88 0 ovl_cover_t.cvr_msg
-2 90 70 80033 2 3b 2600a 0 89 512 2 aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa ovl_cover_t
-2 91 69 27002a 1 0 20008 0 0 1 4 1
+2 90 70 80033 2 3b 2600a 0 89 512 2 11aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa ovl_cover_t
+2 91 69 27002a 1 0 20008 0 0 1 4 1001
 2 92 69 210025 1 32 8 0 0 width
-2 93 69 20002c 1 25 20208 91 92 4 2 aa
+2 93 69 20002c 1 25 20208 91 92 4 2 f0aa
 2 94 69 c001b 4 1 8 0 0 one_hots_checked
-2 95 69 c002c 4 11 2020c 93 94 1 2 2
+2 95 69 c002c 4 11 2020c 93 94 1 2 1102
 2 96 68 250034 4 1 8 0 0 one_hots_checked
 2 97 68 c0020 5 1 c 0 0 prev_one_hots_checked
-2 98 68 c0034 6 15 2028c 96 97 1 2 2
-2 99 68 b002d 6 18 203cc 95 98 1 2 2
+2 98 68 c0034 6 15 2028c 96 97 1 2 1102
+2 99 68 b002d 6 18 203cc 95 98 1 2 1102
 2 100 68 6002f 13 39 400e 99 0
-2 101 49 2d002d 1 0 20004 0 0 32 64 0 0 0 0 0 0 0 0
+2 101 49 2d002d 1 0 20004 0 0 32 64 f00 f00 f00 f00 f00 f00 f00 f00
 2 102 49 1b0028 1 32 8 0 0 coverage_level
-2 103 49 1b002d 1 15 20108 101 102 1 2 2
-2 104 49 130016 1 0 20004 0 0 1 4 0
+2 103 49 1b002d 1 15 20108 101 102 1 2 1002
+2 104 49 130016 1 0 20004 0 0 1 4 100
 2 105 49 8000e 2 1 c 0 0 reset_n
-2 106 49 80016 2 15 2014c 104 105 1 2 2
-2 107 49 8002d 2 18 2028c 103 106 1 2 2
+2 106 49 80016 2 15 2014c 104 105 1 2 1102
+2 107 49 8002d 2 18 2028c 103 106 1 2 102
 2 108 49 4002e 18 39 400e 107 0
 2 109 48 130015 31 1 c 0 0 clk
 2 110 48 b0011 0 2a 20000 0 0 1 2 2
@@ -157,21 +157,21 @@
 4 108 45 111
 4 111 108 0
 3 3 assert_zero_one_hot.ovl_cover_t main.foo.ovl_cover_t std_ovl_task.h 75 94
-2 112 78 1f001f 1 0 20008 0 0 32 64 1 0 0 0 0 0 0 0
+2 112 78 1f001f 1 0 20008 0 0 32 64 1e01 f00 f00 f00 f00 f00 f00 f00
 2 113 78 11001b 4 1 1c 0 0 cover_count
-2 114 78 11001f 4 6 20298 112 113 32 66 aa aa aa aa aa aa aa aa
+2 114 78 11001f 4 6 20298 112 113 32 66 1eaa faa faa faa faa faa faa faa
 2 115 78 3000d 0 1 400 0 0 cover_count
 2 116 78 3001f 5 37 1102a 114 115
 2 117 0 0 5 4e 20002 0 0 1 2 2
 2 118 0 0 0 4e 20002 0 0 1 2 2
 2 119 87 0 0 30 20002 0 0 1 2 2
-2 120 86 f0012 1 0 20008 0 0 1 4 1
-2 121 86 c000d 1 0 20008 0 0 32 64 0 4 0 0 0 0 0 0
-2 122 86 b0014 1 25 20208 120 121 32 2 aa aa aa aa aa aa aa aa
+2 120 86 f0012 1 0 20008 0 0 1 4 1001
+2 121 86 c000d 1 0 20008 0 0 32 64 f00 2d04 f00 f00 f00 f00 f00 f00
+2 122 86 b0014 1 25 20208 120 121 32 2 f0aa f0aa f0aa f0aa f0aa f0aa f0aa f0aa
 2 123 84 f001c a 32 a 0 0 coverage_level
-2 124 86 0 5 2d 2020a 122 123 1 2 2
-2 125 85 b000b 1 0 20004 0 0 32 64 0 0 0 0 0 0 0 0
-2 126 85 0 5 2d 20106 125 123 1 2 2
+2 124 86 0 5 2d 2020a 122 123 1 2 1002
+2 125 85 b000b 1 0 20004 0 0 32 64 f00 f00 f00 f00 f00 f00 f00 f00
+2 126 85 0 5 2d 20106 125 123 1 2 102
 1 cvr_msg 0 76 800015 512 1 aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa 53aa 1aa 2aaa aa d1aa 1aa 26aa aa dfaa 1aa 3faa 21aa fcaa 12aa 3daa 32aa 23aa 10aa 8faa 20aa daaa 1aa f0aa 13aa 7baa 22aa 24aa 10aa 1baa 21aa bbaa 11aa c0aa 2aa 81aa aa 80aa 1aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa
 4 118 0 0
 4 119 118 0

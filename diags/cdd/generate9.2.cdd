@@ -2,10 +2,10 @@
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd generate9.2.vcd -o generate9.2.cdd -v generate9.2.v
 3 0 $root $root NA 0 0
 3 0 main main generate9.2.v 1 36
-2 1 25 50008 1 0 20004 0 0 1 4 0
+2 1 25 50008 1 0 20004 0 0 1 4 100
 2 2 25 10001 0 1 400 0 0 y
 2 3 25 10008 1 37 1006 1 2
-2 4 26 f0012 1 0 20004 0 0 1 4 0
+2 4 26 f0012 1 0 20004 0 0 1 4 100
 2 5 26 f0012 1 47 4 4 0 foo_func.a
 2 6 26 50014 1 3a 4 0 5 foo_func
 2 7 26 10001 0 1 400 0 0 y

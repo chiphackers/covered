@@ -2,12 +2,12 @@
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd param6.1.vcd -o param6.1.cdd -v param6.1.v
 3 0 $root $root NA 0 0
 3 0 main main param6.1.v 1 19
-2 1 9 1f001f 1 0 20008 0 0 32 64 1 0 0 0 0 0 0 0
+2 1 9 1f001f 1 0 20008 0 0 32 64 1e01 f00 f00 f00 f00 f00 f00 f00
 2 2 9 19001d 1 32 8 0 0 SIZE0
-2 3 9 19001f 1 6 20208 1 2 32 2 aa aa aa aa aa aa aa aa
+2 3 9 19001f 1 6 20208 1 2 32 2 eaa faa faa faa faa faa faa faa
 2 4 9 130017 1 32 8 0 0 SIZE0
 2 5 9 d0011 1 32 8 0 0 SIZE1
-2 6 9 d0017 2 6 20208 4 5 32 2 aa aa aa aa aa aa aa aa
+2 6 9 d0017 2 6 20208 4 5 32 2 1caa faa faa faa faa faa faa faa
 2 7 9 b0020 2 24 208 3 6 b
 2 8 9 70007 0 1 400 0 0 a
 2 9 9 70020 2 35 f00a 7 8

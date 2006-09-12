@@ -2,11 +2,11 @@
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd include1.1.vcd -o include1.1.cdd -v include1.1.v -I ./include
 3 0 $root $root NA 0 0
 3 0 main main include1.1.v 1 21
-2 1 8 160019 1 0 20008 0 0 1 4 1
-2 2 8 f0012 1 0 20004 0 0 1 4 0
-2 3 8 b0012 4 1a 2008c 1 2 1 2 2
+2 1 8 160019 1 0 20008 0 0 1 4 1001
+2 2 8 f0012 1 0 20004 0 0 1 4 100
+2 3 8 b0012 4 1a 2008c 1 2 1 2 1102
 2 4 8 b000b 3 1 c 0 0 b
-2 5 8 b0019 4 19 2018c 3 4 1 2 2
+2 5 8 b0019 4 19 2018c 3 4 1 2 1102
 2 6 8 70007 0 1 400 0 0 a
 2 7 8 70019 4 35 f00e 5 6
 1 a 0 5 30008 1 1 1002
