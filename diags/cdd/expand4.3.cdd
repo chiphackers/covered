@@ -2,8 +2,8 @@
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd expand4.3.vcd -o expand4.3.cdd -v expand4.3.v
 3 0 $root $root NA 0 0
 3 0 main main expand4.3.v 1 19
-2 1 6 e0011 1 0 20004 0 0 1 4 100
-2 2 6 c000c 1 0 20008 0 0 32 64 4b10 f00 f00 f00 f00 f00 f00 f00
+2 1 6 e0011 1 0 20004 0 0 1 4 0
+2 2 6 c000c 1 0 20008 0 0 32 64 10 0 0 0 0 0 0 0
 2 3 6 b0013 1 25 20104 1 2 4 2 faa
 2 4 6 70007 0 1 400 0 0 a
 2 5 6 70013 1 35 f006 3 4

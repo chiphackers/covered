@@ -2,7 +2,7 @@
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd long_sig.vcd -o long_sig.cdd -v long_sig.v
 3 0 $root $root NA 0 0
 3 0 main main long_sig.v 1 18
-2 1 7 b000e 1 0 20004 0 0 1 4 100
+2 1 7 b000e 1 0 20004 0 0 1 4 0
 2 2 7 70007 0 1 400 0 0 a
 2 3 7 7000e 1 35 f006 1 2
 1 a 0 3 30010 1 1 2

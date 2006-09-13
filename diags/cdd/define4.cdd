@@ -2,9 +2,9 @@
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd define4.vcd -o define4.cdd -I ./include -v define4.v
 3 0 $root $root NA 0 0
 3 0 main main define4.v 10 25
-2 1 13 100010 1 0 20008 0 0 32 64 1e01 f00 f00 f00 f00 f00 f00 f00
+2 1 13 100010 1 0 20008 0 0 32 64 1 0 0 0 0 0 0 0
 2 2 13 c000c 2 1 c 0 0 b
-2 3 13 c0010 3 8 2028c 1 2 1 2 102
+2 3 13 c0010 3 8 2028c 1 2 1 2 10102
 2 4 13 80008 0 1 400 0 0 a
 2 5 13 80010 3 36 f00e 3 4
 1 b 0 12 30008 1 1 102

@@ -2,8 +2,8 @@
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd port3.vcd -o port3.cdd -v port3.v
 3 0 $root $root NA 0 0
 3 0 main main port3.v 1 21
-2 1 6 160019 1 0 20008 0 0 1 4 1001
-2 2 6 100013 1 0 20004 0 0 1 4 100
+2 1 6 160019 1 0 20008 0 0 1 4 1
+2 2 6 100013 1 0 20004 0 0 1 4 0
 2 3 6 100019 1 31 20088 1 2 2 2 120a
 2 4 6 f001a 1 26 20008 3 0 2 2 120a
 2 5 6 f001a 1 47 8 4 0 foo_func.b

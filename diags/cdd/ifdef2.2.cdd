@@ -2,8 +2,8 @@
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd ifdef2.2.vcd -o ifdef2.2.cdd -v ifdef2.2.v
 3 0 $root $root NA 0 0
 3 0 main main ifdef2.2.v 1 26
-2 1 14 160019 1 0 20004 0 0 1 4 100
-2 2 14 f0012 1 0 20008 0 0 1 4 1001
+2 1 14 160019 1 0 20004 0 0 1 4 0
+2 2 14 f0012 1 0 20008 0 0 1 4 1
 2 3 14 b0012 3 1a 2010c 1 2 1 2 1102
 2 4 14 b000b 2 1 c 0 0 b
 2 5 14 b0019 3 19 2024c 3 4 1 2 1102
