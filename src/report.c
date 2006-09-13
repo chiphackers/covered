@@ -120,6 +120,12 @@ bool report_covered      = FALSE;
 bool report_gui          = FALSE;
 
 /*!
+ If set to a boolean value of TRUE, displays all vector combinational logic on a bitwise
+ basis.
+*/
+bool report_bitwise      = FALSE;
+
+/*!
  If set to a boolean value of TRUE, displays combination logic output in a by-line-width
  format (instead of the user specified Verilog source format).
 */
@@ -194,6 +200,8 @@ void report_usage() {
   printf( "                               expressions are output in the format that the user specified in the\n" );
   printf( "                               Verilog source.\n" );
   printf( "      -s                      Suppress outputting modules/instances that do not contain any coverage metrics.\n" );
+  printf( "      -b                      If combinational logic verbose output is reported and the expression is a\n" );
+  printf( "                               vector operation, this option outputs the coverage information on a bitwise basis.\n" );
   printf( "\n" );
 
 }
@@ -348,6 +356,10 @@ bool report_parse_args( int argc, int last_arg, char** argv ) {
     } else if( strncmp( "-s", argv[i], 2 ) == 0 ) {
 
       flag_suppress_empty_funits = TRUE;
+
+    } else if( strncmp( "-b", argv[i], 2 ) == 0 ) {
+
+      report_bitwise = TRUE;
 
     } else if( (i + 1) == argc ) {
 
@@ -865,6 +877,9 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.72  2006/09/01 23:06:02  phase1geo
+ Fixing regressions per latest round of changes.  Full regression now passes.
+
  Revision 1.71  2006/09/01 04:06:37  phase1geo
  Added code to support more than one instance tree.  Currently, I am seeing
  quite a few memory errors that are causing some major problems at the moment.

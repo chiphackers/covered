@@ -27,7 +27,7 @@
  expression values reached.
  
  \par
- Every expression contains two possible expression values during simulation:  0 and 1 (or 1+).
+ Every expression contains two possible expression values during simulation:  0 and 1.
  If an expression evaluated to some unknown value, this is not recorded by Covered.
  If an expression has evaluated to 0, the WAS_FALSE bit of the expression's supplemental
  field will be set.  If the expression has evaluated to 1 or a value greater than 1, the
@@ -40,8 +40,8 @@
 
  \par
  For combinational logic, four other expression supplemental bits are used to determine which logical
- combinations of its two children have occurred during simulation.  These four bits are EVAL_00, EVAL_01,
- EVAL_10, and EVAL_11.  If the left and right expressions simultaneously evaluated to 0 during simulation,
+ combinations of its two children have occurred during simulation.  These four bits are EVAL_A, EVAL_B,
+ EVAL_C, and EVAL_D.  If the left and right expressions simultaneously evaluated to 0 during simulation,
  the EVAL_00 bit is set.  If the left and right expressions simultaneously evaluated to 0 and 1, respectively,
  the EVAL_01 bit is set.  If the left and right expressions simultaneously evaluated to 1 and 0, respectively,
  the EVAL_10 bit is set.  If the left and right expression simultaneously evaluated to 1 during simulation,
@@ -79,6 +79,7 @@ extern funit_link*    funit_head;
 extern bool           report_covered;
 extern unsigned int   report_comb_depth;
 extern bool           report_instance;
+extern bool           report_bitwise;
 extern char**         leading_hierarchies;
 extern int            leading_hier_num;
 extern bool           leading_hiers_differ;
@@ -311,21 +312,55 @@ void combination_get_tree_stats( expression* exp, int* ulid, unsigned int curr_d
             if( !expression_is_static_only( exp ) ) {
               if( EXPR_IS_COMB( exp ) == 1 ) {
                 if( exp_op_info[exp->op].suppl.is_comb == AND_COMB ) {
-                  tot_num = 3;
-                  num_hit = ESUPPL_WAS_FALSE( exp->left->suppl )  + 
-                            ESUPPL_WAS_FALSE( exp->right->suppl ) +
-                            exp->suppl.part.eval_11;
+                  if( report_bitwise ) {
+                    int i;
+                    tot_num = 3 * exp->value->width;
+                    num_hit = 0;
+                    for( i=0; i<exp->value->width; i++ ) {
+                      num_hit += exp->value->value[i].part.exp.eval_a +
+                                 exp->value->value[i].part.exp.eval_b +
+                                 exp->value->value[i].part.exp.eval_c;
+                    }
+                  } else {
+                    tot_num = 3;
+                    num_hit = ESUPPL_WAS_FALSE( exp->left->suppl )  + 
+                              ESUPPL_WAS_FALSE( exp->right->suppl ) +
+                              exp->suppl.part.eval_11;
+                  }
                 } else if( exp_op_info[exp->op].suppl.is_comb == OR_COMB ) {
-                  tot_num = 3;
-                  num_hit = ESUPPL_WAS_TRUE( exp->left->suppl )  +
-                            ESUPPL_WAS_TRUE( exp->right->suppl ) +
-                            exp->suppl.part.eval_00;
+                  if( report_bitwise ) {
+                    int i;
+                    tot_num = 3 * exp->value->width;
+                    num_hit = 0;
+                    for( i=0; i<exp->value->width; i++ ) {
+                      num_hit += exp->value->value[i].part.exp.eval_a +
+                                 exp->value->value[i].part.exp.eval_b +
+                                 exp->value->value[i].part.exp.eval_c;
+                    }
+                  } else {
+                    tot_num = 3;
+                    num_hit = ESUPPL_WAS_TRUE( exp->left->suppl )  +
+                              ESUPPL_WAS_TRUE( exp->right->suppl ) +
+                              exp->suppl.part.eval_00;
+                  }
                 } else {
-                  tot_num = 4;
-                  num_hit = exp->suppl.part.eval_00 +
-                            exp->suppl.part.eval_01 +
-                            exp->suppl.part.eval_10 +
-                            exp->suppl.part.eval_11;
+                  if( report_bitwise ) {
+                    int i;
+                    tot_num = 4 * exp->value->width;
+                    num_hit = 0;
+                    for( i=0; i<exp->value->width; i++ ) {
+                      num_hit += exp->value->value[i].part.exp.eval_a +
+                                 exp->value->value[i].part.exp.eval_b +
+                                 exp->value->value[i].part.exp.eval_c +
+                                 exp->value->value[i].part.exp.eval_d;
+                    }
+                  } else {
+                    tot_num = 4;
+                    num_hit = exp->suppl.part.eval_00 +
+                              exp->suppl.part.eval_01 +
+                              exp->suppl.part.eval_10 +
+                              exp->suppl.part.eval_11;
+                  }
                 }
                 *total += tot_num;
                 if( excluded ) {
@@ -350,8 +385,17 @@ void combination_get_tree_stats( expression* exp, int* ulid, unsigned int curr_d
                   (*ulid)++;
                 }
               } else {
-                *total  = *total + 2;
-                num_hit = ESUPPL_WAS_TRUE( exp->suppl ) + ESUPPL_WAS_FALSE( exp->suppl );
+                if( report_bitwise ) {
+                  int i;
+                  *total  = *total + (2 * exp->value->width);
+                  num_hit = 0;
+                  for( i=0; i<exp->value->width; i++ ) {
+                    num_hit += exp->value->value[i].part.exp.eval_a + exp->value->value[i].part.exp.eval_b;
+                  } 
+                } else {
+                  *total  = *total + 2;
+                  num_hit = ESUPPL_WAS_TRUE( exp->suppl ) + ESUPPL_WAS_FALSE( exp->suppl );
+                }
                 if( excluded ) {
                   *hit += 2;
                 } else {
@@ -389,7 +433,7 @@ void combination_reset_counted_exprs( exp_link* expl ) {
 
   while( expl != NULL ) {
     expl->exp->suppl.part.comb_cntd = 1;
-    expl             = expl->next;
+    expl = expl->next;
   }
 
 }
@@ -1312,38 +1356,79 @@ void combination_underline( FILE* ofile, char** code, int code_depth, expression
 void combination_unary( char*** info, int* info_size, expression* exp ) {
 
   int   hit = 0;                           /* Number of combinations hit for this expression */
-  char  tmp[20]; 
-  int   length; 
+  int   tot;                               /* Total number of coverage points possible */
+  char  tmp[20];                           /* Temporary string used for sizing lines for numbers */
+  int   length;                            /* Length of the current line to allocate */
   char* op = exp_op_info[exp->op].op_str;  /* Operations string */
+  int   lines;                             /* Specifies the number of lines to allocate memory for */
 
   assert( exp != NULL );
 
   /* Get hit information */
-  hit = ESUPPL_WAS_FALSE( exp->suppl ) + ESUPPL_WAS_TRUE( exp->suppl );
+  if( report_bitwise && (exp->value->width > 1) ) {
+    int i;
+    hit   = 0;
+    lines = exp->value->width + 2;
+    tot   = (2 * exp->value->width);
+    for( i=0; i<exp->value->width; i++ ) {
+      hit += exp->value->value[i].part.exp.eval_a + exp->value->value[i].part.exp.eval_b;
+    }
+  } else {
+    lines = 1;
+    tot   = 2;
+    hit   = ESUPPL_WAS_FALSE( exp->suppl ) + ESUPPL_WAS_TRUE( exp->suppl );
+  }
 
-  if( hit != 2 ) {
+  if( hit != tot ) {
 
     assert( exp->ulid != -1 );
 
     /* Allocate memory for info array */
-    *info_size = 5;
+    *info_size = 4 + lines;
     *info      = (char**)malloc_safe( sizeof( char* ) * (*info_size), __FILE__, __LINE__ );
 
     /* Allocate lines and assign values */ 
-    length = 27;  snprintf( tmp, 20, "%d", exp->ulid );  length += strlen( tmp );  snprintf( tmp, 20, "%d", hit );  length += strlen( tmp );
+    length = 27;
+    snprintf( tmp, 20, "%d", exp->ulid );  length += strlen( tmp );
+    snprintf( tmp, 20, "%d", hit );        length += strlen( tmp );
+    snprintf( tmp, 20, "%d", tot );        length += strlen( tmp );
     (*info)[0] = (char*)malloc_safe( length, __FILE__, __LINE__ );
-    snprintf( (*info)[0], length, "        Expression %d   (%d/2)", exp->ulid, hit );
+    snprintf( (*info)[0], length, "        Expression %d   (%d/%d)", exp->ulid, hit, tot );
 
     length  = 25 + strlen( op );  (*info)[1] = (char*)malloc_safe( length, __FILE__, __LINE__ );
     snprintf( (*info)[1], length, "        ^^^^^^^^^^^^^ - %s", op );
 
-    (*info)[2] = strdup( "         E | E" );
-    (*info)[3] = strdup( "        =0=|=1=" );
+    if( report_bitwise && (exp->value->width > 1) ) {
 
-    length = 15;  (*info)[4] = (char*)malloc_safe( length, __FILE__, __LINE__ );
-    snprintf( (*info)[4], length, "         %c   %c",
-              ((ESUPPL_WAS_FALSE( exp->suppl ) == 1) ? ' ' : '*'),
-              ((ESUPPL_WAS_TRUE( exp->suppl )  == 1) ? ' ' : '*') );
+      int i;
+
+      (*info)[2] = strdup( "          Bit | E | E" );
+      (*info)[3] = strdup( "        ======|=0=|=1=" );
+
+      length = 22;
+      (*info)[4] = (char*)malloc_safe( length, __FILE__, __LINE__ );
+      snprintf( (*info)[4], length, "          All | %c   %c",
+                ((ESUPPL_WAS_FALSE( exp->suppl ) == 1) ? ' ' : '*'),
+                ((ESUPPL_WAS_TRUE( exp->suppl )  == 1) ? ' ' : '*') )
+      (*info)[5] = strdup( "        ------|---|---" );
+      for( i=0; i<exp->value->width; i++ ) {
+        (*info)[i+6] = (char*)malloc_safe( length, __FILE__, __LINE__ );
+        snprintf( (*info)[i+6], length, "         %4d | %c   %c", i,
+                  ((exp->value->value[i].part.exp.eval_a == 1) ? ' ' : '*'),
+                  ((exp->value->value[i].part.exp.eval_b == 1) ? ' ' : '*') );
+      }
+
+    } else {
+
+      (*info)[2] = strdup( "         E | E" );
+      (*info)[3] = strdup( "        =0=|=1=" );
+
+      length = 15;  (*info)[4] = (char*)malloc_safe( length, __FILE__, __LINE__ );
+      snprintf( (*info)[4], length, "         %c   %c",
+                ((ESUPPL_WAS_FALSE( exp->suppl ) == 1) ? ' ' : '*'),
+                ((ESUPPL_WAS_TRUE( exp->suppl )  == 1) ? ' ' : '*') );
+
+    }
 
   }
 
@@ -1397,11 +1482,12 @@ void combination_event( char*** info, int* info_size, expression* exp ) {
 */
 void combination_two_vars( char*** info, int* info_size, expression* exp ) {
 
-  int   hit;      /* Number of combinations hit for this expression */
-  int   total;    /* Total number of combinations for this expression */
-  char  tmp[20];
-  int   length; 
+  int   hit;                               /* Number of combinations hit for this expression */
+  int   total;                             /* Total number of combinations for this expression */
+  char  tmp[20];                           /* Temporary string used for calculating line width */
+  int   length;                            /* Specifies the length of the current line */
   char* op = exp_op_info[exp->op].op_str;  /* Operation string */
+  int   lines;                             /* Specifies the number of lines needed to output this vector */
 
   assert( exp != NULL );
 
@@ -1413,17 +1499,57 @@ void combination_two_vars( char*** info, int* info_size, expression* exp ) {
 
   /* Get hit information */
   if( exp_op_info[exp->op].suppl.is_comb == AND_COMB ) {
-    hit   = ESUPPL_WAS_FALSE( exp->left->suppl ) + ESUPPL_WAS_FALSE( exp->right->suppl ) + exp->suppl.part.eval_11;
-    total = 3;
+    if( report_bitwise && (exp->value->width > 1) ) {
+      int i;
+      lines = exp->value->width + 2;
+      total = (3 * exp->value->width);
+      hit   = 0;
+      for( i=0; i<exp->value->width; i++ ) {
+        hit += (exp->value->value[i].part.exp.eval_a +
+                exp->value->value[i].part.exp.eval_b +
+                exp->value->value[i].part.exp.eval_c);
+      }
+    } else {
+      lines = 1;
+      total = 3;
+      hit   = ESUPPL_WAS_FALSE( exp->left->suppl ) + ESUPPL_WAS_FALSE( exp->right->suppl ) + exp->suppl.part.eval_11;
+    }
   } else if( exp_op_info[exp->op].suppl.is_comb == OR_COMB ) {
-    hit   = ESUPPL_WAS_TRUE( exp->left->suppl ) + ESUPPL_WAS_TRUE( exp->right->suppl ) + exp->suppl.part.eval_00;
-    total = 3;
+    if( report_bitwise && (exp->value->width > 1) ) {
+      int i;
+      lines = exp->value->width + 2;
+      total = (3 * exp->value->width);
+      hit   = 0;
+      for( i=0; i<exp->value->width; i++ ) {
+        hit += (exp->value->value[i].part.exp.eval_a +
+                exp->value->value[i].part.exp.eval_b +
+                exp->value->value[i].part.exp.eval_c);
+      }
+    } else {
+      lines = 1;
+      total = 3;
+      hit   = ESUPPL_WAS_TRUE( exp->left->suppl ) + ESUPPL_WAS_TRUE( exp->right->suppl ) + exp->suppl.part.eval_00;
+    }
   } else {
-    hit = exp->suppl.part.eval_00 +
-          exp->suppl.part.eval_01 +
-          exp->suppl.part.eval_10 +
-          exp->suppl.part.eval_11;
-    total = 4;
+    if( report_bitwise && (exp->value->width > 1) ) {
+      int i;
+      lines = exp->value->width + 2;
+      total = (4 * exp->value->width);
+      hit   = 0;
+      for( i=0; i<exp->value->width; i++ ) {
+        hit += (exp->value->value[i].part.exp.eval_a +
+                exp->value->value[i].part.exp.eval_b +
+                exp->value->value[i].part.exp.eval_c +
+                exp->value->value[i].part.exp.eval_d);
+      }
+    } else {
+      lines = 1;
+      total = 4;
+      hit   = exp->suppl.part.eval_00 +
+              exp->suppl.part.eval_01 +
+              exp->suppl.part.eval_10 +
+              exp->suppl.part.eval_11;
+    }
   }
 
   if( hit != total ) {
@@ -1431,11 +1557,14 @@ void combination_two_vars( char*** info, int* info_size, expression* exp ) {
     assert( exp->ulid != -1 );
 
     /* Allocate memory for info array */
-    *info_size = 5;
+    *info_size = 4 + lines;
     *info      = (char**)malloc_safe( sizeof( char* ) * (*info_size), __FILE__, __LINE__ );
 
     /* Allocate lines and assign values */ 
-    length = 27;  snprintf( tmp, 20, "%d", exp->ulid );  length += strlen( tmp );  snprintf( tmp, 20, "%d", hit );  length += strlen( tmp );
+    length = 27;
+    snprintf( tmp, 20, "%d", exp->ulid );  length += strlen( tmp );
+    snprintf( tmp, 20, "%d", hit );        length += strlen( tmp );
+    snprintf( tmp, 20, "%d", total );      length += strlen( tmp );
     (*info)[0] = (char*)malloc_safe( length, __FILE__, __LINE__ );
     snprintf( (*info)[0], length, "        Expression %d   (%d/%d)", exp->ulid, hit, total );
 
@@ -1445,40 +1574,120 @@ void combination_two_vars( char*** info, int* info_size, expression* exp ) {
 
     if( exp_op_info[exp->op].suppl.is_comb == AND_COMB ) {
 
-      (*info)[2] = strdup( "         LR | LR | LR " );
-      (*info)[3] = strdup( "        =0-=|=-0=|=11=" );
+      if( report_bitwise && (exp->value->width > 1) ) {
 
-      length = 21;
-      (*info)[4] = (char*)malloc_safe( length, __FILE__, __LINE__ );
-      snprintf( (*info)[4], length, "         %c    %c    %c",
-                (ESUPPL_WAS_FALSE( exp->left->suppl )  ? ' ' : '*'),
-                (ESUPPL_WAS_FALSE( exp->right->suppl ) ? ' ' : '*'),
-                ((exp->suppl.part.eval_11 > 0) ? ' ' : '*') );
+        int i;
+ 
+        (*info)[2] = strdup( "          Bit | LR | LR | LR " );
+        (*info)[3] = strdup( "        ======|=0-=|=-0=|=11=" );
+
+        length = 28;
+        (*info)[4] = (char*)malloc_safe( length, __FILE__, __LINE__ );
+        snprintf( (*info)[4], length, "          All | %c    %c    %c",
+                  (ESUPPL_WAS_FALSE( exp->left->suppl )  ? ' ' : '*'),
+                  (ESUPPL_WAS_FALSE( exp->right->suppl ) ? ' ' : '*'),
+                  ((exp->suppl.part.eval_11 > 0) ? ' ' : '*') );
+        (*info)[5] = strdup( "        ------|----|----|----" );
+        for( i=0; i<exp->value->width; i++ ) {
+          (*info)[i+6] = (char*)malloc_safe( length, __FILE__, __LINE__ );
+          snprintf( (*info)[i+6], length, "         %4d | %c    %c    %c", i,
+                    ((exp->value->value[i].part.exp.eval_a == 1) ? ' ' : '*'),
+                    ((exp->value->value[i].part.exp.eval_b == 1) ? ' ' : '*'),
+                    ((exp->value->value[i].part.exp.eval_c == 1) ? ' ' : '*') );
+        }
+
+      } else {
+
+        (*info)[2] = strdup( "         LR | LR | LR " );
+        (*info)[3] = strdup( "        =0-=|=-0=|=11=" );
+
+        length = 21;
+        (*info)[4] = (char*)malloc_safe( length, __FILE__, __LINE__ );
+        snprintf( (*info)[4], length, "         %c    %c    %c",
+                  (ESUPPL_WAS_FALSE( exp->left->suppl )  ? ' ' : '*'),
+                  (ESUPPL_WAS_FALSE( exp->right->suppl ) ? ' ' : '*'),
+                  ((exp->suppl.part.eval_11 > 0) ? ' ' : '*') );
+
+      }
 
     } else if( exp_op_info[exp->op].suppl.is_comb == OR_COMB ) {
 
-      (*info)[2] = strdup( "         LR | LR | LR " );
-      (*info)[3] = strdup( "        =1-=|=-1=|=00=" );
+      if( report_bitwise && (exp->value->width > 1) ) {
 
-      length = 21;
-      (*info)[4] = (char*)malloc_safe( length, __FILE__, __LINE__ );
-      snprintf( (*info)[4], length, "         %c    %c    %c",
-                (ESUPPL_WAS_TRUE( exp->left->suppl )  ? ' ' : '*'),
-                (ESUPPL_WAS_TRUE( exp->right->suppl ) ? ' ' : '*'),
-                ((exp->suppl.part.eval_00 > 0) ? ' ' : '*') );
+        int i;
+
+        (*info)[2] = strdup( "          Bit | LR | LR | LR " );
+        (*info)[3] = strdup( "        ======|=1-=|=-1=|=00=" );
+
+        length = 28;
+        (*info)[4] = (char*)malloc_safe( length, __FILE__, __LINE__ );
+        snprintf( (*info)[4], length, "          All | %c    %c    %c",
+                  (ESUPPL_WAS_TRUE( exp->left->suppl )  ? ' ' : '*'),
+                  (ESUPPL_WAS_TRUE( exp->right->suppl ) ? ' ' : '*'),
+                  ((exp->suppl.part.eval_00 > 0) ? ' ' : '*') );
+        (*info)[5] = strdup( "        ------|----|----|----" );
+        for( i=0; i<exp->value->width; i++ ) {
+          (*info)[i+6] = (char*)malloc_safe( length, __FILE__, __LINE__ );
+          snprintf( (*info)[i+6], length, "         %4d | %c    %c    %c", i,
+                    ((exp->value->value[i].part.exp.eval_a == 1) ? ' ' : '*'),
+                    ((exp->value->value[i].part.exp.eval_b == 1) ? ' ' : '*'),
+                    ((exp->value->value[i].part.exp.eval_c == 1) ? ' ' : '*') );
+        }
+
+      } else {
+
+        (*info)[2] = strdup( "         LR | LR | LR " );
+        (*info)[3] = strdup( "        =1-=|=-1=|=00=" );
+
+        length = 21;
+        (*info)[4] = (char*)malloc_safe( length, __FILE__, __LINE__ );
+        snprintf( (*info)[4], length, "         %c    %c    %c",
+                  (ESUPPL_WAS_TRUE( exp->left->suppl )  ? ' ' : '*'),
+                  (ESUPPL_WAS_TRUE( exp->right->suppl ) ? ' ' : '*'),
+                  ((exp->suppl.part.eval_00 > 0) ? ' ' : '*') );
+
+      }
 
     } else {
 
-      (*info)[2] = strdup( "         LR | LR | LR | LR " );
-      (*info)[3] = strdup( "        =00=|=01=|=10=|=11=" );
+      if( report_bitwise && (exp->value->width > 1) ) {
 
-      length = 26;
-      (*info)[4] = (char*)malloc_safe( length, __FILE__, __LINE__ );
-      snprintf( (*info)[4], length, "         %c    %c    %c    %c",
-                ((exp->suppl.part.eval_00 == 1) ? ' ' : '*'),
-                ((exp->suppl.part.eval_01 == 1) ? ' ' : '*'),
-                ((exp->suppl.part.eval_10 == 1) ? ' ' : '*'),
-                ((exp->suppl.part.eval_11 == 1) ? ' ' : '*') );
+        int i;
+
+        (*info)[2] = strdup( "          Bit | LR | LR | LR | LR " );
+        (*info)[3] = strdup( "        ======|=00=|=01=|=10=|=11=" );
+
+        length = 33;
+        (*info)[4] = (char*)malloc_safe( length, __FILE__, __LINE__ );
+        snprintf( (*info)[4], length, "          All | %c    %c    %c    %c",
+                  ((exp->suppl.part.eval_00 == 1) ? ' ' : '*'),
+                  ((exp->suppl.part.eval_01 == 1) ? ' ' : '*'),
+                  ((exp->suppl.part.eval_10 == 1) ? ' ' : '*'),
+                  ((exp->suppl.part.eval_11 == 1) ? ' ' : '*') );
+        (*info)[5] = strdup( "        ------|----|----|----|----" );
+        for( i=0; i<exp->value->width; i++ ) {
+          (*info)[i+6] = (char*)malloc_safe( length, __FILE__, __LINE__ );
+          snprintf( (*info)[i+6], length, "         %4d | %c    %c    %c    %c", i,
+                    ((exp->value->value[i].part.exp.eval_a == 1) ? ' ' : '*'),
+                    ((exp->value->value[i].part.exp.eval_b == 1) ? ' ' : '*'),
+                    ((exp->value->value[i].part.exp.eval_c == 1) ? ' ' : '*'),
+                    ((exp->value->value[i].part.exp.eval_d == 1) ? ' ' : '*') );
+        }
+
+      } else {
+
+        (*info)[2] = strdup( "         LR | LR | LR | LR " );
+        (*info)[3] = strdup( "        =00=|=01=|=10=|=11=" );
+  
+        length = 26;
+        (*info)[4] = (char*)malloc_safe( length, __FILE__, __LINE__ );
+        snprintf( (*info)[4], length, "         %c    %c    %c    %c",
+                  ((exp->suppl.part.eval_00 == 1) ? ' ' : '*'),
+                  ((exp->suppl.part.eval_01 == 1) ? ' ' : '*'),
+                  ((exp->suppl.part.eval_10 == 1) ? ' ' : '*'),
+                  ((exp->suppl.part.eval_11 == 1) ? ' ' : '*') );
+
+      }
 
     }
 
@@ -2435,6 +2644,9 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.156  2006/09/01 23:06:02  phase1geo
+ Fixing regressions per latest round of changes.  Full regression now passes.
+
  Revision 1.155  2006/09/01 04:06:36  phase1geo
  Added code to support more than one instance tree.  Currently, I am seeing
  quite a few memory errors that are causing some major problems at the moment.

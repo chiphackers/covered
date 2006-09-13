@@ -746,7 +746,7 @@ void expression_resize( expression* expr, bool recursive ) {
        children's width.  Remove the current vector and replace it with the appropriately
        sized vector.
       */
-      case EXP_OP_MULTIPLY :
+      // case EXP_OP_MULTIPLY :
       case EXP_OP_LIST :
         if( (expr->value->width != (expr->left->value->width + expr->right->value->width)) ||
             (expr->value->value == NULL) ) {
@@ -3113,9 +3113,10 @@ bool expression_operate( expression* expr, thread* thr ) {
             }
             break;
           case AND_COMB :
+            //printf( "Expr: %s OTHER_COMB\n", expression_string( expr ) );
             for( i=0; i<expr->value->width; i++ ) {
-              lval = expr->left->value->value[i].part.exp.value;
-              rval = expr->right->value->value[i].part.exp.value;
+              lval = (i < expr->left->value->width)  ? expr->left->value->value[i].part.exp.value  : 0;
+              rval = (i < expr->right->value->width) ? expr->right->value->value[i].part.exp.value : 0;
               if( (lval < 2) || (rval < 2) ) {
                 expr->value->value[i].part.exp.eval_a |= (lval == 0) ? 1 : 0;
                 expr->value->value[i].part.exp.eval_b |= (rval == 0) ? 1 : 0;
@@ -3125,8 +3126,8 @@ bool expression_operate( expression* expr, thread* thr ) {
             break;
           case OR_COMB :
             for( i=0; i<expr->value->width; i++ ) {
-              lval = expr->left->value->value[i].part.exp.value;
-              rval = expr->right->value->value[i].part.exp.value;
+              lval = (i < expr->left->value->width)  ? expr->left->value->value[i].part.exp.value  : 0;
+              rval = (i < expr->right->value->width) ? expr->right->value->value[i].part.exp.value : 0;
               if( (lval < 2) || (rval < 2) ) {
                 expr->value->value[i].part.exp.eval_a |= (lval == 1) ? 1 : 0;
                 expr->value->value[i].part.exp.eval_b |= (rval == 1) ? 1 : 0;
@@ -3135,15 +3136,19 @@ bool expression_operate( expression* expr, thread* thr ) {
             }
             break;
           case OTHER_COMB :
+            //printf( "Expr: %s OTHER_COMB\n", expression_string( expr ) );
             for( i=0; i<expr->value->width; i++ ) {
-              lval = expr->left->value->value[i].part.exp.value;
-              rval = expr->right->value->value[i].part.exp.value;
+              lval = (i < expr->left->value->width)  ? expr->left->value->value[i].part.exp.value  : 0;
+              rval = (i < expr->right->value->width) ? expr->right->value->value[i].part.exp.value : 0;
+              //printf( "  i: %d, lval: %d, rval: %d", i, lval, rval );
               if( (lval < 2) && (rval < 2) ) {
                 expr->value->value[i].part.exp.eval_a |= ((lval == 0) && (rval == 0)) ? 1 : 0;
                 expr->value->value[i].part.exp.eval_b |= ((lval == 0) && (rval == 1)) ? 1 : 0;
                 expr->value->value[i].part.exp.eval_c |= ((lval == 1) && (rval == 0)) ? 1 : 0;
                 expr->value->value[i].part.exp.eval_d |= ((lval == 1) && (rval == 1)) ? 1 : 0;
+                //printf( ", all: %x", expr->value->value[i].all ); 
               }
+              //printf( "\n" );
             }
             break;
           default : break;
@@ -3627,6 +3632,12 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.208  2006/09/12 22:24:42  phase1geo
+ Added first attempt at collecting bitwise coverage information during simulation.
+ Updated regressions for this change; however, we currently do not report on this
+ information currently.  Also added missing keywords to GUI Verilog highlighter.
+ Checkpointing.
+
  Revision 1.207  2006/09/11 22:27:55  phase1geo
  Starting to work on supporting bitwise coverage.  Moving bits around in supplemental
  fields to allow this to work.  Full regression has been updated for the current changes

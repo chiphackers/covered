@@ -227,7 +227,16 @@ void vector_db_write( vector* vec, FILE* file, bool write_data ) {
   assert( vec != NULL );
   assert( vec->width > 0 );
 
-  mask = write_data ? 0xf : 0xc;
+  /* Calculate vector data mask */
+  mask = write_data ? 0xff : 0xfc;
+  switch( vec->suppl.part.type ) {
+    case VTYPE_VAL :  mask = mask & 0x03;  break;
+    case VTYPE_SIG :  mask = mask & 0x0f;  break;
+    case VTYPE_EXP :  mask = mask & 0x3f;  break;
+    default        :  break;
+  }
+
+  /* Calculate default value of bit */
   dflt = (vec->suppl.part.is_2state == 1) ? 0x0 : 0x2;
 
   /* Output vector information to specified file */
@@ -859,7 +868,7 @@ bool vector_set_value( vector* vec, vec_data* value, int width, int from_idx, in
         to_val   = set_val.part.exp.value;
         if( (from_val != to_val) || (set_val.part.exp.set == 0x0) ) {
           /* Perform value assignment */
-          set_val.part.sig.set   = 1;
+          set_val.part.exp.set   = 1;
           set_val.part.exp.value = from_val;
           vval[i + to_idx]       = set_val;
           retval = TRUE;
@@ -2068,6 +2077,14 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.79  2006/09/11 22:27:55  phase1geo
+ Starting to work on supporting bitwise coverage.  Moving bits around in supplemental
+ fields to allow this to work.  Full regression has been updated for the current changes
+ though this feature is still not fully implemented at this time.  Also added parsing support
+ for SystemVerilog program blocks (ignored) and final blocks (not handled properly at this
+ time).  Also added lexer support for the return, void, continue, break, final, program and
+ endprogram SystemVerilog keywords.  Checkpointing work.
+
  Revision 1.78  2006/08/20 03:21:00  phase1geo
  Adding support for +=, -=, *=, /=, %=, &=, |=, ^=, <<=, >>=, <<<=, >>>=, ++
  and -- operators.  The op-and-assign operators are currently good for
