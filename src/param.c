@@ -670,8 +670,8 @@ void param_expr_eval( expression* expr, funit_inst* inst ) {
 
     /* For constant functions, resolve parameters and resize the functional unit first */
     if( expr->op == EXP_OP_FUNC_CALL ) {
-      assert( expr->stmt != NULL );
-      funit = funit_find_by_id( expr->stmt->exp->id );
+      assert( expr->elem.stmt != NULL );
+      funit = funit_find_by_id( expr->elem.stmt->exp->id );
       assert( funit != NULL );
       funiti = instance_find_by_funit( inst, funit, &ignore );
       assert( funiti != NULL );
@@ -1051,6 +1051,14 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.74  2006/09/11 22:27:55  phase1geo
+ Starting to work on supporting bitwise coverage.  Moving bits around in supplemental
+ fields to allow this to work.  Full regression has been updated for the current changes
+ though this feature is still not fully implemented at this time.  Also added parsing support
+ for SystemVerilog program blocks (ignored) and final blocks (not handled properly at this
+ time).  Also added lexer support for the return, void, continue, break, final, program and
+ endprogram SystemVerilog keywords.  Checkpointing work.
+
  Revision 1.73  2006/09/04 05:28:18  phase1geo
  Fixing bug 1546059 last remaining issue.  Updated user documentation.
 

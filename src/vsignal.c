@@ -511,6 +511,43 @@ vsignal* vsignal_from_string( char** str ) {
 
 }
 
+int vsignal_calc_width_for_expr( expression* expr, vsignal* sig ) {
+
+  int exp_dim;    /* Expression dimension number */
+  int width = 1;  /* Return value for this function */
+
+  assert( expr != NULL );
+  assert( sig != NULL );
+
+  /* Get expression dimension value */
+  exp_dim = expression_get_curr_dimension( expr );
+
+  /* Calculate width */
+  for( i=(exp_dim + 1); i < (sig->pdim_num + sig->udim_num); i++ ) {
+    if( sig->dim[i].msb > sig->dim[i].lsb ) {
+      width = width * (sig->dim[i].msb - sig->dim[i].lsb);
+    } else {
+      width = width * (sig->dim[i].lsb - sig->dim[i].msb);
+    }
+  }
+
+  return( width );
+
+}
+
+/*!
+ \param expr     Pointer to expression to get LSB for
+ \param sig      Pointer to signal to get LSB for
+ \param lsb_val  Calculated LSB value from this expression
+
+ \return Returns the LSB of the given signal for the given expression.
+*/
+int vsignal_calc_lsb_for_expr( expression* expr, vsignal* sig, int lsb_val ) {
+
+  return( vsignal_calc_width_for_expr( expr, sig ) * lsb_val );
+
+}
+
 /*!
  \param sig  Pointer to vsignal to deallocate.
 
@@ -551,6 +588,14 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.32  2006/09/11 22:27:55  phase1geo
+ Starting to work on supporting bitwise coverage.  Moving bits around in supplemental
+ fields to allow this to work.  Full regression has been updated for the current changes
+ though this feature is still not fully implemented at this time.  Also added parsing support
+ for SystemVerilog program blocks (ignored) and final blocks (not handled properly at this
+ time).  Also added lexer support for the return, void, continue, break, final, program and
+ endprogram SystemVerilog keywords.  Checkpointing work.
+
  Revision 1.31  2006/08/29 22:49:31  phase1geo
  Added enumeration support and partial support for typedefs.  Added enum1
  diagnostic to verify initial enumeration support.  Full regression has not

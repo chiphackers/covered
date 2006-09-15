@@ -308,7 +308,7 @@
  supplemental fields are ANDed with this mask and ORed together to perform the
  merge.  See esuppl_u for information on which bits are masked.
 */
-#define ESUPPL_MERGE_MASK            0xfffff
+#define ESUPPL_MERGE_MASK            0x7fffff
 
 /*!
  Returns a value of 1 if the specified supplemental value has the SWAPPED
@@ -426,6 +426,12 @@
 */
 #define ESUPPL_STMT_EXCLUDED(x)      x.part.stmt_excluded
 
+/*!
+ Returns the type of expression that this expression should be treated as.  Legal values
+ are specified \ref expression_types.
+*/
+#define ESUPPL_TYPE(x)               x.part.type
+
 /*! @} */
 
 /*!
@@ -468,6 +474,9 @@
 
 /*! This signal is an enumerated value */
 #define SSUPPL_TYPE_ENUM          10
+
+/*! This signal is a memory */
+#define SSUPPL_TYPE_MEM           11
 
 /*! @} */
      
@@ -1016,6 +1025,20 @@ typedef enum exp_op_type_e {
 
 /*! @} */
 
+/*!
+ \addtogroup expression_types Expression Types
+
+ The following defines specify the various flavors of expression types that can be stored in its elem_ptr
+ union.
+
+ @{
+*/
+
+/*! Statement */
+#define ETYPE_STMT      0
+
+/*! @} */
+
 /*! Overload for the snprintf function which verifies that we don't overrun character arrays */
 #define snprintf(x,y,...)	{ int svar = snprintf( x, y, __VA_ARGS__ ); assert( svar < (y) ); }
 
@@ -1143,24 +1166,25 @@ union esuppl_u {
                                      set. */
     control stmt_excluded  :1;  /*!< Bit 19.  Mask bit = 1.  Indicates that this statement (and its associated expression
                                      tree) should be excluded from coverage results. */
+    control type           :3;  /*!< Bits 22:20.  Mask bit = 1.  Indicates how the pointer element should be treated as */
  
     /* UNMASKED BITS */
-    control eval_t         :1;  /*!< Bit 20.  Mask bit = 0.  Indicates that the value of the current expression is
+    control eval_t         :1;  /*!< Bit 23.  Mask bit = 0.  Indicates that the value of the current expression is
                                      currently set to TRUE (temporary value). */
-    control eval_f         :1;  /*!< Bit 21.  Mask bit = 0.  Indicates that the value of the current expression is
+    control eval_f         :1;  /*!< Bit 24.  Mask bit = 0.  Indicates that the value of the current expression is
                                      currently set to FALSE (temporary value). */
-    control comb_cntd      :1;  /*!< Bit 22.  Mask bit = 0.  Indicates that the current expression has been previously
+    control comb_cntd      :1;  /*!< Bit 25.  Mask bit = 0.  Indicates that the current expression has been previously
                                      counted for combinational coverage.  Only set by report command (therefore this bit
                                      will always be a zero when written to CDD file. */
-    control stmt_added     :1;  /*!< Bit 23.  Temporary bit value used by the score command but not displayed to the CDD
+    control stmt_added     :1;  /*!< Bit 26.  Temporary bit value used by the score command but not displayed to the CDD
                                      file.  When this bit is set to a one, it indicates to the db_add_statement
                                      function that this statement and all children statements have already been
                                      added to the functional unit statement list and should not be added again. */
-    control owned          :1;  /*!< Bit 24.  Mask bit = 0.  Temporary value used by the score command to indicate
+    control owned          :1;  /*!< Bit 27.  Mask bit = 0.  Temporary value used by the score command to indicate
                                      if this expression is already owned by a mod_parm structure. */
-    control gen_expr       :1;  /*!< Bit 25.  Mask bit = 0.  Temporary value used by the score command to indicate
+    control gen_expr       :1;  /*!< Bit 28.  Mask bit = 0.  Temporary value used by the score command to indicate
                                      that this expression is a part of a generate expression. */
-    control prev_called    :1;  /*!< Bit 26.  Mask bit = 0.  Temporary value used by named block and task expression
+    control prev_called    :1;  /*!< Bit 29.  Mask bit = 0.  Temporary value used by named block and task expression
                                      functions to indicate if we are in the middle of executing a named block or task
                                      expression (since these cause a context switch to occur. */
   } part;
@@ -1288,6 +1312,8 @@ struct gen_item_s;
 struct gitem_link_s;
 struct typedef_item_s;
 struct enum_item_s;
+struct sig_range_s;
+struct dim_range_s;
 
 /*------------------------------------------------------------------------------*/
 /*  STRUCTURE/UNION TYPEDEFS  */
@@ -1519,6 +1545,16 @@ typedef struct typedef_item_s typedef_item;
 */
 typedef struct enum_item_s enum_item;
 
+/*!
+ Renaming memory_s structure for convenience.
+*/
+typedef struct sig_range_s sig_range;
+
+/*!
+ Renaming dim_range_s structure for convenience.
+*/
+typedef struct dim_range_s dim_range;
+
 /*------------------------------------------------------------------------------*/
 /*  STRUCTURE/UNION DEFINITIONS  */
 
@@ -1592,22 +1628,24 @@ union expr_stmt_u {
  run-time information for its expression.
 */
 struct expression_s {
-  vector*     value;                /*!< Current value and toggle information of this expression */
-  exp_op_type op;                   /*!< Expression operation type */
-  esuppl      suppl;                /*!< Supplemental information for the expression */
-  int         id;                   /*!< Specifies unique ID for this expression in the parent */
-  int         ulid;                 /*!< Specifies underline ID for reporting purposes */
-  int         line;                 /*!< Specified line in file that this expression is found on */
-  control     exec_num;             /*!< Specifies the number of times this expression was executed during simulation */
-  control     col;                  /*!< Specifies column location of beginning/ending of expression */
-  vsignal*    sig;                  /*!< Pointer to signal.  If NULL then no signal is attached */
-  char*       name;                 /*!< Name of signal/function/task for output purposes (only valid if we are binding
-                                         to a signal, task or function */
-  expr_stmt*  parent;               /*!< Parent expression/statement */
-  expression* right;                /*!< Pointer to expression on right */
-  expression* left;                 /*!< Pointer to expression on left */
-  fsm*        table;                /*!< Pointer to FSM table associated with this expression */
-  statement*  stmt;                 /*!< Pointer to starting task/function statement to be called by this expression */
+  vector*      value;              /*!< Current value and toggle information of this expression */
+  exp_op_type  op;                 /*!< Expression operation type */
+  esuppl       suppl;              /*!< Supplemental information for the expression */
+  int          id;                 /*!< Specifies unique ID for this expression in the parent */
+  int          ulid;               /*!< Specifies underline ID for reporting purposes */
+  int          line;               /*!< Specified line in file that this expression is found on */
+  control      exec_num;           /*!< Specifies the number of times this expression was executed during simulation */
+  control      col;                /*!< Specifies column location of beginning/ending of expression */
+  vsignal*     sig;                /*!< Pointer to signal.  If NULL then no signal is attached */
+  char*        name;               /*!< Name of signal/function/task for output purposes (only valid if we are binding
+                                        to a signal, task or function */
+  expr_stmt*   parent;             /*!< Parent expression/statement */
+  expression*  right;              /*!< Pointer to expression on right */
+  expression*  left;               /*!< Pointer to expression on left */
+  fsm*         table;              /*!< Pointer to FSM table associated with this expression */
+  union {
+    statement* stmt;               /*!< Pointer to starting task/function statement to be called by this expression */
+  } elem;
 };
 
 /*!
@@ -1619,7 +1657,9 @@ struct vsignal_s {
   int        line;                   /*!< Specifies line number that this signal was declared on */
   ssuppl     suppl;                  /*!< Supplemental information for this signal */
   vector*    value;                  /*!< Pointer to vector value of this signal */
-  int        lsb;                    /*!< Least-significant bit position of this signal */
+  int        pdim_num;               /*!< Number of packed dimensions in pdim array */
+  int        udim_num;               /*!< Number of unpacked dimensions in pdim array */
+  dim_range* dim;                    /*!< Unpacked/packed dimension array */
   exp_link*  exp_head;               /*!< Head pointer to list of expressions */
   exp_link*  exp_tail;               /*!< Tail pointer to list of expressions */
 };
@@ -1816,7 +1856,7 @@ struct func_unit_s {
   typedef_item* tdi_tail;            /*!< Tail pointer to list of typedef types for this functional unit */
   enum_item*    ei_head;             /*!< Head pointer to list of enumerated values for this functional unit */
   enum_item*    ei_tail;             /*!< Tail pointer to list of enumerated values for this functional unit */
- };
+};
 
 /*!
  Linked list element that stores a functional unit (no scope).
@@ -1870,9 +1910,9 @@ struct static_expr_s {
  Specifies bit range of a signal or expression.
 */
 struct vector_width_s {
-  static_expr* left;                 /*!< Specifies left bit value of bit range */
-  static_expr* right;                /*!< Specifies right bit value of bit range */
-  bool         implicit;             /*!< Specifies if vector width was explicitly set by user or implicitly set by parser */
+  static_expr*  left;                /*!< Specifies left bit value of bit range */
+  static_expr*  right;               /*!< Specifies right bit value of bit range */
+  bool          implicit;            /*!< Specifies if vector width was explicitly set by user or implicitly set by parser */
 };
 
 /*!
@@ -2120,8 +2160,32 @@ struct enum_item_s {
   enum_item*    next;                /*!< Pointer to next enumeration item in the list */
 };
 
+/*!
+ Represents a multi-dimensional memory structure in the design.
+*/
+struct sig_range_s {
+  int           pdim_num;            /*!< Specifies the number of packed dimensions */
+  int           udim_num;            /*!< Specifies the number of unpacked dimensions */
+  vector_width* dim;                 /*!< Pointer to array of unpacked/packed dimensions */
+};
+
+/*!
+ Represents a dimension in a multi-dimensional array/signal.
+*/
+struct dim_range_s {
+  int        msb;                    /*!< MSB of range */
+  int        lsb;                    /*!< LSB of range */
+};
+
+
 /*
  $Log$
+ Revision 1.230  2006/09/12 22:24:42  phase1geo
+ Added first attempt at collecting bitwise coverage information during simulation.
+ Updated regressions for this change; however, we currently do not report on this
+ information currently.  Also added missing keywords to GUI Verilog highlighter.
+ Checkpointing.
+
  Revision 1.229  2006/09/11 22:27:55  phase1geo
  Starting to work on supporting bitwise coverage.  Moving bits around in supplemental
  fields to allow this to work.  Full regression has been updated for the current changes

@@ -640,7 +640,7 @@ bool bind_statement( int id, expression* exp, func_unit* funit_exp, bool cdd_rea
     /* Bind the expression to the specified statement */
     if( !rm_stmt ) {
 
-      exp->stmt = found_stmtl->stmt;
+      exp->elem.stmt = found_stmtl->stmt;
 
     /* If we were previously told to remove this statement block, do so now */
     } else {
@@ -783,7 +783,7 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
         stmt_iter_find_head( &si, FALSE );
 
         if( si.curr->stmt != NULL ) {
-          exp->stmt = si.curr->stmt;
+          exp->elem.stmt = si.curr->stmt;
           retval = TRUE;
         }
 
@@ -1026,6 +1026,14 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.93  2006/09/11 22:27:55  phase1geo
+ Starting to work on supporting bitwise coverage.  Moving bits around in supplemental
+ fields to allow this to work.  Full regression has been updated for the current changes
+ though this feature is still not fully implemented at this time.  Also added parsing support
+ for SystemVerilog program blocks (ignored) and final blocks (not handled properly at this
+ time).  Also added lexer support for the return, void, continue, break, final, program and
+ endprogram SystemVerilog keywords.  Checkpointing work.
+
  Revision 1.92  2006/09/06 22:09:22  phase1geo
  Fixing bug with multiply-and-op operation.  Also fixing bug in gen_item_resolve
  function where an instance was incorrectly being placed into a new instance tree.

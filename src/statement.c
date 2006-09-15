@@ -674,7 +674,7 @@ void statement_find_rhs_sigs( statement* stmt, str_link** head, str_link** tail 
 
     if( (stmt->exp->op == EXP_OP_NB_CALL) || (stmt->exp->op == EXP_OP_FORK) ) {
 
-      statement_find_rhs_sigs( stmt->exp->stmt, head, tail );
+      statement_find_rhs_sigs( stmt->exp->elem.stmt, head, tail );
 
     } else {
 
@@ -879,6 +879,10 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.93  2006/09/08 14:56:05  phase1geo
+ Somehow a return from the statement_find_statement function was missing that
+ caused problems with removing statement blocks.
+
  Revision 1.92  2006/09/07 21:59:24  phase1geo
  Fixing some bugs related to statement block removal.  Also made some significant
  optimizations to this code.

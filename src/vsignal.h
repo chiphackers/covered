@@ -67,12 +67,24 @@ void vsignal_display( vsignal* sig );
 /*! \brief Converts a string to a vsignal. */
 vsignal* vsignal_from_string( char** str );
 
+/*! \brief Calculates width of the specified signal's vector value based on the given expression */
+int vsignal_calc_width_for_expr( expression* expr, vsignal* sig );
+
+/*! \brief Calculates LSB of the specified signal's vector value based on the given expression */
+int vsignal_calc_lsb_for_expr( expression* expr, vsignal* sig, int lsb_val );
+
 /*! \brief Deallocates the memory used for this vsignal. */
 void vsignal_dealloc( vsignal* sig );
 
 
 /*
  $Log$
+ Revision 1.15  2006/07/25 21:35:54  phase1geo
+ Fixing nested namespace problem with generate blocks.  Also adding support
+ for using generate values in expressions.  Still not quite working correctly
+ yet, but the format of the CDD file looks good as far as I can tell at this
+ point.
+
  Revision 1.14  2006/05/28 02:43:49  phase1geo
  Integrating stable release 0.4.4 changes into main branch.  Updated regressions
  appropriately.

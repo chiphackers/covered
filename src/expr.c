@@ -390,7 +390,7 @@ expression* expression_create( expression* right, expression* left, exp_op_type 
   new_expr->left                = left;
   new_expr->value               = (vector*)malloc_safe( sizeof( vector ), __FILE__, __LINE__ );
   new_expr->table               = NULL;
-  new_expr->stmt                = NULL;
+  new_expr->elem.stmt           = NULL;
   new_expr->name                = NULL;
 
   if( right != NULL ) {
@@ -548,14 +548,15 @@ void expression_set_value( expression* exp, vector* vec ) {
         if( exp->op == EXP_OP_PARAM_MBIT ) {
           exp->value->value = vec->value + ((vec->width - exp->value->width) - lbit);
         } else {
-          exp->value->value = vec->value + (((vec->width - exp->value->width) - lbit) - exp->sig->lsb);
+          exp->value->value = vec->value + (((vec->width - exp->value->width) - lbit) -
+                                             exp->sig->dim[(exp->sig->udim_num + exp->sig->pdim_num)-1].lsb);
         }
       } else {
         exp->value->width = ((lbit - rbit) + 1);
         if( exp->op == EXP_OP_PARAM_MBIT ) {
           exp->value->value = vec->value + rbit;
         } else {
-          exp->value->value = vec->value + (rbit - exp->sig->lsb);
+          exp->value->value = vec->value + (rbit - exp->sig->dim[(exp->sig->udim_num + exp->sig->pdim_num)-1].lsb);
         }
       }
       break;
@@ -878,6 +879,41 @@ expression* expression_get_last_line_expr( expression* expr ) {
 }
 
 /*!
+ \param expr  Pointer to expression to get dimension for
+
+ \return Returns the dimension index for the given expression
+
+ Recursively iterates up expression tree, counting the number of dimensions deep that
+ the given expression is.
+*/
+int expression_get_curr_dimension( expression* expr ) {
+  
+  int dim;  /* Return value for this function */
+
+  assert( expr != NULL );
+
+  if( expr->op == EXP_OP_DIM ) {
+
+    dim = expression_get_curr_dimension( expr->left ) + 1;
+
+  } else {
+
+    /* We should never be calling this function for a root expression */
+    assert( ESUPPL_IS_ROOT( expr->suppl ) == 0 );
+
+    if( (expr->parent->expr->op == EXP_OP_DIM) && (expr->parent->expr->right == expr) ) {
+      dim = expression_get_curr_dimension( expr->parent->expr );
+    } else {
+      dim = 0;
+    }
+
+  }
+
+  return( dim );
+
+}
+
+/*!
  \param expr  Pointer to expression tree to parse.
  \param head  Pointer to head of signal name list to populate.
  \param tail  Pointer to tail of signal name list to populate.
@@ -1007,7 +1043,7 @@ bool expression_find_expr( expression* root, expression* expr ) {
 bool expression_contains_expr_calling_stmt( expression* expr, statement* stmt ) {
 
   return( (expr != NULL) &&
-          ((expr->stmt == stmt) ||
+          (((ESUPPL_TYPE( expr->suppl ) == ETYPE_STMT) && (expr->elem.stmt == stmt)) ||
            expression_contains_expr_calling_stmt( expr->left, stmt ) ||
            expression_contains_expr_calling_stmt( expr->right, stmt )) );
 
@@ -1095,8 +1131,8 @@ void expression_db_write( expression* expr, FILE* file, bool parse_mode ) {
     fprintf( file, " %s", expr->name );
   } else if( expr->sig != NULL ) {
     fprintf( file, " %s", expr->sig->name );  /* This will be valid for parameters */
-  } else if( expr->stmt != NULL ) {
-    fprintf( file, " %d", expression_get_id( expr->stmt->exp, parse_mode ) );
+  } else if( (ESUPPL_TYPE( expr->suppl ) == ETYPE_STMT) && (expr->elem.stmt != NULL) ) {
+    fprintf( file, " %d", expression_get_id( expr->elem.stmt->exp, parse_mode ) );
   }
 
   fprintf( file, "\n" );
@@ -2584,7 +2620,7 @@ bool expression_op_func__bassign( expression* expr, thread* thr ) {
 */
 bool expression_op_func__func_call( expression* expr, thread* thr ) {
 
-  sim_thread( sim_add_thread( thr, expr->stmt ) );
+  sim_thread( sim_add_thread( thr, expr->elem.stmt ) );
 
   return( TRUE );
 
@@ -2604,7 +2640,7 @@ bool expression_op_func__task_call( expression* expr, thread* thr ) {
 
   if( !expr->suppl.part.prev_called ) {
 
-    sim_add_thread( thr, expr->stmt );
+    sim_add_thread( thr, expr->elem.stmt );
     expr->suppl.part.prev_called         = 1;
     expr->value->value[0].part.exp.value = 0;
 
@@ -2634,13 +2670,13 @@ bool expression_op_func__nb_call( expression* expr, thread* thr ) {
 
   if( ESUPPL_IS_IN_FUNC( expr->suppl ) ) {
 
-    sim_thread( sim_add_thread( thr, expr->stmt ) );
+    sim_thread( sim_add_thread( thr, expr->elem.stmt ) );
     retval = TRUE;
 
   } else {
 
     if( !expr->suppl.part.prev_called ) {
-      sim_add_thread( thr, expr->stmt );
+      sim_add_thread( thr, expr->elem.stmt );
       expr->suppl.part.prev_called         = 1;
       expr->value->value[0].part.exp.value = 0;
     } else if( thr->child_head == NULL ) {
@@ -2665,7 +2701,7 @@ bool expression_op_func__nb_call( expression* expr, thread* thr ) {
 */
 bool expression_op_func__fork( expression* expr, thread* thr ) {
 
-  sim_add_thread( thr, expr->stmt );
+  sim_add_thread( thr, expr->elem.stmt );
 
   return( TRUE );
 
@@ -2695,7 +2731,7 @@ bool expression_op_func__join( expression* expr, thread* thr ) {
 */
 bool expression_op_func__disable( expression* expr, thread* thr ) {
 
-  sim_kill_thread_with_stmt( expr->stmt );
+  sim_kill_thread_with_stmt( expr->elem.stmt );
 
   return( TRUE );
 
@@ -3539,10 +3575,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
         if( !exp_only ) {
 #ifdef DEBUG_MODE
-          snprintf( user_msg, USER_MSG_LENGTH, "Removing statement block starting at line %d because it is a NB_CALL or FORK and its calling expression is being removed", expr->stmt->exp->line );
+          snprintf( user_msg, USER_MSG_LENGTH, "Removing statement block starting at line %d because it is a NB_CALL or FORK and its calling expression is being removed", expr->elem.stmt->exp->line );
           print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
-          stmt_blk_add_to_remove_list( expr->stmt );
+          stmt_blk_add_to_remove_list( expr->elem.stmt );
         } else {
           bind_rm_stmt( expr->id );
         }
@@ -3632,6 +3668,9 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.209  2006/09/13 23:05:56  phase1geo
+ Continuing from last submission.
+
  Revision 1.208  2006/09/12 22:24:42  phase1geo
  Added first attempt at collecting bitwise coverage information during simulation.
  Updated regressions for this change; however, we currently do not report on this

@@ -3557,8 +3557,8 @@ statement
         db_end_function_task_namedblock( @6.first_line );
         if( $4 != NULL ) {
           exp = db_create_expression( NULL, NULL, EXP_OP_NB_CALL, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-          exp->stmt = $4->stmt;
-          exp->name = $4->name;
+          exp->elem.stmt = $4->stmt;
+          exp->name      = $4->name;
           free_safe( $4 );
           stmt = db_create_statement( exp );
           db_add_expression( exp );
@@ -3593,8 +3593,8 @@ statement
         db_end_function_task_namedblock( @4.first_line );
         if( $3 != NULL ) {
           exp = db_create_expression( NULL, NULL, EXP_OP_NB_CALL, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-          exp->stmt = $3->stmt;
-          exp->name = $3->name;
+          exp->elem.stmt = $3->stmt;
+          exp->name      = $3->name;
           free_safe( $3 );
           stmt = db_create_statement( exp );
           db_add_expression( exp );

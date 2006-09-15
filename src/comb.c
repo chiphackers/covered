@@ -1039,13 +1039,13 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
               case EXP_OP_RPT_DLY  :  *size = l_size + r_size + 1;  strcpy( code_fmt, "%s %s" );             break;
               case EXP_OP_TASK_CALL :
               case EXP_OP_FUNC_CALL :
-                if( (tfunit = funit_find_by_id( exp->stmt->exp->id )) != NULL ) {
+                if( (tfunit = funit_find_by_id( exp->elem.stmt->exp->id )) != NULL ) {
                   tmpname = strdup_safe( tfunit->name, __FILE__, __LINE__ );
                   scope_extract_back( tfunit->name, tmpname, user_msg );
                   pname = scope_gen_printable( tmpname );
                 } else {
                   snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  Could not find statement %d in module %s",
-                            exp->stmt->exp->id, obf_funit( funit->name ) );
+                            exp->elem.stmt->exp->id, obf_funit( funit->name ) );
                   print_output( user_msg, FATAL, __FILE__, __LINE__ );
                   exit( 1 );
                 }
@@ -2644,6 +2644,9 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.157  2006/09/13 23:05:55  phase1geo
+ Continuing from last submission.
+
  Revision 1.156  2006/09/01 23:06:02  phase1geo
  Fixing regressions per latest round of changes.  Full regression now passes.
 

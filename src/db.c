@@ -1511,7 +1511,7 @@ statement* db_parallelize_statement( statement* stmt ) {
     exp = db_create_expression( NULL, NULL, EXP_OP_FORK, FALSE, stmt->exp->line, ((stmt->exp->col & 0xffff0000) >> 16), (stmt->exp->col & 0xffff), NULL );
 
     /* Bind the FORK expression to this statement */
-    exp->stmt = stmt;
+    exp->elem.stmt = stmt;
     bind_add_stmt( stmt->exp->id, exp, curr_funit );
 
     /* Reduce fork and block depth for the new statement */
@@ -2139,6 +2139,14 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.222  2006/09/11 22:27:55  phase1geo
+ Starting to work on supporting bitwise coverage.  Moving bits around in supplemental
+ fields to allow this to work.  Full regression has been updated for the current changes
+ though this feature is still not fully implemented at this time.  Also added parsing support
+ for SystemVerilog program blocks (ignored) and final blocks (not handled properly at this
+ time).  Also added lexer support for the return, void, continue, break, final, program and
+ endprogram SystemVerilog keywords.  Checkpointing work.
+
  Revision 1.221  2006/09/08 22:39:50  phase1geo
  Fixes for memory problems.
 
