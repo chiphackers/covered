@@ -29,11 +29,11 @@
 #include "obfuscate.h"
 
 
-extern char          user_msg[USER_MSG_LENGTH];
-extern vector_width* curr_range;
-extern func_unit*    curr_funit;
-extern str_link*     gen_mod_head;
-extern int           flag_global_generation;
+extern char       user_msg[USER_MSG_LENGTH];
+extern sig_range  curr_range;
+extern func_unit* curr_funit;
+extern str_link*  gen_mod_head;
+extern int        flag_global_generation;
 
 
 /*!
@@ -92,34 +92,52 @@ int VLwrap() {
 */
 void parser_dealloc_curr_range() {
 
-  if( curr_range != NULL ) {
-    static_expr_dealloc( curr_range->left,  FALSE );
-    static_expr_dealloc( curr_range->right, FALSE );
-    free_safe( curr_range );
+  int i;
+
+  for( i=0; i<(curr_range.pdim_num + curr_range.udim_num); i++ ) {
+    static_expr_dealloc( curr_range.dim[i].left,  FALSE );
+    static_expr_dealloc( curr_range.dim[i].right, FALSE );
   }
+
+  if( i > 0 ) {
+    free_safe( curr_range.dim );
+    curr_range.dim      = NULL;
+    curr_range.pdim_num = 0;
+    curr_range.udim_num = 0;
+  }
+
+  /* Clear the clear bit */
+  curr_range.clear = FALSE;
 
 }
 
 /*!
  Creates a copy of the curr_range variable for stored usage.
 */
-vector_width* parser_copy_curr_range() {
+sig_range* parser_copy_curr_range() {
 
-  vector_width* vw;  /* Copy of the curr_range variable */
+  sig_range* range;  /* Copy of the curr_range variable */
+  int        i;      /* Loop iterator */
 
-  assert( curr_range != NULL );
+  range = (sig_range*)malloc_safe( sizeof( sig_range ), __FILE__, __LINE__ );
 
-  vw             = (vector_width*)malloc_safe( sizeof( vector_width ), __FILE__, __LINE__ );
+  /* Set curr_range */
+  range->pdim_num = curr_range.pdim_num;
+  range->udim_num = curr_range.udim_num;
+  if( (curr_range.pdim_num + curr_range.udim_num) > 0 ) {
+    range->dim = (vector_width*)malloc_safe( (sizeof( vector_width ) * (curr_range.pdim_num + curr_range.udim_num)), __FILE__, __LINE__ );
+    for( i=0; i<(curr_range.pdim_num + curr_range.udim_num); i++ ) {
+      range->dim[i].left       = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
+      range->dim[i].left->num  = curr_range.dim[i].left->num;
+      range->dim[i].left->exp  = curr_range.dim[i].left->exp;
+      range->dim[i].right      = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
+      range->dim[i].right->num = curr_range.dim[i].right->num;
+      range->dim[i].right->exp = curr_range.dim[i].right->exp;
+      range->dim[i].implicit   = FALSE;
+    }
+  }
 
-  vw->left       = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
-  vw->left->num  = curr_range->left->num;
-  vw->left->exp  = curr_range->left->exp;
-
-  vw->right      = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
-  vw->right->num = curr_range->right->num;
-  vw->right->exp = curr_range->right->exp;
-
-  return( vw );
+  return( range );
 
 }
 
@@ -130,62 +148,140 @@ vector_width* parser_copy_curr_range() {
  Copies specifies static expressions to the current range.  Primarily used for
  copying typedef'ed ranges to the current range.
 */
-void parser_copy_se_to_curr_range( static_expr* left, static_expr* right ) {
+void parser_copy_range_to_curr_range( sig_range* range ) {
+
+  int i;  /* Loop iterator */
 
   /* Deallocate any memory currently associated with the curr_range variable */
   parser_dealloc_curr_range();
 
-  /* Allocate and set curr_range */
-  curr_range             = (vector_width*)malloc_safe( sizeof( vector_width ), __FILE__, __LINE__ );
-  curr_range->left       = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
-  curr_range->left->num  = left->num;
-  curr_range->left->exp  = left->exp;
-  curr_range->right      = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
-  curr_range->right->num = right->num;
-  curr_range->right->exp = right->exp;
-  curr_range->implicit   = FALSE;
+  /* Set curr_range */
+  curr_range.pdim_num = range->pdim_num;
+  curr_range.udim_num = range->udim_num;
+  if( (range->pdim_num + range->udim_num) > 0 ) {
+    curr_range.dim      = (vector_width*)malloc_safe( (sizeof( vector_width ) * (range->pdim_num + range->udim_num)), __FILE__, __LINE__ );
+    for( i=0; i<(range->pdim_num + range->udim_num); i++ ) {
+      curr_range.dim[i].left       = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
+      curr_range.dim[i].left->num  = range->dim[i].left->num;
+      curr_range.dim[i].left->exp  = range->dim[i].left->exp;
+      curr_range.dim[i].right      = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
+      curr_range.dim[i].right->num = range->dim[i].right->num;
+      curr_range.dim[i].right->exp = range->dim[i].right->exp;
+      curr_range.dim[i].implicit   = FALSE;
+    }
+  }
 
 }
 
 /*!
- \param left   Pointer to static expression of expression/value on the left side of the colon.
- \param right  Pointer to static expression of expression/value on the right side of the colon.
+ \param left    Pointer to static expression of expression/value on the left side of the colon.
+ \param right   Pointer to static expression of expression/value on the right side of the colon.
+ \param packed  If TRUE, adds a packed dimension; otherwise, adds an unpacked dimension.
 
  Deallocates and sets the curr_range variable from static expressions
 */
-void parser_explicitly_set_curr_range( static_expr* left, static_expr* right ) {
+void parser_explicitly_set_curr_range( static_expr* left, static_expr* right, bool packed ) {
 
-  /* Deallocate any memory currently associated with the curr_range variable */
+  sig_range* range;     /* Temporary range */
+  int        i;         /* Loop iterator */
+  int        j = 0;     /* Loop iterator */
+  int        pdim_num;  /* Number of packed dimensions to create */
+  int        udim_num;  /* Number of unpacked dimensions to create */
+
+  /* Copy the current range */
+  if( !curr_range.clear ) {
+    range = parser_copy_curr_range();
+    pdim_num =  packed ? (range->pdim_num + 1) : range->pdim_num;
+    udim_num = !packed ? (range->udim_num + 1) : range->udim_num;
+  } else {
+    pdim_num =  packed ? 1 : 0;
+    udim_num = !packed ? 1 : 0;
+  }
+
+  /* Deallocate the current range */
   parser_dealloc_curr_range();
 
-  /* Allocate and set curr_range */
-  curr_range           = (vector_width*)malloc_safe( sizeof( vector_width ), __FILE__, __LINE__ );
-  curr_range->left     = left;
-  curr_range->right    = right;
-  curr_range->implicit = FALSE;
+  /* Now rebuild current range, adding in the new range */
+  curr_range.pdim_num = pdim_num;
+  curr_range.udim_num = udim_num;
+  curr_range.dim = (vector_width*)malloc_safe( (sizeof( vector_width ) * (pdim_num + udim_num)), __FILE__, __LINE__ );
+  for( i=0; i<(pdim_num + udim_num); i++ ) {
+    if( ( packed && ((i + 1) == (pdim_num + udim_num))) ||
+        (!packed && ((i + 1) == udim_num)) ) {
+      curr_range.dim[i].left     = left;
+      curr_range.dim[i].right    = right;
+      curr_range.dim[i].implicit = FALSE;
+    } else {
+      curr_range.dim[i].left     = range->dim[j].left;
+      curr_range.dim[i].right    = range->dim[j].right;
+      curr_range.dim[i].implicit = range->dim[j].implicit;
+      j++;
+    }
+  }
+
+  /* Deallocate the rest of the temporary range */
+  if( j > 0 ) {
+    free_safe( range->dim );
+    free_safe( range );
+  }
 
 }
 
 /*!
  \param left_num   Integer value of left expression
  \param right_num  Integer value of right expression
+ \param packed     If TRUE, adds a packed dimension; otherwise, adds an unpacked dimension.
 
  Deallocates and sets the curr_range variable from known integer values.
 */
-void parser_implicitly_set_curr_range( int left_num, int right_num ) {
+void parser_implicitly_set_curr_range( int left_num, int right_num, bool packed ) {
 
-  /* Deallocate any memory currently associated with the curr_range variable */
+  sig_range* range;     /* Temporary range */
+  int        i;         /* Loop iterator */
+  int        j = 0;     /* Loop iterator */
+  int        pdim_num;  /* Number of packed dimensions to create */
+  int        udim_num;  /* Number of unpacked dimensions to create */
+
+  /* Copy the current range */
+  if( !curr_range.clear ) {
+    range = parser_copy_curr_range();
+    pdim_num =  packed ? (range->pdim_num + 1) : range->pdim_num;
+    udim_num = !packed ? (range->udim_num + 1) : range->udim_num;
+  } else {
+    pdim_num =  packed ? 1 : 0;
+    udim_num = !packed ? 1 : 0;
+  }
+
+  /* Deallocate the current range */
   parser_dealloc_curr_range();
 
-  /* Allocate and set curr_range */
-  curr_range             = (vector_width*)malloc_safe( sizeof( vector_width ), __FILE__, __LINE__ );
-  curr_range->left       = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
-  curr_range->left->num  = left_num;
-  curr_range->left->exp  = NULL;
-  curr_range->right      = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
-  curr_range->right->num = right_num;
-  curr_range->right->exp = NULL;
-  curr_range->implicit   = TRUE;
+  /* Now rebuild current range, adding in the new range */
+  curr_range.pdim_num = pdim_num;
+  curr_range.udim_num = udim_num;
+  curr_range.dim = (vector_width*)malloc_safe( (sizeof( vector_width ) * (pdim_num + udim_num)), __FILE__, __LINE__ );
+  for( i=0; i<(pdim_num + udim_num); i++ ) {
+    if( ( packed && ((i + 1) == (pdim_num + udim_num))) ||
+        (!packed && ((i + 1) == udim_num)) ) {
+      curr_range.dim[i].left       = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
+      curr_range.dim[i].left->num  = left_num;
+      curr_range.dim[i].left->exp  = NULL;
+      curr_range.dim[i].right      = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
+      curr_range.dim[i].right->num = right_num;
+      curr_range.dim[i].right->exp = NULL;
+      curr_range.dim[i].implicit   = TRUE;
+    } else {
+      curr_range.dim[i].left     = range->dim[j].left;
+      curr_range.dim[i].right    = range->dim[j].right;
+      curr_range.dim[i].implicit = range->dim[j].implicit;
+      j++;
+    }
+  }
+
+  /* Deallocate the rest of the temporary range */
+  if( j > 0 ) {
+    free_safe( range->dim );
+    free_safe( range );
+  }
 
 }
 
@@ -219,6 +315,14 @@ bool parser_check_generation( int gen ) {
 
 /*
  $Log$
+ Revision 1.11  2006/08/31 22:32:18  phase1geo
+ Things are in a state of flux at the moment.  I have added proper parsing support
+ for assertions, properties and sequences.  Also added partial support for the $root
+ space (though I need to work on figuring out how to handle it in terms of the
+ instance tree) and all that goes along with that.  Add parsing support with an
+ error message for multi-dimensional array declarations.  Regressions should not be
+ expected to run correctly at the moment.
+
  Revision 1.10  2006/08/18 22:07:45  phase1geo
  Integrating obfuscation into all user-viewable output.  Verified that these
  changes have not made an impact on regressions.  Also improved performance

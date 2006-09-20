@@ -65,9 +65,6 @@ bool funit_db_read( func_unit* funit, char* scope, char** line );
 /*! \brief Reads and merges two functional units into base functional unit. */
 bool funit_db_merge( func_unit* base, FILE* file, bool same );
 
-/*! \brief Reads and replaces original functional unit with contents of new functional unit. */
-bool funit_db_replace( func_unit* base, FILE* file );
-
 /*! \brief Finds the functional unit that contains the given statement/expression ID */
 func_unit* funit_find_by_id( int id );
 
@@ -86,6 +83,10 @@ void funit_dealloc( func_unit* funit );
 
 /*
  $Log$
+ Revision 1.13  2006/09/07 21:59:24  phase1geo
+ Fixing some bugs related to statement block removal.  Also made some significant
+ optimizations to this code.
+
  Revision 1.12  2006/07/24 22:20:23  phase1geo
  Things are quite hosed at the moment -- trying to come up with a scheme to
  handle embedded hierarchy in generate blocks.  Chances are that a lot of

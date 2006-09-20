@@ -381,24 +381,6 @@ bool db_read( char* file, int read_mode ) {
               merge_mode = TRUE;
               curr_funit = foundinst->funit;
               funit_db_merge( foundinst->funit, db_handle, TRUE );
-            } else if( read_mode == READ_MODE_REPORT_MOD_REPLACE ) {
-              if( (foundfunit = funit_link_find( &tmpfunit, funit_head )) != NULL ) {
-                merge_mode = TRUE;
-                curr_funit = foundfunit->funit;
-                /*
-                 If this functional unit has been assigned a stat, remove it and replace it with the new functional unit contents;
-                 otherwise, merge the results of the new functional unit with the old.
-                */
-                if( foundfunit->funit->stat != NULL ) {
-                  statistic_dealloc( foundfunit->funit->stat );
-                  foundfunit->funit->stat = NULL;
-                  funit_db_replace( foundfunit->funit, db_handle );
-                } else {
-                  funit_db_merge( foundfunit->funit, db_handle, FALSE );
-                }
-              } else {
-                retval = FALSE;
-              }
             } else if( (read_mode == READ_MODE_REPORT_MOD_MERGE) && ((foundfunit = funit_link_find( &tmpfunit, funit_head )) != NULL) ) {
               merge_mode = TRUE;
               curr_funit = foundfunit->funit;
@@ -797,14 +779,15 @@ void db_add_override_param( char* inst_name, expression* expr, char* param_name 
 }
 
 /*!
- \param sig       Pointer to signal to attach parameter to.
- \param parm_exp  Expression containing value of vector parameter.
- \param type      Type of signal vector parameter to create (LSB or MSB).
+ \param sig        Pointer to signal to attach parameter to.
+ \param parm_exp   Expression containing value of vector parameter.
+ \param type       Type of signal vector parameter to create (LSB or MSB).
+ \param dimension  Specifies the signal dimension to solve for.
 
  Creates a vector parameter for the specified signal or expression with the specified
  parameter expression.  This function is called by the parser.
 */
-void db_add_vector_param( vsignal* sig, expression* parm_exp, int type ) {
+void db_add_vector_param( vsignal* sig, expression* parm_exp, int type, int dimension ) {
 
   mod_parm* mparm;  /* Holds newly created module parameter */
 
@@ -821,6 +804,9 @@ void db_add_vector_param( vsignal* sig, expression* parm_exp, int type ) {
 
   /* Add signal to module parameter list */
   mparm->sig = sig;
+
+  /* Set the dimension value of the module parameter to our dimension */
+  mparm->suppl.part.dimension = dimension;
 
 }
 
@@ -847,8 +833,7 @@ void db_add_defparam( char* name, expression* expr ) {
 /*!
  \param name       Name of signal being added.
  \param type       Type of signal being added.
- \param left       Specifies constant value for calculation of left-hand vector value.
- \param right      Specifies constant value for calculation of right-hand vector value.
+ \param range      Specifies signal range information.
  \param is_signed  Specifies that this signal is signed (TRUE) or not (FALSE)
  \param mba        Set to TRUE if specified signal must be assigned by simulated results.
  \param line       Line number where signal was declared.
@@ -862,14 +847,11 @@ void db_add_defparam( char* name, expression* expr ) {
  add to the current module's parameter list and all associated instances are
  updated to contain new value.
 */
-void db_add_signal( char* name, int type, static_expr* left, static_expr* right, bool is_signed, bool mba,
-                    int line, int col, bool handled ) {
+void db_add_signal( char* name, int type, sig_range* range, bool is_signed, bool mba, int line, int col, bool handled ) {
 
-  vsignal  tmpsig;      /* Temporary signal for signal searching */
-  vsignal* sig;         /* Container for newly created signal */
-  int      lsb;         /* Signal LSB */
-  int      width;       /* Signal width */
-  int      big_endian;  /* Signal endianness */
+  vsignal  tmpsig;  /* Temporary signal for signal searching */
+  vsignal* sig;     /* Container for newly created signal */
+  int      i;       /* Loop iterator */
 
 #ifdef DEBUG_MODE
   snprintf( user_msg, USER_MSG_LENGTH, "In db_add_signal, signal: %s, line: %d, col: %d", obf_sig( name ), line, col );
@@ -881,33 +863,37 @@ void db_add_signal( char* name, int type, static_expr* left, static_expr* right,
   /* Add signal to current module's signal list if it does not already exist */
   if( sig_link_find( &tmpsig, curr_funit->sig_head ) == NULL ) {
 
-    static_expr_calc_lsb_and_width_pre( left, right, &width, &lsb, &big_endian );
-
-    /* Check to make sure that signal width does not exceed maximum size */
-    if( width > MAX_BIT_WIDTH ) {
-      snprintf( user_msg, USER_MSG_LENGTH, "Signal (%s) width (%d) exceeds maximum allowed by Covered (%d).  Ignoring...",
-                obf_sig( name ), width, MAX_BIT_WIDTH );
-      print_output( user_msg, WARNING, __FILE__, __LINE__ );
-      width = -1;
-      left  = NULL;
-      right = NULL;
-    }  
-
-    if( (lsb != -1) && (width != -1) ) { 
-      sig = vsignal_create( name, type, width, lsb, line, col, big_endian );
+    /* Create the signal */
+    if( type == SSUPPL_TYPE_GENVAR ) {
+      /* For genvars, set the size to 32, automatically */
+      sig = vsignal_create( name, type, 32, line, col );
     } else {
-      sig = (vsignal*)malloc_safe( sizeof( vsignal ), __FILE__, __LINE__ );
-      vsignal_init( sig, strdup_safe( name, __FILE__, __LINE__ ), type,
-                    (vector*)malloc_safe( sizeof( vector ), __FILE__, __LINE__ ), lsb, line, col, big_endian );
-      vector_init( sig->value, NULL, width, VTYPE_SIG );
-      if( (left != NULL) && (left->exp != NULL) ) {
-        db_add_vector_param( sig, left->exp, PARAM_TYPE_SIG_MSB );
+      /* For normal signals just make the width a value of 1 for now -- it will be resized during funit_resize_elements */
+      sig = vsignal_create( name, type, 1, line, col );
+    }
+
+    /* Check all of the dimensions within range and create vector parameters, if necessary */
+    assert( range != NULL );
+    assert( (range->pdim_num + range->udim_num) > 0 );
+    sig->pdim_num = range->pdim_num;
+    sig->udim_num = range->udim_num;
+    sig->dim = (dim_range*)malloc_safe( (sizeof( dim_range ) * (range->pdim_num + range->udim_num)), __FILE__, __LINE__ );
+    for( i=0; i<(range->pdim_num + range->udim_num); i++ ) {
+      assert( range->dim[i].left != NULL );
+      if( range->dim[i].left->exp != NULL ) {
+        db_add_vector_param( sig, range->dim[i].left->exp, PARAM_TYPE_SIG_MSB, i );
+      } else {
+        sig->dim[i].msb = range->dim[i].left->num;
       }
-      if( (right != NULL) && (right->exp != NULL) ) {
-        db_add_vector_param( sig, right->exp, PARAM_TYPE_SIG_LSB );
+      assert( range->dim[i].right != NULL );
+      if( range->dim[i].right->exp != NULL ) {
+        db_add_vector_param( sig, range->dim[i].right->exp, PARAM_TYPE_SIG_LSB, i );
+      } else {
+        sig->dim[i].lsb = range->dim[i].right->num;
       }
     }
 
+    /* Add the signal to either the functional unit or a generate item */
     if( (generate_mode > 0) && (type != SSUPPL_TYPE_GENVAR) ) {
       last_gi = gen_item_create_sig( sig );
       if( curr_gi_block != NULL ) {
@@ -973,12 +959,11 @@ void db_end_enum_list() {
  \param is_signed    Specifies if this typedef is signed or not
  \param is_handled   Specifies if this typedef is handled or not
  \param is_sizeable  Specifies if a range can be later placed on this value
- \param msb          Pointer to static expression containing the MSB information
- \param lsb          Pointer to static expression containing the LSB information
+ \param range        Dimensional range information for this value
 
  Adds the given names and information to the list of typedefs for the current module.
 */
-void db_add_typedef( char* name, bool is_signed, bool is_handled, bool is_sizeable, static_expr* msb, static_expr* lsb ) {
+void db_add_typedef( char* name, bool is_signed, bool is_handled, bool is_sizeable, sig_range* range ) {
 
   typedef_item* tdi;   /* Typedef item to create */
 
@@ -994,12 +979,7 @@ void db_add_typedef( char* name, bool is_signed, bool is_handled, bool is_sizeab
   tdi->is_signed   = is_signed;
   tdi->is_handled  = is_handled;
   tdi->is_sizeable = is_sizeable;
-  tdi->msb         = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
-  tdi->msb->num    = msb->num;
-  tdi->msb->exp    = msb->exp;
-  tdi->lsb         = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
-  tdi->lsb->num    = lsb->num;
-  tdi->lsb->exp    = lsb->exp;
+  tdi->range       = range;
   tdi->next        = NULL;
 
   /* Add it the current module's typedef list */
@@ -1255,7 +1235,7 @@ expression* db_create_expression( expression* right, expression* left, int op, b
   }
 
   /*
-   If this is some kind of assignment expression operator, set the left expression vector to that of
+   If this is some kind of assignment expression operator, set the our expression vector to that of
    the right expression.
   */
   if( (expr->op == EXP_OP_BASSIGN) ||
@@ -1265,6 +1245,7 @@ expression* db_create_expression( expression* right, expression* left, int op, b
       (expr->op == EXP_OP_ASSIGN)  ||
       (expr->op == EXP_OP_IF)      ||
       (expr->op == EXP_OP_WHILE)   ||
+      (expr->op == EXP_OP_DIM)     ||
       (expr->op == EXP_OP_DLY_ASSIGN) ) {
     vector_dealloc( expr->value );
     expr->value = right->value;
@@ -2139,6 +2120,10 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.223  2006/09/15 22:14:54  phase1geo
+ Working on adding arrayed signals.  This is currently in progress and doesn't
+ even compile at this point, much less work.  Checkpointing work.
+
  Revision 1.222  2006/09/11 22:27:55  phase1geo
  Starting to work on supporting bitwise coverage.  Moving bits around in supplemental
  fields to allow this to work.  Full regression has been updated for the current changes

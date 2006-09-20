@@ -2,15 +2,15 @@
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd param8.vcd -o param8.cdd -v param8.v
 3 0 $root $root NA 0 0
 3 0 main main param8.v 1 17
-1 a 0 3 3000a 4 1 aa
+1 a 3 3000a 1 0 3 0 4 1 aa
 3 0 foo main.bar param8.v 20 30
 2 1 28 f0012 2 32 4 0 0 ZERO
 2 2 28 b000b 1 1 4 0 0 a
 2 3 28 b0012 2 9 20044 1 2 4 2 f00aa
 2 4 28 70007 0 1 400 0 0 b
 2 5 28 70012 2 35 f006 3 4
-1 SIZE 0 0 80000 32 1 10 0 0 0 0 0 0 0
-1 ZERO 0 0 80000 32 1 0 0 0 0 0 0 0 0
-1 a 0 21 1a 4 1 aa
-1 b 0 26 30012 4 1 aa
+1 SIZE 0 80000 1 0 31 0 32 1 10 0 0 0 0 0 0 0
+1 ZERO 0 80000 1 0 31 0 32 1 0 0 0 0 0 0 0 0
+1 a 21 1a 1 0 3 0 4 1 aa
+1 b 26 30012 1 0 3 0 4 1 aa
 4 5 5 5

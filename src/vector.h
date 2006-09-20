@@ -46,9 +46,6 @@ bool vector_db_read( vector** vec, char** line );
 /*! \brief Reads and merges two vectors, placing the result into base vector. */
 bool vector_db_merge( vector* base, char** line, bool same );
 
-/*! \brief Reads and replaces original vector with newly read vector. */
-bool vector_db_replace( vector* base, char** line );
-
 /*! \brief Returns string containing toggle 0 -> 1 information in binary format */
 char* vector_get_toggle01( vec_data* nib, int width );
 
@@ -157,6 +154,14 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.36  2006/09/11 22:27:55  phase1geo
+ Starting to work on supporting bitwise coverage.  Moving bits around in supplemental
+ fields to allow this to work.  Full regression has been updated for the current changes
+ though this feature is still not fully implemented at this time.  Also added parsing support
+ for SystemVerilog program blocks (ignored) and final blocks (not handled properly at this
+ time).  Also added lexer support for the return, void, continue, break, final, program and
+ endprogram SystemVerilog keywords.  Checkpointing work.
+
  Revision 1.35  2006/08/20 03:21:00  phase1geo
  Adding support for +=, -=, *=, /=, %=, &=, |=, ^=, <<=, >>=, <<<=, >>>=, ++
  and -- operators.  The op-and-assign operators are currently good for

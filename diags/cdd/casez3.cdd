@@ -2,5 +2,5 @@
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd casez3.vcd -o casez3.cdd -v casez3.v
 3 0 $root $root NA 0 0
 3 0 main main casez3.v 1 21
-1 a 0 3 3000a 1 1 2
-1 entry 0 5 3000a 2 1 a
+1 a 3 3000a 1 0 0 0 1 1 2
+1 entry 5 3000a 1 0 1 0 2 1 a

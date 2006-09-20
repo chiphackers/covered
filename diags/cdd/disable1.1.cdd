@@ -3,7 +3,7 @@
 3 0 $root $root NA 0 0
 3 0 main main disable1.1.v 1 22
 2 1 5 8000c 2 3d 2100a 0 0 1 2 1102 foobar
-1 a 0 3 830004 1 1 102
+1 a 3 830004 1 0 0 0 1 1 102
 4 1 0 0
 3 1 main.foobar main.foobar disable1.1.v 5 13
 2 2 6 d0010 1 0 20004 0 0 1 4 0

@@ -505,7 +505,11 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
         snprintf( user_msg, USER_MSG_LENGTH, "module \"%s\", file \"%s\", line %d",
                   obf_funit( funit_exp->name ), obf_file( funit_exp->filename ), exp_line );
         print_output( user_msg, WARNING_WRAP, __FILE__, __LINE__ );
-        found_sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT, 1, 0, exp->line, ((exp->col >> 16) & 0xffff), 0 );
+        found_sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT, 1, exp->line, ((exp->col >> 16) & 0xffff) );
+        found_sig->pdim_num   = 1;
+        found_sig->dim        = (dim_range*)malloc_safe( (sizeof( dim_range ) * 1), __FILE__, __LINE__ );
+        found_sig->dim[0].msb = 0;
+        found_sig->dim[0].lsb = 0;
         sig_link_add( found_sig, &(funit_exp->sig_head), &(funit_exp->sig_tail) );
       }
 
@@ -550,7 +554,7 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
             (exp->op == EXP_OP_PARAM_MBIT_POS) ||
             (exp->op == EXP_OP_PARAM_MBIT_NEG) ||
             (exp->op == EXP_OP_TRIGGER) ) {
-          expression_set_value( exp, found_sig->value );
+          expression_set_value( exp, found_sig );
         }
 
       }
@@ -807,7 +811,7 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
           exp->sig = sigl->sig;
 
           /* Attach the signal's value to our expression value */
-          expression_set_value( exp, sigl->sig->value );
+          expression_set_value( exp, sigl->sig );
 
         }
 
@@ -1026,6 +1030,10 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.94  2006/09/15 22:14:54  phase1geo
+ Working on adding arrayed signals.  This is currently in progress and doesn't
+ even compile at this point, much less work.  Checkpointing work.
+
  Revision 1.93  2006/09/11 22:27:55  phase1geo
  Starting to work on supporting bitwise coverage.  Moving bits around in supplemental
  fields to allow this to work.  Full regression has been updated for the current changes

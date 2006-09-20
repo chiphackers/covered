@@ -3,9 +3,9 @@
 3 0 $root $root NA 0 0
 3 0 main main localparam1.3.v 1 12
 3 0 foo main.bar localparam1.3.v 15 25
-1 SIZEG1 0 0 80000 32 1 44 0 0 0 0 0 0 0
-1 SIZEL 0 0 80000 32 1 11 0 0 0 0 0 0 0
-1 SIZEG2 0 0 80000 32 1 10 1 0 0 0 0 0 0
-1 a 0 21 30014 5 1 aa 2
-1 b 0 22 30014 10 1 aa aa a
-1 c 0 23 30014 20 1 aa aa aa aa aa
+1 SIZEG1 0 80000 1 0 31 0 32 1 44 0 0 0 0 0 0 0
+1 SIZEL 0 80000 1 0 31 0 32 1 11 0 0 0 0 0 0 0
+1 SIZEG2 0 80000 1 0 31 0 32 1 10 1 0 0 0 0 0 0
+1 a 21 30014 1 0 4 0 5 1 aa 2
+1 b 22 30014 1 0 9 0 10 1 aa aa a
+1 c 23 30014 1 0 19 0 20 1 aa aa aa aa aa

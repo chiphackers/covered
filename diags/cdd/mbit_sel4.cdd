@@ -2,4 +2,4 @@
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd mbit_sel4.dump -o mbit_sel4.cdd -v mbit_sel4.v
 3 0 $root $root NA 0 0
 3 0 main main mbit_sel4.v 1 19
-1 a 0 3 3000b 4 1 82aa
+1 a 3 3000b 1 0 3 0 4 1 82aa

@@ -731,21 +731,21 @@ void combination_draw_centered_line( char* line, int size, int exp_id, bool left
 void combination_underline_tree( expression* exp, unsigned int curr_depth, char*** lines, int* depth, int* size,
                                  int parent_op, bool center, func_unit* funit ) {
 
-  char**     l_lines;        /* Pointer to left underline stack */
-  char**     r_lines;        /* Pointer to right underline stack */
-  int        l_depth = 0;    /* Index to top of left stack */
-  int        r_depth = 0;    /* Index to top of right stack */
-  int        l_size;         /* Number of characters for left expression */
-  int        r_size;         /* Number of characters for right expression */
-  int        i;              /* Loop iterator */
-  char*      exp_sp;         /* Space to take place of missing expression(s) */
-  char       code_fmt[300];  /* Contains format string for rest of stack */
-  char*      tmpstr;         /* Temporary string value */
-  int        comb_missed;    /* If set to 1, current combination was missed */
-  char*      tmpname;        /* Temporary pointer to current signal name */
-  char*      pname;          /* Printable version of signal/function/task name */
-  func_unit* tfunit;         /* Temporary pointer to found functional unit */
-  int        ulid;           /* Underline ID to use */
+  char**     l_lines;         /* Pointer to left underline stack */
+  char**     r_lines;         /* Pointer to right underline stack */
+  int        l_depth = 0;     /* Index to top of left stack */
+  int        r_depth = 0;     /* Index to top of right stack */
+  int        l_size;          /* Number of characters for left expression */
+  int        r_size;          /* Number of characters for right expression */
+  int        i;               /* Loop iterator */
+  char*      exp_sp;          /* Space to take place of missing expression(s) */
+  char       code_fmt[300];   /* Contains format string for rest of stack */
+  char*      tmpstr;          /* Temporary string value */
+  int        comb_missed;     /* If set to 1, current combination was missed */
+  char*      tmpname = NULL;  /* Temporary pointer to current signal name */
+  char*      pname;           /* Printable version of signal/function/task name */
+  func_unit* tfunit;          /* Temporary pointer to found functional unit */
+  int        ulid;            /* Underline ID to use */
   
   *depth  = 0;
   *size   = 0;
@@ -909,23 +909,35 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
               case EXP_OP_UNXOR      :  *size = l_size + r_size + 2;  strcpy( code_fmt, "  %s"             );  break;
               case EXP_OP_PARAM_SBIT :
               case EXP_OP_SBIT_SEL   :  
-                tmpname = scope_gen_printable( exp->name );
-                *size = l_size + r_size + strlen( tmpname ) + 2;
-                for( i=0; i<strlen( tmpname ); i++ ) {
-                  code_fmt[i] = ' ';
+                if( (ESUPPL_IS_ROOT( exp->suppl ) == 0) &&
+                    (exp->parent->expr->op == EXP_OP_DIM) &&
+                    (exp->parent->expr->right == exp) ) {
+                  code_fmt[0] = '\0';
+                } else {
+                  tmpname = scope_gen_printable( exp->name );
+                  *size = l_size + r_size + strlen( tmpname ) + 2;
+                  for( i=0; i<strlen( tmpname ); i++ ) {
+                    code_fmt[i] = ' ';
+                  }
+                  code_fmt[i] = '\0';
                 }
-                code_fmt[i] = '\0';
                 strcat( code_fmt, " %s " );
                 free_safe( tmpname );
                 break;
               case EXP_OP_PARAM_MBIT :
               case EXP_OP_MBIT_SEL   :  
-                tmpname = scope_gen_printable( exp->name );
-                *size = l_size + r_size + strlen( tmpname ) + 3;  
-                for( i=0; i<strlen( tmpname ); i++ ) {
-                  code_fmt[i] = ' ';
+                if( (ESUPPL_IS_ROOT( exp->suppl ) == 0) &&
+                    (exp->parent->expr->op == EXP_OP_DIM) &&
+                    (exp->parent->expr->right == exp) ) {
+                  code_fmt[0] = '\0';
+                } else {
+                  tmpname = scope_gen_printable( exp->name );
+                  *size = l_size + r_size + strlen( tmpname ) + 3;  
+                  for( i=0; i<strlen( tmpname ); i++ ) {
+                    code_fmt[i] = ' ';
+                  }
+                  code_fmt[i] = '\0';
                 }
-                code_fmt[i] = '\0';
                 strcat( code_fmt, " %s %s " );
                 free_safe( tmpname );
                 break;
@@ -933,12 +945,18 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
               case EXP_OP_PARAM_MBIT_NEG :
               case EXP_OP_MBIT_POS       :
               case EXP_OP_MBIT_NEG       :
-                tmpname = scope_gen_printable( exp->name );
-                *size = l_size + r_size + strlen( tmpname ) + 4;
-                for( i=0; i<strlen( tmpname ); i++ ) {
-                  code_fmt[i] = ' ';
+                if( (ESUPPL_IS_ROOT( exp->suppl ) == 0) &&
+                    (exp->parent->expr->op == EXP_OP_DIM) &&
+                    (exp->parent->expr->right == exp) ) {
+                  code_fmt[0] = '\0';
+                } else {
+                  tmpname = scope_gen_printable( exp->name );
+                  *size = l_size + r_size + strlen( tmpname ) + 4;
+                  for( i=0; i<strlen( tmpname ); i++ ) {
+                    code_fmt[i] = ' ';
+                  }
+                  code_fmt[i] = '\0';
                 }
-                code_fmt[i] = '\0';
                 strcat( code_fmt, " %s  %s " );
                 free_safe( tmpname );
                 break;
@@ -1059,6 +1077,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
                 free_safe( pname );
                 break;
               case EXP_OP_NEGATE   :  *size = l_size + r_size + 1;  strcpy( code_fmt, " %s"              );  break;
+              case EXP_OP_DIM      :  *size = l_size + r_size;      strcpy( code_fmt, "%s%s"             );  break;
               default              :
                 snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  Unknown expression type in combination_underline_tree (%d)",
                           exp->op );
@@ -2644,6 +2663,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.158  2006/09/15 22:14:54  phase1geo
+ Working on adding arrayed signals.  This is currently in progress and doesn't
+ even compile at this point, much less work.  Checkpointing work.
+
  Revision 1.157  2006/09/13 23:05:55  phase1geo
  Continuing from last submission.
 

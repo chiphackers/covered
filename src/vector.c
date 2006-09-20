@@ -245,8 +245,6 @@ void vector_db_write( vector* vec, FILE* file, bool write_data ) {
     vec->suppl.all
   );
 
-  assert( vec->width <= MAX_BIT_WIDTH );
-
   if( vec->value == NULL ) {
 
     /* If the vector value was NULL, output default value */
@@ -431,86 +429,6 @@ bool vector_db_merge( vector* base, char** line, bool same ) {
         i += 4;
       }
                        
-    }
-
-  } else {
-
-    retval = FALSE;
-
-  }
-
-  return( retval );
-
-}
-
-/*!
- \param base  Base vector containing data to replace.
- \param line  Pointer to line to parse for vector information.
-
- \return Returns TRUE if parsing successful; otherwise, returns FALSE.
-
- Parses current file line for vector information and performs vector replace of
- base vector with read vector information.  If the vectors are found to be different
- (width is not equal), an error message is sent to the user and the
- program is halted.  If the vectors are found to be equivalents, the replacement is
- performed on the vector nibbles.
-*/
-bool vector_db_replace( vector* base, char** line ) {
-
-  bool   retval = TRUE;   /* Return value of this function */
-  int    width;           /* Width of read vector */
-  int    suppl;           /* Supplemental value of vector */
-  int    chars_read;      /* Number of characters read */
-  int    i;               /* Loop iterator */
-  int    value;           /* Integer form of value */
-  nibble nibs[4];         /* Temporary nibble containers */
-
-  assert( base != NULL );
-
-  if( sscanf( *line, "%d %d%n", &width, &suppl, &chars_read ) == 2 ) {
-
-    *line = *line + chars_read;
-
-    if( base->width != width ) {
-
-      print_output( "Attempting to replace a database derived from a different design.  Unable to replace",
-                    FATAL, __FILE__, __LINE__ );
-      exit( 1 );
-
-    } else {
-
-      i = 0;
-      while( (i < width) && retval ) {
-        if( sscanf( *line, "%x%n", &value, &chars_read ) == 1 ) {
-          *line += chars_read;
-          vector_uint_to_nibbles( value, nibs );
-          switch( width - i ) {
-            case 0 :  break;
-            case 1 :
-              base->value[i+0].all = nibs[0];
-              break;
-            case 2 :
-              base->value[i+0].all = nibs[0];
-              base->value[i+1].all = nibs[1];
-              break;
-            case 3 :
-              base->value[i+0].all = nibs[0];
-              base->value[i+1].all = nibs[1];
-              base->value[i+2].all = nibs[2];
-              break;
-            default:
-              base->value[i+0].all = nibs[0];
-              base->value[i+1].all = nibs[1];
-              base->value[i+2].all = nibs[2];
-              base->value[i+3].all = nibs[3];
-              break;
-          }
-        } else {
-          retval = FALSE;
-        }
-        i += 4;
-      }
-
     }
 
   } else {
@@ -2077,6 +1995,9 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.80  2006/09/13 23:05:56  phase1geo
+ Continuing from last submission.
+
  Revision 1.79  2006/09/11 22:27:55  phase1geo
  Starting to work on supporting bitwise coverage.  Moving bits around in supplemental
  fields to allow this to work.  Full regression has been updated for the current changes

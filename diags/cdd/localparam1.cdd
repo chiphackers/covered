@@ -3,5 +3,5 @@
 3 0 $root $root NA 0 0
 3 0 main main localparam1.v 1 12
 3 0 foo main.bar localparam1.v 15 21
-1 SIZE 0 0 80000 32 1 11 0 0 0 0 0 0 0
-1 a 0 19 30012 5 1 aa 2
+1 SIZE 0 80000 1 0 31 0 32 1 11 0 0 0 0 0 0 0
+1 a 19 30012 1 0 4 0 5 1 aa 2

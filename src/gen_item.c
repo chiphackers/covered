@@ -8,17 +8,17 @@
 #include <stdio.h>
 
 #include "defines.h"
-#include "gen_item.h"
 #include "expr.h"
-#include "util.h"
-#include "vsignal.h"
-#include "instance.h"
-#include "statement.h"
-#include "param.h"
-#include "link.h"
 #include "func_unit.h"
-#include "vector.h"
+#include "gen_item.h"
+#include "instance.h"
+#include "link.h"
 #include "obfuscate.h"
+#include "param.h"
+#include "statement.h"
+#include "util.h"
+#include "vector.h"
+#include "vsignal.h"
 
 
 extern static_expr* parse_static_expr( char* str, func_unit* funit, int lineno, bool no_genvars );
@@ -631,26 +631,28 @@ gen_item* gen_item_create_bind( char* name, expression* expr ) {
  Recursively iterates the the specified generate item block, resizing all statements
  within that block.
 */
-void gen_item_resize_statements( gen_item* gi ) {
+void gen_item_resize_stmts_and_sigs( gen_item* gi ) {
 
   if( gi != NULL ) {
 
     /* Resize our statement, if we are one */
     if( gi->suppl.part.type == GI_TYPE_STMT ) {
       statement_size_elements( gi->elem.stmt );
+    } else if( gi->suppl.part.type == GI_TYPE_SIG ) {
+      vsignal_create_vec( gi->elem.sig );
     }
 
     /* Go to the next generate item */
     if( gi->next_true == gi->next_false ) {
       if( gi->suppl.part.stop_true == 0 ) {
-        gen_item_resize_statements( gi->next_true );
+        gen_item_resize_stmts_and_sigs( gi->next_true );
       }
     } else {
       if( gi->suppl.part.stop_false == 0 ) {
-        gen_item_resize_statements( gi->next_false );
+        gen_item_resize_stmts_and_sigs( gi->next_false );
       }
       if( gi->suppl.part.stop_true == 0 ) {
-        gen_item_resize_statements( gi->next_true );
+        gen_item_resize_stmts_and_sigs( gi->next_true );
       }
     }
 
@@ -1104,6 +1106,10 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.37  2006/09/07 21:59:24  phase1geo
+ Fixing some bugs related to statement block removal.  Also made some significant
+ optimizations to this code.
+
  Revision 1.36  2006/09/06 22:09:22  phase1geo
  Fixing bug with multiply-and-op operation.  Also fixing bug in gen_item_resolve
  function where an instance was incorrectly being placed into a new instance tree.

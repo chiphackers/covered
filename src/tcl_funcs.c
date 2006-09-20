@@ -1240,43 +1240,6 @@ int tcl_func_save_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* argv
  \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
          TCL_ERROR.
 
- Replaces the current CDD database with the contents of the given CDD filename.  The CDD file replacing
- the current CDD file must be generated from the same design or an error will occur.
-*/
-int tcl_func_replace_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
-
-  int   retval = TCL_OK;  /* Return value for this function */
-  char* ifile;            /* Name of CDD file to replace the existing file */
-
-  /* If no filename was specified, the user hit cancel so just exit gracefully */
-  if( argv[1][0] != '\0' ) {
-
-    ifile = strdup_safe( argv[1], __FILE__, __LINE__ );
-
-    if( !report_read_cdd_and_ready( ifile, READ_MODE_REPORT_MOD_REPLACE ) ) {
-      snprintf( user_msg, USER_MSG_LENGTH, "Unable to replace current CDD with \"%s\"", ifile );
-      Tcl_AddErrorInfo( tcl, user_msg );
-      print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      retval = TCL_ERROR;
-    }
-
-    free_safe( ifile );
-
-  }
-
-  return( retval );
-
-}
-
-/*!
- \param d     TBD
- \param tcl   Pointer to the Tcl interpreter
- \param argc  Number of arguments in the argv list
- \param argv  Array of arguments passed to this function
-
- \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
-         TCL_ERROR.
-
  Merges the specified CDD file with the current CDD database.
 */
 int tcl_func_merge_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
@@ -2026,7 +1989,6 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
   Tcl_CreateCommand( tcl, "tcl_func_open_cdd",                  (Tcl_CmdProc*)(tcl_func_open_cdd),                  0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_close_cdd",                 (Tcl_CmdProc*)(tcl_func_close_cdd),                 0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_save_cdd",                  (Tcl_CmdProc*)(tcl_func_save_cdd),                  0, 0 );
-  Tcl_CreateCommand( tcl, "tcl_func_replace_cdd",               (Tcl_CmdProc*)(tcl_func_replace_cdd),               0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_merge_cdd",                 (Tcl_CmdProc*)(tcl_func_merge_cdd),                 0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_line_summary",          (Tcl_CmdProc*)(tcl_func_get_line_summary),          0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_toggle_summary",        (Tcl_CmdProc*)(tcl_func_get_toggle_summary),        0, 0 );
@@ -2063,6 +2025,11 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.59  2006/09/01 04:06:37  phase1geo
+ Added code to support more than one instance tree.  Currently, I am seeing
+ quite a few memory errors that are causing some major problems at the moment.
+ Checkpointing.
+
  Revision 1.58  2006/08/31 04:02:02  phase1geo
  Adding parsing support for assertions and properties.  Adding feature to
  highlighting support that looks up the generation for the given module and

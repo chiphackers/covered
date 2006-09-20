@@ -52,13 +52,13 @@ void db_add_declared_param( bool is_signed, static_expr* msb, static_expr* lsb, 
 void db_add_override_param( char* inst_name, expression* expr, char* param_name );
 
 /*! \brief Adds vsignal/expression vector parameter to parameter list. */
-void db_add_vector_param( vsignal* sig, expression* parm_exp, int type );
+void db_add_vector_param( vsignal* sig, expression* parm_exp, int type, int dimension );
 
 /*! \brief Adds specified defparam to parameter override list.  Called by parser. */
 void db_add_defparam( char* name, expression* expr );
 
 /*! \brief Adds specified vsignal to vsignal list.  Called by parser. */
-void db_add_signal( char* name, int type, static_expr* left, static_expr* right, bool is_signed, bool mba, int line, int col, bool handled );
+void db_add_signal( char* name, int type, sig_range* range, bool is_signed, bool mba, int line, int col, bool handled );
 
 /*! \brief Creates statement block that acts like a fork join block from a standard statement block */
 statement* db_add_fork_join( statement* stmt );
@@ -70,7 +70,7 @@ void db_add_enum( vsignal* enum_sig, static_expr* value );
 void db_end_enum_list();
 
 /*! \brief Adds given typedefs to the database */
-void db_add_typedef( char* name, bool is_signed, bool is_handled, bool is_sizable, static_expr* msb, static_expr* lsb );
+void db_add_typedef( char* name, bool is_signed, bool is_handled, bool is_sizable, sig_range* range );
 
 /*! \brief Called when the endmodule keyword is parsed. */
 void db_end_module( int end_line );
@@ -171,6 +171,9 @@ void db_do_timestep( int time );
 
 /*
  $Log$
+ Revision 1.69  2006/09/08 22:39:50  phase1geo
+ Fixes for memory problems.
+
  Revision 1.68  2006/09/07 21:59:24  phase1geo
  Fixing some bugs related to statement block removal.  Also made some significant
  optimizations to this code.

@@ -83,21 +83,21 @@
 2 79 90 b000b 1 0 20008 0 0 32 64 1 0 0 0 0 0 0 0
 2 80 90 b000b 1 0 20008 0 0 32 64 55 55 55 55 55 55 55 55
 2 81 90 9000c 65 2c 2000a 79 80 32 2 aa aa aa aa aa aa aa aa
-1 A 0 0 80000 32 1 0 0 0 0 0 0 0 0
-1 STATE_A 0 0 80000 32 1 1 0 0 0 0 0 0 0
-1 B 0 0 80000 32 1 1 0 0 0 0 0 0 0
-1 STATE_B 0 0 80000 32 1 4 0 0 0 0 0 0 0
-1 C 0 0 80000 32 1 4 0 0 0 0 0 0 0
-1 STATE_C 0 0 80000 32 1 10 0 0 0 0 0 0 0
-1 clock 0 12 83000c 1 1 1102
-1 display_tagto_current_state 0 13 3000c 3 1 2a
-1 next_st 0 15 83000c 3 1 2a
-1 pcix_pio_timeout_recorder 0 16 3000c 8 1 aa aa
-1 split_resp_active 0 17 3000c 1 1 2
-1 split_resp_tag 0 18 3000c 3 1 2a
-1 tag_timeout 0 19 3000c 3 1 2a
-1 clr_tag_toed 0 20 3000c 1 1 2
-1 ascii_display_tagto_state 0 21 83000c 80 1 aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa
+1 A 0 80000 1 0 31 0 32 1 0 0 0 0 0 0 0 0
+1 STATE_A 0 80000 1 0 31 0 32 1 1 0 0 0 0 0 0 0
+1 B 0 80000 1 0 31 0 32 1 1 0 0 0 0 0 0 0
+1 STATE_B 0 80000 1 0 31 0 32 1 4 0 0 0 0 0 0 0
+1 C 0 80000 1 0 31 0 32 1 4 0 0 0 0 0 0 0
+1 STATE_C 0 80000 1 0 31 0 32 1 10 0 0 0 0 0 0 0
+1 clock 12 83000c 1 0 0 0 1 1 1102
+1 display_tagto_current_state 13 3000c 1 0 2 0 3 1 2a
+1 next_st 15 83000c 1 0 2 0 3 1 2a
+1 pcix_pio_timeout_recorder 16 3000c 1 0 7 0 8 1 aa aa
+1 split_resp_active 17 3000c 1 0 0 0 1 1 2
+1 split_resp_tag 18 3000c 1 0 2 0 3 1 2a
+1 tag_timeout 19 3000c 1 0 2 0 3 1 2a
+1 clr_tag_toed 20 3000c 1 0 0 0 1 1 2
+1 ascii_display_tagto_state 21 83000c 1 0 79 0 80 1 aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa
 4 24 65 65
 4 32 24 65
 4 21 32 32

@@ -58,9 +58,6 @@ bool arc_db_read( char** arcs, char** line );
 /*! \brief Merges contents of arc table from line to specified base array. */
 bool arc_db_merge( char** arcs, char** line, bool same );
 
-/*! \brief Replaces contents of arc table from line to specified base array. */
-bool arc_db_replace( char** arcs, char** line );
-
 /*! \brief Stores arc array state values to specified string array. */
 void arc_get_states( char*** states, int* state_size, const char* arcs, bool hit, bool any );
 
@@ -75,6 +72,10 @@ void arc_dealloc( char* arcs );
 
 /*
  $Log$
+ Revision 1.15  2006/06/29 04:26:02  phase1geo
+ More updates for FSM coverage.  We are getting close but are just not to fully
+ working order yet.
+
  Revision 1.14  2006/06/28 22:15:19  phase1geo
  Adding more code to support FSM coverage.  Still a ways to go before this
  is completed.

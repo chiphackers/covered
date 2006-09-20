@@ -2,7 +2,7 @@
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd race1.1.vcd -o race1.1.cdd -v race1.1.v
 3 0 $root $root NA 0 0
 3 0 main main race1.1.v 1 14
-1 a 0 3 30005 1 1 2
+1 a 3 30005 1 0 0 0 1 1 2
 3 0 foobar main.bar race1.1.v 17 30
 2 1 24 c000f 1 0 20004 0 0 1 4 0
 2 2 24 80008 0 1 400 0 0 c
@@ -10,9 +10,9 @@
 2 4 28 b000b 1 1 4 0 0 c
 2 5 28 70007 0 1 400 0 0 b
 2 6 28 7000b 1 35 f006 4 5
-1 a 0 19 6 1 1 2
-1 b 0 21 30005 1 1 2
-1 c 0 22 830004 1 1 2
+1 a 19 6 1 0 0 0 1 1 2
+1 b 21 30005 1 0 0 0 1 1 2
+1 c 22 830004 1 0 0 0 1 1 2
 4 3 0 0
 4 6 6 6
 7 5 26 26

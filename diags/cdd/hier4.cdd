@@ -4,11 +4,11 @@
 3 0 main main hier4.v 1 13
 3 0 foo main.a hier4.v 17 21
 3 0 bar main.a.x[0] hier4.v 25 29
-1 z 0 27 30004 1 1 2
+1 z 27 30004 1 0 0 0 1 1 2
 3 0 bar main.a.x[1] hier4.v 25 29
-1 z 0 27 30004 1 1 2
+1 z 27 30004 1 0 0 0 1 1 2
 3 0 foo main.b hier4.v 17 21
 3 0 bar main.b.x[0] hier4.v 25 29
-1 z 0 27 30004 1 1 2
+1 z 27 30004 1 0 0 0 1 1 2
 3 0 bar main.b.x[1] hier4.v 25 29
-1 z 0 27 30004 1 1 2
+1 z 27 30004 1 0 0 0 1 1 2

@@ -518,13 +518,6 @@
 */
 #define READ_MODE_REPORT_MOD_MERGE        3
 
-/*!
- When a functional unit is completely read in (including module, signals, expressions), the
- functional unit is looked up in the functional unit list.  If the functional unit is found,
- it is replaced (unless the functional unit has already been replaced, in which case it is merged) with
- the existing functional unit.
-*/
-#define READ_MODE_REPORT_MOD_REPLACE      4
 /*! @} */
 
 /*!
@@ -807,7 +800,8 @@ typedef enum exp_op_type_e {
 					 (o != EXP_OP_PASSIGN)        && \
                                          (o != EXP_OP_INC)            && \
                                          (o != EXP_OP_DEC)            && \
-                                         (o != EXP_OP_DLY_ASSIGN))
+                                         (o != EXP_OP_DLY_ASSIGN)     && \
+                                         (o != EXP_OP_DIM))
 
 /*!
  Returns a value of true if the specified expression is considered a unary expression by
@@ -1234,6 +1228,7 @@ union psuppl_u {
     control order    : 16;      /*!< Specifies the parameter order number in its module */
     control type     : 3;       /*!< Specifies the parameter type (see \ref param_suppl_types for legal value) */
     control owns_expr: 1;       /*!< Specifies the parameter is the owner of the associated expression */
+    control dimension: 10;      /*!< Specifies the signal dimension that this module parameter resolves */
   } part;
 };
 
@@ -2090,7 +2085,7 @@ struct perf_stat_s {
 struct port_info_s {
   int           type;                /*!< Type of port (see \ref ssuppl_type for legal values) */
   bool          is_signed;           /*!< Set to TRUE if this port is signed */
-  vector_width* range;               /*!< Contains range information for this port */
+  sig_range*    range;               /*!< Contains range information for this port */
 };
 
 /*!
@@ -2145,8 +2140,7 @@ struct typedef_item_s {
   bool          is_signed;           /*!< Specifies if this typedef type is signed */
   bool          is_handled;          /*!< Specifies if this typedef type is handled by Covered */
   bool          is_sizeable;         /*!< Specifies if a range can be later placed on this typedef */
-  static_expr*  msb;                 /*!< Specifies MSB value for this type */
-  static_expr*  lsb;                 /*!< Specifies LSB value for this type */
+  sig_range*    range;               /*!< Dimensional range information for this type */
   typedef_item* next;                /*!< Pointer to next item in typedef list */
 };
 
@@ -2167,6 +2161,8 @@ struct sig_range_s {
   int           pdim_num;            /*!< Specifies the number of packed dimensions */
   int           udim_num;            /*!< Specifies the number of unpacked dimensions */
   vector_width* dim;                 /*!< Pointer to array of unpacked/packed dimensions */
+  bool          clear;               /*!< Set to TRUE when a semicolon is seen by the lexer, causes the curr_range
+                                          global variable to be cleared prior to being added to */
 };
 
 /*!
@@ -2180,6 +2176,10 @@ struct dim_range_s {
 
 /*
  $Log$
+ Revision 1.231  2006/09/15 22:14:54  phase1geo
+ Working on adding arrayed signals.  This is currently in progress and doesn't
+ even compile at this point, much less work.  Checkpointing work.
+
  Revision 1.230  2006/09/12 22:24:42  phase1geo
  Added first attempt at collecting bitwise coverage information during simulation.
  Updated regressions for this change; however, we currently do not report on this

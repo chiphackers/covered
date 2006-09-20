@@ -405,7 +405,12 @@ inst_parm* inst_parm_add( char* name, char* inst_name, static_expr* msb, static_
   assert( (sig_width <= MAX_BIT_WIDTH) && (sig_width >= 0) );
 
   /* Create instance parameter signal */
-  iparm->sig = vsignal_create( name, SSUPPL_TYPE_PARAM, sig_width, sig_lsb, 0, 0, sig_be );
+  iparm->sig = vsignal_create( name, SSUPPL_TYPE_PARAM, sig_width, 0, 0 );
+  iparm->sig->pdim_num   = 1;
+  iparm->sig->dim        = (dim_range*)malloc_safe( (sizeof( dim_range ) * 1), __FILE__, __LINE__ );
+  iparm->sig->dim[0].lsb = sig_lsb;
+  iparm->sig->dim[0].msb = (sig_lsb + sig_width) - 1;
+  iparm->sig->suppl.part.big_endian = sig_be;
 
   /* Store signed attribute for this vector */
   iparm->sig->value->suppl.part.is_signed = is_signed;
@@ -423,7 +428,7 @@ inst_parm* inst_parm_add( char* name, char* inst_name, static_expr* msb, static_
       expl->exp->sig = iparm->sig;
       /* Set the expression's vector to this signal's vector if we are part of a generate expression */
       if( expl->exp->suppl.part.gen_expr == 1 ) {
-        expression_set_value( expl->exp, iparm->sig->value );
+        expression_set_value( expl->exp, iparm->sig );
       }
       exp_link_add( expl->exp, &(iparm->sig->exp_head), &(iparm->sig->exp_tail) );
       expl = expl->next;
@@ -580,7 +585,7 @@ void param_find_and_set_expr_value( expression* expr, funit_inst* inst ) {
     } else {
 
       /* Set the found instance parameter value to this expression */
-      expression_set_value( expr, icurr->sig->value );
+      expression_set_value( expr, icurr->sig );
 
       /* Cause expression/signal to point to each other */
       expr->sig = icurr->sig;
@@ -597,54 +602,22 @@ void param_find_and_set_expr_value( expression* expr, funit_inst* inst ) {
  \param sig    Pointer to signal to search for in instance parameter list.
  \param icurr  Pointer to head of instance parameter list to search.
  
- \return Returns TRUE if signal size is fully established; otherwise, returns FALSE.
-
  Sizes the specified signal according to the value of the specified
  instance parameter value.
 */
-bool param_set_sig_size( vsignal* sig, inst_parm* icurr ) {
-
-  bool    established = FALSE;  /* Specifies if current signal size is fully established */
-  int     bit_sel;              /* MSB/LSB bit select value from instance parameter */
-  vector* vec;                  /* Pointer to new signal vector */
+void param_set_sig_size( vsignal* sig, inst_parm* icurr ) {
 
   assert( sig != NULL );
-  assert( sig->name != NULL );
+  assert( icurr != NULL );
+  assert( icurr->sig != NULL );
+  assert( icurr->mparm != NULL );
 
-  bit_sel = vector_to_int( icurr->sig->value );
-
-  /* LSB gets set to first value found, we may adjust this later. */
-  if( sig->lsb == -1 ) {
-    
-    sig->lsb = bit_sel;
-    
+  /* Set the LSB/MSB to the value of the given instance parameter */
+  if( icurr->mparm->suppl.part.type == PARAM_TYPE_SIG_LSB ) {
+    sig->dim[icurr->mparm->suppl.part.dimension].lsb = vector_to_int( icurr->sig->value );
   } else {
-    
-    /* LSB is known so adjust the LSB and width with this value */
-    if( sig->lsb <= bit_sel ) {
-      sig->value->width = (bit_sel - sig->lsb) + 1;
-    } else {
-      sig->value->width = (sig->lsb - bit_sel) + 1;
-      sig->lsb          = bit_sel;
-    }
-
-    /* Create the vector data for this signal */
-    vec = vector_create( sig->value->width, VTYPE_SIG, TRUE );
-
-    /* Deallocate and reassign the new data */
-    if( sig->value->value != NULL ) {
-      free_safe( sig->value->value );
-    }
-    sig->value->value = vec->value;
-
-    /* Deallocate the vector memory */
-    free_safe( vec );
-    
-    established = TRUE;
-    
+    sig->dim[icurr->mparm->suppl.part.dimension].msb = vector_to_int( icurr->sig->value );
   }
-  
-  return( established );
 
 }
 
@@ -956,17 +929,7 @@ void param_db_write( inst_parm* iparm, FILE* file, bool parse_mode ) {
   */
   if( iparm->sig->name != NULL ) {
 
-    /* Display identification and value information first */
-    fprintf( file, "%d %s %d 0 %x ",
-      DB_TYPE_SIGNAL,
-      iparm->sig->name,
-      iparm->sig->lsb,
-      iparm->sig->suppl.all
-    );
-
-    vector_db_write( iparm->sig->value, file, TRUE );
-
-    fprintf( file, "\n" );
+    vsignal_db_write( iparm->sig, file );
 
   }
 
@@ -1051,6 +1014,10 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.75  2006/09/15 22:14:54  phase1geo
+ Working on adding arrayed signals.  This is currently in progress and doesn't
+ even compile at this point, much less work.  Checkpointing work.
+
  Revision 1.74  2006/09/11 22:27:55  phase1geo
  Starting to work on supporting bitwise coverage.  Moving bits around in supplemental
  fields to allow this to work.  Full regression has been updated for the current changes

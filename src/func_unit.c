@@ -305,6 +305,7 @@ void funit_size_elements( func_unit* funit, funit_inst* inst ) {
   exp_link*   curr_exp;         /* Pointer to current expression link to evaluate */
   fsm_link*   curr_fsm;         /* Pointer to current FSM structure to evaluate */
   gitem_link* curr_gi;          /* Pointer to current generate item link to evaluate */
+  sig_link*   curr_sig;         /* Pointer to current signal link to evaluate */
   bool        resolve = FALSE;  /* If set to TRUE, perform one more parameter resolution */
   bool        bind    = FALSE;  /* If set to TRUE, perform a binding */
   
@@ -321,7 +322,7 @@ void funit_size_elements( func_unit* funit, funit_inst* inst ) {
       curr_exp = curr_iparm->sig->exp_head;
       while( curr_exp != NULL ) {
         if( curr_exp->exp->suppl.part.gen_expr == 0 ) {
-          expression_set_value( curr_exp->exp, curr_iparm->sig->value );
+          expression_set_value( curr_exp->exp, curr_iparm->sig );
           resolve = TRUE;
         }
         curr_exp = curr_exp->next;
@@ -358,12 +359,19 @@ void funit_size_elements( func_unit* funit, funit_inst* inst ) {
         /* This parameter attaches to an expression tree */
         curr_exp = curr_iparm->mparm->exp_head;
         while( curr_exp != NULL ) {
-          expression_set_value( curr_exp->exp, curr_iparm->sig->value );
+          expression_set_value( curr_exp->exp, curr_iparm->sig );
           curr_exp = curr_exp->next;
         }
       }
     }
     curr_iparm = curr_iparm->next;
+  }
+
+  /* Traverse through all signals, calculating and creating their vector values */
+  curr_sig = funit->sig_head;
+  while( curr_sig != NULL ) {
+    vsignal_create_vec( curr_sig->sig );
+    curr_sig = curr_sig->next;
   }
 
   /*
@@ -383,16 +391,16 @@ void funit_size_elements( func_unit* funit, funit_inst* inst ) {
       expression_resize( curr_exp->exp, TRUE );
     }
     if( curr_exp->exp->sig != NULL ) {
-      expression_set_value( curr_exp->exp, curr_exp->exp->sig->value );
+      expression_set_value( curr_exp->exp, curr_exp->exp->sig );
       assert( curr_exp->exp->value->value != NULL );
     }
     curr_exp = curr_exp->next;
   }
 
-  /* Sixth, traverse all generate items and resize all expressions. */
+  /* Sixth, traverse all generate items and resize all expressions and signals. */
   curr_gi = inst->gitem_head;
   while( curr_gi != NULL ) {
-    gen_item_resize_statements( curr_gi->gi );
+    gen_item_resize_stmts_and_sigs( curr_gi->gi );
     curr_gi = curr_gi->next;
   }
 
@@ -729,137 +737,6 @@ bool funit_db_merge( func_unit* base, FILE* file, bool same ) {
 }
 
 /*!
- \param base  Functional unit that will be replaced with the new data.
- \param file  Pointer to CDD file handle to read.
-
- \return Returns TRUE if parse and merge was successful; otherwise, returns FALSE.
-
- Parses specified line for functional unit information and performs a replacement of the original
- functional unit with the contents of the new functional unit.  If there are any differences between the
- two functional units, a warning or error will be displayed to the user.
-*/
-bool funit_db_replace( func_unit* base, FILE* file ) {
-
-  bool      retval = TRUE;   /* Return value of this function */
-  exp_link* curr_base_exp;   /* Pointer to current expression in base functional unit expression list */
-  sig_link* curr_base_sig;   /* Pointer to current signal in base functional unit signal list */
-  stmt_iter curr_base_stmt;  /* Statement list iterator */
-  fsm_link* curr_base_fsm;   /* Pointer to current FSM in base functional unit FSM list */
-  race_blk* curr_base_race;  /* Pointer to current race condition block in base functional unit list  */
-  char*     curr_line;       /* Pointer to current line being read from CDD */
-  char*     rest_line;       /* Pointer to rest of read line */
-  int       type;            /* Specifies currently read CDD type */
-  int       chars_read;      /* Number of characters read from current CDD line */
-
-  assert( base != NULL );
-  assert( base->name != NULL );
-
-  /* Handle all functional unit expressions */
-  curr_base_exp = base->exp_head;
-  while( (curr_base_exp != NULL) && retval ) {
-    if( util_readline( file, &curr_line ) ) {
-      if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
-        rest_line = curr_line + chars_read;
-        if( type == DB_TYPE_EXPRESSION ) {
-          retval = expression_db_replace( curr_base_exp->exp, &rest_line );
-        } else {
-          retval = FALSE;
-        }
-      } else {
-        retval = FALSE;
-      }
-      free_safe( curr_line );
-    } else {
-      retval = FALSE;
-    }
-    curr_base_exp = curr_base_exp->next;
-  }
-
-  /* Handle all functional unit signals */
-  curr_base_sig = base->sig_head;
-  while( (curr_base_sig != NULL) && retval ) {
-    if( util_readline( file, &curr_line ) ) {
-      if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
-        rest_line = curr_line + chars_read;
-        if( type == DB_TYPE_SIGNAL ) {
-          retval = vsignal_db_replace( curr_base_sig->sig, &rest_line );
-        } else {
-          retval = FALSE;
-        }
-      } else {
-        retval = FALSE;
-      }
-      free_safe( curr_line );
-    } else {
-      retval = FALSE;
-    }
-    curr_base_sig = curr_base_sig->next;
-  }
-
-  /* Since statements don't get replaced, we will just read these lines in */
-  stmt_iter_reset( &curr_base_stmt, base->stmt_head );
-  while( (curr_base_stmt.curr != NULL) && retval ) {
-    if( util_readline( file, &curr_line ) ) {
-      if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
-        rest_line = curr_line + chars_read;
-        if( type != DB_TYPE_STATEMENT ) {
-          retval = FALSE;
-        }
-      } else {
-        retval = FALSE;
-      }
-      free_safe( curr_line );
-    } else {
-      retval = FALSE;
-    }
-    stmt_iter_next( &curr_base_stmt );
-  }
-
-  /* Handle all functional unit FSMs */
-  curr_base_fsm = base->fsm_head;
-  while( (curr_base_fsm != NULL) && retval ) {
-    if( util_readline( file, &curr_line ) ) {
-      if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
-        rest_line = curr_line + chars_read;
-        if( type == DB_TYPE_FSM ) {
-          retval = fsm_db_replace( curr_base_fsm->table, &rest_line );
-        } else {
-          retval = FALSE;
-        }
-      } else {
-        retval = FALSE;
-      }
-      free_safe( curr_line );
-    } else {
-      retval = FALSE;
-    }
-    curr_base_fsm = curr_base_fsm->next;
-  }
-
-  /* Since race condition blocks don't get replaced, we will just read these lines in */
-  curr_base_race = base->race_head;
-  while( (curr_base_race != NULL) && retval ) {
-    if( util_readline( file, &curr_line ) ) {
-      if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
-        rest_line = curr_line + chars_read;
-        if( type != DB_TYPE_RACE ) {
-          retval = FALSE;
-        }
-      } else {
-        retval = FALSE;
-      }
-      free_safe( curr_line );
-    } else {
-      retval = FALSE;
-    }
-    curr_base_race = curr_base_race->next;
-  }
-
-  return( retval );
-
-}
-
-/*!
  \param id  Expression/statement ID to search for
  
  \return Returns a pointer to the functional unit that contains the specified expression/statement
@@ -938,6 +815,7 @@ void funit_clean( func_unit* funit ) {
   func_unit*    old_funit = curr_funit;  /* Holds the original functional unit in curr_funit */
   typedef_item* tdi;                     /* Pointer to current typedef item */
   typedef_item* ttdi;                    /* Pointer to temporary typedef item */
+  int           i;                       /* Loop iterator */
 
   if( funit != NULL ) {
 
@@ -991,8 +869,14 @@ void funit_clean( func_unit* funit ) {
       ttdi = tdi;
       tdi  = tdi->next;
       free_safe( ttdi->name );
-      static_expr_dealloc( ttdi->msb, FALSE );
-      static_expr_dealloc( ttdi->lsb, FALSE );
+      for( i=0; i<(ttdi->range->pdim_num + ttdi->range->udim_num); i++ ) {
+        static_expr_dealloc( ttdi->range->dim[i].left, FALSE );
+        static_expr_dealloc( ttdi->range->dim[i].right, FALSE );
+      }
+      if( (ttdi->range->pdim_num + ttdi->range->udim_num) > 0 ) {
+        free_safe( ttdi->range->dim );
+        free_safe( ttdi->range );
+      }
       free_safe( ttdi );
     }
     funit->tdi_head = NULL;
@@ -1042,6 +926,10 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.43  2006/09/07 21:59:24  phase1geo
+ Fixing some bugs related to statement block removal.  Also made some significant
+ optimizations to this code.
+
  Revision 1.42  2006/09/06 22:09:22  phase1geo
  Fixing bug with multiply-and-op operation.  Also fixing bug in gen_item_resolve
  function where an instance was incorrectly being placed into a new instance tree.

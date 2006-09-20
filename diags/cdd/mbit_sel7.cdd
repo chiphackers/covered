@@ -9,6 +9,6 @@
 2 5 6 9000b 0 7 20608 3 4 32 2 21caa faa faa faa faa faa faa faa
 2 6 6 7000e 0 24 400 2 5 a
 2 7 6 70012 3 35 f00e 1 6
-1 a 0 3 3000c 32 1 13aa aa aa aa aa aa aa aa
-1 b 0 4 3000c 2 1 130a
+1 a 3 3000c 1 0 31 0 32 1 13aa aa aa aa aa aa aa aa
+1 b 4 3000c 1 0 1 0 2 1 130a
 4 7 7 7

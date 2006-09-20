@@ -68,6 +68,7 @@ void toggle_get_stats( sig_link* sigl, float* total, int* hit01, int* hit10 ) {
   while( curr_sig != NULL ) {
     if( (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_PARAM) &&
         (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_ENUM)  &&
+        (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_MEM)  &&
         (curr_sig->sig->suppl.part.mba == 0) ) {
       *total += curr_sig->sig->value->width;
       if( curr_sig->sig->suppl.part.excluded == 1 ) {
@@ -119,6 +120,7 @@ bool toggle_collect( char* funit_name, int funit_type, int cov, sig_link** sig_h
 
       if( (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_PARAM) &&
           (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_ENUM)  &&
+          (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_MEM)  &&
           (curr_sig->sig->suppl.part.mba == 0) ) {
 
         vector_toggle_count( curr_sig->sig->value, &hit01, &hit10 );
@@ -178,8 +180,9 @@ bool toggle_get_coverage( char* funit_name, int funit_type, char* sig_name, int*
     sig.name = sig_name;
 
     if( (sigl = sig_link_find( &sig, funitl->funit->sig_head )) != NULL ) {
-      *msb      = sigl->sig->lsb + (sigl->sig->value->width - 1);
-      *lsb      = sigl->sig->lsb; 
+      assert( sigl->sig->dim != NULL );
+      *msb      = sigl->sig->dim[0].msb;
+      *lsb      = sigl->sig->dim[0].lsb; 
       *tog01    = vector_get_toggle01( sigl->sig->value->value, sigl->sig->value->width );
       *tog10    = vector_get_toggle10( sigl->sig->value->value, sigl->sig->value->width );
       *excluded = sigl->sig->suppl.part.excluded;
@@ -239,6 +242,7 @@ bool toggle_get_funit_summary( char* funit_name, int funit_type, int* total, int
 
       if( (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_PARAM) &&
           (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_ENUM)  &&
+          (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_MEM)  &&
           (curr_sig->sig->suppl.part.mba == 0) ) {
 
         /* We have found a valid signal to look at; therefore, increment the total */
@@ -451,6 +455,7 @@ void toggle_display_verbose( FILE* ofile, sig_link* sigl ) {
 
     if( (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_PARAM) &&
         (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_ENUM)  &&
+        (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_MEM)  &&
         (curr_sig->sig->suppl.part.mba == 0) ) {
 
       vector_toggle_count( curr_sig->sig->value, &hit01, &hit10 );
@@ -648,6 +653,14 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.49  2006/09/11 22:27:55  phase1geo
+ Starting to work on supporting bitwise coverage.  Moving bits around in supplemental
+ fields to allow this to work.  Full regression has been updated for the current changes
+ though this feature is still not fully implemented at this time.  Also added parsing support
+ for SystemVerilog program blocks (ignored) and final blocks (not handled properly at this
+ time).  Also added lexer support for the return, void, continue, break, final, program and
+ endprogram SystemVerilog keywords.  Checkpointing work.
+
  Revision 1.48  2006/09/01 23:06:02  phase1geo
  Fixing regressions per latest round of changes.  Full regression now passes.
 

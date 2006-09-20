@@ -1137,44 +1137,6 @@ bool arc_db_merge( char** base, char** line, bool same ) {
 }
 
 /*!
- \param base  Pointer to arc table to merge data into.
- \param line  Pointer to read in line from CDD file to merge.
-
- \return Returns TRUE if line was read in correctly; otherwise, returns FALSE.
-
- Replaces the base FSM arc information with the information extracted from the current line.
-*/
-bool arc_db_replace( char** base, char** line ) {
-
-  bool  retval = TRUE;  /* Return value for this function */
-  char* arcs;           /* Read arc array */
-
-  if( arc_db_read( &arcs, line ) ) {
-
-    /* Check to make sure that arc arrays are compatible */
-    if( arc_get_width( *base ) != arc_get_width( arcs ) ) {
-      /*
-       This case has been proven to be unreachable; however, we will keep it here
-       in case future code changes make it valid.  There is no diagnostic in error
-       regression that hits this failure.
-      */
-      print_output( "Attempting to replace a database derived from a different design.  Unable to replace",
-                    FATAL, __FILE__, __LINE__ );
-      exit( 1 );
-    }
-
-    free_safe( *base );
-
-    /* Replace old arc array with new arc array */
-    *base = arcs;
-
-  }
-
-  return( retval );
-
-}
-
-/*!
  \param states      Pointer to string array containing stringified state information
  \param state_size  Pointer to number of elements stored in states array
  \param arcs        Pointer to state transition arc array.
@@ -1327,6 +1289,12 @@ void arc_dealloc( char* arcs ) {
 
 /*
  $Log$
+ Revision 1.37  2006/06/29 22:44:57  phase1geo
+ Fixing newly introduced bug in FSM report handler.  Also adding pointers back
+ to main text window when exclusion properties are changed.  Fixing toggle
+ coverage retension.  This is partially working but doesn't seem to want to
+ save/restore properly at this point.
+
  Revision 1.36  2006/06/29 16:48:14  phase1geo
  FSM exclusion code now complete.
 

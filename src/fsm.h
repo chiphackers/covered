@@ -45,9 +45,6 @@ bool fsm_db_read( char** line, func_unit* funit );
 /*! \brief Reads and merges two FSMs, placing result into base FSM. */
 bool fsm_db_merge( fsm* base, char** line, bool same );
 
-/*! \brief Reads and replaces original FSM with new FSM. */
-bool fsm_db_replace( fsm* base, char** line );
-
 /*! \brief Sets the bit in set table based on the values of last and curr. */
 void fsm_table_set( fsm* table );
 
@@ -77,6 +74,10 @@ void fsm_dealloc( fsm* table );
 
 /*
  $Log$
+ Revision 1.19  2006/06/29 04:26:02  phase1geo
+ More updates for FSM coverage.  We are getting close but are just not to fully
+ working order yet.
+
  Revision 1.18  2006/06/28 22:15:19  phase1geo
  Adding more code to support FSM coverage.  Still a ways to go before this
  is completed.

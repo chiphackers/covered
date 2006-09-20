@@ -8,6 +8,6 @@
 2 4 6 d0018 3 26 20008 3 0 64 2 fdaa 79aa f0aa 69aa f0aa 69aa 69aa 69aa aa aa aa aa aa aa aa aa
 2 5 6 70009 0 1 400 0 0 str
 2 6 6 70018 3 35 f00a 4 5
-1 chr 0 3 30012 8 1 daa 10aa
-1 str 0 4 30012 64 1 daa 10aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa
+1 chr 3 30012 1 0 7 0 8 1 daa 10aa
+1 str 4 30012 1 0 63 0 64 1 daa 10aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa
 4 6 6 6

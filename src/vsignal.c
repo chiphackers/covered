@@ -31,14 +31,14 @@
 #include <assert.h>
 
 #include "defines.h"
-#include "vsignal.h"
 #include "expr.h"
-#include "link.h"
-#include "vector.h"
 #include "func_unit.h"
-#include "util.h"
-#include "sim.h"
+#include "link.h"
 #include "obfuscate.h"
+#include "sim.h"
+#include "util.h"
+#include "vector.h"
+#include "vsignal.h"
 
 
 extern nibble or_optab[OPTAB_SIZE];
@@ -46,43 +46,40 @@ extern char   user_msg[USER_MSG_LENGTH];
 
 
 /*!
- \param sig         Pointer to vsignal to initialize.
- \param name        Pointer to vsignal name string.
- \param type        Type of signal to create
- \param value       Pointer to vsignal value.
- \param lsb         Least-significant bit position in this string.
- \param line        Line number that this signal is declared on.
- \param col         Starting column that this signal is declared on.
- \param big_endian  Set to 1 if the MSB is less than the LSB.
+ \param sig    Pointer to vsignal to initialize.
+ \param name   Pointer to vsignal name string.
+ \param type   Type of signal to create
+ \param value  Pointer to vsignal value.
+ \param line   Line number that this signal is declared on.
+ \param col    Starting column that this signal is declared on.
  
  Initializes the specified vsignal with the values of name, value and lsb.  This
  function is called by the vsignal_create routine and is also useful for
  creating temporary vsignals (reduces the need for dynamic memory allocation).
  for performance enhancing purposes.
 */
-void vsignal_init( vsignal* sig, char* name, int type, vector* value, int lsb, int line, int col, int big_endian ) {
+void vsignal_init( vsignal* sig, char* name, int type, vector* value, int line, int col ) {
 
-  sig->name                  = name;
-  sig->suppl.all             = 0;
-  sig->suppl.part.type       = type;
-  sig->suppl.part.col        = col;
-  sig->suppl.part.big_endian = big_endian;
-  sig->value                 = value;
-  sig->lsb                   = lsb;
-  sig->line                  = line;
-  sig->exp_head              = NULL;
-  sig->exp_tail              = NULL;
+  sig->name            = name;
+  sig->pdim_num        = 0;
+  sig->udim_num        = 0;
+  sig->dim             = NULL;
+  sig->suppl.all       = 0;
+  sig->suppl.part.type = type;
+  sig->suppl.part.col  = col;
+  sig->value           = value;
+  sig->line            = line;
+  sig->exp_head        = NULL;
+  sig->exp_tail        = NULL;
 
 }
 
 /*!
- \param name        Full hierarchical name of this vsignal.
- \param type        Type of signal to create
- \param width       Bit width of this vsignal.
- \param lsb         Bit position of least significant bit.
- \param line        Line number that this signal is declared on.
- \param col         Starting column that this signal is declared on.
- \param big_endian  Set to 1 if the MSB is less than the LSB.
+ \param name   Full hierarchical name of this vsignal.
+ \param type   Type of signal to create
+ \param width  Bit width of this vsignal.
+ \param line   Line number that this signal is declared on.
+ \param col    Starting column that this signal is declared on.
 
  \returns Pointer to newly created vsignal.
 
@@ -91,16 +88,58 @@ void vsignal_init( vsignal* sig, char* name, int type, vector* value, int lsb, i
  values for a vsignal and returns a pointer to this newly created
  vsignal.
 */
-vsignal* vsignal_create( char* name, int type, int width, int lsb, int line, int col, int big_endian ) {
+vsignal* vsignal_create( char* name, int type, int width, int line, int col ) {
 
   vsignal* new_sig;  /* Pointer to newly created vsignal */
 
   new_sig = (vsignal*)malloc_safe( sizeof( vsignal ), __FILE__, __LINE__ );
 
   vsignal_init( new_sig, ((name != NULL) ? strdup_safe( name, __FILE__, __LINE__ ) : NULL),
-                type, vector_create( width, VTYPE_SIG, TRUE ), lsb, line, col, big_endian );
+                type, vector_create( width, VTYPE_SIG, TRUE ), line, col );
 
   return( new_sig );
+
+}
+
+/*!
+ \param sig  Pointer to signal to create vector for
+
+ Calculates the signal width and creates a vector value that is
+ sized to match this width.  This function is called during race condition checking and
+ functional unit element sizing function and needs to be called before expression resizing is performed.
+*/
+void vsignal_create_vec( vsignal* sig ) {
+
+  int     i;    /* Loop iterator */
+  vector* vec;  /* Temporary vector used for getting a vector value */
+
+  assert( sig != NULL );
+  assert( sig->value != NULL );
+
+  /* Set the initial signal width to 1 */
+  sig->value->width = 1;
+
+  /* Calculate the width of the given signal */
+  for( i=0; i<(sig->pdim_num + sig->udim_num); i++ ) {
+    if( sig->dim[i].msb > sig->dim[i].lsb ) {
+      sig->value->width *= ((sig->dim[i].msb - sig->dim[i].lsb) + 1);
+    } else {
+      sig->value->width *= ((sig->dim[i].lsb - sig->dim[i].msb) + 1);
+    }
+  }
+
+  /* Set the endianness */
+  if( (sig->pdim_num + sig->udim_num) > 0 ) {
+    sig->suppl.part.big_endian = (sig->dim[(sig->pdim_num + sig->udim_num)-1].msb < sig->dim[(sig->pdim_num + sig->udim_num)-1].lsb) ? 1 : 0;
+  }
+
+  /* Create the vector and assign it to the signal */
+  vec = vector_create( sig->value->width, VTYPE_SIG, TRUE );
+  if( sig->value->value != NULL ) {
+    free_safe( sig->value->value );
+  }
+  sig->value->value = vec->value;
+  free_safe( vec );
 
 }
 
@@ -115,16 +154,28 @@ vsignal* vsignal_duplicate( vsignal* sig ) {
 
   vsignal*  new_sig;  /* Pointer to newly created vsignal */
   exp_link* expl;     /* Pointer to current expression link */
+  int       i;        /* Loop iterator */
 
   assert( sig != NULL );
 
   new_sig = (vsignal*)malloc_safe( sizeof( vsignal ), __FILE__, __LINE__ );
   new_sig->name      = strdup_safe( sig->name, __FILE__, __LINE__ );
   new_sig->suppl.all = sig->suppl.all;
-  new_sig->lsb       = sig->lsb;
+  new_sig->pdim_num  = sig->pdim_num;
+  new_sig->udim_num  = sig->udim_num;
+  new_sig->dim       = NULL;
   new_sig->line      = sig->line;
   new_sig->exp_head  = NULL;
   new_sig->exp_tail  = NULL;
+
+  /* Copy the dimension information */
+  if( (sig->pdim_num + sig->udim_num) > 0 ) {
+    new_sig->dim = (dim_range*)malloc_safe( (sizeof( dim_range ) * (sig->pdim_num + sig->udim_num)), __FILE__, __LINE__ );
+    for( i=0; i<(sig->pdim_num + sig->udim_num); i++ ) {
+      new_sig->dim[i].msb = sig->dim[i].msb;
+      new_sig->dim[i].lsb = sig->dim[i].lsb;
+    }
+  }
 
   /* Copy the vector value */
   vector_copy( sig->value, &(new_sig->value) );
@@ -151,18 +202,29 @@ vsignal* vsignal_duplicate( vsignal* sig ) {
 void vsignal_db_write( vsignal* sig, FILE* file ) {
 
   exp_link* curr;  /* Pointer to current expression link element */
+  int       i;     /* Loop iterator */
 
   /* Don't write this vsignal if it isn't usable by Covered */
-  if( (sig->suppl.part.not_handled == 0) && (sig->value->width != -1) && (sig->suppl.part.type != SSUPPL_TYPE_GENVAR) ) {
+  if( (sig->suppl.part.not_handled == 0) &&
+      (sig->value->width != -1) &&
+      (sig->value->width <= MAX_BIT_WIDTH) &&
+      (sig->suppl.part.type != SSUPPL_TYPE_GENVAR) ) {
 
     /* Display identification and value information first */
-    fprintf( file, "%d %s %d %d %x ",
+    fprintf( file, "%d %s %d %x %d %d",
       DB_TYPE_SIGNAL,
       sig->name,
-      sig->lsb,
       sig->line,
-      sig->suppl.all
+      sig->suppl.all,
+      sig->pdim_num,
+      sig->udim_num
     );
+
+    /* Display dimension information */
+    for( i=0; i<(sig->pdim_num + sig->udim_num); i++ ) {
+      fprintf( file, " %d %d", sig->dim[i].msb, sig->dim[i].lsb );
+    }
+    fprintf( file, " " );
 
     vector_db_write( sig->value, file, ((sig->suppl.part.type == SSUPPL_TYPE_PARAM) || (sig->suppl.part.type == SSUPPL_TYPE_ENUM)) );
 
@@ -189,43 +251,74 @@ bool vsignal_db_read( char** line, func_unit* curr_funit ) {
   char       name[256];      /* Name of current vsignal */
   vsignal*   sig;            /* Pointer to the newly created vsignal */
   vector*    vec;            /* Vector value for this vsignal */
-  int        lsb;            /* Least-significant bit of this vsignal */
   int        sline;          /* Declared line number */
+  int        pdim_num;       /* Packed dimension number */
+  int        udim_num;       /* Unpacked dimension number */
+  int        msb;            /* Current dimension MSB */
+  int        lsb;            /* Current dimension LSB */
+  dim_range* dim    = NULL;  /* Dimensional information */
   ssuppl     suppl;          /* Supplemental field */
   int        exp_id;         /* Expression ID */
   int        chars_read;     /* Number of characters read from line */
   expression texp;           /* Temporary expression link for searching purposes */
   exp_link*  expl;           /* Temporary expression link for storage */
   func_unit* parent_mod;     /* Pointer to parent module */
+  int        i;              /* Loop iterator */
 
   /* Get name values. */
-  if( sscanf( *line, "%s %d %d %x %n", name, &lsb, &sline, &(suppl.all), &chars_read ) == 4 ) {
+  if( sscanf( *line, "%s %d %x %d %d%n", name, &sline, &(suppl.all), &pdim_num, &udim_num, &chars_read ) == 5 ) {
 
     *line = *line + chars_read;
 
-    /* Read in vector information */
-    if( vector_db_read( &vec, line ) ) {
+    /* Allocate dimensional information */
+    dim = (dim_range*)malloc_safe( (sizeof( dim_range ) * (pdim_num + udim_num)), __FILE__, __LINE__ );
 
-      /* Create new vsignal */
-      sig = vsignal_create( name, suppl.part.type, vec->width, lsb, sline, suppl.part.col, suppl.part.big_endian );
-      sig->suppl.part.assigned = suppl.part.assigned;
-      sig->suppl.part.mba      = suppl.part.mba;
-
-      /* Copy over vector value */
-      vector_dealloc( sig->value );
-      sig->value = vec;
-
-      /* Add vsignal to vsignal list */
-      if( curr_funit == NULL ) {
-        print_output( "Internal error:  vsignal in database written before its functional unit", FATAL, __FILE__, __LINE__ );
-        retval = FALSE;
+    /* Read in dimensional information */
+    i = 0;
+    while( (i < (pdim_num + udim_num)) && retval ) {
+      if( sscanf( *line, " %d %d%n", &(dim[i].msb), &(dim[i].lsb), &chars_read ) == 2 ) {
+        *line = *line + chars_read;
       } else {
-        sig_link_add( sig, &(curr_funit->sig_head), &(curr_funit->sig_tail) );
+        retval = FALSE;
       }
+      i++;
+    }
+
+    if( !retval ) {
+
+      free_safe( dim );
 
     } else {
 
-      retval = FALSE;
+      /* Read in vector information */
+      if( vector_db_read( &vec, line ) ) {
+
+        /* Create new vsignal */
+        sig = vsignal_create( name, suppl.part.type, vec->width, sline, suppl.part.col );
+        sig->suppl.part.assigned   = suppl.part.assigned;
+        sig->suppl.part.mba        = suppl.part.mba;
+        sig->suppl.part.big_endian = suppl.part.big_endian;
+        sig->pdim_num              = pdim_num;
+        sig->udim_num              = udim_num;
+        sig->dim                   = dim;
+
+        /* Copy over vector value */
+        vector_dealloc( sig->value );
+        sig->value = vec;
+
+        /* Add vsignal to vsignal list */
+        if( curr_funit == NULL ) {
+          print_output( "Internal error:  vsignal in database written before its functional unit", FATAL, __FILE__, __LINE__ );
+          retval = FALSE;
+        } else {
+          sig_link_add( sig, &(curr_funit->sig_head), &(curr_funit->sig_tail) );
+        }
+
+      } else {
+
+        retval = FALSE;
+
+      }
 
     }
 
@@ -255,21 +348,25 @@ bool vsignal_db_read( char** line, func_unit* curr_funit ) {
 */
 bool vsignal_db_merge( vsignal* base, char** line, bool same ) {
  
-  bool    retval;      /* Return value of this function */
-  char    name[256];   /* Name of current vsignal */
-  int     lsb;         /* Least-significant bit of this vsignal */
-  int     sline;       /* Declared line number */
-  ssuppl  suppl;       /* Supplemental signal information */
-  int     chars_read;  /* Number of characters read from line */
+  bool    retval = TRUE;  /* Return value of this function */
+  char    name[256];      /* Name of current vsignal */
+  int     sline;          /* Declared line number */
+  int     pdim_num;       /* Number of packed dimensions */
+  int     udim_num;       /* Number of unpacked dimensions */
+  int     msb;            /* MSB of current dimension being read */
+  int     lsb;            /* LSB of current dimension being read */
+  ssuppl  suppl;          /* Supplemental signal information */
+  int     chars_read;     /* Number of characters read from line */
+  int     i;              /* Loop iterator */
 
   assert( base != NULL );
   assert( base->name != NULL );
 
-  if( sscanf( *line, "%s %d %d %x %n", name, &lsb, &sline, &(suppl.all), &chars_read ) == 4 ) {
+  if( sscanf( *line, "%s %d %x %d %d%n", name, &sline, &(suppl.all), &pdim_num, &udim_num, &chars_read ) == 5 ) {
 
     *line = *line + chars_read;
 
-    if( !scope_compare( base->name, name ) || (base->lsb != lsb) ) {
+    if( !scope_compare( base->name, name ) || (base->pdim_num != pdim_num) || (base->udim_num != udim_num) ) {
 
       print_output( "Attempting to merge two databases derived from different designs.  Unable to merge",
                     FATAL, __FILE__, __LINE__ );
@@ -277,8 +374,18 @@ bool vsignal_db_merge( vsignal* base, char** line, bool same ) {
 
     } else {
 
-      /* Read in vector information */
-      retval = vector_db_merge( base->value, line, same );
+      i = 0;
+      while( (i < (pdim_num + udim_num)) && (sscanf( *line, " %d %d%n", &msb, &lsb, &chars_read ) == 2) ) {
+        *line = *line + chars_read;
+        i++;
+      }
+
+      if( i == (pdim_num + udim_num) ) {
+
+        /* Read in vector information */
+        retval = vector_db_merge( base->value, line, same );
+
+      }
 
     }
 
@@ -289,74 +396,6 @@ bool vsignal_db_merge( vsignal* base, char** line, bool same ) {
   }
 
   return( retval );
-
-}
-
-/*!
- \param base  Signal to store replaced data.
- \param line  Pointer to line of CDD file to parse.
-
- \return Returns TRUE if parsing successful; otherwise, returns FALSE.
-
- Parses specified line for vsignal information and performs a replacement
- of the base with the new vsignal.  If the vsignals are found to be unalike
- (names are different), an error message is displayed to the user.
- If both vsignals are the same, perform the replacement.
-*/
-bool vsignal_db_replace( vsignal* base, char** line ) {
-
-  bool   retval;      /* Return value of this function */
-  char   name[256];   /* Name of current vsignal */
-  int    lsb;         /* Least-significant bit of this vsignal */
-  int    sline;       /* Declared line number */
-  ssuppl suppl;       /* Supplemental signal information */
-  int    chars_read;  /* Number of characters read from line */
-
-  assert( base != NULL );
-  assert( base->name != NULL );
-
-  if( sscanf( *line, "%s %d %d %x %n", name, &lsb, &sline, &(suppl.all), &chars_read ) == 4 ) {
-
-    *line = *line + chars_read;
-
-    if( !scope_compare( base->name, name ) || (base->lsb != lsb) ) {
-
-      print_output( "Attempting to replace a database derived from a different design.  Unable to replace",
-                    FATAL, __FILE__, __LINE__ );
-      exit( 1 );
-
-    } else {
-
-      /* Read in vector information */
-      retval = vector_db_replace( base->value, line );
-
-    }
-
-  } else {
-
-    retval = FALSE;
-
-  }
-
-  return( retval );
-
-}
-
-/*!
- \param sig  Pointer to signal to set assigned bits to
- \param msb  Most-significant bit to set in signal vector
- \param lsb  Least-significant bit to set in signal vector
-
- \return Returns TRUE if any of the set bits were previously set by earlier calls to this 
-         function for this signal.
-
- Sets all assigned bits in the signal vector value bit array for the range specified.  If
- any of these set bits were previously set, return TRUE to the calling function to indicate
- that this occurred.  This function is used by the race condition checker.
-*/
-bool vsignal_set_assigned( vsignal* sig, int msb, int lsb ) {
-
-  return( vector_set_assigned( sig->value, (msb - sig->lsb), (lsb - sig->lsb) ) );
 
 }
 
@@ -403,17 +442,24 @@ void vsignal_vcd_assign( vsignal* sig, char* value, int msb, int lsb ) {
   bool      vec_changed;  /* Specifies if assigned value differed from original value */
   exp_link* curr_expr;    /* Pointer to current expression link under evaluation */
 
+  assert( sig != NULL );
   assert( sig->value != NULL );
+
+  /*
+   Since this signal is coming from the dumpfile, we don't expect to see values for multi-dimensional
+   arrays.
+  */
+  assert( (sig->pdim_num == 1) && (sig->udim_num == 0) );
 
 #ifdef DEBUG_MODE
   snprintf( user_msg, USER_MSG_LENGTH, "Assigning vsignal %s[%d:%d] (lsb=%d) to value %s",
-            obf_sig( sig->name ), msb, lsb, sig->lsb, value );
+            obf_sig( sig->name ), msb, lsb, sig->dim[0].lsb, value );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
   /* Set vsignal value to specified value */
   if( lsb > 0 ) {
-    vec_changed = vector_vcd_assign( sig->value, value, (msb - sig->lsb), (lsb - sig->lsb) );
+    vec_changed = vector_vcd_assign( sig->value, value, (msb - sig->dim[0].lsb), (lsb - sig->dim[0].lsb) );
   } else {
     vec_changed = vector_vcd_assign( sig->value, value, msb, lsb );
   }
@@ -444,13 +490,32 @@ void vsignal_add_expression( vsignal* sig, expression* expr ) {
 /*!
  \param sig  Pointer to vsignal to display to standard output.
 
- Displays vsignal's name, width, lsb and value vector to the standard output.
+ Displays vsignal's name, dimensional info, width and value vector to the standard output.
 */
 void vsignal_display( vsignal* sig ) {
 
+  int i;  /* Loop iterator */
+
   assert( sig != NULL );
 
-  printf( "  Signal =>  name: %s, lsb: %d, ", obf_sig( sig->name ), sig->lsb );
+  printf( "  Signal =>  name: %s, ", obf_sig( sig->name ) );
+
+  if( sig->pdim_num > 0 ) {
+    printf( "packed: " );
+    for( i=sig->udim_num; i<(sig->pdim_num + sig->udim_num); i++ ) {
+      printf( "[%d:%d]", sig->dim[i].msb, sig->dim[i].lsb );
+    }
+    printf( ", " );
+  }
+
+  if( sig->udim_num > 0 ) {
+    printf( "unpacked: " );
+    for( i=0; i<sig->udim_num; i++ ) {
+      printf( "[%d:%d]", sig->dim[i].msb, sig->dim[i].lsb );
+    }
+    printf( ", " );
+  }
+
   vector_display_value( sig->value->value, sig->value->width );
   printf( "\n" );
 
@@ -468,14 +533,14 @@ void vsignal_display( vsignal* sig ) {
 */
 vsignal* vsignal_from_string( char** str ) {
 
-  vsignal* sig;         /* Pointer to newly created vsignal */
-  char     name[4096];  /* Signal name */
-  int      left;        /* Left selection value of the signal */
-  int      right;       /* Right selection value of the signal */
-  int      width;       /* Width of the signal */
-  int      lsb;         /* LSB of the signal */
-  int      big_endian;  /* Endianness of the signal */
-  int      chars_read;  /* Number of characters read from string */
+  vsignal* sig;             /* Pointer to newly created vsignal */
+  char     name[4096];      /* Signal name */
+  int      left;            /* Left selection value of the signal */
+  int      right;           /* Right selection value of the signal */
+  int      width;           /* Width of the signal */
+  int      lsb;             /* LSB of the signal */
+  int      big_endian = 0;  /* Endianness of the signal */
+  int      chars_read;      /* Number of characters read from string */
 
   if( sscanf( *str, "%[a-zA-Z0-9_]\[%d:%d]%n", name, &left, &right, &chars_read ) == 3 ) {
     if( right > left ) {
@@ -487,19 +552,36 @@ vsignal* vsignal_from_string( char** str ) {
       lsb        = right;
       big_endian = 0;
     }
-    sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT, width, lsb, 0, 0, big_endian );
+    sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT, width, 0, 0 );
+    sig->pdim_num   = 1;
+    sig->dim        = (dim_range*)malloc_safe( (sizeof( dim_range ) * 1), __FILE__, __LINE__ );
+    sig->dim[0].msb = left;
+    sig->dim[0].lsb = right;
+    sig->suppl.part.big_endian = big_endian;
     *str += chars_read;
   } else if( sscanf( *str, "%[a-zA-Z0-9_]\[%d+:%d]%n", name, &left, &right, &chars_read ) == 3 ) {
-    sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT_POS, right, left, 0, 0, 0 );
+    sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT_POS, right, 0, 0 );
+    sig->pdim_num   = 1;
+    sig->dim        = (dim_range*)malloc_safe( (sizeof( dim_range ) * 1), __FILE__, __LINE__ );
+    sig->dim[0].msb = left + right;
+    sig->dim[0].lsb = left;
     *str += chars_read;
   } else if( sscanf( *str, "%[a-zA-Z0-9_]\[%d-:%d]%n", name, &left, &right, &chars_read ) == 3 ) {
-    sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT_NEG, right, ((left - right) + 1), 0, 0, 0 );
+    sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT_NEG, right, 0, 0 );
+    sig->pdim_num   = 1;
+    sig->dim        = (dim_range*)malloc_safe( (sizeof( dim_range ) * 1), __FILE__, __LINE__ );
+    sig->dim[0].msb = left - right;
+    sig->dim[0].lsb = left;
     *str += chars_read;
   } else if( sscanf( *str, "%[a-zA-Z0-9_]\[%d]%n", name, &right, &chars_read ) == 2 ) {
-    sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT, 1, right, 0, 0, 0 );
+    sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT, 1, 0, 0 );
+    sig->pdim_num   = 1;
+    sig->dim        = (dim_range*)malloc_safe( (sizeof( dim_range ) * 1), __FILE__, __LINE__ );
+    sig->dim[0].msb = right;
+    sig->dim[0].lsb = right;
     *str += chars_read;
   } else if( sscanf( *str, "%[a-zA-Z0-9_]%n", name, &chars_read ) == 1 ) {
-    sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT, 1, 0, 0, 0, 0 );
+    sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT, 1, 0, 0 );
     /* Specify that this width is unknown */
     sig->value->width = 0;
     *str += chars_read;
@@ -511,10 +593,17 @@ vsignal* vsignal_from_string( char** str ) {
 
 }
 
+/*!
+ \param expr  Pointer to expression to get width for
+ \param sig   Pointer to signal to get width for
+
+ \return Returns width of the given expression that is bound to the given signal.
+*/
 int vsignal_calc_width_for_expr( expression* expr, vsignal* sig ) {
 
   int exp_dim;    /* Expression dimension number */
   int width = 1;  /* Return value for this function */
+  int i;          /* Loop iterator */
 
   assert( expr != NULL );
   assert( sig != NULL );
@@ -525,9 +614,9 @@ int vsignal_calc_width_for_expr( expression* expr, vsignal* sig ) {
   /* Calculate width */
   for( i=(exp_dim + 1); i < (sig->pdim_num + sig->udim_num); i++ ) {
     if( sig->dim[i].msb > sig->dim[i].lsb ) {
-      width = width * (sig->dim[i].msb - sig->dim[i].lsb);
+      width *= (sig->dim[i].msb - sig->dim[i].lsb) + 1;
     } else {
-      width = width * (sig->dim[i].lsb - sig->dim[i].msb);
+      width *= (sig->dim[i].lsb - sig->dim[i].msb) + 1;
     }
   }
 
@@ -557,13 +646,16 @@ int vsignal_calc_lsb_for_expr( expression* expr, vsignal* sig, int lsb_val ) {
 void vsignal_dealloc( vsignal* sig ) {
 
   exp_link* curr_expl;  /* Pointer to current expression link to set to NULL */
+  int       i;          /* Loop iterator */
 
   if( sig != NULL ) {
 
-    if( sig->name != NULL ) {
-      free_safe( sig->name );
-      sig->name = NULL;
-    }
+    /* Free the signal name */
+    free_safe( sig->name );
+    sig->name = NULL;
+
+    /* Free the dimension information */
+    free_safe( sig->dim );
 
     /* Free up memory for value */
     vector_dealloc( sig->value );
@@ -588,6 +680,10 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.33  2006/09/15 22:14:54  phase1geo
+ Working on adding arrayed signals.  This is currently in progress and doesn't
+ even compile at this point, much less work.  Checkpointing work.
+
  Revision 1.32  2006/09/11 22:27:55  phase1geo
  Starting to work on supporting bitwise coverage.  Moving bits around in supplemental
  fields to allow this to work.  Full regression has been updated for the current changes

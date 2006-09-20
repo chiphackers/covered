@@ -2,27 +2,27 @@
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd instance6.2.vcd -o instance6.2.cdd -v instance6.2.v
 3 0 $root $root NA 0 0
 3 0 main main instance6.2.v 6 26
-1 a 0 8 3000a 4 1 15aa
-1 b 0 8 3000d 4 1 aa
+1 a 8 3000a 1 0 3 0 4 1 15aa
+1 b 8 3000d 1 0 3 0 4 1 aa
 3 0 foobar main.foo instance6.2.v 29 39
 2 1 37 f000f 1 0 20004 0 0 32 64 0 0 0 0 0 0 0 0
 2 2 37 d000d 4 0 20008 0 0 32 64 1 0 0 0 0 0 0 0
 2 3 37 b0010 4 24 10c 1 2 b
 2 4 37 70007 0 1 400 0 0 a
 2 5 37 70010 4 35 f00e 3 4
-1 bsize 0 0 80000 32 1 10 0 0 0 0 0 0 0
-1 b 0 33 13 4 1 15aa
-1 a 0 35 3000b 2 1 110a
+1 bsize 0 80000 1 0 31 0 32 1 10 0 0 0 0 0 0 0
+1 b 33 13 1 0 3 0 4 1 15aa
+1 a 35 3000b 1 0 1 0 2 1 110a
 4 5 5 5
 3 0 barfoo main.bar instance6.2.v 42 48
-1 b 0 44 d 4 1 aa
+1 b 44 d 1 0 3 0 4 1 aa
 3 0 foobar main.bar.dude instance6.2.v 29 39
 2 6 37 f000f 1 0 20004 0 0 32 64 0 0 0 0 0 0 0 0
 2 7 37 d000d 2 0 20008 0 0 32 64 1 0 0 0 0 0 0 0
 2 8 37 b0010 2 24 108 6 7 b
 2 9 37 70007 0 1 400 0 0 a
 2 10 37 70010 2 35 f00a 8 9
-1 bsize 0 0 80000 32 1 4 0 0 0 0 0 0 0
-1 b 0 33 13 2 1 a
-1 a 0 35 3000b 2 1 a
+1 bsize 0 80000 1 0 31 0 32 1 4 0 0 0 0 0 0 0
+1 b 33 13 1 0 1 0 2 1 a
+1 a 35 3000b 1 0 1 0 2 1 a
 4 10 10 10

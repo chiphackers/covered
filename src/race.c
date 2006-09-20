@@ -35,20 +35,20 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#include "defines.h"
-#include "race.h"
 #include "db.h"
-#include "util.h"
-#include "vsignal.h"
-#include "statement.h"
-#include "iter.h"
-#include "vector.h"
-#include "link.h"
-#include "stmt_blk.h"
+#include "defines.h"
 #include "expr.h"
 #include "func_unit.h"
-#include "ovl.h"
+#include "iter.h"
+#include "link.h"
 #include "obfuscate.h"
+#include "ovl.h"
+#include "race.h"
+#include "statement.h"
+#include "stmt_blk.h"
+#include "util.h"
+#include "vector.h"
+#include "vsignal.h"
 
 
 /*!
@@ -476,9 +476,15 @@ void race_check_one_block_assignment( func_unit* mod ) {
   bool       curr_race;           /* Set to TRUE if race condition was found in current iteration */
   int        lval;                /* Left expression value */
   int        rval;                /* Right expression value */
+  int        exp_dim;             /* Current expression dimension */
+  int        lsb;                 /* Calculated LSB */
+  int        msb;                 /* Calculated MSB */
 
   sigl = mod->sig_head;
   while( sigl != NULL ) {
+
+    /* Size the given signal */
+    vsignal_create_vec( sigl->sig );
 
     sig_stmt = -1;
 
@@ -490,7 +496,10 @@ void race_check_one_block_assignment( func_unit* mod ) {
       while( expl != NULL ) {
 					      
         /* Only look at expressions that are part of LHS and they are not part of a bit select */
-        if( (ESUPPL_IS_LHS( expl->exp->suppl ) == 1) && !expression_is_bit_select( expl->exp ) ) {
+        if( (ESUPPL_IS_LHS( expl->exp->suppl ) == 1) && !expression_is_bit_select( expl->exp ) && expression_is_last_select( expl->exp ) ) {
+
+          /* Get current dimension of the given expression */
+          exp_dim = expression_get_curr_dimension( expl->exp );
 
           /*
            If the signal was a part select, set the appropriate misc bits to indicate what
@@ -498,40 +507,47 @@ void race_check_one_block_assignment( func_unit* mod ) {
           */
 	  switch( expl->exp->op ) {
             case EXP_OP_SIG :
-              if( (ESUPPL_IS_ROOT( expl->exp->suppl ) == 0) && (expl->exp->parent->expr->op != EXP_OP_RASSIGN) ) {
-                curr_race = vsignal_set_assigned( sigl->sig, ((sigl->sig->value->width - 1) + sigl->sig->lsb), sigl->sig->lsb );
+              if( (ESUPPL_IS_ROOT( expl->exp->suppl ) == 0) && !expression_is_in_rassign( expl->exp ) ) {
+                curr_race = vector_set_assigned( sigl->sig->value, (sigl->sig->value->width - 1), 0 );
               }
 	      break;
             case EXP_OP_SBIT_SEL :
               if( expl->exp->left->op == EXP_OP_STATIC ) {
-                curr_race = vsignal_set_assigned( sigl->sig, vector_to_int( expl->exp->left->value ), vector_to_int( expl->exp->left->value ) );
+                lsb = (vector_to_int( expl->exp->left->value ) - sigl->sig->dim[exp_dim].lsb) * expl->exp->value->width;
+                curr_race = vector_set_assigned( sigl->sig->value, ((expl->exp->value->width - 1) + lsb), lsb );
 	      } else { 
-                curr_race = vsignal_set_assigned( sigl->sig, ((sigl->sig->value->width - 1) + sigl->sig->lsb), sigl->sig->lsb );
+                curr_race = vector_set_assigned( sigl->sig->value, (sigl->sig->value->width - 1), 0 );
               }
 	      break;
             case EXP_OP_MBIT_SEL :
 	      if( (expl->exp->left->op == EXP_OP_STATIC) && (expl->exp->right->op == EXP_OP_STATIC) ) {
-                curr_race = vsignal_set_assigned( sigl->sig, vector_to_int( expl->exp->left->value ), vector_to_int( expl->exp->right->value ) );
+                lsb = vector_to_int( expl->exp->right->value ) - sigl->sig->dim[exp_dim].lsb;
+                msb = vector_to_int( expl->exp->left->value )  - sigl->sig->dim[exp_dim].lsb;
+                curr_race = vector_set_assigned( sigl->sig->value, msb, lsb );
               } else {
-                curr_race = vsignal_set_assigned( sigl->sig, ((sigl->sig->value->width - 1) + sigl->sig->lsb), sigl->sig->lsb );
+                curr_race = vector_set_assigned( sigl->sig->value, (sigl->sig->value->width - 1), 0 );
               }
 	      break;
             case EXP_OP_MBIT_POS :
               if( expl->exp->left->op == EXP_OP_STATIC ) {
                 lval = vector_to_int( expl->exp->left->value );
                 rval = vector_to_int( expl->exp->right->value );
-                curr_race = vsignal_set_assigned( sigl->sig, ((lval + rval) - 1), lval );
+                lsb  = lval - sigl->sig->dim[exp_dim].lsb;
+                msb  = (lval + rval) - sigl->sig->dim[exp_dim].lsb;
+                curr_race = vector_set_assigned( sigl->sig->value, msb, lsb );
               } else {
-                curr_race = vsignal_set_assigned( sigl->sig, ((sigl->sig->value->width - 1) + sigl->sig->lsb), sigl->sig->lsb );
+                curr_race = vector_set_assigned( sigl->sig->value, (sigl->sig->value->width - 1), 0 );
               }
               break;
             case EXP_OP_MBIT_NEG :
               if( expl->exp->left->op == EXP_OP_STATIC ) {
                 lval = vector_to_int( expl->exp->left->value );
                 rval = vector_to_int( expl->exp->right->value );
-                curr_race = vsignal_set_assigned( sigl->sig, lval, ((lval - rval) + 1) );
+                lsb  = ((lval - rval) + 1) - sigl->sig->dim[exp_dim].lsb;
+                msb  = (lval + 1) - sigl->sig->dim[exp_dim].lsb;
+                curr_race = vector_set_assigned( sigl->sig->value, msb, lsb );
               } else {
-                curr_race = vsignal_set_assigned( sigl->sig, ((sigl->sig->value->width - 1) + sigl->sig->lsb), sigl->sig->lsb );
+                curr_race = vector_set_assigned( sigl->sig->value, (sigl->sig->value->width - 1), 0 );
               }
               break;
             default :
@@ -974,6 +990,10 @@ void race_blk_delete_list( race_blk* rb ) {
 
 /*
  $Log$
+ Revision 1.46  2006/09/15 22:14:54  phase1geo
+ Working on adding arrayed signals.  This is currently in progress and doesn't
+ even compile at this point, much less work.  Checkpointing work.
+
  Revision 1.45  2006/09/05 21:00:45  phase1geo
  Fixing bug in removing statements that are generate items.  Also added parsing
  support for multi-dimensional array accessing (no functionality here to support

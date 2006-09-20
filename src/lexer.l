@@ -57,6 +57,7 @@ extern char*      ppfilename;
 extern str_link*  modlist_head;
 extern str_link*  modlist_tail;
 extern func_unit* curr_funit;
+extern sig_range  curr_range;
 
 /*!
  Contains state before entering exclusive block.
@@ -233,6 +234,9 @@ WSPACE [ \t\b\f]+
 <PARSE>[}{;:\[\],()#=.@&!?<>%|^~+*/-] {
 	yylloc.first_column = yylloc.last_column;
 	yylloc.last_column += 1;
+        if( (yytext[0] == ';') || (yytext[0] == ',') ) {
+          curr_range.clear = TRUE;
+        }
 	return yytext[0];
  }
 

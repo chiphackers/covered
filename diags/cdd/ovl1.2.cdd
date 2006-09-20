@@ -2,10 +2,10 @@
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd ovl1.2.vcd -o ovl1.2.cdd -v ovl1.2.v -A ovl +libext+.vlib+ -y ./ovl -I ./ovl -I ./ovl/vlog95
 3 0 $root $root NA 0 0
 3 0 main main ovl1.2.v 1 28
-1 width 0 0 80000 32 1 10 0 0 0 0 0 0 0
-1 clock 0 3 3000a 1 1 1102
-1 reset_n 0 4 3000a 1 1 102
-1 a 0 5 3000a 4 1 10aa
+1 width 0 80000 1 0 31 0 32 1 10 0 0 0 0 0 0 0
+1 clock 3 3000a 1 0 0 0 1 1 1102
+1 reset_n 4 3000a 1 0 0 0 1 1 102
+1 a 5 3000a 1 0 3 0 4 1 10aa
 3 0 clock_gen main.clkgen ovl1.2.v 31 40
 2 1 36 100013 1 0 20004 0 0 1 4 0
 2 2 36 8000c 0 1 400 0 0 clock
@@ -17,7 +17,7 @@
 2 8 37 110011 1 0 20008 0 0 32 64 1 0 0 0 0 0 0 0
 2 9 37 110011 1 0 20008 0 0 32 64 55 55 55 55 55 55 55 55
 2 10 37 100011 53 2c 2000a 8 9 32 2 aa aa aa aa aa aa aa aa
-1 clock 0 32 81000d 1 1 1102
+1 clock 32 81000d 1 0 0 0 1 1 1102
 4 7 10 10
 4 10 7 0
 4 3 10 10
@@ -52,7 +52,7 @@
 2 38 45 40028 1 37 6 36 37
 2 39 52 14002d 1 0 20008 0 0 192 16 10 14 11 14 4 15 11 14 14 15 55 14 5 14 0 4 11 14 15 14 54 14 1 14 40 14 5 14 55 11 4 15 0 15 40 15 11 14 55 11 10 15 5 15 11 14 10 15
 2 40 52 14002d 1 47 8 39 0 ovl_cover_t.cvr_msg
-2 41 52 8002f 2 3b 2600a 0 40 512 2 11aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa ovl_cover_t
+2 41 52 8002f 2 3b 2600a 0 40 1 2 1102 ovl_cover_t
 2 42 51 170024 2 1 c 0 0 prev_test_expr
 2 43 51 a0012 2 1 c 0 0 test_expr
 2 44 51 a0024 3 15 202cc 42 43 1 2 1102
@@ -62,7 +62,7 @@
 2 48 54 60020 f 38 e 46 47
 2 49 57 140030 1 0 20008 0 0 216 16 10 14 11 14 4 15 11 14 14 15 55 14 5 14 0 4 5 15 55 14 4 15 11 14 44 15 55 11 50 14 50 14 1 14 55 11 4 15 0 15 40 15 11 14 55 11 10 15 5 15 11 14 10 15
 2 50 57 140030 1 47 8 49 0 ovl_cover_t.cvr_msg
-2 51 57 80032 2 3b 2600a 0 50 512 2 11aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa ovl_cover_t
+2 51 57 80032 2 3b 2600a 0 50 1 2 1102 ovl_cover_t
 2 52 56 410044 1 0 20004 0 0 1 4 0
 2 53 56 3b003f 1 32 8 0 0 width
 2 54 56 3a0046 1 25 20104 52 53 4 2 faa
@@ -101,7 +101,7 @@
 2 87 66 6002e f 38 a 85 86
 2 88 70 140031 0 0 20010 0 0 224 16 10 14 11 14 4 15 11 14 14 15 55 14 5 14 0 4 10 14 11 14 45 14 5 14 11 14 40 14 5 14 55 11 5 15 10 15 55 14 40 14 55 11 11 14 54 14 55 14 55 11 50 14 50 14 1 14
 2 89 70 140031 0 47 20 88 0 ovl_cover_t.cvr_msg
-2 90 70 80033 0 3b 26012 0 89 512 2 aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa ovl_cover_t
+2 90 70 80033 0 3b 26012 0 89 1 2 2 ovl_cover_t
 2 91 69 27002a 1 0 20008 0 0 1 4 1
 2 92 69 210025 1 32 8 0 0 width
 2 93 69 20002c 1 25 20208 91 92 4 2 f0aa
@@ -123,21 +123,21 @@
 2 109 48 130015 29 1 c 0 0 clk
 2 110 48 b0011 0 2a 20000 0 0 1 2 2
 2 111 48 b0015 3e 27 2100a 109 110 1 2 2
-1 severity_level 0 0 80000 32 1 1 0 0 0 0 0 0 0
-1 width 0 0 80000 32 1 10 0 0 0 0 0 0 0
-1 property_type 0 0 80000 32 1 0 0 0 0 0 0 0 0
-1 msg 0 0 80000 32 1 54 10 55 10 41 10 10 11
-1 coverage_level 0 0 80000 32 1 55 55 55 55 55 55 55 55
-1 assert_name 0 0 80000 32 1 10 11 55 10 40 10 55 11
-1 clk 0 12 8 1 1 1102
-1 reset_n 0 12 d 1 1 102
-1 test_expr 0 13 14 4 1 10aa
-1 error_count 0 4 3000a 32 65 aa aa aa aa aa aa aa aa
-1 cover_count 0 72 3000a 32 65 2aa aa aa aa aa aa aa aa
-1 test_expr_1 0 13 30013 4 1 faa
-1 prev_test_expr 0 38 30012 4 1 10aa
-1 one_hots_checked 0 40 30012 4 1 1aa
-1 prev_one_hots_checked 0 41 30012 4 1 1aa
+1 severity_level 0 80000 1 0 31 0 32 1 1 0 0 0 0 0 0 0
+1 width 0 80000 1 0 31 0 32 1 10 0 0 0 0 0 0 0
+1 property_type 0 80000 1 0 31 0 32 1 0 0 0 0 0 0 0 0
+1 msg 0 80000 1 0 31 0 32 1 54 10 55 10 41 10 10 11
+1 coverage_level 0 80000 1 0 31 0 32 1 55 55 55 55 55 55 55 55
+1 assert_name 0 80000 1 0 31 0 32 1 10 11 55 10 40 10 55 11
+1 clk 12 8 1 0 0 0 1 1 1102
+1 reset_n 12 d 1 0 0 0 1 1 102
+1 test_expr 13 14 1 0 3 0 4 1 10aa
+1 error_count 4 3000a 1 0 31 0 32 65 aa aa aa aa aa aa aa aa
+1 cover_count 72 3000a 1 0 31 0 32 65 2aa aa aa aa aa aa aa aa
+1 test_expr_1 13 30013 1 0 3 0 4 1 faa
+1 prev_test_expr 38 30012 1 0 3 0 4 1 10aa
+1 one_hots_checked 40 30012 1 0 3 0 4 1 1aa
+1 prev_one_hots_checked 41 30012 1 0 3 0 4 1 1aa
 4 13 0 0
 4 16 0 0
 4 28 28 28
@@ -172,7 +172,7 @@
 2 124 86 0 2 2d 2020a 122 123 1 2 1002
 2 125 85 b000b 1 0 20004 0 0 32 64 0 0 0 0 0 0 0 0
 2 126 85 0 2 2d 20106 125 123 1 2 102
-1 cvr_msg 0 76 800015 512 1 aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa 42aa 1aa 8aa aa c0aa 1aa 4aa aa 2aa 1aa caa 21aa 30aa 12aa 2caa 10aa 1aa 10aa 7aa 20aa 52aa 1aa f0aa 2aa 48aa aa 24aa 10aa aaa 21aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa
+1 cvr_msg 76 800015 1 0 511 0 512 1 aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa 42aa 1aa 8aa aa c0aa 1aa 4aa aa 2aa 1aa caa 21aa 30aa 12aa 2caa 10aa 1aa 10aa 7aa 20aa 52aa 1aa f0aa 2aa 48aa aa 24aa 10aa aaa 21aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa
 4 118 0 0
 4 119 118 0
 4 117 0 0

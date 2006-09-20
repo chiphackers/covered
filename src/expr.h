@@ -35,7 +35,7 @@ void expression_create_value( expression* exp, int width, bool data );
 expression* expression_create( expression* right, expression* left, exp_op_type op, bool lhs, int id, int line, int first, int last, bool data );
 
 /*! \brief Sets the specified expression value to the specified vector value. */
-void expression_set_value( expression* exp, vector* vec );
+void expression_set_value( expression* exp, vsignal* sig );
 
 /*! \brief Sets the signed bit for all appropriate parent expressions */
 void expression_set_signed( expression* exp );
@@ -88,9 +88,6 @@ bool expression_db_read( char** line, func_unit* curr_mod, bool eval );
 /*! \brief Reads and merges two expressions and stores result in base expression. */
 bool expression_db_merge( expression* base, char** line, bool same );
 
-/*! \brief Reads and replaces original expression with new expression. */
-bool expression_db_replace( expression* base, char** line );
-
 /*! \brief Returns user-readable name of specified expression operation. */
 const char* expression_string_op( int op );
 
@@ -112,8 +109,14 @@ bool expression_is_static_only( expression* expr );
 /*! \brief Returns TRUE if specified expression is on the LHS of a blocking assignment operator. */
 bool expression_is_assigned( expression* expr );
 
-/*! \brief Returns TRUE if specifies expression is a part of an bit select expression tree. */
+/*! \brief Returns TRUE if specified expression is a part of an bit select expression tree. */
 bool expression_is_bit_select( expression* expr );
+
+/*! \brief Returns TRUE if specified expression is in an RASSIGN expression tree. */
+bool expression_is_in_rassign( expression* expr );
+
+/*! \brief Returns TRUE if specified expression is the last select of a signal */
+bool expression_is_last_select( expression* expr );
 
 /*! \brief Performs blocking assignment assignment to variables. */
 void expression_assign( expression* lhs, expression* rhs, int* lsb );
@@ -124,6 +127,10 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.50  2006/09/15 22:14:54  phase1geo
+ Working on adding arrayed signals.  This is currently in progress and doesn't
+ even compile at this point, much less work.  Checkpointing work.
+
  Revision 1.49  2006/09/08 22:39:50  phase1geo
  Fixes for memory problems.
 

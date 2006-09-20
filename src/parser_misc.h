@@ -60,22 +60,30 @@ extern unsigned error_count, warn_count;
 void parser_dealloc_curr_range();
 
 /*! \brief Creates a copy of the curr_range variable */
-vector_width* parser_copy_curr_range();
+sig_range* parser_copy_curr_range();
 
 /*! \brief Copies specifies static expressions to the current range */
-void parser_copy_se_to_curr_range( static_expr* left, static_expr* right );
+void parser_copy_range_to_curr_range( sig_range* range );
 
 /*! \brief Deallocates and sets the curr_range variable from explicitly set values */
-void parser_explicitly_set_curr_range( static_expr* left, static_expr* right );
+void parser_explicitly_set_curr_range( static_expr* left, static_expr* right, bool packed );
 
 /*! \brief Deallocates and sets the curr_range variable from implicitly set values */
-void parser_implicitly_set_curr_range( int left_num, int right_num );
+void parser_implicitly_set_curr_range( int left_num, int right_num, bool packed );
 
 /*! \brief Checks the specified generation value to see if it holds in the specified module */
 bool parser_check_generation( int gen );
 
 /*
  $Log$
+ Revision 1.9  2006/08/31 22:32:18  phase1geo
+ Things are in a state of flux at the moment.  I have added proper parsing support
+ for assertions, properties and sequences.  Also added partial support for the $root
+ space (though I need to work on figuring out how to handle it in terms of the
+ instance tree) and all that goes along with that.  Add parsing support with an
+ error message for multi-dimensional array declarations.  Regressions should not be
+ expected to run correctly at the moment.
+
  Revision 1.8  2006/07/15 22:07:14  phase1geo
  Added all code to parser to check generation value to decide if a piece of
  syntax is allowable by the parser or not.  This code compiles and has been

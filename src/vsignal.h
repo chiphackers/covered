@@ -29,10 +29,13 @@
 
 
 /*! \brief Initializes specified vsignal with specified values. */
-void vsignal_init( vsignal* sig, char* name, int type, vector* value, int lsb, int line, int col, int big_endian );
+void vsignal_init( vsignal* sig, char* name, int type, vector* value, int line, int col );
 
 /*! \brief Creates a new vsignal based on the information passed to this function. */
-vsignal* vsignal_create( char* name, int type, int width, int lsb, int line, int col, int big_endian );
+vsignal* vsignal_create( char* name, int type, int width, int line, int col );
+
+/*! \brief Creates the vector for a given signal based on the values of its dimension information */
+void vsignal_create_vec( vsignal* sig );
 
 /*! \brief Duplicates the given signal and returns a newly allocated signal */
 vsignal* vsignal_duplicate( vsignal* sig );
@@ -45,12 +48,6 @@ bool vsignal_db_read( char** line, func_unit* curr_funit );
 
 /*! \brief Reads and merges two vsignals, placing result into base vsignal. */
 bool vsignal_db_merge( vsignal* base, char** line, bool same );
-
-/*! \brief Reads and replaces an original vsignal with a new vsignal. */
-bool vsignal_db_replace( vsignal* base, char** line );
-
-/*! \brief Sets vector value assigned bits and returns overlapping indicator. */
-bool vsignal_set_assigned( vsignal* sig, int msb, int lsb );
 
 /*! \brief Propagates specified signal information to rest of design. */
 void vsignal_propagate( vsignal* sig );
@@ -79,6 +76,10 @@ void vsignal_dealloc( vsignal* sig );
 
 /*
  $Log$
+ Revision 1.16  2006/09/15 22:14:54  phase1geo
+ Working on adding arrayed signals.  This is currently in progress and doesn't
+ even compile at this point, much less work.  Checkpointing work.
+
  Revision 1.15  2006/07/25 21:35:54  phase1geo
  Fixing nested namespace problem with generate blocks.  Also adding support
  for using generate values in expressions.  Still not quite working correctly
