@@ -30,6 +30,11 @@ void enumerate_add_item( vsignal* enum_sig, static_expr* value, func_unit* funit
   ei->last  = FALSE;
   ei->next  = NULL;
 
+  /* Set the root bit on the static expression, if necessary */
+  if( (value != NULL) && (value->exp != NULL) ) {
+    value->exp->suppl.part.root = 1;
+  }
+
   /* Add it to the current functional unit's enumeration list */
   if( funit->ei_head == NULL ) {
     funit->ei_head = funit->ei_tail = ei;
@@ -147,6 +152,11 @@ void enumerate_dealloc_list( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.2  2006/08/30 12:02:48  phase1geo
+ Changing assertion in vcd.c that fails when the VCD file is improperly formatted
+ to a user error message with a bit more meaning.  Fixing problem with signedness
+ of enumeration resolution.  Added enum1.1 diagnostic to testsuite.
+
  Revision 1.1  2006/08/29 22:49:31  phase1geo
  Added enumeration support and partial support for typedefs.  Added enum1
  diagnostic to verify initial enumeration support.  Full regression has not

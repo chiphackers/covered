@@ -5,10 +5,10 @@ reg [31:0] b;
 
 always @*
   begin : foo
-    reg [1:0] mem[1:0];
-    mem[0] = 2'b01;
-    mem[1] = 2'b10;
-    a = mem[b];
+    real mem0, mem1;
+    mem0 = 2'b01;
+    mem1 = 2'b10;
+    a = b ? mem1 : mem0;
   end
 
 initial begin

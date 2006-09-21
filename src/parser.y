@@ -5746,6 +5746,7 @@ gate_instance
   | IDENTIFIER range '(' ignore_more expression_list ignore_less ')'
     {
       str_link* tmp;
+      curr_range.clear = TRUE;
       if( !parser_check_generation( GENERATION_2001 ) ) {
         VLerror( "Arrayed instantiation syntax found in block that is specified to not allow Verilog-2001 syntax" );
         free_safe( $1 );
@@ -5760,6 +5761,7 @@ gate_instance
     }
   | UNUSED_IDENTIFIER range '(' ignore_more expression_list ignore_less ')'
     {
+      curr_range.clear = TRUE;
       $$ = NULL;
     }
 
@@ -5779,6 +5781,7 @@ gate_instance
   | IDENTIFIER range '(' port_name_list ')'
     {
       str_link* tmp;
+      curr_range.clear = TRUE;
       if( !parser_check_generation( GENERATION_2001 ) ) {
         VLerror( "Arrayed instantiation syntax found in block that is specified to not allow Verilog-2001 syntax" );
         free_safe( $1 );
@@ -5786,6 +5789,7 @@ gate_instance
       } else {
         tmp        = (str_link*)malloc_safe( sizeof( str_link ), __FILE__, __LINE__ );
         tmp->str   = $1;
+        printf( "pdim: %d, udim: %d\n", curr_range.pdim_num, curr_range.udim_num );
         tmp->range = curr_range.dim;
         tmp->next  = NULL;
         $$ = tmp;

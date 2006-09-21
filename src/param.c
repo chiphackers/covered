@@ -341,13 +341,13 @@ inst_parm* inst_parm_find( char* name, inst_parm* iparm ) {
 inst_parm* inst_parm_add( char* name, char* inst_name, static_expr* msb, static_expr* lsb, bool is_signed,
                           vector* value, mod_parm* mparm, funit_inst* inst ) {
 
-  inst_parm* iparm;      /* Temporary pointer to instance parameter */
-  int        sig_width;  /* Width of this parameter signal */
-  int        sig_lsb;    /* LSB of this parameter signal */
-  int        sig_be;     /* Big endianness of this parameter signal */
-  int        left_val;   /* Value of left (msb) static expression */
-  int        right_val;  /* Value of right (lsb) static expression */
-  exp_link*  expl;       /* Pointer to current expression link */
+  inst_parm* iparm;           /* Temporary pointer to instance parameter */
+  int        sig_width;       /* Width of this parameter signal */
+  int        sig_lsb;         /* LSB of this parameter signal */
+  int        sig_be;          /* Big endianness of this parameter signal */
+  int        left_val  = 31;  /* Value of left (msb) static expression */
+  int        right_val = 0;   /* Value of right (lsb) static expression */
+  exp_link*  expl;            /* Pointer to current expression link */
   
   assert( value != NULL );
   assert( ((msb == NULL) && (lsb == NULL)) || ((msb != NULL) && (lsb != NULL)) );
@@ -1014,6 +1014,10 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.77  2006/09/21 04:20:59  phase1geo
+ Fixing endianness diagnostics.  Still getting memory error with some diagnostics
+ in regressions (ovl1 is one of them).  Updated regression.
+
  Revision 1.76  2006/09/20 22:38:09  phase1geo
  Lots of changes to support memories and multi-dimensional arrays.  We still have
  issues with endianness and VCS regressions have not been run, but this is a significant

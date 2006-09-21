@@ -2,7 +2,7 @@
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd generate8.1.vcd -o generate8.1.cdd -v generate8.1.v
 3 0 $root $root NA 0 0
 3 0 main main generate8.1.v 1 26
-1 A 0 0 80000 32 1 0 0 0 0 0 0 0 0
+1 A 0 80000 1 0 31 0 32 1 0 0 0 0 0 0 0 0
 3 1 main.b main.b generate8.1.v 7 16
 2 1 8 110015 0 1 400 0 0 count
 2 2 8 190019 1 0 20004 0 0 32 64 0 0 0 0 0 0 0 0
@@ -16,13 +16,13 @@
 2 10 15 240024 1 0 20008 0 0 32 64 1 0 0 0 0 0 0 0
 2 11 15 1c0024 1 6 20098 10 9 32 2 1eaa faa faa faa faa faa faa faa
 2 12 15 140024 1 37 602a 11 8
-1 count 0 8 830011 32 1 1aa aa aa aa aa aa aa aa
+1 count 8 830011 1 0 31 0 32 1 1aa aa aa aa aa aa aa aa
 4 3 0 0
 4 4 0 0
 4 12 7 7
 4 7 12 0
 3 0 foo main.b.f generate8.1.v 30 34
-1 x 0 32 830004 1 1 1102
+1 x 32 830004 1 0 0 0 1 1 1102
 3 1 main.b.c main.b.c generate8.1.v 10 14
 2 13 12 130013 1 0 20004 0 0 32 64 0 0 0 0 0 0 0 0
 2 14 12 110011 0 1 400 0 0 i
@@ -38,7 +38,7 @@
 2 24 12 180018 1 0 20008 0 0 32 64 10 0 0 0 0 0 0 0
 2 25 12 160016 5 1 c 0 0 i
 2 26 12 160018 5 d 2028e 24 25 1 66 1102
-1 i 0 11 83000f 32 65 37aa aa aa aa aa aa aa aa
+1 i 11 83000f 1 0 31 0 32 65 37aa aa aa aa aa aa aa aa
 4 20 26 26
 4 23 20 20
 4 26 23 0

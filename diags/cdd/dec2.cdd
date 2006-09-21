@@ -18,8 +18,8 @@
 2 14 7 d000e 1 0 20008 0 0 32 64 0 4 0 0 0 0 0 0
 2 15 7 b000b 21 1 c 0 0 i
 2 16 7 b000e 21 d 2028e 14 15 1 66 1102
-1 a 0 3 830008 32 65 ffaa 1faa faa faa faa faa faa faa
-1 i 0 3 83000b 32 65 ffaa 13aa aa aa aa aa aa aa
+1 a 3 830008 1 0 31 0 32 65 ffaa 1faa faa faa faa faa faa faa
+1 i 3 83000b 1 0 31 0 32 65 ffaa 13aa aa aa aa aa aa aa
 4 11 16 16
 4 13 11 11
 4 16 13 0

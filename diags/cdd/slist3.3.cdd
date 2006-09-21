@@ -2,6 +2,6 @@
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd slist3.3.vcd -o slist3.3.cdd -v slist3.3.v
 3 0 $root $root NA 0 0
 3 0 main main slist3.3.v 1 22
-1 a 0 3 3000b 2 1 a
-1 b 0 4 3000b 32 1 aa aa aa aa aa aa aa aa
+1 a 3 3000b 1 0 1 0 2 1 a
+1 b 4 3000b 1 0 31 0 32 1 aa aa aa aa aa aa aa aa
 3 1 main.foo main.foo slist3.3.v 7 12
