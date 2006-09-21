@@ -221,6 +221,7 @@ void vsignal_db_write( vsignal* sig, FILE* file ) {
     );
 
     /* Display dimension information */
+    vsignal_display( sig );
     for( i=0; i<(sig->pdim_num + sig->udim_num); i++ ) {
       fprintf( file, " %d %d", sig->dim[i].msb, sig->dim[i].lsb );
     }
@@ -680,6 +681,11 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.34  2006/09/20 22:38:10  phase1geo
+ Lots of changes to support memories and multi-dimensional arrays.  We still have
+ issues with endianness and VCS regressions have not been run, but this is a significant
+ amount of work that needs to be checkpointed.
+
  Revision 1.33  2006/09/15 22:14:54  phase1geo
  Working on adding arrayed signals.  This is currently in progress and doesn't
  even compile at this point, much less work.  Checkpointing work.

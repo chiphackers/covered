@@ -408,8 +408,8 @@ inst_parm* inst_parm_add( char* name, char* inst_name, static_expr* msb, static_
   iparm->sig = vsignal_create( name, SSUPPL_TYPE_PARAM, sig_width, 0, 0 );
   iparm->sig->pdim_num   = 1;
   iparm->sig->dim        = (dim_range*)malloc_safe( (sizeof( dim_range ) * 1), __FILE__, __LINE__ );
-  iparm->sig->dim[0].lsb = sig_lsb;
-  iparm->sig->dim[0].msb = (sig_lsb + sig_width) - 1;
+  iparm->sig->dim[0].lsb = right_val;
+  iparm->sig->dim[0].msb = left_val;
   iparm->sig->suppl.part.big_endian = sig_be;
 
   /* Store signed attribute for this vector */
@@ -1014,6 +1014,11 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.76  2006/09/20 22:38:09  phase1geo
+ Lots of changes to support memories and multi-dimensional arrays.  We still have
+ issues with endianness and VCS regressions have not been run, but this is a significant
+ amount of work that needs to be checkpointed.
+
  Revision 1.75  2006/09/15 22:14:54  phase1geo
  Working on adding arrayed signals.  This is currently in progress and doesn't
  even compile at this point, much less work.  Checkpointing work.

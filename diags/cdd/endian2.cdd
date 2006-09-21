@@ -1,5 +1,5 @@
 5 9 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd endian2.vcd -o endian2.cdd -v endian2.v
+8 /ptmp/cvs/covered/diags/verilog -t main -vcd endian2.vcd -o endian2.cdd -v endian2.v
 3 0 $root $root NA 0 0
 3 0 main main endian2.v 1 23
 2 1 9 a000d 1 0 20004 0 0 1 4 0
@@ -23,9 +23,9 @@
 2 19 13 5000c 1 24 208 17 18 a
 2 20 13 10001 0 1 400 0 0 b
 2 21 13 1000c 1 37 a 19 20
-1 FOO 0 0 80000 32 1 5 0 0 0 0 0 0 0
-1 a 0 5 83000c 4 1 caa
-1 b 3 6 83000c 4 1 4aa
+1 FOO 0 80000 1 0 31 0 32 1 5 0 0 0 0 0 0 0
+1 a 5 93000c 1 0 0 3 4 1 caa
+1 b 6 93000c 1 0 3 6 4 1 4aa
 4 21 0 0
 4 16 21 21
 4 13 16 0

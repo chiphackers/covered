@@ -132,16 +132,16 @@
 #include <stdlib.h>
 #include <assert.h>
 
+#include "binding.h"
 #include "defines.h"
 #include "expr.h"
-#include "link.h"
-#include "vector.h"
-#include "binding.h"
-#include "util.h"
-#include "sim.h"
 #include "fsm.h"
 #include "func_unit.h"
+#include "link.h"
+#include "sim.h"
+#include "vector.h"
 #include "vsignal.h"
+#include "util.h"
 
 
 extern nibble xor_optab[OPTAB_SIZE];
@@ -517,6 +517,8 @@ void expression_set_value( expression* exp, vsignal* sig ) {
   int lbit;       /* Bit boundary specified by left child */
   int rbit;       /* Bit boundary specified by right child */
   int exp_width;  /* Dimensional width of the expression */
+  int exp_dim;    /* Dimension of the expression */
+  int lsb;        /* LSB of signal */
   
   assert( exp != NULL );
   assert( exp->value != NULL );
@@ -528,6 +530,9 @@ void expression_set_value( expression* exp, vsignal* sig ) {
 
   /* Calculate expression dimensional width */
   exp_width = vsignal_calc_width_for_expr( exp, sig );
+
+  /* Calculate the expression dimension */
+  exp_dim = expression_get_curr_dimension( exp );
   
   switch( exp->op ) {
     case EXP_OP_SIG       :
@@ -548,20 +553,20 @@ void expression_set_value( expression* exp, vsignal* sig ) {
       expression_operate_recursively( exp->right, TRUE );
       lbit = vector_to_int( exp->left->value  );
       rbit = vector_to_int( exp->right->value );
+      lsb  = (sig->dim[exp_dim].lsb < sig->dim[exp_dim].msb) ? sig->dim[exp_dim].lsb : sig->dim[exp_dim].msb;
       if( lbit <= rbit ) {
-        exp->value->width = ((rbit - lbit) + 1) * exp_width;
+        exp->value->width = (rbit - lbit) + 1;
         if( exp->op == EXP_OP_PARAM_MBIT ) {
           exp->value->value = sig->value->value + ((sig->value->width - exp->value->width) - lbit);
         } else {
-          exp->value->value = sig->value->value + (((sig->value->width - exp->value->width) - lbit) -
-                                             sig->dim[(sig->udim_num + sig->pdim_num)-1].lsb);
+          exp->value->value = sig->value->value + (((sig->value->width - exp->value->width) - lbit) - lsb);
         }
       } else {
-        exp->value->width = ((lbit - rbit) + 1) * exp_width;
+        exp->value->width = (lbit - rbit) + 1;
         if( exp->op == EXP_OP_PARAM_MBIT ) {
           exp->value->value = sig->value->value + rbit;
         } else {
-          exp->value->value = sig->value->value + (rbit - sig->dim[(sig->udim_num + sig->pdim_num)-1].lsb);
+          exp->value->value = sig->value->value + (rbit - sig->dim[exp_dim].lsb);
         }
       }
       break;
@@ -2826,7 +2831,10 @@ bool expression_op_func__mbit_pos( expression* expr, thread* thr ) {
 
   if( !vector_is_unknown( expr->left->value ) ) {
 
-    intval = vector_to_int( expr->left->value ) - expr->sig->dim[expression_get_curr_dimension( expr )].lsb;
+    int exp_dim = expression_get_curr_dimension( expr );
+    int lsb     = (expr->sig->dim[exp_dim].lsb < expr->sig->dim[exp_dim].msb) ? expr->sig->dim[exp_dim].lsb : expr->sig->dim[exp_dim].msb;
+
+    intval = vector_to_int( expr->left->value ) - lsb;
     assert( intval >= 0 );
     assert( intval < expr->sig->value->width );
     expr->value->value = vstart + intval;
@@ -2860,7 +2868,10 @@ bool expression_op_func__mbit_neg( expression* expr, thread* thr ) {
 
   if( !vector_is_unknown( expr->left->value ) ) {
 
-    intval1 = vector_to_int( expr->left->value ) - expr->sig->dim[expression_get_curr_dimension( expr )].lsb;
+    int exp_dim = expression_get_curr_dimension( expr );
+    int lsb     = (expr->sig->dim[exp_dim].lsb < expr->sig->dim[exp_dim].msb) ? expr->sig->dim[exp_dim].lsb : expr->sig->dim[exp_dim].msb;
+
+    intval1 = vector_to_int( expr->left->value ) - lsb;
     intval2 = vector_to_int( expr->right->value );
     assert( intval1 < expr->sig->value->width );
     assert( ((intval1 - intval2) + 1) >= 0 );
@@ -3743,6 +3754,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.211  2006/09/20 22:38:09  phase1geo
+ Lots of changes to support memories and multi-dimensional arrays.  We still have
+ issues with endianness and VCS regressions have not been run, but this is a significant
+ amount of work that needs to be checkpointed.
+
  Revision 1.210  2006/09/15 22:14:54  phase1geo
  Working on adding arrayed signals.  This is currently in progress and doesn't
  even compile at this point, much less work.  Checkpointing work.
