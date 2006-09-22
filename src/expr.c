@@ -196,6 +196,7 @@ static bool expression_op_func__unand( expression*, thread* );
 static bool expression_op_func__unor( expression*, thread* );
 static bool expression_op_func__unxor( expression*, thread* );
 static bool expression_op_func__sbit( expression*, thread* );
+static bool expression_op_func__mbit( expression*, thread* );
 static bool expression_op_func__expand( expression*, thread* );
 static bool expression_op_func__concat( expression*, thread* );
 static bool expression_op_func__pedge( expression*, thread* );
@@ -272,7 +273,7 @@ const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",         "",             ex
                                            {"UNOR",           "~|",           expression_op_func__unor,       {0, 0, NOT_COMB,   1, 1, 0, 0} },
                                            {"UNXOR",          "~^",           expression_op_func__unxor,      {0, 0, NOT_COMB,   1, 1, 0, 0} },
                                            {"SBIT_SEL",       "[]",           expression_op_func__sbit,       {0, 0, NOT_COMB,   1, 1, 0, 0} },
-                                           {"MBIT_SEL",       "[:]",          expression_op_func__null,       {0, 0, NOT_COMB,   1, 1, 0, 0} },
+                                           {"MBIT_SEL",       "[:]",          expression_op_func__mbit,       {0, 0, NOT_COMB,   1, 1, 0, 0} },
                                            {"EXPAND",         "{{}}",         expression_op_func__expand,     {0, 0, NOT_COMB,   1, 1, 0, 0} },
                                            {"CONCAT",         "{}",           expression_op_func__concat,     {0, 0, NOT_COMB,   1, 1, 0, 0} },
                                            {"PEDGE",          "posedge",      expression_op_func__pedge,      {1, 0, NOT_COMB,   0, 1, 1, 0} },
@@ -288,7 +289,7 @@ const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",         "",             ex
                                            {"LIST",           "",             expression_op_func__list,       {0, 0, NOT_COMB,   1, 0, 0, 0} },
                                            {"PARAM",          "",             expression_op_func__null,       {0, 1, NOT_COMB,   1, 0, 0, 0} },
                                            {"PARAM_SBIT",     "[]",           expression_op_func__sbit,       {0, 1, NOT_COMB,   1, 0, 0, 0} },
-                                           {"PARAM_MBIT",     "[:]",          expression_op_func__null,       {0, 1, NOT_COMB,   1, 0, 0, 0} },
+                                           {"PARAM_MBIT",     "[:]",          expression_op_func__mbit,       {0, 1, NOT_COMB,   1, 0, 0, 0} },
                                            {"ASSIGN",         "",             expression_op_func__null,       {0, 0, NOT_COMB,   1, 0, 0, 0} },
                                            {"DASSIGN",        "",             expression_op_func__null,       {0, 0, NOT_COMB,   1, 0, 0, 0} },
                                            {"BASSIGN",        "",             expression_op_func__bassign,    {0, 0, NOT_COMB,   1, 0, 0, 0} },
@@ -549,17 +550,16 @@ void expression_set_value( expression* exp, vsignal* sig ) {
   /* Calculate the expression dimension */
   exp_dim = expression_get_curr_dimension( exp );
   
+  /* Set the expression width */
   switch( exp->op ) {
     case EXP_OP_SIG       :
     case EXP_OP_PARAM     :
     case EXP_OP_FUNC_CALL :
     case EXP_OP_TRIGGER   :
-      exp->value->value = sig->value->value;
       exp->value->width = sig->value->width;
       break;
     case EXP_OP_SBIT_SEL   :
     case EXP_OP_PARAM_SBIT :
-      exp->value->value = sig->value->value;
       exp->value->width = exp_width;
       break;
     case EXP_OP_MBIT_SEL   :
@@ -568,21 +568,10 @@ void expression_set_value( expression* exp, vsignal* sig ) {
       expression_operate_recursively( exp->right, TRUE );
       lbit = vector_to_int( exp->left->value  );
       rbit = vector_to_int( exp->right->value );
-      lsb  = (sig->dim[exp_dim].lsb < sig->dim[exp_dim].msb) ? sig->dim[exp_dim].lsb : sig->dim[exp_dim].msb;
       if( lbit <= rbit ) {
-        exp->value->width = (rbit - lbit) + 1;
-        if( exp->op == EXP_OP_PARAM_MBIT ) {
-          exp->value->value = sig->value->value + ((sig->value->width - exp->value->width) - lbit);
-        } else {
-          exp->value->value = sig->value->value + (((sig->value->width - exp->value->width) - lbit) - lsb);
-        }
+        exp->value->width = ((rbit - lbit) + 1) * exp_width;
       } else {
-        exp->value->width = (lbit - rbit) + 1;
-        if( exp->op == EXP_OP_PARAM_MBIT ) {
-          exp->value->value = sig->value->value + rbit;
-        } else {
-          exp->value->value = sig->value->value + (rbit - sig->dim[exp_dim].lsb);
-        }
+        exp->value->width = ((lbit - rbit) + 1) * exp_width;
       }
       break;
     case EXP_OP_MBIT_POS :
@@ -590,11 +579,13 @@ void expression_set_value( expression* exp, vsignal* sig ) {
     case EXP_OP_PARAM_MBIT_POS :
     case EXP_OP_PARAM_MBIT_NEG :
       expression_operate_recursively( exp->right, TRUE );
-      exp->value->value = sig->value->value;
       exp->value->width = vector_to_int( exp->right->value ) * exp_width;
       break;
     default :  break;
   }
+
+  /* Point expression value to the signal value */
+  exp->value->value = sig->value->value;
 
 }
 
@@ -2190,6 +2181,55 @@ bool expression_op_func__sbit( expression* expr, thread* thr ) {
 
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
+ Performs a multi-bit select operation.
+*/
+bool expression_op_func__mbit( expression* expr, thread* thr ) {
+
+  int       intval;   /* Integer value */
+  vec_data* vstart;   /* Calculated starting vector bit */
+  int       lsb;      /* LSB of current signal dimension */
+  int       exp_dim;  /* Expression dimension */
+  bool      be;       /* Big endianness of this dimension */
+
+  /* Calculate starting bit position */
+  if( (expr->parent->expr->op == EXP_OP_DIM) && (expr->parent->expr->right == expr) ) {
+    vstart = expr->parent->expr->left->value->value;
+  } else {
+    vstart = expr->sig->value->value;
+  }
+
+  /* Calculate signal LSB and big endianness */
+  exp_dim = expression_get_curr_dimension( expr );
+  if( expr->sig->dim[exp_dim].lsb < expr->sig->dim[exp_dim].msb ) {
+    lsb = expr->sig->dim[exp_dim].lsb;
+    be  = FALSE;
+  } else {
+    lsb = expr->sig->dim[exp_dim].msb;
+    be  = TRUE;
+  }
+
+  intval = ((be ? vector_to_int( expr->left->value ) : vector_to_int( expr->right->value )) - lsb) * vsignal_calc_width_for_expr( expr, expr->sig );
+  printf( "be: %d, intval: %d, exp_width: %d, left: %d, right: %d, lsb: %d\n",
+          be, intval, vsignal_calc_width_for_expr( expr, expr->sig ), vector_to_int( expr->left->value ), vector_to_int( expr->right->value ), lsb );
+  assert( intval >= 0 );
+  assert( intval < expr->sig->value->width );
+
+  if( be ) {
+    expr->value->value = vstart + ((expr->sig->value->width - intval) - 1);
+  } else {
+    expr->value->value = vstart + intval;
+  }
+
+  return( TRUE );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
  Performs a expansion ({{}}) operation.
 */
 bool expression_op_func__expand( expression* expr, thread* thr ) {
@@ -2837,7 +2877,7 @@ bool expression_op_func__mbit_pos( expression* expr, thread* thr ) {
     int exp_dim = expression_get_curr_dimension( expr );
     int lsb     = (expr->sig->dim[exp_dim].lsb < expr->sig->dim[exp_dim].msb) ? expr->sig->dim[exp_dim].lsb : expr->sig->dim[exp_dim].msb;
 
-    intval = vector_to_int( expr->left->value ) - lsb;
+    intval = (vector_to_int( expr->left->value ) - lsb) * vsignal_calc_width_for_expr( expr, expr->sig );
     assert( intval >= 0 );
     assert( intval < expr->sig->value->width );
     expr->value->value = vstart + intval;
@@ -3443,13 +3483,14 @@ void expression_set_assigned( expression* expr ) {
 */
 void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
 
-  int       intval1;  /* Integer value to use */
-  int       intval2;  /* Integer value to use */
-  vec_data* vstart;   /* Starting vector data */
-  bool      assign;   /* Set to TRUE if we should perform assignment */
-  int       exp_dim;  /* Current LHS expression dimension */
-  int       sig_lsb;  /* Current LHS signal LSB */
-  bool      sig_be;   /* Current LHS signal endianness */
+  int       intval1;    /* Integer value to use */
+  int       intval2;    /* Integer value to use */
+  vec_data* vstart;     /* Starting vector data */
+  bool      assign;     /* Set to TRUE if we should perform assignment */
+  int       exp_dim;    /* Current LHS expression dimension */
+  int       dim_width;  /* Current LHS dimension width */
+  int       dim_lsb;    /* Current LHS dimension LSB */
+  bool      dim_be;     /* Current LHS dimension endianness */
 
   if( lhs != NULL ) {
 
@@ -3463,12 +3504,13 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
       }
       exp_dim = expression_get_curr_dimension( lhs );
       if( lhs->sig->dim[exp_dim].lsb < lhs->sig->dim[exp_dim].msb ) {
-        sig_lsb = lhs->sig->dim[exp_dim].lsb;
-        sig_be  = FALSE;
+        dim_lsb = lhs->sig->dim[exp_dim].lsb;
+        dim_be  = FALSE;
       } else {
-        sig_lsb = lhs->sig->dim[exp_dim].msb;
-        sig_be  = TRUE;
+        dim_lsb = lhs->sig->dim[exp_dim].msb;
+        dim_be  = TRUE;
       }
+      dim_width = vsignal_calc_width_for_expr( lhs, lhs->sig );
     }
 
     /* Calculate assignment */
@@ -3487,11 +3529,9 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
         if( lhs->sig->suppl.part.assigned == 1 ) {
           if( assign ) {
             vector_set_value( lhs->value, rhs->value->value, rhs->value->width, *lsb, 0 );
-          }
-          if( rhs->value->width < lhs->value->width ) {
-            vector_bit_fill( lhs->value, lhs->value->width, (rhs->value->width + *lsb) );
-          }
-          if( assign ) {
+            if( rhs->value->width < lhs->value->width ) {
+              vector_bit_fill( lhs->value, lhs->value->width, (rhs->value->width + *lsb) );
+            }
 #ifdef DEBUG_MODE
             if( debug_mode ) {
               printf( "        " );  vsignal_display( lhs->sig );
@@ -3507,17 +3547,22 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
       case EXP_OP_SBIT_SEL :
         if( lhs->sig->suppl.part.assigned == 1 ) {
           if( !vector_is_unknown( lhs->left->value ) ) {
-            intval1 = (vector_to_int( lhs->left->value ) - sig_lsb) * lhs->value->width;
+            intval1 = (vector_to_int( lhs->left->value ) - dim_lsb) * dim_width;
             assert( intval1 >= 0 );
-            assert( intval1 < lhs->sig->value->width );
-            if( sig_be ) {
-              lhs->value->value = vstart + ((lhs->sig->value->width - intval1) - 1);
+            printf( "SBIT intval1: %d\n", intval1 );
+            if( dim_be ) {
+              assert( intval1 <= lhs->sig->value->width );
+              lhs->value->value = vstart + (lhs->sig->value->width - (intval1 + lhs->value->width));
             } else {
+              assert( intval1 < lhs->sig->value->width );
               lhs->value->value = vstart + intval1;
             }
           }
           if( assign ) {
             vector_set_value( lhs->value, rhs->value->value, rhs->value->width, *lsb, 0 );
+            if( rhs->value->width < lhs->value->width ) {
+              vector_bit_fill( lhs->value, lhs->value->width, (rhs->value->width + *lsb) );
+            }
 #ifdef DEBUG_MODE
             if( debug_mode ) {
               printf( "        " );  vsignal_display( lhs->sig );
@@ -3532,13 +3577,21 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
         break;
       case EXP_OP_MBIT_SEL :
         if( lhs->sig->suppl.part.assigned == 1 ) {
+          intval1 = ((dim_be ? vector_to_int( lhs->left->value ) : vector_to_int( lhs->right->value )) - dim_lsb) * dim_width;
+          assert( intval1 >= 0 );
+          printf( "MBIT intval1: %d\n", intval1 );
+          if( dim_be ) {
+            assert( intval1 <= lhs->sig->value->width );
+            lhs->value->value = vstart + (lhs->sig->value->width - (intval1 + lhs->value->width));
+          } else {
+            assert( intval1 < lhs->sig->value->width );
+            lhs->value->value = vstart + intval1;
+          }
           if( assign ) {
             vector_set_value( lhs->value, rhs->value->value, rhs->value->width, *lsb, 0 );
-          }
-          if( rhs->value->width < lhs->value->width ) {
-            vector_bit_fill( lhs->value, lhs->value->width, (rhs->value->width + *lsb) );
-          }
-          if( assign ) {
+            if( rhs->value->width < lhs->value->width ) {
+              vector_bit_fill( lhs->value, lhs->value->width, (rhs->value->width + *lsb) );
+            }
 #ifdef DEBUG_MODE
             if( debug_mode ) {
               printf( "        " );  vsignal_display( lhs->sig );
@@ -3555,7 +3608,7 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
       case EXP_OP_MBIT_POS :
         if( lhs->sig->suppl.part.assigned == 1 ) {
           if( !vector_is_unknown( lhs->left->value ) ) {
-            intval1 = (vector_to_int( lhs->left->value ) - sig_lsb) * lhs->value->width;
+            intval1 = (vector_to_int( lhs->left->value ) - dim_lsb) * lhs->value->width;
             intval2 = vector_to_int( lhs->right->value ) * lhs->value->width;
             assert( intval1 >= 0 );
             assert( ((intval1 + intval2) - 1) < lhs->sig->value->width );
@@ -3578,7 +3631,7 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
       case EXP_OP_MBIT_NEG :
         if( lhs->sig->suppl.part.assigned == 1 ) {
           if( !vector_is_unknown( lhs->left->value ) ) {
-            intval1 = (vector_to_int( lhs->left->value ) - sig_lsb) * lhs->value->width;
+            intval1 = (vector_to_int( lhs->left->value ) - dim_lsb) * lhs->value->width;
             intval2 = vector_to_int( lhs->right->value ) * lhs->value->width;
             assert( intval1 < lhs->sig->value->width );
             assert( ((intval1 - intval2) + 1) >= 0 );
@@ -3759,6 +3812,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.214  2006/09/22 19:56:45  phase1geo
+ Final set of fixes and regression updates per recent changes.  Full regression
+ now passes.
+
  Revision 1.213  2006/09/22 04:23:04  phase1geo
  More fixes to support new signal range structure.  Still don't have full
  regressions passing at the moment.
