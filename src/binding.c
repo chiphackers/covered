@@ -810,8 +810,11 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
           /* Set expression to point at signal */
           exp->sig = sigl->sig;
 
+          printf( "BINDING FUNC_CALL %s to signal %s in functional unit %s\n", expression_string( exp ), sigl->sig->name, found_funit->name );
           /* Attach the signal's value to our expression value */
           expression_set_value( exp, sigl->sig );
+          vsignal_display( sigl->sig );
+          printf( "  expression width: %d\n", exp->value->width );
 
         }
 
@@ -1030,6 +1033,11 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.95  2006/09/20 22:38:09  phase1geo
+ Lots of changes to support memories and multi-dimensional arrays.  We still have
+ issues with endianness and VCS regressions have not been run, but this is a significant
+ amount of work that needs to be checkpointed.
+
  Revision 1.94  2006/09/15 22:14:54  phase1geo
  Working on adding arrayed signals.  This is currently in progress and doesn't
  even compile at this point, much less work.  Checkpointing work.

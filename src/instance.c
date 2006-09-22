@@ -495,8 +495,8 @@ bool instance_resolve_inst( funit_inst* root, funit_inst* curr ) {
     free_safe( curr->name );
 
     /* For the first instance, just modify the name */
-    new_name   = (char*)malloc_safe( (strlen( curr->name ) + 23), __FILE__, __LINE__ );
-    snprintf( new_name, (strlen( curr->name ) + 23), "%s[%d]", name_copy, lsb );
+    new_name   = (char*)malloc_safe( (strlen( name_copy ) + 23), __FILE__, __LINE__ );
+    snprintf( new_name, (strlen( name_copy ) + 23), "%s[%d]", name_copy, lsb );
     curr->name = strdup_safe( new_name, __FILE__, __LINE__ );
 
     /* For all of the rest of the instances, do the instance_parse_add function call */
@@ -863,6 +863,9 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.59  2006/09/08 22:39:50  phase1geo
+ Fixes for memory problems.
+
  Revision 1.58  2006/09/07 21:59:24  phase1geo
  Fixing some bugs related to statement block removal.  Also made some significant
  optimizations to this code.

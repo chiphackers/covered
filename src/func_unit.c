@@ -312,6 +312,8 @@ void funit_size_elements( func_unit* funit, funit_inst* inst ) {
   assert( funit != NULL );
   assert( inst != NULL );
 
+  printf( "*** Sizing elements for functional unit %s ***\n", funit->name );
+
   /*
    First, traverse through current instance's parameter list and resolve
    any unresolved parameters created via generate statements.
@@ -926,6 +928,11 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.44  2006/09/20 22:38:09  phase1geo
+ Lots of changes to support memories and multi-dimensional arrays.  We still have
+ issues with endianness and VCS regressions have not been run, but this is a significant
+ amount of work that needs to be checkpointed.
+
  Revision 1.43  2006/09/07 21:59:24  phase1geo
  Fixing some bugs related to statement block removal.  Also made some significant
  optimizations to this code.

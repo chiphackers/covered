@@ -372,6 +372,7 @@ void static_expr_calc_lsb_and_width_post( static_expr* left, static_expr* right,
   /* If the left static expression contains an expression, get its integer value and place it in the num field */
   if( left->exp != NULL ) {
     left->num = vector_to_int( left->exp->value );
+    expression_display( left->exp );
   }
   
   /* Get initial value for LSB */
@@ -415,6 +416,14 @@ void static_expr_dealloc( static_expr* stexp, bool rm_exp ) {
 
 /*
  $Log$
+ Revision 1.23  2006/09/11 22:27:55  phase1geo
+ Starting to work on supporting bitwise coverage.  Moving bits around in supplemental
+ fields to allow this to work.  Full regression has been updated for the current changes
+ though this feature is still not fully implemented at this time.  Also added parsing support
+ for SystemVerilog program blocks (ignored) and final blocks (not handled properly at this
+ time).  Also added lexer support for the return, void, continue, break, final, program and
+ endprogram SystemVerilog keywords.  Checkpointing work.
+
  Revision 1.22  2006/07/11 04:59:08  phase1geo
  Reworking the way that instances are being generated.  This is to fix a bug and
  pave the way for generate loops for instances.  Code not working at this point
