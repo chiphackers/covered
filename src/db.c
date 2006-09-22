@@ -833,7 +833,8 @@ void db_add_defparam( char* name, expression* expr ) {
 /*!
  \param name       Name of signal being added.
  \param type       Type of signal being added.
- \param range      Specifies signal range information.
+ \param prange     Specifies packed signal range information.
+ \param urange     Specifies unpacked signal range information.
  \param is_signed  Specifies that this signal is signed (TRUE) or not (FALSE)
  \param mba        Set to TRUE if specified signal must be assigned by simulated results.
  \param line       Line number where signal was declared.
@@ -847,11 +848,12 @@ void db_add_defparam( char* name, expression* expr ) {
  add to the current module's parameter list and all associated instances are
  updated to contain new value.
 */
-void db_add_signal( char* name, int type, sig_range* range, bool is_signed, bool mba, int line, int col, bool handled ) {
+void db_add_signal( char* name, int type, sig_range* prange, sig_range* urange, bool is_signed, bool mba, int line, int col, bool handled ) {
 
   vsignal  tmpsig;  /* Temporary signal for signal searching */
   vsignal* sig;     /* Container for newly created signal */
   int      i;       /* Loop iterator */
+  int      j = 0;   /* Loop iterator */
 
 #ifdef DEBUG_MODE
   snprintf( user_msg, USER_MSG_LENGTH, "In db_add_signal, signal: %s, line: %d, col: %d", obf_sig( name ), line, col );
@@ -873,24 +875,40 @@ void db_add_signal( char* name, int type, sig_range* range, bool is_signed, bool
     }
 
     /* Check all of the dimensions within range and create vector parameters, if necessary */
-    assert( range != NULL );
-    assert( (range->pdim_num + range->udim_num) > 0 );
-    sig->pdim_num = range->pdim_num;
-    sig->udim_num = range->udim_num;
-    sig->dim = (dim_range*)malloc_safe( (sizeof( dim_range ) * (range->pdim_num + range->udim_num)), __FILE__, __LINE__ );
-    for( i=0; i<(range->pdim_num + range->udim_num); i++ ) {
-      assert( range->dim[i].left != NULL );
-      if( range->dim[i].left->exp != NULL ) {
-        db_add_vector_param( sig, range->dim[i].left->exp, PARAM_TYPE_SIG_MSB, i );
+    assert( prange != NULL );
+    sig->udim_num = (urange != NULL) ? urange->dim_num : 0;
+    sig->pdim_num = prange->dim_num;
+    assert( (sig->pdim_num + sig->udim_num) > 0 );
+    sig->dim = (dim_range*)malloc_safe( (sizeof( dim_range ) * (sig->pdim_num + sig->udim_num)), __FILE__, __LINE__ );
+    for( i=0; i<sig->udim_num; i++ ) {
+      assert( urange->dim[i].left != NULL );
+      if( urange->dim[i].left->exp != NULL ) {
+        db_add_vector_param( sig, urange->dim[i].left->exp, PARAM_TYPE_SIG_MSB, j );
       } else {
-        sig->dim[i].msb = range->dim[i].left->num;
+        sig->dim[j].msb = urange->dim[i].left->num;
       }
-      assert( range->dim[i].right != NULL );
-      if( range->dim[i].right->exp != NULL ) {
-        db_add_vector_param( sig, range->dim[i].right->exp, PARAM_TYPE_SIG_LSB, i );
+      assert( urange->dim[i].right != NULL );
+      if( urange->dim[i].right->exp != NULL ) {
+        db_add_vector_param( sig, urange->dim[i].right->exp, PARAM_TYPE_SIG_LSB, j );
       } else {
-        sig->dim[i].lsb = range->dim[i].right->num;
+        sig->dim[j].lsb = urange->dim[i].right->num;
       }
+      j++;
+    }
+    for( i=0; i<sig->pdim_num; i++ ) {
+      assert( prange->dim[i].left != NULL );
+      if( prange->dim[i].left->exp != NULL ) {
+        db_add_vector_param( sig, prange->dim[i].left->exp, PARAM_TYPE_SIG_MSB, j );
+      } else {
+        sig->dim[j].msb = prange->dim[i].left->num;
+      }
+      assert( prange->dim[i].right != NULL );
+      if( prange->dim[i].right->exp != NULL ) {
+        db_add_vector_param( sig, prange->dim[i].right->exp, PARAM_TYPE_SIG_LSB, j );
+      } else {
+        sig->dim[j].lsb = prange->dim[i].right->num;
+      }
+      j++;
     }
 
     /* Add the signal to either the functional unit or a generate item */
@@ -959,11 +977,12 @@ void db_end_enum_list() {
  \param is_signed    Specifies if this typedef is signed or not
  \param is_handled   Specifies if this typedef is handled or not
  \param is_sizeable  Specifies if a range can be later placed on this value
- \param range        Dimensional range information for this value
+ \param prange       Dimensional packed range information for this value
+ \param urange       Dimensional unpacked range information for this value
 
  Adds the given names and information to the list of typedefs for the current module.
 */
-void db_add_typedef( char* name, bool is_signed, bool is_handled, bool is_sizeable, sig_range* range ) {
+void db_add_typedef( char* name, bool is_signed, bool is_handled, bool is_sizeable, sig_range* prange, sig_range* urange ) {
 
   typedef_item* tdi;   /* Typedef item to create */
 
@@ -979,7 +998,8 @@ void db_add_typedef( char* name, bool is_signed, bool is_handled, bool is_sizeab
   tdi->is_signed   = is_signed;
   tdi->is_handled  = is_handled;
   tdi->is_sizeable = is_sizeable;
-  tdi->range       = range;
+  tdi->prange      = prange;
+  tdi->urange      = urange;
   tdi->next        = NULL;
 
   /* Add it the current module's typedef list */
@@ -1221,19 +1241,6 @@ expression* db_create_expression( expression* right, expression* left, int op, b
   /* If current functional unit is nested in a function, set the IN_FUNC supplemental field bit */
   expr->suppl.part.in_func = (func_funit != NULL) ? 1 : 0;
 
-  /* Set right and left side expression's (if they exist) parent pointer to this expression */
-  if( right != NULL ) {
-    assert( right->parent->expr == NULL );
-    right->parent->expr = expr;
-  }
-  if( (left != NULL) &&
-      (expr->op != EXP_OP_CASE) &&
-      (expr->op != EXP_OP_CASEX) &&
-      (expr->op != EXP_OP_CASEZ) ) {
-    assert( left->parent->expr == NULL );
-    left->parent->expr = expr;
-  }
-
   /*
    If this is some kind of assignment expression operator, set the our expression vector to that of
    the right expression.
@@ -1380,9 +1387,6 @@ void db_add_expression( expression* root ) {
       if( generate_mode > 0 ) {
 
         if( root->suppl.part.gen_expr == 1 ) {
-
-          /* Set the root bit */
-          root->suppl.part.root = 1;
 
           /* Add root expression to the generate item list for the current functional unit */
           last_gi = gen_item_create_expr( root );
@@ -2120,6 +2124,11 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.224  2006/09/20 22:38:09  phase1geo
+ Lots of changes to support memories and multi-dimensional arrays.  We still have
+ issues with endianness and VCS regressions have not been run, but this is a significant
+ amount of work that needs to be checkpointed.
+
  Revision 1.223  2006/09/15 22:14:54  phase1geo
  Working on adding arrayed signals.  This is currently in progress and doesn't
  even compile at this point, much less work.  Checkpointing work.

@@ -88,7 +88,6 @@ expression* fsm_arg_parse_state( char** arg, char* funit_name ) {
           vector_from_int( expr->value, sig->dim[0].lsb );
 
           expr = expression_create( NULL, expr, EXP_OP_SBIT_SEL, FALSE, curr_expr_id, 0, 0, 0, FALSE );
-          expr->left->parent->expr = expr;
           curr_expr_id++;
           fsm_var_bind_add( sig->name, expr, funit_name );
 
@@ -113,8 +112,6 @@ expression* fsm_arg_parse_state( char** arg, char* funit_name ) {
             default                       :  assert( 0 );           break;
           }
           expr = expression_create( expt, expr, op, FALSE, curr_expr_id, 0, 0, 0, FALSE );
-          expr->left->parent->expr  = expr;
-          expr->right->parent->expr = expr;
           curr_expr_id++;
           fsm_var_bind_add( sig->name, expr, funit_name );
 
@@ -122,8 +119,6 @@ expression* fsm_arg_parse_state( char** arg, char* funit_name ) {
 
         if( expl != NULL ) {
           expl = expression_create( expr, expl, EXP_OP_LIST, FALSE, curr_expr_id, 0, 0, 0, FALSE );
-          expl->left->parent->expr = expl;
-          expl->right->parent->expr = expl;
           curr_expr_id++;
         } else {
           expl = expr;
@@ -143,7 +138,6 @@ expression* fsm_arg_parse_state( char** arg, char* funit_name ) {
     if( !error ) {
       (*arg)++;
       expl = expression_create( expl, NULL, EXP_OP_CONCAT, FALSE, curr_expr_id, 0, 0, 0, FALSE );
-      expl->right->parent->expr = expl;
       curr_expr_id++;
     }
 
@@ -165,7 +159,6 @@ expression* fsm_arg_parse_state( char** arg, char* funit_name ) {
         vector_from_int( expr->value, sig->dim[0].lsb );
 
         expl = expression_create( NULL, expr, EXP_OP_SBIT_SEL, FALSE, curr_expr_id, 0, 0, 0, FALSE );
-        expl->left->parent->expr = expl;
         curr_expr_id++;
 
       } else {
@@ -190,8 +183,6 @@ expression* fsm_arg_parse_state( char** arg, char* funit_name ) {
         }
 
         expl = expression_create( expt, expr, op, FALSE, curr_expr_id, 0, 0, 0, FALSE );
-        expl->left->parent->expr  = expl;
-        expl->right->parent->expr = expl;
         curr_expr_id++;
 
       }
@@ -345,9 +336,6 @@ expression* fsm_arg_parse_value( char** str, func_unit* funit ) {
 
         /* Generate multi-bit parameter expression */
         expr = expression_create( right, left, EXP_OP_PARAM_MBIT, FALSE, curr_expr_id, 0, 0, 0, FALSE ); 
-        left->parent->expr = expr;
-        right->parent->expr = expr;
-        expr->suppl.part.root = 1;
         curr_expr_id++;
         exp_link_add( expr, &(mparm->exp_head), &(mparm->exp_tail) );
 
@@ -372,9 +360,6 @@ expression* fsm_arg_parse_value( char** str, func_unit* funit ) {
 
         /* Generate variable positive multi-bit parameter expression */
         expr = expression_create( right, left, EXP_OP_PARAM_MBIT_POS, FALSE, curr_expr_id, 0, 0, 0, FALSE );
-        left->parent->expr  = expr;
-        right->parent->expr = expr;
-        expr->suppl.part.root = 1;
         curr_expr_id++;
         exp_link_add( expr, &(mparm->exp_head), &(mparm->exp_tail) );
 
@@ -399,9 +384,6 @@ expression* fsm_arg_parse_value( char** str, func_unit* funit ) {
 
         /* Generate variable positive multi-bit parameter expression */
         expr = expression_create( right, left, EXP_OP_PARAM_MBIT_NEG, FALSE, curr_expr_id, 0, 0, 0, FALSE );
-        left->parent->expr  = expr;
-        right->parent->expr = expr;
-        expr->suppl.part.root = 1;
         curr_expr_id++;
         exp_link_add( expr, &(mparm->exp_head), &(mparm->exp_tail) );
 
@@ -419,8 +401,6 @@ expression* fsm_arg_parse_value( char** str, func_unit* funit ) {
 
         /* Generate single-bit parameter expression */
         expr = expression_create( NULL, left, EXP_OP_PARAM_SBIT, FALSE, curr_expr_id, 0, 0, 0, FALSE );
-        left->parent->expr = expr;
-        expr->suppl.part.root = 1;
         curr_expr_id++;
         exp_link_add( expr, &(mparm->exp_head), &(mparm->exp_tail) );
 
@@ -431,7 +411,6 @@ expression* fsm_arg_parse_value( char** str, func_unit* funit ) {
 
         /* Generate parameter expression */
         expr = expression_create( NULL, NULL, EXP_OP_PARAM, FALSE, curr_expr_id, 0, 0, 0, FALSE );
-        expr->suppl.part.root = 1;
         curr_expr_id++;
         exp_link_add( expr, &(mparm->exp_head), &(mparm->exp_tail) );
 
@@ -622,6 +601,11 @@ void fsm_arg_parse_attr( attr_param* ap, func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.29  2006/09/20 22:38:09  phase1geo
+ Lots of changes to support memories and multi-dimensional arrays.  We still have
+ issues with endianness and VCS regressions have not been run, but this is a significant
+ amount of work that needs to be checkpointed.
+
  Revision 1.28  2006/09/11 22:27:55  phase1geo
  Starting to work on supporting bitwise coverage.  Moving bits around in supplemental
  fields to allow this to work.  Full regression has been updated for the current changes

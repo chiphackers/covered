@@ -30,11 +30,6 @@ void enumerate_add_item( vsignal* enum_sig, static_expr* value, func_unit* funit
   ei->last  = FALSE;
   ei->next  = NULL;
 
-  /* Set the root bit on the static expression, if necessary */
-  if( (value != NULL) && (value->exp != NULL) ) {
-    value->exp->suppl.part.root = 1;
-  }
-
   /* Add it to the current functional unit's enumeration list */
   if( funit->ei_head == NULL ) {
     funit->ei_head = funit->ei_tail = ei;
@@ -152,6 +147,11 @@ void enumerate_dealloc_list( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.3  2006/09/21 22:44:20  phase1geo
+ More updates to regressions for latest changes to support memories/multi-dimensional
+ arrays.  We still have a handful of VCS diagnostics that are failing.  Checkpointing
+ for now.
+
  Revision 1.2  2006/08/30 12:02:48  phase1geo
  Changing assertion in vcd.c that fails when the VCD file is improperly formatted
  to a user error message with a bit more meaning.  Fixing problem with signedness

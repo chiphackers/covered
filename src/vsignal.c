@@ -116,30 +116,35 @@ void vsignal_create_vec( vsignal* sig ) {
   assert( sig != NULL );
   assert( sig->value != NULL );
 
-  /* Set the initial signal width to 1 */
-  sig->value->width = 1;
+  /* If this signal has been previously simulated, don't create a new vector */
+  if( !vector_is_set( sig->value ) ) {
 
-  /* Calculate the width of the given signal */
-  for( i=0; i<(sig->pdim_num + sig->udim_num); i++ ) {
-    if( sig->dim[i].msb > sig->dim[i].lsb ) {
-      sig->value->width *= ((sig->dim[i].msb - sig->dim[i].lsb) + 1);
-    } else {
-      sig->value->width *= ((sig->dim[i].lsb - sig->dim[i].msb) + 1);
+    /* Set the initial signal width to 1 */
+    sig->value->width = 1;
+
+    /* Calculate the width of the given signal */
+    for( i=0; i<(sig->pdim_num + sig->udim_num); i++ ) {
+      if( sig->dim[i].msb > sig->dim[i].lsb ) {
+        sig->value->width *= ((sig->dim[i].msb - sig->dim[i].lsb) + 1);
+      } else {
+        sig->value->width *= ((sig->dim[i].lsb - sig->dim[i].msb) + 1);
+      }
     }
-  }
 
-  /* Set the endianness */
-  if( (sig->pdim_num + sig->udim_num) > 0 ) {
-    sig->suppl.part.big_endian = (sig->dim[(sig->pdim_num + sig->udim_num)-1].msb < sig->dim[(sig->pdim_num + sig->udim_num)-1].lsb) ? 1 : 0;
-  }
+    /* Set the endianness */
+    if( (sig->pdim_num + sig->udim_num) > 0 ) {
+      sig->suppl.part.big_endian = (sig->dim[(sig->pdim_num + sig->udim_num)-1].msb < sig->dim[(sig->pdim_num + sig->udim_num)-1].lsb) ? 1 : 0;
+    }
 
-  /* Create the vector and assign it to the signal */
-  vec = vector_create( sig->value->width, VTYPE_SIG, TRUE );
-  if( sig->value->value != NULL ) {
-    free_safe( sig->value->value );
+    /* Create the vector and assign it to the signal */
+    vec = vector_create( sig->value->width, VTYPE_SIG, TRUE );
+    if( sig->value->value != NULL ) {
+      free_safe( sig->value->value );
+    }
+    sig->value->value = vec->value;
+    free_safe( vec );
+
   }
-  sig->value->value = vec->value;
-  free_safe( vec );
 
 }
 
@@ -680,6 +685,11 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.36  2006/09/21 22:44:20  phase1geo
+ More updates to regressions for latest changes to support memories/multi-dimensional
+ arrays.  We still have a handful of VCS diagnostics that are failing.  Checkpointing
+ for now.
+
  Revision 1.35  2006/09/21 04:20:59  phase1geo
  Fixing endianness diagnostics.  Still getting memory error with some diagnostics
  in regressions (ovl1 is one of them).  Updated regression.

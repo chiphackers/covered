@@ -57,13 +57,13 @@ extern void VLwarn( char* msg );
 extern unsigned error_count, warn_count;
 
 /*! \brief Deallocates the curr_sig_width variable if it has been previously set */
-void parser_dealloc_curr_range();
+void parser_dealloc_sig_range( sig_range* range, bool rm_ptr );
 
 /*! \brief Creates a copy of the curr_range variable */
-sig_range* parser_copy_curr_range();
+sig_range* parser_copy_curr_range( bool packed );
 
 /*! \brief Copies specifies static expressions to the current range */
-void parser_copy_range_to_curr_range( sig_range* range );
+void parser_copy_range_to_curr_range( sig_range* range, bool packed );
 
 /*! \brief Deallocates and sets the curr_range variable from explicitly set values */
 void parser_explicitly_set_curr_range( static_expr* left, static_expr* right, bool packed );
@@ -76,6 +76,11 @@ bool parser_check_generation( int gen );
 
 /*
  $Log$
+ Revision 1.10  2006/09/20 22:38:09  phase1geo
+ Lots of changes to support memories and multi-dimensional arrays.  We still have
+ issues with endianness and VCS regressions have not been run, but this is a significant
+ amount of work that needs to be checkpointed.
+
  Revision 1.9  2006/08/31 22:32:18  phase1geo
  Things are in a state of flux at the moment.  I have added proper parsing support
  for assertions, properties and sequences.  Also added partial support for the $root

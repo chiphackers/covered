@@ -31,10 +31,11 @@
 #include <assert.h>
 
 #include "defines.h"
-#include "instance.h"
 #include "func_unit.h"
-#include "util.h"
+#include "instance.h"
 #include "param.h"
+#include "static.h"
+#include "util.h"
 
 
 extern int        curr_expr_id;
@@ -485,8 +486,8 @@ bool instance_resolve_inst( funit_inst* root, funit_inst* curr ) {
     assert( lsb   != -1 );
 
     /* Remove the range information from this instance */
-    static_expr_dealloc( curr->range->left );
-    static_expr_dealloc( curr->range->right );
+    static_expr_dealloc( curr->range->left,  FALSE );
+    static_expr_dealloc( curr->range->right, FALSE );
     free_safe( curr->range );
     curr->range = NULL;
 
@@ -863,6 +864,10 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.60  2006/09/22 04:23:04  phase1geo
+ More fixes to support new signal range structure.  Still don't have full
+ regressions passing at the moment.
+
  Revision 1.59  2006/09/08 22:39:50  phase1geo
  Fixes for memory problems.
 

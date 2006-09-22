@@ -145,7 +145,6 @@ static_expr* static_expr_gen_unary( static_expr* stexp, int op, int line, int fi
         
           stexp->exp = expression_create( tmpexp, NULL, op, FALSE, curr_expr_id, line, first, last, FALSE );
           curr_expr_id++;
-          tmpexp->parent->expr = stexp->exp;
           break;
         default :  break;
       }
@@ -154,7 +153,6 @@ static_expr* static_expr_gen_unary( static_expr* stexp, int op, int line, int fi
 
       tmpexp = expression_create( stexp->exp, NULL, op, FALSE, curr_expr_id, line, first, last, FALSE );
       curr_expr_id++;
-      stexp->exp->parent->expr = tmpexp;
       stexp->exp = tmpexp;
 
     }
@@ -242,8 +240,6 @@ static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int
 
         tmpexp = expression_create( right->exp, left->exp, op, FALSE, curr_expr_id, line, first, last, FALSE );
         curr_expr_id++;
-        right->exp->parent->expr = tmpexp;
-        left->exp->parent->expr  = tmpexp;
         right->exp = tmpexp;
         
       }
@@ -259,15 +255,12 @@ static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int
 
         tmpexp = expression_create( right->exp, left->exp, op, FALSE, curr_expr_id, line, first, last, FALSE );
         curr_expr_id++;
-        right->exp->parent->expr = tmpexp;
         right->exp = tmpexp;
 
       } else {
 
         tmpexp = expression_create( right->exp, left->exp, op, FALSE, curr_expr_id, line, first, last, FALSE );
         curr_expr_id++;
-        right->exp->parent->expr = tmpexp;
-        left->exp->parent->expr  = tmpexp;
         right->exp = tmpexp;
 
       }
@@ -287,7 +280,6 @@ static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int
     right = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
     right->exp = expression_create( NULL, left->exp, op, FALSE, curr_expr_id, line, first, last, FALSE );
     curr_expr_id++;
-    left->exp->parent->expr = right->exp;
 
     /* Make sure that we bind this later */
     bind_add( FUNIT_FUNCTION, func_name, right->exp, curr_funit );
@@ -372,7 +364,7 @@ void static_expr_calc_lsb_and_width_post( static_expr* left, static_expr* right,
   /* If the left static expression contains an expression, get its integer value and place it in the num field */
   if( left->exp != NULL ) {
     left->num = vector_to_int( left->exp->value );
-    expression_display( left->exp );
+    // expression_display( left->exp );
   }
   
   /* Get initial value for LSB */
@@ -416,6 +408,10 @@ void static_expr_dealloc( static_expr* stexp, bool rm_exp ) {
 
 /*
  $Log$
+ Revision 1.24  2006/09/22 04:23:04  phase1geo
+ More fixes to support new signal range structure.  Still don't have full
+ regressions passing at the moment.
+
  Revision 1.23  2006/09/11 22:27:55  phase1geo
  Starting to work on supporting bitwise coverage.  Moving bits around in supplemental
  fields to allow this to work.  Full regression has been updated for the current changes

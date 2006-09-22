@@ -30,7 +30,8 @@
 
 
 extern char       user_msg[USER_MSG_LENGTH];
-extern sig_range  curr_range;
+extern sig_range  curr_prange;
+extern sig_range  curr_urange;
 extern func_unit* curr_funit;
 extern str_link*  gen_mod_head;
 extern int        flag_global_generation;
@@ -88,51 +89,65 @@ int VLwrap() {
 }
 
 /*!
- Deallocates all memory associated with the curr_range global variable.
+ \param range   Pointer to signal range to deallocate
+ \param rm_ptr  If TRUE, deallocates the pointer to the given range
+
+ Deallocates all allocated memory within associated signal range variable, but does
+ not deallocate the pointer itself (unless rm_ptr is set to TRUE).
 */
-void parser_dealloc_curr_range() {
+void parser_dealloc_sig_range( sig_range* range, bool rm_ptr ) {
 
-  int i;
+  int i;  /* Loop iterator */
 
-  for( i=0; i<(curr_range.pdim_num + curr_range.udim_num); i++ ) {
-    static_expr_dealloc( curr_range.dim[i].left,  FALSE );
-    static_expr_dealloc( curr_range.dim[i].right, FALSE );
+  for( i=0; i<range->dim_num; i++ ) {
+    static_expr_dealloc( range->dim[i].left,  FALSE );
+    static_expr_dealloc( range->dim[i].right, FALSE );
   }
 
   if( i > 0 ) {
-    free_safe( curr_range.dim );
-    curr_range.dim      = NULL;
-    curr_range.pdim_num = 0;
-    curr_range.udim_num = 0;
+    free_safe( range->dim );
+    range->dim     = NULL;
+    range->dim_num = 0;
   }
 
   /* Clear the clear bit */
-  curr_range.clear = FALSE;
+  range->clear = FALSE;
+
+  /* Deallocate pointer itself, if specified to do so */
+  if( rm_ptr ) {
+    free_safe( range );
+  }
 
 }
 
 /*!
+ \param packed  Specifies if curr_prange (TRUE) or curr_urange (FALSE) should be copied.
+
  Creates a copy of the curr_range variable for stored usage.
 */
-sig_range* parser_copy_curr_range() {
+sig_range* parser_copy_curr_range( bool packed ) {
 
-  sig_range* range;  /* Copy of the curr_range variable */
-  int        i;      /* Loop iterator */
+  sig_range* crange;  /* Pointer to curr_range variable to copy */
+  sig_range* range;   /* Copy of the curr_range variable */
+  int        i;       /* Loop iterator */
 
+  /* Get the correct global range */
+  crange = packed ? &curr_prange : &curr_urange;
+
+  /* Allocate memory for the new range */
   range = (sig_range*)malloc_safe( sizeof( sig_range ), __FILE__, __LINE__ );
 
   /* Set curr_range */
-  range->pdim_num = curr_range.pdim_num;
-  range->udim_num = curr_range.udim_num;
-  if( (curr_range.pdim_num + curr_range.udim_num) > 0 ) {
-    range->dim = (vector_width*)malloc_safe( (sizeof( vector_width ) * (curr_range.pdim_num + curr_range.udim_num)), __FILE__, __LINE__ );
-    for( i=0; i<(curr_range.pdim_num + curr_range.udim_num); i++ ) {
+  range->dim_num = crange->dim_num;
+  if( crange->dim_num > 0 ) {
+    range->dim = (vector_width*)malloc_safe( (sizeof( vector_width ) * crange->dim_num), __FILE__, __LINE__ );
+    for( i=0; i<crange->dim_num; i++ ) {
       range->dim[i].left       = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
-      range->dim[i].left->num  = curr_range.dim[i].left->num;
-      range->dim[i].left->exp  = curr_range.dim[i].left->exp;
+      range->dim[i].left->num  = crange->dim[i].left->num;
+      range->dim[i].left->exp  = crange->dim[i].left->exp;
       range->dim[i].right      = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
-      range->dim[i].right->num = curr_range.dim[i].right->num;
-      range->dim[i].right->exp = curr_range.dim[i].right->exp;
+      range->dim[i].right->num = crange->dim[i].right->num;
+      range->dim[i].right->exp = crange->dim[i].right->exp;
       range->dim[i].implicit   = FALSE;
     }
   }
@@ -142,32 +157,33 @@ sig_range* parser_copy_curr_range() {
 }
 
 /*!
- \param left   Pointer to left static_expression to copy to current range
- \param right  Pointer to right static_expression to copy to current range
+ \param left    Pointer to left static_expression to copy to current range
+ \param right   Pointer to right static_expression to copy to current range
+ \param packed  Specifies if curr_prange (TRUE) or curr_urange (FALSE) should be updated.
 
- Copies specifies static expressions to the current range.  Primarily used for
+ Copies specifies static expressions to the specified current range.  Primarily used for
  copying typedef'ed ranges to the current range.
 */
-void parser_copy_range_to_curr_range( sig_range* range ) {
+void parser_copy_range_to_curr_range( sig_range* range, bool packed ) {
 
-  int i;  /* Loop iterator */
+  sig_range* crange = packed ? &curr_prange : &curr_urange;  /* Pointer to curr_Xrange to use */
+  int        i;                                              /* Loop iterator */
 
   /* Deallocate any memory currently associated with the curr_range variable */
-  parser_dealloc_curr_range();
+  parser_dealloc_sig_range( crange, FALSE );
 
   /* Set curr_range */
-  curr_range.pdim_num = range->pdim_num;
-  curr_range.udim_num = range->udim_num;
-  if( (range->pdim_num + range->udim_num) > 0 ) {
-    curr_range.dim      = (vector_width*)malloc_safe( (sizeof( vector_width ) * (range->pdim_num + range->udim_num)), __FILE__, __LINE__ );
-    for( i=0; i<(range->pdim_num + range->udim_num); i++ ) {
-      curr_range.dim[i].left       = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
-      curr_range.dim[i].left->num  = range->dim[i].left->num;
-      curr_range.dim[i].left->exp  = range->dim[i].left->exp;
-      curr_range.dim[i].right      = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
-      curr_range.dim[i].right->num = range->dim[i].right->num;
-      curr_range.dim[i].right->exp = range->dim[i].right->exp;
-      curr_range.dim[i].implicit   = FALSE;
+  crange->dim_num = range->dim_num;
+  if( range->dim_num > 0 ) {
+    crange->dim = (vector_width*)malloc_safe( (sizeof( vector_width ) * range->dim_num), __FILE__, __LINE__ );
+    for( i=0; i<range->dim_num; i++ ) {
+      crange->dim[i].left       = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
+      crange->dim[i].left->num  = range->dim[i].left->num;
+      crange->dim[i].left->exp  = range->dim[i].left->exp;
+      crange->dim[i].right      = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
+      crange->dim[i].right->num = range->dim[i].right->num;
+      crange->dim[i].right->exp = range->dim[i].right->exp;
+      crange->dim[i].implicit   = FALSE;
     }
   }
 
@@ -182,48 +198,22 @@ void parser_copy_range_to_curr_range( sig_range* range ) {
 */
 void parser_explicitly_set_curr_range( static_expr* left, static_expr* right, bool packed ) {
 
-  sig_range* range;     /* Temporary range */
-  int        i;         /* Loop iterator */
-  int        j = 0;     /* Loop iterator */
-  int        pdim_num;  /* Number of packed dimensions to create */
-  int        udim_num;  /* Number of unpacked dimensions to create */
+  sig_range* crange;  /* Pointer to curr_Xrange to change */
 
-  /* Copy the current range */
-  if( !curr_range.clear ) {
-    range = parser_copy_curr_range();
-    pdim_num =  packed ? (range->pdim_num + 1) : range->pdim_num;
-    udim_num = !packed ? (range->udim_num + 1) : range->udim_num;
-  } else {
-    pdim_num =  packed ? 1 : 0;
-    udim_num = !packed ? 1 : 0;
+  /* Get a pointer to the correct signal range to use */
+  crange = packed ? &curr_prange : &curr_urange;
+
+  /* Clear current range, if specified */
+  if( crange->clear ) {
+    parser_dealloc_sig_range( crange, FALSE );
   }
-
-  /* Deallocate the current range */
-  parser_dealloc_curr_range();
 
   /* Now rebuild current range, adding in the new range */
-  curr_range.pdim_num = pdim_num;
-  curr_range.udim_num = udim_num;
-  curr_range.dim = (vector_width*)malloc_safe( (sizeof( vector_width ) * (pdim_num + udim_num)), __FILE__, __LINE__ );
-  for( i=0; i<(pdim_num + udim_num); i++ ) {
-    if( ( packed && ((i + 1) == (pdim_num + udim_num))) ||
-        (!packed && ((i + 1) == udim_num)) ) {
-      curr_range.dim[i].left     = left;
-      curr_range.dim[i].right    = right;
-      curr_range.dim[i].implicit = FALSE;
-    } else {
-      curr_range.dim[i].left     = range->dim[j].left;
-      curr_range.dim[i].right    = range->dim[j].right;
-      curr_range.dim[i].implicit = range->dim[j].implicit;
-      j++;
-    }
-  }
-
-  /* Deallocate the rest of the temporary range */
-  if( j > 0 ) {
-    free_safe( range->dim );
-    free_safe( range );
-  }
+  crange->dim_num++;
+  crange->dim = (vector_width*)realloc( crange->dim, (sizeof( vector_width ) * crange->dim_num) );
+  crange->dim[crange->dim_num - 1].left     = left;
+  crange->dim[crange->dim_num - 1].right    = right;
+  crange->dim[crange->dim_num - 1].implicit = FALSE;
 
 }
 
@@ -236,52 +226,26 @@ void parser_explicitly_set_curr_range( static_expr* left, static_expr* right, bo
 */
 void parser_implicitly_set_curr_range( int left_num, int right_num, bool packed ) {
 
-  sig_range* range;     /* Temporary range */
-  int        i;         /* Loop iterator */
-  int        j = 0;     /* Loop iterator */
-  int        pdim_num;  /* Number of packed dimensions to create */
-  int        udim_num;  /* Number of unpacked dimensions to create */
+  sig_range* crange;  /* Pointer to curr_Xrange to modify */
 
-  /* Copy the current range */
-  if( !curr_range.clear ) {
-    range = parser_copy_curr_range();
-    pdim_num =  packed ? (range->pdim_num + 1) : range->pdim_num;
-    udim_num = !packed ? (range->udim_num + 1) : range->udim_num;
-  } else {
-    pdim_num =  packed ? 1 : 0;
-    udim_num = !packed ? 1 : 0;
+  /* Get a pointer to the curr_Xrange to modify */
+  crange = packed ? &curr_prange : &curr_urange;
+
+  /* Clear current range, if specified */
+  if( crange->clear ) {
+    parser_dealloc_sig_range( crange, FALSE );
   }
-
-  /* Deallocate the current range */
-  parser_dealloc_curr_range();
 
   /* Now rebuild current range, adding in the new range */
-  curr_range.pdim_num = pdim_num;
-  curr_range.udim_num = udim_num;
-  curr_range.dim = (vector_width*)malloc_safe( (sizeof( vector_width ) * (pdim_num + udim_num)), __FILE__, __LINE__ );
-  for( i=0; i<(pdim_num + udim_num); i++ ) {
-    if( ( packed && ((i + 1) == (pdim_num + udim_num))) ||
-        (!packed && ((i + 1) == udim_num)) ) {
-      curr_range.dim[i].left       = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
-      curr_range.dim[i].left->num  = left_num;
-      curr_range.dim[i].left->exp  = NULL;
-      curr_range.dim[i].right      = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
-      curr_range.dim[i].right->num = right_num;
-      curr_range.dim[i].right->exp = NULL;
-      curr_range.dim[i].implicit   = TRUE;
-    } else {
-      curr_range.dim[i].left     = range->dim[j].left;
-      curr_range.dim[i].right    = range->dim[j].right;
-      curr_range.dim[i].implicit = range->dim[j].implicit;
-      j++;
-    }
-  }
-
-  /* Deallocate the rest of the temporary range */
-  if( j > 0 ) {
-    free_safe( range->dim );
-    free_safe( range );
-  }
+  crange->dim_num++;
+  crange->dim = (vector_width*)realloc( crange->dim, (sizeof( vector_width ) * crange->dim_num) );
+  crange->dim[crange->dim_num - 1].left       = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
+  crange->dim[crange->dim_num - 1].left->num  = left_num;
+  crange->dim[crange->dim_num - 1].left->exp  = NULL;
+  crange->dim[crange->dim_num - 1].right      = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
+  crange->dim[crange->dim_num - 1].right->num = right_num;
+  crange->dim[crange->dim_num - 1].right->exp = NULL;
+  crange->dim[crange->dim_num - 1].implicit   = TRUE;
 
 }
 
@@ -315,6 +279,11 @@ bool parser_check_generation( int gen ) {
 
 /*
  $Log$
+ Revision 1.12  2006/09/20 22:38:09  phase1geo
+ Lots of changes to support memories and multi-dimensional arrays.  We still have
+ issues with endianness and VCS regressions have not been run, but this is a significant
+ amount of work that needs to be checkpointed.
+
  Revision 1.11  2006/08/31 22:32:18  phase1geo
  Things are in a state of flux at the moment.  I have added proper parsing support
  for assertions, properties and sequences.  Also added partial support for the $root

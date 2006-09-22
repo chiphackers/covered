@@ -2,8 +2,8 @@
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd static_func2.2.vcd -o static_func2.2.cdd -v static_func2.2.v
 3 0 $root $root NA 0 0
 3 0 main main static_func2.2.v 1 23
-1 FOO 0 0 80000 32 1 10 0 0 0 0 0 0 0
-1 a 0 5 3001a 16 1 aa aa aa aa
+1 FOO 0 80000 1 0 31 0 32 1 10 0 0 0 0 0 0 0
+1 a 5 3001a 1 0 15 0 16 1 aa aa aa aa
 3 2 main.const_func main.const_func static_func2.2.v 15 21
 2 1 18 110011 0 0 20810 0 0 32 64 0 0 0 0 0 0 0 0
 2 2 18 4000d 0 1 c00 0 0 const_func
@@ -12,7 +12,7 @@
 2 5 19 f0012 0 1 c00 0 0 size
 2 6 19 40013 0 23 c00 0 5 const_func
 2 7 19 40017 1 37 82a 4 6
-1 const_func 0 15 850010 32 1 aa 1aa aa aa aa aa aa aa
-1 size 0 16 80000f 32 1 aa aa aa aa aa aa aa aa
+1 const_func 15 850010 1 0 31 0 32 1 aa 1aa aa aa aa aa aa aa
+1 size 16 80000f 1 0 31 0 32 1 aa aa aa aa aa aa aa aa
 4 7 0 0
 4 3 7 7

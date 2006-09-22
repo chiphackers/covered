@@ -58,7 +58,7 @@ void db_add_vector_param( vsignal* sig, expression* parm_exp, int type, int dime
 void db_add_defparam( char* name, expression* expr );
 
 /*! \brief Adds specified vsignal to vsignal list.  Called by parser. */
-void db_add_signal( char* name, int type, sig_range* range, bool is_signed, bool mba, int line, int col, bool handled );
+void db_add_signal( char* name, int type, sig_range* prange, sig_range* urange, bool is_signed, bool mba, int line, int col, bool handled );
 
 /*! \brief Creates statement block that acts like a fork join block from a standard statement block */
 statement* db_add_fork_join( statement* stmt );
@@ -70,7 +70,7 @@ void db_add_enum( vsignal* enum_sig, static_expr* value );
 void db_end_enum_list();
 
 /*! \brief Adds given typedefs to the database */
-void db_add_typedef( char* name, bool is_signed, bool is_handled, bool is_sizable, sig_range* range );
+void db_add_typedef( char* name, bool is_signed, bool is_handled, bool is_sizable, sig_range* prange, sig_range* urange );
 
 /*! \brief Called when the endmodule keyword is parsed. */
 void db_end_module( int end_line );
@@ -171,6 +171,11 @@ void db_do_timestep( int time );
 
 /*
  $Log$
+ Revision 1.70  2006/09/20 22:38:09  phase1geo
+ Lots of changes to support memories and multi-dimensional arrays.  We still have
+ issues with endianness and VCS regressions have not been run, but this is a significant
+ amount of work that needs to be checkpointed.
+
  Revision 1.69  2006/09/08 22:39:50  phase1geo
  Fixes for memory problems.
 

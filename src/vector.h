@@ -85,6 +85,9 @@ int vector_get_type( vector* vec );
 /*! \brief Specifies if vector contains unknown values (X or Z) */
 bool vector_is_unknown( vector* vec );
 
+/*! \brief Returns TRUE if specified vector has been set (simulated) */
+bool vector_is_set( vector* vec );
+
 /*! \brief Converts vector into integer value. */
 int vector_to_int( vector* vec );
 
@@ -154,6 +157,11 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.37  2006/09/20 22:38:10  phase1geo
+ Lots of changes to support memories and multi-dimensional arrays.  We still have
+ issues with endianness and VCS regressions have not been run, but this is a significant
+ amount of work that needs to be checkpointed.
+
  Revision 1.36  2006/09/11 22:27:55  phase1geo
  Starting to work on supporting bitwise coverage.  Moving bits around in supplemental
  fields to allow this to work.  Full regression has been updated for the current changes

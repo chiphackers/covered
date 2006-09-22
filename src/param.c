@@ -210,9 +210,6 @@ mod_parm* mod_parm_add( char* scope, static_expr* msb, static_expr* lsb, bool is
     parm->msb      = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
     parm->msb->num = msb->num;
     parm->msb->exp = msb->exp;
-    if( parm->msb->exp != NULL ) {
-      parm->msb->exp->suppl.part.root = 1;
-    }
   } else {
     parm->msb = NULL;
   }
@@ -220,9 +217,6 @@ mod_parm* mod_parm_add( char* scope, static_expr* msb, static_expr* lsb, bool is
     parm->lsb      = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
     parm->lsb->num = lsb->num;
     parm->lsb->exp = lsb->exp;
-    if( parm->lsb->exp != NULL ) {
-      parm->lsb->exp->suppl.part.root = 1;
-    }
   } else {
     parm->lsb = NULL;
   }
@@ -232,7 +226,6 @@ mod_parm* mod_parm_add( char* scope, static_expr* msb, static_expr* lsb, bool is
   parm->suppl.part.type       = type;
   parm->suppl.part.order      = order;
   if( expr != NULL ) {
-    parm->expr->suppl.part.root = 1;
     if( expr->suppl.part.owned == 0 ) {
       parm->suppl.part.owns_expr = 1;
       expr->suppl.part.owned = 1;
@@ -1015,6 +1008,10 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.79  2006/09/22 04:23:04  phase1geo
+ More fixes to support new signal range structure.  Still don't have full
+ regressions passing at the moment.
+
  Revision 1.78  2006/09/21 22:44:20  phase1geo
  More updates to regressions for latest changes to support memories/multi-dimensional
  arrays.  We still have a handful of VCS diagnostics that are failing.  Checkpointing

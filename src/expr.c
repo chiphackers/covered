@@ -377,6 +377,7 @@ expression* expression_create( expression* right, expression* left, exp_op_type 
   new_expr->suppl.part.lhs      = (nibble)lhs & 0x1;
   new_expr->suppl.part.owns_vec = EXPR_OWNS_VEC( op, new_expr->suppl );
   new_expr->suppl.part.gen_expr = (generate_expr_mode > 0) ? 1 : 0;
+  new_expr->suppl.part.root     = 1;
   new_expr->op                  = op;
   new_expr->id                  = id;
   new_expr->ulid                = -1;
@@ -399,6 +400,13 @@ expression* expression_create( expression* right, expression* left, exp_op_type 
     assert( right->value != NULL );
     rwidth = right->value->width;
 
+    /* Set right expression parent to this expression */
+    assert( right->parent->expr == NULL );
+    right->parent->expr = new_expr;
+
+    /* Reset root bit of right expression */
+    right->suppl.part.root = 0;
+
   }
 
   if( left != NULL ) {
@@ -406,6 +414,13 @@ expression* expression_create( expression* right, expression* left, exp_op_type 
     /* Get information from left */
     assert( left->value != NULL );
     lwidth = left->value->width;
+
+    /* Set left expression parent to this expression (if this is not a case expression) */
+    if( (op != EXP_OP_CASE) && (op != EXP_OP_CASEX) && (op != EXP_OP_CASEZ) ) {
+      assert( left->parent->expr == NULL );
+      left->parent->expr    = new_expr;
+      left->suppl.part.root = 0;
+    }
 
   }
 
@@ -1247,18 +1262,6 @@ bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) {
 
       expr->suppl.all = suppl.all;
       expr->exec_num  = exec_num;
-
-      if( right != NULL ) {
-        right->parent->expr = expr;
-      }
-
-      /* Don't set left child's parent if the parent is a CASE, CASEX, or CASEZ type expression */
-      if( (left != NULL) && 
-          (op != EXP_OP_CASE)  &&
-          (op != EXP_OP_CASEX) &&
-          (op != EXP_OP_CASEZ) ) {
-        left->parent->expr = expr;
-      }
 
       if( ESUPPL_OWNS_VEC( suppl ) ) {
 
@@ -2823,7 +2826,7 @@ bool expression_op_func__mbit_pos( expression* expr, thread* thr ) {
   vec_data* vstart;  /* Starting bit position */
 
   /* Calculate starting bit position */
-  if( (expr->parent->expr->op == EXP_OP_DIM) && (expr->parent->expr->right == expr) ) {
+  if( (ESUPPL_IS_ROOT( expr->suppl ) == 0) && (expr->parent->expr->op == EXP_OP_DIM) && (expr->parent->expr->right == expr) ) {
     vstart = expr->parent->expr->left->value->value;
   } else {
     vstart = expr->sig->value->value;
@@ -2860,7 +2863,7 @@ bool expression_op_func__mbit_neg( expression* expr, thread* thr ) {
   vec_data* vstart;   /* Starting bit position */
 
   /* Calculate starting bit position */
-  if( (expr->parent->expr->op == EXP_OP_DIM) && (expr->parent->expr->right == expr) ) {
+  if( (ESUPPL_IS_ROOT( expr->suppl ) == 0) && (expr->parent->expr->op == EXP_OP_DIM) && (expr->parent->expr->right == expr) ) {
     vstart = expr->parent->expr->left->value->value;
   } else {
     vstart = expr->sig->value->value;
@@ -3208,8 +3211,6 @@ bool expression_operate( expression* expr, thread* thr ) {
 
   /* Specify that we have executed this expression */
   (expr->exec_num)++;
-
-  expression_display( expr );
 
   return( retval );
 
@@ -3647,7 +3648,7 @@ void expression_dealloc( expression* expr, bool exp_only ) {
   exp_link*  tmp_expl;  /* Temporary pointer to expression list */
   statement* tmp_stmt;  /* Temporary pointer to statement */
 
-  printf( "Deallocating expression: %s\n", expression_string( expr ) );
+  // printf( "Deallocating expression: %s\n", expression_string( expr ) );
 
   if( expr != NULL ) {
 
@@ -3758,6 +3759,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.213  2006/09/22 04:23:04  phase1geo
+ More fixes to support new signal range structure.  Still don't have full
+ regressions passing at the moment.
+
  Revision 1.212  2006/09/21 04:20:59  phase1geo
  Fixing endianness diagnostics.  Still getting memory error with some diagnostics
  in regressions (ovl1 is one of them).  Updated regression.

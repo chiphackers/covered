@@ -57,7 +57,8 @@ extern char*      ppfilename;
 extern str_link*  modlist_head;
 extern str_link*  modlist_tail;
 extern func_unit* curr_funit;
-extern sig_range  curr_range;
+extern sig_range  curr_prange;
+extern sig_range  curr_urange;
 
 /*!
  Contains state before entering exclusive block.
@@ -235,7 +236,8 @@ WSPACE [ \t\b\f]+
 	yylloc.first_column = yylloc.last_column;
 	yylloc.last_column += 1;
         if( (yytext[0] == ';') || (yytext[0] == ',') ) {
-          curr_range.clear = TRUE;
+          curr_prange.clear = TRUE;
+          curr_urange.clear = TRUE;
         }
 	return yytext[0];
  }
@@ -347,13 +349,13 @@ WSPACE [ \t\b\f]+
  }
 
   /* Ignore program syntax */
-<IGNORE_SEQUENCE>endprogram {
+<IGNORE_PROGRAM>endprogram {
         yylloc.first_column = yylloc.last_column;
         yylloc.last_column += strlen( yytext );
         BEGIN( PARSE );
         return K_endprogram;
  }
-<IGNORE_SEQUENCE>. {
+<IGNORE_PROGRAM>. {
         yylloc.last_column += 1;
         yymore();
  }
