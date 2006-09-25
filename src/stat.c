@@ -36,20 +36,26 @@ statistic* statistic_create() {
 
   stat = (statistic*)malloc_safe( sizeof( statistic ), __FILE__, __LINE__ );
 
-  stat->line_total   = 0;
-  stat->line_hit     = 0;
-  stat->tog_total    = 0;
-  stat->tog01_hit    = 0;
-  stat->tog10_hit    = 0;
-  stat->comb_total   = 0;
-  stat->comb_hit     = 0;
-  stat->state_total  = 0;
-  stat->state_hit    = 0;
-  stat->arc_total    = 0;
-  stat->arc_hit      = 0;
-  stat->assert_total = 0;
-  stat->assert_hit   = 0;
-  stat->show         = TRUE;
+  stat->line_total    = 0;
+  stat->line_hit      = 0;
+  stat->tog_total     = 0;
+  stat->tog01_hit     = 0;
+  stat->tog10_hit     = 0;
+  stat->comb_total    = 0;
+  stat->comb_hit      = 0;
+  stat->state_total   = 0;
+  stat->state_hit     = 0;
+  stat->arc_total     = 0;
+  stat->arc_hit       = 0;
+  stat->assert_total  = 0;
+  stat->assert_hit    = 0;
+  stat->mem_ae_total  = 0;
+  stat->mem_wr_hit    = 0;
+  stat->mem_rd_hit    = 0;
+  stat->mem_tog_total = 0;
+  stat->mem_tog01_hit = 0;
+  stat->mem_tog10_hit = 0;
+  stat->show          = TRUE;
 
   return( stat );
 
@@ -83,10 +89,16 @@ void statistic_merge( statistic* stat_to, statistic* stat_from ) {
   } else {
     stat_to->arc_total = -1;
   }
-  stat_to->arc_hit      += stat_from->arc_hit;
-  stat_to->assert_total += stat_from->assert_total;
-  stat_to->assert_hit   += stat_from->assert_hit;
-  stat_to->show         |= stat_from->show;
+  stat_to->arc_hit       += stat_from->arc_hit;
+  stat_to->assert_total  += stat_from->assert_total;
+  stat_to->assert_hit    += stat_from->assert_hit;
+  stat_to->mem_ae_total  += stat_from->mem_ae_total;
+  stat_to->mem_wr_hit    += stat_from->mem_wr_hit;
+  stat_to->mem_rd_hit    += stat_from->mem_rd_hit;
+  stat_to->mem_tog_total += stat_from->mem_tog_total;
+  stat_to->mem_tog01_hit += stat_from->mem_tog01_hit;
+  stat_to->mem_tog10_hit += stat_from->mem_tog10_hit;
+  stat_to->show          |= stat_from->show;
 
 }
 
@@ -100,12 +112,14 @@ bool statistic_is_empty( statistic* stat ) {
 
   assert( stat != NULL );
 
-  return( (stat->line_total   == 0) &&
-          (stat->tog_total    == 0) &&
-          (stat->comb_total   == 0) &&
-          (stat->state_total  == 0) &&
-          (stat->arc_total    == 0) &&
-          (stat->assert_total == 0) );
+  return( (stat->line_total    == 0) &&
+          (stat->tog_total     == 0) &&
+          (stat->comb_total    == 0) &&
+          (stat->state_total   == 0) &&
+          (stat->arc_total     == 0) &&
+          (stat->assert_total  == 0) &&
+          (stat->mem_ae_total  == 0) &&
+          (stat->mem_tog_total == 0) );
 
 }
 
@@ -127,6 +141,9 @@ void statistic_dealloc( statistic* stat ) {
 
 /*
  $Log$
+ Revision 1.9  2006/09/01 23:06:02  phase1geo
+ Fixing regressions per latest round of changes.  Full regression now passes.
+
  Revision 1.8  2006/04/19 22:21:33  phase1geo
  More updates to properly support assertion coverage.  Removing assertion modules
  from line, toggle, combinational logic, FSM and race condition output so that there

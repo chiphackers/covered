@@ -1762,6 +1762,12 @@ struct statistic_s {
   int   rtype_total[RACE_TYPE_NUM];  /*!< Total number of each race condition type found */
   float assert_total;                /*!< Total number of assertions */
   int   assert_hit;                  /*!< Number of assertions covered during simulation */
+  float mem_ae_total;                /*!< Total number of addressable memory elements */
+  int   mem_wr_hit;                  /*!< Total number of addressable memory elements written */
+  int   mem_rd_hit;                  /*!< Total number of addressable memory elements read */
+  float mem_tog_total;               /*!< Total number of bits in memories */
+  int   mem_tog01_hit;               /*!< Total number of bits toggling from 0 to 1 in memories */
+  int   mem_tog10_hit;               /*!< Total number of bits toggling from 1 to 0 in memories */
   bool  show;                        /*!< Set to TRUE if this module should be output to the report */
 };
 
@@ -2176,6 +2182,10 @@ struct dim_range_s {
 
 /*
  $Log$
+ Revision 1.233  2006/09/22 19:56:45  phase1geo
+ Final set of fixes and regression updates per recent changes.  Full regression
+ now passes.
+
  Revision 1.232  2006/09/20 22:38:09  phase1geo
  Lots of changes to support memories and multi-dimensional arrays.  We still have
  issues with endianness and VCS regressions have not been run, but this is a significant

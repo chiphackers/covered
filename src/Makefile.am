@@ -30,6 +30,7 @@ covered_SOURCES = arc.c \
 		  lxt.c \
 		  lxt2_read.c \
 		  main.c \
+                  memory.c \
 		  merge.c \
                   obfuscate.c \
                   ovl.c \

@@ -34,22 +34,22 @@
 #include <tk.h>
 #endif
 
-#include "defines.h"
-#include "report.h"
-#include "util.h"
-#include "line.h"
-#include "toggle.h"
-#include "comb.h"
-#include "fsm.h"
-#include "instance.h"
-#include "stat.h"
-#include "db.h"
-#include "fsm.h"
-#include "tcl_funcs.h"
-#include "info.h"
-#include "race.h"
-#include "binding.h"
 #include "assertion.h"
+#include "binding.h"
+#include "comb.h"
+#include "db.h"
+#include "defines.h"
+#include "fsm.h"
+#include "info.h"
+#include "instance.h"
+#include "line.h"
+#include "memory.h"
+#include "race.h"
+#include "report.h"
+#include "stat.h"
+#include "tcl_funcs.h"
+#include "toggle.h"
+#include "util.h"
 
 
 extern char        user_msg[USER_MSG_LENGTH];
@@ -98,6 +98,12 @@ bool report_race         = FALSE;
  database file; otherwise, omits assertion coverage from the report output.
 */
 bool report_assertion    = FALSE;
+
+/*!
+ If set to a boolean value of TRUE, reports the memory coverage for the specified database file;
+ otherwise, omits memory coverage from the report output.
+*/
+bool report_memory       = FALSE;
 
 /*!
  If set to a boolean value of TRUE, provides a coverage information for individual
@@ -177,31 +183,31 @@ void report_usage() {
 #ifdef HAVE_TCLTK
   printf( "Usage:  covered report (-h | -view | [<options>] <database_file>)\n" );
   printf( "\n" );
-  printf( "   -view                      Uses the graphical report viewer for viewing reports.  If this\n" );
-  printf( "                               option is not specified, the text report will be generated.\n" );
+  printf( "   -view                        Uses the graphical report viewer for viewing reports.  If this\n" );
+  printf( "                                 option is not specified, the text report will be generated.\n" );
 #else
   printf( "Usage:  covered report (-h | [<options>] <database_file>)\n" );
   printf( "\n" );
 #endif
-  printf( "   -h                         Displays this help information.\n" );
+  printf( "   -h                           Displays this help information.\n" );
   printf( "\n" );
   printf( "   Options:\n" );
-  printf( "      -m [l][t][c][f][r][a]   Type(s) of metrics to report.  l=line, t=toggle, c=combinational logic,\n" );
-  printf( "                               f=FSM state/arc, r=race condition, a=assertion.  Default is ltcf.\n" );
-  printf( "      -d (s|d|v)              Level of report detail (s=summary, d=detailed, v=verbose).\n" );
-  printf( "                               Default is to display summary coverage information.\n" );
-  printf( "      -i                      Provides coverage information for instances instead of module/task/function.\n" );
-  printf( "      -c                      If '-d d' or '-d v' is specified, displays covered line, toggle\n" );
-  printf( "                               and combinational cases.  Default is to display uncovered results.\n" );
-  printf( "      -o <filename>           File to output report information to.  Default is standard output.\n" );
-  printf( "      -w [<line_width>]       Causes expressions to be output to best-fit to the specified line\n" );
-  printf( "                               width.  If the -w option is specified without a value, the default\n" );
-  printf( "                               line width of 80 is used.  If the -w option is not specified, all\n" );
-  printf( "                               expressions are output in the format that the user specified in the\n" );
-  printf( "                               Verilog source.\n" );
-  printf( "      -s                      Suppress outputting modules/instances that do not contain any coverage metrics.\n" );
-  printf( "      -b                      If combinational logic verbose output is reported and the expression is a\n" );
-  printf( "                               vector operation, this option outputs the coverage information on a bitwise basis.\n" );
+  printf( "      -m [l][t][c][f][r][a][m]  Type(s) of metrics to report.  l=line, t=toggle, c=combinational logic,\n" );
+  printf( "                                 f=FSM state/arc, r=race condition, a=assertion, m=memory.  Default is ltcf.\n" );
+  printf( "      -d (s|d|v)                Level of report detail (s=summary, d=detailed, v=verbose).\n" );
+  printf( "                                 Default is to display summary coverage information.\n" );
+  printf( "      -i                        Provides coverage information for instances instead of module/task/function.\n" );
+  printf( "      -c                        If '-d d' or '-d v' is specified, displays covered line, toggle\n" );
+  printf( "                                 and combinational cases.  Default is to display uncovered results.\n" );
+  printf( "      -o <filename>             File to output report information to.  Default is standard output.\n" );
+  printf( "      -w [<line_width>]         Causes expressions to be output to best-fit to the specified line\n" );
+  printf( "                                 width.  If the -w option is specified without a value, the default\n" );
+  printf( "                                 line width of 80 is used.  If the -w option is not specified, all\n" );
+  printf( "                                 expressions are output in the format that the user specified in the\n" );
+  printf( "                                 Verilog source.\n" );
+  printf( "      -s                        Suppress outputting modules/instances that do not contain any coverage metrics.\n" );
+  printf( "      -b                        If combinational logic verbose output is reported and the expression is a\n" );
+  printf( "                                 vector operation, this option outputs the coverage information on a bitwise basis.\n" );
   printf( "\n" );
 
 }
@@ -225,6 +231,7 @@ void report_parse_metrics( char* metrics ) {
   report_fsm         = FALSE;
   report_race        = FALSE;
   report_assertion   = FALSE;
+  report_memory      = FALSE;
 
   for( ptr=metrics; ptr<(metrics + strlen( metrics )); ptr++ ) {
 
@@ -241,6 +248,8 @@ void report_parse_metrics( char* metrics ) {
       case 'R' :  report_race        = TRUE;  break;
       case 'a' :
       case 'A' :  report_assertion   = TRUE;  break;
+      case 'm' :
+      case 'M' :  report_memory      = TRUE;  break;
       default  :
         snprintf( user_msg, USER_MSG_LENGTH, "Unknown metric specified '%c'...  Ignoring.", *ptr );
         print_output( user_msg, WARNING, __FILE__, __LINE__ );
@@ -451,6 +460,16 @@ void report_gather_instance_stats( funit_inst* root ) {
                            &(root->stat->assert_hit) );
     }
 
+    if( report_memory ) {
+      memory_get_stats( root->funit->sig_head,
+                        &(root->stat->mem_ae_total),
+                        &(root->stat->mem_wr_hit),
+                        &(root->stat->mem_rd_hit),
+                        &(root->stat->mem_tog_total),
+                        &(root->stat->mem_tog01_hit),
+                        &(root->stat->mem_tog10_hit) );
+    }
+
     /* Only get race condition statistics for this instance module if the module hasn't been gathered yet */
     if( report_race && (root->funit->stat == NULL) ) {
       root->funit->stat = statistic_create();
@@ -513,6 +532,16 @@ void report_gather_funit_stats( funit_link* head ) {
         assertion_get_stats( head->funit,
                              &(head->funit->stat->assert_total),
                              &(head->funit->stat->assert_hit) );
+      }
+
+      if( report_memory ) {
+        memory_get_stats( head->funit->sig_head,
+                          &(head->funit->stat->mem_ae_total),
+                          &(head->funit->stat->mem_wr_hit),
+                          &(head->funit->stat->mem_rd_hit),
+                          &(head->funit->stat->mem_tog_total),
+                          &(head->funit->stat->mem_tog01_hit),
+                          &(head->funit->stat->mem_tog10_hit) );
       }
 
       if( report_race ) {
@@ -670,6 +699,10 @@ void report_generate( FILE* ofile ) {
 
   if( report_assertion ) {
     assertion_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
+  }
+
+  if( report_memory ) {
+    memory_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
   }
 
   if( report_race ) {
@@ -877,6 +910,9 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.73  2006/09/13 23:05:56  phase1geo
+ Continuing from last submission.
+
  Revision 1.72  2006/09/01 23:06:02  phase1geo
  Fixing regressions per latest round of changes.  Full regression now passes.
 
