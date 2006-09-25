@@ -233,6 +233,7 @@ void vector_db_write( vector* vec, FILE* file, bool write_data ) {
     case VTYPE_VAL :  mask = mask & 0x03;  break;
     case VTYPE_SIG :  mask = mask & 0x0f;  break;
     case VTYPE_EXP :  mask = mask & 0x3f;  break;
+    case VTYPE_MEM :  mask = mask & 0x3f;  break;
     default        :  break;
   }
 
@@ -632,6 +633,30 @@ void vector_display_nibble( vec_data* nib, int width, int type ) {
 
       break;
 
+    case VTYPE_MEM :
+  
+      /* Display nibble toggle01 history */
+      printf( ", 0->1: " );
+      vector_display_toggle01( nib, width, stdout );
+
+      /* Display nibble toggle10 history */
+      printf( ", 1->0: " );
+      vector_display_toggle10( nib, width, stdout );
+
+      /* Write history */
+      printf( ", wr: %d'b", width );
+      for( i=(width - 1); i>=0; i-- ) {
+        printf( "%d", nib[i].part.mem.wr );
+      }
+
+      /* Read history */
+      printf( ", rd: %d'b", width );
+      for( i=(width - 1); i>=0; i-- ) {
+        printf( "%d", nib[i].part.mem.rd );
+      }
+
+      break;
+
     default : break;
 
   }
@@ -672,13 +697,32 @@ void vector_toggle_count( vector* vec, int* tog01_cnt, int* tog10_cnt ) {
 
   int i;  /* Loop iterator */
 
-  if( vec->suppl.part.type == VTYPE_SIG ) {
+  if( (vec->suppl.part.type == VTYPE_SIG) || (vec->suppl.part.type == VTYPE_MEM) ) {
 
     for( i=0; i<vec->width; i++ ) {
       *tog01_cnt = *tog01_cnt + vec->value[i].part.sig.tog01;
       *tog10_cnt = *tog10_cnt + vec->value[i].part.sig.tog10;
     }
 
+  }
+
+}
+
+/*!
+ \param vec     Pointer to vector to parse
+ \param wr_cnt  Pointer to number of bits in vector that were written
+ \param rd_cnt  Pointer to number of bits in vector that were read
+
+ Counts the number of bits that were written and read for the given memory
+ vector.
+*/
+void vector_mem_rw_count( vector* vec, int* wr_cnt, int* rd_cnt ) {
+
+  int i;  /* Loop iterator */
+
+  for( i=0; i<vec->width; i++ ) {
+    *wr_cnt += vec->value[i].part.mem.wr;
+    *rd_cnt += vec->value[i].part.mem.rd;
   }
 
 }
@@ -774,6 +818,29 @@ bool vector_set_value( vector* vec, vec_data* value, int width, int from_idx, in
           /* Perform value assignment */
           set_val.part.sig.set   = 1;
           set_val.part.sig.value = from_val;
+          vval[i + to_idx]       = set_val;
+          retval = TRUE;
+        }
+      }
+      break;
+    case VTYPE_MEM :
+      printf( "In vector_set_value, for MEM\n" );
+      for( i=0; i<width; i++ ) {
+        set_val  = vval[i + to_idx];
+        from_val = ((v2st & value[i + from_idx].part.val.value) > 1) ? 0 : value[i + from_idx].part.val.value;
+        to_val   = set_val.part.mem.value;
+        printf( "from_val: %d, to_val: %d\n", from_val, to_val );
+        if( from_val != to_val ) {
+          /* Assign toggle values if necessary */
+          if( (to_val == 0) && (from_val == 1) ) {
+            set_val.part.mem.tog01 = 1;
+          } else if( (to_val == 1) && (from_val == 0) ) {
+            set_val.part.mem.tog10 = 1;
+          }
+          /* Assign write information */
+          set_val.part.mem.wr = 1;
+          /* Perform value assignment */
+          set_val.part.mem.value = from_val;
           vval[i + to_idx]       = set_val;
           retval = TRUE;
         }
@@ -2014,6 +2081,10 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.82  2006/09/22 19:56:45  phase1geo
+ Final set of fixes and regression updates per recent changes.  Full regression
+ now passes.
+
  Revision 1.81  2006/09/20 22:38:10  phase1geo
  Lots of changes to support memories and multi-dimensional arrays.  We still have
  issues with endianness and VCS regressions have not been run, but this is a significant

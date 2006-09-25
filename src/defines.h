@@ -1017,6 +1017,9 @@ typedef enum exp_op_type_e {
 /*! Used for storing 2 or 4-state expression values */
 #define VTYPE_EXP       2
 
+/*! Used for storing 2 or 4-state memory information */
+#define VTYPE_MEM       3
+
 /*! @} */
 
 /*!
@@ -1087,6 +1090,13 @@ union vec_data_u {
       nibble set    :1;  /*!< Indicator if bit has been previously assigned this timestep */
       nibble misc   :1;  /*!< Miscellaneous indicator bit */
     } sig;               /*!< Vector data for signal */
+    struct {
+      nibble value  :2;  /*!< 2 or 4-state value */
+      nibble tog01  :1;  /*!< Indicator if bit was toggled from 0->1 */
+      nibble tog10  :1;  /*!< Indicator if bit was toggled from 1->0 */
+      nibble wr     :1;  /*!< Indicator if bit was written to */
+      nibble rd     :1;  /*!< Indicator if bit was read from */
+    } mem;
     struct {
       nibble value  :2;  /*!< 2 or 4-state value */
       nibble eval_a :1;  /*!< Coverage indicator: AND-left=0; OR-left=1; OTHER-left=0, right=0 */
@@ -2182,6 +2192,10 @@ struct dim_range_s {
 
 /*
  $Log$
+ Revision 1.234  2006/09/25 04:15:03  phase1geo
+ Starting to add support for new memory coverage metric.  This includes changes
+ for the report command only at this point.
+
  Revision 1.233  2006/09/22 19:56:45  phase1geo
  Final set of fixes and regression updates per recent changes.  Full regression
  now passes.

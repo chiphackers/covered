@@ -65,15 +65,15 @@
 #include <assert.h>
 
 #include "defines.h"
-#include "param.h"
-#include "util.h"
 #include "expr.h"
-#include "vector.h"
-#include "link.h"
-#include "vsignal.h"
 #include "func_unit.h"
 #include "instance.h"
+#include "link.h"
 #include "obfuscate.h"
+#include "param.h"
+#include "util.h"
+#include "vector.h"
+#include "vsignal.h"
 
 
 /*!
@@ -1008,6 +1008,10 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.80  2006/09/22 19:56:45  phase1geo
+ Final set of fixes and regression updates per recent changes.  Full regression
+ now passes.
+
  Revision 1.79  2006/09/22 04:23:04  phase1geo
  More fixes to support new signal range structure.  Still don't have full
  regressions passing at the moment.

@@ -856,7 +856,7 @@ void db_add_signal( char* name, int type, sig_range* prange, sig_range* urange, 
   int      j = 0;   /* Loop iterator */
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_add_signal, signal: %s, line: %d, col: %d", obf_sig( name ), line, col );
+  snprintf( user_msg, USER_MSG_LENGTH, "In db_add_signal, signal: %s, type: %d, line: %d, col: %d", obf_sig( name ), type, line, col );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
@@ -2124,6 +2124,10 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.225  2006/09/22 19:56:45  phase1geo
+ Final set of fixes and regression updates per recent changes.  Full regression
+ now passes.
+
  Revision 1.224  2006/09/20 22:38:09  phase1geo
  Lots of changes to support memories and multi-dimensional arrays.  We still have
  issues with endianness and VCS regressions have not been run, but this is a significant

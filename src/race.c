@@ -82,6 +82,7 @@ const char* race_msgs[RACE_TYPE_NUM] = { "Sequential statement block contains bl
 extern int         flag_race_check;
 extern char        user_msg[USER_MSG_LENGTH];
 extern funit_link* funit_head;
+extern inst_link*  inst_head;
 extern func_unit*  curr_funit;
 extern isuppl      info_suppl;
 
@@ -477,8 +478,13 @@ void race_check_one_block_assignment( func_unit* mod ) {
   int        lval;                /* Left expression value */
   int        rval;                /* Right expression value */
   int        exp_dim;             /* Current expression dimension */
-  int        lsb;                 /* Calculated LSB */
-  int        msb;                 /* Calculated MSB */
+  int        dim_lsb;             /* LSB of current dimension */
+  bool       dim_be;              /* Big endianness of current dimension */
+  int        dim_width;           /* Bit width of current dimension */
+  int        intval;              /* Integer value */
+  vector     vec;                 /* Temporary vector used for setting assigned bits in signal */
+  vec_data*  vstart;              /* Starting address for current dimension */
+  int        vwidth;              /* Width of bit range to work within for current dimension */
 
   sigl = mod->sig_head;
   while( sigl != NULL ) {
@@ -501,6 +507,25 @@ void race_check_one_block_assignment( func_unit* mod ) {
           /* Get current dimension of the given expression */
           exp_dim = expression_get_curr_dimension( expl->exp );
 
+          /* Calculate starting vector value bit and signal LSB/BE for LHS */
+          if( (ESUPPL_IS_ROOT( expl->exp->suppl ) == 0) &&
+              (expl->exp->parent->expr->op == EXP_OP_DIM) && (expl->exp->parent->expr->right == expl->exp) ) {
+            vstart = expl->exp->parent->expr->left->value->value;
+            vwidth = expl->exp->parent->expr->left->value->width;
+          } else {
+            /* Get starting vector bit from signal itself */
+            vstart = sigl->sig->value->value;
+            vwidth = sigl->sig->value->width;
+          }
+          if( sigl->sig->dim[exp_dim].lsb < sigl->sig->dim[exp_dim].msb ) {
+            dim_lsb = sigl->sig->dim[exp_dim].lsb;
+            dim_be  = FALSE;
+          } else {
+            dim_lsb = sigl->sig->dim[exp_dim].msb;
+            dim_be  = TRUE;
+          }
+          dim_width = vsignal_calc_width_for_expr( expl->exp, sigl->sig );
+
           /*
            If the signal was a part select, set the appropriate misc bits to indicate what
            bits have been assigned.
@@ -513,17 +538,26 @@ void race_check_one_block_assignment( func_unit* mod ) {
 	      break;
             case EXP_OP_SBIT_SEL :
               if( expl->exp->left->op == EXP_OP_STATIC ) {
-                lsb = (vector_to_int( expl->exp->left->value ) - sigl->sig->dim[exp_dim].lsb) * expl->exp->value->width;
-                curr_race = vector_set_assigned( sigl->sig->value, ((expl->exp->value->width - 1) + lsb), lsb );
+                intval = (vector_to_int( expl->exp->left->value ) - dim_lsb) * dim_width;
+                if( dim_be ) {
+                  vector_init( &vec, (vstart + (vwidth - (intval + expl->exp->value->width))), expl->exp->value->width, VTYPE_SIG );
+                } else {
+                  vector_init( &vec, (vstart + intval), expl->exp->value->width, VTYPE_SIG );
+                }
+                curr_race = vector_set_assigned( &vec, (vec.width - 1), 0 );
 	      } else { 
                 curr_race = vector_set_assigned( sigl->sig->value, (sigl->sig->value->width - 1), 0 );
               }
 	      break;
             case EXP_OP_MBIT_SEL :
 	      if( (expl->exp->left->op == EXP_OP_STATIC) && (expl->exp->right->op == EXP_OP_STATIC) ) {
-                lsb = vector_to_int( expl->exp->right->value ) - sigl->sig->dim[exp_dim].lsb;
-                msb = vector_to_int( expl->exp->left->value )  - sigl->sig->dim[exp_dim].lsb;
-                curr_race = vector_set_assigned( sigl->sig->value, msb, lsb );
+                intval = ((dim_be ? vector_to_int( expl->exp->left->value ) : vector_to_int( expl->exp->right->value )) - dim_lsb) * dim_width;
+                if( dim_be ) {
+                  vector_init( &vec, (vstart + (vwidth - (intval + expl->exp->value->width))), expl->exp->value->width, VTYPE_SIG );
+                } else {
+                  vector_init( &vec, (vstart + intval), expl->exp->value->width, VTYPE_SIG );
+                }
+                curr_race = vector_set_assigned( &vec, (vec.width - 1), 0 );
               } else {
                 curr_race = vector_set_assigned( sigl->sig->value, (sigl->sig->value->width - 1), 0 );
               }
@@ -532,9 +566,7 @@ void race_check_one_block_assignment( func_unit* mod ) {
               if( expl->exp->left->op == EXP_OP_STATIC ) {
                 lval = vector_to_int( expl->exp->left->value );
                 rval = vector_to_int( expl->exp->right->value );
-                lsb  = lval - sigl->sig->dim[exp_dim].lsb;
-                msb  = (lval + rval) - sigl->sig->dim[exp_dim].lsb;
-                curr_race = vector_set_assigned( sigl->sig->value, msb, lsb );
+                curr_race = vector_set_assigned( sigl->sig->value, ((lval + rval) - sigl->sig->dim[exp_dim].lsb), (lval - sigl->sig->dim[exp_dim].lsb) );
               } else {
                 curr_race = vector_set_assigned( sigl->sig->value, (sigl->sig->value->width - 1), 0 );
               }
@@ -543,9 +575,7 @@ void race_check_one_block_assignment( func_unit* mod ) {
               if( expl->exp->left->op == EXP_OP_STATIC ) {
                 lval = vector_to_int( expl->exp->left->value );
                 rval = vector_to_int( expl->exp->right->value );
-                lsb  = ((lval - rval) + 1) - sigl->sig->dim[exp_dim].lsb;
-                msb  = (lval + 1) - sigl->sig->dim[exp_dim].lsb;
-                curr_race = vector_set_assigned( sigl->sig->value, msb, lsb );
+                curr_race = vector_set_assigned( sigl->sig->value, ((lval + 1) - sigl->sig->dim[exp_dim].lsb), (((lval - rval) + 1) - sigl->sig->dim[exp_dim].lsb) );
               } else {
                 curr_race = vector_set_assigned( sigl->sig->value, (sigl->sig->value->width - 1), 0 );
               }
@@ -632,12 +662,17 @@ void race_check_modules() {
   funit_link* modl;      /* Pointer to current module link */
   int         i;         /* Loop iterator */
   funit_link* tfl;       /* Pointer to current task/function/named block link */
+  int         ignore;    /* Placeholder */
 
   modl = funit_head;
 
   while( modl != NULL ) {
 
     if( (modl->funit->type == FUNIT_MODULE) && ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( modl->funit )) ) {
+
+      /* Size elements for the current module */
+      ignore = 0;
+      funit_size_elements( modl->funit, inst_link_find_by_funit( modl->funit, inst_head, &ignore ) );
 
       /* Clear statement block array size */
       sb_size = 0;
@@ -990,6 +1025,11 @@ void race_blk_delete_list( race_blk* rb ) {
 
 /*
  $Log$
+ Revision 1.47  2006/09/20 22:38:09  phase1geo
+ Lots of changes to support memories and multi-dimensional arrays.  We still have
+ issues with endianness and VCS regressions have not been run, but this is a significant
+ amount of work that needs to be checkpointed.
+
  Revision 1.46  2006/09/15 22:14:54  phase1geo
  Working on adding arrayed signals.  This is currently in progress and doesn't
  even compile at this point, much less work.  Checkpointing work.

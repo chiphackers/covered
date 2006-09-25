@@ -541,7 +541,7 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
 
       }
 
-      if( cdd_reading || (found_sig->suppl.part.type == SSUPPL_TYPE_GENVAR) ) {
+//      if( cdd_reading || (found_sig->suppl.part.type == SSUPPL_TYPE_GENVAR) ) {
 
         if( (exp->op == EXP_OP_SIG)            ||
             (exp->op == EXP_OP_SBIT_SEL)       ||
@@ -557,7 +557,7 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
           expression_set_value( exp, found_sig );
         }
 
-      }
+//      }
 
       if( !cdd_reading ) {
 
@@ -1030,6 +1030,10 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.97  2006/09/22 19:56:45  phase1geo
+ Final set of fixes and regression updates per recent changes.  Full regression
+ now passes.
+
  Revision 1.96  2006/09/22 04:23:04  phase1geo
  More fixes to support new signal range structure.  Still don't have full
  regressions passing at the moment.

@@ -95,7 +95,7 @@ vsignal* vsignal_create( char* name, int type, int width, int line, int col ) {
   new_sig = (vsignal*)malloc_safe( sizeof( vsignal ), __FILE__, __LINE__ );
 
   vsignal_init( new_sig, ((name != NULL) ? strdup_safe( name, __FILE__, __LINE__ ) : NULL),
-                type, vector_create( width, VTYPE_SIG, TRUE ), line, col );
+                type, vector_create( width, ((type == SSUPPL_TYPE_MEM) ? VTYPE_MEM : VTYPE_SIG), TRUE ), line, col );
 
   return( new_sig );
 
@@ -137,7 +137,7 @@ void vsignal_create_vec( vsignal* sig ) {
     }
 
     /* Create the vector and assign it to the signal */
-    vec = vector_create( sig->value->width, VTYPE_SIG, TRUE );
+    vec = vector_create( sig->value->width, ((sig->suppl.part.type == SSUPPL_TYPE_MEM) ? VTYPE_MEM : VTYPE_SIG), TRUE );
     if( sig->value->value != NULL ) {
       free_safe( sig->value->value );
     }
@@ -685,6 +685,10 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.37  2006/09/22 19:56:45  phase1geo
+ Final set of fixes and regression updates per recent changes.  Full regression
+ now passes.
+
  Revision 1.36  2006/09/21 22:44:20  phase1geo
  More updates to regressions for latest changes to support memories/multi-dimensional
  arrays.  We still have a handful of VCS diagnostics that are failing.  Checkpointing

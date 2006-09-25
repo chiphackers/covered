@@ -55,6 +55,9 @@ void funit_remove_stmt_blks_calling_stmt( func_unit* funit, statement* stmt );
 /*! \brief Generates the internally used task/function/named-block name for the specified functional unit */
 char* funit_gen_task_function_namedblock_name( char* orig_name, func_unit* parent );
 
+/*! \brief Sizes all elements for the current functional unit from the given instance */
+void funit_size_elements( func_unit* funit, funit_inst* inst );
+
 /*! \brief Writes contents of provided functional unit to specified output. */
 bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst, bool report_save );
 
@@ -83,6 +86,11 @@ void funit_dealloc( func_unit* funit );
 
 /*
  $Log$
+ Revision 1.14  2006/09/20 22:38:09  phase1geo
+ Lots of changes to support memories and multi-dimensional arrays.  We still have
+ issues with endianness and VCS regressions have not been run, but this is a significant
+ amount of work that needs to be checkpointed.
+
  Revision 1.13  2006/09/07 21:59:24  phase1geo
  Fixing some bugs related to statement block removal.  Also made some significant
  optimizations to this code.

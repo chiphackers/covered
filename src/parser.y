@@ -5184,7 +5184,7 @@ register_variable
       /* Unpacked dimensions are now handled */
       curr_packed = TRUE;
       if( $1 != NULL ) {
-        db_add_signal( $1, curr_sig_type, &curr_prange, &curr_urange, curr_signed, TRUE, @1.first_line, @1.first_column, TRUE );
+        db_add_signal( $1, SSUPPL_TYPE_MEM, &curr_prange, &curr_urange, curr_signed, TRUE, @1.first_line, @1.first_column, TRUE );
         free_safe( $1 );
       }
     }
