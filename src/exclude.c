@@ -109,22 +109,53 @@ void exclude_expr_assign_and_recalc( expression* expr, func_unit* funit, bool ex
 */
 void exclude_sig_assign_and_recalc( vsignal* sig, func_unit* funit, bool excluded ) {
 
-  int hit01;  /* Number of bits transitioning from 0 -> 1 */
-  int hit10;  /* Number of bits transitioning from 1 -> 0 */
-
   /* First, set the exclude bit in the signal supplemental field */
   sig->suppl.part.excluded = excluded ? 1 : 0;
 
-  /* Get the total hit01 and hit10 information */
-  vector_toggle_count( sig->value, &hit01, &hit10 );
+  /* If the signal is a memory, we need to update the memory coverage numbers */
+  if( sig->suppl.part.type == SSUPPL_TYPE_MEM ) {
 
-  /* Recalculate the total and hit values for toggle coverage */
-  if( excluded ) {
-    funit->stat->tog01_hit += (sig->value->width - hit01);
-    funit->stat->tog10_hit += (sig->value->width - hit10);
+    float ae_total  = 0;  /* Number of addressable elements in this memory */
+    int   wr_hit    = 0;  /* Number of addressable elements written */
+    int   rd_hit    = 0;  /* Number of addressable elements read */
+    float tog_total = 0;  /* Total number of toggle bits */
+    int   tog01_hit = 0;  /* Number of bits toggling from 0->1 */
+    int   tog10_hit = 0;  /* Number of bits toggling from 1->0 */
+
+    /* Get the stats for the current memory */
+    memory_get_stat( sig, ae_total, wr_hit, rd_hit, tog_total, tog01_hit, tog10_hit );
+
+    /* Recalculate the total and hit values for memory coverage */
+    if( excluded ) {
+      funit->stat->mem_wr_hit    += (ae_total  - wr_hit);
+      funit->stat->mem_rd_hit    += (ae_total  - rd_hit);
+      funit->stat->mem_tog01_hit += (tog_total - tog01_hit);
+      funit->stat->mem_tog10_hit += (tog_total - tog10_hit);
+    } else {
+      funit->stat->mem_wr_hit    -= (ae_total  - wr_hit);
+      funit->stat->mem_rd_hit    -= (ae_total  - rd_hit);
+      funit->stat->mem_tog01_hit -= (tog_total - tog01_hit);
+      funit->stat->mem_tog10_hit -= (tog_total - tog10_hit);
+    }
+
+  /* Otherwise, the toggle coverage numbers should be adjusted */
   } else {
-    funit->stat->tog01_hit -= (sig->value->width - hit01);
-    funit->stat->tog10_hit -= (sig->value->width - hit10);
+
+    int hit01;  /* Number of bits transitioning from 0 -> 1 */
+    int hit10;  /* Number of bits transitioning from 1 -> 0 */
+
+    /* Get the total hit01 and hit10 information */
+    vector_toggle_count( sig->value, &hit01, &hit10 );
+
+    /* Recalculate the total and hit values for toggle coverage */
+    if( excluded ) {
+      funit->stat->tog01_hit += (sig->value->width - hit01);
+      funit->stat->tog10_hit += (sig->value->width - hit10);
+    } else {
+      funit->stat->tog01_hit -= (sig->value->width - hit01);
+      funit->stat->tog10_hit -= (sig->value->width - hit10);
+    }
+
   }
 
 }
@@ -409,6 +440,11 @@ bool exclude_set_assert_exclude( char* funit_name, int funit_type, char* inst_na
 
 /*
  $Log$
+ Revision 1.10  2006/09/01 04:06:37  phase1geo
+ Added code to support more than one instance tree.  Currently, I am seeing
+ quite a few memory errors that are causing some major problems at the moment.
+ Checkpointing.
+
  Revision 1.9  2006/06/29 20:57:24  phase1geo
  Added stmt_excluded bit to expression to allow us to individually control line
  and combinational logic exclusion.  This also allows us to exclude combinational

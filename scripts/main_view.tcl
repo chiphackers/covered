@@ -13,6 +13,7 @@ source $HOME/scripts/preferences.tcl
 source $HOME/scripts/cdd_view.tcl
 source $HOME/scripts/assert.tcl
 source $HOME/scripts/verilog.tcl
+source $HOME/scripts/memory.tcl
 
 set last_lb_index      ""
 set lwidth             -1 
@@ -151,7 +152,7 @@ proc main_place {width value} {
  
 proc populate_listbox {listbox_w} {
 
-  global mod_inst_type funit_names funit_types inst_list cov_rb cdd_name
+  global mod_inst_type funit_names funit_types inst_list cdd_name
   global line_summary_total line_summary_hit
   global toggle_summary_total toggle_summary_hit
   global uncov_fgColor uncov_bgColor
@@ -202,6 +203,7 @@ proc highlight_listbox {} {
   global comb_summary_total comb_summary_hit
   global fsm_summary_total fsm_summary_hit
   global assert_summary_total assert_summary_hit
+  global memory_summary_total memory_summary_hit
 
   if {$cdd_name != ""} {
 
@@ -223,6 +225,9 @@ proc highlight_listbox {} {
       } elseif {$cov_rb == "assert"} {
         tcl_func_get_assert_summary [lindex $funit_names $i] [lindex $funit_types $i]
         set fully_covered [expr $assert_summary_total == $assert_summary_hit]
+      } elseif {$cov_rb == "memory"} {
+        tcl_func_get_memory_summary [lindex $funit_names $i] [lindex $funit_types $i]
+        set fully_covered [expr $memory_summary_total == $memory_summary_hit]
       } else {
         # ERROR
       }
@@ -259,6 +264,8 @@ proc populate_text {} {
         process_funit_line_cov
       } elseif {$cov_rb == "toggle"} {
         process_funit_toggle_cov
+      } elseif {$cov_rb == "memory"} {
+        process_funit_memory_cov
       } elseif {$cov_rb == "comb"} {
         process_funit_comb_cov
       } elseif {$cov_rb == "fsm"} {
@@ -459,6 +466,9 @@ proc update_all_windows {} {
   # Update the toggle window
   update_toggle
 
+  # Update the memory window
+  update_memory
+
   # Update the combinational logic window
   update_comb
 
@@ -480,6 +490,9 @@ proc clear_all_windows {} {
 
   # Clear the toggle window
   clear_toggle
+
+  # Clear the memory window
+  clear_memory
 
   # Clear the combinational logic window
   clear_comb

@@ -7,10 +7,11 @@ tcl_SCRIPTS = assert.tcl \
               fsm.tcl \
               help.tcl \
               main_view.tcl \
+              memory.tcl \
               menu_create.tcl \
               preferences.tcl \
               process_file.tcl \
-	            summary.tcl \
+              summary.tcl \
               toggle.tcl \
               verilog.tcl
 

@@ -31,23 +31,24 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "defines.h"
-#include "tcl_funcs.h"
-#include "gui.h"
-#include "link.h"
-#include "util.h"
-#include "line.h"
-#include "toggle.h"
-#include "comb.h"
-#include "expr.h"
-#include "instance.h"
-#include "report.h"
-#include "race.h"
-#include "fsm.h"
 #include "assertion.h"
-#include "search.h"
-#include "score.h"
+#include "comb.h"
+#include "defines.h"
 #include "exclude.h"
+#include "expr.h"
+#include "fsm.h"
+#include "gui.h"
+#include "instance.h"
+#include "line.h"
+#include "link.h"
+#include "memory.h"
+#include "race.h"
+#include "report.h"
+#include "score.h"
+#include "search.h"
+#include "tcl_funcs.h"
+#include "toggle.h"
+#include "util.h"
 
 
 extern funit_link* funit_head;
@@ -551,6 +552,78 @@ int tcl_func_collect_covered_toggles( ClientData d, Tcl_Interp* tcl, int argc, c
  \param tcl   Pointer to the Tcl interpreter
  \param argc  Number of arguments in the argv list
  \param argv  Array of arguments passed to this function
+ 
+ \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
+         TCL_ERROR.
+
+ Populates the global variable "covered_memories" and "uncovered_memories" with the names of all signals
+ of the given functional unit that achieved 100% memory coverage and less than 100% memory coverage, respectively.
+*/
+int tcl_func_collect_memories( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+
+  int       retval   = TCL_OK;  /* Return value for this function */
+  char*     funit_name;         /* Functional unit name to find */
+  int       funit_type;         /* Functional unit type to find */
+  sig_link* cov_sigh = NULL;    /* Pointer to head of covered signal list */
+  sig_link* cov_sigt = NULL;    /* Pointer to tail of covered signal list */
+  sig_link* unc_sigh = NULL;    /* Pointer to head of uncovered signal list */
+  sig_link* unc_sigt = NULL;    /* Pointer to tail of uncovered signal list */
+  sig_link* sigl;               /* Pointer to current signal being evaluated */
+  char      tmp[85];            /* Temporary string */
+  int       start_line;         /* Starting line number of this functional unit */
+
+  /* Get the valid arguments for this function call */
+  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_type = atoi( argv[2] );
+  start_line = atoi( argv[3] );
+
+  /* Get the memory information for all covered/uncovered signals */
+  if( memory_collect( funit_name, funit_type, 0, &unc_sigh, &unc_sigt ) &&
+      memory_collect( funit_name, funit_type, 1, &cov_sigh, &cov_sigt ) ) {
+
+    /* Populate covered_memories array */
+    sigl = cov_sigh;
+    while( sigl != NULL ) {
+      snprintf( tmp, 85, "%d.%d %d.%d",
+                (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + 14),
+                (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + (strlen( sigl->sig->name ) - 1) + 15) );
+      Tcl_SetVar( tcl, "covered_memories", tmp, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+      sigl = sigl->next;
+    }
+
+    /* Populate uncovered_memories array */
+    sigl = unc_sigh;
+    while( sigl != NULL ) {
+      snprintf( tmp, 85, "%d.%d %d.%d",
+                (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + 14),
+                (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + (strlen( sigl->sig->name ) - 1) + 15) );
+      Tcl_SetVar( tcl, "uncovered_memories", tmp, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+      sigl = sigl->next;
+    }
+
+    /* Deallocate list of signals (without deallocating the signals themselves) */
+    sig_link_delete_list( cov_sigh, FALSE );
+    sig_link_delete_list( unc_sigh, FALSE );
+
+  } else {
+
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find functional unit %s in design", funit_name );
+    Tcl_AddErrorInfo( tcl, user_msg );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    retval = TCL_ERROR;
+
+  }
+
+  free_safe( funit_name );
+
+  return( retval );
+
+}
+/*!
+ \param d     TBD
+ \param tcl   Pointer to the Tcl interpreter
+ \param argc  Number of arguments in the argv list
+ \param argv  Array of arguments passed to this function
 
  \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
          TCL_ERROR.
@@ -605,6 +678,61 @@ int tcl_func_get_toggle_coverage( ClientData d, Tcl_Interp* tcl, int argc, const
 
 }
 
+/*!
+ \param d     TBD
+ \param tcl   Pointer to the Tcl interpreter
+ \param argc  Number of arguments in the argv list
+ \param argv  Array of arguments passed to this function
+
+ \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
+         TCL_ERROR.
+
+ Populates the global variable "memory_verbose" with the verbose memory coverage information for the
+ specified signal in the specified functional unit.
+*/
+int tcl_func_get_memory_coverage( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+
+  int   retval = TCL_OK;  /* Return value for this function */
+  char* funit_name;       /* Name of functional unit containing the signal to get verbose toggle information for */
+  int   funit_type;       /* Type of functional unit containing the signal to get verbose toggle information for */
+  char* signame;          /* Name of signal to get verbose toggle information for */
+  char* pdim_info;        /* String containing signal packed dimensional information */
+  char* udim_info;        /* String containing signal unpacked dimensional information */
+  char* memory_info;      /* Memory information */
+  int   excluded;         /* Specifies if signal should be excluded */
+  char  tmp[20];          /* Temporary string for conversion purposes */
+
+  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_type = atoi( argv[2] );
+  signame    = strdup_safe( argv[3], __FILE__, __LINE__ );
+
+  if( memory_get_coverage( funit_name, funit_type, signame, &pdim_info, &udim_info, &memory_info, &excluded ) ) {
+
+    Tcl_SetVar( tcl, "memory_udim", udim_info, TCL_GLOBAL_ONLY );
+    Tcl_SetVar( tcl, "memory_pdim", pdim_info, TCL_GLOBAL_ONLY );
+    Tcl_SetVar( tcl, "memory_array", memory_info, TCL_GLOBAL_ONLY );
+    snprintf( tmp, 20, "%d", excluded );
+    Tcl_SetVar( tcl, "memory_excluded", tmp, TCL_GLOBAL_ONLY );
+
+    /* Free up allocated memory */
+    free_safe( pdim_info );
+    free_safe( udim_info );
+    free_safe( memory_info );
+
+  } else {
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find functional unit %s in design", argv[1] );
+    Tcl_AddErrorInfo( tcl, user_msg );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    retval = TCL_ERROR;
+  }
+
+  /* Free up allocated memory */
+  free_safe( funit_name );
+  free_safe( signame );
+
+  return( retval );
+
+}
 /*!
  \param d     TBD
  \param tcl   Pointer to the Tcl interpreter
@@ -1364,6 +1492,49 @@ int tcl_func_get_toggle_summary( ClientData d, Tcl_Interp* tcl, int argc, const 
  \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
          TCL_ERROR.
 
+ Populates the global variables "memory_summary_total" and "memory_summary_hit" to the total number
+ of signals evaluated for memory coverage and the total number of signals with complete memory coverage
+ for the specified functional unit.
+*/
+int tcl_func_get_memory_summary( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+
+  int   retval = TCL_OK;  /* Return value for this function */
+  char* funit_name;       /* Name of functional unit to lookup */
+  int   funit_type;       /* Type of functional unit to lookup */
+  int   total;            /* Contains total number of signals evaluated */
+  int   hit;              /* Contains total number of signals hit */
+  char  value[20];        /* String version of a value */
+
+  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_type = atoi( argv[2] );
+
+  if( memory_get_funit_summary( funit_name, funit_type, &total, &hit ) ) {
+    snprintf( value, 20, "%d", total );
+    Tcl_SetVar( tcl, "memory_summary_total", value, TCL_GLOBAL_ONLY );
+    snprintf( value, 20, "%d", hit );
+    Tcl_SetVar( tcl, "memory_summary_hit", value, TCL_GLOBAL_ONLY );
+  } else {
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find functional unit %s", funit_name );
+    Tcl_AddErrorInfo( tcl, user_msg );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    retval = TCL_ERROR;
+  }
+
+  free_safe( funit_name );
+
+  return( retval );
+
+}
+
+/*!
+ \param d     TBD
+ \param tcl   Pointer to the Tcl interpreter
+ \param argc  Number of arguments in the argv list
+ \param argv  Array of arguments passed to this function
+
+ \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
+         TCL_ERROR.
+
  Populates the global variables "comb_summary_total" and "comb_summary_hit" to the total number
  of expression values evaluated for combinational logic coverage and the total number of expression values
  with complete combinational logic coverage for the specified functional unit.
@@ -1748,6 +1919,49 @@ int tcl_func_set_toggle_exclude( ClientData d, Tcl_Interp* tcl, int argc, const 
  \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
          TCL_ERROR.
 
+ Sets the exclusion value for a specified memory.  This function is called whenever the user changes
+ the exclusion for a specified memory.  The tcl_func_get_memory_summary function should be called
+ immediately after to get the new memory summary information.
+*/
+int tcl_func_set_memory_exclude( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+
+  int   retval = TCL_OK;  /* Return value for this function */
+  char* funit_name;       /* Name of current functional unit */
+  int   funit_type;       /* Type of current functional unit */
+  char* sig_name;         /* Name of signal being excluded/included */
+  int   value;            /* Value to set the exclusion value to */
+
+  /* Get argument values */
+  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_type = atoi( argv[2] );
+  sig_name   = strdup_safe( argv[3], __FILE__, __LINE__ );
+  value      = atoi( argv[4] );
+
+  /* Set exclusion bit for the given toggle */
+  if( !exclude_set_toggle_exclude( funit_name, funit_type, sig_name, value ) ) {
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find functional unit %s", funit_name );
+    Tcl_AddErrorInfo( tcl, user_msg );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    retval = TCL_ERROR;
+  }
+
+  /* Free used memory */
+  free_safe( funit_name );
+  free_safe( sig_name );
+
+  return( retval );
+
+}
+
+/*!
+ \param d     TBD
+ \param tcl   Pointer to the Tcl interpreter
+ \param argc  Number of arguments in the argv list
+ \param argv  Array of arguments passed to this function
+
+ \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
+         TCL_ERROR.
+
  Sets the exclusion value for a specified line.  This function is called whenever the user changes
  the exclusion for a specified line.  The tcl_func_get_line_summary function should be called
  immediately after to get the new line summary information.
@@ -1977,11 +2191,13 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
   Tcl_CreateCommand( tcl, "tcl_func_collect_race_lines",        (Tcl_CmdProc*)(tcl_func_collect_race_lines),        0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_collect_uncovered_toggles", (Tcl_CmdProc*)(tcl_func_collect_uncovered_toggles), 0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_collect_covered_toggles",   (Tcl_CmdProc*)(tcl_func_collect_covered_toggles),   0, 0 );
+  Tcl_CreateCommand( tcl, "tcl_func_collect_memories",          (Tcl_CmdProc*)(tcl_func_collect_memories),          0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_collect_combs",             (Tcl_CmdProc*)(tcl_func_collect_combs),             0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_collect_fsms",              (Tcl_CmdProc*)(tcl_func_collect_fsms),              0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_collect_assertions",        (Tcl_CmdProc*)(tcl_func_collect_assertions),        0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_funit_start_and_end",   (Tcl_CmdProc*)(tcl_func_get_funit_start_and_end),   0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_toggle_coverage",       (Tcl_CmdProc*)(tcl_func_get_toggle_coverage),       0, 0 ); 
+  Tcl_CreateCommand( tcl, "tcl_func_get_memory_coverage",       (Tcl_CmdProc*)(tcl_func_get_memory_coverage),       0, 0 ); 
   Tcl_CreateCommand( tcl, "tcl_func_get_comb_expression",       (Tcl_CmdProc*)(tcl_func_get_comb_expression),       0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_comb_coverage",         (Tcl_CmdProc*)(tcl_func_get_comb_coverage),         0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_fsm_coverage",          (Tcl_CmdProc*)(tcl_func_get_fsm_coverage),          0, 0 );
@@ -1992,6 +2208,7 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
   Tcl_CreateCommand( tcl, "tcl_func_merge_cdd",                 (Tcl_CmdProc*)(tcl_func_merge_cdd),                 0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_line_summary",          (Tcl_CmdProc*)(tcl_func_get_line_summary),          0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_toggle_summary",        (Tcl_CmdProc*)(tcl_func_get_toggle_summary),        0, 0 );
+  Tcl_CreateCommand( tcl, "tcl_func_get_memory_summary",        (Tcl_CmdProc*)(tcl_func_get_memory_summary),        0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_comb_summary",          (Tcl_CmdProc*)(tcl_func_get_comb_summary),          0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_fsm_summary",           (Tcl_CmdProc*)(tcl_func_get_fsm_summary),           0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_assert_summary",        (Tcl_CmdProc*)(tcl_func_get_assert_summary),        0, 0 );
@@ -2001,6 +2218,7 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
   Tcl_CreateCommand( tcl, "tcl_func_get_generation",            (Tcl_CmdProc*)(tcl_func_get_generation),            0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_set_line_exclude",          (Tcl_CmdProc*)(tcl_func_set_line_exclude),          0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_set_toggle_exclude",        (Tcl_CmdProc*)(tcl_func_set_toggle_exclude),        0, 0 );
+  Tcl_CreateCommand( tcl, "tcl_func_set_memory_exclude",        (Tcl_CmdProc*)(tcl_func_set_memory_exclude),        0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_set_comb_exclude",          (Tcl_CmdProc*)(tcl_func_set_comb_exclude),          0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_set_fsm_exclude",           (Tcl_CmdProc*)(tcl_func_set_fsm_exclude),           0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_set_assert_exclude",        (Tcl_CmdProc*)(tcl_func_set_assert_exclude),        0, 0 );
@@ -2025,6 +2243,11 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.60  2006/09/20 22:38:09  phase1geo
+ Lots of changes to support memories and multi-dimensional arrays.  We still have
+ issues with endianness and VCS regressions have not been run, but this is a significant
+ amount of work that needs to be checkpointed.
+
  Revision 1.59  2006/09/01 04:06:37  phase1geo
  Added code to support more than one instance tree.  Currently, I am seeing
  quite a few memory errors that are causing some major problems at the moment.

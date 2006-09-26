@@ -5,8 +5,11 @@
 */
 
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
 #include "defines.h"
+#include "link.h"
 #include "memory.h"
 #include "obfuscate.h"
 #include "vector.h"
@@ -33,8 +36,10 @@ extern isuppl info_suppl;
  \param tog_total  Pointer to total number of bits in memories that can be toggled
  \param tog01_hit  Pointer to total number of bits toggling from 0->1
  \param tog10_hit  Pointer to total number of bits toggling from 1->0
+
+ Calculates the total and hit memory coverage information for the given memory signal.
 */
-void memory_get_stats( sig_link* sigl, float* ae_total, int* wr_hit, int* rd_hit, float* tog_total, int* tog01_hit, int* tog10_hit ) {
+void memory_get_stat( vsignal* sig, float* ae_total, int* wr_hit, int* rd_hit, float* tog_total, int* tog01_hit, int* tog10_hit ) {
 
   int    i;       /* Loop iterator */
   int    wr;      /* Number of bits written within an addressable element */
@@ -42,51 +47,405 @@ void memory_get_stats( sig_link* sigl, float* ae_total, int* wr_hit, int* rd_hit
   vector vec;     /* Temporary vector used for storing one addressable element */
   int    pwidth;  /* Width of packed portion of memory */
 
+  /* Calculate width of smallest addressable element */
+  pwidth = 1;
+  for( i=(sig->udim_num); i<(sig->udim_num + sig->pdim_num); i++ ) {
+    if( sig->dim[i].msb > sig->dim[i].lsb ) {
+      pwidth *= (sig->dim[i].msb - sig->dim[i].lsb) + 1;
+    } else {
+      pwidth *= (sig->dim[i].lsb - sig->dim[i].msb) + 1;
+    }
+  }
+
+  /* Calculate total number of addressable elements and their write/read information */
+  for( i=0; i<sig->value->width; i+=pwidth ) {
+    vector_init( &vec, NULL, pwidth, VTYPE_MEM );
+    vec.value = &(sig->value->value[i]);
+    wr = 0;
+    rd = 0;
+    vector_mem_rw_count( &vec, &wr, &rd );
+    if( wr > 0 ) {
+      (*wr_hit)++;
+    }
+    if( rd > 0 ) {
+      (*rd_hit)++;
+    }
+    (*ae_total)++;
+  }
+
+  /* Calculate toggle coverage information for the memory */
+  *tog_total += sig->value->width;
+  if( sig->suppl.part.excluded == 1 ) {
+    *tog01_hit += sig->value->width;
+    *tog10_hit += sig->value->width;
+  } else {
+    vector_toggle_count( sig->value, tog01_hit, tog10_hit );
+  }
+
+}
+
+/*!
+ \param sig        Pointer to signal list to traverse for memories
+ \param ae_total   Pointer to total number of addressable elements
+ \param wr_hit     Pointer to total number of addressable elements written
+ \param rd_hit     Pointer to total number of addressable elements read
+ \param tog_total  Pointer to total number of bits in memories that can be toggled
+ \param tog01_hit  Pointer to total number of bits toggling from 0->1
+ \param tog10_hit  Pointer to total number of bits toggling from 1->0
+*/
+void memory_get_stats( sig_link* sigl, float* ae_total, int* wr_hit, int* rd_hit, float* tog_total, int* tog01_hit, int* tog10_hit ) {
+
   while( sigl != NULL ) {
 
     /* Calculate only for memory elements (must contain one or more unpacked dimensions) */
     if( (sigl->sig->suppl.part.type == SSUPPL_TYPE_MEM) && (sigl->sig->udim_num > 0) ) {
 
-      /* Calculate width of smallest addressable element */
-      pwidth = 1;
-      for( i=(sigl->sig->udim_num); i<(sigl->sig->udim_num + sigl->sig->pdim_num); i++ ) {
-        if( sigl->sig->dim[i].msb > sigl->sig->dim[i].lsb ) {
-          pwidth *= (sigl->sig->dim[i].msb - sigl->sig->dim[i].lsb) + 1;
-        } else {
-          pwidth *= (sigl->sig->dim[i].lsb - sigl->sig->dim[i].msb) + 1;
-        }
-      }
-
-      /* Calculate total number of addressable elements and their write/read information */
-      for( i=0; i<sigl->sig->value->width; i+=pwidth ) {
-        vector_init( &vec, NULL, pwidth, VTYPE_MEM );
-        vec.value = &(sigl->sig->value->value[i]);
-        wr = 0;
-        rd = 0;
-        vector_mem_rw_count( &vec, &wr, &rd );
-        if( wr > 0 ) {
-          (*wr_hit)++;
-        }
-        if( rd > 0 ) {
-          (*rd_hit)++;
-        }
-        (*ae_total)++;
-      }
-
-      /* Calculate toggle coverage information for the memory */
-      *tog_total += sigl->sig->value->width;
-      if( sigl->sig->suppl.part.excluded == 1 ) {
-        *tog01_hit += sigl->sig->value->width;
-        *tog10_hit += sigl->sig->value->width;
-      } else {
-        vector_toggle_count( sigl->sig->value, tog01_hit, tog10_hit );
-      }
+      memory_get_stat( sigl->sig, ae_total, wr_hit, rd_hit, tog_total, tog01_hit, tog10_hit );
 
     }
 
     sigl = sigl->next;
 
   }
+
+}
+
+/*!
+ \param funit_name  Name of functional unit to find memories in
+ \param funit_type  Type of functional unit to find memories in
+ \param total       Pointer to total number of memories in the given functional unit
+ \param hit         Pointer to number of memories that received 100% coverage of all memory metrics
+
+ \return Returns TRUE if we were able to determine the summary information properly; otherwise,
+         returns FALSE to indicate that an error occurred.
+
+ Retrieves memory summary information for a given functional unit made by a GUI request.
+*/
+bool memory_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit ) {
+
+  bool        retval    = FALSE;  /* Return value for this function */
+  func_unit   funit;              /* Functional unit container used for searching */
+  funit_link* funitl;             /* Pointer to functional unit link containing the requested functional unit */
+  sig_link*   sigl;               /* Pointer to current signal link in list */
+  float       ae_total  = 0;      /* Total number of addressable elements */
+  int         wr_hit    = 0;      /* Number of addressable elements written */
+  int         rd_hit    = 0;      /* Number of addressable elements read */
+  float       tog_total = 0;      /* Total number of toggle bits */
+  int         tog01_hit = 0;      /* Number of bits toggling from 0->1 */
+  int         tog10_hit = 0;      /* Number of bits toggling from 1->0 */
+
+  /* Find the given functional unit in the design */
+  funit.name = funit_name;
+  funit.type = funit_type;
+
+  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
+  
+    /* Initialize total and hit information */
+    *total = 0;
+    *hit   = 0;
+
+    retval = TRUE;
+    sigl   = funitl->funit->sig_head;
+
+    while( sigl != NULL ) {
+
+      /* Only evaluate a signal if it is a memory type */
+      if( sigl->sig->suppl.part.type == SSUPPL_TYPE_MEM ) {
+
+        /* Increment the total number */
+        (*total)++;
+
+        /* Figure out if this signal is 100% covered in memory coverage */
+        memory_get_stat( sigl->sig, &ae_total, &wr_hit, &rd_hit, &tog_total, &tog01_hit, &tog10_hit );
+
+        if( (wr_hit > 0) && (rd_hit > 0) && (tog01_hit == tog_total) && (tog10_hit == tog_total) ) {
+          (*hit)++;
+        } 
+
+      }
+
+      sigl = sigl->next;
+
+    }
+    
+  }
+
+  return( retval );
+
+}
+
+/*!
+ \param mem_str           String containing memory information
+ \param sig               Pointer to signal to get memory coverage for
+ \param value             Pointer to vector value containing the current vector to interrogate (initially this will
+                          be the signal value)
+ \param prefix            String containing memory prefix to output (initially this will be just the signal name)
+ \param dim               Current dimension index (initially this will be 0)
+ \param parent_dim_width  Bit width of parent dimension (initially this will be the width of the signal)
+
+ Creates memory array structure for Tcl and stores it into the mem_str parameter.
+*/
+void memory_get_mem_coverage( char** mem_str, vsignal* sig, vec_data* value, char* prefix, int dim, int parent_dim_width ) {
+
+  char name[4096];  /* Contains signal name */
+  int  msb;         /* MSB of current dimension */
+  int  lsb;         /* LSB of current dimension */
+  int  be;          /* Big endianness of current dimension */
+  int  i;           /* Loop iterator */
+  int  dim_width;   /* Bit width of current dimension */
+
+  assert( sig != NULL );
+  assert( prefix != NULL );
+  assert( dim < sig->udim_num );
+
+  /* Calculate MSB, LSB and big endianness of current dimension */
+  if( sig->dim[dim].msb > sig->dim[dim].lsb ) {
+    msb = sig->dim[dim].msb;
+    lsb = sig->dim[dim].lsb;
+    be  = FALSE;
+  } else {
+    msb = sig->dim[dim].lsb;
+    lsb = sig->dim[dim].msb;
+    be  = TRUE;
+  }
+
+  /* Calculate current dimensional width */
+  dim_width = parent_dim_width / ((msb - lsb) + 1);
+
+  /* Only output memory contents if we have reached the lowest dimension */
+  if( (dim + 1) == sig->udim_num ) {
+
+    vector vec;
+    int    tog01;
+    int    tog10;
+    int    wr;
+    int    rd;
+    char*  tog01_str;
+    char*  tog10_str;
+    char   hit_str[2];
+    char   int_str[20];
+    char*  dim_str;
+    char*  entry_str;
+
+    /* Iterate through each addressable element in the current dimension */
+    for( i=0; i<((msb - lsb) + 1); i++ ) {
+
+      /* Initialize the vector */
+      vector_init( &vec, NULL, dim_width, VTYPE_MEM );
+      vec.value = value;
+
+      /* Create dimension string */
+      snprintf( int_str, 20, "%d", i );
+      dim_str = (char*)malloc_safe( (strlen( prefix ) + strlen( int_str ) + 3), __FILE__, __LINE__ );
+      snprintf( dim_str, (strlen( prefix ) + strlen( int_str ) + 3), "%s[%d]", prefix, i );
+
+      /* Get toggle information */
+      tog01 = 0;
+      tog10 = 0;
+      vector_toggle_count( &vec, &tog01, &tog10 );
+
+      /* Get toggle strings */
+      tog01_str = vector_get_toggle01( value, dim_width );
+      tog10_str = vector_get_toggle01( value, dim_width );
+
+      /* Get write/read information */
+      wr = 0;
+      rd = 0;
+      vector_mem_rw_count( &vec, &wr, &rd );
+
+      /* Output the addressable memory element if it is found to be lacking in coverage */
+      if( (tog01 < dim_width) || (tog10 < dim_width) || (wr == 0) || (rd == 0) ) {
+        strcpy( hit_str, "0" );
+      } else {
+        strcpy( hit_str, "1" );
+      }
+
+      /* Create a string list for this entry */
+      entry_str = (char*)malloc_safe( (strlen( dim_str ) + strlen( hit_str ) + strlen( tog01_str ) + strlen( tog10_str ) + 10), __FILE__, __LINE__ );
+      snprintf( entry_str, (strlen( dim_str ) + strlen( hit_str ) + strlen( tog01_str ) + strlen( tog10_str ) + 10), "{%s %s %d %d %s %s}",
+                dim_str, hit_str, ((wr == 0) ? 0 : 1), ((rd == 0) ? 0 : 1), tog01_str, tog10_str );
+
+      *mem_str = (char*)realloc( *mem_str, (strlen( *mem_str ) + strlen( entry_str ) + 2) );
+      strcat( *mem_str, " " );
+      strcat( *mem_str, entry_str );
+
+      /* Deallocate memory */
+      free_safe( dim_str );
+      free_safe( tog01_str );
+      free_safe( tog10_str );
+      free_safe( entry_str );
+
+    } 
+
+  /* Otherwise, go down one level */
+  } else {
+
+    /* Iterate through each entry in the current dimesion */
+    for( i=0; i<((msb - lsb) + 1); i++ ) {
+
+      /* Create new prefix */
+      snprintf( name, 4096, "%s[%d]", prefix, i );
+
+      if( be ) {
+        memory_get_mem_coverage( mem_str, sig, (value + (dim_width * ((msb - lsb) - i))), name, (dim + 1), dim_width );
+      } else {
+        memory_get_mem_coverage( mem_str, sig, (value + (dim_width * i)),                 name, (dim + 1), dim_width );
+      }
+
+    }
+
+  }
+
+}
+
+/*!
+ \param funit_name   Name of functional unit containing the given signal
+ \param funit_type   Type of functional unit containing the given signal
+ \param signame      Name of signal to find memory coverage information for
+ \param pdim_info    Pointer to string to store packed dimensional information
+ \param udim_info    Pointer to string to store unpacked dimensional information
+ \param memory_info  Pointer to string to store memory information into
+ \param excluded     Pointer to excluded indicator to store
+
+ \return Returns TRUE if the given signal was found and its memory coverage information properly
+         stored in the given pointers; otherwise, returns FALSE to indicate that an error occurred.
+
+ Retrieves memory coverage information for the given signal in the specified functional unit.
+*/
+bool memory_get_coverage( char* funit_name, int funit_type, char* signame,
+                          char** pdim_info, char** udim_info, char** memory_info, int* excluded ) {
+
+  bool        retval = FALSE;  /* Return value for this function */
+  func_unit   funit;           /* Functional unit container used for searching */
+  funit_link* funitl;          /* Pointer to found functional unit link */
+  vsignal     sig;             /* Signal container used for searching */
+  sig_link*   sigl;            /* Pointer to found signal link */
+  int         i;               /* Loop iterator */
+  char        tmp1[20];        /* Temporary string holder */
+  char        tmp2[20];        /* Temporary string holder */
+
+  funit.name = funit_name;
+  funit.type = funit_type;
+
+  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
+
+    sig.name = signame;
+
+    if( (sigl = sig_link_find( &sig, funitl->funit->sig_head )) != NULL ) {
+
+      /* Allocate and populate the pdim_info string */
+      *pdim_info = NULL;
+      for( i=sigl->sig->udim_num; i<(sigl->sig->pdim_num + sigl->sig->udim_num); i++ ) {
+        snprintf( tmp1, 20, "%d", sigl->sig->dim[i].msb );
+        snprintf( tmp2, 20, "%d", sigl->sig->dim[i].lsb );
+        *pdim_info = (char*)realloc( *pdim_info, (strlen( tmp1 ) + strlen( tmp2 ) + 4) );
+        if( i == sigl->sig->udim_num ) {
+          snprintf( *pdim_info, (strlen( tmp1 ) + strlen( tmp2 ) + 4), "{%s %s}", tmp1, tmp2 );
+        } else {
+          strcat( *pdim_info, "{" );
+          strcat( *pdim_info, tmp1 );
+          strcat( *pdim_info, " " );
+          strcat( *pdim_info, tmp2 );
+          strcat( *pdim_info, "}" );
+        }
+      }
+
+      /* Allocate and populate the udim_info string */
+      *udim_info = NULL;
+      for( i=0; i<sigl->sig->udim_num; i++ ) {
+        snprintf( tmp1, 20, "%d", sigl->sig->dim[i].msb );
+        snprintf( tmp2, 20, "%d", sigl->sig->dim[i].lsb );
+        *udim_info = (char*)realloc( *udim_info, (strlen( tmp1 ) + strlen( tmp2 ) + 4) );
+        if( i == 0 ) {
+          snprintf( *udim_info, (strlen( tmp1 ) + strlen( tmp2 ) + 4), "[%s:%s]", tmp1, tmp2 );
+        } else {
+          strcat( *udim_info, "[" );
+          strcat( *udim_info, tmp1 );
+          strcat( *udim_info, ":" );
+          strcat( *udim_info, tmp2 );
+          strcat( *udim_info, "]" );
+        }
+      }
+
+      /* Populate the memory_info string */
+      *memory_info = (char*)malloc_safe( 1, __FILE__, __LINE__ );
+      (*memory_info)[0] = '\0';
+      memory_get_mem_coverage( memory_info, sigl->sig, sigl->sig->value->value, "", 0, sigl->sig->value->width );
+
+      /* Populate the excluded value */
+      *excluded = sigl->sig->suppl.part.excluded;
+      
+      retval = TRUE;
+
+    }
+
+  }
+
+  return( retval );
+
+}
+
+/*!
+ \param funit_name  Name of functional unit to collect memories for
+ \param funit_type  Type of functional unit to collect memories for
+ \param cov         Set to 0 to get uncovered memories or 1 to get covered memories
+ \param head        Pointer to head of signal list containing retrieved signals
+ \param tail        Pointer to tail of signal list containing retrieved signals
+
+ \return Returns TRUE if we were able to find the given functional unit; otherwise, returns
+         FALSE to indicate that an error occurred.
+
+ Collects all signals that are memories and match the given coverage type and stores them
+ in the given signal list.
+*/
+bool memory_collect( char* funit_name, int funit_type, int cov, sig_link** head, sig_link** tail ) {
+
+  bool        retval = FALSE;  /* Return value for this function */
+  func_unit   funit;           /* Functional unit used for searching */
+  funit_link* funitl;          /* Pointer to found functional unit link */
+  sig_link*   sigl;            /* Pointer to current signal link being evaluated */
+  float       ae_total  = 0;   /* Total number of addressable elements */
+  int         wr_hit    = 0;   /* Total number of addressable elements written */
+  int         rd_hit    = 0;   /* Total number of addressable elements read */
+  float       tog_total = 0;   /* Total number of toggle bits */
+  int         hit01     = 0;   /* Number of bits that toggled from 0 to 1 */
+  int         hit10     = 0;   /* Number of bits that toggled from 1 to 0 */
+
+  /* First, find functional unit in functional unit array */
+  funit.name = funit_name;
+  funit.type = funit_type;
+
+  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
+
+    sigl = funitl->funit->sig_head;
+    retval = TRUE;
+
+    while( sigl != NULL ) {
+
+      if( sigl->sig->suppl.part.type == SSUPPL_TYPE_MEM ) {
+
+        ae_total = 0;
+   
+        memory_get_stat( sigl->sig, &ae_total, &wr_hit, &rd_hit, &tog_total, &hit01, &hit10 );
+
+        /* If this signal meets the coverage requirement, add it to the signal list */
+        if( ((cov == 1) && (wr_hit > 0) && (rd_hit > 0) && (hit01 == tog_total) && (hit10 == tog_total)) ||
+            ((cov == 0) && ((wr_hit == 0) || (rd_hit == 0) || (hit01 < tog_total) || (hit10 < tog_total))) ) {
+
+          sig_link_add( sigl->sig, head, tail );
+
+        }
+
+      }
+
+      sigl = sigl->next;
+
+    }
+
+  }
+
+
+  return( retval );
 
 }
 
@@ -738,6 +1097,10 @@ void memory_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.2  2006/09/25 22:22:28  phase1geo
+ Adding more support for memory reporting to both score and report commands.
+ We are getting closer; however, regressions are currently broken.  Checkpointing.
+
  Revision 1.1  2006/09/25 04:15:03  phase1geo
  Starting to add support for new memory coverage metric.  This includes changes
  for the report command only at this point.

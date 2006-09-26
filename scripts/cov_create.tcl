@@ -40,6 +40,22 @@ proc cov_create {f} {
       .bot.right.txt yview moveto [lindex $text_y 0]
     }
   }
+  radiobutton $f.m.mem  -variable cov_rb -value memory -text "Memory" -command {
+    if {$cdd_name != ""} {
+      set text_x [.bot.right.txt xview]
+      set text_y [.bot.right.txt yview]
+      if {$last_cov_rb != $cov_rb} {
+        set last_cov_rb $cov_rb
+        highlight_listbox
+        process_funit_memory_cov
+        update_all_windows
+      } else {
+        display_memory_cov
+      }
+      .bot.right.txt xview moveto [lindex $text_x 0]
+      .bot.right.txt yview moveto [lindex $text_y 0]
+    }
+  }
   radiobutton $f.m.comb -variable cov_rb -value comb -text "Logic" -command {
     if {$cdd_name != ""} {
       set text_x [.bot.right.txt xview]
@@ -95,6 +111,7 @@ proc cov_create {f} {
   # Pack radiobuttons
   pack $f.m.line   -side left
   pack $f.m.tog    -side left
+  pack $f.m.mem    -side left
   pack $f.m.comb   -side left
   pack $f.m.fsm    -side left
   pack $f.m.assert -side left
@@ -126,6 +143,8 @@ proc cov_display_summary {hit total} {
     set info "$hit out of $total lines executed"
   } elseif {$cov_rb == "toggle"} {
     set info "$hit out of $total signals fully toggled"
+  } elseif {$cov_rb == "memory"} {
+    set info "$hit out of $total memories fully covered"
   } elseif {$cov_rb == "comb"} {
     set info "$hit out of $total logical combinations hit"
   } elseif {$cov_rb == "fsm"} {
@@ -137,10 +156,13 @@ proc cov_display_summary {hit total} {
   } elseif {$cov_rb == "assert"} {
     set info "$hit out of $total assertion coverage points hit"
   } else {
+    set info ""
   }
 
   # Display text to GUI
-  .covbox.s.ht configure -text $info
+  if {$info != ""} {
+    .covbox.s.ht configure -text $info
+  }
 
 }
 

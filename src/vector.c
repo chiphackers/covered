@@ -442,6 +442,12 @@ bool vector_db_merge( vector* base, char** line, bool same ) {
 
 }
 
+/*!
+ \param nib    Pointer to vector data array to get string from
+ \param width  Width of given vector data array
+
+ \return Returns a string showing the toggle 0 -> 1 information.
+*/
 char* vector_get_toggle01( vec_data* nib, int width ) {
 
   char* bits = (char*)malloc_safe( (width + 1), __FILE__, __LINE__ );
@@ -459,6 +465,12 @@ char* vector_get_toggle01( vec_data* nib, int width ) {
 
 }
 
+/*!
+ \param nib    Pointer to vector data array to get string from
+ \param width  Width of given vector data array
+
+ \return Returns a string showing the toggle 1 -> 0 information.
+*/
 char* vector_get_toggle10( vec_data* nib, int width ) {
 
   char* bits = (char*)malloc_safe( (width + 1), __FILE__, __LINE__ );
@@ -2081,6 +2093,10 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.83  2006/09/25 22:22:28  phase1geo
+ Adding more support for memory reporting to both score and report commands.
+ We are getting closer; however, regressions are currently broken.  Checkpointing.
+
  Revision 1.82  2006/09/22 19:56:45  phase1geo
  Final set of fixes and regression updates per recent changes.  Full regression
  now passes.

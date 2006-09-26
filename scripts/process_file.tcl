@@ -14,6 +14,8 @@ set line_summary_total    0
 set line_summary_hit      0
 set toggle_summary_total  0
 set toggle_summary_hit    0
+set memory_summary_total  0
+set memory_summary_hit    0
 set comb_summary_total    0
 set comb_summary_hit      0
 set fsm_summary_total     0
@@ -72,6 +74,8 @@ proc create_race_tags {} {
   }
 
 }
+
+#-----------  LINE COVERAGE  -------------------------------------------------
 
 proc process_funit_line_cov {} {
 
@@ -252,6 +256,8 @@ proc display_line_cov {} {
 
 }
 
+#-----------  TOGGLE COVERAGE  -----------------------------------------------
+
 proc process_funit_toggle_cov {} {
 
   global fileContent file_name start_line end_line
@@ -417,6 +423,175 @@ proc display_toggle_cov {} {
   return
 
 }
+
+#-----------  MEMORY COVERAGE  -----------------------------------------------
+
+proc process_funit_memory_cov {} {
+
+  global fileContent file_name start_line end_line
+  global curr_funit_name curr_funit_type
+  global memory_summary_hit memory_summary_total
+
+  if {$curr_funit_name != 0} {
+
+    # Get the file name of the currently selected functional unit and read it in
+    tcl_func_get_filename $curr_funit_name $curr_funit_type
+    load_verilog $file_name 1
+
+    # Get start and end line numbers of this functional unit
+    set start_line 0
+    set end_line   0
+    tcl_func_get_funit_start_and_end $curr_funit_name $curr_funit_type
+
+    # Get line summary information and display this now
+    tcl_func_get_memory_summary $curr_funit_name $curr_funit_type
+
+    # If we have some uncovered values, enable the "next" pointer
+    if {$memory_summary_total != $memory_summary_hit} {
+      .bot.right.h.next configure -state normal
+    } else {
+      .bot.right.h.next configure -state disabled
+    }
+    .bot.right.h.prev configure -state disabled
+
+    calc_and_display_memory_cov
+
+  }
+
+}
+
+proc calc_and_display_memory_cov {} {
+
+  global cov_type uncov_type mod_inst_type
+  global uncovered_memories covered_memories race_memories memory_excludes
+  global curr_funit_name curr_funit_type start_line
+
+  if {$curr_funit_name != 0} {
+
+    # Get list of uncovered/covered memories
+    set uncovered_memories ""
+    set covered_memories   ""
+    set memory_excludes    ""
+    tcl_func_collect_memories $curr_funit_name $curr_funit_type $start_line
+
+    display_memory_cov
+
+  }
+
+}
+
+proc display_memory_cov {} {
+
+  global fileContent file_name
+  global uncov_fgColor uncov_bgColor
+  global cov_fgColor cov_bgColor
+  global uncovered_memories covered_memories memory_excludes
+  global uncov_type cov_type
+  global start_line end_line
+  global memory_summary_total memory_summary_hit
+  global cov_rb mod_inst_type
+  global memory01_verbose memory10_verbose memory_width
+  global curr_funit_name curr_funit_type
+
+  if {$curr_funit_name != 0} {
+
+    # Populate information bar
+    .info configure -text "Filename: $file_name"
+
+    # Allow us to write to the text box
+    .bot.right.txt configure -state normal
+
+    # Clear the text-box before any insertion is being made
+    .bot.right.txt delete 1.0 end
+
+    set contents [split $fileContent($file_name) \n]
+    set linecount 1
+
+    if {$end_line != 0} {
+
+      # First, populate the summary information
+      cov_display_summary $memory_summary_hit $memory_summary_total
+
+      # Next, populate text box with file contents
+      foreach phrase $contents {
+        if [expr [expr $start_line <= $linecount] && [expr $end_line >= $linecount]] {
+          set line [format {%3s  %7u  %s} "   " $linecount [append phrase "\n"]]
+          .bot.right.txt insert end $line
+        }
+        incr linecount
+      }
+
+      # Perform syntax highlighting
+      verilog_highlight .bot.right.txt
+
+      # Create race condition tags
+      create_race_tags
+
+      # Finally, set memory information
+      if {[expr $uncov_type == 1] && [expr [llength $uncovered_memories] > 0]} {
+        set cmd_enter      ".bot.right.txt tag add uncov_enter"
+        set cmd_button     ".bot.right.txt tag add uncov_button"
+        set cmd_leave      ".bot.right.txt tag add uncov_leave"
+        set cmd_ucov_uline ".bot.right.txt tag add uncov_uline"
+        set cmd_excl_uline ".bot.right.txt tag add excl_uline"
+        for {set i 0} {$i<[llength $uncovered_memories]} {incr i} {
+          set entry      [lindex $uncovered_memories $i]
+          set cmd_enter  [concat $cmd_enter  $entry]
+          set cmd_button [concat $cmd_button $entry]
+          set cmd_leave  [concat $cmd_leave  $entry]
+          if {[lindex $memory_excludes $i] == 0} {
+            set cmd_ucov_uline [concat $cmd_ucov_uline $entry]
+          } else {
+            set cmd_excl_uline [concat $cmd_excl_uline $entry]
+          } 
+        }
+        eval $cmd_enter
+        eval $cmd_button
+        eval $cmd_leave
+        if {[llength $cmd_ucov_uline] > 4} {
+          eval $cmd_ucov_uline
+          .bot.right.txt tag configure uncov_uline -underline true -foreground $uncov_fgColor -background $uncov_bgColor
+        }
+        if {[llength $cmd_excl_uline] > 4} {
+          eval $cmd_excl_uline
+          .bot.right.txt tag configure excl_uline  -underline true -foreground $cov_fgColor   -background $cov_bgColor
+        }
+        .bot.right.txt tag bind uncov_enter <Enter> {
+          set curr_cursor [.bot.right.txt cget -cursor]
+          set curr_info   [.info cget -text]
+          .bot.right.txt configure -cursor hand2
+          .info configure -text "Click left button for detailed memory coverage information"
+        }
+        .bot.right.txt tag bind uncov_leave <Leave> {
+          .bot.right.txt configure -cursor $curr_cursor
+          .info configure -text $curr_info
+        }
+        .bot.right.txt tag bind uncov_button <ButtonPress-1> {
+          display_memory current
+        }
+      } 
+
+      if {[expr $cov_type == 1] && [expr [llength $covered_memories] > 0]} {
+        set cmd_cov ".bot.right.txt tag add cov_highlight"
+        foreach entry $covered_memories {
+          set cmd_cov [concat $cmd_cov $entry]
+        }
+        eval $cmd_cov
+        .bot.right.txt tag configure cov_highlight -foreground $cov_fgColor -background $cov_bgColor
+      }
+
+    }
+
+    # Now cause the text box to be read-only again
+    .bot.right.txt configure -state disabled
+
+  }
+
+  return
+
+}
+
+#-----------  COMBINATIONAL LOGIC COVERAGE  ----------------------------------
  
 proc process_funit_comb_cov {} {
 
@@ -605,6 +780,8 @@ proc display_comb_cov {} {
 
 }
 
+#-----------  FSM COVERAGE  --------------------------------------------------
+ 
 proc process_funit_fsm_cov {} {
 
   global fileContent file_name start_line end_line
@@ -771,6 +948,8 @@ proc display_fsm_cov {} {
 
 }
 
+#-----------  ASSERTION COVERAGE  --------------------------------------------
+ 
 proc process_funit_assert_cov {} {
 
   global fileContent file_name start_line end_line
