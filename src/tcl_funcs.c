@@ -696,8 +696,9 @@ int tcl_func_get_memory_coverage( ClientData d, Tcl_Interp* tcl, int argc, const
   char* funit_name;       /* Name of functional unit containing the signal to get verbose toggle information for */
   int   funit_type;       /* Type of functional unit containing the signal to get verbose toggle information for */
   char* signame;          /* Name of signal to get verbose toggle information for */
-  char* pdim_info;        /* String containing signal packed dimensional information */
-  char* udim_info;        /* String containing signal unpacked dimensional information */
+  char* pdim_str;         /* String containing signal packed dimensional information */
+  char* pdim_array;       /* String containing signal packed dimensional bit information */
+  char* udim_str;         /* String containing signal unpacked dimensional information */
   char* memory_info;      /* Memory information */
   int   excluded;         /* Specifies if signal should be excluded */
   char  tmp[20];          /* Temporary string for conversion purposes */
@@ -706,17 +707,19 @@ int tcl_func_get_memory_coverage( ClientData d, Tcl_Interp* tcl, int argc, const
   funit_type = atoi( argv[2] );
   signame    = strdup_safe( argv[3], __FILE__, __LINE__ );
 
-  if( memory_get_coverage( funit_name, funit_type, signame, &pdim_info, &udim_info, &memory_info, &excluded ) ) {
+  if( memory_get_coverage( funit_name, funit_type, signame, &pdim_str, &pdim_array, &udim_str, &memory_info, &excluded ) ) {
 
-    Tcl_SetVar( tcl, "memory_udim", udim_info, TCL_GLOBAL_ONLY );
-    Tcl_SetVar( tcl, "memory_pdim", pdim_info, TCL_GLOBAL_ONLY );
+    Tcl_SetVar( tcl, "memory_udim", udim_str, TCL_GLOBAL_ONLY );
+    Tcl_SetVar( tcl, "memory_pdim_str", pdim_str, TCL_GLOBAL_ONLY );
+    Tcl_SetVar( tcl, "memory_pdim_array", pdim_array, TCL_GLOBAL_ONLY );
     Tcl_SetVar( tcl, "memory_array", memory_info, TCL_GLOBAL_ONLY );
     snprintf( tmp, 20, "%d", excluded );
     Tcl_SetVar( tcl, "memory_excluded", tmp, TCL_GLOBAL_ONLY );
 
     /* Free up allocated memory */
-    free_safe( pdim_info );
-    free_safe( udim_info );
+    free_safe( pdim_str );
+    free_safe( pdim_array );
+    free_safe( udim_str );
     free_safe( memory_info );
 
   } else {
@@ -2243,6 +2246,10 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.61  2006/09/26 22:36:38  phase1geo
+ Adding code for memory coverage to GUI and related files.  Lots of work to go
+ here so we are checkpointing for the moment.
+
  Revision 1.60  2006/09/20 22:38:09  phase1geo
  Lots of changes to support memories and multi-dimensional arrays.  We still have
  issues with endianness and VCS regressions have not been run, but this is a significant

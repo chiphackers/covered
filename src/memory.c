@@ -175,6 +175,60 @@ bool memory_get_funit_summary( char* funit_name, int funit_type, int* total, int
 }
 
 /*!
+ \param str     Pointer to string array to populate with packed dimension information
+ \param sig     Pointer to signal that we are solving for
+ \param prefix  Prefix string to append to the beginning of the newly created string
+ \param dim     Current dimension to solve for
+
+ Creates a string array for each bit in the given signal corresponding to its position
+ in the packed array portion.
+*/
+void memory_create_pdim_bit_array( char** str, vsignal* sig, char* prefix, int dim ) {
+
+  char name[4096];  /* Temporary string */
+  int  i;           /* Loop iterator */
+  bool last_dim;    /* Specifies if this is the final dimension */
+
+  /* Calculate final dimension */
+  last_dim = (dim + 1) == (sig->pdim_num + sig->udim_num);
+
+  if( sig->dim[dim].msb > sig->dim[dim].lsb ) {
+
+    for( i=sig->dim[dim].lsb; i<=sig->dim[dim].msb; i++ ) {
+      if( last_dim ) {
+        snprintf( name, 4096, "%d", i );
+        *str = (char*)realloc( *str, (strlen( *str ) + strlen( prefix ) + strlen( name ) + 4) );
+        strcat( *str, prefix );
+        strcat( *str, "[" );
+        strcat( *str, name );
+        strcat( *str, "] " );
+      } else {
+        snprintf( name, 4096, "%s[%d]", prefix, i );
+        memory_create_pdim_bit_array( str, sig, name, (dim + 1) );
+      }
+    }
+
+  } else {
+
+    for( i=sig->dim[dim].lsb; i>=sig->dim[dim].msb; i-- ) {
+      if( last_dim ) {
+        snprintf( name, 4096, "%d", i );
+        *str = (char*)realloc( *str, (strlen( *str ) + strlen( prefix ) + strlen( name ) + 4) );
+        strcat( *str, prefix );
+        strcat( *str, "[" );
+        strcat( *str, name );
+        strcat( *str, "] " );
+      } else {
+        snprintf( name, 4096, "%s[%d]", prefix, i );
+        memory_create_pdim_bit_array( str, sig, name, (dim + 1) );
+      }
+    }
+
+  }
+
+}
+
+/*!
  \param mem_str           String containing memory information
  \param sig               Pointer to signal to get memory coverage for
  \param value             Pointer to vector value containing the current vector to interrogate (initially this will
@@ -236,8 +290,8 @@ void memory_get_mem_coverage( char** mem_str, vsignal* sig, vec_data* value, cha
 
       /* Create dimension string */
       snprintf( int_str, 20, "%d", i );
-      dim_str = (char*)malloc_safe( (strlen( prefix ) + strlen( int_str ) + 3), __FILE__, __LINE__ );
-      snprintf( dim_str, (strlen( prefix ) + strlen( int_str ) + 3), "%s[%d]", prefix, i );
+      dim_str = (char*)malloc_safe( (strlen( prefix ) + strlen( int_str ) + 5), __FILE__, __LINE__ );
+      snprintf( dim_str, (strlen( prefix ) + strlen( int_str ) + 5), "%s\\[%d\\]", prefix, i );
 
       /* Get toggle information */
       tog01 = 0;
@@ -313,7 +367,7 @@ void memory_get_mem_coverage( char** mem_str, vsignal* sig, vec_data* value, cha
  Retrieves memory coverage information for the given signal in the specified functional unit.
 */
 bool memory_get_coverage( char* funit_name, int funit_type, char* signame,
-                          char** pdim_info, char** udim_info, char** memory_info, int* excluded ) {
+                          char** pdim_str, char** pdim_array, char** udim_str, char** memory_info, int* excluded ) {
 
   bool        retval = FALSE;  /* Return value for this function */
   func_unit   funit;           /* Functional unit container used for searching */
@@ -333,37 +387,42 @@ bool memory_get_coverage( char* funit_name, int funit_type, char* signame,
 
     if( (sigl = sig_link_find( &sig, funitl->funit->sig_head )) != NULL ) {
 
-      /* Allocate and populate the pdim_info string */
-      *pdim_info = NULL;
+      /* Allocate and populate the pdim_array and pdim_width parameters */
+      *pdim_array = (char*)malloc_safe( 1, __FILE__, __LINE__ );
+      (*pdim_array)[0] = '\0';
+      memory_create_pdim_bit_array( pdim_array, sigl->sig, "", sigl->sig->pdim_num );
+
+      /* Allocate and populate the pdim_str string */
+      *pdim_str = NULL;
       for( i=sigl->sig->udim_num; i<(sigl->sig->pdim_num + sigl->sig->udim_num); i++ ) {
         snprintf( tmp1, 20, "%d", sigl->sig->dim[i].msb );
         snprintf( tmp2, 20, "%d", sigl->sig->dim[i].lsb );
-        *pdim_info = (char*)realloc( *pdim_info, (strlen( tmp1 ) + strlen( tmp2 ) + 4) );
+        *pdim_str = (char*)realloc( *pdim_str, (strlen( tmp1 ) + strlen( tmp2 ) + 4) );
         if( i == sigl->sig->udim_num ) {
-          snprintf( *pdim_info, (strlen( tmp1 ) + strlen( tmp2 ) + 4), "{%s %s}", tmp1, tmp2 );
+          snprintf( *pdim_str, (strlen( tmp1 ) + strlen( tmp2 ) + 4), "[%s:%s]", tmp1, tmp2 );
         } else {
-          strcat( *pdim_info, "{" );
-          strcat( *pdim_info, tmp1 );
-          strcat( *pdim_info, " " );
-          strcat( *pdim_info, tmp2 );
-          strcat( *pdim_info, "}" );
+          strcat( *pdim_str, "[" );
+          strcat( *pdim_str, tmp1 );
+          strcat( *pdim_str, ":" );
+          strcat( *pdim_str, tmp2 );
+          strcat( *pdim_str, "]" );
         }
       }
 
       /* Allocate and populate the udim_info string */
-      *udim_info = NULL;
+      *udim_str = NULL;
       for( i=0; i<sigl->sig->udim_num; i++ ) {
         snprintf( tmp1, 20, "%d", sigl->sig->dim[i].msb );
         snprintf( tmp2, 20, "%d", sigl->sig->dim[i].lsb );
-        *udim_info = (char*)realloc( *udim_info, (strlen( tmp1 ) + strlen( tmp2 ) + 4) );
+        *udim_str = (char*)realloc( *udim_str, (strlen( tmp1 ) + strlen( tmp2 ) + 4) );
         if( i == 0 ) {
-          snprintf( *udim_info, (strlen( tmp1 ) + strlen( tmp2 ) + 4), "[%s:%s]", tmp1, tmp2 );
+          snprintf( *udim_str, (strlen( tmp1 ) + strlen( tmp2 ) + 4), "[%s:%s]", tmp1, tmp2 );
         } else {
-          strcat( *udim_info, "[" );
-          strcat( *udim_info, tmp1 );
-          strcat( *udim_info, ":" );
-          strcat( *udim_info, tmp2 );
-          strcat( *udim_info, "]" );
+          strcat( *udim_str, "[" );
+          strcat( *udim_str, tmp1 );
+          strcat( *udim_str, ":" );
+          strcat( *udim_str, tmp2 );
+          strcat( *udim_str, "]" );
         }
       }
 
@@ -1097,6 +1156,10 @@ void memory_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.3  2006/09/26 22:36:38  phase1geo
+ Adding code for memory coverage to GUI and related files.  Lots of work to go
+ here so we are checkpointing for the moment.
+
  Revision 1.2  2006/09/25 22:22:28  phase1geo
  Adding more support for memory reporting to both score and report commands.
  We are getting closer; however, regressions are currently broken.  Checkpointing.
