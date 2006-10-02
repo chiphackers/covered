@@ -129,13 +129,13 @@ ReportAccumulateBy = module
 # 'l' (line), 't' (toggle), 'c' (combinational logic), 'f' (FSM), 'a' (assertion) and/or
 # 'r' (race condition).
 
-ReportShowMetrics = ltcf
+ReportShowMetrics = ltmcfar
 
 # When an ASCII report is generated, this option specifies whether uncovered or covered
 # information will be displayed to the report file.  Legal values are 'uncovered' or
 # 'covered'.
 
-ReportCoverageType = covered
+ReportCoverageType = uncovered
 
 # When an ASCII report is generated, this option specifies whether the width of the file
 # should be set to a certain number of characters or just retain the formatting that is

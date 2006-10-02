@@ -4,18 +4,18 @@
  \date     6/22/2006
 */
 
+#include "arc.h"
+#include "assertion.h"
+#include "comb.h"
 #include "defines.h"
 #include "exclude.h"
 #include "expr.h"
-#include "line.h"
-#include "toggle.h"
-#include "comb.h"
-#include "arc.h"
 #include "fsm.h"
-#include "assertion.h"
-#include "ovl.h"
-#include "link.h"
 #include "instance.h"
+#include "line.h"
+#include "link.h"
+#include "ovl.h"
+#include "toggle.h"
 #include "vector.h"
 
 
@@ -123,7 +123,7 @@ void exclude_sig_assign_and_recalc( vsignal* sig, func_unit* funit, bool exclude
     int   tog10_hit = 0;  /* Number of bits toggling from 1->0 */
 
     /* Get the stats for the current memory */
-    memory_get_stat( sig, ae_total, wr_hit, rd_hit, tog_total, tog01_hit, tog10_hit );
+    memory_get_stat( sig, &ae_total, &wr_hit, &rd_hit, &tog_total, &tog01_hit, &tog10_hit, TRUE );
 
     /* Recalculate the total and hit values for memory coverage */
     if( excluded ) {
@@ -440,6 +440,10 @@ bool exclude_set_assert_exclude( char* funit_name, int funit_type, char* inst_na
 
 /*
  $Log$
+ Revision 1.11  2006/09/26 22:36:38  phase1geo
+ Adding code for memory coverage to GUI and related files.  Lots of work to go
+ here so we are checkpointing for the moment.
+
  Revision 1.10  2006/09/01 04:06:37  phase1geo
  Added code to support more than one instance tree.  Currently, I am seeing
  quite a few memory errors that are causing some major problems at the moment.

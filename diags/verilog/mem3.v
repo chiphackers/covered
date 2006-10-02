@@ -1,6 +1,6 @@
 module main;
 
-reg [0:3][4:1] mem[2:0][0:5];
+reg [0:3][4:1] mem[2:0][0:6];
 
 initial begin
 	mem[0][0][0][1] = 1'b0;

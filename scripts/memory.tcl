@@ -1,4 +1,4 @@
-set sig_name        ""
+set mem_name        ""
 set curr_memory_ptr ""
 set mem_curr_entry  ""
 
@@ -53,12 +53,26 @@ proc create_memory_window {signal} {
     text .memwin.f.fae.t -height 10 -xscrollcommand ".memwin.f.fae.hb set" -wrap none -state disabled
     scrollbar .memwin.f.fae.hb -orient horizontal -command ".memwin.f.fae.t"
 
+    # Create exclude checkbutton
+    checkbutton .memwin.f.fae.excl -text "Exclude" -variable memory_excluded -command {
+      tcl_func_set_memory_exclude $curr_funit_name $curr_funit_type $mem_name $memory_excluded
+      set text_x [.bot.right.txt xview]
+      set text_y [.bot.right.txt yview]
+      process_funit_memory_cov
+      .bot.right.txt xview moveto [lindex $text_x 0]
+      .bot.right.txt yview moveto [lindex $text_y 0]
+      update_summary
+      enable_cdd_save
+      set_pointer curr_memory_ptr $curr_memory_ptr
+    }
+
     # Pack the addressable memory elements frame
     grid rowconfigure    .memwin.f.fae 1 -weight 1
     grid columnconfigure .memwin.f.fae 0 -weight 1
-    grid .memwin.f.fae.l  -row 0 -column 0 -sticky new
-    grid .memwin.f.fae.t  -row 1 -column 0 -sticky news
-    grid .memwin.f.fae.hb -row 2 -column 0 -sticky ew 
+    grid .memwin.f.fae.l    -row 0 -column 0 -sticky new
+    grid .memwin.f.fae.excl -row 0 -column 1 -sticky new
+    grid .memwin.f.fae.t    -row 1 -column 0 -columnspan 2 -sticky news
+    grid .memwin.f.fae.hb   -row 2 -column 0 -columnspan 2 -sticky ew 
 
     # Add memory toggle widgets
     frame .memwin.f.ft -relief raised -borderwidth 1
@@ -77,32 +91,18 @@ proc create_memory_window {signal} {
     label .memwin.f.ft.l_rd -anchor w -text "Read:"
     label .memwin.f.ft.l_rv -anchor w -width 3
 
-    # Create exclude checkbutton
-    checkbutton .memwin.f.ft.excl -text "Exclude" -variable memory_excluded -command {
-      tcl_func_set_memory_exclude $curr_funit_name $curr_funit_type $sig_name $memory_excluded
-      set text_x [.bot.right.txt xview]
-      set text_y [.bot.right.txt yview]
-      process_funit_memory_cov
-      .bot.right.txt xview moveto [lindex $text_x 0]
-      .bot.right.txt yview moveto [lindex $text_y 0]
-      update_summary
-      enable_cdd_save
-      set_pointer curr_memory_ptr $curr_memory_ptr
-    }
-
     # Pack the toggle/write/read widgets
     grid columnconfigure .memwin.f.ft 0 -weight 1
     grid .memwin.f.ft.l    -row 0 -column 0 -sticky new
-    grid .memwin.f.ft.t    -row 1 -rowspan 2 -column 0 -columnspan 6 -sticky new
-    grid .memwin.f.ft.l_01 -row 1 -column 6 -sticky new
-    grid .memwin.f.ft.l_10 -row 2 -column 6 -sticky new
-    grid .memwin.f.ft.hb   -row 3 -column 0 -columnspan 6 -sticky new
-    grid .memwin.f.ft.info -row 4 -column 0 -columnspan 6 -sticky new
+    grid .memwin.f.ft.t    -row 1 -rowspan 2 -column 0 -columnspan 5 -sticky new
+    grid .memwin.f.ft.l_01 -row 1 -column 5 -sticky new
+    grid .memwin.f.ft.l_10 -row 2 -column 5 -sticky new
+    grid .memwin.f.ft.hb   -row 3 -column 0 -columnspan 5 -sticky new
+    grid .memwin.f.ft.info -row 4 -column 0 -columnspan 5 -sticky new
     grid .memwin.f.ft.l_wr -row 5 -column 1 -sticky new
     grid .memwin.f.ft.l_wv -row 5 -column 2 -sticky new
     grid .memwin.f.ft.l_rd -row 5 -column 3 -sticky new
     grid .memwin.f.ft.l_rv -row 5 -column 4 -sticky new
-    grid .memwin.f.ft.excl -row 5 -column 5 -sticky news
 
     # Create bottom button bar
     frame .memwin.bf -relief raised -borderwidth 1
@@ -154,10 +154,10 @@ proc create_memory_window {signal} {
   set memory_array      ""
   tcl_func_get_memory_coverage $curr_funit_name $curr_funit_type $signal
 
-  puts "memory_pdim_str:    $memory_pdim_str"
-  puts "memory_pdim_array:  $memory_pdim_array"
-  puts "memory_udim:        $memory_udim"
-  puts "memory_array:       $memory_array"
+  # puts "memory_pdim_str:    $memory_pdim_str"
+  # puts "memory_pdim_array:  $memory_pdim_array"
+  # puts "memory_udim:        $memory_udim"
+  # puts "memory_array:       $memory_array"
 
   #################################################
   # POPULATE THE ADDRESSABLE MEMORY ELEMENT TEXTBOX
@@ -192,7 +192,6 @@ proc create_memory_window {signal} {
       set start_pos [.memwin.f.fae.t index "[expr $i + 1].end"]
       .memwin.f.fae.t insert $start_pos "[lindex $entry 0]"
       set end_pos [.memwin.f.fae.t index "[expr $i + 1].end"]
-      puts "i: $i, j: $j, start_pos: $start_pos, end_pos: $end_pos"
       .memwin.f.fae.t insert "[expr $i + 1].end" "   "
 
       # Append to appropriate tags
@@ -216,8 +215,6 @@ proc create_memory_window {signal} {
 
   # Configure tags
   .memwin.f.fae.t tag configure mem_ubutton -background $uncov_bgColor -foreground $uncov_fgColor
-
-  puts "entry ranges: [.memwin.f.fae.t tag ranges mem_enter]"
 
   # Bind tags
   .memwin.f.fae.t tag bind mem_enter <Enter> {
@@ -251,15 +248,30 @@ proc populate_memory_entry_frame { sel_mem_index } {
   global memory_pdim_str
   global memory_msb memory_lsb mem_curr_entry
   global uncov_bgColor uncov_fgColor
+  global cov_bgColor cov_fgColor
+  global memory_pdim_array
 
   # Get memory entry that corresponds to the given memory index
-  set entry [lindex $memory_array $sel_mem_index]
+  set full_cols [expr [llength $memory_array] / 10]
+  set last_rows [expr [llength $memory_array] % 10]
+  if {$last_rows != 0} {
+    set upper_blk [expr ($full_cols + 1) * $last_rows]
+  } else {
+    set upper_blk 0
+  }
+  if {$sel_mem_index < $upper_blk} {
+    set index [expr (($sel_mem_index % ($full_cols + 1)) * 10) + ($sel_mem_index / ($full_cols + 1))]
+  } else {
+    set sel_mem_index [expr $sel_mem_index - $upper_blk]
+    set index [expr (($sel_mem_index % $full_cols) * 10) + ($sel_mem_index / $full_cols) + $last_rows]
+  }
+  set entry [lindex $memory_array $index]
 
   # Save off the currently selected memory entry
   set mem_curr_entry [lindex $entry 0]
 
-  # TEMPORARY - TBD
-  set memory_msb 0
+  # Setup MSB and LSB information for justification code below
+  set memory_msb [expr [llength $memory_pdim_array] - 1]
   set memory_lsb 0
 
   # Allow us to clear out text box
@@ -279,14 +291,14 @@ proc populate_memory_entry_frame { sel_mem_index } {
 
   # Configure written/read labels
   if {[lindex $entry 2] == 0} {
-    .memwin.f.ft.l_wv configure -text "No" -background $uncov_bgColor -foreground $uncov_fgColor
+    .memwin.f.ft.l_wv configure -text "No"  -background $uncov_bgColor -foreground $uncov_fgColor
   } else {
-    .memwin.f.ft.l_wv configure -text "Yes"
+    .memwin.f.ft.l_wv configure -text "Yes" -background $cov_bgColor   -foreground $cov_fgColor
   }
   if {[lindex $entry 3] == 0} {
-    .memwin.f.ft.l_rv configure -text "No" -background $uncov_bgColor -foreground $uncov_fgColor
+    .memwin.f.ft.l_rv configure -text "No"  -background $uncov_bgColor -foreground $uncov_fgColor
   } else {
-    .memwin.f.ft.l_rv configure -text "Yes"
+    .memwin.f.ft.l_rv configure -text "Yes" -background $cov_bgColor   -foreground $cov_fgColor
   }
 
   # Create leave bindings for textboxes
@@ -297,7 +309,7 @@ proc populate_memory_entry_frame { sel_mem_index } {
   # Add memory tags and bindings
   .memwin.f.ft.t tag add  mem_motion 1.0 {end - 1 chars}
   .memwin.f.ft.t tag bind mem_motion <Motion> {
-    set tmp [lindex [split [.memwin.f.ft.t index current] "."] 1]
+    set tmp [expr ([llength $memory_pdim_array] - 1) - [lindex [split [.memwin.f.ft.t index current] "."] 1]]
     set tmp [lindex $memory_pdim_array $tmp]
     .memwin.f.ft.info configure -text "$mem_name$mem_curr_entry$tmp"
   }

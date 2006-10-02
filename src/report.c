@@ -299,6 +299,8 @@ bool report_parse_args( int argc, int last_arg, char** argv ) {
 #ifdef HAVE_TCLTK
       report_gui          = TRUE;
       report_comb_depth   = REPORT_VERBOSE;
+      report_assertion    = TRUE;
+      report_memory       = TRUE;
 //      flag_use_line_width = TRUE;
 #else
       print_output( "The -view option is not available with this build", FATAL, __FILE__, __LINE__ );
@@ -910,6 +912,10 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.75  2006/09/25 22:22:28  phase1geo
+ Adding more support for memory reporting to both score and report commands.
+ We are getting closer; however, regressions are currently broken.  Checkpointing.
+
  Revision 1.74  2006/09/25 04:15:04  phase1geo
  Starting to add support for new memory coverage metric.  This includes changes
  for the report command only at this point.

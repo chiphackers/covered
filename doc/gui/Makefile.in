@@ -105,6 +105,7 @@ doc_DATA = assert.html \
            line.html \
            main.html \
            main_menu.html \
+           memory.html \
            mod_inst_lb.html \
            pref_color.html \
            pref_goals.html \

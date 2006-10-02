@@ -66,6 +66,7 @@ extern char*       output_file;
 extern int         report_comb_depth; 
 extern bool        report_line;
 extern bool        report_toggle;
+extern bool        report_memory;
 extern bool        report_combination;
 extern bool        report_fsm;
 extern bool        report_assertion;
@@ -588,6 +589,8 @@ int tcl_func_collect_memories( ClientData d, Tcl_Interp* tcl, int argc, const ch
                 (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + 14),
                 (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + (strlen( sigl->sig->name ) - 1) + 15) );
       Tcl_SetVar( tcl, "covered_memories", tmp, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+      snprintf( tmp, 85, "%d", sigl->sig->suppl.part.excluded );
+      Tcl_SetVar( tcl, "memory_excludes", tmp, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
       sigl = sigl->next;
     }
 
@@ -598,6 +601,8 @@ int tcl_func_collect_memories( ClientData d, Tcl_Interp* tcl, int argc, const ch
                 (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + 14),
                 (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + (strlen( sigl->sig->name ) - 1) + 15) );
       Tcl_SetVar( tcl, "uncovered_memories", tmp, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+      snprintf( tmp, 85, "%d", sigl->sig->suppl.part.excluded );
+      Tcl_SetVar( tcl, "memory_excludes", tmp, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
       sigl = sigl->next;
     }
 
@@ -2135,6 +2140,10 @@ int tcl_func_generate_report( ClientData d, Tcl_Interp* tcl, int argc, const cha
         toggle_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
       }
 
+      if( report_memory ) {
+        memory_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
+      }
+
       if( report_combination ) {
         combination_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
       }
@@ -2246,6 +2255,11 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.62  2006/09/27 21:38:35  phase1geo
+ Adding code to interract with data in memory coverage verbose window.  Majority
+ of code is in place; however, this has not been thoroughly debugged at this point.
+ Adding mem3 diagnostic for GUI debugging purposes and checkpointing.
+
  Revision 1.61  2006/09/26 22:36:38  phase1geo
  Adding code for memory coverage to GUI and related files.  Lots of work to go
  here so we are checkpointing for the moment.

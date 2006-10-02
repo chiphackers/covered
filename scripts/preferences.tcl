@@ -31,6 +31,7 @@ set rsel_mi                 ""
 set rsel_cu                 ""
 set rsel_l                  "l"
 set rsel_t                  "t"
+set rsel_m                  "m"
 set rsel_c                  "c"
 set rsel_f                  "f"
 set rsel_a                  ""
@@ -54,7 +55,7 @@ proc read_coveredrc {} {
   global vlog_hl_mode vlog_hl_ppkeyword_color vlog_hl_keyword_color
   global vlog_hl_comment_color vlog_hl_string_color vlog_hl_value_color
   global vlog_hl_symbol_color
-  global rsel_sdv rsel_mi rsel_cu rsel_l rsel_t rsel_c rsel_f rsel_a rsel_r rsel_wsel rsel_width rsel_sup
+  global rsel_sdv rsel_mi rsel_cu rsel_l rsel_t rsel_m rsel_c rsel_f rsel_a rsel_r rsel_wsel rsel_width rsel_sup
   global HOME USER_HOME rc_file_to_write
 
   # Find the correct configuration file to read and eventually write
@@ -144,6 +145,11 @@ proc read_coveredrc {} {
           } else {
             set rsel_t ""
           }
+          if {[string first "m" $value] != -1} {
+            set rsel_m "m"
+          } else {
+            set rsel_m ""
+          }
           if {[string first "c" $value] != -1} {
             set rsel_c "c"
           } else {
@@ -200,7 +206,7 @@ proc write_coveredrc {} {
   global vlog_hl_mode vlog_hl_ppkeyword_color vlog_hl_keyword_color
   global vlog_hl_comment_color vlog_hl_string_color vlog_hl_value_color
   global vlog_hl_symbol_color
-  global rsel_sdv rsel_mi rsel_cu rsel_wsel rsel_width rsel_l rsel_t rsel_c rsel_f rsel_a rsel_r rsel_sup
+  global rsel_sdv rsel_mi rsel_cu rsel_wsel rsel_width rsel_l rsel_t rsel_m rsel_c rsel_f rsel_a rsel_r rsel_sup
   global rc_file_to_write
 
   if {$rc_file_to_write != ""} {
@@ -346,7 +352,7 @@ proc write_coveredrc {} {
     puts $rc "# 'l' (line), 't' (toggle), 'c' (combinational logic), 'f' (FSM), 'a' (assertion) and/or"
     puts $rc "# 'r' (race condition).\n"
 
-    puts $rc "ReportShowMetrics = $rsel_l$rsel_t$rsel_c$rsel_f$rsel_a$rsel_r\n"
+    puts $rc "ReportShowMetrics = $rsel_l$rsel_t$rsel_m$rsel_c$rsel_f$rsel_a$rsel_r\n"
 
     puts $rc "# When an ASCII report is generated, this option specifies whether uncovered or covered"
     puts $rc "# information will be displayed to the report file.  Legal values are 'uncovered' or"
@@ -410,6 +416,7 @@ proc create_preferences {start_index} {
   global rsel_width              tmp_rsel_width
   global rsel_l                  tmp_rsel_l
   global rsel_t                  tmp_rsel_t
+  global rsel_m                  tmp_rsel_m
   global rsel_c                  tmp_rsel_c
   global rsel_f                  tmp_rsel_f
   global rsel_a                  tmp_rsel_a
@@ -446,6 +453,7 @@ proc create_preferences {start_index} {
     set tmp_rsel_width              $rsel_width
     set tmp_rsel_l                  $rsel_l
     set tmp_rsel_t                  $rsel_t
+    set tmp_rsel_m                  $rsel_m
     set tmp_rsel_c                  $rsel_c
     set tmp_rsel_f                  $rsel_f
     set tmp_rsel_a                  $rsel_a
@@ -459,7 +467,7 @@ proc create_preferences {start_index} {
     toplevel .prefwin
     wm title .prefwin "Covered - Preferences"
     # wm resizable .prefwin 0 0
-    wm geometry .prefwin =500x400
+    wm geometry .prefwin =500x450
 
     # Create listbox frame
     frame .prefwin.lbf -relief raised -borderwidth 1
@@ -595,6 +603,7 @@ proc apply_preferences {} {
   global rsel_width              tmp_rsel_width
   global rsel_l                  tmp_rsel_l
   global rsel_t                  tmp_rsel_t
+  global rsel_m                  tmp_rsel_m
   global rsel_c                  tmp_rsel_c
   global rsel_f                  tmp_rsel_f
   global rsel_a                  tmp_rsel_a
@@ -705,6 +714,10 @@ proc apply_preferences {} {
   }
   if {$rsel_t != $tmp_rsel_t} {
     set rsel_t $tmp_rsel_t
+    set changed 1
+  }
+  if {$rsel_m != $tmp_rsel_m} {
+    set rsel_m $tmp_rsel_m
     set changed 1
   }
   if {$rsel_c != $tmp_rsel_c} {
@@ -1056,7 +1069,7 @@ proc create_syntax_pref {} {
 proc create_report_pref {} {
 
   global tmp_rsel_sdv tmp_rsel_mi tmp_rsel_cu
-  global tmp_rsel_l tmp_rsel_t tmp_rsel_c tmp_rsel_f tmp_rsel_a tmp_rsel_r
+  global tmp_rsel_l tmp_rsel_t tmp_rsel_m tmp_rsel_c tmp_rsel_f tmp_rsel_a tmp_rsel_r
   global tmp_rsel_width tmp_rsel_wsel tmp_rsel_sup
 
   frame .prefwin.pf.f
@@ -1088,6 +1101,7 @@ proc create_report_pref {} {
   label .prefwin.pf.f.metric_lbl -text "Show Metrics" -anchor w
   checkbutton .prefwin.pf.f.metric_l -text "Line"            -variable tmp_rsel_l -onvalue "l" -offvalue "" -anchor w
   checkbutton .prefwin.pf.f.metric_t -text "Toggle"          -variable tmp_rsel_t -onvalue "t" -offvalue "" -anchor w
+  checkbutton .prefwin.pf.f.metric_m -text "Memory"          -variable tmp_rsel_m -onvalue "m" -offvalue "" -anchor w
   checkbutton .prefwin.pf.f.metric_c -text "Logic"           -variable tmp_rsel_c -onvalue "c" -offvalue "" -anchor w
   checkbutton .prefwin.pf.f.metric_f -text "FSM"             -variable tmp_rsel_f -onvalue "f" -offvalue "" -anchor w
   checkbutton .prefwin.pf.f.metric_a -text "Assertion"       -variable tmp_rsel_a -onvalue "a" -offvalue "" -anchor w
@@ -1122,10 +1136,11 @@ proc create_report_pref {} {
   grid .prefwin.pf.f.cu_u       -row 8  -column 2 -sticky news -padx 12
   grid .prefwin.pf.f.metric_t   -row 9  -column 0 -sticky news -padx 12
   grid .prefwin.pf.f.cu_c       -row 9  -column 2 -sticky news -padx 12
-  grid .prefwin.pf.f.metric_c   -row 10 -column 0 -sticky news -padx 12
-  grid .prefwin.pf.f.metric_f   -row 11 -column 0 -sticky news -padx 12
-  grid .prefwin.pf.f.metric_a   -row 12 -column 0 -sticky news -padx 12
-  grid .prefwin.pf.f.metric_r   -row 13 -column 0 -sticky news -padx 12
+  grid .prefwin.pf.f.metric_m   -row 10 -column 0 -sticky news -padx 12
+  grid .prefwin.pf.f.metric_c   -row 11 -column 0 -sticky news -padx 12
+  grid .prefwin.pf.f.metric_f   -row 12 -column 0 -sticky news -padx 12
+  grid .prefwin.pf.f.metric_a   -row 13 -column 0 -sticky news -padx 12
+  grid .prefwin.pf.f.metric_r   -row 14 -column 0 -sticky news -padx 12
 
   pack .prefwin.pf.f -fill both
 

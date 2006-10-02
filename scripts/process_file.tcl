@@ -463,7 +463,7 @@ proc process_funit_memory_cov {} {
 proc calc_and_display_memory_cov {} {
 
   global cov_type uncov_type mod_inst_type
-  global uncovered_memories covered_memories race_memories memory_excludes
+  global uncovered_memories covered_memories memory_excludes
   global curr_funit_name curr_funit_type start_line
 
   if {$curr_funit_name != 0} {

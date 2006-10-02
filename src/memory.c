@@ -29,17 +29,19 @@ extern isuppl info_suppl;
 
 
 /*!
- \param sig        Pointer to signal list to traverse for memories
- \param ae_total   Pointer to total number of addressable elements
- \param wr_hit     Pointer to total number of addressable elements written
- \param rd_hit     Pointer to total number of addressable elements read
- \param tog_total  Pointer to total number of bits in memories that can be toggled
- \param tog01_hit  Pointer to total number of bits toggling from 0->1
- \param tog10_hit  Pointer to total number of bits toggling from 1->0
+ \param sig          Pointer to signal list to traverse for memories
+ \param ae_total     Pointer to total number of addressable elements
+ \param wr_hit       Pointer to total number of addressable elements written
+ \param rd_hit       Pointer to total number of addressable elements read
+ \param tog_total    Pointer to total number of bits in memories that can be toggled
+ \param tog01_hit    Pointer to total number of bits toggling from 0->1
+ \param tog10_hit    Pointer to total number of bits toggling from 1->0
+ \param ignore_excl  If set to TRUE, ignores the current value of the excluded bit
 
  Calculates the total and hit memory coverage information for the given memory signal.
 */
-void memory_get_stat( vsignal* sig, float* ae_total, int* wr_hit, int* rd_hit, float* tog_total, int* tog01_hit, int* tog10_hit ) {
+void memory_get_stat( vsignal* sig, float* ae_total, int* wr_hit, int* rd_hit, float* tog_total, int* tog01_hit, int* tog10_hit,
+                      bool ignore_excl ) {
 
   int    i;       /* Loop iterator */
   int    wr;      /* Number of bits written within an addressable element */
@@ -59,23 +61,28 @@ void memory_get_stat( vsignal* sig, float* ae_total, int* wr_hit, int* rd_hit, f
 
   /* Calculate total number of addressable elements and their write/read information */
   for( i=0; i<sig->value->width; i+=pwidth ) {
-    vector_init( &vec, NULL, pwidth, VTYPE_MEM );
-    vec.value = &(sig->value->value[i]);
-    wr = 0;
-    rd = 0;
-    vector_mem_rw_count( &vec, &wr, &rd );
-    if( wr > 0 ) {
+    if( (sig->suppl.part.excluded == 1) && !ignore_excl ) {
       (*wr_hit)++;
-    }
-    if( rd > 0 ) {
       (*rd_hit)++;
+    } else {
+      vector_init( &vec, NULL, pwidth, VTYPE_MEM );
+      vec.value = &(sig->value->value[i]);
+      wr = 0;
+      rd = 0;
+      vector_mem_rw_count( &vec, &wr, &rd );
+      if( wr > 0 ) {
+        (*wr_hit)++;
+      }
+      if( rd > 0 ) {
+        (*rd_hit)++;
+      }
     }
     (*ae_total)++;
   }
 
   /* Calculate toggle coverage information for the memory */
   *tog_total += sig->value->width;
-  if( sig->suppl.part.excluded == 1 ) {
+  if( (sig->suppl.part.excluded == 1) && !ignore_excl ) {
     *tog01_hit += sig->value->width;
     *tog10_hit += sig->value->width;
   } else {
@@ -100,7 +107,7 @@ void memory_get_stats( sig_link* sigl, float* ae_total, int* wr_hit, int* rd_hit
     /* Calculate only for memory elements (must contain one or more unpacked dimensions) */
     if( (sigl->sig->suppl.part.type == SSUPPL_TYPE_MEM) && (sigl->sig->udim_num > 0) ) {
 
-      memory_get_stat( sigl->sig, ae_total, wr_hit, rd_hit, tog_total, tog01_hit, tog10_hit );
+      memory_get_stat( sigl->sig, ae_total, wr_hit, rd_hit, tog_total, tog01_hit, tog10_hit, FALSE );
 
     }
 
@@ -156,7 +163,7 @@ bool memory_get_funit_summary( char* funit_name, int funit_type, int* total, int
         (*total)++;
 
         /* Figure out if this signal is 100% covered in memory coverage */
-        memory_get_stat( sigl->sig, &ae_total, &wr_hit, &rd_hit, &tog_total, &tog01_hit, &tog10_hit );
+        memory_get_stat( sigl->sig, &ae_total, &wr_hit, &rd_hit, &tog_total, &tog01_hit, &tog10_hit, FALSE );
 
         if( (wr_hit > 0) && (rd_hit > 0) && (tog01_hit == tog_total) && (tog10_hit == tog_total) ) {
           (*hit)++;
@@ -286,7 +293,11 @@ void memory_get_mem_coverage( char** mem_str, vsignal* sig, vec_data* value, cha
 
       /* Initialize the vector */
       vector_init( &vec, NULL, dim_width, VTYPE_MEM );
-      vec.value = value;
+      if( be ) {
+        vec.value = value + (dim_width * ((msb - lsb) - i));
+      } else {
+        vec.value = value + (dim_width * i);
+      }
 
       /* Create dimension string */
       snprintf( int_str, 20, "%d", i );
@@ -299,8 +310,8 @@ void memory_get_mem_coverage( char** mem_str, vsignal* sig, vec_data* value, cha
       vector_toggle_count( &vec, &tog01, &tog10 );
 
       /* Get toggle strings */
-      tog01_str = vector_get_toggle01( value, dim_width );
-      tog10_str = vector_get_toggle01( value, dim_width );
+      tog01_str = vector_get_toggle01( vec.value, vec.width );
+      tog10_str = vector_get_toggle10( vec.value, vec.width );
 
       /* Get write/read information */
       wr = 0;
@@ -485,7 +496,7 @@ bool memory_collect( char* funit_name, int funit_type, int cov, sig_link** head,
 
         ae_total = 0;
    
-        memory_get_stat( sigl->sig, &ae_total, &wr_hit, &rd_hit, &tog_total, &hit01, &hit10 );
+        memory_get_stat( sigl->sig, &ae_total, &wr_hit, &rd_hit, &tog_total, &hit01, &hit10, TRUE );
 
         /* If this signal meets the coverage requirement, add it to the signal list */
         if( ((cov == 1) && (wr_hit > 0) && (rd_hit > 0) && (hit01 == tog_total) && (hit10 == tog_total)) ||
@@ -1156,6 +1167,11 @@ void memory_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.4  2006/09/27 21:38:35  phase1geo
+ Adding code to interract with data in memory coverage verbose window.  Majority
+ of code is in place; however, this has not been thoroughly debugged at this point.
+ Adding mem3 diagnostic for GUI debugging purposes and checkpointing.
+
  Revision 1.3  2006/09/26 22:36:38  phase1geo
  Adding code for memory coverage to GUI and related files.  Lots of work to go
  here so we are checkpointing for the moment.

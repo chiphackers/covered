@@ -329,14 +329,14 @@ proc open_files {} {
 proc create_report_selection_window {} {
 
   global rsel_sdv rsel_mi rsel_cu
-  global rsel_l rsel_t rsel_c rsel_f rsel_a rsel_r
+  global rsel_l rsel_t rsel_m rsel_c rsel_f rsel_a rsel_r
   global rsel_width rsel_wsel rsel_sup
   global rsel_fname cdd_name
 
   toplevel .rselwin
   wm title .rselwin "Create ASCII report"
   wm resizable .rselwin 0 0
-  wm geometry .rselwin =450x220
+  wm geometry .rselwin =550x220
 
   # Create default report filename
   set rsel_fname "[file rootname $cdd_name].rpt"
@@ -396,7 +396,7 @@ proc create_report_selection_window {} {
     } else {
       set w "-w $rsel_width"
     }
-    set cmd "-d $rsel_sdv $rsel_mi $rsel_cu -m $rsel_l$rsel_t$rsel_c$rsel_f$rsel_a$rsel_r $w -o $rsel_fname $rsel_sup $cdd_name"
+    set cmd "-d $rsel_sdv $rsel_mi $rsel_cu -m $rsel_l$rsel_t$rsel_m$rsel_c$rsel_f$rsel_a$rsel_r $w -o $rsel_fname $rsel_sup $cdd_name"
     puts "cmd: $cmd"
     eval "tcl_func_generate_report $cmd"
     destroy .rselwin
@@ -427,7 +427,7 @@ proc create_report_selection_window {} {
 proc update_report_select {} {
 
   global rsel_sdv rsel_mi rsel_cu
-  global rsel_l rsel_t rsel_c rsel_f rsel_a rsel_r
+  global rsel_l rsel_t rsel_m rsel_c rsel_f rsel_a rsel_r
   global rsel_width rsel_wsel rsel_sup
   global rsel_fname cdd_name
 
@@ -452,6 +452,9 @@ proc update_report_select {} {
     }
     if {$rsel_t == "t"} {
       lappend metric_list "Toggle"
+    }
+    if {$rsel_m == "m"} {
+      lappend metric_list "Memory"
     }
     if {$rsel_c == "c"} {
       lappend metric_list "Logic"
