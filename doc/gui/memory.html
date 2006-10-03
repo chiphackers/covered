@@ -12,43 +12,138 @@
   <a href="comb.html">Next &gt;</a>
 </div>
 <hr>
-<h1>Navigating the Memory Coverage Window - TBD</h1>
+<h1>Navigating the Memory Coverage Window</h1>
 <hr>
 
 <p>
-The verbose toggle window allows the user to see which bits for a given signal have
-toggled from a 0->1 or a 1->0 during simulation.  To display this window, simply click
-on a highlighted/underlined uncovered signal in the 
+The verbose memory window allows the user to interactively view all of the coverage
+information for a selected memory, including the following for each addressable memory
+element:
+</p>
+
+<p>
+<ol>
+  <li> Have all bits toggled from 0 -> 1 and from 1 -> 0? </li>
+  <li> Has the entry been written? </li>
+  <li> Has the entry been read? </li>
+</ol>
+</p>
+
+<p>
+To display this window, simply click on a highlighted/underlined uncovered memory in the 
 <a href="cov_view.html">Coverage Viewer</a> of the main window.  This will cause the 
-verbose toggle viewer to be created for the specified signal as well as display a 
-"-->" symbol in the Coverage Viewer on the same line as the selected signal.  This
-symbol is simply meant to help the user identify in the Coverage Viewer which signal
-is currently displayed in the Toggle Viewer window.  Figure 1 shows the Toggle Viewer
-loaded with a 4-bit signal called "err_vec" in which bits 3:2 have successfully toggled 
-from a 0->1.
+verbose memory viewer to be created for the specified memory as well as display a 
+"-->" symbol in the Coverage Viewer on the same line as the selected memory.  This
+symbol is simply meant to help the user identify in the Coverage Viewer which memory
+is currently displayed in the Memory Viewer window.  Figure 1 shows the Memory Viewer
+loaded with a 4-dimensional memory called "mem" in which two of the dimensions are
+unpacked (all combinations of unpacked dimensions make up the total number of addressable
+elements in the memory), creating a total of 18 addressable elements.  The first addressable
+element "[0][0]" is shown in the lower frame in which only a single bit has been toggled from
+0 -> 1, the element has been written, but it has not been read.
 </p>
 
 <div align="center">
-<p><strong>Figure 1.  Verbose Toggle Window</strong></p>
-<img src="images/toggle_full.png" alt="Verbose Toggle Window">
+<p><strong>Figure 1.  Verbose Memory Window</strong></p>
+<img src="images/memory_full.png" alt="Verbose Memory Window">
 </div>
 
 <h2>Understanding the Layout</h2>
 
 <p>
-The bit vector displayed is a binary bit vector, each value (0 or 1) represents whether
-that bit in the signal either toggled (1) or did not toggle (0) during simulation.  There
-are two bit vectors displayed for the signal, the top vector shows the 0->1 toggle
-information while the bottom vector shows the 1->0 toggle information.
+The Memory Coverage window is split up into three main frames stacked from top to bottom.  These
+frames, in order from top to bottom, are the "Addressable Memory Elements" frame, the "Element
+Coverage" frame, and the button frame.  Each are described in detail below.
+</p>
+
+<h3>Addressable Memory Elements Frame</h3>
+
+<p>
+The uppermost frame contains all of the addressable memory elements (AMEs) of the memory.  An AME
+is a single memory entry that is addressed by specifying a unique combination of values for each
+of the unpacked dimensions of the memory.  For example, consider the following memory:
 </p>
 
 <p>
-The name of the signal along with its MSB:LSB information is displayed at the bottom
-of the window; however, if the mouse cursor is placed over a specific bit in the toggle
-box, the MSB:LSB will be changed to show the displayed bit, making it easy for the user
-to discern exactly which bit has toggled/not toggled.  If the width of the signal
-exceeds the given space for the toggle window, a scrollbar will be allowed to slide
+<code>
+  reg [15:0] foo[0:1][0:3];
+</endcode>
+</p>
+
+<p>
+This memory called "foo" contains three dimensions.  One packed dimension which is a 16-bit little
+endian value and two unpacked dimensions, containing two entries of four entries (for a total of eight
+addressable memory elements).  Each AME being 16 bits wide.  The AMEs for this memory would be:
+</p>
+
+<p>
+<ul>
+  <li> foo[0][0] </li>
+  <li> foo[0][1] </li>
+  <li> foo[0][2] </li>
+  <li> foo[0][3] </li>
+  <li> foo[1][0] </li>
+  <li> foo[1][1] </li>
+  <li> foo[1][2] </li>
+  <li> foo[1][3] </li>
+</ul>
+</p>
+
+<p>
+The upper frame will contain all of the AMEs for the selected memory.  The uncovered
+AMEs will be highlighted in the uncovered color scheme (as specified in the
+<a href="pref_color.html">Preferences window</a>) while all fully covered AMEs will remain
+unhighlighted.  To view the coverage information for any uncovered AME, simply click on it
+and the information will be viewable in the "Element Coverage" frame below it.
+</p>
+
+<h3>Element Coverage Frame</h3>
+
+<p>
+The Element Coverage frame shows all of the coverage information for the currently selected
+AME including toggle coverage (which bits of the element toggled from 0->1 and 1->0), write
+coverage (was this entry written to) and read coverage (was this entry accessed).  
+</p>
+
+<p>
+The bit vector displayed in the toggle window is a binary bit vector, where each value
+(0 or 1) represents whether that bit in the signal either toggled (1) or did not toggle
+(0) during simulation.  There are two bit vectors displayed for the AME, the top vector
+shows the 0->1 toggle information while the bottom vector shows the 1->0 toggle information.
+</p>
+
+<p>
+The name of the memory along with its dimensional range information is displayed below the
+toggle window; however, if the mouse cursor is placed over a specific bit in the toggle
+box, the packed dimensional range information will be changed to show the displayed bit, making
+it easy for the user to discern exactly which bit has toggled/not toggled.  If the width of the
+AME exceeds the given space for the toggle window, a scrollbar will be allowed to slide
 left and right to view the rest of the toggle information.  
+</p>
+
+<p>
+Below the memory name are two other pieces of coverage information about the AME.  The value to
+the right of the "Written:" label will be set to either "Yes" or "No".  If the value is "Yes",
+this indicates that the currently selected AME was written during simulation and value will be
+highlighted with the covered color scheme (as selected in the 
+<a href="pref_color.html">Preferences window</a>).  If the value is "No", this indicates that
+the currently selected AME was not written during simulation and the value will be highlighted
+with the uncovered color scheme.
+</p>
+
+<p>
+To the right of the "Written" information is the "Read label which will also be set to either
+a value of "Yes" or "No".  If the value is "Yes", this indicates that the currently selected AME
+was accessed during simulation and the value will be highlighted with the covered color scheme.
+If the value is "No", this indicates that the currently selected AME was not accessed during
+simulation and the value will be highlighted with the uncovered color scheme.
+</p>
+
+<h3>Button Frame</h3>
+
+<p>
+The button frame contains buttons for closing the Memory Coverage window, displaying this help page,
+or moving to the next/previous uncovered memory in the same module/instance.
 </p>
 
 <p>
@@ -56,45 +151,45 @@ To exit this window, simply click on "Close" button.  To see this help page from
 toggle window, click on the "Help" button.
 </p>
 
-<h2>Excluding/Including a Signal for Toggle Coverage</h2>
+<h2>Excluding/Including a Memory for Memory Coverage</h2>
 
 <p>
-The user may exclude/include any uncovered signal in the design for toggle coverage by simply clicking
-on the "Excluded" checkbutton.  If this checkbutton is checked, the summary coverage information
-will automatically be recalculated and redisplayed in the <a href="summary_bar.html">Main Window
-Summary Bar</a> and the background color of the underlined signal in the
-<a href="cov_view.html">Main Window File Viewer</a> will change from the uncovered background color to the
-covered background color.  However, the signal will still remain underlined, allowing the user to see
-the verbose toggle coverage information, if necessary.  If the "Excluded" checkbutton is unchecked,
-the summary coverage information and background colors will be readjusted to include the coverage information
-for this signal.
+The user may exclude/include any uncovered memory in the design for memory coverage by simply clicking
+on the "Excluded" checkbutton in the upper right-hand portion of the Memory Coverage window.  If this
+checkbutton is checked, the summary coverage information will automatically be recalculated and
+redisplayed in the <a href="summary_bar.html">Main Window Summary Bar</a> and the background color of
+the underlined memory in the <a href="cov_view.html">Main Window File Viewer</a> will change from the
+uncovered background color to the covered background color.  However, the memory will still remain
+underlined, allowing the user to see the verbose memory coverage information, if necessary.  If the
+"Excluded" checkbutton is unchecked, the summary coverage information and background colors will be
+readjusted to include the coverage information for this memory.
 </p>
 
 <p>
-If the user excludes any signal for toggle coverage in the design, the "Save CDD..." option in the
+If the user excludes any memory for memory coverage in the design, the "Save CDD..." option in the
 <a href="file_menu.html">File Menu</a> will be enabled.  This allows the user to save the excluded property
 either back to the CDD file (or to a newly named CDD file).  Doing so will allow the user to load the
-CDD file at a different time and retain the knowledge of which signals have been excluded/included
-for toggle coverage.  Additionally, if a saved CDD file with coverage exclusion is merged with another CDD file,
-the excluded signal information is preserved for the resulting merged CDD file.
+CDD file at a different time and retain the knowledge of which memories have been excluded/included
+for memory coverage.  Additionally, if a saved CDD file with coverage exclusion is merged with another CDD file,
+the excluded memory information is preserved for the resulting merged CDD file.
 </p>
 
-<h2>Displaying a New Signal</h2>
+<h2>Displaying a New Memory</h2>
 
 <p>
-If the Verbose Toggle Coverage window is currently displayed with a signal, the user may
-select a new signal in the <a href="cov_view.html">Coverage File Viewer</a> of the Main
-window.  When a new signal is selected, its value immediately replaces the currently
-selecting signal value.  This feature allows many different signals to be viewed one
-after the other without having to create/destroy a new window for each signal.
+If the Verbose Memory Coverage window is currently displayed with a memory, the user may
+select a new memory in the <a href="cov_view.html">Coverage File Viewer</a> of the Main
+window.  When a new memory is selected, its value immediately replaces the currently
+selecting memory value.  This feature allows many different memories to be viewed one
+after the other without having to create/destroy a new window for each memory.
 </p>
 
 <p>
-The user may also see the previous or next uncovered signal in the main viewer by clicking
-either the "<--" button (for previous signal viewing) or the "-->" button (for next signal
-viewing).  Note that the "<--" button will be disabled if there is not a signal previous
-to the current signal in the given module and the "--> button will be disabled if there is
-not a signal after the current signal in the given module.
+The user may also see the previous or next uncovered memory in the main viewer by clicking
+either the "<--" button (for previous memory viewing) or the "-->" button (for next memory
+viewing).  Note that the "<--" button will be disabled if there is not a memory previous
+to the current memory in the given module and the "--> button will be disabled if there is
+not a memory after the current memory in the given module.
 </p>
 
 </body>

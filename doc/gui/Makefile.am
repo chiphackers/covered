@@ -57,6 +57,7 @@ img_DATA = images/assert_excl.png \
            images/main_summary.png \
            images/main_viewer.png \
            images/main_window.png \
+           images/memory_full.png \
            images/open_cdd.png \
            images/populated_lb.png \
            images/pref_main.png \
