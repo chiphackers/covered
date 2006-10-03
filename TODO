@@ -32,7 +32,7 @@ Score command
        FSM coverage results.
 
    7.  Add SystemVerilog features/syntax
-        - multi-dimensional arrays
+X       - multi-dimensional arrays
 IP      - typedef
         - struct
         - union
@@ -48,7 +48,7 @@ Merge command
 Report command
 --------------
 
-   1.  Add ability to see combinational logic output on a bit-by-bit basis for bussed expressions.
+X  1.  Add ability to see combinational logic output on a bit-by-bit basis for bussed expressions.
 
 
 Miscellaneous

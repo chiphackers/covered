@@ -7,7 +7,7 @@
 2 3 9 7000b 2 35 f00a 1 2
 1 i 3 3000a 1 0 31 0 32 65 1aaa aa aa aa aa aa aa aa
 1 t 4 103000a 1 0 63 0 64 1 24aa 1aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa
-1 mem 5 103000a 1 1 1 0 1 0 4 1 aa
+1 mem 5 10b000a 1 1 1 0 1 0 4 3 aa
 1 a 7 3000b 1 0 1 0 2 1 120a
 1 b 7 3000e 1 0 1 0 2 1 200a
 1 c 7 30011 1 0 1 0 2 1 a

@@ -539,10 +539,11 @@ void race_check_one_block_assignment( func_unit* mod ) {
             case EXP_OP_SBIT_SEL :
               if( expl->exp->left->op == EXP_OP_STATIC ) {
                 intval = (vector_to_int( expl->exp->left->value ) - dim_lsb) * dim_width;
+                vector_init( &vec, NULL, expl->exp->value->width, VTYPE_SIG );
                 if( dim_be ) {
-                  vector_init( &vec, (vstart + (vwidth - (intval + expl->exp->value->width))), expl->exp->value->width, VTYPE_SIG );
+                  vec.value = vstart + (vwidth - (intval + expl->exp->value->width));
                 } else {
-                  vector_init( &vec, (vstart + intval), expl->exp->value->width, VTYPE_SIG );
+                  vec.value = vstart + intval;
                 }
                 curr_race = vector_set_assigned( &vec, (vec.width - 1), 0 );
 	      } else { 
@@ -552,10 +553,11 @@ void race_check_one_block_assignment( func_unit* mod ) {
             case EXP_OP_MBIT_SEL :
 	      if( (expl->exp->left->op == EXP_OP_STATIC) && (expl->exp->right->op == EXP_OP_STATIC) ) {
                 intval = ((dim_be ? vector_to_int( expl->exp->left->value ) : vector_to_int( expl->exp->right->value )) - dim_lsb) * dim_width;
+                vector_init( &vec, NULL, expl->exp->value->width, VTYPE_SIG );
                 if( dim_be ) {
-                  vector_init( &vec, (vstart + (vwidth - (intval + expl->exp->value->width))), expl->exp->value->width, VTYPE_SIG );
+                  vec.value = vstart + (vwidth - (intval + expl->exp->value->width));
                 } else {
-                  vector_init( &vec, (vstart + intval), expl->exp->value->width, VTYPE_SIG );
+                  vec.value = vstart + intval;
                 }
                 curr_race = vector_set_assigned( &vec, (vec.width - 1), 0 );
               } else {
@@ -672,7 +674,7 @@ void race_check_modules() {
 
       /* Size elements for the current module */
       ignore = 0;
-      funit_size_elements( modl->funit, inst_link_find_by_funit( modl->funit, inst_head, &ignore ) );
+      funit_size_elements( modl->funit, inst_link_find_by_funit( modl->funit, inst_head, &ignore ), FALSE );
 
       /* Clear statement block array size */
       sb_size = 0;
@@ -1025,6 +1027,10 @@ void race_blk_delete_list( race_blk* rb ) {
 
 /*
  $Log$
+ Revision 1.48  2006/09/25 22:22:28  phase1geo
+ Adding more support for memory reporting to both score and report commands.
+ We are getting closer; however, regressions are currently broken.  Checkpointing.
+
  Revision 1.47  2006/09/20 22:38:09  phase1geo
  Lots of changes to support memories and multi-dimensional arrays.  We still have
  issues with endianness and VCS regressions have not been run, but this is a significant

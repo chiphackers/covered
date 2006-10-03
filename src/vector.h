@@ -71,7 +71,7 @@ void vector_display( vector* vec );
 nibble vector_bit_val( nibble* value, int pos );
 
 /*! \brief Sets specified vector value to new value and maintains coverage history. */
-bool vector_set_value( vector* vec, vec_data* value, int width, int from_idx, int to_idx );
+bool vector_set_value( vector* vec, vec_data* value, int val_type, int width, int from_idx, int to_idx );
 
 /*! \brief Performs a zero-fill of all bits starting at lsb and continuing to the vector's msb */
 bool vector_zero_fill( vector* vec, int msb, int lsb );
@@ -160,6 +160,10 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.39  2006/09/25 22:22:29  phase1geo
+ Adding more support for memory reporting to both score and report commands.
+ We are getting closer; however, regressions are currently broken.  Checkpointing.
+
  Revision 1.38  2006/09/22 19:56:45  phase1geo
  Final set of fixes and regression updates per recent changes.  Full regression
  now passes.

@@ -539,17 +539,18 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
           exp->value = found_sig->value;
         }
 
-        if( (exp->op == EXP_OP_SIG)            ||
-            (exp->op == EXP_OP_SBIT_SEL)       ||
-            (exp->op == EXP_OP_MBIT_SEL)       ||
-            (exp->op == EXP_OP_MBIT_POS)       ||
-            (exp->op == EXP_OP_MBIT_NEG)       ||
-            (exp->op == EXP_OP_PARAM)          ||
-            (exp->op == EXP_OP_PARAM_SBIT)     ||
-            (exp->op == EXP_OP_PARAM_MBIT)     ||
-            (exp->op == EXP_OP_PARAM_MBIT_POS) ||
-            (exp->op == EXP_OP_PARAM_MBIT_NEG) ||
-            (exp->op == EXP_OP_TRIGGER) ) {
+        if( ((exp->op == EXP_OP_SIG)            ||
+             (exp->op == EXP_OP_SBIT_SEL)       ||
+             (exp->op == EXP_OP_MBIT_SEL)       ||
+             (exp->op == EXP_OP_MBIT_POS)       ||
+             (exp->op == EXP_OP_MBIT_NEG)       ||
+             (exp->op == EXP_OP_PARAM)          ||
+             (exp->op == EXP_OP_PARAM_SBIT)     ||
+             (exp->op == EXP_OP_PARAM_MBIT)     ||
+             (exp->op == EXP_OP_PARAM_MBIT_POS) ||
+             (exp->op == EXP_OP_PARAM_MBIT_NEG) ||
+             (exp->op == EXP_OP_TRIGGER)) &&
+            (cdd_reading || (found_sig->suppl.part.type == SSUPPL_TYPE_GENVAR)) ) {
           expression_set_value( exp, found_sig );
         }
 
@@ -1026,6 +1027,10 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.99  2006/09/26 22:36:37  phase1geo
+ Adding code for memory coverage to GUI and related files.  Lots of work to go
+ here so we are checkpointing for the moment.
+
  Revision 1.98  2006/09/25 22:22:28  phase1geo
  Adding more support for memory reporting to both score and report commands.
  We are getting closer; however, regressions are currently broken.  Checkpointing.

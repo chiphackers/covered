@@ -36,16 +36,16 @@
 #include <string.h>
 #endif
 
-#include "defines.h"
-#include "fsm.h"
-#include "util.h"
-#include "link.h"
-#include "vector.h"
 #include "arc.h"
-#include "expr.h"
-#include "codegen.h"
 #include "binding.h"
+#include "codegen.h"
+#include "defines.h"
+#include "expr.h"
+#include "fsm.h"
+#include "link.h"
 #include "obfuscate.h"
+#include "util.h"
+#include "vector.h"
 
 
 extern inst_link*   inst_head;
@@ -120,8 +120,8 @@ void fsm_add_arc( fsm* table, expression* from_state, expression* to_state ) {
 */
 void fsm_create_tables( fsm* table ) {
 
-  fsm_arc* curr_arc;    /* Pointer to current FSM arc structure       */
-  bool     set = TRUE;  /* Specifies if specified bit was set         */
+  fsm_arc* curr_arc;    /* Pointer to current FSM arc structure */
+  bool     set = TRUE;  /* Specifies if specified bit was set */
 
   /* Create the FSM arc transition table */
   assert( table != NULL );
@@ -286,11 +286,11 @@ bool fsm_db_read( char** line, func_unit* funit ) {
 */
 bool fsm_db_merge( fsm* base, char** line, bool same ) {
 
-  bool   retval = TRUE;  /* Return value of this function       */
-  int    iid;            /* Input state variable expression ID  */
+  bool   retval = TRUE;  /* Return value of this function */
+  int    iid;            /* Input state variable expression ID */
   int    oid;            /* Output state variable expression ID */
   int    chars_read;     /* Number of characters read from line */
-  int    is_table;       /* Holds value of is_table signifier   */
+  int    is_table;       /* Holds value of is_table signifier */
 
   assert( base != NULL );
   assert( base->from_state != NULL );
@@ -537,7 +537,8 @@ bool fsm_collect( char* funit_name, int funit_type, sig_link** cov_head, sig_lin
 
  \return Returns TRUE if the specified functional unit was found; otherwise, returns FALSE.
 
- TBD
+ Gets the FSM coverage information for the specified FSM in the specified functional unit.  Used by the GUI
+ for creating the contents of the verbose FSM viewer.
 */
 bool fsm_get_coverage( char* funit_name, int funit_type, int expr_id, int* width,
                        char*** total_states, int* total_state_num,
@@ -1132,6 +1133,11 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.61  2006/09/20 22:38:09  phase1geo
+ Lots of changes to support memories and multi-dimensional arrays.  We still have
+ issues with endianness and VCS regressions have not been run, but this is a significant
+ amount of work that needs to be checkpointed.
+
  Revision 1.60  2006/09/01 23:06:02  phase1geo
  Fixing regressions per latest round of changes.  Full regression now passes.
 

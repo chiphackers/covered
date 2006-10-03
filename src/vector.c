@@ -772,6 +772,7 @@ bool vector_set_assigned( vector* vec, int msb, int lsb ) {
 /*!
  \param vec       Pointer to vector to set value to.
  \param value     New value to set vector value to.
+ \param val_type  Type of vector value being assigned from.
  \param width     Width of new value.
  \param from_idx  Starting bit index of value to start copying.
  \param to_idx    Starting bit index of value to copy to.
@@ -784,7 +785,7 @@ bool vector_set_assigned( vector* vec, int msb, int lsb ) {
  been set, checks to see if new vector bits have toggled, sets appropriate
  toggle values, sets the new value to this value and returns.
 */
-bool vector_set_value( vector* vec, vec_data* value, int width, int from_idx, int to_idx ) {
+bool vector_set_value( vector* vec, vec_data* value, int val_type, int width, int from_idx, int to_idx ) {
 
   bool      retval = FALSE;  /* Return value for this function */
   nibble    from_val;        /* Current bit value of value being assigned */
@@ -836,12 +837,10 @@ bool vector_set_value( vector* vec, vec_data* value, int width, int from_idx, in
       }
       break;
     case VTYPE_MEM :
-      printf( "In vector_set_value, for MEM\n" );
       for( i=0; i<width; i++ ) {
         set_val  = vval[i + to_idx];
         from_val = ((v2st & value[i + from_idx].part.val.value) > 1) ? 0 : value[i + from_idx].part.val.value;
         to_val   = set_val.part.mem.value;
-        printf( "from_val: %d, to_val: %d\n", from_val, to_val );
         if( from_val != to_val ) {
           /* Assign toggle values if necessary */
           if( (to_val == 0) && (from_val == 1) ) {
@@ -873,6 +872,11 @@ bool vector_set_value( vector* vec, vec_data* value, int width, int from_idx, in
       }
       break;
     default : break;
+  }
+
+  /* If the value being assigned from is a memory, set the read bit on the first read bit */
+  if( val_type == VTYPE_MEM ) {
+    value[from_idx].part.mem.rd = 1;
   }
 
   return( retval );
@@ -909,7 +913,7 @@ bool vector_bit_fill( vector* vec, int msb, int lsb ) {
   }
 
   for( i=lsb; i<msb; i++ ) {
-    changed |= vector_set_value( vec, &value, 1, 0, i );
+    changed |= vector_set_value( vec, &value, VTYPE_VAL, 1, 0, i );
   }
 
   return( changed );
@@ -1390,7 +1394,7 @@ bool vector_vcd_assign( vector* vec, char* value, int msb, int lsb ) {
         break;
     }
 
-    retval |= vector_set_value( vec, &vval, 1, 0, i );
+    retval |= vector_set_value( vec, &vval, VTYPE_VAL, 1, 0, i );
 
     ptr--;
     i++;
@@ -1402,7 +1406,7 @@ bool vector_vcd_assign( vector* vec, char* value, int msb, int lsb ) {
   /* Perform VCD value bit-fill if specified value did not match width of vector value */
   for( ; i<=msb; i++ ) {
     if( vval.all == 1 ) { vval.all = 0; }
-    retval |= vector_set_value( vec, &vval, 1, 0, i );
+    retval |= vector_set_value( vec, &vval, VTYPE_VAL, 1, 0, i );
   }
 
   return( retval );
@@ -1453,7 +1457,7 @@ bool vector_bitwise_op( vector* tgt, vector* src1, vector* src2, nibble* optab )
     }
 
     vec.value[0].part.val.value = optab[ ((bit1 << 2) | bit2) ];
-    retval |= vector_set_value( tgt, vec.value, 1, 0, i );
+    retval |= vector_set_value( tgt, vec.value, VTYPE_VAL, 1, 0, i );
     
   }
 
@@ -1571,7 +1575,7 @@ bool vector_op_compare( vector* tgt, vector* left, vector* right, int comp_type 
 
   }
 
-  retval = vector_set_value( tgt, &value, 1, 0, 0 );
+  retval = vector_set_value( tgt, &value, VTYPE_VAL, 1, 0, 0 );
 
   return( retval );
 
@@ -1601,20 +1605,20 @@ bool vector_op_lshift( vector* tgt, vector* left, vector* right ) {
   if( vector_is_unknown( right ) ) {
 
     for( i=0; i<tgt->width; i++ ) {
-      retval |= vector_set_value( tgt, &unknown, 1, 0, i );
+      retval |= vector_set_value( tgt, &unknown, VTYPE_VAL, 1, 0, i );
     }
 
   } else {
 
     /* Zero-fill LSBs */
     for( i=0; i<tgt->width; i++ ) {
-      retval |= vector_set_value( tgt, &zero, 1, 0, i );
+      retval |= vector_set_value( tgt, &zero, VTYPE_VAL, 1, 0, i );
     }
 
     shift_val = vector_to_int( right );
 
     if( shift_val < left->width ) {
-      retval |= vector_set_value( tgt, left->value, (left->width - shift_val), 0, shift_val );
+      retval |= vector_set_value( tgt, left->value, VTYPE_VAL, (left->width - shift_val), 0, shift_val );
     }
 
   }
@@ -1647,20 +1651,20 @@ bool vector_op_rshift( vector* tgt, vector* left, vector* right ) {
   if( vector_is_unknown( right ) ) {
 
     for( i=0; i<tgt->width; i++ ) {
-      retval |= vector_set_value( tgt, &unknown, 1, 0, i );
+      retval |= vector_set_value( tgt, &unknown, VTYPE_VAL, 1, 0, i );
     }
 
   } else {
 
     /* Perform zero-fill */
     for( i=0; i<tgt->width; i++ ) {
-      retval |= vector_set_value( tgt, &zero, 1, 0, i );
+      retval |= vector_set_value( tgt, &zero, VTYPE_VAL, 1, 0, i );
     }
 
     shift_val = vector_to_int( right );
 
     if( shift_val < left->width ) {
-      retval |= vector_set_value( tgt, left->value, (left->width - shift_val), shift_val, 0 );
+      retval |= vector_set_value( tgt, left->value, VTYPE_VAL, (left->width - shift_val), shift_val, 0 );
     }
 
   }
@@ -1694,20 +1698,20 @@ bool vector_op_arshift( vector* tgt, vector* left, vector* right ) {
   if( vector_is_unknown( right ) ) {
 
     for( i=0; i<tgt->width; i++ ) {
-      retval |= vector_set_value( tgt, &unknown, 1, 0, i );
+      retval |= vector_set_value( tgt, &unknown, VTYPE_VAL, 1, 0, i );
     }
 
   } else {
 
     /* Perform sign extend-fill */
     for( i=0; i<tgt->width; i++ ) {
-      retval |= vector_set_value( tgt, &sign, 1, 0, i );
+      retval |= vector_set_value( tgt, &sign, VTYPE_VAL, 1, 0, i );
     }
 
     shift_val = vector_to_int( right );
 
     if( shift_val < left->width ) {
-      retval |= vector_set_value( tgt, left->value, (left->width - shift_val), shift_val, 0 );
+      retval |= vector_set_value( tgt, left->value, VTYPE_VAL, (left->width - shift_val), shift_val, 0 );
     }
 
   }
@@ -1755,7 +1759,7 @@ bool vector_op_add( vector* tgt, vector* left, vector* right ) {
                  ((add_optab[ ((lbit  << 2) | rbit) ] >> 2) & 0x3));
     
 
-    retval |= vector_set_value( tgt, &value, 1, 0, i );
+    retval |= vector_set_value( tgt, &value, VTYPE_VAL, 1, 0, i );
 
   }
 
@@ -1874,7 +1878,7 @@ bool vector_op_multiply( vector* tgt, vector* left, vector* right ) {
     if( vector_to_int( left ) == 0 ) {
       vector_from_int( &vec, 0 );
     } else if( vector_to_int( left ) == 1 ) {
-      vector_set_value( &vec, right->value, right->width, 0, 0 );
+      vector_set_value( &vec, right->value, right->suppl.part.type, right->width, 0, 0 );
     } else {
       for( i=0; i<vec.width; i++ ) {
         vec.value[i].part.val.value = 2;
@@ -1886,7 +1890,7 @@ bool vector_op_multiply( vector* tgt, vector* left, vector* right ) {
     if( vector_to_int( right ) == 0 ) {
       vector_from_int( &vec, 0 );
     } else if( vector_to_int( right ) == 1 ) {
-      vector_set_value( &vec, left->value, left->width, 0, 0 );
+      vector_set_value( &vec, left->value, left->suppl.part.type, left->width, 0, 0 );
     } else {
       for( i=0; i<vec.width; i++ ) {
         vec.value[i].part.val.value = 2;
@@ -1900,7 +1904,7 @@ bool vector_op_multiply( vector* tgt, vector* left, vector* right ) {
   }
 
   /* Set target value */
-  retval = vector_set_value( tgt, vec.value, vec.width, 0, 0 );
+  retval = vector_set_value( tgt, vec.value, VTYPE_VAL, vec.width, 0, 0 );
 
   return( retval );
 
@@ -1988,7 +1992,7 @@ bool vector_unary_inv( vector* tgt, vector* src ) {
       case 1  :  vec.value[0].part.val.value = 0;  break;
       default :  vec.value[0].part.val.value = 2;  break;
     }
-    retval |= vector_set_value( tgt, vec.value, 1, 0, i );
+    retval |= vector_set_value( tgt, vec.value, VTYPE_VAL, 1, 0, i );
 
   }
 
@@ -2035,7 +2039,7 @@ bool vector_unary_op( vector* tgt, vector* src, nibble* optab ) {
     }
 
     vec.value[0].part.val.value = uval;
-    retval = vector_set_value( tgt, vec.value, 1, 0, 0 );
+    retval = vector_set_value( tgt, vec.value, VTYPE_VAL, 1, 0, 0 );
 
   }
 
@@ -2093,6 +2097,10 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.84  2006/09/26 22:36:38  phase1geo
+ Adding code for memory coverage to GUI and related files.  Lots of work to go
+ here so we are checkpointing for the moment.
+
  Revision 1.83  2006/09/25 22:22:28  phase1geo
  Adding more support for memory reporting to both score and report commands.
  We are getting closer; however, regressions are currently broken.  Checkpointing.

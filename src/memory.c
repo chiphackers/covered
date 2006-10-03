@@ -866,7 +866,11 @@ void memory_display_memory( FILE* ofile, vsignal* sig, vec_data* value, char* pr
 
       /* Initialize the vector */
       vector_init( &vec, NULL, dim_width, VTYPE_MEM );
-      vec.value = value;
+      if( be ) {
+        vec.value = value + (dim_width * ((msb - lsb) - i));
+      } else {
+        vec.value = value + (dim_width * i);
+      }
 
       /* Get toggle information */
       tog01 = 0;
@@ -1167,6 +1171,11 @@ void memory_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.5  2006/10/02 22:41:00  phase1geo
+ Lots of bug fixes to memory coverage functionality for GUI.  Memory coverage
+ should now be working correctly.  We just need to update the GUI documentation
+ as well as other images for the new feature add.
+
  Revision 1.4  2006/09/27 21:38:35  phase1geo
  Adding code to interract with data in memory coverage verbose window.  Majority
  of code is in place; however, this has not been thoroughly debugged at this point.

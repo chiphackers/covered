@@ -292,15 +292,17 @@ char* funit_gen_task_function_namedblock_name( char* orig_name, func_unit* paren
 }
 
 /*!
- \param funit  Pointer to functional unit containing elements to resize.
- \param inst   Pointer to instance containing this functional unit.
+ \param funit    Pointer to functional unit containing elements to resize.
+ \param inst     Pointer to instance containing this functional unit.
+ \param gen_all  Set to TRUE to generate all components (this should only be set
+                 by the funit_db_write function).
  
  Resizes signals if they are contigent upon parameter values.  After
  all signals have been resized, the signal's corresponding expressions
  are resized.  This function should be called just prior to outputting
  this funtional unit's contents to the CDD file (after parsing phase only)
 */
-void funit_size_elements( func_unit* funit, funit_inst* inst ) {
+void funit_size_elements( func_unit* funit, funit_inst* inst, bool gen_all ) {
   
   inst_parm*  curr_iparm;       /* Pointer to current instance parameter to evaluate */
   exp_link*   curr_exp;         /* Pointer to current expression link to evaluate */
@@ -312,8 +314,6 @@ void funit_size_elements( func_unit* funit, funit_inst* inst ) {
   
   assert( funit != NULL );
   assert( inst != NULL );
-
-  // printf( "*** Sizing elements for functional unit %s ***\n", funit->name );
 
   /*
    First, traverse through current instance's parameter list and resolve
@@ -407,16 +407,20 @@ void funit_size_elements( func_unit* funit, funit_inst* inst ) {
     curr_gi = curr_gi->next;
   }
 
-  /*
-   Last, size all FSMs.  Since the FSM structure is reliant on the size
-   of the state variable signal to which it is attached, its tables
-   cannot be created until the state variable size can be calculated.
-   Since this has been done now, size the FSMs.
-  */
-  curr_fsm = funit->fsm_head;
-  while( curr_fsm != NULL ) {
-    fsm_create_tables( curr_fsm->table );
-    curr_fsm = curr_fsm->next;
+  if( gen_all ) {
+
+    /*
+     Last, size all FSMs.  Since the FSM structure is reliant on the size
+     of the state variable signal to which it is attached, its tables
+     cannot be created until the state variable size can be calculated.
+     Since this has been done now, size the FSMs.
+    */
+    curr_fsm = funit->fsm_head;
+    while( curr_fsm != NULL ) {
+      fsm_create_tables( curr_fsm->table );
+      curr_fsm = curr_fsm->next;
+    }
+
   }
     
 }
@@ -485,7 +489,7 @@ bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
 
     /* Size all elements in this functional unit if we are in parse mode */
     if( inst != NULL ) {
-      funit_size_elements( funit, inst );
+      funit_size_elements( funit, inst, TRUE );
     }
   
     /* Now print all expressions in functional unit */
@@ -923,6 +927,10 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.46  2006/09/22 19:56:45  phase1geo
+ Final set of fixes and regression updates per recent changes.  Full regression
+ now passes.
+
  Revision 1.45  2006/09/22 04:23:04  phase1geo
  More fixes to support new signal range structure.  Still don't have full
  regressions passing at the moment.

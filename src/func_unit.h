@@ -56,7 +56,7 @@ void funit_remove_stmt_blks_calling_stmt( func_unit* funit, statement* stmt );
 char* funit_gen_task_function_namedblock_name( char* orig_name, func_unit* parent );
 
 /*! \brief Sizes all elements for the current functional unit from the given instance */
-void funit_size_elements( func_unit* funit, funit_inst* inst );
+void funit_size_elements( func_unit* funit, funit_inst* inst, bool gen_all );
 
 /*! \brief Writes contents of provided functional unit to specified output. */
 bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst, bool report_save );
@@ -86,6 +86,10 @@ void funit_dealloc( func_unit* funit );
 
 /*
  $Log$
+ Revision 1.15  2006/09/25 22:22:28  phase1geo
+ Adding more support for memory reporting to both score and report commands.
+ We are getting closer; however, regressions are currently broken.  Checkpointing.
+
  Revision 1.14  2006/09/20 22:38:09  phase1geo
  Lots of changes to support memories and multi-dimensional arrays.  We still have
  issues with endianness and VCS regressions have not been run, but this is a significant

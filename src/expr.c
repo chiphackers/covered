@@ -1482,7 +1482,7 @@ bool expression_op_func__xor( expression* expr, thread* thr ) {
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
-    vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->width, 0, 0 );
+    vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type, expr->parent->expr->left->value->width, 0, 0 );
   }
 
   return( vector_bitwise_op( expr->value, expr->left->value, expr->right->value, xor_optab ) );
@@ -1501,7 +1501,7 @@ bool expression_op_func__multiply( expression* expr, thread* thr ) {
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
-    vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->width, 0, 0 );
+    vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type, expr->parent->expr->left->value->width, 0, 0 );
   }
 
   return( vector_op_multiply( expr->value, expr->left->value, expr->right->value ) );
@@ -1528,7 +1528,7 @@ bool expression_op_func__divide( expression* expr, thread* thr ) {
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
-    vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->width, 0, 0 );
+    vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type, expr->parent->expr->left->value->width, 0, 0 );
   }
 
   if( vector_is_unknown( expr->left->value ) || vector_is_unknown( expr->right->value ) ) {
@@ -1536,7 +1536,7 @@ bool expression_op_func__divide( expression* expr, thread* thr ) {
     bit.all            = 0;
     bit.part.exp.value = 0x2;
     for( i=0; i<expr->value->width; i++ ) {
-      retval |= vector_set_value( expr->value, &bit, 1, 0, i );
+      retval |= vector_set_value( expr->value, &bit, VTYPE_VAL, 1, 0, i );
     }
 
   } else {
@@ -1552,7 +1552,7 @@ bool expression_op_func__divide( expression* expr, thread* thr ) {
 
     intval1 = intval1 / intval2;
     vector_from_int( &vec1, intval1 );
-    retval = vector_set_value( expr->value, vec1.value, expr->value->width, 0, 0 );
+    retval = vector_set_value( expr->value, vec1.value, VTYPE_VAL, expr->value->width, 0, 0 );
 
   }
 
@@ -1580,7 +1580,8 @@ bool expression_op_func__mod( expression* expr, thread* thr ) {
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
-    vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->width, 0, 0 );
+    vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type,
+                      expr->parent->expr->left->value->width, 0, 0 );
   }
 
   if( vector_is_unknown( expr->left->value ) || vector_is_unknown( expr->right->value ) ) {
@@ -1588,7 +1589,7 @@ bool expression_op_func__mod( expression* expr, thread* thr ) {
     bit.all            = 0;
     bit.part.exp.value = 0x2;
     for( i=0; i<expr->value->width; i++ ) {
-      retval |= vector_set_value( expr->value, &bit, 1, 0, i );
+      retval |= vector_set_value( expr->value, &bit, VTYPE_VAL, 1, 0, i );
     }
 
   } else {
@@ -1604,7 +1605,7 @@ bool expression_op_func__mod( expression* expr, thread* thr ) {
 
     intval1 = intval1 % intval2;
     vector_from_int( &vec1, intval1 );
-    retval = vector_set_value( expr->value, vec1.value, expr->value->width, 0, 0 );
+    retval = vector_set_value( expr->value, vec1.value, VTYPE_VAL, expr->value->width, 0, 0 );
 
   }
 
@@ -1624,7 +1625,8 @@ bool expression_op_func__add( expression* expr, thread* thr ) {
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
-    vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->width, 0, 0 );
+    vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type,
+                      expr->parent->expr->left->value->width, 0, 0 );
   }
 
   return( vector_op_add( expr->value, expr->left->value, expr->right->value ) );
@@ -1643,7 +1645,8 @@ bool expression_op_func__subtract( expression* expr, thread* thr ) {
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
-    vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->width, 0, 0 );
+    vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type,
+                      expr->parent->expr->left->value->width, 0, 0 );
   }
 
   return( vector_op_subtract( expr->value, expr->left->value, expr->right->value ) );
@@ -1662,7 +1665,8 @@ bool expression_op_func__and( expression* expr, thread* thr ) {
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
-    vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->width, 0, 0 );
+    vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type,
+                      expr->parent->expr->left->value->width, 0, 0 );
   }
 
   return( vector_bitwise_op( expr->value, expr->left->value, expr->right->value, and_optab ) );
@@ -1681,7 +1685,8 @@ bool expression_op_func__or( expression* expr, thread* thr ) {
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
-    vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->width, 0, 0 );
+    vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type,
+                      expr->parent->expr->left->value->width, 0, 0 );
   }
 
   return( vector_bitwise_op( expr->value, expr->left->value, expr->right->value, or_optab ) );
@@ -1770,7 +1775,8 @@ bool expression_op_func__lshift( expression* expr, thread* thr ) {
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
-    vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->width, 0, 0 );
+    vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type,
+                      expr->parent->expr->left->value->width, 0, 0 );
   }
 
   return( vector_op_lshift( expr->value, expr->left->value, expr->right->value ) );
@@ -1789,7 +1795,8 @@ bool expression_op_func__rshift( expression* expr, thread* thr ) {
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
-    vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->width, 0, 0 );
+    vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type,
+                      expr->parent->expr->left->value->width, 0, 0 );
   }
 
   return( vector_op_rshift( expr->value, expr->left->value, expr->right->value ) );
@@ -1808,7 +1815,8 @@ bool expression_op_func__arshift( expression* expr, thread* thr ) {
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
-    vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->width, 0, 0 );
+    vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type,
+                      expr->parent->expr->left->value->width, 0, 0 );
   }
 
   return( vector_op_arshift( expr->value, expr->left->value, expr->right->value ) );
@@ -1960,7 +1968,7 @@ bool expression_op_func__land( expression* expr, thread* thr ) {
 bool expression_op_func__cond( expression* expr, thread* thr ) {
 
   /* Simple vector copy from right side */
-  return( vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 ) );
+  return( vector_set_value( expr->value, expr->right->value->value, expr->right->value->suppl.part.type, expr->right->value->width, 0, 0 ) );
 
 }
 
@@ -1984,14 +1992,14 @@ bool expression_op_func__cond_sel( expression* expr, thread* thr ) {
   vector_unary_op( &vec1, expr->parent->expr->left->value, or_optab );
 
   if( vec1.value[0].part.exp.value == 0 ) {
-    retval = vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 );
+    retval = vector_set_value( expr->value, expr->right->value->value, expr->right->value->suppl.part.type, expr->right->value->width, 0, 0 );
   } else if( vec1.value[0].part.exp.value == 1 ) {
-    retval = vector_set_value( expr->value, expr->left->value->value, expr->left->value->width, 0, 0 );
+    retval = vector_set_value( expr->value, expr->left->value->value, expr->left->value->suppl.part.type, expr->left->value->width, 0, 0 );
   } else {
     bitx.all            = 0; 
     bitx.part.exp.value = 2;
     for( i=0; i<expr->value->width; i++ ) {
-      retval |= vector_set_value( expr->value, &bitx, 1, 0, i );
+      retval |= vector_set_value( expr->value, &bitx, VTYPE_VAL, 1, 0, i );
     }
   }
 
@@ -2255,7 +2263,7 @@ bool expression_op_func__expand( expression* expr, thread* thr ) {
 
     bit.part.exp.value = 0x2;
     for( i=0; i<expr->value->width; i++ ) {
-      retval |= vector_set_value( expr->value, &bit, 1, 0, i );
+      retval |= vector_set_value( expr->value, &bit, VTYPE_VAL, 1, 0, i );
     }
 
   } else {
@@ -2264,7 +2272,7 @@ bool expression_op_func__expand( expression* expr, thread* thr ) {
       bit.part.exp.value = expr->right->value->value[j].part.exp.value;
       width              = vector_to_int( expr->left->value );
       for( i=0; i<width; i++ ) {
-        retval |= vector_set_value( expr->value, &bit, 1, 0, ((j * expr->right->value->width) + i) );
+        retval |= vector_set_value( expr->value, &bit, VTYPE_VAL, 1, 0, ((j * expr->right->value->width) + i) );
       }
     }
 
@@ -2286,8 +2294,8 @@ bool expression_op_func__list( expression* expr, thread* thr ) {
 
   bool retval = FALSE;  /* Return value for this function */
 
-  retval |= vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 );
-  retval |= vector_set_value( expr->value, expr->left->value->value,  expr->left->value->width,  0, expr->right->value->width );
+  retval |= vector_set_value( expr->value, expr->right->value->value, expr->right->value->suppl.part.type, expr->right->value->width, 0, 0 );
+  retval |= vector_set_value( expr->value, expr->left->value->value,  expr->left->value->suppl.part.type,  expr->left->value->width,  0, expr->right->value->width );
 
   return( retval );
 
@@ -2303,7 +2311,7 @@ bool expression_op_func__list( expression* expr, thread* thr ) {
 */
 bool expression_op_func__concat( expression* expr, thread* thr ) {
 
-  return( vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 ) );
+  return( vector_set_value( expr->value, expr->right->value->value, expr->right->value->suppl.part.type, expr->right->value->width, 0, 0 ) );
 
 }
 
@@ -2415,7 +2423,7 @@ bool expression_op_func__aedge( expression* expr, thread* thr ) {
       expr->suppl.part.true   = 1;
       expr->suppl.part.eval_t = 1;
       retval = TRUE;
-      vector_set_value( expr->left->value, expr->right->value->value, expr->right->value->width, 0, 0 );
+      vector_set_value( expr->left->value, expr->right->value->value, expr->right->value->suppl.part.type, expr->right->value->width, 0, 0 );
     } else {
       expr->suppl.part.eval_t = 0;
       retval = FALSE;
@@ -2606,7 +2614,7 @@ bool expression_op_func__default( expression* expr, thread* thr ) {
   bit.all            = 0;
   bit.part.exp.value = 1;
 
-  return( vector_set_value( expr->value, &bit, 1, 0, 0 ) );
+  return( vector_set_value( expr->value, &bit, VTYPE_VAL, 1, 0, 0 ) );
 
 }
 
@@ -2803,7 +2811,7 @@ bool expression_op_func__exponent( expression* expr, thread* thr ) {
     bit.all            = 0;
     bit.part.exp.value = 0x2;
     for( i=0; i<expr->value->width; i++ ) {
-      retval |= vector_set_value( expr->value, &bit, 1, 0, i );
+      retval |= vector_set_value( expr->value, &bit, VTYPE_VAL, 1, 0, i );
     }
 
   } else {
@@ -2817,7 +2825,7 @@ bool expression_op_func__exponent( expression* expr, thread* thr ) {
     }
 
     vector_from_int( &vec, intval3 );
-    retval = vector_set_value( expr->value, vec.value, expr->value->width, 0, 0 );
+    retval = vector_set_value( expr->value, vec.value, VTYPE_VAL, expr->value->width, 0, 0 );
 
   }
 
@@ -2839,7 +2847,7 @@ bool expression_op_func__passign( expression* expr, thread* thr ) {
 
     /* If the connected signal is an input type, copy the parameter expression value to this vector */
     case SSUPPL_TYPE_INPUT :
-      vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 );
+      vector_set_value( expr->value, expr->right->value->value, expr->right->value->suppl.part.type, expr->right->value->width, 0, 0 );
       vsignal_propagate( expr->sig );
       break;
 
@@ -3045,7 +3053,7 @@ bool expression_op_func__dly_op( expression* expr, thread* thr ) {
 
   /* If we are not waiting for the delay to occur, copy the contents of the operation */
   if( !thr->exec_first ) {
-    vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 );
+    vector_set_value( expr->value, expr->right->value->value, expr->right->value->suppl.part.type, expr->right->value->width, 0, 0 );
   }
 
   /* Explicitly call the delay/event.  If the delay is complete, set eval_t to TRUE */
@@ -3535,7 +3543,7 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
       case EXP_OP_SIG      :
         if( lhs->sig->suppl.part.assigned == 1 ) {
           if( assign ) {
-            vector_set_value( lhs->value, rhs->value->value, rhs->value->width, *lsb, 0 );
+            vector_set_value( lhs->value, rhs->value->value, rhs->value->suppl.part.type, rhs->value->width, *lsb, 0 );
             if( rhs->value->width < lhs->value->width ) {
               vector_bit_fill( lhs->value, lhs->value->width, (rhs->value->width + *lsb) );
             }
@@ -3565,7 +3573,7 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
             }
           }
           if( assign ) {
-            vector_set_value( lhs->value, rhs->value->value, rhs->value->width, *lsb, 0 );
+            vector_set_value( lhs->value, rhs->value->value, rhs->value->suppl.part.type, rhs->value->width, *lsb, 0 );
             if( rhs->value->width < lhs->value->width ) {
               vector_bit_fill( lhs->value, lhs->value->width, (rhs->value->width + *lsb) );
             }
@@ -3593,7 +3601,7 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
             lhs->value->value = vstart + intval1;
           }
           if( assign ) {
-            vector_set_value( lhs->value, rhs->value->value, rhs->value->width, *lsb, 0 );
+            vector_set_value( lhs->value, rhs->value->value, rhs->value->suppl.part.type, rhs->value->width, *lsb, 0 );
             if( rhs->value->width < lhs->value->width ) {
               vector_bit_fill( lhs->value, lhs->value->width, (rhs->value->width + *lsb) );
             }
@@ -3620,7 +3628,7 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
             lhs->value->value = vstart + intval1;
           }
           if( assign ) {
-            vector_set_value( lhs->value, rhs->value->value, intval2, *lsb, 0 );
+            vector_set_value( lhs->value, rhs->value->value, rhs->value->suppl.part.type, intval2, *lsb, 0 );
 #ifdef DEBUG_MODE
             if( debug_mode ) {
               printf( "        " );  vsignal_display( lhs->sig );
@@ -3643,7 +3651,7 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
             lhs->value->value = vstart + ((intval1 - intval2) + 1);
           }
           if( assign ) {
-            vector_set_value( lhs->value, rhs->value->value, intval2, *lsb, 0 );
+            vector_set_value( lhs->value, rhs->value->value, rhs->value->suppl.part.type, intval2, *lsb, 0 );
 #ifdef DEBUG_MODE
             if( debug_mode ) {
               printf( "        " );  vsignal_display( lhs->sig );
@@ -3815,6 +3823,14 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.216  2006/09/23 19:40:53  phase1geo
+ Fixing expression_assign, single and multi-bit select functions in expr.c
+ to properly handle multi-dimensional arrays in both LHS and RHS expressions.
+ Added marray* diagnostics to verify proper behavior this new functionality
+ for packed arrays (all endianness combinations).  Still a lot of testing to
+ go, but this should be the majority of the code for now.  Full IV regression
+ has been verified to pass.
+
  Revision 1.215  2006/09/22 22:49:15  phase1geo
  Adding multidimensional array diagnostics to regression suite.  At this point,
  they do not all pass.  Also adding fixes to expression_assign() to get things
