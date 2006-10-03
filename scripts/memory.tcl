@@ -34,6 +34,7 @@ proc create_memory_window {signal} {
   global curr_funit_name curr_funit_type
   global curr_memory_ptr memory_pdim_str
   global uncov_fgColor uncov_bgColor
+  global cov_fgColor cov_bgColor
 
   set mem_name $signal
 
@@ -215,6 +216,7 @@ proc create_memory_window {signal} {
 
   # Configure tags
   .memwin.f.fae.t tag configure mem_ubutton -background $uncov_bgColor -foreground $uncov_fgColor
+  .memwin.f.fae.t tag configure mem_cbutton -background $cov_bgColor   -foreground $cov_fgColor
 
   # Bind tags
   .memwin.f.fae.t tag bind mem_enter <Enter> {
@@ -225,10 +227,18 @@ proc create_memory_window {signal} {
     .memwin.f.fae.t configure -cursor $curr_mem_cursor
   }
   .memwin.f.fae.t tag bind mem_ubutton <ButtonPress-1> {
-    populate_memory_entry_frame [expr [lsearch [.memwin.f.fae.t tag ranges mem_enter] [lindex [.memwin.f.fae.t tag prevrange mem_enter "current + 1 chars"] 0]] / 2]
+    set mem_curr_range [.memwin.f.fae.t tag prevrange mem_enter "current + 1 chars"]
+    .memwin.f.fae.t tag delete mem_select
+    .memwin.f.fae.t tag add mem_select [lindex $mem_curr_range 0] [lindex $mem_curr_range 1]
+    .memwin.f.fae.t tag configure mem_select -background $uncov_fgColor -foreground $uncov_bgColor
+    populate_memory_entry_frame [expr [lsearch [.memwin.f.fae.t tag ranges mem_enter] [lindex $mem_curr_range 0]] / 2]
   }
   .memwin.f.fae.t tag bind mem_cbutton <ButtonPress-1> {
-    populate_memory_entry_frame [expr [lsearch [.memwin.f.fae.t tag ranges mem_enter] [lindex [.memwin.f.fae.t tag prevrange mem_enter "current + 1 chars"] 0]] / 2]
+    set mem_curr_range [.memwin.f.fae.t tag prevrange mem_enter "current + 1 chars"]
+    .memwin.f.fae.t tag delete mem_select
+    .memwin.f.fae.t tag add mem_select [lindex $mem_curr_range 0] [lindex $mem_curr_range 1]
+    .memwin.f.fae.t tag configure mem_select -background $cov_fgColor -foreground $cov_bgColor
+    populate_memory_entry_frame [expr [lsearch [.memwin.f.fae.t tag ranges mem_enter] [lindex $mem_curr_range 0]] / 2]
   }
   
   # Keep user from writing in text box
