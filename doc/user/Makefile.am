@@ -26,9 +26,27 @@ doc_DATA = 001.html \
            023.html \
            024.html \
            025.html \
+           026.html \
+           027.html \
            banner.gif \
            test/example.rptI.html \
            test/example.rptM.html \
            test/example.v.html \
            index.html \
            styles.css
+
+imgdir   = $(datadir)/covered/doc/user/img
+img_DATA = img/000000.gif \
+           img/12568c.gif \
+           img/butprev.png \
+           img/fsm_example.png \
+           img/tile.jpeg \
+           img/toolbar_cont.png \
+           img/toolbar_first.png \
+           img/toolbar_home.png \
+           img/toolbar_last.png \
+           img/toolbar_left.png \
+           img/toolbar_next.png \
+           img/toolbar_prev.png \
+           img/toolbar_right.png \
+           img/vhier.png
