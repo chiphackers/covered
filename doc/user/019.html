@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
 <HTML>
 <HEAD>
-  <TITLE>Covered - Reading Line Coverage</TITLE>
+  <TITLE>Covered - Reading the Report</TITLE>
   <META name="GENERATOR" content="ManStyle">
   <meta name="author" content="Trevor Williams">
   <LINK rel=stylesheet type="text/css" href="styles.css">
@@ -23,7 +23,7 @@
     </TD>
     <TD width=460>
       <IMG src="img/space.gif" width=460 height=1 border=0><BR>
-      <P class="pageNumber">&nbsp;19&nbsp;</P>
+      <P class="pageNumber">&nbsp;18&nbsp;</P>
     </TD>
   </TR>
 
@@ -39,9 +39,9 @@
             <IMG src="img/toolbar_left.png" border=0>
             <A href="001.html" alt="Contents"><IMG src="img/toolbar_cont.png" border=0></A>
             <A href="index.html" alt="First Page"><IMG src="img/toolbar_first.png" border=0></A>
-            <A href="018.html" alt="Previous Page"><IMG src="img/toolbar_prev.png" border=0></A>
+            <A href="017.html" alt="Previous Page"><IMG src="img/toolbar_prev.png" border=0></A>
             <A href="index.html" alt="Home"><IMG src="img/toolbar_home.png" border=0></A>
-            <A href="020.html" alt="Next Page"><IMG src="img/toolbar_next.png" border=0></A>
+            <A href="019.html" alt="Next Page"><IMG src="img/toolbar_next.png" border=0></A>
             <A href="025.html" alt="Last Page"><IMG src="img/toolbar_last.png" border=0></A>
             <IMG src="img/toolbar_right.png" border=0>
             <BR><IMG src="img/000000.gif" height=2 width=460></P>
@@ -69,7 +69,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="header2">12.1&nbsp; <A name="12_1"></A>Reading Line Coverage</P>
+      <P class="header1">12&nbsp;&nbsp; <A name="12"></A>Reading the Report<BR><IMG src="img/12568c.gif" height=2 width=460></P>
     </TD>
   </TR>
 
@@ -80,34 +80,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="header3">12.1.1 <A name="12_1_1"></A>Summary Information Description - Module-based</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      For module-based reports, the summary table for line metrics includes information for the name of each
-      module that was covered and the name of the file in which the module is described in. Lines 
-      <a href="test/example.rptM.html#18">18 through 22</a> of the module-based report show what this information
-      looks like in the report. We have three modules that were scored within our DUT: main, fsma and fsmb. The
-      table shows that all three modules were described in the file "example.v".</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="header3">12.1.2 <A name="12_1_2"></A>Summary Information Description - Instance-based</P>
+      <P class="pg"></P>
     </TD>
   </TR>
 
@@ -119,39 +92,12 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      For instance-based reports, the summary table for line metrics includes information for the Verilog hierarchy
-      pertaining to each instance on the left-hand-side of each row. Lines
-      <a href="test/example.rptI.html#18">18 through 22</a> of the instance-based report show what this information
-      looks like in the report. In our DUT example, there are three instances within the design with the
-      Verilog hierarchies of "main", "main.fsm1" and "main.fsm2".</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="header3">12.1.3 <A name="12_1_3"></A>Summary Information Description - Both</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      On the right-hand side of each row in the table are the hit, miss and total numbers for the line coverage,
-      followed by a calculated percent of the lines that were hit (calculated by taking the number of lines hit
-      during simulation divided by the total number of lines that Covered simulated). The hit value indicates
-      how many lines were executed during the simulation; the miss value indicates the number of lines not
-      executed during simulation; and the total value indicates the total number of lines within the specified
-      module/instance that Covered was able to simulate.</P>
+      This chapter describes the meanings of the textual report output that Covered 
+      generates when the report command is issued. It is well understood by the 
+      developers of Covered that a code coverage tool is only as good as the output that 
+      it generates, and this, of course, includes the ability to discern the information 
+      provided by the report.</P>&nbsp;<A href="024.html">24</A>&nbsp;|
+        &nbsp;<A href="025.html">25</A>&nbsp;
     </TD>
   </TR>
 
@@ -163,23 +109,10 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      If the percentage value in the far left of the summary table is 100%, this indicates that all lines that
-      Covered was capable of simulating (for the module/instance of this row) were executed. If the value of the
-      percentage is less than 100%, this indicates that some number of lines were not executed and full coverage
-      was not achieved for that module/instance. Note that for a module/instance which does not contain any lines
-      in which Covered was able to simulate, the values of hit, miss, and total will be 0 while the hit percentage
-      value will indicate 100%.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="header3">12.1.4 <A name="12_1_4"></A>Verbose Information Description - Both</P>
+      To help describe the various sections of a Covered report, we will use a relatively 
+      small Verilog file containing our DUT, generating the two main types of reports 
+      (module and instance) based on the CDD generated for this file. This example file 
+      is provided <a href="test/example.v.html">here</a>.</P>
     </TD>
   </TR>
 
@@ -191,13 +124,19 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      If the miss value for a particular module was not 0 (indicating that lines were missed during simulation)
-      and the '-d v' option was specified on the command-line (specifying to output verbose reporting information),
-      the line that was missed during simulation will be output below the summary information per module that
-      contained missed lines. In our sample report, there was one line that was missed during simulation (according
-      to the summary output) for the module called "fsmb" (instance "main.fsmb"). The line number and Verilog line
-      that was missed is output in lines <a href="example.rptM.html#25">25 through 29</a> of the module-based report
-      and in lines <a href="example.rptI.html#25">25 through 29</a> of the instance-based report.</P>
+      After being compiled and run, this module is scored with the following Covered 
+      command:</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin">Score Command</P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="code">covered score -t main -v example.v -o example.cdd -vcd example.vcd</P>
     </TD>
   </TR>
 
@@ -209,49 +148,19 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      If a module does not contain any missed lines and the '-d v' option was specified, no verbose output will be
-      displayed for this module. Likewise, if a module/instance does not contain any lines that Covered could execute, 
-      no verbose output will be displayed.</P>
+      The module-based verbose report can be viewed in its entirety 
+      <a href="example.rptM.html">here</a> and is generated with the following command:</P>
     </TD>
   </TR>
 
   <TR>
     <TD></TD>
     <TD valign=top>
-      <P class="margin"></P>
+      <P class="margin">Module-base report command</P>
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="header4"><A name="12_1_4_1"></A>Important Note</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      The definition of what Covered considers a line is a statement (ex. assignment, conditional, etc.). If a
-      statement is written in such a way that it consumes multiple file lines, Covered only counts the statement
-      as one line. The user can assume that if the beginning of a statement is labeled as missed, the entire
-      expression was missed (not just the first line of the expression). For example, consider the following code:</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg"><pre><code>
-      always @(posedge b)
-        a <= (b & c) |
-             (d & e);</code></pre></P>
+      <P class="code">covered report -d v example.cdd</P>
     </TD>
   </TR>
 
@@ -263,20 +172,19 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      If the expression <pre><code> a <= (b & c) | (d & e);</code></pre> is not executed during simulation,
-      Covered will indicate that only one line was missed during execution (not two), and it will display the
-      missing line (if verbose reporting is specified with the '-d v' option) as the following:</P>
+      The instance-based verbose report can be viewed in its entirety 
+      <a href="example.rptI.html">here</a> and is generated with the following command:</P>
     </TD>
   </TR>
 
   <TR>
     <TD></TD>
     <TD valign=top>
-      <P class="margin"></P>
+      <P class="margin">Instance-based report command</P>
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg"><pre><code>     2:      assign a <= (b & c) ...</code></pre></P>
+      <P class="code">covered report -i -d v example.cdd</P>
     </TD>
   </TR>
 
@@ -288,8 +196,40 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      The "..." notation at the end of the Verilog output indicates that the statement was a multiline statement
-      in the source code but is only considered one line.</P>
+      The instructions for analyzing each of the six types of coverage information 
+      from the report can be found on the following pages.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      <ol> 
+        <li><A href="020.html">Reading Line Coverage</A></li> 
+        <li><A href="021.html">Reading Toggle Coverage</A></li> 
+        <li><A href="022.html">Reading Combinational Logic Coverage</A></li> 
+        <li><A href="023.html">Reading FSM Coverage</A></li>
+        <li><A href="024.html">Reading Assertion Coverage</A></li>
+        <li><A href="025.html">Reading Memory Coverage</A></li>
+      </ol></P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      For information on reading race condition information in the report, please see 
+      the user guide page detailing race conditions and viewing the reports.</P>
     </TD>
   </TR>
 
@@ -303,9 +243,9 @@
        [&nbsp;
        <A href="001.html">Contents</A>&nbsp;&nbsp;|&nbsp;
        <A href="index.html">First Page</A>&nbsp;&nbsp;|&nbsp;
-       <A href="018.html">Previous Page</A>&nbsp;&nbsp;|&nbsp;
+       <A href="017.html">Previous Page</A>&nbsp;&nbsp;|&nbsp;
        <A href="index.html">Home</A>&nbsp;
-       &nbsp;|&nbsp;<A href="020.html">Next Page</A>&nbsp;&nbsp;|&nbsp;
+       &nbsp;|&nbsp;<A href="019.html">Next Page</A>&nbsp;&nbsp;|&nbsp;
        <A href="025.html">Last Page</A>&nbsp;
        ]<BR>
        [&nbsp;<A href="001.html">1</A>&nbsp;|

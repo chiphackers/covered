@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
 <HTML>
 <HEAD>
-  <TITLE>Covered - Coverage Boundaries</TITLE>
+  <TITLE>Covered - Assertion Coverage</TITLE>
   <META name="GENERATOR" content="ManStyle">
   <meta name="author" content="Trevor Williams">
   <LINK rel=stylesheet type="text/css" href="styles.css">
@@ -23,7 +23,7 @@
     </TD>
     <TD width=460>
       <IMG src="img/space.gif" width=460 height=1 border=0><BR>
-      <P class="pageNumber">&nbsp;9&nbsp;</P>
+      <P class="pageNumber">&nbsp;8&nbsp;</P>
     </TD>
   </TR>
 
@@ -42,7 +42,7 @@
             <A href="008.html" alt="Previous Page"><IMG src="img/toolbar_prev.png" border=0></A>
             <A href="index.html" alt="Home"><IMG src="img/toolbar_home.png" border=0></A>
             <A href="010.html" alt="Next Page"><IMG src="img/toolbar_next.png" border=0></A>
-            <A href="025.html" alt="Last Page"><IMG src="img/toolbar_last.png" border=0></A>
+            <A href="027.html" alt="Last Page"><IMG src="img/toolbar_last.png" border=0></A>
             <IMG src="img/toolbar_right.png" border=0>
             <BR><IMG src="img/000000.gif" height=2 width=460></P>
           </TD>
@@ -69,7 +69,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="header1">3&nbsp;&nbsp; <A name="3"></A>Coverage Boundaries<BR><IMG src="img/12568c.gif" height=2 width=460></P>
+      <P class="header2">2.6&nbsp; <A name="2_6"></A>Memory Coverage</P>
     </TD>
   </TR>
 
@@ -81,105 +81,9 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      To properly evaluate the effectiveness of any coverage tool, it is necessary to 
-      understand what kinds of logic are able to be analyzed and which kinds of logic 
-      are unable to be analyzed (along with a reason for why the logic cannot be 
-      adequately covered). Understanding the limitations of tools up front can often 
-      guide the user of those tools to make better decisions in their usage. In the 
-      case of Covered and the open source community, it may also help drive ideas to 
-      how to correct or get around these limitations.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      For these reasons, a list of what type of logic can be analyzed and what type of 
-      logic cannot be currently analyzed is listed below. Note that both of these lists 
-      may not be exhaustive and are subject to change between releases of the tool. Also
-      note that it is the goal of Covered to be able to parse all of the Verilog-1995
-      and Verilog-2001 (and a subset of SystemVerilog) constructs though some
-      portions of it may be ignored for coverage purposes.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="header2">3.1&nbsp; <A name="3_1"></A>What logic can be analyzed?</P>
-    </TD>
-  </TR>
-  
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="header3">3.1.1&nbsp; <A name="3_1_1"></A>Verilog-1995 constructs</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      <ol>
-      	<li>
-      	All expressional logic which is comprised of the following data types and operators
-      	which exist in an assign block, always block, initial block, task, function or
-      	named begin/end block:
-      		<ul>
-      			<li>Nets: wire, tri, tri0, tri1, wor, wand, trior, triand, supply0, suppl1</li>
-      			<li>Triregs: trireg</li>
-      			<li>Registers: reg</li>
-      			<li>Parameter values</li>
-      			<li>String values</li>
-      			<li>Integer values</li>
-      			<li>Unary operators: +, -, ~, &, |, ^, ~&, ~|, ~^</li>
-      			<li>Arithmetic operators: +, -, *, /, %</li>
-      			<li>Logical operators: &&, ||, !</li>
-      			<li>Relational operators: &gt; &lt; &gt;= &lt;=</li>
-      			<li>Equality operators: ==, ===, !=, !==</li>
-      			<li>Bitwise operators: &, |, ^, ~&, ~|, ~^</li>
-      			<li>Shift operators: &lt;&lt; &gt;&gt;</li>
-      			<li>Concatentation/replication operators: {}, {{}}</li>
-      			<li>Bit select operators: [], [:]</li>
-      			<li>Conditional operator: ?:</li>
-      		</ul></li>
-      	<li>case, casex, casez statements</li>
-      	<li>if, if/else statements</li>
-      	<li>Delays when delay value is integer</li>
-      	<li>Delayed procedural assignments (i.e., "a = #5 b;" or "a = @(c) b;")</li>
-      	<li>Event waits and triggers: wait, @(posedge), @(negedge), @(), -></li>
-      	<li>Repetition statements (for, while and repeat)</li>
-      	<li>Fork/join statements</li>
-      </ol></P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="header3">3.1.2&nbsp; <A name="3_1_2"></A>Verilog-2001 constructs</P>
+      TBD
+      Assertion coverage answers the question, "Did I hit all of the possible
+      coverage points of the assertions that I included in the design?"</P>
     </TD>
   </TR>
   
@@ -191,36 +95,15 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      <ol>
-      	<li>`ifndef and `elsif directives</li>
-      	<li>`file and `line directives</li>
-         <li>Constant functions calls</li>
-         <li>Inline parameter passing by name</li>
-         <li>Localparam support</li>
-         <li>Implicit event sensitivity lists (@*)</li>
-         <li>Comma-separated event lists (alternative to the "or" keyword)</li>
-         <li>Signed value support</li>
-         <li>Immediate register assignment (reg a = 1'b0)</li>
-         <li>Variable multi-bit selects (a[b+:3], a[b-:3]</li>
-         <li>Exponential power operator (a**b)</li>
-         <li>The "<<<" and ">>>" shift operators</li>
-         <li>Pre-port parameter listing (module foo #(parameter a=0) (...);)</li>
-         <li>Inline port listing (module foo (input wire a, output reg b);)</li>
-         <li>Attributes (note: Covered only performs attributes that it recognizes)</li>
-      	<li>Arrays of instances</li>
-      	<li>Generate blocks</li>
-      </ol></P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="header3">3.1.3&nbsp; <A name="3_1_2"></A>SystemVerilog constructs</P>
+      Currently, Covered is capable of finding all OVL (Open Verification Language)
+      assertion modules instantiated within the design (when the <b>-A ovl</b> option
+      has been specified to the score command).  Within most OVL assertion
+      modules are one or more built-in coverage points.  When the user has specified
+      a particular assertion instance to check for a coverage point, Covered
+      simulates this assertion module, keeping track of which coverage points within
+      the assertion have been hit during simulation (and how many times each coverage
+      point has been hit) and which have not.  This allows the user to check for more
+      complex coverage scenarios within the design.</P>
     </TD>
   </TR>
   
@@ -232,105 +115,39 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      <ol>
-      	<li>New integer types:  char, byte, bit, logic, int, shortint, longint</li>
-      	<li>Op-and-assign statements:  +=, -=, *=, /=, %=, &=, |=, ^=, <<=, >>=, <<<=, >>>=, ++, --</li>
-        <li>Proper support for always_comb, always_latch and always_ff blocks</li>
-        <li>do..while loops</li>
-        <li>Enumerations</li>
-        <li>Typedefs</li>
-        <li>$root scope support</li>
-        <li>Parsing support for unique and priority if/case labels</li>
-        <li>Parsing support for implicit .name ports (ex. "foo f( .a, .b, .c );")</li>
-        <li>Parsing support for implicit .* ports (ex. "foo f( .* );")</li>
-        <li>Parsing support for assertions, properties and sequences</li>
-      </ol></P>
+      Currently, only <A href="http://www.accellera.org/activities/ovl">OVL version 1.6</A>
+      (and newer) are supported.  Older versions of the OVL may not work and are not 
+      planned to be supported.</P>
     </TD>
   </TR>
-  
-  <TR>
+
+    <TR>
     <TD></TD>
     <TD valign=top>
       <P class="margin"></P>
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="header2">3.2&nbsp; <A name="3_2"></A>What logic cannot be currently analyzed?</P>
+      <P class="header3">2.6.1 <A name="2_6_1"></A>Recommendations</P>
     </TD>
   </TR>
 
   <TR>
     <TD></TD>
     <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="header3">3.2.1&nbsp; <A name="3_2_1"></A>Verilog-1995 constructs</P>
-    </TD>
-  </TR>
-  
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
+      <P class="margin">Recommendations</P>
     </TD>
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      <ol>
-      	<li>All gate types (i.e., buf, not, or, and, etc.)</li>
-      	<li>All user defined primitives (UDPs)</li>
-      	<li>Memories</li>
-      	<li>All expressions containing types: time, real, realtime</li>
-      	<li>System task calls (or any ... call)</li>
-      </ol></P>
+      For a design to pass full coverage, it is recommended that the assertion coverage 
+      for all modules in a design receive 100% coverage. If an assertion coverage point
+      is not hit during simulation, the design has not been fully exercised. Assertion
+      coverage is useful for determining more specific corner case holes in the test 
+      suite.</P>
     </TD>
   </TR>
   
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="header3">3.2.2&nbsp; <A name="3_2_2"></A>Verilog-2001 constructs</P>
-    </TD>
-  </TR>
-  
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      <ol>
-      	<li>Configuration statements</li>
-      	<li>Multidimensional arrays</li>
-      	<li>"Automatic" or reentrant tasks/recursive functions</li>
-      </ol></P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      When logic is encountered that cannot be analyzed within an always, initial,
-      task, function or named block, Covered will disregard the entire always block. 
-      If the entire block cannot be analyzed, it does not try to get coverage 
-      statistics as these will most likely be incorrect (i.e., disregarded logic could 
-      affect the state of the logic that is being covered).</P>
-    </TD>
-  </TR>
-
   <TR>
     <TD></TD>
     <TD></TD>
@@ -343,7 +160,7 @@
        <A href="008.html">Previous Page</A>&nbsp;&nbsp;|&nbsp;
        <A href="index.html">Home</A>&nbsp;
        &nbsp;|&nbsp;<A href="010.html">Next Page</A>&nbsp;&nbsp;|&nbsp;
-       <A href="025.html">Last Page</A>&nbsp;
+       <A href="027.html">Last Page</A>&nbsp;
        ]<BR>
        [&nbsp;<A href="001.html">1</A>&nbsp;|
         &nbsp;<A href="002.html">2</A>&nbsp;|
@@ -369,7 +186,9 @@
         &nbsp;<A href="022.html">22</A>&nbsp;|
         &nbsp;<A href="023.html">23</A>&nbsp;|
         &nbsp;<A href="024.html">24</A>&nbsp;|
-        &nbsp;<A href="025.html">25</A>&nbsp;]
+        &nbsp;<A href="025.html">25</A>&nbsp;|
+        &nbsp;<A href="026.html">26</A>&nbsp;|
+        &nbsp;<A href="027.html">27</A>&nbsp;]
        <BR>
        <B>License: GPL</B><BR>
        This Manual was created with <A HREF="http://manstyle.sourceforge.net">ManStyle</A>.
