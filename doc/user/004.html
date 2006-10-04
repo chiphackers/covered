@@ -36,14 +36,7 @@
         <TR>
           <TD width=460 align=center valign=top class="navigator">
             <P class="navigator"><IMG src="img/000000.gif" height=2 width=460><BR>
-            <IMG src="img/toolbar_left.png" border=0>
-            <A href="001.html" alt="Contents"><IMG src="img/toolbar_cont.png" border=0></A>
-            <A href="index.html" alt="First Page"><IMG src="img/toolbar_first.png" border=0></A>
-            <A href="003.html" alt="Previous Page"><IMG src="img/toolbar_prev.png" border=0></A>
-            <A href="index.html" alt="Home"><IMG src="img/toolbar_home.png" border=0></A>
-            <A href="005.html" alt="Next Page"><IMG src="img/toolbar_next.png" border=0></A>
-            <A href="027.html" alt="Last Page"><IMG src="img/toolbar_last.png" border=0></A>
-            <IMG src="img/toolbar_right.png" border=0>
+            <IMG src="img/toolbar_left.png" border=0><A href="001.html" alt="Contents"><IMG src="img/toolbar_cont.png" border=0></A><A href="index.html" alt="First Page"><IMG src="img/toolbar_first.png" border=0></A><A href="003.html" alt="Previous Page"><IMG src="img/toolbar_prev.png" border=0></A><A href="index.html" alt="Home"><IMG src="img/toolbar_home.png" border=0></A><A href="005.html" alt="Next Page"><IMG src="img/toolbar_next.png" border=0></A><A href="027.html" alt="Last Page"><IMG src="img/toolbar_last.png" border=0></A><IMG src="img/toolbar_right.png" border=0>
             <BR><IMG src="img/000000.gif" height=2 width=460></P>
           </TD>
         </TR>
@@ -133,7 +126,23 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="code">module test;<br><br> reg a, b, c;<br><br> initial<br> &nbsp; begin<br> &nbsp;&nbsp;&nbsp; a = 0;&nbsp;&nbsp;&nbsp; // Line 1<br> &nbsp;&nbsp;&nbsp; b = 1;&nbsp;&nbsp;&nbsp; // Line 2<br> &nbsp;&nbsp;&nbsp; if( a )<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; c = b;&nbsp; // Line 3<br> &nbsp;&nbsp;&nbsp; else<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; c = ~b; // Line 4<br> &nbsp; end<br><br> endmodule </P>
+      <P class="code">
+        <PRE>
+        module test;
+
+        reg a, b, c;
+
+        initial
+          begin
+           a = 0;    // Line 1
+           b = 1;    // Line 2
+           if( a )
+             c = b;  // Line 3
+           else
+             c = ~b; // Line 4
+          end
+
+        endmodule</PRE></P>
     </TD>
   </TR>
 

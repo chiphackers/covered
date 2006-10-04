@@ -36,14 +36,7 @@
         <TR>
           <TD width=460 align=center valign=top class="navigator">
             <P class="navigator"><IMG src="img/000000.gif" height=2 width=460><BR>
-            <IMG src="img/toolbar_left.png" border=0>
-            <A href="001.html" alt="Contents"><IMG src="img/toolbar_cont.png" border=0></A>
-            <A href="index.html" alt="First Page"><IMG src="img/toolbar_first.png" border=0></A>
-            <A href="008.html" alt="Previous Page"><IMG src="img/toolbar_prev.png" border=0></A>
-            <A href="index.html" alt="Home"><IMG src="img/toolbar_home.png" border=0></A>
-            <A href="010.html" alt="Next Page"><IMG src="img/toolbar_next.png" border=0></A>
-            <A href="027.html" alt="Last Page"><IMG src="img/toolbar_last.png" border=0></A>
-            <IMG src="img/toolbar_right.png" border=0>
+            <IMG src="img/toolbar_left.png" border=0><A href="001.html" alt="Contents"><IMG src="img/toolbar_cont.png" border=0></A><A href="index.html" alt="First Page"><IMG src="img/toolbar_first.png" border=0></A><A href="008.html" alt="Previous Page"><IMG src="img/toolbar_prev.png" border=0></A><A href="index.html" alt="Home"><IMG src="img/toolbar_home.png" border=0></A><A href="010.html" alt="Next Page"><IMG src="img/toolbar_next.png" border=0></A><A href="027.html" alt="Last Page"><IMG src="img/toolbar_last.png" border=0></A><IMG src="img/toolbar_right.png" border=0>
             <BR><IMG src="img/000000.gif" height=2 width=460></P>
           </TD>
         </TR>
@@ -81,46 +74,156 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      TBD
-      Assertion coverage answers the question, "Did I hit all of the possible
-      coverage points of the assertions that I included in the design?"</P>
-    </TD>
-  </TR>
-  
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      Currently, Covered is capable of finding all OVL (Open Verification Language)
-      assertion modules instantiated within the design (when the <b>-A ovl</b> option
-      has been specified to the score command).  Within most OVL assertion
-      modules are one or more built-in coverage points.  When the user has specified
-      a particular assertion instance to check for a coverage point, Covered
-      simulates this assertion module, keeping track of which coverage points within
-      the assertion have been hit during simulation (and how many times each coverage
-      point has been hit) and which have not.  This allows the user to check for more
-      complex coverage scenarios within the design.</P>
-    </TD>
-  </TR>
-  
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      Currently, only <A href="http://www.accellera.org/activities/ovl">OVL version 1.6</A>
-      (and newer) are supported.  Older versions of the OVL may not work and are not 
-      planned to be supported.</P>
+      Memory coverage answers a number of questions about memories/multi-dimensional arrays
+      being used in your design, including the following:</P>
     </TD>
   </TR>
 
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+        <OL>
+          <LI>Did all bits of each addressable memory element toggle from 0 to 1?</LI>
+          <LI>Did all bits of each addressable memory element toggle from 1 to 0?</LI>
+          <LI>Did every addressable memory element get written?</LI>
+          <LI>Did every addressable memory element get read?</LI>
+        </OL></P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      Memories/multi-dimensional arrays can have two types of dimensions, packed and unpacked.
+      Packed dimensional information is specified to the left of an array declaration while
+      unpacked dimensional information is specified to the right of an array declaration.
+      Consider the following example:</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin">
+      Multi-dimensional array example</P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="code">
+        <PRE>
+          reg [3:0][2:0] foo[0:15];
+        </PRE></P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      The memory "foo" consists of three dimensions.  The first dimension is an unpacked dimension
+      which specifies that there are 16 addressable memory elements (AME).  The number of AMEs are
+      determined by multiplying the unpacked dimension of an array.  The second two dimensions
+      are packed dimensions, creating a total of 12 bits for each AME.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      Other than getting toggle coverage information for each AME, memory coverage also allows us to
+      easily see which AMEs were written and read during simulation.  If all entries of a memory have
+      not been written during a regression run, it could indicate several shortcomings of either the
+      testbench or a logical problem with the write control logic, including, but not limited to,
+      the following:</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin">
+      Potential testsuite or logic problems found when AME write coverage is not 100%</P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+        <OL>
+          <LI>If no AMEs for a given memory were written, it could indicate that the testsuite
+              was never able to get out of bypass mode for that memory.</LI>
+          <LI>If fewer AMEs for a given memory were written than were read, it could indicate that
+              there is a read controller issue leading to an underflow issue with the memory.</LI>
+          <LI>For memories that act like stacks or use lowest/highest address first write selection
+              scheme, indicates that the memory was never completely filled (may miss out on things
+              like buffer overflow errors)</LI>
+          <LI>For memories that are written in a round-robin fashion, indicates that either not
+              enough entries were written (could miss a write pointer wrap bug) or that there is
+              a logical issue by which the write pointer did not properly increment in a round-robin
+              fashion.</LI>
+          <LI>If there are "holes" in the write coverage of the AMEs (that is an AME is found to not
+              have been written while those above and below it have been), this could indicate a corner
+              case logic bug or other testsuite issue that needs to be addressed.</LI>
+        </OL></P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin">
+      Potential testsuite or logic problems found when AME read coverage is not 100%</P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+        <OL>
+          <LI>If no AMEs for a given memory were read, it could indicate that the testsuite
+              was never able to get out of bypass mode for that memory.</LI>
+          <LI>If fewer AMEs for a given memory were read than written, it could indicate that
+              a resource allocation issue.</LI>
+          <LI>For memories that are written in a round-robin fashion, indicates that either not
+              enough entries were read (could miss a read pointer wrap bug) or that there is
+              a logical issue by which the read pointer did not properly increment in a round-robin
+              fashion.</LI>
+          <LI>If there are "holes" in the read coverage of the AMEs (that is an AME is found to not
+              have been read while those above and below it have been), this could indicate a corner
+              case logic bug or other testsuite issue that needs to be addressed.</LI>
+        </OL></P>
+    </TD>
+  </TR>
+  
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      Currently, Covered simulates all memories/multi-dimensional arrays and its coverage is
+      automatically accumulated during the score command.  To see its report information, either
+      specify the -m m option to the report command or bring up the GUI for interactive analysis.</P>
+    </TD>
+  </TR>
+  
     <TR>
     <TD></TD>
     <TD valign=top>
@@ -140,11 +243,11 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      For a design to pass full coverage, it is recommended that the assertion coverage 
-      for all modules in a design receive 100% coverage. If an assertion coverage point
-      is not hit during simulation, the design has not been fully exercised. Assertion
-      coverage is useful for determining more specific corner case holes in the test 
-      suite.</P>
+      For a design to pass full coverage, it is recommended that the write/read memory coverage 
+      for all modules in a design receive 100% coverage.  If every AME was not both written and
+      read during simulation, the design has not been fully exercised.  Toggle coverage per AME
+      need not receive 100% since a memory element that is written once will not cause toggle
+      coverage to change.</P>
     </TD>
   </TR>
   

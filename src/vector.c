@@ -874,10 +874,12 @@ bool vector_set_value( vector* vec, vec_data* value, int val_type, int width, in
     default : break;
   }
 
+#ifdef OBSOLETE
   /* If the value being assigned from is a memory, set the read bit on the first read bit */
   if( val_type == VTYPE_MEM ) {
     value[from_idx].part.mem.rd = 1;
   }
+#endif
 
   return( retval );
 
@@ -2097,6 +2099,12 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.85  2006/10/03 22:47:00  phase1geo
+ Adding support for read coverage to memories.  Also added memory coverage as
+ a report output for DIAGLIST diagnostics in regressions.  Fixed various bugs
+ left in code from array changes and updated regressions for these changes.
+ At this point, all IV diagnostics pass regressions.
+
  Revision 1.84  2006/09/26 22:36:38  phase1geo
  Adding code for memory coverage to GUI and related files.  Lots of work to go
  here so we are checkpointing for the moment.

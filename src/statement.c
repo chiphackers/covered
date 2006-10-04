@@ -156,6 +156,30 @@ statement* statement_create( expression* exp ) {
 }
 
 /*!
+ Displays the current contents of the statement loop list for debug purposes only.
+*/
+void statement_queue_display() {
+
+  stmt_loop_link* sll;  /* Pointer to current statement loop link */
+
+  printf( "Statement loop list:\n" );
+
+  sll = stmt_loop_head;
+  while( sll != NULL ) {
+    printf( "  id: %d, next_true: %d, stmt: %s  ", sll->id, sll->next_true, expression_string( sll->stmt->exp ) );
+    if( sll == stmt_loop_head ) {
+      printf( "H" );
+    }
+    if( sll == stmt_loop_tail ) {
+      printf( "T" );
+    }
+    printf( "\n" );
+    sll = sll->next;
+  }
+
+}
+
+/*!
  \param stmt       Pointer of statement waiting to be linked.
  \param id         ID of statement to be read out later.
  \param next_true  Set to TRUE if the specified ID is for the next_true statement.
@@ -183,6 +207,9 @@ void statement_queue_add( statement* stmt, int id, bool next_true ) {
     stmt_loop_tail->next = sll;
     stmt_loop_tail       = sll;
   }
+
+  // printf( "After SLL add\n" );
+  // statement_queue_display();
 
 }
 
@@ -213,20 +240,18 @@ void statement_queue_compare( statement* stmt ) {
       if( (sll->stmt->next_true == NULL) && sll->next_true ) {
         sll->stmt->next_true = stmt;
       }
-      // if( (sll->stmt->next_false == NULL) && !EXPR_IS_CONTEXT_SWITCH( sll->stmt->exp ) && !sll->next_true ) {
       if( (sll->stmt->next_false == NULL) && !sll->next_true ) {
         sll->stmt->next_false = stmt;
       }
        
       /* Remove this element from the list */
-      if( stmt_loop_head == sll ) {
-        if( stmt_loop_tail == sll ) {
-          stmt_loop_head = stmt_loop_tail = NULL;
-        } else {
-          stmt_loop_head = sll->next;
-        }
+      if( (stmt_loop_head == sll) && (stmt_loop_tail == sll) ) {
+        stmt_loop_head = stmt_loop_tail = NULL;
+      } else if( stmt_loop_head == sll ) {
+        stmt_loop_head = sll->next;
       } else if( stmt_loop_tail == sll ) {
-        stmt_loop_tail = last_sll;
+        stmt_loop_tail       = last_sll;
+        stmt_loop_tail->next = NULL;
       } else {
         last_sll->next = sll->next;
       }
@@ -235,6 +260,9 @@ void statement_queue_compare( statement* stmt ) {
       tsll = sll;
       sll  = sll->next;
       free_safe( tsll );
+
+      // printf( "After SLL remove\n" );
+      // statement_queue_display();
 
     } else {
 
@@ -878,6 +906,10 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.95  2006/09/22 19:56:45  phase1geo
+ Final set of fixes and regression updates per recent changes.  Full regression
+ now passes.
+
  Revision 1.94  2006/09/15 22:14:54  phase1geo
  Working on adding arrayed signals.  This is currently in progress and doesn't
  even compile at this point, much less work.  Checkpointing work.

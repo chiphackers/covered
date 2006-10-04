@@ -490,12 +490,12 @@ void race_check_one_block_assignment( func_unit* mod ) {
   while( sigl != NULL ) {
 
     /* Size the given signal */
-    vsignal_create_vec( sigl->sig );
+    // vsignal_create_vec( sigl->sig );
 
     sig_stmt = -1;
 
     /* Skip checking the expressions of genvar signals */
-    if( sigl->sig->suppl.part.type != SSUPPL_TYPE_GENVAR ) {
+    if( (sigl->sig->suppl.part.type != SSUPPL_TYPE_GENVAR) && (sigl->sig->suppl.part.type != SSUPPL_TYPE_MEM) ) {
 
       /* Iterate through expressions */
       expl = sigl->sig->exp_head;
@@ -665,16 +665,23 @@ void race_check_modules() {
   int         i;         /* Loop iterator */
   funit_link* tfl;       /* Pointer to current task/function/named block link */
   int         ignore;    /* Placeholder */
+  funit_inst* inst;      /* Instance of this functional unit */
 
   modl = funit_head;
 
   while( modl != NULL ) {
 
-    if( (modl->funit->type == FUNIT_MODULE) && ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( modl->funit )) ) {
+    /* Get instance */
+    ignore = 0;
+    inst   = inst_link_find_by_funit( modl->funit, inst_head, &ignore );
+
+    /* Only perform race condition checking for modules that are instantiated and are not OVL assertions */
+    if( (modl->funit->type == FUNIT_MODULE) &&
+        (inst != NULL) &&
+        ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( modl->funit )) ) {
 
       /* Size elements for the current module */
-      ignore = 0;
-      funit_size_elements( modl->funit, inst_link_find_by_funit( modl->funit, inst_head, &ignore ), FALSE );
+      funit_size_elements( modl->funit, inst, FALSE );
 
       /* Clear statement block array size */
       sb_size = 0;
@@ -854,7 +861,7 @@ bool race_report_summary( FILE* ofile, funit_link* head ) {
 
   while( head != NULL ) {
 
-    if( head->funit->type == FUNIT_MODULE ) {
+    if( (head->funit->type == FUNIT_MODULE) && (head->funit->stat != NULL) ) {
 
       found = (head->funit->stat->race_total > 0) ? TRUE : found;
 
@@ -886,7 +893,7 @@ void race_report_verbose( FILE* ofile, funit_link* head ) {
 
   while( head != NULL ) {
 
-    if( head->funit->stat->race_total > 0 ) {
+    if( (head->funit->stat != NULL) && (head->funit->stat->race_total > 0) ) {
 
       fprintf( ofile, "\n" );
       switch( head->funit->type ) {
@@ -1027,6 +1034,12 @@ void race_blk_delete_list( race_blk* rb ) {
 
 /*
  $Log$
+ Revision 1.49  2006/10/03 22:47:00  phase1geo
+ Adding support for read coverage to memories.  Also added memory coverage as
+ a report output for DIAGLIST diagnostics in regressions.  Fixed various bugs
+ left in code from array changes and updated regressions for these changes.
+ At this point, all IV diagnostics pass regressions.
+
  Revision 1.48  2006/09/25 22:22:28  phase1geo
  Adding more support for memory reporting to both score and report commands.
  We are getting closer; however, regressions are currently broken.  Checkpointing.

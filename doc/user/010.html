@@ -36,14 +36,7 @@
         <TR>
           <TD width=460 align=center valign=top class="navigator">
             <P class="navigator"><IMG src="img/000000.gif" height=2 width=460><BR>
-            <IMG src="img/toolbar_left.png" border=0>
-            <A href="001.html" alt="Contents"><IMG src="img/toolbar_cont.png" border=0></A>
-            <A href="index.html" alt="First Page"><IMG src="img/toolbar_first.png" border=0></A>
-            <A href="009.html" alt="Previous Page"><IMG src="img/toolbar_prev.png" border=0></A>
-            <A href="index.html" alt="Home"><IMG src="img/toolbar_home.png" border=0></A>
-            <A href="011.html" alt="Next Page"><IMG src="img/toolbar_next.png" border=0></A>
-            <A href="027.html" alt="Last Page"><IMG src="img/toolbar_last.png" border=0></A>
-            <IMG src="img/toolbar_right.png" border=0>
+            <IMG src="img/toolbar_left.png" border=0><A href="001.html" alt="Contents"><IMG src="img/toolbar_cont.png" border=0></A><A href="index.html" alt="First Page"><IMG src="img/toolbar_first.png" border=0></A><A href="009.html" alt="Previous Page"><IMG src="img/toolbar_prev.png" border=0></A><A href="index.html" alt="Home"><IMG src="img/toolbar_home.png" border=0></A><A href="011.html" alt="Next Page"><IMG src="img/toolbar_next.png" border=0></A><A href="027.html" alt="Last Page"><IMG src="img/toolbar_last.png" border=0></A><IMG src="img/toolbar_right.png" border=0>
             <BR><IMG src="img/000000.gif" height=2 width=460></P>
           </TD>
         </TR>
@@ -168,6 +161,7 @@
       	<li>Event waits and triggers: wait, @(posedge), @(negedge), @(), -></li>
       	<li>Repetition statements (for, while and repeat)</li>
       	<li>Fork/join statements</li>
+      	<li>Memories</li>
       </ol></P>
     </TD>
   </TR>
@@ -207,8 +201,8 @@
          <li>Pre-port parameter listing (module foo #(parameter a=0) (...);)</li>
          <li>Inline port listing (module foo (input wire a, output reg b);)</li>
          <li>Attributes (note: Covered only performs attributes that it recognizes)</li>
-      	<li>Arrays of instances</li>
-      	<li>Generate blocks</li>
+      	 <li>Arrays of instances</li>
+      	 <li>Generate blocks</li>
       </ol></P>
     </TD>
   </TR>
@@ -240,6 +234,7 @@
         <li>Enumerations</li>
         <li>Typedefs</li>
         <li>$root scope support</li>
+        <li>Multi-dimensional arrays including packed/unpacked dimensions and bit-select, part-select and slicing</li>
         <li>Parsing support for unique and priority if/case labels</li>
         <li>Parsing support for implicit .name ports (ex. "foo f( .a, .b, .c );")</li>
         <li>Parsing support for implicit .* ports (ex. "foo f( .* );")</li>
@@ -281,9 +276,8 @@
       <ol>
       	<li>All gate types (i.e., buf, not, or, and, etc.)</li>
       	<li>All user defined primitives (UDPs)</li>
-      	<li>Memories</li>
       	<li>All expressions containing types: time, real, realtime</li>
-      	<li>System task calls (or any ... call)</li>
+      	<li>System task calls (or any $... call)</li>
       </ol></P>
     </TD>
   </TR>

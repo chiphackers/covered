@@ -2173,6 +2173,7 @@ bool expression_op_func__sbit( expression* expr, thread* thr ) {
     }
     dim_width = vsignal_calc_width_for_expr( expr, expr->sig );
 
+    /* Adjust this expression's vector data pointer to point to correct bits in signal */
     intval = (vector_to_int( expr->left->value ) - dim_lsb) * dim_width;
     assert( intval >= 0 );
     if( dim_be ) {
@@ -2181,6 +2182,11 @@ bool expression_op_func__sbit( expression* expr, thread* thr ) {
     } else {
       assert( intval < vwidth );
       expr->value->value = vstart + intval;
+    }
+
+    /* If this expression references a memory and is the last unpacked dimension, set the first read vector data bit to 1 */
+    if( (expr->value->suppl.part.type == VTYPE_MEM) && ((exp_dim + 1) == expr->sig->udim_num) ) { 
+      expr->value->value[0].part.mem.rd = 1;
     }
 
   }
@@ -3823,6 +3829,12 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.217  2006/10/03 22:47:00  phase1geo
+ Adding support for read coverage to memories.  Also added memory coverage as
+ a report output for DIAGLIST diagnostics in regressions.  Fixed various bugs
+ left in code from array changes and updated regressions for these changes.
+ At this point, all IV diagnostics pass regressions.
+
  Revision 1.216  2006/09/23 19:40:53  phase1geo
  Fixing expression_assign, single and multi-bit select functions in expr.c
  to properly handle multi-dimensional arrays in both LHS and RHS expressions.

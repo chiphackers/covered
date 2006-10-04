@@ -7,11 +7,21 @@ module main;
 reg        clk;
 reg        go;
 wire [2:0] state;
+reg  [3:0] err_mem[0:15];
+reg  [4:0] err_cnt;
 
 fsma fsm1( clk, go, state );
 fsmb fsm2( clk, go );
 
-wire error = (state[0] & state[1]) || (state[0] & state[2]) || (state[1] & state[2]) || (state == 3'b000);
+initial begin
+        err_cnt = 0;
+        forever @(posedge clk)
+          begin
+           err_mem[err_cnt] = {(state[0] & state[1]), (state[0] & state[2]), (state[1] & state[2]), (state == 3'b000)};
+           if( !err_cnt[4] && (err_mem[err_cnt] != 0) )
+             err_cnt = err_cnt + 1;
+          end
+end
 
 initial begin
 	$dumpfile( "example.vcd" );
