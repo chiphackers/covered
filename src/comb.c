@@ -1078,6 +1078,10 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
                 break;
               case EXP_OP_NEGATE   :  *size = l_size + r_size + 1;  strcpy( code_fmt, " %s"              );  break;
               case EXP_OP_DIM      :  *size = l_size + r_size;      strcpy( code_fmt, "%s%s"             );  break;
+              case EXP_OP_IINC     :
+              case EXP_OP_IDEC     :  *size = l_size + 2;           strcpy( code_fmt, "  %s"             );  break;
+              case EXP_OP_PINC     :
+              case EXP_OP_PDEC     :  *size = l_size + 2;           strcpy( code_fmt, "%s  "             );  break;
               default              :
                 snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  Unknown expression type in combination_underline_tree (%d)",
                           exp->op );
@@ -2663,6 +2667,11 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.159  2006/09/20 22:38:09  phase1geo
+ Lots of changes to support memories and multi-dimensional arrays.  We still have
+ issues with endianness and VCS regressions have not been run, but this is a significant
+ amount of work that needs to be checkpointed.
+
  Revision 1.158  2006/09/15 22:14:54  phase1geo
  Working on adding arrayed signals.  This is currently in progress and doesn't
  even compile at this point, much less work.  Checkpointing work.

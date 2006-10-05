@@ -226,8 +226,10 @@ static bool expression_op_func__mbit_pos( expression*, thread* );
 static bool expression_op_func__mbit_neg( expression*, thread* );
 static bool expression_op_func__negate( expression*, thread* );
 static bool expression_op_func__noop( expression*, thread* );
-static bool expression_op_func__inc( expression*, thread* );
-static bool expression_op_func__dec( expression*, thread* );
+static bool expression_op_func__iinc( expression*, thread* );
+static bool expression_op_func__pinc( expression*, thread* );
+static bool expression_op_func__idec( expression*, thread* );
+static bool expression_op_func__pdec( expression*, thread* );
 static bool expression_op_func__dly_assign( expression*, thread* );
 static bool expression_op_func__dly_op( expression*, thread* );
 static bool expression_op_func__repeat_dly( expression*, thread* );
@@ -318,8 +320,10 @@ const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",         "",             ex
                                            {"NOOP",           "",             expression_op_func__null,       {0, 0, NOT_COMB,   0, 0, 0, 0} },
                                            {"ALWAYS_COMB",    "always_comb",  expression_op_func__slist,      {1, 0, NOT_COMB,   0, 1, 1, 0} },
                                            {"ALWAYS_LATCH",   "always_latch", expression_op_func__slist,      {1, 0, NOT_COMB,   0, 1, 1, 0} },
-                                           {"INC",            "++",           expression_op_func__inc,        {1, 0, NOT_COMB,   0, 0, 0, 0} },
-                                           {"DEC",            "--",           expression_op_func__dec,        {1, 0, NOT_COMB,   0, 0, 0, 0} },
+                                           {"IINC",           "++",           expression_op_func__iinc,       {1, 0, NOT_COMB,   0, 0, 0, 0} },
+                                           {"PINC",           "++",           expression_op_func__pinc,       {1, 0, NOT_COMB,   0, 0, 0, 0} },
+                                           {"IDEC",           "--",           expression_op_func__idec,       {1, 0, NOT_COMB,   0, 0, 0, 0} },
+                                           {"PDEC",           "--",           expression_op_func__pdec,       {1, 0, NOT_COMB,   0, 0, 0, 0} },
                                            {"DLY_ASSIGN",     "",             expression_op_func__dly_assign, {1, 0, NOT_COMB,   0, 0, 1, 0} },
                                            {"DLY_OP",         "",             expression_op_func__dly_op,     {1, 0, NOT_COMB,   0, 0, 0, 0} },
                                            {"RPT_DLY",        "",             expression_op_func__repeat_dly, {1, 0, NOT_COMB,   0, 0, 0, 0} },
@@ -696,8 +700,6 @@ void expression_resize( expression* expr, bool recursive ) {
       case EXP_OP_FUNC_CALL      :
       case EXP_OP_WHILE          :
       case EXP_OP_LAST           :
-      case EXP_OP_INC            :
-      case EXP_OP_DEC            :
       case EXP_OP_DIM            :
         break;
 
@@ -2969,9 +2971,41 @@ bool expression_op_func__negate( expression* expr, thread* thr ) {
 
  \return Returns TRUE.
 
- Performs an increment operation.
+ Performs an immediate increment operation.
 */
-bool expression_op_func__inc( expression* expr, thread* thr ) {
+bool expression_op_func__iinc( expression* expr, thread* thr ) {
+
+  /* Perform increment */
+  vector_op_inc( expr->left->value );
+
+  /* Copy the left-hand value to our expression */
+  vector_set_value( expr->value, expr->left->value->value, expr->left->value->suppl.part.type, expr->left->value->width, 0, 0 );
+
+#ifdef DEBUG_MODE
+  if( debug_mode ) {
+    printf( "        " );  vsignal_display( expr->left->sig );
+  }
+#endif
+
+  /* Propagate value change */
+  vsignal_propagate( expr->left->sig );
+
+  return( TRUE );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE.
+
+ Performs a postponed increment operation.
+*/
+bool expression_op_func__pinc( expression* expr, thread* thr ) {
+
+  /* Copy the left-hand value to our expression */
+  vector_set_value( expr->value, expr->left->value->value, expr->left->value->suppl.part.type, expr->left->value->width, 0, 0 );
 
   /* Perform increment */
   vector_op_inc( expr->left->value );
@@ -2995,9 +3029,41 @@ bool expression_op_func__inc( expression* expr, thread* thr ) {
 
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
- Performs a decrement operation.
+ Performs an immediate decrement operation.
 */
-bool expression_op_func__dec( expression* expr, thread* thr ) {
+bool expression_op_func__idec( expression* expr, thread* thr ) {
+
+  /* Perform decrement */
+  vector_op_dec( expr->left->value );
+
+  /* Copy the left-hand value to our expression */
+  vector_set_value( expr->value, expr->left->value->value, expr->left->value->suppl.part.type, expr->left->value->width, 0, 0 );
+
+#ifdef DEBUG_MODE
+  if( debug_mode ) {
+    printf( "        " );  vsignal_display( expr->left->sig );
+  }
+#endif
+
+  /* Propagate value change */
+  vsignal_propagate( expr->left->sig );
+
+  return( TRUE );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a postponed decrement operation.
+*/
+bool expression_op_func__pdec( expression* expr, thread* thr ) {
+
+  /* Copy the left-hand value to our expression */
+  vector_set_value( expr->value, expr->left->value->value, expr->left->value->suppl.part.type, expr->left->value->width, 0, 0 );
 
   /* Perform decrement */
   vector_op_dec( expr->left->value );
@@ -3829,6 +3895,14 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.218  2006/10/04 22:04:16  phase1geo
+ Updating rest of regressions.  Modified the way we are setting the memory rd
+ vector data bit (should optimize the score command just a bit).  Also updated
+ quite a bit of memory coverage documentation though I still need to finish
+ documenting how to understand the report file for this metric.  Cleaning up
+ other things and fixing a few more software bugs from regressions.  Added
+ marray2* diagnostics to verify endianness in the unpacked dimension list.
+
  Revision 1.217  2006/10/03 22:47:00  phase1geo
  Adding support for read coverage to memories.  Also added memory coverage as
  a report output for DIAGLIST diagnostics in regressions.  Fixed various bugs

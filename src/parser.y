@@ -1639,10 +1639,58 @@ expr_primary
       if( (ignore_mode == 0) && ($1 != NULL) ) {
         tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
         $$  = tmp;
-        free_safe( $1 );
       } else {
         $$ = NULL;
       }
+      free_safe( $1 );
+    }
+  | identifier K_INC
+    {
+      expression* tmp;
+      if( ignore_mode == 0 ) {
+        tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
+        tmp = db_create_expression( NULL, tmp,  EXP_OP_PINC, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
+        $$  = tmp; 
+      } else {
+        $$ = NULL;
+      }
+      free_safe( $1 );
+    }
+  | identifier K_DEC
+    {
+      expression* tmp;
+      if( ignore_mode == 0 ) {
+        tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
+        tmp = db_create_expression( NULL, tmp,  EXP_OP_PDEC, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
+        $$  = tmp;
+      } else {
+        $$ = NULL;
+      }
+      free_safe( $1 );
+    }
+  | K_INC identifier
+    {
+      expression* tmp;
+      if( ignore_mode == 0 ) {
+        tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), $2 );
+        tmp = db_create_expression( NULL, tmp,  EXP_OP_IINC, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
+        $$  = tmp;
+      } else {
+        $$ = NULL;
+      }
+      free_safe( $2 );
+    }
+  | K_DEC identifier
+    {
+      expression* tmp;
+      if( ignore_mode == 0 ) {
+        tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), $2 );
+        tmp = db_create_expression( NULL, tmp,  EXP_OP_IDEC, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
+        $$  = tmp;
+      } else {
+        $$ = NULL;
+      }
+      free_safe( $2 );
     }
   | SYSTEM_IDENTIFIER
     {
@@ -1671,12 +1719,71 @@ expr_primary
         $2->line = @1.first_line;
         $2->col  = ((@1.first_column & 0xffff) << 16) | ($2->col & 0xffff);
         $$ = $2;
-        free_safe( $1 );
       } else {
-        free_safe( $1 );
         expression_dealloc( $2, FALSE );
         $$ = NULL;
       }
+      free_safe( $1 );
+    }
+  | identifier index_expr K_INC
+    {
+      expression* tmp;
+      if( (ignore_mode == 0) && ($2 != NULL) ) {
+        db_bind_expr_tree( $2, $1 );
+        $2->line = @1.first_line;
+        $2->col  = ((@1.first_column & 0xffff) << 16) | ($2->col & 0xffff);
+        tmp = db_create_expression( NULL, $2, EXP_OP_PINC, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = tmp;
+      } else {
+        expression_dealloc( $2, FALSE );
+        $$ = NULL;
+      }
+      free_safe( $1 );
+    }
+  | identifier index_expr K_DEC
+    {
+      expression* tmp;
+      if( (ignore_mode == 0) && ($2 != NULL) ) {
+        db_bind_expr_tree( $2, $1 );
+        $2->line = @1.first_line;
+        $2->col  = ((@1.first_column & 0xffff) << 16) | ($2->col & 0xffff);
+        tmp = db_create_expression( NULL, $2, EXP_OP_PDEC, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = tmp;
+      } else {
+        expression_dealloc( $2, FALSE );
+        $$ = NULL;
+      }
+      free_safe( $1 );
+    }
+  | K_INC identifier index_expr
+    {
+      expression* tmp;
+      if( (ignore_mode == 0) && ($3 != NULL) ) {
+        db_bind_expr_tree( $3, $2 );
+        $3->line = @2.first_line;
+        $3->col  = ((@2.first_column & 0xffff) << 16) | ($3->col & 0xffff);
+        tmp = db_create_expression( NULL, $3, EXP_OP_IINC, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = tmp;
+      } else {
+        expression_dealloc( $3, FALSE );
+        $$ = NULL;
+      }
+      free_safe( $2 );
+    }
+  | K_DEC identifier index_expr
+    {
+      expression* tmp;
+      if( (ignore_mode == 0) && ($3 != NULL) ) {
+        db_bind_expr_tree( $3, $2 );
+        $3->line = @2.first_line;
+        $3->col  = ((@2.first_column & 0xffff) << 16) | ($3->col & 0xffff);
+        tmp = db_create_expression( NULL, $3, EXP_OP_IDEC, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = tmp;
+      } else {
+        expression_dealloc( $3, FALSE );
+        $$ = NULL;
+      }
+      free_safe( $2 );
     }
   | identifier '(' expression_port_list ')'
     {
@@ -2357,7 +2464,7 @@ generate_passign
     {
       expression* expr;
       expr = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
-      expr = db_create_expression( NULL, expr, EXP_OP_INC, FALSE, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
+      expr = db_create_expression( NULL, expr, EXP_OP_PINC, FALSE, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
       if( generate_varname == NULL ) {
         generate_varname = $1;
       }
@@ -2371,7 +2478,7 @@ generate_passign
     {
       expression* expr;
       expr = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
-      expr = db_create_expression( NULL, expr, EXP_OP_DEC, FALSE, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
+      expr = db_create_expression( NULL, expr, EXP_OP_PDEC, FALSE, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
       if( generate_varname == NULL ) {
         generate_varname = $1;
       }
@@ -3514,7 +3621,7 @@ passign
           expression_dealloc( $1, FALSE );
           $$ = NULL;
         } else {
-          tmp = db_create_expression( NULL, $1, EXP_OP_INC, FALSE, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
+          tmp = db_create_expression( NULL, $1, EXP_OP_PINC, FALSE, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
           stmt = db_create_statement( tmp );
           db_add_expression( tmp );
           $$ = stmt;
@@ -3534,7 +3641,7 @@ passign
           expression_dealloc( $1, FALSE );
           $$ = NULL;
         } else {
-          tmp = db_create_expression( NULL, $1, EXP_OP_DEC, FALSE, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
+          tmp = db_create_expression( NULL, $1, EXP_OP_PDEC, FALSE, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
           stmt = db_create_statement( tmp );
           db_add_expression( tmp );
           $$ = stmt;

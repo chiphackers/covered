@@ -716,12 +716,14 @@ typedef enum exp_op_type_e {
   EXP_OP_NOOP,            /*!< 78:0x4e.  Specifies no operation is to be performed (placeholder) */
   EXP_OP_ALWAYS_COMB,     /*!< 79:0x4f.  Specifies an always_comb statement (implicit event expression - similar to SLIST) */
   EXP_OP_ALWAYS_LATCH,    /*!< 80:0x50.  Specifies an always_latch statement (implicit event expression - similar to SLIST) */
-  EXP_OP_INC,             /*!< 81:0x51.  Specifies the increment SystemVerilog operator (++) */
-  EXP_OP_DEC,             /*!< 82:0x52.  Specifies the decrement SystemVerilog operator (--) */
-  EXP_OP_DLY_ASSIGN,      /*!< 83:0x53.  Specifies a delayed assignment (i.e., a = #5 b; or a = @(c) b;) */
-  EXP_OP_DLY_OP,          /*!< 84:0x54.  Child expression of DLY_ASSIGN, points to the delay expr and the op expr */
-  EXP_OP_RPT_DLY,         /*!< 85:0x55.  Child expression of DLY_OP, points to the delay expr and the repeat expr */
-  EXP_OP_DIM,             /*!< 86:0x56.  Specifies a selection dimension (right expression points to a selection expr) */
+  EXP_OP_IINC,            /*!< 81:0x51.  Specifies the immediate increment SystemVerilog operator (++a) */
+  EXP_OP_PINC,            /*!< 82:0x52.  Specifies the postponed increment SystemVerilog operator (a++) */
+  EXP_OP_IDEC,            /*!< 83:0x53.  Specifies the immediate decrement SystemVerilog operator (--a) */
+  EXP_OP_PDEC,            /*!< 84:0x54.  Specifies the postponed decrement SystemVerilog operator (a--) */
+  EXP_OP_DLY_ASSIGN,      /*!< 85:0x55.  Specifies a delayed assignment (i.e., a = #5 b; or a = @(c) b;) */
+  EXP_OP_DLY_OP,          /*!< 86:0x56.  Child expression of DLY_ASSIGN, points to the delay expr and the op expr */
+  EXP_OP_RPT_DLY,         /*!< 87:0x57.  Child expression of DLY_OP, points to the delay expr and the repeat expr */
+  EXP_OP_DIM,             /*!< 88:0x58.  Specifies a selection dimension (right expression points to a selection expr) */
   EXP_OP_NUM              /*!< The total number of defines for expression values */
 } exp_op_type;
 
@@ -798,8 +800,6 @@ typedef enum exp_op_type_e {
                                          (o != EXP_OP_WHILE)          && \
                                          (o != EXP_OP_FUNC_CALL)      && \
 					 (o != EXP_OP_PASSIGN)        && \
-                                         (o != EXP_OP_INC)            && \
-                                         (o != EXP_OP_DEC)            && \
                                          (o != EXP_OP_DLY_ASSIGN)     && \
                                          (o != EXP_OP_DIM))
 
@@ -2192,6 +2192,10 @@ struct dim_range_s {
 
 /*
  $Log$
+ Revision 1.235  2006/09/25 22:22:28  phase1geo
+ Adding more support for memory reporting to both score and report commands.
+ We are getting closer; however, regressions are currently broken.  Checkpointing.
+
  Revision 1.234  2006/09/25 04:15:03  phase1geo
  Starting to add support for new memory coverage metric.  This includes changes
  for the report command only at this point.

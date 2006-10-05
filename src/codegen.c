@@ -855,13 +855,22 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
           codegen_create_expr( code, code_depth, expr->line, "-", right_code, right_code_depth, expr->right, NULL,
                                NULL, 0, NULL, NULL );
           break;
-        case EXP_OP_INC      :
+        case EXP_OP_IINC     :
+          codegen_create_expr( code, code_depth, expr->line, "++", left_code, left_code_depth, expr->left, NULL,
+                               NULL, 0, NULL, NULL );
+          break;
+        case EXP_OP_PINC     :
           codegen_create_expr( code, code_depth, expr->line, NULL, left_code, left_code_depth, expr->left, "++",
                                NULL, 0, NULL, NULL );
           break;
-        case EXP_OP_DEC      :
+        case EXP_OP_IDEC     :
+          codegen_create_expr( code, code_depth, expr->line, "--", left_code, left_code_depth, expr->left, NULL,
+                               NULL, 0, NULL, NULL );
+          break;
+        case EXP_OP_PDEC     :
           codegen_create_expr( code, code_depth, expr->line, NULL, left_code, left_code_depth, expr->left, "--",
                                NULL, 0, NULL, NULL );
+          break;
         case EXP_OP_DIM      :
           codegen_create_expr( code, code_depth, expr->line, NULL, left_code, left_code_depth, expr->left, "",
                                right_code, right_code_depth, expr->right, NULL );
@@ -891,6 +900,11 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.77  2006/09/20 22:38:09  phase1geo
+ Lots of changes to support memories and multi-dimensional arrays.  We still have
+ issues with endianness and VCS regressions have not been run, but this is a significant
+ amount of work that needs to be checkpointed.
+
  Revision 1.76  2006/09/15 22:14:54  phase1geo
  Working on adding arrayed signals.  This is currently in progress and doesn't
  even compile at this point, much less work.  Checkpointing work.
