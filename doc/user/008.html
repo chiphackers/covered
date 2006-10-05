@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
 <HTML>
 <HEAD>
-  <TITLE>Covered - Assertion Coverage</TITLE>
+  <TITLE>Covered - FSM Coverage</TITLE>
   <META name="GENERATOR" content="ManStyle">
   <meta name="author" content="Trevor Williams">
   <LINK rel=stylesheet type="text/css" href="styles.css">
@@ -62,7 +62,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="header2">2.5&nbsp; <A name="2_5"></A>Assertion Coverage</P>
+      <P class="header2">2.5&nbsp; <A name="2_5"></A>Finite State Machine (FSM) Coverage</P>
     </TD>
   </TR>
 
@@ -74,53 +74,165 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      Assertion coverage answers the question, "Did I hit all of the possible
-      coverage points of the assertions that I included in the design?"</P>
-    </TD>
-  </TR>
-  
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      Currently, Covered is capable of finding all OVL (Open Verification Language)
-      assertion modules instantiated within the design (when the <b>-A ovl</b> option
-      has been specified to the score command).  Within most OVL assertion
-      modules are one or more built-in coverage points.  When the user has specified
-      a particular assertion instance to check for a coverage point, Covered
-      simulates this assertion module, keeping track of which coverage points within
-      the assertion have been hit during simulation (and how many times each coverage
-      point has been hit) and which have not.  This allows the user to check for more
-      complex coverage scenarios within the design.</P>
-    </TD>
-  </TR>
-  
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      Currently, only <A href="http://www.accellera.org/activities/ovl">OVL version 1.6</A>
-      (and newer) are supported.  Older versions of the OVL may not work and are not 
-      planned to be supported.</P>
+      Finite state machine (FSM) coverage answers the question, "Did I reach all of the 
+      states and traverse all possible paths through a given state machine?"</P>
     </TD>
   </TR>
 
-    <TR>
+  <TR>
     <TD></TD>
     <TD valign=top>
       <P class="margin"></P>
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="header3">2.5.1 <A name="2_5_1"></A>Recommendations</P>
+      <P class="pg">
+      There are two types of coverage detail for FSMs that Covered can handle:</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      <OL> 
+        <LI>State coverage - answers the question "Were all states of an FSM hit during 
+            simulation?"</LI>
+        <LI>State transition coverage - answers the question "Did the FSM transition 
+            between all states (that are achievable) in simulation?"</LI>
+      </OL></P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header3">2.5.1 <A name="2_5_1"></A>Example</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin">Example</P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">Suppose the DUT comprised of the following finite state machine.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="code">module test( clock );<br> input clock;<br> <br> reg [1:0] state;<br> reg req, gnt;<br> <br> parameter IDLE 2'b00;<br> parameter REQ&nbsp; 2'b01;<br> parameter WAIT 2'b10;<br> parameter GNT&nbsp; 2'b11;<br> <br> initial<br> &nbsp; begin<br> &nbsp;&nbsp;&nbsp; req = 1'b0;<br> &nbsp;&nbsp;&nbsp; gnt = 1'b0;<br> &nbsp;&nbsp;&nbsp; repeat(4) @(posedge clock);<br> &nbsp;&nbsp;&nbsp; req <= 1'b1;<br> &nbsp;&nbsp;&nbsp; @(posedge clock);<br> &nbsp;&nbsp;&nbsp; req <= 1'b0;<br> &nbsp;&nbsp;&nbsp; gnt <= 1'b1;<br> &nbsp;&nbsp;&nbsp; @(posedge clock);<br> &nbsp;&nbsp;&nbsp; gnt <= 1'b0;<br> &nbsp;&nbsp;&nbsp; repeat(2) @(posedge clock);<br> &nbsp; end<br> <br> always @(posedge clock)<br> &nbsp; case( state )<br> &nbsp;&nbsp;&nbsp; IDLE : state <= req ? REQ : IDLE;<br> &nbsp;&nbsp;&nbsp; REQ&nbsp; : state <= gnt ? GNT : WAIT;<br> &nbsp;&nbsp;&nbsp; WAIT : state <= gnt ? GNT : WAIT;<br> &nbsp;&nbsp;&nbsp; GNT&nbsp; : state <= IDLE;<br> &nbsp;&nbsp;&nbsp; default : state <= 2'bx;<br> &nbsp; endcase<br> <br> endmodule </P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      To help visualize this state machine, let's also display it as a digraph.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg"><img src="img/fsm_example.png"><br><br></P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      This state machine has four states: IDLE, REQ, WAIT, GNT. During simulation, 75% 
+      of the states were hit (3 out of 4) including IDLE, REQ and GNT. You can see that 
+      the WAIT state was never hit during simulation since the gnt signal was asserted 
+      the clock period after the req signal asserted. </P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      Additionally, this state machine contains 7 state "arcs" which are represented in 
+      the digraph as arrowed lines. They are the following:</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      <ol> 
+        <li>IDLE -> IDLE&nbsp; (HIT)</li>
+        <li>IDLE -> REQ&nbsp;&nbsp; (HIT)</li>
+        <li>REQ&nbsp; -> WAIT&nbsp; (MISSED)</li>
+        <li>REQ&nbsp; -> GNT&nbsp;&nbsp; (HIT)</li>
+        <li>WAIT -> WAIT&nbsp; (MISSED)</li>
+        <li>WAIT -> GNT&nbsp;&nbsp; (MISSED)</li>
+        <li>GNT&nbsp; -> IDLE&nbsp; (HIT)</li>
+      </ol></P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      Counting the number of traversed arcs during simulation, we can see that we have 
+      covered 4 out of 7 (or 57%) of the possible arcs in this state machine.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header3">2.5.2 <A name="2_5_2"></A>Recommendations</P>
     </TD>
   </TR>
 
@@ -132,14 +244,16 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      For a design to pass full coverage, it is recommended that the assertion coverage 
-      for all modules in a design receive 100% coverage. If an assertion coverage point
-      is not hit during simulation, the design has not been fully exercised. Assertion
-      coverage is useful for determining more specific corner case holes in the test 
-      suite.</P>
+      For a design to pass full coverage, it is recommended that the FSM coverage for 
+      all finite state machines in the design to receive 100% coverage for the state 
+      coverage and 100% for all achievable state transitions. Since Covered will not 
+      determine which state transitions are achievable, it is up to the verification 
+      engineer to examine the executed state transitions to determine if 100% of 
+      possible transitions occurred.</P>
     </TD>
   </TR>
-  
+
+
   <TR>
     <TD></TD>
     <TD></TD>

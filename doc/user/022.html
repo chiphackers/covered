@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
 <HTML>
 <HEAD>
-  <TITLE>Covered - Reading FSM Coverage</TITLE>
+  <TITLE>Covered - Reading Assertion Coverage</TITLE>
   <META name="GENERATOR" content="ManStyle">
   <meta name="author" content="Trevor Williams">
   <LINK rel=stylesheet type="text/css" href="styles.css">
@@ -62,7 +62,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="header2">12.4&nbsp; <A name="12_4"></A>Reading FSM Coverage</P>
+      <P class="header2">12.3&nbsp; <A name="12_3"></A>Reading Memory Coverage</P>
     </TD>
   </TR>
 
@@ -73,34 +73,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="header3">12.4.1 <A name="12_4_1"></A>Summary Information Description - Module-based</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">
-      For module-based reports, the summary table for FSM metrics includes information for the name of each
-      module that was covered and the name of the file in which the module is described in. Lines
-      <a href="test/example.rptM.html#239">239 through 244</a> of the module-based report show what this
-      information looks like in the report. We have three modules that were scored within our DUT: main,
-      fsma and fsmb. The table shows that all three modules were described in the file "example.v".</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="header3">12.4.2 <A name="12_4_2"></A>Summary Information Description - Instance-based</P>
+      <P class="header3">12.3.1 <A name="12_3_1"></A>Summary Information Description - Module-based</P>
     </TD>
   </TR>
 
@@ -112,10 +85,40 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      For instance-based reports, the summary table for FSM metrics includes information for the Verilog
-      hierarchy pertaining to each instance on the left-hand-side of each row. Lines
-      <a href="test/example.rptI.html#239">239 through 244</a> of the instance-based report show what this
-      information looks like in the report. In our DUT example, there are three instances within the design
+      For module-based reports, the summary table for memory metrics includes 
+      information for the name of each module, instantiating one or more memories,
+      that was analyzed and the name of the file in which the module is described in. 
+      Lines <a href="test/example.rptM.html#93">93 through 111</a> of the module-based 
+      report show what this information looks like in the report. We have three modules 
+      that were scored within our DUT: main, fsma and fsmb. The table shows that all 
+      three modules were described in the file "example.v".</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header3">12.3.2 <A name="12_3_2"></A>Summary Information Description - Instance-based</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      For instance-based reports, the summary table for memory metrics includes 
+      information for the Verilog hierarchy pertaining to each instance on the 
+      left-hand-side of each row. Lines <a href="test/example.rptI.html#93">93 through 
+      111</a> of the instance-based report show what this information looks like in the 
+      report. In our DUT example, there are three instances within the design
       with the Verilog hierarchies of "main", "main.fsm1" and "main.fsm2".</P>
     </TD>
   </TR>
@@ -127,7 +130,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="header3">12.4.3 <A name="12_4_3"></A>Summary Information Description - Both</P>
+      <P class="header3">12.3.3 <A name="12_3_3"></A>Summary Information Description - Both</P>
     </TD>
   </TR>
 
@@ -139,12 +142,15 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      On the right-hand side of each row in the table are the hit, miss and total numbers for the FSM state
-      coverage, followed by a calculated percent of the FSM states that were hit (calculated by taking the
-      number of FSM states hit during simulation divided by the total number of FSM states that Covered could
-      have simulated). The hit value indicates how many FSM states were executed during the simulation; the
-      miss value indicates the number of FSM states not executed during simulation; and the total value
-      indicates the total number of FSM states within the specified module/instance that Covered can simulate.</P>
+      On the right-hand side of each row in the table are the hit, miss and total numbers 
+      for the various memory coverage metrics, followed by a calculated percent of each
+      memory coverage metric that was hit (calculated by taking the number hit during simulation 
+      divided by the total number that Covered could have simulated). The hit 
+      value indicates how many were executed during the simulation; the miss value 
+      indicates the number not executed during simulation; and the total 
+      value indicates the total number within the specified module/instance that Covered can
+      simulate.  All four metrics (AME toggle 0->1, AME toggle 1->0, AME write and AME read)
+      are listed in the summary section.</P>
     </TD>
   </TR>
 
@@ -156,8 +162,25 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      To the right of the FSM state summary information is the FSM state-transition hit, miss, total and
-      percentage hit summary information for each module/instance.</P>
+      If the percentage value in the far left of the summary table is 100%, this 
+      indicates that all coverage points that Covered was capable of simulating 
+      (for the module/instance of this row) were executed. If the value of the percentage 
+      is less than 100%, this indicates that some number of coverage points
+      were not executed and full coverage was not achieved for that module/instance.
+      Note that for a module/instance which does not contain any coverage points
+      in which Covered was able to simulate, the values of hit, miss, and total will be 0 
+      while the hit percentage value will indicate 100%.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header3">12.3.4 <A name="12_3_4"></A>Verbose Information Description - Both</P>
     </TD>
   </TR>
 
@@ -169,23 +192,9 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      If the percentage value in the far left of the summary table is 100%, this indicates that all FSM states
-      and state-transitions that Covered was capable of simulating (for the module/instance of this row) were
-      executed. If the value of the percentage is less than 100%, this indicates that some number of FSM states
-      and/or FSM state-transitions were not executed and full coverage was not achieved for that module/instance.
-      Note that for a module/instance which does not contain any FSMs in which Covered was able to simulate, the
-      values of hit, miss, and total will be 0 while the hit percentage value will indicate 100%.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="header3">12.4.4 <A name="12_4_4"></A>Verbose Information Description - Both</P>
+      When a module/instance is found to be not fully covered (i.e., the number of each hit 
+      coverage points is not equal to the associated number of attainable coverage points), the
+      missed coverage points for each AME in the memory are output to the report as follows:</P>
     </TD>
   </TR>
 
@@ -197,21 +206,10 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      The verbose output for FSM coverage is split into the state coverage information and the state transition
-      coverage information. When an FSM is found to be not fully covered (i.e., the number of hit states/state
-      transitions is not equal to the number of attainable states/state transitions), the missed states are
-      output to the report as a list of state values in hexidecimal format as follows:</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">&lt;<i>hexidecimal value</i>&gt;</P>
+        <PRE>
+      &lt;AME&gt;  Written: &lt;0 or 1&gt;  0->1: &lt;hexidecimal_value&gt;
+      .....  Read:    &lt;0 or 1&gt;  1->0: &lt;hexidecimal_value&gt; ...
+        </PRE></P>
     </TD>
   </TR>
 
@@ -223,19 +221,12 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      When an FSM is found to be not fully covered, the missed state transitions are output to the report as a
-      list of state transitions in the format below:</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">&lt;<i>hexidecimal input state value</i>&gt; -&gt; &lt;<i>hexidecimal output state value</i>&gt;</P>
+      The answers to each of the questions listed above are specified with a 0 (meaning that
+      the answer is "NO") or a 1 (meaning that the answer is "YES").  Note that in the toggle
+      coverage information, like toggle coverage verbose information, the individual bits are
+      grouped together and displayed in hexidecimal form to conserve space and make the task
+      of figuring out exactly which bit positions did not toggle easier.  See lines
+      <A href="test/example.rptM.html#117">117 through 151</A> for an example of this output.</P>
     </TD>
   </TR>
 
@@ -247,15 +238,10 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      If the -c option is used or the number of attainable state/state transitions are unknown for the specified
-      FSM, Covered outputs this information in the same way as the missed cases except that the title of the 
-      output is "Hit cases". If the number of attainable states/state transitions is unknown, providing the
-      cases that were hit during simulation is useful in aiding the user in determining coverage. In this case,
-      the summary report will output question marks in the missed and total categories, showing the user that
-      this information was not known by Covered.</P>
+      If the -c option is used, Covered outputs the names of the memories that were fully
+      covered during simulation only.</P>
     </TD>
   </TR>
-
 
   <TR>
     <TD></TD>

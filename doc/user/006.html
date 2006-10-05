@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
 <HTML>
 <HEAD>
-  <TITLE>Covered - Combinational Coverage</TITLE>
+  <TITLE>Covered - Assertion Coverage</TITLE>
   <META name="GENERATOR" content="ManStyle">
   <meta name="author" content="Trevor Williams">
   <LINK rel=stylesheet type="text/css" href="styles.css">
@@ -62,7 +62,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="header2">2.3&nbsp; <A name="2_3"></A>Combinational Coverage</P>
+      <P class="header2">2.3&nbsp; <A name="2_3"></A>Memory Coverage</P>
     </TD>
   </TR>
 
@@ -74,9 +74,8 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      Combinational logic coverage answers the question, "What values did an 
-      expression (or subexpression) evaluate to (or not evaluate to) during the 
-      course of the simulation?"</P>
+      Memory coverage answers a number of questions about memories/multi-dimensional arrays
+      being used in your design, including the following:</P>
     </TD>
   </TR>
 
@@ -88,42 +87,12 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      This type of coverage is extremely useful in determining logical combinations 
-      of signals that were not tried during simulation, exposing potential holes in 
-      verification.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="header3">2.3.1 <A name="2_3_1"></A>Example</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin">Example</P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">Suppose the DUT comprised of the following module</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="code">module test;<br> <br> reg&nbsp; a;<br> reg&nbsp; b;<br> wire c;<br> <br> initial<br> &nbsp; begin<br> &nbsp;&nbsp;&nbsp; a = 1'b0;<br> &nbsp;&nbsp;&nbsp; b = 1'b1;<br> &nbsp;&nbsp;&nbsp; #10;<br> &nbsp;&nbsp;&nbsp; a = 1'b1;<br> &nbsp;&nbsp;&nbsp; #10;<br> &nbsp; end<br> <br> assign c = a | b;<br> <br> endmodule</P>
+        <OL>
+          <LI>Did all bits of each addressable memory element toggle from 0 to 1?</LI>
+          <LI>Did all bits of each addressable memory element toggle from 1 to 0?</LI>
+          <LI>Did every addressable memory element get written?</LI>
+          <LI>Did every addressable memory element get read?</LI>
+        </OL></P>
     </TD>
   </TR>
 
@@ -135,9 +104,25 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      This module comprises of only one expression: a | b. If this module were 
-      simulated it would result in a combinational coverage value of 50% (2 out of 4). 
-      Can you determine which cases are not being covered?</P>
+      Memories/multi-dimensional arrays can have two types of dimensions, packed and unpacked.
+      Packed dimensional information is specified to the left of an array declaration while
+      unpacked dimensional information is specified to the right of an array declaration.
+      Consider the following example:</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin">
+      Multi-dimensional array example</P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="code">
+        <PRE>
+          reg [3:0][2:0] foo[0:15];
+        </PRE></P>
     </TD>
   </TR>
 
@@ -149,8 +134,10 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      The expression "a | b" can result in two values, 0 and 1, but can do so in 
-      four combinations:</P>
+      The memory "foo" consists of three dimensions.  The first dimension is an unpacked dimension
+      which specifies that there are 16 addressable memory elements (AME).  The number of AMEs are
+      determined by multiplying the unpacked dimension of an array.  The second two dimensions
+      are packed dimensions, creating a total of 12 bits for each AME.</P>
     </TD>
   </TR>
 
@@ -162,15 +149,67 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      <ol>
-      	<li>a = 0, b = 0, c = 0</li>
-      	<li>a = 0, b = 1, c = 1</li>
-      	<li>a = 1, b = 0, c = 1</li>
-      	<li>a = 1, b = 1, c = 1</li>
-      </ol></P>
+      Other than getting toggle coverage information for each AME, memory coverage also allows us to
+      easily see which AMEs were written and read during simulation.  If all entries of a memory have
+      not been written during a regression run, it could indicate several shortcomings of either the
+      testbench or a logical problem with the write control logic, including, but not limited to,
+      the following:</P>
     </TD>
   </TR>
 
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin">
+      Potential testsuite or logic problems found when AME write coverage is not 100%</P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+        <OL>
+          <LI>If no AMEs for a given memory were written, it could indicate that the testsuite
+              was never able to get out of bypass mode for that memory.</LI>
+          <LI>If fewer AMEs for a given memory were written than were read, it could indicate that
+              there is a read controller issue leading to an underflow issue with the memory.</LI>
+          <LI>For memories that act like stacks or use lowest/highest address first write selection
+              scheme, indicates that the memory was never completely filled (may miss out on things
+              like buffer overflow errors)</LI>
+          <LI>For memories that are written in a round-robin fashion, indicates that either not
+              enough entries were written (could miss a write pointer wrap bug) or that there is
+              a logical issue by which the write pointer did not properly increment in a round-robin
+              fashion.</LI>
+          <LI>If there are "holes" in the write coverage of the AMEs (that is an AME is found to not
+              have been written while those above and below it have been), this could indicate a corner
+              case logic bug or other testsuite issue that needs to be addressed.</LI>
+        </OL></P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin">
+      Potential testsuite or logic problems found when AME read coverage is not 100%</P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+        <OL>
+          <LI>If no AMEs for a given memory were read, it could indicate that the testsuite
+              was never able to get out of bypass mode for that memory.</LI>
+          <LI>If fewer AMEs for a given memory were read than written, it could indicate that
+              a resource allocation issue.</LI>
+          <LI>For memories that are written in a round-robin fashion, indicates that either not
+              enough entries were read (could miss a read pointer wrap bug) or that there is
+              a logical issue by which the read pointer did not properly increment in a round-robin
+              fashion.</LI>
+          <LI>If there are "holes" in the read coverage of the AMEs (that is an AME is found to not
+              have been read while those above and below it have been), this could indicate a corner
+              case logic bug or other testsuite issue that needs to be addressed.</LI>
+        </OL></P>
+    </TD>
+  </TR>
+  
   <TR>
     <TD></TD>
     <TD valign=top>
@@ -179,21 +218,20 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      Noticing the values assigned to a and b during simulation, shows that 
-      combinations (2) and (4) were hit during execution while combinations 
-      (1) and (3) were not (2 out of 4 - 50%). This also shows us that the value 
-      of c was never 0 during simulation.</P>
+      Currently, Covered simulates all memories/multi-dimensional arrays and its coverage is
+      automatically accumulated during the score command.  To see its report information, either
+      specify the -m m option to the report command or bring up the GUI for interactive analysis.</P>
     </TD>
   </TR>
-
-  <TR>
+  
+    <TR>
     <TD></TD>
     <TD valign=top>
       <P class="margin"></P>
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="header3">2.3.2 <A name="2_3_2"></A>Recommendations</P>
+      <P class="header3">2.3.1 <A name="2_3_1"></A>Recommendations</P>
     </TD>
   </TR>
 
@@ -205,17 +243,14 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      For a design to pass full coverage, it is recommended that the combinational 
-      logic coverage for all modules be 80% or higher. If the expression coverage for 
-      an expression is not 100%, it is recommended that the verification engineer 
-      closely examine these missed cases to determine if more testing is required. 
-      Sometimes certain combinations of signals are unachievable due to design 
-      constraints, keeping the expression coverage from ever reaching a value of 
-      100% but still can be considered fully covered. </P>
+      For a design to pass full coverage, it is recommended that the write/read memory coverage 
+      for all modules in a design receive 100% coverage.  If every AME was not both written and
+      read during simulation, the design has not been fully exercised.  Toggle coverage per AME
+      need not receive 100% since a memory element that is written once will not cause toggle
+      coverage to change.</P>
     </TD>
   </TR>
-
-
+  
   <TR>
     <TD></TD>
     <TD></TD>
