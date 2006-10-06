@@ -233,7 +233,7 @@ static bool expression_op_func__pdec( expression*, thread* );
 static bool expression_op_func__dly_assign( expression*, thread* );
 static bool expression_op_func__dly_op( expression*, thread* );
 static bool expression_op_func__repeat_dly( expression*, thread* );
-static bool expression_op_func__dimension( expression*, thread* );
+static bool expression_op_func__wait( expression*, thread* );
 
 /*!
  Array containing static information about expression operation types.  NOTE:  This structure MUST be
@@ -327,7 +327,8 @@ const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",         "",             ex
                                            {"DLY_ASSIGN",     "",             expression_op_func__dly_assign, {1, 0, NOT_COMB,   0, 0, 1, 0} },
                                            {"DLY_OP",         "",             expression_op_func__dly_op,     {1, 0, NOT_COMB,   0, 0, 0, 0} },
                                            {"RPT_DLY",        "",             expression_op_func__repeat_dly, {1, 0, NOT_COMB,   0, 0, 0, 0} },
-                                           {"DIM",            "",             expression_op_func__dimension,  {0, 0, NOT_COMB,   0, 0, 0, 0} } };
+                                           {"DIM",            "",             expression_op_func__null,       {0, 0, NOT_COMB,   0, 0, 0, 0} },
+                                           {"WAIT",           "wait",         expression_op_func__wait,       {1, 0, NOT_COMB,   0, 1, 1, 0} } };
 
 
 /*!
@@ -483,7 +484,8 @@ expression* expression_create( expression* right, expression* left, exp_op_type 
              (op == EXP_OP_CASEZ)   ||
              (op == EXP_OP_DEFAULT) ||
              (op == EXP_OP_REPEAT)  ||
-             (op == EXP_OP_RPT_DLY) ) {
+             (op == EXP_OP_RPT_DLY) ||
+             (op == EXP_OP_WAIT) ) {
 
     /* If this expression will evaluate to a single bit, create vector now */
     expression_create_value( new_expr, 1, data );
@@ -728,6 +730,7 @@ void expression_resize( expression* expr, bool recursive ) {
       case EXP_OP_DEFAULT :
       case EXP_OP_REPEAT  :
       case EXP_OP_RPT_DLY :
+      case EXP_OP_WAIT    :
         if( (expr->value->width != 1) || (expr->value->value == NULL) ) {
           assert( expr->value->value == NULL );
           expression_create_value( expr, 1, FALSE );
@@ -766,7 +769,6 @@ void expression_resize( expression* expr, bool recursive ) {
        children's width.  Remove the current vector and replace it with the appropriately
        sized vector.
       */
-      // case EXP_OP_MULTIPLY :
       case EXP_OP_LIST :
         if( (expr->value->width != (expr->left->value->width + expr->right->value->width)) ||
             (expr->value->value == NULL) ) {
@@ -3180,18 +3182,30 @@ bool expression_op_func__repeat_dly( expression* expr, thread* thr ) {
 
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
- Performs a dimensional array access.
+ Performs a wait statement operation.
 */
-bool expression_op_func__dimension( expression* expr, thread* thr ) {
+bool expression_op_func__wait( expression* expr, thread* thr ) {
 
-  bool retval = TRUE;  /* Return value for this function */
+  bool     retval = TRUE;  /* Return value for this function */
+  vector   vec;            /* Temporary vector */
+  vec_data bit;            /* Temporary vector data */
 
-  /* TBD */
+  /* Check to see if the right expression has evaluated to a value of TRUE */
+  vector_init( &vec, &bit, 1, VTYPE_VAL );
+  vector_unary_op( &vec, expr->right->value, or_optab );
+
+  /* If the right expression evaluates to TRUE, continue; otherwise, do a context switch */
+  if( vec.value[0].part.val.value == 1 ) {
+    expr->suppl.part.eval_t = 1;
+    retval                  = TRUE;
+  } else {
+    expr->suppl.part.eval_t = 0;
+    retval                  = FALSE;
+  }
 
   return( retval );
 
 }
-
 
 /*!
  \param expr  Pointer to expression to set value to.
@@ -3895,6 +3909,12 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.219  2006/10/05 21:43:17  phase1geo
+ Added support for increment and decrement operators in expressions.  Also added
+ proper parsing and handling support for immediate and postponed increment/decrement.
+ Added inc3, inc3.1, dec3 and dec3.1 diagnostics to verify this new functionality.
+ Still need to run regressions.
+
  Revision 1.218  2006/10/04 22:04:16  phase1geo
  Updating rest of regressions.  Modified the way we are setting the memory rd
  vector data bit (should optimize the score command just a bit).  Also updated

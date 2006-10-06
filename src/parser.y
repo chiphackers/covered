@@ -4301,11 +4301,19 @@ statement
     }
   | K_wait '(' expression ')' inc_block_depth statement_opt dec_block_depth
     {
-      statement* stmt;
+      expression* exp;
+      statement*  stmt;
       if( (ignore_mode == 0) && ($3 != NULL) ) {
-        stmt = db_create_statement( $3 );
-        db_add_expression( $3 );
-        db_connect_statement_true( stmt, $6 );
+        exp  = db_create_expression( $3, NULL, EXP_OP_WAIT, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
+        stmt = db_create_statement( exp );
+        db_add_expression( exp );
+        if( $6 != NULL ) {
+          if( !db_statement_connect( stmt, $6 ) ) {
+            db_remove_statement( stmt );
+            db_remove_statement( $6 );
+            stmt = NULL;
+          }
+        }
         $$ = stmt;
       } else {
         db_remove_statement( $6 );

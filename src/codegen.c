@@ -851,6 +851,10 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
           codegen_create_expr( code, code_depth, expr->line, "while( ", right_code, right_code_depth, expr->right, " )",
                                NULL, 0, NULL, NULL );
           break;
+        case EXP_OP_WAIT     :
+          codegen_create_expr( code, code_depth, expr->line, "wait( ", right_code, right_code_depth, expr->right, " )",
+                               NULL, 0, NULL, NULL );
+          break;
         case EXP_OP_NEGATE   :
           codegen_create_expr( code, code_depth, expr->line, "-", right_code, right_code_depth, expr->right, NULL,
                                NULL, 0, NULL, NULL );
@@ -900,6 +904,12 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.78  2006/10/05 21:43:17  phase1geo
+ Added support for increment and decrement operators in expressions.  Also added
+ proper parsing and handling support for immediate and postponed increment/decrement.
+ Added inc3, inc3.1, dec3 and dec3.1 diagnostics to verify this new functionality.
+ Still need to run regressions.
+
  Revision 1.77  2006/09/20 22:38:09  phase1geo
  Lots of changes to support memories and multi-dimensional arrays.  We still have
  issues with endianness and VCS regressions have not been run, but this is a significant

@@ -1053,6 +1053,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
               case EXP_OP_IF       :  *size = r_size + 6;           strcpy( code_fmt, "    %s  " );          break;
               case EXP_OP_REPEAT   :  *size = r_size + 10;          strcpy( code_fmt, "        %s  " );      break;
               case EXP_OP_WHILE    :  *size = r_size + 9;           strcpy( code_fmt, "       %s  " );       break;
+              case EXP_OP_WAIT     :  *size = r_size + 8;           strcpy( code_fmt, "      %s  " );        break;
               case EXP_OP_DLY_OP   :
               case EXP_OP_RPT_DLY  :  *size = l_size + r_size + 1;  strcpy( code_fmt, "%s %s" );             break;
               case EXP_OP_TASK_CALL :
@@ -2667,6 +2668,12 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.160  2006/10/05 21:43:17  phase1geo
+ Added support for increment and decrement operators in expressions.  Also added
+ proper parsing and handling support for immediate and postponed increment/decrement.
+ Added inc3, inc3.1, dec3 and dec3.1 diagnostics to verify this new functionality.
+ Still need to run regressions.
+
  Revision 1.159  2006/09/20 22:38:09  phase1geo
  Lots of changes to support memories and multi-dimensional arrays.  We still have
  issues with endianness and VCS regressions have not been run, but this is a significant
