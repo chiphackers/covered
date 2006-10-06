@@ -308,7 +308,7 @@
  supplemental fields are ANDed with this mask and ORed together to perform the
  merge.  See esuppl_u for information on which bits are masked.
 */
-#define ESUPPL_MERGE_MASK            0x7fffff
+#define ESUPPL_MERGE_MASK            0xffffff
 
 /*!
  Returns a value of 1 if the specified supplemental value has the SWAPPED
@@ -431,6 +431,12 @@
  are specified \ref expression_types.
 */
 #define ESUPPL_TYPE(x)               x.part.type
+
+/*!
+ Returns a value of 1 if the specified statement block should only be executed during the
+ last simulation step.
+*/
+#define ESUPPL_STMT_FINAL(x)         x.part.stmt_final
 
 /*! @} */
 
@@ -1171,24 +1177,26 @@ union esuppl_u {
     control stmt_excluded  :1;  /*!< Bit 19.  Mask bit = 1.  Indicates that this statement (and its associated expression
                                      tree) should be excluded from coverage results. */
     control type           :3;  /*!< Bits 22:20.  Mask bit = 1.  Indicates how the pointer element should be treated as */
+    control stmt_final     :1;  /*!< Bit 23.  Mask bit = 1.  Indicates that this statement block should only be executed
+                                     during the final simulation step. */
  
     /* UNMASKED BITS */
-    control eval_t         :1;  /*!< Bit 23.  Mask bit = 0.  Indicates that the value of the current expression is
+    control eval_t         :1;  /*!< Bit 24.  Mask bit = 0.  Indicates that the value of the current expression is
                                      currently set to TRUE (temporary value). */
-    control eval_f         :1;  /*!< Bit 24.  Mask bit = 0.  Indicates that the value of the current expression is
+    control eval_f         :1;  /*!< Bit 25.  Mask bit = 0.  Indicates that the value of the current expression is
                                      currently set to FALSE (temporary value). */
-    control comb_cntd      :1;  /*!< Bit 25.  Mask bit = 0.  Indicates that the current expression has been previously
+    control comb_cntd      :1;  /*!< Bit 26.  Mask bit = 0.  Indicates that the current expression has been previously
                                      counted for combinational coverage.  Only set by report command (therefore this bit
                                      will always be a zero when written to CDD file. */
-    control stmt_added     :1;  /*!< Bit 26.  Temporary bit value used by the score command but not displayed to the CDD
+    control stmt_added     :1;  /*!< Bit 27.  Temporary bit value used by the score command but not displayed to the CDD
                                      file.  When this bit is set to a one, it indicates to the db_add_statement
                                      function that this statement and all children statements have already been
                                      added to the functional unit statement list and should not be added again. */
-    control owned          :1;  /*!< Bit 27.  Mask bit = 0.  Temporary value used by the score command to indicate
+    control owned          :1;  /*!< Bit 28.  Mask bit = 0.  Temporary value used by the score command to indicate
                                      if this expression is already owned by a mod_parm structure. */
-    control gen_expr       :1;  /*!< Bit 28.  Mask bit = 0.  Temporary value used by the score command to indicate
+    control gen_expr       :1;  /*!< Bit 29.  Mask bit = 0.  Temporary value used by the score command to indicate
                                      that this expression is a part of a generate expression. */
-    control prev_called    :1;  /*!< Bit 29.  Mask bit = 0.  Temporary value used by named block and task expression
+    control prev_called    :1;  /*!< Bit 30.  Mask bit = 0.  Temporary value used by named block and task expression
                                      functions to indicate if we are in the middle of executing a named block or task
                                      expression (since these cause a context switch to occur. */
   } part;
@@ -2192,6 +2200,12 @@ struct dim_range_s {
 
 /*
  $Log$
+ Revision 1.236  2006/10/05 21:43:17  phase1geo
+ Added support for increment and decrement operators in expressions.  Also added
+ proper parsing and handling support for immediate and postponed increment/decrement.
+ Added inc3, inc3.1, dec3 and dec3.1 diagnostics to verify this new functionality.
+ Still need to run regressions.
+
  Revision 1.235  2006/09/25 22:22:28  phase1geo
  Adding more support for memory reporting to both score and report commands.
  We are getting closer; however, regressions are currently broken.  Checkpointing.

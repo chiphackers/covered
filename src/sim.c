@@ -130,6 +130,18 @@ thread* delay_head  = NULL;
 */
 thread* delay_tail  = NULL;
 
+/*!
+ Pointer to head of thread list containing threads that should only be executed during the final
+ simulation phase (after all other threads have completed).
+*/
+thread* final_head  = NULL;
+
+/*!
+ Pointer to tail of thread list containing threads that should only be executed during the final
+ simulation phase (after all other threads have completed).
+*/
+thread* final_tail  = NULL;
+
 
 /*!
  \param head  Pointer to head of thread queue to display
@@ -405,12 +417,23 @@ thread* sim_add_thread( thread* parent, statement* stmt ) {
 
       } else {
 
-        if( thread_head == NULL ) {
-          thread_head = thread_tail = thr;
+        /* If the statement block is specified as a final block, add it to the final list */
+        if( ESUPPL_STMT_FINAL( stmt->exp->suppl ) == 1 ) {
+          if( final_head == NULL ) {
+            final_head = final_tail = thr;
+          } else {
+            final_tail->next = thr;
+            final_tail       = thr;
+          }
+        /* Otherwise, add it to the normal thread list */
         } else {
-          thr->prev         = thread_tail;
-          thread_tail->next = thr;
-          thread_tail       = thr;
+          if( thread_head == NULL ) {
+            thread_head = thread_tail = thr;
+          } else {
+            thr->prev         = thread_tail;
+            thread_tail->next = thr;
+            thread_tail       = thr;
+          }
         }
 
       }
@@ -747,9 +770,33 @@ void sim_simulate() {
   
 }
 
+/*!
+ Performs final simulation step.  All "final" blocks are executed at this time.
+*/
+void sim_simulate_final() {
+
+  if( final_head != NULL ) {
+
+    /* Make the final list the current thread list */
+    thread_head = final_head;
+    thread_tail = final_tail;
+
+    /* Perform final simulation */
+    sim_simulate();
+
+  }
+
+}
 
 /*
  $Log$
+ Revision 1.72  2006/08/28 22:28:28  phase1geo
+ Fixing bug 1546059 to match stable branch.  Adding support for repeated delay
+ expressions (i.e., a = repeat(2) @(b) c).  Fixing support for event delayed
+ assignments (i.e., a = @(b) c).  Adding several new diagnostics to verify this
+ new level of support and updating regressions for these changes.  Also added
+ parser support for logic port types.
+
  Revision 1.71  2006/08/21 22:50:01  phase1geo
  Adding more support for delayed assignments.  Added dly_assign1 to testsuite
  to verify the #... type of delayed assignment.  This seems to be working for

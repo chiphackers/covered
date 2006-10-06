@@ -53,9 +53,16 @@ void sim_thread( thread* thr );
 /*! \brief Simulates current timestep. */
 void sim_simulate();
 
+/*! \brief Simulates the final timestep. */
+void sim_simulate_final();
 
 /*
  $Log$
+ Revision 1.16  2006/03/28 22:28:28  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.15  2006/01/06 23:39:10  phase1geo
  Started working on removing the need to simulate more than is necessary.  Things
  are pretty broken at this point, but all of the code should be in -- debugging.
