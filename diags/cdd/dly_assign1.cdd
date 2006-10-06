@@ -1,5 +1,5 @@
 5 9 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd dly_assign1.vcd -o dly_assign1.cdd -v dly_assign1.v
+8 /ptmp/cvs/covered/diags/verilog -t main -vcd dly_assign1.vcd -o dly_assign1.cdd -v dly_assign1.v
 3 0 $root $root NA 0 0
 3 0 main main dly_assign1.v 1 25
 2 1 6 20002 1 0 20008 0 0 32 64 1 0 0 0 0 0 0 0
@@ -14,9 +14,9 @@
 2 10 8 60006 1 0 20008 0 0 32 64 11 0 0 0 0 0 0 0
 2 11 8 60006 1 0 20008 0 0 32 64 55 55 55 55 55 55 55 55
 2 12 8 50006 1 2c 20008 10 11 1 2 2
-2 13 8 5000c 2 54 20020 9 12 1 2 2
+2 13 8 5000c 2 56 20020 9 12 1 2 2
 2 14 8 10001 0 1 400 0 0 a
-2 15 8 1000c 4 53 2 13 14
+2 15 8 1000c 4 55 2 13 14
 2 16 9 50008 1 0 20008 0 0 1 4 1
 2 17 9 10001 0 1 400 0 0 c
 2 18 9 10008 1 37 a 16 17
