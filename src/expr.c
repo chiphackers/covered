@@ -3197,6 +3197,7 @@ bool expression_op_func__wait( expression* expr, thread* thr ) {
   /* If the right expression evaluates to TRUE, continue; otherwise, do a context switch */
   if( vec.value[0].part.val.value == 1 ) {
     expr->suppl.part.eval_t = 1;
+    expr->suppl.part.true   = 1;
     retval                  = TRUE;
   } else {
     expr->suppl.part.eval_t = 0;
@@ -3909,6 +3910,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.220  2006/10/06 22:45:57  phase1geo
+ Added support for the wait() statement.  Added wait1 diagnostic to regression
+ suite to verify its behavior.  Also added missing GPL license note at the top
+ of several *.h and *.c files that are somewhat new.
+
  Revision 1.219  2006/10/05 21:43:17  phase1geo
  Added support for increment and decrement operators in expressions.  Also added
  proper parsing and handling support for immediate and postponed increment/decrement.

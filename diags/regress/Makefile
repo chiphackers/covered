@@ -84,7 +84,7 @@ DIAGS1        = add1            always1         always2         always3         
                 task2           task2.1         task2.2         task2.3         task3 \
                 task3.1         task4           task4.1         toggle          tri \
                 tri0            tri1            triand          trior           wait1 \
-                wand            while1          while1.1        wor
+                wait1.1         wand            while1          while1.1        wor
 DIAGS2        = delay1.1
 DIAGS3        = delay1.2
 DIAGS4        = delay1.3
