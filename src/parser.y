@@ -436,15 +436,6 @@ description
       curr_signed = FALSE;
     }
     net_decl_assigns ';'
-  | TYPEDEF_IDENTIFIER
-    {
-      curr_mba     = FALSE;
-      curr_signed  = $1->is_signed;
-      curr_handled = $1->is_handled;
-      parser_copy_range_to_curr_range( $1->prange, TRUE );
-      parser_copy_range_to_curr_range( $1->urange, FALSE );
-    }
-    register_variable_list ';'
   | K_trireg charge_strength_opt range_opt delay3_opt
     {
       curr_mba      = FALSE;
@@ -4774,6 +4765,15 @@ block_item_decl
       curr_handled  = TRUE;
       curr_sig_type = SSUPPL_TYPE_DECLARED;
       parser_implicitly_set_curr_range( 63, 0, TRUE );
+    }
+    register_variable_list ';'
+  | attribute_list_opt TYPEDEF_IDENTIFIER ';'
+    {
+      curr_signed  = $2->is_signed;
+      curr_mba     = TRUE;
+      curr_handled = $2->is_handled;
+      parser_copy_range_to_curr_range( $2->prange, TRUE );
+      parser_copy_range_to_curr_range( $2->urange, FALSE );
     }
     register_variable_list ';'
   | attribute_list_opt K_real

@@ -78,12 +78,11 @@ PLI_INT32 covered_value_change( p_cb_data cb ) {
   value.format = vpiBinStrVal;
   vpi_get_value( cb->obj, &value );
 
-// #ifdef DEBUG_MODE
+#ifdef DEBUG_MODE
   snprintf( user_msg, USER_MSG_LENGTH, "In covered_value_change, name: %s, time: %d, value: %s",
             obf_sig( vpi_get_str( vpiFullName, cb->obj ) ), cb->time->low, value.value.str );
-  // print_output( user_msg, DEBUG, __FILE__, __LINE__ );
-  print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-// #endif
+  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+#endif
 
   if( cb->time->low != last_time ) {
     if( last_time >= 0 ) {
@@ -98,8 +97,7 @@ PLI_INT32 covered_value_change( p_cb_data cb ) {
 #ifdef DEBUG_MODE
   snprintf( user_msg, USER_MSG_LENGTH, "In covered_value_change, name: %s, time: %d, value: %s",
             obf_sig( vpi_get_str( vpiFullName, cb->obj ) ), cb->time->low, cb->value->value.str );
-  // print_output( user_msg, DEBUG, __FILE__, __LINE__ );
-  print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
   if( cb->time->low != last_time ) {
