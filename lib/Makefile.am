@@ -4,15 +4,12 @@ EXTRA_PROGRAMS = covered.vpi covered.vcs.so covered.cver.so
 noinst_LIBRARIES = libcovered.a
 libcovered_a_SOURCES = ../src/arc.c \
                        ../src/assertion.c \
-         	       ../src/attr.c \
                        ../src/binding.c \
                        ../src/codegen.c \
                        ../src/db.c \
                        ../src/enumerate.c \
                        ../src/expr.c \
                        ../src/fsm.c \
-                       ../src/fsm_arg.c \
-                       ../src/fsm_var.c \
                        ../src/func_unit.c \
                        ../src/info.c \
                        ../src/instance.c \
@@ -21,6 +18,7 @@ libcovered_a_SOURCES = ../src/arc.c \
                        ../src/obfuscate.c \
                        ../src/ovl.c \
                        ../src/param.c \
+                       ../src/parser_misc.c \
                        ../src/race.c \
                        ../src/scope.c \
                        ../src/search.c \

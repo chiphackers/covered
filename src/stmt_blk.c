@@ -54,7 +54,9 @@ void stmt_blk_add_to_remove_list( statement* stmt ) {
 
   assert( stmt != NULL );
 
+#ifndef VPI_ONLY
   if( !generate_remove_stmt( stmt ) ) {
+#endif
 
     /* If this is a head statement, don't bother looking this up again */
     if( ESUPPL_IS_STMT_HEAD( stmt->exp->suppl ) == 0 ) {
@@ -73,7 +75,9 @@ void stmt_blk_add_to_remove_list( statement* stmt ) {
       stmt_link_add_tail( stmt, &rm_stmt_head, &rm_stmt_tail );
     }
 
+#ifndef VPI_ONLY
   }
+#endif
 
 }
 
@@ -107,6 +111,10 @@ void stmt_blk_remove() {
 
 /*
  $Log$
+ Revision 1.8  2006/09/07 21:59:24  phase1geo
+ Fixing some bugs related to statement block removal.  Also made some significant
+ optimizations to this code.
+
  Revision 1.7  2006/09/05 21:00:45  phase1geo
  Fixing bug in removing statements that are generate items.  Also added parsing
  support for multi-dimensional array accessing (no functionality here to support

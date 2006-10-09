@@ -613,8 +613,8 @@ void toggle_report( FILE* ofile, bool verbose ) {
       strcpy( tmp, leading_hierarchies[0] );
     }
 
-    fprintf( ofile, "Instance                                                   Toggle 0 -> 1                       Toggle 1 -> 0\n" );
-    fprintf( ofile, "                                                   Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit\n" );
+    fprintf( ofile, "                                                           Toggle 0 -> 1                       Toggle 1 -> 0\n" );
+    fprintf( ofile, "Instance                                           Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
     instl = inst_head;
@@ -634,8 +634,8 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
   } else {
 
-    fprintf( ofile, "Module/Task/Function      Filename                         Toggle 0 -> 1                       Toggle 1 -> 0\n" );
-    fprintf( ofile, "                                                   Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit\n" );
+    fprintf( ofile, "                                                           Toggle 0 -> 1                       Toggle 1 -> 0\n" );
+    fprintf( ofile, "Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
     missed_found = toggle_funit_summary( ofile, funit_head );
@@ -653,6 +653,10 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.51  2006/09/25 04:15:04  phase1geo
+ Starting to add support for new memory coverage metric.  This includes changes
+ for the report command only at this point.
+
  Revision 1.50  2006/09/20 22:38:10  phase1geo
  Lots of changes to support memories and multi-dimensional arrays.  We still have
  issues with endianness and VCS regressions have not been run, but this is a significant

@@ -653,12 +653,14 @@ void instance_db_write( funit_inst* root, FILE* file, char* scope, bool parse_mo
       expl = expl->next;
     }
 
+#ifndef VPI_ONLY
     /* Then issue IDs to any generated expressions */
     gil = root->gitem_head;
     while( gil != NULL ) {
       gen_item_assign_expr_ids( gil->gi );
       gil = gil->next;
     }
+#endif
 
   }
 
@@ -691,12 +693,14 @@ void instance_remove_stmt_blks_calling_stmt( funit_inst* root, statement* stmt )
     /* First, handle the current functional unit */
     funit_remove_stmt_blks_calling_stmt( root->funit, stmt );
 
+#ifndef VPI_ONLY
     /* Second, handle all generate items in this instance */
     gil = root->gitem_head;
     while( gil != NULL ) {
       gen_item_remove_if_contains_expr_calling_stmt( gil->gi, stmt );
       gil = gil->next;
     }
+#endif
 
     /* Parse children */
     curr_child = root->child_head;
@@ -789,8 +793,10 @@ void instance_dealloc_tree( funit_inst* root ) {
     /* Deallocate memory for instance parameter list */
     inst_parm_dealloc( root->param_head, TRUE );
 
+#ifndef VPI_ONLY
     /* Deallocate memory for generate item list */
     gitem_link_delete_list( root->gitem_head, FALSE );
+#endif
   
     /* Free up memory for this functional unit instance */
     free_safe( root );
@@ -864,6 +870,10 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.61  2006/09/22 19:56:45  phase1geo
+ Final set of fixes and regression updates per recent changes.  Full regression
+ now passes.
+
  Revision 1.60  2006/09/22 04:23:04  phase1geo
  More fixes to support new signal range structure.  Still don't have full
  regressions passing at the moment.

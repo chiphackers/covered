@@ -56,6 +56,8 @@ int    merge_in_num;
 char** merge_in            = NULL;
 char*  top_module          = NULL;
 char*  top_instance        = NULL;
+int    flag_global_generation = GENERATION_SV;
+int    generate_expr_mode  = 0;
 
 extern bool        debug_mode;
 extern symtable*   vcd_symtab;
@@ -76,11 +78,12 @@ PLI_INT32 covered_value_change( p_cb_data cb ) {
   value.format = vpiBinStrVal;
   vpi_get_value( cb->obj, &value );
 
-#ifdef DEBUG_MODE
+// #ifdef DEBUG_MODE
   snprintf( user_msg, USER_MSG_LENGTH, "In covered_value_change, name: %s, time: %d, value: %s",
             obf_sig( vpi_get_str( vpiFullName, cb->obj ) ), cb->time->low, value.value.str );
-  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
-#endif
+  // print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+// #endif
 
   if( cb->time->low != last_time ) {
     if( last_time >= 0 ) {
@@ -95,7 +98,8 @@ PLI_INT32 covered_value_change( p_cb_data cb ) {
 #ifdef DEBUG_MODE
   snprintf( user_msg, USER_MSG_LENGTH, "In covered_value_change, name: %s, time: %d, value: %s",
             obf_sig( vpi_get_str( vpiFullName, cb->obj ) ), cb->time->low, cb->value->value.str );
-  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  // print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 #endif
 
   if( cb->time->low != last_time ) {
@@ -220,7 +224,7 @@ void covered_create_value_change_cb( vpiHandle sig ) {
     }
 
     /* Add signal/symbol to symtab database */
-    db_assign_symbol( vsigl->sig->name, symbol, ((vsigl->sig->value->width + vsigl->sig->lsb) - 1), vsigl->sig->lsb ); 
+    db_assign_symbol( vsigl->sig->name, symbol, ((vsigl->sig->value->width + vsigl->sig->dim[0].lsb) - 1), vsigl->sig->dim[0].lsb ); 
 
     /* Add a callback for a value change to this net */
     cb                   = (p_cb_data)malloc( sizeof( s_cb_data ) );

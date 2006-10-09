@@ -29,6 +29,7 @@
 #include "obfuscate.h"
 
 
+#ifndef VPI_ONLY
 extern char       user_msg[USER_MSG_LENGTH];
 extern sig_range  curr_prange;
 extern sig_range  curr_urange;
@@ -87,6 +88,7 @@ int VLwrap() {
   return -1;
 
 }
+#endif /* VPI_ONLY */
 
 /*!
  \param range   Pointer to signal range to deallocate
@@ -120,6 +122,7 @@ void parser_dealloc_sig_range( sig_range* range, bool rm_ptr ) {
 
 }
 
+#ifndef VPI_ONLY
 /*!
  \param packed  Specifies if curr_prange (TRUE) or curr_urange (FALSE) should be copied.
 
@@ -275,10 +278,15 @@ bool parser_check_generation( int gen ) {
   return( retval );
 
 }
+#endif /* VPI_ONLY */
 
 
 /*
  $Log$
+ Revision 1.13  2006/09/22 19:56:45  phase1geo
+ Final set of fixes and regression updates per recent changes.  Full regression
+ now passes.
+
  Revision 1.12  2006/09/20 22:38:09  phase1geo
  Lots of changes to support memories and multi-dimensional arrays.  We still have
  issues with endianness and VCS regressions have not been run, but this is a significant

@@ -242,6 +242,7 @@ void funit_link_add( func_unit* funit, funit_link** head, funit_link** tail ) {
   
 }
 
+#ifndef VPI_ONLY
 /*!
  \param gi     Generate item to add to specified gitem_link list.
  \param head   Pointer to head gitem_link element of list.
@@ -268,6 +269,7 @@ void gitem_link_add( gen_item* gi, gitem_link** head, gitem_link** tail ) {
   }
 
 }
+#endif /* VPI_ONLY */
 
 /*!
  \param inst   Functional unit instance root to add
@@ -404,6 +406,7 @@ void funit_link_display( funit_link* head ) {
 
 }
 
+#ifndef VPI_ONLY
 /*!
  \param head  Pointer to head of gitem_link list.
 
@@ -423,6 +426,7 @@ void gitem_link_display( gitem_link* head ) {
   }
 
 }
+#endif /* VPI_ONLY */
 
 /*!
  \param head  Pointer to head of inst_link list.
@@ -582,6 +586,7 @@ funit_link* funit_link_find( func_unit* funit, funit_link* head ) {
 
 }
 
+#ifndef VPI_ONLY
 /*!
  \param gi    Pointer to generate item to find.
  \param head  Pointer to head of gitem_link list to search.
@@ -604,6 +609,7 @@ gitem_link* gitem_link_find( gen_item* gi, gitem_link* head ) {
   return( curr );
 
 }
+#endif /* VPI_ONLY */
 
 /*!
  \param scope  Hierarchical scope to search for.
@@ -759,6 +765,7 @@ void exp_link_remove( expression* exp, exp_link** head, exp_link** tail, bool re
 
 }
 
+#ifndef VPI_ONLY
 /*!
  \param gi    Pointer to specified generate item to remove
  \param head  Pointer to head of generate item list
@@ -796,6 +803,7 @@ void gitem_link_remove( gen_item* gi, gitem_link** head, gitem_link** tail ) {
   }
 
 }
+#endif /* VPI_ONLY */
 
 /*!
  \param funit     Pointer to functional unit to find and remove
@@ -1067,6 +1075,7 @@ void funit_link_delete_list( funit_link** head, funit_link** tail, bool rm_funit
 
 }
 
+#ifndef VPI_ONLY
 /*!
  \param head      Pointer to head gitem_link element of list.
  \param rm_elems  If TRUE, deallocates specified generate item.
@@ -1091,6 +1100,7 @@ void gitem_link_delete_list( gitem_link* head, bool rm_elems ) {
   }
 
 }
+#endif /* VPI_ONLY */
 
 /*!
  \param head  Pointer to head inst_link element of list.
@@ -1106,10 +1116,10 @@ void inst_link_delete_list( inst_link* head ) {
     tmp  = head;
     head = tmp->next;
 
-    /* Deallocate generate item */
+    /* Deallocate instance item */
     instance_dealloc( tmp->inst, tmp->inst->name );
 
-    /* Deallocate gitem_link element itself */
+    /* Deallocate inst_link element itself */
     free_safe( tmp );
 
   }
@@ -1119,6 +1129,9 @@ void inst_link_delete_list( inst_link* head ) {
 
 /*
  $Log$
+ Revision 1.56  2006/09/01 23:06:02  phase1geo
+ Fixing regressions per latest round of changes.  Full regression now passes.
+
  Revision 1.55  2006/09/01 04:06:37  phase1geo
  Added code to support more than one instance tree.  Currently, I am seeing
  quite a few memory errors that are causing some major problems at the moment.

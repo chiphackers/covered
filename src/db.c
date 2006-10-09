@@ -476,6 +476,7 @@ bool db_read( char* file, int read_mode ) {
 
 }
 
+#ifndef VPI_ONLY
 /*!
  \param scope  Name of functional unit instance being added.
  \param name   Name of functional unit being instantiated.
@@ -1592,6 +1593,7 @@ void db_add_statement( statement* stmt, statement* start ) {
   }
 
 }
+#endif
 
 /*!
  \param stmt  Pointer to statement to remove from memory.
@@ -1631,6 +1633,7 @@ void db_remove_statement_from_current_funit( statement* stmt ) {
 
 }
 
+#ifndef VPI_ONLY
 /*!
  \param stmt  Pointer to statement to remove from memory.
 
@@ -1880,6 +1883,7 @@ void db_parse_attribute( attr_param* ap ) {
   attribute_dealloc( ap );
 
 }
+#endif /* VPI_ONLY */
 
 /*!
  \param stmt  Pointer to statement to compare with all expressions
@@ -2129,6 +2133,10 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.227  2006/10/06 17:18:12  phase1geo
+ Adding support for the final block type.  Added final1 diagnostic to regression
+ suite.  Full regression passes.
+
  Revision 1.226  2006/09/25 22:22:28  phase1geo
  Adding more support for memory reporting to both score and report commands.
  We are getting closer; however, regressions are currently broken.  Checkpointing.

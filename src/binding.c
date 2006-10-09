@@ -959,6 +959,7 @@ void bind_perform( bool cdd_reading, int pass ) {
 
     }
 
+#ifndef VPI_ONLY
     /* If we are in parse mode, resolve all parameters and arrays of instances now */
     if( !cdd_reading && (pass == 0) ) {
       inst_link* instl;
@@ -993,6 +994,7 @@ void bind_perform( bool cdd_reading, int pass ) {
         instl = instl->next;
       }
     }
+#endif
 
   }
 
@@ -1027,6 +1029,12 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.100  2006/10/03 22:47:00  phase1geo
+ Adding support for read coverage to memories.  Also added memory coverage as
+ a report output for DIAGLIST diagnostics in regressions.  Fixed various bugs
+ left in code from array changes and updated regressions for these changes.
+ At this point, all IV diagnostics pass regressions.
+
  Revision 1.99  2006/09/26 22:36:37  phase1geo
  Adding code for memory coverage to GUI and related files.  Lots of work to go
  here so we are checkpointing for the moment.

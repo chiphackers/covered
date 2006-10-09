@@ -231,6 +231,7 @@ vsignal* funit_find_signal( char* name, func_unit* funit ) {
 
     found_sig = sigl->sig;
 
+#ifndef VPI_ONLY
   } else {
 
     /* If it was not found, search in the functional unit generate item list */
@@ -242,6 +243,7 @@ vsignal* funit_find_signal( char* name, func_unit* funit ) {
 
     /* Deallocate temporary generate item */
     gen_item_dealloc( gi, FALSE );
+#endif
 
   }
 
@@ -339,6 +341,7 @@ void funit_size_elements( func_unit* funit, funit_inst* inst, bool gen_all ) {
     param_resolve( inst );
   }
 
+#ifndef VPI_ONLY
   /*
    Second, traverse through any BIND generate items and update the expression name.
   */
@@ -347,6 +350,7 @@ void funit_size_elements( func_unit* funit, funit_inst* inst, bool gen_all ) {
     gen_item_bind( curr_gi->gi, inst->funit );
     curr_gi = curr_gi->next;
   }
+#endif
 
   /* 
    Third, traverse through current instance's instance parameter list and
@@ -400,12 +404,14 @@ void funit_size_elements( func_unit* funit, funit_inst* inst, bool gen_all ) {
     curr_exp = curr_exp->next;
   }
 
+#ifndef VPI_ONLY
   /* Sixth, traverse all generate items and resize all expressions and signals. */
   curr_gi = inst->gitem_head;
   while( curr_gi != NULL ) {
     gen_item_resize_stmts_and_sigs( curr_gi->gi );
     curr_gi = curr_gi->next;
   }
+#endif
 
   if( gen_all ) {
 
@@ -499,6 +505,7 @@ bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
       curr_exp = curr_exp->next;
     }
 
+#ifndef VPI_ONLY
     /* Now print all expressions within generated statements in functional unit */
     if( inst != NULL ) {
       curr_gi = inst->gitem_head;
@@ -507,6 +514,7 @@ bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
         curr_gi = curr_gi->next;
       }
     }
+#endif
 
     /* Now print all parameters in functional unit */
     if( inst != NULL ) {
@@ -524,6 +532,7 @@ bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
       curr_sig = curr_sig->next; 
     }
 
+#ifndef VPI_ONLY
     /* Now print any generated signals in the current instance */
     if( inst != NULL ) {
       curr_gi = inst->gitem_head;
@@ -532,6 +541,7 @@ bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
         curr_gi = curr_gi->next;
       }
     }
+#endif
 
     /* Now print all statements in functional unit */
     if( report_save ) {
@@ -544,6 +554,7 @@ bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
       stmt_iter_next( &curr_stmt );
     }
 
+#ifndef VPI_ONLY
     /* Now print any generated statements in the current instance */
     if( inst != NULL ) {
       curr_gi = inst->gitem_head;
@@ -552,6 +563,7 @@ bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
         curr_gi = curr_gi->next;
       }
     }
+#endif
 
     /* Now print all FSM structures in functional unit */
     curr_fsm = funit->fsm_head;
@@ -859,10 +871,12 @@ void funit_clean( func_unit* funit ) {
     funit->race_head = NULL;
     funit->race_tail = NULL;
 
+#ifndef VPI_ONLY
     /* Free generate item list */
     gitem_link_delete_list( funit->gitem_head, TRUE );
     funit->gitem_head = NULL;
     funit->gitem_tail = NULL;
+#endif
 
     /* Free statistic structure */
     statistic_dealloc( funit->stat );
@@ -927,6 +941,12 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.47  2006/10/03 22:47:00  phase1geo
+ Adding support for read coverage to memories.  Also added memory coverage as
+ a report output for DIAGLIST diagnostics in regressions.  Fixed various bugs
+ left in code from array changes and updated regressions for these changes.
+ At this point, all IV diagnostics pass regressions.
+
  Revision 1.46  2006/09/22 19:56:45  phase1geo
  Final set of fixes and regression updates per recent changes.  Full regression
  now passes.

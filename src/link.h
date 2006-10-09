@@ -47,8 +47,10 @@ void fsm_link_add( fsm* table, fsm_link** head, fsm_link** tail );
 /*! \brief Adds specified functional unit to funit_link element at the end of the list. */
 void funit_link_add( func_unit* funit, funit_link** head, funit_link** tail );
 
+#ifndef VPI_ONLY
 /*! \brief Adds specified generate item to the end of specified gitem list. */
 void gitem_link_add( gen_item* gi, gitem_link** head, gitem_link** tail );
+#endif
 
 /*! \brief Adds specified functional unit instance to inst_link element at the end of the list. */
 inst_link* inst_link_add( funit_inst* inst, inst_link** head, inst_link** tail );
@@ -70,8 +72,10 @@ void sig_link_display( sig_link* head );
 /*! \brief Displays specified functional unit list to standard output. */
 void funit_link_display( funit_link* head );
 
+#ifndef VPI_ONLY
 /*! \brief Displays specified generate item list to standard output. */
 void gitem_link_display( gitem_link* head );
+#endif
 
 /*! \brief Displays specified instance list to standard output. */
 void inst_link_display( inst_link* head );
@@ -96,8 +100,10 @@ fsm_link* fsm_link_find( fsm* table, fsm_link* head );
 /*! \brief Finds specified functional unit in given funit_link list. */
 funit_link* funit_link_find( func_unit* funit, funit_link* head );
 
+#ifndef VPI_ONLY
 /*! \brief Finds specified generate item in given gitem_link list. */
 gitem_link* gitem_link_find( gen_item* gi, gitem_link* head );
+#endif
 
 /*! \brief Finds specified functional unit instance in given inst_link list. */
 funit_inst* inst_link_find_by_scope( char* scope, inst_link* head );
@@ -113,8 +119,10 @@ void str_link_remove( char* str, str_link** head, str_link** tail );
 /*! \brief Searches for and removes specified expression link from list. */
 void exp_link_remove( expression* exp, exp_link** head, exp_link** tail, bool recursive );
 
+#ifndef VPI_ONLY
 /*! \brief Searches for and removes specified generate item link from list. */
 void gitem_link_remove( gen_item* gi, gitem_link** head, gitem_link** tail );
+#endif
 
 /*! \brief Searches for and removes specified functional unit link from list. */
 void funit_link_remove( func_unit* funit, funit_link** head, funit_link** tail, bool rm_funit );
@@ -142,8 +150,10 @@ void fsm_link_delete_list( fsm_link* head );
 /*! \brief Deletes entire list specified by head pointer. */
 void funit_link_delete_list( funit_link** head, funit_link** tail, bool rm_funit );
 
+#ifndef VPI_ONLY
 /*! \brief Deletes entire list specified by head pointer. */
 void gitem_link_delete_list( gitem_link* head, bool rm_elems );
+#endif
 
 /*! \brief Deletes entire list specified by head pointer. */
 void inst_link_delete_list( inst_link* head );
@@ -151,6 +161,9 @@ void inst_link_delete_list( inst_link* head );
 
 /*
  $Log$
+ Revision 1.23  2006/09/01 23:06:02  phase1geo
+ Fixing regressions per latest round of changes.  Full regression now passes.
+
  Revision 1.22  2006/09/01 04:06:37  phase1geo
  Added code to support more than one instance tree.  Currently, I am seeing
  quite a few memory errors that are causing some major problems at the moment.
