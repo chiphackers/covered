@@ -2004,13 +2004,33 @@ list_of_variables
       db_add_signal( $1, curr_sig_type, &curr_prange, NULL, curr_signed, curr_mba, @1.first_line, @1.first_column, curr_handled );
       free_safe( $1 );
     }
+  | IDENTIFIER { curr_packed = FALSE; } range
+    {
+      if( !parser_check_generation( GENERATION_SV ) ) {
+        VLerror( "Unpacked array specified for net type in block that was specified to not allow SystemVerilog syntax" );
+      } else {
+        db_add_signal( $1, curr_sig_type, &curr_prange, &curr_urange, curr_signed, curr_mba, @1.first_line, @1.first_column, curr_handled );
+      }
+      free_safe( $1 );
+    }
   | UNUSED_IDENTIFIER
+  | UNUSED_IDENTIFIER range
   | list_of_variables ',' IDENTIFIER
     {
       db_add_signal( $3, curr_sig_type, &curr_prange, NULL, curr_signed, curr_mba, @3.first_line, @3.first_column, curr_handled );
       free_safe( $3 );
     }
+  | list_of_variables ',' IDENTIFIER range
+    {
+      if( !parser_check_generation( GENERATION_SV ) ) {
+        VLerror( "Unpacked array specified for net type in block that was specified to not allow SystemVerilog syntax" );
+      } else {
+        db_add_signal( $3, curr_sig_type, &curr_prange, &curr_urange, curr_signed, curr_mba, @3.first_line, @3.first_column, curr_handled );
+      }
+      free_safe( $3 );
+    }
   | list_of_variables ',' UNUSED_IDENTIFIER
+  | list_of_variables ',' UNUSED_IDENTIFIER range
   ;
 
   /* I don't know what to do with UDPs.  This is included to allow designs that contain
@@ -2580,7 +2600,6 @@ generate_item
       gen_item*   gi3;
       if( $12 != NULL ) {
         db_end_function_task_namedblock( @15.first_line );
-        free_safe( $12 );
       } else {
         if( ignore_mode > 0 ) {
           ignore_mode--;
@@ -2615,10 +2634,10 @@ generate_item
         expression_dealloc( $4, FALSE );
         static_expr_dealloc( $6, TRUE );
         expression_dealloc( $8, TRUE );
-        free_safe( $12 );
         /* TBD - Deallocate generate block */
         $$ = NULL;
       }
+      free_safe( $12 );
       generate_expr_mode--;
     }
   | K_if inc_gen_expr_mode '(' static_expr ')' dec_gen_expr_mode inc_block_depth generate_item dec_block_depth %prec less_than_K_else
@@ -6291,22 +6310,22 @@ list_of_names
 
  /* Handles typedef declarations (both in module and $root space) */
 typedef_decl
-  : K_typedef enumeration IDENTIFIER
+  : K_typedef enumeration IDENTIFIER ';'
     {
       if( ignore_mode == 0 ) {
         assert( curr_prange.dim != NULL );
         db_add_typedef( $3, curr_signed, curr_handled, TRUE, parser_copy_curr_range( TRUE ), parser_copy_curr_range( FALSE ) );
         free_safe( $3 );
       }
-    } ';'
-  | K_typedef net_type_sign_range_opt IDENTIFIER
+    }
+  | K_typedef net_type_sign_range_opt IDENTIFIER ';'
     {
       if( ignore_mode == 0 ) {
         assert( curr_prange.dim != NULL );
         db_add_typedef( $3, curr_signed, curr_handled, TRUE, parser_copy_curr_range( TRUE ), parser_copy_curr_range( FALSE ) );
         free_safe( $3 );
       }
-    } ';'
+    }
   ;
 
 single_index_expr
