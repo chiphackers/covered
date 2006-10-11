@@ -176,8 +176,10 @@ always @(posedge go)
   end
 
 initial begin
+`ifndef VPI
 	$dumpfile( "long_exp2.vcd" );
 	$dumpvars( 0, main );
+`endif
 	b = 1'b0;
 	c = 1'b0;
 	d = 25'h0000000;

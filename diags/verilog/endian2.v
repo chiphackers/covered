@@ -14,8 +14,10 @@ initial begin
 end
 
 initial begin
+`ifndef VPI
         $dumpfile( "endian2.vcd" );
         $dumpvars( 0, main );
+`endif
         #10;
         $finish;
 end

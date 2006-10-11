@@ -8,8 +8,10 @@ assign c = 1'b1 & 1'b0;
 assign d = 1'b1 & 1'b1;
 
 initial begin
+`ifndef VPI
         $dumpfile( "static2.vcd" );
         $dumpvars( 0, main );
+`endif
         #10;
 	$finish;
 end

@@ -9,8 +9,10 @@ always @*
   join
 
 initial begin
+`ifndef VPI
         $dumpfile( "slist3.1.vcd" );
         $dumpvars( 0, main );
+`endif
 	b = 1'b0;
 	d = 1'b1;
         #10;

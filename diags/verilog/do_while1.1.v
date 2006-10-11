@@ -19,8 +19,10 @@ initial begin
 end
 
 initial begin
+`ifndef VPI
         $dumpfile( "do_while1.1.vcd" );
         $dumpvars( 0, main );
+`endif
         #20;
         $finish;
 end

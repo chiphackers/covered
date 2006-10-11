@@ -1,7 +1,7 @@
 5 9 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd for3.vcd -o for3.cdd -v for3.v
 3 0 $root $root NA 0 0
-3 0 main main for3.v 1 19
+3 0 main main for3.v 1 21
 2 1 6 80008 1 0 20004 0 0 32 64 0 0 0 0 0 0 0 0
 2 2 6 60006 0 1 400 0 0 i
 2 3 6 60008 1 37 1006 1 2

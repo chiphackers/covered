@@ -11,8 +11,10 @@ assign b = t;
 assign c = mem[0];
 
 initial begin
+`ifndef VPI
 	$dumpfile( "implicit2.vcd" );
 	$dumpvars( 0, main );
+`endif
 	i      = 1;
 	t      = 2;
 	mem[0] = 2'h0;

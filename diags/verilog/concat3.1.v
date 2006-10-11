@@ -6,8 +6,10 @@ reg  [3:0] c, d;
 assign {a, b} = c & d;
 
 initial begin
+`ifndef VPI
         $dumpfile( "concat3.1.vcd" );
         $dumpvars( 0, main );
+`endif
 	c = 4'b0000;
 	d = 4'b0000;
 	#10;

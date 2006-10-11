@@ -3,8 +3,10 @@ module main;
 foo #(8) bar();
 
 initial begin
+`ifndef VPI
         $dumpfile( "generate1.vcd" );
         $dumpvars( 0, main );
+`endif
 	#20;
 	$finish;
 end

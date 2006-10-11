@@ -11,8 +11,10 @@ always @(posedge clock)
   endcase
 
 initial begin
+`ifndef VPI
 	$dumpfile( "case1.1.vcd" );
 	$dumpvars( 0, main );
+`endif
 	clock = 1'b0;
 	forever #(5) clock = ~clock;
 end

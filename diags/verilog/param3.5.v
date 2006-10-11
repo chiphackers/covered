@@ -3,8 +3,10 @@ module main;
 reg	x, y;
 
 initial begin
+`ifndef VPI
 	$dumpfile( "param3.vcd" );
 	$dumpvars( 0, main );
+`endif
 	x = 1'b0;
 	y = 1'b0;
 	#5;

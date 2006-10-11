@@ -17,8 +17,10 @@ initial begin
 end
 
 initial begin
+`ifndef VPI
         $dumpfile( "marray2.3.vcd" );
         $dumpvars( 0, main );
+`endif
         #10;
         $finish;
 end

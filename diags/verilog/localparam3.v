@@ -3,8 +3,10 @@ module main;
 foo bar();
 
 initial begin
+`ifndef VPI
         $dumpfile( "localparam3.vcd" );
         $dumpvars( 0, main );
+`endif
         #10;
         $finish;
 end

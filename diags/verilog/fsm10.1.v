@@ -23,8 +23,10 @@ fsma fsm2 (
 );
 
 initial begin
+`ifndef VPI
 	$dumpfile( "fsm10.1.vcd" );
 	$dumpvars( 0, main );
+`endif
         reset  = 1'b1;
 	head1  = 1'b0;
         tail1  = 1'b0;

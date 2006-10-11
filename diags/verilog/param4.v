@@ -11,8 +11,10 @@ assign b = vec[16];
 assign c = vec;
 
 initial begin
+`ifndef VPI
 	$dumpfile( "param4.vcd" );
 	$dumpvars( 0, main );
+`endif
 	#10;
 	$finish;
 end

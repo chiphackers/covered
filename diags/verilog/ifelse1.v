@@ -5,8 +5,10 @@ reg	clock, reset, a, b, sel;
 wire	z;
 
 initial begin
+`ifndef VPI
 	$dumpfile( "ifelse1.vcd" );
 	$dumpvars( 0, main );
+`endif
 	clock = 1'b0;
 	forever #(5) clock = ~clock;
 end

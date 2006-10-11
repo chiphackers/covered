@@ -4,8 +4,10 @@ reg  in;
 wire out;
 
 initial begin
+`ifndef VPI
         $dumpfile( "defparam1.vcd" );
         $dumpvars( 0, main );
+`endif
 	in = 1'b0;
 	#10;
 	in = 1'b1;

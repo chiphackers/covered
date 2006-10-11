@@ -13,8 +13,10 @@ always @*
   endcase
 
 initial begin
+`ifndef VPI
         $dumpfile( "casex2.vcd" );
         $dumpvars( 0, main );
+`endif
         #10;
         $finish;
 end

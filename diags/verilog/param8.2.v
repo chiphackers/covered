@@ -7,8 +7,10 @@ reg [2:0] c;
 foo bar( a, b, c );
 
 initial begin
+`ifndef VPI
         $dumpfile( "param8.2.vcd" );
         $dumpvars( 0, main );
+`endif
 	a = 1'h0;
 	b = 2'h0;
         c = 3'h0;

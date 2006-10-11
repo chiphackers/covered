@@ -1,1 +1,1 @@
-ERROR!  Attempting to use a delay, task call, non-blocking assign or event controls in function main.return_two, file func3.1.v, line 15
+ERROR!  Attempting to use a delay, task call, non-blocking assign or event controls in function main.return_two, file func3.1.v, line 17

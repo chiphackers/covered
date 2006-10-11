@@ -1,7 +1,7 @@
 5 9 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd fork2.vcd -o fork2.cdd -v fork2.v
 3 0 $root $root NA 0 0
-3 0 main main fork2.v 1 28
+3 0 main main fork2.v 1 30
 2 1 6 10004 2 3d 2100a 0 0 1 2 1102 foo_fork
 1 b 3 830004 1 0 0 0 1 1 102
 4 1 0 0

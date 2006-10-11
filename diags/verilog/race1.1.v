@@ -5,8 +5,10 @@ wire a;
 foobar bar( a );
 
 initial begin
+`ifndef VPI
 	$dumpfile( "race1.1.vcd" );
 	$dumpvars( 0, main );
+`endif
 	#10;
 	$finish;
 end

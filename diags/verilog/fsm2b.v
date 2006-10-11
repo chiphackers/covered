@@ -15,8 +15,10 @@ fsm fsm (
 );
 
 initial begin
+`ifndef VPI
 	$dumpfile( "fsm2b.vcd" );
 	$dumpvars( 0, main );
+`endif
         reset = 1'b1;
 	head  = 1'b0;
         tail  = 1'b0;

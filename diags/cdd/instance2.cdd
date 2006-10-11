@@ -1,7 +1,7 @@
 5 9 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd instance2.vcd -o instance2.cdd -v instance2.v -y ./lib
 3 0 $root $root NA 0 0
-3 0 main main instance2.v 1 27
+3 0 main main instance2.v 1 29
 2 1 9 180018 3 1 c 0 0 z
 2 2 9 110015 2 1 c 0 0 carry
 2 3 9 110018 3 31 20188 1 2 5 2 dfaa 1102

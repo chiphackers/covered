@@ -41,8 +41,10 @@ always @(st or b or c or d or e or f)
 always @(posedge clock) st <= next_st;
       
 initial begin
+`ifndef VPI
 	$dumpfile( "case4.vcd" );
 	$dumpvars( 0, main );
+`endif
 	st = 3'b001;
 	b  = 1'b0;
 	c  = 1'b0;

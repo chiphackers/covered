@@ -7,8 +7,10 @@ reg          c;
 assign a = { (b | c), (b & c) };
 
 initial begin
+`ifndef VPI
 	$dumpfile( "concat2.vcd" );
 	$dumpvars( 0, main );
+`endif
 	b = 1'b1;
 	c = 1'b0;
 	#5;

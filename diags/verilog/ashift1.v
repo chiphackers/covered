@@ -18,8 +18,10 @@ initial begin
 end
 
 initial begin
+`ifndef VPI
         $dumpfile( "ashift1.vcd" );
         $dumpvars( 0, main );
+`endif
         #10;
         $finish;
 end

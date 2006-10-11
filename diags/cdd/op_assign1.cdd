@@ -1,7 +1,7 @@
 5 9 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd op_assign1.vcd -o op_assign1.cdd -v op_assign1.v
 3 0 $root $root NA 0 0
-3 0 main main op_assign1.v 1 72
+3 0 main main op_assign1.v 1 74
 2 1 6 50005 1 0 20004 0 0 32 64 0 0 0 0 0 0 0 0
 2 2 6 10001 0 1 400 0 0 a
 2 3 6 10005 1 37 1006 1 2

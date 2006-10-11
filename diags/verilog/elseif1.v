@@ -22,8 +22,10 @@ always @(posedge coreclk) begin
 end
 
 initial begin
+`ifndef VPI
         $dumpfile( "elseif1.vcd" );
         $dumpvars( 0, main );
+`endif
 	sreset  = 1'b1;
 	coreclk = 1'b0;
 	#5;

@@ -1,7 +1,7 @@
 5 9 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd generate8.6.vcd -o generate8.6.cdd -v generate8.6.v
 3 0 $root $root NA 0 0
-3 0 main main generate8.6.v 1 40
+3 0 main main generate8.6.v 1 42
 2 1 14 100010 0 1 400 0 0 a
 2 2 14 140017 1 0 20004 0 0 1 4 0
 2 3 14 100017 1 37 1006 2 1

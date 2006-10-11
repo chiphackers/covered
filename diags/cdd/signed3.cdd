@@ -1,7 +1,7 @@
 5 9 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd signed3.vcd -o signed3.cdd -v signed3.v
 3 0 $root $root NA 0 0
-3 0 main main signed3.v 1 23
+3 0 main main signed3.v 1 25
 2 1 6 190024 1 0 20008 0 0 8 68 54 55
 2 2 6 d0014 1 0 20008 0 0 4 68 54
 2 3 6 d0024 1 11 20208 1 2 1 2 1002

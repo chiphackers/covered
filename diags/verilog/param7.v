@@ -8,8 +8,10 @@ foo #(1) a();
 goo      b();
 
 initial begin
+`ifndef VPI
 	$dumpfile( "param7.vcd" );
 	$dumpvars( 0, main );
+`endif
 	#50;
 	$finish;
 end

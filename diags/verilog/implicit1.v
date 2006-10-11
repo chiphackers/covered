@@ -7,8 +7,10 @@ assign d = ~a;
 assign a = b & c;
 
 initial begin
+`ifndef VPI
 	$dumpfile( "implicit1.vcd" );
 	$dumpvars( 0, main );
+`endif
 	b = 1'b0;
 	c = 1'b0;
 	#5;

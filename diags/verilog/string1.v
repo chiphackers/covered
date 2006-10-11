@@ -6,8 +6,10 @@ wire [(8*8)-1:0]  str;
 assign str = {"foo", chr};
 
 initial begin
+`ifndef VPI
 	$dumpfile( "string1.vcd" );
 	$dumpvars( 0, main );
+`endif
 	chr = "bar";
 	#10;
 	chr = "doo";

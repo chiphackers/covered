@@ -5,8 +5,10 @@ event a;
 always @(a) #5;
 
 initial begin
+`ifndef VPI
 	$dumpfile( "always7.vcd" );
 	$dumpvars( 0, main );
+`endif
 	->a;
 	#10;
 	->a;

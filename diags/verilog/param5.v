@@ -8,8 +8,10 @@ wire   [((dude*2)-1):0]  b;
 assign b = {a, ~a};
 
 initial begin
+`ifndef VPI
 	$dumpfile( "param5.vcd" );
 	$dumpvars( 0, main );
+`endif
 	a = 2'b00;
 	#5;
 	a = 2'b10;

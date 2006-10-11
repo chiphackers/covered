@@ -29,8 +29,10 @@ always @(state or head or valid or tail)
 assign msg_ip = state[0];
 
 initial begin
+`ifndef VPI
 	$dumpfile( "fsm5.1.vcd" );
 	$dumpvars( 0, main );
+`endif
 	reset = 1'b1;
 	valid = 1'b0;
 	head  = 1'b0;

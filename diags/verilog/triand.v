@@ -10,8 +10,10 @@ assign b = {d, e};
 assign c = {2{a}} | b;
 
 initial begin
+`ifndef VPI
 	$dumpfile( "triand.vcd" );
 	$dumpvars( 0, main );
+`endif
 	d = 1'b0;
 	e = 1'b1;
 	#5;

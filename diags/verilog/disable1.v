@@ -17,8 +17,10 @@ initial begin
 end
 
 initial begin
+`ifndef VPI
         $dumpfile( "disable1.vcd" );
         $dumpvars( 0, main );
+`endif
         #100;
         $finish;
 end

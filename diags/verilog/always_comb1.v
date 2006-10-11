@@ -9,8 +9,10 @@ always_comb
   end
 
 initial begin
+`ifndef VPI
         $dumpfile( "always_comb1.vcd" );
         $dumpvars( 0, main );
+`endif
 	#100;
 	$finish;
 end

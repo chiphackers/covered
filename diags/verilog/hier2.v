@@ -7,8 +7,10 @@ foo a[3:0] ();
 initial b = \a[1] . \b[2] . c;
 
 initial begin
+`ifndef VPI
         $dumpfile( "hier2.vcd" );
         $dumpvars( 0, main );
+`endif
         #10;
         $finish;
 end

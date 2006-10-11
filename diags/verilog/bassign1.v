@@ -11,8 +11,10 @@ always @(c)
   end
 
 initial begin
+`ifndef VPI
         $dumpfile( "bassign1.vcd" );
         $dumpvars( 0, main );
+`endif
 	c = 1'b1;
         #10;
 	c = 1'b0;

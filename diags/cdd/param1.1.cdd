@@ -1,7 +1,7 @@
 5 9 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd param1.1.vcd -o param1.1.cdd -v param1.1.v
 3 0 $root $root NA 0 0
-3 0 main main param1.1.v 1 21
+3 0 main main param1.1.v 1 23
 2 1 9 18001d 2 32 8 0 0 value1
 2 2 9 f0014 2 32 4 0 0 value0
 2 3 9 b0014 3 1a 2008c 1 2 32 2 1faa faa faa faa faa faa faa faa

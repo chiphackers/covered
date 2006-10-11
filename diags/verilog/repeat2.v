@@ -15,8 +15,10 @@ initial begin
 end
 
 initial begin
+`ifndef VPI
         $dumpfile( "repeat2.vcd" );
         $dumpvars( 0, main );
+`endif
         b = 1'b0;
 	c = 10;
         #10;

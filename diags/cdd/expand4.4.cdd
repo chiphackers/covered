@@ -1,7 +1,7 @@
 5 9 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd expand4.4.vcd -o expand4.4.cdd -v expand4.4.v
 3 0 $root $root NA 0 0
-3 0 main main expand4.4.v 1 19
+3 0 main main expand4.4.v 1 21
 2 1 6 130013 3 1 4 0 0 b
 2 2 6 120012 3 1b 20008 1 0 1 2 1002
 2 3 6 e000e 3 1 4 0 0 b

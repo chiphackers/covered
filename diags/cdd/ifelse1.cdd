@@ -1,7 +1,7 @@
 5 9 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd ifelse1.vcd -o ifelse1.cdd -v ifelse1.v -y ./lib
 3 0 $root $root NA 0 0
-3 0 main main ifelse1.v 1 33
+3 0 main main ifelse1.v 1 35
 1 clock 3 30004 1 0 0 0 1 1 1102
 1 reset 3 3000b 1 0 0 0 1 1 1002
 1 a 3 30012 1 0 0 0 1 1 102

@@ -12,8 +12,10 @@ assign b = `WIDTH'd`VALUE + e;
 assign a = 'd`VALUE + e;
 
 initial begin
+`ifndef VPI
 	$dumpfile( "define3.vcd" );
 	$dumpvars( 0, main );
+`endif
 	e = `WIDTH'd2;
 	#5;
 	e = `WIDTH'd3;

@@ -4,8 +4,10 @@ foo a();
 foo b();
 
 initial begin
+`ifndef VPI
         $dumpfile( "hier4.vcd" );
         $dumpvars( 0, main );
+`endif
         #10;
         $finish;
 end

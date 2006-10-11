@@ -10,8 +10,10 @@ initial begin
 end
 
 initial begin
+`ifndef VPI
         $dumpfile( "for3.vcd" );
         $dumpvars( 0, main );
+`endif
         #50;
         $finish;
 end

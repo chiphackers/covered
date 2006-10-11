@@ -26,8 +26,10 @@ initial begin
 end
 
 initial begin
+`ifndef VPI
         $dumpfile( "for2.vcd" );
         $dumpvars( 0, main );
+`endif
 	#100;
 	$finish;
 end

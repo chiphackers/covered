@@ -4,8 +4,10 @@ reg  [1:0] x;
 reg  [2:0] y;
 
 initial begin
+`ifndef VPI
 	$dumpfile( "param3.4.vcd" );
 	$dumpvars( 0, main );
+`endif
 	x = 2'b00;
 	y = 3'b000;
 	#5;

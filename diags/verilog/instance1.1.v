@@ -3,8 +3,10 @@ module main;
 reg    a, b;
 
 initial begin
+`ifndef VPI
 	$dumpfile( "instance1.vcd" );
 	$dumpvars( 0, main );
+`endif
 	a = 1'b0;
 	b = 1'b0;
 	#5;

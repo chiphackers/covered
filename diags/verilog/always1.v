@@ -22,8 +22,10 @@ always @(posedge c)
     h <= 1'b1;
 
 initial begin
+`ifndef VPI
 	$dumpfile( "always1.vcd" );
 	$dumpvars( 0, main );
+`endif
 	b = 1'b0;
 	c = 1'b0;
 	d = 1'b0;

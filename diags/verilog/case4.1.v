@@ -79,8 +79,10 @@ always @(posedge clock) display_tagto_current_state <= next_st;
 // always @(posedge clock) st <= next_st;
 
 initial begin
+`ifndef VPI
 	$dumpfile( "case4.1.vcd" );
 	$dumpvars( 0, main );
+`endif
 	#50;
 	$finish;
 end

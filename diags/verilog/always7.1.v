@@ -7,8 +7,10 @@ always @(a)
   if( b ) c = 1'b1;
 
 initial begin
+`ifndef VPI
 	$dumpfile( "always7.1.vcd" );
 	$dumpvars( 0, main );
+`endif
 	b = 1'b0;
 	c = 1'b0;
 	->a;

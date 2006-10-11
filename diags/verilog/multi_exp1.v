@@ -8,8 +8,10 @@ wire a2 = e |  f |  g;
 wire a3 = e || f || g;
 
 initial begin
+`ifndef VPI
 	$dumpfile( "multi_exp1.vcd" );
 	$dumpvars( 0, main );
+`endif
 	#10;
 	$finish;
 end

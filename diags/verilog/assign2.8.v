@@ -8,8 +8,10 @@ supply0        w2 = ~a;
 supply0 [1:0]  w3 = w0 & |w1 & w2;
 
 initial begin
+`ifndef VPI
 	$dumpfile( "assign2.8.vcd" );
         $dumpvars( 0, main );
+`endif
         a = 1'b0;
         b = 1'b0;
 	#5;

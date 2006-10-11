@@ -20,8 +20,10 @@ generate
 endgenerate
 
 initial begin
+`ifndef VPI
         $dumpfile( "generate5.3.vcd" );
         $dumpvars( 0, main );
+`endif
         #20;
         $finish;
 end

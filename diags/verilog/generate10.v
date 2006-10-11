@@ -16,8 +16,10 @@ generate
              a = b & c;
      end
      initial begin
+`ifndef VPI
              $dumpfile( "generate10.vcd" );
              $dumpvars( 0, main );
+`endif
              #30;
              $finish;
      end

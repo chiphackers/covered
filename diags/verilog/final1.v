@@ -16,8 +16,10 @@ final begin
 end
 
 initial begin
+`ifndef VPI
         $dumpfile( "final1.vcd" );
         $dumpvars( 0, main );
+`endif
         #10;
         $finish;
 end

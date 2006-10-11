@@ -9,8 +9,10 @@ always @(b[c[0]])
   a[2] <= b[c[0]];
 
 initial begin
+`ifndef VPI
 	$dumpfile( "mem1.vcd" );
 	$dumpvars( 0, main );
+`endif
         for( i=0; i<8; i=i+1 )
           b[i] = i;
 	c[0] = 3'b001;

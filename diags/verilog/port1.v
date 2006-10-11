@@ -15,8 +15,10 @@ foo bar (
 );
 
 initial begin
+`ifndef VPI
         $dumpfile( "port1.vcd" );
         $dumpvars( 0, main );
+`endif
 	i1 = 1'b0;
 	i2 = 2'b10;
         #10;

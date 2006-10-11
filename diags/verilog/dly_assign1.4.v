@@ -19,8 +19,10 @@ initial begin
 end
 
 initial begin
+`ifndef VPI
         $dumpfile( "dly_assign1.4.vcd" );
         $dumpvars( 0, main );
+`endif
         #50;
         $finish;
 end

@@ -48,8 +48,10 @@ always @(posedge clock)
   end
 
 initial begin
+`ifndef VPI
 	$dumpfile( "always9.vcd" );
 	$dumpvars( 0, main );
+`endif
 	reset = 1'b1;
 	addr  = 4'h0;
 	d[8]  = 1'b1;

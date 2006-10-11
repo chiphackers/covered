@@ -4,8 +4,10 @@ generate
   if( 0 < 1 )
     begin
      initial begin
+`ifndef VPI
              $dumpfile( "generate10.2.vcd" );
              $dumpvars( 0, main );
+`endif
              #30;
              $finish;
      end

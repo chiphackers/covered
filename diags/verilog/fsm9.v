@@ -27,8 +27,10 @@ always @(state or head or valid or tail)
   end
 
 initial begin
+`ifndef VPI
 	$dumpfile( "fsm9.vcd" );
 	$dumpvars( 0, main );
+`endif
         reset = 1'b1;
 	head  = 1'b0;
         tail  = 1'b0;

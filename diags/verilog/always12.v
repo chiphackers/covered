@@ -16,8 +16,10 @@ always @(a)
   end
 
 initial begin
+`ifndef VPI
         $dumpfile( "always12.vcd" );
         $dumpvars( 0, main );
+`endif
 	b = 1'b0;
 	#10;
 	a = 1'b0;

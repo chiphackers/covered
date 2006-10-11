@@ -1,7 +1,7 @@
 5 9 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd task2.3.vcd -o task2.3.cdd -v task2.3.v
 3 0 $root $root NA 0 0
-3 0 main main task2.3.v 1 39
+3 0 main main task2.3.v 1 41
 2 1 6 1000c 2 3b 2100a 0 0 1 2 1102 delay_for_a
 2 2 7 1000c 2 3b 2000a 0 0 1 2 1102 delay_for_a
 2 3 8 1000c 1 3b 20002 0 0 1 2 102 delay_for_a
@@ -47,8 +47,8 @@
 4 13 16 16
 4 10 13 0
 4 7 10 10
-3 3 main.delay_for_a main.delay_for_a task2.3.v 31 37
-2 32 34 c000c 5 1 c 0 0 a
-2 33 34 4000a 0 2a 20000 0 0 1 2 2
-2 34 34 4000c 8 27 3100a 32 33 1 2 2
+3 3 main.delay_for_a main.delay_for_a task2.3.v 33 39
+2 32 36 c000c 5 1 c 0 0 a
+2 33 36 4000a 0 2a 20000 0 0 1 2 2
+2 34 36 4000c 8 27 3100a 32 33 1 2 2
 4 34 0 0

@@ -17,8 +17,10 @@ always @(a)
   endcase
 
 initial begin
+`ifndef VPI
 	$dumpfile( "always8.vcd" );
 	$dumpvars( 0, main );
+`endif
 	a = B;
 	#5;
 	a = D;

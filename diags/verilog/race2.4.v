@@ -25,8 +25,10 @@ always
   end
 
 initial begin
+`ifndef VPI
 	$dumpfile( "race2.4.vcd" );
 	$dumpvars( 0, main );
+`endif
 	x = 1'b0;
 	#10;
 	$finish;

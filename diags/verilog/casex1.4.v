@@ -11,8 +11,10 @@ always @( a )
   endcase
 
 initial begin
+`ifndef VPI
 	$dumpfile( "casex1.4.vcd" );
 	$dumpvars( 0, main );
+`endif
 	#5;
 	a = 1'b0;
 	#5;

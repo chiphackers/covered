@@ -13,8 +13,10 @@ initial begin : foo
 end
 
 initial begin
+`ifndef VPI
         $dumpfile( "nested_block1.vcd" );
         $dumpvars( 0, main );
+`endif
         #10;
         $finish;
 end

@@ -10,8 +10,10 @@ always @(a)
   end
 
 initial begin
+`ifndef VPI
 	$dumpfile( "block1.vcd" );
 	$dumpvars( 0, main );
+`endif
 	a = 1'b0;
 	#5;
 	a = 1'b1;

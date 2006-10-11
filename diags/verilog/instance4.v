@@ -5,8 +5,10 @@ reg    a, b;
 foobar foo( a, b );
 
 initial begin
+`ifndef VPI
 	$dumpfile( "instance4.vcd" );
 	$dumpvars( 0, main );
+`endif
 	a = 1'b0;
 	b = 1'b0;
 	#5;

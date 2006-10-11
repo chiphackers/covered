@@ -7,8 +7,10 @@ foo bar[const_func(4)-1:0] (
 );
 
 initial begin
+`ifndef VPI
         $dumpfile( "static_func2.vcd" );
         $dumpvars( 0, main );
+`endif
         #10;
         $finish;
 end

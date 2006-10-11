@@ -16,8 +16,10 @@ always @(b) d <= ~d;
 always @(c) d <= ~d;
 
 initial begin
+`ifndef VPI
 	$dumpfile( "event1.vcd" );
 	$dumpvars( 0, main );
+`endif
 	d = 1'b0;
 	#5;
 	->a;

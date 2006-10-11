@@ -33,8 +33,10 @@ assign c = val[31:16];		// Top portion bit select
 
 initial 
   begin
+`ifndef VPI
     $dumpfile( "assign3.2A.vcd" );
     $dumpvars( 0, main );
+`endif
     error = 0;
     if(a != 1'bx)
       begin

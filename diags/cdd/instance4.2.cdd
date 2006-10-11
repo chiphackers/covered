@@ -1,13 +1,13 @@
 5 9 1 main.foo 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t fooman -i main.foo.foo -vcd instance4.vcd -o instance4.2.cdd -v instance4.v
 3 0 $root $root NA 0 0
-3 0 fooman foo instance4.v 36 44
-2 1 42 f000f 2 1 c 0 0 c
-2 2 42 b000b 3 1 c 0 0 b
-2 3 42 b000f 3 8 201c4 1 2 1 2 1102
-2 4 42 70007 0 1 400 0 0 a
-2 5 42 7000f 1 35 f006 3 4
-1 b 38 8 1 0 0 0 1 1 1102
-1 c 39 8 1 0 0 0 1 1 102
-1 a 41 30007 1 0 0 0 1 1 2
+3 0 fooman foo instance4.v 38 46
+2 1 44 f000f 2 1 c 0 0 c
+2 2 44 b000b 3 1 c 0 0 b
+2 3 44 b000f 3 8 201c4 1 2 1 2 1102
+2 4 44 70007 0 1 400 0 0 a
+2 5 44 7000f 1 35 f006 3 4
+1 b 40 8 1 0 0 0 1 1 1102
+1 c 41 8 1 0 0 0 1 1 102
+1 a 43 30007 1 0 0 0 1 1 2
 4 5 5 5

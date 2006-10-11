@@ -15,8 +15,10 @@ initial begin
 end
 
 initial begin
+`ifndef VPI
         $dumpfile( "signed3.6.vcd" );
         $dumpvars( 0, main );
+`endif
         #10;
         $finish;
 end

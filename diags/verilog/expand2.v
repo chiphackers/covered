@@ -7,8 +7,10 @@ reg          c;
 assign a = {3{b, c}};
 
 initial begin
+`ifndef VPI
 	$dumpfile( "expand2.vcd" );
 	$dumpvars( 0, main );
+`endif
 	#5;
 	b = 1'b0;
 	#5;

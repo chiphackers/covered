@@ -1,36 +1,36 @@
 5 9 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd generate4.1.vcd -o generate4.1.cdd -v generate4.1.v
 3 0 $root $root NA 0 0
-3 0 main main generate4.1.v 1 25
-2 1 20 110014 1 0 20004 0 0 1 4 0
-2 2 20 1000d 0 1 400 0 0 U[1].bar[2].x
-2 3 20 10014 1 37 1006 1 2
-2 4 21 20003 1 0 20008 0 0 32 64 44 0 0 0 0 0 0 0
-2 5 21 20003 1 0 20008 0 0 32 64 55 55 55 55 55 55 55 55
-2 6 21 10003 2 2c 2000a 4 5 32 2 aa aa aa aa aa aa aa aa
-2 7 22 110014 1 0 20008 0 0 1 4 1
-2 8 22 1000d 0 1 400 0 0 U[1].bar[2].x
-2 9 22 10014 1 37 a 7 8
+3 0 main main generate4.1.v 1 27
+2 1 22 110014 1 0 20004 0 0 1 4 0
+2 2 22 1000d 0 1 400 0 0 U[1].bar[2].x
+2 3 22 10014 1 37 1006 1 2
+2 4 23 20003 1 0 20008 0 0 32 64 44 0 0 0 0 0 0 0
+2 5 23 20003 1 0 20008 0 0 32 64 55 55 55 55 55 55 55 55
+2 6 23 10003 2 2c 2000a 4 5 32 2 aa aa aa aa aa aa aa aa
+2 7 24 110014 1 0 20008 0 0 1 4 1
+2 8 24 1000d 0 1 400 0 0 U[1].bar[2].x
+2 9 24 10014 1 37 a 7 8
 4 9 0 0
 4 6 9 0
 4 3 6 6
 3 1 main.U[0] main.U[0] generate4.1.v 7 9
 1 i 3 1880007 1 0 31 0 32 1 0 0 0 0 0 0 0 0
-3 0 foo main.U[0].bar[0] generate4.1.v 29 33
-1 x 31 830004 1 0 0 0 1 1 2
-3 0 foo main.U[0].bar[1] generate4.1.v 29 33
-1 x 31 830004 1 0 0 0 1 1 2
-3 0 foo main.U[0].bar[2] generate4.1.v 29 33
-1 x 31 830004 1 0 0 0 1 1 2
-3 0 foo main.U[0].bar[3] generate4.1.v 29 33
-1 x 31 830004 1 0 0 0 1 1 2
+3 0 foo main.U[0].bar[0] generate4.1.v 31 35
+1 x 33 830004 1 0 0 0 1 1 2
+3 0 foo main.U[0].bar[1] generate4.1.v 31 35
+1 x 33 830004 1 0 0 0 1 1 2
+3 0 foo main.U[0].bar[2] generate4.1.v 31 35
+1 x 33 830004 1 0 0 0 1 1 2
+3 0 foo main.U[0].bar[3] generate4.1.v 31 35
+1 x 33 830004 1 0 0 0 1 1 2
 3 1 main.U[1] main.U[1] generate4.1.v 7 9
 1 i 3 1880007 1 0 31 0 32 1 101 0 0 0 0 0 0 0
-3 0 foo main.U[1].bar[0] generate4.1.v 29 33
-1 x 31 830004 1 0 0 0 1 1 2
-3 0 foo main.U[1].bar[1] generate4.1.v 29 33
-1 x 31 830004 1 0 0 0 1 1 2
-3 0 foo main.U[1].bar[2] generate4.1.v 29 33
-1 x 31 830004 1 0 0 0 1 1 102
-3 0 foo main.U[1].bar[3] generate4.1.v 29 33
-1 x 31 830004 1 0 0 0 1 1 2
+3 0 foo main.U[1].bar[0] generate4.1.v 31 35
+1 x 33 830004 1 0 0 0 1 1 2
+3 0 foo main.U[1].bar[1] generate4.1.v 31 35
+1 x 33 830004 1 0 0 0 1 1 2
+3 0 foo main.U[1].bar[2] generate4.1.v 31 35
+1 x 33 830004 1 0 0 0 1 1 102
+3 0 foo main.U[1].bar[3] generate4.1.v 31 35
+1 x 33 830004 1 0 0 0 1 1 2

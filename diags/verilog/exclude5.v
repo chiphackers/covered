@@ -16,8 +16,10 @@ end
 always @(posedge b) d <= ~a;
 
 initial begin
+`ifndef VPI
         $dumpfile( "exclude5.vcd" );
         $dumpvars( 0, main );
+`endif
         #100;
         $finish;
 end

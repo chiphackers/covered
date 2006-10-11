@@ -6,8 +6,10 @@ foobar foo( a );
 foobar bar( b );
 
 initial begin
+`ifndef VPI
 	$dumpfile( "instance5.vcd" );
 	$dumpvars( 0, main );
+`endif
 	a = 3'b000;
         b = 3'b111;
 	#5;

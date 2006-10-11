@@ -7,17 +7,17 @@
 ######################################################
 
 IVERILOG        = iverilog
-IVERILOG_FLAGS1 = -c config_file -y ./lib -I ./include -DRUNTEST
-IVERILOG_FLAGS2 = -c config_file -y ./lib -I ./include -DRUNTEST -Tmin
-IVERILOG_FLAGS3 = -c config_file -y ./lib -I ./include -DRUNTEST -Ttyp
-IVERILOG_FLAGS4 = -c config_file -y ./lib -I ./include -DRUNTEST -Tmax
+IVERILOG_FLAGS1 = -c config_file -y ./lib -I ./include -DRUNTEST -DDUMP
+IVERILOG_FLAGS2 = -c config_file -y ./lib -I ./include -DRUNTEST -DDUMP -Tmin
+IVERILOG_FLAGS3 = -c config_file -y ./lib -I ./include -DRUNTEST -DDUMP -Ttyp
+IVERILOG_FLAGS4 = -c config_file -y ./lib -I ./include -DRUNTEST -DDUMP -Tmax
 IVERILOG_EXEC   = a.out
 
 VCS        = vcs
-VCS_FLAGS1 = +libext+.vlib+.v+ -y ./lib +incdir+./include +define+RUNTEST +define+VCS +v2k -sverilog
-VCS_FLAGS2 = +libext+.vlib+.v+ -y ./lib +incdir+./include +define+RUNTEST +define+VCS +mindelays +v2k -sverilog
-VCS_FLAGS3 = +libext+.vlib+.v+ -y ./lib +incdir+./include +define+RUNTEST +define+VCS +typdelays +v2k -sverilog
-VCS_FLAGS4 = +libext+.vlib+.v+ -y ./lib +incdir+./include +define+RUNTEST +define+VCS +maxdelays +v2k -sverilog
+VCS_FLAGS1 = +libext+.vlib+.v+ -y ./lib +incdir+./include +define+RUNTEST +define+DUMP +define+VCS +v2k -sverilog
+VCS_FLAGS2 = +libext+.vlib+.v+ -y ./lib +incdir+./include +define+RUNTEST +define+DUMP +define+VCS +mindelays +v2k -sverilog
+VCS_FLAGS3 = +libext+.vlib+.v+ -y ./lib +incdir+./include +define+RUNTEST +define+DUMP +define+VCS +typdelays +v2k -sverilog
+VCS_FLAGS4 = +libext+.vlib+.v+ -y ./lib +incdir+./include +define+RUNTEST +define+DUMP +define+VCS +maxdelays +v2k -sverilog
 VCS_EXEC   = simv
 
 CDD_DIR       = ../cdd

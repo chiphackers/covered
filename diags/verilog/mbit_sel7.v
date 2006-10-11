@@ -6,8 +6,10 @@ reg  [1:0]  b;
 assign a[2-1:0] = b;
 
 initial begin
+`ifndef VPI
         $dumpfile( "mbit_sel7.vcd" );
         $dumpvars( 0, main );
+`endif
 	b = 2'b00;
 	#10;
 	b = 2'b01;

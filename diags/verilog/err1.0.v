@@ -9,8 +9,10 @@ reg     valid;
 fsma fsm( clk, reset, head, tail, valid );
 
 initial begin
+`ifndef VPI
 	$dumpfile( "err1.0.vcd" );
 	$dumpvars( 0, main );
+`endif
         reset  = 1'b1;
         head   = 1'b0;
         tail   = 1'b0;

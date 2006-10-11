@@ -61,8 +61,10 @@ assign y1  = {2{a}};       // EXP_OP_EXPAND
 assign y2  = {a, b};       // EXP_OP_CONCAT -- wrong
 
 initial begin
+`ifndef VPI
 	$dumpfile( "assign1.vcd" );
         $dumpvars( 0, main );
+`endif
 	for( i=0; i<2; i=i+1 )
           begin
            a = i;

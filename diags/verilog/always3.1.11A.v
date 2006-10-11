@@ -31,8 +31,10 @@ always begin
 
 initial 
   begin
+`ifndef VPI
      $dumpfile( "always3.1.11A.vcd" );
      $dumpvars( 0, main );
+`endif
      value1 = 0;
      value2 = 0;
      if(value1 != 0)

@@ -27,8 +27,10 @@ initial begin
 end
 
 initial begin
+`ifndef VPI
         $dumpfile( "generate9.3.vcd" );
         $dumpvars( 0, main );
+`endif
         #20;
         $finish;
 end

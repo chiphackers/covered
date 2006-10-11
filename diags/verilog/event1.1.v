@@ -24,8 +24,10 @@ initial begin
 end
 
 initial begin
+`ifndef VPI
 	$dumpfile( "event1.1.vcd" );
 	$dumpvars( 0, main );
+`endif
 	d = 1'b0;
 	#25;
 	$finish;

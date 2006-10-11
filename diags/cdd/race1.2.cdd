@@ -1,7 +1,7 @@
 5 9 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd race1.2.vcd -o race1.2.cdd -v race1.2.v
 3 0 $root $root NA 0 0
-3 0 main main race1.2.v 1 25
+3 0 main main race1.2.v 1 27
 2 1 11 e000e 1 1 4 0 0 b
 2 2 11 90009 0 0 20400 0 0 32 64 0 0 0 0 0 0 0 0
 2 3 11 7000a 0 23 400 0 2 c

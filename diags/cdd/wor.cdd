@@ -1,7 +1,7 @@
 5 9 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd wor.vcd -o wor.cdd -v wor.v
 3 0 $root $root NA 0 0
-3 0 main main wor.v 1 24
+3 0 main main wor.v 1 26
 2 1 8 f000f 2 1 c 0 0 e
 2 2 8 b000b 2 1 c 0 0 d
 2 3 8 b000f 2 8 20184 1 2 1 2 1102

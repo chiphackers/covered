@@ -14,8 +14,10 @@ always @(posedge clock)
  end
 
 initial begin
+`ifndef VPI
         $dumpfile( "always14.vcd" );
         $dumpvars( 0, main );
+`endif
 	a = 1'b0;
 	b = 4'h0;
 	c = 1'b1;

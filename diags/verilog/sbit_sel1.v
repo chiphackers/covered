@@ -11,8 +11,10 @@ assign d = z[4];
 assign e = z[sel+1];
 
 initial begin
+`ifndef VPI
 	$dumpfile( "sbit_sel1.vcd" );
 	$dumpvars( 0, main );
+`endif
 	sel = 3'h2;
 	z = 4'h0;
 	#5;

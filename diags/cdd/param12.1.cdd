@@ -1,13 +1,13 @@
 5 9 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd param12.1.vcd -o param12.1.cdd -v param12.1.v
 3 0 $root $root NA 0 0
-3 0 main main param12.1.v 1 12
-3 0 foo main.a param12.1.v 14 28
+3 0 main main param12.1.v 1 14
+3 0 foo main.a param12.1.v 16 30
 2 1 0 0 1 4e 21002 0 0 1 2 2
 1 A 0 80000 1 0 31 0 32 1 44 0 0 0 0 0 0 0
 1 B 0 80000 1 0 31 0 32 1 5 0 0 0 0 0 0 0
 1 C 0 80000 1 0 31 0 32 1 10 0 0 0 0 0 0 0
-1 a 20 3000f 1 0 9 0 10 1 aa aa a
-1 b 21 3000f 1 0 2 0 3 1 2a
-1 c 22 3000f 1 0 3 0 4 1 aa
+1 a 22 3000f 1 0 9 0 10 1 aa aa a
+1 b 23 3000f 1 0 2 0 3 1 2a
+1 c 24 3000f 1 0 3 0 4 1 aa
 4 1 0 0

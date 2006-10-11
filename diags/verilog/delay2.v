@@ -10,8 +10,10 @@ always @(posedge clk)
   end
 
 initial begin
+`ifndef VPI
 	$dumpfile( "delay2.vcd" );
 	$dumpvars( 0, main );
+`endif
 	b = 1'b0;
 	#5;
 	b = 1'b1;

@@ -12,8 +12,10 @@ always @(b)
   end
 
 initial begin
+`ifndef VPI
         $dumpfile( "do_while2.vcd" );
         $dumpvars( 0, main );
+`endif
 	#10;
 	b = 0;
 	#10;

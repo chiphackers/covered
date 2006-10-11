@@ -1,7 +1,7 @@
 5 9 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd mbit_sel6.3.vcd -o mbit_sel6.3.cdd -v mbit_sel6.3.v
 3 0 $root $root NA 0 0
-3 0 main main mbit_sel6.3.v 1 26
+3 0 main main mbit_sel6.3.v 1 28
 2 1 10 b000e 1 32 8 0 0 incr
 2 2 10 80008 4 1 8 0 0 c
 2 3 10 6000f 5 4c 208 1 2 a

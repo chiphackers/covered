@@ -10,8 +10,10 @@ initial begin : bar
 end
 
 initial begin
+`ifndef VPI
         $dumpfile( "param13.vcd" );
         $dumpvars( 0, main );
+`endif
         #10;
         $finish;
 end

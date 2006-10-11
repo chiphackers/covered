@@ -3,8 +3,10 @@ module main;
 foo #(.p2(20),.p1(10)) bar();
 
 initial begin
+`ifndef VPI
         $dumpfile( "param9.2.vcd" );
         $dumpvars( 0, main );
+`endif
         #10;
         $finish;
 end

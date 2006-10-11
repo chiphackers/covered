@@ -172,8 +172,10 @@ assign a = (b | c) &
                     (d[12:3] != 10'h04B)) ;
 
 initial begin
+`ifndef VPI
 	$dumpfile( "long_exp1.vcd" );
 	$dumpvars( 0, main );
+`endif
 	b = 1'b0;
 	c = 1'b0;
 	d = 25'h0000000;

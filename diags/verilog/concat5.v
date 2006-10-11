@@ -22,8 +22,10 @@ always @(b)
        b[  3:  0], b[  7:  4]};
 
 initial begin
+`ifndef VPI
 	$dumpfile( "concat5.vcd" );
 	$dumpvars( 0, main );
+`endif
 	b = 128'h0;
 	#5;
 	b = 128'h1;

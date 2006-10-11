@@ -11,8 +11,10 @@ initial begin
 end
 	
 initial begin
+`ifndef VPI
         $dumpfile( "task3.vcd" );
         $dumpvars( 0, main );
+`endif
         #1000;
         $finish;
 end

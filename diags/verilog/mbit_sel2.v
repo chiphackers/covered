@@ -8,8 +8,10 @@ assign a[2:1] = b;
 assign a[0]   = c;
 
 initial begin
+`ifndef VPI
 	$dumpfile( "mbit_sel2.vcd" );
 	$dumpvars( 0, main );
+`endif
 	b = 2'b00;
 	c = 1'b1;
 	#5;

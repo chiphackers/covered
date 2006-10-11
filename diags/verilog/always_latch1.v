@@ -9,8 +9,10 @@ always_latch
   end
 
 initial begin
+`ifndef VPI
         $dumpfile( "always_latch1.vcd" );
         $dumpvars( 0, main );
+`endif
 	#100;
 	$finish;
 end

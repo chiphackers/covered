@@ -1,7 +1,7 @@
 5 9 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd exponent1.vcd -o exponent1.cdd -v exponent1.v
 3 0 $root $root NA 0 0
-3 0 main main exponent1.v 1 20
+3 0 main main exponent1.v 1 22
 2 1 6 50005 1 0 20008 0 0 32 64 4 0 0 0 0 0 0 0
 2 2 6 10001 0 1 400 0 0 b
 2 3 6 10005 1 37 100a 1 2

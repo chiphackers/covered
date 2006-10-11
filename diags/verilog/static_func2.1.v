@@ -10,8 +10,10 @@ foo bar[const_func(2)-1:0] (
 assign b2 = bar[3].b | bar[2].b;
 
 initial begin
+`ifndef VPI
         $dumpfile( "static_func2.1.vcd" );
         $dumpvars( 0, main );
+`endif
 	a = 4'h4;
 	#10;
 	a = 4'hb;

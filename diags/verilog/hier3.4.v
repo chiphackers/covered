@@ -9,8 +9,10 @@ initial begin
 end
 
 initial begin
+`ifndef VPI
         $dumpfile( "hier3.4.vcd" );
         $dumpvars( 0, main );
+`endif
         #10;
         $finish;
 end

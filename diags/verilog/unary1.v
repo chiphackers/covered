@@ -13,8 +13,10 @@ wire i = ~^a;
 wire j = !(|a);
 
 initial begin
+`ifndef VPI
 	$dumpfile( "unary1.vcd" );
 	$dumpvars( 0, main );
+`endif
 	a = 3'h0;
 	#20;
 	$finish;

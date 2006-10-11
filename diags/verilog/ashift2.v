@@ -10,8 +10,10 @@ always @(a)
   end
 
 initial begin
+`ifndef VPI
         $dumpfile( "ashift2.vcd" );
         $dumpvars( 0, main );
+`endif
         #10;
         $finish;
 end

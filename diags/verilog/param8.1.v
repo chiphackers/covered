@@ -7,8 +7,10 @@ foo #(3) bar (
 );
 
 initial begin
+`ifndef VPI
         $dumpfile( "param8.1.vcd" );
         $dumpvars( 0, main );
+`endif
 	a = 4'h0;
         #10;
         $finish;

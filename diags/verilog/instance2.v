@@ -11,8 +11,10 @@ assign result = {carry, z};
 adder4 add( a, b, carry, z );
 
 initial begin
+`ifndef VPI
 	$dumpfile( "instance2.vcd" );
 	$dumpvars( 0, main );
+`endif
 	a = 4'h0;
 	b = 4'h1;
 	#5;

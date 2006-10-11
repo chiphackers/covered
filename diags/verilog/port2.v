@@ -5,8 +5,10 @@ wire a;
 foo bar ( a );
 
 initial begin
+`ifndef VPI
         $dumpfile( "port2.vcd" );
         $dumpvars( 0, main );
+`endif
         #10;
         $finish;
 end

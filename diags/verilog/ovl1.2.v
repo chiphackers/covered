@@ -13,8 +13,10 @@ assert_zero_one_hot #(.width(4)) foo (
 );
 
 initial begin
+`ifndef VPI
         $dumpfile( "ovl1.2.vcd" );
         $dumpvars( 0, main );
+`endif
 	reset_n = 1'b0;
 	a       = 4'h1;
         #10;

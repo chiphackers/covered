@@ -12,8 +12,10 @@ assign a = sel ? `VALUE0 : `VALUE1;
 assign b = sel ? `VALUE_AND : `VALUE_OR;
 
 initial begin
+`ifndef VPI
 	$dumpfile( "define2.vcd" );
 	$dumpvars( 0, main );
+`endif
 	sel = 1'b0;
 	#10;
 	sel = 1'b1;

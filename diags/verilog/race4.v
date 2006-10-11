@@ -7,8 +7,10 @@ always @(b) a = b;
 always @(posedge clock) a <= b;
 
 initial begin
+`ifndef VPI
         $dumpfile( "race4.vcd" );
         $dumpvars( 0, main );
+`endif
 	b = 1'b0;
         #10;
         $finish;

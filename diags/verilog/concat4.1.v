@@ -8,8 +8,10 @@ reg  [3:0]   d;
 always @(d) {a, b, c} = d;
 
 initial begin
+`ifndef VPI
 	$dumpfile( "concat4.1.vcd" );
 	$dumpvars( 0, main );
+`endif
 	d = 4'h0;
 	#5;
 	d = 4'h1;

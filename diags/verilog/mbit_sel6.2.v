@@ -9,8 +9,10 @@ always @*
   b = a[c-:4];
 
 initial begin
+`ifndef VPI
         $dumpfile( "mbit_sel6.2.vcd" );
         $dumpvars( 0, main );
+`endif
 	c = 3;
 	#10;
 	c = 7;

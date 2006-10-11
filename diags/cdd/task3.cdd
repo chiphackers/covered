@@ -1,7 +1,7 @@
 5 9 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd task3.vcd -o task3.cdd -v task3.v
 3 0 $root $root NA 0 0
-3 0 main main task3.v 1 31
+3 0 main main task3.v 1 33
 2 1 4 20002 1 0 20008 0 0 32 64 11 0 0 0 0 0 0 0
 2 2 4 20002 1 0 20008 0 0 32 64 55 55 55 55 55 55 55 55
 2 3 4 10002 2 2c 2100a 1 2 32 2 aa aa aa aa aa aa aa aa
@@ -18,11 +18,11 @@
 4 3 6 0
 4 12 0 0
 4 9 12 0
-3 3 main.call_task main.call_task task3.v 20 29
-2 13 25 20004 1 0 20008 0 0 32 64 10 14 0 0 0 0 0 0
-2 14 25 20004 1 0 20008 0 0 32 64 55 55 55 55 55 55 55 55
-2 15 25 10004 5 2c 3100a 13 14 32 2 aa aa aa aa aa aa aa aa
+3 3 main.call_task main.call_task task3.v 22 31
+2 13 27 20004 1 0 20008 0 0 32 64 10 14 0 0 0 0 0 0
+2 14 27 20004 1 0 20008 0 0 32 64 55 55 55 55 55 55 55 55
+2 15 27 10004 5 2c 3100a 13 14 32 2 aa aa aa aa aa aa aa aa
 2 16 0 0 1 4e 20002 0 0 1 2 2
-1 a 22 800006 1 0 0 0 1 1 102
+1 a 24 800006 1 0 0 0 1 1 102
 4 16 0 0
 4 15 16 0

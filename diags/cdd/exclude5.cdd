@@ -1,7 +1,7 @@
 5 9 3 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd exclude5.vcd -o exclude5.cdd -v exclude5.v -ec
 3 0 $root $root NA 0 0
-3 0 main main exclude5.v 1 25
+3 0 main main exclude5.v 1 27
 2 1 11 50008 1 0 20004 0 0 1 4 0
 2 2 11 10001 0 1 400 0 0 b
 2 3 11 10008 1 37 1006 1 2

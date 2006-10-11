@@ -1,7 +1,7 @@
 5 9 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd multi_exp2.1.vcd -o multi_exp2.1.cdd -v multi_exp2.1.v
 3 0 $root $root NA 0 0
-3 0 main main multi_exp2.1.v 1 22
+3 0 main main multi_exp2.1.v 1 24
 2 1 5 110011 2 1 c 0 0 d
 2 2 5 d000d 2 1 c 0 0 c
 2 3 5 90009 2 1 c 0 0 b

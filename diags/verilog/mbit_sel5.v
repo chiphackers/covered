@@ -8,8 +8,10 @@ always @*
   b = a[c+:4];
 
 initial begin
+`ifndef VPI
         $dumpfile( "mbit_sel5.vcd" );
         $dumpvars( 0, main );
+`endif
 	a = 16'h8421;
 	c = 0;
 	#10;

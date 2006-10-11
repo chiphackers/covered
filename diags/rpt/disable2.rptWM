@@ -27,7 +27,7 @@ Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hi
     -------------------------------------------------------------------------------------------------------------
     Missed Lines
 
-           30:     a  = 1'b0
+           32:     a  = 1'b0
 
 
 

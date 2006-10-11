@@ -13,8 +13,10 @@ assign e = z[4:2];
 assign f = z[4:1];
 
 initial begin
+`ifndef VPI
 	$dumpfile( "mbit_sel1.vcd" );
 	$dumpvars( 0, main );
+`endif
 	z = 4'h0;
 	#5;
 	z = 4'h4;

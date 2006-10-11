@@ -11,8 +11,10 @@ assign b = vec[16];
 assign c = vec;
 
 initial begin
+`ifndef VPI
 	$dumpfile( "sbit_sel1.1.vcd" );
 	$dumpvars( 0, main );
+`endif
 	vec = 32'h01234567;
 	#10;
 	$finish;

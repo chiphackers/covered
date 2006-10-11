@@ -11,8 +11,10 @@ always_ff @(posedge clk or negedge resetn)
     q <= d;
 
 initial begin
+`ifndef VPI
         $dumpfile( "always_ff1.vcd" );
         $dumpvars( 0, main );
+`endif
 	resetn = 1'b0;
 	d = 1'b1;
         #10;

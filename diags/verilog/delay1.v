@@ -6,8 +6,10 @@ reg [1:0] a, c;
 always @(posedge b) #(5:10:15) a <= c[1] & c[0];
 
 initial begin
+`ifndef VPI
 	$dumpfile( "delay1.vcd" );
 	$dumpvars( 0, main );
+`endif
 	b = 1'b0;
 	#5;
 	b = 1'b1;

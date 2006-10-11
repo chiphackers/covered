@@ -16,8 +16,10 @@ always @(ir)
   endcase
 
 initial begin
+`ifndef VPI
 	$dumpfile( "casez2.vcd" );
 	$dumpvars( 0, main );
+`endif
 	#5;
 	ir = 8'h00;
 	#5;

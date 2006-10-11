@@ -12,8 +12,10 @@ always @*
   end
 
 initial begin
+`ifndef VPI
         $dumpfile( "slist4.vcd" );
         $dumpvars( 0, main );
+`endif
 	reset = 1'b1;
 	#10;
 	reset = 1'b0;

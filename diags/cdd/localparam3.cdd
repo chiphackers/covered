@@ -1,7 +1,7 @@
 5 9 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd localparam3.vcd -o localparam3.cdd -v localparam3.v -P main.SIZE
 3 0 $root $root NA 0 0
-3 0 main main localparam3.v 1 12
-3 0 foo main.bar localparam3.v 15 21
+3 0 main main localparam3.v 1 14
+3 0 foo main.bar localparam3.v 17 23
 1 SIZE 0 80000 1 0 31 0 32 1 11 0 0 0 0 0 0 0
-1 a 19 30012 1 0 4 0 5 1 aa 2
+1 a 21 30012 1 0 4 0 5 1 aa 2

@@ -1,7 +1,7 @@
 5 9 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd mem2.vcd -o mem2.cdd -v mem2.v
 3 0 $root $root NA 0 0
-3 0 main main mem2.v 1 20
+3 0 main main mem2.v 1 22
 2 1 8 8000c 2 3d 2100a 0 0 1 2 1102 foo
 1 BAR0 0 80000 1 0 31 0 32 1 0 0 0 0 0 0 0 0
 1 BAR1 0 80000 1 0 31 0 32 1 1 0 0 0 0 0 0 0

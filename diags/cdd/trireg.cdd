@@ -1,7 +1,7 @@
 5 9 1 * 0
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd trireg.vcd -o trireg.cdd -v trireg.v
 3 0 $root $root NA 0 0
-3 0 main main trireg.v 1 42
+3 0 main main trireg.v 1 44
 2 1 14 f000f 2 1 c 0 0 e
 2 2 14 b000b 2 1 c 0 0 d
 2 3 14 b000f 2 8 20184 1 2 1 2 1102

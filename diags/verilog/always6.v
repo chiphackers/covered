@@ -6,8 +6,10 @@ reg       b;
 always @(a) b = a[1];
 
 initial begin
+`ifndef VPI
 	$dumpfile( "always6.vcd" );
 	$dumpvars( 0, main );
+`endif
 	a = 2'b01;
 	#5;
 	a = 2'b10;
