@@ -44,6 +44,7 @@
 #include "instance.h"
 #include "line.h"
 #include "memory.h"
+#include "ovl.h"
 #include "race.h"
 #include "report.h"
 #include "stat.h"
@@ -289,7 +290,7 @@ bool report_parse_args( int argc, int last_arg, char** argv ) {
 
     } else if( strncmp( "-m", argv[i], 2 ) == 0 ) {
     
-      if( retval = check_option_value( argc, argv, i ) ) {
+      if( (retval = check_option_value( argc, argv, i )) ) {
         i++;
         report_parse_metrics( argv[i] );
       }
@@ -317,7 +318,7 @@ bool report_parse_args( int argc, int last_arg, char** argv ) {
 
     } else if( strncmp( "-d", argv[i], 2 ) == 0 ) {
 
-      if( retval = check_option_value( argc, argv, i ) ) {
+      if( (retval = check_option_value( argc, argv, i )) ) {
         i++;
         if( argv[i][0] == 's' ) {
           report_comb_depth = REPORT_SUMMARY;
@@ -334,7 +335,7 @@ bool report_parse_args( int argc, int last_arg, char** argv ) {
 
     } else if( strncmp( "-o", argv[i], 2 ) == 0 ) {
 
-      if( retval = check_option_value( argc, argv, i ) ) {
+      if( (retval = check_option_value( argc, argv, i )) ) {
         i++;
         if( output_file != NULL ) {
           print_output( "Only one -o option is allowed on the report command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
@@ -783,11 +784,13 @@ int command_report( int argc, int last_arg, char** argv ) {
 
   int   retval = 0;       /* Return value of this function */
   FILE* ofile;            /* Pointer to output stream */
+#ifdef HAVE_TCLTK
   char* covered_home;     /* Pathname to Covered's home installation directory */
   char* covered_browser;  /* Name of browser to use for GUI help pages */
   char* covered_version;  /* String version of current Covered version */
   char* main_file;        /* Name of main TCL file to interpret */ 
   char* user_home;        /* HOME environment variable */
+#endif
 
   /* Parse score command-line */
   if( report_parse_args( argc, last_arg, argv ) ) {
@@ -912,6 +915,11 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.76  2006/10/02 22:41:00  phase1geo
+ Lots of bug fixes to memory coverage functionality for GUI.  Memory coverage
+ should now be working correctly.  We just need to update the GUI documentation
+ as well as other images for the new feature add.
+
  Revision 1.75  2006/09/25 22:22:28  phase1geo
  Adding more support for memory reporting to both score and report commands.
  We are getting closer; however, regressions are currently broken.  Checkpointing.

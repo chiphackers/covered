@@ -44,6 +44,7 @@
 #include "fsm.h"
 #include "link.h"
 #include "obfuscate.h"
+#include "ovl.h"
 #include "util.h"
 #include "vector.h"
 
@@ -1133,6 +1134,12 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.62  2006/10/03 22:47:00  phase1geo
+ Adding support for read coverage to memories.  Also added memory coverage as
+ a report output for DIAGLIST diagnostics in regressions.  Fixed various bugs
+ left in code from array changes and updated regressions for these changes.
+ At this point, all IV diagnostics pass regressions.
+
  Revision 1.61  2006/09/20 22:38:09  phase1geo
  Lots of changes to support memories and multi-dimensional arrays.  We still have
  issues with endianness and VCS regressions have not been run, but this is a significant

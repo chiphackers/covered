@@ -30,31 +30,32 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#include "defines.h"
-#include "db.h"
-#include "util.h"
-#include "func_unit.h"
-#include "expr.h"
-#include "vsignal.h"
-#include "link.h"
-#include "symtable.h"
-#include "instance.h"
-#include "statement.h"
-#include "sim.h"
-#include "binding.h"
-#include "param.h"
-#include "static.h"
-#include "stat.h"
-#include "fsm.h"
-#include "info.h"
 #include "attr.h"
+#include "binding.h"
+#include "db.h"
+#include "defines.h"
+#include "enumerate.h"
+#include "expr.h"
+#include "fsm.h"
+#include "func_unit.h"
+#include "gen_item.h"
+#include "info.h"
+#include "instance.h"
+#include "link.h"
+#include "obfuscate.h"
+#include "ovl.h"
+#include "param.h"
 #include "race.h"
 #include "scope.h"
-#include "ovl.h"
-#include "gen_item.h"
+#include "sim.h"
+#include "stat.h"
+#include "statement.h"
+#include "static.h"
+#include "symtable.h"
+#include "tree.h"
+#include "util.h"
 #include "vector.h"
-#include "obfuscate.h"
-#include "enumerate.h"
+#include "vsignal.h"
 
 
 extern char*       top_module;
@@ -158,8 +159,6 @@ gen_item* last_gi         = NULL;
 */
 void db_close() {
   
-  int i;  /* Loop iterator */
-
   if( inst_head != NULL ) {
 
     /* Remove memory allocated for inst_head */
@@ -1188,13 +1187,11 @@ int db_curr_signal_count() {
 */
 expression* db_create_expression( expression* right, expression* left, int op, bool lhs, int line, int first, int last, char* sig_name ) {
 
-  expression* expr;                 /* Temporary pointer to newly created expression */
-  mod_parm*   mparm       = NULL;   /* Module parameter matching signal of current module */
-  bool        sig_is_parm = FALSE;  /* Specifies if current signal is a module parameter */
-  func_unit*  func_funit;           /* Pointer to function, if we are nested in one */
+  expression* expr;        /* Temporary pointer to newly created expression */
+  func_unit*  func_funit;  /* Pointer to function, if we are nested in one */
 #ifdef DEBUG_MODE
-  int         right_id;             /* ID of right expression */
-  int         left_id;              /* ID of left expression */
+  int         right_id;    /* ID of right expression */
+  int         left_id;     /* ID of left expression */
 
   if( right == NULL ) {
     right_id = 0;
@@ -2133,6 +2130,11 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.228  2006/10/09 17:54:19  phase1geo
+ Fixing support for VPI to allow it to properly get linked to the simulator.
+ Also fixed inconsistency in generate reports and updated appropriately in
+ regressions for this change.  Full regression now passes.
+
  Revision 1.227  2006/10/06 17:18:12  phase1geo
  Adding support for the final block type.  Added final1 diagnostic to regression
  suite.  Full regression passes.

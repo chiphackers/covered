@@ -139,9 +139,10 @@
 #include "func_unit.h"
 #include "link.h"
 #include "sim.h"
+#include "stmt_blk.h"
+#include "util.h"
 #include "vector.h"
 #include "vsignal.h"
-#include "util.h"
 
 
 extern nibble xor_optab[OPTAB_SIZE];
@@ -225,7 +226,6 @@ static bool expression_op_func__passign( expression*, thread* );
 static bool expression_op_func__mbit_pos( expression*, thread* );
 static bool expression_op_func__mbit_neg( expression*, thread* );
 static bool expression_op_func__negate( expression*, thread* );
-static bool expression_op_func__noop( expression*, thread* );
 static bool expression_op_func__iinc( expression*, thread* );
 static bool expression_op_func__pinc( expression*, thread* );
 static bool expression_op_func__idec( expression*, thread* );
@@ -540,7 +540,6 @@ void expression_set_value( expression* exp, vsignal* sig ) {
   int rbit;       /* Bit boundary specified by right child */
   int exp_width;  /* Dimensional width of the expression */
   int exp_dim;    /* Dimension of the expression */
-  int lsb;        /* LSB of signal */
   
   assert( exp != NULL );
   assert( exp->value != NULL );
@@ -1126,8 +1125,6 @@ void expression_assign_expr_ids( expression* root ) {
 */
 void expression_db_write( expression* expr, FILE* file, bool parse_mode ) {
 
-  func_unit* funit;  /* Pointer to functional unit containing the statement attached to this expression */
-
   assert( expr != NULL );
 
   fprintf( file, "%d %d %d %x %x %x %x %d %d",
@@ -1211,7 +1208,6 @@ bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) {
   vector*     vec;            /* Holders vector value of this expression */
   expression  texp;           /* Temporary expression link holder for searching */
   exp_link*   expl;           /* Pointer to found expression in functional unit */
-  char        tmpname[1024];  /* Name of signal/functional unit that the current expression is bound to */
   int         tmpid;          /* ID of statement that the current expression is bound to */
 
   if( sscanf( *line, "%d %d %x %x %x %x %d %d%n", &id, &linenum, &column, &exec_num, &op, &(suppl.all), &right_id, &left_id, &chars_read ) == 8 ) {
@@ -1438,8 +1434,7 @@ char* expression_string( expression* exp ) {
 void expression_display( expression* expr ) {
 
   int right_id;  /* Value of right expression ID */
-  int left_id;   /* Value of left expression ID  */
-  char op[20];   /* String representation of expression operation */    
+  int left_id;   /* Value of left expression ID */
 
   assert( expr != NULL );
 
@@ -2843,6 +2838,8 @@ bool expression_op_func__exponent( expression* expr, thread* thr ) {
 
   }
 
+  return( retval );
+
 }
 
 /*!
@@ -2855,13 +2852,14 @@ bool expression_op_func__exponent( expression* expr, thread* thr ) {
 */
 bool expression_op_func__passign( expression* expr, thread* thr ) {
 
-  int intval = 0;  /* Integer value */
+  bool retval;      /* Return value for this function */
+  int  intval = 0;  /* Integer value */
 
   switch( expr->sig->suppl.part.type ) {
 
     /* If the connected signal is an input type, copy the parameter expression value to this vector */
     case SSUPPL_TYPE_INPUT :
-      vector_set_value( expr->value, expr->right->value->value, expr->right->value->suppl.part.type, expr->right->value->width, 0, 0 );
+      retval = vector_set_value( expr->value, expr->right->value->value, expr->right->value->suppl.part.type, expr->right->value->width, 0, 0 );
       vsignal_propagate( expr->sig );
       break;
 
@@ -2871,6 +2869,7 @@ bool expression_op_func__passign( expression* expr, thread* thr ) {
     */
     case SSUPPL_TYPE_OUTPUT :
       expression_assign( expr->right, expr, &intval );
+      retval = TRUE;
       break;
 
     /* We don't currently support INOUT as these are not used in tasks or functions */
@@ -2880,6 +2879,8 @@ bool expression_op_func__passign( expression* expr, thread* thr ) {
       break;
 
   }
+
+  return( retval );
 
 }
 
@@ -3529,17 +3530,19 @@ bool expression_is_last_select( expression* expr ) {
 */
 bool expression_is_in_rassign( expression* expr ) {
 
+  bool retval = FALSE;  /* Return value for this function */
+
   if( expr != NULL ) {
 
     if( expr->op == EXP_OP_RASSIGN ) {
-      return( TRUE );
+      retval = TRUE;
     } else if( ESUPPL_IS_ROOT( expr->suppl ) == 0 ) {
-      return( expression_is_in_rassign( expr->parent->expr ) );
-    } else {
-      return( FALSE );
+      retval = expression_is_in_rassign( expr->parent->expr );
     }
 
   }
+
+  return( retval );
 
 }
 
@@ -3587,7 +3590,6 @@ void expression_set_assigned( expression* expr ) {
 void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
 
   int       intval1;    /* Integer value to use */
-  int       intval2;    /* Integer value to use */
   vec_data* vstart;     /* Starting vector data */
   int       vwidth;     /* Width of vector data to select from */
   bool      assign;     /* Set to TRUE if we should perform assignment */
@@ -3914,6 +3916,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.222  2006/10/07 02:16:22  phase1geo
+ Fixing bug in PEDGE and NEDGE expressions to make them completely compliant
+ to the Verilog LRM.
+
  Revision 1.221  2006/10/07 02:06:57  phase1geo
  Fixing bug in report command in that wait events were not being considered "covered"
  when they successfully passed in simulation.  Added wait1.1 diagnostic which found this

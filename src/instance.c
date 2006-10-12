@@ -31,8 +31,11 @@
 #include <assert.h>
 
 #include "defines.h"
+#include "expr.h"
 #include "func_unit.h"
+#include "gen_item.h"
 #include "instance.h"
+#include "link.h"
 #include "param.h"
 #include "static.h"
 #include "util.h"
@@ -870,6 +873,11 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.62  2006/10/09 17:54:19  phase1geo
+ Fixing support for VPI to allow it to properly get linked to the simulator.
+ Also fixed inconsistency in generate reports and updated appropriately in
+ regressions for this change.  Full regression now passes.
+
  Revision 1.61  2006/09/22 19:56:45  phase1geo
  Final set of fixes and regression updates per recent changes.  Full regression
  now passes.

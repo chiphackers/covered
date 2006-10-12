@@ -80,11 +80,12 @@
 #include <assert.h>
 
 #include "defines.h"
-#include "sim.h"
 #include "expr.h"
-#include "vector.h"
 #include "iter.h"
 #include "link.h"
+#include "sim.h"
+#include "util.h"
+#include "vector.h"
 #include "vsignal.h"
 
 
@@ -336,9 +337,8 @@ void sim_expr_changed( expression* expr ) {
 */
 thread* sim_add_thread( thread* parent, statement* stmt ) {
 
-  sig_link* sigl;                 /* Pointer to current signal in signal list */
-  thread*   thr         = NULL;   /* Pointer to new thread to create */
-  bool      first_child = FALSE;  /* Specifies if this is the first child to be added to the parent */
+  thread* thr         = NULL;   /* Pointer to new thread to create */
+  bool    first_child = FALSE;  /* Specifies if this is the first child to be added to the parent */
 
   assert( stmt != NULL );
 
@@ -525,10 +525,7 @@ void sim_kill_thread( thread* thr ) {
 */
 void sim_kill_thread_with_stmt( statement* stmt ) {
 
-  thread* curr  = NULL;   /* Pointer to current thread being examined */
-  thread* parent;         /* Pointer to current parent thread being examined */
-  thread* child;          /* Pointer to current child being examined */
-  bool    found = FALSE;  /* Specifies if matching statement has been found yet */
+  thread* child;  /* Pointer to current child being examined */
 
   assert( stmt != NULL );
   assert( stmt->static_thr != NULL );
@@ -665,7 +662,6 @@ bool sim_expression( expression* expr, thread* thr ) {
 void sim_thread( thread* thr ) {
 
   statement* stmt;                  /* Pointer to current statement to evaluate */
-  sig_link*  sigl;                  /* Pointer to current signal in signal list */
   bool       expr_changed = FALSE;  /* Specifies if expression tree was modified in any way */
 
   /* Set the value of stmt with the head_stmt */
@@ -790,6 +786,10 @@ void sim_simulate_final() {
 
 /*
  $Log$
+ Revision 1.73  2006/10/06 17:18:13  phase1geo
+ Adding support for the final block type.  Added final1 diagnostic to regression
+ suite.  Full regression passes.
+
  Revision 1.72  2006/08/28 22:28:28  phase1geo
  Fixing bug 1546059 to match stable branch.  Adding support for repeated delay
  expressions (i.e., a = repeat(2) @(b) c).  Fixing support for event delayed

@@ -32,6 +32,7 @@
 #include "defines.h"
 #include "link.h"
 #include "obfuscate.h"
+#include "ovl.h"
 #include "toggle.h"
 #include "util.h"
 #include "vector.h"
@@ -103,7 +104,6 @@ bool toggle_collect( char* funit_name, int funit_type, int cov, sig_link** sig_h
   sig_link*   curr_sig;       /* Pointer to current signal link being evaluated */
   int         hit01;          /* Number of bits that toggled from 0 to 1 */
   int         hit10;          /* Number of bits that toggled from 1 to 0 */
-  exp_link*   expl;           /* Pointer to expression linked list */
      
   /* First, find functional unit in functional unit array */
   funit.name = funit_name;
@@ -653,6 +653,11 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.52  2006/10/09 17:54:19  phase1geo
+ Fixing support for VPI to allow it to properly get linked to the simulator.
+ Also fixed inconsistency in generate reports and updated appropriately in
+ regressions for this change.  Full regression now passes.
+
  Revision 1.51  2006/09/25 04:15:04  phase1geo
  Starting to add support for new memory coverage metric.  This includes changes
  for the report command only at this point.

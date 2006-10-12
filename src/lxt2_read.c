@@ -20,6 +20,8 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
+#include <stdio.h>
+
 #include "defines.h"
 #include "lxt2_read.h"
 #include "util.h"

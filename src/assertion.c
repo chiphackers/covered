@@ -212,12 +212,6 @@ bool assertion_funit_summary( FILE* ofile, funit_link* head ) {
 */
 void assertion_display_verbose( FILE* ofile, func_unit* funit ) {
 
-  stmt_iter   stmti;       /* Statement list iterator */
-  expression* unexec_exp;  /* Pointer to current unexecuted expression */
-  char**      code;        /* Pointer to code string from code generator */
-  int         code_depth;  /* Depth of code array */
-  int         i;           /* Loop iterator */
-
   if( report_covered ) {
     fprintf( ofile, "    Hit Assertions\n\n" );
   } else {
@@ -532,6 +526,9 @@ bool assertion_get_coverage( char* funit_name, int funit_type, char* inst_name, 
 
 /*
  $Log$
+ Revision 1.14  2006/09/01 23:06:02  phase1geo
+ Fixing regressions per latest round of changes.  Full regression now passes.
+
  Revision 1.13  2006/09/01 04:06:36  phase1geo
  Added code to support more than one instance tree.  Currently, I am seeing
  quite a few memory errors that are causing some major problems at the moment.

@@ -315,8 +315,6 @@ void statement_size_elements( statement* stmt ) {
 */
 void statement_db_write( statement* stmt, FILE* ofile, bool parse_mode ) {
 
-  exp_link* expl;  /* Pointer to current element in expression list */
-
   assert( stmt != NULL );
 
   /* Write out contents of this statement last */
@@ -406,7 +404,6 @@ bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) {
   int        id;             /* ID of root expression that is associated with this statement */
   int        true_id;        /* ID of root expression that is associated with the next_true statement */
   int        false_id;       /* ID of root expression that is associated with the next_false statement */
-  int        tf_call_id;     /* ID of task/function call expression that points to this statement */
   expression tmpexp;         /* Temporary expression used for expression search */
   statement* stmt;           /* Pointer to newly created statement */
   exp_link*  expl;           /* Pointer to found expression link */
@@ -742,9 +739,7 @@ void statement_find_rhs_sigs( statement* stmt, str_link** head, str_link** tail 
 */
 statement* statement_find_head_statement( statement* stmt, stmt_link* head ) {
 
-  stmt_iter  si;     /* Statement iterator used to find head statement */
-  stmt_link* stmtl;  /* Pointer to current statement in stmt_link list */
-  func_unit* tmp_funit;
+  stmt_iter si;  /* Statement iterator used to find head statement */
 
   assert( stmt != NULL );
 
@@ -836,7 +831,7 @@ bool statement_contains_expr_calling_stmt( statement* curr, statement* stmt ) {
             statement_contains_expr_calling_stmt( curr->next_true, stmt )) ||
            ((curr->next_false != curr->next_false) &&
             (ESUPPL_IS_STMT_STOP_FALSE( curr->exp->suppl ) == 0) &&
-            statement_find_expr_calls( curr->next_false, stmt ))) );
+            statement_contains_expr_calling_stmt( curr->next_false, stmt ))) );
 
 }
 
@@ -906,6 +901,14 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.96  2006/10/04 22:04:16  phase1geo
+ Updating rest of regressions.  Modified the way we are setting the memory rd
+ vector data bit (should optimize the score command just a bit).  Also updated
+ quite a bit of memory coverage documentation though I still need to finish
+ documenting how to understand the report file for this metric.  Cleaning up
+ other things and fixing a few more software bugs from regressions.  Added
+ marray2* diagnostics to verify endianness in the unpacked dimension list.
+
  Revision 1.95  2006/09/22 19:56:45  phase1geo
  Final set of fixes and regression updates per recent changes.  Full regression
  now passes.

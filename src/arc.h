@@ -28,6 +28,9 @@
 #include "defines.h"
 
 
+/*! \brief Returns the width of the specified arc. */
+int arc_get_width( const char* arcs );
+
 /*! \brief Allocates and initializes new state transition array. */
 char* arc_create( int width );
 
@@ -72,6 +75,11 @@ void arc_dealloc( char* arcs );
 
 /*
  $Log$
+ Revision 1.16  2006/09/20 22:38:09  phase1geo
+ Lots of changes to support memories and multi-dimensional arrays.  We still have
+ issues with endianness and VCS regressions have not been run, but this is a significant
+ amount of work that needs to be checkpointed.
+
  Revision 1.15  2006/06/29 04:26:02  phase1geo
  More updates for FSM coverage.  We are getting close but are just not to fully
  working order yet.

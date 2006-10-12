@@ -1149,9 +1149,8 @@ bool arc_db_merge( char** base, char** line, bool same ) {
 */
 void arc_get_states( char*** states, int* state_size, const char* arcs, bool hit, bool any ) {
 
-  char* str;  /* Holder for string value of current state */
-  int   i;    /* Loop iterator */
-  int   j;    /* Loop iterator */
+  int i;  /* Loop iterator */
+  int j;  /* Loop iterator */
 
   /* Initialize states array to NULL */
   *states     = NULL;
@@ -1289,6 +1288,11 @@ void arc_dealloc( char* arcs ) {
 
 /*
  $Log$
+ Revision 1.38  2006/09/20 22:38:09  phase1geo
+ Lots of changes to support memories and multi-dimensional arrays.  We still have
+ issues with endianness and VCS regressions have not been run, but this is a significant
+ amount of work that needs to be checkpointed.
+
  Revision 1.37  2006/06/29 22:44:57  phase1geo
  Fixing newly introduced bug in FSM report handler.  Also adding pointers back
  to main text window when exclusion properties are changed.  Fixing toggle

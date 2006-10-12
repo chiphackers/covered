@@ -33,6 +33,7 @@
 #include "parser_misc.h"
 #include "race.h"
 #include "sim.h"
+#include "stmt_blk.h"
 #include "util.h"
 #include "vcd.h"
 
@@ -234,6 +235,10 @@ bool parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) {
 
 /*
  $Log$
+ Revision 1.45  2006/09/22 19:56:45  phase1geo
+ Final set of fixes and regression updates per recent changes.  Full regression
+ now passes.
+
  Revision 1.44  2006/08/06 05:02:59  phase1geo
  Documenting and adding warning message to parse.c for the -rI option.
 

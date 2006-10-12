@@ -27,6 +27,7 @@
 #include "link.h"
 #include "memory.h"
 #include "obfuscate.h"
+#include "ovl.h"
 #include "vector.h"
 #include "vsignal.h"
 #include "util.h"
@@ -1186,6 +1187,11 @@ void memory_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.7  2006/10/06 22:45:57  phase1geo
+ Added support for the wait() statement.  Added wait1 diagnostic to regression
+ suite to verify its behavior.  Also added missing GPL license note at the top
+ of several *.h and *.c files that are somewhat new.
+
  Revision 1.6  2006/10/03 22:47:00  phase1geo
  Adding support for read coverage to memories.  Also added memory coverage as
  a report output for DIAGLIST diagnostics in regressions.  Fixed various bugs

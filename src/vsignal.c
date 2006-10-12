@@ -206,8 +206,7 @@ vsignal* vsignal_duplicate( vsignal* sig ) {
 */
 void vsignal_db_write( vsignal* sig, FILE* file ) {
 
-  exp_link* curr;  /* Pointer to current expression link element */
-  int       i;     /* Loop iterator */
+  int i;  /* Loop iterator */
 
   /* Don't write this vsignal if it isn't usable by Covered */
   if( (sig->suppl.part.not_handled == 0) &&
@@ -259,15 +258,9 @@ bool vsignal_db_read( char** line, func_unit* curr_funit ) {
   int        sline;          /* Declared line number */
   int        pdim_num;       /* Packed dimension number */
   int        udim_num;       /* Unpacked dimension number */
-  int        msb;            /* Current dimension MSB */
-  int        lsb;            /* Current dimension LSB */
   dim_range* dim    = NULL;  /* Dimensional information */
   ssuppl     suppl;          /* Supplemental field */
-  int        exp_id;         /* Expression ID */
   int        chars_read;     /* Number of characters read from line */
-  expression texp;           /* Temporary expression link for searching purposes */
-  exp_link*  expl;           /* Temporary expression link for storage */
-  func_unit* parent_mod;     /* Pointer to parent module */
   int        i;              /* Loop iterator */
 
   /* Get name values. */
@@ -444,8 +437,7 @@ void vsignal_propagate( vsignal* sig ) {
 */
 void vsignal_vcd_assign( vsignal* sig, char* value, int msb, int lsb ) {
 
-  bool      vec_changed;  /* Specifies if assigned value differed from original value */
-  exp_link* curr_expr;    /* Pointer to current expression link under evaluation */
+  bool vec_changed;  /* Specifies if assigned value differed from original value */
 
   assert( sig != NULL );
   assert( sig->value != NULL );
@@ -651,7 +643,6 @@ int vsignal_calc_lsb_for_expr( expression* expr, vsignal* sig, int lsb_val ) {
 void vsignal_dealloc( vsignal* sig ) {
 
   exp_link* curr_expl;  /* Pointer to current expression link to set to NULL */
-  int       i;          /* Loop iterator */
 
   if( sig != NULL ) {
 
@@ -685,6 +676,10 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.38  2006/09/25 22:22:29  phase1geo
+ Adding more support for memory reporting to both score and report commands.
+ We are getting closer; however, regressions are currently broken.  Checkpointing.
+
  Revision 1.37  2006/09/22 19:56:45  phase1geo
  Final set of fixes and regression updates per recent changes.  Full regression
  now passes.

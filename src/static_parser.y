@@ -33,13 +33,16 @@
 #endif
 
 #include "db.h"
+#include "obfuscate.h"
+#include "parser_misc.h"
 #include "static.h"
 #include "util.h"
-#include "obfuscate.h"
 
+extern int  SElex();
 extern void reset_static_lexer( char* str );
-
 extern char user_msg[USER_MSG_LENGTH];
+
+int SEerror( char* str );
 
 /*! Pointer to value of the current static expression string */
 static int  se_value;
@@ -323,10 +326,19 @@ int parse_static_expr( char* str, func_unit* funit, int lineno, bool no_genvars 
 
 }
 
+/*!
+ \param str  String to output to standard error
+
+ \return Returns 0
+
+ Displays an error message from the static expression parser and exits execution.
+*/
 int SEerror( char* str ) {
 
   snprintf( user_msg, USER_MSG_LENGTH, "%s,   file: %s, line: %d", str, obf_file( se_funit->name ), se_lineno );
   print_output( user_msg, FATAL, __FILE__, __LINE__ );
   exit( 1 );
+
+  return( 0 );
 
 }

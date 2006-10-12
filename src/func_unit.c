@@ -43,7 +43,9 @@
 #include "param.h"
 #include "parser_misc.h"
 #include "race.h"
+#include "stat.h"
 #include "statement.h"
+#include "stmt_blk.h"
 #include "util.h"
 #include "vsignal.h"
 
@@ -259,8 +261,7 @@ vsignal* funit_find_signal( char* name, func_unit* funit ) {
 */
 void funit_remove_stmt_blks_calling_stmt( func_unit* funit, statement* stmt ) {
 
-  stmt_iter   si;   /* Statement list iterator */
-  gitem_link* gil;  /* Generate item link pointer */
+  stmt_iter si;  /* Statement list iterator */
 
   /* Search all of the statement blocks */
   stmt_iter_reset( &si, funit->stmt_head );
@@ -312,7 +313,6 @@ void funit_size_elements( func_unit* funit, funit_inst* inst, bool gen_all ) {
   gitem_link* curr_gi;          /* Pointer to current generate item link to evaluate */
   sig_link*   curr_sig;         /* Pointer to current signal link to evaluate */
   bool        resolve = FALSE;  /* If set to TRUE, perform one more parameter resolution */
-  bool        bind    = FALSE;  /* If set to TRUE, perform a binding */
   
   assert( funit != NULL );
   assert( inst != NULL );
@@ -834,7 +834,6 @@ void funit_clean( func_unit* funit ) {
   func_unit*    old_funit = curr_funit;  /* Holds the original functional unit in curr_funit */
   typedef_item* tdi;                     /* Pointer to current typedef item */
   typedef_item* ttdi;                    /* Pointer to temporary typedef item */
-  int           i;                       /* Loop iterator */
 
   if( funit != NULL ) {
 
@@ -941,6 +940,11 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.48  2006/10/09 17:54:19  phase1geo
+ Fixing support for VPI to allow it to properly get linked to the simulator.
+ Also fixed inconsistency in generate reports and updated appropriately in
+ regressions for this change.  Full regression now passes.
+
  Revision 1.47  2006/10/03 22:47:00  phase1geo
  Adding support for read coverage to memories.  Also added memory coverage as
  a report output for DIAGLIST diagnostics in regressions.  Fixed various bugs

@@ -45,6 +45,9 @@ void db_add_module( char* name, char* file, int start_line );
 /*! \brief Adds specified task/function to functional unit list.  Called by parser. */
 bool db_add_function_task_namedblock( int type, char* name, char* file, int start_line );
 
+/*! \brief Performs actions necessary when the end of a function/task/named-block is seen.  Called by parser. */
+void db_end_function_task_namedblock( int end_line );
+
 /*! \brief Adds specified declared parameter to parameter list.  Called by parser. */
 void db_add_declared_param( bool is_signed, static_expr* msb, static_expr* lsb, char* name, expression* expr, bool local );
 
@@ -80,6 +83,9 @@ void db_end_function_task( int end_line );
 
 /*! \brief Finds specified signal in functional unit and returns pointer to the signal structure.  Called by parser. */
 vsignal* db_find_signal( char* name );
+
+/*! \brief Adds a generate block to the database.  Called by parser. */
+void db_add_gen_item_block( gen_item* gi );
 
 /*! \brief Find specified generate item in the current functional unit.  Called by parser. */
 gen_item* db_find_gen_item( gen_item* root, gen_item* gi );
@@ -171,6 +177,10 @@ void db_do_timestep( int time );
 
 /*
  $Log$
+ Revision 1.71  2006/09/22 19:56:45  phase1geo
+ Final set of fixes and regression updates per recent changes.  Full regression
+ now passes.
+
  Revision 1.70  2006/09/20 22:38:09  phase1geo
  Lots of changes to support memories and multi-dimensional arrays.  We still have
  issues with endianness and VCS regressions have not been run, but this is a significant

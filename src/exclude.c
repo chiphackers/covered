@@ -29,6 +29,7 @@
 #include "instance.h"
 #include "line.h"
 #include "link.h"
+#include "memory.h"
 #include "ovl.h"
 #include "toggle.h"
 #include "vector.h"
@@ -455,6 +456,11 @@ bool exclude_set_assert_exclude( char* funit_name, int funit_type, char* inst_na
 
 /*
  $Log$
+ Revision 1.13  2006/10/06 22:45:57  phase1geo
+ Added support for the wait() statement.  Added wait1 diagnostic to regression
+ suite to verify its behavior.  Also added missing GPL license note at the top
+ of several *.h and *.c files that are somewhat new.
+
  Revision 1.12  2006/10/02 22:41:00  phase1geo
  Lots of bug fixes to memory coverage functionality for GUI.  Memory coverage
  should now be working correctly.  We just need to update the GUI documentation

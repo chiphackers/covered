@@ -71,6 +71,7 @@
 #include "link.h"
 #include "obfuscate.h"
 #include "param.h"
+#include "static.h"
 #include "util.h"
 #include "vector.h"
 #include "vsignal.h"
@@ -450,7 +451,6 @@ inst_parm* inst_parm_add( char* name, char* inst_name, static_expr* msb, static_
 void inst_parm_add_genvar( vsignal* sig, funit_inst* inst ) {
 
   inst_parm* iparm;  /* Pointer to the newly allocated instance parameter */
-  exp_link*  expl;   /* Pointer to current expression link */
 
   /* Allocate the new instance parameter */
   iparm = (inst_parm*)malloc_safe( sizeof( inst_parm ), __FILE__, __LINE__ );
@@ -915,8 +915,6 @@ void param_resolve( funit_inst* inst ) {
 */
 void param_db_write( inst_parm* iparm, FILE* file, bool parse_mode ) {
 
-  exp_link* curr;  /* Pointer to current expression link element */
-
   /*
    If the parameter does not have a name, it will not be used in expressions;
    therefore, there is no reason to output this parameter to the CDD file.
@@ -1008,6 +1006,12 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.82  2006/10/03 22:47:00  phase1geo
+ Adding support for read coverage to memories.  Also added memory coverage as
+ a report output for DIAGLIST diagnostics in regressions.  Fixed various bugs
+ left in code from array changes and updated regressions for these changes.
+ At this point, all IV diagnostics pass regressions.
+
  Revision 1.81  2006/09/25 22:22:28  phase1geo
  Adding more support for memory reporting to both score and report commands.
  We are getting closer; however, regressions are currently broken.  Checkpointing.

@@ -663,7 +663,6 @@ void race_check_modules() {
   stmt_iter   si;        /* Statement iterator */
   funit_link* modl;      /* Pointer to current module link */
   int         i;         /* Loop iterator */
-  funit_link* tfl;       /* Pointer to current task/function/named block link */
   int         ignore;    /* Placeholder */
   funit_inst* inst;      /* Instance of this functional unit */
 
@@ -972,7 +971,6 @@ bool race_collect_lines( char* funit_name, int funit_type, int** slines, int** e
   func_unit   mod;               /* Temporary module used to search for module name */
   funit_link* modl;              /* Pointer to found module link containing specified module */
   race_blk*   curr_race = NULL;  /* Pointer to current race condition block */
-  int         i;                 /* Loop iterator */
   int         line_size = 20;    /* Current number of lines allocated in lines array */
 
   mod.name = strdup_safe( funit_name, __FILE__, __LINE__ );
@@ -1034,6 +1032,14 @@ void race_blk_delete_list( race_blk* rb ) {
 
 /*
  $Log$
+ Revision 1.50  2006/10/04 22:04:16  phase1geo
+ Updating rest of regressions.  Modified the way we are setting the memory rd
+ vector data bit (should optimize the score command just a bit).  Also updated
+ quite a bit of memory coverage documentation though I still need to finish
+ documenting how to understand the report file for this metric.  Cleaning up
+ other things and fixing a few more software bugs from regressions.  Added
+ marray2* diagnostics to verify endianness in the unpacked dimension list.
+
  Revision 1.49  2006/10/03 22:47:00  phase1geo
  Adding support for read coverage to memories.  Also added memory coverage as
  a report output for DIAGLIST diagnostics in regressions.  Fixed various bugs

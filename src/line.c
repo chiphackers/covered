@@ -30,15 +30,16 @@
 #include <string.h>
 #endif
 
-#include "line.h"
-#include "defines.h"
-#include "link.h"
-#include "instance.h"
 #include "codegen.h"
-#include "iter.h"
-#include "util.h"
+#include "defines.h"
 #include "expr.h"
+#include "instance.h"
+#include "iter.h"
+#include "line.h"
+#include "link.h"
 #include "obfuscate.h"
+#include "ovl.h"
+#include "util.h"
 
 extern inst_link*  inst_head;
 extern funit_link* funit_head;
@@ -566,6 +567,9 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.67  2006/09/01 23:06:02  phase1geo
+ Fixing regressions per latest round of changes.  Full regression now passes.
+
  Revision 1.66  2006/09/01 04:06:37  phase1geo
  Added code to support more than one instance tree.  Currently, I am seeing
  quite a few memory errors that are causing some major problems at the moment.

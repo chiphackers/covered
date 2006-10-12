@@ -32,18 +32,19 @@
 #include <string.h>
 #endif
 
-#include "defines.h"
-#include "vsignal.h"
-#include "expr.h"
-#include "vector.h"
-#include "func_unit.h"
 #include "db.h"
+#include "defines.h"
+#include "expr.h"
+#include "func_unit.h"
+#include "gen_item.h"
 #include "link.h"
+#include "obfuscate.h"
 #include "parser_misc.h"
 #include "statement.h"
 #include "static.h"
 #include "util.h"
-#include "obfuscate.h"
+#include "vector.h"
+#include "vsignal.h"
 
 extern char   user_msg[USER_MSG_LENGTH];
 extern int    delay_expr_type;
@@ -613,7 +614,6 @@ module_port_list_opt
   : '(' list_of_ports ')'
   | '(' list_of_port_declarations ')'
     {
-      int i;
       if( $2 != NULL ) {
         parser_dealloc_sig_range( $2->prange, TRUE );
         parser_dealloc_sig_range( $2->urange, TRUE );
@@ -630,7 +630,6 @@ list_of_port_declarations
     }
   | list_of_port_declarations ',' port_declaration
     {
-      int i;
       if( $1 != NULL ) {
         parser_dealloc_sig_range( $1->prange, TRUE );
         parser_dealloc_sig_range( $1->urange, TRUE );
@@ -4025,11 +4024,10 @@ statement
     }
   | K_for inc_block_depth '(' passign ';' expression ';' passign ')' statement dec_block_depth
     {
-      expression* expr;
-      statement*  stmt1 = $4;
-      statement*  stmt2;
-      statement*  stmt3 = $8;
-      statement*  stmt4 = $10;
+      statement* stmt1 = $4;
+      statement* stmt2;
+      statement* stmt3 = $8;
+      statement* stmt4 = $10;
       if( (ignore_mode == 0) && ($4 != NULL) && ($6 != NULL) && ($8 != NULL) && ($10 != NULL) ) {
         block_depth++;
         stmt2 = db_create_statement( $6 );
@@ -5628,18 +5626,14 @@ dr_strength1
 event_control
   : '@' IDENTIFIER
     {
-      vsignal*    sig;
       expression* tmp;
       if( (ignore_mode == 0) && ($2 != NULL) ) {
         tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), $2 );
-        free_safe( $2 );
-        $$ = tmp;
+        $$  = tmp;
       } else {
-        if( $2 != NULL ) {
-          free_safe( $2 );
-        }
         $$ = NULL;
       }
+      free_safe( $2 );
     }
   | '@' UNUSED_IDENTIFIER
     {
@@ -6407,7 +6401,6 @@ single_index_expr
 index_expr
   : index_expr single_index_expr
     {
-      expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($2 != NULL) ) {
         $$ = db_create_expression( $2, $1, EXP_OP_DIM, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
       } else {

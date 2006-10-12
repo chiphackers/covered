@@ -14,12 +14,13 @@
 #endif
 #include <stdlib.h>
 
+#include "binding.h"
 #include "db.h"
 #include "defines.h"
-#include "merge.h"
-#include "util.h"
 #include "info.h"
-#include "binding.h"
+#include "merge.h"
+#include "sim.h"
+#include "util.h"
 
 
 extern int merged_code;
@@ -89,7 +90,7 @@ bool merge_parse_args( int argc, int last_arg, char** argv ) {
 
     } else if( strncmp( "-o", argv[i], 2 ) == 0 ) {
     
-      if( retval = check_option_value( argc, argv, i ) ) {
+      if( (retval = check_option_value( argc, argv, i )) ) {
         i++;
         if( is_directory( argv[i] ) ) {
           merged_file = strdup_safe( argv[i], __FILE__, __LINE__ );
@@ -205,6 +206,11 @@ int command_merge( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.28  2006/08/18 04:41:14  phase1geo
+ Incorporating bug fixes 1538920 and 1541944.  Updated regressions.  Only
+ event1.1 does not currently pass (this does not pass in the stable version
+ yet either).
+
  Revision 1.27  2006/08/02 22:28:32  phase1geo
  Attempting to fix the bug pulled out by generate11.v.  We are just having an issue
  with setting the assigned bit in a signal expression that contains a hierarchical reference
