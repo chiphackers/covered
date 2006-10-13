@@ -195,7 +195,7 @@ static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int
           (op == EXP_OP_NOR)    || (op == EXP_OP_NAND)     || (op == EXP_OP_NXOR)   || (op == EXP_OP_EXPONENT)  ||
           (op == EXP_OP_LSHIFT) || (op == EXP_OP_RSHIFT)   || (op == EXP_OP_LIST)   || (op == EXP_OP_FUNC_CALL) ||
           (op == EXP_OP_GE)     || (op == EXP_OP_LE)       || (op == EXP_OP_EQ)     || (op == EXP_OP_GT)        ||
-          (op == EXP_OP_LT) );
+          (op == EXP_OP_LT)     || (op == EXP_OP_SBIT_SEL) );
 
   if( (right != NULL) && (left != NULL) ) {
 
@@ -267,10 +267,10 @@ static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int
 
     }
 
-  } else if( op == EXP_OP_FUNC_CALL ) {
+  } else if( (op == EXP_OP_FUNC_CALL) || (op == EXP_OP_SBIT_SEL) ) {
 
     /*
-     If this is a function call, only the left expression will be a valid expression (so we need to special
+     If this is a function call or SBIT_SEL, only the left expression will be a valid expression (so we need to special
      handle this)
     */
 
@@ -408,6 +408,10 @@ void static_expr_dealloc( static_expr* stexp, bool rm_exp ) {
 
 /*
  $Log$
+ Revision 1.25  2006/09/22 19:56:45  phase1geo
+ Final set of fixes and regression updates per recent changes.  Full regression
+ now passes.
+
  Revision 1.24  2006/09/22 04:23:04  phase1geo
  More fixes to support new signal range structure.  Still don't have full
  regressions passing at the moment.

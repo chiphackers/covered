@@ -45,7 +45,8 @@ funit_inst* instance_find_by_funit( funit_inst* root, func_unit* funit, int* ign
 funit_inst* instance_add_child( funit_inst* inst, func_unit* child, char* name, vector_width* range, bool resolve );
 
 /*! \brief Adds new instance to specified instance tree during parse. */
-bool instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child, char* inst_name, vector_width* range, bool resolve );
+bool instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child, char* inst_name, vector_width* range,
+                         bool resolve, bool child_gend );
 
 /*! \brief Resolves all instance arrays. */
 void instance_resolve( funit_inst* root );
@@ -71,6 +72,9 @@ void instance_dealloc( funit_inst* root, char* scope );
 
 /*
  $Log$
+ Revision 1.21  2006/10/13 15:56:02  phase1geo
+ Updating rest of source files for compiler warnings.
+
  Revision 1.20  2006/09/08 22:39:50  phase1geo
  Fixes for memory problems.
 

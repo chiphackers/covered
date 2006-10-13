@@ -216,9 +216,11 @@ vsignal* funit_find_signal( char* name, func_unit* funit ) {
   vsignal*    found_sig = NULL;  /* Pointer to the found signal */
   vsignal     sig;               /* Holder for signal to search for */
   sig_link*   sigl;              /* Pointer to signal link */
+#ifndef VPI_ONLY
   gen_item*   gi;                /* Pointer to temporary generate item */
   gen_item*   found_gi;          /* Pointer to found generate item */
   gitem_link* gil;               /* Pointer to found generate item link */
+#endif
 #ifdef OBSOLETE
   int         ignore;            /* Value to use for ignore purposes */
   int         i         = 0;     /* Loop iterator */
@@ -310,7 +312,9 @@ void funit_size_elements( func_unit* funit, funit_inst* inst, bool gen_all ) {
   inst_parm*  curr_iparm;       /* Pointer to current instance parameter to evaluate */
   exp_link*   curr_exp;         /* Pointer to current expression link to evaluate */
   fsm_link*   curr_fsm;         /* Pointer to current FSM structure to evaluate */
+#ifndef VPI_ONLY
   gitem_link* curr_gi;          /* Pointer to current generate item link to evaluate */
+#endif
   sig_link*   curr_sig;         /* Pointer to current signal link to evaluate */
   bool        resolve = FALSE;  /* If set to TRUE, perform one more parameter resolution */
   
@@ -454,7 +458,9 @@ bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
   inst_parm*  curr_parm;      /* Pointer to current instance parameter */
   fsm_link*   curr_fsm;       /* Pointer to current functional unit fsm_link element */
   race_blk*   curr_race;      /* Pointer to current race condition block */
+#ifndef VPI_ONLY
   gitem_link* curr_gi;        /* Pointer to current gitem_link element */
+#endif
   char        modname[4096];  /* Name of module */
   char        tmp[4096];      /* Temporary string holder */
 
@@ -940,6 +946,9 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.49  2006/10/12 22:48:46  phase1geo
+ Updates to remove compiler warnings.  Still some work left to go here.
+
  Revision 1.48  2006/10/09 17:54:19  phase1geo
  Fixing support for VPI to allow it to properly get linked to the simulator.
  Also fixed inconsistency in generate reports and updated appropriately in

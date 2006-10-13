@@ -824,7 +824,7 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
   funit_inst* child;    /* Pointer to child instance of this instance to resolve */
   char*       varname;  /* Pointer to new, substituted name (used for BIND types) */
 
-  if( gi != NULL ) {
+  if( (gi != NULL) && (inst != NULL) ) {
 
 #ifdef DEBUG_MODE 
     if( debug_mode ) {
@@ -881,23 +881,25 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
             exit( 1 );
           }
           snprintf( inst_name, 4096, "%s[%d]", gi->elem.inst->name, vector_to_int( genvar->value ) );
-          while( (instl != NULL) && !instance_parse_add( &(instl->inst), inst->funit, gi->elem.inst->funit, inst_name, NULL, FALSE ) ) {
+          while( (instl != NULL) && !instance_parse_add( &(instl->inst), inst->funit, gi->elem.inst->funit, inst_name, NULL, FALSE, TRUE ) ) {
             instl = instl->next;
           }
           assert( instl != NULL );
           snprintf( inst_name, 4096, "%s.%s[%d]", inst->name, gi->elem.inst->name, vector_to_int( genvar->value ) );
-          child = instance_find_scope( inst, inst_name );
-          inst_parm_add_genvar( genvar, child );
+          if( (child = instance_find_scope( inst, inst_name )) != NULL ) {
+            inst_parm_add_genvar( genvar, child );
+          }
         } else {
           char       inst_name[4096];
           inst_link* instl = inst_head;
-          while( (instl != NULL) && !instance_parse_add( &(instl->inst), inst->funit, gi->elem.inst->funit, gi->elem.inst->name, NULL, FALSE ) ) {
+          while( (instl != NULL) && !instance_parse_add( &(instl->inst), inst->funit, gi->elem.inst->funit, gi->elem.inst->name, NULL, FALSE, TRUE ) ) {
             instl = instl->next;
           }
           assert( instl != NULL );
           snprintf( inst_name, 4096, "%s.%s", inst->name, gi->elem.inst->name );
           child = instance_find_scope( inst, inst_name );
         }
+        // child->generated = TRUE;
         gen_item_resolve( gi->next_true, child, TRUE );
         gen_item_resolve( gi->next_false, inst, FALSE );
         break;
@@ -936,7 +938,7 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
         while( funitl != NULL ) {
           scope_extract_back( funitl->funit->name, back, front );
           instl = inst_head;
-          while( (instl != NULL) && !instance_parse_add( &(instl->inst), funitl->funit->parent, funitl->funit, back, NULL, FALSE ) ) {
+          while( (instl != NULL) && !instance_parse_add( &(instl->inst), funitl->funit->parent, funitl->funit, back, NULL, FALSE, TRUE ) ) {
             instl = instl->next;
           }
           assert( instl != NULL );
@@ -985,7 +987,8 @@ void generate_resolve( funit_inst* root ) {
 
   if( root != NULL ) {
 
-    // gitem_link_display( root->funit->gitem_head );
+    printf( "**********  RESOLVING instance %s  ***********\n", root->name );
+    gitem_link_display( root->funit->gitem_head );
 
     /* Resolve ourself */
     curr_gi = root->funit->gitem_head;
@@ -1122,6 +1125,9 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.40  2006/10/13 15:56:02  phase1geo
+ Updating rest of source files for compiler warnings.
+
  Revision 1.39  2006/10/06 22:45:57  phase1geo
  Added support for the wait() statement.  Added wait1 diagnostic to regression
  suite to verify its behavior.  Also added missing GPL license note at the top

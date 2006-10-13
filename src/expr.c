@@ -3830,6 +3830,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
           bind_rm_stmt( expr->id );
         }
 
+      /* If this is a task call, remove the bind */
+      } else if( expr->op == EXP_OP_TASK_CALL ) {
+         
+        bind_remove( expr->id, FALSE );
+
       }
 
     } else {
@@ -3916,6 +3921,9 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.223  2006/10/12 22:48:46  phase1geo
+ Updates to remove compiler warnings.  Still some work left to go here.
+
  Revision 1.222  2006/10/07 02:16:22  phase1geo
  Fixing bug in PEDGE and NEDGE expressions to make them completely compliant
  to the Verilog LRM.

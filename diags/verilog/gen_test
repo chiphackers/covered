@@ -23,21 +23,38 @@ if( -e "${diag}.v" ) {
   exit( 1 );
 }
 
+# Generate the current date
+$date = `date +%m/%d/%Y`;  chomp( $date );
+
+# Generate author
+$author = `whoami`;  chomp( $author );
+if( $author eq "trevorw" ) {
+  $author = "Trevor Williams  (trevorw\@charter.net)";
+} else {
+  $author = "";
+}
+
 print "Generating test ${diag}...\n";
 
 # Generate template Verilog diagnostic
 open( DIAG, ">${diag}.v" ) || die "Can't open ${diag}: $!\n";
-print DIAG "module main;\n";
-print DIAG "\n";
+print DIAG "/*\n";
+print DIAG " Name:     ${diag}.v\n";
+print DIAG " Author:   ${author}\n";
+print DIAG " Date:     ${date}\n";
+print DIAG " Purpose:  \n";
+print DIAG "*/\n\n";
+print DIAG "module main;\n\n";
 
 if( $type ne "gen" ) {
   print DIAG "initial begin\n";
+  print DIAG "`ifndef VPI\n";
   print DIAG "        \$dumpfile( \"${diag}.vcd\" );\n";
   print DIAG "        \$dumpvars( 0, main );\n";
+  print DIAG "`endif\n";
   print DIAG "        #10;\n";
   print DIAG "        \$finish;\n";
-  print DIAG "end\n";
-  print DIAG "\n";
+  print DIAG "end\n\n";
 }
 
 print DIAG "endmodule\n";

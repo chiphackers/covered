@@ -69,6 +69,17 @@ extern char        user_msg[USER_MSG_LENGTH];
 extern isuppl      info_suppl;
 
 
+/*!
+ \param msg  Message to output to standard output
+
+ Outputs the given message to standard output using the vpi_printf function.
+*/
+void vpi_print_output( char* msg ) {
+
+  vpi_printf( "Covered VPI: %s", msg );
+
+}
+
 PLI_INT32 covered_value_change( p_cb_data cb ) {
 
 #ifndef NOIV

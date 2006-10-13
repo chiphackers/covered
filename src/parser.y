@@ -1022,9 +1022,15 @@ static_expr_primary
       static_expr* tmp;
       if( ignore_mode == 0 ) {
         tmp = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
-        tmp->num = vector_to_int( $1 );
-        tmp->exp = NULL;
-        vector_dealloc( $1 );
+        if( vector_is_unknown( $1 ) ) {
+          tmp->exp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+          vector_dealloc( tmp->exp->value );
+          tmp->exp->value = $1;
+        } else {
+          tmp->num = vector_to_int( $1 );
+          tmp->exp = NULL;
+          vector_dealloc( $1 );
+        }
         $$ = tmp;
       } else {
         $$ = NULL;
@@ -1066,18 +1072,42 @@ static_expr_primary
     }
   | IDENTIFIER '(' static_expr_port_list ')'
     {
-      static_expr* tmp;
       if( ignore_mode == 0 ) {
-        tmp = static_expr_gen( NULL, $3, EXP_OP_FUNC_CALL, @1.first_line, @1.first_column, (@4.last_column - 1), $1 );
-        $$  = tmp;
+        $$ = static_expr_gen( NULL, $3, EXP_OP_FUNC_CALL, @1.first_line, @1.first_column, (@4.last_column - 1), $1 );
       } else {
+        static_expr_dealloc( $3, TRUE );
         $$ = NULL;
       }
       free_safe( $1 );
     }
   | UNUSED_IDENTIFIER '(' static_expr_port_list ')'
     {
+      $$ = NULL;
       static_expr_dealloc( $3, TRUE );
+    }
+  | IDENTIFIER '[' static_expr ']'
+    {
+      if( ignore_mode == 0 ) { 
+        $$ = static_expr_gen( NULL, $3, EXP_OP_SBIT_SEL, @1.first_line, @1.first_column, (@4.last_column - 1), $1 );
+      } else {
+        static_expr_dealloc( $3, TRUE );
+        $$ = NULL;
+      }
+      free_safe( $1 );
+    }
+  | UNUSED_IDENTIFIER '[' static_expr ']'
+    {
+      $$ = NULL;
+      static_expr_dealloc( $3, TRUE );
+    }
+  | SYSTEM_IDENTIFIER
+    {
+      free_safe( $1 );
+      $$ = NULL;
+    }
+  | UNUSED_SYSTEM_IDENTIFIER
+    {
+      $$ = NULL;
     }
   ;
 

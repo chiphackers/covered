@@ -23,11 +23,14 @@
  \brief    Contains functions for handling VPI-related activity.
 */
 
-/*! \brief Generated top-level module that contains VPI call */
-void vpi_generate_top_module( char* vpi_file, char* output_db, char* top_inst );
+/*! \brief Displays the given message to standard output */
+void vpi_print_output( char* msg );
 
 /*
  $Log$
+ Revision 1.1  2006/04/06 22:31:22  phase1geo
+ Adding vpi.c and vpi.h to src directory.
+
 */
 
 #endif

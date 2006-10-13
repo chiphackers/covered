@@ -381,22 +381,28 @@ void instance_copy( funit_inst* from_inst, funit_inst* to_inst, char* name, vect
   /* Add new child instance */
   new_inst = instance_add_child( to_inst, from_inst->funit, name, range, resolve );
 
-  /* Iterate through rest of current child's list of children */
-  curr = from_inst->child_head;
-  while( curr != NULL ) {
-    instance_copy( curr, new_inst, curr->name, curr->range, resolve );
-    curr = curr->next;
+  /* Do not add children if no child instance was created */
+  if( new_inst != NULL ) {
+
+    /* Iterate through rest of current child's list of children */
+    curr = from_inst->child_head;
+    while( curr != NULL ) {
+      instance_copy( curr, new_inst, curr->name, curr->range, resolve );
+      curr = curr->next;
+    }
+
   }
 
 }
 
 /*!
- \param root       Root funit_inst pointer of functional unit instance tree.
- \param parent     Pointer to parent functional unit of specified child.
- \param child      Pointer to child functional unit to add.
- \param inst_name  Name of new functional unit instance.
- \param range      For array of instances, specifies the name range.
- \param resolve    If set to TRUE, resolve any added instance.
+ \param root        Root funit_inst pointer of functional unit instance tree.
+ \param parent      Pointer to parent functional unit of specified child.
+ \param child       Pointer to child functional unit to add.
+ \param inst_name   Name of new functional unit instance.
+ \param range       For array of instances, specifies the name range.
+ \param resolve     If set to TRUE, resolve any added instance.
+ \param child_gend  If set to TRUE, specifies that child is a generated instance and should only be added once
 
  \return Returns TRUE if specified instance was successfully added to the specified instance tree;
          otherwise, returns FALSE.
@@ -406,7 +412,8 @@ void instance_copy( funit_inst* from_inst, funit_inst* to_inst, char* name, vect
  tree pointed to by root.  This function is used by the db_add_instance
  function during the parsing stage.
 */
-bool instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child, char* inst_name, vector_width* range, bool resolve ) {
+bool instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child, char* inst_name, vector_width* range,
+                         bool resolve, bool child_gend ) {
   
   bool        retval = TRUE;  /* Return value for this function */
   funit_inst* inst;           /* Temporary pointer to functional unit instance to add to */
@@ -430,24 +437,39 @@ bool instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child,
      one of its instances for copying the instance tree below it.
     */
     cinst = instance_find_by_funit( *root, child, &ignore);
+    printf( "Searching for functional unit %s", child->name );
+    if( cinst != NULL ) {
+      char tmp[4096];
+      tmp[0] = '\0';
+      instance_gen_scope( tmp, cinst );
+      printf( " and found %s\n", tmp );
+    } else {
+      printf( "\n" );
+    }
+    instance_display_tree( *root );
     
     /* Filename will be set to a value if the functional unit has been parsed */
     if( (cinst != NULL) && (cinst->funit->filename != NULL) ) { 
 
+      char tmp[4096];
       ignore = 0;
-      while( (inst = instance_find_by_funit( *root, parent, &ignore )) != NULL ) {
+      printf( "parent: %s\n", parent->name );
+      while( (i >= 0) && ((inst = instance_find_by_funit( *root, parent, &ignore )) != NULL) ) {
+        tmp[0] = '\0';
+        instance_gen_scope( tmp, inst );
+        printf( "inst: %s, %s\n", inst->name, tmp );
         instance_copy( cinst, inst, inst_name, range, resolve );
         i++;
-        ignore = i;
+        ignore = child_gend ? -1 : i;
       }
 
     } else {
 
       ignore = 0;
-      while( (inst = instance_find_by_funit( *root, parent, &ignore )) != NULL ) {
-        instance_add_child( inst, child, inst_name, range, resolve );
+      while( (i >= 0) && ((inst = instance_find_by_funit( *root, parent, &ignore )) != NULL) ) {
+        cinst = instance_add_child( inst, child, inst_name, range, resolve );
         i++;
-        ignore = i;
+        ignore = (child_gend && (cinst != NULL)) ? -1 : i;
       }
 
     }
@@ -510,7 +532,7 @@ bool instance_resolve_inst( funit_inst* root, funit_inst* curr ) {
       snprintf( new_name, (strlen( curr->name ) + 23), "%s[%d]", name_copy, (lsb + i) );
 
       /* Add the instance */
-      instance_parse_add( &root, ((curr->parent == NULL) ? NULL : curr->parent->funit), curr->funit, new_name, NULL, TRUE );
+      instance_parse_add( &root, ((curr->parent == NULL) ? NULL : curr->parent->funit), curr->funit, new_name, NULL, TRUE, FALSE );
 
     }
 
@@ -639,7 +661,9 @@ void instance_db_write( funit_inst* root, FILE* file, char* scope, bool parse_mo
   char        tscope[4096];  /* New scope of functional unit to write */
   funit_inst* curr;          /* Pointer to current child functional unit instance */
   exp_link*   expl;          /* Pointer to current expression link */
+#ifndef VPI_ONLY
   gitem_link* gil;           /* Pointer to current generate item link */
+#endif
 
   assert( scope != NULL );
 
@@ -689,7 +713,9 @@ void instance_db_write( funit_inst* root, FILE* file, char* scope, bool parse_mo
 void instance_remove_stmt_blks_calling_stmt( funit_inst* root, statement* stmt ) {
 
   funit_inst* curr_child;  /* Pointer to current child instance to parse */
+#ifndef VPI_ONLY
   gitem_link* gil;         /* Pointer to current generate item link */
+#endif
 
   if( root != NULL ) {
 
@@ -873,6 +899,9 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.63  2006/10/12 22:48:46  phase1geo
+ Updates to remove compiler warnings.  Still some work left to go here.
+
  Revision 1.62  2006/10/09 17:54:19  phase1geo
  Fixing support for VPI to allow it to properly get linked to the simulator.
  Also fixed inconsistency in generate reports and updated appropriately in

@@ -452,6 +452,8 @@ void inst_parm_add_genvar( vsignal* sig, funit_inst* inst ) {
 
   inst_parm* iparm;  /* Pointer to the newly allocated instance parameter */
 
+  assert( inst != NULL );
+
   /* Allocate the new instance parameter */
   iparm = (inst_parm*)malloc_safe( sizeof( inst_parm ), __FILE__, __LINE__ );
 
@@ -1006,6 +1008,9 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.83  2006/10/12 22:48:46  phase1geo
+ Updates to remove compiler warnings.  Still some work left to go here.
+
  Revision 1.82  2006/10/03 22:47:00  phase1geo
  Adding support for read coverage to memories.  Also added memory coverage as
  a report output for DIAGLIST diagnostics in regressions.  Fixed various bugs

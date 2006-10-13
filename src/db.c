@@ -541,7 +541,7 @@ func_unit* db_add_instance( char* scope, char* name, int type, vector_width* ran
       }
     } else {
       inst_link* instl = inst_head;
-      while( (instl != NULL) && !instance_parse_add( &instl->inst, curr_funit, found_funit_link->funit, scope, range, FALSE ) ) {
+      while( (instl != NULL) && !instance_parse_add( &instl->inst, curr_funit, found_funit_link->funit, scope, range, FALSE, FALSE ) ) {
         instl = instl->next;
       }
       if( instl == NULL ) {
@@ -566,7 +566,7 @@ func_unit* db_add_instance( char* scope, char* name, int type, vector_width* ran
       }
     } else {
       inst_link* instl = inst_head;
-      while( (instl != NULL) && !instance_parse_add( &instl->inst, curr_funit, funit, scope, range, FALSE ) ) {
+      while( (instl != NULL) && !instance_parse_add( &instl->inst, curr_funit, funit, scope, range, FALSE, FALSE ) ) {
         instl = instl->next;
       }
       if( instl == NULL ) {
@@ -2130,6 +2130,9 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.229  2006/10/12 22:48:45  phase1geo
+ Updates to remove compiler warnings.  Still some work left to go here.
+
  Revision 1.228  2006/10/09 17:54:19  phase1geo
  Fixing support for VPI to allow it to properly get linked to the simulator.
  Also fixed inconsistency in generate reports and updated appropriately in
