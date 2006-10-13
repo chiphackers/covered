@@ -1270,7 +1270,7 @@ char* lxt2_rd_get_facname( struct lxt2_rd_trace* lt, lxtint32_t facidx ) {
           *(pnt++) = lt->faccache->bufprev[j];
         }
 
-        while( *(pnt++) = lxt2_rd_get_byte( lt->faccache->n++, 0 ) );
+        while( (*(pnt++) = lxt2_rd_get_byte( lt->faccache->n++, 0 )) );
 
 	lt->faccache->old_facidx = facidx;
 

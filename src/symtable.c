@@ -268,7 +268,6 @@ void symtable_add( char* sym, vsignal* sig, int msb, int lsb ) {
 void symtable_set_value( char* sym, char* value ) {
 
   symtable* curr;         /* Pointer to current symtable */
-  sym_sig*  sig;          /* Pointer to current sym_sig in list */
   char*     ptr;          /* Pointer to current character in symbol */
   bool      set = FALSE;  /* Specifies if this symtable entry has been set this timestep yet */
 
@@ -365,6 +364,10 @@ void symtable_dealloc( symtable* symtab ) {
 
 /*
  $Log$
+ Revision 1.25  2006/05/28 02:43:49  phase1geo
+ Integrating stable release 0.4.4 changes into main branch.  Updated regressions
+ appropriately.
+
  Revision 1.24  2006/05/25 12:11:02  phase1geo
  Including bug fix from 0.4.4 stable release and updating regressions.
 

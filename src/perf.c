@@ -130,8 +130,7 @@ void perf_output_inst_report_helper( FILE* ofile, funit_inst* root ) {
 */
 void perf_output_inst_report( FILE* ofile ) {
 
-  funit_inst* curr;   /* Pointer to current functional unit instance */
-  inst_link*  instl;  /* Pointer to current instance link */
+  inst_link* instl;  /* Pointer to current instance link */
 
   fprintf( ofile, "\nSIMULATION PERFORMANCE STATISTICS:\n\n" );
 
@@ -145,6 +144,11 @@ void perf_output_inst_report( FILE* ofile ) {
 
 /*
  $Log$
+ Revision 1.4  2006/09/01 04:06:37  phase1geo
+ Added code to support more than one instance tree.  Currently, I am seeing
+ quite a few memory errors that are causing some major problems at the moment.
+ Checkpointing.
+
  Revision 1.3  2006/03/28 22:28:28  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

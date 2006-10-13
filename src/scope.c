@@ -53,7 +53,6 @@ func_unit* scope_find_funit_from_scope( char* scope, func_unit* curr_funit ) {
 
   funit_inst* curr_inst;      /* Pointer to current instance */
   funit_inst* funiti = NULL;  /* Pointer to functional unit instance found */
-  func_unit*  funit;          /* Pointer to parent functional unit */
   int         ignore = 0;     /* Used for functional unit instance search */
   char        tscope[4096];   /* Temporary scope value */
 
@@ -342,6 +341,10 @@ func_unit* scope_get_parent_module( char* scope ) {
 
 /*
  $Log$
+ Revision 1.30  2006/10/09 20:27:07  phase1geo
+ Fixing simulator issue and adding parsing support for typedef'ed instantiations
+ within modules.
+
  Revision 1.29  2006/09/01 04:06:37  phase1geo
  Added code to support more than one instance tree.  Currently, I am seeing
  quite a few memory errors that are causing some major problems at the moment.

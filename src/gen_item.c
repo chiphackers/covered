@@ -22,6 +22,7 @@
 #include <string.h>
 #include <stdio.h>
 
+#include "binding.h"
 #include "defines.h"
 #include "expr.h"
 #include "func_unit.h"
@@ -30,13 +31,14 @@
 #include "link.h"
 #include "obfuscate.h"
 #include "param.h"
+#include "scope.h"
 #include "statement.h"
 #include "util.h"
 #include "vector.h"
 #include "vsignal.h"
 
 
-extern static_expr* parse_static_expr( char* str, func_unit* funit, int lineno, bool no_genvars );
+extern int parse_static_expr( char* str, func_unit* funit, int lineno, bool no_genvars );
 
 extern inst_link* inst_head;
 extern inst_link* inst_tail;
@@ -820,7 +822,6 @@ bool gen_item_connect( gen_item* gi1, gen_item* gi2, int conn_id ) {
 void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
 
   funit_inst* child;    /* Pointer to child instance of this instance to resolve */
-  func_unit*  parent;   /* Pointer to parent functional unit of the current instance */
   char*       varname;  /* Pointer to new, substituted name (used for BIND types) */
 
   if( gi != NULL ) {
@@ -1121,6 +1122,11 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.39  2006/10/06 22:45:57  phase1geo
+ Added support for the wait() statement.  Added wait1 diagnostic to regression
+ suite to verify its behavior.  Also added missing GPL license note at the top
+ of several *.h and *.c files that are somewhat new.
+
  Revision 1.38  2006/09/20 22:38:09  phase1geo
  Lots of changes to support memories and multi-dimensional arrays.  We still have
  issues with endianness and VCS regressions have not been run, but this is a significant

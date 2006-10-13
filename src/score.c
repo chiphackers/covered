@@ -31,18 +31,20 @@
 #include <sys/times.h>
 #include <unistd.h>
 
+#include "db.h"
 #include "defines.h"
-#include "score.h"
-#include "util.h"
-#include "link.h"
-#include "search.h"
-#include "parse.h"
-#include "param.h"
-#include "vector.h"
 #include "fsm_arg.h"
 #include "fsm_var.h"
-#include "info.h"
+#include "link.h"
+#include "ovl.h"
+#include "parse.h"
+#include "param.h"
 #include "perf.h"
+#include "score.h"
+#include "search.h"
+#include "info.h"
+#include "util.h"
+#include "vector.h"
 #include "vpi.h"
 
 
@@ -383,7 +385,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 
     } else if( strncmp( "-i", argv[i], 2 ) == 0 ) {
 
-      if( retval = check_option_value( argc, argv, i ) ) {
+      if( (retval = check_option_value( argc, argv, i )) ) {
         i++;
         if( instance_specified ) {
           print_output( "Only one -i option may be present on the command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
@@ -397,7 +399,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 
     } else if( strncmp( "-o", argv[i], 2 ) == 0 ) {
 
-      if( retval = check_option_value( argc, argv, i ) ) {
+      if( (retval = check_option_value( argc, argv, i )) ) {
         i++;
         if( output_db != NULL ) {
           print_output( "Only one -o option may be present on the command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
@@ -416,7 +418,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 
     } else if( strncmp( "-ts", argv[i], 3 ) == 0 ) {
 
-      if( retval = check_option_value( argc, argv, i ) ) {
+      if( (retval = check_option_value( argc, argv, i )) ) {
         i++;
         if( timestep_update != 0 ) {
           print_output( "Only one -ts option may be present on the command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
@@ -429,7 +431,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 
     } else if( strncmp( "-t", argv[i], 2 ) == 0 ) {
 
-      if( retval = check_option_value( argc, argv, i ) ) {
+      if( (retval = check_option_value( argc, argv, i )) ) {
         i++;
         if( top_module != NULL ) {
           print_output( "Only one -t option may be present on the command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
@@ -448,9 +450,9 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 
     } else if( strncmp( "-I", argv[i], 2 ) == 0 ) {
 
-      if( retval = check_option_value( argc, argv, i ) ) {
+      if( (retval = check_option_value( argc, argv, i )) ) {
         i++;
-        if( retval = search_add_include_path( argv[i] ) ) {
+        if( (retval = search_add_include_path( argv[i] )) ) {
           score_add_arg( argv[i-1] );
           score_add_arg( argv[i] );
         }
@@ -458,9 +460,9 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 
     } else if( strncmp( "-y", argv[i], 2 ) == 0 ) {
 
-      if( retval = check_option_value( argc, argv, i ) ) {
+      if( (retval = check_option_value( argc, argv, i )) ) {
         i++;
-        if( retval = search_add_directory_path( argv[i] ) ) {
+        if( (retval = search_add_directory_path( argv[i] )) ) {
           score_add_arg( argv[i-1] );
           score_add_arg( argv[i] );
         }
@@ -468,9 +470,9 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 
     } else if( strncmp( "-F", argv[i], 2 ) == 0 ) {
 
-      if( retval = check_option_value( argc, argv, i ) ) {
+      if( (retval = check_option_value( argc, argv, i )) ) {
         i++;
-        if( retval = fsm_arg_parse( argv[i] ) ) {
+        if( (retval = fsm_arg_parse( argv[i] )) ) {
           score_add_arg( argv[i-1] );
           score_add_arg( argv[i] );
         }
@@ -478,7 +480,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
       
     } else if( strncmp( "-f", argv[i], 2 ) == 0 ) {
 
-      if( retval = check_option_value( argc, argv, i ) ) {
+      if( (retval = check_option_value( argc, argv, i )) ) {
         i++;
         if( file_exists( argv[i] ) ) {
           read_command_file( argv[i], &arg_list, &arg_num );
@@ -511,9 +513,9 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 
     } else if( strncmp( "-e", argv[i], 2 ) == 0 ) {
 
-      if( retval = check_option_value( argc, argv, i ) ) {
+      if( (retval = check_option_value( argc, argv, i )) ) {
         i++;
-        if( retval = search_add_no_score_funit( argv[i] ) ) {
+        if( (retval = search_add_no_score_funit( argv[i] )) ) {
           score_add_arg( argv[i-1] );
           score_add_arg( argv[i] );
         }
@@ -521,7 +523,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 
     } else if( strncmp( "-vcd", argv[i], 4 ) == 0 ) {
 
-      if( retval = check_option_value( argc, argv, i ) ) {
+      if( (retval = check_option_value( argc, argv, i )) ) {
         i++;
         switch( dump_mode ) {
           case DUMP_FMT_NONE :
@@ -552,7 +554,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 
     } else if( strncmp( "-lxt", argv[i], 4 ) == 0 ) {
  
-      if( retval = check_option_value( argc, argv, i ) ) {
+      if( (retval = check_option_value( argc, argv, i )) ) {
         i++; 
         switch( dump_mode ) {
           case DUMP_FMT_NONE :
@@ -603,9 +605,9 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 
     } else if( strncmp( "-v", argv[i], 2 ) == 0 ) {
 
-      if( retval = check_option_value( argc, argv, i ) ) {
+      if( (retval = check_option_value( argc, argv, i )) ) {
         i++;
-        if( retval = search_add_file( argv[i] ) ) {
+        if( (retval = search_add_file( argv[i] )) ) {
           score_add_arg( argv[i-1] );
           score_add_arg( argv[i] );
         }
@@ -613,13 +615,13 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 
     } else if( strncmp( "+libext+", argv[i], 8 ) == 0 ) {
 
-      if( retval = search_add_extensions( argv[i] + 8 ) ) {
+      if( (retval = search_add_extensions( argv[i] + 8 )) ) {
         score_add_arg( argv[i] );
       }
 
     } else if( strncmp( "-D", argv[i], 2 ) == 0 ) {
 
-      if( retval = check_option_value( argc, argv, i ) ) {
+      if( (retval = check_option_value( argc, argv, i )) ) {
         i++;
         score_parse_define( argv[i] );
         score_add_arg( argv[i-1] );
@@ -628,7 +630,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
  
     } else if( strncmp( "-p", argv[i], 2 ) == 0 ) {
       
-      if( retval = check_option_value( argc, argv, i ) ) {
+      if( (retval = check_option_value( argc, argv, i )) ) {
         i++;
         if( ppfilename != NULL ) {
           print_output( "Only one -p option is allowed on the score command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
@@ -647,7 +649,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
         
     } else if( strncmp( "-P", argv[i], 2 ) == 0 ) {
 
-      if( retval = check_option_value( argc, argv, i ) ) {
+      if( (retval = check_option_value( argc, argv, i )) ) {
         i++;
         ptr = argv[i];
         while( (*ptr != '\0') && (*ptr != '=') ) {
@@ -668,7 +670,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
       
     } else if( strncmp( "-T", argv[i], 2 ) == 0 ) {
       
-      if( retval = check_option_value( argc, argv, i ) ) {
+      if( (retval = check_option_value( argc, argv, i )) ) {
         i++;
         if( delay_expr_type != DELAY_EXPR_DEFAULT ) {
           print_output( "Only one -T option is allowed on the score command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
@@ -718,7 +720,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 
     } else if( strncmp( "-A", argv[i], 2 ) == 0 ) {
 
-      if( retval = check_option_value( argc, argv, i ) ) {
+      if( (retval = check_option_value( argc, argv, i )) ) {
         i++;
         if( strncmp( argv[i], "ovl", 3 ) == 0 ) {
           info_suppl.part.assert_ovl = 1;
@@ -738,7 +740,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
       int  generation;
       char tmp[256];
 
-      if( retval = check_option_value( argc, argv, i ) ) {
+      if( (retval = check_option_value( argc, argv, i )) ) {
         i++;
         if( argv[i][(strlen( argv[i] ) - 1)] == '1' ) {
           generation = GENERATION_1995;
@@ -897,6 +899,9 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.85  2006/09/01 23:06:02  phase1geo
+ Fixing regressions per latest round of changes.  Full regression now passes.
+
  Revision 1.84  2006/08/31 04:02:02  phase1geo
  Adding parsing support for assertions and properties.  Adding feature to
  highlighting support that looks up the generation for the given module and

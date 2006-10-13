@@ -62,12 +62,18 @@ void instance_remove_stmt_blks_calling_stmt( funit_inst* root, statement* stmt )
 /*! \brief Removes expressions from instance parameters within the given instance that match the given expression */
 void instance_remove_parms_with_expr( funit_inst* root, statement* stmt );
 
+/*! \brief Recursively deallocates all memory for the associated instance tree */
+void instance_dealloc_tree( funit_inst* root );
+
 /*! \brief Removes specified instance from tree. */
 void instance_dealloc( funit_inst* root, char* scope );
 
 
 /*
  $Log$
+ Revision 1.20  2006/09/08 22:39:50  phase1geo
+ Fixes for memory problems.
+
  Revision 1.19  2006/09/07 21:59:24  phase1geo
  Fixing some bugs related to statement block removal.  Also made some significant
  optimizations to this code.

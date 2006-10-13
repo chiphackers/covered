@@ -99,8 +99,7 @@ void info_initialize() {
 */
 void info_db_write( FILE* file ) {
 
-  int     i;      /* Loop iterator */
-  control suppl;  /* 32-bit supplemental value */
+  int i;  /* Loop iterator */
 
   assert( leading_hier_num > 0 );
 
@@ -227,14 +226,9 @@ bool info_db_read( char** line ) {
 */
 bool args_db_read( char** line ) {
 
-  bool    retval = TRUE;  /* Return value for this function */
-  int     chars_read;     /* Number of characters scanned in from this line */
-  control scored;         /* Indicates if this file contains scored data */
-  int     version;        /* Contains CDD version from file */
-  int     mnum;           /* Temporary merge num */
-  char    tmp1[4096];     /* Temporary string */
-  char    tmp2[4096];     /* Temporary string */
-  int     i;              /* Loop iterator */
+  bool retval = TRUE;  /* Return value for this function */
+  int  chars_read;     /* Number of characters scanned in from this line */
+  char tmp1[4096];     /* Temporary string */
 
   if( sscanf( *line, "%s%n", score_run_path, &chars_read ) == 1 ) {
 
@@ -289,6 +283,10 @@ void info_dealloc() {
 
 /*
  $Log$
+ Revision 1.18  2006/07/27 16:08:46  phase1geo
+ Fixing several memory leak bugs, cleaning up output and fixing regression
+ bugs.  Full regression now passes (including all current generate diagnostics).
+
  Revision 1.17  2006/05/02 21:49:41  phase1geo
  Updating regression files -- all but three diagnostics pass (due to known problems).
  Added SCORE_ARGS line type to CDD format which stores the directory that the score
