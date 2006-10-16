@@ -900,7 +900,7 @@ typedef enum exp_op_type_e {
  @{
 */
 
-#define MAX_BIT_WIDTH           1024    /*!< Maximum number of bits that a vector can hold */
+#define MAX_BIT_WIDTH           65536   /*!< Maximum number of bits that a vector can hold */
 #define DECIMAL			0	/*!< String in format [dD][0-9]+ */
 #define BINARY			1	/*!< String in format [bB][01xXzZ_\?]+ */
 #define OCTAL			2	/*!< String in format [oO][0-7xXzZ_\?]+ */
@@ -2201,6 +2201,11 @@ struct dim_range_s {
 
 /*
  $Log$
+ Revision 1.238  2006/10/06 22:45:57  phase1geo
+ Added support for the wait() statement.  Added wait1 diagnostic to regression
+ suite to verify its behavior.  Also added missing GPL license note at the top
+ of several *.h and *.c files that are somewhat new.
+
  Revision 1.237  2006/10/06 17:18:13  phase1geo
  Adding support for the final block type.  Added final1 diagnostic to regression
  suite.  Full regression passes.

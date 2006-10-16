@@ -437,27 +437,12 @@ bool instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child,
      one of its instances for copying the instance tree below it.
     */
     cinst = instance_find_by_funit( *root, child, &ignore);
-    printf( "Searching for functional unit %s", child->name );
-    if( cinst != NULL ) {
-      char tmp[4096];
-      tmp[0] = '\0';
-      instance_gen_scope( tmp, cinst );
-      printf( " and found %s\n", tmp );
-    } else {
-      printf( "\n" );
-    }
-    instance_display_tree( *root );
     
     /* Filename will be set to a value if the functional unit has been parsed */
     if( (cinst != NULL) && (cinst->funit->filename != NULL) ) { 
 
-      char tmp[4096];
       ignore = 0;
-      printf( "parent: %s\n", parent->name );
-      while( (i >= 0) && ((inst = instance_find_by_funit( *root, parent, &ignore )) != NULL) ) {
-        tmp[0] = '\0';
-        instance_gen_scope( tmp, inst );
-        printf( "inst: %s, %s\n", inst->name, tmp );
+      while( (ignore >= 0) && ((inst = instance_find_by_funit( *root, parent, &ignore )) != NULL) ) {
         instance_copy( cinst, inst, inst_name, range, resolve );
         i++;
         ignore = child_gend ? -1 : i;
@@ -466,7 +451,7 @@ bool instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child,
     } else {
 
       ignore = 0;
-      while( (i >= 0) && ((inst = instance_find_by_funit( *root, parent, &ignore )) != NULL) ) {
+      while( (ignore >= 0) && ((inst = instance_find_by_funit( *root, parent, &ignore )) != NULL) ) {
         cinst = instance_add_child( inst, child, inst_name, range, resolve );
         i++;
         ignore = (child_gend && (cinst != NULL)) ? -1 : i;
@@ -899,6 +884,10 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.64  2006/10/13 22:46:31  phase1geo
+ Things are a bit of a mess at this point.  Adding generate12 diagnostic that
+ shows a failure in properly handling generates of instances.
+
  Revision 1.63  2006/10/12 22:48:46  phase1geo
  Updates to remove compiler warnings.  Still some work left to go here.
 

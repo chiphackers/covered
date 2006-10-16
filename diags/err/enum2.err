@@ -1,0 +1,2 @@
+ERROR!  Implicit enumerate assignment cannot follow an X or Z value
+        File: enum2.v, Line: 10

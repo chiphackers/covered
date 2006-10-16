@@ -56,7 +56,7 @@ DIAGS1        = add1            always1         always2         always3         
                 instance2       instance3       instance4       instance4.1     instance4.2 \
                 instance5       instance6       instance6.1     instance6.2     instance7 \
                 localparam1     localparam1.1   localparam1.2   localparam1.3   localparam2 \
-                localparam3     long_exp1       long_exp2       long_exp3       long_sig \
+                localparam3     long_exp1       long_exp2       long_exp3 \
                 mbit_sel1       mbit_sel2       mbit_sel3       mbit_sel3.1     mbit_sel4 \
                 mbit_sel4.1     mbit_sel4.2     mbit_sel4.3     mbit_sel5       mbit_sel5.1 \
                 mbit_sel5.2     mbit_sel5.3     mbit_sel6       mbit_sel6.1     mbit_sel6.2 \
@@ -113,7 +113,7 @@ GENLIST       = gen1            gen1.1          gen1.3          gen2.1          
                 gen33.2         gen34.2         gen35.2         gen36.2         gen37.2 \
                 gen38.2         gen39.2         gen40.2
 
-GENERRLIST    = gen1.2          gen1.4          gen1.5          gen2            gen3 \
+GENERRLIST    = enum2           gen1.2          gen1.4          gen1.5          gen2            gen3 \
                 gen4            gen5            gen6            gen7            gen8 \
                 gen9            gen10           gen11           gen12           gen13 \
                 gen14           gen15           gen16           gen17           gen18 \
@@ -143,7 +143,7 @@ VCSONLYDIAGS1 = always_comb1    always_ff1      always_latch1   assert1         
                 dly_assign1.4   dly_assign2     dly_assign2.1   do_while1       do_while1.1 \
                 do_while2       elsif1          elsif1.1        elsif1.2        elsif1.3 \
                 elsif1.4        elsif2          elsif2.1        enum1           enum1.1 \
-                enum1.2         enum1.3         exponent1       final1          for3 \
+                enum1.2         enum1.3         enum2.1         exponent1       final1          for3 \
                 gate1.1         generate1.1     generate2       generate2.1     generate3 \
                 generate3.1     generate4       generate4.1     generate5       generate5.1 \
                 generate5.2     generate5.3     generate6       generate7       generate7.1 \
@@ -153,7 +153,7 @@ VCSONLYDIAGS1 = always_comb1    always_ff1      always_latch1   assert1         
                 generate10.1    generate10.2    generate11      generate11.1    generate11.2 \
                 generate11.3    generate11.4    hier1.1         inc1            inc1.1 \
                 inc2            inc3            inc3.1          int1            line1 \
-                logic1          longint1        marray1         marray1.1       marray1.2 \
+                logic1          longint1        long_sig        marray1         marray1.1       marray1.2 \
                 marray1.3       marray2         marray2.1       marray2.2       marray2.3 \
                 mbit_sel5.4     mbit_sel6.4     mem3            op_assign1      param8.2 \
                 param12         param12.1       shortint1       slist3.1 \

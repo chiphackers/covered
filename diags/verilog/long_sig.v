@@ -1,11 +1,11 @@
 module main;
 
-wire            a;
-wire  [1999:0]  b;
-reg   [1024:0]  c;
+wire             a;
+wire  [69999:0]  b;
+reg   [65536:0]  c;
 
 assign a = 1'b0;
-assign b = 2000'h0;
+assign b = 70000'h0;
 
 initial begin
 `ifndef VPI

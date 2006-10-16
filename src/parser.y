@@ -2035,6 +2035,7 @@ list_of_variables
     }
   | IDENTIFIER { curr_packed = FALSE; } range
     {
+      curr_packed = TRUE;
       if( !parser_check_generation( GENERATION_SV ) ) {
         VLerror( "Unpacked array specified for net type in block that was specified to not allow SystemVerilog syntax" );
       } else {
