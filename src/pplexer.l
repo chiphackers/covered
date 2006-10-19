@@ -110,12 +110,6 @@ WSPACE [ \t\b\f]+
 <CCOMMENT>\n   { istack->lineno += 1;                           ECHO; }
 <CCOMMENT>"*/" { BEGIN( comment_enter );                        ECHO; }
 
-  /* Pragma comments */
-"(*"           { comment_enter = YY_START;  BEGIN( PCOMMENT );  ECHO; }
-<PCOMMENT>.    {                                                ECHO; }
-<PCOMMENT>\n   { istack->lineno += 1;                           ECHO; }
-<PCOMMENT>"*)" { BEGIN( comment_enter );                        ECHO; }
-
   /* C-style strings */
 \"            { comment_enter = YY_START;  BEGIN( CSTRING );  ECHO; }
 <CSTRING>\\\" {                                               ECHO; }
