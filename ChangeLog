@@ -1,663 +1,355 @@
-2006-09-04 00:59  phase1geo
+2006-10-19 14:04  phase1geo
 
-	Updating build scripts and documentation for new development
+	Removed pragma comment parsing from pplexer.l (this is handled by
+	the normal parser).
+
+2006-10-18 20:43  phase1geo
+
+	Updating configuration files and documentation for new development
 	release date.
 
-2006-09-04 00:28  phase1geo
+2006-10-16 16:34  phase1geo
 
-	Fixing bug 1546059 last remaining issue.  Updated user
-	documentation.
+	Increased max bit width from 1024 to 65536 to allow for more room
+	for memories.  Fixed issue with enumerated values being explicitly
+	assigned unknown values and created error output message when an
+	implicitly assigned enum followed an explicitly assign unknown enum
+	value.	Fixed problem with generate blocks in different
+	instantiations of the same module.  Fixed bug in parser related to
+	setting the curr_packed global variable correctly.  Added enum2 and
+	enum2.1 diagnostics to test suite to verify correct enumerate
+	behavior for the changes made in this checkin.	Full regression now
+	passes.
 
-2006-09-01 23:13  phase1geo
+2006-10-16 11:12  phase1geo
 
-	Updating user documentation, development configuration file and
-	making multi-dimensional array processing pass parsing but not
-	internally handled.
+	Fixing bug 1578251 and adding merge3 diagnostic to regression suite
+	to verify it.
 
-2006-09-01 21:39  phase1geo
+2006-10-16 11:10  phase1geo
 
-	Updating configuration files for new development release date.
+	Adding merge3 diagnostic to regression suite to verify the
+	development branch code for handling merging DUTs that contain the
+	full hierarchy.
 
-2006-09-01 18:06  phase1geo
+2006-10-13 17:46  phase1geo
 
-	Updating .coveredrc file for default values.
+	Things are a bit of a mess at this point.  Adding generate12
+	diagnostic that shows a failure in properly handling generates of
+	instances.
 
-2006-09-01 18:04  phase1geo
+2006-10-13 11:11  phase1geo
 
-	Fixing regressions per latest round of changes.  Full regression
-	now passes.
+	Cleaned up compiler warnings.
 
-2006-08-31 23:06  phase1geo
+2006-10-13 10:56  phase1geo
 
-	Added code to support more than one instance tree.  Currently, I am
-	seeing quite a few memory errors that are causing some major
-	problems at the moment.  Checkpointing.
+	Updating rest of source files for compiler warnings.
 
-2006-08-31 17:32  phase1geo
+2006-10-12 17:48  phase1geo
 
-	Things are in a state of flux at the moment.  I have added proper
-	parsing support for assertions, properties and sequences.  Also
-	added partial support for the $root space (though I need to work on
-	figuring out how to handle it in terms of the instance tree) and
-	all that goes along with that.	Add parsing support with an error
-	message for multi-dimensional array declarations.  Regressions
-	should not be expected to run correctly at the moment.
+	Updates to remove compiler warnings.  Still some work left to go
+	here.
 
-2006-08-30 23:06  phase1geo
+2006-10-11 16:36  phase1geo
 
-	Updating user documentation for supported SystemVerilog constructs.
+	Adding ifndef VPI around $dumpfile and $dumpvars calls to allow VPI
+	testing.  Updated regressions for this change.
 
-2006-08-30 23:04  phase1geo
-
-	Adding assert1 diagnostic to regression suite.
-
-2006-08-30 23:02  phase1geo
-
-	Adding parsing support for assertions and properties.  Adding
-	feature to highlighting support that looks up the generation for
-	the given module and highlights accordingly.
-
-2006-08-30 17:37  phase1geo
-
-	Adding more enumeration diagnostics.
-
-2006-08-30 07:02  phase1geo
-
-	Changing assertion in vcd.c that fails when the VCD file is
-	improperly formatted to a user error message with a bit more
-	meaning.  Fixing problem with signedness of enumeration resolution.
-	 Added enum1.1 diagnostic to testsuite.
-
-2006-08-29 21:37  phase1geo
-
-	Updating build scripts and adding mem2 diagnostic from stable
-	branch.  Full IV regressions pass.
-
-2006-08-29 17:49  phase1geo
-
-	Added enumeration support and partial support for typedefs.  Added
-	enum1 diagnostic to verify initial enumeration support.  Full
-	regression has not been run at this point -- checkpointing.
-
-2006-08-28 21:51  phase1geo
-
-	Adding enumeration parsing support to parser.  No functionality at
-	this point, however.
-
-2006-08-28 17:28  phase1geo
-
-	Fixing bug 1546059 to match stable branch.  Adding support for
-	repeated delay expressions (i.e., a = repeat(2) @(b) c).  Fixing
-	support for event delayed assignments (i.e., a = @(b) c).  Adding
-	several new diagnostics to verify this new level of support and
-	updating regressions for these changes.  Also added parser support
-	for logic port types.
-
-2006-08-25 21:38  phase1geo
-
-	Adding Verilog-2001 and SystemVerilog keywords to verilog.tcl
-	script.  Updating build files for development release date of
-	9/2/2006.  Updated TODO.
-
-2006-08-25 21:23  phase1geo
-
-	Fixing IV regression failures.	Full IV regression now passes.
-
-2006-08-25 17:49  phase1geo
-
-	Adding support for handling generated hierarchical names in signals
-	that are outside of generate blocks.  Added support for
-	op-and-assigns in generate for loops as well as normal for loops. 
-	Added generate11.4 and for3 diagnostics to regression suite to
-	verify this new behavior.  Full regressions have not been verified
-	with these changes however.  Checkpointing.
-
-2006-08-25 13:25  phase1geo
-
-	Modified gen39 and gen40 to not use the Verilog-2001 port syntax. 
-	Fixed problem with detecting implicit .name and .* syntax.  Fixed
-	op-and-assign report output.  Added support for 'typedef',
-	'struct', 'union' and 'enum' syntax for SystemVerilog.	Updated
-	user documentation.  Full regression completely passes now.
-
-2006-08-24 17:25  phase1geo
-
-	Fixing issue with generate expressions within signal hierarchies. 
-	Also added ability to parse implicit named and * port lists.  Added
-	diagnostics to regressions to verify this new ability.	Full
-	regression passes.
-
-2006-08-23 22:40  phase1geo
+2006-10-10 22:48  phase1geo
 
 	Updating build files.
 
-2006-08-23 22:39  phase1geo
+2006-10-09 17:19  phase1geo
 
-	Fixing some issues with new static_lexer/parser.  Working on
-	debugging issue related to the generate variable mysteriously
-	losing its vector data.
+	Adding parser support for unpacked arrays of non-registers when
+	operating in SystemVerilog mode.  Also fixed a small segmentation
+	fault in the generate parsing logic.
 
-2006-08-23 17:22  phase1geo
+2006-10-09 15:27  phase1geo
 
-	Adding VCD files generated from VCS for generate11.2 and
-	generate11.3.  Also making needed tweak to lexer.l.
+	Fixing simulator issue and adding parsing support for typedef'ed
+	instantiations within modules.
 
-2006-08-23 17:18  phase1geo
+2006-10-09 12:53  phase1geo
 
-	Adding static expression parser/lexer for parsing generate signals.
-	 Integrated this into gen_item.  First attempt and hasn't been
-	tested, so I'm sure its full of bugs at the moment.
-
-2006-08-22 16:46  phase1geo
-
-	Updating from stable branch.
-
-2006-08-21 23:16  phase1geo
-
-	Updating user documentation.
-
-2006-08-21 23:00  phase1geo
-
-	Fixing bugs 1544322 and 1544325.  Updating regressions per these
-	changes.  Full IV regression now passes.
-
-2006-08-21 17:49  phase1geo
-
-	Adding more support for delayed assignments.  Added dly_assign1 to
-	testsuite to verify the #... type of delayed assignment.  This
-	seems to be working for this case but has a potential issue in the
-	report generation.  Checkpointing work.
-
-2006-08-21 12:50  phase1geo
-
-	Updating regressions for VCS runs.
-
-2006-08-19 22:20  phase1geo
-
-	Adding support for +=, -=, *=, /=, %=, &=, |=, ^=, <<=, >>=, <<<=,
-	>>>=, ++ and -- operators.  The op-and-assign operators are
-	currently good for simulation and code generation purposes but
-	still need work in the comb.c file for proper combinational logic
-	underline and reporting support.  The increment and decrement
-	operations should be fully supported with the exception of their
-	use in FOR loops (I'm not sure if this is supported by
-	SystemVerilog or not yet).  Also started adding support for delayed
-	assignments; however, I need to rework this completely as it
-	currently causes segfaults.  Added lots of new diagnostics to
-	verify this new functionality and updated regression for these
-	changes.  Full IV regression now passes.
-
-2006-08-18 20:41  phase1geo
-
-	Updating documentation for the -B global option and updating build
-	files.
-
-2006-08-18 17:41  phase1geo
-
-	Adding enumerated values for the operate-and-assign SystemVerilog
-	operations.
-
-2006-08-18 17:32  phase1geo
-
-	Adding get_dirname routine to util.c for future use.
-
-2006-08-18 17:19  phase1geo
-
-	Fully integrated obfuscation into the development release.
-
-2006-08-18 17:07  phase1geo
-
-	Integrating obfuscation into all user-viewable output.	Verified
-	that these changes have not made an impact on regressions.  Also
-	improved performance impact of not obfuscating output.
-
-2006-08-17 23:41  phase1geo
-
-	Incorporating bug fixes 1538920 and 1541944.  Updated regressions. 
-	Only event1.1 does not currently pass (this does not pass in the
-	stable version yet either).
-
-2006-08-16 23:30  phase1geo
-
-	Adding obfuscate ability though this is currently not integrated
-	into the core at this point.  Updated makefiles for this change.
-
-2006-08-16 12:59  phase1geo
-
-	Fixing things for good now (after the last submission).  Full
-	regression passes with the exception of generate11.2 and
-	generate11.3.
-
-2006-08-16 12:20  phase1geo
-
-	Adding support for SystemVerilog data types bit, logic, byte, char,
-	shortint, int, and longint.  Added diagnostics to verify correct
-	behavior.  Also added generate11.2 and generate11.3 diagnostics
-	which show a shortfall in Covered's handling of generate
-	expressions within hierarchy names.
-
-2006-08-16 10:32  phase1geo
-
-	Fixing issues with do..while loop handling.  Full regression now
-	passes.
-
-2006-08-15 11:21  phase1geo
-
-	Fixing bug for generate4 diagnostic which incorrectly added a BIND
-	element when not in a generate block.  Full regression now passes.
-
-2006-08-13 23:19  phase1geo
-
-	Fixing problem with generate11* diagnostics (generate variable used
-	in signal name).  These tests pass now but full regression hasn't
-	been verified at this point.
-
-2006-08-11 17:36  phase1geo
-
-	Fixing bug 1538922.
-
-2006-08-11 16:27  phase1geo
-
-	Adding support for unique, priority and do..while SystemVerilog
-	constructs.  do_while2 diagnostic is currently failing with an
-	issue regarding connecting its false path to the top of its always
-	block.	Otherwise, full regression should be passing (with the
-	exception of the problem with the assigned bit due to changes for
-	generate11).
-
-2006-08-11 13:57  phase1geo
-
-	Adding support for always_comb, always_latch and always_ff
-	statement block types.	Added several diagnostics to regression
-	suite to verify this new behavior.
-
-2006-08-11 10:16  phase1geo
-
-	Joining slist3.3 diagnostic to latest development branch.  Adding
-	changes to fix memory issues from bug 1535412.
-
-2006-08-10 17:35  phase1geo
-
-	Updating with fixes for upcoming 0.4.7 stable release.	Updated
-	regressions for this change.  Full regression still fails due to an
-	unrelated issue.
-
-2006-08-06 00:02  phase1geo
-
-	Documenting and adding warning message to parse.c for the -rI
-	option.
-
-2006-08-05 23:36  phase1geo
-
-	Fixing bugs 1533896 and 1533827.  Also added -rI option that will
-	ignore the race condition check altogether (has not been verified
-	to this point, however).
-
-2006-08-02 17:28  phase1geo
-
-	Attempting to fix the bug pulled out by generate11.v.  We are just
-	having an issue with setting the assigned bit in a signal
-	expression that contains a hierarchical reference using a genvar
-	reference.  Adding generate11.1 diagnostic to verify a slightly
-	different syntax style for the same code.  Note sure how badly I
-	broke regression at this point.
-
-2006-08-01 16:14  phase1geo
-
-	Adding new generate diagnostic and fixing syntax error in lexer.l
-	to allow hierarchical referencing using genvar names within square
-	brackets.  The new diagnostic fails currently.
-
-2006-08-01 13:51  phase1geo
-
-	Adding more diagnostics to testsuite to verify correct behavior of
-	generate blocks.  Full regression passes.  I think that we are
-	pretty close to fully testing generate blocks.
-
-2006-08-01 13:05  phase1geo
-
-	Adding more diagnostics to test generate item structure
-	connectivity.  Fixing bug in funit_find_signal function to search
-	the function (instead of the instance for for finding a signal to
-	bind).
-
-2006-08-01 11:22  phase1geo
-
-	Removed incorrect assertion in score.c and replaced it with an if
-	statement.  Updated regressions for recent changes.  Full
+	Fixing support for VPI to allow it to properly get linked to the
+	simulator.  Also fixed inconsistency in generate reports and
+	updated appropriately in regressions for this change.  Full
 	regression now passes.
 
-2006-07-31 23:47  phase1geo
+2006-10-06 21:16  phase1geo
 
-	Adding generate9.3 diagnostic to regression suite (still need to
-	verify that it passes, however).
+	Fixing bug in PEDGE and NEDGE expressions to make them completely
+	compliant to the Verilog LRM.
 
-2006-07-31 23:38  phase1geo
+2006-10-06 21:06  phase1geo
 
-	Fixing issues with binding to non-module scope and not binding
-	references that reference a "no score" module.	Full regression
-	passes.
+	Fixing bug in report command in that wait events were not being
+	considered "covered" when they successfully passed in simulation. 
+	Added wait1.1 diagnostic which found this bug.	Also added feature
+	in VPI mode that will only get signals from simulator that it needs
+	(rather than all of the signals).  This should improve performance
+	when running in this mode.
 
-2006-07-31 17:11  phase1geo
+2006-10-06 17:45  phase1geo
 
-	Fixing bug with generated tasks.  Added diagnostic to test generate
-	functions (this is currently failing with a binding issue).
+	Added support for the wait() statement.  Added wait1 diagnostic to
+	regression suite to verify its behavior.  Also added missing GPL
+	license note at the top of several *.h and *.c files that are
+	somewhat new.
 
-2006-07-31 11:26  phase1geo
+2006-10-06 13:36  phase1geo
 
-	Tweaking the is_static_only function to consider expressions using
-	generate variables to be static.  Updating regression for changes. 
-	Full regression now passes.
+	Updating regression runs and removing unnecessary output from
+	expr.c.  Also added check_failures script to diagnostic verilog
+	directory for future use.
 
-2006-07-30 00:00  phase1geo
+2006-10-06 12:18  phase1geo
 
-	Adding generate8.2 to regression list (VCS-only).
+	Adding support for the final block type.  Added final1 diagnostic
+	to regression suite.  Full regression passes.
 
-2006-07-29 23:59  phase1geo
+2006-10-05 23:51  phase1geo
 
-	Modifying db_find_signal to use scope lookup function (for upwards
-	name referencing purposes).  Emits user error if specified signal
-	could not be found (we are understanding that if the db_find_signal
-	function is used, the signal better be within the current scope (no
-	hierarchical referencing allowed).  Diagnostic generate8.2 should
-	work now with VCS.
+	Updating IV regression for latest round of changes.  Updated TODO
+	list to indicate what has been worked on and its status.
 
-2006-07-29 23:30  phase1geo
+2006-10-05 16:43  phase1geo
 
-	Adding generate8.2 diagnostic which uses nested generate loops. 
-	The problem with Covered with this diagnostic is not in the nested
-	for loops but rather it currently does not bind generate variables
-	with TFN generate items.
+	Added support for increment and decrement operators in expressions.
+	 Also added proper parsing and handling support for immediate and
+	postponed increment/decrement.	Added inc3, inc3.1, dec3 and dec3.1
+	diagnostics to verify this new functionality.  Still need to run
+	regressions.
 
-2006-07-29 16:15  phase1geo
+2006-10-04 22:55  phase1geo
 
-	Fixing last issue with generate8.1.v.  Full regression passes with
-	IV.  Still need to check VCS regression run.
+	Updating/fixing user guide.  Also added page for describing how to
+	understand memory coverage in a report.
 
-2006-07-29 15:53  phase1geo
+2006-10-04 17:07  phase1geo
 
-	Fixing some code related to generate statements; however,
-	generate8.1 is still not completely working at this point.  Full
-	regression passes for IV.
+	Fixing bug found in development branch and fixing missing document
+	links in user documentation.
 
-2006-07-28 17:42  phase1geo
+2006-10-04 17:04  phase1geo
 
-	Updates to support expression/signal binding for expressions within
-	a generate block statement block.
+	Updating rest of regressions.  Modified the way we are setting the
+	memory rd vector data bit (should optimize the score command just a
+	bit).  Also updated quite a bit of memory coverage documentation
+	though I still need to finish documenting how to understand the
+	report file for this metric.  Cleaning up other things and fixing a
+	few more software bugs from regressions.  Added marray2*
+	diagnostics to verify endianness in the unpacked dimension list.
 
-2006-07-28 11:30  phase1geo
+2006-10-04 03:23  phase1geo
 
-	Fixing one last regression error.  We are now ready to make a tag.
+	More documentation updates.  Everything should now be ready to
+	document the memory coverage information.  Also added missing
+	images for user documentation (this should probably be fixed in the
+	stable branch as well).  Updated build files to suit.
 
-2006-07-27 16:19  phase1geo
+2006-10-03 23:19  phase1geo
 
-	Small updates.
+	Starting to make room for memory coverage user guide pages. 
+	Finished through 010.html (need to modify the rest). 
+	Checkpointing.
 
-2006-07-27 13:02  phase1geo
+2006-10-03 17:46  phase1geo
 
-	More diagnostic additions and upgraded the generate item display
-	functionality for better debugging using this feature.	We are
-	about to forge into some new territory with regard to generate
-	blocks, so we will tag at this point.
+	Adding support for read coverage to memories.  Also added memory
+	coverage as a report output for DIAGLIST diagnostics in
+	regressions.  Fixed various bugs left in code from array changes
+	and updated regressions for these changes.  At this point, all IV
+	diagnostics pass regressions.
 
-2006-07-27 11:27  phase1geo
+2006-10-03 13:39  phase1geo
 
-	Adding diagnostics to verify basic generate case blocks.  Full
-	regression passes.
+	Adding memory element selection feature in AME window of memory
+	coverage window.  Also updated the memory window picture for this
+	addition.
 
-2006-07-27 11:08  phase1geo
+2006-10-02 22:23  phase1geo
 
-	Fixing several memory leak bugs, cleaning up output and fixing
-	regression bugs.  Full regression now passes (including all current
-	generate diagnostics).
+	Updating lots of GUI documentation and images for addition of
+	memory coverage and to update some parts that were incorrect.
 
-2006-07-26 23:34  phase1geo
+2006-10-02 17:40  phase1geo
 
-	Adding initial support for generate case statements.  This has only
-	been verified to compile at this point.
+	Lots of bug fixes to memory coverage functionality for GUI.  Memory
+	coverage should now be working correctly.  We just need to update
+	the GUI documentation as well as other images for the new feature
+	add.
 
-2006-07-26 21:14  phase1geo
+2006-09-27 16:38  phase1geo
 
-	Cleaning up verbose output and fixing a few bugs for regression. 
-	IV regression passes at this point.
+	Adding code to interract with data in memory coverage verbose
+	window.  Majority of code is in place; however, this has not been
+	thoroughly debugged at this point.  Adding mem3 diagnostic for GUI
+	debugging purposes and checkpointing.
 
-2006-07-26 21:04  phase1geo
+2006-09-26 17:36  phase1geo
 
-	Fixing problem with parameter usage in a generate block for signal
-	sizing.
+	Adding code for memory coverage to GUI and related files.  Lots of
+	work to go here so we are checkpointing for the moment.
 
-2006-07-26 01:22  phase1geo
+2006-09-25 17:22  phase1geo
 
-	Fixing rest of issues with generate6 diagnostic.  Still need to
-	know if I have broken regressions or not and there are plenty of
-	cases in this area to test before I call things good.
+	Adding more support for memory reporting to both score and report
+	commands.  We are getting closer; however, regressions are
+	currently broken.  Checkpointing.
 
-2006-07-25 22:33  phase1geo
+2006-09-24 23:15  phase1geo
 
-	Update to named block scoping function.  Searching relatively
-	before searching broadly; however, this is not working quite as
-	expected yet.  More work to come.
+	Starting to add support for new memory coverage metric.  This
+	includes changes for the report command only at this point.
 
-2006-07-25 16:35  phase1geo
+2006-09-23 14:40  phase1geo
 
-	Fixing nested namespace problem with generate blocks.  Also adding
-	support for using generate values in expressions.  Still not quite
-	working correctly yet, but the format of the CDD file looks good as
-	far as I can tell at this point.
+	Fixing expression_assign, single and multi-bit select functions in
+	expr.c to properly handle multi-dimensional arrays in both LHS and
+	RHS expressions.  Added marray* diagnostics to verify proper
+	behavior this new functionality for packed arrays (all endianness
+	combinations).	Still a lot of testing to go, but this should be
+	the majority of the code for now.  Full IV regression has been
+	verified to pass.
 
-2006-07-24 17:20  phase1geo
+2006-09-22 17:49  phase1geo
 
-	Things are quite hosed at the moment -- trying to come up with a
-	scheme to handle embedded hierarchy in generate blocks.  Chances
-	are that a lot of things are currently broken at the moment.
+	Adding multidimensional array diagnostics to regression suite.	At
+	this point, they do not all pass.  Also adding fixes to
+	expression_assign() to get things to work.
 
-2006-07-24 13:22  phase1geo
+2006-09-22 14:56  phase1geo
 
-	Making tweak to check_test script to not stop on assertion failure
-	(prior to CDD file being created).  All tests in regression pass at
-	this point with the exception of generate6.
+	Final set of fixes and regression updates per recent changes.  Full
+	regression now passes.
 
-2006-07-24 08:35  phase1geo
+2006-09-21 23:23  phase1geo
 
-	More generate updates.
+	More fixes to support new signal range structure.  Still don't have
+	full regressions passing at the moment.
 
-2006-07-21 23:28  phase1geo
+2006-09-21 22:31  phase1geo
 
-	Adding generate6 diagnostic to pull out problems with adding scopes
-	inside of generate loops.  Problem still exists in the code at this
-	time.
+	Preparing some files for the 0.4.8 stable release.
 
-2006-07-21 22:57  phase1geo
+2006-09-21 17:44  phase1geo
 
-	Adding support for parameters within generate blocks.  Adding more
-	diagnostics to verify statement support and parameter usage (signal
-	sizing).
+	More updates to regressions for latest changes to support
+	memories/multi-dimensional arrays.  We still have a handful of VCS
+	diagnostics that are failing.  Checkpointing for now.
 
-2006-07-21 20:17  phase1geo
+2006-09-20 23:20  phase1geo
 
-	Fixing generate statement output function to output statements in
-	the correct order.  Diagnostic generate5.v should now work
-	correctly with VCS.
+	Fixing endianness diagnostics.	Still getting memory error with
+	some diagnostics in regressions (ovl1 is one of them).	Updated
+	regression.
 
-2006-07-21 17:39  phase1geo
+2006-09-20 17:37  phase1geo
 
-	Started adding support for generated statements.  Still looks like
-	I have some loose ends to tie here before I can call it good. 
-	Added generate5 diagnostic to regression suite -- this does not
-	quite pass at this point, however.
+	Lots of changes to support memories and multi-dimensional arrays. 
+	We still have issues with endianness and VCS regressions have not
+	been run, but this is a significant amount of work that needs to be
+	checkpointed.
 
-2006-07-21 15:12  phase1geo
+2006-09-15 17:14  phase1geo
 
-	Fixing code to get generated instances and generated array of
-	instances to work.  Added diagnostics to verify correct
-	functionality.	Full regression passes.
+	Working on adding arrayed signals.  This is currently in progress
+	and doesn't even compile at this point, much less work. 
+	Checkpointing work.
 
-2006-07-21 12:47  phase1geo
+2006-09-14 17:24  phase1geo
 
-	Simple if and if-else generate statements are now working.  Added
-	diagnostics to regression suite to verify these.  More testing to
-	follow.
+	Removing all regression comments from diagnostic files as these are
+	not used and take up too much space on disk.
 
-2006-07-21 10:52  phase1geo
+2006-09-14 12:46  phase1geo
 
-	Checking in an initial working version of the generate structure. 
-	Diagnostic generate1 passes.  Still a lot of work to go before we
-	fully support generate statements, but this marks a working version
-	to enhance on.	Full regression passes as well.
+	More regression updates.
 
-2006-07-21 00:47  phase1geo
+2006-09-13 18:05  phase1geo
 
-	More code additions for generate functionality.  At this point, we
-	seem to be creating proper generate item blocks and are creating
-	the generate loop namespace appropriately.  However, the binder is
-	still unable to find a signal created by a generate block.
+	Continuing from last submission.
 
-2006-07-20 15:11  phase1geo
+2006-09-13 18:02  phase1geo
 
-	More work on generate statements.  Trying to figure out a
-	methodology for handling namespaces.  Still a lot of work to go...
+	Fixing bugs in bitwise coverage calculator.  Added report
+	generation for bitwise coverage and associated -b option to the
+	report command (this functionality has not been fully verified at
+	this point yet).  Updated regressions which now fully pass.
 
-2006-07-20 00:02  phase1geo
+2006-09-12 17:24  phase1geo
 
-	Adding missing function declarations to keywords.h.
+	Added first attempt at collecting bitwise coverage information
+	during simulation.  Updated regressions for this change; however,
+	we currently do not report on this information currently.  Also
+	added missing keywords to GUI Verilog highlighter.  Checkpointing.
 
-2006-07-19 23:55  phase1geo
+2006-09-12 17:23  phase1geo
 
-	More updates to support generate blocks.  We seem to be passing the
-	parser stage now.  Getting segfaults in the generate_resolve code,
-	presently.
+	Added first attempt at collecting bitwise coverage information
+	during simulation.  Updated regressions for this change; however,
+	we currently do not report on this information currently. 
+	Checkpointing.
 
-2006-07-19 17:30  phase1geo
+2006-09-11 17:27  phase1geo
 
-	More work done for generate support.  Still have a ways to go.
+	Starting to work on supporting bitwise coverage.  Moving bits
+	around in supplemental fields to allow this to work.  Full
+	regression has been updated for the current changes though this
+	feature is still not fully implemented at this time.  Also added
+	parsing support for SystemVerilog program blocks (ignored) and
+	final blocks (not handled properly at this time).  Also added lexer
+	support for the return, void, continue, break, final, program and
+	endprogram SystemVerilog keywords.  Checkpointing work.
 
-2006-07-18 16:52  phase1geo
+2006-09-11 09:57  phase1geo
 
-	More work on generate blocks.  Currently working on assembling
-	generate item statements in the parser.  Still a lot of work to go
-	here.
+	Updating release information for 0.4.8 stable release.
 
-2006-07-18 14:03  phase1geo
+2006-09-11 09:54  phase1geo
 
-	Sync'ing up to the scoping fixes from the 0.4.6 stable release.
+	Attempting to fix memory access problems during the db_close
+	function.
 
-2006-07-18 08:37  phase1geo
+2006-09-11 09:50  phase1geo
 
-	Fixing compile issues.
+	Fixing error in parser for regressions.
 
-2006-07-17 17:12  phase1geo
+2006-09-08 17:39  phase1geo
 
-	Adding more code for generate block support.  Still just adding
-	code at this point -- hopefully I haven't broke anything that
-	doesn't use generate blocks.
+	Fixes for memory problems.
 
-2006-07-15 23:16  phase1geo
+2006-09-08 09:56  phase1geo
 
-	Finishing testing on new -g option.  Full regression now passes.
+	Somehow a return from the statement_find_statement function was
+	missing that caused problems with removing statement blocks.
 
-2006-07-15 17:07  phase1geo
+2006-09-07 16:59  phase1geo
 
-	Added all code to parser to check generation value to decide if a
-	piece of syntax is allowable by the parser or not.  This code
-	compiles and has been proven to not break regressions; however,
-	none if it has been tested at this point.  Many regression tests to
-	follow...
+	Fixing some bugs related to statement block removal.  Also made
+	some significant optimizations to this code.
 
-2006-07-15 00:49  phase1geo
+2006-09-07 10:10  phase1geo
 
-	Removed the old manstyle documentation directory as this tool is no
-	longer used to generate user documentation.  Created new keywords
-	files to break out 1995, 2001 and SystemVerilog syntax.  Added
-	several new diagnostics to regression suite to verify this new
-	feature (still more parser code to add to completely support this
-	feature).  Also fixed several bugs that existed in the 0.4.5 stable
-	release and added those tests.	Full regression is passing. 
-	Finally, updated the manpage for the new -g option to the score
-	command.  Still need to document this new option in the user's
-	guide.	Added ability to verify the -g option diagnostics to the
-	regression suite.
+	Fixing parsing problem when a named begin/end block was empty.
 
-2006-07-14 13:53  phase1geo
+2006-09-06 17:09  phase1geo
 
-	Fixing -g option for keywords.	This seems to be working and I
-	believe that regressions are passing here as well.
+	Fixing bug with multiply-and-op operation.  Also fixing bug in
+	gen_item_resolve function where an instance was incorrectly being
+	placed into a new instance tree.  Full regression passes with these
+	changes.  Also removed verbose output.
 
-2006-07-13 17:24  phase1geo
+2006-09-05 16:00  phase1geo
 
-	We are really broke at this time; however, more code has been added
-	to support the -g score option.
-
-2006-07-13 16:03  phase1geo
-
-	Fixing bug in db_read function to set curr_funit to the correct
-	structure when merging functional units.  Updated regressions per
-	this fix.
-
-2006-07-13 00:31  phase1geo
-
-	Adding -g option to score command parser/usage information.  Still
-	a lot of work to go before this feature is complete.
-
-2006-07-12 23:35  phase1geo
-
-	Fixing problem with unary inversion and logical not.  Updated
-	unary1 failures as a result.  Still need to run full regression
-	before considering this fully fixed.
-
-2006-07-12 17:16  phase1geo
-
-	Fixing hierarchical referencing for instance arrays.  Also
-	attempted to fix a problem found with unary1; however, the
-	generated report coverage information does not look correct at this
-	time.  Checkpointing what I have done for now.
-
-2006-07-11 09:49  phase1geo
-
-	Modifying unary1 and adding a testcase to it.
-
-2006-07-10 23:59  phase1geo
-
-	Reworking the way that instances are being generated.  This is to
-	fix a bug and pave the way for generate loops for instances.  Code
-	not working at this point and may cause serious problems for
-	regression runs.
-
-2006-07-10 21:32  phase1geo
-
-	Fixing memory leak problem in db_close function (with score_args).
-
-2006-07-10 17:36  phase1geo
-
-	Getting parser to parse generate blocks appropriately.	I believe
-	this is accurate now.  Also added the beginnings of gen_item.c
-	which is meant to hold functions which handle generate items.  This
-	is really just a brainstorm at this point -- I still don't have a
-	definite course of action on how to properly handle generate
-	blocks.
-
-2006-07-10 14:30  phase1geo
-
-	Fixing bug in instance.c that ignored the LSB information for an
-	instance array (this also needs to be fixed for the 0.4.6 stable
-	release).  Added diagnostic to verify correctness of this behavior.
-	 Also added case statement to the generate parser.
-
-2006-07-09 22:05  phase1geo
-
-	Contains bug fixes for memory leaks and segmentation faults.  Also
-	contains some starting code to support generate blocks.  There is
-	absolutely no functionality here, however.
-
-2006-07-08 20:40  phase1geo
-
-	Removing the vpi directory (again).  Also fixing a bug in Covered's
-	expression deallocator where a case statement contains an
-	unbindable signal.  Previously the case test expression was being
-	deallocated twice.  This submission fixes this bug (bug was also
-	fixed in the 0.4.5 stable release).  Added new tests to verify fix.
-	 Full regression passes.
-
-2006-07-08 00:24  phase1geo
-
-	Updating covered.spec RPM file.
+	Fixing bug in removing statements that are generate items.  Also
+	added parsing support for multi-dimensional array accessing (no
+	functionality here to support these, however).	Fixing bug in race
+	condition checker for generated items.	Currently hitting into
+	problem with genvars used in SBIT_SEL or MBIT_SEL type expressions
+	-- we are hitting into an assertion error in
+	expression_operate_recursively.
 

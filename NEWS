@@ -1,6 +1,82 @@
 Covered-Related NEWS
 ====================
 
+    * 10/20/2006
+
+Development release covered-20061020 made.  The major additions in this release is the support for
+memories/multi-dimensional arrays and bitwise coverage support.  Associated with this functional
+support, I have also created a new memory coverage metric that is available for usage in both the
+report command as well as the GUI.  Memory coverage currently answers the following questions about
+a given memory:
+
+1.  What entries in the memory were written?
+2.  What entries in the memory were read?
+3.  What is the toggle information for each entry in the memory?
+
+I plan to add a few more coverage points to memory coverage including:  where any entries read before
+they were written? and where any entries written and read simultaneously?  However, I am open to more
+ideas on memory coverage information that people would like to see.  Read the accompanying User's Guide
+and GUI User's Guide for more information on memory coverage and how to understand the coverage output
+from both the report command and GUI.  The following is a list of changes made from the last development
+release.
+
+  - Fixed bug in code that removes statements from coverage consideration that were created by a
+    generate block.
+  - Fixed bug in race condition checker for generated items
+  - Fixed bug with multiply-and-assign (i.e., a *= b) operation
+  - Fixed bug in gen_item_resolve function where an instance was incorrectly being placed into a new
+    instance tree.
+  - Fixed parsing bug when a named begin/end block was empty
+  - Fixed bug in statement removal algorithm and optimized this process significantly
+  - Fixed several memory leak issues
+  - Added support for bitwise coverage information for vectored combinational expressions (i.e., given
+    the following code:  
+
+      reg  [3:0] a, b, c;
+      always @(posedge clock) c <= a & b;
+
+    You can get combinational logic coverage detail that would be equivalent to:
+
+      always @(posedge clock)
+        begin
+         c[0] <= a[0] & b[0];
+         c[1] <= a[1] & b[1];
+         c[2] <= a[2] & b[2];
+         c[3] <= a[3] & b[3];
+        end
+
+    This information is attainable using the new -b option to the report command.
+  - Adding parsing support for SystemVerilog "program" blocks (the contents within these blocks are ignored
+    for coverage purposes).
+  - Added support for SystemVerilog "final" blocks
+  - Updated GUI syntax highlighter to match all of the keywords that are currently detectable by the lexer
+  - Cleaned up extraneous comments from diagnostic Verilog files (should make the diagnostic tarball quite
+    a bit smaller).
+  - Added full parsing and handling support for memories and multi-dimensional arrays
+  - Added memory coverage metric to report command and GUI viewer
+  - Documentation updates to all user documentation for changes related to this release
+  - Fixed missing images in User Guide
+  - Added parsing and handling support of increment and decrement operators (both ++a and a++ varieties)
+    within expressions (i.e., if( a++ == b ) ...)
+  - Added proper support for the "wait( ... )" statement
+  - Optimized VPI version of Covered which should cause simulators to run faster than previously when interacting
+    with Covered through its VPI.
+  - Fixed bug with posedge and negedge handling within Covered to make it completely compliant with the LRM
+    (previously X->1 or Z->1 would not cause a posedge event to trigger and likewise for the negedge)
+  - Fixed several linking errors with the VPI library
+  - Added parsing support for unpacked arrays of non-registers for SystemVerilog enabled modules
+  - Fixed segmentation fault issue that occurred with generate blocks
+  - Fixed most compiler warnings (when using the -Wall operation to the compiler)
+  - Fixed bug with generating instances
+  - Fixed bug when merging two CDD files that contain full hierarchy
+  - Increased maximum bit width of signals from 1024 bits to 65536 bits
+  - Removed pragma comment parser from preprocessor as these are handled by the actual parser
+
+This development release can be considered the beta release to a 0.5 stable release.  The development
+branch will be mostly in "feature freeze" mode at this point.  Only bug fixes, documentation updates and
+testing updates will be performed until we snap the new stable release.  So give this version a try and
+log those bugs!
+
     * 09/04/2006
 
 Development release covered-20060904 made.  This is primarily an enhanced language support release
