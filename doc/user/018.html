@@ -169,25 +169,29 @@
                 <td> <strong>Description</strong> <td>
               </tr>
               <tr>
-                <td> -m [l][t][c][f][r] </td>
-                <td> Specifies type of coverage information to report (default is to 
-                     generate report for line, toggle and combinational coverage). </td>
+                <td> -m [l][t][c][f][r][a][m] </td>
+                <td> Specifies type of coverage information to report (l=line, t=toggle,
+                     c=combinational logic, f=FSM state/arc, r=race condition, a=assertion,
+                     m=memory).  Default is ltcf. </td>
               </tr>
               <tr>
                 <td> -d (s|d|v) </td>
                 <td> Level of report detail (s=summary, d=detailed, v=verbose). Default 
-                     is to display summary coverage information. </td>
+                     is to display summary coverage information.  See
+                     <a href="018.html#11_3">Section 11.3</a> for more information.</td>
               </tr>
               <tr>
                 <td> -i </td>
                 <td> Generates report information for each instance (default is to 
-                     generate per module). </td>
+                     generate per module).  See <a href="018.html#11_4">Section 11.4</a>
+                     for more information. </td>
               </tr>
               <tr>
                 <td> -c </td>
                 <td> Used in conjunction with the '-d d' or '-d v' option. If set, causes 
                      covered logic to be reported instead of default behavior of 
-                     reporting uncovered logic. </td>
+                     reporting uncovered logic.  See <a href="018.html#11_5">Section 11.5</a>
+                     for more information. </td>
               </tr>
               <tr>
                 <td> -o &lt;<i>filename</i>&gt; </td>
@@ -212,6 +216,12 @@
                 <td> Suppresses modules/instances that do not contain any coverage information
                      from being output to the coverage report.  This may eliminate potentially
                      meaningless information from the report. </td>
+              </tr>
+              <tr>
+                <td> -b </td>
+                <td> If combinational logic verbose output is reported and the expression is a
+                     vector operation, this option outputs the coverage information on a bitwise
+                     basis. </td>
               </tr>
               <tr>
                 <td> -h </td>

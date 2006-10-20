@@ -137,9 +137,12 @@ File to output new database to.  If this argument is not specified, the \fIexist
 .SH "REPORT COMMAND"
 .LP 
 The following options are valid with the report command:
+.TP
+\fB\-b\fR
+If combinational logic verbose output is reported and the expression is a vector operation, this option outputs the coverage information on a bitwise basis.
 .TP 
 \fB\-c\fR
-If \fI\-v\fR is specified, displays covered line, toggle and combinational cases.  Default is to display uncovered information.
+If \fI\-v\fR is specified, displays covered metrics only.  Default is to display uncovered information only.
 .TP 
 \fB\-d\fR \fI(s|d|v)\fR
 Level of detail to provide in coverage report information (s = summary, d = detailed, v = verbose).  Default is summary.
