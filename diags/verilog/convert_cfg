@@ -1,0 +1,30 @@
+#!/usr/bin/perl
+
+#	Name:	  convert_cfg
+#	Author:   Trevor Williams  (trevorw<charter.net>)
+#	Date:     10/20/2006
+#	Purpose:  Converts *.cfg files for VCD, LXT or VPI testing
+#	Usage:    convert_cfg (vcd|lxt|vpi) <cfg_filename>
+
+$type = $ARGV[0];
+$file = $ARGV[1];
+
+print "type: $type, file: $file\n";
+
+if( (($type ne "vcd") && ($type ne "lxt") && ($type ne "vpi")) || ($file eq "") ) {
+  die "Usage:  convert_cfg (vcd|lxt|vpi) <cfg_filename>\n";
+}
+
+open( OFILE, ">${file}" ) || die "Can't open ${file} for writing!\n";
+open( IFILE, "../regress/${file}" ) || die "Can't open ../regress/${file} for reading!\n";
+
+while( $line = <IFILE> ) {
+  $line =~ s/\-vcd/\-$type/g; 
+  if( $type eq "vpi" ) {
+    $line =~ s/[0-9a-zA-Z\.]+\.vcd/covered_vpi.v/g;
+  }
+  print OFILE $line;
+}
+
+close( IFILE );
+close( OFILE );
