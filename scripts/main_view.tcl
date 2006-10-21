@@ -7,6 +7,7 @@ source $HOME/scripts/process_file.tcl
 source $HOME/scripts/toggle.tcl
 source $HOME/scripts/comb.tcl
 source $HOME/scripts/fsm.tcl
+source $HOME/scripts/help_wrapper.tcl
 source $HOME/scripts/help.tcl
 source $HOME/scripts/summary.tcl
 source $HOME/scripts/preferences.tcl
