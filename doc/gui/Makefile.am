@@ -5,6 +5,7 @@ doc_DATA = assert.html \
            cov_view.html \
            file_menu.html \
            fsm.html \
+           help.help \
            help_menu.html \
            info_bar.html \
            intro.html \

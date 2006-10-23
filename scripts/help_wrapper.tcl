@@ -32,8 +32,8 @@ proc help_show_manual {section} {
 
   global HOME BROWSER
 
-  set fpath [file join $HOME doc gui $section].html
+  set fpath [file join $HOME doc gui help].help
 
-  help::init $fpath
+  help::init $fpath $section
 
 }

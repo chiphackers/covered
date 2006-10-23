@@ -229,7 +229,7 @@ proc menu_create {.menubar} {
 
   # Add Manual and About information
   $thm add command -label "Manual" -state disabled -underline 0 -command {
-    help_show_manual "welcome"
+    help_show_manual "contents"
   }
   $thm add separator
   $thm add command -label "About Covered" -underline 0 -command {
