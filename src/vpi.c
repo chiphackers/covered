@@ -37,7 +37,7 @@
 
 char        in_db_name[1024];
 char        out_db_name[1024];
-int         last_time            = -1;
+int         last_time      = -1;
 
 /* These are needed for compile purposes only */
 bool   report_gui          = FALSE;
@@ -76,7 +76,7 @@ extern isuppl      info_suppl;
 */
 void vpi_print_output( char* msg ) {
 
-  vpi_printf( "Covered VPI: %s", msg );
+  vpi_printf( "covered VPI: %s\n", msg );
 
 }
 
@@ -126,7 +126,28 @@ PLI_INT32 covered_value_change( p_cb_data cb ) {
 
 }
 
+PLI_INT32 covered_cb_perform_timestep( p_cb_data cb ) {
+
+#ifdef DEBUG_MODE
+  snprintf( user_msg, USER_MSG_LENGTH, "In covered_cb_perform_timestep, time: %d", cb->time->low );
+  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+#endif
+
+  if( cb->time->low != last_time ) {
+    if( last_time >= 0 ) {
+      db_do_timestep( last_time );
+    }
+    last_time = cb->time->low;
+  }
+
+}
+
 PLI_INT32 covered_end_of_sim( p_cb_data cb ) {
+
+  /* Perform last timestep from simulator (if there was one) */
+  if( last_time >= 0 ) {
+    db_do_timestep( last_time );
+  }
 
   /* Flush any pending statement trees that are waiting for delay */
   db_do_timestep( -1 );
@@ -136,7 +157,7 @@ PLI_INT32 covered_end_of_sim( p_cb_data cb ) {
 
   /* Write contents to database file */
   if( !db_write( out_db_name, FALSE, FALSE ) ) {
-    vpi_printf( "covered VPI: Unable to write database file" );
+    vpi_printf( "covered VPI: Unable to write database file\n" );
     exit( 1 );
   } else {
     vpi_printf( "covered VPI: Output coverage information to %s\n", out_db_name );
@@ -215,6 +236,8 @@ void covered_create_value_change_cb( vpiHandle sig ) {
 
   /* Find current signal in coverage database */
   vsig.name = vpi_get_str( vpiName, sig );
+
+  vpi_printf( "vsigl, name: %s\n", vsig.name );
 
   /* Only add the signal if it is in our database and needs to be assigned from the simulator */
   if( ((vsigl = sig_link_find( &vsig, curr_instance->funit->sig_head )) != NULL) &&
@@ -429,6 +452,16 @@ PLI_INT32 covered_sim_calltf( PLI_BYTE8* name ) {
   vpi_register_cb( cb );
 #endif
 
+  /* Create callback for beginning of time slots */
+  cb            = (p_cb_data)malloc( sizeof( s_cb_data ) );
+  cb->reason    = cbAtStartOfSimTime;
+  cb->cb_rtn    = covered_cb_perform_timestep;
+  cb->obj       = NULL;
+  cb->time      = NULL;
+  cb->value     = NULL;
+  cb->user_data = NULL;
+  vpi_register_cb( cb );
+
   /* Get name of CDD database file from system call arguments */
   if( (arg_handle = vpi_scan( arg_iterator )) != NULL ) {
     s_vpi_value data;
@@ -457,7 +490,7 @@ PLI_INT32 covered_sim_calltf( PLI_BYTE8* name ) {
     
   /* Read in contents of specified database file */
   if( !db_read( in_db_name, READ_MODE_MERGE_NO_MERGE ) ) {
-    vpi_printf( "covered VPI: Unable to read database file" );
+    vpi_printf( "covered VPI: Unable to read database file\n" );
     exit( 1 );
   } else {
     vpi_printf( "covered VPI: Read design information from %s\n", in_db_name );

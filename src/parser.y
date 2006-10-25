@@ -3049,19 +3049,22 @@ module_item
         ignore_mode--;
       } else {
         if( $4 != NULL ) {
-          slist = db_create_sensitivity_list( $4 );
-          slist = db_create_expression( slist, NULL, EXP_OP_ALWAYS_COMB, lhs_mode, @2.first_line, @2.first_column, (@2.last_column - 1), NULL );
-          stmt  = db_create_statement( slist );
-          db_add_expression( slist );
-          if( !db_statement_connect( stmt, $4 ) ) {
-            db_remove_statement( stmt );
-            db_remove_statement( $4 );
+          if( (slist = db_create_sensitivity_list( $4 )) == NULL ) {
+            VLerror( "Empty implicit event expression for the specified always_comb statement" );
           } else {
-            if( db_statement_connect( stmt, stmt ) && (info_suppl.part.excl_always == 0) ) {
-              stmt->exp->suppl.part.stmt_head = 1;
-              db_add_statement( stmt, stmt );
-            } else {
+            slist = db_create_expression( slist, NULL, EXP_OP_ALWAYS_COMB, lhs_mode, @2.first_line, @2.first_column, (@2.last_column - 1), NULL );
+            stmt  = db_create_statement( slist );
+            db_add_expression( slist );
+            if( !db_statement_connect( stmt, $4 ) ) {
               db_remove_statement( stmt );
+              db_remove_statement( $4 );
+            } else {
+              if( db_statement_connect( stmt, stmt ) && (info_suppl.part.excl_always == 0) ) {
+                stmt->exp->suppl.part.stmt_head = 1;
+                db_add_statement( stmt, stmt );
+              } else {
+                db_remove_statement( stmt );
+              }
             }
           }
         }
@@ -3083,19 +3086,22 @@ module_item
         ignore_mode--;
       } else {
         if( $4 != NULL ) {
-          slist = db_create_sensitivity_list( $4 );
-          slist = db_create_expression( slist, NULL, EXP_OP_ALWAYS_LATCH, lhs_mode, @2.first_line, @2.first_column, (@2.last_column - 1), NULL );
-          stmt  = db_create_statement( slist );
-          db_add_expression( slist );
-          if( !db_statement_connect( stmt, $4 ) ) {
-            db_remove_statement( stmt );
-            db_remove_statement( $4 );
+          if( (slist = db_create_sensitivity_list( $4 )) == NULL ) {
+            VLerror( "Empty implicit event expression for the specified always_latch statement" );
           } else {
-            if( db_statement_connect( stmt, stmt ) && (info_suppl.part.excl_always == 0) ) {
-              stmt->exp->suppl.part.stmt_head = 1;
-              db_add_statement( stmt, stmt );
-            } else {
+            slist = db_create_expression( slist, NULL, EXP_OP_ALWAYS_LATCH, lhs_mode, @2.first_line, @2.first_column, (@2.last_column - 1), NULL );
+            stmt  = db_create_statement( slist );
+            db_add_expression( slist );
+            if( !db_statement_connect( stmt, $4 ) ) {
               db_remove_statement( stmt );
+              db_remove_statement( $4 );
+            } else {
+              if( db_statement_connect( stmt, stmt ) && (info_suppl.part.excl_always == 0) ) {
+                stmt->exp->suppl.part.stmt_head = 1;
+                db_add_statement( stmt, stmt );
+              } else {
+                db_remove_statement( stmt );
+              }
             }
           }
         }
@@ -4186,16 +4192,21 @@ statement
         $$ = NULL;
       } else {
         if( (ignore_mode == 0) && ($4 != NULL) ) {
-          expr = db_create_sensitivity_list( $4 );
-          expr = db_create_expression( expr, NULL, EXP_OP_SLIST, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), NULL ); 
-          stmt = db_create_statement( expr );
-          db_add_expression( expr );
-          if( !db_statement_connect( stmt, $4 ) ) {
-            db_remove_statement( stmt );
+          if( (expr = db_create_sensitivity_list( $4 )) == NULL ) {
+            VLerror( "Empty implicit event expression for the specified statement" );
             db_remove_statement( $4 );
-            stmt = NULL;
+            $$ = NULL;
+          } else {
+            expr = db_create_expression( expr, NULL, EXP_OP_SLIST, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), NULL ); 
+            stmt = db_create_statement( expr );
+            db_add_expression( expr );
+            if( !db_statement_connect( stmt, $4 ) ) {
+              db_remove_statement( stmt );
+              db_remove_statement( $4 );
+              stmt = NULL;
+            }
+            $$ = stmt;
           }
-          $$ = stmt;
         } else {
           db_remove_statement( $4 );
           $$ = NULL;

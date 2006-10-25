@@ -1,3 +1,5 @@
-ERROR!  syntax error, unexpected K_priority,   file: gen23.v, line: 3, col: 4
-ERROR!  Syntax error in reg variable list,   file: gen23.v, line: 3, col: 12
+ERROR!  syntax error, unexpected K_priority,
+        File: gen23.v, Line: 3, Column: 4
+ERROR!  Syntax error in reg variable list,
+        File: gen23.v, Line: 3, Column: 12
 ERROR!  Error in parsing design

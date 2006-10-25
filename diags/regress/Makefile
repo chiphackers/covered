@@ -6,19 +6,15 @@
 # Purpose:      Runs regression suite for Verilog
 ######################################################
 
-IVERILOG        = iverilog
-IVERILOG_FLAGS1 = -c config_file -y ./lib -I ./include -DRUNTEST -DDUMP
-IVERILOG_FLAGS2 = -c config_file -y ./lib -I ./include -DRUNTEST -DDUMP -Tmin
-IVERILOG_FLAGS3 = -c config_file -y ./lib -I ./include -DRUNTEST -DDUMP -Ttyp
-IVERILOG_FLAGS4 = -c config_file -y ./lib -I ./include -DRUNTEST -DDUMP -Tmax
-IVERILOG_EXEC   = a.out
+IVERILOG_FLAGS1 = 
+IVERILOG_FLAGS2 = -Tmin
+IVERILOG_FLAGS3 = -Ttyp
+IVERILOG_FLAGS4 = -Tmax
 
-VCS        = vcs
-VCS_FLAGS1 = +libext+.vlib+.v+ -y ./lib +incdir+./include +define+RUNTEST +define+DUMP +define+VCS +v2k -sverilog
-VCS_FLAGS2 = +libext+.vlib+.v+ -y ./lib +incdir+./include +define+RUNTEST +define+DUMP +define+VCS +mindelays +v2k -sverilog
-VCS_FLAGS3 = +libext+.vlib+.v+ -y ./lib +incdir+./include +define+RUNTEST +define+DUMP +define+VCS +typdelays +v2k -sverilog
-VCS_FLAGS4 = +libext+.vlib+.v+ -y ./lib +incdir+./include +define+RUNTEST +define+DUMP +define+VCS +maxdelays +v2k -sverilog
-VCS_EXEC   = simv
+VCS_FLAGS1 = 
+VCS_FLAGS2 = +mindelays
+VCS_FLAGS3 = +typdelays
+VCS_FLAGS4 = +maxdelays
 
 CDD_DIR       = ../cdd
 
@@ -102,7 +98,7 @@ ERRSCORE      = err1.0          err2.0          func3           func3.1         
 ERRMERGE      =
 ERRREPORT     = err2.1
 
-GENLIST       = gen1            gen1.1          gen1.3          gen2.1          gen3.1 \
+NOSIMLIST     = gen1            gen1.1          gen1.3          gen2.1          gen3.1 \
                 gen4.1          gen5.1          gen6.1          gen7.1          gen8.1 \
                 gen9.1          gen10.1         gen11.1         gen12.1         gen13.1 \
                 gen14.1         gen15.1         gen16.1         gen17.1         gen18.1 \
@@ -113,7 +109,7 @@ GENLIST       = gen1            gen1.1          gen1.3          gen2.1          
                 gen33.2         gen34.2         gen35.2         gen36.2         gen37.2 \
                 gen38.2         gen39.2         gen40.2
 
-GENERRLIST    = enum2           gen1.2          gen1.4          gen1.5          gen2            gen3 \
+NOSIMERRLIST  = enum2           gen1.2          gen1.4          gen1.5          gen2            gen3 \
                 gen4            gen5            gen6            gen7            gen8 \
                 gen9            gen10           gen11           gen12           gen13 \
                 gen14           gen15           gen16           gen17           gen18 \
@@ -163,35 +159,26 @@ VCSONLYDIAGS2 =
 VCSONLYDIAGS3 = 
 VCSONLYDIAGS4 = 
 
-ifeq ($(MAKECMDGOALS),lxt)
-DUMP_FMT   = -lxt2
-export LXT = 1
-else
-DUMP_FMT   = -vcd
-endif
-
 iverilog:
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q VERILOG=$(IVERILOG) VERILOG_FLAGS="$(IVERILOG_FLAGS1)" VERILOG_CMD="vvp $(IVERILOG_EXEC) $(DUMP_FMT)" VERILOG_EXEC=$(IVERILOG_EXEC) DIAGLIST="$(DIAGS1) $(IVONLYDIAGS1)" MERGELIST="$(MERGE1)" MERGE3LIST="$(MERGE3)" ERRSCORELIST="$(ERRSCORE)" ERRMERGELIST="$(ERRMERGE)" ERRREPORTLIST="$(ERRREPORT)" RACELIST="$(RACELIST)" GENLIST="$(GENLIST)" GENERRLIST="$(GENERRLIST)" regress
+	$(MAKE) COVERED_GFLAG=-Q VERILOG_EXTRA_FLAGS="$(IVERILOG_FLAGS1)" DIAGLIST="$(DIAGS1) $(IVONLYDIAGS1)" MERGELIST="$(MERGE1)" MERGE3LIST="$(MERGE3)" ERRSCORELIST="$(ERRSCORE)" ERRMERGELIST="$(ERRMERGE)" ERRREPORTLIST="$(ERRREPORT)" RACELIST="$(RACELIST)" NOSIMLIST="$(NOSIMLIST)" NOSIMERRLIST="$(NOSIMERRLIST)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q VERILOG=$(IVERILOG) VERILOG_FLAGS="$(IVERILOG_FLAGS2)" VERILOG_CMD="vvp $(IVERILOG_EXEC) $(DUMP_FMT)" VERILOG_EXEC=$(IVERILOG_EXEC) DIAGLIST="$(DIAGS2) $(IVONLYDIAGS2)" regress
+	$(MAKE) COVERED_GFLAG=-Q VERILOG_EXTRA_FLAGS="$(IVERILOG_FLAGS2)" DIAGLIST="$(DIAGS2) $(IVONLYDIAGS2)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q VERILOG=$(IVERILOG) VERILOG_FLAGS="$(IVERILOG_FLAGS3)" VERILOG_CMD="vvp $(IVERILOG_EXEC) $(DUMP_FMT)" VERILOG_EXEC=$(IVERILOG_EXEC) DIAGLIST="$(DIAGS3) $(IVONLYDIAGS3)" regress
+	$(MAKE) COVERED_GFLAG=-Q VERILOG_EXTRA_FLAGS="$(IVERILOG_FLAGS3)" DIAGLIST="$(DIAGS3) $(IVONLYDIAGS3)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q VERILOG=$(IVERILOG) VERILOG_FLAGS="$(IVERILOG_FLAGS4)" VERILOG_CMD="vvp $(IVERILOG_EXEC) $(DUMP_FMT)" VERILOG_EXEC=$(IVERILOG_EXEC) DIAGLIST="$(DIAGS4) $(IVONLYDIAGS4)" regress
+	$(MAKE) COVERED_GFLAG=-Q VERILOG_EXTRA_FLAGS="$(IVERILOG_FLAGS4)" DIAGLIST="$(DIAGS4) $(IVONLYDIAGS4)" regress
 	@cd ../verilog;  $(MAKE) eot;  $(MAKE) clean
-
-lxt:	iverilog
 
 vcs:
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q VERILOG=$(VCS) VERILOG_FLAGS="$(VCS_FLAGS1)" VERILOG_CMD=$(VCS_EXEC) VERILOG_EXEC=$(VCS_EXEC) DIAGLIST="$(DIAGS1) $(VCSONLYDIAGS1)" MERGELIST="$(MERGE1)" MERGE3LIST="$(MERGE3)" regress
+	$(MAKE) COVERED_GFLAG=-Q USE_VCS=1 VERILOG_EXTRA_FLAGS="$(VCS_FLAGS1)" DIAGLIST="$(DIAGS1) $(VCSONLYDIAGS1)" MERGELIST="$(MERGE1)" MERGE3LIST="$(MERGE3)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q VERILOG=$(VCS) VERILOG_FLAGS="$(VCS_FLAGS2)" VERILOG_CMD=$(VCS_EXEC) VERILOG_EXEC=$(VCS_EXEC) DIAGLIST="$(DIAGS2) $(VCSONLYDIAGS2)" regress
+	$(MAKE) COVERED_GFLAG=-Q USE_VCS=1 VERILOG_EXTRA_FLAGS="$(VCS_FLAGS2)" DIAGLIST="$(DIAGS2) $(VCSONLYDIAGS2)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q VERILOG=$(VCS) VERILOG_FLAGS="$(VCS_FLAGS3)" VERILOG_CMD=$(VCS_EXEC) VERILOG_EXEC=$(VCS_EXEC) DIAGLIST="$(DIAGS3) $(VCSONLYDIAGS3)" regress
+	$(MAKE) COVERED_GFLAG=-Q USE_VCS=1 VERILOG_EXTRA_FLAGS="$(VCS_FLAGS3)" DIAGLIST="$(DIAGS3) $(VCSONLYDIAGS3)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q VERILOG=$(VCS) VERILOG_FLAGS="$(VCS_FLAGS4)" VERILOG_CMD=$(VCS_EXEC) VERILOG_EXEC=$(VCS_EXEC) DIAGLIST="$(DIAGS4) $(VCSONLYDIAGS4)" regress
+	$(MAKE) COVERED_GFLAG=-Q USE_VCS=1 VERILOG_EXTRA_FLAGS="$(VCS_FLAGS4)" DIAGLIST="$(DIAGS4) $(VCSONLYDIAGS4)" regress
 	@cd ../verilog;  $(MAKE) eot;  $(MAKE) clean
 
 clean:

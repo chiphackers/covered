@@ -1,3 +1,5 @@
-ERROR!  syntax error, unexpected K_always_latch,   file: gen20.v, line: 3, col: 4
-ERROR!  Syntax error in reg variable list,   file: gen20.v, line: 3, col: 16
+ERROR!  syntax error, unexpected K_always_latch,
+        File: gen20.v, Line: 3, Column: 4
+ERROR!  Syntax error in reg variable list,
+        File: gen20.v, Line: 3, Column: 16
 ERROR!  Error in parsing design

@@ -1,3 +1,5 @@
-ERROR!  syntax error, unexpected K_always_ff,   file: gen21.v, line: 3, col: 4
-ERROR!  Syntax error in reg variable list,   file: gen21.v, line: 3, col: 13
+ERROR!  syntax error, unexpected K_always_ff,
+        File: gen21.v, Line: 3, Column: 4
+ERROR!  Syntax error in reg variable list,
+        File: gen21.v, Line: 3, Column: 13
 ERROR!  Error in parsing design

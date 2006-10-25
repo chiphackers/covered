@@ -1,3 +1,5 @@
-ERROR!  syntax error, unexpected K_do,   file: gen24.v, line: 3, col: 4
-ERROR!  Syntax error in reg variable list,   file: gen24.v, line: 3, col: 6
+ERROR!  syntax error, unexpected K_do,
+        File: gen24.v, Line: 3, Column: 4
+ERROR!  Syntax error in reg variable list,
+        File: gen24.v, Line: 3, Column: 6
 ERROR!  Error in parsing design

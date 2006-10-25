@@ -1,2 +1,3 @@
-ERROR!  ANSI-C port declaration used in a block that is specified to not allow Verilog-2001 syntax,   file: gen12.v, line: 5, col: 11
+ERROR!  ANSI-C port declaration used in a block that is specified to not allow Verilog-2001 syntax,
+        File: gen12.v, Line: 5, Column: 11
 ERROR!  Error in parsing design

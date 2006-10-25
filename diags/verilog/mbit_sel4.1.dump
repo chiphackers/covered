@@ -1,31 +1,4 @@
-$date
-	Fri Feb 14 10:51:12 2003
-$end
-
-$version
-	Synopsys VCS version 6.2R22
-$end
-
-$timescale
-	1s
-$end
-
-$comment Csum: 1 b927fe382934d029 $end
-
-
-$scope module main $end
-$var reg 1 $ a [3:2] $end
-$var reg 1 " a [1] $end
-$var reg 1 ! a [0] $end
-$upscope $end
-
-$enddefinitions $end
-#0
-$dumpvars
-1!
-0"
-b11 $
-$end
-#5
-1"
-b1 $
+`timescale 1 ns / 1 ps
+module mbit_sel4;
+initial $covered_sim( "mbit_sel4.1.cdd", main );
+endmodule

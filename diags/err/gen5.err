@@ -1,2 +1,3 @@
-ERROR!  Inline port declaration syntax found in block that is specified to not allow Verilog-2001 syntax,   file: gen5.v, line: 2, col: 20
+ERROR!  Inline port declaration syntax found in block that is specified to not allow Verilog-2001 syntax,
+        File: gen5.v, Line: 2, Column: 20
 ERROR!  Error in parsing design

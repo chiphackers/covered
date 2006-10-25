@@ -1,2 +1,3 @@
-ERROR!  Exponential power operator found in block that is specified to not allow Verilog-2001 syntax,   file: gen6.v, line: 8, col: 11
+ERROR!  Exponential power operator found in block that is specified to not allow Verilog-2001 syntax,
+        File: gen6.v, Line: 8, Column: 11
 ERROR!  Error in parsing design

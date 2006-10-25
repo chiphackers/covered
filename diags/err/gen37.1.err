@@ -1,2 +1,3 @@
-ERROR!  Increment (++) operation found in block that is specified to not allow SystemVerilog syntax,   file: gen37.v, line: 5, col: 9
+ERROR!  Increment (++) operation found in block that is specified to not allow SystemVerilog syntax,
+        File: gen37.v, Line: 5, Column: 9
 ERROR!  Error in parsing design

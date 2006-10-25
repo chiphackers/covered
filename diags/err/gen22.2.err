@@ -1,3 +1,5 @@
-ERROR!  syntax error, unexpected K_unique,   file: gen22.v, line: 3, col: 4
-ERROR!  Syntax error in reg variable list,   file: gen22.v, line: 3, col: 10
+ERROR!  syntax error, unexpected K_unique,
+        File: gen22.v, Line: 3, Column: 4
+ERROR!  Syntax error in reg variable list,
+        File: gen22.v, Line: 3, Column: 10
 ERROR!  Error in parsing design

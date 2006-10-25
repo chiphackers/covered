@@ -1,4 +1,7 @@
-ERROR!  Implicit .name port list item found in block that is specified to not allow SystemVerilog syntax,   file: gen39.v, line: 5, col: 9
-ERROR!  Implicit .name port list item found in block that is specified to not allow SystemVerilog syntax,   file: gen39.v, line: 5, col: 13
-ERROR!  Implicit .name port list item found in block that is specified to not allow SystemVerilog syntax,   file: gen39.v, line: 5, col: 18
+ERROR!  Implicit .name port list item found in block that is specified to not allow SystemVerilog syntax,
+        File: gen39.v, Line: 5, Column: 9
+ERROR!  Implicit .name port list item found in block that is specified to not allow SystemVerilog syntax,
+        File: gen39.v, Line: 5, Column: 13
+ERROR!  Implicit .name port list item found in block that is specified to not allow SystemVerilog syntax,
+        File: gen39.v, Line: 5, Column: 18
 ERROR!  Error in parsing design

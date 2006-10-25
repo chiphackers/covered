@@ -1,3 +1,5 @@
-ERROR!  syntax error, unexpected K_always_comb,   file: gen19.v, line: 3, col: 4
-ERROR!  Syntax error in reg variable list,   file: gen19.v, line: 3, col: 15
+ERROR!  syntax error, unexpected K_always_comb,
+        File: gen19.v, Line: 3, Column: 4
+ERROR!  Syntax error in reg variable list,
+        File: gen19.v, Line: 3, Column: 15
 ERROR!  Error in parsing design

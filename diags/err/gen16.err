@@ -1,3 +1,5 @@
-ERROR!  Comma-separated combinational logic sensitivity list found in block that is specified to not allow Verilog-2001 syntax,   file: gen16.v, line: 5, col: 13
-ERROR!  Comma-separated combinational logic sensitivity list found in block that is specified to not allow Verilog-2001 syntax,   file: gen16.v, line: 5, col: 16
+ERROR!  Comma-separated combinational logic sensitivity list found in block that is specified to not allow Verilog-2001 syntax,
+        File: gen16.v, Line: 5, Column: 13
+ERROR!  Comma-separated combinational logic sensitivity list found in block that is specified to not allow Verilog-2001 syntax,
+        File: gen16.v, Line: 5, Column: 16
 ERROR!  Error in parsing design

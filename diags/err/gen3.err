@@ -1,2 +1,3 @@
-ERROR!  Attribute syntax found in block that is specified to not allow Verilog-2001 syntax,   file: gen3.v, line: 5, col: 3
+ERROR!  Attribute syntax found in block that is specified to not allow Verilog-2001 syntax,
+        File: gen3.v, Line: 5, Column: 3
 ERROR!  Error in parsing design

@@ -1,2 +1,3 @@
-ERROR!  &= operation found in block that is specified to not allow SystemVerilog syntax,   file: gen30.v, line: 5, col: 14
+ERROR!  &= operation found in block that is specified to not allow SystemVerilog syntax,
+        File: gen30.v, Line: 5, Column: 14
 ERROR!  Error in parsing design

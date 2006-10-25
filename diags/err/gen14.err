@@ -1,2 +1,3 @@
-ERROR!  Wildcard combinational logic sensitivity list found in block that is specified to not allow Verilog-2001 syntax,   file: gen14.v, line: 6, col: 11
+ERROR!  Wildcard combinational logic sensitivity list found in block that is specified to not allow Verilog-2001 syntax,
+        File: gen14.v, Line: 6, Column: 11
 ERROR!  Error in parsing design

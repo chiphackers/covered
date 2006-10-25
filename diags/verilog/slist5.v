@@ -13,13 +13,4 @@ reg foo;
 
 always @* foo = 1'b0;
 
-initial begin
-`ifndef VPI
-        $dumpfile( "slist5.vcd" );
-        $dumpvars( 0, main );
-`endif
-        #10;
-        $finish;
-end
-
 endmodule
