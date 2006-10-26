@@ -57,16 +57,30 @@ VCS_FLAGS += +define+VPI +vpi -load /home/ultrav/trevorw/libexec/covered.vcs.so:
 endif
 VCS_EXEC  = ./simv
 
+CVER      = cver
+CVER_FLAGS = +libext+.v+.vlib+ -y ./lib -y ./ovl +incdir+./ovl +incdir+./include +define+RUNTEST +define+OVL_VERILOG +define+OVL_COVER_ON
+ifdef VPI
+CVER_FLAGS += +loadvpi=/home/ultrav/trevorw/libexec/covered.cver.so:vpi_compat_bootstrap covered_vpi.v
+endif
+CVER_EXEC =
+
 ifdef USE_VCS
 VERILOG       = $(VCS)
 VERILOG_FLAGS = $(VCS_FLAGS) $(VERILOG_EXTRA_FLAGS)
 VERILOG_EXEC  = $(VCS_EXEC)
 VERILOG_CMD   = $(VCS_EXEC)
 else
+ifdef USE_CVER
+VERILOG       = $(CVER)
+VERILOG       = $(CVER_FLAGS) $(VERILOG_EXTRA_FLAGS)
+VERILOG_EXEC  = $(CVER_EXEC)
+VERILOG_CMD   = $(CVER_EXEC)
+else
 VERILOG       = $(IVERILOG)
 VERILOG_FLAGS = $(IVERILOG_FLAGS) $(VERILOG_EXTRA_FLAGS)
 VERILOG_EXEC  = $(IVERILOG_EXEC)
 VERILOG_CMD   = $(IVERILOG_INTER) $(IVERILOG_EXEC) $(DUMP_FMT)
+endif
 endif
 
 CDD_DIR       = ../cdd
