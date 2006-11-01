@@ -3,7 +3,7 @@
 3 0 $root $root NA 0 0
 3 0 main main param13.v 1 21
 2 1 7 8000c 2 3d 2100a 0 0 1 2 1102 bar
-1 foo 0 80000 1 0 31 0 32 1 1 0 0 0 0 0 0 0
+1 foo 0 80000 1 0 31 0 1 1 1
 1 a 5 830004 1 0 0 0 1 1 102
 4 1 0 0
 3 1 main.bar main.bar param13.v 7 10
