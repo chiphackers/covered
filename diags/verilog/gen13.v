@@ -1,4 +1,12 @@
-module main (
+module main;
+
+foo f();
+
+endmodule
+
+//-------------------------
+
+module foo (
   a
 );
 

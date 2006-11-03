@@ -30,6 +30,9 @@
 /*! \brief Deallocates all memory consumed by the database. */
 void db_close();
 
+/*! \brief Checks to see if the module specified by the -t option is the top-level module of the simulator. */
+bool db_check_for_top_module();
+
 /*! \brief Writes contents of expressions, functional units and vsignals to database file. */
 bool db_write( char* file, bool parse_mode, bool report_save );
 
@@ -177,6 +180,9 @@ void db_do_timestep( int time );
 
 /*
  $Log$
+ Revision 1.72  2006/10/12 22:48:46  phase1geo
+ Updates to remove compiler warnings.  Still some work left to go here.
+
  Revision 1.71  2006/09/22 19:56:45  phase1geo
  Final set of fixes and regression updates per recent changes.  Full regression
  now passes.

@@ -49,6 +49,8 @@ extern isuppl    info_suppl;
 extern bool      flag_check_races;
 extern sig_range curr_prange;
 extern sig_range curr_urange;
+extern bool      instance_specified;
+extern char*     top_module;
 
 /*!
  \param file  Pointer to file to read
@@ -115,6 +117,24 @@ bool parse_design( char* top, char* output_db ) {
 #ifdef DEBUG_MODE
     print_output( "========  Completed design parsing  ========\n", DEBUG, __FILE__, __LINE__ );
 #endif
+
+    /* Check to make sure that the -t and -i options were specified correctly */
+    if( db_check_for_top_module() ) {
+      if( instance_specified ) {
+        snprintf( user_msg, USER_MSG_LENGTH, "Module specified with -t option (%s) is a top-level module.", top_module );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        print_output( "The -i option should not have been specified", FATAL_WRAP, __FILE__, __LINE__ );
+        exit( 1 );
+      }
+    } else {
+      if( !instance_specified ) {
+        snprintf( user_msg, USER_MSG_LENGTH, "Module specified with -t option (%s) is not a top-level module.", top_module );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        print_output( "The -i option must be specified to provide the hierarchy to the module specified with", FATAL_WRAP, __FILE__, __LINE__ );
+        print_output( "the -t option.", FATAL_WRAP, __FILE__, __LINE__ );
+        exit( 1 );
+      }
+    }
 
     /* Perform all signal/expression binding */
     bind_perform( FALSE, 0 );
@@ -235,6 +255,9 @@ bool parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) {
 
 /*
  $Log$
+ Revision 1.46  2006/10/12 22:48:46  phase1geo
+ Updates to remove compiler warnings.  Still some work left to go here.
+
  Revision 1.45  2006/09/22 19:56:45  phase1geo
  Final set of fixes and regression updates per recent changes.  Full regression
  now passes.

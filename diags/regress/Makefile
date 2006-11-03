@@ -109,8 +109,8 @@ NOSIMLIST     = gen1            gen1.1          gen1.3          gen2.1          
                 gen33.2         gen34.2         gen35.2         gen36.2         gen37.2 \
                 gen38.2         gen39.2         gen40.2
 
-NOSIMERRLIST  = comment1        enum2           gen1.2          gen1.4          gen1.5 \
-                gen2            gen3 \
+NOSIMERRLIST  = comment1        enum2           err4            err4.1          gen1.2 \
+                gen1.4          gen1.5          gen2            gen3 \
                 gen4            gen5            gen6            gen7            gen8 \
                 gen9            gen10           gen11           gen12           gen13 \
                 gen14           gen15           gen16           gen17           gen18 \

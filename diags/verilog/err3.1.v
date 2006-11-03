@@ -8,7 +8,7 @@
 
 module main;
 
-foo a();
+foo a( 1'b0 );
 
 initial begin
 	$dumpfile( "err3.1.vcd" );
@@ -21,12 +21,14 @@ endmodule
 
 //-------------------------------
 
-module foo;
+module foo (
+  input wire b
+);
 
 reg a;
 
 initial begin
-	a = 1'b0;
+	a = b;
 	#10;
 	a = 1'b1;
 end

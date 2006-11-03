@@ -1,5 +1,13 @@
-module main (
-  output wire [1:0] foo
+module main;
+
+foo f();
+
+endmodule
+
+//---------------------------------
+
+module foo (
+  output wire [1:0] a
 );
 
 endmodule

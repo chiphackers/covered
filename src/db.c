@@ -188,6 +188,38 @@ void db_close() {
 }
 
 /*!
+ \return Returns TRUE if the top module specified in the -t option is the top-level module
+         of the simulation; otherwise, returns FALSE.
+
+ Iterates through the signal list of the top-level module.  Returns TRUE if no signals with
+ type INPUT, OUTPUT or INOUT were found; otherwise, returns FALSE.  Called by the parse_design()
+ function.
+*/
+bool db_check_for_top_module() {
+
+  bool       retval = FALSE;  /* Return value for this function */
+  inst_link* instl;           /* Pointer to current instance link being checked */
+
+  instl = inst_head;
+  while( (instl != NULL) && (strcmp( instl->inst->funit->name, top_module ) != 0) ) {
+    instl = instl->next;
+  }
+
+  /*
+   If we found the top module specified by the -t option, iterate through the
+   functional unit's signal list.
+  */
+  if( instl != NULL ) {
+
+    retval = funit_is_top_module( instl->inst->funit );
+
+  }
+
+  return( retval );
+
+}
+
+/*!
  \param file         Name of database file to output contents to.
  \param parse_mode   Specifies if we are outputting parse data or score data.
  \param report_save  Specifies if we are attempting to "save" a CDD file modified in the report command
@@ -2130,6 +2162,10 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.230  2006/10/13 22:46:31  phase1geo
+ Things are a bit of a mess at this point.  Adding generate12 diagnostic that
+ shows a failure in properly handling generates of instances.
+
  Revision 1.229  2006/10/12 22:48:45  phase1geo
  Updates to remove compiler warnings.  Still some work left to go here.
 

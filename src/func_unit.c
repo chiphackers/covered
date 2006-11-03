@@ -791,6 +791,38 @@ func_unit* funit_find_by_id( int id ) {
 }
 
 /*!
+ \param funit  Pointer to functional unit to check.
+ 
+ \return Returns TRUE if the specified functional unit does not contain any inputs, outputs or
+         inouts and is of type MODULE.
+*/
+bool funit_is_top_module( func_unit* funit ) {
+
+  bool      retval = FALSE;  /* Return value for this function */
+  sig_link* sigl;            /* Pointer to current signal link */
+
+  assert( funit != NULL );
+
+  /* Only check the signal list if we are a MODULE type */
+  if( funit->type == FUNIT_MODULE ) {
+
+    sigl = funit->sig_head;
+    while( (sigl != NULL) &&
+           (sigl->sig->suppl.part.type != SSUPPL_TYPE_INPUT) &&
+           (sigl->sig->suppl.part.type != SSUPPL_TYPE_OUTPUT) &&
+           (sigl->sig->suppl.part.type != SSUPPL_TYPE_INOUT) ) {
+      sigl = sigl->next;
+    }
+
+    retval = (sigl == NULL);
+
+  }
+
+  return( retval );
+
+}
+
+/*!
  \param funit  Pointer to functional unit element to display signals.
 
  Iterates through signal list of specified functional unit, displaying each signal's
@@ -946,6 +978,10 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.50  2006/10/13 22:46:31  phase1geo
+ Things are a bit of a mess at this point.  Adding generate12 diagnostic that
+ shows a failure in properly handling generates of instances.
+
  Revision 1.49  2006/10/12 22:48:46  phase1geo
  Updates to remove compiler warnings.  Still some work left to go here.
 
