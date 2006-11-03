@@ -48,9 +48,9 @@
 */
 tnode* tree_add( const char* key, const char* value, bool override, tnode** root ) {
   
-  tnode* node;            /* Pointer to newly created tree node            */
-  tnode* curr   = *root;  /* Pointer to current node                       */
-  bool   placed = FALSE;  /* Sets to TRUE when node is placed in tree      */
+  tnode* node;            /* Pointer to newly created tree node */
+  tnode* curr   = *root;  /* Pointer to current node */
+  bool   placed = FALSE;  /* Sets to TRUE when node is placed in tree */
   int    comp;            /* Specifies compare value for string comparison */
 
   /* Allocate memory for tree node and populate */
@@ -146,8 +146,8 @@ tnode* tree_find( const char* key, tnode* root ) {
 */
 void tree_remove( const char* key, tnode** root ) {
   
-  tnode* node;          /* Pointer to found tree node to remove */
-  tnode* tail;          /* Temporary pointer to tail node       */
+  tnode* node;  /* Pointer to found tree node to remove */
+  tnode* tail;  /* Temporary pointer to tail node */
   
   /* Find undefined identifer string in table */
   node = tree_find( key, *root );
@@ -287,6 +287,11 @@ void tree_dealloc( tnode* root ) {
 
 /*
  $Log$
+ Revision 1.4  2006/03/28 22:28:28  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.3  2005/12/19 23:11:27  phase1geo
  More fixes for memory faults.  Full regression passes.  Errors have now been
  eliminated from regression -- just left-over memory issues remain.
