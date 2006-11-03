@@ -1,0 +1,5 @@
+ERROR!  syntax error, unexpected IDENTIFIER,
+        File: comment1.v, Line: 8, Column: 27
+ERROR!  Invalid $root item,
+        File: comment1.v, Line: 10, Column: 11
+ERROR!  Error in parsing design
