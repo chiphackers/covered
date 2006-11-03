@@ -1,0 +1,18 @@
+5 9 1 * 0
+8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd report1.vcd -o report1.cdd -v report1.v
+3 0 $root $root NA 0 0
+3 0 main main report1.v 9 36
+2 1 19 b000b 2 1 c 0 0 d
+2 2 17 c000c 1 1 8 0 0 c
+2 3 17 b000b 1 1b 20004 2 0 1 2 102
+2 4 16 b000b 1 1 4 0 0 b
+2 5 16 b000c 1 31 20044 3 4 2 2 30a
+2 6 15 c000b 1 26 20004 5 0 2 2 30a
+2 7 15 c000b 2 8 200c4 1 6 2 2 330a
+2 8 15 70007 0 1 400 0 0 a
+2 9 15 7000b 1 35 f006 7 8
+1 a 11 3000b 1 0 1 0 2 1 a
+1 b 12 3000b 1 0 0 0 1 1 2
+1 c 12 3000e 1 0 0 0 1 1 2
+1 d 13 3000b 1 0 1 0 2 1 30a
+4 9 9 9
