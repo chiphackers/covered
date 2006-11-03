@@ -513,20 +513,20 @@ description
         ignore_mode--;
       }
     }
-  | K_function range_or_type_opt IDENTIFIER ';'
+  | K_function signed_opt range_or_type_opt IDENTIFIER ';'
     {
       if( ignore_mode == 0 ) {
-        if( db_add_function_task_namedblock( FUNIT_FUNCTION, $3, @3.text, @3.first_line ) ) {
-          db_add_signal( $3, SSUPPL_TYPE_IMPLICIT, &curr_prange, NULL, FALSE, FALSE, @3.first_line, @3.first_column, TRUE );
+        if( db_add_function_task_namedblock( FUNIT_FUNCTION, $4, @4.text, @4.first_line ) ) {
+          db_add_signal( $4, SSUPPL_TYPE_IMPLICIT, &curr_prange, NULL, curr_signed, FALSE, @4.first_line, @4.first_column, TRUE );
         } else {
           ignore_mode++;
         }
-        free_safe( $3 );
+        free_safe( $4 );
       }
     }
     function_item_list statement
     {
-      statement* stmt = $7;
+      statement* stmt = $8;
       if( (ignore_mode == 0) && (stmt != NULL) ) {
         stmt->exp->suppl.part.stmt_head      = 1;
         stmt->exp->suppl.part.stmt_is_called = 1;
@@ -536,7 +536,7 @@ description
     K_endfunction
     {
       if( ignore_mode == 0 ) {
-        db_end_function_task_namedblock( @9.first_line );
+        db_end_function_task_namedblock( @10.first_line );
       } else {
         ignore_mode--;
       }
@@ -2878,14 +2878,13 @@ module_item
       }
     }
   /* Handles Verilog-2001 port of type:  input wire [m:l] <list>; */
-  | attribute_list_opt port_type net_type range_opt
+  | attribute_list_opt port_type net_type signed_opt range_opt
     {
       if( !parser_check_generation( GENERATION_2001 ) ) {
         VLerror( "ANSI-C port declaration used in a block that is specified to not allow Verilog-2001 syntax" );
         ignore_mode++;
       } else {
         curr_mba     = FALSE;
-        curr_signed  = FALSE;
         curr_handled = TRUE;
         if( generate_mode > 0 ) {
           ignore_mode++;
@@ -2899,14 +2898,13 @@ module_item
         ignore_mode--;
       }
     }
-  | attribute_list_opt K_output var_type range_opt
+  | attribute_list_opt K_output var_type signed_opt range_opt
     {
       if( !parser_check_generation( GENERATION_2001 ) ) {
         VLerror( "ANSI-C port declaration used in a block that is specified to not allow Verilog-2001 syntax" );
         ignore_mode++;
       } else {
         curr_mba      = FALSE;
-        curr_signed   = FALSE;
         curr_handled  = TRUE;
         curr_sig_type = SSUPPL_TYPE_OUTPUT;
         if( generate_mode > 0 ) {
@@ -3192,29 +3190,27 @@ module_item
       }
     }
   | attribute_list_opt
-    K_function range_or_type_opt IDENTIFIER ';'
+    K_function signed_opt range_or_type_opt IDENTIFIER ';'
     {
       if( generate_for_mode > 0 ) {
         VLerror( "Function definition not allowed within a generate loop" );
         ignore_mode++;
       }
       if( ignore_mode == 0 ) {
-        if( db_add_function_task_namedblock( FUNIT_FUNCTION, $4, @4.text, @4.first_line ) ) {
+        if( db_add_function_task_namedblock( FUNIT_FUNCTION, $5, @5.text, @5.first_line ) ) {
           generate_mode--;
-          db_add_signal( $4, SSUPPL_TYPE_IMPLICIT, &curr_prange, NULL, FALSE, FALSE, @4.first_line, @4.first_column, TRUE );
+          db_add_signal( $5, SSUPPL_TYPE_IMPLICIT, &curr_prange, NULL, curr_signed, FALSE, @5.first_line, @5.first_column, TRUE );
           generate_mode++;
         } else {
           ignore_mode++;
         }
-        if( $4 != NULL ) {
-          free_safe( $4 );
-        }
+        free_safe( $5 );
       }
       generate_mode--;
     }
     function_item_list statement
     {
-      statement* stmt = $8;
+      statement* stmt = $9;
       if( (ignore_mode == 0) && (stmt != NULL) ) {
         stmt->exp->suppl.part.stmt_head      = 1;
         stmt->exp->suppl.part.stmt_is_called = 1;
@@ -3225,7 +3221,7 @@ module_item
     {
       generate_mode++;
       if( ignore_mode == 0 ) {
-        db_end_function_task_namedblock( @10.first_line );
+        db_end_function_task_namedblock( @11.first_line );
       } else {
         ignore_mode--;
       }
@@ -6005,9 +6001,8 @@ function_item_list
   ;
 
 function_item
-  : K_input range_opt
+  : K_input signed_opt range_opt
     {
-      curr_signed   = FALSE;
       curr_mba      = FALSE;
       curr_handled  = TRUE;
       curr_sig_type = SSUPPL_TYPE_INPUT;
