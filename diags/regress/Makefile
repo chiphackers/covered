@@ -91,10 +91,10 @@ MERGE3        = merge2
 RACELIST      = race1           race1.1         race1.2         race2.1         race2.2 \
                 race2.3         race2.4         race4
 
-ERRSCORE      = err1.0          err2.0          func3           func3.1         func3.2 \
-                func3.3         func3.4         func3.5         func3.6         func4 \
-                func4.1         func4.2         func4.3         func4.4         func4.5 \
-                func4.6         task5
+ERRSCORE      = err1.0          err2.0          err3            err3.1          func3 \
+                func3.1         func3.2         func3.3         func3.4         func3.5 \
+                func3.6         func4           func4.1         func4.2         func4.3 \
+                func4.4         func4.5         func4.6         task5
 ERRMERGE      =
 ERRREPORT     = err2.1
 
@@ -109,7 +109,8 @@ NOSIMLIST     = gen1            gen1.1          gen1.3          gen2.1          
                 gen33.2         gen34.2         gen35.2         gen36.2         gen37.2 \
                 gen38.2         gen39.2         gen40.2
 
-NOSIMERRLIST  = enum2           gen1.2          gen1.4          gen1.5          gen2            gen3 \
+NOSIMERRLIST  = comment1        enum2           gen1.2          gen1.4          gen1.5 \
+                gen2            gen3 \
                 gen4            gen5            gen6            gen7            gen8 \
                 gen9            gen10           gen11           gen12           gen13 \
                 gen14           gen15           gen16           gen17           gen18 \

@@ -241,7 +241,7 @@ void vcd_parse_def( FILE* vcd ) {
     print_output( "No instances were found in specified VCD file that matched design", FATAL, __FILE__, __LINE__ );
 
     /* If the -i option was not specified, let the user know */
-    if( instance_specified ) {
+    if( !instance_specified ) {
       print_output( "  Please use -i option to specify correct hierarchy to top-level module to score",
                     FATAL, __FILE__, __LINE__ );
     } else {
@@ -417,6 +417,11 @@ void vcd_parse( char* vcd_file ) {
 
 /*
  $Log$
+ Revision 1.24  2006/08/30 12:02:48  phase1geo
+ Changing assertion in vcd.c that fails when the VCD file is improperly formatted
+ to a user error message with a bit more meaning.  Fixing problem with signedness
+ of enumeration resolution.  Added enum1.1 diagnostic to testsuite.
+
  Revision 1.23  2006/05/28 02:43:49  phase1geo
  Integrating stable release 0.4.4 changes into main branch.  Updated regressions
  appropriately.

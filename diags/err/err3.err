@@ -1,0 +1,2 @@
+ERROR!  No instances were found in specified VCD file that matched design
+ERROR!    Please use -i option to specify correct hierarchy to top-level module to score
