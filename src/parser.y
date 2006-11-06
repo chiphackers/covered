@@ -427,8 +427,8 @@ description
   | udp_primitive
   | KK_attribute { ignore_mode++; } '(' UNUSED_IDENTIFIER ',' UNUSED_STRING ',' UNUSED_STRING ')' { ignore_mode--; }
   | typedef_decl
-  | net_type range_opt list_of_variables ';'
-  | net_type range_opt net_decl_assigns ';'
+  | net_type signed_opt range_opt list_of_variables ';'
+  | net_type signed_opt range_opt net_decl_assigns ';'
   | net_type drive_strength
     {
       if( (ignore_mode == 0) && ($1 == 1) ) {
@@ -2839,9 +2839,9 @@ module_item_list
 
 module_item
   : attribute_list_opt
-    net_type range_opt list_of_variables ';'
+    net_type signed_opt range_opt list_of_variables ';'
   | attribute_list_opt
-    net_type range_opt net_decl_assigns ';'
+    net_type signed_opt range_opt net_decl_assigns ';'
   | attribute_list_opt
     net_type drive_strength
     {
@@ -5585,7 +5585,7 @@ net_decl_assign
       expression* tmp;
       statement*  stmt;
       if( (ignore_mode == 0) && ($1 != NULL) && (info_suppl.part.excl_assign == 0) ) {
-        db_add_signal( $1, SSUPPL_TYPE_DECLARED, &curr_prange, NULL, FALSE, FALSE, @1.first_line, @1.first_column, TRUE );
+        db_add_signal( $1, SSUPPL_TYPE_DECLARED, &curr_prange, NULL, curr_signed, FALSE, @1.first_line, @1.first_column, TRUE );
         if( $3 != NULL ) {
           tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
           tmp  = db_create_expression( $3, tmp, EXP_OP_DASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
