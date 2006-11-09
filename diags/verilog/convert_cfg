@@ -9,8 +9,6 @@
 $type = $ARGV[0];
 $file = $ARGV[1];
 
-print "type: $type, file: $file\n";
-
 if( (($type ne "vcd") && ($type ne "lxt") && ($type ne "vpi")) || ($file eq "") ) {
   die "Usage:  convert_cfg (vcd|lxt|vpi) <cfg_filename>\n";
 }

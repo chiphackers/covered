@@ -132,6 +132,44 @@ int combination_calc_depth( expression* exp, unsigned int curr_depth, bool left 
 }
 
 /*!
+ \param exp  Pointer to expression to check for multi-expression underlines
+
+ \return Returns TRUE if the given expression multi-expression tree needs to be underlined
+*/
+bool combination_does_multi_exp_need_ul( expression* exp ) {
+
+  bool ul = FALSE;  /* Return value for this function */
+  bool and_op;      /* Specifies if current expression is an AND or LAND operation */
+
+  if( exp != NULL ) {
+
+    /* Figure out if this is an AND/LAND operation */
+    and_op = (exp->op == EXP_OP_AND) || (exp->op == EXP_OP_LAND);
+
+    /* Decide if our expression requires that this sequence gets underlined */
+    if( and_op ) {
+      ul = (exp->suppl.part.eval_11 == 0) || (ESUPPL_WAS_FALSE( exp->left->suppl ) == 0) || (ESUPPL_WAS_FALSE( exp->right->suppl ) == 0);
+    } else {
+      ul = (exp->suppl.part.eval_00 == 0) || (ESUPPL_WAS_TRUE( exp->left->suppl )  == 0) || (ESUPPL_WAS_TRUE( exp->right->suppl )  == 0);
+    }
+
+    /* If we did not require underlining, check our left child */
+    if( !ul && ((exp->left == NULL) || (exp->op == exp->left->op)) ) {
+      ul = combination_does_multi_exp_need_ul( exp->left );
+    }
+
+    /* If we still have not found a reason to underline, check our right child */
+    if( !ul && ((exp->right == NULL) || (exp->op == exp->right->op)) ) {
+      ul = combination_does_multi_exp_need_ul( exp->right );
+    }
+
+  }
+
+  return( ul );
+
+}
+
+/*!
  \param exp       Pointer to expression to calculate hit and total of multi-expression subtrees.
  \param ulid      Pointer to current underline ID.
  \param ul        If TRUE, parent expressions were found to be missing so force the underline.
@@ -139,12 +177,10 @@ int combination_calc_depth( expression* exp, unsigned int curr_depth, bool left 
  \param hit       Pointer to value containing number of hit expression values in this expression.
  \param total     Pointer to value containing total number of expression values in this expression.
 
- \return Returns TRUE if child expressions were found to be missed; otherwise, returns FALSE.
-
  Parses the specified expression tree, calculating the hit and total values of all
  sub-expressions that are the same operation types as their left children.
 */
-bool combination_multi_expr_calc( expression* exp, int* ulid, bool ul, bool excluded, int* hit, float* total ) {
+void combination_multi_expr_calc( expression* exp, int* ulid, bool ul, bool excluded, int* hit, float* total ) {
 
   bool and_op;  /* Specifies if current expression is an AND or LAND operation */
 
@@ -158,11 +194,7 @@ bool combination_multi_expr_calc( expression* exp, int* ulid, bool ul, bool excl
 
     /* Decide if our expression requires that this sequence gets underlined */
     if( !ul ) {
-      if( and_op ) {
-        ul = (exp->suppl.part.eval_11 == 0) || (ESUPPL_WAS_FALSE( exp->left->suppl ) == 0) || (ESUPPL_WAS_FALSE( exp->right->suppl ) == 0);
-      } else {
-        ul = (exp->suppl.part.eval_00 == 0) || (ESUPPL_WAS_TRUE( exp->left->suppl )  == 0) || (ESUPPL_WAS_TRUE( exp->right->suppl )  == 0);
-      }
+      ul = combination_does_multi_exp_need_ul( exp );
     }
 
     if( (exp->left != NULL) && (exp->op != exp->left->op) ) {
@@ -181,7 +213,7 @@ bool combination_multi_expr_calc( expression* exp, int* ulid, bool ul, bool excl
       }
       (*total)++;
     } else {
-      ul = combination_multi_expr_calc( exp->left, ulid, ul, excluded, hit, total );
+      combination_multi_expr_calc( exp->left, ulid, ul, excluded, hit, total );
     }
 
     if( (exp->right != NULL) && (exp->op != exp->right->op) ) {
@@ -200,7 +232,7 @@ bool combination_multi_expr_calc( expression* exp, int* ulid, bool ul, bool excl
       }
       (*total)++;
     } else {
-      ul = combination_multi_expr_calc( exp->right, ulid, ul, excluded, hit, total );
+      combination_multi_expr_calc( exp->right, ulid, ul, excluded, hit, total );
     }
 
     if( (ESUPPL_IS_ROOT( exp->suppl ) == 1) || (exp->op != exp->parent->expr->op) ) {
@@ -221,8 +253,6 @@ bool combination_multi_expr_calc( expression* exp, int* ulid, bool ul, bool excl
     }
 
   }
-
-  return( ul );
 
 }
 
@@ -2671,6 +2701,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.164  2006/11/03 22:23:58  phase1geo
+ Fixing bug 1545442.  Added report1 diagnostic to regression suite to verify
+ this fix.
+
  Revision 1.163  2006/10/12 22:48:45  phase1geo
  Updates to remove compiler warnings.  Still some work left to go here.
 

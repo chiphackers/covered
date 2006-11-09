@@ -97,97 +97,92 @@ check-ovl:
 		echo "Create symlink called \"ovl\" in the diags/verilog directory to point to base OVL vlib directory"; \
 		exit 1; \
 	fi
-	echo $(VERILOG_FLAGS)
+
+diagrun:
+	@echo Running $(DIAG)
+	@convert_cfg $(CFG_CMD) $(DIAG).cfg
+ifdef VPI
+	@$(COVERED) $(COVERED_GFLAG) score -f $(DIAG).cfg
+	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v
+	@if test "$(COVERED_GFLAG)" = "-D"; then \
+		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd +covered_debug; \
+	else \
+		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd; \
+	fi
+	@$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfam -o $(DIAG).rptM $(DIAG).cdd
+	@$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfam -i -o $(DIAG).rptI $(DIAG).cdd
+	@$(COVERED) $(COVERED_GFLAG) report -w -d v -o $(DIAG).rptWM $(DIAG).cdd
+	@$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $(DIAG).rptWI $(DIAG).cdd
+else
+	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v
+ifndef USE_CVER
+	@$(VERILOG_CMD)
+endif
+	@vg_exists=`which $(VG_EXEC) | wc -w`
+	@if test "$$vg_exists" = "1"; then \
+		$(VG_COVERED) $(COVERED_GFLAG) score -f $(DIAG).cfg; \
+		$(VG_COVERED) $(COVERED_GFLAG) report -d v -m ltcfam -o $(DIAG).rptM $(DIAG).cdd; \
+	else \
+		$(COVERED) $(COVERED_GFLAG) score -f $(DIAG).cfg; \
+		$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfam -o $(DIAG).rptM $(DIAG).cdd; \
+	fi
+	@$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfam -i -o $(DIAG).rptI $(DIAG).cdd
+	@$(COVERED) $(COVERED_GFLAG) report -w -d v -o $(DIAG).rptWM $(DIAG).cdd
+	@$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $(DIAG).rptWI $(DIAG).cdd
+endif
+	@rm -f $(DIAG).cfg
+	@./check_test $(DIAG) 1 $(CHK_CODE)
 
 $(DIAGLIST): check-ovl
+	@if test ! -f $@.done; then \
+		$(MAKE) DIAG=$@ diagrun; \
+	else \
+		echo Skipping $@; \
+		./check_test $@ 1 2; \
+	fi
+
+racerun:
+	@echo Running $(DIAG)
+	@convert_cfg $(CFG_CMD) $(DIAG).cfg
 ifdef VPI
-	@if test ! -f $@.done; then \
-		echo Running $@; \
-		convert_cfg $(CFG_CMD) $@.cfg; \
-		$(COVERED) $(COVERED_GFLAG) score -f $@.cfg; \
-		$(VERILOG) $(VERILOG_FLAGS) $@.v; \
-		if test "$(COVERED_GFLAG)" = "-D"; then \
-			$(VERILOG_CMD) +covered_cdd=$@.cdd +covered_debug; \
-		else \
-			$(VERILOG_CMD) +covered_cdd=$@.cdd; \
-		fi; \
-		$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfam -o $@.rptM $@.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfam -i -o $@.rptI $@.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -w -d v -o $@.rptWM $@.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $@.rptWI $@.cdd; \
-		rm -f $@.cfg; \
-		./check_test $@ 1 $(CHK_CODE); \
+	@$(VG_COVERED) $(COVERED_GFLAG) score -f $(DIAG).cfg
+	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v
+	@if test "$(COVERED_GFLAG)" = "-D"; then \
+		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd +covered_debug; \
 	else \
-		echo Skipping $@; \
-		./check_test $@ 1 2; \
+		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd; \
 	fi
+	@$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfr -o $(DIAG).rptM $(DIAG).cdd
+	@$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfr -i -o $(DIAG).rptI $(DIAG).cdd
+	@$(COVERED) $(COVERED_GFLAG) report -w -d v -m ltcfr -o $(DIAG).rptWM $(DIAG).cdd
+	@$(COVERED) $(COVERED_GFLAG) report -w -d v -m ltcfr -i -o $(DIAG).rptWI $(DIAG).cdd
 else
-	@if test ! -f $@.done; then \
-		echo Running $@; \
-		convert_cfg $(CFG_CMD) $@.cfg; \
-		$(VERILOG) $(VERILOG_FLAGS) $@.v; \
-		$(VERILOG_CMD); \
-		vg_exists=`which $(VG_EXEC) | wc -w`; \
-		if test "$$vg_exists" = "1"; then \
-			$(VG_COVERED) $(COVERED_GFLAG) score -f $@.cfg; \
-			$(VG_COVERED) $(COVERED_GFLAG) report -d v -m ltcfam -o $@.rptM $@.cdd; \
-		else \
-			$(COVERED) $(COVERED_GFLAG) score -f $@.cfg; \
-			$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfam -o $@.rptM $@.cdd; \
-		fi; \
-		$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfam -i -o $@.rptI $@.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -w -d v -o $@.rptWM $@.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $@.rptWI $@.cdd; \
-		rm -f $@.cfg; \
-		./check_test $@ 1 $(CHK_CODE); \
-	else \
-		echo Skipping $@; \
-		./check_test $@ 1 2; \
-	fi
+	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v
+ifndef USE_CVER
+	@$(VERILOG_CMD)
 endif
+	@vg_exists=`which $(VG_EXEC) | wc -w`
+	@if test "$$vg_exists" = "1"; then \
+		$(VG_COVERED) $(COVERED_GFLAG) score -f $(DIAG).cfg; \
+		$(VG_COVERED) $(COVERED_GFLAG) report -d v -m ltcfr -o $(DIAG).rptM $(DIAG).cdd; \
+	else \
+		$(COVERED) $(COVERED_GFLAG) score -f $(DIAG).cfg; \
+		$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfr -o $(DIAG).rptM $(DIAG).cdd; \
+	fi
+	@$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfr -i -o $(DIAG).rptI $(DIAG).cdd
+	@$(COVERED) $(COVERED_GFLAG) report -w -d v -m ltcfr -o $(DIAG).rptWM $(DIAG).cdd
+	@$(COVERED) $(COVERED_GFLAG) report -w -d v -m ltcfr -i -o $(DIAG).rptWI $(DIAG).cdd
+endif
+	@rm -f $(DIAG).cfg
+	@./check_test $(DIAG) 1 $(CHK_CODE)
 
 $(RACELIST):
-ifdef VPI
 	@if test ! -f $@.done; then \
-		echo Running $@; \
-		convert_cfg $(CFG_CMD) $@.cfg; \
-		$(VG_COVERED) $(COVERED_GFLAG) score -f $@.cfg; \
-		$(VERILOG) $(VERILOG_FLAGS) $@.v; \
-		$(VERILOG_CMD) +covered_cdd=$@.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfr -o $@.rptM $@.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfr -i -o $@.rptI $@.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -w -d v -m ltcfr -o $@.rptWM $@.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -w -d v -m ltcfr -i -o $@.rptWI $@.cdd; \
-		rm -f $@.cfg; \
-		./check_test $@ 1 $(CHK_CODE); \
+		make DIAG=$@ racerun; \
 	else \
 		echo Skipping $@; \
 		./check_test $@ 1 2; \
 	fi
-else
-	@if test ! -f $@.done; then \
-		echo Running $@; \
-		$(VERILOG) $(VERILOG_FLAGS) $@.v; \
-		$(VERILOG_CMD); \
-		convert_cfg $(CFG_CMD) $@.cfg; \
-		vg_exists=`which $(VG_EXEC) | wc -w`; \
-		if test "$$vg_exists" = "1"; then \
-			$(VG_COVERED) $(COVERED_GFLAG) score -f $@.cfg; \
-			$(VG_COVERED) $(COVERED_GFLAG) report -d v -m ltcfr -o $@.rptM $@.cdd; \
-		else \
-			$(COVERED) $(COVERED_GFLAG) score -f $@.cfg; \
-			$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfr -o $@.rptM $@.cdd; \
-		fi; \
-		$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfr -i -o $@.rptI $@.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -w -d v -m ltcfr -o $@.rptWM $@.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -w -d v -m ltcfr -i -o $@.rptWI $@.cdd; \
-		rm -f $@.cfg; \
-		./check_test $@ 1 $(CHK_CODE); \
-	else \
-		echo Skipping $@; \
-		./check_test $@ 1 2; \
-	fi
-endif
 
 $(MERGELIST):
 ifdef VPI
