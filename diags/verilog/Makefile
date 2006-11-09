@@ -58,7 +58,7 @@ endif
 VCS_EXEC  = ./simv
 
 CVER      = cver
-CVER_FLAGS = +libext+.v+.vlib+ -y ./lib -y ./ovl +incdir+./ovl +incdir+./include +define+RUNTEST +define+OVL_VERILOG +define+OVL_COVER_ON
+CVER_FLAGS = -q +libext+.v+.vlib+ -y ./lib -y ./ovl +incdir+./ovl +incdir+./include +define+RUNTEST +define+OVL_VERILOG +define+OVL_COVER_ON
 ifdef VPI
 CVER_FLAGS += +loadvpi=/home/ultrav/trevorw/libexec/covered.cver.so:vpi_compat_bootstrap covered_vpi.v
 endif
@@ -72,7 +72,7 @@ VERILOG_CMD   = $(VCS_EXEC)
 else
 ifdef USE_CVER
 VERILOG       = $(CVER)
-VERILOG       = $(CVER_FLAGS) $(VERILOG_EXTRA_FLAGS)
+VERILOG_FLAGS = $(CVER_FLAGS) $(VERILOG_EXTRA_FLAGS)
 VERILOG_EXEC  = $(CVER_EXEC)
 VERILOG_CMD   = $(CVER_EXEC)
 else
@@ -103,12 +103,20 @@ diagrun:
 	@convert_cfg $(CFG_CMD) $(DIAG).cfg
 ifdef VPI
 	@$(COVERED) $(COVERED_GFLAG) score -f $(DIAG).cfg
+ifdef USE_CVER
+	@if test "$(COVERED_GFLAG)" = "-D"; then \
+		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v +covered_cdd=$(DIAG).cdd +covered_debug; \
+	else \
+		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v +covered_cdd=$(DIAG).cdd; \
+	fi
+else
 	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v
 	@if test "$(COVERED_GFLAG)" = "-D"; then \
 		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd +covered_debug; \
 	else \
 		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd; \
 	fi
+endif
 	@$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfam -o $(DIAG).rptM $(DIAG).cdd
 	@$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfam -i -o $(DIAG).rptI $(DIAG).cdd
 	@$(COVERED) $(COVERED_GFLAG) report -w -d v -o $(DIAG).rptWM $(DIAG).cdd
@@ -146,12 +154,20 @@ racerun:
 	@convert_cfg $(CFG_CMD) $(DIAG).cfg
 ifdef VPI
 	@$(VG_COVERED) $(COVERED_GFLAG) score -f $(DIAG).cfg
+ifdef USE_CVER
+	@if test "$(COVERED_GFLAG)" = "-D"; then \
+		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v +covered_cdd=$(DIAG).cdd +covered_debug; \
+	else \
+		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v +covered_cdd=$(DIAG).cdd; \
+	fi
+else
 	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v
 	@if test "$(COVERED_GFLAG)" = "-D"; then \
 		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd +covered_debug; \
 	else \
 		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd; \
 	fi
+endif
 	@$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfr -o $(DIAG).rptM $(DIAG).cdd
 	@$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfr -i -o $(DIAG).rptI $(DIAG).cdd
 	@$(COVERED) $(COVERED_GFLAG) report -w -d v -m ltcfr -o $(DIAG).rptWM $(DIAG).cdd
@@ -188,12 +204,20 @@ onemergerun:
 	@convert_cfg $(CFG_CMD) $(DIAG).cfg
 ifdef VPI
 	@$(COVERED) $(COVERED_GFLAG) score -f $(DIAG).cfg
+ifdef USE_CVER
+	@if test "$(COVERED_GFLAG)" = "-D"; then \
+		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v +covered_cdd=$(DIAG).cdd +covered_debug; \
+	else \
+		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v +covered_cdd=$(DIAG).cdd; \
+	fi
+else
 	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v
 	@if test "$(COVERED_GFLAG)" = "-D"; then \
 		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd +covered_debug; \
 	else \
 		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd; \
 	fi
+endif
 	@$(COVERED) $(COVERED_GFLAG) report -d v -o $(DIAG).rptM $(DIAG).cdd
 	@$(COVERED) $(COVERED_GFLAG) report -d v -i -o $(DIAG).rptI $(DIAG).cdd
 	@$(COVERED) $(COVERED_GFLAG) report -w -d v -o $(DIAG).rptWM $(DIAG).cdd
@@ -316,7 +340,7 @@ $(ERRMERGELIST):
 	fi
 
 errreportrun:
-ifdef VPI
+ifndef VPI
 	@echo Running $(DIAG) -- should see an error message
 	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v
 ifndef USE_CVER
