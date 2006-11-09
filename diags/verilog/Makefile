@@ -178,260 +178,161 @@ endif
 
 $(RACELIST):
 	@if test ! -f $@.done; then \
-		make DIAG=$@ racerun; \
+		$(MAKE) DIAG=$@ racerun; \
 	else \
 		echo Skipping $@; \
 		./check_test $@ 1 2; \
 	fi
+
+onemergerun:
+	@convert_cfg $(CFG_CMD) $(DIAG).cfg
+ifdef VPI
+	@$(COVERED) $(COVERED_GFLAG) score -f $(DIAG).cfg
+	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v
+	@if test "$(COVERED_GFLAG)" = "-D"; then \
+		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd +covered_debug; \
+	else \
+		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd; \
+	fi
+	@$(COVERED) $(COVERED_GFLAG) report -d v -o $(DIAG).rptM $(DIAG).cdd
+	@$(COVERED) $(COVERED_GFLAG) report -d v -i -o $(DIAG).rptI $(DIAG).cdd
+	@$(COVERED) $(COVERED_GFLAG) report -w -d v -o $(DIAG).rptWM $(DIAG).cdd
+	@$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $(DIAG).rptWI $(DIAG).cdd
+else
+	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v
+ifndef USE_CVER
+	@$(VERILOG_CMD)
+endif
+	@vg_exists=`which $(VG_EXEC) | wc -w`
+	@if test "$$vg_exists" = "1"; then \
+		$(VG_COVERED) $(COVERED_GFLAG) score -f $(DIAG).cfg; \
+		$(VG_COVERED) $(COVERED_GFLAG) report -d v -o $(DIAG).rptM $(DIAG).cdd; \
+	else \
+		$(COVERED) $(COVERED_GFLAG) score -f $(DIAG).cfg; \
+		$(COVERED) $(COVERED_GFLAG) report -d v -o $(DIAG).rptM $(DIAG).cdd; \
+	fi
+	@$(COVERED) $(COVERED_GFLAG) report -d v -i -o $(DIAG).rptI $(DIAG).cdd
+	@$(COVERED) $(COVERED_GFLAG) report -w -d v -o $(DIAG).rptWM $(DIAG).cdd
+	@$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $(DIAG).rptWI $(DIAG).cdd
+endif
+	@rm -f $(DIAG).cfg
+	@./check_test $(DIAG) 0 $(CHK_CODE)
+	
+mergerun:
+	@echo Running $(DIAG)
+	@$(MAKE) DIAG=$(DIAG)a onemergerun
+	@$(MAKE) DIAG=$(DIAG)b onemergerun
+	@if test "$$vg_exists" = "1"; then \
+		$(VG_COVERED) $(COVERED_GFLAG) merge -o $(DIAG).cdd $(DIAG)a.cdd $(DIAG)b.cdd; \
+	else \
+		$(COVERED) $(COVERED_GFLAG) merge -o $(DIAG).cdd $(DIAG)a.cdd $(DIAG)b.cdd; \
+	fi
+	@$(COVERED) $(COVERED_GFLAG) report -d v -o $(DIAG).rptM $(DIAG).cdd
+	@$(COVERED) $(COVERED_GFLAG) report -d v -i -o $(DIAG).rptI $(DIAG).cdd
+	@$(COVERED) $(COVERED_GFLAG) report -w -d v -o $(DIAG).rptWM $(DIAG).cdd
+	@$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $(DIAG).rptWI $(DIAG).cdd
+	@./check_test $(DIAG) 1 $(CHK_CODE)
 
 $(MERGELIST):
-ifdef VPI
 	@if test ! -f $@.done; then \
-		echo Running $@; \
-		convert_cfg $(CFG_CMD) $@a.cfg; \
-		$(COVERED) $(COVERED_GFLAG) score -f $@a.cfg; \
-		$(VERILOG) $(VERILOG_FLAGS) $@a.v; \
-		$(VERILOG_CMD) +covered_cdd=$@a.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -d v -o $@a.rptM $@a.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -d v -i -o $@a.rptI $@a.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -w -d v -o $@a.rptWM $@a.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $@a.rptWI $@a.cdd; \
-		rm -f $@a.cfg; \
-		./check_test $@a 0 $(CHK_CODE); \
-		convert_cfg $(CFG_CMD) $@b.cfg; \
-		$(COVERED) $(COVERED_GFLAG) score -f $@b.cfg; \
-		$(VERILOG) $(VERILOG_FLAGS) $@b.v; \
-		$(VERILOG_CMD) +covered_cdd=$@b.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -d v -o $@b.rptM $@b.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -d v -i -o $@b.rptI $@b.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -w -d v -o $@b.rptWM $@b.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $@b.rptWI $@b.cdd; \
-		rm -f $@b.cfg; \
-		./check_test $@b 0 $(CHK_CODE); \
-		if test "$$vg_exists" = "1"; then \
-			$(VG_COVERED) $(COVERED_GFLAG) merge -o $@.cdd $@a.cdd $@b.cdd; \
-		else \
-			$(COVERED) $(COVERED_GFLAG) merge -o $@.cdd $@a.cdd $@b.cdd; \
-		fi; \
-		$(COVERED) $(COVERED_GFLAG) report -d v -o $@.rptM $@.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -d v -i -o $@.rptI $@.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -w -d v -o $@.rptWM $@.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $@.rptWI $@.cdd; \
-		./check_test $@ 1 $(CHK_CODE); \
+		$(MAKE) DIAG=$@ mergerun; \
 	else \
 		echo Skipping $@; \
 		./check_test $@ 1 2; \
 	fi
-else
-	@if test ! -f $@.done; then \
-		echo Running $@; \
-		$(VERILOG) $(VERILOG_FLAGS) $@a.v; \
-		$(VERILOG_CMD); \
-		convert_cfg $(CFG_CMD) $@a.cfg; \
-		vg_exists=`which $(VG_EXEC) | wc -w`; \
-		if test "$$vg_exists" = "1"; then \
-			$(VG_COVERED) $(COVERED_GFLAG) score -f $@a.cfg; \
-			$(VG_COVERED) $(COVERED_GFLAG) report -d v -o $@a.rptM $@a.cdd; \
-		else \
-			$(COVERED) $(COVERED_GFLAG) score -f $@a.cfg; \
-			$(COVERED) $(COVERED_GFLAG) report -d v -o $@a.rptM $@a.cdd; \
-		fi; \
-		$(COVERED) $(COVERED_GFLAG) report -d v -i -o $@a.rptI $@a.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -w -d v -o $@a.rptWM $@a.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $@a.rptWI $@a.cdd; \
-		rm -f $@a.cfg; \
-		./check_test $@a 0 $(CHK_CODE); \
-		$(VERILOG) $(VERILOG_FLAGS) $@b.v; \
-		$(VERILOG_CMD); \
-		convert_cfg $(CFG_CMD) $@b.cfg; \
-		if test "$$vg_exists" = "1"; then \
-			$(VG_COVERED) $(COVERED_GFLAG) score -f $@b.cfg; \
-			$(VG_COVERED) $(COVERED_GFLAG) report -d v -o $@b.rptM $@b.cdd; \
-		else \
-			$(COVERED) $(COVERED_GFLAG) score -f $@b.cfg; \
-			$(COVERED) $(COVERED_GFLAG) report -d v -o $@b.rptM $@b.cdd; \
-		fi; \
-		$(COVERED) $(COVERED_GFLAG) report -d v -i -o $@b.rptI $@b.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -w -d v -o $@b.rptWM $@b.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $@b.rptWI $@b.cdd; \
-		rm -f $@b.cfg; \
-		./check_test $@b 0 $(CHK_CODE); \
-		if test "$$vg_exists" = "1"; then \
-			$(VG_COVERED) $(COVERED_GFLAG) merge -o $@.cdd $@a.cdd $@b.cdd; \
-		else \
-			$(COVERED) $(COVERED_GFLAG) merge -o $@.cdd $@a.cdd $@b.cdd; \
-		fi; \
-		$(COVERED) $(COVERED_GFLAG) report -d v -o $@.rptM $@.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -d v -i -o $@.rptI $@.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -w -d v -o $@.rptWM $@.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $@.rptWI $@.cdd; \
-		./check_test $@ 1 $(CHK_CODE); \
+
+merge3run:
+	@$(MAKE) DIAG=$(DIAG)a onemergerun
+	@$(MAKE) DIAG=$(DIAG)b onemergerun
+	@$(MAKE) DIAG=$(DIAG)c onemergerun
+	@if test "$$vg_exists" = "1"; then \
+		$(VG_COVERED) $(COVERED_GFLAG) merge -o $(DIAG).cdd $(DIAG)a.cdd $(DIAG)b.cdd $(DIAG)c.cdd; \
 	else \
-		echo Skipping $@; \
-		./check_test $@ 1 2; \
+		$(COVERED) $(COVERED_GFLAG) merge -o $(DIAG).cdd $(DIAG)a.cdd $(DIAG)b.cdd $(DIAG)c.cdd; \
 	fi
-endif
+	@$(COVERED) $(COVERED_GFLAG) report -d v -o $(DIAG).rptM $(DIAG).cdd
+	@$(COVERED) $(COVERED_GFLAG) report -d v -i -o $(DIAG).rptI $(DIAG).cdd
+	@$(COVERED) $(COVERED_GFLAG) report -w -d v -o $(DIAG).rptWM $(DIAG).cdd
+	@$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $(DIAG).rptWI $(DIAG).cdd
+	@./check_test $(DIAG) 1 $(CHK_CODE)
 
 $(MERGE3LIST):
-ifdef VPI
 	@if test ! -f $@.done; then \
-		echo Running $@; \
-		convert_cfg $(CFG_CMD) $@a.cfg; \
-		$(COVERED) $(COVERED_GFLAG) score -f $@a.cfg; \
-		$(VERILOG) $(VERILOG_FLAGS) $@a.v; \
-		$(VERILOG_CMD) +covered_cdd=$@a.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -d v -o $@a.rptM $@a.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -d v -i -o $@a.rptI $@a.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -w -d v -o $@a.rptWM $@a.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $@a.rptWI $@a.cdd; \
-		rm -f $@a.cfg; \
-		./check_test $@a 0 $(CHK_CODE); \
-		convert_cfg $(CFG_CMD) $@b.cfg; \
-		$(COVERED) $(COVERED_GFLAG) score -f $@b.cfg; \
-		$(VERILOG) $(VERILOG_FLAGS) $@b.v; \
-		$(VERILOG_CMD) +covered_cdd=$@b.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -d v -o $@b.rptM $@b.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -d v -i -o $@b.rptI $@b.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -w -d v -o $@b.rptWM $@b.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $@b.rptWI $@b.cdd; \
-		rm -f $@b.cfg; \
-		./check_test $@b 0 $(CHK_CODE); \
-		convert_cfg $(CFG_CMD) $@c.cfg; \
-		$(COVERED) $(COVERED_GFLAG) score -f $@c.cfg; \
-		$(VERILOG) $(VERILOG_FLAGS) $@c.v; \
-		$(VERILOG_CMD) +covered_cdd=$@c.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -d v -o $@c.rptM $@c.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -d v -i -o $@c.rptI $@c.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -w -d v -o $@c.rptWM $@c.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $@c.rptWI $@c.cdd; \
-		rm -f $@c.cfg; \
-		./check_test $@c 0 $(CHK_CODE); \
-		if test "$$vg_exists" = "1"; then \
-			$(VG_COVERED) $(COVERED_GFLAG) merge -o $@.cdd $@a.cdd $@b.cdd $@c.cdd; \
-		else \
-			$(COVERED) $(COVERED_GFLAG) merge -o $@.cdd $@a.cdd $@b.cdd $@c.cdd; \
-		fi; \
-		$(COVERED) $(COVERED_GFLAG) report -d v -o $@.rptM $@.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -d v -i -o $@.rptI $@.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -w -d v -o $@.rptWM $@.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $@.rptWI $@.cdd; \
-		./check_test $@ 1 $(CHK_CODE); \
+		$(MAKE) DIAG=$@ merge3run; \
 	else \
 		echo Skipping $@; \
 		./check_test $@ 1 2; \
 	fi
-else
-	@if test ! -f $@.done; then \
-		echo Running $@; \
-		$(VERILOG) $(VERILOG_FLAGS) $@a.v; \
-		$(VERILOG_CMD); \
-		convert_cfg $(CFG_CMD) $@a.cfg; \
-		vg_exists=`which $(VG_EXEC) | wc -w`; \
-		if test "$$vg_exists" = "1"; then \
-			$(VG_COVERED) $(COVERED_GFLAG) score -f $@a.cfg; \
-			$(VG_COVERED) $(COVERED_GFLAG) report -d v -o $@a.rptM $@a.cdd; \
-		else \
-			$(COVERED) $(COVERED_GFLAG) score -f $@a.cfg; \
-			$(COVERED) $(COVERED_GFLAG) report -d v -o $@a.rptM $@a.cdd; \
-		fi; \
-		$(COVERED) $(COVERED_GFLAG) report -d v -i -o $@a.rptI $@a.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -w -d v -o $@a.rptWM $@a.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $@a.rptWI $@a.cdd; \
-		rm -f $@a.cfg; \
-		./check_test $@a 0 $(CHK_CODE); \
-		$(VERILOG) $(VERILOG_FLAGS) $@b.v; \
-		$(VERILOG_CMD); \
-		convert_cfg $(CFG_CMD) $@b.cfg; \
-		if test "$$vg_exists" = "1"; then \
-			$(VG_COVERED) $(COVERED_GFLAG) score -f $@b.cfg; \
-			$(VG_COVERED) $(COVERED_GFLAG) report -d v -o $@b.rptM $@b.cdd; \
-		else \
-			$(COVERED) $(COVERED_GFLAG) score -f $@b.cfg; \
-			$(COVERED) $(COVERED_GFLAG) report -d v -o $@b.rptM $@b.cdd; \
-		fi; \
-		$(COVERED) $(COVERED_GFLAG) report -d v -i -o $@b.rptI $@b.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -w -d v -o $@b.rptWM $@b.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $@b.rptWI $@b.cdd; \
-		rm -f $@b.cfg; \
-		./check_test $@b 0 $(CHK_CODE); \
-		$(VERILOG) $(VERILOG_FLAGS) $@c.v; \
-		$(VERILOG_CMD); \
-		convert_cfg $(CFG_CMD) $@c.cfg; \
-		if test "$$vg_exists" = "1"; then \
-			$(VG_COVERED) $(COVERED_GFLAG) score -f $@c.cfg; \
-			$(VG_COVERED) $(COVERED_GFLAG) report -d v -o $@c.rptM $@c.cdd; \
-		else \
-			$(COVERED) $(COVERED_GFLAG) score -f $@c.cfg; \
-			$(COVERED) $(COVERED_GFLAG) report -d v -o $@c.rptM $@c.cdd; \
-		fi; \
-		$(COVERED) $(COVERED_GFLAG) report -d v -i -o $@c.rptI $@c.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -w -d v -o $@c.rptWM $@c.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $@c.rptWI $@c.cdd; \
-		rm -f $@c.cfg; \
-		./check_test $@c 0 $(CHK_CODE); \
-		if test "$$vg_exists" = "1"; then \
-			$(VG_COVERED) $(COVERED_GFLAG) merge -o $@.cdd $@a.cdd $@b.cdd $@c.cdd; \
-		else \
-			$(COVERED) $(COVERED_GFLAG) merge -o $@.cdd $@a.cdd $@b.cdd $@c.cdd; \
-		fi; \
-		$(COVERED) $(COVERED_GFLAG) report -d v -o $@.rptM $@.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -d v -i -o $@.rptI $@.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -w -d v -o $@.rptWM $@.cdd; \
-		$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $@.rptWI $@.cdd; \
-		./check_test $@ 1 $(CHK_CODE); \
-	else \
-		echo Skipping $@; \
-		./check_test $@ 1 2; \
-	fi
+
+errscorerun:
+ifndef VPI
+	@echo Running $(DIAG) -- should see an error message
+	@convert_cfg $(CFG_CMD) $(DIAG).cfg
+	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v
+ifndef USE_CVER
+	@$(VERILOG_CMD)
+endif
+	@-$(COVERED) $(COVERED_GFLAG) score -f $(DIAG).cfg 2> $(DIAG).err
+	@rm -f $(DIAG).cfg
+	@cat $(DIAG).err
+	@./check_test $(DIAG) 1 1
 endif
 
 $(ERRSCORELIST):
 	@if test ! -f $@.done; then \
-		echo Running $@ -- should see an error message; \
-		$(VERILOG) $(VERILOG_FLAGS) $@.v; \
-		$(VERILOG_CMD); \
-		convert_cfg $(CFG_CMD) $@.cfg; \
-		$(COVERED) $(COVERED_GFLAG) score -f $@.cfg 2> $@.err; \
-		rm -f $@.cfg; \
-		cat $@.err; \
-		./check_test $@ 1 1; \
+		$(MAKE) DIAG=$@ errscorerun; \
 	else \
 		echo Skipping $@; \
 		./check_test $@ 1 2; \
 	fi
+
+oneerrmergerun:
+ifndef VPI
+	@convert_cfg $(CFG_CMD) $(DIAG).cfg
+	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v
+ifndef USE_CVER
+	@$(VERILOG_CMD)
+endif
+	@$(COVERED) $(COVERED_GFLAG) score -f $(DIAG).cfg
+	@rm -f $(DIAG).cfg
+endif
+
+errmergerun:
+ifndef VPI
+	@echo Running $(DIAG) -- should see an error message
+	@$(MAKE) DIAG=$(DIAG)a oneerrmergerun
+	@$(MAKE) DIAG=$(DIAG)b oneerrmergerun
+	@$(COVERED) $(COVERED_GFLAG) merge -o $(DIAG).cdd $(DIAG)a.cdd $(DIAG)b.cdd 2> $(DIAG).err
+	@cat $(DIAG).err
+	@./check_test $(DIAG) 1 1
+endif
 
 $(ERRMERGELIST):
 	@if test ! -f $@.done; then \
-		echo Running $@ -- should see an error message; \
-		$(VERILOG) $(VERILOG_FLAGS) $@a.v; \
-		$(VERILOG_CMD); \
-		convert_cfg $(CFG_CMD) $@a.cfg; \
-		$(COVERED) $(COVERED_GFLAG) score -f $@a.cfg; \
-		rm -f $@a.cfg; \
-		$(VERILOG) $(VERILOG_FLAGS) $@b.v; \
-		$(VERILOG_CMD); \
-		convert_cfg $(CFG_CMD) $@b.cfg; \
-		$(COVERED) $(COVERED_GFLAG) score -f $@b.cfg; \
-		$(COVERED) $(COVERED_GFLAG) merge -o $@.cdd $@a.cdd $@b.cdd 2> $@.err; \
-		rm -f $@b.cfg; \
-		cat $@.err; \
-		./check_test $@ 1 1; \
+		$(MAKE) DIAG=$@ errmergerun; \
 	else \
 		echo Skipping $@; \
 		./check_test $@ 1 2; \
 	fi
 
+errreportrun:
+ifdef VPI
+	@echo Running $(DIAG) -- should see an error message
+	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v
+ifndef USE_CVER
+	@$(VERILOG_CMD)
+endif
+	@convert_cfg $(CFG_CMD) $(DIAG).cfg
+	@$(COVERED) $(COVERED_GFLAG) score -f $(DIAG).cfg
+	@$(COVERED) $(COVERED_GFLAG) report -d v $(DIAG).cdd 2> $(DIAG).err
+	@rm -f $(DIAG).cfg
+	@cat $(DIAG).err
+	@./check_test $(DIAG) 1 1
+endif
+
 $(ERRREPORTLIST):
 	@if test ! -f $@.done; then \
-		echo Running $@ -- should see an error message; \
-		$(VERILOG) $(VERILOG_FLAGS) $@.v; \
-		$(VERILOG_CMD); \
-		convert_cfg $(CFG_CMD) $@.cfg; \
-		$(COVERED) $(COVERED_GFLAG) score -f $@.cfg; \
-		$(COVERED) $(COVERED_GFLAG) report -d v $@.cdd 2> $@.err; \
-		rm -f $@.cfg; \
-		cat $@.err; \
-		./check_test $@ 1 1; \
+		$(MAKE) DIAG=$@ errreportrun; \
 	else \
 		echo Skipping $@; \
 		./check_test $@ 1 2; \
@@ -464,7 +365,7 @@ $(NOSIMERRLIST):
 	fi
 
 $(COVERED):
-	cd $(COVERED_SRC); make
+	cd $(COVERED_SRC); $(MAKE)
 
 eot:
 	@./check_test dummy 1 $(FINISH_CODE)
