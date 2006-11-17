@@ -2058,7 +2058,12 @@ void db_assign_symbol( char* name, char* symbol, int msb, int lsb ) {
     if( (slink = sig_link_find( &tmpsig, curr_instance->funit->sig_head )) != NULL ) {
 
       /* Only add the symbol if we are not going to generate this value ourselves */
-      if( slink->sig->suppl.part.assigned == 0 ) {
+      if( (slink->sig->suppl.part.assigned == 0)              &&
+          (slink->sig->suppl.part.type != SSUPPL_TYPE_PARAM)  &&
+          (slink->sig->suppl.part.type != SSUPPL_TYPE_ENUM)   &&
+          (slink->sig->suppl.part.type != SSUPPL_TYPE_MEM)    &&
+          (slink->sig->suppl.part.type != SSUPPL_TYPE_GENVAR) &&
+          (slink->sig->suppl.part.type != SSUPPL_TYPE_EVENT) ) {
 
         /* Add this signal */
         symtable_add( symbol, slink->sig, msb, lsb );
@@ -2162,6 +2167,9 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.231  2006/11/03 23:36:36  phase1geo
+ Fixing bug 1590104.  Updating regressions per this change.
+
  Revision 1.230  2006/10/13 22:46:31  phase1geo
  Things are a bit of a mess at this point.  Adding generate12 diagnostic that
  shows a failure in properly handling generates of instances.

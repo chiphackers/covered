@@ -660,11 +660,11 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
                         FATAL, __FILE__, __LINE__ );
           exit( 1 );
         } else {
+          score_add_arg( argv[i-1] );
+          score_add_arg( argv[i] );
           *ptr = '\0';
           ptr++;
           defparam_add( argv[i], vector_from_string( &ptr, FALSE ) );
-          score_add_arg( argv[i-1] );
-          score_add_arg( argv[i] );
         }
       }
       
@@ -899,6 +899,9 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.86  2006/10/13 15:56:02  phase1geo
+ Updating rest of source files for compiler warnings.
+
  Revision 1.85  2006/09/01 23:06:02  phase1geo
  Fixing regressions per latest round of changes.  Full regression now passes.
 

@@ -2,7 +2,7 @@
 8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd param4.1.vcd -o param4.1.cdd -v param4.1.v
 3 0 $root $root NA 0 0
 3 0 main main param4.1.v 1 22
-2 1 8 f0011 2 32 8 0 0 vec
+2 1 8 f0011 1 32 8 0 0 vec
 2 2 8 b000b 2 1 8 0 0 b
 2 3 8 b0011 3 8 2020c 1 2 4 2 49eaa
 2 4 8 70007 0 1 400 0 0 a

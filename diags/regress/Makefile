@@ -40,7 +40,7 @@ DIAGS1        = add1            always1         always2         always3         
                 concat1         concat2         concat3 \
                 concat4.1       concat4.2       concat5         concat6         cond1 \
                 cond2           delay1          delay2          define1         define1.1 \
-                define1.2       define2         define2.1       define3         define4 \
+                define1.2       define2         define2.1       define4 \
                 define5         disable1        disable1.1      disable2        disable2.1 \
                 dly_assign1     endian1         endian2         endian3         event1          event1.1 \
                 exclude1        exclude2        exclude3        exclude4        exclude5 \
@@ -49,32 +49,30 @@ DIAGS1        = add1            always1         always2         always3         
                 for1            for2            forever1        fork1           fork2 \
                 fsm3            fsm4            fsm4.1          fsm5            fsm5.1 \
                 fsm5.2          fsm5.3          func1           func2           gate1 \
-                generate1       hier1           hier2           hier3           hier3.1 \
+                hier1           hier3.1 \
                 hier3.2         hier3.3         hier3.4         hier4           ifdef1 \
                 ifdef1.2        ifdef2.1        ifdef2.2 \
                 ifdef2.3        ifelse1         implicit2.1     include1        include1.1 \
                 include2        initial1        instance1       instance1.1     instance1.2 \
                 instance2       instance3       instance4       instance4.1     instance4.2 \
                 instance5       instance6       instance6.1     instance6.2     instance7 \
-                localparam1     localparam1.1   localparam1.2   localparam1.3   localparam2 \
-                localparam3     long_exp1       long_exp2       long_exp3 \
+                long_exp1       long_exp2       long_exp3 \
                 mbit_sel1       mbit_sel2       mbit_sel3       mbit_sel3.1     mbit_sel4 \
-                mbit_sel4.1     mbit_sel4.2     mbit_sel4.3     mbit_sel5       mbit_sel5.1 \
-                mbit_sel5.2     mbit_sel5.3     mbit_sel6       mbit_sel6.1     mbit_sel6.2 \
-                mbit_sel6.3     mbit_sel7       mem1            mem2            mult1 \
+                mbit_sel4.1     mbit_sel4.2     mbit_sel4.3 \
+                mbit_sel7       mem1            mem2            mult1 \
                 multi_exp1      multi_exp1.1    multi_exp1.2    multi_exp1.3    multi_exp1.4 \
                 multi_exp1.5    multi_exp1.6    multi_exp1.7    multi_exp1.8    multi_exp1.9 \
                 multi_exp1.10   multi_exp1.11   multi_exp1.12   multi_exp1.13   multi_exp1.14 \
                 multi_exp1.15   multi_exp2      multi_exp2.1    multi_exp3      multi_exp4 \
                 named_block1    named_block2    named_block3    nested_block1   nested_block2 \
-                nested_block2.1 nested_block3   ovl1            ovl1.1          ovl1.2 \
-                ovl1.3          param1          param1.1        param1.2        param1.3 \
+                nested_block2.1 nested_block3 \
+                param1          param1.1        param1.2        param1.3 \
                 param3          param3.1        param3.2        param3.3        param3.4 \
                 param3.5        param4          param4.1        param5          param6 \
                 param6.1        param7          param8          param8.1        param9 \
-                param9.1        param9.2        param10         param10.1       param10.2 \
-                param10.3       param10.4       param10.5       param11         param13 \
-                param13.1       param14         param15         port1           port2 \
+                param9.1        param9.2        param10         param10.2 \
+                param10.3       param10.4       param11         param13 \
+                param13.1       param14         param15         port1 \
                 port3           pulldown1       pullup1         rassign1        real1 \
                 repeat1         repeat2         report1         sbit_sel1 \
                 sbit_sel1.1     signed1         signed3         signed3.1       signed3.2 \
@@ -170,26 +168,35 @@ CVERONLYDIAGS2 =
 CVERONLYDIAGS3 =
 CVERONLYDIAGS4 =
 
+IVVCSDIAGS1   = define3         generate1       hier2           hier3           localparam1 \
+                localparam1.1   localparam1.2   localparam1.3   localparam2     localparam3 \
+                mbit_sel5       mbit_sel5.1     mbit_sel5.2     mbit_sel5.3     mbit_sel6 \
+                mbit_sel6.1     mbit_sel6.2     mbit_sel6.3     ovl1            ovl1.1 \
+                ovl1.2          ovl1.3          param10.1       param10.5       port2
+IVVCSDIAGS2   =
+IVVCSDIAGS3   =
+IVVCSDIAGS4   =
+
 iverilog:
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q VERILOG_EXTRA_FLAGS="$(IVERILOG_FLAGS1)" DIAGLIST="$(DIAGS1) $(IVONLYDIAGS1)" MERGELIST="$(MERGE1)" MERGE3LIST="$(MERGE3)" ERRSCORELIST="$(ERRSCORE)" ERRMERGELIST="$(ERRMERGE)" ERRREPORTLIST="$(ERRREPORT)" RACELIST="$(RACELIST)" NOSIMLIST="$(NOSIMLIST)" NOSIMERRLIST="$(NOSIMERRLIST)" regress
+	$(MAKE) COVERED_GFLAG=-Q VERILOG_EXTRA_FLAGS="$(IVERILOG_FLAGS1)" DIAGLIST="$(DIAGS1) $(IVONLYDIAGS1) $(IVVCSDIAGS1)" MERGELIST="$(MERGE1)" MERGE3LIST="$(MERGE3)" ERRSCORELIST="$(ERRSCORE)" ERRMERGELIST="$(ERRMERGE)" ERRREPORTLIST="$(ERRREPORT)" RACELIST="$(RACELIST)" NOSIMLIST="$(NOSIMLIST)" NOSIMERRLIST="$(NOSIMERRLIST)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q VERILOG_EXTRA_FLAGS="$(IVERILOG_FLAGS2)" DIAGLIST="$(DIAGS2) $(IVONLYDIAGS2)" regress
+	$(MAKE) COVERED_GFLAG=-Q VERILOG_EXTRA_FLAGS="$(IVERILOG_FLAGS2)" DIAGLIST="$(DIAGS2) $(IVONLYDIAGS2) $(IVVCSDIAGS2)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q VERILOG_EXTRA_FLAGS="$(IVERILOG_FLAGS3)" DIAGLIST="$(DIAGS3) $(IVONLYDIAGS3)" regress
+	$(MAKE) COVERED_GFLAG=-Q VERILOG_EXTRA_FLAGS="$(IVERILOG_FLAGS3)" DIAGLIST="$(DIAGS3) $(IVONLYDIAGS3) $(IVVCSDIAGS3)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q VERILOG_EXTRA_FLAGS="$(IVERILOG_FLAGS4)" DIAGLIST="$(DIAGS4) $(IVONLYDIAGS4)" regress
+	$(MAKE) COVERED_GFLAG=-Q VERILOG_EXTRA_FLAGS="$(IVERILOG_FLAGS4)" DIAGLIST="$(DIAGS4) $(IVONLYDIAGS4) $(IVVCSDIAGS4)" regress
 	@cd ../verilog;  $(MAKE) eot;  $(MAKE) clean
 
 vcs:
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q USE_VCS=1 VERILOG_EXTRA_FLAGS="$(VCS_FLAGS1)" DIAGLIST="$(DIAGS1) $(VCSONLYDIAGS1)" MERGELIST="$(MERGE1)" MERGE3LIST="$(MERGE3)" regress
+	$(MAKE) COVERED_GFLAG=-Q USE_VCS=1 VERILOG_EXTRA_FLAGS="$(VCS_FLAGS1)" DIAGLIST="$(DIAGS1) $(VCSONLYDIAGS1) $(IVVCSDIAGS1)" MERGELIST="$(MERGE1)" MERGE3LIST="$(MERGE3)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q USE_VCS=1 VERILOG_EXTRA_FLAGS="$(VCS_FLAGS2)" DIAGLIST="$(DIAGS2) $(VCSONLYDIAGS2)" regress
+	$(MAKE) COVERED_GFLAG=-Q USE_VCS=1 VERILOG_EXTRA_FLAGS="$(VCS_FLAGS2)" DIAGLIST="$(DIAGS2) $(VCSONLYDIAGS2) $(IVVCSDIAGS2)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q USE_VCS=1 VERILOG_EXTRA_FLAGS="$(VCS_FLAGS3)" DIAGLIST="$(DIAGS3) $(VCSONLYDIAGS3)" regress
+	$(MAKE) COVERED_GFLAG=-Q USE_VCS=1 VERILOG_EXTRA_FLAGS="$(VCS_FLAGS3)" DIAGLIST="$(DIAGS3) $(VCSONLYDIAGS3) $(IVVCSDIAGS3)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q USE_VCS=1 VERILOG_EXTRA_FLAGS="$(VCS_FLAGS4)" DIAGLIST="$(DIAGS4) $(VCSONLYDIAGS4)" regress
+	$(MAKE) COVERED_GFLAG=-Q USE_VCS=1 VERILOG_EXTRA_FLAGS="$(VCS_FLAGS4)" DIAGLIST="$(DIAGS4) $(VCSONLYDIAGS4) $(IVVCSDIAGS4)" regress
 	@cd ../verilog;  $(MAKE) eot;  $(MAKE) clean
 
 cver:
