@@ -237,8 +237,6 @@ void covered_create_value_change_cb( vpiHandle sig ) {
   /* Find current signal in coverage database */
   vsig.name = vpi_get_str( vpiName, sig );
 
-  vpi_printf( "vsigl, name: %s\n", vsig.name );
-
   /* Only add the signal if it is in our database and needs to be assigned from the simulator */
   if( ((vsigl = sig_link_find( &vsig, curr_instance->funit->sig_head )) != NULL) &&
       (vsigl->sig->suppl.part.assigned == 0) ) {

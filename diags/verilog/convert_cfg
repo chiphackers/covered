@@ -19,7 +19,7 @@ open( IFILE, "../regress/${file}" ) || die "Can't open ../regress/${file} for re
 while( $line = <IFILE> ) {
   $line =~ s/\-vcd/\-$type/g; 
   if( $type eq "vpi" ) {
-    $line =~ s/[0-9a-zA-Z\.]+\.vcd/covered_vpi.v/g;
+    $line =~ s/[0-9a-zA-Z_\.]+\.(vcd|dump)/covered_vpi.v/g;
   }
   print OFILE $line;
 }
