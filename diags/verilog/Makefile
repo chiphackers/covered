@@ -104,7 +104,7 @@ diagrun:
 ifdef VPI
 	@$(COVERED) $(COVERED_GFLAG) score -f $(DIAG).cfg
 ifdef USE_CVER
-	@if test "$(COVERED_GFLAG)" = "-D"; then \
+	if test "$(COVERED_GFLAG)" = "-D"; then \
 		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v +covered_cdd=$(DIAG).cdd +covered_debug; \
 	else \
 		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v +covered_cdd=$(DIAG).cdd; \
