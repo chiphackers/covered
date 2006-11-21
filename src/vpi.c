@@ -334,37 +334,46 @@ void covered_parse_task_func( vpiHandle mod ) {
 void covered_parse_signals( vpiHandle mod ) {
 
   vpiHandle iter, handle;
+  int       type;
 
   /* Parse nets */
   if( (iter = vpi_iterate( vpiNet, mod )) != NULL ) {
-
     while( (handle = vpi_scan( iter )) != NULL ) {
-
 #ifdef DEBUG_MODE
       snprintf( user_msg, USER_MSG_LENGTH, "Found net: %s", obf_sig( vpi_get_str( vpiName, handle ) ) );
       print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
-
       covered_create_value_change_cb( handle );
-
     }
-
   }
 
   /* Parse regs */
   if( (iter = vpi_iterate( vpiReg, mod )) != NULL ) {
-
     while( (handle = vpi_scan( iter )) != NULL ) {
-
 #ifdef DEBUG_MODE
       snprintf( user_msg, USER_MSG_LENGTH, "Found reg: %s", obf_sig( vpi_get_str( vpiName, handle ) ) );
       print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
-
       covered_create_value_change_cb( handle );
-
     }
+  }
 
+  /* Parse integers */
+  if( (iter = vpi_iterate( vpiVariables, mod )) != NULL ) {
+    while( (handle = vpi_scan( iter )) != NULL ) {
+      type = vpi_get( vpiType, handle );
+      if( (type == vpiIntegerVar) || (type == vpiTimeVar) ) {
+#ifdef DEBUG_MODE
+        if( type == vpiIntegerVar ) {
+          snprintf( user_msg, USER_MSG_LENGTH, "Found integer: %s", obf_sig( vpi_get_str( vpiName, handle ) ) );
+        } else {
+          snprintf( user_msg, USER_MSG_LENGTH, "Found time: %s", obf_sig( vpi_get_str( vpiName, handle ) ) );
+        }
+        print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+#endif
+        covered_create_value_change_cb( handle );
+      }
+    }
   }
 
 }
