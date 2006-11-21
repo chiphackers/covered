@@ -123,9 +123,11 @@ AC_HEADER_STDC
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
+AC_CHECK_SIZEOF(char,4)
 AC_CHECK_SIZEOF(short,4)
 AC_CHECK_SIZEOF(int,4)
 AC_CHECK_SIZEOF(long,4)
+AC_CHECK_SIZEOF([long long],4)
 
 dnl Checks for library functions.
 AC_TYPE_SIGNAL

@@ -37,7 +37,8 @@
 
 char        in_db_name[1024];
 char        out_db_name[1024];
-int         last_time      = -1;
+uint64      last_time      = 0;
+bool        use_last_time  = FALSE;
 
 /* These are needed for compile purposes only */
 bool   report_gui          = FALSE;
@@ -90,32 +91,34 @@ PLI_INT32 covered_value_change( p_cb_data cb ) {
   vpi_get_value( cb->obj, &value );
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In covered_value_change, name: %s, time: %d, value: %s",
-            obf_sig( vpi_get_str( vpiFullName, cb->obj ) ), cb->time->low, value.value.str );
+  snprintf( user_msg, USER_MSG_LENGTH, "In covered_value_change, name: %s, time: %lld, value: %s",
+            obf_sig( vpi_get_str( vpiFullName, cb->obj ) ), (((uint64)cb->time->high << 32) | (uint64)cb->time->low), value.value.str );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
-  if( cb->time->low != last_time ) {
-    if( last_time >= 0 ) {
-      db_do_timestep( last_time );
+  if( (cb->time->low != (last_time & 0xffffffff)) || (cb->time->high != ((last_time & 0xffffffff00000000) >> 32)) ) {
+    if( use_last_time ) {
+      db_do_timestep( last_time, FALSE );
     }
-    last_time = cb->time->low;
+    last_time     = ((uint64)cb->time->high << 32) | (uint64)cb->time->low;
+    use_last_time = TRUE;
   }
   
   /* Set symbol value */
   db_set_symbol_string( cb->user_data, value.value.str );
 #else
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In covered_value_change, name: %s, time: %d, value: %s",
-            obf_sig( vpi_get_str( vpiFullName, cb->obj ) ), cb->time->low, cb->value->value.str );
+  snprintf( user_msg, USER_MSG_LENGTH, "In covered_value_change, name: %s, time: %d%0d, value: %s",
+            obf_sig( vpi_get_str( vpiFullName, cb->obj ) ), (((uint64)cb->time->high << 32) | (uint64)cb->time->low), cb->value->value.str );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
-  if( cb->time->low != last_time ) {
-    if( last_time >= 0 ) {
-      db_do_timestep( last_time );
+  if( (cb->time->low != (last_time & 0xffffffff)) || (cb->time->high != ((last_time & 0xffffffff00000000) >> 32)) ) {
+    if( use_last_time ) {
+      db_do_timestep( last_time, FALSE );
     }
-    last_time = cb->time->low;
+    last_time     = ((uint64)cb->time->high << 32) | (uint64)cb->time->low;
+    use_last_time = TRUE;
   }
 
   /* Set symbol value */
@@ -126,31 +129,14 @@ PLI_INT32 covered_value_change( p_cb_data cb ) {
 
 }
 
-PLI_INT32 covered_cb_perform_timestep( p_cb_data cb ) {
-
-#ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In covered_cb_perform_timestep, time: %d", cb->time->low );
-  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
-#endif
-
-  if( cb->time->low != last_time ) {
-    if( last_time >= 0 ) {
-      db_do_timestep( last_time );
-    }
-    last_time = cb->time->low;
-  }
-
-}
-
 PLI_INT32 covered_end_of_sim( p_cb_data cb ) {
 
-  /* Perform last timestep from simulator (if there was one) */
-  if( last_time >= 0 ) {
-    db_do_timestep( last_time );
+  if( use_last_time ) {
+    db_do_timestep( last_time, FALSE );
   }
 
   /* Flush any pending statement trees that are waiting for delay */
-  db_do_timestep( -1 );
+  db_do_timestep( 0, TRUE );
 
   /* Indicate that this CDD contains scored information */
   info_suppl.part.scored = 1;
@@ -458,16 +444,6 @@ PLI_INT32 covered_sim_calltf( PLI_BYTE8* name ) {
   cb->user_data = NULL;
   vpi_register_cb( cb );
 #endif
-
-  /* Create callback for beginning of time slots */
-  cb            = (p_cb_data)malloc( sizeof( s_cb_data ) );
-  cb->reason    = cbAtStartOfSimTime;
-  cb->cb_rtn    = covered_cb_perform_timestep;
-  cb->obj       = NULL;
-  cb->time      = NULL;
-  cb->value     = NULL;
-  cb->user_data = NULL;
-  vpi_register_cb( cb );
 
   /* Get name of CDD database file from system call arguments */
   if( (arg_handle = vpi_scan( arg_iterator )) != NULL ) {

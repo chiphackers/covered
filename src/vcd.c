@@ -62,8 +62,8 @@ bool one_instance_found = FALSE;
 void vcd_parse_def_ignore( FILE* vcd ) {
 
   bool end_seen = FALSE;  /* If set to true, $end keyword was seen */
-  char token[256];        /* String value of current token         */
-  int  chars_read;        /* Number of characters scanned in       */
+  char token[256];        /* String value of current token */
+  int  chars_read;        /* Number of characters scanned in */
 
   while( !end_seen && (fscanf( vcd, "%s%n", token, &chars_read ) == 1) ) {
     assert( chars_read <= 256 );
@@ -264,7 +264,7 @@ void vcd_parse_def( FILE* vcd ) {
 */
 void vcd_parse_sim_vector( FILE* vcd, char* value ) {
 
-  char sym[256];    /* String value of signal symbol   */
+  char sym[256];    /* String value of signal symbol */
   int  chars_read;  /* Number of characters scanned in */
 
   if( fscanf( vcd, "%s%n", sym, &chars_read ) == 1 ) {
@@ -290,7 +290,7 @@ void vcd_parse_sim_vector( FILE* vcd, char* value ) {
 */
 void vcd_parse_sim_ignore( FILE* vcd ) {
 
-  char sym[256];    /* String value of signal symbol   */
+  char sym[256];    /* String value of signal symbol */
   int  chars_read;  /* Number of characters scanned in */
 
   if( fscanf( vcd, "%s%n", sym, &chars_read ) != 1 ) {
@@ -311,10 +311,11 @@ void vcd_parse_sim_ignore( FILE* vcd ) {
 */
 void vcd_parse_sim( FILE* vcd ) {
 
-  char token[4100];            /* Current token from VCD file           */
-  int  last_timestep = -1;     /* Value of last timestamp from file     */
-  int  chars_read;             /* Number of characters scanned in       */
-  bool carry_over    = FALSE;  /* Specifies if last string was too long */
+  char   token[4100];                /* Current token from VCD file */
+  uint64 last_timestep     = 0;      /* Value of last timestamp from file */
+  bool   use_last_timestep = FALSE;  /* Specifies if timestep has been encountered */
+  int    chars_read;                 /* Number of characters scanned in */
+  bool   carry_over        = FALSE;  /* Specifies if last string was too long */
  
   while( !feof( vcd ) && (fscanf( vcd, "%4099s%n", token, &chars_read ) == 1) ) {
 
@@ -335,10 +336,11 @@ void vcd_parse_sim( FILE* vcd ) {
 
       } else if( token[0] == '#' ) {
 
-        if( last_timestep >= 0 ) {
-          db_do_timestep( last_timestep );
+        if( use_last_timestep ) {
+          db_do_timestep( last_timestep, FALSE );
         }
-        last_timestep = atol( token + 1 );
+        last_timestep     = ato64( token + 1 );
+        use_last_timestep = TRUE;
 
       } else if( (token[0] == '0') ||
                  (token[0] == '1') ||
@@ -366,8 +368,8 @@ void vcd_parse_sim( FILE* vcd ) {
   }
 
   /* Simulate the last timestep now */
-  if( last_timestep >= 0 ) {
-    db_do_timestep( last_timestep );
+  if( use_last_timestep ) {
+    db_do_timestep( last_timestep, FALSE );
   }
 
 }
@@ -417,6 +419,10 @@ void vcd_parse( char* vcd_file ) {
 
 /*
  $Log$
+ Revision 1.25  2006/11/03 19:00:01  phase1geo
+ Fixing bug 1589831.  Also added err3 and err3.1 diagnostics to verify its
+ correct behavior.
+
  Revision 1.24  2006/08/30 12:02:48  phase1geo
  Changing assertion in vcd.c that fails when the VCD file is improperly formatted
  to a user error message with a bit more meaning.  Fixing problem with signedness

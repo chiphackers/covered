@@ -175,11 +175,14 @@ void db_set_symbol_char( char* sym, char value );
 void db_set_symbol_string( char* sym, char* value );
 
 /*! \brief Performs a timestep for all signal changes during this timestep. */
-void db_do_timestep( int time ); 
+void db_do_timestep( uint64 time, bool final ); 
 
 
 /*
  $Log$
+ Revision 1.73  2006/11/03 23:36:36  phase1geo
+ Fixing bug 1590104.  Updating regressions per this change.
+
  Revision 1.72  2006/10/12 22:48:46  phase1geo
  Updates to remove compiler warnings.  Still some work left to go here.
 

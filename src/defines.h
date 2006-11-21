@@ -1051,26 +1051,92 @@ typedef enum exp_op_type_e {
 */
 typedef enum {
   FALSE,   /*!< Boolean false value */
-  TRUE     /*!< Boolean true value  */
+  TRUE     /*!< Boolean true value */
 } bool;
 
-#if SIZEOF_INT == 4
+/*!
+ Create an 8-bit unsigned value.
+*/
+#if SIZEOF_CHAR == 1
+typedef unsigned char uint8;
+#elif SIZEOF_SHORT == 1
+typedef unsigned short uint8;
+#elif SIZEOF_INT == 1
+typedef unsigned int uint8;
+#elif SIZEOF_LONG == 1
+typedef unsigned long uint8;
+#elif SIZEOF_LONG_LONG == 1
+typedef unsigned long long uint8;
+#else
+#error "Unable to find an 8-bit data type"
+#endif
+
+/*!
+ Create an 16-bit unsigned value.
+*/
+#if SIZEOF_CHAR == 2
+typedef unsigned char uint16;
+#elif SIZEOF_SHORT == 2
+typedef unsigned short uint16;
+#elif SIZEOF_INT == 2
+typedef unsigned int uint16;
+#elif SIZEOF_LONG == 2
+typedef unsigned long uint16;
+#elif SIZEOF_LONG_LONG == 2
+typedef unsigned long long uint16;
+#else
+#error "Unable to find a 16-bit data type"
+#endif
+
+/*!
+ Create a 32-bit unsigned value.
+*/
+#if SIZEOF_CHAR == 4
+typedef unsigned char uint32;
+#elif SIZEOF_SHORT == 4
+typedef unsigned short uint32;
+#elif SIZEOF_INT == 4
+typedef unsigned int uint32;
+#define ato32(x) atoi(x)
+#elif SIZEOF_LONG == 4
+typedef unsigned long uint32;
+#define ato32(x) atol(x)
+#elif SIZEOF_LONG_LONG == 4
+typedef unsigned long long uint32;
+#define ato32(x) atoll(x)
+#else
+#error "Unable to find a 32-bit data type"
+#endif
+
+/*!
+ Create a 64-bit unsigned value.
+*/
+#if SIZEOF_CHAR == 8
+typedef unsigned char uint64;
+#elif SIZEOF_SHORT == 8
+typedef unsigned short uint64;
+#elif SIZEOF_INT == 8
+typedef unsigned int uint64;
+#define ato64(x) atoi(x)
+#elif SIZEOF_LONG == 8
+typedef unsigned long uint64;
+#define ato64(x) atol(x)
+#elif SIZEOF_LONG_LONG == 8
+typedef unsigned long long uint64;
+#define ato64(x) atoll(x)
+#else
+#error "Unable to find a 64-bit data type"
+#endif
 
 /*!
  A nibble is a 8-bit value.
 */
-typedef unsigned char nibble;
+typedef uint8 nibble;
 
 /*!
  A control is a 32-bit value.
 */
-typedef unsigned int control;
-#else
-#if SIZEOF_LONG == 4
-typedef unsigned long nibble;
-typedef unsigned long control;
-#endif
-#endif
+typedef uint32 control;
 
 /*------------------------------------------------------------------------------*/
 
@@ -2201,6 +2267,16 @@ struct dim_range_s {
 
 /*
  $Log$
+ Revision 1.239  2006/10/16 21:34:46  phase1geo
+ Increased max bit width from 1024 to 65536 to allow for more room for memories.
+ Fixed issue with enumerated values being explicitly assigned unknown values and
+ created error output message when an implicitly assigned enum followed an explicitly
+ assign unknown enum value.  Fixed problem with generate blocks in different
+ instantiations of the same module.  Fixed bug in parser related to setting the
+ curr_packed global variable correctly.  Added enum2 and enum2.1 diagnostics to test
+ suite to verify correct enumerate behavior for the changes made in this checkin.
+ Full regression now passes.
+
  Revision 1.238  2006/10/06 22:45:57  phase1geo
  Added support for the wait() statement.  Added wait1 diagnostic to regression
  suite to verify its behavior.  Also added missing GPL license note at the top

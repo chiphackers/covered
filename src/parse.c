@@ -233,7 +233,7 @@ bool parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) {
   }
     
   /* Flush any pending statement trees that are waiting for delay */
-  db_do_timestep( -1 );
+  db_do_timestep( 0, TRUE );
 
 #ifdef DEBUG_MODE
   snprintf( user_msg, USER_MSG_LENGTH, "========  Writing database %s  ========\n", db );
@@ -255,6 +255,9 @@ bool parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) {
 
 /*
  $Log$
+ Revision 1.47  2006/11/03 23:36:36  phase1geo
+ Fixing bug 1590104.  Updating regressions per this change.
+
  Revision 1.46  2006/10/12 22:48:46  phase1geo
  Updates to remove compiler warnings.  Still some work left to go here.
 

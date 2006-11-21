@@ -76,12 +76,10 @@ void vcd_callback(struct lxt2_rd_trace **lt, lxtint64_t *pnt_time, lxtint32_t *p
 
   struct lxt2_rd_geometry *g = lxt2_rd_get_fac_geometry( *lt, *pnt_facidx );
 
-  printf( "In vcd_callback, vcd_prevtime: %lld, pnt_time: %lld\n", vcd_prevtime, *pnt_time );
-
   /* If this is a new timestamp, perform a simulation */
   if( vcd_prevtime != *pnt_time ) {
     if( vcd_prevtime >= 0 ) {
-      db_do_timestep( vcd_prevtime );
+      db_do_timestep( vcd_prevtime, FALSE );
     }
     vcd_prevtime = *pnt_time;
   }
@@ -209,7 +207,7 @@ void lxt_parse( char* lxt_file ) {
 
     /* Perform last simulation if necessary */
     if( vcd_prevtime >= 0 ) {
-      db_do_timestep( vcd_prevtime );
+      db_do_timestep( vcd_prevtime, FALSE );
     }
 
     /* Deallocate memory */
@@ -232,6 +230,10 @@ void lxt_parse( char* lxt_file ) {
 
 /*
  $Log$
+ Revision 1.9  2006/05/28 02:43:49  phase1geo
+ Integrating stable release 0.4.4 changes into main branch.  Updated regressions
+ appropriately.
+
  Revision 1.8  2006/05/25 12:11:01  phase1geo
  Including bug fix from 0.4.4 stable release and updating regressions.
 

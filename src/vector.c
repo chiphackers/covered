@@ -1333,7 +1333,7 @@ vector* vector_from_string( char** str, bool quoted ) {
       vec = vector_create( size, VTYPE_VAL, TRUE );
       vec->suppl.part.base = type;
       if( type == DECIMAL ) {
-        vector_from_int( vec, atol( value ) );
+        vector_from_int( vec, ato32( value ) );
       } else {
         vector_set_static( vec, value, bits_per_char ); 
       }
@@ -2099,6 +2099,14 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.86  2006/10/04 22:04:16  phase1geo
+ Updating rest of regressions.  Modified the way we are setting the memory rd
+ vector data bit (should optimize the score command just a bit).  Also updated
+ quite a bit of memory coverage documentation though I still need to finish
+ documenting how to understand the report file for this metric.  Cleaning up
+ other things and fixing a few more software bugs from regressions.  Added
+ marray2* diagnostics to verify endianness in the unpacked dimension list.
+
  Revision 1.85  2006/10/03 22:47:00  phase1geo
  Adding support for read coverage to memories.  Also added memory coverage as
  a report output for DIAGLIST diagnostics in regressions.  Fixed various bugs

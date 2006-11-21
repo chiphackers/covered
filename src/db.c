@@ -70,7 +70,7 @@ extern bool        one_instance_found;
 extern char**      leading_hierarchies;
 extern int         leading_hier_num;
 extern isuppl      info_suppl;
-extern int         timestep_update;
+extern uint64      timestep_update;
 extern bool        debug_mode;
 extern int*        fork_block_depth;
 extern int         fork_depth;
@@ -123,14 +123,14 @@ int       curr_expr_id  = 1;
  This static value contains the current simulation time which is specified by the db_do_timestep
  function.  It is used for calculating delay expressions in the simulation engine.
 */
-int       curr_sim_time   = 0;
+uint64    curr_sim_time   = 0;
 
 /*!
  Contains timestep value when simulation was last performed.  This value is used to determine
  if the current timestep needs to be printed to standard output (if the -ts option is specified
  to the score command.
 */
-int       last_sim_update = 0;
+uint64    last_sim_update = 0;
 
 /*!
  Specifies current connection ID to use for connecting statements.  This value should be passed
@@ -2125,25 +2125,30 @@ void db_set_symbol_string( char* sym, char* value ) {
 }
 
 /*!
- \param time  Current time step value being performed.
+ \param time   Current time step value being performed.
+ \param final  Specifies that this is the final timestep.
 
  Cycles through expression queue, performing expression evaluations as we go.  If
  an expression has a parent expression, that parent expression is placed in the
  expression queue after that expression has completed its evaluation.  When the
  expression queue is empty, we are finished for this clock period.
 */
-void db_do_timestep( int time ) {
+void db_do_timestep( uint64 time, bool final ) {
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "Performing timestep #%d", time );
-  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  if( final ) {
+    print_output( "Performing final timestep", DEBUG, __FILE__, __LINE__ );
+  } else {
+    snprintf( user_msg, USER_MSG_LENGTH, "Performing timestep #%lld", time );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  }
 #endif
 
   curr_sim_time = time;
 
-  if( (timestep_update > 0) && ((curr_sim_time - last_sim_update) >= timestep_update) && !debug_mode ) {
+  if( (timestep_update > 0) && ((curr_sim_time - last_sim_update) >= timestep_update) && !debug_mode && !final ) {
     last_sim_update = curr_sim_time;
-    printf( "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bPerforming timestep %10d", curr_sim_time );
+    printf( "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bPerforming timestep %10lld", curr_sim_time );
     fflush( stdout );
   }
 
@@ -2151,7 +2156,7 @@ void db_do_timestep( int time ) {
   sim_simulate();
 
   /* If this is the last timestep, add the final list and do one more simulate */
-  if( time == -1 ) {
+  if( final ) {
     sim_simulate_final();
   }
 
@@ -2167,6 +2172,11 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.232  2006/11/17 23:17:12  phase1geo
+ Fixing bug in score command where parameter override values were not being saved
+ off properly in the CDD file.  Also fixing bug when a parameter is found in a VCD
+ file (ignoring its usage).  Updated regressions for these changes.
+
  Revision 1.231  2006/11/03 23:36:36  phase1geo
  Fixing bug 1590104.  Updating regressions per this change.
 
