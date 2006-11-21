@@ -96,13 +96,11 @@ PLI_INT32 covered_value_change( p_cb_data cb ) {
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
-  if( (cb->time->low != (last_time & 0xffffffff)) || (cb->time->high != ((last_time & 0xffffffff00000000) >> 32)) ) {
-    if( use_last_time ) {
-      db_do_timestep( last_time, FALSE );
-    }
-    last_time     = ((uint64)cb->time->high << 32) | (uint64)cb->time->low;
-    use_last_time = TRUE;
+  if( ((cb->time->low != (last_time & 0xffffffff)) || (cb->time->high != ((last_time & 0xffffffff00000000) >> 32))) && use_last_time ) {
+    db_do_timestep( last_time, FALSE );
   }
+  last_time     = ((uint64)cb->time->high << 32) | (uint64)cb->time->low;
+  use_last_time = TRUE;
   
   /* Set symbol value */
   db_set_symbol_string( cb->user_data, value.value.str );
@@ -113,13 +111,11 @@ PLI_INT32 covered_value_change( p_cb_data cb ) {
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
-  if( (cb->time->low != (last_time & 0xffffffff)) || (cb->time->high != ((last_time & 0xffffffff00000000) >> 32)) ) {
-    if( use_last_time ) {
-      db_do_timestep( last_time, FALSE );
-    }
-    last_time     = ((uint64)cb->time->high << 32) | (uint64)cb->time->low;
-    use_last_time = TRUE;
+  if( ((cb->time->low != (last_time & 0xffffffff)) || (cb->time->high != ((last_time & 0xffffffff00000000) >> 32))) && use_last_time ) {
+    db_do_timestep( last_time, FALSE );
   }
+  last_time     = ((uint64)cb->time->high << 32) | (uint64)cb->time->low;
+  use_last_time = TRUE;
 
   /* Set symbol value */
   db_set_symbol_string( cb->user_data, cb->value->value.str );
