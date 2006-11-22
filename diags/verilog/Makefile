@@ -100,7 +100,7 @@ check-ovl:
 
 diagrun:
 	@echo Running $(DIAG)
-	@convert_cfg $(CFG_CMD) $(DIAG).cfg
+	@./convert_cfg $(CFG_CMD) $(DIAG).cfg
 ifdef VPI
 	@$(COVERED) $(COVERED_GFLAG) score -f $(DIAG).cfg
 ifdef USE_CVER
@@ -151,7 +151,7 @@ $(DIAGLIST): check-ovl
 
 racerun:
 	@echo Running $(DIAG)
-	@convert_cfg $(CFG_CMD) $(DIAG).cfg
+	@./convert_cfg $(CFG_CMD) $(DIAG).cfg
 ifdef VPI
 	@$(VG_COVERED) $(COVERED_GFLAG) score -f $(DIAG).cfg
 ifdef USE_CVER
@@ -201,7 +201,7 @@ $(RACELIST):
 	fi
 
 onemergerun:
-	@convert_cfg $(CFG_CMD) $(DIAG).cfg
+	@./convert_cfg $(CFG_CMD) $(DIAG).cfg
 ifdef VPI
 	@$(COVERED) $(COVERED_GFLAG) score -f $(DIAG).cfg
 ifdef USE_CVER
@@ -291,7 +291,7 @@ $(MERGE3LIST):
 errscorerun:
 ifndef VPI
 	@echo Running $(DIAG) -- should see an error message
-	@convert_cfg $(CFG_CMD) $(DIAG).cfg
+	@./convert_cfg $(CFG_CMD) $(DIAG).cfg
 	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v
 ifndef USE_CVER
 	@$(VERILOG_CMD)
@@ -312,7 +312,7 @@ $(ERRSCORELIST):
 
 oneerrmergerun:
 ifndef VPI
-	@convert_cfg $(CFG_CMD) $(DIAG).cfg
+	@./convert_cfg $(CFG_CMD) $(DIAG).cfg
 	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v
 ifndef USE_CVER
 	@$(VERILOG_CMD)
@@ -346,7 +346,7 @@ ifndef VPI
 ifndef USE_CVER
 	@$(VERILOG_CMD)
 endif
-	@convert_cfg $(CFG_CMD) $(DIAG).cfg
+	@./convert_cfg $(CFG_CMD) $(DIAG).cfg
 	@$(COVERED) $(COVERED_GFLAG) score -f $(DIAG).cfg
 	@$(COVERED) $(COVERED_GFLAG) report -d v $(DIAG).cdd 2> $(DIAG).err
 	@rm -f $(DIAG).cfg
@@ -365,7 +365,7 @@ $(ERRREPORTLIST):
 $(NOSIMLIST):
 	@if test ! -f $@.done; then \
 		echo Running $@; \
-		convert_cfg $(CFG_CMD) $@.cfg; \
+		./convert_cfg $(CFG_CMD) $@.cfg; \
 		$(COVERED) $(COVERED_GFLAG) score -f $@.cfg 2> $@.err; \
 		rm -f $@.cfg $@.cdd; \
 		cat $@.err; \
@@ -378,7 +378,7 @@ $(NOSIMLIST):
 $(NOSIMERRLIST):
 	@if test ! -f $@.done; then \
 		echo Running $@ -- should see an error message; \
-		convert_cfg $(CFG_CMD) $@.cfg; \
+		./convert_cfg $(CFG_CMD) $@.cfg; \
 		$(COVERED) $(COVERED_GFLAG) score -f $@.cfg 2> $@.err; \
 		rm -f $@.cfg; \
 		cat $@.err; \
