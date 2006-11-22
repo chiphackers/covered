@@ -2151,9 +2151,10 @@ struct thread_s {
   thread*    parent;                 /*!< Pointer to parent thread that spawned this thread */
   statement* head;                   /*!< Pointer to original head statement that created this thread */
   statement* curr;                   /*!< Pointer to current head statement for this thread */
-  bool       kill;                   /*!< Set to true if this thread should be killed */
-  bool       queued;                 /*!< Set to true when thread exists in the thread queue */
-  bool       exec_first;             /*!< Set to true when the first statement is being executed */
+  bool       kill;                   /*!< Set to TRUE if this thread should be killed */
+  bool       queued;                 /*!< Set to TRUE when thread exists in the thread queue */
+  bool       exec_first;             /*!< Set to TRUE when the first statement is being executed */
+  bool       resim_needed;           /*!< Set to TRUE if this thread needs to be simulated again in the same sim_simulate call */
   thread*    child_head;             /*!< Pointer to head element in child thread list for this thread */
   thread*    child_tail;             /*!< Pointer to tail element in child thread list for this thread */
   thread*    prev_sib;               /*!< Pointer to previous sibling thread */
@@ -2267,6 +2268,10 @@ struct dim_range_s {
 
 /*
  $Log$
+ Revision 1.240  2006/11/21 19:54:13  phase1geo
+ Making modifications to defines.h to help in creating appropriately sized types.
+ Other changes to VPI code (but this is still broken at the moment).  Checkpointing.
+
  Revision 1.239  2006/10/16 21:34:46  phase1geo
  Increased max bit width from 1024 to 65536 to allow for more room for memories.
  Fixed issue with enumerated values being explicitly assigned unknown values and

@@ -1001,7 +1001,46 @@ int vector_to_int( vector* vec ) {
   /* If the vector is signed, sign-extend the integer */
   if( vec->suppl.part.is_signed == 1 ) {
     for( i=width; i<(SIZEOF_INT * 8); i++ ) {
-      retval = (retval << 1) | vec->value[width-1].part.val.value;
+      retval |= (vec->value[width-1].part.val.value << i);
+    }
+  }
+
+  return( retval );
+
+}
+
+/*!
+ \param vec  Pointer to vector to convert into integer.
+
+ \return Returns integer value of specified vector.
+
+ Converts a vector structure into an integer value.  If the number of bits for the
+ vector exceeds the number of bits in an integer, the upper bits of the vector are
+ unused.
+*/
+uint64 vector_to_uint64( vector* vec ) {
+
+  uint64 retval = 0;   /* 64-bit integer value returned to calling function */
+  int    i;            /* Loop iterator */
+  int    width;        /* Number of bits to use in creating integer */
+
+  width = (vec->width > 64) ? 64 : vec->width;
+
+  for( i=(width - 1); i>=0; i-- ) {
+    switch( vec->value[i].part.val.value ) {
+      case 0 :  retval = (retval << 1) | 0;  break;
+      case 1 :  retval = (retval << 1) | 1;  break;
+      default:
+        print_output( "Vector converting to 64-bit integer contains X or Z values", FATAL, __FILE__, __LINE__ );
+        assert( vec->value[i].part.val.value < 2 );
+        break;
+    }
+  }
+
+  /* If the vector is signed, sign-extend the integer */
+  if( vec->suppl.part.is_signed == 1 ) {
+    for( i=width; i<64; i++ ) {
+      retval |= (vec->value[width-1].part.val.value << i);
     }
   }
 
@@ -1033,6 +1072,32 @@ void vector_from_int( vector* vec, int value ) {
 
   /* Because this value came from an integer, specify that the vector is signed */
   vec->suppl.part.is_signed = 1;
+
+}
+
+/*!
+ \param vec    Pointer to vector store value into.
+ \param value  64-bit integer value to convert into vector.
+
+ Converts a 64-bit integer value into a vector.  This function is used along with
+ the vector_to_uint64 for mathematical vector operations.  We will first convert
+ vectors into 64-bit integers, perform the mathematical operation, and then revert
+ the 64-bit integers back into the vectors.
+*/
+void vector_from_uint64( vector* vec, uint64 value ) {
+
+  int width;  /* Number of bits to convert */
+  int i;      /* Loop iterator */
+
+  width = (vec->width < 64) ? vec->width : 64;
+
+  for( i=0; i<width; i++ ) {
+    vec->value[i].part.val.value = (value & 0x1);
+    value >>= 1;
+  }
+
+  /* Because this value came from an unsigned integer, specify that the vector is unsigned */
+  vec->suppl.part.is_signed = 0;
 
 }
 
@@ -2099,6 +2164,10 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.87  2006/11/21 19:54:13  phase1geo
+ Making modifications to defines.h to help in creating appropriately sized types.
+ Other changes to VPI code (but this is still broken at the moment).  Checkpointing.
+
  Revision 1.86  2006/10/04 22:04:16  phase1geo
  Updating rest of regressions.  Modified the way we are setting the memory rd
  vector data bit (should optimize the score command just a bit).  Also updated

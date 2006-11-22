@@ -94,8 +94,14 @@ bool vector_is_set( vector* vec );
 /*! \brief Converts vector into integer value. */
 int vector_to_int( vector* vec );
 
+/*! \brief Converts vector into a 64-bit value. */
+uint64 vector_to_uint64( vector* vec );
+
 /*! \brief Converts integer into vector value. */
 void vector_from_int( vector* vec, int value );
+
+/*! \brief Converts a 64-bit integer into a vector value. */
+void vector_from_uint64( vector* vec, uint64 value );
 
 /*! \brief Converts vector into a string value in specified format. */
 char* vector_to_string( vector* vec );
@@ -163,6 +169,9 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.41  2006/10/12 22:48:46  phase1geo
+ Updates to remove compiler warnings.  Still some work left to go here.
+
  Revision 1.40  2006/10/03 22:47:00  phase1geo
  Adding support for read coverage to memories.  Also added memory coverage as
  a report output for DIAGLIST diagnostics in regressions.  Fixed various bugs

@@ -152,8 +152,9 @@ extern nibble nand_optab[OPTAB_SIZE];
 extern nibble nor_optab[OPTAB_SIZE];
 extern nibble nxor_optab[OPTAB_SIZE];
 
-extern int  curr_sim_time;
-extern char user_msg[USER_MSG_LENGTH];
+extern uint64 curr_sim_time;
+extern bool   final_sim_time;
+extern char   user_msg[USER_MSG_LENGTH];
 
 extern exp_link* static_expr_head;
 extern exp_link* static_expr_tail;
@@ -2519,27 +2520,36 @@ bool expression_op_func__slist( expression* expr, thread* thr ) {
 */
 bool expression_op_func__delay( expression* expr, thread* thr ) {
 
-  bool retval;   /* Return value for this function */
-  int  intval1;  /* Integer value holder */
-  int  intval2;  /* Integer value holder */
+  bool   retval = FALSE;  /* Return value for this function */
+  uint64 intval1;         /* 64-bit integer value holder */
+  uint64 intval2;         /* 64-bit integer value holder */
 
+  /* Clear the evaluated TRUE indicator */
   expr->suppl.part.eval_t = 0;
 
-  /* If this expression is not currently waiting, set the start time of delay */
-  if( vector_to_int( expr->left->value ) == 0xffffffff ) {
-    vector_from_int( expr->left->value, curr_sim_time );
-  }
+  /* If this is he first statement in the current thread, we are executing for the first time */
+  if( thr->exec_first ) {
 
-  intval1 = vector_to_int( expr->left->value );           /* Start time of delay */
-  intval2 = vector_to_int( expr->right->value );          /* Number of clocks to delay */
+    intval1 = vector_to_uint64( expr->left->value );   /* Start time of delay */
+    intval2 = vector_to_uint64( expr->right->value );  /* Number of clocks to delay */
 
-  if( ((intval1 + intval2) <= curr_sim_time) || ((curr_sim_time == -1) && (intval1 != 0xffffffff)) ) {
-    expr->suppl.part.eval_t = 1;
-    expr->suppl.part.true   = 1;
-    vector_from_int( expr->left->value, 0xffffffff );
-    retval = TRUE;
-  } else {
-    retval = FALSE;
+    if( ((intval1 + intval2) <= curr_sim_time) || final_sim_time ) {
+      expr->suppl.part.eval_t = 1;
+      expr->suppl.part.true   = 1;
+      vector_from_uint64( expr->left->value, (intval1 + intval2) );
+      retval = TRUE;
+
+      /*
+       If it is possible that this delay could be executed twice before the current simulation time,
+       set the resim_needed flag to TRUE; otherwise, set it to FALSE.
+      */
+      if( (intval1 + (intval2 * 2)) < curr_sim_time ) {
+        thr->resim_needed = TRUE;
+      } else {
+        thr->resim_needed = FALSE;
+      }
+    }
+
   }
 
   return( retval );
@@ -3921,6 +3931,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.224  2006/10/13 22:46:31  phase1geo
+ Things are a bit of a mess at this point.  Adding generate12 diagnostic that
+ shows a failure in properly handling generates of instances.
+
  Revision 1.223  2006/10/12 22:48:46  phase1geo
  Updates to remove compiler warnings.  Still some work left to go here.
 

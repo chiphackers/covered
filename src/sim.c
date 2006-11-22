@@ -143,6 +143,18 @@ thread* final_head  = NULL;
 */
 thread* final_tail  = NULL;
 
+/*!
+ Pointer to head of thread list containing threads that have been executed in the current cycle but
+ need to be resimulated in the same cycle.
+*/
+thread* resim_head  = NULL;
+
+/*!
+ Pointer to head of thread list containing threads that have been executed in the current cycle but
+ need to be resimulated in the same cycle.
+*/
+thread* resim_tail  = NULL;
+
 
 /*!
  \param head  Pointer to head of thread queue to display
@@ -157,6 +169,10 @@ void sim_display_thread_queue( thread** head ) {
     printf( "Current thread queue for thread queue...\n" );
   } else if( head == &delay_head ) {
     printf( "Current thread queue for delay queue...\n" );
+  } else if( head == &final_head ) {
+    printf( "Current thread queue for final queue...\n" );
+  } else if( head == &resim_head ) {
+    printf( "Current thread queue for resim queue...\n" );
   } else {
     printf( "Current thread queue for unknown queue...\n" );
   }
@@ -236,9 +252,13 @@ void sim_thread_pop_head() {
     /* Reset previous and next pointers */
     tmp_head->next = tmp_head->prev = NULL;
 
+    /* If the thread wishes to be resimulated, add it to the resim queue */
+    if( tmp_head->resim_needed ) {
+      sim_thread_push( tmp_head, &resim_head, &resim_tail );
+
     /* If the last request was a delay request, add it to the delay queue */
-    if( (tmp_head->curr->exp->op == EXP_OP_DELAY) ||
-        (tmp_head->curr->exp->op == EXP_OP_DLY_ASSIGN) ) {
+    } else if( (tmp_head->curr->exp->op == EXP_OP_DELAY) ||
+               (tmp_head->curr->exp->op == EXP_OP_DLY_ASSIGN) ) {
       sim_thread_push( tmp_head, &delay_head, &delay_tail );
     }
 
@@ -352,6 +372,7 @@ thread* sim_add_thread( thread* parent, statement* stmt ) {
     thr->curr         = stmt;
     thr->kill         = FALSE;
     thr->queued       = TRUE;    /* We will place the thread immediately into the thread queue */
+    thr->resim_needed = FALSE;
     thr->child_head   = NULL;
     thr->child_tail   = NULL;
     thr->prev_sib     = NULL;
@@ -786,6 +807,9 @@ void sim_simulate_final() {
 
 /*
  $Log$
+ Revision 1.74  2006/10/12 22:48:46  phase1geo
+ Updates to remove compiler warnings.  Still some work left to go here.
+
  Revision 1.73  2006/10/06 17:18:13  phase1geo
  Adding support for the final block type.  Added final1 diagnostic to regression
  suite.  Full regression passes.

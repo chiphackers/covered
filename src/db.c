@@ -126,6 +126,11 @@ int       curr_expr_id  = 1;
 uint64    curr_sim_time   = 0;
 
 /*!
+ Set to TRUE in the db_do_timestep function to indicate that this is the final simulation timestep.
+*/
+bool      final_sim_time  = FALSE;
+
+/*!
  Contains timestep value when simulation was last performed.  This value is used to determine
  if the current timestep needs to be printed to standard output (if the -ts option is specified
  to the score command.
@@ -2144,7 +2149,8 @@ void db_do_timestep( uint64 time, bool final ) {
   }
 #endif
 
-  curr_sim_time = time;
+  curr_sim_time  = time;
+  final_sim_time = final;
 
   if( (timestep_update > 0) && ((curr_sim_time - last_sim_update) >= timestep_update) && !debug_mode && !final ) {
     last_sim_update = curr_sim_time;
@@ -2172,6 +2178,10 @@ void db_do_timestep( uint64 time, bool final ) {
 
 /*
  $Log$
+ Revision 1.233  2006/11/21 19:54:13  phase1geo
+ Making modifications to defines.h to help in creating appropriately sized types.
+ Other changes to VPI code (but this is still broken at the moment).  Checkpointing.
+
  Revision 1.232  2006/11/17 23:17:12  phase1geo
  Fixing bug in score command where parameter override values were not being saved
  off properly in the CDD file.  Also fixing bug when a parameter is found in a VCD
