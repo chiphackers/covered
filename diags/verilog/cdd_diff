@@ -12,11 +12,12 @@ if( ($cdd1 eq "") || ($cdd2 eq "") ) {
   die "Usage:  cdd_diff <CDD> <CDD>\n";
 }
 
-$line_cnt = 1;
 $retval   = 0;
 
 open( CDD1, "$cdd1" ) || die "Can't open $cdd1: $!\n";
 open( CDD2, "$cdd2" ) || die "Can't open $cdd1: $!\n";
+open( OCDD1, ">$cdd1.tmpdiff" ) || die "Can't open $cdd1.tmpdiff: $!\n";
+open( OCDD2, ">$cdd2.tmpdiff" ) || die "Can't open $cdd2.tmpdiff: $!\n";
 
 while( ($l1 = <CDD1>) && ($l2 = <CDD2>) ) {
 
@@ -34,19 +35,18 @@ while( ($l1 = <CDD1>) && ($l2 = <CDD2>) ) {
         $line2[4] = "0";
       }
     }
-    if( "@line1" ne "@line2" ) {
-      print "-${line_cnt}-------\n";
-      print "< @line1\n";
-      print "> @line2\n";
-      $retval = 1;
-    }
+    print OCDD1 "@line1\n";
+    print OCDD2 "@line2\n";
   }
-
-  $line_cnt++;
 
 }
 
 close( CDD1 );
 close( CDD2 );
+close( OCDD1 );
+close( OCDD2 );
+
+$retval = system( "diff $cdd1.tmpdiff $cdd2.tmpdiff" );
+system( "rm -f $cdd1.tmpdiff $cdd2.tmpdiff" );
 
 exit $retval;
