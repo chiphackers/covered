@@ -92,6 +92,7 @@
 extern nibble   or_optab[OPTAB_SIZE];
 extern char     user_msg[USER_MSG_LENGTH];
 extern exp_info exp_op_info[EXP_OP_NUM];
+extern uint64   curr_sim_time;
 
 /*!
  Pointer to head of expression list that contains all expressions that contain static (non-changing)
@@ -252,7 +253,7 @@ void sim_thread_pop_head() {
     /* Reset previous and next pointers */
     tmp_head->next = tmp_head->prev = NULL;
 
-    /* If the thread wishes to be resimulated, add it to the resim queue */
+    /* If the thread needs to be resimulated, add it to the resim queue */
     if( tmp_head->resim_needed ) {
       sim_thread_push( tmp_head, &resim_head, &resim_tail );
 
@@ -373,6 +374,7 @@ thread* sim_add_thread( thread* parent, statement* stmt ) {
     thr->kill         = FALSE;
     thr->queued       = TRUE;    /* We will place the thread immediately into the thread queue */
     thr->resim_needed = FALSE;
+    thr->curr_time    = curr_sim_time;
     thr->child_head   = NULL;
     thr->child_tail   = NULL;
     thr->prev_sib     = NULL;
@@ -522,6 +524,7 @@ void sim_kill_thread( thread* thr ) {
       thr->parent->next->prev = thr->parent;
     }
     thread_head = thr->parent;
+    thr->parent->curr_time = thr->curr_time;
   } else {
     thread_head = thread_head->next;
     if( thread_head == NULL ) {
@@ -780,10 +783,28 @@ void sim_simulate() {
 
   }
 
-  /* Simulate all threads in the thread queue */
-  while( thread_head != NULL ) {
-    sim_thread( thread_head );
-  }
+  do {
+
+    /* Add resimulation queue elements to thread queue */
+    if( resim_head != NULL ) {
+      if( thread_tail == NULL ) {
+        thread_head = resim_head;
+        thread_tail = resim_tail;
+      } else {
+        thread_tail->next = resim_head;
+        resim_head->prev  = thread_tail;
+        thread_tail       = resim_tail;
+      }
+      resim_head  = NULL;
+      resim_tail  = NULL;
+    }
+
+    /* Simulate all threads in the thread queue */
+    while( thread_head != NULL ) {
+      sim_thread( thread_head );
+    }
+
+  } while( resim_head != NULL );
   
 }
 
@@ -807,6 +828,13 @@ void sim_simulate_final() {
 
 /*
  $Log$
+ Revision 1.75  2006/11/22 20:20:01  phase1geo
+ Updates to properly support 64-bit time.  Also starting to make changes to
+ simulator to support "back simulation" for when the current simulation time
+ has advanced out quite a bit of time and the simulator needs to catch up.
+ This last feature is not quite working at the moment and regressions are
+ currently broken.  Checkpointing.
+
  Revision 1.74  2006/10/12 22:48:46  phase1geo
  Updates to remove compiler warnings.  Still some work left to go here.
 

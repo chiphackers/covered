@@ -1,2 +1,2 @@
 ERROR!  Unable to find specified FSM signal "foo" in module "fsma" in file err1.0.v
-ERROR!  Unable to bind FSM-specified signal (foo) to expression (87) in module (fsma)
+ERROR!  Unable to bind FSM-specified signal (foo) to expression (83) in module (fsma)

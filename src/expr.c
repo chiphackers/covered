@@ -2521,8 +2521,7 @@ bool expression_op_func__slist( expression* expr, thread* thr ) {
 bool expression_op_func__delay( expression* expr, thread* thr ) {
 
   bool   retval = FALSE;  /* Return value for this function */
-  uint64 intval1;         /* 64-bit integer value holder */
-  uint64 intval2;         /* 64-bit integer value holder */
+  uint64 intval;          /* 64-bit integer value holder */
 
   /* Clear the evaluated TRUE indicator */
   expr->suppl.part.eval_t = 0;
@@ -2530,25 +2529,26 @@ bool expression_op_func__delay( expression* expr, thread* thr ) {
   /* If this is he first statement in the current thread, we are executing for the first time */
   if( thr->exec_first ) {
 
-    intval1 = vector_to_uint64( expr->left->value );   /* Start time of delay */
-    intval2 = vector_to_uint64( expr->right->value );  /* Number of clocks to delay */
+    /* Get number of clocks to delay */
+    intval = vector_to_uint64( expr->right->value );
 
-    if( ((intval1 + intval2) <= curr_sim_time) || final_sim_time ) {
+    if( ((thr->curr_time + intval) <= curr_sim_time) || final_sim_time ) {
       expr->suppl.part.eval_t = 1;
       expr->suppl.part.true   = 1;
-      vector_from_uint64( expr->left->value, (intval1 + intval2) );
+      thr->curr_time += intval;
       retval = TRUE;
-
-      /*
-       If it is possible that this delay could be executed twice before the current simulation time,
-       set the resim_needed flag to TRUE; otherwise, set it to FALSE.
-      */
-      if( (intval1 + (intval2 * 2)) < curr_sim_time ) {
-        thr->resim_needed = TRUE;
-      } else {
-        thr->resim_needed = FALSE;
-      }
     }
+
+    if( (thr->curr_time + (intval * 2)) < curr_sim_time ) {
+      thr->resim_needed = TRUE;
+    } else {
+      thr->resim_needed = FALSE;
+    }
+
+  /* If we do not need to resimulate, load the current simulation time */
+  } else if( !thr->resim_needed ) {
+
+    thr->curr_time = curr_sim_time;
 
   }
 
@@ -3931,6 +3931,13 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.225  2006/11/22 20:20:01  phase1geo
+ Updates to properly support 64-bit time.  Also starting to make changes to
+ simulator to support "back simulation" for when the current simulation time
+ has advanced out quite a bit of time and the simulator needs to catch up.
+ This last feature is not quite working at the moment and regressions are
+ currently broken.  Checkpointing.
+
  Revision 1.224  2006/10/13 22:46:31  phase1geo
  Things are a bit of a mess at this point.  Adding generate12 diagnostic that
  shows a failure in properly handling generates of instances.
