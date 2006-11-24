@@ -1,0 +1,2 @@
+ERROR!  Module specified with -t option (main) is a top-level module.
+        The -i option should not have been specified

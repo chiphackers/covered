@@ -1,0 +1,3 @@
+ERROR!  Module specified with -t option (foo) is not a top-level module.
+        The -i option must be specified to provide the hierarchy to the module specified with
+        the -t option.
