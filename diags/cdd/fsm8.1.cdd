@@ -1,5 +1,5 @@
 5 9 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd fsm8.1.vcd -o fsm8.1.cdd -v fsm8.1.v
+8 /ptmp/cvs/covered/diags/verilog -t main -vcd fsm8.1.vcd -o fsm8.1.cdd -v fsm8.1.v
 3 0 $root $root NA 0 0
 3 0 main main fsm8.1.v 1 61
 2 1 17 580061 1 32 4 0 0 STATE_IDLE
@@ -94,8 +94,8 @@
 2 90 58 e0012 0 1 400 0 0 clock
 2 91 58 e001b 2d 37 602e 89 90
 2 92 58 b000b 1 0 20008 0 0 32 64 1 0 0 0 0 0 0 0
-2 93 58 b000b 1 0 20008 0 0 32 64 55 55 55 55 55 55 55 55
-2 94 58 9000c 5b 2c 2000a 92 93 32 2 aa aa aa aa aa aa aa aa
+2 93 58 b000b 1 0 20004 0 0 64 0 51 4 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+2 94 58 9000c 5b 2c 2000a 92 93 64 2 aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa
 2 95 0 0 5 1 f00e 0 0 next_state
 2 96 0 0 1 0 20008 0 0 32 64 1 0 0 0 0 0 0 0
 2 97 0 0 6 0 20008 0 0 32 64 4 0 0 0 0 0 0 0

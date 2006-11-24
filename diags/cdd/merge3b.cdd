@@ -1,5 +1,5 @@
 5 9 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd merge3b.vcd -o merge3b.cdd -v merge3b.v
+8 /ptmp/cvs/covered/diags/verilog -t main -vcd merge3b.vcd -o merge3b.cdd -v merge3b.v
 3 0 $root $root NA 0 0
 3 0 main main merge3b.v 9 31
 2 1 13 d000d 2 1 c 0 0 c
@@ -14,8 +14,8 @@
 2 10 17 10001 0 1 400 0 0 c
 2 11 17 10008 1 37 a 9 10
 2 12 18 20002 1 0 20008 0 0 32 64 11 0 0 0 0 0 0 0
-2 13 18 20002 1 0 20008 0 0 32 64 55 55 55 55 55 55 55 55
-2 14 18 10002 2 2c 2000a 12 13 32 2 aa aa aa aa aa aa aa aa
+2 13 18 20002 1 0 20004 0 0 64 0 11 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+2 14 18 10002 2 2c 2000a 12 13 64 2 aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa
 2 15 19 c000f 1 0 20004 0 0 1 4 0
 2 16 19 80008 0 1 400 0 0 c
 2 17 19 8000f 1 37 6 15 16

@@ -1,5 +1,5 @@
 5 9 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd task2.vcd -o task2.cdd -v task2.v
+8 /ptmp/cvs/covered/diags/verilog -t main -vcd task2.vcd -o task2.cdd -v task2.v
 3 0 $root $root NA 0 0
 3 0 main main task2.v 1 32
 2 1 6 10011 2 3b 2100a 0 0 1 2 1102 delay_for_awhile
@@ -7,8 +7,8 @@
 2 3 7 10001 0 1 400 0 0 a
 2 4 7 10008 1 37 6 2 3
 2 5 8 20003 1 0 20008 0 0 32 64 44 0 0 0 0 0 0 0
-2 6 8 20003 1 0 20008 0 0 32 64 55 55 55 55 55 55 55 55
-2 7 8 10003 2 2c 2000a 5 6 32 2 aa aa aa aa aa aa aa aa
+2 6 8 20003 1 0 20004 0 0 64 0 44 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+2 7 8 10003 2 2c 2000a 5 6 64 2 aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa
 1 a 3 830004 1 0 0 0 1 1 2
 4 7 0 0
 4 4 7 7
@@ -18,8 +18,8 @@
 2 9 25 20002 0 1 400 0 0 b
 2 10 25 20009 1 37 11006 8 9
 2 11 26 30004 1 0 20008 0 0 32 64 44 0 0 0 0 0 0 0
-2 12 26 30004 1 0 20008 0 0 32 64 55 55 55 55 55 55 55 55
-2 13 26 20004 2 2c 2000a 11 12 32 2 aa aa aa aa aa aa aa aa
+2 12 26 30004 1 0 20004 0 0 64 0 44 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+2 13 26 20004 2 2c 2000a 11 12 64 2 aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa
 2 14 27 60009 1 0 20008 0 0 1 4 1
 2 15 27 20002 0 1 400 0 0 b
 2 16 27 20009 1 37 a 14 15

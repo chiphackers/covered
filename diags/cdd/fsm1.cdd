@@ -1,5 +1,5 @@
 5 9 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd fsm1.vcd -o fsm1.cdd -y lib -v fsm1.v -F fsm
+8 /ptmp/cvs/covered/diags/verilog -t main -vcd fsm1.vcd -o fsm1.cdd -y lib -v fsm1.v -F fsm
 3 0 $root $root NA 0 0
 3 0 main main fsm1.v 1 47
 2 1 43 7000a 1 0 20004 0 0 1 4 0
@@ -10,8 +10,8 @@
 2 6 44 150017 0 1 400 0 0 clk
 2 7 44 15001e 23 37 602e 5 6
 2 8 44 120012 1 0 20008 0 0 32 64 4 0 0 0 0 0 0 0
-2 9 44 120012 1 0 20008 0 0 32 64 55 55 55 55 55 55 55 55
-2 10 44 100013 47 2c 2000a 8 9 32 2 aa aa aa aa aa aa aa aa
+2 9 44 120012 1 0 20004 0 0 64 0 14 10 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+2 10 44 100013 47 2c 2000a 8 9 64 2 aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa
 1 clk 3 83000b 1 0 0 0 1 1 1102
 1 reset 4 3000b 1 0 0 0 1 1 1002
 1 head 5 3000b 1 0 0 0 1 1 1102

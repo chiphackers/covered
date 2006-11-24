@@ -26,16 +26,16 @@ closedir( ODIR );
 foreach $file (sort( keys( %files ) )) {
   
   # Check report files
-  &handle_mismatch( "${file}.rptM",  "../rpt", 1 );
-  &handle_mismatch( "${file}.rptI",  "../rpt", 1 );
-  &handle_mismatch( "${file}.rptWM", "../rpt", 1 );
-  &handle_mismatch( "${file}.rptWI", "../rpt", 1 );
+  &handle_mismatch( "${file}.rptM",  "../rpt", 1, 0 );
+  &handle_mismatch( "${file}.rptI",  "../rpt", 1, 0 );
+  &handle_mismatch( "${file}.rptWM", "../rpt", 1, 0 );
+  &handle_mismatch( "${file}.rptWI", "../rpt", 1, 0 );
 
   # Check error file
-  &handle_mismatch( "${file}.err", "../err", 0 );
+  &handle_mismatch( "${file}.err", "../err", 0, 0 );
 
   # Check CDD file
-  &handle_mismatch( "${file}.cdd", "../cdd", 0 );
+  &handle_mismatch( "${file}.cdd", "../cdd", 0, 1 );
 
 }
 
@@ -43,12 +43,16 @@ foreach $file (sort( keys( %files ) )) {
 
 sub handle_mismatch {
  
-  my( $file, $dir, $a ) = @_;
+  my( $file, $dir, $a, $cdd ) = @_;
   my( $response );
 
   # Handle the report files first
   if( -e "${file}" ) {
-    system( "diff ${file} ${dir}" );
+    if( $cdd == 1 ) {
+      system( "./cdd_diff ${file} ${dir}/${file}" );
+    } else {
+      system( "diff ${file} ${dir}" );
+    }
     if( $a == 1 ) {
       print "Difference is for ${file} - Accept? (y|n|a|q) [y] ";
     } else {

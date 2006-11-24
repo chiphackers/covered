@@ -1,5 +1,5 @@
 5 9 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd fsm7.1.vcd -o fsm7.1.cdd -v fsm7.1.v
+8 /ptmp/cvs/covered/diags/verilog -t main -vcd fsm7.1.vcd -o fsm7.1.cdd -v fsm7.1.v
 3 0 $root $root NA 0 0
 3 0 main main fsm7.1.v 1 59
 2 1 16 34003d 5 1 c 0 0 next_state
@@ -80,8 +80,8 @@
 2 76 56 150017 0 1 400 0 0 clk
 2 77 56 15001e 23 37 602e 75 76
 2 78 56 120012 1 0 20008 0 0 32 64 4 0 0 0 0 0 0 0
-2 79 56 120012 1 0 20008 0 0 32 64 55 55 55 55 55 55 55 55
-2 80 56 100013 47 2c 2000a 78 79 32 2 aa aa aa aa aa aa aa aa
+2 79 56 120012 1 0 20004 0 0 64 0 14 10 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+2 80 56 100013 47 2c 2000a 78 79 64 2 aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa
 2 81 0 0 5 1 f00e 0 0 next_state
 2 82 0 0 5 1 f00e 0 0 state
 1 STATE_IDLE 0 80000 1 0 31 0 2 1 0

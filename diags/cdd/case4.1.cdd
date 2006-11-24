@@ -1,5 +1,5 @@
 5 9 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd case4.1.vcd -o case4.1.cdd -v case4.1.v
+8 /ptmp/cvs/covered/diags/verilog -t main -vcd case4.1.vcd -o case4.1.cdd -v case4.1.v
 3 0 $root $root NA 0 0
 3 0 main main case4.1.v 1 95
 2 1 31 e0028 1 1 0 0 0 display_tagto_current_state
@@ -81,8 +81,8 @@
 2 77 92 e0012 0 1 400 0 0 clock
 2 78 92 e001b 32 37 602e 76 77
 2 79 92 b000b 1 0 20008 0 0 32 64 1 0 0 0 0 0 0 0
-2 80 92 b000b 1 0 20008 0 0 32 64 55 55 55 55 55 55 55 55
-2 81 92 9000c 65 2c 2000a 79 80 32 2 aa aa aa aa aa aa aa aa
+2 80 92 b000b 1 0 20004 0 0 64 0 4 5 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+2 81 92 9000c 65 2c 2000a 79 80 64 2 aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa
 1 A 0 80000 1 0 31 0 32 1 0 0 0 0 0 0 0 0
 1 STATE_A 0 80000 1 0 31 0 32 1 1 0 0 0 0 0 0 0
 1 B 0 80000 1 0 31 0 32 1 1 0 0 0 0 0 0 0

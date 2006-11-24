@@ -1,5 +1,5 @@
 5 9 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd exclude4.vcd -o exclude4.cdd -v exclude4.v -y ./lib -e foo_module.foo_named_block
+8 /ptmp/cvs/covered/diags/verilog -t main -vcd exclude4.vcd -o exclude4.cdd -v exclude4.v -y ./lib -e foo_module.foo_named_block
 3 0 $root $root NA 0 0
 3 0 main main exclude4.v 1 14
 3 0 foo_module main.bar ./lib/foo_module.v 1 34
@@ -28,8 +28,8 @@
 2 12 28 40008 0 1 400 0 0 foo_b
 2 13 28 4000f 1 37 11006 11 12
 2 14 29 50006 1 0 20008 0 0 32 64 44 0 0 0 0 0 0 0
-2 15 29 50006 1 0 20008 0 0 32 64 55 55 55 55 55 55 55 55
-2 16 29 40006 2 2c 2000a 14 15 32 2 aa aa aa aa aa aa aa aa
+2 15 29 50006 1 0 20004 0 0 64 0 44 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+2 16 29 40006 2 2c 2000a 14 15 64 2 aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa
 2 17 30 c000f 1 0 20008 0 0 1 4 1
 2 18 30 40008 0 1 400 0 0 foo_b
 2 19 30 4000f 1 37 a 17 18

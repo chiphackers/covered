@@ -1,5 +1,5 @@
 5 9 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd fsm5.3.vcd -o fsm5.3.cdd -v fsm5.3.v -F main
+8 /ptmp/cvs/covered/diags/verilog -t main -vcd fsm5.3.vcd -o fsm5.3.cdd -v fsm5.3.v -F main
 3 0 $root $root NA 0 0
 3 0 main main fsm5.3.v 1 52
 2 1 14 410041 5 0 20008 0 0 32 64 1 0 0 0 0 0 0 0
@@ -87,8 +87,8 @@
 2 83 49 e0012 0 1 400 0 0 clock
 2 84 49 e001b 2b 37 602e 82 83
 2 85 49 b000b 1 0 20008 0 0 32 64 1 0 0 0 0 0 0 0
-2 86 49 b000b 1 0 20008 0 0 32 64 55 55 55 55 55 55 55 55
-2 87 49 9000c 57 2c 2000a 85 86 32 2 aa aa aa aa aa aa aa aa
+2 86 49 b000b 1 0 20004 0 0 64 0 45 4 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+2 87 49 9000c 57 2c 2000a 85 86 64 2 aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa
 2 88 0 0 6 0 20008 0 0 32 64 1 0 0 0 0 0 0 0
 2 89 0 0 6 23 f00e 0 88 next_state
 2 90 0 0 4 1 c 0 0 state

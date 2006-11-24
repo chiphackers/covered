@@ -1,5 +1,5 @@
 5 9 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd generate1.vcd -o generate1.cdd -v generate1.v
+8 /ptmp/cvs/covered/diags/verilog -t main -vcd generate1.vcd -o generate1.cdd -v generate1.v
 3 0 $root $root NA 0 0
 3 0 main main generate1.v 1 26
 2 1 15 110014 1 0 20004 0 0 2 12 0
@@ -15,8 +15,8 @@
 2 11 18 1000d 0 1 400 0 0 bar.\U[3] .a
 2 12 18 10014 1 37 6 10 11
 2 13 19 9000a 1 0 20008 0 0 32 64 44 0 0 0 0 0 0 0
-2 14 19 9000a 1 0 20008 0 0 32 64 55 55 55 55 55 55 55 55
-2 15 19 8000a 2 2c 2000a 13 14 32 2 aa aa aa aa aa aa aa aa
+2 14 19 9000a 1 0 20004 0 0 64 0 44 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+2 15 19 8000a 2 2c 2000a 13 14 64 2 aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa
 2 16 20 110014 1 0 20004 0 0 2 12 0
 2 17 20 1000d 0 1 400 0 0 bar.\U[0] .a
 2 18 20 10014 1 37 6 16 17

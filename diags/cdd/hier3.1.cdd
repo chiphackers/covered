@@ -1,5 +1,5 @@
 5 9 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd hier3.1.vcd -o hier3.1.cdd -v hier3.1.v
+8 /ptmp/cvs/covered/diags/verilog -t main -vcd hier3.1.vcd -o hier3.1.cdd -v hier3.1.v
 3 0 $root $root NA 0 0
 3 0 main main hier3.1.v 1 14
 3 0 foo main.a hier3.1.v 18 26
@@ -14,8 +14,8 @@
 2 2 41 10003 0 1 400 0 0 a.y
 2 3 41 1000a 1 37 100a 1 2
 2 4 42 20002 1 0 20008 0 0 32 64 11 0 0 0 0 0 0 0
-2 5 42 20002 1 0 20008 0 0 32 64 55 55 55 55 55 55 55 55
-2 6 42 10002 2 2c 2000a 4 5 32 2 aa aa aa aa aa aa aa aa
+2 5 42 20002 1 0 20004 0 0 64 0 11 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+2 6 42 10002 2 2c 2000a 4 5 64 2 aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa
 2 7 43 7000a 1 0 20004 0 0 1 4 0
 2 8 43 10003 0 1 400 0 0 a.y
 2 9 43 1000a 1 37 6 7 8

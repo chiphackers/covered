@@ -1,12 +1,12 @@
 5 9 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd named_block1.vcd -o named_block1.cdd -v named_block1.v
+8 /ptmp/cvs/covered/diags/verilog -t main -vcd named_block1.vcd -o named_block1.cdd -v named_block1.v
 3 0 $root $root NA 0 0
 3 0 main main named_block1.v 1 36
 2 1 5 8000c 2 3d 2100a 0 0 1 2 1102 foobar
 2 2 9 8000c 2 3d 2100a 0 0 1 2 1102 barfoo
 2 3 14 20003 1 0 20008 0 0 32 64 44 0 0 0 0 0 0 0
-2 4 14 20003 1 0 20008 0 0 32 64 55 55 55 55 55 55 55 55
-2 5 14 10003 2 2c 2100a 3 4 32 2 aa aa aa aa aa aa aa aa
+2 4 14 20003 1 0 20004 0 0 64 0 44 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+2 5 14 10003 2 2c 2100a 3 4 64 2 aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa
 2 6 15 10005 2 3d 2000a 0 0 1 2 1102 fooey
 2 7 20 10005 2 3d 2000a 0 0 1 2 1102 barry
 1 a 3 830004 1 0 0 0 1 1 2

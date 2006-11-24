@@ -1,10 +1,10 @@
 5 9 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd always3.1.11A.vcd -o always3.1.11A.cdd -v always3.1.11A.v
+8 /ptmp/cvs/covered/diags/verilog -t main -vcd always3.1.11A.vcd -o always3.1.11A.cdd -v always3.1.11A.v
 3 0 $root $root NA 0 0
 3 0 main main always3.1.11A.v 23 56
 2 1 28 b000b 1 0 20008 0 0 32 64 11 0 0 0 0 0 0 0
-2 2 28 b000b 1 0 20008 0 0 32 64 55 55 55 55 55 55 55 55
-2 3 28 a000b 5 2c 2100a 1 2 32 2 aa aa aa aa aa aa aa aa
+2 2 28 b000b 1 0 20004 0 0 64 0 44 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+2 3 28 a000b 5 2c 2100a 1 2 64 2 aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa
 2 4 29 130013 1 0 20008 0 0 32 64 1 0 0 0 0 0 0 0
 2 5 29 a000f 0 1 400 0 0 value1
 2 6 29 a0013 2 37 600a 4 5

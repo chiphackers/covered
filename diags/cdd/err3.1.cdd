@@ -1,13 +1,13 @@
 5 9 0 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t foo -i top -vcd err3.1.vcd -o err3.1.cdd -v err3.1.v
+8 /ptmp/cvs/covered/diags/verilog -t foo -i top -vcd err3.1.vcd -o err3.1.cdd -v err3.1.v
 3 0 $root $root NA 0 0
 3 0 foo top err3.1.v 24 36
 2 1 31 50005 0 1 0 0 0 b
 2 2 31 10001 0 1 400 0 0 a
 2 3 31 10005 0 37 1002 1 2
 2 4 32 20003 0 0 20000 0 0 32 64 44 0 0 0 0 0 0 0
-2 5 32 20003 0 0 20000 0 0 32 64 55 55 55 55 55 55 55 55
-2 6 32 10003 0 2c 20002 4 5 32 2 aa aa aa aa aa aa aa aa
+2 5 32 20003 0 0 20000 0 0 64 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+2 6 32 10003 0 2c 20002 4 5 64 2 aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa
 2 7 33 50008 0 0 20000 0 0 1 4 1
 2 8 33 10001 0 1 400 0 0 a
 2 9 33 10008 0 37 2 7 8

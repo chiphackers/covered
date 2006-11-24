@@ -1,21 +1,33 @@
-module main;
+$date
+        Fri Feb 14 10:51:12 2003
+$end
 
-reg  [3:0] a;
+$version
+        Synopsys VCS version 6.2R22
+$end
 
-initial begin
-`ifndef VPI
-	$dumpfile( "mbit_sel4.vcd" );
-	$dumpvars( 0, main );
-`endif
-	a[0] = 1'b1;
-	a[1] = 1'b0;
-	a[2] = 1'b1;
-	a[3] = 1'b1;
-	#5;
-	a[1] = 1'b1;
-	a[3] = 1'b0;
-	#5;
-	$finish;
-end
+$timescale
+        1s
+$end
 
-endmodule
+$comment Csum: 1 b927fe382934d029 $end
+
+
+$scope module main $end
+$var reg 1 $ a [3] $end
+$var reg 1 # a [2] $end
+$var reg 1 " a [1] $end
+$var reg 1 ! a [0] $end
+$upscope $end
+
+$enddefinitions $end
+#0
+$dumpvars
+1!
+0"
+1#
+1$
+$end
+#5
+1"
+0$
