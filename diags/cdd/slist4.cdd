@@ -1,7 +1,7 @@
-5 9 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd slist4.vcd -o slist4.cdd -v slist4.v
-3 0 $root $root NA 0 0
-3 0 main main slist4.v 1 26
+5 a 1 * 0
+8 /ptmp/cvs/covered/diags/verilog -t main -vcd slist4.vcd -o slist4.cdd -v slist4.v
+3 0 $root $root NA 0 0 1
+3 0 main main slist4.v 1 26 1
 2 1 6 a000e 2 1 c 0 0 reset
 2 2 6 60006 1 1 8 0 0 b
 2 3 6 6000e 3 9 20308 1 2 1 2 1102

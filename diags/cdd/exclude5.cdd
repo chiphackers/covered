@@ -1,12 +1,12 @@
-5 9 3 * 0
+5 a 3 * 0
 8 /ptmp/cvs/covered/diags/verilog -t main -vcd exclude5.vcd -o exclude5.cdd -v exclude5.v -ec
-3 0 $root $root NA 0 0
-3 0 main main exclude5.v 1 27
+3 0 $root $root NA 0 0 1
+3 0 main main exclude5.v 1 27 1
 2 1 11 50008 1 0 20004 0 0 1 4 0
 2 2 11 10001 0 1 400 0 0 b
 2 3 11 10008 1 37 1006 1 2
 2 4 12 20003 1 0 20008 0 0 32 64 44 0 0 0 0 0 0 0
-2 5 12 10003 2 2c 2000a 4 0 32 2 aa aa aa aa aa aa aa aa
+2 5 12 10003 2 2c 12000a 4 0 32 2 aa aa aa aa aa aa aa aa
 2 6 13 50008 1 0 20008 0 0 1 4 1
 2 7 13 10001 0 1 400 0 0 b
 2 8 13 10008 1 37 a 6 7

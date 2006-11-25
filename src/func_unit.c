@@ -30,6 +30,7 @@
 #include <stdlib.h>
 #include <assert.h>
 
+#include "db.h"
 #include "defines.h"
 #include "enumerate.h"
 #include "expr.h"
@@ -495,7 +496,7 @@ bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
       funit->timescale = db_scale_to_precision( (uint64)1, funit );
     }
   
-    fprintf( file, "%d %d %s %s %s %d %d %lld\n",
+    fprintf( file, "%d %d %s %s %s %d %d %llu\n",
       DB_TYPE_FUNIT,
       funit->type,
       modname,
@@ -611,7 +612,7 @@ bool funit_db_read( func_unit* funit, char* scope, char** line ) {
   int  chars_read;     /* Number of characters currently read */
   int  params;         /* Number of parameters in string that were parsed */
 
-  if( (params = sscanf( *line, "%d %s %s %s %d %d %lld%n", &(funit->type), funit->name, scope, funit->filename,
+  if( (params = sscanf( *line, "%d %s %s %s %d %d %llu%n", &(funit->type), funit->name, scope, funit->filename,
               &(funit->start_line), &(funit->end_line), &(funit->timescale), &chars_read )) == 7 ) {
 
     *line = *line + chars_read;
@@ -980,6 +981,13 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.52  2006/11/25 04:24:40  phase1geo
+ Adding initial code to fully support the timescale directive and its usage.
+ Added -vpi_ts score option to allow the user to specify a top-level timescale
+ value for the generated VPI file (this code has not been tested at this point,
+ however).  Also updated diagnostic Makefile to get the VPI shared object files
+ from the current lib directory (instead of the checked in one).
+
  Revision 1.51  2006/11/03 23:36:36  phase1geo
  Fixing bug 1590104.  Updating regressions per this change.
 

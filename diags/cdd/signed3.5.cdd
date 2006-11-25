@@ -1,7 +1,7 @@
-5 9 1 * 0
+5 a 1 * 0
 8 /ptmp/cvs/covered/diags/verilog -t main -vcd signed3.5.vcd -o signed3.5.cdd -v signed3.5.v
-3 0 $root $root NA 0 0
-3 0 main main signed3.5.v 1 26
+3 0 $root $root NA 0 0 1
+3 0 main main signed3.5.v 1 26 1
 2 1 6 50008 1 0 20004 0 0 1 4 0
 2 2 6 10001 0 1 400 0 0 a
 2 3 6 10008 1 37 1006 1 2
@@ -15,7 +15,7 @@
 2 11 9 10001 0 1 400 0 0 d
 2 12 9 10008 1 37 6 10 11
 2 13 10 20002 1 0 20008 0 0 32 64 11 0 0 0 0 0 0 0
-2 14 10 10002 2 2c 2000a 13 0 32 2 aa aa aa aa aa aa aa aa
+2 14 10 10002 2 2c 12000a 13 0 32 2 aa aa aa aa aa aa aa aa
 2 15 11 d000e 1 0 20008 0 0 32 64 44 0 0 0 0 0 0 0
 2 16 11 c000c 1 4d 20008 15 0 32 66 69aa f0aa f0aa f0aa f0aa f0aa f0aa f0aa
 2 17 11 60007 1 0 20008 0 0 32 64 44 0 0 0 0 0 0 0

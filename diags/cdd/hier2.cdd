@@ -1,45 +1,45 @@
-5 9 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd hier2.vcd -o hier2.cdd -v hier2.v
-3 0 $root $root NA 0 0
-3 0 main main hier2.v 1 18
+5 a 1 * 0
+8 /ptmp/cvs/covered/diags/verilog -t main -vcd hier2.vcd -o hier2.cdd -v hier2.v
+3 0 $root $root NA 0 0 1
+3 0 main main hier2.v 1 18 1
 2 1 7 c001c 0 1 10 0 0 \a[1] .\b[2] .c
 2 2 7 80008 0 1 400 0 0 b
 2 3 7 8001c 1 37 1022 1 2
 1 b 3 830004 1 0 0 0 1 1 2
 4 3 0 0
-3 0 foo main.a[0] hier2.v 22 26
-3 0 bar main.a[0].b[0] hier2.v 30 34
+3 0 foo main.a[0] hier2.v 22 26 1
+3 0 bar main.a[0].b[0] hier2.v 30 34 1
 1 c 32 30004 1 0 0 0 1 1 2
-3 0 bar main.a[0].b[1] hier2.v 30 34
+3 0 bar main.a[0].b[1] hier2.v 30 34 1
 1 c 32 30004 1 0 0 0 1 1 2
-3 0 bar main.a[0].b[2] hier2.v 30 34
+3 0 bar main.a[0].b[2] hier2.v 30 34 1
 1 c 32 30004 1 0 0 0 1 1 2
-3 0 bar main.a[0].b[3] hier2.v 30 34
+3 0 bar main.a[0].b[3] hier2.v 30 34 1
 1 c 32 30004 1 0 0 0 1 1 2
-3 0 foo main.a[1] hier2.v 22 26
-3 0 bar main.a[1].b[0] hier2.v 30 34
+3 0 foo main.a[1] hier2.v 22 26 1
+3 0 bar main.a[1].b[0] hier2.v 30 34 1
 1 c 32 30004 1 0 0 0 1 1 2
-3 0 bar main.a[1].b[1] hier2.v 30 34
+3 0 bar main.a[1].b[1] hier2.v 30 34 1
 1 c 32 30004 1 0 0 0 1 1 2
-3 0 bar main.a[1].b[2] hier2.v 30 34
+3 0 bar main.a[1].b[2] hier2.v 30 34 1
 1 c 32 30004 1 0 0 0 1 1 2
-3 0 bar main.a[1].b[3] hier2.v 30 34
+3 0 bar main.a[1].b[3] hier2.v 30 34 1
 1 c 32 30004 1 0 0 0 1 1 2
-3 0 foo main.a[2] hier2.v 22 26
-3 0 bar main.a[2].b[0] hier2.v 30 34
+3 0 foo main.a[2] hier2.v 22 26 1
+3 0 bar main.a[2].b[0] hier2.v 30 34 1
 1 c 32 30004 1 0 0 0 1 1 2
-3 0 bar main.a[2].b[1] hier2.v 30 34
+3 0 bar main.a[2].b[1] hier2.v 30 34 1
 1 c 32 30004 1 0 0 0 1 1 2
-3 0 bar main.a[2].b[2] hier2.v 30 34
+3 0 bar main.a[2].b[2] hier2.v 30 34 1
 1 c 32 30004 1 0 0 0 1 1 2
-3 0 bar main.a[2].b[3] hier2.v 30 34
+3 0 bar main.a[2].b[3] hier2.v 30 34 1
 1 c 32 30004 1 0 0 0 1 1 2
-3 0 foo main.a[3] hier2.v 22 26
-3 0 bar main.a[3].b[0] hier2.v 30 34
+3 0 foo main.a[3] hier2.v 22 26 1
+3 0 bar main.a[3].b[0] hier2.v 30 34 1
 1 c 32 30004 1 0 0 0 1 1 2
-3 0 bar main.a[3].b[1] hier2.v 30 34
+3 0 bar main.a[3].b[1] hier2.v 30 34 1
 1 c 32 30004 1 0 0 0 1 1 2
-3 0 bar main.a[3].b[2] hier2.v 30 34
+3 0 bar main.a[3].b[2] hier2.v 30 34 1
 1 c 32 30004 1 0 0 0 1 1 2
-3 0 bar main.a[3].b[3] hier2.v 30 34
+3 0 bar main.a[3].b[3] hier2.v 30 34 1
 1 c 32 30004 1 0 0 0 1 1 2

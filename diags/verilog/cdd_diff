@@ -46,7 +46,7 @@ close( CDD2 );
 close( OCDD1 );
 close( OCDD2 );
 
-$retval = system( "diff $cdd1.tmpdiff $cdd2.tmpdiff" );
-system( "rm -f $cdd1.tmpdiff $cdd2.tmpdiff" );
+$retval = system( "diff $cdd1.tmpdiff $cdd2.tmpdiff" ) / 256;
+system( "rm -f $cdd1.tmpdiff $cdd2.tmpdiff" ) && die;
 
 exit $retval;

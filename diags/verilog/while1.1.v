@@ -1,6 +1,6 @@
 module main;
 
-reg a, b;
+reg a, b, c;
 
 initial begin
         a = 1'b0;
@@ -19,6 +19,8 @@ initial begin
 `endif
 	b = 1'b0;
         #20;
+	c = 1'b1;
+	#1;
         $finish;
 end
 

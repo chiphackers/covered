@@ -1,7 +1,7 @@
-5 9 1 * 0
+5 a 1 * 0
 8 /ptmp/cvs/covered/diags/verilog -t main -vcd fsm3.vcd -o fsm3.cdd -y lib -v fsm3.v -F main
-3 0 $root $root NA 0 0
-3 0 main main fsm3.v 1 66
+3 0 $root $root NA 0 0 1
+3 0 main main fsm3.v 1 66 1
 2 1 16 34003d 9 1 8 0 0 next_state
 2 2 16 270030 1 32 8 0 0 STATE_IDLE
 2 3 16 1f0030 b 1a 20208 1 2 16 2 1faa 1faa 1faa 1faa
@@ -80,7 +80,7 @@
 2 76 63 150017 0 1 400 0 0 clk
 2 77 63 15001e 31 37 602e 75 76
 2 78 63 120012 1 0 20008 0 0 32 64 4 0 0 0 0 0 0 0
-2 79 63 100013 63 2c 2000a 78 0 32 2 aa aa aa aa aa aa aa aa
+2 79 63 100013 63 2c 12000a 78 0 32 2 aa aa aa aa aa aa aa aa
 2 80 0 0 9 1 f00a 0 0 next_state
 2 81 0 0 8 1 f00a 0 0 state
 1 STATE_IDLE 0 80000 1 0 31 0 16 1 1 0 0 0

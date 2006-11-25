@@ -1,14 +1,14 @@
-5 9 1 * 0
+5 a 1 * 0
 8 /ptmp/cvs/covered/diags/verilog -t main -vcd task3.vcd -o task3.cdd -v task3.v
-3 0 $root $root NA 0 0
-3 0 main main task3.v 1 33
+3 0 $root $root NA 0 0 1
+3 0 main main task3.v 1 33 1
 2 1 4 20002 1 0 20008 0 0 32 64 11 0 0 0 0 0 0 0
-2 2 4 10002 2 2c 2100a 1 0 32 2 aa aa aa aa aa aa aa aa
+2 2 4 10002 2 2c 12100a 1 0 32 2 aa aa aa aa aa aa aa aa
 2 3 5 c000f 1 0 20004 0 0 1 4 0
 2 4 5 c000f 1 47 4 3 0 call_task.a
 2 5 5 10012 2 3b 2000a 0 4 1 2 1102 call_task
 2 6 9 20003 1 0 20008 0 0 32 64 44 0 0 0 0 0 0 0
-2 7 9 10003 3 2c 2100a 6 0 32 2 aa aa aa aa aa aa aa aa
+2 7 9 10003 3 2c 12100a 6 0 32 2 aa aa aa aa aa aa aa aa
 2 8 10 c000f 1 0 20008 0 0 1 4 1
 2 9 10 c000f 1 47 8 8 0 call_task.a
 2 10 10 10012 2 3b 2000a 0 9 1 2 1102 call_task
@@ -16,9 +16,9 @@
 4 2 5 0
 4 10 0 0
 4 7 10 0
-3 3 main.call_task main.call_task task3.v 22 31
+3 3 main.call_task main.call_task task3.v 22 31 1
 2 11 27 20004 1 0 20008 0 0 32 64 10 14 0 0 0 0 0 0
-2 12 27 10004 5 2c 3100a 11 0 32 2 aa aa aa aa aa aa aa aa
+2 12 27 10004 5 2c 13100a 11 0 32 2 aa aa aa aa aa aa aa aa
 2 13 0 0 2 4e 20002 0 0 1 2 2
 1 a 24 800006 1 0 0 0 1 1 102
 4 13 0 0

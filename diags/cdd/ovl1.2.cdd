@@ -1,12 +1,12 @@
-5 9 11 * 0
+5 a 11 * 0
 8 /ptmp/cvs/covered/diags/verilog -t main -vcd ovl1.2.vcd -o ovl1.2.cdd -v ovl1.2.v -A ovl +libext+.vlib+ -y ./ovl -I ./ovl -I ./ovl/vlog95
-3 0 $root $root NA 0 0
-3 0 main main ovl1.2.v 1 30
+3 0 $root $root NA 0 0 1
+3 0 main main ovl1.2.v 1 30 1
 1 width 0 80000 1 0 31 0 32 1 10 0 0 0 0 0 0 0
 1 clock 3 3000a 1 0 0 0 1 1 1102
 1 reset_n 4 3000a 1 0 0 0 1 1 102
 1 a 5 3000a 1 0 3 0 4 1 10aa
-3 0 clock_gen main.clkgen ovl1.2.v 33 42
+3 0 clock_gen main.clkgen ovl1.2.v 33 42 1
 2 1 38 100013 1 0 20004 0 0 1 4 0
 2 2 38 8000c 0 1 400 0 0 clock
 2 3 38 80013 1 37 1006 1 2
@@ -15,12 +15,12 @@
 2 6 39 130017 0 1 400 0 0 clock
 2 7 39 130020 29 37 602e 5 6
 2 8 39 110011 1 0 20008 0 0 32 64 1 0 0 0 0 0 0 0
-2 9 39 100011 53 2c 2000a 8 0 32 2 aa aa aa aa aa aa aa aa
+2 9 39 100011 53 2c 12000a 8 0 32 2 aa aa aa aa aa aa aa aa
 1 clock 34 81000d 1 0 0 0 1 1 1102
 4 7 9 9
 4 9 7 0
 4 3 9 9
-3 0 assert_zero_one_hot main.foo ./ovl/assert_zero_one_hot.vlib 6 26
+3 0 assert_zero_one_hot main.foo ./ovl/assert_zero_one_hot.vlib 6 26 1
 2 10 5 180018 1 0 20004 0 0 32 64 0 0 0 0 0 0 0 0
 2 11 5 a0014 0 1 400 0 0 error_count
 2 12 5 a0018 1 37 1006 10 11
@@ -155,7 +155,7 @@
 4 44 40 47
 4 107 44 110
 4 110 107 0
-3 3 assert_zero_one_hot.ovl_cover_t main.foo.ovl_cover_t std_ovl_task.h 75 94
+3 3 assert_zero_one_hot.ovl_cover_t main.foo.ovl_cover_t std_ovl_task.h 75 94 1
 2 111 78 1f001f 1 0 20008 0 0 32 64 1 0 0 0 0 0 0 0
 2 112 78 11001b 1 1 14 0 0 cover_count
 2 113 78 11001f 1 6 20098 111 112 32 66 1eaa faa faa faa faa faa faa faa

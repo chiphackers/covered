@@ -1,7 +1,7 @@
-5 9 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd wait1.vcd -o wait1.cdd -v wait1.v
-3 0 $root $root NA 0 0
-3 0 main main wait1.v 1 24
+5 a 1 * 0
+8 /ptmp/cvs/covered/diags/verilog -t main -vcd wait1.vcd -o wait1.cdd -v wait1.v
+3 0 $root $root NA 0 0 1
+3 0 main main wait1.v 1 24 1
 2 1 6 c000f 1 0 20004 0 0 1 4 0
 2 2 6 80008 0 1 400 0 0 b
 2 3 6 8000f 1 37 1006 1 2

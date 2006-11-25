@@ -1,7 +1,7 @@
-5 9 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd sbit_sel1.vcd -o sbit_sel1.cdd -v sbit_sel1.v
-3 0 $root $root NA 0 0
-3 0 main main sbit_sel1.v 1 33
+5 a 1 * 0
+8 /ptmp/cvs/covered/diags/verilog -t main -vcd sbit_sel1.vcd -o sbit_sel1.cdd -v sbit_sel1.v
+3 0 $root $root NA 0 0 1
+3 0 main main sbit_sel1.v 1 33 1
 2 1 7 d000d 6 0 20008 0 0 32 64 1 0 0 0 0 0 0 0
 2 2 7 b000e 6 23 c 0 1 z
 2 3 7 70007 0 1 400 0 0 a

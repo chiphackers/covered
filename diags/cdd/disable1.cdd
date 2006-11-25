@@ -1,11 +1,11 @@
-5 9 1 * 0
+5 a 1 * 0
 8 /ptmp/cvs/covered/diags/verilog -t main -vcd disable1.vcd -o disable1.cdd -v disable1.v
-3 0 $root $root NA 0 0
-3 0 main main disable1.v 1 28
+3 0 $root $root NA 0 0 1
+3 0 main main disable1.v 1 28 1
 2 1 7 b000f 1 3e 21002 0 0 1 2 2 2
 2 2 7 b000f 2 3d 3100a 0 0 1 2 1102 foo
 2 3 13 e000f 1 0 20008 0 0 32 64 5 1 0 0 0 0 0 0
-2 4 13 d000f 2 2c 3100a 3 0 32 2 aa aa aa aa aa aa aa aa
+2 4 13 d000f 2 2c 13100a 3 0 32 2 aa aa aa aa aa aa aa aa
 2 5 14 d0017 1 40 20002 0 0 1 2 2 foo
 2 6 13 d000f 1 3e 20002 0 0 1 2 2 4
 2 7 16 9000c 2 3f 20002 0 0 1 2 2
@@ -16,12 +16,12 @@
 4 7 0 0
 4 6 7 7
 4 1 6 6
-3 1 main.foo main.foo disable1.v 7 11
+3 1 main.foo main.foo disable1.v 7 11 1
 2 8 8 a000d 1 0 20004 0 0 1 4 0
 2 9 8 60006 0 1 400 0 0 a
 2 10 8 6000d 1 37 11006 8 9
 2 11 9 e000f 1 0 20008 0 0 32 64 10 1 0 0 0 0 0 0
-2 12 9 d000f 1 2c 20002 11 0 32 2 aa aa aa aa aa aa aa aa
+2 12 9 d000f 1 2c 120002 11 0 32 2 aa aa aa aa aa aa aa aa
 2 13 10 110014 0 0 20010 0 0 1 4 1
 2 14 10 d000d 0 1 400 0 0 a
 2 15 10 d0014 0 37 22 13 14

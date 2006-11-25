@@ -1,25 +1,25 @@
-5 9 1 * 0
+5 a 1 * 0
 8 /ptmp/cvs/covered/diags/verilog -t main -vcd hier3.3.vcd -o hier3.3.cdd -v hier3.3.v
-3 0 $root $root NA 0 0
-3 0 main main hier3.3.v 1 14
-3 0 foo main.a hier3.3.v 18 26
-3 0 bar main.a.a hier3.3.v 30 34
+3 0 $root $root NA 0 0 1
+3 0 main main hier3.3.v 1 14 1
+3 0 foo main.a hier3.3.v 18 26 1
+3 0 bar main.a.a hier3.3.v 30 34 1
 1 y 32 30004 1 0 0 0 1 1 2
-3 0 bar main.a.b hier3.3.v 30 34
+3 0 bar main.a.b hier3.3.v 30 34 1
 1 y 32 30004 1 0 0 0 1 1 2
-3 0 bar main.a.c hier3.3.v 30 34
+3 0 bar main.a.c hier3.3.v 30 34 1
 1 y 32 30004 1 0 0 0 1 1 2
-3 0 test main.a.t hier3.3.v 38 48
+3 0 test main.a.t hier3.3.v 38 48 1
 2 1 41 9000c 1 0 20008 0 0 1 4 1
 2 2 41 10005 0 1 400 0 0 t.a.y
 2 3 41 1000c 1 37 100a 1 2
 2 4 42 20002 1 0 20008 0 0 32 64 11 0 0 0 0 0 0 0
-2 5 42 10002 2 2c 2000a 4 0 32 2 aa aa aa aa aa aa aa aa
+2 5 42 10002 2 2c 12000a 4 0 32 2 aa aa aa aa aa aa aa aa
 2 6 43 9000c 1 0 20004 0 0 1 4 0
 2 7 43 10005 0 1 400 0 0 t.a.y
 2 8 43 1000c 1 37 6 6 7
 4 8 0 0
 4 5 8 0
 4 3 5 5
-3 0 boo main.a.t.a hier3.3.v 52 56
+3 0 boo main.a.t.a hier3.3.v 52 56 1
 1 y 54 830004 1 0 0 0 1 1 1002

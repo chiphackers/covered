@@ -1,4 +1,4 @@
-5 9 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd named_block2.vcd -o named_block2.cdd -v named_block2.v
-3 0 $root $root NA 0 0
-3 0 main main named_block2.v 1 15
+5 a 1 * 0
+8 /ptmp/cvs/covered/diags/verilog -t main -vcd named_block2.vcd -o named_block2.cdd -v named_block2.v
+3 0 $root $root NA 0 0 1
+3 0 main main named_block2.v 1 15 1

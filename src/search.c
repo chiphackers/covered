@@ -84,6 +84,7 @@ void search_init() {
     global_funit->name     = strdup_safe( "$root", __FILE__, __LINE__ );
     global_funit->type     = FUNIT_MODULE;
     global_funit->filename = strdup_safe( "NA", __FILE__, __LINE__ );
+    global_funit->ts_unit  = 0;
     funit_link_add( global_funit, &funit_head, &funit_tail );
     curr_funit = global_funit;
 
@@ -291,6 +292,11 @@ void search_free_lists() {
 
 /*
  $Log$
+ Revision 1.28  2006/09/01 04:06:37  phase1geo
+ Added code to support more than one instance tree.  Currently, I am seeing
+ quite a few memory errors that are causing some major problems at the moment.
+ Checkpointing.
+
  Revision 1.27  2006/08/31 22:32:18  phase1geo
  Things are in a state of flux at the moment.  I have added proper parsing support
  for assertions, properties and sequences.  Also added partial support for the $root

@@ -540,7 +540,7 @@ uint64 db_scale_to_precision( uint64 value, func_unit* funit ) {
 
   while( units > global_timescale_precision ) {
     units--;
-    value *= 10;
+    value *= (uint64)10;
   }
 
   return( value );
@@ -2231,6 +2231,13 @@ void db_do_timestep( uint64 time, bool final ) {
 
 /*
  $Log$
+ Revision 1.235  2006/11/25 04:24:39  phase1geo
+ Adding initial code to fully support the timescale directive and its usage.
+ Added -vpi_ts score option to allow the user to specify a top-level timescale
+ value for the generated VPI file (this code has not been tested at this point,
+ however).  Also updated diagnostic Makefile to get the VPI shared object files
+ from the current lib directory (instead of the checked in one).
+
  Revision 1.234  2006/11/22 20:20:01  phase1geo
  Updates to properly support 64-bit time.  Also starting to make changes to
  simulator to support "back simulation" for when the current simulation time

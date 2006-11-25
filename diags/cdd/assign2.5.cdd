@@ -1,7 +1,7 @@
-5 9 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd assign2.5.vcd -o assign2.5.cdd -v assign2.5.v
-3 0 $root $root NA 0 0
-3 0 main main assign2.5.v 1 25
+5 a 1 * 0
+8 /ptmp/cvs/covered/diags/verilog -t main -vcd assign2.5.vcd -o assign2.5.cdd -v assign2.5.v
+3 0 $root $root NA 0 0 1
+3 0 main main assign2.5.v 1 25 1
 2 1 5 170017 2 1 c 0 0 b
 2 2 5 130013 2 1 c 0 0 a
 2 3 5 130017 3 2 2034c 1 2 1 2 110102

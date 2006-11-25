@@ -1,7 +1,7 @@
-5 9 1 * 0
+5 a 1 * 0
 8 /ptmp/cvs/covered/diags/verilog -t main -vcd fsm8.2.vcd -o fsm8.2.cdd -v fsm8.2.v
-3 0 $root $root NA 0 0
-3 0 main main fsm8.2.v 1 52
+3 0 $root $root NA 0 0 1
+3 0 main main fsm8.2.v 1 52 1
 2 1 14 410041 5 0 20008 0 0 32 64 1 0 0 0 0 0 0 0
 2 2 14 360042 5 23 c 0 1 next_state
 2 3 14 290032 1 32 4 0 0 STATE_IDLE
@@ -70,7 +70,7 @@
 2 66 49 e0012 0 1 400 0 0 clock
 2 67 49 e001b 2b 37 602e 65 66
 2 68 49 b000b 1 0 20008 0 0 32 64 1 0 0 0 0 0 0 0
-2 69 49 9000c 57 2c 2000a 68 0 32 2 aa aa aa aa aa aa aa aa
+2 69 49 9000c 57 2c 12000a 68 0 32 2 aa aa aa aa aa aa aa aa
 2 70 0 0 5 0 20008 0 0 32 64 1 0 0 0 0 0 0 0
 2 71 0 0 5 23 f00e 0 70 next_state
 2 72 0 0 4 1 f00e 0 0 state

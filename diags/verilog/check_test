@@ -62,13 +62,10 @@ if( ($mode == 3) || ($mode == 4) ) {
 
       # Check CDD file
       if( -e "${test}.cdd" ) {
-        system( "grep -v \"^8\" ${test}.cdd > ${test}.cdd.tmp1" );
-        system( "grep -v \"^8\" ${CDD_DIR}/${test}.cdd > ${test}.cdd.tmp2" );
-        $check1 = system( "./cdd_diff ${test}.cdd.tmp1 ${test}.cdd.tmp2" );
+        $check1 = system( "./cdd_diff ${test}.cdd ${CDD_DIR}/${test}.cdd" );
         if( ($check1 == 0) && ($rm_cdd == 1) ) {
           system( "rm ${test}.cdd" ) && die;
         }
-        system( "rm -f ${test}.cdd.tmp1 ${test}.cdd.tmp2" ) && die;
       } else {
         $check1 = 1;
       }

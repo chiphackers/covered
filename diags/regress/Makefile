@@ -77,7 +77,9 @@ DIAGS1        = add1            always1         always2         always3         
                 slist1.3        slist2          slist3          slist3.2        slist4 \
                 static1         string1         supply0         supply1         task1 \
                 task1.1         task2           task2.1         task2.2         task2.3 \
-                task3           task3.1         task4           task4.1         toggle \
+                task3           task3.1         task4           task4.1         timescale1 \
+                timescale1.6    timescale1.9    timescale1.12   timescale1.15 \
+                timescale1.16   timescale1.17   timescale1.18   toggle \
                 tri             tri0            tri1            triand          trior \
                 wait1           wait1.1         wand            while1          while1.1 \
                 wor
@@ -169,7 +171,10 @@ IVVCSDIAGS1   = define3         generate1       hier2           hier3           
                 localparam1.1   localparam1.2   localparam1.3   localparam2     localparam3 \
                 mbit_sel5       mbit_sel5.1     mbit_sel5.2     mbit_sel5.3     mbit_sel6 \
                 mbit_sel6.1     mbit_sel6.2     mbit_sel6.3     ovl1            ovl1.1 \
-                ovl1.2          ovl1.3          param10.1       param10.5       port2
+                ovl1.2          ovl1.3          param10.1       param10.5       port2 \
+                timescale1.1    timescale1.2    timescale1.3    timescale1.4    timescale1.5 \
+                timescale1.7    timescale1.8    timescale1.10   timescale1.11   timescale1.13 \
+                timescale1.14   timescale1.19
 IVVCSDIAGS2   =
 IVVCSDIAGS3   =
 IVVCSDIAGS4   =

@@ -28,7 +28,7 @@ Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hi
 Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
   $root                   NA                         0/    0/    0      100%             0/    0/    0      100%
-  main                    while1.1.v                 0/    2/    2        0%             0/    2/    2        0%
+  main                    while1.1.v                 0/    3/    3        0%             0/    3/    3        0%
 ---------------------------------------------------------------------------------------------------------------------
 
     Module: main, File: while1.1.v
@@ -40,6 +40,8 @@ Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hi
       a                         0->1: 1'h0
       ......................... 1->0: 1'h0 ...
       b                         0->1: 1'h0
+      ......................... 1->0: 1'h0 ...
+      c                         0->1: 1'h0
       ......................... 1->0: 1'h0 ...
 
 
