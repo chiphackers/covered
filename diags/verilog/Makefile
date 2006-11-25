@@ -45,7 +45,7 @@ endif
 IVERILOG       = iverilog
 IVERILOG_FLAGS = -cconfig_file -y ./lib -I./include -DRUNTEST
 ifdef VPI
-IVERILOG_FLAGS += -DVPI -m ./libexec/covered.vpi covered_vpi.v
+IVERILOG_FLAGS += -DVPI -m ../../lib/covered.vpi covered_vpi.v
 endif
 IVERILOG_EXEC  = a.out
 IVERILOG_INTER = vvp
@@ -53,14 +53,14 @@ IVERILOG_INTER = vvp
 VCS       = vcs
 VCS_FLAGS = +libext+.v+.vlib+ -y ./lib -y ./ovl +incdir+./ovl +incdir+./include +define+RUNTEST +define+OVL_VERILOG +define+OVL_COVER_ON +v2k -sverilog -PP
 ifdef VPI
-VCS_FLAGS += +define+VPI +vpi -load ./libexec/covered.vcs.so:covered_register -P covered_vpi.tab covered_vpi.v
+VCS_FLAGS += +define+VPI +vpi -load ../../lib/covered.vcs.so:covered_register -P covered_vpi.tab covered_vpi.v
 endif
 VCS_EXEC  = ./simv
 
 CVER      = cver
 CVER_FLAGS = -q +libext+.v+.vlib+ -y ./lib -y ./ovl +incdir+./ovl +incdir+./include +define+RUNTEST +define+OVL_VERILOG +define+OVL_COVER_ON
 ifdef VPI
-CVER_FLAGS += +loadvpi=./libexec/covered.cver.so:vpi_compat_bootstrap covered_vpi.v
+CVER_FLAGS += +loadvpi=../../lib/covered.cver.so:vpi_compat_bootstrap covered_vpi.v
 endif
 CVER_EXEC =
 
@@ -88,7 +88,7 @@ RPT_DIR       = ../rpt
 
 LOGFILE = regress.log
 
-.PHONY:	view_vg_errs check-ovl check-libexec
+.PHONY:	view_vg_errs check-ovl
 
 regress:	$(COVERED) $(DIAGLIST) $(RACELIST) $(MERGELIST) $(MERGE3LIST) $(ERRSCORELIST) $(ERRMERGELIST) $(NOSIMLIST) $(NOSIMERRLIST)
 
@@ -97,15 +97,6 @@ check-ovl:
 		echo "Create symlink called \"ovl\" in the diags/verilog directory to point to base OVL vlib directory"; \
 		exit 1; \
 	fi
-
-check-libexec:
-ifdef VPI
-	@if test ! -h libexec; then \
-		echo "Create symlink called \"libexec\" in the diags/verilog directory to point to the libexec"; \
-		echo "directory that contains the shared objects needed for VPI testing"; \
-		exit 1; \
-	fi
-endif
 
 diagrun:
 	@echo Running $(DIAG)
@@ -150,7 +141,7 @@ endif
 	@rm -f $(DIAG).cfg
 	@./check_test $(DIAG) 1 $(CHK_CODE)
 
-$(DIAGLIST): check-ovl check-libexec
+$(DIAGLIST): check-ovl
 	@if test ! -f $@.done; then \
 		$(MAKE) DIAG=$@ diagrun; \
 	else \

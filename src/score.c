@@ -65,6 +65,7 @@ bool      flag_display_sim_stats = FALSE;               /*!< Specifies if simula
 int       flag_global_generation = GENERATION_SV;       /*!< Specifies the supported global generation value */
 str_link* gen_mod_head           = NULL;                /*!< Pointer to the head of the generation module list */
 str_link* gen_mod_tail           = NULL;                /*!< Pointer to the tail of the generation module list */
+char*     vpi_timescale          = NULL;                /*!< Specifies the user-supplied timescale information for VPI */
 
 extern unsigned long largest_malloc_size;
 extern unsigned long curr_malloc_size;
@@ -78,6 +79,7 @@ extern char**        score_args;
 extern int           score_arg_num;
 
 
+void process_timescale( const char* txt );
 void define_macro( const char* name, const char* value );
 
 
@@ -103,6 +105,12 @@ void score_usage() {
   printf( "                                    is not specified, the module file is called %s\n", DFLT_VPI_NAME );
   printf( "                                    If the -vcd option is specified along with this option, this\n" );
   printf( "                                    option will not be used.\n" );
+  printf( "      -vpi_ts <timescale>          This option is only valid when the -vpi option has been specified.\n" );
+  printf( "                                    This option allows the user to specify a timescale for the generated\n" );
+  printf( "                                    Verilog module.  If this option is not specified, no timescale will\n" );
+  printf( "                                    be created for the generated module.  The value of <timescale> is\n" );
+  printf( "                                    specified as follows (without whitespace):\n" );
+  printf( "                                      (1|10|100)(s|ms|us|ns|ps|fs)/(1|10|100)(s|ms|us|ns|ps|fs)\n" );
   printf( "      -i <instance_name>           Verilog hierarchical scope of top-level module to score.\n" );
   printf( "                                    Necessary if module to verify coverage is not the top-level\n" );
   printf( "                                    module in the design.  If not specified, -t value is used.\n" );
@@ -175,7 +183,10 @@ void score_generate_top_vpi_module( char* vpi_file, char* output_db, char* top_i
 
     if( (vfile = fopen( vpi_file, "w" )) != NULL ) {
   
-      fprintf( vfile, "`timescale 1 ns / 1 ps\nmodule %s;\ninitial $covered_sim( \"%s\", %s );\nendmodule\n", mod_name, output_db, top_inst );
+      if( vpi_timescale != NULL ) {
+        fprintf( vfile, "`timescale %s\n", vpi_timescale );
+      }
+      fprintf( vfile, "module %s;\ninitial $covered_sim( \"%s\", %s );\nendmodule\n", mod_name, output_db, top_inst );
       fclose( vfile );
 
     } else {
@@ -340,6 +351,82 @@ void score_parse_define( char* def ) {
   } else {
     define_macro( def, "1" );
   }
+
+}
+
+/*!
+ \param token  User-specified timescale token (either unit or precision information)
+ \param ts     Output version of token
+*/
+bool score_parse_timescale_token( char* token, char* ts ) {
+
+  bool retval = TRUE;  /* Return value for this function */
+  int  i      = 3;     /* Loop iterator */
+
+  while( (i > 0) && (strncmp( token, "100", i ) != 0) ) i++;
+
+  if( i == 0 ) {
+    retval = FALSE;
+  } else {
+    strncpy( ts, token, i );
+    strcat( ts, " " );
+    token += i;
+    if( strncmp( "s", token, 1 ) == 0 ) {
+      strncat( ts, token, 1 );
+      strcat( ts, " " );
+      token += i;
+      retval = (*token == '\0') ? TRUE : FALSE;
+    } else if( (strncmp( "ms", token, 2 ) == 0) || (strncmp( "us", token, 2 ) == 0) ||
+               (strncmp( "ns", token, 2 ) == 0) || (strncmp( "ps", token, 2 ) == 0) ||
+               (strncmp( "fs", token, 2 ) == 0) ) {
+      strncat( ts, token, 2 );
+      strcat( ts, " " );
+      token += i;
+      retval = (*token == '\0') ? TRUE : FALSE;
+    } else {
+      retval = FALSE;
+    }
+  }
+
+}
+
+/*!
+ \param ts  Timescale string in the format of (1|10|100)(s|ms|us|ns|ps|fs)/(1|10|100)(s|ms|us|ns|ps|fs)
+
+ \return Returns TRUE if timescale string was formatted correctly; otherwise, returns FALSE.
+
+ Parses timescale information from command-line and updates the database accordingly.
+*/
+bool score_parse_timescale( char* ts ) {
+
+  bool retval = TRUE;  /* Return value for this function */
+  int  slash;          /* Index position of '/' character in timestep */
+
+  /* Allocate memory for timescale */
+  vpi_timescale = (char*)malloc_safe( (strlen( ts ) + 6), __FILE__, __LINE__ );
+
+  /* Find slash in timescale information */
+  if( (slash = strcspn( ts, "/" )) > 0 ) {
+    ts[slash] = '\0';
+    if( (retval = score_parse_timescale_token( ts, vpi_timescale )) ) {
+      strcat( vpi_timescale, "/" );
+      retval = score_parse_timescale_token( (ts + slash + 1), (vpi_timescale + strlen( vpi_timescale )) );
+    }
+  } else {
+    retval = FALSE;
+  }
+
+  /* If the timescale information parsed correctly, parse its contents for information */
+  if( retval ) {
+    process_timescale( vpi_timescale );
+
+  /* There was a problem parsing the timescale information, free the memory allocated for it */
+  } else {
+    free_safe( vpi_timescale );
+    vpi_timescale = NULL;
+  }
+
+  return( retval );
 
 }
 
@@ -580,6 +667,23 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
           default :
             assert( 0 );
             break;
+        }
+      }
+
+    } else if( strncmp( "-vpi_ts", argv[i], 7 ) == 0 ) {
+
+      if( (retval = check_option_value( argc, argv, i )) ) {
+        i++;
+        if( vpi_timescale != NULL ) {
+          print_output( "Only one -vpi_ts option is allowed on the score command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
+          if( (i == argc) || (argv[i][0] == '-') ) {
+            i--;
+          }
+        } else {
+          if( (retval = score_parse_timescale( argv[i] )) ) {
+            score_add_arg( argv[i-1] );
+            score_add_arg( argv[i] );
+          }
         }
       }
 
@@ -899,6 +1003,10 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.88  2006/11/21 19:54:13  phase1geo
+ Making modifications to defines.h to help in creating appropriately sized types.
+ Other changes to VPI code (but this is still broken at the moment).  Checkpointing.
+
  Revision 1.87  2006/11/17 23:17:12  phase1geo
  Fixing bug in score command where parameter override values were not being saved
  off properly in the CDD file.  Also fixing bug when a parameter is found in a VCD

@@ -27,6 +27,7 @@
 #include "cv_vpi_user.h"
 #endif
 
+#include "db.h"
 #include "defines.h"
 #include "link.h"
 #include "util.h"
@@ -96,7 +97,9 @@ PLI_INT32 covered_value_change( p_cb_data cb ) {
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
-  if( ((cb->time->low != (last_time & 0xffffffff)) || (cb->time->high != ((last_time & 0xffffffff00000000) >> 32))) && use_last_time ) {
+  if( ((cb->time->low  != (PLI_INT32)(last_time & 0xffffffff)) ||
+       (cb->time->high != (PLI_INT32)((last_time >> 32) & 0xffffffff))) &&
+      use_last_time ) {
     db_do_timestep( last_time, FALSE );
   }
   last_time     = ((uint64)cb->time->high << 32) | (uint64)cb->time->low;
@@ -111,7 +114,9 @@ PLI_INT32 covered_value_change( p_cb_data cb ) {
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
-  if( ((cb->time->low != (last_time & 0xffffffff)) || (cb->time->high != ((last_time & 0xffffffff00000000) >> 32))) && use_last_time ) {
+  if( ((cb->time->low  != (PLI_INT32)(last_time & 0xffffffff)) ||
+       (cb->time->high != (PLI_INT32)((last_time >> 32) & 0xffffffff))) &&
+      use_last_time ) {
     db_do_timestep( last_time, FALSE );
   }
   last_time     = ((uint64)cb->time->high << 32) | (uint64)cb->time->low;

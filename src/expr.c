@@ -1255,6 +1255,11 @@ bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) {
       expr->suppl.all = suppl.all;
       expr->exec_num  = exec_num;
 
+      if( op == EXP_OP_DELAY ) {
+        expr->suppl.part.type = ETYPE_DELAY;
+        expr->elem.scale = &(curr_funit->timescale);
+      }
+
       if( ESUPPL_OWNS_VEC( suppl ) ) {
 
         /* Read in vector information */
@@ -2530,7 +2535,7 @@ bool expression_op_func__delay( expression* expr, thread* thr ) {
   if( thr->exec_first ) {
 
     /* Get number of clocks to delay */
-    intval = vector_to_uint64( expr->right->value );
+    intval = vector_to_uint64( expr->right->value ) * *(expr->elem.scale);
 
     if( ((thr->curr_time + intval) <= curr_sim_time) || final_sim_time ) {
       expr->suppl.part.eval_t = 1;
@@ -3931,6 +3936,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.226  2006/11/24 05:30:15  phase1geo
+ Checking in fix for proper handling of delays.  This does not include the use
+ of timescales (which will be fixed next).  Full IV regression now passes.
+
  Revision 1.225  2006/11/22 20:20:01  phase1geo
  Updates to properly support 64-bit time.  Also starting to make changes to
  simulator to support "back simulation" for when the current simulation time

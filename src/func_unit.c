@@ -489,21 +489,23 @@ bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
       strcpy( modname, tmp );
     }
 
-    fprintf( file, "%d %d %s %s %s %d %d\n",
+    /* Size all elements in this functional unit and calculate timescale if we are in parse mode */
+    if( inst != NULL ) {
+      funit_size_elements( funit, inst, TRUE );
+      funit->timescale = db_scale_to_precision( (uint64)1, funit );
+    }
+  
+    fprintf( file, "%d %d %s %s %s %d %d %lld\n",
       DB_TYPE_FUNIT,
       funit->type,
       modname,
       scope,
       funit->filename,
       funit->start_line,
-      funit->end_line
+      funit->end_line,
+      funit->timescale
     );
 
-    /* Size all elements in this functional unit if we are in parse mode */
-    if( inst != NULL ) {
-      funit_size_elements( funit, inst, TRUE );
-    }
-  
     /* Now print all expressions in functional unit */
     curr_exp = funit->exp_head;
     while( curr_exp != NULL ) {
@@ -609,14 +611,14 @@ bool funit_db_read( func_unit* funit, char* scope, char** line ) {
   int  chars_read;     /* Number of characters currently read */
   int  params;         /* Number of parameters in string that were parsed */
 
-  if( (params = sscanf( *line, "%d %s %s %s %d %d%n", &(funit->type), funit->name, scope, funit->filename,
-              &(funit->start_line), &(funit->end_line), &chars_read )) == 6 ) {
+  if( (params = sscanf( *line, "%d %s %s %s %d %d %lld%n", &(funit->type), funit->name, scope, funit->filename,
+              &(funit->start_line), &(funit->end_line), &(funit->timescale), &chars_read )) == 7 ) {
 
     *line = *line + chars_read;
 
   } else {
 
-    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Incorrect number of parameters for func_unit, should be 6 but is %d\n", params );
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Incorrect number of parameters for func_unit, should be 7 but is %d\n", params );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = FALSE;
 
@@ -978,6 +980,9 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.51  2006/11/03 23:36:36  phase1geo
+ Fixing bug 1590104.  Updating regressions per this change.
+
  Revision 1.50  2006/10/13 22:46:31  phase1geo
  Things are a bit of a mess at this point.  Adding generate12 diagnostic that
  shows a failure in properly handling generates of instances.

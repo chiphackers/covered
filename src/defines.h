@@ -50,7 +50,7 @@
  Contains the CDD version number of all CDD files that this version of Covered can write
  and read.
 */
-#define CDD_VERSION        9
+#define CDD_VERSION        10
 
 /*!
  This contains the header information specified when executing this tool.
@@ -1041,6 +1041,9 @@ typedef enum exp_op_type_e {
 /*! Statement */
 #define ETYPE_STMT      0
 
+/*! Delay */
+#define ETYPE_DELAY     1
+
 /*! @} */
 
 /*! Overload for the snprintf function which verifies that we don't overrun character arrays */
@@ -1725,6 +1728,7 @@ struct expression_s {
   fsm*         table;              /*!< Pointer to FSM table associated with this expression */
   union {
     statement* stmt;               /*!< Pointer to starting task/function statement to be called by this expression */
+    uint64*    scale;              /*!< Pointer to parent functional unit's timescale value */
   } elem;
 };
 
@@ -1920,6 +1924,8 @@ struct func_unit_s {
   char*         filename;            /*!< File name where functional unit exists */
   int           start_line;          /*!< Starting line number of functional unit in its file */
   int           end_line;            /*!< Ending line number of functional unit in its file */
+  int           ts_unit;             /*!< Timescale unit value */
+  uint64        timescale;           /*!< Timescale for this functional unit contents */
   statistic*    stat;                /*!< Pointer to functional unit coverage statistics structure */
   sig_link*     sig_head;            /*!< Head pointer to list of signals in this functional unit */
   sig_link*     sig_tail;            /*!< Tail pointer to list of signals in this functional unit */
@@ -2269,6 +2275,10 @@ struct dim_range_s {
 
 /*
  $Log$
+ Revision 1.242  2006/11/24 05:30:15  phase1geo
+ Checking in fix for proper handling of delays.  This does not include the use
+ of timescales (which will be fixed next).  Full IV regression now passes.
+
  Revision 1.241  2006/11/22 20:20:01  phase1geo
  Updates to properly support 64-bit time.  Also starting to make changes to
  simulator to support "back simulation" for when the current simulation time

@@ -158,6 +158,16 @@ gen_item* curr_gi_block   = NULL;
 */
 gen_item* last_gi         = NULL;
 
+/*!
+ Specifies the current timescale unit shift value.
+*/
+int current_timescale_unit      = 0;
+
+/*!
+ Specifies the global timescale precision shift value.
+*/
+int global_timescale_precision  = 0;
+
 
 /*!
  Deallocates all memory associated with the database.
@@ -428,6 +438,7 @@ bool db_read( char* file, int read_mode ) {
               curr_funit->filename   = strdup_safe( funit_file, __FILE__, __LINE__ );
               curr_funit->start_line = tmpfunit.start_line;
               curr_funit->end_line   = tmpfunit.end_line;
+              curr_funit->timescale  = tmpfunit.timescale;
               if( tmpfunit.type != FUNIT_MODULE ) {
                 curr_funit->parent = scope_get_parent_funit( funit_scope );
                 parent_mod         = scope_get_parent_module( funit_scope );
@@ -512,7 +523,48 @@ bool db_read( char* file, int read_mode ) {
 
 }
 
+/*!
+ \param value  Delay value to scale.
+ \param funit  Pointer to current functional unit of expression to scale.
+
+ \return Returns scaled version of input value.
+
+ Takes in specified delay value and scales it to the correct timescale for the given
+ module.
+*/
+uint64 db_scale_to_precision( uint64 value, func_unit* funit ) {
+
+  int units = funit->ts_unit;
+
+  assert( units >= global_timescale_precision );
+
+  while( units > global_timescale_precision ) {
+    units--;
+    value *= 10;
+  }
+
+  return( value );
+
+}
+
 #ifndef VPI_ONLY
+/*!
+ \param unit       Timescale unit offset value
+ \param precision  Timescale precision offset value
+
+ Sets the global timescale unit and precision variables.
+*/
+void db_set_timescale( int unit, int precision ) {
+
+  current_timescale_unit = unit;
+
+  /* Set the global precision value to the lowest precision value specified */
+  if( precision < global_timescale_precision ) {
+    global_timescale_precision = precision;
+  }
+
+}
+
 /*!
  \param scope  Name of functional unit instance being added.
  \param name   Name of functional unit being instantiated.
@@ -653,6 +705,7 @@ void db_add_module( char* name, char* file, int start_line ) {
   curr_funit             = modl->funit;
   curr_funit->filename   = strdup_safe( file, __FILE__, __LINE__ );
   curr_funit->start_line = start_line;
+  curr_funit->ts_unit    = current_timescale_unit;
   
 }
 
@@ -2178,6 +2231,13 @@ void db_do_timestep( uint64 time, bool final ) {
 
 /*
  $Log$
+ Revision 1.234  2006/11/22 20:20:01  phase1geo
+ Updates to properly support 64-bit time.  Also starting to make changes to
+ simulator to support "back simulation" for when the current simulation time
+ has advanced out quite a bit of time and the simulator needs to catch up.
+ This last feature is not quite working at the moment and regressions are
+ currently broken.  Checkpointing.
+
  Revision 1.233  2006/11/21 19:54:13  phase1geo
  Making modifications to defines.h to help in creating appropriately sized types.
  Other changes to VPI code (but this is still broken at the moment).  Checkpointing.
