@@ -17,7 +17,7 @@ initial begin
         $dumpfile( "timescale2.8.vcd" );
         $dumpvars( 0, main );
 `endif
-        #10;
+        #9;
         $finish;
 end
 

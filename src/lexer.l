@@ -814,7 +814,7 @@ bool process_timescale_token( char* token, char* type, int* value, bool report )
       }
       retval = FALSE;
     }
-    if( retval && (token != '\0') ) {
+    if( retval && (*token != '\0') ) {
       if( report ) {
         VLerror( "Illegal timescale directive specified" );
       }
@@ -834,7 +834,7 @@ bool process_timescale_token( char* token, char* type, int* value, bool report )
 */
 bool process_timescale( const char* txt, bool report ) {
 
-  bool  retval = FALSE;  /* Return value for this function */
+  bool  retval = TRUE;   /* Return value for this function */
   char* str;             /* String version of text minus spaces */
   char* ptr;             /* Pointer to current token */
   int   i;               /* Loop iterator */
@@ -861,14 +861,14 @@ bool process_timescale( const char* txt, bool report ) {
     if( report ) {
       VLerror( "Timescale missing '/' character" );
     }
+    retval = FALSE;
 
   } else {
 
     /* Process the time unit and precision tokens */
     str[i] = '\0';
-    retval |= process_timescale_token( str,           "unit",      &unit, report );
-    if( retval ) {
-      retval |= process_timescale_token( (str + i + 1), "precision", &prec, report );
+    if( (retval = process_timescale_token( str, "unit", &unit, report )) ) {
+      retval = process_timescale_token( (str + i + 1), "precision", &prec, report );
     }
 
   }

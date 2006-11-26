@@ -1,3 +1,3 @@
-ERROR!  Illegal timescale directive specified,
+ERROR!  Invalid timescale settings (unit must be greater than the precision),
         File: timescale3.v, Line: 8, Column: 88
 ERROR!  Error in parsing design
