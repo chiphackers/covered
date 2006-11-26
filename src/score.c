@@ -79,7 +79,7 @@ extern char**        score_args;
 extern int           score_arg_num;
 
 
-void process_timescale( const char* txt );
+bool process_timescale( const char* txt, bool report );
 void define_macro( const char* name, const char* value );
 
 
@@ -355,82 +355,6 @@ void score_parse_define( char* def ) {
 }
 
 /*!
- \param token  User-specified timescale token (either unit or precision information)
- \param ts     Output version of token
-*/
-bool score_parse_timescale_token( char* token, char* ts ) {
-
-  bool retval = TRUE;  /* Return value for this function */
-  int  i      = 3;     /* Loop iterator */
-
-  while( (i > 0) && (strncmp( token, "100", i ) != 0) ) i++;
-
-  if( i == 0 ) {
-    retval = FALSE;
-  } else {
-    strncpy( ts, token, i );
-    strcat( ts, " " );
-    token += i;
-    if( strncmp( "s", token, 1 ) == 0 ) {
-      strncat( ts, token, 1 );
-      strcat( ts, " " );
-      token += i;
-      retval = (*token == '\0') ? TRUE : FALSE;
-    } else if( (strncmp( "ms", token, 2 ) == 0) || (strncmp( "us", token, 2 ) == 0) ||
-               (strncmp( "ns", token, 2 ) == 0) || (strncmp( "ps", token, 2 ) == 0) ||
-               (strncmp( "fs", token, 2 ) == 0) ) {
-      strncat( ts, token, 2 );
-      strcat( ts, " " );
-      token += i;
-      retval = (*token == '\0') ? TRUE : FALSE;
-    } else {
-      retval = FALSE;
-    }
-  }
-
-}
-
-/*!
- \param ts  Timescale string in the format of (1|10|100)(s|ms|us|ns|ps|fs)/(1|10|100)(s|ms|us|ns|ps|fs)
-
- \return Returns TRUE if timescale string was formatted correctly; otherwise, returns FALSE.
-
- Parses timescale information from command-line and updates the database accordingly.
-*/
-bool score_parse_timescale( char* ts ) {
-
-  bool retval = TRUE;  /* Return value for this function */
-  int  slash;          /* Index position of '/' character in timestep */
-
-  /* Allocate memory for timescale */
-  vpi_timescale = (char*)malloc_safe( (strlen( ts ) + 6), __FILE__, __LINE__ );
-
-  /* Find slash in timescale information */
-  if( (slash = strcspn( ts, "/" )) > 0 ) {
-    ts[slash] = '\0';
-    if( (retval = score_parse_timescale_token( ts, vpi_timescale )) ) {
-      strcat( vpi_timescale, "/" );
-      retval = score_parse_timescale_token( (ts + slash + 1), (vpi_timescale + strlen( vpi_timescale )) );
-    }
-  } else {
-    retval = FALSE;
-  }
-
-  /* If the timescale information parsed correctly, parse its contents for information */
-  if( retval ) {
-    process_timescale( vpi_timescale );
-
-  /* There was a problem parsing the timescale information, free the memory allocated for it */
-  } else {
-    free_safe( vpi_timescale );
-    vpi_timescale = NULL;
-  }
-
-  return( retval );
-
-}
-
-/*!
  \param arg  Argument from score command.
  
  Adds the specified argument to the list of score arguments that will be written to the CDD file.
@@ -680,9 +604,11 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
             i--;
           }
         } else {
-          if( (retval = score_parse_timescale( argv[i] )) ) {
+          if( (retval = process_timescale( argv[i], FALSE )) ) {
             score_add_arg( argv[i-1] );
             score_add_arg( argv[i] );
+          } else {
+            print_output( "Timescale specified with -vpi_ts option is in an illegal format", FATAL, __FILE__, __LINE__ );
           }
         }
       }
@@ -1003,6 +929,13 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.89  2006/11/25 04:24:40  phase1geo
+ Adding initial code to fully support the timescale directive and its usage.
+ Added -vpi_ts score option to allow the user to specify a top-level timescale
+ value for the generated VPI file (this code has not been tested at this point,
+ however).  Also updated diagnostic Makefile to get the VPI shared object files
+ from the current lib directory (instead of the checked in one).
+
  Revision 1.88  2006/11/21 19:54:13  phase1geo
  Making modifications to defines.h to help in creating appropriately sized types.
  Other changes to VPI code (but this is still broken at the moment).  Checkpointing.

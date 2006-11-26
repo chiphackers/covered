@@ -1,0 +1,3 @@
+ERROR!  Illegal timescale directive specified,
+        File: timescale3.v, Line: 8, Column: 88
+ERROR!  Error in parsing design

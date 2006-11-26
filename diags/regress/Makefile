@@ -78,8 +78,9 @@ DIAGS1        = add1            always1         always2         always3         
                 static1         string1         supply0         supply1         task1 \
                 task1.1         task2           task2.1         task2.2         task2.3 \
                 task3           task3.1         task4           task4.1         timescale1 \
-                timescale1.6    timescale1.9    timescale1.12   timescale1.15 \
-                timescale1.16   timescale1.17   timescale1.18   toggle \
+                timescale1.6    timescale1.9    timescale1.12   timescale1.15   timescale1.16 \
+                timescale1.17   timescale1.18   timescale2      timescale2.2 \
+                timescale2.3    timescale2.4    timescale2.5    timescale2.8    toggle \
                 tri             tri0            tri1            triand          trior \
                 wait1           wait1.1         wand            while1          while1.1 \
                 wor
@@ -123,7 +124,10 @@ NOSIMERRLIST  = comment1        enum2           err4            err4.1          
                 gen32           gen32.1         gen33           gen33.1         gen34 \
                 gen34.1         gen35           gen35.1         gen36           gen36.1 \
                 gen37           gen37.1         gen38           gen38.1         gen39 \
-                gen39.1         gen40           gen40.1
+                gen39.1         gen40           gen40.1         timescale3      timescale3.1 \
+                timescale3.2    timescale3.3    timescale3.4    timescale3.5    timescale3.6 \
+                timescale3.7    timescale3.8    timescale3.9    timescale3.10   timescale3.11 \
+                timescale3.12   timescale3.13   timescale3.14
            
 IVONLYDIAGS1  = always5.1       assign1         assign2.8       example         fsm1 \
                 fsm1.1          fsm1.2          fsm1.3          fsm1.4          fsm6 \
@@ -174,10 +178,15 @@ IVVCSDIAGS1   = define3         generate1       hier2           hier3           
                 ovl1.2          ovl1.3          param10.1       param10.5       port2 \
                 timescale1.1    timescale1.2    timescale1.3    timescale1.4    timescale1.5 \
                 timescale1.7    timescale1.8    timescale1.10   timescale1.11   timescale1.13 \
-                timescale1.14   timescale1.19
+                timescale1.14   timescale1.19   timescale2.1
 IVVCSDIAGS2   =
 IVVCSDIAGS3   =
 IVVCSDIAGS4   =
+
+CVERVCSDIAGS1 = timescale1.20   timescale2.6    timescale2.7
+CVERVCSDIAGS2 =
+CVERVCSDIAGS3 =
+CVERVCSDIAGS4 =
 
 iverilog:
 	@cd ../verilog; \
@@ -192,24 +201,24 @@ iverilog:
 
 vcs:
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q USE_VCS=1 VERILOG_EXTRA_FLAGS="$(VCS_FLAGS1)" DIAGLIST="$(DIAGS1) $(VCSONLYDIAGS1) $(IVVCSDIAGS1)" MERGELIST="$(MERGE1)" MERGE3LIST="$(MERGE3)" regress
+	$(MAKE) COVERED_GFLAG=-Q USE_VCS=1 VERILOG_EXTRA_FLAGS="$(VCS_FLAGS1)" DIAGLIST="$(DIAGS1) $(VCSONLYDIAGS1) $(IVVCSDIAGS1) $(CVERVCSDIAGS1)" MERGELIST="$(MERGE1)" MERGE3LIST="$(MERGE3)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q USE_VCS=1 VERILOG_EXTRA_FLAGS="$(VCS_FLAGS2)" DIAGLIST="$(DIAGS2) $(VCSONLYDIAGS2) $(IVVCSDIAGS2)" regress
+	$(MAKE) COVERED_GFLAG=-Q USE_VCS=1 VERILOG_EXTRA_FLAGS="$(VCS_FLAGS2)" DIAGLIST="$(DIAGS2) $(VCSONLYDIAGS2) $(IVVCSDIAGS2) $(CVERVCSDIAGS2)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q USE_VCS=1 VERILOG_EXTRA_FLAGS="$(VCS_FLAGS3)" DIAGLIST="$(DIAGS3) $(VCSONLYDIAGS3) $(IVVCSDIAGS3)" regress
+	$(MAKE) COVERED_GFLAG=-Q USE_VCS=1 VERILOG_EXTRA_FLAGS="$(VCS_FLAGS3)" DIAGLIST="$(DIAGS3) $(VCSONLYDIAGS3) $(IVVCSDIAGS3) $(CVERVCSDIAGS3)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q USE_VCS=1 VERILOG_EXTRA_FLAGS="$(VCS_FLAGS4)" DIAGLIST="$(DIAGS4) $(VCSONLYDIAGS4) $(IVVCSDIAGS4)" regress
+	$(MAKE) COVERED_GFLAG=-Q USE_VCS=1 VERILOG_EXTRA_FLAGS="$(VCS_FLAGS4)" DIAGLIST="$(DIAGS4) $(VCSONLYDIAGS4) $(IVVCSDIAGS4) $(CVERVCSDIAGS4)" regress
 	@cd ../verilog;  $(MAKE) eot;  $(MAKE) clean
 
 cver:
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q USE_CVER=1 VERILOG_EXTRA_FLAGS="$(CVER_FLAGS1)" DIAGLIST="$(DIAGS1) $(CVERONLYDIAGS1)" MERGELIST="$(MERGE1)" MERGE3LIST="$(MERGE3)" regress
+	$(MAKE) COVERED_GFLAG=-Q USE_CVER=1 VERILOG_EXTRA_FLAGS="$(CVER_FLAGS1)" DIAGLIST="$(DIAGS1) $(CVERONLYDIAGS1) $(CVERVCSDIAGS1)" MERGELIST="$(MERGE1)" MERGE3LIST="$(MERGE3)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q USE_CVER=1 VERILOG_EXTRA_FLAGS="$(CVER_FLAGS2)" DIAGLIST="$(DIAGS2) $(CVERONLYDIAGS2)" regress
+	$(MAKE) COVERED_GFLAG=-Q USE_CVER=1 VERILOG_EXTRA_FLAGS="$(CVER_FLAGS2)" DIAGLIST="$(DIAGS2) $(CVERONLYDIAGS2) $(CVERVCSDIAGS2)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q USE_CVER=1 VERILOG_EXTRA_FLAGS="$(CVER_FLAGS3)" DIAGLIST="$(DIAGS3) $(CVERONLYDIAGS3)" regress
+	$(MAKE) COVERED_GFLAG=-Q USE_CVER=1 VERILOG_EXTRA_FLAGS="$(CVER_FLAGS3)" DIAGLIST="$(DIAGS3) $(CVERONLYDIAGS3) $(CVERVCSDIAGS3)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q USE_CVER=1 VERILOG_EXTRA_FLAGS="$(CVER_FLAGS4)" DIAGLIST="$(DIAGS4) $(CVERONLYDIAGS4)" regress
+	$(MAKE) COVERED_GFLAG=-Q USE_CVER=1 VERILOG_EXTRA_FLAGS="$(CVER_FLAGS4)" DIAGLIST="$(DIAGS4) $(CVERONLYDIAGS4) $(CVERVCSDIAGS4)" regress
 	@cd ../verilog;  $(MAKE) eot;  $(MAKE) clean
 
 clean:

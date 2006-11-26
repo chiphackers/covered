@@ -1,0 +1,3 @@
+ERROR!  Illegal time unit measurement specified (must be 's', 'ms', 'us', 'ns', 'ps' or 'fs'),
+        File: timescale3.1.v, Line: 9, Column: 65
+ERROR!  Error in parsing design

@@ -66,7 +66,7 @@ extern sig_range  curr_urange;
 static int  state_enter;
 static void line_directive();
 static void line_directive2();
-void process_timescale( const char* txt );
+bool process_timescale( const char* txt, bool report );
 static int  yywrap();
 
 /*!
@@ -653,12 +653,13 @@ WSPACE [ \t\b\f]+
         state_enter         = YY_START;
 	BEGIN( PPTIMESCALE );
  }
-<PPTIMESCALE>.*      {
+<PPTIMESCALE>.      {
         yylloc.first_column = yylloc.last_column;
         yylloc.last_column += strlen( yytext );
-        process_timescale( yytext );
+        yymore();
  }
 <PPTIMESCALE>\n      {
+     process_timescale( yytext, TRUE );
      yylloc.first_line += 1;
      BEGIN( state_enter );
      yylloc.last_column = 0;
@@ -776,87 +777,117 @@ static void line_directive2() {
 }
 
 /*!
+ \param token   User-specified timescale token (either unit or precision information)
+ \param type    String specifying timescale token type ("unit" or "precision")
+ \param value   Integer value to store shift information in
+ \param report  If set to TRUE, calls VLerror with appropriate error information
+
+ Parses either the time unit or time precision token.
+*/
+bool process_timescale_token( char* token, char* type, int* value, bool report ) {
+
+  bool retval = TRUE;         /* Return value for this function */
+  int  i      = 3;            /* Loop iterator */
+  char msg[USER_MSG_LENGTH];  /* Error message container */
+
+  while( (i > 0) && (strncmp( token, "100", i ) != 0) ) i--;
+
+  if( i == 0 ) {
+    if( report ) {
+      snprintf( msg, USER_MSG_LENGTH, "Illegal time %s value specified (must be 1, 10 or 100)", type );
+      VLerror( msg );
+    }
+    retval = FALSE;
+  } else {
+    *value = i - 1;
+    token += i;
+    if(      strncmp(  "s", token, 1 ) == 0 ) { token += 1; }
+    else if( strncmp( "ms", token, 2 ) == 0 ) { token += 2;  *value -= 3; }
+    else if( strncmp( "us", token, 2 ) == 0 ) { token += 2;  *value -= 6; }
+    else if( strncmp( "ns", token, 2 ) == 0 ) { token += 2;  *value -= 9; }
+    else if( strncmp( "ps", token, 2 ) == 0 ) { token += 2;  *value -= 12; }
+    else if( strncmp( "fs", token, 2 ) == 0 ) { token += 2;  *value -= 15; }
+    else {
+      if( report ) {
+        snprintf( msg, USER_MSG_LENGTH, "Illegal time %s measurement specified (must be 's', 'ms', 'us', 'ns', 'ps' or 'fs')", type );
+        VLerror( msg );
+      }
+      retval = FALSE;
+    }
+    if( retval && (token != '\0') ) {
+      if( report ) {
+        VLerror( "Illegal timescale directive specified" );
+      }
+      retval = FALSE;
+    }
+  }
+
+  return( retval );
+
+}
+
+/*!
+ \param txt     String containing timescale information
+ \param report  If set to TRUE, reports any error information to the VLerror function
+
  Processes a text string into timescale information.
 */
-void process_timescale( const char* txt ) {
+bool process_timescale( const char* txt, bool report ) {
 
-  unsigned    num;       /* Time unit or precision value */
-  const char* cp;        /* Pointer to current string to parse */
-  char*       tmp;       /* Temporary string pointer */
-  const char* ctmp;      /* Temporary string pointer */
-  int         unit = 0;  /* Time unit offset */
-  int         prec = 0;  /* Time precision offset */
+  bool  retval = FALSE;  /* Return value for this function */
+  char* str;             /* String version of text minus spaces */
+  char* ptr;             /* Pointer to current token */
+  int   i;               /* Loop iterator */
+  int   num_spaces = 0;  /* Number of spaces found in given string */
+  int   unit = 0;        /* Time unit offset */
+  int   prec = 0;        /* Time precision offset */
 
-  cp  = txt + strspn( txt, " \t" );
-  num = strtoul( cp, &tmp, 10 );
-  if( num == 0 ) {
-    VLerror( "Invalid `timescale string." );
-    return;
+  /* Copy the given string */
+  str = strdup( txt );
+
+  /* Remove all spaces */
+  for( i=0; i<(strlen( str )+1); i++ ) {
+    if( (str[i] == ' ') || (str[i] == '\t') || (str[i] == '\n') ) {
+      num_spaces++;
+    } else {
+      str[i-num_spaces] = str[i];
+    }
   }
 
-  while( num >= 10 ) {
-    unit++;
-    num /= 10;
+  /* Get timescale tokens */
+  i = strcspn( str, "/" );
+  if( i == strlen( str ) ) {
+
+    if( report ) {
+      VLerror( "Timescale missing '/' character" );
+    }
+
+  } else {
+
+    /* Process the time unit and precision tokens */
+    str[i] = '\0';
+    retval |= process_timescale_token( str,           "unit",      &unit, report );
+    if( retval ) {
+      retval |= process_timescale_token( (str + i + 1), "precision", &prec, report );
+    }
+
   }
-  if( num != 1 ) {
-    VLerror( "Invalid `timescale unit number (must be 1, 10 or 100)." );
-    return;
-  }
-
-  cp   = tmp;
-  cp  += strspn( cp, " \t" );
-  ctmp = cp + strcspn( cp, " \t/" );
-
-  if(      strncmp(  "s", cp, (ctmp - cp) ) == 0 ) { unit -= 0; }
-  else if( strncmp( "ms", cp, (ctmp - cp) ) == 0 ) { unit -= 3; }
-  else if( strncmp( "us", cp, (ctmp - cp) ) == 0 ) { unit -= 6; }
-  else if( strncmp( "ns", cp, (ctmp - cp) ) == 0 ) { unit -= 9; }
-  else if( strncmp( "ps", cp, (ctmp - cp) ) == 0 ) { unit -= 12; }
-  else if( strncmp( "fs", cp, (ctmp - cp) ) == 0 ) { unit -= 15; }
-  else {
-      VLerror( "Invalid timescale unit of measurement (must be 's', 'ms', 'us', 'ns', 'ps' or 'fs')." );
-      return;
-  }
-
-  cp  = ctmp;
-  cp += strspn( cp, " \t/" );
-
-  num = strtoul( cp, &tmp, 10 );
-  if( num == 0 ) {
-    VLerror( "Invalid timescale string." );
-    return;
+  
+  /* Check to make sure that the unit setting is greater than the precision */
+  if( retval && (unit < prec) ) {
+    if( report ) {
+      VLerror( "Invalid timescale settings (unit must be greater than the precision)" );
+    }
+    retval = FALSE;
   }
 
-  while( num >= 10 ) {
-    prec++;
-    num /= 10;
-  }
-  if( num != 1 ) {
-    VLerror( "Invalid timescale precision number (must be 1, 10 or 100)." );
-    return;
+  /* Handle the timescale with the database */
+  if( retval ) {
+    db_set_timescale( unit, prec );
   }
 
-  cp   = tmp;
-  cp  += strspn( cp, " \t" );
-  ctmp = cp + strcspn( cp, " \t\r" );
-
-  if(      strncmp(  "s", cp, (ctmp - cp) ) == 0 ) { prec -= 0; }
-  else if( strncmp( "ms", cp, (ctmp - cp) ) == 0 ) { prec -= 3; }
-  else if( strncmp( "us", cp, (ctmp - cp) ) == 0 ) { prec -= 6; }
-  else if( strncmp( "ns", cp, (ctmp - cp) ) == 0 ) { prec -= 9; }
-  else if( strncmp( "ps", cp, (ctmp - cp) ) == 0 ) { prec -= 12; }
-  else if( strncmp( "fs", cp, (ctmp - cp) ) == 0 ) { prec -= 15; }
-  else {
-    VLerror( "Invalid timescale precision units of measurement (must be 's', 'ms', 'us', 'ns', 'ps' or 'fs')." );
-    return;
-  }
-
-  if( unit < prec ) {
-    VLerror( "Invalid timescale settings (unit must be greater than the precision)." );
-    return;
-  }
-
-  db_set_timescale( unit, prec );
+  /* Finally, deallocate memory */
+  free_safe( str );
 
 }
 

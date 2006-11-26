@@ -48,10 +48,14 @@ sub handle_mismatch {
 
   # Handle the report files first
   if( -e "${file}" ) {
-    if( $cdd == 1 ) {
-      system( "./cdd_diff ${file} ${dir}/${file}" );
+    if( ! -e "${dir}/${file}" ) {
+      system( "cat ${file}" );
     } else {
-      system( "diff ${file} ${dir}" );
+      if( $cdd == 1 ) {
+        system( "./cdd_diff ${file} ${dir}/${file}" );
+      } else {
+        system( "diff ${file} ${dir}" );
+      }
     }
     if( $a == 1 ) {
       print "Difference is for ${file} - Accept? (y|n|a|q) [y] ";
