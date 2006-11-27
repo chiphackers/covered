@@ -50,10 +50,10 @@ bool vsignal_db_read( char** line, func_unit* curr_funit );
 bool vsignal_db_merge( vsignal* base, char** line, bool same );
 
 /*! \brief Propagates specified signal information to rest of design. */
-void vsignal_propagate( vsignal* sig );
+void vsignal_propagate( vsignal* sig, uint64 sim_time );
 
 /*! \brief Assigns specified VCD value to specified vsignal. */
-void vsignal_vcd_assign( vsignal* sig, char* value, int msb, int lsb );
+void vsignal_vcd_assign( vsignal* sig, char* value, int msb, int lsb, uint64 sim_time );
 
 /*! \brief Adds an expression to the vsignal list. */
 void vsignal_add_expression( vsignal* sig, expression* expr );
@@ -76,6 +76,11 @@ void vsignal_dealloc( vsignal* sig );
 
 /*
  $Log$
+ Revision 1.17  2006/09/20 22:38:10  phase1geo
+ Lots of changes to support memories and multi-dimensional arrays.  We still have
+ issues with endianness and VCS regressions have not been run, but this is a significant
+ amount of work that needs to be checkpointed.
+
  Revision 1.16  2006/09/15 22:14:54  phase1geo
  Working on adding arrayed signals.  This is currently in progress and doesn't
  even compile at this point, much less work.  Checkpointing work.

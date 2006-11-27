@@ -179,7 +179,7 @@ void sim_display_thread_queue( thread** head ) {
   }
 
   while( curr != NULL ) {
-    printf( "     stmt %d, %s, line %d  ", curr->curr->exp->id, expression_string_op( curr->curr->exp->op ), curr->curr->exp->line );
+    printf( "     stmt %d, %s, line %d, resim: %d  ", curr->curr->exp->id, expression_string_op( curr->curr->exp->op ), curr->curr->exp->line, curr->resim_needed );
     if( curr == thread_head ) {
       printf( "H" );
     }
@@ -193,15 +193,16 @@ void sim_display_thread_queue( thread** head ) {
 }
 
 /*!
- \param thr   Pointer to thread to add to the tail of the simulation queue.
- \param head  Pointer to head of thread queue to add the specified thread to.
- \param tail  Pointer to tail of thread queue to add the specified thread to.
+ \param thr       Pointer to thread to add to the tail of the simulation queue.
+ \param sim_time  Current simulation time of thread to push
+ \param head      Pointer to head of thread queue to add the specified thread to.
+ \param tail      Pointer to tail of thread queue to add the specified thread to.
 
  Adds the specified thread to the end of the current simulation queue.  This function gets
  called whenever a head statement has a signal change or the head statement is a delay operation
  and
 */
-void sim_thread_push( thread* thr, thread** head, thread** tail ) {
+void sim_thread_push( thread* thr, uint64 sim_time, thread** head, thread** tail ) {
 
   // printf( "Before thread is pushed...\n" );
 
@@ -224,6 +225,9 @@ void sim_thread_push( thread* thr, thread** head, thread** tail ) {
 
     /* Set the queue indicator to TRUE */
     thr->queued = TRUE;
+
+    /* Set the current time of the thread to the given value */
+    thr->curr_time = sim_time;
 
     // printf( "After thread is pushed...\n" );
     // sim_display_thread_queue( head );
@@ -254,13 +258,13 @@ void sim_thread_pop_head() {
     tmp_head->next = tmp_head->prev = NULL;
 
     /* If the thread needs to be resimulated, add it to the resim queue */
-    if( tmp_head->resim_needed ) {
-      sim_thread_push( tmp_head, &resim_head, &resim_tail );
+    if( tmp_head->resim_needed && (tmp_head->child_head == NULL) ) {
+      sim_thread_push( tmp_head, tmp_head->curr_time, &resim_head, &resim_tail );
 
     /* If the last request was a delay request, add it to the delay queue */
     } else if( (tmp_head->curr->exp->op == EXP_OP_DELAY) ||
                (tmp_head->curr->exp->op == EXP_OP_DLY_ASSIGN) ) {
-      sim_thread_push( tmp_head, &delay_head, &delay_tail );
+      sim_thread_push( tmp_head, tmp_head->curr_time, &delay_head, &delay_tail );
     }
 
     /* If the queue is now empty, set tail to NULL as well */
@@ -276,7 +280,8 @@ void sim_thread_pop_head() {
 }
 
 /*!
- \param expr  Pointer to expression that contains a changed signal value.
+ \param expr      Pointer to expression that contains a changed signal value.
+ \param sim_time  Specifies current simulation time for the thread to push.
 
  Traverses up expression tree pointed to by leaf node expr, setting the
  CHANGED bits as it reaches the root expression.  When the root expression is
@@ -286,15 +291,16 @@ void sim_thread_pop_head() {
  bit set, we know that the statement has already been added, so stop here and
  do not add the statement again.
 */
-void sim_expr_changed( expression* expr ) {
+void sim_expr_changed( expression* expr, uint64 sim_time ) {
 
   assert( expr != NULL );
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In sim_expr_changed, expr %d, op %s, line %d, left_changed: %d, right_changed: %d",
+  snprintf( user_msg, USER_MSG_LENGTH, "In sim_expr_changed, expr %d, op %s, line %d, left_changed: %d, right_changed: %d, time: %llu",
             expr->id, expression_string_op( expr->op ), expr->line,
             ESUPPL_IS_LEFT_CHANGED( expr->suppl ),
-            ESUPPL_IS_RIGHT_CHANGED( expr->suppl ) );
+            ESUPPL_IS_RIGHT_CHANGED( expr->suppl ),
+            sim_time );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
@@ -326,7 +332,7 @@ void sim_expr_changed( expression* expr ) {
       }
 
       /* Continue up the tree */
-      sim_expr_changed( expr->parent->expr );
+      sim_expr_changed( expr->parent->expr, sim_time );
 
     /*
      Otherwise, if we have hit the root expression and the parent pointer is valid, add 
@@ -334,7 +340,7 @@ void sim_expr_changed( expression* expr ) {
     */
     } else if( expr->parent->expr != NULL ) {
 
-      sim_thread_push( expr->parent->stmt->thr, &thread_head, &thread_tail );
+      sim_thread_push( expr->parent->stmt->thr, sim_time, &thread_head, &thread_tail );
 
     }
 
@@ -396,6 +402,8 @@ thread* sim_add_thread( thread* parent, statement* stmt ) {
         parent->child_tail->next_sib = thr;
         parent->child_tail           = thr;
       }
+      thr->curr_time    = parent->curr_time;
+      thr->resim_needed = parent->resim_needed;
     }
 
     /* Add this thread to the simulation thread queue */
@@ -524,7 +532,8 @@ void sim_kill_thread( thread* thr ) {
       thr->parent->next->prev = thr->parent;
     }
     thread_head = thr->parent;
-    thr->parent->curr_time = thr->curr_time;
+    thr->parent->curr_time    = thr->curr_time;
+    thr->parent->resim_needed = thr->resim_needed;
   } else {
     thread_head = thread_head->next;
     if( thread_head == NULL ) {
@@ -589,7 +598,7 @@ void sim_add_statics() {
   
   curr = static_expr_head;
   while( curr != NULL ) {
-    sim_expr_changed( curr->exp );
+    sim_expr_changed( curr->exp, 0 );
     curr = curr->next;
   }
   
@@ -828,6 +837,10 @@ void sim_simulate_final() {
 
 /*
  $Log$
+ Revision 1.76  2006/11/24 05:30:15  phase1geo
+ Checking in fix for proper handling of delays.  This does not include the use
+ of timescales (which will be fixed next).  Full IV regression now passes.
+
  Revision 1.75  2006/11/22 20:20:01  phase1geo
  Updates to properly support 64-bit time.  Also starting to make changes to
  simulator to support "back simulation" for when the current simulation time

@@ -2224,13 +2224,17 @@ void db_do_timestep( uint64 time, bool final ) {
 #endif
 
   /* Assign all stored values in current post-timestep to stored signals */
-  symtable_assign();
+  symtable_assign( time );
 
 }
 
 
 /*
  $Log$
+ Revision 1.236  2006/11/25 21:29:01  phase1geo
+ Adding timescale diagnostics to regression suite and fixing bugs in core associated
+ with this code.  Full regression now passes for IV and Cver (not in VPI mode).
+
  Revision 1.235  2006/11/25 04:24:39  phase1geo
  Adding initial code to fully support the timescale directive and its usage.
  Added -vpi_ts score option to allow the user to specify a top-level timescale

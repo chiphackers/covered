@@ -122,7 +122,7 @@ bool expression_is_last_select( expression* expr );
 void expression_set_assigned( expression* expr );
 
 /*! \brief Performs blocking assignment assignment to variables. */
-void expression_assign( expression* lhs, expression* rhs, int* lsb );
+void expression_assign( expression* lhs, expression* rhs, int* lsb, uint64 sim_time );
 
 /*! \brief Deallocates memory used for expression. */
 void expression_dealloc( expression* expr, bool exp_only );
@@ -130,6 +130,9 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.52  2006/10/12 22:48:46  phase1geo
+ Updates to remove compiler warnings.  Still some work left to go here.
+
  Revision 1.51  2006/09/20 22:38:09  phase1geo
  Lots of changes to support memories and multi-dimensional arrays.  We still have
  issues with endianness and VCS regressions have not been run, but this is a significant

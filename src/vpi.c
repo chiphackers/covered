@@ -132,12 +132,20 @@ PLI_INT32 covered_value_change( p_cb_data cb ) {
 
 PLI_INT32 covered_end_of_sim( p_cb_data cb ) {
 
+  p_vpi_time final_time;
+
   if( use_last_time ) {
     db_do_timestep( last_time, FALSE );
   }
 
+  /* Get the final simulation time */
+  final_time       = (p_vpi_time)malloc_safe( sizeof( s_vpi_time ), __FILE__, __LINE__ );
+  final_time->type = vpiSimTime;
+  vpi_get_time( NULL, final_time );
+
   /* Flush any pending statement trees that are waiting for delay */
-  db_do_timestep( 0, TRUE );
+  last_time = ((uint64)final_time->high << 32) | (uint64)final_time->low;
+  db_do_timestep( last_time, FALSE );
 
   /* Indicate that this CDD contains scored information */
   info_suppl.part.scored = 1;

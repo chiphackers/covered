@@ -398,13 +398,14 @@ bool vsignal_db_merge( vsignal* base, char** line, bool same ) {
 }
 
 /*!
- \param sig  Pointer to signal to propagate change information from.
+ \param sig       Pointer to signal to propagate change information from.
+ \param sim_time  Current simulation time when signal changed.
 
   When the specified signal in the parameter list has changed values, this function
   is called to propagate the value change to the simulator to cause any statements
   waiting on this value change to be resimulated.
 */
-void vsignal_propagate( vsignal* sig ) {
+void vsignal_propagate( vsignal* sig, uint64 sim_time ) {
 
   exp_link* curr_expr;  /* Pointer to current expression in signal list */
 
@@ -416,7 +417,7 @@ void vsignal_propagate( vsignal* sig ) {
     if( (ESUPPL_IS_LHS( curr_expr->exp->suppl ) == 0) &&
         (curr_expr->exp->op != EXP_OP_FUNC_CALL) &&
         (curr_expr->exp->op != EXP_OP_PASSIGN) ) {
-      sim_expr_changed( curr_expr->exp );
+      sim_expr_changed( curr_expr->exp, sim_time );
     }
 
     curr_expr = curr_expr->next;
@@ -426,16 +427,17 @@ void vsignal_propagate( vsignal* sig ) {
 }
 
 /*!
- \param sig    Pointer to vsignal to assign VCD value to.
- \param value  String version of VCD value.
- \param msb    Most significant bit to assign to.
- \param lsb    Least significant bit to assign to.
+ \param sig       Pointer to vsignal to assign VCD value to.
+ \param value     String version of VCD value.
+ \param msb       Most significant bit to assign to.
+ \param lsb       Least significant bit to assign to.
+ \param sim_time  Current simulation time signal is being assigned.
 
  Assigns the associated value to the specified vsignal's vector.  After this, it
  iterates through its expression list, setting the TRUE and FALSE bits accordingly.
  Finally, calls the simulator expr_changed function for each expression.
 */
-void vsignal_vcd_assign( vsignal* sig, char* value, int msb, int lsb ) {
+void vsignal_vcd_assign( vsignal* sig, char* value, int msb, int lsb, uint64 sim_time ) {
 
   bool vec_changed;  /* Specifies if assigned value differed from original value */
 
@@ -465,7 +467,7 @@ void vsignal_vcd_assign( vsignal* sig, char* value, int msb, int lsb ) {
   if( vec_changed ) {
 
     /* Propagate signal changes to rest of design */
-    vsignal_propagate( sig );
+    vsignal_propagate( sig, sim_time );
 
   } 
 
@@ -676,6 +678,9 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.39  2006/10/12 22:48:46  phase1geo
+ Updates to remove compiler warnings.  Still some work left to go here.
+
  Revision 1.38  2006/09/25 22:22:29  phase1geo
  Adding more support for memory reporting to both score and report commands.
  We are getting closer; however, regressions are currently broken.  Checkpointing.

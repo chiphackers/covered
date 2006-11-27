@@ -2550,12 +2550,9 @@ bool expression_op_func__delay( expression* expr, thread* thr ) {
       thr->resim_needed = FALSE;
     }
 
-  /* If we do not need to resimulate, load the current simulation time */
-  } else if( !thr->resim_needed ) {
-
-    thr->curr_time = curr_sim_time;
-
   }
+
+  printf( "Current time: %llu\n", thr->curr_time );
 
   return( retval );
 
@@ -2575,7 +2572,7 @@ bool expression_op_func__trigger( expression* expr, thread* thr ) {
   expr->value->value[0].part.exp.value = 1;
 
   /* Propagate event */
-  vsignal_propagate( expr->sig );
+  vsignal_propagate( expr->sig, thr->curr_time );
 
   return( TRUE );
 
@@ -2654,7 +2651,7 @@ bool expression_op_func__bassign( expression* expr, thread* thr ) {
 
   int intval = 0;  /* Integer value */
 
-  expression_assign( expr->left, expr->right, &intval );
+  expression_assign( expr->left, expr->right, &intval, thr->curr_time );
 
   return( TRUE );
 
@@ -2875,7 +2872,7 @@ bool expression_op_func__passign( expression* expr, thread* thr ) {
     /* If the connected signal is an input type, copy the parameter expression value to this vector */
     case SSUPPL_TYPE_INPUT :
       retval = vector_set_value( expr->value, expr->right->value->value, expr->right->value->suppl.part.type, expr->right->value->width, 0, 0 );
-      vsignal_propagate( expr->sig );
+      vsignal_propagate( expr->sig, thr->curr_time );
       break;
 
     /*
@@ -2883,7 +2880,7 @@ bool expression_op_func__passign( expression* expr, thread* thr ) {
      to the right expression.
     */
     case SSUPPL_TYPE_OUTPUT :
-      expression_assign( expr->right, expr, &intval );
+      expression_assign( expr->right, expr, &intval, thr->curr_time );
       retval = TRUE;
       break;
 
@@ -3010,7 +3007,7 @@ bool expression_op_func__iinc( expression* expr, thread* thr ) {
 #endif
 
   /* Propagate value change */
-  vsignal_propagate( expr->left->sig );
+  vsignal_propagate( expr->left->sig, thr->curr_time );
 
   return( TRUE );
 
@@ -3039,7 +3036,7 @@ bool expression_op_func__pinc( expression* expr, thread* thr ) {
 #endif
 
   /* Propagate value change */
-  vsignal_propagate( expr->left->sig );
+  vsignal_propagate( expr->left->sig, thr->curr_time );
 
   return( TRUE );
 
@@ -3068,7 +3065,7 @@ bool expression_op_func__idec( expression* expr, thread* thr ) {
 #endif
 
   /* Propagate value change */
-  vsignal_propagate( expr->left->sig );
+  vsignal_propagate( expr->left->sig, thr->curr_time );
 
   return( TRUE );
 
@@ -3097,7 +3094,7 @@ bool expression_op_func__pdec( expression* expr, thread* thr ) {
 #endif
 
   /* Propagate value change */
-  vsignal_propagate( expr->left->sig );
+  vsignal_propagate( expr->left->sig, thr->curr_time );
 
   return( TRUE );
 
@@ -3123,7 +3120,7 @@ bool expression_op_func__dly_assign( expression* expr, thread* thr ) {
 
   /* Check the dly_op expression.  If eval_t is set to 1, perform the assignment */
   if( ESUPPL_IS_TRUE( expr->right->suppl ) == 1 ) {
-    expression_assign( expr->left, expr->right, &intval );
+    expression_assign( expr->left, expr->right, &intval, thr->curr_time );
     expr->suppl.part.eval_t = 1;
     retval = TRUE;
   } else {
@@ -3595,14 +3592,15 @@ void expression_set_assigned( expression* expr ) {
 }
 
 /*!
- \param lhs  Pointer to current expression on left-hand-side of assignment to calculate for.
- \param rhs  Pointer to the right-hand-expression that will be assigned from.
- \param lsb  Current least-significant bit in rhs value to start assigning.
+ \param lhs       Pointer to current expression on left-hand-side of assignment to calculate for.
+ \param rhs       Pointer to the right-hand-expression that will be assigned from.
+ \param lsb       Current least-significant bit in rhs value to start assigning.
+ \param sim_time  Specifies current simulation time when expression assignment occurs.
 
  Recursively iterates through specified LHS expression, assigning the value from the RHS expression.
  This is called whenever a blocking assignment expression is found during simulation.
 */
-void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
+void expression_assign( expression* lhs, expression* rhs, int* lsb, uint64 sim_time ) {
 
   int       intval1;    /* Integer value to use */
   vec_data* vstart;     /* Starting vector data */
@@ -3641,8 +3639,8 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
 
 #ifdef DEBUG_MODE
     if( assign ) {
-      snprintf( user_msg, USER_MSG_LENGTH, "        In expression_assign, lhs_op: %s, rhs_op: %s, lsb: %d",
-                expression_string_op( lhs->op ), expression_string_op( rhs->op ), *lsb );
+      snprintf( user_msg, USER_MSG_LENGTH, "        In expression_assign, lhs_op: %s, rhs_op: %s, lsb: %d, time: %llu",
+                expression_string_op( lhs->op ), expression_string_op( rhs->op ), *lsb, sim_time );
       print_output( user_msg, DEBUG, __FILE__, __LINE__ );
     }
 #endif
@@ -3660,7 +3658,7 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
               printf( "        " );  vsignal_display( lhs->sig );
             }
 #endif
-            vsignal_propagate( lhs->sig );
+            vsignal_propagate( lhs->sig, sim_time );
           }
         }
         if( assign ) {
@@ -3690,7 +3688,7 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
               printf( "        " );  vsignal_display( lhs->sig );
             }
 #endif
-            vsignal_propagate( lhs->sig );
+            vsignal_propagate( lhs->sig, sim_time );
           }
         }
         if( assign ) {
@@ -3718,7 +3716,7 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
               printf( "        " );  vsignal_display( lhs->sig );
             }
 #endif
-    	    vsignal_propagate( lhs->sig );
+    	    vsignal_propagate( lhs->sig, sim_time );
           }
         }
         if( assign ) {
@@ -3742,7 +3740,7 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
               printf( "        " );  vsignal_display( lhs->sig );
             }
 #endif
-            vsignal_propagate( lhs->sig );
+            vsignal_propagate( lhs->sig, sim_time );
           }
         }
         if( assign ) {
@@ -3765,7 +3763,7 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
               printf( "        " );  vsignal_display( lhs->sig );
             }
 #endif
-            vsignal_propagate( lhs->sig );
+            vsignal_propagate( lhs->sig, sim_time );
           }
         }
         if( assign ) {
@@ -3775,12 +3773,12 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
 #endif
       case EXP_OP_CONCAT   :
       case EXP_OP_LIST     :
-        expression_assign( lhs->right, rhs, lsb );
-        expression_assign( lhs->left,  rhs, lsb );
+        expression_assign( lhs->right, rhs, lsb, sim_time );
+        expression_assign( lhs->left,  rhs, lsb, sim_time );
         break;
       case EXP_OP_DIM      :
-        expression_assign( lhs->left,  rhs, lsb );
-        expression_assign( lhs->right, rhs, lsb );
+        expression_assign( lhs->left,  rhs, lsb, sim_time );
+        expression_assign( lhs->right, rhs, lsb, sim_time );
         break;
       case EXP_OP_STATIC   :
         break;
@@ -3936,6 +3934,13 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.227  2006/11/25 04:24:39  phase1geo
+ Adding initial code to fully support the timescale directive and its usage.
+ Added -vpi_ts score option to allow the user to specify a top-level timescale
+ value for the generated VPI file (this code has not been tested at this point,
+ however).  Also updated diagnostic Makefile to get the VPI shared object files
+ from the current lib directory (instead of the checked in one).
+
  Revision 1.226  2006/11/24 05:30:15  phase1geo
  Checking in fix for proper handling of delays.  This does not include the use
  of timescales (which will be fixed next).  Full IV regression now passes.
