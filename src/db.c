@@ -777,6 +777,7 @@ bool db_add_function_task_namedblock( int type, char* name, char* file, int star
     curr_funit             = tf;
     curr_funit->filename   = strdup_safe( file, __FILE__, __LINE__ );
     curr_funit->start_line = start_line;
+    curr_funit->ts_unit    = current_timescale_unit;
     
   }
 
@@ -2231,6 +2232,10 @@ void db_do_timestep( uint64 time, bool final ) {
 
 /*
  $Log$
+ Revision 1.237  2006/11/27 04:11:41  phase1geo
+ Adding more changes to properly support thread time.  This is a work in progress
+ and regression is currently broken for the moment.  Checkpointing.
+
  Revision 1.236  2006/11/25 21:29:01  phase1geo
  Adding timescale diagnostics to regression suite and fixing bugs in core associated
  with this code.  Full regression now passes for IV and Cver (not in VPI mode).

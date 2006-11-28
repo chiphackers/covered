@@ -204,6 +204,8 @@ void sim_display_thread_queue( thread** head ) {
 */
 void sim_thread_push( thread* thr, uint64 sim_time, thread** head, thread** tail ) {
 
+  exp_op_type op;  /* Operation type of current expression in given thread */
+
   // printf( "Before thread is pushed...\n" );
 
   /* Only add the thread if it exists and it isn't already in a queue */
@@ -227,7 +229,17 @@ void sim_thread_push( thread* thr, uint64 sim_time, thread** head, thread** tail
     thr->queued = TRUE;
 
     /* Set the current time of the thread to the given value */
-    thr->curr_time = sim_time;
+    op = thr->curr->exp->op;
+    if( (op == EXP_OP_PEDGE)       ||
+        (op == EXP_OP_NEDGE)       ||
+        (op == EXP_OP_AEDGE)       ||
+        (op == EXP_OP_EOR)         ||
+        (op == EXP_OP_WAIT)        ||
+        (op == EXP_OP_SLIST)       ||
+        (op == EXP_OP_ALWAYS_COMB) ||
+        (op == EXP_OP_ALWAYS_LATCH) ) {
+      thr->curr_time = sim_time;
+    }
 
     // printf( "After thread is pushed...\n" );
     // sim_display_thread_queue( head );
@@ -257,14 +269,18 @@ void sim_thread_pop_head() {
     /* Reset previous and next pointers */
     tmp_head->next = tmp_head->prev = NULL;
 
-    /* If the thread needs to be resimulated, add it to the resim queue */
-    if( tmp_head->resim_needed && (tmp_head->child_head == NULL) ) {
-      sim_thread_push( tmp_head, tmp_head->curr_time, &resim_head, &resim_tail );
+    if( (tmp_head->curr->exp->op == EXP_OP_DELAY) ||
+        (tmp_head->curr->exp->op == EXP_OP_DLY_ASSIGN) ) {
 
-    /* If the last request was a delay request, add it to the delay queue */
-    } else if( (tmp_head->curr->exp->op == EXP_OP_DELAY) ||
-               (tmp_head->curr->exp->op == EXP_OP_DLY_ASSIGN) ) {
-      sim_thread_push( tmp_head, tmp_head->curr_time, &delay_head, &delay_tail );
+      /* If the thread needs to be resimulated, add it to the resim queue */
+      if( tmp_head->resim_needed && (tmp_head->child_head == NULL) ) {
+        sim_thread_push( tmp_head, tmp_head->curr_time, &resim_head, &resim_tail );
+
+      /* If the last request was a delay request, add it to the delay queue */
+      } else {
+        sim_thread_push( tmp_head, tmp_head->curr_time, &delay_head, &delay_tail );
+      }
+
     }
 
     /* If the queue is now empty, set tail to NULL as well */
@@ -837,6 +853,10 @@ void sim_simulate_final() {
 
 /*
  $Log$
+ Revision 1.77  2006/11/27 04:11:42  phase1geo
+ Adding more changes to properly support thread time.  This is a work in progress
+ and regression is currently broken for the moment.  Checkpointing.
+
  Revision 1.76  2006/11/24 05:30:15  phase1geo
  Checking in fix for proper handling of delays.  This does not include the use
  of timescales (which will be fixed next).  Full IV regression now passes.

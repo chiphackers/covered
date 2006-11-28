@@ -2537,6 +2537,9 @@ bool expression_op_func__delay( expression* expr, thread* thr ) {
     /* Get number of clocks to delay */
     intval = vector_to_uint64( expr->right->value ) * *(expr->elem.scale);
 
+    printf( "In expression_op_func__delay, intval: %llu, curr_time: %llu, curr_sim_time: %llu, final: %d\n",
+            intval, thr->curr_time, curr_sim_time, final_sim_time );
+
     if( ((thr->curr_time + intval) <= curr_sim_time) || final_sim_time ) {
       expr->suppl.part.eval_t = 1;
       expr->suppl.part.true   = 1;
@@ -2651,7 +2654,7 @@ bool expression_op_func__bassign( expression* expr, thread* thr ) {
 
   int intval = 0;  /* Integer value */
 
-  expression_assign( expr->left, expr->right, &intval, thr->curr_time );
+  expression_assign( expr->left, expr->right, &intval, ((thr == NULL) ? 0 : thr->curr_time) );
 
   return( TRUE );
 
@@ -2880,7 +2883,7 @@ bool expression_op_func__passign( expression* expr, thread* thr ) {
      to the right expression.
     */
     case SSUPPL_TYPE_OUTPUT :
-      expression_assign( expr->right, expr, &intval, thr->curr_time );
+      expression_assign( expr->right, expr, &intval, ((thr == NULL) ? 0 : thr->curr_time) );
       retval = TRUE;
       break;
 
@@ -3120,7 +3123,7 @@ bool expression_op_func__dly_assign( expression* expr, thread* thr ) {
 
   /* Check the dly_op expression.  If eval_t is set to 1, perform the assignment */
   if( ESUPPL_IS_TRUE( expr->right->suppl ) == 1 ) {
-    expression_assign( expr->left, expr->right, &intval, thr->curr_time );
+    expression_assign( expr->left, expr->right, &intval, ((thr == NULL) ? 0 : thr->curr_time) );
     expr->suppl.part.eval_t = 1;
     retval = TRUE;
   } else {
@@ -3934,6 +3937,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.228  2006/11/27 04:11:41  phase1geo
+ Adding more changes to properly support thread time.  This is a work in progress
+ and regression is currently broken for the moment.  Checkpointing.
+
  Revision 1.227  2006/11/25 04:24:39  phase1geo
  Adding initial code to fully support the timescale directive and its usage.
  Added -vpi_ts score option to allow the user to specify a top-level timescale

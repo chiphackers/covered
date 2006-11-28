@@ -68,7 +68,7 @@ Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hi
 Module/Task/Function                Filename                          Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
   $root                             NA                                  0/   0/   0      100%
-  main                              delay1.1.v                          2/   2/   4       50%
+  main                              delay1.1.v                          3/   1/   4       75%
 ---------------------------------------------------------------------------------------------------------------------
 
     Module: main, File: delay1.1.v
@@ -81,11 +81,11 @@ Module/Task/Function                Filename                          Hit/Miss/T
               6:     a  <= (c[1] & c[0])
                            |-----1-----|
 
-        Expression 1   (1/3)
+        Expression 1   (2/3)
         ^^^^^^^^^^^^^ - &
          LR | LR | LR 
         =0-=|=-0=|=11=
-              *    *
+                   *
 
 
 
