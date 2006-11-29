@@ -86,7 +86,9 @@ elif test "${withval}" = yes; then
   want_vcs=yes
 else
   want_vcs=yes
-  vcs_prefix="${withval}"
+  AC_CHECK_HEADER([$withval/vpi_user.h],
+    [want_vcs=yes
+     vcs_prefix="${withval}"],AC_MSG_ERROR([Invalid include path to --with-vcs]))
 fi],
 [want_vcs=no])
 if test "$want_vcs" = yes; then
@@ -103,7 +105,7 @@ elif test "${withval}" = yes; then
   want_cver=yes
 else
   want_cver=yes
-  cver_prefix="${withval}"
+  AC_CHECK_HEADER([$withval/vpi_user.h],cver_prefix="${withval}",AC_MSG_ERROR([Invalid include path to --with-cver]))
 fi],
 [want_cver=no])
 if test "$want_cver" = yes; then

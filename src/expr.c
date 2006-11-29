@@ -2346,7 +2346,7 @@ bool expression_op_func__pedge( expression* expr, thread* thr ) {
 
   if( (value1a.part.exp.value != value1b.part.exp.value) &&
       ((value1b.part.exp.value == 0) || (value1a.part.exp.value == 1)) &&
-      thr->exec_first ) {
+      thr->suppl.part.exec_first ) {
     expr->suppl.part.true   = 1;
     expr->suppl.part.eval_t = 1;
     retval = TRUE;
@@ -2382,7 +2382,7 @@ bool expression_op_func__nedge( expression* expr, thread* thr ) {
 
   if( (value1a.part.exp.value != value1b.part.exp.value) &&
       ((value1b.part.exp.value == 1) || (value1a.part.exp.value == 0)) &&
-      thr->exec_first ) {
+      thr->suppl.part.exec_first ) {
     expr->suppl.part.true   = 1;
     expr->suppl.part.eval_t = 1;
     retval = TRUE;
@@ -2416,7 +2416,7 @@ bool expression_op_func__aedge( expression* expr, thread* thr ) {
   if( (expr->right->sig != NULL) && (expr->right->sig->suppl.part.type == SSUPPL_TYPE_EVENT) ) {
 
     if( expr->right->suppl.part.eval_t == 1 ) {
-      if( thr->exec_first ) {
+      if( thr->suppl.part.exec_first ) {
         expr->suppl.part.true   = 1;
         expr->suppl.part.eval_t = 1;
         retval = TRUE;
@@ -2434,7 +2434,7 @@ bool expression_op_func__aedge( expression* expr, thread* thr ) {
     vector_op_compare( &vec, expr->left->value, expr->right->value, COMP_CEQ );
 
     /* If the last value and the current value are NOT equal, we have a fired event */
-    if( (bit.part.exp.value == 0) && thr->exec_first ) {
+    if( (bit.part.exp.value == 0) && thr->suppl.part.exec_first ) {
       expr->suppl.part.true   = 1;
       expr->suppl.part.eval_t = 1;
       retval = TRUE;
@@ -2531,14 +2531,11 @@ bool expression_op_func__delay( expression* expr, thread* thr ) {
   /* Clear the evaluated TRUE indicator */
   expr->suppl.part.eval_t = 0;
 
+  /* Get number of clocks to delay */
+  intval = vector_to_uint64( expr->right->value ) * *(expr->elem.scale);
+
   /* If this is he first statement in the current thread, we are executing for the first time */
-  if( thr->exec_first ) {
-
-    /* Get number of clocks to delay */
-    intval = vector_to_uint64( expr->right->value ) * *(expr->elem.scale);
-
-    printf( "In expression_op_func__delay, intval: %llu, curr_time: %llu, curr_sim_time: %llu, final: %d\n",
-            intval, thr->curr_time, curr_sim_time, final_sim_time );
+  if( thr->suppl.part.exec_first ) {
 
     if( ((thr->curr_time + intval) <= curr_sim_time) || final_sim_time ) {
       expr->suppl.part.eval_t = 1;
@@ -2547,15 +2544,14 @@ bool expression_op_func__delay( expression* expr, thread* thr ) {
       retval = TRUE;
     }
 
-    if( (thr->curr_time + (intval * 2)) < curr_sim_time ) {
-      thr->resim_needed = TRUE;
-    } else {
-      thr->resim_needed = FALSE;
+  } else {
+
+    /* Add this delay into the delay queue if this is not the final simulation step */
+    if( !final_sim_time ) {
+      sim_thread_insert_into_delay_queue( thr, (thr->curr_time + intval) );
     }
 
   }
-
-  printf( "Current time: %llu\n", thr->curr_time );
 
   return( retval );
 
@@ -3117,7 +3113,7 @@ bool expression_op_func__dly_assign( expression* expr, thread* thr ) {
   int  intval = 0;  /* Integer value */
 
   /* If we are the first statement in the queue, perform the dly_op manually */
-  if( thr->exec_first && (expr->right->left->op == EXP_OP_DELAY) ) {
+  if( thr->suppl.part.exec_first && (expr->right->left->op == EXP_OP_DELAY) ) {
     expression_op_func__dly_op( expr->right, thr );
   }
 
@@ -3146,7 +3142,7 @@ bool expression_op_func__dly_assign( expression* expr, thread* thr ) {
 bool expression_op_func__dly_op( expression* expr, thread* thr ) {
 
   /* If we are not waiting for the delay to occur, copy the contents of the operation */
-  if( !thr->exec_first ) {
+  if( !thr->suppl.part.exec_first ) {
     vector_set_value( expr->value, expr->right->value->value, expr->right->value->suppl.part.type, expr->right->value->width, 0, 0 );
   }
 
@@ -3937,6 +3933,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.229  2006/11/28 16:39:46  phase1geo
+ More updates for regressions due to changes in delay handling.  Still work
+ to go.
+
  Revision 1.228  2006/11/27 04:11:41  phase1geo
  Adding more changes to properly support thread time.  This is a work in progress
  and regression is currently broken for the moment.  Checkpointing.

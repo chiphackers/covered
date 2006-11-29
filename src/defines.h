@@ -2157,10 +2157,16 @@ struct thread_s {
   thread*    parent;                 /*!< Pointer to parent thread that spawned this thread */
   statement* head;                   /*!< Pointer to original head statement that created this thread */
   statement* curr;                   /*!< Pointer to current head statement for this thread */
-  bool       kill;                   /*!< Set to TRUE if this thread should be killed */
-  bool       queued;                 /*!< Set to TRUE when thread exists in the thread queue */
-  bool       exec_first;             /*!< Set to TRUE when the first statement is being executed */
-  bool       resim_needed;           /*!< Set to TRUE if this thread will need to be resimulated */
+  union {
+    uint8 all;
+    struct {
+      uint8 kill        : 1;         /*!< Set to TRUE if this thread should be killed */
+      uint8 queued      : 1;         /*!< Set to TRUE when thread exists in the thread queue */
+      uint8 exec_first  : 1;         /*!< Set to TRUE when the first statement is being executed */
+      uint8 time_thread : 1;         /*!< Set to TRUE if this thread represents a timestamp (for the delay queue only) */
+      uint8 delayed     : 1;         /*!< Set to TRUE if this thread exists in the delay queue */
+    } part;
+  } suppl;
   uint64     curr_time;              /*!< Set to the current simulation time for this thread */
   thread*    child_head;             /*!< Pointer to head element in child thread list for this thread */
   thread*    child_tail;             /*!< Pointer to tail element in child thread list for this thread */
@@ -2275,6 +2281,13 @@ struct dim_range_s {
 
 /*
  $Log$
+ Revision 1.243  2006/11/25 04:24:39  phase1geo
+ Adding initial code to fully support the timescale directive and its usage.
+ Added -vpi_ts score option to allow the user to specify a top-level timescale
+ value for the generated VPI file (this code has not been tested at this point,
+ however).  Also updated diagnostic Makefile to get the VPI shared object files
+ from the current lib directory (instead of the checked in one).
+
  Revision 1.242  2006/11/24 05:30:15  phase1geo
  Checking in fix for proper handling of delays.  This does not include the use
  of timescales (which will be fixed next).  Full IV regression now passes.

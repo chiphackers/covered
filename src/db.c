@@ -2213,11 +2213,11 @@ void db_do_timestep( uint64 time, bool final ) {
   }
 
   /* Simulate the current timestep */
-  sim_simulate();
+  sim_simulate( time );
 
   /* If this is the last timestep, add the final list and do one more simulate */
   if( final ) {
-    sim_simulate_final();
+    sim_simulate( 0xffffffffffffffff );
   }
 
 #ifdef DEBUG_MODE
@@ -2232,6 +2232,10 @@ void db_do_timestep( uint64 time, bool final ) {
 
 /*
  $Log$
+ Revision 1.238  2006/11/28 16:39:46  phase1geo
+ More updates for regressions due to changes in delay handling.  Still work
+ to go.
+
  Revision 1.237  2006/11/27 04:11:41  phase1geo
  Adding more changes to properly support thread time.  This is a work in progress
  and regression is currently broken for the moment.  Checkpointing.
