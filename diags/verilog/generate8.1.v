@@ -9,6 +9,7 @@ generate
       foo f();
       initial begin : c
 	      integer i;
+              #1;
      	      for( i=0; i<4; i=i+1 )
                 f.x = i;
       end

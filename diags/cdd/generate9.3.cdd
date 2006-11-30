@@ -1,7 +1,7 @@
-5 9 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd generate9.3.vcd -o generate9.3.cdd -v generate9.3.v
-3 0 $root $root NA 0 0
-3 0 main main generate9.3.v 1 38
+5 a 1 * 0
+8 /data/cf/uvlogic1/uvg/trevorw/projects/covered/diags/verilog -t main -vcd generate9.3.vcd -o generate9.3.cdd -v generate9.3.v
+3 0 $root $root NA 0 0 1
+3 0 main main generate9.3.v 1 38 1
 2 1 25 50008 1 0 20004 0 0 1 4 0
 2 2 25 10001 0 1 400 0 0 y
 2 3 25 10008 1 37 1006 1 2
@@ -14,7 +14,7 @@
 1 y 5 830004 1 0 0 0 1 1 102
 4 8 0 0
 4 3 8 8
-3 2 main.foo_func main.foo_func generate9.3.v 16 21
+3 2 main.foo_func main.foo_func generate9.3.v 16 21 1
 2 9 19 140014 1 1 804 0 0 a
 2 10 19 130013 1 1b 20808 9 0 1 2 1002
 2 11 19 8000f 0 1 c00 0 0 foo_func

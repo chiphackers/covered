@@ -91,6 +91,7 @@
 
 extern nibble   or_optab[OPTAB_SIZE];
 extern char     user_msg[USER_MSG_LENGTH];
+extern bool     debug_mode;
 extern exp_info exp_op_info[EXP_OP_NUM];
 extern uint64   curr_sim_time;
 
@@ -193,13 +194,21 @@ void sim_thread_insert_into_delay_queue( thread* thr, uint64 sim_time ) {
   thread* last_time = NULL;  /* Pointer to the last time slot */
   thread* new_time;          /* Pointer to newly created time thread */
 
-  // printf( "Before delay thread is inserted for time %llu...\n", sim_time );
+#ifdef DEBUG_MODE
+  if( debug_mode ) {
+    printf( "Before delay thread is inserted for time %llu...\n", sim_time );
+  }
+#endif
 
   if( thr != NULL ) {
 
     assert( thr->suppl.part.delayed == 0 );
 
-    // sim_display_delay_queue();
+#ifdef DEBUG_MODE
+    if( debug_mode ) {
+      sim_display_delay_queue();
+    }
+#endif
 
     /* Search through thread queue searching for a simulation time that matches the given thread */
     curr_time = delay_head;
@@ -265,8 +274,12 @@ void sim_thread_insert_into_delay_queue( thread* thr, uint64 sim_time ) {
       thr->suppl.part.queued  = 1;
     }
 
-    // printf( "After delay thread is inserted...\n" );
-    // sim_display_delay_queue();
+#ifdef DEBUG_MODE
+    if( debug_mode ) {
+      printf( "After delay thread is inserted...\n" );
+      sim_display_delay_queue();
+    }
+#endif
 
   }
 
@@ -284,12 +297,20 @@ void sim_thread_push( thread* thr, uint64 sim_time ) {
 
   exp_op_type op;  /* Operation type of current expression in given thread */
 
-  // printf( "Before thread is pushed...\n" );
+#ifdef DEBUG_MODE
+  if( debug_mode ) {
+    printf( "Before thread is pushed...\n" );
+  }
+#endif
 
   /* Only add the thread if it exists and it isn't already in a queue */
   if( (thr != NULL) && (thr->suppl.part.queued == 0) ) {
 
-    // sim_display_thread_queue();
+#ifdef DEBUG_MODE
+    if( debug_mode ) {
+      sim_display_thread_queue();
+    }
+#endif
 
     /* Add thread to tail-end of queue */
     if( thread_tail == NULL ) {
@@ -319,8 +340,12 @@ void sim_thread_push( thread* thr, uint64 sim_time ) {
       thr->curr_time = sim_time;
     }
 
-    // printf( "After thread is pushed...\n" );
-    // sim_display_thread_queue();
+#ifdef DEBUG_MODE
+    if( debug_mode ) {
+      printf( "After thread is pushed...\n" );
+      sim_display_thread_queue();
+    }
+#endif
 
   }
 
@@ -333,8 +358,12 @@ void sim_thread_pop_head() {
 
   thread* tmp_head = thread_head;  /* Pointer to head of thread queue */
 
-  // printf( "Before thread is popped from thread queue...\n" );
-  // sim_display_thread_queue();
+#ifdef DEBUG_MODE
+  if( debug_mode ) {
+    printf( "Before thread is popped from thread queue...\n" );
+    sim_display_thread_queue();
+  }
+#endif
 
   if( thread_head != NULL ) {
 
@@ -358,8 +387,12 @@ void sim_thread_pop_head() {
 
   }
 
-  // printf( "After thread is popped from thread queue...\n" );
-  // sim_display_thread_queue();
+#ifdef DEBUG_MODE
+  if( debug_mode ) {
+    printf( "After thread is popped from thread queue...\n" );
+    sim_display_thread_queue();
+  }
+#endif
 
 }
 
@@ -491,9 +524,6 @@ thread* sim_add_thread( thread* parent, statement* stmt ) {
     /* Add this thread to the simulation thread queue */
     if( parent != NULL ) {
 
-      /* We are not the first statement since we are a child */
-      thr->suppl.part.exec_first = 0;
-
       /* Insert this child between the parent and its next thread */
       thr->prev    = parent;
       thr->next    = parent->next;
@@ -507,9 +537,6 @@ thread* sim_add_thread( thread* parent, statement* stmt ) {
       }
 
     } else {
-
-      /* We are the first statement */
-      // thr->suppl.part.exec_first = 1;
 
       /*
        If this statement is an always_comb or always_latch, add it to the delay list and change its right
@@ -544,8 +571,12 @@ thread* sim_add_thread( thread* parent, statement* stmt ) {
  
     }
 
-    // printf( "After thread is added to thread queue...\n" );
-    // sim_display_thread_queue();
+#ifdef DEBUG_MODE
+    if( debug_mode ) {
+      printf( "After thread is added to thread queue...\n" );
+      sim_display_thread_queue();
+    }
+#endif
 
   }
 
@@ -647,19 +678,6 @@ void sim_kill_thread_with_stmt( statement* stmt ) {
 
 }
 
-#ifdef OBSOLETE
-/*!
- Kills all threads in the simulator.  This is used at the end of a simulation run.
-*/
-void sim_kill_all_threads() {
-
-  while( thread_head != NULL ) {
-    sim_kill_thread( thread_head );
-  }
-    
-}
-#endif
-
 /*!
  Iterates through static expression list and causes the simulator to
  evaluate these expressions at simulation time.
@@ -707,10 +725,11 @@ bool sim_expression( expression* expr, thread* thr ) {
 #endif
 
   /* Traverse left child expression if it has changed */
-  if( (ESUPPL_IS_LEFT_CHANGED( expr->suppl ) == 1) ||
-      (expr->op == EXP_OP_CASE)                    ||
-      (expr->op == EXP_OP_CASEX)                   ||
-      (expr->op == EXP_OP_CASEZ) ) {
+  if( ((ESUPPL_IS_LEFT_CHANGED( expr->suppl ) == 1) ||
+       (expr->op == EXP_OP_CASE)                    ||
+       (expr->op == EXP_OP_CASEX)                   ||
+       (expr->op == EXP_OP_CASEZ)) &&
+      ((expr->op != EXP_OP_DLY_OP) || (expr->left == NULL) || (expr->left->op != EXP_OP_DELAY)) ) {
 
     /* Simulate the left expression if it has changed */
     if( expr->left != NULL ) {
@@ -881,8 +900,12 @@ void sim_simulate( uint64 sim_time ) {
     }
     free_safe( tmp );
 
-    // printf( "After delay simulation...\n" );
-    // sim_display_delay_queue();
+#ifdef DEBUG_MODE
+    if( debug_mode ) {
+      printf( "After delay simulation...\n" );
+      sim_display_delay_queue();
+    }
+#endif
 
   }
     
@@ -891,6 +914,10 @@ void sim_simulate( uint64 sim_time ) {
 
 /*
  $Log$
+ Revision 1.80  2006/11/30 05:04:23  phase1geo
+ More fixes to new simulation algorithm.  Still have a couple of failures that
+ need to be looked at.  Checkpointing.
+
  Revision 1.79  2006/11/29 23:15:46  phase1geo
  Major overhaul to simulation engine by including an appropriate delay queue
  mechanism to handle simulation timing for delay operations.  Regression not

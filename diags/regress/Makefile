@@ -134,8 +134,9 @@ IVONLYDIAGS1  = always5.1       assign1         assign2.8       example         
                 fsm7            fsm7.1          fsm7.2          fsm7.3          fsm7.4 \
                 fsm7.5          fsm8            fsm8.1          fsm8.2          fsm8.3 \
                 fsm9            fsm9.1          fsm9.2          fsm10           fsm10.1 \
-                fsm10.2         ifdef1.1        implicit1       implicit2       real1.1 \
-                static2         static2.1       static2.2       unary1
+                fsm10.2         generate1       hier2           ifdef1.1        implicit1 \
+                implicit2       real1.1         static2         static2.1       static2.2 \
+                unary1
 IVONLYDIAGS2  = 
 IVONLYDIAGS3  = 
 IVONLYDIAGS4  = 
@@ -171,7 +172,12 @@ CVERONLYDIAGS2 =
 CVERONLYDIAGS3 =
 CVERONLYDIAGS4 =
 
-IVVCSDIAGS1   = define3         generate1       hier2           hier3           localparam1 \
+IVCVERDIAGS1  =
+IVCVERDIAGS2  =
+IVCVERDIAGS3  =
+IVCVERDIAGS4  =
+
+IVVCSDIAGS1   = define3         hier3           localparam1 \
                 localparam1.1   localparam1.2   localparam1.3   localparam2     localparam3 \
                 mbit_sel5       mbit_sel5.1     mbit_sel5.2     mbit_sel5.3     mbit_sel6 \
                 mbit_sel6.1     mbit_sel6.2     mbit_sel6.3     ovl1            ovl1.1 \
@@ -190,13 +196,13 @@ CVERVCSDIAGS4 =
 
 iverilog:
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q VERILOG_EXTRA_FLAGS="$(IVERILOG_FLAGS1)" DIAGLIST="$(DIAGS1) $(IVONLYDIAGS1) $(IVVCSDIAGS1)" MERGELIST="$(MERGE1)" MERGE3LIST="$(MERGE3)" ERRSCORELIST="$(ERRSCORE)" ERRMERGELIST="$(ERRMERGE)" ERRREPORTLIST="$(ERRREPORT)" RACELIST="$(RACELIST)" NOSIMLIST="$(NOSIMLIST)" NOSIMERRLIST="$(NOSIMERRLIST)" regress
+	$(MAKE) COVERED_GFLAG=-Q VERILOG_EXTRA_FLAGS="$(IVERILOG_FLAGS1)" DIAGLIST="$(DIAGS1) $(IVONLYDIAGS1) $(IVVCSDIAGS1) $(IVCVERDIAGS1)" MERGELIST="$(MERGE1)" MERGE3LIST="$(MERGE3)" ERRSCORELIST="$(ERRSCORE)" ERRMERGELIST="$(ERRMERGE)" ERRREPORTLIST="$(ERRREPORT)" RACELIST="$(RACELIST)" NOSIMLIST="$(NOSIMLIST)" NOSIMERRLIST="$(NOSIMERRLIST)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q VERILOG_EXTRA_FLAGS="$(IVERILOG_FLAGS2)" DIAGLIST="$(DIAGS2) $(IVONLYDIAGS2) $(IVVCSDIAGS2)" regress
+	$(MAKE) COVERED_GFLAG=-Q VERILOG_EXTRA_FLAGS="$(IVERILOG_FLAGS2)" DIAGLIST="$(DIAGS2) $(IVONLYDIAGS2) $(IVVCSDIAGS2) $(IVCVERDIAGS2)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q VERILOG_EXTRA_FLAGS="$(IVERILOG_FLAGS3)" DIAGLIST="$(DIAGS3) $(IVONLYDIAGS3) $(IVVCSDIAGS3)" regress
+	$(MAKE) COVERED_GFLAG=-Q VERILOG_EXTRA_FLAGS="$(IVERILOG_FLAGS3)" DIAGLIST="$(DIAGS3) $(IVONLYDIAGS3) $(IVVCSDIAGS3) $(IVCVERDIAGS3)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q VERILOG_EXTRA_FLAGS="$(IVERILOG_FLAGS4)" DIAGLIST="$(DIAGS4) $(IVONLYDIAGS4) $(IVVCSDIAGS4)" regress
+	$(MAKE) COVERED_GFLAG=-Q VERILOG_EXTRA_FLAGS="$(IVERILOG_FLAGS4)" DIAGLIST="$(DIAGS4) $(IVONLYDIAGS4) $(IVVCSDIAGS4) $(IVCVERDIAGS4)" regress
 	@cd ../verilog;  $(MAKE) eot;  $(MAKE) clean
 
 vcs:
@@ -212,13 +218,13 @@ vcs:
 
 cver:
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q USE_CVER=1 VERILOG_EXTRA_FLAGS="$(CVER_FLAGS1)" DIAGLIST="$(DIAGS1) $(CVERONLYDIAGS1) $(CVERVCSDIAGS1)" MERGELIST="$(MERGE1)" MERGE3LIST="$(MERGE3)" regress
+	$(MAKE) COVERED_GFLAG=-Q USE_CVER=1 VERILOG_EXTRA_FLAGS="$(CVER_FLAGS1)" DIAGLIST="$(DIAGS1) $(CVERONLYDIAGS1) $(IVCVERDIAGS1) $(CVERVCSDIAGS1)" MERGELIST="$(MERGE1)" MERGE3LIST="$(MERGE3)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q USE_CVER=1 VERILOG_EXTRA_FLAGS="$(CVER_FLAGS2)" DIAGLIST="$(DIAGS2) $(CVERONLYDIAGS2) $(CVERVCSDIAGS2)" regress
+	$(MAKE) COVERED_GFLAG=-Q USE_CVER=1 VERILOG_EXTRA_FLAGS="$(CVER_FLAGS2)" DIAGLIST="$(DIAGS2) $(CVERONLYDIAGS2) $(IVCVERDIAGS2) $(CVERVCSDIAGS2)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q USE_CVER=1 VERILOG_EXTRA_FLAGS="$(CVER_FLAGS3)" DIAGLIST="$(DIAGS3) $(CVERONLYDIAGS3) $(CVERVCSDIAGS3)" regress
+	$(MAKE) COVERED_GFLAG=-Q USE_CVER=1 VERILOG_EXTRA_FLAGS="$(CVER_FLAGS3)" DIAGLIST="$(DIAGS3) $(CVERONLYDIAGS3) $(IVCVERDIAGS3) $(CVERVCSDIAGS3)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q USE_CVER=1 VERILOG_EXTRA_FLAGS="$(CVER_FLAGS4)" DIAGLIST="$(DIAGS4) $(CVERONLYDIAGS4) $(CVERVCSDIAGS4)" regress
+	$(MAKE) COVERED_GFLAG=-Q USE_CVER=1 VERILOG_EXTRA_FLAGS="$(CVER_FLAGS4)" DIAGLIST="$(DIAGS4) $(CVERONLYDIAGS4) $(IVCVERDIAGS4) $(CVERVCSDIAGS4)" regress
 	@cd ../verilog;  $(MAKE) eot;  $(MAKE) clean
 
 clean:

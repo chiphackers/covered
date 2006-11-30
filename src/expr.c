@@ -2571,7 +2571,7 @@ bool expression_op_func__trigger( expression* expr, thread* thr ) {
   expr->value->value[0].part.exp.value = 1;
 
   /* Propagate event */
-  vsignal_propagate( expr->sig, thr->curr_time );
+  vsignal_propagate( expr->sig, ((thr == NULL) ? 0 : thr->curr_time) );
 
   return( TRUE );
 
@@ -2871,7 +2871,7 @@ bool expression_op_func__passign( expression* expr, thread* thr ) {
     /* If the connected signal is an input type, copy the parameter expression value to this vector */
     case SSUPPL_TYPE_INPUT :
       retval = vector_set_value( expr->value, expr->right->value->value, expr->right->value->suppl.part.type, expr->right->value->width, 0, 0 );
-      vsignal_propagate( expr->sig, thr->curr_time );
+      vsignal_propagate( expr->sig, ((thr == NULL) ? 0 : thr->curr_time) );
       break;
 
     /*
@@ -3006,7 +3006,7 @@ bool expression_op_func__iinc( expression* expr, thread* thr ) {
 #endif
 
   /* Propagate value change */
-  vsignal_propagate( expr->left->sig, thr->curr_time );
+  vsignal_propagate( expr->left->sig, ((thr == NULL) ? 0 : thr->curr_time) );
 
   return( TRUE );
 
@@ -3035,7 +3035,7 @@ bool expression_op_func__pinc( expression* expr, thread* thr ) {
 #endif
 
   /* Propagate value change */
-  vsignal_propagate( expr->left->sig, thr->curr_time );
+  vsignal_propagate( expr->left->sig, ((thr == NULL) ? 0 : thr->curr_time) );
 
   return( TRUE );
 
@@ -3064,7 +3064,7 @@ bool expression_op_func__idec( expression* expr, thread* thr ) {
 #endif
 
   /* Propagate value change */
-  vsignal_propagate( expr->left->sig, thr->curr_time );
+  vsignal_propagate( expr->left->sig, ((thr == NULL) ? 0 : thr->curr_time) );
 
   return( TRUE );
 
@@ -3093,7 +3093,7 @@ bool expression_op_func__pdec( expression* expr, thread* thr ) {
 #endif
 
   /* Propagate value change */
-  vsignal_propagate( expr->left->sig, thr->curr_time );
+  vsignal_propagate( expr->left->sig, ((thr == NULL) ? 0 : thr->curr_time) );
 
   return( TRUE );
 
@@ -3933,6 +3933,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.230  2006/11/29 23:15:46  phase1geo
+ Major overhaul to simulation engine by including an appropriate delay queue
+ mechanism to handle simulation timing for delay operations.  Regression not
+ fully passing at this moment but enough is working to checkpoint this work.
+
  Revision 1.229  2006/11/28 16:39:46  phase1geo
  More updates for regressions due to changes in delay handling.  Still work
  to go.

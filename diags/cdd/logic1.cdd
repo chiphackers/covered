@@ -1,7 +1,7 @@
-5 9 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd logic1.vcd -o logic1.cdd -v logic1.v
-3 0 $root $root NA 0 0
-3 0 main main logic1.v 1 19
+5 a 1 * 0
+8 /data/cf/uvlogic1/uvg/trevorw/projects/covered/diags/verilog -t main -vcd logic1.vcd -o logic1.cdd -v logic1.v
+3 0 $root $root NA 0 0 1
+3 0 main main logic1.v 1 19 1
 2 1 3 190019 1 0 20004 0 0 32 64 0 0 0 0 0 0 0 0
 2 2 3 150015 0 1 400 0 0 a
 2 3 3 150019 1 48 7006 1 2

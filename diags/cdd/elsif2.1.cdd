@@ -1,7 +1,7 @@
-5 9 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd elsif2.1.vcd -o elsif2.1.cdd -v elsif2.1.v
-3 0 $root $root NA 0 0
-3 0 main main elsif2.1.v 4 33
+5 a 1 * 0
+8 /data/cf/uvlogic1/uvg/trevorw/projects/covered/diags/verilog -t main -vcd elsif2.1.vcd -o elsif2.1.cdd -v elsif2.1.v
+3 0 $root $root NA 0 0 1
+3 0 main main elsif2.1.v 4 33 1
 2 1 14 50008 1 0 20008 0 0 1 4 1
 2 2 14 10001 0 1 400 0 0 a
 2 3 14 10008 1 37 100a 1 2

@@ -1,7 +1,7 @@
-5 9 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd static_func2.1.vcd -o static_func2.1.cdd -v static_func2.1.v
-3 0 $root $root NA 0 0
-3 0 main main static_func2.1.v 1 32
+5 a 1 * 0
+8 /data/cf/uvlogic1/uvg/trevorw/projects/covered/diags/verilog -t main -vcd static_func2.1.vcd -o static_func2.1.cdd -v static_func2.1.v
+3 0 $root $root NA 0 0 1
+3 0 main main static_func2.1.v 1 32 1
 2 1 10 17001e 2 1 c 0 0 bar[2].b
 2 2 10 c0013 2 1 c 0 0 bar[3].b
 2 3 10 c001e 2 9 20188 1 2 1 2 1102
@@ -10,7 +10,7 @@
 1 a 3 3000a 1 0 3 0 4 1 4baa
 1 b2 4 3000a 1 0 0 0 1 1 2
 4 5 5 5
-3 0 foo main.bar[0] static_func2.1.v 35 39
+3 0 foo main.bar[0] static_func2.1.v 35 39 1
 2 6 37 a000a 2 1 c 0 0 a
 2 7 37 90009 2 1b 2000c 6 0 1 2 1102
 2 8 37 50005 0 1 400 0 0 b
@@ -18,7 +18,7 @@
 1 a 35 18 1 0 0 0 1 1 102
 1 b 37 30005 1 0 0 0 1 1 1002
 4 9 9 9
-3 2 main.const_func main.const_func static_func2.1.v 24 30
+3 2 main.const_func main.const_func static_func2.1.v 24 30 1
 2 10 27 110011 0 0 20810 0 0 32 64 0 0 0 0 0 0 0 0
 2 11 27 4000d 0 1 c00 0 0 const_func
 2 12 27 40011 1 37 11826 10 11
@@ -30,7 +30,7 @@
 1 bit_to_set 25 80000f 1 0 31 0 32 1 aa aa aa aa aa aa aa aa
 4 16 0 0
 4 12 16 16
-3 0 foo main.bar[1] static_func2.1.v 35 39
+3 0 foo main.bar[1] static_func2.1.v 35 39 1
 2 17 37 a000a 2 1 c 0 0 a
 2 18 37 90009 2 1b 2000c 17 0 1 2 1102
 2 19 37 50005 0 1 400 0 0 b
@@ -38,7 +38,7 @@
 1 a 35 18 1 0 0 0 1 1 102
 1 b 37 30005 1 0 0 0 1 1 1002
 4 20 20 20
-3 0 foo main.bar[2] static_func2.1.v 35 39
+3 0 foo main.bar[2] static_func2.1.v 35 39 1
 2 21 37 a000a 2 1 c 0 0 a
 2 22 37 90009 2 1b 2000c 21 0 1 2 1102
 2 23 37 50005 0 1 400 0 0 b
@@ -46,7 +46,7 @@
 1 a 35 18 1 0 0 0 1 1 1002
 1 b 37 30005 1 0 0 0 1 1 102
 4 24 24 24
-3 0 foo main.bar[3] static_func2.1.v 35 39
+3 0 foo main.bar[3] static_func2.1.v 35 39 1
 2 25 37 a000a 2 1 c 0 0 a
 2 26 37 90009 2 1b 2000c 25 0 1 2 1102
 2 27 37 50005 0 1 400 0 0 b

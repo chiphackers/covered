@@ -255,14 +255,14 @@ mergerun:
 	@$(COVERED) $(COVERED_GFLAG) report -d v -i -o $(DIAG).rptI $(DIAG).cdd
 	@$(COVERED) $(COVERED_GFLAG) report -w -d v -o $(DIAG).rptWM $(DIAG).cdd
 	@$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $(DIAG).rptWI $(DIAG).cdd
-	@./check_test $(DIAG) 1 $(CHK_CODE)
+	@./check_test $(DIAG) 2 $(CHK_CODE)
 
 $(MERGELIST):
 	@if test ! -f $@.done; then \
 		$(MAKE) DIAG=$@ mergerun; \
 	else \
 		echo Skipping $@; \
-		./check_test $@ 1 2; \
+		./check_test $@ 2 2; \
 	fi
 
 merge3run:
@@ -278,14 +278,14 @@ merge3run:
 	@$(COVERED) $(COVERED_GFLAG) report -d v -i -o $(DIAG).rptI $(DIAG).cdd
 	@$(COVERED) $(COVERED_GFLAG) report -w -d v -o $(DIAG).rptWM $(DIAG).cdd
 	@$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $(DIAG).rptWI $(DIAG).cdd
-	@./check_test $(DIAG) 1 $(CHK_CODE)
+	@./check_test $(DIAG) 3 $(CHK_CODE)
 
 $(MERGE3LIST):
 	@if test ! -f $@.done; then \
 		$(MAKE) DIAG=$@ merge3run; \
 	else \
 		echo Skipping $@; \
-		./check_test $@ 1 2; \
+		./check_test $@ 3 2; \
 	fi
 
 errscorerun:

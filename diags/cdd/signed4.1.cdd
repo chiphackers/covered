@@ -1,10 +1,10 @@
-5 9 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd signed4.1.vcd -o signed4.1.cdd -v signed4.1.v
-3 0 $root $root NA 0 0
-3 0 main main signed4.1.v 9 31
+5 a 1 * 0
+8 /data/cf/uvlogic1/uvg/trevorw/projects/covered/diags/verilog -t main -vcd signed4.1.vcd -o signed4.1.cdd -v signed4.1.v
+3 0 $root $root NA 0 0 1
+3 0 main main signed4.1.v 9 31 1
 2 1 0 0 1 4e 21002 0 0 1 2 2
 4 1 0 0
-3 2 main.foo_func main.foo_func signed4.1.v 24 29
+3 2 main.foo_func main.foo_func signed4.1.v 24 29 1
 2 2 27 140014 0 0 20810 0 0 32 64 1 0 0 0 0 0 0 0
 2 3 27 f0010 0 1 810 0 0 in
 2 4 27 f0014 0 7 20830 2 3 32 66 aa aa aa aa aa aa aa aa

@@ -1,10 +1,10 @@
-5 9 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd generate8.2.vcd -o generate8.2.cdd -v generate8.2.v
-3 0 $root $root NA 0 0
-3 0 main main generate8.2.v 1 26
-3 1 main.U[0] main.U[0] generate8.2.v 6 14
+5 a 1 * 0
+8 /data/cf/uvlogic1/uvg/trevorw/projects/covered/diags/verilog -t main -vcd generate8.2.vcd -o generate8.2.cdd -v generate8.2.v
+3 0 $root $root NA 0 0 1
+3 0 main main generate8.2.v 1 26 1
+3 1 main.U[0] main.U[0] generate8.2.v 6 14 1
 1 i 4 1880009 1 0 31 0 32 1 0 0 0 0 0 0 0 0
-3 1 main.U[0].V[0] main.U[0].V[0] generate8.2.v 8 13
+3 1 main.U[0].V[0] main.U[0].V[0] generate8.2.v 8 13 1
 2 1 9 120012 0 1 400 0 0 x
 2 2 9 160016 1 0 20004 0 0 32 64 0 0 0 0 0 0 0 0
 2 3 9 120016 1 48 7006 2 1
@@ -19,7 +19,7 @@
 1 x 9 830012 1 0 3 0 4 1 aa
 4 3 0 0
 4 10 0 0
-3 1 main.U[0].V[1] main.U[0].V[1] generate8.2.v 8 13
+3 1 main.U[0].V[1] main.U[0].V[1] generate8.2.v 8 13 1
 2 11 9 120012 0 1 400 0 0 x
 2 12 9 160016 1 0 20004 0 0 32 64 0 0 0 0 0 0 0 0
 2 13 9 120016 1 48 7006 12 11
@@ -34,7 +34,7 @@
 1 x 9 830012 1 0 3 0 4 1 1aa
 4 13 0 0
 4 20 0 0
-3 1 main.U[0].V[2] main.U[0].V[2] generate8.2.v 8 13
+3 1 main.U[0].V[2] main.U[0].V[2] generate8.2.v 8 13 1
 2 21 9 120012 0 1 400 0 0 x
 2 22 9 160016 1 0 20004 0 0 32 64 0 0 0 0 0 0 0 0
 2 23 9 120016 1 48 7006 22 21
@@ -49,7 +49,7 @@
 1 x 9 830012 1 0 3 0 4 1 2aa
 4 23 0 0
 4 30 0 0
-3 1 main.U[0].V[3] main.U[0].V[3] generate8.2.v 8 13
+3 1 main.U[0].V[3] main.U[0].V[3] generate8.2.v 8 13 1
 2 31 9 120012 0 1 400 0 0 x
 2 32 9 160016 1 0 20004 0 0 32 64 0 0 0 0 0 0 0 0
 2 33 9 120016 1 48 7006 32 31
@@ -64,9 +64,9 @@
 1 x 9 830012 1 0 3 0 4 1 3aa
 4 33 0 0
 4 40 0 0
-3 1 main.U[1] main.U[1] generate8.2.v 6 14
+3 1 main.U[1] main.U[1] generate8.2.v 6 14 1
 1 i 4 1880009 1 0 31 0 32 1 101 0 0 0 0 0 0 0
-3 1 main.U[1].V[0] main.U[1].V[0] generate8.2.v 8 13
+3 1 main.U[1].V[0] main.U[1].V[0] generate8.2.v 8 13 1
 2 41 9 120012 0 1 400 0 0 x
 2 42 9 160016 1 0 20004 0 0 32 64 0 0 0 0 0 0 0 0
 2 43 9 120016 1 48 7006 42 41
@@ -81,7 +81,7 @@
 1 x 9 830012 1 0 3 0 4 1 4aa
 4 43 0 0
 4 50 0 0
-3 1 main.U[1].V[1] main.U[1].V[1] generate8.2.v 8 13
+3 1 main.U[1].V[1] main.U[1].V[1] generate8.2.v 8 13 1
 2 51 9 120012 0 1 400 0 0 x
 2 52 9 160016 1 0 20004 0 0 32 64 0 0 0 0 0 0 0 0
 2 53 9 120016 1 48 7006 52 51
@@ -96,7 +96,7 @@
 1 x 9 830012 1 0 3 0 4 1 5aa
 4 53 0 0
 4 60 0 0
-3 1 main.U[1].V[2] main.U[1].V[2] generate8.2.v 8 13
+3 1 main.U[1].V[2] main.U[1].V[2] generate8.2.v 8 13 1
 2 61 9 120012 0 1 400 0 0 x
 2 62 9 160016 1 0 20004 0 0 32 64 0 0 0 0 0 0 0 0
 2 63 9 120016 1 48 7006 62 61
@@ -111,7 +111,7 @@
 1 x 9 830012 1 0 3 0 4 1 6aa
 4 63 0 0
 4 70 0 0
-3 1 main.U[1].V[3] main.U[1].V[3] generate8.2.v 8 13
+3 1 main.U[1].V[3] main.U[1].V[3] generate8.2.v 8 13 1
 2 71 9 120012 0 1 400 0 0 x
 2 72 9 160016 1 0 20004 0 0 32 64 0 0 0 0 0 0 0 0
 2 73 9 120016 1 48 7006 72 71

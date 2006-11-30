@@ -1,7 +1,7 @@
-5 9 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd hier1.1.vcd -o hier1.1.cdd -v hier1.1.v
-3 0 $root $root NA 0 0
-3 0 main main hier1.1.v 1 17
+5 a 1 * 0
+8 /data/cf/uvlogic1/uvg/trevorw/projects/covered/diags/verilog -t main -vcd hier1.1.vcd -o hier1.1.cdd -v hier1.1.v
+3 0 $root $root NA 0 0 1
+3 0 main main hier1.1.v 1 17 1
 2 1 5 2c004b 2 1 c 0 0 \this/is/some/kind/of/name[0] .a
 2 2 5 290029 1 0 20008 0 0 32 64 10 0 0 0 0 0 0 0
 2 3 5 28004d 3 25 2030c 1 2 4 2 ffaa
@@ -16,17 +16,16 @@
 1 c 6 30005 1 0 0 0 1 1 1002
 4 6 6 6
 4 10 10 10
-3 0 foo main.\this/is/some/kind/of/name[0] hier1.1.v 20 30
+3 0 foo main.\this/is/some/kind/of/name[0] hier1.1.v 20 30 1
 2 11 25 50008 1 0 20004 0 0 1 4 0
 2 12 25 10001 0 1 400 0 0 a
 2 13 25 10008 1 37 1006 11 12
 2 14 26 20003 1 0 20008 0 0 32 64 44 0 0 0 0 0 0 0
-2 15 26 20003 1 0 20008 0 0 32 64 55 55 55 55 55 55 55 55
-2 16 26 10003 2 2c 2000a 14 15 32 2 aa aa aa aa aa aa aa aa
-2 17 27 50008 1 0 20008 0 0 1 4 1
-2 18 27 10001 0 1 400 0 0 a
-2 19 27 10008 1 37 a 17 18
+2 15 26 10003 2 2c 12000a 14 0 32 2 aa aa aa aa aa aa aa aa
+2 16 27 50008 1 0 20008 0 0 1 4 1
+2 17 27 10001 0 1 400 0 0 a
+2 18 27 10008 1 37 a 16 17
 1 a 22 830004 1 0 0 0 1 1 102
-4 19 0 0
-4 16 19 0
-4 13 16 16
+4 18 0 0
+4 15 18 0
+4 13 15 15

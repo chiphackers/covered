@@ -1,7 +1,7 @@
-5 9 1 * 0
-8 /home/ultrav3/trevorw/covered/diags/verilog -t main -vcd enum2.1.vcd -o enum2.1.cdd -v enum2.1.v
-3 0 $root $root NA 0 0
-3 0 main main enum2.1.v 8 21
+5 a 1 * 0
+8 /data/cf/uvlogic1/uvg/trevorw/projects/covered/diags/verilog -t main -vcd enum2.1.vcd -o enum2.1.cdd -v enum2.1.v
+3 0 $root $root NA 0 0 1
+3 0 main main enum2.1.v 8 21 1
 1 FOO_0 10 a000d 1 0 0 0 1 1 2
 1 FOO_1 10 a001b 1 0 0 0 1 1 0
 1 foo 10 3002a 1 0 0 0 1 1 2
