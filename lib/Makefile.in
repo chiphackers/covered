@@ -131,6 +131,9 @@ libcovered_a_SOURCES = ../src/arc.c \
 INCLUDES = -I..
 AM_CPPFLAGS = -DVPI_ONLY -DINSTALL_DIR=\"@datadir@/covered\" $(TCLTK_CPPFLAGS) $(DEBUGDEF)
 
+
+#covered.vpi: $(libcovered_a_OBJECTS) ../src/vpi.c
+#	iverilog-vpi --name=covered $(libcovered_a_OBJECTS) ../src/vpi.c
 CLEANFILES = vpi.o vpi.vcs.o vpi.cver.o covered.vcs.so covered.cver.so covered.vpi
 subdir = lib
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -847,14 +850,17 @@ covered.vcs.so: vpi.vcs.o libcovered.a
 covered.cver.so: vpi.cver.o libcovered.a
 	ld -G -shared -export-dynamic vpi.cver.o -L. -lcovered -o covered.cver.so
 
+covered.vpi: vpi.iv.o libcovered.a
+	ld -shared vpi.iv.o -L. -lcovered -L$(IVDIR)/lib -lveriuser -lvpi -o covered.vpi
+
 vpi.vcs.o: ../src/vpi.c
 	gcc -fPIC -g -DVCS -DNOIV $(DEBUGDEF) -I$(VCSINC) -I.. -c -o vpi.vcs.o ../src/vpi.c
 
 vpi.cver.o: ../src/vpi.c
 	gcc -fPIC -g -DCVER -DNOIV $(DEBUGDEF) -I$(CVERINC) -I.. -c -o vpi.cver.o ../src/vpi.c
 
-covered.vpi: $(libcovered_a_OBJECTS) ../src/vpi.c
-	iverilog-vpi --name=covered $(libcovered_a_OBJECTS) ../src/vpi.c
+vpi.iv.o: ../src/vpi.c
+	gcc -fPIC -g $(DEBUGDEF) -I$(IVDIR)/include -I.. -c -o vpi.iv.o ../src/vpi.c
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
