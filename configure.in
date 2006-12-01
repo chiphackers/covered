@@ -62,19 +62,21 @@ COVERED_DEBUG
 
 ## Simulators supported
 AC_ARG_WITH([iv],
-[AC_HELP_STRING([--with-iv=IV_INCLUDE_DIR],
-                [Create covered.vpi module for the Icarus Verilog simulator with the specified include directory @<:@@:>@])],
+[AC_HELP_STRING([--with-iv=IV_BASE_DIR],
+                [Create covered.vpi module for the Icarus Verilog simulator with the specified base directory @<:@@:>@])],
 [if test "${withval}" = no; then
   want_iv=no
 elif test "${withval}" = yes; then
   want_iv=yes
 else
-  want_iv=yes
-  iv_prefix="${withval}"
+  AC_CHECK_HEADER([$withval/include/vpi_user.h],
+    [want_iv=yes
+     iv_prefix="${withval}"],AC_MSG_ERROR([Invalid base directory specified in --with-iv]))
 fi],
 [want_iv=no])
 if test "$want_iv" = yes; then
-  AC_SUBST([IVLIB], ['covered.vpi${EXEEXT}'])
+  AC_SUBST([IVLIB], ['covered.vpi'])
+  AC_SUBST([IVDIR], ["${iv_prefix}"])
 fi
 
 AC_ARG_WITH([vcs],
@@ -85,14 +87,13 @@ AC_ARG_WITH([vcs],
 elif test "${withval}" = yes; then
   want_vcs=yes
 else
-  want_vcs=yes
   AC_CHECK_HEADER([$withval/vpi_user.h],
     [want_vcs=yes
-     vcs_prefix="${withval}"],AC_MSG_ERROR([Invalid include path to --with-vcs]))
+     vcs_prefix="${withval}"],AC_MSG_ERROR([Invalid include directory specified in --with-vcs]))
 fi],
 [want_vcs=no])
 if test "$want_vcs" = yes; then
-  AC_SUBST([VCSLIB], ['covered.vcs.so${EXEEXT}'])
+  AC_SUBST([VCSLIB], ['covered.vcs.so'])
   AC_SUBST([VCSINC], ["${vcs_prefix}"])
 fi
 
@@ -104,12 +105,13 @@ AC_ARG_WITH([cver],
 elif test "${withval}" = yes; then
   want_cver=yes
 else
-  want_cver=yes
-  AC_CHECK_HEADER([$withval/vpi_user.h],cver_prefix="${withval}",AC_MSG_ERROR([Invalid include path to --with-cver]))
+  AC_CHECK_HEADER([$withval/vpi_user.h],
+    [want_cver=yes
+     cver_prefix="${withval}"],AC_MSG_ERROR([Invalid include directory specified in --with-cver]))
 fi],
 [want_cver=no])
 if test "$want_cver" = yes; then
-  AC_SUBST([CVERLIB], ['covered.cver.so${EXEEXT}'])
+  AC_SUBST([CVERLIB], ['covered.cver.so'])
   AC_SUBST([CVERINC], ["${cver_prefix}"])
 fi
 

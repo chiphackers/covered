@@ -147,6 +147,9 @@ PLI_INT32 covered_end_of_sim( p_cb_data cb ) {
   last_time = ((uint64)final_time->high << 32) | (uint64)final_time->low;
   db_do_timestep( last_time, FALSE );
 
+  /* Perform one last simulation timestep */
+  db_do_timestep( 0, TRUE );
+
   /* Indicate that this CDD contains scored information */
   info_suppl.part.scored = 1;
 
@@ -420,7 +423,15 @@ void covered_parse_instance( vpiHandle inst ) {
 
 }
 
+#ifdef NOIV
+#ifdef VCS
 PLI_INT32 covered_sim_calltf( PLI_BYTE8* name ) {
+#else
+PLI_INT32 covered_sim_calltf() {
+#endif
+#else
+PLI_INT32 covered_sim_calltf( char* name ) {
+#endif
 
   vpiHandle       systf_handle, arg_iterator, module_handle;
   vpiHandle       arg_handle;
