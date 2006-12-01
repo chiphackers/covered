@@ -17,7 +17,7 @@ initial begin
 	b = 1'b0;
 	#5;
 	b = 1'b1;
-	#5;
+	#6;
 	$finish;
 end
 

@@ -53,7 +53,7 @@ IVERILOG_INTER = vvp
 VCS       = vcs
 VCS_FLAGS = +libext+.v+.vlib+ -y ./lib -y ./ovl +incdir+./ovl +incdir+./include +define+RUNTEST +define+OVL_VERILOG +define+OVL_COVER_ON +v2k -sverilog -PP
 ifdef VPI
-VCS_FLAGS += +define+VPI +vpi -load ../../lib/covered.vcs.so:covered_register -P covered_vpi.tab covered_vpi.v
+VCS_FLAGS += +define+VPI +vpi -load ../../lib/covered.vcs.so:covered_register covered_vpi.v
 endif
 VCS_EXEC  = ./simv
 
@@ -102,7 +102,7 @@ diagrun:
 	@echo Running $(DIAG)
 	@./convert_cfg $(CFG_CMD) $(DIAG).cfg
 ifdef VPI
-	@$(COVERED) $(COVERED_GFLAG) score -f $(DIAG).cfg -vpi_ts "1 ns / 1ps"
+	@$(COVERED) $(COVERED_GFLAG) score -f $(DIAG).cfg -vpi_ts "1 s / 1 s"
 ifdef USE_CVER
 	@if test "$(COVERED_GFLAG)" = "-D"; then \
 		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v +covered_cdd=$(DIAG).cdd +covered_debug; \
@@ -203,7 +203,7 @@ $(RACELIST):
 onemergerun:
 	@./convert_cfg $(CFG_CMD) $(DIAG).cfg
 ifdef VPI
-	@$(COVERED) $(COVERED_GFLAG) score -f $(DIAG).cfg -vpi_ts "1 ns / 1ps"
+	@$(COVERED) $(COVERED_GFLAG) score -f $(DIAG).cfg -vpi_ts "1 s / 1 s"
 ifdef USE_CVER
 	@if test "$(COVERED_GFLAG)" = "-D"; then \
 		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v +covered_cdd=$(DIAG).cdd +covered_debug; \

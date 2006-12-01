@@ -1,8 +1,8 @@
 5 a 1 * 0
-8 /ptmp/cvs/covered/diags/verilog -t main -vcd exclude3.vcd -o exclude3.cdd -v exclude3.v -y ./lib -e foo_module.foo_task
-3 0 $root $root NA 0 0 1
-3 0 main main exclude3.v 1 14 1
-3 0 foo_module main.bar ./lib/foo_module.v 1 34 1
+8 /data/cf/uvlogic1/uvg/trevorw/projects/covered/diags/verilog -t main -vpi covered_vpi.v -o exclude3.cdd -v exclude3.v -y ./lib -e foo_module.foo_task -vpi_ts 1 ns / 1ps
+3 0 $root $root NA 0 0 1000000000000
+3 0 main main exclude3.v 1 14 1000
+3 0 foo_module main.bar ./lib/foo_module.v 1 34 1000
 2 1 9 19001c 1 0 20004 0 0 1 4 0
 2 2 9 19001c 1 47 4 1 0 foo_func.a
 2 3 9 f001e 1 3a 8 0 2 foo_func
@@ -11,16 +11,16 @@
 2 6 15 8000c 2 3d 2100a 0 0 1 2 1102 foo_named_block
 1 foo_c 3 6 1 0 0 0 1 1 2
 1 foo_a 5 30005 1 0 0 0 1 1 2
-1 foo_b 6 30005 1 0 0 0 1 1 2
+1 foo_b 6 30005 1 0 0 0 1 1 102
 1 foo_d 7 830005 1 0 0 0 1 1 2
 4 5 5 5
 4 6 0 0
-3 1 foo_module.foo_named_block main.bar.foo_named_block ./lib/foo_module.v 15 17 1
+3 1 foo_module.foo_named_block main.bar.foo_named_block ./lib/foo_module.v 15 17 1000
 2 7 16 9000c 1 0 20008 0 0 1 4 1
 2 8 16 10005 0 1 400 0 0 foo_d
 2 9 16 1000c 1 37 1100a 7 8
 4 9 0 0
-3 2 foo_module.foo_func main.bar.foo_func ./lib/foo_module.v 19 24 1
+3 2 foo_module.foo_func main.bar.foo_func ./lib/foo_module.v 19 24 1000
 2 10 22 100010 1 1 804 0 0 a
 2 11 22 f000f 1 1b 20808 10 0 1 2 1002
 2 12 22 4000b 0 1 c00 0 0 foo_func

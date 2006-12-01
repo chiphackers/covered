@@ -26,7 +26,7 @@ endfunction
 task foo_task;
   begin
     foo_b = 1'b0;
-    #10;
+    #5;
     foo_b = 1'b1;
   end
 endtask
