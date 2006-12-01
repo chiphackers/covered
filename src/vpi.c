@@ -27,19 +27,37 @@
 #include "cv_vpi_user.h"
 #endif
 
+#include "binding.h"
 #include "db.h"
 #include "defines.h"
-#include "link.h"
-#include "util.h"
 #include "instance.h"
-#include "symtable.h"
-#include "binding.h"
+#include "link.h"
 #include "obfuscate.h"
+#include "symtable.h"
+#include "util.h"
 
-char        in_db_name[1024];
-char        out_db_name[1024];
-uint64      last_time      = 0;
-bool        use_last_time  = FALSE;
+struct sym_value_s;
+
+/*!
+ Renaming sym_value_s structure for convenience.
+*/
+typedef struct sym_value_s sym_value;
+
+/*!
+ Structure used for storing symbol and string value information.
+*/
+struct sym_value_s {
+  char*      sym;                    /*!< Signal symbol */
+  char*      value;                  /*!< Signal value to assign */
+  sym_value* next;                   /*!< Pointer to next sym_value structure in list */
+};
+
+char       in_db_name[1024];       /*!< Name of input CDD file */
+char       out_db_name[1024];      /*!< Name of output CDD file */
+uint64     last_time     = 0;      /*!< Last simulation time seen from simulator */
+bool       use_last_time = FALSE;  /*!< Set to TRUE if last_time has been set by the simulator */
+sym_value* sv_head       = NULL;   /*!< Pointer to head of sym_value list */
+sym_value* sv_tail       = NULL;   /*!< Pointer to tail of sym_value list */
 
 /* These are needed for compile purposes only */
 bool   report_gui          = FALSE;
@@ -82,6 +100,68 @@ void vpi_print_output( char* msg ) {
 
 }
 
+/*!
+ \param sym    Symbol string of signal to store.
+ \param value  Initial signal value to store.
+
+ Stores the given signal symbol and initial value in the sym_value list that
+ will be assigned to the simulator once the timestep table has been allocated.
+*/
+void sym_value_store( char* sym, char* value ) {
+
+  sym_value* sval;  /* Pointer to newly allocated sym_value structure */
+
+  /* Allocate and initialize the sym_value structure */
+  sval = (sym_value*)malloc_safe( sizeof( sym_value ), __FILE__, __LINE__ );
+  sval->sym   = strdup( sym );
+  sval->value = strdup( value );
+  sval->next  = NULL; 
+
+  /* Add the newly created sym_value structure to the sv list */
+  if( sv_head == NULL ) {
+    sv_head = sv_tail = sval;
+  } else {
+    sv_tail->next = sval;
+    sv_tail       = sval;
+  }
+
+}
+
+/*!
+ Iterates through the sym_value list, adding the information to Covered's simulation
+ core and deallocating its memory.  Called by the covered_sim_calltf function.
+*/
+void add_sym_values_to_sim() {
+
+  sym_value* sval;  /* Pointer to current sym_value structure */
+
+  sval = sv_head;
+  while( sv_head != NULL ) {
+
+    /* Assign the current sv_head to the sval pointer */
+    sval    = sv_head;
+    sv_head = sv_head->next;
+
+    /* Set the given symbol to the given value in Covered's simulator */
+    db_set_symbol_string( sval->sym, sval->value );
+
+    /* Deallocate all memory associated with this sym_table structure */
+    free_safe( sval->sym );
+    free_safe( sval->value );
+    free_safe( sval );
+  }
+
+}
+
+/*!
+ \param cb  Pointer to callback data structure from vpi_user.h
+
+ \return Returns 0.
+
+ This callback function is called whenever a signal changes within the simulator.  It places
+ this value in the Covered symtable and calls the db_do_timestep if this value change occurred
+ on a new timestep.
+*/
 PLI_INT32 covered_value_change( p_cb_data cb ) {
 
 #ifndef NOIV
@@ -130,6 +210,8 @@ PLI_INT32 covered_value_change( p_cb_data cb ) {
 
 }
 
+/*!
+*/
 PLI_INT32 covered_end_of_sim( p_cb_data cb ) {
 
   p_vpi_time final_time;
@@ -225,12 +307,21 @@ char* gen_next_symbol() {
 
 }
 
+/*!
+ \param sig  Pointer to vpiHandle for a given signal.
+
+ Finds the given VPI signal in Covered's database and creates a callback function that will
+ be called whenever this signal changes value during simulation.  Also retrieves the initial
+ value of the signal and stores it in the sym_value list and creates a symbol in the symtable
+ structure for this signal.
+*/
 void covered_create_value_change_cb( vpiHandle sig ) {
 
-  p_cb_data cb;
-  vsignal   vsig;
-  sig_link* vsigl;
-  char*     symbol;
+  p_cb_data   cb;
+  vsignal     vsig;
+  sig_link*   vsigl;
+  char*       symbol;
+  s_vpi_value value;
 
   /* Find current signal in coverage database */
   vsig.name = vpi_get_str( vpiName, sig );
@@ -253,6 +344,11 @@ void covered_create_value_change_cb( vpiHandle sig ) {
 
     /* Add signal/symbol to symtab database */
     db_assign_symbol( vsigl->sig->name, symbol, ((vsigl->sig->value->width + vsigl->sig->dim[0].lsb) - 1), vsigl->sig->dim[0].lsb ); 
+
+    /* Get initial value of this signal and store it for later retrieval */
+    value.format = vpiBinStrVal;
+    vpi_get_value( sig, &value );
+    sym_value_store( symbol, value.value.str );
 
     /* Add a callback for a value change to this net */
     cb                   = (p_cb_data)malloc( sizeof( s_cb_data ) );
@@ -439,6 +535,8 @@ PLI_INT32 covered_sim_calltf( char* name ) {
   p_cb_data       cb;
   int             i;
   char*           argvptr;
+  sig_link*       vsigl;
+  s_vpi_value     value;
 
   systf_handle = vpi_handle( vpiSysTfCall, NULL );
   arg_iterator = vpi_iterate( vpiArgument, systf_handle );
@@ -517,6 +615,9 @@ PLI_INT32 covered_sim_calltf( char* name ) {
   if( vcd_symtab_size > 0 ) {
     timestep_tab = malloc_safe_nolimit( (sizeof( symtable*) * vcd_symtab_size), __FILE__, __LINE__ );
   }
+
+  /* Add all of the sym_value structures to the simulation core */
+  add_sym_values_to_sim();
 
   return 0;
 

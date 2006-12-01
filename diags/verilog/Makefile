@@ -102,7 +102,7 @@ diagrun:
 	@echo Running $(DIAG)
 	@./convert_cfg $(CFG_CMD) $(DIAG).cfg
 ifdef VPI
-	$(COVERED) $(COVERED_GFLAG) score -f $(DIAG).cfg -vpi_ts "1 ns / 1ps"
+	@$(COVERED) $(COVERED_GFLAG) score -f $(DIAG).cfg -vpi_ts "1 ns / 1ps"
 ifdef USE_CVER
 	@if test "$(COVERED_GFLAG)" = "-D"; then \
 		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v +covered_cdd=$(DIAG).cdd +covered_debug; \
