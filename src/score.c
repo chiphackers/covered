@@ -109,8 +109,10 @@ void score_usage() {
   printf( "                                    This option allows the user to specify a timescale for the generated\n" );
   printf( "                                    Verilog module.  If this option is not specified, no timescale will\n" );
   printf( "                                    be created for the generated module.  The value of <timescale> is\n" );
-  printf( "                                    specified as follows (without whitespace):\n" );
+  printf( "                                    specified as follows:\n" );
   printf( "                                      (1|10|100)(s|ms|us|ns|ps|fs)/(1|10|100)(s|ms|us|ns|ps|fs)\n" );
+  printf( "                                    If whitespace is needed between the various values, place the\n" );
+  printf( "                                    entire contents of <timescale> in double quotes.\n" );
   printf( "      -i <instance_name>           Verilog hierarchical scope of top-level module to score.\n" );
   printf( "                                    Necessary if module to verify coverage is not the top-level\n" );
   printf( "                                    module in the design.  If not specified, -t value is used.\n" );
@@ -605,6 +607,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
           }
         } else {
           if( (retval = process_timescale( argv[i], FALSE )) ) {
+            vpi_timescale = strdup( argv[i] );
             score_add_arg( argv[i-1] );
             score_add_arg( argv[i] );
           } else {
@@ -920,6 +923,7 @@ int command_score( int argc, int last_arg, char** argv ) {
 
     free_safe( directive_filename );
     free_safe( top_instance );
+    free_safe( vpi_timescale );
 
   }
 
@@ -929,6 +933,10 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.90  2006/11/26 05:23:38  phase1geo
+ Adding several more timescale diagnostics to regression suite.  Still have a couple
+ of failing diagnostics in normal regression runs.  Checkpointing.
+
  Revision 1.89  2006/11/25 04:24:40  phase1geo
  Adding initial code to fully support the timescale directive and its usage.
  Added -vpi_ts score option to allow the user to specify a top-level timescale
