@@ -157,140 +157,206 @@
             <P class="blockIndentLeft">&nbsp;</P>
           </TD>
           <TD width=100% align=center>
-				<table cellspacing=2 cellpadding=4 border=1> 
-					<tr> 
-						<td colspan=2 class="tableHeader"> Options to score Command </td> </tr> 
-					<tr> 
-						<td> <strong>Option</strong> </td> 
-						<td> <strong>Description</strong> </td> </tr> 
-					<tr> 
-						<td> -vcd &lt;dumpfile&gt; </td> 
-						<td> 
-						Name of VCD dumpfile to score design with. If this option or the -lxt
-						option is not used, Covered will only create an initial CDD file 
-						from the design and will not attempt to score the design. </td> </tr>
-					<tr>
-						<td> -lxt &lt;dumpfile&gt; </td>
-						<td>
-						Name of LXT/LXT2 dumpfile to score design with. If this option or
-						the -vcd option is not used, Covered will only create an initial
-						CDD file from the design and will not attempt to score the
-						design. </td></tr> 
-					<tr> 
-						<td> -i &lt;instance&gt; </td> 
-						<td>
-						Instance name of top-level module. Necessary if module to verify 
-						coverage is not the top-level module in the design. If not 
-						specified, -t value is used. </td> </tr> 
-					<tr> 
-						<td> -o &lt;<i>filename</i>&gt; </td> 
-						<td> Name of CDD to write coverage information to </td> </tr> 
-					<tr> 
-						<td> -I &lt;<i>directory</i>&gt; </td> 
-						<td> 
-						Directory to find included Verilog files. You may use this option 
-						as many times as necessary on the command-line, one for each 
-						directory. </td> </tr> 
-					<tr> 
-						<td> -f &lt;<i>filename</i>&gt; </td> 
-						<td> 
-						Name of file containing additional arguments to parse. You may 
-						specify this option more than once on a command-line. </td> </tr> 
-					<tr> 
-						<td> -y &lt;<i>directory</i>&gt; </td> 
-						<td> 
-						Directory to find unspecified Verilog files. You may specify this 
-						option more than once on a command-line; one for each directory 
-						required. </td> </tr> 
-					<tr> 
-						<td> -v &lt;<i>filename</i>&gt; </td> 
-						<td> 
-						Name of specific Verilog file to score. You may specify this option 
-						more than once on a command-line; one for each filename to parse. </td> </tr> 
-					<tr> 
-						<td> -e &lt;<i>module</i>&gt; </td> 
-						<td> 
-						Name of module, task, function or named begin/end block to not score. You may 
-						specify this option more than once on a command-line; one for each 
-						block to remove from coverage. </td> </tr>
-					<tr>
-						<td> -ea </td>
-						<td>
-						Specifies that all always blocks in the design should be excluded from
-						coverage consideration.  This option may help to increase performance
-						of the score command if all always blocks in the design do not need to
-						be checked for coverage.  By default, always blocks are considered for
-						coverage. </td> </tr>
-					<tr>
-						<td> -ec </td>
-						<td>
-						Specifies that all continuous assignments in the design should be
-						excluded from coverage consideration.  This option may help to increase
-						performance of the score command if all assign blocks in the design do
-						not need to be checked for coverage.  By default, continuous assignments
-						are considered for coverage. </td> </tr>
-					<tr>
-						<td> -ei </td>
-						<td>
-						Specifies that all initial blocks in the design should be excluded
-						from coverage consideration.  This option may help to increase
-						performance of the score command if all initial blocks in the design
-						do not need to be checked for coverage.  By default, initial blocks
-						are considered for coverage. </td> </tr>
-					<tr> 
-						<td> -D &lt;name&gt;[=&lt;value&gt;] </td> 
-						<td> Defines the specified name to 1 or the specified value. </td> </tr> 
-					<tr> 
-						<td> -p &lt;filename&gt; </td> 
-						<td> 
-						Overrides filename used for outputting intermediate preprocessor 
-						output. See "Other Notes" section below for more information. </td> </tr> 
-					<tr> 
-						<td> -P &lt;parameter_scope&gt;=&lt;value&gt; </td> 
-						<td> Performs a defparam on the specified parameter with value. </td> </tr> 
-					<tr> 
-						<td> -T min|typ|max </td> 
-						<td> 
-						Specifies which value to use in min:typ:max delay expressions. Default 
-						is typ. </td> </tr> 
-					<tr> 
-						<td> -ts &lt;number&gt; </td> 
-						<td> 
-						When scoring occurs, this option allows the user to see how far the 
-						simulator has progressed by outputting the current timestep to standard 
-						output. The value of &lt;number&gt; specifies how many timesteps are 
-						allowed to be simulated before outputting the current timestep 
-						(results in less calls to output stream). </td> </tr> 
-					<tr> 
-						<td> -F &lt;module&gt;=[&lt;in_expr&gt;,]&lt;out_expr&gt; </td> 
-						<td> 
-						Specifies the location to find an FSM to score where <i>module</i> 
-						is the Verilog module containing the FSM, <i>in_expr</i> is the 
-						input state expression and <i>out_expr</i> is the output state 
-						expression. If <i>in_expr</i> is not specified, <i>out_expr</i> is 
-						used as both the input and output state expression. </td> </tr> 
-					<tr> 
-						<td> -r(S|W|E|I) </td> 
-						<td>
-						Determines Covered's behavior for handling found race conditions 
-						in design (-rS = do not output information but continue scoring 
-						design, -rW = output information and continue scoring design, 
-						-rE = output information and immediately exit the scoring 
-						process, -rI = skip the race condition check for all modules). </td> </tr> 
-					<tr>
-						<td> -g [&lt;module&gt;]=(1|2|3) </td>
-						<td>
-						Specifies what generation of Verilog to use for parsing the design.
-						If &lt;module&gt; is specified, uses the given generation value for
-						that module only.  If &lt;module&gt; is not specified, applies that
-						generation to the entire design.  This option may be specified multiple
-						times on the command-line, where options to the left take precedence
-						over the values to the right.  1=Verilog-1995, 2=Verilog-2001,
-						3=SystemVerilog. </td> </tr>
-					<tr> 
-						<td> -h </td> 
-						<td> Outputs usage information for the score command </td> </tr> 
-				</table><br>
+	    <table cellspacing=2 cellpadding=4 border=1> 
+	      <tr> 
+		<td colspan=2 class="tableHeader"> Options to score Command </td>
+              </tr> 
+	      <tr> 
+	        <td> <strong>Option</strong> </td> 
+		<td> <strong>Description</strong> </td>
+              </tr> 
+              <tr>
+                <td> -A ovl </td>
+                <td>
+                Causes OVL assertions to be used for assertion coverage.  This flag must be given to the score
+                command if assertion coverage metrics are needed in the report command. </td>
+              </tr>
+	      <tr> 
+		<td> -D &lt;name&gt;[=&lt;value&gt;] </td> 
+		<td> Defines the specified name to 1 or the specified value. </td>
+              </tr> 
+	      <tr> 
+		<td> -e &lt;<i>module</i>&gt; </td> 
+		<td> 
+		Name of module, task, function or named begin/end block to not score. You may 
+		specify this option more than once on a command-line; one for each 
+		block to remove from coverage. </td>
+              </tr>
+	      <tr>
+		<td> -ea </td>
+		<td>
+		Specifies that all always blocks in the design should be excluded from
+		coverage consideration.  This option may help to increase performance
+		of the score command if all always blocks in the design do not need to
+		be checked for coverage.  By default, always blocks are considered for
+		coverage. </td>
+              </tr>
+	      <tr>
+		<td> -ec </td>
+		<td>
+		Specifies that all continuous assignments in the design should be
+		excluded from coverage consideration.  This option may help to increase
+		performance of the score command if all assign blocks in the design do
+		not need to be checked for coverage.  By default, continuous assignments
+		are considered for coverage. </td>
+              </tr>
+	      <tr>
+		<td> -ei </td>
+		<td>
+		Specifies that all initial blocks in the design should be excluded
+		from coverage consideration.  This option may help to increase
+		performance of the score command if all initial blocks in the design
+		do not need to be checked for coverage.  By default, initial blocks
+		are considered for coverage. </td>
+              </tr>
+	      <tr> 
+		<td> -F &lt;module&gt;=[&lt;in_expr&gt;,]&lt;out_expr&gt; </td> 
+		<td> 
+		Specifies the location to find an FSM to score where <i>module</i> 
+		is the Verilog module containing the FSM, <i>in_expr</i> is the 
+		input state expression and <i>out_expr</i> is the output state 
+		expression. If <i>in_expr</i> is not specified, <i>out_expr</i> is 
+		used as both the input and output state expression. </td>
+              </tr> 
+	      <tr> 
+		<td> -f &lt;<i>filename</i>&gt; </td> 
+		<td> 
+		Name of file containing additional arguments to parse. You may 
+		specify this option more than once on a command-line. </td>
+              </tr> 
+	      <tr>
+		<td> -g [&lt;module&gt;=](1|2|3) </td>
+		<td>
+		Specifies what generation of Verilog to use for parsing the design.
+		If &lt;module&gt; is specified, uses the given generation value for
+		that module only.  If &lt;module&gt; is not specified, applies that
+		generation to the entire design.  This option may be specified multiple
+		times on the command-line, where options to the left take precedence
+		over the values to the right.  1=Verilog-1995, 2=Verilog-2001,
+		3=SystemVerilog. </td>
+              </tr>
+	      <tr> 
+		<td> -h </td> 
+		<td> Outputs usage information for the score command </td>
+              </tr> 
+	      <tr> 
+		<td> -I &lt;<i>directory</i>&gt; </td> 
+		<td> 
+		Directory to find included Verilog files. You may use this option 
+		as many times as necessary on the command-line, one for each 
+		directory. </td>
+              </tr> 
+	      <tr> 
+		<td> -i &lt;instance&gt; </td> 
+		<td>
+		Instance name of top-level module. Necessary if module to verify 
+		coverage is not the top-level module in the design. If not 
+		specified, -t value is used. </td>
+              </tr> 
+	      <tr>
+		<td> -lxt &lt;dumpfile&gt; </td>
+		<td>
+		Name of LXT/LXT2 dumpfile to score design with. If this option or
+		the -vcd option is not used, Covered will only create an initial
+		CDD file from the design and will not attempt to score the
+		design. </td>
+              </tr> 
+	      <tr> 
+		<td> -o &lt;<i>filename</i>&gt; </td> 
+		<td> Name of CDD to write coverage information to </td>
+              </tr> 
+	      <tr> 
+		<td> -p &lt;filename&gt; </td> 
+		<td> 
+		Overrides filename used for outputting intermediate preprocessor 
+		output. See "Other Notes" section below for more information. </td>
+              </tr> 
+	      <tr> 
+		<td> -P &lt;parameter_scope&gt;=&lt;value&gt; </td> 
+		<td> Performs a defparam on the specified parameter with value. </td>
+              </tr> 
+	      <tr> 
+		<td> -r(S|W|E|I) </td> 
+		<td>
+		Determines Covered's behavior for handling found race conditions 
+		in design (-rS = do not output information but continue scoring 
+		design, -rW = output information and continue scoring design, 
+		-rE = output information and immediately exit the scoring 
+		process, -rI = skip the race condition check for all modules). </td>
+              </tr> 
+              <tr>
+                <td> -S </td>
+                <td>
+                Outputs simulation statistics after simulation has completed.  This
+                information is currently only useful for the developers of Covered. </td>
+              </tr>
+	      <tr> 
+		<td> -ts &lt;number&gt; </td> 
+		<td> 
+		When scoring occurs, this option allows the user to see how far the 
+		simulator has progressed by outputting the current timestep to standard 
+		output. The value of &lt;number&gt; specifies how many timesteps are 
+		allowed to be simulated before outputting the current timestep 
+		(results in less calls to output stream). </td>
+              </tr> 
+	      <tr> 
+		<td> -T (min|typ|max) </td> 
+		<td> 
+		Specifies which value to use in min:typ:max delay expressions. Default 
+		is typ. </td>
+              </tr> 
+	      <tr> 
+		<td> -v &lt;<i>filename</i>&gt; </td> 
+		<td> 
+		Name of specific Verilog file to score. You may specify this option 
+		more than once on a command-line; one for each filename to parse. </td>
+              </tr> 
+	      <tr> 
+		<td> -vcd &lt;dumpfile&gt; </td> 
+		<td> 
+		Name of VCD dumpfile to score design with. If this option or the -lxt
+		option is not used, Covered will only create an initial CDD file 
+		from the design and will not attempt to score the design. </td>
+              </tr>
+              <tr>
+                <td> -vpi [&lt;filename&gt;] </td>
+                <td>
+                If this option is specified without the -vcd or -lxt options, the
+                design is parsed, a CDD file is created and a top-level Verilog module
+                named &lt;filename&gt; (if this value is specified) or "covered_vpi.v"
+                (if filename is not specified) is created along with a PLI table file
+                called &lt;filename&gt;.tab or "covered_vpi.v.tab".  Both of these
+                files are used in the compilation of the simulator to use Covered as a
+                VPI module.  If either the -vcd or -lxt options are specified,
+                this option has no effect. </td>
+              </tr>
+              <tr>
+                <td> -vpi_ts &lt;timescale&gt; </td>
+                <td>
+                This option is only valid when the -vpi option has been specified.
+                This option allows the user to specify a timescale for the generated
+                Verilog module created with the -vpi option.  If this option is not
+                specified, no timescale will be created for the generated module.  The
+                value of timescale is specified as follows:
+                <p>
+                <b>(1|10|100)(s|ms|us|ns|ps|fs)/(1|10|100)(s|ms|us|ns|ps|fs)</b>
+                <p>
+                If whitespace is needed between the various values, place the entire
+                contents of timescale in double quotes. </td>
+              </tr>
+	      <tr> 
+		<td> -y &lt;<i>directory</i>&gt; </td> 
+		<td> 
+		Directory to find unspecified Verilog files. You may specify this 
+		option more than once on a command-line; one for each directory 
+		required. </td>
+              </tr> 
+              <tr>
+                <td> <b>+libext+</b>&lt;.extension&gt;[<b>+</b>&lt;.extension&gt;]*<b>+</b> </td>
+                <td>
+                Extensions of Verilog files to allow in scoring. </td>
+              </tr>
+	    </table><br>
           </TD>
           <TD>
             <P class="blockIndentRight">&nbsp;</P>
