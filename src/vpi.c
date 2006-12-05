@@ -619,6 +619,11 @@ PLI_INT32 covered_sim_calltf( char* name ) {
   /* Add all of the sym_value structures to the simulation core */
   add_sym_values_to_sim();
 
+  /* If we are Cver or VCS, perform an initial 0 timestep since this will not get called */
+#ifdef NOIV
+  db_do_timestep( 0, FALSE );
+#endif
+
   return 0;
 
 }
