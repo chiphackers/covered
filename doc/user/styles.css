@@ -124,7 +124,7 @@ P.header1 {
   font-size:30px;
   font-weight:bold;
   font-style:italic;
-  width:455;
+  width:645;
  }
 
 P.header2 {
@@ -176,7 +176,7 @@ P.contentsHeader {
   font-size:30px;
   font-weight:bold;
   font-style:italic;
-  width:455;
+  width:645;
  }
 
 P.contents1 {
@@ -265,7 +265,7 @@ P.pageHeader {
   margin-top:0cm;
   margin-bottom:0cm;
   text-align:center;
-  width:455;
+  width:645;
  }
 
 P.pageHeaderWide {
@@ -282,7 +282,7 @@ P.navigator {
   margin-top:0cm;
   margin-bottom:0.0cm;
   text-align:center;
-  width:455;
+  width:645;
  }
 
 P.navigatorWide {
@@ -301,7 +301,7 @@ P.navigatorSmall {
   margin-top:1cm;
   margin-bottom:0.0cm;
   text-align:center;
-  width:455;
+  width:645;
  }
 
 P.navigatorSmallWide {
