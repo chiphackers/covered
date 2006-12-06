@@ -1,6 +1,45 @@
 Covered-Related NEWS
 ====================
 
+    * 12/05/2006
+
+Development release covered-20061205 made.  A few updates to the core code to properly support VPI
+usage were necessary which is why this is not a stable release.  At this point, regressions are fully
+passing with Icarus Verilog, Cver and VCS in both dumpfile and VPI modes of operation -- an important
+milestone for the upcoming 0.5 stable release.  There is still additional testing of existing
+functionality that needs to be done as well as finishing the GUI documentation support using the new
+HelpSystem documentation reader utility before I would consider Covered ready for a new stable release.
+The following changes are included in this release.
+
+  - Updated User Guide documentation to complete the list of score command options, document the -b
+    option to the report command, and include a FAQ item that addresses the question of the difference
+    between the stable releases and development releases.
+  - Updated regression Makefiles to allow testing of VPI, LXT and VCD modes of operation.
+  - Added Cver runs to regression Makefiles
+  - Started integrating the HelpSystem 1.5 Tcl/Tk widget into Covered's GUI to allow better and faster
+    documentation browsing for GUI information.
+  - Updated parser error output to make it easier to read.
+  - All bug fixes contained in the 0.4.8 stable release were applied to this release.
+  - Fixed bugs 1589519, 1589524 and 1589546 which are related to parser errors with the "signed" keyword.
+  - Fixed bug 1590104.  A more meaningful error message is displayed if the -i option to the score
+    command is misused (or not used when it should be).
+  - Fixed bug 1599869.  Uncovered "disable" statements are now handled properly by the report command.
+  - Lots of fixes to the VPI code were made as well as the core simulator to support correct behavior
+    when running in this mode, including:
+    - Added proper support for delay queueing
+    - Added 64-bit time support to core (originally this was just 32-bit).
+    - Added complete support for `timescale directive handling. 
+    - Added -vpi_ts option to score command-line to allow the user to specify a timescale for
+      the generated top-level file created for VPI usage.
+    - Added support for time and integer types to make cbChangeValue callbacks.
+    - Added configuration support for detecting 8, 16, 32 and 64-bit types.
+    - Removed the usage of the iverilog-vpi script to create the Covered VPI module for Icarus Verilog,
+      using a normal call to the linker to create the appropriate shared object (allows for debug output
+      to be used in this mode).
+
+Consider this development release to be a 0.5-beta release.  If all goes well, the next release should be
+the new 0.5 stable release!  As always, have fun and log those bugs!
+
     * 10/20/2006
 
 Development release covered-20061020 made.  The major additions in this release is the support for

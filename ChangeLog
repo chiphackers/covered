@@ -1,355 +1,314 @@
-2006-10-19 14:04  phase1geo
+2006-12-05 17:27  phase1geo
 
-	Removed pragma comment parsing from pplexer.l (this is handled by
-	the normal parser).
+	Updates to user documentation to increase the width of viewable
+	information.  This was necessary to accommodate the width of the
+	score command options table.
 
-2006-10-18 20:43  phase1geo
+2006-12-05 16:25  phase1geo
 
-	Updating configuration files and documentation for new development
-	release date.
+	Fixing VPI code to allow Cver and VCS regressions to pass.  With
+	these simulators, we need to perform a time 0 timestep simulation.
 
-2006-10-16 16:34  phase1geo
+2006-12-01 23:18  phase1geo
 
-	Increased max bit width from 1024 to 65536 to allow for more room
-	for memories.  Fixed issue with enumerated values being explicitly
-	assigned unknown values and created error output message when an
-	implicitly assigned enum followed an explicitly assign unknown enum
-	value.	Fixed problem with generate blocks in different
-	instantiations of the same module.  Fixed bug in parser related to
-	setting the curr_packed global variable correctly.  Added enum2 and
-	enum2.1 diagnostics to test suite to verify correct enumerate
-	behavior for the changes made in this checkin.	Full regression now
-	passes.
+	Updating regressions, updating build scripts and updating
+	documentation.
 
-2006-10-16 11:12  phase1geo
+2006-12-01 17:24  phase1geo
 
-	Fixing bug 1578251 and adding merge3 diagnostic to regression suite
-	to verify it.
+	Small tweaks to diagnostic Makefile.
 
-2006-10-16 11:10  phase1geo
+2006-12-01 17:08  phase1geo
 
-	Adding merge3 diagnostic to regression suite to verify the
-	development branch code for handling merging DUTs that contain the
-	full hierarchy.
+	Last of the updates (I believe) for full regressions to pass for
+	IV, Cver and VCS in both normal and VPI modes.
 
-2006-10-13 17:46  phase1geo
+2006-12-01 15:40  phase1geo
 
-	Things are a bit of a mess at this point.  Adding generate12
-	diagnostic that shows a failure in properly handling generates of
-	instances.
+	Fixing VPI bug in that initial values of signals were not being
+	recorded because they were not considered to be value changes by
+	the simulator.	Regressions are getting quite close to fully
+	passing in all modes but there are still a few exceptions.
 
-2006-10-13 11:11  phase1geo
+2006-12-01 13:14  phase1geo
 
-	Cleaned up compiler warnings.
+	Fixing lib Makefile and configuration file to compile the
+	covered.vpi module via Makefile (instead of the iverilog-vpi) to
+	give us more debug output.  Also fixed some compilation warnings
+	with vpi.c and IV.
 
-2006-10-13 10:56  phase1geo
+2006-12-01 13:05  phase1geo
 
-	Updating rest of source files for compiler warnings.
+	Fixing the usage of -vpi_ts option.  Updating its -h usage
+	information as well.
 
-2006-10-12 17:48  phase1geo
+2006-11-30 16:14  phase1geo
 
-	Updates to remove compiler warnings.  Still some work left to go
-	here.
+	Updating lib/Makefile.am file to not use the iverilog-vpi utility
+	for creating the covered.vpi module (allows us to control debugging
+	information).
 
-2006-10-11 16:36  phase1geo
+2006-11-30 13:58  phase1geo
 
-	Adding ifndef VPI around $dumpfile and $dumpvars calls to allow VPI
-	testing.  Updated regressions for this change.
+	Fixing rest of issues so that full regression (IV, Cver and VCS)
+	without VPI passes.  Updated regression files.
 
-2006-10-10 22:48  phase1geo
+2006-11-29 23:04  phase1geo
 
-	Updating build files.
+	More fixes to new simulation algorithm.  Still have a couple of
+	failures that need to be looked at.  Checkpointing.
 
-2006-10-09 17:19  phase1geo
+2006-11-29 17:15  phase1geo
 
-	Adding parser support for unpacked arrays of non-registers when
-	operating in SystemVerilog mode.  Also fixed a small segmentation
-	fault in the generate parsing logic.
+	Major overhaul to simulation engine by including an appropriate
+	delay queue mechanism to handle simulation timing for delay
+	operations.  Regression not fully passing at this moment but enough
+	is working to checkpoint this work.
 
-2006-10-09 15:27  phase1geo
+2006-11-28 10:39  phase1geo
 
-	Fixing simulator issue and adding parsing support for typedef'ed
-	instantiations within modules.
+	More updates for regressions due to changes in delay handling. 
+	Still work to go.
 
-2006-10-09 12:53  phase1geo
+2006-11-26 22:11  phase1geo
 
-	Fixing support for VPI to allow it to properly get linked to the
-	simulator.  Also fixed inconsistency in generate reports and
-	updated appropriately in regressions for this change.  Full
+	Adding more changes to properly support thread time.  This is a
+	work in progress and regression is currently broken for the moment.
+	 Checkpointing.
+
+2006-11-26 14:57  phase1geo
+
+	Bug fixes and regression updates for timescale code.  This code
+	should now be working correctly.
+
+2006-11-25 23:23  phase1geo
+
+	Adding several more timescale diagnostics to regression suite. 
+	Still have a couple of failing diagnostics in normal regression
+	runs.  Checkpointing.
+
+2006-11-25 15:27  phase1geo
+
+	Adding timescale diagnostics to regression suite and fixing bugs in
+	core associated with this code.  Full regression now passes for IV
+	and Cver (not in VPI mode).
+
+2006-11-24 22:24  phase1geo
+
+	Adding initial code to fully support the timescale directive and
+	its usage.  Added -vpi_ts score option to allow the user to specify
+	a top-level timescale value for the generated VPI file (this code
+	has not been tested at this point, however).  Also updated
+	diagnostic Makefile to get the VPI shared object files from the
+	current lib directory (instead of the checked in one).
+
+2006-11-24 13:40  phase1geo
+
+	Updating Makefile to use correct VPI shared object files when
+	running VPI regressions.
+
+2006-11-23 23:35  phase1geo
+
+	Updating cdd_diff script to use the normal diff procedure instead
+	of the homegrown one.
+
+2006-11-23 23:30  phase1geo
+
+	Checking in fix for proper handling of delays.	This does not
+	include the use of timescales (which will be fixed next).  Full IV
 	regression now passes.
 
-2006-10-06 21:16  phase1geo
+2006-11-23 21:44  phase1geo
 
-	Fixing bug in PEDGE and NEDGE expressions to make them completely
-	compliant to the Verilog LRM.
+	Correcting a few more files.
 
-2006-10-06 21:06  phase1geo
+2006-11-23 21:38  phase1geo
 
-	Fixing bug in report command in that wait events were not being
-	considered "covered" when they successfully passed in simulation. 
-	Added wait1.1 diagnostic which found this bug.	Also added feature
-	in VPI mode that will only get signals from simulator that it needs
-	(rather than all of the signals).  This should improve performance
-	when running in this mode.
+	Adding missing files.
 
-2006-10-06 17:45  phase1geo
+2006-11-23 21:38  phase1geo
 
-	Added support for the wait() statement.  Added wait1 diagnostic to
-	regression suite to verify its behavior.  Also added missing GPL
-	license note at the top of several *.h and *.c files that are
-	somewhat new.
+	Updates for regression which is not fully passing at the moment. 
+	Also added cdd_diff script for regression running purposes.
 
-2006-10-06 13:36  phase1geo
+2006-11-22 14:20  phase1geo
 
-	Updating regression runs and removing unnecessary output from
-	expr.c.  Also added check_failures script to diagnostic verilog
-	directory for future use.
-
-2006-10-06 12:18  phase1geo
-
-	Adding support for the final block type.  Added final1 diagnostic
-	to regression suite.  Full regression passes.
-
-2006-10-05 23:51  phase1geo
-
-	Updating IV regression for latest round of changes.  Updated TODO
-	list to indicate what has been worked on and its status.
-
-2006-10-05 16:43  phase1geo
-
-	Added support for increment and decrement operators in expressions.
-	 Also added proper parsing and handling support for immediate and
-	postponed increment/decrement.	Added inc3, inc3.1, dec3 and dec3.1
-	diagnostics to verify this new functionality.  Still need to run
-	regressions.
-
-2006-10-04 22:55  phase1geo
-
-	Updating/fixing user guide.  Also added page for describing how to
-	understand memory coverage in a report.
-
-2006-10-04 17:07  phase1geo
-
-	Fixing bug found in development branch and fixing missing document
-	links in user documentation.
-
-2006-10-04 17:04  phase1geo
-
-	Updating rest of regressions.  Modified the way we are setting the
-	memory rd vector data bit (should optimize the score command just a
-	bit).  Also updated quite a bit of memory coverage documentation
-	though I still need to finish documenting how to understand the
-	report file for this metric.  Cleaning up other things and fixing a
-	few more software bugs from regressions.  Added marray2*
-	diagnostics to verify endianness in the unpacked dimension list.
-
-2006-10-04 03:23  phase1geo
-
-	More documentation updates.  Everything should now be ready to
-	document the memory coverage information.  Also added missing
-	images for user documentation (this should probably be fixed in the
-	stable branch as well).  Updated build files to suit.
-
-2006-10-03 23:19  phase1geo
-
-	Starting to make room for memory coverage user guide pages. 
-	Finished through 010.html (need to modify the rest). 
+	Updates to properly support 64-bit time.  Also starting to make
+	changes to simulator to support "back simulation" for when the
+	current simulation time has advanced out quite a bit of time and
+	the simulator needs to catch up.  This last feature is not quite
+	working at the moment and regressions are currently broken. 
 	Checkpointing.
 
-2006-10-03 17:46  phase1geo
+2006-11-21 20:25  phase1geo
 
-	Adding support for read coverage to memories.  Also added memory
-	coverage as a report output for DIAGLIST diagnostics in
-	regressions.  Fixed various bugs left in code from array changes
-	and updated regressions for these changes.  At this point, all IV
-	diagnostics pass regressions.
+	Updating build scripts.
 
-2006-10-03 13:39  phase1geo
+2006-11-21 17:56  phase1geo
 
-	Adding memory element selection feature in AME window of memory
-	coverage window.  Also updated the memory window picture for this
-	addition.
+	More updates to VPI (still not working correctly, however).
 
-2006-10-02 22:23  phase1geo
+2006-11-21 13:54  phase1geo
 
-	Updating lots of GUI documentation and images for addition of
-	memory coverage and to update some parts that were incorrect.
+	Making modifications to defines.h to help in creating appropriately
+	sized types.  Other changes to VPI code (but this is still broken
+	at the moment).  Checkpointing.
 
-2006-10-02 17:40  phase1geo
+2006-11-21 12:25  phase1geo
 
-	Lots of bug fixes to memory coverage functionality for GUI.  Memory
-	coverage should now be working correctly.  We just need to update
-	the GUI documentation as well as other images for the new feature
-	add.
+	Adding changeValue support for integer and time to VPI
+	functionality.
 
-2006-09-27 16:38  phase1geo
+2006-11-20 17:02  phase1geo
 
-	Adding code to interract with data in memory coverage verbose
-	window.  Majority of code is in place; however, this has not been
-	thoroughly debugged at this point.  Adding mem3 diagnostic for GUI
-	debugging purposes and checkpointing.
+	Fixing convert_cfg script for the mbit_sel4*.v diagnostics.  Also
+	removing unneeded output in vpi.c.
 
-2006-09-26 17:36  phase1geo
+2006-11-20 15:36  phase1geo
 
-	Adding code for memory coverage to GUI and related files.  Lots of
-	work to go here so we are checkpointing for the moment.
+	Fixing bug 1599869.  When a disable statement is found to not be
+	covered, the codegen_gen_expr function returns the proper output
+	(instead of unitialized output).
 
-2006-09-25 17:22  phase1geo
+2006-11-17 17:17  phase1geo
 
-	Adding more support for memory reporting to both score and report
-	commands.  We are getting closer; however, regressions are
-	currently broken.  Checkpointing.
+	Fixing bug in score command where parameter override values were
+	not being saved off properly in the CDD file.  Also fixing bug when
+	a parameter is found in a VCD file (ignoring its usage).  Updated
+	regressions for these changes.
 
-2006-09-24 23:15  phase1geo
+2006-11-09 16:51  phase1geo
 
-	Starting to add support for new memory coverage metric.  This
-	includes changes for the report command only at this point.
-
-2006-09-23 14:40  phase1geo
-
-	Fixing expression_assign, single and multi-bit select functions in
-	expr.c to properly handle multi-dimensional arrays in both LHS and
-	RHS expressions.  Added marray* diagnostics to verify proper
-	behavior this new functionality for packed arrays (all endianness
-	combinations).	Still a lot of testing to go, but this should be
-	the majority of the code for now.  Full IV regression has been
-	verified to pass.
-
-2006-09-22 17:49  phase1geo
-
-	Adding multidimensional array diagnostics to regression suite.	At
-	this point, they do not all pass.  Also adding fixes to
-	expression_assign() to get things to work.
-
-2006-09-22 14:56  phase1geo
-
-	Final set of fixes and regression updates per recent changes.  Full
-	regression now passes.
-
-2006-09-21 23:23  phase1geo
-
-	More fixes to support new signal range structure.  Still don't have
-	full regressions passing at the moment.
-
-2006-09-21 22:31  phase1geo
-
-	Preparing some files for the 0.4.8 stable release.
-
-2006-09-21 17:44  phase1geo
-
-	More updates to regressions for latest changes to support
-	memories/multi-dimensional arrays.  We still have a handful of VCS
-	diagnostics that are failing.  Checkpointing for now.
-
-2006-09-20 23:20  phase1geo
-
-	Fixing endianness diagnostics.	Still getting memory error with
-	some diagnostics in regressions (ovl1 is one of them).	Updated
-	regression.
-
-2006-09-20 17:37  phase1geo
-
-	Lots of changes to support memories and multi-dimensional arrays. 
-	We still have issues with endianness and VCS regressions have not
-	been run, but this is a significant amount of work that needs to be
-	checkpointed.
-
-2006-09-15 17:14  phase1geo
-
-	Working on adding arrayed signals.  This is currently in progress
-	and doesn't even compile at this point, much less work. 
-	Checkpointing work.
-
-2006-09-14 17:24  phase1geo
-
-	Removing all regression comments from diagnostic files as these are
-	not used and take up too much space on disk.
-
-2006-09-14 12:46  phase1geo
-
-	More regression updates.
-
-2006-09-13 18:05  phase1geo
-
-	Continuing from last submission.
-
-2006-09-13 18:02  phase1geo
-
-	Fixing bugs in bitwise coverage calculator.  Added report
-	generation for bitwise coverage and associated -b option to the
-	report command (this functionality has not been fully verified at
-	this point yet).  Updated regressions which now fully pass.
-
-2006-09-12 17:24  phase1geo
-
-	Added first attempt at collecting bitwise coverage information
-	during simulation.  Updated regressions for this change; however,
-	we currently do not report on this information currently.  Also
-	added missing keywords to GUI Verilog highlighter.  Checkpointing.
-
-2006-09-12 17:23  phase1geo
-
-	Added first attempt at collecting bitwise coverage information
-	during simulation.  Updated regressions for this change; however,
-	we currently do not report on this information currently. 
+	Adding cver rule to regression Makefile to allow Cver regressions
+	to be run.  Seeing quite a few errors in regression as it is
+	(though I do not believe that Covered is broken at this point). 
 	Checkpointing.
 
-2006-09-11 17:27  phase1geo
+2006-11-09 16:26  phase1geo
 
-	Starting to work on supporting bitwise coverage.  Moving bits
-	around in supplemental fields to allow this to work.  Full
-	regression has been updated for the current changes though this
-	feature is still not fully implemented at this time.  Also added
-	parsing support for SystemVerilog program blocks (ignored) and
-	final blocks (not handled properly at this time).  Also added lexer
-	support for the return, void, continue, break, final, program and
-	endprogram SystemVerilog keywords.  Checkpointing work.
+	Finished work on Makefile to make it useful for Cver as well.
 
-2006-09-11 09:57  phase1geo
+2006-11-09 12:12  phase1geo
 
-	Updating release information for 0.4.8 stable release.
+	Fixing bug 1569819.  Added multi_exp4 diagnostic to regression
+	suite to verify this fix.  Full regression passes.  Also started to
+	add support for Cver to the regression testing Makefile -- still
+	more work to go here.
 
-2006-09-11 09:54  phase1geo
+2006-11-06 12:12  phase1geo
 
-	Attempting to fix memory access problems during the db_close
-	function.
+	Adding more signed parsing support to net declarations.  Added
+	signed4.2 diagnostic to verify this support.  Updated regressions
+	which now fully pass.
 
-2006-09-11 09:50  phase1geo
+2006-11-03 17:36  phase1geo
 
-	Fixing error in parser for regressions.
+	Fixing bug 1590104.  Updating regressions per this change.
 
-2006-09-08 17:39  phase1geo
+2006-11-03 16:23  phase1geo
 
-	Fixes for memory problems.
+	Fixing bug 1545442.  Added report1 diagnostic to regression suite
+	to verify this fix.
 
-2006-09-08 09:56  phase1geo
+2006-11-03 15:28  phase1geo
 
-	Somehow a return from the statement_find_statement function was
-	missing that caused problems with removing statement blocks.
+	file report1.rptM was initially added on branch
+	covered-0_4_5-branch.
 
-2006-09-07 16:59  phase1geo
+2006-11-03 15:28  phase1geo
 
-	Fixing some bugs related to statement block removal.  Also made
-	some significant optimizations to this code.
+	file report1.rptI was initially added on branch
+	covered-0_4_5-branch.
 
-2006-09-07 10:10  phase1geo
+2006-11-03 15:28  phase1geo
 
-	Fixing parsing problem when a named begin/end block was empty.
+	file report1.rptWI was initially added on branch
+	covered-0_4_5-branch.
 
-2006-09-06 17:09  phase1geo
+2006-11-03 15:28  phase1geo
 
-	Fixing bug with multiply-and-op operation.  Also fixing bug in
-	gen_item_resolve function where an instance was incorrectly being
-	placed into a new instance tree.  Full regression passes with these
-	changes.  Also removed verbose output.
+	file report1.rptWM was initially added on branch
+	covered-0_4_5-branch.
 
-2006-09-05 16:00  phase1geo
+2006-11-03 15:28  phase1geo
 
-	Fixing bug in removing statements that are generate items.  Also
-	added parsing support for multi-dimensional array accessing (no
-	functionality here to support these, however).	Fixing bug in race
-	condition checker for generated items.	Currently hitting into
-	problem with genvars used in SBIT_SEL or MBIT_SEL type expressions
-	-- we are hitting into an assertion error in
-	expression_operate_recursively.
+	file report1.cfg was initially added on branch
+	covered-0_4_5-branch.
+
+2006-11-03 15:28  phase1geo
+
+	file report1.cdd was initially added on branch
+	covered-0_4_5-branch.
+
+2006-11-03 15:28  phase1geo
+
+	file report1.v was initially added on branch covered-0_4_5-branch.
+
+2006-11-03 14:52  phase1geo
+
+	Fixing bugs 1589519, 1589524 and 1589546.  Added signed4 and
+	signed4.1 diagnostics to regression suite to verify its correct
+	behavior.
+
+2006-11-03 13:01  phase1geo
+
+	Adding missing file.
+
+2006-11-03 13:00  phase1geo
+
+	Fixing bug 1589831.  Also added err3 and err3.1 diagnostics to
+	verify its correct behavior.
+
+2006-11-03 12:58  phase1geo
+
+	Fixing bug 1589522.
+
+2006-11-03 12:16  phase1geo
+
+	Removing unnecessary spaces in comments.
+
+2006-11-01 16:35  phase1geo
+
+	Fixing bug dealing with sizing of parameters.  When the user does
+	not explicitly set the parameter size, Covered was assuming this
+	width to be 32 instead of the width of its assigned value.  Updated
+	regressions for this change and added param15 to verify its
+	correctness.  Full regression passes.
+
+2006-10-26 16:58  phase1geo
+
+	Starting to add support for Cver regression testing.
+
+2006-10-25 17:35  phase1geo
+
+	Starting to update testsuite to verify VPI mode as well.  Fixing
+	runtime issues with vpi.c.  Also updated VL_error output format for
+	easier readability.  Fixing bug in parser for statement blocks that
+	do not contain RHS signals for implicit event expressions. 
+	Updating regressions for these changes.
+
+2006-10-22 22:27  phase1geo
+
+	Adding slist5 diagnostic to replicate bug found in the field.
+
+2006-10-22 22:25  phase1geo
+
+	Starting to update help files using the new widget from HelpSystem
+	1.5.
+
+2006-10-20 20:54  phase1geo
+
+	Started integrating HelpSystem into Covered's help menu.  Need to
+	do a lot of work on creating the appropriate help files, but this
+	is a good first start.
+
+2006-10-20 17:28  phase1geo
+
+	Adding conversion script to allow for VCD, LXT and VPI testing.
+
+2006-10-20 11:56  phase1geo
+
+	Documentation updates for missing -b option to report command as
+	well as adding another FAQ item describing differences between
+	stable and development releases.
 
