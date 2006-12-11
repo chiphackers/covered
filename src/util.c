@@ -89,7 +89,7 @@ char user_msg[USER_MSG_LENGTH];
 /*!
  Array of functional unit names used for output purposes.
 */
-const char* funit_types[FUNIT_TYPES+1] = { "module", "named block", "function", "task", "UNKNOWN" };
+const char* funit_types[FUNIT_TYPES+1] = { "module", "named block", "function", "task", "no_score", "afunction", "atask", "UNKNOWN" };
 
 
 /*!
@@ -1123,6 +1123,10 @@ const char* get_funit_type( int type ) {
 
 /*
  $Log$
+ Revision 1.56  2006/10/13 22:46:31  phase1geo
+ Things are a bit of a mess at this point.  Adding generate12 diagnostic that
+ shows a failure in properly handling generates of instances.
+
  Revision 1.55  2006/08/31 22:32:18  phase1geo
  Things are in a state of flux at the moment.  I have added proper parsing support
  for assertions, properties and sequences.  Also added partial support for the $root

@@ -236,8 +236,8 @@ int yydebug = 1;
   port_info*      portinfo;
   gen_item*       gitem;
   case_gitem*     case_gi;
-  nb_call*        nbcall;
   typedef_item*   typdef;
+  func_unit*      funit;
 };
 
 %token <text>     IDENTIFIER SYSTEM_IDENTIFIER
@@ -289,6 +289,7 @@ int yydebug = 1;
 
 %token KK_attribute
 
+%type <logical>   automatic_opt
 %type <integer>   net_type net_type_sign_range_opt var_type
 %type <text>      identifier
 %type <text>      udp_port_list
@@ -304,7 +305,7 @@ int yydebug = 1;
 %type <state>     if_statement_error
 %type <state>     passign
 %type <strlink>   gate_instance gate_instance_list list_of_names
-%type <nbcall>    named_begin_end_block fork_statement
+%type <funit>     named_begin_end_block fork_statement
 %type <attr_parm> attribute attribute_list
 %type <portinfo>  port_declaration list_of_port_declarations
 %type <gitem>     generate_item generate_item_list generate_item_list_opt
@@ -487,18 +488,18 @@ description
       parser_implicitly_set_curr_range( 0, 0, TRUE );
     }
     list_of_variables ';'
-  | K_task IDENTIFIER ';'
+  | K_task automatic_opt IDENTIFIER ';'
     {
       if( ignore_mode == 0 ) {
-        if( !db_add_function_task_namedblock( FUNIT_TASK, $2, @2.text, @2.first_line ) ) {
+        if( !db_add_function_task_namedblock( ($2 ? FUNIT_ATASK : FUNIT_TASK), $3, @3.text, @3.first_line ) ) {
           ignore_mode++;
         }
       }
-      free_safe( $2 );
+      free_safe( $3 );
     }
     task_item_list_opt statement_opt
     {
-      statement* stmt = $6;
+      statement* stmt = $7;
       if( (ignore_mode == 0) && (stmt != NULL) ) {
         stmt->exp->suppl.part.stmt_head      = 1;
         stmt->exp->suppl.part.stmt_is_called = 1;
@@ -508,25 +509,25 @@ description
     K_endtask
     {
       if( ignore_mode == 0 ) {
-        db_end_function_task_namedblock( @8.first_line );
+        db_end_function_task_namedblock( @9.first_line );
       } else {
         ignore_mode--;
       }
     }
-  | K_function signed_opt range_or_type_opt IDENTIFIER ';'
+  | K_function automatic_opt signed_opt range_or_type_opt IDENTIFIER ';'
     {
       if( ignore_mode == 0 ) {
-        if( db_add_function_task_namedblock( FUNIT_FUNCTION, $4, @4.text, @4.first_line ) ) {
-          db_add_signal( $4, SSUPPL_TYPE_IMPLICIT, &curr_prange, NULL, curr_signed, FALSE, @4.first_line, @4.first_column, TRUE );
+        if( db_add_function_task_namedblock( ($2 ? FUNIT_AFUNCTION : FUNIT_FUNCTION), $5, @5.text, @5.first_line ) ) {
+          db_add_signal( $5, SSUPPL_TYPE_IMPLICIT, &curr_prange, NULL, curr_signed, FALSE, @5.first_line, @5.first_column, TRUE );
         } else {
           ignore_mode++;
         }
-        free_safe( $4 );
+        free_safe( $5 );
       }
     }
     function_item_list statement
     {
-      statement* stmt = $8;
+      statement* stmt = $9;
       if( (ignore_mode == 0) && (stmt != NULL) ) {
         stmt->exp->suppl.part.stmt_head      = 1;
         stmt->exp->suppl.part.stmt_is_called = 1;
@@ -536,7 +537,7 @@ description
     K_endfunction
     {
       if( ignore_mode == 0 ) {
-        db_end_function_task_namedblock( @10.first_line );
+        db_end_function_task_namedblock( @11.first_line );
       } else {
         ignore_mode--;
       }
@@ -3157,23 +3158,23 @@ module_item
       }
     }
   | attribute_list_opt
-    K_task IDENTIFIER ';'
+    K_task automatic_opt IDENTIFIER ';'
     {
       if( generate_for_mode > 0 ) {
         VLerror( "Task definition not allowed within a generate loop" );
         ignore_mode++;
       }
       if( ignore_mode == 0 ) {
-        if( !db_add_function_task_namedblock( FUNIT_TASK, $3, @3.text, @3.first_line ) ) {
+        if( !db_add_function_task_namedblock( ($3 ? FUNIT_ATASK : FUNIT_TASK), $4, @4.text, @4.first_line ) ) {
           ignore_mode++;
         }
       }
-      free_safe( $3 );
+      free_safe( $4 );
       generate_mode--;
     }
     task_item_list_opt statement_opt
     {
-      statement* stmt = $7;
+      statement* stmt = $8;
       if( (ignore_mode == 0) && (stmt != NULL) ) {
         stmt->exp->suppl.part.stmt_head      = 1;
         stmt->exp->suppl.part.stmt_is_called = 1;
@@ -3184,33 +3185,33 @@ module_item
     {
       generate_mode++;
       if( ignore_mode == 0 ) {
-        db_end_function_task_namedblock( @9.first_line );
+        db_end_function_task_namedblock( @10.first_line );
       } else {
         ignore_mode--;
       }
     }
   | attribute_list_opt
-    K_function signed_opt range_or_type_opt IDENTIFIER ';'
+    K_function automatic_opt signed_opt range_or_type_opt IDENTIFIER ';'
     {
       if( generate_for_mode > 0 ) {
         VLerror( "Function definition not allowed within a generate loop" );
         ignore_mode++;
       }
       if( ignore_mode == 0 ) {
-        if( db_add_function_task_namedblock( FUNIT_FUNCTION, $5, @5.text, @5.first_line ) ) {
+        if( db_add_function_task_namedblock( ($3 ? FUNIT_AFUNCTION : FUNIT_FUNCTION), $6, @6.text, @6.first_line ) ) {
           generate_mode--;
-          db_add_signal( $5, SSUPPL_TYPE_IMPLICIT, &curr_prange, NULL, curr_signed, FALSE, @5.first_line, @5.first_column, TRUE );
+          db_add_signal( $6, SSUPPL_TYPE_IMPLICIT, &curr_prange, NULL, curr_signed, FALSE, @6.first_line, @6.first_column, TRUE );
           generate_mode++;
         } else {
           ignore_mode++;
         }
-        free_safe( $5 );
+        free_safe( $6 );
       }
       generate_mode--;
     }
     function_item_list statement
     {
-      statement* stmt = $9;
+      statement* stmt = $10;
       if( (ignore_mode == 0) && (stmt != NULL) ) {
         stmt->exp->suppl.part.stmt_head      = 1;
         stmt->exp->suppl.part.stmt_is_called = 1;
@@ -3221,7 +3222,7 @@ module_item
     {
       generate_mode++;
       if( ignore_mode == 0 ) {
-        db_end_function_task_namedblock( @11.first_line );
+        db_end_function_task_namedblock( @12.first_line );
       } else {
         ignore_mode--;
       }
@@ -3725,9 +3726,7 @@ statement
         db_end_function_task_namedblock( @6.first_line );
         if( $4 != NULL ) {
           exp = db_create_expression( NULL, NULL, EXP_OP_NB_CALL, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-          exp->elem.stmt = $4->stmt;
-          exp->name      = $4->name;
-          free_safe( $4 );
+          exp->elem.funit = $4;
           stmt = db_create_statement( exp );
           db_add_expression( exp );
           $$ = stmt;
@@ -3761,9 +3760,7 @@ statement
         db_end_function_task_namedblock( @4.first_line );
         if( $3 != NULL ) {
           exp = db_create_expression( NULL, NULL, EXP_OP_NB_CALL, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-          exp->elem.stmt = $3->stmt;
-          exp->name      = $3->name;
-          free_safe( $3 );
+          exp->elem.funit = $3;
           stmt = db_create_statement( exp );
           db_add_expression( exp );
           $$ = stmt;
@@ -4485,6 +4482,7 @@ statement
 fork_statement
   : ':' IDENTIFIER
     {
+      func_unit* tf = NULL;
       if( (ignore_mode == 0) && ($2 != NULL) ) {
         if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $2, @2.text, @2.first_line ) ) {
           ignore_mode++;
@@ -4492,12 +4490,12 @@ fork_statement
       } else {
         ignore_mode++;
       }
+      $$ = tf;
     }
     block_item_decls_opt statement_list dec_fork_depth
     {
       expression* expr;
       statement*  stmt;
-      nb_call*    nbc;
       if( ignore_mode == 0 ) {
         if( $5 != NULL ) {
           expr = db_create_expression( NULL, NULL, EXP_OP_JOIN, FALSE, @5.first_line, @5.first_column, (@5.last_column - 1), NULL );
@@ -4508,10 +4506,7 @@ fork_statement
             stmt->exp->suppl.part.stmt_head      = 1;
             stmt->exp->suppl.part.stmt_is_called = 1;
             db_add_statement( stmt, stmt );
-            nbc = (nb_call*)malloc_safe( sizeof( nb_call ), __FILE__, __LINE__ );
-            nbc->stmt = stmt;
-            nbc->name = $2;
-            $$ = nbc;
+            $$ = db_get_curr_funit();
           } else {
             db_remove_statement( $5 );
             db_remove_statement( stmt );
@@ -4556,16 +4551,12 @@ named_begin_end_block
     block_item_decls_opt statement_list
     {
       statement* stmt = $4;
-      nb_call*   nbc;
       if( ignore_mode == 0 ) {
         if( stmt != NULL ) {
           stmt->exp->suppl.part.stmt_head      = 1;
           stmt->exp->suppl.part.stmt_is_called = 1;
           db_add_statement( stmt, stmt );
-          nbc = (nb_call*)malloc_safe( sizeof( nb_call ), __FILE__, __LINE__ );
-          nbc->stmt = stmt;
-          nbc->name = $1;
-          $$ = nbc;
+          $$ = db_get_curr_funit();
         } else {
           free_safe( $1 );
           $$ = NULL;
@@ -5331,6 +5322,11 @@ task_item
       curr_handled = TRUE;
     }
     list_of_variables ';'
+  ;
+
+automatic_opt
+  : K_automatic { $$ = TRUE; }
+  |             { $$ = FALSE; }
   ;
 
 signed_opt

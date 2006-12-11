@@ -566,6 +566,17 @@ void db_set_timescale( int unit, int precision ) {
 }
 
 /*!
+ \return Returns a pointer to the current functional unit.
+
+ This function returns a pointer to the current functional unit being parsed.
+*/
+func_unit* db_get_curr_funit() {
+
+  return( curr_funit );
+
+}
+
+/*!
  \param scope  Name of functional unit instance being added.
  \param name   Name of functional unit being instantiated.
  \param type   Type of functional unit being instantiated.
@@ -736,8 +747,8 @@ void db_end_module( int end_line ) {
  \param file        File containing the specified functional unit
  \param start_line  Starting line number of functional unit
 
- \return Returns TRUE if specified function, task or named block was added to the design.  If
-         it was not, returns FALSE to indicate that this block should be ignored.
+ \return Returns TRUE if the new functional unit was added to the design; otherwise, returns FALSE
+         to indicate that this block should be ignored.
 */
 bool db_add_function_task_namedblock( int type, char* name, char* file, int start_line ) {
 
@@ -745,7 +756,8 @@ bool db_add_function_task_namedblock( int type, char* name, char* file, int star
   func_unit* parent;     /* Pointer to parent module for the newly created functional unit */
   char*      full_name;  /* Full name of function/task/namedblock which includes the parent module name */
 
-  assert( (type == FUNIT_FUNCTION) || (type == FUNIT_TASK) || (type == FUNIT_NAMED_BLOCK) );
+  assert( (type == FUNIT_FUNCTION)  || (type == FUNIT_TASK) || (type == FUNIT_NAMED_BLOCK) ||
+          (type == FUNIT_AFUNCTION) || (type == FUNIT_ATASK) );
 
 #ifdef DEBUG_MODE
   snprintf( user_msg, USER_MSG_LENGTH, "In db_add_function_task_namedblock, %s: %s, file: %s, start_line: %d",
@@ -2232,6 +2244,11 @@ void db_do_timestep( uint64 time, bool final ) {
 
 /*
  $Log$
+ Revision 1.239  2006/11/29 23:15:45  phase1geo
+ Major overhaul to simulation engine by including an appropriate delay queue
+ mechanism to handle simulation timing for delay operations.  Regression not
+ fully passing at this moment but enough is working to checkpoint this work.
+
  Revision 1.238  2006/11/28 16:39:46  phase1geo
  More updates for regressions due to changes in delay handling.  Still work
  to go.

@@ -73,6 +73,7 @@ void funit_init( func_unit* funit ) {
   funit->sig_tail   = NULL;
   funit->exp_head   = NULL;
   funit->exp_tail   = NULL;
+  funit->first_stmt = NULL;
   funit->stmt_head  = NULL;
   funit->stmt_tail  = NULL;
   funit->fsm_head   = NULL;
@@ -142,11 +143,11 @@ func_unit* funit_get_curr_function( func_unit* funit ) {
 
   assert( funit != NULL );
 
-  while( (funit->type != FUNIT_FUNCTION) && (funit->type != FUNIT_MODULE) ) {
+  while( (funit->type != FUNIT_FUNCTION) && (funit->type != FUNIT_AFUNCTION) && (funit->type != FUNIT_MODULE) ) {
     funit = funit->parent;
   }
 
-  return( (funit->type == FUNIT_FUNCTION) ? funit : NULL );
+  return( ((funit->type == FUNIT_FUNCTION) || (funit->type == FUNIT_AFUNCTION)) ? funit : NULL );
 
 }
 
@@ -468,8 +469,9 @@ bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
   if( funit->type != FUNIT_NO_SCORE ) {
 
 #ifdef DEBUG_MODE
-    assert( (funit->type == FUNIT_MODULE) || (funit->type == FUNIT_NAMED_BLOCK) ||
-            (funit->type == FUNIT_FUNCTION) || (funit->type == FUNIT_TASK) );
+    assert( (funit->type == FUNIT_MODULE)    || (funit->type == FUNIT_NAMED_BLOCK) ||
+            (funit->type == FUNIT_FUNCTION)  || (funit->type == FUNIT_TASK)        ||
+            (funit->type == FUNIT_AFUNCTION) || (funit->type == FUNIT_ATASK) );
     snprintf( user_msg, USER_MSG_LENGTH, "Writing %s %s", get_funit_type( funit->type ), obf_funit( funit->name ) );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
@@ -981,6 +983,10 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.53  2006/11/25 21:29:01  phase1geo
+ Adding timescale diagnostics to regression suite and fixing bugs in core associated
+ with this code.  Full regression now passes for IV and Cver (not in VPI mode).
+
  Revision 1.52  2006/11/25 04:24:40  phase1geo
  Adding initial code to fully support the timescale directive and its usage.
  Added -vpi_ts score option to allow the user to specify a top-level timescale

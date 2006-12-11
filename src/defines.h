@@ -249,8 +249,14 @@
 /*! Represents a scope that is considered a "no score" functional unit */
 #define FUNIT_NO_SCORE       4
 
+/*! Represents a re-entrant Verilog function (syntax "function automatic <name> ... endfunction") */
+#define FUNIT_AFUNCTION      5
+
+/*! Represents a re-entrant Verilog task (syntax "task <name> ... endtask") */
+#define FUNIT_ATASK          6
+
 /*! The number of valid functional unit types */
-#define FUNIT_TYPES          4
+#define FUNIT_TYPES          7
 
 /*! @} */
 
@@ -1372,7 +1378,6 @@ struct sym_sig_s;
 struct symtable_s;
 struct static_expr_s;
 struct vector_width_s;
-struct nb_call_s;
 struct exp_bind_s;
 struct case_stmt_s;
 struct case_gitem_s;
@@ -1397,6 +1402,8 @@ struct typedef_item_s;
 struct enum_item_s;
 struct sig_range_s;
 struct dim_range_s;
+struct reentrant_s;
+struct rstack_entry_s;
 
 /*------------------------------------------------------------------------------*/
 /*  STRUCTURE/UNION TYPEDEFS  */
@@ -1532,11 +1539,6 @@ typedef struct static_expr_s static_expr;
 typedef struct vector_width_s vector_width;
 
 /*!
- Renaming named block call structure for convenience.
-*/
-typedef struct nb_call_s nb_call;
-
-/*!
  Renaming signal/functional unit to expression binding structure for convenience.
 */
 typedef struct exp_bind_s exp_bind;
@@ -1638,6 +1640,16 @@ typedef struct sig_range_s sig_range;
 */
 typedef struct dim_range_s dim_range;
 
+/*!
+ Renaming reentrant_s structure for convenience.
+*/
+typedef struct reentrant_s reentrant;
+
+/*!
+ Renaming rstack_entry_s structure for convenience.
+*/
+typedef struct rstack_entry_s rstack_entry;
+
 /*------------------------------------------------------------------------------*/
 /*  STRUCTURE/UNION DEFINITIONS  */
 
@@ -1727,7 +1739,7 @@ struct expression_s {
   expression*  left;               /*!< Pointer to expression on left */
   fsm*         table;              /*!< Pointer to FSM table associated with this expression */
   union {
-    statement* stmt;               /*!< Pointer to starting task/function statement to be called by this expression */
+    func_unit* funit;              /*!< Pointer to task/function to be called by this expression */
     uint64*    scale;              /*!< Pointer to parent functional unit's timescale value */
   } elem;
 };
@@ -1931,6 +1943,7 @@ struct func_unit_s {
   sig_link*     sig_tail;            /*!< Tail pointer to list of signals in this functional unit */
   exp_link*     exp_head;            /*!< Head pointer to list of expressions in this functional unit */
   exp_link*     exp_tail;            /*!< Tail pointer to list of expressions in this functional unit */
+  statement*    first_stmt;          /*!< Pointer to first head statement in this functional unit (for tasks/functions only) */
   stmt_link*    stmt_head;           /*!< Head pointer to list of statements in this functional unit */
   stmt_link*    stmt_tail;           /*!< Tail pointer to list of statements in this functional unit */
   fsm_link*     fsm_head;            /*!< Head pointer to list of FSMs in this functional unit */
@@ -2005,14 +2018,6 @@ struct vector_width_s {
   static_expr*  left;                /*!< Specifies left bit value of bit range */
   static_expr*  right;               /*!< Specifies right bit value of bit range */
   bool          implicit;            /*!< Specifies if vector width was explicitly set by user or implicitly set by parser */
-};
-
-/*!
- Specifies a named block calling structure for storing the head statement and block name.
-*/
-struct nb_call_s {
-  char*      name;                   /*!< Specifies the name of the named block */
-  statement* stmt;                   /*!< Pointer to the head statement of the named block */
 };
 
 /*!
@@ -2278,9 +2283,31 @@ struct dim_range_s {
   int        lsb;                    /*!< LSB of range */
 };
 
+/*!
+ Represents a reentrant stack and control information.
+*/
+struct reentrant_s {
+  rstack_entry* stack;               /*!< Stack containing signal value bit information from previous call */
+  func_unit*    funit;               /*!< Pointer to functional unit containing signals to store */
+  int           data_size;           /*!< Number of nibbles stored in a single rstack_entry data */
+};
+
+/*!
+ Represents a reentrant stack entry.
+*/
+struct rstack_entry_s {
+  nibble*       data;                /*!< Bit data stored from signals */
+  rstack_entry* prev;                /*!< Pointer to previous stack entry in stack */
+};
+
 
 /*
  $Log$
+ Revision 1.244  2006/11/29 23:15:46  phase1geo
+ Major overhaul to simulation engine by including an appropriate delay queue
+ mechanism to handle simulation timing for delay operations.  Regression not
+ fully passing at this moment but enough is working to checkpoint this work.
+
  Revision 1.243  2006/11/25 04:24:39  phase1geo
  Adding initial code to fully support the timescale directive and its usage.
  Added -vpi_ts score option to allow the user to specify a top-level timescale
