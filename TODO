@@ -22,7 +22,7 @@ Score command
        without user intervention.
 
    4.  Add more Verilog-2001 constructs to parser.
-	- automatic storage for functions/tasks (instead of static) - difficult!
+IP	- automatic storage for functions/tasks
 	- config command
         - $random
 
