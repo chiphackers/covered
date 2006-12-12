@@ -1597,7 +1597,7 @@ statement* db_parallelize_statement( statement* stmt ) {
     exp = db_create_expression( NULL, NULL, EXP_OP_FORK, FALSE, stmt->exp->line, ((stmt->exp->col & 0xffff0000) >> 16), (stmt->exp->col & 0xffff), NULL );
 
     /* Bind the FORK expression to this statement */
-    exp->elem.stmt = stmt;
+    // TBD - exp->elem.stmt = stmt;
     bind_add_stmt( stmt->exp->id, exp, curr_funit );
 
     /* Reduce fork and block depth for the new statement */
@@ -2244,6 +2244,10 @@ void db_do_timestep( uint64 time, bool final ) {
 
 /*
  $Log$
+ Revision 1.240  2006/12/11 23:29:16  phase1geo
+ Starting to add support for re-entrant tasks and functions.  Currently, compiling
+ fails.  Checkpointing.
+
  Revision 1.239  2006/11/29 23:15:45  phase1geo
  Major overhaul to simulation engine by including an appropriate delay queue
  mechanism to handle simulation timing for delay operations.  Regression not

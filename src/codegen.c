@@ -486,30 +486,24 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
     } else if( (expr->op == EXP_OP_FUNC_CALL) || (expr->op == EXP_OP_TASK_CALL) ) {
 
-      assert( expr->elem.stmt != NULL );
+      assert( expr->elem.funit != NULL );
 
-      if( (tfunit = funit_find_by_id( expr->elem.stmt->exp->id )) != NULL ) {
-        after = (char*)malloc_safe( (strlen( tfunit->name ) + 1), __FILE__, __LINE__ );
-        scope_extract_back( tfunit->name, after, user_msg );
-        pname = scope_gen_printable( after );
-        if( (expr->op == EXP_OP_TASK_CALL) && (expr->left == NULL) ) {
-          *code       = (char**)malloc_safe( sizeof( char* ), __FILE__, __LINE__ );
-          (*code)[0]  = strdup_safe( pname, __FILE__, __LINE__ );
-          *code_depth = 1;
-        } else {
-          tmpstr = (char*)malloc_safe( (strlen( pname ) + 3), __FILE__, __LINE__ );
-          snprintf( tmpstr, (strlen( pname ) + 3), "%s( ", pname );
-          codegen_create_expr( code, code_depth, expr->line, tmpstr, left_code, left_code_depth, expr->left, " )", NULL, 0, NULL, NULL );
-          free_safe( tmpstr );
-        }
-        free_safe( after );
-        free_safe( pname );
+      tfunit = expr->elem.funit;
+      after = (char*)malloc_safe( (strlen( tfunit->name ) + 1), __FILE__, __LINE__ );
+      scope_extract_back( tfunit->name, after, user_msg );
+      pname = scope_gen_printable( after );
+      if( (expr->op == EXP_OP_TASK_CALL) && (expr->left == NULL) ) {
+        *code       = (char**)malloc_safe( sizeof( char* ), __FILE__, __LINE__ );
+        (*code)[0]  = strdup_safe( pname, __FILE__, __LINE__ );
+        *code_depth = 1;
       } else {
-        snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find statement %d in module %s's task/function list",
-                  expr->elem.stmt->exp->id, obf_funit( funit->name ) );
-        print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        exit( 1 );
+        tmpstr = (char*)malloc_safe( (strlen( pname ) + 3), __FILE__, __LINE__ );
+        snprintf( tmpstr, (strlen( pname ) + 3), "%s( ", pname );
+        codegen_create_expr( code, code_depth, expr->line, tmpstr, left_code, left_code_depth, expr->left, " )", NULL, 0, NULL, NULL );
+        free_safe( tmpstr );
       }
+      free_safe( after );
+      free_safe( pname );
 
     } else if( expr->op == EXP_OP_TRIGGER ) {
 
@@ -528,7 +522,7 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
     } else if( expr->op == EXP_OP_DISABLE ) {
 
-      assert( expr->elem.stmt != NULL );
+      assert( expr->elem.funit != NULL );
 
       pname  = scope_gen_printable( expr->name );
       tmpstr = (char*)malloc_safe( (strlen( pname ) + 9), __FILE__, __LINE__ );
@@ -919,6 +913,10 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.80  2006/11/20 21:36:21  phase1geo
+ Fixing bug 1599869.  When a disable statement is found to not be covered, the
+ codegen_gen_expr function returns the proper output (instead of unitialized output).
+
  Revision 1.79  2006/10/06 22:45:57  phase1geo
  Added support for the wait() statement.  Added wait1 diagnostic to regression
  suite to verify its behavior.  Also added missing GPL license note at the top

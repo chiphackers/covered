@@ -83,6 +83,7 @@
 #include "expr.h"
 #include "iter.h"
 #include "link.h"
+#include "reentrant.h"
 #include "sim.h"
 #include "util.h"
 #include "vector.h"
@@ -494,6 +495,7 @@ thread* sim_add_thread( thread* parent, statement* stmt ) {
     thr->parent            = parent;
     thr->head              = stmt;
     thr->curr              = stmt;
+    thr->ren               = NULL;
     thr->suppl.all         = 0;
     thr->suppl.part.queued = 1;    /* We will place the thread immediately into the thread queue */
     thr->curr_time         = curr_sim_time;
@@ -646,6 +648,11 @@ void sim_kill_thread( thread* thr ) {
 
   /* Set the statement thread pointer to NULL */
   thr->curr->thr = NULL;
+
+  /* If this thread contains a re-entrant structure, deallocate it */
+  if( thr->ren != NULL ) {
+    reentrant_dealloc( thr->ren );
+  }
 
   /* Now we can deallocate the thread */
   free_safe( thr );
@@ -914,6 +921,10 @@ void sim_simulate( uint64 sim_time ) {
 
 /*
  $Log$
+ Revision 1.81  2006/11/30 19:58:11  phase1geo
+ Fixing rest of issues so that full regression (IV, Cver and VCS) without VPI
+ passes.  Updated regression files.
+
  Revision 1.80  2006/11/30 05:04:23  phase1geo
  More fixes to new simulation algorithm.  Still have a couple of failures that
  need to be looked at.  Checkpointing.

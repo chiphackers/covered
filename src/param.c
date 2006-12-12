@@ -638,8 +638,7 @@ void param_expr_eval( expression* expr, funit_inst* inst ) {
 
     /* For constant functions, resolve parameters and resize the functional unit first */
     if( expr->op == EXP_OP_FUNC_CALL ) {
-      assert( expr->elem.stmt != NULL );
-      funit = funit_find_by_id( expr->elem.stmt->exp->id );
+      funit = expr->elem.funit;
       assert( funit != NULL );
       funiti = instance_find_by_funit( inst, funit, &ignore );
       assert( funiti != NULL );
@@ -1008,6 +1007,10 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.84  2006/10/13 22:46:31  phase1geo
+ Things are a bit of a mess at this point.  Adding generate12 diagnostic that
+ shows a failure in properly handling generates of instances.
+
  Revision 1.83  2006/10/12 22:48:46  phase1geo
  Updates to remove compiler warnings.  Still some work left to go here.
 

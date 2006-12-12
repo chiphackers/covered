@@ -642,7 +642,7 @@ bool bind_statement( int id, expression* exp, func_unit* funit_exp, bool cdd_rea
     /* Bind the expression to the specified statement */
     if( !rm_stmt ) {
 
-      exp->elem.stmt = found_stmtl->stmt;
+      // TBD - exp->elem.stmt = found_stmtl->stmt;
 
     /* If we were previously told to remove this statement block, do so now */
     } else {
@@ -779,12 +779,13 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
 
         assert( found_funit->stmt_head->stmt != NULL );
 
-        /* Set expression to point at task/function's first head statement */
+        /* Set functional unit's first_stmt pointer to its head statement */
         stmt_iter_reset( &si, found_funit->stmt_tail );
         stmt_iter_find_head( &si, FALSE );
 
         if( si.curr->stmt != NULL ) {
-          exp->elem.stmt = si.curr->stmt;
+          found_funit->first_stmt = si.curr->stmt;
+          exp->elem.funit = found_funit;
           retval = TRUE;
         }
 
@@ -1019,6 +1020,9 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.102  2006/10/12 22:48:45  phase1geo
+ Updates to remove compiler warnings.  Still some work left to go here.
+
  Revision 1.101  2006/10/09 17:54:18  phase1geo
  Fixing support for VPI to allow it to properly get linked to the simulator.
  Also fixed inconsistency in generate reports and updated appropriately in

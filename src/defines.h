@@ -1044,11 +1044,14 @@ typedef enum exp_op_type_e {
  @{
 */
 
+/*! Functional unit */
+#define ETYPE_FUNIT     0
+
 /*! Statement */
-#define ETYPE_STMT      0
+#define ETYPE_STMT      1
 
 /*! Delay */
-#define ETYPE_DELAY     1
+#define ETYPE_DELAY     2
 
 /*! @} */
 
@@ -1739,6 +1742,7 @@ struct expression_s {
   expression*  left;               /*!< Pointer to expression on left */
   fsm*         table;              /*!< Pointer to FSM table associated with this expression */
   union {
+    //statement* stmt;               /*!< Pointer to statement to be called by this expression (EXP_OP_FORK) */
     func_unit* funit;              /*!< Pointer to task/function to be called by this expression */
     uint64*    scale;              /*!< Pointer to parent functional unit's timescale value */
   } elem;
@@ -2162,6 +2166,7 @@ struct thread_s {
   thread*    parent;                 /*!< Pointer to parent thread that spawned this thread */
   statement* head;                   /*!< Pointer to original head statement that created this thread */
   statement* curr;                   /*!< Pointer to current head statement for this thread */
+  reentrant* ren;                    /*!< Pointer to re-entrant structure to use for this thread */
   union {
     uint8 all;
     struct {
@@ -2303,6 +2308,10 @@ struct rstack_entry_s {
 
 /*
  $Log$
+ Revision 1.245  2006/12/11 23:29:16  phase1geo
+ Starting to add support for re-entrant tasks and functions.  Currently, compiling
+ fails.  Checkpointing.
+
  Revision 1.244  2006/11/29 23:15:46  phase1geo
  Major overhaul to simulation engine by including an appropriate delay queue
  mechanism to handle simulation timing for delay operations.  Regression not

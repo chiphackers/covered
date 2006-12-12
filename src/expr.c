@@ -138,6 +138,7 @@
 #include "fsm.h"
 #include "func_unit.h"
 #include "link.h"
+#include "reentrant.h"
 #include "sim.h"
 #include "stmt_blk.h"
 #include "util.h"
@@ -398,7 +399,7 @@ expression* expression_create( expression* right, expression* left, exp_op_type 
   new_expr->left                = left;
   new_expr->value               = (vector*)malloc_safe( sizeof( vector ), __FILE__, __LINE__ );
   new_expr->table               = NULL;
-  new_expr->elem.stmt           = NULL;
+  new_expr->elem.funit          = NULL;
   new_expr->name                = NULL;
 
   if( right != NULL ) {
@@ -1063,7 +1064,8 @@ bool expression_find_expr( expression* root, expression* expr ) {
 bool expression_contains_expr_calling_stmt( expression* expr, statement* stmt ) {
 
   return( (expr != NULL) &&
-          (((ESUPPL_TYPE( expr->suppl ) == ETYPE_STMT) && (expr->elem.stmt == stmt)) ||
+          (// TBD - ((ESUPPL_TYPE( expr->suppl ) == ETYPE_STMT)  && (expr->elem.stmt == stmt)) ||
+           ((ESUPPL_TYPE( expr->suppl ) == ETYPE_FUNIT) && (expr->elem.funit->first_stmt == stmt)) ||
            expression_contains_expr_calling_stmt( expr->left, stmt ) ||
            expression_contains_expr_calling_stmt( expr->right, stmt )) );
 
@@ -1149,8 +1151,8 @@ void expression_db_write( expression* expr, FILE* file, bool parse_mode ) {
     fprintf( file, " %s", expr->name );
   } else if( expr->sig != NULL ) {
     fprintf( file, " %s", expr->sig->name );  /* This will be valid for parameters */
-  } else if( (ESUPPL_TYPE( expr->suppl ) == ETYPE_STMT) && (expr->elem.stmt != NULL) ) {
-    fprintf( file, " %d", expression_get_id( expr->elem.stmt->exp, parse_mode ) );
+// TBD -  } else if( (ESUPPL_TYPE( expr->suppl ) == ETYPE_STMT) && (expr->elem.stmt != NULL) ) {
+//    fprintf( file, " %d", expression_get_id( expr->elem.stmt->exp, parse_mode ) );
   }
 
   fprintf( file, "\n" );
@@ -2666,7 +2668,30 @@ bool expression_op_func__bassign( expression* expr, thread* thr ) {
 */
 bool expression_op_func__func_call( expression* expr, thread* thr ) {
 
-  sim_thread( sim_add_thread( thr, expr->elem.stmt ) );
+  thread* new_thr;  /* Pointer to newly created thread to perform this function call */
+
+  /* If this function call is to an automatic (re-entrant) function, handle the stack */
+  if( expr->elem.funit->type == FUNIT_AFUNCTION ) {
+
+    /* Create new thread */
+    new_thr = sim_add_thread( thr, expr->elem.funit->first_stmt );
+
+    /* Create reentrant structure, pass it to the thread and push the current function signal contents */
+    new_thr->ren = reentrant_create( expr->elem.funit );
+    reentrant_stack_push( new_thr->ren );
+
+    /* Simulate the thread */
+    sim_thread( new_thr );
+
+    /* Now pop the stack and deallocate it */
+    reentrant_stack_pop( new_thr->ren );
+    reentrant_dealloc( new_thr->ren );
+    
+  } else {
+
+    sim_thread( sim_add_thread( thr, expr->elem.funit->first_stmt ) );
+
+  }
 
   return( TRUE );
 
@@ -2682,11 +2707,26 @@ bool expression_op_func__func_call( expression* expr, thread* thr ) {
 */
 bool expression_op_func__task_call( expression* expr, thread* thr ) {
 
-  bool retval = FALSE;  /* Return value for this function */
+  bool    retval = FALSE;  /* Return value for this function */
+  thread* new_thr;         /* Pointer to newly created simulation thread */
 
   if( !expr->suppl.part.prev_called ) {
 
-    sim_add_thread( thr, expr->elem.stmt );
+    if( expr->elem.funit->type == FUNIT_ATASK ) {
+
+      /* Create new thread */
+      new_thr = sim_add_thread( thr, expr->elem.funit->first_stmt );
+    
+      /* Create reentrant structure, pass it to the thread and push the current function signal contents */
+      new_thr->ren = reentrant_create( expr->elem.funit ); 
+      reentrant_stack_push( new_thr->ren );
+    
+    } else {
+
+      sim_add_thread( thr, expr->elem.funit->first_stmt );
+
+    }
+
     expr->suppl.part.prev_called         = 1;
     expr->value->value[0].part.exp.value = 0;
 
@@ -2716,13 +2756,14 @@ bool expression_op_func__nb_call( expression* expr, thread* thr ) {
 
   if( ESUPPL_IS_IN_FUNC( expr->suppl ) ) {
 
-    sim_thread( sim_add_thread( thr, expr->elem.stmt ) );
+    /* TBD - Do we need to create a reentrant for this if the parent function is an automatic? */
+    sim_thread( sim_add_thread( thr, expr->elem.funit->first_stmt ) );
     retval = TRUE;
 
   } else {
 
     if( !expr->suppl.part.prev_called ) {
-      sim_add_thread( thr, expr->elem.stmt );
+      sim_add_thread( thr, expr->elem.funit->first_stmt );
       expr->suppl.part.prev_called         = 1;
       expr->value->value[0].part.exp.value = 0;
     } else if( thr->child_head == NULL ) {
@@ -2747,7 +2788,7 @@ bool expression_op_func__nb_call( expression* expr, thread* thr ) {
 */
 bool expression_op_func__fork( expression* expr, thread* thr ) {
 
-  sim_add_thread( thr, expr->elem.stmt );
+// TBD -  sim_add_thread( thr, expr->elem.stmt );
 
   return( TRUE );
 
@@ -2777,7 +2818,7 @@ bool expression_op_func__join( expression* expr, thread* thr ) {
 */
 bool expression_op_func__disable( expression* expr, thread* thr ) {
 
-  sim_kill_thread_with_stmt( expr->elem.stmt );
+  sim_kill_thread_with_stmt( expr->elem.funit->first_stmt );
 
   return( TRUE );
 
@@ -3829,15 +3870,15 @@ void expression_dealloc( expression* expr, bool exp_only ) {
       vector_dealloc( expr->value );
       expr->value = NULL;
 
-      /* If this is a named block call or fork statement, remove the statement that this expression points to */
+      /* If this is a named block call or fork call, remove the statement that this expression points to */
       if( (expr->op == EXP_OP_NB_CALL) || (expr->op == EXP_OP_FORK) ) {
 
         if( !exp_only ) {
 #ifdef DEBUG_MODE
-          snprintf( user_msg, USER_MSG_LENGTH, "Removing statement block starting at line %d because it is a NB_CALL or FORK and its calling expression is being removed", expr->elem.stmt->exp->line );
+// TBD -          snprintf( user_msg, USER_MSG_LENGTH, "Removing statement block starting at line %d because it is a NB_CALL and its calling expression is being removed", expr->elem.stmt->exp->line );
           print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
-          stmt_blk_add_to_remove_list( expr->elem.stmt );
+// TBD -          stmt_blk_add_to_remove_list( expr->elem.stmt );
         } else {
           bind_rm_stmt( expr->id );
         }
@@ -3933,6 +3974,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.231  2006/11/30 19:58:11  phase1geo
+ Fixing rest of issues so that full regression (IV, Cver and VCS) without VPI
+ passes.  Updated regression files.
+
  Revision 1.230  2006/11/29 23:15:46  phase1geo
  Major overhaul to simulation engine by including an appropriate delay queue
  mechanism to handle simulation timing for delay operations.  Regression not

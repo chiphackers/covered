@@ -1089,16 +1089,10 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
               case EXP_OP_RPT_DLY  :  *size = l_size + r_size + 1;  strcpy( code_fmt, "%s %s" );             break;
               case EXP_OP_TASK_CALL :
               case EXP_OP_FUNC_CALL :
-                if( (tfunit = funit_find_by_id( exp->elem.stmt->exp->id )) != NULL ) {
-                  tmpname = strdup_safe( tfunit->name, __FILE__, __LINE__ );
-                  scope_extract_back( tfunit->name, tmpname, user_msg );
-                  pname = scope_gen_printable( tmpname );
-                } else {
-                  snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  Could not find statement %d in module %s",
-                            exp->elem.stmt->exp->id, obf_funit( funit->name ) );
-                  print_output( user_msg, FATAL, __FILE__, __LINE__ );
-                  exit( 1 );
-                }
+                tfunit = exp->elem.funit;
+                tmpname = strdup_safe( tfunit->name, __FILE__, __LINE__ );
+                scope_extract_back( tfunit->name, tmpname, user_msg );
+                pname = scope_gen_printable( tmpname );
                 *size = l_size + r_size + strlen( pname ) + 4;
                 for( i=0; i<strlen( pname ); i++ ) {
                   code_fmt[i] = ' ';
@@ -2701,6 +2695,11 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.165  2006/11/09 18:12:56  phase1geo
+ Fixing bug 1569819.  Added multi_exp4 diagnostic to regression suite
+ to verify this fix.  Full regression passes.  Also started to add support
+ for Cver to the regression testing Makefile -- still more work to go here.
+
  Revision 1.164  2006/11/03 22:23:58  phase1geo
  Fixing bug 1545442.  Added report1 diagnostic to regression suite to verify
  this fix.
