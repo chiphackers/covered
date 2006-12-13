@@ -182,6 +182,11 @@ gitem_link* save_gi_head = NULL;
 */
 gitem_link* save_gi_tail = NULL;
 
+/*!
+ Specifies a unique name for an unnamed scope (begin...end block containing block_items)
+*/
+int unnamed_scope_inst   = 0;
+
 #define YYERROR_VERBOSE 1
 
 /* Uncomment these lines to turn debugging on */
@@ -289,9 +294,9 @@ int yydebug = 1;
 
 %token KK_attribute
 
-%type <logical>   automatic_opt
+%type <logical>   automatic_opt block_item_decls_opt
 %type <integer>   net_type net_type_sign_range_opt var_type
-%type <text>      identifier
+%type <text>      identifier IDENTIFIER_opt
 %type <text>      udp_port_list
 %type <text>      defparam_assign_list defparam_assign
 %type <statexp>   static_expr static_expr_primary static_expr_port_list
@@ -1997,6 +2002,16 @@ expression_port_list
         $$ = NULL;
       }
     }
+  ;
+
+IDENTIFIER_opt
+  : IDENTIFIER { $$ = $1; }
+  | { $$ = NULL; }
+  ;
+
+UNUSED_IDENTIFIER_opt
+  : UNUSED_IDENTIFIER
+  |
   ;
 
 identifier
@@ -3752,15 +3767,15 @@ statement
       VLerror( "Illegal syntax in begin/end block" );
       $$ = NULL;
     }
-  | K_fork inc_fork_depth fork_statement K_join
+  | K_fork inc_fork_depth ':' fork_statement K_join
     {
       expression* exp;
       statement*  stmt;
       if( ignore_mode == 0 ) {
-        db_end_function_task_namedblock( @4.first_line );
-        if( $3 != NULL ) {
+        db_end_function_task_namedblock( @5.first_line );
+        if( $4 != NULL ) {
           exp = db_create_expression( NULL, NULL, EXP_OP_NB_CALL, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-          exp->elem.funit = $3;
+          exp->elem.funit = $4;
           stmt = db_create_statement( exp );
           db_add_expression( exp );
           $$ = stmt;
@@ -4480,11 +4495,11 @@ statement
   ;
 
 fork_statement
-  : ':' IDENTIFIER
+  : IDENTIFIER
     {
       func_unit* tf = NULL;
-      if( (ignore_mode == 0) && ($2 != NULL) ) {
-        if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $2, @2.text, @2.first_line ) ) {
+      if( (ignore_mode == 0) && ($1 != NULL) ) {
+        if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $1, @1.text, @1.first_line ) ) {
           ignore_mode++;
         }
       } else {
@@ -4497,28 +4512,28 @@ fork_statement
       expression* expr;
       statement*  stmt;
       if( ignore_mode == 0 ) {
-        if( $5 != NULL ) {
-          expr = db_create_expression( NULL, NULL, EXP_OP_JOIN, FALSE, @5.first_line, @5.first_column, (@5.last_column - 1), NULL );
+        if( $4 != NULL ) {
+          expr = db_create_expression( NULL, NULL, EXP_OP_JOIN, FALSE, @4.first_line, @4.first_column, (@4.last_column - 1), NULL );
           stmt = db_create_statement( expr );
-          if( db_statement_connect( $5, stmt ) ) {
+          if( db_statement_connect( $4, stmt ) ) {
             db_add_expression( expr );
-            stmt = $5;
+            stmt = $4;
             stmt->exp->suppl.part.stmt_head      = 1;
             stmt->exp->suppl.part.stmt_is_called = 1;
             db_add_statement( stmt, stmt );
             $$ = db_get_curr_funit();
           } else {
-            db_remove_statement( $5 );
+            db_remove_statement( $4 );
             db_remove_statement( stmt );
-            free_safe( $2 );
+            free_safe( $1 );
             $$ = NULL;
           }
         } else {
-          free_safe( $2 );
+          free_safe( $1 );
           $$ = NULL;
         }
       } else {
-        free_safe( $2 );
+        free_safe( $1 );
         $$ = NULL;
       }
     }
@@ -4537,11 +4552,18 @@ fork_statement
   ;
 
 named_begin_end_block
-  : IDENTIFIER
+  : IDENTIFIER_opt
     {
-      if( (ignore_mode == 0) && ($1 != NULL) ) {
-        if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $1, @1.text, @1.first_line ) ) {
-          ignore_mode++;
+      if( ignore_mode == 0 ) {
+        if( ($1 == NULL) && parser_check_generation( GENERATION_SV ) ) {
+          $1 = (char*)malloc_safe( 30, __FILE__, __LINE__ );
+          snprintf( $1, 30, "$unnamed_%d\n", unnamed_scope_inst );
+          unnamed_scope_inst++;
+        }
+        if( $1 != NULL) ) {
+          if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $1, @1.text, @1.first_line ) ) {
+            ignore_mode++;
+          }
         }
       } else {
         ignore_mode++;
@@ -4551,6 +4573,10 @@ named_begin_end_block
     block_item_decls_opt statement_list
     {
       statement* stmt = $4;
+      if( $3 && ($1 == NULL) ) {
+        VLerror( "Net/variables declared in unnamed begin...end block that is specified to not allow SystemVerilog syntax" );
+        ignore_mode++;
+      }
       if( ignore_mode == 0 ) {
         if( stmt != NULL ) {
           stmt->exp->suppl.part.stmt_head      = 1;
@@ -4562,16 +4588,19 @@ named_begin_end_block
           $$ = NULL;
         }
       } else {
+        if( $3 && ($1 == NULL) ) {
+          ignore_mode--;
+        }
         free_safe( $1 );
         $$ = NULL;
       }
       generate_mode++;
     }
-  | UNUSED_IDENTIFIER block_item_decls_opt statement_list
+  | UNUSED_IDENTIFIER_opt block_item_decls_opt statement_list
     {
       $$ = NULL;
     }
-  | IDENTIFIER
+  | IDENTIFIER_opt
     {
       if( $1 != NULL ) {
         free_safe( $1 );
@@ -4579,7 +4608,7 @@ named_begin_end_block
       ignore_mode++;
       $$ = NULL;
     }
-  | UNUSED_IDENTIFIER
+  | UNUSED_IDENTIFIER_opt
     {
       $$ = NULL;
     }
@@ -4719,8 +4748,8 @@ lavalue
   ;
 
 block_item_decls_opt
-  : block_item_decls
-  |
+  : block_item_decls { $$ = TRUE; }
+  | { $$ = FALSE; }
   ;
 
 block_item_decls
