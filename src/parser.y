@@ -257,7 +257,7 @@ int yydebug = 1;
 %token UNUSED_NUMBER
 %token UNUSED_REALTIME
 %token UNUSED_STRING UNUSED_SYSTEM_IDENTIFIER
-%token K_LE K_GE K_EG K_EQ K_NE K_CEQ K_CNE K_LS K_LSS K_RS K_RSS K_SG K_EG
+%token K_LE K_GE K_EG K_EQ K_NE K_CEQ K_CNE K_LS K_LSS K_RS K_RSS K_SG
 %token K_ADD_A K_SUB_A K_MLT_A K_DIV_A K_MOD_A K_AND_A K_OR_A K_XOR_A K_LS_A K_RS_A K_ALS_A K_ARS_A K_INC K_DEC
 %token K_PO_POS K_PO_NEG K_STARP K_PSTAR
 %token K_LOR K_LAND K_NAND K_NOR K_NXOR K_TRIGGER
@@ -296,7 +296,7 @@ int yydebug = 1;
 
 %type <logical>   automatic_opt block_item_decls_opt
 %type <integer>   net_type net_type_sign_range_opt var_type
-%type <text>      identifier IDENTIFIER_opt
+%type <text>      identifier begin_end_id
 %type <text>      udp_port_list
 %type <text>      defparam_assign_list defparam_assign
 %type <statexp>   static_expr static_expr_primary static_expr_port_list
@@ -310,7 +310,7 @@ int yydebug = 1;
 %type <state>     if_statement_error
 %type <state>     passign
 %type <strlink>   gate_instance gate_instance_list list_of_names
-%type <funit>     named_begin_end_block fork_statement
+%type <funit>     begin_end_block fork_statement
 %type <attr_parm> attribute attribute_list
 %type <portinfo>  port_declaration list_of_port_declarations
 %type <gitem>     generate_item generate_item_list generate_item_list_opt
@@ -2004,14 +2004,16 @@ expression_port_list
     }
   ;
 
-IDENTIFIER_opt
-  : IDENTIFIER { $$ = $1; }
-  | { $$ = NULL; }
-  ;
-
-UNUSED_IDENTIFIER_opt
-  : UNUSED_IDENTIFIER
+begin_end_id
+  : ':' IDENTIFIER        { $$ = $2;   }
+  | ':' UNUSED_IDENTIFIER { $$ = NULL; }
   |
+    {
+      char* name = (char*)malloc_safe( 30, __FILE__, __LINE__ );
+      snprintf( name, 30, "$unnamed_%d", unnamed_scope_inst );
+      unnamed_scope_inst++;
+      $$ = name;
+    }
   ;
 
 identifier
@@ -3733,7 +3735,7 @@ statement
       statement* stmt = db_parallelize_statement( $3 );
       $$ = stmt;
     }
-  | K_begin inc_block_depth ':' named_begin_end_block dec_block_depth K_end
+  | K_begin inc_block_depth ':' begin_end_block dec_block_depth K_end
     {
       expression* exp;
       statement*  stmt;
@@ -3767,15 +3769,15 @@ statement
       VLerror( "Illegal syntax in begin/end block" );
       $$ = NULL;
     }
-  | K_fork inc_fork_depth ':' fork_statement K_join
+  | K_fork inc_fork_depth fork_statement K_join
     {
       expression* exp;
       statement*  stmt;
       if( ignore_mode == 0 ) {
-        db_end_function_task_namedblock( @5.first_line );
-        if( $4 != NULL ) {
+        db_end_function_task_namedblock( @4.first_line );
+        if( $3 != NULL ) {
           exp = db_create_expression( NULL, NULL, EXP_OP_NB_CALL, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-          exp->elem.funit = $4;
+          exp->elem.funit = $3;
           stmt = db_create_statement( exp );
           db_add_expression( exp );
           $$ = stmt;
@@ -3833,6 +3835,7 @@ statement
         }
       }
     }
+/*
   | K_fork inc_fork_depth statement_list dec_fork_depth K_join
     {
       expression* expr;
@@ -3852,6 +3855,7 @@ statement
         $$ = NULL;
       }
     }
+*/
   | K_repeat '(' expression ')' inc_block_depth statement dec_block_depth
     {
       vector*     vec;
@@ -4495,9 +4499,8 @@ statement
   ;
 
 fork_statement
-  : IDENTIFIER
+  : begin_end_id
     {
-      func_unit* tf = NULL;
       if( (ignore_mode == 0) && ($1 != NULL) ) {
         if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $1, @1.text, @1.first_line ) ) {
           ignore_mode++;
@@ -4505,12 +4508,15 @@ fork_statement
       } else {
         ignore_mode++;
       }
-      $$ = tf;
     }
     block_item_decls_opt statement_list dec_fork_depth
     {
       expression* expr;
       statement*  stmt;
+      if( $3 && ($1[0] == '$') ) {
+        VLerror( "Net/variables declared in unnamed fork...join block that is specified to not allow SystemVerilog syntax" );
+        ignore_mode++;
+      }
       if( ignore_mode == 0 ) {
         if( $4 != NULL ) {
           expr = db_create_expression( NULL, NULL, EXP_OP_JOIN, FALSE, @4.first_line, @4.first_column, (@4.last_column - 1), NULL );
@@ -4533,13 +4539,12 @@ fork_statement
           $$ = NULL;
         }
       } else {
+        if( $3 && ($1[0] == '$') ) {
+          ignore_mode--;
+        }
         free_safe( $1 );
         $$ = NULL;
       }
-    }
-  | ':' UNUSED_IDENTIFIER block_item_decls_opt statement_list
-    {
-      $$ = NULL;
     }
   | ':' UNUSED_IDENTIFIER
     {
@@ -4551,19 +4556,12 @@ fork_statement
     }
   ;
 
-named_begin_end_block
-  : IDENTIFIER_opt
+begin_end_block
+  : begin_end_id
     {
-      if( ignore_mode == 0 ) {
-        if( ($1 == NULL) && parser_check_generation( GENERATION_SV ) ) {
-          $1 = (char*)malloc_safe( 30, __FILE__, __LINE__ );
-          snprintf( $1, 30, "$unnamed_%d\n", unnamed_scope_inst );
-          unnamed_scope_inst++;
-        }
-        if( $1 != NULL) ) {
-          if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $1, @1.text, @1.first_line ) ) {
-            ignore_mode++;
-          }
+      if( (ignore_mode == 0) && ($1 != NULL) ) {
+        if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $1, @1.text, @1.first_line ) ) {
+          ignore_mode++;
         }
       } else {
         ignore_mode++;
@@ -4573,7 +4571,7 @@ named_begin_end_block
     block_item_decls_opt statement_list
     {
       statement* stmt = $4;
-      if( $3 && ($1 == NULL) ) {
+      if( $3 && ($1[0] == '$') ) {
         VLerror( "Net/variables declared in unnamed begin...end block that is specified to not allow SystemVerilog syntax" );
         ignore_mode++;
       }
@@ -4588,7 +4586,7 @@ named_begin_end_block
           $$ = NULL;
         }
       } else {
-        if( $3 && ($1 == NULL) ) {
+        if( $3 && ($1[0] == '$') ) {
           ignore_mode--;
         }
         free_safe( $1 );
@@ -4596,20 +4594,12 @@ named_begin_end_block
       }
       generate_mode++;
     }
-  | UNUSED_IDENTIFIER_opt block_item_decls_opt statement_list
-    {
-      $$ = NULL;
-    }
-  | IDENTIFIER_opt
+  | begin_end_id
     {
       if( $1 != NULL ) {
         free_safe( $1 );
       }
       ignore_mode++;
-      $$ = NULL;
-    }
-  | UNUSED_IDENTIFIER_opt
-    {
       $$ = NULL;
     }
   ;

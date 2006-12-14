@@ -139,7 +139,7 @@ bool race_find_head_statement_containing_statement_helper( statement* curr, stat
       if( (curr->exp->op == EXP_OP_NB_CALL)   ||
           (curr->exp->op == EXP_OP_TASK_CALL) ||
           (curr->exp->op == EXP_OP_FORK) ) {
-        retval = race_find_head_statement_containing_statement_helper( curr->exp->elem.stmt, to_find );
+        retval = race_find_head_statement_containing_statement_helper( curr->exp->elem.funit->first_stmt, to_find );
       }
 
       if( !retval && (ESUPPL_IS_STMT_STOP_TRUE( curr->exp->suppl ) == 0) ) {
@@ -266,7 +266,7 @@ void race_calc_expr_assignment( expression* exp, int sb_index ) {
     case EXP_OP_NASSIGN   :  sb[sb_index].nassign = TRUE;  break;
     case EXP_OP_TASK_CALL :
     case EXP_OP_FORK      :
-    case EXP_OP_NB_CALL   :  race_calc_assignments( exp->elem.stmt, sb_index );  break;
+    case EXP_OP_NB_CALL   :  race_calc_assignments( exp->elem.funit->first_stmt, sb_index );  break;
     default               :  break;
   }
 
@@ -1032,6 +1032,9 @@ void race_blk_delete_list( race_blk* rb ) {
 
 /*
  $Log$
+ Revision 1.51  2006/10/12 22:48:46  phase1geo
+ Updates to remove compiler warnings.  Still some work left to go here.
+
  Revision 1.50  2006/10/04 22:04:16  phase1geo
  Updating rest of regressions.  Modified the way we are setting the memory rd
  vector data bit (should optimize the score command just a bit).  Also updated

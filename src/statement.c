@@ -698,7 +698,7 @@ void statement_find_rhs_sigs( statement* stmt, str_link** head, str_link** tail 
 
     if( (stmt->exp->op == EXP_OP_NB_CALL) || (stmt->exp->op == EXP_OP_FORK) ) {
 
-      statement_find_rhs_sigs( stmt->exp->elem.stmt, head, tail );
+      statement_find_rhs_sigs( stmt->exp->elem.funit->first_stmt, head, tail );
 
     } else {
 
@@ -901,6 +901,9 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.97  2006/10/12 22:48:46  phase1geo
+ Updates to remove compiler warnings.  Still some work left to go here.
+
  Revision 1.96  2006/10/04 22:04:16  phase1geo
  Updating rest of regressions.  Modified the way we are setting the memory rd
  vector data bit (should optimize the score command just a bit).  Also updated

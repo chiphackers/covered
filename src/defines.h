@@ -1047,11 +1047,8 @@ typedef enum exp_op_type_e {
 /*! Functional unit */
 #define ETYPE_FUNIT     0
 
-/*! Statement */
-#define ETYPE_STMT      1
-
 /*! Delay */
-#define ETYPE_DELAY     2
+#define ETYPE_DELAY     1
 
 /*! @} */
 
@@ -1742,7 +1739,6 @@ struct expression_s {
   expression*  left;               /*!< Pointer to expression on left */
   fsm*         table;              /*!< Pointer to FSM table associated with this expression */
   union {
-    //statement* stmt;               /*!< Pointer to statement to be called by this expression (EXP_OP_FORK) */
     func_unit* funit;              /*!< Pointer to task/function to be called by this expression */
     uint64*    scale;              /*!< Pointer to parent functional unit's timescale value */
   } elem;
@@ -2308,6 +2304,10 @@ struct rstack_entry_s {
 
 /*
  $Log$
+ Revision 1.246  2006/12/12 06:20:22  phase1geo
+ More updates to support re-entrant tasks/functions.  Still working through
+ compiler errors.  Checkpointing.
+
  Revision 1.245  2006/12/11 23:29:16  phase1geo
  Starting to add support for re-entrant tasks and functions.  Currently, compiling
  fails.  Checkpointing.
