@@ -132,8 +132,6 @@ void bind_add( int type, const char* name, expression* exp, func_unit* funit ) {
   eb->type           = type;
   eb->name           = strdup_safe( name, __FILE__, __LINE__ );
   eb->clear_assigned = 0;
-  eb->stmt_id        = 0;
-  eb->rm_stmt        = FALSE;
   eb->line           = exp->line;
   eb->funit          = funit;
   eb->exp            = exp;
@@ -148,43 +146,6 @@ void bind_add( int type, const char* name, expression* exp, func_unit* funit ) {
     eb_tail       = eb;
   }
   
-}
-
-/*!
- \param id  Statement ID of statement to bind to the specified expression
- \param exp  Pointer to expression to bind to the given statement
- \param funit  Pointer to the functional unit containing the given expression to bind
-
- Creates a binding element to bind a statement to an expression and adds this element to the 
- binding list.
-*/
-void bind_add_stmt( int id, expression* exp, func_unit* funit ) {
-
-  exp_bind* eb;  /* Temporary pointer to signal/expression binding */
-
-  assert( exp != NULL );
-
-  /* Create new statement/expression binding */
-  eb                 = (exp_bind *)malloc_safe( sizeof( exp_bind ), __FILE__, __LINE__ );
-  eb->type           = 0;
-  eb->name           = NULL;
-  eb->clear_assigned = 0;
-  eb->stmt_id        = id;
-  eb->rm_stmt        = FALSE;
-  eb->line           = exp->line;
-  eb->funit          = funit;
-  eb->exp            = exp;
-  eb->fsm            = NULL;
-  eb->next           = NULL;
-
-  /* Add new signal/expression binding to linked list */
-  if( eb_head == NULL ) {
-    eb_head = eb_tail = eb;
-  } else {
-    eb_tail->next = eb;
-    eb_tail       = eb;
-  }
-
 }
 
 /*!
@@ -226,41 +187,32 @@ void bind_display_list() {
 
   while( curr != NULL ) {
 
-    if( curr->stmt_id > 0 ) {
-      if( curr->rm_stmt ) {
-        printf( "  Statement to be removed: %d\n", curr->stmt_id );
-      } else {
-        printf( "  Expr: %d, %s, line %d;  Statement: %d\n",
-                curr->exp->id, expression_string_op( curr->exp->op ), curr->exp->line, curr->stmt_id );
-      }
-    } else {
-      switch( curr->type ) {
-        case FUNIT_FUNCTION :
-          printf( "  Expr: %d, %s, line %d;  Functional Unit: %s;  Function: %s\n",
+    switch( curr->type ) {
+      case FUNIT_FUNCTION :
+        printf( "  Expr: %d, %s, line %d;  Functional Unit: %s;  Function: %s\n",
+                curr->exp->id, expression_string_op( curr->exp->op ), curr->exp->line,
+                obf_funit( curr->funit->name ), obf_sig( curr->name ) );
+        break;
+      case FUNIT_TASK :
+        printf( "  Expr: %d, %s, line %d;  Functional Unit: %s;  Task: %s\n",
+                curr->exp->id, expression_string_op( curr->exp->op ), curr->exp->line,
+                obf_funit( curr->funit->name ), obf_sig( curr->name ) );
+        break;
+      case FUNIT_NAMED_BLOCK :
+        printf( "  Expr: %d, %s, line %d;  Functional Unit: %s;  Named Block: %s\n",
+                curr->exp->id, expression_string_op( curr->exp->op ), curr->exp->line,
+                obf_funit( curr->funit->name ), obf_sig( curr->name ) );
+        break;
+      case 0 :
+        if( curr->clear_assigned > 0 ) {
+          printf( "  Signal to be cleared: %s\n", obf_sig( curr->name ) );
+        } else {
+          printf( "  Expr: %d, %s, line %d;  Functional Unit: %s;  Signal: %s\n",
                   curr->exp->id, expression_string_op( curr->exp->op ), curr->exp->line,
                   obf_funit( curr->funit->name ), obf_sig( curr->name ) );
-          break;
-        case FUNIT_TASK :
-          printf( "  Expr: %d, %s, line %d;  Functional Unit: %s;  Task: %s\n",
-                  curr->exp->id, expression_string_op( curr->exp->op ), curr->exp->line,
-                  obf_funit( curr->funit->name ), obf_sig( curr->name ) );
-          break;
-        case FUNIT_NAMED_BLOCK :
-          printf( "  Expr: %d, %s, line %d;  Functional Unit: %s;  Named Block: %s\n",
-                  curr->exp->id, expression_string_op( curr->exp->op ), curr->exp->line,
-                  obf_funit( curr->funit->name ), obf_sig( curr->name ) );
-          break;
-        case 0 :
-          if( curr->clear_assigned > 0 ) {
-            printf( "  Signal to be cleared: %s\n", obf_sig( curr->name ) );
-          } else {
-            printf( "  Expr: %d, %s, line %d;  Functional Unit: %s;  Signal: %s\n",
-                    curr->exp->id, expression_string_op( curr->exp->op ), curr->exp->line,
-                    obf_funit( curr->funit->name ), obf_sig( curr->name ) );
-          }
-          break;
-        default :  break;
-      }
+        }
+        break;
+      default :  break;
     }
 
     curr = curr->next;
@@ -286,7 +238,7 @@ void bind_remove( int id, bool clear_assigned ) {
 
   while( curr != NULL ) {
 
-    if( ((curr->exp != NULL) && (curr->exp->id == id)) || (curr->clear_assigned == id) || (curr->rm_stmt == id) ) {
+    if( ((curr->exp != NULL) && (curr->exp->id == id)) || (curr->clear_assigned == id) ) {
       
       if( clear_assigned ) {
 
@@ -371,33 +323,6 @@ char* bind_find_sig_name( expression* exp ) {
   }
 
   return( name );
-
-}
-
-/*!
- \param id  Expression ID whose statement pointer needs to be removed after binding
-
- Tells the associated binding element to remove the corresponding statement block after
- binding has occurred.
-*/
-void bind_rm_stmt( int id ) {
-
-  exp_bind* curr;  /* Pointer to current exp_bind link */
-
-  /* Find the binding element that matches this expression ID */
-  curr = eb_head;
-
-  while( curr != NULL ) {
-
-    /* Tell the binder to remove the statement block */
-    if( !curr->rm_stmt && (curr->exp != NULL) && (curr->exp->id == id) ) {
-      curr->rm_stmt = id;
-      curr->exp     = NULL;
-    }      
-
-    curr = curr->next;
-
-  }
 
 }
 
@@ -613,57 +538,6 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
 }
 
 /*!
- \param id            ID of statement to bind to.
- \param exp           Pointer to expression to bind to given statement ID
- \param funit_exp     Pointer to functional unit containing the given expression to bind
- \param cdd_reading   Set to TRUE if we are binding after reading from the CDD file
- \param rm_stmt       Set to TRUE if we need to remove the statement block (instead of bind to it)
- \param bind_locally  If TRUE, only attempt to bind to a statement in the same functional unit as this expression.
-
- \return Returns TRUE if statement was properly bound to the specified expression; otherwise, returns FALSE.
-
- Binds a statement to an expression (occurs for EXP_OP_FUNC_CALL, EXP_OP_TASK_CALL and EXP_OP_NB_CALL expressions).
-*/
-bool bind_statement( int id, expression* exp, func_unit* funit_exp, bool cdd_reading, bool rm_stmt, bool bind_locally ) {
-
-  bool       retval = FALSE;  /* Return value for this function */
-  func_unit* found_funit;     /* Pointer to functional unit containing the specified statement */
-  stmt_link* found_stmtl;     /* Pointer to found statement */
-
-  /* Get functional unit to search in */
-  if( bind_locally ) {
-    found_funit = funit_exp;
-  } else {
-    found_funit = funit_find_by_id( id );
-  }
-
-  if( (found_funit != NULL) && ((found_stmtl = stmt_link_find( id, found_funit->stmt_head )) != NULL) ) {
-
-    /* Bind the expression to the specified statement */
-    if( !rm_stmt ) {
-
-      // TBD - exp->elem.stmt = found_stmtl->stmt;
-
-    /* If we were previously told to remove this statement block, do so now */
-    } else {
-
-#ifdef DEBUG_MODE
-      snprintf( user_msg, USER_MSG_LENGTH, "Removing statement block at line %d in file \"%s\" because its calling expression was removed", found_stmtl->stmt->exp->line, obf_file( funit_exp->filename ) );
-      print_output( user_msg, DEBUG, __FILE__, __LINE__ );
-#endif
-      stmt_blk_add_to_remove_list( found_stmtl->stmt );
-
-    }
-
-    retval = TRUE;
-
-  }
-
-  return( retval );
-
-}
-
-/*!
  \param expr       Pointer to port expression to potentially bind to the specified port
  \param funit      Pointer to task/function to bind port list to
  \param name       Hierachical name of function to bind port list to
@@ -862,68 +736,52 @@ void bind_perform( bool cdd_reading, int pass ) {
     curr_eb = eb_head;
     while( curr_eb != NULL ) {
 
-      if( curr_eb->stmt_id == 0 ) {
+      /* Figure out ID to clear from the binding list after the bind occurs */
+      if( curr_eb->clear_assigned == 0 ) {
+        id = curr_eb->exp->id;
+      } else {
+        id = curr_eb->clear_assigned;
+      }
 
-        /* Figure out ID to clear from the binding list after the bind occurs */
-        if( curr_eb->clear_assigned == 0 ) {
-          id = curr_eb->exp->id;
-        } else {
-          id = curr_eb->clear_assigned;
+      /* Handle signal/parameter binding */
+      if( curr_eb->type == 0 ) {
+
+        /* Attempt to bind the expression to a parameter; otherwise, bind to a signal */
+        if( !(bound = bind_param( curr_eb->name, curr_eb->exp, curr_eb->funit, curr_eb->line, (pass == 0) )) ) {
+          bound = bind_signal( curr_eb->name, curr_eb->exp, curr_eb->funit, FALSE, cdd_reading,
+                               (curr_eb->clear_assigned > 0), curr_eb->line, (pass == 0) );
         }
 
-        /* Handle signal/parameter binding */
-        if( curr_eb->type == 0 ) {
+        /* If an FSM expression is attached, size it now */
+        if( curr_eb->fsm != NULL ) {
+          curr_eb->fsm->value = vector_create( curr_eb->exp->value->width, VTYPE_EXP, TRUE );
+        }
 
-          /* Attempt to bind the expression to a parameter; otherwise, bind to a signal */
-          if( !(bound = bind_param( curr_eb->name, curr_eb->exp, curr_eb->funit, curr_eb->line, (pass == 0) )) ) {
-            bound = bind_signal( curr_eb->name, curr_eb->exp, curr_eb->funit, FALSE, cdd_reading,
-                                 (curr_eb->clear_assigned > 0), curr_eb->line, (pass == 0) );
-          }
+      /* Otherwise, handle disable binding */
+      } else if( curr_eb->type == 1 ) {
 
-          /* If an FSM expression is attached, size it now */
-          if( curr_eb->fsm != NULL ) {
-            curr_eb->fsm->value = vector_create( curr_eb->exp->value->width, VTYPE_EXP, TRUE );
-          }
-
-        /* Otherwise, handle disable binding */
-        } else if( curr_eb->type == 1 ) {
-
-          /* Attempt to bind a named block -- if unsuccessful, attempt to bind with a task */
-          if( !(bound = bind_task_function_namedblock( FUNIT_NAMED_BLOCK, curr_eb->name, curr_eb->exp, curr_eb->funit,
-                                                       cdd_reading, curr_eb->line, (pass == 0) )) ) {
-            bound = bind_task_function_namedblock( FUNIT_TASK, curr_eb->name, curr_eb->exp, curr_eb->funit,
-                                                   cdd_reading, curr_eb->line, (pass == 0) );
-          }
-
-        /* Otherwise, handle function/task binding */
-        } else {
-
-          /*
-           Bind the expression to the task/function.  If it is unsuccessful, we need to remove the statement
-           that this expression is a part of.
-          */
-          bound = bind_task_function_namedblock( curr_eb->type, curr_eb->name, curr_eb->exp, curr_eb->funit,
+        /* Attempt to bind a named block -- if unsuccessful, attempt to bind with a task */
+        if( !(bound = bind_task_function_namedblock( FUNIT_NAMED_BLOCK, curr_eb->name, curr_eb->exp, curr_eb->funit,
+                                                     cdd_reading, curr_eb->line, (pass == 0) )) ) {
+          bound = bind_task_function_namedblock( FUNIT_TASK, curr_eb->name, curr_eb->exp, curr_eb->funit,
                                                  cdd_reading, curr_eb->line, (pass == 0) );
-
         }
 
-        /* If we have bound successfully, copy the name of this exp_bind to the expression */
-        if( bound && (curr_eb->exp != NULL) ) {
-          curr_eb->exp->name = strdup_safe( curr_eb->name, __FILE__, __LINE__ );
-        }
-
+      /* Otherwise, handle function/task binding */
       } else {
 
-        /* Figure out ID to clear from the binding list after the bind occurs */
-        if( curr_eb->rm_stmt > 0 ) {
-          id = curr_eb->rm_stmt;
-        } else {
-          id = curr_eb->exp->id;
-        }
+        /*
+         Bind the expression to the task/function.  If it is unsuccessful, we need to remove the statement
+         that this expression is a part of.
+        */
+        bound = bind_task_function_namedblock( curr_eb->type, curr_eb->name, curr_eb->exp, curr_eb->funit,
+                                               cdd_reading, curr_eb->line, (pass == 0) );
 
-        /* Handle statement binding */
-        bound = bind_statement( curr_eb->stmt_id, curr_eb->exp, curr_eb->funit, cdd_reading, curr_eb->rm_stmt, (pass == 0) );
+      }
 
+      /* If we have bound successfully, copy the name of this exp_bind to the expression */
+      if( bound && (curr_eb->exp != NULL) ) {
+        curr_eb->exp->name = strdup_safe( curr_eb->name, __FILE__, __LINE__ );
       }
 
       /*
@@ -1020,6 +878,10 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.103  2006/12/12 06:20:22  phase1geo
+ More updates to support re-entrant tasks/functions.  Still working through
+ compiler errors.  Checkpointing.
+
  Revision 1.102  2006/10/12 22:48:45  phase1geo
  Updates to remove compiler warnings.  Still some work left to go here.
 

@@ -1064,8 +1064,7 @@ bool expression_find_expr( expression* root, expression* expr ) {
 bool expression_contains_expr_calling_stmt( expression* expr, statement* stmt ) {
 
   return( (expr != NULL) &&
-          (// TBD - ((ESUPPL_TYPE( expr->suppl ) == ETYPE_STMT)  && (expr->elem.stmt == stmt)) ||
-           ((ESUPPL_TYPE( expr->suppl ) == ETYPE_FUNIT) && (expr->elem.funit->first_stmt == stmt)) ||
+          (((ESUPPL_TYPE( expr->suppl ) == ETYPE_FUNIT) && (expr->elem.funit->first_stmt == stmt)) ||
            expression_contains_expr_calling_stmt( expr->left, stmt ) ||
            expression_contains_expr_calling_stmt( expr->right, stmt )) );
 
@@ -1151,8 +1150,6 @@ void expression_db_write( expression* expr, FILE* file, bool parse_mode ) {
     fprintf( file, " %s", expr->name );
   } else if( expr->sig != NULL ) {
     fprintf( file, " %s", expr->sig->name );  /* This will be valid for parameters */
-// TBD -  } else if( (ESUPPL_TYPE( expr->suppl ) == ETYPE_STMT) && (expr->elem.stmt != NULL) ) {
-//    fprintf( file, " %d", expression_get_id( expr->elem.stmt->exp, parse_mode ) );
   }
 
   fprintf( file, "\n" );
@@ -1280,18 +1277,13 @@ bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) {
 
       }
 
-      /* Check to see if we are bound to a statement */
-      if( sscanf( *line, "%d%n", &tmpid, &chars_read ) == 1 ) {
-        *line = *line + chars_read;
-        bind_add_stmt( tmpid, expr, curr_funit );
-
       /* Check to see if we are bound to a signal or functional unit */
-      // } else if( sscanf( *line, "%s%n", tmpname, &chars_read ) == 1 ) {
-      } else if( ((*line)[0] != '\n') && ((*line)[0] != '\0') ) {
+      if( ((*line)[0] != '\n') && ((*line)[0] != '\0') ) {
         (*line)++;   /* Remove space */
         switch( op ) {
           case EXP_OP_FUNC_CALL :  bind_add( FUNIT_FUNCTION,    *line, expr, curr_funit );  break;
           case EXP_OP_TASK_CALL :  bind_add( FUNIT_TASK,        *line, expr, curr_funit );  break;
+          case EXP_OP_FORK      :
           case EXP_OP_NB_CALL   :  bind_add( FUNIT_NAMED_BLOCK, *line, expr, curr_funit );  break;
           case EXP_OP_DISABLE   :  bind_add( 1,                 *line, expr, curr_funit );  break;
           default               :  bind_add( 0,                 *line, expr, curr_funit );  break;
@@ -2788,7 +2780,7 @@ bool expression_op_func__nb_call( expression* expr, thread* thr ) {
 */
 bool expression_op_func__fork( expression* expr, thread* thr ) {
 
-// TBD -  sim_add_thread( thr, expr->elem.stmt );
+  sim_add_thread( thr, expr->elem.funit->first_stmt );
 
   return( TRUE );
 
@@ -3875,12 +3867,12 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
         if( !exp_only ) {
 #ifdef DEBUG_MODE
-// TBD -          snprintf( user_msg, USER_MSG_LENGTH, "Removing statement block starting at line %d because it is a NB_CALL and its calling expression is being removed", expr->elem.stmt->exp->line );
+          snprintf( user_msg, USER_MSG_LENGTH, "Removing statement block starting at line %d because it is a NB_CALL and its calling expression is being removed", expr->elem.funit->first_stmt->exp->line );
           print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
-// TBD -          stmt_blk_add_to_remove_list( expr->elem.stmt );
+          stmt_blk_add_to_remove_list( expr->elem.funit->first_stmt );
         } else {
-          bind_rm_stmt( expr->id );
+          bind_remove( expr->id, FALSE );
         }
 
       /* If this is a task call, remove the bind */
@@ -3974,6 +3966,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.232  2006/12/12 06:20:22  phase1geo
+ More updates to support re-entrant tasks/functions.  Still working through
+ compiler errors.  Checkpointing.
+
  Revision 1.231  2006/11/30 19:58:11  phase1geo
  Fixing rest of issues so that full regression (IV, Cver and VCS) without VPI
  passes.  Updated regression files.

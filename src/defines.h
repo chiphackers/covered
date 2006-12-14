@@ -2027,8 +2027,6 @@ struct exp_bind_s {
   int         type;                  /*!< Specifies if name refers to a signal (0), function (FUNIT_FUNCTION) or task (FUNIT_TASK) */
   char*       name;                  /*!< Name of Verilog scoped signal/functional unit to bind */
   bool        clear_assigned;        /*!< If TRUE, clears the signal assigned supplemental field without binding */
-  int         stmt_id;               /*!< Specifies the statement ID to bind to (only value for expressiont-statement binding) */
-  bool        rm_stmt;               /*!< Specifies if statement block attached to this expression should be removed after binding */
   int         line;                  /*!< Specifies line of expression -- used when expression is deallocated and we are clearing */
   expression* exp;                   /*!< Expression to bind. */
   expression* fsm;                   /*!< FSM expression to create value for when this expression is bound */
@@ -2304,6 +2302,11 @@ struct rstack_entry_s {
 
 /*
  $Log$
+ Revision 1.247  2006/12/14 04:19:35  phase1geo
+ More updates to parser and associated code to handle unnamed scopes and
+ fixing more code to use functional unit pointers in expressions instead of
+ statement pointers.  Still not fully compiling at this point.  Checkpointing.
+
  Revision 1.246  2006/12/12 06:20:22  phase1geo
  More updates to support re-entrant tasks/functions.  Still working through
  compiler errors.  Checkpointing.

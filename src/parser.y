@@ -182,11 +182,6 @@ gitem_link* save_gi_head = NULL;
 */
 gitem_link* save_gi_tail = NULL;
 
-/*!
- Specifies a unique name for an unnamed scope (begin...end block containing block_items)
-*/
-int unnamed_scope_inst   = 0;
-
 #define YYERROR_VERBOSE 1
 
 /* Uncomment these lines to turn debugging on */
@@ -2007,13 +2002,7 @@ expression_port_list
 begin_end_id
   : ':' IDENTIFIER        { $$ = $2;   }
   | ':' UNUSED_IDENTIFIER { $$ = NULL; }
-  |
-    {
-      char* name = (char*)malloc_safe( 30, __FILE__, __LINE__ );
-      snprintf( name, 30, "$unnamed_%d", unnamed_scope_inst );
-      unnamed_scope_inst++;
-      $$ = name;
-    }
+  | { $$ = db_create_unnamed_scope(); }
   ;
 
 identifier
@@ -4513,7 +4502,7 @@ fork_statement
     {
       expression* expr;
       statement*  stmt;
-      if( $3 && ($1[0] == '$') ) {
+      if( $3 && db_is_unnamed_scope( $1 ) ) {
         VLerror( "Net/variables declared in unnamed fork...join block that is specified to not allow SystemVerilog syntax" );
         ignore_mode++;
       }
@@ -4539,7 +4528,7 @@ fork_statement
           $$ = NULL;
         }
       } else {
-        if( $3 && ($1[0] == '$') ) {
+        if( $3 && db_is_unnamed_scope( $1 ) ) {
           ignore_mode--;
         }
         free_safe( $1 );
@@ -4571,7 +4560,7 @@ begin_end_block
     block_item_decls_opt statement_list
     {
       statement* stmt = $4;
-      if( $3 && ($1[0] == '$') ) {
+      if( $3 && db_is_unnamed_scope( $1 ) ) {
         VLerror( "Net/variables declared in unnamed begin...end block that is specified to not allow SystemVerilog syntax" );
         ignore_mode++;
       }
@@ -4586,7 +4575,7 @@ begin_end_block
           $$ = NULL;
         }
       } else {
-        if( $3 && ($1[0] == '$') ) {
+        if( $3 && db_is_unnamed_scope( $1 ) ) {
           ignore_mode--;
         }
         free_safe( $1 );

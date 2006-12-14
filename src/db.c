@@ -577,6 +577,35 @@ func_unit* db_get_curr_funit() {
 }
 
 /*!
+ \return Returns a scope name for an unnamed scope.  Only called for parsing purposes.
+*/
+char* db_create_unnamed_scope() {
+
+  static int unique_id = 0;
+
+  /* Allocate memory for the unnamed scope name */
+  char* name = (char*)malloc_safe( 30, __FILE__, __LINE__ );
+
+  /* Create unnamed scope name */
+  snprintf( name, 30, "$unnamed_%d", unique_id );
+  unique_id++;
+
+  return( name );
+
+}
+
+/*!
+ \param scope name to check
+
+ \return Returns TRUE if the given scope is an unnamed scope name; otherwise, returns FALSE.
+*/
+bool db_is_unnamed_scope( char* scope ) {
+
+  return( (scope != NULL) && (scope[0] == '$') );
+
+}
+
+/*!
  \param scope  Name of functional unit instance being added.
  \param name   Name of functional unit being instantiated.
  \param type   Type of functional unit being instantiated.
@@ -1577,7 +1606,8 @@ expression* db_create_sensitivity_list( statement* stmt ) {
 */
 statement* db_parallelize_statement( statement* stmt ) {
 
-  expression* exp;  /* Expression containing FORK statement */
+  expression* exp;    /* Expression containing FORK statement */
+  char*       scope;  /* Name of current parallelized statement scope */
 
   /* If we are a parallel statement, create a FORK statement for this statement block */
   if( (stmt != NULL) && (fork_depth != -1) && (fork_block_depth[fork_depth] == block_depth) ) {
@@ -1596,9 +1626,18 @@ statement* db_parallelize_statement( statement* stmt ) {
     /* Create FORK expression */
     exp = db_create_expression( NULL, NULL, EXP_OP_FORK, FALSE, stmt->exp->line, ((stmt->exp->col & 0xffff0000) >> 16), (stmt->exp->col & 0xffff), NULL );
 
-    /* Bind the FORK expression to this statement */
-    // TBD - exp->elem.stmt = stmt;
-    bind_add_stmt( stmt->exp->id, exp, curr_funit );
+    /* Create unnamed scope */
+    scope = db_create_unnamed_scope();
+    if( db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, scope, curr_funit->filename, stmt->exp->line ) ) {
+
+      /* Restore the original functional unit */
+      db_end_function_task_namedblock( stmt->exp->line );
+
+      /* Bind the FORK expression to this statement */
+      bind_add( FUNIT_NAMED_BLOCK, scope, exp, curr_funit );
+
+    }
+    free_safe( scope );
 
     /* Reduce fork and block depth for the new statement */
     fork_depth--;
@@ -2244,6 +2283,10 @@ void db_do_timestep( uint64 time, bool final ) {
 
 /*
  $Log$
+ Revision 1.241  2006/12/12 06:20:22  phase1geo
+ More updates to support re-entrant tasks/functions.  Still working through
+ compiler errors.  Checkpointing.
+
  Revision 1.240  2006/12/11 23:29:16  phase1geo
  Starting to add support for re-entrant tasks and functions.  Currently, compiling
  fails.  Checkpointing.
