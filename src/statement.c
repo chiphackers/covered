@@ -470,7 +470,7 @@ bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) {
        is called.
       */
       if( ESUPPL_STMT_IS_CALLED( stmt->exp->suppl ) == 0 ) {
-        thr = sim_add_thread( NULL, stmt );
+        thr = sim_add_thread( NULL, stmt, curr_funit );
       }
 
     }
@@ -515,7 +515,6 @@ void statement_assign_expr_ids( statement* stmt ) {
 
 }
 
-#ifdef SKIP
 void display( char* id, statement* curr_stmt, statement* next_stmt, int conn_id ) {
 
   printf( "%s::  curr_stmt id: %d, line: %d, op: %s, conn_id: %d, stop_T: %d, stop_F: %d   next_stmt: %d, line: %d, op: %s   conn_id: %d\n",
@@ -524,7 +523,6 @@ void display( char* id, statement* curr_stmt, statement* next_stmt, int conn_id 
           conn_id );
 
 }
-#endif
 
 /*!
  \param curr_stmt  Pointer to statement sequence to traverse.
@@ -547,22 +545,22 @@ bool statement_connect( statement* curr_stmt, statement* next_stmt, int conn_id 
   /* Specify that this statement has been traversed */
   curr_stmt->conn_id = conn_id;
 
-  //display( "In statement_connect", curr_stmt, next_stmt, conn_id );
+  display( "In statement_connect", curr_stmt, next_stmt, conn_id );
 
   /* If both paths go to the same destination, only parse one path */
   if( curr_stmt->next_true == curr_stmt->next_false ) {
     
     /* If the TRUE path is NULL, connect it to the new statement */
     if( curr_stmt->next_true == NULL ) {
-      //display( "Setting next_true to next_stmt", curr_stmt, next_stmt, conn_id );
+      display( "Setting next_true to next_stmt", curr_stmt, next_stmt, conn_id );
       curr_stmt->next_true  = next_stmt;
       /* If the current statement is a wait statement, don't connect next_false path */
       if( !EXPR_IS_CONTEXT_SWITCH( curr_stmt->exp ) ) {
-        //display( "Setting next_false to next_stmt", curr_stmt, next_stmt, conn_id );
+        display( "Setting next_false to next_stmt", curr_stmt, next_stmt, conn_id );
         curr_stmt->next_false = next_stmt;
       }
       if( curr_stmt->next_true->conn_id == conn_id ) {
-        //display( "Setting stop_true and stop_false", curr_stmt, next_stmt, conn_id );
+        display( "Setting stop_true and stop_false", curr_stmt, next_stmt, conn_id );
         curr_stmt->exp->suppl.part.stmt_stop_true  = 1;
         curr_stmt->exp->suppl.part.stmt_stop_false = 1;
       } else {
@@ -571,12 +569,12 @@ bool statement_connect( statement* curr_stmt, statement* next_stmt, int conn_id 
       retval = TRUE;
     /* If the TRUE path leads to a loop/merge, set the stop bit and stop traversing */
     } else if( curr_stmt->next_true->conn_id == conn_id ) {
-      //display( "Setting stop_true and stop_false", curr_stmt, next_stmt, conn_id );
+      display( "Setting stop_true and stop_false", curr_stmt, next_stmt, conn_id );
       curr_stmt->exp->suppl.part.stmt_stop_true  = 1;
       curr_stmt->exp->suppl.part.stmt_stop_false = 1;
     /* Continue to traverse the TRUE path if the next_stmt does not match this statement */
     } else if( curr_stmt->next_true != next_stmt ) {
-      //display( "Traversing next_true path", curr_stmt, next_stmt, conn_id );
+      display( "Traversing next_true path", curr_stmt, next_stmt, conn_id );
       retval |= statement_connect( curr_stmt->next_true, next_stmt, conn_id );
     }
 
@@ -585,10 +583,10 @@ bool statement_connect( statement* curr_stmt, statement* next_stmt, int conn_id 
     /* Traverse FALSE path */
     if( curr_stmt->next_false == NULL ) {
       if( !EXPR_IS_CONTEXT_SWITCH( curr_stmt->exp ) ) {
-        //display( "Setting next_false to next_stmt", curr_stmt, next_stmt, conn_id );
+        display( "Setting next_false to next_stmt", curr_stmt, next_stmt, conn_id );
         curr_stmt->next_false = next_stmt;
         if( curr_stmt->next_false->conn_id == conn_id ) {
-          //display( "Setting stop_false", curr_stmt, next_stmt, conn_id );
+          display( "Setting stop_false", curr_stmt, next_stmt, conn_id );
           curr_stmt->exp->suppl.part.stmt_stop_false = 1;
         } else {
           curr_stmt->next_false->conn_id = conn_id; 
@@ -597,20 +595,20 @@ bool statement_connect( statement* curr_stmt, statement* next_stmt, int conn_id 
       }
     /* If the FALSE path leads to a loop/merge, set the stop bit and stop traversing */
     } else if( curr_stmt->next_false->conn_id == conn_id ) {
-      //display( "Setting stop_false", curr_stmt, next_stmt, conn_id );
+      display( "Setting stop_false", curr_stmt, next_stmt, conn_id );
       curr_stmt->exp->suppl.part.stmt_stop_false = 1;
     /* Continue to traverse the FALSE path if the next statement does not match this statement */
     } else if( (curr_stmt->next_false != next_stmt) ) {
-      //display( "Traversing next_false path", curr_stmt, next_stmt, conn_id );
+      display( "Traversing next_false path", curr_stmt, next_stmt, conn_id );
       retval |= statement_connect( curr_stmt->next_false, next_stmt, conn_id );
     }
 
     /* Traverse TRUE path */
     if( curr_stmt->next_true == NULL ) {
-      //display( "Setting next_true to next_stmt", curr_stmt, next_stmt, conn_id );
+      display( "Setting next_true to next_stmt", curr_stmt, next_stmt, conn_id );
       curr_stmt->next_true = next_stmt;
       if( curr_stmt->next_true->conn_id == conn_id ) {
-        //display( "Setting stop_true", curr_stmt, next_stmt, conn_id );
+        display( "Setting stop_true", curr_stmt, next_stmt, conn_id );
         curr_stmt->exp->suppl.part.stmt_stop_true = 1;
       } else {
         curr_stmt->next_true->conn_id = conn_id;
@@ -618,11 +616,11 @@ bool statement_connect( statement* curr_stmt, statement* next_stmt, int conn_id 
       retval = TRUE;
     /* If the TRUE path leads to a loop/merge, set the stop bit and stop traversing */
     } else if( curr_stmt->next_true->conn_id == conn_id ) {
-      //display( "Setting stop_true", curr_stmt, next_stmt, conn_id );
+      display( "Setting stop_true", curr_stmt, next_stmt, conn_id );
       curr_stmt->exp->suppl.part.stmt_stop_true = 1;
     /* Continue to traverse the TRUE path if the next statement does not match this statement */
     } else if( curr_stmt->next_true != next_stmt ) {
-      //display( "Traversing next_true path", curr_stmt, next_stmt, conn_id );
+      display( "Traversing next_true path", curr_stmt, next_stmt, conn_id );
       retval |= statement_connect( curr_stmt->next_true, next_stmt, conn_id );
     }
 
@@ -901,6 +899,11 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.98  2006/12/14 04:19:35  phase1geo
+ More updates to parser and associated code to handle unnamed scopes and
+ fixing more code to use functional unit pointers in expressions instead of
+ statement pointers.  Still not fully compiling at this point.  Checkpointing.
+
  Revision 1.97  2006/10/12 22:48:46  phase1geo
  Updates to remove compiler warnings.  Still some work left to go here.
 

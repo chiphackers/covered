@@ -138,7 +138,6 @@
 #include "fsm.h"
 #include "func_unit.h"
 #include "link.h"
-#include "reentrant.h"
 #include "sim.h"
 #include "stmt_blk.h"
 #include "util.h"
@@ -2660,30 +2659,7 @@ bool expression_op_func__bassign( expression* expr, thread* thr ) {
 */
 bool expression_op_func__func_call( expression* expr, thread* thr ) {
 
-  thread* new_thr;  /* Pointer to newly created thread to perform this function call */
-
-  /* If this function call is to an automatic (re-entrant) function, handle the stack */
-  if( expr->elem.funit->type == FUNIT_AFUNCTION ) {
-
-    /* Create new thread */
-    new_thr = sim_add_thread( thr, expr->elem.funit->first_stmt );
-
-    /* Create reentrant structure, pass it to the thread and push the current function signal contents */
-    new_thr->ren = reentrant_create( expr->elem.funit );
-    reentrant_stack_push( new_thr->ren );
-
-    /* Simulate the thread */
-    sim_thread( new_thr );
-
-    /* Now pop the stack and deallocate it */
-    reentrant_stack_pop( new_thr->ren );
-    reentrant_dealloc( new_thr->ren );
-    
-  } else {
-
-    sim_thread( sim_add_thread( thr, expr->elem.funit->first_stmt ) );
-
-  }
+  sim_thread( sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit ) );
 
   return( TRUE );
 
@@ -2699,25 +2675,12 @@ bool expression_op_func__func_call( expression* expr, thread* thr ) {
 */
 bool expression_op_func__task_call( expression* expr, thread* thr ) {
 
-  bool    retval = FALSE;  /* Return value for this function */
-  thread* new_thr;         /* Pointer to newly created simulation thread */
+  bool retval = FALSE;  /* Return value for this function */
 
   if( !expr->suppl.part.prev_called ) {
 
-    if( expr->elem.funit->type == FUNIT_ATASK ) {
-
-      /* Create new thread */
-      new_thr = sim_add_thread( thr, expr->elem.funit->first_stmt );
-    
-      /* Create reentrant structure, pass it to the thread and push the current function signal contents */
-      new_thr->ren = reentrant_create( expr->elem.funit ); 
-      reentrant_stack_push( new_thr->ren );
-    
-    } else {
-
-      sim_add_thread( thr, expr->elem.funit->first_stmt );
-
-    }
+    /* Add a new thread */
+    sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit );
 
     expr->suppl.part.prev_called         = 1;
     expr->value->value[0].part.exp.value = 0;
@@ -2748,14 +2711,13 @@ bool expression_op_func__nb_call( expression* expr, thread* thr ) {
 
   if( ESUPPL_IS_IN_FUNC( expr->suppl ) ) {
 
-    /* TBD - Do we need to create a reentrant for this if the parent function is an automatic? */
-    sim_thread( sim_add_thread( thr, expr->elem.funit->first_stmt ) );
+    sim_thread( sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit ) );
     retval = TRUE;
 
   } else {
 
     if( !expr->suppl.part.prev_called ) {
-      sim_add_thread( thr, expr->elem.funit->first_stmt );
+      sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit );
       expr->suppl.part.prev_called         = 1;
       expr->value->value[0].part.exp.value = 0;
     } else if( thr->child_head == NULL ) {
@@ -2780,7 +2742,7 @@ bool expression_op_func__nb_call( expression* expr, thread* thr ) {
 */
 bool expression_op_func__fork( expression* expr, thread* thr ) {
 
-  sim_add_thread( thr, expr->elem.funit->first_stmt );
+  sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit );
 
   return( TRUE );
 
@@ -3966,6 +3928,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.233  2006/12/14 23:46:57  phase1geo
+ Fixing remaining compile issues with support for functional unit pointers in
+ expressions and unnamed scope handling.  Starting to debug run-time issues now.
+ Added atask1 diagnostic to begin this verification process.  Checkpointing.
+
  Revision 1.232  2006/12/12 06:20:22  phase1geo
  More updates to support re-entrant tasks/functions.  Still working through
  compiler errors.  Checkpointing.

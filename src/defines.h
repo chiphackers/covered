@@ -2157,6 +2157,7 @@ struct stmt_blk_s {
  statements.
 */
 struct thread_s {
+  func_unit* funit;                  /*!< Pointer to functional unit that this thread is running for */
   thread*    parent;                 /*!< Pointer to parent thread that spawned this thread */
   statement* head;                   /*!< Pointer to original head statement that created this thread */
   statement* curr;                   /*!< Pointer to current head statement for this thread */
@@ -2302,6 +2303,11 @@ struct rstack_entry_s {
 
 /*
  $Log$
+ Revision 1.248  2006/12/14 23:46:57  phase1geo
+ Fixing remaining compile issues with support for functional unit pointers in
+ expressions and unnamed scope handling.  Starting to debug run-time issues now.
+ Added atask1 diagnostic to begin this verification process.  Checkpointing.
+
  Revision 1.247  2006/12/14 04:19:35  phase1geo
  More updates to parser and associated code to handle unnamed scopes and
  fixing more code to use functional unit pointers in expressions instead of

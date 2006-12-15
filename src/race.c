@@ -282,12 +282,16 @@ void race_calc_expr_assignment( expression* exp, int sb_index ) {
 void race_calc_assignments( statement* stmt, int sb_index ) {
 
   if( stmt != NULL ) {
+
+    printf( "In race_calc_assignments, stmt: %s, sb_index: %d\n", expression_string( stmt->exp ), sb_index );
 	
     /* Calculate children statements */
     if( ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0 ) {
+      printf( "  Traversing TRUE path\n" );
       race_calc_assignments( stmt->next_true, sb_index );
     }
     if( (ESUPPL_IS_STMT_STOP_FALSE( stmt->exp->suppl ) == 0) && (stmt->next_true != stmt->next_false) ) {
+      printf( "  Traversing FALSE path\n" );
       race_calc_assignments( stmt->next_false, sb_index );
     }
 
@@ -1032,6 +1036,11 @@ void race_blk_delete_list( race_blk* rb ) {
 
 /*
  $Log$
+ Revision 1.52  2006/12/14 04:19:35  phase1geo
+ More updates to parser and associated code to handle unnamed scopes and
+ fixing more code to use functional unit pointers in expressions instead of
+ statement pointers.  Still not fully compiling at this point.  Checkpointing.
+
  Revision 1.51  2006/10/12 22:48:46  phase1geo
  Updates to remove compiler warnings.  Still some work left to go here.
 

@@ -386,6 +386,13 @@ void sim_thread_pop_head() {
       thread_tail = NULL;
     }
 
+    /* If the tmp_head thread running for an automatic function/task, push the data */
+    if( (tmp_head->funit->type == FUNIT_ATASK) || (tmp_head->funit->type == FUNIT_AFUNCTION) ) {
+      assert( tmp_head->ren == NULL );
+      tmp_head->ren = reentrant_create( tmp_head->funit );
+      reentrant_stack_push( tmp_head->ren );
+    }
+
   }
 
 #ifdef DEBUG_MODE
@@ -474,13 +481,14 @@ void sim_expr_changed( expression* expr, uint64 sim_time ) {
 /*!
  \param parent  Pointer to parent thread of the new thread to create (set to NULL if there is no parent thread)
  \param stmt    Pointer to head statement to have new thread point to.
+ \param funit   Pointer to functional unit that is creating this thread.
 
  \return Returns a pointer to the newly created thread if created; otherwise, returns NULL.
 
  Creates a new thread with the given information and adds the thread to the thread queue to run.  Returns a pointer
  to the newly created thread for joining/running purposes.
 */
-thread* sim_add_thread( thread* parent, statement* stmt ) {
+thread* sim_add_thread( thread* parent, statement* stmt, func_unit* funit ) {
 
   thread* thr         = NULL;   /* Pointer to new thread to create */
   bool    first_child = FALSE;  /* Specifies if this is the first child to be added to the parent */
@@ -492,6 +500,7 @@ thread* sim_add_thread( thread* parent, statement* stmt ) {
 
     /* Create and initialize thread */
     thr                    = (thread*)malloc_safe( sizeof( thread ), __FILE__, __LINE__ );
+    thr->funit             = funit;
     thr->parent            = parent;
     thr->head              = stmt;
     thr->curr              = stmt;
@@ -649,11 +658,6 @@ void sim_kill_thread( thread* thr ) {
   /* Set the statement thread pointer to NULL */
   thr->curr->thr = NULL;
 
-  /* If this thread contains a re-entrant structure, deallocate it */
-  if( thr->ren != NULL ) {
-    reentrant_dealloc( thr->ren );
-  }
-
   /* Now we can deallocate the thread */
   free_safe( thr );
 
@@ -795,6 +799,13 @@ void sim_thread( thread* thr ) {
   statement* stmt;                  /* Pointer to current statement to evaluate */
   bool       expr_changed = FALSE;  /* Specifies if expression tree was modified in any way */
 
+  /* If the thread has a reentrant structure assigned to it, pop it */
+  if( thr->ren != NULL ) {
+    reentrant_stack_pop( thr->ren );
+    reentrant_dealloc( thr->ren );
+    thr->ren = NULL;
+  }
+
   /* Set the value of stmt with the head_stmt */
   stmt = thr->curr;
 
@@ -921,6 +932,10 @@ void sim_simulate( uint64 sim_time ) {
 
 /*
  $Log$
+ Revision 1.82  2006/12/12 06:20:23  phase1geo
+ More updates to support re-entrant tasks/functions.  Still working through
+ compiler errors.  Checkpointing.
+
  Revision 1.81  2006/11/30 19:58:11  phase1geo
  Fixing rest of issues so that full regression (IV, Cver and VCS) without VPI
  passes.  Updated regression files.

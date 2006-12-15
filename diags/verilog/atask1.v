@@ -29,8 +29,7 @@ task automatic foo;
   begin
    if( a )
      foo( ~a );
-   else
-     bar = 1'b1;
+   bar = a;
   end
 endtask
 

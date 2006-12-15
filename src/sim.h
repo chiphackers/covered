@@ -34,7 +34,7 @@ void sim_thread_insert_into_delay_queue( thread* thr, uint64 sim_time );
 void sim_expr_changed( expression* expr, uint64 sim_time );
 
 /*! \brief Creates a thread for the given statement and adds it to the thread simulation queue. */
-thread* sim_add_thread( thread* parent, statement* stmt );
+thread* sim_add_thread( thread* parent, statement* stmt, func_unit* funit );
 
 /*! \brief Deallocates thread and removes it from parent and thread queue lists */
 void sim_kill_thread( thread* thr );
@@ -59,6 +59,11 @@ void sim_simulate( uint64 sim_time );
 
 /*
  $Log$
+ Revision 1.19  2006/11/29 23:15:46  phase1geo
+ Major overhaul to simulation engine by including an appropriate delay queue
+ mechanism to handle simulation timing for delay operations.  Regression not
+ fully passing at this moment but enough is working to checkpoint this work.
+
  Revision 1.18  2006/11/27 04:11:42  phase1geo
  Adding more changes to properly support thread time.  This is a work in progress
  and regression is currently broken for the moment.  Checkpointing.

@@ -32,13 +32,10 @@ IP	- automatic storage for functions/tasks
        FSM coverage results.
 
    7.  Add SystemVerilog features/syntax
-X       - multi-dimensional arrays
 IP      - typedef
         - struct
         - union
 IP      - enum
-
-X  8.  Add memory coverage capability
 
 
 Merge command
@@ -50,9 +47,6 @@ Merge command
 Report command
 --------------
 
-X  1.  Add ability to see combinational logic output on a bit-by-bit basis for bussed expressions.
-
-X  2.  Add memory coverage output.
 
 
 Miscellaneous
@@ -64,4 +58,3 @@ IP 1.  Add regression that produces known, achievable error conditions in the co
 GUI
 ---
 
-X  1.  Add GUI support for memory coverage
