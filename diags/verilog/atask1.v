@@ -10,7 +10,7 @@ module main;
 reg bar;
 
 initial begin
-	bar = 1'b0;
+	bar = 1'b1;
 	#5;
 	foo( 1'b1 );
 end

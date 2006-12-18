@@ -1713,10 +1713,6 @@ void db_add_statement( statement* stmt, statement* start ) {
 
     } else {
 
-      printf( "stmt.stop_false: %d, stmt.false: %p, stmt.stop_true: %d, stmt.true: %p\n",
-              ESUPPL_IS_STMT_STOP_FALSE( stmt->exp->suppl ), stmt->next_false,
-              ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ),  stmt->next_true );
-
       /* Add TRUE and FALSE statement paths to list */
       if( (ESUPPL_IS_STMT_STOP_FALSE( stmt->exp->suppl ) == 0) && (stmt->next_false != start) ) {
         db_add_statement( stmt->next_false, start );
@@ -2287,6 +2283,11 @@ void db_do_timestep( uint64 time, bool final ) {
 
 /*
  $Log$
+ Revision 1.243  2006/12/15 17:33:45  phase1geo
+ Updating TODO list.  Fixing more problems associated with handling re-entrant
+ tasks/functions.  Still not quite there yet for simulation, but we are getting
+ quite close now.  Checkpointing.
+
  Revision 1.242  2006/12/14 23:46:57  phase1geo
  Fixing remaining compile issues with support for functional unit pointers in
  expressions and unnamed scope handling.  Starting to debug run-time issues now.

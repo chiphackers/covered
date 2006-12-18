@@ -3719,20 +3719,22 @@ statement
     {
       $$ = NULL;
     }
+/*
   | K_begin inc_block_depth statement_list dec_block_depth K_end
     {
       statement* stmt = db_parallelize_statement( $3 );
       $$ = stmt;
     }
-  | K_begin inc_block_depth ':' begin_end_block dec_block_depth K_end
+*/
+  | K_begin inc_block_depth begin_end_block dec_block_depth K_end
     {
       expression* exp;
       statement*  stmt;
       if( ignore_mode == 0 ) {
-        db_end_function_task_namedblock( @6.first_line );
-        if( $4 != NULL ) {
+        db_end_function_task_namedblock( @5.first_line );
+        if( $3 != NULL ) {
           exp = db_create_expression( NULL, NULL, EXP_OP_NB_CALL, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-          exp->elem.funit = $4;
+          exp->elem.funit = $3;
           stmt = db_create_statement( exp );
           db_add_expression( exp );
           $$ = stmt;
@@ -3749,6 +3751,7 @@ statement
         $$ = NULL;
       }
     }
+/*
   | K_begin inc_block_depth dec_block_depth K_end
     {
       $$ = NULL;
@@ -3758,6 +3761,7 @@ statement
       VLerror( "Illegal syntax in begin/end block" );
       $$ = NULL;
     }
+*/
   | K_fork inc_fork_depth fork_statement K_join
     {
       expression* exp;

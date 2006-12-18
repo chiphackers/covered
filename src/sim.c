@@ -390,7 +390,6 @@ void sim_thread_pop_head() {
     if( (tmp_head->funit->type == FUNIT_ATASK) || (tmp_head->funit->type == FUNIT_AFUNCTION) ) {
       assert( tmp_head->ren == NULL );
       tmp_head->ren = reentrant_create( tmp_head->funit );
-      reentrant_stack_push( tmp_head->ren );
     }
 
   }
@@ -607,6 +606,16 @@ void sim_kill_thread( thread* thr ) {
 
   assert( thr != NULL );
 
+#ifdef DEBUG_MODE
+  if( debug_mode ) {
+    printf( "Thread queue before thread is killed...\n" );
+    sim_display_thread_queue();
+  }
+#endif
+
+  /* Set the statement thread pointer to NULL */
+  thr->curr->thr = NULL;
+
   /* Remove this thread from its parent, if it has a parent */
   if( thr->parent != NULL ) {
 
@@ -636,6 +645,9 @@ void sim_kill_thread( thread* thr ) {
 
     }
 
+    /* Set the parent current statement thread pointer to point to the parent thread */
+    thr->parent->curr->thr = thr->parent;
+
   }
 
   /* If we are the last child, re-insert the parent in our place (setting thread_head to the parent) */
@@ -648,6 +660,7 @@ void sim_kill_thread( thread* thr ) {
     }
     thread_head = thr->parent;
     thr->parent->curr_time = thr->curr_time;
+    thr->parent->suppl.part.queued = 1;  /* Specify that the parent thread is now back in the thread queue */
   } else {
     thread_head = thread_head->next;
     if( thread_head == NULL ) {
@@ -655,11 +668,15 @@ void sim_kill_thread( thread* thr ) {
     }
   }
 
-  /* Set the statement thread pointer to NULL */
-  thr->curr->thr = NULL;
-
   /* Now we can deallocate the thread */
   free_safe( thr );
+
+#ifdef DEBUG_MODE
+  if( debug_mode ) {
+    printf( "Thread queue after thread is killed...\n" );
+    sim_display_thread_queue();
+  }
+#endif
 
 }
 
@@ -787,22 +804,22 @@ bool sim_expression( expression* expr, thread* thr ) {
 }
 
 /*!
- \param thr  Pointer to current thread to simulate.
+ \param thr       Pointer to current thread to simulate.
+ \param sim_time  Current simulation time to simulate.
 
  Performs statement simulation as described above.  Calls expression simulator if
  the associated root expression is specified that signals have changed value within
  it.  Continues to run for current statement tree until statement tree hits a
  wait-for-event condition (or we reach the end of a simulation tree).
 */
-void sim_thread( thread* thr ) {
+void sim_thread( thread* thr, uint64 sim_time ) {
 
   statement* stmt;                  /* Pointer to current statement to evaluate */
   bool       expr_changed = FALSE;  /* Specifies if expression tree was modified in any way */
 
   /* If the thread has a reentrant structure assigned to it, pop it */
   if( thr->ren != NULL ) {
-    reentrant_stack_pop( thr->ren );
-    reentrant_dealloc( thr->ren );
+    reentrant_dealloc( thr->ren, thr->funit, sim_time );
     thr->ren = NULL;
   }
 
@@ -891,7 +908,7 @@ void sim_simulate( uint64 sim_time ) {
 
   /* Simulate all threads in the thread queue */
   while( thread_head != NULL ) {
-    sim_thread( thread_head );
+    sim_thread( thread_head, sim_time );
   }
 
   /* Now simulate all threads in the delay queue up to the current simulation time */
@@ -906,7 +923,7 @@ void sim_simulate( uint64 sim_time ) {
       delay_head->child_head = NULL;
       delay_head->child_tail = NULL;
       while( thread_head != NULL ) {
-        sim_thread( thread_head );
+        sim_thread( thread_head, sim_time );
       }
     }
 
@@ -932,6 +949,11 @@ void sim_simulate( uint64 sim_time ) {
 
 /*
  $Log$
+ Revision 1.83  2006/12/15 17:33:45  phase1geo
+ Updating TODO list.  Fixing more problems associated with handling re-entrant
+ tasks/functions.  Still not quite there yet for simulation, but we are getting
+ quite close now.  Checkpointing.
+
  Revision 1.82  2006/12/12 06:20:23  phase1geo
  More updates to support re-entrant tasks/functions.  Still working through
  compiler errors.  Checkpointing.

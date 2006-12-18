@@ -29,18 +29,16 @@
 /*! \brief Allocates and initializes the reentrant structure for the given functional unit */
 reentrant* reentrant_create( func_unit* funit );
 
-/*! \brief Adds a new stack entry to the given reentrant stack */
-void reentrant_stack_push( reentrant* ren );
-
-/*! \brief Assigns data from the current stack top back to the functional unit and pops the current stack top */
-void reentrant_stack_pop( reentrant* ren );
-
 /*! \brief Deallocates all memory associated with the given reentrant structure */
-void reentrant_dealloc( reentrant* ren );
+void reentrant_dealloc( reentrant* ren, func_unit* funit, uint64 sim_time );
 
 
 /*
  $Log$
+ Revision 1.1  2006/12/11 23:29:17  phase1geo
+ Starting to add support for re-entrant tasks and functions.  Currently, compiling
+ fails.  Checkpointing.
+
 */
 
 #endif

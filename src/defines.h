@@ -2287,22 +2287,18 @@ struct dim_range_s {
  Represents a reentrant stack and control information.
 */
 struct reentrant_s {
-  rstack_entry* stack;               /*!< Stack containing signal value bit information from previous call */
-  func_unit*    funit;               /*!< Pointer to functional unit containing signals to store */
+  nibble*       data;                /*!< Packed bit data stored from signals */
   int           data_size;           /*!< Number of nibbles stored in a single rstack_entry data */
-};
-
-/*!
- Represents a reentrant stack entry.
-*/
-struct rstack_entry_s {
-  nibble*       data;                /*!< Bit data stored from signals */
-  rstack_entry* prev;                /*!< Pointer to previous stack entry in stack */
 };
 
 
 /*
  $Log$
+ Revision 1.249  2006/12/15 17:33:45  phase1geo
+ Updating TODO list.  Fixing more problems associated with handling re-entrant
+ tasks/functions.  Still not quite there yet for simulation, but we are getting
+ quite close now.  Checkpointing.
+
  Revision 1.248  2006/12/14 23:46:57  phase1geo
  Fixing remaining compile issues with support for functional unit pointers in
  expressions and unnamed scope handling.  Starting to debug run-time issues now.

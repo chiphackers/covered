@@ -2659,7 +2659,7 @@ bool expression_op_func__bassign( expression* expr, thread* thr ) {
 */
 bool expression_op_func__func_call( expression* expr, thread* thr ) {
 
-  sim_thread( sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit ) );
+  sim_thread( sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit ), thr->curr_time );
 
   return( TRUE );
 
@@ -2711,7 +2711,7 @@ bool expression_op_func__nb_call( expression* expr, thread* thr ) {
 
   if( ESUPPL_IS_IN_FUNC( expr->suppl ) ) {
 
-    sim_thread( sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit ) );
+    sim_thread( sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit ), thr->curr_time );
     retval = TRUE;
 
   } else {
@@ -3928,6 +3928,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.234  2006/12/15 17:33:45  phase1geo
+ Updating TODO list.  Fixing more problems associated with handling re-entrant
+ tasks/functions.  Still not quite there yet for simulation, but we are getting
+ quite close now.  Checkpointing.
+
  Revision 1.233  2006/12/14 23:46:57  phase1geo
  Fixing remaining compile issues with support for functional unit pointers in
  expressions and unnamed scope handling.  Starting to debug run-time issues now.

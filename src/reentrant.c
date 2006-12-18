@@ -31,139 +31,81 @@
 
  \return Returns a pointer to the newly created reentrant structure.
 
- Allocates and initializes the reentrant structure for the given functional unit.
+ Allocates and initializes the reentrant structure for the given functional unit,
+ compressing and packing the bits into the given data structure.
 */
 reentrant* reentrant_create( func_unit* funit ) {
 
   reentrant* ren;       /* Pointer to newly created reentrant structure */
   sig_link*  sigl;      /* Pointer to current signal in the given functional unit */
   int        bits = 0;  /* Number of bits needed to store signal values */
+  int        bit  = 0;  /* Current bit position of compressed data */
+  int        i;         /* Loop iterator */
 
   /* Allocate the structure */
   ren = (reentrant*)malloc_safe( sizeof( reentrant ), __FILE__, __LINE__ );
 
-  /* Initialize the structure */
-  ren->stack     = NULL;
-  ren->funit     = funit;
-
   /* Get size needed to store data */
   sigl = funit->sig_head;
   while( sigl != NULL ) {
-    printf( "In reentrant_create, signal: %s, width: %d\n", sigl->sig->name, sigl->sig->value->width );
     bits += sigl->sig->value->width;
     sigl = sigl->next;
   }
 
   /* Calculate data size */
   ren->data_size = ((bits % 4) == 0) ? (bits / 4) : ((bits / 4) + 1);
-  printf( "  data_size: %d\n", ren->data_size );
+
+  /* Allocate memory for data */
+  ren->data = (nibble*)malloc_safe( (sizeof( nibble ) * ren->data_size), __FILE__, __LINE__ );
+
+  /* Walk through the signal list in the reentrant functional unit, compressing and saving vector values */
+  sigl = funit->sig_head;
+  while( sigl != NULL ) {
+    for( i=0; i<sigl->sig->value->width; i++ ) {
+      ren->data[((bit%4)==0)?(bit/4):((bit/4)+1)] |= (sigl->sig->value->value[i].part.val.value << (bit % 4));
+      bit++;
+    }
+    sigl = sigl->next;
+  }
 
   return( ren );
 
 }
 
 /*!
- \param ren  Pointer to reentrant structure containing stack to push.
+ \param ren       Pointer to the reentrant structure to deallocate from memory.
+ \param funit     Pointer to functional unit associated with this reentrant structure.
+ \param sim_time  Current timestep being simulated.
 
- Iterates through the functional unit's signal list, compressing and storing its values into a newly
- allocated stack entry.  Adds the new stack entry to the stack contained in the given reentrant structure.
+ Pops data back into the given functional unit and deallocates all memory associated
+ with the given reentrant structure.
 */
-void reentrant_stack_push( reentrant* ren ) {
+void reentrant_dealloc( reentrant* ren, func_unit* funit, uint64 sim_time ) {
 
-  sig_link*     sigl;     /* Pointer to current signal link in list */
-  rstack_entry* rse;      /* Pointer to newly allocated reentrant stack entry */
-  int           bit = 0;  /* Index into the packed data structure */
-  int           i;        /* Loop iterator */
-
-  assert( ren != NULL );
-
-  printf( "In reentrant_stack_push...\n" );
-
-  if( ren->data_size > 0 ) {
-
-    /* Allocate memory for stack entry and its data */
-    rse       = (rstack_entry*)malloc_safe( sizeof( rstack_entry ), __FILE__, __LINE__ );
-    printf( "*****  Allocating data for rse: %p\n", rse );
-    rse->data = (nibble*)malloc_safe( (sizeof( nibble ) * ren->data_size), __FILE__, __LINE__ );
-
-    /* Walk through the signal list in the reentrant functional unit, compressing and saving vector values */
-    sigl = ren->funit->sig_head;
-    while( sigl != NULL ) {
-      for( i=0; i<sigl->sig->value->width; i++ ) {
-        rse->data[((bit%4)==0)?(bit/4):((bit/4)+1)] |= (sigl->sig->value->value[i].part.val.value << (bit % 4));
-        bit++;
-      }
-      sigl = sigl->next;
-    }
-
-    /* Move stack pointer to point to this newly created stack */
-    rse->prev  = ren->stack;
-    ren->stack = rse;
-
-  }
-
-}
-
-/*!
- \param ren  Pointer to reentrant structure containing stack to pop.
-
- Iterates through each stored bit in the given reentrant stack top, assigning it back to its original signal
- value.  Calls the vsignal_propagate function for each signal to indicate that the value has changed from its
- previous value and deallocates/pops the top of the reentrant stack.
-*/
-void reentrant_stack_pop( reentrant* ren ) {
-
-  sig_link*     sigl;     /* Pointer to current signal link in list */
-  rstack_entry* rse;      /* Tempoary pointer to reentrant stack entry */
-  int           bit = 0;  /* Index into the packed data structure */
-  int           i;        /* Loop iterator */
-
-  assert( ren != NULL );
-
-  if( ren->data_size > 0 ) {
-
-    printf( "Attempting to pop data from rse: %p\n", ren->stack );
-
-    /* Walk through each bit in the compressed data array and assign it back to its signal */
-    sigl = ren->funit->sig_head;
-    while( sigl != NULL ) {
-      for( i=0; i<sigl->sig->value->width; i++ ) {
-        sigl->sig->value->value[i].part.val.value = (ren->stack->data[((bit%4)==0)?(bit/4):((bit/4)+1)] >> (bit % 4));
-        bit++;
-      }
-      vsignal_propagate( sigl->sig, 0 );
-      sigl = sigl->next;
-    }
-
-    /* Now pop the entry */
-    rse        = ren->stack;
-    ren->stack = ren->stack->prev;
-    
-    /* Deallocate the last entry */
-    printf( "***** Deallocating data for rse: %p\n", rse );
-    free_safe( rse->data );
-    free_safe( rse );
-
-  }
-
-}
-
-/*!
- \param ren  Pointer to the reentrant structure to deallocate from memory.
-
- Deallocates all memory associated with the given reentrant structure.
-*/
-void reentrant_dealloc( reentrant* ren ) {
+  sig_link* sigl;     /* Pointer to current signal link in list */
+  int       i;        /* Loop iterator */
+  int       bit = 0;  /* Current bit in compressed bit array being assigned */
 
   if( ren != NULL ) {
 
-    /* If the stack still exists, pop it (it should be the final entry) */
-    if( ren->stack != NULL ) {
-      reentrant_stack_pop( ren );
-    }
+    /* If we have data being stored, pop it */
+    if( ren->data_size > 0 ) {
 
-    /* Verify that the stack has been deallocated */
-    assert( ren->stack == NULL );
+      /* Walk through each bit in the compressed data array and assign it back to its signal */
+      sigl = funit->sig_head;
+      while( sigl != NULL ) {
+        for( i=0; i<sigl->sig->value->width; i++ ) {
+          sigl->sig->value->value[i].part.val.value = (ren->data[((bit%4)==0)?(bit/4):((bit/4)+1)] >> (bit % 4));
+          bit++;
+        }
+        vsignal_propagate( sigl->sig, sim_time );
+        sigl = sigl->next;
+      }
+
+      /* Deallocate the data nibble array */
+      free_safe( ren->data );
+
+    }
 
     /* Deallocate memory allocated for this reentrant structure */
     free_safe( ren );
@@ -174,6 +116,11 @@ void reentrant_dealloc( reentrant* ren ) {
 
 /*
  $Log$
+ Revision 1.2  2006/12/15 17:33:45  phase1geo
+ Updating TODO list.  Fixing more problems associated with handling re-entrant
+ tasks/functions.  Still not quite there yet for simulation, but we are getting
+ quite close now.  Checkpointing.
+
  Revision 1.1  2006/12/11 23:29:16  phase1geo
  Starting to add support for re-entrant tasks and functions.  Currently, compiling
  fails.  Checkpointing.

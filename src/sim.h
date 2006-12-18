@@ -51,7 +51,7 @@ void sim_kill_all_threads();
 void sim_add_statics();
 
 /*! \brief Simulates one thread until it has either completed or enters a context switch */
-void sim_thread( thread* thr );
+void sim_thread( thread* thr, uint64 sim_time );
 
 /*! \brief Simulates current timestep. */
 void sim_simulate( uint64 sim_time );
@@ -59,6 +59,11 @@ void sim_simulate( uint64 sim_time );
 
 /*
  $Log$
+ Revision 1.20  2006/12/15 17:33:45  phase1geo
+ Updating TODO list.  Fixing more problems associated with handling re-entrant
+ tasks/functions.  Still not quite there yet for simulation, but we are getting
+ quite close now.  Checkpointing.
+
  Revision 1.19  2006/11/29 23:15:46  phase1geo
  Major overhaul to simulation engine by including an appropriate delay queue
  mechanism to handle simulation timing for delay operations.  Regression not

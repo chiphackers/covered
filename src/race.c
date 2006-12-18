@@ -85,6 +85,7 @@ extern funit_link* funit_head;
 extern inst_link*  inst_head;
 extern func_unit*  curr_funit;
 extern isuppl      info_suppl;
+extern int         stmt_conn_id;
 
 /*!
  \param reason      Numerical reason for why race condition was detected.
@@ -124,7 +125,9 @@ bool race_find_head_statement_containing_statement_helper( statement* curr, stat
 
   bool retval = FALSE;  /* Return value for this function */
 
-  if( curr != NULL ) {
+  if( (curr != NULL) && (curr->conn_id != stmt_conn_id) ) {
+
+    curr->conn_id = stmt_conn_id;
 
     if( curr == to_find ) {
 
@@ -174,6 +177,11 @@ statement* race_find_head_statement_containing_statement( statement* stmt ) {
 
   while( (i < sb_size) && !race_find_head_statement_containing_statement_helper( sb[i].stmt, stmt ) ) {
     i++;
+    stmt_conn_id++;
+  }
+
+  if( i < sb_size ) {
+    stmt_conn_id++;
   }
 
   return( (i == sb_size) ? NULL : sb[i].stmt );
@@ -281,17 +289,15 @@ void race_calc_expr_assignment( expression* exp, int sb_index ) {
 */
 void race_calc_assignments( statement* stmt, int sb_index ) {
 
-  if( stmt != NULL ) {
+  if( (stmt != NULL) && (stmt->conn_id != stmt_conn_id) ) {
 
-    printf( "In race_calc_assignments, stmt: %s, sb_index: %d\n", expression_string( stmt->exp ), sb_index );
-	
+    stmt->conn_id = stmt_conn_id;
+
     /* Calculate children statements */
     if( ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0 ) {
-      printf( "  Traversing TRUE path\n" );
       race_calc_assignments( stmt->next_true, sb_index );
     }
     if( (ESUPPL_IS_STMT_STOP_FALSE( stmt->exp->suppl ) == 0) && (stmt->next_true != stmt->next_false) ) {
-      printf( "  Traversing FALSE path\n" );
       race_calc_assignments( stmt->next_false, sb_index );
     }
 
@@ -719,6 +725,7 @@ void race_check_modules() {
 	    race_calc_stmt_blk_type( sb[sb_index].stmt->exp, sb_index );
 	    race_calc_assignments( sb[sb_index].stmt, sb_index );
             sb_index++; 
+            stmt_conn_id++;
           }
           stmt_iter_next( &si );
         }
@@ -1036,6 +1043,11 @@ void race_blk_delete_list( race_blk* rb ) {
 
 /*
  $Log$
+ Revision 1.53  2006/12/15 17:33:45  phase1geo
+ Updating TODO list.  Fixing more problems associated with handling re-entrant
+ tasks/functions.  Still not quite there yet for simulation, but we are getting
+ quite close now.  Checkpointing.
+
  Revision 1.52  2006/12/14 04:19:35  phase1geo
  More updates to parser and associated code to handle unnamed scopes and
  fixing more code to use functional unit pointers in expressions instead of
