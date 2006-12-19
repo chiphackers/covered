@@ -700,6 +700,7 @@ void instance_flatten( funit_inst* root ) {
 
   funit_inst* child;              /* Pointer to current child instance */
   funit_inst* last_child = NULL;  /* Pointer to the last child instance */
+  funit_inst* tmp;                /* Temporary pointer to functional unit instance */
 
   if( root != NULL ) {
 
@@ -735,11 +736,11 @@ void instance_flatten( funit_inst* root ) {
           }
         }
 
-        last_child = child;
+        tmp   = child;
         child = child->next;
 
         /* Deallocate child instance */
-        instance_dealloc_tree( last_child );
+        instance_dealloc_tree( tmp );
       
       } else {
 
@@ -950,6 +951,10 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.66  2006/12/19 05:23:39  phase1geo
+ Added initial code for handling instance flattening for unnamed scopes.  This
+ is partially working at this point but still needs some debugging.  Checkpointing.
+
  Revision 1.65  2006/10/16 21:34:46  phase1geo
  Increased max bit width from 1024 to 65536 to allow for more room for memories.
  Fixed issue with enumerated values being explicitly assigned unknown values and
