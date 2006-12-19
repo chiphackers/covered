@@ -43,7 +43,7 @@ covered.cver.so: vpi.cver.o libcovered.a
 	ld -G -shared -export-dynamic vpi.cver.o -L. -lcovered -o covered.cver.so
 
 covered.vpi: vpi.iv.o libcovered.a
-	ld -shared vpi.iv.o -L. -lcovered -L$(IVDIR)/lib -lveriuser -lvpi -o covered.vpi
+	gcc -shared vpi.iv.o -L. -lcovered -L$(IVDIR)/lib -lveriuser -lvpi -o covered.vpi
 
 vpi.vcs.o: ../src/vpi.c
 	gcc -fPIC -g -DVCS -DNOIV $(DEBUGDEF) -I$(VCSINC) -I.. -c -o vpi.vcs.o ../src/vpi.c

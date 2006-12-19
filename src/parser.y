@@ -3735,6 +3735,7 @@ statement
         if( $3 != NULL ) {
           exp = db_create_expression( NULL, NULL, EXP_OP_NB_CALL, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
           exp->elem.funit = $3;
+          exp->name = strdup( exp->elem.funit->name );
           stmt = db_create_statement( exp );
           db_add_expression( exp );
           $$ = stmt;
@@ -3771,6 +3772,7 @@ statement
         if( $3 != NULL ) {
           exp = db_create_expression( NULL, NULL, EXP_OP_NB_CALL, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
           exp->elem.funit = $3;
+          exp->name = strdup( exp->elem.funit->name );
           stmt = db_create_statement( exp );
           db_add_expression( exp );
           $$ = stmt;

@@ -781,6 +781,7 @@ void bind_perform( bool cdd_reading, int pass ) {
 
       /* If we have bound successfully, copy the name of this exp_bind to the expression */
       if( bound && (curr_eb->exp != NULL) ) {
+        printf( "Setting expression %s to name %s\n", expression_string( curr_eb->exp ), curr_eb->name );
         curr_eb->exp->name = strdup_safe( curr_eb->name, __FILE__, __LINE__ );
       }
 
@@ -878,6 +879,11 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.104  2006/12/14 23:46:56  phase1geo
+ Fixing remaining compile issues with support for functional unit pointers in
+ expressions and unnamed scope handling.  Starting to debug run-time issues now.
+ Added atask1 diagnostic to begin this verification process.  Checkpointing.
+
  Revision 1.103  2006/12/12 06:20:22  phase1geo
  More updates to support re-entrant tasks/functions.  Still working through
  compiler errors.  Checkpointing.
