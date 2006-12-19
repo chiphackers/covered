@@ -53,6 +53,7 @@
 
 extern char        user_msg[USER_MSG_LENGTH];
 extern funit_link* funit_head;
+extern funit_link* funit_tail;
 extern func_unit*  curr_funit;
 
 
@@ -767,6 +768,55 @@ bool funit_db_merge( func_unit* base, FILE* file, bool same ) {
 }
 
 /*!
+ \param base   Pointer to base functional unit that will receive the information from the other functional unit
+ \param other  Pointer to the functional unit that will give up its information.
+
+ Takes all of the design information from the other functional unit and integrates it into the base
+ functional unit, deallocating the other functional unit when complete and removing it from the funit_head
+ list.
+*/
+void funit_converge( func_unit* base, func_unit* other ) {
+
+  assert( base != NULL );
+  assert( other != NULL );
+  assert( other->sig_head == NULL ); 
+
+  /* Append the expression list */
+  if( base->exp_head == NULL ) {
+    base->exp_head = other->exp_head;
+    base->exp_tail = other->exp_tail;
+  } else {
+    base->exp_tail->next = other->exp_head;
+    base->exp_tail       = other->exp_tail;
+  }
+  other->exp_head = other->exp_tail = NULL;
+
+  /* Append the statement list */
+  if( base->stmt_head == NULL ) {
+    base->stmt_head = other->stmt_head;
+    base->stmt_tail = other->stmt_tail;
+  } else if( other->stmt_head != NULL ) {
+    stmt_link_join( base->stmt_tail, other->stmt_head );
+    base->stmt_tail = other->stmt_tail;
+  }
+  other->stmt_head = other->stmt_tail = NULL;
+
+  /* Append the FSM list */
+  if( base->fsm_head == NULL ) {
+    base->fsm_head = other->fsm_head;
+    base->fsm_tail = other->fsm_tail;
+  } else {
+    base->fsm_tail->next = other->fsm_head;
+    base->fsm_tail       = other->fsm_tail;
+  }
+  other->fsm_head = other->fsm_tail = NULL;
+
+  /* Deallocate the contents of the other functional unit */
+  funit_link_remove( other, &funit_head, &funit_tail, TRUE );
+
+}
+
+/*!
  \param id  Expression/statement ID to search for
  
  \return Returns a pointer to the functional unit that contains the specified expression/statement
@@ -821,6 +871,32 @@ bool funit_is_top_module( func_unit* funit ) {
 
     retval = (sigl == NULL);
 
+  }
+
+  return( retval );
+
+}
+
+/*!
+ \param funit  Pointer to functional unit to check.
+
+ \return Returns TRUE if the specified functional unit is an unnamed scope; otherwise,
+         returns FALSE.
+
+ A functional unit is considered to be an unnamed scope if it is of type FUNIT_NAMED_BLOCK
+ and the last portion of its functional unit name returns TRUE after calling the 
+ db_is_unnamed_scope() function.
+*/
+bool funit_is_unnamed( func_unit* funit ) {
+
+  bool retval = FALSE;  /* Return value for this function */
+  char back[256];       /* Last portion of functional unit name */
+  char rest[4096];      /* Rest of functional unit name */
+
+  /* Only begin..end blocks can be unnamed scopes */
+  if( funit->type == FUNIT_NAMED_BLOCK ) {
+    scope_extract_back( funit->name, back, rest );
+    retval = db_is_unnamed_scope( back );
   }
 
   return( retval );
@@ -983,6 +1059,10 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.54  2006/12/11 23:29:16  phase1geo
+ Starting to add support for re-entrant tasks and functions.  Currently, compiling
+ fails.  Checkpointing.
+
  Revision 1.53  2006/11/25 21:29:01  phase1geo
  Adding timescale diagnostics to regression suite and fixing bugs in core associated
  with this code.  Full regression now passes for IV and Cver (not in VPI mode).

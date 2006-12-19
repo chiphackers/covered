@@ -68,11 +68,17 @@ bool funit_db_read( func_unit* funit, char* scope, char** line );
 /*! \brief Reads and merges two functional units into base functional unit. */
 bool funit_db_merge( func_unit* base, FILE* file, bool same );
 
+/*! \brief Converges the contents of the other functional unit into the base functional unit */
+void funit_converge( func_unit* base, func_unit* other );
+
 /*! \brief Finds the functional unit that contains the given statement/expression ID */
 func_unit* funit_find_by_id( int id );
 
 /*! \brief Returns TRUE if the given functional unit does not contain any input, output or inout ports. */
 bool funit_is_top_module( func_unit* funit );
+
+/*! \brief Returns TRUE if the given functional unit is an unnamed scope. */
+bool funit_is_unnamed( func_unit* funit );
 
 /*! \brief Displays signals stored in this functional unit. */
 void funit_display_signals( func_unit* funit );
@@ -89,6 +95,9 @@ void funit_dealloc( func_unit* funit );
 
 /*
  $Log$
+ Revision 1.17  2006/11/03 23:36:36  phase1geo
+ Fixing bug 1590104.  Updating regressions per this change.
+
  Revision 1.16  2006/10/03 22:47:00  phase1geo
  Adding support for read coverage to memories.  Also added memory coverage as
  a report output for DIAGLIST diagnostics in regressions.  Fixed various bugs

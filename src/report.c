@@ -818,6 +818,9 @@ int command_report( int argc, int last_arg, char** argv ) {
           /* Perform binding */
           bind_perform( TRUE, 0 );
 
+          /* Collapse the design to remove unnamed scopes */
+          inst_link_flatten( inst_head );
+
           /* Open output stream */
           if( output_file != NULL ) {
             if( (ofile = fopen( output_file, "w" )) == NULL ) {
@@ -915,6 +918,9 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.77  2006/10/12 22:48:46  phase1geo
+ Updates to remove compiler warnings.  Still some work left to go here.
+
  Revision 1.76  2006/10/02 22:41:00  phase1geo
  Lots of bug fixes to memory coverage functionality for GUI.  Memory coverage
  should now be working correctly.  We just need to update the GUI documentation

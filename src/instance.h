@@ -57,6 +57,9 @@ bool instance_read_add( funit_inst** root, char* parent, func_unit* child, char*
 /*! \brief Displays contents of functional unit instance tree to specified file. */
 void instance_db_write( funit_inst* root, FILE* file, char* scope, bool parse_mode, bool report_save );
 
+/*! \brief Removes all unnamed scopes in given instance tree, converging their data into the parent scopes. */
+void instance_flatten( funit_inst* root );
+
 /*! \brief Removes all statement blocks that contain expressions that call the given statement */
 void instance_remove_stmt_blks_calling_stmt( funit_inst* root, statement* stmt );
 
@@ -72,6 +75,10 @@ void instance_dealloc( funit_inst* root, char* scope );
 
 /*
  $Log$
+ Revision 1.22  2006/10/13 22:46:31  phase1geo
+ Things are a bit of a mess at this point.  Adding generate12 diagnostic that
+ shows a failure in properly handling generates of instances.
+
  Revision 1.21  2006/10/13 15:56:02  phase1geo
  Updating rest of source files for compiler warnings.
 

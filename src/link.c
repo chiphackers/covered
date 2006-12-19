@@ -135,6 +135,33 @@ void stmt_link_add_tail( statement* stmt, stmt_link** head, stmt_link** tail ) {
 }
 
 /*!
+ \param tail  Pointer to tail statement link of first statement link list to join.
+ \param head  Pointer to second statement link of first statement link list to join.
+
+ Joins two statement links together.
+*/
+void stmt_link_join( stmt_link* tail, stmt_link* head ) {
+
+  stmt_iter si_tail;  /* Statement iterator for the tail */
+  stmt_iter si_head;  /* Statement iterator for the head */
+
+  /* Get next to last statement link in tail list */
+  stmt_iter_reset( &si_tail, tail );
+  stmt_iter_next( &si_tail );
+
+  /* Get second statement link in head list */
+  stmt_iter_reset( &si_head, head );
+  stmt_iter_next( &si_head );
+
+  /* Setup tail pointer */
+  tail->ptr = (stmt_link*)((long int)(si_tail.curr) ^ (long int)head);
+
+  /* Setup head pointer */
+  head->ptr = (stmt_link*)((long int)(si_head.curr) ^ (long int)tail);
+
+}
+
+/*!
  \param expr  Expression to add to specified expression list.
  \param head  Pointer to head exp_link element of list.
  \param tail  Pointer to tail exp_link element of list.
@@ -853,6 +880,22 @@ void funit_link_remove( func_unit* funit, funit_link** head, funit_link** tail, 
 
 }
 
+/*!
+ \param head  Pointer to head of instance link list.
+
+ Iterates through the given instance link list, flattening the instance trees to remove
+ all unnamed scopes within it.  Only called by the report command after the CDD has been
+ read into the database.
+*/
+void inst_link_flatten( inst_link* head ) {
+
+  while( head != NULL ) {
+    instance_flatten( head->inst );
+    head = head->next;
+  }
+
+}
+
 /**************************************************************************************/
 
 /*!
@@ -1129,6 +1172,11 @@ void inst_link_delete_list( inst_link* head ) {
 
 /*
  $Log$
+ Revision 1.57  2006/10/09 17:54:19  phase1geo
+ Fixing support for VPI to allow it to properly get linked to the simulator.
+ Also fixed inconsistency in generate reports and updated appropriately in
+ regressions for this change.  Full regression now passes.
+
  Revision 1.56  2006/09/01 23:06:02  phase1geo
  Fixing regressions per latest round of changes.  Full regression now passes.
 

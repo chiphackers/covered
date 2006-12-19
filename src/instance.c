@@ -690,6 +690,72 @@ void instance_db_write( funit_inst* root, FILE* file, char* scope, bool parse_mo
 }
 
 /*!
+ \param root  Pointer to current instance root
+
+ Recursively iterates through instance tree, integrating all unnamed scopes that do
+ not contain any signals into their parent modules.  This function only gets called
+ during the report command.
+*/
+void instance_flatten( funit_inst* root ) {
+
+  funit_inst* child;              /* Pointer to current child instance */
+  funit_inst* last_child = NULL;  /* Pointer to the last child instance */
+
+  if( root != NULL ) {
+
+    /* Iterate through child instances */
+    child = root->child_head;
+    while( child != NULL ) {
+
+      /* First, flatten the child instance */
+      instance_flatten( child );
+
+      /*
+       Next, fold this child instance into this instance if it is an unnamed scope
+       that has no signals.
+      */
+      if( funit_is_unnamed( child->funit ) && (child->funit->sig_head == NULL) ) {
+
+        /* Converge the child functional unit into this functional unit */
+        funit_converge( root->funit, child->funit );
+
+        /* Remove this child from the child list of this instance */
+        if( child == root->child_head ) {
+          if( child == root->child_tail ) {
+            root->child_head = root->child_tail = NULL;
+          } else {
+            root->child_head = child->next;
+          }
+        } else {
+          if( child == root->child_tail ) {
+            root->child_tail = last_child;
+            root->child_tail->next = NULL;
+          } else {
+            last_child->next = child->next;
+          }
+        }
+
+        last_child = child;
+        child = child->next;
+
+        /* Deallocate child instance */
+        instance_dealloc_tree( last_child );
+      
+      } else {
+
+        last_child = child;
+        child = child->next;
+
+      }
+
+
+    }
+
+  }
+
+}
+
+/*!
  \param root  Pointer to root instance to remove statements from
  \param stmt  Pointer to statement to match
 
@@ -884,6 +950,16 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.65  2006/10/16 21:34:46  phase1geo
+ Increased max bit width from 1024 to 65536 to allow for more room for memories.
+ Fixed issue with enumerated values being explicitly assigned unknown values and
+ created error output message when an implicitly assigned enum followed an explicitly
+ assign unknown enum value.  Fixed problem with generate blocks in different
+ instantiations of the same module.  Fixed bug in parser related to setting the
+ curr_packed global variable correctly.  Added enum2 and enum2.1 diagnostics to test
+ suite to verify correct enumerate behavior for the changes made in this checkin.
+ Full regression now passes.
+
  Revision 1.64  2006/10/13 22:46:31  phase1geo
  Things are a bit of a mess at this point.  Adding generate12 diagnostic that
  shows a failure in properly handling generates of instances.
