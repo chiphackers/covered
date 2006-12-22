@@ -1,5 +1,10 @@
 libexec_PROGRAMS = $(IVLIB) $(VCSLIB) $(CVERLIB)
+
+if BUILD_CYGWIN
+EXTRA_PROGRAMS = covered.vpi covered.cver.dll
+else
 EXTRA_PROGRAMS = covered.vpi covered.vcs.so covered.cver.so
+endif
 
 noinst_LIBRARIES = libcovered.a
 libcovered_a_SOURCES = ../src/arc.c \
@@ -36,23 +41,31 @@ libcovered_a_SOURCES = ../src/arc.c \
 INCLUDES=	-I..
 AM_CPPFLAGS=-DVPI_ONLY -DINSTALL_DIR=\"@datadir@/covered\" $(TCLTK_CPPFLAGS) $(DEBUGDEF)
 
+if BUILD_CYGWIN
+covered.cver.dll: vpi.cver.o libcovered.a
+	$(CC) -shared -o covered.cver.dll -Wl,--out-implib=covered.cver.dll.a \
+		-Wl,--export-all -Wl,--enable-auto-image-base \
+		-Wl,--export-dynamic -Wl,--output-def=covered.cver.def \
+		vpi.cver.o -L. -lcovered -lcver
+else
 covered.vcs.so: vpi.vcs.o libcovered.a
 	ld -G -shared -export-dynamic vpi.vcs.o -L. -lcovered -o covered.vcs.so
 
 covered.cver.so: vpi.cver.o libcovered.a
 	ld -G -shared -export-dynamic vpi.cver.o -L. -lcovered -o covered.cver.so
+endif
 
 covered.vpi: vpi.iv.o libcovered.a
-	gcc -shared vpi.iv.o -L. -lcovered -L$(IVDIR)/lib -lveriuser -lvpi -o covered.vpi
+	$(CC) -shared vpi.iv.o -L. -lcovered -L$(IVDIR)/lib -lveriuser -lvpi -o covered.vpi
 
 vpi.vcs.o: ../src/vpi.c
-	gcc -fPIC -g -DVCS -DNOIV $(DEBUGDEF) -I$(VCSINC) -I.. -c -o vpi.vcs.o ../src/vpi.c
+	$(CC) -fPIC -g -DVCS -DNOIV $(DEBUGDEF) -I$(VCSINC) -I.. -c -o vpi.vcs.o ../src/vpi.c
 
 vpi.cver.o: ../src/vpi.c
-	gcc -fPIC -g -DCVER -DNOIV $(DEBUGDEF) -I$(CVERINC) -I.. -c -o vpi.cver.o ../src/vpi.c
+	$(CC) -fPIC -g -DCVER -DNOIV $(DEBUGDEF) -I$(CVERINC) -I.. -c -o vpi.cver.o ../src/vpi.c
 
 vpi.iv.o: ../src/vpi.c
-	gcc -fPIC -g $(DEBUGDEF) -I$(IVDIR)/include -I.. -c -o vpi.iv.o ../src/vpi.c
+	$(CC) -fPIC -g $(DEBUGDEF) -I$(IVDIR)/include -I.. -c -o vpi.iv.o ../src/vpi.c
 
 #covered.vpi: $(libcovered_a_OBJECTS) ../src/vpi.c
 #	iverilog-vpi --name=covered $(libcovered_a_OBJECTS) ../src/vpi.c

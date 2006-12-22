@@ -1,7 +1,15 @@
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(src/main.c)
 AM_CONFIG_HEADER(config.h)
-AM_INIT_AUTOMAKE(covered,covered-20061205)
+AM_INIT_AUTOMAKE(covered,covered-20070201)
+
+dnl Get host information
+AC_CANONICAL_HOST
+case $host_os in
+  *cygwin* ) build_cygwin=yes;;
+         * ) build_cygwin=no;;
+esac
+AM_CONDITIONAL([BUILD_CYGWIN], [test x$build_cygwin = xyes])
 
 dnl Checks for programs.
 AC_PROG_MAKE_SET
@@ -93,8 +101,12 @@ else
 fi],
 [want_vcs=no])
 if test "$want_vcs" = yes; then
-  AC_SUBST([VCSLIB], ['covered.vcs.so'])
-  AC_SUBST([VCSINC], ["${vcs_prefix}"])
+  if test "$build_cygwin" = yes; then
+    AC_MSG_ERROR([Cygwin version of VCS library is not available])
+  else
+    AC_SUBST([VCSLIB], ['covered.vcs.so'])
+    AC_SUBST([VCSINC], ["${vcs_prefix}"])
+  fi
 fi
 
 AC_ARG_WITH([cver],
@@ -111,7 +123,11 @@ else
 fi],
 [want_cver=no])
 if test "$want_cver" = yes; then
-  AC_SUBST([CVERLIB], ['covered.cver.so'])
+  if test "$build_cygwin" = yes; then
+    AC_SUBST([CVERLIB], ['covered.cver.dll'])
+  else
+    AC_SUBST([CVERLIB], ['covered.cver.so'])
+  fi
   AC_SUBST([CVERINC], ["${cver_prefix}"])
 fi
 

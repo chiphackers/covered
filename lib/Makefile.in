@@ -59,6 +59,8 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
+host_alias = @host_alias@
+host_triplet = @host@
 
 EXEEXT = @EXEEXT@
 OBJEXT = @OBJEXT@
@@ -94,7 +96,9 @@ am__quote = @am__quote@
 install_sh = @install_sh@
 use_tcltk = @use_tcltk@
 libexec_PROGRAMS = $(IVLIB) $(VCSLIB) $(CVERLIB)
-EXTRA_PROGRAMS = covered.vpi covered.vcs.so covered.cver.so
+
+@BUILD_CYGWIN_TRUE@EXTRA_PROGRAMS = covered.vpi covered.cver.dll
+@BUILD_CYGWIN_FALSE@EXTRA_PROGRAMS = covered.vpi covered.vcs.so covered.cver.so
 
 noinst_LIBRARIES = libcovered.a
 libcovered_a_SOURCES = ../src/arc.c \
@@ -155,11 +159,19 @@ am_libcovered_a_OBJECTS = arc.$(OBJEXT) assertion.$(OBJEXT) \
 	symtable.$(OBJEXT) tree.$(OBJEXT) util.$(OBJEXT) \
 	vector.$(OBJEXT) vsignal.$(OBJEXT)
 libcovered_a_OBJECTS = $(am_libcovered_a_OBJECTS)
-EXTRA_PROGRAMS = covered.vpi$(EXEEXT) covered.vcs.so$(EXEEXT) \
-	covered.cver.so$(EXEEXT)
+@BUILD_CYGWIN_TRUE@EXTRA_PROGRAMS = covered.vpi$(EXEEXT) \
+@BUILD_CYGWIN_TRUE@	covered.cver.dll$(EXEEXT)
+@BUILD_CYGWIN_FALSE@EXTRA_PROGRAMS = covered.vpi$(EXEEXT) \
+@BUILD_CYGWIN_FALSE@	covered.vcs.so$(EXEEXT) \
+@BUILD_CYGWIN_FALSE@	covered.cver.so$(EXEEXT)
 libexec_PROGRAMS = @IVLIB@ @VCSLIB@ @CVERLIB@
 PROGRAMS = $(libexec_PROGRAMS)
 
+covered_cver_dll_SOURCES = covered.cver.dll.c
+covered_cver_dll_OBJECTS = covered.cver.dll.$(OBJEXT)
+covered_cver_dll_LDADD = $(LDADD)
+covered_cver_dll_DEPENDENCIES =
+covered_cver_dll_LDFLAGS =
 covered_cver_so_SOURCES = covered.cver.so.c
 covered_cver_so_OBJECTS = covered.cver.so.$(OBJEXT)
 covered_cver_so_LDADD = $(LDADD)
@@ -185,6 +197,7 @@ depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/arc.Po ./$(DEPDIR)/assertion.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/binding.Po ./$(DEPDIR)/codegen.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/covered.cver.dll.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/covered.cver.so.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/covered.vcs.so.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/covered.vpi.Po ./$(DEPDIR)/db.Po \
@@ -206,10 +219,10 @@ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 CFLAGS = @CFLAGS@
-DIST_SOURCES = $(libcovered_a_SOURCES) covered.cver.so.c \
-	covered.vcs.so.c covered.vpi.c
+DIST_SOURCES = $(libcovered_a_SOURCES) covered.cver.dll.c \
+	covered.cver.so.c covered.vcs.so.c covered.vpi.c
 DIST_COMMON = Makefile.am Makefile.in
-SOURCES = $(libcovered_a_SOURCES) covered.cver.so.c covered.vcs.so.c covered.vpi.c
+SOURCES = $(libcovered_a_SOURCES) covered.cver.dll.c covered.cver.so.c covered.vcs.so.c covered.vpi.c
 
 all: all-am
 
@@ -294,6 +307,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/assertion.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/binding.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/codegen.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/covered.cver.dll.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/covered.cver.so.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/covered.vcs.so.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/covered.vpi.Po@am__quote@
@@ -845,23 +859,28 @@ uninstall-am: uninstall-info-am uninstall-libexecPROGRAMS
 	uninstall-info-am uninstall-libexecPROGRAMS
 
 
-covered.vcs.so: vpi.vcs.o libcovered.a
-	ld -G -shared -export-dynamic vpi.vcs.o -L. -lcovered -o covered.vcs.so
+@BUILD_CYGWIN_TRUE@covered.cver.dll: vpi.cver.o libcovered.a
+@BUILD_CYGWIN_TRUE@	$(CC) -shared -o covered.cver.dll -Wl,--out-implib=covered.cver.dll.a \
+@BUILD_CYGWIN_TRUE@		-Wl,--export-all -Wl,--enable-auto-image-base \
+@BUILD_CYGWIN_TRUE@		-Wl,--export-dynamic -Wl,--output-def=covered.cver.def \
+@BUILD_CYGWIN_TRUE@		vpi.cver.o -L. -lcovered -lcver
+@BUILD_CYGWIN_FALSE@covered.vcs.so: vpi.vcs.o libcovered.a
+@BUILD_CYGWIN_FALSE@	ld -G -shared -export-dynamic vpi.vcs.o -L. -lcovered -o covered.vcs.so
 
-covered.cver.so: vpi.cver.o libcovered.a
-	ld -G -shared -export-dynamic vpi.cver.o -L. -lcovered -o covered.cver.so
+@BUILD_CYGWIN_FALSE@covered.cver.so: vpi.cver.o libcovered.a
+@BUILD_CYGWIN_FALSE@	ld -G -shared -export-dynamic vpi.cver.o -L. -lcovered -o covered.cver.so
 
 covered.vpi: vpi.iv.o libcovered.a
-	ld -shared vpi.iv.o -L. -lcovered -L$(IVDIR)/lib -lveriuser -lvpi -o covered.vpi
+	$(CC) -shared vpi.iv.o -L. -lcovered -L$(IVDIR)/lib -lveriuser -lvpi -o covered.vpi
 
 vpi.vcs.o: ../src/vpi.c
-	gcc -fPIC -g -DVCS -DNOIV $(DEBUGDEF) -I$(VCSINC) -I.. -c -o vpi.vcs.o ../src/vpi.c
+	$(CC) -fPIC -g -DVCS -DNOIV $(DEBUGDEF) -I$(VCSINC) -I.. -c -o vpi.vcs.o ../src/vpi.c
 
 vpi.cver.o: ../src/vpi.c
-	gcc -fPIC -g -DCVER -DNOIV $(DEBUGDEF) -I$(CVERINC) -I.. -c -o vpi.cver.o ../src/vpi.c
+	$(CC) -fPIC -g -DCVER -DNOIV $(DEBUGDEF) -I$(CVERINC) -I.. -c -o vpi.cver.o ../src/vpi.c
 
 vpi.iv.o: ../src/vpi.c
-	gcc -fPIC -g $(DEBUGDEF) -I$(IVDIR)/include -I.. -c -o vpi.iv.o ../src/vpi.c
+	$(CC) -fPIC -g $(DEBUGDEF) -I$(IVDIR)/include -I.. -c -o vpi.iv.o ../src/vpi.c
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
