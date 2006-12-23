@@ -547,35 +547,6 @@ uint64 db_scale_to_precision( uint64 value, func_unit* funit ) {
 
 }
 
-#ifndef VPI_ONLY
-/*!
- \param unit       Timescale unit offset value
- \param precision  Timescale precision offset value
-
- Sets the global timescale unit and precision variables.
-*/
-void db_set_timescale( int unit, int precision ) {
-
-  current_timescale_unit = unit;
-
-  /* Set the global precision value to the lowest precision value specified */
-  if( precision < global_timescale_precision ) {
-    global_timescale_precision = precision;
-  }
-
-}
-
-/*!
- \return Returns a pointer to the current functional unit.
-
- This function returns a pointer to the current functional unit being parsed.
-*/
-func_unit* db_get_curr_funit() {
-
-  return( curr_funit );
-
-}
-
 /*!
  \return Returns a scope name for an unnamed scope.  Only called for parsing purposes.
 */
@@ -602,6 +573,35 @@ char* db_create_unnamed_scope() {
 bool db_is_unnamed_scope( char* scope ) {
 
   return( (scope != NULL) && (scope[0] == '$') );
+
+}
+
+#ifndef VPI_ONLY
+/*!
+ \param unit       Timescale unit offset value
+ \param precision  Timescale precision offset value
+
+ Sets the global timescale unit and precision variables.
+*/
+void db_set_timescale( int unit, int precision ) {
+
+  current_timescale_unit = unit;
+
+  /* Set the global precision value to the lowest precision value specified */
+  if( precision < global_timescale_precision ) {
+    global_timescale_precision = precision;
+  }
+
+}
+
+/*!
+ \return Returns a pointer to the current functional unit.
+
+ This function returns a pointer to the current functional unit being parsed.
+*/
+func_unit* db_get_curr_funit() {
+
+  return( curr_funit );
 
 }
 
@@ -2268,7 +2268,7 @@ void db_do_timestep( uint64 time, bool final ) {
 
   /* If this is the last timestep, add the final list and do one more simulate */
   if( final ) {
-    sim_simulate( 0xffffffffffffffff );
+    sim_simulate( (uint64)0xffffffffffffffff );
   }
 
 #ifdef DEBUG_MODE
@@ -2283,6 +2283,11 @@ void db_do_timestep( uint64 time, bool final ) {
 
 /*
  $Log$
+ Revision 1.245  2006/12/19 06:06:05  phase1geo
+ Shortening unnamed scope name from $unnamed_%d to $u%d.  Also fixed a few
+ bugs in the instance_flatten function (still more debug work to go here).
+ Checkpointing.
+
  Revision 1.244  2006/12/18 23:58:34  phase1geo
  Fixes for automatic tasks.  Added atask1 diagnostic to regression suite to verify.
  Other fixes to parser for blocks.  We need to add code to properly handle unnamed

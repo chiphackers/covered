@@ -782,34 +782,40 @@ void funit_converge( func_unit* base, func_unit* other ) {
   assert( other->sig_head == NULL ); 
 
   /* Append the expression list */
-  if( base->exp_head == NULL ) {
-    base->exp_head = other->exp_head;
-    base->exp_tail = other->exp_tail;
-  } else {
-    base->exp_tail->next = other->exp_head;
-    base->exp_tail       = other->exp_tail;
+  if( other->exp_head != NULL ) {
+    if( base->exp_head == NULL ) {
+      base->exp_head = other->exp_head;
+      base->exp_tail = other->exp_tail;
+    } else {
+      base->exp_tail->next = other->exp_head;
+      base->exp_tail       = other->exp_tail;
+    }
+    other->exp_head = other->exp_tail = NULL;
   }
-  other->exp_head = other->exp_tail = NULL;
 
   /* Append the statement list */
-  if( base->stmt_head == NULL ) {
-    base->stmt_head = other->stmt_head;
-    base->stmt_tail = other->stmt_tail;
-  } else if( other->stmt_head != NULL ) {
-    stmt_link_join( base->stmt_tail, other->stmt_head );
-    base->stmt_tail = other->stmt_tail;
+  if( other->stmt_head != NULL ) {
+    if( base->stmt_head == NULL ) {
+      base->stmt_head = other->stmt_head;
+      base->stmt_tail = other->stmt_tail;
+    } else if( other->stmt_head != NULL ) {
+      stmt_link_join( base->stmt_tail, other->stmt_head );
+      base->stmt_tail = other->stmt_tail;
+    }
+    other->stmt_head = other->stmt_tail = NULL;
   }
-  other->stmt_head = other->stmt_tail = NULL;
 
   /* Append the FSM list */
-  if( base->fsm_head == NULL ) {
-    base->fsm_head = other->fsm_head;
-    base->fsm_tail = other->fsm_tail;
-  } else {
-    base->fsm_tail->next = other->fsm_head;
-    base->fsm_tail       = other->fsm_tail;
+  if( other->fsm_head != NULL ) {
+    if( base->fsm_head == NULL ) {
+      base->fsm_head = other->fsm_head;
+      base->fsm_tail = other->fsm_tail;
+    } else {
+      base->fsm_tail->next = other->fsm_head;
+      base->fsm_tail       = other->fsm_tail;
+    }
+    other->fsm_head = other->fsm_tail = NULL;
   }
-  other->fsm_head = other->fsm_tail = NULL;
 
   /* Deallocate the contents of the other functional unit */
   funit_link_remove( other, &funit_head, &funit_tail, TRUE );
@@ -1059,6 +1065,10 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.55  2006/12/19 05:23:38  phase1geo
+ Added initial code for handling instance flattening for unnamed scopes.  This
+ is partially working at this point but still needs some debugging.  Checkpointing.
+
  Revision 1.54  2006/12/11 23:29:16  phase1geo
  Starting to add support for re-entrant tasks and functions.  Currently, compiling
  fails.  Checkpointing.
