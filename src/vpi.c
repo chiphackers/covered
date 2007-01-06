@@ -375,46 +375,70 @@ void covered_create_value_change_cb( vpiHandle sig ) {
 
 void covered_parse_task_func( vpiHandle mod ) {
 
-  vpiHandle   iter, handle;
-  vpiHandle   liter, scope;
+  vpiHandle iter, handle;
+  vpiHandle liter, scope;
+  int       type;
 	
   /* Parse all internal scopes for tasks and functions */
   if( (iter = vpi_iterate( vpiInternalScope, mod )) != NULL ) {
 
     while( (scope = vpi_scan( iter )) != NULL ) {
       
+      type = vpi_get( vpiType, handle );
+
+      if( (type == vpiTask) || (type == vpiFunction) || (type == vpiNamedBegin) ) {
+
 #ifdef DEBUG_MODE
-      snprintf( user_msg, USER_MSG_LENGTH, "Parsing task/function %s", obf_funit( vpi_get_str( vpiFullName, scope ) ) );
-      print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+        snprintf( user_msg, USER_MSG_LENGTH, "Parsing task/function %s", obf_funit( vpi_get_str( vpiFullName, scope ) ) );
+        print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
-      /* Set current scope in database */
-      if( curr_inst_scope != NULL ) {
-        free_safe( curr_inst_scope );
-      }
-      curr_inst_scope = strdup_safe( vpi_get_str( vpiFullName, scope ), __FILE__, __LINE__ );
-
-      /* Synchronize curr_instance to point to curr_inst_scope */
-      db_sync_curr_instance();
-
-      if( curr_instance != NULL ) {
-
-        /* Parse signals */
-        if( (liter = vpi_iterate( vpiReg, scope )) != NULL ) {
-          while( (handle = vpi_scan( liter )) != NULL ) {
-#ifdef DEBUG_MODE
-            snprintf( user_msg, USER_MSG_LENGTH, "Found reg %s", obf_sig( vpi_get_str( vpiFullName, handle ) ) );
-            print_output( user_msg, DEBUG, __FILE__, __LINE__ );
-#endif
-            covered_create_value_change_cb( handle );
-          }
+        /* Set current scope in database */
+        if( curr_inst_scope != NULL ) {
+          free_safe( curr_inst_scope );
         }
+        curr_inst_scope = strdup_safe( vpi_get_str( vpiFullName, scope ), __FILE__, __LINE__ );
 
-        /* Recursively check scope */
-        if( (liter = vpi_iterate( vpiInternalScope, scope )) != NULL ) {
-          while( (handle = vpi_scan( liter )) != NULL ) {
-            covered_parse_task_func( handle );
+        /* Synchronize curr_instance to point to curr_inst_scope */
+        db_sync_curr_instance();
+
+        if( curr_instance != NULL ) {
+
+          /* Parse signals */
+          if( (liter = vpi_iterate( vpiReg, scope )) != NULL ) {
+            while( (handle = vpi_scan( liter )) != NULL ) {
+#ifdef DEBUG_MODE
+              snprintf( user_msg, USER_MSG_LENGTH, "Found reg %s", obf_sig( vpi_get_str( vpiFullName, handle ) ) );
+              print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+#endif
+              covered_create_value_change_cb( handle );
+            }
           }
+
+          if( (liter = vpi_iterate( vpiVariables, scope )) != NULL ) {
+            while( (handle = vpi_scan( liter )) != NULL ) {
+              type = vpi_get( vpiType, handle );
+#ifdef DEBUG_MODE
+              if( type == vpiReg ) {
+                snprintf( user_msg, USER_MSG_LENGTH, "Found reg %s", obf_sig( vpi_get_str( vpiFullName, handle ) ) );
+              } else if( type == vpiIntegerVar ) {
+                snprintf( user_msg, USER_MSG_LENGTH, "Found integer %s", obf_sig( vpi_get_str( vpiFullName, handle ) ) );
+              } else if( type == vpiTimeVar ) {
+                snprintf( user_msg, USER_MSG_LENGTH, "Found time %s", obf_sig( vpi_get_str( vpiFullName, handle ) ) );
+              }
+              print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+#endif
+              covered_create_value_change_cb( handle );
+            }
+          }
+
+          /* Recursively check scope */
+          if( (liter = vpi_iterate( vpiInternalScope, scope )) != NULL ) {
+            while( (handle = vpi_scan( liter )) != NULL ) {
+              covered_parse_task_func( handle );
+            }
+          }
+
         }
 
       }
@@ -456,12 +480,14 @@ void covered_parse_signals( vpiHandle mod ) {
   if( (iter = vpi_iterate( vpiVariables, mod )) != NULL ) {
     while( (handle = vpi_scan( iter )) != NULL ) {
       type = vpi_get( vpiType, handle );
-      if( (type == vpiIntegerVar) || (type == vpiTimeVar) ) {
+      if( (type == vpiIntegerVar) || (type == vpiTimeVar) || (type == vpiReg) ) {
 #ifdef DEBUG_MODE
         if( type == vpiIntegerVar ) {
           snprintf( user_msg, USER_MSG_LENGTH, "Found integer: %s", obf_sig( vpi_get_str( vpiName, handle ) ) );
-        } else {
+        } else if( type == vpiTimeVar ) {
           snprintf( user_msg, USER_MSG_LENGTH, "Found time: %s", obf_sig( vpi_get_str( vpiName, handle ) ) );
+        } else {
+          snprintf( user_msg, USER_MSG_LENGTH, "Found reg: %s", obf_sig( vpi_get_str( vpiName, handle ) ) );
         }
         print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif

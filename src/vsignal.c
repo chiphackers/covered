@@ -448,7 +448,15 @@ void vsignal_vcd_assign( vsignal* sig, char* value, int msb, int lsb, uint64 sim
    Since this signal is coming from the dumpfile, we don't expect to see values for multi-dimensional
    arrays.
   */
-  assert( (sig->pdim_num == 1) && (sig->udim_num == 0) );
+  assert( sig->udim_num == 0 );
+
+  /*
+   VCS seems to create funny MSB values for packed arrays, so if the pdim_num is more than 1, adjust
+   the MSB accordingly.
+  */
+  if( (sig->pdim_num > 1) && (msb >= sig->value->width) ) {
+    msb = sig->value->width - 1;
+  }
 
 #ifdef DEBUG_MODE
   snprintf( user_msg, USER_MSG_LENGTH, "Assigning vsignal %s[%d:%d] (lsb=%d) to value %s",
@@ -678,6 +686,14 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.40.2.1  2007/01/05 15:55:39  phase1geo
+ Fixing bug 1628356 and fixing problem with VCS generated VCD file parsing
+ for multi-dimensional packed arrays.
+
+ Revision 1.40  2006/11/27 04:11:42  phase1geo
+ Adding more changes to properly support thread time.  This is a work in progress
+ and regression is currently broken for the moment.  Checkpointing.
+
  Revision 1.39  2006/10/12 22:48:46  phase1geo
  Updates to remove compiler warnings.  Still some work left to go here.
 
