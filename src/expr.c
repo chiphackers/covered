@@ -2684,7 +2684,6 @@ bool expression_op_func__task_call( expression* expr, thread* thr ) {
 
     expr->suppl.part.prev_called         = 1;
     expr->value->value[0].part.exp.value = 0;
-    retval = TRUE;
 
   } else if( thr->child_head == NULL ) {
 
@@ -2721,7 +2720,6 @@ bool expression_op_func__nb_call( expression* expr, thread* thr ) {
       sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit );
       expr->suppl.part.prev_called         = 1;
       expr->value->value[0].part.exp.value = 0;
-      retval = TRUE;
     } else if( thr->child_head == NULL ) {
       expr->suppl.part.prev_called         = 0;
       expr->value->value[0].part.exp.value = 1;
@@ -3930,6 +3928,9 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.236  2006/12/22 23:39:08  phase1geo
+ Fixing problem with NB_CALL in infinite loop.
+
  Revision 1.235  2006/12/18 23:58:34  phase1geo
  Fixes for automatic tasks.  Added atask1 diagnostic to regression suite to verify.
  Other fixes to parser for blocks.  We need to add code to properly handle unnamed

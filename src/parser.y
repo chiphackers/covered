@@ -3058,8 +3058,7 @@ module_item
             VLerror( "Empty implicit event expression for the specified always_comb statement" );
           } else {
             slist = db_create_expression( slist, NULL, EXP_OP_ALWAYS_COMB, lhs_mode, @2.first_line, @2.first_column, (@2.last_column - 1), NULL );
-            stmt  = db_create_statement( slist );
-            db_add_expression( slist );
+            stmt = db_create_statement( slist );
             if( !db_statement_connect( stmt, $4 ) ) {
               db_remove_statement( stmt );
               db_remove_statement( $4 );
@@ -3096,7 +3095,6 @@ module_item
           } else {
             slist = db_create_expression( slist, NULL, EXP_OP_ALWAYS_LATCH, lhs_mode, @2.first_line, @2.first_column, (@2.last_column - 1), NULL );
             stmt  = db_create_statement( slist );
-            db_add_expression( slist );
             if( !db_statement_connect( stmt, $4 ) ) {
               db_remove_statement( stmt );
               db_remove_statement( $4 );
@@ -3364,7 +3362,6 @@ passign
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
         tmp  = db_create_expression( $3, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
         stmt = db_create_statement( tmp );
-        db_add_expression( tmp );
         $$ = stmt;
       } else {
         expression_dealloc( $1, FALSE );
@@ -3387,7 +3384,6 @@ passign
           tmp = db_create_expression( $3, tmp, EXP_OP_ADD, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
           tmp = db_create_expression( tmp, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
           stmt = db_create_statement( tmp );
-          db_add_expression( tmp );
           $$ = stmt;
         }
       } else {
@@ -3411,7 +3407,6 @@ passign
           tmp = db_create_expression( $3, tmp, EXP_OP_SUBTRACT, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
           tmp = db_create_expression( tmp, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
           stmt = db_create_statement( tmp );
-          db_add_expression( tmp );
           $$ = stmt;
         }
       } else {
@@ -3435,7 +3430,6 @@ passign
           tmp = db_create_expression( $3, tmp, EXP_OP_MULTIPLY, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
           tmp = db_create_expression( tmp, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
           stmt = db_create_statement( tmp );
-          db_add_expression( tmp );
           $$ = stmt;
         }
       } else {
@@ -3459,7 +3453,6 @@ passign
           tmp = db_create_expression( $3, tmp, EXP_OP_DIVIDE, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
           tmp = db_create_expression( tmp, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
           stmt = db_create_statement( tmp );
-          db_add_expression( tmp );
           $$ = stmt;
         }
       } else {
@@ -3483,7 +3476,6 @@ passign
           tmp = db_create_expression( $3, tmp, EXP_OP_MOD, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
           tmp = db_create_expression( tmp, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
           stmt = db_create_statement( tmp );
-          db_add_expression( tmp );
           $$ = stmt;
         }
       } else {
@@ -3507,7 +3499,6 @@ passign
           tmp = db_create_expression( $3, tmp, EXP_OP_AND, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
           tmp = db_create_expression( tmp, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
           stmt = db_create_statement( tmp );
-          db_add_expression( tmp );
           $$ = stmt;
         }
       } else {
@@ -3531,7 +3522,6 @@ passign
           tmp = db_create_expression( $3, tmp, EXP_OP_OR, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
           tmp = db_create_expression( tmp, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
           stmt = db_create_statement( tmp );
-          db_add_expression( tmp );
           $$ = stmt;
         }
       } else {
@@ -3555,7 +3545,6 @@ passign
           tmp = db_create_expression( $3, tmp, EXP_OP_XOR, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
           tmp = db_create_expression( tmp, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
           stmt = db_create_statement( tmp );
-          db_add_expression( tmp );
           $$ = stmt;
         }
       } else {
@@ -3579,7 +3568,6 @@ passign
           tmp = db_create_expression( $3, tmp, EXP_OP_LSHIFT, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
           tmp = db_create_expression( tmp, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
           stmt = db_create_statement( tmp );
-          db_add_expression( tmp );
           $$ = stmt;
         }
       } else {
@@ -3603,7 +3591,6 @@ passign
           tmp = db_create_expression( $3, tmp, EXP_OP_RSHIFT, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
           tmp = db_create_expression( tmp, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
           stmt = db_create_statement( tmp );
-          db_add_expression( tmp );
           $$ = stmt;
         }
       } else {
@@ -3627,7 +3614,6 @@ passign
           tmp = db_create_expression( $3, tmp, EXP_OP_ALSHIFT, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
           tmp = db_create_expression( tmp, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
           stmt = db_create_statement( tmp );
-          db_add_expression( tmp );
           $$ = stmt;
         }
       } else {
@@ -3651,7 +3637,6 @@ passign
           tmp = db_create_expression( $3, tmp, EXP_OP_ARSHIFT, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
           tmp = db_create_expression( tmp, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
           stmt = db_create_statement( tmp );
-          db_add_expression( tmp );
           $$ = stmt;
         }
       } else {
@@ -3672,7 +3657,6 @@ passign
         } else {
           tmp = db_create_expression( NULL, $1, EXP_OP_PINC, FALSE, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
           stmt = db_create_statement( tmp );
-          db_add_expression( tmp );
           $$ = stmt;
         }
       } else {
@@ -3692,7 +3676,6 @@ passign
         } else {
           tmp = db_create_expression( NULL, $1, EXP_OP_PDEC, FALSE, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
           stmt = db_create_statement( tmp );
-          db_add_expression( tmp );
           $$ = stmt;
         }
       } else {
@@ -3737,7 +3720,6 @@ statement
           exp->elem.funit = $3;
           exp->name = strdup( exp->elem.funit->name );
           stmt = db_create_statement( exp );
-          db_add_expression( exp );
           $$ = stmt;
         } else {
           if( ignore_mode > 0 ) {
@@ -3774,7 +3756,6 @@ statement
           exp->elem.funit = $3;
           exp->name = strdup( exp->elem.funit->name );
           stmt = db_create_statement( exp );
-          db_add_expression( exp );
           $$ = stmt;
         } else {
           ignore_mode--;
@@ -3792,7 +3773,6 @@ statement
       if( (ignore_mode == 0) && ($2 != NULL) ) {
         exp  = db_create_expression( NULL, NULL, EXP_OP_DISABLE, FALSE, @1.first_line, @1.first_column, (@2.last_column - 1), $2 );
         stmt = db_create_statement( exp );
-        db_add_expression( exp );
         free_safe( $2 );
         $$ = stmt;
       } else {
@@ -3808,7 +3788,6 @@ statement
       statement*  stmt;
       if( (ignore_mode == 0) && ($2 != NULL) ) {
         expr = db_create_expression( NULL, NULL, EXP_OP_TRIGGER, FALSE, @1.first_line, @1.first_column, (@2.last_column - 1), $2 );
-        db_add_expression( expr );
         stmt = db_create_statement( expr );
         free_safe( $2 );
         $$ = stmt;
@@ -3839,7 +3818,6 @@ statement
         expr = db_create_expression( NULL, NULL, EXP_OP_JOIN, FALSE, @5.first_line, @5.first_column, (@5.last_column - 1), NULL );
         stmt = db_create_statement( expr );
         if( db_statement_connect( $3, stmt ) ) {
-          db_add_expression( expr );
           $$ = $3;
         } else {
           db_remove_statement( $3 );
@@ -3865,7 +3843,6 @@ statement
         expr->value = vec;
         expr = db_create_expression( $3, expr, EXP_OP_REPEAT, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
         stmt = db_create_statement( expr );
-        db_add_expression( expr );
         db_connect_statement_true( stmt, $6 );
         stmt->conn_id = stmt_conn_id;   /* This will cause the STOP bit to be set for all statements connecting to stmt */
         assert( db_statement_connect( $6, stmt ) );
@@ -3891,7 +3868,6 @@ statement
           } else {
             expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, lhs_mode, c_stmt->line, 0, 0, NULL );
           }
-          db_add_expression( expr );
           stmt = db_create_statement( expr );
           db_connect_statement_true( stmt, c_stmt->stmt );
           db_connect_statement_false( stmt, last_stmt );
@@ -3934,7 +3910,6 @@ statement
           } else {
             expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, lhs_mode, c_stmt->line, 0, 0, NULL );
           }
-          db_add_expression( expr );
           stmt = db_create_statement( expr );
           db_connect_statement_true( stmt, c_stmt->stmt );
           db_connect_statement_false( stmt, last_stmt );
@@ -3977,7 +3952,6 @@ statement
           } else {
             expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, lhs_mode, c_stmt->line, 0, 0, NULL );
           }
-          db_add_expression( expr );
           stmt = db_create_statement( expr );
           db_connect_statement_true( stmt, c_stmt->stmt );
           db_connect_statement_false( stmt, last_stmt );
@@ -4036,7 +4010,6 @@ statement
       if( (ignore_mode == 0) && ($4 != NULL) ) {
         tmp  = db_create_expression( $4, NULL, EXP_OP_IF, FALSE, @2.first_line, @2.first_column, (@5.last_column - 1), NULL );
         stmt = db_create_statement( tmp );
-        db_add_expression( tmp );
         db_connect_statement_true( stmt, $7 );
         $$ = stmt;
       } else {
@@ -4051,7 +4024,6 @@ statement
       if( (ignore_mode == 0) && ($4 != NULL) ) {
         tmp  = db_create_expression( $4, NULL, EXP_OP_IF, FALSE, @2.first_line, @2.first_column, (@5.last_column - 1), NULL );
         stmt = db_create_statement( tmp );
-        db_add_expression( tmp );
         db_connect_statement_true( stmt, $7 );
         db_connect_statement_false( stmt, $10 );
         $$ = stmt;
@@ -4075,7 +4047,6 @@ statement
       if( (ignore_mode == 0) && ($4 != NULL) && ($6 != NULL) && ($8 != NULL) && ($10 != NULL) ) {
         block_depth++;
         stmt2 = db_create_statement( $6 );
-        db_add_expression( $6 );
         db_statement_connect( stmt1, stmt2 );
         db_connect_statement_true( stmt2, stmt4 );
         db_statement_connect( stmt4, stmt3 );
@@ -4117,7 +4088,6 @@ statement
       if( (ignore_mode == 0) && ($3 != NULL) && ($6 != NULL) ) {
         expr = db_create_expression( $3, NULL, EXP_OP_WHILE, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
         stmt = db_create_statement( expr );
-        db_add_expression( expr );
         db_connect_statement_true( stmt, $6 );
         stmt->conn_id = stmt_conn_id;   /* This will cause the STOP bit to be set for all statements connecting to stmt */
         assert( db_statement_connect( $6, stmt ) );
@@ -4140,7 +4110,6 @@ statement
       if( (ignore_mode == 0) && ($3 != NULL) && ($7 != NULL) ) {
         expr = db_create_expression( $7, NULL, EXP_OP_WHILE, FALSE, @5.first_line, @5.first_column, (@8.last_column - 1), NULL );
         stmt = db_create_statement( expr );
-        db_add_expression( expr );
         assert( db_statement_connect( $3, stmt ) );
         db_connect_statement_true( stmt, $3 );
         stmt->exp->suppl.part.stmt_stop_true = 1;  /* Set STOP bit for the TRUE path */
@@ -4156,7 +4125,6 @@ statement
       statement* stmt;
       if( (ignore_mode == 0) && ($1 != NULL) ) {
         stmt = db_create_statement( $1 );
-        db_add_expression( $1 );
         if( $3 != NULL ) {
           if( !db_statement_connect( stmt, $3 ) ) {
             db_remove_statement( stmt );
@@ -4175,7 +4143,6 @@ statement
       statement* stmt;
       if( (ignore_mode == 0) && ($1 != NULL) ) {
         stmt = db_create_statement( $1 );
-        db_add_expression( $1 );
         if( $3 != NULL ) {
           if( !db_statement_connect( stmt, $3 ) ) {
             db_remove_statement( stmt );
@@ -4206,7 +4173,6 @@ statement
           } else {
             expr = db_create_expression( expr, NULL, EXP_OP_SLIST, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), NULL ); 
             stmt = db_create_statement( expr );
-            db_add_expression( expr );
             if( !db_statement_connect( stmt, $4 ) ) {
               db_remove_statement( stmt );
               db_remove_statement( $4 );
@@ -4231,7 +4197,6 @@ statement
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
         tmp  = db_create_expression( $3, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
         stmt = db_create_statement( tmp );
-        db_add_expression( tmp );
         $$ = stmt;
       } else {
         expression_dealloc( $1, FALSE );
@@ -4247,7 +4212,6 @@ statement
         tmp  = db_create_expression( $4, $3, EXP_OP_DLY_OP, FALSE, @3.first_line, @3.first_column, (@4.last_column - 1), NULL );
         tmp  = db_create_expression( tmp, $1, EXP_OP_DLY_ASSIGN, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
         stmt = db_create_statement( tmp );
-        db_add_expression( tmp );
         $$ = stmt;
       } else {
         expression_dealloc( $1, FALSE );
@@ -4264,7 +4228,6 @@ statement
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) && ($4 != NULL) ) {
         tmp  = db_create_expression( $4, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
         stmt = db_create_statement( tmp );
-        db_add_expression( tmp );
         expression_dealloc( $3, FALSE );
         $$ = stmt;
       } else {
@@ -4282,7 +4245,6 @@ statement
         tmp  = db_create_expression( $4, $3, EXP_OP_DLY_OP, FALSE, @3.first_line, @3.first_column, (@4.last_column - 1), NULL );
         tmp  = db_create_expression( tmp, $1, EXP_OP_DLY_ASSIGN, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
         stmt = db_create_statement( tmp );
-        db_add_expression( tmp );
         $$ = stmt;
       } else {
         expression_dealloc( $1, FALSE );
@@ -4299,7 +4261,6 @@ statement
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) && ($4 != NULL) ) {
         tmp  = db_create_expression( $4, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
         stmt = db_create_statement( tmp );
-        db_add_expression( tmp );
         expression_dealloc( $3, FALSE );
         $$ = stmt;
       } else {
@@ -4326,7 +4287,6 @@ statement
         tmp = db_create_expression( $8, tmp, EXP_OP_DLY_OP, FALSE, @3.first_line, @3.first_column, (@8.last_column - 1), NULL );
         tmp = db_create_expression( tmp, $1, EXP_OP_DLY_ASSIGN, FALSE, @1.first_line, @1.first_column, (@8.last_column - 1), NULL );
         stmt = db_create_statement( tmp );
-        db_add_expression( tmp );
         $$ = stmt;
       } else {
         expression_dealloc( $1, FALSE );
@@ -4344,7 +4304,6 @@ statement
       if( (ignore_mode == 0) && ($1 != NULL) && ($8 != NULL) ) {
         tmp  = db_create_expression( $8, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, @1.first_column, (@8.last_column - 1), NULL );
         stmt = db_create_statement( tmp );
-        db_add_expression( tmp );
         expression_dealloc( $5, FALSE );
         expression_dealloc( $7, FALSE );
         $$ = stmt;
@@ -4363,7 +4322,6 @@ statement
       if( (ignore_mode == 0) && ($3 != NULL) ) {
         exp  = db_create_expression( $3, NULL, EXP_OP_WAIT, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
         stmt = db_create_statement( exp );
-        db_add_expression( exp );
         if( $6 != NULL ) {
           if( !db_statement_connect( stmt, $6 ) ) {
             db_remove_statement( stmt );
@@ -4385,7 +4343,6 @@ statement
         if( strncmp( $1, "$display", 8 ) == 0 ) {
           exp  = db_create_expression( NULL, NULL, EXP_OP_NOOP, lhs_mode, 0, 0, 0, NULL );
           stmt = db_create_statement( exp );
-          db_add_expression( exp );
           $$   = stmt;
         } else {
           $$   = NULL;
@@ -4410,7 +4367,6 @@ statement
         if( strncmp( $1, "$display", 8 ) == 0 ) {
           exp  = db_create_expression( NULL, NULL, EXP_OP_NOOP, lhs_mode, 0, 0, 0, NULL );
           stmt = db_create_statement( exp );
-          db_add_expression( exp );
           $$   = stmt;
         } else {
           $$   = NULL;
@@ -4434,7 +4390,6 @@ statement
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
         exp  = db_create_expression( NULL, $3, EXP_OP_TASK_CALL, FALSE, @1.first_line, @1.first_column, (@5.last_column - 1), $1 );
         stmt = db_create_statement( exp );
-        db_add_expression( exp );
         $$   = stmt;
         free_safe( $1 );
       } else {
@@ -4451,7 +4406,6 @@ statement
       if( (ignore_mode == 0) && ($1 != NULL) ) {
         exp  = db_create_expression( NULL, NULL, EXP_OP_TASK_CALL, FALSE, @1.first_line, @1.first_column, (@2.last_column - 1), $1 );
         stmt = db_create_statement( exp );
-        db_add_expression( exp );
         $$   = stmt;
         free_safe( $1 );
       } else {
@@ -4469,7 +4423,6 @@ statement
       if( ignore_mode == 0 ) {
         exp  = db_create_expression( NULL, NULL, EXP_OP_NOOP, lhs_mode, 0, 0, 0, NULL );
         stmt = db_create_statement( exp );
-        db_add_expression( exp );
         $$   = stmt;
       }
     }
@@ -4481,7 +4434,6 @@ statement
       if( ignore_mode == 0 ) {
         exp  = db_create_expression( NULL, NULL, EXP_OP_NOOP, lhs_mode, 0, 0, 0, NULL );
         stmt = db_create_statement( exp );
-        db_add_expression( exp );
         $$   = stmt;
       }
       free_safe( $1 );
@@ -4517,7 +4469,6 @@ fork_statement
           expr = db_create_expression( NULL, NULL, EXP_OP_JOIN, FALSE, @4.first_line, @4.first_column, (@4.last_column - 1), NULL );
           stmt = db_create_statement( expr );
           if( db_statement_connect( $4, stmt ) ) {
-            db_add_expression( expr );
             stmt = $4;
             stmt->exp->suppl.part.stmt_head      = 1;
             stmt->exp->suppl.part.stmt_is_called = 1;
@@ -5206,7 +5157,6 @@ assign
         /* Statement will be looped back to itself */
         db_connect_statement_true( stmt, stmt );
         db_connect_statement_false( stmt, stmt );
-        db_add_expression( tmp );
         db_add_statement( stmt, stmt );
       } else {
         expression_dealloc( $1, FALSE );
@@ -5293,7 +5243,6 @@ register_variable
           stmt->exp->suppl.part.stmt_head       = 1;
           stmt->exp->suppl.part.stmt_stop_true  = 1;
           stmt->exp->suppl.part.stmt_stop_false = 1;
-          db_add_expression( exp );
           db_add_statement( stmt, stmt );
         }
         free_safe( $1 );
@@ -5553,7 +5502,6 @@ net_decl_assign
           /* Statement will be looped back to itself */
           db_connect_statement_true( stmt, stmt );
           db_connect_statement_false( stmt, stmt );
-          db_add_expression( tmp );
           db_add_statement( stmt, stmt );
         }
         free_safe( $1 );
@@ -5579,7 +5527,6 @@ net_decl_assign
           /* Statement will be looped back to itself */
           db_connect_statement_true( stmt, stmt );
           db_connect_statement_false( stmt, stmt );
-          db_add_expression( tmp );
           db_add_statement( stmt, stmt );
         }
         free_safe( $2 );
