@@ -227,7 +227,7 @@ proc display_line_cov {} {
           .info configure -text $curr_info
         }
         .bot.right.txt tag bind uncov_button <ButtonPress-1> {
-          set selected_line [lindex [split [.bot.right.txt index current] .] 0]
+          set selected_line [expr [lindex [split [.bot.right.txt index current] .] 0] + ($start_line - 1)]
           if {[.bot.right.txt get current] == "E"} {
             set excl_value 0
           } else {

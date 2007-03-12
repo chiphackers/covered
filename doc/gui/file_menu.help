@@ -1,0 +1,148 @@
+.image file_menu   file images/file_menu.gif
+.image open_cdd    file images/open_cdd.gif
+.image file_viewer file images/file_viewer.gif
+.image close_warn  file images/close_warn.gif
+.image gen_menu    file images/gen_menu.gif
+.image exit_warn   file images/exit_warn.gif
+
+<h3>The File Menu</h3>
+
+<p>
+The file menu is used to open a new CDD file, merge a related CDD file (derived from 
+the same design as the currently opened CDD file, save the currently opened CDD 
+file(s), close all opened CDD files, generate different types of output and view
+the names of all currently opened CDD files.  Additionally, the user selects this menu 
+bar to exit the Covered report viewer GUI.  Figure 1 shows the file menu contents 
+within the main window.
+</p>
+
+<p align=center><b>Figure 1.  The File Menu</b></p>
+<p align=center><img src=file_menu id="Covered - File Menu"></p>
+
+<h4>Open/Merge CDDs...</h4>
+
+  <p>
+  This menu option is used to either open a new CDD file or merge a related CDD
+  file into the currently opened CDD file(s).  This action needs to be performed
+  before any coverage viewing can take place.  When this option is selected, a 
+  standard file window is displayed allowing the user to select one (or possibly
+  more depending on your version of Tcl/Tk) CDD file to open or merge (see Figure 
+  2).  To select more than one CDD file with one call to this option, simply press
+  and hold the Control key while selecting files with the left mouse button.  If
+  your version of Tcl/Tk supports this feature, you will see multiple files
+  highlighted for selection; otherwise, only the last selected file will be
+  selected.  If no CDD files currently are opened, any CDD file may be opened.  If 
+  one or more CDD files have been opened/merged, only CDD files generated from the
+  same design may be merged.</p>
+
+  <p>
+  Note that this option has an accelerator keystroke &lt;Control-o&gt;.  Hitting
+  this keystroke combination will also open new CDD file(s).</p>
+
+  <p align=center><b>Figure 2.  The Open/Merge CDD Selection Window</b></p>
+  <p align=center><img src=open_cdd id="Open CDD Window"></p>
+	   
+<h4>View Loaded CDD(s)...</h4>
+
+  <p>
+  This menu option is only available after an initial CDD file has been opened 
+  using the <b>Open/Merge CDDs...</b> file menu option.  When this menu option is 
+  selected, a new window displaying all currently opened CDD files is displayed
+  (see Figure 3 below).  If another CDD file is merged and this window is currently 
+  displayed, it is automatically updated with the newly added file.  If the <b>Close 
+  CDDs...</b> file menu option is selected while this window is opened, all filenames 
+  will be automatically removed to indicate this.  The <b>View Loaded CDD(s)...</b> menu 
+  option is useful for helping the user see exactly which files have been merged 
+  or not merged in the current viewer.  Simply click on the <b>Close</b> button in the 
+  <b>Loaded CDD file viewer</b> window to close the window.</p>
+
+  <p align=center><b>Figure 3.  The CDD Opened File Viewer Window</b></p>
+  <p align=center><img src=file_viewer id="Opened CDD Window"></p>
+      
+<h4>Save CDD...</h4>
+
+  <p>
+  This menu option is only available after one or more CDD files have been
+  opened/merged.  It is used to save the opened or merged CDD files as a single,
+  merged CDD file than can be viewed as a separate CDD file or can be merged with
+  other CDD files.  It is also used to save any changes that the user has made
+  to exclude/include coverage cases within the GUI.  If you would like to retain
+  this information, please save the CDD file.  By default, the name of the first
+  loaded CDD file is placed in the "Save As" window when this option is selected.
+  The user may choose to replace the old CDD file with the new one, or the user
+  may save it under a different name.  Once a CDD file has been saved, this option
+  is deselected until either a new CDD file is merged or the user changes the
+  exclude/include property of any coverage case within the GUI.</p>
+
+  <p>
+  Note that this option has an accelerator keystroke &lt;Control-s&gt;.  Hitting
+  this keystroke combination will also save the current CDD.</p>
+		
+<h4>Close CDDs</h4>
+
+  <p>
+  This menu option is used to close all opened/merged CDD files so that the user
+  may view a different CDD file without needing to exit and re-enter the GUI.
+  The user may open and close as many times as needed without needing to reinvoke
+  the GUI.  When CDD files are closed, any opened coverage windows are automatically
+  closed and all necessary GUI components are restored to their original state as
+  when the GUI is first invoked.  If the currently opened CDD file(s) have not been
+  saved, a window (shown in Figure 4 below) is displayed to ask the user if they
+  would like to save prior to closing.  To save the CDD file, simply click "Yes"
+  and a "Save As" window will prompt you for a location/name to save it as.  To
+  close the CDD file without saving, simply click "No".  To cancel the close
+  operation, simply click <b>Cancel</b>.  To view another CDD file after closing all
+  CDD files, simply select the <b>Open/Merge CDDs...</b> file menu option.</p>
+
+  <p>
+  Note that this option has an accelerator keystroke &lt;Control-w&gt;.  Hitting
+  this keystroke combination will also close all opened CDD files.</p>
+
+  <p align=center><b>Figure 4.  The Close Warning Window</b></p>
+  <p align=center><img src=close_warn id="Close Warning Window"></p>
+		
+<h4>Generate</h4>
+
+  <p>
+  This option, when selected, displays a submenu of items that can be generated
+  by the GUI.  The following options (with descriptions) are available (see
+  Figure 5).</p>
+
+  <p align=center><b>Figure 5.  The Generate Menu List</b></p>
+  <p align=center><img src=gen_menu id="Generate Menu List"></p>
+
+  <p><ul>
+    <li><b>ASCII Report...</b></li>
+      <p>
+      Selecting this submenu option will cause Covered to generate an ASCII
+      version of the coverage report to a specified file (note:  this can also
+      be accomplished with the "report" command of Covered's command-line
+      interface).  When this option is selected, another window is created 
+      that lists the current report generation options as specified in the 
+      Preferences window.  Additionally, the user may modify the report generation
+      options and select the name of the coverage report file to save.  See 
+      <a href="report_gen.help?internal_1">ASCII Report Generation Window</a> for more
+      information on the navigation of this window.</p>
+      <p>
+      Note that this option has an accelerator keystroke &lt;Control-r&gt;.
+      Hitting this keystroke combination will also cause the ASCII
+      report generator window to be displayed.</p></li>
+  </ul></p>
+
+<h4>Exit</h4>
+
+  <p>
+  This menu option will exit the entire GUI application, closing all opened windows 
+  created by this application.  Use this option to exit the application.  If
+  the currently opened CDD file(s) have not been saved, a window (shown in Figure
+  6 below) is displayed to ask the user if they would like to save prior to
+  exiting.  To save the CDD file, simply click <b>Yes</b> and a "Save As" window will
+  prompt you for a location/name to save it as.  To close the CDD file without
+  saving, simply click <b>No</b>.  To cancel the close operation, simply click <b>Cancel</b>.</p>
+
+  <p>
+  Note that this option has an accelerator keystroke &lt;Control-x&gt;.  Hitting
+  this keystroke combination will also close the entire application.</p>
+
+  <p align=center><b>Figure 6.  The Exit Warning Window</b></p>
+  <p align=center><img src=exit_warn id="Exit Warning Window"></p>

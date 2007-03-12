@@ -3,41 +3,41 @@
 .forecolor black
 .backcolor white
 .linkcolor #006800
-.buttons "back forw sep prev up next sep stop sep find search sep cont ind"
+.buttons "back forw sep prev up next sep stop sep find search sep cont"
 .controls "back forw sep prev up next sep cont"
 
+; do not append list of subtopics to topic page
+.h_appendlist no
 ;add any header to topics list
 .h_topics .*
 ;add any header to contents
 .h_contents .*
 ; ignore any header level 5
-.h_ignore <h5.*
-; append list of subtopics to topic page
-.h_appendlist yes
+.h_ignore <h[456].*
 
-.include intro.html
-.include main.html
-.include main_menu.html
-.include file_menu.html
-.include report_menu.html
-.include view_menu.html
-.include help_menu.html
-.include cov_bar.html
-.include summary_bar.html
-.include mod_inst_lb.html
-.include cov_view.html
-.include info_bar.html
-.include line.html
-.include toggle.html
-.include memory.html
-.include comb.html
-.include fsm.html
-.include assert.html
-.include src_view.html
-.include summary.html
-.include report_gen.html
-.include pref_main.html
-.include pref_color.html
-.include pref_goals.html
-.include pref_syntax.html
-.include pref_report.html
+.include intro.help
+.include main.help
+.include main_menu.help
+.include file_menu.help
+.include report_menu.help
+.include view_menu.help
+.include help_menu.help
+.include cov_bar.help
+.include summary_bar.help
+.include mod_inst_lb.help
+.include cov_view.help
+.include info_bar.help
+.include line.help
+.include toggle.help
+.include memory.help
+.include comb.help
+.include fsm.help
+.include assert.help
+.include src_view.help
+.include summary.help
+.include report_gen.help
+.include pref_main.help
+.include pref_color.help
+.include pref_goals.help
+.include pref_syntax.help
+.include pref_report.help

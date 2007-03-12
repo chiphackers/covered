@@ -7,6 +7,7 @@ tcl_SCRIPTS = assert.tcl \
               fsm.tcl \
               help.tcl \
               help_wrapper.tcl \
+              help_tbl.tcl \
               main_view.tcl \
               memory.tcl \
               menu_create.tcl \

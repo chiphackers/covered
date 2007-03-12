@@ -1,0 +1,20 @@
+.image main_menu file images/main_menu.gif
+
+<h2>The Main Menu Bar</h2>
+
+<p>
+The Main Menu Bar consists of four menus at the top of the main window.  Figure 1. 
+below shows the menu bar portion of the GUI bordered in red.  These menus are the 
+following:
+</p>
+
+<p><ul>
+  <li><a href="file_menu.help?internal_1">File</a> - Opens new CDD files for viewing and exits the application</li>
+  <li><a href="report_menu.help?internal_1">Report</a> - Specifies what type of report to show</li>
+  <li><a href="view_menu.help?internal_1">View</a> - Provides additional viewing options</li>
+  <li><a href="help_menu.help?internal_1">Help</a> - Provides access to online help manual and tool information</li>
+</ul></p>
+
+<p align=center><b>Figure 1.  Covered Main Window Highlighting the Menu Bar</b></p>
+<p align=center><img src=main_menu id="Covered Main Menu Bar"></p>
+

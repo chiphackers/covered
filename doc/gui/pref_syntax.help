@@ -1,0 +1,26 @@
+.image pref_syntax file images/pref_syntax.gif
+
+<h2>Preferences Syntax Highlighting Pane</h2>
+
+<p>
+The syntax highlighting preferences pane allows the user to adjust the syntax highlighting
+mode and colors for any displayed Verilog source code.</p>
+
+<p align=center><b>Figure 1.  The Syntax Highlighting Preferences Pane</b></p>
+<p align=center><img src=pref_syntax id="Covered - Syntax Highlighting Preferences Pane"></p>
+
+<h4>Set Syntax Highlighting Options</h4>
+
+<p>
+This frame allows the user to specify if syntax highlighting should be performed in all
+Verilog source viewers or not.  When the square to the left of the <b>Turn on syntax 
+highlighting mode</b> is selected, syntax highlighting will occur; otherwise, it will
+not perform syntax highlighting.  The various colored buttons below the selection mode
+allow the user to select the foreground color of the text associated with its specified
+syntax type (Comments, Preprocessor Keywords, Verilog Keywords, Strings, Constant Values,
+and Operation Symbols).  Simply click on one of the buttons to change its color.  Doing
+so will cause a color selection window (see Figure 2 above) to be displayed.</p>
+
+<p>
+If the syntax highlighting mode is disabled by the user, the color selection buttons
+will be disabled.</p>

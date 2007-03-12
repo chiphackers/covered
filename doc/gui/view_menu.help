@@ -1,0 +1,75 @@
+.image view_menu file images/view_menu.gif
+
+<h3>The View Menu</h3>
+
+<p>
+The View menu allows the user to select or change the current way the information in
+Covered is viewed.  Figure 1 shows the contents of the View menu.
+</p>
+
+<p align=center><b>Figure 1.  The View Menu</b></p>
+<p align=center><img src=view_menu id="The View Menu"></p>
+
+<h4>Summary...</h4>
+
+  <p>
+  Displays the <a href="summary.help?internal_1">Summary Window</a> if this window does not
+  exist or forces it to the foreground if it currently does.</p>
+		
+<h4>Next Uncovered</h4>
+
+  <p>
+  Causes the line containing the next uncovered metric to be visible in the
+  <a href="cov_view.help?internal_1">Coverage Viewer</a>.  If the next uncovered line is
+  already visible, this menu item will have no visible effect.  The search for the
+  next uncovered line starts at (a) the top of the module (when the module is first
+  displayed in the the Coverage Viewer), (b) from the last uncovered line searched
+  for with the <b>Next Uncovered</b> or <b>Previous Uncovered</b> calls, or (c) from the
+  last currently selected line (only valid for toggle and combinational logic 
+  views).</p>
+
+  <p>
+  This menu item is only enabled when another uncovered line exists after the
+  current uncovered line.  It can also be accessed with the accelerator keystroke
+  &lt;Control-n&gt; or the <b>--&gt;</b> button in the Main Window.</p>
+		
+<h4>Previous Uncovered</h4>
+
+  <p>
+  Causes the line containing the previous uncovered metric to be visible in the
+  <a href="cov_view.help?internal_1">Coverage Viewer</a>.  If the previous uncovered line is
+  already visible, this menu item will have no visible effect.  The search for the
+  previous uncovered line starts at (a) the top of the module (when the module is 
+  first displayed in the the Coverage Viewer), (b) from the last uncovered line 
+  searched for with the <b>Next Uncovered</b> or <b>Previous Uncovered</b> calls, or (c) from 
+  the last currently selected line (only valid for toggle and combinational logic 
+  views).</p>
+
+  <p>
+  This menu item is only enabled when another uncovered line exists before the
+  current uncovered line.  It can also be accessed with the accelerator keystroke
+  &lt;Control-p&gt; or the <b>&lt;--</b> button in the Main Window.</p>
+		
+<h4>Show Current Selection</h4>
+
+  <p>
+  This menu item is only available if the current metric mode is not "Line", the 
+  user has clicked on an uncovered segment of code, and the associated
+  <a href="toggle.help?internal_1">Verbose Toggle Window</a>,
+  <a href="memory.help?internal_1">Verbose Memory Window</a>,
+  <a href="comb.help?internal_1">Verbose Combinational Logic Window</a>,
+  <a href="fsm.help?internal_1">Verbose FSM State/State Transition Window</a> or
+  <a href="assert.help?internal_1">Verbose Assertion Coverage Window</a> exists.  The currently
+  selected line is visually identified in the <a href="cov_view.help?internal_1">Coverage
+  Viewer</a> area on the left-hand-side of the line containing the uncovered code.
+  If this line is not currently visible in the Coverage Viewer, selecting this menu
+  item will cause it to be visible.</p>
+
+  <p>
+  An accelerator keystroke &lt;Control-c&gt; will also invoke this menu item.</p>
+		
+<h4>Preferences...</h4>
+
+  <p>
+  Causes the <a href="preferences.help?internal_1">Preferences Window</a> to be created if it
+  currently does not exist or forces it into the foreground if it does exist.</p>

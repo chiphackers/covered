@@ -1,0 +1,66 @@
+.image summary_window file images/summary_window.gif
+
+<h1>Navigating the Summary Report Window</h1>
+
+<p>
+The Summary Report window allows the user to at-a-glance see how well each of the modules
+or instances is achieving coverage for a given coverage metric.  The modules/instances
+are ordered according to percentage of coverage for the current metric.  By default, all
+modules/instances are displayed in the Summary Report window in decreasing order by coverage
+percentage.  The user may change this ordering to increasing order (the lowest percentage
+will be displayed at the top of the window), by selecting the <b>Increasing Order</b> button.
+The user may switch back to decreasing ordered display by selecting the <b>Decreasing Order</b>
+button.  The modules/instances are also highlighted in red, yellow and green to indicate
+the level of coverage achievement each module/instance has made for the current coverage metric.</p>
+
+<p><ul>
+  <li>
+    <font bgcolor="red">Red</font> - Indicates that the module/instance had a coverage
+    percentage between 0 and the user-specified coverage goal that was selected in the
+    <a href="preferences.help?internal_1">Preferences</a> window.  This indicates that the
+    module/instance failed to reach an adequate coverage percentage.</li>
+  <li>
+    <font bgcolor="yellow">Yellow</font> - Indicates that the module/instance had a
+    coverage percentage between the user-specified coverage goal that was
+    selected in the <a href="preferences.help?internal_1">Preferences</a> window and 99%
+    coverage.  This indicates that the module/instance reached adequate coverage
+    percentage but is not 100% covered.</li>
+  <li>
+    <font bgcolor="green">Green</font> - Indicates that the module/instance had a coverage
+    percentage of 100%.</li>
+</ul></p>
+
+<p>
+Figure 1. shows an example of a summary report based on module-line coverage.  The
+user-specified <b>Line Coverage %</b> goal was set to 80%.</p>
+
+<p align=center><b>Figure 1.  Summary Report Window</b></p>
+<p align=center><img src=summary_window id="Summary Report Window">
+
+<p>
+To exit this window, simply click on <b>Close</b> button.  To see this help page for the
+summary window, click on the <b>Help</b> button.</p>
+
+<h2>Selecting a Summary Report</h2>
+
+<p>
+The contents of the Summary Report window are selected by the current mode in the
+<a href="main.help?internal_1">Main Window</a>.  To view the summary report by module, select
+the <b>Report &gt; Module-Based</b> option.  If the Summary Report window
+is already displayed, selecting this option will automatically cause the Summary
+Report information to be displayed by module.  Likewise, to view the summary report by
+instance, select the <b>Report &gt; Instance-Based</b> option.</p>
+
+<p>
+To view a summary report based on different the coverage metrics, simply select 
+one of the buttons in the main window.  Doing so will automatically cause all 
+percentages to be redisplayed for the new coverage metric and will automatically 
+cause these modules/instances to be re-ordered based on the new percentages.</p>
+
+<h2>Viewing a Detailed Report from the Summary Report Window</h2>
+
+<p>
+To view the coverage details for a specific module/instance back in the main window,
+simply click on the name of the module/instance in the summary window.  The main
+window will jump to the selected module/instance, displaying/highlighting the
+code for that module in the <a href="cov_view.help?internal_1">Coverage File Viewer</a>.</p>

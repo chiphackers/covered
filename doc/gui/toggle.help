@@ -1,0 +1,75 @@
+.image toggle_full file images/toggle_full.gif
+
+<h1>Navigating the Toggle Coverage Window</h1>
+
+<p>
+The verbose toggle window allows the user to see which bits for a given signal have
+toggled from a 0-&gt;1 or a 1-&gt;0 during simulation.  To display this window, simply click
+on a highlighted/underlined uncovered signal in the 
+<a href="cov_view.help?internal_1">Coverage Viewer</a> of the main window.  This will cause the 
+verbose toggle viewer to be created for the specified signal as well as display a 
+"--&gt;" symbol in the Coverage Viewer on the same line as the selected signal.  This
+symbol is simply meant to help the user identify in the Coverage Viewer which signal
+is currently displayed in the Toggle Viewer window.  Figure 1 shows the Toggle Viewer
+loaded with a 4-bit signal called "err_vec" in which bits 3:2 have successfully toggled 
+from a 0-&gt;1.</p>
+
+<p align=center><b>Figure 1.  Verbose Toggle Window</b></p>
+<p align=center><img src=toggle_full id="Verbose Toggle Window"></p>
+
+<h4>Understanding the Layout</h4>
+
+<p>
+The bit vector displayed is a binary bit vector, each value (0 or 1) represents whether
+that bit in the signal either toggled (1) or did not toggle (0) during simulation.  There
+are two bit vectors displayed for the signal, the top vector shows the 0-&gt;1 toggle
+information while the bottom vector shows the 1-&gt;0 toggle information.</p>
+
+<p>
+The name of the signal along with its MSB:LSB information is displayed at the bottom
+of the window; however, if the mouse cursor is placed over a specific bit in the toggle
+box, the MSB:LSB will be changed to show the displayed bit, making it easy for the user
+to discern exactly which bit has toggled/not toggled.  If the width of the signal
+exceeds the given space for the toggle window, a scrollbar will be allowed to slide
+left and right to view the rest of the toggle information.</p>
+
+<p>
+To exit this window, simply click on <b>Close</b> button.  To see this help page from the
+toggle window, click on the <b>Help</b> button.</p>
+
+<h2>Excluding/Including a Signal for Toggle Coverage</h2>
+
+<p>
+The user may exclude/include any uncovered signal in the design for toggle coverage by simply clicking
+on the <b>Excluded</b> checkbutton.  If this checkbutton is checked, the summary coverage information
+will automatically be recalculated and redisplayed in the <a href="summary_bar.help?internal_1">Main Window
+Summary Bar</a> and the background color of the underlined signal in the
+<a href="cov_view.help?internal_1">Main Window File Viewer</a> will change from the uncovered background color to the
+covered background color.  However, the signal will still remain underlined, allowing the user to see
+the verbose toggle coverage information, if necessary.  If the <b>Excluded</b> checkbutton is unchecked,
+the summary coverage information and background colors will be readjusted to include the coverage information
+for this signal.</p>
+
+<p>
+If the user excludes any signal for toggle coverage in the design, the <b>Save CDD...</b> option in the
+<a href="file_menu.help?internal_1">File Menu</a> will be enabled.  This allows the user to save the excluded property
+either back to the CDD file (or to a newly named CDD file).  Doing so will allow the user to load the
+CDD file at a different time and retain the knowledge of which signals have been excluded/included
+for toggle coverage.  Additionally, if a saved CDD file with coverage exclusion is merged with another CDD file,
+the excluded signal information is preserved for the resulting merged CDD file.</p>
+
+<h2>Displaying a New Signal for Toggle Coverage</h2>
+
+<p>
+If the Verbose Toggle Coverage window is currently displayed with a signal, the user may
+select a new signal in the <a href="cov_view.help?internal_1">Coverage File Viewer</a> of the Main
+window.  When a new signal is selected, its value immediately replaces the currently
+selecting signal value.  This feature allows many different signals to be viewed one
+after the other without having to create/destroy a new window for each signal.</p>
+
+<p>
+The user may also see the previous or next uncovered signal in the main viewer by clicking
+either the <b>&lt;--</b> button (for previous signal viewing) or the <b>--&gt;</b> button (for next signal
+viewing).  Note that the <b>&lt;--</b> button will be disabled if there is not a signal previous
+to the current signal in the given module and the <b>--&gt;</b> button will be disabled if there is
+not a signal after the current signal in the given module.</p>

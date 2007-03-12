@@ -1,0 +1,16 @@
+.image main_summary file images/main_summary.gif
+
+<h2>The Summary Coverage Bar</h2>
+
+<p>
+The summary coverage bar contains the high-level coverage information for the currently 
+selected module/instance and coverage metric.  Typically, this information will tell the 
+user the number of coverage points that were hit out of the total number of coverage 
+points that Covered measured during simulation.  If the number hit is less than the 
+total, the currently selected module/instance was found to be not fully covered, and 
+the name of the module/instance will be highlighted in the 
+<a href="mod_inst_lb.help?internal_1">module/instance selection box</a> with the uncovered color 
+scheme.</p>
+
+<p align=center><b>Figure 1.  Covered Main Window Highlighting the Summary Coverage Bar</b></p>
+<p align=center><img src=main_summary id="Covered Main Summary Coverage Bar"></p>

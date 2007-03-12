@@ -1,0 +1,24 @@
+.image main_window file images/main_window.gif
+
+<h1>Navigating the Main Window</h1>
+
+<p>
+Figure 1 shows the main window prior to a CDD file being loaded.  There are six main 
+components of the main window.  These components are the following (from top to 
+bottom, left to right):
+</p>
+
+<p><ol>
+  <li><a href="main_menu.help?internal_1">Main Menu Bar</a></li>
+  <li><a href="cov_bar.help?internal_1">Coverage Type View Bar</a></li>
+  <li><a href="summary_bar.help?internal_1">Summary Coverage Bar</a></li>
+  <li><a href="mod_inst_lb.help?internal_1">Module/Instance Listbox</a></li>
+  <li><a href="cov_view.help?internal_1">Coverage File Viewer</a></li>
+  <li><a href="info_bar.help?internal_1">Information Bar</a></li>
+</ol></p>
+
+<p align="center"><b>Figure 1.  Covered Main Window</b></p>
+<p align="center"><img src=main_window id="Covered Main Window"></p>
+
+</body>
+</html>

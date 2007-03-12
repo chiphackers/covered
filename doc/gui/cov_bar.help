@@ -1,0 +1,17 @@
+.image main_cov file images/main_cov.gif
+
+<h2>The Coverage Type View Bar</h2>
+
+<p>
+Figure 1. shows the location of the coverage type view bar.  The bar is split up into 
+the five main types of coverage metrics that Covered can provide:  line, toggle, memory,
+logic (combinational logic), FSM (state and arc) and assert (assertion coverage).  When 
+the Covered GUI is first invoked, the line coverage metric is the default mode.  To view 
+a different metric, simply left click on the button to the left of the metric name.  Doing 
+so will automatically deselect the old mode, set the selection indicator to the new mode 
+and display the new metric information in the <a href="summary_bar.help?internal_1">summary bar</a>, 
+<a href="mod_inst_lb.help?internal_1">module/instance listbox</a>, and 
+<a href="cov_view.help?internal_1">coverage file viewer window</a>.</p>
+
+<p align=center><b>Figure 1.  Covered Main Window Highlighting the Coverage Type View Bar</b></p>
+<p align=center><img src=main_cov id="Covered Main Coverage Type View Bar"></p>

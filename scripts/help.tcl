@@ -3105,3 +3105,4 @@ switch -- $tcl_platform(platform) {
 
 help::add_ext [file join [file dirname [info script]] "help_chk.tcl"]
 help::add_ext [file join [file dirname [info script]] "help_2htm.tcl"]
+help::add_ext [file join [file dirname [info script]] "help_tbl.tcl"]

@@ -1,0 +1,127 @@
+.image line_incl file images/line_incl.gif
+.image line_excl file images/line_excl.gif
+
+<h1>Navigating the Line Coverage Window</h1>
+
+<p>
+Line coverage is the quickest way to determine what logic in your design is being 
+exercised and which logic has not be exercised during simulation.  If a line was found 
+to not be simulated, this is an indication that there was some event that did not occur 
+or did not occur at the proper time to cause a previous conditional expression to be 
+evaluated to true or false.  For example, if a block of code looked something like:</p>
+
+<p><code>
+  always @(posedge clock) // Line 1<br>
+  &nbsp;&nbsp;if( a )&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Line 2<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;b &lt;= 1'b0;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Line 3<br>
+  &nbsp;&nbsp;else&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Line 4<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;b &lt;= 1'b1;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Line 5<br>
+</code></p>
+
+<p>
+If line 3 was shown to be not covered, this would indicate that at the positive edge 
+of the term "clock", the value of "a" never evaluated to a value of 1 (true).  To make 
+line 3 become covered, we would need to setup a situation in the diagnostic that 
+caused "a" to become true at the positive edge of the term "clock".</p>
+
+<p>
+On the other hand, if all lines 2 - 5 were found to be uncovered, this would indicate 
+the the term "clock" never made a transition from some value to a 1 (true) value 
+during simulation.</p>
+
+<h2>Viewing Uncovered Lines</h2>
+
+<p>
+To view line coverage for all uncovered lines for a specific module/instance, do the 
+following:</p>
+
+<p><ol>
+  <li>
+    Make sure that the <b>Show Uncovered</b> menu item in the 
+    <a href="report_menu.help?internal_1">Report menu</a> is selected.</li>
+  <li>
+    Select the line coverage metric in the <a href="cov_bar.help?internal_1">Coverage
+    Type Bar</a> by left-clicking on selection button to the left of "Line".</li>
+  <li>
+    Select one of the modules/instances that is highlighted in the uncovered color scheme
+    (to change this color scheme, see <a href="pref_menu.help?internal_1">Preferences Menu</a>)
+    in the <a href="mod_inst_lb.help?internal_1">Module/Instance Listbox</a>.  This will cause
+    the selected module/instance source code to be displayed in the
+    <a href="cov_view.help?internal_1">Coverage File Viewer</a>.</li>
+</ol></p>
+
+<p>
+Once the selected module/instance has been displayed, scroll down in the Coverage File 
+Viewer window (using the scroll bars to the right and below the Coverage File Viewer 
+window) until you have reached a line that is highlighted in the uncovered color scheme.  
+The line number of the highlighted line will be printed to the left of the source code 
+line.  This line represents a line that was found to not be hit during the simulation 
+of this module/instance.</p>
+
+<h3>Excluding/Included Uncovered Lines from Line Coverage</h3>
+
+<p>
+Any uncovered line in the design may be included/excluded from coverage consideration.  To the left of
+each uncovered line is an underlined <u>I</u> (line is included in coverage) or <u>E</u> (line is excluded in coverage).
+Clicking on this character will change the coverage exclusion property of the line by recalculating the
+summary line coverage information, redisplaying it in the <a href="summary_bar.html">Main Window Summary Bar</a>,
+changing the background color of the line from the uncovered background color to the covered background color, and
+changing the leftmost character of the line to the opposite value to indicate its current status.  Figure 1 shows
+an uncovered line that is included for coverage consideration.  Figure 2 shows the same line which is now excluded
+from coverage consideration.</p>
+
+<p align=center><b>Figure 1.  Example of uncovered line included for line coverage consideration</b></p>
+<p align=center><img src=line_incl id="Uncovered, included line"></p>
+
+<p align=center><b>Figure 2.  Example of uncovered line excluded for line coverage consideration</b></p>
+<p align=center><img src=line_excl id="Uncovered, excluded line"></p>
+
+<p>
+In addition to changing the line coverage information, the combinational logic coverage information for an uncovered
+statement on that line will also be implicitly excluded from coverage (though the exclude properties for each subexpression
+of the statement will not change).</p>
+
+<p>
+If the user excludes any line in the design, the <b>Save CDD...</b> option in the
+<a href="file_menu.help?internal_1">File Menu</a> will be enabled.  This allows the
+user to save the excluded property either back to the CDD file (or to a newly named CDD file).
+Doing so will allow the user to load the CDD file at a different time and retain the knowledge
+of which lines have been excluded/included for coverage.  Additionally, if a saved CDD file
+with coverage exclusion is merged with another CDD file, the excluded line information is
+preserved for the resulting merged CDD file.</p>
+
+<h2>Viewing Covered Lines</h2>
+
+<p>
+To view line coverage for all covered lines for a specific module/instance, do the 
+following:</p>
+
+<p><ol>
+  <li>
+    Make sure that the <b>Show Covered</b> menu item in the 
+    <a href="report_menu.help?internal_1">Report menu</a> is selected.</li>
+  <li>
+    Select the line coverage metric in the <a href="cov_bar.help?internal_1">
+    Coverage Type Bar</a> by left-clicking on the selection button to the left of "Line".</li>
+  <li>
+    Select one of the modules/instances in the <a href="mod_inst_lb.help?internal_1">
+    Module/Instance Listbox</a> that shows that at least one line was considered coverable
+    by Covered by looking in the <a href="summary_bar.help?internal_1">Coverage Summary Bar</a>.</li>
+</ol></p>
+
+<p>
+Once the selected module/instance has been displayed, scroll down in the Coverage File 
+Viewer window (using the scroll bars to the right and below the Coverage File Viewer 
+window) until you have reached a line that is highlighted in the covered color scheme.  
+The line number of the highlighted line will be printed to the left of the source code 
+line.  This line represents a line that was found to be hit during the simulation of 
+this module/instance.</p>
+
+<h2>Important Note</h2>
+
+<p>
+You may see both the covered and uncovered line coverage simultaneously by selecting 
+both the <b>Show Uncovered</b> and <b>Show Covered</b> items in the Report menu.  This is sometimes 
+useful to see what logic Covered was not able to provide coverage support for (all 
+lines which contain code that are not highlighted in either the uncovered or covered 
+color schemes).</p>

@@ -1,0 +1,33 @@
+.image assert_src file images/assert_src.gif
+
+<h1>Navigating the Assertion Source Code Window</h1>
+
+<p>
+The Assertion Source Viewer window allows the user to see the source code for the current
+assertion in the <a href="assert.help?internal_1">Verbose Assertion Coverage window</a>.  To view
+this window, simply click the <b>Show Code</b> button in the Verbose Assertion Coverage
+window.  Figure 1 shows a zero_one_hot OVL assertion code with syntax highlighting applied.</p>
+
+<p align=center><b>Figure 1.  Assertion Source Viewer Window</b></p>
+<p align=center><img src=assert_src id="Covered - Assertion Source Viewer Window"></p>
+
+<h4>Navigating the Source Code</h4>
+
+<p>
+The source code for the current assertion will be automatically displayed in the text
+viewer when the window is created.  However, the source code will be displayed as it is
+found in the file system, without preprocessing applied to it.  This means that included
+files will not be displayed in an in-lined fashion.  To view included files, simply click
+on the included filename (it will be underlined).  This will cause the included file to
+replace its includer in the text viewer.  An infinite number of includes may be traversed
+in this manner.  To go back to the file that included the current file, simply click on
+the <b>Back</b> button located in the bottom left-hand corner of the window.  This will
+cause the current source code to be replaced with its "parent" source code.</p>
+
+<p>
+Note that the <b>Back</b> button will be disabled when the top-level assertion file is
+currently displayed.</p>
+
+<p>
+To exit this window, simply click on <b>Close</b> button.  To see this help page for the
+assertion source code window, click on the <b>Help</b> button.</p>

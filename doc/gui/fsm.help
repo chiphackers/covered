@@ -1,0 +1,127 @@
+.image fsm_window file images/fsm_window.gif
+.image fsm_excl   file images/fsm_excl.gif
+
+<h1>Navigating the FSM State/State Transition Coverage Window</h1>
+
+<p>
+The Verbose FSM State/State Transition Coverage window allows the user to see which
+states and state transitions of a currently selected FSM have been covered or are
+uncovered.  To view this window, simply select the "FSM" coverage metric mode in the
+<a href="cov_bar.help?internal_1">Coverage Metric Bar</a> in the main window and select an
+underlined FSM state variable in the <a href="cov_view.help?internal_1">Coverage File Viewer</a>.
+This will cause the FSM Coverage window to be displayed with the currently selected
+FSM information loaded.  Figure 1 below shows an example of this window.</p>
+
+<p align=center><b>Figure 1.  Verbose FSM Coverage Window</b></p>
+<p align=center><img src=fsm_window id="Covered - Verbose FSM Coverage Window"></p>
+
+<h4>Navigating the FSM Window</h4>
+
+<p>
+The Verbose FSM window is split into two main frames.  The top frame contains the
+expressions that make up the input and output states of the selected FSM.  The bottom
+frame contains a two-dimensional table showing the covered and/or uncovered states and
+state transitions.</p>
+
+<p>
+The state/state transition table is a two-dimensional table with all possible values of the
+input states in the left-most column, the output states in the upper-most row, and
+the state transitions in the rest of the table.</p>
+
+<p>
+To determine which states have been uncovered in the table, simply find all state values
+in the input column or output row (both show the same information) which are highlighted 
+with the "Uncovered" color selection specified in the
+<a href="preferences.help?internal_1">Preferences window</a>.  To determine which states have been
+covered in the table, simply find all state values in the input column or output row which
+are highlighted with the "Covered" color selection.  All other state values which are
+not highlighted are either impossible values (if all of the state transitions were
+specified in the Verilog file) or are unknown for coverage (if not all of the state
+transitions were specified in the Verilog file).</p>
+
+<p>
+To determine which state transitions have been uncovered in the table, simply find all
+empty boxes in the table that are highlighted with the "Uncovered" background color.  If
+one of these exist, it specifies that the transition of "input state" (the value
+specified in the left-most column in the same row) to "output state" (the value specified
+in the upper-most row in the same column) did not occur.  In the example above, we can
+see that the following state transitions did not occur:</p>
+
+<p><ul>
+  <li>1 -&gt; 2</li>
+  <li>3 -&gt; 1</li>
+  <li>2 -&gt; 3</li>
+  <li>2 -&gt; 2 (loopback case)</li>
+</ul></p>
+
+<p>
+Follow the same procedure for finding all covered state transitions in the table except
+that these boxes will be highlighted with the "Covered" background color.  In the example
+above, we can see that the following state transitions occurred:</p>
+
+<p><ul>
+  <li>0 -&gt; 0 (loopback case)</li>
+  <li>0 -&gt; 1</li>
+  <li>1 -&gt; 3</li>
+  <li>3 -&gt; 0</li>
+</ul></p>
+
+<p>
+All other state transition boxes that are not highlighted are either impossible state
+transitions (if all state transitions were specified in the Verilog source code) or
+are unknown in their coverage (either not hit or impossible transition if all state
+transitions were not specified in the Verilog source code).</p>
+
+<p>
+To exit this window, simply click on <b>Close</b> button.  To see this help page for the
+FSM window, click on the <b>Help</b> button.</p>
+
+<h2>Excluding/Including a State Transition</h2>
+
+<p>
+Uncovered state transitions can be excluded/included for FSM coverage consideration.  This
+is done by clicking on the <u>I</u> (state transition is currently included in coverage
+results) or <u>E</u> (state transition is currently excluded from coverage results) character 
+in the middle of a state transition square.  Changing a state transition from an <u>I</u> to
+an <u>E</u> will automatically cause the state transition summary coverage information in the
+<a href="summary_bar.help?internal_1">Main Window Summary Bar</a> to be updated and the background color
+of the state transition box will change from the uncovered color to the covered color.  Changing
+a state transition from an <u>E</u> to an <u>I</u> will automatically cause the state transition
+summary coverage information in the Main Window Summary Bar to be updated and the background
+color of the state transition box will change from the covered color to the uncovered color.
+Figure 2 below shows an example of the Figure 1 state machine coverage information with a couple
+of state transitions excluded from coverage.</p>
+
+<p align=center><b>Figure 2.  Example of excluded state transitions</b></p>
+<p align=center><img src=fsm_excl id="Example of excluded state transitions"></p>
+
+<p>
+If all of the state transitions for a state machine have been excluded for coverage consideration,
+the output state variable in the <a href="cov_view.help?internal_1">Main Window File Viewer</a> will change
+its background from the uncovered to the covered background color.  However, the underline will
+remain under the variable to allow the user to still examine the verbose FSM information for that
+state machine.</p>
+
+<p>
+If the user excludes any state transition in the design, the <b>Save CDD...</b> option in the
+<a href="file_menu.help?internal_1">File Menu</a> will be enabled.  This allows the user to save the excluded property
+either back to the CDD file (or to a newly named CDD file).  Doing so will allow the user to load the
+CDD file at a different time and retain the knowledge of which state transitions have been excluded/included
+for coverage.  Additionally, if a saved CDD file with coverage exclusion is merged with another CDD file,
+the excluded state transition information is preserved for the resulting merged CDD file.</p>
+
+<h2>Displaying a New FSM</h2>
+
+<p>
+If the Verbose FSM Coverage window is currently displayed, the user may select a 
+new FSM state variable in the <a href="cov_view.help?internal_1">Coverage File Viewer</a> of the Main
+window.  When a new FSM is selected, its information immediately replaces the 
+currently selected FSM.  This feature allows many different FSMs to be viewed 
+one after the other without having to create/destroy a new window for each.</p>
+
+<p>
+The user may also see the previous or next uncovered FSM in the main viewer by 
+clicking either the <b>&lt;--</b> button (for previous signal viewing) or the <b>--&gt;</b> button 
+(for next signal viewing).  Note that the <b>&lt;--</b> button will be disabled if there is 
+not a signal previous to the current signal in the given module and the <b>--&gt;</b> button 
+will be disabled if there is not a signal after the current signal in the given module.</p>
