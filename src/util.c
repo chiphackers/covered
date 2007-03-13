@@ -337,43 +337,18 @@ bool is_func_unit( char* token ) {
 
 /*!
  \param token String to check for valid pathname-ness
- \return Returns TRUE if the specified string is a legal UNIX directory;
-         otherwise, returns FALSE.
 
- Returns TRUE if the specified string is either a legal UNIX relative
- pathname or static pathname.  If the specified string does not correlate
- to a legal UNIX pathname, a value of FALSE is returned.
+ \return Returns TRUE if the specified string would be a legal filename to
+         write to; otherwise, returns FALSE.
 */
-bool is_directory( char* token ) {
+bool is_legal_filename( char* token ) {
 
-  bool retval  = TRUE;    /* Return value of this function */
-  int  periods = 0;       /* Number of periods seen in a row */
+  bool  retval = FALSE;  /* Return value for this function */
+  FILE* tmpfile;         /* Temporary file pointer */
 
-  if( token != NULL ) {
-
-    while( (token[0] != '\0') && retval ) {
-      if( token[0] == '.' ) {
-        periods++;
-        if( periods > 2 ) {
-          retval = FALSE;
-        }
-      } else if( token[0] == '/' ) {
-        periods = 0;
-      } else if( ((token[0] >= 'a') && (token[0] <= 'z')) ||
-                 ((token[0] >= 'A') && (token[0] <= 'Z')) ||
-                 ((token[0] >= '0') && (token[0] <= '9')) ||
-                  (token[0] == '_') ) {
-        periods = 0;
-      } else {
-        retval = FALSE;
-      }
-      token++;
-    }
-
-  } else {
-
-    retval = FALSE;
-
+  if( (tmpfile = fopen( token, "w" )) != NULL ) {
+    retval = TRUE;
+    fclose( tmpfile );
   }
 
   return( retval );
@@ -1123,6 +1098,13 @@ const char* get_funit_type( int type ) {
 
 /*
  $Log$
+ Revision 1.57  2006/12/11 23:29:17  phase1geo
+ Starting to add support for re-entrant tasks and functions.  Currently, compiling
+ fails.  Checkpointing.
+
+ Revision 1.56.2.1  2007/03/13 22:05:11  phase1geo
+ Fixing bug 1678931.  Updated regression.
+
  Revision 1.56  2006/10/13 22:46:31  phase1geo
  Things are a bit of a mess at this point.  Adding generate12 diagnostic that
  shows a failure in properly handling generates of instances.

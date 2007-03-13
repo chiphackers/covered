@@ -43,8 +43,8 @@ bool check_option_value( int argc, char** argv, int option_index );
 /*! \brief Returns TRUE if the specified string is a legal variable name. */
 bool is_variable( char* token );
 
-/*! \brief Returns TRUE if the specified string is a legal directory string. */
-bool is_directory( char* token );
+/*! \brief Returns TRUE if the specified string could be a valid filename. */
+bool is_legal_filename( char* token );
 
 /*! \brief Returns TRUE if the specified string is a legal functional unit value. */
 bool is_func_unit( char* token );
@@ -123,6 +123,12 @@ const char* get_funit_type( int type );
 
 /*
  $Log$
+ Revision 1.24.2.1  2007/03/13 22:05:11  phase1geo
+ Fixing bug 1678931.  Updated regression.
+
+ Revision 1.24  2006/08/18 22:32:57  phase1geo
+ Adding get_dirname routine to util.c for future use.
+
  Revision 1.23  2006/08/18 04:41:14  phase1geo
  Incorporating bug fixes 1538920 and 1541944.  Updated regressions.  Only
  event1.1 does not currently pass (this does not pass in the stable version

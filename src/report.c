@@ -340,10 +340,10 @@ bool report_parse_args( int argc, int last_arg, char** argv ) {
         if( output_file != NULL ) {
           print_output( "Only one -o option is allowed on the report command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
         } else {
-          if( is_directory( argv[i] ) ) {
+          if( is_legal_filename( argv[i] ) ) {
             output_file = strdup_safe( argv[i], __FILE__, __LINE__ );
           } else {
-            snprintf( user_msg, USER_MSG_LENGTH, "Illegal output directory specified \"%s\"", argv[i] );
+            snprintf( user_msg, USER_MSG_LENGTH, "Output file \"%s\" is unwritable", argv[i] );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
             retval = FALSE;
           }
@@ -918,6 +918,13 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.78  2006/12/19 05:23:39  phase1geo
+ Added initial code for handling instance flattening for unnamed scopes.  This
+ is partially working at this point but still needs some debugging.  Checkpointing.
+
+ Revision 1.77.2.1  2007/03/13 22:05:10  phase1geo
+ Fixing bug 1678931.  Updated regression.
+
  Revision 1.77  2006/10/12 22:48:46  phase1geo
  Updates to remove compiler warnings.  Still some work left to go here.
 
