@@ -29,7 +29,7 @@
 
 /*! \brief  Finds the functional unit that corresponds to the given scope relative to the current
             functional unit */
-func_unit* scope_find_funit_from_scope( char* scope, func_unit* curr_funit );
+func_unit* scope_find_funit_from_scope( char* scope, func_unit* curr_funit, bool rm_unnamed );
 
 /*! \brief  Find the given signal in the provided scope */
 bool scope_find_param( char* name, func_unit* curr_funit, mod_parm** found_parm, func_unit** found_funit, int line );
@@ -38,7 +38,7 @@ bool scope_find_param( char* name, func_unit* curr_funit, mod_parm** found_parm,
 bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, func_unit** found_funit, int line );
 
 /*! \brief  Finds the given task or function in the provided scope. */
-bool scope_find_task_function_namedblock( char* name, int type, func_unit* curr_funit, func_unit** found_funit, int line, bool must_find );
+bool scope_find_task_function_namedblock( char* name, int type, func_unit* curr_funit, func_unit** found_funit, int line, bool must_find, bool rm_unnamed );
 
 /*! \brief  Finds the parent functional unit of the functional unit with the given scope */
 func_unit* scope_get_parent_funit( char* scope );
@@ -49,6 +49,10 @@ func_unit* scope_get_parent_module( char* scope );
 
 /*
  $Log$
+ Revision 1.9  2006/08/01 04:38:20  phase1geo
+ Fixing issues with binding to non-module scope and not binding references
+ that reference a "no score" module.  Full regression passes.
+
  Revision 1.8  2006/05/25 12:11:01  phase1geo
  Including bug fix from 0.4.4 stable release and updating regressions.
 

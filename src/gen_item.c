@@ -882,14 +882,14 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
           snprintf( inst_name, 4096, "%s[%d]", gi->elem.inst->name, vector_to_int( genvar->value ) );
           instance_parse_add( &inst, inst->funit, gi->elem.inst->funit, inst_name, NULL, FALSE, TRUE );
           snprintf( inst_name, 4096, "%s.%s[%d]", inst->name, gi->elem.inst->name, vector_to_int( genvar->value ) );
-          if( (child = instance_find_scope( inst, inst_name )) != NULL ) {
+          if( (child = instance_find_scope( inst, inst_name, TRUE )) != NULL ) {
             inst_parm_add_genvar( genvar, child );
           }
         } else {
           char inst_name[4096];
           instance_parse_add( &inst, inst->funit, gi->elem.inst->funit, gi->elem.inst->name, NULL, FALSE, TRUE );
           snprintf( inst_name, 4096, "%s.%s", inst->name, gi->elem.inst->name );
-          child = instance_find_scope( inst, inst_name );
+          child = instance_find_scope( inst, inst_name, TRUE );
         }
         gen_item_resolve( gi->next_true, child, TRUE );
         gen_item_resolve( gi->next_false, inst, FALSE );
@@ -1113,6 +1113,16 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.42  2006/10/16 21:34:46  phase1geo
+ Increased max bit width from 1024 to 65536 to allow for more room for memories.
+ Fixed issue with enumerated values being explicitly assigned unknown values and
+ created error output message when an implicitly assigned enum followed an explicitly
+ assign unknown enum value.  Fixed problem with generate blocks in different
+ instantiations of the same module.  Fixed bug in parser related to setting the
+ curr_packed global variable correctly.  Added enum2 and enum2.1 diagnostics to test
+ suite to verify correct enumerate behavior for the changes made in this checkin.
+ Full regression now passes.
+
  Revision 1.41  2006/10/13 22:46:31  phase1geo
  Things are a bit of a mess at this point.  Adding generate12 diagnostic that
  shows a failure in properly handling generates of instances.

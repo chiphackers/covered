@@ -646,7 +646,8 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
   /* Don't continue if the name is not local and we are told to bind locally */
   if( scope_local( name ) || !bind_locally ) {
 
-    if( scope_find_task_function_namedblock( name, type, funit_exp, &found_funit, exp_line, !bind_locally ) &&
+    if( scope_find_task_function_namedblock( name, type, funit_exp, &found_funit, exp_line, !bind_locally, 
+                                             ((exp->op != EXP_OP_NB_CALL) && (exp->op != EXP_OP_FORK)) ) &&
         (found_funit->type != FUNIT_NO_SCORE) ) {
 
       if( found_funit->stmt_head != NULL ) {
@@ -878,6 +879,10 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.106  2006/12/19 05:23:38  phase1geo
+ Added initial code for handling instance flattening for unnamed scopes.  This
+ is partially working at this point but still needs some debugging.  Checkpointing.
+
  Revision 1.105  2006/12/19 02:36:18  phase1geo
  Fixing error in parser when parsing begin..end blocks.  Still need to properly
  handle unnamed scopes.  Checkpointing.

@@ -40,6 +40,7 @@ extern char       user_msg[USER_MSG_LENGTH];
 /*!
  \param scope       Verilog hierachical scope to a functional unit.
  \param curr_funit  Pointer to current functional unit whose member is calling this function
+ \param rm_unnamed  Set to TRUE to cause unnamed scopes to be discarded
 
  \return Returns a pointer to the functional unit being scoped if it can be found; otherwise, returns
          a value of NULL.
@@ -49,7 +50,7 @@ extern char       user_msg[USER_MSG_LENGTH];
  a top-of-tree search.  The specified scope should only be for a functional unit.  If the user is attempting
  to get the functional unit for a signal, the signal name should be removed prior to calling this function.
 */
-func_unit* scope_find_funit_from_scope( char* scope, func_unit* curr_funit ) {
+func_unit* scope_find_funit_from_scope( char* scope, func_unit* curr_funit, bool rm_unnamed ) {
 
   funit_inst* curr_inst;      /* Pointer to current instance */
   funit_inst* funiti = NULL;  /* Pointer to functional unit instance found */
@@ -61,9 +62,9 @@ func_unit* scope_find_funit_from_scope( char* scope, func_unit* curr_funit ) {
   /* Get current instance */
   if( (curr_inst = inst_link_find_by_funit( curr_funit, inst_head, &ignore )) != NULL ) {
 
-    /* First check scope based on a relative path */
+    /* First check scope based on a relative path if unnamed scopes are not ignored */
     snprintf( tscope, 4096, "%s.%s", curr_inst->name, scope );
-    funiti = instance_find_scope( curr_inst, tscope );
+    funiti = instance_find_scope( curr_inst, tscope, rm_unnamed );
 
     /*
      If we still did not find the functional unit, iterate up the scope tree looking for a module
@@ -73,12 +74,12 @@ func_unit* scope_find_funit_from_scope( char* scope, func_unit* curr_funit ) {
       do {
         if( curr_inst->parent == NULL ) {
           strcpy( tscope, scope );
-          funiti = instance_find_scope( curr_inst, tscope );
+          funiti = instance_find_scope( curr_inst, tscope, rm_unnamed );
           curr_inst = curr_inst->parent;
         } else {
           curr_inst = curr_inst->parent;
           snprintf( tscope, 4096, "%s.%s", curr_inst->name, scope );
-          funiti = instance_find_scope( curr_inst, tscope );
+          funiti = instance_find_scope( curr_inst, tscope, rm_unnamed );
         }
       } while( (curr_inst != NULL) && (funiti == NULL) );
     }
@@ -123,7 +124,7 @@ bool scope_find_param( char* name, func_unit* curr_funit, mod_parm** found_parm,
     scope_extract_back( name, parm_name, scope );
 
     /* Get the functional unit that contains this signal */
-    if( (*found_funit = scope_find_funit_from_scope( scope, curr_funit )) == NULL ) {
+    if( (*found_funit = scope_find_funit_from_scope( scope, curr_funit, TRUE )) == NULL ) {
 
       if( line > 0 ) {
         snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined signal hierarchy (%s) in %s %s, file %s, line %d",
@@ -189,7 +190,7 @@ bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, 
     scope_extract_back( name, sig_name, scope );
 
     /* Get the functional unit that contains this signal */
-    if( (*found_funit = scope_find_funit_from_scope( scope, curr_funit )) == NULL ) {
+    if( (*found_funit = scope_find_funit_from_scope( scope, curr_funit, TRUE )) == NULL ) {
 
       if( line > 0 ) {
         snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined signal hierarchy (%s) in %s %s, file %s, line %d",
@@ -239,6 +240,7 @@ bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, 
  \param found_funit  Pointer to found functional unit within the design.
  \param line         Line number where functional unit is being used (for error output purposes only).
  \param must_find    Set to TRUE if the scope MUST be found.
+ \param rm_unnamed   Set to TRUE if unnamed scopes should be ignored
 
  \return Returns TRUE if the functional unit was found in the design; otherwise, returns FALSE.
 
@@ -246,7 +248,7 @@ bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, 
  found, the found_funit pointer is set to the functional unit and the function returns TRUE; otherwise, the function
  returns FALSE to the calling function.
 */
-bool scope_find_task_function_namedblock( char* name, int type, func_unit* curr_funit, func_unit** found_funit, int line, bool must_find ) {
+bool scope_find_task_function_namedblock( char* name, int type, func_unit* curr_funit, func_unit** found_funit, int line, bool must_find, bool rm_unnamed ) {
 
   assert( (type == FUNIT_FUNCTION) || (type == FUNIT_TASK) || (type == FUNIT_NAMED_BLOCK) );
   assert( curr_funit != NULL );
@@ -254,10 +256,11 @@ bool scope_find_task_function_namedblock( char* name, int type, func_unit* curr_
   /*
    Find the functional unit that refers to this scope.
   */
-  if( ((*found_funit = scope_find_funit_from_scope( name, curr_funit )) == NULL) && must_find ) {
+  if( ((*found_funit = scope_find_funit_from_scope( name, curr_funit, rm_unnamed )) == NULL) && must_find ) {
 
-    snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined %s hierarchy in %s %s, file %s, line %d",
-              get_funit_type( type ), get_funit_type( curr_funit->type ), obf_funit( name ), obf_file( curr_funit->filename ), line );
+    snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined %s hierarchy (%s) in %s %s, file %s, line %d",
+              get_funit_type( type ), obf_funit( name ), get_funit_type( curr_funit->type ),
+              obf_funit( curr_funit->name ), obf_file( curr_funit->filename ), line );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     exit( 1 );
 
@@ -338,9 +341,51 @@ func_unit* scope_get_parent_module( char* scope ) {
 
 }
 
+#ifdef SKIP
+/*!
+ \param scope  Instance scope to potentially flatten
+
+ \return Returns flattened scope (unnamed instances removed)
+
+ \note To match VCS and because I don't know what the SystemVerilog LRM has to say about
+       unnamed scopes and hierachical referencing of these scopes at this time, this function
+       only removes unnamed scopes that do not contain signals.
+*/
+char* scope_flatten( char* scope ) {
+
+  funit_inst* inst;        /* Pointer to current functional unit instance */
+  char*       curr_scope;  /* Current scope to search for */
+  char*       rest;        /* Temporary holder */
+  char*       back;        /* Temporary holder */
+  char*       new_scope;   /* Pointer to new scope name */
+
+  /* Get a local copy of the specified scope */
+  curr_scope = strdup_safe( scope, __FILE__, __LINE__ );
+  rest       = strdup_safe( scope, __FILE__, __LINE__ );
+  back       = strdup_safe( scope, __FILE__, __LINE__ );
+  new_scope  = (char*)malloc_safe( (strlen( scope ) + 1), __FILE__, __LINE__ );
+
+  do {
+    scope_extract_back( curr_scope, back, rest );
+    assert( rest[0] != '\0' );
+    strcpy( curr_scope, rest );
+    inst = inst_link_find_by_scope( curr_scope, inst_head );
+    if( !funit_is_unnamed( inst->funit ) ) {
+      /* TBD */
+    }
+  } while( rest[0] != '\0' );
+
+  return( new_scope );
+
+}
+#endif
+
 
 /*
  $Log$
+ Revision 1.31  2006/10/13 15:56:02  phase1geo
+ Updating rest of source files for compiler warnings.
+
  Revision 1.30  2006/10/09 20:27:07  phase1geo
  Fixing simulator issue and adding parsing support for typedef'ed instantiations
  within modules.

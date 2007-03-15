@@ -36,7 +36,7 @@ void instance_display_tree( funit_inst* root );
 void instance_gen_scope( char* scope, funit_inst* leaf );
 
 /*! \brief Finds specified scope in functional unit instance tree. */
-funit_inst* instance_find_scope( funit_inst* root, char* scope );
+funit_inst* instance_find_scope( funit_inst* root, char* scope, bool rm_unnamed );
 
 /*! \brief Returns instance that points to specified functional unit for each instance. */
 funit_inst* instance_find_by_funit( funit_inst* root, func_unit* funit, int* ignore );
@@ -75,6 +75,10 @@ void instance_dealloc( funit_inst* root, char* scope );
 
 /*
  $Log$
+ Revision 1.23  2006/12/19 05:23:39  phase1geo
+ Added initial code for handling instance flattening for unnamed scopes.  This
+ is partially working at this point but still needs some debugging.  Checkpointing.
+
  Revision 1.22  2006/10/13 22:46:31  phase1geo
  Things are a bit of a mess at this point.  Adding generate12 diagnostic that
  shows a failure in properly handling generates of instances.

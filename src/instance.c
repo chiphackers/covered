@@ -220,8 +220,9 @@ bool instance_compare( char* inst_name, funit_inst* inst ) {
 }
 
 /*!
- \param root   Root of funit_inst tree to parse for scope.
- \param scope  Scope to search for.
+ \param root        Root of funit_inst tree to parse for scope.
+ \param scope       Scope to search for.
+ \param rm_unnamed  Set to TRUE if we need to remove unnamed scopes
  
  \return Returns pointer to functional unit instance found by scope.
  
@@ -229,7 +230,7 @@ bool instance_compare( char* inst_name, funit_inst* inst ) {
  scope.  When the functional unit instance is found, a pointer to that
  functional unit instance is passed back to the calling function.
 */
-funit_inst* instance_find_scope( funit_inst* root, char* scope ) {
+funit_inst* instance_find_scope( funit_inst* root, char* scope, bool rm_unnamed ) {
  
   char        front[256];   /* Front of scope value */
   char        rest[4096];   /* Rest of scope value */
@@ -241,12 +242,20 @@ funit_inst* instance_find_scope( funit_inst* root, char* scope ) {
   /* First extract the front scope */
   scope_extract_front( scope, front, rest );
 
-  if( instance_compare( front, root ) ) {
+  /* Skip this instance and move onto the children if we are an unnamed scope that does not contain signals */
+  if( !rm_unnamed && db_is_unnamed_scope( root->name ) && !funit_is_unnamed( root->funit ) ) {
+    child = root->child_head;
+    while( (child != NULL) && ((inst = instance_find_scope( child, scope, rm_unnamed )) == NULL) ) {
+      child = child->next;
+    }
+
+  /* Keep traversing if our name matches */
+  } else if( instance_compare( front, root ) ) {
     if( rest[0] == '\0' ) {
       inst = root;
     } else {
       child = root->child_head;
-      while( (child != NULL) && ((inst = instance_find_scope( child, rest )) == NULL) ) {
+      while( (child != NULL) && ((inst = instance_find_scope( child, rest, rm_unnamed )) == NULL) ) {
         child = child->next;
       }
     }
@@ -600,7 +609,7 @@ bool instance_read_add( funit_inst** root, char* parent, func_unit* child, char*
 
     assert( parent != NULL );
   
-    if( (inst = instance_find_scope( *root, parent )) != NULL ) {
+    if( (inst = instance_find_scope( *root, parent, TRUE )) != NULL ) {
 
       /* Create new instance */
       new_inst = instance_create( child, inst_name, NULL );
@@ -919,7 +928,7 @@ void instance_dealloc( funit_inst* root, char* scope ) {
     scope_extract_back( scope, back, rest );
     assert( rest[0] != '\0' );
 
-    inst = instance_find_scope( root, rest );
+    inst = instance_find_scope( root, rest, TRUE );
     assert( inst != NULL );
 
     curr = inst->child_head;
@@ -951,6 +960,11 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.67  2006/12/19 06:06:05  phase1geo
+ Shortening unnamed scope name from $unnamed_%d to $u%d.  Also fixed a few
+ bugs in the instance_flatten function (still more debug work to go here).
+ Checkpointing.
+
  Revision 1.66  2006/12/19 05:23:39  phase1geo
  Added initial code for handling instance flattening for unnamed scopes.  This
  is partially working at this point but still needs some debugging.  Checkpointing.
