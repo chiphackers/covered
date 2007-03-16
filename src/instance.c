@@ -710,6 +710,9 @@ void instance_flatten( funit_inst* root ) {
   funit_inst* child;              /* Pointer to current child instance */
   funit_inst* last_child = NULL;  /* Pointer to the last child instance */
   funit_inst* tmp;                /* Temporary pointer to functional unit instance */
+  funit_inst* grandchild;         /* Pointer to current granchild instance */
+  char        back[4096];         /* Last portion of functional unit name */
+  char        rest[4096];         /* Holds the rest of the functional unit name */
 
   if( root != NULL ) {
 
@@ -719,6 +722,9 @@ void instance_flatten( funit_inst* root ) {
 
       /* First, flatten the child instance */
       instance_flatten( child );
+
+      /* Get the last portion of the child instance before this functional unit is removed */
+      scope_extract_back( child->funit->name, back, rest );
 
       /*
        Next, fold this child instance into this instance if it is an unnamed scope
@@ -745,11 +751,27 @@ void instance_flatten( funit_inst* root ) {
           }
         }
 
+        /* Add grandchildren to this parent */
+        grandchild = child->child_head;
+        if( grandchild != NULL ) {
+          while( grandchild != NULL ) {
+            grandchild->parent = root;
+            funit_flatten_name( grandchild->funit, back );
+            grandchild = grandchild->next;
+          }
+          if( root->child_head == NULL ) {
+            root->child_head = root->child_tail = child->child_head;
+          } else {
+            root->child_tail->next = child->child_head;
+            root->child_tail       = child->child_head;
+          }
+        }
+
         tmp   = child;
         child = child->next;
 
         /* Deallocate child instance */
-        instance_dealloc_tree( tmp );
+        instance_dealloc_single( tmp );
       
       } else {
 
@@ -845,6 +867,43 @@ void instance_remove_parms_with_expr( funit_inst* root, statement* stmt ) {
 }
 
 /*!
+ \param inst  Pointer to instance to deallocate memory for
+
+ Deallocates all memory allocated for the given instance.
+*/
+void instance_dealloc_single( funit_inst* inst ) {
+
+  if( inst != NULL ) {
+
+    /* Free up memory allocated for name */
+    free_safe( inst->name );
+
+    /* Free up memory allocated for statistic, if necessary */
+    free_safe( inst->stat );
+
+    /* Free up memory for range, if necessary */
+    if( inst->range != NULL ) {
+      static_expr_dealloc( inst->range->left,  FALSE );
+      static_expr_dealloc( inst->range->right, FALSE );
+      free_safe( inst->range );
+    }
+
+    /* Deallocate memory for instance parameter list */
+    inst_parm_dealloc( inst->param_head, TRUE );
+
+#ifndef VPI_ONLY
+    /* Deallocate memory for generate item list */
+    gitem_link_delete_list( inst->gitem_head, FALSE );
+#endif
+
+    /* Free up memory for this functional unit instance */
+    free_safe( inst );
+
+  }
+
+}
+
+/*!
  \param root  Pointer to root instance of functional unit instance tree to remove.
 
  Recursively traverses instance tree, deallocating heap memory used to store the
@@ -865,31 +924,8 @@ void instance_dealloc_tree( funit_inst* root ) {
       curr = tmp;
     }
 
-    /* Free up memory allocated for name */
-    free_safe( root->name );
-
-    /* Free up memory allocated for statistic, if necessary */
-    if( root->stat != NULL ) {
-      free_safe( root->stat );
-    }
-
-    /* Free up memory for range, if necessary */
-    if( root->range != NULL ) {
-      static_expr_dealloc( root->range->left,  FALSE );
-      static_expr_dealloc( root->range->right, FALSE );
-      free_safe( root->range );
-    }
-
-    /* Deallocate memory for instance parameter list */
-    inst_parm_dealloc( root->param_head, TRUE );
-
-#ifndef VPI_ONLY
-    /* Deallocate memory for generate item list */
-    gitem_link_delete_list( root->gitem_head, FALSE );
-#endif
-  
-    /* Free up memory for this functional unit instance */
-    free_safe( root );
+    /* Deallocate the instance memory */
+    instance_dealloc_single( root );
 
   }
 
@@ -960,6 +996,9 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.68  2007/03/15 22:39:05  phase1geo
+ Fixing bug in unnamed scope binding.
+
  Revision 1.67  2006/12/19 06:06:05  phase1geo
  Shortening unnamed scope name from $unnamed_%d to $u%d.  Also fixed a few
  bugs in the instance_flatten function (still more debug work to go here).

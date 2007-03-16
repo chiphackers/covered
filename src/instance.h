@@ -66,6 +66,9 @@ void instance_remove_stmt_blks_calling_stmt( funit_inst* root, statement* stmt )
 /*! \brief Removes expressions from instance parameters within the given instance that match the given expression */
 void instance_remove_parms_with_expr( funit_inst* root, statement* stmt );
 
+/*! \brief Deallocates single functional unit instance memory */
+void instance_dealloc_single( funit_inst* inst );
+
 /*! \brief Recursively deallocates all memory for the associated instance tree */
 void instance_dealloc_tree( funit_inst* root );
 
@@ -75,6 +78,9 @@ void instance_dealloc( funit_inst* root, char* scope );
 
 /*
  $Log$
+ Revision 1.24  2007/03/15 22:39:05  phase1geo
+ Fixing bug in unnamed scope binding.
+
  Revision 1.23  2006/12/19 05:23:39  phase1geo
  Added initial code for handling instance flattening for unnamed scopes.  This
  is partially working at this point but still needs some debugging.  Checkpointing.

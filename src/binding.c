@@ -632,7 +632,6 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
                                     bool cdd_reading, int exp_line, bool bind_locally ) {
 
   bool       retval = FALSE;  /* Return value for this function */
-  stmt_iter  si;              /* Statement iterator used to find the head statement */
   vsignal    sig;             /* Temporary signal for comparison purposes */
   sig_link*  sigl;            /* Temporary signal link holder */
   func_unit* found_funit;     /* Pointer to found task/function functional unit */
@@ -647,24 +646,13 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
   if( scope_local( name ) || !bind_locally ) {
 
     if( scope_find_task_function_namedblock( name, type, funit_exp, &found_funit, exp_line, !bind_locally, 
-                                             ((exp->op != EXP_OP_NB_CALL) && (exp->op != EXP_OP_FORK)) ) &&
-        (found_funit->type != FUNIT_NO_SCORE) ) {
+                                             ((exp->op != EXP_OP_NB_CALL) && (exp->op != EXP_OP_FORK)) ) ) {
 
-      if( found_funit->stmt_head != NULL ) {
-
-        assert( found_funit->stmt_head->stmt != NULL );
-
-        /* Set functional unit's first_stmt pointer to its head statement */
-        stmt_iter_reset( &si, found_funit->stmt_tail );
-        stmt_iter_find_head( &si, FALSE );
-
-        if( si.curr->stmt != NULL ) {
-          found_funit->first_stmt = si.curr->stmt;
-          exp->elem.funit = found_funit;
-          retval = TRUE;
-        }
-
-      }
+//      if( found_funit->first_stmt != NULL ) {
+        exp->elem.funit         = found_funit;
+        exp->suppl.part.type    = ETYPE_FUNIT;
+        retval = (found_funit->type != FUNIT_NO_SCORE);
+//      }
 
       if( retval ) {
 
@@ -730,7 +718,7 @@ void bind_perform( bool cdd_reading, int pass ) {
   int        id;        /* Current expression id -- used for removal */
   bool       bound;     /* Specifies if the current expression was successfully bound or not */
   statement* tmp_stmt;  /* Pointer to temporary statement */
-    
+
   /* Make three passes through binding list, 0=local signal/param bindings, 1=remote signal/param bindings */
   for( ; pass<2; pass++ ) {
 
@@ -879,6 +867,9 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.107  2007/03/15 22:39:05  phase1geo
+ Fixing bug in unnamed scope binding.
+
  Revision 1.106  2006/12/19 05:23:38  phase1geo
  Added initial code for handling instance flattening for unnamed scopes.  This
  is partially working at this point but still needs some debugging.  Checkpointing.

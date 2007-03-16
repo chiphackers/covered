@@ -833,6 +833,8 @@ bool db_add_function_task_namedblock( int type, char* name, char* file, int star
 */
 void db_end_function_task_namedblock( int end_line ) {
 
+  stmt_iter si;  /* Statement iterator for finding the first statement of the functional unit */
+
 #ifdef DEBUG_MODE
   snprintf( user_msg, USER_MSG_LENGTH, "In db_end_function_task_namedblock, end_line: %d", end_line );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -840,6 +842,21 @@ void db_end_function_task_namedblock( int end_line ) {
 
   /* Store last line information */
   curr_funit->end_line = end_line;
+
+  /* Set the first statement pointer */
+  if( curr_funit->stmt_head != NULL ) {
+
+    assert( curr_funit->stmt_head->stmt != NULL );
+
+    /* Set functional unit's first_stmt pointer to its head statement */
+    stmt_iter_reset( &si, curr_funit->stmt_tail );
+    stmt_iter_find_head( &si, FALSE );
+
+    if( si.curr->stmt != NULL ) {
+      curr_funit->first_stmt = si.curr->stmt;
+    }
+
+  }
 
   /* Set the current functional unit to the parent module */
   curr_funit = curr_funit->parent;
@@ -2291,6 +2308,9 @@ void db_do_timestep( uint64 time, bool final ) {
 
 /*
  $Log$
+ Revision 1.247  2007/03/08 05:17:29  phase1geo
+ Various code fixes.  Full regression does not yet pass.
+
  Revision 1.246  2006/12/23 04:44:45  phase1geo
  Fixing build problems on cygwin.  Fixing compile errors with VPI and fixing
  segmentation fault in the funit_converge function.  Regression is far from

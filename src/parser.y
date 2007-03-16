@@ -3718,12 +3718,12 @@ statement
       if( ignore_mode == 0 ) {
         db_end_function_task_namedblock( @5.first_line );
         if( $3 != NULL ) {
-          exp = db_create_expression( NULL, NULL, EXP_OP_NB_CALL, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+          scope_extract_back( $3->name, back, rest );
+          exp  = db_create_expression( NULL, NULL, EXP_OP_NB_CALL, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
           exp->elem.funit = $3;
-          scope_extract_back( exp->elem.funit->name, back, rest );
-          exp->name = strdup( back );
+          exp->name       = strdup( back );
           stmt = db_create_statement( exp );
-          $$ = stmt;
+          $$   = stmt;
         } else {
           if( ignore_mode > 0 ) {
             ignore_mode--;
@@ -3752,14 +3752,17 @@ statement
     {
       expression* exp;
       statement*  stmt;
+      char        back[4096];
+      char        rest[4096];
       if( ignore_mode == 0 ) {
         db_end_function_task_namedblock( @4.first_line );
         if( $3 != NULL ) {
-          exp = db_create_expression( NULL, NULL, EXP_OP_NB_CALL, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+          scope_extract_back( $3->name, back, rest );
+          exp  = db_create_expression( NULL, NULL, EXP_OP_NB_CALL, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
           exp->elem.funit = $3;
-          exp->name = strdup( exp->elem.funit->name );
+          exp->name       = strdup( back );
           stmt = db_create_statement( exp );
-          $$ = stmt;
+          $$   = stmt;
         } else {
           ignore_mode--;
           $$ = NULL;

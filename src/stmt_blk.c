@@ -101,6 +101,7 @@ void stmt_blk_remove() {
      blocks that contain expressions that call this task, function or named block.
     */
     if( (curr_funit->type == FUNIT_FUNCTION) || (curr_funit->type == FUNIT_TASK) || (curr_funit->type == FUNIT_NAMED_BLOCK) ) {
+      printf( "Calling db_remove_stmt_blks_calling_statement for curr_funit: %s, %s\n", curr_funit->name, expression_string( stmt->exp ) );
       db_remove_stmt_blks_calling_statement( stmt );
     }
     /* Deallocate the statement block now */
@@ -111,6 +112,11 @@ void stmt_blk_remove() {
 
 /*
  $Log$
+ Revision 1.9  2006/10/09 17:54:19  phase1geo
+ Fixing support for VPI to allow it to properly get linked to the simulator.
+ Also fixed inconsistency in generate reports and updated appropriately in
+ regressions for this change.  Full regression now passes.
+
  Revision 1.8  2006/09/07 21:59:24  phase1geo
  Fixing some bugs related to statement block removal.  Also made some significant
  optimizations to this code.

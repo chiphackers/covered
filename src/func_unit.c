@@ -823,6 +823,41 @@ void funit_converge( func_unit* base, func_unit* other ) {
 }
 
 /*!
+ \param funit          Pointer to functional unit to flatten name (if necessary)
+ \param unnamed_scope  String specifying this unnamed_scope to remove
+
+ Flattens the functional unit name by finding the last unnamed scope portion of
+ the name and removing it from this name.
+*/
+void funit_flatten_name( func_unit* funit, char* unnamed_scope ) {
+
+  char* uscope;  /* Unnamed scope to find */
+  char* substr;  /* Pointer to found substring */
+  int   slen;    /* Length of string */
+  char* nname;   /* New functional unit name */
+
+  assert( funit != NULL );
+  assert( unnamed_scope != NULL );
+
+  slen = strlen( unnamed_scope ) + 2;
+  uscope = (char*)malloc_safe( slen, __FILE__, __LINE__ );
+  snprintf( uscope, slen, "%s.", unnamed_scope );
+
+  if( (substr = strstr( funit->name, uscope )) != NULL ) {
+    *substr = '\0';
+    substr += (slen - 1);
+    slen    = strlen( funit->name ) + strlen( substr ) + 1;
+    nname   = (char*)malloc_safe( slen, __FILE__, __LINE__ );
+    snprintf( nname, slen, "%s%s", funit->name, substr );
+    free_safe( funit->name );
+    funit->name = nname;
+  }
+
+  free_safe( uscope );
+
+}
+
+/*!
  \param id  Expression/statement ID to search for
  
  \return Returns a pointer to the functional unit that contains the specified expression/statement
@@ -1065,6 +1100,11 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.56  2006/12/23 04:44:48  phase1geo
+ Fixing build problems on cygwin.  Fixing compile errors with VPI and fixing
+ segmentation fault in the funit_converge function.  Regression is far from
+ passing at this point.  Checkpointing.
+
  Revision 1.55  2006/12/19 05:23:38  phase1geo
  Added initial code for handling instance flattening for unnamed scopes.  This
  is partially working at this point but still needs some debugging.  Checkpointing.

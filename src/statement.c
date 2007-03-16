@@ -113,6 +113,7 @@
 #include "sim.h"
 #include "db.h"
 #include "iter.h"
+#include "stmt_blk.h"
 
 
 extern char     user_msg[USER_MSG_LENGTH];
@@ -427,6 +428,16 @@ bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) {
       assert( expl != NULL );
 
       stmt = statement_create( expl->exp );
+
+      /*
+       If this statement is a head statement and the current functional unit is a task, function or named block,
+       set the curr_funit->first_stmt pointer to this statement.
+      */
+      if( (ESUPPL_IS_STMT_HEAD( stmt->exp->suppl ) == 1) &&
+          ((curr_funit->type == FUNIT_TASK) || (curr_funit->type == FUNIT_FUNCTION) || (curr_funit->type == FUNIT_NAMED_BLOCK)) ) {
+        assert( curr_funit->first_stmt == NULL );
+        curr_funit->first_stmt = stmt;
+      }
 
       /* Find and link next_true */
       if( true_id == id ) {
@@ -845,6 +856,15 @@ void statement_dealloc_recursive( statement* stmt ) {
   
     assert( stmt->exp != NULL );
 
+    /* If we are a named block or fork call statement, remove that statement block */
+    if( (stmt->exp->op == EXP_OP_NB_CALL) || (stmt->exp->op == EXP_OP_FORK) ) {
+
+      if( stmt->exp->elem.funit != NULL ) {
+        stmt_blk_add_to_remove_list( stmt->exp->elem.funit->first_stmt );
+      }
+
+    }
+
     /* Remove TRUE path */
     if( stmt->next_true == stmt->next_false ) {
 
@@ -900,6 +920,9 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.101  2007/03/08 05:17:30  phase1geo
+ Various code fixes.  Full regression does not yet pass.
+
  Revision 1.100  2006/12/18 23:58:34  phase1geo
  Fixes for automatic tasks.  Added atask1 diagnostic to regression suite to verify.
  Other fixes to parser for blocks.  We need to add code to properly handle unnamed
