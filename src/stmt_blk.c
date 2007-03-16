@@ -101,7 +101,7 @@ void stmt_blk_remove() {
      blocks that contain expressions that call this task, function or named block.
     */
     if( (curr_funit->type == FUNIT_FUNCTION) || (curr_funit->type == FUNIT_TASK) || (curr_funit->type == FUNIT_NAMED_BLOCK) ) {
-      printf( "Calling db_remove_stmt_blks_calling_statement for curr_funit: %s, %s\n", curr_funit->name, expression_string( stmt->exp ) );
+      curr_funit->type = FUNIT_NO_SCORE;
       db_remove_stmt_blks_calling_statement( stmt );
     }
     /* Deallocate the statement block now */
@@ -112,6 +112,10 @@ void stmt_blk_remove() {
 
 /*
  $Log$
+ Revision 1.10  2007/03/16 21:41:10  phase1geo
+ Checkpointing some work in fixing regressions for unnamed scope additions.
+ Getting closer but still need to properly handle the removal of functional units.
+
  Revision 1.9  2006/10/09 17:54:19  phase1geo
  Fixing support for VPI to allow it to properly get linked to the simulator.
  Also fixed inconsistency in generate reports and updated appropriately in
