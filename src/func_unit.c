@@ -262,7 +262,8 @@ vsignal* funit_find_signal( char* name, func_unit* funit ) {
  \param funit  Pointer to functional unit to search in
  \param stmt   Pointer to statement to search for
 
- TBD
+ Searches all statement blocks in the given functional unit that have expressions that call
+ the functional unit containing the given statement as its first statement.
 */
 void funit_remove_stmt_blks_calling_stmt( func_unit* funit, statement* stmt ) {
 
@@ -1100,6 +1101,10 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.57  2007/03/16 21:41:09  phase1geo
+ Checkpointing some work in fixing regressions for unnamed scope additions.
+ Getting closer but still need to properly handle the removal of functional units.
+
  Revision 1.56  2006/12/23 04:44:48  phase1geo
  Fixing build problems on cygwin.  Fixing compile errors with VPI and fixing
  segmentation fault in the funit_converge function.  Regression is far from

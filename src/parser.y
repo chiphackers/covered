@@ -3720,8 +3720,9 @@ statement
         if( $3 != NULL ) {
           scope_extract_back( $3->name, back, rest );
           exp  = db_create_expression( NULL, NULL, EXP_OP_NB_CALL, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-          exp->elem.funit = $3;
-          exp->name       = strdup( back );
+          exp->elem.funit      = $3;
+          exp->suppl.part.type = ETYPE_FUNIT;
+          exp->name            = strdup( back );
           stmt = db_create_statement( exp );
           $$   = stmt;
         } else {
@@ -3759,8 +3760,9 @@ statement
         if( $3 != NULL ) {
           scope_extract_back( $3->name, back, rest );
           exp  = db_create_expression( NULL, NULL, EXP_OP_NB_CALL, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-          exp->elem.funit = $3;
-          exp->name       = strdup( back );
+          exp->elem.funit      = $3;
+          exp->suppl.part.type = ETYPE_FUNIT;
+          exp->name            = strdup( back );
           stmt = db_create_statement( exp );
           $$   = stmt;
         } else {

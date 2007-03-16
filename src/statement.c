@@ -856,14 +856,16 @@ void statement_dealloc_recursive( statement* stmt ) {
   
     assert( stmt->exp != NULL );
 
+#ifdef SKIP
     /* If we are a named block or fork call statement, remove that statement block */
     if( (stmt->exp->op == EXP_OP_NB_CALL) || (stmt->exp->op == EXP_OP_FORK) ) {
 
-      if( stmt->exp->elem.funit != NULL ) {
+      if( ESUPPL_TYPE( stmt->exp->suppl ) == ETYPE_FUNIT ) {
         stmt_blk_add_to_remove_list( stmt->exp->elem.funit->first_stmt );
       }
 
     }
+#endif
 
     /* Remove TRUE path */
     if( stmt->next_true == stmt->next_false ) {
@@ -920,6 +922,10 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.102  2007/03/16 21:41:10  phase1geo
+ Checkpointing some work in fixing regressions for unnamed scope additions.
+ Getting closer but still need to properly handle the removal of functional units.
+
  Revision 1.101  2007/03/08 05:17:30  phase1geo
  Various code fixes.  Full regression does not yet pass.
 
