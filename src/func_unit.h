@@ -69,7 +69,7 @@ bool funit_db_read( func_unit* funit, char* scope, char** line );
 bool funit_db_merge( func_unit* base, FILE* file, bool same );
 
 /*! \brief Converges the contents of the other functional unit into the base functional unit */
-void funit_converge( func_unit* base, func_unit* other );
+void funit_converge( func_unit* base, func_unit* other, funit_inst* other_inst );
 
 /*! \brief Flattens the functional unit name by removing the last unnamed scope portion */
 void funit_flatten_name( func_unit* funit, char* unnamed_scope );
@@ -98,6 +98,10 @@ void funit_dealloc( func_unit* funit );
 
 /*
  $Log$
+ Revision 1.19  2007/03/16 21:41:09  phase1geo
+ Checkpointing some work in fixing regressions for unnamed scope additions.
+ Getting closer but still need to properly handle the removal of functional units.
+
  Revision 1.18  2006/12/19 05:23:39  phase1geo
  Added initial code for handling instance flattening for unnamed scopes.  This
  is partially working at this point but still needs some debugging.  Checkpointing.

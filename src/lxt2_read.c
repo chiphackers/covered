@@ -1460,7 +1460,7 @@ unsigned int lxt2_rd_get_num_active_blocks( struct lxt2_rd_trace* lt ) {
 
 /****************************************************************************/
 
-#ifndef HAVE_ZLIB
+#ifndef HAVE_LIBZ
 int lxt2_rd_iter_blocks( struct lxt2_rd_trace* lt,
                          void (*value_change_callback)( struct lxt2_rd_trace** lt, lxtint64_t* time, lxtint32_t* facidx, char** value ),
                          void *user_callback_data_pointer ) {

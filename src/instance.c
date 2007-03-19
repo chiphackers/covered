@@ -66,7 +66,11 @@ void instance_display_tree_helper( funit_inst* root, char* prefix ) {
 
   /* Get printable version of this instance and functional unit name */
   piname = scope_gen_printable( root->name );
-  pfname = scope_gen_printable( root->funit->name );
+  if( root->funit == NULL ) {
+    pfname[0] = strdup( "" );
+  } else {
+    pfname = scope_gen_printable( root->funit->name );
+  }
 
   /* Display ourselves */
   printf( "%s%s (%s)\n", prefix, piname, pfname );
@@ -716,6 +720,9 @@ void instance_flatten( funit_inst* root ) {
 
   if( root != NULL ) {
 
+    printf( "BEFORE flattening\n" );
+    instance_display_tree( root );
+
     /* Iterate through child instances */
     child = root->child_head;
     while( child != NULL ) {
@@ -733,7 +740,7 @@ void instance_flatten( funit_inst* root ) {
       if( funit_is_unnamed( child->funit ) && (child->funit->sig_head == NULL) ) {
 
         /* Converge the child functional unit into this functional unit */
-        funit_converge( root->funit, child->funit );
+        funit_converge( root->funit, child->funit, child );
 
         /* Remove this child from the child list of this instance */
         if( child == root->child_head ) {
@@ -996,6 +1003,10 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.69  2007/03/16 21:41:09  phase1geo
+ Checkpointing some work in fixing regressions for unnamed scope additions.
+ Getting closer but still need to properly handle the removal of functional units.
+
  Revision 1.68  2007/03/15 22:39:05  phase1geo
  Fixing bug in unnamed scope binding.
 

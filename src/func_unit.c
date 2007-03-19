@@ -55,6 +55,7 @@ extern char        user_msg[USER_MSG_LENGTH];
 extern funit_link* funit_head;
 extern funit_link* funit_tail;
 extern func_unit*  curr_funit;
+extern inst_link*  inst_head;
 
 
 /*!
@@ -769,14 +770,18 @@ bool funit_db_merge( func_unit* base, FILE* file, bool same ) {
 }
 
 /*!
- \param base   Pointer to base functional unit that will receive the information from the other functional unit
- \param other  Pointer to the functional unit that will give up its information.
+ \param base        Pointer to base functional unit that will receive the information from the other functional unit
+ \param other       Pointer to the functional unit that will give up its information.
+ \param other_inst  Pointer to instance containing the other functional unit.
 
  Takes all of the design information from the other functional unit and integrates it into the base
  functional unit, deallocating the other functional unit when complete and removing it from the funit_head
  list.
 */
-void funit_converge( func_unit* base, func_unit* other ) {
+void funit_converge( func_unit* base, func_unit* other, funit_inst* other_inst ) {
+
+  funit_inst* inst;        /* Pointer to instance that points to this functional unit */
+  int         ignore = 0;  /* Specifies that we should not ignore any matching instances */
 
   assert( base != NULL );
   assert( other != NULL );
@@ -816,6 +821,16 @@ void funit_converge( func_unit* base, func_unit* other ) {
       base->fsm_tail       = other->fsm_tail;
     }
     other->fsm_head = other->fsm_tail = NULL;
+  }
+
+  /* Remove this functional unit from all instances that point to it */
+  while( (inst = inst_link_find_by_funit( other, inst_head, &ignore )) != NULL ) {
+    if( inst != other_inst ) {
+      printf( "Found instance: %s\n", inst->name );
+      inst->funit = NULL;
+    } else {
+      ignore++;
+    }
   }
 
   /* Deallocate the contents of the other functional unit */
@@ -1089,6 +1104,7 @@ void funit_dealloc( func_unit* funit ) {
 
   if( funit != NULL ) {
 
+    /* Deallocate the contents of the functional unit itself */
     funit_clean( funit );
 
     /* Deallocate functional unit element itself */
@@ -1101,6 +1117,11 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.58  2007/03/16 22:28:14  phase1geo
+ Checkpointing again.  Still having quite a few issues with getting good coverage
+ reports.  Fixing a few more problems that the exclude3 diagnostic complained
+ about.
+
  Revision 1.57  2007/03/16 21:41:09  phase1geo
  Checkpointing some work in fixing regressions for unnamed scope additions.
  Getting closer but still need to properly handle the removal of functional units.
