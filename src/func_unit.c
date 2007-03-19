@@ -803,9 +803,8 @@ void funit_converge( func_unit* base, func_unit* other ) {
     if( base->stmt_head == NULL ) {
       base->stmt_head = other->stmt_head;
       base->stmt_tail = other->stmt_tail;
-    } else if( other->stmt_tail != NULL ) {
-      stmt_link_join( other->stmt_tail, base->stmt_head );
-      base->stmt_head = other->stmt_head;
+    } else {
+      stmt_link_merge( &(base->stmt_head), &(base->stmt_tail), other->stmt_head, other->stmt_tail );
     }
     other->stmt_head = other->stmt_tail = NULL;
   }
@@ -1103,6 +1102,11 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.60  2007/03/19 20:30:31  phase1geo
+ More fixes to report command for instance flattening.  This seems to be
+ working now as far as I can tell.  Regressions still have about 8 diagnostics
+ failing with report errors.  Checkpointing.
+
  Revision 1.59  2007/03/19 03:30:16  phase1geo
  More fixes to instance flattening algorithm.  Still much more work to do here.
  Checkpointing.

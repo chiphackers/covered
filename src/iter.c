@@ -40,6 +40,19 @@ void stmt_iter_reset( stmt_iter* si, stmt_link* start ) {
 }
 
 /*!
+ \param si    Pointer to statement iterator containing the copied information
+ \param orig  Pointer to original statementer iterator being copied
+
+ Copies the given statement iterator to the given iterator.
+*/
+void stmt_iter_copy( stmt_iter* si, stmt_iter* orig ) {
+
+  si->curr = orig->curr;
+  si->last = orig->last;
+
+}
+
+/*!
  \param si  Pointer to statement iterator to advance.
  
  \return Returns pointer to next statement link.
@@ -155,8 +168,34 @@ void stmt_iter_get_next_in_order( stmt_iter* si ) {
 
 }
 
+void stmt_iter_get_line_before( stmt_iter* si, int lnum ) {
+
+  if( si->curr != NULL ) {
+
+    if( si->curr->stmt->exp->line < lnum ) {
+      while( (si->curr != NULL) && (si->curr->stmt->exp->line < lnum) ) {
+        stmt_iter_next( si );
+      }
+      stmt_iter_reverse( si );
+      stmt_iter_next( si );
+      stmt_iter_reverse( si );
+    } else {
+      while( (si->curr != NULL) && (si->curr->stmt->exp->line > lnum) ) {
+        stmt_iter_next( si );
+      }
+    }
+
+  }
+
+}
+
 /*
  $Log$
+ Revision 1.12  2006/03/28 22:28:27  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.11  2006/03/23 22:42:54  phase1geo
  Changed two variable combinational expressions that have a constant value in either the
  left or right expression tree to unary expressions.  Removed expressions containing only

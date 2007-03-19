@@ -135,30 +135,78 @@ void stmt_link_add_tail( statement* stmt, stmt_link** head, stmt_link** tail ) {
 }
 
 /*!
- \param tail  Pointer to tail statement link of first statement link list to join.
- \param head  Pointer to second statement link of first statement link list to join.
+ \param tail  Pointer to head of statement link of first statement link list to merge into.
+ \param head  Pointer to head of statement link of second statement link list to merge.
 
- Joins two statement links together.
+ Joins two statement links together such that the statements are stored in line order.
+ Assumes that the base list contains at least one statement link.
 */
-void stmt_link_join( stmt_link* tail, stmt_link* head ) {
+void stmt_link_merge( stmt_link** base_head, stmt_link** base_tail, stmt_link* other_head, stmt_link* other_tail ) {
 
-  stmt_iter si_tail;  /* Statement iterator for the tail */
-  stmt_iter si_head;  /* Statement iterator for the head */
+  stmt_iter si_base;   /* Statement iterator for the base list */
+  stmt_iter si_base2;  /* Statement iterator for the base list */
+  stmt_iter si_other;  /* Statement iterator for the other list */
 
   /* Get next to last statement link in tail list */
-  stmt_iter_reset( &si_tail, tail );
-  stmt_iter_next( &si_tail );
+  stmt_iter_reset( &si_base, *base_head );
+  stmt_iter_get_line_before( &si_base, other_head->stmt->exp->line );
+  stmt_iter_reset( &si_other, other_head );
 
-  /* Get second statement link in head list */
-  stmt_iter_reset( &si_head, head );
-  stmt_iter_next( &si_head );
+  /* The other list should succeed the base list */
+  if( si_base.curr == NULL ) {
 
-  /* Setup tail pointer */
-  tail->ptr = (stmt_link*)((long int)(si_tail.curr) ^ (long int)head);
+    stmt_iter_reverse( &si_base );
+    stmt_iter_next( &si_base );
+    stmt_iter_reverse( &si_base );
+    stmt_iter_next( &si_other );
 
-  /* Setup head pointer */
-  head->ptr = (stmt_link*)((long int)(si_head.curr) ^ (long int)tail);
+    si_base.curr->ptr  = (stmt_link*)((long int)(si_base.last) ^ (long int)si_other.last);
+    si_other.last->ptr = (stmt_link*)((long int)(si_other.curr) ^ (long int)si_base.curr);
 
+    *base_tail = other_tail;
+
+  /* The other list should precede the base list */
+  } else if( si_base.last == NULL ) {
+
+    stmt_iter_next( &si_base );
+    stmt_iter_next( &si_base );
+    while( si_other.curr != NULL ) {
+      stmt_iter_next( &si_other );
+    }
+    stmt_iter_reverse( &si_other );
+    stmt_iter_next( &si_other );
+    stmt_iter_reverse( &si_other );
+
+    si_base.last->ptr  = (stmt_link*)((long int)(si_base.curr) ^ (long int)si_other.curr);
+    si_other.curr->ptr = (stmt_link*)((long int)(si_other.last) ^ (long int)si_base.last);
+
+    *base_head = other_head;
+
+  /* Otherwise, the other list needs to be merged into the base list */
+  } else {
+
+    stmt_iter_next( &si_other );
+    stmt_iter_copy( &si_base2, &si_base );
+    stmt_iter_next( &si_base2 );
+    stmt_iter_next( &si_base2 );
+
+    /* Tie up the front of the other list */
+    si_base.curr->ptr  = (stmt_link*)((long int)(si_base.last) ^ (long int)si_other.last);
+    si_other.last->ptr = (stmt_link*)((long int)(si_other.curr) ^ (long int)si_base.curr);
+
+    while( si_other.curr != NULL ) {
+      stmt_iter_next( &si_other );
+    }
+    stmt_iter_reverse( &si_other );
+    stmt_iter_next( &si_other );
+    stmt_iter_reverse( &si_other );
+
+    /* Now tie up the tail */
+    si_other.curr->ptr = (stmt_link*)((long int)(si_base2.last) ^ (long int)si_other.last);
+    si_base2.last->ptr = (stmt_link*)((long int)(si_other.curr) ^ (long int)si_base2.curr);
+
+  }
+    
 }
 
 /*!
@@ -1172,6 +1220,9 @@ void inst_link_delete_list( inst_link* head ) {
 
 /*
  $Log$
+ Revision 1.59  2007/03/15 22:39:05  phase1geo
+ Fixing bug in unnamed scope binding.
+
  Revision 1.58  2006/12/19 05:23:39  phase1geo
  Added initial code for handling instance flattening for unnamed scopes.  This
  is partially working at this point but still needs some debugging.  Checkpointing.

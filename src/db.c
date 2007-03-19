@@ -1625,6 +1625,7 @@ statement* db_parallelize_statement( statement* stmt ) {
 
   expression* exp;    /* Expression containing FORK statement */
   char*       scope;  /* Name of current parallelized statement scope */
+  char        back[4096];  /* Last portion of scope */
 
   /* If we are a parallel statement, create a FORK statement for this statement block */
   if( (stmt != NULL) && (fork_depth != -1) && (fork_block_depth[fork_depth] == block_depth) ) {
@@ -1650,11 +1651,16 @@ statement* db_parallelize_statement( statement* stmt ) {
       stmt->exp->suppl.part.stmt_is_called = 1;
       db_add_statement( stmt, stmt );
 
+      /* Bind the FORK expression now */
+      exp->elem.funit      = curr_funit;
+      exp->suppl.part.type = ETYPE_FUNIT;
+      exp->name            = strdup( scope );
+
       /* Restore the original functional unit */
       db_end_function_task_namedblock( stmt->exp->line );
 
       /* Bind the FORK expression to this statement */
-      bind_add( FUNIT_NAMED_BLOCK, scope, exp, curr_funit );
+      //bind_add( FUNIT_NAMED_BLOCK, scope, exp, curr_funit );
 
     }
     free_safe( scope );
@@ -2308,6 +2314,10 @@ void db_do_timestep( uint64 time, bool final ) {
 
 /*
  $Log$
+ Revision 1.248  2007/03/16 21:41:08  phase1geo
+ Checkpointing some work in fixing regressions for unnamed scope additions.
+ Getting closer but still need to properly handle the removal of functional units.
+
  Revision 1.247  2007/03/08 05:17:29  phase1geo
  Various code fixes.  Full regression does not yet pass.
 
