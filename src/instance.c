@@ -41,9 +41,11 @@
 #include "util.h"
 
 
-extern int        curr_expr_id;
-extern inst_link* inst_head;
-extern char       user_msg[USER_MSG_LENGTH];
+extern int         curr_expr_id;
+extern inst_link*  inst_head;
+extern funit_link* funit_head;
+extern funit_link* funit_tail;
+extern char        user_msg[USER_MSG_LENGTH];
 
 
 bool instance_resolve_inst( funit_inst* root, funit_inst* curr );
@@ -66,11 +68,7 @@ void instance_display_tree_helper( funit_inst* root, char* prefix ) {
 
   /* Get printable version of this instance and functional unit name */
   piname = scope_gen_printable( root->name );
-  if( root->funit == NULL ) {
-    pfname[0] = strdup( "" );
-  } else {
-    pfname = scope_gen_printable( root->funit->name );
-  }
+  pfname = scope_gen_printable( root->funit->name );
 
   /* Display ourselves */
   printf( "%s%s (%s)\n", prefix, piname, pfname );
@@ -703,32 +701,31 @@ void instance_db_write( funit_inst* root, FILE* file, char* scope, bool parse_mo
 }
 
 /*!
- \param root  Pointer to current instance root
+ \param root     Pointer to current instance root
+ \param rm_head  Pointer to head of functional unit list to remove
+ \param rm_tail  Pointer to head of functional unit list to remove
 
  Recursively iterates through instance tree, integrating all unnamed scopes that do
  not contain any signals into their parent modules.  This function only gets called
  during the report command.
 */
-void instance_flatten( funit_inst* root ) {
+void instance_flatten_helper( funit_inst* root, funit_link** rm_head, funit_link** rm_tail ) {
 
-  funit_inst* child;              /* Pointer to current child instance */
-  funit_inst* last_child = NULL;  /* Pointer to the last child instance */
-  funit_inst* tmp;                /* Temporary pointer to functional unit instance */
-  funit_inst* grandchild;         /* Pointer to current granchild instance */
-  char        back[4096];         /* Last portion of functional unit name */
-  char        rest[4096];         /* Holds the rest of the functional unit name */
+  funit_inst* child;                 /* Pointer to current child instance */
+  funit_inst* last_child    = NULL;  /* Pointer to the last child instance */
+  funit_inst* tmp;                   /* Temporary pointer to functional unit instance */
+  funit_inst* grandchild;            /* Pointer to current granchild instance */
+  char        back[4096];            /* Last portion of functional unit name */
+  char        rest[4096];            /* Holds the rest of the functional unit name */
 
   if( root != NULL ) {
-
-    printf( "BEFORE flattening\n" );
-    instance_display_tree( root );
 
     /* Iterate through child instances */
     child = root->child_head;
     while( child != NULL ) {
 
       /* First, flatten the child instance */
-      instance_flatten( child );
+      instance_flatten_helper( child, rm_head, rm_tail );
 
       /* Get the last portion of the child instance before this functional unit is removed */
       scope_extract_back( child->funit->name, back, rest );
@@ -740,7 +737,7 @@ void instance_flatten( funit_inst* root ) {
       if( funit_is_unnamed( child->funit ) && (child->funit->sig_head == NULL) ) {
 
         /* Converge the child functional unit into this functional unit */
-        funit_converge( root->funit, child->funit, child );
+        funit_converge( root->funit, child->funit );
 
         /* Remove this child from the child list of this instance */
         if( child == root->child_head ) {
@@ -777,6 +774,11 @@ void instance_flatten( funit_inst* root ) {
         tmp   = child;
         child = child->next;
 
+        /* Add the current functional unit to the list of functional units to remove */
+        if( funit_link_find( tmp->funit, *rm_head ) == NULL ) {
+          funit_link_add( tmp->funit, rm_head, rm_tail );
+        }
+
         /* Deallocate child instance */
         instance_dealloc_single( tmp );
       
@@ -787,10 +789,39 @@ void instance_flatten( funit_inst* root ) {
 
       }
 
-
     }
 
   }
+
+}
+
+/*!
+ \param root     Pointer to current instance root
+
+ Recursively iterates through instance tree, integrating all unnamed scopes that do
+ not contain any signals into their parent modules.  This function only gets called
+ during the report command.
+*/
+void instance_flatten( funit_inst* root ) {
+
+  funit_link* rm_head = NULL;  /* Pointer to head of functional unit list to remove */
+  funit_link* rm_tail = NULL;  /* Pointer to tail of functional unit list to remove */
+  func_unit*  parent_mod;      /* Pointer to parent module of list to remove */
+
+  /* Flatten the hierarchy */
+  instance_flatten_helper( root, &rm_head, &rm_tail );
+
+  /* Now deallocate the list of functional units */
+  funit_link* funitl = rm_head;
+  while( funitl != NULL ) {
+    funit_link_remove( funitl->funit, &funit_head, &funit_tail, FALSE );
+    if( funitl->funit->type != FUNIT_MODULE ) {
+      parent_mod = funit_get_curr_module( funitl->funit );
+      funit_link_remove( funitl->funit, &(parent_mod->tf_head), &(parent_mod->tf_tail), FALSE );
+    }
+    funitl = funitl->next;
+  }
+  funit_link_delete_list( &rm_head, &rm_tail, TRUE );
 
 }
 
@@ -1003,6 +1034,10 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.70  2007/03/19 03:30:16  phase1geo
+ More fixes to instance flattening algorithm.  Still much more work to do here.
+ Checkpointing.
+
  Revision 1.69  2007/03/16 21:41:09  phase1geo
  Checkpointing some work in fixing regressions for unnamed scope additions.
  Getting closer but still need to properly handle the removal of functional units.

@@ -770,15 +770,14 @@ bool funit_db_merge( func_unit* base, FILE* file, bool same ) {
 }
 
 /*!
- \param base        Pointer to base functional unit that will receive the information from the other functional unit
- \param other       Pointer to the functional unit that will give up its information.
- \param other_inst  Pointer to instance containing the other functional unit.
+ \param base   Pointer to base functional unit that will receive the information from the other functional unit
+ \param other  Pointer to the functional unit that will give up its information.
 
  Takes all of the design information from the other functional unit and integrates it into the base
  functional unit, deallocating the other functional unit when complete and removing it from the funit_head
  list.
 */
-void funit_converge( func_unit* base, func_unit* other, funit_inst* other_inst ) {
+void funit_converge( func_unit* base, func_unit* other ) {
 
   funit_inst* inst;        /* Pointer to instance that points to this functional unit */
   int         ignore = 0;  /* Specifies that we should not ignore any matching instances */
@@ -804,9 +803,9 @@ void funit_converge( func_unit* base, func_unit* other, funit_inst* other_inst )
     if( base->stmt_head == NULL ) {
       base->stmt_head = other->stmt_head;
       base->stmt_tail = other->stmt_tail;
-    } else if( other->stmt_head != NULL ) {
-      stmt_link_join( base->stmt_tail, other->stmt_head );
-      base->stmt_tail = other->stmt_tail;
+    } else if( other->stmt_tail != NULL ) {
+      stmt_link_join( other->stmt_tail, base->stmt_head );
+      base->stmt_head = other->stmt_head;
     }
     other->stmt_head = other->stmt_tail = NULL;
   }
@@ -822,19 +821,6 @@ void funit_converge( func_unit* base, func_unit* other, funit_inst* other_inst )
     }
     other->fsm_head = other->fsm_tail = NULL;
   }
-
-  /* Remove this functional unit from all instances that point to it */
-  while( (inst = inst_link_find_by_funit( other, inst_head, &ignore )) != NULL ) {
-    if( inst != other_inst ) {
-      printf( "Found instance: %s\n", inst->name );
-      inst->funit = NULL;
-    } else {
-      ignore++;
-    }
-  }
-
-  /* Deallocate the contents of the other functional unit */
-  funit_link_remove( other, &funit_head, &funit_tail, TRUE );
 
 }
 
@@ -1117,6 +1103,10 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.59  2007/03/19 03:30:16  phase1geo
+ More fixes to instance flattening algorithm.  Still much more work to do here.
+ Checkpointing.
+
  Revision 1.58  2007/03/16 22:28:14  phase1geo
  Checkpointing again.  Still having quite a few issues with getting good coverage
  reports.  Fixing a few more problems that the exclude3 diagnostic complained
