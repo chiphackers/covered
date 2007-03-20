@@ -16,6 +16,7 @@
 1 c 32 30004 1 0 0 0 1 1 2
 3 0 bar main.a[0].b[3] hier2.v 30 34 1
 1 c 32 30004 1 0 0 0 1 1 2
+3 1 main.$u0 main.$u0 hier2.v 0 16 1
 3 0 foo main.a[1] hier2.v 22 26 1
 3 0 bar main.a[1].b[0] hier2.v 30 34 1
 1 c 32 30004 1 0 0 0 1 1 2

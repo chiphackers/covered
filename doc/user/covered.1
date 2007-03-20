@@ -1,4 +1,4 @@
-.TH "Covered" "1" "covered-20061205" "Trevor Williams" "Code Analysis"
+.TH "Covered" "1" "covered-0.5" "Trevor Williams" "Code Analysis"
 .SH "NAME"
 .LP 
 Covered \- Verilog Code Coverage Analyzer
@@ -183,7 +183,7 @@ In addition to using Covered's score command to parse a VCD or LXT file to abstr
 .TP 
 To automatically build the VPI\-ready library files when generating Covered from source, simply specify one or more of the following when running the "configure" utility in the base Covered directory:  \-\-with\-iv=<Icarus Verilog install path>, \-\-with\-vcs=<VCS include path>, \-\-with\-cver=<CVER include path>.  After Covered has been configured, simply type 'make' and 'make install'.  This will install the VPI\-ready library files in the installation libexec directory (by default this path will be /usr/local/libexec).
 .TP 
-Before you are ready to compile the design, you must first create a CDD file, a top\-level Verilog file, and a PLI table file (the last file is only needed for the VCS compiler).  This is done by specifying the \fB\-vpi\fR  (\fIfilename\fR) option to Covered's score command.  If no filename is specified after \-vpi, the files covered_vpi.v and covered_vpi.tab will be created along with the generated coverage file.  Note that this step only needs to be performed once unless the design files change.  You are now ready to compile the simulator.
+Before you are ready to compile the design, you must first create a CDD file, a top\-level Verilog file, and a PLI table file (the last file is only needed for the VCS compiler).  This is done by specifying the \fB\-vpi\fR  (\fIfilename\fR) option to Covered's score command.  If no filename is specified after \-vpi, the files covered_vpi.v and covered_vpi.ta b will be created along with the generated coverage file.  Note that this step only needs to be performed once unless the design files change.  You are now ready to compile the simulator.
 .TP 
 If you are compiling an Icarus Verilog simulation, simply add '\-m /usr/local/libexec/covered.vpi covered_vpi.v' to the 'iverilog' command\-line.  Once compilation is complete, run the generated executable file as you normally would.
 .TP 

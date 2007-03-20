@@ -1,2 +1,1 @@
-ERROR!  Could not open ./tmp/err2.0.cdd for writing
-ERROR!  Unable to write database file
+ERROR!  Output file "./tmp/err2.0.cdd" is not writable

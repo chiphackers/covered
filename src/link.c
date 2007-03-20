@@ -147,6 +147,12 @@ void stmt_link_merge( stmt_link** base_head, stmt_link** base_tail, stmt_link* o
   stmt_iter si_base2;  /* Statement iterator for the base list */
   stmt_iter si_other;  /* Statement iterator for the other list */
 
+/*
+  printf( "In stmt_link_merge\n" );
+  stmt_link_display( *base_head );
+  stmt_link_display( other_head );
+*/
+
   /* Get next to last statement link in tail list */
   stmt_iter_reset( &si_base, *base_head );
   stmt_iter_get_line_before( &si_base, other_head->stmt->exp->line );
@@ -155,6 +161,7 @@ void stmt_link_merge( stmt_link** base_head, stmt_link** base_tail, stmt_link* o
   /* The other list should succeed the base list */
   if( si_base.curr == NULL ) {
 
+    //printf( "*** other succeeds base ***\n" );
     stmt_iter_reverse( &si_base );
     stmt_iter_next( &si_base );
     stmt_iter_reverse( &si_base );
@@ -168,6 +175,7 @@ void stmt_link_merge( stmt_link** base_head, stmt_link** base_tail, stmt_link* o
   /* The other list should precede the base list */
   } else if( si_base.last == NULL ) {
 
+    //printf( "*** other precedes base ***\n" );
     stmt_iter_next( &si_base );
     stmt_iter_next( &si_base );
     while( si_other.curr != NULL ) {
@@ -185,10 +193,13 @@ void stmt_link_merge( stmt_link** base_head, stmt_link** base_tail, stmt_link* o
   /* Otherwise, the other list needs to be merged into the base list */
   } else {
 
+    //printf( "*** other interrupts base ***\n" );
     stmt_iter_next( &si_other );
     stmt_iter_copy( &si_base2, &si_base );
     stmt_iter_next( &si_base2 );
-    stmt_iter_next( &si_base2 );
+    stmt_iter_reverse( &si_base );
+    stmt_iter_next( &si_base );
+    stmt_iter_reverse( &si_base );
 
     /* Tie up the front of the other list */
     si_base.curr->ptr  = (stmt_link*)((long int)(si_base.last) ^ (long int)si_other.last);
@@ -207,6 +218,9 @@ void stmt_link_merge( stmt_link** base_head, stmt_link** base_tail, stmt_link* o
 
   }
     
+  /* Finally, clear the IS_STMT_HEAD bit */
+  other_head->stmt->exp->suppl.part.stmt_head = 0;
+
 }
 
 /*!
@@ -1220,6 +1234,12 @@ void inst_link_delete_list( inst_link* head ) {
 
 /*
  $Log$
+ Revision 1.60  2007/03/19 22:52:50  phase1geo
+ Attempting to fix problem with line ordering for a named block that is
+ in the middle of another statement block.  Also fixed a problem with FORK
+ expressions not being bound early enough.  Run currently segfaults but
+ I need to checkpoint at the moment.
+
  Revision 1.59  2007/03/15 22:39:05  phase1geo
  Fixing bug in unnamed scope binding.
 
