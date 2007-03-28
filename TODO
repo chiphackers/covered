@@ -54,6 +54,8 @@ Miscellaneous
 
 IP 1.  Add regression that produces known, achievable error conditions in the code.
 
+   2.  Make all code splint clean.
+
 
 GUI
 ---
