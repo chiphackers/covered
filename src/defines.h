@@ -1056,7 +1056,7 @@ typedef enum exp_op_type_e {
 /*! @} */
 
 /*! Overload for the snprintf function which verifies that we don't overrun character arrays */
-#define snprintf(x,y,...)	{ int svar = snprintf( x, y, __VA_ARGS__ ); assert( svar < (y) ); }
+#define snprintf(x,y,...)	assert( snprintf( x, y, __VA_ARGS__ ) < (y) );
 
 /*!
  Defines boolean variables used in most functions.
@@ -1267,15 +1267,19 @@ union esuppl_u {
     control comb_cntd      :1;  /*!< Bit 26.  Mask bit = 0.  Indicates that the current expression has been previously
                                      counted for combinational coverage.  Only set by report command (therefore this bit
                                      will always be a zero when written to CDD file. */
-    control stmt_added     :1;  /*!< Bit 27.  Temporary bit value used by the score command but not displayed to the CDD
-                                     file.  When this bit is set to a one, it indicates to the db_add_statement
-                                     function that this statement and all children statements have already been
-                                     added to the functional unit statement list and should not be added again. */
-    control owned          :1;  /*!< Bit 28.  Mask bit = 0.  Temporary value used by the score command to indicate
+    control stmt_added     :1;  /*!< Bit 27.  Mask bit = 0.  Temporary bit value used by the score command but not
+                                     displayed to the CDD file.  When this bit is set to a one, it indicates to the
+                                     db_add_statement function that this statement and all children statements have
+                                     already been added to the functional unit statement list and should not be added again. */
+    control exp_added      :1;  /*!< Bit 28.  Mask bit = 0.  Temporary bit value used by the score command but not
+                                     displayed to the CDD file.  When this bit is set to a one, it indicates to the
+                                     db_add_expression function that this expression and all children expressions have
+                                     already been added to the functional unit expression list and should not be added again. */
+    control owned          :1;  /*!< Bit 29.  Mask bit = 0.  Temporary value used by the score command to indicate
                                      if this expression is already owned by a mod_parm structure. */
-    control gen_expr       :1;  /*!< Bit 29.  Mask bit = 0.  Temporary value used by the score command to indicate
+    control gen_expr       :1;  /*!< Bit 30.  Mask bit = 0.  Temporary value used by the score command to indicate
                                      that this expression is a part of a generate expression. */
-    control prev_called    :1;  /*!< Bit 30.  Mask bit = 0.  Temporary value used by named block and task expression
+    control prev_called    :1;  /*!< Bit 31.  Mask bit = 0.  Temporary value used by named block and task expression
                                      functions to indicate if we are in the middle of executing a named block or task
                                      expression (since these cause a context switch to occur. */
   } part;
@@ -2297,6 +2301,10 @@ struct reentrant_s {
 
 /*
  $Log$
+ Revision 1.251  2007/03/16 21:41:08  phase1geo
+ Checkpointing some work in fixing regressions for unnamed scope additions.
+ Getting closer but still need to properly handle the removal of functional units.
+
  Revision 1.250  2006/12/18 23:58:34  phase1geo
  Fixes for automatic tasks.  Added atask1 diagnostic to regression suite to verify.
  Other fixes to parser for blocks.  We need to add code to properly handle unnamed

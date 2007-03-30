@@ -343,7 +343,7 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
     }
 
-    if( (expr->op == EXP_OP_LAST) || (expr->op == EXP_OP_NB_CALL) ) {
+    if( (expr->op == EXP_OP_LAST) || (expr->op == EXP_OP_NB_CALL) || (expr->op == EXP_OP_JOIN) || (expr->op == EXP_OP_FORK) ) {
 
       /* Do nothing. */
       *code_depth = 0;
@@ -913,6 +913,10 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.81  2006/12/12 06:20:22  phase1geo
+ More updates to support re-entrant tasks/functions.  Still working through
+ compiler errors.  Checkpointing.
+
  Revision 1.80  2006/11/20 21:36:21  phase1geo
  Fixing bug 1599869.  When a disable statement is found to not be covered, the
  codegen_gen_expr function returns the proper output (instead of unitialized output).

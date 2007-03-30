@@ -59,8 +59,8 @@
 
 
 extern char*       top_module;
-extern inst_link*  inst_head;
-extern inst_link*  inst_tail;
+extern /*@null@*/inst_link*  inst_head;
+extern /*@null@*/inst_link*  inst_tail;
 extern str_link*   no_score_head;
 extern funit_link* funit_head;
 extern funit_link* funit_tail;
@@ -75,42 +75,42 @@ extern bool        debug_mode;
 extern int*        fork_block_depth;
 extern int         fork_depth;
 extern int         block_depth;
-extern tnode*      def_table;
+/*@null@*/extern tnode*      def_table;
 extern int         generate_mode;
 extern int         generate_expr_mode;
 
 /*!
  Specifies the string Verilog scope that is currently specified in the VCD file.
 */
-char* curr_inst_scope = NULL;
+/*@null@*/char* curr_inst_scope = NULL;
 
 /*!
  Pointer to the current instance selected by the VCD parser.  If this value is
  NULL, the current instance does not reside in the design specified for coverage.
 */
-funit_inst* curr_instance = NULL;
+/*@null@*/funit_inst* curr_instance = NULL;
 
 /*!
  Pointer to head of list of module names that need to be parsed yet.  These names
  are added in the db_add_instance function and removed in the db_end_module function.
 */
-str_link* modlist_head  = NULL;
+/*@null@*/str_link* modlist_head  = NULL;
 
 /*!
  Pointer to tail of list of module names that need to be parsed yet.  These names
  are added in the db_add_instance function and removed in the db_end_module function.
 */
-str_link* modlist_tail  = NULL;
+/*@null@*/str_link* modlist_tail  = NULL;
 
 /*!
  Pointer to the functional unit structure for the functional unit that is currently being parsed.
 */
-func_unit* curr_funit   = NULL;
+/*@null@*/func_unit* curr_funit   = NULL;
 
 /*!
  Pointer to the global function unit that is available in SystemVerilog.
 */
-func_unit* global_funit = NULL;
+/*@null@*/func_unit* global_funit = NULL;
 
 /*!
  This static value contains the current expression ID number to use for the next expression found, it
@@ -151,12 +151,12 @@ int       gi_conn_id      = 1;
 /*!
  Pointer to current implicitly connected generate item block.
 */
-gen_item* curr_gi_block   = NULL;
+/*@null@*/gen_item* curr_gi_block   = NULL;
 
 /*!
  Pointer to the most recently created generate item.
 */
-gen_item* last_gi         = NULL;
+/*@null@*/gen_item* last_gi         = NULL;
 
 /*!
  Specifies the current timescale unit shift value.
@@ -266,7 +266,7 @@ bool db_write( char* file, bool parse_mode, bool report_save ) {
       instance_db_write( instl->inst, db_handle, instl->inst->name, parse_mode, report_save );
       instl = instl->next;
     }
-    fclose( db_handle );
+    assert( fclose( db_handle ) == 0 );
 
   } else {
 
@@ -406,7 +406,7 @@ bool db_read( char* file, int read_mode ) {
                 instl = instl->next;
               }
               if( instl == NULL ) {
-                inst_link_add( instance_create( curr_funit, funit_scope, NULL ), &inst_head, &inst_tail );
+                (void)inst_link_add( instance_create( curr_funit, funit_scope, NULL ), &inst_head, &inst_tail );
               }
 
             }
@@ -1521,44 +1521,43 @@ expression* db_create_expr_from_static( static_expr* se, int line, int first_col
 */
 void db_add_expression( expression* root ) {
 
-  if( root != NULL ) {
+  if( (root != NULL) && (root->suppl.part.exp_added == 0) ) {
 
-    if( exp_link_find( root, curr_funit->exp_head ) == NULL ) {
-    
 #ifdef DEBUG_MODE
-      snprintf( user_msg, USER_MSG_LENGTH, "In db_add_expression, id: %d, op: %s, line: %d", 
-                root->id, expression_string_op( root->op ), root->line );
-      print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    snprintf( user_msg, USER_MSG_LENGTH, "In db_add_expression, id: %d, op: %s, line: %d", 
+              root->id, expression_string_op( root->op ), root->line );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
-      if( generate_mode > 0 ) {
+    if( generate_mode > 0 ) {
 
-        if( root->suppl.part.gen_expr == 1 ) {
+      if( root->suppl.part.gen_expr == 1 ) {
 
-          /* Add root expression to the generate item list for the current functional unit */
-          last_gi = gen_item_create_expr( root );
+        /* Add root expression to the generate item list for the current functional unit */
+        last_gi = gen_item_create_expr( root );
 
-          /* Attach it to the curr_gi_block, if one exists */
-          if( curr_gi_block != NULL ) {
-            db_gen_item_connect( curr_gi_block, last_gi );
-          } else {
-            curr_gi_block = last_gi;
-          }
-
+        /* Attach it to the curr_gi_block, if one exists */
+        if( curr_gi_block != NULL ) {
+          db_gen_item_connect( curr_gi_block, last_gi );
+        } else {
+          curr_gi_block = last_gi;
         }
-
-      } else {
-
-        /* Add expression's children first. */
-        db_add_expression( root->right );
-        db_add_expression( root->left );
-
-        /* Now add this expression to the list. */
-        exp_link_add( root, &(curr_funit->exp_head), &(curr_funit->exp_tail) );
 
       }
 
+    } else {
+
+      /* Add expression's children first. */
+      db_add_expression( root->right );
+      db_add_expression( root->left );
+
+      /* Now add this expression to the list. */
+      exp_link_add( root, &(curr_funit->exp_head), &(curr_funit->exp_tail) );
+
     }
+
+    /* Specify that this expression has already been added */
+    root->suppl.part.exp_added = 1;
 
   }
 
@@ -1643,9 +1642,6 @@ statement* db_parallelize_statement( statement* stmt ) {
     scope = db_create_unnamed_scope();
     if( db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, scope, curr_funit->filename, stmt->exp->line ) ) {
 
-      /* Add the expression to this functional unit */
-      db_add_expression( stmt->exp );
-
       /* Create a thread block for this statement block */
       stmt->exp->suppl.part.stmt_head      = 1;
       stmt->exp->suppl.part.stmt_is_called = 1;
@@ -1671,16 +1667,10 @@ statement* db_parallelize_statement( statement* stmt ) {
 
     /* Create FORK statement and add the expression */
     stmt = db_create_statement( exp );
-    db_add_expression( exp );
 
     /* Restore fork and block depth values for parser */
     fork_depth++;
     block_depth++;
-
-  } else {
-
-    /* Add the expression to the current functional unit */
-    db_add_expression( stmt->exp );
 
   }
 
@@ -1744,6 +1734,9 @@ void db_add_statement( statement* stmt, statement* start ) {
 
     } else {
 
+      /* Add the associated expression tree */
+      db_add_expression( stmt->exp );
+
       /* Add TRUE and FALSE statement paths to list */
       if( (ESUPPL_IS_STMT_STOP_FALSE( stmt->exp->suppl ) == 0) && (stmt->next_false != start) ) {
         db_add_statement( stmt->next_false, start );
@@ -1756,6 +1749,7 @@ void db_add_statement( statement* stmt, statement* start ) {
       /* Set ADDED bit of this statement */
       stmt->exp->suppl.part.stmt_added = 1;
 
+      /* Finally, add the statement to the functional unit statement list */
       stmt_link_add_tail( stmt, &(curr_funit->stmt_head), &(curr_funit->stmt_tail) );
 
     }
@@ -2314,6 +2308,12 @@ void db_do_timestep( uint64 time, bool final ) {
 
 /*
  $Log$
+ Revision 1.249  2007/03/19 22:52:50  phase1geo
+ Attempting to fix problem with line ordering for a named block that is
+ in the middle of another statement block.  Also fixed a problem with FORK
+ expressions not being bound early enough.  Run currently segfaults but
+ I need to checkpoint at the moment.
+
  Revision 1.248  2007/03/16 21:41:08  phase1geo
  Checkpointing some work in fixing regressions for unnamed scope additions.
  Getting closer but still need to properly handle the removal of functional units.

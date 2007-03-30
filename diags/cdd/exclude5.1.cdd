@@ -1,5 +1,5 @@
 5 a 5 * 0
-8 /ptmp/cvs/covered/diags/verilog -t main -vcd exclude5.1.vcd -o exclude5.1.cdd -v exclude5.1.v -ea
+8 /data/cf/uvlogic1/uvg/trevorw/projects/covered/diags/verilog -t main -vcd exclude5.1.vcd -o exclude5.1.cdd -v exclude5.1.v -ea
 3 0 $root $root NA 0 0 1
 3 0 main main exclude5.1.v 1 27 1
 2 1 6 d000d 2 1 c 0 0 c

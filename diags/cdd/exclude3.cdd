@@ -1,5 +1,5 @@
 5 a 1 * 0
-8 /ptmp/cvs/covered/diags/verilog -t main -vcd exclude3.vcd -o exclude3.cdd -v exclude3.v -y ./lib -e foo_module.foo_task
+8 /data/cf/uvlogic1/uvg/trevorw/projects/covered/diags/verilog -t main -vcd exclude3.vcd -o exclude3.cdd -v exclude3.v -y ./lib -e foo_module.foo_task
 3 0 $root $root NA 0 0 1
 3 0 main main exclude3.v 1 14 1
 3 0 foo_module main.bar ./lib/foo_module.v 1 34 1

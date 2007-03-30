@@ -77,6 +77,8 @@ void line_get_stats( stmt_link* stmtl, float* total, int* hit ) {
         (curr.curr->stmt->exp->op != EXP_OP_CASEZ)   &&
         (curr.curr->stmt->exp->op != EXP_OP_DEFAULT) &&
         (curr.curr->stmt->exp->op != EXP_OP_NB_CALL) &&
+        (curr.curr->stmt->exp->op != EXP_OP_FORK)    &&
+        (curr.curr->stmt->exp->op != EXP_OP_JOIN)    &&
         (curr.curr->stmt->exp->line != 0) ) {
       *total = *total + 1;
       if( (curr.curr->stmt->exp->exec_num > 0) || (ESUPPL_STMT_EXCLUDED( curr.curr->stmt->exp->suppl ) == 1) ) {
@@ -138,6 +140,8 @@ bool line_collect( char* funit_name, int funit_type, int cov, int** lines, int**
           (stmti.curr->stmt->exp->op != EXP_OP_CASEZ)   &&
           (stmti.curr->stmt->exp->op != EXP_OP_DEFAULT) &&
           (stmti.curr->stmt->exp->op != EXP_OP_NB_CALL) &&
+          (stmti.curr->stmt->exp->op != EXP_OP_FORK)    &&
+          (stmti.curr->stmt->exp->op != EXP_OP_JOIN)    &&
           (stmti.curr->stmt->exp->line != 0) ) {
 
         if( ((stmti.curr->stmt->exp->exec_num > 0) ? 1 : 0) == cov ) {
@@ -368,6 +372,8 @@ void line_display_verbose( FILE* ofile, func_unit* funit ) {
         (stmti.curr->stmt->exp->op != EXP_OP_CASEZ)   &&
         (stmti.curr->stmt->exp->op != EXP_OP_DEFAULT) &&
         (stmti.curr->stmt->exp->op != EXP_OP_NB_CALL) &&
+        (stmti.curr->stmt->exp->op != EXP_OP_FORK)    &&
+        (stmti.curr->stmt->exp->op != EXP_OP_JOIN)    &&
         (stmti.curr->stmt->exp->line != 0) ) {
 
       if( ((stmti.curr->stmt->exp->exec_num > 0) ? 1 : 0) == report_covered ) {
@@ -567,6 +573,9 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.68  2006/10/12 22:48:46  phase1geo
+ Updates to remove compiler warnings.  Still some work left to go here.
+
  Revision 1.67  2006/09/01 23:06:02  phase1geo
  Fixing regressions per latest round of changes.  Full regression now passes.
 

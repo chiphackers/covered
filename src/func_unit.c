@@ -770,6 +770,51 @@ bool funit_db_merge( func_unit* base, FILE* file, bool same ) {
 }
 
 /*!
+ \param funit     Pointer to functional unit to traverse
+ \param line_num  Specifies the last line number found
+
+ Finds the next statement that follows the given line number.
+*/
+statement* funit_get_next_stmt( func_unit* funit, int line_num ) {
+
+  stmt_iter   si;           /* Statement iterator */
+  statement*  stmt = NULL;  /* Pointer to found statement */
+  statement*  child_stmt;   /* Pointer to child statement */
+  funit_link* funitl;       /* Pointer to functional unit link */
+
+  assert( funit != NULL );
+
+  /* Examine the current functional unit for statements that are closest to the given line number (without going under) */
+  /* TBD - We may want to save off the statement iterator in the func_unit module for performance purposes */
+  stmt_iter_reset( &si, funit->stmt_tail );
+  while( (si.curr != NULL) && (stmt == NULL) ) {
+    stmt_iter_get_next_in_order( &si );
+    if( (si.curr != NULL) && (si.curr->stmt->exp->line >= line_num) ) {
+      stmt = si.curr->stmt;
+    }
+  }
+
+  /* Now search all of the unnamed scope children of this module */
+  funitl = funit->tf_head;
+  while( funitl != NULL ) {
+
+    /* If the current child is an unnamed scope, search its list of statements */
+    if( db_is_unnamed_scope( funitl->funit->name ) ) {
+      child_stmt = funit_get_next_stmt( funitl->funit, line_num );
+      if( (stmt == NULL) || ((child_stmt != NULL) && (stmt->exp->line > child_stmt->exp->line)) ) {
+        stmt = child_stmt;
+      }
+    }
+
+    funitl = funitl->next;
+
+  }
+
+  return( stmt );
+
+}
+
+/*!
  \param base   Pointer to base functional unit that will receive the information from the other functional unit
  \param other  Pointer to the functional unit that will give up its information.
 
@@ -1102,6 +1147,12 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.61  2007/03/19 22:52:50  phase1geo
+ Attempting to fix problem with line ordering for a named block that is
+ in the middle of another statement block.  Also fixed a problem with FORK
+ expressions not being bound early enough.  Run currently segfaults but
+ I need to checkpoint at the moment.
+
  Revision 1.60  2007/03/19 20:30:31  phase1geo
  More fixes to report command for instance flattening.  This seems to be
  working now as far as I can tell.  Regressions still have about 8 diagnostics

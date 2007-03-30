@@ -1,5 +1,5 @@
 5 a 1 * 0
-8 /ptmp/cvs/covered/diags/verilog -t main -vcd param10.2.vcd -o param10.2.cdd -v param10.2.v
+8 /data/cf/uvlogic1/uvg/trevorw/projects/covered/diags/verilog -t main -vcd param10.2.vcd -o param10.2.cdd -v param10.2.v
 3 0 $root $root NA 0 0 1
 3 0 main main param10.2.v 1 14 1
 3 0 foo main.a param10.2.v 17 25 1

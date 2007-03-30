@@ -140,7 +140,7 @@ Module                    Filename                 Number of Violations found
     -------------------------------------------------------------------------------------------------------------
       Starting Line #     Race Condition Violation Reason
       ---------------------------------------------------------------------------------------------------------
-                    8:    Statement block contains both blocking and non-blocking assignment(s)
+                    7:    Statement block contains both blocking and non-blocking assignment(s)
 
 
 

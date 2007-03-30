@@ -1,5 +1,5 @@
 5 a 1 * 0
-8 /ptmp/cvs/covered/diags/verilog -t main -vcd rassign1.vcd -o rassign1.cdd -v rassign1.v
+8 /data/cf/uvlogic1/uvg/trevorw/projects/covered/diags/verilog -t main -vcd rassign1.vcd -o rassign1.cdd -v rassign1.v
 3 0 $root $root NA 0 0 1
 3 0 main main rassign1.v 1 23 1
 2 1 6 e0011 1 32 4 0 0 ZERO

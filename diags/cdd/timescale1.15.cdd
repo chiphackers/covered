@@ -1,5 +1,5 @@
 5 a 1 * 0
-8 /ptmp/cvs/covered/diags/verilog -t main -vcd timescale1.15.vcd -o timescale1.15.cdd -v timescale1.15.v
+8 /data/cf/uvlogic1/uvg/trevorw/projects/covered/diags/verilog -t main -vcd timescale1.15.vcd -o timescale1.15.cdd -v timescale1.15.v
 3 0 $root $root NA 0 0 1000000
 3 0 main main timescale1.15.v 10 29 1000000
 2 1 14 8000c 2 3d 12100a 0 0 1 2 1102 $u0

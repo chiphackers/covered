@@ -1,5 +1,5 @@
 5 a 1 * 0
-8 /ptmp/cvs/covered/diags/verilog -t main -vcd signed1.vcd -o signed1.cdd -v signed1.v
+8 /data/cf/uvlogic1/uvg/trevorw/projects/covered/diags/verilog -t main -vcd signed1.vcd -o signed1.cdd -v signed1.v
 3 0 $root $root NA 0 0 1
 3 0 main main signed1.v 1 26 1
 2 1 8 8000c 2 3d 12100a 0 0 1 2 1102 $u0

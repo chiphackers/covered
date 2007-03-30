@@ -211,54 +211,63 @@ bool fsm_db_read( char** line, func_unit* funit ) {
 
     *line = *line + chars_read + 1;
 
-    /* Find specified signal */
-    if( ((iexpl = exp_link_find( &iexp, funit->exp_head )) != NULL) &&
-        ((oexpl = exp_link_find( &oexp, funit->exp_head )) != NULL) ) {
+    if( funit == NULL ) {
 
-      /* Create new FSM */
-      table = fsm_create( iexpl->exp, oexpl->exp );
+      print_output( "Internal error:  FSM in database written before its functional unit", FATAL, __FILE__, __LINE__ );
+      retval = FALSE;
 
-      /*
-       If the input state variable is the same as the output state variable, create the new expression now.
-      */
-      if( iexp.id == oexp.id ) {
-        table->from_state = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, iexp.id, 0, 0, 0, FALSE );
-        vector_dealloc( table->from_state->value );
-        bind_append_fsm_expr( table->from_state, iexpl->exp, funit );
-      } else {
-        table->from_state = iexpl->exp;
-      }
+    } else {
 
-      /* Set output expression tables to point to this FSM */
-      table->to_state->table = table;
+      /* Find specified signal */
+      if( ((iexpl = exp_link_find( &iexp, funit->exp_head )) != NULL) &&
+          ((oexpl = exp_link_find( &oexp, funit->exp_head )) != NULL) ) {
 
-      /* Now read in set table */
-      if( is_table == 1 ) {
+        /* Create new FSM */
+        table = fsm_create( iexpl->exp, oexpl->exp );
 
-        if( arc_db_read( &(table->table), line ) ) {
+        /*
+         If the input state variable is the same as the output state variable, create the new expression now.
+        */
+        if( iexp.id == oexp.id ) {
+          table->from_state = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, iexp.id, 0, 0, 0, FALSE );
+          vector_dealloc( table->from_state->value );
+          bind_append_fsm_expr( table->from_state, iexpl->exp, funit );
+        } else {
+          table->from_state = iexpl->exp;
+        }
+
+        /* Set output expression tables to point to this FSM */
+        table->to_state->table = table;
+
+        /* Now read in set table */
+        if( is_table == 1 ) {
+
+          if( arc_db_read( &(table->table), line ) ) {
+
+            /* Add fsm to current functional unit */
+            fsm_link_add( table, &(funit->fsm_head), &(funit->fsm_tail) );
+ 
+          } else {
+
+            print_output( "Unable to read FSM state transition arc array", FATAL, __FILE__, __LINE__ );
+            retval = FALSE;
+
+          }
+
+        } else {
 
           /* Add fsm to current functional unit */
           fsm_link_add( table, &(funit->fsm_head), &(funit->fsm_tail) );
- 
-        } else {
-
-          print_output( "Unable to read FSM state transition arc array", FATAL, __FILE__, __LINE__ );
-          retval = FALSE;
 
         }
-
+ 
       } else {
 
-        /* Add fsm to current functional unit */
-        fsm_link_add( table, &(funit->fsm_head), &(funit->fsm_tail) );
+        snprintf( user_msg, USER_MSG_LENGTH, "Unable to find state variable expressions (%d, %d) for current FSM", iexp.id, oexp.id );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        retval = FALSE;
 
       }
- 
-    } else {
-
-      snprintf( user_msg, USER_MSG_LENGTH, "Unable to find state variable expressions (%d, %d) for current FSM", iexp.id, oexp.id );
-      print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      retval = FALSE;
 
     }
 
@@ -1134,6 +1143,9 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.63  2006/10/12 22:48:46  phase1geo
+ Updates to remove compiler warnings.  Still some work left to go here.
+
  Revision 1.62  2006/10/03 22:47:00  phase1geo
  Adding support for read coverage to memories.  Also added memory coverage as
  a report output for DIAGLIST diagnostics in regressions.  Fixed various bugs

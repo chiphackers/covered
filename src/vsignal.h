@@ -44,7 +44,7 @@ vsignal* vsignal_duplicate( vsignal* sig );
 void vsignal_db_write( vsignal* sig, FILE* file );
 
 /*! \brief Reads vsignal information from specified file. */
-bool vsignal_db_read( char** line, func_unit* curr_funit );
+bool vsignal_db_read( char** line, /*@null@*/func_unit* curr_funit );
 
 /*! \brief Reads and merges two vsignals, placing result into base vsignal. */
 bool vsignal_db_merge( vsignal* base, char** line, bool same );
@@ -76,6 +76,10 @@ void vsignal_dealloc( vsignal* sig );
 
 /*
  $Log$
+ Revision 1.18  2006/11/27 04:11:42  phase1geo
+ Adding more changes to properly support thread time.  This is a work in progress
+ and regression is currently broken for the moment.  Checkpointing.
+
  Revision 1.17  2006/09/20 22:38:10  phase1geo
  Lots of changes to support memories and multi-dimensional arrays.  We still have
  issues with endianness and VCS regressions have not been run, but this is a significant

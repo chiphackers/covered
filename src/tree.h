@@ -35,10 +35,15 @@ tnode* tree_find( const char* key, tnode* root );
 void tree_remove( const char* key, tnode** root );
 
 /*! \brief Deallocates entire tree from memory. */
-void tree_dealloc( tnode* root );
+void tree_dealloc( /*@null@*/tnode* root );
 
 /*
  $Log$
+ Revision 1.2  2006/03/28 22:28:28  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.1  2003/01/04 09:25:15  phase1geo
  Fixing file search algorithm to fix bug where unexpected module that was
  ignored cannot be found.  Added instance7.v diagnostic to verify appropriate

@@ -83,7 +83,7 @@ void expression_db_write( expression* expr, FILE* file, bool parse_mode );
 void expression_db_write_tree( expression* root, FILE* file );
 
 /*! \brief Reads current line of specified file and parses for expression information. */
-bool expression_db_read( char** line, func_unit* curr_mod, bool eval );
+bool expression_db_read( char** line, /*@null@*/func_unit* curr_mod, bool eval );
 
 /*! \brief Reads and merges two expressions and stores result in base expression. */
 bool expression_db_merge( expression* base, char** line, bool same );
@@ -130,6 +130,10 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.53  2006/11/27 04:11:41  phase1geo
+ Adding more changes to properly support thread time.  This is a work in progress
+ and regression is currently broken for the moment.  Checkpointing.
+
  Revision 1.52  2006/10/12 22:48:46  phase1geo
  Updates to remove compiler warnings.  Still some work left to go here.
 

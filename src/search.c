@@ -38,23 +38,23 @@
 #include "instance.h"
 
 
-str_link* inc_paths_head  = NULL;   /*!< Pointer to head element of include paths list */
-str_link* inc_paths_tail  = NULL;   /*!< Pointer to tail element of include paths list */
+/*@null@*/str_link* inc_paths_head  = NULL;   /*!< Pointer to head element of include paths list */
+/*@null@*/str_link* inc_paths_tail  = NULL;   /*!< Pointer to tail element of include paths list */
 
-str_link* use_files_head  = NULL;   /*!< Pointer to head element of used files list */
-str_link* use_files_tail  = NULL;   /*!< Pointer to tail element of used files list */
+/*@null@*/str_link* use_files_head  = NULL;   /*!< Pointer to head element of used files list */
+/*@null@*/str_link* use_files_tail  = NULL;   /*!< Pointer to tail element of used files list */
 
-str_link* no_score_head   = NULL;   /*!< Pointer to head element of functional units not-to-score list */
-str_link* no_score_tail   = NULL;   /*!< Pointer to tail element of functional units not-to-score list */
+/*@null@*/str_link* no_score_head   = NULL;   /*!< Pointer to head element of functional units not-to-score list */
+/*@null@*/str_link* no_score_tail   = NULL;   /*!< Pointer to tail element of functional units not-to-score list */
 
-str_link* extensions_head = NULL;   /*!< Pointer to head element of extensions list */
-str_link* extensions_tail = NULL;   /*!< Pointer to tail element of extensions list */
+/*@null@*/str_link* extensions_head = NULL;   /*!< Pointer to head element of extensions list */
+/*@null@*/str_link* extensions_tail = NULL;   /*!< Pointer to tail element of extensions list */
 
-funit_link* funit_head    = NULL;   /*!< Pointer to head element of functional unit list */
-funit_link* funit_tail    = NULL;   /*!< Pointer to tail element of functional unit list */
+/*@null@*/funit_link* funit_head    = NULL;   /*!< Pointer to head element of functional unit list */
+/*@null@*/funit_link* funit_tail    = NULL;   /*!< Pointer to tail element of functional unit list */
 
-inst_link*  inst_head     = NULL;   /*!< Pointer to head element of functional unit instance list */
-inst_link*  inst_tail     = NULL;   /*!< Pointer to tail element of functional unit instance list */
+/*@null@*/inst_link*  inst_head     = NULL;   /*!< Pointer to head element of functional unit instance list */
+/*@null@*/inst_link*  inst_tail     = NULL;   /*!< Pointer to tail element of functional unit instance list */
 
 extern char*      top_module;
 extern char*      top_instance;
@@ -292,6 +292,9 @@ void search_free_lists() {
 
 /*
  $Log$
+ Revision 1.30  2007/03/13 22:12:59  phase1geo
+ Merging changes to covered-0_5-branch to fix bug 1678931.
+
  Revision 1.29.2.1  2007/03/13 22:05:11  phase1geo
  Fixing bug 1678931.  Updated regression.
 

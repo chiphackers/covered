@@ -1,5 +1,5 @@
 5 a 1 * 0
-8 /ptmp/cvs/covered/diags/verilog -t main -vcd task4.vcd -o task4.cdd -v task4.v
+8 /data/cf/uvlogic1/uvg/trevorw/projects/covered/diags/verilog -t main -vcd task4.vcd -o task4.cdd -v task4.v
 3 0 $root $root NA 0 0 1
 3 0 main main task4.v 1 15 1
 3 0 mod_a main.a task4.v 18 31 1

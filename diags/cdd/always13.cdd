@@ -1,19 +1,19 @@
 5 a 1 * 0
-8 /ptmp/cvs/covered/diags/verilog -t main -vcd always13.vcd -o always13.cdd -v always13.v
+8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd always13.vcd -o always13.cdd -v always13.v
 3 0 $root $root NA 0 0 1
 3 0 main main always13.v 1 19 1
-2 1 5 200022 15 1 1c 0 0 clk
-2 2 5 1f001f 15 1b 2002c 1 0 1 2 1102
-2 3 5 18001b 1 0 20004 0 0 1 4 0
-2 4 5 12001b 16 1a 200ec 2 3 1 2 1102
-2 5 5 120014 2 1 c 0 0 rst
-2 6 5 120022 16 19 201ec 4 5 1 2 1102
-2 7 5 c000e 0 1 400 0 0 clk
-2 8 5 c0022 16 37 602e 6 7
-2 9 5 90009 1 0 20008 0 0 32 64 11 0 0 0 0 0 0 0
-2 10 5 7000a 2d 2c 22100a 9 0 32 2 aa aa aa aa aa aa aa aa
+2 1 5 90009 1 0 20008 0 0 32 64 11 0 0 0 0 0 0 0
+2 2 5 7000a 2d 2c 22100a 1 0 32 2 aa aa aa aa aa aa aa aa
+2 3 5 200022 15 1 1c 0 0 clk
+2 4 5 1f001f 15 1b 2002c 3 0 1 2 1102
+2 5 5 18001b 1 0 20004 0 0 1 4 0
+2 6 5 12001b 16 1a 200ec 4 5 1 2 1102
+2 7 5 120014 2 1 c 0 0 rst
+2 8 5 120022 16 19 201ec 6 7 1 2 1102
+2 9 5 c000e 0 1 400 0 0 clk
+2 10 5 c0022 16 37 602e 8 9
 1 rst 3 30004 1 0 0 0 1 1 1002
 1 clk 3 830009 1 0 0 0 1 1 1102
-4 8 10 10
-4 10 8 0
+4 10 2 2
+4 2 10 0
 3 1 main.$u0 main.$u0 always13.v 0 17 1

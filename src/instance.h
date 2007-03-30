@@ -27,7 +27,7 @@
 
 
 /*! \brief Creates a new instance with the given information */
-funit_inst* instance_create( func_unit* funit, char* inst_name, vector_width* range );
+funit_inst* instance_create( func_unit* funit, char* inst_name, /*@null@*/vector_width* range );
 
 /*! \brief Displays the current state of the instance tree */
 void instance_display_tree( funit_inst* root );
@@ -78,6 +78,10 @@ void instance_dealloc( funit_inst* root, char* scope );
 
 /*
  $Log$
+ Revision 1.25  2007/03/16 21:41:09  phase1geo
+ Checkpointing some work in fixing regressions for unnamed scope additions.
+ Getting closer but still need to properly handle the removal of functional units.
+
  Revision 1.24  2007/03/15 22:39:05  phase1geo
  Fixing bug in unnamed scope binding.
 

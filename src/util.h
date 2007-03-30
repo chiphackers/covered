@@ -65,16 +65,16 @@ void directory_load( char* dir, str_link* ext_head, str_link** file_head, str_li
 bool file_exists( char* file );
 
 /*! \brief Reads line from file and returns it in string form. */
-bool util_readline( FILE* file, char** line );
+bool util_readline( FILE* file, /*@out@*/char** line );
 
 /*! \brief Searches the specified string for environment variables and substitutes their value if found */
 char* substitute_env_vars( char* value );
 
 /*! \brief Extracts highest level of hierarchy from specified scope. */
-void scope_extract_front( char* scope, char* front, char* rest );
+void scope_extract_front( char* scope, /*@out@*/char* front, /*@out@*/char* rest );
 
 /*! \brief Extracts lowest level of hierarchy from specified scope. */
-void scope_extract_back( char* scope, char* back, char* rest );
+void scope_extract_back( char* scope, /*@out@*/char* back, /*@out@*/char* rest );
 
 /*! \brief Extracts rest of scope not included in front. */
 void scope_extract_scope( char* scope, char* front, char* back );
@@ -98,7 +98,7 @@ void* malloc_safe( size_t size, char* file, int line );
 void* malloc_safe_nolimit( size_t size, char* file, int line );
 
 /*! \brief Performs safe deallocation of heap memory. */
-void free_safe( void* ptr );
+void free_safe( /*@null@*/void* ptr );
 
 /*! \brief Safely allocates heap memory by performing a call to strdup */
 char* strdup_safe( const char* str, char* file, int line );
@@ -123,6 +123,9 @@ const char* get_funit_type( int type );
 
 /*
  $Log$
+ Revision 1.25  2007/03/13 22:12:59  phase1geo
+ Merging changes to covered-0_5-branch to fix bug 1678931.
+
  Revision 1.24.2.1  2007/03/13 22:05:11  phase1geo
  Fixing bug 1678931.  Updated regression.
 

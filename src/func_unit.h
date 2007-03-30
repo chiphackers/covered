@@ -63,10 +63,13 @@ bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
 
 /*! \brief Read contents of current line from specified file, creates functional unit
            and adds to functional unit list. */
-bool funit_db_read( func_unit* funit, char* scope, char** line );
+bool funit_db_read( func_unit* funit, /*@out@*/char* scope, char** line );
 
 /*! \brief Reads and merges two functional units into base functional unit. */
 bool funit_db_merge( func_unit* base, FILE* file, bool same );
+
+/*! \brief Gets the next statement (in line number order) that comes after the given line number */
+statement* funit_get_next_stmt( func_unit* funit, int line_num );
 
 /*! \brief Converges the contents of the other functional unit into the base functional unit */
 void funit_converge( func_unit* base, func_unit* other );
@@ -98,6 +101,11 @@ void funit_dealloc( func_unit* funit );
 
 /*
  $Log$
+ Revision 1.21  2007/03/19 20:30:31  phase1geo
+ More fixes to report command for instance flattening.  This seems to be
+ working now as far as I can tell.  Regressions still have about 8 diagnostics
+ failing with report errors.  Checkpointing.
+
  Revision 1.20  2007/03/19 03:30:16  phase1geo
  More fixes to instance flattening algorithm.  Still much more work to do here.
  Checkpointing.

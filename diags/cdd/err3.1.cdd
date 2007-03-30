@@ -1,5 +1,5 @@
 5 a 0 * 0
-8 /ptmp/cvs/covered/diags/verilog -t foo -i top -vcd err3.1.vcd -o err3.1.cdd -v err3.1.v
+8 /data/cf/uvlogic1/uvg/trevorw/projects/covered/diags/verilog -t foo -i top -vcd err3.1.vcd -o err3.1.cdd -v err3.1.v
 3 0 $root $root NA 0 0 1
 3 0 foo top err3.1.v 24 36 1
 2 1 30 8000c 0 3d 121002 0 0 1 2 2 $u0
