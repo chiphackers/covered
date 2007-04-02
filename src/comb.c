@@ -456,17 +456,33 @@ void combination_get_tree_stats( expression* exp, int* ulid, unsigned int curr_d
 }
 
 /*!
- \param expl  Pointer to expression list of current module to reset.
+ \param funit  Pointer to functional unit to reset.
 
  Iterates through specified expression list, setting the combination counted bit
  in the supplemental field of each expression.  This function needs to get called
  whenever a new module is picked by the GUI.
 */
-void combination_reset_counted_exprs( exp_link* expl ) {
+void combination_reset_counted_exprs( func_unit* funit ) {
 
+  exp_link*   expl;   /* Pointer to current expression list */
+  funit_link* child;  /* Pointer to current child functional unit */
+
+  assert( funit != NULL );
+
+  /* Reset the comb_cntd bit in all expressions for the current functional unit */
+  expl = funit->exp_head;
   while( expl != NULL ) {
     expl->exp->suppl.part.comb_cntd = 1;
     expl = expl->next;
+  }
+
+  /* Do the same for all children functional units that are unnamed */
+  child = funit->tf_head;
+  while( child != NULL ) {
+    if( db_is_unnamed_scope( child->funit->name ) ) {
+      combination_reset_counted_exprs( child->funit );
+    }
+    child = child->next;
   }
 
 }
@@ -2400,7 +2416,7 @@ bool combination_collect( char* funit_name, int funit_type, expression*** covs, 
   if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
 
     /* Reset combination counted bits */
-    combination_reset_counted_exprs( funitl->funit->exp_head );
+    combination_reset_counted_exprs( funitl->funit );
 
     /* Create an array that will hold the number of uncovered combinations */
     cov_size   = 20;
@@ -2724,6 +2740,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.167  2007/04/02 04:50:04  phase1geo
+ Adding func_iter files to iterate through a functional unit for reporting
+ purposes.  Updated affected files.
+
  Revision 1.166  2006/12/12 06:20:22  phase1geo
  More updates to support re-entrant tasks/functions.  Still working through
  compiler errors.  Checkpointing.

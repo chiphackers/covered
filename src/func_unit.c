@@ -770,106 +770,6 @@ bool funit_db_merge( func_unit* base, FILE* file, bool same ) {
 }
 
 /*!
- \param funit     Pointer to functional unit to traverse
- \param line_num  Specifies the last line number found
-
- Finds the next statement that follows the given line number.
-*/
-statement* funit_get_next_stmt( func_unit* funit, int line_num ) {
-
-  stmt_iter   si;           /* Statement iterator */
-  statement*  stmt = NULL;  /* Pointer to found statement */
-  statement*  child_stmt;   /* Pointer to child statement */
-  funit_link* funitl;       /* Pointer to functional unit link */
-
-  assert( funit != NULL );
-
-  /* Examine the current functional unit for statements that are closest to the given line number (without going under) */
-  /* TBD - We may want to save off the statement iterator in the func_unit module for performance purposes */
-  stmt_iter_reset( &si, funit->stmt_tail );
-  stmt_iter_find_head( &si, FALSE );
-  while( (si.curr != NULL) && (stmt == NULL) ) {
-    stmt_iter_get_next_in_order( &si );
-    if( (si.curr != NULL) && (si.curr->stmt->exp->line >= line_num) ) {
-      stmt = si.curr->stmt;
-    }
-  }
-
-  /* Now search all of the unnamed scope children of this module */
-  funitl = funit->tf_head;
-  while( funitl != NULL ) {
-
-    /* If the current child is an unnamed scope, search its list of statements */
-    if( db_is_unnamed_scope( funitl->funit->name ) ) {
-      child_stmt = funit_get_next_stmt( funitl->funit, line_num );
-      if( (stmt == NULL) || ((child_stmt != NULL) && (stmt->exp->line > child_stmt->exp->line)) ) {
-        stmt = child_stmt;
-      }
-    }
-
-    funitl = funitl->next;
-
-  }
-
-  return( stmt );
-
-}
-
-/*!
- \param base   Pointer to base functional unit that will receive the information from the other functional unit
- \param other  Pointer to the functional unit that will give up its information.
-
- Takes all of the design information from the other functional unit and integrates it into the base
- functional unit, deallocating the other functional unit when complete and removing it from the funit_head
- list.
-*/
-void funit_converge( func_unit* base, func_unit* other ) {
-
-  funit_inst* inst;        /* Pointer to instance that points to this functional unit */
-  int         ignore = 0;  /* Specifies that we should not ignore any matching instances */
-
-  assert( base != NULL );
-  assert( other != NULL );
-  assert( other->sig_head == NULL ); 
-
-  /* Append the expression list */
-  if( other->exp_head != NULL ) {
-    if( base->exp_head == NULL ) {
-      base->exp_head = other->exp_head;
-      base->exp_tail = other->exp_tail;
-    } else {
-      base->exp_tail->next = other->exp_head;
-      base->exp_tail       = other->exp_tail;
-    }
-    other->exp_head = other->exp_tail = NULL;
-  }
-
-  /* Append the statement list */
-  if( other->stmt_head != NULL ) {
-    if( base->stmt_head == NULL ) {
-      base->stmt_head = other->stmt_head;
-      base->stmt_tail = other->stmt_tail;
-    } else {
-      stmt_link_merge( &(base->stmt_head), &(base->stmt_tail), other->stmt_head, other->stmt_tail );
-    }
-    other->stmt_head = other->stmt_tail = NULL;
-  }
-
-  /* Append the FSM list */
-  if( other->fsm_head != NULL ) {
-    if( base->fsm_head == NULL ) {
-      base->fsm_head = other->fsm_head;
-      base->fsm_tail = other->fsm_tail;
-    } else {
-      base->fsm_tail->next = other->fsm_head;
-      base->fsm_tail       = other->fsm_tail;
-    }
-    other->fsm_head = other->fsm_tail = NULL;
-  }
-
-}
-
-/*!
  \param funit          Pointer to functional unit to flatten name (if necessary)
  \param unnamed_scope  String specifying this unnamed_scope to remove
 
@@ -988,6 +888,22 @@ bool funit_is_unnamed( func_unit* funit ) {
   }
 
   return( retval );
+
+}
+
+/*!
+ \param parent  Potential parent functional unit to check for relationship to child
+ \param child   Potential child functional unit to check for relationship to parent
+
+ \return Returns TRUE if the relationship of the "parent" and "child" is just that.
+*/
+bool funit_is_unnamed_child_of( func_unit* parent, func_unit* child ) {
+
+  while( (child->parent != NULL) && (child->parent != parent) && funit_is_unnamed( child->parent ) ) {
+    child = child->parent;
+  }
+
+  return( child->parent != NULL );
 
 }
 
@@ -1148,6 +1064,10 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.63  2007/04/02 04:50:04  phase1geo
+ Adding func_iter files to iterate through a functional unit for reporting
+ purposes.  Updated affected files.
+
  Revision 1.62  2007/03/30 22:43:13  phase1geo
  Regression fixes.  Still have a ways to go but we are getting close.
 

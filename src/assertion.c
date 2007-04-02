@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include <assert.h>
 
+#include "db.h"
 #include "defines.h"
 #include "assertion.h"
 #include "ovl.h"
@@ -116,7 +117,8 @@ bool assertion_instance_summary( FILE* ofile, funit_inst* root, char* parent_ins
 
   free_safe( pname );
 
-  if( root->stat->show && ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
+  if( root->stat->show && !db_is_unnamed_scope( root->funit->name ) &&
+      ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
 
     if( root->stat->assert_total == 0 ) {
       percent = 100.0;
@@ -179,7 +181,8 @@ bool assertion_funit_summary( FILE* ofile, funit_link* head ) {
     miss_found = (miss > 0) ? TRUE : miss_found;
 
     /* If this is an assertion module, don't output any further */
-    if( head->funit->stat->show && ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( head->funit )) ) {
+    if( head->funit->stat->show && !db_is_unnamed_scope( head->funit->name ) &&
+        ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( head->funit )) ) {
 
       /* Get printable version of functional unit name */
       pname = scope_gen_printable( head->funit->name );
@@ -254,8 +257,9 @@ void assertion_instance_verbose( FILE* ofile, funit_inst* root, char* parent_ins
 
   free_safe( pname );
 
-  if( ((root->stat->assert_hit < root->stat->assert_total) && !report_covered) ||
-      ((root->stat->assert_hit > 0) && report_covered) ) {
+  if( !db_is_unnamed_scope( root->funit->name ) &&
+      (((root->stat->assert_hit < root->stat->assert_total) && !report_covered) ||
+       ((root->stat->assert_hit > 0) && report_covered)) ) {
 
     /* Get printable version of functional unit name */
     pname = scope_gen_printable( root->funit->name );
@@ -298,8 +302,9 @@ void assertion_funit_verbose( FILE* ofile, funit_link* head ) {
 
   while( head != NULL ) {
 
-    if( ((head->funit->stat->assert_hit < head->funit->stat->assert_total) && !report_covered) ||
-        ((head->funit->stat->assert_hit > 0) && report_covered) ) {
+    if( !db_is_unnamed_scope( head->funit->name ) &&
+        (((head->funit->stat->assert_hit < head->funit->stat->assert_total) && !report_covered) ||
+         ((head->funit->stat->assert_hit > 0) && report_covered)) ) {
 
       /* Get printable version of functional unit name */
       pname = scope_gen_printable( head->funit->name );
@@ -526,6 +531,9 @@ bool assertion_get_coverage( char* funit_name, int funit_type, char* inst_name, 
 
 /*
  $Log$
+ Revision 1.15  2006/10/12 22:48:45  phase1geo
+ Updates to remove compiler warnings.  Still some work left to go here.
+
  Revision 1.14  2006/09/01 23:06:02  phase1geo
  Fixing regressions per latest round of changes.  Full regression now passes.
 

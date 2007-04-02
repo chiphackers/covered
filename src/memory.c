@@ -23,6 +23,7 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "db.h"
 #include "defines.h"
 #include "link.h"
 #include "memory.h"
@@ -569,7 +570,8 @@ bool memory_toggle_instance_summary( FILE* ofile, funit_inst* root, char* parent
 
   free_safe( pname );
 
-  if( root->stat->show && ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
+  if( root->stat->show && !db_is_unnamed_scope( root->funit->name ) &&
+      ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
 
     /* Calculate for toggle01 information */
     if( root->stat->mem_tog_total == 0 ) {
@@ -649,7 +651,8 @@ bool memory_ae_instance_summary( FILE* ofile, funit_inst* root, char* parent_ins
 
   free_safe( pname );
 
-  if( root->stat->show && ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
+  if( root->stat->show && !db_is_unnamed_scope( root->funit->name ) &&
+      ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
 
     /* Calculate for addressable element write information */
     if( root->stat->mem_ae_total == 0 ) {
@@ -734,7 +737,8 @@ bool memory_toggle_funit_summary( FILE* ofile, funit_link* head ) {
     miss_found = ((miss01 > 0) || (miss10 > 0)) ? TRUE : miss_found;
 
     /* If this is an assertion module, don't output any further */
-    if( head->funit->stat->show && ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( head->funit )) ) {
+    if( head->funit->stat->show && !db_is_unnamed_scope( head->funit->name ) &&
+        ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( head->funit )) ) {
 
       /* Get printable version of functional unit name */
       pname = scope_gen_printable( head->funit->name );
@@ -801,7 +805,8 @@ bool memory_ae_funit_summary( FILE* ofile, funit_link* head ) {
     miss_found = ((miss_wr > 0) || (miss_rd > 0)) ? TRUE : miss_found;
 
     /* If this is an assertion module, don't output any further */
-    if( head->funit->stat->show && ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( head->funit )) ) {
+    if( head->funit->stat->show && !db_is_unnamed_scope( head->funit->name ) &&
+        ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( head->funit )) ) {
 
       /* Get printable version of functional unit name */
       pname = scope_gen_printable( head->funit->name );
@@ -1035,10 +1040,11 @@ void memory_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst )
 
   free_safe( pname );
 
-  if( (root->stat->mem_tog01_hit < root->stat->mem_tog_total) ||
-      (root->stat->mem_tog10_hit < root->stat->mem_tog_total) ||
-      (root->stat->mem_wr_hit    < root->stat->mem_ae_total)  ||
-      (root->stat->mem_rd_hit    < root->stat->mem_ae_total) ) {
+  if( !db_is_unnamed_scope( root->funit->name ) &&
+      ((root->stat->mem_tog01_hit < root->stat->mem_tog_total) ||
+       (root->stat->mem_tog10_hit < root->stat->mem_tog_total) ||
+       (root->stat->mem_wr_hit    < root->stat->mem_ae_total)  ||
+       (root->stat->mem_rd_hit    < root->stat->mem_ae_total)) ) {
 
     fprintf( ofile, "\n" );
     switch( root->funit->type ) {
@@ -1079,10 +1085,11 @@ void memory_funit_verbose( FILE* ofile, funit_link* head ) {
 
   while( head != NULL ) {
 
-    if( (head->funit->stat->mem_tog01_hit < head->funit->stat->mem_tog_total) ||
-        (head->funit->stat->mem_tog10_hit < head->funit->stat->mem_tog_total) ||
-        (head->funit->stat->mem_wr_hit    < head->funit->stat->mem_ae_total)  ||
-        (head->funit->stat->mem_rd_hit    < head->funit->stat->mem_ae_total) ) {
+    if( !db_is_unnamed_scope( head->funit->name ) &&
+        ((head->funit->stat->mem_tog01_hit < head->funit->stat->mem_tog_total) ||
+         (head->funit->stat->mem_tog10_hit < head->funit->stat->mem_tog_total) ||
+         (head->funit->stat->mem_wr_hit    < head->funit->stat->mem_ae_total)  ||
+         (head->funit->stat->mem_rd_hit    < head->funit->stat->mem_ae_total)) ) {
 
       fprintf( ofile, "\n" );
       switch( head->funit->type ) {
@@ -1187,6 +1194,9 @@ void memory_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.8  2006/10/12 22:48:46  phase1geo
+ Updates to remove compiler warnings.  Still some work left to go here.
+
  Revision 1.7  2006/10/06 22:45:57  phase1geo
  Added support for the wait() statement.  Added wait1 diagnostic to regression
  suite to verify its behavior.  Also added missing GPL license note at the top

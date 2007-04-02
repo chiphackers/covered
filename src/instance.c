@@ -737,7 +737,7 @@ void instance_flatten_helper( funit_inst* root, funit_link** rm_head, funit_link
       if( funit_is_unnamed( child->funit ) && (child->funit->sig_head == NULL) ) {
 
         /* Converge the child functional unit into this functional unit */
-        funit_converge( root->funit, child->funit );
+        //funit_converge( root->funit, child->funit );
 
         /* Remove this child from the child list of this instance */
         if( child == root->child_head ) {
@@ -1034,6 +1034,11 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.71  2007/03/19 20:30:31  phase1geo
+ More fixes to report command for instance flattening.  This seems to be
+ working now as far as I can tell.  Regressions still have about 8 diagnostics
+ failing with report errors.  Checkpointing.
+
  Revision 1.70  2007/03/19 03:30:16  phase1geo
  More fixes to instance flattening algorithm.  Still much more work to do here.
  Checkpointing.

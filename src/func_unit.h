@@ -68,12 +68,6 @@ bool funit_db_read( func_unit* funit, /*@out@*/char* scope, char** line );
 /*! \brief Reads and merges two functional units into base functional unit. */
 bool funit_db_merge( func_unit* base, FILE* file, bool same );
 
-/*! \brief Gets the next statement (in line number order) that comes after the given line number */
-statement* funit_get_next_stmt( func_unit* funit, int line_num );
-
-/*! \brief Converges the contents of the other functional unit into the base functional unit */
-void funit_converge( func_unit* base, func_unit* other );
-
 /*! \brief Flattens the functional unit name by removing the last unnamed scope portion */
 void funit_flatten_name( func_unit* funit, char* unnamed_scope );
 
@@ -85,6 +79,9 @@ bool funit_is_top_module( func_unit* funit );
 
 /*! \brief Returns TRUE if the given functional unit is an unnamed scope. */
 bool funit_is_unnamed( func_unit* funit );
+
+/*! \brief Returns TRUE if the specified "parent" functional unit is a parent of the "child" functional unit */
+bool funit_is_unnamed_child_of( func_unit* parent, func_unit* child );
 
 /*! \brief Displays signals stored in this functional unit. */
 void funit_display_signals( func_unit* funit );
@@ -101,6 +98,9 @@ void funit_dealloc( func_unit* funit );
 
 /*
  $Log$
+ Revision 1.22  2007/03/30 22:43:13  phase1geo
+ Regression fixes.  Still have a ways to go but we are getting close.
+
  Revision 1.21  2007/03/19 20:30:31  phase1geo
  More fixes to report command for instance flattening.  This seems to be
  working now as far as I can tell.  Regressions still have about 8 diagnostics

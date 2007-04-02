@@ -29,6 +29,7 @@
 #include <string.h>
 #endif
 
+#include "db.h"
 #include "defines.h"
 #include "link.h"
 #include "obfuscate.h"
@@ -306,7 +307,8 @@ bool toggle_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst )
 
   free_safe( pname );
 
-  if( root->stat->show && ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
+  if( root->stat->show && !db_is_unnamed_scope( root->funit->name ) &&
+      ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
 
     /* Calculate for toggle01 information */
     if( root->stat->tog_total == 0 ) {
@@ -391,7 +393,8 @@ bool toggle_funit_summary( FILE* ofile, funit_link* head ) {
     miss_found = ((miss01 > 0) || (miss10 > 0)) ? TRUE : miss_found;
 
     /* If this is an assertion module, don't output any further */
-    if( head->funit->stat->show && ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( head->funit )) ) {
+    if( head->funit->stat->show && !db_is_unnamed_scope( head->funit->name ) &&
+        ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( head->funit )) ) {
 
       /* Get printable version of functional unit name */
       pname = scope_gen_printable( head->funit->name );
@@ -520,8 +523,9 @@ void toggle_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst )
 
   free_safe( pname );
 
-  if( (root->stat->tog01_hit < root->stat->tog_total) ||
-      (root->stat->tog10_hit < root->stat->tog_total) ) {
+  if( !db_is_unnamed_scope( root->funit->name ) &&
+      ((root->stat->tog01_hit < root->stat->tog_total) ||
+       (root->stat->tog10_hit < root->stat->tog_total)) ) {
 
     fprintf( ofile, "\n" );
     switch( root->funit->type ) {
@@ -561,8 +565,9 @@ void toggle_funit_verbose( FILE* ofile, funit_link* head ) {
 
   while( head != NULL ) {
 
-    if( (head->funit->stat->tog01_hit < head->funit->stat->tog_total) ||
-        (head->funit->stat->tog10_hit < head->funit->stat->tog_total) ) {
+    if( !db_is_unnamed_scope( head->funit->name ) &&
+        ((head->funit->stat->tog01_hit < head->funit->stat->tog_total) ||
+         (head->funit->stat->tog10_hit < head->funit->stat->tog_total)) ) {
 
       fprintf( ofile, "\n" );
       switch( head->funit->type ) {
@@ -653,6 +658,9 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.53  2006/10/12 22:48:46  phase1geo
+ Updates to remove compiler warnings.  Still some work left to go here.
+
  Revision 1.52  2006/10/09 17:54:19  phase1geo
  Fixing support for VPI to allow it to properly get linked to the simulator.
  Also fixed inconsistency in generate reports and updated appropriately in
