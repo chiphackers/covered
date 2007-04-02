@@ -572,7 +572,16 @@ char* db_create_unnamed_scope() {
 */
 bool db_is_unnamed_scope( char* scope ) {
 
-  return( (scope != NULL) && (scope[0] == '$') );
+  bool retval = FALSE;  /* Return value for this function */
+  char back[4096];      /* Last portion of specified scope */
+  char rest[4096];      /* First portion of specified scope */
+ 
+  if( scope != NULL ) {
+    scope_extract_back( scope, back, rest );
+    retval = (back[0] == '$') && (back[1] == 'u');
+  }
+
+  return( retval );
 
 }
 
@@ -2308,6 +2317,9 @@ void db_do_timestep( uint64 time, bool final ) {
 
 /*
  $Log$
+ Revision 1.250  2007/03/30 22:43:13  phase1geo
+ Regression fixes.  Still have a ways to go but we are getting close.
+
  Revision 1.249  2007/03/19 22:52:50  phase1geo
  Attempting to fix problem with line ordering for a named block that is
  in the middle of another statement block.  Also fixed a problem with FORK

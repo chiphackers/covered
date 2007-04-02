@@ -14,6 +14,7 @@ covered_SOURCES = arc.c \
 		  fsm.c \
                   fsm_arg.c \
 		  fsm_var.c \
+                  func_iter.c \
 		  func_unit.c \
                   gen_item.c \
 		  gui.c \

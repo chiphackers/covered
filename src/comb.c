@@ -64,8 +64,10 @@
 
 #include "codegen.h"
 #include "comb.h"
+#include "db.h"
 #include "defines.h"
 #include "expr.h"
+#include "func_iter.h"
 #include "func_unit.h"
 #include "iter.h"
 #include "link.h"
@@ -490,7 +492,7 @@ void combination_reset_counted_expr_tree( expression* exp ) {
 }
 
 /*!
- \param expl   Pointer to current expression link to evaluate.
+ \param funit  Pointer to functional unit to search
  \param total  Pointer to total number of logical combinations.
  \param hit    Pointer to number of logical combinations hit during simulation.
 
@@ -498,19 +500,29 @@ void combination_reset_counted_expr_tree( expression* exp ) {
  each root expression, the combination_get_tree_stats function is called to generate
  the coverage numbers for the specified expression tree.  Called by report function.
 */
-void combination_get_stats( exp_link* expl, float* total, int* hit ) {
+void combination_get_stats( func_unit* funit, float* total, int* hit ) {
 
-  exp_link* curr_exp;  /* Pointer to the current expression link in the list */
-  int       ulid;      /* Current underline ID for this expression */
+  func_iter  fi;    /* Functional unit iterator */
+  statement* stmt;  /* Pointer to current statement being examined */
+  int        ulid;  /* Current underline ID for this expression */
   
-  curr_exp = expl;
+  /* If the given functional unit is not an unnamed scope, traverse it now */
+  if( !db_is_unnamed_scope( funit->name ) ) {
 
-  while( curr_exp != NULL ) {
-    if( ESUPPL_IS_ROOT( curr_exp->exp->suppl ) == 1 ) {
+    /* Initialize functional unit iterator */
+    func_iter_init( &fi, funit );
+
+    /* Traverse statements in the given functional unit */
+    stmt = func_iter_get_next_statement( &fi );
+    while( stmt != NULL ) {
       ulid = 1;
-      combination_get_tree_stats( curr_exp->exp, &ulid, 0, ESUPPL_STMT_EXCLUDED( curr_exp->exp->suppl ), total, hit );
+      combination_get_tree_stats( stmt->exp, &ulid, 0, ESUPPL_STMT_EXCLUDED( stmt->exp->suppl ), total, hit );
+      stmt = func_iter_get_next_statement( &fi );
     }
-    curr_exp = curr_exp->next;
+
+    /* Deallocate functional unit iterator */
+    func_iter_dealloc( &fi );
+
   }
 
 }
@@ -531,6 +543,8 @@ bool combination_get_funit_summary( char* funit_name, int funit_type, int* total
   func_unit   funit;          /* Functional unit used for searching */
   funit_link* funitl;         /* Pointer to found functional unit link */
   char        tmp[21];        /* Temporary string for total */
+
+  assert( !db_is_unnamed_scope( funit_name ) );
 
   funit.name = funit_name;
   funit.type = funit_type;
@@ -582,7 +596,8 @@ bool combination_instance_summary( FILE* ofile, funit_inst* root, char* parent )
     snprintf( tmpname, 4096, "%s.%s", parent, obf_inst( root->name ) );
   }
 
-  if( root->stat->show && ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
+  if( root->stat->show && !db_is_unnamed_scope( root->funit->name ) &&
+      ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
 
     if( root->stat->comb_total == 0 ) {
       percent = 100;
@@ -648,7 +663,8 @@ bool combination_funit_summary( FILE* ofile, funit_link* head ) {
     }
 
     /* If this is an assertion module, don't output any further */
-    if( head->funit->stat->show && ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( head->funit )) ) {
+    if( head->funit->stat->show && !db_is_unnamed_scope( head->funit->name ) &&
+        ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( head->funit )) ) {
 
       fprintf( ofile, "  %-30.30s    %-30.30s   %4d/%4.0f/%4.0f      %3.0f%%\n", 
                obf_funit( head->funit->name ),
@@ -2190,8 +2206,8 @@ void combination_output_expr( expression* expr, unsigned int curr_depth, int* an
 */
 void combination_display_verbose( FILE* ofile, func_unit* funit ) {
 
-  stmt_iter   stmti;           /* Statement list iterator */
-  expression* unexec_exp;      /* Pointer to current unexecuted expression */
+  func_iter   fi;              /* Functional unit iterator */
+  statement*  stmt;            /* Pointer to current statement */
   char**      code;            /* Code string from code generator */
   int         code_depth;      /* Depth of code array */
   int         any_missed;      /* Specifies if any of the subexpressions were missed in this expression */
@@ -2203,42 +2219,45 @@ void combination_display_verbose( FILE* ofile, func_unit* funit ) {
     fprintf( ofile, "    Missed Combinations  (* = missed value)\n\n" );
   }
 
-  /* Display current instance missed lines */
-  stmt_iter_reset( &stmti, funit->stmt_tail );
-  stmt_iter_find_head( &stmti, FALSE );
+  /* Initialize functional unit iterator */
+  func_iter_init( &fi, funit );
 
-  while( stmti.curr != NULL ) {
+  /* Display missed combinations */
+  stmt = func_iter_get_next_statement( &fi );
+  while( stmt != NULL ) {
 
     any_missed     = 0;
     any_measurable = 0;
 
-    combination_output_expr( stmti.curr->stmt->exp, 0, &any_missed, &any_measurable );
+    combination_output_expr( stmt->exp, 0, &any_missed, &any_measurable );
 
     if( ((report_covered == 0) && (any_missed == 1) && (any_measurable == 1)) ||
         ((report_covered == 1) && (any_missed == 0) && (any_measurable == 1)) ) {
  
-      stmti.curr->stmt->exp->suppl.part.comb_cntd = 0;
-      unexec_exp = stmti.curr->stmt->exp;
+      stmt->exp->suppl.part.comb_cntd = 0;
 
       fprintf( ofile, "      =========================================================================================================\n" );
       fprintf( ofile, "       Line #     Expression\n" );
       fprintf( ofile, "      =========================================================================================================\n" );
 
       /* Generate line of code that missed combinational coverage */
-      codegen_gen_expr( unexec_exp, unexec_exp->op, &code, &code_depth, funit );
+      codegen_gen_expr( stmt->exp, stmt->exp->op, &code, &code_depth, funit );
 
       /* Output underlining feature for missed expressions */
-      combination_underline( ofile, code, code_depth, unexec_exp, funit );
+      combination_underline( ofile, code, code_depth, stmt->exp, funit );
       fprintf( ofile, "\n" );
 
       /* Output logical combinations that missed complete coverage */
-      combination_list_missed( ofile, unexec_exp, 0 );
+      combination_list_missed( ofile, stmt->exp, 0 );
 
     }
     
-    stmt_iter_get_next_in_order( &stmti );
+    stmt = func_iter_get_next_statement( &fi );
 
   }
+
+  /* Deallocate functional unit iterator */
+  func_iter_dealloc( &fi );
 
 }
 
@@ -2269,8 +2288,9 @@ void combination_instance_verbose( FILE* ofile, funit_inst* root, char* parent )
 
   free_safe( pname );
 
-  if( ((root->stat->comb_hit < root->stat->comb_total) && !report_covered) ||
-      ((root->stat->comb_hit > 0) && report_covered) ) {
+  if( !db_is_unnamed_scope( root->funit->name ) &&
+      (((root->stat->comb_hit < root->stat->comb_total) && !report_covered) ||
+       ((root->stat->comb_hit > 0) && report_covered)) ) {
 
     /* Get printable version of functional unit name */
     pname = scope_gen_printable( root->funit->name );
@@ -2313,8 +2333,9 @@ void combination_funit_verbose( FILE* ofile, funit_link* head ) {
 
   while( head != NULL ) {
 
-    if( ((head->funit->stat->comb_hit < head->funit->stat->comb_total) && !report_covered) ||
-        ((head->funit->stat->comb_hit > 0) && report_covered) ) {
+    if( !db_is_unnamed_scope( head->funit->name ) &&
+        (((head->funit->stat->comb_hit < head->funit->stat->comb_total) && !report_covered) ||
+         ((head->funit->stat->comb_hit > 0) && report_covered)) ) {
 
       /* Get printable version of functional unit name */
       pname = scope_gen_printable( head->funit->name );
@@ -2363,12 +2384,15 @@ bool combination_collect( char* funit_name, int funit_type, expression*** covs, 
   bool        retval = TRUE;   /* Return value of this function */
   func_unit   funit;           /* Functional unit used for searching */
   funit_link* funitl;          /* Pointer to found functional unit link */
-  stmt_iter   stmti;           /* Statement list iterator */
+  func_iter   fi;              /* Functional unit iterator */
+  statement*  stmt;            /* Pointer to current statement */
   int         any_missed;      /* Specifies if any of the subexpressions were missed in this expression */
   int         any_measurable;  /* Specifies if any of the subexpressions were measurable in this expression */
   int         cov_size;        /* Current maximum allocated space in covs array */
   int         uncov_size;      /* Current maximum allocated space in uncovs array */
  
+  assert( !db_is_unnamed_scope( funit_name ) );
+
   /* First, find functional unit in functional unit array */
   funit.name = funit_name;
   funit.type = funit_type;
@@ -2387,48 +2411,49 @@ bool combination_collect( char* funit_name, int funit_type, expression*** covs, 
     *uncovs    = (expression**)malloc_safe( (sizeof( expression* ) * uncov_size), __FILE__, __LINE__ );
     *excludes  = (int*)malloc_safe( (sizeof( expression* ) * uncov_size), __FILE__, __LINE__ );
 
-    /* Display current instance missed lines */
-    stmt_iter_reset( &stmti, funitl->funit->stmt_tail );
-    stmt_iter_find_head( &stmti, FALSE );
+    func_iter_init( &fi, funitl->funit );
 
-    while( stmti.curr != NULL ) {
+    stmt = func_iter_get_next_statement( &fi );
+    while( stmt != NULL ) {
 
       any_missed     = 0;
       any_measurable = 0;
 
-      combination_output_expr( stmti.curr->stmt->exp, 0, &any_missed, &any_measurable );
+      combination_output_expr( stmt->exp, 0, &any_missed, &any_measurable );
 
       /* Check for uncovered statements */
       if( any_missed == 1 ) {
-        if( stmti.curr->stmt->exp->line != 0 ) {
+        if( stmt->exp->line != 0 ) {
           if( *uncov_cnt == uncov_size ) {
             uncov_size += 20;
             *uncovs     = (expression**)realloc( *uncovs, (sizeof( expression* ) * uncov_size) );
             *excludes   = (int*)realloc( *excludes, (sizeof( int* ) * uncov_size) );
           }
-          (*uncovs)[(*uncov_cnt)]   = stmti.curr->stmt->exp;
-          (*excludes)[(*uncov_cnt)] = (any_measurable && (ESUPPL_STMT_EXCLUDED( stmti.curr->stmt->exp->suppl ) == 0)) ? 0 : 1;
+          (*uncovs)[(*uncov_cnt)]   = stmt->exp;
+          (*excludes)[(*uncov_cnt)] = (any_measurable && (ESUPPL_STMT_EXCLUDED( stmt->exp->suppl ) == 0)) ? 0 : 1;
           (*uncov_cnt)++;
         }
-        stmti.curr->stmt->exp->suppl.part.comb_cntd = 0;
+        stmt->exp->suppl.part.comb_cntd = 0;
       }
 
       /* Check for covered statements */
       if( (any_missed == 0) && (any_measurable == 1) ) {
-        if( stmti.curr->stmt->exp->line != 0 ) {
+        if( stmt->exp->line != 0 ) {
           if( *cov_cnt == cov_size ) {
             cov_size += 20;
             *covs     = (expression**)realloc( *covs, (sizeof( expression* ) * cov_size) );
           }
-          (*covs)[(*cov_cnt)] = stmti.curr->stmt->exp;
+          (*covs)[(*cov_cnt)] = stmt->exp;
           (*cov_cnt)++;
         }
-        stmti.curr->stmt->exp->suppl.part.comb_cntd = 0;
+        stmt->exp->suppl.part.comb_cntd = 0;
       }
 
-      stmt_iter_get_next_in_order( &stmti );
+      stmt = func_iter_get_next_statement( &fi );
 
     }
+
+    func_iter_dealloc( &fi );
 
   }
 
@@ -2501,6 +2526,8 @@ bool combination_get_expression( char* funit_name, int funit_type, int expr_id, 
   int         tmp_uline_size;
   int         start     = 0;
   int         uline_max = 20;
+
+  assert( !db_is_unnamed_scope( funit_name ) );
 
   funit.name = funit_name;
   funit.type = funit_type;
@@ -2602,6 +2629,8 @@ bool combination_get_coverage( char* funit_name, int funit_type, int exp_id, int
   expression* exp;             /* Pointer to found expression */
   expression  tmpexp;          /* Temporary expression used for searching */
 
+  assert( !db_is_unnamed_scope( funit_name ) );
+
   funit.name = funit_name;
   funit.type = funit_type;
 
@@ -2695,6 +2724,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.166  2006/12/12 06:20:22  phase1geo
+ More updates to support re-entrant tasks/functions.  Still working through
+ compiler errors.  Checkpointing.
+
  Revision 1.165  2006/11/09 18:12:56  phase1geo
  Fixing bug 1569819.  Added multi_exp4 diagnostic to regression suite
  to verify this fix.  Full regression passes.  Also started to add support

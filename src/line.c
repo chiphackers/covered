@@ -31,8 +31,11 @@
 #endif
 
 #include "codegen.h"
+#include "db.h"
 #include "defines.h"
 #include "expr.h"
+#include "func_iter.h"
+#include "func_unit.h"
 #include "instance.h"
 #include "iter.h"
 #include "line.h"
@@ -54,7 +57,7 @@ extern isuppl       info_suppl;
 extern bool         flag_suppress_empty_funits;
 
 /*!
- \param stmtl  Pointer to current statement list to explore.
+ \param funit  Pointer to current functional unit to explore.
  \param total  Holds total number of lines parsed.
  \param hit    Holds total number of lines hit.
 
@@ -63,30 +66,39 @@ extern bool         flag_suppress_empty_funits;
  lines were missed during simulation.  This information is used to report
  summary information about line coverage.
 */
-void line_get_stats( stmt_link* stmtl, float* total, int* hit ) {
+void line_get_stats( func_unit* funit, float* total, int* hit ) {
 
-  stmt_iter curr;  /* Statement list iterator */
+  statement* stmt;  /* Pointer to current statement */
+  func_iter  fi;    /* Functional unit iterator */
 
-  stmt_iter_reset( &curr, stmtl );
-  
-  while( curr.curr != NULL ) {
+  if( !db_is_unnamed_scope( funit->name ) ) {
 
-    if( (curr.curr->stmt->exp->op != EXP_OP_DELAY)   &&
-        (curr.curr->stmt->exp->op != EXP_OP_CASE)    &&
-        (curr.curr->stmt->exp->op != EXP_OP_CASEX)   &&
-        (curr.curr->stmt->exp->op != EXP_OP_CASEZ)   &&
-        (curr.curr->stmt->exp->op != EXP_OP_DEFAULT) &&
-        (curr.curr->stmt->exp->op != EXP_OP_NB_CALL) &&
-        (curr.curr->stmt->exp->op != EXP_OP_FORK)    &&
-        (curr.curr->stmt->exp->op != EXP_OP_JOIN)    &&
-        (curr.curr->stmt->exp->line != 0) ) {
-      *total = *total + 1;
-      if( (curr.curr->stmt->exp->exec_num > 0) || (ESUPPL_STMT_EXCLUDED( curr.curr->stmt->exp->suppl ) == 1) ) {
-        (*hit)++;
+    /* Initialize the functional unit iterator */
+    func_iter_init( &fi, funit );
+
+    stmt = func_iter_get_next_statement( &fi );
+    while( stmt != NULL ) {
+
+      if( (stmt->exp->op != EXP_OP_DELAY)   &&
+          (stmt->exp->op != EXP_OP_CASE)    &&
+          (stmt->exp->op != EXP_OP_CASEX)   &&
+          (stmt->exp->op != EXP_OP_CASEZ)   &&
+          (stmt->exp->op != EXP_OP_DEFAULT) &&
+          (stmt->exp->op != EXP_OP_NB_CALL) &&
+          (stmt->exp->op != EXP_OP_FORK)    &&
+          (stmt->exp->op != EXP_OP_JOIN)    &&
+          (stmt->exp->line != 0) ) {
+        *total = *total + 1;
+        if( (stmt->exp->exec_num > 0) || (ESUPPL_STMT_EXCLUDED( stmt->exp->suppl ) == 1) ) {
+          (*hit)++;
+        }
       }
+
+      stmt = func_iter_get_next_statement( &fi );
+
     }
 
-    stmt_iter_next( &curr );
+    func_iter_dealloc( &fi );
 
   }
 
@@ -116,6 +128,10 @@ bool line_collect( char* funit_name, int funit_type, int cov, int** lines, int**
   int         i;              /* Loop iterator */
   int         last_line;      /* Specifies the last line of the current expression  */
   int         line_size;      /* Indicates the number of entries in the lines array */
+  statement*  stmt;           /* Pointer to current statement */
+  func_iter   fi;             /* Functional unit iterator */
+
+  assert( !db_is_unnamed_scope( funit_name ) );
 
   /* First, find functional unit in functional unit array */
   funit.name = funit_name;
@@ -129,32 +145,33 @@ bool line_collect( char* funit_name, int funit_type, int cov, int** lines, int**
     *lines    = (int*)malloc_safe( (sizeof( int ) * line_size), __FILE__, __LINE__ );
     *excludes = (int*)malloc_safe( (sizeof( int ) * line_size), __FILE__, __LINE__ );
 
-    stmt_iter_reset( &stmti, funitl->funit->stmt_tail );
-    stmt_iter_find_head( &stmti, FALSE );
+    /* Initialize the functional unit iterator */
+    func_iter_init( &fi, funitl->funit );
 
-    while( stmti.curr != NULL ) {
+    stmt = func_iter_get_next_statement( &fi );
+    while( stmt != NULL ) {
 
-      if( (stmti.curr->stmt->exp->op != EXP_OP_DELAY)   &&
-          (stmti.curr->stmt->exp->op != EXP_OP_CASE)    &&
-          (stmti.curr->stmt->exp->op != EXP_OP_CASEX)   &&
-          (stmti.curr->stmt->exp->op != EXP_OP_CASEZ)   &&
-          (stmti.curr->stmt->exp->op != EXP_OP_DEFAULT) &&
-          (stmti.curr->stmt->exp->op != EXP_OP_NB_CALL) &&
-          (stmti.curr->stmt->exp->op != EXP_OP_FORK)    &&
-          (stmti.curr->stmt->exp->op != EXP_OP_JOIN)    &&
-          (stmti.curr->stmt->exp->line != 0) ) {
+      if( (stmt->exp->op != EXP_OP_DELAY)   &&
+          (stmt->exp->op != EXP_OP_CASE)    &&
+          (stmt->exp->op != EXP_OP_CASEX)   &&
+          (stmt->exp->op != EXP_OP_CASEZ)   &&
+          (stmt->exp->op != EXP_OP_DEFAULT) &&
+          (stmt->exp->op != EXP_OP_NB_CALL) &&
+          (stmt->exp->op != EXP_OP_FORK)    &&
+          (stmt->exp->op != EXP_OP_JOIN)    &&
+          (stmt->exp->line != 0) ) {
 
-        if( ((stmti.curr->stmt->exp->exec_num > 0) ? 1 : 0) == cov ) {
+        if( ((stmt->exp->exec_num > 0) ? 1 : 0) == cov ) {
 
-          last_line = expression_get_last_line_expr( stmti.curr->stmt->exp )->line;
-          for( i=stmti.curr->stmt->exp->line; i<=last_line; i++ ) {
+          last_line = expression_get_last_line_expr( stmt->exp )->line;
+          for( i=stmt->exp->line; i<=last_line; i++ ) {
             if( *line_cnt == line_size ) {
               line_size += 20;
               *lines    = (int*)realloc( *lines,    (sizeof( int ) * line_size) );
               *excludes = (int*)realloc( *excludes, (sizeof( int ) * line_size) );
             }
             (*lines)[(*line_cnt)]    = i;
-            (*excludes)[(*line_cnt)] = ESUPPL_EXCLUDED( stmti.curr->stmt->exp->suppl );
+            (*excludes)[(*line_cnt)] = ESUPPL_EXCLUDED( stmt->exp->suppl );
             (*line_cnt)++;
           }
 
@@ -162,9 +179,11 @@ bool line_collect( char* funit_name, int funit_type, int cov, int** lines, int**
 
       }
 
-      stmt_iter_get_next_in_order( &stmti );
+      stmt = func_iter_get_next_statement( &fi );
 
     }
+
+    func_iter_dealloc( &fi );
 
   } else {
 
@@ -197,6 +216,8 @@ bool line_get_funit_summary( char* funit_name, int funit_type, int* total, int* 
   func_unit   funit;          /* Functional unit used for searching */
   funit_link* funitl;         /* Pointer to found functional unit link */
   char        tmp[21];        /* Temporary string for total */
+
+  assert( !db_is_unnamed_scope( funit_name ) );
 
   funit.name = funit_name;
   funit.type = funit_type;
@@ -252,7 +273,8 @@ bool line_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst ) {
 
   free_safe( pname );
 
-  if( root->stat->show && ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
+  if( root->stat->show && !db_is_unnamed_scope( root->funit->name ) &&
+      ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
 
     if( root->stat->line_total == 0 ) {
       percent = 100.0;
@@ -314,7 +336,8 @@ bool line_funit_summary( FILE* ofile, funit_link* head ) {
     miss_found = (miss > 0) ? TRUE : miss_found;
 
     /* If this is an assertion module, don't output any further */
-    if( head->funit->stat->show && ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( head->funit )) ) {
+    if( head->funit->stat->show && !db_is_unnamed_scope( head->funit->name ) &&
+        ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( head->funit )) ) {
 
       /* Get printable version of functional unit name */
       pname = scope_gen_printable( head->funit->name );
@@ -348,11 +371,12 @@ bool line_funit_summary( FILE* ofile, funit_link* head ) {
 */
 void line_display_verbose( FILE* ofile, func_unit* funit ) {
 
-  stmt_iter   stmti;       /* Statement list iterator */
+  statement*  stmt;        /* Pointer to current statement */
   expression* unexec_exp;  /* Pointer to current unexecuted expression */
   char**      code;        /* Pointer to code string from code generator */
   int         code_depth;  /* Depth of code array */
   int         i;           /* Loop iterator */
+  func_iter   fi;          /* Functional unit iterator */
 
   if( report_covered ) {
     fprintf( ofile, "    Hit Lines\n\n" );
@@ -360,25 +384,26 @@ void line_display_verbose( FILE* ofile, func_unit* funit ) {
     fprintf( ofile, "    Missed Lines\n\n" );
   }
 
+  /* Initialize functional unit iterator */
+  func_iter_init( &fi, funit );
+
   /* Display current instance missed lines */
-  stmt_iter_reset( &stmti, funit->stmt_tail );
-  stmt_iter_find_head( &stmti, FALSE );
-  
-  while( stmti.curr != NULL ) {
+  stmt = func_iter_get_next_statement( &fi );
+  while( stmt != NULL ) {
 
-    if( (stmti.curr->stmt->exp->op != EXP_OP_DELAY)   &&
-        (stmti.curr->stmt->exp->op != EXP_OP_CASE)    &&
-        (stmti.curr->stmt->exp->op != EXP_OP_CASEX)   &&
-        (stmti.curr->stmt->exp->op != EXP_OP_CASEZ)   &&
-        (stmti.curr->stmt->exp->op != EXP_OP_DEFAULT) &&
-        (stmti.curr->stmt->exp->op != EXP_OP_NB_CALL) &&
-        (stmti.curr->stmt->exp->op != EXP_OP_FORK)    &&
-        (stmti.curr->stmt->exp->op != EXP_OP_JOIN)    &&
-        (stmti.curr->stmt->exp->line != 0) ) {
+    if( (stmt->exp->op != EXP_OP_DELAY)   &&
+        (stmt->exp->op != EXP_OP_CASE)    &&
+        (stmt->exp->op != EXP_OP_CASEX)   &&
+        (stmt->exp->op != EXP_OP_CASEZ)   &&
+        (stmt->exp->op != EXP_OP_DEFAULT) &&
+        (stmt->exp->op != EXP_OP_NB_CALL) &&
+        (stmt->exp->op != EXP_OP_FORK)    &&
+        (stmt->exp->op != EXP_OP_JOIN)    &&
+        (stmt->exp->line != 0) ) {
 
-      if( ((stmti.curr->stmt->exp->exec_num > 0) ? 1 : 0) == report_covered ) {
+      if( ((stmt->exp->exec_num > 0) ? 1 : 0) == report_covered ) {
 
-        unexec_exp = stmti.curr->stmt->exp;
+        unexec_exp = stmt->exp;
 
         codegen_gen_expr( unexec_exp, unexec_exp->op, &code, &code_depth, funit );
         if( code_depth == 1 ) {
@@ -395,9 +420,11 @@ void line_display_verbose( FILE* ofile, func_unit* funit ) {
 
     }
 
-    stmt_iter_get_next_in_order( &stmti );
+    stmt = func_iter_get_next_statement( &fi );
 
   }
+
+  func_iter_dealloc( &fi );
 
   fprintf( ofile, "\n" );
 
@@ -432,8 +459,9 @@ void line_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst ) {
 
   free_safe( pname );
 
-  if( ((root->stat->line_hit < root->stat->line_total) && !report_covered) ||
-        ((root->stat->line_hit > 0) && report_covered) ) {
+  if( !db_is_unnamed_scope( root->funit->name ) &&
+      (((root->stat->line_hit < root->stat->line_total) && !report_covered) ||
+       ((root->stat->line_hit > 0) && report_covered)) ) {
 
     /* Get printable version of functional unit name */
     pname = scope_gen_printable( root->funit->name );
@@ -478,8 +506,9 @@ void line_funit_verbose( FILE* ofile, funit_link* head ) {
 
   while( head != NULL ) {
 
-    if( ((head->funit->stat->line_hit < head->funit->stat->line_total) && !report_covered) ||
-        ((head->funit->stat->line_hit > 0) && report_covered) ) {
+    if( !db_is_unnamed_scope( head->funit->name ) &&
+        (((head->funit->stat->line_hit < head->funit->stat->line_total) && !report_covered) ||
+         ((head->funit->stat->line_hit > 0) && report_covered)) ) {
 
       /* Get printable version of functional unit name */
       pname = scope_gen_printable( head->funit->name );
@@ -521,6 +550,8 @@ void line_report( FILE* ofile, bool verbose ) {
   bool       missed_found = FALSE;  /* If set to TRUE, lines were found to be missed */
   char       tmp[4096];             /* Temporary string value */
   inst_link* instl;                 /* Pointer to current instance link */
+
+  printf( "In line_report\n" );
 
   fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
   fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   LINE COVERAGE RESULTS   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
@@ -573,6 +604,9 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.69  2007/03/30 22:43:13  phase1geo
+ Regression fixes.  Still have a ways to go but we are getting close.
+
  Revision 1.68  2006/10/12 22:48:46  phase1geo
  Updates to remove compiler warnings.  Still some work left to go here.
 

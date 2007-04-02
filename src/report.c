@@ -433,7 +433,7 @@ void report_gather_instance_stats( funit_inst* root ) {
 
     /* Get coverage results for this instance */
     if( report_line ) {
-      line_get_stats( root->funit->stmt_head, &(root->stat->line_total), &(root->stat->line_hit) );
+      line_get_stats( root->funit, &(root->stat->line_total), &(root->stat->line_hit) );
     }
 
     if( report_toggle ) {
@@ -444,7 +444,7 @@ void report_gather_instance_stats( funit_inst* root ) {
     }
 
     if( report_combination ) {
-      combination_get_stats( root->funit->exp_head,
+      combination_get_stats( root->funit,
                              &(root->stat->comb_total),
                              &(root->stat->comb_hit) );
     }
@@ -507,7 +507,7 @@ void report_gather_funit_stats( funit_link* head ) {
 
       /* Get coverage results for this instance */
       if( report_line ) {
-        line_get_stats( head->funit->stmt_head, &(head->funit->stat->line_total), &(head->funit->stat->line_hit) );
+        line_get_stats( head->funit, &(head->funit->stat->line_total), &(head->funit->stat->line_hit) );
       }
 
       if( report_toggle ) {
@@ -518,7 +518,7 @@ void report_gather_funit_stats( funit_link* head ) {
       }
 
       if( report_combination ) {
-        combination_get_stats( head->funit->exp_head,
+        combination_get_stats( head->funit,
                                &(head->funit->stat->comb_total),
                                &(head->funit->stat->comb_hit) );
       }
@@ -736,7 +736,7 @@ bool report_read_cdd_and_ready( char* ifile, int read_mode ) {
 
     if( (retval = db_read( ifile, read_mode )) ) {
       bind_perform( TRUE, 0 );
-      /*TBD*/inst_link_flatten( inst_head );
+      ///*TBD*/inst_link_flatten( inst_head );
       report_gather_funit_stats( funit_head );
     }
 
@@ -820,7 +820,7 @@ int command_report( int argc, int last_arg, char** argv ) {
           bind_perform( TRUE, 0 );
 
           /* Collapse the design to remove unnamed scopes */
-          inst_link_flatten( inst_head );
+          //inst_link_flatten( inst_head );
 
           /* Open output stream */
           if( output_file != NULL ) {
@@ -919,6 +919,9 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.80  2007/03/30 22:43:13  phase1geo
+ Regression fixes.  Still have a ways to go but we are getting close.
+
  Revision 1.79  2007/03/13 22:12:59  phase1geo
  Merging changes to covered-0_5-branch to fix bug 1678931.
 

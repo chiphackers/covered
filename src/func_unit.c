@@ -787,6 +787,7 @@ statement* funit_get_next_stmt( func_unit* funit, int line_num ) {
   /* Examine the current functional unit for statements that are closest to the given line number (without going under) */
   /* TBD - We may want to save off the statement iterator in the func_unit module for performance purposes */
   stmt_iter_reset( &si, funit->stmt_tail );
+  stmt_iter_find_head( &si, FALSE );
   while( (si.curr != NULL) && (stmt == NULL) ) {
     stmt_iter_get_next_in_order( &si );
     if( (si.curr != NULL) && (si.curr->stmt->exp->line >= line_num) ) {
@@ -1147,6 +1148,9 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.62  2007/03/30 22:43:13  phase1geo
+ Regression fixes.  Still have a ways to go but we are getting close.
+
  Revision 1.61  2007/03/19 22:52:50  phase1geo
  Attempting to fix problem with line ordering for a named block that is
  in the middle of another statement block.  Also fixed a problem with FORK

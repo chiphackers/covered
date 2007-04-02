@@ -38,7 +38,7 @@ void combination_reset_counted_expr_tree( expression* exp );
 void combination_get_tree_stats( expression* exp, int* ulid, unsigned int curr_depth, bool excluded, float* total, int* hit );
 
 /*! \brief Calculates combination logic statistics for summary output */
-void combination_get_stats( exp_link* expl, float* total, int* hit );
+void combination_get_stats( func_unit* funit, float* total, int* hit );
 
 /*! \brief Collects all toggle expressions that match the specified coverage indication. */
 bool combination_collect( char* funit_name, int funit_type, expression*** covs, int* cov_cnt,
@@ -60,6 +60,12 @@ void combination_report( FILE* ofile, bool verbose );
 
 /*
  $Log$
+ Revision 1.19  2006/06/28 04:35:47  phase1geo
+ Adding support for line coverage and fixing toggle and combinational coverage
+ to redisplay main textbox to reflect exclusion changes.  Also added messageBox
+ for close and exit menu options when a CDD has been changed but not saved to
+ allow the user to do so before continuing on.
+
  Revision 1.18  2006/06/27 22:06:26  phase1geo
  Fixing more code related to exclusion.  The detailed combinational expression
  window now works correctly.  I am currently working on getting the main window
