@@ -117,7 +117,7 @@ bool assertion_instance_summary( FILE* ofile, funit_inst* root, char* parent_ins
 
   free_safe( pname );
 
-  if( root->stat->show && !db_is_unnamed_scope( root->funit->name ) &&
+  if( root->stat->show && !funit_is_unnamed( root->funit ) &&
       ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
 
     if( root->stat->assert_total == 0 ) {
@@ -181,11 +181,11 @@ bool assertion_funit_summary( FILE* ofile, funit_link* head ) {
     miss_found = (miss > 0) ? TRUE : miss_found;
 
     /* If this is an assertion module, don't output any further */
-    if( head->funit->stat->show && !db_is_unnamed_scope( head->funit->name ) &&
+    if( head->funit->stat->show && !funit_is_unnamed( head->funit ) &&
         ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( head->funit )) ) {
 
       /* Get printable version of functional unit name */
-      pname = scope_gen_printable( head->funit->name );
+      pname = scope_gen_printable( funit_flatten_name( head->funit ) );
 
       fprintf( ofile, "  %-20.20s    %-20.20s   %5d/%5.0f/%5.0f      %3.0f%%\n",
                pname,
@@ -257,12 +257,12 @@ void assertion_instance_verbose( FILE* ofile, funit_inst* root, char* parent_ins
 
   free_safe( pname );
 
-  if( !db_is_unnamed_scope( root->funit->name ) &&
+  if( !funit_is_unnamed( root->funit ) &&
       (((root->stat->assert_hit < root->stat->assert_total) && !report_covered) ||
        ((root->stat->assert_hit > 0) && report_covered)) ) {
 
     /* Get printable version of functional unit name */
-    pname = scope_gen_printable( root->funit->name );
+    pname = scope_gen_printable( funit_flatten_name( root->funit ) );
 
     fprintf( ofile, "\n" );
     switch( root->funit->type ) {
@@ -302,12 +302,12 @@ void assertion_funit_verbose( FILE* ofile, funit_link* head ) {
 
   while( head != NULL ) {
 
-    if( !db_is_unnamed_scope( head->funit->name ) &&
+    if( !funit_is_unnamed( head->funit ) &&
         (((head->funit->stat->assert_hit < head->funit->stat->assert_total) && !report_covered) ||
          ((head->funit->stat->assert_hit > 0) && report_covered)) ) {
 
       /* Get printable version of functional unit name */
-      pname = scope_gen_printable( head->funit->name );
+      pname = scope_gen_printable( funit_flatten_name( head->funit ) );
 
       fprintf( ofile, "\n" );
       switch( head->funit->type ) {
@@ -531,6 +531,10 @@ bool assertion_get_coverage( char* funit_name, int funit_type, char* inst_name, 
 
 /*
  $Log$
+ Revision 1.16  2007/04/02 20:19:36  phase1geo
+ Checkpointing more work on use of functional iterators.  Not working correctly
+ yet.
+
  Revision 1.15  2006/10/12 22:48:45  phase1geo
  Updates to remove compiler warnings.  Still some work left to go here.
 

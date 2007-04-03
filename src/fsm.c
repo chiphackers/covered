@@ -42,6 +42,7 @@
 #include "db.h"
 #include "defines.h"
 #include "expr.h"
+#include "func_unit.h"
 #include "fsm.h"
 #include "link.h"
 #include "obfuscate.h"
@@ -639,7 +640,7 @@ bool fsm_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst ) {
 
   free_safe( pname );
 
-  if( root->stat->show && !db_is_unnamed_scope( root->funit->name ) &&
+  if( root->stat->show && !funit_is_unnamed( root->funit ) &&
       ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
 
     if( root->stat->state_total == 0 ) {
@@ -727,11 +728,11 @@ bool fsm_funit_summary( FILE* ofile, funit_link* head ) {
     miss_found = ((state_miss != 0) || (arc_miss != 0)) ? TRUE : miss_found;
 
     /* If this is an assertion module, don't output any further */
-    if( head->funit->stat->show && !db_is_unnamed_scope( head->funit->name ) &&
+    if( head->funit->stat->show && !funit_is_unnamed( head->funit ) &&
         ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( head->funit )) ) {
 
       /* Get printable version of functional unit name */
-      pname = scope_gen_printable( head->funit->name );
+      pname = scope_gen_printable( funit_flatten_name( head->funit ) );
 
       if( (head->funit->stat->state_total == -1) || (head->funit->stat->arc_total == -1) ) {
         fprintf( ofile, "  %-20.20s    %-20.20s   %4d/  ? /  ?        ? %%         %4d/  ? /  ?        ? %%\n",
@@ -957,14 +958,14 @@ void fsm_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst ) {
 
   free_safe( pname );
 
-  if( !db_is_unnamed_scope( root->funit->name ) &&
+  if( !funit_is_unnamed( root->funit ) &&
       ((((root->stat->state_hit < root->stat->state_total) || (root->stat->arc_hit < root->stat->arc_total)) && !report_covered) ||
          (root->stat->state_total == -1) ||
          (root->stat->arc_total   == -1) ||
        (((root->stat->state_hit > 0) || (root->stat->arc_hit > 0)) && report_covered)) ) {
 
     /* Get printable version of functional unit name */
-    pname = scope_gen_printable( root->funit->name );
+    pname = scope_gen_printable( funit_flatten_name( root->funit ) );
 
     fprintf( ofile, "\n" );
     switch( root->funit->type ) {
@@ -1003,7 +1004,7 @@ void fsm_funit_verbose( FILE* ofile, funit_link* head ) {
 
   while( head != NULL ) {
 
-    if( !db_is_unnamed_scope( head->funit->name ) &&
+    if( !funit_is_unnamed( head->funit ) &&
         ((((head->funit->stat->state_hit < head->funit->stat->state_total) || 
            (head->funit->stat->arc_hit < head->funit->stat->arc_total)) && !report_covered) ||
            (head->funit->stat->state_total == -1) ||
@@ -1011,7 +1012,7 @@ void fsm_funit_verbose( FILE* ofile, funit_link* head ) {
          (((head->funit->stat->state_hit > 0) || (head->funit->stat->arc_hit > 0)) && report_covered)) ) {
 
       /* Get printable version of functional unit name */
-      pname = scope_gen_printable( head->funit->name );
+      pname = scope_gen_printable( funit_flatten_name( head->funit ) );
 
       fprintf( ofile, "\n" );
       switch( head->funit->type ) {
@@ -1148,6 +1149,10 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.65  2007/04/02 20:19:36  phase1geo
+ Checkpointing more work on use of functional iterators.  Not working correctly
+ yet.
+
  Revision 1.64  2007/03/30 22:43:13  phase1geo
  Regression fixes.  Still have a ways to go but we are getting close.
 

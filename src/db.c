@@ -572,16 +572,7 @@ char* db_create_unnamed_scope() {
 */
 bool db_is_unnamed_scope( char* scope ) {
 
-  bool retval = FALSE;  /* Return value for this function */
-  char back[4096];      /* Last portion of specified scope */
-  char rest[4096];      /* First portion of specified scope */
- 
-  if( scope != NULL ) {
-    scope_extract_back( scope, back, rest );
-    retval = (back[0] == '$') && (back[1] == 'u');
-  }
-
-  return( retval );
+  return( (scope != NULL) && (scope[0] == '$') && (scope[1] == 'u') );
 
 }
 
@@ -2317,6 +2308,10 @@ void db_do_timestep( uint64 time, bool final ) {
 
 /*
  $Log$
+ Revision 1.251  2007/04/02 04:50:04  phase1geo
+ Adding func_iter files to iterate through a functional unit for reporting
+ purposes.  Updated affected files.
+
  Revision 1.250  2007/03/30 22:43:13  phase1geo
  Regression fixes.  Still have a ways to go but we are getting close.
 

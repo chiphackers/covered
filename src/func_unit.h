@@ -68,8 +68,8 @@ bool funit_db_read( func_unit* funit, /*@out@*/char* scope, char** line );
 /*! \brief Reads and merges two functional units into base functional unit. */
 bool funit_db_merge( func_unit* base, FILE* file, bool same );
 
-/*! \brief Flattens the functional unit name by removing the last unnamed scope portion */
-void funit_flatten_name( func_unit* funit, char* unnamed_scope );
+/*! \brief Flattens the functional unit name by removing all unnamed scope portions */
+char* funit_flatten_name( func_unit* funit );
 
 /*! \brief Finds the functional unit that contains the given statement/expression ID */
 func_unit* funit_find_by_id( int id );
@@ -98,6 +98,10 @@ void funit_dealloc( func_unit* funit );
 
 /*
  $Log$
+ Revision 1.23  2007/04/02 20:19:36  phase1geo
+ Checkpointing more work on use of functional iterators.  Not working correctly
+ yet.
+
  Revision 1.22  2007/03/30 22:43:13  phase1geo
  Regression fixes.  Still have a ways to go but we are getting close.
 

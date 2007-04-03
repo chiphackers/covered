@@ -770,37 +770,34 @@ bool funit_db_merge( func_unit* base, FILE* file, bool same ) {
 }
 
 /*!
- \param funit          Pointer to functional unit to flatten name (if necessary)
- \param unnamed_scope  String specifying this unnamed_scope to remove
+ \param flattened_scope  Storage array for the flattened scope name
+ \param funit            Pointer to functional unit to flatten name
 
- Flattens the functional unit name by finding the last unnamed scope portion of
- the name and removing it from this name.
+ Flattens the functional unit name and stores the result name in the flattened_scope
+ array.
 */
-void funit_flatten_name( func_unit* funit, char* unnamed_scope ) {
+char* funit_flatten_name( func_unit* funit ) {
 
-  char* uscope;  /* Unnamed scope to find */
-  char* substr;  /* Pointer to found substring */
-  int   slen;    /* Length of string */
-  char* nname;   /* New functional unit name */
+  static char fscope[4096];  /* Flattened scope name */
+  char        tmp[4096];     /* Temporary string storage */
+  char        front[4096];   /* First portion of scope name */
+  char        rest[4096];    /* Last portion of scope name */
 
   assert( funit != NULL );
-  assert( unnamed_scope != NULL );
 
-  slen = strlen( unnamed_scope ) + 2;
-  uscope = (char*)malloc_safe( slen, __FILE__, __LINE__ );
-  snprintf( uscope, slen, "%s.", unnamed_scope );
+  scope_extract_front( funit->name, front, rest );
+  strcpy( fscope, front );
 
-  if( (substr = strstr( funit->name, uscope )) != NULL ) {
-    *substr = '\0';
-    substr += (slen - 1);
-    slen    = strlen( funit->name ) + strlen( substr ) + 1;
-    nname   = (char*)malloc_safe( slen, __FILE__, __LINE__ );
-    snprintf( nname, slen, "%s%s", funit->name, substr );
-    free_safe( funit->name );
-    funit->name = nname;
+  while( front[0] != '\0' ) {
+    if( !db_is_unnamed_scope( front ) ) {
+      strcat( fscope, "." );
+      strcat( fscope, front );
+    }
+    strcpy( tmp, rest );
+    scope_extract_front( tmp, front, rest ); 
   }
 
-  free_safe( uscope );
+  return fscope;
 
 }
 
@@ -903,7 +900,7 @@ bool funit_is_unnamed_child_of( func_unit* parent, func_unit* child ) {
     child = child->parent;
   }
 
-  return( child->parent != NULL );
+  return( child->parent == parent );
 
 }
 
@@ -1064,6 +1061,10 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.64  2007/04/02 20:19:36  phase1geo
+ Checkpointing more work on use of functional iterators.  Not working correctly
+ yet.
+
  Revision 1.63  2007/04/02 04:50:04  phase1geo
  Adding func_iter files to iterate through a functional unit for reporting
  purposes.  Updated affected files.

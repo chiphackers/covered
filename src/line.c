@@ -71,9 +71,7 @@ void line_get_stats( func_unit* funit, float* total, int* hit ) {
   statement* stmt;  /* Pointer to current statement */
   func_iter  fi;    /* Functional unit iterator */
 
-  if( !db_is_unnamed_scope( funit->name ) ) {
-
-    printf( "Gathering line statistics for functional unit %s\n", funit->name );
+  if( !funit_is_unnamed( funit ) ) {
 
     /* Initialize the functional unit iterator */
     func_iter_init( &fi, funit );
@@ -81,7 +79,6 @@ void line_get_stats( func_unit* funit, float* total, int* hit ) {
     stmt = func_iter_get_next_statement( &fi );
     while( stmt != NULL ) {
 
-      printf( "  statement: %s\n", expression_string( stmt->exp ) );
       if( (stmt->exp->op != EXP_OP_DELAY)   &&
           (stmt->exp->op != EXP_OP_CASE)    &&
           (stmt->exp->op != EXP_OP_CASEX)   &&
@@ -102,10 +99,6 @@ void line_get_stats( func_unit* funit, float* total, int* hit ) {
     }
 
     func_iter_dealloc( &fi );
-
-  } else {
-
-    printf( "In line_get_stats, funit %s is considered to be an unnamed scope\n", funit->name );
 
   }
 
@@ -137,8 +130,6 @@ bool line_collect( char* funit_name, int funit_type, int cov, int** lines, int**
   int         line_size;      /* Indicates the number of entries in the lines array */
   statement*  stmt;           /* Pointer to current statement */
   func_iter   fi;             /* Functional unit iterator */
-
-  assert( !db_is_unnamed_scope( funit_name ) );
 
   /* First, find functional unit in functional unit array */
   funit.name = funit_name;
@@ -224,8 +215,6 @@ bool line_get_funit_summary( char* funit_name, int funit_type, int* total, int* 
   funit_link* funitl;         /* Pointer to found functional unit link */
   char        tmp[21];        /* Temporary string for total */
 
-  assert( !db_is_unnamed_scope( funit_name ) );
-
   funit.name = funit_name;
   funit.type = funit_type;
 
@@ -280,7 +269,7 @@ bool line_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst ) {
 
   free_safe( pname );
 
-  if( root->stat->show && !db_is_unnamed_scope( root->funit->name ) &&
+  if( root->stat->show && !funit_is_unnamed( root->funit ) &&
       ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
 
     if( root->stat->line_total == 0 ) {
@@ -343,11 +332,11 @@ bool line_funit_summary( FILE* ofile, funit_link* head ) {
     miss_found = (miss > 0) ? TRUE : miss_found;
 
     /* If this is an assertion module, don't output any further */
-    if( head->funit->stat->show && !db_is_unnamed_scope( head->funit->name ) &&
+    if( head->funit->stat->show && !funit_is_unnamed( head->funit ) &&
         ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( head->funit )) ) {
 
       /* Get printable version of functional unit name */
-      pname = scope_gen_printable( head->funit->name );
+      pname = scope_gen_printable( funit_flatten_name( head->funit ) );
 
       fprintf( ofile, "  %-20.20s    %-20.20s   %5d/%5.0f/%5.0f      %3.0f%%\n", 
                pname,
@@ -466,12 +455,12 @@ void line_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst ) {
 
   free_safe( pname );
 
-  if( !db_is_unnamed_scope( root->funit->name ) &&
+  if( !funit_is_unnamed( root->funit ) &&
       (((root->stat->line_hit < root->stat->line_total) && !report_covered) ||
        ((root->stat->line_hit > 0) && report_covered)) ) {
 
     /* Get printable version of functional unit name */
-    pname = scope_gen_printable( root->funit->name );
+    pname = scope_gen_printable( funit_flatten_name( root->funit ) );
 
     fprintf( ofile, "\n" );
     switch( root->funit->type ) {
@@ -513,12 +502,12 @@ void line_funit_verbose( FILE* ofile, funit_link* head ) {
 
   while( head != NULL ) {
 
-    if( !db_is_unnamed_scope( head->funit->name ) &&
+    if( !funit_is_unnamed( head->funit ) &&
         (((head->funit->stat->line_hit < head->funit->stat->line_total) && !report_covered) ||
          ((head->funit->stat->line_hit > 0) && report_covered)) ) {
 
       /* Get printable version of functional unit name */
-      pname = scope_gen_printable( head->funit->name );
+      pname = scope_gen_printable( funit_flatten_name( head->funit ) );
 
       fprintf( ofile, "\n" );
       switch( head->funit->type ) {
@@ -609,6 +598,10 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.71  2007/04/02 20:19:36  phase1geo
+ Checkpointing more work on use of functional iterators.  Not working correctly
+ yet.
+
  Revision 1.70  2007/04/02 04:50:04  phase1geo
  Adding func_iter files to iterate through a functional unit for reporting
  purposes.  Updated affected files.

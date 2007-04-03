@@ -479,7 +479,7 @@ void combination_reset_counted_exprs( func_unit* funit ) {
   /* Do the same for all children functional units that are unnamed */
   child = funit->tf_head;
   while( child != NULL ) {
-    if( db_is_unnamed_scope( child->funit->name ) ) {
+    if( funit_is_unnamed( child->funit ) ) {
       combination_reset_counted_exprs( child->funit );
     }
     child = child->next;
@@ -523,7 +523,7 @@ void combination_get_stats( func_unit* funit, float* total, int* hit ) {
   int        ulid;  /* Current underline ID for this expression */
   
   /* If the given functional unit is not an unnamed scope, traverse it now */
-  if( !db_is_unnamed_scope( funit->name ) ) {
+  if( !funit_is_unnamed( funit ) ) {
 
     /* Initialize functional unit iterator */
     func_iter_init( &fi, funit );
@@ -559,8 +559,6 @@ bool combination_get_funit_summary( char* funit_name, int funit_type, int* total
   func_unit   funit;          /* Functional unit used for searching */
   funit_link* funitl;         /* Pointer to found functional unit link */
   char        tmp[21];        /* Temporary string for total */
-
-  assert( !db_is_unnamed_scope( funit_name ) );
 
   funit.name = funit_name;
   funit.type = funit_type;
@@ -612,7 +610,7 @@ bool combination_instance_summary( FILE* ofile, funit_inst* root, char* parent )
     snprintf( tmpname, 4096, "%s.%s", parent, obf_inst( root->name ) );
   }
 
-  if( root->stat->show && !db_is_unnamed_scope( root->funit->name ) &&
+  if( root->stat->show && !funit_is_unnamed( root->funit ) &&
       ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
 
     if( root->stat->comb_total == 0 ) {
@@ -679,11 +677,11 @@ bool combination_funit_summary( FILE* ofile, funit_link* head ) {
     }
 
     /* If this is an assertion module, don't output any further */
-    if( head->funit->stat->show && !db_is_unnamed_scope( head->funit->name ) &&
+    if( head->funit->stat->show && !funit_is_unnamed( head->funit ) &&
         ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( head->funit )) ) {
 
       fprintf( ofile, "  %-30.30s    %-30.30s   %4d/%4.0f/%4.0f      %3.0f%%\n", 
-               obf_funit( head->funit->name ),
+               obf_funit( funit_flatten_name( head->funit ) ),
                get_basename( obf_file( head->funit->filename ) ),
                head->funit->stat->comb_hit,
                miss,
@@ -2304,12 +2302,12 @@ void combination_instance_verbose( FILE* ofile, funit_inst* root, char* parent )
 
   free_safe( pname );
 
-  if( !db_is_unnamed_scope( root->funit->name ) &&
+  if( !funit_is_unnamed( root->funit ) &&
       (((root->stat->comb_hit < root->stat->comb_total) && !report_covered) ||
        ((root->stat->comb_hit > 0) && report_covered)) ) {
 
     /* Get printable version of functional unit name */
-    pname = scope_gen_printable( root->funit->name );
+    pname = scope_gen_printable( funit_flatten_name( root->funit ) );
 
     fprintf( ofile, "\n" );
     switch( root->funit->type ) {
@@ -2349,12 +2347,12 @@ void combination_funit_verbose( FILE* ofile, funit_link* head ) {
 
   while( head != NULL ) {
 
-    if( !db_is_unnamed_scope( head->funit->name ) &&
+    if( !funit_is_unnamed( head->funit ) &&
         (((head->funit->stat->comb_hit < head->funit->stat->comb_total) && !report_covered) ||
          ((head->funit->stat->comb_hit > 0) && report_covered)) ) {
 
       /* Get printable version of functional unit name */
-      pname = scope_gen_printable( head->funit->name );
+      pname = scope_gen_printable( funit_flatten_name( head->funit ) );
 
       fprintf( ofile, "\n" );
       switch( head->funit->type ) {
@@ -2407,8 +2405,6 @@ bool combination_collect( char* funit_name, int funit_type, expression*** covs, 
   int         cov_size;        /* Current maximum allocated space in covs array */
   int         uncov_size;      /* Current maximum allocated space in uncovs array */
  
-  assert( !db_is_unnamed_scope( funit_name ) );
-
   /* First, find functional unit in functional unit array */
   funit.name = funit_name;
   funit.type = funit_type;
@@ -2543,8 +2539,6 @@ bool combination_get_expression( char* funit_name, int funit_type, int expr_id, 
   int         start     = 0;
   int         uline_max = 20;
 
-  assert( !db_is_unnamed_scope( funit_name ) );
-
   funit.name = funit_name;
   funit.type = funit_type;
 
@@ -2645,8 +2639,6 @@ bool combination_get_coverage( char* funit_name, int funit_type, int exp_id, int
   expression* exp;             /* Pointer to found expression */
   expression  tmpexp;          /* Temporary expression used for searching */
 
-  assert( !db_is_unnamed_scope( funit_name ) );
-
   funit.name = funit_name;
   funit.type = funit_type;
 
@@ -2740,6 +2732,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.168  2007/04/02 20:19:36  phase1geo
+ Checkpointing more work on use of functional iterators.  Not working correctly
+ yet.
+
  Revision 1.167  2007/04/02 04:50:04  phase1geo
  Adding func_iter files to iterate through a functional unit for reporting
  purposes.  Updated affected files.

@@ -22,7 +22,6 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#include "db.h"
 #include "defines.h"
 #include "func_iter.h"
 #include "func_unit.h"
@@ -104,7 +103,7 @@ int func_iter_count_stmt_iters( func_unit* funit ) {
   /* Iterate through children functional units, counting all of the unnamed scopes */
   child = parent->tf_head;
   while( child != NULL ) {
-    if( funit_is_unnamed_child_of( funit, child->funit ) && db_is_unnamed_scope( child->funit->name ) ) {
+    if( funit_is_unnamed( child->funit ) && (child->funit->parent == funit) ) {
       count += func_iter_count_stmt_iters( child->funit );
     }
     child = child->next;
@@ -142,7 +141,7 @@ void func_iter_add_stmt_iters( func_iter* fi, func_unit* funit ) {
   /* Now traverse down all of the child functional units doing the same */
   child = parent->tf_head;
   while( child != NULL ) {
-    if( funit_is_unnamed_child_of( funit, child->funit ) && db_is_unnamed_scope( child->funit->name ) ) {
+    if( funit_is_unnamed( child->funit ) && (child->funit->parent == funit) ) {
       func_iter_add_stmt_iters( fi, child->funit );
     }
     child = child->next;
@@ -228,5 +227,9 @@ void func_iter_dealloc( func_iter* fi ) {
 
 /*
  $Log$
+ Revision 1.1  2007/04/02 20:19:36  phase1geo
+ Checkpointing more work on use of functional iterators.  Not working correctly
+ yet.
+
 */
 

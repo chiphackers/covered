@@ -31,6 +31,7 @@
 
 #include "db.h"
 #include "defines.h"
+#include "func_unit.h"
 #include "link.h"
 #include "obfuscate.h"
 #include "ovl.h"
@@ -307,7 +308,7 @@ bool toggle_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst )
 
   free_safe( pname );
 
-  if( root->stat->show && !db_is_unnamed_scope( root->funit->name ) &&
+  if( root->stat->show && !funit_is_unnamed( root->funit ) &&
       ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
 
     /* Calculate for toggle01 information */
@@ -393,11 +394,11 @@ bool toggle_funit_summary( FILE* ofile, funit_link* head ) {
     miss_found = ((miss01 > 0) || (miss10 > 0)) ? TRUE : miss_found;
 
     /* If this is an assertion module, don't output any further */
-    if( head->funit->stat->show && !db_is_unnamed_scope( head->funit->name ) &&
+    if( head->funit->stat->show && !funit_is_unnamed( head->funit ) &&
         ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( head->funit )) ) {
 
       /* Get printable version of functional unit name */
-      pname = scope_gen_printable( head->funit->name );
+      pname = scope_gen_printable( funit_flatten_name( head->funit ) );
 
       fprintf( ofile, "  %-20.20s    %-20.20s   %5d/%5.0f/%5.0f      %3.0f%%         %5d/%5.0f/%5.0f      %3.0f%%\n", 
                pname,
@@ -523,7 +524,7 @@ void toggle_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst )
 
   free_safe( pname );
 
-  if( !db_is_unnamed_scope( root->funit->name ) &&
+  if( !funit_is_unnamed( root->funit ) &&
       ((root->stat->tog01_hit < root->stat->tog_total) ||
        (root->stat->tog10_hit < root->stat->tog_total)) ) {
 
@@ -535,7 +536,7 @@ void toggle_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst )
       case FUNIT_TASK        :  fprintf( ofile, "    Task: " );         break;
       default                :  fprintf( ofile, "    UNKNOWN: " );      break;
     }
-    pname = scope_gen_printable( root->funit->name );
+    pname = scope_gen_printable( funit_flatten_name( root->funit ) );
     fprintf( ofile, "%s, File: %s, Instance: %s\n", pname, obf_file( root->funit->filename ), tmpname );
     fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
     free_safe( pname );
@@ -565,7 +566,7 @@ void toggle_funit_verbose( FILE* ofile, funit_link* head ) {
 
   while( head != NULL ) {
 
-    if( !db_is_unnamed_scope( head->funit->name ) &&
+    if( !funit_is_unnamed( head->funit ) &&
         ((head->funit->stat->tog01_hit < head->funit->stat->tog_total) ||
          (head->funit->stat->tog10_hit < head->funit->stat->tog_total)) ) {
 
@@ -577,7 +578,7 @@ void toggle_funit_verbose( FILE* ofile, funit_link* head ) {
         case FUNIT_TASK        :  fprintf( ofile, "    Task: " );         break;
         default                :  fprintf( ofile, "    UNKNOWN: " );      break;
       }
-      fprintf( ofile, "%s, File: %s\n", obf_funit( head->funit->name ), obf_file( head->funit->filename ) );
+      fprintf( ofile, "%s, File: %s\n", obf_funit( funit_flatten_name( head->funit ) ), obf_file( head->funit->filename ) );
       fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
       toggle_display_verbose( ofile, head->funit->sig_head );
@@ -658,6 +659,10 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.54  2007/04/02 20:19:37  phase1geo
+ Checkpointing more work on use of functional iterators.  Not working correctly
+ yet.
+
  Revision 1.53  2006/10/12 22:48:46  phase1geo
  Updates to remove compiler warnings.  Still some work left to go here.
 

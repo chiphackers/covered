@@ -760,7 +760,7 @@ void instance_flatten_helper( funit_inst* root, funit_link** rm_head, funit_link
         if( grandchild != NULL ) {
           while( grandchild != NULL ) {
             grandchild->parent = root;
-            funit_flatten_name( grandchild->funit, back );
+            //funit_flatten_name( grandchild->funit, back );
             grandchild = grandchild->next;
           }
           if( root->child_head == NULL ) {
@@ -1034,6 +1034,10 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.72  2007/04/02 20:19:36  phase1geo
+ Checkpointing more work on use of functional iterators.  Not working correctly
+ yet.
+
  Revision 1.71  2007/03/19 20:30:31  phase1geo
  More fixes to report command for instance flattening.  This seems to be
  working now as far as I can tell.  Regressions still have about 8 diagnostics

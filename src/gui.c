@@ -53,6 +53,7 @@ bool funit_get_list( char*** funit_names, char*** funit_types, int* funit_size )
   funit_link* curr;           /* Pointer to current functional unit link in list */
   int         i;              /* Index to module list */
   char        tmpstr[10];     /* Temporary string */
+  char        fname[4096];    /* Temporary storage for functional unit name */
 
   /* Initialize functional unit array size */
   *funit_size = 0;
@@ -60,7 +61,8 @@ bool funit_get_list( char*** funit_names, char*** funit_types, int* funit_size )
   /* Count the number of functional units */
   curr = funit_head;
   while( curr != NULL ) {
-    if( (info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( funit_get_curr_module( curr->funit ) ) ) {
+    if( !funit_is_unnamed( curr->funit ) &&
+        ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( funit_get_curr_module( curr->funit ) )) ) {
       (*funit_size)++;
     }
     curr = curr->next;
@@ -77,7 +79,8 @@ bool funit_get_list( char*** funit_names, char*** funit_types, int* funit_size )
     i    = 0;
     curr = funit_head;
     while( curr != NULL ) {
-      if( (info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( funit_get_curr_module( curr->funit ) ) ) {
+      if( !funit_is_unnamed( curr->funit ) &&
+          ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( funit_get_curr_module( curr->funit ) )) ) {
         (*funit_names)[i] = strdup_safe( curr->funit->name, __FILE__, __LINE__ );
         snprintf( tmpstr, 10, "%d", curr->funit->type );
         (*funit_types)[i] = strdup_safe( tmpstr, __FILE__, __LINE__ );
@@ -164,6 +167,9 @@ bool funit_get_start_and_end_lines( const char* funit_name, int funit_type, int*
 
 /*
  $Log$
+ Revision 1.8  2006/05/01 22:27:37  phase1geo
+ More updates with assertion coverage window.  Still have a ways to go.
+
  Revision 1.7  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the
