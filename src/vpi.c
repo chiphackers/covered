@@ -384,7 +384,7 @@ void covered_parse_task_func( vpiHandle mod ) {
 
     while( (scope = vpi_scan( iter )) != NULL ) {
       
-      type = vpi_get( vpiType, handle );
+      type = vpi_get( vpiType, scope );
 
       if( (type == vpiTask) || (type == vpiFunction) || (type == vpiNamedBegin) ) {
 

@@ -15,6 +15,7 @@ libcovered_a_SOURCES = ../src/arc.c \
                        ../src/enumerate.c \
                        ../src/expr.c \
                        ../src/fsm.c \
+                       ../src/func_iter.c \
                        ../src/func_unit.c \
                        ../src/info.c \
                        ../src/instance.c \

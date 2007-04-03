@@ -1,9 +1,13 @@
 5 a 1 * 0
-8 /data/cf/uvlogic1/uvg/trevorw/projects/covered/diags/verilog -t main -vcd elsif1.2.vcd -o elsif1.2.cdd -v elsif1.2.v
+8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd elsif1.2.vcd -o elsif1.2.cdd -v elsif1.2.v
 3 0 $root $root NA 0 0 1
 3 0 main main elsif1.2.v 1 26 1
-2 1 13 50008 1 0 20004 0 0 1 4 0
-2 2 13 10001 0 1 400 0 0 a
-2 3 13 10008 1 37 1006 1 2
+2 1 5 8000c 2 3d 12100a 0 0 1 2 1102 $u0
 1 a 3 830004 1 0 0 0 1 1 2
-4 3 0 0
+4 1 0 0
+3 1 main.$u0 main.$u0 elsif1.2.v 0 15 1
+2 2 13 50008 1 0 20004 0 0 1 4 0
+2 3 13 10001 0 1 400 0 0 a
+2 4 13 10008 1 37 11006 2 3
+4 4 0 0
+3 1 main.$u1 main.$u1 elsif1.2.v 0 24 1

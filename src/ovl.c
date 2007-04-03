@@ -31,14 +31,16 @@
 #include <stdlib.h>
 
 #include "defines.h"
-#include "ovl.h"
-#include "util.h"
-#include "link.h"
+#include "func_iter.h"
+#include "func_unit.h"
 #include "instance.h"
 #include "iter.h"
-#include "search.h"
-#include "vector.h"
+#include "link.h"
 #include "obfuscate.h"
+#include "ovl.h"
+#include "search.h"
+#include "util.h"
+#include "vector.h"
 
 
 /*!
@@ -168,7 +170,8 @@ void ovl_get_funit_stats( func_unit* funit, float* total, int* hit ) {
   funit_inst* funiti;      /* Pointer to found functional unit instance containing this functional unit */
   funit_inst* curr_child;  /* Current child of this functional unit's instance */
   int         ignore = 0;  /* Number of functional units to ignore */
-  stmt_iter   si;          /* Statement iterator */
+  func_iter   fi;          /* Functional unit iterator */
+  statement*  stmt;        /* Pointer to current statement */
 
   /* If the current functional unit is not an OVL module, get the statistics */
   if( !ovl_is_assertion_module( funit ) ) {
@@ -184,20 +187,23 @@ void ovl_get_funit_stats( func_unit* funit, float* total, int* hit ) {
       /* If this child instance module type is an assertion module, get its assertion information */
       if( (curr_child->funit->type == FUNIT_MODULE) && ovl_is_assertion_module( curr_child->funit ) ) {
 
-        stmt_iter_reset( &si, curr_child->funit->stmt_head );
-        while( si.curr != NULL ) {
+        /* Initialize the functional unit iterator */
+        func_iter_init( &fi, curr_child->funit );
+
+        while( (stmt = func_iter_get_next_statement( &fi )) != NULL ) {
 
           /* If this statement is a task call to the task "ovl_cover_t", get its total and hit information */
-          if( ovl_is_coverage_point( si.curr->stmt->exp ) ) {
+          if( ovl_is_coverage_point( stmt->exp ) ) {
             *total = *total + 1;
-            if( (si.curr->stmt->exp->exec_num > 0) || (ESUPPL_EXCLUDED( si.curr->stmt->exp->suppl ) == 1) ) {
+            if( (stmt->exp->exec_num > 0) || (ESUPPL_EXCLUDED( stmt->exp->suppl ) == 1) ) {
               (*hit)++;
             }
           }
 
-          stmt_iter_next( &si );
-
         }
+
+        /* Deallocate functional unit iterator */
+        func_iter_dealloc( &fi );
 
       }
 
@@ -250,7 +256,8 @@ void ovl_display_verbose( FILE* ofile, func_unit* funit ) {
   int         ignore = 0;  /* Specifies that we do not want to ignore any modules */
   funit_inst* curr_child;  /* Pointer to current child instance of this module */
   char*       cov_point;   /* Pointer to name of current coverage point */
-  stmt_iter   si;          /* Statement iterator */
+  func_iter   fi;          /* Functional unit iterator */
+  statement*  stmt;        /* Pointer to current statement */
 
   if( report_covered ) {
     fprintf( ofile, "      Instance Name               Assertion Name          Coverage Point                            # of hits\n" );
@@ -270,29 +277,32 @@ void ovl_display_verbose( FILE* ofile, func_unit* funit ) {
     /* If this child instance module type is an assertion module, check its assertion information */
     if( (curr_child->funit->type == FUNIT_MODULE) && ovl_is_assertion_module( curr_child->funit ) ) {
 
-      stmt_iter_reset( &si, curr_child->funit->stmt_head );
-      while( si.curr != NULL ) {
+      /* Initialize the functional unit iterator */
+      func_iter_init( &fi, curr_child->funit );
+
+      while( (stmt = func_iter_get_next_statement( &fi )) != NULL ) {
 
         /* If this statement is a task call to the task "ovl_cover_t", get its total and hit information */
-        if( ovl_is_coverage_point( si.curr->stmt->exp ) ) {
+        if( ovl_is_coverage_point( stmt->exp ) ) {
 
           /* Get coverage point name */
-          cov_point = ovl_get_coverage_point( si.curr->stmt );
+          cov_point = ovl_get_coverage_point( stmt );
 
           /* Output the coverage verbose results to the specified output file */
-          if( (si.curr->stmt->exp->exec_num == 0) && !report_covered ) {
+          if( (stmt->exp->exec_num == 0) && !report_covered ) {
             fprintf( ofile, "      %-26s  %-22s  \"%-38s\"\n",
-                     obf_inst( curr_child->name ), obf_funit( curr_child->funit->name ), cov_point );
-          } else if( (si.curr->stmt->exp->exec_num > 0) && report_covered ) {
+                     obf_inst( curr_child->name ), obf_funit( funit_flatten_name( curr_child->funit ) ), cov_point );
+          } else if( (stmt->exp->exec_num > 0) && report_covered ) {
             fprintf( ofile, "      %-26s  %-22s  \"%-38s\"  %9d\n",
-                     obf_inst( curr_child->name ), obf_funit( curr_child->funit->name ), cov_point, si.curr->stmt->exp->exec_num );
+                     obf_inst( curr_child->name ), obf_funit( funit_flatten_name( curr_child->funit ) ), cov_point, stmt->exp->exec_num );
           }
           
         }
 
-        stmt_iter_next( &si );
-
       }
+
+      /* Deallocate functional unit iterator */
+      func_iter_dealloc( &fi );
 
     }
 
@@ -442,6 +452,11 @@ void ovl_get_coverage( func_unit* funit, char* inst_name, char** assert_mod, str
 
 /*
  $Log$
+ Revision 1.12  2006/09/01 04:06:37  phase1geo
+ Added code to support more than one instance tree.  Currently, I am seeing
+ quite a few memory errors that are causing some major problems at the moment.
+ Checkpointing.
+
  Revision 1.11  2006/08/18 22:07:45  phase1geo
  Integrating obfuscation into all user-viewable output.  Verified that these
  changes have not made an impact on regressions.  Also improved performance

@@ -885,7 +885,7 @@ bool race_report_summary( FILE* ofile, funit_link* head ) {
       found = (head->funit->stat->race_total > 0) ? TRUE : found;
 
       fprintf( ofile, "  %-20.20s    %-20.20s        %d\n", 
-               head->funit->name,
+               funit_flatten_name( head->funit ),
   	       get_basename( obf_file( head->funit->filename ) ),
   	       head->funit->stat->race_total );
 
@@ -922,7 +922,7 @@ void race_report_verbose( FILE* ofile, funit_link* head ) {
         case FUNIT_TASK        :  fprintf( ofile, "    Task: " );         break;
         default                :  fprintf( ofile, "    UNKNOWN: " );      break;
       }
-      fprintf( ofile, "%s, File: %s\n", obf_funit( head->funit->name ), obf_file( head->funit->filename ) );
+      fprintf( ofile, "%s, File: %s\n", obf_funit( funit_flatten_name( head->funit ) ), obf_file( head->funit->filename ) );
       fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
       fprintf( ofile, "      Starting Line #     Race Condition Violation Reason\n" );
@@ -1052,6 +1052,9 @@ void race_blk_delete_list( race_blk* rb ) {
 
 /*
  $Log$
+ Revision 1.55  2007/03/30 22:43:13  phase1geo
+ Regression fixes.  Still have a ways to go but we are getting close.
+
  Revision 1.54  2006/12/18 23:58:34  phase1geo
  Fixes for automatic tasks.  Added atask1 diagnostic to regression suite to verify.
  Other fixes to parser for blocks.  We need to add code to properly handle unnamed

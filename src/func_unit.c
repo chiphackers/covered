@@ -785,8 +785,9 @@ char* funit_flatten_name( func_unit* funit ) {
 
   assert( funit != NULL );
 
-  scope_extract_front( funit->name, front, rest );
-  strcpy( fscope, front );
+  scope_extract_front( funit->name, fscope, rest );
+  strcpy( tmp, rest );
+  scope_extract_front( tmp, front, rest );
 
   while( front[0] != '\0' ) {
     if( !db_is_unnamed_scope( front ) ) {
@@ -1061,6 +1062,12 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.65  2007/04/03 04:15:17  phase1geo
+ Fixing bugs in func_iter functionality.  Modified functional unit name
+ flattening function (though this does not appear to be working correctly
+ at this time).  Added calls to funit_flatten_name in all of the reporting
+ files.  Checkpointing.
+
  Revision 1.64  2007/04/02 20:19:36  phase1geo
  Checkpointing more work on use of functional iterators.  Not working correctly
  yet.

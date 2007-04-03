@@ -261,7 +261,9 @@ bool line_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst ) {
   pname = scope_gen_printable( root->name );
   
   /* Calculate instance name */
-  if( strcmp( parent_inst, "*" ) == 0 ) {
+  if( db_is_unnamed_scope( pname ) ) {
+    strcpy( tmpname, parent_inst );
+  } else if( strcmp( parent_inst, "*" ) == 0 ) {
     strcpy( tmpname, pname );
   } else {
     snprintf( tmpname, 4096, "%s.%s", parent_inst, pname );
@@ -447,7 +449,9 @@ void line_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst ) {
   /* Get printable version of instance name */
   pname = scope_gen_printable( root->name );
 
-  if( strcmp( parent_inst, "*" ) == 0 ) {
+  if( db_is_unnamed_scope( pname ) ) {
+    strcpy( tmpname, parent_inst );
+  } else if( strcmp( parent_inst, "*" ) == 0 ) {
     strcpy( tmpname, pname );
   } else {
     snprintf( tmpname, 4096, "%s.%s", parent_inst, pname );
@@ -598,6 +602,12 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.72  2007/04/03 04:15:17  phase1geo
+ Fixing bugs in func_iter functionality.  Modified functional unit name
+ flattening function (though this does not appear to be working correctly
+ at this time).  Added calls to funit_flatten_name in all of the reporting
+ files.  Checkpointing.
+
  Revision 1.71  2007/04/02 20:19:36  phase1geo
  Checkpointing more work on use of functional iterators.  Not working correctly
  yet.
