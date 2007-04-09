@@ -29,6 +29,9 @@
 /*! \brief Creates a new instance with the given information */
 funit_inst* instance_create( func_unit* funit, char* inst_name, /*@null@*/vector_width* range );
 
+/*! \brief Creates all of the threads for the given instance tree and adds them to the thread list */
+unsigned instance_create_threads( funit_inst* root, thread** thread_head, thread** thread_tail );
+
 /*! \brief Displays the current state of the instance tree */
 void instance_display_tree( funit_inst* root );
 
@@ -78,6 +81,9 @@ void instance_dealloc( funit_inst* root, char* scope );
 
 /*
  $Log$
+ Revision 1.26  2007/03/30 22:43:13  phase1geo
+ Regression fixes.  Still have a ways to go but we are getting close.
+
  Revision 1.25  2007/03/16 21:41:09  phase1geo
  Checkpointing some work in fixing regressions for unnamed scope additions.
  Getting closer but still need to properly handle the removal of functional units.

@@ -149,7 +149,6 @@ statement* statement_create( expression* exp ) {
   stmt->next_false        = NULL;
   stmt->conn_id           = 0;
   stmt->thr               = NULL;
-  stmt->static_thr        = NULL;
 
   return( stmt );
 
@@ -409,7 +408,6 @@ bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) {
   exp_link*  expl;           /* Pointer to found expression link */
   stmt_link* stmtl;          /* Pointer to found statement link */
   int        chars_read;     /* Number of characters read from line */
-  thread*    thr;            /* Pointer to created simulation thread */
 
   if( sscanf( *line, "%d %d %d%n", &id, &true_id, &false_id, &chars_read ) == 3 ) {
 
@@ -484,7 +482,7 @@ bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) {
        is called.
       */
       if( ESUPPL_STMT_IS_CALLED( stmt->exp->suppl ) == 0 ) {
-        thr = sim_add_thread( NULL, stmt, curr_funit );
+        sim_create_thread( stmt, curr_funit );
       }
 
     }
@@ -909,11 +907,6 @@ void statement_dealloc( statement* stmt ) {
 
   if( stmt != NULL ) {
  
-    /* Deallocate the thread attached to this statement */
-    if( stmt->thr != NULL ) {
-      free_safe( stmt->thr );
-    }
-
     /* Finally, deallocate this statement */
     free_safe( stmt );
 
@@ -924,6 +917,10 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.105  2007/04/03 18:55:57  phase1geo
+ Fixing more bugs in reporting mechanisms for unnamed scopes.  Checking in more
+ regression updates per these changes.  Checkpointing.
+
  Revision 1.104  2007/03/16 22:33:46  phase1geo
  One more fix that helps diagnostics like always1 and still fixes exclude3.
  Regressions are still not working correctly yet, though.

@@ -1798,7 +1798,6 @@ struct statement_s {
   int         conn_id;               /*!< Current connection ID (used to make sure that we do not infinitely loop
                                           in connecting statements together) */
   thread*     thr;                   /*!< Pointer to thread that this statement is executing in */
-  thread*     static_thr;            /*!< Pointer to thread that originally called this statement */
 };
 
 /*!
@@ -2166,8 +2165,7 @@ struct stmt_blk_s {
 struct thread_s {
   func_unit* funit;                  /*!< Pointer to functional unit that this thread is running for */
   thread*    parent;                 /*!< Pointer to parent thread that spawned this thread */
-  statement* head;                   /*!< Pointer to original head statement that created this thread */
-  statement* curr;                   /*!< Pointer to current head statement for this thread */
+  statement* curr;                   /*!< Pointer to current statement running in this thread */
   reentrant* ren;                    /*!< Pointer to re-entrant structure to use for this thread */
   union {
     uint8 all;
@@ -2175,17 +2173,14 @@ struct thread_s {
       uint8 kill        : 1;         /*!< Set to TRUE if this thread should be killed */
       uint8 queued      : 1;         /*!< Set to TRUE when thread exists in the thread queue */
       uint8 exec_first  : 1;         /*!< Set to TRUE when the first statement is being executed */
-      uint8 time_thread : 1;         /*!< Set to TRUE if this thread represents a timestamp (for the delay queue only) */
       uint8 delayed     : 1;         /*!< Set to TRUE if this thread exists in the delay queue */
+      uint8 configured  : 1;         /*!< Set to TRUE if this thread has been configured */
     } part;
   } suppl;
+  unsigned   active_children;        /*!< Set to the number of children threads in active thread queue */
+  thread*    active_prev;            /*!< Pointer to previous thread in active queue */
+  thread*    active_next;            /*!< Pointer to next thread in active queue */
   uint64     curr_time;              /*!< Set to the current simulation time for this thread */
-  thread*    child_head;             /*!< Pointer to head element in child thread list for this thread */
-  thread*    child_tail;             /*!< Pointer to tail element in child thread list for this thread */
-  thread*    prev_sib;               /*!< Pointer to previous sibling thread */
-  thread*    next_sib;               /*!< Pointer to next sibling thread */
-  thread*    prev;                   /*!< Pointer to previous thread in thread simulation list */
-  thread*    next;                   /*!< Pointer to next thread in thread simulation list */
 };
 
 /*!
@@ -2301,6 +2296,9 @@ struct reentrant_s {
 
 /*
  $Log$
+ Revision 1.252  2007/03/30 22:43:13  phase1geo
+ Regression fixes.  Still have a ways to go but we are getting close.
+
  Revision 1.251  2007/03/16 21:41:08  phase1geo
  Checkpointing some work in fixing regressions for unnamed scope additions.
  Getting closer but still need to properly handle the removal of functional units.

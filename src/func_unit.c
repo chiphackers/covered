@@ -116,6 +116,16 @@ func_unit* funit_create() {
 
 }
 
+unsigned funit_create_threads( func_unit* funit, thread* parent, thread** thread_head, thread** thread_tail ) {
+
+  unsigned size = 0;
+
+  /* TBD */
+
+  return( size );
+
+}
+
 /*!
  \param funit  Pointer to functional unit to get its module from
 
@@ -1062,6 +1072,10 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.66  2007/04/03 18:55:57  phase1geo
+ Fixing more bugs in reporting mechanisms for unnamed scopes.  Checking in more
+ regression updates per these changes.  Checkpointing.
+
  Revision 1.65  2007/04/03 04:15:17  phase1geo
  Fixing bugs in func_iter functionality.  Modified functional unit name
  flattening function (though this does not appear to be working correctly

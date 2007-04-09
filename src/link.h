@@ -58,6 +58,9 @@ void gitem_link_add( gen_item* gi, gitem_link** head, gitem_link** tail );
 /*! \brief Adds specified functional unit instance to inst_link element at the end of the list. */
 inst_link* inst_link_add( funit_inst* inst, inst_link** head, inst_link** tail );
 
+/*! \brief Iterates through all instances, creating needed thread list */
+unsigned inst_link_create_threads( inst_link* head, thread** thread_head, thread** thread_tail );
+
 /*********************************************************************************/
 
 /*! \brief Displays specified string list to standard output. */
@@ -167,6 +170,12 @@ void inst_link_delete_list( inst_link* head );
 
 /*
  $Log$
+ Revision 1.26  2007/03/19 22:52:50  phase1geo
+ Attempting to fix problem with line ordering for a named block that is
+ in the middle of another statement block.  Also fixed a problem with FORK
+ expressions not being bound early enough.  Run currently segfaults but
+ I need to checkpoint at the moment.
+
  Revision 1.25  2006/12/19 05:23:39  phase1geo
  Added initial code for handling instance flattening for unnamed scopes.  This
  is partially working at this point but still needs some debugging.  Checkpointing.

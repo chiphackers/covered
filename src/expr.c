@@ -2659,7 +2659,8 @@ bool expression_op_func__bassign( expression* expr, thread* thr ) {
 */
 bool expression_op_func__func_call( expression* expr, thread* thr ) {
 
-  sim_thread( sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit ), thr->curr_time );
+  sim_add_thread( expr->elem.funit->first_stmt->thr );
+  sim_thread( expr->elem.funit->first_stmt->thr, thr->curr_time );
 
   return( TRUE );
 
@@ -2677,23 +2678,27 @@ bool expression_op_func__task_call( expression* expr, thread* thr ) {
 
   bool retval = FALSE;  /* Return value for this function */
 
+  sim_add_thread( expr->elem.funit->first_stmt->thr );
+
+#ifdef OBSOLETE
   if( !expr->suppl.part.prev_called ) {
 
     printf( "In expression_op_func__task_call, expr->elem.funit: %s\n", expr->elem.funit->name );
 
     /* Add a new thread */
-    sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit );
+    sim_add_thread( expr->elem.funit->first_stmt->thr );
 
     expr->suppl.part.prev_called         = 1;
     expr->value->value[0].part.exp.value = 0;
 
-  } else if( thr->child_head == NULL ) {
+  } else if( thr->active_chidren == 0 ) {
 
     expr->suppl.part.prev_called         = 0;
     expr->value->value[0].part.exp.value = 1;
     retval = TRUE;
 
   }
+#endif
 
   return( retval );
 
@@ -2713,22 +2718,27 @@ bool expression_op_func__nb_call( expression* expr, thread* thr ) {
 
   if( ESUPPL_IS_IN_FUNC( expr->suppl ) ) {
 
-    sim_thread( sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit ), thr->curr_time );
+    sim_add_thread( expr->elem.funit->first_stmt->thr );
+    sim_thread( expr->elem.funit->first_stmt->thr, thr->curr_time );
     retval = TRUE;
 
   } else {
 
+    sim_add_thread( expr->elem.funit->first_stmt->thr );
+
+#ifdef OBSOLETE
     if( !expr->suppl.part.prev_called ) {
-      sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit );
+      sim_add_thread( expr->elem.funit->first_stmt->thr, expr->elem.funit );
       expr->suppl.part.prev_called         = 1;
       expr->value->value[0].part.exp.value = 0;
       expr->suppl.part.eval_t              = 0;
       expr->suppl.part.eval_f              = 1;
-    } else if( thr->child_head == NULL ) {
+    } else if( thr->active_children == 0 ) {
       expr->suppl.part.prev_called         = 0;
       expr->value->value[0].part.exp.value = 1;
       retval = TRUE;
     }
+#endif
 
   }
 
@@ -2746,7 +2756,7 @@ bool expression_op_func__nb_call( expression* expr, thread* thr ) {
 */
 bool expression_op_func__fork( expression* expr, thread* thr ) {
 
-  sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit );
+  sim_add_thread( expr->elem.funit->first_stmt->thr );
 
   return( TRUE );
 
@@ -2762,7 +2772,7 @@ bool expression_op_func__fork( expression* expr, thread* thr ) {
 */
 bool expression_op_func__join( expression* expr, thread* thr ) {
 
-  return( thr->child_head == NULL );
+  return( thr->active_children == 0 );
 
 }
 
@@ -2776,7 +2786,7 @@ bool expression_op_func__join( expression* expr, thread* thr ) {
 */
 bool expression_op_func__disable( expression* expr, thread* thr ) {
 
-  sim_kill_thread_with_stmt( expr->elem.funit->first_stmt );
+  sim_kill_thread_with_funit( expr->elem.funit );
 
   return( TRUE );
 
@@ -3932,6 +3942,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.239  2007/04/03 18:55:57  phase1geo
+ Fixing more bugs in reporting mechanisms for unnamed scopes.  Checking in more
+ regression updates per these changes.  Checkpointing.
+
  Revision 1.238  2007/03/14 22:26:52  phase1geo
  Fixing bug in nb_call operation (need to set eval_t and eval_f in the case
  where we are considering the named block call to not be changed).

@@ -33,19 +33,20 @@ void sim_thread_insert_into_delay_queue( thread* thr, uint64 sim_time );
 /*! \brief Adds specified expression's statement to pre-simulation statement queue. */
 void sim_expr_changed( expression* expr, uint64 sim_time );
 
+/*! \brief Allocates and initializes a new thread */
+thread* sim_create_thread( statement* stmt, func_unit* funit );
+
+/*! \brief Called to configure a thread prior to simulation */
+void sim_configure_thread( thread* parent );
+
 /*! \brief Creates a thread for the given statement and adds it to the thread simulation queue. */
-thread* sim_add_thread( thread* parent, statement* stmt, func_unit* funit );
+void sim_add_thread( thread* thr );
 
 /*! \brief Deallocates thread and removes it from parent and thread queue lists */
 void sim_kill_thread( thread* thr );
 
-/*! \brief Deallocates thread and removes it from parent and thread queue lists for specified statement */
-void sim_kill_thread_with_stmt( statement* stmt );
-
-#ifdef OBSOLETE
-/*! \brief Deallocates all thread from thread queue */
-void sim_kill_all_threads();
-#endif
+/*! \brief Deallocates thread and removes it from parent and thread queue lists for specified functional unit */
+void sim_kill_thread_with_funit( func_unit* funit );
 
 /*! \brief Adds static expression values to initial simulator */
 void sim_add_statics();
@@ -56,9 +57,20 @@ void sim_thread( thread* thr, uint64 sim_time );
 /*! \brief Simulates current timestep. */
 void sim_simulate( uint64 sim_time );
 
+/*! \brief Initializes the simulator */
+void sim_initialize();
+
+/*! \brief Deallocates all memory for simulator */
+void sim_dealloc();
+
 
 /*
  $Log$
+ Revision 1.21  2006/12/18 23:58:34  phase1geo
+ Fixes for automatic tasks.  Added atask1 diagnostic to regression suite to verify.
+ Other fixes to parser for blocks.  We need to add code to properly handle unnamed
+ scopes now before regressions will get to a passing state.  Checkpointing.
+
  Revision 1.20  2006/12/15 17:33:45  phase1geo
  Updating TODO list.  Fixing more problems associated with handling re-entrant
  tasks/functions.  Still not quite there yet for simulation, but we are getting

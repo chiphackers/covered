@@ -148,6 +148,34 @@ funit_inst* instance_create( func_unit* funit, char* inst_name, vector_width* ra
 }
 
 /*!
+ \param root         Pointer to current functional unit instance to traverse
+ \param thread_head  Pointer to head of collected thread list
+ \param thread_tail  Pointer to tail of collected thread list
+
+ \return Returns the number of threads added to the given thread list.
+
+ TBD
+*/
+unsigned instance_create_threads( funit_inst* root, thread** thread_head, thread** thread_tail ) {
+
+  funit_inst* child;  /* Pointer to current child instance */
+  unsigned    size;   /* Number of elements added to the thread_list */
+
+  /* Add the threads from the current functional unit */
+  size = funit_create_threads( root->funit, NULL, thread_head, thread_tail );
+
+  /* Now add the threads from all of the children */
+  child = root->child_head;
+  while( child != NULL ) {
+    size += instance_create_threads( child, thread_head, thread_tail );
+    child = child->next;
+  }
+
+  return( size );
+
+}
+
+/*!
  \param scope  String pointer to store generated scope (assumed to be allocated)
  \param leaf   Pointer to leaf instance in scope.
 
@@ -1034,6 +1062,12 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.73  2007/04/03 04:15:17  phase1geo
+ Fixing bugs in func_iter functionality.  Modified functional unit name
+ flattening function (though this does not appear to be working correctly
+ at this time).  Added calls to funit_flatten_name in all of the reporting
+ files.  Checkpointing.
+
  Revision 1.72  2007/04/02 20:19:36  phase1geo
  Checkpointing more work on use of functional iterators.  Not working correctly
  yet.
