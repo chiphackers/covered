@@ -116,11 +116,30 @@ func_unit* funit_create() {
 
 }
 
+/*!
+ \param funit        Pointer to current functional unit to traverse
+ \param parent       Pointer to parent thread that would add this thread while running
+ \param thread_head  Pointer to head of thread list to create
+ \param thread_tail  Pointer to tail of thread list to create
+
+ \return Returns the number of threads created and added to the thread list.
+*/
 unsigned funit_create_threads( func_unit* funit, thread* parent, thread** thread_head, thread** thread_tail ) {
 
-  unsigned size = 0;
+  funit_link* funitl;    /* Pointer to functional unit link of child */
+  unsigned    size = 0;  /* Number of elements this function call added to the thread list */
+  stmt_iter   si;        /* Statement iterator */
+  func_unit*  mod;       /* Pointer to parent module of this functional unit */
 
-  /* TBD */
+  /* Initialize the statement iterator for this functional unit */
+  stmt_iter_reset( &si, funit->stmt_tail );
+
+  /* Accumulate all of the threads for this functional unit */
+  stmt_iter_find_head( &si, FALSE );
+  while( si.curr != NULL ) {
+    size += statement_create_threads( si.curr->stmt, funit, NULL, parent, thread_head, thread_tail );
+    stmt_iter_find_head( &si, TRUE );
+  }
 
   return( size );
 
@@ -1072,6 +1091,10 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.67  2007/04/09 22:47:53  phase1geo
+ Starting to modify the simulation engine for performance purposes.  Code is
+ not complete and is untested at this point.
+
  Revision 1.66  2007/04/03 18:55:57  phase1geo
  Fixing more bugs in reporting mechanisms for unnamed scopes.  Checking in more
  regression updates per these changes.  Checkpointing.

@@ -29,6 +29,9 @@
 /*! \brief Creates new statement structure. */
 statement* statement_create( expression* exp );
 
+/*! \brief Iterates through the given statement block, creating, counting and adding simulation threads to the given list. */
+unsigned statement_create_threads( statement* stmt, func_unit* funit, thread* curr, thread* parent, thread** thread_head, thread** thread_tail );
+
 /*! \brief Sizes all expressions for the given statement block */
 void statement_size_elements( statement* stmt );
 
@@ -74,6 +77,9 @@ void statement_dealloc( statement* stmt );
 
 /*
  $Log$
+ Revision 1.30  2007/03/30 22:43:13  phase1geo
+ Regression fixes.  Still have a ways to go but we are getting close.
+
  Revision 1.29  2006/09/07 21:59:24  phase1geo
  Fixing some bugs related to statement block removal.  Also made some significant
  optimizations to this code.

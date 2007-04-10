@@ -245,6 +245,7 @@ PLI_INT32 covered_end_of_sim( p_cb_data cb ) {
 
   /* Deallocate memory */
   symtable_dealloc( vcd_symtab );
+  sim_dealloc();
   if( timestep_tab != NULL ) {
     free_safe( timestep_tab );
   }
@@ -627,7 +628,7 @@ PLI_INT32 covered_sim_calltf( char* name ) {
   bind_perform( TRUE, 0 );
 
   /* Add static values to simulator */
-  sim_add_statics();
+  sim_initialize();
 
   /* Create initial symbol table */
   vcd_symtab = symtable_create();

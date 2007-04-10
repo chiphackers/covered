@@ -174,7 +174,7 @@ int command_merge( int argc, int last_arg, char** argv ) {
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
     db_read( merge_in[0], READ_MODE_MERGE_NO_MERGE );
     bind_perform( TRUE, 0 );
-    sim_add_statics();
+    //sim_add_statics();
 
     /* Read in databases to merge */
     for( i=1; i<mnum; i++ ) {
@@ -206,6 +206,9 @@ int command_merge( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.30  2007/03/13 22:12:59  phase1geo
+ Merging changes to covered-0_5-branch to fix bug 1678931.
+
  Revision 1.29.2.1  2007/03/13 22:05:10  phase1geo
  Fixing bug 1678931.  Updated regression.
 

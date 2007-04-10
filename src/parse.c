@@ -218,7 +218,7 @@ bool parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) {
   bind_perform( TRUE, 0 );
 
   /* Add static values to simulator */
-  sim_add_statics();
+  sim_initialize();
 
 #ifdef DEBUG_MODE
   snprintf( user_msg, USER_MSG_LENGTH, "========  Reading in VCD dumpfile %s  ========\n", dump_file );
@@ -249,12 +249,19 @@ bool parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) {
     exit( 1 );
   }
 
+  /* Deallocate simulator stuff */
+  sim_dealloc();
+
   return( retval );
 
 }
 
 /*
  $Log$
+ Revision 1.48  2006/11/21 19:54:13  phase1geo
+ Making modifications to defines.h to help in creating appropriately sized types.
+ Other changes to VPI code (but this is still broken at the moment).  Checkpointing.
+
  Revision 1.47  2006/11/03 23:36:36  phase1geo
  Fixing bug 1590104.  Updating regressions per this change.
 

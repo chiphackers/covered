@@ -34,7 +34,7 @@ void sim_thread_insert_into_delay_queue( thread* thr, uint64 sim_time );
 void sim_expr_changed( expression* expr, uint64 sim_time );
 
 /*! \brief Allocates and initializes a new thread */
-thread* sim_create_thread( statement* stmt, func_unit* funit );
+thread* sim_create_thread( thread* parent, statement* stmt, func_unit* funit );
 
 /*! \brief Called to configure a thread prior to simulation */
 void sim_configure_thread( thread* parent );
@@ -66,6 +66,10 @@ void sim_dealloc();
 
 /*
  $Log$
+ Revision 1.22  2007/04/09 22:47:53  phase1geo
+ Starting to modify the simulation engine for performance purposes.  Code is
+ not complete and is untested at this point.
+
  Revision 1.21  2006/12/18 23:58:34  phase1geo
  Fixes for automatic tasks.  Added atask1 diagnostic to regression suite to verify.
  Other fixes to parser for blocks.  We need to add code to properly handle unnamed

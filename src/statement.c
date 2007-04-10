@@ -155,6 +155,80 @@ statement* statement_create( expression* exp ) {
 }
 
 /*!
+ \param stmt         Pointer to current statement to traverse
+ \param funit        Pointer to current functional unit
+ \param curr         Pointer to current thread
+ \param parent       Pointer to parent thread of the thread being created
+ \param thread_head  Pointer to head of thread list to create
+ \param thread_tail  Pointer to tail of thread list to create
+
+ \return Returns the number of threads created and added.
+
+ TBD
+*/
+unsigned statement_create_threads( statement* stmt, func_unit* funit, thread* curr, thread* parent, thread** thread_head, thread** thread_tail ) {
+
+  unsigned size = 0;  /* Number of threads added to the thread from this call */
+
+  /* If the current statement exists and it hasn't had a thread assigned to it yet, continue */
+  if( (stmt != NULL) && (stmt->thr == NULL) ) {
+
+    /* Create a new thread if necessary */
+    if( curr == NULL ) {
+      printf( "Adding statement %s to thread list\n", expression_string( stmt->exp ) );
+      curr              = sim_create_thread( parent, stmt, funit );
+      curr->active_next = NULL;
+      if( *thread_head == NULL ) {
+        *thread_head = *thread_tail = curr;
+      } else {
+        (*thread_tail)->active_next = curr;
+        (*thread_tail)              = curr;
+      }
+      size++;
+    }
+
+    assert( curr != NULL );
+
+    /* Assign the current thread of the statement */
+    stmt->thr = curr;
+
+    /* If the current statement calls a statement block, traverse that statement block */
+    if( (stmt->exp->op == EXP_OP_NB_CALL)   ||
+        (stmt->exp->op == EXP_OP_FORK)      ||
+        (stmt->exp->op == EXP_OP_FUNC_CALL) ||
+        (stmt->exp->op == EXP_OP_TASK_CALL) ) {
+
+      size += statement_create_threads( stmt->exp->elem.funit->first_stmt, stmt->exp->elem.funit, NULL, curr, thread_head, thread_tail );
+
+    }
+
+    /* If both true and false paths lead to same statement, just traverse the true path */
+    if( stmt->next_true == stmt->next_false ) {
+
+      if( ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0 ) {
+        size += statement_create_threads( stmt->next_true, funit, curr, parent, thread_head, thread_tail );
+      }
+
+    /* Otherwise, traverse both true and false paths */
+    } else {
+
+      if( ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0 ) {
+        size += statement_create_threads( stmt->next_true, funit, curr, parent, thread_head, thread_tail );
+      }
+
+      if( ESUPPL_IS_STMT_STOP_FALSE( stmt->exp->suppl ) == 0 ) {
+        size += statement_create_threads( stmt->next_false, funit, curr, parent, thread_head, thread_tail );
+      }
+
+    }
+
+  }
+
+  return( size );
+
+}
+
+/*!
  Displays the current contents of the statement loop list for debug purposes only.
 */
 void statement_queue_display() {
@@ -474,15 +548,6 @@ bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) {
         stmt_link_add_tail( stmt, &(curr_funit->stmt_head), &(curr_funit->stmt_tail) );
       } else {
         stmt_link_add_head( stmt, &(curr_funit->stmt_head), &(curr_funit->stmt_tail) );
-      }
-
-      /*
-       Possibly add statement to presimulation queue (if the current functional unit is a task
-       or function, do not add this to the presimulation queue (this will be added when the expression
-       is called.
-      */
-      if( ESUPPL_STMT_IS_CALLED( stmt->exp->suppl ) == 0 ) {
-        sim_create_thread( stmt, curr_funit );
       }
 
     }
@@ -917,6 +982,10 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.106  2007/04/09 22:47:53  phase1geo
+ Starting to modify the simulation engine for performance purposes.  Code is
+ not complete and is untested at this point.
+
  Revision 1.105  2007/04/03 18:55:57  phase1geo
  Fixing more bugs in reporting mechanisms for unnamed scopes.  Checking in more
  regression updates per these changes.  Checkpointing.
