@@ -444,7 +444,7 @@ void stmt_link_display( stmt_link* head ) {
   while( curr.curr != NULL ) {
     assert( curr.curr->stmt != NULL );
     assert( curr.curr->stmt->exp != NULL );
-    printf( "  id: %d, line: %d\n", curr.curr->stmt->exp->id, curr.curr->stmt->exp->line );
+    printf( "  id: %d, line: %d, stmt_head: %d\n", curr.curr->stmt->exp->id, curr.curr->stmt->exp->line, ESUPPL_IS_STMT_HEAD( curr.curr->stmt->exp->suppl ) );
     stmt_iter_next( &curr );
   }
 
@@ -1249,6 +1249,10 @@ void inst_link_delete_list( inst_link* head ) {
 
 /*
  $Log$
+ Revision 1.62  2007/04/09 22:47:53  phase1geo
+ Starting to modify the simulation engine for performance purposes.  Code is
+ not complete and is untested at this point.
+
  Revision 1.61  2007/03/20 04:29:32  phase1geo
  Fixing bugs in new stmt_link_merge function.  Updated regressions (only 11
  diagnostics are currently failing in IV regression).  Checkpointing.

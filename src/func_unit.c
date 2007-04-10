@@ -131,14 +131,20 @@ unsigned funit_create_threads( func_unit* funit, thread* parent, thread** thread
   stmt_iter   si;        /* Statement iterator */
   func_unit*  mod;       /* Pointer to parent module of this functional unit */
 
-  /* Initialize the statement iterator for this functional unit */
-  stmt_iter_reset( &si, funit->stmt_tail );
+  /* Only traverse modules -- other functional unit types will be traversed via the statement_create_threads call */
+  if( funit->type == FUNIT_MODULE ) {
 
-  /* Accumulate all of the threads for this functional unit */
-  stmt_iter_find_head( &si, FALSE );
-  while( si.curr != NULL ) {
-    size += statement_create_threads( si.curr->stmt, funit, NULL, parent, thread_head, thread_tail );
-    stmt_iter_find_head( &si, TRUE );
+    /* Initialize the statement iterator for this functional unit */
+    stmt_iter_reset( &si, funit->stmt_head );
+
+    /* Accumulate all of the threads for this functional unit */
+    while( si.curr != NULL ) {
+      if( ESUPPL_IS_STMT_HEAD( si.curr->stmt->exp->suppl ) == 1 ) {
+        size += statement_create_threads( si.curr->stmt, funit, NULL, parent, thread_head, thread_tail );
+      }
+      stmt_iter_next( &si );
+    }
+
   }
 
   return( size );
@@ -1091,6 +1097,10 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.68  2007/04/10 03:56:18  phase1geo
+ Completing majority of code to support new simulation core.  Starting to debug
+ this though we still have quite a ways to go here.  Checkpointing.
+
  Revision 1.67  2007/04/09 22:47:53  phase1geo
  Starting to modify the simulation engine for performance purposes.  Code is
  not complete and is untested at this point.

@@ -151,25 +151,23 @@ void sim_display_active_queue() {
 
   thread* curr;  /* Pointer to current thread */
 
-  printf( "In sim_display_active_queue, active_head: %p, active_tail: %p\n", active_head, active_tail );
-
   curr = active_head;
   while( curr != NULL ) {
     if( curr->curr == NULL ) {
-      printf( "    time %llu, stmt NONE, queued %d, delayed %d (%p, prev=%p, next=%p, parent=%p)  ",
+      printf( "    time %llu, stmt NONE, queued %d, delayed %d (%p, parent=%p, prev=%p, next=%p)  ",
               curr->curr_time,
               curr->suppl.part.queued,
               curr->suppl.part.delayed,
-              curr, curr->active_prev, curr->active_next, curr->parent );
+              curr, curr->parent, curr->active_prev, curr->active_next );
     } else {
-      printf( "    time %llu, stmt %d, %s, line %d, queued %d, delayed %d (%p, prev=%p, next=%p, parent=%p)  ",
+      printf( "    time %llu, stmt %d, %s, line %d, queued %d, delayed %d (%p, parent=%p, prev=%p, next=%p)  ",
               curr->curr_time,
               curr->curr->exp->id,
               expression_string_op( curr->curr->exp->op ),
               curr->curr->exp->line,
               curr->suppl.part.queued,
               curr->suppl.part.delayed,
-              curr, curr->active_prev, curr->active_next, curr->parent );
+              curr, curr->parent, curr->active_prev, curr->active_next );
     }
     if( curr == active_head ) {
       printf( "H" );
@@ -184,30 +182,60 @@ void sim_display_active_queue() {
 }
 
 /*!
- Displays the current state of the delay queue (for debug purposes only).
+ \param tlist  Pointer to thread list to display
+ \param size   Number of elements in tlist to display
+
+ Displays the given thread list (array form) to standard output.
 */
-void sim_display_delay_queue() {
+void sim_display_thread_list( thread** tlist, unsigned size ) {
 
   unsigned i;  /* Loop iterator */
 
-  for( i=0; i<delayed_size; i++ ) {
-    printf( "    time %llu, stmt %d, %s, line %d, queued %d, delayed %d (%p, p=%p)  ",
-            delayed_threads[i]->curr_time,
-            delayed_threads[i]->curr->exp->id,
-            expression_string_op( delayed_threads[i]->curr->exp->op ),
-            delayed_threads[i]->curr->exp->line,
-            delayed_threads[i]->suppl.part.queued,
-            delayed_threads[i]->suppl.part.delayed,
-            delayed_threads[i], delayed_threads[i]->parent );
+  for( i=0; i<size; i++ ) {
+    if( tlist[i]->curr == NULL ) {
+      printf( "    time %llu, stmt NONE, queued %d, delayed %d (%p, parent=%p, prev=%p, next=%p)  ",
+              tlist[i]->curr_time,
+              tlist[i]->suppl.part.queued,
+              tlist[i]->suppl.part.delayed,
+              tlist[i], tlist[i]->parent, tlist[i]->active_prev, tlist[i]->active_next );
+    } else {
+      printf( "    time %llu, stmt %d, %s, line %d, queued %d, delayed %d (%p, parent=%p, prev=%p, next=%p)  ",
+              tlist[i]->curr_time,
+              tlist[i]->curr->exp->id,
+              expression_string_op( tlist[i]->curr->exp->op ),
+              tlist[i]->curr->exp->line,
+              tlist[i]->suppl.part.queued,
+              tlist[i]->suppl.part.delayed,
+              tlist[i], tlist[i]->parent, tlist[i]->active_prev, tlist[i]->active_next );
+    }
     if( i == 0 ) {
       printf( "H" );
     }
-    if( (i+1) == delayed_size ) {
+    if( (i+1) == size ) {
       printf( "T" );
     }
     printf( "\n" );
   }
-  
+
+}
+
+/*!
+ Displays the current state of the delay queue (for debug purposes only).
+*/
+void sim_display_delay_queue() {
+
+  sim_display_thread_list( delayed_threads, delayed_size );
+
+}
+
+/*!
+ Displays the current state of the all_threads list (for debug purposes only).
+*/
+void sim_display_all_list() {
+
+  printf( "ALL THREADS:\n" );
+  sim_display_thread_list( all_threads, all_size );  
+
 }
 
 /*!
@@ -218,7 +246,7 @@ void sim_display_delay_queue() {
 */
 void sim_thread_insert_into_delay_queue( thread* thr, uint64 sim_time ) {
 
-  unsigned i;       /* Loop iterator */
+  int      i;       /* Loop iterator */
   unsigned parent;  /* Index of parent node in heap structure */
   unsigned child;   /* Index of child node in heap structure */
 
@@ -250,7 +278,6 @@ void sim_thread_insert_into_delay_queue( thread* thr, uint64 sim_time ) {
     delayed_size++;
 
     /* Now perform a heap sort on the new value */
-    unsigned i = delayed_size / 2;
     for( i=((delayed_size / 2) - 1); i>=0; i-- ) {
       thr    = delayed_threads[i];
       parent = i;
@@ -274,6 +301,7 @@ void sim_thread_insert_into_delay_queue( thread* thr, uint64 sim_time ) {
     if( debug_mode ) {
       printf( "After delay thread is inserted...\n" );
       sim_display_delay_queue();
+      sim_display_all_list();
     }
 #endif
 
@@ -340,6 +368,7 @@ void sim_thread_push( thread* thr, uint64 sim_time ) {
     if( debug_mode ) {
       printf( "After thread is pushed...\n" );
       sim_display_active_queue();
+      sim_display_all_list();
     }
 #endif
 
@@ -380,11 +409,17 @@ void sim_thread_pop_head() {
 
   /* Move the head pointer */
   active_head = active_head->active_next;
+  if( active_head == NULL ) {
+    active_tail = NULL;
+  } else {
+    active_head->active_prev = NULL;   /* TBD - Placed here for help in debug */
+  }
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {
     printf( "After thread is popped from active queue...\n" );
     sim_display_active_queue();
+    sim_display_all_list();
   }
 #endif
 
@@ -449,7 +484,7 @@ void sim_expr_changed( expression* expr, uint64 sim_time ) {
      Otherwise, if we have hit the root expression and the parent pointer is valid, add 
      this statement (if it is the head) back onto the active queue.
     */
-    } else if( expr->parent->expr != NULL ) {
+    } else if( (expr->parent->expr != NULL) && (expr->parent->stmt->thr->curr == expr->parent->stmt) ) {
 
       sim_thread_push( expr->parent->stmt->thr, sim_time );
 
@@ -486,6 +521,7 @@ thread* sim_create_thread( thread* parent, statement* stmt, func_unit* funit ) {
   thr->curr      = stmt;
   thr->ren       = NULL;
   thr->suppl.all = 0;
+  thr->curr_time = 0;
 
   return( thr );
 
@@ -503,8 +539,6 @@ thread* sim_create_thread( thread* parent, statement* stmt, func_unit* funit ) {
 void sim_add_thread( thread* thr ) {
 
   assert( thr != NULL );
-
-  printf( "In sim_add_thread, thr %p\n", thr );
 
   /* Only add expression if it is the head statement of its statement block */
   if( ESUPPL_IS_STMT_HEAD( thr->curr->exp->suppl ) == 1 ) {
@@ -524,14 +558,12 @@ void sim_add_thread( thread* thr ) {
     if( thr->parent != NULL ) {
 
       thr->curr_time = thr->parent->curr_time;
-      printf( "Setting our current time (%lld) to parent current time\n", thr->curr_time );
       thr->parent->active_children++;
 
       /* Place ourselves between the parent and its active_next pointer */
       thr->active_next = thr->parent->active_next;
       thr->parent->active_next = thr;
       if( thr->active_next == NULL ) {
-        printf( "**** Setting active tail to current thread\n" );
         active_tail = thr;
       } else {
         thr->active_next->active_prev = thr;
@@ -578,6 +610,7 @@ void sim_add_thread( thread* thr ) {
     if( debug_mode ) {
       printf( "After thread is added to active queue...\n" );
       sim_display_active_queue();
+      sim_display_all_list();
     }
 #endif
 
@@ -609,7 +642,6 @@ void sim_kill_thread( thread* thr ) {
 
     /* If we are the last child, re-insert the parent in our place (setting active_head to the parent) */
     if( thr->parent->active_children == 0 ) {
-      printf( "We are the last child!!!!!\n" );
       thr->parent->active_next = thr->active_next;
       if( thr->active_next == NULL ) {
         active_tail = thr->parent;
@@ -639,6 +671,7 @@ void sim_kill_thread( thread* thr ) {
   if( debug_mode ) {
     printf( "Thread queue after thread is killed...\n" );
     sim_display_active_queue();
+    sim_display_all_list();
   }
 #endif
 
@@ -963,20 +996,21 @@ void sim_initialize() {
 
   thread*  tmp_head = NULL;  /* Pointer to head of temporary thread list */
   thread*  tmp_tail = NULL;  /* Pointer to tail of temporary thread list */
-  unsigned i;                /* Loop iterator */
+  unsigned size;             /* Stores the size of all the threads */
 
   /* Iterate through the instances, counting, creating and adding new threads to a temporary list */
-  all_size = inst_link_create_threads( inst_head, &tmp_head, &tmp_tail );
+  size = inst_link_create_threads( inst_head, &tmp_head, &tmp_tail );
 
   /* Allocate memory for the all_threads list */
-  all_threads = (thread**)malloc_safe( (sizeof( thread* ) * all_size), __FILE__, __LINE__ );
+  all_threads = (thread**)malloc_safe( (sizeof( thread* ) * size), __FILE__, __LINE__ );
 
   /* Copy active threads to the active thread array */
-  i = 0;
+  all_size = 0;
   while( tmp_head != NULL ) {
-    assert( i < all_size );
-    all_threads[i] = tmp_head;
-    i++;
+    assert( all_size < size );
+    printf( "Adding thread %p to all_threads array (pre_all_size=%d)\n", tmp_head, all_size );
+    all_threads[all_size] = tmp_head;
+    all_size++;
     tmp_tail = tmp_head->active_next;
     if( ESUPPL_STMT_IS_CALLED( tmp_head->curr->exp->suppl ) == 0 ) {
       sim_add_thread( tmp_head );
@@ -985,7 +1019,7 @@ void sim_initialize() {
   }
 
   /* Allocate delayed thread array */
-  delayed_threads = (thread**)malloc_safe( (sizeof( thread* ) * all_size), __FILE__, __LINE__ );
+  delayed_threads = (thread**)malloc_safe( (sizeof( thread* ) * size), __FILE__, __LINE__ );
   delayed_size    = 0;
 
   /* Add static values */
@@ -1014,6 +1048,10 @@ void sim_dealloc() {
 
 /*
  $Log$
+ Revision 1.86  2007/04/10 03:56:18  phase1geo
+ Completing majority of code to support new simulation core.  Starting to debug
+ this though we still have quite a ways to go here.  Checkpointing.
+
  Revision 1.85  2007/04/09 22:47:53  phase1geo
  Starting to modify the simulation engine for performance purposes.  Code is
  not complete and is untested at this point.
