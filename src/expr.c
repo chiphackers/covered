@@ -2524,13 +2524,16 @@ bool expression_op_func__delay( expression* expr, thread* thr ) {
   /* Clear the evaluated TRUE indicator */
   expr->suppl.part.eval_t = 0;
 
+#ifdef SKIP
   /* Get number of clocks to delay */
   intval = vector_to_uint64( expr->right->value ) * *(expr->elem.scale);
+#endif
 
-  /* If this is he first statement in the current thread, we are executing for the first time */
+  /* If this is the first statement in the current thread, we are executing for the first time */
   if( thr->suppl.part.exec_first ) {
 
-    if( ((thr->curr_time + intval) <= curr_sim_time) || final_sim_time ) {
+    //if( ((thr->curr_time + intval) <= curr_sim_time) || final_sim_time ) {
+    if( (thr->curr_time <= curr_sim_time) || final_sim_time ) {
       expr->suppl.part.eval_t = 1;
       expr->suppl.part.true   = 1;
       thr->curr_time += intval;
@@ -2538,6 +2541,9 @@ bool expression_op_func__delay( expression* expr, thread* thr ) {
     }
 
   } else {
+
+    /* Get number of clocks to delay */
+    intval = vector_to_uint64( expr->right->value ) * *(expr->elem.scale);
 
     /* Add this delay into the delay queue if this is not the final simulation step */
     if( !final_sim_time ) {
@@ -3942,6 +3948,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.240  2007/04/09 22:47:53  phase1geo
+ Starting to modify the simulation engine for performance purposes.  Code is
+ not complete and is untested at this point.
+
  Revision 1.239  2007/04/03 18:55:57  phase1geo
  Fixing more bugs in reporting mechanisms for unnamed scopes.  Checking in more
  regression updates per these changes.  Checkpointing.
