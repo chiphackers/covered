@@ -79,9 +79,16 @@
 
 #include <assert.h>
 
+#ifdef DEBUG_MODE
+#ifndef VPI_ONLY
+#include "cli.h"
+#include "codegen.h"
+#endif
+#endif
 #include "defines.h"
 #include "expr.h"
 #include "func_unit.h"
+#include "instance.h"
 #include "iter.h"
 #include "link.h"
 #include "reentrant.h"
@@ -97,6 +104,8 @@ extern bool                  debug_mode;
 extern exp_info              exp_op_info[EXP_OP_NUM];
 extern uint64                curr_sim_time;
 extern /*@null@*/inst_link*  inst_head;
+extern bool                  flag_use_command_line_debug;
+extern bool                  cli_debug_mode;
 
 
 /*!
@@ -239,6 +248,56 @@ void sim_display_all_list() {
 }
 
 /*!
+ Outputs the scope, block name, filename and line number of the current thread in the active queue to standard output.
+*/
+void sim_display_current() {
+
+  char scope[4096];  /* String containing scope of given functional unit */
+  int  ignore = 0;   /* Specifies that we should not ignore a matching functional unit */
+
+  assert( active_head != NULL );
+  assert( active_head->funit != NULL );
+  assert( active_head->curr != NULL );
+
+  /* Get the scope of the functional unit represented by the current thread */
+  scope[0] = '\0';
+  instance_gen_scope( scope, inst_link_find_by_funit( active_head->funit, inst_head, &ignore ), TRUE );
+
+  /* Output the given scope */
+  printf( "SCOPE: %s, BLOCK: %s, FILE: %s, LINE: %d\n",
+          scope, funit_flatten_name( active_head->funit ), active_head->funit->filename, active_head->curr->exp->line );
+
+}
+
+/*!
+ Displays the current statement to standard output.
+*/
+void sim_display_current_stmt() {
+
+  char** code;        /* Pointer to code string from code generator */
+  int    code_depth;  /* Depth of code array */
+  int    i;           /* Loop iterator */
+
+  assert( active_head != NULL );
+  assert( active_head->funit != NULL );
+  assert( active_head->curr != NULL );
+
+  /* Generate the logic */
+  codegen_gen_expr( active_head->curr->exp, active_head->curr->exp->op, &code, &code_depth, active_head->funit );
+
+  /* Output the full expression */
+  for( i=0; i<code_depth; i++ ) {
+    printf( "      %7d:    %s\n", active_head->curr->exp->line, code[i] );
+    free_safe( code[i] );
+  }
+
+  if( code_depth > 0 ) {
+    free_safe( code );
+  }
+
+}
+
+/*!
  \param thr       Pointer to the thread to add to the delay queue.
  \param sim_time  Time to insert the given thread.
 
@@ -251,7 +310,7 @@ void sim_thread_insert_into_delay_queue( thread* thr, uint64 sim_time ) {
   unsigned child;   /* Index of child node in heap structure */
 
 #ifdef DEBUG_MODE
-  if( debug_mode ) {
+  if( debug_mode && !flag_use_command_line_debug ) {
     printf( "Before delay thread is inserted for time %llu...\n", sim_time );
   }
 #endif
@@ -261,7 +320,7 @@ void sim_thread_insert_into_delay_queue( thread* thr, uint64 sim_time ) {
     assert( thr->suppl.part.delayed == 0 );
 
 #ifdef DEBUG_MODE
-    if( debug_mode ) {
+    if( debug_mode && !flag_use_command_line_debug ) {
       sim_display_delay_queue();
     }
 #endif
@@ -298,7 +357,7 @@ void sim_thread_insert_into_delay_queue( thread* thr, uint64 sim_time ) {
     }
 
 #ifdef DEBUG_MODE
-    if( debug_mode ) {
+    if( debug_mode && !flag_use_command_line_debug ) {
       printf( "After delay thread is inserted...\n" );
       sim_display_delay_queue();
       sim_display_all_list();
@@ -322,7 +381,7 @@ void sim_thread_push( thread* thr, uint64 sim_time ) {
   exp_op_type op;  /* Operation type of current expression in given thread */
 
 #ifdef DEBUG_MODE
-  if( debug_mode ) {
+  if( debug_mode && !flag_use_command_line_debug ) {
     printf( "Before thread is pushed...\n" );
   }
 #endif
@@ -331,7 +390,7 @@ void sim_thread_push( thread* thr, uint64 sim_time ) {
   if( (thr != NULL) && (thr->suppl.part.queued == 0) && (ESUPPL_STMT_IS_CALLED( thr->curr->exp->suppl ) == 0) ) {
 
 #ifdef DEBUG_MODE
-    if( debug_mode ) {
+    if( debug_mode && !flag_use_command_line_debug ) {
       sim_display_active_queue();
     }
 #endif
@@ -365,7 +424,7 @@ void sim_thread_push( thread* thr, uint64 sim_time ) {
     }
 
 #ifdef DEBUG_MODE
-    if( debug_mode ) {
+    if( debug_mode && !flag_use_command_line_debug ) {
       printf( "After thread is pushed...\n" );
       sim_display_active_queue();
       sim_display_all_list();
@@ -382,7 +441,7 @@ void sim_thread_push( thread* thr, uint64 sim_time ) {
 void sim_thread_pop_head() {
 
 #ifdef DEBUG_MODE
-  if( debug_mode ) {
+  if( debug_mode && !flag_use_command_line_debug ) {
     printf( "Before thread is popped from active queue...\n" );
     sim_display_active_queue();
   }
@@ -416,7 +475,7 @@ void sim_thread_pop_head() {
   }
 
 #ifdef DEBUG_MODE
-  if( debug_mode ) {
+  if( debug_mode && !flag_use_command_line_debug ) {
     printf( "After thread is popped from active queue...\n" );
     sim_display_active_queue();
     sim_display_all_list();
@@ -607,7 +666,7 @@ void sim_add_thread( thread* thr ) {
     }
 
 #ifdef DEBUG_MODE
-    if( debug_mode ) {
+    if( debug_mode && !flag_use_command_line_debug ) {
       printf( "After thread is added to active queue...\n" );
       sim_display_active_queue();
       sim_display_all_list();
@@ -629,7 +688,7 @@ void sim_kill_thread( thread* thr ) {
   assert( thr != NULL );
 
 #ifdef DEBUG_MODE
-  if( debug_mode ) {
+  if( debug_mode && !flag_use_command_line_debug ) {
     printf( "Thread queue before thread is killed...\n" );
     sim_display_active_queue();
   }
@@ -668,7 +727,7 @@ void sim_kill_thread( thread* thr ) {
   }
 
 #ifdef DEBUG_MODE
-  if( debug_mode ) {
+  if( debug_mode && !flag_use_command_line_debug ) {
     printf( "Thread queue after thread is killed...\n" );
     sim_display_active_queue();
     sim_display_all_list();
@@ -841,6 +900,10 @@ void sim_thread( thread* thr, uint64 sim_time ) {
     stmt->thr = thr;
 #endif
 
+#ifdef DEBUG_MODE
+    cli_execute();
+#endif
+
     /* Place expression in expression simulator and run */
     expr_changed = sim_expression( stmt->exp, thr );
 
@@ -979,7 +1042,7 @@ void sim_simulate( uint64 sim_time ) {
     } while( (delayed_size > 0) && (delayed_threads[0]->curr_time <= sim_time) );
 
 #ifdef DEBUG_MODE
-    if( debug_mode ) {
+    if( debug_mode && !flag_use_command_line_debug ) {
       printf( "After delay simulation...\n" );
       sim_display_delay_queue();
     }
@@ -1008,7 +1071,7 @@ void sim_initialize() {
   all_size = 0;
   while( tmp_head != NULL ) {
     assert( all_size < size );
-    printf( "Adding thread %p to all_threads array (pre_all_size=%d)\n", tmp_head, all_size );
+    // printf( "Adding thread %p to all_threads array (pre_all_size=%d)\n", tmp_head, all_size );
     all_threads[all_size] = tmp_head;
     all_size++;
     tmp_tail = tmp_head->active_next;
@@ -1024,6 +1087,9 @@ void sim_initialize() {
 
   /* Add static values */
   sim_add_statics();
+
+  /* Set the CLI debug mode to the value of the general debug mode */
+  cli_debug_mode = debug_mode;
 
 }
 
@@ -1043,11 +1109,17 @@ void sim_dealloc() {
   free_safe( all_threads );
   free_safe( delayed_threads );
 
+  /* Clear CLI debug mode */
+  cli_debug_mode = FALSE;
+
 }
 
 
 /*
  $Log$
+ Revision 1.87  2007/04/10 22:10:11  phase1geo
+ Fixing some more simulation issues.
+
  Revision 1.86  2007/04/10 03:56:18  phase1geo
  Completing majority of code to support new simulation core.  Starting to debug
  this though we still have quite a ways to go here.  Checkpointing.

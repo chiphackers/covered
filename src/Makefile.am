@@ -5,6 +5,7 @@ covered_SOURCES = arc.c \
                   parser.c \
                   static_parser.c \
 		  binding.c \
+                  cli.c \
 		  codegen.c \
 		  comb.c \
 		  db.c \

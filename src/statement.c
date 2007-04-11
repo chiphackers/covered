@@ -175,7 +175,7 @@ unsigned statement_create_threads( statement* stmt, func_unit* funit, thread* cu
 
     /* Create a new thread if necessary */
     if( curr == NULL ) {
-      printf( "Adding statement %s to thread list\n", expression_string( stmt->exp ) );
+      // printf( "Adding statement %s to thread list\n", expression_string( stmt->exp ) );
       curr              = sim_create_thread( parent, stmt, funit );
       curr->active_next = NULL;
       if( *thread_head == NULL ) {
@@ -982,6 +982,10 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.107  2007/04/10 03:56:18  phase1geo
+ Completing majority of code to support new simulation core.  Starting to debug
+ this though we still have quite a ways to go here.  Checkpointing.
+
  Revision 1.106  2007/04/09 22:47:53  phase1geo
  Starting to modify the simulation engine for performance purposes.  Code is
  not complete and is untested at this point.

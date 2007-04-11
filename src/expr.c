@@ -162,6 +162,8 @@ extern exp_link* static_expr_tail;
 extern bool debug_mode;
 extern int  generate_expr_mode;
 extern int  curr_expr_id;
+extern bool flag_use_command_line_debug;
+extern bool cli_debug_mode;
 
 static bool expression_op_func__xor( expression*, thread* );
 static bool expression_op_func__multiply( expression*, thread* );
@@ -2524,19 +2526,12 @@ bool expression_op_func__delay( expression* expr, thread* thr ) {
   /* Clear the evaluated TRUE indicator */
   expr->suppl.part.eval_t = 0;
 
-#ifdef SKIP
-  /* Get number of clocks to delay */
-  intval = vector_to_uint64( expr->right->value ) * *(expr->elem.scale);
-#endif
-
   /* If this is the first statement in the current thread, we are executing for the first time */
   if( thr->suppl.part.exec_first ) {
 
-    //if( ((thr->curr_time + intval) <= curr_sim_time) || final_sim_time ) {
     if( (thr->curr_time <= curr_sim_time) || final_sim_time ) {
       expr->suppl.part.eval_t = 1;
       expr->suppl.part.true   = 1;
-      thr->curr_time += intval;
       retval = TRUE;
     }
 
@@ -3015,7 +3010,7 @@ bool expression_op_func__iinc( expression* expr, thread* thr ) {
   vector_set_value( expr->value, expr->left->value->value, expr->left->value->suppl.part.type, expr->left->value->width, 0, 0 );
 
 #ifdef DEBUG_MODE
-  if( debug_mode ) {
+  if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
     printf( "        " );  vsignal_display( expr->left->sig );
   }
 #endif
@@ -3044,7 +3039,7 @@ bool expression_op_func__pinc( expression* expr, thread* thr ) {
   vector_op_inc( expr->left->value );
 
 #ifdef DEBUG_MODE
-  if( debug_mode ) {
+  if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
     printf( "        " );  vsignal_display( expr->left->sig );
   }
 #endif
@@ -3073,7 +3068,7 @@ bool expression_op_func__idec( expression* expr, thread* thr ) {
   vector_set_value( expr->value, expr->left->value->value, expr->left->value->suppl.part.type, expr->left->value->width, 0, 0 );
 
 #ifdef DEBUG_MODE
-  if( debug_mode ) {
+  if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
     printf( "        " );  vsignal_display( expr->left->sig );
   }
 #endif
@@ -3102,7 +3097,7 @@ bool expression_op_func__pdec( expression* expr, thread* thr ) {
   vector_op_dec( expr->left->value );
 
 #ifdef DEBUG_MODE
-  if( debug_mode ) {
+  if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
     printf( "        " );  vsignal_display( expr->left->sig );
   }
 #endif
@@ -3668,7 +3663,7 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb, uint64 sim_t
               vector_bit_fill( lhs->value, lhs->value->width, (rhs->value->width + *lsb) );
             }
 #ifdef DEBUG_MODE
-            if( debug_mode ) {
+            if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
               printf( "        " );  vsignal_display( lhs->sig );
             }
 #endif
@@ -3698,7 +3693,7 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb, uint64 sim_t
               vector_bit_fill( lhs->value, lhs->value->width, (rhs->value->width + *lsb) );
             }
 #ifdef DEBUG_MODE
-            if( debug_mode ) {
+            if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
               printf( "        " );  vsignal_display( lhs->sig );
             }
 #endif
@@ -3726,7 +3721,7 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb, uint64 sim_t
               vector_bit_fill( lhs->value, lhs->value->width, (rhs->value->width + *lsb) );
             }
 #ifdef DEBUG_MODE
-            if( debug_mode ) {
+            if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
               printf( "        " );  vsignal_display( lhs->sig );
             }
 #endif
@@ -3750,7 +3745,7 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb, uint64 sim_t
           if( assign ) {
             vector_set_value( lhs->value, rhs->value->value, rhs->value->suppl.part.type, intval2, *lsb, 0 );
 #ifdef DEBUG_MODE
-            if( debug_mode ) {
+            if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
               printf( "        " );  vsignal_display( lhs->sig );
             }
 #endif
@@ -3773,7 +3768,7 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb, uint64 sim_t
           if( assign ) {
             vector_set_value( lhs->value, rhs->value->value, rhs->value->suppl.part.type, intval2, *lsb, 0 );
 #ifdef DEBUG_MODE
-            if( debug_mode ) {
+            if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
               printf( "        " );  vsignal_display( lhs->sig );
             }
 #endif
@@ -3948,6 +3943,9 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.241  2007/04/11 03:15:20  phase1geo
+ Attempting to fix delay expression for new simulation core.  Almost there.
+
  Revision 1.240  2007/04/09 22:47:53  phase1geo
  Starting to modify the simulation engine for performance purposes.  Code is
  not complete and is untested at this point.

@@ -153,7 +153,7 @@ int tcl_func_get_instances( Tcl_Interp* tcl, funit_inst* root ) {
 
   /* Generate the name of this child */
   scope[0] = '\0';
-  instance_gen_scope( scope, root );
+  instance_gen_scope( scope, root, FALSE );
   Tcl_SetVar( tcl, "inst_list",   scope,             (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
   Tcl_SetVar( tcl, "funit_names", root->funit->name, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
   snprintf( tmpstr, 10, "%d", root->funit->type );
@@ -2255,6 +2255,11 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.63  2006/10/02 22:41:00  phase1geo
+ Lots of bug fixes to memory coverage functionality for GUI.  Memory coverage
+ should now be working correctly.  We just need to update the GUI documentation
+ as well as other images for the new feature add.
+
  Revision 1.62  2006/09/27 21:38:35  phase1geo
  Adding code to interract with data in memory coverage verbose window.  Majority
  of code is in place; however, this has not been thoroughly debugged at this point.

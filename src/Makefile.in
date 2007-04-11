@@ -102,6 +102,7 @@ covered_SOURCES = arc.c \
                   parser.c \
                   static_parser.c \
 		  binding.c \
+                  cli.c \
 		  codegen.c \
 		  comb.c \
 		  db.c \
@@ -173,7 +174,7 @@ PROGRAMS = $(bin_PROGRAMS)
 
 am_covered_OBJECTS = arc.$(OBJEXT) assertion.$(OBJEXT) attr.$(OBJEXT) \
 	parser.$(OBJEXT) static_parser.$(OBJEXT) binding.$(OBJEXT) \
-	codegen.$(OBJEXT) comb.$(OBJEXT) db.$(OBJEXT) \
+	cli.$(OBJEXT) codegen.$(OBJEXT) comb.$(OBJEXT) db.$(OBJEXT) \
 	enumerate.$(OBJEXT) exclude.$(OBJEXT) expr.$(OBJEXT) \
 	fsm.$(OBJEXT) fsm_arg.$(OBJEXT) fsm_var.$(OBJEXT) \
 	func_iter.$(OBJEXT) func_unit.$(OBJEXT) gen_item.$(OBJEXT) \
@@ -203,15 +204,15 @@ depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/arc.Po ./$(DEPDIR)/assertion.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/attr.Po ./$(DEPDIR)/binding.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/codegen.Po ./$(DEPDIR)/comb.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/db.Po ./$(DEPDIR)/enumerate.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/exclude.Po ./$(DEPDIR)/expr.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/fsm.Po ./$(DEPDIR)/fsm_arg.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/fsm_var.Po ./$(DEPDIR)/func_iter.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/func_unit.Po ./$(DEPDIR)/gen_item.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/gui.Po ./$(DEPDIR)/info.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/instance.Po ./$(DEPDIR)/iter.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/keywords_1995.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/cli.Po ./$(DEPDIR)/codegen.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/comb.Po ./$(DEPDIR)/db.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/enumerate.Po ./$(DEPDIR)/exclude.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/expr.Po ./$(DEPDIR)/fsm.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/fsm_arg.Po ./$(DEPDIR)/fsm_var.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/func_iter.Po ./$(DEPDIR)/func_unit.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/gen_item.Po ./$(DEPDIR)/gui.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/info.Po ./$(DEPDIR)/instance.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/iter.Po ./$(DEPDIR)/keywords_1995.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/keywords_2001.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/keywords_sv.Po ./$(DEPDIR)/lexer.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/line.Po ./$(DEPDIR)/link.Po \
@@ -289,6 +290,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/assertion.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/attr.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/binding.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cli.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/codegen.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/comb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/db.Po@am__quote@

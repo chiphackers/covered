@@ -771,7 +771,7 @@ inst_parm* param_has_defparam( mod_parm* mparm, funit_inst* inst ) {
 
     /* Get scope of this instance */
     scope[0] = '\0';
-    instance_gen_scope( scope, inst );
+    instance_gen_scope( scope, inst, FALSE );
 
     assert( leading_hier_num > 0 );
 
@@ -1007,6 +1007,10 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.85  2006/12/12 06:20:23  phase1geo
+ More updates to support re-entrant tasks/functions.  Still working through
+ compiler errors.  Checkpointing.
+
  Revision 1.84  2006/10/13 22:46:31  phase1geo
  Things are a bit of a mess at this point.  Adding generate12 diagnostic that
  shows a failure in properly handling generates of instances.

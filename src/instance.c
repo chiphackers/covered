@@ -30,6 +30,7 @@
 #include <stdlib.h>
 #include <assert.h>
 
+#include "db.h"
 #include "defines.h"
 #include "expr.h"
 #include "func_unit.h"
@@ -176,25 +177,28 @@ unsigned instance_create_threads( funit_inst* root, thread** thread_head, thread
 }
 
 /*!
- \param scope  String pointer to store generated scope (assumed to be allocated)
- \param leaf   Pointer to leaf instance in scope.
+ \param scope    String pointer to store generated scope (assumed to be allocated)
+ \param leaf     Pointer to leaf instance in scope.
+ \param flatten  Causes all unnamed scopes to be removed from generated scope if set to TRUE
 
  Recursively travels up to the root of the instance tree, building the scope
  string as it goes.  When the root instance is reached, the string is returned.
  Assumes that scope is initialized to the NULL character.
 */
-void instance_gen_scope( char* scope, funit_inst* leaf ) {
+void instance_gen_scope( char* scope, funit_inst* leaf, bool flatten ) {
 
   if( leaf != NULL ) {
 
     /* Call parent instance first */
-    instance_gen_scope( scope, leaf->parent );
+    instance_gen_scope( scope, leaf->parent, flatten );
 
-    if( scope[0] != '\0' ) {
-      strcat( scope, "." );
-      strcat( scope, leaf->name );
-    } else {
-      strcpy( scope, leaf->name );
+    if( !flatten || !db_is_unnamed_scope( leaf->name ) ) {
+      if( scope[0] != '\0' ) {
+        strcat( scope, "." );
+        strcat( scope, leaf->name );
+      } else {
+        strcpy( scope, leaf->name );
+      }
     }
 
   }
@@ -1062,6 +1066,10 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.74  2007/04/09 22:47:53  phase1geo
+ Starting to modify the simulation engine for performance purposes.  Code is
+ not complete and is untested at this point.
+
  Revision 1.73  2007/04/03 04:15:17  phase1geo
  Fixing bugs in func_iter functionality.  Modified functional unit name
  flattening function (though this does not appear to be working correctly

@@ -63,6 +63,8 @@ int       flag_race_check        = WARNING;             /*!< Specifies how race 
 bool      flag_check_races       = TRUE;                /*!< Specifies if race condition checking should occur */
 bool      flag_display_sim_stats = FALSE;               /*!< Specifies if simulation performance information should be output */
 int       flag_global_generation = GENERATION_SV;       /*!< Specifies the supported global generation value */
+bool      flag_use_command_line_debug = FALSE;          /*!< Specifies whether the command-line debugger should be enabled */
+char*     command_line_debug_file = NULL;               /*!< Specifies the name of an input file to use for debugging */
 str_link* gen_mod_head           = NULL;                /*!< Pointer to the head of the generation module list */
 str_link* gen_mod_tail           = NULL;                /*!< Pointer to the tail of the generation module list */
 char*     vpi_timescale          = NULL;                /*!< Specifies the user-supplied timescale information for VPI */
@@ -144,6 +146,9 @@ void score_usage() {
   printf( "                                    generation.  If <module>= is not specified, the entire design will use\n" );
   printf( "                                    the provided generation.  1=Verilog-1995, 2=Verilog-2001, 3=SystemVerilog\n" );
   printf( "                                    By default, the latest generation is parsed.\n" );
+  printf( "      -cli                         Causes the command-line debugger to be used during VCD/LXT dumpfile scoring.\n" );
+  printf( "                                    This option is only available when Covered is configured with the --enable-debug\n" );
+  printf( "                                    option.\n" );
   printf( "      -h                           Displays this help information.\n" );
   printf( "\n" );
   printf( "      +libext+.<extension>(+.<extension>)+\n" );
@@ -810,6 +815,16 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
         }
       }
 
+    } else if( strncmp( "-cli", argv[i], 2 ) == 0 ) {
+
+#ifdef DEBUG_MODE
+      flag_use_command_line_debug = TRUE;
+      score_add_arg( argv[i] );
+#else
+      print_output( "Command-line debugger (-cli option) is not available because Covered was not configured with the --enable-debug option", FATAL, __FILE__, __LINE__ );
+      retval = FALSE;
+#endif
+
     } else {
 
       snprintf( user_msg, USER_MSG_LENGTH, "Unknown score command option \"%s\".  See \"covered score -h\" for more information.", argv[i] );
@@ -933,6 +948,9 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.93  2007/04/11 03:04:13  phase1geo
+ Fixing bug 1688487.
+
  Revision 1.92  2007/03/13 22:12:59  phase1geo
  Merging changes to covered-0_5-branch to fix bug 1678931.
 

@@ -52,6 +52,8 @@
 #include "vpi.h"
 
 extern bool        report_gui;
+extern bool        flag_use_command_line_debug;
+extern bool        cli_debug_mode;
 #ifndef VPI_ONLY
 #ifdef HAVE_TCLTK
 extern Tcl_Interp* interp;
@@ -130,7 +132,7 @@ void print_output( char* msg, int type, char* file, int line ) {
 
   switch( type ) {
     case DEBUG:
-      if( debug_mode ) {
+      if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
 #ifdef VPI_ONLY
         vpi_print_output( msg );
 #else
@@ -533,8 +535,8 @@ bool file_exists( char* file ) {
 bool util_readline( FILE* file, char** line ) {
 
   char  c;                 /* Character recently read from file */
-  int   i         = 0;     /* Current index of line             */
-  int   line_size = 128;   /* Size of current line              */
+  int   i         = 0;     /* Current index of line */
+  int   line_size = 128;   /* Size of current line */
 
   *line = (char*)malloc_safe( line_size, __FILE__, __LINE__ );
 
@@ -1098,6 +1100,9 @@ const char* get_funit_type( int type ) {
 
 /*
  $Log$
+ Revision 1.58  2007/03/13 22:12:59  phase1geo
+ Merging changes to covered-0_5-branch to fix bug 1678931.
+
  Revision 1.57  2006/12/11 23:29:17  phase1geo
  Starting to add support for re-entrant tasks and functions.  Currently, compiling
  fails.  Checkpointing.

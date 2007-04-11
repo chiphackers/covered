@@ -805,11 +805,9 @@ bool funit_db_merge( func_unit* base, FILE* file, bool same ) {
 }
 
 /*!
- \param flattened_scope  Storage array for the flattened scope name
- \param funit            Pointer to functional unit to flatten name
+ \param funit Pointer to functional unit to flatten name
 
- Flattens the functional unit name and stores the result name in the flattened_scope
- array.
+ \return Returns the flattened name of the given functional unit
 */
 char* funit_flatten_name( func_unit* funit ) {
 
@@ -1097,6 +1095,9 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.69  2007/04/10 22:10:11  phase1geo
+ Fixing some more simulation issues.
+
  Revision 1.68  2007/04/10 03:56:18  phase1geo
  Completing majority of code to support new simulation core.  Starting to debug
  this though we still have quite a ways to go here.  Checkpointing.
