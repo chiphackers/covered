@@ -83,7 +83,6 @@
 #ifdef DEBUG_MODE
 #ifndef VPI_ONLY
 #include "cli.h"
-#include "codegen.h"
 #endif
 #endif
 #include "defines.h"
@@ -106,7 +105,9 @@ extern exp_info              exp_op_info[EXP_OP_NUM];
 extern uint64                curr_sim_time;
 extern /*@null@*/inst_link*  inst_head;
 extern bool                  flag_use_command_line_debug;
+#ifdef DEBUG_MODE
 extern bool                  cli_debug_mode;
+#endif
 
 
 /*!
@@ -249,87 +250,11 @@ void sim_display_all_list() {
 }
 
 /*!
- Outputs the scope, block name, filename and line number of the current thread in the active queue to standard output.
+ \return Returns a pointer to the current head of the active thread queue.
 */
-void sim_display_current() {
+thread* sim_current_thread() {
 
-  char scope[4096];  /* String containing scope of given functional unit */
-  int  ignore = 0;   /* Specifies that we should not ignore a matching functional unit */
-
-  assert( active_head != NULL );
-  assert( active_head->funit != NULL );
-  assert( active_head->curr != NULL );
-
-  /* Get the scope of the functional unit represented by the current thread */
-  scope[0] = '\0';
-  instance_gen_scope( scope, inst_link_find_by_funit( active_head->funit, inst_head, &ignore ), TRUE );
-
-  /* Output the given scope */
-  printf( "SCOPE: %s, BLOCK: %s, FILE: %s\n", scope, funit_flatten_name( active_head->funit ), active_head->funit->filename );
-
-  /* Display current statement */
-  sim_display_current_stmt();
-
-}
-
-/*!
- Displays the current statement to standard output.
-*/
-void sim_display_current_stmt() {
-
-  char** code;        /* Pointer to code string from code generator */
-  int    code_depth;  /* Depth of code array */
-  int    i;           /* Loop iterator */
-
-  assert( active_head != NULL );
-  assert( active_head->funit != NULL );
-  assert( active_head->curr != NULL );
-
-  /* Generate the logic */
-  codegen_gen_expr( active_head->curr->exp, active_head->curr->exp->op, &code, &code_depth, active_head->funit );
-
-  /* Output the full expression */
-  for( i=0; i<code_depth; i++ ) {
-    printf( "      %7d:    %s\n", active_head->curr->exp->line, code[i] );
-    free_safe( code[i] );
-  }
-
-  if( code_depth > 0 ) {
-    free_safe( code );
-  }
-
-}
-
-/*!
- \param num  Maximum number of lines to display
-
- Starting at the current statement line, outputs the next num lines to standard output.
-*/
-void sim_display_lines( unsigned num ) {
-
-  FILE* vfile;       /* File pointer to Verilog file */
-  char* line;        /* Pointer to current line */
-  int   curr = 1;    /* Current line number */
-  int   start_line;  /* Starting line */
-
-  assert( active_head != NULL );
-  assert( active_head->funit != NULL );
-  assert( active_head->curr != NULL );
-  assert( (vfile = fopen( active_head->funit->filename, "r" )) != NULL );
-
-  /* Get the starting line number */
-  start_line = active_head->curr->exp->line;
-
-  /* Read the Verilog file and output lines when we are in range */
-  while( util_readline( vfile, &line ) ) {
-    if( (curr >= start_line) && (curr < (start_line + num)) ) { 
-      printf( "%7d:  %s\n", curr, line );
-    }
-    free_safe( line );
-    curr++;
-  }
-
-  fclose( vfile );
+  return( active_head );
 
 }
 
@@ -610,13 +535,15 @@ thread* sim_create_thread( thread* parent, statement* stmt, func_unit* funit ) {
   thread* thr;  /* Pointer to newly allocated thread */
 
   /* Allocate the new thread */
-  thr            = (thread*)malloc_safe( sizeof( thread ), __FILE__, __LINE__ );
-  thr->funit     = funit;
-  thr->parent    = parent;
-  thr->curr      = stmt;
-  thr->ren       = NULL;
-  thr->suppl.all = 0;
-  thr->curr_time = 0;
+  thr              = (thread*)malloc_safe( sizeof( thread ), __FILE__, __LINE__ );
+  thr->funit       = funit;
+  thr->parent      = parent;
+  thr->curr        = stmt;
+  thr->ren         = NULL;
+  thr->suppl.all   = 0;
+  thr->curr_time   = 0;
+  thr->active_prev = NULL;
+  thr->active_next = NULL;
 
   return( thr );
 
@@ -753,11 +680,16 @@ void sim_kill_thread( thread* thr ) {
       }
     }
 
+    /* Reset curr pointer to point to first statement -- in case this thread gets used again */
+    thr->curr = thr->funit->first_stmt;
+
   } else {
 
     active_head = active_head->active_next;
     if( active_head == NULL ) {
       active_tail = NULL;
+    } else {
+      active_head->active_prev = NULL;  /* Here for debug purposes - TBD */
     }
 
   }
@@ -1029,8 +961,11 @@ void sim_simulate( uint64 sim_time ) {
         last_time = delayed_threads[0]->curr_time;
         if( active_head == NULL ) {
           active_head = active_tail = delayed_threads[0]; 
+          delayed_threads[0]->active_prev = NULL; 
+          delayed_threads[0]->active_next = NULL; 
         } else {
           delayed_threads[0]->active_prev = active_tail;
+          delayed_threads[0]->active_next = NULL;
           active_tail->active_next        = delayed_threads[0];
           active_tail                     = delayed_threads[0];
         }
@@ -1039,11 +974,11 @@ void sim_simulate( uint64 sim_time ) {
         /* Perform the heap sort sift operation */
         if( delayed_size > 0 ) {
           do {
-            tmp    = delayed_threads[delayed_size-1];
+            tmp    = delayed_threads[delayed_size];
             parent = 0;
             child  = 1;
-            while( child < (delayed_size-1) ) {
-              if( ((child + 1) < (delayed_size-1)) && (delayed_threads[child + 1]->curr_time < delayed_threads[child]->curr_time) ) {
+            while( child < delayed_size ) {
+              if( ((child + 1) < delayed_size) && (delayed_threads[child + 1]->curr_time < delayed_threads[child]->curr_time) ) {
                 child++;
               }
               if( delayed_threads[child]->curr_time < tmp->curr_time ) {
@@ -1058,12 +993,16 @@ void sim_simulate( uint64 sim_time ) {
             if( delayed_threads[0]->curr_time == last_time ) {
               if( active_head == NULL ) {
                 active_head = active_tail = delayed_threads[0];
+                delayed_threads[0]->active_prev = NULL;
+                delayed_threads[0]->active_next = NULL;
               } else {
                 delayed_threads[0]->active_prev = active_tail;
+                delayed_threads[0]->active_next = NULL;
                 active_tail->active_next        = delayed_threads[0];
                 active_tail                     = delayed_threads[0];
               }
               delayed_size--;
+
             }
           } while( (delayed_size > 0) && (delayed_threads[0]->curr_time == last_time) );
         }
@@ -1098,34 +1037,37 @@ void sim_initialize() {
   unsigned size;             /* Stores the size of all the threads */
 
   /* Iterate through the instances, counting, creating and adding new threads to a temporary list */
-  size = inst_link_create_threads( inst_head, &tmp_head, &tmp_tail );
+  if( (size = inst_link_create_threads( inst_head, &tmp_head, &tmp_tail )) > 0 ) {
 
-  /* Allocate memory for the all_threads list */
-  all_threads = (thread**)malloc_safe( (sizeof( thread* ) * size), __FILE__, __LINE__ );
+    /* Allocate memory for the all_threads list */
+    all_threads = (thread**)malloc_safe( (sizeof( thread* ) * size), __FILE__, __LINE__ );
 
-  /* Copy active threads to the active thread array */
-  all_size = 0;
-  while( tmp_head != NULL ) {
-    assert( all_size < size );
-    // printf( "Adding thread %p to all_threads array (pre_all_size=%d)\n", tmp_head, all_size );
-    all_threads[all_size] = tmp_head;
-    all_size++;
-    tmp_tail = tmp_head->active_next;
-    if( ESUPPL_STMT_IS_CALLED( tmp_head->curr->exp->suppl ) == 0 ) {
-      sim_add_thread( tmp_head );
+    /* Copy active threads to the active thread array */
+    all_size = 0;
+    while( tmp_head != NULL ) {
+      assert( all_size < size );
+      all_threads[all_size] = tmp_head;
+      all_size++;
+      tmp_tail = tmp_head->active_next;
+      if( ESUPPL_STMT_IS_CALLED( tmp_head->curr->exp->suppl ) == 0 ) {
+        sim_add_thread( tmp_head );
+      }
+      tmp_head = tmp_tail;
     }
-    tmp_head = tmp_tail;
+
+    /* Allocate delayed thread array */
+    delayed_threads = (thread**)malloc_safe( (sizeof( thread* ) * size), __FILE__, __LINE__ );
+    delayed_size    = 0;
+
+    /* Add static values */
+    sim_add_statics();
+
   }
 
-  /* Allocate delayed thread array */
-  delayed_threads = (thread**)malloc_safe( (sizeof( thread* ) * size), __FILE__, __LINE__ );
-  delayed_size    = 0;
-
-  /* Add static values */
-  sim_add_statics();
-
+#ifdef DEBUG_MODE
   /* Set the CLI debug mode to the value of the general debug mode */
   cli_debug_mode = debug_mode;
+#endif
 
 }
 
@@ -1145,14 +1087,20 @@ void sim_dealloc() {
   free_safe( all_threads );
   free_safe( delayed_threads );
 
+#ifdef DEBUG_MODE
   /* Clear CLI debug mode */
   cli_debug_mode = FALSE;
+#endif
 
 }
 
 
 /*
  $Log$
+ Revision 1.89  2007/04/12 04:15:40  phase1geo
+ Adding history all command, added list command and updated the display current
+ command to include statement output.
+
  Revision 1.88  2007/04/11 22:29:48  phase1geo
  Adding support for CLI to score command.  Still some work to go to get history
  stuff right.  Otherwise, it seems to be working.
