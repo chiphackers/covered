@@ -29,6 +29,7 @@
 #include "util.h"
 
 
+extern char   user_msg[USER_MSG_LENGTH];
 extern bool   flag_use_command_line_debug;
 extern uint64 curr_sim_time;
 
@@ -52,6 +53,11 @@ static uint64 last_timestep;
  Specifies if we should run without stopping (ignore stmts_left value)
 */
 static bool   dont_stop = FALSE;
+
+/*!
+ Specifies if the history buffer needs to be replayed prior to CLI prompting.
+*/
+static int    cli_replay_index = 0;
 
 /*!
  Specifies if simulator debug information should be output during CLI operation.
@@ -98,33 +104,39 @@ void cli_usage() {
   printf( "    time             Displays the current simulation time.\n" );
   printf( "  debug [on | off] Turns verbose debug output from simulator on or off.  If 'on'\n" );
   printf( "                   or 'off' is not specified, displays the current debug mode.\n" );
+  printf( "  savehist <file>  Saves the current history to the specified file.\n" );
   printf( "  history          Displays the command-line history.\n" );
   printf( "  !<num>           Executes the command at the <num> position in history.\n" );
   printf( "  !!               Executes the last valid command.\n" );
-  printf( "  savehist <file>  Saves the current history to the specified file.\n" );
-  printf( "  readhist <file>  Reads and executes the history stored in the specified file.\n" );
   printf( "  quit             Ends simulation.\n" );
   printf( "\n" );
 
 }
 
 /*!
- \param msg  Message to display as error message.
+ \param msg       Message to display as error message.
+ \param standard  If set to TRUE, output to standard output.
 
  Displays the specified error message.
 */
-void cli_print_error( char* msg ) {
+void cli_print_error( char* msg, bool standard ) {
 
-  printf( "%s.  Type 'help' for usage information.\n", msg );
+  if( standard ) {
+    printf( "%s.  Type 'help' for usage information.\n", msg );
+  }
 
 }
 
 /*!
+ \param line       User-specified command line to parse
+ \param perform    Set to TRUE if we should perform the specified command
+ \param replaying  Set to TRUE if we are calling this due to replaying the history
+
  \return Returns TRUE if the user specified a valid command; otherwise, returns FALSE
 
  Parses the given command from the user.
 */
-void cli_parse_input( char* line ) {
+bool cli_parse_input( char* line, bool perform, bool replaying ) {
 
   char  arg[4096];         /* Holder for user argument */
   bool  valid_cmd = TRUE;  /* Specifies if the given command was valid */
@@ -138,147 +150,164 @@ void cli_parse_input( char* line ) {
     history      = (char**)realloc( history, (sizeof( char* ) * (history_size * 2)) );
   }
 
-  /* Store this command in the history buffer */
-  history[history_index] = line;
+  /* Store this command in the history buffer if we are not in replay mode */
+  if( !replaying ) {
+    history[history_index] = line;
+  }
 
   /* Parse first string */
   if( sscanf( line, "%s%n", arg, &chars_read ) == 1 ) {
 
     line += chars_read;
 
-    printf( "arg: %s\n", arg );
     if( arg[0] == '!' ) {
 
       line = arg;
       line++;
       if( arg[1] == '!' ) {
         free_safe( history[history_index] );
-        cli_parse_input( strdup( history[history_index-1] ) );
+        cli_parse_input( strdup( history[history_index-1] ), perform, replaying );
+        history_index--;
       } else if( sscanf( line, "%d", &i ) == 1 ) {
         if( i < (history_index + 1) ) {
           free_safe( history[history_index] );
-          cli_parse_input( strdup( history[i-1] ) );
+          cli_parse_input( strdup( history[i-1] ), perform, replaying );
+          history_index--;
         } else {
-          cli_print_error( "Illegal history number" );
+          cli_print_error( "Illegal history number", perform );
           valid_cmd = FALSE;
         }
       } else {
-        cli_print_error( "Illegal value to the right of '!'" );
+        cli_print_error( "Illegal value to the right of '!'", perform );
         valid_cmd = FALSE;
       }
             
     } else if( strncmp( "help", arg, 4 ) == 0 ) {
 
-      cli_usage();
+      if( perform && !replaying ) {
+        cli_usage();
+      }
 
     } else if( strncmp( "step", arg, 4 ) == 0 ) {
 
-      if( sscanf( line, "%d", &stmts_left ) != 1 ) {
-        stmts_left = 1;
+      if( perform ) {
+        if( sscanf( line, "%d", &stmts_left ) != 1 ) {
+          stmts_left = 1;
+        }
       }
 
     } else if( strncmp( "next", arg, 4 ) == 0 ) {
 
-      if( sscanf( line, "%d", &timesteps_left ) != 1 ) {
-        timesteps_left = 1;
+      if( perform ) {
+        if( sscanf( line, "%d", &timesteps_left ) != 1 ) {
+          timesteps_left = 1;
+        }
       }
 
     } else if( strncmp( "run", arg, 3 ) == 0 ) {
   
-      /* TBD - We should probably allow a way to restart the simulation??? */
-      dont_stop = TRUE;
+      if( perform ) {
+        /* TBD - We should probably allow a way to restart the simulation??? */
+        dont_stop = TRUE;
+      }
 
     } else if( strncmp( "continue", arg, 8 ) == 0 ) {
 
-      dont_stop = TRUE;
+      if( perform ) {
+        dont_stop = TRUE;
+      }
 
     } else if( strncmp( "display", arg, 7 ) == 0 ) {
 
       if( sscanf( line, "%s", arg ) == 1 ) {
         if( strncmp( "active_queue", arg, 12 ) == 0 ) {
-          sim_display_active_queue();
+          if( perform ) {
+            sim_display_active_queue();
+          }
         } else if( strncmp( "delayed_queue", arg, 13 ) == 0 ) {
-          sim_display_delay_queue();
+          if( perform ) {
+            sim_display_delay_queue();
+          }
         } else if( strncmp( "current", arg, 5 ) == 0 ) {
-          sim_display_current();
+          if( perform ) {
+            sim_display_current();
+          }
         } else if( strncmp( "time", arg, 4 ) == 0 ) {
-          printf( "%lld\n", curr_sim_time );
+          if( perform ) {
+            printf( "%lld\n", curr_sim_time );
+          }
         } else {
-          cli_print_error( "Unknown display type" );
+          cli_print_error( "Unknown display type", perform );
           valid_cmd = FALSE; 
         }
       } else {
-        cli_print_error( "Type information missing from display command" );
+        cli_print_error( "Type information missing from display command", perform );
         valid_cmd = FALSE; 
       }
 
     } else if( strncmp( "quit", arg, 4 ) == 0 ) {
 
-      exit( 0 );
+      if( perform ) {
+        exit( 0 );
+      }
  
     } else if( strncmp( "debug", arg, 5 ) == 0 ) {
 
       if( sscanf( line, "%s", arg ) == 1 ) {
         if( strncmp( "on", arg, 2 ) == 0 ) {
-          cli_debug_mode = TRUE;
+          if( perform ) {
+            cli_debug_mode = TRUE;
+          }
         } else if( strncmp( "off", arg, 3 ) == 0 ) {
-          cli_debug_mode = FALSE;
+          if( perform ) {
+            cli_debug_mode = FALSE;
+          }
         } else {
-          cli_print_error( "Unknown debug command parameter" );
+          cli_print_error( "Unknown debug command parameter", perform );
           valid_cmd = FALSE; 
         }
       } else {
-        if( cli_debug_mode ) {
-          printf( "Current debug mode is on.\n" );
-        } else {
-          printf( "Current debug mode is off.\n" );
+        if( perform ) {
+          if( cli_debug_mode ) {
+            printf( "Current debug mode is on.\n" );
+          } else {
+            printf( "Current debug mode is off.\n" );
+          }
         }
       }
 
     } else if( strncmp( "history", arg, 7 ) == 0 ) {
 
-      printf( "\n" );
-      for( i=0; i<=history_index; i++ ) {
-        printf( "%7d  %s\n", (i + 1), history[i] );
+      if( perform && !replaying ) {
+        printf( "\n" );
+        for( i=0; i<=history_index; i++ ) {
+          printf( "%7d  %s\n", (i + 1), history[i] );
+        }
       }
 
     } else if( strncmp( "savehist", arg, 8 ) == 0 ) {
 
       if( sscanf( line, "%s", arg ) == 1 ) {
-        if( (hfile = fopen( arg, "w" )) != NULL ) {
-          for( i=0; i<history_index; i++ ) {
-            fprintf( hfile, "%s\n", history[i] );
+        if( perform && !replaying ) {
+          if( (hfile = fopen( arg, "w" )) != NULL ) {
+            for( i=0; i<history_index; i++ ) {
+              fprintf( hfile, "%s\n", history[i] );
+            }
+            fclose( hfile );
+            printf( "History saved to file '%s'\n", arg );
+          } else {
+            cli_print_error( "Unable to write history file", perform );
+            valid_cmd = FALSE;
           }
-          fclose( hfile );
-        } else {
-          cli_print_error( "Unable to write history file" );
-          valid_cmd = FALSE;
         }
       } else {
-        cli_print_error( "Filename not specified" );
-        valid_cmd = FALSE;
-      }
-
-    } else if( strncmp( "readhist", arg, 8 ) == 0 ) {
-
-      if( sscanf( line, "%s", arg ) == 1 ) {
-        if( (hfile = fopen( arg, "r" )) != NULL ) {
-          while( util_readline( hfile, &line ) ) {
-            cli_parse_input( line );
-          }
-          fclose( hfile );
-        } else {
-          cli_print_error( "Unable to read history file" );
-          valid_cmd = FALSE;
-        }
-      } else {
-        cli_print_error( "Filename not specified" );
+        cli_print_error( "Filename not specified", perform );
         valid_cmd = FALSE;
       }
 
     } else {
 
-      cli_print_error( "Unknown command" );
+      cli_print_error( "Unknown command", perform );
       valid_cmd = FALSE; 
 
     }
@@ -290,13 +319,22 @@ void cli_parse_input( char* line ) {
   }
 
   /* If the command was valid, increment the history index */
-  if( valid_cmd ) {
-    history_index++;
+  if( !replaying ) {
+    if( valid_cmd ) {
+      history_index++;
  
-  /* Otherwise, deallocate the command from the history buffer */
-  } else {
-    free_safe( history[history_index] );
+    /* Otherwise, deallocate the command from the history buffer */
+    } else {
+      free_safe( history[history_index] );
+    }
   }
+  
+  /* Always increment the replay index if we are performing */
+  if( perform ) {
+    cli_replay_index++;  
+  }
+
+  return( valid_cmd );
 
 }
 
@@ -310,19 +348,29 @@ void cli_prompt_user() {
 
   do {
 
-    /* Prompt the user for input */
-    printf( "\ncli %d> ", (history_index + 1) ); 
-    fflush( stdout );
+    /* If the history buffer still needs to be replayed, do so instead of prompting the user */
+    if( cli_replay_index < history_index ) {
 
-    /* Read the user-specified command */
-    (void)util_readline( stdin, &line );
+      (void)cli_parse_input( history[cli_replay_index], TRUE, TRUE );
 
-    /* Parse the command line */
-    cli_parse_input( line );
+    } else {
+
+      /* Prompt the user for input */
+      printf( "\ncli %d> ", (history_index + 1) ); 
+      fflush( stdout );
+
+      /* Read the user-specified command */
+      (void)util_readline( stdin, &line );
+
+      /* Parse the command line */
+      (void)cli_parse_input( line, TRUE, FALSE );
+
+    }
 
   } while( (stmts_left == 0) && (timesteps_left == 0) && !dont_stop );
 
 }
+
 /*!
  Performs CLI prompting if necessary.
 */
@@ -363,7 +411,51 @@ void cli_execute() {
 
 }
 
+/*!
+ \param fname  Name of history file to read in
+
+ \return Returns TRUE if history file was read without error; otherwise, returns FALSE.
+*/
+bool cli_read_hist_file( char* fname ) {
+
+  bool  retval = TRUE;  /* Return value for this function */
+  char* line;           /* Holds current line read from history file */
+  FILE* hfile;          /* File containing history file */
+
+  /* Make sure that this function was not called twice */
+  assert( (cli_replay_index == 0) && !flag_use_command_line_debug );
+
+  /* Read the contents of the history file, storing the read lines into the history array */
+  if( (hfile = fopen( fname, "r" )) != NULL ) {
+
+    while( util_readline( hfile, &line ) && retval ) {
+      retval = cli_parse_input( line, FALSE, FALSE );
+    }
+
+    fclose( hfile );
+
+    if( !retval ) {
+      snprintf( user_msg, USER_MSG_LENGTH, "Specified -cli file \"%s\" is not a valid CLI history file", fname );
+      print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    }
+
+  } else {
+
+    snprintf( user_msg, USER_MSG_LENGTH, "Unable to read history file \"%s\"", fname );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    retval = FALSE;
+
+  }
+
+  return( retval );
+
+}
+
 /*
  $Log$
+ Revision 1.1  2007/04/11 22:29:48  phase1geo
+ Adding support for CLI to score command.  Still some work to go to get history
+ stuff right.  Otherwise, it seems to be working.
+
 */
 

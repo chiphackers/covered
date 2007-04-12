@@ -24,11 +24,21 @@
 */
 
 
+#include "defines.h"
+
+
 /*! \brief Performs CLI management. */
 void cli_execute();
 
+/*! \brief Reads in given history file from -cli option */
+bool cli_read_hist_file( char* fname );
+
 /*
  $Log$
+ Revision 1.1  2007/04/11 22:29:48  phase1geo
+ Adding support for CLI to score command.  Still some work to go to get history
+ stuff right.  Otherwise, it seems to be working.
+
 */
 
 #endif

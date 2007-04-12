@@ -31,6 +31,9 @@
 #include <sys/times.h>
 #include <unistd.h>
 
+#ifdef DEBUG_MODE
+#include "cli.h"
+#endif
 #include "db.h"
 #include "defines.h"
 #include "fsm_arg.h"
@@ -146,9 +149,12 @@ void score_usage() {
   printf( "                                    generation.  If <module>= is not specified, the entire design will use\n" );
   printf( "                                    the provided generation.  1=Verilog-1995, 2=Verilog-2001, 3=SystemVerilog\n" );
   printf( "                                    By default, the latest generation is parsed.\n" );
-  printf( "      -cli                         Causes the command-line debugger to be used during VCD/LXT dumpfile scoring.\n" );
-  printf( "                                    This option is only available when Covered is configured with the --enable-debug\n" );
-  printf( "                                    option.\n" );
+  printf( "      -cli (<filename>)            Causes the command-line debugger to be used during VCD/LXT dumpfile scoring.\n" );
+  printf( "                                    If <filename> is specified, this file contains information saved in a previous\n" );
+  printf( "                                    call to savehist on the CLI and causes the history contained in this file to be\n" );
+  printf( "                                    replayed prior to the CLI command prompt.  If <filename> is not specified, the\n" );
+  printf( "                                    CLI prompt will be immediately available at the start of simulation.  This option\n" );
+  printf( "                                    is only available when Covered is configured with the --enable-debug option.\n" );
   printf( "      -h                           Displays this help information.\n" );
   printf( "\n" );
   printf( "      +libext+.<extension>(+.<extension>)+\n" );
@@ -818,8 +824,24 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
     } else if( strncmp( "-cli", argv[i], 2 ) == 0 ) {
 
 #ifdef DEBUG_MODE
-      flag_use_command_line_debug = TRUE;
-      score_add_arg( argv[i] );
+      i++;
+      if( flag_use_command_line_debug ) {
+        print_output( "Only one -cli option is allowed on the score command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
+        if( (i == argc) || (argv[i][0] == '-') ) {
+          i--;
+        }
+      } else {
+        if( (i < argc) && (argv[i][0] != '-') ) {
+          if( (retval = cli_read_hist_file( argv[i] )) ) {
+            score_add_arg( argv[i-1] );
+            score_add_arg( argv[i] );
+          }
+        } else {
+          i--;
+          score_add_arg( argv[i] );
+        }
+        flag_use_command_line_debug = TRUE;
+      }
 #else
       print_output( "Command-line debugger (-cli option) is not available because Covered was not configured with the --enable-debug option", FATAL, __FILE__, __LINE__ );
       retval = FALSE;
@@ -948,6 +970,10 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.94  2007/04/11 22:29:48  phase1geo
+ Adding support for CLI to score command.  Still some work to go to get history
+ stuff right.  Otherwise, it seems to be working.
+
  Revision 1.93  2007/04/11 03:04:13  phase1geo
  Fixing bug 1688487.
 
