@@ -36,6 +36,9 @@ void sim_display_delay_queue();
 /*! \brief Displays the current scope of the thread at the head of the active queue. */
 void sim_display_current();
 
+/*! \brief Displays file lines starting at current position. */
+void sim_display_lines( unsigned num );
+
 /*! \brief Displays the current statement. */
 void sim_display_current_stmt();
 
@@ -78,6 +81,10 @@ void sim_dealloc();
 
 /*
  $Log$
+ Revision 1.24  2007/04/11 22:29:49  phase1geo
+ Adding support for CLI to score command.  Still some work to go to get history
+ stuff right.  Otherwise, it seems to be working.
+
  Revision 1.23  2007/04/10 03:56:18  phase1geo
  Completing majority of code to support new simulation core.  Starting to debug
  this though we still have quite a ways to go here.  Checkpointing.

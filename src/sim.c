@@ -77,6 +77,7 @@
  on by the statement simulation engine as specified above.
 */
 
+#include <stdio.h>
 #include <assert.h>
 
 #ifdef DEBUG_MODE
@@ -264,8 +265,10 @@ void sim_display_current() {
   instance_gen_scope( scope, inst_link_find_by_funit( active_head->funit, inst_head, &ignore ), TRUE );
 
   /* Output the given scope */
-  printf( "SCOPE: %s, BLOCK: %s, FILE: %s, LINE: %d\n",
-          scope, funit_flatten_name( active_head->funit ), active_head->funit->filename, active_head->curr->exp->line );
+  printf( "SCOPE: %s, BLOCK: %s, FILE: %s\n", scope, funit_flatten_name( active_head->funit ), active_head->funit->filename );
+
+  /* Display current statement */
+  sim_display_current_stmt();
 
 }
 
@@ -294,6 +297,39 @@ void sim_display_current_stmt() {
   if( code_depth > 0 ) {
     free_safe( code );
   }
+
+}
+
+/*!
+ \param num  Maximum number of lines to display
+
+ Starting at the current statement line, outputs the next num lines to standard output.
+*/
+void sim_display_lines( unsigned num ) {
+
+  FILE* vfile;       /* File pointer to Verilog file */
+  char* line;        /* Pointer to current line */
+  int   curr = 1;    /* Current line number */
+  int   start_line;  /* Starting line */
+
+  assert( active_head != NULL );
+  assert( active_head->funit != NULL );
+  assert( active_head->curr != NULL );
+  assert( (vfile = fopen( active_head->funit->filename, "r" )) != NULL );
+
+  /* Get the starting line number */
+  start_line = active_head->curr->exp->line;
+
+  /* Read the Verilog file and output lines when we are in range */
+  while( util_readline( vfile, &line ) ) {
+    if( (curr >= start_line) && (curr < (start_line + num)) ) { 
+      printf( "%7d:  %s\n", curr, line );
+    }
+    free_safe( line );
+    curr++;
+  }
+
+  fclose( vfile );
 
 }
 
@@ -1117,6 +1153,10 @@ void sim_dealloc() {
 
 /*
  $Log$
+ Revision 1.88  2007/04/11 22:29:48  phase1geo
+ Adding support for CLI to score command.  Still some work to go to get history
+ stuff right.  Otherwise, it seems to be working.
+
  Revision 1.87  2007/04/10 22:10:11  phase1geo
  Fixing some more simulation issues.
 

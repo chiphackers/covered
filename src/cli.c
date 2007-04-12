@@ -104,8 +104,12 @@ void cli_usage() {
   printf( "    time             Displays the current simulation time.\n" );
   printf( "  debug [on | off] Turns verbose debug output from simulator on or off.  If 'on'\n" );
   printf( "                   or 'off' is not specified, displays the current debug mode.\n" );
+  printf( "  list [<num>]     Lists the contents of the file where the current statement is to\n" );
+  printf( "                   be executed.  If <num> is specified, outputs the given number of lines;\n" );
+  printf( "                   otherwise, outputs 10 lines.\n" );
   printf( "  savehist <file>  Saves the current history to the specified file.\n" );
-  printf( "  history          Displays the command-line history.\n" );
+  printf( "  history [all]    Displays the last 10 lines of command-line history.  If 'all' is specified,\n" );
+  printf( "                   the entire history contents will be displayed.\n" );
   printf( "  !<num>           Executes the command at the <num> position in history.\n" );
   printf( "  !!               Executes the last valid command.\n" );
   printf( "  quit             Ends simulation.\n" );
@@ -138,11 +142,12 @@ void cli_print_error( char* msg, bool standard ) {
 */
 bool cli_parse_input( char* line, bool perform, bool replaying ) {
 
-  char  arg[4096];         /* Holder for user argument */
-  bool  valid_cmd = TRUE;  /* Specifies if the given command was valid */
-  int   chars_read;        /* Specifies the number of characters that was read from the string */
-  int   i;                 /* Iterator */
-  FILE* hfile;             /* History file to read or to write */
+  char     arg[4096];         /* Holder for user argument */
+  bool     valid_cmd = TRUE;  /* Specifies if the given command was valid */
+  int      chars_read;        /* Specifies the number of characters that was read from the string */
+  int      i;                 /* Iterator */
+  unsigned num;               /* Unsigned integer value from user */
+  FILE*    hfile;             /* History file to read or to write */
 
   /* Resize the history if necessary */
   if( history_index == history_size ) {
@@ -168,10 +173,10 @@ bool cli_parse_input( char* line, bool perform, bool replaying ) {
         free_safe( history[history_index] );
         cli_parse_input( strdup( history[history_index-1] ), perform, replaying );
         history_index--;
-      } else if( sscanf( line, "%d", &i ) == 1 ) {
-        if( i < (history_index + 1) ) {
+      } else if( sscanf( line, "%d", &num ) == 1 ) {
+        if( num < (history_index + 1) ) {
           free_safe( history[history_index] );
-          cli_parse_input( strdup( history[i-1] ), perform, replaying );
+          cli_parse_input( strdup( history[num-1] ), perform, replaying );
           history_index--;
         } else {
           cli_print_error( "Illegal history number", perform );
@@ -221,19 +226,19 @@ bool cli_parse_input( char* line, bool perform, bool replaying ) {
 
       if( sscanf( line, "%s", arg ) == 1 ) {
         if( strncmp( "active_queue", arg, 12 ) == 0 ) {
-          if( perform ) {
+          if( perform && !replaying ) {
             sim_display_active_queue();
           }
         } else if( strncmp( "delayed_queue", arg, 13 ) == 0 ) {
-          if( perform ) {
+          if( perform && !replaying ) {
             sim_display_delay_queue();
           }
         } else if( strncmp( "current", arg, 5 ) == 0 ) {
-          if( perform ) {
+          if( perform && !replaying ) {
             sim_display_current();
           }
         } else if( strncmp( "time", arg, 4 ) == 0 ) {
-          if( perform ) {
+          if( perform && !replaying ) {
             printf( "%lld\n", curr_sim_time );
           }
         } else {
@@ -278,9 +283,15 @@ bool cli_parse_input( char* line, bool perform, bool replaying ) {
 
     } else if( strncmp( "history", arg, 7 ) == 0 ) {
 
+      i = (history_index - 9);
+      if( sscanf( line, "%s", arg ) == 1 ) {
+        if( strncmp( "all", arg, 3 ) == 0 ) {
+          i = 0;
+        }
+      }
       if( perform && !replaying ) {
         printf( "\n" );
-        for( i=0; i<=history_index; i++ ) {
+        for( ; i<=history_index; i++ ) {
           printf( "%7d  %s\n", (i + 1), history[i] );
         }
       }
@@ -303,6 +314,16 @@ bool cli_parse_input( char* line, bool perform, bool replaying ) {
       } else {
         cli_print_error( "Filename not specified", perform );
         valid_cmd = FALSE;
+      }
+
+    } else if( strncmp( "list", arg, 4 ) == 0 ) {
+
+      if( perform && !replaying ) {
+        if( sscanf( line, "%u", &num ) == 1 ) {
+          sim_display_lines( num );
+        } else {
+          sim_display_lines( 10 );
+        }
       }
 
     } else {
@@ -399,8 +420,10 @@ void cli_execute() {
     /* If we have no more statements to execute and we are not supposed to continuely run, prompt the user */
     if( (stmts_left == 0) && (timesteps_left == 0) && !dont_stop ) {
 
-      /* Display current line that will be executed */
-      sim_display_current_stmt();
+      /* Display current line that will be executed if we are not replaying */
+      if( cli_replay_index == history_index ) {
+        sim_display_current_stmt();
+      }
 
       /* Get the next instruction from the user */
       cli_prompt_user();
@@ -453,6 +476,10 @@ bool cli_read_hist_file( char* fname ) {
 
 /*
  $Log$
+ Revision 1.2  2007/04/12 03:46:30  phase1geo
+ Fixing bugs with CLI.  History and history file saving/loading is implemented
+ and working as desired.
+
  Revision 1.1  2007/04/11 22:29:48  phase1geo
  Adding support for CLI to score command.  Still some work to go to get history
  stuff right.  Otherwise, it seems to be working.
