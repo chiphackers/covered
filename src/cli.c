@@ -88,31 +88,54 @@ void cli_usage() {
   printf( "\n" );
   printf( "Covered score command CLI usage:\n" );
   printf( "\n" );
-  printf( "  help             Displays this usage message.\n" );
-  printf( "  step [<num>]     Advances to the next statement if <num> is not specified;\n" );
-  printf( "                   otherwise, advances <num> statements before returning to\n" );
-  printf( "                   the CLI prompt.\n" );
-  printf( "  next [<num>]     Advances to the next timestep if <num> is not specified;\n" );
-  printf( "                   otherwise, advances <num> timesteps before returning to\n" );
-  printf( "                   the CLI prompt.\n" );
-  printf( "  run              Runs the simulation.\n" );
-  printf( "  continue         Continues running the simulation.\n" );
-  printf( "  display <type>   Displays the current state of the given type.  Valid types:\n" );
-  printf( "    active_queue     Displays the current state of the active simulation queue.\n" );
-  printf( "    delayed_queue    Displays the current state of the delayed simulation queue.\n" );
-  printf( "    current          Displays the current scope, block, filename and line number.\n" );
-  printf( "    time             Displays the current simulation time.\n" );
-  printf( "  debug [on | off] Turns verbose debug output from simulator on or off.  If 'on'\n" );
-  printf( "                   or 'off' is not specified, displays the current debug mode.\n" );
-  printf( "  list [<num>]     Lists the contents of the file where the current statement is to\n" );
-  printf( "                   be executed.  If <num> is specified, outputs the given number of lines;\n" );
-  printf( "                   otherwise, outputs 10 lines.\n" );
-  printf( "  savehist <file>  Saves the current history to the specified file.\n" );
-  printf( "  history [all]    Displays the last 10 lines of command-line history.  If 'all' is specified,\n" );
-  printf( "                   the entire history contents will be displayed.\n" );
-  printf( "  !<num>           Executes the command at the <num> position in history.\n" );
-  printf( "  !!               Executes the last valid command.\n" );
-  printf( "  quit             Ends simulation.\n" );
+  printf( "  step [<num>]            Advances to the next statement if <num> is not\n" );
+  printf( "                          specified; otherwise, advances <num> statements\n" );
+  printf( "                          before returning to the CLI prompt.\n" );
+  printf( "\n" );
+  printf( "  next [<num>]            Advances to the next timestep if <num> is not\n" );
+  printf( "                          specified; otherwise, advances <num> timesteps\n" );
+  printf( "                          before returning to the CLI prompt.\n" );
+  printf( "\n" );
+  printf( "  run                     Runs the simulation.\n" );
+  printf( "\n" );
+  printf( "  continue                Continues running the simulation.\n" );
+  printf( "\n" );
+  printf( "  display <type>          Displays the current state of the given type.\n" );
+  printf( "      Valid types:\n" );
+  printf( "        active_queue      Displays the current state of the active\n" );
+  printf( "                          simulation queue.\n" );
+  printf( "        delayed_queue     Displays the current state of the delayed\n" );
+  printf( "                          simulation queue.\n" );
+  printf( "        current           Displays the current scope, block, filename\n" );
+  printf( "                          and line number.\n" );
+  printf( "        time              Displays the current simulation time.\n" );
+  printf( "\n" );
+  printf( "  debug [on | off]        Turns verbose debug output from simulator on\n" );
+  printf( "                          or off.  If 'on' or 'off' is not specified,\n" );
+  printf( "                          displays the current debug mode.\n" );
+  printf( "\n" );
+  printf( "  list [<num>]            Lists the contents of the file where the\n" );
+  printf( "                          current statement is to be executed.  If\n" );
+  printf( "                          <num> is specified, outputs the given number\n" );
+  printf( "                          of lines; otherwise, outputs 10 lines.\n" );
+  printf( "\n" );
+  printf( "  savehist <file>         Saves the current history to the specified\n" );
+  printf( "                          file.\n" );
+  printf( "\n" );
+  printf( "  history [(<num> | all)] Displays the last 10 lines of command-line\n" );
+  printf( "                          history.  If 'all' is specified, the entire\n" );
+  printf( "                          history contents will be displayed.  If <num>\n" );
+  printf( "                          is specified, the last <num> commands will be\n" );
+  printf( "                          displayed.\n" );
+  printf( "\n" );
+  printf( "  !<num>                  Executes the command at the <num> position\n" );
+  printf( "                          in history.\n" );
+  printf( "\n" );
+  printf( "  !!                      Executes the last valid command.\n" );
+  printf( "\n" );
+  printf( "  help                    Displays this usage message.\n" );
+  printf( "\n" );
+  printf( "  quit                    Ends simulation.\n" );
   printf( "\n" );
 
 }
@@ -226,11 +249,11 @@ bool cli_parse_input( char* line, bool perform, bool replaying ) {
 
       if( sscanf( line, "%s", arg ) == 1 ) {
         if( strncmp( "active_queue", arg, 12 ) == 0 ) {
-          if( perform && !replaying ) {
+          if( perform ) {
             sim_display_active_queue();
           }
         } else if( strncmp( "delayed_queue", arg, 13 ) == 0 ) {
-          if( perform && !replaying ) {
+          if( perform ) {
             sim_display_delay_queue();
           }
         } else if( strncmp( "current", arg, 5 ) == 0 ) {
@@ -284,14 +307,16 @@ bool cli_parse_input( char* line, bool perform, bool replaying ) {
     } else if( strncmp( "history", arg, 7 ) == 0 ) {
 
       i = (history_index - 9);
-      if( sscanf( line, "%s", arg ) == 1 ) {
+      if( sscanf( line, "%d", &num ) == 1 ) {
+        i = (history_index - (num - 1));
+      } else if( sscanf( line, "%s", arg ) == 1 ) {
         if( strncmp( "all", arg, 3 ) == 0 ) {
           i = 0;
         }
       }
       if( perform && !replaying ) {
         printf( "\n" );
-        for( ; i<=history_index; i++ ) {
+        for( i=((i<0)?0:i); i<=history_index; i++ ) {
           printf( "%7d  %s\n", (i + 1), history[i] );
         }
       }
@@ -359,6 +384,10 @@ bool cli_parse_input( char* line, bool perform, bool replaying ) {
 
 }
 
+/*!
+ Takes care of either replaying the history buffer or prompting the user for the next command
+ to be issued.
+*/
 void cli_prompt_user() {
 
   char* line;        /* Read line from user */
@@ -476,6 +505,10 @@ bool cli_read_hist_file( char* fname ) {
 
 /*
  $Log$
+ Revision 1.3  2007/04/12 04:15:40  phase1geo
+ Adding history all command, added list command and updated the display current
+ command to include statement output.
+
  Revision 1.2  2007/04/12 03:46:30  phase1geo
  Fixing bugs with CLI.  History and history file saving/loading is implemented
  and working as desired.
