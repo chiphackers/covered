@@ -348,7 +348,7 @@ void sim_thread_push( thread* thr, uint64 sim_time ) {
 #endif
 
   /* Only add the thread if it exists and it isn't already in a queue */
-  if( (thr != NULL) && (thr->suppl.part.queued == 0) && (ESUPPL_STMT_IS_CALLED( thr->curr->exp->suppl ) == 0) ) {
+  if( (thr != NULL) && (thr->suppl.part.queued == 0) && (thr->active_children == 0) && (ESUPPL_STMT_IS_CALLED( thr->curr->exp->suppl ) == 0) ) {
 
 #ifdef DEBUG_MODE
     if( debug_mode && !flag_use_command_line_debug ) {
@@ -1097,6 +1097,11 @@ void sim_dealloc() {
 
 /*
  $Log$
+ Revision 1.90  2007/04/12 20:54:55  phase1geo
+ Adding cli > output when replaying and adding back all of the functions (since
+ the cli > prompt helps give it context.  Fixing bugs in simulation core.
+ Checkpointing.
+
  Revision 1.89  2007/04/12 04:15:40  phase1geo
  Adding history all command, added list command and updated the display current
  command to include statement output.
