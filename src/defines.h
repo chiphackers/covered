@@ -1747,6 +1747,7 @@ struct expression_s {
   fsm*         table;              /*!< Pointer to FSM table associated with this expression */
   union {
     func_unit* funit;              /*!< Pointer to task/function to be called by this expression */
+    thread*    thr;                /*!< Pointer to next thread to be called */
     uint64*    scale;              /*!< Pointer to parent functional unit's timescale value */
   } elem;
 };
@@ -2296,6 +2297,10 @@ struct reentrant_s {
 
 /*
  $Log$
+ Revision 1.253  2007/04/09 22:47:52  phase1geo
+ Starting to modify the simulation engine for performance purposes.  Code is
+ not complete and is untested at this point.
+
  Revision 1.252  2007/03/30 22:43:13  phase1geo
  Regression fixes.  Still have a ways to go but we are getting close.
 

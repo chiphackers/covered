@@ -1,8 +1,8 @@
 5 a 1 * 0
-8 /data/cf/uvlogic1/uvg/trevorw/projects/covered/diags/verilog -t main -vcd bassign2.vcd -o bassign2.cdd -v bassign2.v
+8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd bassign2.vcd -o bassign2.cdd -v bassign2.v
 3 0 $root $root NA 0 0 1
 3 0 main main bassign2.v 1 20 1
-2 1 5 8000c 2 3d 12100a 0 0 1 2 1102 $u0
+2 1 5 8000c 1 3d 121002 0 0 1 2 2 $u0
 1 a 3 83000b 1 0 31 0 32 1 aa aa aa aa aa aa aa aa
 1 b 3 83000e 1 0 31 0 32 1 2aa aa aa aa aa aa aa aa
 4 1 0 0

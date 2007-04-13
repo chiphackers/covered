@@ -1,8 +1,8 @@
 5 a 1 * 0
-8 /data/cf/uvlogic1/uvg/trevorw/projects/covered/diags/verilog -t main -vcd param15.vcd -o param15.cdd -v param15.v
+8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd param15.vcd -o param15.cdd -v param15.v
 3 0 $root $root NA 0 0 1
 3 0 main main param15.v 9 31 1
-2 1 16 8000c 2 3d 12100a 0 0 1 2 1102 $u0
+2 1 16 8000c 1 3d 121002 0 0 1 2 2 $u0
 1 foo 0 80000 1 0 31 0 40 1 55 55 55 55 55 55 55 55 55 55
 1 bar 0 80000 1 0 31 0 2 1 4
 1 a 14 83000b 1 0 39 0 40 1 daa faa faa faa faa faa faa faa faa faa

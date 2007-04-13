@@ -1,9 +1,9 @@
 5 a 1 * 0
-8 /data/cf/uvlogic1/uvg/trevorw/projects/covered/diags/verilog -t main -vcd wait1.vcd -o wait1.cdd -v wait1.v
+8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd wait1.vcd -o wait1.cdd -v wait1.v
 3 0 $root $root NA 0 0 1
 3 0 main main wait1.v 1 24 1
-2 1 5 8000c 1 3d 121002 0 0 1 2 102 $u0
-2 2 11 8000c 2 3d 12100a 0 0 1 2 1102 $u1
+2 1 5 8000c 1 3d 121002 0 0 1 2 2 $u0
+2 2 11 8000c 1 3d 121002 0 0 1 2 2 $u1
 1 a 3 830004 1 0 0 0 1 1 2
 1 b 3 830007 1 0 0 0 1 1 2
 4 1 0 0

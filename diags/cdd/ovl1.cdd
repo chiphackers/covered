@@ -2,7 +2,7 @@
 8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd ovl1.vcd -o ovl1.cdd -v ovl1.v -A ovl +libext+.vlib+ -y ./ovl -I ./ovl -I ./ovl/vlog95
 3 0 $root $root NA 0 0 1
 3 0 main main ovl1.v 1 30 1
-2 1 25 8000c 1 3d 121002 0 0 1 2 102 $u1
+2 1 25 8000c 1 3d 121002 0 0 1 2 2 $u1
 1 width 0 80000 1 0 31 0 32 1 10 0 0 0 0 0 0 0
 1 clock 3 83000a 1 0 0 0 1 1 1102
 1 reset_n 3 30011 1 0 0 0 1 1 102
@@ -27,11 +27,11 @@
 2 17 13 210042 2 7 20088 15 16 4 2 1eaa
 2 18 13 13001d 0 1 400 0 0 test_expr_1
 2 19 13 130042 2 36 f00a 17 18
-2 20 43 a000e 2 3d 12100a 0 0 1 2 1102 $u8
+2 20 43 a000e 1 3d 121002 0 0 1 2 2 $u8
 2 21 48 130015 1e 1 c 0 0 clk
 2 22 48 b0011 0 2a 20000 0 0 1 2 2
 2 23 48 b0015 2e 27 2100a 21 22 1 2 2
-2 24 48 18001c 1e 3d 12600a 0 0 1 2 1102 $u9
+2 24 48 18001c f 3d 126002 0 0 1 2 2 $u9
 1 severity_level 0 80000 1 0 31 0 32 1 1 0 0 0 0 0 0 0
 1 width 0 80000 1 0 31 0 32 1 10 0 0 0 0 0 0 0
 1 property_type 0 80000 1 0 31 0 32 1 0 0 0 0 0 0 0 0
@@ -101,7 +101,7 @@
 2 56 49 80016 2 15 2014c 54 55 1 2 1102
 2 57 49 8002d 2 18 2028c 53 56 1 2 10102
 2 58 49 4002e f 39 1100e 57 0
-2 59 49 300034 14 3d 12000a 0 0 1 2 1102 $u10
+2 59 49 300034 a 3d 120002 0 0 1 2 2 $u10
 4 59 0 0
 4 58 59 0
 3 1 assert_zero_one_hot.$u9.$u10 main.foo.$u9.$u10 ./vlog95/assert_zero_one_hot_logic.v 0 72 1
@@ -148,7 +148,7 @@
 2 100 70 140031 0 0 20010 0 0 224 16 10 14 11 14 4 15 11 14 14 15 55 14 5 14 0 4 10 14 11 14 45 14 5 14 11 14 40 14 5 14 55 11 5 15 10 15 55 14 40 14 55 11 11 14 54 14 55 14 55 11 50 14 50 14 1 14
 2 101 70 140031 0 47 20 100 0 ovl_cover_t.cvr_msg
 2 102 70 80033 0 3b 120012 0 101 512 2 aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa ovl_cover_t
-2 103 60 320036 14 3d 12600a 0 0 1 2 1102 $u13
+2 103 60 320036 a 3d 126002 0 0 1 2 2 $u13
 2 104 56 49004d 0 3d 126002 0 0 1 2 2 $u12
 2 105 51 27002b 0 3d 126002 0 0 1 2 2 $u11
 4 102 0 0
@@ -180,7 +180,7 @@
 2 117 61 d0023 1 8 20084 115 116 4 2 faa
 2 118 61 c0035 1 11 20048 114 117 1 2 1002
 2 119 61 80036 a 39 1100a 118 0
-2 120 61 38003c 14 3d 12000a 0 0 1 2 1102 $u14
+2 120 61 38003c a 3d 120002 0 0 1 2 2 $u14
 4 120 0 0
 4 119 120 0
 3 1 assert_zero_one_hot.$u9.$u10.$u13.$u14 main.foo.$u9.$u10.$u13.$u14 ./vlog95/assert_zero_one_hot_logic.v 0 63 1

@@ -1,8 +1,8 @@
 5 a 1 * 0
-8 /data/cf/uvlogic1/uvg/trevorw/projects/covered/diags/verilog -t main -vcd hier3.4.vcd -o hier3.4.cdd -v hier3.4.v
+8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd hier3.4.vcd -o hier3.4.cdd -v hier3.4.v
 3 0 $root $root NA 0 0 1
 3 0 main main hier3.4.v 1 20 1
-2 1 5 8000c 2 3d 12100a 0 0 1 2 1102 $u0
+2 1 5 8000c 1 3d 121002 0 0 1 2 2 $u0
 4 1 0 0
 3 0 foo main.a hier3.4.v 24 32 1
 3 0 bar main.a.a hier3.4.v 36 40 1
@@ -12,7 +12,7 @@
 3 0 bar main.a.c hier3.4.v 36 40 1
 1 y 38 830004 1 0 0 0 1 1 2
 3 0 test main.a.t hier3.4.v 44 54 1
-2 2 46 8000c 2 3d 12100a 0 0 1 2 1102 $u2
+2 2 46 8000c 1 3d 121002 0 0 1 2 2 $u2
 4 2 0 0
 3 1 test.$u2 main.a.t.$u2 hier3.4.v 0 50 1
 2 3 47 9000c 1 0 20008 0 0 1 4 1

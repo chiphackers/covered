@@ -860,14 +860,6 @@ void sim_thread( thread* thr, uint64 sim_time ) {
 
   while( (stmt != NULL) && !thr->suppl.part.kill ) {
 
-#ifdef OBSOLETE
-    /* Remove the pointer to the current thread from the last statement */
-    thr->curr->thr = NULL;
-
-    /* Set current statement thread pointer to current thread */
-    stmt->thr = thr;
-#endif
-
 #ifdef DEBUG_MODE
     cli_execute();
 #endif
@@ -1097,6 +1089,9 @@ void sim_dealloc() {
 
 /*
  $Log$
+ Revision 1.91  2007/04/12 21:35:20  phase1geo
+ More bug fixes to simulation core.  Checkpointing.
+
  Revision 1.90  2007/04/12 20:54:55  phase1geo
  Adding cli > output when replaying and adding back all of the functions (since
  the cli > prompt helps give it context.  Fixing bugs in simulation core.

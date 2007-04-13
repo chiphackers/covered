@@ -1,11 +1,11 @@
 5 a 1 * 0
-8 /data/cf/uvlogic1/uvg/trevorw/projects/covered/diags/verilog -t main -vcd param10.5.vcd -o param10.5.cdd -v param10.5.v
+8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd param10.5.vcd -o param10.5.cdd -v param10.5.v
 3 0 $root $root NA 0 0 1
 3 0 main main param10.5.v 1 16 1
 1 car 0 80000 1 0 31 0 32 1 14 0 0 0 0 0 0 0
 3 0 foo main.a param10.5.v 19 37 1
-2 1 26 8000c 2 3d 12100a 0 0 1 2 1102 foo_begin
-2 2 32 8000c 2 3d 12100a 0 0 1 2 1102 $u1
+2 1 26 8000c 1 3d 121002 0 0 1 2 2 foo_begin
+2 2 32 8000c 1 3d 121002 0 0 1 2 2 $u1
 1 bar 0 80000 1 0 31 0 32 1 4 0 0 0 0 0 0 0
 1 b 23 30011 1 0 1 0 2 1 a
 1 c 24 830011 1 0 31 0 32 1 2aa aa aa aa aa aa aa aa
@@ -28,8 +28,8 @@
 4 11 0 0
 4 8 11 11
 3 0 foo main.b param10.5.v 19 37 1
-2 12 26 8000c 2 3d 12100a 0 0 1 2 1102 foo_begin
-2 13 32 8000c 2 3d 12100a 0 0 1 2 1102 $u1
+2 12 26 8000c 1 3d 121002 0 0 1 2 2 foo_begin
+2 13 32 8000c 1 3d 121002 0 0 1 2 2 $u1
 1 bar 0 80000 1 0 31 0 32 1 5 0 0 0 0 0 0 0
 1 b 23 30011 1 0 2 0 3 1 2a
 1 c 24 830011 1 0 31 0 32 1 3aa aa aa aa aa aa aa aa
@@ -52,8 +52,8 @@
 4 22 0 0
 4 19 22 22
 3 0 foo main.c param10.5.v 19 37 1
-2 23 26 8000c 2 3d 12100a 0 0 1 2 1102 foo_begin
-2 24 32 8000c 2 3d 12100a 0 0 1 2 1102 $u1
+2 23 26 8000c 1 3d 121002 0 0 1 2 2 foo_begin
+2 24 32 8000c 1 3d 121002 0 0 1 2 2 $u1
 1 bar 0 80000 1 0 31 0 32 1 1 0 0 0 0 0 0 0
 1 b 23 30011 1 0 0 0 1 1 2
 1 c 24 830011 1 0 31 0 32 1 1aa aa aa aa aa aa aa aa

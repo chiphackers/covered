@@ -2,7 +2,7 @@
 8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd repeat2.vcd -o repeat2.cdd -v repeat2.v
 3 0 $root $root NA 0 0 1
 3 0 main main repeat2.v 1 34 1
-2 1 6 8000c 1 3d 121002 0 0 1 2 102 $u0
+2 1 6 8000c 1 3d 121002 0 0 1 2 2 $u0
 1 a 3 83000b 1 0 0 0 1 1 1102
 1 b 3 3000e 1 0 0 0 1 1 1102
 1 c 4 3000b 1 0 31 0 32 1 aa aa aa aa aa aa aa aa
@@ -20,7 +20,7 @@
 2 11 14 50005 0 1b 20020 10 0 1 2 2
 2 12 14 10001 0 1 400 0 0 a
 2 13 14 10006 0 37 22 11 12
-2 14 10 30007 7 3d 12600a 0 0 1 2 1102 $u1
+2 14 10 30007 4 3d 126002 0 0 1 2 2 $u1
 4 13 0 0
 4 14 9 0
 4 9 14 13

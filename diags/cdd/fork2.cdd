@@ -1,12 +1,12 @@
 5 a 1 * 0
-8 /data/cf/uvlogic1/uvg/trevorw/projects/covered/diags/verilog -t main -vcd fork2.vcd -o fork2.cdd -v fork2.v
+8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd fork2.vcd -o fork2.cdd -v fork2.v
 3 0 $root $root NA 0 0 1
 3 0 main main fork2.v 1 30 1
-2 1 5 8000c 2 3d 12100a 0 0 1 2 1102 $u0
+2 1 5 8000c 1 3d 121002 0 0 1 2 2 $u0
 1 b 3 830004 1 0 0 0 1 1 102
 4 1 0 0
 3 1 main.$u0 main.$u0 fork2.v 0 19 1
-2 2 6 10004 2 3d 13100a 0 0 1 2 1102 foo_fork
+2 2 6 10004 1 3d 131002 0 0 1 2 2 foo_fork
 4 2 0 0
 3 1 main.$u0.foo_fork main.$u0.foo_fork fork2.v 6 18 1
 2 3 8 a000e 1 3e 131002 0 0 1 2 2 $u2
@@ -29,7 +29,7 @@
 4 10 13 0
 4 8 10 10
 3 1 main.$u0.foo_fork.$u2 main.$u0.foo_fork.$u2 fork2.v 8 8 1
-2 14 8 a000e 2 3d 13100a 0 0 1 2 1102 $u1
+2 14 8 a000e 1 3d 131002 0 0 1 2 2 $u1
 4 14 0 0
 3 1 main.$u0.foo_fork.$u3 main.$u0.foo_fork.$u3 fork2.v 0 17 1
 2 15 14 100013 1 0 20004 0 0 1 4 0
@@ -44,6 +44,6 @@
 4 19 22 0
 4 17 19 19
 3 1 main.$u0.foo_fork.$u4 main.$u0.foo_fork.$u4 fork2.v 13 13 1
-2 23 13 a000e 2 3d 13100a 0 0 1 2 1102 $u3
+2 23 13 a000e 1 3d 131002 0 0 1 2 2 $u3
 4 23 0 0
 3 1 main.$u5 main.$u5 fork2.v 0 28 1

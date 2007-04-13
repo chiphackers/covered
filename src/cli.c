@@ -112,6 +112,7 @@ void cli_usage() {
   printf( "                          simulation queue.\n" );
   printf( "        delayed_queue     Displays the current state of the delayed\n" );
   printf( "                          simulation queue.\n" );
+  printf( "        all_list          Displays the list of all threads.\n" );
   printf( "        current           Displays the current scope, block, filename\n" );
   printf( "                          and line number.\n" );
   printf( "        time              Displays the current simulation time.\n" );
@@ -398,6 +399,10 @@ bool cli_parse_input( char* line, bool perform, bool replaying ) {
           if( perform ) {
             sim_display_delay_queue();
           }
+        } else if( strncmp( "all_list", arg, 8 ) == 0 ) {
+          if( perform ) {
+            sim_display_all_list();
+          }
         } else if( strncmp( "current", arg, 5 ) == 0 ) {
           if( perform ) {
             cli_display_current();
@@ -661,6 +666,11 @@ bool cli_read_hist_file( char* fname ) {
 
 /*
  $Log$
+ Revision 1.5  2007/04/12 20:54:55  phase1geo
+ Adding cli > output when replaying and adding back all of the functions (since
+ the cli > prompt helps give it context.  Fixing bugs in simulation core.
+ Checkpointing.
+
  Revision 1.4  2007/04/12 14:28:35  phase1geo
  Adding ability to display the last <num> lines of history to the history
  command.  Changed behavior of 'display active_queue' and 'display delayed_queue'
