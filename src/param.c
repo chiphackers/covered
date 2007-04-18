@@ -474,6 +474,27 @@ void inst_parm_add_genvar( vsignal* sig, funit_inst* inst ) {
 
 }
 
+/*!
+ \param iparm  Pointer to instance parameter to bind.
+
+ Binds the instance parameter signal to its list of expressions.  This is called
+ by funit_size_elements.
+*/
+void inst_parm_bind( inst_parm* iparm ) {
+
+  exp_link* expl;  /* Pointer to current expression link in list */
+
+  /* Bind the module parameter expression list to this signal */
+  if( iparm->mparm != NULL ) {
+    expl = iparm->mparm->exp_head;
+    while( expl != NULL ) {
+      expl->exp->sig = iparm->sig;
+      expl = expl->next;
+    }
+  }
+
+}
+
 
 /************************************************************************************/
 
@@ -1007,9 +1028,18 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.86  2007/04/11 22:29:48  phase1geo
+ Adding support for CLI to score command.  Still some work to go to get history
+ stuff right.  Otherwise, it seems to be working.
+
  Revision 1.85  2006/12/12 06:20:23  phase1geo
  More updates to support re-entrant tasks/functions.  Still working through
  compiler errors.  Checkpointing.
+
+ Revision 1.84.2.1  2007/04/17 16:31:53  phase1geo
+ Fixing bug 1698806 by rebinding a parameter signal to its list of expressions
+ prior to writing the initial CDD file (elaboration phase).  Added param16
+ diagnostic to regression suite to verify the fix.  Full regressions pass.
 
  Revision 1.84  2006/10/13 22:46:31  phase1geo
  Things are a bit of a mess at this point.  Adding generate12 diagnostic that

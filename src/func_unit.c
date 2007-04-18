@@ -117,41 +117,6 @@ func_unit* funit_create() {
 }
 
 /*!
- \param funit        Pointer to current functional unit to traverse
- \param parent       Pointer to parent thread that would add this thread while running
- \param thread_head  Pointer to head of thread list to create
- \param thread_tail  Pointer to tail of thread list to create
-
- \return Returns the number of threads created and added to the thread list.
-*/
-unsigned funit_create_threads( func_unit* funit, thread* parent, thread** thread_head, thread** thread_tail ) {
-
-  funit_link* funitl;    /* Pointer to functional unit link of child */
-  unsigned    size = 0;  /* Number of elements this function call added to the thread list */
-  stmt_iter   si;        /* Statement iterator */
-  func_unit*  mod;       /* Pointer to parent module of this functional unit */
-
-  /* Only traverse modules -- other functional unit types will be traversed via the statement_create_threads call */
-  if( funit->type == FUNIT_MODULE ) {
-
-    /* Initialize the statement iterator for this functional unit */
-    stmt_iter_reset( &si, funit->stmt_head );
-
-    /* Accumulate all of the threads for this functional unit */
-    while( si.curr != NULL ) {
-      if( ESUPPL_IS_STMT_HEAD( si.curr->stmt->exp->suppl ) == 1 ) {
-        size += statement_create_threads( si.curr->stmt, funit, NULL, parent, thread_head, thread_tail );
-      }
-      stmt_iter_next( &si );
-    }
-
-  }
-
-  return( size );
-
-}
-
-/*!
  \param funit  Pointer to functional unit to get its module from
 
  \return Returns a pointer to the module that contains the specified functional unit.
@@ -402,6 +367,7 @@ void funit_size_elements( func_unit* funit, funit_inst* inst, bool gen_all ) {
   */
   curr_iparm = inst->param_head;
   while( curr_iparm != NULL ) {
+    inst_parm_bind( curr_iparm );
     if( curr_iparm->mparm != NULL ) {
       /* This parameter sizes a signal so perform the signal size */
       if( curr_iparm->mparm->sig != NULL ) {
@@ -939,6 +905,22 @@ bool funit_is_unnamed_child_of( func_unit* parent, func_unit* child ) {
 }
 
 /*!
+ \param parent  Potential parent functional unit to check for relationship to child
+ \param child   Potential child functional unit to check for relationship to parent
+
+ \return Returns TRUE if the relationship of the "parent" and "child" is just that.
+*/
+bool funit_is_child_of( func_unit* parent, func_unit* child ) {
+
+  while( (child->parent != NULL) && (child->parent != parent) ) {
+    child = child->parent;
+  }
+
+  return( child->parent == parent );
+
+}
+
+/*!
  \param funit  Pointer to functional unit element to display signals.
 
  Iterates through signal list of specified functional unit, displaying each signal's
@@ -1095,6 +1077,10 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.70  2007/04/11 22:29:48  phase1geo
+ Adding support for CLI to score command.  Still some work to go to get history
+ stuff right.  Otherwise, it seems to be working.
+
  Revision 1.69  2007/04/10 22:10:11  phase1geo
  Fixing some more simulation issues.
 
@@ -1163,6 +1149,11 @@ void funit_dealloc( func_unit* funit ) {
  Revision 1.54  2006/12/11 23:29:16  phase1geo
  Starting to add support for re-entrant tasks and functions.  Currently, compiling
  fails.  Checkpointing.
+
+ Revision 1.53.2.1  2007/04/17 16:31:53  phase1geo
+ Fixing bug 1698806 by rebinding a parameter signal to its list of expressions
+ prior to writing the initial CDD file (elaboration phase).  Added param16
+ diagnostic to regression suite to verify the fix.  Full regressions pass.
 
  Revision 1.53  2006/11/25 21:29:01  phase1geo
  Adding timescale diagnostics to regression suite and fixing bugs in core associated

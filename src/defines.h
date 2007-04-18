@@ -1055,6 +1055,28 @@ typedef enum exp_op_type_e {
 
 /*! @} */
 
+/*!
+ \addtogroup thread_states Thread States
+
+ The following defines specify the various states that a thread can be in.
+
+ @{
+*/
+
+/*! Specifies that this thread is current inactive and can be reused */
+#define THR_ST_NONE     0
+
+/*! Specifies that this thread is currently in the active queue */
+#define THR_ST_ACTIVE   1
+
+/*! Specifies that this thread is currently in the delayed queue */
+#define THR_ST_DELAYED  2
+
+/*! Specifies that this thread is currently in the waiting queue */
+#define THR_ST_WAITING  3
+
+/*! @} */
+
 /*! Overload for the snprintf function which verifies that we don't overrun character arrays */
 #define snprintf(x,y,...)	assert( snprintf( x, y, __VA_ARGS__ ) < (y) );
 
@@ -1798,7 +1820,6 @@ struct statement_s {
   statement*  next_false;            /*!< Pointer to next statement to run if next_true not picked */
   int         conn_id;               /*!< Current connection ID (used to make sure that we do not infinitely loop
                                           in connecting statements together) */
-  thread*     thr;                   /*!< Pointer to thread that this statement is executing in */
 };
 
 /*!
@@ -2171,16 +2192,16 @@ struct thread_s {
   union {
     uint8 all;
     struct {
-      uint8 kill        : 1;         /*!< Set to TRUE if this thread should be killed */
-      uint8 queued      : 1;         /*!< Set to TRUE when thread exists in the thread queue */
-      uint8 exec_first  : 1;         /*!< Set to TRUE when the first statement is being executed */
-      uint8 delayed     : 1;         /*!< Set to TRUE if this thread exists in the delay queue */
-      uint8 configured  : 1;         /*!< Set to TRUE if this thread has been configured */
+      uint8 state      : 2;          /*!< Set to current state of this thread (see \ref thread_states for legal values) */
+      uint8 kill       : 1;          /*!< Set to TRUE if this thread should be killed */
+      uint8 exec_first : 1;          /*!< Set to TRUE when the first statement is being executed */
     } part;
   } suppl;
   unsigned   active_children;        /*!< Set to the number of children threads in active thread queue */
-  thread*    active_prev;            /*!< Pointer to previous thread in active queue */
-  thread*    active_next;            /*!< Pointer to next thread in active queue */
+  thread*    queue_prev;             /*!< Pointer to previous thread in active/delayed queue */
+  thread*    queue_next;             /*!< Pointer to next thread in active/delayed queue */
+  thread*    all_prev;               /*!< Pointer to previous thread in all pool */
+  thread*    all_next;               /*!< Pointer to next thread in all pool */
   uint64     curr_time;              /*!< Set to the current simulation time for this thread */
 };
 
@@ -2297,6 +2318,11 @@ struct reentrant_s {
 
 /*
  $Log$
+ Revision 1.254  2007/04/13 21:47:12  phase1geo
+ More simulation debugging.  Added 'display all_list' command to CLI to output
+ the list of all threads.  Updated regressions though we are not fully passing
+ at the moment.  Checkpointing.
+
  Revision 1.253  2007/04/09 22:47:52  phase1geo
  Starting to modify the simulation engine for performance purposes.  Code is
  not complete and is untested at this point.

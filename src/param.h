@@ -51,6 +51,9 @@ inst_parm* inst_parm_add( char* name, char* inst_name, static_expr* msb, static_
 /*! \brief Creates a new instance parameter for a generate variable */
 void inst_parm_add_genvar( vsignal* sig, funit_inst* inst );
 
+/*! \brief Performs bind of signal and expressions for the given instance parameter. */
+void inst_parm_bind( inst_parm* iparm );
+
 /*! \brief Adds parameter override to defparam list. */
 void defparam_add( char* scope, vector* expr );
 
@@ -84,6 +87,16 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive );
 
 /*
  $Log$
+ Revision 1.26.2.1  2007/04/17 16:31:53  phase1geo
+ Fixing bug 1698806 by rebinding a parameter signal to its list of expressions
+ prior to writing the initial CDD file (elaboration phase).  Added param16
+ diagnostic to regression suite to verify the fix.  Full regressions pass.
+
+ Revision 1.26  2006/09/20 22:38:09  phase1geo
+ Lots of changes to support memories and multi-dimensional arrays.  We still have
+ issues with endianness and VCS regressions have not been run, but this is a significant
+ amount of work that needs to be checkpointed.
+
  Revision 1.25  2006/07/25 21:35:54  phase1geo
  Fixing nested namespace problem with generate blocks.  Also adding support
  for using generate values in expressions.  Still not quite working correctly

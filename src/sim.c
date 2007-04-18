@@ -105,6 +105,7 @@ extern exp_info              exp_op_info[EXP_OP_NUM];
 extern uint64                curr_sim_time;
 extern /*@null@*/inst_link*  inst_head;
 extern bool                  flag_use_command_line_debug;
+extern bool                  final_sim_time;
 #ifdef DEBUG_MODE
 extern bool                  cli_debug_mode;
 #endif
@@ -125,14 +126,19 @@ exp_link*  static_expr_head = NULL;
 exp_link*  static_expr_tail = NULL;
 
 /*!
- Array of all threads created by sim_create_thread().
+ Head of list of all allocated threads.
 */
-static thread** all_threads = NULL;
+static thread* all_head = NULL;
 
 /*!
- Number of elements stored in all_threads array.
+ Tail of list of all allocated threads.
 */
-static unsigned all_size    = 0;
+static thread* all_tail = NULL;
+
+/*!
+ Pointer to next thread to allocate.
+*/
+static thread* all_next = NULL;
 
 /*!
  Pointer to head of active thread list.
@@ -145,88 +151,96 @@ static thread* active_head  = NULL;
 static thread* active_tail  = NULL;
 
 /*!
- Array of all delayed threads.
+ Pointer to head of delayed thread list.
 */
-static thread** delayed_threads = NULL;
+static thread* delayed_head = NULL;
 
 /*!
- Number of delayed threads in delayed_threads array.
+ Pointer to tail of delayed thread list.
 */
-static unsigned delayed_size    = 0;
+static thread* delayed_tail = NULL;
 
+/*!
+ Pointer to head of waiting thread list.
+*/ 
+static thread* waiting_head = NULL;
+
+/*!
+ Pointer to tail of waiting thread list.
+*/ 
+static thread* waiting_tail = NULL;
+
+/*!
+ List of thread state string names.
+*/
+static const char* thread_state_str[4] = {"NONE", "ACTIVE", "DELAYED", "WAITING"};
+
+
+/*!
+ \param thr         Pointer to thread to display to standard output
+ \param show_queue  If set to TRUE, displays queue_prev/queue_next; otherwise, displays all_prev/all_next
+ \param endl        If set to TRUE, prints a newline character
+
+ Displays the contents of the given thread to standard output.
+*/
+void sim_display_thread( thread* thr, bool show_queue, bool endl ) {
+
+  if( !endl ) {
+    printf( "    " );
+  }
+
+  printf( "time %llu, ", thr->curr_time );
+
+  if( thr->curr == NULL ) {
+    printf( "stmt NONE, " );
+  } else {
+    printf( "stmt %d, ", thr->curr->exp->id );
+    printf( "%s, ", expression_string_op( thr->curr->exp->op ) );
+    printf( "line %d, ", thr->curr->exp->line );
+  }
+
+  printf( "state %s ", thread_state_str[thr->suppl.part.state] );
+  printf( "(%p, ", thr );
+  printf( "parent=%p, ", thr->parent );
+  printf( "prev=%p, ", (show_queue ? thr->queue_prev : thr->all_prev) );
+  printf( "next=%p)  ", (show_queue ? thr->queue_next : thr->all_next) );
+
+  if( endl ) {
+    printf( "\n" );
+  }
+
+}
+
+/*!
+ \param queue_head  Pointer to head of queue to display
+
+ Displays the current state of the active queue (for debug purposes only).
+*/
+void sim_display_queue( thread* queue_head, thread* queue_tail ) {
+
+  thread* thr;  /* Pointer to current thread */
+
+  thr = queue_head;
+  while( thr != NULL ) {
+    sim_display_thread( thr, TRUE, FALSE );
+    if( thr == queue_head ) {
+      printf( "H" );
+    }
+    if( thr == queue_tail ) {
+      printf( "T" );
+    }
+    printf( "\n" );
+    thr = thr->queue_next;
+  }
+
+}
 
 /*!
  Displays the current state of the active queue (for debug purposes only).
 */
 void sim_display_active_queue() {
 
-  thread* curr;  /* Pointer to current thread */
-
-  curr = active_head;
-  while( curr != NULL ) {
-    if( curr->curr == NULL ) {
-      printf( "    time %llu, stmt NONE, queued %d, delayed %d (%p, parent=%p, prev=%p, next=%p)  ",
-              curr->curr_time,
-              curr->suppl.part.queued,
-              curr->suppl.part.delayed,
-              curr, curr->parent, curr->active_prev, curr->active_next );
-    } else {
-      printf( "    time %llu, stmt %d, %s, line %d, queued %d, delayed %d (%p, parent=%p, prev=%p, next=%p)  ",
-              curr->curr_time,
-              curr->curr->exp->id,
-              expression_string_op( curr->curr->exp->op ),
-              curr->curr->exp->line,
-              curr->suppl.part.queued,
-              curr->suppl.part.delayed,
-              curr, curr->parent, curr->active_prev, curr->active_next );
-    }
-    if( curr == active_head ) {
-      printf( "H" );
-    }
-    if( curr == active_tail ) {
-      printf( "T" );
-    }
-    printf( "\n" );
-    curr = curr->active_next;
-  }
-
-}
-
-/*!
- \param tlist  Pointer to thread list to display
- \param size   Number of elements in tlist to display
-
- Displays the given thread list (array form) to standard output.
-*/
-void sim_display_thread_list( thread** tlist, unsigned size ) {
-
-  unsigned i;  /* Loop iterator */
-
-  for( i=0; i<size; i++ ) {
-    if( tlist[i]->curr == NULL ) {
-      printf( "    time %llu, stmt NONE, queued %d, delayed %d (%p, parent=%p, prev=%p, next=%p)  ",
-              tlist[i]->curr_time,
-              tlist[i]->suppl.part.queued,
-              tlist[i]->suppl.part.delayed,
-              tlist[i], tlist[i]->parent, tlist[i]->active_prev, tlist[i]->active_next );
-    } else {
-      printf( "    time %llu, stmt %d, %s, line %d, queued %d, delayed %d (%p, parent=%p, prev=%p, next=%p)  ",
-              tlist[i]->curr_time,
-              tlist[i]->curr->exp->id,
-              expression_string_op( tlist[i]->curr->exp->op ),
-              tlist[i]->curr->exp->line,
-              tlist[i]->suppl.part.queued,
-              tlist[i]->suppl.part.delayed,
-              tlist[i], tlist[i]->parent, tlist[i]->active_prev, tlist[i]->active_next );
-    }
-    if( i == 0 ) {
-      printf( "H" );
-    }
-    if( (i+1) == size ) {
-      printf( "T" );
-    }
-    printf( "\n" );
-  }
+  sim_display_queue( active_head, active_tail );
 
 }
 
@@ -235,7 +249,16 @@ void sim_display_thread_list( thread** tlist, unsigned size ) {
 */
 void sim_display_delay_queue() {
 
-  sim_display_thread_list( delayed_threads, delayed_size );
+  sim_display_queue( delayed_head, delayed_tail );
+
+}
+
+/*!
+ Displays the current state of the waiting queue (for debug purposes only).
+*/
+void sim_display_wait_queue() {
+
+  sim_display_queue( waiting_head, waiting_tail );
 
 }
 
@@ -244,8 +267,25 @@ void sim_display_delay_queue() {
 */
 void sim_display_all_list() {
 
+  thread* thr;  /* Pointer to current thread */
+
   printf( "ALL THREADS:\n" );
-  sim_display_thread_list( all_threads, all_size );  
+
+  thr = all_head;
+  while( thr != NULL ) {
+    sim_display_thread( thr, FALSE, FALSE );
+    if( thr == all_head ) {
+      printf( "H" );
+    }
+    if( thr == all_tail ) {
+      printf( "T" );
+    }
+    if( thr == all_next ) {
+      printf( "N" );
+    }
+    printf( "\n" );
+    thr = thr->all_next;
+  }
 
 }
 
@@ -259,6 +299,70 @@ thread* sim_current_thread() {
 }
 
 /*!
+ Pops the head thread from the active queue without deallocating the thread.
+*/
+void sim_thread_pop_head() {
+
+  thread* thr = active_head;  /* Pointer to head of active queue */
+
+#ifdef DEBUG_MODE
+  if( debug_mode && !flag_use_command_line_debug ) {
+    printf( "Before thread is popped from active queue...\n" );
+    sim_display_active_queue();
+  }
+#endif
+
+  /* Move the head pointer */
+  active_head = active_head->queue_next;
+  if( active_head == NULL ) {
+    active_tail = NULL;
+  } else {
+    active_head->queue_prev = NULL;   /* TBD - Placed here for help in debug */
+  }
+
+  /* Advance the curr pointer if we call sim_add_thread */
+  if( (thr->curr->exp->op == EXP_OP_FORK)      ||
+      (thr->curr->exp->op == EXP_OP_FUNC_CALL) ||
+      (thr->curr->exp->op == EXP_OP_TASK_CALL) ||
+      (thr->curr->exp->op == EXP_OP_NB_CALL) ) {
+    thr->curr = thr->curr->next_true;
+    thr->suppl.part.state = THR_ST_NONE;
+  } else if( (thr->curr->exp->op != EXP_OP_DELAY) &&
+             (thr->curr->exp->op != EXP_OP_DLY_ASSIGN) ) {
+    thr->suppl.part.state = THR_ST_WAITING;
+  }
+
+  /* If the thread is running for an automatic function/task, push the data */
+  if( (thr->funit->type == FUNIT_ATASK) || (thr->funit->type == FUNIT_AFUNCTION) ) {
+    assert( thr->ren == NULL );
+    thr->ren = reentrant_create( thr->funit );
+  }
+
+  /* If the current state is waiting, place this thread in the waiting queue */
+  if( thr->suppl.part.state == THR_ST_WAITING ) {
+    if( waiting_head == NULL ) {
+      waiting_head = waiting_tail = thr;
+      thr->queue_prev = NULL;
+      thr->queue_next = NULL;
+    } else {
+      thr->queue_prev          = waiting_tail;
+      thr->queue_next          = NULL;
+      waiting_tail->queue_next = thr;
+      waiting_tail             = thr;
+    }
+  }
+
+#ifdef DEBUG_MODE
+  if( debug_mode && !flag_use_command_line_debug ) {
+    printf( "After thread is popped from active queue...\n" );
+    sim_display_active_queue();
+    sim_display_all_list();
+  }
+#endif
+
+}
+
+/*!
  \param thr       Pointer to the thread to add to the delay queue.
  \param sim_time  Time to insert the given thread.
 
@@ -266,9 +370,7 @@ thread* sim_current_thread() {
 */
 void sim_thread_insert_into_delay_queue( thread* thr, uint64 sim_time ) {
 
-  int      i;       /* Loop iterator */
-  unsigned parent;  /* Index of parent node in heap structure */
-  unsigned child;   /* Index of child node in heap structure */
+  thread* curr;  /* Pointer to current thread in delayed queue to compare against */
 
 #ifdef DEBUG_MODE
   if( debug_mode && !flag_use_command_line_debug ) {
@@ -278,7 +380,7 @@ void sim_thread_insert_into_delay_queue( thread* thr, uint64 sim_time ) {
 
   if( thr != NULL ) {
 
-    assert( thr->suppl.part.delayed == 0 );
+    assert( thr->suppl.part.state != THR_ST_DELAYED );
 
 #ifdef DEBUG_MODE
     if( debug_mode && !flag_use_command_line_debug ) {
@@ -286,37 +388,53 @@ void sim_thread_insert_into_delay_queue( thread* thr, uint64 sim_time ) {
     }
 #endif
 
+    /* If the thread is currently in the active state, remove it from the active queue now */
+    if( thr->suppl.part.state == THR_ST_ACTIVE ) {
+ 
+      /* Move the head pointer */
+      active_head = active_head->queue_next;
+      if( active_head == NULL ) {
+        active_tail = NULL;
+      } else {
+        active_head->queue_prev = NULL;   /* TBD - Placed here for help in debug */
+      }
+
+    }
+
     /* Specify that the thread is queued and delayed */
-    thr->suppl.part.delayed = 1;
-    thr->suppl.part.queued  = 1;
+    thr->suppl.part.state = THR_ST_DELAYED;
 
     /* Set the thread simulation time to the given sim_time */
     thr->curr_time = sim_time;
 
-    /* Add the given thread to the delayed queue */
-    delayed_threads[delayed_size] = thr;
-    delayed_size++;
-
-    /* Now perform a heap sort on the new value */
-    for( i=((delayed_size / 2) - 1); i>=0; i-- ) {
-      thr    = delayed_threads[i];
-      parent = i;
-      child  = (i * 2) + 1;
-      while( child < delayed_size ) {
-        if( ((child + 1) < delayed_size) && (delayed_threads[child+1]->curr_time < delayed_threads[child]->curr_time) ) {
-          child++;
-        }
-        if( delayed_threads[child]->curr_time < thr->curr_time ) {
-          delayed_threads[parent] = delayed_threads[child];
-          parent = child;
-          child  = (parent * 2) + 1;
-        } else {
-          break;
-        }
+    /* Add the given thread to the delayed queue in simulation time order */
+    if( delayed_head == NULL ) {
+      delayed_head = delayed_tail = thr;
+      thr->queue_prev = NULL;
+      thr->queue_next = NULL;
+    } else {
+      curr = delayed_tail;
+      while( (curr != NULL) && (curr->curr_time > sim_time) ) {
+        curr = curr->queue_prev;
       }
-      delayed_threads[i] = thr;
+      if( curr == NULL ) {
+        thr->queue_prev          = NULL;
+        thr->queue_next          = delayed_head;
+        delayed_head->queue_prev = thr;
+        delayed_head             = thr;
+      } else if( curr == delayed_tail ) {
+        thr->queue_prev          = delayed_tail;
+        thr->queue_next          = NULL;
+        delayed_tail->queue_next = thr;
+        delayed_tail             = thr;
+      } else {
+        thr->queue_prev             = curr;
+        thr->queue_next             = curr->queue_next;
+        thr->queue_next->queue_prev = thr;
+        curr->queue_next            = thr;
+      }
     }
-
+    
 #ifdef DEBUG_MODE
     if( debug_mode && !flag_use_command_line_debug ) {
       printf( "After delay thread is inserted...\n" );
@@ -344,100 +462,55 @@ void sim_thread_push( thread* thr, uint64 sim_time ) {
 #ifdef DEBUG_MODE
   if( debug_mode && !flag_use_command_line_debug ) {
     printf( "Before thread is pushed...\n" );
-  }
-#endif
-
-  /* Only add the thread if it exists and it isn't already in a queue */
-  if( (thr != NULL) && (thr->suppl.part.queued == 0) && (thr->active_children == 0) && (ESUPPL_STMT_IS_CALLED( thr->curr->exp->suppl ) == 0) ) {
-
-#ifdef DEBUG_MODE
-    if( debug_mode && !flag_use_command_line_debug ) {
-      sim_display_active_queue();
-    }
-#endif
-
-    /* Set the queue indicator to TRUE */
-    thr->suppl.part.queued = 1;
-
-    /* Set the current time of the thread to the given value */
-    op = thr->curr->exp->op;
-    if( (op == EXP_OP_PEDGE)       ||
-        (op == EXP_OP_NEDGE)       ||
-        (op == EXP_OP_AEDGE)       ||
-        (op == EXP_OP_EOR)         ||
-        (op == EXP_OP_WAIT)        ||
-        (op == EXP_OP_SLIST)       ||
-        (op == EXP_OP_ALWAYS_COMB) ||
-        (op == EXP_OP_ALWAYS_LATCH) ) {
-      thr->curr_time = sim_time;
-    }
-
-    /* Set the active next and prev pointers to NULL */
-    thr->active_prev = thr->active_next = NULL;
-
-    /* Add the given thread to the end of the active_threads queue */
-    if( active_head == NULL ) {
-      active_head = active_tail = thr;
-    } else {
-      thr->active_prev         = active_tail;
-      active_tail->active_next = thr;
-      active_tail              = thr;
-    }
-
-#ifdef DEBUG_MODE
-    if( debug_mode && !flag_use_command_line_debug ) {
-      printf( "After thread is pushed...\n" );
-      sim_display_active_queue();
-      sim_display_all_list();
-    }
-#endif
-
-  }
-
-}
-
-/*!
- Pops the head thread from the active queue without deallocating the thread.
-*/
-void sim_thread_pop_head() {
-
-#ifdef DEBUG_MODE
-  if( debug_mode && !flag_use_command_line_debug ) {
-    printf( "Before thread is popped from active queue...\n" );
     sim_display_active_queue();
   }
 #endif
 
-  /* Advance the curr pointer if we call sim_add_thread */
-  if( (active_head->curr->exp->op == EXP_OP_FORK)      ||
-      (active_head->curr->exp->op == EXP_OP_FUNC_CALL) ||
-      (active_head->curr->exp->op == EXP_OP_TASK_CALL) ||
-      (active_head->curr->exp->op == EXP_OP_NB_CALL) ) {
-    active_head->curr = active_head->curr->next_true;
-  }
-
-  /* If the current thread is not in the delay queue, clear the queued indicator */
-  if( active_head->suppl.part.delayed == 0 ) {
-    active_head->suppl.part.queued = 0;
-  }
-
-  /* If the active_head thread running for an automatic function/task, push the data */
-  if( (active_head->funit->type == FUNIT_ATASK) || (active_head->funit->type == FUNIT_AFUNCTION) ) {
-    assert( active_head->ren == NULL );
-    active_head->ren = reentrant_create( active_head->funit );
-  }
-
-  /* Move the head pointer */
-  active_head = active_head->active_next;
-  if( active_head == NULL ) {
-    active_tail = NULL;
+  /* Remove the thread from the waiting queue */
+  if( waiting_head == waiting_tail ) {
+    waiting_head = waiting_tail = NULL;
+  } else if( thr == waiting_head ) {
+    waiting_head = thr->queue_next;
+    waiting_head->queue_prev = NULL;
+  } else if( thr == waiting_tail ) {
+    waiting_tail = thr->queue_prev;
+    waiting_tail->queue_next = NULL;
   } else {
-    active_head->active_prev = NULL;   /* TBD - Placed here for help in debug */
+    thr->queue_prev->queue_next = thr->queue_next;
+    thr->queue_next->queue_prev = thr->queue_prev;
+  }
+
+  /* Set the state to ACTIVE */
+  thr->suppl.part.state = THR_ST_ACTIVE;
+
+  /* Set the current time of the thread to the given value */
+  op = thr->curr->exp->op;
+  if( (op == EXP_OP_PEDGE)       ||
+      (op == EXP_OP_NEDGE)       ||
+      (op == EXP_OP_AEDGE)       ||
+      (op == EXP_OP_EOR)         ||
+      (op == EXP_OP_WAIT)        ||
+      (op == EXP_OP_SLIST)       ||
+      (op == EXP_OP_ALWAYS_COMB) ||
+      (op == EXP_OP_ALWAYS_LATCH) ) {
+    thr->curr_time = sim_time;
+  }
+
+  /* Set the active next and prev pointers to NULL */
+  thr->queue_prev = thr->queue_next = NULL;
+
+  /* Add the given thread to the end of the active_threads queue */
+  if( active_head == NULL ) {
+    active_head = active_tail = thr;
+  } else {
+    thr->queue_prev         = active_tail;
+    active_tail->queue_next = thr;
+    active_tail             = thr;
   }
 
 #ifdef DEBUG_MODE
   if( debug_mode && !flag_use_command_line_debug ) {
-    printf( "After thread is popped from active queue...\n" );
+    printf( "After thread is pushed...\n" );
     sim_display_active_queue();
     sim_display_all_list();
   }
@@ -458,6 +531,8 @@ void sim_thread_pop_head() {
  do not add the statement again.
 */
 void sim_expr_changed( expression* expr, uint64 sim_time ) {
+
+  thread* thr;  /* Pointer to current thread */
 
   assert( expr != NULL );
 
@@ -504,9 +579,19 @@ void sim_expr_changed( expression* expr, uint64 sim_time ) {
      Otherwise, if we have hit the root expression and the parent pointer is valid, add 
      this statement (if it is the head) back onto the active queue.
     */
-    } else if( (expr->parent->expr != NULL) && (expr->parent->stmt->thr->curr == expr->parent->stmt) ) {
+    } else if( expr->parent->expr != NULL ) {
 
-      sim_thread_push( expr->parent->stmt->thr, sim_time );
+//      printf( "Waiting list:\n" );
+//      sim_display_wait_queue();
+
+      thr = waiting_head;
+      while( thr != NULL ) {
+//        printf( "thr->curr: %p, expr->parent->stmt: %p\n", thr->curr, expr->parent->stmt );
+        if( thr->curr == expr->parent->stmt ) {
+          sim_thread_push( thr, sim_time );
+        }
+        thr = thr->queue_next;
+      }
 
     }
 
@@ -534,44 +619,71 @@ thread* sim_create_thread( thread* parent, statement* stmt, func_unit* funit ) {
 
   thread* thr;  /* Pointer to newly allocated thread */
 
-  /* Allocate the new thread */
-  thr              = (thread*)malloc_safe( sizeof( thread ), __FILE__, __LINE__ );
-  thr->funit       = funit;
-  thr->parent      = parent;
-  thr->curr        = stmt;
-  thr->ren         = NULL;
-  thr->suppl.all   = 0;
-  thr->curr_time   = 0;
-  thr->active_prev = NULL;
-  thr->active_next = NULL;
+  /* If the next thread to use is empty, create a new one and add it to the end of the all pool */
+  if( all_next == NULL ) {
+
+    /* Allocate the new thread */
+    thr           = (thread*)malloc_safe( sizeof( thread ), __FILE__, __LINE__ );
+    thr->all_prev = NULL;
+    thr->all_next = NULL;
+
+    /* Place newly allocated thread in the all_threads pool */
+    if( all_head == NULL ) {
+      all_head = all_tail = thr;
+    } else {
+      thr->all_prev      = all_tail;
+      all_tail->all_next = thr;
+      all_tail           = thr;
+    }
+
+  /* Otherwise, select the next thread and advance the all_next pointer */
+  } else {
+
+    thr = all_next; 
+    all_next = all_next->all_next;
+
+  }
+
+  /* Initialize the contents of the thread */
+  thr->funit      = funit;
+  thr->parent     = parent;
+  thr->curr       = stmt;
+  thr->ren        = NULL;
+  thr->suppl.all  = 0;  /* Sets the current state of the thread to NONE */
+  thr->curr_time  = 0;
+  thr->queue_prev = NULL;
+  thr->queue_next = NULL;
 
   return( thr );
 
 }
 
 /*!
- \param thr     Pointer to thread to add to the active_threads queue
  \param parent  Pointer to parent thread of the new thread to create (set to NULL if there is no parent thread)
  \param stmt    Pointer to head statement to have new thread point to.
  \param funit   Pointer to functional unit that is creating this thread.
 
+ \return Returns the pointer to the thread that was added to the active queue (if one was added).
+
  Creates a new thread with the given information and adds the thread to the active queue to run.  Returns a pointer
  to the newly created thread for joining/running purposes.
 */
-void sim_add_thread( thread* thr ) {
+thread* sim_add_thread( thread* parent, statement* stmt, func_unit* funit ) {
 
-  assert( thr != NULL );
+  thread* thr = NULL;  /* Pointer to added thread */
 
   /* Only add expression if it is the head statement of its statement block */
-  if( ESUPPL_IS_STMT_HEAD( thr->curr->exp->suppl ) == 1 ) {
+  if( ESUPPL_IS_STMT_HEAD( stmt->exp->suppl ) == 1 ) {
+
+    /* Create thread, if needed */
+    thr = sim_create_thread( parent, stmt, funit );
 
     /* Initialize thread runtime components */
-    thr->suppl.all         = 0;
-    thr->suppl.part.queued = 1;    /* We will place the thread immediately into the active queue */
-    thr->active_children   = 0;
-    thr->curr_time         = curr_sim_time;
-    thr->active_prev       = NULL;
-    thr->active_next       = NULL;
+    thr->suppl.all       = 0;
+    thr->active_children = 0;
+    thr->curr_time       = curr_sim_time;
+    thr->queue_prev      = NULL;
+    thr->queue_next      = NULL;
 
     /*
      If the parent thread is specified, update our current time, increment the number of active children in the parent
@@ -582,15 +694,16 @@ void sim_add_thread( thread* thr ) {
       thr->curr_time = thr->parent->curr_time;
       thr->parent->active_children++;
 
-      /* Place ourselves between the parent and its active_next pointer */
-      thr->active_next = thr->parent->active_next;
-      thr->parent->active_next = thr;
-      if( thr->active_next == NULL ) {
+      /* Place ourselves between the parent and its queue_next pointer */
+      thr->queue_next = thr->parent->queue_next;
+      thr->parent->queue_next = thr;
+      if( thr->queue_next == NULL ) {
         active_tail = thr;
       } else {
-        thr->active_next->active_prev = thr;
+        thr->queue_next->queue_prev = thr;
       }
-      thr->active_prev = thr->parent;
+      thr->queue_prev = thr->parent;
+      thr->suppl.part.state = THR_ST_ACTIVE;    /* We will place the thread immediately into the active queue */
 
     } else {
 
@@ -618,10 +731,12 @@ void sim_add_thread( thread* thr ) {
           if( active_head == NULL ) {
             active_head = active_tail = thr;
           } else {
-            thr->active_prev         = active_tail;
-            active_tail->active_next = thr;
-            active_tail              = thr;
+            thr->queue_prev         = active_tail;
+            active_tail->queue_next = thr;
+            active_tail             = thr;
           }
+          thr->suppl.part.state = THR_ST_ACTIVE;
+
         }
 
       }
@@ -637,6 +752,8 @@ void sim_add_thread( thread* thr ) {
 #endif
 
   }
+
+  return( thr );
 
 }
 
@@ -664,34 +781,51 @@ void sim_kill_thread( thread* thr ) {
 
     /* If we are the last child, re-insert the parent in our place (setting active_head to the parent) */
     if( thr->parent->active_children == 0 ) {
-      thr->parent->active_next = thr->active_next;
-      if( thr->active_next == NULL ) {
+      thr->parent->queue_next = thr->queue_next;
+      if( thr->queue_next == NULL ) {
         active_tail = thr->parent;
       } else {
-        thr->active_next->active_prev = thr->parent;
+        thr->queue_next->queue_prev = thr->parent;
       }
       active_head = thr->parent;
       thr->parent->curr_time = thr->curr_time;
-      thr->parent->suppl.part.queued = 1;  /* Specify that the parent thread is now back in the active queue */
+      thr->parent->suppl.part.state = THR_ST_ACTIVE;  /* Specify that the parent thread is now back in the active queue */
     } else {
-      active_head = active_head->active_next;
+      active_head = active_head->queue_next;
       if( active_head == NULL ) {
         active_tail = NULL;
       }
     }
 
-    /* Reset curr pointer to point to first statement -- in case this thread gets used again */
-    thr->curr = thr->funit->first_stmt;
-
   } else {
 
-    active_head = active_head->active_next;
+    active_head = active_head->queue_next;
     if( active_head == NULL ) {
       active_tail = NULL;
     } else {
-      active_head->active_prev = NULL;  /* Here for debug purposes - TBD */
+      active_head->queue_prev = NULL;  /* Here for debug purposes - TBD */
     }
 
+  }
+
+  /* Finally, park this thread at the end of the all_queue (if its not already there) */
+  if( thr != all_tail ) {
+    if( thr == all_head ) {
+      all_head           = thr->all_next;
+      all_head->all_prev = NULL;
+    } else {
+      thr->all_prev->all_next = thr->all_next;
+      thr->all_next->all_prev = thr->all_prev;
+    }
+    thr->all_prev      = all_tail;
+    thr->all_next      = NULL;
+    all_tail->all_next = thr;
+    all_tail           = thr;
+  }
+
+  /* If the all_next pointer is NULL, point it to the moved thread */
+  if( all_next == NULL ) {
+    all_next = all_tail;
   }
 
 #ifdef DEBUG_MODE
@@ -713,24 +847,17 @@ void sim_kill_thread( thread* thr ) {
 */
 void sim_kill_thread_with_funit( func_unit* funit ) {
 
-  func_unit*  mod;    /* Pointer to current module */
-  funit_link* child;  /* Pointer to current child being examined */
+  thread* thr;  /* Pointer to current thread */
 
   assert( funit != NULL );
 
-  /* Specify that this thread should be killed */
-  funit->first_stmt->thr->suppl.part.kill = 1;
-
-  /* Get parent module */
-  mod = funit_get_curr_module( funit );
-
-  /* If this thread is a parent to other threads, kill all children */
-  child = mod->tf_head;
-  while( child != NULL ) {
-    if( child->funit->parent == funit ) {
-      child->funit->first_stmt->thr->suppl.part.kill = 1;
+  /* Kill any threads that match the given functional unit or are children of it */
+  thr = all_head;
+  while( thr != NULL ) {
+    if( (thr->funit == funit) || (funit_is_child_of( funit, thr->funit )) ) {
+      thr->suppl.part.kill = 1;
     }
-    child = child->next;
+    thr = thr->all_next;
   }
 
 }
@@ -855,9 +982,6 @@ void sim_thread( thread* thr, uint64 sim_time ) {
   /* Set the value of stmt with the head_stmt */
   stmt = thr->curr;
 
-  /* Clear the delayed supplemental field of the current thread */
-  thr->suppl.part.delayed = 0;
-
   while( (stmt != NULL) && !thr->suppl.part.kill ) {
 
 #ifdef DEBUG_MODE
@@ -917,7 +1041,9 @@ void sim_thread( thread* thr, uint64 sim_time ) {
 #endif
 
     /* Pop this packet out of the active queue */
-    sim_thread_pop_head();
+    if( ((thr->curr->exp->op != EXP_OP_DELAY) && (thr->curr->exp->op != EXP_OP_DLY_ASSIGN)) || final_sim_time ) {
+      sim_thread_pop_head();
+    }
 
   }
 
@@ -932,90 +1058,63 @@ void sim_thread( thread* thr, uint64 sim_time ) {
 */
 void sim_simulate( uint64 sim_time ) {
 
-  unsigned i;          /* Loop iterator */
-  unsigned parent;     /* Index of parent node for heapsort */
-  unsigned child;      /* Index of child node for heapsort */
-  uint64   last_time;  /* Last time placed into the active thread queue */      
-  thread*  tmp;        /* Pointer to temporary thread */
+  uint64  last_time;  /* Last time placed into the active thread queue */      
+  thread* thr;        /* Temporary thread pointer */
 
   /* Simulate all threads in the active queue */
   while( active_head != NULL ) {
     sim_thread( active_head, sim_time );
   }
 
-  if( delayed_size > 0 ) {
+  /* Simulate delay queue for each timestep less than the current simulation time */
+  while( (delayed_head != NULL) && (delayed_head->curr_time <= sim_time) ) {
 
-    do {
+    last_time = delayed_head->curr_time;
 
-      /* Now extract items from the delayed queue and put them in the active thread list */
-      if( delayed_threads[0]->curr_time <= sim_time ) {
+    /* Change the state to ACTIVE */
+    delayed_head->suppl.part.state = THR_ST_ACTIVE;
 
-        last_time = delayed_threads[0]->curr_time;
-        if( active_head == NULL ) {
-          active_head = active_tail = delayed_threads[0]; 
-          delayed_threads[0]->active_prev = NULL; 
-          delayed_threads[0]->active_next = NULL; 
-        } else {
-          delayed_threads[0]->active_prev = active_tail;
-          delayed_threads[0]->active_next = NULL;
-          active_tail->active_next        = delayed_threads[0];
-          active_tail                     = delayed_threads[0];
-        }
-        delayed_size--;
+    /* Now extract items from the delayed queue and put them in the active thread list */
+    assert( active_head == NULL );
 
-        /* Perform the heap sort sift operation */
-        if( delayed_size > 0 ) {
-          do {
-            tmp    = delayed_threads[delayed_size];
-            parent = 0;
-            child  = 1;
-            while( child < delayed_size ) {
-              if( ((child + 1) < delayed_size) && (delayed_threads[child + 1]->curr_time < delayed_threads[child]->curr_time) ) {
-                child++;
-              }
-              if( delayed_threads[child]->curr_time < tmp->curr_time ) {
-                delayed_threads[parent] = delayed_threads[child];
-                parent = child;
-                child  = (parent * 2) + 1;
-              } else {
-                break;
-              }
-            }
-            delayed_threads[parent] = tmp;
-            if( delayed_threads[0]->curr_time == last_time ) {
-              if( active_head == NULL ) {
-                active_head = active_tail = delayed_threads[0];
-                delayed_threads[0]->active_prev = NULL;
-                delayed_threads[0]->active_next = NULL;
-              } else {
-                delayed_threads[0]->active_prev = active_tail;
-                delayed_threads[0]->active_next = NULL;
-                active_tail->active_next        = delayed_threads[0];
-                active_tail                     = delayed_threads[0];
-              }
-              delayed_size--;
-
-            }
-          } while( (delayed_size > 0) && (delayed_threads[0]->curr_time == last_time) );
-        }
-
-        /* Simulate all threads in the active queue */
-        while( active_head != NULL ) {
-          sim_thread( active_head, sim_time );
-        }
-
-      }
-
-    } while( (delayed_size > 0) && (delayed_threads[0]->curr_time <= sim_time) );
-
-#ifdef DEBUG_MODE
-    if( debug_mode && !flag_use_command_line_debug ) {
-      printf( "After delay simulation...\n" );
-      sim_display_delay_queue();
+    active_head = active_tail = delayed_head; 
+    delayed_head = delayed_head->queue_next;
+    active_head->queue_prev = NULL; 
+    active_head->queue_next = NULL; 
+    if( delayed_head != NULL ) {
+      delayed_head->queue_prev = NULL;
+    } else {
+      delayed_tail = NULL;
     }
-#endif
+
+    while( (delayed_head != NULL) && (delayed_head->curr_time == last_time) ) {
+      thr = delayed_head;
+      delayed_head             = delayed_head->queue_next;
+      thr->suppl.part.state = THR_ST_ACTIVE;
+      thr->queue_prev = active_tail;
+      thr->queue_next = NULL;
+      active_tail->queue_next  = thr;
+      active_tail              = thr;
+      if( delayed_head != NULL ) {
+        delayed_head->queue_prev = NULL;
+      } else {
+        delayed_tail = NULL;
+      }
+    }
+
+    /* Simulate all threads in the active queue */
+    while( active_head != NULL ) {
+      sim_thread( active_head, sim_time );
+    }
 
   }
+
+#ifdef DEBUG_MODE
+  if( debug_mode && !flag_use_command_line_debug ) {
+    printf( "After delay simulation...\n" );
+    sim_display_delay_queue();
+  }
+#endif
 
 }
 
@@ -1024,37 +1123,8 @@ void sim_simulate( uint64 sim_time ) {
 */
 void sim_initialize() {
 
-  thread*  tmp_head = NULL;  /* Pointer to head of temporary thread list */
-  thread*  tmp_tail = NULL;  /* Pointer to tail of temporary thread list */
-  unsigned size;             /* Stores the size of all the threads */
-
-  /* Iterate through the instances, counting, creating and adding new threads to a temporary list */
-  if( (size = inst_link_create_threads( inst_head, &tmp_head, &tmp_tail )) > 0 ) {
-
-    /* Allocate memory for the all_threads list */
-    all_threads = (thread**)malloc_safe( (sizeof( thread* ) * size), __FILE__, __LINE__ );
-
-    /* Copy active threads to the active thread array */
-    all_size = 0;
-    while( tmp_head != NULL ) {
-      assert( all_size < size );
-      all_threads[all_size] = tmp_head;
-      all_size++;
-      tmp_tail = tmp_head->active_next;
-      if( ESUPPL_STMT_IS_CALLED( tmp_head->curr->exp->suppl ) == 0 ) {
-        sim_add_thread( tmp_head );
-      }
-      tmp_head = tmp_tail;
-    }
-
-    /* Allocate delayed thread array */
-    delayed_threads = (thread**)malloc_safe( (sizeof( thread* ) * size), __FILE__, __LINE__ );
-    delayed_size    = 0;
-
-    /* Add static values */
-    sim_add_statics();
-
-  }
+  /* Add static values */
+  sim_add_statics();
 
 #ifdef DEBUG_MODE
   /* Set the CLI debug mode to the value of the general debug mode */
@@ -1068,16 +1138,14 @@ void sim_initialize() {
 */
 void sim_dealloc() {
 
-  unsigned i;
+  thread* tmp;  /* Temporary thread pointer */
 
   /* Deallocate each thread in the all_threads array */
-  for( i=0; i<all_size; i++ ) {
-    free_safe( all_threads[i] );
+  while( all_head != NULL ) {
+    tmp = all_head;
+    all_head = all_head->all_next;
+    free_safe( tmp );
   }
-
-  /* Deallocate thread arrays */
-  free_safe( all_threads );
-  free_safe( delayed_threads );
 
 #ifdef DEBUG_MODE
   /* Clear CLI debug mode */
@@ -1089,6 +1157,11 @@ void sim_dealloc() {
 
 /*
  $Log$
+ Revision 1.92  2007/04/13 21:47:12  phase1geo
+ More simulation debugging.  Added 'display all_list' command to CLI to output
+ the list of all threads.  Updated regressions though we are not fully passing
+ at the moment.  Checkpointing.
+
  Revision 1.91  2007/04/12 21:35:20  phase1geo
  More bug fixes to simulation core.  Checkpointing.
 

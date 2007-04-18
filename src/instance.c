@@ -149,34 +149,6 @@ funit_inst* instance_create( func_unit* funit, char* inst_name, vector_width* ra
 }
 
 /*!
- \param root         Pointer to current functional unit instance to traverse
- \param thread_head  Pointer to head of collected thread list
- \param thread_tail  Pointer to tail of collected thread list
-
- \return Returns the number of threads added to the given thread list.
-
- TBD
-*/
-unsigned instance_create_threads( funit_inst* root, thread** thread_head, thread** thread_tail ) {
-
-  funit_inst* child;  /* Pointer to current child instance */
-  unsigned    size;   /* Number of elements added to the thread_list */
-
-  /* Add the threads from the current functional unit */
-  size = funit_create_threads( root->funit, NULL, thread_head, thread_tail );
-
-  /* Now add the threads from all of the children */
-  child = root->child_head;
-  while( child != NULL ) {
-    size += instance_create_threads( child, thread_head, thread_tail );
-    child = child->next;
-  }
-
-  return( size );
-
-}
-
-/*!
  \param scope    String pointer to store generated scope (assumed to be allocated)
  \param leaf     Pointer to leaf instance in scope.
  \param flatten  Causes all unnamed scopes to be removed from generated scope if set to TRUE
@@ -1066,6 +1038,10 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.75  2007/04/11 22:29:48  phase1geo
+ Adding support for CLI to score command.  Still some work to go to get history
+ stuff right.  Otherwise, it seems to be working.
+
  Revision 1.74  2007/04/09 22:47:53  phase1geo
  Starting to modify the simulation engine for performance purposes.  Code is
  not complete and is untested at this point.

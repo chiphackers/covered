@@ -2660,8 +2660,7 @@ bool expression_op_func__bassign( expression* expr, thread* thr ) {
 */
 bool expression_op_func__func_call( expression* expr, thread* thr ) {
 
-  sim_add_thread( expr->elem.funit->first_stmt->thr );
-  sim_thread( expr->elem.funit->first_stmt->thr, thr->curr_time );
+  sim_thread( sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit ), thr->curr_time );
 
   return( TRUE );
 
@@ -2677,31 +2676,9 @@ bool expression_op_func__func_call( expression* expr, thread* thr ) {
 */
 bool expression_op_func__task_call( expression* expr, thread* thr ) {
 
-  bool retval = FALSE;  /* Return value for this function */
+  sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit );
 
-  sim_add_thread( expr->elem.funit->first_stmt->thr );
-
-#ifdef OBSOLETE
-  if( !expr->suppl.part.prev_called ) {
-
-    printf( "In expression_op_func__task_call, expr->elem.funit: %s\n", expr->elem.funit->name );
-
-    /* Add a new thread */
-    sim_add_thread( expr->elem.funit->first_stmt->thr );
-
-    expr->suppl.part.prev_called         = 1;
-    expr->value->value[0].part.exp.value = 0;
-
-  } else if( thr->active_chidren == 0 ) {
-
-    expr->suppl.part.prev_called         = 0;
-    expr->value->value[0].part.exp.value = 1;
-    retval = TRUE;
-
-  }
-#endif
-
-  return( retval );
+  return( FALSE );
 
 }
 
@@ -2715,31 +2692,16 @@ bool expression_op_func__task_call( expression* expr, thread* thr ) {
 */
 bool expression_op_func__nb_call( expression* expr, thread* thr ) {
 
-  bool retval = FALSE;  /* Return value for this function */
+  bool    retval = FALSE;  /* Return value for this function */
+  thread* tmp;             /* Pointer to temporary thread */
+
+  /* Add the thread to the active queue */
+  tmp = sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit );
 
   if( ESUPPL_IS_IN_FUNC( expr->suppl ) ) {
 
-    sim_add_thread( expr->elem.funit->first_stmt->thr );
-    sim_thread( expr->elem.funit->first_stmt->thr, thr->curr_time );
+    sim_thread( tmp, thr->curr_time );
     retval = TRUE;
-
-  } else {
-
-    sim_add_thread( expr->elem.funit->first_stmt->thr );
-
-#ifdef OBSOLETE
-    if( !expr->suppl.part.prev_called ) {
-      sim_add_thread( expr->elem.funit->first_stmt->thr, expr->elem.funit );
-      expr->suppl.part.prev_called         = 1;
-      expr->value->value[0].part.exp.value = 0;
-      expr->suppl.part.eval_t              = 0;
-      expr->suppl.part.eval_f              = 1;
-    } else if( thr->active_children == 0 ) {
-      expr->suppl.part.prev_called         = 0;
-      expr->value->value[0].part.exp.value = 1;
-      retval = TRUE;
-    }
-#endif
 
   }
 
@@ -2757,7 +2719,7 @@ bool expression_op_func__nb_call( expression* expr, thread* thr ) {
 */
 bool expression_op_func__fork( expression* expr, thread* thr ) {
 
-  sim_add_thread( expr->elem.funit->first_stmt->thr );
+  sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit );
 
   return( TRUE );
 
@@ -3943,6 +3905,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.242  2007/04/11 22:29:48  phase1geo
+ Adding support for CLI to score command.  Still some work to go to get history
+ stuff right.  Otherwise, it seems to be working.
+
  Revision 1.241  2007/04/11 03:15:20  phase1geo
  Attempting to fix delay expression for new simulation core.  Almost there.
 

@@ -148,83 +148,8 @@ statement* statement_create( expression* exp ) {
   stmt->next_true         = NULL;
   stmt->next_false        = NULL;
   stmt->conn_id           = 0;
-  stmt->thr               = NULL;
 
   return( stmt );
-
-}
-
-/*!
- \param stmt         Pointer to current statement to traverse
- \param funit        Pointer to current functional unit
- \param curr         Pointer to current thread
- \param parent       Pointer to parent thread of the thread being created
- \param thread_head  Pointer to head of thread list to create
- \param thread_tail  Pointer to tail of thread list to create
-
- \return Returns the number of threads created and added.
-
- TBD
-*/
-unsigned statement_create_threads( statement* stmt, func_unit* funit, thread* curr, thread* parent, thread** thread_head, thread** thread_tail ) {
-
-  unsigned size = 0;  /* Number of threads added to the thread from this call */
-
-  /* If the current statement exists and it hasn't had a thread assigned to it yet, continue */
-  if( (stmt != NULL) && (stmt->thr == NULL) ) {
-
-    /* Create a new thread if necessary */
-    if( curr == NULL ) {
-      assert( ESUPPL_IS_STMT_HEAD( stmt->exp->suppl ) == 1 );
-      curr              = sim_create_thread( parent, stmt, funit );
-      curr->active_next = NULL;
-      if( *thread_head == NULL ) {
-        *thread_head = *thread_tail = curr;
-      } else {
-        (*thread_tail)->active_next = curr;
-        (*thread_tail)              = curr;
-      }
-      size++;
-    }
-
-    assert( curr != NULL );
-
-    /* Assign the current thread of the statement */
-    stmt->thr = curr;
-
-    /* If the current statement calls a statement block, traverse that statement block */
-    if( (stmt->exp->op == EXP_OP_NB_CALL)   ||
-        (stmt->exp->op == EXP_OP_FORK)      ||
-        (stmt->exp->op == EXP_OP_FUNC_CALL) ||
-        (stmt->exp->op == EXP_OP_TASK_CALL) ) {
-
-      size += statement_create_threads( stmt->exp->elem.funit->first_stmt, stmt->exp->elem.funit, NULL, curr, thread_head, thread_tail );
-
-    }
-
-    /* If both true and false paths lead to same statement, just traverse the true path */
-    if( stmt->next_true == stmt->next_false ) {
-
-      if( ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0 ) {
-        size += statement_create_threads( stmt->next_true, funit, curr, parent, thread_head, thread_tail );
-      }
-
-    /* Otherwise, traverse both true and false paths */
-    } else {
-
-      if( ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0 ) {
-        size += statement_create_threads( stmt->next_true, funit, curr, parent, thread_head, thread_tail );
-      }
-
-      if( ESUPPL_IS_STMT_STOP_FALSE( stmt->exp->suppl ) == 0 ) {
-        size += statement_create_threads( stmt->next_false, funit, curr, parent, thread_head, thread_tail );
-      }
-
-    }
-
-  }
-
-  return( size );
 
 }
 
@@ -545,7 +470,18 @@ bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) {
 
       /* Add statement to functional unit statement list */
       if( (read_mode == READ_MODE_MERGE_NO_MERGE) || (read_mode == READ_MODE_MERGE_INST_MERGE) ) {
+
         stmt_link_add_tail( stmt, &(curr_funit->stmt_head), &(curr_funit->stmt_tail) );
+
+        /*
+         Possibly add statement to presimulation queue (if the current functional unit is a task
+         or function, do not add this to the presimulation queue (this will be added when the expression
+         is called.
+        */
+        if( ESUPPL_STMT_IS_CALLED( stmt->exp->suppl ) == 0 ) {
+          sim_add_thread( NULL, stmt, curr_funit );
+        }
+
       } else {
         stmt_link_add_head( stmt, &(curr_funit->stmt_head), &(curr_funit->stmt_tail) );
       }
@@ -982,6 +918,11 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.109  2007/04/12 20:54:55  phase1geo
+ Adding cli > output when replaying and adding back all of the functions (since
+ the cli > prompt helps give it context.  Fixing bugs in simulation core.
+ Checkpointing.
+
  Revision 1.108  2007/04/11 22:29:49  phase1geo
  Adding support for CLI to score command.  Still some work to go to get history
  stuff right.  Otherwise, it seems to be working.

@@ -1,8 +1,8 @@
 5 a 1 * 0
-8 /data/cf/uvlogic1/uvg/trevorw/projects/covered/diags/verilog -t main -vcd port3.vcd -o port3.cdd -v port3.v
+8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd port3.vcd -o port3.cdd -v port3.v
 3 0 $root $root NA 0 0 1
 3 0 main main port3.v 1 23 1
-2 1 5 8000c 2 3d 12100a 0 0 1 2 1102 $u0
+2 1 5 8000c 1 3d 121002 0 0 1 2 2 $u0
 1 a 3 830004 1 0 0 0 1 1 2
 4 1 0 0
 3 1 main.$u0 main.$u0 port3.v 0 7 1

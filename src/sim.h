@@ -33,6 +33,9 @@ void sim_display_active_queue();
 /*! \brief Displays the current state of the delay queue (for debug purposes only). */
 void sim_display_delay_queue();
 
+/*! \brief Displays the current state of the waiting queue (for debug purposes only). */
+void sim_display_wait_queue();
+
 /*! \brief Displays the state of all threads */
 void sim_display_all_list();
 
@@ -45,14 +48,8 @@ void sim_thread_insert_into_delay_queue( thread* thr, uint64 sim_time );
 /*! \brief Adds specified expression's statement to pre-simulation statement queue. */
 void sim_expr_changed( expression* expr, uint64 sim_time );
 
-/*! \brief Allocates and initializes a new thread */
-thread* sim_create_thread( thread* parent, statement* stmt, func_unit* funit );
-
-/*! \brief Called to configure a thread prior to simulation */
-void sim_configure_thread( thread* parent );
-
 /*! \brief Creates a thread for the given statement and adds it to the thread simulation queue. */
-void sim_add_thread( thread* thr );
+thread* sim_add_thread( thread* parent, statement* stmt, func_unit* funit );
 
 /*! \brief Deallocates thread and removes it from parent and thread queue lists */
 void sim_kill_thread( thread* thr );
@@ -78,6 +75,11 @@ void sim_dealloc();
 
 /*
  $Log$
+ Revision 1.27  2007/04/13 21:47:12  phase1geo
+ More simulation debugging.  Added 'display all_list' command to CLI to output
+ the list of all threads.  Updated regressions though we are not fully passing
+ at the moment.  Checkpointing.
+
  Revision 1.26  2007/04/12 20:54:55  phase1geo
  Adding cli > output when replaying and adding back all of the functions (since
  the cli > prompt helps give it context.  Fixing bugs in simulation core.

@@ -2,11 +2,11 @@
 8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd disable3.vcd -o disable3.cdd -v disable3.v
 3 0 $root $root NA 0 0 1
 3 0 main main disable3.v 9 37 1
-2 1 13 8000c 2 3d 12100a 0 0 1 2 1102 $u0
+2 1 13 8000c 1 3d 121002 0 0 1 2 2 $u0
 1 a 11 830004 1 0 0 0 1 1 102
 4 1 0 0
 3 1 main.$u0 main.$u0 disable3.v 0 26 1
-2 2 14 10004 2 3d 13100a 0 0 1 2 1102 $u1
+2 2 14 10004 1 3d 131002 0 0 1 2 2 $u1
 4 2 0 0
 3 1 main.$u0.$u1 main.$u0.$u1 disable3.v 0 25 1
 2 3 15 a000e 1 3e 131002 0 0 1 2 2 $u2
@@ -28,7 +28,7 @@
 4 10 13 0
 4 8 10 10
 3 1 main.$u0.$u1.$u2 main.$u0.$u1.$u2 disable3.v 15 15 1
-2 14 15 a000e 2 3d 13100a 0 0 1 2 1102 foo
+2 14 15 a000e 1 3d 131002 0 0 1 2 2 foo
 4 14 0 0
 3 1 main.$u0.$u1.bar main.$u0.$u1.bar disable3.v 20 24 1
 2 15 21 c000d 1 0 20008 0 0 32 64 44 0 0 0 0 0 0 0
@@ -41,6 +41,6 @@
 4 19 20 0
 4 16 19 0
 3 1 main.$u0.$u1.$u3 main.$u0.$u1.$u3 disable3.v 20 20 1
-2 21 20 a000e 2 3d 13100a 0 0 1 2 1102 bar
+2 21 20 a000e 1 3d 131002 0 0 1 2 2 bar
 4 21 0 0
 3 1 main.$u4 main.$u4 disable3.v 0 35 1
