@@ -380,7 +380,7 @@ $(NOSIMERRLIST):
 		echo Running $@ -- should see an error message; \
 		./convert_cfg $(CFG_CMD) $@.cfg; \
 		$(COVERED) $(COVERED_GFLAG) score -f $@.cfg 2> $@.err; \
-		rm -f $@.cfg; \
+		rm -f $@.cfg $@.cdd; \
 		cat $@.err; \
 		./check_test $@ 1 1; \
 	else \

@@ -28,13 +28,14 @@
 
 /*!
  \param funit  Pointer to functional unit to create a new reentrant structure for.
+ \param stmt   Pointer to current statement that is causing the context swith.
 
  \return Returns a pointer to the newly created reentrant structure.
 
  Allocates and initializes the reentrant structure for the given functional unit,
  compressing and packing the bits into the given data structure.
 */
-reentrant* reentrant_create( func_unit* funit ) {
+reentrant* reentrant_create( func_unit* funit, statement* stmt ) {
 
   reentrant* ren;       /* Pointer to newly created reentrant structure */
   sig_link*  sigl;      /* Pointer to current signal in the given functional unit */
@@ -75,12 +76,13 @@ reentrant* reentrant_create( func_unit* funit ) {
 /*!
  \param ren       Pointer to the reentrant structure to deallocate from memory.
  \param funit     Pointer to functional unit associated with this reentrant structure.
+ \param stmt      Pointer to statement associated with this reentrant structure.
  \param sim_time  Current timestep being simulated.
 
  Pops data back into the given functional unit and deallocates all memory associated
  with the given reentrant structure.
 */
-void reentrant_dealloc( reentrant* ren, func_unit* funit, uint64 sim_time ) {
+void reentrant_dealloc( reentrant* ren, func_unit* funit, statement* stmt, uint64 sim_time ) {
 
   sig_link* sigl;     /* Pointer to current signal link in list */
   int       i;        /* Loop iterator */
@@ -116,6 +118,11 @@ void reentrant_dealloc( reentrant* ren, func_unit* funit, uint64 sim_time ) {
 
 /*
  $Log$
+ Revision 1.3  2006/12/18 23:58:34  phase1geo
+ Fixes for automatic tasks.  Added atask1 diagnostic to regression suite to verify.
+ Other fixes to parser for blocks.  We need to add code to properly handle unnamed
+ scopes now before regressions will get to a passing state.  Checkpointing.
+
  Revision 1.2  2006/12/15 17:33:45  phase1geo
  Updating TODO list.  Fixing more problems associated with handling re-entrant
  tasks/functions.  Still not quite there yet for simulation, but we are getting

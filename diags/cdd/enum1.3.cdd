@@ -2,7 +2,7 @@
 8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd enum1.3.vcd -o enum1.3.cdd -v enum1.3.v
 3 0 $root $root NA 0 0 1
 3 0 main main enum1.3.v 1 23 1
-2 1 6 8000c 2 3d 12100a 0 0 1 2 1102 $u0
+2 1 6 8000c 1 3d 121002 0 0 1 2 2 $u0
 1 A 3 a0006 2 0 0 0 31 0 32 1 0 0 0 0 0 0 0 0
 1 B 3 a0009 2 0 0 0 31 0 32 1 1 0 0 0 0 0 0 0
 1 C 3 a000c 2 0 0 0 31 0 32 1 4 0 0 0 0 0 0 0

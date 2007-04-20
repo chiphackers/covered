@@ -2,7 +2,7 @@
 8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd do_while1.vcd -o do_while1.cdd -v do_while1.v
 3 0 $root $root NA 0 0 1
 3 0 main main do_while1.v 1 30 1
-2 1 6 8000c 1 3d 121002 0 0 1 2 102 $u0
+2 1 6 8000c 1 3d 121002 0 0 1 2 2 $u0
 1 a 3 83000b 1 0 31 0 32 1 37aa aa aa aa aa aa aa aa
 1 b 4 83000b 1 0 0 0 1 1 2
 4 1 0 0
@@ -13,7 +13,7 @@
 2 5 8 c000f 1 0 20004 0 0 1 4 0
 2 6 8 80008 0 1 400 0 0 b
 2 7 8 8000f 1 37 6 5 6
-2 8 10 a000e 9 3d 12000a 0 0 1 2 1102 $u1
+2 8 10 a000e 5 3d 120002 0 0 1 2 2 $u1
 2 9 17 130014 1 0 20008 0 0 32 64 44 0 0 0 0 0 0 0
 2 10 17 f000f 4 1 8 0 0 a
 2 11 17 f0014 4 d 20208 9 10 1 2 1002

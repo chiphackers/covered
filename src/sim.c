@@ -320,6 +320,12 @@ void sim_thread_pop_head() {
     active_head->queue_prev = NULL;   /* TBD - Placed here for help in debug */
   }
 
+  /* If the thread is running for an automatic function/task, push the data */
+  if( (thr->funit->type == FUNIT_ATASK) || (thr->funit->type == FUNIT_AFUNCTION) ) {
+    assert( thr->ren == NULL );
+    thr->ren = reentrant_create( thr->funit, thr->curr );
+  }
+
   /* Advance the curr pointer if we call sim_add_thread */
   if( (thr->curr->exp->op == EXP_OP_FORK)      ||
       (thr->curr->exp->op == EXP_OP_FUNC_CALL) ||
@@ -327,15 +333,9 @@ void sim_thread_pop_head() {
       (thr->curr->exp->op == EXP_OP_NB_CALL) ) {
     thr->curr = thr->curr->next_true;
     thr->suppl.part.state = THR_ST_NONE;
-  } else if( (thr->curr->exp->op != EXP_OP_DELAY) &&
-             (thr->curr->exp->op != EXP_OP_DLY_ASSIGN) ) {
-    thr->suppl.part.state = THR_ST_WAITING;
-  }
-
-  /* If the thread is running for an automatic function/task, push the data */
-  if( (thr->funit->type == FUNIT_ATASK) || (thr->funit->type == FUNIT_AFUNCTION) ) {
-    assert( thr->ren == NULL );
-    thr->ren = reentrant_create( thr->funit );
+  } else {
+    thr->suppl.part.state      = THR_ST_WAITING;
+    thr->suppl.part.exec_first = 1; 
   }
 
   /* If the current state is waiting, place this thread in the waiting queue */
@@ -975,7 +975,7 @@ void sim_thread( thread* thr, uint64 sim_time ) {
 
   /* If the thread has a reentrant structure assigned to it, pop it */
   if( thr->ren != NULL ) {
-    reentrant_dealloc( thr->ren, thr->funit, sim_time );
+    reentrant_dealloc( thr->ren, thr->funit, thr->curr, sim_time );
     thr->ren = NULL;
   }
 
@@ -1032,17 +1032,18 @@ void sim_thread( thread* thr, uint64 sim_time ) {
   /* Otherwise, we are switching contexts */
   } else {
 
-    /* Set exec_first to TRUE for next run */
-    thr->suppl.part.exec_first = 1;
-
 #ifdef DEBUG_MODE
     snprintf( user_msg, USER_MSG_LENGTH, "Switching context of thread %p...\n", thr );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
     /* Pop this packet out of the active queue */
-    if( ((thr->curr->exp->op != EXP_OP_DELAY) && (thr->curr->exp->op != EXP_OP_DLY_ASSIGN)) || final_sim_time ) {
+    if( ((thr->curr->exp->op != EXP_OP_DELAY) && 
+         ((thr->curr->exp->op != EXP_OP_DLY_ASSIGN) || (thr->curr->exp->right->left->op != EXP_OP_DELAY))) ||
+        final_sim_time ) {
       sim_thread_pop_head();
+    } else {
+      thr->suppl.part.exec_first = 1;
     }
 
   }
@@ -1157,6 +1158,9 @@ void sim_dealloc() {
 
 /*
  $Log$
+ Revision 1.93  2007/04/18 22:35:02  phase1geo
+ Revamping simulator core again.  Checkpointing.
+
  Revision 1.92  2007/04/13 21:47:12  phase1geo
  More simulation debugging.  Added 'display all_list' command to CLI to output
  the list of all threads.  Updated regressions though we are not fully passing
