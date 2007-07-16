@@ -56,6 +56,7 @@ extern bool         leading_hiers_differ;
 extern isuppl       info_suppl;
 extern bool         flag_suppress_empty_funits;
 
+
 /*!
  \param funit  Pointer to current functional unit to explore.
  \param total  Holds total number of lines parsed.
@@ -234,10 +235,32 @@ bool line_get_funit_summary( char* funit_name, int funit_type, int* total, int* 
 
 }
 
+bool line_display_instance_summary( FILE* ofile, char* name, int hits, float total ) {
+
+  float percent;
+  float miss;
+
+  if( total == 0 ) {
+    percent = 100.0;
+  } else {
+    percent = ((hits / total) * 100);
+  }
+
+  miss = (total - hits);
+
+  fprintf( ofile, "  %-43.43s    %5d/%5.0f/%5.0f      %3.0f%%\n",
+           name, hits, miss, total, percent );
+
+  return( miss > 0 );
+
+}
+
 /*!
  \param ofile        Pointer to file to output results to.
  \param root         Current node in instance tree.
  \param parent_inst  Name of parent instance.
+ \param hits         Pointer to accumulated hit information
+ \param total        Pointer to accumulated total information
 
  \return Returns TRUE if lines were found to be missed; otherwise, returns FALSE.
  
@@ -246,13 +269,12 @@ bool line_get_funit_summary( char* funit_name, int funit_type, int* total, int* 
  executed during the course of simulation.  The parent node will
  display its information before calling its children.
 */
-bool line_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst ) {
+bool line_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst, int* hits, float* total ) {
 
-  funit_inst* curr;           /* Pointer to current child functional unit instance of this node */
-  float       percent;        /* Percentage of lines hit */
-  float       miss = 0;       /* Number of lines missed */
-  char        tmpname[4096];  /* Temporary holder of instance name */
-  char*       pname;          /* Printable version of instance name */
+  funit_inst* curr;                /* Pointer to current child functional unit instance of this node */
+  char        tmpname[4096];       /* Temporary holder of instance name */
+  char*       pname;               /* Printable version of instance name */
+  bool        miss_found = FALSE;  /* Set to TRUE if a line was found to be missed */
 
   assert( root != NULL );
   assert( root->stat != NULL );
@@ -274,20 +296,11 @@ bool line_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst ) {
   if( root->stat->show && !funit_is_unnamed( root->funit ) &&
       ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
 
-    if( root->stat->line_total == 0 ) {
-      percent = 100.0;
-    } else {
-      percent = ((root->stat->line_hit / root->stat->line_total) * 100);
-    }
+    miss_found = line_display_instance_summary( ofile, tmpname, root->stat->line_hit, root->stat->line_total );
 
-    miss = (root->stat->line_total - root->stat->line_hit);
-
-    fprintf( ofile, "  %-43.43s    %5d/%5.0f/%5.0f      %3.0f%%\n",
-             tmpname,
-             root->stat->line_hit,
-             miss,
-             root->stat->line_total,
-             percent );
+    /* Update accumulated information */
+    *hits  += root->stat->line_hit;
+    *total += root->stat->line_total;
 
   }
 
@@ -295,19 +308,53 @@ bool line_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst ) {
 
     curr = root->child_head;
     while( curr != NULL ) {
-      miss = miss + line_instance_summary( ofile, curr, tmpname );
+      miss_found |= line_instance_summary( ofile, curr, tmpname, hits, total );
       curr = curr->next;
     }
 
   }
 
-  return( miss > 0 );
+  return( miss_found );
            
+}
+
+/*!
+ \param ofile  Pointer to file to output functional unit line summary information to
+ \param name   Name of functional unit being displayed
+ \param fname  Filename containing function unit being displayed
+ \param hits   Number of hits in this functional unit
+ \param total  Number of total lines in this functional unit
+
+ \return Returns TRUE if at least one line was found to be missed; otherwise, returns FALSE.
+
+ Calculates the percentage and miss information for the given hit and total coverage info and
+ outputs this information in human-readable format to the given output file.
+*/
+bool line_display_funit_summary( FILE* ofile, char* name, char* fname, int hits, float total ) {
+
+  float percent;  /* Percentage of lines hits */
+  float miss;     /* Number of lines missed */
+
+  if( total == 0 ) {
+    percent = 100.0;
+  } else {
+    percent = ((hits / total) * 100);
+  } 
+      
+  miss = (total - hits);
+
+  fprintf( ofile, "  %-20.20s    %-20.20s   %5d/%5.0f/%5.0f      %3.0f%%\n", 
+           name, fname, hits, miss, total, percent );
+
+  return (miss > 0);
+
 }
 
 /*!
  \param ofile  Pointer to file to output results to.
  \param head   Pointer to head of functional unit list to explore.
+ \param hits   Pointer to accumulated hit information.
+ \param total  Pointer to accumulated total information.
 
  \return Returns TRUE if there where lines that were found to be missed; otherwise,
          returns FALSE.
@@ -315,23 +362,13 @@ bool line_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst ) {
  Iterates through the functional unit list, displaying the line coverage results (summary
  format) for each functional unit.
 */
-bool line_funit_summary( FILE* ofile, funit_link* head ) {
+bool line_funit_summary( FILE* ofile, funit_link* head, int* hits, float* total ) {
 
   float percent;             /* Percentage of lines hit */
-  float miss;                /* Number of lines missed */
   bool  miss_found = FALSE;  /* Set to TRUE if line was found to be missed */
   char* pname;               /* Printable version of functional unit name */
 
   while( head != NULL ) {
-
-    if( head->funit->stat->line_total == 0 ) {
-      percent = 100.0;
-    } else {
-      percent = ((head->funit->stat->line_hit / head->funit->stat->line_total) * 100);
-    }
-
-    miss       = (head->funit->stat->line_total - head->funit->stat->line_hit);
-    miss_found = (miss > 0) ? TRUE : miss_found;
 
     /* If this is an assertion module, don't output any further */
     if( head->funit->stat->show && !funit_is_unnamed( head->funit ) &&
@@ -340,13 +377,11 @@ bool line_funit_summary( FILE* ofile, funit_link* head ) {
       /* Get printable version of functional unit name */
       pname = scope_gen_printable( funit_flatten_name( head->funit ) );
 
-      fprintf( ofile, "  %-20.20s    %-20.20s   %5d/%5.0f/%5.0f      %3.0f%%\n", 
-               pname,
-               get_basename( obf_file( head->funit->filename ) ),
-               head->funit->stat->line_hit,
-               miss,
-               head->funit->stat->line_total,
-               percent );
+      miss_found |= line_display_funit_summary( ofile, pname, get_basename( obf_file( head->funit->filename ) ), head->funit->stat->line_hit, head->funit->stat->line_total );
+
+      /* Update accumulated information */
+      *hits  += head->funit->stat->line_hit;
+      *total += head->funit->stat->line_total;
 
       free_safe( pname );
 
@@ -550,6 +585,8 @@ void line_report( FILE* ofile, bool verbose ) {
   bool       missed_found = FALSE;  /* If set to TRUE, lines were found to be missed */
   char       tmp[4096];             /* Temporary string value */
   inst_link* instl;                 /* Pointer to current instance link */
+  int        acc_hits     = 0;      /* Accumulated line hits for entire design */
+  float      acc_total    = 0;      /* Accumulated line total for entire design */
 
   fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
   fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   LINE COVERAGE RESULTS   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
@@ -569,9 +606,11 @@ void line_report( FILE* ofile, bool verbose ) {
 
     instl = inst_head;
     while( instl != NULL ) {
-      missed_found |= line_instance_summary( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*") );
+      missed_found |= line_instance_summary( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*"), &acc_hits, &acc_total );
       instl = instl->next;
     }
+    fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
+    line_display_instance_summary( ofile, "Accumulated", acc_hits, acc_total );
     
     if( verbose && (missed_found || report_covered) ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
@@ -587,7 +626,9 @@ void line_report( FILE* ofile, bool verbose ) {
     fprintf( ofile, "Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
-    missed_found = line_funit_summary( ofile, funit_head );
+    missed_found = line_funit_summary( ofile, funit_head, &acc_hits, &acc_total );
+    fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
+    line_display_funit_summary( ofile, "Accumulated", "", acc_hits, acc_total );
 
     if( verbose && (missed_found || report_covered) ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
@@ -602,6 +643,10 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.73  2007/04/03 18:55:57  phase1geo
+ Fixing more bugs in reporting mechanisms for unnamed scopes.  Checking in more
+ regression updates per these changes.  Checkpointing.
+
  Revision 1.72  2007/04/03 04:15:17  phase1geo
  Fixing bugs in func_iter functionality.  Modified functional unit name
  flattening function (though this does not appear to be working correctly

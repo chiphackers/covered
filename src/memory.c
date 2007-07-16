@@ -537,85 +537,32 @@ bool memory_collect( char* funit_name, int funit_type, int cov, sig_link** head,
 
 }
 
-/*!
- \param ofile        File to output coverage information to.
- \param root         Instance node in the functional unit instance tree being evaluated.
- \param parent_inst  Name of parent instance.
+bool memory_display_toggle_instance_summary( FILE* ofile, char* name, int hits01, int hits10, float total ) {
 
- \return Returns TRUE if any bits were found to be not toggled; otherwise, returns FALSE.
+  float percent01;    /* Percentage of bits toggling from 0 -> 1 */
+  float percent10;    /* Percentage of bits toggling from 1 -> 0 */
+  float miss01  = 0;  /* Number of bits that did not toggle from 0 -> 1 */
+  float miss10  = 0;  /* Number of bits that did not toggle from 1 -> 0 */
 
- Displays the memory instance summarization to the specified file.  Recursively
- iterates through functional unit instance tree, outputting the toggle information that
- is found at that instance.
-*/
-bool memory_toggle_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst ) { 
-
-  funit_inst* curr;           /* Pointer to current child functional unit instance of this node */
-  float       percent01;      /* Percentage of bits toggling from 0 -> 1 */
-  float       percent10;      /* Percentage of bits toggling from 1 -> 0 */
-  float       miss01  = 0;    /* Number of bits that did not toggle from 0 -> 1 */
-  float       miss10  = 0;    /* Number of bits that did not toggle from 1 -> 0 */
-  char        tmpname[4096];  /* Temporary name holder for instance */
-  char*       pname;          /* Printable version of instance name */
-
-  assert( root != NULL );
-  assert( root->stat != NULL );
-
-  /* Get printable version of this instance */
-  pname = scope_gen_printable( root->name );
-  if( db_is_unnamed_scope( pname ) ) {
-    strcpy( tmpname, parent_inst );
-  } else if( strcmp( parent_inst, "*" ) == 0 ) {
-    strcpy( tmpname, pname );
+  /* Calculate for toggle01 information */
+  if( total == 0 ) {
+    percent01 = 100;
   } else {
-    snprintf( tmpname, 4096, "%s.%s", parent_inst, pname );
+    percent01 = ((hits01 / total) * 100);
   }
+  miss01 = (total - hits01);
 
-  free_safe( pname );
-
-  if( root->stat->show && !funit_is_unnamed( root->funit ) &&
-      ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
-
-    /* Calculate for toggle01 information */
-    if( root->stat->mem_tog_total == 0 ) {
-      percent01 = 100;
-    } else {
-      percent01 = ((root->stat->mem_tog01_hit / root->stat->mem_tog_total) * 100);
-    }
-    miss01 = (root->stat->mem_tog_total - root->stat->mem_tog01_hit);
-
-    /* Calculate for toggle10 information */
-    if( root->stat->mem_tog_total == 0 ) {
-      percent10 = 100;
-    } else {
-      percent10 = ((root->stat->mem_tog10_hit / root->stat->mem_tog_total) * 100);
-    }
-    miss10 = (root->stat->mem_tog_total - root->stat->mem_tog10_hit);
-
-    /* Output toggle information */
-    fprintf( ofile, "  %-43.43s    %5d/%5.0f/%5.0f      %3.0f%%         %5d/%5.0f/%5.0f      %3.0f%%\n",
-             tmpname,
-             root->stat->mem_tog01_hit,
-             miss01,
-             root->stat->mem_tog_total,
-             percent01,
-             root->stat->mem_tog10_hit,
-             miss10,
-             root->stat->mem_tog_total,
-             percent10 ); 
-
-  } 
-
-  /* If this is an assertion module, don't output any further */
-  if( (info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit ) ) {
-
-    curr = root->child_head;
-    while( curr != NULL ) {
-      miss01 = miss01 + memory_toggle_instance_summary( ofile, curr, tmpname );
-      curr = curr->next;
-    }
-
+  /* Calculate for toggle10 information */
+  if( total == 0 ) {
+    percent10 = 100;
+  } else {
+    percent10 = ((hits10 / total) * 100);
   }
+  miss10 = (total - hits10);
+
+  /* Output toggle information */
+  fprintf( ofile, "  %-43.43s    %5d/%5.0f/%5.0f      %3.0f%%         %5d/%5.0f/%5.0f      %3.0f%%\n",
+           name, hits01, miss01, total, percent01, hits10, miss10, total, percent10 );
 
   return( (miss01 > 0) || (miss10 > 0) );
 
@@ -625,6 +572,9 @@ bool memory_toggle_instance_summary( FILE* ofile, funit_inst* root, char* parent
  \param ofile        File to output coverage information to.
  \param root         Instance node in the functional unit instance tree being evaluated.
  \param parent_inst  Name of parent instance.
+ \param hits01       Pointer to accumulated toggle 0 -> 1 hit count
+ \param hits10       Pointer to accumulated toggle 1 -> 0 hit count
+ \param total        Pointer to total number of memory bits
 
  \return Returns TRUE if any bits were found to be not toggled; otherwise, returns FALSE.
 
@@ -632,15 +582,12 @@ bool memory_toggle_instance_summary( FILE* ofile, funit_inst* root, char* parent
  iterates through functional unit instance tree, outputting the toggle information that
  is found at that instance.
 */
-bool memory_ae_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst ) { 
+bool memory_toggle_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst, int* hits01, int* hits10, float* total ) { 
 
-  funit_inst* curr;           /* Pointer to current child functional unit instance of this node */
-  float       percent_wr;     /* Percentage of addressable elements written */
-  float       percent_rd;     /* Percentage of addressable elements read */
-  float       miss_wr = 0;    /* Number of addressable elements that were not written */
-  float       miss_rd = 0;    /* Number of addressable elements that were not read */
-  char        tmpname[4096];  /* Temporary name holder for instance */
-  char*       pname;          /* Printable version of instance name */
+  funit_inst* curr;                /* Pointer to current child functional unit instance of this node */
+  char        tmpname[4096];       /* Temporary name holder for instance */
+  char*       pname;               /* Printable version of instance name */
+  bool        miss_found = FALSE;  /* Set to TRUE if at least one bit is found to not be toggled */
 
   assert( root != NULL );
   assert( root->stat != NULL );
@@ -660,33 +607,12 @@ bool memory_ae_instance_summary( FILE* ofile, funit_inst* root, char* parent_ins
   if( root->stat->show && !funit_is_unnamed( root->funit ) &&
       ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
 
-    /* Calculate for addressable element write information */
-    if( root->stat->mem_ae_total == 0 ) {
-      percent_wr = 100;
-    } else {
-      percent_wr = ((root->stat->mem_wr_hit / root->stat->mem_ae_total) * 100);
-    }
-    miss_wr = (root->stat->mem_ae_total - root->stat->mem_wr_hit);
+    miss_found |= memory_display_toggle_instance_summary( ofile, tmpname, root->stat->mem_tog01_hit, root->stat->mem_tog10_hit, root->stat->mem_tog_total );
 
-    /* Calculate for addressable element read information */
-    if( root->stat->mem_ae_total == 0 ) {
-      percent_rd = 100;
-    } else {
-      percent_rd = ((root->stat->mem_rd_hit / root->stat->mem_ae_total) * 100);
-    }
-    miss_rd = (root->stat->mem_ae_total - root->stat->mem_rd_hit);
-
-    /* Output toggle information */
-    fprintf( ofile, "  %-43.43s    %5d/%5.0f/%5.0f      %3.0f%%         %5d/%5.0f/%5.0f      %3.0f%%\n",
-             tmpname,
-             root->stat->mem_wr_hit,
-             miss_wr,
-             root->stat->mem_ae_total,
-             percent_wr,
-             root->stat->mem_rd_hit,
-             miss_rd,
-             root->stat->mem_ae_total,
-             percent_rd ); 
+    /* Update accumulated coverage information */
+    *hits01 += root->stat->mem_tog01_hit;
+    *hits10 += root->stat->mem_tog10_hit;
+    *total  += root->stat->mem_tog_total;
 
   } 
 
@@ -695,13 +621,119 @@ bool memory_ae_instance_summary( FILE* ofile, funit_inst* root, char* parent_ins
 
     curr = root->child_head;
     while( curr != NULL ) {
-      miss_wr = miss_wr + memory_ae_instance_summary( ofile, curr, tmpname );
+      miss_found |= memory_toggle_instance_summary( ofile, curr, tmpname, hits01, hits10, total );
       curr = curr->next;
     }
 
   }
 
-  return( (miss_wr > 0) || (miss_rd > 0) );
+  return( miss_found );
+
+}
+
+/*!
+ \param ofile   Pointer to file to output coverage summary information to
+ \param name    Name of instance being displayed
+ \param wr_hit  Number of addressable elements that were written
+ \param rd_hit  Number of addressable elements that were read
+ \param total   Number of all addressable elements
+
+ \return Returns TRUE if at least one miss was found; otherwise, returns FALSE.
+
+ Calculates the miss and hit percentage statistics for the given instance and outputs this information
+ to the given output file.
+*/
+bool memory_display_ae_instance_summary( FILE* ofile, char* name, int wr_hit, int rd_hit, float total ) {
+
+  float wr_percent;  /* Percentage of addressable elements written */
+  float rd_percent;  /* Percentage of addressable elements read */
+  float wr_miss;     /* Number of addressable elements that were not written */
+  float rd_miss;     /* Number of addressable elements that were not read */
+
+  /* Calculate for addressable element write information */
+  if( total == 0 ) {
+    wr_percent = 100;
+  } else {
+    wr_percent = ((wr_hit / total) * 100);
+  }
+  wr_miss = (total - wr_hit);
+
+  /* Calculate for addressable element read information */
+  if( total == 0 ) {
+    rd_percent = 100;
+  } else {
+    rd_percent = ((rd_hit / total) * 100);
+  }
+  rd_miss = (total - rd_hit);
+
+  /* Output toggle information */
+  fprintf( ofile, "  %-43.43s    %5d/%5.0f/%5.0f      %3.0f%%         %5d/%5.0f/%5.0f      %3.0f%%\n",
+           name, wr_hit, wr_miss, total, wr_percent, rd_hit, rd_miss, total, rd_percent );
+
+  return( (wr_miss > 0) || (rd_miss > 0) );
+
+}
+
+/*!
+ \param ofile        File to output coverage information to.
+ \param root         Instance node in the functional unit instance tree being evaluated.
+ \param parent_inst  Name of parent instance.
+ \param wr_hits      Pointer to accumulated number of addressable elements written
+ \param rd_hits      Pointer to accumulated number of addressable elements read
+ \param total        Pointer to the total number of addressable elements
+
+ \return Returns TRUE if any bits were found to be not toggled; otherwise, returns FALSE.
+
+ Displays the memory instance summarization to the specified file.  Recursively
+ iterates through functional unit instance tree, outputting the toggle information that
+ is found at that instance.
+*/
+bool memory_ae_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst, int* wr_hits, int* rd_hits, float* total ) { 
+
+  funit_inst* curr;                /* Pointer to current child functional unit instance of this node */
+  char        tmpname[4096];       /* Temporary name holder for instance */
+  char*       pname;               /* Printable version of instance name */
+  bool        miss_found = FALSE;  /* Set to true if a coverage type was missed */
+
+  assert( root != NULL );
+  assert( root->stat != NULL );
+
+  /* Get printable version of this instance */
+  pname = scope_gen_printable( root->name );
+  if( db_is_unnamed_scope( pname ) ) {
+    strcpy( tmpname, parent_inst );
+  } else if( strcmp( parent_inst, "*" ) == 0 ) {
+    strcpy( tmpname, pname );
+  } else {
+    snprintf( tmpname, 4096, "%s.%s", parent_inst, pname );
+  }
+
+  free_safe( pname );
+
+  if( root->stat->show && !funit_is_unnamed( root->funit ) &&
+      ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
+
+    miss_found |= memory_display_ae_instance_summary( ofile, tmpname, root->stat->mem_wr_hit, root->stat->mem_rd_hit, root->stat->mem_ae_total );
+
+    /* Update accumulated stats */
+    *wr_hits += root->stat->mem_wr_hit;
+    *rd_hits += root->stat->mem_rd_hit;
+    *total   += root->stat->mem_ae_total;
+
+  } 
+
+  /* If this is an assertion module, don't output any further */
+  if( (info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit ) ) {
+
+    curr = root->child_head;
+    while( curr != NULL ) {
+      miss_found |= memory_ae_instance_summary( ofile, curr, tmpname, wr_hits, rd_hits, total );
+      curr = curr->next;
+    }
+
+  }
+
+  return( miss_found );
 
 }
 
@@ -1126,9 +1158,15 @@ void memory_funit_verbose( FILE* ofile, funit_link* head ) {
 */
 void memory_report( FILE* ofile, bool verbose ) {
 
-  bool       missed_found = FALSE;  /* If set to TRUE, indicates that untoggled bits were found */
-  char       tmp[4096];             /* Temporary string value */
-  inst_link* instl;                 /* Pointer to current instance link */
+  bool       missed_found  = FALSE;  /* If set to TRUE, indicates that untoggled bits were found */
+  char       tmp[4096];              /* Temporary string value */
+  inst_link* instl;                  /* Pointer to current instance link */
+  int        acc_hits01    = 0;      /* Accumulated hits 0 -> 1 count */
+  int        acc_hits10    = 0;      /* Accumulated hits 1 -> 0 count */
+  float      acc_tog_total = 0;      /* Accumulated bit toggle count */
+  int        acc_wr_hits   = 0;      /* Accumulated number of addressable elements written */
+  int        acc_rd_hits   = 0;      /* Accumulated number of addressable elements read */
+  float      acc_ae_total  = 0;      /* Accumulated number of addressable elements */
 
   fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
   fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   MEMORY COVERAGE RESULTS   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
@@ -1149,9 +1187,11 @@ void memory_report( FILE* ofile, bool verbose ) {
 
     instl = inst_head;
     while( instl != NULL ) {
-      missed_found |= memory_toggle_instance_summary( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*") );
+      missed_found |= memory_toggle_instance_summary( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*"), &acc_hits01, &acc_hits10, &acc_tog_total );
       instl = instl->next;
     }
+    fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
+    memory_display_toggle_instance_summary( ofile, "Accumulated", acc_hits01, acc_hits10, acc_tog_total );
 
     fprintf( ofile, "\n" );
     fprintf( ofile, "                                                    Addressable elements written         Addressable elements read\n" );
@@ -1160,9 +1200,11 @@ void memory_report( FILE* ofile, bool verbose ) {
 
     instl = inst_head;
     while( instl != NULL ) {
-      missed_found |= memory_ae_instance_summary( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*") );
+      missed_found |= memory_ae_instance_summary( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*"), &acc_wr_hits, &acc_rd_hits, &acc_ae_total );
       instl = instl->next;
     }
+    fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
+    memory_display_ae_instance_summary( ofile, "Accumulated", acc_wr_hits, acc_rd_hits, acc_ae_total );
 
     if( verbose && missed_found ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
@@ -1202,6 +1244,10 @@ void memory_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.11  2007/04/03 18:55:57  phase1geo
+ Fixing more bugs in reporting mechanisms for unnamed scopes.  Checking in more
+ regression updates per these changes.  Checkpointing.
+
  Revision 1.10  2007/04/03 04:15:17  phase1geo
  Fixing bugs in func_iter functionality.  Modified functional unit name
  flattening function (though this does not appear to be working correctly

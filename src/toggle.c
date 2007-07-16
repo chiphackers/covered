@@ -274,6 +274,48 @@ bool toggle_get_funit_summary( char* funit_name, int funit_type, int* total, int
 }
 
 /*!
+ \param ofile   Pointer to file to output summary information to
+ \param name    Name of instance to output
+ \param hits01  Number of bits that toggled from 0 -> 1
+ \param hits10  Number of bits that toggled from 1 -> 0
+ \param total   Total number of bits in given instance
+
+ \return Returns TRUE if at least one bit was found to not be toggled; otherwise, returns FALSE.
+
+ Displays the toggle instance summary information to the given output file, calculating the miss and
+ percentage information.
+*/
+bool toggle_display_instance_summary( FILE* ofile, char* name, int hits01, int hits10, float total ) {
+
+  float percent01;  /* Percentage of bits toggled from 0 -> 1 */
+  float percent10;  /* Percentage of bits toggled from 1 -> 0 */
+  float miss01;     /* Number of bits not toggled from 0 -> 1 */
+  float miss10;     /* Number of bits not toggled from 1 -> 0 */
+
+  /* Calculate for toggle01 information */
+  if( total == 0 ) {
+    percent01 = 100;
+  } else {
+    percent01 = ((hits01 / total) * 100);
+  }
+  miss01 = (total - hits01);
+
+  /* Calculate for toggle10 information */
+  if( total == 0 ) {
+    percent10 = 100;
+  } else {
+    percent10 = ((hits10 / total) * 100);
+  }
+  miss10 = (total - hits10);
+
+  fprintf( ofile, "  %-43.43s    %5d/%5.0f/%5.0f      %3.0f%%         %5d/%5.0f/%5.0f      %3.0f%%\n",
+           name, hits01, miss01, total, percent01, hits10, miss10, total, percent10 );
+
+  return( (miss01 > 0) || (miss10 > 0) );
+
+}
+
+/*!
  \param ofile        File to output coverage information to.
  \param root         Instance node in the functional unit instance tree being evaluated.
  \param parent_inst  Name of parent instance.
@@ -284,15 +326,12 @@ bool toggle_get_funit_summary( char* funit_name, int funit_type, int* total, int
  iterates through functional unit instance tree, outputting the toggle information that
  is found at that instance.
 */
-bool toggle_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst ) {
+bool toggle_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst, int* hits01, int* hits10, float* total ) {
 
-  funit_inst* curr;           /* Pointer to current child functional unit instance of this node */
-  float       percent01;      /* Percentage of bits toggling from 0 -> 1 */
-  float       percent10;      /* Percentage of bits toggling from 1 -> 0 */
-  float       miss01 = 0;     /* Number of bits that did not toggle from 0 -> 1 */
-  float       miss10 = 0;     /* Number of bits that did not toggle from 1 -> 0 */
-  char        tmpname[4096];  /* Temporary name holder for instance */
-  char*       pname;          /* Printable version of instance name */
+  funit_inst* curr;                /* Pointer to current child functional unit instance of this node */
+  char        tmpname[4096];       /* Temporary name holder for instance */
+  char*       pname;               /* Printable version of instance name */
+  bool        miss_found = FALSE;  /* Specifies if at least one bit was not fully toggled */
 
   assert( root != NULL );
   assert( root->stat != NULL );
@@ -313,32 +352,12 @@ bool toggle_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst )
   if( root->stat->show && !funit_is_unnamed( root->funit ) &&
       ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
 
-    /* Calculate for toggle01 information */
-    if( root->stat->tog_total == 0 ) {
-      percent01 = 100;
-    } else {
-      percent01 = ((root->stat->tog01_hit / root->stat->tog_total) * 100);
-    }
-    miss01    = (root->stat->tog_total - root->stat->tog01_hit);
+    miss_found |= toggle_display_instance_summary( ofile, tmpname, root->stat->tog01_hit, root->stat->tog10_hit, root->stat->tog_total );
 
-    /* Calculate for toggle10 information */
-    if( root->stat->tog_total == 0 ) {
-      percent10 = 100;
-    } else {
-      percent10 = ((root->stat->tog10_hit / root->stat->tog_total) * 100);
-    }
-    miss10    = (root->stat->tog_total - root->stat->tog10_hit);
-
-    fprintf( ofile, "  %-43.43s    %5d/%5.0f/%5.0f      %3.0f%%         %5d/%5.0f/%5.0f      %3.0f%%\n",
-             tmpname,
-             root->stat->tog01_hit,
-             miss01,
-             root->stat->tog_total,
-             percent01,
-             root->stat->tog10_hit,
-             miss10,
-             root->stat->tog_total,
-             percent10 );
+    /* Update accumulated information */
+    *hits01 += root->stat->tog01_hit;
+    *hits10 += root->stat->tog10_hit;
+    *total  += root->stat->tog_total;
 
   }
 
@@ -347,53 +366,77 @@ bool toggle_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst )
 
     curr = root->child_head;
     while( curr != NULL ) {
-      miss01 = miss01 + toggle_instance_summary( ofile, curr, tmpname );
+      miss_found |= toggle_instance_summary( ofile, curr, tmpname, hits01, hits10, total );
       curr = curr->next;
     }
 
   }
+
+  return( miss_found );
+
+}
+
+/*!
+ \param ofile   Pointer to file to output summary information to
+ \param name    Name of instance to output
+ \param fname   Name of file containing instance to output
+ \param hits01  Number of bits that toggled from 0 -> 1
+ \param hits10  Number of bits that toggled from 1 -> 0
+ \param total   Total number of bits in given instance
+  
+ \return Returns TRUE if at least one bit was found to not be toggled; otherwise, returns FALSE.
+  
+ Displays the toggle functional unit summary information to the given output file, calculating the miss and
+ percentage information.
+*/
+bool toggle_display_funit_summary( FILE* ofile, char* name, char* fname, int hits01, int hits10, float total ) {
+
+  float percent01;  /* Percentage of bits that toggled from 0 to 1 */
+  float percent10;  /* Percentage of bits that toggled from 1 to 0 */
+  float miss01;     /* Number of bits that did not toggle from 0 to 1 */
+  float miss10;     /* Number of bits that did not toggle from 1 to 0 */
+
+  /* Calculate for toggle01 */
+  if( total == 0 ) {
+    percent01 = 100;
+  } else {
+    percent01 = ((hits01 / total) * 100);
+  }
+  miss01 = (total - hits01);
+  
+  /* Calculate for toggle10 */
+  if( total == 0 ) {
+    percent10 = 100;
+  } else {
+    percent10 = ((hits10 / total) * 100);
+  }
+  miss10 = (total - hits10);
+
+  fprintf( ofile, "  %-20.20s    %-20.20s   %5d/%5.0f/%5.0f      %3.0f%%         %5d/%5.0f/%5.0f      %3.0f%%\n",
+           name, fname, hits01, miss01, total, percent01, hits10, miss10, total, percent10 );
 
   return( (miss01 > 0) || (miss10 > 0) );
 
 }
 
 /*!
- \param ofile  Pointer to file to display coverage results to.
- \param head   Pointer to head of functional unit list to parse.
+ \param ofile   Pointer to file to display coverage results to.
+ \param head    Pointer to head of functional unit list to parse.
+ \param hits01  Pointer to accumulated hit count for toggles 0 -> 1.
+ \param hits10  Pointer to accumulated hit count for toggles 1 -> 0.
+ \param total   Pointer to accumulated total of bits.
 
  \return Returns TRUE if any bits were found to be untoggled; otherwise, returns FALSE.
 
  Iterates through the functional unit list displaying the toggle coverage for
  each functional unit.
 */
-bool toggle_funit_summary( FILE* ofile, funit_link* head ) {
+bool toggle_funit_summary( FILE* ofile, funit_link* head, int* hits01, int* hits10, float* total ) {
 
-  float percent01;           /* Percentage of bits that toggled from 0 to 1 */
-  float percent10;           /* Percentage of bits that toggled from 1 to 0 */
-  float miss01;              /* Number of bits that did not toggle from 0 to 1 */
-  float miss10;              /* Number of bits that did not toggle from 1 to 0 */
-  float miss_found = FALSE;  /* Set to TRUE if missing toggles were found */
+  bool  miss_found = FALSE;  /* Set to TRUE if missing toggles were found */
   char* pname;               /* Printable version of the functional unit name */
 
   while( head != NULL ) {
-
-    /* Calculate for toggle01 */
-    if( head->funit->stat->tog_total == 0 ) {
-      percent01 = 100;
-    } else {
-      percent01 = ((head->funit->stat->tog01_hit / head->funit->stat->tog_total) * 100);
-    }
-    miss01 = (head->funit->stat->tog_total - head->funit->stat->tog01_hit);
-
-    /* Calculate for toggle10 */
-    if( head->funit->stat->tog_total == 0 ) {
-      percent10 = 100;
-    } else {
-      percent10 = ((head->funit->stat->tog10_hit / head->funit->stat->tog_total) * 100);
-    }
-    miss10 = (head->funit->stat->tog_total - head->funit->stat->tog10_hit);
-
-    miss_found = ((miss01 > 0) || (miss10 > 0)) ? TRUE : miss_found;
 
     /* If this is an assertion module, don't output any further */
     if( head->funit->stat->show && !funit_is_unnamed( head->funit ) &&
@@ -402,19 +445,15 @@ bool toggle_funit_summary( FILE* ofile, funit_link* head ) {
       /* Get printable version of functional unit name */
       pname = scope_gen_printable( funit_flatten_name( head->funit ) );
 
-      fprintf( ofile, "  %-20.20s    %-20.20s   %5d/%5.0f/%5.0f      %3.0f%%         %5d/%5.0f/%5.0f      %3.0f%%\n", 
-               pname,
-               get_basename( obf_file( head->funit->filename ) ),
-               head->funit->stat->tog01_hit,
-               miss01,
-               head->funit->stat->tog_total,
-               percent01,
-               head->funit->stat->tog10_hit,
-               miss10,
-               head->funit->stat->tog_total,
-               percent10 );
+      miss_found |= toggle_display_funit_summary( ofile, pname, get_basename( obf_file( head->funit->filename ) ),
+                                                  head->funit->stat->tog01_hit, head->funit->stat->tog10_hit, head->funit->stat->tog_total );
 
       free_safe( pname );
+
+      /* Update accumulated information */
+      *hits01 += head->funit->stat->tog01_hit;
+      *hits10 += head->funit->stat->tog10_hit;
+      *total  += head->funit->stat->tog_total;
 
     }
 
@@ -609,6 +648,9 @@ void toggle_report( FILE* ofile, bool verbose ) {
   bool       missed_found = FALSE;  /* If set to TRUE, indicates that untoggled bits were found */
   char       tmp[4096];             /* Temporary string value */
   inst_link* instl;                 /* Pointer to current instance link */
+  int        acc_hits01   = 0;      /* Accumulated 0 -> 1 toggle hit count */
+  int        acc_hits10   = 0;      /* Accumulated 1 -> 0 toggle hit count */
+  float      acc_total    = 0;      /* Accumulated bit count */
 
   fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
   fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   TOGGLE COVERAGE RESULTS   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
@@ -629,9 +671,11 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
     instl = inst_head;
     while( instl != NULL ) {
-      missed_found |= toggle_instance_summary( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*") );
+      missed_found |= toggle_instance_summary( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*"), &acc_hits01, &acc_hits10, &acc_total );
       instl = instl->next;
     }
+    fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
+    toggle_display_instance_summary( ofile, "Accumulated", acc_hits01, acc_hits10, acc_total );
     
     if( verbose && missed_found ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
@@ -648,7 +692,9 @@ void toggle_report( FILE* ofile, bool verbose ) {
     fprintf( ofile, "Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
-    missed_found = toggle_funit_summary( ofile, funit_head );
+    missed_found = toggle_funit_summary( ofile, funit_head, &acc_hits01, &acc_hits10, &acc_total );
+    fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
+    toggle_display_funit_summary( ofile, "Accumulated", "", acc_hits01, acc_hits10, acc_total );
 
     if( verbose && missed_found ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
@@ -663,6 +709,10 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.56  2007/04/03 18:55:57  phase1geo
+ Fixing more bugs in reporting mechanisms for unnamed scopes.  Checking in more
+ regression updates per these changes.  Checkpointing.
+
  Revision 1.55  2007/04/03 04:15:17  phase1geo
  Fixing bugs in func_iter functionality.  Modified functional unit name
  flattening function (though this does not appear to be working correctly
