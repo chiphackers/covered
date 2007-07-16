@@ -22,6 +22,8 @@ Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hi
   main.foo                nested_block2.v            0/    0/    0      100%
   main.foo.foo_block      nested_block2.v            2/    0/    2      100%
   main.bar                nested_block2.v            1/    0/    1      100%
+---------------------------------------------------------------------------------------------------------------------
+  Accumulated                                        4/    0/    4      100%
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -35,6 +37,8 @@ Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hi
   main.foo                nested_block2.v            0/    2/    2        0%             0/    2/    2        0%
   main.foo.foo_block      nested_block2.v            0/    1/    1        0%             0/    1/    1        0%
   main.bar                nested_block2.v            0/    2/    2        0%             0/    2/    2        0%
+---------------------------------------------------------------------------------------------------------------------
+  Accumulated                                        0/    7/    7        0%             0/    7/    7        0%
 ---------------------------------------------------------------------------------------------------------------------
 
     Module: main, File: nested_block2.v
@@ -91,6 +95,8 @@ Module/Task/Function                Filename                          Hit/Miss/T
   main.foo                          nested_block2.v                     0/   0/   0      100%
   main.foo.foo_block                nested_block2.v                     1/   1/   2       50%
   main.bar                          nested_block2.v                     1/   1/   2       50%
+---------------------------------------------------------------------------------------------------------------------
+  Accumulated                                                           3/   3/   6       50%
 ---------------------------------------------------------------------------------------------------------------------
 
     Module: main, File: nested_block2.v
@@ -156,5 +162,7 @@ Module/Task/Function      Filename                Hit/Miss/Total    Percent Hit 
   main.foo                nested_block2.v           0/   0/   0      100%            0/   0/   0      100%
   main.foo.foo_block      nested_block2.v           0/   0/   0      100%            0/   0/   0      100%
   main.bar                nested_block2.v           0/   0/   0      100%            0/   0/   0      100%
+---------------------------------------------------------------------------------------------------------------------
+  Accumulated                                       0/   0/   0      100%            0/   0/   0      100%
 
 

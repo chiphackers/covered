@@ -22,6 +22,8 @@ Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hi
   foo_module              foo_module.v               1/    0/    1      100%
   foo_module.foo_named    foo_module.v               1/    0/    1      100%
   foo_module.foo_task     foo_module.v               2/    0/    2      100%
+---------------------------------------------------------------------------------------------------------------------
+  Accumulated                                        4/    0/    4      100%
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -35,6 +37,8 @@ Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hi
   foo_module              foo_module.v               1/    3/    4       25%             0/    4/    4        0%
   foo_module.foo_named    foo_module.v               0/    0/    0      100%             0/    0/    0      100%
   foo_module.foo_task     foo_module.v               0/    0/    0      100%             0/    0/    0      100%
+---------------------------------------------------------------------------------------------------------------------
+  Accumulated                                        1/    3/    4       25%             0/    4/    4        0%
 ---------------------------------------------------------------------------------------------------------------------
 
     Module: foo_module, File: ./lib/foo_module.v
@@ -64,6 +68,8 @@ Module/Task/Function                Filename                          Hit/Miss/T
   foo_module                        foo_module.v                        0/   0/   0      100%
   foo_module.foo_named_block        foo_module.v                        0/   0/   0      100%
   foo_module.foo_task               foo_module.v                        0/   0/   0      100%
+---------------------------------------------------------------------------------------------------------------------
+  Accumulated                                                           0/   0/   0      100%
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -77,5 +83,7 @@ Module/Task/Function      Filename                Hit/Miss/Total    Percent Hit 
   foo_module              foo_module.v              0/   0/   0      100%            0/   0/   0      100%
   foo_module.foo_named    foo_module.v              0/   0/   0      100%            0/   0/   0      100%
   foo_module.foo_task     foo_module.v              0/   0/   0      100%            0/   0/   0      100%
+---------------------------------------------------------------------------------------------------------------------
+  Accumulated                                       0/   0/   0      100%            0/   0/   0      100%
 
 

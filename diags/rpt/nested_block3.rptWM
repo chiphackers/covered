@@ -23,6 +23,8 @@ Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hi
   main.foo.foo_block      nested_block3.v            3/    0/    3      100%
   main.bar                nested_block3.v            0/    0/    0      100%
   main.bar.bar_block      nested_block3.v            2/    0/    2      100%
+---------------------------------------------------------------------------------------------------------------------
+  Accumulated                                        6/    0/    6      100%
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -37,6 +39,8 @@ Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hi
   main.foo.foo_block      nested_block3.v            0/    1/    1        0%             0/    1/    1        0%
   main.bar                nested_block3.v            0/    0/    0      100%             0/    0/    0      100%
   main.bar.bar_block      nested_block3.v            0/    0/    0      100%             0/    0/    0      100%
+---------------------------------------------------------------------------------------------------------------------
+  Accumulated                                        1/    2/    3       33%             0/    3/    3        0%
 ---------------------------------------------------------------------------------------------------------------------
 
     Module: main, File: nested_block3.v
@@ -79,6 +83,8 @@ Module/Task/Function                Filename                          Hit/Miss/T
   main.foo.foo_block                nested_block3.v                     0/   0/   0      100%
   main.bar                          nested_block3.v                     0/   0/   0      100%
   main.bar.bar_block                nested_block3.v                     0/   0/   0      100%
+---------------------------------------------------------------------------------------------------------------------
+  Accumulated                                                           0/   0/   0      100%
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -93,5 +99,7 @@ Module/Task/Function      Filename                Hit/Miss/Total    Percent Hit 
   main.foo.foo_block      nested_block3.v           0/   0/   0      100%            0/   0/   0      100%
   main.bar                nested_block3.v           0/   0/   0      100%            0/   0/   0      100%
   main.bar.bar_block      nested_block3.v           0/   0/   0      100%            0/   0/   0      100%
+---------------------------------------------------------------------------------------------------------------------
+  Accumulated                                       0/   0/   0      100%            0/   0/   0      100%
 
 

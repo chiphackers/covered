@@ -613,13 +613,13 @@ bool fsm_display_instance_summary( FILE* ofile, char* name, int state_hit, float
   float state_miss;     /* Number of states missed */
   float arc_miss;       /* Number of arcs missed */
 
-  calc_miss_percent( state_hit, state_total, &state_miss, &state_percent );
-  calc_miss_percent( arc_hit, arc_total, &arc_miss, &arc_percent );
-
   if( (state_total == -1) || (arc_total == -1) ) {
     fprintf( ofile, "  %-43.43s    %4d/  ? /  ?        ? %%         %4d/  ? /  ?        ? %%\n",
              name, state_hit, arc_hit );
+    state_miss = arc_miss = 1;
   } else {
+    calc_miss_percent( state_hit, state_total, &state_miss, &state_percent );
+    calc_miss_percent( arc_hit, arc_total, &arc_miss, &arc_percent );
     fprintf( ofile, "  %-43.43s    %4d/%4.0f/%4.0f      %3.0f%%         %4d/%4.0f/%4.0f      %3.0f%%\n",
              name, state_hit, state_miss, state_total, state_percent, arc_hit, arc_miss, arc_total, arc_percent );
   }
@@ -670,10 +670,18 @@ bool fsm_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst, int
     miss_found |= fsm_display_instance_summary( ofile, tmpname, root->stat->state_hit, root->stat->state_total, root->stat->arc_hit, root->stat->arc_total );
 
     /* Update accumulated information */
-    *state_hits  += root->stat->state_hit; 
-    *state_total += root->stat->state_total;
-    *arc_hits    += root->stat->arc_hit;
-    *arc_total   += root->stat->arc_total;
+    *state_hits += root->stat->state_hit; 
+    if( (root->stat->state_total == -1) || (*state_total == -1) ) {
+      *state_total = -1;
+    } else {
+      *state_total += root->stat->state_total;
+    }
+    *arc_hits += root->stat->arc_hit;
+    if( (root->stat->arc_total == -1) || (*arc_total == -1) ) {
+      *arc_total = -1;
+    } else {
+      *arc_total += root->stat->arc_total;
+    }
 
   }
 
@@ -699,13 +707,13 @@ bool fsm_display_funit_summary( FILE* ofile, char* name, char* fname, int state_
   float state_miss;     /* Number of states missed */
   float arc_miss;       /* Number of arcs missed */
 
-  calc_miss_percent( state_hits, state_total, &state_miss, &state_percent );
-  calc_miss_percent( arc_hits, arc_total, &arc_miss, &arc_percent );
-
   if( (state_total == -1) || (arc_total == -1) ) {
     fprintf( ofile, "  %-20.20s    %-20.20s   %4d/  ? /  ?        ? %%         %4d/  ? /  ?        ? %%\n",
              name, fname, state_hits, arc_hits );
+    state_miss = arc_miss = 1;
   } else {
+    calc_miss_percent( state_hits, state_total, &state_miss, &state_percent );
+    calc_miss_percent( arc_hits, arc_total, &arc_miss, &arc_percent );
     fprintf( ofile, "  %-20.20s    %-20.20s   %4d/%4.0f/%4.0f      %3.0f%%         %4d/%4.0f/%4.0f      %3.0f%%\n",
              name, fname, state_hits, state_miss, state_total, state_percent, arc_hits, arc_miss, arc_total, arc_percent );
   }
@@ -741,10 +749,18 @@ bool fsm_funit_summary( FILE* ofile, funit_link* head, int* state_hits, float* s
                                                head->funit->stat->arc_hit, head->funit->stat->arc_total );
 
       /* Update accumulated information */
-      *state_hits  += head->funit->stat->state_hit;
-      *state_total += head->funit->stat->state_total;
-      *arc_hits    += head->funit->stat->arc_hit;
-      *arc_total   += head->funit->stat->arc_total;
+      *state_hits += head->funit->stat->state_hit;
+      if( (head->funit->stat->state_total == -1) || (*state_total == -1) ) {
+        *state_total = -1;
+      } else {
+        *state_total += head->funit->stat->state_total;
+      }
+      *arc_hits += head->funit->stat->arc_hit;
+      if( (head->funit->stat->arc_total == -1) || (*arc_total == -1) ) {
+        *arc_total = -1;
+      } else {
+        *arc_total += head->funit->stat->arc_total;
+      }
 
       free_safe( pname );
 
@@ -1151,6 +1167,12 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.68  2007/07/16 18:39:59  phase1geo
+ Finishing adding accumulated coverage output to report files.  Also fixed
+ compiler warnings with static values in C code that are inputs to 64-bit
+ variables.  Full regression was not run with these changes due to pre-existing
+ simulator problems in core code.
+
  Revision 1.67  2007/04/03 18:55:57  phase1geo
  Fixing more bugs in reporting mechanisms for unnamed scopes.  Checking in more
  regression updates per these changes.  Checkpointing.

@@ -21,6 +21,8 @@ Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hi
   main                    nested_block2.1.v          1/    0/    1      100%
   main.foo                nested_block2.1.v          1/    0/    1      100%
   main.foo.foo_block      nested_block2.1.v          1/    0/    1      100%
+---------------------------------------------------------------------------------------------------------------------
+  Accumulated                                        3/    0/    3      100%
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -33,6 +35,8 @@ Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hi
   main                    nested_block2.1.v          0/    2/    2        0%             0/    2/    2        0%
   main.foo                nested_block2.1.v          0/    3/    3        0%             0/    3/    3        0%
   main.foo.foo_block      nested_block2.1.v          0/    0/    0      100%             0/    0/    0      100%
+---------------------------------------------------------------------------------------------------------------------
+  Accumulated                                        0/    5/    5        0%             0/    5/    5        0%
 ---------------------------------------------------------------------------------------------------------------------
 
     Module: main, File: nested_block2.1.v
@@ -70,6 +74,8 @@ Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hi
   main                    nested_block2.1.v          0/    0/    0      100%             0/    0/    0      100%
   main.foo                nested_block2.1.v          0/    0/    0      100%             0/    0/    0      100%
   main.foo.foo_block      nested_block2.1.v          0/    0/    0      100%             0/    0/    0      100%
+---------------------------------------------------------------------------------------------------------------------
+  Accumulated                                        0/    0/    0      100%             0/    0/    0      100%
 
                                                     Addressable elements written         Addressable elements read
                                                    Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit
@@ -78,6 +84,8 @@ Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hi
   main                    nested_block2.1.v          0/    0/    0      100%             0/    0/    0      100%
   main.foo                nested_block2.1.v          0/    0/    0      100%             0/    0/    0      100%
   main.foo.foo_block      nested_block2.1.v          0/    0/    0      100%             0/    0/    0      100%
+---------------------------------------------------------------------------------------------------------------------
+  Accumulated                                        0/    0/    0      100%             0/    0/    0      100%
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -90,6 +98,8 @@ Module/Task/Function                Filename                          Hit/Miss/T
   main                              nested_block2.1.v                   1/   1/   2       50%
   main.foo                          nested_block2.1.v                   1/   1/   2       50%
   main.foo.foo_block                nested_block2.1.v                   0/   0/   0      100%
+---------------------------------------------------------------------------------------------------------------------
+  Accumulated                                                           2/   2/   4       50%
 ---------------------------------------------------------------------------------------------------------------------
 
     Module: main, File: nested_block2.1.v
@@ -137,6 +147,8 @@ Module/Task/Function      Filename                Hit/Miss/Total    Percent Hit 
   main                    nested_block2.1.v         0/   0/   0      100%            0/   0/   0      100%
   main.foo                nested_block2.1.v         0/   0/   0      100%            0/   0/   0      100%
   main.foo.foo_block      nested_block2.1.v         0/   0/   0      100%            0/   0/   0      100%
+---------------------------------------------------------------------------------------------------------------------
+  Accumulated                                       0/   0/   0      100%            0/   0/   0      100%
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -148,5 +160,7 @@ Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hi
   main                    nested_block2.1.v          0/    0/    0      100%
   main.foo                nested_block2.1.v          0/    0/    0      100%
   main.foo.foo_block      nested_block2.1.v          0/    0/    0      100%
+---------------------------------------------------------------------------------------------------------------------
+  Accumulated                                        0/    0/    0      100%
 
 
