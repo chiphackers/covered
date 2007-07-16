@@ -84,6 +84,19 @@ void assertion_get_stats( func_unit* funit, float* total, int* hit ) {
 
 }
 
+bool assertion_display_instance_summary( FILE* ofile, char* name, int hits, float total ) {
+
+  float percent;  /* Percentage of assertions hit */
+  float miss;     /* Number of assertions missed */
+
+  calc_miss_percent( hits, total, &miss, &percent );
+
+  fprintf( ofile, "  %-43.43s    %5d/%5.0f/%5.0f      %3.0f%%\n", name, hits, miss, total, percent );
+
+  return( miss > 0 );
+
+}
+
 /*!
  \param ofile        Pointer to the file to output the instance summary information to
  \param root         Pointer to the current functional unit instance to look at
@@ -95,13 +108,12 @@ void assertion_get_stats( func_unit* funit, float* total, int* hit ) {
  Outputs the instance summary assertion coverage information for the given functional
  unit instance to the given output file.
 */
-bool assertion_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst ) {
+bool assertion_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst, int* hits, float* total ) {
 
-  funit_inst* curr;           /* Pointer to current child functional unit instance of this node */
-  float       percent;        /* Percentage of assertions hit */
-  float       miss = 0;       /* Number of assertions missed */
-  char        tmpname[4096];  /* Temporary holder of instance name */
-  char*       pname;          /* Printable version of instance name */
+  funit_inst* curr;                /* Pointer to current child functional unit instance of this node */
+  char        tmpname[4096];       /* Temporary holder of instance name */
+  char*       pname;               /* Printable version of instance name */
+  bool        miss_found = FALSE;  /* Set to TRUE if assertion was missed */
 
   assert( root != NULL );
   assert( root->stat != NULL );
@@ -123,20 +135,11 @@ bool assertion_instance_summary( FILE* ofile, funit_inst* root, char* parent_ins
   if( root->stat->show && !funit_is_unnamed( root->funit ) &&
       ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
 
-    if( root->stat->assert_total == 0 ) {
-      percent = 100.0;
-    } else {
-      percent = ((root->stat->assert_hit / root->stat->assert_total) * 100);
-    }
+    miss_found |= assertion_display_instance_summary( ofile, tmpname, root->stat->assert_hit, root->stat->assert_total ); 
 
-    miss = (root->stat->assert_total - root->stat->assert_hit);
-
-    fprintf( ofile, "  %-43.43s    %5d/%5.0f/%5.0f      %3.0f%%\n",
-             tmpname,
-             root->stat->assert_hit,
-             miss,
-             root->stat->assert_total,
-             percent );
+    /* Update accumulated information */
+    *hits  += root->stat->assert_hit;
+    *total += root->stat->assert_total;
 
   }
 
@@ -145,11 +148,25 @@ bool assertion_instance_summary( FILE* ofile, funit_inst* root, char* parent_ins
 
     curr = root->child_head;
     while( curr != NULL ) {
-      miss = miss + assertion_instance_summary( ofile, curr, tmpname );
+      miss_found |= assertion_instance_summary( ofile, curr, tmpname, hits, total );
       curr = curr->next;
     }
 
   }
+
+  return( miss_found );
+
+}
+
+bool assertion_display_funit_summary( FILE* ofile, char* name, char* fname, int hits, float total ) {
+
+  float percent;  /* Percentage of assertions hit */
+  float miss;     /* Number of assertions missed */
+
+  calc_miss_percent( hits, total, &miss, &percent );
+
+  fprintf( ofile, "  %-20.20s    %-20.20s   %5d/%5.0f/%5.0f      %3.0f%%\n",
+           name, fname, hits, miss, total, percent );
 
   return( miss > 0 );
 
@@ -165,23 +182,12 @@ bool assertion_instance_summary( FILE* ofile, funit_inst* root, char* parent_ins
  Outputs the functional unit summary assertion coverage information for the given
  functional unit to the given output file.
 */
-bool assertion_funit_summary( FILE* ofile, funit_link* head ) {
+bool assertion_funit_summary( FILE* ofile, funit_link* head, int* hits, float* total ) {
 
-  float percent;             /* Percentage of assertions hit */
-  float miss;                /* Number of assertions missed */
   bool  miss_found = FALSE;  /* Set to TRUE if assertion was found to be missed */
   char* pname;               /* Printable version of functional unit name */
 
   while( head != NULL ) {
-
-    if( head->funit->stat->assert_total == 0 ) {
-      percent = 100.0;
-    } else {
-      percent = ((head->funit->stat->assert_hit / head->funit->stat->assert_total) * 100);
-    }
-
-    miss       = (head->funit->stat->assert_total - head->funit->stat->assert_hit);
-    miss_found = (miss > 0) ? TRUE : miss_found;
 
     /* If this is an assertion module, don't output any further */
     if( head->funit->stat->show && !funit_is_unnamed( head->funit ) &&
@@ -190,13 +196,12 @@ bool assertion_funit_summary( FILE* ofile, funit_link* head ) {
       /* Get printable version of functional unit name */
       pname = scope_gen_printable( funit_flatten_name( head->funit ) );
 
-      fprintf( ofile, "  %-20.20s    %-20.20s   %5d/%5.0f/%5.0f      %3.0f%%\n",
-               pname,
-               get_basename( obf_file( head->funit->filename ) ),
-               head->funit->stat->assert_hit,
-               miss,
-               head->funit->stat->assert_total,
-               percent );
+      miss_found |= assertion_display_funit_summary( ofile, pname, get_basename( obf_file( head->funit->filename ) ),
+                                                     head->funit->stat->assert_hit, head->funit->stat->assert_total );
+
+      /* Update accumulated information */
+      *hits  += head->funit->stat->assert_hit;
+      *total += head->funit->stat->assert_total;
 
       free_safe( pname );
 
@@ -348,6 +353,8 @@ void assertion_report( FILE* ofile, bool verbose ) {
   bool       missed_found = FALSE;  /* If set to TRUE, lines were found to be missed */
   char       tmp[4096];             /* Temporary string value */
   inst_link* instl;                 /* Pointer to current instance link */
+  int        acc_hits     = 0;      /* Total number of assertions hit */
+  float      acc_total    = 0;      /* Total number of assertions in design */
 
   fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
   fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   ASSERTION COVERAGE RESULTS   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
@@ -367,9 +374,11 @@ void assertion_report( FILE* ofile, bool verbose ) {
 
     instl = inst_head;
     while( instl != NULL ) {
-      missed_found |= assertion_instance_summary( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*") );
+      missed_found |= assertion_instance_summary( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*"), &acc_hits, &acc_total );
       instl = instl->next;
     }
+    fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
+    assertion_display_instance_summary( ofile, "Accumulated", acc_hits, acc_total );
 
     if( verbose && (missed_found || report_covered) ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
@@ -386,7 +395,9 @@ void assertion_report( FILE* ofile, bool verbose ) {
     fprintf( ofile, "Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
-    missed_found = assertion_funit_summary( ofile, funit_head );
+    missed_found = assertion_funit_summary( ofile, funit_head, &acc_hits, &acc_total );
+    fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
+    assertion_display_funit_summary( ofile, "Accumulated", "", acc_hits, acc_total );
 
     if( verbose && (missed_found || report_covered) ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
@@ -536,6 +547,10 @@ bool assertion_get_coverage( char* funit_name, int funit_type, char* inst_name, 
 
 /*
  $Log$
+ Revision 1.18  2007/04/03 18:55:57  phase1geo
+ Fixing more bugs in reporting mechanisms for unnamed scopes.  Checking in more
+ regression updates per these changes.  Checkpointing.
+
  Revision 1.17  2007/04/03 04:15:17  phase1geo
  Fixing bugs in func_iter functionality.  Modified functional unit name
  flattening function (though this does not appear to be working correctly

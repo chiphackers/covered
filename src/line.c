@@ -237,16 +237,10 @@ bool line_get_funit_summary( char* funit_name, int funit_type, int* total, int* 
 
 bool line_display_instance_summary( FILE* ofile, char* name, int hits, float total ) {
 
-  float percent;
-  float miss;
+  float percent;  /* Percentage of lines hits */
+  float miss;     /* Number of lines missed */
 
-  if( total == 0 ) {
-    percent = 100.0;
-  } else {
-    percent = ((hits / total) * 100);
-  }
-
-  miss = (total - hits);
+  calc_miss_percent( hits, total, &miss, &percent );
 
   fprintf( ofile, "  %-43.43s    %5d/%5.0f/%5.0f      %3.0f%%\n",
            name, hits, miss, total, percent );
@@ -335,13 +329,7 @@ bool line_display_funit_summary( FILE* ofile, char* name, char* fname, int hits,
   float percent;  /* Percentage of lines hits */
   float miss;     /* Number of lines missed */
 
-  if( total == 0 ) {
-    percent = 100.0;
-  } else {
-    percent = ((hits / total) * 100);
-  } 
-      
-  miss = (total - hits);
+  calc_miss_percent( hits, total, &miss, &percent );
 
   fprintf( ofile, "  %-20.20s    %-20.20s   %5d/%5.0f/%5.0f      %3.0f%%\n", 
            name, fname, hits, miss, total, percent );
@@ -643,6 +631,12 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.74  2007/07/16 12:39:33  phase1geo
+ Started to add support for displaying accumulated coverage results for
+ each metric.  Finished line and toggle and am half-way done with memory
+ coverage (still have combinational logic, FSM and assertion coverage
+ to complete before this feature is fully functional).
+
  Revision 1.73  2007/04/03 18:55:57  phase1geo
  Fixing more bugs in reporting mechanisms for unnamed scopes.  Checking in more
  regression updates per these changes.  Checkpointing.

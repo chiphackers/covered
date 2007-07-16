@@ -606,25 +606,47 @@ bool fsm_get_coverage( char* funit_name, int funit_type, int expr_id, int* width
 
 }
 
+bool fsm_display_instance_summary( FILE* ofile, char* name, int state_hit, float state_total, int arc_hit, float arc_total ) {
+
+  float state_percent;  /* Percentage of states hit */
+  float arc_percent;    /* Percentage of arcs hit */
+  float state_miss;     /* Number of states missed */
+  float arc_miss;       /* Number of arcs missed */
+
+  calc_miss_percent( state_hit, state_total, &state_miss, &state_percent );
+  calc_miss_percent( arc_hit, arc_total, &arc_miss, &arc_percent );
+
+  if( (state_total == -1) || (arc_total == -1) ) {
+    fprintf( ofile, "  %-43.43s    %4d/  ? /  ?        ? %%         %4d/  ? /  ?        ? %%\n",
+             name, state_hit, arc_hit );
+  } else {
+    fprintf( ofile, "  %-43.43s    %4d/%4.0f/%4.0f      %3.0f%%         %4d/%4.0f/%4.0f      %3.0f%%\n",
+             name, state_hit, state_miss, state_total, state_percent, arc_hit, arc_miss, arc_total, arc_percent );
+  }
+
+  return( (state_miss > 0) || (arc_miss > 0) );
+
+}
 
 /*!
  \param ofile        Pointer to output file to display report contents to.
  \param root         Pointer to current root of instance tree to report.
  \param parent_inst  String containing Verilog hierarchy of this instance's parent.
+ \param state_hits   Pointer to total number of states hit in design.
+ \param state_total  Pointer to total number of states in design.
+ \param arc_hits     Pointer to total number of arcs traversed.
+ \param arc_total    Pointer to total number of arcs in design.
 
  \return Returns TRUE if any FSM states/arcs were found missing; otherwise, returns FALSE.
 
  Generates an instance summary report of the current FSM states and arcs hit during simulation.
 */
-bool fsm_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst ) {
+bool fsm_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst, int* state_hits, float* state_total, int* arc_hits, float* arc_total ) {
 
-  funit_inst* curr;            /* Pointer to current child functional unit instance of this node */
-  float       state_percent;   /* Percentage of states hit */
-  float       arc_percent;     /* Percentage of arcs hit */
-  float       state_miss = 0;  /* Number of states missed */
-  float       arc_miss   = 0;  /* Number of arcs missed */
-  char        tmpname[4096];   /* Temporary name holder for instance */
-  char*       pname;           /* Printable version of instance name */
+  funit_inst* curr;                /* Pointer to current child functional unit instance of this node */
+  char        tmpname[4096];       /* Temporary name holder for instance */
+  char*       pname;               /* Printable version of instance name */
+  bool        miss_found = FALSE;  /* Set to TRUE if at least state or arc was not hit */
 
   assert( root != NULL );
   assert( root->stat != NULL );
@@ -645,37 +667,13 @@ bool fsm_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst ) {
   if( root->stat->show && !funit_is_unnamed( root->funit ) &&
       ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
 
-    if( root->stat->state_total == 0 ) {
-      state_percent = 100.0;
-    } else {
-      state_percent = ((root->stat->state_hit / root->stat->state_total) * 100);
-    }
-    state_miss = (root->stat->state_total - root->stat->state_hit);
+    miss_found |= fsm_display_instance_summary( ofile, tmpname, root->stat->state_hit, root->stat->state_total, root->stat->arc_hit, root->stat->arc_total );
 
-    if( root->stat->arc_total == 0 ) {
-      arc_percent = 100.0;
-    } else {
-      arc_percent = ((root->stat->arc_hit / root->stat->arc_total) * 100);
-    }
-    arc_miss   = (root->stat->arc_total - root->stat->arc_hit);
-
-    if( (root->stat->state_total == -1) || (root->stat->arc_total == -1) ) {
-      fprintf( ofile, "  %-43.43s    %4d/  ? /  ?        ? %%         %4d/  ? /  ?        ? %%\n",
-             tmpname,
-             root->stat->state_hit,
-             root->stat->arc_hit );
-    } else {
-      fprintf( ofile, "  %-43.43s    %4d/%4.0f/%4.0f      %3.0f%%         %4d/%4.0f/%4.0f      %3.0f%%\n",
-             tmpname,
-             root->stat->state_hit,
-             state_miss,
-             root->stat->state_total,
-             state_percent,
-             root->stat->arc_hit,
-             arc_miss,
-             root->stat->arc_total,
-             arc_percent );
-    }
+    /* Update accumulated information */
+    *state_hits  += root->stat->state_hit; 
+    *state_total += root->stat->state_total;
+    *arc_hits    += root->stat->arc_hit;
+    *arc_total   += root->stat->arc_total;
 
   }
 
@@ -684,13 +682,35 @@ bool fsm_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst ) {
 
     curr = root->child_head;
     while( curr != NULL ) {
-      arc_miss = arc_miss + fsm_instance_summary( ofile, curr, tmpname );
+      miss_found |= fsm_instance_summary( ofile, curr, tmpname, state_hits, state_total, arc_hits, arc_total );
       curr = curr->next;
     }
 
   }
 
-  return( (state_miss != 0) || (arc_miss != 0) );
+  return( miss_found );
+
+}
+
+bool fsm_display_funit_summary( FILE* ofile, char* name, char* fname, int state_hits, float state_total, int arc_hits, float arc_total ) {
+
+  float state_percent;  /* Percentage of states hit */
+  float arc_percent;    /* Percentage of arcs hit */
+  float state_miss;     /* Number of states missed */
+  float arc_miss;       /* Number of arcs missed */
+
+  calc_miss_percent( state_hits, state_total, &state_miss, &state_percent );
+  calc_miss_percent( arc_hits, arc_total, &arc_miss, &arc_percent );
+
+  if( (state_total == -1) || (arc_total == -1) ) {
+    fprintf( ofile, "  %-20.20s    %-20.20s   %4d/  ? /  ?        ? %%         %4d/  ? /  ?        ? %%\n",
+             name, fname, state_hits, arc_hits );
+  } else {
+    fprintf( ofile, "  %-20.20s    %-20.20s   %4d/%4.0f/%4.0f      %3.0f%%         %4d/%4.0f/%4.0f      %3.0f%%\n",
+             name, fname, state_hits, state_miss, state_total, state_percent, arc_hits, arc_miss, arc_total, arc_percent );
+  }
+
+  return( (state_miss > 0) || (arc_miss > 0) );
 
 }
 
@@ -702,32 +722,12 @@ bool fsm_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst ) {
 
  Generates a functional unit summary report of the current FSM states and arcs hit during simulation.
 */
-bool fsm_funit_summary( FILE* ofile, funit_link* head ) {
+bool fsm_funit_summary( FILE* ofile, funit_link* head, int* state_hits, float* state_total, int* arc_hits, float* arc_total ) {
 
-  float state_percent;       /* Percentage of states hit */
-  float arc_percent;         /* Percentage of arcs hit */
-  float state_miss;          /* Number of states missed */
-  float arc_miss;            /* Number of arcs missed */
   bool  miss_found = FALSE;  /* Set to TRUE if state/arc was found to be missed */
   char* pname;               /* Printable version of functional unit name */
 
   while( head != NULL ) {
-
-    if( head->funit->stat->state_total == 0 ) {
-      state_percent = 100.0;
-    } else {
-      state_percent = ((head->funit->stat->state_hit / head->funit->stat->state_total) * 100);
-    }
-
-    if( head->funit->stat->arc_total == 0 ) {
-      arc_percent = 100.0;
-    } else {
-      arc_percent = ((head->funit->stat->arc_hit / head->funit->stat->arc_total) * 100);
-    }
-
-    state_miss = (head->funit->stat->state_total - head->funit->stat->state_hit);
-    arc_miss   = (head->funit->stat->arc_total   - head->funit->stat->arc_hit);
-    miss_found = ((state_miss != 0) || (arc_miss != 0)) ? TRUE : miss_found;
 
     /* If this is an assertion module, don't output any further */
     if( head->funit->stat->show && !funit_is_unnamed( head->funit ) &&
@@ -736,25 +736,15 @@ bool fsm_funit_summary( FILE* ofile, funit_link* head ) {
       /* Get printable version of functional unit name */
       pname = scope_gen_printable( funit_flatten_name( head->funit ) );
 
-      if( (head->funit->stat->state_total == -1) || (head->funit->stat->arc_total == -1) ) {
-        fprintf( ofile, "  %-20.20s    %-20.20s   %4d/  ? /  ?        ? %%         %4d/  ? /  ?        ? %%\n",
-             pname,
-             get_basename( obf_file( head->funit->filename ) ),
-             head->funit->stat->state_hit,
-             head->funit->stat->arc_hit );
-      } else {
-        fprintf( ofile, "  %-20.20s    %-20.20s   %4d/%4.0f/%4.0f      %3.0f%%         %4d/%4.0f/%4.0f      %3.0f%%\n",
-               pname,
-               get_basename( obf_file( head->funit->filename ) ),
-               head->funit->stat->state_hit,
-               state_miss,
-               head->funit->stat->state_total,
-               state_percent,
-               head->funit->stat->arc_hit,
-               arc_miss,
-               head->funit->stat->arc_total,
-               arc_percent );
-      }
+      miss_found |= fsm_display_funit_summary( ofile, pname, get_basename( obf_file( head->funit->filename ) ),
+                                               head->funit->stat->state_hit, head->funit->stat->state_total,
+                                               head->funit->stat->arc_hit, head->funit->stat->arc_total );
+
+      /* Update accumulated information */
+      *state_hits  += head->funit->stat->state_hit;
+      *state_total += head->funit->stat->state_total;
+      *arc_hits    += head->funit->stat->arc_hit;
+      *arc_total   += head->funit->stat->arc_total;
 
       free_safe( pname );
 
@@ -1052,9 +1042,13 @@ void fsm_funit_verbose( FILE* ofile, funit_link* head ) {
 */
 void fsm_report( FILE* ofile, bool verbose ) {
 
-  bool       missed_found = FALSE;  /* If set to TRUE, FSM cases were found to be missed */
-  char       tmp[4096];             /* Temporary string value */
-  inst_link* instl;                 /* Pointer to current instance link */
+  bool       missed_found  = FALSE;  /* If set to TRUE, FSM cases were found to be missed */
+  char       tmp[4096];              /* Temporary string value */
+  inst_link* instl;                  /* Pointer to current instance link */
+  int        acc_st_hits   = 0;      /* Accumulated number of states hit */
+  float      acc_st_total  = 0;      /* Accumulated number of states in design */
+  int        acc_arc_hits  = 0;      /* Accumulated number of arcs hit */
+  float      acc_arc_total = 0;      /* Accumulated number of arcs in design */
 
   fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
   fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   FINITE STATE MACHINE COVERAGE RESULTS   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
@@ -1075,9 +1069,11 @@ void fsm_report( FILE* ofile, bool verbose ) {
 
     instl = inst_head;
     while( instl != NULL ) {
-      missed_found |= fsm_instance_summary( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*") );
+      missed_found |= fsm_instance_summary( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*"), &acc_st_hits, &acc_st_total, &acc_arc_hits, &acc_arc_total );
       instl = instl->next;
     }
+    fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
+    fsm_display_instance_summary( ofile, "Accumulated", acc_st_hits, acc_st_total, acc_arc_hits, acc_arc_total );
    
     if( verbose && (missed_found || report_covered) ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
@@ -1094,7 +1090,9 @@ void fsm_report( FILE* ofile, bool verbose ) {
     fprintf( ofile, "Module/Task/Function      Filename                Hit/Miss/Total    Percent Hit    Hit/Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
-    missed_found = fsm_funit_summary( ofile, funit_head );
+    missed_found = fsm_funit_summary( ofile, funit_head, &acc_st_hits, &acc_st_total, &acc_arc_hits, &acc_arc_total );
+    fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
+    fsm_display_funit_summary( ofile, "Accumulated", "", acc_st_hits, acc_st_total, acc_arc_hits, acc_arc_total );
 
     if( verbose && (missed_found || report_covered) ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
@@ -1153,6 +1151,10 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.67  2007/04/03 18:55:57  phase1geo
+ Fixing more bugs in reporting mechanisms for unnamed scopes.  Checking in more
+ regression updates per these changes.  Checkpointing.
+
  Revision 1.66  2007/04/03 04:15:17  phase1geo
  Fixing bugs in func_iter functionality.  Modified functional unit name
  flattening function (though this does not appear to be working correctly

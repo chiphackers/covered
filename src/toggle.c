@@ -292,21 +292,8 @@ bool toggle_display_instance_summary( FILE* ofile, char* name, int hits01, int h
   float miss01;     /* Number of bits not toggled from 0 -> 1 */
   float miss10;     /* Number of bits not toggled from 1 -> 0 */
 
-  /* Calculate for toggle01 information */
-  if( total == 0 ) {
-    percent01 = 100;
-  } else {
-    percent01 = ((hits01 / total) * 100);
-  }
-  miss01 = (total - hits01);
-
-  /* Calculate for toggle10 information */
-  if( total == 0 ) {
-    percent10 = 100;
-  } else {
-    percent10 = ((hits10 / total) * 100);
-  }
-  miss10 = (total - hits10);
+  calc_miss_percent( hits01, total, &miss01, &percent01 );
+  calc_miss_percent( hits10, total, &miss10, &percent10 );
 
   fprintf( ofile, "  %-43.43s    %5d/%5.0f/%5.0f      %3.0f%%         %5d/%5.0f/%5.0f      %3.0f%%\n",
            name, hits01, miss01, total, percent01, hits10, miss10, total, percent10 );
@@ -396,21 +383,8 @@ bool toggle_display_funit_summary( FILE* ofile, char* name, char* fname, int hit
   float miss01;     /* Number of bits that did not toggle from 0 to 1 */
   float miss10;     /* Number of bits that did not toggle from 1 to 0 */
 
-  /* Calculate for toggle01 */
-  if( total == 0 ) {
-    percent01 = 100;
-  } else {
-    percent01 = ((hits01 / total) * 100);
-  }
-  miss01 = (total - hits01);
-  
-  /* Calculate for toggle10 */
-  if( total == 0 ) {
-    percent10 = 100;
-  } else {
-    percent10 = ((hits10 / total) * 100);
-  }
-  miss10 = (total - hits10);
+  calc_miss_percent( hits01, total, &miss01, &percent01 );
+  calc_miss_percent( hits10, total, &miss10, &percent10 );
 
   fprintf( ofile, "  %-20.20s    %-20.20s   %5d/%5.0f/%5.0f      %3.0f%%         %5d/%5.0f/%5.0f      %3.0f%%\n",
            name, fname, hits01, miss01, total, percent01, hits10, miss10, total, percent10 );
@@ -709,6 +683,12 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.57  2007/07/16 12:39:33  phase1geo
+ Started to add support for displaying accumulated coverage results for
+ each metric.  Finished line and toggle and am half-way done with memory
+ coverage (still have combinational logic, FSM and assertion coverage
+ to complete before this feature is fully functional).
+
  Revision 1.56  2007/04/03 18:55:57  phase1geo
  Fixing more bugs in reporting mechanisms for unnamed scopes.  Checking in more
  regression updates per these changes.  Checkpointing.

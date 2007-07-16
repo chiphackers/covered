@@ -544,21 +544,8 @@ bool memory_display_toggle_instance_summary( FILE* ofile, char* name, int hits01
   float miss01  = 0;  /* Number of bits that did not toggle from 0 -> 1 */
   float miss10  = 0;  /* Number of bits that did not toggle from 1 -> 0 */
 
-  /* Calculate for toggle01 information */
-  if( total == 0 ) {
-    percent01 = 100;
-  } else {
-    percent01 = ((hits01 / total) * 100);
-  }
-  miss01 = (total - hits01);
-
-  /* Calculate for toggle10 information */
-  if( total == 0 ) {
-    percent10 = 100;
-  } else {
-    percent10 = ((hits10 / total) * 100);
-  }
-  miss10 = (total - hits10);
+  calc_miss_percent( hits01, total, &miss01, &percent01 );
+  calc_miss_percent( hits10, total, &miss10, &percent10 );
 
   /* Output toggle information */
   fprintf( ofile, "  %-43.43s    %5d/%5.0f/%5.0f      %3.0f%%         %5d/%5.0f/%5.0f      %3.0f%%\n",
@@ -650,21 +637,8 @@ bool memory_display_ae_instance_summary( FILE* ofile, char* name, int wr_hit, in
   float wr_miss;     /* Number of addressable elements that were not written */
   float rd_miss;     /* Number of addressable elements that were not read */
 
-  /* Calculate for addressable element write information */
-  if( total == 0 ) {
-    wr_percent = 100;
-  } else {
-    wr_percent = ((wr_hit / total) * 100);
-  }
-  wr_miss = (total - wr_hit);
-
-  /* Calculate for addressable element read information */
-  if( total == 0 ) {
-    rd_percent = 100;
-  } else {
-    rd_percent = ((rd_hit / total) * 100);
-  }
-  rd_miss = (total - rd_hit);
+  calc_miss_percent( wr_hit, total, &wr_miss, &wr_percent );
+  calc_miss_percent( rd_hit, total, &rd_miss, &rd_percent );
 
   /* Output toggle information */
   fprintf( ofile, "  %-43.43s    %5d/%5.0f/%5.0f      %3.0f%%         %5d/%5.0f/%5.0f      %3.0f%%\n",
@@ -737,42 +711,41 @@ bool memory_ae_instance_summary( FILE* ofile, funit_inst* root, char* parent_ins
 
 }
 
+bool memory_display_toggle_funit_summary( FILE* ofile, char* name, char* fname, int hit01, int hit10, float total ) {
+
+  float percent01;  /* Percentage of bits that toggled from 0 to 1 */
+  float percent10;  /* Percentage of bits that toggled from 1 to 0 */
+  float miss01;     /* Number of bits that did not toggle from 0 to 1 */
+  float miss10;     /* Number of bits that did not toggle from 1 to 0 */
+
+  calc_miss_percent( hit01, total, &miss01, &percent01 );
+  calc_miss_percent( hit10, total, &miss10, &percent10 );
+
+  fprintf( ofile, "  %-20.20s    %-20.20s   %5d/%5.0f/%5.0f      %3.0f%%         %5d/%5.0f/%5.0f      %3.0f%%\n",
+           name, fname, hit01, miss01, total, percent01, hit10, miss10, total, percent10 );
+
+  return( (miss01 > 0) || (miss10 > 0) );
+
+}
+
 /*!
- \param ofile  Pointer to file to display coverage results to.
- \param head   Pointer to head of functional unit list to parse.
+ \param ofile   Pointer to file to display coverage results to.
+ \param head    Pointer to head of functional unit list to parse.
+ \param hits01  Pointer to number of bits in memory toggled from 0 -> 1.
+ \param hits10  Pointer to number of bits in memory toggled from 1 -> 0.
+ \param total   Pointer to total number of bits in memories.
 
  \return Returns TRUE if any bits were found to be untoggled; otherwise, returns FALSE.
 
  Iterates through the functional unit list displaying the memory toggle coverage summary for
  each functional unit.
 */
-bool memory_toggle_funit_summary( FILE* ofile, funit_link* head ) { 
+bool memory_toggle_funit_summary( FILE* ofile, funit_link* head, int* hits01, int* hits10, float* total ) { 
 
-  float percent01;           /* Percentage of bits that toggled from 0 to 1 */
-  float percent10;           /* Percentage of bits that toggled from 1 to 0 */
-  float miss01;              /* Number of bits that did not toggle from 0 to 1 */
-  float miss10;              /* Number of bits that did not toggle from 1 to 0 */
-  float miss_found = FALSE;  /* Set to TRUE if missing toggles were found */
+  bool  miss_found = FALSE;  /* Set to TRUE if missing toggles were found */
   char* pname;               /* Printable version of the functional unit name */
 
   while( head != NULL ) {
-
-    /* Calculate for toggle01 */
-    if( head->funit->stat->mem_tog_total == 0 ) {
-      percent01 = 100;
-    } else {
-      percent01 = ((head->funit->stat->mem_tog01_hit / head->funit->stat->mem_tog_total) * 100);
-    }
-    miss01 = (head->funit->stat->mem_tog_total - head->funit->stat->mem_tog01_hit);
-
-    /* Calculate for toggle10 */
-    if( head->funit->stat->mem_tog_total == 0 ) {
-      percent10 = 100;
-    } else {
-      percent10 = ((head->funit->stat->mem_tog10_hit / head->funit->stat->mem_tog_total) * 100);
-    }
-    miss10 = (head->funit->stat->mem_tog_total - head->funit->stat->mem_tog10_hit); 
-    miss_found = ((miss01 > 0) || (miss10 > 0)) ? TRUE : miss_found;
 
     /* If this is an assertion module, don't output any further */
     if( head->funit->stat->show && !funit_is_unnamed( head->funit ) &&
@@ -781,17 +754,13 @@ bool memory_toggle_funit_summary( FILE* ofile, funit_link* head ) {
       /* Get printable version of functional unit name */
       pname = scope_gen_printable( funit_flatten_name( head->funit ) );
 
-      fprintf( ofile, "  %-20.20s    %-20.20s   %5d/%5.0f/%5.0f      %3.0f%%         %5d/%5.0f/%5.0f      %3.0f%%\n",
-               pname,
-               get_basename( obf_file( head->funit->filename ) ),
-               head->funit->stat->mem_tog01_hit,
-               miss01,
-               head->funit->stat->mem_tog_total,
-               percent01,
-               head->funit->stat->mem_tog10_hit,
-               miss10,
-               head->funit->stat->mem_tog_total,
-               percent10 );
+      miss_found |= memory_display_toggle_funit_summary( ofile, pname, get_basename( obf_file( head->funit->filename ) ),
+                                                         head->funit->stat->mem_tog01_hit, head->funit->stat->mem_tog10_hit, head->funit->stat->mem_tog_total );
+
+      /* Update accumulated information */
+      *hits01 += head->funit->stat->mem_tog01_hit;
+      *hits10 += head->funit->stat->mem_tog10_hit;
+      *total  += head->funit->stat->mem_tog_total;
 
       free_safe( pname );
 
@@ -805,42 +774,41 @@ bool memory_toggle_funit_summary( FILE* ofile, funit_link* head ) {
 
 }
 
+bool memory_display_ae_funit_summary( FILE* ofile, char* name, char* fname, int wr_hits, int rd_hits, int total ) {
+
+  float wr_percent;  /* Percentage of addressable elements that were written */
+  float rd_percent;  /* Percentage of addressable elements that were read */
+  float wr_miss;     /* Number of addressable elements that were not written */
+  float rd_miss;     /* Number of addressable elements that were not read */
+
+  calc_miss_percent( wr_hits, total, &wr_miss, &wr_percent );
+  calc_miss_percent( rd_hits, total, &rd_miss, &rd_percent );
+
+  fprintf( ofile, "  %-20.20s    %-20.20s   %5d/%5.0f/%5.0f      %3.0f%%         %5d/%5.0f/%5.0f      %3.0f%%\n",
+           name, fname, wr_hits, wr_miss, total, wr_percent, rd_hits, rd_miss, total, rd_percent );
+
+  return( (wr_miss > 0) || (rd_miss > 0) );
+
+}
+
 /*!
- \param ofile  Pointer to file to display coverage results to.
- \param head   Pointer to head of functional unit list to parse.
+ \param ofile    Pointer to file to display coverage results to.
+ \param head     Pointer to head of functional unit list to parse.
+ \param wr_hits  Pointer to number of bits in memory toggled from 0 -> 1.
+ \param rd_hits  Pointer to number of bits in memory toggled from 1 -> 0.
+ \param total    Pointer to total number of bits in memories.
 
  \return Returns TRUE if any bits were found to be untoggled; otherwise, returns FALSE.
 
  Iterates through the functional unit list displaying the memory toggle coverage summary for
  each functional unit.
 */
-bool memory_ae_funit_summary( FILE* ofile, funit_link* head ) { 
+bool memory_ae_funit_summary( FILE* ofile, funit_link* head, int* wr_hits, int* rd_hits, float* total ) { 
 
-  float percent_wr;          /* Percentage of addressable elements that were written */
-  float percent_rd;          /* Percentage of addressable elements that were read */
-  float miss_wr;             /* Number of addressable elements that were not written */
-  float miss_rd;             /* Number of addressable elements that were not read */
-  float miss_found = FALSE;  /* Set to TRUE if missing toggles were found */
+  bool  miss_found = FALSE;  /* Set to TRUE if missing toggles were found */
   char* pname;               /* Printable version of the functional unit name */
 
   while( head != NULL ) {
-
-    /* Calculate for writes */
-    if( head->funit->stat->mem_ae_total == 0 ) {
-      percent_wr = 100;
-    } else {
-      percent_wr = ((head->funit->stat->mem_wr_hit / head->funit->stat->mem_ae_total) * 100);
-    }
-    miss_wr = (head->funit->stat->mem_ae_total - head->funit->stat->mem_wr_hit);
-
-    /* Calculate for reads */
-    if( head->funit->stat->mem_ae_total == 0 ) {
-      percent_rd = 100;
-    } else {
-      percent_rd = ((head->funit->stat->mem_rd_hit / head->funit->stat->mem_ae_total) * 100);
-    }
-    miss_rd = (head->funit->stat->mem_ae_total - head->funit->stat->mem_rd_hit); 
-    miss_found = ((miss_wr > 0) || (miss_rd > 0)) ? TRUE : miss_found;
 
     /* If this is an assertion module, don't output any further */
     if( head->funit->stat->show && !funit_is_unnamed( head->funit ) &&
@@ -849,17 +817,13 @@ bool memory_ae_funit_summary( FILE* ofile, funit_link* head ) {
       /* Get printable version of functional unit name */
       pname = scope_gen_printable( funit_flatten_name( head->funit ) );
 
-      fprintf( ofile, "  %-20.20s    %-20.20s   %5d/%5.0f/%5.0f      %3.0f%%         %5d/%5.0f/%5.0f      %3.0f%%\n",
-               pname,
-               get_basename( obf_file( head->funit->filename ) ),
-               head->funit->stat->mem_wr_hit,
-               miss_wr,
-               head->funit->stat->mem_ae_total,
-               percent_wr,
-               head->funit->stat->mem_rd_hit,
-               miss_rd,
-               head->funit->stat->mem_ae_total,
-               percent_rd );
+      miss_found |= memory_display_ae_funit_summary( ofile, pname, get_basename( obf_file( head->funit->filename ) ),
+                                                     head->funit->stat->mem_wr_hit, head->funit->stat->mem_rd_hit, head->funit->stat->mem_ae_total );
+
+      /* Update accumulated information */
+      *wr_hits += head->funit->stat->mem_wr_hit;
+      *rd_hits += head->funit->stat->mem_rd_hit;
+      *total   += head->funit->stat->mem_ae_total; 
 
       free_safe( pname );
 
@@ -1221,14 +1185,18 @@ void memory_report( FILE* ofile, bool verbose ) {
     fprintf( ofile, "Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
-    missed_found |= memory_toggle_funit_summary( ofile, funit_head );
+    missed_found |= memory_toggle_funit_summary( ofile, funit_head, &acc_hits01, &acc_hits10, &acc_tog_total );
+    fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
+    memory_display_toggle_funit_summary( ofile, "Accumulated", "", acc_hits01, acc_hits10, acc_tog_total );
 
     fprintf( ofile, "\n" );
     fprintf( ofile, "                                                    Addressable elements written         Addressable elements read\n" );
     fprintf( ofile, "                                                   Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
-    missed_found |= memory_ae_funit_summary( ofile, funit_head );
+    missed_found |= memory_ae_funit_summary( ofile, funit_head, &acc_wr_hits, &acc_rd_hits, &acc_ae_total );
+    fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
+    memory_display_ae_funit_summary( ofile, "Accumulated", "", acc_wr_hits, acc_rd_hits, acc_ae_total );
 
     if( verbose && missed_found ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
@@ -1244,6 +1212,12 @@ void memory_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.12  2007/07/16 12:39:33  phase1geo
+ Started to add support for displaying accumulated coverage results for
+ each metric.  Finished line and toggle and am half-way done with memory
+ coverage (still have combinational logic, FSM and assertion coverage
+ to complete before this feature is fully functional).
+
  Revision 1.11  2007/04/03 18:55:57  phase1geo
  Fixing more bugs in reporting mechanisms for unnamed scopes.  Checking in more
  regression updates per these changes.  Checkpointing.

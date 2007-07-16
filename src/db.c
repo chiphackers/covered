@@ -2293,7 +2293,7 @@ void db_do_timestep( uint64 time, bool final ) {
 
   /* If this is the last timestep, add the final list and do one more simulate */
   if( final ) {
-    sim_simulate( (uint64)0xffffffffffffffff );
+    sim_simulate( 0xffffffffffffffffLL );
   }
 
 #ifdef DEBUG_MODE
@@ -2308,6 +2308,12 @@ void db_do_timestep( uint64 time, bool final ) {
 
 /*
  $Log$
+ Revision 1.252  2007/04/03 04:15:17  phase1geo
+ Fixing bugs in func_iter functionality.  Modified functional unit name
+ flattening function (though this does not appear to be working correctly
+ at this time).  Added calls to funit_flatten_name in all of the reporting
+ files.  Checkpointing.
+
  Revision 1.251  2007/04/02 04:50:04  phase1geo
  Adding func_iter files to iterate through a functional unit for reporting
  purposes.  Updated affected files.

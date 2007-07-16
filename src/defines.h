@@ -1093,14 +1093,24 @@ typedef enum {
 */
 #if SIZEOF_CHAR == 1
 typedef unsigned char uint8;
+#define UINT8(x) x
+#define ato8(x)  atoi(x)
 #elif SIZEOF_SHORT == 1
 typedef unsigned short uint8;
+#define UINT8(x) x
+#define ato8(x)  atoi(x)
 #elif SIZEOF_INT == 1
 typedef unsigned int uint8;
+#define UINT8(x) x
+#define ato8(x)  atoi(x)
 #elif SIZEOF_LONG == 1
 typedef unsigned long uint8;
+#define UINT8(x) x
+#define ato8(x)  atol(x)
 #elif SIZEOF_LONG_LONG == 1
 typedef unsigned long long uint8;
+#define UINT8(x) x ## LL
+#define ato8(x)  atoll(x)
 #else
 #error "Unable to find an 8-bit data type"
 #endif
@@ -1110,14 +1120,24 @@ typedef unsigned long long uint8;
 */
 #if SIZEOF_CHAR == 2
 typedef unsigned char uint16;
+#define UINT16(x) x
+#define ato16(x)  atoi(x)
 #elif SIZEOF_SHORT == 2
 typedef unsigned short uint16;
+#define UINT16(x) x
+#define ato16(x)  atoi(x)
 #elif SIZEOF_INT == 2
 typedef unsigned int uint16;
+#define UINT16(x) x
+#define ato16(x)  atoi(x)
 #elif SIZEOF_LONG == 2
 typedef unsigned long uint16;
+#define UINT16(x) x
+#define ato16(x)  atol(x)
 #elif SIZEOF_LONG_LONG == 2
 typedef unsigned long long uint16;
+#define UINT16(x) x ## LL
+#define ato16(x)  atoll(x)
 #else
 #error "Unable to find a 16-bit data type"
 #endif
@@ -1127,17 +1147,24 @@ typedef unsigned long long uint16;
 */
 #if SIZEOF_CHAR == 4
 typedef unsigned char uint32;
+#define UINT32(x) x
+#define ato32(x)  atoi(x)
 #elif SIZEOF_SHORT == 4
 typedef unsigned short uint32;
+#define UINT32(x) x
+#define ato32(x)  atoi(x)
 #elif SIZEOF_INT == 4
 typedef unsigned int uint32;
-#define ato32(x) atoi(x)
+#define UINT32(x) x
+#define ato32(x)  atoi(x)
 #elif SIZEOF_LONG == 4
 typedef unsigned long uint32;
-#define ato32(x) atol(x)
+#define UINT32(x) x
+#define ato32(x)  atol(x)
 #elif SIZEOF_LONG_LONG == 4
 typedef unsigned long long uint32;
-#define ato32(x) atoll(x)
+#define UINT32(x) x ## LL
+#define ato32(x)  atoll(x)
 #else
 #error "Unable to find a 32-bit data type"
 #endif
@@ -1147,17 +1174,24 @@ typedef unsigned long long uint32;
 */
 #if SIZEOF_CHAR == 8
 typedef unsigned char uint64;
+#define UINT64(x) x
+#define ato64(x)  atoi(x)
 #elif SIZEOF_SHORT == 8
 typedef unsigned short uint64;
+#define UINT64(x) x
+#define ato64(x)  atoi(x)
 #elif SIZEOF_INT == 8
 typedef unsigned int uint64;
-#define ato64(x) atoi(x)
+#define UINT64(x) x
+#define ato64(x)  atoi(x)
 #elif SIZEOF_LONG == 8
 typedef unsigned long uint64;
-#define ato64(x) atol(x)
+#define UINT64(x) x
+#define ato64(x)  atol(x)
 #elif SIZEOF_LONG_LONG == 8
 typedef unsigned long long uint64;
-#define ato64(x) atoll(x)
+#define UINT64(x) x ## LL
+#define ato64(x)  atoll(x)
 #else
 #error "Unable to find a 64-bit data type"
 #endif
@@ -2318,6 +2352,9 @@ struct reentrant_s {
 
 /*
  $Log$
+ Revision 1.255  2007/04/18 22:34:58  phase1geo
+ Revamping simulator core again.  Checkpointing.
+
  Revision 1.254  2007/04/13 21:47:12  phase1geo
  More simulation debugging.  Added 'display all_list' command to CLI to output
  the list of all threads.  Updated regressions though we are not fully passing

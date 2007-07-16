@@ -579,10 +579,26 @@ bool combination_get_funit_summary( char* funit_name, int funit_type, int* total
 
 }
 
+bool combination_display_instance_summary( FILE* ofile, char* name, int hits, float total ) {
+
+  float percent;  /* Percentage of lines hit */
+  float miss;     /* Number of lines missed */
+
+  calc_miss_percent( hits, total, &miss, &percent );
+
+  fprintf( ofile, "  %-63.63s    %4d/%4.0f/%4.0f      %3.0f%%\n",
+           name, hits, miss, total, percent );
+
+  return( miss > 0 );
+
+}
+
 /*!
  \param ofile   Pointer to file to output results to.
  \param root    Pointer to node in instance tree to evaluate.
  \param parent  Name of parent instance name.
+ \param hits    Pointer to accumulated number of combinations hit.
+ \param total   Pointer to accumulated number of total combinations in design.
 
  \return Returns TRUE if combinations were found to be missed; otherwise,
          returns FALSE.
@@ -594,13 +610,12 @@ bool combination_get_funit_summary( char* funit_name, int funit_type, int* total
  design.  An expression is said to be measurable for combinational coverage 
  if it evaluates to a value of 0 or 1.
 */
-bool combination_instance_summary( FILE* ofile, funit_inst* root, char* parent ) {
+bool combination_instance_summary( FILE* ofile, funit_inst* root, char* parent, int* hits, float* total ) {
 
-  funit_inst* curr;           /* Pointer to current child functional unit instance of this node */
-  float       percent;        /* Percentage of lines hit */
-  float       miss = 0;       /* Number of lines missed */
-  char        tmpname[4096];  /* Temporary name holder of instance */
-  char*       pname;          /* Printable version of instance name */
+  funit_inst* curr;                /* Pointer to current child functional unit instance of this node */
+  char        tmpname[4096];       /* Temporary name holder of instance */
+  char*       pname;               /* Printable version of instance name */
+  bool        miss_found = FALSE;  /* Set to TRUE if a logical combination was missed */
 
   assert( root != NULL );
   assert( root->stat != NULL );
@@ -621,19 +636,11 @@ bool combination_instance_summary( FILE* ofile, funit_inst* root, char* parent )
   if( root->stat->show && !funit_is_unnamed( root->funit ) &&
       ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
 
-    if( root->stat->comb_total == 0 ) {
-      percent = 100;
-    } else {
-      percent = ((root->stat->comb_hit / root->stat->comb_total) * 100);
-    }
-    miss    = (root->stat->comb_total - root->stat->comb_hit);
+    miss_found |= combination_display_instance_summary( ofile, tmpname, root->stat->comb_hit, root->stat->comb_total );
 
-    fprintf( ofile, "  %-63.63s    %4d/%4.0f/%4.0f      %3.0f%%\n",
-             tmpname,
-             root->stat->comb_hit,
-             miss,
-             root->stat->comb_total,
-             percent );
+    /* Update accumulated information */
+    *hits  += root->stat->comb_hit;
+    *total += root->stat->comb_total;
 
   }
 
@@ -642,11 +649,25 @@ bool combination_instance_summary( FILE* ofile, funit_inst* root, char* parent )
 
     curr = root->child_head;
     while( curr != NULL ) {
-      miss = miss + combination_instance_summary( ofile, curr, tmpname );
+      miss_found |= combination_instance_summary( ofile, curr, tmpname, hits, total );
       curr = curr->next;
     }
 
   }
+
+  return( miss_found );
+
+}
+
+bool combination_display_funit_summary( FILE* ofile, char* name, char* fname, int hits, float total ) {
+
+  float percent;  /* Percentage of lines hit */
+  float miss;     /* Number of lines missed */
+
+  calc_miss_percent( hits, total, &miss, &percent );
+
+  fprintf( ofile, "  %-30.30s    %-30.30s   %4d/%4.0f/%4.0f      %3.0f%%\n",
+           name, fname, hits, miss, total, percent );
 
   return( miss > 0 );
 
@@ -666,35 +687,22 @@ bool combination_instance_summary( FILE* ofile, funit_inst* root, char* parent )
  design.  An expression is said to be measurable for combinational coverage 
  if it evaluates to a value of 0 or 1.
 */
-bool combination_funit_summary( FILE* ofile, funit_link* head ) {
+bool combination_funit_summary( FILE* ofile, funit_link* head, int* hits, float* total ) {
 
-  float percent;             /* Percentage of lines hit */
-  float miss;                /* Number of lines missed */
-  float miss_found = FALSE;  /* Set to TRUE if missing combinations were found */
+  bool miss_found = FALSE;  /* Set to TRUE if missing combinations were found */
 
   while( head != NULL ) {
-
-    if( head->funit->stat->comb_total == 0 ) {
-      percent = 100;
-    } else {
-      percent = ((head->funit->stat->comb_hit / head->funit->stat->comb_total) * 100);
-    }
-    miss = (head->funit->stat->comb_total - head->funit->stat->comb_hit);
-    if( miss > 0 ) {
-      miss_found = TRUE;
-    }
 
     /* If this is an assertion module, don't output any further */
     if( head->funit->stat->show && !funit_is_unnamed( head->funit ) &&
         ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( head->funit )) ) {
 
-      fprintf( ofile, "  %-30.30s    %-30.30s   %4d/%4.0f/%4.0f      %3.0f%%\n", 
-               obf_funit( funit_flatten_name( head->funit ) ),
-               get_basename( obf_file( head->funit->filename ) ),
-               head->funit->stat->comb_hit,
-               miss,
-               head->funit->stat->comb_total,
-               percent );
+      miss_found |= combination_display_funit_summary( ofile, obf_funit( funit_flatten_name( head->funit ) ), get_basename( obf_file( head->funit->filename ) ),
+                                                       head->funit->stat->comb_hit, head->funit->stat->comb_total );
+
+      /* Update accumulated information */
+      *hits  += head->funit->stat->comb_hit;
+      *total += head->funit->stat->comb_total;
 
     }
 
@@ -2687,6 +2695,8 @@ void combination_report( FILE* ofile, bool verbose ) {
   bool       missed_found = FALSE;  /* If set to TRUE, indicates combinations were missed */
   char       tmp[4096];             /* Temporary string value */
   inst_link* instl;                 /* Pointer to current instance link */
+  int        acc_hits     = 0;      /* Accumulated number of combinations hit */
+  float      acc_total    = 0;      /* Accumulated number of combinations in design */
 
   fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
   fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   COMBINATIONAL LOGIC COVERAGE RESULTS   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
@@ -2707,9 +2717,11 @@ void combination_report( FILE* ofile, bool verbose ) {
 
     instl = inst_head;
     while( instl != NULL ) {
-      missed_found |= combination_instance_summary( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*") );
+      missed_found |= combination_instance_summary( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*"), &acc_hits, &acc_total );
       instl = instl->next;
     }
+    fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
+    combination_display_instance_summary( ofile, "Accumulated", acc_hits, acc_total );
     
     if( verbose && (missed_found || report_covered) ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
@@ -2726,7 +2738,9 @@ void combination_report( FILE* ofile, bool verbose ) {
     fprintf( ofile, "Module/Task/Function                Filename                          Hit/Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
-    missed_found = combination_funit_summary( ofile, funit_head );
+    missed_found = combination_funit_summary( ofile, funit_head, &acc_hits, &acc_total );
+    fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
+    combination_display_funit_summary( ofile, "Accumulated", "", acc_hits, acc_total );
 
     if( verbose && (missed_found || report_covered) ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
@@ -2742,6 +2756,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.170  2007/04/03 18:55:57  phase1geo
+ Fixing more bugs in reporting mechanisms for unnamed scopes.  Checking in more
+ regression updates per these changes.  Checkpointing.
+
  Revision 1.169  2007/04/03 04:15:17  phase1geo
  Fixing bugs in func_iter functionality.  Modified functional unit name
  flattening function (though this does not appear to be working correctly

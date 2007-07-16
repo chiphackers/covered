@@ -723,7 +723,7 @@ thread* sim_add_thread( thread* parent, statement* stmt, func_unit* funit ) {
 
         /* If the statement block is specified as a final block, add it to the end of the delay queue */
         if( ESUPPL_STMT_FINAL( thr->curr->exp->suppl ) == 1 ) {
-          sim_thread_insert_into_delay_queue( thr, (uint64)0xffffffffffffffff );
+          sim_thread_insert_into_delay_queue( thr, 0xffffffffffffffffLL );
 
         /* Otherwise, add it to the active thread list */
         } else {
@@ -1158,6 +1158,9 @@ void sim_dealloc() {
 
 /*
  $Log$
+ Revision 1.94  2007/04/20 22:56:46  phase1geo
+ More regression updates and simulator core fixes.  Still a ways to go.
+
  Revision 1.93  2007/04/18 22:35:02  phase1geo
  Revamping simulator core again.  Checkpointing.
 

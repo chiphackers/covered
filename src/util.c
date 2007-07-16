@@ -1098,8 +1098,36 @@ const char* get_funit_type( int type ) {
 
 }
 
+/*!
+ \param hits     Number of items hit during simulation
+ \param total    Number of total items
+ \param misses   Pointer to a storage element which will contain the calculated number of items missed during simulation
+ \param percent  Pointer to a storage element which will contain the calculated hit percent information
+
+ Calculates the number of misses and hit percentage information from the given hit and total information, storing
+ the results in the misses and percent storage elements.
+
+ \note
+ If the total number of items is 0, the hit percentage will be calculated as 100% covered.
+*/
+void calc_miss_percent( int hits, float total, float* misses, float* percent ) {
+
+  if( total == 0 ) {
+    *percent = 100;
+  } else {
+    *percent = ((hits / total) * 100);
+  }
+  *misses = (total - hits);
+
+}
+
+
 /*
  $Log$
+ Revision 1.59  2007/04/11 22:29:49  phase1geo
+ Adding support for CLI to score command.  Still some work to go to get history
+ stuff right.  Otherwise, it seems to be working.
+
  Revision 1.58  2007/03/13 22:12:59  phase1geo
  Merging changes to covered-0_5-branch to fix bug 1678931.
 

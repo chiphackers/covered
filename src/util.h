@@ -120,9 +120,15 @@ void timer_stop( timer** tm );
 /*! \brief Returns string representation of the specified functional unit type */
 const char* get_funit_type( int type );
 
+/*! \brief Calculates miss and percent information from given hit and total information */
+void calc_miss_percent( int hits, float total, float* misses, float* percent );
+
 
 /*
  $Log$
+ Revision 1.26  2007/03/30 22:43:13  phase1geo
+ Regression fixes.  Still have a ways to go but we are getting close.
+
  Revision 1.25  2007/03/13 22:12:59  phase1geo
  Merging changes to covered-0_5-branch to fix bug 1678931.
 
