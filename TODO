@@ -47,6 +47,7 @@ Merge command
 Report command
 --------------
 
+X  1.  Add accumulative coverage statistics for each metric in ASCII reports
 
 
 Miscellaneous
