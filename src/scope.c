@@ -60,8 +60,10 @@ func_unit* scope_find_funit_from_scope( char* scope, func_unit* curr_funit, bool
   assert( curr_funit != NULL );
 
   /* Get current instance */
+  printf( "curr_funit: %s\n", curr_funit->name );
   if( (curr_inst = inst_link_find_by_funit( curr_funit, inst_head, &ignore )) != NULL ) {
 
+    printf( "curr_inst: %s\n", curr_inst->name );
     /* First check scope based on a relative path if unnamed scopes are not ignored */
     snprintf( tscope, 4096, "%s.%s", curr_inst->name, scope );
     funiti = instance_find_scope( curr_inst, tscope, rm_unnamed );
@@ -258,6 +260,7 @@ bool scope_find_task_function_namedblock( char* name, int type, func_unit* curr_
   */
   if( ((*found_funit = scope_find_funit_from_scope( name, curr_funit, rm_unnamed )) == NULL) && must_find ) {
 
+    inst_link_display( inst_head );
     snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined %s hierarchy (%s) in %s %s, file %s, line %d",
               get_funit_type( type ), obf_funit( name ), get_funit_type( curr_funit->type ),
               obf_funit( curr_funit->name ), obf_file( curr_funit->filename ), line );
@@ -383,6 +386,9 @@ char* scope_flatten( char* scope ) {
 
 /*
  $Log$
+ Revision 1.32  2007/03/15 22:39:06  phase1geo
+ Fixing bug in unnamed scope binding.
+
  Revision 1.31  2006/10/13 15:56:02  phase1geo
  Updating rest of source files for compiler warnings.
 

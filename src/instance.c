@@ -291,6 +291,7 @@ funit_inst* instance_find_by_funit( funit_inst* root, func_unit* funit, int* ign
 
   if( root != NULL ) {
 
+    printf( "root->funit: %s, funit: %s\n", root->funit->name, funit->name );
     if( root->funit == funit ) {
 
       if( *ignore == 0 ) {
@@ -375,6 +376,46 @@ funit_inst* instance_add_child( funit_inst* inst, func_unit* child, char* name, 
 }
 
 /*!
+ \param parent  Pointer to parent instance to attach child to
+ \param child   Pointer to child instance tree to attach
+
+ Searches given parent instance child list for a matching child to the specified
+ child instance.  If the given child instance does not already exist in the parent's
+ list of children, it is added and its parent pointer is pointed to the parent.
+*/
+void instance_attach_child( funit_inst* parent, funit_inst* child ) {
+
+  funit_inst* curr_inst;  /* Pointer to current instance */
+  
+  /* Check to see if this instance already exists */
+  curr_inst = parent->child_head;
+  while( (curr_inst != NULL) && (strcmp( curr_inst->name, child->name ) != 0) ) {
+    curr_inst = curr_inst->next; 
+  } 
+  
+  /* If this instance already exists, don't add it again */
+  if( curr_inst == NULL ) {
+  
+    /* Add new instance to inst child instance list */
+    if( parent->child_head == NULL ) {
+      parent->child_head       = child;
+      parent->child_tail       = child;
+    } else {
+      parent->child_tail->next = child;
+      parent->child_tail       = child;
+    } 
+    
+    /* Point this instance's parent pointer to its parent */
+    child->parent = parent; 
+
+  }
+
+  printf( "AFTER ATTACHING...\n" );
+  inst_link_display( inst_head );
+
+}
+
+/*!
  \param from_inst  Pointer to instance tree to copy.
  \param to_inst    Pointer to instance to copy tree to.
  \param name       Instance name of current instance being copied.
@@ -436,6 +477,8 @@ bool instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child,
   int         i;              /* Loop iterator */
   int         ignore;         /* Number of matched instances to ignore */
 
+  printf( "In instance_parse_add...\n" );
+
   if( *root == NULL ) {
 
     *root = instance_create( child, inst_name, range );
@@ -465,8 +508,10 @@ bool instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child,
 
     } else {
 
+      printf( "  HHEERREE...\n" );
       ignore = 0;
       while( (ignore >= 0) && ((inst = instance_find_by_funit( *root, parent, &ignore )) != NULL) ) {
+        printf( "    Adding child\n" );
         cinst = instance_add_child( inst, child, inst_name, range, resolve );
         i++;
         ignore = (child_gend && (cinst != NULL)) ? -1 : i;
@@ -475,6 +520,7 @@ bool instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child,
     }
 
     /* Everything went well with the add if we found at least one parent instance */
+    printf( "i: %d\n", i );
     retval = (i > 0);
 
   }
@@ -1038,6 +1084,9 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.76  2007/04/18 22:35:02  phase1geo
+ Revamping simulator core again.  Checkpointing.
+
  Revision 1.75  2007/04/11 22:29:48  phase1geo
  Adding support for CLI to score command.  Still some work to go to get history
  stuff right.  Otherwise, it seems to be working.

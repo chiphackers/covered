@@ -864,7 +864,7 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
         break;
 
       case GI_TYPE_INST :
-        instance_add_child( inst, gi->elem.inst->funit, gi->elem.inst->name, gi->elem.inst->range, FALSE );
+        instance_attach_child( inst, gi->elem.inst );
         gen_item_resolve( gi->next_true, inst, FALSE );
         break;
 
@@ -1113,6 +1113,9 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.43  2007/03/15 22:39:05  phase1geo
+ Fixing bug in unnamed scope binding.
+
  Revision 1.42  2006/10/16 21:34:46  phase1geo
  Increased max bit width from 1024 to 65536 to allow for more room for memories.
  Fixed issue with enumerated values being explicitly assigned unknown values and

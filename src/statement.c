@@ -436,7 +436,7 @@ bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) {
            (curr_funit->type == FUNIT_FUNCTION)  ||
            (curr_funit->type == FUNIT_AFUNCTION) ||
            (curr_funit->type == FUNIT_NAMED_BLOCK)) ) {
-        assert( curr_funit->first_stmt == NULL );
+        //assert( curr_funit->first_stmt == NULL );
         curr_funit->first_stmt = stmt;
       }
 
@@ -918,6 +918,9 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.110  2007/04/18 22:35:02  phase1geo
+ Revamping simulator core again.  Checkpointing.
+
  Revision 1.109  2007/04/12 20:54:55  phase1geo
  Adding cli > output when replaying and adding back all of the functions (since
  the cli > prompt helps give it context.  Fixing bugs in simulation core.

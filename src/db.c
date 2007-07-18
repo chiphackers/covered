@@ -669,12 +669,14 @@ func_unit* db_add_instance( char* scope, char* name, int type, vector_width* ran
         curr_gi_block = last_gi;
       }
     } else {
-      inst_link* instl = inst_head;
-      while( (instl != NULL) && !instance_parse_add( &instl->inst, curr_funit, found_funit_link->funit, scope, range, FALSE, FALSE ) ) {
-        instl = instl->next;
-      }
-      if( instl == NULL ) {
-        inst_link_add( instance_create( found_funit_link->funit, scope, range ), &inst_head, &inst_tail );
+      if( (last_gi == NULL) || (last_gi->suppl.part.type != GI_TYPE_INST) || !instance_parse_add( &last_gi->elem.inst, curr_funit, found_funit_link->funit, scope, range, FALSE, TRUE ) ) {
+        inst_link* instl = inst_head;
+        while( (instl != NULL) && !instance_parse_add( &instl->inst, curr_funit, found_funit_link->funit, scope, range, FALSE, FALSE ) ) {
+          instl = instl->next;
+        }
+        if( instl == NULL ) {
+          inst_link_add( instance_create( found_funit_link->funit, scope, range ), &inst_head, &inst_tail );
+        }
       }
     }
 
@@ -694,12 +696,14 @@ func_unit* db_add_instance( char* scope, char* name, int type, vector_width* ran
         curr_gi_block = last_gi;
       }
     } else {
-      inst_link* instl = inst_head;
-      while( (instl != NULL) && !instance_parse_add( &instl->inst, curr_funit, funit, scope, range, FALSE, FALSE ) ) {
-        instl = instl->next;
-      }
-      if( instl == NULL ) {
-        inst_link_add( instance_create( funit, scope, range ), &inst_head, &inst_tail );
+      if( (last_gi == NULL) || (last_gi->suppl.part.type != GI_TYPE_INST) || !instance_parse_add( &last_gi->elem.inst, curr_funit, funit, scope, range, FALSE, TRUE ) ) {
+        inst_link* instl = inst_head;
+        while( (instl != NULL) && !instance_parse_add( &instl->inst, curr_funit, funit, scope, range, FALSE, FALSE ) ) {
+          instl = instl->next;
+        }
+        if( instl == NULL ) {
+          inst_link_add( instance_create( funit, scope, range ), &inst_head, &inst_tail );
+        }
       }
     }
 
@@ -708,6 +712,8 @@ func_unit* db_add_instance( char* scope, char* name, int type, vector_width* ran
     }
       
   }
+
+  inst_link_display( inst_head );
 
   return( score ? funit : NULL );
 
@@ -2308,6 +2314,12 @@ void db_do_timestep( uint64 time, bool final ) {
 
 /*
  $Log$
+ Revision 1.253  2007/07/16 18:39:59  phase1geo
+ Finishing adding accumulated coverage output to report files.  Also fixed
+ compiler warnings with static values in C code that are inputs to 64-bit
+ variables.  Full regression was not run with these changes due to pre-existing
+ simulator problems in core code.
+
  Revision 1.252  2007/04/03 04:15:17  phase1geo
  Fixing bugs in func_iter functionality.  Modified functional unit name
  flattening function (though this does not appear to be working correctly
