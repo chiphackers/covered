@@ -864,7 +864,8 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
         break;
 
       case GI_TYPE_INST :
-        instance_attach_child( inst, gi->elem.inst );
+        //instance_attach_child( inst, gi->elem.inst );
+        instance_copy( gi->elem.inst, inst, gi->elem.inst->name, gi->elem.inst->range, FALSE );
         gen_item_resolve( gi->next_true, inst, FALSE );
         break;
 
@@ -1113,6 +1114,11 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.44  2007/07/18 02:15:04  phase1geo
+ Attempts to fix a problem with generating instances with hierarchy.  Also fixing
+ an issue with named blocks in generate statements.  Still some work to go before
+ regressions are passing again, however.
+
  Revision 1.43  2007/03/15 22:39:05  phase1geo
  Fixing bug in unnamed scope binding.
 

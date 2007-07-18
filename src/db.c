@@ -713,8 +713,6 @@ func_unit* db_add_instance( char* scope, char* name, int type, vector_width* ran
       
   }
 
-  inst_link_display( inst_head );
-
   return( score ? funit : NULL );
 
 }
@@ -2314,6 +2312,11 @@ void db_do_timestep( uint64 time, bool final ) {
 
 /*
  $Log$
+ Revision 1.254  2007/07/18 02:15:04  phase1geo
+ Attempts to fix a problem with generating instances with hierarchy.  Also fixing
+ an issue with named blocks in generate statements.  Still some work to go before
+ regressions are passing again, however.
+
  Revision 1.253  2007/07/16 18:39:59  phase1geo
  Finishing adding accumulated coverage output to report files.  Also fixed
  compiler warnings with static values in C code that are inputs to 64-bit

@@ -3174,7 +3174,7 @@ module_item
         }
       }
       free_safe( $4 );
-      generate_mode--;
+      //generate_mode--;
     }
     task_item_list_opt statement_opt
     {
@@ -3187,7 +3187,7 @@ module_item
     }
     K_endtask
     {
-      generate_mode++;
+      //generate_mode++;
       if( ignore_mode == 0 ) {
         db_end_function_task_namedblock( @10.first_line );
       } else {
@@ -3203,15 +3203,15 @@ module_item
       }
       if( ignore_mode == 0 ) {
         if( db_add_function_task_namedblock( ($3 ? FUNIT_AFUNCTION : FUNIT_FUNCTION), $6, @6.text, @6.first_line ) ) {
-          generate_mode--;
+          //generate_mode--;
           db_add_signal( $6, SSUPPL_TYPE_IMPLICIT, &curr_prange, NULL, curr_signed, FALSE, @6.first_line, @6.first_column, TRUE );
-          generate_mode++;
+          //generate_mode++;
         } else {
           ignore_mode++;
         }
         free_safe( $6 );
       }
-      generate_mode--;
+      //generate_mode--;
     }
     function_item_list statement
     {
@@ -3224,7 +3224,7 @@ module_item
     }
     K_endfunction
     {
-      generate_mode++;
+      //generate_mode++;
       if( ignore_mode == 0 ) {
         db_end_function_task_namedblock( @12.first_line );
       } else {
@@ -4485,13 +4485,12 @@ fork_statement
           } else {
             db_remove_statement( $4 );
             db_remove_statement( stmt );
-            free_safe( $1 );
             $$ = NULL;
           }
         } else {
-          free_safe( $1 );
           $$ = NULL;
         }
+        free_safe( $1 );
       } else {
         if( $3 && db_is_unnamed_scope( $1 ) ) {
           ignore_mode--;
@@ -4520,7 +4519,7 @@ begin_end_block
       } else {
         ignore_mode++;
       }
-      generate_mode--;
+      //generate_mode--;
     }
     block_item_decls_opt statement_list
     {
@@ -4536,23 +4535,20 @@ begin_end_block
           db_add_statement( stmt, stmt );
           $$ = db_get_curr_funit();
         } else {
-          free_safe( $1 );
           $$ = NULL;
         }
       } else {
         if( $3 && db_is_unnamed_scope( $1 ) ) {
           ignore_mode--;
         }
-        free_safe( $1 );
         $$ = NULL;
       }
-      generate_mode++;
+      free_safe( $1 );
+      //generate_mode++;
     }
   | begin_end_id
     {
-      if( $1 != NULL ) {
-        free_safe( $1 );
-      }
+      free_safe( $1 );
       ignore_mode++;
       $$ = NULL;
     }

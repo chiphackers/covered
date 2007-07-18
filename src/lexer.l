@@ -59,6 +59,7 @@ extern str_link*  modlist_tail;
 extern func_unit* curr_funit;
 extern sig_range  curr_prange;
 extern sig_range  curr_urange;
+extern gen_item*  last_gi;
 
 /*!
  Contains state before entering exclusive block.
@@ -404,7 +405,7 @@ WSPACE [ \t\b\f]+
      yylloc.last_column += strlen( yytext );
      if( rc == IDENTIFIER ) {
        if( ignore_mode == 0 ) {
-         if( (generate_mode == 0) && (strchr( yytext, '.' ) != NULL) ) {
+         if( (generate_mode == 0) && ((last_gi == NULL) || (last_gi->suppl.part.type != GI_TYPE_INST)) && (strchr( yytext, '.' ) != NULL) ) {
            yylval.text = gen_item_calc_signal_name( yytext, curr_funit, yylloc.first_line, TRUE );
          } else {
            yylval.text = strdup_safe( yytext, __FILE__, __LINE__ );

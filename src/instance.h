@@ -47,6 +47,9 @@ funit_inst* instance_add_child( funit_inst* inst, func_unit* child, char* name, 
 /*! \brief Attaches the given child instance to the given parent instance */
 void instance_attach_child( funit_inst* parent, funit_inst* child );
 
+/*! \brief Copies the given from_inst as a child of the given to_inst */
+void instance_copy( funit_inst* from_inst, funit_inst* to_inst, char* name, vector_width* range, bool resolve );
+
 /*! \brief Adds new instance to specified instance tree during parse. */
 bool instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child, char* inst_name, vector_width* range,
                          bool resolve, bool child_gend );
@@ -81,6 +84,11 @@ void instance_dealloc( funit_inst* root, char* scope );
 
 /*
  $Log$
+ Revision 1.30  2007/07/18 02:15:04  phase1geo
+ Attempts to fix a problem with generating instances with hierarchy.  Also fixing
+ an issue with named blocks in generate statements.  Still some work to go before
+ regressions are passing again, however.
+
  Revision 1.29  2007/04/18 22:35:02  phase1geo
  Revamping simulator core again.  Checkpointing.
 
