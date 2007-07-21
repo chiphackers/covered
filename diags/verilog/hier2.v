@@ -4,7 +4,7 @@ reg b;
 
 foo a[3:0] ();
 
-initial b = \a[1] . \b[2] . c;
+initial b = a[1].b[2].c;
 
 initial begin
 `ifndef VPI

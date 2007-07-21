@@ -1,10 +1,10 @@
 5 a 1 * 0
-8 /data/cf/uvlogic1/uvg/trevorw/projects/covered/diags/verilog -t main -vcd hier2.vcd -o hier2.cdd -v hier2.v
+8 /home/HP_User/covered/diags/verilog -t main -vcd hier2.vcd -o hier2.cdd -v hier2.v
 3 0 $root $root NA 0 0 1
 3 0 main main hier2.v 1 18 1
-2 1 7 c001c 0 1 10 0 0 \a[1] .\b[2] .c
+2 1 7 c0016 0 1 10 0 0 a[1].b[2].c
 2 2 7 80008 0 1 400 0 0 b
-2 3 7 8001c 1 37 1022 1 2
+2 3 7 80016 1 37 1022 1 2
 1 b 3 830004 1 0 0 0 1 1 2
 4 3 0 0
 3 0 foo main.a[0] hier2.v 22 26 1
