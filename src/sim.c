@@ -107,7 +107,9 @@ extern /*@null@*/inst_link*  inst_head;
 extern bool                  flag_use_command_line_debug;
 extern bool                  final_sim_time;
 #ifdef DEBUG_MODE
+#ifndef VPI_ONLY
 extern bool                  cli_debug_mode;
+#endif
 #endif
 
 
@@ -985,7 +987,9 @@ void sim_thread( thread* thr, uint64 sim_time ) {
   while( (stmt != NULL) && !thr->suppl.part.kill ) {
 
 #ifdef DEBUG_MODE
+#ifndef VPI_ONLY
     cli_execute();
+#endif
 #endif
 
     /* Place expression in expression simulator and run */
@@ -1128,8 +1132,10 @@ void sim_initialize() {
   sim_add_statics();
 
 #ifdef DEBUG_MODE
+#ifndef VPI_ONLY
   /* Set the CLI debug mode to the value of the general debug mode */
   cli_debug_mode = debug_mode;
+#endif
 #endif
 
 }
@@ -1149,8 +1155,10 @@ void sim_dealloc() {
   }
 
 #ifdef DEBUG_MODE
+#ifndef VPI_ONLY
   /* Clear CLI debug mode */
   cli_debug_mode = FALSE;
+#endif
 #endif
 
 }
@@ -1158,6 +1166,12 @@ void sim_dealloc() {
 
 /*
  $Log$
+ Revision 1.95  2007/07/16 18:39:59  phase1geo
+ Finishing adding accumulated coverage output to report files.  Also fixed
+ compiler warnings with static values in C code that are inputs to 64-bit
+ variables.  Full regression was not run with these changes due to pre-existing
+ simulator problems in core code.
+
  Revision 1.94  2007/04/20 22:56:46  phase1geo
  More regression updates and simulator core fixes.  Still a ways to go.
 

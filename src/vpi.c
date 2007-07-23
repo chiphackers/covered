@@ -78,6 +78,8 @@ char*  top_module          = NULL;
 char*  top_instance        = NULL;
 int    flag_global_generation = GENERATION_SV;
 int    generate_expr_mode  = 0;
+bool   cli_debug_mode      = FALSE;
+bool   flag_use_command_line_debug = FALSE;
 
 extern bool        debug_mode;
 extern symtable*   vcd_symtab;

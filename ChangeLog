@@ -1,314 +1,167 @@
-2006-12-05 17:27  phase1geo
+2007-07-21 07:34  phase1geo
 
-	Updates to user documentation to increase the width of viewable
-	information.  This was necessary to accommodate the width of the
-	score command options table.
+	* Updating regression for latest version of Icarus Verilog.
 
-2006-12-05 16:25  phase1geo
+2007-07-18 17:39  phase1geo
 
-	Fixing VPI code to allow Cver and VCS regressions to pass.  With
-	these simulators, we need to perform a time 0 timestep simulation.
+	* Checkpointing generate work though we are at a fairly broken
+	  state at the moment.
 
-2006-12-01 23:18  phase1geo
+2007-07-17 21:15  phase1geo
 
-	Updating regressions, updating build scripts and updating
-	documentation.
+	* Attempts to fix a problem with generating instances with
+	  hierarchy.  Also fixing an issue with named blocks in generate
+	  statements.  Still some work to go before regressions are passing
+	  again, however.
 
-2006-12-01 17:24  phase1geo
+2007-07-17 09:19  phase1geo
 
-	Small tweaks to diagnostic Makefile.
+	* Updating VCS regression files.  VCS regressions do not fully
+	  complete successfully at this point, however.
 
-2006-12-01 17:08  phase1geo
+2007-07-17 07:52  phase1geo
 
-	Last of the updates (I believe) for full regressions to pass for
-	IV, Cver and VCS in both normal and VPI modes.
+	* Updating TODO list.
 
-2006-12-01 15:40  phase1geo
+2007-07-16 17:24  phase1geo
 
-	Fixing VPI bug in that initial values of signals were not being
-	recorded because they were not considered to be value changes by
-	the simulator.	Regressions are getting quite close to fully
-	passing in all modes but there are still a few exceptions.
+	* Fixed bugs in accumulated coverage output and updated regression
+	  files for this change.  VCS simulated results are not contained
+	  here, however.
 
-2006-12-01 13:14  phase1geo
+2007-07-16 13:39  phase1geo
 
-	Fixing lib Makefile and configuration file to compile the
-	covered.vpi module via Makefile (instead of the iverilog-vpi) to
-	give us more debug output.  Also fixed some compilation warnings
-	with vpi.c and IV.
+	* Finishing adding accumulated coverage output to report files.
+	  Also fixed compiler warnings with static values in C code that
+	  are inputs to 64-bit variables.  Full regression was not run with
+	  these changes due to pre-existing simulator problems in core
+	  code.
 
-2006-12-01 13:05  phase1geo
+2007-07-16 07:39  phase1geo
 
-	Fixing the usage of -vpi_ts option.  Updating its -h usage
-	information as well.
+	* Started to add support for displaying accumulated coverage
+	  results for each metric.  Finished line and toggle and am
+	  half-way done with memory coverage (still have combinational
+	  logic, FSM and assertion coverage to complete before this feature
+	  is fully functional).
 
-2006-11-30 16:14  phase1geo
+2007-04-20 17:56  phase1geo
 
-	Updating lib/Makefile.am file to not use the iverilog-vpi utility
-	for creating the covered.vpi module (allows us to control debugging
-	information).
+	* More regression updates and simulator core fixes.  Still a ways
+	  to go.
 
-2006-11-30 13:58  phase1geo
+2007-04-19 07:43  phase1geo
 
-	Fixing rest of issues so that full regression (IV, Cver and VCS)
-	without VPI passes.  Updated regression files.
+	* Adding concat7 to the test and regression suite.  This diagnostic
+	  currently fails.
 
-2006-11-29 23:04  phase1geo
+2007-04-18 17:34  phase1geo
 
-	More fixes to new simulation algorithm.  Still have a couple of
-	failures that need to be looked at.  Checkpointing.
+	* Revamping simulator core again.  Checkpointing.
 
-2006-11-29 17:15  phase1geo
+2007-04-17 11:31  phase1geo
 
-	Major overhaul to simulation engine by including an appropriate
-	delay queue mechanism to handle simulation timing for delay
-	operations.  Regression not fully passing at this moment but enough
-	is working to checkpoint this work.
+	* Fixing bug 1698806 by rebinding a parameter signal to its list of
+	  expressions prior to writing the initial CDD file (elaboration
+	  phase).  Added param16 diagnostic to regression suite to verify
+	  the fix.  Full regressions pass.
 
-2006-11-28 10:39  phase1geo
+2007-04-13 16:47  phase1geo
 
-	More updates for regressions due to changes in delay handling. 
-	Still work to go.
+	* More simulation debugging.  Added 'display all_list' command to
+	  CLI to output the list of all threads.  Updated regressions
+	  though we are not fully passing at the moment.  Checkpointing.
 
-2006-11-26 22:11  phase1geo
+2007-04-12 16:35  phase1geo
 
-	Adding more changes to properly support thread time.  This is a
-	work in progress and regression is currently broken for the moment.
-	 Checkpointing.
+	* More bug fixes to simulation core.  Checkpointing.
 
-2006-11-26 14:57  phase1geo
+2007-04-12 15:54  phase1geo
 
-	Bug fixes and regression updates for timescale code.  This code
-	should now be working correctly.
+	* Adding cli > output when replaying and adding back all of the
+	  functions (since the cli > prompt helps give it context.  Fixing
+	  bugs in simulation core.  Checkpointing.
 
-2006-11-25 23:23  phase1geo
+2007-04-12 09:28  phase1geo
 
-	Adding several more timescale diagnostics to regression suite. 
-	Still have a couple of failing diagnostics in normal regression
-	runs.  Checkpointing.
+	* Adding ability to display the last <num> lines of history to the
+	  history command.  Changed behavior of 'display active_queue' and
+	  'display delayed_queue' commands to output when replaying
+	  history.  Also modified look of the help output to hopefully make
+	  it easier to read.
 
-2006-11-25 15:27  phase1geo
+2007-04-11 23:15  phase1geo
 
-	Adding timescale diagnostics to regression suite and fixing bugs in
-	core associated with this code.  Full regression now passes for IV
-	and Cver (not in VPI mode).
+	* Adding history all command, added list command and updated the
+	  display current command to include statement output.
 
-2006-11-24 22:24  phase1geo
+2007-04-11 22:46  phase1geo
 
-	Adding initial code to fully support the timescale directive and
-	its usage.  Added -vpi_ts score option to allow the user to specify
-	a top-level timescale value for the generated VPI file (this code
-	has not been tested at this point, however).  Also updated
-	diagnostic Makefile to get the VPI shared object files from the
-	current lib directory (instead of the checked in one).
+	* Fixing bugs with CLI.  History and history file saving/loading is
+	  implemented and working as desired.
 
-2006-11-24 13:40  phase1geo
+2007-04-11 17:29  phase1geo
 
-	Updating Makefile to use correct VPI shared object files when
-	running VPI regressions.
+	* Adding support for CLI to score command.  Still some work to go
+	  to get history stuff right.  Otherwise, it seems to be working.
 
-2006-11-23 23:35  phase1geo
+2007-04-10 22:15  phase1geo
 
-	Updating cdd_diff script to use the normal diff procedure instead
-	of the homegrown one.
+	* Attempting to fix delay expression for new simulation core.
+	  Almost there.
 
-2006-11-23 23:30  phase1geo
+2007-04-10 22:04  phase1geo
 
-	Checking in fix for proper handling of delays.	This does not
-	include the use of timescales (which will be fixed next).  Full IV
-	regression now passes.
+	* Fixing bug 1688487.
 
-2006-11-23 21:44  phase1geo
+2007-04-10 22:03  phase1geo
 
-	Correcting a few more files.
+	* Fixing writability check to -o option in the score command.
+	  Fixes bug 1688487.
 
-2006-11-23 21:38  phase1geo
+2007-04-10 17:10  phase1geo
 
-	Adding missing files.
+	* Fixing some more simulation issues.
 
-2006-11-23 21:38  phase1geo
+2007-04-09 22:56  phase1geo
 
-	Updates for regression which is not fully passing at the moment. 
-	Also added cdd_diff script for regression running purposes.
+	* Completing majority of code to support new simulation core.
+	  Starting to debug this though we still have quite a ways to go
+	  here.  Checkpointing.
 
-2006-11-22 14:20  phase1geo
+2007-04-09 17:47  phase1geo
 
-	Updates to properly support 64-bit time.  Also starting to make
-	changes to simulator to support "back simulation" for when the
-	current simulation time has advanced out quite a bit of time and
-	the simulator needs to catch up.  This last feature is not quite
-	working at the moment and regressions are currently broken. 
-	Checkpointing.
+	* Starting to modify the simulation engine for performance
+	  purposes.  Code is not complete and is untested at this point.
 
-2006-11-21 20:25  phase1geo
+2007-04-03 13:55  phase1geo
 
-	Updating build scripts.
+	* Fixing more bugs in reporting mechanisms for unnamed scopes.
+	  Checking in more regression updates per these changes.
+	  Checkpointing.
 
-2006-11-21 17:56  phase1geo
+2007-04-02 23:15  phase1geo
 
-	More updates to VPI (still not working correctly, however).
+	* Fixing bugs in func_iter functionality.  Modified functional unit
+	  name flattening function (though this does not appear to be
+	  working correctly at this time).  Added calls to
+	  funit_flatten_name in all of the reporting files.  Checkpointing.
 
-2006-11-21 13:54  phase1geo
+2007-04-02 15:19  phase1geo
 
-	Making modifications to defines.h to help in creating appropriately
-	sized types.  Other changes to VPI code (but this is still broken
-	at the moment).  Checkpointing.
+	* Checkpointing more work on use of functional iterators.  Not
+	  working correctly yet.
 
-2006-11-21 12:25  phase1geo
+2007-04-01 23:50  phase1geo
 
-	Adding changeValue support for integer and time to VPI
-	functionality.
+	* Adding func_iter files to iterate through a functional unit for
+	  reporting purposes.  Updated affected files.
 
-2006-11-20 17:02  phase1geo
+2007-03-30 17:43  phase1geo
 
-	Fixing convert_cfg script for the mbit_sel4*.v diagnostics.  Also
-	removing unneeded output in vpi.c.
+	* Regression fixes.  Still have a ways to go but we are getting
+	  close.
 
-2006-11-20 15:36  phase1geo
+2007-03-28 13:46  phase1geo
 
-	Fixing bug 1599869.  When a disable statement is found to not be
-	covered, the codegen_gen_expr function returns the proper output
-	(instead of unitialized output).
-
-2006-11-17 17:17  phase1geo
-
-	Fixing bug in score command where parameter override values were
-	not being saved off properly in the CDD file.  Also fixing bug when
-	a parameter is found in a VCD file (ignoring its usage).  Updated
-	regressions for these changes.
-
-2006-11-09 16:51  phase1geo
-
-	Adding cver rule to regression Makefile to allow Cver regressions
-	to be run.  Seeing quite a few errors in regression as it is
-	(though I do not believe that Covered is broken at this point). 
-	Checkpointing.
-
-2006-11-09 16:26  phase1geo
-
-	Finished work on Makefile to make it useful for Cver as well.
-
-2006-11-09 12:12  phase1geo
-
-	Fixing bug 1569819.  Added multi_exp4 diagnostic to regression
-	suite to verify this fix.  Full regression passes.  Also started to
-	add support for Cver to the regression testing Makefile -- still
-	more work to go here.
-
-2006-11-06 12:12  phase1geo
-
-	Adding more signed parsing support to net declarations.  Added
-	signed4.2 diagnostic to verify this support.  Updated regressions
-	which now fully pass.
-
-2006-11-03 17:36  phase1geo
-
-	Fixing bug 1590104.  Updating regressions per this change.
-
-2006-11-03 16:23  phase1geo
-
-	Fixing bug 1545442.  Added report1 diagnostic to regression suite
-	to verify this fix.
-
-2006-11-03 15:28  phase1geo
-
-	file report1.rptM was initially added on branch
-	covered-0_4_5-branch.
-
-2006-11-03 15:28  phase1geo
-
-	file report1.rptI was initially added on branch
-	covered-0_4_5-branch.
-
-2006-11-03 15:28  phase1geo
-
-	file report1.rptWI was initially added on branch
-	covered-0_4_5-branch.
-
-2006-11-03 15:28  phase1geo
-
-	file report1.rptWM was initially added on branch
-	covered-0_4_5-branch.
-
-2006-11-03 15:28  phase1geo
-
-	file report1.cfg was initially added on branch
-	covered-0_4_5-branch.
-
-2006-11-03 15:28  phase1geo
-
-	file report1.cdd was initially added on branch
-	covered-0_4_5-branch.
-
-2006-11-03 15:28  phase1geo
-
-	file report1.v was initially added on branch covered-0_4_5-branch.
-
-2006-11-03 14:52  phase1geo
-
-	Fixing bugs 1589519, 1589524 and 1589546.  Added signed4 and
-	signed4.1 diagnostics to regression suite to verify its correct
-	behavior.
-
-2006-11-03 13:01  phase1geo
-
-	Adding missing file.
-
-2006-11-03 13:00  phase1geo
-
-	Fixing bug 1589831.  Also added err3 and err3.1 diagnostics to
-	verify its correct behavior.
-
-2006-11-03 12:58  phase1geo
-
-	Fixing bug 1589522.
-
-2006-11-03 12:16  phase1geo
-
-	Removing unnecessary spaces in comments.
-
-2006-11-01 16:35  phase1geo
-
-	Fixing bug dealing with sizing of parameters.  When the user does
-	not explicitly set the parameter size, Covered was assuming this
-	width to be 32 instead of the width of its assigned value.  Updated
-	regressions for this change and added param15 to verify its
-	correctness.  Full regression passes.
-
-2006-10-26 16:58  phase1geo
-
-	Starting to add support for Cver regression testing.
-
-2006-10-25 17:35  phase1geo
-
-	Starting to update testsuite to verify VPI mode as well.  Fixing
-	runtime issues with vpi.c.  Also updated VL_error output format for
-	easier readability.  Fixing bug in parser for statement blocks that
-	do not contain RHS signals for implicit event expressions. 
-	Updating regressions for these changes.
-
-2006-10-22 22:27  phase1geo
-
-	Adding slist5 diagnostic to replicate bug found in the field.
-
-2006-10-22 22:25  phase1geo
-
-	Starting to update help files using the new widget from HelpSystem
-	1.5.
-
-2006-10-20 20:54  phase1geo
-
-	Started integrating HelpSystem into Covered's help menu.  Need to
-	do a lot of work on creating the appropriate help files, but this
-	is a good first start.
-
-2006-10-20 17:28  phase1geo
-
-	Adding conversion script to allow for VCD, LXT and VPI testing.
-
-2006-10-20 11:56  phase1geo
-
-	Documentation updates for missing -b option to report command as
-	well as adding another FAQ item describing differences between
-	stable and development releases.
-
+	* Adding TODO item to make all C code splint clean.
