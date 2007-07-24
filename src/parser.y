@@ -78,6 +78,11 @@ int  attr_mode   = 0;
 int  generate_mode = 0;
 
 /*!
+ If set to a value > 0, specifies that we are parsing the top-most level of structures in a generate block.
+*/
+int  generate_top_mode = 0;
+
+/*!
  If set to a value > 0, specifies that we are parsing the body of a generate loop
 */
 int  generate_for_mode = 0;
@@ -2873,14 +2878,14 @@ module_item
       curr_mba     = FALSE;
       curr_signed  = FALSE;
       curr_handled = TRUE;
-      if( generate_mode > 0 ) {
+      if( generate_top_mode > 0 ) {
         ignore_mode++;
         VLerror( "Port declaration not allowed within a generate block" );
       }
     }
     list_of_variables ';'
     {
-      if( generate_mode > 0 ) {
+      if( generate_top_mode > 0 ) {
         ignore_mode--;
       }
     }
@@ -2893,7 +2898,7 @@ module_item
       } else {
         curr_mba     = FALSE;
         curr_handled = TRUE;
-        if( generate_mode > 0 ) {
+        if( generate_top_mode > 0 ) {
           ignore_mode++;
           VLerror( "Port declaration not allowed within a generate block" );
         }
@@ -2901,7 +2906,7 @@ module_item
     }
     list_of_variables ';'
     {
-      if( !parser_check_generation( GENERATION_2001 ) || (generate_mode > 0) ) {
+      if( !parser_check_generation( GENERATION_2001 ) || (generate_top_mode > 0) ) {
         ignore_mode--;
       }
     }
@@ -2914,7 +2919,7 @@ module_item
         curr_mba      = FALSE;
         curr_handled  = TRUE;
         curr_sig_type = SSUPPL_TYPE_OUTPUT;
-        if( generate_mode > 0 ) {
+        if( generate_top_mode > 0 ) {
           ignore_mode++;
           VLerror( "Port declaration not allowed within a generate block" );
         }
@@ -2922,13 +2927,13 @@ module_item
     }
     list_of_variables ';'
     {
-      if( !parser_check_generation( GENERATION_2001 ) || (generate_mode > 0) ) {
+      if( !parser_check_generation( GENERATION_2001 ) || (generate_top_mode > 0) ) {
         ignore_mode--;
       }
     }
   | attribute_list_opt port_type range_opt error ';'
     {
-      if( generate_mode > 0 ) {
+      if( generate_top_mode > 0 ) {
         VLerror( "Port declaration not allowed within a generate block" );
       } else {
         VLerror( "Invalid variable list in port declaration" );
@@ -2940,14 +2945,14 @@ module_item
       curr_signed   = FALSE;
       curr_handled  = TRUE;
       curr_sig_type = SSUPPL_TYPE_DECLARED;
-      if( generate_mode > 0 ) {
+      if( generate_top_mode > 0 ) {
         ignore_mode++;
         VLerror( "Port declaration not allowed within a generate block" );
       }
     }
     list_of_variables ';'
     {
-      if( generate_mode > 0 ) {
+      if( generate_top_mode > 0 ) {
         ignore_mode--;
       }
     }
@@ -3174,7 +3179,7 @@ module_item
         }
       }
       free_safe( $4 );
-      //generate_mode--;
+      generate_top_mode--;
     }
     task_item_list_opt statement_opt
     {
@@ -3187,7 +3192,7 @@ module_item
     }
     K_endtask
     {
-      //generate_mode++;
+      generate_top_mode++;
       if( ignore_mode == 0 ) {
         db_end_function_task_namedblock( @10.first_line );
       } else {
@@ -3203,15 +3208,15 @@ module_item
       }
       if( ignore_mode == 0 ) {
         if( db_add_function_task_namedblock( ($3 ? FUNIT_AFUNCTION : FUNIT_FUNCTION), $6, @6.text, @6.first_line ) ) {
-          //generate_mode--;
+          generate_top_mode--;
           db_add_signal( $6, SSUPPL_TYPE_IMPLICIT, &curr_prange, NULL, curr_signed, FALSE, @6.first_line, @6.first_column, TRUE );
-          //generate_mode++;
+          generate_top_mode++;
         } else {
           ignore_mode++;
         }
         free_safe( $6 );
       }
-      //generate_mode--;
+      generate_top_mode--;
     }
     function_item_list statement
     {
@@ -3224,7 +3229,7 @@ module_item
     }
     K_endfunction
     {
-      //generate_mode++;
+      generate_top_mode++;
       if( ignore_mode == 0 ) {
         db_end_function_task_namedblock( @12.first_line );
       } else {
@@ -3239,6 +3244,7 @@ module_item
       } else {
         if( generate_mode == 0 ) {
           generate_mode = 1;
+          generate_top_mode = 1;
         } else {
           VLerror( "Found generate keyword inside of a generate block" );
         }
@@ -3248,6 +3254,7 @@ module_item
     K_endgenerate
     {
       generate_mode = 0;
+      generate_top_mode = 0;
       if( !parser_check_generation( GENERATION_2001 ) ) {
         ignore_mode--;
       } else {
@@ -3276,7 +3283,7 @@ module_item
   | attribute_list_opt
     K_specify
     {
-      if( generate_mode > 0 ) {
+      if( generate_top_mode > 0 ) {
         VLerror( "Specify block not allowed within a generate block" );
       }
     }
@@ -3284,7 +3291,7 @@ module_item
   | attribute_list_opt
     K_specify
     {
-      if( generate_mode > 0 ) {
+      if( generate_top_mode > 0 ) {
         VLerror( "Specify block not allowed within a generate block" );
       }
     }
@@ -3292,7 +3299,7 @@ module_item
   | attribute_list_opt
     K_specify
     {
-      if( generate_mode > 0 ) {
+      if( generate_top_mode > 0 ) {
         VLerror( "Specify block not allowed within a generate block" );
       }
     }
@@ -4519,7 +4526,7 @@ begin_end_block
       } else {
         ignore_mode++;
       }
-      //generate_mode--;
+      generate_top_mode--;
     }
     block_item_decls_opt statement_list
     {
@@ -4544,7 +4551,7 @@ begin_end_block
         $$ = NULL;
       }
       free_safe( $1 );
-      //generate_mode++;
+      generate_top_mode++;
     }
   | begin_end_id
     {

@@ -77,6 +77,7 @@ extern int         fork_depth;
 extern int         block_depth;
 /*@null@*/extern tnode*      def_table;
 extern int         generate_mode;
+extern int         generate_top_mode;
 extern int         generate_expr_mode;
 
 /*!
@@ -651,7 +652,7 @@ func_unit* db_add_instance( char* scope, char* name, int type, vector_width* ran
     }
   }
 
-  if( ((found_funit_link = funit_link_find( funit, funit_head )) != NULL) && (generate_mode == 0) ) {
+  if( ((found_funit_link = funit_link_find( funit, funit_head )) != NULL) && (generate_top_mode == 0) ) {
 
     if( type != FUNIT_MODULE ) {
       snprintf( user_msg, USER_MSG_LENGTH, "Multiple identical task/function/named-begin-end names (%s) found in module %s, file %s\n",
@@ -661,7 +662,7 @@ func_unit* db_add_instance( char* scope, char* name, int type, vector_width* ran
     }
 
     /* If we are currently within a generate block, create a generate item for this instance to resolve it later */
-    if( generate_mode > 0 ) {
+    if( generate_top_mode > 0 ) {
       last_gi = gen_item_create_inst( instance_create( found_funit_link->funit, scope, range ) );
       if( curr_gi_block != NULL ) {
         db_gen_item_connect( curr_gi_block, last_gi );
@@ -688,7 +689,7 @@ func_unit* db_add_instance( char* scope, char* name, int type, vector_width* ran
     funit_link_add( funit, &funit_head, &funit_tail );
 
     /* If we are currently within a generate block, create a generate item for this instance to resolve it later */
-    if( generate_mode > 0 ) {
+    if( generate_top_mode > 0 ) {
       last_gi = gen_item_create_inst( instance_create( funit, scope, range ) );
       if( curr_gi_block != NULL ) {
         db_gen_item_connect( curr_gi_block, last_gi );
@@ -1065,7 +1066,7 @@ void db_add_signal( char* name, int type, sig_range* prange, sig_range* urange, 
     }
 
     /* Add the signal to either the functional unit or a generate item */
-    if( (generate_mode > 0) && (type != SSUPPL_TYPE_GENVAR) ) {
+    if( (generate_top_mode > 0) && (type != SSUPPL_TYPE_GENVAR) ) {
       last_gi = gen_item_create_sig( sig );
       if( curr_gi_block != NULL ) {
         db_gen_item_connect( curr_gi_block, last_gi );
@@ -1533,7 +1534,7 @@ void db_add_expression( expression* root ) {
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
-    if( generate_mode > 0 ) {
+    if( generate_top_mode > 0 ) {
 
       if( root->suppl.part.gen_expr == 1 ) {
 
@@ -1726,7 +1727,7 @@ void db_add_statement( statement* stmt, statement* start ) {
 #endif
 
     /* Now add current statement */
-    if( generate_mode > 0 ) {
+    if( generate_top_mode > 0 ) {
 
       last_gi = gen_item_create_stmt( stmt );
 
@@ -2312,6 +2313,9 @@ void db_do_timestep( uint64 time, bool final ) {
 
 /*
  $Log$
+ Revision 1.255  2007/07/18 22:39:17  phase1geo
+ Checkpointing generate work though we are at a fairly broken state at the moment.
+
  Revision 1.254  2007/07/18 02:15:04  phase1geo
  Attempts to fix a problem with generating instances with hierarchy.  Also fixing
  an issue with named blocks in generate statements.  Still some work to go before

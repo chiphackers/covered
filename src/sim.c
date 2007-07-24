@@ -311,6 +311,7 @@ void sim_thread_pop_head() {
   if( debug_mode && !flag_use_command_line_debug ) {
     printf( "Before thread is popped from active queue...\n" );
     sim_display_active_queue();
+    printf( "-WAIT-\n" );  sim_display_wait_queue();
   }
 #endif
 
@@ -330,6 +331,7 @@ void sim_thread_pop_head() {
 
   /* Advance the curr pointer if we call sim_add_thread */
   if( (thr->curr->exp->op == EXP_OP_FORK)      ||
+      (thr->curr->exp->op == EXP_OP_JOIN)      ||  /* TBD */
       (thr->curr->exp->op == EXP_OP_FUNC_CALL) ||
       (thr->curr->exp->op == EXP_OP_TASK_CALL) ||
       (thr->curr->exp->op == EXP_OP_NB_CALL) ) {
@@ -358,6 +360,7 @@ void sim_thread_pop_head() {
   if( debug_mode && !flag_use_command_line_debug ) {
     printf( "After thread is popped from active queue...\n" );
     sim_display_active_queue();
+    printf( "-WAIT-\n" );  sim_display_wait_queue();
     sim_display_all_list();
   }
 #endif
@@ -783,6 +786,10 @@ void sim_kill_thread( thread* thr ) {
 
     /* If we are the last child, re-insert the parent in our place (setting active_head to the parent) */
     if( thr->parent->active_children == 0 ) {
+
+      /* If the parent was sitting in the waiting queue, remove it */
+      //if( thr->parent->suppl.part.state == THR_ST_WAITING ) {
+      //}
       thr->parent->queue_next = thr->queue_next;
       if( thr->queue_next == NULL ) {
         active_tail = thr->parent;
@@ -1166,6 +1173,9 @@ void sim_dealloc() {
 
 /*
  $Log$
+ Revision 1.96  2007/07/23 12:32:58  phase1geo
+ Updating ChangeLog and fixing some compile issues with the VPI library.
+
  Revision 1.95  2007/07/16 18:39:59  phase1geo
  Finishing adding accumulated coverage output to report files.  Also fixed
  compiler warnings with static values in C code that are inputs to 64-bit
