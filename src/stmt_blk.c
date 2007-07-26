@@ -100,7 +100,8 @@ void stmt_blk_remove() {
      If we are removing the statement contained in a task, function or named block, we need to remove all statement
      blocks that contain expressions that call this task, function or named block.
     */
-    if( (curr_funit->type == FUNIT_FUNCTION) || (curr_funit->type == FUNIT_TASK) || (curr_funit->type == FUNIT_NAMED_BLOCK) ) {
+    if( (curr_funit->type == FUNIT_FUNCTION)  || (curr_funit->type == FUNIT_TASK)  || (curr_funit->type == FUNIT_NAMED_BLOCK) ||
+        (curr_funit->type == FUNIT_AFUNCTION) || (curr_funit->type == FUNIT_ATASK) || (curr_funit->type == FUNIT_ANAMED_BLOCK) ) {
       curr_funit->type = FUNIT_NO_SCORE;
       db_remove_stmt_blks_calling_statement( stmt );
     }
@@ -112,6 +113,10 @@ void stmt_blk_remove() {
 
 /*
  $Log$
+ Revision 1.11  2007/03/16 22:33:46  phase1geo
+ One more fix that helps diagnostics like always1 and still fixes exclude3.
+ Regressions are still not working correctly yet, though.
+
  Revision 1.10  2007/03/16 21:41:10  phase1geo
  Checkpointing some work in fixing regressions for unnamed scope additions.
  Getting closer but still need to properly handle the removal of functional units.

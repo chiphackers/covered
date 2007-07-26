@@ -154,6 +154,24 @@ func_unit* funit_get_curr_function( func_unit* funit ) {
 }
 
 /*!
+ \param funit  Functional unit that may be nested in a function
+
+ \return Returns a pointer to the function that contains the specified functional unit if
+         one exists; otherwise, returns NULL.
+*/
+func_unit* funit_get_curr_task( func_unit* funit ) {
+
+  assert( funit != NULL );
+
+  while( (funit->type != FUNIT_TASK) && (funit->type != FUNIT_ATASK) && (funit->type != FUNIT_MODULE) ) {
+    funit = funit->parent;
+  }
+
+  return( ((funit->type == FUNIT_TASK) || (funit->type == FUNIT_ATASK)) ? funit : NULL );
+
+}
+
+/*!
  \param funit  Pointer to functional unit to process
 
  \return Returns the number of input, output and inout ports specified in this functional unit
@@ -476,7 +494,8 @@ bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
 #ifdef DEBUG_MODE
     assert( (funit->type == FUNIT_MODULE)    || (funit->type == FUNIT_NAMED_BLOCK) ||
             (funit->type == FUNIT_FUNCTION)  || (funit->type == FUNIT_TASK)        ||
-            (funit->type == FUNIT_AFUNCTION) || (funit->type == FUNIT_ATASK) );
+            (funit->type == FUNIT_AFUNCTION) || (funit->type == FUNIT_ATASK)       ||
+            (funit->type == FUNIT_ANAMED_BLOCK) );
     snprintf( user_msg, USER_MSG_LENGTH, "Writing %s %s", get_funit_type( funit->type ), obf_funit( funit->name ) );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
@@ -880,7 +899,7 @@ bool funit_is_unnamed( func_unit* funit ) {
   char rest[4096];      /* Rest of functional unit name */
 
   /* Only begin..end blocks can be unnamed scopes */
-  if( funit->type == FUNIT_NAMED_BLOCK ) {
+  if( (funit->type == FUNIT_NAMED_BLOCK) || (funit->type == FUNIT_ANAMED_BLOCK) ) {
     scope_extract_back( funit->name, back, rest );
     retval = db_is_unnamed_scope( back );
   }
@@ -1078,6 +1097,13 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.73  2007/07/26 20:12:45  phase1geo
+ Fixing bug related to failure of hier1.1 diagnostic.  Placing functional unit
+ scope in quotes for cases where backslashes are used in the scope names (requiring
+ spaces in the names to escape the backslash).  Incrementing CDD version and
+ regenerated all regression files.  Only atask1 is currently failing in regressions
+ now.
+
  Revision 1.72  2007/07/26 17:05:15  phase1geo
  Fixing problem with static functions (vector data associated with expressions
  were not being allocated).  Regressions have been run.  Only two failures

@@ -255,8 +255,11 @@
 /*! Represents a re-entrant Verilog task (syntax "task <name> ... endtask") */
 #define FUNIT_ATASK          6
 
+/*! Represents a named block inside of a re-entrant Verilog task or function */
+#define FUNIT_ANAMED_BLOCK   7
+
 /*! The number of valid functional unit types */
-#define FUNIT_TYPES          7
+#define FUNIT_TYPES          8
 
 /*! @} */
 
@@ -2352,6 +2355,13 @@ struct reentrant_s {
 
 /*
  $Log$
+ Revision 1.257  2007/07/26 20:12:45  phase1geo
+ Fixing bug related to failure of hier1.1 diagnostic.  Placing functional unit
+ scope in quotes for cases where backslashes are used in the scope names (requiring
+ spaces in the names to escape the backslash).  Incrementing CDD version and
+ regenerated all regression files.  Only atask1 is currently failing in regressions
+ now.
+
  Revision 1.256  2007/07/16 18:39:59  phase1geo
  Finishing adding accumulated coverage output to report files.  Also fixed
  compiler warnings with static values in C code that are inputs to 64-bit

@@ -188,16 +188,19 @@ void bind_display_list() {
   while( curr != NULL ) {
 
     switch( curr->type ) {
+      case FUNIT_AFUNCTION :
       case FUNIT_FUNCTION :
         printf( "  Expr: %d, %s, line %d;  Functional Unit: %s;  Function: %s\n",
                 curr->exp->id, expression_string_op( curr->exp->op ), curr->exp->line,
                 obf_funit( curr->funit->name ), obf_sig( curr->name ) );
         break;
+      case FUNIT_ATASK :
       case FUNIT_TASK :
         printf( "  Expr: %d, %s, line %d;  Functional Unit: %s;  Task: %s\n",
                 curr->exp->id, expression_string_op( curr->exp->op ), curr->exp->line,
                 obf_funit( curr->funit->name ), obf_sig( curr->name ) );
         break;
+      case FUNIT_ANAMED_BLOCK :
       case FUNIT_NAMED_BLOCK :
         printf( "  Expr: %d, %s, line %d;  Functional Unit: %s;  Named Block: %s\n",
                 curr->exp->id, expression_string_op( curr->exp->op ), curr->exp->line,
@@ -640,7 +643,9 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
   int        port_order;      /* Port order value */
   int        port_cnt;        /* Number of ports in the found function/task's port list */
 
-  assert( (type == FUNIT_FUNCTION) || (type == FUNIT_TASK) || (type == FUNIT_NAMED_BLOCK) );
+  assert( (type == FUNIT_FUNCTION)    || (type == FUNIT_AFUNCTION) ||
+          (type == FUNIT_TASK)        || (type == FUNIT_ATASK)     ||
+          (type == FUNIT_NAMED_BLOCK) || (type == FUNIT_ANAMED_BLOCK) );
 
   /* Don't continue if the name is not local and we are told to bind locally */
   if( scope_local( name ) || !bind_locally ) {
@@ -867,6 +872,10 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.108  2007/03/16 21:41:07  phase1geo
+ Checkpointing some work in fixing regressions for unnamed scope additions.
+ Getting closer but still need to properly handle the removal of functional units.
+
  Revision 1.107  2007/03/15 22:39:05  phase1geo
  Fixing bug in unnamed scope binding.
 

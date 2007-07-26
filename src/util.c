@@ -91,7 +91,7 @@ char user_msg[USER_MSG_LENGTH];
 /*!
  Array of functional unit names used for output purposes.
 */
-const char* funit_types[FUNIT_TYPES+1] = { "module", "named block", "function", "task", "no_score", "afunction", "atask", "UNKNOWN" };
+const char* funit_types[FUNIT_TYPES+1] = { "module", "named block", "function", "task", "no_score", "afunction", "atask", "named block", "UNKNOWN" };
 
 
 /*!
@@ -1124,6 +1124,12 @@ void calc_miss_percent( int hits, float total, float* misses, float* percent ) {
 
 /*
  $Log$
+ Revision 1.60  2007/07/16 18:39:59  phase1geo
+ Finishing adding accumulated coverage output to report files.  Also fixed
+ compiler warnings with static values in C code that are inputs to 64-bit
+ variables.  Full regression was not run with these changes due to pre-existing
+ simulator problems in core code.
+
  Revision 1.59  2007/04/11 22:29:49  phase1geo
  Adding support for CLI to score command.  Still some work to go to get history
  stuff right.  Otherwise, it seems to be working.

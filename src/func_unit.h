@@ -40,6 +40,9 @@ func_unit* funit_get_curr_module( func_unit* funit );
 /*! \brief Returns the parent function of the given functional unit (if there is one) */
 func_unit* funit_get_curr_function( func_unit* funit );
 
+/*! \brief Returns the parent task of the given functional unit (if there is one) */
+func_unit* funit_get_curr_task( func_unit* funit );
+
 /*! \brief Returns the number of input, output and inout ports in the specified functional unit */
 int funit_get_port_count( func_unit* funit );
 
@@ -101,6 +104,11 @@ void funit_dealloc( func_unit* funit );
 
 /*
  $Log$
+ Revision 1.27  2007/07/26 17:05:15  phase1geo
+ Fixing problem with static functions (vector data associated with expressions
+ were not being allocated).  Regressions have been run.  Only two failures
+ in total still to be fixed.
+
  Revision 1.26  2007/04/18 22:35:02  phase1geo
  Revamping simulator core again.  Checkpointing.
 

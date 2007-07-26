@@ -491,11 +491,14 @@ void line_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst ) {
 
     fprintf( ofile, "\n" );
     switch( root->funit->type ) {
-      case FUNIT_MODULE      :  fprintf( ofile, "    Module: " );       break;
-      case FUNIT_NAMED_BLOCK :  fprintf( ofile, "    Named Block: " );  break;
-      case FUNIT_FUNCTION    :  fprintf( ofile, "    Function: " );     break;
-      case FUNIT_TASK        :  fprintf( ofile, "    Task: " );         break;
-      default                :  fprintf( ofile, "    UNKNOWN: " );      break;
+      case FUNIT_MODULE       :  fprintf( ofile, "    Module: " );       break;
+      case FUNIT_ANAMED_BLOCK :
+      case FUNIT_NAMED_BLOCK  :  fprintf( ofile, "    Named Block: " );  break;
+      case FUNIT_AFUNCTION    :
+      case FUNIT_FUNCTION     :  fprintf( ofile, "    Function: " );     break;
+      case FUNIT_ATASK        :
+      case FUNIT_TASK         :  fprintf( ofile, "    Task: " );         break;
+      default                 :  fprintf( ofile, "    UNKNOWN: " );      break;
     }
     fprintf( ofile, "%s, File: %s, Instance: %s\n", pname, obf_file( root->funit->filename ), tmpname );
     fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
@@ -538,11 +541,14 @@ void line_funit_verbose( FILE* ofile, funit_link* head ) {
 
       fprintf( ofile, "\n" );
       switch( head->funit->type ) {
-        case FUNIT_MODULE      :  fprintf( ofile, "    Module: " );       break;
-        case FUNIT_NAMED_BLOCK :  fprintf( ofile, "    Named Block: " );  break;
-        case FUNIT_FUNCTION    :  fprintf( ofile, "    Function: " );     break;
-        case FUNIT_TASK        :  fprintf( ofile, "    Task: " );         break;
-        default                :  fprintf( ofile, "    UNKNOWN: " );      break;
+        case FUNIT_MODULE       :  fprintf( ofile, "    Module: " );       break;
+        case FUNIT_ANAMED_BLOCK :
+        case FUNIT_NAMED_BLOCK  :  fprintf( ofile, "    Named Block: " );  break;
+        case FUNIT_AFUNCTION    :
+        case FUNIT_FUNCTION     :  fprintf( ofile, "    Function: " );     break;
+        case FUNIT_ATASK        :
+        case FUNIT_TASK         :  fprintf( ofile, "    Task: " );         break;
+        default                 :  fprintf( ofile, "    UNKNOWN: " );      break;
       }
       fprintf( ofile, "%s, File: %s\n", pname, obf_file( head->funit->filename ) );
       fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
@@ -631,6 +637,12 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.75  2007/07/16 18:39:59  phase1geo
+ Finishing adding accumulated coverage output to report files.  Also fixed
+ compiler warnings with static values in C code that are inputs to 64-bit
+ variables.  Full regression was not run with these changes due to pre-existing
+ simulator problems in core code.
+
  Revision 1.74  2007/07/16 12:39:33  phase1geo
  Started to add support for displaying accumulated coverage results for
  each metric.  Finished line and toggle and am half-way done with memory

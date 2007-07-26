@@ -916,11 +916,14 @@ void race_report_verbose( FILE* ofile, funit_link* head ) {
 
       fprintf( ofile, "\n" );
       switch( head->funit->type ) {
-        case FUNIT_MODULE      :  fprintf( ofile, "    Module: " );       break;
-        case FUNIT_NAMED_BLOCK :  fprintf( ofile, "    Named Block: " );  break;
-        case FUNIT_FUNCTION    :  fprintf( ofile, "    Function: " );     break;
-        case FUNIT_TASK        :  fprintf( ofile, "    Task: " );         break;
-        default                :  fprintf( ofile, "    UNKNOWN: " );      break;
+        case FUNIT_MODULE       :  fprintf( ofile, "    Module: " );       break;
+        case FUNIT_ANAMED_BLOCK :
+        case FUNIT_NAMED_BLOCK  :  fprintf( ofile, "    Named Block: " );  break;
+        case FUNIT_AFUNCTION    :
+        case FUNIT_FUNCTION     :  fprintf( ofile, "    Function: " );     break;
+        case FUNIT_ATASK        :
+        case FUNIT_TASK         :  fprintf( ofile, "    Task: " );         break;
+        default                 :  fprintf( ofile, "    UNKNOWN: " );      break;
       }
       fprintf( ofile, "%s, File: %s\n", obf_funit( funit_flatten_name( head->funit ) ), obf_file( head->funit->filename ) );
       fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
@@ -1052,6 +1055,11 @@ void race_blk_delete_list( race_blk* rb ) {
 
 /*
  $Log$
+ Revision 1.57  2007/07/26 17:05:15  phase1geo
+ Fixing problem with static functions (vector data associated with expressions
+ were not being allocated).  Regressions have been run.  Only two failures
+ in total still to be fixed.
+
  Revision 1.56  2007/04/03 18:55:57  phase1geo
  Fixing more bugs in reporting mechanisms for unnamed scopes.  Checking in more
  regression updates per these changes.  Checkpointing.

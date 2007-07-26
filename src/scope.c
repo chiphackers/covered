@@ -252,7 +252,8 @@ bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, 
 */
 bool scope_find_task_function_namedblock( char* name, int type, func_unit* curr_funit, func_unit** found_funit, int line, bool must_find, bool rm_unnamed ) {
 
-  assert( (type == FUNIT_FUNCTION) || (type == FUNIT_TASK) || (type == FUNIT_NAMED_BLOCK) );
+  assert( (type == FUNIT_FUNCTION)  || (type == FUNIT_TASK)  || (type == FUNIT_NAMED_BLOCK) ||
+          (type == FUNIT_AFUNCTION) || (type == FUNIT_ATASK) || (type == FUNIT_ANAMED_BLOCK) );
   assert( curr_funit != NULL );
 
   /*
@@ -385,6 +386,9 @@ char* scope_flatten( char* scope ) {
 
 /*
  $Log$
+ Revision 1.34  2007/07/18 22:39:18  phase1geo
+ Checkpointing generate work though we are at a fairly broken state at the moment.
+
  Revision 1.33  2007/07/18 02:15:04  phase1geo
  Attempts to fix a problem with generating instances with hierarchy.  Also fixing
  an issue with named blocks in generate statements.  Still some work to go before

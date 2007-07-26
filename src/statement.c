@@ -431,11 +431,12 @@ bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) {
        set the curr_funit->first_stmt pointer to this statement.
       */
       if( (ESUPPL_IS_STMT_HEAD( stmt->exp->suppl ) == 1) &&
-          ((curr_funit->type == FUNIT_TASK)      ||
-           (curr_funit->type == FUNIT_ATASK)     ||
-           (curr_funit->type == FUNIT_FUNCTION)  ||
-           (curr_funit->type == FUNIT_AFUNCTION) ||
-           (curr_funit->type == FUNIT_NAMED_BLOCK)) ) {
+          ((curr_funit->type == FUNIT_TASK)        ||
+           (curr_funit->type == FUNIT_ATASK)       ||
+           (curr_funit->type == FUNIT_FUNCTION)    ||
+           (curr_funit->type == FUNIT_AFUNCTION)   ||
+           (curr_funit->type == FUNIT_NAMED_BLOCK) ||
+           (curr_funit->type == FUNIT_ANAMED_BLOCK)) ) {
         //assert( curr_funit->first_stmt == NULL );
         curr_funit->first_stmt = stmt;
       }
@@ -918,6 +919,11 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.112  2007/07/26 17:05:15  phase1geo
+ Fixing problem with static functions (vector data associated with expressions
+ were not being allocated).  Regressions have been run.  Only two failures
+ in total still to be fixed.
+
  Revision 1.111  2007/07/18 02:15:04  phase1geo
  Attempts to fix a problem with generating instances with hierarchy.  Also fixing
  an issue with named blocks in generate statements.  Still some work to go before

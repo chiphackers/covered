@@ -819,6 +819,14 @@ bool db_add_function_task_namedblock( int type, char* name, char* file, int star
     /* Set our parent pointer to the current functional unit */
     tf->parent = curr_funit;
 
+    /* If we are in an automatic task or function, set our type to FUNIT_ANAMED_BLOCK */
+    if( (curr_funit->type == FUNIT_AFUNCTION) ||
+        (curr_funit->type == FUNIT_ATASK) ||
+        (curr_funit->type == FUNIT_ANAMED_BLOCK) ) {
+      assert( tf->type == FUNIT_NAMED_BLOCK );
+      tf->type = FUNIT_ANAMED_BLOCK;
+    }
+
     /* Set current functional unit to this functional unit */
     curr_funit             = tf;
     curr_funit->filename   = strdup_safe( file, __FILE__, __LINE__ );
@@ -2313,6 +2321,9 @@ void db_do_timestep( uint64 time, bool final ) {
 
 /*
  $Log$
+ Revision 1.256  2007/07/24 22:52:26  phase1geo
+ More clean-up for VCS regressions.  Still not fully passing yet.
+
  Revision 1.255  2007/07/18 22:39:17  phase1geo
  Checkpointing generate work though we are at a fairly broken state at the moment.
 

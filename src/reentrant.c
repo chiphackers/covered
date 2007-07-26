@@ -37,14 +37,12 @@
 */
 reentrant* reentrant_create( func_unit* funit, statement* stmt ) {
 
-  reentrant* ren;       /* Pointer to newly created reentrant structure */
-  sig_link*  sigl;      /* Pointer to current signal in the given functional unit */
-  int        bits = 0;  /* Number of bits needed to store signal values */
-  int        bit  = 0;  /* Current bit position of compressed data */
-  int        i;         /* Loop iterator */
-
-  /* Allocate the structure */
-  ren = (reentrant*)malloc_safe( sizeof( reentrant ), __FILE__, __LINE__ );
+  reentrant* ren  = NULL;  /* Pointer to newly created reentrant structure */
+  int        data_size;    /* Number of nibbles needed to store the given functional unit */
+  sig_link*  sigl;         /* Pointer to current signal in the given functional unit */
+  int        bits = 0;     /* Number of bits needed to store signal values */
+  int        bit  = 0;     /* Current bit position of compressed data */
+  int        i;            /* Loop iterator */
 
   /* Get size needed to store data */
   sigl = funit->sig_head;
@@ -54,19 +52,30 @@ reentrant* reentrant_create( func_unit* funit, statement* stmt ) {
   }
 
   /* Calculate data size */
-  ren->data_size = ((bits % 4) == 0) ? (bits / 4) : ((bits / 4) + 1);
+  data_size = ((bits % 4) == 0) ? (bits / 4) : ((bits / 4) + 1);
 
-  /* Allocate memory for data */
-  ren->data = (nibble*)malloc_safe( (sizeof( nibble ) * ren->data_size), __FILE__, __LINE__ );
+  /* If there is data to store, allocate the needed memory and populate it */
+  if( data_size > 0 ) {
 
-  /* Walk through the signal list in the reentrant functional unit, compressing and saving vector values */
-  sigl = funit->sig_head;
-  while( sigl != NULL ) {
-    for( i=0; i<sigl->sig->value->width; i++ ) {
-      ren->data[((bit%4)==0)?(bit/4):((bit/4)+1)] |= (sigl->sig->value->value[i].part.val.value << (bit % 4));
-      bit++;
+    /* Allocate the structure */
+    ren = (reentrant*)malloc_safe( sizeof( reentrant ), __FILE__, __LINE__ );
+
+    /* Set the data size */
+    ren->data_size = data_size;
+
+    /* Allocate memory for data */
+    ren->data = (nibble*)malloc_safe( (sizeof( nibble ) * ren->data_size), __FILE__, __LINE__ );
+
+    /* Walk through the signal list in the reentrant functional unit, compressing and saving vector values */
+    sigl = funit->sig_head;
+    while( sigl != NULL ) {
+      for( i=0; i<sigl->sig->value->width; i++ ) {
+        ren->data[((bit%4)==0)?(bit/4):((bit/4)+1)] |= (sigl->sig->value->value[i].part.val.value << (bit % 4));
+        bit++;
+      }
+      sigl = sigl->next;
     }
-    sigl = sigl->next;
+
   }
 
   return( ren );
@@ -118,6 +127,9 @@ void reentrant_dealloc( reentrant* ren, func_unit* funit, statement* stmt, uint6
 
 /*
  $Log$
+ Revision 1.4  2007/04/20 22:56:46  phase1geo
+ More regression updates and simulator core fixes.  Still a ways to go.
+
  Revision 1.3  2006/12/18 23:58:34  phase1geo
  Fixes for automatic tasks.  Added atask1 diagnostic to regression suite to verify.
  Other fixes to parser for blocks.  We need to add code to properly handle unnamed
