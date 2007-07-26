@@ -640,6 +640,32 @@ void param_set_sig_size( vsignal* sig, inst_parm* icurr ) {
 /*************************************************************************************/
 
 /*!
+ \param inst   Pointer to instance pointing to given functional unit
+ \param funit  Pointer to functional unit to size
+
+ Recursively iterates through all functional units of given function, sizing them as
+ appropriate for the purposes of static function allocation and execution.
+*/
+void param_size_function( funit_inst* inst, func_unit* funit ) {
+
+  funit_inst* child;  /* Pointer to current child instance */
+
+  printf( "Sizing funit: %s\n", funit->name );
+  instance_display_tree( inst );
+
+  /* Resize the current functional unit */
+  funit_size_elements( funit, inst, FALSE );
+
+  /* Recursively iterate through list of children instances */
+  child = inst->child_head;
+  while( child != NULL ) {
+    param_size_function( child, child->funit );
+    child = child->next;
+  }
+
+}
+
+/*!
  \param expr  Current expression to evaluate.
  \param inst  Pointer to current instance to evaluate for.
 
@@ -664,7 +690,8 @@ void param_expr_eval( expression* expr, funit_inst* inst ) {
       funiti = instance_find_by_funit( inst, funit, &ignore );
       assert( funiti != NULL );
       param_resolve( funiti );
-      funit_size_elements( funit, funiti, FALSE );
+      //funit_size_elements( funit, funiti, FALSE );
+      param_size_function( funiti, funit );
       expression_set_value( expr, expr->sig );
     }
 
@@ -1028,6 +1055,9 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.87  2007/04/18 22:35:02  phase1geo
+ Revamping simulator core again.  Checkpointing.
+
  Revision 1.86  2007/04/11 22:29:48  phase1geo
  Adding support for CLI to score command.  Still some work to go to get history
  stuff right.  Otherwise, it seems to be working.

@@ -2660,7 +2660,7 @@ bool expression_op_func__bassign( expression* expr, thread* thr ) {
 */
 bool expression_op_func__func_call( expression* expr, thread* thr ) {
 
-  sim_thread( sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit ), thr->curr_time );
+  sim_thread( sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit ), ((thr == NULL) ? 0 : thr->curr_time) );
 
   return( TRUE );
 
@@ -3905,6 +3905,9 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.243  2007/04/18 22:34:58  phase1geo
+ Revamping simulator core again.  Checkpointing.
+
  Revision 1.242  2007/04/11 22:29:48  phase1geo
  Adding support for CLI to score command.  Still some work to go to get history
  stuff right.  Otherwise, it seems to be working.
