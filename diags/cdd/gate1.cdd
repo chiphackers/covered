@@ -1,7 +1,7 @@
-5 a 1 * 0
-8 /ptmp/cvs/covered/diags/verilog -t main -vcd gate1.vcd -o gate1.cdd -v gate1.v
-3 0 $root $root NA 0 0 1
-3 0 main main gate1.v 1 103 1
+5 b 1 * 0
+8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd gate1.vcd -o gate1.cdd -v gate1.v
+3 0 $root "$root" NA 0 0 1
+3 0 main "main" gate1.v 1 103 1
 1 a_o 3 30008 1 0 0 0 1 1 2
 1 b_o 3 3000d 1 0 0 0 1 1 2
 1 c_o 3 30012 1 0 0 0 1 1 102
@@ -48,3 +48,4 @@
 1 o2 22 3000c 1 0 0 0 1 1 2
 1 p1 23 30008 1 0 0 0 1 1 102
 1 p2 23 3000c 1 0 0 0 1 1 2
+3 1 main.$u0 "main.$u0" gate1.v 0 101 1

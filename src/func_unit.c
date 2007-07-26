@@ -503,7 +503,7 @@ bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
       funit->timescale = db_scale_to_precision( (uint64)1, funit );
     }
   
-    fprintf( file, "%d %d %s %s %s %d %d %llu\n",
+    fprintf( file, "%d %d %s \"%s\" %s %d %d %llu\n",
       DB_TYPE_FUNIT,
       funit->type,
       modname,
@@ -619,7 +619,7 @@ bool funit_db_read( func_unit* funit, char* scope, char** line ) {
   int  chars_read;     /* Number of characters currently read */
   int  params;         /* Number of parameters in string that were parsed */
 
-  if( (params = sscanf( *line, "%d %s %s %s %d %d %llu%n", &(funit->type), funit->name, scope, funit->filename,
+  if( (params = sscanf( *line, "%d %s \"%[^\"]\" %s %d %d %llu%n", &(funit->type), funit->name, scope, funit->filename,
               &(funit->start_line), &(funit->end_line), &(funit->timescale), &chars_read )) == 7 ) {
 
     *line = *line + chars_read;
@@ -1078,6 +1078,11 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.72  2007/07/26 17:05:15  phase1geo
+ Fixing problem with static functions (vector data associated with expressions
+ were not being allocated).  Regressions have been run.  Only two failures
+ in total still to be fixed.
+
  Revision 1.71  2007/04/18 22:34:58  phase1geo
  Revamping simulator core again.  Checkpointing.
 

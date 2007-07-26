@@ -1,7 +1,7 @@
-5 a 1 * 0
-8 /ptmp/cvs/covered/diags/verilog -t main -vcd multi_exp1.10.vcd -o multi_exp1.10.cdd -v multi_exp1.10.v
-3 0 $root $root NA 0 0 1
-3 0 main main multi_exp1.10.v 1 28 1
+5 b 1 * 0
+8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd multi_exp1.10.vcd -o multi_exp1.10.cdd -v multi_exp1.10.v
+3 0 $root "$root" NA 0 0 1
+3 0 main "main" multi_exp1.10.v 1 28 1
 2 1 5 140014 1 1 8 0 0 d
 2 2 5 f000f 2 1 c 0 0 c
 2 3 5 a000a 1 1 8 0 0 b
@@ -44,3 +44,4 @@
 4 14 14 14
 4 21 21 21
 4 28 28 28
+3 1 main.$u0 "main.$u0" multi_exp1.10.v 0 26 1

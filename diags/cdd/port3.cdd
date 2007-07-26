@@ -1,11 +1,11 @@
-5 a 1 * 0
+5 b 1 * 0
 8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd port3.vcd -o port3.cdd -v port3.v
-3 0 $root $root NA 0 0 1
-3 0 main main port3.v 1 23 1
+3 0 $root "$root" NA 0 0 1
+3 0 main "main" port3.v 1 23 1
 2 1 5 8000c 1 3d 121002 0 0 1 2 2 $u0
 1 a 3 830004 1 0 0 0 1 1 2
 4 1 0 0
-3 1 main.$u0 main.$u0 port3.v 0 7 1
+3 1 main.$u0 "main.$u0" port3.v 0 7 1
 2 2 6 160019 1 0 20008 0 0 1 4 1
 2 3 6 100013 1 0 20004 0 0 1 4 0
 2 4 6 100019 1 31 20088 2 3 2 2 120a
@@ -15,8 +15,8 @@
 2 8 6 10001 0 1 400 0 0 a
 2 9 6 1001c 1 37 1100a 7 8
 4 9 0 0
-3 1 main.$u1 main.$u1 port3.v 0 16 1
-3 2 main.foo_func main.foo_func port3.v 18 21 1
+3 1 main.$u1 "main.$u1" port3.v 0 16 1
+3 2 main.foo_func "main.foo_func" port3.v 18 21 1
 2 10 20 c000c 1 1 808 0 0 b
 2 11 20 b000b 1 1e 20808 10 0 1 2 1002
 2 12 20 7 0 1 c00 0 0 foo_func

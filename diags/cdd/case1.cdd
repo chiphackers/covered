@@ -1,7 +1,7 @@
-5 a 1 * 0
+5 b 1 * 0
 8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd case1.vcd -o case1.cdd -v case1.v
-3 0 $root $root NA 0 0 1
-3 0 main main case1.v 1 31 1
+3 0 $root "$root" NA 0 0 1
+3 0 main "main" case1.v 1 31 1
 2 1 6 110015 b 1 c 0 0 clock
 2 2 6 9000f 0 2a 20000 0 0 1 2 2
 2 3 6 90015 11 27 2100a 1 2 1 2 2
@@ -24,5 +24,5 @@
 4 14 3 3
 4 6 14 8
 4 3 6 0
-3 1 main.$u0 main.$u0 case1.v 0 19 1
-3 1 main.$u1 main.$u1 case1.v 0 29 1
+3 1 main.$u0 "main.$u0" case1.v 0 19 1
+3 1 main.$u1 "main.$u1" case1.v 0 29 1

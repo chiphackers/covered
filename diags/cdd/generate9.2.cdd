@@ -1,12 +1,12 @@
-5 a 1 * 0
+5 b 1 * 0
 8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd generate9.2.vcd -o generate9.2.cdd -v generate9.2.v
-3 0 $root $root NA 0 0 1
-3 0 main main generate9.2.v 1 38 1
+3 0 $root "$root" NA 0 0 1
+3 0 main "main" generate9.2.v 1 38 1
 2 1 24 8000c 1 3d 121002 0 0 1 2 2 $u2
 1 A 0 80000 1 0 31 0 32 1 0 0 0 0 0 0 0 0
 1 y 5 830004 1 0 0 0 1 1 2
 4 1 0 0
-3 1 main.$u2 main.$u2 generate9.2.v 0 27 1
+3 1 main.$u2 "main.$u2" generate9.2.v 0 27 1
 2 2 25 50008 1 0 20004 0 0 1 4 0
 2 3 25 10001 0 1 400 0 0 y
 2 4 25 10008 1 37 11006 2 3
@@ -17,13 +17,13 @@
 2 9 26 10014 1 37 6 7 8
 4 9 0 0
 4 4 9 9
-3 1 main.$u3 main.$u3 generate9.2.v 0 36 1
-3 2 main.foo_func main.foo_func generate9.2.v 9 14 1
+3 1 main.$u3 "main.$u3" generate9.2.v 0 36 1
+3 2 main.foo_func "main.foo_func" generate9.2.v 9 14 1
 2 10 11 6000a 1 3d 131802 0 0 1 2 2 $u0
 1 foo_func 9 85000d 1 0 0 0 1 1 2
 1 a 10 80000c 1 0 0 0 1 1 2
 4 10 0 0
-3 1 main.foo_func.$u0 main.foo_func.$u0 generate9.2.v 0 13 1
+3 1 main.foo_func.$u0 "main.foo_func.$u0" generate9.2.v 0 13 1
 2 11 12 130013 1 1 804 0 0 a
 2 12 12 8000f 0 1 c00 0 0 foo_func
 2 13 12 80013 1 37 11806 11 12

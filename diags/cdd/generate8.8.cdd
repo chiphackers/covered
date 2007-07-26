@@ -1,8 +1,9 @@
-5 a 1 * 0
-8 /data/cf/uvlogic1/uvg/trevorw/projects/covered/diags/verilog -t main -vcd generate8.8.vcd -o generate8.8.cdd -v generate8.8.v
-3 0 $root $root NA 0 0 1
-3 0 main main generate8.8.v 1 42 1
+5 b 1 * 0
+8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd generate8.8.vcd -o generate8.8.cdd -v generate8.8.v
+3 0 $root "$root" NA 0 0 1
+3 0 main "main" generate8.8.v 1 42 1
 1 A 0 80000 1 0 31 0 32 1 0 0 0 0 0 0 0 0
 1 B 0 80000 1 0 31 0 32 1 1 0 0 0 0 0 0 0
 1 C 0 80000 1 0 31 0 32 1 1 0 0 0 0 0 0 0
 1 b 20 3000b 1 0 0 0 1 1 2
+3 1 main.$u2 "main.$u2" generate8.8.v 0 40 1

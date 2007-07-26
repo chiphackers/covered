@@ -1,7 +1,7 @@
-5 a 1 * 0
+5 b 1 * 0
 8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd merge3b.vcd -o merge3b.cdd -v merge3b.v
-3 0 $root $root NA 0 0 1
-3 0 main main merge3b.v 9 31 1
+3 0 $root "$root" NA 0 0 1
+3 0 main "main" merge3b.v 9 31 1
 2 1 13 d000d 2 1 c 0 0 c
 2 2 13 90009 1 1 8 0 0 b
 2 3 13 9000d 2 8 2030c 1 2 1 2 11002
@@ -13,7 +13,7 @@
 1 a 13 30005 1 0 0 0 1 1 1002
 4 5 5 5
 4 6 0 0
-3 1 main.$u0 main.$u0 merge3b.v 0 20 1
+3 1 main.$u0 "main.$u0" merge3b.v 0 20 1
 2 7 16 50008 1 0 20008 0 0 1 4 1
 2 8 16 10001 0 1 400 0 0 b
 2 9 16 10008 1 37 1100a 7 8
@@ -29,4 +29,4 @@
 4 14 17 0
 4 12 14 14
 4 9 12 12
-3 1 main.$u1 main.$u1 merge3b.v 0 29 1
+3 1 main.$u1 "main.$u1" merge3b.v 0 29 1

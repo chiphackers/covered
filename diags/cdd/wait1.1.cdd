@@ -1,12 +1,12 @@
-5 a 1 * 0
+5 b 1 * 0
 8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd wait1.1.vcd -o wait1.1.cdd -v wait1.1.v
-3 0 $root $root NA 0 0 1
-3 0 main main wait1.1.v 1 21 1
+3 0 $root "$root" NA 0 0 1
+3 0 main "main" wait1.1.v 1 21 1
 2 1 5 8000c 1 3d 121002 0 0 1 2 2 $u0
 1 a 3 830004 1 0 0 0 1 1 2
 1 b 3 830007 1 0 0 0 1 1 102
 4 1 0 0
-3 1 main.$u0 main.$u0 wait1.1.v 0 10 1
+3 1 main.$u0 "main.$u0" wait1.1.v 0 10 1
 2 2 6 c000f 1 0 20004 0 0 1 4 0
 2 3 6 80008 0 1 400 0 0 a
 2 4 6 8000f 1 37 11006 2 3
@@ -24,4 +24,4 @@
 4 11 14 0
 4 7 11 11
 4 4 7 7
-3 1 main.$u1 main.$u1 wait1.1.v 0 19 1
+3 1 main.$u1 "main.$u1" wait1.1.v 0 19 1

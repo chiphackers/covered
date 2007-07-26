@@ -50,7 +50,7 @@
  Contains the CDD version number of all CDD files that this version of Covered can write
  and read.
 */
-#define CDD_VERSION        10
+#define CDD_VERSION        11
 
 /*!
  This contains the header information specified when executing this tool.
@@ -2352,6 +2352,12 @@ struct reentrant_s {
 
 /*
  $Log$
+ Revision 1.256  2007/07/16 18:39:59  phase1geo
+ Finishing adding accumulated coverage output to report files.  Also fixed
+ compiler warnings with static values in C code that are inputs to 64-bit
+ variables.  Full regression was not run with these changes due to pre-existing
+ simulator problems in core code.
+
  Revision 1.255  2007/04/18 22:34:58  phase1geo
  Revamping simulator core again.  Checkpointing.
 

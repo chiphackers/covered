@@ -1,7 +1,7 @@
-5 a 1 * 0
-8 /ptmp/cvs/covered/diags/verilog -t main -vcd ifdef2.2.vcd -o ifdef2.2.cdd -v ifdef2.2.v
-3 0 $root $root NA 0 0 1
-3 0 main main ifdef2.2.v 1 28 1
+5 b 1 * 0
+8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd ifdef2.2.vcd -o ifdef2.2.cdd -v ifdef2.2.v
+3 0 $root "$root" NA 0 0 1
+3 0 main "main" ifdef2.2.v 1 28 1
 2 1 14 160019 1 0 20004 0 0 1 4 0
 2 2 14 f0012 1 0 20008 0 0 1 4 1
 2 3 14 b0012 3 1a 2010c 1 2 1 2 1102
@@ -12,3 +12,4 @@
 1 a 11 30005 1 0 0 0 1 1 102
 1 b 12 30005 1 0 0 0 1 1 102
 4 7 7 7
+3 1 main.$u0 "main.$u0" ifdef2.2.v 0 26 1

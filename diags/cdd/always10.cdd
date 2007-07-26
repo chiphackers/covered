@@ -1,7 +1,7 @@
-5 a 1 * 0
+5 b 1 * 0
 8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd always10.vcd -o always10.cdd -v always10.v
-3 0 $root $root NA 0 0 1
-3 0 main main always10.v 1 29 1
+3 0 $root "$root" NA 0 0 1
+3 0 main "main" always10.v 1 29 1
 2 1 6 110015 16 1 c 0 0 clock
 2 2 6 9000f 0 2a 20000 0 0 1 2 2
 2 3 6 90015 22 27 2100a 1 2 1 2 2
@@ -19,8 +19,8 @@
 4 5 8 3
 4 3 5 0
 4 9 0 0
-3 1 main.$u0 main.$u0 always10.v 0 22 1
-3 1 main.$u1 main.$u1 always10.v 0 27 1
+3 1 main.$u0 "main.$u0" always10.v 0 22 1
+3 1 main.$u1 "main.$u1" always10.v 0 27 1
 2 10 25 9000c 1 0 20004 0 0 1 4 0
 2 11 25 10005 0 1 400 0 0 clock
 2 12 25 1000c 1 37 11006 10 11

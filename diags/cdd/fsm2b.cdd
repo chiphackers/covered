@@ -1,7 +1,7 @@
-5 a 1 main 0
+5 b 1 main 0
 8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t fsm -i main.fsm -vcd fsm2b.vcd -o fsm2b.cdd -y lib -v fsm2b.v -F fsm
-3 0 $root $root NA 0 0 1
-3 0 fsm fsm lib/fsm.v 1 35 1
+3 0 $root "$root" NA 0 0 1
+3 0 fsm "fsm" lib/fsm.v 1 35 1
 2 1 23 110015 23 1 c 0 0 clock
 2 2 23 9000f 0 2a 20000 0 0 1 2 2
 2 3 23 90015 35 27 2100a 1 2 1 2 2
@@ -48,7 +48,7 @@
 4 26 25 0
 4 25 26 0
 6 28 27 1 02,04,04,,01,81,81030106
-3 1 fsm.$u0 fsm.$u0 lib/fsm.v 0 33 1
+3 1 fsm.$u0 "fsm.$u0" lib/fsm.v 0 33 1
 2 29 28 5000e 1 32 4 0 0 STATE_IDLE
 2 30 27 9000d d 1 e 0 0 state
 2 31 28 0 6 2d 3114e 29 30 1 2 1102

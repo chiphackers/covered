@@ -1,9 +1,9 @@
-5 a 1 * 0
+5 b 1 * 0
 8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd task4.1.vcd -o task4.1.cdd -v task4.1.v
-3 0 $root $root NA 0 0 1
-3 0 main main task4.1.v 1 18 1
+3 0 $root "$root" NA 0 0 1
+3 0 main "main" task4.1.v 1 18 1
 1 c 3 30004 1 0 0 0 1 1 2
-3 0 mod_a main.a task4.1.v 21 35 1
+3 0 mod_a "main.a" task4.1.v 21 35 1
 2 1 23 90009 1 1 4 0 0 c
 2 2 23 90009 0 2a 20000 0 0 1 2 2
 2 3 23 90009 3 29 2100a 1 2 1 2 2
@@ -13,12 +13,12 @@
 1 c 21 19 1 0 0 0 1 1 2
 4 6 3 0
 4 3 6 0
-3 3 mod_a.foo main.a.foo task4.1.v 25 33 1
+3 3 mod_a.foo "main.a.foo" task4.1.v 25 33 1
 2 7 28 20006 1 3d 131002 0 0 1 2 2 $u1
 1 c 26 800008 1 0 0 0 1 1 2
 1 a 27 830006 1 0 0 0 1 1 102
 4 7 0 0
-3 1 mod_a.foo.$u1 main.a.foo.$u1 task4.1.v 0 32 1
+3 1 mod_a.foo.$u1 "main.a.foo.$u1" task4.1.v 0 32 1
 2 8 29 70007 1 1 4 0 0 c
 2 9 29 30003 0 1 400 0 0 a
 2 10 29 30007 1 37 11006 8 9
@@ -31,7 +31,7 @@
 4 16 0 0
 4 12 16 0
 4 10 12 12
-3 0 mod_a main.b task4.1.v 21 35 1
+3 0 mod_a "main.b" task4.1.v 21 35 1
 2 17 23 90009 1 1 8 0 0 c
 2 18 23 90009 0 2a 20000 0 0 1 2 2
 2 19 23 90009 3 29 2100a 17 18 1 2 2
@@ -41,12 +41,12 @@
 1 c 21 19 1 0 0 0 1 1 2
 4 22 19 0
 4 19 22 0
-3 3 mod_a.foo main.b.foo task4.1.v 25 33 1
+3 3 mod_a.foo "main.b.foo" task4.1.v 25 33 1
 2 23 28 20006 1 3d 131002 0 0 1 2 2 $u1
 1 c 26 800008 1 0 0 0 1 1 2
 1 a 27 830006 1 0 0 0 1 1 1002
 4 23 0 0
-3 1 mod_a.foo.$u1 main.b.foo.$u1 task4.1.v 0 32 1
+3 1 mod_a.foo.$u1 "main.b.foo.$u1" task4.1.v 0 32 1
 2 24 29 70007 1 1 8 0 0 c
 2 25 29 30003 0 1 400 0 0 a
 2 26 29 30007 1 37 1100a 24 25
@@ -59,4 +59,4 @@
 4 32 0 0
 4 28 32 0
 4 26 28 28
-3 1 main.$u0 main.$u0 task4.1.v 0 16 1
+3 1 main.$u0 "main.$u0" task4.1.v 0 16 1

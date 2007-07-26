@@ -1,11 +1,11 @@
-5 a 1 * 0
+5 b 1 * 0
 8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd marray1.3.vcd -o marray1.3.cdd -v marray1.3.v
-3 0 $root $root NA 0 0 1
-3 0 main main marray1.3.v 1 22 1
+3 0 $root "$root" NA 0 0 1
+3 0 main "main" marray1.3.v 1 22 1
 2 1 5 8000c 1 3d 121002 0 0 1 2 2 $u0
 1 a 3 93000f 2 0 2 0 0 3 12 1 e0aa d9aa f0aa
 4 1 0 0
-3 1 main.$u0 main.$u0 marray1.3.v 0 11 1
+3 1 main.$u0 "main.$u0" marray1.3.v 0 11 1
 2 2 6 d0013 1 0 20008 0 0 12 12 55 55 55
 2 3 6 10001 0 1 400 0 0 a
 2 4 6 10013 1 37 1100a 2 3
@@ -38,4 +38,4 @@
 4 13 20 20
 4 8 13 13
 4 4 8 8
-3 1 main.$u1 main.$u1 marray1.3.v 0 20 1
+3 1 main.$u1 "main.$u1" marray1.3.v 0 20 1

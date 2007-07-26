@@ -1,7 +1,7 @@
-5 a 1 * 0
+5 b 1 * 0
 8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd fsm4.vcd -o fsm4.cdd -y lib -v fsm4.v -F main
-3 0 $root $root NA 0 0 1
-3 0 main main fsm4.v 1 64 1
+3 0 $root "$root" NA 0 0 1
+3 0 main "main" fsm4.v 1 64 1
 2 1 15 110013 32 1 c 0 0 clk
 2 2 15 9000f 0 2a 20000 0 0 1 2 2
 2 3 15 90013 4c 27 2100a 1 2 1 2 2
@@ -81,8 +81,8 @@
 4 3 5 0
 4 54 0 0
 6 55 55 1 10,10,06,,010880,,0180,08,01,0880,0108,,0801,0808,81,,,08
-3 1 main.$u0 main.$u0 fsm4.v 0 57 1
-3 1 main.$u1 main.$u1 fsm4.v 0 62 1
+3 1 main.$u0 "main.$u0" fsm4.v 0 57 1
+3 1 main.$u1 "main.$u1" fsm4.v 0 62 1
 2 56 60 7000a 1 0 20004 0 0 1 4 0
 2 57 60 10003 0 1 400 0 0 clk
 2 58 60 1000a 1 37 11006 56 57

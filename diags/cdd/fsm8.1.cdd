@@ -1,7 +1,7 @@
-5 a 1 * 0
+5 b 1 * 0
 8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd fsm8.1.vcd -o fsm8.1.cdd -v fsm8.1.v
-3 0 $root $root NA 0 0 1
-3 0 main main fsm8.1.v 1 61 1
+3 0 $root "$root" NA 0 0 1
+3 0 main "main" fsm8.1.v 1 61 1
 2 1 17 110015 2e 1 c 0 0 clock
 2 2 17 9000f 0 2a 20000 0 0 1 2 2
 2 3 17 90015 46 27 2100a 1 2 1 2 2
@@ -66,7 +66,7 @@
 4 38 38 38
 4 39 0 0
 6 43 40 1 02,04,04,,01,81,81030106
-3 1 main.$u0 main.$u0 fsm8.1.v 0 28 1
+3 1 main.$u0 "main.$u0" fsm8.1.v 0 28 1
 2 44 23 5000e 1 32 4 0 0 STATE_IDLE
 2 45 22 110011 1 0 20008 0 0 32 64 1 0 0 0 0 0 0 0
 2 46 22 f000f 5 0 20008 0 0 32 64 4 0 0 0 0 0 0 0
@@ -122,8 +122,8 @@
 4 50 81 52
 4 90 0 0
 4 48 90 50
-3 1 main.$u1 main.$u1 fsm8.1.v 0 54 1
-3 1 main.$u2 main.$u2 fsm8.1.v 0 59 1
+3 1 main.$u1 "main.$u1" fsm8.1.v 0 54 1
+3 1 main.$u2 "main.$u2" fsm8.1.v 0 59 1
 2 91 57 9000c 1 0 20004 0 0 1 4 0
 2 92 57 10005 0 1 400 0 0 clock
 2 93 57 1000c 1 37 11006 91 92

@@ -1,7 +1,7 @@
-5 a 1 * 0
-8 /ptmp/cvs/covered/diags/verilog -t main -vcd unary1.vcd -o unary1.cdd -v unary1.v
-3 0 $root $root NA 0 0 1
-3 0 main main unary1.v 1 25 1
+5 b 1 * 0
+8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd unary1.vcd -o unary1.cdd -v unary1.v
+3 0 $root "$root" NA 0 0 1
+3 0 main "main" unary1.v 1 25 1
 2 1 5 a000a 1 1 4 0 0 a
 2 2 5 90009 1 1b 20008 1 0 1 2 1002
 2 3 5 50005 0 1 400 0 0 b
@@ -58,3 +58,4 @@
 4 28 28 28
 4 32 32 32
 4 37 37 37
+3 1 main.$u0 "main.$u0" unary1.v 0 23 1

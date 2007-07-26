@@ -1,7 +1,7 @@
-5 a 1 * 0
-8 /ptmp/cvs/covered/diags/verilog -t main -vcd expand4.2.vcd -o expand4.2.cdd -v expand4.2.v
-3 0 $root $root NA 0 0 1
-3 0 main main expand4.2.v 1 23 1
+5 b 1 * 0
+8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd expand4.2.vcd -o expand4.2.cdd -v expand4.2.v
+3 0 $root "$root" NA 0 0 1
+3 0 main "main" expand4.2.v 1 23 1
 2 1 8 100013 1 0 20004 0 0 1 4 0
 2 2 8 e000e 1 0 20008 0 0 32 64 1 0 0 0 0 0 0 0
 2 3 8 c000c 1 0 20008 0 0 32 64 5 0 0 0 0 0 0 0
@@ -12,3 +12,4 @@
 1 a 5 3000b 1 0 3 0 4 1 aa
 1 b 6 3000b 1 0 0 0 1 1 2
 4 7 7 7
+3 1 main.$u0 "main.$u0" expand4.2.v 0 21 1

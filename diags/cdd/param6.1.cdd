@@ -1,7 +1,7 @@
-5 a 1 * 0
-8 /ptmp/cvs/covered/diags/verilog -t main -vcd param6.1.vcd -o param6.1.cdd -v param6.1.v
-3 0 $root $root NA 0 0 1
-3 0 main main param6.1.v 1 21 1
+5 b 1 * 0
+8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd param6.1.vcd -o param6.1.cdd -v param6.1.v
+3 0 $root "$root" NA 0 0 1
+3 0 main "main" param6.1.v 1 21 1
 2 1 9 1f001f 1 0 20008 0 0 32 64 1 0 0 0 0 0 0 0
 2 2 9 19001d 1 32 8 0 0 SIZE0
 2 3 9 19001f 1 6 20208 1 2 32 2 100eaa faa faa faa faa faa faa faa
@@ -16,3 +16,4 @@
 1 b 6 30017 1 0 3 0 4 1 aa
 1 a 7 30017 1 0 1 0 2 1 a
 4 9 9 9
+3 1 main.$u0 "main.$u0" param6.1.v 0 19 1

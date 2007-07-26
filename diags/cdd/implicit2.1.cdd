@@ -1,4 +1,5 @@
-5 a 1 * 0
-8 /ptmp/cvs/covered/diags/verilog -t main -vcd implicit2.1.vcd -o implicit2.1.cdd -v implicit2.1.v
-3 0 $root $root NA 0 0 1
-3 0 main main implicit2.1.v 1 20 1
+5 b 1 * 0
+8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd implicit2.1.vcd -o implicit2.1.cdd -v implicit2.1.v
+3 0 $root "$root" NA 0 0 1
+3 0 main "main" implicit2.1.v 1 20 1
+3 1 main.$u0 "main.$u0" implicit2.1.v 0 18 1

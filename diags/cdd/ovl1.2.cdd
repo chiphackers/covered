@@ -1,16 +1,16 @@
-5 a 11 * 0
+5 b 11 * 0
 8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd ovl1.2.vcd -o ovl1.2.cdd -v ovl1.2.v -A ovl +libext+.vlib+ -y ./ovl -I ./ovl -I ./ovl/vlog95
-3 0 $root $root NA 0 0 1
-3 0 main main ovl1.2.v 1 30 1
+3 0 $root "$root" NA 0 0 1
+3 0 main "main" ovl1.2.v 1 30 1
 1 width 0 80000 1 0 31 0 32 1 10 0 0 0 0 0 0 0
 1 clock 3 3000a 1 0 0 0 1 1 1102
 1 reset_n 4 3000a 1 0 0 0 1 1 102
 1 a 5 3000a 1 0 3 0 4 1 10aa
-3 0 clock_gen main.clkgen ovl1.2.v 33 42 1
+3 0 clock_gen "main.clkgen" ovl1.2.v 33 42 1
 2 1 37 8000c 1 3d 121002 0 0 1 2 2 $u1
 1 clock 34 81000d 1 0 0 0 1 1 1102
 4 1 0 0
-3 1 clock_gen.$u1 main.clkgen.$u1 ovl1.2.v 0 40 1
+3 1 clock_gen.$u1 "main.clkgen.$u1" ovl1.2.v 0 40 1
 2 2 38 100013 1 0 20004 0 0 1 4 0
 2 3 38 8000c 0 1 400 0 0 clock
 2 4 38 80013 1 37 11006 2 3
@@ -23,7 +23,7 @@
 4 10 6 6
 4 6 10 0
 4 4 6 6
-3 0 assert_zero_one_hot main.foo ./ovl/assert_zero_one_hot.vlib 6 26 1
+3 0 assert_zero_one_hot "main.foo" ./ovl/assert_zero_one_hot.vlib 6 26 1
 2 11 5 180018 1 0 20004 0 0 32 64 0 0 0 0 0 0 0 0
 2 12 5 a0014 0 1 400 0 0 error_count
 2 13 5 a0018 1 37 1006 11 12
@@ -68,11 +68,11 @@
 4 29 0 0
 4 33 32 0
 4 32 33 0
-3 3 assert_zero_one_hot.ovl_cover_t main.foo.ovl_cover_t std_ovl_task.h 75 94 1
+3 3 assert_zero_one_hot.ovl_cover_t "main.foo.ovl_cover_t" std_ovl_task.h 75 94 1
 2 34 77 20006 2 3d 131002 0 0 1 2 2 $u7
 1 cvr_msg 76 800015 1 0 511 0 512 1 aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa 42aa 1aa 8aa aa c0aa 1aa 4aa aa 2aa 1aa caa 21aa 30aa 12aa 2caa 10aa 1aa 10aa 7aa 20aa 52aa 1aa f0aa 2aa 48aa aa 24aa 10aa aaa 21aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa
 4 34 0 0
-3 1 assert_zero_one_hot.ovl_cover_t.$u7 main.foo.ovl_cover_t.$u7 std_ovl_task.h 0 93 1
+3 1 assert_zero_one_hot.ovl_cover_t.$u7 "main.foo.ovl_cover_t.$u7" std_ovl_task.h 0 93 1
 2 35 78 1f001f 1 0 20008 0 0 32 64 1 0 0 0 0 0 0 0
 2 36 78 11001b 1 1 14 0 0 cover_count
 2 37 78 11001f 1 6 20098 35 36 32 66 1eaa faa faa faa faa faa faa faa
@@ -94,7 +94,7 @@
 4 46 49 47
 4 42 0 46
 4 39 42 42
-3 1 assert_zero_one_hot.$u8 main.foo.$u8 ./vlog95/assert_zero_one_hot_logic.v 0 46 1
+3 1 assert_zero_one_hot.$u8 "main.foo.$u8" ./vlog95/assert_zero_one_hot_logic.v 0 46 1
 2 50 44 230026 1 0 20004 0 0 1 4 0
 2 51 44 1d0021 1 32 8 0 0 width
 2 52 44 1c0028 1 25 20104 50 51 4 2 faa
@@ -107,7 +107,7 @@
 2 59 45 40028 1 37 6 57 58
 4 59 0 0
 4 54 59 59
-3 1 assert_zero_one_hot.$u9 main.foo.$u9 ./vlog95/assert_zero_one_hot_logic.v 0 73 1
+3 1 assert_zero_one_hot.$u9 "main.foo.$u9" ./vlog95/assert_zero_one_hot_logic.v 0 73 1
 2 60 49 2d002d 1 0 20004 0 0 32 64 0 0 0 0 0 0 0 0
 2 61 49 1b0028 1 32 8 0 0 coverage_level
 2 62 49 1b002d 1 15 20108 60 61 1 2 1002
@@ -119,7 +119,7 @@
 2 68 49 300034 f 3d 120002 0 0 1 2 2 $u10
 4 68 0 0
 4 67 68 0
-3 1 assert_zero_one_hot.$u9.$u10 main.foo.$u9.$u10 ./vlog95/assert_zero_one_hot_logic.v 0 72 1
+3 1 assert_zero_one_hot.$u9.$u10 "main.foo.$u9.$u10" ./vlog95/assert_zero_one_hot_logic.v 0 72 1
 2 69 51 170024 2 1 c 0 0 prev_test_expr
 2 70 51 a0012 2 1 c 0 0 test_expr
 2 71 51 a0024 3 15 202cc 69 70 1 2 1102
@@ -176,17 +176,17 @@
 4 75 87 87
 4 114 75 0
 4 72 114 75
-3 1 assert_zero_one_hot.$u9.$u10.$u11 main.foo.$u9.$u10.$u11 ./vlog95/assert_zero_one_hot_logic.v 0 53 1
+3 1 assert_zero_one_hot.$u9.$u10.$u11 "main.foo.$u9.$u10.$u11" ./vlog95/assert_zero_one_hot_logic.v 0 53 1
 2 115 52 14002d 1 0 20008 0 0 192 16 10 14 11 14 4 15 11 14 14 15 55 14 5 14 0 4 11 14 15 14 54 14 1 14 40 14 5 14 55 11 4 15 0 15 40 15 11 14 55 11 10 15 5 15 11 14 10 15
 2 116 52 14002d 1 47 8 115 0 ovl_cover_t.cvr_msg
 2 117 52 8002f 1 3b 131002 0 116 512 2 aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa ovl_cover_t
 4 117 0 0
-3 1 assert_zero_one_hot.$u9.$u10.$u12 main.foo.$u9.$u10.$u12 ./vlog95/assert_zero_one_hot_logic.v 0 58 1
+3 1 assert_zero_one_hot.$u9.$u10.$u12 "main.foo.$u9.$u10.$u12" ./vlog95/assert_zero_one_hot_logic.v 0 58 1
 2 118 57 140030 1 0 20008 0 0 216 16 10 14 11 14 4 15 11 14 14 15 55 14 5 14 0 4 5 15 55 14 4 15 11 14 44 15 55 11 50 14 50 14 1 14 55 11 4 15 0 15 40 15 11 14 55 11 10 15 5 15 11 14 10 15
 2 119 57 140030 1 47 8 118 0 ovl_cover_t.cvr_msg
 2 120 57 80032 1 3b 131002 0 119 512 2 aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa ovl_cover_t
 4 120 0 0
-3 1 assert_zero_one_hot.$u9.$u10.$u13 main.foo.$u9.$u10.$u13 ./vlog95/assert_zero_one_hot_logic.v 0 64 1
+3 1 assert_zero_one_hot.$u9.$u10.$u13 "main.foo.$u9.$u10.$u13" ./vlog95/assert_zero_one_hot_logic.v 0 64 1
 2 121 61 300033 1 0 20004 0 0 1 4 0
 2 122 61 2a002e 1 32 8 0 0 width
 2 123 61 290035 1 25 20104 121 122 4 2 faa
@@ -198,11 +198,11 @@
 2 129 61 38003c f 3d 120002 0 0 1 2 2 $u14
 4 129 0 0
 4 128 129 0
-3 1 assert_zero_one_hot.$u9.$u10.$u13.$u14 main.foo.$u9.$u10.$u13.$u14 ./vlog95/assert_zero_one_hot_logic.v 0 63 1
+3 1 assert_zero_one_hot.$u9.$u10.$u13.$u14 "main.foo.$u9.$u10.$u13.$u14" ./vlog95/assert_zero_one_hot_logic.v 0 63 1
 2 130 62 310039 2 1 c 0 0 test_expr
 2 131 62 1e002d 1 1 8 0 0 one_hots_checked
 2 132 62 1e0039 2 9 20308 130 131 4 2 e11aa
 2 133 62 a0019 0 1 400 0 0 one_hots_checked
 2 134 62 a0039 f 38 1100a 132 133
 4 134 0 0
-3 1 main.$u0 main.$u0 ovl1.2.v 0 28 1
+3 1 main.$u0 "main.$u0" ovl1.2.v 0 28 1

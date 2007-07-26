@@ -1,7 +1,7 @@
-5 a 1 * 0
+5 b 1 * 0
 8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd slist3.2.vcd -o slist3.2.cdd -v slist3.2.v
-3 0 $root $root NA 0 0 1
-3 0 main main slist3.2.v 1 26 1
+3 0 $root "$root" NA 0 0 1
+3 0 main "main" slist3.2.v 1 26 1
 2 1 4 90009 2 1 c 0 0 c
 2 2 4 50005 0 1 400 0 0 b
 2 3 4 50009 2 36 f00e 1 2
@@ -24,7 +24,7 @@
 4 3 3 3
 4 16 15 0
 4 15 16 0
-3 1 main.foo main.foo slist3.2.v 7 10 1
+3 1 main.foo "main.foo" slist3.2.v 7 10 1
 2 17 9 100014 1 1 0 0 0 bar.a
 2 18 9 c000c 2 1 c 0 0 b
 2 19 9 80008 1 1 0 0 0 x
@@ -34,6 +34,6 @@
 2 23 9 40014 2 37 1100a 21 22
 1 x 8 30008 1 0 0 0 1 1 2
 4 23 0 0
-3 0 foobar main.bar slist3.2.v 30 34 1
+3 0 foobar "main.bar" slist3.2.v 30 34 1
 1 a 32 30004 1 0 0 0 1 1 2
-3 1 main.$u0 main.$u0 slist3.2.v 0 24 1
+3 1 main.$u0 "main.$u0" slist3.2.v 0 24 1

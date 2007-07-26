@@ -1,7 +1,7 @@
-5 a 1 * 0
+5 b 1 * 0
 8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd generate11.4.vcd -o generate11.4.cdd -v generate11.4.v
-3 0 $root $root NA 0 0 1
-3 0 main main generate11.4.v 1 22 1
+3 0 $root "$root" NA 0 0 1
+3 0 main "main" generate11.4.v 1 22 1
 2 1 11 90009 1 0 20008 0 0 32 64 11 0 0 0 0 0 0 0
 2 2 11 80009 2 2c 22100a 1 0 32 2 aa aa aa aa aa aa aa aa
 2 3 11 150018 1 0 20008 0 0 1 4 1
@@ -9,29 +9,29 @@
 2 5 11 b0018 1 37 a 3 4
 4 5 0 0
 4 2 5 0
-3 1 main.$u0 main.$u0 generate11.4.v 0 20 1
-3 1 main.U[0] main.U[0] generate11.4.v 6 8 1
+3 1 main.$u0 "main.$u0" generate11.4.v 0 20 1
+3 1 main.U[0] "main.U[0]" generate11.4.v 6 8 1
 2 6 7 f000f 0 1 400 0 0 x
 2 7 7 130013 1 0 20004 0 0 32 64 0 0 0 0 0 0 0 0
 2 8 7 f0013 1 48 7006 7 6
 1 i 4 1880009 1 0 31 0 32 1 0 0 0 0 0 0 0 0
 1 x 7 83000f 1 0 1 0 2 1 10a
 4 8 0 0
-3 1 main.U[1] main.U[1] generate11.4.v 6 8 1
+3 1 main.U[1] "main.U[1]" generate11.4.v 6 8 1
 2 9 7 f000f 0 1 400 0 0 x
 2 10 7 130013 1 0 20004 0 0 32 64 0 0 0 0 0 0 0 0
 2 11 7 f0013 1 48 7006 10 9
 1 i 4 1880009 1 0 31 0 32 1 101 0 0 0 0 0 0 0
 1 x 7 83000f 1 0 1 0 2 1 a
 4 11 0 0
-3 1 main.U[2] main.U[2] generate11.4.v 6 8 1
+3 1 main.U[2] "main.U[2]" generate11.4.v 6 8 1
 2 12 7 f000f 0 1 400 0 0 x
 2 13 7 130013 1 0 20004 0 0 32 64 0 0 0 0 0 0 0 0
 2 14 7 f0013 1 48 7006 13 12
 1 i 4 1880009 1 0 31 0 32 1 1304 0 0 0 0 0 0 0
 1 x 7 83000f 1 0 1 0 2 1 a
 4 14 0 0
-3 1 main.U[3] main.U[3] generate11.4.v 6 8 1
+3 1 main.U[3] "main.U[3]" generate11.4.v 6 8 1
 2 15 7 f000f 0 1 400 0 0 x
 2 16 7 130013 1 0 20004 0 0 32 64 0 0 0 0 0 0 0 0
 2 17 7 f0013 1 48 7006 16 15

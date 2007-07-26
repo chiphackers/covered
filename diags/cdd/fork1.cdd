@@ -1,33 +1,33 @@
-5 a 1 * 0
+5 b 1 * 0
 8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd fork1.vcd -o fork1.cdd -v fork1.v
-3 0 $root $root NA 0 0 1
-3 0 main main fork1.v 1 45 1
+3 0 $root "$root" NA 0 0 1
+3 0 main "main" fork1.v 1 45 1
 2 1 5 8000c 1 3d 121002 0 0 1 2 2 $u0
 1 a 3 30004 1 0 0 0 1 1 102
 1 b 3 30007 1 0 0 0 1 1 102
 4 1 0 0
-3 1 main.$u0 main.$u0 fork1.v 0 10 1
+3 1 main.$u0 "main.$u0" fork1.v 0 10 1
 2 2 6 10004 1 3d 131002 0 0 1 2 2 $u1
 4 2 0 0
-3 1 main.$u0.$u1 main.$u0.$u1 fork1.v 0 9 1
+3 1 main.$u0.$u1 "main.$u0.$u1" fork1.v 0 9 1
 2 3 7 3000d 1 3e 131002 0 0 1 2 2 $u2
 2 4 8 a0014 1 3e 120002 0 0 1 2 2 $u3
-2 5 7 30014 2 3f 20002 0 0 1 2 2
+2 5 7 30014 1 3f 20002 0 0 1 2 2
 4 5 0 0
 4 4 5 5
 4 3 4 4
-3 1 main.$u0.$u1.$u2 main.$u0.$u1.$u2 fork1.v 7 7 1
+3 1 main.$u0.$u1.$u2 "main.$u0.$u1.$u2" fork1.v 7 7 1
 2 6 7 3000d 1 3b 131002 0 0 1 2 2 wait_for_a
 4 6 0 0
-3 1 main.$u0.$u1.$u3 main.$u0.$u1.$u3 fork1.v 8 8 1
+3 1 main.$u0.$u1.$u3 "main.$u0.$u1.$u3" fork1.v 8 8 1
 2 7 8 a0014 1 3b 131002 0 0 1 2 2 wait_for_b
 4 7 0 0
-3 1 main.$u4 main.$u4 fork1.v 0 25 1
-3 3 main.wait_for_a main.wait_for_a fork1.v 27 34 1
+3 1 main.$u4 "main.$u4" fork1.v 0 25 1
+3 3 main.wait_for_a "main.wait_for_a" fork1.v 27 34 1
 2 8 29 20006 1 3d 131002 0 0 1 2 2 $u5
 1 c 28 830006 1 0 0 0 1 1 102
 4 8 0 0
-3 1 main.wait_for_a.$u5 main.wait_for_a.$u5 fork1.v 0 33 1
+3 1 main.wait_for_a.$u5 "main.wait_for_a.$u5" fork1.v 0 33 1
 2 9 30 8000b 1 0 20004 0 0 1 4 0
 2 10 30 40004 0 1 400 0 0 c
 2 11 30 4000b 1 37 11006 9 10
@@ -40,11 +40,11 @@
 4 17 0 0
 4 14 17 0
 4 11 14 14
-3 3 main.wait_for_b main.wait_for_b fork1.v 36 43 1
+3 3 main.wait_for_b "main.wait_for_b" fork1.v 36 43 1
 2 18 38 20006 1 3d 131002 0 0 1 2 2 $u6
 1 c 37 830006 1 0 0 0 1 1 102
 4 18 0 0
-3 1 main.wait_for_b.$u6 main.wait_for_b.$u6 fork1.v 0 42 1
+3 1 main.wait_for_b.$u6 "main.wait_for_b.$u6" fork1.v 0 42 1
 2 19 39 8000b 1 0 20004 0 0 1 4 0
 2 20 39 40004 0 1 400 0 0 c
 2 21 39 4000b 1 37 11006 19 20

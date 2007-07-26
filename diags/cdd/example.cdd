@@ -1,7 +1,7 @@
-5 a 1 * 0
+5 b 1 * 0
 8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd example.vcd -o example.cdd -v example.v
-3 0 $root $root NA 0 0 1
-3 0 main main example.v 5 33 1
+3 0 $root "$root" NA 0 0 1
+3 0 main "main" example.v 5 33 1
 2 1 14 620067 1 0 20004 0 0 3 4 0
 2 2 14 59005d 3 1 8 0 0 state
 2 3 14 590067 4 11 20104 1 2 1 2 102
@@ -32,7 +32,7 @@
 1 error 14 30005 1 0 0 0 1 1 2
 4 23 23 23
 4 24 0 0
-3 0 fsma main.fsm1 example.v 35 58 1
+3 0 fsma "main.fsm1" example.v 35 58 1
 2 25 51 120013 2 1 c 0 0 go
 2 26 51 120013 0 2a 20000 0 0 1 2 2
 2 27 51 120013 2 29 20008 25 26 1 2 2
@@ -81,7 +81,7 @@
 4 31 34 0
 6 57 56 1 03,06,04,,8110810401050109
 7 4 48 48
-3 0 fsmb main.fsm2 example.v 60 85 1
+3 0 fsmb "main.fsm2" example.v 60 85 1
 2 58 78 120013 2 1 c 0 0 go
 2 59 78 120013 0 2a 20000 0 0 1 2 2
 2 60 78 120013 2 29 20008 58 59 1 2 2
@@ -130,8 +130,8 @@
 4 64 67 0
 6 90 89 1 03,06,05,010105,0a801081040109
 7 4 72 72
-3 1 main.$u0 main.$u0 example.v 0 26 1
-3 1 main.$u1 main.$u1 example.v 0 31 1
+3 1 main.$u0 "main.$u0" example.v 0 26 1
+3 1 main.$u1 "main.$u1" example.v 0 31 1
 2 91 29 7000a 1 0 20004 0 0 1 4 0
 2 92 29 10003 0 1 400 0 0 clk
 2 93 29 1000a 1 37 11006 91 92

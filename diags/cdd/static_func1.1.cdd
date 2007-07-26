@@ -1,17 +1,17 @@
-5 a 1 * 0
+5 b 1 * 0
 8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd static_func1.1.vcd -o static_func1.1.cdd -v static_func1.1.v
-3 0 $root $root NA 0 0 1
-3 0 main main static_func1.1.v 1 25 1
+3 0 $root "$root" NA 0 0 1
+3 0 main "main" static_func1.1.v 1 25 1
 1 SIZE 0 80000 1 0 31 0 32 1 11 0 0 0 0 0 0 0
 1 FOO 0 80000 1 0 31 0 32 1 0 1 0 0 0 0 0 0
 1 a 6 30011 1 0 15 0 16 1 aa aa aa aa
-3 1 main.$u0 main.$u0 static_func1.1.v 0 15 1
-3 2 main.static_func main.static_func static_func1.1.v 17 23 1
+3 1 main.$u0 "main.$u0" static_func1.1.v 0 15 1
+3 2 main.static_func "main.static_func" static_func1.1.v 17 23 1
 2 1 19 20006 1 3d 131806 0 0 1 2 102 $u1
 1 static_func 17 850010 1 0 31 0 32 1 aa 1aa aa aa aa aa aa aa
 1 bit_to_set 18 800015 1 0 4 0 5 1 aa 2
 4 1 0 0
-3 1 main.static_func.$u1 main.static_func.$u1 static_func1.1.v 0 22 1
+3 1 main.static_func.$u1 "main.static_func.$u1" static_func1.1.v 0 22 1
 2 2 20 1e001e 0 0 20810 0 0 32 64 0 0 0 0 0 0 0 0
 2 3 20 4000e 0 1 c00 0 0 static_func
 2 4 20 4001e 1 37 11826 2 3
