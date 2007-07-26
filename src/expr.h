@@ -41,7 +41,7 @@ void expression_set_value( expression* exp, vsignal* sig );
 void expression_set_signed( expression* exp );
 
 /*! \brief Recursively resizes specified expression tree leaf node. */
-void expression_resize( expression* expr, bool recursive );
+void expression_resize( expression* expr, bool recursive, bool alloc );
 
 /*! \brief Returns expression ID of this expression. */
 int expression_get_id( expression* expr, bool parse_mode );
@@ -130,6 +130,9 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.54  2007/03/30 22:43:13  phase1geo
+ Regression fixes.  Still have a ways to go but we are getting close.
+
  Revision 1.53  2006/11/27 04:11:41  phase1geo
  Adding more changes to properly support thread time.  This is a work in progress
  and regression is currently broken for the moment.  Checkpointing.

@@ -843,7 +843,7 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
       case GI_TYPE_EXPR :
         /* Recursively resize the expression tree if we have not already done this */
         if( gi->elem.expr->exec_num == 0 ) {
-          expression_resize( gi->elem.expr, TRUE );
+          expression_resize( gi->elem.expr, TRUE, FALSE );
         }
         expression_operate_recursively( gi->elem.expr, FALSE );
         if( ESUPPL_IS_TRUE( gi->elem.expr->suppl ) ) {
@@ -1114,6 +1114,9 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.45  2007/07/18 22:39:17  phase1geo
+ Checkpointing generate work though we are at a fairly broken state at the moment.
+
  Revision 1.44  2007/07/18 02:15:04  phase1geo
  Attempts to fix a problem with generating instances with hierarchy.  Also fixing
  an issue with named blocks in generate statements.  Still some work to go before

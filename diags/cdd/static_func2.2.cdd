@@ -1,18 +1,22 @@
 5 a 1 * 0
-8 /data/cf/uvlogic1/uvg/trevorw/projects/covered/diags/verilog -t main -vcd static_func2.2.vcd -o static_func2.2.cdd -v static_func2.2.v
+8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd static_func2.2.vcd -o static_func2.2.cdd -v static_func2.2.v
 3 0 $root $root NA 0 0 1
 3 0 main main static_func2.2.v 1 25 1
 1 FOO 0 80000 1 0 31 0 32 1 10 0 0 0 0 0 0 0
 1 a 5 3001a 1 0 15 0 16 1 aa aa aa aa
+3 1 main.$u0 main.$u0 static_func2.2.v 0 15 1
 3 2 main.const_func main.const_func static_func2.2.v 17 23 1
-2 1 20 110011 0 0 20810 0 0 32 64 0 0 0 0 0 0 0 0
-2 2 20 4000d 0 1 c00 0 0 const_func
-2 3 20 40011 1 37 11826 1 2
-2 4 21 170017 0 0 20810 0 0 32 64 1 0 0 0 0 0 0 0
-2 5 21 f0012 0 1 c00 0 0 size
-2 6 21 40013 0 23 c00 0 5 const_func
-2 7 21 40017 1 37 82a 4 6
+2 1 19 20006 1 3d 131806 0 0 1 2 102 $u1
 1 const_func 17 850010 1 0 31 0 32 1 aa 1aa aa aa aa aa aa aa
 1 size 18 80000f 1 0 31 0 32 1 aa aa aa aa aa aa aa aa
-4 7 0 0
-4 3 7 7
+4 1 0 0
+3 1 main.const_func.$u1 main.const_func.$u1 static_func2.2.v 0 22 1
+2 2 20 110011 0 0 20810 0 0 32 64 0 0 0 0 0 0 0 0
+2 3 20 4000d 0 1 c00 0 0 const_func
+2 4 20 40011 1 37 11826 2 3
+2 5 21 170017 0 0 20810 0 0 32 64 1 0 0 0 0 0 0 0
+2 6 21 f0012 0 1 c00 0 0 size
+2 7 21 40013 0 23 c00 0 6 const_func
+2 8 21 40017 1 37 82a 5 7
+4 8 0 0
+4 4 8 8

@@ -1,5 +1,5 @@
 5 a 1 * 0
-8 /data/cf/uvlogic1/uvg/trevorw/projects/covered/diags/verilog -t main -vcd static_func2.1.vcd -o static_func2.1.cdd -v static_func2.1.v
+8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd static_func2.1.vcd -o static_func2.1.cdd -v static_func2.1.v
 3 0 $root $root NA 0 0 1
 3 0 main main static_func2.1.v 1 32 1
 2 1 10 17001e 2 1 c 0 0 bar[2].b
@@ -18,39 +18,43 @@
 1 a 35 18 1 0 0 0 1 1 102
 1 b 37 30005 1 0 0 0 1 1 1002
 4 9 9 9
+3 1 main.$u0 main.$u0 static_func2.1.v 0 22 1
 3 2 main.const_func main.const_func static_func2.1.v 24 30 1
-2 10 27 110011 0 0 20810 0 0 32 64 0 0 0 0 0 0 0 0
-2 11 27 4000d 0 1 c00 0 0 const_func
-2 12 27 40011 1 37 11826 10 11
-2 13 28 1d0020 0 0 20810 0 0 1 4 1
-2 14 28 f0018 0 1 c00 0 0 bit_to_set
-2 15 28 40019 0 23 c00 0 14 const_func
-2 16 28 40020 1 37 82a 13 15
+2 10 26 20006 1 3d 131806 0 0 1 2 102 $u1
 1 const_func 24 850010 1 0 31 0 32 1 4aa aa aa aa aa aa aa aa
 1 bit_to_set 25 80000f 1 0 31 0 32 1 aa aa aa aa aa aa aa aa
-4 16 0 0
-4 12 16 16
+4 10 0 0
+3 1 main.const_func.$u1 main.const_func.$u1 static_func2.1.v 0 29 1
+2 11 27 110011 0 0 20810 0 0 32 64 0 0 0 0 0 0 0 0
+2 12 27 4000d 0 1 c00 0 0 const_func
+2 13 27 40011 1 37 11826 11 12
+2 14 28 1d0020 0 0 20810 0 0 1 4 1
+2 15 28 f0018 0 1 c00 0 0 bit_to_set
+2 16 28 40019 0 23 c00 0 15 const_func
+2 17 28 40020 1 37 82a 14 16
+4 17 0 0
+4 13 17 17
 3 0 foo main.bar[1] static_func2.1.v 35 39 1
-2 17 37 a000a 2 1 c 0 0 a
-2 18 37 90009 2 1b 2000c 17 0 1 2 1102
-2 19 37 50005 0 1 400 0 0 b
-2 20 37 5000a 2 36 f00e 18 19
+2 18 37 a000a 2 1 c 0 0 a
+2 19 37 90009 2 1b 2000c 18 0 1 2 1102
+2 20 37 50005 0 1 400 0 0 b
+2 21 37 5000a 2 36 f00e 19 20
 1 a 35 18 1 0 0 0 1 1 102
 1 b 37 30005 1 0 0 0 1 1 1002
-4 20 20 20
+4 21 21 21
 3 0 foo main.bar[2] static_func2.1.v 35 39 1
-2 21 37 a000a 2 1 c 0 0 a
-2 22 37 90009 2 1b 2000c 21 0 1 2 1102
-2 23 37 50005 0 1 400 0 0 b
-2 24 37 5000a 2 36 f00e 22 23
+2 22 37 a000a 2 1 c 0 0 a
+2 23 37 90009 2 1b 2000c 22 0 1 2 1102
+2 24 37 50005 0 1 400 0 0 b
+2 25 37 5000a 2 36 f00e 23 24
 1 a 35 18 1 0 0 0 1 1 1002
 1 b 37 30005 1 0 0 0 1 1 102
-4 24 24 24
+4 25 25 25
 3 0 foo main.bar[3] static_func2.1.v 35 39 1
-2 25 37 a000a 2 1 c 0 0 a
-2 26 37 90009 2 1b 2000c 25 0 1 2 1102
-2 27 37 50005 0 1 400 0 0 b
-2 28 37 5000a 2 36 f00e 26 27
+2 26 37 a000a 2 1 c 0 0 a
+2 27 37 90009 2 1b 2000c 26 0 1 2 1102
+2 28 37 50005 0 1 400 0 0 b
+2 29 37 5000a 2 36 f00e 27 28
 1 a 35 18 1 0 0 0 1 1 102
 1 b 37 30005 1 0 0 0 1 1 1002
-4 28 28 28
+4 29 29 29

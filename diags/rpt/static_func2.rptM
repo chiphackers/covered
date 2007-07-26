@@ -21,6 +21,8 @@ Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hi
   main                    static_func2.v             0/    0/    0      100%
   foo                     static_func2.v             1/    0/    1      100%
   main.const_func         static_func2.v             2/    0/    2      100%
+---------------------------------------------------------------------------------------------------------------------
+  Accumulated                                        3/    0/    3      100%
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -33,6 +35,8 @@ Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hi
   main                    static_func2.v             0/   16/   16        0%             0/   16/   16        0%
   foo                     static_func2.v             0/    2/    2        0%             0/    2/    2        0%
   main.const_func         static_func2.v             1/   63/   64        2%             1/   63/   64        2%
+---------------------------------------------------------------------------------------------------------------------
+  Accumulated                                        1/   81/   82        1%             1/   81/   82        1%
 ---------------------------------------------------------------------------------------------------------------------
 
     Module: main, File: static_func2.v
@@ -77,6 +81,8 @@ Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hi
   main                    static_func2.v             0/    0/    0      100%             0/    0/    0      100%
   foo                     static_func2.v             0/    0/    0      100%             0/    0/    0      100%
   main.const_func         static_func2.v             0/    0/    0      100%             0/    0/    0      100%
+---------------------------------------------------------------------------------------------------------------------
+  Accumulated                                        0/    0/    0      100%             0/    0/    0      100%
 
                                                     Addressable elements written         Addressable elements read
                                                    Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit
@@ -85,6 +91,8 @@ Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hi
   main                    static_func2.v             0/    0/    0      100%             0/    0/    0      100%
   foo                     static_func2.v             0/    0/    0      100%             0/    0/    0      100%
   main.const_func         static_func2.v             0/    0/    0      100%             0/    0/    0      100%
+---------------------------------------------------------------------------------------------------------------------
+  Accumulated                                        0/    0/    0      100%             0/    0/    0      100%
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -97,6 +105,8 @@ Module/Task/Function                Filename                          Hit/Miss/T
   main                              static_func2.v                      0/   0/   0      100%
   foo                               static_func2.v                      0/   2/   2        0%
   main.const_func                   static_func2.v                      0/   0/   0      100%
+---------------------------------------------------------------------------------------------------------------------
+  Accumulated                                                           0/   2/   2        0%
 ---------------------------------------------------------------------------------------------------------------------
 
     Module: foo, File: static_func2.v
@@ -127,6 +137,8 @@ Module/Task/Function      Filename                Hit/Miss/Total    Percent Hit 
   main                    static_func2.v            0/   0/   0      100%            0/   0/   0      100%
   foo                     static_func2.v            0/   0/   0      100%            0/   0/   0      100%
   main.const_func         static_func2.v            0/   0/   0      100%            0/   0/   0      100%
+---------------------------------------------------------------------------------------------------------------------
+  Accumulated                                       0/   0/   0      100%            0/   0/   0      100%
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -138,5 +150,7 @@ Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hi
   main                    static_func2.v             0/    0/    0      100%
   foo                     static_func2.v             0/    0/    0      100%
   main.const_func         static_func2.v             0/    0/    0      100%
+---------------------------------------------------------------------------------------------------------------------
+  Accumulated                                        0/    0/    0      100%
 
 

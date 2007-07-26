@@ -650,13 +650,14 @@ void expression_set_signed( expression* exp ) {
 /*!
  \param expr       Pointer to expression to potentially resize.
  \param recursive  Specifies if we should perform a recursive depth-first resize
+ \param alloc      If set to TRUE, allocates vector data for all expressions
 
  Resizes the given expression depending on the expression operation and its
  children's sizes.  If recursive is TRUE, performs the resize in a depth-first
  fashion, resizing the children before resizing the current expression.  If
  recursive is FALSE, only the given expression is evaluated and resized.
 */
-void expression_resize( expression* expr, bool recursive ) {
+void expression_resize( expression* expr, bool recursive, bool alloc ) {
 
   int    largest_width;  /* Holds larger width of left and right children */
   nibble old_vec_suppl;  /* Holds original vector supplemental field as this will be erased */
@@ -664,8 +665,8 @@ void expression_resize( expression* expr, bool recursive ) {
   if( expr != NULL ) {
 
     if( recursive ) {
-      expression_resize( expr->left, recursive );
-      expression_resize( expr->right, recursive );
+      expression_resize( expr->left, recursive, alloc );
+      expression_resize( expr->right, recursive, alloc );
     }
 
     /* Get vector supplemental field */
@@ -735,7 +736,7 @@ void expression_resize( expression* expr, bool recursive ) {
       case EXP_OP_WAIT    :
         if( (expr->value->width != 1) || (expr->value->value == NULL) ) {
           assert( expr->value->value == NULL );
-          expression_create_value( expr, 1, FALSE );
+          expression_create_value( expr, 1, alloc );
         }
         break;
 
@@ -745,11 +746,11 @@ void expression_resize( expression* expr, bool recursive ) {
       case EXP_OP_AEDGE   :
         if( (expr->left->value->width != 1) || (expr->left->value->value == NULL) ) {
           assert( expr->left->value->value == NULL );
-          expression_create_value( expr->left, 1, FALSE );
+          expression_create_value( expr->left, 1, alloc );
         }
         if( (expr->value->width != 1) || (expr->value->value == NULL) ) {
           assert( expr->value->value == NULL );
-          expression_create_value( expr, 1, FALSE );
+          expression_create_value( expr, 1, alloc );
         }
         break;
 
@@ -762,7 +763,7 @@ void expression_resize( expression* expr, bool recursive ) {
         if( (expr->value->width != (vector_to_int( expr->left->value ) * expr->right->value->width)) ||
             (expr->value->value == NULL) ) {
           assert( expr->value->value == NULL );
-          expression_create_value( expr, (vector_to_int( expr->left->value ) * expr->right->value->width), FALSE );
+          expression_create_value( expr, (vector_to_int( expr->left->value ) * expr->right->value->width), alloc );
         }
         break;
 
@@ -775,11 +776,11 @@ void expression_resize( expression* expr, bool recursive ) {
         if( (expr->value->width != (expr->left->value->width + expr->right->value->width)) ||
             (expr->value->value == NULL) ) {
           assert( expr->value->value == NULL );
-          expression_create_value( expr, (expr->left->value->width + expr->right->value->width), FALSE );
+          expression_create_value( expr, (expr->left->value->width + expr->right->value->width), alloc );
         }
         if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
           assert( expr->left->value->value == NULL );
-          expression_create_value( expr->left, expr->parent->expr->left->value->width, FALSE );
+          expression_create_value( expr->left, expr->parent->expr->left->value->width, alloc );
         }
         break;
 
@@ -805,25 +806,25 @@ void expression_resize( expression* expr, bool recursive ) {
           }
           if( (expr->value->width != largest_width) || (expr->value->value == NULL) ) {
             assert( expr->value->value == NULL );
-            expression_create_value( expr, largest_width, FALSE );
+            expression_create_value( expr, largest_width, alloc );
           }
 
         /* If our parent is a DLY_OP, we need to get our value from the LHS of the DLY_ASSIGN expression */
         } else if( expr->parent->expr->op == EXP_OP_DLY_OP ) {
           if( (expr->parent->expr->parent->expr->left->value->width != expr->value->width) || (expr->value->value == NULL) ) {
             assert( expr->value->value == NULL );
-            expression_create_value( expr, expr->parent->expr->parent->expr->left->value->width, FALSE );
+            expression_create_value( expr, expr->parent->expr->parent->expr->left->value->width, alloc );
           }
 
         /* Otherwise, get our value from the size of the expression on the left-hand-side of the assignment */
         } else {
           if( (expr->parent->expr->left->value->width != expr->value->width) || (expr->value->value == NULL) ) {
             assert( expr->value->value == NULL );
-            expression_create_value( expr, expr->parent->expr->left->value->width, FALSE );
+            expression_create_value( expr, expr->parent->expr->left->value->width, alloc );
           }
           if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
             assert( expr->left->value->value == NULL );
-            expression_create_value( expr->left, expr->value->width, FALSE );
+            expression_create_value( expr->left, expr->value->width, alloc );
           }
         }
         break;
@@ -1111,7 +1112,7 @@ void expression_assign_expr_ids( expression* root ) {
     curr_expr_id++;
 
     /* Resize ourselves */
-    expression_resize( root, FALSE );
+    expression_resize( root, FALSE, FALSE );
 
   }
 
@@ -3373,12 +3374,14 @@ void expression_operate_recursively( expression* expr, bool sizing ) {
               (expr->op != EXP_OP_MBIT_NEG) );
 
       /* Resize current expression only */
-      expression_resize( expr, FALSE );
+      expression_resize( expr, FALSE, TRUE );
     
+#ifdef OBSOLETE
       /* Create vector value to store operation information */
       if( expr->value->value == NULL ) {
         expression_create_value( expr, expr->value->width, TRUE );
       }
+#endif
 
     }
     
@@ -3905,6 +3908,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.244  2007/07/26 05:03:42  phase1geo
+ Starting to work on fix for static function support.  Fixing issue if
+ func_call is called with NULL thr parameter (to avoid segmentation fault).
+ IV regression fully passes.
+
  Revision 1.243  2007/04/18 22:34:58  phase1geo
  Revamping simulator core again.  Checkpointing.
 

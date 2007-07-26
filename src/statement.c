@@ -283,7 +283,7 @@ void statement_size_elements( statement* stmt ) {
   if( stmt != NULL ) {
 
     /* Size the current statement */
-    expression_resize( stmt->exp, TRUE );
+    expression_resize( stmt->exp, TRUE, FALSE );
 
     /* Iterate to the next statement */
     if( stmt->next_true == stmt->next_false ) {
@@ -918,6 +918,11 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.111  2007/07/18 02:15:04  phase1geo
+ Attempts to fix a problem with generating instances with hierarchy.  Also fixing
+ an issue with named blocks in generate statements.  Still some work to go before
+ regressions are passing again, however.
+
  Revision 1.110  2007/04/18 22:35:02  phase1geo
  Revamping simulator core again.  Checkpointing.
 

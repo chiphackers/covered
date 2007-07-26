@@ -650,11 +650,11 @@ void param_size_function( funit_inst* inst, func_unit* funit ) {
 
   funit_inst* child;  /* Pointer to current child instance */
 
-  printf( "Sizing funit: %s\n", funit->name );
-  instance_display_tree( inst );
+  /* Resolve all parameters for this instance */
+  param_resolve( inst );
 
   /* Resize the current functional unit */
-  funit_size_elements( funit, inst, FALSE );
+  funit_size_elements( funit, inst, FALSE, TRUE );
 
   /* Recursively iterate through list of children instances */
   child = inst->child_head;
@@ -689,7 +689,7 @@ void param_expr_eval( expression* expr, funit_inst* inst ) {
       assert( funit != NULL );
       funiti = instance_find_by_funit( inst, funit, &ignore );
       assert( funiti != NULL );
-      param_resolve( funiti );
+      //param_resolve( funiti );
       //funit_size_elements( funit, funiti, FALSE );
       param_size_function( funiti, funit );
       expression_set_value( expr, expr->sig );
@@ -725,11 +725,13 @@ void param_expr_eval( expression* expr, funit_inst* inst ) {
                 (expr->op != EXP_OP_MBIT_SEL) &&
                 (expr->op != EXP_OP_MBIT_POS) &&
                 (expr->op != EXP_OP_MBIT_NEG) );
-        expression_resize( expr, FALSE );
+        expression_resize( expr, FALSE, TRUE );
+#ifdef OBSOLETE
         if( expr->value->value != NULL ) {
           free_safe( expr->value->value );
         }
         expression_create_value( expr, expr->value->width, TRUE );
+#endif
         break;
     }
 
@@ -1055,6 +1057,11 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.88  2007/07/26 05:03:42  phase1geo
+ Starting to work on fix for static function support.  Fixing issue if
+ func_call is called with NULL thr parameter (to avoid segmentation fault).
+ IV regression fully passes.
+
  Revision 1.87  2007/04/18 22:35:02  phase1geo
  Revamping simulator core again.  Checkpointing.
 

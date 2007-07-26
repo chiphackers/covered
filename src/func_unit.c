@@ -302,17 +302,18 @@ char* funit_gen_task_function_namedblock_name( char* orig_name, func_unit* paren
 }
 
 /*!
- \param funit    Pointer to functional unit containing elements to resize.
- \param inst     Pointer to instance containing this functional unit.
- \param gen_all  Set to TRUE to generate all components (this should only be set
-                 by the funit_db_write function).
+ \param funit        Pointer to functional unit containing elements to resize.
+ \param inst         Pointer to instance containing this functional unit.
+ \param gen_all      Set to TRUE to generate all components (this should only be set
+                     by the funit_db_write function).
+ \param alloc_exprs  Allocates vector data for all expressions if set to TRUE.
  
  Resizes signals if they are contigent upon parameter values.  After
  all signals have been resized, the signal's corresponding expressions
  are resized.  This function should be called just prior to outputting
  this funtional unit's contents to the CDD file (after parsing phase only)
 */
-void funit_size_elements( func_unit* funit, funit_inst* inst, bool gen_all ) {
+void funit_size_elements( func_unit* funit, funit_inst* inst, bool gen_all, bool alloc_exprs ) {
   
   inst_parm*  curr_iparm;       /* Pointer to current instance parameter to evaluate */
   exp_link*   curr_exp;         /* Pointer to current expression link to evaluate */
@@ -405,7 +406,7 @@ void funit_size_elements( func_unit* funit, funit_inst* inst, bool gen_all ) {
   while( curr_exp != NULL ) {
     if( ESUPPL_IS_ROOT( curr_exp->exp->suppl ) ) {
       /* Perform an entire expression resize */
-      expression_resize( curr_exp->exp, TRUE );
+      expression_resize( curr_exp->exp, TRUE, alloc_exprs );
     }
     if( curr_exp->exp->sig != NULL ) {
       expression_set_value( curr_exp->exp, curr_exp->exp->sig );
@@ -498,7 +499,7 @@ bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
 
     /* Size all elements in this functional unit and calculate timescale if we are in parse mode */
     if( inst != NULL ) {
-      funit_size_elements( funit, inst, TRUE );
+      funit_size_elements( funit, inst, TRUE, FALSE );
       funit->timescale = db_scale_to_precision( (uint64)1, funit );
     }
   
@@ -1077,6 +1078,9 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.71  2007/04/18 22:34:58  phase1geo
+ Revamping simulator core again.  Checkpointing.
+
  Revision 1.70  2007/04/11 22:29:48  phase1geo
  Adding support for CLI to score command.  Still some work to go to get history
  stuff right.  Otherwise, it seems to be working.

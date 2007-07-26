@@ -690,7 +690,7 @@ void race_check_modules() {
         ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( modl->funit )) ) {
 
       /* Size elements for the current module */
-      funit_size_elements( modl->funit, inst, FALSE );
+      funit_size_elements( modl->funit, inst, FALSE, FALSE );
 
       /* Clear statement block array size */
       sb_size = 0;
@@ -1052,6 +1052,10 @@ void race_blk_delete_list( race_blk* rb ) {
 
 /*
  $Log$
+ Revision 1.56  2007/04/03 18:55:57  phase1geo
+ Fixing more bugs in reporting mechanisms for unnamed scopes.  Checking in more
+ regression updates per these changes.  Checkpointing.
+
  Revision 1.55  2007/03/30 22:43:13  phase1geo
  Regression fixes.  Still have a ways to go but we are getting close.
 
