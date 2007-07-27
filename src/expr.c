@@ -2662,15 +2662,6 @@ bool expression_op_func__bassign( expression* expr, thread* thr ) {
 */
 bool expression_op_func__func_call( expression* expr, thread* thr ) {
 
-#ifdef OBSOLETE
-  /* If the current thread is running an automatic function, create a reentrant structure for it */
-  if( (thr->funit->type == FUNIT_AFUNCTION) || (thr->funit->type == FUNIT_ATASK) || (thr->funit->type == FUNIT_ANAMED_BLOCK) ) {
-    assert( thr->ren == NULL );
-    printf( "CREATING REENTRANT for thread %p\n", thr );
-    thr->ren = reentrant_create( thr->funit );
-  }
-#endif
-
   sim_thread( sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit ), ((thr == NULL) ? 0 : thr->curr_time) );
 
   return( TRUE );
@@ -2686,15 +2677,6 @@ bool expression_op_func__func_call( expression* expr, thread* thr ) {
  Performs a task call operation.
 */
 bool expression_op_func__task_call( expression* expr, thread* thr ) {
-
-#ifdef OBSOLETE
-  /* If the current thread is running an automatic function, create a reentrant structure for it */
-  if( (thr->funit->type == FUNIT_AFUNCTION) || (thr->funit->type == FUNIT_ATASK) || (thr->funit->type == FUNIT_ANAMED_BLOCK) ) {
-    assert( thr->ren == NULL );
-    printf( "CREATING REENTRANT for thread %p\n", thr );
-    thr->ren = reentrant_create( thr->funit );
-  }
-#endif
 
   sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit );
 
@@ -3934,6 +3916,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.246  2007/07/27 19:11:27  phase1geo
+ Putting in rest of support for automatic functions/tasks.  Checked in
+ atask1 diagnostic files.
+
  Revision 1.245  2007/07/26 17:05:15  phase1geo
  Fixing problem with static functions (vector data associated with expressions
  were not being allocated).  Regressions have been run.  Only two failures

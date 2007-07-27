@@ -915,6 +915,9 @@ bool sim_expression( expression* expr, thread* thr ) {
        (expr->op == EXP_OP_CASEZ)) &&
       ((expr->op != EXP_OP_DLY_OP) || (expr->left == NULL) || (expr->left->op != EXP_OP_DELAY)) ) {
 
+    /* Clear LEFT CHANGED bit */
+    expr->suppl.part.left_changed = 0;
+
     /* Simulate the left expression if it has changed */
     if( expr->left != NULL ) {
       if( expr->left->suppl.part.lhs == 0 ) {
@@ -924,14 +927,14 @@ bool sim_expression( expression* expr, thread* thr ) {
       left_changed = TRUE;
     }
 
-    /* Clear LEFT CHANGED bit */
-    expr->suppl.part.left_changed = 0;
-
   }
 
   /* Traverse right child expression if it has changed */
   if( (ESUPPL_IS_RIGHT_CHANGED( expr->suppl ) == 1) &&
       ((expr->op != EXP_OP_DLY_OP) || !thr->suppl.part.exec_first) ) {
+
+    /* Clear RIGHT CHANGED bit */
+    expr->suppl.part.right_changed = 0;
 
     /* Simulate the right expression if it has changed */
     if( expr->right != NULL ) {
@@ -941,9 +944,6 @@ bool sim_expression( expression* expr, thread* thr ) {
     } else {
       right_changed = TRUE;
     } 
-
-    /* Clear RIGHT CHANGED bit */
-    expr->suppl.part.right_changed = 0;
 
   }
 
@@ -1165,6 +1165,10 @@ void sim_dealloc() {
 
 /*
  $Log$
+ Revision 1.99  2007/07/27 19:11:27  phase1geo
+ Putting in rest of support for automatic functions/tasks.  Checked in
+ atask1 diagnostic files.
+
  Revision 1.98  2007/07/26 22:23:00  phase1geo
  Starting to work on the functionality for automatic tasks/functions.  Just
  checkpointing some work.

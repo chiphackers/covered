@@ -141,8 +141,8 @@ IVONLYDIAGS2  =
 IVONLYDIAGS3  = 
 IVONLYDIAGS4  = 
 
-VCSONLYDIAGS1 = always_comb1    always_ff1      always_latch1   assert1         atask1 \
-                bit1 \
+VCSONLYDIAGS1 = afunc1          always_comb1    always_ff1      always_latch1   assert1 \
+                atask1          bit1 \
                 byte1           char1           dec1            dec1.1          dec2 \
                 dec3            dec3.1          dly_assign1.1   dly_assign1.2   dly_assign1.3 \
                 dly_assign1.4   dly_assign2     dly_assign2.1   do_while1       do_while1.1 \
