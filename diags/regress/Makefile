@@ -228,6 +228,11 @@ cver:
 	$(MAKE) COVERED_GFLAG=-Q USE_CVER=1 VERILOG_EXTRA_FLAGS="$(CVER_FLAGS4)" DIAGLIST="$(DIAGS4) $(CVERONLYDIAGS4) $(IVCVERDIAGS4) $(CVERVCSDIAGS4)" regress
 	@cd ../verilog;  $(MAKE) eot;  $(MAKE) clean
 
+all:
+	$(MAKE) iverilog LEAVE=1
+	$(MAKE) cver LEAVE=1
+	$(MAKE) vcs
+
 clean:
 	@cd ../verilog;  $(MAKE) clobber
 

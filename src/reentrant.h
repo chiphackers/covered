@@ -27,14 +27,17 @@
 
 
 /*! \brief Allocates and initializes the reentrant structure for the given functional unit */
-reentrant* reentrant_create( func_unit* funit, statement* stmt );
+reentrant* reentrant_create( func_unit* funit );
 
 /*! \brief Deallocates all memory associated with the given reentrant structure */
-void reentrant_dealloc( reentrant* ren, func_unit* funit, statement* stmt, uint64 sim_time );
+void reentrant_dealloc( reentrant* ren, func_unit* funit, uint64 sim_time );
 
 
 /*
  $Log$
+ Revision 1.3  2007/04/20 22:56:46  phase1geo
+ More regression updates and simulator core fixes.  Still a ways to go.
+
  Revision 1.2  2006/12/18 23:58:34  phase1geo
  Fixes for automatic tasks.  Added atask1 diagnostic to regression suite to verify.
  Other fixes to parser for blocks.  We need to add code to properly handle unnamed

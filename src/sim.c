@@ -311,7 +311,6 @@ void sim_thread_pop_head() {
   if( debug_mode && !flag_use_command_line_debug ) {
     printf( "Before thread is popped from active queue...\n" );
     sim_display_active_queue();
-    printf( "-WAIT-\n" );  sim_display_wait_queue();
   }
 #endif
 
@@ -321,13 +320,6 @@ void sim_thread_pop_head() {
     active_tail = NULL;
   } else {
     active_head->queue_prev = NULL;   /* TBD - Placed here for help in debug */
-  }
-
-  /* If the thread is running for an automatic function/task, push the data */
-  if( (thr->funit->type == FUNIT_ATASK) || (thr->funit->type == FUNIT_AFUNCTION) || (thr->funit->type == FUNIT_ANAMED_BLOCK) ) {
-    assert( thr->ren == NULL );
-    printf( "CREATING REENTRANT for thread %p\n", thr );
-    thr->ren = reentrant_create( thr->funit, thr->curr );
   }
 
   /* Advance the curr pointer if we call sim_add_thread */
@@ -361,8 +353,6 @@ void sim_thread_pop_head() {
   if( debug_mode && !flag_use_command_line_debug ) {
     printf( "After thread is popped from active queue...\n" );
     sim_display_active_queue();
-    printf( "-WAIT-\n" );  sim_display_wait_queue();
-    sim_display_all_list();
   }
 #endif
 
@@ -986,7 +976,7 @@ void sim_thread( thread* thr, uint64 sim_time ) {
   /* If the thread has a reentrant structure assigned to it, pop it */
   if( thr->ren != NULL ) {
     printf( "DEALLOCATING REENTRANT for thread %p\n", thr );
-    reentrant_dealloc( thr->ren, thr->funit, thr->curr, sim_time );
+    reentrant_dealloc( thr->ren, thr->funit, sim_time );
     thr->ren = NULL;
   }
 
@@ -1175,6 +1165,10 @@ void sim_dealloc() {
 
 /*
  $Log$
+ Revision 1.98  2007/07/26 22:23:00  phase1geo
+ Starting to work on the functionality for automatic tasks/functions.  Just
+ checkpointing some work.
+
  Revision 1.97  2007/07/24 22:52:26  phase1geo
  More clean-up for VCS regressions.  Still not fully passing yet.
 
