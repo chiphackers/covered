@@ -320,6 +320,11 @@
 #define ESUPPL_MERGE_MASK            0xffffff
 
 /*!
+ Specifies the number of bits to store for a given expression for reentrant purposes.
+*/
+#define ESUPPL_BITS_TO_STORE         0
+
+/*!
  Returns a value of 1 if the specified supplemental value has the SWAPPED
  bit set indicating that the children of the current expression were
  swapped positions during the scoring phase.
@@ -2355,6 +2360,10 @@ struct reentrant_s {
 
 /*
  $Log$
+ Revision 1.258  2007/07/26 22:23:00  phase1geo
+ Starting to work on the functionality for automatic tasks/functions.  Just
+ checkpointing some work.
+
  Revision 1.257  2007/07/26 20:12:45  phase1geo
  Fixing bug related to failure of hier1.1 diagnostic.  Placing functional unit
  scope in quotes for cases where backslashes are used in the scope names (requiring

@@ -38,15 +38,26 @@
 int reentrant_count_afu_bits( func_unit* funit ) {
 
   sig_link* sigl;      /* Pointer to current signal link */
+  exp_link* expl;      /* Pointer to current expression link */
   int       bits = 0;  /* Number of bits in this functional unit and all parent functional units in the reentrant task/function */
 
   if( (funit->type == FUNIT_ATASK) || (funit->type == FUNIT_AFUNCTION) || (funit->type == FUNIT_ANAMED_BLOCK) ) {
 
-    /* Count the number of bits in this functional unit */
+    /* Count the number of signal bits in this functional unit */
     sigl = funit->sig_head;
     while( sigl != NULL ) {
       bits += sigl->sig->value->width;
       sigl = sigl->next;
+    }
+
+    /* Count the number of expression bits in this functional unit */
+    expl = funit->exp_head;
+    while( expl != NULL ) {
+      if( ESUPPL_OWNS_VEC( expl->exp->suppl ) == 1 ) {
+        bits += expl->exp->value->width;
+      }
+      bits += ESUPPL_BITS_TO_STORE;
+      expl = expl->next;
     }
 
     /* If the current functional unit is a named block, gather the bits in the parent functional unit */
@@ -71,6 +82,7 @@ int reentrant_count_afu_bits( func_unit* funit ) {
 void reentrant_store_data_bits( func_unit* funit, reentrant* ren, int curr_bit ) {
 
   sig_link* sigl;  /* Pointer to current signal link in current functional unit */
+  exp_link* expl;  /* Pointer to current expression link in current functional unit */
   int       i;     /* Loop iterator */
 
   if( (funit->type == FUNIT_ATASK) || (funit->type == FUNIT_AFUNCTION) || (funit->type == FUNIT_ANAMED_BLOCK) ) {
@@ -83,6 +95,17 @@ void reentrant_store_data_bits( func_unit* funit, reentrant* ren, int curr_bit )
         curr_bit++;
       }
       sigl = sigl->next;
+    }
+
+    /* Walk through expression list in the reentrant functional unit, compressing and saving vector and supplemental values */
+    expl = funit->exp_head;
+    while( expl != NULL ) {
+      if( ESUPPL_OWNS_VEC( expl->exp->suppl ) == 1 ) {
+        ren->data[((curr_bit%4)==0)?(curr_bit/4):((curr_bit/4)+1)] |= (expl->exp->value->value[i].part.val.value << (curr_bit % 4));
+        curr_bit++;
+      }
+      /* TBD - Store the expression supplemental information */
+      expl = expl->next;
     }
 
     /* If the current functional unit is a named block, store the bits in the parent functional unit */
@@ -100,11 +123,12 @@ void reentrant_store_data_bits( func_unit* funit, reentrant* ren, int curr_bit )
  \param curr_bit  Current bit in reentrant structure to restore
  \param sim_time  Current simulation time
 
- Recursively restores the signal values of the functional units in a reentrant task/function.
+ Recursively restores the signal and expression values of the functional units in a reentrant task/function.
 */
 void reentrant_restore_data_bits( func_unit* funit, reentrant* ren, int curr_bit, uint64 sim_time ) {
 
   sig_link* sigl;  /* Pointer to current signal link */
+  exp_link* expl;  /* Pointer to current expression link */
   int       i;     /* Loop iterator */
 
   if( (funit->type == FUNIT_ATASK) || (funit->type == FUNIT_AFUNCTION) || (funit->type == FUNIT_ANAMED_BLOCK) ) {
@@ -118,6 +142,19 @@ void reentrant_restore_data_bits( func_unit* funit, reentrant* ren, int curr_bit
       }
       vsignal_propagate( sigl->sig, sim_time );
       sigl = sigl->next;
+    }
+
+    /* Walk through each bit in the compressed data array and assign it back to its expression */
+    expl = funit->exp_head;
+    while( expl != NULL ) {
+      if( ESUPPL_OWNS_VEC( expl->exp->suppl ) == 1 ) {
+        for( i=0; i<expl->exp->value->width; i++ ) {
+          expl->exp->value->value[i].part.val.value = (ren->data[((curr_bit%4)==0)?(curr_bit/4):((curr_bit/4)+1)] >> (curr_bit % 4));
+          curr_bit++;
+        }
+      }
+      /* TBD - Restore the expression supplemental information */
+      expl = expl->next;
     }
 
     /*
@@ -209,6 +246,10 @@ void reentrant_dealloc( reentrant* ren, func_unit* funit, uint64 sim_time ) {
 
 /*
  $Log$
+ Revision 1.6  2007/07/27 19:11:27  phase1geo
+ Putting in rest of support for automatic functions/tasks.  Checked in
+ atask1 diagnostic files.
+
  Revision 1.5  2007/07/26 22:23:00  phase1geo
  Starting to work on the functionality for automatic tasks/functions.  Just
  checkpointing some work.
