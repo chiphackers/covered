@@ -91,9 +91,8 @@
 
  \par EXP_OP_FUNC_CALL
  A function call expression runs the head statement block of the prescribed function whenever an
- expression changes value in its parameter list.  The expression's value vector pointer is
- automatically set to the return value signal in the function by the binding process.  As such,
- a function call expression should never deallocate its vector.
+ expression changes value in its parameter list.  After the function is simulated the function variable
+ value is copied to the expression vector.
  
  \par EXP_OP_TASK_CALL
  A task call expression simply runs the head statement block of the prescribed task immediately
@@ -563,7 +562,6 @@ void expression_set_value( expression* exp, vsignal* sig ) {
   switch( exp->op ) {
     case EXP_OP_SIG       :
     case EXP_OP_PARAM     :
-    case EXP_OP_FUNC_CALL :
     case EXP_OP_TRIGGER   :
       exp->value->width = sig->value->width;
       break;
@@ -703,7 +701,6 @@ void expression_resize( expression* expr, bool recursive, bool alloc ) {
       case EXP_OP_RASSIGN        :
       case EXP_OP_DLY_ASSIGN     :
       case EXP_OP_IF             :
-      case EXP_OP_FUNC_CALL      :
       case EXP_OP_WHILE          :
       case EXP_OP_LAST           :
       case EXP_OP_DIM            :
@@ -782,6 +779,19 @@ void expression_resize( expression* expr, bool recursive, bool alloc ) {
         if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
           assert( expr->left->value->value == NULL );
           expression_create_value( expr->left, expr->parent->expr->left->value->width, alloc );
+        }
+        break;
+
+      /*
+       A FUNC_CALL expression width is set to the same width as that of the function's return value.
+      */
+      case EXP_OP_FUNC_CALL :
+        assert( expr->sig != NULL );
+        printf( "In expression_resize, expr->value->width: %d, expr->sig: %s, width: %d\n", expr->value->width, expr->sig->name, expr->sig->value->width );
+        expression_display( expr );
+        if( (expr->value->width != expr->sig->value->width) || (expr->value->value == NULL) ) {
+          assert( expr->value->value == NULL );
+          expression_create_value( expr, expr->sig->value->width, alloc );
         }
         break;
 
@@ -2662,9 +2672,15 @@ bool expression_op_func__bassign( expression* expr, thread* thr ) {
 */
 bool expression_op_func__func_call( expression* expr, thread* thr ) {
 
+  bool retval;  /* Return value for this function */
+
+  /* First, simulate the function */
   sim_thread( sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit ), ((thr == NULL) ? 0 : thr->curr_time) );
 
-  return( TRUE );
+  /* Then copy the function variable to this expression */
+  retval = vector_set_value( expr->value, expr->sig->value->value, VTYPE_VAL, expr->value->width, 0, 0 );
+
+  return( retval );
 
 }
 
@@ -3916,6 +3932,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.247  2007/07/27 21:57:08  phase1geo
+ Adding afunc1 diagnostic to regression suite (though this diagnostic does not
+ currently pass).  Checkpointing.
+
  Revision 1.246  2007/07/27 19:11:27  phase1geo
  Putting in rest of support for automatic functions/tasks.  Checked in
  atask1 diagnostic files.

@@ -321,8 +321,14 @@
 
 /*!
  Specifies the number of bits to store for a given expression for reentrant purposes.
+ Contains the following expression supplemental field bits:
+ -# left_changed
+ -# right_changed
+ -# eval_t
+ -# eval_f
+ -# prev_called
 */
-#define ESUPPL_BITS_TO_STORE         0
+#define ESUPPL_BITS_TO_STORE         5
 
 /*!
  Returns a value of 1 if the specified supplemental value has the SWAPPED
@@ -819,7 +825,6 @@ typedef enum exp_op_type_e {
                                          (o != EXP_OP_RASSIGN)        && \
                                          (o != EXP_OP_IF)             && \
                                          (o != EXP_OP_WHILE)          && \
-                                         (o != EXP_OP_FUNC_CALL)      && \
 					 (o != EXP_OP_PASSIGN)        && \
                                          (o != EXP_OP_DLY_ASSIGN)     && \
                                          (o != EXP_OP_DIM))
@@ -2360,6 +2365,10 @@ struct reentrant_s {
 
 /*
  $Log$
+ Revision 1.259  2007/07/27 22:43:50  phase1geo
+ Starting to add support for saving expression information for re-entrant
+ tasks/functions.  Still more work to go.
+
  Revision 1.258  2007/07/26 22:23:00  phase1geo
  Starting to work on the functionality for automatic tasks/functions.  Just
  checkpointing some work.

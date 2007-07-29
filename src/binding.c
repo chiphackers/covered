@@ -653,15 +653,13 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
     if( scope_find_task_function_namedblock( name, type, funit_exp, &found_funit, exp_line, !bind_locally, 
                                              ((exp->op != EXP_OP_NB_CALL) && (exp->op != EXP_OP_FORK)) ) ) {
 
-//      if( found_funit->first_stmt != NULL ) {
-        exp->elem.funit         = found_funit;
-        exp->suppl.part.type    = ETYPE_FUNIT;
-        retval = (found_funit->type != FUNIT_NO_SCORE);
-//      }
+      exp->elem.funit      = found_funit;
+      exp->suppl.part.type = ETYPE_FUNIT;
+      retval = (found_funit->type != FUNIT_NO_SCORE);
 
       if( retval ) {
 
-        /* If this is a function, also bind the return value signal vector to the expression's vector */
+        /* If this is a function, bind the return value signal */
         if( type == FUNIT_FUNCTION ) {
 
           scope_extract_back( found_funit->name, back, rest );
@@ -675,9 +673,6 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
 
           /* Set expression to point at signal */
           exp->sig = sigl->sig;
-
-          /* Attach the signal's value to our expression value */
-          expression_set_value( exp, sigl->sig );
 
         }
 
@@ -872,6 +867,10 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.109  2007/07/26 22:23:00  phase1geo
+ Starting to work on the functionality for automatic tasks/functions.  Just
+ checkpointing some work.
+
  Revision 1.108  2007/03/16 21:41:07  phase1geo
  Checkpointing some work in fixing regressions for unnamed scope additions.
  Getting closer but still need to properly handle the removal of functional units.

@@ -104,7 +104,17 @@ void reentrant_store_data_bits( func_unit* funit, reentrant* ren, int curr_bit )
         ren->data[((curr_bit%4)==0)?(curr_bit/4):((curr_bit/4)+1)] |= (expl->exp->value->value[i].part.val.value << (curr_bit % 4));
         curr_bit++;
       }
-      /* TBD - Store the expression supplemental information */
+      for( i=0; i<ESUPPL_BITS_TO_STORE; i++ ) {
+        switch( i ) {
+          case 0 :  ren->data[((curr_bit%4)==0)?(curr_bit/4):((curr_bit/4)+1)] |= (expl->exp->suppl.part.left_changed  << (curr_bit % 4));  break;
+          case 1 :  ren->data[((curr_bit%4)==0)?(curr_bit/4):((curr_bit/4)+1)] |= (expl->exp->suppl.part.right_changed << (curr_bit % 4));  break;
+          case 2 :  ren->data[((curr_bit%4)==0)?(curr_bit/4):((curr_bit/4)+1)] |= (expl->exp->suppl.part.eval_t        << (curr_bit % 4));  break;
+          case 3 :  ren->data[((curr_bit%4)==0)?(curr_bit/4):((curr_bit/4)+1)] |= (expl->exp->suppl.part.eval_f        << (curr_bit % 4));  break;
+          case 4 :  ren->data[((curr_bit%4)==0)?(curr_bit/4):((curr_bit/4)+1)] |= (expl->exp->suppl.part.prev_called   << (curr_bit % 4));  break;
+          default:  assert( i < ESUPPL_BITS_TO_STORE );  break;
+        }
+        curr_bit++;
+      }
       expl = expl->next;
     }
 
@@ -140,7 +150,7 @@ void reentrant_restore_data_bits( func_unit* funit, reentrant* ren, int curr_bit
         sigl->sig->value->value[i].part.val.value = (ren->data[((curr_bit%4)==0)?(curr_bit/4):((curr_bit/4)+1)] >> (curr_bit % 4));
         curr_bit++;
       }
-      vsignal_propagate( sigl->sig, sim_time );
+      //vsignal_propagate( sigl->sig, sim_time );
       sigl = sigl->next;
     }
 
@@ -153,7 +163,17 @@ void reentrant_restore_data_bits( func_unit* funit, reentrant* ren, int curr_bit
           curr_bit++;
         }
       }
-      /* TBD - Restore the expression supplemental information */
+      for( i=0; i<ESUPPL_BITS_TO_STORE; i++ ) {
+        switch( i ) {
+          case 0 :  expl->exp->suppl.part.left_changed  = (ren->data[((curr_bit%4)==0)?(curr_bit/4):((curr_bit/4)+1)] >> (curr_bit % 4));  break;
+          case 1 :  expl->exp->suppl.part.right_changed = (ren->data[((curr_bit%4)==0)?(curr_bit/4):((curr_bit/4)+1)] >> (curr_bit % 4));  break;
+          case 2 :  expl->exp->suppl.part.eval_t        = (ren->data[((curr_bit%4)==0)?(curr_bit/4):((curr_bit/4)+1)] >> (curr_bit % 4));  break;
+          case 3 :  expl->exp->suppl.part.eval_f        = (ren->data[((curr_bit%4)==0)?(curr_bit/4):((curr_bit/4)+1)] >> (curr_bit % 4));  break;
+          case 4 :  expl->exp->suppl.part.prev_called   = (ren->data[((curr_bit%4)==0)?(curr_bit/4):((curr_bit/4)+1)] >> (curr_bit % 4));  break;
+          default:  assert( i < ESUPPL_BITS_TO_STORE );  break;
+        }
+        curr_bit++;
+      }
       expl = expl->next;
     }
 
@@ -246,6 +266,10 @@ void reentrant_dealloc( reentrant* ren, func_unit* funit, uint64 sim_time ) {
 
 /*
  $Log$
+ Revision 1.7  2007/07/27 22:43:50  phase1geo
+ Starting to add support for saving expression information for re-entrant
+ tasks/functions.  Still more work to go.
+
  Revision 1.6  2007/07/27 19:11:27  phase1geo
  Putting in rest of support for automatic functions/tasks.  Checked in
  atask1 diagnostic files.
