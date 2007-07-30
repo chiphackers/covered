@@ -1726,13 +1726,10 @@ expr_primary
         } else {
           $$ = NULL;
         }
-        free_safe( $1 );
       } else {
-        if( $1 != NULL ) {
-          free_safe( $1 );
-        }
         $$ = NULL;
       }
+      free_safe( $1 );
     }
   | UNUSED_SYSTEM_IDENTIFIER
     {
@@ -1817,14 +1814,11 @@ expr_primary
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL ) ) {
         tmp = db_create_expression( NULL, $3, EXP_OP_FUNC_CALL, lhs_mode, @1.first_line, @1.first_column, (@4.last_column - 1), $1 );
         $$  = tmp;
-        free_safe( $1 );
       } else {
-        if( $1 != NULL ) {
-          free_safe( $1 );
-        }
         expression_dealloc( $3, FALSE );
         $$ = NULL;
       }
+      free_safe( $1 );
     }
   | SYSTEM_IDENTIFIER '(' ignore_more expression_port_list ignore_less ')'
     {
@@ -1834,13 +1828,10 @@ expr_primary
         } else {
           $$ = NULL;
         }
-        free_safe( $1 );
       } else {
-        if( $1 != NULL ) {
-          free_safe( $1 );
-        }
         $$ = NULL;
       }
+      free_safe( $1 );
     }
   | UNUSED_SYSTEM_IDENTIFIER '(' expression_port_list ')'
     {

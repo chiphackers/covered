@@ -5,7 +5,7 @@
 3 0 foo_module "main.bar" ./lib/foo_module.v 1 34 1
 2 1 9 19001c 1 0 20004 0 0 1 4 0
 2 2 9 19001c 1 47 4 1 0 foo_func.a
-2 3 9 f001e 1 3a 100008 0 2 foo_func
+2 3 9 f001e 1 3a 120008 0 2 1 2 1002 foo_func
 2 4 9 7000b 0 1 400 0 0 foo_a
 2 5 9 7001e 1 35 f00a 3 4
 2 6 11 8000c 1 3d 121002 0 0 1 2 2 $u1

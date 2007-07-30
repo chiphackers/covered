@@ -786,10 +786,7 @@ void expression_resize( expression* expr, bool recursive, bool alloc ) {
        A FUNC_CALL expression width is set to the same width as that of the function's return value.
       */
       case EXP_OP_FUNC_CALL :
-        assert( expr->sig != NULL );
-        printf( "In expression_resize, expr->value->width: %d, expr->sig: %s, width: %d\n", expr->value->width, expr->sig->name, expr->sig->value->width );
-        expression_display( expr );
-        if( (expr->value->width != expr->sig->value->width) || (expr->value->value == NULL) ) {
+        if( (expr->sig != NULL) && ((expr->value->width != expr->sig->value->width) || (expr->value->value == NULL)) ) {
           assert( expr->value->value == NULL );
           expression_create_value( expr, expr->sig->value->width, alloc );
         }
@@ -3932,6 +3929,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.248  2007/07/29 03:32:06  phase1geo
+ First attempt to make FUNC_CALL expressions copy the functional return value
+ to the expression vector.  Not quite working yet -- checkpointing.
+
  Revision 1.247  2007/07/27 21:57:08  phase1geo
  Adding afunc1 diagnostic to regression suite (though this diagnostic does not
  currently pass).  Checkpointing.
