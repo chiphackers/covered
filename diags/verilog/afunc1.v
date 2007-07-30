@@ -27,9 +27,11 @@ end
 function automatic [31:0] div2;
   input [31:0] a;
   begin
-    if( a > 0 )
-      div2 = div2( a >> 1 ) + 1;
-    else
+    if( a > 0 ) begin
+      reg [31:0] b;
+      b = a >> 1;
+      div2 = div2( b ) + 1;
+    end else
       div2 = 0;
   end
 endfunction

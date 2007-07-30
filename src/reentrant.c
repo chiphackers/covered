@@ -26,6 +26,9 @@
 #include "util.h"
 
 
+extern const exp_info exp_op_info[EXP_OP_NUM];
+
+
 /*!
  \param funit  Pointer to current function to count the bits of
 
@@ -100,9 +103,11 @@ void reentrant_store_data_bits( func_unit* funit, reentrant* ren, int curr_bit )
     /* Walk through expression list in the reentrant functional unit, compressing and saving vector and supplemental values */
     expl = funit->exp_head;
     while( expl != NULL ) {
-      if( ESUPPL_OWNS_VEC( expl->exp->suppl ) == 1 ) {
-        ren->data[((curr_bit%4)==0)?(curr_bit/4):((curr_bit/4)+1)] |= (expl->exp->value->value[i].part.val.value << (curr_bit % 4));
-        curr_bit++;
+      if( (ESUPPL_OWNS_VEC( expl->exp->suppl ) == 1) && (EXPR_IS_STATIC( expl->exp ) == 0) ) {
+        for( i=0; i<expl->exp->value->width; i++ ) {
+          ren->data[((curr_bit%4)==0)?(curr_bit/4):((curr_bit/4)+1)] |= (expl->exp->value->value[i].part.val.value << (curr_bit % 4));
+          curr_bit++;
+        }
       }
       for( i=0; i<ESUPPL_BITS_TO_STORE; i++ ) {
         switch( i ) {
@@ -115,6 +120,12 @@ void reentrant_store_data_bits( func_unit* funit, reentrant* ren, int curr_bit )
         }
         curr_bit++;
       }
+      /* Clear supplemental bits that have been saved off */
+      expl->exp->suppl.part.left_changed  = 0;
+      expl->exp->suppl.part.right_changed = 0;
+      expl->exp->suppl.part.eval_t        = 0;
+      expl->exp->suppl.part.eval_f        = 0;
+      expl->exp->suppl.part.prev_called   = 0;
       expl = expl->next;
     }
 
@@ -132,10 +143,11 @@ void reentrant_store_data_bits( func_unit* funit, reentrant* ren, int curr_bit )
  \param ren       Pointer to reentrant structure containing bits to restore
  \param curr_bit  Current bit in reentrant structure to restore
  \param sim_time  Current simulation time
+ \param expr      Pointer to expression to exclude from updating
 
  Recursively restores the signal and expression values of the functional units in a reentrant task/function.
 */
-void reentrant_restore_data_bits( func_unit* funit, reentrant* ren, int curr_bit, uint64 sim_time ) {
+void reentrant_restore_data_bits( func_unit* funit, reentrant* ren, int curr_bit, uint64 sim_time, expression* expr ) {
 
   sig_link* sigl;  /* Pointer to current signal link */
   exp_link* expl;  /* Pointer to current expression link */
@@ -157,10 +169,14 @@ void reentrant_restore_data_bits( func_unit* funit, reentrant* ren, int curr_bit
     /* Walk through each bit in the compressed data array and assign it back to its expression */
     expl = funit->exp_head;
     while( expl != NULL ) {
-      if( ESUPPL_OWNS_VEC( expl->exp->suppl ) == 1 ) {
-        for( i=0; i<expl->exp->value->width; i++ ) {
-          expl->exp->value->value[i].part.val.value = (ren->data[((curr_bit%4)==0)?(curr_bit/4):((curr_bit/4)+1)] >> (curr_bit % 4));
-          curr_bit++;
+      if( expl->exp == expr ) {
+        curr_bit += expr->value->width;
+      } else {
+        if( (ESUPPL_OWNS_VEC( expl->exp->suppl ) == 1) && (EXPR_IS_STATIC( expl->exp ) == 0) ) {
+          for( i=0; i<expl->exp->value->width; i++ ) {
+            expl->exp->value->value[i].part.val.value = (ren->data[((curr_bit%4)==0)?(curr_bit/4):((curr_bit/4)+1)] >> (curr_bit % 4));
+            curr_bit++;
+          }
         }
       }
       for( i=0; i<ESUPPL_BITS_TO_STORE; i++ ) {
@@ -182,7 +198,7 @@ void reentrant_restore_data_bits( func_unit* funit, reentrant* ren, int curr_bit
      in this reentrant task/function.
     */
     if( funit->type == FUNIT_ANAMED_BLOCK ) {
-      reentrant_restore_data_bits( funit->parent, ren, curr_bit, sim_time );
+      reentrant_restore_data_bits( funit->parent, ren, curr_bit, sim_time, expr );
     }
 
   }
@@ -202,6 +218,8 @@ reentrant* reentrant_create( func_unit* funit ) {
   reentrant* ren  = NULL;  /* Pointer to newly created reentrant structure */
   int        data_size;    /* Number of nibbles needed to store the given functional unit */
   int        bits = 0;     /* Number of bits needed to store signal values */
+
+  printf( "In reentrant_create\n" );
 
   /* Get size needed to store data */
   bits = reentrant_count_afu_bits( funit );
@@ -234,15 +252,18 @@ reentrant* reentrant_create( func_unit* funit ) {
  \param ren       Pointer to the reentrant structure to deallocate from memory.
  \param funit     Pointer to functional unit associated with this reentrant structure.
  \param sim_time  Current timestep being simulated.
+ \param expr      Pointer of expression to exclude from updating (optional)
 
  Pops data back into the given functional unit and deallocates all memory associated
  with the given reentrant structure.
 */
-void reentrant_dealloc( reentrant* ren, func_unit* funit, uint64 sim_time ) {
+void reentrant_dealloc( reentrant* ren, func_unit* funit, uint64 sim_time, expression* expr ) {
 
   sig_link* sigl;     /* Pointer to current signal link in list */
   int       i;        /* Loop iterator */
   int       bit = 0;  /* Current bit in compressed bit array being assigned */
+
+  printf( "In reentrant_dealloc\n" );
 
   if( ren != NULL ) {
 
@@ -250,7 +271,7 @@ void reentrant_dealloc( reentrant* ren, func_unit* funit, uint64 sim_time ) {
     if( ren->data_size > 0 ) {
 
       /* Walk through each bit in the compressed data array and assign it back to its signal */
-      reentrant_restore_data_bits( funit, ren, 0, sim_time );
+      reentrant_restore_data_bits( funit, ren, 0, sim_time, expr );
 
       /* Deallocate the data nibble array */
       free_safe( ren->data );
@@ -266,6 +287,10 @@ void reentrant_dealloc( reentrant* ren, func_unit* funit, uint64 sim_time ) {
 
 /*
  $Log$
+ Revision 1.8  2007/07/29 03:32:06  phase1geo
+ First attempt to make FUNC_CALL expressions copy the functional return value
+ to the expression vector.  Not quite working yet -- checkpointing.
+
  Revision 1.7  2007/07/27 22:43:50  phase1geo
  Starting to add support for saving expression information for re-entrant
  tasks/functions.  Still more work to go.

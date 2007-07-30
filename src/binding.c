@@ -405,11 +405,12 @@ bool bind_param( char* name, expression* exp, func_unit* funit_exp, int exp_line
 bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bind, bool cdd_reading,
                   bool clear_assigned, int exp_line, bool bind_locally ) {
 
-  bool       retval = TRUE;  /* Return value for this function */
-  vsignal*   found_sig;      /* Pointer to found signal in design for the given name */
-  func_unit* found_funit;    /* Pointer to found functional unit containing given signal */
-  statement* stmt;           /* Pointer to root statement for the given expression */
-  exp_link*  expl;           /* Pointer to current expression link */
+  bool        retval = TRUE;  /* Return value for this function */
+  vsignal*    found_sig;      /* Pointer to found signal in design for the given name */
+  func_unit*  found_funit;    /* Pointer to found functional unit containing given signal */
+  funit_inst* found_inst;     /* Pointer to found instance containing given signal */
+  statement*  stmt;           /* Pointer to root statement for the given expression */
+  exp_link*   expl;           /* Pointer to current expression link */
 
   /* Skip signal binding if the name is not local and we are binding locally */
   if( scope_local( name ) || !bind_locally || (!clear_assigned && (exp->op == EXP_OP_PASSIGN)) ) {
@@ -867,6 +868,10 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.110  2007/07/29 03:32:06  phase1geo
+ First attempt to make FUNC_CALL expressions copy the functional return value
+ to the expression vector.  Not quite working yet -- checkpointing.
+
  Revision 1.109  2007/07/26 22:23:00  phase1geo
  Starting to work on the functionality for automatic tasks/functions.  Just
  checkpointing some work.

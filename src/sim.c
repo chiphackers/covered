@@ -975,8 +975,7 @@ void sim_thread( thread* thr, uint64 sim_time ) {
 
   /* If the thread has a reentrant structure assigned to it, pop it */
   if( thr->ren != NULL ) {
-    printf( "DEALLOCATING REENTRANT for thread %p\n", thr );
-    reentrant_dealloc( thr->ren, thr->funit, sim_time );
+    reentrant_dealloc( thr->ren, thr->funit, sim_time, FALSE );
     thr->ren = NULL;
   }
 
@@ -1165,6 +1164,10 @@ void sim_dealloc() {
 
 /*
  $Log$
+ Revision 1.100  2007/07/27 21:57:08  phase1geo
+ Adding afunc1 diagnostic to regression suite (though this diagnostic does not
+ currently pass).  Checkpointing.
+
  Revision 1.99  2007/07/27 19:11:27  phase1geo
  Putting in rest of support for automatic functions/tasks.  Checked in
  atask1 diagnostic files.

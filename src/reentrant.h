@@ -30,11 +30,15 @@
 reentrant* reentrant_create( func_unit* funit );
 
 /*! \brief Deallocates all memory associated with the given reentrant structure */
-void reentrant_dealloc( reentrant* ren, func_unit* funit, uint64 sim_time );
+void reentrant_dealloc( reentrant* ren, func_unit* funit, uint64 sim_time, expression* expr );
 
 
 /*
  $Log$
+ Revision 1.4  2007/07/27 19:11:27  phase1geo
+ Putting in rest of support for automatic functions/tasks.  Checked in
+ atask1 diagnostic files.
+
  Revision 1.3  2007/04/20 22:56:46  phase1geo
  More regression updates and simulator core fixes.  Still a ways to go.
 

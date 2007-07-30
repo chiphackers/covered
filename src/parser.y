@@ -4466,7 +4466,7 @@ fork_statement
     {
       expression* expr;
       statement*  stmt;
-      if( $3 && db_is_unnamed_scope( $1 ) ) {
+      if( $3 && db_is_unnamed_scope( $1 ) && !parser_check_generation( GENERATION_SV ) ) {
         VLerror( "Net/variables declared in unnamed fork...join block that is specified to not allow SystemVerilog syntax" );
         ignore_mode++;
       }
@@ -4522,7 +4522,7 @@ begin_end_block
     block_item_decls_opt statement_list
     {
       statement* stmt = $4;
-      if( $3 && db_is_unnamed_scope( $1 ) ) {
+      if( $3 && db_is_unnamed_scope( $1 ) && !parser_check_generation( GENERATION_SV ) ) {
         VLerror( "Net/variables declared in unnamed begin...end block that is specified to not allow SystemVerilog syntax" );
         ignore_mode++;
       }

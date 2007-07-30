@@ -340,6 +340,8 @@ void funit_size_elements( func_unit* funit, funit_inst* inst, bool gen_all, bool
   gitem_link* curr_gi;          /* Pointer to current generate item link to evaluate */
 #endif
   sig_link*   curr_sig;         /* Pointer to current signal link to evaluate */
+  funit_inst* tmp_inst;         /* Pointer to temporary instance */
+  func_unit*  tmp_funit;        /* Pointer to temporary functional unit */
   bool        resolve = FALSE;  /* If set to TRUE, perform one more parameter resolution */
 
   assert( funit != NULL );
@@ -1097,6 +1099,11 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.75  2007/07/30 20:36:14  phase1geo
+ Fixing rest of issues pertaining to new implementation of function calls.
+ Full regression passes (with the exception of afunc1 which we do not expect
+ to pass with these changes as of yet).
+
  Revision 1.74  2007/07/26 22:23:00  phase1geo
  Starting to work on the functionality for automatic tasks/functions.  Just
  checkpointing some work.
