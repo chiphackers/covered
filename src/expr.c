@@ -1777,6 +1777,8 @@ bool expression_op_func__lt( expression* expr, thread* thr ) {
 */
 bool expression_op_func__gt( expression* expr, thread* thr ) {
 
+  printf( "LEFT:  " );  expression_display( expr->left );
+  printf( "RIGHT: " );  expression_display( expr->right );
   return( vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_GT ) );
 
 }
@@ -2685,6 +2687,7 @@ bool expression_op_func__func_call( expression* expr, thread* thr ) {
 
   /* Then copy the function variable to this expression */
   retval = vector_set_value( expr->value, expr->sig->value->value, VTYPE_VAL, expr->value->width, 0, 0 );
+  printf( "after func_call: " );  expression_display( expr );
   
   /* Deallocate the reentrant structure of the current thread (if it exists) */
   if( (thr != NULL) && (thr->ren != NULL) ) {
@@ -2874,11 +2877,14 @@ bool expression_op_func__passign( expression* expr, thread* thr ) {
     thr->ren = reentrant_create( thr->funit );
   }
 
+  printf( "Port value: " );  expression_display( expr->right );
+
   switch( expr->sig->suppl.part.type ) {
 
     /* If the connected signal is an input type, copy the parameter expression value to this vector */
     case SSUPPL_TYPE_INPUT :
       retval = vector_set_value( expr->value, expr->right->value->value, expr->right->value->suppl.part.type, expr->right->value->width, 0, 0 );
+      printf( "INPUT: " );  expression_display( expr );
       vsignal_propagate( expr->sig, ((thr == NULL) ? 0 : thr->curr_time) );
       break;
 
@@ -3943,6 +3949,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.252  2007/07/31 20:07:06  phase1geo
+ Finished work on automatic function support and added new static_afunc1 diagnostic
+ to verify static use of automatic functions (this diagnostic is currently not
+ passing).
+
  Revision 1.251  2007/07/31 03:36:10  phase1geo
  Fixing last known issue with automatic functions.  Also fixing issue with
  toggle report output (still a problem with the toggle calculation for the

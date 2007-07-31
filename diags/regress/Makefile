@@ -162,8 +162,8 @@ VCSONLYDIAGS1 = afunc1          always_comb1    always_ff1      always_latch1   
                 marray1.2       marray1.3       marray2         marray2.1       marray2.2 \
                 marray2.3       mbit_sel5.4     mbit_sel6.4     mem3            op_assign1 \
                 param8.2        param12         param12.1       shortint1       signed4.1 \
-                slist3.1        slist3.3        static_func1    static_func1.1  static_func2 \
-                static_func2.1  static_func2.2  static_func2.3  trireg
+                slist3.1        slist3.3        static_afunc1   static_func1    static_func1.1 \
+                static_func2    static_func2.1  static_func2.2  static_func2.3  trireg
 VCSONLYDIAGS2 = 
 VCSONLYDIAGS3 = 
 VCSONLYDIAGS4 = 

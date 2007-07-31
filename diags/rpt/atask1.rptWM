@@ -37,7 +37,7 @@ Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hi
   Accumulated                                        1/    1/    2       50%             2/    0/    2      100%
 ---------------------------------------------------------------------------------------------------------------------
 
-    UNKNOWN: main.foo, File: atask1.v
+    Task: main.foo, File: atask1.v
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 

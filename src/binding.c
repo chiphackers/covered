@@ -644,9 +644,7 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
   int        port_order;      /* Port order value */
   int        port_cnt;        /* Number of ports in the found function/task's port list */
 
-  assert( (type == FUNIT_FUNCTION)    || (type == FUNIT_AFUNCTION) ||
-          (type == FUNIT_TASK)        || (type == FUNIT_ATASK)     ||
-          (type == FUNIT_NAMED_BLOCK) || (type == FUNIT_ANAMED_BLOCK) );
+  assert( (type == FUNIT_FUNCTION) || (type == FUNIT_TASK) || (type == FUNIT_NAMED_BLOCK) || (type == FUNIT_ANAMED_BLOCK) );
 
   /* Don't continue if the name is not local and we are told to bind locally */
   if( scope_local( name ) || !bind_locally ) {
@@ -868,6 +866,10 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.111  2007/07/30 22:42:02  phase1geo
+ Making some progress on automatic function support.  Things currently don't compile
+ but I need to checkpoint for now.
+
  Revision 1.110  2007/07/29 03:32:06  phase1geo
  First attempt to make FUNC_CALL expressions copy the functional return value
  to the expression vector.  Not quite working yet -- checkpointing.
