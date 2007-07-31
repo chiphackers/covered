@@ -592,11 +592,14 @@ void toggle_funit_verbose( FILE* ofile, funit_link* head ) {
 
       fprintf( ofile, "\n" );
       switch( head->funit->type ) {
-        case FUNIT_MODULE      :  fprintf( ofile, "    Module: " );       break;
-        case FUNIT_NAMED_BLOCK :  fprintf( ofile, "    Named Block: " );  break;
-        case FUNIT_FUNCTION    :  fprintf( ofile, "    Function: " );     break;
-        case FUNIT_TASK        :  fprintf( ofile, "    Task: " );         break;
-        default                :  fprintf( ofile, "    UNKNOWN: " );      break;
+        case FUNIT_MODULE       :  fprintf( ofile, "    Module: " );       break;
+        case FUNIT_ANAMED_BLOCK :
+        case FUNIT_NAMED_BLOCK  :  fprintf( ofile, "    Named Block: " );  break;
+        case FUNIT_AFUNCTION    :
+        case FUNIT_FUNCTION     :  fprintf( ofile, "    Function: " );     break;
+        case FUNIT_ATASK        :
+        case FUNIT_TASK         :  fprintf( ofile, "    Task: " );         break;
+        default                 :  fprintf( ofile, "    UNKNOWN: " );      break;
       }
       fprintf( ofile, "%s, File: %s\n", obf_funit( funit_flatten_name( head->funit ) ), obf_file( head->funit->filename ) );
       fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
@@ -686,6 +689,10 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.59  2007/07/26 22:23:00  phase1geo
+ Starting to work on the functionality for automatic tasks/functions.  Just
+ checkpointing some work.
+
  Revision 1.58  2007/07/16 18:39:59  phase1geo
  Finishing adding accumulated coverage output to report files.  Also fixed
  compiler warnings with static values in C code that are inputs to 64-bit

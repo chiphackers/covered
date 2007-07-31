@@ -35,13 +35,13 @@ void expression_create_value( expression* exp, int width, bool data );
 expression* expression_create( expression* right, expression* left, exp_op_type op, bool lhs, int id, int line, int first, int last, bool data );
 
 /*! \brief Sets the specified expression value to the specified vector value. */
-void expression_set_value( expression* exp, vsignal* sig, funit_inst* inst );
+void expression_set_value( expression* exp, vsignal* sig );
 
 /*! \brief Sets the signed bit for all appropriate parent expressions */
 void expression_set_signed( expression* exp );
 
 /*! \brief Recursively resizes specified expression tree leaf node. */
-void expression_resize( expression* expr, bool recursive, bool alloc, funit_inst* inst );
+void expression_resize( expression* expr, bool recursive, bool alloc );
 
 /*! \brief Returns expression ID of this expression. */
 int expression_get_id( expression* expr, bool parse_mode );
@@ -74,7 +74,7 @@ bool expression_contains_expr_calling_stmt( expression* expr, statement* stmt );
 statement* expression_get_root_statement( expression* exp );
 
 /*! \brief Assigns each expression in the given tree a unique identifier */
-void expression_assign_expr_ids( expression* root, funit_inst* inst );
+void expression_assign_expr_ids( expression* root );
 
 /*! \brief Writes this expression to the specified database file. */
 void expression_db_write( expression* expr, FILE* file, bool parse_mode );
@@ -101,7 +101,7 @@ void expression_display( expression* expr );
 bool expression_operate( expression* expr, thread* thr );
 
 /*! \brief Performs recursive expression operation (parse mode only). */
-void expression_operate_recursively( expression* expr, bool sizing, funit_inst* inst );
+void expression_operate_recursively( expression* expr, bool sizing );
 
 /*! \brief Returns TRUE if specified expression is found to contain all static leaf expressions. */
 bool expression_is_static_only( expression* expr );
@@ -130,6 +130,10 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.56  2007/07/30 22:42:02  phase1geo
+ Making some progress on automatic function support.  Things currently don't compile
+ but I need to checkpoint for now.
+
  Revision 1.55  2007/07/26 17:05:15  phase1geo
  Fixing problem with static functions (vector data associated with expressions
  were not being allocated).  Regressions have been run.  Only two failures

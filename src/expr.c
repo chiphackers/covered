@@ -159,6 +159,7 @@ extern char   user_msg[USER_MSG_LENGTH];
 
 extern exp_link* static_expr_head;
 extern exp_link* static_expr_tail;
+extern inst_link* inst_head;
 
 extern bool debug_mode;
 extern int  generate_expr_mode;
@@ -534,12 +535,11 @@ expression* expression_create( expression* right, expression* left, exp_op_type 
 /*!
  \param exp   Pointer to expression to set value to.
  \param sig   Pointer to signal containing vector value to set expression to.
- \param inst  Pointer to instance containing this expression
  
  Sets the specified expression (if necessary) to the value of the
  specified signal's vector value.
 */
-void expression_set_value( expression* exp, vsignal* sig, funit_inst* inst ) {
+void expression_set_value( expression* exp, vsignal* sig ) {
   
   int lbit;       /* Bit boundary specified by left child */
   int rbit;       /* Bit boundary specified by right child */
@@ -573,8 +573,8 @@ void expression_set_value( expression* exp, vsignal* sig, funit_inst* inst ) {
       break;
     case EXP_OP_MBIT_SEL   :
     case EXP_OP_PARAM_MBIT :
-      expression_operate_recursively( exp->left,  TRUE, inst );
-      expression_operate_recursively( exp->right, TRUE, inst );
+      expression_operate_recursively( exp->left,  TRUE );
+      expression_operate_recursively( exp->right, TRUE );
       lbit = vector_to_int( exp->left->value  );
       rbit = vector_to_int( exp->right->value );
       if( lbit <= rbit ) {
@@ -587,7 +587,7 @@ void expression_set_value( expression* exp, vsignal* sig, funit_inst* inst ) {
     case EXP_OP_MBIT_NEG :
     case EXP_OP_PARAM_MBIT_POS :
     case EXP_OP_PARAM_MBIT_NEG :
-      expression_operate_recursively( exp->right, TRUE, inst );
+      expression_operate_recursively( exp->right, TRUE );
       exp->value->width = vector_to_int( exp->right->value ) * exp_width;
       break;
     default :  break;
@@ -652,14 +652,13 @@ void expression_set_signed( expression* exp ) {
  \param expr       Pointer to expression to potentially resize.
  \param recursive  Specifies if we should perform a recursive depth-first resize
  \param alloc      If set to TRUE, allocates vector data for all expressions
- \param inst       Pointer to current instance containing this expression
 
  Resizes the given expression depending on the expression operation and its
  children's sizes.  If recursive is TRUE, performs the resize in a depth-first
  fashion, resizing the children before resizing the current expression.  If
  recursive is FALSE, only the given expression is evaluated and resized.
 */
-void expression_resize( expression* expr, bool recursive, bool alloc, funit_inst* inst ) {
+void expression_resize( expression* expr, bool recursive, bool alloc ) {
 
   int         largest_width;  /* Holds larger width of left and right children */
   nibble      old_vec_suppl;  /* Holds original vector supplemental field as this will be erased */
@@ -669,8 +668,8 @@ void expression_resize( expression* expr, bool recursive, bool alloc, funit_inst
   if( expr != NULL ) {
 
     if( recursive ) {
-      expression_resize( expr->left, recursive, alloc, inst );
-      expression_resize( expr->right, recursive, alloc, inst );
+      expression_resize( expr->left, recursive, alloc );
+      expression_resize( expr->right, recursive, alloc );
     }
 
     /* Get vector supplemental field */
@@ -793,7 +792,7 @@ void expression_resize( expression* expr, bool recursive, bool alloc, funit_inst
       case EXP_OP_FUNC_CALL :
         if( expr->sig != NULL ) {
           assert( expr->elem.funit != NULL );
-          tmp_inst = instance_find_by_funit( inst, expr->elem.funit, &ignore );
+          tmp_inst = inst_link_find_by_funit( expr->elem.funit, inst_head, &ignore );
           funit_size_elements( expr->elem.funit, tmp_inst, FALSE, FALSE );
           if( (expr->value->width != expr->sig->value->width) || (expr->value->value == NULL) ) {
             assert( expr->value->value == NULL );
@@ -1114,24 +1113,23 @@ statement* expression_get_root_statement( expression* exp ) {
 
 /*!
  \param root  Pointer to root of the expression tree to assign unique IDs for
- \param inst  Pointer to current instance containing this expression tree
 
  Recursively iterates down the specified expression tree assigning unique IDs to each expression.
 */
-void expression_assign_expr_ids( expression* root, funit_inst* inst ) {
+void expression_assign_expr_ids( expression* root ) {
 
   if( root != NULL ) {
 
     /* Traverse children first */
-    expression_assign_expr_ids( root->left, inst );
-    expression_assign_expr_ids( root->right, inst );
+    expression_assign_expr_ids( root->left );
+    expression_assign_expr_ids( root->right );
 
     /* Assign our expression a unique ID value */
     root->ulid = curr_expr_id;
     curr_expr_id++;
 
     /* Resize ourselves */
-    expression_resize( root, FALSE, FALSE, inst );
+    expression_resize( root, FALSE, FALSE );
 
   }
 
@@ -2685,18 +2683,8 @@ bool expression_op_func__func_call( expression* expr, thread* thr ) {
   /* First, simulate the function */
   sim_thread( sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit ), ((thr == NULL) ? 0 : thr->curr_time) );
 
-  printf( "In expression_op_func__func_call, getting signal %s, %p\n", expr->sig->name, expr->sig );
-
   /* Then copy the function variable to this expression */
   retval = vector_set_value( expr->value, expr->sig->value->value, VTYPE_VAL, expr->value->width, 0, 0 );
-
-  expression_display( expr );
-
-  /* Deallocate the reentrant structure of the current thread (if it exists) */
-  if( (thr != NULL) && (thr->ren != NULL) ) {
-    reentrant_dealloc( thr->ren, thr->funit, thr->curr_time, expr );
-    thr->ren = NULL;
-  }
 
   return( retval );
 
@@ -3374,6 +3362,12 @@ bool expression_operate( expression* expr, thread* thr ) {
         }
       }
 
+      /* If the expression was a FUNC_CALL, deallocate the reentrant structure of the current thread (if it exists) */
+      if( (expr->op == EXP_OP_FUNC_CALL) && (thr != NULL) && (thr->ren != NULL) ) {
+        reentrant_dealloc( thr->ren, thr->funit, thr->curr_time, expr );
+        thr->ren = NULL;
+      }
+
     }
 
   }
@@ -3388,20 +3382,19 @@ bool expression_operate( expression* expr, thread* thr ) {
 /*!
  \param expr    Pointer to top of expression tree to perform recursive operations.
  \param sizing  Set to TRUE if we are evaluating for purposes of sizing.
- \param inst    Pointer to current instance containing this expression
  
  Recursively performs the proper operations to cause the top-level expression to
  be set to a value.  This function is called during the parse stage to derive 
  pre-CDD widths of multi-bit expressions.  Each MSB/LSB is an expression tree that 
  needs to be evaluated to set the width properly on the MBIT_SEL expression.
 */
-void expression_operate_recursively( expression* expr, bool sizing, funit_inst* inst ) {
+void expression_operate_recursively( expression* expr, bool sizing ) {
     
   if( expr != NULL ) {
     
     /* Evaluate children */
-    expression_operate_recursively( expr->left,  sizing, inst );
-    expression_operate_recursively( expr->right, sizing, inst );
+    expression_operate_recursively( expr->left,  sizing );
+    expression_operate_recursively( expr->right, sizing );
     
     if( sizing ) {
 
@@ -3416,7 +3409,7 @@ void expression_operate_recursively( expression* expr, bool sizing, funit_inst* 
               (expr->op != EXP_OP_MBIT_NEG) );
 
       /* Resize current expression only */
-      expression_resize( expr, FALSE, TRUE, inst );
+      expression_resize( expr, FALSE, TRUE );
     
 #ifdef OBSOLETE
       /* Create vector value to store operation information */
@@ -3950,6 +3943,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.250  2007/07/30 22:42:02  phase1geo
+ Making some progress on automatic function support.  Things currently don't compile
+ but I need to checkpoint for now.
+
  Revision 1.249  2007/07/30 20:36:14  phase1geo
  Fixing rest of issues pertaining to new implementation of function calls.
  Full regression passes (with the exception of afunc1 which we do not expect
