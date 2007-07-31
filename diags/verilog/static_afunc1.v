@@ -1,23 +1,26 @@
 /*
- Name:     afunc1.v
+ Name:     static_afunc1.v
  Author:   Trevor Williams  (trevorw@charter.net)
- Date:     07/27/2007
- Purpose:  Simple test to verify functionality of automatic functions.
+ Date:     07/31/2007
+ Purpose:  Verify that automatic functions work properly in static function
+           conditions.
 */
 
 module main;
 
-reg [31:0] b;
+parameter FOO_SIZE = div2( 32 );
+
+reg [(FOO_SIZE-1):0] foo;
 
 initial begin
-	b = 0;
+	foo = 'h0;
 	#5;
-	b = div2( 32 );
+	foo = 'hff;
 end
 
 initial begin
 `ifndef VPI
-        $dumpfile( "afunc1.vcd" );
+        $dumpfile( "static_afunc1.vcd" );
         $dumpvars( 0, main );
 `endif
         #10;
@@ -30,6 +33,8 @@ function automatic [31:0] div2;
     div2 = 0;
     if( a > 0 )
       div2 = div2( a >> 1 ) + 1;
+    else
+      div2 = 0;
   end
 endfunction
 
