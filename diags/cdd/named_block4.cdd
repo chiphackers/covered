@@ -1,0 +1,17 @@
+5 b 1 * 0
+8 /home/HP_User/covered/diags/verilog -t main -vcd named_block4.vcd -o named_block4.cdd -v named_block4.v
+3 0 $root "$root" NA 0 0 1
+3 0 main "main" named_block4.v 8 32 1
+2 1 13 20006 5 3d 127002 0 0 1 2 2 foo
+1 a 10 830004 1 0 0 0 1 1 1102
+1 b 10 30007 1 0 0 0 1 1 1102
+4 1 1 0
+3 1 main.foo "main.foo" named_block4.v 13 16 1
+2 2 14 50005 1 0 20008 0 0 32 64 11 0 0 0 0 0 0 0
+2 3 14 40005 9 2c 23100a 2 0 32 2 aa aa aa aa aa aa aa aa
+2 4 15 80008 3 1 c 0 0 b
+2 5 15 40004 0 1 400 0 0 a
+2 6 15 40008 4 37 e 4 5
+4 6 0 0
+4 3 6 0
+3 1 main.$u0 "main.$u0" named_block4.v 0 30 1
