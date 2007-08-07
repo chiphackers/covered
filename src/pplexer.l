@@ -100,6 +100,9 @@ WSPACE [ \t\b\f]+
   /* Newline character - blank line -- we ignore these */
 \n            { istack->lineno += 1;  ECHO; }
 
+  /* Make sure that we don't treat SLIST code as an attribute */
+"("{WSPACE}*"*"{WSPACE}*")"        { ECHO; }
+
   /* Attribute -- we only perform define substitution within strings */
 "(*"                               { comment_enter = YY_START; BEGIN( ATTRIBUTE ); ECHO; }
 <ATTRIBUTE>`[a-zA-Z_][a-zA-Z0-9_]* { def_match(); }
