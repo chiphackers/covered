@@ -74,12 +74,12 @@ bool debug_mode;
  Contains the total number of bytes malloc'ed during the simulation run.  This
  information is output to the user after simulation as a performance indicator.
 */
-unsigned long curr_malloc_size = 0;
+uint64 curr_malloc_size = 0;
 
 /*!
  Holds the largest number of bytes in allocation at one period of time.
 */
-unsigned long largest_malloc_size = 0;
+uint64 largest_malloc_size = 0;
 
 /*!
  Holds some output that will be displayed via the print_output command.  This is
@@ -1124,6 +1124,10 @@ void calc_miss_percent( int hits, float total, float* misses, float* percent ) {
 
 /*
  $Log$
+ Revision 1.61  2007/07/26 22:23:00  phase1geo
+ Starting to work on the functionality for automatic tasks/functions.  Just
+ checkpointing some work.
+
  Revision 1.60  2007/07/16 18:39:59  phase1geo
  Finishing adding accumulated coverage output to report files.  Also fixed
  compiler warnings with static values in C code that are inputs to 64-bit
