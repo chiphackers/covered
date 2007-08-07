@@ -73,6 +73,7 @@ static struct include_stack_t* standby = 0;
 
 %option stack
 
+%x ATTRIBUTE
 %x LCOMMENT
 %x CCOMMENT
 %x PCOMMENT
@@ -98,6 +99,13 @@ WSPACE [ \t\b\f]+
 
   /* Newline character - blank line -- we ignore these */
 \n            { istack->lineno += 1;  ECHO; }
+
+  /* Attribute -- we only perform define substitution within strings */
+"(*"                               { comment_enter = YY_START; BEGIN( ATTRIBUTE ); ECHO; }
+<ATTRIBUTE>`[a-zA-Z_][a-zA-Z0-9_]* { def_match(); }
+<ATTRIBUTE>.                       { ECHO; }
+<ATTRIBUTE>\n                      { istack->lineno += 1; ECHO; }
+<ATTRIBUTE>"*)"                    { BEGIN( comment_enter );  ECHO; }
 
   /* Single-line comment -- we ignore this information */
 "//".*        { comment_enter = YY_START;  BEGIN( LCOMMENT );   ECHO; }
