@@ -53,11 +53,18 @@
 
 extern bool        report_gui;
 extern bool        flag_use_command_line_debug;
-extern bool        cli_debug_mode;
 #ifndef VPI_ONLY
+#ifdef DEBUG_MODE
+#define CLI_DEBUG_MODE_EXISTS
+extern bool        cli_debug_mode;
+#endif
 #ifdef HAVE_TCLTK
 extern Tcl_Interp* interp;
 #endif
+#endif
+
+#ifndef CLI_DEBUG_MODE_EXISTS
+static bool cli_debug_mode = FALSE;
 #endif
 
 /*!
@@ -1124,6 +1131,9 @@ void calc_miss_percent( int hits, float total, float* misses, float* percent ) {
 
 /*
  $Log$
+ Revision 1.62  2007/08/07 02:23:32  phase1geo
+ Fixing bug 1687409.
+
  Revision 1.61  2007/07/26 22:23:00  phase1geo
  Starting to work on the functionality for automatic tasks/functions.  Just
  checkpointing some work.
