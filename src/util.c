@@ -55,7 +55,7 @@ extern bool        report_gui;
 extern bool        flag_use_command_line_debug;
 #ifndef VPI_ONLY
 #ifdef DEBUG_MODE
-#define CLI_DEBUG_MODE_EXISTS
+#define CLI_DEBUG_MODE_EXISTS 1
 extern bool        cli_debug_mode;
 #endif
 #ifdef HAVE_TCLTK
@@ -1131,6 +1131,9 @@ void calc_miss_percent( int hits, float total, float* misses, float* percent ) {
 
 /*
  $Log$
+ Revision 1.63  2007/08/17 22:08:45  phase1geo
+ Fixing linker issue when --enable-debug is not specified to the configure script.
+
  Revision 1.62  2007/08/07 02:23:32  phase1geo
  Fixing bug 1687409.
 
