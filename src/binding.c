@@ -481,7 +481,7 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
              (exp->op == EXP_OP_PARAM_MBIT_NEG) ||
              (exp->op == EXP_OP_TRIGGER)) &&
             (cdd_reading || (found_sig->suppl.part.type == SSUPPL_TYPE_GENVAR)) ) {
-          expression_set_value( exp, found_sig );
+          expression_set_value( exp, found_sig, funit_exp );
         }
 
       }
@@ -866,6 +866,10 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.112  2007/07/31 22:17:44  phase1geo
+ Attempting to debug issue with automatic static functions.  Updated regressions
+ per last change.
+
  Revision 1.111  2007/07/30 22:42:02  phase1geo
  Making some progress on automatic function support.  Things currently don't compile
  but I need to checkpoint for now.

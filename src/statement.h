@@ -30,7 +30,7 @@
 statement* statement_create( expression* exp );
 
 /*! \brief Sizes all expressions for the given statement block */
-void statement_size_elements( statement* stmt );
+void statement_size_elements( statement* stmt, func_unit* funit );
 
 /*! \brief Writes specified statement to the specified output file. */
 void statement_db_write( statement* stmt, FILE* ofile, bool parse_mode );
@@ -45,7 +45,7 @@ void statement_db_write_expr_tree( statement* stmt, FILE* ofile );
 bool statement_db_read( char** line, /*@null@*/func_unit* curr_funit, int read_mode );
 
 /*! \brief Assigns unique expression IDs to each expression in the given statement block. */
-void statement_assign_expr_ids( statement* stmt );
+void statement_assign_expr_ids( statement* stmt, func_unit* funit );
 
 /*! \brief Connects statement sequence to next statement and sets stop bit. */
 bool statement_connect( statement* curr_stmt, statement* next_stmt, int conn_id );
@@ -74,6 +74,9 @@ void statement_dealloc( statement* stmt );
 
 /*
  $Log$
+ Revision 1.32  2007/04/18 22:35:02  phase1geo
+ Revamping simulator core again.  Checkpointing.
+
  Revision 1.31  2007/04/10 03:56:18  phase1geo
  Completing majority of code to support new simulation core.  Starting to debug
  this though we still have quite a ways to go here.  Checkpointing.

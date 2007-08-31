@@ -274,28 +274,29 @@ void statement_queue_compare( statement* stmt ) {
 }
 
 /*!
- \param stmt  Pointer to statement block to size elements for
+ \param stmt   Pointer to statement block to size elements for
+ \param funit  Pointer to functional unit containing this statement block
 
  Recursively sizes all elements for the given statement block.
 */
-void statement_size_elements( statement* stmt ) {
+void statement_size_elements( statement* stmt, func_unit* funit ) {
 
   if( stmt != NULL ) {
 
     /* Size the current statement */
-    expression_resize( stmt->exp, TRUE, FALSE );
+    expression_resize( stmt->exp, funit, TRUE, FALSE );
 
     /* Iterate to the next statement */
     if( stmt->next_true == stmt->next_false ) {
       if( ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0 ) {
-        statement_size_elements( stmt->next_true );
+        statement_size_elements( stmt->next_true, funit );
       }
     } else {
       if( ESUPPL_IS_STMT_STOP_FALSE( stmt->exp->suppl ) == 0 ) {
-        statement_size_elements( stmt->next_false );
+        statement_size_elements( stmt->next_false, funit );
       }
       if( ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0 ) {
-        statement_size_elements( stmt->next_true );
+        statement_size_elements( stmt->next_true, funit );
       }
     }
 
@@ -501,27 +502,28 @@ bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) {
 }
 
 /*!
- \param stmt  Pointer to statement block to traverse
+ \param stmt   Pointer to statement block to traverse
+ \param funit  Pointer to functional unit containing this statement block
 
  Recursively traverses the entire statement block and assigns unique expression IDs for each
  expression tree that it finds.
 */
-void statement_assign_expr_ids( statement* stmt ) {
+void statement_assign_expr_ids( statement* stmt, func_unit* funit ) {
 
   if( stmt != NULL ) {
 
     /* Assign unique expression IDs */
-    expression_assign_expr_ids( stmt->exp );
+    expression_assign_expr_ids( stmt->exp, funit );
 
     /* Traverse down the rest of the statement block */
     if( (stmt->next_true == stmt->next_false) && (ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0) ) {
-      statement_assign_expr_ids( stmt->next_true );
+      statement_assign_expr_ids( stmt->next_true, funit );
     } else {
       if( ESUPPL_IS_STMT_STOP_FALSE( stmt->exp->suppl ) == 0 ) {
-        statement_assign_expr_ids( stmt->next_false );
+        statement_assign_expr_ids( stmt->next_false, funit );
       }
       if( ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0 ) {
-        statement_assign_expr_ids( stmt->next_true );
+        statement_assign_expr_ids( stmt->next_true, funit );
       }
     }
 
@@ -919,6 +921,10 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.113  2007/07/26 22:23:00  phase1geo
+ Starting to work on the functionality for automatic tasks/functions.  Just
+ checkpointing some work.
+
  Revision 1.112  2007/07/26 17:05:15  phase1geo
  Fixing problem with static functions (vector data associated with expressions
  were not being allocated).  Regressions have been run.  Only two failures

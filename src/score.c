@@ -72,16 +72,16 @@ str_link* gen_mod_head           = NULL;                /*!< Pointer to the head
 str_link* gen_mod_tail           = NULL;                /*!< Pointer to the tail of the generation module list */
 char*     vpi_timescale          = NULL;                /*!< Specifies the user-supplied timescale information for VPI */
 
-extern unsigned long largest_malloc_size;
-extern unsigned long curr_malloc_size;
-extern str_link*     use_files_head;
-extern char          user_msg[USER_MSG_LENGTH];
-extern char*         directive_filename;
-extern bool          debug_mode;
-extern isuppl        info_suppl;
-extern char          score_run_path[4096];
-extern char**        score_args;
-extern int           score_arg_num;
+extern uint64    largest_malloc_size;
+extern uint64    curr_malloc_size;
+extern str_link* use_files_head;
+extern char      user_msg[USER_MSG_LENGTH];
+extern char*     directive_filename;
+extern bool      debug_mode;
+extern isuppl    info_suppl;
+extern char      score_run_path[4096];
+extern char**    score_args;
+extern int       score_arg_num;
 
 
 bool process_timescale( const char* txt, bool report );
@@ -970,6 +970,9 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.96  2007/08/07 02:23:32  phase1geo
+ Fixing bug 1687409.
+
  Revision 1.95  2007/04/12 03:46:30  phase1geo
  Fixing bugs with CLI.  History and history file saving/loading is implemented
  and working as desired.

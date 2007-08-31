@@ -533,13 +533,14 @@ expression* expression_create( expression* right, expression* left, exp_op_type 
 }
 
 /*!
- \param exp   Pointer to expression to set value to.
- \param sig   Pointer to signal containing vector value to set expression to.
+ \param exp    Pointer to expression to set value to.
+ \param sig    Pointer to signal containing vector value to set expression to.
+ \param funit  Pointer to functional unit containing expression.
  
  Sets the specified expression (if necessary) to the value of the
  specified signal's vector value.
 */
-void expression_set_value( expression* exp, vsignal* sig ) {
+void expression_set_value( expression* exp, vsignal* sig, func_unit* funit ) {
   
   int lbit;       /* Bit boundary specified by left child */
   int rbit;       /* Bit boundary specified by right child */
@@ -573,8 +574,8 @@ void expression_set_value( expression* exp, vsignal* sig ) {
       break;
     case EXP_OP_MBIT_SEL   :
     case EXP_OP_PARAM_MBIT :
-      expression_operate_recursively( exp->left,  TRUE );
-      expression_operate_recursively( exp->right, TRUE );
+      expression_operate_recursively( exp->left,  funit, TRUE );
+      expression_operate_recursively( exp->right, funit, TRUE );
       lbit = vector_to_int( exp->left->value  );
       rbit = vector_to_int( exp->right->value );
       if( lbit <= rbit ) {
@@ -587,7 +588,7 @@ void expression_set_value( expression* exp, vsignal* sig ) {
     case EXP_OP_MBIT_NEG :
     case EXP_OP_PARAM_MBIT_POS :
     case EXP_OP_PARAM_MBIT_NEG :
-      expression_operate_recursively( exp->right, TRUE );
+      expression_operate_recursively( exp->right, funit, TRUE );
       exp->value->width = vector_to_int( exp->right->value ) * exp_width;
       break;
     default :  break;
@@ -650,6 +651,7 @@ void expression_set_signed( expression* exp ) {
 
 /*!
  \param expr       Pointer to expression to potentially resize.
+ \param funit      Pointer to functional unit containing expression.
  \param recursive  Specifies if we should perform a recursive depth-first resize
  \param alloc      If set to TRUE, allocates vector data for all expressions
 
@@ -658,7 +660,7 @@ void expression_set_signed( expression* exp ) {
  fashion, resizing the children before resizing the current expression.  If
  recursive is FALSE, only the given expression is evaluated and resized.
 */
-void expression_resize( expression* expr, bool recursive, bool alloc ) {
+void expression_resize( expression* expr, func_unit* funit, bool recursive, bool alloc ) {
 
   int         largest_width;  /* Holds larger width of left and right children */
   nibble      old_vec_suppl;  /* Holds original vector supplemental field as this will be erased */
@@ -668,9 +670,11 @@ void expression_resize( expression* expr, bool recursive, bool alloc ) {
   if( expr != NULL ) {
 
     if( recursive ) {
-      expression_resize( expr->left, recursive, alloc );
-      expression_resize( expr->right, recursive, alloc );
+      expression_resize( expr->left, funit, recursive, alloc );
+      expression_resize( expr->right, funit, recursive, alloc );
     }
+
+    printf( "IN expression_resize, expr: %s\n", expression_string( expr ) );
 
     /* Get vector supplemental field */
     old_vec_suppl = expr->value->suppl.all;
@@ -689,7 +693,7 @@ void expression_resize( expression* expr, bool recursive, bool alloc ) {
       case EXP_OP_MBIT_POS       :
       case EXP_OP_MBIT_NEG       :
         if( recursive && (expr->sig != NULL) ) {
-          expression_set_value( expr, expr->sig );
+          expression_set_value( expr, expr->sig, funit );
           assert( expr->value->value != NULL );
         }
         break;
@@ -761,7 +765,7 @@ void expression_resize( expression* expr, bool recursive, bool alloc ) {
        the left child and the bit-width of the right child.
       */
       case EXP_OP_EXPAND :
-        expression_operate_recursively( expr->left, TRUE );
+        expression_operate_recursively( expr->left, funit, TRUE );
         if( (expr->value->width != (vector_to_int( expr->left->value ) * expr->right->value->width)) ||
             (expr->value->value == NULL) ) {
           assert( expr->value->value == NULL );
@@ -791,9 +795,13 @@ void expression_resize( expression* expr, bool recursive, bool alloc ) {
       */
       case EXP_OP_FUNC_CALL :
         if( expr->sig != NULL ) {
-          assert( expr->elem.funit != NULL );
-          tmp_inst = inst_link_find_by_funit( expr->elem.funit, inst_head, &ignore );
-          funit_size_elements( expr->elem.funit, tmp_inst, FALSE, FALSE );
+          assert( funit != NULL );
+          printf( "funit->name: %s, type: %d\n", funit->name, funit->type );
+          if( (funit->type != FUNIT_AFUNCTION) && (funit->type != FUNIT_ANAMED_BLOCK) ) {
+            assert( expr->elem.funit != NULL );
+            tmp_inst = inst_link_find_by_funit( expr->elem.funit, inst_head, &ignore );
+            funit_size_elements( expr->elem.funit, tmp_inst, FALSE, FALSE );
+          }
           if( (expr->value->width != expr->sig->value->width) || (expr->value->value == NULL) ) {
             assert( expr->value->value == NULL );
             expression_create_value( expr, expr->sig->value->width, alloc );
@@ -1112,24 +1120,25 @@ statement* expression_get_root_statement( expression* exp ) {
 }
 
 /*!
- \param root  Pointer to root of the expression tree to assign unique IDs for
+ \param root   Pointer to root of the expression tree to assign unique IDs for
+ \param funit  Pointer to functional unit containing this expression tree
 
  Recursively iterates down the specified expression tree assigning unique IDs to each expression.
 */
-void expression_assign_expr_ids( expression* root ) {
+void expression_assign_expr_ids( expression* root, func_unit* funit ) {
 
   if( root != NULL ) {
 
     /* Traverse children first */
-    expression_assign_expr_ids( root->left );
-    expression_assign_expr_ids( root->right );
+    expression_assign_expr_ids( root->left, funit );
+    expression_assign_expr_ids( root->right, funit );
 
     /* Assign our expression a unique ID value */
     root->ulid = curr_expr_id;
     curr_expr_id++;
 
     /* Resize ourselves */
-    expression_resize( root, FALSE, FALSE );
+    expression_resize( root, funit, FALSE, FALSE );
 
   }
 
@@ -1641,13 +1650,22 @@ bool expression_op_func__mod( expression* expr, thread* thr ) {
 */
 bool expression_op_func__add( expression* expr, thread* thr ) {
 
+  bool retval;
+
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
     vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type,
                       expr->parent->expr->left->value->width, 0, 0 );
   }
 
-  return( vector_op_add( expr->value, expr->left->value, expr->right->value ) );
+  printf( "In expression_op_func__add...\n" );
+  printf( "  left (%s): ", expression_string( expr->left ) );  vector_display( expr->left->value );
+  printf( "  right (%s): ", expression_string( expr->right ) );  vector_display( expr->right->value );
+
+  retval = vector_op_add( expr->value, expr->left->value, expr->right->value );
+  vector_display( expr->value );
+  return( retval );
+  //return( vector_op_add( expr->value, expr->left->value, expr->right->value ) );
 
 }
 
@@ -3387,6 +3405,7 @@ bool expression_operate( expression* expr, thread* thr ) {
 
 /*!
  \param expr    Pointer to top of expression tree to perform recursive operations.
+ \param funit   Pointer to functional unit containing this expression.
  \param sizing  Set to TRUE if we are evaluating for purposes of sizing.
  
  Recursively performs the proper operations to cause the top-level expression to
@@ -3394,13 +3413,13 @@ bool expression_operate( expression* expr, thread* thr ) {
  pre-CDD widths of multi-bit expressions.  Each MSB/LSB is an expression tree that 
  needs to be evaluated to set the width properly on the MBIT_SEL expression.
 */
-void expression_operate_recursively( expression* expr, bool sizing ) {
+void expression_operate_recursively( expression* expr, func_unit* funit, bool sizing ) {
     
   if( expr != NULL ) {
     
     /* Evaluate children */
-    expression_operate_recursively( expr->left,  sizing );
-    expression_operate_recursively( expr->right, sizing );
+    expression_operate_recursively( expr->left,  funit, sizing );
+    expression_operate_recursively( expr->right, funit, sizing );
     
     if( sizing ) {
 
@@ -3415,7 +3434,7 @@ void expression_operate_recursively( expression* expr, bool sizing ) {
               (expr->op != EXP_OP_MBIT_NEG) );
 
       /* Resize current expression only */
-      expression_resize( expr, FALSE, TRUE );
+      expression_resize( expr, funit, FALSE, TRUE );
     
 #ifdef OBSOLETE
       /* Create vector value to store operation information */
@@ -3662,6 +3681,7 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb, uint64 sim_t
 
     switch( lhs->op ) {
       case EXP_OP_SIG      :
+        printf( "assigned: %d, assign: %d, rhs->width: %d, lsb: %d\n", lhs->sig->suppl.part.assigned, assign, rhs->value->width, *lsb );
         if( lhs->sig->suppl.part.assigned == 1 ) {
           if( assign ) {
             vector_set_value( lhs->value, rhs->value->value, rhs->value->suppl.part.type, rhs->value->width, *lsb, 0 );
@@ -3949,6 +3969,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.253  2007/07/31 22:17:44  phase1geo
+ Attempting to debug issue with automatic static functions.  Updated regressions
+ per last change.
+
  Revision 1.252  2007/07/31 20:07:06  phase1geo
  Finished work on automatic function support and added new static_afunc1 diagnostic
  to verify static use of automatic functions (this diagnostic is currently not

@@ -643,18 +643,19 @@ gen_item* gen_item_create_bind( char* name, expression* expr ) {
 }
 
 /*!
- \param gi  Pointer to generate item block to check
+ \param gi     Pointer to generate item block to check
+ \param funit  Pointer to functional unit that contains this generate item
 
  Recursively iterates the the specified generate item block, resizing all statements
  within that block.
 */
-void gen_item_resize_stmts_and_sigs( gen_item* gi ) {
+void gen_item_resize_stmts_and_sigs( gen_item* gi, func_unit* funit ) {
 
   if( gi != NULL ) {
 
     /* Resize our statement, if we are one */
     if( gi->suppl.part.type == GI_TYPE_STMT ) {
-      statement_size_elements( gi->elem.stmt );
+      statement_size_elements( gi->elem.stmt, funit );
     } else if( gi->suppl.part.type == GI_TYPE_SIG ) {
       vsignal_create_vec( gi->elem.sig );
     }
@@ -662,14 +663,14 @@ void gen_item_resize_stmts_and_sigs( gen_item* gi ) {
     /* Go to the next generate item */
     if( gi->next_true == gi->next_false ) {
       if( gi->suppl.part.stop_true == 0 ) {
-        gen_item_resize_stmts_and_sigs( gi->next_true );
+        gen_item_resize_stmts_and_sigs( gi->next_true, funit );
       }
     } else {
       if( gi->suppl.part.stop_false == 0 ) {
-        gen_item_resize_stmts_and_sigs( gi->next_false );
+        gen_item_resize_stmts_and_sigs( gi->next_false, funit );
       }
       if( gi->suppl.part.stop_true == 0 ) {
-        gen_item_resize_stmts_and_sigs( gi->next_true );
+        gen_item_resize_stmts_and_sigs( gi->next_true, funit );
       }
     }
 
@@ -678,15 +679,16 @@ void gen_item_resize_stmts_and_sigs( gen_item* gi ) {
 }
 
 /*!
- \param gi  Pointer to generate item to check and assign expression IDs for
+ \param gi     Pointer to generate item to check and assign expression IDs for
+ \param funit  Pointer to functional unit containing this generate item
 
  Assigns unique expression IDs to each expression in the tree given for a generated statement.
 */
-void gen_item_assign_expr_ids( gen_item* gi ) {
+void gen_item_assign_expr_ids( gen_item* gi, func_unit* funit ) {
 
   if( (gi->suppl.part.type == GI_TYPE_STMT) && (gi->suppl.part.removed == 0) ) {
 
-    statement_assign_expr_ids( gi->elem.stmt );
+    statement_assign_expr_ids( gi->elem.stmt, funit );
 
   }
 
@@ -843,9 +845,9 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
       case GI_TYPE_EXPR :
         /* Recursively resize the expression tree if we have not already done this */
         if( gi->elem.expr->exec_num == 0 ) {
-          expression_resize( gi->elem.expr, TRUE, FALSE );
+          expression_resize( gi->elem.expr, inst->funit, TRUE, FALSE );
         }
-        expression_operate_recursively( gi->elem.expr, FALSE );
+        expression_operate_recursively( gi->elem.expr, inst->funit, FALSE );
         if( ESUPPL_IS_TRUE( gi->elem.expr->suppl ) ) {
           gen_item_resolve( gi->next_true, inst, FALSE );
         } else {
@@ -1114,6 +1116,11 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.46  2007/07/26 17:05:15  phase1geo
+ Fixing problem with static functions (vector data associated with expressions
+ were not being allocated).  Regressions have been run.  Only two failures
+ in total still to be fixed.
+
  Revision 1.45  2007/07/18 22:39:17  phase1geo
  Checkpointing generate work though we are at a fairly broken state at the moment.
 

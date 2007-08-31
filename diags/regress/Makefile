@@ -44,11 +44,12 @@ DIAGS1        = add1            always1         always2         always3         
                 disable2        disable2.1      disable3        dly_assign1     endian1 \
                 endian2         endian3         event1          event1.1        exclude1 \
                 exclude2        exclude3        exclude4        exclude5        exclude5.1 \
-                exclude5.2      expand1         expand2         expand3         expand4 \
-                expand4.1       expand4.2       expand4.3       expand4.4       for1 \
-                for2            forever1        fork1           fork2           fsm3 \
-                fsm4            fsm4.1          fsm5            fsm5.1          fsm5.2 \
-                fsm5.3          fsm11           func1           func2           gate1           hier1 \
+                exclude5.2      exclude6        exclude6.1      expand1         expand2 \
+                expand3         expand4         expand4.1       expand4.2       expand4.3 \
+                expand4.4       for1            for2            forever1        fork1 \
+                fork2           fsm3            fsm4            fsm4.1          fsm5 \
+                fsm5.1          fsm5.2          fsm5.3          fsm11           func1 \
+                func2           gate1           hier1 \
                 hier3.1         hier3.2         hier3.3         hier3.4         hier4 \
                 ifdef1          ifdef1.2        ifdef2.1        ifdef2.2        ifdef2.3 \
                 ifelse1         implicit2.1     include1        include1.1      include2 \
@@ -142,21 +143,21 @@ IVONLYDIAGS3  =
 IVONLYDIAGS4  = 
 
 VCSONLYDIAGS1 = afunc1          always_comb1    always_ff1      always_latch1   assert1 \
-                atask1          bit1 \
-                byte1           char1           dec1            dec1.1          dec2 \
-                dec3            dec3.1          dly_assign1.1   dly_assign1.2   dly_assign1.3 \
-                dly_assign1.4   dly_assign2     dly_assign2.1   do_while1       do_while1.1 \
-                do_while2       elsif1          elsif1.1        elsif1.2        elsif1.3 \
-                elsif1.4        elsif2          elsif2.1        enum1           enum1.1 \
-                enum1.2         enum1.3         enum2.1         exponent1       final1          for3 \
-                gate1.1         generate1.1     generate2       generate2.1     generate3 \
-                generate3.1     generate4       generate4.1     generate5       generate5.1 \
-                generate5.2     generate5.3     generate6       generate7       generate7.1 \
-                generate7.2     generate8       generate8.1     generate8.2     generate8.3 \
-                generate8.4     generate8.5     generate8.6     generate8.7     generate8.8 \
-                generate9       generate9.1     generate9.2     generate9.3     generate10 \
-                generate10.1    generate10.2    generate11      generate11.1    generate11.2 \
-                generate11.3    generate11.4    hier1.1         inc1            inc1.1 \
+                atask1          bit1            byte1           char1           dec1 \
+                dec1.1          dec2            dec3            dec3.1          dly_assign1.1 \
+                dly_assign1.2   dly_assign1.3   dly_assign1.4   dly_assign2     dly_assign2.1 \
+                do_while1       do_while1.1     do_while2       elsif1          elsif1.1 \
+                elsif1.2        elsif1.3        elsif1.4        elsif2          elsif2.1 \
+                enum1           enum1.1         enum1.2         enum1.3         enum2.1 \
+                exponent1       final1          for3            gate1.1         generate1.1 \
+                generate2       generate2.1     generate3       generate3.1     generate4 \
+                generate4.1     generate5       generate5.1     generate5.2     generate5.3 \
+                generate6       generate7       generate7.1     generate7.2     generate8 \
+                generate8.1     generate8.2     generate8.3     generate8.4     generate8.5 \
+                generate8.6     generate8.7     generate8.8     generate9       generate9.1 \
+                generate9.2     generate9.3     generate10      generate10.1    generate10.2 \
+                generate11      generate11.1    generate11.2    generate11.3    generate11.4 \
+                generate13      generate14      hier1.1         inc1            inc1.1 \
                 inc2            inc3            inc3.1          int1            line1 \
                 logic1          longint1        long_sig        marray1         marray1.1 \
                 marray1.2       marray1.3       marray2         marray2.1       marray2.2 \

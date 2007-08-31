@@ -422,7 +422,7 @@ inst_parm* inst_parm_add( char* name, char* inst_name, static_expr* msb, static_
       expl->exp->sig = iparm->sig;
       /* Set the expression's vector to this signal's vector if we are part of a generate expression */
       if( expl->exp->suppl.part.gen_expr == 1 ) {
-        expression_set_value( expl->exp, iparm->sig );
+        expression_set_value( expl->exp, iparm->sig, inst->funit );
       }
       exp_link_add( expl->exp, &(iparm->sig->exp_head), &(iparm->sig->exp_tail) );
       expl = expl->next;
@@ -601,7 +601,7 @@ void param_find_and_set_expr_value( expression* expr, funit_inst* inst ) {
     } else {
 
       /* Set the found instance parameter value to this expression */
-      expression_set_value( expr, icurr->sig );
+      expression_set_value( expr, icurr->sig, inst->funit );
 
       /* Cause expression/signal to point to each other */
       expr->sig = icurr->sig;
@@ -649,6 +649,8 @@ void param_set_sig_size( vsignal* sig, inst_parm* icurr ) {
 void param_size_function( funit_inst* inst, func_unit* funit ) {
 
   funit_inst* child;  /* Pointer to current child instance */
+
+  printf( "IN param_size_function, inst: %s, funit: %s\n", inst->name, funit->name );
 
   /* Resolve all parameters for this instance */
   param_resolve( inst );
@@ -721,7 +723,8 @@ void param_expr_eval( expression* expr, funit_inst* inst ) {
                 (expr->op != EXP_OP_MBIT_SEL) &&
                 (expr->op != EXP_OP_MBIT_POS) &&
                 (expr->op != EXP_OP_MBIT_NEG) );
-        expression_resize( expr, FALSE, TRUE );
+        printf( "About to resize expr: %s\n", expression_string( expr ) );
+        expression_resize( expr, inst->funit, FALSE, TRUE );
 #ifdef OBSOLETE
         if( expr->value->value != NULL ) {
           free_safe( expr->value->value );
@@ -1053,6 +1056,11 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.90  2007/07/30 20:36:14  phase1geo
+ Fixing rest of issues pertaining to new implementation of function calls.
+ Full regression passes (with the exception of afunc1 which we do not expect
+ to pass with these changes as of yet).
+
  Revision 1.89  2007/07/26 17:05:15  phase1geo
  Fixing problem with static functions (vector data associated with expressions
  were not being allocated).  Regressions have been run.  Only two failures

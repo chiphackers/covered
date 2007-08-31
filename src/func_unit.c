@@ -347,6 +347,8 @@ void funit_size_elements( func_unit* funit, funit_inst* inst, bool gen_all, bool
   assert( funit != NULL );
   assert( inst != NULL );
 
+  printf( "IN funit_size_elements, funit: %s\n", funit->name );
+
   /*
    First, traverse through current instance's parameter list and resolve
    any unresolved parameters created via generate statements.
@@ -357,7 +359,7 @@ void funit_size_elements( func_unit* funit, funit_inst* inst, bool gen_all, bool
       curr_exp = curr_iparm->sig->exp_head;
       while( curr_exp != NULL ) {
         if( curr_exp->exp->suppl.part.gen_expr == 0 ) {
-          expression_set_value( curr_exp->exp, curr_iparm->sig );
+          expression_set_value( curr_exp->exp, curr_iparm->sig, funit );
           resolve = TRUE;
         }
         curr_exp = curr_exp->next;
@@ -397,7 +399,7 @@ void funit_size_elements( func_unit* funit, funit_inst* inst, bool gen_all, bool
         /* This parameter attaches to an expression tree */
         curr_exp = curr_iparm->mparm->exp_head;
         while( curr_exp != NULL ) {
-          expression_set_value( curr_exp->exp, curr_iparm->sig );
+          expression_set_value( curr_exp->exp, curr_iparm->sig, funit );
           curr_exp = curr_exp->next;
         }
       }
@@ -426,10 +428,10 @@ void funit_size_elements( func_unit* funit, funit_inst* inst, bool gen_all, bool
   while( curr_exp != NULL ) {
     if( ESUPPL_IS_ROOT( curr_exp->exp->suppl ) ) {
       /* Perform an entire expression resize */
-      expression_resize( curr_exp->exp, TRUE, alloc_exprs );
+      expression_resize( curr_exp->exp, funit, TRUE, alloc_exprs );
     }
     if( (curr_exp->exp->sig != NULL) && (curr_exp->exp->op != EXP_OP_FUNC_CALL) ) {
-      expression_set_value( curr_exp->exp, curr_exp->exp->sig );
+      expression_set_value( curr_exp->exp, curr_exp->exp->sig, funit );
       assert( curr_exp->exp->value->value != NULL );
     }
     curr_exp = curr_exp->next;
@@ -439,7 +441,7 @@ void funit_size_elements( func_unit* funit, funit_inst* inst, bool gen_all, bool
   /* Sixth, traverse all generate items and resize all expressions and signals. */
   curr_gi = inst->gitem_head;
   while( curr_gi != NULL ) {
-    gen_item_resize_stmts_and_sigs( curr_gi->gi );
+    gen_item_resize_stmts_and_sigs( curr_gi->gi, funit );
     curr_gi = curr_gi->next;
   }
 #endif
@@ -1099,6 +1101,10 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.76  2007/07/30 22:42:02  phase1geo
+ Making some progress on automatic function support.  Things currently don't compile
+ but I need to checkpoint for now.
+
  Revision 1.75  2007/07/30 20:36:14  phase1geo
  Fixing rest of issues pertaining to new implementation of function calls.
  Full regression passes (with the exception of afunc1 which we do not expect

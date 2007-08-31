@@ -1703,8 +1703,12 @@ int tcl_func_preprocess_verilog( ClientData d, Tcl_Interp* tcl, int argc, const 
   }
 
   /* Now the preprocessor on this file first */
-  reset_pplexer( argv[1], out );
-  PPVLlex();
+  if( strcmp( argv[1], "NA" ) == 0 ) {
+    fprintf( out, "No information available\n" );
+  } else {
+    reset_pplexer( argv[1], out );
+    PPVLlex();
+  }
 
   fclose( out );
   
@@ -2255,6 +2259,10 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.64  2007/04/11 22:29:49  phase1geo
+ Adding support for CLI to score command.  Still some work to go to get history
+ stuff right.  Otherwise, it seems to be working.
+
  Revision 1.63  2006/10/02 22:41:00  phase1geo
  Lots of bug fixes to memory coverage functionality for GUI.  Memory coverage
  should now be working correctly.  We just need to update the GUI documentation
