@@ -110,8 +110,9 @@ vsignal* vsignal_create( char* name, int type, int width, int line, int col ) {
 */
 void vsignal_create_vec( vsignal* sig ) {
 
-  int     i;    /* Loop iterator */
-  vector* vec;  /* Temporary vector used for getting a vector value */
+  int       i;     /* Loop iterator */
+  vector*   vec;   /* Temporary vector used for getting a vector value */
+  exp_link* expl;  /* Pointer to current expression in signal expression list */
 
   assert( sig != NULL );
   assert( sig->value != NULL );
@@ -143,6 +144,15 @@ void vsignal_create_vec( vsignal* sig ) {
     }
     sig->value->value = vec->value;
     free_safe( vec );
+
+    /* Iterate through expression list, setting the expression to this signal */
+    expl = sig->exp_head;
+    while( expl != NULL ) {
+      if( expl->exp->op != EXP_OP_FUNC_CALL ) {
+        expression_set_value( expl->exp, sig, NULL );
+      }
+      expl = expl->next;
+    }
 
   }
 
@@ -686,6 +696,9 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.41  2007/01/06 04:44:22  phase1geo
+ Updating vpi.c and vsignal.c to match fixes made in covered-0_5-branch.
+
  Revision 1.40.2.1  2007/01/05 15:55:39  phase1geo
  Fixing bug 1628356 and fixing problem with VCS generated VCD file parsing
  for multi-dimensional packed arrays.
