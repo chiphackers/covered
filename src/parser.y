@@ -623,6 +623,7 @@ module_port_list_opt
       if( $2 != NULL ) {
         parser_dealloc_sig_range( $2->prange, TRUE );
         parser_dealloc_sig_range( $2->urange, TRUE );
+        free_safe( $2 );
       }
     }
   |
@@ -639,6 +640,7 @@ list_of_port_declarations
       if( $1 != NULL ) {
         parser_dealloc_sig_range( $1->prange, TRUE );
         parser_dealloc_sig_range( $1->urange, TRUE );
+        free_safe( $1 );
       }
       $$ = $3;
     }
