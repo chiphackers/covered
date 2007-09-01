@@ -856,14 +856,12 @@ int command_report( int argc, int last_arg, char** argv ) {
       assert( interp );
 
       if( Tcl_Init( interp ) == TCL_ERROR ) {
-        snprintf( user_msg, USER_MSG_LENGTH, "%s", interp->result );
-        print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        printf( "ERROR: %s\n", interp->result );
         exit( 1 );
       }
 
       if( Tk_SafeInit( interp ) == TCL_ERROR ) {
-        snprintf( user_msg, USER_MSG_LENGTH, "%s", interp->result );
-        print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        printf( "ERROR: %s\n", interp->result );
         exit( 1 );
       }
 
@@ -919,6 +917,10 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.81  2007/04/02 04:50:04  phase1geo
+ Adding func_iter files to iterate through a functional unit for reporting
+ purposes.  Updated affected files.
+
  Revision 1.80  2007/03/30 22:43:13  phase1geo
  Regression fixes.  Still have a ways to go but we are getting close.
 

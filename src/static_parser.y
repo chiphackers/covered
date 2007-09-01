@@ -75,7 +75,7 @@ int yydebug = 1;
 %token <text>     IDENTIFIER
 %token <number>   NUMBER
 %token <realtime> REALTIME
-%token            K_LE K_GE K_EG K_EQ K_NE K_CEQ K_CNE K_LS K_LSS K_RS K_RSS K_SG K_EG
+%token            K_LE K_GE K_EG K_EQ K_NE K_CEQ K_CNE K_LS K_LSS K_RS K_RSS K_SG
 %token            K_NAND K_NOR K_NXOR
 
 %type <number>    static_expr static_expr_primary static_expr_port_list
