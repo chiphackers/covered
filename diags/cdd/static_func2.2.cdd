@@ -7,7 +7,7 @@
 3 1 main.$u0 "main.$u0" static_func2.2.v 0 15 1
 3 2 main.const_func "main.const_func" static_func2.2.v 17 23 1
 2 1 19 20006 1 3d 131806 0 0 1 2 102 $u1
-1 const_func 17 850010 1 0 31 0 32 1 aa aa aa aa aa aa aa aa
+1 const_func 17 850010 1 0 31 0 32 1 aa 1aa aa aa aa aa aa aa
 1 size 18 80000f 1 0 31 0 32 1 aa aa aa aa aa aa aa aa
 4 1 0 0
 3 1 main.const_func.$u1 "main.const_func.$u1" static_func2.2.v 0 22 1

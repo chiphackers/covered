@@ -21,7 +21,7 @@
 4 4 6 6
 3 1 main.$u1 "main.$u1" afunc1.v 0 25 1
 3 5 main.div2 "main.div2" afunc1.v 27 34 1
-2 12 29 20006 7 3d 131812 0 0 1 2 2 $u2
+2 12 29 20006 7 3d 131802 0 0 1 2 2 $u2
 1 div2 27 85001a 1 0 31 0 32 1 7aa aa aa aa aa aa aa aa
 1 a 28 80000f 1 0 31 0 32 1 ffaa 31aa aa aa aa aa aa aa
 4 12 0 0
@@ -29,7 +29,7 @@
 2 13 30 b000b 1 0 20804 0 0 32 64 0 0 0 0 0 0 0 0
 2 14 30 40007 0 1 c00 0 0 div2
 2 15 30 4000b 7 37 11806 13 14
-2 16 31 c000c 1 0 20814 0 0 32 64 0 0 0 0 0 0 0 0
+2 16 31 c000c 1 0 20804 0 0 32 64 0 0 0 0 0 0 0 0
 2 17 31 80008 7 1 80c 0 0 a
 2 18 31 8000c 7 e 2090c 16 17 1 2 1102
 2 19 31 4000e 7 39 80e 18 0
@@ -39,7 +39,7 @@
 2 23 32 130018 6 10 20a0c 21 22 32 2 ffaa 1faa faa faa faa faa faa faa
 2 24 32 130018 6 47 80c 23 0 div2.a
 2 25 32 d001a 6 3a 12080c 0 24 32 2 7faa faa faa faa faa faa faa faa div2
-2 26 32 d001e 6 6 20a18 20 25 32 2 161eaa faa faa faa faa faa faa faa
+2 26 32 d001e 6 6 20a08 20 25 32 2 161eaa faa faa faa faa faa faa faa
 2 27 32 60009 0 1 c00 0 0 div2
 2 28 32 6001e 6 37 80a 26 27
 4 28 0 0

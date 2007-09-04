@@ -143,7 +143,7 @@ void print_output( char* msg, int type, char* file, int line ) {
 #ifdef VPI_ONLY
         vpi_print_output( msg );
 #else
-        printf( "%s\n", msg );
+        printf( "%s\n", msg );  fflush( stdout );
 #endif
       }
       break;
@@ -1131,6 +1131,10 @@ void calc_miss_percent( int hits, float total, float* misses, float* percent ) {
 
 /*
  $Log$
+ Revision 1.64  2007/08/19 02:08:32  phase1geo
+ Fixing one syntax error with fix for compiling issue when --enable-debug is
+ not specified.
+
  Revision 1.63  2007/08/17 22:08:45  phase1geo
  Fixing linker issue when --enable-debug is not specified to the configure script.
 

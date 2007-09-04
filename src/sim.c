@@ -1152,6 +1152,8 @@ void sim_dealloc() {
     free_safe( tmp );
   }
 
+  all_head = all_tail = all_next = NULL;
+
 #ifdef DEBUG_MODE
 #ifndef VPI_ONLY
   /* Clear CLI debug mode */
@@ -1164,6 +1166,10 @@ void sim_dealloc() {
 
 /*
  $Log$
+ Revision 1.101  2007/07/30 22:42:02  phase1geo
+ Making some progress on automatic function support.  Things currently don't compile
+ but I need to checkpoint for now.
+
  Revision 1.100  2007/07/27 21:57:08  phase1geo
  Adding afunc1 diagnostic to regression suite (though this diagnostic does not
  currently pass).  Checkpointing.

@@ -170,6 +170,9 @@ bool parse_design( char* top, char* output_db ) {
     exit( 1 );
   }
 
+  /* Deallocate simulator stuff */
+  sim_dealloc();
+
   /* Close database */
   db_close();
 
@@ -258,6 +261,10 @@ bool parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) {
 
 /*
  $Log$
+ Revision 1.49  2007/04/10 03:56:18  phase1geo
+ Completing majority of code to support new simulation core.  Starting to debug
+ this though we still have quite a ways to go here.  Checkpointing.
+
  Revision 1.48  2006/11/21 19:54:13  phase1geo
  Making modifications to defines.h to help in creating appropriately sized types.
  Other changes to VPI code (but this is still broken at the moment).  Checkpointing.

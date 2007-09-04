@@ -49,17 +49,17 @@ int reentrant_count_afu_bits( func_unit* funit ) {
     /* Count the number of signal bits in this functional unit */
     sigl = funit->sig_head;
     while( sigl != NULL ) {
-      bits += sigl->sig->value->width;
+      bits += (sigl->sig->value->width * 2);
       sigl = sigl->next;
     }
 
     /* Count the number of expression bits in this functional unit */
     expl = funit->exp_head;
     while( expl != NULL ) {
-      if( ESUPPL_OWNS_VEC( expl->exp->suppl ) == 1 ) {
-        bits += expl->exp->value->width;
+      if( (ESUPPL_OWNS_VEC( expl->exp->suppl ) == 1) && (EXPR_IS_STATIC( expl->exp ) == 0) ) {
+        bits += (expl->exp->value->width * 2);
       }
-      bits += ESUPPL_BITS_TO_STORE;
+      bits += ((ESUPPL_BITS_TO_STORE % 2) == 0) ? ESUPPL_BITS_TO_STORE : (ESUPPL_BITS_TO_STORE + 1);
       expl = expl->next;
     }
 
@@ -94,8 +94,8 @@ void reentrant_store_data_bits( func_unit* funit, reentrant* ren, int curr_bit )
     sigl = funit->sig_head;
     while( sigl != NULL ) {
       for( i=0; i<sigl->sig->value->width; i++ ) {
-        ren->data[((curr_bit%4)==0)?(curr_bit/4):((curr_bit/4)+1)] |= (sigl->sig->value->value[i].part.val.value << (curr_bit % 4));
-        curr_bit++;
+        ren->data[curr_bit/8] |= (sigl->sig->value->value[i].part.val.value << (curr_bit % 8));
+        curr_bit += 2;
       }
       sigl = sigl->next;
     }
@@ -105,18 +105,17 @@ void reentrant_store_data_bits( func_unit* funit, reentrant* ren, int curr_bit )
     while( expl != NULL ) {
       if( (ESUPPL_OWNS_VEC( expl->exp->suppl ) == 1) && (EXPR_IS_STATIC( expl->exp ) == 0) ) {
         for( i=0; i<expl->exp->value->width; i++ ) {
-          ren->data[((curr_bit%4)==0)?(curr_bit/4):((curr_bit/4)+1)] |= (expl->exp->value->value[i].part.val.value << (curr_bit % 4));
-          curr_bit++;
+          ren->data[curr_bit/8] |= (expl->exp->value->value[i].part.val.value << (curr_bit % 8));
+          curr_bit += 2;
         }
       }
-      for( i=0; i<ESUPPL_BITS_TO_STORE; i++ ) {
+      for( i=0; i<(((ESUPPL_BITS_TO_STORE % 2) == 0) ? ESUPPL_BITS_TO_STORE : (ESUPPL_BITS_TO_STORE + 1)); i++ ) {
         switch( i ) {
-          case 0 :  ren->data[((curr_bit%4)==0)?(curr_bit/4):((curr_bit/4)+1)] |= (expl->exp->suppl.part.left_changed  << (curr_bit % 4));  break;
-          case 1 :  ren->data[((curr_bit%4)==0)?(curr_bit/4):((curr_bit/4)+1)] |= (expl->exp->suppl.part.right_changed << (curr_bit % 4));  break;
-          case 2 :  ren->data[((curr_bit%4)==0)?(curr_bit/4):((curr_bit/4)+1)] |= (expl->exp->suppl.part.eval_t        << (curr_bit % 4));  break;
-          case 3 :  ren->data[((curr_bit%4)==0)?(curr_bit/4):((curr_bit/4)+1)] |= (expl->exp->suppl.part.eval_f        << (curr_bit % 4));  break;
-          case 4 :  ren->data[((curr_bit%4)==0)?(curr_bit/4):((curr_bit/4)+1)] |= (expl->exp->suppl.part.prev_called   << (curr_bit % 4));  break;
-          default:  assert( i < ESUPPL_BITS_TO_STORE );  break;
+          case 0 :  ren->data[curr_bit/8] |= (expl->exp->suppl.part.left_changed  << (curr_bit % 8));  break;
+          case 1 :  ren->data[curr_bit/8] |= (expl->exp->suppl.part.right_changed << (curr_bit % 8));  break;
+          case 2 :  ren->data[curr_bit/8] |= (expl->exp->suppl.part.eval_t        << (curr_bit % 8));  break;
+          case 3 :  ren->data[curr_bit/8] |= (expl->exp->suppl.part.eval_f        << (curr_bit % 8));  break;
+          case 4 :  ren->data[curr_bit/8] |= (expl->exp->suppl.part.prev_called   << (curr_bit % 8));  break;
         }
         curr_bit++;
       }
@@ -159,8 +158,8 @@ void reentrant_restore_data_bits( func_unit* funit, reentrant* ren, int curr_bit
     sigl = funit->sig_head;
     while( sigl != NULL ) {
       for( i=0; i<sigl->sig->value->width; i++ ) {
-        sigl->sig->value->value[i].part.val.value = (ren->data[((curr_bit%4)==0)?(curr_bit/4):((curr_bit/4)+1)] >> (curr_bit % 4));
-        curr_bit++;
+        sigl->sig->value->value[i].part.val.value = (ren->data[curr_bit/8] >> (curr_bit % 8));
+        curr_bit += 2;
       }
       //vsignal_propagate( sigl->sig, sim_time );
       sigl = sigl->next;
@@ -170,23 +169,22 @@ void reentrant_restore_data_bits( func_unit* funit, reentrant* ren, int curr_bit
     expl = funit->exp_head;
     while( expl != NULL ) {
       if( expl->exp == expr ) {
-        curr_bit += expr->value->width;
+        curr_bit += (expr->value->width * 2);
       } else {
         if( (ESUPPL_OWNS_VEC( expl->exp->suppl ) == 1) && (EXPR_IS_STATIC( expl->exp ) == 0) ) {
           for( i=0; i<expl->exp->value->width; i++ ) {
-            expl->exp->value->value[i].part.val.value = (ren->data[((curr_bit%4)==0)?(curr_bit/4):((curr_bit/4)+1)] >> (curr_bit % 4));
-            curr_bit++;
+            expl->exp->value->value[i].part.val.value = (ren->data[curr_bit/8] >> (curr_bit % 8));
+            curr_bit += 2;
           }
         }
       }
-      for( i=0; i<ESUPPL_BITS_TO_STORE; i++ ) {
+      for( i=0; i<(((ESUPPL_BITS_TO_STORE % 2) == 0) ? ESUPPL_BITS_TO_STORE : (ESUPPL_BITS_TO_STORE + 1)); i++ ) {
         switch( i ) {
-          case 0 :  expl->exp->suppl.part.left_changed  = (ren->data[((curr_bit%4)==0)?(curr_bit/4):((curr_bit/4)+1)] >> (curr_bit % 4));  break;
-          case 1 :  expl->exp->suppl.part.right_changed = (ren->data[((curr_bit%4)==0)?(curr_bit/4):((curr_bit/4)+1)] >> (curr_bit % 4));  break;
-          case 2 :  expl->exp->suppl.part.eval_t        = (ren->data[((curr_bit%4)==0)?(curr_bit/4):((curr_bit/4)+1)] >> (curr_bit % 4));  break;
-          case 3 :  expl->exp->suppl.part.eval_f        = (ren->data[((curr_bit%4)==0)?(curr_bit/4):((curr_bit/4)+1)] >> (curr_bit % 4));  break;
-          case 4 :  expl->exp->suppl.part.prev_called   = (ren->data[((curr_bit%4)==0)?(curr_bit/4):((curr_bit/4)+1)] >> (curr_bit % 4));  break;
-          default:  assert( i < ESUPPL_BITS_TO_STORE );  break;
+          case 0 :  expl->exp->suppl.part.left_changed  = (ren->data[curr_bit/8] >> (curr_bit % 8));  break;
+          case 1 :  expl->exp->suppl.part.right_changed = (ren->data[curr_bit/8] >> (curr_bit % 8));  break;
+          case 2 :  expl->exp->suppl.part.eval_t        = (ren->data[curr_bit/8] >> (curr_bit % 8));  break;
+          case 3 :  expl->exp->suppl.part.eval_f        = (ren->data[curr_bit/8] >> (curr_bit % 8));  break;
+          case 4 :  expl->exp->suppl.part.prev_called   = (ren->data[curr_bit/8] >> (curr_bit % 8));  break;
         }
         curr_bit++;
       }
@@ -218,14 +216,13 @@ reentrant* reentrant_create( func_unit* funit ) {
   reentrant* ren  = NULL;  /* Pointer to newly created reentrant structure */
   int        data_size;    /* Number of nibbles needed to store the given functional unit */
   int        bits = 0;     /* Number of bits needed to store signal values */
-
-  printf( "In reentrant_create\n" );
+  int        i;            /* Loop iterator */
 
   /* Get size needed to store data */
   bits = reentrant_count_afu_bits( funit );
 
   /* Calculate data size */
-  data_size = ((bits % 4) == 0) ? (bits / 4) : ((bits / 4) + 1);
+  data_size = ((bits % 8) == 0) ? (bits / 8) : ((bits / 8) + 1);
 
   /* If there is data to store, allocate the needed memory and populate it */
   if( data_size > 0 ) {
@@ -236,8 +233,11 @@ reentrant* reentrant_create( func_unit* funit ) {
     /* Set the data size */
     ren->data_size = data_size;
 
-    /* Allocate memory for data */
+    /* Allocate and initialize memory for data */
     ren->data = (nibble*)malloc_safe( (sizeof( nibble ) * ren->data_size), __FILE__, __LINE__ );
+    for( i=0; i<data_size; i++ ) {
+      ren->data[i] = 0;
+    }
 
     /* Walk through the signal list in the reentrant functional unit, compressing and saving vector values */
     reentrant_store_data_bits( funit, ren, 0 );
@@ -263,8 +263,6 @@ void reentrant_dealloc( reentrant* ren, func_unit* funit, uint64 sim_time, expre
   int       i;        /* Loop iterator */
   int       bit = 0;  /* Current bit in compressed bit array being assigned */
 
-  printf( "In reentrant_dealloc\n" );
-
   if( ren != NULL ) {
 
     /* If we have data being stored, pop it */
@@ -287,6 +285,10 @@ void reentrant_dealloc( reentrant* ren, func_unit* funit, uint64 sim_time, expre
 
 /*
  $Log$
+ Revision 1.9  2007/07/30 22:42:02  phase1geo
+ Making some progress on automatic function support.  Things currently don't compile
+ but I need to checkpoint for now.
+
  Revision 1.8  2007/07/29 03:32:06  phase1geo
  First attempt to make FUNC_CALL expressions copy the functional return value
  to the expression vector.  Not quite working yet -- checkpointing.

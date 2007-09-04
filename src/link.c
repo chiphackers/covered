@@ -849,6 +849,7 @@ void exp_link_remove( expression* exp, exp_link** head, exp_link** tail, bool re
 
   /* If recursive flag set, remove expression as well */
   if( recursive ) {
+    printf( "C Expression: %s (%p)\n", expression_string( exp ), exp );
     expression_dealloc( exp, TRUE );
   }
 
@@ -1234,6 +1235,9 @@ void inst_link_delete_list( inst_link* head ) {
 
 /*
  $Log$
+ Revision 1.64  2007/04/18 22:35:02  phase1geo
+ Revamping simulator core again.  Checkpointing.
+
  Revision 1.63  2007/04/10 22:10:11  phase1geo
  Fixing some more simulation issues.
 

@@ -30,7 +30,6 @@ end
 function automatic [31:0] div2;
   input [31:0] a;
   begin
-    div2 = 0;
     if( a > 0 )
       div2 = div2( a >> 1 ) + 1;
     else

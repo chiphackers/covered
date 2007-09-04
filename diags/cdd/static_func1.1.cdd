@@ -8,7 +8,7 @@
 3 1 main.$u0 "main.$u0" static_func1.1.v 0 15 1
 3 2 main.static_func "main.static_func" static_func1.1.v 17 23 1
 2 1 19 20006 1 3d 131806 0 0 1 2 102 $u1
-1 static_func 17 850010 1 0 31 0 32 1 aa aa aa aa aa aa aa aa
+1 static_func 17 850010 1 0 31 0 32 1 aa 1aa aa aa aa aa aa aa
 1 bit_to_set 18 800015 1 0 4 0 5 1 aa 2
 4 1 0 0
 3 1 main.static_func.$u1 "main.static_func.$u1" static_func1.1.v 0 22 1

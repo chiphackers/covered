@@ -650,8 +650,6 @@ void param_size_function( funit_inst* inst, func_unit* funit ) {
 
   funit_inst* child;  /* Pointer to current child instance */
 
-  printf( "IN param_size_function, inst: %s, funit: %s\n", inst->name, funit->name );
-
   /* Resolve all parameters for this instance */
   param_resolve( inst );
 
@@ -723,7 +721,6 @@ void param_expr_eval( expression* expr, funit_inst* inst ) {
                 (expr->op != EXP_OP_MBIT_SEL) &&
                 (expr->op != EXP_OP_MBIT_POS) &&
                 (expr->op != EXP_OP_MBIT_NEG) );
-        printf( "About to resize expr: %s\n", expression_string( expr ) );
         expression_resize( expr, inst->funit, FALSE, TRUE );
 #ifdef OBSOLETE
         if( expr->value->value != NULL ) {
@@ -1056,6 +1053,10 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.91  2007/08/31 22:46:36  phase1geo
+ Adding diagnostics from stable branch.  Fixing a few minor bugs and in progress
+ of working on static_afunc1 failure (still not quite there yet).  Checkpointing.
+
  Revision 1.90  2007/07/30 20:36:14  phase1geo
  Fixing rest of issues pertaining to new implementation of function calls.
  Full regression passes (with the exception of afunc1 which we do not expect

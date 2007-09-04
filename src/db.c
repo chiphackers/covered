@@ -1811,6 +1811,7 @@ void db_remove_statement_from_current_funit( statement* stmt ) {
     }
 
     /* Remove expression from current module expression list and delete expressions */
+    printf( "A Expression: %p\n", stmt->exp );
     exp_link_remove( stmt->exp, &(curr_funit->exp_head), &(curr_funit->exp_tail), TRUE );
 
     /* Remove this statement link from the current module's stmt_link list */
@@ -2367,6 +2368,10 @@ void db_do_timestep( uint64 time, bool final ) {
 
 /*
  $Log$
+ Revision 1.258  2007/08/31 22:46:36  phase1geo
+ Adding diagnostics from stable branch.  Fixing a few minor bugs and in progress
+ of working on static_afunc1 failure (still not quite there yet).  Checkpointing.
+
  Revision 1.257  2007/07/26 22:23:00  phase1geo
  Starting to work on the functionality for automatic tasks/functions.  Just
  checkpointing some work.

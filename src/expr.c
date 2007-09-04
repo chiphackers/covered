@@ -674,8 +674,6 @@ void expression_resize( expression* expr, func_unit* funit, bool recursive, bool
       expression_resize( expr->right, funit, recursive, alloc );
     }
 
-    printf( "IN expression_resize, expr: %s\n", expression_string( expr ) );
-
     /* Get vector supplemental field */
     old_vec_suppl = expr->value->suppl.all;
 
@@ -796,7 +794,6 @@ void expression_resize( expression* expr, func_unit* funit, bool recursive, bool
       case EXP_OP_FUNC_CALL :
         if( expr->sig != NULL ) {
           assert( funit != NULL );
-          printf( "funit->name: %s, type: %d\n", funit->name, funit->type );
           if( (funit->type != FUNIT_AFUNCTION) && (funit->type != FUNIT_ANAMED_BLOCK) ) {
             assert( expr->elem.funit != NULL );
             tmp_inst = inst_link_find_by_funit( expr->elem.funit, inst_head, &ignore );
@@ -1650,22 +1647,13 @@ bool expression_op_func__mod( expression* expr, thread* thr ) {
 */
 bool expression_op_func__add( expression* expr, thread* thr ) {
 
-  bool retval;
-
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
     vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type,
                       expr->parent->expr->left->value->width, 0, 0 );
   }
 
-  printf( "In expression_op_func__add...\n" );
-  printf( "  left (%s): ", expression_string( expr->left ) );  vector_display( expr->left->value );
-  printf( "  right (%s): ", expression_string( expr->right ) );  vector_display( expr->right->value );
-
-  retval = vector_op_add( expr->value, expr->left->value, expr->right->value );
-  vector_display( expr->value );
-  return( retval );
-  //return( vector_op_add( expr->value, expr->left->value, expr->right->value ) );
+  return( vector_op_add( expr->value, expr->left->value, expr->right->value ) );
 
 }
 
@@ -1795,8 +1783,6 @@ bool expression_op_func__lt( expression* expr, thread* thr ) {
 */
 bool expression_op_func__gt( expression* expr, thread* thr ) {
 
-  printf( "LEFT:  " );  expression_display( expr->left );
-  printf( "RIGHT: " );  expression_display( expr->right );
   return( vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_GT ) );
 
 }
@@ -2705,7 +2691,6 @@ bool expression_op_func__func_call( expression* expr, thread* thr ) {
 
   /* Then copy the function variable to this expression */
   retval = vector_set_value( expr->value, expr->sig->value->value, VTYPE_VAL, expr->value->width, 0, 0 );
-  printf( "after func_call: " );  expression_display( expr );
   
   /* Deallocate the reentrant structure of the current thread (if it exists) */
   if( (thr != NULL) && (thr->ren != NULL) ) {
@@ -2895,14 +2880,11 @@ bool expression_op_func__passign( expression* expr, thread* thr ) {
     thr->ren = reentrant_create( thr->funit );
   }
 
-  printf( "Port value: " );  expression_display( expr->right );
-
   switch( expr->sig->suppl.part.type ) {
 
     /* If the connected signal is an input type, copy the parameter expression value to this vector */
     case SSUPPL_TYPE_INPUT :
       retval = vector_set_value( expr->value, expr->right->value->value, expr->right->value->suppl.part.type, expr->right->value->width, 0, 0 );
-      printf( "INPUT: " );  expression_display( expr );
       vsignal_propagate( expr->sig, ((thr == NULL) ? 0 : thr->curr_time) );
       break;
 
@@ -3681,7 +3663,6 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb, uint64 sim_t
 
     switch( lhs->op ) {
       case EXP_OP_SIG      :
-        printf( "assigned: %d, assign: %d, rhs->width: %d, lsb: %d\n", lhs->sig->suppl.part.assigned, assign, rhs->value->width, *lsb );
         if( lhs->sig->suppl.part.assigned == 1 ) {
           if( assign ) {
             vector_set_value( lhs->value, rhs->value->value, rhs->value->suppl.part.type, rhs->value->width, *lsb, 0 );
@@ -3883,6 +3864,13 @@ void expression_dealloc( expression* expr, bool exp_only ) {
          
         bind_remove( expr->id, FALSE );
 
+      } else if( expr->op == EXP_OP_FUNC_CALL ) {
+
+        /* Remove this expression from the attached signal's expression list (if the signal has not been deallocated yet) */
+        if( expr->sig != NULL ) {
+          exp_link_remove( expr, &(expr->sig->exp_head), &(expr->sig->exp_tail), FALSE );
+        }
+
       }
 
     } else {
@@ -3908,6 +3896,7 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
       } else {
 
+        printf( "  Removing expression from signal %s\n", expr->sig->name );
         /* Remove this expression from the attached signal's expression list */
         exp_link_remove( expr, &(expr->sig->exp_head), &(expr->sig->exp_tail), FALSE );
 
@@ -3969,6 +3958,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.254  2007/08/31 22:46:36  phase1geo
+ Adding diagnostics from stable branch.  Fixing a few minor bugs and in progress
+ of working on static_afunc1 failure (still not quite there yet).  Checkpointing.
+
  Revision 1.253  2007/07/31 22:17:44  phase1geo
  Attempting to debug issue with automatic static functions.  Updated regressions
  per last change.

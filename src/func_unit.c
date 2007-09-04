@@ -347,8 +347,6 @@ void funit_size_elements( func_unit* funit, funit_inst* inst, bool gen_all, bool
   assert( funit != NULL );
   assert( inst != NULL );
 
-  printf( "IN funit_size_elements, funit: %s\n", funit->name );
-
   /*
    First, traverse through current instance's parameter list and resolve
    any unresolved parameters created via generate statements.
@@ -1101,6 +1099,10 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.77  2007/08/31 22:46:36  phase1geo
+ Adding diagnostics from stable branch.  Fixing a few minor bugs and in progress
+ of working on static_afunc1 failure (still not quite there yet).  Checkpointing.
+
  Revision 1.76  2007/07/30 22:42:02  phase1geo
  Making some progress on automatic function support.  Things currently don't compile
  but I need to checkpoint for now.
