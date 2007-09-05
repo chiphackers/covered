@@ -148,7 +148,6 @@ void vsignal_create_vec( vsignal* sig ) {
     /* Iterate through expression list, setting the expression to this signal */
     expl = sig->exp_head;
     while( expl != NULL ) {
-      printf( "B Expression: %p (signal: %s)\n", expl->exp, sig->name );  fflush( stdout );
       if( expl->exp->op != EXP_OP_FUNC_CALL ) {
         expression_set_value( expl->exp, sig, NULL );
       }
@@ -697,6 +696,10 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.43  2007/09/04 22:50:50  phase1geo
+ Fixed static_afunc1 issues.  Reran regressions and updated necessary files.
+ Also working on debugging one remaining issue with mem1.v (not solved yet).
+
  Revision 1.42  2007/09/01 19:31:32  phase1geo
  Attempting to fix static_afunc1 failure -- we are getting further but am now
  getting a new type of error.

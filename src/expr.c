@@ -3896,7 +3896,6 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
       } else {
 
-        printf( "  Removing expression from signal %s\n", expr->sig->name );
         /* Remove this expression from the attached signal's expression list */
         exp_link_remove( expr, &(expr->sig->exp_head), &(expr->sig->exp_tail), FALSE );
 
@@ -3958,6 +3957,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.255  2007/09/04 22:50:50  phase1geo
+ Fixed static_afunc1 issues.  Reran regressions and updated necessary files.
+ Also working on debugging one remaining issue with mem1.v (not solved yet).
+
  Revision 1.254  2007/08/31 22:46:36  phase1geo
  Adding diagnostics from stable branch.  Fixing a few minor bugs and in progress
  of working on static_afunc1 failure (still not quite there yet).  Checkpointing.

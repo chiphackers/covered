@@ -1811,7 +1811,6 @@ void db_remove_statement_from_current_funit( statement* stmt ) {
     }
 
     /* Remove expression from current module expression list and delete expressions */
-    printf( "A Expression: %p\n", stmt->exp );
     exp_link_remove( stmt->exp, &(curr_funit->exp_head), &(curr_funit->exp_tail), TRUE );
 
     /* Remove this statement link from the current module's stmt_link list */
@@ -2368,6 +2367,10 @@ void db_do_timestep( uint64 time, bool final ) {
 
 /*
  $Log$
+ Revision 1.259  2007/09/04 22:50:50  phase1geo
+ Fixed static_afunc1 issues.  Reran regressions and updated necessary files.
+ Also working on debugging one remaining issue with mem1.v (not solved yet).
+
  Revision 1.258  2007/08/31 22:46:36  phase1geo
  Adding diagnostics from stable branch.  Fixing a few minor bugs and in progress
  of working on static_afunc1 failure (still not quite there yet).  Checkpointing.

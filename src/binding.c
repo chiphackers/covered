@@ -731,45 +731,54 @@ void bind_perform( bool cdd_reading, int pass ) {
         id = curr_eb->clear_assigned;
       }
 
-      /* Handle signal/parameter binding */
-      if( curr_eb->type == 0 ) {
+      /* If the expression has already been bound, do not attempt to do it again */
+      if( (curr_eb->exp != NULL) && (curr_eb->exp->name != NULL) ) {
 
-        /* Attempt to bind the expression to a parameter; otherwise, bind to a signal */
-        if( !(bound = bind_param( curr_eb->name, curr_eb->exp, curr_eb->funit, curr_eb->line, (pass == 0) )) ) {
-          bound = bind_signal( curr_eb->name, curr_eb->exp, curr_eb->funit, FALSE, cdd_reading,
-                               (curr_eb->clear_assigned > 0), curr_eb->line, (pass == 0) );
-        }
+        bound = TRUE;
 
-        /* If an FSM expression is attached, size it now */
-        if( curr_eb->fsm != NULL ) {
-          curr_eb->fsm->value = vector_create( curr_eb->exp->value->width, VTYPE_EXP, TRUE );
-        }
-
-      /* Otherwise, handle disable binding */
-      } else if( curr_eb->type == 1 ) {
-
-        /* Attempt to bind a named block -- if unsuccessful, attempt to bind with a task */
-        if( !(bound = bind_task_function_namedblock( FUNIT_NAMED_BLOCK, curr_eb->name, curr_eb->exp, curr_eb->funit,
-                                                     cdd_reading, curr_eb->line, (pass == 0) )) ) {
-          bound = bind_task_function_namedblock( FUNIT_TASK, curr_eb->name, curr_eb->exp, curr_eb->funit,
-                                                 cdd_reading, curr_eb->line, (pass == 0) );
-        }
-
-      /* Otherwise, handle function/task binding */
       } else {
 
-        /*
-         Bind the expression to the task/function.  If it is unsuccessful, we need to remove the statement
-         that this expression is a part of.
-        */
-        bound = bind_task_function_namedblock( curr_eb->type, curr_eb->name, curr_eb->exp, curr_eb->funit,
-                                               cdd_reading, curr_eb->line, (pass == 0) );
+        /* Handle signal/parameter binding */
+        if( curr_eb->type == 0 ) {
 
-      }
+          /* Attempt to bind the expression to a parameter; otherwise, bind to a signal */
+          if( !(bound = bind_param( curr_eb->name, curr_eb->exp, curr_eb->funit, curr_eb->line, (pass == 0) )) ) {
+            bound = bind_signal( curr_eb->name, curr_eb->exp, curr_eb->funit, FALSE, cdd_reading,
+                                 (curr_eb->clear_assigned > 0), curr_eb->line, (pass == 0) );
+          }
 
-      /* If we have bound successfully, copy the name of this exp_bind to the expression */
-      if( bound && (curr_eb->exp != NULL) ) {
-        curr_eb->exp->name = strdup_safe( curr_eb->name, __FILE__, __LINE__ );
+          /* If an FSM expression is attached, size it now */
+          if( curr_eb->fsm != NULL ) {
+            curr_eb->fsm->value = vector_create( curr_eb->exp->value->width, VTYPE_EXP, TRUE );
+          }
+
+        /* Otherwise, handle disable binding */
+        } else if( curr_eb->type == 1 ) {
+
+          /* Attempt to bind a named block -- if unsuccessful, attempt to bind with a task */
+          if( !(bound = bind_task_function_namedblock( FUNIT_NAMED_BLOCK, curr_eb->name, curr_eb->exp, curr_eb->funit,
+                                                       cdd_reading, curr_eb->line, (pass == 0) )) ) {
+            bound = bind_task_function_namedblock( FUNIT_TASK, curr_eb->name, curr_eb->exp, curr_eb->funit,
+                                                   cdd_reading, curr_eb->line, (pass == 0) );
+          }
+
+        /* Otherwise, handle function/task binding */
+        } else {
+
+          /*
+           Bind the expression to the task/function.  If it is unsuccessful, we need to remove the statement
+           that this expression is a part of.
+          */
+          bound = bind_task_function_namedblock( curr_eb->type, curr_eb->name, curr_eb->exp, curr_eb->funit,
+                                                 cdd_reading, curr_eb->line, (pass == 0) );
+
+        }
+
+        /* If we have bound successfully, copy the name of this exp_bind to the expression */
+        if( bound && (curr_eb->exp != NULL) ) {
+          curr_eb->exp->name = strdup_safe( curr_eb->name, __FILE__, __LINE__ );
+        }
+
       }
 
       /*
@@ -866,6 +875,10 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.113  2007/08/31 22:46:36  phase1geo
+ Adding diagnostics from stable branch.  Fixing a few minor bugs and in progress
+ of working on static_afunc1 failure (still not quite there yet).  Checkpointing.
+
  Revision 1.112  2007/07/31 22:17:44  phase1geo
  Attempting to debug issue with automatic static functions.  Updated regressions
  per last change.
