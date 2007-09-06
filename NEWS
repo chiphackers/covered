@@ -1,6 +1,39 @@
 Covered-Related NEWS
 ====================
 
+    * 9/6/2007
+
+Development release covered-20070906 finally made.  Several severe changes to support CLI-style
+runtime debugging, unnamed scope handling, some resimulation optimizations, automatic function/task
+handling, and lots of bug fixes have gone into this release.  The following changes are included in
+this release.
+
+  - Added support for unnamed scopes and the ability to create variables within these scopes.
+  - Modified simulator memory handling to optimize performance.
+  - Fixed bug 1688487:  The writability check on a -o file was accidentally removing the file if it
+    previously existed
+  - Added support for a CLI debugging environment when scoring simulations (only available if Covered
+    is built with the --enable-debug option).
+  - Fixed bug 1698806:  Function calls made within operations were causing those operations to not get
+    bit-sized correctly.
+  - Added accumulated summary coverage information to generated reports for each metric.
+  - Fixed some compilation warnings dealing with large static values being assigned to unsigned long long
+    variables.
+  - Fixed bug with handling embedded scopes within generate blocks.
+  - Added the ability to simulate and get coverage for automatic tasks/functions.
+  - Added ability to read/write file sizes that extend beyond 2G in size.
+  - Fixed bug 1709984:  Adding ability to enter defined values inside of covered_fsm attributes (to
+    match the documentation).
+  - Fixed memory leak bug in parser code.
+  - Fixed bug 1687409:  Memory allocation information at end of score command written as a 32-bit signed
+    value -- changed to an unsigned long long value.
+  - Fixed error output when Tcl/Tk fails in initializing the Tcl/Tk environment.
+  - Fixed bug 1788991:  Memory corruption bug due to memory (multi-dimensional array) accesses.
+
+Lots of somewhat major changes to the simulation core and elaboration code have been made (hopefully for
+the better).  This development release is a springboard for adding further SystemVerilog support for some
+other features of the language.  Have fun and let's log those bugs!
+
     * 12/05/2006
 
 Development release covered-20061205 made.  A few updates to the core code to properly support VPI

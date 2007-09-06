@@ -1,4 +1,4 @@
-%define version 0.5
+%define version 0.6
 
 Summary: Verilog code coverage analyzer
 Name: covered
@@ -15,8 +15,9 @@ Requires: tk >= 8.3
 
 %description
 Covered is a Verilog code-coverage utility using VCD/LXT style dumpfiles and the
-design to generate line, toggle, combinational logic and FSM state/arc coverage
-reports. Covered also contains a built-in race condition checker and GUI report viewer.
+design to generate line, toggle, memory, combinational logic, FSM state/arc and
+assertion coverage reports. Covered also contains a built-in race condition checker
+and GUI report viewer.
 
 %prep
 %setup
@@ -73,9 +74,11 @@ make clean
 /usr/local/share/covered/doc/user/020.html
 /usr/local/share/covered/doc/user/021.html
 /usr/local/share/covered/doc/user/022.html
-/uss/local/share/covered/doc/user/023.html
+/usr/local/share/covered/doc/user/023.html
 /usr/local/share/covered/doc/user/024.html
 /usr/local/share/covered/doc/user/025.html
+/usr/local/share/covered/doc/user/026.html
+/usr/local/share/covered/doc/user/027.html
 /usr/local/share/covered/doc/user/banner.gif
 /usr/local/share/covered/doc/user/example.rptI.html
 /usr/local/share/covered/doc/user/example.rptM.html

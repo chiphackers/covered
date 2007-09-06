@@ -1,4 +1,4 @@
-.TH "Covered" "1" "covered-0.5" "Trevor Williams" "Code Analysis"
+.TH "Covered" "1" "covered-20070906" "Trevor Williams" "Code Analysis"
 .SH "NAME"
 .LP 
 Covered \- Verilog Code Coverage Analyzer
@@ -47,6 +47,9 @@ The following options are valid for the score command:
 .TP 
 \fB\-A ovl\fR
 Causes OVL assertions to be used for assertion coverage.  This flag must be given to the score command if assertion coverage metrics are needed in the report command.
+.TP
+\fB\-cli\fR \fI[filename]\fR
+Causes the command-line debugger to be used during VCD/LXT dumpfile scoring.  If \fIfilename\fR is specified, this file contains information saved in a previous call to savehist on the CLI and causes the history contained in this file to be replayed prior to the CLI command prompt.  If \fIfilename\fR is not specified, the CLI prompt will be immediately available at the start of simulation.  This option is only available when Covered is configured with the \fI--enable-debug\fR option.
 .TP 
 \fB\-D\fR \fIdefine_name\fR
 Defines the specified name to 1.

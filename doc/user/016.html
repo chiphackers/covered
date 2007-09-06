@@ -171,6 +171,16 @@
                 Causes OVL assertions to be used for assertion coverage.  This flag must be given to the score
                 command if assertion coverage metrics are needed in the report command. </td>
               </tr>
+              <tr>
+                <td> -cli [&lt;filename&gt;] </td>
+                <td>
+                Causes the command-line debugger to be used during VCD/LXT dumpfile scoring.  If &lt;filename&gt;
+                is specified, this file contains information saved in a previous call to savehist on the CLI and
+                causes the history contained in this file to be replayed prior to the CLI command prompt.  If
+                &lt;filename&gt; is not specified, the CLI prompt will be immediately available at the start of
+                simulation.  This option is only available when Covered is configured with the <i>--enable-debug</i>
+                option. </td>
+              </tr>
 	      <tr> 
 		<td> -D &lt;name&gt;[=&lt;value&gt;] </td> 
 		<td> Defines the specified name to 1 or the specified value. </td>
