@@ -117,7 +117,7 @@ int yydebug = 1;
 %token UNUSED_REALTIME
 %token UNUSED_STRING UNUSED_SYSTEM_IDENTIFIER
 %token K_LE K_GE K_EG K_EQ K_NE K_CEQ K_CNE K_LS K_LSS K_RS K_RSS K_SG
-%token K_ADD_A K_SUB_A K_MLT_A K_DIV_A K_MOD_A K_AND_A K_OR_A K_XOR_A K_LS_A K_RS_A K_ALS_A K_ARS_A K_INC K_DEC
+%token K_ADD_A K_SUB_A K_MLT_A K_DIV_A K_MOD_A K_AND_A K_OR_A K_XOR_A K_LS_A K_RS_A K_ALS_A K_ARS_A K_INC K_DEC K_POW
 %token K_PO_POS K_PO_NEG K_STARP K_PSTAR
 %token K_LOR K_LAND K_NAND K_NOR K_NXOR K_TRIGGER
 %token K_always K_and K_assign K_begin K_buf K_bufif0 K_bufif1 K_case
@@ -147,10 +147,12 @@ int yydebug = 1;
 %token K_unique K_priority K_do
 %token K_always_comb K_always_latch K_always_ff
 %token K_typedef K_type K_enum K_union K_struct K_packed
-%token K_assert K_property K_endproperty K_cover K_sequence K_endsequence
+%token K_assert K_assume K_property K_endproperty K_cover K_sequence K_endsequence K_expect
 %token K_program K_endprogram K_final K_void K_return K_continue K_break K_extern K_interface K_endinterface
 %token K_class K_endclass K_extends K_package K_endpackage K_timeunit K_timeprecision K_ref K_bind K_const
-%token K_new K_static K_protected K_local K_rand K_randc K_constraint K_import K_scalared K_chandle
+%token K_new K_static K_protected K_local K_rand K_randc K_constraint K_import K_export K_scalared K_chandle
+%token K_context K_pure K_modport K_clocking K_iff K_intersect K_first_match K_throughout K_within
+%token K_dist
 
 %token KK_attribute
 
@@ -995,6 +997,16 @@ data_type
   | ps_covergroup_identifier
   ;
 
+data_type_list
+  : ',' data_type
+  | data_type_list ',' data_type
+  ;
+
+data_type_list_opt
+  : data_type_list
+  |
+  ;
+
 packed_opt
   : K_packed signing_opt
   |
@@ -1262,39 +1274,669 @@ port_identifiers_list_opt
   |
   ;
 
-list_of_udp_port_identifiers ::= port_identifier { , port_identifier }
+list_of_udp_port_identifiers
+  : port_identifier udp_port_identifiers_list_opt
+  ;
 
-list_of_specparam_assignments ::= specparam_assignment { , specparam_assignment }
+udp_port_identifiers_list
+  : ',' port_identifier
+  | udp_port_identifiers_list ',' port_identifier
+  ;
 
-list_of_tf_variable_identifiers ::= port_identifier variable_dimension [ = expression ]
-{ , port_identifier variable_dimension [ = expression ] }
+udp_port_identifiers_list_opt
+  : udp_port_identifiers_list
+  |
+  ;
 
-list_of_type_assignments ::= type_assignment { , type_assignment }
+list_of_specparam_assignments
+  : specparam_assignment specparam_assignments_list_opt
+  ;
 
-list_of_variable_decl_assignments ::= variable_decl_assignment { , variable_decl_assignment }
+specparam_assignments_list
+  : ',' specparam_assignment
+  | specparam_assignments_list ',' specparam_assignment
+  ;
 
-list_of_variable_identifiers ::= variable_identifier variable_dimension
-{ , variable_identifier variable_dimension }
+specparam_assignments_list_opt
+  : specparam_assignments_list
+  |
+  ;
 
-list_of_variable_port_identifiers ::= port_identifier variable_dimension [ = constant_expression ]
-{ , port_identifier variable_dimension [ = constant_expression ] }
+list_of_tf_variable_identifiers
+  : port_identifier variable_dimension tf_variable_identifiers_list_opt
+  | port_identifier variable_dimension '=' expression tf_variable_identifiers_list_opt
+  ;
 
-list_of_virtual_interface_decl ::=
-variable_identifier [ = interface_instance_identifier ]
-{ , variable_identifier [ = interface_instance_identifier ] }
-Declaration assignments
+tf_variable_identifiers_list
+  : ',' port_identifier variable_dimension
+  | ',' port_identifier variable_dimension '=' expression
+  | tf_variable_identifiers_list ',' port_identifier variable_dimension
+  | tf_variable_identifiers_list ',' port_identifier variable_dimension '=' expression
+  ;
 
-defparam_assignment ::= hierarchical_parameter_identifier = constant_mintypmax_expression
+tf_variable_identifiers_list_opt
+  : tf_variable_identifiers_list
+  |
+  ;
 
-net_decl_assignment ::= net_identifier { unpacked_dimension } [ = expression ]
+list_of_type_assignments
+  : type_assignment type_assignments_list_opt
 
-param_assignment ::= parameter_identifier { unpacked_dimension } = constant_param_expression
+type_assignments_list
+  : ',' type_assignment
+  | type_assignments_list ',' type_assignment
+  ;
 
-specparam_assignment ::=
-specparam_identifier = constant_mintypmax_expression
-| pulse_control_specparam
+type_assignments_list_opt
+  : type_assignments_list
+  |
+  ;
 
-type_assignment ::= type_identifier = data_type 
+list_of_variable_decl_assignments
+  : variable_decl_assignment variable_decl_assignments_list_opt
+  ;
+
+variable_decl_assignments_list
+  : ',' variable_decl_assignment
+  | variable_decl_assignments_list ',' variable_decl_assignment
+  ;
+
+variable_decl_assignments_list_opt
+  : variable_decl_assignments_list
+  |
+  ;
+
+list_of_variable_identifiers
+  : variable_identifier variable_dimension variable_identifiers_list_opt
+  ;
+
+variable_identifiers_list
+  : ',' variable_identifier variable_dimension
+  | variable_identifiers_list ',' variable_identifier variable_dimension
+  ;
+
+variable_identifiers_list_opt
+  : variable_identifiers_list
+  |
+  ;
+
+list_of_variable_port_identifiers
+  : port_identifier variable_dimension variable_port_identifiers_list_opt
+  : port_identifier variable_dimension '=' constant_expression variable_port_identifiers_list_opt
+  ;
+
+variable_port_identifiers_list
+  : ',' port_identifier variable_dimension
+  | ',' port_identifier variable_dimension '=' constant_expression
+  | variable_port_identifiers_list ',' port_identifier variable_dimension
+  | variable_port_identifiers_list ',' port_identifier variable_dimension '=' constant_expression
+  ;
+
+variable_port_identifiers_list_opt
+  : variable_port_identifiers_list
+  |
+  ;
+
+list_of_virtual_interface_decl
+  : variable_identifier virtual_interface_decl_list_opt
+  | variable_identifier '=' interface_instance_identifier virtual_interface_decl_list_opt
+  ;
+
+virtual_interface_decl_list
+  : ',' variable_identifier
+  | ',' variable_identifier '=' interface_instance_identifier
+  | virtual_interface_decl_list ',' variable_identifier
+  | virtual_interface_decl_list ',' variable_identifier '=' interface_instance_identifier
+  ;
+
+virtual_interface_decl_list_opt
+  : virtual_interface_decl_list
+  |
+  ;
+
+  /* Declaration assignments */
+
+defparam_assignment
+  : hierarchical_parameter_identifier '=' constant_mintypmax_expression
+  ;
+
+net_decl_assignment
+  : net_identifier unpacked_dimensions_opt
+  | net_identifier unpacked_dimensions_opt '=' expression
+  ;
+
+param_assignment
+  : parameter_identifier unpacked_dimensions_opt '=' constant_param_expression
+  ;
+
+specparam_assignment
+  : specparam_identifier '=' constant_mintypmax_expression
+  | pulse_control_specparam
+  ;
+
+type_assignment
+  : type_identifier '=' data_type 
+  ;
+
+pulse_control_specparam
+  : PATHPULSE_IDENTIFIER '=' '(' reject_limit_value ')' ';'
+  | PATHPULSE_IDENTIFIER '=' '(' reject_limit_value ',' error_limit_value ')' ';'
+  | PATHPULSE_IDENTIFIER specify_input_terminal_descriptor '$' specify_output_terminal_descriptor '=' '(' reject_limit_value ')' ';'
+  | PATHPULSE_IDENTIFIER specify_input_terminal_descriptor '$' specify_output_terminal_descriptor '=' '(' reject_limit_value ',' error_limit_value ')' ';'
+  ;
+
+error_limit_value
+  : limit_value
+  ;
+
+reject_limit_value
+  : limit_value
+  ;
+
+limit_value
+  : constant_mintypmax_expression
+  ;
+
+variable_decl_assignment
+  : variable_identifier variable_dimension
+  | variable_identifier variable_dimension '=' expression
+  | dynamic_array_variable_identifier '[' ']'
+  | dynamic_array_variable_identifier '[' ']' '=' dynamic_array_new
+  | class_variable_identifier
+  | class_variable_identifier '=' class_new
+  | '=' K_new list_of_arguments_opt
+  | covergroup_variable_identifier '=' K_new list_of_arguments_opt
+  ;
+
+class_new
+  : K_new list_of_arguments_opt
+  | K_new expression
+  ;
+
+dynamic_array_new
+  : K_new '[' expression ']'
+  | K_new '[' expression ']' '(' expression ')'
+  ;
+
+  /* Declaration ranges */
+unpacked_dimension
+  : '[' constant_range ']'
+  | '[' constant_expression ']'
+  ;
+
+unpacked_dimensions
+  : unpacked_dimension
+  | unpacked_dimensions unpacked_dimension
+  ;
+
+unpacked_dimensions_opt
+  : unpacked_dimensions
+  |
+  ;
+
+packed_dimension
+  : '[' constant_range ']'
+  | unsized_dimension
+  ;
+
+packed_dimensions
+  : packed_dimension
+  | packed_dimensions packed_dimension
+  ;
+
+packed_dimensions_opt
+  : packed_dimensions
+  |
+  ;
+
+associative_dimension
+  : '[' data_type ']'
+  | '[' '*' ']'
+  ;
+
+variable_dimension
+  : sized_or_unsized_dimensions_opt
+  | associative_dimension
+  | queue_dimension
+  ;
+
+queue_dimension
+  : '[' '$' ']'
+  | '[' '$' ':' constant_expression ']'
+  ;
+
+unsized_dimension
+  : '[' ']'
+  ;
+
+sized_or_unsized_dimension
+  : unpacked_dimension
+  | unsized_dimension
+  ;
+
+sized_or_unsized_dimensions
+  : sized_or_unsized_dimension
+  | sized_or_unsized_dimensions sized_or_unsized_dimension
+  ;
+
+sized_or_unsized_dimensions_opt
+  : sized_or_unsized_dimensions
+  |
+  ;
+
+  /* Function declarations */
+function_data_type
+  : data_type
+  | K_void
+  ;
+
+function_data_type_or_implicit
+  : function_data_type
+  | signing_opt packed_dimensions_opt
+  ;
+
+function_declaration
+  : K_function lifetime_opt function_body_declaration
+  ;
+
+function_body_declaration
+  : function_data_type_or_implicit function_identifier ';' tf_item_declarations_opt function_statement_or_nulls_opt K_endfunction postfix_identifier_opt
+  | function_data_type_or_implicit interface_identifier '.' function_identifier ';' tf_item_declarations_opt function_statement_or_nulls_opt K_endfunction postfix_identifier_opt
+  | function_data_type_or_implicit class_scope function_identifier ';' tf_item_declarations_opt function_statement_or_nulls_opt K_endfunction postfix_identifier_opt
+  | function_data_type_or_implicit function_identifier '(' tf_port_list_opt ')' ';' block_item_declarations_opt function_statement_or_nulls_opt K_endfunction postfix_identifier_opt
+  | function_data_type_or_implicit interface_identifier '.' function_identifier '(' tf_port_list_opt ')' ';' block_item_declarations_opt function_statement_or_nulls_opt K_endfunction postfix_identifier_opt
+  | function_data_type_or_implicit class_scope function_identifier '(' tf_port_list_opt ')' ';' block_item_declarations_opt function_statement_or_nulls_opt K_endfunction postfix_identifier_opt
+  ;
+
+function_prototype
+  : K_function function_data_type function_identifier '(' tf_port_list_opt ')'
+  ;
+
+dpi_import_export
+  : K_import DPI dpi_function_import_property_opt dpi_function_proto ';'
+  | K_import DPI dpi_function_import_property_opt c_identifier '=' dpi_function_proto ';'
+  | K_import DPI dpi_task_import_property dpi_task_proto ';'
+  | K_import DPI dpi_task_import_property c_identifier '=' dpi_task_proto ';'
+  | K_export DPI K_function function_identifier ';'
+  | K_export DPI c_identifier '=' K_function function_identifier ';'
+  | K_export DPI K_task task_identifier ';'
+  | K_export DPI c_identifier '=' K_task task_identifier ';'
+  ;
+
+dpi_function_import_property
+  : K_context
+  | K_pure
+  ;
+
+dpi_task_import_property
+  : K_context
+  ;
+
+dpi_function_proto
+  : function_prototype
+  ;
+
+dpi_task_proto
+  : task_prototype
+  ;
+
+  /* Task declarations */
+task_declaration
+  : K_task lifetime_opt task_body_declaration
+  ;
+
+task_body_declaration
+  : task_identifier ';' tf_item_declarations_opt statement_or_nulls_opt K_endtask postfix_identifier_opt
+  | interface_identifier '.' task_identifier ';' tf_item_declarations_opt statement_or_nulls_opt K_endtask postfix_identifier_opt
+  | class_scope task_identifier ';' tf_item_declarations_opt statement_or_nulls_opt K_endtask postfix_identifier_opt
+  | task_identifier '(' tf_port_list_opt ')' ';' block_item_declarations_opt statement_or_nulls_opt K_endtask postfix_identifier_opt
+  | interface_identifier '.' task_identifier '(' tf_port_list_opt ')' ';' block_item_declarations_opt statement_or_nulls_opt K_endtask postfix_identifier_opt
+  | class_scope task_identifier '(' tf_port_list_opt ')' ';' block_item_declarations_opt statement_or_nulls_opt K_endtask postfix_identifier_opt
+  ;
+
+tf_item_declaration
+  : block_item_declaration
+  | tf_port_declaration
+  ;
+
+tf_port_list
+  : tf_port_item tf_port_items_opt
+  ;
+
+tf_port_list_opt
+  : tf_port_list
+  |
+  ;
+
+tf_port_item
+  : attribute_instances_opt tf_port_direction_opt data_type_or_implicit port_identifier variable_dimension
+  | attribute_instances_opt tf_port_direction_opt data_type_or_implicit port_identifier variable_dimension '=' expression
+  ;
+
+tf_port_items
+  : tf_port_item
+  | tf_port_items tf_port_item
+  ;
+
+tf_port_items_opt
+  : tf_port_items
+  |
+  ;
+
+tf_port_direction
+  : port_direction
+  | K_const K_ref
+  ;
+
+tf_port_declaration
+  : attribute_instances_opt tf_port_direction data_type_or_implicit list_of_tf_variable_identifiers ';'
+  ;
+
+task_prototype
+  : K_task task_identifier '(' tf_port_list_opt ')'
+  ;
+
+  /* Block item declarations */
+block_item_declaration
+  : attribute_instances_opt data_declaration
+  | attribute_instances_opt local_parameter_declaration
+  | attribute_instances_opt parameter_declaration ';'
+  | attribute_instances_opt overload_declaration
+  ;
+
+overload_declaration
+  : K_bind overload_operator K_function data_type function_identifier '(' overload_proto_formals ')' ';'
+  ;
+
+overload_operator
+  : '+'
+  | K_INC
+  | '-'
+  | K_DEC
+  | '*'
+  | K_POW
+  | '/'
+  | '%'
+  | K_EQ
+  | K_NE
+  | K_LT
+  | K_LE
+  | K_GT
+  | K_GE
+  | '='
+  ;
+
+overload_proto_formals
+  : data_type data_type_list_opt
+  ;
+
+  /* Interface declarations */
+virtual_interface_declaration
+  : K_virtual interface_identifier list_of_virtual_interface_decl ';'
+  | K_virtual K_interface interface_identifier list_of_virtual_interface_decl ';'
+  ;
+
+modport_declaration
+  : K_modport modport_item modport_item_list_opt ';'
+  ;
+
+modport_item
+  : modport_identifier '(' modport_ports_declaration modport_ports_declaration_list_opt ')'
+  ;
+
+modport_ports_declaration
+  : attribute_instances_opt modport_simple_ports_declaration
+  | attribute_instances_opt modport_hierarchical_ports_declaration
+  | attribute_instances_opt modport_tf_ports_declaration
+  | attribute_instances_opt modport_clocking_declaration
+  ;
+
+modport_ports_declaration_list
+  : ',' modport_ports_declaration
+  | modport_ports_declaration_list ',' modport_ports_declaration
+  ;
+
+modport_ports_declaration_list_opt
+  : modport_ports_declaration_list
+  |
+  ;
+
+modport_clocking_declaration
+  : K_clocking clocking_identifier
+  ;
+
+modport_simple_ports_declaration
+  : port_direction modport_simple_port modport_simple_port_list_opt
+  ;
+
+modport_simple_port
+  : port_identifier
+  | '.' port_identifier '(' expression_opt ')'
+  ;
+
+modport_simple_port_list
+  : ',' modport_simple_port
+  | modport_simple_port_list ',' modport_simple_port
+  ;
+
+modport_simple_port_list_opt
+  : modport_simple_port_list
+  |
+  ;
+
+modport_hierarchical_ports_declaration
+  : interface_instance_identifier '.' modport_identifier
+  | interface_instance_identifier '[' constant_expression ']' '.' modport_identifier
+  ;
+
+modport_tf_ports_declaration
+  : import_export modport_tf_port modport_tf_port_list_opt
+  ;
+
+modport_tf_port
+  : method_prototype
+  | tf_identifier
+  ;
+
+modport_tf_port_list
+  : ',' modport_tf_port
+  | modport_tf_port_list ',' modport_tf_port
+  ;
+
+modport_tf_port_list_opt
+  : modport_tf_port_list
+  |
+  ;
+
+import_export
+  : K_import
+  | K_export
+  ;
+
+  /* Assertion declarations */
+
+concurrent_assertion_item
+  : concurrent_assertion_statement
+  | block_identifier ':' concurrent_assertion_statement
+  ;
+
+concurrent_assertion_statement
+  : assert_property_statement
+  | assume_property_statement
+  | cover_property_statement
+  ;
+
+assert_property_statement
+  : K_assert K_property '(' property_spec ')' action_block
+  ;
+
+assume_property_statement
+  : K_assume K_property '(' property_spec ')' ';'
+  ;
+
+cover_property_statement
+  : K_cover K_property '(' property_spec ')' statement_or_null
+  ;
+
+expect_property_statement
+  : K_expect '(' property_spec ')' action_block
+  ;
+
+property_instance
+  : ps_property_identifier actual_arg_lister_opt
+  ;
+
+concurrent_assertion_item_declaration
+  : property_declaration
+  | sequence_declaration
+  ;
+
+property_declaration
+  : K_property property_identifier list_of_formals_opt ';' assertion_variable_declarations_opt property_spec ';' K_endproperty postfix_identifier_opt
+  ;
+
+property_spec
+  : clocking_event_opt property_expr
+  | clocking_event_opt K_disable K_iff '(' expresion_or_dist ')' property_expr
+  ;
+
+property_expr
+  : sequence_expr
+  | '(' property_expr ')'
+  | K_not property_expr
+  | property_expr K_or property_expr
+  | property_expr K_and property_expr
+  | sequence_expr '|' K_TRIGGER property_expr
+  | sequence_expr '|' K_EG property_expr
+  | K_if '(' expression_or_dist ')' property_expr
+  | K_if '(' expression_or_dist ')' property_expr K_else property_expr
+  | property_instance
+  | clocking_event property_expr
+  ;
+
+sequence_declaration
+  : K_sequence sequence_identifier list_of_formals_opt ';' assertion_variable_declarations_opt sequence_expr ';' K_endsequence postfix_identifier_opt
+  ;
+
+sequence_expr
+  : cycle_delay_range sequence_expr cycle_delay_range_sequence_exprs_opt
+  | sequence_expr cycle_delay_range sequence_expr cycle_delay_range_sequence_exprs_opt
+  | expression_or_dist boolean_abbrev_opt
+  | '(' expression_or_dist sequence_match_item_list_opt ')' boolean_abbrev_opt
+  | sequence_instance sequence_abbrev_opt
+  | '(' sequence_expr sequence_match_item_list_opt ')' sequence_abbrev_opt
+  | sequence_expr K_and sequence_expr
+  | sequence_expr K_intersect sequence_expr
+  | sequence_expr K_or sequence_expr
+  | K_first_match '(' sequence_expr sequence_match_item_list_opt ')'
+  | expression_or_dist K_throughout sequence_expr
+  | clocking_event sequence_expr
+  ;
+
+cycle_delay_range
+  : '#' '#' integral number
+  | '#' '#' identifier
+  | '#' '#' '(' constant_expression ')'
+  | '#' '#' '[' cycle_delay_const_range_expression ']'
+  ;
+
+sequence_method_call
+  : sequence_instance '.' method_identifier
+  ;
+
+sequence_match_item
+  : operator_assignment
+  | inc_or_dec_expression
+  | subroutine_call
+  ;
+
+sequence_match_item_list
+  : ',' sequence_match_item
+  | sequence_match_item_list ',' sequence_match_item
+  ;
+
+sequence_match_item_list_opt
+  : sequence_match_item_list
+  |
+  ;
+
+sequence_instance
+  : ps_sequence_identifier actual_arg_list_opt
+  ;
+
+formal_list_item
+  : formal_identifier
+  | formal_identifier '=' actual_arg_expr
+  ;
+
+formal_list_item_list
+  : ',' formal_list_item
+  | formal_list_item_list ',' formal_list_item
+  ;
+
+formal_list_item_list_opt
+  : formal_list_item_list
+  |
+  ;
+
+list_of_formals
+  : formal_list_item formal_list_item_list_opt
+  ;
+
+actual_arg_expr
+  : event_expression
+  | '$'
+  ;
+
+boolean_abbrev
+  : consecutive_repetition
+  | non_consecutive_repetition
+  | goto_repetition
+  ;
+
+boolean_abbrev_opt
+  : boolean_abbrev
+  :
+  ;
+
+sequence_abbrev
+  : consecutive_repetition
+  ;
+
+consecutive_repetition
+  : '[' '*' const_or_range_expression ']'
+  ;
+
+non_consecutive_repetition
+  : '[' '=' const_or_range_expression ']'
+  ;
+
+goto_repetition
+  : '[' K_TRIGGER const_or_range_expression ']'
+  ;
+
+const_or_range_expression
+  : constant_expression
+  | cycle_delay_const_range_expression
+  ;
+
+cycle_delay_const_range_expression
+  : constant_expression ':' constant_expression
+  | constant_expression ':' '$'
+  ;
+
+expression_or_dist
+  : expression
+  | expression K_dist '{' dist_list '}'
+  ;
+
+assertion_variable_declaration
+  : data_type list_of_variable_identifiers ';'
+  ;
+
+  /* Covergroup declarations */
+
+
 
 
 
@@ -1316,8 +1958,18 @@ list_of_arguments_opt
   |
   ;
 
+list_of_formals_opt
+  : '(' list_of_formals ')'
+  |
+  ;
+
 tf_port_lister_opt
   : '(' tf_port_list_opt ')'
+  |
+  ;
+
+actual_arg_lister_opt
+  : '(' actual_arg_list ')'
   |
   ;
 

@@ -258,7 +258,7 @@ int yydebug = 1;
 %token UNUSED_REALTIME
 %token UNUSED_STRING UNUSED_SYSTEM_IDENTIFIER
 %token K_LE K_GE K_EG K_EQ K_NE K_CEQ K_CNE K_LS K_LSS K_RS K_RSS K_SG
-%token K_ADD_A K_SUB_A K_MLT_A K_DIV_A K_MOD_A K_AND_A K_OR_A K_XOR_A K_LS_A K_RS_A K_ALS_A K_ARS_A K_INC K_DEC
+%token K_ADD_A K_SUB_A K_MLT_A K_DIV_A K_MOD_A K_AND_A K_OR_A K_XOR_A K_LS_A K_RS_A K_ALS_A K_ARS_A K_INC K_DEC K_POW
 %token K_PO_POS K_PO_NEG K_STARP K_PSTAR
 %token K_LOR K_LAND K_NAND K_NOR K_NXOR K_TRIGGER
 %token K_always K_and K_assign K_begin K_buf K_bufif0 K_bufif1 K_case
@@ -937,16 +937,16 @@ static_expr
       tmp = static_expr_gen( $3, $1, EXP_OP_SUBTRACT, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
       $$ = tmp;
     }
-  | static_expr '*' '*' static_expr
+  | static_expr K_POW static_expr
     {
       static_expr* tmp;
       if( !parser_check_generation( GENERATION_2001 ) ) {
         VLerror( "Exponential power operation found in block that is specified to not allow Verilog-2001 syntax" );
         static_expr_dealloc( $1, TRUE );
-        static_expr_dealloc( $4, TRUE );
+        static_expr_dealloc( $3, TRUE );
         $$ = NULL;
       } else {
-        tmp = static_expr_gen( $4, $1, EXP_OP_EXPONENT, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
+        tmp = static_expr_gen( $3, $1, EXP_OP_EXPONENT, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
         $$ = tmp;
       }
     }
@@ -1352,21 +1352,21 @@ expression
         $$ = NULL;
       }
     }
-  | expression '*' '*' expression
+  | expression K_POW expression
     {
       expression* tmp;
       if( !parser_check_generation( GENERATION_2001 ) ) {
         VLerror( "Exponential power operator found in block that is specified to not allow Verilog-2001 syntax" );
         expression_dealloc( $1, FALSE );
-        expression_dealloc( $4, FALSE );
+        expression_dealloc( $3, FALSE );
         $$ = NULL;
       } else {
-        if( (ignore_mode == 0) && ($1 != NULL) && ($4 != NULL) ) {
-          tmp = db_create_expression( $4, $1, EXP_OP_EXPONENT, lhs_mode, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
+        if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
+          tmp = db_create_expression( $3, $1, EXP_OP_EXPONENT, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
           $$ = tmp;
         } else {
           expression_dealloc( $1, FALSE );
-          expression_dealloc( $4, FALSE );
+          expression_dealloc( $3, FALSE );
           $$ = NULL;
         }
       }

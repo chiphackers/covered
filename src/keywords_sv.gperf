@@ -31,6 +31,7 @@ always_comb,   K_always_comb
 always_ff,     K_always_ff
 always_latch,  K_always_latch
 assert,        K_assert
+assume,        K_assume
 bool,          K_bool
 bind,          K_bind
 bit,           K_bit
@@ -40,10 +41,13 @@ byte,          K_byte
 chandle,       K_chandle
 char,          K_char
 class,         K_class
+clocking,      K_clocking
 const,         K_const
 constraint,    K_constraint
+context,       K_context
 continue,      K_continue
 cover,         K_cover
+dist,          K_dist
 do,            K_do
 endclass,      K_endclass
 endinterface,  K_endinterface
@@ -52,16 +56,22 @@ endprogram,    K_endprogram
 endproperty,   K_endproperty
 endsequence,   K_endsequence
 enum,          K_enum
+expect,        K_expect
+export,        K_export
 extends,       K_extends
 extern,        K_extern
 final,         K_final
+first_match,   K_first_match
 foreach,       K_foreach
+iff,           K_iff
 import,        K_import
 int,           K_int
 interface,     K_interface
+intersect,     K_intersect
 local,         K_local
 logic,         K_logic
 longint,       K_longint
+modport,       K_modport
 new,           K_new
 package,       K_package
 packed,        K_packed
@@ -69,6 +79,7 @@ priority,      K_priority
 program,       K_program
 property,      K_property
 protected,     K_protected
+pure,          K_pure
 rand,          K_rand
 randc,         K_randc
 ref,           K_ref
@@ -80,6 +91,7 @@ solve,         K_solve
 static,        K_static
 struct,        K_struct
 super,         K_super
+throughout,    K_throughout
 timeprecision, K_timeprecision
 timeunit,      K_timeunit
 type,          K_type
@@ -89,6 +101,7 @@ unique,        K_unique
 unsigned,      K_unsigned
 virtual,       K_virtual
 void,          K_void
+within,        K_within
 %%
 
 int lexer_keyword_sv_code( const char* str, int length ) {

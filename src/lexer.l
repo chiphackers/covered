@@ -229,6 +229,7 @@ WSPACE [ \t\b\f]+
 <PARSE>">>>=" { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 4;  return K_ARS_A;   }
 <PARSE>"++"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_INC;     }
 <PARSE>"--"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_DEC;     }
+<PARSE>"**"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_POW;     }
 
   /* Properly handle all cases of (*) and convert it to a simple '*' */
 <PARSE>"("{WSPACE}*"*"{WSPACE}*")" { yylloc.first_column = yylloc.last_column;  yylloc.last_column += strlen( yytext );  return '*'; }
