@@ -122,6 +122,9 @@ static bool      file_prev_parsed;
 %s IGNORE_PROGRAM
 %s PARSE
 %s UDPTABLE
+%s TIMEUNIT
+%s LIBOPTIONS
+%s IMEXPORT
 %x PPTIMESCALE
 
 WSPACE [ \t\b\f]+
@@ -203,6 +206,8 @@ WSPACE [ \t\b\f]+
 <PARSE>"!="   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_NE;      }
 <PARSE>"==="  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 3;  return K_CEQ;     }
 <PARSE>"!=="  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 3;  return K_CNE;     }
+<PARSE>"=?="  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 3;  return K_PEQ;     }
+<PARSE>"!?="  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 3;  return K_PNE;     }
 <PARSE>"||"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_LOR;     }
 <PARSE>"&&"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_LAND;    }
 <PARSE>"&&&"  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 3;  return K_TAND;    }
@@ -235,7 +240,7 @@ WSPACE [ \t\b\f]+
 <PARSE>"("{WSPACE}*"*"{WSPACE}*")" { yylloc.first_column = yylloc.last_column;  yylloc.last_column += strlen( yytext );  return '*'; }
 
   /* Single character symbols */
-<PARSE>[}{;:\[\],()#=.@&!?<>%|^~+*/-] {
+<PARSE>[}{;:\[\],()#=.@&!?<>%|^~+*/-\'] {
 	yylloc.first_column = yylloc.last_column;
 	yylloc.last_column += 1;
         if( (yytext[0] == ';') || (yytext[0] == ',') ) {
@@ -385,7 +390,23 @@ WSPACE [ \t\b\f]+
 <UDPTABLE>[xX]       { yylloc.last_column += strlen( yytext );  return 'x';       }
 <UDPTABLE>[nN]       { yylloc.last_column += strlen( yytext );  return 'n';       }
 <UDPTABLE>[pP]       { yylloc.last_column += strlen( yytext );  return 'p';       }
+<UDPTABLE>[zZ]       { yylloc.last_column += strlen( yytext );  return 'z';       }
 <UDPTABLE>[01\?\*\-] { yylloc.last_column += strlen( yytext );  return yytext[0]; }
+
+  /* Entries for time units */
+<TIMEUNIT>step { yylloc.last_column += strlen( yytext );  return K_TU_STEP; }
+<TIMEUNIT>s    { yylloc.last_column += strlen( yytext );  return K_TU_S; }
+<TIMEUNIT>ms   { yylloc.last_column += strlen( yytext );  return K_TU_MS; }
+<TIMEUNIT>us   { yylloc.last_column += strlen( yytext );  return K_TU_US; }
+<TIMEUNIT>ns   { yylloc.last_column += strlen( yytext );  return K_TU_NS; }
+<TIMEUNIT>ps   { yylloc.last_column += strlen( yytext );  return K_TU_PS; }
+<TIMEUNIT>fs   { yylloc.last_column += strlen( yytext );  return K_TU_FS; }
+
+  /* Library options */
+<LIBOPTION>-incdir { yylloc.last_column += strlen( yytext );  return K_INCDIR; }
+
+  /* Import/Export options */
+<IMEXPORT>\"DPI\" { yylloc.last_column += strlen( yytext );  return K_DPI; }
 
   /* Keyword and signal identifiers */
 <PARSE>[a-zA-Z_][a-zA-Z0-9$_]*(\[[^]]*\]\.[a-zA-Z_][a-zA-Z0-9$_]*)* {
@@ -718,6 +739,61 @@ void lex_end_udp_table() {
   BEGIN( INITIAL );
 
 }
+
+/*!
+ Called at the start of time unit parsing.
+*/
+void lex_start_time_unit() {
+
+  BEGIN( TIMEUNIT );
+
+}
+
+/*!
+ Called at the end of time unit parsing.
+*/
+void lex_end_time_unit() {
+
+  BEGIN( INITIAL );
+
+}
+
+/*!
+ Called at the start of library_argument parsing.
+*/
+void lex_start_library_options() {
+
+  BEGIN( LIBOPTIONS );
+
+}
+
+/*!
+ Called at the end of library argument parsing.
+*/
+void lex_end_library_options() {
+
+  BEGIN( INITIAL );
+
+}
+
+/*!
+ Called at the start of import/export library parsing.
+*/
+void lex_start_import_export() {
+
+  BEGIN( IMEXPORT );
+
+}
+
+/*!
+ Called at the end of import/export library parsing.
+*/
+void lex_end_import_export() {
+
+  BEGIN( INITIAL );
+
+}
+
 
 /*!
  Parses and handles a line directive that is in the CPP format.

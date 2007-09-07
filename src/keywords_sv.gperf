@@ -27,6 +27,7 @@
 %}
 struct keyword { char *name; int type; };
 %%
+alias,         K_alias
 always_comb,   K_always_comb
 always_ff,     K_always_ff
 always_latch,  K_always_latch
@@ -34,6 +35,8 @@ assert,        K_assert
 assume,        K_assume
 bool,          K_bool
 bind,          K_bind
+bins,          K_bins
+binsof,        K_binsof
 bit,           K_bit
 before,        K_before
 break,         K_break
@@ -47,9 +50,14 @@ constraint,    K_constraint
 context,       K_context
 continue,      K_continue
 cover,         K_cover
+covergroup,    K_covergroup
+coverpoint,    K_coverpoint
+cross,         K_cross
 dist,          K_dist
 do,            K_do
 endclass,      K_endclass
+endclocking,   K_endclocking
+endgroup,      K_endgroup
 endinterface,  K_endinterface
 endpackage,    K_endpackage
 endprogram,    K_endprogram
@@ -63,16 +71,28 @@ extern,        K_extern
 final,         K_final
 first_match,   K_first_match
 foreach,       K_foreach
+forkjoin,      K_forkjoin
 iff,           K_iff
+ifnone,        K_ifnone
+ignore_bins,   K_ignore_bins
+illegal_bins,  K_illegal_bins
 import,        K_import
+include,       K_include
+inside,        K_inside
+instance,      K_instance
 int,           K_int
 interface,     K_interface
 intersect,     K_intersect
+join_any,      K_join_any
+join_none,     K_join_none
 local,         K_local
 logic,         K_logic
 longint,       K_longint
+matches,       K_matches
 modport,       K_modport
 new,           K_new
+null,          K_null
+option.,       K_optionDOT
 package,       K_package
 packed,        K_packed
 priority,      K_priority
@@ -82,25 +102,35 @@ protected,     K_protected
 pure,          K_pure
 rand,          K_rand
 randc,         K_randc
+randcase,      K_randcase
+randomize,     K_randomize
+randsequence,  K_randsequence
 ref,           K_ref
 return,        K_return
 scalared,      K_scalared
 sequence,      K_sequence
 shortint,      K_shortint
+shortreal,     K_shortreal
 solve,         K_solve
 static,        K_static
 struct,        K_struct
 super,         K_super
+tagged,        K_tagged
+this,          K_this
 throughout,    K_throughout
 timeprecision, K_timeprecision
 timeunit,      K_timeunit
 type,          K_type
 typedef,       K_typedef
+type_option.,  K_type_optionDOT
 union,         K_union
 unique,        K_unique
 unsigned,      K_unsigned
 virtual,       K_virtual
 void,          K_void
+wait_order,    K_wait_order
+wildcard,      K_wildcard
+with,          K_with
 within,        K_within
 %%
 
