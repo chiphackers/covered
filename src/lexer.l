@@ -220,6 +220,8 @@ WSPACE [ \t\b\f]+
 <PARSE>"-:"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_PO_NEG;  }
 <PARSE>"=>"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_EG;      }
 <PARSE>"*>"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_SG;      }
+<PARSE>".*"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_PS;      }
+<PARSE>"##"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_PP;      }
 <PARSE>"+="   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_ADD_A;   }
 <PARSE>"-="   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_SUB_A;   }
 <PARSE>"*="   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_MLT_A;   }

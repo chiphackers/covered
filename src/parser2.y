@@ -86,7 +86,7 @@ int yydebug = 1;
   bool            logical;
   char*           text;
   int             integer;
-  vector*         number;
+  vector*         num;
   double          realtime;
   vsignal*        sig;
   expression*     expr;
@@ -107,16 +107,16 @@ int yydebug = 1;
 %token <text>     IDENTIFIER SYSTEM_IDENTIFIER C_IDENTIFIER SIMPLE_IDENTIFIER ESCAPED_IDENTIFIER
 %token <typdef>   TYPEDEF_IDENTIFIER
 %token <text>     PATHPULSE_IDENTIFIER
-%token <number>   NUMBER
+%token <num>      NUMBER
 %token <realtime> REALTIME
-%token <number>   STRING
+%token <num>      STRING
 %token IGNORE
 %token UNUSED_IDENTIFIER UNUSED_C_IDENTIFIER UNUSED_SIMPLE_IDENTIFIER UNUSED_ESCAPED_IDENTIFIER
 %token UNUSED_PATHPULSE_IDENTIFIER
 %token UNUSED_NUMBER
 %token UNUSED_REALTIME
 %token UNUSED_STRING UNUSED_SYSTEM_IDENTIFIER
-%token K_LE K_GE K_EG K_EQ K_NE K_CEQ K_CNE K_LS K_LSS K_RS K_RSS K_SG K_PEQ K_PNE
+%token K_LE K_GE K_EG K_EQ K_NE K_CEQ K_CNE K_LS K_RS K_SG K_PP K_PS K_PEQ K_PNE K_RSS K_LSS
 %token K_ADD_A K_SUB_A K_MLT_A K_DIV_A K_MOD_A K_AND_A K_OR_A K_XOR_A K_LS_A K_RS_A K_ALS_A K_ARS_A K_INC K_DEC K_POW
 %token K_PO_POS K_PO_NEG K_STARP K_PSTAR
 %token K_LOR K_LAND K_NAND K_NOR K_NXOR K_TRIGGER
@@ -134,7 +134,7 @@ int yydebug = 1;
 %token K_notif1 K_or K_output K_parameter K_pmos K_posedge K_primitive
 %token K_pull0 K_pull1 K_pulldown K_pullup K_rcmos K_shortreal K_real K_realtime
 %token K_reg K_release K_repeat
-%token K_rnmos K_rpmos K_rtran K_rtranif0 K_rtranif1 K_scalered
+%token K_rnmos K_rpmos K_rtran K_rtranif0 K_rtranif1
 %token K_signed K_small K_specify
 %token K_specparam K_strong0 K_strong1 K_supply0 K_supply1 K_table K_task
 %token K_time K_tran K_tranif0 K_tranif1 K_tri K_tri0 K_tri1 K_triand
@@ -145,7 +145,7 @@ int yydebug = 1;
 %token K_automatic K_cell K_use K_library K_config K_endconfig K_design K_liblist K_instance
 %token K_showcancelled K_noshowcancelled K_pulsestyle_onevent K_pulsestyle_ondetect
 
-%token K_bool K_bit K_byte K_logic K_char K_shortint K_int K_longint K_unsigned
+%token K_bit K_byte K_logic K_shortint K_int K_longint K_unsigned
 %token K_unique K_priority K_do
 %token K_always_comb K_always_latch K_always_ff
 %token K_typedef K_type K_enum K_union K_struct K_packed
@@ -153,14 +153,12 @@ int yydebug = 1;
 %token K_program K_endprogram K_final K_void K_return K_continue K_break K_extern K_interface K_endinterface
 %token K_class K_endclass K_extends K_package K_endpackage K_timeunit K_timeprecision K_ref K_bind K_const
 %token K_new K_static K_protected K_local K_rand K_randc K_randcase K_constraint K_import K_export K_scalared K_chandle
-%token K_context K_pure K_modport K_clocking K_iff K_intersect K_first_match K_throughout K_within K_with
+%token K_context K_pure K_modport K_clocking K_iff K_intersect K_first_match K_throughout K_with K_within
 %token K_dist K_covergroup K_endgroup K_coverpoint K_optionDOT K_type_optionDOT K_wildcard
 %token K_bins K_illegal_bins K_ignore_bins K_cross K_binsof K_alias K_join_any K_join_none K_matches
 %token K_tagged K_foreach K_randsequence K_ifnone K_randomize K_null K_inside K_super K_this K_wait_order
-%token K_include K_Sroot K_Sunit K_endclocking K_virtual K_before K_instance K_forkjoin K_solve
+%token K_include K_Sroot K_Sunit K_endclocking K_virtual K_before K_forkjoin K_solve
 %token K_DPI
-
-%token KK_attribute
 
 %token K_TAND
 %right '?' ':'
@@ -171,13 +169,12 @@ int yydebug = 1;
 %left '&' K_NAND
 %left K_EQ K_NE K_CEQ K_CNE
 %left K_GE K_LE '<' '>'
-%left K_LS K_RS K_LSS K_RSS
+%left K_LS K_RS K_RSS K_LSS
 %left '+' '-'
 %left '*' '/' '%'
 %left UNARY_PREC
 
 /* to resolve dangling else ambiguity: */
-%nonassoc less_than_K_else
 %nonassoc K_else
 
 %%
@@ -186,19 +183,19 @@ int yydebug = 1;
 main
   : source_text
   | library_text
+  |
   ;
 
-
   /* Library source text - CURRENTLY NOT SUPPORTED - TBD */
+
 library_text
-  : library_descriptions_opt
+  : library_descriptions
   ;
 
 library_description
   : library_declaration
   | include_statement
   | config_declaration
-  |
   ;
 
 library_descriptions
@@ -206,13 +203,9 @@ library_descriptions
   | library_descriptions library_description
   ;
 
-library_descriptions_opt
-  : library_descriptions
-  |
-  ;
-
 library_declaration
   : K_library identifier file_path_specs { lex_start_library_options(); } incdir_opt { lex_end_library_options(); }
+  ;
 
 file_path_spec
   : STRING        { free_safe( $1 ); }
@@ -226,6 +219,7 @@ file_path_specs
 
 include_statement
   : K_include file_path_spec ; 
+  ;
 
 incdir_opt
   : K_INCDIR file_path_specs
@@ -233,6 +227,7 @@ incdir_opt
   ;
 
   /* Configuration source text - CURRENTLY NOT SUPPORTED - TBD */
+
 config_declaration
   : K_config identifier ';' design_statement config_rule_statements_opt K_endconfig postfix_identifier_opt
   ;
@@ -247,7 +242,6 @@ config_rule_statement
   | inst_clause use_clause
   | cell_clause liblist_clause
   | cell_clause use_clause
-  |
   ;
 
 config_rule_statements
@@ -308,7 +302,9 @@ use_clause
   /* Configuration source text */
 
 source_text
-  : timeunits_declaration_opt descriptions_opt
+  : timeunits_declaration descriptions
+  | descriptions
+  ;
 
 description
   : module_declaration
@@ -325,11 +321,6 @@ descriptions
   | descriptions description
   ;
 
-descriptions_opt
-  : descriptions
-  |
-  ;
-
 module_nonansi_header
   : attribute_instances_opt module_keyword lifetime_opt identifier parameter_port_list_opt list_of_ports ';'
   ;
@@ -341,7 +332,7 @@ module_ansi_header
 module_declaration
   : module_nonansi_header timeunits_declaration_opt module_items_opt K_endmodule postfix_identifier_opt
   | module_ansi_header timeunits_declaration_opt non_port_module_items_opt K_endmodule postfix_identifier_opt
-  | attribute_instances_opt module_keyword lifetime_opt identifier '(' '.' '*' ')' ';' timeunits_declaration_opt module_items_opt K_endmodule postfix_identifier_opt
+  | attribute_instances_opt module_keyword lifetime_opt identifier '(' K_PS ')' ';' timeunits_declaration_opt module_items_opt K_endmodule postfix_identifier_opt
   | K_extern module_nonansi_header
   | K_extern module_ansi_header
   ;
@@ -362,7 +353,7 @@ interface_ansi_header
 interface_declaration
   : interface_nonansi_header timeunits_declaration_opt interface_items_opt K_endinterface postfix_identifier_opt
   | interface_ansi_header timeunits_declaration_opt non_port_interface_items_opt K_endinterface postfix_identifier_opt
-  | attribute_instances_opt K_interface identifier '(' '.' '*' ')' ';' timeunits_declaration_opt interface_items_opt K_endinterface postfix_identifier_opt
+  | attribute_instances_opt K_interface identifier '(' K_PS ')' ';' timeunits_declaration_opt interface_items_opt K_endinterface postfix_identifier_opt
   | K_extern interface_nonansi_header
   | K_extern interface_ansi_header
   ;
@@ -378,7 +369,7 @@ program_ansi_header
 program_declaration
   : program_nonansi_header timeunits_declaration_opt program_items_opt K_endprogram postfix_identifier_opt
   | program_ansi_header timeunits_declaration_opt non_port_program_items_opt K_endprogram postfix_identifier_opt
-  | attribute_instances_opt K_program identifier '(' '.' '*' ')' ';' timeunits_declaration_opt program_items_opt K_endprogram postfix_identifier_opt
+  | attribute_instances_opt K_program identifier '(' K_PS ')' ';' timeunits_declaration_opt program_items_opt K_endprogram postfix_identifier_opt
   | K_extern program_nonansi_header
   | K_extern program_ansi_header
   ;
@@ -499,7 +490,8 @@ port
 
 port_expression
   : port_reference
-  | { port_reference { , port_reference } }
+  | '{' port_reference port_reference_list_opt '}'
+  ;
 
 port_expression_opt
   : port_expression
@@ -508,6 +500,16 @@ port_expression_opt
 
 port_reference
   : identifier constant_select
+  ;
+
+port_reference_list
+  : ',' port_reference
+  | port_reference_list ',' port_reference
+  ;
+
+port_reference_list_opt
+  : port_reference_list
+  |
   ;
 
 port_direction
@@ -530,11 +532,6 @@ variable_port_header
   : port_direction_opt data_type
   ;
 
-variable_port_header_opt
-  : variable_port_header
-  |
-  ;
-
 interface_port_header
   : identifier
   | identifier '.' identifier
@@ -543,10 +540,16 @@ interface_port_header
   ;
 
 ansi_port_declaration
-  : net_port_header_or_interface_port_header_opt identifier unpacked_dimensions_opt
-  | variable_port_header_opt identifier variable_dimension
-  | variable_port_header_opt identifier variable_dimension '=' constant_expression
-  | net_port_header_or_interface_port_header_opt '.' identifier '(' expression_opt ')'
+  : identifier unpacked_dimensions_opt
+  | net_port_header identifier unpacked_dimensions_opt
+  | interface_port_header identifier unpacked_dimensions_opt
+  | identifier variable_dimension
+  | variable_port_header identifier variable_dimension
+  | identifier variable_dimension '=' constant_expression
+  | variable_port_header identifier variable_dimension '=' constant_expression
+  | '.' identifier '(' expression_opt ')'
+  | net_port_header '.' identifier '(' expression_opt ')'
+  | variable_port_header '.' identifier '(' expression_opt ')'
   ;
 
 ansi_port_declarations
@@ -559,17 +562,10 @@ ansi_port_declarations_opt
   |
   ;
 
-net_port_header_or_interface_port_header_opt
-  : net_port_header
-  | interface_port_header
-  |
-  ;
-
   /* Module items */
 module_common_item
   : module_or_generate_item_declaration
-  | interface_instantiation
-  | program_instantiation
+  | interface_or_program_or_module_instantiation
   | concurrent_assertion_item
   | bind_directive
   | continuous_assign
@@ -598,7 +594,6 @@ module_or_generate_item
   : attribute_instances_opt parameter_override
   | attribute_instances_opt gate_instantiation
   | attribute_instances_opt udp_instantiation
-  | attribute_instances_opt module_instantiation
   | attribute_instances_opt module_common_item
   ;
 
@@ -638,9 +633,7 @@ bind_directive
   ;
 
 bind_instantiation
-  : program_instantiation
-  | module_instantiation
-  | interface_instantiation 
+  : interface_or_program_or_module_instantiation 
   ;
 
   /* Interface items */
@@ -732,7 +725,6 @@ class_item
   | attribute_instances_opt type_declaration
   | attribute_instances_opt class_declaration
   | attribute_instances_opt timeunits_declaration
-  |
   ;
 
 class_items
@@ -825,15 +817,10 @@ method_prototype
   ;
 
 class_constructor_declaration
-  : K_function class_scope_opt K_new tf_port_list_opt ';'
-    block_item_declarations_opt super_opt
-    function_statement_or_nulls_opt
-    K_endfunction postfix_new_opt
-  ;
-
-super_opt
-  : K_super '.' K_new list_of_arguments_opt ';'
-  |
+  : K_function class_scope_opt K_new tf_port_list_opt ';' block_item_declarations_opt
+    function_statement_or_nulls_opt K_endfunction postfix_new_opt
+  | K_function class_scope_opt K_new tf_port_list_opt ';' block_item_declarations_opt K_super '.' K_new list_of_arguments_opt ';'
+    function_statement_or_nulls_opt K_endfunction postfix_new_opt
   ;
 
   /* Constraints */
@@ -882,6 +869,7 @@ constraint_expressions_opt
 constraint_set
   : constraint_expression
   | '{' constraint_expressions_opt '}'
+  ;
 
 dist_list
   : dist_item dist_items_opt
@@ -961,7 +949,6 @@ anonymous_program_item
   | class_declaration
   | covergroup_declaration
   | class_constructor_declaration
-  |
   ; 
 
 anonymous_program_items
@@ -1020,7 +1007,8 @@ ref_declaration
 
 data_declaration
   : K_const lifetime_opt variable_declaration
-  | lifetime_opt variable_declaration
+  | variable_declaration
+  | lifetime variable_declaration
   | type_declaration
   | package_import_declaration
   | virtual_interface_declaration
@@ -1604,9 +1592,13 @@ type_assignment
 
 pulse_control_specparam
   : PATHPULSE_IDENTIFIER '=' '(' reject_limit_value ')' ';'
+  | UNUSED_PATHPULSE_IDENTIFIER '=' '(' reject_limit_value ')' ';'
   | PATHPULSE_IDENTIFIER '=' '(' reject_limit_value ',' error_limit_value ')' ';'
+  | UNUSED_PATHPULSE_IDENTIFIER '=' '(' reject_limit_value ',' error_limit_value ')' ';'
   | PATHPULSE_IDENTIFIER specify_input_terminal_descriptor '$' specify_output_terminal_descriptor '=' '(' reject_limit_value ')' ';'
+  | UNUSED_PATHPULSE_IDENTIFIER specify_input_terminal_descriptor '$' specify_output_terminal_descriptor '=' '(' reject_limit_value ')' ';'
   | PATHPULSE_IDENTIFIER specify_input_terminal_descriptor '$' specify_output_terminal_descriptor '=' '(' reject_limit_value ',' error_limit_value ')' ';'
+  | UNUSED_PATHPULSE_IDENTIFIER specify_input_terminal_descriptor '$' specify_output_terminal_descriptor '=' '(' reject_limit_value ',' error_limit_value ')' ';'
   ;
 
 error_limit_value
@@ -1747,14 +1739,14 @@ function_prototype
   ;
 
 dpi_import_export
-  : K_import { lex_start_import_export(); } K_DPI { lex_end_import_export(); } dpi_function_import_property_opt dpi_function_proto ';'
-  | K_import { lex_start_import_export(); } K_DPI { lex_end_import_export(); } dpi_function_import_property_opt c_identifier '=' dpi_function_proto ';'
-  | K_import { lex_start_import_export(); } K_DPI { lex_end_import_export(); } dpi_task_import_property dpi_task_proto ';'
-  | K_import { lex_start_import_export(); } K_DPI { lex_end_import_export(); } dpi_task_import_property c_identifier '=' dpi_task_proto ';'
-  | K_export { lex_start_import_export(); } K_DPI { lex_end_import_export(); } K_function identifier ';'
-  | K_export { lex_start_import_export(); } K_DPI { lex_end_import_export(); } c_identifier '=' K_function identifier ';'
-  | K_export { lex_start_import_export(); } K_DPI { lex_end_import_export(); } K_task identifier ';'
-  | K_export { lex_start_import_export(); } K_DPI { lex_end_import_export(); } c_identifier '=' K_task identifier ';'
+  : K_import lex_start_import_export K_DPI lex_end_import_export dpi_function_import_property_opt dpi_function_proto ';'
+  | K_import lex_start_import_export K_DPI lex_end_import_export dpi_function_import_property_opt c_identifier '=' dpi_function_proto ';'
+  | K_import lex_start_import_export K_DPI lex_end_import_export dpi_task_import_property dpi_task_proto ';'
+  | K_import lex_start_import_export K_DPI lex_end_import_export dpi_task_import_property c_identifier '=' dpi_task_proto ';'
+  | K_export lex_start_import_export K_DPI lex_end_import_export K_function identifier ';'
+  | K_export lex_start_import_export K_DPI lex_end_import_export c_identifier '=' K_function identifier ';'
+  | K_export lex_start_import_export K_DPI lex_end_import_export K_task identifier ';'
+  | K_export lex_start_import_export K_DPI lex_end_import_export c_identifier '=' K_task identifier ';'
   ;
 
 dpi_function_import_property
@@ -2064,6 +2056,7 @@ sequence_expr
   | sequence_expr K_or sequence_expr
   | K_first_match '(' sequence_expr sequence_match_item_list_opt ')'
   | expression_or_dist K_throughout sequence_expr
+  | sequence_expr K_within sequence_expr
   | clocking_event sequence_expr
   ;
 
@@ -2078,11 +2071,11 @@ cycle_delay_range_sequence_exprs_opt
   ;
 
 cycle_delay_range
-  : '#' '#' NUMBER
-  | '#' '#' UNUSED_NUMBER
-  | '#' '#' identifier
-  | '#' '#' '(' constant_expression ')'
-  | '#' '#' '[' cycle_delay_const_range_expression ']'
+  : K_PP NUMBER
+  | K_PP UNUSED_NUMBER
+  | K_PP identifier
+  | K_PP '(' constant_expression ')'
+  | K_PP '[' cycle_delay_const_range_expression ']'
   ;
 
 sequence_method_call
@@ -2287,17 +2280,17 @@ bins_or_empty
 
 bins_or_options
   : coverage_option
-  | wildcard_opt bins_keyword identifier '=' range_lists_opt iff_expression_opt
-  | wildcard_opt bins_keyword identifier '[' expression_opt ']' '=' range_lists_opt iff_expression_opt
-  | wildcard_opt bins_keyword identifier '=' trans_list iff_expression_opt
-  | wildcard_opt bins_keyword identifier '[' ']' '=' trans_list iff_expression_opt
+  | bins_keyword identifier '=' '{' range_list '}' iff_expression_opt
+  | bins_keyword identifier '[' expression_opt ']' '=' '{' range_list '}' iff_expression_opt
+  | bins_keyword identifier '=' trans_list iff_expression_opt
+  | bins_keyword identifier '[' ']' '=' trans_list iff_expression_opt
+  | K_wildcard bins_keyword identifier '=' '{' range_list '}' iff_expression_opt
+  | K_wildcard bins_keyword identifier '[' expression_opt ']' '=' '{' range_list '}' iff_expression_opt
+  | K_wildcard bins_keyword identifier '=' trans_list iff_expression_opt
+  | K_wildcard bins_keyword identifier '[' ']' '=' trans_list iff_expression_opt
   | bins_keyword identifier '=' K_default iff_expression_opt
   | bins_keyword identifier '[' expression_opt ']' '=' K_default iff_expression_opt
   | bins_keyword identifier '=' K_default K_sequence iff_expression_opt
-
-wildcard_opt
-  : K_wildcard
-  |
   ;
 
 bins_or_options_list
@@ -2318,16 +2311,6 @@ bins_keyword
 
 range_list
   : value_range value_range_list_opt
-
-range_lists
-  : range_list
-  | range_lists range_list
-  ;
-
-range_lists_opt
-  : range_lists
-  |
-  ;
 
 value_range_list
   : ',' value_range
@@ -2726,10 +2709,6 @@ pass_switchtype
 
   /* Module instantiation */
 
-module_instantiation
-  : identifier parameter_value_assignment_opt hierarchical_instance hierarchical_instance_list_opt ';'
-  ;
-
 parameter_value_assignment
   : '#' '(' list_of_parameter_assignments ')'
   ;
@@ -2822,7 +2801,7 @@ ordered_port_connection_list_opt
 named_port_connection
   : attribute_instances_opt '.' identifier
   : attribute_instances_opt '.' identifier '(' expression_opt ')'
-  | attribute_instances_opt '.' '*'
+  | attribute_instances_opt K_PS
   ;
 
 named_port_connection_list
@@ -2835,15 +2814,9 @@ named_port_connection_list_opt
   |
   ;
 
-  /* Interface instantiation */
+  /* Interface/Program/Module instantiation */
 
-interface_instantiation
-  : identifier parameter_value_assignment_opt hierarchical_instance hierarchical_instance_list_opt ';'
-  ;
-
-  /* Program instantiation */
-
-program_instantiation
+interface_or_program_or_module_instantiation
   : identifier parameter_value_assignment_opt hierarchical_instance hierarchical_instance_list_opt ';'
   ;
 
@@ -3005,7 +2978,7 @@ udp_declaration
   | udp_ansi_declaration udp_body K_endprimitive postfix_identifier_opt
   | K_extern udp_nonansi_declaration
   | K_extern udp_ansi_declaration
-  | attribute_instances_opt K_primitive identifier '(' '.' '*' ')' ';' udp_port_declarations_opt udp_body K_endprimitive postfix_identifier_opt
+  | attribute_instances_opt K_primitive identifier '(' K_PS ')' ';' udp_port_declarations_opt udp_body K_endprimitive postfix_identifier_opt
   ;
 
   /* UDP ports */
@@ -3083,16 +3056,12 @@ combinational_entries_opt
   ;
 
 sequential_body
-  : udp_initial_statement_opt K_table { lex_start_udp_table(); } sequential_entry sequential_entries_opt { lex_end_udp_table(); } K_endtable
+  : K_table { lex_start_udp_table(); } sequential_entry sequential_entries_opt { lex_end_udp_table(); } K_endtable
+  | udp_initial_statement K_table { lex_start_udp_table(); } sequential_entry sequential_entries_opt { lex_end_udp_table(); } K_endtable
   ;
 
 udp_initial_statement
   : K_initial identifier '=' init_val ';'
-  ;
-
-udp_initial_statement_opt
-  : udp_initial_statement
-  |
   ;
 
 init_val
@@ -3252,7 +3221,7 @@ blocking_assignment
   : variable_lvalue '=' delay_or_event_control expression
   | hierarchical_identifier '=' dynamic_array_new
   | hierarchical_identifier select '=' class_new
-  | implicit_class_handle '.' hierarchical_identifier select '=' class_new
+  | implicit_class_handle_dot hierarchical_identifier select '=' class_new
   | class_scope hierarchical_identifier select '=' class_new
   | package_scope hierarchical_identifier select '=' class_new
   | operator_assignment
@@ -3309,7 +3278,8 @@ variable_assignment_list_opt
 
 action_block
   : statement_or_null
-  | statement_opt K_else statement_or_null
+  | K_else statement_or_null
+  | statement K_else statement_or_null
   ;
 
 seq_block
@@ -3347,11 +3317,6 @@ statement_or_nulls_opt
 statement
   : attribute_instances_opt statement_item 
   | identifier ':' attribute_instances_opt statement_item 
-  ;
-
-statement_opt
-  : statement
-  |
   ;
 
 statement_item
@@ -3593,7 +3558,7 @@ randcase_items_opt
 
 pattern
   : '.' identifier
-  | '.' '*'
+  | K_PS
   | constant_expression
   | K_tagged identifier pattern_opt
   | '{' pattern pattern_list_opt '}'
@@ -3791,10 +3756,10 @@ clocking_drive
   ;
 
 cycle_delay
-  : '#' '#' NUMBER
-  | '#' '#' UNUSED_NUMBER
-  | '#' '#' identifier
-  | '#' '#' '(' expression ')'
+  : K_PP NUMBER
+  | K_PP UNUSED_NUMBER
+  | K_PP identifier
+  | K_PP '(' expression ')'
   ;
 
 cycle_delay_opt
@@ -3973,7 +3938,7 @@ parallel_path_description
   ;
 
 full_path_description
-  : '(' list_of_path_inputs polarity_operator_opt '*' '>' list_of_path_outputs ')'
+  : '(' list_of_path_inputs polarity_operator_opt K_SG list_of_path_outputs ')'
   ;
 
 list_of_path_inputs
@@ -4034,75 +3999,11 @@ path_delay_value
   ;
 
 list_of_path_delay_expressions
-  : t_path_delay_expression
-  | trise_path_delay_expression ',' tfall_path_delay_expression
-  | trise_path_delay_expression ',' tfall_path_delay_expression ',' tz_path_delay_expression
-  | t01_path_delay_expression ',' t10_path_delay_expression ',' t0z_path_delay_expression ',' tz1_path_delay_expression ',' t1z_path_delay_expression ',' tz0_path_delay_expression
-  | t01_path_delay_expression ',' t10_path_delay_expression ',' t0z_path_delay_expression ',' tz1_path_delay_expression ',' t1z_path_delay_expression ',' tz0_path_delay_expression ',' t0x_path_delay_expression ',' tx1_path_delay_expression ',' t1x_path_delay_expression ',' tx0_path_delay_expression ',' txz_path_delay_expression ',' tzx_path_delay_expression
-  ;
-
-t_path_delay_expression
   : path_delay_expression
-  ;
-
-trise_path_delay_expression
-  : path_delay_expression
-  ;
-
-tfall_path_delay_expression
-  : path_delay_expression
-  ;
-
-tz_path_delay_expression
-  : path_delay_expression
-  ;
-
-t01_path_delay_expression
-  : path_delay_expression
-  ;
-
-t10_path_delay_expression
-  : path_delay_expression
-  ;
-
-t0z_path_delay_expression
-  : path_delay_expression
-  ;
-
-tz1_path_delay_expression
-  : path_delay_expression
-  ;
-
-t1z_path_delay_expression
-  : path_delay_expression
-  ;
-
-tz0_path_delay_expression
-  : path_delay_expression 
-  ;
-
-t0x_path_delay_expression
-  : path_delay_expression
-  ;
-
-tx1_path_delay_expression
-  : path_delay_expression
-  ;
-
-t1x_path_delay_expression
-  : path_delay_expression
-  ;
-
-tx0_path_delay_expression
-  : path_delay_expression
-  ;
-
-txz_path_delay_expression
-  : path_delay_expression
-  ;
-
-tzx_path_delay_expression
-  : path_delay_expression
+  | path_delay_expression ',' path_delay_expression
+  | path_delay_expression ',' path_delay_expression ',' path_delay_expression
+  | path_delay_expression ',' path_delay_expression ',' path_delay_expression ',' path_delay_expression ',' path_delay_expression ',' path_delay_expression
+  | path_delay_expression ',' path_delay_expression ',' path_delay_expression ',' path_delay_expression ',' path_delay_expression ',' path_delay_expression ',' path_delay_expression ',' path_delay_expression ',' path_delay_expression ',' path_delay_expression ',' path_delay_expression ',' path_delay_expression
   ;
 
 path_delay_expression
@@ -4119,7 +4020,7 @@ parallel_edge_sensitive_path_description
   ;
 
 full_edge_sensitive_path_description
-  : '(' edge_identifier_opt list_of_path_inputs '*' '>' '(' list_of_path_outputs polarity_operator_opt ':' data_source_expression ')' ')'
+  : '(' edge_identifier_opt list_of_path_inputs K_SG '(' list_of_path_outputs polarity_operator_opt ':' data_source_expression ')' ')'
   ;
 
 data_source_expression
@@ -4264,7 +4165,7 @@ data_event
 
 delayed_data
   : identifier
-  | identifier constant_mintypmax_expression_opt
+  | identifier '[' constant_mintypmax_expression ']'
   ;
 
 delayed_data_opt
@@ -4274,7 +4175,7 @@ delayed_data_opt
 
 delayed_reference
   : identifier
-  | identifier constant_mintypmax_expression_opt
+  | identifier '[' constant_mintypmax_expression ']'
   ;
 
 delayed_reference_opt
@@ -4423,63 +4324,36 @@ scalar_constant
 
 concatenation
   : '{' expression expression_list_opt '}'
-  | '{' struct_member_label ':' expression struct_member_label_expression_list_opt '}'
-  | '{' array_member_label ':' expression array_member_label_expression_list_opt '}'
+  | '{' struct_or_array_member_label ':' expression struct_or_array_member_label_expression_list_opt '}'
   ;
 
-struct_member_label_expression_list
-  : ',' struct_member_label ':' expression
-  | struct_member_label_expression_list ',' struct_member_label ':' expression
+struct_or_array_member_label_expression_list
+  : ',' struct_or_array_member_label ':' expression
+  | struct_or_array_member_label_expression_list ',' struct_or_array_member_label ':' expression
   ;
 
-struct_member_label_expression_list_opt
-  : struct_member_label_expression_list
-  |
-  ;
-
-array_member_label_expression_list
-  : ',' array_member_label ':' expression
-  | array_member_label_expression_list ',' array_member_label ':' expression
-  ;
-
-array_member_label_expression_list_opt
-  : array_member_label_expression_list
+struct_or_array_member_label_expression_list_opt
+  : struct_or_array_member_label_expression_list
   |
   ;
 
 constant_concatenation
   : '{' constant_expression constant_expression_list_opt '}'
-  | '{' struct_member_label ':' constant_expression struct_member_label_constant_expression_list_opt '}'
-  | '{' array_member_label ':' constant_expression array_member_label_constant_expression_list_opt '}'
+  | '{' struct_or_array_member_label ':' constant_expression struct_or_array_member_label_constant_expression_list_opt '}'
+  ;
 
-struct_member_label
+struct_or_array_member_label
   : K_default
-  | identifier
+  | constant_expression { /* identifier only valid for structs */ }
   ;
 
-struct_member_label_constant_expression_list
-  : ',' struct_member_label ':' constant_expression
-  | struct_member_label_constant_expression_list ',' struct_member_label ':' constant_expression
+struct_or_array_member_label_constant_expression_list
+  : ',' struct_or_array_member_label ':' constant_expression
+  | struct_or_array_member_label_constant_expression_list ',' struct_or_array_member_label ':' constant_expression
   ;
 
-struct_member_label_constant_expression_list_opt
-  : struct_member_label_constant_expression_list
-  |
-  ;
-
-array_member_label
-  : K_default
-  | identifier
-  | constant_expression
-  ;
-
-array_member_label_constant_expression_list
-  : ',' array_member_label ':' constant_expression
-  | array_member_label_constant_expression_list ',' array_member_label ':' constant_expression
-  ;
-
-array_member_label_constant_expression_list_opt
-  : array_member_label_constant_expression_list
+struct_or_array_member_label_constant_expression_list_opt
+  : struct_or_array_member_label_constant_expression_list
   |
   ;
 
@@ -4500,7 +4374,8 @@ multiple_concatenation
   ;
 
 streaming_expression
-  : '{' stream_operator slice_size_opt stream_concatenation '}'
+  : '{' stream_operator slice_size stream_concatenation '}'
+  | '{' stream_operator stream_concatenation '}'
   ;
 
 stream_operator
@@ -4513,13 +4388,9 @@ slice_size
   | constant_expression
   ;
 
-slice_size_opt
-  : slice_size
-  |
-  ;
-
 stream_concatenation
   : '{' stream_expression stream_expression_list_opt '}'
+  ;
 
 stream_expression
   : expression
@@ -4603,7 +4474,7 @@ identifier_expression_opt_list_opt
   ;
 
 method_call
-  : method_call_root '.' method_call_body
+  : method_call_root_dot method_call_body
   ;
 
 method_call_body
@@ -4632,9 +4503,9 @@ randomize_call
   | K_randomize attribute_instances_opt '(' K_null ')' K_with constraint_block
   ;
 
-method_call_root
-  : expression
-  | implicit_class_handle
+method_call_root_dot
+  : expression '.'
+  | implicit_class_handle_dot
   ;
 
 array_method_name
@@ -4676,11 +4547,6 @@ constant_expression_list_opt
 constant_mintypmax_expression
   : constant_expression
   | constant_expression ':' constant_expression ':' constant_expression
-  ;
-
-constant_mintypmax_expression_opt
-  : constant_mintypmax_expression
-  |
   ;
 
 constant_param_expression
@@ -4825,7 +4691,7 @@ module_path_primary
 primary
   : primary_literal
   | hierarchical_identifier select
-  | implicit_class_handle '.' hierarchical_identifier select
+  | implicit_class_handle_dot hierarchical_identifier select
   | class_scope hierarchical_identifier select
   | package_scope hierarchical_identifier select
   | empty_queue
@@ -4857,10 +4723,10 @@ time_unit
   | K_TU_STEP
   ;
 
-implicit_class_handle
-  : K_this
-  | K_super
-  | K_this '.' K_super
+implicit_class_handle_dot
+  : K_this '.'
+  | K_super '.'
+  | K_this '.' K_super '.'
   ;
 
 select
@@ -4930,7 +4796,7 @@ net_lvalue_list_opt
 
 variable_lvalue
   : hierarchical_identifier select
-  | implicit_class_handle '.' hierarchical_identifier select
+  | implicit_class_handle_dot hierarchical_identifier select
   | package_scope hierarchical_identifier select
   | '{' variable_lvalue variable_lvalue_list_opt '}'
   ;
@@ -4985,8 +4851,8 @@ binary_operator
   | K_NXOR
   | K_LS
   | K_RS
-  | K_ALS_A
-  | K_ARS_A
+  | K_LSS
+  | K_RSS
   ;
 
 inc_or_dec_operator
@@ -5077,8 +4943,13 @@ escaped_identifier
   ; /* '\' {any_ASCII_character_except_white_space} white_space */
 
 hierarchical_identifier
-  : identifier_select_constant_expression_list_opt identifier
-  | K_Sroot '.' identifier_select_constant_expression_list_opt identifier
+  : hierarchical_identifier_tail
+  | K_Sroot '.' hierarchical_identifier_tail
+  ;
+
+hierarchical_identifier_tail
+  : identifier
+  | identifier select_constant_expression_list_opt '.' hierarchical_identifier_list
   ;
 
 hierarchical_identifier_list
@@ -5088,16 +4959,6 @@ hierarchical_identifier_list
 
 hierarchical_identifier_list_opt
   : hierarchical_identifier_list
-  |
-  ;
-
-identifier_select_constant_expression_list
-  : identifier select_constant_expression_list_opt '.'
-  | identifier_select_constant_expression_list identifier select_constant_expression_list_opt '.'
-  ;
-
-identifier_select_constant_expression_list_opt
-  : identifier_select_constant_expression_list
   |
   ;
 
@@ -5163,16 +5024,6 @@ net_lvalue_assign_list
   | net_lvalue_assign_list '=' net_lvalue
   ;
 
-identifier_opt_list
-  : ',' identifier_opt
-  | identifier_opt_list ',' identifier_opt
-  ;
-
-identifier_opt_list_opt
-  : identifier_opt_list
-  |
-  ;
-
 net_lvalue_assign_list_opt
   : net_lvalue_assign_list
   |
@@ -5206,4 +5057,12 @@ identifiers
 identifiers_opt
   : identifiers
   |
+  ;
+
+lex_start_import_export
+  : { lex_start_import_export(); }
+  ;
+
+lex_end_import_export
+  : { lex_end_import_export(); }
   ;

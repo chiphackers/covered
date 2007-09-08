@@ -33,7 +33,6 @@ always_ff,     K_always_ff
 always_latch,  K_always_latch
 assert,        K_assert
 assume,        K_assume
-bool,          K_bool
 bind,          K_bind
 bins,          K_bins
 binsof,        K_binsof
@@ -42,7 +41,6 @@ before,        K_before
 break,         K_break
 byte,          K_byte
 chandle,       K_chandle
-char,          K_char
 class,         K_class
 clocking,      K_clocking
 const,         K_const
@@ -131,7 +129,7 @@ void,          K_void
 wait_order,    K_wait_order
 wildcard,      K_wildcard
 with,          K_with
-within,        K_within
+within,        K_within 
 %%
 
 int lexer_keyword_sv_code( const char* str, int length ) {
