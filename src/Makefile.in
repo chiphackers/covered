@@ -529,7 +529,7 @@ keywords_2001.c:  keywords_2001.gperf
 	gperf -o -i 7 -C -k 1-3,$$ -L ANSI-C -H keyword_hash_2001 -N check_identifier_2001 -t $(srcdir)/keywords_2001.gperf > keywords_2001.c || (rm -f keywords_2001.c ; false)
 
 keywords_sv.c:  keywords_sv.gperf
-	gperf -o -i 7 -C -k 1-3,$$ -L ANSI-C -H keyword_hash_sv -N check_identifier_sv -t $(srcdir)/keywords_sv.gperf > keywords_sv.c || (rm -f keywords_sv.c ; false)
+	gperf -o -i 7 -C -k 1-3,$$ -L ANSI-C -D -H keyword_hash_sv -N check_identifier_sv -t $(srcdir)/keywords_sv.gperf > keywords_sv.c || (rm -f keywords_sv.c ; false)
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

@@ -38,9 +38,11 @@ bins,          K_bins
 binsof,        K_binsof
 bit,           K_bit
 before,        K_before
+bool,          K_bool
 break,         K_break
 byte,          K_byte
 chandle,       K_chandle
+char,          K_char
 class,         K_class
 clocking,      K_clocking
 const,         K_const

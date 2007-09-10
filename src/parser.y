@@ -285,12 +285,22 @@ int yydebug = 1;
 %token K_automatic K_cell K_use K_library K_config K_endconfig K_design K_liblist K_instance
 %token K_showcancelled K_noshowcancelled K_pulsestyle_onevent K_pulsestyle_ondetect
 
-%token K_bool K_bit K_byte K_logic K_char K_shortint K_int K_longint K_unsigned
+%token K_TU_S K_TU_MS K_TU_US K_TU_NS K_TU_PS K_TU_FS K_TU_STEP
+%token K_INCDIR K_DPI
+%token K_PP K_PS K_PEQ K_PNE K_RSS K_LSS
+%token K_bool K_bit K_byte K_char K_logic K_shortint K_int K_longint K_unsigned K_shortreal
 %token K_unique K_priority K_do
 %token K_always_comb K_always_latch K_always_ff
-%token K_typedef K_enum K_union K_struct K_packed
-%token K_assert K_property K_endproperty K_cover K_sequence K_endsequence
-%token K_program K_endprogram K_final K_void K_return K_continue K_break
+%token K_typedef K_type K_enum K_union K_struct K_packed
+%token K_assert K_assume K_property K_endproperty K_cover K_sequence K_endsequence K_expect
+%token K_program K_endprogram K_final K_void K_return K_continue K_break K_extern K_interface K_endinterface
+%token K_class K_endclass K_extends K_package K_endpackage K_timeunit K_timeprecision K_ref K_bind K_const
+%token K_new K_static K_protected K_local K_rand K_randc K_randcase K_constraint K_import K_export K_scalared K_chandle
+%token K_context K_pure K_modport K_clocking K_iff K_intersect K_first_match K_throughout K_with K_within
+%token K_dist K_covergroup K_endgroup K_coverpoint K_optionDOT K_type_optionDOT K_wildcard
+%token K_bins K_illegal_bins K_ignore_bins K_cross K_binsof K_alias K_join_any K_join_none K_matches
+%token K_tagged K_foreach K_randsequence K_ifnone K_randomize K_null K_inside K_super K_this K_wait_order
+%token K_include K_Sroot K_Sunit K_endclocking K_virtual K_before K_forkjoin K_solve
 
 %token KK_attribute
 
@@ -328,7 +338,7 @@ int yydebug = 1;
 %left K_GE K_LE '<' '>'
 %left K_LS K_RS K_LSS K_RSS
 %left '+' '-'
-%left '*' '/' '%'
+%left '*' '/' '%' K_POW
 %left UNARY_PREC
 
 /* to resolve dangling else ambiguity: */

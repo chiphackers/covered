@@ -242,7 +242,7 @@ WSPACE [ \t\b\f]+
 <PARSE>"("{WSPACE}*"*"{WSPACE}*")" { yylloc.first_column = yylloc.last_column;  yylloc.last_column += strlen( yytext );  return '*'; }
 
   /* Single character symbols */
-<PARSE>[}{;:\[\],()#=.@&!?<>%|^~+*/-\'] {
+<PARSE>[}{;:\[\],()#=.@&!?<>%|^~+*/-] {
 	yylloc.first_column = yylloc.last_column;
 	yylloc.last_column += 1;
         if( (yytext[0] == ';') || (yytext[0] == ',') ) {
@@ -405,7 +405,7 @@ WSPACE [ \t\b\f]+
 <TIMEUNIT>fs   { yylloc.last_column += strlen( yytext );  return K_TU_FS; }
 
   /* Library options */
-<LIBOPTION>-incdir { yylloc.last_column += strlen( yytext );  return K_INCDIR; }
+<LIBOPTIONS>-incdir { yylloc.last_column += strlen( yytext );  return K_INCDIR; }
 
   /* Import/Export options */
 <IMEXPORT>\"DPI\" { yylloc.last_column += strlen( yytext );  return K_DPI; }
