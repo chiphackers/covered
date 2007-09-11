@@ -22,7 +22,6 @@ Score command
        without user intervention.
 
    4.  Add more Verilog-2001 constructs to parser.
-X 	- automatic storage for functions/tasks
 	- config command
         - $random
 
