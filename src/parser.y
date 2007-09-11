@@ -73,11 +73,6 @@ int  param_mode  = 0;
 int  attr_mode   = 0;
 
 /*!
- If set to a value > 0, specifies that we are parsing the initialization section of a for loop
-*/
-int  for_init_mode = 0;
-
-/*!
  If set to a value > 0, specifies that we are parsing a generate block
 */
 int  generate_mode = 0;
@@ -326,7 +321,7 @@ int yydebug = 1;
 %type <state>     passign for_initialization
 %type <state>     expression_assignment_list
 %type <strlink>   gate_instance gate_instance_list list_of_names
-%type <funit>     begin_end_block fork_statement
+%type <funit>     begin_end_block fork_statement inc_for_depth
 %type <attr_parm> attribute attribute_list
 %type <portinfo>  port_declaration list_of_port_declarations
 %type <gitem>     generate_item generate_item_list generate_item_list_opt
@@ -3480,16 +3475,20 @@ expression_assignment_list
     {
       expression* tmp;
       statement*  stmt;
+      char*       unnamed;
       if( (ignore_mode == 0) && ($4 != NULL) ) {
-        if( $1 == 1 ) {
+        if( ($1 == 1) && db_is_unnamed_scope( $2 ) && !parser_check_generation( GENERATION_SV ) ) {
+          VLerror( "Net/variables declared in for initialization block that is specified to not allow SystemVerilog syntax" );
+        } else if( ($1 == 1) || (db_find_signal( $2 ) == NULL) ) {
           db_add_signal( $2, curr_sig_type, &curr_prange, NULL, curr_signed, curr_mba, @2.first_line, @2.first_column, TRUE );
         }
-        tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, FALSE, @2.first_line, @2.first_column, (@2.last_column - 1), $2 );
+        tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @2.first_line, @2.first_column, (@2.last_column - 1), $2 );
         tmp  = db_create_expression( $4, tmp, EXP_OP_BASSIGN, FALSE, @2.first_line, @2.first_column, (@4.last_column - 1), NULL );
         stmt = db_create_statement( tmp );
         $$ = stmt;
       } else {
         expression_dealloc( $4, FALSE );
+        $$ = NULL;
       }
       free_safe( $2 );
     }
@@ -3503,10 +3502,12 @@ expression_assignment_list
       expression* tmp;
       statement*  stmt;
       if( (ignore_mode == 0) && ($1 != NULL) && ($6 != NULL) ) {
-        if( $3 == 1 ) {
+        if( ($3 == 1) && db_is_unnamed_scope( $4 ) && !parser_check_generation( GENERATION_SV ) ) {
+          VLerror( "Net/variables declared in for initialization block that is specified to not allow SystemVerilog syntax" );
+        } else if( ($3 == 1) || (db_find_signal( $4 ) == NULL) ) {
           db_add_signal( $4, curr_sig_type, &curr_prange, NULL, curr_signed, curr_mba, @4.first_line, @4.first_column, TRUE );
         }
-        tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, FALSE, @4.first_line, @4.first_column, (@4.last_column - 1), $4 );
+        tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @4.first_line, @4.first_column, (@4.last_column - 1), $4 );
         tmp = db_create_expression( $6, tmp, EXP_OP_BASSIGN, FALSE, @4.first_line, @4.first_column, (@6.last_column - 1), NULL );
         stmt = db_create_statement( tmp );
         if( !db_statement_connect( $1, stmt ) ) {
@@ -4218,47 +4219,69 @@ statement
       VLerror( "Illegal conditional if expression" );
       $$ = NULL;
     }
-  | K_for inc_block_depth '(' inc_for_init for_initialization dec_for_init ';' expression ';' passign ')' statement dec_block_depth
+  | K_for inc_for_depth '(' for_initialization ';' expression ';' passign ')' statement dec_for_depth
     {
-      statement* stmt1 = $5;
-      statement* stmt2;
-      statement* stmt3 = $10;
-      statement* stmt4 = $12;
-      if( (ignore_mode == 0) && ($5 != NULL) && ($8 != NULL) && ($10 != NULL) && ($12 != NULL) ) {
+      expression* exp;
+      statement*  stmt;
+      statement*  stmt1 = $4;
+      statement*  stmt2;
+      statement*  stmt3 = $8;
+      statement*  stmt4 = $10;
+      char        back[4096];
+      char        rest[4096];
+      if( (ignore_mode == 0) && ($4 != NULL) && ($6 != NULL) && ($8 != NULL) && ($10 != NULL) ) {
         block_depth++;
-        stmt2 = db_create_statement( $8 );
+        stmt2 = db_create_statement( $6 );
         db_statement_connect( stmt1, stmt2 );
         db_connect_statement_true( stmt2, stmt4 );
         db_statement_connect( stmt4, stmt3 );
         stmt2->conn_id = stmt_conn_id;   /* This will cause the STOP bit to be set for the stmt3 */
         db_statement_connect( stmt3, stmt2 );
         block_depth--;
-        $$ = db_parallelize_statement( stmt1 );
+        stmt1 = db_parallelize_statement( stmt1 );
+        stmt1->exp->suppl.part.stmt_head      = 1;
+        stmt1->exp->suppl.part.stmt_is_called = 1;
+        db_add_statement( stmt1, stmt1 );
       } else {
         db_remove_statement( stmt1 );
-        expression_dealloc( $8, FALSE );
+        expression_dealloc( $6, FALSE );
         db_remove_statement( stmt3 );
         db_remove_statement( stmt4 );
+        stmt1 = NULL;
+      }
+      db_end_function_task_namedblock( @11.first_line );
+      if( (stmt1 != NULL) && ($2 != NULL) ) {
+        scope_extract_back( $2->name, back, rest );
+        exp = db_create_expression( NULL, NULL, EXP_OP_NB_CALL, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+        exp->elem.funit      = $2;
+        exp->suppl.part.type = ETYPE_FUNIT;
+        exp->name            = strdup_safe( back, __FILE__, __LINE__ );
+        stmt = db_create_statement( exp );
+        $$ = stmt;
+      } else {
         $$ = NULL;
       }
     }
-  | K_for inc_block_depth '(' inc_for_init for_initialization dec_for_init ';' expression ';' error ')' statement dec_block_depth
+  | K_for inc_for_depth '(' for_initialization ';' expression ';' error ')' statement dec_for_depth
     {
-      db_remove_statement( $5 );
-      expression_dealloc( $8, FALSE );
-      db_remove_statement( $12 );
-      $$ = NULL;
-    }
-  | K_for inc_block_depth '(' inc_for_init for_initialization dec_for_init ';' error ';' passign ')' statement dec_block_depth
-    {
-      db_remove_statement( $5 );
+      db_remove_statement( $4 );
+      expression_dealloc( $6, FALSE );
       db_remove_statement( $10 );
-      db_remove_statement( $12 );
+      db_end_function_task_namedblock( @11.first_line );
       $$ = NULL;
     }
-  | K_for inc_block_depth '(' error ')' statement dec_block_depth
+  | K_for inc_for_depth '(' for_initialization ';' error ';' passign ')' statement dec_for_depth
+    {
+      db_remove_statement( $4 );
+      db_remove_statement( $8 );
+      db_remove_statement( $10 );
+      db_end_function_task_namedblock( @11.first_line );
+      $$ = NULL;
+    }
+  | K_for inc_for_depth '(' error ')' statement dec_for_depth
     {
       db_remove_statement( $6 );
+      db_end_function_task_namedblock( @7.first_line );
       $$ = NULL;
     }
   | K_while '(' expression ')' inc_block_depth statement dec_block_depth
@@ -6592,6 +6615,28 @@ dec_block_depth
     }
   ;
 
+inc_for_depth
+  :
+    {
+      char* scope      = NULL;
+      func_unit* funit = db_get_curr_funit();
+      if( ignore_mode == 0 ) {
+        scope = db_create_unnamed_scope();
+        assert( db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, scope, funit->filename, 0 ) );
+        free_safe( scope );
+      }
+      block_depth++;
+      $$ = db_get_curr_funit();
+    }
+  ;
+
+dec_for_depth
+  :
+    {
+      block_depth--;
+    }
+  ;
+
 inc_gen_expr_mode
   :
     {
@@ -6603,19 +6648,5 @@ dec_gen_expr_mode
   : 
     {
       generate_expr_mode--;
-    }
-  ;
-
-inc_for_init
-  :
-    {
-      for_init_mode++;
-    }
-  ;
-
-dec_for_init
-  :
-    {
-      for_init_mode--;
     }
   ;

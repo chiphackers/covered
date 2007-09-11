@@ -7,14 +7,14 @@
 
 module main;
 
-reg [1:0] i;
-
 initial begin : foo
 	reg [1:0] a;
+        reg [1:0] i;
 	i = 0;
 	#5;
-	for( int i=0; i<4; i++ )
+	for( int i=0; i<4; i++ ) begin : for1
 	  a = i;
+        end
 	i = a;
 end
 
