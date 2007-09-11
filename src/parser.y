@@ -73,6 +73,11 @@ int  param_mode  = 0;
 int  attr_mode   = 0;
 
 /*!
+ If set to a value > 0, specifies that we are parsing the initialization section of a for loop
+*/
+int  for_init_mode = 0;
+
+/*!
  If set to a value > 0, specifies that we are parsing a generate block
 */
 int  generate_mode = 0;
@@ -287,7 +292,7 @@ int yydebug = 1;
 
 %token K_TU_S K_TU_MS K_TU_US K_TU_NS K_TU_PS K_TU_FS K_TU_STEP
 %token K_INCDIR K_DPI
-%token K_PP K_PS K_PEQ K_PNE K_RSS K_LSS
+%token K_PP K_PS K_PEQ K_PNE
 %token K_bool K_bit K_byte K_char K_logic K_shortint K_int K_longint K_unsigned K_shortreal
 %token K_unique K_priority K_do
 %token K_always_comb K_always_latch K_always_ff
@@ -305,7 +310,7 @@ int yydebug = 1;
 %token KK_attribute
 
 %type <logical>   automatic_opt block_item_decls_opt
-%type <integer>   net_type net_type_sign_range_opt var_type
+%type <integer>   net_type net_type_sign_range_opt var_type data_type_opt
 %type <text>      identifier begin_end_id
 %type <text>      udp_port_list
 %type <text>      defparam_assign_list defparam_assign
@@ -318,7 +323,8 @@ int yydebug = 1;
 %type <expr>      generate_passign index_expr single_index_expr
 %type <state>     statement statement_list statement_opt 
 %type <state>     if_statement_error
-%type <state>     passign
+%type <state>     passign for_initialization
+%type <state>     expression_assignment_list
 %type <strlink>   gate_instance gate_instance_list list_of_names
 %type <funit>     begin_end_block fork_statement
 %type <attr_parm> attribute attribute_list
@@ -3364,6 +3370,162 @@ module_item
     }
   ;
 
+for_initialization
+  : expression_assignment_list
+    {
+      $$ = $1;
+    }
+  ;
+
+  /* TBD - In the SystemVerilog BNF, there are more options available for this rule -- but we don't current support them */
+data_type
+  : integer_vector_type signed_opt range_opt
+  | integer_atom_type signed_opt
+  | K_event
+    {
+      curr_mba      = TRUE;
+      curr_signed   = FALSE;
+      curr_sig_type = SSUPPL_TYPE_EVENT;
+      curr_handled  = TRUE;
+      parser_implicitly_set_curr_range( 0, 0, TRUE );
+    }
+  ;
+
+data_type_opt
+  : data_type
+    {
+      $$ = 1;
+    }
+  |
+    {
+      $$ = 0;
+    }
+  ;
+
+integer_vector_type
+  : K_bit
+    {
+      curr_mba      = FALSE;
+      curr_handled  = TRUE;
+      curr_sig_type = SSUPPL_TYPE_DECLARED;
+    }
+  | K_logic
+    {
+      curr_mba      = FALSE;
+      curr_handled  = TRUE;
+      curr_sig_type = SSUPPL_TYPE_DECLARED;
+    }
+  | K_reg
+    {
+      curr_mba      = FALSE;
+      curr_handled  = TRUE;
+      curr_sig_type = SSUPPL_TYPE_DECLARED;
+    }
+  ;
+
+integer_atom_type
+  : K_bool
+    {
+      curr_mba      = FALSE;
+      curr_handled  = TRUE;
+      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      parser_implicitly_set_curr_range( 0, 0, TRUE );
+    }
+  | K_byte
+    {
+      curr_mba      = FALSE;
+      curr_handled  = TRUE;
+      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      parser_implicitly_set_curr_range( 7, 0, TRUE );
+    }
+  | K_shortint
+    {
+      curr_mba      = FALSE;
+      curr_handled  = TRUE;
+      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      parser_implicitly_set_curr_range( 15, 0, TRUE );
+    }
+  | K_int
+    {
+      curr_mba      = FALSE;
+      curr_handled  = TRUE;
+      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      parser_implicitly_set_curr_range( 31, 0, TRUE );
+    }
+  | K_integer
+    {
+      curr_mba      = FALSE;
+      curr_handled  = TRUE;
+      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      parser_implicitly_set_curr_range( 31, 0, TRUE );
+    }
+  | K_longint
+    {
+      curr_mba      = FALSE;
+      curr_handled  = TRUE;
+      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      parser_implicitly_set_curr_range( 63, 0, TRUE );
+    }
+  | K_time
+    {
+      curr_mba      = FALSE;
+      curr_handled  = TRUE;
+      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      parser_implicitly_set_curr_range( 63, 0, TRUE );
+    }
+  ;
+
+expression_assignment_list
+  : data_type_opt IDENTIFIER '=' expression
+    {
+      expression* tmp;
+      statement*  stmt;
+      if( (ignore_mode == 0) && ($4 != NULL) ) {
+        if( $1 == 1 ) {
+          db_add_signal( $2, curr_sig_type, &curr_prange, NULL, curr_signed, curr_mba, @2.first_line, @2.first_column, TRUE );
+        }
+        tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, FALSE, @2.first_line, @2.first_column, (@2.last_column - 1), $2 );
+        tmp  = db_create_expression( $4, tmp, EXP_OP_BASSIGN, FALSE, @2.first_line, @2.first_column, (@4.last_column - 1), NULL );
+        stmt = db_create_statement( tmp );
+        $$ = stmt;
+      } else {
+        expression_dealloc( $4, FALSE );
+      }
+      free_safe( $2 );
+    }
+  | data_type_opt UNUSED_IDENTIFIER '=' expression
+    {
+      expression_dealloc( $4, FALSE );
+      $$ = NULL;
+    }
+  | expression_assignment_list ',' data_type_opt IDENTIFIER '=' expression
+    {
+      expression* tmp;
+      statement*  stmt;
+      if( (ignore_mode == 0) && ($1 != NULL) && ($6 != NULL) ) {
+        if( $3 == 1 ) {
+          db_add_signal( $4, curr_sig_type, &curr_prange, NULL, curr_signed, curr_mba, @4.first_line, @4.first_column, TRUE );
+        }
+        tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, FALSE, @4.first_line, @4.first_column, (@4.last_column - 1), $4 );
+        tmp = db_create_expression( $6, tmp, EXP_OP_BASSIGN, FALSE, @4.first_line, @4.first_column, (@6.last_column - 1), NULL );
+        stmt = db_create_statement( tmp );
+        if( !db_statement_connect( $1, stmt ) ) {
+          db_remove_statement( stmt );
+        }
+      } else {
+        expression_dealloc( $6, FALSE );
+      }
+      free_safe( $4 );
+      $$ = $1;
+    }
+  | expression_assignment_list ',' data_type_opt UNUSED_IDENTIFIER '=' expression
+    {
+      db_remove_statement( $1 );      
+      expression_dealloc( $6, FALSE );
+      $$ = NULL;
+    }
+  ;
+
 passign
   : lpvalue '=' expression
     {
@@ -4056,15 +4218,15 @@ statement
       VLerror( "Illegal conditional if expression" );
       $$ = NULL;
     }
-  | K_for inc_block_depth '(' passign ';' expression ';' passign ')' statement dec_block_depth
+  | K_for inc_block_depth '(' inc_for_init for_initialization dec_for_init ';' expression ';' passign ')' statement dec_block_depth
     {
-      statement* stmt1 = $4;
+      statement* stmt1 = $5;
       statement* stmt2;
-      statement* stmt3 = $8;
-      statement* stmt4 = $10;
-      if( (ignore_mode == 0) && ($4 != NULL) && ($6 != NULL) && ($8 != NULL) && ($10 != NULL) ) {
+      statement* stmt3 = $10;
+      statement* stmt4 = $12;
+      if( (ignore_mode == 0) && ($5 != NULL) && ($8 != NULL) && ($10 != NULL) && ($12 != NULL) ) {
         block_depth++;
-        stmt2 = db_create_statement( $6 );
+        stmt2 = db_create_statement( $8 );
         db_statement_connect( stmt1, stmt2 );
         db_connect_statement_true( stmt2, stmt4 );
         db_statement_connect( stmt4, stmt3 );
@@ -4074,24 +4236,24 @@ statement
         $$ = db_parallelize_statement( stmt1 );
       } else {
         db_remove_statement( stmt1 );
-        expression_dealloc( $6, FALSE );
+        expression_dealloc( $8, FALSE );
         db_remove_statement( stmt3 );
         db_remove_statement( stmt4 );
         $$ = NULL;
       }
     }
-  | K_for inc_block_depth '(' passign ';' expression ';' error ')' statement dec_block_depth
+  | K_for inc_block_depth '(' inc_for_init for_initialization dec_for_init ';' expression ';' error ')' statement dec_block_depth
     {
-      db_remove_statement( $4 );
-      expression_dealloc( $6, FALSE );
-      db_remove_statement( $10 );
+      db_remove_statement( $5 );
+      expression_dealloc( $8, FALSE );
+      db_remove_statement( $12 );
       $$ = NULL;
     }
-  | K_for inc_block_depth '(' passign ';' error ';' passign ')' statement dec_block_depth
+  | K_for inc_block_depth '(' inc_for_init for_initialization dec_for_init ';' error ';' passign ')' statement dec_block_depth
     {
-      db_remove_statement( $4 );
-      db_remove_statement( $8 );
+      db_remove_statement( $5 );
       db_remove_statement( $10 );
+      db_remove_statement( $12 );
       $$ = NULL;
     }
   | K_for inc_block_depth '(' error ')' statement dec_block_depth
@@ -6441,5 +6603,19 @@ dec_gen_expr_mode
   : 
     {
       generate_expr_mode--;
+    }
+  ;
+
+inc_for_init
+  :
+    {
+      for_init_mode++;
+    }
+  ;
+
+dec_for_init
+  :
+    {
+      for_init_mode--;
     }
   ;
