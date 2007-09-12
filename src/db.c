@@ -1185,7 +1185,8 @@ void db_add_typedef( char* name, bool is_signed, bool is_handled, bool is_sizeab
 }
 
 /*!
- \param name  String name of signal to find in current module.
+ \param name               String name of signal to find in current module.
+ \param okay_if_not_found  If set to TRUE, does not emit error message if signal is not found (returns NULL)
 
  \return Returns pointer to the found signal.
 
@@ -1193,7 +1194,7 @@ void db_add_typedef( char* name, bool is_signed, bool is_handled, bool is_sizeab
  found, returns a pointer to the calling function for that signal.  If the signal is not
  found, emits a user error and immediately halts execution.
 */
-vsignal* db_find_signal( char* name ) {
+vsignal* db_find_signal( char* name, bool okay_if_not_found ) {
 
   vsignal*   found_sig;    /* Pointer to found signal (return value) */
   func_unit* found_funit;  /* Pointer to found functional unit (not used) */
@@ -1203,7 +1204,7 @@ vsignal* db_find_signal( char* name ) {
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
-  if( !scope_find_signal( name, curr_funit, &found_sig, &found_funit, 0 ) ) {
+  if( !scope_find_signal( name, curr_funit, &found_sig, &found_funit, 0 ) && !okay_if_not_found ) {
 
     snprintf( user_msg, USER_MSG_LENGTH, "Unable to find variable %s in module %s", obf_sig( name ), obf_funit( curr_funit->name ) );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -2367,6 +2368,10 @@ void db_do_timestep( uint64 time, bool final ) {
 
 /*
  $Log$
+ Revision 1.260  2007/09/05 21:07:36  phase1geo
+ Fixing bug 1788991.  Full regression passes.  Removed excess output used for
+ debugging.  May want to create a new development release with these changes.
+
  Revision 1.259  2007/09/04 22:50:50  phase1geo
  Fixed static_afunc1 issues.  Reran regressions and updated necessary files.
  Also working on debugging one remaining issue with mem1.v (not solved yet).

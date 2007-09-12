@@ -3433,6 +3433,13 @@ integer_atom_type
       curr_sig_type = SSUPPL_TYPE_DECLARED;
       parser_implicitly_set_curr_range( 7, 0, TRUE );
     }
+  | K_char
+    {
+      curr_mba      = FALSE;
+      curr_handled  = TRUE;
+      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      parser_implicitly_set_curr_range( 7, 0, TRUE );
+    }
   | K_shortint
     {
       curr_mba      = FALSE;
@@ -3477,9 +3484,9 @@ expression_assignment_list
       statement*  stmt;
       char*       unnamed;
       if( (ignore_mode == 0) && ($4 != NULL) ) {
-        if( ($1 == 1) && db_is_unnamed_scope( $2 ) && !parser_check_generation( GENERATION_SV ) ) {
-          VLerror( "Net/variables declared in for initialization block that is specified to not allow SystemVerilog syntax" );
-        } else if( ($1 == 1) || (db_find_signal( $2 ) == NULL) ) {
+        if( ($1 == 1) && !parser_check_generation( GENERATION_SV ) ) {
+          VLerror( "Variables declared in FOR initialization block that is specified to not allow SystemVerilog syntax" );
+        } else if( ($1 == 1) || (db_find_signal( $2, TRUE ) == NULL) ) {
           db_add_signal( $2, curr_sig_type, &curr_prange, NULL, curr_signed, curr_mba, @2.first_line, @2.first_column, TRUE );
         }
         tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @2.first_line, @2.first_column, (@2.last_column - 1), $2 );
@@ -3502,9 +3509,9 @@ expression_assignment_list
       expression* tmp;
       statement*  stmt;
       if( (ignore_mode == 0) && ($1 != NULL) && ($6 != NULL) ) {
-        if( ($3 == 1) && db_is_unnamed_scope( $4 ) && !parser_check_generation( GENERATION_SV ) ) {
-          VLerror( "Net/variables declared in for initialization block that is specified to not allow SystemVerilog syntax" );
-        } else if( ($3 == 1) || (db_find_signal( $4 ) == NULL) ) {
+        if( ($3 == 1) && !parser_check_generation( GENERATION_SV ) ) {
+          VLerror( "Variables declared in FOR initialization block that is specified to not allow SystemVerilog syntax" );
+        } else if( ($3 == 1) || (db_find_signal( $4, TRUE ) == NULL) ) {
           db_add_signal( $4, curr_sig_type, &curr_prange, NULL, curr_signed, curr_mba, @4.first_line, @4.first_column, TRUE );
         }
         tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @4.first_line, @4.first_column, (@4.last_column - 1), $4 );
@@ -6389,14 +6396,14 @@ enum_variable
   : IDENTIFIER
     {
       db_add_signal( $1, SSUPPL_TYPE_ENUM, &curr_prange, NULL, curr_signed, FALSE, @1.first_line, @1.first_column, TRUE );
-      db_add_enum( db_find_signal( $1 ), NULL );
+      db_add_enum( db_find_signal( $1, FALSE ), NULL );
       free_safe( $1 );
     }
   | UNUSED_IDENTIFIER
   | IDENTIFIER '=' static_expr
     {
       db_add_signal( $1, SSUPPL_TYPE_ENUM, &curr_prange, NULL, curr_signed, FALSE, @1.first_line, @1.first_column, TRUE );
-      db_add_enum( db_find_signal( $1 ), $3 );
+      db_add_enum( db_find_signal( $1, FALSE ), $3 );
       free_safe( $1 );
     }
   | UNUSED_IDENTIFIER '=' static_expr

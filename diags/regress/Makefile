@@ -113,8 +113,8 @@ NOSIMLIST     = gen1            gen1.1          gen1.3          gen2.1          
                 gen33.2         gen34.2         gen35.2         gen36.2         gen37.2 \
                 gen38.2         gen39.2         gen40.2
 
-NOSIMERRLIST  = comment1        enum2           err4            err4.1          gen1.2 \
-                gen1.4          gen1.5          gen2            gen3 \
+NOSIMERRLIST  = comment1        enum2           err4            err4.1          for7 \
+                for7.1          gen1.2          gen1.4          gen1.5          gen2            gen3 \
                 gen4            gen5            gen6            gen7            gen8 \
                 gen9            gen10           gen11           gen12           gen13 \
                 gen14           gen15           gen16           gen17           gen18 \
@@ -149,7 +149,10 @@ VCSONLYDIAGS1 = afunc1          always_comb1    always_ff1      always_latch1   
                 do_while1       do_while1.1     do_while2       elsif1          elsif1.1 \
                 elsif1.2        elsif1.3        elsif1.4        elsif2          elsif2.1 \
                 enum1           enum1.1         enum1.2         enum1.3         enum2.1 \
-                exponent1       final1          for3            for5            gate1.1         generate1.1 \
+                exponent1       final1          for3            for5            for5.1 \
+                for5.2          for5.3          for5.4          for5.5          for5.6 \
+                for5.7          for5.8          for5.9          for5.10         for6 \
+                gate1.1         generate1.1 \
                 generate2       generate2.1     generate3       generate3.1     generate4 \
                 generate4.1     generate5       generate5.1     generate5.2     generate5.3 \
                 generate6       generate7       generate7.1     generate7.2     generate8 \
