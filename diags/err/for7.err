@@ -1,0 +1,3 @@
+ERROR!  Variables declared in FOR initialization block that is specified to not allow SystemVerilog syntax,
+        File: for7.v, Line: 16, Column: 17
+ERROR!  Error in parsing design

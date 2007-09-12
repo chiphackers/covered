@@ -151,8 +151,7 @@ VCSONLYDIAGS1 = afunc1          always_comb1    always_ff1      always_latch1   
                 enum1           enum1.1         enum1.2         enum1.3         enum2.1 \
                 exponent1       final1          for3            for5            for5.1 \
                 for5.2          for5.3          for5.4          for5.5          for5.6 \
-                for5.7          for5.8          for5.9          for5.10         for6 \
-                gate1.1         generate1.1 \
+                for5.8          for5.9          for5.10         for6            gate1.1         generate1.1 \
                 generate2       generate2.1     generate3       generate3.1     generate4 \
                 generate4.1     generate5       generate5.1     generate5.2     generate5.3 \
                 generate6       generate7       generate7.1     generate7.2     generate8 \

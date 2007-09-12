@@ -1,3 +1,3 @@
 ERROR!  Implicit .* port list item found in block that is specified to not allow SystemVerilog syntax,
-        File: gen40.v, Line: 5, Column: 8
+        File: gen40.v, Line: 5, Column: 7
 ERROR!  Error in parsing design

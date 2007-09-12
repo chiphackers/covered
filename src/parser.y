@@ -288,7 +288,7 @@ int yydebug = 1;
 %token K_TU_S K_TU_MS K_TU_US K_TU_NS K_TU_PS K_TU_FS K_TU_STEP
 %token K_INCDIR K_DPI
 %token K_PP K_PS K_PEQ K_PNE
-%token K_bool K_bit K_byte K_char K_logic K_shortint K_int K_longint K_unsigned K_shortreal
+%token K_bit K_byte K_char K_logic K_shortint K_int K_longint K_unsigned K_shortreal
 %token K_unique K_priority K_do
 %token K_always_comb K_always_latch K_always_ff
 %token K_typedef K_type K_enum K_union K_struct K_packed
@@ -3419,14 +3419,7 @@ integer_vector_type
   ;
 
 integer_atom_type
-  : K_bool
-    {
-      curr_mba      = FALSE;
-      curr_handled  = TRUE;
-      curr_sig_type = SSUPPL_TYPE_DECLARED;
-      parser_implicitly_set_curr_range( 0, 0, TRUE );
-    }
-  | K_byte
+  : K_byte
     {
       curr_mba      = FALSE;
       curr_handled  = TRUE;
@@ -6193,7 +6186,7 @@ port_name
       }
       free_safe( $2 );
     }
-  | '.' '*'
+  | K_PS
     {
       if( (ignore_mode == 0) && !parser_check_generation( GENERATION_SV ) ) {
         VLerror( "Implicit .* port list item found in block that is specified to not allow SystemVerilog syntax" );
