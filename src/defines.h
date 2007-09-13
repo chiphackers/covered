@@ -1480,6 +1480,8 @@ struct sig_range_s;
 struct dim_range_s;
 struct reentrant_s;
 struct rstack_entry_s;
+struct struct_union_s;
+struct su_member_s;
 
 /*------------------------------------------------------------------------------*/
 /*  STRUCTURE/UNION TYPEDEFS  */
@@ -1707,7 +1709,7 @@ typedef struct typedef_item_s typedef_item;
 typedef struct enum_item_s enum_item;
 
 /*!
- Renaming memory_s structure for convenience.
+ Renaming sig_range_s structure for convenience.
 */
 typedef struct sig_range_s sig_range;
 
@@ -1725,6 +1727,16 @@ typedef struct reentrant_s reentrant;
  Renaming rstack_entry_s structure for convenience.
 */
 typedef struct rstack_entry_s rstack_entry;
+
+/*!
+ Renaming struct_unions_s structure for convenience.
+*/
+typedef struct struct_union_s struct_union;
+
+/*!
+ Renaming su_member_s structure for convenience.
+*/
+typedef struct su_member_s su_member;
 
 /*------------------------------------------------------------------------------*/
 /*  STRUCTURE/UNION DEFINITIONS  */
@@ -2036,6 +2048,8 @@ struct func_unit_s {
   typedef_item* tdi_tail;            /*!< Tail pointer to list of typedef types for this functional unit */
   enum_item*    ei_head;             /*!< Head pointer to list of enumerated values for this functional unit */
   enum_item*    ei_tail;             /*!< Tail pointer to list of enumerated values for this functional unit */
+  struct_union* su_head;             /*!< Head pointer to list of struct/unions for this functional unit */
+  struct_union* su_tail;             /*!< Tail pointer to list of struct/unions for this functional unit */
 };
 
 /*!
@@ -2362,9 +2376,40 @@ struct reentrant_s {
   int           data_size;           /*!< Number of nibbles stored in a single rstack_entry data */
 };
 
+/*!
+ Represents a SystemVerilog structure/union.
+*/
+struct struct_union_s {
+  int           type;                /*!< Specifies whether this is a struct, union or tagged union */
+  bool          packed;              /*!< Specifies if the data in this struct/union should be handled in a packed or unpacked manner */
+  bool          is_signed;           /*!< Specifies if the data in the struct/union should be handled as a signed value or not */
+  su_member*    su_head;             /*!< Pointer to head of struct/union member list */
+  su_member*    su_tail;             /*!< Pointer to tail of struct/union member list */
+  struct_union* next;                /*!< Pointer to next struct/union in list */
+};
+
+/*!
+ Represents a single structure/union member variable.
+*/
+struct su_member_s {
+  int             type;              /*!< Type of struct/union member */
+  int             pos;               /*!< Position of member in the list */
+  union {
+    vsignal*      sig;               /*!< Points to a signal */
+    struct_union* su;                /*!< Points to a struct/union */
+    enum_item*    ei;                /*!< Points to an enumerated item */
+    typedef_item* tdi;               /*!< Points to a typedef'ed item */
+  } elem;                            /*!< Member element pointer */
+  su_member*      next;              /*!< Pointer to next struct/union member */
+};
+
 
 /*
  $Log$
+ Revision 1.261  2007/09/13 17:03:30  phase1geo
+ Cleaning up some const-ness corrections -- still more to go but it's a good
+ start.
+
  Revision 1.260  2007/07/29 03:32:06  phase1geo
  First attempt to make FUNC_CALL expressions copy the functional return value
  to the expression vector.  Not quite working yet -- checkpointing.

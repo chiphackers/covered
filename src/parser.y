@@ -3376,6 +3376,12 @@ for_initialization
 data_type
   : integer_vector_type signed_opt range_opt
   | integer_atom_type signed_opt
+  | struct_union '{' struct_union_member_list '}' range_opt
+    {
+    }
+  | struct_union K_packed signed_opt '{' struct_union_member_list '}' range_opt
+    {
+    }
   | K_event
     {
       curr_mba      = TRUE;
@@ -3394,6 +3400,26 @@ data_type_opt
   |
     {
       $$ = 0;
+    }
+  ;
+
+  /* TBD - Not sure what this should return at this point */
+struct_union
+  : K_struct
+  | K_union
+  | K_union K_tagged
+  ;
+
+struct_union_member
+  : attribute_list_opt data_type_or_void list_of_variables ';'
+    {
+    }
+  ;
+
+data_type_or_void
+  : data_type
+  | K_void 
+    {
     }
   ;
 

@@ -52,6 +52,7 @@ covered_SOURCES = arc.c \
                   static_lexer.c \
 		  statement.c \
 		  stmt_blk.c \
+                  struct_union.c \
 		  symtable.c \
 		  tcl_funcs.c \
 		  toggle.c \
