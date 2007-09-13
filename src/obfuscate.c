@@ -65,7 +65,7 @@ void obfuscate_set_mode( bool value ) {
  return the given name; otherwise, create a new element in the tree to represent
  this new name.
 */
-char* obfuscate_name( char* real_name, char prefix ) {
+char* obfuscate_name( const char* real_name, char prefix ) {
 
   tnode* obfnode;    /* Pointer to obfuscated tree node */
   char*  obfname;    /* Obfuscated name */
@@ -116,6 +116,11 @@ void obfuscate_dealloc() {
 
 /*
  $Log$
+ Revision 1.5  2006/10/06 22:45:57  phase1geo
+ Added support for the wait() statement.  Added wait1 diagnostic to regression
+ suite to verify its behavior.  Also added missing GPL license note at the top
+ of several *.h and *.c files that are somewhat new.
+
  Revision 1.4  2006/08/18 22:19:54  phase1geo
  Fully integrated obfuscation into the development release.
 

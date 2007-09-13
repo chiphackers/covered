@@ -537,7 +537,18 @@ bool memory_collect( char* funit_name, int funit_type, int cov, sig_link** head,
 
 }
 
-bool memory_display_toggle_instance_summary( FILE* ofile, char* name, int hits01, int hits10, float total ) {
+/*!
+ \param ofile   Pointer to file to display coverage results to.
+ \param name    Name of instance being reported
+ \param hits01  Pointer to number of bits in memory toggled from 0 -> 1.
+ \param hits10  Pointer to number of bits in memory toggled from 1 -> 0.
+ \param total   Pointer to total number of bits in memories.
+
+ \return Returns TRUE if any bits were found to be untoggled; otherwise, returns FALSE.
+
+ Calculates and outputs the memory toggle summary coverage results for a given instance.
+*/
+bool memory_display_toggle_instance_summary( FILE* ofile, const char* name, int hits01, int hits10, float total ) {
 
   float percent01;    /* Percentage of bits toggling from 0 -> 1 */
   float percent10;    /* Percentage of bits toggling from 1 -> 0 */
@@ -711,7 +722,19 @@ bool memory_ae_instance_summary( FILE* ofile, funit_inst* root, char* parent_ins
 
 }
 
-bool memory_display_toggle_funit_summary( FILE* ofile, char* name, char* fname, int hit01, int hit10, float total ) {
+/*!
+ \param ofile  Pointer to file to output functional unit summary results
+ \param name   Name of functional unit being reported
+ \param fname  Filename containing the functional unit being reported
+ \param hit01  Number of memory bits that transitioned from a value of 0 to a value of 1 during simulation for this functional unit
+ \param hit10  Number of memory bits that transitioned from a value of 1 to a value of 0 during simulation for this functional unit
+ \param total  Number of total memory bits in the given functional unit
+
+ \return Returns TRUE if at least one bit was found to not have transitioned during simulation.
+
+ Calculates and outputs the toggle coverage for all memories in the given functional unit.
+*/
+bool memory_display_toggle_funit_summary( FILE* ofile, const char* name, const char* fname, int hit01, int hit10, float total ) {
 
   float percent01;  /* Percentage of bits that toggled from 0 to 1 */
   float percent10;  /* Percentage of bits that toggled from 1 to 0 */
@@ -774,7 +797,20 @@ bool memory_toggle_funit_summary( FILE* ofile, funit_link* head, int* hits01, in
 
 }
 
-bool memory_display_ae_funit_summary( FILE* ofile, char* name, char* fname, int wr_hits, int rd_hits, float total ) {
+/*!
+ \param ofile    Pointer to output file that will be written
+ \param name     Name of functional unit being reported
+ \param fname    Filename containing the given functional unit being reported
+ \param wr_hits  Number of addressable memory elements that were written in this functional unit during simulation
+ \param rd_hits  Number of addressable memory elements that were read in this functional unit during simulation
+ \param total    Number of addressable memory elements in the given functional unit
+
+ \return Returns TRUE if at least one addressable memory element was not written or read during simulation; otherwise,
+         returns FALSE.
+
+ Calculates and outputs the summary addressable memory element coverage information for a given functional unit.
+*/
+bool memory_display_ae_funit_summary( FILE* ofile, const char* name, const char* fname, int wr_hits, int rd_hits, float total ) {
 
   float wr_percent;  /* Percentage of addressable elements that were written */
   float rd_percent;  /* Percentage of addressable elements that were read */
@@ -1218,6 +1254,10 @@ void memory_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.15  2007/07/26 22:23:00  phase1geo
+ Starting to work on the functionality for automatic tasks/functions.  Just
+ checkpointing some work.
+
  Revision 1.14  2007/07/16 22:24:38  phase1geo
  Fixed bugs in accumulated coverage output and updated regression files for this
  change.  VCS simulated results are not contained here, however.

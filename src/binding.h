@@ -29,17 +29,14 @@
 /*! \brief Adds vsignal and expression to binding list. */
 void bind_add( int type, const char* name, expression* exp, func_unit* funit );
 
-/*! \brief Adds statement ID and expression to binding list. */
-void bind_add_stmt( int id, expression* exp, func_unit* funit );
-
 /*! \brief Appends an FSM expression to a matching expression binding structure */
-void bind_append_fsm_expr( expression* fsm_exp, expression* exp, func_unit* curr_funit );
+void bind_append_fsm_expr( expression* fsm_exp, const expression* exp, const func_unit* curr_funit );
 
 /*! \brief Removes the expression with ID of id from binding list. */
 void bind_remove( int id, bool clear_assigned );
 
 /*! \brief Searches current binding list for the signal name associated with the given expression */
-char* bind_find_sig_name( expression* exp );
+char* bind_find_sig_name( const expression* exp );
 
 /*! \brief Removes the statement block associated with the expression with ID of id after binding has occurred */
 void bind_rm_stmt( int id );
@@ -61,6 +58,12 @@ void bind_dealloc();
 
 /* 
  $Log$
+ Revision 1.28  2006/08/02 22:28:31  phase1geo
+ Attempting to fix the bug pulled out by generate11.v.  We are just having an issue
+ with setting the assigned bit in a signal expression that contains a hierarchical reference
+ using a genvar reference.  Adding generate11.1 diagnostic to verify a slightly different
+ syntax style for the same code.  Note sure how badly I broke regression at this point.
+
  Revision 1.27  2006/04/07 03:47:50  phase1geo
  Fixing run-time issues with VPI.  Things are running correctly now with IV.
 

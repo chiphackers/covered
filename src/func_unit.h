@@ -37,6 +37,9 @@ func_unit* funit_create();
 /*! \brief Returns the parent module of the given functional unit. */
 func_unit* funit_get_curr_module( func_unit* funit );
 
+/*! \brief Returns the parent module of the given functional unit (returning a const version). */
+const func_unit* funit_get_curr_module_safe( const func_unit* funit );
+
 /*! \brief Returns the parent function of the given functional unit (if there is one) */
 func_unit* funit_get_curr_function( func_unit* funit );
 
@@ -104,6 +107,10 @@ void funit_dealloc( func_unit* funit );
 
 /*
  $Log$
+ Revision 1.28  2007/07/26 22:23:00  phase1geo
+ Starting to work on the functionality for automatic tasks/functions.  Just
+ checkpointing some work.
+
  Revision 1.27  2007/07/26 17:05:15  phase1geo
  Fixing problem with static functions (vector data associated with expressions
  were not being allocated).  Regressions have been run.  Only two failures

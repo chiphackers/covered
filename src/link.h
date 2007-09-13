@@ -112,7 +112,7 @@ gitem_link* gitem_link_find( gen_item* gi, gitem_link* head );
 funit_inst* inst_link_find_by_scope( char* scope, inst_link* head );
 
 /*! \brief Finds specified functional unit instance in given inst_link list. */
-funit_inst* inst_link_find_by_funit( func_unit* funit, inst_link* head, int* ignore );
+funit_inst* inst_link_find_by_funit( const func_unit* funit, inst_link* head, int* ignore );
 
 /*********************************************************************************/
 
@@ -167,6 +167,9 @@ void inst_link_delete_list( inst_link* head );
 
 /*
  $Log$
+ Revision 1.28  2007/04/18 22:35:02  phase1geo
+ Revamping simulator core again.  Checkpointing.
+
  Revision 1.27  2007/04/09 22:47:53  phase1geo
  Starting to modify the simulation engine for performance purposes.  Code is
  not complete and is untested at this point.

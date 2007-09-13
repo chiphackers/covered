@@ -284,7 +284,7 @@ int arc_get_suppl( const char* arcs, int type ) {
 
  Sets the state value of 
 */
-bool arc_set_states( char* arcs, int start, vector* left, vector* right ) {
+bool arc_set_states( char* arcs, int start, const vector* left, const vector* right ) {
 
   bool   retval = TRUE;  /* Return value of this function */
   char   mask;           /* Mask to apply to current bit select */
@@ -302,8 +302,6 @@ bool arc_set_states( char* arcs, int start, vector* left, vector* right ) {
     retval = FALSE;
 
   } else {
-
-    /* printf( "Setting state (%d) to (%d)\n", vector_to_int( left ), vector_to_int( right ) ); */
 
     entry_size = arc_get_entry_width( arc_get_width( arcs ) );
 
@@ -400,7 +398,7 @@ int arc_get_entry_suppl( const char* arcs, int curr, int type ) {
  will either modify the supplemental data that is associated with this function's return
  value or it will check to see if another arc entry is required to be added.
 */
-int arc_find( const char* arcs, vector* from_st, vector* to_st, int* ptr ) {
+int arc_find( const char* arcs, const vector* from_st, const vector* to_st, int* ptr ) {
 
   char  tmp[264];    /* Temporary arc array entry for comparison purposes */
   int   curr_size;   /* Current number of entries in this arc array */
@@ -488,9 +486,9 @@ char* arc_create( int width ) {
   arcs = (char*)malloc_safe( ((arc_get_entry_width( width ) * width) + ARC_STATUS_SIZE + 1), __FILE__, __LINE__ );
 
   /* Initialize */
-  arc_set_width( arcs, width );     /* Signal width                                   */
-  arc_set_max_size( arcs, width );  /* Number of entries in current arc array         */
-  arc_set_curr_size( arcs, 0 );     /* Current entry pointer to store new             */
+  arc_set_width( arcs, width );     /* Signal width */
+  arc_set_max_size( arcs, width );  /* Number of entries in current arc array */
+  arc_set_curr_size( arcs, 0 );     /* Current entry pointer to store new */
   arc_set_suppl( arcs, 0 );         /* Initialize supplemental field to zeros for now */
 
   for( i=0; i<(arc_get_entry_width( width ) * width); i++ ) {
@@ -515,7 +513,7 @@ char* arc_create( int width ) {
  a state transition entry from the fr_st and to_st expressions, setting the
  hit bits in the entry to 0.
 */
-void arc_add( char** arcs, vector* fr_st, vector* to_st, int hit ) {
+void arc_add( char** arcs, const vector* fr_st, const vector* to_st, int hit ) {
 
   char* tmp;          /* Temporary char array holder */
   int   entry_width;  /* Width of a signal entry in the arc array */
@@ -526,8 +524,6 @@ void arc_add( char** arcs, vector* fr_st, vector* to_st, int hit ) {
   assert( *arcs != NULL );
 
   if( !vector_is_unknown( fr_st ) && !vector_is_unknown( to_st ) ) {
-
-    /* printf( "Adding state transition %d -> %d\n", vector_to_int( fr_st ), vector_to_int( to_st ) ); */
 
     ptr  = 1;   /* Tell find function to check for a match even if opposite bit is not set. */
     side = arc_find( *arcs, fr_st, to_st, &ptr );
@@ -1288,6 +1284,9 @@ void arc_dealloc( char* arcs ) {
 
 /*
  $Log$
+ Revision 1.39  2006/10/12 22:48:45  phase1geo
+ Updates to remove compiler warnings.  Still some work left to go here.
+
  Revision 1.38  2006/09/20 22:38:09  phase1geo
  Lots of changes to support memories and multi-dimensional arrays.  We still have
  issues with endianness and VCS regressions have not been run, but this is a significant

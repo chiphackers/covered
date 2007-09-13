@@ -292,7 +292,7 @@ bool fsm_arg_parse( char* arg ) {
  parsed value and is returned to the calling function.  If the string is not
  parsed correctly, a value of NULL is returned to the calling function.
 */
-expression* fsm_arg_parse_value( char** str, func_unit* funit ) {
+expression* fsm_arg_parse_value( char** str, const func_unit* funit ) {
 
   expression* expr = NULL;   /* Pointer to expression containing state value */
   expression* left;          /* Left child expression */
@@ -441,7 +441,7 @@ expression* fsm_arg_parse_value( char** str, func_unit* funit ) {
  Each transition is then added to the specified FSM table's arc list which is added to the
  FSM arc transition table when the fsm_create_tables() function is called.
 */
-void fsm_arg_parse_trans( expression* expr, fsm* table, func_unit* funit ) {
+void fsm_arg_parse_trans( expression* expr, fsm* table, const func_unit* funit ) {
 
   expression* from_state;  /* Pointer to from_state value of transition */
   expression* to_state;    /* Pointer to to_state value of transition */
@@ -495,7 +495,7 @@ void fsm_arg_parse_trans( expression* expr, fsm* table, func_unit* funit ) {
  Parses the specified attribute parameter for validity and updates FSM structure
  accordingly.
 */
-void fsm_arg_parse_attr( attr_param* ap, func_unit* funit ) {
+void fsm_arg_parse_attr( attr_param* ap, const func_unit* funit ) {
 
   attr_param* curr;               /* Pointer to current attribute parameter in list */
   fsm_link*   fsml      = NULL;   /* Pointer to found FSM structure */
@@ -601,6 +601,10 @@ void fsm_arg_parse_attr( attr_param* ap, func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.30  2006/09/22 19:56:45  phase1geo
+ Final set of fixes and regression updates per recent changes.  Full regression
+ now passes.
+
  Revision 1.29  2006/09/20 22:38:09  phase1geo
  Lots of changes to support memories and multi-dimensional arrays.  We still have
  issues with endianness and VCS regressions have not been run, but this is a significant

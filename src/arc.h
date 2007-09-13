@@ -35,7 +35,7 @@ int arc_get_width( const char* arcs );
 char* arc_create( int width );
 
 /*! \brief Adds new state transition arc entry to specified table. */
-void arc_add( char** arcs, vector* fr_st, vector* to_st, int hit );
+void arc_add( char** arcs, const vector* fr_st, const vector* to_st, int hit );
 
 /*! \brief Gets supplemental field value from specified arc entry table. */
 int arc_get_suppl( const char* arcs, int type );
@@ -47,7 +47,7 @@ void arc_set_entry_suppl( char* arcs, int curr, int type, char val );
 int arc_get_entry_suppl( const char* arcs, int curr, int type );
 
 /*! \brief Finds the specified state transition in the given arc array */
-int arc_find( const char* arcs, vector* from_st, vector* to_st, int* ptr );
+int arc_find( const char* arcs, const vector* from_st, const vector* to_st, int* ptr );
 
 /*! \brief Calculates all state and state transition values for reporting purposes. */
 void arc_get_stats( char* arcs, float* state_total, int* state_hits, float* arc_total, int* arc_hits );
@@ -75,6 +75,9 @@ void arc_dealloc( char* arcs );
 
 /*
  $Log$
+ Revision 1.17  2006/10/12 22:48:45  phase1geo
+ Updates to remove compiler warnings.  Still some work left to go here.
+
  Revision 1.16  2006/09/20 22:38:09  phase1geo
  Lots of changes to support memories and multi-dimensional arrays.  We still have
  issues with endianness and VCS regressions have not been run, but this is a significant

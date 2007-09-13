@@ -86,7 +86,7 @@ void vector_set_type( vector* vec, int type );
 int vector_get_type( vector* vec );
 
 /*! \brief Specifies if vector contains unknown values (X or Z) */
-bool vector_is_unknown( vector* vec );
+bool vector_is_unknown( const vector* vec );
 
 /*! \brief Returns TRUE if specified vector has been set (simulated) */
 bool vector_is_set( vector* vec );
@@ -169,6 +169,13 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.42  2006/11/22 20:20:01  phase1geo
+ Updates to properly support 64-bit time.  Also starting to make changes to
+ simulator to support "back simulation" for when the current simulation time
+ has advanced out quite a bit of time and the simulator needs to catch up.
+ This last feature is not quite working at the moment and regressions are
+ currently broken.  Checkpointing.
+
  Revision 1.41  2006/10/12 22:48:46  phase1geo
  Updates to remove compiler warnings.  Still some work left to go here.
 

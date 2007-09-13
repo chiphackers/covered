@@ -50,7 +50,7 @@ extern char       user_msg[USER_MSG_LENGTH];
  a top-of-tree search.  The specified scope should only be for a functional unit.  If the user is attempting
  to get the functional unit for a signal, the signal name should be removed prior to calling this function.
 */
-func_unit* scope_find_funit_from_scope( char* scope, func_unit* curr_funit, bool rm_unnamed ) {
+func_unit* scope_find_funit_from_scope( const char* scope, func_unit* curr_funit, bool rm_unnamed ) {
 
   funit_inst* curr_inst;      /* Pointer to current instance */
   funit_inst* funiti = NULL;  /* Pointer to functional unit instance found */
@@ -105,7 +105,7 @@ func_unit* scope_find_funit_from_scope( char* scope, func_unit* curr_funit, bool
  are set to the found module parameter and its functional unit; otherwise, a value of FALSE is returned to the
  calling function.
 */
-bool scope_find_param( char* name, func_unit* curr_funit, mod_parm** found_parm, func_unit** found_funit, int line ) {
+bool scope_find_param( const char* name, func_unit* curr_funit, mod_parm** found_parm, func_unit** found_funit, int line ) {
 
   char* parm_name;  /* Parameter basename holder */
   char* scope;      /* Parameter scope holder */
@@ -171,7 +171,7 @@ bool scope_find_param( char* name, func_unit* curr_funit, mod_parm** found_parm,
  performs relative referencing to find the signal.  If the signal is found the found_sig and found_funit pointers
  are set to the found signal and its functional unit; otherwise, a value of FALSE is returned to the calling function.
 */
-bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, func_unit** found_funit, int line ) {
+bool scope_find_signal( const char* name, func_unit* curr_funit, vsignal** found_sig, func_unit** found_funit, int line ) {
 
   char*     sig_name;  /* Signal basename holder */
   char*     scope;     /* Signal scope holder */
@@ -250,7 +250,7 @@ bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, 
  found, the found_funit pointer is set to the functional unit and the function returns TRUE; otherwise, the function
  returns FALSE to the calling function.
 */
-bool scope_find_task_function_namedblock( char* name, int type, func_unit* curr_funit, func_unit** found_funit, int line, bool must_find, bool rm_unnamed ) {
+bool scope_find_task_function_namedblock( const char* name, int type, func_unit* curr_funit, func_unit** found_funit, int line, bool must_find, bool rm_unnamed ) {
 
   assert( (type == FUNIT_FUNCTION)  || (type == FUNIT_TASK)  || (type == FUNIT_NAMED_BLOCK) ||
           (type == FUNIT_AFUNCTION) || (type == FUNIT_ATASK) || (type == FUNIT_ANAMED_BLOCK) );
@@ -281,7 +281,7 @@ bool scope_find_task_function_namedblock( char* name, int type, func_unit* curr_
  \note This function should only be called when the scope refers to a functional unit
        that is NOT a module!
 */
-func_unit* scope_get_parent_funit( char* scope ) {
+func_unit* scope_get_parent_funit( const char* scope ) {
 
   funit_inst* inst;  /* Pointer to functional unit instance with the specified scope */
   char*       rest;  /* Temporary holder */
@@ -314,7 +314,7 @@ func_unit* scope_get_parent_funit( char* scope ) {
 
  \note Assumes that the given scope is not that of a module itself!
 */
-func_unit* scope_get_parent_module( char* scope ) {
+func_unit* scope_get_parent_module( const char* scope ) {
 
   funit_inst* inst;        /* Pointer to functional unit instance with the specified scope */
   char*       curr_scope;  /* Current scope to search for */
@@ -386,6 +386,10 @@ char* scope_flatten( char* scope ) {
 
 /*
  $Log$
+ Revision 1.35  2007/07/26 22:23:00  phase1geo
+ Starting to work on the functionality for automatic tasks/functions.  Just
+ checkpointing some work.
+
  Revision 1.34  2007/07/18 22:39:18  phase1geo
  Checkpointing generate work though we are at a fairly broken state at the moment.
 

@@ -132,7 +132,7 @@ void set_debug( bool value ) {
  Displays the specified message to standard output based on the type of message
  being output.
 */
-void print_output( char* msg, int type, char* file, int line ) {
+void print_output( const char* msg, int type, const char* file, int line ) {
 
   FILE* outf = debug_mode ? stdout : stderr;
   char  tmpmsg[USER_MSG_LENGTH];
@@ -273,7 +273,7 @@ bool check_option_value( int argc, char** argv, int option_index ) {
  variable (doesn't start with a number, contains only a-zA-Z0-9_ characters),
  returns a value of TRUE; otherwise, returns a value of FALSE.
 */
-bool is_variable( char* token ) {
+bool is_variable( const char* token ) {
 
   bool retval = TRUE;   /* Return value of this function */
 
@@ -313,7 +313,7 @@ bool is_variable( char* token ) {
  \return Returns TRUE if the specified token is a valid argument representing
          a functional unit.
 */
-bool is_func_unit( char* token ) {
+bool is_func_unit( const char* token ) {
 
   char* orig;                          /* Temporary string */
   char* rest;                          /* Temporary string */
@@ -350,7 +350,7 @@ bool is_func_unit( char* token ) {
  \return Returns TRUE if the specified string would be a legal filename to
          write to; otherwise, returns FALSE.
 */
-bool is_legal_filename( char* token ) {
+bool is_legal_filename( const char* token ) {
 
   bool  retval = FALSE;  /* Return value for this function */
   FILE* tmpfile;         /* Temporary file pointer */
@@ -371,9 +371,9 @@ bool is_legal_filename( char* token ) {
 
  Extracts the file basename of the specified filename string.
 */
-char* get_basename( char* str ) {
+const char* get_basename( const char* str ) {
 
-  char* ptr;  /* Pointer to current character in str */
+  const char* ptr;  /* Pointer to current character in str */
 
   ptr = (str + strlen( str )) - 1;
 
@@ -423,7 +423,7 @@ char* get_dirname( char* str ) {
  Checks to see if the specified directory actually exists in the file structure.
  If the directory is found to exist, returns TRUE; otherwise, returns FALSE.
 */
-bool directory_exists( char* dir ) {
+bool directory_exists( const char* dir ) {
 
   bool        retval = FALSE;  /* Return value for this function */
   struct stat filestat;        /* Statistics of specified directory */
@@ -454,14 +454,14 @@ bool directory_exists( char* dir ) {
  contain the specified extensions (if ext_head is NULL, load only *.v files).
  Stores all string filenames to the specified string list.
 */
-void directory_load( char* dir, str_link* ext_head, str_link** file_head, str_link** file_tail ) {
+void directory_load( const char* dir, const str_link* ext_head, str_link** file_head, str_link** file_tail ) {
 
-  DIR*           dir_handle;  /* Pointer to opened directory */
-  struct dirent* dirp;        /* Pointer to current directory entry */
-  str_link*      curr_ext;    /* Pointer to current extension string */
-  char*          ptr;         /* Pointer to current character in filename */
-  int            tmpchars;    /* Number of characters needed to store full pathname for file */
-  char*          tmpfile;     /* Temporary string holder for full pathname of file */
+  DIR*            dir_handle;  /* Pointer to opened directory */
+  struct dirent*  dirp;        /* Pointer to current directory entry */
+  const str_link* curr_ext;    /* Pointer to current extension string */
+  char*           ptr;         /* Pointer to current character in filename */
+  int             tmpchars;    /* Number of characters needed to store full pathname for file */
+  char*           tmpfile;     /* Temporary string holder for full pathname of file */
 
   if( (dir_handle = opendir( dir )) == NULL ) {
 
@@ -511,7 +511,7 @@ void directory_load( char* dir, str_link* ext_head, str_link** file_head, str_li
  Checks to see if the specified file actually exists in the file structure.
  If the file is found to exist, returns TRUE; otherwise, returns FALSE.
 */
-bool file_exists( char* file ) {
+bool file_exists( const char* file ) {
 
   bool        retval = FALSE;  /* Return value for this function */
   struct stat filestat;        /* Statistics of specified directory */
@@ -576,15 +576,15 @@ bool util_readline( FILE* file, char** line ) {
  \return Returns the given value with environment variables substituted in.  This value should
          be freed by the calling function.
 */
-char* substitute_env_vars( char* value ) {
+char* substitute_env_vars( const char* value ) {
 
-  char* newvalue    = NULL;   /* New value */
-  int   newvalue_index;       /* Current index into newvalue */
-  char* ptr;                  /* Pointer to current character in value */
-  char  env_var[4096];        /* Name of found environment variable */
-  int   env_var_index;        /* Current index to write into env_var string */
-  bool  parsing_var = FALSE;  /* Set to TRUE when we are parsing an environment variable */
-  char* env_value;            /* Environment variable value */
+  char*       newvalue    = NULL;   /* New value */
+  int         newvalue_index;       /* Current index into newvalue */
+  const char* ptr;                  /* Pointer to current character in value */
+  char        env_var[4096];        /* Name of found environment variable */
+  int         env_var_index;        /* Current index to write into env_var string */
+  bool        parsing_var = FALSE;  /* Set to TRUE when we are parsing an environment variable */
+  char*       env_value;            /* Environment variable value */
 
   ptr            = value;
   newvalue_index = 0;
@@ -633,10 +633,10 @@ char* substitute_env_vars( char* value ) {
  returning that instance name to the value of front and the the
  rest of the hierarchy in the value of rest.
 */
-void scope_extract_front( char* scope, char* front, char* rest ) {
+void scope_extract_front( const char* scope, char* front, char* rest ) {
   
-  char* ptr;      /* Pointer to current character */
-  char  endchar;  /* Set to the character we are searching for */
+  const char* ptr;      /* Pointer to current character */
+  char        endchar;  /* Set to the character we are searching for */
   
   ptr = scope;
 
@@ -676,10 +676,10 @@ void scope_extract_front( char* scope, char* front, char* rest ) {
  returning that instance name to the value of back and the the
  rest of the hierarchy in the value of rest.
 */
-void scope_extract_back( char* scope, char* back, char* rest ) {
+void scope_extract_back( const char* scope, char* back, char* rest ) {
 
-  char* ptr;      /* Pointer to current character */
-  char  endchar;  /* Set to the character we are searching for */
+  const char* ptr;      /* Pointer to current character */
+  char        endchar;  /* Set to the character we are searching for */
 
   ptr = scope + strlen( scope ) - 1;
 
@@ -715,7 +715,7 @@ void scope_extract_back( char* scope, char* back, char* rest ) {
  \param back
 
 */
-void scope_extract_scope( char* scope, char* front, char* back ) {
+void scope_extract_scope( const char* scope, const char* front, char* back ) {
 
   back[0] = '\0';
 
@@ -733,7 +733,7 @@ void scope_extract_scope( char* scope, char* front, char* back ) {
  Allocates memory for and generates a printable version of the given string (a signal or
  instance name).  The calling function is responsible for deallocating the string returned.
 */
-char* scope_gen_printable( char* str ) {
+char* scope_gen_printable( const char* str ) {
 
   char* new_str;  /* New version of string with escaped sequences removed */
 
@@ -756,7 +756,7 @@ char* scope_gen_printable( char* str ) {
  \return Returns TRUE if the two strings are equal, properly handling the case where one or
          both are escaped names (start with an escape character and end with a space).
 */
-bool scope_compare( char* str1, char* str2 ) {
+bool scope_compare( const char* str1, const char* str2 ) {
 
   bool  retval;    /* Return value for this function */
   char* new_str1;  /* New form of str1 with escaped sequences removed */
@@ -786,9 +786,9 @@ bool scope_compare( char* str1, char* str2 ) {
  Parses specified scope for '.' character.  If one is found, returns FALSE; otherwise,
  returns TRUE.
 */
-bool scope_local( char* scope ) {
+bool scope_local( const char* scope ) {
 
-  char* ptr;             /* Pointer to current character */
+  const char* ptr;             /* Pointer to current character */
   bool  esc;             /* Set to TRUE if current is escaped */
   bool  wspace = FALSE;  /* Set if last character seen was a whitespace */
 
@@ -875,7 +875,7 @@ void convert_file_to_module( char* mname, int len, char* fname ) {
  If a file is a library file (suppl field is 'D'), the name of the module to search
  for is compared with the name of the file.
 */
-str_link* get_next_vfile( str_link* curr, char* mod ) {
+str_link* get_next_vfile( str_link* curr, const char* mod ) {
 
   str_link* next = NULL;  /* Pointer to next Verilog file to parse */
   char      name[256];    /* String holder for module name of file */
@@ -912,7 +912,7 @@ str_link* get_next_vfile( str_link* curr, char* mod ) {
  Allocated memory like a malloc() call but performs some pre-allocation and
  post-allocation checks to be sure that the malloc call works properly.
 */
-void* malloc_safe( size_t size, char* file, int line ) {
+void* malloc_safe( size_t size, const char* file, int line ) {
 
   void* obj;      /* Object getting malloc address */
 
@@ -952,7 +952,7 @@ void* malloc_safe( size_t size, char* file, int line ) {
  post-allocation checks to be sure that the malloc call works properly.  Unlike
  malloc_safe, there is no upper bound on the amount of memory to allocate.
 */
-void* malloc_safe_nolimit( size_t size, char* file, int line ) {
+void* malloc_safe_nolimit( size_t size, const char* file, int line ) {
 
   void* obj;  /* Object getting malloc address */
 
@@ -1001,7 +1001,7 @@ void free_safe( void* ptr ) {
  Calls the strdup() function for the specified string, making sure that the string to
  allocate is a healthy string (contains NULL character).
 */
-char* strdup_safe( const char* str, char* file, int line ) {
+char* strdup_safe( const char* str, const char* file, int line ) {
 
   char* new_str;
 
@@ -1131,6 +1131,10 @@ void calc_miss_percent( int hits, float total, float* misses, float* percent ) {
 
 /*
  $Log$
+ Revision 1.65  2007/09/04 22:50:50  phase1geo
+ Fixed static_afunc1 issues.  Reran regressions and updated necessary files.
+ Also working on debugging one remaining issue with mem1.v (not solved yet).
+
  Revision 1.64  2007/08/19 02:08:32  phase1geo
  Fixing one syntax error with fix for compiling issue when --enable-debug is
  not specified.

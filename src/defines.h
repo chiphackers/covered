@@ -2099,14 +2099,14 @@ struct vector_width_s {
  Binds a signal to an expression.
 */
 struct exp_bind_s {
-  int         type;                  /*!< Specifies if name refers to a signal (0), function (FUNIT_FUNCTION) or task (FUNIT_TASK) */
-  char*       name;                  /*!< Name of Verilog scoped signal/functional unit to bind */
-  bool        clear_assigned;        /*!< If TRUE, clears the signal assigned supplemental field without binding */
-  int         line;                  /*!< Specifies line of expression -- used when expression is deallocated and we are clearing */
-  expression* exp;                   /*!< Expression to bind. */
-  expression* fsm;                   /*!< FSM expression to create value for when this expression is bound */
-  func_unit*  funit;                 /*!< Pointer to functional unit containing expression */
-  exp_bind*   next;                  /*!< Pointer to next binding in list */
+  int              type;             /*!< Specifies if name refers to a signal (0), function (FUNIT_FUNCTION) or task (FUNIT_TASK) */
+  char*            name;             /*!< Name of Verilog scoped signal/functional unit to bind */
+  bool             clear_assigned;   /*!< If TRUE, clears the signal assigned supplemental field without binding */
+  int              line;             /*!< Specifies line of expression -- used when expression is deallocated and we are clearing */
+  expression*      exp;              /*!< Expression to bind. */
+  expression*      fsm;              /*!< FSM expression to create value for when this expression is bound */
+  func_unit*       funit;            /*!< Pointer to functional unit containing expression */
+  exp_bind*        next;             /*!< Pointer to next binding in list */
 };
 
 /*!
@@ -2365,6 +2365,10 @@ struct reentrant_s {
 
 /*
  $Log$
+ Revision 1.260  2007/07/29 03:32:06  phase1geo
+ First attempt to make FUNC_CALL expressions copy the functional return value
+ to the expression vector.  Not quite working yet -- checkpointing.
+
  Revision 1.259  2007/07/27 22:43:50  phase1geo
  Starting to add support for saving expression information for re-entrant
  tasks/functions.  Still more work to go.

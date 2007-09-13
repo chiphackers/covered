@@ -30,13 +30,13 @@
 
 
 /*! \brief Parses -A command-line option to score command */
-void assertion_parse( char* arg );
+void assertion_parse( const char* arg );
 
 /*! \brief Parses an in-line attribute for assertion coverage information */
-void assertion_parse_attr( attr_param* ap, func_unit* funit );
+void assertion_parse_attr( attr_param* ap, const func_unit* funit );
 
 /*! \brief Gather statistics for assertion coverage */
-void assertion_get_stats( func_unit* funit, float* total, int* hit );
+void assertion_get_stats( const func_unit* funit, float* total, int* hit );
 
 /*! \brief Generates report output for assertion coverage */
 void assertion_report( FILE* ofile, bool verbose );
@@ -45,15 +45,20 @@ void assertion_report( FILE* ofile, bool verbose );
 bool assertion_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit );
 
 /*! \brief Collects uncovered and covered assertion instance names for the given module */
-bool assertion_collect( char* funit_name, int funit_type, char*** uncov_inst_names, int** excludes, int* uncov_inst_size,
+bool assertion_collect( const char* funit_name, int funit_type, char*** uncov_inst_names, int** excludes, int* uncov_inst_size,
                         char*** cov_inst_names, int* cov_inst_size );
 
 /*! \brief Gets missed coverage point descriptions for the given assertion module */
-bool assertion_get_coverage( char* funit_name, int funit_type, char* inst_name, char** assert_mod, str_link** cp_head, str_link** cp_tail );
+bool assertion_get_coverage( const char* funit_name, int funit_type, const char* inst_name, char** assert_mod, str_link** cp_head, str_link** cp_tail );
 
 
 /*
  $Log$
+ Revision 1.8  2006/06/29 20:06:33  phase1geo
+ Adding assertion exclusion code.  Things seem to be working properly with this
+ now.  This concludes the initial version of code exclusion.  There are some
+ things to clean up (and maybe make better looking).
+
  Revision 1.7  2006/05/01 22:27:37  phase1geo
  More updates with assertion coverage window.  Still have a ways to go.
 

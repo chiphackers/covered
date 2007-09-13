@@ -734,7 +734,7 @@ funit_inst* inst_link_find_by_scope( char* scope, inst_link* head ) {
  a matching instance is found, the pointer to this element is returned.  If the specified
  generate item could not be matched, the value of NULL is returned.
 */
-funit_inst* inst_link_find_by_funit( func_unit* funit, inst_link* head, int* ignore ) {
+funit_inst* inst_link_find_by_funit( const func_unit* funit, inst_link* head, int* ignore ) {
 
   inst_link*  curr;  /* Pointer to current inst_link */
   funit_inst* inst;  /* Pointer to found instance */
@@ -1234,6 +1234,10 @@ void inst_link_delete_list( inst_link* head ) {
 
 /*
  $Log$
+ Revision 1.66  2007/09/05 21:07:37  phase1geo
+ Fixing bug 1788991.  Full regression passes.  Removed excess output used for
+ debugging.  May want to create a new development release with these changes.
+
  Revision 1.65  2007/09/04 22:50:50  phase1geo
  Fixed static_afunc1 issues.  Reran regressions and updated necessary files.
  Also working on debugging one remaining issue with mem1.v (not solved yet).

@@ -30,7 +30,7 @@
 attr_param* attribute_create( const char* name, expression* expr );
 
 /*! \brief Parses and handles specified attribute parameter list. */
-void attribute_parse( attr_param* ap, func_unit* mod );
+void attribute_parse( attr_param* ap, const func_unit* mod );
 
 /*! \brief Deallocates entire attribute parameter list. */
 void attribute_dealloc( attr_param* ap );
@@ -38,6 +38,11 @@ void attribute_dealloc( attr_param* ap );
 
 /*
  $Log$
+ Revision 1.6  2006/03/28 22:28:27  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.5  2005/11/08 23:12:09  phase1geo
  Fixes for function/task additions.  Still a lot of testing on these structures;
  however, regressions now pass again so we are checkpointing here.

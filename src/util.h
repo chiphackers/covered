@@ -35,73 +35,73 @@ void set_output_suppression( bool value );
 void set_debug( bool value );
 
 /*! \brief Displays error message to standard output. */
-void print_output( char* msg, int type, char* file, int line );
+void print_output( const char* msg, int type, const char* file, int line );
 
 /*! \brief Checks to make sure that a value was properly specified for a given option. */
 bool check_option_value( int argc, char** argv, int option_index );
 
 /*! \brief Returns TRUE if the specified string is a legal variable name. */
-bool is_variable( char* token );
+bool is_variable( const char* token );
 
 /*! \brief Returns TRUE if the specified string could be a valid filename. */
-bool is_legal_filename( char* token );
+bool is_legal_filename( const char* token );
 
 /*! \brief Returns TRUE if the specified string is a legal functional unit value. */
-bool is_func_unit( char* token );
+bool is_func_unit( const char* token );
 
 /*! \brief Extracts filename from file pathname. */
-char* get_basename( char* str );
+const char* get_basename( const char* str );
 
 /*! \brief Extracts directory path from file pathname. */
 char* get_dirname( char* str );
 
 /*! \brief Returns TRUE if the specified directory exists. */
-bool directory_exists( char* dir );
+bool directory_exists( const char* dir );
 
 /*! \brief Loads contents of specified directory to file list if extension is part of list. */
-void directory_load( char* dir, str_link* ext_head, str_link** file_head, str_link** file_tail );
+void directory_load( const char* dir, const str_link* ext_head, str_link** file_head, str_link** file_tail );
 
 /*! \brief Returns TRUE if the specified file exists. */
-bool file_exists( char* file );
+bool file_exists( const char* file );
 
 /*! \brief Reads line from file and returns it in string form. */
 bool util_readline( FILE* file, /*@out@*/char** line );
 
 /*! \brief Searches the specified string for environment variables and substitutes their value if found */
-char* substitute_env_vars( char* value );
+char* substitute_env_vars( const char* value );
 
 /*! \brief Extracts highest level of hierarchy from specified scope. */
-void scope_extract_front( char* scope, /*@out@*/char* front, /*@out@*/char* rest );
+void scope_extract_front( const char* scope, /*@out@*/char* front, /*@out@*/char* rest );
 
 /*! \brief Extracts lowest level of hierarchy from specified scope. */
-void scope_extract_back( char* scope, /*@out@*/char* back, /*@out@*/char* rest );
+void scope_extract_back( const char* scope, /*@out@*/char* back, /*@out@*/char* rest );
 
 /*! \brief Extracts rest of scope not included in front. */
-void scope_extract_scope( char* scope, char* front, char* back );
+void scope_extract_scope( const char* scope, const char* front, /*@out@*/char* back );
 
 /*! \brief Generates printable version of given signal/instance string */
-char* scope_gen_printable( char* str );
+char* scope_gen_printable( const char* str );
 
 /*! \brief Compares two signal names or two instance names. */
-bool scope_compare( char* str1, char* str2 );
+bool scope_compare( const char* str1, const char* str2 );
 
 /*! \brief Returns TRUE if specified scope is local (contains no periods). */
-bool scope_local( char* scope );
+bool scope_local( const char* scope );
 
 /*! \brief Returns next Verilog file to parse. */
-str_link* get_next_vfile( str_link* curr, char* mod );
+str_link* get_next_vfile( str_link* curr, const char* mod );
 
 /*! \brief Performs safe malloc call. */
-void* malloc_safe( size_t size, char* file, int line );
+void* malloc_safe( size_t size, const char* file, int line );
 
 /*! \brief Performs safe malloc call without upper bound on byte allocation. */
-void* malloc_safe_nolimit( size_t size, char* file, int line );
+void* malloc_safe_nolimit( size_t size, const char* file, int line );
 
 /*! \brief Performs safe deallocation of heap memory. */
 void free_safe( /*@null@*/void* ptr );
 
 /*! \brief Safely allocates heap memory by performing a call to strdup */
-char* strdup_safe( const char* str, char* file, int line );
+char* strdup_safe( const char* str, const char* file, int line );
 
 /*! \brief Creates a string containing space characters. */
 void gen_space( char* spaces, int num_spaces );
@@ -126,6 +126,12 @@ void calc_miss_percent( int hits, float total, float* misses, float* percent );
 
 /*
  $Log$
+ Revision 1.27  2007/07/16 18:39:59  phase1geo
+ Finishing adding accumulated coverage output to report files.  Also fixed
+ compiler warnings with static values in C code that are inputs to 64-bit
+ variables.  Full regression was not run with these changes due to pre-existing
+ simulator problems in core code.
+
  Revision 1.26  2007/03/30 22:43:13  phase1geo
  Regression fixes.  Still have a ways to go but we are getting close.
 

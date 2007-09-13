@@ -72,7 +72,7 @@ char* ovl_assertions[OVL_ASSERT_NUM] = { "assert_change",      "assert_cycle_seq
  \return Returns TRUE if the specified name refers to a supported OVL coverage module; otherwise,
          returns FALSE.
 */
-bool ovl_is_assertion_name( char* name ) {
+bool ovl_is_assertion_name( const char* name ) {
 
   int i = OVL_ASSERT_NUM;  /* Loop iterator */
 
@@ -96,7 +96,7 @@ bool ovl_is_assertion_name( char* name ) {
  \return Returns TRUE if the specified module name is a supported OVL assertion; otherwise,
          returns FALSE.
 */
-bool ovl_is_assertion_module( func_unit* funit ) {
+bool ovl_is_assertion_module( const func_unit* funit ) {
 
   bool        retval = FALSE;  /* Return value for this function */
   funit_link* funitl;          /* Pointer to current functional unit link */
@@ -126,7 +126,7 @@ bool ovl_is_assertion_module( func_unit* funit ) {
 
  \return Returns TRUE if the specifies expression corresponds to a coverage point; otherwise, returns FALSE.
 */
-bool ovl_is_coverage_point( expression* exp ) {
+bool ovl_is_coverage_point( const expression* exp ) {
 
   return( (exp->op == EXP_OP_TASK_CALL) && (strcmp( exp->name, "ovl_cover_t" ) == 0) );
 
@@ -165,7 +165,7 @@ void ovl_add_assertions_to_no_score_list( bool rm_tasks ) {
  Gathers the total and hit assertion coverage information for the specified functional unit and
  stores this information in the total and hit pointers.
 */
-void ovl_get_funit_stats( func_unit* funit, float* total, int* hit ) {
+void ovl_get_funit_stats( const func_unit* funit, float* total, int* hit ) {
 
   funit_inst* funiti;      /* Pointer to found functional unit instance containing this functional unit */
   funit_inst* curr_child;  /* Current child of this functional unit's instance */
@@ -250,7 +250,7 @@ char* ovl_get_coverage_point( statement* stmt ) {
  Displays the verbose hit/miss information to the given output file for the given functional
  unit.
 */
-void ovl_display_verbose( FILE* ofile, func_unit* funit ) {
+void ovl_display_verbose( FILE* ofile, const func_unit* funit ) {
 
   funit_inst* funiti;      /* Pointer to functional unit instance found for this functional unit */
   int         ignore = 0;  /* Specifies that we do not want to ignore any modules */
@@ -407,7 +407,7 @@ void ovl_collect( func_unit* funit, char*** uncov_inst_names, int** excludes, in
 
  Retrieves the coverage point strings and execution counts from the specified assertion module.
 */
-void ovl_get_coverage( func_unit* funit, char* inst_name, char** assert_mod, str_link** cp_head, str_link** cp_tail ) {
+void ovl_get_coverage( const func_unit* funit, const char* inst_name, char** assert_mod, str_link** cp_head, str_link** cp_tail ) {
 
   funit_inst* funiti;      /* Pointer to found functional unit instance */
   funit_inst* curr_child;  /* Pointer to current child functional instance */
@@ -452,6 +452,10 @@ void ovl_get_coverage( func_unit* funit, char* inst_name, char** assert_mod, str
 
 /*
  $Log$
+ Revision 1.13  2007/04/03 18:55:57  phase1geo
+ Fixing more bugs in reporting mechanisms for unnamed scopes.  Checking in more
+ regression updates per these changes.  Checkpointing.
+
  Revision 1.12  2006/09/01 04:06:37  phase1geo
  Added code to support more than one instance tree.  Currently, I am seeing
  quite a few memory errors that are causing some major problems at the moment.

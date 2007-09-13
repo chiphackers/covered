@@ -324,7 +324,7 @@ bool line_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst, in
  Calculates the percentage and miss information for the given hit and total coverage info and
  outputs this information in human-readable format to the given output file.
 */
-bool line_display_funit_summary( FILE* ofile, char* name, char* fname, int hits, float total ) {
+bool line_display_funit_summary( FILE* ofile, const char* name, const char* fname, int hits, float total ) {
 
   float percent;  /* Percentage of lines hits */
   float miss;     /* Number of lines missed */
@@ -637,6 +637,10 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.76  2007/07/26 22:23:00  phase1geo
+ Starting to work on the functionality for automatic tasks/functions.  Just
+ checkpointing some work.
+
  Revision 1.75  2007/07/16 18:39:59  phase1geo
  Finishing adding accumulated coverage output to report files.  Also fixed
  compiler warnings with static values in C code that are inputs to 64-bit

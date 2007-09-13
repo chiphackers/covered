@@ -700,7 +700,20 @@ bool fsm_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst, int
 
 }
 
-bool fsm_display_funit_summary( FILE* ofile, char* name, char* fname, int state_hits, float state_total, int arc_hits, float arc_total ) {
+/*!
+ \param ofile  Pointer to file stream to output summary information to
+ \param name   Name of functional unit being reported
+ \param fname  Filename containing the functional unit being reported
+ \param state_hits  Number of FSM states that were hit in this functional unit during simulation
+ \param state_total  Number of total FSM states that exist in the given functional unit
+ \param arc_hits     Number of FSM arcs that were hit in this functional unit during simulation
+ \param arc_total    Number of total FSM arcs that exist in the given functional unit
+
+ \return Returns TRUE if at least one FSM state or FSM arc was missed during simulation for this functional unit; otherwise, returns FALSE.
+
+ Outputs the summary FSM state/arc information for a given functional unit to the given output stream.
+*/
+bool fsm_display_funit_summary( FILE* ofile, const char* name, const char* fname, int state_hits, float state_total, int arc_hits, float arc_total ) {
 
   float state_percent;  /* Percentage of states hit */
   float arc_percent;    /* Percentage of arcs hit */
@@ -1173,6 +1186,10 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.70  2007/07/26 22:23:00  phase1geo
+ Starting to work on the functionality for automatic tasks/functions.  Just
+ checkpointing some work.
+
  Revision 1.69  2007/07/16 22:24:38  phase1geo
  Fixed bugs in accumulated coverage output and updated regression files for this
  change.  VCS simulated results are not contained here, however.

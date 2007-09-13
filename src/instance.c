@@ -284,7 +284,7 @@ funit_inst* instance_find_scope( funit_inst* root, char* scope, bool rm_unnamed 
  passed back to the calling function; otherwise, the ignore count is
  decremented and the searching continues.
 */
-funit_inst* instance_find_by_funit( funit_inst* root, func_unit* funit, int* ignore ) {
+funit_inst* instance_find_by_funit( funit_inst* root, const func_unit* funit, int* ignore ) {
 
   funit_inst* match_inst = NULL;  /* Pointer to functional unit instance that found a match */
   funit_inst* curr_child;         /* Pointer to current instances child functional unit instance */
@@ -1081,6 +1081,10 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.79  2007/08/31 22:46:36  phase1geo
+ Adding diagnostics from stable branch.  Fixing a few minor bugs and in progress
+ of working on static_afunc1 failure (still not quite there yet).  Checkpointing.
+
  Revision 1.78  2007/07/18 22:39:17  phase1geo
  Checkpointing generate work though we are at a fairly broken state at the moment.
 

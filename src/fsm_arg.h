@@ -30,11 +30,16 @@
 bool fsm_arg_parse( char* arg );
 
 /*! \brief Parses specified attribute argument for FSM information. */
-void fsm_arg_parse_attr( attr_param* ap, func_unit* funit );
+void fsm_arg_parse_attr( attr_param* ap, const func_unit* funit );
 
 
 /*
  $Log$
+ Revision 1.4  2006/03/28 22:28:27  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.3  2005/11/08 23:12:09  phase1geo
  Fixes for function/task additions.  Still a lot of testing on these structures;
  however, regressions now pass again so we are checkpointing here.

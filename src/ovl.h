@@ -28,32 +28,37 @@
 
 
 /*! \brief Returns TRUE if specified name refers to an OVL assertion module. */
-bool ovl_is_assertion_name( char* name );
+bool ovl_is_assertion_name( const char* name );
 
 /*! \brief Returns TRUE if specified functional unit is an OVL assertion module. */
-bool ovl_is_assertion_module( func_unit* funit );
+bool ovl_is_assertion_module( const func_unit* funit );
 
 /*! \brief Returns TRUE if specified expression corresponds to a functional coverage point. */
-bool ovl_is_coverage_point( expression* exp );
+bool ovl_is_coverage_point( const expression* exp );
 
 /*! \brief Adds all assertion modules to no score list */
 void ovl_add_assertions_to_no_score_list( bool rm_tasks );
 
 /*! \brief Gathers the OVL assertion coverage summary statistics for the given functional unit. */
-void ovl_get_funit_stats( func_unit* funit, float* total, int* hit );
+void ovl_get_funit_stats( const func_unit* funit, float* total, int* hit );
 
 /*! \brief Displays the verbose hit/miss information to the given output file for the given functional unit. */
-void ovl_display_verbose( FILE* ofile, func_unit* funit );
+void ovl_display_verbose( FILE* ofile, const func_unit* funit );
 
 /*! \brief Finds the instance names of all uncovered and covered assertions in the specified functional unit. */
 void ovl_collect( func_unit* funit, char*** uncov_inst_names, int** excludes, int* uncov_inst_size,
                   char*** cov_inst_names, int* cov_inst_size );
 
 /*! \brief Gets missed coverage points for the given assertion */
-void ovl_get_coverage( func_unit* funit, char* inst_name, char** assert_mod, str_link** cp_head, str_link** cp_tail );
+void ovl_get_coverage( const func_unit* funit, const char* inst_name, char** assert_mod, str_link** cp_head, str_link** cp_tail );
 
 /*
  $Log$
+ Revision 1.9  2006/06/29 20:06:33  phase1geo
+ Adding assertion exclusion code.  Things seem to be working properly with this
+ now.  This concludes the initial version of code exclusion.  There are some
+ things to clean up (and maybe make better looking).
+
  Revision 1.8  2006/06/23 19:45:27  phase1geo
  Adding full C support for excluding/including coverage points.  Fixed regression
  suite failures -- full regression now passes.  We just need to start adding support

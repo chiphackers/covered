@@ -159,7 +159,7 @@ void bind_add( int type, const char* name, expression* exp, func_unit* funit ) {
  parameters.  When the entry is found, the FSM expression is added to the exp_bind structure
  to be sized when the expression is bound.
 */
-void bind_append_fsm_expr( expression* fsm_exp, expression* exp, func_unit* curr_funit ) {
+void bind_append_fsm_expr( expression* fsm_exp, const expression* exp, const func_unit* curr_funit ) {
 
   exp_bind* curr;
 
@@ -287,7 +287,7 @@ void bind_remove( int id, bool clear_assigned ) {
  \return Returns the name of the signal to be bound with the given expression (if one exists);
          otherwise, returns NULL if no match was found.
 */
-char* bind_find_sig_name( expression* exp ) {
+char* bind_find_sig_name( const expression* exp ) {
 
   exp_bind*  curr;         /* Pointer to current exp_bind link */
   vsignal*   found_sig;    /* Placeholder */
@@ -308,7 +308,7 @@ char* bind_find_sig_name( expression* exp ) {
   */
   if( curr != NULL ) {
     if( scope_find_signal( curr->name, curr->funit, &found_sig, &found_funit, -1 ) ) {
-      if( funit_get_curr_module( curr->funit ) == funit_get_curr_module( found_funit ) ) {
+      if( funit_get_curr_module_safe( curr->funit ) == funit_get_curr_module_safe( found_funit ) ) {
         front = strdup_safe( found_funit->name, __FILE__, __LINE__ );
         rest  = strdup_safe( found_funit->name, __FILE__, __LINE__ );
         scope_extract_front( found_funit->name, front, rest );
@@ -342,7 +342,7 @@ char* bind_find_sig_name( expression* exp ) {
  Attempts to bind the specified expression to a parameter in the design.  If binding is successful,
  returns TRUE; otherwise, returns FALSE.
 */
-bool bind_param( char* name, expression* exp, func_unit* funit_exp, int exp_line, bool bind_locally ) {
+bool bind_param( const char* name, expression* exp, func_unit* funit_exp, int exp_line, bool bind_locally ) {
 
   bool       retval = FALSE;  /* Return value for this function */
   mod_parm*  found_parm;      /* Pointer to found parameter in design for the given name */
@@ -875,6 +875,10 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.114  2007/09/05 21:07:36  phase1geo
+ Fixing bug 1788991.  Full regression passes.  Removed excess output used for
+ debugging.  May want to create a new development release with these changes.
+
  Revision 1.113  2007/08/31 22:46:36  phase1geo
  Adding diagnostics from stable branch.  Fixing a few minor bugs and in progress
  of working on static_afunc1 failure (still not quite there yet).  Checkpointing.
