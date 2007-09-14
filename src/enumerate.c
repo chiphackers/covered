@@ -146,6 +146,27 @@ void enumerate_resolve( funit_inst* inst ) {
 }
 
 /*!
+ \param ei  Pointer to enumeration to deallocate
+
+ Deallocates all memory associated with the given enumeration.
+*/
+void enumerate_dealloc( enum_item* ei ) {
+
+  if( ei != NULL ) {
+
+    /* Deallocate static expression, if necessary */
+    if( ei->value != NULL ) {
+      static_expr_dealloc( ei->value, TRUE );
+    }
+
+    /* Deallocate ourself */
+    free( ei );
+
+  }
+
+}
+
+/*!
  \param funit  Pointer to functional unit to remove enumeration list for
 
  Deallocates all memory associated with the enumeration list in the given functional unit
@@ -155,18 +176,9 @@ void enumerate_dealloc_list( func_unit* funit ) {
   enum_item* tmp;  /* Temporary pointer to current link in list */
 
   while( funit->ei_head != NULL ) {
-
     tmp  = funit->ei_head;
     funit->ei_head = tmp->next;
-
-    /* Deallocate static expression, if necessary */
-    if( tmp->value != NULL ) {
-      static_expr_dealloc( tmp->value, TRUE );
-    }
-
-    /* Deallocate ourself */
-    free( tmp );
-
+    enumerate_dealloc( tmp );
   }
 
   /* Set the tail pointer to NULL as well */
@@ -177,6 +189,16 @@ void enumerate_dealloc_list( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.7  2006/10/16 21:34:46  phase1geo
+ Increased max bit width from 1024 to 65536 to allow for more room for memories.
+ Fixed issue with enumerated values being explicitly assigned unknown values and
+ created error output message when an implicitly assigned enum followed an explicitly
+ assign unknown enum value.  Fixed problem with generate blocks in different
+ instantiations of the same module.  Fixed bug in parser related to setting the
+ curr_packed global variable correctly.  Added enum2 and enum2.1 diagnostics to test
+ suite to verify correct enumerate behavior for the changes made in this checkin.
+ Full regression now passes.
+
  Revision 1.6  2006/10/13 22:46:31  phase1geo
  Things are a bit of a mess at this point.  Adding generate12 diagnostic that
  shows a failure in properly handling generates of instances.

@@ -35,12 +35,20 @@ void enumerate_end_list( func_unit* funit );
 /*! \brief Resolves all enumerations within the given functional unit instance */
 void enumerate_resolve( funit_inst* inst );
 
+/*! \brief Deallocates all memory associated with the given enumeration. */
+void enumerate_dealloc( enum_item* ei );
+
 /*! \brief Deallocates enumeration list from given functional unit */
 void enumerate_dealloc_list( func_unit* funit );
 
 
 /*
  $Log$
+ Revision 1.2  2006/10/06 22:45:57  phase1geo
+ Added support for the wait() statement.  Added wait1 diagnostic to regression
+ suite to verify its behavior.  Also added missing GPL license note at the top
+ of several *.h and *.c files that are somewhat new.
+
  Revision 1.1  2006/08/29 22:49:31  phase1geo
  Added enumeration support and partial support for typedefs.  Added enum1
  diagnostic to verify initial enumeration support.  Full regression has not

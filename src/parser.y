@@ -3410,8 +3410,14 @@ struct_union
   | K_union K_tagged
   ;
 
-struct_union_member
+struct_union_member_list
   : attribute_list_opt data_type_or_void list_of_variables ';'
+    {
+    }
+  | struct_union_member_list ',' attribute_list_opt data_type_or_void list_of_variables ';'
+    {
+    }
+  |
     {
     }
   ;

@@ -1090,6 +1090,50 @@ typedef enum exp_op_type_e {
 
 /*! @} */
 
+/*!
+ \addtogroup struct_union_types Struct/Union Types
+
+ The following defines specify the various types of struct/union structures that can exist.
+
+ @{
+*/
+
+/*! Specifies a struct */
+#define SU_TYPE_STRUCT        0
+
+/*! Specifies a union */
+#define SU_TYPE_UNION         1
+
+/*! Specifies a tagged union */
+#define SU_TYPE_TAGGED_UNION  2
+
+/*! @} */
+
+/*!
+ \addtogroup struct_union_member_types Struct/Union Member Types
+
+ The following defines specify the various types of struct/union member types that can exist.
+
+ @{
+*/
+
+/*! Specifies the member is a void type */
+#define SU_MEMTYPE_VOID      0
+
+/*! Specifies the member is a signal type */
+#define SU_MEMTYPE_SIG       1
+
+/*! Specifies the member is a typedef */
+#define SU_MEMTYPE_TYPEDEF   2
+
+/*! Specifies the member is an enumeration */
+#define SU_MEMTYPE_ENUM      3
+
+/*! Specifies the member is a struct, union or tagged union */
+#define SU_MEMTYPE_SU        4
+
+/*! @} */
+
 /*! Overload for the snprintf function which verifies that we don't overrun character arrays */
 #define snprintf(x,y,...)	assert( snprintf( x, y, __VA_ARGS__ ) < (y) );
 
@@ -2380,11 +2424,12 @@ struct reentrant_s {
  Represents a SystemVerilog structure/union.
 */
 struct struct_union_s {
+  char*         name;                /*!< Name of this struct or union */
   int           type;                /*!< Specifies whether this is a struct, union or tagged union */
   bool          packed;              /*!< Specifies if the data in this struct/union should be handled in a packed or unpacked manner */
   bool          is_signed;           /*!< Specifies if the data in the struct/union should be handled as a signed value or not */
-  su_member*    su_head;             /*!< Pointer to head of struct/union member list */
-  su_member*    su_tail;             /*!< Pointer to tail of struct/union member list */
+  su_member*    mem_head;            /*!< Pointer to head of struct/union member list */
+  su_member*    mem_tail;            /*!< Pointer to tail of struct/union member list */
   struct_union* next;                /*!< Pointer to next struct/union in list */
 };
 
@@ -2406,6 +2451,10 @@ struct su_member_s {
 
 /*
  $Log$
+ Revision 1.262  2007/09/13 22:50:46  phase1geo
+ Initial creation of struct_union files.  Added initial parsing ability for
+ structs and unions (though I don't believe this is complete at this time).
+
  Revision 1.261  2007/09/13 17:03:30  phase1geo
  Cleaning up some const-ness corrections -- still more to go but it's a good
  start.

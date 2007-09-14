@@ -44,12 +44,19 @@ su_member* struct_union_add_member_struct_union( struct_union* su, struct_union*
 /*! \brief Allocates, initializes and adds a new enumerated item to the given functional unit */
 struct_union* struct_union_create( const char* name, sig_range* range, int type, bool packed, bool is_signed, func_unit* funit );
 
+/*! \brief Deallocates given struct/union */
+void struct_union_dealloc( struct_union* su );
+
 /*! \brief Deallocates struct/union list from given functional unit */
 void struct_union_dealloc_list( func_unit* funit );
 
 
 /*
  $Log$
+ Revision 1.1  2007/09/13 22:50:46  phase1geo
+ Initial creation of struct_union files.  Added initial parsing ability for
+ structs and unions (though I don't believe this is complete at this time).
+
 */
 
 #endif
