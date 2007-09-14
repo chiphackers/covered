@@ -128,6 +128,7 @@ libcovered_a_SOURCES = ../src/arc.c \
                        ../src/statement.c \
                        ../src/static.c \
                        ../src/stmt_blk.c \
+                       ../src/struct_union.c \
                        ../src/symtable.c \
                        ../src/tree.c \
                        ../src/util.c \
@@ -159,8 +160,8 @@ am_libcovered_a_OBJECTS = arc.$(OBJEXT) assertion.$(OBJEXT) \
 	parser_misc.$(OBJEXT) race.$(OBJEXT) reentrant.$(OBJEXT) \
 	scope.$(OBJEXT) search.$(OBJEXT) sim.$(OBJEXT) stat.$(OBJEXT) \
 	statement.$(OBJEXT) static.$(OBJEXT) stmt_blk.$(OBJEXT) \
-	symtable.$(OBJEXT) tree.$(OBJEXT) util.$(OBJEXT) \
-	vector.$(OBJEXT) vsignal.$(OBJEXT)
+	struct_union.$(OBJEXT) symtable.$(OBJEXT) tree.$(OBJEXT) \
+	util.$(OBJEXT) vector.$(OBJEXT) vsignal.$(OBJEXT)
 libcovered_a_OBJECTS = $(am_libcovered_a_OBJECTS)
 @BUILD_CYGWIN_TRUE@EXTRA_PROGRAMS = covered.vpi$(EXEEXT) \
 @BUILD_CYGWIN_TRUE@	covered.cver.dll$(EXEEXT)
@@ -215,9 +216,9 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/search.Po ./$(DEPDIR)/sim.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/stat.Po ./$(DEPDIR)/statement.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/static.Po ./$(DEPDIR)/stmt_blk.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/symtable.Po ./$(DEPDIR)/tree.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/util.Po ./$(DEPDIR)/vector.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/vsignal.Po
+@AMDEP_TRUE@	./$(DEPDIR)/struct_union.Po ./$(DEPDIR)/symtable.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/tree.Po ./$(DEPDIR)/util.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/vector.Po ./$(DEPDIR)/vsignal.Po
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
@@ -269,6 +270,7 @@ stat.$(OBJEXT): ../src/stat.c
 statement.$(OBJEXT): ../src/statement.c
 static.$(OBJEXT): ../src/static.c
 stmt_blk.$(OBJEXT): ../src/stmt_blk.c
+struct_union.$(OBJEXT): ../src/struct_union.c
 symtable.$(OBJEXT): ../src/symtable.c
 tree.$(OBJEXT): ../src/tree.c
 util.$(OBJEXT): ../src/util.c
@@ -340,6 +342,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/statement.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/static.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stmt_blk.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/struct_union.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/symtable.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tree.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/util.Po@am__quote@
@@ -684,6 +687,18 @@ stmt_blk.obj: ../src/stmt_blk.c
 @AMDEP_TRUE@	depfile='$(DEPDIR)/stmt_blk.Po' tmpdepfile='$(DEPDIR)/stmt_blk.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o stmt_blk.obj `cygpath -w ../src/stmt_blk.c`
+
+struct_union.o: ../src/struct_union.c
+@AMDEP_TRUE@	source='../src/struct_union.c' object='struct_union.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/struct_union.Po' tmpdepfile='$(DEPDIR)/struct_union.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o struct_union.o `test -f '../src/struct_union.c' || echo '$(srcdir)/'`../src/struct_union.c
+
+struct_union.obj: ../src/struct_union.c
+@AMDEP_TRUE@	source='../src/struct_union.c' object='struct_union.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/struct_union.Po' tmpdepfile='$(DEPDIR)/struct_union.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o struct_union.obj `cygpath -w ../src/struct_union.c`
 
 symtable.o: ../src/symtable.c
 @AMDEP_TRUE@	source='../src/symtable.c' object='symtable.o' libtool=no @AMDEPBACKSLASH@

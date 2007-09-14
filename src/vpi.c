@@ -96,7 +96,7 @@ extern isuppl      info_suppl;
 
  Outputs the given message to standard output using the vpi_printf function.
 */
-void vpi_print_output( char* msg ) {
+void vpi_print_output( const char* msg ) {
 
   vpi_printf( "covered VPI: %s\n", msg );
 
