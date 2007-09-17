@@ -2428,6 +2428,8 @@ struct struct_union_s {
   int           type;                /*!< Specifies whether this is a struct, union or tagged union */
   bool          packed;              /*!< Specifies if the data in this struct/union should be handled in a packed or unpacked manner */
   bool          is_signed;           /*!< Specifies if the data in the struct/union should be handled as a signed value or not */
+  bool          owns_data;           /*!< Specifies if this struct/union owns its vector data */
+  vector*       data;                /*!< Pointer to all data needed for this structure */
   su_member*    mem_head;            /*!< Pointer to head of struct/union member list */
   su_member*    mem_tail;            /*!< Pointer to tail of struct/union member list */
   struct_union* next;                /*!< Pointer to next struct/union in list */
@@ -2445,12 +2447,17 @@ struct su_member_s {
     enum_item*    ei;                /*!< Points to an enumerated item */
     typedef_item* tdi;               /*!< Points to a typedef'ed item */
   } elem;                            /*!< Member element pointer */
+  su_member*      parent;            /*!< Pointer to parent struct/union member */
   su_member*      next;              /*!< Pointer to next struct/union member */
 };
 
 
 /*
  $Log$
+ Revision 1.263  2007/09/14 06:22:12  phase1geo
+ Filling in existing functions in struct_union.  Completed parser code for handling
+ struct/union declarations.  Code compiles thus far.
+
  Revision 1.262  2007/09/13 22:50:46  phase1geo
  Initial creation of struct_union files.  Added initial parsing ability for
  structs and unions (though I don't believe this is complete at this time).
