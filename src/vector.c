@@ -119,6 +119,7 @@ vector* vector_create( int width, int type, bool data ) {
 
   if( data == TRUE ) {
     value = (vec_data*)malloc_safe( (sizeof( vec_data ) * width), __FILE__, __LINE__ );
+    new_vec->suppl.part.owns_data = 1;
   }
 
   vector_init( new_vec, value, width, type );
@@ -2145,7 +2146,7 @@ void vector_dealloc( vector* vec ) {
   if( vec != NULL ) {
 
     /* Deallocate all vector values */
-    if( vec->value != NULL ) {
+    if( (vec->value != NULL) && (vec->suppl.part.owns_data == 1) ) {
       free_safe( vec->value );
       vec->value = NULL;
     }
@@ -2164,6 +2165,10 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.89  2007/09/13 17:03:30  phase1geo
+ Cleaning up some const-ness corrections -- still more to go but it's a good
+ start.
+
  Revision 1.88  2006/11/22 20:20:01  phase1geo
  Updates to properly support 64-bit time.  Also starting to make changes to
  simulator to support "back simulation" for when the current simulation time
