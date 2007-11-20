@@ -1,6 +1,6 @@
 /*
  Name:     timescale1.14.v
- Author:   Trevor Williams  (trevorw@charter.net)
+ Author:   Trevor Williams  (phase1geo@gmail.com)
  Date:     11/25/2006
  Purpose:  Verifies 100 s / 1 ms timescale setting.
 */

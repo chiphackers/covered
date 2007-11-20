@@ -15,7 +15,7 @@
 
 /*!
  \file     toggle.c
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     3/31/2002
 */
 
@@ -689,6 +689,10 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.61  2007/09/13 17:03:30  phase1geo
+ Cleaning up some const-ness corrections -- still more to go but it's a good
+ start.
+
  Revision 1.60  2007/07/31 03:36:10  phase1geo
  Fixing last known issue with automatic functions.  Also fixing issue with
  toggle report output (still a problem with the toggle calculation for the

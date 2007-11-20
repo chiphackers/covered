@@ -1,6 +1,6 @@
 /*
  Name:     signed4.v
- Author:   Trevor Williams  (trevorw@charter.net)
+ Author:   Trevor Williams  (phase1geo@gmail.com)
  Date:     11/03/2006
  Purpose:  
 */

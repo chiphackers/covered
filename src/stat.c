@@ -15,7 +15,7 @@
 
 /*!
  \file     stat.c
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     4/4/2002
 */
 
@@ -141,6 +141,10 @@ void statistic_dealloc( statistic* stat ) {
 
 /*
  $Log$
+ Revision 1.10  2006/09/25 04:15:04  phase1geo
+ Starting to add support for new memory coverage metric.  This includes changes
+ for the report command only at this point.
+
  Revision 1.9  2006/09/01 23:06:02  phase1geo
  Fixing regressions per latest round of changes.  Full regression now passes.
 

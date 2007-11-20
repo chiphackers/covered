@@ -18,7 +18,7 @@
 
 /*!
  \file     func_unit.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     12/7/2001
  \brief    Contains functions for handling functional units.
 */
@@ -107,6 +107,10 @@ void funit_dealloc( func_unit* funit );
 
 /*
  $Log$
+ Revision 1.29  2007/09/13 17:03:30  phase1geo
+ Cleaning up some const-ness corrections -- still more to go but it's a good
+ start.
+
  Revision 1.28  2007/07/26 22:23:00  phase1geo
  Starting to work on the functionality for automatic tasks/functions.  Just
  checkpointing some work.

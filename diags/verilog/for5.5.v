@@ -1,6 +1,6 @@
 /*
  Name:     for5.5.v
- Author:   Trevor Williams  (trevorw@charter.net)
+ Author:   Trevor Williams  (phase1geo@gmail.com)
  Date:     11/11/2007
  Purpose:  Verifies local time declaration in for loops.
 */

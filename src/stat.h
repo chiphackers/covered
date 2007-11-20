@@ -18,7 +18,7 @@
 
 /*!
  \file     stat.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     4/4/2002
  \brief    Contains functions for handling coverage statistics.
 */
@@ -41,6 +41,9 @@ void statistic_dealloc( statistic* stat );
 
 /*
  $Log$
+ Revision 1.7  2006/09/01 23:06:02  phase1geo
+ Fixing regressions per latest round of changes.  Full regression now passes.
+
  Revision 1.6  2006/03/28 22:28:28  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

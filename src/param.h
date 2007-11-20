@@ -18,7 +18,7 @@
 
 /*!
  \file     param.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     8/22/2002
  \brief    Contains functions and structures necessary to handle parameters.
 */
@@ -87,6 +87,9 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive );
 
 /*
  $Log$
+ Revision 1.27  2007/04/18 22:35:02  phase1geo
+ Revamping simulator core again.  Checkpointing.
+
  Revision 1.26.2.1  2007/04/17 16:31:53  phase1geo
  Fixing bug 1698806 by rebinding a parameter signal to its list of expressions
  prior to writing the initial CDD file (elaboration phase).  Added param16

@@ -18,7 +18,7 @@
 
 /*!
  \file     toggle.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     3/31/2002
  \brief    Contains functions for determining/reporting toggle coverage.
 */
@@ -47,6 +47,12 @@ void toggle_report( FILE* ofile, bool verbose );
 
 /*
  $Log$
+ Revision 1.14  2006/06/29 22:44:57  phase1geo
+ Fixing newly introduced bug in FSM report handler.  Also adding pointers back
+ to main text window when exclusion properties are changed.  Fixing toggle
+ coverage retension.  This is partially working but doesn't seem to want to
+ save/restore properly at this point.
+
  Revision 1.13  2006/03/28 22:28:28  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

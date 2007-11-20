@@ -15,7 +15,7 @@
 
 /*!
  \file     obfuscate.c
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     9/16/2006
 */
 
@@ -116,6 +116,10 @@ void obfuscate_dealloc() {
 
 /*
  $Log$
+ Revision 1.6  2007/09/13 17:03:30  phase1geo
+ Cleaning up some const-ness corrections -- still more to go but it's a good
+ start.
+
  Revision 1.5  2006/10/06 22:45:57  phase1geo
  Added support for the wait() statement.  Added wait1 diagnostic to regression
  suite to verify its behavior.  Also added missing GPL license note at the top

@@ -1,6 +1,6 @@
 /*
  Name:     generate12.v
- Author:   Trevor Williams  (trevorw@charter.net)
+ Author:   Trevor Williams  (phase1geo@gmail.com)
  Date:     10/13/2006
  Purpose:  
 */

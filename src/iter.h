@@ -18,7 +18,7 @@
 
 /*!
  \file     iter.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     10/24/2002
  \brief    Contains functions for dealing with iterators.
 */
@@ -49,6 +49,12 @@ void stmt_iter_get_line_before( stmt_iter* si, int lnum );
 
 /*
  $Log$
+ Revision 1.9  2007/03/19 22:52:50  phase1geo
+ Attempting to fix problem with line ordering for a named block that is
+ in the middle of another statement block.  Also fixed a problem with FORK
+ expressions not being bound early enough.  Run currently segfaults but
+ I need to checkpoint at the moment.
+
  Revision 1.8  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

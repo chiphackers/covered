@@ -15,7 +15,7 @@
 
 /*!
  \file     parser_misc.c
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     12/19/2001
 */
 
@@ -287,6 +287,12 @@ bool parser_check_generation( int gen ) {
 
 /*
  $Log$
+ Revision 1.15  2006/10/25 22:35:41  phase1geo
+ Starting to update testsuite to verify VPI mode as well.  Fixing runtime
+ issues with vpi.c.  Also updated VL_error output format for easier readability.
+ Fixing bug in parser for statement blocks that do not contain RHS signals for
+ implicit event expressions.  Updating regressions for these changes.
+
  Revision 1.14  2006/10/09 17:54:19  phase1geo
  Fixing support for VPI to allow it to properly get linked to the simulator.
  Also fixed inconsistency in generate reports and updated appropriately in

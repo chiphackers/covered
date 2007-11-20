@@ -15,7 +15,7 @@
 
 /*!
  \file     vcd.c
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     7/21/2002
 */
 
@@ -419,6 +419,10 @@ void vcd_parse( char* vcd_file ) {
 
 /*
  $Log$
+ Revision 1.26  2006/11/21 19:54:13  phase1geo
+ Making modifications to defines.h to help in creating appropriately sized types.
+ Other changes to VPI code (but this is still broken at the moment).  Checkpointing.
+
  Revision 1.25  2006/11/03 19:00:01  phase1geo
  Fixing bug 1589831.  Also added err3 and err3.1 diagnostics to verify its
  correct behavior.

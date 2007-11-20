@@ -18,7 +18,7 @@
 
 /*!
  \file     struct_union.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     9/13/2007
  \brief    Contains functions for handling SystemVerilog structs/unions.
 */
@@ -53,6 +53,10 @@ void struct_union_dealloc_list( func_unit* funit );
 
 /*
  $Log$
+ Revision 1.2  2007/09/14 06:22:12  phase1geo
+ Filling in existing functions in struct_union.  Completed parser code for handling
+ struct/union declarations.  Code compiles thus far.
+
  Revision 1.1  2007/09/13 22:50:46  phase1geo
  Initial creation of struct_union files.  Added initial parsing ability for
  structs and unions (though I don't believe this is complete at this time).

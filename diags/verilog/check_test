@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 # Name:    check_test
-# Author:  Trevor Williams  <trevorw(charter.net)>
+# Author:  Trevor Williams  <phase1geo(gmail.com)>
 # Date:    12/28/2002
 # Purpose: Verifies that specified diagnostic successfully passed all phases of testing.
 # Note:    mode 0:  Normally run diagnostic error check (checks report and CDD files)

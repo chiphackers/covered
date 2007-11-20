@@ -1,6 +1,6 @@
 /*
  Name:     fsm11.v
- Author:   Trevor Williams  (trevorw@charter.net)
+ Author:   Trevor Williams  (phase1geo@gmail.com)
  Date:     08/06/2007
  Purpose:  Verify usage of defined values in FSM attribute list.
 */

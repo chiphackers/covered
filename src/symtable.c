@@ -15,7 +15,7 @@
 
 /*!
  \file     symtable.c
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     1/3/2002
 
  \par VCD Files
@@ -366,6 +366,10 @@ void symtable_dealloc( symtable* symtab ) {
 
 /*
  $Log$
+ Revision 1.27  2006/11/27 04:11:42  phase1geo
+ Adding more changes to properly support thread time.  This is a work in progress
+ and regression is currently broken for the moment.  Checkpointing.
+
  Revision 1.26  2006/10/13 15:56:02  phase1geo
  Updating rest of source files for compiler warnings.
 

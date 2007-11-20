@@ -18,7 +18,7 @@
 
 /*!
  \file     util.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     11/27/2001
  \brief    Contains miscellaneous global functions used by many functions.
 */
@@ -126,6 +126,10 @@ void calc_miss_percent( int hits, float total, float* misses, float* percent );
 
 /*
  $Log$
+ Revision 1.28  2007/09/13 17:03:30  phase1geo
+ Cleaning up some const-ness corrections -- still more to go but it's a good
+ start.
+
  Revision 1.27  2007/07/16 18:39:59  phase1geo
  Finishing adding accumulated coverage output to report files.  Also fixed
  compiler warnings with static values in C code that are inputs to 64-bit

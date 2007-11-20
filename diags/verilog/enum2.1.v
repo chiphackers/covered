@@ -1,6 +1,6 @@
 /*
  Name:     enum2.v
- Author:   Trevor Williams  (trevorw@charter.net)
+ Author:   Trevor Williams  (phase1geo@gmail.com)
  Date:     10/16/2006
  Purpose:  
 */

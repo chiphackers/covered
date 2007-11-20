@@ -15,7 +15,7 @@
 
 /*!
  \file     db.c
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     12/7/2001
 */
 
@@ -2368,6 +2368,12 @@ void db_do_timestep( uint64 time, bool final ) {
 
 /*
  $Log$
+ Revision 1.261  2007/09/12 05:40:11  phase1geo
+ Adding support for bool and char types in FOR loop initialization blocks.  Adding
+ a plethora of new diagnostics to completely verify this new functionality.  These
+ new diagnostics have not been run yet so they will fail in the next run of regression
+ but should be ready to be checked out.
+
  Revision 1.260  2007/09/05 21:07:36  phase1geo
  Fixing bug 1788991.  Full regression passes.  Removed excess output used for
  debugging.  May want to create a new development release with these changes.

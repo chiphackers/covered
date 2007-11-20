@@ -1,6 +1,6 @@
 /*
  Name:     disable3.v
- Author:   Trevor Williams  (trevorw@charter.net)
+ Author:   Trevor Williams  (phase1geo@gmail.com)
  Date:     11/20/2006
  Purpose:  Verifies that a disable statement that is not reached is handled
            properly by the report command.

@@ -18,7 +18,7 @@
 
 /*
  \file     devel_doc.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     6/11/2002
  \brief    Contains development documentation for project
 */
@@ -1214,7 +1214,7 @@
  \par Section 9.1.  Development Team
  
  \par
- - Trevor Williams  (trevorw@charter.net)
+ - Trevor Williams  (phase1geo@gmail.com)
 
 <HR>
 
@@ -1231,6 +1231,11 @@
 
 /*
  $Log$
+ Revision 1.10  2006/03/28 22:28:27  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.9  2005/02/05 04:13:29  phase1geo
  Started to add reporting capabilities for race condition information.  Modified
  race condition reason calculation and handling.  Ran -Wall on all code and cleaned

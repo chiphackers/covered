@@ -1,6 +1,6 @@
 /*
  Name:     timescale3.1.v
- Author:   Trevor Williams  (trevorw@charter.net)
+ Author:   Trevor Williams  (phase1geo@gmail.com)
  Date:     11/25/2006
  Purpose:  Verifiying that error condition is reported when an illegal
            timescale measurement is specified.

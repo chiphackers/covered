@@ -15,7 +15,7 @@
 
 /*!
  \file     fsm_arg.c
- \author   Trevor Williams  (trevorw@sgi.com)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     10/02/2003
 */
 
@@ -601,6 +601,10 @@ void fsm_arg_parse_attr( attr_param* ap, const func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.31  2007/09/13 17:03:30  phase1geo
+ Cleaning up some const-ness corrections -- still more to go but it's a good
+ start.
+
  Revision 1.30  2006/09/22 19:56:45  phase1geo
  Final set of fixes and regression updates per recent changes.  Full regression
  now passes.

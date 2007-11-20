@@ -15,7 +15,7 @@
 
 /*!
  \file     expr.c
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     12/1/2001
  
  \par Expressions
@@ -3957,6 +3957,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.256  2007/09/05 21:07:37  phase1geo
+ Fixing bug 1788991.  Full regression passes.  Removed excess output used for
+ debugging.  May want to create a new development release with these changes.
+
  Revision 1.255  2007/09/04 22:50:50  phase1geo
  Fixed static_afunc1 issues.  Reran regressions and updated necessary files.
  Also working on debugging one remaining issue with mem1.v (not solved yet).

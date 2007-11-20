@@ -1,6 +1,6 @@
 /*!
  \file     regress.cc
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     1/31/2006
  \brief    Regression utility for running Covered diagnostics and regression suite.
  \note     For usage information, type 'regress -h'.

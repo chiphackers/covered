@@ -18,7 +18,7 @@
 
 /*!
  \file     db.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     12/7/2001
  \brief    Contains functions for writing and reading contents of
            covered database file.
@@ -195,6 +195,12 @@ void db_do_timestep( uint64 time, bool final );
 
 /*
  $Log$
+ Revision 1.78  2007/09/12 05:40:11  phase1geo
+ Adding support for bool and char types in FOR loop initialization blocks.  Adding
+ a plethora of new diagnostics to completely verify this new functionality.  These
+ new diagnostics have not been run yet so they will fail in the next run of regression
+ but should be ready to be checked out.
+
  Revision 1.77  2006/12/14 23:46:57  phase1geo
  Fixing remaining compile issues with support for functional unit pointers in
  expressions and unnamed scope handling.  Starting to debug run-time issues now.

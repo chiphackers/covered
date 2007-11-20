@@ -1,6 +1,6 @@
 /*
  Name:     atask1.v
- Author:   Trevor Williams  (trevorw@charter.net)
+ Author:   Trevor Williams  (phase1geo@gmail.com)
  Date:     12/14/2006
  Purpose:  Basic test to verify automatic task recursion.
 */

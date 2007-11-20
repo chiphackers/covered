@@ -1,6 +1,6 @@
 /*
  Name:     multi_exp4.v
- Author:   Trevor Williams  (trevorw@charter.net)
+ Author:   Trevor Williams  (phase1geo@gmail.com)
  Date:     11/08/2006
  Purpose:  
 */

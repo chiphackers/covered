@@ -17,7 +17,7 @@
 
 /*!
  \file     static_parser.c
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     8/23/2006
 */
 

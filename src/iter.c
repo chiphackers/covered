@@ -15,7 +15,7 @@
 
 /*!
  \file     iter.c
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     10/24/2002
 */
 
@@ -207,6 +207,10 @@ void stmt_iter_get_line_before( stmt_iter* si, int lnum ) {
 
 /*
  $Log$
+ Revision 1.14  2007/03/20 04:29:32  phase1geo
+ Fixing bugs in new stmt_link_merge function.  Updated regressions (only 11
+ diagnostics are currently failing in IV regression).  Checkpointing.
+
  Revision 1.13  2007/03/19 22:52:50  phase1geo
  Attempting to fix problem with line ordering for a named block that is
  in the middle of another statement block.  Also fixed a problem with FORK

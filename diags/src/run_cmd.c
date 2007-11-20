@@ -1,6 +1,6 @@
 /*!
  \file     run_cmd.c
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     2/27/2006
 */
 
@@ -322,6 +322,10 @@ void run_cmd_dealloc_list( run_cmd* rc_head ) {
 
 /*
  $Log$
+ Revision 1.4  2006/03/15 22:48:28  phase1geo
+ Updating run program.  Fixing bugs in statement_connect algorithm.  Updating
+ regression files.
+
  Revision 1.3  2006/03/06 22:55:47  phase1geo
  Fixing command-line parser.
 

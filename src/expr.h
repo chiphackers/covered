@@ -18,7 +18,7 @@
 
 /*!
  \file     expr.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     12/1/2001
  \brief    Contains functions for handling expressions.
 */
@@ -130,6 +130,10 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.58  2007/08/31 22:46:36  phase1geo
+ Adding diagnostics from stable branch.  Fixing a few minor bugs and in progress
+ of working on static_afunc1 failure (still not quite there yet).  Checkpointing.
+
  Revision 1.57  2007/07/31 03:36:10  phase1geo
  Fixing last known issue with automatic functions.  Also fixing issue with
  toggle report output (still a problem with the toggle calculation for the

@@ -1,6 +1,6 @@
 /*!
  \file     list.c
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     2/27/2006
 */
 
@@ -215,6 +215,10 @@ void list_dealloc( list* l ) {
 
 /*
  $Log$
+ Revision 1.2  2006/03/03 23:24:53  phase1geo
+ Fixing C-based run script.  This is now working for all but one diagnostic to this
+ point.  There is still some work to do here, however.
+
  Revision 1.1  2006/02/27 23:22:10  phase1geo
  Working on C-version of run command.  Initial version only -- does not work
  at this point.

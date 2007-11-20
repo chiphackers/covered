@@ -18,7 +18,7 @@
 
 /*!
  \file     fsm.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     3/31/2002
  \brief    Contains functions for determining/reporting FSM coverage.
 */
@@ -74,6 +74,9 @@ void fsm_dealloc( fsm* table );
 
 /*
  $Log$
+ Revision 1.21  2007/03/30 22:43:13  phase1geo
+ Regression fixes.  Still have a ways to go but we are getting close.
+
  Revision 1.20  2006/09/20 22:38:09  phase1geo
  Lots of changes to support memories and multi-dimensional arrays.  We still have
  issues with endianness and VCS regressions have not been run, but this is a significant

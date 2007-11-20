@@ -1,6 +1,6 @@
 /*
  Name:     param15.v
- Author:   Trevor Williams  (trevorw@charter.net)
+ Author:   Trevor Williams  (phase1geo@gmail.com)
  Date:     10/31/2006
  Purpose:  Verifies that implicitly sized parameter value is dependent upon
            the size of its expression.

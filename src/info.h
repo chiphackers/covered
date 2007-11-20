@@ -18,7 +18,7 @@
 
 /*!
  \file     info.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     2/12/2003
  \brief    Contains functions for reading/writing info line of CDD file.
 */
@@ -44,6 +44,10 @@ void info_dealloc();
 
 /*
  $Log$
+ Revision 1.6  2006/07/27 16:08:46  phase1geo
+ Fixing several memory leak bugs, cleaning up output and fixing regression
+ bugs.  Full regression now passes (including all current generate diagnostics).
+
  Revision 1.5  2006/05/02 21:49:41  phase1geo
  Updating regression files -- all but three diagnostics pass (due to known problems).
  Added SCORE_ARGS line type to CDD format which stores the directory that the score

@@ -17,7 +17,7 @@
 
 /*!
  \file     cli.c
- \author   Trevor Williams  (trevorw@sgi.com)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     4/11/2007
 */
 
@@ -672,6 +672,9 @@ bool cli_read_hist_file( char* fname ) {
 
 /*
  $Log$
+ Revision 1.7  2007/04/18 22:34:58  phase1geo
+ Revamping simulator core again.  Checkpointing.
+
  Revision 1.6  2007/04/13 21:47:12  phase1geo
  More simulation debugging.  Added 'display all_list' command to CLI to output
  the list of all threads.  Updated regressions though we are not fully passing

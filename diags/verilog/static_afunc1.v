@@ -1,6 +1,6 @@
 /*
  Name:     static_afunc1.v
- Author:   Trevor Williams  (trevorw@charter.net)
+ Author:   Trevor Williams  (phase1geo@gmail.com)
  Date:     07/31/2007
  Purpose:  Verify that automatic functions work properly in static function
            conditions.

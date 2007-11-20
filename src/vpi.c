@@ -15,7 +15,7 @@
 
 /*!
  \file    vpi.c
- \author  Trevor Williams  (trevorw@charter.net)
+ \author  Trevor Williams  (phase1geo@gmail.com)
  \date    5/6/2005
 */
 

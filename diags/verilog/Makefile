@@ -1,5 +1,5 @@
 ######################################################
-# Written by:   Trevor Williams  (trevorw@charter.net)
+# Written by:   Trevor Williams  (phase1geo@gmail.com)
 #
 # Date:         3/22/2002
 #

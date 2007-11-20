@@ -15,7 +15,7 @@
 
 /*!
  \file     tree.c
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     1/4/2003
 */
 
@@ -287,6 +287,9 @@ void tree_dealloc( tnode* root ) {
 
 /*
  $Log$
+ Revision 1.5  2006/11/03 18:16:38  phase1geo
+ Removing unnecessary spaces in comments.
+
  Revision 1.4  2006/03/28 22:28:28  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

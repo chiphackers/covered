@@ -15,7 +15,7 @@
 
 /*!
  \file     info.c
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     2/12/2003
 */
 
@@ -283,6 +283,9 @@ void info_dealloc() {
 
 /*
  $Log$
+ Revision 1.19  2006/10/13 15:56:02  phase1geo
+ Updating rest of source files for compiler warnings.
+
  Revision 1.18  2006/07/27 16:08:46  phase1geo
  Fixing several memory leak bugs, cleaning up output and fixing regression
  bugs.  Full regression now passes (including all current generate diagnostics).

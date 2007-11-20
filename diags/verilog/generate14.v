@@ -1,6 +1,6 @@
 /*
  Name:     generate14.v
- Author:   Trevor Williams  (trevorw@charter.net)
+ Author:   Trevor Williams  (phase1geo@gmail.com)
  Date:     08/31/2007
  Purpose:  Verify that when the VCD dumpfile down/up-scopes more than one hierachy at a time
            the Covered correctly handles it.

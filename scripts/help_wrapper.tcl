@@ -15,7 +15,7 @@ proc help_show_about {} {
     wm title .helpabout "About Covered"
 
     label .helpabout.i -background white -image [image create photo -file "$HOME/scripts/banner.gif"]
-    label .helpabout.l -background white -justify left -text "Version:      $VERSION\nAuthor:       Trevor Williams\nEmail:         trevorw@charter.net\nHomepage:  http://covered.sourceforge.net\n\nFreely distributable under the GPL license"
+    label .helpabout.l -background white -justify left -text "Version:      $VERSION\nAuthor:       Trevor Williams\nEmail:         phase1geo@gmail.com\nHomepage:  http://covered.sourceforge.net\n\nFreely distributable under the GPL license"
     button .helpabout.b -text "Close" -command {
       destroy .helpabout
     }

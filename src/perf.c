@@ -15,7 +15,7 @@
 
 /*!
  \file     perf.c
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     1/1/2006
 */
 
@@ -144,6 +144,9 @@ void perf_output_inst_report( FILE* ofile ) {
 
 /*
  $Log$
+ Revision 1.5  2006/10/13 15:56:02  phase1geo
+ Updating rest of source files for compiler warnings.
+
  Revision 1.4  2006/09/01 04:06:37  phase1geo
  Added code to support more than one instance tree.  Currently, I am seeing
  quite a few memory errors that are causing some major problems at the moment.

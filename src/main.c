@@ -15,7 +15,7 @@
 
 /*!
  \file     main.c
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     11/26/2001
 */
 
@@ -195,6 +195,9 @@ int main( int argc, char** argv ) {
 
 /*
  $Log$
+ Revision 1.17  2006/08/18 22:19:54  phase1geo
+ Fully integrated obfuscation into the development release.
+
  Revision 1.16  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

@@ -1,6 +1,6 @@
 /*
  Name:     named_block4.v
- Author:   Trevor Williams  (trevorw@charter.net)
+ Author:   Trevor Williams  (phase1geo@gmail.com)
  Date:     08/06/2007
  Purpose:  Used to verify fix for bug 1621096.
 */

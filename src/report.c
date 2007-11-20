@@ -15,7 +15,7 @@
 
 /*!
  \file     report.c
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     11/29/2001
 */
 
@@ -917,6 +917,10 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.82  2007/09/01 05:33:38  phase1geo
+ Fixing error output in report.c when Tcl/Tk initialization routines return
+ in error.  Also removing extra K_EG from static_parser.y file.
+
  Revision 1.81  2007/04/02 04:50:04  phase1geo
  Adding func_iter files to iterate through a functional unit for reporting
  purposes.  Updated affected files.

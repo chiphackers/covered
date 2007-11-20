@@ -1,6 +1,6 @@
 /*
  Name:     timescale3.5.v
- Author:   Trevor Williams  (trevorw@charter.net)
+ Author:   Trevor Williams  (phase1geo@gmail.com)
  Date:     11/25/2006
  Purpose:  Verifies an illegal value in the time unit slot
            is appropriately flagged.

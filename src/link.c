@@ -15,7 +15,7 @@
 
 /*!
  \file     link.c
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     11/28/2001
 */
 
@@ -1234,6 +1234,10 @@ void inst_link_delete_list( inst_link* head ) {
 
 /*
  $Log$
+ Revision 1.67  2007/09/13 17:03:30  phase1geo
+ Cleaning up some const-ness corrections -- still more to go but it's a good
+ start.
+
  Revision 1.66  2007/09/05 21:07:37  phase1geo
  Fixing bug 1788991.  Full regression passes.  Removed excess output used for
  debugging.  May want to create a new development release with these changes.

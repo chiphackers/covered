@@ -18,7 +18,7 @@
 
 /*!
  \file     parser_misc.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     12/19/2001
  \brief    Contains miscellaneous functions declarations and defines used by parser.
 */
@@ -76,6 +76,10 @@ bool parser_check_generation( int gen );
 
 /*
  $Log$
+ Revision 1.11  2006/09/22 19:56:45  phase1geo
+ Final set of fixes and regression updates per recent changes.  Full regression
+ now passes.
+
  Revision 1.10  2006/09/20 22:38:09  phase1geo
  Lots of changes to support memories and multi-dimensional arrays.  We still have
  issues with endianness and VCS regressions have not been run, but this is a significant

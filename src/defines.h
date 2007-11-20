@@ -18,7 +18,7 @@
 
 /*!
  \file     defines.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     11/27/2001
  \brief    Contains definitions/structures used in the Covered utility.
  
@@ -55,7 +55,7 @@
 /*!
  This contains the header information specified when executing this tool.
 */
-#define COVERED_HEADER     "\nCovered %s -- Verilog Code Coverage Utility\nWritten by Trevor Williams  (trevorw@charter.net)\nFreely distributable under the GPL license\n", COVERED_VERSION
+#define COVERED_HEADER     "\nCovered %s -- Verilog Code Coverage Utility\nWritten by Trevor Williams  (phase1geo@gmail.com)\nFreely distributable under the GPL license\n", COVERED_VERSION
 
 /*!
  Default database filename if not specified on command-line.
@@ -2466,6 +2466,10 @@ struct su_member_s {
 
 /*
  $Log$
+ Revision 1.265  2007/09/18 21:41:54  phase1geo
+ Removing inport indicator bit in vector and replacing with owns_data bit
+ indicator.  Full regression passes.
+
  Revision 1.264  2007/09/17 13:32:58  phase1geo
  Adding some new structure members to support struct/union.
 

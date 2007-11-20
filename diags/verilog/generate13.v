@@ -1,6 +1,6 @@
 /*
  Name:     generate13.v
- Author:   Trevor Williams  (trevorw@charter.net)
+ Author:   Trevor Williams  (phase1geo@gmail.com)
  Date:     08/29/2007
  Purpose:  Verifies that Covered handles embedded hierarchy correctly within
            a generate block

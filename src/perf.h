@@ -18,7 +18,7 @@
 
 /*!
  \file     perf.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     1/1/2006
  \brief    Contains functions for calculating and outputting simulation performance metrics.
 */
@@ -35,6 +35,11 @@ void perf_output_inst_report( FILE* ofile );
 
 /*
  $Log$
+ Revision 1.2  2006/03/28 22:28:28  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.1  2006/01/02 21:35:36  phase1geo
  Added simulation performance statistical information to end of score command
  when we are in debug mode.

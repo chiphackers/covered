@@ -15,7 +15,7 @@
 
 /*!
  \file     stmt_blk.c
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     11/23/2005
 */
 
@@ -113,6 +113,10 @@ void stmt_blk_remove() {
 
 /*
  $Log$
+ Revision 1.12  2007/07/26 22:23:00  phase1geo
+ Starting to work on the functionality for automatic tasks/functions.  Just
+ checkpointing some work.
+
  Revision 1.11  2007/03/16 22:33:46  phase1geo
  One more fix that helps diagnostics like always1 and still fixes exclude3.
  Regressions are still not working correctly yet, though.

@@ -18,7 +18,7 @@
 
 /*!
  \file     sim.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     6/20/2002
  \brief    Contains functions for simulation engine.
 */
@@ -75,6 +75,9 @@ void sim_dealloc();
 
 /*
  $Log$
+ Revision 1.28  2007/04/18 22:35:02  phase1geo
+ Revamping simulator core again.  Checkpointing.
+
  Revision 1.27  2007/04/13 21:47:12  phase1geo
  More simulation debugging.  Added 'display all_list' command to CLI to output
  the list of all threads.  Updated regressions though we are not fully passing

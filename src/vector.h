@@ -18,7 +18,7 @@
 
 /*!
  \file     vector.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     12/1/2001
  \brief    Contains vector-related functions for signal vectors.
 */
@@ -169,6 +169,10 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.43  2007/09/13 17:03:30  phase1geo
+ Cleaning up some const-ness corrections -- still more to go but it's a good
+ start.
+
  Revision 1.42  2006/11/22 20:20:01  phase1geo
  Updates to properly support 64-bit time.  Also starting to make changes to
  simulator to support "back simulation" for when the current simulation time

@@ -18,7 +18,7 @@
 
 /*!
  \file     fsm_arg.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     10/02/2003
  \brief    Contains functions for handling FSM arguments from the command-line.
 */
@@ -35,6 +35,10 @@ void fsm_arg_parse_attr( attr_param* ap, const func_unit* funit );
 
 /*
  $Log$
+ Revision 1.5  2007/09/13 17:03:30  phase1geo
+ Cleaning up some const-ness corrections -- still more to go but it's a good
+ start.
+
  Revision 1.4  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

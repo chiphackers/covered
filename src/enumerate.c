@@ -15,7 +15,7 @@
 
 /*!
  \file     enumerate.c
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     8/29/2006
 */
 
@@ -189,6 +189,10 @@ void enumerate_dealloc_list( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.8  2007/09/14 06:22:12  phase1geo
+ Filling in existing functions in struct_union.  Completed parser code for handling
+ struct/union declarations.  Code compiles thus far.
+
  Revision 1.7  2006/10/16 21:34:46  phase1geo
  Increased max bit width from 1024 to 65536 to allow for more room for memories.
  Fixed issue with enumerated values being explicitly assigned unknown values and

@@ -16,7 +16,7 @@
 
 /*!
  \file     pplexer.l
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     12/2/2001
  \brief    Preprocessor lexer for Verilog language
 */

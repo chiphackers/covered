@@ -16,7 +16,7 @@
 
 /*!
  \file     static_lexer.c
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     8/23/2006
  \brief    Lexer for static expressions
 */

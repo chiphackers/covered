@@ -18,7 +18,7 @@
 
 /*!
  \file     score.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     11/29/2001
  \brief    Contains functions for score command.
 */
@@ -33,6 +33,11 @@ int command_score( int argc, int last_arg, char** argv );
 
 /*
  $Log$
+ Revision 1.9  2006/05/03 22:49:42  phase1geo
+ Causing all files to be preprocessed when written to the file viewer.  I'm sure that
+ I am breaking all kinds of things at this point, but things do work properly on a few
+ select test cases so I'm checkpointing here.
+
  Revision 1.8  2006/03/28 22:28:28  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

@@ -18,7 +18,7 @@
 
 /*!
  \file     keywords.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     12/2/2001
  \brief    Contains functions for checking Verilog keywords.
 */

@@ -15,7 +15,7 @@
 
 /*!
  \file     arc.c
- \author   Trevor Williams  (trevorw@sgi.com)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     8/25/2003
 
  \par What is an arc?
@@ -1284,6 +1284,10 @@ void arc_dealloc( char* arcs ) {
 
 /*
  $Log$
+ Revision 1.40  2007/09/13 17:03:30  phase1geo
+ Cleaning up some const-ness corrections -- still more to go but it's a good
+ start.
+
  Revision 1.39  2006/10/12 22:48:45  phase1geo
  Updates to remove compiler warnings.  Still some work left to go here.
 

@@ -18,7 +18,7 @@
 
 /*!
  \file     parse.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     11/27/2001
  \brief    Contains functions for parsing Verilog modules
 */
@@ -35,6 +35,11 @@ bool parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode );
 
 /*
  $Log$
+ Revision 1.8  2006/03/28 22:28:27  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.7  2006/01/25 22:13:46  phase1geo
  Adding LXT-style dumpfile parsing support.  Everything is wired in but I still
  need to look at a problem at the end of the dumpfile -- I'm getting coredumps

@@ -18,7 +18,7 @@
 
 /*!
  \file     binding.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     3/4/2002
  \brief    Contains all functions for vsignal/expression binding.
 */
@@ -58,6 +58,10 @@ void bind_dealloc();
 
 /* 
  $Log$
+ Revision 1.29  2007/09/13 17:03:30  phase1geo
+ Cleaning up some const-ness corrections -- still more to go but it's a good
+ start.
+
  Revision 1.28  2006/08/02 22:28:31  phase1geo
  Attempting to fix the bug pulled out by generate11.v.  We are just having an issue
  with setting the assigned bit in a signal expression that contains a hierarchical reference

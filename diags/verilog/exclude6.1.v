@@ -1,6 +1,6 @@
 /*
  Name:     exclude6.1.v
- Author:   Trevor Williams  (trevorw@charter.net)
+ Author:   Trevor Williams  (phase1geo@gmail.com)
  Date:     08/20/2007
  Purpose:  Verifies that functions can be excluded when there are multiple functions in the same module.
 */

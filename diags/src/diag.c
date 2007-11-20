@@ -1,6 +1,6 @@
 /*!
  \file     diag.c
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     2/27/2006
 */
 
@@ -372,6 +372,10 @@ void diag_dealloc_list() {
 
 /*
  $Log$
+ Revision 1.3  2006/03/15 22:48:27  phase1geo
+ Updating run program.  Fixing bugs in statement_connect algorithm.  Updating
+ regression files.
+
  Revision 1.2  2006/03/03 23:24:53  phase1geo
  Fixing C-based run script.  This is now working for all but one diagnostic to this
  point.  There is still some work to do here, however.

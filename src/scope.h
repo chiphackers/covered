@@ -18,7 +18,7 @@
 
 /*!
  \file     scope.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     11/10/2005
  \brief    Contains functions for looking up structures for the given scope
 */
@@ -49,6 +49,10 @@ func_unit* scope_get_parent_module( const char* scope );
 
 /*
  $Log$
+ Revision 1.11  2007/09/13 17:03:30  phase1geo
+ Cleaning up some const-ness corrections -- still more to go but it's a good
+ start.
+
  Revision 1.10  2007/03/15 22:39:06  phase1geo
  Fixing bug in unnamed scope binding.
 

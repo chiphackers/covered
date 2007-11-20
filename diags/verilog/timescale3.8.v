@@ -1,6 +1,6 @@
 /*
  Name:     timescale3.8.v
- Author:   Trevor Williams  (trevorw@charter.net)
+ Author:   Trevor Williams  (phase1geo@gmail.com)
  Date:     11/25/2006
  Purpose:  Verifies that a bad value in the time precision slot
            will be appropriately flagged.

@@ -1,6 +1,6 @@
 /*
  Name:     afunc1.v
- Author:   Trevor Williams  (trevorw@charter.net)
+ Author:   Trevor Williams  (phase1geo@gmail.com)
  Date:     07/27/2007
  Purpose:  Simple test to verify functionality of automatic functions.
 */

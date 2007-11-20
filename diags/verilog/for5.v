@@ -1,6 +1,6 @@
 /*
  Name:     for5.v
- Author:   Trevor Williams  (trevorw@charter.net)
+ Author:   Trevor Williams  (phase1geo@gmail.com)
  Date:     09/10/2007
  Purpose:  Verifies local variable declarations in for loops.
 */

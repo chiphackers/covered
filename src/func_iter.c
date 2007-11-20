@@ -15,7 +15,7 @@
 
 /*!
  \file     func_iter.c
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     4/2/2007
 */
 
@@ -227,6 +227,12 @@ void func_iter_dealloc( func_iter* fi ) {
 
 /*
  $Log$
+ Revision 1.2  2007/04/03 04:15:17  phase1geo
+ Fixing bugs in func_iter functionality.  Modified functional unit name
+ flattening function (though this does not appear to be working correctly
+ at this time).  Added calls to funit_flatten_name in all of the reporting
+ files.  Checkpointing.
+
  Revision 1.1  2007/04/02 20:19:36  phase1geo
  Checkpointing more work on use of functional iterators.  Not working correctly
  yet.

@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 #	Name:		view_vg_errs
-#	Author:		Trevor Williams  (trevorw@charter.net)
+#	Author:		Trevor Williams  (phase1geo@gmail.com)
 #	Date:		12/21/2005
 #	Usage:		view_vg_errs <valgrind_log_prefix>
 

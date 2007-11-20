@@ -18,7 +18,7 @@
 
 /*!
  \file     reentrant.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     12/11/2006
  \brief    Contains functions for handling re-entrant tasks and functions.
 */
@@ -35,6 +35,10 @@ void reentrant_dealloc( reentrant* ren, func_unit* funit, uint64 sim_time, expre
 
 /*
  $Log$
+ Revision 1.5  2007/07/30 22:42:02  phase1geo
+ Making some progress on automatic function support.  Things currently don't compile
+ but I need to checkpoint for now.
+
  Revision 1.4  2007/07/27 19:11:27  phase1geo
  Putting in rest of support for automatic functions/tasks.  Checked in
  atask1 diagnostic files.

@@ -1,6 +1,6 @@
 /*
  Name:     merge3b.v
- Author:   Trevor Williams  (trevorw@charter.net)
+ Author:   Trevor Williams  (phase1geo@gmail.com)
  Date:     10/16/2006
  Purpose:  Verify that merging two designs with full hierarchy can
            be successfully done (proving fix for bug 1578251).
