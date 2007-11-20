@@ -329,7 +329,7 @@ void vcd_parse_sim( FILE* vcd ) {
 
         vcd_parse_sim_vector( vcd, (token + 1) );
 
-      } else if( (token[0] == 'r') || (token[0] == 'B') || carry_over ) {
+      } else if( (token[0] == 'r') || (token[0] == 'R') || carry_over ) {
 
         vcd_parse_sim_ignore( vcd );
         carry_over = FALSE;
@@ -419,6 +419,9 @@ void vcd_parse( char* vcd_file ) {
 
 /*
  $Log$
+ Revision 1.27  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.26  2006/11/21 19:54:13  phase1geo
  Making modifications to defines.h to help in creating appropriately sized types.
  Other changes to VPI code (but this is still broken at the moment).  Checkpointing.
