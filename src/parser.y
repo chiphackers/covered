@@ -40,6 +40,7 @@
 #include "link.h"
 #include "obfuscate.h"
 #include "parser_misc.h"
+#include "profiler.h"
 #include "statement.h"
 #include "static.h"
 #include "util.h"
@@ -668,7 +669,7 @@ list_of_port_declarations
   /* Handles Verilog-2001 port of type:  input wire [m:l] <list>; */
 port_declaration
   : attribute_list_opt port_type net_type_sign_range_opt IDENTIFIER
-    {
+    { PROFILE(PARSER_PORT_DECLARATION_A);
       port_info* pi;
       if( !parser_check_generation( GENERATION_2001 ) ) {
         VLerror( "Inline port declaration syntax found in block that is specified to not allow Verilog-2001 syntax" );
@@ -677,7 +678,7 @@ port_declaration
       } else {
         if( ignore_mode == 0 ) {
           db_add_signal( $4, curr_sig_type, &curr_prange, NULL, curr_signed, FALSE, @4.first_line, @4.first_column, TRUE );
-          pi = (port_info*)malloc_safe( sizeof( port_info ), __FILE__, __LINE__ );
+          pi = (port_info*)malloc_safe( sizeof( port_info ) );
           pi->type      = curr_sig_type;
           pi->is_signed = curr_signed;
           pi->prange    = parser_copy_curr_range( TRUE );
@@ -690,7 +691,7 @@ port_declaration
       }
     }
   | attribute_list_opt K_output var_type signed_opt range_opt IDENTIFIER
-    {
+    { PROFILE(PARSER_PORT_DECLARATION_B);
       port_info* pi;
       if( !parser_check_generation( GENERATION_2001 ) ) {
         VLerror( "Inline port declaration syntax found in block that is specified to not allow Verilog-2001 syntax" );
@@ -699,7 +700,7 @@ port_declaration
       } else {
         if( ignore_mode == 0 ) {
           db_add_signal( $6, SSUPPL_TYPE_OUTPUT, &curr_prange, NULL, curr_signed, FALSE, @6.first_line, @6.first_column, TRUE );
-          pi = (port_info*)malloc_safe( sizeof( port_info ), __FILE__, __LINE__ );
+          pi = (port_info*)malloc_safe( sizeof( port_info ) );
           pi->type      = SSUPPL_TYPE_OUTPUT;
           pi->is_signed = curr_signed;
           pi->prange    = parser_copy_curr_range( TRUE );
@@ -713,7 +714,7 @@ port_declaration
     }
   /* We just need to parse the static register assignment as this signal will get its value from the dumpfile */
   | attribute_list_opt K_output var_type signed_opt range_opt IDENTIFIER '=' ignore_more static_expr ignore_less
-    {
+    { PROFILE(PARSER_PORT_DECLARATION_C);
       port_info* pi;
       if( !parser_check_generation( GENERATION_2001 ) ) {
         VLerror( "Inline port declaration syntax found in block that is specified to not allow Verilog-2001 syntax" );
@@ -722,7 +723,7 @@ port_declaration
       } else {
         if( ignore_mode == 0 ) {
           db_add_signal( $6, SSUPPL_TYPE_OUTPUT, &curr_prange, NULL, curr_signed, FALSE, @6.first_line, @6.first_column, TRUE );
-          pi = (port_info*)malloc_safe( sizeof( port_info ), __FILE__, __LINE__ );
+          pi = (port_info*)malloc_safe( sizeof( port_info ) );
           pi->type       = SSUPPL_TYPE_OUTPUT;
           pi->is_signed  = curr_signed;
           pi->prange     = parser_copy_curr_range( TRUE );
@@ -1037,10 +1038,10 @@ static_expr
 
 static_expr_primary
   : NUMBER
-    {
+    { PROFILE(PARSER_STATIC_EXPR_PRIMARY_A);
       static_expr* tmp;
       if( ignore_mode == 0 ) {
-        tmp = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
+        tmp = (static_expr*)malloc_safe( sizeof( static_expr ) );
         if( vector_is_unknown( $1 ) ) {
           tmp->exp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
           vector_dealloc( tmp->exp->value );
@@ -1068,10 +1069,10 @@ static_expr_primary
       $$ = NULL;
     }
   | IDENTIFIER
-    {
+    { PROFILE(PARSER_STATIC_EXPR_PRIMARY_B);
       static_expr* tmp;
       if( ignore_mode == 0 ) {
-        tmp = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
+        tmp = (static_expr*)malloc_safe( sizeof( static_expr ) );
         tmp->num = -1;
         tmp->exp = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
         free_safe( $1 );
@@ -1886,7 +1887,7 @@ expr_primary
   /* Expression lists are used in concatenations and parameter overrides */
 expression_list
   : expression_list ',' expression
-    {
+    { PROFILE(PARSER_EXPRESSION_LIST_A);
       expression*  tmp;
       expression*  exp = $3;
       param_oride* po;
@@ -1900,7 +1901,7 @@ expression_list
           }
         } else {
           if( $3 != NULL ) {
-            po = (param_oride*)malloc_safe( sizeof( param_oride ), __FILE__, __LINE__ );
+            po = (param_oride*)malloc_safe( sizeof( param_oride ) );
             po->name = NULL;
             po->expr = $3;
             po->next = NULL;
@@ -1918,7 +1919,7 @@ expression_list
       }
     }
   | expression
-    {
+    { PROFILE(PARSER_EXPRESSION_LIST_B);
       expression*  exp = $1;
       param_oride* po;
       if( ignore_mode == 0 ) {
@@ -1926,7 +1927,7 @@ expression_list
           $$ = exp;
         } else {
           if( $1 != NULL ) {
-            po = (param_oride*)malloc_safe( sizeof( param_oride ), __FILE__, __LINE__ );
+            po = (param_oride*)malloc_safe( sizeof( param_oride ) );
             po->name = NULL;
             po->expr = $1;
             po->next = NULL;
@@ -1944,10 +1945,10 @@ expression_list
       }
     }
   |
-    {
+    { PROFILE(PARSER_EXPRESSION_LIST_C);
       param_oride* po;
       if( (ignore_mode == 0) && (param_mode == 1) ) {
-        po = (param_oride*)malloc_safe( sizeof( param_oride ), __FILE__, __LINE__ );
+        po = (param_oride*)malloc_safe( sizeof( param_oride ) );
         po->name = NULL;
         po->expr = NULL;
         po->next = NULL;
@@ -1961,10 +1962,10 @@ expression_list
       $$ = NULL;
     }
   | expression_list ','
-    {
+    { PROFILE(PARSER_EXPRESSION_LIST_D);
       param_oride* po;
       if( (ignore_mode == 0) && (param_mode == 1) ) {
-        po = (param_oride*)malloc_safe( sizeof( param_oride ), __FILE__, __LINE__ );
+        po = (param_oride*)malloc_safe( sizeof( param_oride ) );
         po->name = NULL;
         po->expr = NULL;
         po->next = NULL;
@@ -2024,9 +2025,9 @@ identifier
       $$ = NULL;
     }
   | identifier '.' IDENTIFIER
-    {
+    { PROFILE(PARSER_IDENTIFIER_A);
       int   len = strlen( $1 ) + strlen( $3 ) + 2;
-      char* str = (char*)malloc_safe( len, __FILE__, __LINE__ );
+      char* str = (char*)malloc_safe( len );
       snprintf( str, len, "%s.%s", $1, $3 );
       if( $1 != NULL ) {
         free_safe( $1 );
@@ -2777,10 +2778,10 @@ generate_item
 
 generate_case_item
   : expression_list ':' dec_gen_expr_mode generate_item inc_gen_expr_mode
-    {
+    { PROFILE(PARSER_GENERATE_CASE_ITEM_A);
       case_gitem* cstmt;
       if( ignore_mode == 0 ) {
-        cstmt = (case_gitem*)malloc_safe( sizeof( case_gitem ), __FILE__, __LINE__ );
+        cstmt = (case_gitem*)malloc_safe( sizeof( case_gitem ) );
         cstmt->prev = NULL;
         cstmt->expr = $1;
         cstmt->gi = $4;
@@ -2791,10 +2792,10 @@ generate_case_item
       }
     }
   | K_default ':' dec_gen_expr_mode generate_item inc_gen_expr_mode
-    {
+    { PROFILE(PARSER_GENERATE_CASE_ITEM_B);
       case_gitem* cstmt;
       if( ignore_mode == 0 ) {
-        cstmt = (case_gitem*)malloc_safe( sizeof( case_gitem ), __FILE__, __LINE__ );
+        cstmt = (case_gitem*)malloc_safe( sizeof( case_gitem ) );
         cstmt->prev = NULL;
         cstmt->expr = NULL;
         cstmt->gi   = $4;
@@ -2805,10 +2806,10 @@ generate_case_item
       }
     }
   | K_default dec_gen_expr_mode generate_item inc_gen_expr_mode
-    {
+    { PROFILE(PARSER_GENERATE_CASE_ITEM_C);
       case_gitem* cstmt;
       if( ignore_mode == 0 ) {
-        cstmt = (case_gitem*)malloc_safe( sizeof( case_gitem ), __FILE__, __LINE__ );
+        cstmt = (case_gitem*)malloc_safe( sizeof( case_gitem ) );
         cstmt->prev = NULL;
         cstmt->expr = NULL;
         cstmt->gi   = $3;
@@ -3915,7 +3916,7 @@ statement
     }
 */
   | K_begin inc_block_depth begin_end_block dec_block_depth K_end
-    {
+    { PROFILE(PARSER_STATEMENT_BEGIN_A);
       expression* exp;
       statement*  stmt;
       char        back[4096];
@@ -3927,7 +3928,7 @@ statement
           exp  = db_create_expression( NULL, NULL, EXP_OP_NB_CALL, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
           exp->elem.funit      = $3;
           exp->suppl.part.type = ETYPE_FUNIT;
-          exp->name            = strdup( back );
+          exp->name            = strdup_safe( back );
           stmt = db_create_statement( exp );
           $$   = stmt;
         } else {
@@ -3955,7 +3956,7 @@ statement
     }
 */
   | K_fork inc_fork_depth fork_statement K_join
-    {
+    { PROFILE(PARSER_STATEMENT_FORK_A);
       expression* exp;
       statement*  stmt;
       char        back[4096];
@@ -3967,7 +3968,7 @@ statement
           exp  = db_create_expression( NULL, NULL, EXP_OP_NB_CALL, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
           exp->elem.funit      = $3;
           exp->suppl.part.type = ETYPE_FUNIT;
-          exp->name            = strdup( back );
+          exp->name            = strdup_safe( back );
           stmt = db_create_statement( exp );
           $$   = stmt;
         } else {
@@ -4252,7 +4253,7 @@ statement
       $$ = NULL;
     }
   | K_for inc_for_depth '(' for_initialization ';' expression ';' passign ')' statement dec_for_depth
-    {
+    { PROFILE(PARSER_STATEMENT_FOR_A);
       expression* exp;
       statement*  stmt;
       statement*  stmt1 = $4;
@@ -4287,7 +4288,7 @@ statement
         exp = db_create_expression( NULL, NULL, EXP_OP_NB_CALL, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
         exp->elem.funit      = $2;
         exp->suppl.part.type = ETYPE_FUNIT;
-        exp->name            = strdup_safe( back, __FILE__, __LINE__ );
+        exp->name            = strdup_safe( back );
         stmt = db_create_statement( exp );
         $$ = stmt;
       } else {
@@ -5120,10 +5121,10 @@ block_item_decl
 
 case_item
   : expression_list ':' statement_opt
-    {
+    { PROFILE(PARSER_CASE_ITEM_A);
       case_statement* cstmt;
       if( ignore_mode == 0 ) {
-        cstmt = (case_statement*)malloc_safe( sizeof( case_statement ), __FILE__, __LINE__ );
+        cstmt = (case_statement*)malloc_safe( sizeof( case_statement ) );
         cstmt->prev = NULL;
         cstmt->expr = $1;
         cstmt->stmt = $3;
@@ -5134,10 +5135,10 @@ case_item
       }
     }
   | K_default ':' statement_opt
-    {
+    { PROFILE(PARSER_CASE_ITEM_B);
       case_statement* cstmt;
       if( ignore_mode == 0 ) {
-        cstmt = (case_statement*)malloc_safe( sizeof( case_statement ), __FILE__, __LINE__ );
+        cstmt = (case_statement*)malloc_safe( sizeof( case_statement ) );
         cstmt->prev = NULL;
         cstmt->expr = NULL;
         cstmt->stmt = $3;
@@ -5148,10 +5149,10 @@ case_item
       }
     }
   | K_default statement_opt
-    {
+    { PROFILE(PARSER_CASE_ITEM_C);
       case_statement* cstmt;
       if( ignore_mode == 0 ) {
-        cstmt = (case_statement*)malloc_safe( sizeof( case_statement ), __FILE__, __LINE__ );
+        cstmt = (case_statement*)malloc_safe( sizeof( case_statement ) );
         cstmt->prev = NULL;
         cstmt->expr = NULL;
         cstmt->stmt = $2;
@@ -5261,13 +5262,13 @@ delay3_opt
 
 delay_value
   : static_expr
-    {
+    { PROFILE(PARSER_DELAY_VALUE_A);
       expression*  tmp;
       static_expr* se = $1;
       if( (ignore_mode == 0) && (se != NULL) ) {
         if( se->exp == NULL ) {
           tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-          vector_init( tmp->value, (vec_data*)malloc_safe( (sizeof( vec_data ) * 32), __FILE__, __LINE__ ), 32, VTYPE_VAL );
+          vector_init( tmp->value, (vec_data*)malloc_safe( (sizeof( vec_data ) * 32) ), 32, VTYPE_VAL );
           vector_from_int( tmp->value, se->num );
           static_expr_dealloc( se, TRUE );
         } else {
@@ -5280,7 +5281,7 @@ delay_value
       }
     }
   | static_expr ':' static_expr ':' static_expr
-    {
+    { PROFILE(PARSER_DELAY_VALUE_B);
       expression*  tmp;
       static_expr* se = NULL;
       if( ignore_mode == 0 ) {
@@ -5318,7 +5319,7 @@ delay_value
         if( se != NULL ) {
           if( se->exp == NULL ) {
             tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-            vector_init( tmp->value, (vec_data*)malloc_safe( (sizeof( vec_data ) * 32), __FILE__, __LINE__ ), 32, VTYPE_VAL );
+            vector_init( tmp->value, (vec_data*)malloc_safe( (sizeof( vec_data ) * 32) ), 32, VTYPE_VAL );
             vector_from_int( tmp->value, se->num );
             static_expr_dealloc( se, TRUE );
           } else {
@@ -5971,14 +5972,14 @@ parameter_value_byname_list
 
 parameter_value_byname
   : '.' IDENTIFIER '(' expression ')'
-    {
+    { PROFILE(PARSER_PARAMETER_VALUE_BYNAME_A);
       param_oride* po;
       if( !parser_check_generation( GENERATION_2001 ) ) {
         VLerror( "Explicit in-line parameter passing syntax found in block that is specified to not allow Verilog-2001 syntax" );
         free_safe( $2 );
         expression_dealloc( $4, FALSE );
       } else {
-        po = (param_oride*)malloc_safe( sizeof( param_oride ), __FILE__, __LINE__ );
+        po = (param_oride*)malloc_safe( sizeof( param_oride ) );
         po->name = $2;
         po->expr = $4;
         po->next = NULL;
@@ -6025,9 +6026,9 @@ gate_instance_list
      type. In any case, the gate has a set of connections to ports. */
 gate_instance
   : IDENTIFIER '(' ignore_more expression_list ignore_less ')'
-    {
+    { PROFILE(PARSER_GATE_INSTANCE_A);
       str_link* tmp;
-      tmp        = (str_link*)malloc_safe( sizeof( str_link ), __FILE__, __LINE__ );
+      tmp        = (str_link*)malloc_safe( sizeof( str_link ) );
       tmp->str   = $1;
       tmp->range = NULL;
       tmp->next  = NULL;
@@ -6038,7 +6039,7 @@ gate_instance
       $$ = NULL;
     }
   | IDENTIFIER range '(' ignore_more expression_list ignore_less ')'
-    {
+    { PROFILE(PARSER_GATE_INSTANCE_B);
       str_link* tmp;
       curr_prange.clear = TRUE;
       if( !parser_check_generation( GENERATION_2001 ) ) {
@@ -6046,7 +6047,7 @@ gate_instance
         free_safe( $1 );
         $$ = NULL;
       } else {
-        tmp        = (str_link*)malloc_safe( sizeof( str_link ), __FILE__, __LINE__ );
+        tmp        = (str_link*)malloc_safe( sizeof( str_link ) );
         tmp->str   = $1;
         tmp->range = curr_prange.dim;
         tmp->next  = NULL;
@@ -6060,9 +6061,9 @@ gate_instance
     }
 
   | IDENTIFIER '(' port_name_list ')'
-    {
+    { PROFILE(PARSER_GATE_INSTANCE_C);
       str_link* tmp;
-      tmp        = (str_link*)malloc_safe( sizeof( str_link ), __FILE__, __LINE__ );
+      tmp        = (str_link*)malloc_safe( sizeof( str_link ) );
       tmp->str   = $1;
       tmp->range = NULL;
       tmp->next  = NULL;
@@ -6073,7 +6074,7 @@ gate_instance
       $$ = NULL;
     }
   | IDENTIFIER range '(' port_name_list ')'
-    {
+    { PROFILE(PARSER_GATE_INSTANCE_D);
       str_link* tmp;
       curr_prange.clear = TRUE;
       if( !parser_check_generation( GENERATION_2001 ) ) {
@@ -6081,7 +6082,7 @@ gate_instance
         free_safe( $1 );
         $$ = NULL;
       } else {
-        tmp        = (str_link*)malloc_safe( sizeof( str_link ), __FILE__, __LINE__ );
+        tmp        = (str_link*)malloc_safe( sizeof( str_link ) );
         tmp->str   = $1;
         tmp->range = curr_prange.dim;
         tmp->next  = NULL;
@@ -6444,8 +6445,8 @@ enum_variable_list
 
 list_of_names
   : IDENTIFIER
-    {
-      str_link* strl = (str_link*)malloc_safe( sizeof( str_link ), __FILE__, __LINE__ );
+    { PROFILE(PARSER_LIST_OF_NAMES_A);
+      str_link* strl = (str_link*)malloc_safe( sizeof( str_link ) );
       strl->str    = $1;
       strl->suppl  = @1.first_line;
       strl->suppl2 = @1.first_column;
@@ -6457,8 +6458,8 @@ list_of_names
       $$ = NULL;
     }
   | list_of_names ',' IDENTIFIER
-    {
-      str_link* strl = (str_link*)malloc_safe( sizeof( str_link ), __FILE__, __LINE__ );
+    { PROFILE(PARSER_LIST_OF_NAMES_B);
+      str_link* strl = (str_link*)malloc_safe( sizeof( str_link ) );
       str_link* strt = $1;
       strl->str    = $3;
       strl->suppl  = @3.first_line;

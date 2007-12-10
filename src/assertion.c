@@ -30,6 +30,7 @@
 #include "link.h"
 #include "obfuscate.h"
 #include "ovl.h"
+#include "profiler.h"
 #include "util.h"
 
 
@@ -48,7 +49,7 @@ extern isuppl      info_suppl;
 
  Parses the specified command-line argument as an assertion to consider for coverage.
 */
-void assertion_parse( const char* arg ) {
+void assertion_parse( const char* arg ) { PROFILE(ASSERTION_PARSE);
 
 }
 
@@ -58,7 +59,7 @@ void assertion_parse( const char* arg ) {
 
  Parses the specified assertion attribute for assertion coverage details.
 */
-void assertion_parse_attr( attr_param* ap, const func_unit* funit ) {
+void assertion_parse_attr( attr_param* ap, const func_unit* funit ) { PROFILE(ASSERTION_PARSE_ATTR);
 
 }
 
@@ -69,7 +70,7 @@ void assertion_parse_attr( attr_param* ap, const func_unit* funit ) {
 
  Gets total and hit assertion coverage statistics for the given functional unit.
 */
-void assertion_get_stats( const func_unit* funit, float* total, int* hit ) {
+void assertion_get_stats( const func_unit* funit, float* total, int* hit ) { PROFILE(ASSERTION_GET_STATS);
 
   assert( funit != NULL );
 
@@ -94,7 +95,7 @@ void assertion_get_stats( const func_unit* funit, float* total, int* hit ) {
 
  Displays the assertion summary information for a given instance to the specified output stream.
 */
-bool assertion_display_instance_summary( FILE* ofile, const char* name, int hits, float total ) {
+bool assertion_display_instance_summary( FILE* ofile, const char* name, int hits, float total ) { PROFILE(ASSERTION_DISPLAY_INSTANCE_SUMMARY);
 
   float percent;  /* Percentage of assertions hit */
   float miss;     /* Number of assertions missed */
@@ -118,7 +119,7 @@ bool assertion_display_instance_summary( FILE* ofile, const char* name, int hits
  Outputs the instance summary assertion coverage information for the given functional
  unit instance to the given output file.
 */
-bool assertion_instance_summary( FILE* ofile, const funit_inst* root, const char* parent_inst, int* hits, float* total ) {
+bool assertion_instance_summary( FILE* ofile, const funit_inst* root, const char* parent_inst, int* hits, float* total ) { PROFILE(ASSERTION_INSTANCE_SUMMARY);
 
   funit_inst* curr;                /* Pointer to current child functional unit instance of this node */
   char        tmpname[4096];       /* Temporary holder of instance name */
@@ -179,7 +180,7 @@ bool assertion_instance_summary( FILE* ofile, const funit_inst* root, const char
 
  Displays the assertion summary information for a given instance to the specified output stream.
 */
-bool assertion_display_funit_summary( FILE* ofile, const char* name, const char* fname, int hits, float total ) {
+bool assertion_display_funit_summary( FILE* ofile, const char* name, const char* fname, int hits, float total ) { PROFILE(ASSERTION_DISPLAY_FUNIT_SUMMARY);
 
   float percent;  /* Percentage of assertions hit */
   float miss;     /* Number of assertions missed */
@@ -203,7 +204,7 @@ bool assertion_display_funit_summary( FILE* ofile, const char* name, const char*
  Outputs the functional unit summary assertion coverage information for the given
  functional unit to the given output file.
 */
-bool assertion_funit_summary( FILE* ofile, const funit_link* head, int* hits, float* total ) {
+bool assertion_funit_summary( FILE* ofile, const funit_link* head, int* hits, float* total ) { PROFILE(ASSERTION_FUNIT_SUMMARY);
 
   bool  miss_found = FALSE;  /* Set to TRUE if assertion was found to be missed */
   char* pname;               /* Printable version of functional unit name */
@@ -242,7 +243,7 @@ bool assertion_funit_summary( FILE* ofile, const funit_link* head, int* hits, fl
 
  Displays the verbose hit/miss assertion information for the given functional unit.
 */
-void assertion_display_verbose( FILE* ofile, const func_unit* funit ) {
+void assertion_display_verbose( FILE* ofile, const func_unit* funit ) { PROFILE(ASSERTION_DISPLAY_VERBOSE);
 
   if( report_covered ) {
     fprintf( ofile, "    Hit Assertions\n\n" );
@@ -267,7 +268,7 @@ void assertion_display_verbose( FILE* ofile, const func_unit* funit ) {
  Outputs the instance verbose assertion coverage information for the given functional
  unit instance to the given output file.
 */
-void assertion_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst ) {
+void assertion_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst ) { PROFILE(ASSERTION_INSTANCE_VERBOSE);
 
   funit_inst* curr_inst;      /* Pointer to current instance being evaluated */
   char        tmpname[4096];  /* Temporary name holder for instance */
@@ -330,7 +331,7 @@ void assertion_instance_verbose( FILE* ofile, funit_inst* root, char* parent_ins
  Outputs the functional unit verbose assertion coverage information for the given
  functional unit to the given output file.
 */
-void assertion_funit_verbose( FILE* ofile, const funit_link* head ) {
+void assertion_funit_verbose( FILE* ofile, const funit_link* head ) { PROFILE(ASSERTION_FUNIT_VERBOSE);
 
   char* pname;  /* Printable version of functional unit name */
 
@@ -375,7 +376,7 @@ void assertion_funit_verbose( FILE* ofile, const funit_link* head ) {
 
  Outputs assertion coverage report information to the given file handle. 
 */
-void assertion_report( FILE* ofile, bool verbose ) {
+void assertion_report( FILE* ofile, bool verbose ) { PROFILE(ASSERTION_REPORT);
 
   bool       missed_found = FALSE;  /* If set to TRUE, lines were found to be missed */
   char       tmp[4096];             /* Temporary string value */
@@ -447,7 +448,7 @@ void assertion_report( FILE* ofile, bool verbose ) {
  
  Counts the total number and number of hit assertions for the specified functional unit.
 */
-bool assertion_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit ) {
+bool assertion_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit ) { PROFILE(ASSERTION_GET_FUNIT_SUMMARY);
 	
   bool        retval = TRUE;  /* Return value for this function */
   func_unit   funit;          /* Functional unit used for searching */
@@ -494,14 +495,14 @@ bool assertion_get_funit_summary( char* funit_name, int funit_type, int* total, 
  Searches the specified functional unit, collecting all uncovered and covered assertion module instance names.
 */
 bool assertion_collect( const char* funit_name, int funit_type, char*** uncov_inst_names, int** excludes, int* uncov_inst_size,
-                        char*** cov_inst_names, int* cov_inst_size ) {
+                        char*** cov_inst_names, int* cov_inst_size ) { PROFILE(ASSERTION_COLLECT);
   
   bool        retval = TRUE;  /* Return value for this function */
   func_unit   funit;          /* Temporary functional unit used for searching */
   funit_link* funitl;         /* Pointer to found functional unit */
   
   /* Initialize functional unit to search for */
-  funit.name = strdup_safe( funit_name, __FILE__, __LINE__ );
+  funit.name = strdup_safe( funit_name );
   funit.type = funit_type;
   
   /* Find functional unit */
@@ -544,13 +545,13 @@ bool assertion_collect( const char* funit_name, int funit_type, char*** uncov_in
  Finds all of the coverage points for the given assertion instance and stores their
  string descriptions and execution counts in the cp list.
 */
-bool assertion_get_coverage( const char* funit_name, int funit_type, const char* inst_name, char** assert_mod, str_link** cp_head, str_link** cp_tail ) {
+bool assertion_get_coverage( const char* funit_name, int funit_type, const char* inst_name, char** assert_mod, str_link** cp_head, str_link** cp_tail ) { PROFILE(ASSERTION_GET_COVERAGE);
 
   bool        retval = TRUE;  /* Return value for this function */
   func_unit   funit;          /* Temporary functional unit used for searching */
   funit_link* funitl;         /* Pointer to found functional unit link */
 
-  funit.name = strdup_safe( funit_name, __FILE__, __LINE__ );
+  funit.name = strdup_safe( funit_name );
   funit.type = funit_type;
 
   /* Find functional unit */
@@ -577,6 +578,9 @@ bool assertion_get_coverage( const char* funit_name, int funit_type, const char*
 
 /*
  $Log$
+ Revision 1.22  2007/11/20 05:28:57  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.21  2007/09/13 17:03:30  phase1geo
  Cleaning up some const-ness corrections -- still more to go but it's a good
  start.

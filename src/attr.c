@@ -39,13 +39,14 @@
 #include <string.h>
 #endif
 
-#include "defines.h"
-#include "attr.h"
-#include "expr.h"
-#include "func_unit.h"
-#include "util.h"
-#include "fsm_arg.h"
 #include "assertion.h"
+#include "attr.h"
+#include "defines.h"
+#include "expr.h"
+#include "fsm_arg.h"
+#include "func_unit.h"
+#include "profiler.h"
+#include "util.h"
 
 
 /*!
@@ -56,12 +57,12 @@
 
  Allocates and initializes an attribute parameter entry.
 */
-attr_param* attribute_create( const char* name, expression* expr ) {
+attr_param* attribute_create( const char* name, expression* expr ) { PROFILE(ATTRIBUTE_CREATE);
 
   attr_param* ap;  /* Pointer to newly allocated attribute parameter */
 
-  ap        = (attr_param*)malloc_safe( sizeof( attr_param ), __FILE__, __LINE__ );
-  ap->name  = strdup_safe( name, __FILE__, __LINE__ );
+  ap        = (attr_param*)malloc_safe( sizeof( attr_param ) );
+  ap->name  = strdup_safe( name );
   ap->expr  = expr;
   ap->index = 0;
   ap->next  = NULL;
@@ -80,7 +81,7 @@ attr_param* attribute_create( const char* name, expression* expr ) {
  should parse.  If this attribute is identified by Covered as one of its own, it
  calls the appropriate function to handle the entire attribute parameter list.
 */
-void attribute_parse( attr_param* ap, const func_unit* funit ) {
+void attribute_parse( attr_param* ap, const func_unit* funit ) { PROFILE(ATTRIBUTE_PARSE);
 
   if( ap != NULL ) {
 
@@ -103,7 +104,7 @@ void attribute_parse( attr_param* ap, const func_unit* funit ) {
 
  Deallocates all memory for the entire attribute parameter list.
 */
-void attribute_dealloc( attr_param* ap ) {
+void attribute_dealloc( attr_param* ap ) { PROFILE(ATTRIBUTE_DEALLOC);
 
   if( ap != NULL ) {
 
@@ -125,6 +126,9 @@ void attribute_dealloc( attr_param* ap ) {
 
 /*
  $Log$
+ Revision 1.8  2007/11/20 05:28:57  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.7  2007/09/13 17:03:30  phase1geo
  Cleaning up some const-ness corrections -- still more to go but it's a good
  start.

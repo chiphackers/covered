@@ -269,7 +269,7 @@ WSPACE [ \t\b\f]+
         yylloc.first_line += 1;
         return 0;
  }
-<CSTRING>\"   {
+<CSTRING>\"   { PROFILE(LEXER_CSTRING_A);
 	yylloc.last_column += 1;
 	BEGIN( state_enter );
         if( ignore_mode == 0 ) {
@@ -411,7 +411,7 @@ WSPACE [ \t\b\f]+
 <IMEXPORT>\"DPI\" { yylloc.last_column += strlen( yytext );  return K_DPI; }
 
   /* Keyword and signal identifiers */
-<PARSE>[a-zA-Z_][a-zA-Z0-9$_]*(\[[^]]*\]\.[a-zA-Z_][a-zA-Z0-9$_]*)* {
+<PARSE>[a-zA-Z_][a-zA-Z0-9$_]*(\[[^]]*\]\.[a-zA-Z_][a-zA-Z0-9$_]*)* { PROFILE(LEXER_KEYWORD_A);
      str_link* foundmod;
      int       rc   = lexer_keyword_1995_code( yytext, yyleng );
      if( (rc == IDENTIFIER) && parser_check_generation( GENERATION_2001 ) ) {
@@ -481,7 +481,7 @@ WSPACE [ \t\b\f]+
  }
 
   /* Signal names starting with a '\' character */
-<PARSE>\\[^ \t\b\f\r\n]+  { 
+<PARSE>\\[^ \t\b\f\r\n]+  { PROFILE(LEXER_ESCAPED_NAME);
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
      if( ignore_mode == 0 ) {
@@ -494,7 +494,7 @@ WSPACE [ \t\b\f]+
  }
 
   /* System call lines -- we ignore this information */
-<PARSE>\$([a-zA-Z0-9$_]+)   { 
+<PARSE>\$([a-zA-Z0-9$_]+)   { PROFILE(LEXER_SYSTEM_CALL);
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
      if( ignore_mode == 0 ) {
@@ -912,7 +912,7 @@ bool process_timescale_token( char* token, char* type, int* value, bool report )
 
  Processes a text string into timescale information.
 */
-bool process_timescale( const char* txt, bool report ) {
+bool process_timescale( const char* txt, bool report ) { PROFILE(PROCESS_TIMESCALE);
 
   bool  retval = TRUE;   /* Return value for this function */
   char* str;             /* String version of text minus spaces */
@@ -923,7 +923,7 @@ bool process_timescale( const char* txt, bool report ) {
   int   prec = 0;        /* Time precision offset */
 
   /* Copy the given string */
-  str = strdup( txt );
+  str = strdup_safe( txt, __FILE__, __LINE__ );
 
   /* Remove all spaces */
   for( i=0; i<(strlen( str )+1); i++ ) {
@@ -1080,7 +1080,7 @@ static int yywrap() {
  opened, and the lexer is initialized.  The include stack is cleared
  and ready to go.
 */
-void reset_lexer( str_link* file_list_head ) {
+void reset_lexer( str_link* file_list_head ) { PROFILE(RESET_LEXER);
 
   FILE*     out;
   str_link* curr = file_list_head;

@@ -121,16 +121,16 @@ exp_bind* eb_tail;
  This bindings list will be handled after all input Verilog has been
  parsed.
 */
-void bind_add( int type, const char* name, expression* exp, func_unit* funit ) {
+void bind_add( int type, const char* name, expression* exp, func_unit* funit ) { PROFILE(BIND_ADD);
   
   exp_bind* eb;   /* Temporary pointer to signal/expressing binding */
 
   assert( exp != NULL );
   
   /* Create new signal/expression binding */
-  eb                 = (exp_bind *)malloc_safe( sizeof( exp_bind ), __FILE__, __LINE__ );
+  eb                 = (exp_bind *)malloc_safe( sizeof( exp_bind ) );
   eb->type           = type;
-  eb->name           = strdup_safe( name, __FILE__, __LINE__ );
+  eb->name           = strdup_safe( name );
   eb->clear_assigned = 0;
   eb->line           = exp->line;
   eb->funit          = funit;
@@ -159,7 +159,7 @@ void bind_add( int type, const char* name, expression* exp, func_unit* funit ) {
  parameters.  When the entry is found, the FSM expression is added to the exp_bind structure
  to be sized when the expression is bound.
 */
-void bind_append_fsm_expr( expression* fsm_exp, const expression* exp, const func_unit* curr_funit ) {
+void bind_append_fsm_expr( expression* fsm_exp, const expression* exp, const func_unit* curr_funit ) { PROFILE(BIND_APPEND_FSM_EXPR);
 
   exp_bind* curr;
 
@@ -231,7 +231,7 @@ void bind_display_list() {
  Removes the binding containing the expression ID of id.  This needs to
  be called before an expression is removed.
 */
-void bind_remove( int id, bool clear_assigned ) {
+void bind_remove( int id, bool clear_assigned ) { PROFILE(BIND_REMOVE);
 
   exp_bind* curr;  /* Pointer to current exp_bind link */
   exp_bind* last;  /* Pointer to last exp_bind link examined */
@@ -287,7 +287,7 @@ void bind_remove( int id, bool clear_assigned ) {
  \return Returns the name of the signal to be bound with the given expression (if one exists);
          otherwise, returns NULL if no match was found.
 */
-char* bind_find_sig_name( const expression* exp ) {
+char* bind_find_sig_name( const expression* exp ) { PROFILE(BIND_FIND_SIG_NAME);
 
   exp_bind*  curr;         /* Pointer to current exp_bind link */
   vsignal*   found_sig;    /* Placeholder */
@@ -309,11 +309,11 @@ char* bind_find_sig_name( const expression* exp ) {
   if( curr != NULL ) {
     if( scope_find_signal( curr->name, curr->funit, &found_sig, &found_funit, -1 ) ) {
       if( funit_get_curr_module_safe( curr->funit ) == funit_get_curr_module_safe( found_funit ) ) {
-        front = strdup_safe( found_funit->name, __FILE__, __LINE__ );
-        rest  = strdup_safe( found_funit->name, __FILE__, __LINE__ );
+        front = strdup_safe( found_funit->name );
+        rest  = strdup_safe( found_funit->name );
         scope_extract_front( found_funit->name, front, rest );
         if( rest[0] != '\0' ) {
-          name = (char*)malloc_safe( (strlen( curr->name ) + strlen( rest ) + 2), __FILE__, __LINE__ );
+          name = (char*)malloc_safe( strlen( curr->name ) + strlen( rest ) + 2 );
           snprintf( name, (strlen( curr->name ) + strlen( found_funit->name ) + 2), "%s.%s", rest, curr->name );
         }
         free_safe( front );
@@ -321,7 +321,7 @@ char* bind_find_sig_name( const expression* exp ) {
       }
     }
     if( name == NULL ) {
-      name = strdup_safe( curr->name, __FILE__, __LINE__ );
+      name = strdup_safe( curr->name );
     }
   }
 
@@ -342,7 +342,7 @@ char* bind_find_sig_name( const expression* exp ) {
  Attempts to bind the specified expression to a parameter in the design.  If binding is successful,
  returns TRUE; otherwise, returns FALSE.
 */
-bool bind_param( const char* name, expression* exp, func_unit* funit_exp, int exp_line, bool bind_locally ) {
+bool bind_param( const char* name, expression* exp, func_unit* funit_exp, int exp_line, bool bind_locally ) { PROFILE(BIND_PARAM);
 
   bool       retval = FALSE;  /* Return value for this function */
   mod_parm*  found_parm;      /* Pointer to found parameter in design for the given name */
@@ -403,7 +403,7 @@ bool bind_param( const char* name, expression* exp, func_unit* funit_exp, int ex
  be an implicit signal and a 1-bit signal is created.
 */
 bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bind, bool cdd_reading,
-                  bool clear_assigned, int exp_line, bool bind_locally ) {
+                  bool clear_assigned, int exp_line, bool bind_locally ) { PROFILE(BIND_SIGNAL);
 
   bool        retval = TRUE;  /* Return value for this function */
   vsignal*    found_sig;      /* Pointer to found signal in design for the given name */
@@ -437,7 +437,7 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
         print_output( user_msg, WARNING_WRAP, __FILE__, __LINE__ );
         found_sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT, 1, exp->line, ((exp->col >> 16) & 0xffff) );
         found_sig->pdim_num   = 1;
-        found_sig->dim        = (dim_range*)malloc_safe( (sizeof( dim_range ) * 1), __FILE__, __LINE__ );
+        found_sig->dim        = (dim_range*)malloc_safe( sizeof( dim_range ) * 1 );
         found_sig->dim[0].msb = 0;
         found_sig->dim[0].lsb = 0;
         sig_link_add( found_sig, &(funit_exp->sig_head), &(funit_exp->sig_tail) );
@@ -551,7 +551,7 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
  Binds a given task/function call port parameter to the matching signal in the specified
  task/function.
 */
-void bind_task_function_ports( expression* expr, func_unit* funit, char* name, int* order, func_unit* funit_exp ) {
+void bind_task_function_ports( expression* expr, func_unit* funit, char* name, int* order, func_unit* funit_exp ) { PROFILE(BIND_TASK_FUNCTION_PORTS);
 
   sig_link* sigl;            /* Pointer to current signal link to examine */
   int       i;               /* Loop iterator */
@@ -633,7 +633,7 @@ void bind_task_function_ports( expression* expr, func_unit* funit, char* name, i
  Binds an expression to a function/task/named block.
 */
 bool bind_task_function_namedblock( int type, char* name, expression* exp, func_unit* funit_exp,
-                                    bool cdd_reading, int exp_line, bool bind_locally ) {
+                                    bool cdd_reading, int exp_line, bool bind_locally ) { PROFILE(BIND_TASK_FUNCTION_NAMEDBLOCK);
 
   bool       retval = FALSE;  /* Return value for this function */
   vsignal    sig;             /* Temporary signal for comparison purposes */
@@ -711,7 +711,7 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
  to the signal's expression pointer list, and setting the expression vector pointer
  to point to the signal vector.
 */
-void bind_perform( bool cdd_reading, int pass ) {
+void bind_perform( bool cdd_reading, int pass ) { PROFILE(BIND_PERFORM);
   
   exp_bind*  curr_eb;   /* Pointer to current expression bind structure */
   int        id;        /* Current expression id -- used for removal */
@@ -776,7 +776,7 @@ void bind_perform( bool cdd_reading, int pass ) {
 
         /* If we have bound successfully, copy the name of this exp_bind to the expression */
         if( bound && (curr_eb->exp != NULL) ) {
-          curr_eb->exp->name = strdup_safe( curr_eb->name, __FILE__, __LINE__ );
+          curr_eb->exp->name = strdup_safe( curr_eb->name );
         }
 
       }
@@ -849,7 +849,7 @@ void bind_perform( bool cdd_reading, int pass ) {
 /*!
  Deallocates all memory used for the storage of the binding list.
 */
-void bind_dealloc() {
+void bind_dealloc() { PROFILE(BIND_DEALLOC);
 
   exp_bind* tmp;  /* Temporary binding pointer */
 
@@ -875,6 +875,9 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.116  2007/11/20 05:28:57  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.115  2007/09/13 17:03:30  phase1geo
  Cleaning up some const-ness corrections -- still more to go but it's a good
  start.

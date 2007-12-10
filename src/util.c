@@ -49,6 +49,7 @@
 #include "util.h"
 #include "link.h"
 #include "obfuscate.h"
+#include "profiler.h"
 #include "vpi.h"
 
 extern bool        report_gui;
@@ -903,16 +904,17 @@ str_link* get_next_vfile( str_link* curr, const char* mod ) {
 }
 
 /*!
- \param size  Number of bytes to allocate.
- \param file  File that called this function.
- \param line  Line number of file that called this function.
+ \param size           Number of bytes to allocate.
+ \param file           File that called this function.
+ \param line           Line number of file that called this function.
+ \param profile_index  Profile index of function that called this function
 
  \return Pointer to allocated memory.
 
  Allocated memory like a malloc() call but performs some pre-allocation and
  post-allocation checks to be sure that the malloc call works properly.
 */
-void* malloc_safe( size_t size, const char* file, int line ) {
+void* malloc_safe1( size_t size, const char* file, int line, unsigned int profile_index ) {
 
   void* obj;      /* Object getting malloc address */
 
@@ -937,14 +939,18 @@ void* malloc_safe( size_t size, const char* file, int line ) {
     exit( 1 );
   }
 
+  /* Profile the malloc */
+  MALLOC_CALL(profile_index);
+
   return( obj );
 
 }
 
 /*!
- \param size  Number of bytes to allocate.
- \param file  Name of file that called this function.
- \param line  Line number of file that called this function.
+ \param size           Number of bytes to allocate.
+ \param file           Name of file that called this function.
+ \param line           Line number of file that called this function.
+ \param profile_index  Profile index of function that called this function
 
  \return Pointer to allocated memory.
 
@@ -952,7 +958,7 @@ void* malloc_safe( size_t size, const char* file, int line ) {
  post-allocation checks to be sure that the malloc call works properly.  Unlike
  malloc_safe, there is no upper bound on the amount of memory to allocate.
 */
-void* malloc_safe_nolimit( size_t size, const char* file, int line ) {
+void* malloc_safe_nolimit1( size_t size, const char* file, int line, unsigned int profile_index ) {
 
   void* obj;  /* Object getting malloc address */
 
@@ -974,34 +980,42 @@ void* malloc_safe_nolimit( size_t size, const char* file, int line ) {
     exit( 1 );
   }
 
+  /* Profile the malloc */
+  MALLOC_CALL(profile_index);
+
   return( obj );
 
 }
 
 /*!
- \param ptr  Pointer to object to deallocate.
+ \param ptr            Pointer to object to deallocate.
+ \param profile_index  Profile index of function that called this function
 
  Safely performs a free function of heap memory.  Also keeps track
  of current memory usage for output information at end of program
  life.
 */
-void free_safe( void* ptr ) {
+void free_safe1( void* ptr, unsigned int profile_index ) {
 
   if( ptr != NULL ) {
     free( ptr );
   }
 
+  /* Profile the free */
+  FREE_CALL(profile_index);
+
 }
 
 /*!
- \param str   String to duplicate.
- \param file  Name of file that called this function.
- \param line  Line number of file that called this function.
+ \param str            String to duplicate.
+ \param file           Name of file that called this function.
+ \param line           Line number of file that called this function.
+ \param profile_index  Profile index of function that called this function
 
  Calls the strdup() function for the specified string, making sure that the string to
  allocate is a healthy string (contains NULL character).
 */
-char* strdup_safe( const char* str, const char* file, int line ) {
+char* strdup_safe1( const char* str, const char* file, int line, unsigned int profile_index ) {
 
   char* new_str;
 
@@ -1011,6 +1025,9 @@ char* strdup_safe( const char* str, const char* file, int line ) {
   }
 
   new_str = strdup( str );
+
+  /* Profile the malloc */
+  MALLOC_CALL(profile_index);
 
   return( new_str );
 
@@ -1131,6 +1148,9 @@ void calc_miss_percent( int hits, float total, float* misses, float* percent ) {
 
 /*
  $Log$
+ Revision 1.67  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.66  2007/09/13 17:03:30  phase1geo
  Cleaning up some const-ness corrections -- still more to go but it's a good
  start.

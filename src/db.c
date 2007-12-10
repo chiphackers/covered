@@ -178,7 +178,7 @@ int global_timescale_precision  = 0;
 /*!
  Deallocates all memory associated with the database.
 */
-void db_close() {
+void db_close() { PROFILE(DB_CLOSE);
   
   int i;  /* Loop iterator */
 
@@ -221,7 +221,7 @@ void db_close() {
  type INPUT, OUTPUT or INOUT were found; otherwise, returns FALSE.  Called by the parse_design()
  function.
 */
-bool db_check_for_top_module() {
+bool db_check_for_top_module() { PROFILE(DB_CHECK_FOR_TOP_MODULE);
 
   bool       retval = FALSE;  /* Return value for this function */
   inst_link* instl;           /* Pointer to current instance link being checked */
@@ -257,7 +257,7 @@ bool db_check_for_top_module() {
  to the database file.  If database write successful, returns TRUE; otherwise,
  returns FALSE to the calling function.
 */
-bool db_write( char* file, bool parse_mode, bool report_save ) {
+bool db_write( char* file, bool parse_mode, bool report_save ) { PROFILE(DB_WRITE);
 
   bool       retval = TRUE;  /* Return value for this function */
   FILE*      db_handle;      /* Pointer to database file being written */
@@ -307,7 +307,7 @@ bool db_write( char* file, bool parse_mode, bool report_save ) {
  list.  If there are any problems opening the file for reading or parsing
  errors, returns FALSE; otherwise, returns TRUE.
 */
-bool db_read( char* file, int read_mode ) {
+bool db_read( char* file, int read_mode ) { PROFILE(DB_READ);
 
   bool         retval = TRUE;        /* Return value for this function */
   FILE*        db_handle;            /* Pointer to database file being read */
@@ -444,9 +444,9 @@ bool db_read( char* file, int read_mode ) {
               funit_db_merge( foundfunit->funit, db_handle, FALSE );
             } else {
               curr_funit             = funit_create();
-              curr_funit->name       = strdup_safe( funit_name, __FILE__, __LINE__ );
+              curr_funit->name       = strdup_safe( funit_name );
               curr_funit->type       = tmpfunit.type;
-              curr_funit->filename   = strdup_safe( funit_file, __FILE__, __LINE__ );
+              curr_funit->filename   = strdup_safe( funit_file );
               curr_funit->start_line = tmpfunit.start_line;
               curr_funit->end_line   = tmpfunit.end_line;
               curr_funit->timescale  = tmpfunit.timescale;
@@ -543,7 +543,7 @@ bool db_read( char* file, int read_mode ) {
  Takes in specified delay value and scales it to the correct timescale for the given
  module.
 */
-uint64 db_scale_to_precision( uint64 value, func_unit* funit ) {
+uint64 db_scale_to_precision( uint64 value, func_unit* funit ) { PROFILE(DB_SCALE_TO_PRECISION);
 
   int units = funit->ts_unit;
 
@@ -561,12 +561,12 @@ uint64 db_scale_to_precision( uint64 value, func_unit* funit ) {
 /*!
  \return Returns a scope name for an unnamed scope.  Only called for parsing purposes.
 */
-char* db_create_unnamed_scope() {
+char* db_create_unnamed_scope() { PROFILE(DB_CREATE_UNNAMED_SCOPE);
 
   static int unique_id = 0;
 
   /* Allocate memory for the unnamed scope name */
-  char* name = (char*)malloc_safe( 30, __FILE__, __LINE__ );
+  char* name = (char*)malloc_safe( 30 );
 
   /* Create unnamed scope name */
   snprintf( name, 30, "$u%d", unique_id );
@@ -581,7 +581,7 @@ char* db_create_unnamed_scope() {
 
  \return Returns TRUE if the given scope is an unnamed scope name; otherwise, returns FALSE.
 */
-bool db_is_unnamed_scope( char* scope ) {
+bool db_is_unnamed_scope( char* scope ) { PROFILE(DB_IS_UNNAMED_SCOPE);
 
   return( (scope != NULL) && (scope[0] == '$') && (scope[1] == 'u') );
 
@@ -594,7 +594,7 @@ bool db_is_unnamed_scope( char* scope ) {
 
  Sets the global timescale unit and precision variables.
 */
-void db_set_timescale( int unit, int precision ) {
+void db_set_timescale( int unit, int precision ) { PROFILE(DB_SET_TIMESCALE);
 
   current_timescale_unit = unit;
 
@@ -610,7 +610,7 @@ void db_set_timescale( int unit, int precision ) {
 
  This function returns a pointer to the current functional unit being parsed.
 */
-func_unit* db_get_curr_funit() {
+func_unit* db_get_curr_funit() { PROFILE(DB_GET_CURR_FUNIT);
 
   return( curr_funit );
 
@@ -629,7 +629,7 @@ func_unit* db_get_curr_funit() {
  functional unit hasn't been created previously, create it now without a filename associated (NULL).
  Add functional unit node to tree if there are no problems in doing so.
 */
-func_unit* db_add_instance( char* scope, char* name, int type, vector_width* range ) {
+func_unit* db_add_instance( char* scope, char* name, int type, vector_width* range ) { PROFILE(DB_ADD_INSTANCE);
 
   func_unit*  funit = NULL;      /* Pointer to functional unit */
   funit_link* found_funit_link;  /* Pointer to found funit_link in functional unit list */
@@ -649,7 +649,7 @@ func_unit* db_add_instance( char* scope, char* name, int type, vector_width* ran
 
   /* Create new functional unit node */
   funit       = funit_create();
-  funit->name = strdup_safe( name, __FILE__, __LINE__ );
+  funit->name = strdup_safe( name );
   funit->type = score ? type : FUNIT_NO_SCORE;
 
   /* If a range has been specified, calculate its width and lsb now */
@@ -719,7 +719,7 @@ func_unit* db_add_instance( char* scope, char* name, int type, vector_width* ran
     }
 
     if( (type == FUNIT_MODULE) && score && (str_link_find( name, modlist_head ) == NULL) ) {
-      str_link_add( strdup_safe( name, __FILE__, __LINE__ ), &modlist_head, &modlist_tail );
+      str_link_add( strdup_safe( name ), &modlist_head, &modlist_tail );
     }
       
   }
@@ -738,7 +738,7 @@ func_unit* db_add_instance( char* scope, char* name, int type, vector_width* ran
  are actually parsing a module which implies that we must have the name of the module
  at the head of the modlist linked-list structure.
 */
-void db_add_module( char* name, char* file, int start_line ) {
+void db_add_module( char* name, char* file, int start_line ) { PROFILE(DB_ADD_MODULE);
 
   func_unit   mod;   /* Temporary module for comparison */
   funit_link* modl;  /* Pointer to found tree node */
@@ -758,7 +758,7 @@ void db_add_module( char* name, char* file, int start_line ) {
   assert( modl != NULL );
 
   curr_funit             = modl->funit;
-  curr_funit->filename   = strdup_safe( file, __FILE__, __LINE__ );
+  curr_funit->filename   = strdup_safe( file );
   curr_funit->start_line = start_line;
   curr_funit->ts_unit    = current_timescale_unit;
   
@@ -769,7 +769,7 @@ void db_add_module( char* name, char* file, int start_line ) {
 
  Updates the modlist for parsing purposes.
 */
-void db_end_module( int end_line ) {
+void db_end_module( int end_line ) { PROFILE(DB_END_MODULE);
 
 #ifdef DEBUG_MODE
   snprintf( user_msg, USER_MSG_LENGTH, "In db_end_module, end_line: %d", end_line );
@@ -794,7 +794,7 @@ void db_end_module( int end_line ) {
  \return Returns TRUE if the new functional unit was added to the design; otherwise, returns FALSE
          to indicate that this block should be ignored.
 */
-bool db_add_function_task_namedblock( int type, char* name, char* file, int start_line ) {
+bool db_add_function_task_namedblock( int type, char* name, char* file, int start_line ) { PROFILE(DB_ADD_FUNCTION_TASK_NAMEDBLOCK);
 
   func_unit* tf;         /* Pointer to created functional unit */
   func_unit* parent;     /* Pointer to parent module for the newly created functional unit */
@@ -839,7 +839,7 @@ bool db_add_function_task_namedblock( int type, char* name, char* file, int star
 
     /* Set current functional unit to this functional unit */
     curr_funit             = tf;
-    curr_funit->filename   = strdup_safe( file, __FILE__, __LINE__ );
+    curr_funit->filename   = strdup_safe( file );
     curr_funit->start_line = start_line;
     curr_funit->ts_unit    = current_timescale_unit;
     
@@ -854,7 +854,7 @@ bool db_add_function_task_namedblock( int type, char* name, char* file, int star
 /*!
  \param end_line  Line number of end of this task/function
 */
-void db_end_function_task_namedblock( int end_line ) {
+void db_end_function_task_namedblock( int end_line ) { PROFILE(DB_END_FUNCTION_TASK_NAMEDBLOCK);
 
   stmt_iter si;  /* Statement iterator for finding the first statement of the functional unit */
 
@@ -898,7 +898,7 @@ void db_end_function_task_namedblock( int end_line ) {
  used in the module.  If the parameter name has not been found, it is created added to
  the current module's parameter list.
 */
-void db_add_declared_param( bool is_signed, static_expr* msb, static_expr* lsb, char* name, expression* expr, bool local ) {
+void db_add_declared_param( bool is_signed, static_expr* msb, static_expr* lsb, char* name, expression* expr, bool local ) { PROFILE(DB_ADD_DECLARED_PARAM);
 
   mod_parm* mparm;  /* Pointer to added module parameter */
 
@@ -931,7 +931,7 @@ void db_add_declared_param( bool is_signed, static_expr* msb, static_expr* lsb, 
  Creates override parameter and stores this in the current module as well
  as all associated instances.
 */
-void db_add_override_param( char* inst_name, expression* expr, char* param_name ) {
+void db_add_override_param( char* inst_name, expression* expr, char* param_name ) { PROFILE(DB_ADD_OVERRIDE_PARAM);
 
   mod_parm* mparm;  /* Pointer to module parameter added to current module */
 
@@ -959,7 +959,7 @@ void db_add_override_param( char* inst_name, expression* expr, char* param_name 
  Creates a vector parameter for the specified signal or expression with the specified
  parameter expression.  This function is called by the parser.
 */
-void db_add_vector_param( vsignal* sig, expression* parm_exp, int type, int dimension ) {
+void db_add_vector_param( vsignal* sig, expression* parm_exp, int type, int dimension ) { PROFILE(DB_ADD_VECTOR_PARAM);
 
   mod_parm* mparm;  /* Holds newly created module parameter */
 
@@ -988,7 +988,7 @@ void db_add_vector_param( vsignal* sig, expression* parm_exp, int type, int dime
 
  Adds specified parameter to the defparam list.
 */
-void db_add_defparam( char* name, expression* expr ) {
+void db_add_defparam( char* name, expression* expr ) { PROFILE(DB_ADD_DEFPARAM);
 
 #ifdef DEBUG_MODE
   snprintf( user_msg, USER_MSG_LENGTH, "In db_add_defparam, defparam: %s", obf_sig( name ) );
@@ -1020,7 +1020,7 @@ void db_add_defparam( char* name, expression* expr ) {
  add to the current module's parameter list and all associated instances are
  updated to contain new value.
 */
-void db_add_signal( char* name, int type, sig_range* prange, sig_range* urange, bool is_signed, bool mba, int line, int col, bool handled ) {
+void db_add_signal( char* name, int type, sig_range* prange, sig_range* urange, bool is_signed, bool mba, int line, int col, bool handled ) { PROFILE(DB_ADD_SIGNAL);
 
   vsignal  tmpsig;  /* Temporary signal for signal searching */
   vsignal* sig;     /* Container for newly created signal */
@@ -1051,7 +1051,7 @@ void db_add_signal( char* name, int type, sig_range* prange, sig_range* urange, 
     sig->udim_num = (urange != NULL) ? urange->dim_num : 0;
     sig->pdim_num = prange->dim_num;
     assert( (sig->pdim_num + sig->udim_num) > 0 );
-    sig->dim = (dim_range*)malloc_safe( (sizeof( dim_range ) * (sig->pdim_num + sig->udim_num)), __FILE__, __LINE__ );
+    sig->dim = (dim_range*)malloc_safe( sizeof( dim_range ) * (sig->pdim_num + sig->udim_num) );
     for( i=0; i<sig->udim_num; i++ ) {
       assert( urange->dim[i].left != NULL );
       if( urange->dim[i].left->exp != NULL ) {
@@ -1118,7 +1118,7 @@ void db_add_signal( char* name, int type, sig_range* prange, sig_range* urange, 
 
  Allocates and adds an enum_item to the current module's list to be elaborated later.
 */
-void db_add_enum( vsignal* enum_sig, static_expr* value ) {
+void db_add_enum( vsignal* enum_sig, static_expr* value ) { PROFILE(DB_ADD_ENUM);
 
   assert( enum_sig != NULL );
 
@@ -1134,7 +1134,7 @@ void db_add_enum( vsignal* enum_sig, static_expr* value ) {
 /*!
  Called after an entire enum list has been parsed and added to the database.
 */
-void db_end_enum_list() {
+void db_end_enum_list() { PROFILE(DB_END_ENUM_LIST);
 
 #ifdef DEBUG_MODE
   print_output( "In db_end_enum_list", DEBUG, __FILE__, __LINE__ );
@@ -1154,7 +1154,7 @@ void db_end_enum_list() {
 
  Adds the given names and information to the list of typedefs for the current module.
 */
-void db_add_typedef( char* name, bool is_signed, bool is_handled, bool is_sizeable, sig_range* prange, sig_range* urange ) {
+void db_add_typedef( char* name, bool is_signed, bool is_handled, bool is_sizeable, sig_range* prange, sig_range* urange ) { PROFILE(DB_ADD_TYPEDEF);
 
   typedef_item* tdi;   /* Typedef item to create */
 
@@ -1165,8 +1165,8 @@ void db_add_typedef( char* name, bool is_signed, bool is_handled, bool is_sizeab
 #endif
 
   /* Allocate memory and initialize the structure */
-  tdi              = (typedef_item*)malloc_safe( sizeof( typedef_item ), __FILE__, __LINE__ );
-  tdi->name        = strdup_safe( name, __FILE__, __LINE__ );
+  tdi              = (typedef_item*)malloc_safe( sizeof( typedef_item ) );
+  tdi->name        = strdup_safe( name );
   tdi->is_signed   = is_signed;
   tdi->is_handled  = is_handled;
   tdi->is_sizeable = is_sizeable;
@@ -1194,7 +1194,7 @@ void db_add_typedef( char* name, bool is_signed, bool is_handled, bool is_sizeab
  found, returns a pointer to the calling function for that signal.  If the signal is not
  found, emits a user error and immediately halts execution.
 */
-vsignal* db_find_signal( char* name, bool okay_if_not_found ) {
+vsignal* db_find_signal( char* name, bool okay_if_not_found ) { PROFILE(DB_FIND_SIGNAL);
 
   vsignal*   found_sig;    /* Pointer to found signal (return value) */
   func_unit* found_funit;  /* Pointer to found functional unit (not used) */
@@ -1222,7 +1222,7 @@ vsignal* db_find_signal( char* name, bool okay_if_not_found ) {
  Adds the specified generate item block to the list of generate blocks for
  the current functional unit.
 */
-void db_add_gen_item_block( gen_item* gi ) {
+void db_add_gen_item_block( gen_item* gi ) { PROFILE(DB_ADD_GEN_ITEM_BLOCK);
 
   if( gi != NULL ) {
 
@@ -1245,7 +1245,7 @@ void db_add_gen_item_block( gen_item* gi ) {
  the specified generate item is automatically deallocated on behalf of the caller.
  This function should only be called during the parsing stage.
 */
-gen_item* db_find_gen_item( gen_item* root, gen_item* gi ) {
+gen_item* db_find_gen_item( gen_item* root, gen_item* gi ) { PROFILE(DB_FIND_GEN_ITEM);
 
   gen_item* found;  /* Return value for this function */
 
@@ -1271,7 +1271,7 @@ gen_item* db_find_gen_item( gen_item* root, gen_item* gi ) {
 
  Searches for the given typedef name in the current module.
 */
-typedef_item* db_find_typedef( const char* name ) {
+typedef_item* db_find_typedef( const char* name ) { PROFILE(DB_FIND_TYPEDEF);
 
   func_unit*    parent;      /* Pointer to parent module */
   typedef_item* tdi = NULL;  /* Pointer to current typedef item */
@@ -1309,7 +1309,7 @@ typedef_item* db_find_typedef( const char* name ) {
 /*!
  \return Returns a pointer to the last generate item added to the current functional unit.
 */
-gen_item* db_get_curr_gen_block() {
+gen_item* db_get_curr_gen_block() { PROFILE(DB_GET_CURR_GEN_BLOCK);
 
   gen_item* block = curr_gi_block;  /* Temporary pointer to current generate item block */
 
@@ -1328,7 +1328,7 @@ gen_item* db_get_curr_gen_block() {
 /*!
  \return Returns the number of signals in the current function unit.
 */
-int db_curr_signal_count() {
+int db_curr_signal_count() { PROFILE(DB_CURR_SIGNAL_COUNT);
 
   int       sig_cnt = 0;  /* Holds number of signals in the current functional unit */
   sig_link* sigl;         /* Pointer to current signal link */
@@ -1358,7 +1358,7 @@ int db_curr_signal_count() {
  Creates a new expression with the specified parameter information and returns a
  pointer to the newly created expression.
 */
-expression* db_create_expression( expression* right, expression* left, int op, bool lhs, int line, int first, int last, char* sig_name ) {
+expression* db_create_expression( expression* right, expression* left, int op, bool lhs, int line, int first, int last, char* sig_name ) { PROFILE(DB_CREATE_EXPRESSION);
 
   expression* expr;        /* Temporary pointer to newly created expression */
   func_unit*  func_funit;  /* Pointer to function, if we are nested in one */
@@ -1466,7 +1466,7 @@ expression* db_create_expression( expression* right, expression* left, int op, b
  Recursively iterates through the entire expression tree binding all selection expressions within that tree
  to the given signal.
 */
-void db_bind_expr_tree( expression* root, char* sig_name ) {
+void db_bind_expr_tree( expression* root, char* sig_name ) { PROFILE(DB_BIND_EXPR_TREE);
 
   assert( sig_name != NULL );
 
@@ -1498,7 +1498,7 @@ void db_bind_expr_tree( expression* root, char* sig_name ) {
  
  \return Returns a pointer to an expression that represents the static expression specified
 */
-expression* db_create_expr_from_static( static_expr* se, int line, int first_col, int last_col ) {
+expression* db_create_expr_from_static( static_expr* se, int line, int first_col, int last_col ) { PROFILE(DB_CREATE_EXPR_FROM_STATIC);
 
   expression* expr;  /* Return value for this function */
   vector*     vec;   /* Temporary vector */
@@ -1543,7 +1543,7 @@ expression* db_create_expr_from_static( static_expr* se, int line, int first_col
 
  Adds the specified expression to the current module's expression list.
 */
-void db_add_expression( expression* root ) {
+void db_add_expression( expression* root ) { PROFILE(DB_ADD_EXPRESSION);
 
   if( (root != NULL) && (root->suppl.part.exp_added == 0) ) {
 
@@ -1592,7 +1592,7 @@ void db_add_expression( expression* root ) {
 
  \return Returns expression tree to execute a sensitivity list for the given statement block.
 */
-expression* db_create_sensitivity_list( statement* stmt ) {
+expression* db_create_sensitivity_list( statement* stmt ) { PROFILE(DB_CREATE_SENSITIVITY_LIST);
 
   str_link*   sig_head = NULL;  /* Pointer to head of signal name list containing RHS used signals */
   str_link*   sig_tail = NULL;  /* Pointer to tail of signal name list containing RHS used signals */
@@ -1644,7 +1644,7 @@ expression* db_create_sensitivity_list( statement* stmt ) {
 
  \return Returns pointer to parallelized statement block
 */
-statement* db_parallelize_statement( statement* stmt ) {
+statement* db_parallelize_statement( statement* stmt ) { PROFILE(DB_PARALLELIZE_STATEMENT);
 
   expression* exp;    /* Expression containing FORK statement */
   char*       scope;  /* Name of current parallelized statement scope */
@@ -1710,7 +1710,7 @@ statement* db_parallelize_statement( statement* stmt ) {
  Creates an statement structure and adds created statement to current
  module's statement list.
 */
-statement* db_create_statement( expression* exp ) {
+statement* db_create_statement( expression* exp ) { PROFILE(DB_CREATE_STATEMENT);
 
   statement* stmt;  /* Pointer to newly created statement */
 
@@ -1736,7 +1736,7 @@ statement* db_create_statement( expression* exp ) {
  Adds the specified statement tree to the tail of the current module's statement list.
  The start statement is specified to avoid infinite looping.
 */
-void db_add_statement( statement* stmt, statement* start ) {
+void db_add_statement( statement* stmt, statement* start ) { PROFILE(DB_ADD_STATEMENT);
  
   if( (stmt != NULL) && (stmt->exp->suppl.part.stmt_added == 0) ) {
 
@@ -1789,7 +1789,7 @@ void db_add_statement( statement* stmt, statement* start ) {
  Removes specified statement expression from the current functional unit.  Called by statement_dealloc_recursive in
  statement.c in its deallocation algorithm.
 */
-void db_remove_statement_from_current_funit( statement* stmt ) {
+void db_remove_statement_from_current_funit( statement* stmt ) { PROFILE(DB_REMOVE_STATEMENT_FROM_CURRENT_FUNIT);
 
   inst_link* instl;  /* Pointer to current functional unit instance */
 
@@ -1829,7 +1829,7 @@ void db_remove_statement_from_current_funit( statement* stmt ) {
  both the expression and statement from heap memory.  Called when a statement structure is
  found to contain a statement that is not supported by Covered.
 */
-void db_remove_statement( statement* stmt ) {
+void db_remove_statement( statement* stmt ) { PROFILE(DB_REMOVE_STATEMENT);
 
   if( stmt != NULL ) {
 
@@ -1852,7 +1852,7 @@ void db_remove_statement( statement* stmt ) {
 
  Connects the specified statement's true statement.
 */
-void db_connect_statement_true( statement* stmt, statement* next_true ) {
+void db_connect_statement_true( statement* stmt, statement* next_true ) { PROFILE(DB_CONNECT_STATEMENT_TRUE);
 
 #ifdef DEBUG_MODE
   int next_id;  /* Statement ID of next TRUE statement */
@@ -1883,7 +1883,7 @@ void db_connect_statement_true( statement* stmt, statement* next_true ) {
 
  Connects the specified statement's false statement.
 */
-void db_connect_statement_false( statement* stmt, statement* next_false ) {
+void db_connect_statement_false( statement* stmt, statement* next_false ) { PROFILE(DB_CONNECT_STATEMENT_FALSE);
 
 #ifdef DEBUG_MODE
   int next_id;  /* Statement ID of next FALSE statement */
@@ -1914,7 +1914,7 @@ void db_connect_statement_false( statement* stmt, statement* next_false ) {
 
  Connects gi2 to gi1's next_true pointer.
 */
-void db_gen_item_connect_true( gen_item* gi1, gen_item* gi2 ) {
+void db_gen_item_connect_true( gen_item* gi1, gen_item* gi2 ) { PROFILE(DB_GEN_ITEM_CONNECT_TRUE);
 
   assert( gi1 != NULL );
 
@@ -1933,7 +1933,7 @@ void db_gen_item_connect_true( gen_item* gi1, gen_item* gi2 ) {
 
  Connects gi2 to gi1's next_false pointer.
 */
-void db_gen_item_connect_false( gen_item* gi1, gen_item* gi2 ) {
+void db_gen_item_connect_false( gen_item* gi1, gen_item* gi2 ) { PROFILE(DB_GEN_ITEM_CONNECT_FALSE);
 
   assert( gi1 != NULL );
 
@@ -1953,7 +1953,7 @@ void db_gen_item_connect_false( gen_item* gi1, gen_item* gi2 ) {
  \return Returns TRUE if a generate item connection was properly established; otherwise,
          returns FALSE.
 */
-bool db_gen_item_connect( gen_item* gi1, gen_item* gi2 ) {
+bool db_gen_item_connect( gen_item* gi1, gen_item* gi2 ) { PROFILE(DB_GEN_ITEM_CONNECT);
 
   bool retval;  /* Return value for this function */
 
@@ -1983,7 +1983,7 @@ bool db_gen_item_connect( gen_item* gi1, gen_item* gi2 ) {
  the statement connection was not achieved, displays warning to user and returns FALSE.  The calling
  function should throw this statement away.
 */
-bool db_statement_connect( statement* curr_stmt, statement* next_stmt ) {
+bool db_statement_connect( statement* curr_stmt, statement* next_stmt ) { PROFILE(DB_STATEMENT_CONNECT);
 
   bool retval;  /* Return value for this function */
 
@@ -2034,7 +2034,7 @@ bool db_statement_connect( statement* curr_stmt, statement* next_stmt ) {
 
  Calls the attribute_create() function and returns the pointer returned by this function.
 */
-attr_param* db_create_attr_param( char* name, expression* expr ) {
+attr_param* db_create_attr_param( char* name, expression* expr ) { PROFILE(DB_CREATE_ATTR_PARAM);
 
   attr_param* attr;  /* Pointer to newly allocated/initialized attribute parameter */
 
@@ -2058,7 +2058,7 @@ attr_param* db_create_attr_param( char* name, expression* expr ) {
 
  Calls the attribute_parse() function and deallocates this list.
 */
-void db_parse_attribute( attr_param* ap ) {
+void db_parse_attribute( attr_param* ap ) { PROFILE(DB_PARSE_ATTRIBUTE);
 
 #ifdef DEBUG_MODE
   print_output( "In db_parse_attribute", DEBUG, __FILE__, __LINE__ );
@@ -2085,7 +2085,7 @@ void db_parse_attribute( attr_param* ap ) {
  function.  This function should only be called after the entire design has
  been parsed to be completely correct.
 */
-void db_remove_stmt_blks_calling_statement( statement* stmt ) {
+void db_remove_stmt_blks_calling_statement( statement* stmt ) { PROFILE(DB_REMOVE_STMT_BLKS_CALLING_STATEMENT);
 
   inst_link* instl;  /* Pointer to current instance */ 
 
@@ -2102,7 +2102,7 @@ void db_remove_stmt_blks_calling_statement( statement* stmt ) {
 /*!
  \return Returns the string version of the current instance scope (memory allocated).
 */
-char* db_gen_curr_inst_scope() {
+char* db_gen_curr_inst_scope() { PROFILE(DB_GEN_CURR_INST_SCOPE);
 
   char* scope      = NULL;  /* Pointer to current scope */
   int   scope_size = 0;     /* Calculated size of current instance scope */
@@ -2116,7 +2116,7 @@ char* db_gen_curr_inst_scope() {
     }
 
     /* Allocate memory for the generated current instance scope */
-    scope = (char*)malloc_safe( scope_size, __FILE__, __LINE__ );
+    scope = (char*)malloc_safe( scope_size );
 
     /* Now populate the scope with the current instance scope information */
     strcpy( scope, curr_inst_scope[0] );
@@ -2134,7 +2134,7 @@ char* db_gen_curr_inst_scope() {
 /*!
  Synchronizes the curr_instance pointer to match the curr_inst_scope hierarchy.
 */
-void db_sync_curr_instance() {
+void db_sync_curr_instance() { PROFILE(DB_SYNC_CURR_INSTANCE);
  
   char  stripped_scope[4096];  /* Temporary string */
   char* scope;                 /* Current instance scope string */
@@ -2175,7 +2175,7 @@ void db_sync_curr_instance() {
 
  Sets the curr_inst_scope global variable to the specified scope.
 */
-void db_set_vcd_scope( char* scope ) {
+void db_set_vcd_scope( char* scope ) { PROFILE(DB_SET_VCD_SCOPE);
 
 #ifdef DEBUG_MODE
   snprintf( user_msg, USER_MSG_LENGTH, "In db_set_vcd_scope, scope: %s", obf_inst( scope ) );
@@ -2186,7 +2186,7 @@ void db_set_vcd_scope( char* scope ) {
 
   /* Create a new scope item */
   curr_inst_scope = (char**)realloc( curr_inst_scope, (sizeof( char* ) * (curr_inst_scope_size + 1)) );
-  curr_inst_scope[curr_inst_scope_size] = strdup_safe( scope, __FILE__, __LINE__ );
+  curr_inst_scope[curr_inst_scope_size] = strdup_safe( scope );
   curr_inst_scope_size++;
 
   /* Synchronize the current instance to the value of curr_inst_scope */
@@ -2198,7 +2198,7 @@ void db_set_vcd_scope( char* scope ) {
  Moves the curr_inst_scope up one level of hierarchy.  This function is called
  when the $upscope keyword is seen in a VCD file.
 */
-void db_vcd_upscope() {
+void db_vcd_upscope() { PROFILE(DB_VCD_UPSCOPE);
 
   char back[4096];   /* Lowest level of hierarchy */
   char rest[4096];   /* Hierarchy up one level */
@@ -2230,7 +2230,7 @@ void db_vcd_upscope() {
 
  Creates a new entry in the symbol table for the specified signal and symbol.
 */
-void db_assign_symbol( char* name, char* symbol, int msb, int lsb ) {
+void db_assign_symbol( char* name, char* symbol, int msb, int lsb ) { PROFILE(DB_ASSIGN_SYMBOL);
 
   sig_link* slink;   /* Pointer to signal containing this symbol */
   vsignal   tmpsig;  /* Temporary signal to search for */
@@ -2280,7 +2280,7 @@ void db_assign_symbol( char* name, char* symbol, int msb, int lsb ) {
  parameter is set to the specified character.  If the symbol was found in the VCD
  symbol table, it is copied to the timestep symbol table.
 */
-void db_set_symbol_char( char* sym, char value ) {
+void db_set_symbol_char( char* sym, char value ) { PROFILE(DB_SET_SYMBOL_CHAR);
 
   char val[2];  /* Value to store */
 
@@ -2307,7 +2307,7 @@ void db_set_symbol_char( char* sym, char value ) {
  parameter is set to the specified string.  If the symbol was found in the VCD
  symbol table, it is copied to the timestep symbol table.
 */
-void db_set_symbol_string( char* sym, char* value ) {
+void db_set_symbol_string( char* sym, char* value ) { PROFILE(DB_SET_SYMBOL_STRING);
 
 #ifdef DEBUG_MODE
   snprintf( user_msg, USER_MSG_LENGTH, "In db_set_symbol_string, sym: %s, value: %s", sym, value );
@@ -2328,7 +2328,7 @@ void db_set_symbol_string( char* sym, char* value ) {
  expression queue after that expression has completed its evaluation.  When the
  expression queue is empty, we are finished for this clock period.
 */
-void db_do_timestep( uint64 time, bool final ) {
+void db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 #ifdef DEBUG_MODE
   if( final ) {
@@ -2368,6 +2368,9 @@ void db_do_timestep( uint64 time, bool final ) {
 
 /*
  $Log$
+ Revision 1.262  2007/11/20 05:28:57  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.261  2007/09/12 05:40:11  phase1geo
  Adding support for bool and char types in FOR loop initialization blocks.  Adding
  a plethora of new diagnostics to completely verify this new functionality.  These

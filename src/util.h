@@ -26,6 +26,20 @@
 #include <stdio.h>
 
 #include "defines.h"
+#include "profiler.h"
+
+
+/*! Overload for the malloc_safe function which includes profiling information */
+#define malloc_safe(x)         malloc_safe1(x,__FILE__,__LINE__,profile_index)
+
+/*! Overload for the malloc_safe_nolimit function which includes profiling information */
+#define malloc_safe_nolimit(x) malloc_safe_nolimit1(x,__FILE__,__LINE__,profile_index)
+
+/*! Overload for the strdup_safe function which includes profiling information */
+#define strdup_safe(x)         strdup_safe1(x,__FILE__,__LINE__,profile_index)
+
+/*! Overload for the free-safe function which includes profiling information */
+#define free_safe(x)           free_safe1(x,profile_index)
 
 
 /*! \brief Sets error suppression to specified value */
@@ -92,16 +106,16 @@ bool scope_local( const char* scope );
 str_link* get_next_vfile( str_link* curr, const char* mod );
 
 /*! \brief Performs safe malloc call. */
-void* malloc_safe( size_t size, const char* file, int line );
+void* malloc_safe1( size_t size, const char* file, int line, unsigned int profile_index );
 
 /*! \brief Performs safe malloc call without upper bound on byte allocation. */
-void* malloc_safe_nolimit( size_t size, const char* file, int line );
+void* malloc_safe_nolimit1( size_t size, const char* file, int line, unsigned int profile_index );
 
 /*! \brief Performs safe deallocation of heap memory. */
-void free_safe( /*@null@*/void* ptr );
+void free_safe1( /*@null@*/void* ptr, unsigned int profile_index );
 
 /*! \brief Safely allocates heap memory by performing a call to strdup */
-char* strdup_safe( const char* str, const char* file, int line );
+char* strdup_safe1( const char* str, const char* file, int line, unsigned int profile_index );
 
 /*! \brief Creates a string containing space characters. */
 void gen_space( char* spaces, int num_spaces );
@@ -124,8 +138,12 @@ const char* get_funit_type( int type );
 void calc_miss_percent( int hits, float total, float* misses, float* percent );
 
 
+
 /*
  $Log$
+ Revision 1.29  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.28  2007/09/13 17:03:30  phase1geo
  Cleaning up some const-ness corrections -- still more to go but it's a good
  start.

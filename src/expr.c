@@ -346,12 +346,12 @@ const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",         "",             ex
  function should be called by either the expression_create function, the bind
  function, or the signal db_read function.
 */
-void expression_create_value( expression* exp, int width, bool data ) {
+void expression_create_value( expression* exp, int width, bool data ) { PROFILE(EXPRESSION_CREATE_VALUE);
 
   vec_data* value = NULL;  /* Temporary storage of vector nibble array */
 
   if( (data == TRUE) || ((exp->suppl.part.gen_expr == 1) && (width > 0)) ) {
-    value = (vec_data*)malloc_safe( (sizeof( vec_data ) * width), __FILE__, __LINE__ );
+    value = (vec_data*)malloc_safe( sizeof( vec_data ) * width );
   }
 
   /* Create value */
@@ -376,13 +376,13 @@ void expression_create_value( expression* exp, int width, bool data ) {
  usage.  Right and left expressions need to be created before this function is called.
 */
 expression* expression_create( expression* right, expression* left, exp_op_type op, bool lhs, int id,
-                               int line, int first, int last, bool data ) {
+                               int line, int first, int last, bool data ) { PROFILE(EXPRESSION_CREATE);
 
   expression* new_expr;    /* Pointer to newly created expression */
   int         rwidth = 0;  /* Bit width of expression on right */
   int         lwidth = 0;  /* Bit width of expression on left */
 
-  new_expr = (expression*)malloc_safe( sizeof( expression ), __FILE__, __LINE__ );
+  new_expr = (expression*)malloc_safe( sizeof( expression ) );
 
   new_expr->suppl.all           = 0;
   new_expr->suppl.part.lhs      = (nibble)lhs & 0x1;
@@ -396,11 +396,11 @@ expression* expression_create( expression* right, expression* left, exp_op_type 
   new_expr->col                 = ((first & 0xffff) << 16) | (last & 0xffff);
   new_expr->exec_num            = 0;
   new_expr->sig                 = NULL;
-  new_expr->parent              = (expr_stmt*)malloc_safe( sizeof( expr_stmt ), __FILE__, __LINE__ );
+  new_expr->parent              = (expr_stmt*)malloc_safe( sizeof( expr_stmt ) );
   new_expr->parent->expr        = NULL;
   new_expr->right               = right;
   new_expr->left                = left;
-  new_expr->value               = (vector*)malloc_safe( sizeof( vector ), __FILE__, __LINE__ );
+  new_expr->value               = (vector*)malloc_safe( sizeof( vector ) );
   new_expr->table               = NULL;
   new_expr->elem.funit          = NULL;
   new_expr->name                = NULL;
@@ -540,7 +540,7 @@ expression* expression_create( expression* right, expression* left, exp_op_type 
  Sets the specified expression (if necessary) to the value of the
  specified signal's vector value.
 */
-void expression_set_value( expression* exp, vsignal* sig, func_unit* funit ) {
+void expression_set_value( expression* exp, vsignal* sig, func_unit* funit ) { PROFILE(EXPRESSION_SET_VALUE);
   
   int lbit;       /* Bit boundary specified by left child */
   int rbit;       /* Bit boundary specified by right child */
@@ -606,7 +606,7 @@ void expression_set_value( expression* exp, vsignal* sig, func_unit* funit ) {
  right expressions have the signed bit set.  This function is called by the bind()
  function after an expression has been set to a signal.
 */
-void expression_set_signed( expression* exp ) {
+void expression_set_signed( expression* exp ) { PROFILE(EXPRESSION_SET_SIGNED);
 
   if( exp != NULL ) {
 
@@ -660,7 +660,7 @@ void expression_set_signed( expression* exp ) {
  fashion, resizing the children before resizing the current expression.  If
  recursive is FALSE, only the given expression is evaluated and resized.
 */
-void expression_resize( expression* expr, func_unit* funit, bool recursive, bool alloc ) {
+void expression_resize( expression* expr, func_unit* funit, bool recursive, bool alloc ) { PROFILE(EXPRESSION_RESIZE);
 
   int         largest_width;  /* Holds larger width of left and right children */
   nibble      old_vec_suppl;  /* Holds original vector supplemental field as this will be erased */
@@ -870,7 +870,7 @@ void expression_resize( expression* expr, func_unit* funit, bool recursive, bool
  expression; otherwise, return a value of 0 to indicate that this
  is a leaf node.
 */
-int expression_get_id( expression* expr, bool parse_mode ) {
+int expression_get_id( expression* expr, bool parse_mode ) { PROFILE(EXPRESSION_GET_ID);
 
   if( expr == NULL ) {
     return( 0 );
@@ -885,7 +885,7 @@ int expression_get_id( expression* expr, bool parse_mode ) {
 
  \return Returns the line number of the first line in this expression.
 */
-expression* expression_get_first_line_expr( expression* expr ) {
+expression* expression_get_first_line_expr( expression* expr ) { PROFILE(EXPRESSION_GET_FIRST_LINE_EXPR);
 
   expression* first = NULL;
 
@@ -907,7 +907,7 @@ expression* expression_get_first_line_expr( expression* expr ) {
 
  \return Returns the line number of the last line in this expression. 
 */
-expression* expression_get_last_line_expr( expression* expr ) {
+expression* expression_get_last_line_expr( expression* expr ) { PROFILE(EXPRESSION_GET_LAST_LINE_EXPR);
 
   expression* last = NULL;
 
@@ -932,7 +932,7 @@ expression* expression_get_last_line_expr( expression* expr ) {
  Recursively iterates up expression tree, counting the number of dimensions deep that
  the given expression is.
 */
-int expression_get_curr_dimension( expression* expr ) {
+int expression_get_curr_dimension( expression* expr ) { PROFILE(EXPRESSION_GET_CURR_DIMENSION);
   
   int dim;  /* Return value for this function */
 
@@ -967,7 +967,7 @@ int expression_get_curr_dimension( expression* expr ) {
  When a signal name is found, it is added to the signal name list specified
  by head and tail.
 */
-void expression_find_rhs_sigs( expression* expr, str_link** head, str_link** tail ) {
+void expression_find_rhs_sigs( expression* expr, str_link** head, str_link** tail ) { PROFILE(EXPRESSION_FIND_RHS_SIGS);
 
   char* sig_name;  /* Name of signal found */
 
@@ -1015,7 +1015,7 @@ void expression_find_rhs_sigs( expression* expr, str_link** head, str_link** tai
  Recursively traverses given expression tree, adding any expressions found that point to parameter
  values.
 */
-void expression_find_params( expression* expr, exp_link** head, exp_link** tail ) {
+void expression_find_params( expression* expr, exp_link** head, exp_link** tail ) { PROFILE(EXPRESSION_FIND_PARAMS);
 
   if( expr != NULL ) {
 
@@ -1046,7 +1046,7 @@ void expression_find_params( expression* expr, exp_link** head, exp_link** tail 
  Recursively searches the given expression tree for the specified underline ID.  If the
  expression is found, a pointer to it is returned; otherwise, returns NULL.
 */
-expression* expression_find_uline_id( expression* expr, int ulid ) {
+expression* expression_find_uline_id( expression* expr, int ulid ) { PROFILE(EXPRESSION_FIND_ULINE_ID);
 
   expression* found_exp = NULL;  /* Pointer to found expression */
 
@@ -1073,7 +1073,7 @@ expression* expression_find_uline_id( expression* expr, int ulid ) {
  \return Returns TRUE if the given expression exists within the given expression tree; otherwise,
          returns FALSE
 */
-bool expression_find_expr( expression* root, expression* expr ) {
+bool expression_find_expr( expression* root, expression* expr ) { PROFILE(EXPRESSION_FIND_EXPR);
 
   return( (root != NULL) && ((root == expr) || expression_find_expr( root->left, expr ) || expression_find_expr( root->right, expr )) );
 
@@ -1085,7 +1085,7 @@ bool expression_find_expr( expression* root, expression* expr ) {
 
  \return Returns TRUE if the given expression tree contains an expression that calls the given statement.
 */
-bool expression_contains_expr_calling_stmt( expression* expr, statement* stmt ) {
+bool expression_contains_expr_calling_stmt( expression* expr, statement* stmt ) { PROFILE(EXPRESSION_CONTAINS_EXPR_CALLING_STMT);
 
   return( (expr != NULL) &&
           (((ESUPPL_TYPE( expr->suppl ) == ETYPE_FUNIT) && (expr->elem.funit->first_stmt == stmt)) ||
@@ -1104,7 +1104,7 @@ bool expression_contains_expr_calling_stmt( expression* expr, statement* stmt ) 
  one exists).  If the root expression is found, return the pointer to the statement pointing to this
  root expression.  If the root expression was not found, return NULL.
 */
-statement* expression_get_root_statement( expression* exp ) {
+statement* expression_get_root_statement( expression* exp ) { PROFILE(EXPRESSION_GET_ROOT_STATEMENT);
 
   if( exp == NULL ) {
     return( NULL );
@@ -1122,7 +1122,7 @@ statement* expression_get_root_statement( expression* exp ) {
 
  Recursively iterates down the specified expression tree assigning unique IDs to each expression.
 */
-void expression_assign_expr_ids( expression* root, func_unit* funit ) {
+void expression_assign_expr_ids( expression* root, func_unit* funit ) { PROFILE(EXPRESSION_ASSIGN_EXPR_IDS);
 
   if( root != NULL ) {
 
@@ -1150,7 +1150,7 @@ void expression_assign_expr_ids( expression* root, func_unit* funit ) {
  This function recursively displays the expression information for the specified
  expression tree to the coverage database specified by file.
 */
-void expression_db_write( expression* expr, FILE* file, bool parse_mode ) {
+void expression_db_write( expression* expr, FILE* file, bool parse_mode ) { PROFILE(EXPRESSION_DB_WRITE);
 
   assert( expr != NULL );
 
@@ -1188,7 +1188,7 @@ void expression_db_write( expression* expr, FILE* file, bool parse_mode ) {
  Recursively iterates through the specified expression tree, outputting the expressions
  to the specified file.
 */
-void expression_db_write_tree( expression* root, FILE* ofile ) {
+void expression_db_write_tree( expression* root, FILE* ofile ) { PROFILE(EXPRESSION_DB_WRITE_TREE);
 
   if( root != NULL ) {
 
@@ -1215,7 +1215,7 @@ void expression_db_write_tree( expression* root, FILE* ofile ) {
  returns that value in the specified expression pointer.  If all is 
  successful, returns TRUE; otherwise, returns FALSE.
 */
-bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) {
+bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) { PROFILE(EXPRESSION_DB_READ);
 
   bool        retval = TRUE;  /* Return value for this function */
   int         id;             /* Holder of expression ID */
@@ -1368,7 +1368,7 @@ bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) {
  to the user in this case.  If both expressions are the same, perform the 
  merge.
 */
-bool expression_db_merge( expression* base, char** line, bool same ) {
+bool expression_db_merge( expression* base, char** line, bool same ) { PROFILE(EXPRESSION_DB_MERGE);
 
   bool    retval = TRUE;  /* Return value for this function */
   int     id;             /* Expression ID field */
@@ -1428,7 +1428,7 @@ bool expression_db_merge( expression* base, char** line, bool same ) {
  \return Returns a non-writable string that contains the user-readable name of the
          specified expression operation.
 */
-const char* expression_string_op( int op ) {
+const char* expression_string_op( int op ) { PROFILE(EXPRESSION_STRING_OP);
 
   assert( (op >= 0) && (op < EXP_OP_NUM) );
 
@@ -1442,7 +1442,7 @@ const char* expression_string_op( int op ) {
  Returns a pointer to user_msg that will contain a user-friendly string version of
  the given expression
 */
-char* expression_string( expression* exp ) {
+char* expression_string( expression* exp ) { PROFILE(EXPRESSION_STRING);
 
   snprintf( user_msg, USER_MSG_LENGTH, "%d (%s line %d)", exp->id, expression_string_op( exp->op ), exp->line );
 
@@ -1456,7 +1456,7 @@ char* expression_string( expression* exp ) {
  Displays contents of the specified expression to standard output.  This function
  is called by the funit_display function.
 */
-void expression_display( expression* expr ) {
+void expression_display( expression* expr ) { PROFILE(EXPRESSION_DISPLAY);
 
   int right_id;  /* Value of right expression ID */
   int left_id;   /* Value of left expression ID */
@@ -1502,7 +1502,7 @@ void expression_display( expression* expr ) {
 
  Performs XOR operation.
 */
-bool expression_op_func__xor( expression* expr, thread* thr ) {
+bool expression_op_func__xor( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__XOR);
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
@@ -1521,7 +1521,7 @@ bool expression_op_func__xor( expression* expr, thread* thr ) {
 
  Performs a multiply operation.
 */
-bool expression_op_func__multiply( expression* expr, thread* thr ) {
+bool expression_op_func__multiply( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__MULTIPLY);
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
@@ -1540,7 +1540,7 @@ bool expression_op_func__multiply( expression* expr, thread* thr ) {
 
  Performs a 32-bit divide operation.
 */
-bool expression_op_func__divide( expression* expr, thread* thr ) {
+bool expression_op_func__divide( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__DIVIDE);
 
   vector   vec1;            /* Temporary vector */
   vec_data bit;             /* Holds the value of a single bit in a vector value */
@@ -1592,7 +1592,7 @@ bool expression_op_func__divide( expression* expr, thread* thr ) {
 
  Performs a 32-bit modulus operation.
 */
-bool expression_op_func__mod( expression* expr, thread* thr ) {
+bool expression_op_func__mod( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__MOD);
 
   vector   vec1;            /* Temporary vector */
   vec_data bit;             /* Holds the value of a single bit in a vector value */
@@ -1645,7 +1645,7 @@ bool expression_op_func__mod( expression* expr, thread* thr ) {
 
  Performs an addition operation.
 */
-bool expression_op_func__add( expression* expr, thread* thr ) {
+bool expression_op_func__add( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__ADD);
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
@@ -1665,7 +1665,7 @@ bool expression_op_func__add( expression* expr, thread* thr ) {
 
  Performs a subtraction operation.
 */
-bool expression_op_func__subtract( expression* expr, thread* thr ) {
+bool expression_op_func__subtract( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__SUBTRACT);
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
@@ -1685,7 +1685,7 @@ bool expression_op_func__subtract( expression* expr, thread* thr ) {
 
  Performs a bitwise AND operation.
 */
-bool expression_op_func__and( expression* expr, thread* thr ) {
+bool expression_op_func__and( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__AND);
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
@@ -3830,7 +3830,7 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb, uint64 sim_t
 
  Deallocates all heap memory allocated with the malloc routine.
 */
-void expression_dealloc( expression* expr, bool exp_only ) {
+void expression_dealloc( expression* expr, bool exp_only ) { PROFILE(EXPRESSION_DEALLOC);
 
   int        op;        /* Temporary operation holder */
   exp_link*  tmp_expl;  /* Temporary pointer to expression list */
@@ -3957,6 +3957,9 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.257  2007/11/20 05:28:58  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.256  2007/09/05 21:07:37  phase1geo
  Fixing bug 1788991.  Full regression passes.  Removed excess output used for
  debugging.  May want to create a new development release with these changes.

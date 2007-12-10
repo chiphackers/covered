@@ -127,6 +127,8 @@ ifndef USE_CVER
 	@$(VERILOG_CMD)
 endif
 	@vg_exists=`which $(VG_EXEC) | wc -w`
+	@echo "VG_EXEC: $(VG_EXEC)"
+	@echo vg_exists: $$vg_exists
 	@if test "$$vg_exists" = "1"; then \
 		$(VG_COVERED) $(COVERED_GFLAG) score -f $(DIAG).cfg; \
 		$(VG_COVERED) $(COVERED_GFLAG) report -d v -m ltcfam -o $(DIAG).rptM $(DIAG).cdd; \

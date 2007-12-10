@@ -40,12 +40,12 @@ extern char user_msg[USER_MSG_LENGTH];
 
  Allocates, initializes and adds a new enumerated item to the given functional unit.
 */
-void enumerate_add_item( vsignal* enum_sig, static_expr* value, func_unit* funit ) {
+void enumerate_add_item( vsignal* enum_sig, static_expr* value, func_unit* funit ) { PROFILE(ENUMERATE_ADD_ITEM);
 
   enum_item* ei;  /* Pointer to newly allocated enumeration item */
 
   /* Allocate and initialize the enumeration item */
-  ei = (enum_item*)malloc_safe( sizeof( enum_item ), __FILE__, __LINE__ );
+  ei = (enum_item*)malloc_safe( sizeof( enum_item ) );
   ei->sig   = enum_sig;
   ei->value = value;
   ei->last  = FALSE;
@@ -66,7 +66,7 @@ void enumerate_add_item( vsignal* enum_sig, static_expr* value, func_unit* funit
 
  Called after all enumerations have been parsed for this list.
 */
-void enumerate_end_list( func_unit* funit ) {
+void enumerate_end_list( func_unit* funit ) { PROFILE(ENUMERATE_END_LIST);
 
   /* Make sure that we aren't calling this function when there is no existing enumerated list */
   assert( funit->ei_tail != NULL );
@@ -83,7 +83,7 @@ void enumerate_end_list( func_unit* funit ) {
  to be called during elaboration after all signals have been sized and parameters have
  been resolved.
 */
-void enumerate_resolve( funit_inst* inst ) {
+void enumerate_resolve( funit_inst* inst ) { PROFILE(ENUMERATE_RESOLVE);
 
   enum_item* ei;            /* Pointer to current enumeration item in the given functional unit */
   int        last_value;    /* Value of last value for this enumeration */
@@ -150,7 +150,7 @@ void enumerate_resolve( funit_inst* inst ) {
 
  Deallocates all memory associated with the given enumeration.
 */
-void enumerate_dealloc( enum_item* ei ) {
+void enumerate_dealloc( enum_item* ei ) { PROFILE(ENUMERATE_DEALLOC);
 
   if( ei != NULL ) {
 
@@ -171,7 +171,7 @@ void enumerate_dealloc( enum_item* ei ) {
 
  Deallocates all memory associated with the enumeration list in the given functional unit
 */
-void enumerate_dealloc_list( func_unit* funit ) {
+void enumerate_dealloc_list( func_unit* funit ) { PROFILE(ENUMERATE_DEALLOC_LIST);
 
   enum_item* tmp;  /* Temporary pointer to current link in list */
 
@@ -189,6 +189,9 @@ void enumerate_dealloc_list( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.9  2007/11/20 05:28:58  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.8  2007/09/14 06:22:12  phase1geo
  Filling in existing functions in struct_union.  Completed parser code for handling
  struct/union declarations.  Code compiles thus far.
