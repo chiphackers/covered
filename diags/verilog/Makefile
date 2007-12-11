@@ -130,9 +130,11 @@ endif
 	@echo "VG_EXEC: $(VG_EXEC)"
 	@echo vg_exists: $$vg_exists
 	@if test "$$vg_exists" = "1"; then \
+		echo $(VG_COVERED) $(COVERED_GFLAG) score -f $(DIAG).cfg; \
 		$(VG_COVERED) $(COVERED_GFLAG) score -f $(DIAG).cfg; \
 		$(VG_COVERED) $(COVERED_GFLAG) report -d v -m ltcfam -o $(DIAG).rptM $(DIAG).cdd; \
 	else \
+		echo $(COVERED) $(COVERED_GFLAG) score -f $(DIAG).cfg; \
 		$(COVERED) $(COVERED_GFLAG) score -f $(DIAG).cfg; \
 		$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfam -o $(DIAG).rptM $(DIAG).cdd; \
 	fi

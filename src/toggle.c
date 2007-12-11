@@ -63,7 +63,7 @@ extern isuppl info_suppl;
  the value of hit01 is incremented by one.  For each bit that toggled from
  a 1 to a 0, the value of hit10 is incremented by one.
 */
-void toggle_get_stats( sig_link* sigl, float* total, int* hit01, int* hit10 ) {
+void toggle_get_stats( sig_link* sigl, float* total, int* hit01, int* hit10 ) { PROFILE(TOGGLE_GET_STATS);
 
   sig_link* curr_sig = sigl;  /* Current signal being evaluated */
   
@@ -98,7 +98,7 @@ void toggle_get_stats( sig_link* sigl, float* total, int* hit01, int* hit10 ) {
  Searches the list of signals for the specified functional unit for signals that are either covered
  or uncovered.  When a signal is found that meets the requirements, signal is added to the signal list.
 */
-bool toggle_collect( char* funit_name, int funit_type, int cov, sig_link** sig_head, sig_link** sig_tail ) {
+bool toggle_collect( char* funit_name, int funit_type, int cov, sig_link** sig_head, sig_link** sig_tail ) { PROFILE(TOGGLE_COLLECT);
 
   bool        retval = TRUE;  /* Return value for this function */
   func_unit   funit;          /* Functional unit used for searching */
@@ -166,7 +166,7 @@ bool toggle_collect( char* funit_name, int funit_type, int cov, sig_link** sig_h
  Returns toggle coverage information for a specified signal in a specified functional unit.  This
  is needed by the GUI for verbose toggle coverage display.
 */
-bool toggle_get_coverage( char* funit_name, int funit_type, char* sig_name, int* msb, int* lsb, char** tog01, char** tog10, int* excluded ) {
+bool toggle_get_coverage( char* funit_name, int funit_type, char* sig_name, int* msb, int* lsb, char** tog01, char** tog10, int* excluded ) { PROFILE(TOGGLE_GET_COVERAGE);
 
   bool        retval = TRUE;  /* Return value for this function */
   func_unit   funit;          /* Functional unit used for searching */
@@ -217,7 +217,7 @@ bool toggle_get_coverage( char* funit_name, int funit_type, char* sig_name, int*
  function, indicating that the functional unit was not found in the design and the values
  of total and hit should not be used.
 */
-bool toggle_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit ) {
+bool toggle_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit ) { PROFILE(TOGGLE_GET_FUNIT_SUMMARY);
 
   bool        retval = TRUE;  /* Return value for this function */
   func_unit   funit;          /* Functional unit used for searching */
@@ -285,7 +285,7 @@ bool toggle_get_funit_summary( char* funit_name, int funit_type, int* total, int
  Displays the toggle instance summary information to the given output file, calculating the miss and
  percentage information.
 */
-bool toggle_display_instance_summary( FILE* ofile, char* name, int hits01, int hits10, float total ) {
+bool toggle_display_instance_summary( FILE* ofile, char* name, int hits01, int hits10, float total ) { PROFILE(TOGGLE_DISPLAY_INSTANCE_SUMMARY);
 
   float percent01;  /* Percentage of bits toggled from 0 -> 1 */
   float percent10;  /* Percentage of bits toggled from 1 -> 0 */
@@ -313,7 +313,7 @@ bool toggle_display_instance_summary( FILE* ofile, char* name, int hits01, int h
  iterates through functional unit instance tree, outputting the toggle information that
  is found at that instance.
 */
-bool toggle_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst, int* hits01, int* hits10, float* total ) {
+bool toggle_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst, int* hits01, int* hits10, float* total ) { PROFILE(TOGGLE_INSTANCE_SUMMARY);
 
   funit_inst* curr;                /* Pointer to current child functional unit instance of this node */
   char        tmpname[4096];       /* Temporary name holder for instance */
@@ -376,7 +376,7 @@ bool toggle_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst, 
  Displays the toggle functional unit summary information to the given output file, calculating the miss and
  percentage information.
 */
-bool toggle_display_funit_summary( FILE* ofile, const char* name, const char* fname, int hits01, int hits10, float total ) {
+bool toggle_display_funit_summary( FILE* ofile, const char* name, const char* fname, int hits01, int hits10, float total ) { PROFILE(TOGGLE_DISPLAY_FUNIT_SUMMARY);
 
   float percent01;  /* Percentage of bits that toggled from 0 to 1 */
   float percent10;  /* Percentage of bits that toggled from 1 to 0 */
@@ -405,7 +405,7 @@ bool toggle_display_funit_summary( FILE* ofile, const char* name, const char* fn
  Iterates through the functional unit list displaying the toggle coverage for
  each functional unit.
 */
-bool toggle_funit_summary( FILE* ofile, funit_link* head, int* hits01, int* hits10, float* total ) {
+bool toggle_funit_summary( FILE* ofile, funit_link* head, int* hits01, int* hits10, float* total ) { PROFILE(TOGGLE_FUNIT_SUMMARY);
 
   bool  miss_found = FALSE;  /* Set to TRUE if missing toggles were found */
   char* pname;               /* Printable version of the functional unit name */
@@ -446,7 +446,7 @@ bool toggle_funit_summary( FILE* ofile, funit_link* head, int* hits01, int* hits
  Displays the signals that did not achieve 100% toggle coverage to standard 
  output from the specified signal list.
 */
-void toggle_display_verbose( FILE* ofile, sig_link* sigl ) {
+void toggle_display_verbose( FILE* ofile, sig_link* sigl ) { PROFILE(TOGGLE_DISPLAY_VERBOSE);
 
   sig_link* curr_sig;   /* Pointer to current signal link being evaluated */
   int       hit01;      /* Number of bits that toggled from 0 to 1 */
@@ -520,7 +520,7 @@ void toggle_display_verbose( FILE* ofile, sig_link* sigl ) {
  an instance basis.  The verbose toggle coverage includes the signal names
  and their bits that did not receive 100% toggle coverage during simulation. 
 */
-void toggle_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst ) {
+void toggle_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst ) { PROFILE(TOGGLE_INSTANCE_VERBOSE);
 
   funit_inst* curr_inst;      /* Pointer to current instance being evaluated */
   char        tmpname[4096];  /* Temporary name holder of instance */
@@ -582,7 +582,7 @@ void toggle_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst )
  The verbose toggle coverage includes the signal names and their bits that
  did not receive 100% toggle coverage during simulation.
 */
-void toggle_funit_verbose( FILE* ofile, funit_link* head ) {
+void toggle_funit_verbose( FILE* ofile, funit_link* head ) { PROFILE(TOGGLE_FUNIT_VERBOSE);
 
   while( head != NULL ) {
 
@@ -623,7 +623,7 @@ void toggle_funit_verbose( FILE* ofile, funit_link* head ) {
  specify its own toggle coverage along with a total toggle coverage including its 
  children.
 */
-void toggle_report( FILE* ofile, bool verbose ) {
+void toggle_report( FILE* ofile, bool verbose ) { PROFILE(TOGGLE_REPORT);
 
   bool       missed_found = FALSE;  /* If set to TRUE, indicates that untoggled bits were found */
   char       tmp[4096];             /* Temporary string value */
@@ -689,6 +689,9 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.62  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.61  2007/09/13 17:03:30  phase1geo
  Cleaning up some const-ness corrections -- still more to go but it's a good
  start.

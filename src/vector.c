@@ -78,7 +78,7 @@ extern char user_msg[USER_MSG_LENGTH];
  and value (if value != NULL).  If value != NULL, initializes all contents 
  of value array to 0x2 (X-value).
 */
-void vector_init( vector* vec, vec_data* value, int width, int type ) {
+void vector_init( vector* vec, vec_data* value, int width, int type ) { PROFILE(VECTOR_INIT);
 
   int i;  /* Loop iterator */
 
@@ -108,17 +108,17 @@ void vector_init( vector* vec, vec_data* value, int width, int type ) {
 
  Creates new vector from heap memory and initializes all vector contents.
 */
-vector* vector_create( int width, int type, bool data ) {
+vector* vector_create( int width, int type, bool data ) { PROFILE(VECTOR_CREATE);
 
   vector*   new_vec;       /* Pointer to newly created vector */
   vec_data* value = NULL;  /* Temporarily stores newly created vector value */
 
   assert( width > 0 );
 
-  new_vec = (vector*)malloc_safe( sizeof( vector ), __FILE__, __LINE__ );
+  new_vec = (vector*)malloc_safe( sizeof( vector ) );
 
   if( data == TRUE ) {
-    value = (vec_data*)malloc_safe( (sizeof( vec_data ) * width), __FILE__, __LINE__ );
+    value = (vec_data*)malloc_safe( sizeof( vec_data ) * width );
     new_vec->suppl.part.owns_data = 1;
   }
 
@@ -134,7 +134,7 @@ vector* vector_create( int width, int type, bool data ) {
  
  Copies the contents of the from_vec to the to_vec, allocating new memory.
 */
-void vector_copy( vector* from_vec, vector** to_vec ) {
+void vector_copy( vector* from_vec, vector** to_vec ) { PROFILE(VECTOR_COPY);
 
   int i;  /* Loop iterator */
 
@@ -166,7 +166,7 @@ void vector_copy( vector* from_vec, vector** to_vec ) {
  \return Returns an unsigned integer containing the values of dat0, dat1, dat2 and dat3
          in an encoded, packed manner.
 */
-unsigned int vector_nibbles_to_uint( nibble dat0, nibble dat1, nibble dat2, nibble dat3 ) {
+unsigned int vector_nibbles_to_uint( nibble dat0, nibble dat1, nibble dat2, nibble dat3 ) { PROFILE(VECTOR_NIBBLES_TO_UINT);
 
   unsigned int d[4];  /* Array of unsigned int format of dat0,1,2,3 */
   int          i;     /* Loop iterator */
@@ -196,7 +196,7 @@ unsigned int vector_nibbles_to_uint( nibble dat0, nibble dat1, nibble dat2, nibb
 
  Decodes and unpacks the given unsigned integer value into the specified nibble array.
 */
-void vector_uint_to_nibbles( unsigned int data, nibble* dat ) {
+void vector_uint_to_nibbles( unsigned int data, nibble* dat ) { PROFILE(VECTOR_UINT_TO_NIBBLES);
 
   int i;  /* Loop iterator */
 
@@ -219,7 +219,7 @@ void vector_uint_to_nibbles( unsigned int data, nibble* dat ) {
 
  Writes the specified vector to the specified coverage database file.
 */
-void vector_db_write( vector* vec, FILE* file, bool write_data ) {
+void vector_db_write( vector* vec, FILE* file, bool write_data ) { PROFILE(VECTOR_DB_WRITE);
 
   int    i;      /* Loop iterator */
   nibble mask;   /* Mask value for vector value nibbles */
@@ -299,7 +299,7 @@ void vector_db_write( vector* vec, FILE* file, bool write_data ) {
  Creates a new vector structure, parses current file line for vector information
  and returns new vector structure to calling function.
 */
-bool vector_db_read( vector** vec, char** line ) {
+bool vector_db_read( vector** vec, char** line ) { PROFILE(VECTOR_DB_READ);
 
   bool         retval = TRUE;  /* Return value for this function */
   int          width;          /* Vector bit width */
@@ -373,7 +373,7 @@ bool vector_db_read( vector** vec, char** line ) {
  program is halted.  If the vectors are found to be equivalents, the merge is
  performed on the vector nibbles.
 */
-bool vector_db_merge( vector* base, char** line, bool same ) {
+bool vector_db_merge( vector* base, char** line, bool same ) { PROFILE(VECTOR_DB_MERGE);
 
   bool   retval = TRUE;   /* Return value of this function */
   int    width;           /* Width of read vector */
@@ -449,9 +449,9 @@ bool vector_db_merge( vector* base, char** line, bool same ) {
 
  \return Returns a string showing the toggle 0 -> 1 information.
 */
-char* vector_get_toggle01( vec_data* nib, int width ) {
+char* vector_get_toggle01( vec_data* nib, int width ) { PROFILE(VECTOR_GET_TOGGLE01);
 
-  char* bits = (char*)malloc_safe( (width + 1), __FILE__, __LINE__ );
+  char* bits = (char*)malloc_safe( width + 1 );
   int   i;
   char  tmp[2];
 
@@ -472,9 +472,9 @@ char* vector_get_toggle01( vec_data* nib, int width ) {
 
  \return Returns a string showing the toggle 1 -> 0 information.
 */
-char* vector_get_toggle10( vec_data* nib, int width ) {
+char* vector_get_toggle10( vec_data* nib, int width ) { PROFILE(VECTOR_GET_TOGGLE10);
 
-  char* bits = (char*)malloc_safe( (width + 1), __FILE__, __LINE__ );
+  char* bits = (char*)malloc_safe( width + 1 );
   int   i; 
   char  tmp[2];
 
@@ -497,7 +497,7 @@ char* vector_get_toggle10( vec_data* nib, int width ) {
  Displays the toggle01 information from the specified vector to the output
  stream specified in ofile.
 */
-void vector_display_toggle01( vec_data* nib, int width, FILE* ofile ) {
+void vector_display_toggle01( vec_data* nib, int width, FILE* ofile ) { PROFILE(VECTOR_DISPLAY_TOGGLE01);
 
   int value = 0;  /* Current 4-bit hexidecimal value of toggle */
   int i;          /* Loop iterator */
@@ -525,7 +525,7 @@ void vector_display_toggle01( vec_data* nib, int width, FILE* ofile ) {
  Displays the toggle10 information from the specified vector to the output
  stream specified in ofile.
 */
-void vector_display_toggle10( vec_data* nib, int width, FILE* ofile ) {
+void vector_display_toggle10( vec_data* nib, int width, FILE* ofile ) { PROFILE(VECTOR_DISPLAY_TOGGLE10);
 
   int value = 0;  /* Current 4-bit hexidecimal value of toggle */
   int i;          /* Loop iterator */
@@ -706,7 +706,7 @@ void vector_display( vector* vec ) {
  are set and the number of toggle10 bits that are set.  Adds these values
  to the contents of tog01_cnt and tog10_cnt.
 */
-void vector_toggle_count( vector* vec, int* tog01_cnt, int* tog10_cnt ) {
+void vector_toggle_count( vector* vec, int* tog01_cnt, int* tog10_cnt ) { PROFILE(VECTOR_TOGGLE_COUNT);
 
   int i;  /* Loop iterator */
 
@@ -729,7 +729,7 @@ void vector_toggle_count( vector* vec, int* tog01_cnt, int* tog10_cnt ) {
  Counts the number of bits that were written and read for the given memory
  vector.
 */
-void vector_mem_rw_count( vector* vec, int* wr_cnt, int* rd_cnt ) {
+void vector_mem_rw_count( vector* vec, int* wr_cnt, int* rd_cnt ) { PROFILE(VECTOR_MEM_RW_COUNT);
 
   int i;  /* Loop iterator */
 
@@ -750,7 +750,7 @@ void vector_mem_rw_count( vector* vec, int* wr_cnt, int* rd_cnt ) {
 
  This function is called by the \ref vsignal_set_assigned function.
 */
-bool vector_set_assigned( vector* vec, int msb, int lsb ) {
+bool vector_set_assigned( vector* vec, int msb, int lsb ) { PROFILE(VECTOR_SET_ASSIGNED);
 
   bool prev_assigned = FALSE;  /* Specifies if any set bit was previously set */
   int  i;                      /* Loop iterator */
@@ -786,7 +786,7 @@ bool vector_set_assigned( vector* vec, int msb, int lsb ) {
  been set, checks to see if new vector bits have toggled, sets appropriate
  toggle values, sets the new value to this value and returns.
 */
-bool vector_set_value( vector* vec, vec_data* value, int val_type, int width, int from_idx, int to_idx ) {
+bool vector_set_value( vector* vec, vec_data* value, int val_type, int width, int from_idx, int to_idx ) { PROFILE(VECTOR_SET_VALUE);
 
   bool      retval = FALSE;  /* Return value for this function */
   nibble    from_val;        /* Current bit value of value being assigned */
@@ -897,7 +897,7 @@ bool vector_set_value( vector* vec, vec_data* value, int val_type, int width, in
  Performs a bit-fill of the specified vector starting at the specified LSB
  and bit-filling all bits to the MSB.
 */
-bool vector_bit_fill( vector* vec, int msb, int lsb ) {
+bool vector_bit_fill( vector* vec, int msb, int lsb ) { PROFILE(VECTOR_BIT_FILL);
 
   vec_data value;            /* Temporary vector data value */
   bool     changed = FALSE;  /* Return value for this function */
@@ -931,7 +931,7 @@ bool vector_bit_fill( vector* vec, int msb, int lsb ) {
  Checks specified vector for any X or Z values and returns TRUE if any are found; otherwise,
  returns a value of false.  This function is useful to be called before vector_to_int is called.
 */
-bool vector_is_unknown( const vector* vec ) {
+bool vector_is_unknown( const vector* vec ) { PROFILE(VECTOR_IS_UNKNOWN);
 
   bool unknown = FALSE;  /* Specifies if vector contains unknown values */
   int  i;                /* Loop iterator */
@@ -958,7 +958,7 @@ bool vector_is_unknown( const vector* vec ) {
  \return Returns TRUE if the specified vector has been previously set (simulated); otherwise,
          returns FALSE.
 */
-bool vector_is_set( vector* vec ) {
+bool vector_is_set( vector* vec ) { PROFILE(VECTOR_IS_SET);
 
   int i = 0;  /* Loop iterator */
 
@@ -980,7 +980,7 @@ bool vector_is_set( vector* vec ) {
  vector exceeds the number of bits in an integer, the upper bits of the vector are
  unused.
 */
-int vector_to_int( vector* vec ) {
+int vector_to_int( vector* vec ) { PROFILE(VECTOR_TO_INT);
 
   int retval = 0;   /* Integer value returned to calling function */
   int i;            /* Loop iterator */
@@ -1019,7 +1019,7 @@ int vector_to_int( vector* vec ) {
  vector exceeds the number of bits in an integer, the upper bits of the vector are
  unused.
 */
-uint64 vector_to_uint64( vector* vec ) {
+uint64 vector_to_uint64( vector* vec ) { PROFILE(VECTOR_TO_UINT64);
 
   uint64 retval = 0;   /* 64-bit integer value returned to calling function */
   int    i;            /* Loop iterator */
@@ -1059,7 +1059,7 @@ uint64 vector_to_uint64( vector* vec ) {
  perform the mathematical operation, and then revert the integers back into
  the vectors.
 */
-void vector_from_int( vector* vec, int value ) {
+void vector_from_int( vector* vec, int value ) { PROFILE(VECTOR_FROM_INT);
 
   int width;  /* Number of bits to convert */
   int i;      /* Loop iterator */
@@ -1085,7 +1085,7 @@ void vector_from_int( vector* vec, int value ) {
  vectors into 64-bit integers, perform the mathematical operation, and then revert
  the 64-bit integers back into the vectors.
 */
-void vector_from_uint64( vector* vec, uint64 value ) {
+void vector_from_uint64( vector* vec, uint64 value ) { PROFILE(VECTOR_FROM_UINT64);
 
   int width;  /* Number of bits to convert */
   int i;      /* Loop iterator */
@@ -1110,7 +1110,7 @@ void vector_from_uint64( vector* vec, uint64 value ) {
  Iterates through string str starting at the left-most character, calculates the int value
  of the character and sets the appropriate number of bits in the specified vector locations.
 */
-void vector_set_static( vector* vec, char* str, int bits_per_char ) {
+void vector_set_static( vector* vec, char* str, int bits_per_char ) { PROFILE(VECTOR_SET_STATIC);
 
   char* ptr;      /* Pointer to current character evaluating */
   int   pos;      /* Current bit position in vector */
@@ -1166,7 +1166,7 @@ void vector_set_static( vector* vec, char* str, int bits_per_char ) {
  function and returning a pointer to that string.  The type specifies what type of
  value to change vector into.
 */
-char* vector_to_string( vector* vec ) {
+char* vector_to_string( vector* vec ) { PROFILE(VECTOR_TO_STRING);
 
   char*  str = NULL;     /* Pointer to allocated string */
   char*  tmp;            /* Pointer to temporary string value */
@@ -1183,7 +1183,7 @@ char* vector_to_string( vector* vec ) {
 
     vec_size  = ((vec->width % 8) == 0) ? ((vec->width / 8) + 1)
                                         : ((vec->width / 8) + 2);
-    str   = (char*)malloc_safe( vec_size, __FILE__, __LINE__ );
+    str   = (char*)malloc_safe( vec_size );
     value = 0;
     pos   = 0;
 
@@ -1229,7 +1229,7 @@ char* vector_to_string( vector* vec ) {
         break;
     }
 
-    tmp   = (char*)malloc_safe( vec_size, __FILE__, __LINE__ );
+    tmp   = (char*)malloc_safe( vec_size );
     value = 0;
     pos   = 0;
 
@@ -1275,7 +1275,7 @@ char* vector_to_string( vector* vec ) {
 
     snprintf( width_str, 20, "%d", vec->width );
     str_size = strlen( width_str ) + 2 + strlen( tmp ) + 1 + vec->suppl.part.is_signed;
-    str      = (char*)malloc_safe( str_size, __FILE__, __LINE__ );
+    str      = (char*)malloc_safe( str_size );
     if( vec->suppl.part.is_signed == 0 ) {
       snprintf( str, str_size, "%d'%c%s", vec->width, type_char, tmp );
     } else {
@@ -1300,7 +1300,7 @@ char* vector_to_string( vector* vec ) {
  sized.  If the string value size exceeds Covered's maximum bit allowance, return
  a value of NULL to indicate this to the calling function.
 */
-vector* vector_from_string( char** str, bool quoted ) {
+vector* vector_from_string( char** str, bool quoted ) { PROFILE(VECTOR_FROM_STRING);
 
   vector* vec;                   /* Temporary holder for newly created vector */
   int     bits_per_char;         /* Number of bits represented by a single character in the value string str */
@@ -1432,7 +1432,7 @@ vector* vector_from_string( char** str, bool quoted ) {
  this value.  Performs a VCD-specific bit-fill if the value size is not the size
  of the vector.  The specified value string is assumed to be in binary format.
 */
-bool vector_vcd_assign( vector* vec, char* value, int msb, int lsb ) {
+bool vector_vcd_assign( vector* vec, char* value, int msb, int lsb ) { PROFILE(VECTOR_VCD_ASSIGN);
 
   bool     retval = FALSE;  /* Return value for this function */
   char*    ptr;             /* Pointer to current character under evaluation */
@@ -1499,7 +1499,7 @@ bool vector_vcd_assign( vector* vec, char* value, int msb, int lsb ) {
  corresponding bit location of the target vector.  Vector sizes will
  be properly compensated by placing zeroes.
 */
-bool vector_bitwise_op( vector* tgt, vector* src1, vector* src2, nibble* optab ) {
+bool vector_bitwise_op( vector* tgt, vector* src1, vector* src2, nibble* optab ) { PROFILE(VECTOR_BITWISE_OP);
 
   bool     retval = FALSE;  /* Return value for this function */
   vector   vec;             /* Temporary vector value */
@@ -1544,7 +1544,7 @@ bool vector_bitwise_op( vector* tgt, vector* src1, vector* src2, nibble* optab )
  Performs a bitwise comparison (starting at most significant bit) of the
  left and right expressions.
 */
-bool vector_op_compare( vector* tgt, vector* left, vector* right, int comp_type ) {
+bool vector_op_compare( vector* tgt, vector* left, vector* right, int comp_type ) { PROFILE(VECTOR_OP_COMPARE);
 
   bool     retval = FALSE;  /* Return value for this function */
   int      pos;             /* Loop iterator */
@@ -1659,7 +1659,7 @@ bool vector_op_compare( vector* tgt, vector* left, vector* right, int comp_type 
  Converts right expression into an integer value and left shifts the left
  expression the specified number of bit locations, zero-filling the LSB.
 */
-bool vector_op_lshift( vector* tgt, vector* left, vector* right ) {
+bool vector_op_lshift( vector* tgt, vector* left, vector* right ) { PROFILE(VECTOR_OP_LSHIFT);
 
   bool     retval  = FALSE;  /* Return value for this function */
   int      shift_val;        /* Number of bits to shift left */
@@ -1705,7 +1705,7 @@ bool vector_op_lshift( vector* tgt, vector* left, vector* right ) {
  Converts right expression into an integer value and right shifts the left
  expression the specified number of bit locations, zero-filling the MSB.
 */
-bool vector_op_rshift( vector* tgt, vector* left, vector* right ) {
+bool vector_op_rshift( vector* tgt, vector* left, vector* right ) { PROFILE(VECTOR_OP_RSHIFT);
 
   bool     retval = FALSE;  /* Return value for this function */
   int      shift_val;       /* Number of bits to shift left */
@@ -1751,7 +1751,7 @@ bool vector_op_rshift( vector* tgt, vector* left, vector* right ) {
  Converts right expression into an integer value and right shifts the left
  expression the specified number of bit locations, sign extending the MSB.
 */
-bool vector_op_arshift( vector* tgt, vector* left, vector* right ) {
+bool vector_op_arshift( vector* tgt, vector* left, vector* right ) { PROFILE(VECTOR_OP_ARSHIFT);
 
   bool     retval = FALSE;  /* Return value for this function */
   int      shift_val;       /* Number of bits to shift left */
@@ -1798,7 +1798,7 @@ bool vector_op_arshift( vector* tgt, vector* left, vector* right ) {
  Performs 4-state bitwise addition on left and right expression values.
  Carry bit is discarded (value is wrapped around).
 */
-bool vector_op_add( vector* tgt, vector* left, vector* right ) {
+bool vector_op_add( vector* tgt, vector* left, vector* right ) { PROFILE(VECTOR_OP_ADD);
 
   bool     retval = FALSE;  /* Return value for this function */
   nibble   lbit;            /* Current left expression bit */
@@ -1843,7 +1843,7 @@ bool vector_op_add( vector* tgt, vector* left, vector* right ) {
 
  Performs a twos complement of the src vector and stores the result in the tgt vector.
 */
-bool vector_op_negate( vector* tgt, vector* src ) {
+bool vector_op_negate( vector* tgt, vector* src ) { PROFILE(VECTOR_OP_NEGATE);
 
   bool    retval = FALSE;  /* Return value for this function */
   vector* vec1;            /* Temporary vector holder */
@@ -1881,7 +1881,7 @@ bool vector_op_negate( vector* tgt, vector* src ) {
  of right expression value, adding one to the result and adding this
  result to the left expression value.
 */
-bool vector_op_subtract( vector* tgt, vector* left, vector* right ) {
+bool vector_op_subtract( vector* tgt, vector* left, vector* right ) { PROFILE(VECTOR_OP_SUBTRACT);
 
   bool    retval = FALSE;  /* Return value for this function */
   vector* vec;             /* Temporary vector holder */
@@ -1915,7 +1915,7 @@ bool vector_op_subtract( vector* tgt, vector* left, vector* right ) {
  is equal to zero, the value is 0.  If one of the values is equal to one,
  the value is that of the other vector.
 */
-bool vector_op_multiply( vector* tgt, vector* left, vector* right ) {
+bool vector_op_multiply( vector* tgt, vector* left, vector* right ) { PROFILE(VECTOR_OP_MULTIPLY);
 
   bool     retval = FALSE;  /* Return value for this function */
   vector   lcomp;           /* Compare vector left */
@@ -1985,7 +1985,7 @@ bool vector_op_multiply( vector* tgt, vector* left, vector* right ) {
 
  Performs an increment operation on the specified vector.
 */
-bool vector_op_inc( vector* tgt ) {
+bool vector_op_inc( vector* tgt ) { PROFILE(VECTOR_OP_INC);
 
   vector* tmp1;  /* Pointer to temporary vector containing the same contents as the target */
   vector* tmp2;  /* Pointer to temporary vector containing the value of 1 */
@@ -2011,7 +2011,7 @@ bool vector_op_inc( vector* tgt ) {
 
  Performs an decrement operation on the specified vector.
 */
-bool vector_op_dec( vector* tgt ) {
+bool vector_op_dec( vector* tgt ) { PROFILE(VECTOR_OP_DEC);
 
   vector* tmp1;  /* Pointer to temporary vector containing the same contents as the target */
   vector* tmp2;  /* Pointer to temporary vector containing the value of 1 */
@@ -2038,7 +2038,7 @@ bool vector_op_dec( vector* tgt ) {
 
  Performs a bitwise inversion on the specified vector.
 */
-bool vector_unary_inv( vector* tgt, vector* src ) {
+bool vector_unary_inv( vector* tgt, vector* src ) { PROFILE(VECTOR_UNARY_INV);
 
   bool     retval = FALSE;  /* Return value for this function */
   nibble   bit;             /* Selected bit from source vector */
@@ -2078,7 +2078,7 @@ bool vector_unary_inv( vector* tgt, vector* src ) {
  Performs unary operation on specified vector value from specifed
  operation table.
 */
-bool vector_unary_op( vector* tgt, vector* src, nibble* optab ) {
+bool vector_unary_op( vector* tgt, vector* src, nibble* optab ) { PROFILE(VECTOR_UNARY_OP);
 
   bool     retval;   /* Return value for this function */
   nibble   uval;     /* Unary operation value */
@@ -2123,7 +2123,7 @@ bool vector_unary_op( vector* tgt, vector* src, nibble* optab ) {
 
  Performs unary logical NOT operation on specified vector value.
 */
-bool vector_unary_not( vector* tgt, vector* src ) {
+bool vector_unary_not( vector* tgt, vector* src ) { PROFILE(VECTOR_UNARY_NOT);
 
   vector   vec;      /* Temporary vector value */
   vec_data vec_val;  /* Temporary value */
@@ -2141,7 +2141,7 @@ bool vector_unary_not( vector* tgt, vector* src ) {
  Deallocates all heap memory that was initially allocated with the malloc
  routine.
 */
-void vector_dealloc( vector* vec ) {
+void vector_dealloc( vector* vec ) { PROFILE(VECTOR_DEALLOC);
 
   if( vec != NULL ) {
 
@@ -2165,6 +2165,9 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.91  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.90  2007/09/18 21:41:54  phase1geo
  Removing inport indicator bit in vector and replacing with owns_data bit
  indicator.  Full regression passes.

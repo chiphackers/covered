@@ -107,7 +107,7 @@ const char* funit_types[FUNIT_TYPES+1] = { "module", "named block", "function", 
 
  Sets the global variable output_suppressed to the specified value.
 */
-void set_output_suppression( bool value ) {
+void set_output_suppression( bool value ) { PROFILE(SET_OUTPUT_SUPPRESSION);
 
   output_suppressed = value;
 
@@ -118,7 +118,7 @@ void set_output_suppression( bool value ) {
 
  Sets the global debug mode to the specified value.
 */
-void set_debug( bool value ) {
+void set_debug( bool value ) { PROFILE(SET_DEBUG);
 
   debug_mode = value;
 
@@ -251,7 +251,7 @@ void print_output( const char* msg, int type, const char* file, int line ) {
  the correct type).  Outputs an error message and returns a value of FALSE if a value was
  not specified; otherwise, returns TRUE.
 */
-bool check_option_value( int argc, char** argv, int option_index ) {
+bool check_option_value( int argc, char** argv, int option_index ) { PROFILE(CHECK_OPTION_VALUE);
 
   bool retval = TRUE;  /* Return value for this function */
 
@@ -274,7 +274,7 @@ bool check_option_value( int argc, char** argv, int option_index ) {
  variable (doesn't start with a number, contains only a-zA-Z0-9_ characters),
  returns a value of TRUE; otherwise, returns a value of FALSE.
 */
-bool is_variable( const char* token ) {
+bool is_variable( const char* token ) { PROFILE(IS_VARIABLE);
 
   bool retval = TRUE;   /* Return value of this function */
 
@@ -314,7 +314,7 @@ bool is_variable( const char* token ) {
  \return Returns TRUE if the specified token is a valid argument representing
          a functional unit.
 */
-bool is_func_unit( const char* token ) {
+bool is_func_unit( const char* token ) { PROFILE(IS_FUNC_UNIT);
 
   char* orig;                          /* Temporary string */
   char* rest;                          /* Temporary string */
@@ -322,9 +322,9 @@ bool is_func_unit( const char* token ) {
   bool  okay = (strlen( token ) > 0);  /* Specifies if this token is a functional unit value or not */
 
   /* Allocate memory */
-  orig  = strdup_safe( token, __FILE__, __LINE__ );
-  rest  = strdup_safe( token, __FILE__, __LINE__ );
-  front = strdup_safe( token, __FILE__, __LINE__ );
+  orig  = strdup_safe( token );
+  rest  = strdup_safe( token );
+  front = strdup_safe( token );
 
   /* Check to make sure that each value between '.' is a valid variable */
   while( (strlen( orig ) > 0) && okay ) {
@@ -351,7 +351,7 @@ bool is_func_unit( const char* token ) {
  \return Returns TRUE if the specified string would be a legal filename to
          write to; otherwise, returns FALSE.
 */
-bool is_legal_filename( const char* token ) {
+bool is_legal_filename( const char* token ) { PROFILE(IS_LEGAL_FILENAME);
 
   bool  retval = FALSE;  /* Return value for this function */
   FILE* tmpfile;         /* Temporary file pointer */
@@ -372,7 +372,7 @@ bool is_legal_filename( const char* token ) {
 
  Extracts the file basename of the specified filename string.
 */
-const char* get_basename( const char* str ) {
+const char* get_basename( const char* str ) { PROFILE(GET_BASENAME);
 
   const char* ptr;  /* Pointer to current character in str */
 
@@ -401,7 +401,7 @@ const char* get_basename( const char* str ) {
  \warning
  Modifies the given string!
 */
-char* get_dirname( char* str ) {
+char* get_dirname( char* str ) { PROFILE(GET_DIRNAME);
 
   char* ptr;  /* Pointer to current character in str */
 
@@ -424,7 +424,7 @@ char* get_dirname( char* str ) {
  Checks to see if the specified directory actually exists in the file structure.
  If the directory is found to exist, returns TRUE; otherwise, returns FALSE.
 */
-bool directory_exists( const char* dir ) {
+bool directory_exists( const char* dir ) { PROFILE(DIRECTORY_EXISTS);
 
   bool        retval = FALSE;  /* Return value for this function */
   struct stat filestat;        /* Statistics of specified directory */
@@ -455,7 +455,7 @@ bool directory_exists( const char* dir ) {
  contain the specified extensions (if ext_head is NULL, load only *.v files).
  Stores all string filenames to the specified string list.
 */
-void directory_load( const char* dir, const str_link* ext_head, str_link** file_head, str_link** file_tail ) {
+void directory_load( const char* dir, const str_link* ext_head, str_link** file_head, str_link** file_tail ) { PROFILE(DIRECTORY_LOAD);
 
   DIR*            dir_handle;  /* Pointer to opened directory */
   struct dirent*  dirp;        /* Pointer to current directory entry */
@@ -487,7 +487,7 @@ void directory_load( const char* dir, const str_link* ext_head, str_link** file_
         if( curr_ext != NULL ) {
           /* Found valid extension, add to list */
           tmpchars = strlen( dirp->d_name ) + strlen( dir ) + 2;
-          tmpfile  = (char*)malloc_safe( tmpchars, __FILE__, __LINE__ );
+          tmpfile  = (char*)malloc_safe( tmpchars );
           snprintf( tmpfile, tmpchars, "%s/%s", dir, dirp->d_name );
           if( str_link_find( tmpfile, *file_head ) == NULL ) {
             str_link_add( tmpfile, file_head, file_tail );
@@ -512,7 +512,7 @@ void directory_load( const char* dir, const str_link* ext_head, str_link** file_
  Checks to see if the specified file actually exists in the file structure.
  If the file is found to exist, returns TRUE; otherwise, returns FALSE.
 */
-bool file_exists( const char* file ) {
+bool file_exists( const char* file ) { PROFILE(FILE_EXISTS);
 
   bool        retval = FALSE;  /* Return value for this function */
   struct stat filestat;        /* Statistics of specified directory */
@@ -540,13 +540,13 @@ bool file_exists( const char* file ) {
  Reads in a single line of information from the specified file and returns a string
  containing the read line to the calling function.
 */
-bool util_readline( FILE* file, char** line ) {
+bool util_readline( FILE* file, char** line ) { PROFILE(UTIL_READLINE);
 
   char  c;                 /* Character recently read from file */
   int   i         = 0;     /* Current index of line */
   int   line_size = 128;   /* Size of current line */
 
-  *line = (char*)malloc_safe( line_size, __FILE__, __LINE__ );
+  *line = (char*)malloc_safe( line_size );
 
   while( !feof( file ) && ((c = (char)fgetc( file )) != '\n') ) {
 
@@ -577,7 +577,7 @@ bool util_readline( FILE* file, char** line ) {
  \return Returns the given value with environment variables substituted in.  This value should
          be freed by the calling function.
 */
-char* substitute_env_vars( const char* value ) {
+char* substitute_env_vars( const char* value ) { PROFILE(SUBSTITUTE_ENV_VARS);
 
   char*       newvalue    = NULL;   /* New value */
   int         newvalue_index;       /* Current index into newvalue */
@@ -634,7 +634,7 @@ char* substitute_env_vars( const char* value ) {
  returning that instance name to the value of front and the the
  rest of the hierarchy in the value of rest.
 */
-void scope_extract_front( const char* scope, char* front, char* rest ) {
+void scope_extract_front( const char* scope, char* front, char* rest ) { PROFILE(SCOPE_EXTRACT_FRONT);
   
   const char* ptr;      /* Pointer to current character */
   char        endchar;  /* Set to the character we are searching for */
@@ -677,7 +677,7 @@ void scope_extract_front( const char* scope, char* front, char* rest ) {
  returning that instance name to the value of back and the the
  rest of the hierarchy in the value of rest.
 */
-void scope_extract_back( const char* scope, char* back, char* rest ) {
+void scope_extract_back( const char* scope, char* back, char* rest ) { PROFILE(SCOPE_EXTRACT_BACK);
 
   const char* ptr;      /* Pointer to current character */
   char        endchar;  /* Set to the character we are searching for */
@@ -716,7 +716,7 @@ void scope_extract_back( const char* scope, char* back, char* rest ) {
  \param back
 
 */
-void scope_extract_scope( const char* scope, const char* front, char* back ) {
+void scope_extract_scope( const char* scope, const char* front, char* back ) { PROFILE(SCOPE_EXTRACT_SCOPE);
 
   back[0] = '\0';
 
@@ -734,12 +734,12 @@ void scope_extract_scope( const char* scope, const char* front, char* back ) {
  Allocates memory for and generates a printable version of the given string (a signal or
  instance name).  The calling function is responsible for deallocating the string returned.
 */
-char* scope_gen_printable( const char* str ) {
+char* scope_gen_printable( const char* str ) { PROFILE(SCOPE_GEN_PRINTABLE);
 
   char* new_str;  /* New version of string with escaped sequences removed */
 
   /* Allocate memory for new string */
-  new_str = strdup_safe( obf_sig( str ), __FILE__, __LINE__ );
+  new_str = strdup_safe( obf_sig( str ) );
 
   /* Remove escape sequences, if any */
   if( str[0] == '\\' ) {
@@ -757,7 +757,7 @@ char* scope_gen_printable( const char* str ) {
  \return Returns TRUE if the two strings are equal, properly handling the case where one or
          both are escaped names (start with an escape character and end with a space).
 */
-bool scope_compare( const char* str1, const char* str2 ) {
+bool scope_compare( const char* str1, const char* str2 ) { PROFILE(SCOPE_COMPARE);
 
   bool  retval;    /* Return value for this function */
   char* new_str1;  /* New form of str1 with escaped sequences removed */
@@ -787,11 +787,11 @@ bool scope_compare( const char* str1, const char* str2 ) {
  Parses specified scope for '.' character.  If one is found, returns FALSE; otherwise,
  returns TRUE.
 */
-bool scope_local( const char* scope ) {
+bool scope_local( const char* scope ) { PROFILE(SCOPE_LOCAL);
 
   const char* ptr;             /* Pointer to current character */
-  bool  esc;             /* Set to TRUE if current is escaped */
-  bool  wspace = FALSE;  /* Set if last character seen was a whitespace */
+  bool        esc;             /* Set to TRUE if current is escaped */
+  bool        wspace = FALSE;  /* Set if last character seen was a whitespace */
 
   assert( scope != NULL );
 
@@ -823,11 +823,11 @@ bool scope_local( const char* scope ) {
  off.  Much like the the functionality of the unix command "basename".  Returns the 
  stripped filename in the mname parameter.
 */
-void convert_file_to_module( char* mname, int len, char* fname ) {
+void convert_file_to_module( char* mname, int len, char* fname ) { PROFILE(CONVERT_FILE_TO_MODULE);
 
   char* ptr;   /* Pointer to current character in filename */
   char* lptr;  /* Pointer to last character in module name */
-  int   i;     /* Loop iterator                            */
+  int   i;     /* Loop iterator */
 
   /* Set ptr to end of fname string */
   ptr  = fname + strlen( fname );
@@ -876,7 +876,7 @@ void convert_file_to_module( char* mname, int len, char* fname ) {
  If a file is a library file (suppl field is 'D'), the name of the module to search
  for is compared with the name of the file.
 */
-str_link* get_next_vfile( str_link* curr, const char* mod ) {
+str_link* get_next_vfile( str_link* curr, const char* mod ) { PROFILE(GET_NEXT_VFILE);
 
   str_link* next = NULL;  /* Pointer to next Verilog file to parse */
   char      name[256];    /* String holder for module name of file */
@@ -1041,7 +1041,7 @@ char* strdup_safe1( const char* str, const char* file, int line, unsigned int pr
  adding a NULL character at the end of the string to allow for correct
  usage by the strlen and other string functions.
 */
-void gen_space( char* spaces, int num_spaces ) {
+void gen_space( char* spaces, int num_spaces ) { PROFILE(GEN_SPACE);
 
   int i;     /* Loop iterator */
 
@@ -1062,7 +1062,7 @@ void gen_space( char* spaces, int num_spaces ) {
 void timer_clear( timer** tm ) {
 
   if( *tm == NULL ) {
-    *tm = (timer*)malloc_safe( sizeof( timer ), __FILE__, __LINE__ ); 
+    *tm = (timer*)malloc_safe( sizeof( timer ) );
   }
 
   (*tm)->total = 0;
@@ -1077,7 +1077,7 @@ void timer_clear( timer** tm ) {
 void timer_start( timer** tm ) {
 
   if( *tm == NULL ) {
-    *tm = (timer*)malloc_safe( sizeof( timer ), __FILE__, __LINE__ );
+    *tm = (timer*)malloc_safe( sizeof( timer ) );
     timer_clear( tm );
   }
 
@@ -1108,7 +1108,7 @@ void timer_stop( timer** tm ) {
 
  \return Returns a string giving the user-readable name of the given functional unit type
 */
-const char* get_funit_type( int type ) {
+const char* get_funit_type( int type ) { PROFILE(GET_FUNIT_TYPE);
 
   const char* type_str;
 
@@ -1134,7 +1134,7 @@ const char* get_funit_type( int type ) {
  \note
  If the total number of items is 0, the hit percentage will be calculated as 100% covered.
 */
-void calc_miss_percent( int hits, float total, float* misses, float* percent ) {
+void calc_miss_percent( int hits, float total, float* misses, float* percent ) { PROFILE(CALC_MISS_PERCENT);
 
   if( total == 0 ) {
     *percent = 100;
@@ -1148,6 +1148,10 @@ void calc_miss_percent( int hits, float total, float* misses, float* percent ) {
 
 /*
  $Log$
+ Revision 1.68  2007/12/10 23:16:22  phase1geo
+ Working on adding profiler for use in finding performance issues.  Things don't compile
+ at the moment.
+
  Revision 1.67  2007/11/20 05:29:00  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

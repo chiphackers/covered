@@ -88,13 +88,13 @@ void vsignal_init( vsignal* sig, char* name, int type, vector* value, int line, 
  values for a vsignal and returns a pointer to this newly created
  vsignal.
 */
-vsignal* vsignal_create( char* name, int type, int width, int line, int col ) {
+vsignal* vsignal_create( char* name, int type, int width, int line, int col ) { PROFILE(VSIGNAL_CREATE);
 
   vsignal* new_sig;  /* Pointer to newly created vsignal */
 
-  new_sig = (vsignal*)malloc_safe( sizeof( vsignal ), __FILE__, __LINE__ );
+  new_sig = (vsignal*)malloc_safe( sizeof( vsignal ) );
 
-  vsignal_init( new_sig, ((name != NULL) ? strdup_safe( name, __FILE__, __LINE__ ) : NULL),
+  vsignal_init( new_sig, ((name != NULL) ? strdup_safe( name ) : NULL),
                 type, vector_create( width, ((type == SSUPPL_TYPE_MEM) ? VTYPE_MEM : VTYPE_SIG), TRUE ), line, col );
 
   return( new_sig );
@@ -108,7 +108,7 @@ vsignal* vsignal_create( char* name, int type, int width, int line, int col ) {
  sized to match this width.  This function is called during race condition checking and
  functional unit element sizing function and needs to be called before expression resizing is performed.
 */
-void vsignal_create_vec( vsignal* sig ) {
+void vsignal_create_vec( vsignal* sig ) { PROFILE(VSIGNAL_CREATE_VEC);
 
   int       i;     /* Loop iterator */
   vector*   vec;   /* Temporary vector used for getting a vector value */
@@ -165,7 +165,7 @@ void vsignal_create_vec( vsignal* sig ) {
 
  Duplicates the contents of the given signal with the exception of the expression list.
 */
-vsignal* vsignal_duplicate( vsignal* sig ) {
+vsignal* vsignal_duplicate( vsignal* sig ) { PROFILE(VSIGNAL_DUPLICATE);
 
   vsignal*  new_sig;  /* Pointer to newly created vsignal */
   exp_link* expl;     /* Pointer to current expression link */
@@ -173,8 +173,8 @@ vsignal* vsignal_duplicate( vsignal* sig ) {
 
   assert( sig != NULL );
 
-  new_sig = (vsignal*)malloc_safe( sizeof( vsignal ), __FILE__, __LINE__ );
-  new_sig->name      = strdup_safe( sig->name, __FILE__, __LINE__ );
+  new_sig = (vsignal*)malloc_safe( sizeof( vsignal ) );
+  new_sig->name      = strdup_safe( sig->name );
   new_sig->suppl.all = sig->suppl.all;
   new_sig->pdim_num  = sig->pdim_num;
   new_sig->udim_num  = sig->udim_num;
@@ -185,7 +185,7 @@ vsignal* vsignal_duplicate( vsignal* sig ) {
 
   /* Copy the dimension information */
   if( (sig->pdim_num + sig->udim_num) > 0 ) {
-    new_sig->dim = (dim_range*)malloc_safe( (sizeof( dim_range ) * (sig->pdim_num + sig->udim_num)), __FILE__, __LINE__ );
+    new_sig->dim = (dim_range*)malloc_safe( sizeof( dim_range ) * (sig->pdim_num + sig->udim_num) );
     for( i=0; i<(sig->pdim_num + sig->udim_num); i++ ) {
       new_sig->dim[i].msb = sig->dim[i].msb;
       new_sig->dim[i].lsb = sig->dim[i].lsb;
@@ -214,7 +214,7 @@ vsignal* vsignal_duplicate( vsignal* sig ) {
  specified file.  This file will be the database coverage file
  for this design.
 */
-void vsignal_db_write( vsignal* sig, FILE* file ) {
+void vsignal_db_write( vsignal* sig, FILE* file ) { PROFILE(VSIGNAL_DB_WRITE);
 
   int i;  /* Loop iterator */
 
@@ -259,7 +259,7 @@ void vsignal_db_write( vsignal* sig, FILE* file ) {
  information and stores it to the specified vsignal.  If there are any problems
  in reading in the current line, returns FALSE; otherwise, returns TRUE.
 */
-bool vsignal_db_read( char** line, func_unit* curr_funit ) {
+bool vsignal_db_read( char** line, func_unit* curr_funit ) { PROFILE(VSIGNAL_DB_READ);
 
   bool       retval = TRUE;  /* Return value for this function */
   char       name[256];      /* Name of current vsignal */
@@ -279,7 +279,7 @@ bool vsignal_db_read( char** line, func_unit* curr_funit ) {
     *line = *line + chars_read;
 
     /* Allocate dimensional information */
-    dim = (dim_range*)malloc_safe( (sizeof( dim_range ) * (pdim_num + udim_num)), __FILE__, __LINE__ );
+    dim = (dim_range*)malloc_safe( sizeof( dim_range ) * (pdim_num + udim_num) );
 
     /* Read in dimensional information */
     i = 0;
@@ -354,7 +354,7 @@ bool vsignal_db_read( char** line, func_unit* curr_funit ) {
  If both vsignals are the same, perform the merge on the vsignal's 
  vectors.
 */
-bool vsignal_db_merge( vsignal* base, char** line, bool same ) {
+bool vsignal_db_merge( vsignal* base, char** line, bool same ) { PROFILE(VSIGNAL_DB_MERGE);
  
   bool    retval = TRUE;  /* Return value of this function */
   char    name[256];      /* Name of current vsignal */
@@ -415,7 +415,7 @@ bool vsignal_db_merge( vsignal* base, char** line, bool same ) {
   is called to propagate the value change to the simulator to cause any statements
   waiting on this value change to be resimulated.
 */
-void vsignal_propagate( vsignal* sig, uint64 sim_time ) {
+void vsignal_propagate( vsignal* sig, uint64 sim_time ) { PROFILE(VSIGNAL_PROPAGATE);
 
   exp_link* curr_expr;  /* Pointer to current expression in signal list */
 
@@ -447,7 +447,7 @@ void vsignal_propagate( vsignal* sig, uint64 sim_time ) {
  iterates through its expression list, setting the TRUE and FALSE bits accordingly.
  Finally, calls the simulator expr_changed function for each expression.
 */
-void vsignal_vcd_assign( vsignal* sig, char* value, int msb, int lsb, uint64 sim_time ) {
+void vsignal_vcd_assign( vsignal* sig, char* value, int msb, int lsb, uint64 sim_time ) { PROFILE(VSIGNAL_VCD_ASSIGN);
 
   bool vec_changed;  /* Specifies if assigned value differed from original value */
 
@@ -498,7 +498,7 @@ void vsignal_vcd_assign( vsignal* sig, char* value, int msb, int lsb, uint64 sim
  Adds the specified expression to the end of this vsignal's expression
  list.
 */
-void vsignal_add_expression( vsignal* sig, expression* expr ) {
+void vsignal_add_expression( vsignal* sig, expression* expr ) { PROFILE(VSIGNAL_ADD_EXPRESSION);
 
   exp_link_add( expr, &(sig->exp_head), &(sig->exp_tail) );
 
@@ -548,7 +548,7 @@ void vsignal_display( vsignal* sig ) {
  vsignal may be a standard vsignal name, a single bit select vsignal or a
  multi-bit select vsignal.
 */
-vsignal* vsignal_from_string( char** str ) {
+vsignal* vsignal_from_string( char** str ) { PROFILE(VSIGNAL_FROM_STRING);
 
   vsignal* sig;             /* Pointer to newly created vsignal */
   char     name[4096];      /* Signal name */
@@ -571,7 +571,7 @@ vsignal* vsignal_from_string( char** str ) {
     }
     sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT, width, 0, 0 );
     sig->pdim_num   = 1;
-    sig->dim        = (dim_range*)malloc_safe( (sizeof( dim_range ) * 1), __FILE__, __LINE__ );
+    sig->dim        = (dim_range*)malloc_safe( sizeof( dim_range ) * 1 );
     sig->dim[0].msb = left;
     sig->dim[0].lsb = right;
     sig->suppl.part.big_endian = big_endian;
@@ -579,21 +579,21 @@ vsignal* vsignal_from_string( char** str ) {
   } else if( sscanf( *str, "%[a-zA-Z0-9_]\[%d+:%d]%n", name, &left, &right, &chars_read ) == 3 ) {
     sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT_POS, right, 0, 0 );
     sig->pdim_num   = 1;
-    sig->dim        = (dim_range*)malloc_safe( (sizeof( dim_range ) * 1), __FILE__, __LINE__ );
+    sig->dim        = (dim_range*)malloc_safe( sizeof( dim_range ) * 1 );
     sig->dim[0].msb = left + right;
     sig->dim[0].lsb = left;
     *str += chars_read;
   } else if( sscanf( *str, "%[a-zA-Z0-9_]\[%d-:%d]%n", name, &left, &right, &chars_read ) == 3 ) {
     sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT_NEG, right, 0, 0 );
     sig->pdim_num   = 1;
-    sig->dim        = (dim_range*)malloc_safe( (sizeof( dim_range ) * 1), __FILE__, __LINE__ );
+    sig->dim        = (dim_range*)malloc_safe( sizeof( dim_range ) * 1 );
     sig->dim[0].msb = left - right;
     sig->dim[0].lsb = left;
     *str += chars_read;
   } else if( sscanf( *str, "%[a-zA-Z0-9_]\[%d]%n", name, &right, &chars_read ) == 2 ) {
     sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT, 1, 0, 0 );
     sig->pdim_num   = 1;
-    sig->dim        = (dim_range*)malloc_safe( (sizeof( dim_range ) * 1), __FILE__, __LINE__ );
+    sig->dim        = (dim_range*)malloc_safe( sizeof( dim_range ) * 1 );
     sig->dim[0].msb = right;
     sig->dim[0].lsb = right;
     *str += chars_read;
@@ -616,7 +616,7 @@ vsignal* vsignal_from_string( char** str ) {
 
  \return Returns width of the given expression that is bound to the given signal.
 */
-int vsignal_calc_width_for_expr( expression* expr, vsignal* sig ) {
+int vsignal_calc_width_for_expr( expression* expr, vsignal* sig ) { PROFILE(VSIGNAL_CALC_WIDTH_FOR_EXPR);
 
   int exp_dim;    /* Expression dimension number */
   int width = 1;  /* Return value for this function */
@@ -648,7 +648,7 @@ int vsignal_calc_width_for_expr( expression* expr, vsignal* sig ) {
 
  \return Returns the LSB of the given signal for the given expression.
 */
-int vsignal_calc_lsb_for_expr( expression* expr, vsignal* sig, int lsb_val ) {
+int vsignal_calc_lsb_for_expr( expression* expr, vsignal* sig, int lsb_val ) { PROFILE(VSIGNAL_CALC_LSB_FOR_EXPR);
 
   return( vsignal_calc_width_for_expr( expr, sig ) * lsb_val );
 
@@ -660,7 +660,7 @@ int vsignal_calc_lsb_for_expr( expression* expr, vsignal* sig, int lsb_val ) {
  Deallocates all malloc'ed memory back to the heap for the specified
  vsignal.
 */
-void vsignal_dealloc( vsignal* sig ) {
+void vsignal_dealloc( vsignal* sig ) { PROFILE(VSIGNAL_DEALLOC);
 
   exp_link* curr_expl;  /* Pointer to current expression link to set to NULL */
 
@@ -696,6 +696,9 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.45  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.44  2007/09/05 21:07:37  phase1geo
  Fixing bug 1788991.  Full regression passes.  Removed excess output used for
  debugging.  May want to create a new development release with these changes.

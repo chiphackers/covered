@@ -59,7 +59,7 @@ bool one_instance_found = FALSE;
 
  Parses specified file until $end keyword is seen, ignoring all text inbetween.
 */
-void vcd_parse_def_ignore( FILE* vcd ) {
+void vcd_parse_def_ignore( FILE* vcd ) { PROFILE(VCD_PARSE_DEF_IGNORE);
 
   bool end_seen = FALSE;  /* If set to true, $end keyword was seen */
   char token[256];        /* String value of current token */
@@ -81,7 +81,7 @@ void vcd_parse_def_ignore( FILE* vcd ) {
 
  Parses definition $var keyword line until $end keyword is seen.
 */
-void vcd_parse_def_var( FILE* vcd ) {
+void vcd_parse_def_var( FILE* vcd ) { PROFILE(VCD_PARSE_DEF_VAR);
 
   char type[256];     /* Variable type */
   int  size;          /* Bit width of specified variable */
@@ -164,7 +164,7 @@ void vcd_parse_def_var( FILE* vcd ) {
 
  Parses definition $scope keyword line until $end keyword is seen.
 */
-void vcd_parse_def_scope( FILE* vcd ) {
+void vcd_parse_def_scope( FILE* vcd ) { PROFILE(VCD_PARSE_DEF_SCOPE);
 
   char type[256];  /* Scope type */
   char id[256];    /* Name of scope to change to */
@@ -192,7 +192,7 @@ void vcd_parse_def_scope( FILE* vcd ) {
 
  Parses all definition information from specified file.
 */
-void vcd_parse_def( FILE* vcd ) {
+void vcd_parse_def( FILE* vcd ) { PROFILE(VCD_PARSE_DEF);
 
   bool enddef_found = FALSE;  /* If set to true, definition section is finished */
   char keyword[256];          /* Holds keyword value */
@@ -262,7 +262,7 @@ void vcd_parse_def( FILE* vcd ) {
  Reads the next token from the file and calls the appropriate database storage
  function for this signal change.
 */
-void vcd_parse_sim_vector( FILE* vcd, char* value ) {
+void vcd_parse_sim_vector( FILE* vcd, char* value ) { PROFILE(VCD_PARSE_SIM_VECTOR);
 
   char sym[256];    /* String value of signal symbol */
   int  chars_read;  /* Number of characters scanned in */
@@ -288,7 +288,7 @@ void vcd_parse_sim_vector( FILE* vcd, char* value ) {
  Reads in symbol from simulation vector line that is to be ignored 
  (unused).  Signals an error message if the line is improperly formatted.
 */
-void vcd_parse_sim_ignore( FILE* vcd ) {
+void vcd_parse_sim_ignore( FILE* vcd ) { PROFILE(VCD_PARSE_SIM_IGNORE);
 
   char sym[256];    /* String value of signal symbol */
   int  chars_read;  /* Number of characters scanned in */
@@ -309,7 +309,7 @@ void vcd_parse_sim_ignore( FILE* vcd ) {
 
  Parses all lines that occur in the simulation portion of the VCD file.
 */
-void vcd_parse_sim( FILE* vcd ) {
+void vcd_parse_sim( FILE* vcd ) { PROFILE(VCD_PARSE_SIM);
 
   char   token[4100];                /* Current token from VCD file */
   uint64 last_timestep     = 0;      /* Value of last timestamp from file */
@@ -381,7 +381,7 @@ void vcd_parse_sim( FILE* vcd ) {
  functions when appropriate to store this information.  This replaces the
  need for a lexer and parser which should increase performance.
 */
-void vcd_parse( char* vcd_file ) {
+void vcd_parse( char* vcd_file ) { PROFILE(VCD_PARSE);
 
   FILE* vcd_handle;        /* Pointer to opened VCD file */
 
@@ -394,7 +394,7 @@ void vcd_parse( char* vcd_file ) {
 
     /* Create timestep symbol table array */
     if( vcd_symtab_size > 0 ) {
-      timestep_tab = malloc_safe_nolimit( (sizeof( symtable*) * vcd_symtab_size), __FILE__, __LINE__ );
+      timestep_tab = malloc_safe_nolimit( sizeof( symtable*) * vcd_symtab_size );
     }
     
     vcd_parse_sim( vcd_handle );
@@ -419,6 +419,9 @@ void vcd_parse( char* vcd_file ) {
 
 /*
  $Log$
+ Revision 1.28  2007/11/20 05:31:14  phase1geo
+ Fixing syntax error in VCD parser per bug 1832592.
+
  Revision 1.27  2007/11/20 05:29:00  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

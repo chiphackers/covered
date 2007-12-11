@@ -33,7 +33,7 @@
 
  Counts the number of stored struct/union members in the given struct/union.
 */
-int struct_union_length( struct_union* su ) {
+int struct_union_length( struct_union* su ) { PROFILE(STRUCT_UNION_LENGTH);
 
   su_member* curr;       /* Pointer to current struct/union member */
   int        count = 0;  /* Number of members counted */
@@ -54,7 +54,7 @@ int struct_union_length( struct_union* su ) {
 
  Adds the given struct/union member to the given struct/union member list.
 */
-void struct_union_add_member( struct_union* su, su_member* mem ) {
+void struct_union_add_member( struct_union* su, su_member* mem ) { PROFILE(STRUCT_UNION_ADD_MEMBER);
 
   if( su->mem_head == NULL ) {
     su->mem_head = su->mem_tail = mem;
@@ -72,12 +72,12 @@ void struct_union_add_member( struct_union* su, su_member* mem ) {
 
  Allocates, initializes and adds a 'void' type struct/union member to the given struct/union.
 */
-su_member* struct_union_add_member_void( struct_union* su ) {
+su_member* struct_union_add_member_void( struct_union* su ) { PROFILE(STRUCT_UNION_ADD_MEMBER_VOID);
 
   su_member* mem;  /* Pointer to newly created struct/union member */
 
   /* Allocate memory for the new member */
-  mem = (su_member*)malloc_safe( sizeof( su_member ), __FILE__, __LINE__ );
+  mem = (su_member*)malloc_safe( sizeof( su_member ) ); 
 
   /* Initialize the contents of the member */
   mem->type     = SU_MEMTYPE_VOID;
@@ -95,12 +95,12 @@ su_member* struct_union_add_member_void( struct_union* su ) {
 
  Allocates, initializes and adds a 'signal' type struct/union member to the given struct/union.
 */
-su_member* struct_union_add_member_sig( struct_union* su, vsignal* sig ) {
+su_member* struct_union_add_member_sig( struct_union* su, vsignal* sig ) { PROFILE(STRUCT_UNION_ADD_MEMBER_SIG);
 
   su_member* mem;  /* Pointer to newly created struct/union member */
 
   /* Allocate memory for the new member */
-  mem = (su_member*)malloc_safe( sizeof( su_member ), __FILE__, __LINE__ );
+  mem = (su_member*)malloc_safe( sizeof( su_member ) );
 
   /* Initialize the contents of the member */
   mem->type     = SU_MEMTYPE_SIG;
@@ -118,12 +118,12 @@ su_member* struct_union_add_member_sig( struct_union* su, vsignal* sig ) {
 
  Allocates, initializes and adds a 'typedef' type struct/union member to the given struct/union.
 */
-su_member* struct_union_add_member_typedef( struct_union* su, typedef_item* tdi ) {
+su_member* struct_union_add_member_typedef( struct_union* su, typedef_item* tdi ) { PROFILE(STRUCT_UNION_ADD_MEMBER_TYPEDEF);
 
   su_member* mem;  /* Pointer to newly created struct/union member */
 
   /* Allocate memory for the new member */
-  mem = (su_member*)malloc_safe( sizeof( su_member ), __FILE__, __LINE__ );
+  mem = (su_member*)malloc_safe( sizeof( su_member ) );
 
   /* Initialize the contents of the member */
   mem->type     = SU_MEMTYPE_TYPEDEF;
@@ -141,12 +141,12 @@ su_member* struct_union_add_member_typedef( struct_union* su, typedef_item* tdi 
 
  Allocates, initializes and adds an 'enum' type struct/union member to the given struct/union.
 */
-su_member* struct_union_add_member_enum( struct_union* su, enum_item* ei ) {
+su_member* struct_union_add_member_enum( struct_union* su, enum_item* ei ) { PROFILE(STRUCT_UNION_ADD_MEMBER_ENUM);
 
   su_member* mem;  /* Pointer to newly created struct/union member */
 
   /* Allocate memory for the new member */
-  mem = (su_member*)malloc_safe( sizeof( su_member ), __FILE__, __LINE__ );
+  mem = (su_member*)malloc_safe( sizeof( su_member ) );
 
   /* Initialize the contents of the member */
   mem->type    = SU_MEMTYPE_ENUM;
@@ -164,12 +164,12 @@ su_member* struct_union_add_member_enum( struct_union* su, enum_item* ei ) {
 
  Allocates, initializes and adds a 'struct/union' type struct/union member to the given struct/union.
 */
-su_member* struct_union_add_member_struct_union( struct_union* su, struct_union* sui ) {
+su_member* struct_union_add_member_struct_union( struct_union* su, struct_union* sui ) { PROFILE(STRUCT_UNION_ADD_MEMBER_STRUCT_UNION);
 
   su_member* mem;  /* Pointer to newly created struct/union member */
   
   /* Allocate memory for the new member */
-  mem = (su_member*)malloc_safe( sizeof( su_member ), __FILE__, __LINE__ );
+  mem = (su_member*)malloc_safe( sizeof( su_member ) );
 
   /* Initialize the contents of the member */
   mem->type    = SU_MEMTYPE_SU;
@@ -193,15 +193,15 @@ su_member* struct_union_add_member_struct_union( struct_union* su, struct_union*
  Allocates, intializes and adds a new struct/union structure to the given functional unit's list of 
  struct/union members.
 */
-struct_union* struct_union_create( const char* name, sig_range* range, int type, bool packed, bool is_signed, func_unit* funit ) {
+struct_union* struct_union_create( const char* name, sig_range* range, int type, bool packed, bool is_signed, func_unit* funit ) { PROFILE(STRUCT_UNION_CREATE);
 
   struct_union* su;  /* Pointer to newly allocated struct/union structure */
 
   /* Allocate memory */
-  su = (struct_union*)malloc_safe( sizeof( struct_union ), __FILE__, __LINE__ );
+  su = (struct_union*)malloc_safe( sizeof( struct_union ) );
 
   /* Initialize */
-  su->name      = strdup_safe( name, __FILE__, __LINE__ );
+  su->name      = strdup_safe( name );
   su->type      = type;
   su->packed    = packed;
   su->is_signed = is_signed;
@@ -226,7 +226,7 @@ struct_union* struct_union_create( const char* name, sig_range* range, int type,
 
  Deallocates all memory associated with the given struct/union member.
 */
-void struct_union_member_dealloc( su_member* mem ) {
+void struct_union_member_dealloc( su_member* mem ) { PROFILE(STRUCT_UNION_MEMBER_DEALLOC);
 
   if( mem != NULL ) {
 
@@ -251,7 +251,7 @@ void struct_union_member_dealloc( su_member* mem ) {
 
  Deallocates all memory associated with the given struct/union member.
 */
-void struct_union_dealloc( struct_union* su ) {
+void struct_union_dealloc( struct_union* su ) { PROFILE(STRUCT_UNION_DEALLOC);
 
   su_member* curr_mem;  /* Pointer to current member entry to deallocate */
   su_member* tmp_mem;   /* Temporary pointer to current member to deallocate */
@@ -281,7 +281,7 @@ void struct_union_dealloc( struct_union* su ) {
 
  Deallocates the entire list of struct/union structures in the given functional unit.
 */
-void struct_union_dealloc_list( func_unit* funit ) {
+void struct_union_dealloc_list( func_unit* funit ) { PROFILE(STRUCT_UNION_DEALLOC_LIST);
 
   struct_union* curr_su;  /* Pointer to current struct/union to deallocate */
   struct_union* tmp_su;   /* Temporary pointer to current struct/union to deallocate */
@@ -302,6 +302,9 @@ void struct_union_dealloc_list( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.3  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.2  2007/09/14 06:22:12  phase1geo
  Filling in existing functions in struct_union.  Completed parser code for handling
  struct/union declarations.  Code compiles thus far.

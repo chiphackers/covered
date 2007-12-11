@@ -78,10 +78,24 @@ void profiler_dealloc() {
 
 void profiler_display_calls( FILE* ofile ) {
 
-  int i;  /* Loop iterator */
+  int largest;  /* Index of largest calls profile */
+  int i;        /* Loop iterator */
+  int j;        /* Loop iterator */
 
+  fprintf( ofile, "Function Name                               # of calls\n" );
+  fprintf( ofile, "------------------------------------------------------\n" );
+
+  /* Output them in order of most to least */
   for( i=0; i<NUM_PROFILES; i++ ) {
-    fprintf( ofile, "  %40s  %d\n", profiles[i].func_name, profiles[i].calls );
+    largest = 0;
+    for( j=0; j<i; j++ ) {
+      if( profiles[j].calls > profiles[largest].calls ) {
+        largest = j;
+      }
+    }
+    if( profiles[largest].calls > 0 ) {
+      fprintf( ofile, "  %-40.40s  %10d\n", profiles[largest].func_name, profiles[largest].calls );
+    }
   }
 
 }
@@ -121,6 +135,9 @@ void profiler_report() {
 
 /*
  $Log$
+ Revision 1.1  2007/12/11 15:07:57  phase1geo
+ Adding missing file.
+
  Revision 1.1  2007/12/10 23:16:22  phase1geo
  Working on adding profiler for use in finding performance issues.  Things don't compile
  at the moment.

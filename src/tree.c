@@ -46,7 +46,7 @@
  Creates new node for this pairing and adds it to the binary tree
  for quick lookup.
 */
-tnode* tree_add( const char* key, const char* value, bool override, tnode** root ) {
+tnode* tree_add( const char* key, const char* value, bool override, tnode** root ) { PROFILE(TREE_ADD);
   
   tnode* node;            /* Pointer to newly created tree node */
   tnode* curr   = *root;  /* Pointer to current node */
@@ -54,9 +54,9 @@ tnode* tree_add( const char* key, const char* value, bool override, tnode** root
   int    comp;            /* Specifies compare value for string comparison */
 
   /* Allocate memory for tree node and populate */
-  node        = (tnode*)malloc_safe( sizeof( tnode ), __FILE__, __LINE__ );
-  node->name  = strdup_safe( key, __FILE__, __LINE__ );
-  node->value = strdup_safe( value, __FILE__, __LINE__ );
+  node        = (tnode*)malloc_safe( sizeof( tnode ) );
+  node->name  = strdup_safe( key );
+  node->value = strdup_safe( value );
   node->left  = NULL;
   node->right = NULL;
   node->up    = NULL;
@@ -120,7 +120,7 @@ tnode* tree_add( const char* key, const char* value, bool override, tnode** root
  If found, a pointer to the node is returned; otherwise, the value of NULL
  is returned.
 */
-tnode* tree_find( const char* key, tnode* root ) {
+tnode* tree_find( const char* key, tnode* root ) { PROFILE(TREE_FIND);
 
   int comp;  /* Value of string comparison */
 
@@ -144,7 +144,7 @@ tnode* tree_find( const char* key, tnode* root ) {
  the tree in such a was as to keep the integrity of the tree in check
  for continual quick searching.
 */
-void tree_remove( const char* key, tnode** root ) {
+void tree_remove( const char* key, tnode** root ) { PROFILE(TREE_REMOVE);
   
   tnode* node;  /* Pointer to found tree node to remove */
   tnode* tail;  /* Temporary pointer to tail node */
@@ -265,7 +265,7 @@ void tree_remove( const char* key, tnode** root ) {
  Recursively traverses specified tree, deallocating all memory associated with
  that tree.
 */
-void tree_dealloc( tnode* root ) {
+void tree_dealloc( tnode* root ) { PROFILE(TREE_DEALLOC);
   
   if( root != NULL ) {
     
@@ -287,6 +287,9 @@ void tree_dealloc( tnode* root ) {
 
 /*
  $Log$
+ Revision 1.6  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.5  2006/11/03 18:16:38  phase1geo
  Removing unnecessary spaces in comments.
 

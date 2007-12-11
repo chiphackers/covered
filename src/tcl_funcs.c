@@ -85,7 +85,7 @@ extern bool        report_race;
  Retrieves all of the race condition messages for all possible race conditions and stores them into
  the "race_msgs" global array.
 */
-int tcl_func_get_race_reason_msgs( ClientData d, Tcl_Interp* tcl, int argc, const char *argv[] ) {
+int tcl_func_get_race_reason_msgs( ClientData d, Tcl_Interp* tcl, int argc, const char *argv[] ) { PROFILE(TCL_FUNC_GET_RACE_REASON_MSGS);
 
   int retval = TCL_OK;  /* Return value of this function */
   int i;                /* Loop iterator */
@@ -111,7 +111,7 @@ int tcl_func_get_race_reason_msgs( ClientData d, Tcl_Interp* tcl, int argc, cons
  Populates the global variables "funit_names" and "funit_types" with all of the functional units from the
  design.
 */
-int tcl_func_get_funit_list( ClientData d, Tcl_Interp* tcl, int argc, const char *argv[] ) {
+int tcl_func_get_funit_list( ClientData d, Tcl_Interp* tcl, int argc, const char *argv[] ) { PROFILE(TCL_FUNC_GET_FUNIT_LIST);
 
   char** funit_names;      /* List of functional unit names in design */
   char** funit_types;      /* List of functional unit types in design */
@@ -145,7 +145,7 @@ int tcl_func_get_funit_list( ClientData d, Tcl_Interp* tcl, int argc, const char
  Populates the global variables "inst_list", "funit_names", and "funit_types" with all of the instances
  from the design.
 */
-int tcl_func_get_instances( Tcl_Interp* tcl, funit_inst* root ) {
+int tcl_func_get_instances( Tcl_Interp* tcl, funit_inst* root ) { PROFILE(TCL_FUNC_GET_INSTANCES);
 
   funit_inst* curr;         /* Pointer to current functional unit instance */
   char        scope[4096];  /* Hierarchical scope name */
@@ -181,7 +181,7 @@ int tcl_func_get_instances( Tcl_Interp* tcl, funit_inst* root ) {
  Populates the global variables "inst_list", "funit_names", and "funit_types" with all of the instances 
  from the design.
 */
-int tcl_func_get_instance_list( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+int tcl_func_get_instance_list( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) { PROFILE(TCL_FUNC_GET_INSTANCE_LIST);
 
   int        retval = TCL_OK;  /* Return value for this function */
   inst_link* instl;            /* Pointer to current instance link */
@@ -215,7 +215,7 @@ int tcl_func_get_instance_list( ClientData d, Tcl_Interp* tcl, int argc, const c
  Gets the filename for the specified functional unit name and type and places this value in the "file_name"
  global variable.
 */
-int tcl_func_get_filename( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+int tcl_func_get_filename( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) { PROFILE(TCL_FUNC_GET_FILENAME);
 
   int   retval = TCL_OK;  /* Return value for this function */
   char* filename;         /* Name of file containing the specified functional unit */
@@ -245,7 +245,7 @@ int tcl_func_get_filename( ClientData d, Tcl_Interp* tcl, int argc, const char* 
  Populates the global variables "start_line" and "end_line" with the starting and ending line numbers of the
  specified functional unit within its file.
 */
-int tcl_func_get_funit_start_and_end( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+int tcl_func_get_funit_start_and_end( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) { PROFILE(TCL_FUNC_GET_FUNIT_START_AND_END);
 
   int  retval = TCL_OK;  /* Return value for this function */
   int  start_line;       /* Starting line number of the given functional unit */
@@ -280,7 +280,7 @@ int tcl_func_get_funit_start_and_end( ClientData d, Tcl_Interp* tcl, int argc, c
  Populates the global variable "uncovered_lines" with the line numbers of all lines that were found to be uncovered
  during simulation.
 */
-int tcl_func_collect_uncovered_lines( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+int tcl_func_collect_uncovered_lines( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) { PROFILE(TCL_FUNC_COLLECT_UNCOVERED_LINES);
 
   int   retval = TCL_OK;  /* Return value for this function */
   char* funit_name;       /* Name of functional unit to get uncovered lines for */
@@ -291,7 +291,7 @@ int tcl_func_collect_uncovered_lines( ClientData d, Tcl_Interp* tcl, int argc, c
   int   i;                /* Loop iterator */
   char  str[20];          /* Temporary string container */
 
-  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_name = strdup_safe( argv[1] );
   funit_type = atoi( argv[2] );
 
   if( line_collect( funit_name, funit_type, 0, &lines, &excludes, &line_cnt ) ) {
@@ -333,7 +333,7 @@ int tcl_func_collect_uncovered_lines( ClientData d, Tcl_Interp* tcl, int argc, c
  Populates the global variable "covered_lines" with the line numbers of all lines that were found to be covered
  during simulation.
 */
-int tcl_func_collect_covered_lines( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+int tcl_func_collect_covered_lines( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) { PROFILE(TCL_FUNC_COLLECT_COVERED_LINES);
 
   int   retval  = TCL_OK;  /* Return value for this function */
   char* funit_name;        /* Name of functional unit to get covered line information for */
@@ -344,7 +344,7 @@ int tcl_func_collect_covered_lines( ClientData d, Tcl_Interp* tcl, int argc, con
   int   i;                 /* Loop iterator */
   char  str[20];           /* Temporary string container */
 
-  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_name = strdup_safe( argv[1] );
   funit_type = atoi( argv[2] );
 
   if( line_collect( funit_name, funit_type, 1, &lines, &excludes, &line_cnt ) ) {
@@ -384,7 +384,7 @@ int tcl_func_collect_covered_lines( ClientData d, Tcl_Interp* tcl, int argc, con
  Populates the global variables "race_lines" and "race_reasons" with the race condition information for
  the specified functional unit.
 */
-int tcl_func_collect_race_lines( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+int tcl_func_collect_race_lines( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) { PROFILE(TCL_FUNC_COLLECT_RACE_LINES);
 
   int   retval = TCL_OK;  /* Return value for this function */
   char* funit_name;       /* Name of functional unit to get race condition information for */
@@ -398,7 +398,7 @@ int tcl_func_collect_race_lines( ClientData d, Tcl_Interp* tcl, int argc, const 
   char  line[50];         /* Temporary string containing line information */
   char  reason[20];       /* Temporary string containing reason information */
 
-  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_name = strdup_safe( argv[1] );
   funit_type = atoi( argv[2] );
   start_line = atoi( argv[3] );
 
@@ -442,7 +442,7 @@ int tcl_func_collect_race_lines( ClientData d, Tcl_Interp* tcl, int argc, const 
  Populates the global variable "uncovered_toggles" with the names of all signals of the given functional unit
  that did not achieve 100% toggle coverage.
 */
-int tcl_func_collect_uncovered_toggles( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+int tcl_func_collect_uncovered_toggles( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) { PROFILE(TCL_FUNC_COLLECT_UNCOVERED_TOGGLES);
 
   int       retval   = TCL_OK;  /* Return value for this function */
   char*     funit_name;         /* Functional unit name to get uncovered signal names for */
@@ -454,7 +454,7 @@ int tcl_func_collect_uncovered_toggles( ClientData d, Tcl_Interp* tcl, int argc,
   int       start_line;         /* Starting line number */
 
   /* Get the valid arguments for this command */
-  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_name = strdup_safe( argv[1] );
   funit_type = atoi( argv[2] );
   start_line = atoi( argv[3] );
 
@@ -502,7 +502,7 @@ int tcl_func_collect_uncovered_toggles( ClientData d, Tcl_Interp* tcl, int argc,
  Populates the global variable "covered_toggles" with the names of all signals of the given functional unit
  that achieved 100% toggle coverage.
 */
-int tcl_func_collect_covered_toggles( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+int tcl_func_collect_covered_toggles( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) { PROFILE(TCL_FUNC_COLLECT_COVERED_TOGGLES);
 
   int       retval   = TCL_OK;  /* Return value for this function */
   char*     funit_name;         /* Functional unit name to find */
@@ -514,7 +514,7 @@ int tcl_func_collect_covered_toggles( ClientData d, Tcl_Interp* tcl, int argc, c
   int       start_line;         /* Starting line number of this functional unit */
 
   /* Get the valid arguments for this function call */
-  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_name = strdup_safe( argv[1] );
   funit_type = atoi( argv[2] );
   start_line = atoi( argv[3] );
 
@@ -560,7 +560,7 @@ int tcl_func_collect_covered_toggles( ClientData d, Tcl_Interp* tcl, int argc, c
  Populates the global variable "covered_memories" and "uncovered_memories" with the names of all signals
  of the given functional unit that achieved 100% memory coverage and less than 100% memory coverage, respectively.
 */
-int tcl_func_collect_memories( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+int tcl_func_collect_memories( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) { PROFILE(TCL_FUNC_COLLECT_MEMORIES);
 
   int       retval   = TCL_OK;  /* Return value for this function */
   char*     funit_name;         /* Functional unit name to find */
@@ -574,7 +574,7 @@ int tcl_func_collect_memories( ClientData d, Tcl_Interp* tcl, int argc, const ch
   int       start_line;         /* Starting line number of this functional unit */
 
   /* Get the valid arguments for this function call */
-  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_name = strdup_safe( argv[1] );
   funit_type = atoi( argv[2] );
   start_line = atoi( argv[3] );
 
@@ -636,7 +636,7 @@ int tcl_func_collect_memories( ClientData d, Tcl_Interp* tcl, int argc, const ch
  Populates the global variables "toggle_msb", "toggle_lsb", "toggle01_verbose", and "toggle10_verbose" with
  the verbose coverage information for the specified signal in the specified functional unit.
 */
-int tcl_func_get_toggle_coverage( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+int tcl_func_get_toggle_coverage( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) { PROFILE(TCL_FUNC_GET_TOGGLE_COVERAGE);
 
   int   retval = TCL_OK;  /* Return value for this function */
   char* funit_name;       /* Name of functional unit containing the signal to get verbose toggle information for */
@@ -649,9 +649,9 @@ int tcl_func_get_toggle_coverage( ClientData d, Tcl_Interp* tcl, int argc, const
   int   excluded;         /* Specifies if signal should be excluded */
   char  tmp[20];          /* Temporary string for conversion purposes */
 
-  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_name = strdup_safe( argv[1] );
   funit_type = atoi( argv[2] );
-  signame    = strdup_safe( argv[3], __FILE__, __LINE__ );
+  signame    = strdup_safe( argv[3] );
 
   if( toggle_get_coverage( funit_name, funit_type, signame, &msb, &lsb, &tog01, &tog10, &excluded ) ) {
 
@@ -695,7 +695,7 @@ int tcl_func_get_toggle_coverage( ClientData d, Tcl_Interp* tcl, int argc, const
  Populates the global variable "memory_verbose" with the verbose memory coverage information for the
  specified signal in the specified functional unit.
 */
-int tcl_func_get_memory_coverage( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+int tcl_func_get_memory_coverage( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) { PROFILE(TCL_FUNC_GET_MEMORY_COVERAGE);
 
   int   retval = TCL_OK;  /* Return value for this function */
   char* funit_name;       /* Name of functional unit containing the signal to get verbose toggle information for */
@@ -708,9 +708,9 @@ int tcl_func_get_memory_coverage( ClientData d, Tcl_Interp* tcl, int argc, const
   int   excluded;         /* Specifies if signal should be excluded */
   char  tmp[20];          /* Temporary string for conversion purposes */
 
-  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_name = strdup_safe( argv[1] );
   funit_type = atoi( argv[2] );
-  signame    = strdup_safe( argv[3], __FILE__, __LINE__ );
+  signame    = strdup_safe( argv[3] );
 
   if( memory_get_coverage( funit_name, funit_type, signame, &pdim_str, &pdim_array, &udim_str, &memory_info, &excluded ) ) {
 
@@ -753,7 +753,7 @@ int tcl_func_get_memory_coverage( ClientData d, Tcl_Interp* tcl, int argc, const
  Populates the global variables "uncovered_combs" and "covered_combs" with the uncovered and covered combinational
  expression line/character values for each.
 */
-int tcl_func_collect_combs( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+int tcl_func_collect_combs( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) { PROFILE(TCL_FUNC_COLLECT_COMBS);
 
   int          retval = TCL_OK;  /* Return value for this function */
   char*        funit_name;       /* Name of functional unit to get combinational logic coverage info for */
@@ -768,7 +768,7 @@ int tcl_func_collect_combs( ClientData d, Tcl_Interp* tcl, int argc, const char*
   int          startline;        /* Starting line number of this module */
   expression*  last;             /* Pointer to expression in an expression tree that is on the last line */
 
-  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_name = strdup_safe( argv[1] );
   funit_type = atoi( argv[2] );
   startline  = atoi( argv[3] );
 
@@ -823,7 +823,7 @@ int tcl_func_collect_combs( ClientData d, Tcl_Interp* tcl, int argc, const char*
  Retrieves the verbose combination expression information for a given expression, populating the "comb_code",
  "comb_uline_groups" and "comb_ulines" global variables with the code and underline information.
 */
-int tcl_func_get_comb_expression( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+int tcl_func_get_comb_expression( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) { PROFILE(TCL_FUNC_GET_COMB_EXPRESSION);
 
   int    retval = TCL_OK;  /* Return value for this function */
   char*  funit_name;       /* Name of functional unit containing expression to find */
@@ -839,7 +839,7 @@ int tcl_func_get_comb_expression( ClientData d, Tcl_Interp* tcl, int argc, const
   int    i;                /* Loop iterator */
   char   tmp[20];          /* Temporary string container */
 
-  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_name = strdup_safe( argv[1] );
   funit_type = atoi( argv[2] );
   expr_id    = atoi( argv[3] );
 
@@ -903,7 +903,7 @@ int tcl_func_get_comb_expression( ClientData d, Tcl_Interp* tcl, int argc, const
  Populates the "comb_expr_cov" global variable with the coverage information for the specified
  subexpression with the given underline identifier.
 */
-int tcl_func_get_comb_coverage( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+int tcl_func_get_comb_coverage( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) { PROFILE(TCL_FUNC_GET_COMB_COVERAGE);
 
   int    retval = TCL_OK;  /* Return value for this function */
   char*  funit_name;       /* Name of functional unit containing expression to lookup */
@@ -914,7 +914,7 @@ int tcl_func_get_comb_coverage( ClientData d, Tcl_Interp* tcl, int argc, const c
   int    info_size;        /* Specifies number of elements in info array */
   int    i;                /* Loop iterator */
 
-  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_name = strdup_safe( argv[1] );
   funit_type = atoi( argv[2] );
   expid      = atoi( argv[3] );
   ulid       = atoi( argv[4] );
@@ -958,7 +958,7 @@ int tcl_func_get_comb_coverage( ClientData d, Tcl_Interp* tcl, int argc, const c
  Populates the global variables "uncovered_fsms" and "covered_fsms" with the uncovered and covered FSM
  expression line/character values for each.
 */
-int tcl_func_collect_fsms( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+int tcl_func_collect_fsms( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) { PROFILE(TCL_FUNC_COLLECT_FSMS);
 
   int          retval = TCL_OK;  /* Return value for this function */
   char*        funit_name;       /* Name of functional unit to get combinational logic coverage info for */
@@ -974,7 +974,7 @@ int tcl_func_collect_fsms( ClientData d, Tcl_Interp* tcl, int argc, const char* 
   int*         excludes;         /* Array containing exclude values of all uncovered FSM signals */
   int          i;                /* Loop iterator */
 
-  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_name = strdup_safe( argv[1] );
   funit_type = atoi( argv[2] );
   start_line = atoi( argv[3] );
 
@@ -1037,7 +1037,7 @@ int tcl_func_collect_fsms( ClientData d, Tcl_Interp* tcl, int argc, const char* 
  Populates the "fsm_states", "fsm_hit_states", "fsm_arcs", "fsm_hit_arcs", "fsm_in_state" and "fsm_out_state"
  global variables with the FSM coverage information from the specified output state expression.
 */
-int tcl_func_get_fsm_coverage( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+int tcl_func_get_fsm_coverage( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) { PROFILE(TCL_FUNC_GET_FSM_COVERAGE);
 
   int          retval = TCL_OK;  /* Return value for this function */
   char*        funit_name;       /* Name of functional unit to get combinational logic coverage info for */
@@ -1062,7 +1062,7 @@ int tcl_func_get_fsm_coverage( ClientData d, Tcl_Interp* tcl, int argc, const ch
   char         str[4096];        /* Temporary string container */
   int          i;                /* Loop iterator */
 
-  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_name = strdup_safe( argv[1] );
   funit_type = atoi( argv[2] );
   expr_id    = atoi( argv[3] );
 
@@ -1164,7 +1164,7 @@ int tcl_func_get_fsm_coverage( ClientData d, Tcl_Interp* tcl, int argc, const ch
  Populates the global variables "uncovered_asserts" and "covered_asserts" with the uncovered and covered assertion
  module instance names.
 */
-int tcl_func_collect_assertions( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+int tcl_func_collect_assertions( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) { PROFILE(TCL_FUNC_COLLECT_ASSERTIONS);
 
   int    retval = TCL_OK;   /* Return value for this function */
   char*  funit_name;        /* Name of functional unit to get combinational logic coverage info for */
@@ -1177,7 +1177,7 @@ int tcl_func_collect_assertions( ClientData d, Tcl_Interp* tcl, int argc, const 
   int    i;                 /* Loop iterator */
   char   str[20];           /* Temporary string holder */
 
-  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_name = strdup_safe( argv[1] );
   funit_type = atoi( argv[2] );
 
   if( assertion_collect( funit_name, funit_type, &uncov_inst_names, &excludes, &uncov_inst_size, &cov_inst_names, &cov_inst_size ) ) {
@@ -1232,7 +1232,7 @@ int tcl_func_collect_assertions( ClientData d, Tcl_Interp* tcl, int argc, const 
  Populates the "assert_cov_mod" and "assert_cov_points" global variables with the coverage points from the
  given instance.
 */
-int tcl_func_get_assert_coverage( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+int tcl_func_get_assert_coverage( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) { PROFILE(TCL_FUNC_GET_ASSERT_COVERAGE);
 
   int       retval = TCL_OK;  /* Return value for this function */
   char*     funit_name;       /* Name of functional unit to find */
@@ -1244,9 +1244,9 @@ int tcl_func_get_assert_coverage( ClientData d, Tcl_Interp* tcl, int argc, const
   str_link* curr_cp;          /* Pointer to current coverage point to write */
   char      str[4096];        /* Temporary string holder */
 
-  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_name = strdup_safe( argv[1] );
   funit_type = atoi( argv[2] );
-  inst_name  = strdup_safe( argv[3], __FILE__, __LINE__ );
+  inst_name  = strdup_safe( argv[3] );
 
   if( assertion_get_coverage( funit_name, funit_type, inst_name, &assert_mod, &cp_head, &cp_tail ) ) {
 
@@ -1283,7 +1283,7 @@ int tcl_func_get_assert_coverage( ClientData d, Tcl_Interp* tcl, int argc, const
 
  Opens the specified CDD file, reading its contents into the database.
 */
-int tcl_func_open_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+int tcl_func_open_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) { PROFILE(TCL_FUNC_OPEN_CDD);
 
   int   retval = TCL_OK;  /* Return value for this function */
   char* ifile;            /* Name of CDD file to open */
@@ -1291,7 +1291,7 @@ int tcl_func_open_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* argv
   /* If no filename was specified, the user hit cancel so just exit gracefully */
   if( argv[1][0] != '\0' ) {
 
-    ifile = strdup_safe( argv[1], __FILE__, __LINE__ );
+    ifile = strdup_safe( argv[1] );
 
     if( !report_read_cdd_and_ready( ifile, READ_MODE_REPORT_MOD_MERGE ) ) {
       snprintf( user_msg, USER_MSG_LENGTH, "Unable to open CDD \"%s\"", ifile );
@@ -1319,7 +1319,7 @@ int tcl_func_open_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* argv
 
  Closes the current CDD file, freeing all associated memory with it.
 */
-int tcl_func_close_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+int tcl_func_close_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) { PROFILE(TCL_FUNC_CLOSE_CDD);
 
   int retval = TCL_OK;  /* Return value for this function */
 
@@ -1345,14 +1345,14 @@ int tcl_func_close_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* arg
 
  Saves the current CDD file with the specified name.
 */
-int tcl_func_save_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+int tcl_func_save_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) { PROFILE(TCL_FUNC_SAVE_CDD);
 
   int   retval = TCL_OK;  /* Return value for this function */
   char* filename;         /* Name of file to save as */
 
   printf( "Saving CDD file %s\n", argv[1] );
 
-  filename = strdup_safe( argv[1], __FILE__, __LINE__ );
+  filename = strdup_safe( argv[1] );
 
   if( !report_save_cdd( filename ) ) {
     snprintf( user_msg, USER_MSG_LENGTH, "Unable to save CDD file \"%s\"", argv[1] );
@@ -1378,7 +1378,7 @@ int tcl_func_save_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* argv
 
  Merges the specified CDD file with the current CDD database.
 */
-int tcl_func_merge_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+int tcl_func_merge_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) { PROFILE(TCL_FUNC_MERGE_CDD);
 
   int   retval = TCL_OK;  /* Return value for this function */
   char* ifile;            /* Name of CDD file to merge */
@@ -1386,7 +1386,7 @@ int tcl_func_merge_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* arg
   /* If no filename was specified, the user hit cancel so just exit gracefully */
   if( argv[1][0] != '\0' ) {
 
-    ifile = strdup_safe( argv[1], __FILE__, __LINE__ );
+    ifile = strdup_safe( argv[1] );
 
     /* Add the specified merge file to the list */
     merge_in               = (char**)realloc( merge_in, (sizeof( char* ) * (merge_in_num + 1)) );
@@ -1418,7 +1418,7 @@ int tcl_func_merge_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* arg
  Populates the "line_summary_total" and "line_summary_hit" global variables with the total number of lines
  and total number of lines hit during simulation information for the specified functional unit.
 */
-int tcl_func_get_line_summary( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+int tcl_func_get_line_summary( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) { PROFILE(TCL_FUNC_GET_LINE_SUMMARY);
 
   int   retval = TCL_OK;  /* Return value for this function */
   char* funit_name;       /* Name of functional unit to lookup */
@@ -1427,7 +1427,7 @@ int tcl_func_get_line_summary( ClientData d, Tcl_Interp* tcl, int argc, const ch
   int   hit;              /* Contains total number of lines hit */
   char  value[20];        /* String version of a value */
 
-  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_name = strdup_safe( argv[1] );
   funit_type = atoi( argv[2] );
  
   if( line_get_funit_summary( funit_name, funit_type, &total, &hit ) ) {
@@ -1461,7 +1461,7 @@ int tcl_func_get_line_summary( ClientData d, Tcl_Interp* tcl, int argc, const ch
  of signals evaluated for toggle coverage and the total number of signals with complete toggle coverage
  for the specified functional unit.
 */
-int tcl_func_get_toggle_summary( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+int tcl_func_get_toggle_summary( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) { PROFILE(TCL_FUNC_GET_TOGGLE_SUMMARY);
 
   int   retval = TCL_OK;  /* Return value for this function */
   char* funit_name;       /* Name of functional unit to lookup */
@@ -1470,7 +1470,7 @@ int tcl_func_get_toggle_summary( ClientData d, Tcl_Interp* tcl, int argc, const 
   int   hit;              /* Contains total number of signals hit */
   char  value[20];        /* String version of a value */
 
-  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_name = strdup_safe( argv[1] );
   funit_type = atoi( argv[2] );
 		     
   if( toggle_get_funit_summary( funit_name, funit_type, &total, &hit ) ) {
@@ -1504,7 +1504,7 @@ int tcl_func_get_toggle_summary( ClientData d, Tcl_Interp* tcl, int argc, const 
  of signals evaluated for memory coverage and the total number of signals with complete memory coverage
  for the specified functional unit.
 */
-int tcl_func_get_memory_summary( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+int tcl_func_get_memory_summary( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) { PROFILE(TCL_FUNC_GET_MEMORY_SUMMARY);
 
   int   retval = TCL_OK;  /* Return value for this function */
   char* funit_name;       /* Name of functional unit to lookup */
@@ -1513,7 +1513,7 @@ int tcl_func_get_memory_summary( ClientData d, Tcl_Interp* tcl, int argc, const 
   int   hit;              /* Contains total number of signals hit */
   char  value[20];        /* String version of a value */
 
-  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_name = strdup_safe( argv[1] );
   funit_type = atoi( argv[2] );
 
   if( memory_get_funit_summary( funit_name, funit_type, &total, &hit ) ) {
@@ -1547,7 +1547,7 @@ int tcl_func_get_memory_summary( ClientData d, Tcl_Interp* tcl, int argc, const 
  of expression values evaluated for combinational logic coverage and the total number of expression values
  with complete combinational logic coverage for the specified functional unit.
 */
-int tcl_func_get_comb_summary( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+int tcl_func_get_comb_summary( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) { PROFILE(TCL_FUNC_GET_COMB_SUMMARY);
 
   int   retval = TCL_OK;  /* Return value for this function */
   char* funit_name;       /* Name of functional unit to lookup */
@@ -1556,7 +1556,7 @@ int tcl_func_get_comb_summary( ClientData d, Tcl_Interp* tcl, int argc, const ch
   int   hit;              /* Contains total number of expressions hit */
   char  value[20];        /* String version of a value */
 
-  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_name = strdup_safe( argv[1] );
   funit_type = atoi( argv[2] );
 
   if( combination_get_funit_summary( funit_name, funit_type, &total, &hit ) ) {
@@ -1590,7 +1590,7 @@ int tcl_func_get_comb_summary( ClientData d, Tcl_Interp* tcl, int argc, const ch
  of state transitions evaluated for FSM coverage and the total number of state transitions
  with complete FSM state transition coverage for the specified functional unit.
 */
-int tcl_func_get_fsm_summary( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+int tcl_func_get_fsm_summary( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) { PROFILE(TCL_FUNC_GET_FSM_SUMMARY);
 
   int   retval = TCL_OK;  /* Return value for this function */
   char* funit_name;       /* Name of functional unit to lookup */
@@ -1599,7 +1599,7 @@ int tcl_func_get_fsm_summary( ClientData d, Tcl_Interp* tcl, int argc, const cha
   int   hit;              /* Contains total number of expressions hit */
   char  value[20];        /* String version of a value */
 
-  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_name = strdup_safe( argv[1] );
   funit_type = atoi( argv[2] );
 
   if( fsm_get_funit_summary( funit_name, funit_type, &total, &hit ) ) {
@@ -1632,7 +1632,7 @@ int tcl_func_get_fsm_summary( ClientData d, Tcl_Interp* tcl, int argc, const cha
  Populates the global variables "assert_summary_total" and "assert_summary_hit" to the total number
  of assertions evaluated for coverage and the total number of hit assertions for the specified functional unit.
 */
-int tcl_func_get_assert_summary( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+int tcl_func_get_assert_summary( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) { PROFILE(TCL_FUNC_GET_ASSERT_SUMMARY);
 
   int   retval = TCL_OK;  /* Return value for this function */
   char* funit_name;       /* Name of functional unit to lookup */
@@ -1641,7 +1641,7 @@ int tcl_func_get_assert_summary( ClientData d, Tcl_Interp* tcl, int argc, const 
   int   hit;              /* Contains total number of expressions hit */
   char  value[20];        /* String version of a value */
 
-  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_name = strdup_safe( argv[1] );
   funit_type = atoi( argv[2] );
 
   if( assertion_get_funit_summary( funit_name, funit_type, &total, &hit ) ) {
@@ -1674,7 +1674,7 @@ int tcl_func_get_assert_summary( ClientData d, Tcl_Interp* tcl, int argc, const 
  Preprocesses the specified filename, outputting the contents into a temporary file whose name is passed back
  to the calling function.
 */
-int tcl_func_preprocess_verilog( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+int tcl_func_preprocess_verilog( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) { PROFILE(TCL_FUNC_PREPROCESS_VERILOG);
 
   int   retval = TCL_OK;  /* Return value for this function */
   char* ppfilename;       /* Preprocessed filename to return to calling function */
@@ -1730,7 +1730,7 @@ int tcl_func_preprocess_verilog( ClientData d, Tcl_Interp* tcl, int argc, const 
 
  Returns the score directory pathname to the calling Tcl process.
 */
-int tcl_func_get_score_path( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+int tcl_func_get_score_path( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) { PROFILE(TCL_FUNC_GET_SCORE_PATH);
 
   int retval = TCL_OK;  /* Return value for this function */
 
@@ -1752,7 +1752,7 @@ int tcl_func_get_score_path( ClientData d, Tcl_Interp* tcl, int argc, const char
  Returns the full pathname of the specified included file.  Uses the -I options specified in the CDD file
  for reference.
 */
-int tcl_func_get_include_pathname( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+int tcl_func_get_include_pathname( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) { PROFILE(TCL_FUNC_GET_INCLUDE_PATHNAME);
 
   int  retval = TCL_OK;  /* Return value for this function */
   char incpath[4096];    /* Contains full included pathname */
@@ -1795,7 +1795,7 @@ int tcl_func_get_include_pathname( ClientData d, Tcl_Interp* tcl, int argc, cons
 
  Returns the generation specified for the given functional unit.
 */
-int tcl_func_get_generation( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+int tcl_func_get_generation( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) { PROFILE(TCL_FUNC_GET_GENERATION);
 
   int   retval = TCL_OK;    /* Return value for this function */
   char  generation[2];      /* Generation to use for the specified module */
@@ -1803,7 +1803,7 @@ int tcl_func_get_generation( ClientData d, Tcl_Interp* tcl, int argc, const char
   int   i;                  /* Loop iterator */
   bool  mod_found = FALSE;  /* Set to TRUE if we found a generation for this exact module */
 
-  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_name = strdup_safe( argv[1] );
   strcpy( generation, "3" );
 
   /* Search the entire command-line */
@@ -1850,7 +1850,7 @@ int tcl_func_get_generation( ClientData d, Tcl_Interp* tcl, int argc, const char
  the exclusion for a specified line.  The tcl_func_get_line_summary function should be called
  immediately after to get the new line summary information.
 */
-int tcl_func_set_line_exclude( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+int tcl_func_set_line_exclude( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) { PROFILE(TCL_FUNC_SET_LINE_EXCLUDE);
 
   int   retval = TCL_OK;  /* Return value for this function */
   char* funit_name;       /* Name of current functional unit */
@@ -1859,7 +1859,7 @@ int tcl_func_set_line_exclude( ClientData d, Tcl_Interp* tcl, int argc, const ch
   int   value;            /* Value to set the exclusion value to */
 
   /* Get argument values */
-  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_name = strdup_safe( argv[1] );
   funit_type = atoi( argv[2] );
   line       = atoi( argv[3] );
   value      = atoi( argv[4] );
@@ -1892,7 +1892,7 @@ int tcl_func_set_line_exclude( ClientData d, Tcl_Interp* tcl, int argc, const ch
  the exclusion for a specified line.  The tcl_func_get_line_summary function should be called
  immediately after to get the new line summary information.
 */
-int tcl_func_set_toggle_exclude( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+int tcl_func_set_toggle_exclude( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) { PROFILE(TCL_FUNC_SET_TOGGLE_EXCLUDE);
 
   int   retval = TCL_OK;  /* Return value for this function */
   char* funit_name;       /* Name of current functional unit */
@@ -1901,9 +1901,9 @@ int tcl_func_set_toggle_exclude( ClientData d, Tcl_Interp* tcl, int argc, const 
   int   value;            /* Value to set the exclusion value to */
 
   /* Get argument values */
-  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_name = strdup_safe( argv[1] );
   funit_type = atoi( argv[2] );
-  sig_name   = strdup_safe( argv[3], __FILE__, __LINE__ );
+  sig_name   = strdup_safe( argv[3] );
   value      = atoi( argv[4] );
 
   /* Set exclusion bit for the given toggle */
@@ -1935,7 +1935,7 @@ int tcl_func_set_toggle_exclude( ClientData d, Tcl_Interp* tcl, int argc, const 
  the exclusion for a specified memory.  The tcl_func_get_memory_summary function should be called
  immediately after to get the new memory summary information.
 */
-int tcl_func_set_memory_exclude( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+int tcl_func_set_memory_exclude( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) { PROFILE(TCL_FUNC_SET_MEMORY_EXCLUDE);
 
   int   retval = TCL_OK;  /* Return value for this function */
   char* funit_name;       /* Name of current functional unit */
@@ -1944,9 +1944,9 @@ int tcl_func_set_memory_exclude( ClientData d, Tcl_Interp* tcl, int argc, const 
   int   value;            /* Value to set the exclusion value to */
 
   /* Get argument values */
-  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_name = strdup_safe( argv[1] );
   funit_type = atoi( argv[2] );
-  sig_name   = strdup_safe( argv[3], __FILE__, __LINE__ );
+  sig_name   = strdup_safe( argv[3] );
   value      = atoi( argv[4] );
 
   /* Set exclusion bit for the given toggle */
@@ -1978,7 +1978,7 @@ int tcl_func_set_memory_exclude( ClientData d, Tcl_Interp* tcl, int argc, const 
  the exclusion for a specified line.  The tcl_func_get_line_summary function should be called
  immediately after to get the new line summary information.
 */
-int tcl_func_set_comb_exclude( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+int tcl_func_set_comb_exclude( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) { PROFILE(TCL_FUNC_SET_COMB_EXCLUDE);
 
   int   retval = TCL_OK;  /* Return value for this function */
   char* funit_name;       /* Name of current functional unit */
@@ -1988,7 +1988,7 @@ int tcl_func_set_comb_exclude( ClientData d, Tcl_Interp* tcl, int argc, const ch
   int   value;            /* Value to set the exclusion value to */
 
   /* Get argument values */
-  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_name = strdup_safe( argv[1] );
   funit_type = atoi( argv[2] );
   expr_id    = atoi( argv[3] );
   uline_id   = atoi( argv[4] );
@@ -2022,7 +2022,7 @@ int tcl_func_set_comb_exclude( ClientData d, Tcl_Interp* tcl, int argc, const ch
  the exclusion for a specified line.  The tcl_func_get_line_summary function should be called
  immediately after to get the new line summary information.
 */
-int tcl_func_set_fsm_exclude( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+int tcl_func_set_fsm_exclude( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) { PROFILE(TCL_FUNC_FSM_EXCLUDE);
 
   int   retval = TCL_OK;  /* Return value for this function */
   char* funit_name;       /* Name of current functional unit */
@@ -2033,11 +2033,11 @@ int tcl_func_set_fsm_exclude( ClientData d, Tcl_Interp* tcl, int argc, const cha
   int   value;            /* Value to set the exclusion value to */
 
   /* Get argument values */
-  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_name = strdup_safe( argv[1] );
   funit_type = atoi( argv[2] );
   expr_id    = atoi( argv[3] );
-  from_state = strdup_safe( argv[4], __FILE__, __LINE__ );
-  to_state   = strdup_safe( argv[5], __FILE__, __LINE__ );
+  from_state = strdup_safe( argv[4] );
+  to_state   = strdup_safe( argv[5] );
   value      = atoi( argv[6] );
 
   /* Set exclusion bit for the given line */
@@ -2070,7 +2070,7 @@ int tcl_func_set_fsm_exclude( ClientData d, Tcl_Interp* tcl, int argc, const cha
  the exclusion for a specified line.  The tcl_func_get_line_summary function should be called
  immediately after to get the new line summary information.
 */
-int tcl_func_set_assert_exclude( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+int tcl_func_set_assert_exclude( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) { PROFILE(TCL_FUNC_SET_ASSERT_EXCLUDE);
 
   int   retval = TCL_OK;  /* Return value for this function */
   char* funit_name;       /* Name of current functional unit */
@@ -2080,9 +2080,9 @@ int tcl_func_set_assert_exclude( ClientData d, Tcl_Interp* tcl, int argc, const 
   int   value;            /* Value to set the exclusion value to */
 
   /* Get argument values */
-  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_name = strdup_safe( argv[1] );
   funit_type = atoi( argv[2] );
-  inst_name  = strdup_safe( argv[3], __FILE__, __LINE__ );
+  inst_name  = strdup_safe( argv[3] );
   expr_id    = atoi( argv[4] );
   value      = atoi( argv[5] );
 
@@ -2113,7 +2113,7 @@ int tcl_func_set_assert_exclude( ClientData d, Tcl_Interp* tcl, int argc, const 
 
  Generates an ASCII report based on the provided parameters.
 */
-int tcl_func_generate_report( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+int tcl_func_generate_report( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) { PROFILE(TCL_FUNC_GENERATE_REPORT);
 
   int   retval = TCL_OK;  /* Return value for this function */
   FILE* ofile;            /* Pointer to opened report file */
@@ -2196,7 +2196,7 @@ int tcl_func_generate_report( ClientData d, Tcl_Interp* tcl, int argc, const cha
  Initializes the Tcl interpreter with all procs that are created in this file.  Also sets some global
  variables that come from the environment, the configuration execution or the Covered define file.
 */
-void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* version, char* browser ) {
+void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* version, char* browser ) { PROFILE(TCL_FUNC_INITIALIZE);
 
   Tcl_CreateCommand( tcl, "tcl_func_get_race_reason_msgs",      (Tcl_CmdProc*)(tcl_func_get_race_reason_msgs),      0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_funit_list",            (Tcl_CmdProc*)(tcl_func_get_funit_list),            0, 0 );
@@ -2259,6 +2259,9 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.66  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.65  2007/08/31 22:46:36  phase1geo
  Adding diagnostics from stable branch.  Fixing a few minor bugs and in progress
  of working on static_afunc1 failure (still not quite there yet).  Checkpointing.

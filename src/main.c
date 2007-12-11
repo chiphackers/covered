@@ -52,7 +52,7 @@ void usage() {
 
   printf( "\n" );
 #ifdef DEBUG_MODE
-  printf( "Usage:  covered (-h | -v | (-D | -Q) (-B) <command> <command_options>))\n" );
+  printf( "Usage:  covered (-h | -v | (-D | -Q) (-P [<file>]) (-B) <command> <command_options>))\n" );
 #else
   printf( "Usage:  covered (-h | -v | (-Q) (-B) <command> <command_options>))\n" );
 #endif
@@ -151,10 +151,14 @@ int main( int argc, char** argv ) {
 
 #ifdef DEBUG_MODE
           profiler_set_mode( TRUE );
-          if( (retval = check_option_value( argc, argv, curr_arg )) ) {
+          if( check_option_value( argc, argv, curr_arg )      &&
+              (strncmp( "score",  argv[curr_arg+1], 5 ) != 0) &&
+              (strncmp( "merge",  argv[curr_arg+1], 5 ) != 0) &&
+              (strncmp( "report", argv[curr_arg+1], 6 ) != 0)) {
             curr_arg++;
             profiler_set_filename( argv[curr_arg] );
           } else {
+            printf( "Setting profiler output file name to %s\n", PROFILING_OUTPUT_NAME );
             profiler_set_filename( PROFILING_OUTPUT_NAME );
           }
 #else
@@ -215,6 +219,11 @@ int main( int argc, char** argv ) {
 
 /*
  $Log$
+ Revision 1.19  2007/12/11 05:48:25  phase1geo
+ Fixing more compile errors with new code changes and adding more profiling.
+ Still have a ways to go before we can compile cleanly again (next submission
+ should do it).
+
  Revision 1.18  2007/11/20 05:28:58  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

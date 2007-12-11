@@ -156,12 +156,12 @@ int        postsim_size    = 0;
  Creates and adds the specified symtable signal structure to the sym_sig
  list for the specified symtab.
 */
-void symtable_add_sym_sig( symtable* symtab, vsignal* sig, int msb, int lsb ) {
+void symtable_add_sym_sig( symtable* symtab, vsignal* sig, int msb, int lsb ) { PROFILE(SYMTABLE_ADD_SYM_SIG);
 
   sym_sig* new_ss;  /* Pointer to newly created sym_sig structure */
 
   /* Create new sym_sig structure */
-  new_ss       = (sym_sig*)malloc_safe( sizeof( sym_sig ), __FILE__, __LINE__ );
+  new_ss       = (sym_sig*)malloc_safe( sizeof( sym_sig ) );
   new_ss->sig  = sig;
   new_ss->msb  = msb;
   new_ss->lsb  = lsb;
@@ -184,11 +184,11 @@ void symtable_add_sym_sig( symtable* symtab, vsignal* sig, int msb, int lsb ) {
 
  Initializes the contents of a symbol table entry.
 */
-void symtable_init( symtable* symtab, int msb, int lsb ) {
+void symtable_init( symtable* symtab, int msb, int lsb ) { PROFILE(SYMTABLE_INIT);
 
   /* Allocate and initialize the entry */
   symtab->size     = (msb - lsb) + 2;
-  symtab->value    = (char*)malloc_safe( symtab->size, __FILE__, __LINE__ );
+  symtab->value    = (char*)malloc_safe( symtab->size );
   symtab->value[0] = '\0';
 
 }
@@ -199,12 +199,12 @@ void symtable_init( symtable* symtab, int msb, int lsb ) {
  Creates a new symbol table entry and returns a pointer to the
  newly created structure.
 */
-symtable* symtable_create() {
+symtable* symtable_create() { PROFILE(SYMTABLE_CREATE);
 
   symtable* symtab;  /* Pointer to new symtable entry */
   int       i;       /* Loop iterator */
 
-  symtab           = (symtable*)malloc_safe( sizeof( symtable ), __FILE__, __LINE__ ); 
+  symtab           = (symtable*)malloc_safe( sizeof( symtable ) );
   symtab->sig_head = NULL;
   symtab->sig_tail = NULL;
   symtab->value    = NULL;
@@ -225,7 +225,7 @@ symtable* symtable_create() {
  Using the symbol as a unique ID, creates a new symtable element for specified information
  and places it into the binary tree.
 */
-void symtable_add( char* sym, vsignal* sig, int msb, int lsb ) {
+void symtable_add( char* sym, vsignal* sig, int msb, int lsb ) { PROFILE(SYMTABLE_ADD);
 
   symtable* curr;  /* Pointer to current symtable entry */
   char*     ptr;   /* Pointer to current character in sym */
@@ -265,7 +265,7 @@ void symtable_add( char* sym, vsignal* sig, int msb, int lsb ) {
  Performs a binary search of the specified tree to find all matching symtable entries.
  When the signal is found, the specified value is assigned to the symtable entry.
 */
-void symtable_set_value( char* sym, char* value ) {
+void symtable_set_value( char* sym, char* value ) { PROFILE(SYMTABLE_SET_VALUE);
 
   symtable* curr;         /* Pointer to current symtable */
   char*     ptr;          /* Pointer to current character in symbol */
@@ -310,7 +310,7 @@ void symtable_set_value( char* sym, char* value ) {
  Traverses simulation symentry array, assigning stored string value to the
  stored signal.
 */
-void symtable_assign( uint64 sim_time ) {
+void symtable_assign( uint64 sim_time ) { PROFILE(SYMTABLE_ASSIGN);
 
   symtable* curr;  /* Pointer to current symtable entry */
   sym_sig*  sig;   /* Pointer to current sym_sig in list */
@@ -334,7 +334,7 @@ void symtable_assign( uint64 sim_time ) {
 
  Recursively deallocates all elements of specifies symbol table.
 */ 
-void symtable_dealloc( symtable* symtab ) {
+void symtable_dealloc( symtable* symtab ) { PROFILE(SYMTABLE_DEALLOC);
 
   sym_sig* curr;  /* Pointer to current sym_sig in list */
   sym_sig* tmp;   /* Temporary pointer to sym_sig */
@@ -366,6 +366,9 @@ void symtable_dealloc( symtable* symtab ) {
 
 /*
  $Log$
+ Revision 1.28  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.27  2006/11/27 04:11:42  phase1geo
  Adding more changes to properly support thread time.  This is a work in progress
  and regression is currently broken for the moment.  Checkpointing.
