@@ -47,7 +47,7 @@ extern isuppl      info_suppl;
 
  Creates an array of the functional unit names/types that exist in the design.
 */
-bool funit_get_list( char*** funit_names, char*** funit_types, int* funit_size ) {
+bool funit_get_list( char*** funit_names, char*** funit_types, int* funit_size ) { PROFILE(FUNIT_GET_LIST);
 
   bool        retval = TRUE;  /* Return value for this function */
   funit_link* curr;           /* Pointer to current functional unit link in list */
@@ -72,8 +72,8 @@ bool funit_get_list( char*** funit_names, char*** funit_types, int* funit_size )
   if( *funit_size > 0 ) {
 
     /* Allocate array to store functional unit names */
-    *funit_names = (char**)malloc_safe( (sizeof( char* ) * (*funit_size)), __FILE__, __LINE__ );
-    *funit_types = (char**)malloc_safe( (sizeof( char* ) * (*funit_size)), __FILE__, __LINE__ );
+    *funit_names = (char**)malloc_safe( sizeof( char* ) * (*funit_size) );
+    *funit_types = (char**)malloc_safe( sizeof( char* ) * (*funit_size) );
 
     /* Now let's populate the functional unit list */
     i    = 0;
@@ -81,9 +81,9 @@ bool funit_get_list( char*** funit_names, char*** funit_types, int* funit_size )
     while( curr != NULL ) {
       if( !funit_is_unnamed( curr->funit ) &&
           ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( funit_get_curr_module( curr->funit ) )) ) {
-        (*funit_names)[i] = strdup_safe( curr->funit->name, __FILE__, __LINE__ );
+        (*funit_names)[i] = strdup_safe( curr->funit->name );
         snprintf( tmpstr, 10, "%d", curr->funit->type );
-        (*funit_types)[i] = strdup_safe( tmpstr, __FILE__, __LINE__ );
+        (*funit_types)[i] = strdup_safe( tmpstr );
         i++;
       }
       curr = curr->next;
@@ -106,18 +106,18 @@ bool funit_get_list( char*** funit_names, char*** funit_types, int* funit_size )
  functional unit is returned to the calling function.  If the functional unit was not found, a value of NULL
  is returned to the calling function indicating an error occurred.
 */
-char* funit_get_filename( const char* funit_name, int funit_type ) {
+char* funit_get_filename( const char* funit_name, int funit_type ) { PROFILE(FUNIT_GET_FILENAME);
 
-  func_unit   funit;         /* Temporary functional unit container used for searching             */
+  func_unit   funit;         /* Temporary functional unit container used for searching */
   funit_link* funitl;        /* Pointer to functional unit link containing matched functional unit */
-  char*       fname = NULL;  /* Name of filename containing specified functional unit              */
+  char*       fname = NULL;  /* Name of filename containing specified functional unit */
 
-  funit.name = strdup_safe( funit_name, __FILE__, __LINE__ );
+  funit.name = strdup_safe( funit_name );
   funit.type = funit_type;
 
   if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
      
-    fname = strdup_safe( funitl->funit->filename, __FILE__, __LINE__ );
+    fname = strdup_safe( funitl->funit->filename );
 
   }
 
@@ -139,13 +139,13 @@ char* funit_get_filename( const char* funit_name, int funit_type ) {
  the found functional unit, returning a value of TRUE to the calling function.  If the functional unit was
  not found in the design, a value of FALSE is returned.
 */
-bool funit_get_start_and_end_lines( const char* funit_name, int funit_type, int* start_line, int* end_line ) {
+bool funit_get_start_and_end_lines( const char* funit_name, int funit_type, int* start_line, int* end_line ) { PROFILE(FUNIT_GET_START_AND_END_LINES);
 
-  bool        retval = TRUE;  /* Return value of this function                                      */
-  func_unit   funit;          /* Temporary functional unit container used for searching             */
+  bool        retval = TRUE;  /* Return value of this function */
+  func_unit   funit;          /* Temporary functional unit container used for searching */
   funit_link* funitl;         /* Pointer to functional unit line containing matched functional unit */
   
-  funit.name = strdup_safe( funit_name, __FILE__, __LINE__ );
+  funit.name = strdup_safe( funit_name );
   funit.type = funit_type;
 
   if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
@@ -167,6 +167,9 @@ bool funit_get_start_and_end_lines( const char* funit_name, int funit_type, int*
 
 /*
  $Log$
+ Revision 1.10  2007/11/20 05:28:58  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.9  2007/04/03 04:15:17  phase1geo
  Fixing bugs in func_iter functionality.  Modified functional unit name
  flattening function (though this does not appear to be working correctly

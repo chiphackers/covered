@@ -1705,7 +1705,7 @@ bool expression_op_func__and( expression* expr, thread* thr ) { PROFILE(EXPRESSI
 
  Performs a bitwise OR operation.
 */
-bool expression_op_func__or( expression* expr, thread* thr ) {
+bool expression_op_func__or( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__OR);
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
@@ -1725,7 +1725,7 @@ bool expression_op_func__or( expression* expr, thread* thr ) {
 
  Performs a bitwise NAND operation.
 */
-bool expression_op_func__nand( expression* expr, thread* thr ) {
+bool expression_op_func__nand( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__NAND);
 
   return( vector_bitwise_op( expr->value, expr->left->value, expr->right->value, nand_optab ) );
 
@@ -1739,7 +1739,7 @@ bool expression_op_func__nand( expression* expr, thread* thr ) {
 
  Performs a bitwise NOR operation.
 */
-bool expression_op_func__nor( expression* expr, thread* thr ) {
+bool expression_op_func__nor( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__NOR);
 
   return( vector_bitwise_op( expr->value, expr->left->value, expr->right->value, nor_optab ) );
 
@@ -1753,7 +1753,7 @@ bool expression_op_func__nor( expression* expr, thread* thr ) {
 
  Performs a bitwise NXOR operation.
 */
-bool expression_op_func__nxor( expression* expr, thread* thr ) {
+bool expression_op_func__nxor( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__NXOR);
 
   return( vector_bitwise_op( expr->value, expr->left->value, expr->right->value, nxor_optab ) );
 
@@ -1767,7 +1767,7 @@ bool expression_op_func__nxor( expression* expr, thread* thr ) {
 
  Performs a less-than comparison operation.
 */
-bool expression_op_func__lt( expression* expr, thread* thr ) {
+bool expression_op_func__lt( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__LT);
 
   return( vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_LT ) );
 
@@ -1781,7 +1781,7 @@ bool expression_op_func__lt( expression* expr, thread* thr ) {
 
  Performs a greater-than comparison operation.
 */
-bool expression_op_func__gt( expression* expr, thread* thr ) {
+bool expression_op_func__gt( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__GT);
 
   return( vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_GT ) );
 
@@ -1795,7 +1795,7 @@ bool expression_op_func__gt( expression* expr, thread* thr ) {
 
  Performs a left shift operation.
 */
-bool expression_op_func__lshift( expression* expr, thread* thr ) {
+bool expression_op_func__lshift( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__LSHIFT);
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
@@ -1815,7 +1815,7 @@ bool expression_op_func__lshift( expression* expr, thread* thr ) {
 
  Performs a right shift operation.
 */
-bool expression_op_func__rshift( expression* expr, thread* thr ) {
+bool expression_op_func__rshift( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__RSHIFT);
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
@@ -1835,7 +1835,7 @@ bool expression_op_func__rshift( expression* expr, thread* thr ) {
 
  Performs an arithmetic right shift operation.
 */
-bool expression_op_func__arshift( expression* expr, thread* thr ) {
+bool expression_op_func__arshift( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__ARSHIFT);
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
@@ -1855,7 +1855,7 @@ bool expression_op_func__arshift( expression* expr, thread* thr ) {
 
  Performs an equality (==) comparison operation.
 */
-bool expression_op_func__eq( expression* expr, thread* thr ) {
+bool expression_op_func__eq( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__EQ);
 
   return( vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_EQ ) );
 
@@ -1869,7 +1869,7 @@ bool expression_op_func__eq( expression* expr, thread* thr ) {
 
  Performs an equality (===) comparison operation.
 */
-bool expression_op_func__ceq( expression* expr, thread* thr ) {
+bool expression_op_func__ceq( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__CEQ);
 
   return( vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CEQ ) );
 
@@ -1883,7 +1883,7 @@ bool expression_op_func__ceq( expression* expr, thread* thr ) {
 
  Performs a less-than-or-equal comparison operation.
 */
-bool expression_op_func__le( expression* expr, thread* thr ) {
+bool expression_op_func__le( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__LE);
 
   return( vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_LE ) );
 
@@ -1897,7 +1897,7 @@ bool expression_op_func__le( expression* expr, thread* thr ) {
 
  Performs a greater-than-or-equal comparison operation.
 */
-bool expression_op_func__ge( expression* expr, thread* thr ) {
+bool expression_op_func__ge( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__GE);
 
   return( vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_GE ) );
 
@@ -1911,7 +1911,7 @@ bool expression_op_func__ge( expression* expr, thread* thr ) {
 
  Performs a not-equal (!=) comparison operation.
 */
-bool expression_op_func__ne( expression* expr, thread* thr ) {
+bool expression_op_func__ne( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__NE);
 
   return( vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_NE ) );
 
@@ -1925,7 +1925,7 @@ bool expression_op_func__ne( expression* expr, thread* thr ) {
 
  Performs a not-equal (!==) comparison operation.
 */
-bool expression_op_func__cne( expression* expr, thread* thr ) {
+bool expression_op_func__cne( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__CNE);
 
   return( vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CNE ) );
 
@@ -1939,7 +1939,7 @@ bool expression_op_func__cne( expression* expr, thread* thr ) {
 
  Performs a logical OR operation.
 */
-bool expression_op_func__lor( expression* expr, thread* thr ) {
+bool expression_op_func__lor( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__LOR);
 
   vector   vec1;     /* Used for logical reduction */
   vector   vec2;     /* Used for logical reduction */
@@ -1964,7 +1964,7 @@ bool expression_op_func__lor( expression* expr, thread* thr ) {
 
  Performs a logical AND operation.
 */
-bool expression_op_func__land( expression* expr, thread* thr ) {
+bool expression_op_func__land( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__LAND);
 
   vector   vec1;     /* Used for logical reduction */
   vector   vec2;     /* Used for logical reduction */
@@ -1989,7 +1989,7 @@ bool expression_op_func__land( expression* expr, thread* thr ) {
 
  Performs a conditional (?:) operation.
 */
-bool expression_op_func__cond( expression* expr, thread* thr ) {
+bool expression_op_func__cond( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__COND);
 
   /* Simple vector copy from right side */
   return( vector_set_value( expr->value, expr->right->value->value, expr->right->value->suppl.part.type, expr->right->value->width, 0, 0 ) );
@@ -2004,7 +2004,7 @@ bool expression_op_func__cond( expression* expr, thread* thr ) {
 
  Performs a conditional select (?:) operation.
 */
-bool expression_op_func__cond_sel( expression* expr, thread* thr ) {
+bool expression_op_func__cond_sel( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__COND_SEL);
 
   vector   vec1;            /* Used for logical reduction */
   vec_data bit1;            /* 1-bit vector value */
@@ -2039,7 +2039,7 @@ bool expression_op_func__cond_sel( expression* expr, thread* thr ) {
 
  Performs a unary invert operation.
 */
-bool expression_op_func__uinv( expression* expr, thread* thr ) {
+bool expression_op_func__uinv( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__UINV);
 
   return( vector_unary_inv( expr->value, expr->right->value ) );
 
@@ -2053,7 +2053,7 @@ bool expression_op_func__uinv( expression* expr, thread* thr ) {
 
  Performs a unary AND operation.
 */
-bool expression_op_func__uand( expression* expr, thread* thr ) {
+bool expression_op_func__uand( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__UAND);
 
   return( vector_unary_op( expr->value, expr->right->value, and_optab ) );
 
@@ -2067,7 +2067,7 @@ bool expression_op_func__uand( expression* expr, thread* thr ) {
 
  Performs a unary NOT operation.
 */
-bool expression_op_func__unot( expression* expr, thread* thr ) {
+bool expression_op_func__unot( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__UNOT);
 
   return( vector_unary_not( expr->value, expr->right->value ) );
 
@@ -2081,7 +2081,7 @@ bool expression_op_func__unot( expression* expr, thread* thr ) {
 
  Performs a unary OR operation.
 */
-bool expression_op_func__uor( expression* expr, thread* thr ) {
+bool expression_op_func__uor( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__UOR);
 
   return( vector_unary_op( expr->value, expr->right->value, or_optab ) );
 
@@ -2095,7 +2095,7 @@ bool expression_op_func__uor( expression* expr, thread* thr ) {
 
  Performs a unary XOR operation.
 */
-bool expression_op_func__uxor( expression* expr, thread* thr ) {
+bool expression_op_func__uxor( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__UXOR);
 
   return( vector_unary_op( expr->value, expr->right->value, xor_optab ) );
 
@@ -2109,7 +2109,7 @@ bool expression_op_func__uxor( expression* expr, thread* thr ) {
 
  Performs a unary NAND operation.
 */
-bool expression_op_func__unand( expression* expr, thread* thr ) {
+bool expression_op_func__unand( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__UNAND);
 
   return( vector_unary_op( expr->value, expr->right->value, nand_optab ) );
 
@@ -2123,7 +2123,7 @@ bool expression_op_func__unand( expression* expr, thread* thr ) {
 
  Performs a unary NOR operation.
 */
-bool expression_op_func__unor( expression* expr, thread* thr ) {
+bool expression_op_func__unor( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__UNOR);
 
   return( vector_unary_op( expr->value, expr->right->value, nor_optab ) );
 
@@ -2137,7 +2137,7 @@ bool expression_op_func__unor( expression* expr, thread* thr ) {
 
  Performs a unary NXOR operation.
 */
-bool expression_op_func__unxor( expression* expr, thread* thr ) {
+bool expression_op_func__unxor( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__UNXOR);
 
   return( vector_unary_op( expr->value, expr->right->value, nxor_optab ) );
 
@@ -2151,7 +2151,7 @@ bool expression_op_func__unxor( expression* expr, thread* thr ) {
 
  No operation is performed -- expression value is assumed to be changed.
 */
-bool expression_op_func__null( expression* expr, thread* thr ) {
+bool expression_op_func__null( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__NULL);
 
   return( TRUE );
 
@@ -2165,7 +2165,7 @@ bool expression_op_func__null( expression* expr, thread* thr ) {
 
  Performs a single bit select operation.
 */
-bool expression_op_func__sbit( expression* expr, thread* thr ) {
+bool expression_op_func__sbit( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__SBIT);
 
   int       intval;     /* Integer value */
   vec_data* vstart;     /* Calculated starting vector bit */
@@ -2227,7 +2227,7 @@ bool expression_op_func__sbit( expression* expr, thread* thr ) {
 
  Performs a multi-bit select operation.
 */
-bool expression_op_func__mbit( expression* expr, thread* thr ) {
+bool expression_op_func__mbit( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__MBIT);
 
   int       intval;     /* Integer value */
   vec_data* vstart;     /* Calculated starting vector bit */
@@ -2279,7 +2279,7 @@ bool expression_op_func__mbit( expression* expr, thread* thr ) {
 
  Performs a expansion ({{}}) operation.
 */
-bool expression_op_func__expand( expression* expr, thread* thr ) {
+bool expression_op_func__expand( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__EXPAND);
 
   vec_data bit;             /* 1-bit vector value */
   int      i;               /* Loop iterator */
@@ -2320,7 +2320,7 @@ bool expression_op_func__expand( expression* expr, thread* thr ) {
 
  Performs a list (,) operation.
 */
-bool expression_op_func__list( expression* expr, thread* thr ) {
+bool expression_op_func__list( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__LIST);
 
   bool retval = FALSE;  /* Return value for this function */
 
@@ -2339,7 +2339,7 @@ bool expression_op_func__list( expression* expr, thread* thr ) {
 
  Performs a concatenation ({}) operation.
 */
-bool expression_op_func__concat( expression* expr, thread* thr ) {
+bool expression_op_func__concat( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__CONCAT);
 
   return( vector_set_value( expr->value, expr->right->value->value, expr->right->value->suppl.part.type, expr->right->value->width, 0, 0 ) );
 
@@ -2353,7 +2353,7 @@ bool expression_op_func__concat( expression* expr, thread* thr ) {
 
  Performs a positive edge event operation.
 */
-bool expression_op_func__pedge( expression* expr, thread* thr ) {
+bool expression_op_func__pedge( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__PEDGE);
 
   bool              retval;   /* Return value for this function */
   register vec_data value1a;  /* 1-bit vector value */
@@ -2389,7 +2389,7 @@ bool expression_op_func__pedge( expression* expr, thread* thr ) {
 
  Performs a negative-edge event operation.
 */
-bool expression_op_func__nedge( expression* expr, thread* thr ) {
+bool expression_op_func__nedge( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__NEDGE);
 
   bool              retval;   /* Return value for this function */
   register vec_data value1a;  /* 1-bit vector value */
@@ -2425,7 +2425,7 @@ bool expression_op_func__nedge( expression* expr, thread* thr ) {
 
  Performs an any-edge event operation.
 */
-bool expression_op_func__aedge( expression* expr, thread* thr ) {
+bool expression_op_func__aedge( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__AEDGE);
 
   vector   vec;     /* Temporary vector */
   vec_data bit;     /* 1-bit vector value */
@@ -2477,7 +2477,7 @@ bool expression_op_func__aedge( expression* expr, thread* thr ) {
 
  Performs a event OR operation.
 */
-bool expression_op_func__eor( expression* expr, thread* thr ) {
+bool expression_op_func__eor( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__EOR);
 
   bool retval;  /* Return value for this function */
 
@@ -2510,7 +2510,7 @@ bool expression_op_func__eor( expression* expr, thread* thr ) {
 
  Performs a sensitivity list operation.
 */
-bool expression_op_func__slist( expression* expr, thread* thr ) {
+bool expression_op_func__slist( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__SLIST);
 
   bool retval;  /* Return value for this function */
 
@@ -2542,7 +2542,7 @@ bool expression_op_func__slist( expression* expr, thread* thr ) {
 
  Performs a delay operation.
 */
-bool expression_op_func__delay( expression* expr, thread* thr ) {
+bool expression_op_func__delay( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__DELAY);
 
   bool   retval = FALSE;  /* Return value for this function */
   uint64 intval;          /* 64-bit integer value holder */
@@ -2583,7 +2583,7 @@ bool expression_op_func__delay( expression* expr, thread* thr ) {
 
  Performs an event trigger (->) operation.
 */
-bool expression_op_func__trigger( expression* expr, thread* thr ) {
+bool expression_op_func__trigger( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__TRIGGER);
 
   /* Specify that we have triggered */
   expr->value->value[0].part.exp.value = 1;
@@ -2603,7 +2603,7 @@ bool expression_op_func__trigger( expression* expr, thread* thr ) {
 
  Performs a case comparison operation.
 */
-bool expression_op_func__case( expression* expr, thread* thr ) {
+bool expression_op_func__case( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__CASE);
 
   return( vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CEQ ) );
 
@@ -2617,7 +2617,7 @@ bool expression_op_func__case( expression* expr, thread* thr ) {
 
  Performs a casex comparison operation.
 */
-bool expression_op_func__casex( expression* expr, thread* thr ) {
+bool expression_op_func__casex( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__CASEX);
 
   return( vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CXEQ ) );
 
@@ -2631,7 +2631,7 @@ bool expression_op_func__casex( expression* expr, thread* thr ) {
 
  Performs a casez comparison operation.
 */
-bool expression_op_func__casez( expression* expr, thread* thr ) {
+bool expression_op_func__casez( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__CASEZ);
 
   return( vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CZEQ ) );
 
@@ -2645,7 +2645,7 @@ bool expression_op_func__casez( expression* expr, thread* thr ) {
 
  Performs a case default comparison operation.
 */
-bool expression_op_func__default( expression* expr, thread* thr ) {
+bool expression_op_func__default( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__DEFAULT);
 
   vec_data bit;  /* 1-bit vector value */
 
@@ -2664,7 +2664,7 @@ bool expression_op_func__default( expression* expr, thread* thr ) {
 
  Performs a blocking assignment operation.
 */
-bool expression_op_func__bassign( expression* expr, thread* thr ) {
+bool expression_op_func__bassign( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__BASSIGN);
 
   int intval = 0;  /* Integer value */
 
@@ -2682,7 +2682,7 @@ bool expression_op_func__bassign( expression* expr, thread* thr ) {
 
  Performs a function call operation.
 */
-bool expression_op_func__func_call( expression* expr, thread* thr ) {
+bool expression_op_func__func_call( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__FUNC_CALL);
 
   bool retval;  /* Return value for this function */
 
@@ -2710,7 +2710,7 @@ bool expression_op_func__func_call( expression* expr, thread* thr ) {
 
  Performs a task call operation.
 */
-bool expression_op_func__task_call( expression* expr, thread* thr ) {
+bool expression_op_func__task_call( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__TASK_CALL);
 
   sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit );
 
@@ -2726,7 +2726,7 @@ bool expression_op_func__task_call( expression* expr, thread* thr ) {
 
  Performs a named block call operation.
 */
-bool expression_op_func__nb_call( expression* expr, thread* thr ) {
+bool expression_op_func__nb_call( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__NB_CALL);
 
   bool    retval = FALSE;  /* Return value for this function */
   thread* tmp;             /* Pointer to temporary thread */
@@ -2753,7 +2753,7 @@ bool expression_op_func__nb_call( expression* expr, thread* thr ) {
 
  Performs a fork operation.
 */
-bool expression_op_func__fork( expression* expr, thread* thr ) {
+bool expression_op_func__fork( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__FORK);
 
   sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit );
 
@@ -2769,7 +2769,7 @@ bool expression_op_func__fork( expression* expr, thread* thr ) {
 
  Performs a join operation.
 */
-bool expression_op_func__join( expression* expr, thread* thr ) {
+bool expression_op_func__join( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__JOIN);
 
   return( thr->active_children == 0 );
 
@@ -2783,7 +2783,7 @@ bool expression_op_func__join( expression* expr, thread* thr ) {
 
  Performs a block disable operation.
 */
-bool expression_op_func__disable( expression* expr, thread* thr ) {
+bool expression_op_func__disable( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__DISABLE);
 
   sim_kill_thread_with_funit( expr->elem.funit );
 
@@ -2799,7 +2799,7 @@ bool expression_op_func__disable( expression* expr, thread* thr ) {
 
  Performs a repeat loop operation.
 */
-bool expression_op_func__repeat( expression* expr, thread* thr ) {
+bool expression_op_func__repeat( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__REPEAT);
 
   bool retval;  /* Return value for this function */
 
@@ -2823,7 +2823,7 @@ bool expression_op_func__repeat( expression* expr, thread* thr ) {
 
  Performs an exponential power operation.
 */
-bool expression_op_func__exponent( expression* expr, thread* thr ) {
+bool expression_op_func__exponent( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__EXPONENT);
 
   bool     retval  = FALSE;  /* Return value for this function */
   vec_data bit;              /* 1-bit vector value */
@@ -2869,7 +2869,7 @@ bool expression_op_func__exponent( expression* expr, thread* thr ) {
 
  Performs a port assignment operation.
 */
-bool expression_op_func__passign( expression* expr, thread* thr ) {
+bool expression_op_func__passign( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__PASSIGN);
 
   bool retval;      /* Return value for this function */
   int  intval = 0;  /* Integer value */
@@ -2917,7 +2917,7 @@ bool expression_op_func__passign( expression* expr, thread* thr ) {
 
  Performs a positive variable multi-bit select operation.
 */
-bool expression_op_func__mbit_pos( expression* expr, thread* thr ) {
+bool expression_op_func__mbit_pos( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__MBIT_POS);
 
   int       intval;  /* Integer value */
   vec_data* vstart;  /* Starting bit position */
@@ -2953,7 +2953,7 @@ bool expression_op_func__mbit_pos( expression* expr, thread* thr ) {
 
  Performs a negative variable multi-bit select operation.
 */
-bool expression_op_func__mbit_neg( expression* expr, thread* thr ) {
+bool expression_op_func__mbit_neg( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__MBIT_NEG);
 
   int       intval1;  /* Integer value */
   int       intval2;  /* Integer value */
@@ -2991,7 +2991,7 @@ bool expression_op_func__mbit_neg( expression* expr, thread* thr ) {
 
  Performs a negate of the specified expression.
 */
-bool expression_op_func__negate( expression* expr, thread* thr ) {
+bool expression_op_func__negate( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__NEGATE);
 
   return( vector_op_negate( expr->value, expr->right->value ) );
 
@@ -3005,7 +3005,7 @@ bool expression_op_func__negate( expression* expr, thread* thr ) {
 
  Performs an immediate increment operation.
 */
-bool expression_op_func__iinc( expression* expr, thread* thr ) {
+bool expression_op_func__iinc( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__IINC);
 
   /* Perform increment */
   vector_op_inc( expr->left->value );
@@ -3034,7 +3034,7 @@ bool expression_op_func__iinc( expression* expr, thread* thr ) {
 
  Performs a postponed increment operation.
 */
-bool expression_op_func__pinc( expression* expr, thread* thr ) {
+bool expression_op_func__pinc( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__PINC);
 
   /* Copy the left-hand value to our expression */
   vector_set_value( expr->value, expr->left->value->value, expr->left->value->suppl.part.type, expr->left->value->width, 0, 0 );
@@ -3063,7 +3063,7 @@ bool expression_op_func__pinc( expression* expr, thread* thr ) {
 
  Performs an immediate decrement operation.
 */
-bool expression_op_func__idec( expression* expr, thread* thr ) {
+bool expression_op_func__idec( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__IDEC);
 
   /* Perform decrement */
   vector_op_dec( expr->left->value );
@@ -3092,7 +3092,7 @@ bool expression_op_func__idec( expression* expr, thread* thr ) {
 
  Performs a postponed decrement operation.
 */
-bool expression_op_func__pdec( expression* expr, thread* thr ) {
+bool expression_op_func__pdec( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__PDEC);
 
   /* Copy the left-hand value to our expression */
   vector_set_value( expr->value, expr->left->value->value, expr->left->value->suppl.part.type, expr->left->value->width, 0, 0 );
@@ -3121,7 +3121,7 @@ bool expression_op_func__pdec( expression* expr, thread* thr ) {
 
  Performs a delayed assignment.
 */
-bool expression_op_func__dly_assign( expression* expr, thread* thr ) {
+bool expression_op_func__dly_assign( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__DLY_ASSIGN);
 
   bool retval;      /* Return value for this function */
   int  intval = 0;  /* Integer value */
@@ -3153,7 +3153,7 @@ bool expression_op_func__dly_assign( expression* expr, thread* thr ) {
 
  Performs an assignment and delay for a delayed assignment.
 */
-bool expression_op_func__dly_op( expression* expr, thread* thr ) {
+bool expression_op_func__dly_op( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__DLY_OP);
 
   /* If we are not waiting for the delay to occur, copy the contents of the operation */
   if( !thr->suppl.part.exec_first ) {
@@ -3179,7 +3179,7 @@ bool expression_op_func__dly_op( expression* expr, thread* thr ) {
 
  Performs a repeated delay for a given assignment.
 */
-bool expression_op_func__repeat_dly( expression* expr, thread* thr ) {
+bool expression_op_func__repeat_dly( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__REPEAT_DLY);
 
   bool retval = FALSE;  /* Return value for this function */
 
@@ -3214,7 +3214,7 @@ bool expression_op_func__repeat_dly( expression* expr, thread* thr ) {
 
  Performs a wait statement operation.
 */
-bool expression_op_func__wait( expression* expr, thread* thr ) {
+bool expression_op_func__wait( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__WAIT);
 
   bool     retval = TRUE;  /* Return value for this function */
   vector   vec;            /* Temporary vector */
@@ -3250,7 +3250,7 @@ bool expression_op_func__wait( expression* expr, thread* thr ) {
  Sets the value of the operation in its own vector value and updates the
  suppl nibble as necessary.
 */
-bool expression_operate( expression* expr, thread* thr ) {
+bool expression_operate( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OPERATE);
 
   bool     retval = TRUE;   /* Return value for this function */
   vector   vec;             /* Used for logical reduction */ 
@@ -3395,7 +3395,7 @@ bool expression_operate( expression* expr, thread* thr ) {
  pre-CDD widths of multi-bit expressions.  Each MSB/LSB is an expression tree that 
  needs to be evaluated to set the width properly on the MBIT_SEL expression.
 */
-void expression_operate_recursively( expression* expr, func_unit* funit, bool sizing ) {
+void expression_operate_recursively( expression* expr, func_unit* funit, bool sizing ) { PROFILE(EXPRESSION_OPERATE_RECURSIVELY);
     
   if( expr != NULL ) {
     
@@ -3449,7 +3449,7 @@ void expression_operate_recursively( expression* expr, func_unit* funit, bool si
  Recursively iterates through specified expression tree and returns TRUE if all of
  the leaf expressions are static expressions (STATIC or parameters).
 */
-bool expression_is_static_only( expression* expr ) {
+bool expression_is_static_only( expression* expr ) { PROFILE(EXPRESSION_IS_STATIC_ONLY);
 
   if( expr != NULL ) {
 
@@ -3477,7 +3477,7 @@ bool expression_is_static_only( expression* expr ) {
 }
 
 /*! \brief Returns TRUE if specified expression is on the LHS of a blocking assignment operator. */
-bool expression_is_assigned( expression* expr ) {
+bool expression_is_assigned( expression* expr ) { PROFILE(EXPRESSION_IS_ASSIGNED);
 
   bool retval = FALSE;  /* Return value for this function */
 
@@ -3512,7 +3512,7 @@ bool expression_is_assigned( expression* expr ) {
 
  \return Returns TRUE if the specifies expression belongs in a single or mult-bit select expression
 */
-bool expression_is_bit_select( expression* expr ) {
+bool expression_is_bit_select( expression* expr ) { PROFILE(EXPRESSION_IS_BIT_SELECT);
 
   bool retval = FALSE;  /* Return value for this function */
 
@@ -3539,7 +3539,7 @@ bool expression_is_bit_select( expression* expr ) {
  \return Returns TRUE if the specified expression is the last (most right-hand) part/bit select of a signal;
          otherwise, returns FALSE.
 */
-bool expression_is_last_select( expression* expr ) {
+bool expression_is_last_select( expression* expr ) { PROFILE(EXPRESSION_IS_LAST_SELECT);
 
   return( (ESUPPL_IS_ROOT( expr->suppl ) == 0) &&
           ( ((expr->parent->expr->op == EXP_OP_DIM) &&
@@ -3556,7 +3556,7 @@ bool expression_is_last_select( expression* expr ) {
  \return Returns TRUE if the specified expression is in an RASSIGN expression tree; otherwise,
          returns FALSE.
 */
-bool expression_is_in_rassign( expression* expr ) {
+bool expression_is_in_rassign( expression* expr ) { PROFILE(EXPRESSION_IS_IN_RASSIGN);
 
   bool retval = FALSE;  /* Return value for this function */
 
@@ -3582,7 +3582,7 @@ bool expression_is_in_rassign( expression* expr ) {
  signal will come from Covered instead of the dumpfile.  This is called in the bind_signal function
  after the expression and signal have been bound (only in parsing stage).
 */
-void expression_set_assigned( expression* expr ) {
+void expression_set_assigned( expression* expr ) { PROFILE(EXPRESSION_SET_ASSIGNED);
 
   expression* curr;  /* Pointer to current expression */
 
@@ -3616,7 +3616,7 @@ void expression_set_assigned( expression* expr ) {
  Recursively iterates through specified LHS expression, assigning the value from the RHS expression.
  This is called whenever a blocking assignment expression is found during simulation.
 */
-void expression_assign( expression* lhs, expression* rhs, int* lsb, uint64 sim_time ) {
+void expression_assign( expression* lhs, expression* rhs, int* lsb, uint64 sim_time ) { PROFILE(EXPRESSION_ASSIGN);
 
   int       intval1;    /* Integer value to use */
   vec_data* vstart;     /* Starting vector data */
@@ -3957,6 +3957,10 @@ void expression_dealloc( expression* expr, bool exp_only ) { PROFILE(EXPRESSION_
 
 /* 
  $Log$
+ Revision 1.258  2007/12/10 23:16:21  phase1geo
+ Working on adding profiler for use in finding performance issues.  Things don't compile
+ at the moment.
+
  Revision 1.257  2007/11/20 05:28:58  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

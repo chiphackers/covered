@@ -63,6 +63,11 @@
 #define DFLT_OUTPUT_CDD    "cov.cdd"
 
 /*!
+ Default profiling output filename.
+*/
+#define PROFILING_OUTPUT_NAME "covered.prof"
+
+/*!
  Default filename that will contain the code necessary to attach Covered as a VPI to the Verilog
  simulator.
 */
@@ -2485,6 +2490,10 @@ struct profiler_s {
 
 /*
  $Log$
+ Revision 1.267  2007/12/10 23:16:21  phase1geo
+ Working on adding profiler for use in finding performance issues.  Things don't compile
+ at the moment.
+
  Revision 1.266  2007/11/20 05:28:58  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

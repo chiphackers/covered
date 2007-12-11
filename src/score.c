@@ -181,15 +181,15 @@ void score_usage() {
 
  Creates a Verilog file that calls the Covered VPI system task.
 */
-void score_generate_top_vpi_module( char* vpi_file, char* output_db, char* top_inst ) {
+void score_generate_top_vpi_module( char* vpi_file, char* output_db, char* top_inst ) { PROFILE(SCORE_GENERATE_TOP_VPI_MODULE);
 
   FILE* vfile;     /* File handle to VPI top-level module */
   char* mod_name;  /* Name of VPI module */
   char* ext;       /* Extension of VPI module */
 
   /* Extract the name of the module from the given filename */
-  mod_name = strdup_safe( vpi_file, __FILE__, __LINE__ );
-  ext      = strdup_safe( vpi_file, __FILE__, __LINE__ );
+  mod_name = strdup_safe( vpi_file );
+  ext      = strdup_safe( vpi_file );
   scope_extract_front( vpi_file, mod_name, ext );
 
   if( ext[0] != '\0' ) {
@@ -229,15 +229,15 @@ void score_generate_top_vpi_module( char* vpi_file, char* output_db, char* top_i
 
  Creates a PLI table file.
 */
-void score_generate_pli_tab_file( char* tab_file, char* top_mod ) {
+void score_generate_pli_tab_file( char* tab_file, char* top_mod ) { PROFILE(SCORE_GENERATE_PLI_TAB_FILE);
 
   FILE* tfile;     /* File handle of VPI tab file - only necessary for VCS */
   char* mod_name;  /* Name of VPI module */
   char* ext;       /* Extension of VPI module */
 
   /* Extract the name of the module from the given filename */
-  mod_name = (char*)malloc_safe( strlen( tab_file ) + 5, __FILE__, __LINE__ );
-  ext      = strdup_safe( tab_file, __FILE__, __LINE__ );
+  mod_name = (char*)malloc_safe( strlen( tab_file ) + 5 );
+  ext      = strdup_safe( tab_file );
   scope_extract_front( tab_file, mod_name, ext );
 
   if( ext[0] != '\0' ) {
@@ -276,7 +276,7 @@ void score_generate_pli_tab_file( char* tab_file, char* top_mod ) {
  \return Returns TRUE if read of command file was successful; otherwise,
          returns FALSE.
 */
-bool read_command_file( char* cmd_file, char*** arg_list, int* arg_num ) {
+bool read_command_file( char* cmd_file, char*** arg_list, int* arg_num ) { PROFILE(READ_COMMAND_FILE);
 
   bool      retval  = TRUE;  /* Return value for this function */
   str_link* head    = NULL;  /* Pointer to head element of arg list */
@@ -307,12 +307,12 @@ bool read_command_file( char* cmd_file, char*** arg_list, int* arg_num ) {
       if( tmp_num > 0 ) {
 
         /* Create argument list */
-        *arg_list = (char**)malloc_safe( (sizeof( char* ) * tmp_num), __FILE__, __LINE__ );
+        *arg_list = (char**)malloc_safe( sizeof( char* ) * tmp_num );
         tmp_num   = 0;
 
         curr = head;
         while( curr != NULL ) {
-          (*arg_list)[tmp_num] = strdup_safe( curr->str, __FILE__, __LINE__ );
+          (*arg_list)[tmp_num] = strdup_safe( curr->str );
           tmp_num++;
           curr = curr->next;
         }
@@ -348,7 +348,7 @@ bool read_command_file( char* cmd_file, char*** arg_list, int* arg_num ) {
  Parses the specified define from the command-line, storing the define value in the
  define tree according to its value.
 */
-void score_parse_define( char* def ) {
+void score_parse_define( char* def ) { PROFILE(SCORE_PARSE_DEFINE);
 
   char* ptr;  /* Pointer to current character in define */
 
@@ -372,10 +372,10 @@ void score_parse_define( char* def ) {
  
  Adds the specified argument to the list of score arguments that will be written to the CDD file.
 */
-void score_add_arg( char* arg ) {
+void score_add_arg( char* arg ) { PROFILE(SCORE_ADD_ARG);
 
   score_args = (char**)realloc( score_args, (sizeof( char* ) * (score_arg_num + 1)) );
-  score_args[score_arg_num] = strdup_safe( arg, __FILE__, __LINE__ );
+  score_args[score_arg_num] = strdup_safe( arg );
   score_arg_num++;
 
 }
@@ -391,7 +391,7 @@ void score_add_arg( char* arg ) {
  Parses score command argument list and performs specified functions based
  on these arguments.
 */
-bool score_parse_args( int argc, int last_arg, char** argv ) {
+bool score_parse_args( int argc, int last_arg, char** argv ) { PROFILE(SCORE_PARSE_ARGS);
 
   bool   retval  = TRUE;          /* Return value for this function */
   int    i       = last_arg + 1;  /* Loop iterator */
@@ -414,7 +414,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
         if( instance_specified ) {
           print_output( "Only one -i option may be present on the command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
         } else {
-          top_instance       = strdup_safe( argv[i], __FILE__, __LINE__ );
+          top_instance       = strdup_safe( argv[i] );
           score_add_arg( argv[i-1] );
           score_add_arg( argv[i] );
           instance_specified = TRUE;
@@ -429,7 +429,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
           print_output( "Only one -o option may be present on the command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
         } else {
           if( file_exists( argv[i] ) || is_legal_filename( argv[i] ) ) {
-            output_db = strdup_safe( argv[i], __FILE__, __LINE__ );
+            output_db = strdup_safe( argv[i] );
             score_add_arg( argv[i-1] );
             score_add_arg( argv[i] );
           } else {
@@ -461,7 +461,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
           print_output( "Only one -t option may be present on the command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
         } else {
           if( is_variable( argv[i] ) ) {
-            top_module = strdup_safe( argv[i], __FILE__, __LINE__ );
+            top_module = strdup_safe( argv[i] );
             score_add_arg( argv[i-1] );
             score_add_arg( argv[i] );
           } else {
@@ -552,7 +552,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
         switch( dump_mode ) {
           case DUMP_FMT_NONE :
             if( file_exists( argv[i] ) ) {
-              dump_file = strdup_safe( argv[i], __FILE__, __LINE__ );
+              dump_file = strdup_safe( argv[i] );
               dump_mode = DUMP_FMT_VCD;
               score_add_arg( argv[i-1] );
               score_add_arg( argv[i] );
@@ -583,7 +583,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
         switch( dump_mode ) {
           case DUMP_FMT_NONE :
             if( file_exists( argv[i] ) ) {
-              dump_file = strdup_safe( argv[i], __FILE__, __LINE__ );
+              dump_file = strdup_safe( argv[i] );
               dump_mode = DUMP_FMT_LXT;
               score_add_arg( argv[i-1] );
               score_add_arg( argv[i] );
@@ -618,7 +618,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
           }
         } else {
           if( (retval = process_timescale( argv[i], FALSE )) ) {
-            vpi_timescale = strdup( argv[i] );
+            vpi_timescale = strdup_safe( argv[i] );
             score_add_arg( argv[i-1] );
             score_add_arg( argv[i] );
           } else {
@@ -637,11 +637,11 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
         }
       } else {
         if( (i < argc) && (argv[i][0] != '-') ) {
-          vpi_file = strdup_safe( argv[i], __FILE__, __LINE__ );
+          vpi_file = strdup_safe( argv[i] );
           score_add_arg( argv[i-1] );
           score_add_arg( argv[i] );
         } else {
-          vpi_file = strdup_safe( DFLT_VPI_NAME, __FILE__, __LINE__ );
+          vpi_file = strdup_safe( DFLT_VPI_NAME );
           i--;
           score_add_arg( argv[i] );
         }
@@ -680,7 +680,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
           print_output( "Only one -p option is allowed on the score command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
         } else {
           if( is_variable( argv[i] ) ) {
-            ppfilename = strdup_safe( argv[i], __FILE__, __LINE__ );
+            ppfilename = strdup_safe( argv[i] );
             score_add_arg( argv[i-1] );
             score_add_arg( argv[i] );
           } else {
@@ -805,7 +805,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
             if( tmp[(strlen( tmp ) - 2)] == '=' ) {
               str_link* strl;
               tmp[(strlen( tmp ) - 2)] = '\0';
-              strl        = str_link_add( strdup_safe( tmp, __FILE__, __LINE__ ), &gen_mod_head, &gen_mod_tail );
+              strl        = str_link_add( strdup_safe( tmp ), &gen_mod_head, &gen_mod_tail );
               strl->suppl = generation;
             } else {
               snprintf( user_msg, USER_MSG_LENGTH, "Illegal -g syntax \"%s\".  See \"covered score -h\" for correct syntax.",
@@ -882,7 +882,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 
  Performs score command functionality.
 */
-int command_score( int argc, int last_arg, char** argv ) {
+int command_score( int argc, int last_arg, char** argv ) { PROFILE(COMMAND_SCORE);
 
   int retval = 0;  /* Return value for this function */
 
@@ -893,7 +893,7 @@ int command_score( int argc, int last_arg, char** argv ) {
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 
     if( output_db == NULL ) {
-      output_db = strdup_safe( DFLT_OUTPUT_CDD, __FILE__, __LINE__ );
+      output_db = strdup_safe( DFLT_OUTPUT_CDD );
     }
 
     /* Parse design */
@@ -970,6 +970,9 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.98  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.97  2007/08/31 22:46:36  phase1geo
  Adding diagnostics from stable branch.  Fixing a few minor bugs and in progress
  of working on static_afunc1 failure (still not quite there yet).  Checkpointing.

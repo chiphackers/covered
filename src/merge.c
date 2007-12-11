@@ -93,7 +93,7 @@ bool merge_parse_args( int argc, int last_arg, char** argv ) {
       if( (retval = check_option_value( argc, argv, i )) ) {
         i++;
         if( is_legal_filename( argv[i] ) ) {
-          merged_file = strdup_safe( argv[i], __FILE__, __LINE__ );
+          merged_file = strdup_safe( argv[i] );
         } else {
           snprintf( user_msg, USER_MSG_LENGTH, "Output file \"%s\" is not writable", argv[i] );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -108,12 +108,12 @@ bool merge_parse_args( int argc, int last_arg, char** argv ) {
 
         /* If we have not specified a merge file explicitly, set it implicitly to the first CDD file found */
         if( (merge_in_num == 0) && (merged_file == NULL) ) {
-          merged_file = strdup_safe( argv[i], __FILE__, __LINE__ );
+          merged_file = strdup_safe( argv[i] );
         }
 
         /* Add the specified merge file to the list */
         merge_in               = (char**)realloc( merge_in, (sizeof( char* ) * (merge_in_num + 1)) );
-        merge_in[merge_in_num] = strdup_safe( argv[i], __FILE__, __LINE__ );
+        merge_in[merge_in_num] = strdup_safe( argv[i] );
         merge_in_num++;
 
       } else {
@@ -206,6 +206,9 @@ int command_merge( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.32  2007/11/20 05:28:59  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.31  2007/04/10 03:56:18  phase1geo
  Completing majority of code to support new simulation core.  Starting to debug
  this though we still have quite a ways to go here.  Checkpointing.

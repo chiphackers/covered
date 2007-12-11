@@ -30,11 +30,11 @@
  Allocates new memory for a coverage statistic structure and initializes
  its values.
 */
-statistic* statistic_create() {
+statistic* statistic_create() { PROFILE(STATISTIC_CREATE);
 
   statistic* stat;   /* New statistic structure */
 
-  stat = (statistic*)malloc_safe( sizeof( statistic ), __FILE__, __LINE__ );
+  stat = (statistic*)malloc_safe( sizeof( statistic ) );
 
   stat->line_total    = 0;
   stat->line_hit      = 0;
@@ -69,7 +69,7 @@ statistic* statistic_create() {
  stat_from structure.  The stat_from structure will then contain
  accumulated results.
 */
-void statistic_merge( statistic* stat_to, statistic* stat_from ) {
+void statistic_merge( statistic* stat_to, statistic* stat_from ) { PROFILE(STATISTIC_MERGE);
 
   stat_to->line_total  += stat_from->line_total;
   stat_to->line_hit    += stat_from->line_hit;
@@ -108,7 +108,7 @@ void statistic_merge( statistic* stat_to, statistic* stat_from ) {
  \return Returns TRUE if the given statistic structure contains values of 0 for all of its
          metrics.
 */
-bool statistic_is_empty( statistic* stat ) {
+bool statistic_is_empty( statistic* stat ) { PROFILE(STATISTIC_IS_EMPTY);
 
   assert( stat != NULL );
 
@@ -128,7 +128,7 @@ bool statistic_is_empty( statistic* stat ) {
 
  Destroys the specified statistic structure from heap memory.
 */
-void statistic_dealloc( statistic* stat ) {
+void statistic_dealloc( statistic* stat ) { PROFILE(STATISTIC_DEALLOC);
 
   if( stat != NULL ) {
    
@@ -141,6 +141,9 @@ void statistic_dealloc( statistic* stat ) {
 
 /*
  $Log$
+ Revision 1.11  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.10  2006/09/25 04:15:04  phase1geo
  Starting to add support for new memory coverage metric.  This includes changes
  for the report command only at this point.

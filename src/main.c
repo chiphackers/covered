@@ -33,11 +33,12 @@
 
 #include "devel_doc.h"
 #include "defines.h"
-#include "score.h"
 #include "merge.h"
-#include "report.h"
-#include "util.h"
 #include "obfuscate.h"
+#include "profiler.h"
+#include "report.h"
+#include "score.h"
+#include "util.h"
 
 
 extern char  user_msg[USER_MSG_LENGTH];
@@ -59,6 +60,7 @@ void usage() {
   printf( "   Options:\n" );
 #ifdef DEBUG_MODE
   printf( "      -D                      Debug.  Display information helpful for debugging tool problems\n" );
+  printf( "      -P [<file>]             Profile.  Generate profiling information file from command.  Default output file is covered.prof\n" );
 #endif
   printf( "      -Q                      Quiet mode.  Causes all output to be suppressed\n" );
   printf( "      -B                      Obfuscate.  Obfuscates design-sensitive names in all user-readable output\n" );
@@ -100,14 +102,15 @@ void covered_cleanup( void ) {
 */
 int main( int argc, char** argv ) {
 
-  int  retval    = 0;      /* Return value of this utility               */
-  int  curr_arg  = 1;      /* Current position in argument list          */
+  int  retval    = 0;      /* Return value of this utility */
+  int  curr_arg  = 1;      /* Current position in argument list */
   bool cmd_found = FALSE;  /* Set to TRUE when command found in arg list */
 
   /* Initialize error suppression value */
   set_output_suppression( FALSE );
   set_debug( FALSE );
   obfuscate_set_mode( FALSE );
+  profiler_set_mode( FALSE );
 
   /* Setup function to be called at exit */
   assert( atexit( covered_cleanup ) == 0 );
@@ -142,6 +145,20 @@ int main( int argc, char** argv ) {
           set_debug( TRUE );
 #else
           print_output( "Global command -D can only be used when Covered is configured with the --enable-debug flag when being built", FATAL, __FILE__, __LINE__ );
+#endif
+
+        } else if( strncmp( "-P", argv[curr_arg], 2 ) == 0 ) {
+
+#ifdef DEBUG_MODE
+          profiler_set_mode( TRUE );
+          if( (retval = check_option_value( argc, argv, curr_arg )) ) {
+            curr_arg++;
+            profiler_set_filename( argv[curr_arg] );
+          } else {
+            profiler_set_filename( PROFILING_OUTPUT_NAME );
+          }
+#else
+          print_output( "Global command -P can only be used when Covered is configured with the --enable-debug flag when being built", FATAL, __FILE__, __LINE__ );
 #endif
 
         } else if( strncmp( "-B", argv[curr_arg], 2 ) == 0 ) {
@@ -186,6 +203,9 @@ int main( int argc, char** argv ) {
 
   }
 
+  /* Output profiling information, if necessary */
+  profiler_report();
+
   /* Deallocate obfuscation tree */
   obfuscate_dealloc();
 
@@ -195,6 +215,9 @@ int main( int argc, char** argv ) {
 
 /*
  $Log$
+ Revision 1.18  2007/11/20 05:28:58  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.17  2006/08/18 22:19:54  phase1geo
  Fully integrated obfuscation into the development release.
 

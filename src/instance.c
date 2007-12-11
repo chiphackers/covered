@@ -58,7 +58,7 @@ bool instance_resolve_inst( funit_inst* root, funit_inst* curr );
 
  Helper function for the \ref instance_display_tree function.
 */
-void instance_display_tree_helper( funit_inst* root, char* prefix ) {
+void instance_display_tree_helper( funit_inst* root, char* prefix ) { PROFILE(INSTANCE_DISPLAY_TREE_HELPER);
 
   char        sp[4096];  /* Contains prefix for children */
   funit_inst* curr;      /* Pointer to current child instance */
@@ -96,7 +96,7 @@ void instance_display_tree_helper( funit_inst* root, char* prefix ) {
  Displays the given instance tree to standard output in a hierarchical format.  Shows
  instance names as well as associated module name.
 */
-void instance_display_tree( funit_inst* root ) {
+void instance_display_tree( funit_inst* root ) { PROFILE(INSTANCE_DISPLAY_TREE);
 
   instance_display_tree_helper( root, "" );
 
@@ -112,13 +112,13 @@ void instance_display_tree( funit_inst* root ) {
  Creates a new functional unit instance from heap, initializes its data and
  returns a pointer to it.
 */
-funit_inst* instance_create( func_unit* funit, char* inst_name, vector_width* range ) {
+funit_inst* instance_create( func_unit* funit, char* inst_name, vector_width* range ) { PROFILE(INSTANCE_CREATE);
 
   funit_inst* new_inst;  /* Pointer to new functional unit instance */
 
-  new_inst             = (funit_inst*)malloc_safe( sizeof( funit_inst ), __FILE__, __LINE__ );
+  new_inst             = (funit_inst*)malloc_safe( sizeof( funit_inst ) );
   new_inst->funit      = funit;
-  new_inst->name       = strdup_safe( inst_name, __FILE__, __LINE__ );
+  new_inst->name       = strdup_safe( inst_name );
   new_inst->stat       = NULL;
   new_inst->param_head = NULL;
   new_inst->param_tail = NULL;
@@ -135,11 +135,11 @@ funit_inst* instance_create( func_unit* funit, char* inst_name, vector_width* ra
   } else {
     assert( range->left  != NULL );
     assert( range->right != NULL );
-    new_inst->range             = (vector_width*)malloc_safe( sizeof( vector_width ), __FILE__, __LINE__ );
-    new_inst->range->left       = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
+    new_inst->range             = (vector_width*)malloc_safe( sizeof( vector_width ) );
+    new_inst->range->left       = (static_expr*)malloc_safe( sizeof( static_expr ) );
     new_inst->range->left->num  = range->left->num;
     new_inst->range->left->exp  = range->left->exp;
-    new_inst->range->right      = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
+    new_inst->range->right      = (static_expr*)malloc_safe( sizeof( static_expr ) );
     new_inst->range->right->num = range->right->num;
     new_inst->range->right->exp = range->right->exp;
   }
@@ -157,7 +157,7 @@ funit_inst* instance_create( func_unit* funit, char* inst_name, vector_width* ra
  string as it goes.  When the root instance is reached, the string is returned.
  Assumes that scope is initialized to the NULL character.
 */
-void instance_gen_scope( char* scope, funit_inst* leaf, bool flatten ) {
+void instance_gen_scope( char* scope, funit_inst* leaf, bool flatten ) { PROFILE(INSTANCE_GEN_SCOPE);
 
   if( leaf != NULL ) {
 
@@ -186,7 +186,7 @@ void instance_gen_scope( char* scope, funit_inst* leaf, bool flatten ) {
          also check to make sure that the index of inst_name falls within the legal range of this
          instance.
 */
-bool instance_compare( char* inst_name, funit_inst* inst ) {
+bool instance_compare( char* inst_name, funit_inst* inst ) { PROFILE(INSTANCE_COMPARE);
 
   bool retval = FALSE;  /* Return value of this function */
   char bname[4096];     /* Base name of inst_name */
@@ -236,7 +236,7 @@ bool instance_compare( char* inst_name, funit_inst* inst ) {
  scope.  When the functional unit instance is found, a pointer to that
  functional unit instance is passed back to the calling function.
 */
-funit_inst* instance_find_scope( funit_inst* root, char* scope, bool rm_unnamed ) {
+funit_inst* instance_find_scope( funit_inst* root, char* scope, bool rm_unnamed ) { PROFILE(INSTANCE_FIND_SCOPE);
  
   char        front[256];   /* Front of scope value */
   char        rest[4096];   /* Rest of scope value */
@@ -284,7 +284,7 @@ funit_inst* instance_find_scope( funit_inst* root, char* scope, bool rm_unnamed 
  passed back to the calling function; otherwise, the ignore count is
  decremented and the searching continues.
 */
-funit_inst* instance_find_by_funit( funit_inst* root, const func_unit* funit, int* ignore ) {
+funit_inst* instance_find_by_funit( funit_inst* root, const func_unit* funit, int* ignore ) { PROFILE(INSTANCE_FIND_BY_FUNIT);
 
   funit_inst* match_inst = NULL;  /* Pointer to functional unit instance that found a match */
   funit_inst* curr_child;         /* Pointer to current instances child functional unit instance */
@@ -328,7 +328,7 @@ funit_inst* instance_find_by_funit( funit_inst* root, const func_unit* funit, in
  Generates new instance, adds it to the child list of the inst functional unit
  instance, and resolves any parameters.
 */
-funit_inst* instance_add_child( funit_inst* inst, func_unit* child, char* name, vector_width* range, bool resolve ) {
+funit_inst* instance_add_child( funit_inst* inst, func_unit* child, char* name, vector_width* range, bool resolve ) { PROFILE(INSTANCE_ADD_CHILD);
 
   funit_inst* new_inst;  /* Pointer to newly created instance to add */
 
@@ -384,7 +384,7 @@ funit_inst* instance_add_child( funit_inst* inst, func_unit* child, char* name, 
  Recursively copies the instance tree of from_inst to the instance
  to_inst, allocating memory for the new instances and resolving parameters.
 */
-void instance_copy( funit_inst* from_inst, funit_inst* to_inst, char* name, vector_width* range, bool resolve ) {
+void instance_copy( funit_inst* from_inst, funit_inst* to_inst, char* name, vector_width* range, bool resolve ) { PROFILE(INSTANCE_COPY);
 
   funit_inst* curr;      /* Pointer to current functional unit instance to copy */
   funit_inst* new_inst;  /* Pointer to newly created functional unit instance */
@@ -421,7 +421,7 @@ void instance_copy( funit_inst* from_inst, funit_inst* to_inst, char* name, vect
  \note
  This function creates a copy of the given child instance tree.
 */
-void instance_attach_child( funit_inst* parent, funit_inst* child ) {
+void instance_attach_child( funit_inst* parent, funit_inst* child ) { PROFILE(INSTANCE_ATTACH_CHILD);
 
   funit_inst* curr_inst;  /* Pointer to current instance */
   
@@ -471,7 +471,7 @@ void instance_attach_child( funit_inst* parent, funit_inst* child ) {
  function during the parsing stage.
 */
 bool instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child, char* inst_name, vector_width* range,
-                         bool resolve, bool child_gend ) {
+                         bool resolve, bool child_gend ) { PROFILE(INSTANCE_PARSE_ADD);
   
   bool        retval = TRUE;  /* Return value for this function */
   funit_inst* inst;           /* Temporary pointer to functional unit instance to add to */
@@ -535,7 +535,7 @@ bool instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child,
  a range was found, create all of the instances for this range and add them to the instance
  tree.
 */
-bool instance_resolve_inst( funit_inst* root, funit_inst* curr ) {
+bool instance_resolve_inst( funit_inst* root, funit_inst* curr ) { PROFILE(INSTANCE_RESOLVE_INST);
 
   int   width = -1;  /* Width of the instance range */
   int   lsb;         /* LSB of the instance range */
@@ -560,13 +560,13 @@ bool instance_resolve_inst( funit_inst* root, funit_inst* curr ) {
     curr->range = NULL;
 
     /* Copy and deallocate instance name */
-    name_copy = strdup_safe( curr->name, __FILE__, __LINE__ );
+    name_copy = strdup_safe( curr->name );
     free_safe( curr->name );
 
     /* For the first instance, just modify the name */
-    new_name   = (char*)malloc_safe( (strlen( name_copy ) + 23), __FILE__, __LINE__ );
+    new_name   = (char*)malloc_safe( strlen( name_copy ) + 23 );
     snprintf( new_name, (strlen( name_copy ) + 23), "%s[%d]", name_copy, lsb );
-    curr->name = strdup_safe( new_name, __FILE__, __LINE__ );
+    curr->name = strdup_safe( new_name );
 
     /* For all of the rest of the instances, do the instance_parse_add function call */
     for( i=1; i<width; i++ ) {
@@ -595,7 +595,7 @@ bool instance_resolve_inst( funit_inst* root, funit_inst* curr ) {
 
  Recursively iterates through the entire instance tree
 */
-void instance_resolve_helper( funit_inst* root, funit_inst* curr ) {
+void instance_resolve_helper( funit_inst* root, funit_inst* curr ) { PROFILE(INSTANCE_RESOLVE_HELPER);
 
   funit_inst* curr_child;  /* Pointer to current child */
 
@@ -620,7 +620,7 @@ void instance_resolve_helper( funit_inst* root, funit_inst* curr ) {
 
  Recursively iterates through entire instance tree, resolving any instance arrays that are found.
 */
-void instance_resolve( funit_inst* root ) {
+void instance_resolve( funit_inst* root ) { PROFILE(INSTANCE_RESOLVE);
 
   /* Resolve all instance names */
   instance_resolve_helper( root, root );
@@ -644,7 +644,7 @@ void instance_resolve( funit_inst* root ) {
  tree pointed to by root.  This function is used by the db_read
  function during the CDD reading stage.
 */ 
-bool instance_read_add( funit_inst** root, char* parent, func_unit* child, char* inst_name ) {
+bool instance_read_add( funit_inst** root, char* parent, func_unit* child, char* inst_name ) { PROFILE(INSTANCE_READ_ADD);
 
   bool        retval = TRUE;  /* Return value for this function */
   funit_inst* inst;           /* Temporary pointer to functional unit instance to add to */
@@ -699,7 +699,7 @@ bool instance_read_add( funit_inst** root, char* parent, func_unit* child, char*
  Note:  the function that calls this function originally should set
  the value of scope to NULL.
 */
-void instance_db_write( funit_inst* root, FILE* file, char* scope, bool parse_mode, bool report_save ) {
+void instance_db_write( funit_inst* root, FILE* file, char* scope, bool parse_mode, bool report_save ) { PROFILE(INSTANCE_DB_WRITE);
 
   char        tscope[4096];  /* New scope of functional unit to write */
   funit_inst* curr;          /* Pointer to current child functional unit instance */
@@ -756,7 +756,7 @@ void instance_db_write( funit_inst* root, FILE* file, char* scope, bool parse_mo
  not contain any signals into their parent modules.  This function only gets called
  during the report command.
 */
-void instance_flatten_helper( funit_inst* root, funit_link** rm_head, funit_link** rm_tail ) {
+void instance_flatten_helper( funit_inst* root, funit_link** rm_head, funit_link** rm_tail ) { PROFILE(INSTANCE_FLATTEN_HELPER);
 
   funit_inst* child;                 /* Pointer to current child instance */
   funit_inst* last_child    = NULL;  /* Pointer to the last child instance */
@@ -849,7 +849,7 @@ void instance_flatten_helper( funit_inst* root, funit_link** rm_head, funit_link
  not contain any signals into their parent modules.  This function only gets called
  during the report command.
 */
-void instance_flatten( funit_inst* root ) {
+void instance_flatten( funit_inst* root ) { PROFILE(INSTANCE_FLATTEN);
 
   funit_link* rm_head = NULL;  /* Pointer to head of functional unit list to remove */
   funit_link* rm_tail = NULL;  /* Pointer to tail of functional unit list to remove */
@@ -878,7 +878,7 @@ void instance_flatten( funit_inst* root ) {
 
  TBD
 */
-void instance_remove_stmt_blks_calling_stmt( funit_inst* root, statement* stmt ) {
+void instance_remove_stmt_blks_calling_stmt( funit_inst* root, statement* stmt ) { PROFILE(INSTANCE_REMOVE_STMT_BLKS_CALLING_STMT);
 
   funit_inst* curr_child;  /* Pointer to current child instance to parse */
 #ifndef VPI_ONLY
@@ -916,7 +916,7 @@ void instance_remove_stmt_blks_calling_stmt( funit_inst* root, statement* stmt )
 
  Recursively traverses the given instance tree, removing the given expression (and its sub
 */
-void instance_remove_parms_with_expr( funit_inst* root, statement* stmt ) {
+void instance_remove_parms_with_expr( funit_inst* root, statement* stmt ) { PROFILE(INSTANCE_REMOVE_PARMS_WITH_EXPR);
 
   funit_inst* curr_child;  /* Pointer to current child instance to traverse */
   inst_parm*  iparm;       /* Pointer to current instance parameter */
@@ -956,7 +956,7 @@ void instance_remove_parms_with_expr( funit_inst* root, statement* stmt ) {
 
  Deallocates all memory allocated for the given instance.
 */
-void instance_dealloc_single( funit_inst* inst ) {
+void instance_dealloc_single( funit_inst* inst ) { PROFILE(INSTANCE_DEALLOC_SINGLE);
 
   if( inst != NULL ) {
 
@@ -994,7 +994,7 @@ void instance_dealloc_single( funit_inst* inst ) {
  Recursively traverses instance tree, deallocating heap memory used to store the
  the tree.
 */
-void instance_dealloc_tree( funit_inst* root ) {
+void instance_dealloc_tree( funit_inst* root ) { PROFILE(INSTANCE_DEALLOC_TREE);
 
   funit_inst* curr;  /* Pointer to current instance to evaluate */
   funit_inst* tmp;   /* Temporary pointer to instance */
@@ -1024,7 +1024,7 @@ void instance_dealloc_tree( funit_inst* root ) {
  the functional unit instance is removed from the tree along with all of its
  child functional unit instances.
 */
-void instance_dealloc( funit_inst* root, char* scope ) {
+void instance_dealloc( funit_inst* root, char* scope ) { PROFILE(INSTANCE_DEALLOC);
   
   funit_inst* inst;        /* Pointer to instance to remove */
   funit_inst* curr;        /* Pointer to current child instance to remove */
@@ -1081,6 +1081,9 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.81  2007/11/20 05:28:58  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.80  2007/09/13 17:03:30  phase1geo
  Cleaning up some const-ness corrections -- still more to go but it's a good
  start.

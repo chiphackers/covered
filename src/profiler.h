@@ -26,6 +26,7 @@
 #include "genprof.h"
 #include "util.h"
 
+
 #define PROFILE(index)
 #define PROFILE_TIME_START
 #define PROFILE_TIME_STOP
@@ -48,14 +49,22 @@
 #endif
 
 
-/*!
- Initializes all of the profiling variables.
-*/
-void profiler_initialize();
+/*! \brief Sets the current profiling mode to the given value. */
+void profiler_set_mode( bool value );
+
+/*! \brief Sets the profiling output file to the given value. */
+void profiler_set_filename( const char* fname );
+
+/*! \brief Output profiler report. */
+void profiler_report();
 
 
 /*
  $Log$
+ Revision 1.1  2007/12/10 23:16:22  phase1geo
+ Working on adding profiler for use in finding performance issues.  Things don't compile
+ at the moment.
+
 */
 
 #endif

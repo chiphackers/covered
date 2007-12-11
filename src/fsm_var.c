@@ -100,7 +100,7 @@ fv_bind* fsm_var_stmt_tail = NULL;
  Adds the specified Verilog hierarchical scope to a list of FSM scopes to
  find during the parsing phase.
 */
-fsm_var* fsm_var_add( char* funit_name, expression* in_state, expression* out_state, char* name ) {
+fsm_var* fsm_var_add( char* funit_name, expression* in_state, expression* out_state, char* name ) { PROFILE(FSM_VAR_ADD);
 
   fsm_var*    new_var = NULL;  /* Pointer to newly created FSM variable */
   funit_link* funitl;          /* Pointer to functional unit link found */
@@ -110,8 +110,8 @@ fsm_var* fsm_var_add( char* funit_name, expression* in_state, expression* out_st
   /* If we have not parsed, design add new FSM variable to list */
   if( funit_head == NULL ) {
 
-    new_var        = (fsm_var*)malloc_safe( sizeof( fsm_var ), __FILE__, __LINE__ );
-    new_var->funit = strdup_safe( funit_name, __FILE__, __LINE__ );
+    new_var        = (fsm_var*)malloc_safe( sizeof( fsm_var ) );
+    new_var->funit = strdup_safe( funit_name );
     new_var->name  = NULL;
     new_var->ivar  = in_state;
     new_var->ovar  = out_state;
@@ -135,7 +135,7 @@ fsm_var* fsm_var_add( char* funit_name, expression* in_state, expression* out_st
     if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
       table = fsm_create( in_state, out_state );
       if( name != NULL ) {
-        table->name = strdup_safe( name, __FILE__, __LINE__ );
+        table->name = strdup_safe( name );
       }
       in_state->table  = table;
       out_state->table = table;
@@ -160,7 +160,7 @@ fsm_var* fsm_var_add( char* funit_name, expression* in_state, expression* out_st
  expression as its output state expression.  If no FSM variable was found, returns
  a value of NULL to the calling function.
 */
-fsm_var* fsm_var_is_output_state( expression* expr ) {
+fsm_var* fsm_var_is_output_state( expression* expr ) { PROFILE(FSM_VAR_IS_OUTPUT_STATE);
 
   fsm_var* curr;  /* Pointer to current FSM variable structure */
 
@@ -188,7 +188,7 @@ fsm_var* fsm_var_is_output_state( expression* expr ) {
  in the design, no binding occurs and the function displays an error message and returns a
  value of FALSE to the calling function.
 */
-bool fsm_var_bind_expr( char* sig_name, expression* expr, char* funit_name ) {
+bool fsm_var_bind_expr( char* sig_name, expression* expr, char* funit_name ) { PROFILE(FSM_VAR_BIND_EXPR);
 
   bool        retval = TRUE;  /* Return value for this function */
   funit_link* funitl;         /* Pointer to found functional unit link element */
@@ -221,7 +221,7 @@ bool fsm_var_bind_expr( char* sig_name, expression* expr, char* funit_name ) {
  Iterates through specified expression tree, adding each expression to the
  specified functional unit if the expression does not already exist in the functional unit.
 */
-void fsm_var_add_expr( expression* expr, func_unit* funit ) {
+void fsm_var_add_expr( expression* expr, func_unit* funit ) { PROFILE(FSM_VAR_ADD_EXPR);
 
   if( expr != NULL ) {
 
@@ -261,7 +261,7 @@ void fsm_var_add_expr( expression* expr, func_unit* funit ) {
  of TRUE to the calling function.  If the functional unit could not be found, this
  function, returns a value of FALSE to the calling function.
 */
-bool fsm_var_bind_stmt( statement* stmt, char* funit_name ) {
+bool fsm_var_bind_stmt( statement* stmt, char* funit_name ) { PROFILE(FSM_VAR_BIND_STMT);
 
   bool        retval = FALSE;  /* Return value for this function */
   funit_link* funitl;          /* Pointer to found functional unit link element */
@@ -310,7 +310,7 @@ bool fsm_var_bind_stmt( statement* stmt, char* funit_name ) {
  The FSM binding structure is then added to the global list of FSM binding structures to
  be bound after parsing is complete.
 */
-void fsm_var_bind_add( char* sig_name, expression* expr, char* funit_name ) {
+void fsm_var_bind_add( char* sig_name, expression* expr, char* funit_name ) { PROFILE(FSM_VAR_BIND_ADD);
 
   fv_bind* fvb;  /* Pointer to new FSM variable binding structure */
 
@@ -318,10 +318,10 @@ void fsm_var_bind_add( char* sig_name, expression* expr, char* funit_name ) {
   if( funit_head == NULL ) {
 
     /* Allocate and initialize FSM variable bind structure */
-    fvb             = (fv_bind*)malloc_safe( sizeof( fv_bind ), __FILE__, __LINE__ );
-    fvb->sig_name   = strdup_safe( sig_name, __FILE__, __LINE__ );
+    fvb             = (fv_bind*)malloc_safe( sizeof( fv_bind ) );
+    fvb->sig_name   = strdup_safe( sig_name );
     fvb->expr       = expr;
-    fvb->funit_name = strdup_safe( funit_name, __FILE__, __LINE__ );
+    fvb->funit_name = strdup_safe( funit_name );
     fvb->next       = NULL;
 
     /* Add new structure to the global list */
@@ -349,13 +349,13 @@ void fsm_var_bind_add( char* sig_name, expression* expr, char* funit_name ) {
  Allocates and initializes an FSM variable binding entry and adds it to the
  fsm_var_stmt list for later processing.
 */
-void fsm_var_stmt_add( statement* stmt, char* funit_name ) {
+void fsm_var_stmt_add( statement* stmt, char* funit_name ) { PROFILE(FSM_VAR_STMT_ADD);
 
   fv_bind* fvb;  /* Pointer to new FSM variable binding structure */
 
-  fvb             = (fv_bind*)malloc_safe( sizeof( fv_bind ), __FILE__, __LINE__ );
+  fvb             = (fv_bind*)malloc_safe( sizeof( fv_bind ) );
   fvb->stmt       = stmt;
-  fvb->funit_name = strdup_safe( funit_name, __FILE__, __LINE__ );
+  fvb->funit_name = strdup_safe( funit_name );
   fvb->next       = NULL;
 
   /* Add new structure to the head of the global list */
@@ -381,7 +381,7 @@ void fsm_var_stmt_add( statement* stmt, char* funit_name ) {
  If the statement contains an FSM state expression that is an output state expression, create the
  FSM structure for this FSM and add it to the design.
 */
-void fsm_var_bind() {
+void fsm_var_bind() { PROFILE(FSM_VAR_BIND);
 
   fv_bind*  curr;           /* Pointer to current FSM variable */
   fv_bind*  tmp;            /* Temporary pointer to FSM bind structure */
@@ -435,7 +435,7 @@ void fsm_var_bind() {
 
  Deallocates an FSM variable entry from memory.
 */
-void fsm_var_dealloc( fsm_var* fv ) {
+void fsm_var_dealloc( fsm_var* fv ) { PROFILE(FSM_VAR_DEALLOC);
 
   if( fv != NULL ) {
 
@@ -456,7 +456,7 @@ void fsm_var_dealloc( fsm_var* fv ) {
  When match is found, remove the structure and deallocate it from memory
  being sure to keep the global list intact.
 */
-void fsm_var_remove( fsm_var* fv ) {
+void fsm_var_remove( fsm_var* fv ) { PROFILE(FSM_VAR_REMOVE);
 
   fsm_var* curr;  /* Pointer to current FSM variable structure in list */
   fsm_var* last;  /* Pointer to last FSM variable structure evaluated */
@@ -491,6 +491,9 @@ void fsm_var_remove( fsm_var* fv ) {
 
 /*
  $Log$
+ Revision 1.30  2007/11/20 05:28:58  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.29  2006/08/18 22:07:45  phase1geo
  Integrating obfuscation into all user-viewable output.  Verified that these
  changes have not made an impact on regressions.  Also improved performance

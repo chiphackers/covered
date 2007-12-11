@@ -63,7 +63,7 @@ extern inst_link*  inst_head;
 
  Initializes all contents to NULL.
 */  
-void funit_init( func_unit* funit ) {
+void funit_init( func_unit* funit ) { PROFILE(FUNIT_INIT);
     
   funit->type       = FUNIT_MODULE;
   funit->name       = NULL;
@@ -103,12 +103,12 @@ void funit_init( func_unit* funit ) {
  Allocates memory from the heap for a functional unit element and initializes all
  contents to NULL.  Returns a pointer to the newly created functional unit.
 */
-func_unit* funit_create() {
+func_unit* funit_create() { PROFILE(FUNIT_CREATE);
 
   func_unit* funit;   /* Pointer to newly created functional unit element */
 
   /* Create and initialize functional unit */
-  funit = (func_unit*)malloc_safe( sizeof( func_unit ), __FILE__, __LINE__ );
+  funit = (func_unit*)malloc_safe( sizeof( func_unit ) );
 
   funit_init( funit );
 
@@ -123,7 +123,7 @@ func_unit* funit_create() {
 
  Traverses up parent list until the FUNIT_MODULE is found (parent should be NULL).
 */
-func_unit* funit_get_curr_module( func_unit* funit ) {
+func_unit* funit_get_curr_module( func_unit* funit ) { PROFILE(FUNIT_GET_CURR_MODULE);
 
   assert( funit != NULL );
 
@@ -143,7 +143,7 @@ func_unit* funit_get_curr_module( func_unit* funit ) {
  Traverses up parent list until the FUNIT_MODULE is found (parent should be NULL).  Does this
  in a way that guarantees that the found functional unit will not be modified.
 */
-const func_unit* funit_get_curr_module_safe( const func_unit* funit ) {
+const func_unit* funit_get_curr_module_safe( const func_unit* funit ) { PROFILE(FUNIT_GET_CURR_MODULE_SAFE);
 
   assert( funit != NULL );
 
@@ -161,7 +161,7 @@ const func_unit* funit_get_curr_module_safe( const func_unit* funit ) {
  \return Returns a pointer to the function that contains the specified functional unit if
          one exists; otherwise, returns NULL.
 */
-func_unit* funit_get_curr_function( func_unit* funit ) {
+func_unit* funit_get_curr_function( func_unit* funit ) { PROFILE(FUNIT_GET_CURR_FUNCTION);
 
   assert( funit != NULL );
 
@@ -179,7 +179,7 @@ func_unit* funit_get_curr_function( func_unit* funit ) {
  \return Returns a pointer to the function that contains the specified functional unit if
          one exists; otherwise, returns NULL.
 */
-func_unit* funit_get_curr_task( func_unit* funit ) {
+func_unit* funit_get_curr_task( func_unit* funit ) { PROFILE(FUNIT_GET_CURR_TASK);
 
   assert( funit != NULL );
 
@@ -196,7 +196,7 @@ func_unit* funit_get_curr_task( func_unit* funit ) {
 
  \return Returns the number of input, output and inout ports specified in this functional unit
 */
-int funit_get_port_count( func_unit* funit ) {
+int funit_get_port_count( func_unit* funit ) { PROFILE(FUNIT_GET_PORT_COUNT);
 
   sig_link* sigl;          /* Pointer to current signal link to examine */
   int       port_cnt = 0;  /* Return value for this function */
@@ -227,7 +227,7 @@ int funit_get_port_count( func_unit* funit ) {
  Recursively searches from the current functional unit up through its scope until either
  the parameter is found or until we have exhausted the scope.
 */
-mod_parm* funit_find_param( char* name, func_unit* funit ) {
+mod_parm* funit_find_param( char* name, func_unit* funit ) { PROFILE(FUNIT_FIND_PARAM);
 
   mod_parm* mparm = NULL;  /* Pointer to found module parameter */
 
@@ -253,7 +253,7 @@ mod_parm* funit_find_param( char* name, func_unit* funit ) {
  Searches the signal list in the given functional unit for the specified signal name.  If
  it isn't found there, we look in the generate item list for the same signal.
 */
-vsignal* funit_find_signal( char* name, func_unit* funit ) {
+vsignal* funit_find_signal( char* name, func_unit* funit ) { PROFILE(FUNIT_FIND_SIGNAL);
 
   vsignal*    found_sig = NULL;  /* Pointer to the found signal */
   vsignal     sig;               /* Holder for signal to search for */
@@ -304,7 +304,7 @@ vsignal* funit_find_signal( char* name, func_unit* funit ) {
  Searches all statement blocks in the given functional unit that have expressions that call
  the functional unit containing the given statement as its first statement.
 */
-void funit_remove_stmt_blks_calling_stmt( func_unit* funit, statement* stmt ) {
+void funit_remove_stmt_blks_calling_stmt( func_unit* funit, statement* stmt ) { PROFILE(FUNIT_REMOVE_STMT_BLKS_CALLING_STMT);
 
   stmt_iter si;  /* Statement list iterator */
 
@@ -325,7 +325,7 @@ void funit_remove_stmt_blks_calling_stmt( func_unit* funit, statement* stmt ) {
 
  \return Returns dynamically allocated string containing internally used task, function or named-block name.
 */
-char* funit_gen_task_function_namedblock_name( char* orig_name, func_unit* parent ) {
+char* funit_gen_task_function_namedblock_name( char* orig_name, func_unit* parent ) { PROFILE(FUNIT_GEN_TASK_FUNCTION_NAMEDBLOCK_NAME);
 
   char full_name[4096];  /* Container for new name */
 
@@ -335,7 +335,7 @@ char* funit_gen_task_function_namedblock_name( char* orig_name, func_unit* paren
   /* Generate full name to use for the function/task */
   snprintf( full_name, 4096, "%s.%s", parent->name, orig_name );
 
-  return( strdup_safe( full_name, __FILE__, __LINE__ ) );
+  return( strdup_safe( full_name ) );
 
 }
 
@@ -351,7 +351,7 @@ char* funit_gen_task_function_namedblock_name( char* orig_name, func_unit* paren
  are resized.  This function should be called just prior to outputting
  this funtional unit's contents to the CDD file (after parsing phase only)
 */
-void funit_size_elements( func_unit* funit, funit_inst* inst, bool gen_all, bool alloc_exprs ) {
+void funit_size_elements( func_unit* funit, funit_inst* inst, bool gen_all, bool alloc_exprs ) { PROFILE(FUNIT_SIZE_ELEMENTS);
   
   inst_parm*  curr_iparm;       /* Pointer to current instance parameter to evaluate */
   exp_link*   curr_exp;         /* Pointer to current expression link to evaluate */
@@ -496,7 +496,7 @@ void funit_size_elements( func_unit* funit, funit_inst* inst, bool gen_all, bool
  file.  If there are any problems with the write, returns FALSE; otherwise,
  returns TRUE.
 */
-bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst, bool report_save ) {
+bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst, bool report_save ) { PROFILE(FUNIT_DB_WRITE);
 
   bool        retval = TRUE;  /* Return value for this function */
   sig_link*   curr_sig;       /* Pointer to current functional unit sig_link element */
@@ -654,7 +654,7 @@ bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
  Reads the current line of the specified file and parses it for a functional unit.
  If all is successful, returns TRUE; otherwise, returns FALSE.
 */
-bool funit_db_read( func_unit* funit, char* scope, char** line ) {
+bool funit_db_read( func_unit* funit, char* scope, char** line ) { PROFILE(FUNIT_DB_READ);
 
   bool retval = TRUE;  /* Return value for this function */
   int  chars_read;     /* Number of characters currently read */
@@ -689,7 +689,7 @@ bool funit_db_read( func_unit* funit, char* scope, char** line ) {
  If there are any differences between the two functional units, a warning or error will be
  displayed to the user.
 */
-bool funit_db_merge( func_unit* base, FILE* file, bool same ) {
+bool funit_db_merge( func_unit* base, FILE* file, bool same ) { PROFILE(FUNIT_DB_MERGE);
 
   bool      retval = TRUE;   /* Return value of this function */
   exp_link* curr_base_exp;   /* Pointer to current expression in base functional unit expression list */
@@ -817,7 +817,7 @@ bool funit_db_merge( func_unit* base, FILE* file, bool same ) {
 
  \return Returns the flattened name of the given functional unit
 */
-char* funit_flatten_name( func_unit* funit ) {
+char* funit_flatten_name( func_unit* funit ) { PROFILE(FUNIT_FLATTEN_NAME);
 
   static char fscope[4096];  /* Flattened scope name */
   char        tmp[4096];     /* Temporary string storage */
@@ -853,7 +853,7 @@ char* funit_flatten_name( func_unit* funit ) {
  by the specified ID and returns a pointer to this functional unit.  If no such ID exists in the
  design, a value of NULL is returned to the calling statement.
 */
-func_unit* funit_find_by_id( int id ) {
+func_unit* funit_find_by_id( int id ) { PROFILE(FUNIT_FIND_BY_ID);
 
   funit_link* funitl;       /* Temporary pointer to functional unit link */
   exp_link*   expl = NULL;  /* Temporary pointer to expression link */
@@ -878,7 +878,7 @@ func_unit* funit_find_by_id( int id ) {
  \return Returns TRUE if the specified functional unit does not contain any inputs, outputs or
          inouts and is of type MODULE.
 */
-bool funit_is_top_module( func_unit* funit ) {
+bool funit_is_top_module( func_unit* funit ) { PROFILE(FUNIT_IS_TOP_MODULE);
 
   bool      retval = FALSE;  /* Return value for this function */
   sig_link* sigl;            /* Pointer to current signal link */
@@ -914,7 +914,7 @@ bool funit_is_top_module( func_unit* funit ) {
  and the last portion of its functional unit name returns TRUE after calling the 
  db_is_unnamed_scope() function.
 */
-bool funit_is_unnamed( func_unit* funit ) {
+bool funit_is_unnamed( func_unit* funit ) { PROFILE(FUNIT_IS_UNNAMED);
 
   bool retval = FALSE;  /* Return value for this function */
   char back[256];       /* Last portion of functional unit name */
@@ -936,7 +936,7 @@ bool funit_is_unnamed( func_unit* funit ) {
 
  \return Returns TRUE if the relationship of the "parent" and "child" is just that.
 */
-bool funit_is_unnamed_child_of( func_unit* parent, func_unit* child ) {
+bool funit_is_unnamed_child_of( func_unit* parent, func_unit* child ) { PROFILE(FUNIT_IS_UNNAMED_CHILD_OF);
 
   while( (child->parent != NULL) && (child->parent != parent) && funit_is_unnamed( child->parent ) ) {
     child = child->parent;
@@ -952,7 +952,7 @@ bool funit_is_unnamed_child_of( func_unit* parent, func_unit* child ) {
 
  \return Returns TRUE if the relationship of the "parent" and "child" is just that.
 */
-bool funit_is_child_of( func_unit* parent, func_unit* child ) {
+bool funit_is_child_of( func_unit* parent, func_unit* child ) { PROFILE(FUNIT_IS_CHILD_OF);
 
   while( (child->parent != NULL) && (child->parent != parent) ) {
     child = child->parent;
@@ -968,7 +968,7 @@ bool funit_is_child_of( func_unit* parent, func_unit* child ) {
  Iterates through signal list of specified functional unit, displaying each signal's
  name, width, lsb and value.
 */
-void funit_display_signals( func_unit* funit ) {
+void funit_display_signals( func_unit* funit ) { PROFILE(FUNIT_DISPLAY_SIGNALS);
 
   sig_link* sigl;  /* Pointer to current signal link element */
 
@@ -988,7 +988,7 @@ void funit_display_signals( func_unit* funit ) {
  Iterates through expression list of specified functional unit, displaying each expression's
  id.
 */
-void funit_display_expressions( func_unit* funit ) {
+void funit_display_expressions( func_unit* funit ) { PROFILE(FUNIT_DISPLAY_EXPRESSIONS);
 
   exp_link* expl;    /* Pointer to current expression link element */
 
@@ -1007,7 +1007,7 @@ void funit_display_expressions( func_unit* funit ) {
 
  Deallocates functional unit contents: name and filename strings.
 */
-void funit_clean( func_unit* funit ) {
+void funit_clean( func_unit* funit ) { PROFILE(FUNIT_CLEAN);
 
   func_unit*    old_funit = curr_funit;  /* Holds the original functional unit in curr_funit */
   typedef_item* tdi;                     /* Pointer to current typedef item */
@@ -1102,7 +1102,7 @@ void funit_clean( func_unit* funit ) {
  Deallocates functional unit; name and filename strings; and finally
  the structure itself from the heap.
 */
-void funit_dealloc( func_unit* funit ) {
+void funit_dealloc( func_unit* funit ) { PROFILE(FUNIT_DEALLOC);
 
   if( funit != NULL ) {
 
@@ -1119,6 +1119,9 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.80  2007/11/20 05:28:58  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.79  2007/09/13 17:03:30  phase1geo
  Cleaning up some const-ness corrections -- still more to go but it's a good
  start.

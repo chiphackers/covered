@@ -23,6 +23,7 @@
 #include "defines.h"
 #include "vsignal.h"
 #include "parser.h"
+#include "profiler.h"
 
 %}
 struct keyword { char *name; int type; };
@@ -131,7 +132,7 @@ xnor,           K_xnor
 xor,            K_xor
 %%
 
-int lexer_keyword_1995_code( const char* str, int length ) {
+int lexer_keyword_1995_code( const char* str, int length ) { PROFILE(LEXER_KEYWORD_1995_CODE);
 
   const struct keyword* rc   = check_identifier_1995(str, length);
   int                   type = IDENTIFIER;

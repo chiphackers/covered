@@ -273,7 +273,7 @@ WSPACE [ \t\b\f]+
 	yylloc.last_column += 1;
 	BEGIN( state_enter );
         if( ignore_mode == 0 ) {
-          yylval.text = strdup_safe( yytext, __FILE__, __LINE__ );
+          yylval.text = strdup_safe( yytext );
           yylval.text[ strlen( yytext ) - 1 ] = '\0';
           tmpstr = yylval.text;
           yylval.number = vector_from_string( &(yylval.text), TRUE );
@@ -432,7 +432,7 @@ WSPACE [ \t\b\f]+
          if( (generate_mode == 0) && ((last_gi == NULL) || (last_gi->suppl.part.type != GI_TYPE_INST)) && (strchr( yytext, '.' ) != NULL) ) {
            yylval.text = gen_item_calc_signal_name( yytext, curr_funit, yylloc.first_line, TRUE );
          } else {
-           yylval.text = strdup_safe( yytext, __FILE__, __LINE__ );
+           yylval.text = strdup_safe( yytext );
          }
          // printf( "Allocated IDENTIFIER %p  %s, line %d\n", yylval.text, yylval.text, yylloc.first_line );
          if( strncmp( yylval.text, "PATHPULSE$", 10) == 0 ) {
@@ -485,7 +485,7 @@ WSPACE [ \t\b\f]+
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
      if( ignore_mode == 0 ) {
-       yylval.text = (char*)malloc_safe( (strlen( yytext ) + 2), __FILE__, __LINE__ );
+       yylval.text = (char*)malloc_safe( strlen( yytext ) + 2 );
        snprintf( yylval.text, (strlen( yytext ) + 2), "%s ", yytext );
        return IDENTIFIER; 
      } else {
@@ -498,7 +498,7 @@ WSPACE [ \t\b\f]+
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
      if( ignore_mode == 0 ) {
-       yylval.text = strdup_safe( yytext, __FILE__, __LINE__ );
+       yylval.text = strdup_safe( yytext );
        return SYSTEM_IDENTIFIER; 
      } else {
        return UNUSED_SYSTEM_IDENTIFIER;
@@ -800,7 +800,7 @@ void lex_end_import_export() {
 /*!
  Parses and handles a line directive that is in the CPP format.
 */
-static void line_directive() {
+static void line_directive() { PROFILE(LINE_DIRECTIVE);
 
   char* qt1;
   char* qt2;
@@ -826,7 +826,7 @@ static void line_directive() {
 /*!
  Parses and handles a line directive in the Verilog-2001 format.
 */
-static void line_directive2() {
+static void line_directive2() { PROFILE(LINE_DIRECTIVE2);
 
   char* cp;
   char* qt1;
@@ -864,7 +864,7 @@ static void line_directive2() {
 
  Parses either the time unit or time precision token.
 */
-bool process_timescale_token( char* token, char* type, int* value, bool report ) {
+bool process_timescale_token( char* token, char* type, int* value, bool report ) { PROFILE(PROCESS_TIMESCALE_TOKEN);
 
   bool retval = TRUE;         /* Return value for this function */
   int  i      = 3;            /* Loop iterator */
@@ -923,7 +923,7 @@ bool process_timescale( const char* txt, bool report ) { PROFILE(PROCESS_TIMESCA
   int   prec = 0;        /* Time precision offset */
 
   /* Copy the given string */
-  str = strdup_safe( txt, __FILE__, __LINE__ );
+  str = strdup_safe( txt );
 
   /* Remove all spaces */
   for( i=0; i<(strlen( str )+1); i++ ) {
@@ -980,7 +980,7 @@ bool process_timescale( const char* txt, bool report ) { PROFILE(PROCESS_TIMESCA
  ends.  Here I pop the include stack and resume the previous file.  If
  there is no previous file, then the main input is ended.
 */
-static int yywrap() {
+static int yywrap() { PROFILE(LEXER_YYWRAP);
 
   str_link* curr;
   str_link* tmpm;
@@ -1094,7 +1094,7 @@ void reset_lexer( str_link* file_list_head ) { PROFILE(RESET_LEXER);
   
   /* Create temporary output filename */
   if( ppfilename == NULL ) {
-    ppfilename = (char*)malloc_safe( 10, __FILE__, __LINE__ );
+    ppfilename = (char*)malloc_safe( 10 );
     snprintf( ppfilename, 10, "tmpXXXXXX" );
     assert( mkstemp( ppfilename ) != 0 );
   }

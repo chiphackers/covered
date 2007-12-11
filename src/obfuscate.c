@@ -49,7 +49,7 @@ bool   obf_mode;
 
  Sets the global 'obf_mode' variable to the specified value.
 */
-void obfuscate_set_mode( bool value ) {
+void obfuscate_set_mode( bool value ) { PROFILE(OBFUSCATE_SET_MODE);
 
   obf_mode = value;
 
@@ -65,7 +65,7 @@ void obfuscate_set_mode( bool value ) {
  return the given name; otherwise, create a new element in the tree to represent
  this new name.
 */
-char* obfuscate_name( const char* real_name, char prefix ) {
+char* obfuscate_name( const char* real_name, char prefix ) { PROFILE(OBFUSCATE_NAME);
 
   tnode* obfnode;    /* Pointer to obfuscated tree node */
   char*  obfname;    /* Obfuscated name */
@@ -73,7 +73,7 @@ char* obfuscate_name( const char* real_name, char prefix ) {
   char   tname[30];  /* Temporary name used for sizing obfuscation ID */
 
   /* Create temporary name */
-  key = (char*)malloc_safe( (strlen( real_name ) + 3), __FILE__, __LINE__ );
+  key = (char*)malloc_safe( strlen( real_name ) + 3 );
   snprintf( key, (strlen( real_name ) + 3), "%s-%c", real_name, prefix );
 
   /* If the name was previously obfuscated, return that name */
@@ -88,7 +88,7 @@ char* obfuscate_name( const char* real_name, char prefix ) {
     snprintf( tname, 30, "%04d", obf_curr_id );
 
     /* Create obfuscated name */
-    obfname = (char*)malloc_safe( (strlen( tname ) + 2), __FILE__, __LINE__ );
+    obfname = (char*)malloc_safe( strlen( tname ) + 2 );
     snprintf( obfname, (strlen( tname ) + 2), "%c%04d", prefix, obf_curr_id );
     obf_curr_id++;
 
@@ -107,7 +107,7 @@ char* obfuscate_name( const char* real_name, char prefix ) {
 /*!
  Deallocates all memory associated with obfuscation.
 */
-void obfuscate_dealloc() {
+void obfuscate_dealloc() { PROFILE(OBFUSCATE_DEALLOC);
 
   tree_dealloc( obf_tree );
 
@@ -116,6 +116,9 @@ void obfuscate_dealloc() {
 
 /*
  $Log$
+ Revision 1.7  2007/11/20 05:28:59  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.6  2007/09/13 17:03:30  phase1geo
  Cleaning up some const-ness corrections -- still more to go but it's a good
  start.

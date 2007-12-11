@@ -67,7 +67,7 @@ extern bool         flag_suppress_empty_funits;
  lines were missed during simulation.  This information is used to report
  summary information about line coverage.
 */
-void line_get_stats( func_unit* funit, float* total, int* hit ) {
+void line_get_stats( func_unit* funit, float* total, int* hit ) { PROFILE(LINE_GET_STATS);
 
   statement* stmt;  /* Pointer to current statement */
   func_iter  fi;    /* Functional unit iterator */
@@ -120,7 +120,7 @@ void line_get_stats( func_unit* funit, float* total, int* hit ) {
  not hit during simulation and a value of TRUE is returned.  If the functional unit name was
  not found, a value of FALSE is returned.
 */
-bool line_collect( char* funit_name, int funit_type, int cov, int** lines, int** excludes, int* line_cnt ) {
+bool line_collect( char* funit_name, int funit_type, int cov, int** lines, int** excludes, int* line_cnt ) { PROFILE(LINE_COLLECT);
 
   bool        retval = TRUE;  /* Return value for this function */
   stmt_iter   stmti;          /* Statement list iterator */
@@ -141,8 +141,8 @@ bool line_collect( char* funit_name, int funit_type, int cov, int** lines, int**
     /* Create an array that will hold the number of uncovered lines */
     line_size = 20;
     *line_cnt = 0;
-    *lines    = (int*)malloc_safe( (sizeof( int ) * line_size), __FILE__, __LINE__ );
-    *excludes = (int*)malloc_safe( (sizeof( int ) * line_size), __FILE__, __LINE__ );
+    *lines    = (int*)malloc_safe( sizeof( int ) * line_size );
+    *excludes = (int*)malloc_safe( sizeof( int ) * line_size );
 
     /* Initialize the functional unit iterator */
     func_iter_init( &fi, funitl->funit );
@@ -209,7 +209,7 @@ bool line_collect( char* funit_name, int funit_type, int cov, int** lines, int**
  function, indicating that the functional unit was not found in the design and the values
  of total and hit should not be used.
 */
-bool line_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit ) {
+bool line_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit ) { PROFILE(LINE_GET_FUNIT_SUMMARY);
 
   bool        retval = TRUE;  /* Return value for this function */
   func_unit   funit;          /* Functional unit used for searching */
@@ -235,7 +235,7 @@ bool line_get_funit_summary( char* funit_name, int funit_type, int* total, int* 
 
 }
 
-bool line_display_instance_summary( FILE* ofile, char* name, int hits, float total ) {
+bool line_display_instance_summary( FILE* ofile, char* name, int hits, float total ) { PROFILE(LINE_DISPLAY_INSTANCE_SUMMARY);
 
   float percent;  /* Percentage of lines hits */
   float miss;     /* Number of lines missed */
@@ -263,7 +263,7 @@ bool line_display_instance_summary( FILE* ofile, char* name, int hits, float tot
  executed during the course of simulation.  The parent node will
  display its information before calling its children.
 */
-bool line_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst, int* hits, float* total ) {
+bool line_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst, int* hits, float* total ) { PROFILE(LINE_INSTANCE_SUMMARY);
 
   funit_inst* curr;                /* Pointer to current child functional unit instance of this node */
   char        tmpname[4096];       /* Temporary holder of instance name */
@@ -324,7 +324,7 @@ bool line_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst, in
  Calculates the percentage and miss information for the given hit and total coverage info and
  outputs this information in human-readable format to the given output file.
 */
-bool line_display_funit_summary( FILE* ofile, const char* name, const char* fname, int hits, float total ) {
+bool line_display_funit_summary( FILE* ofile, const char* name, const char* fname, int hits, float total ) { PROFILE(LINE_DISPLAY_FUNIT_SUMMARY);
 
   float percent;  /* Percentage of lines hits */
   float miss;     /* Number of lines missed */
@@ -350,7 +350,7 @@ bool line_display_funit_summary( FILE* ofile, const char* name, const char* fnam
  Iterates through the functional unit list, displaying the line coverage results (summary
  format) for each functional unit.
 */
-bool line_funit_summary( FILE* ofile, funit_link* head, int* hits, float* total ) {
+bool line_funit_summary( FILE* ofile, funit_link* head, int* hits, float* total ) { PROFILE(LINE_FUNIT_SUMMARY);
 
   float percent;             /* Percentage of lines hit */
   bool  miss_found = FALSE;  /* Set to TRUE if line was found to be missed */
@@ -390,7 +390,7 @@ bool line_funit_summary( FILE* ofile, funit_link* head, int* hits, float* total 
  Displays the lines missed during simulation to standard output from the
  specified expression list.
 */
-void line_display_verbose( FILE* ofile, func_unit* funit ) {
+void line_display_verbose( FILE* ofile, func_unit* funit ) { PROFILE(LINE_DISPLAY_VERBOSE);
 
   statement*  stmt;        /* Pointer to current statement */
   expression* unexec_exp;  /* Pointer to current unexecuted expression */
@@ -461,7 +461,7 @@ void line_display_verbose( FILE* ofile, func_unit* funit ) {
  (and associated verilog code) and file/functional unit name of the lines that were 
  not hit during simulation.
 */
-void line_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst ) {
+void line_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst ) { PROFILE(LINE_INSTANCE_VERBOSE);
 
   funit_inst* curr_inst;      /* Pointer to current instance being evaluated */
   char        tmpname[4096];  /* Temporary name holder for instance */
@@ -526,7 +526,7 @@ void line_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst ) {
  The verbose line coverage includes the line numbers (and associated verilog
  code) and file/functional unit name of the lines that were not hit during simulation.
 */
-void line_funit_verbose( FILE* ofile, funit_link* head ) {
+void line_funit_verbose( FILE* ofile, funit_link* head ) { PROFILE(LINE_FUNIT_VERBOSE);
 
   char* pname;  /* Printable version of functional unit name */
 
@@ -574,7 +574,7 @@ void line_funit_verbose( FILE* ofile, funit_link* head ) {
  specify its own line coverage along with a total line coverage including its 
  children.
 */
-void line_report( FILE* ofile, bool verbose ) {
+void line_report( FILE* ofile, bool verbose ) { PROFILE(LINE_REPORT);
 
   bool       missed_found = FALSE;  /* If set to TRUE, lines were found to be missed */
   char       tmp[4096];             /* Temporary string value */
@@ -637,6 +637,9 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.78  2007/11/20 05:28:58  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.77  2007/09/13 17:03:30  phase1geo
  Cleaning up some const-ness corrections -- still more to go but it's a good
  start.

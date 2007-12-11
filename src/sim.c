@@ -294,7 +294,7 @@ void sim_display_all_list() {
 /*!
  \return Returns a pointer to the current head of the active thread queue.
 */
-thread* sim_current_thread() {
+thread* sim_current_thread() { PROFILE(SIM_CURRENT_THREAD);
 
   return( active_head );
 
@@ -303,7 +303,7 @@ thread* sim_current_thread() {
 /*!
  Pops the head thread from the active queue without deallocating the thread.
 */
-void sim_thread_pop_head() {
+void sim_thread_pop_head() { PROFILE(SIM_THREAD_POP_HEAD);
 
   thread* thr = active_head;  /* Pointer to head of active queue */
 
@@ -364,7 +364,7 @@ void sim_thread_pop_head() {
 
  This function is called by the expression_op_func__delay() function.
 */
-void sim_thread_insert_into_delay_queue( thread* thr, uint64 sim_time ) {
+void sim_thread_insert_into_delay_queue( thread* thr, uint64 sim_time ) { PROFILE(SIM_THREAD_INSERT_INTO_DELAY_QUEUE);
 
   thread* curr;  /* Pointer to current thread in delayed queue to compare against */
 
@@ -451,7 +451,7 @@ void sim_thread_insert_into_delay_queue( thread* thr, uint64 sim_time ) {
  called whenever a head statement has a signal change or the head statement is a delay operation
  and
 */
-void sim_thread_push( thread* thr, uint64 sim_time ) {
+void sim_thread_push( thread* thr, uint64 sim_time ) { PROFILE(SIM_THREAD_PUSH);
 
   exp_op_type op;  /* Operation type of current expression in given thread */
 
@@ -526,7 +526,7 @@ void sim_thread_push( thread* thr, uint64 sim_time ) {
  bit set, we know that the statement has already been added, so stop here and
  do not add the statement again.
 */
-void sim_expr_changed( expression* expr, uint64 sim_time ) {
+void sim_expr_changed( expression* expr, uint64 sim_time ) { PROFILE(SIM_EXPR_CHANGED);
 
   thread* thr;  /* Pointer to current thread */
 
@@ -611,7 +611,7 @@ void sim_expr_changed( expression* expr, uint64 sim_time ) {
  everything that can be done at time 0.  This function does not place the thread into any
  queues (this is left to the sim_add_thread function).
 */
-thread* sim_create_thread( thread* parent, statement* stmt, func_unit* funit ) {
+thread* sim_create_thread( thread* parent, statement* stmt, func_unit* funit ) { PROFILE(SIM_CREATE_THREAD);
 
   thread* thr;  /* Pointer to newly allocated thread */
 
@@ -619,7 +619,7 @@ thread* sim_create_thread( thread* parent, statement* stmt, func_unit* funit ) {
   if( all_next == NULL ) {
 
     /* Allocate the new thread */
-    thr           = (thread*)malloc_safe( sizeof( thread ), __FILE__, __LINE__ );
+    thr           = (thread*)malloc_safe( sizeof( thread ) );
     thr->all_prev = NULL;
     thr->all_next = NULL;
 
@@ -664,7 +664,7 @@ thread* sim_create_thread( thread* parent, statement* stmt, func_unit* funit ) {
  Creates a new thread with the given information and adds the thread to the active queue to run.  Returns a pointer
  to the newly created thread for joining/running purposes.
 */
-thread* sim_add_thread( thread* parent, statement* stmt, func_unit* funit ) {
+thread* sim_add_thread( thread* parent, statement* stmt, func_unit* funit ) { PROFILE(SIM_ADD_THREAD);
 
   thread* thr = NULL;  /* Pointer to added thread */
 
@@ -759,7 +759,7 @@ thread* sim_add_thread( thread* parent, statement* stmt, func_unit* funit ) {
  Removes the specified thread from its parent and the thread simulation queue and finally deallocates
  the specified thread.
 */
-void sim_kill_thread( thread* thr ) {
+void sim_kill_thread( thread* thr ) { PROFILE(SIM_KILL_THREAD);
 
   assert( thr != NULL );
 
@@ -845,7 +845,7 @@ void sim_kill_thread( thread* thr ) {
  If a thread was found to match, kill it.  This function is called whenever the DISABLE statement is
  run.
 */
-void sim_kill_thread_with_funit( func_unit* funit ) {
+void sim_kill_thread_with_funit( func_unit* funit ) { PROFILE(SIM_KILL_THREAD_WITH_FUNIT);
 
   thread* thr;  /* Pointer to current thread */
 
@@ -866,7 +866,7 @@ void sim_kill_thread_with_funit( func_unit* funit ) {
  Iterates through static expression list and causes the simulator to
  evaluate these expressions at simulation time.
 */
-void sim_add_statics() {
+void sim_add_statics() { PROFILE(SIM_ADD_STATICS);
   
   exp_link* curr;   /* Pointer to current expression link */
   
@@ -894,7 +894,7 @@ void sim_add_statics() {
  expression operation for the current expression, clear both changed bits and
  return.
 */
-bool sim_expression( expression* expr, thread* thr ) {
+bool sim_expression( expression* expr, thread* thr ) { PROFILE(SIM_EXPRESSION);
 
   bool retval        = FALSE;  /* Return value for this function */
   bool left_changed  = FALSE;  /* Signifies if left expression tree has changed value */
@@ -968,7 +968,7 @@ bool sim_expression( expression* expr, thread* thr ) {
  it.  Continues to run for current statement tree until statement tree hits a
  wait-for-event condition (or we reach the end of a simulation tree).
 */
-void sim_thread( thread* thr, uint64 sim_time ) {
+void sim_thread( thread* thr, uint64 sim_time ) { PROFILE(SIM_THREAD);
 
   statement* stmt;                  /* Pointer to current statement to evaluate */
   bool       expr_changed = FALSE;  /* Specifies if expression tree was modified in any way */
@@ -1059,7 +1059,7 @@ void sim_thread( thread* thr, uint64 sim_time ) {
  db_do_timestep() function in db.c  and moves the statements and expressions into
  the appropriate simulation functions.  See above explanation on this procedure.
 */
-void sim_simulate( uint64 sim_time ) {
+void sim_simulate( uint64 sim_time ) { PROFILE(SIM_SIMULATE);
 
   uint64  last_time;  /* Last time placed into the active thread queue */      
   thread* thr;        /* Temporary thread pointer */
@@ -1124,7 +1124,7 @@ void sim_simulate( uint64 sim_time ) {
 /*!
  Allocates thread arrays for simulation and initializes the contents of the active_threads array.
 */
-void sim_initialize() {
+void sim_initialize() { PROFILE(SIM_INITIALIZE);
 
   /* Add static values */
   sim_add_statics();
@@ -1141,7 +1141,7 @@ void sim_initialize() {
 /*!
  Deallocates all allocated memory for simulation code.
 */
-void sim_dealloc() {
+void sim_dealloc() { PROFILE(SIM_DEALLOC);
 
   thread* tmp;  /* Temporary thread pointer */
 
@@ -1166,6 +1166,9 @@ void sim_dealloc() {
 
 /*
  $Log$
+ Revision 1.103  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.102  2007/09/04 22:50:50  phase1geo
  Fixed static_afunc1 issues.  Reran regressions and updated necessary files.
  Also working on debugging one remaining issue with mem1.v (not solved yet).

@@ -54,7 +54,7 @@ unsigned warn_count  = 0;
  Outputs specified error message string to standard output and increments
  error count.
 */
-void VLerror( char* msg ) {
+void VLerror( char* msg ) { PROFILE(VLERROR);
 
   error_count++;
   
@@ -72,7 +72,7 @@ void VLerror( char* msg ) {
  Outputs specified warning message string to standard output and increments
  warning count.
 */
-void VLwarn( char* msg ) {
+void VLwarn( char* msg ) { PROFILE(VLWARN);
 
   warn_count++;
   
@@ -101,7 +101,7 @@ int VLwrap() {
  Deallocates all allocated memory within associated signal range variable, but does
  not deallocate the pointer itself (unless rm_ptr is set to TRUE).
 */
-void parser_dealloc_sig_range( sig_range* range, bool rm_ptr ) {
+void parser_dealloc_sig_range( sig_range* range, bool rm_ptr ) { PROFILE(PARSER_DEALLOC_SIG_RANGE);
 
   int i;  /* Loop iterator */
 
@@ -132,7 +132,7 @@ void parser_dealloc_sig_range( sig_range* range, bool rm_ptr ) {
 
  Creates a copy of the curr_range variable for stored usage.
 */
-sig_range* parser_copy_curr_range( bool packed ) {
+sig_range* parser_copy_curr_range( bool packed ) { PROFILE(PARSER_COPY_CURR_RANGE);
 
   sig_range* crange;  /* Pointer to curr_range variable to copy */
   sig_range* range;   /* Copy of the curr_range variable */
@@ -142,17 +142,17 @@ sig_range* parser_copy_curr_range( bool packed ) {
   crange = packed ? &curr_prange : &curr_urange;
 
   /* Allocate memory for the new range */
-  range = (sig_range*)malloc_safe( sizeof( sig_range ), __FILE__, __LINE__ );
+  range = (sig_range*)malloc_safe( sizeof( sig_range ) );
 
   /* Set curr_range */
   range->dim_num = crange->dim_num;
   if( crange->dim_num > 0 ) {
-    range->dim = (vector_width*)malloc_safe( (sizeof( vector_width ) * crange->dim_num), __FILE__, __LINE__ );
+    range->dim = (vector_width*)malloc_safe( sizeof( vector_width ) * crange->dim_num );
     for( i=0; i<crange->dim_num; i++ ) {
-      range->dim[i].left       = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
+      range->dim[i].left       = (static_expr*)malloc_safe( sizeof( static_expr ) );
       range->dim[i].left->num  = crange->dim[i].left->num;
       range->dim[i].left->exp  = crange->dim[i].left->exp;
-      range->dim[i].right      = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
+      range->dim[i].right      = (static_expr*)malloc_safe( sizeof( static_expr ) );
       range->dim[i].right->num = crange->dim[i].right->num;
       range->dim[i].right->exp = crange->dim[i].right->exp;
       range->dim[i].implicit   = FALSE;
@@ -171,7 +171,7 @@ sig_range* parser_copy_curr_range( bool packed ) {
  Copies specifies static expressions to the specified current range.  Primarily used for
  copying typedef'ed ranges to the current range.
 */
-void parser_copy_range_to_curr_range( sig_range* range, bool packed ) {
+void parser_copy_range_to_curr_range( sig_range* range, bool packed ) { PROFILE(PARSER_COPY_RANGE_TO_CURR_RANGE);
 
   sig_range* crange = packed ? &curr_prange : &curr_urange;  /* Pointer to curr_Xrange to use */
   int        i;                                              /* Loop iterator */
@@ -182,12 +182,12 @@ void parser_copy_range_to_curr_range( sig_range* range, bool packed ) {
   /* Set curr_range */
   crange->dim_num = range->dim_num;
   if( range->dim_num > 0 ) {
-    crange->dim = (vector_width*)malloc_safe( (sizeof( vector_width ) * range->dim_num), __FILE__, __LINE__ );
+    crange->dim = (vector_width*)malloc_safe( sizeof( vector_width ) * range->dim_num );
     for( i=0; i<range->dim_num; i++ ) {
-      crange->dim[i].left       = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
+      crange->dim[i].left       = (static_expr*)malloc_safe( sizeof( static_expr ) );
       crange->dim[i].left->num  = range->dim[i].left->num;
       crange->dim[i].left->exp  = range->dim[i].left->exp;
-      crange->dim[i].right      = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
+      crange->dim[i].right      = (static_expr*)malloc_safe( sizeof( static_expr ) );
       crange->dim[i].right->num = range->dim[i].right->num;
       crange->dim[i].right->exp = range->dim[i].right->exp;
       crange->dim[i].implicit   = FALSE;
@@ -203,7 +203,7 @@ void parser_copy_range_to_curr_range( sig_range* range, bool packed ) {
 
  Deallocates and sets the curr_range variable from static expressions
 */
-void parser_explicitly_set_curr_range( static_expr* left, static_expr* right, bool packed ) {
+void parser_explicitly_set_curr_range( static_expr* left, static_expr* right, bool packed ) { PROFILE(PARSER_EXPLICITLY_SET_CURR_RANGE);
 
   sig_range* crange;  /* Pointer to curr_Xrange to change */
 
@@ -231,7 +231,7 @@ void parser_explicitly_set_curr_range( static_expr* left, static_expr* right, bo
 
  Deallocates and sets the curr_range variable from known integer values.
 */
-void parser_implicitly_set_curr_range( int left_num, int right_num, bool packed ) {
+void parser_implicitly_set_curr_range( int left_num, int right_num, bool packed ) { PROFILE(PARSER_IMPLICITLY_SET_CURR_RANGE);
 
   sig_range* crange;  /* Pointer to curr_Xrange to modify */
 
@@ -246,10 +246,10 @@ void parser_implicitly_set_curr_range( int left_num, int right_num, bool packed 
   /* Now rebuild current range, adding in the new range */
   crange->dim_num++;
   crange->dim = (vector_width*)realloc( crange->dim, (sizeof( vector_width ) * crange->dim_num) );
-  crange->dim[crange->dim_num - 1].left       = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
+  crange->dim[crange->dim_num - 1].left       = (static_expr*)malloc_safe( sizeof( static_expr ) );
   crange->dim[crange->dim_num - 1].left->num  = left_num;
   crange->dim[crange->dim_num - 1].left->exp  = NULL;
-  crange->dim[crange->dim_num - 1].right      = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
+  crange->dim[crange->dim_num - 1].right      = (static_expr*)malloc_safe( sizeof( static_expr ) );
   crange->dim[crange->dim_num - 1].right->num = right_num;
   crange->dim[crange->dim_num - 1].right->exp = NULL;
   crange->dim[crange->dim_num - 1].implicit   = TRUE;
@@ -262,7 +262,7 @@ void parser_implicitly_set_curr_range( int left_num, int right_num, bool packed 
  \return Returns TRUE if the given gen value (see \ref generations for legal values) is less than
          or equal to the generation value specified for the current functional unit (or globally).
 */
-bool parser_check_generation( int gen ) {
+bool parser_check_generation( int gen ) { PROFILE(PARSER_CHECK_GENERATION);
 
   bool      retval;    /* Return value for this function */
   str_link* strl;      /* Pointer to the str_link found to match the given mod_name */
@@ -287,6 +287,9 @@ bool parser_check_generation( int gen ) {
 
 /*
  $Log$
+ Revision 1.16  2007/11/20 05:28:59  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.15  2006/10/25 22:35:41  phase1geo
  Starting to update testsuite to verify VPI mode as well.  Fixing runtime
  issues with vpi.c.  Also updated VL_error output format for easier readability.

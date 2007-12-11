@@ -54,7 +54,7 @@ bool vcd_blackout;
 
  \return Returns a unique string ID for the given value
 */
-static char* vcdid( int value ) {
+static char* vcdid( int value ) { PROFILE(VCDID);
 
   static char buf[16];
   int         i;
@@ -72,7 +72,7 @@ static char* vcdid( int value ) {
 
 }
 
-void vcd_callback(struct lxt2_rd_trace **lt, lxtint64_t *pnt_time, lxtint32_t *pnt_facidx, char **pnt_value) {
+void vcd_callback(struct lxt2_rd_trace **lt, lxtint64_t *pnt_time, lxtint32_t *pnt_facidx, char **pnt_value) { PROFILE(VCD_CALLBACK);
 
   struct lxt2_rd_geometry *g = lxt2_rd_get_fac_geometry( *lt, *pnt_facidx );
 
@@ -122,7 +122,7 @@ void vcd_callback(struct lxt2_rd_trace **lt, lxtint64_t *pnt_time, lxtint32_t *p
  Main LXT parsing function.  Reads in an LXT-style dumpfile, tells Covered about signal information
  and simulation results.
 */
-void lxt_parse( char* lxt_file ) {
+void lxt_parse( char* lxt_file ) { PROFILE(LXT_PARSE);
 
   struct lxt2_rd_trace*    lt;             /* LXT read structure */
   int                      i;              /* Loop iterator */
@@ -143,7 +143,7 @@ void lxt_parse( char* lxt_file ) {
     vcd_symtab = symtable_create();
 
     /* Allocate memory for instance scope */
-    curr_inst_scope = (char*)malloc_safe( 4096, __FILE__, __LINE__ );
+    curr_inst_scope = (char*)malloc_safe( 4096 );
 
     /* Get symbol information */
     for( i=0; i<numfacs; i++ ) {
@@ -199,7 +199,7 @@ void lxt_parse( char* lxt_file ) {
 
     /* Create timestep symbol table array */
     if( vcd_symtab_size > 0 ) {
-      timestep_tab = malloc_safe_nolimit( (sizeof( symtable*) * vcd_symtab_size), __FILE__, __LINE__ );
+      timestep_tab = malloc_safe_nolimit( sizeof( symtable*) * vcd_symtab_size );
     }
 
     /* Perform simulation */
@@ -230,6 +230,9 @@ void lxt_parse( char* lxt_file ) {
 
 /*
  $Log$
+ Revision 1.11  2007/11/20 05:28:58  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.10  2006/11/21 19:54:13  phase1geo
  Making modifications to defines.h to help in creating appropriately sized types.
  Other changes to VPI code (but this is still broken at the moment).  Checkpointing.

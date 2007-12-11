@@ -28,7 +28,7 @@
 #include "util.h"
 
 
-void func_iter_display( func_iter* fi ) {
+void func_iter_display( func_iter* fi ) { PROFILE(FUNC_ITER_DISPLAY);
 
   int i;  /* Loop iterator */
 
@@ -45,7 +45,7 @@ void func_iter_display( func_iter* fi ) {
 
  Performs a bubble sort of the first element such that the first line is in location 0 of the sis array.
 */
-void func_iter_sort( func_iter* fi ) {
+void func_iter_sort( func_iter* fi ) { PROFILE(FUNC_ITER_SORT);
 
   stmt_iter* tmp;  /* Temporary statement iterator */
   int        i;    /* Loop iterator */
@@ -89,7 +89,7 @@ void func_iter_sort( func_iter* fi ) {
  \return Returns the number of statement iterators found in all of the unnamed functional units
          within a named functional unit.
 */
-int func_iter_count_stmt_iters( func_unit* funit ) {
+int func_iter_count_stmt_iters( func_unit* funit ) { PROFILE(FUNC_ITER_COUNT_STMT_ITERS);
 
   int         count = 1;  /* Number of statement iterators within this functional unit */
   funit_link* child;      /* Pointer to child functional unit */
@@ -113,7 +113,7 @@ int func_iter_count_stmt_iters( func_unit* funit ) {
 
 }
 
-void func_iter_add_stmt_iters( func_iter* fi, func_unit* funit ) {
+void func_iter_add_stmt_iters( func_iter* fi, func_unit* funit ) { PROFILE(FUNC_ITER_ADD_STMT_ITERS);
 
   funit_link* child;   /* Pointer to child functional unit */
   func_unit*  parent;  /* Pointer to parent module of this functional unit */
@@ -125,7 +125,7 @@ void func_iter_add_stmt_iters( func_iter* fi, func_unit* funit ) {
   }
 
   /* Now allocate a new statement iterator at position 0 and point it at the current functional unit statement list */
-  fi->sis[0] = (stmt_iter*)malloc_safe( sizeof( stmt_iter ), __FILE__, __LINE__ );
+  fi->sis[0] = (stmt_iter*)malloc_safe( sizeof( stmt_iter ) );
   stmt_iter_reset( fi->sis[0], funit->stmt_tail );
   stmt_iter_find_head( fi->sis[0], FALSE );
 
@@ -153,13 +153,13 @@ void func_iter_add_stmt_iters( func_iter* fi, func_unit* funit ) {
  \param fi     Pointer to functional unit iterator structure to populate
  \param funit  Pointer to main functional unit to create iterator for (must be named)
 */
-void func_iter_init( func_iter* fi, func_unit* funit ) {
+void func_iter_init( func_iter* fi, func_unit* funit ) { PROFILE(FUNC_ITER_INIT);
   
   assert( fi != NULL );
   assert( funit != NULL );
 
   /* Allocate array of statement iterators for the current functional unit */
-  fi->sis    = (stmt_iter**)malloc_safe( (sizeof( func_iter* ) * func_iter_count_stmt_iters( funit )), __FILE__, __LINE__ );
+  fi->sis    = (stmt_iter**)malloc_safe( sizeof( func_iter* ) * func_iter_count_stmt_iters( funit ) );
   fi->si_num = 0;
 
   /* Create statement iterators */
@@ -173,7 +173,7 @@ void func_iter_init( func_iter* fi, func_unit* funit ) {
  \return Returns pointer to next statement in line order (or NULL if there are no more
          statements in the given functional unit)
 */
-statement* func_iter_get_next_statement( func_iter* fi ) {
+statement* func_iter_get_next_statement( func_iter* fi ) { PROFILE(FUNC_ITER_GET_NEXT_STATEMENT);
 
   statement* stmt;  /* Pointer to next statement in line order */
 
@@ -207,7 +207,7 @@ statement* func_iter_get_next_statement( func_iter* fi ) {
  
  Deallocates all allocated memory for the given functional unit iterator.
 */
-void func_iter_dealloc( func_iter* fi ) {
+void func_iter_dealloc( func_iter* fi ) { PROFILE(FUNC_ITER_DEALLOC);
 
   int i;  /* Loop iterator */
   
@@ -227,6 +227,9 @@ void func_iter_dealloc( func_iter* fi ) {
 
 /*
  $Log$
+ Revision 1.3  2007/11/20 05:28:58  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.2  2007/04/03 04:15:17  phase1geo
  Fixing bugs in func_iter functionality.  Modified functional unit name
  flattening function (though this does not appear to be working correctly

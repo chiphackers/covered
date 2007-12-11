@@ -71,11 +71,11 @@ extern isuppl       info_suppl;
 
  Allocates and initializes an FSM structure.
 */
-fsm* fsm_create( expression* from_state, expression* to_state ) {
+fsm* fsm_create( expression* from_state, expression* to_state ) { PROFILE(FSM_CREATE);
 
   fsm* table;  /* Pointer to newly created FSM */
 
-  table             = (fsm*)malloc_safe( sizeof( fsm ), __FILE__, __LINE__ );
+  table             = (fsm*)malloc_safe( sizeof( fsm ) );
   table->name       = NULL;
   table->from_state = from_state;
   table->to_state   = to_state;
@@ -94,12 +94,12 @@ fsm* fsm_create( expression* from_state, expression* to_state ) {
 
  Adds new FSM arc structure to specified FSMs arc list.
 */
-void fsm_add_arc( fsm* table, expression* from_state, expression* to_state ) {
+void fsm_add_arc( fsm* table, expression* from_state, expression* to_state ) { PROFILE(FSM_ADD_ARC);
 
   fsm_arc* arc;  /* Pointer to newly created FSM arc structure */
 
   /* Create an initialize specified arc */
-  arc             = (fsm_arc*)malloc_safe( sizeof( fsm_arc ), __FILE__, __LINE__ );
+  arc             = (fsm_arc*)malloc_safe( sizeof( fsm_arc ) );
   arc->from_state = from_state;
   arc->to_state   = to_state;
   arc->next       = NULL;
@@ -121,7 +121,7 @@ void fsm_add_arc( fsm* table, expression* from_state, expression* to_state ) {
  an FSM structure (allocate memory for its tables) and the associated
  FSM arc list is parsed, setting the appropriate bit in the valid table.
 */
-void fsm_create_tables( fsm* table ) {
+void fsm_create_tables( fsm* table ) { PROFILE(FSM_CREATE_TABLES);
 
   fsm_arc* curr_arc;    /* Pointer to current FSM arc structure */
   bool     set = TRUE;  /* Specifies if specified bit was set */
@@ -159,7 +159,7 @@ void fsm_create_tables( fsm* table ) {
 
  Outputs the contents of the specified FSM to the specified CDD file.
 */
-bool fsm_db_write( fsm* table, FILE* file, bool parse_mode ) {
+bool fsm_db_write( fsm* table, FILE* file, bool parse_mode ) { PROFILE(FSM_DB_WRITE);
 
   bool retval = TRUE;  /* Return value for this function */
 
@@ -198,7 +198,7 @@ bool fsm_db_write( fsm* table, FILE* file, bool parse_mode ) {
  Reads in contents of FSM line from CDD file and stores newly created
  FSM into the specified functional unit.
 */
-bool fsm_db_read( char** line, func_unit* funit ) {
+bool fsm_db_read( char** line, func_unit* funit ) { PROFILE(FSM_DB_READ);
 
   bool       retval = TRUE;  /* Return value for this function */
   expression iexp;           /* Temporary signal used for finding state variable */
@@ -296,7 +296,7 @@ bool fsm_db_read( char** line, func_unit* funit ) {
  is displayed to the user.  If both FSMs are the same, perform the merge
  on the FSM's tables.
 */
-bool fsm_db_merge( fsm* base, char** line, bool same ) {
+bool fsm_db_merge( fsm* base, char** line, bool same ) { PROFILE(FSM_DB_MERGE);
 
   bool   retval = TRUE;  /* Return value of this function */
   int    iid;            /* Input state variable expression ID */
@@ -344,7 +344,7 @@ bool fsm_db_merge( fsm* base, char** line, bool same ) {
  to the specified FSM structure arc array (if an entry does not already
  exist in the array).
 */
-void fsm_table_set( fsm* table ) {
+void fsm_table_set( fsm* table ) { PROFILE(FSM_TABLE_SET);
 
   arc_add( &(table->table), table->from_state->value, table->to_state->value, 1 );
 
@@ -359,7 +359,7 @@ void fsm_table_set( fsm* table ) {
 
  Recursive
 */
-void fsm_get_stats( fsm_link* table, float* state_total, int* state_hit, float* arc_total, int* arc_hit ) {
+void fsm_get_stats( fsm_link* table, float* state_total, int* state_hit, float* arc_total, int* arc_hit ) { PROFILE(FSM_GET_STATS);
 
   fsm_link* curr;   /* Pointer to current FSM in table list */
 
@@ -381,7 +381,7 @@ void fsm_get_stats( fsm_link* table, float* state_total, int* state_hit, float* 
 
  Retrieves the FSM summary information for the specified functional unit.
 */
-bool fsm_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit ) {
+bool fsm_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit ) { PROFILE(FSM_GET_FUNIT_SUMMARY);
 
   bool        retval = TRUE;  /* Return value of this function */
   func_unit   funit;          /* Functional unit used for searching */
@@ -419,7 +419,7 @@ bool fsm_get_funit_summary( char* funit_name, int funit_type, int* total, int* h
  points to one to the specified signal list.  Also captures the expression ID of the statement
  containing this signal for each signal found (if expr_id is a non-negative value).
 */
-void fsm_gather_signals( expression* expr, sig_link** head, sig_link** tail, int expr_id, int** expr_ids, int* expr_id_size ) {
+void fsm_gather_signals( expression* expr, sig_link** head, sig_link** tail, int expr_id, int** expr_ids, int* expr_id_size ) { PROFILE(FSM_GATHER_SIGNALS);
 
   if( expr != NULL ) {
 
@@ -463,7 +463,7 @@ void fsm_gather_signals( expression* expr, sig_link** head, sig_link** tail, int
  Used by the GUI for verbose FSM output.
 */
 bool fsm_collect( char* funit_name, int funit_type, sig_link** cov_head, sig_link** cov_tail,
-                  sig_link** uncov_head, sig_link** uncov_tail, int** expr_ids, int** excludes ) {
+                  sig_link** uncov_head, sig_link** uncov_tail, int** expr_ids, int** excludes ) { PROFILE(FSM_COLLECT);
 
   bool        retval = TRUE;   /* Return value for this function */
   func_unit   funit;           /* Functional unit used for searching */
@@ -557,7 +557,7 @@ bool fsm_get_coverage( char* funit_name, int funit_type, int expr_id, int* width
                        char*** hit_states, int* hit_state_num,
                        char*** total_from_arcs, char*** total_to_arcs, int** excludes, int* total_arc_num,
                        char*** hit_from_arcs, char*** hit_to_arcs, int* hit_arc_num,
-                       char*** input_state, int* input_size, char*** output_state, int* output_size ) {
+                       char*** input_state, int* input_size, char*** output_state, int* output_size ) { PROFILE(FSM_GET_COVERAGE);
 
   bool        retval = FALSE;  /* Return value for this function */
   func_unit   funit;           /* Functional unit structure used for searching */
@@ -606,7 +606,7 @@ bool fsm_get_coverage( char* funit_name, int funit_type, int expr_id, int* width
 
 }
 
-bool fsm_display_instance_summary( FILE* ofile, char* name, int state_hit, float state_total, int arc_hit, float arc_total ) {
+bool fsm_display_instance_summary( FILE* ofile, char* name, int state_hit, float state_total, int arc_hit, float arc_total ) { PROFILE(FSM_DISPLAY_INSTANCE_SUMMARY);
 
   float state_percent;  /* Percentage of states hit */
   float arc_percent;    /* Percentage of arcs hit */
@@ -641,7 +641,7 @@ bool fsm_display_instance_summary( FILE* ofile, char* name, int state_hit, float
 
  Generates an instance summary report of the current FSM states and arcs hit during simulation.
 */
-bool fsm_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst, int* state_hits, float* state_total, int* arc_hits, float* arc_total ) {
+bool fsm_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst, int* state_hits, float* state_total, int* arc_hits, float* arc_total ) { PROFILE(FSM_INSTANCE_SUMMARY);
 
   funit_inst* curr;                /* Pointer to current child functional unit instance of this node */
   char        tmpname[4096];       /* Temporary name holder for instance */
@@ -713,7 +713,7 @@ bool fsm_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst, int
 
  Outputs the summary FSM state/arc information for a given functional unit to the given output stream.
 */
-bool fsm_display_funit_summary( FILE* ofile, const char* name, const char* fname, int state_hits, float state_total, int arc_hits, float arc_total ) {
+bool fsm_display_funit_summary( FILE* ofile, const char* name, const char* fname, int state_hits, float state_total, int arc_hits, float arc_total ) { PROFILE(FSM_DISPLAY_FUNIT_SUMMARY);
 
   float state_percent;  /* Percentage of states hit */
   float arc_percent;    /* Percentage of arcs hit */
@@ -743,7 +743,7 @@ bool fsm_display_funit_summary( FILE* ofile, const char* name, const char* fname
 
  Generates a functional unit summary report of the current FSM states and arcs hit during simulation.
 */
-bool fsm_funit_summary( FILE* ofile, funit_link* head, int* state_hits, float* state_total, int* arc_hits, float* arc_total ) {
+bool fsm_funit_summary( FILE* ofile, funit_link* head, int* state_hits, float* state_total, int* arc_hits, float* arc_total ) { PROFILE(FSM_FUNIT_SUMMARY);
 
   bool  miss_found = FALSE;  /* Set to TRUE if state/arc was found to be missed */
   char* pname;               /* Printable version of functional unit name */
@@ -794,7 +794,7 @@ bool fsm_funit_summary( FILE* ofile, funit_link* head, int* state_hits, float* s
  Displays verbose information for hit/missed states to the specified
  output file.
 */
-void fsm_display_state_verbose( FILE* ofile, fsm* table ) {
+void fsm_display_state_verbose( FILE* ofile, fsm* table ) { PROFILE(FSM_DISPLAY_STATE_VERBOSE);
 
   bool   trans_known;  /* Set to TRUE if all legal arc transitions are known */
   char** states;       /* String array of all states */
@@ -839,7 +839,7 @@ void fsm_display_state_verbose( FILE* ofile, fsm* table ) {
  Displays verbose information for hit/missed state transitions to
  the specified output file.
 */
-void fsm_display_arc_verbose( FILE* ofile, fsm* table ) {
+void fsm_display_arc_verbose( FILE* ofile, fsm* table ) { PROFILE(FSM_DISPLAY_ARC_VERBOSE);
 
   bool   trans_known;   /* Set to TRUE if the number of state transitions is known */
   char   fstr[100];     /* Format string */
@@ -909,7 +909,7 @@ void fsm_display_arc_verbose( FILE* ofile, fsm* table ) {
  Displays the verbose FSM state and state transition information to the specified
  output file.
 */
-void fsm_display_verbose( FILE* ofile, fsm_link* head ) {
+void fsm_display_verbose( FILE* ofile, fsm_link* head ) { PROFILE(FSM_DISPLAY_VERBOSE);
 
   char** icode;        /* Verilog output of input state variable expression */
   int    icode_depth;  /* Number of valid entries in the icode array */
@@ -960,7 +960,7 @@ void fsm_display_verbose( FILE* ofile, fsm_link* head ) {
 
  Generates an instance verbose report of the current FSM states and arcs hit during simulation.
 */
-void fsm_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst ) {
+void fsm_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst ) { PROFILE(FSM_INSTANCE_VERBOSE);
 
   funit_inst* curr_inst;      /* Pointer to current instance being evaluated */
   char        tmpname[4096];  /* Temporary name holder for instance */
@@ -1024,7 +1024,7 @@ void fsm_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst ) {
 
  Generates a functional unit verbose report of the current FSM states and arcs hit during simulation.
 */
-void fsm_funit_verbose( FILE* ofile, funit_link* head ) {
+void fsm_funit_verbose( FILE* ofile, funit_link* head ) { PROFILE(FSM_FUNIT_VERBOSE);
 
   char* pname;  /* Printable version of functional unit name */
 
@@ -1075,7 +1075,7 @@ void fsm_funit_verbose( FILE* ofile, funit_link* head ) {
  specify its own FSM coverage along with a total FSM coverage including its 
  children.
 */
-void fsm_report( FILE* ofile, bool verbose ) {
+void fsm_report( FILE* ofile, bool verbose ) { PROFILE(FSM_REPORT);
 
   bool       missed_found  = FALSE;  /* If set to TRUE, FSM cases were found to be missed */
   char       tmp[4096];              /* Temporary string value */
@@ -1145,7 +1145,7 @@ void fsm_report( FILE* ofile, bool verbose ) {
 
  Deallocates all allocated memory for the specified FSM structure.
 */
-void fsm_dealloc( fsm* table ) {
+void fsm_dealloc( fsm* table ) { PROFILE(FSM_DEALLOC);
 
   fsm_arc* tmp;  /* Temporary pointer to current FSM arc structure to deallocate */
 
@@ -1186,6 +1186,9 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.72  2007/11/20 05:28:58  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.71  2007/09/13 17:03:30  phase1geo
  Cleaning up some const-ness corrections -- still more to go but it's a good
  start.

@@ -85,7 +85,7 @@ int score_arg_num = 0;
 /*!
  Initializes all variables used for information.
 */
-void info_initialize() {
+void info_initialize() { PROFILE(INFO_INITIALIZE);
 
   leading_hier_num     = 0;
   leading_hiers_differ = FALSE;
@@ -97,7 +97,7 @@ void info_initialize() {
  
  Writes information line to specified file.
 */
-void info_db_write( FILE* file ) {
+void info_db_write( FILE* file ) { PROFILE(INFO_DB_WRITE);
 
   int i;  /* Loop iterator */
 
@@ -140,7 +140,7 @@ void info_db_write( FILE* file ) {
 
  Reads information line from specified string and stores its information.
 */
-bool info_db_read( char** line ) {
+bool info_db_read( char** line ) { PROFILE(INFO_DB_READ);
 
   bool    retval = TRUE;  /* Return value for this function */
   int     chars_read;     /* Number of characters scanned in from this line */
@@ -170,7 +170,7 @@ bool info_db_read( char** line ) {
 
     /* Assign this hierarchy to the leading hierarchies array */
     leading_hierarchies = (char**)realloc( leading_hierarchies, (sizeof( char* ) * (leading_hier_num + 1)) );
-    leading_hierarchies[leading_hier_num] = strdup_safe( tmp1, __FILE__, __LINE__ );
+    leading_hierarchies[leading_hier_num] = strdup_safe( tmp1 );
     leading_hier_num++;
 
     for( i=0; i<mnum; i++ ) {
@@ -181,7 +181,7 @@ bool info_db_read( char** line ) {
 
         /* Add merged file */
         merge_in = (char**)realloc( merge_in, (sizeof( char* ) * (merge_in_num + 1)) );
-        merge_in[merge_in_num] = strdup_safe( tmp1, __FILE__, __LINE__ );
+        merge_in[merge_in_num] = strdup_safe( tmp1 );
         merge_in_num++;
 
         /* Set leading_hiers_differ to TRUE if this is not the first hierarchy and it differs from the first */
@@ -191,7 +191,7 @@ bool info_db_read( char** line ) {
 
         /* Add its hierarchy */
         leading_hierarchies = (char**)realloc( leading_hierarchies, (sizeof( char* ) * (leading_hier_num + 1)) );
-        leading_hierarchies[leading_hier_num] = strdup_safe( tmp2, __FILE__, __LINE__ );
+        leading_hierarchies[leading_hier_num] = strdup_safe( tmp2 );
         leading_hier_num++;
 
       } else {
@@ -224,7 +224,7 @@ bool info_db_read( char** line ) {
 
  Reads score command-line args line from specified string and stores its information.
 */
-bool args_db_read( char** line ) {
+bool args_db_read( char** line ) { PROFILE(ARGS_DB_READ);
 
   bool retval = TRUE;  /* Return value for this function */
   int  chars_read;     /* Number of characters scanned in from this line */
@@ -238,7 +238,7 @@ bool args_db_read( char** line ) {
     while( sscanf( *line, "%s%n", tmp1, &chars_read ) == 1 ) {
       *line                     = *line + chars_read;
       score_args                = (char**)realloc( score_args, (sizeof( char* ) * (score_arg_num + 1)) );
-      score_args[score_arg_num] = strdup_safe( tmp1, __FILE__, __LINE__ );
+      score_args[score_arg_num] = strdup_safe( tmp1 );
       score_arg_num++;
     }
 
@@ -257,7 +257,7 @@ bool args_db_read( char** line ) {
  Deallocates all memory associated with the database information section.  Needs to be called
  when the database is closed.
 */
-void info_dealloc() {
+void info_dealloc() { PROFILE(INFO_DEALLOC);
 
   int i;  /* Loop iterator */
 
@@ -283,6 +283,9 @@ void info_dealloc() {
 
 /*
  $Log$
+ Revision 1.20  2007/11/20 05:28:58  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.19  2006/10/13 15:56:02  phase1geo
  Updating rest of source files for compiler warnings.
 

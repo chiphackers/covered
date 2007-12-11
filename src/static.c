@@ -84,7 +84,7 @@ extern int        curr_expr_id;
  expression, create an expression for the specified operation type and store
  this expression in the original expression pointer field.
 */
-static_expr* static_expr_gen_unary( static_expr* stexp, int op, int line, int first, int last ) {
+static_expr* static_expr_gen_unary( static_expr* stexp, int op, int line, int first, int last ) { PROFILE(STATIC_EXPR_GEN_UNARY);
 
   expression* tmpexp;  /* Container for newly created expression */
   int uop;             /* Temporary bit holder */
@@ -140,7 +140,7 @@ static_expr* static_expr_gen_unary( static_expr* stexp, int op, int line, int fi
         case EXP_OP_PASSIGN :
           tmpexp = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, line, first, last, FALSE );
           curr_expr_id++;
-          vector_init( tmpexp->value, (vec_data*)malloc_safe( (sizeof( vec_data ) * 32), __FILE__, __LINE__ ), 32, VTYPE_EXP );
+          vector_init( tmpexp->value, (vec_data*)malloc_safe( sizeof( vec_data ) * 32 ), 32, VTYPE_EXP );
           vector_from_int( tmpexp->value, stexp->num );
         
           stexp->exp = expression_create( tmpexp, NULL, op, FALSE, curr_expr_id, line, first, last, FALSE );
@@ -184,7 +184,7 @@ static_expr* static_expr_gen_unary( static_expr* stexp, int op, int line, int fi
  consisting of those two expressions and specified operator.  Store the newly create
  expression in the original right static_expr and deallocate the left static_expr.
 */
-static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int line, int first, int last, char* func_name ) {
+static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int line, int first, int last, char* func_name ) { PROFILE(STATIC_EXPR_GEN);
 
   expression* tmpexp;     /* Temporary expression for holding newly created parent expression */
   int         i;          /* Loop iterator */
@@ -235,7 +235,7 @@ static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int
 
         right->exp = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, line, first, last, FALSE );
         curr_expr_id++;
-        vector_init( right->exp->value, (vec_data*)malloc_safe( (sizeof( vec_data ) * 32), __FILE__, __LINE__ ), 32, VTYPE_EXP );  
+        vector_init( right->exp->value, (vec_data*)malloc_safe( sizeof( vec_data ) * 32 ), 32, VTYPE_EXP );  
         vector_from_int( right->exp->value, right->num );
 
         tmpexp = expression_create( right->exp, left->exp, op, FALSE, curr_expr_id, line, first, last, FALSE );
@@ -250,7 +250,7 @@ static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int
 
         left->exp = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, line, first, last, FALSE );
         curr_expr_id++;
-        vector_init( left->exp->value, (vec_data*)malloc_safe( (sizeof( vec_data ) * 32), __FILE__, __LINE__ ), 32, VTYPE_EXP );
+        vector_init( left->exp->value, (vec_data*)malloc_safe( sizeof( vec_data ) * 32 ), 32, VTYPE_EXP );
         vector_from_int( left->exp->value, left->num );
 
         tmpexp = expression_create( right->exp, left->exp, op, FALSE, curr_expr_id, line, first, last, FALSE );
@@ -277,7 +277,7 @@ static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int
     assert( right == NULL );
     assert( left  != NULL );
 
-    right = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
+    right = (static_expr*)malloc_safe( sizeof( static_expr ) );
     right->exp = expression_create( NULL, left->exp, op, FALSE, curr_expr_id, line, first, last, FALSE );
     curr_expr_id++;
 
@@ -305,7 +305,7 @@ static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int
  static expression), set LSB to -1.  The endianness can only be used if the width is known.
  The returned width and lsb parameters can be used to size a vector instantiation.
 */
-void static_expr_calc_lsb_and_width_pre( static_expr* left, static_expr* right, int* width, int* lsb, int* big_endian ) {
+void static_expr_calc_lsb_and_width_pre( static_expr* left, static_expr* right, int* width, int* lsb, int* big_endian ) { PROFILE(STATIC_EXPR_CALC_LSB_AND_WIDTH_PRE);
 
   *width      = -1;
   *lsb        = -1;
@@ -347,7 +347,7 @@ void static_expr_calc_lsb_and_width_pre( static_expr* left, static_expr* right, 
  static expressions.  This function assumes that any expressions have been calculated for
  a legal value.
 */
-void static_expr_calc_lsb_and_width_post( static_expr* left, static_expr* right, int* width, int* lsb, int* big_endian ) {
+void static_expr_calc_lsb_and_width_post( static_expr* left, static_expr* right, int* width, int* lsb, int* big_endian ) { PROFILE(STATIC_EXPR_CALC_LSB_AND_WIDTH_POST);
   
   assert( left  != NULL );
   assert( right != NULL );
@@ -392,7 +392,7 @@ void static_expr_calc_lsb_and_width_post( static_expr* left, static_expr* right,
  Deallocates all allocated memory from the heap for the specified static_expr
  structure.
 */
-void static_expr_dealloc( static_expr* stexp, bool rm_exp ) {
+void static_expr_dealloc( static_expr* stexp, bool rm_exp ) { PROFILE(STATIC_EXPR_DEALLOC);
 
   if( stexp != NULL ) {
 
@@ -408,6 +408,9 @@ void static_expr_dealloc( static_expr* stexp, bool rm_exp ) {
 
 /*
  $Log$
+ Revision 1.27  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.26  2006/10/13 22:46:31  phase1geo
  Things are a bit of a mess at this point.  Adding generate12 diagnostic that
  shows a failure in properly handling generates of instances.

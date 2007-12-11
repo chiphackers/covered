@@ -38,7 +38,7 @@ extern const exp_info exp_op_info[EXP_OP_NUM];
  Recursively iterates up the functional unit tree keeping track of the total number of bits needed
  to store all information in the current reentrant task/function.
 */
-int reentrant_count_afu_bits( func_unit* funit ) {
+int reentrant_count_afu_bits( func_unit* funit ) { PROFILE(REENTRANT_COUNT_AFU_BITS);
 
   sig_link* sigl;      /* Pointer to current signal link */
   exp_link* expl;      /* Pointer to current expression link */
@@ -82,7 +82,7 @@ int reentrant_count_afu_bits( func_unit* funit ) {
  Recursively gathers all signal data bits to store and stores them in the given reentrant
  structure.
 */
-void reentrant_store_data_bits( func_unit* funit, reentrant* ren, int curr_bit ) {
+void reentrant_store_data_bits( func_unit* funit, reentrant* ren, int curr_bit ) { PROFILE(REENTRANT_STORE_DATA_BITS);
 
   sig_link* sigl;  /* Pointer to current signal link in current functional unit */
   exp_link* expl;  /* Pointer to current expression link in current functional unit */
@@ -146,7 +146,7 @@ void reentrant_store_data_bits( func_unit* funit, reentrant* ren, int curr_bit )
 
  Recursively restores the signal and expression values of the functional units in a reentrant task/function.
 */
-void reentrant_restore_data_bits( func_unit* funit, reentrant* ren, int curr_bit, uint64 sim_time, expression* expr ) {
+void reentrant_restore_data_bits( func_unit* funit, reentrant* ren, int curr_bit, uint64 sim_time, expression* expr ) { PROFILE(REENTRANT_RESTORE_DATA_BITS);
 
   sig_link* sigl;  /* Pointer to current signal link */
   exp_link* expl;  /* Pointer to current expression link */
@@ -211,7 +211,7 @@ void reentrant_restore_data_bits( func_unit* funit, reentrant* ren, int curr_bit
  Allocates and initializes the reentrant structure for the given functional unit,
  compressing and packing the bits into the given data structure.
 */
-reentrant* reentrant_create( func_unit* funit ) {
+reentrant* reentrant_create( func_unit* funit ) { PROFILE(REENTRANT_CREATE);
 
   reentrant* ren  = NULL;  /* Pointer to newly created reentrant structure */
   int        data_size;    /* Number of nibbles needed to store the given functional unit */
@@ -228,13 +228,13 @@ reentrant* reentrant_create( func_unit* funit ) {
   if( data_size > 0 ) {
 
     /* Allocate the structure */
-    ren = (reentrant*)malloc_safe( sizeof( reentrant ), __FILE__, __LINE__ );
+    ren = (reentrant*)malloc_safe( sizeof( reentrant ) );
 
     /* Set the data size */
     ren->data_size = data_size;
 
     /* Allocate and initialize memory for data */
-    ren->data = (nibble*)malloc_safe( (sizeof( nibble ) * ren->data_size), __FILE__, __LINE__ );
+    ren->data = (nibble*)malloc_safe( sizeof( nibble ) * ren->data_size );
     for( i=0; i<data_size; i++ ) {
       ren->data[i] = 0;
     }
@@ -257,7 +257,7 @@ reentrant* reentrant_create( func_unit* funit ) {
  Pops data back into the given functional unit and deallocates all memory associated
  with the given reentrant structure.
 */
-void reentrant_dealloc( reentrant* ren, func_unit* funit, uint64 sim_time, expression* expr ) {
+void reentrant_dealloc( reentrant* ren, func_unit* funit, uint64 sim_time, expression* expr ) { PROFILE(REENTRANT_DEALLOC);
 
   sig_link* sigl;     /* Pointer to current signal link in list */
   int       i;        /* Loop iterator */
@@ -285,6 +285,9 @@ void reentrant_dealloc( reentrant* ren, func_unit* funit, uint64 sim_time, expre
 
 /*
  $Log$
+ Revision 1.11  2007/11/20 05:28:59  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.10  2007/09/04 22:50:50  phase1geo
  Fixed static_afunc1 issues.  Reran regressions and updated necessary files.
  Also working on debugging one remaining issue with mem1.v (not solved yet).

@@ -182,7 +182,7 @@ _LXT2_RD_INLINE granmsk_t lxt2_rd_tzc( granmsk_t x ) {
 /*
  * i2c and c2i utility functions
  */
-static char* lxt2_rd_expand_integer_to_bits( int len, unsigned int value ) {
+static char* lxt2_rd_expand_integer_to_bits( int len, unsigned int value ) { PROFILE(LXT2_RD_EXPAND_INTEGER_TO_BITS);
 
   static char s[33];
   char*       p    = s;
@@ -199,7 +199,7 @@ static char* lxt2_rd_expand_integer_to_bits( int len, unsigned int value ) {
 
 }
 
-unsigned int lxt2_rd_expand_bits_to_integer( int len, char* s ) {
+unsigned int lxt2_rd_expand_bits_to_integer( int len, char* s ) { PROFILE(LXT2_RD_EXPAND_BITS_TO_INTEGER);
 
   unsigned int v = 0;
   int          i;
@@ -219,7 +219,7 @@ unsigned int lxt2_rd_expand_bits_to_integer( int len, char* s ) {
  * (as they're all unique based on the timeslot scheme, no duplicate
  * checking is necessary...)
  */
-void lxt2_rd_iter_radix( struct lxt2_rd_trace *lt, struct lxt2_rd_block *b ) {
+void lxt2_rd_iter_radix( struct lxt2_rd_trace *lt, struct lxt2_rd_block *b ) { PROFILE(LXT2_RD_ITER_RADIX);
 
   unsigned int which_time;
   int          offset;
@@ -311,7 +311,7 @@ void lxt2_rd_iter_radix( struct lxt2_rd_trace *lt, struct lxt2_rd_block *b ) {
           }
           if( lt->flags[idx] & (LXT2_RD_SYM_F_DOUBLE | LXT2_RD_SYM_F_STRING) ) {
             free_safe( lt->value[idx] );
-            lt->value[idx] = strdup_safe( b->string_pointers[vch], __FILE__, __LINE__ );
+            lt->value[idx] = strdup_safe( b->string_pointers[vch] );
             break;
           }
           if( lt->len[idx] == b->string_lens[vch] ) {
@@ -345,7 +345,7 @@ void lxt2_rd_iter_radix( struct lxt2_rd_trace *lt, struct lxt2_rd_block *b ) {
  * called for only 1st vch in a block: blocks out emission of duplicate
  * vch from preceeding block
  */
-void lxt2_rd_iter_radix0( struct lxt2_rd_trace* lt, struct lxt2_rd_block* b, lxtint32_t idx ) {
+void lxt2_rd_iter_radix0( struct lxt2_rd_trace* lt, struct lxt2_rd_block* b, lxtint32_t idx ) { PROFILE(LXT2_RD_ITER_RADIX0);
 
   unsigned int vch;
   unsigned int which_time;
@@ -431,7 +431,7 @@ void lxt2_rd_iter_radix0( struct lxt2_rd_trace* lt, struct lxt2_rd_block* b, lxt
       if( lt->flags[idx] & (LXT2_RD_SYM_F_DOUBLE | LXT2_RD_SYM_F_STRING) ) {
         if( strcmp( lt->value[idx], b->string_pointers[vch] ) ) {
           free_safe( lt->value[idx] );
-          lt->value[idx] = strdup_safe( b->string_pointers[vch], __FILE__, __LINE__ );
+          lt->value[idx] = strdup_safe( b->string_pointers[vch] );
           uniq = 1;
         }
         break;
@@ -485,7 +485,7 @@ fini:
  * do this because of the limited domain of the dataset.
  */
 static void lxt2_rd_build_radix( struct lxt2_rd_trace* lt, struct lxt2_rd_block* b, int granule,
-                                 lxtint32_t strtfac, lxtint32_t endfac ) {
+                                 lxtint32_t strtfac, lxtint32_t endfac ) { PROFILE(LXT2_RD_BUILD_RADIX);
 
   int i;
   int offset;
@@ -527,7 +527,7 @@ static void lxt2_rd_build_radix( struct lxt2_rd_trace* lt, struct lxt2_rd_block*
 /*
  * build compressed process mask if necessary
  */
-static void lxt2_rd_regenerate_process_mask( struct lxt2_rd_trace* lt ) {
+static void lxt2_rd_regenerate_process_mask( struct lxt2_rd_trace* lt ) { PROFILE(LXT2_RD_REGENERATE_PROCESS_MASK);
 
   int i, j, lim, idx;
 
@@ -568,7 +568,7 @@ static void lxt2_rd_regenerate_process_mask( struct lxt2_rd_trace* lt ) {
 /*
  * process a single block and execute the vch callback as necessary
  */
-int lxt2_rd_process_block( struct lxt2_rd_trace* lt, struct lxt2_rd_block* b ) {
+int lxt2_rd_process_block( struct lxt2_rd_trace* lt, struct lxt2_rd_block* b ) { PROFILE(LXT2_RD_PROCESS_BLOCK);
 
   char       vld;
   char*      pnt;
@@ -601,8 +601,8 @@ int lxt2_rd_process_block( struct lxt2_rd_trace* lt, struct lxt2_rd_block* b ) {
   }
 
   if( b->num_dict_entries ) {
-    b->string_pointers = malloc( b->num_dict_entries * sizeof( char* ) );
-    b->string_lens     = malloc( b->num_dict_entries * sizeof( unsigned int ) );
+    b->string_pointers = malloc_safe_nolimit( b->num_dict_entries * sizeof( char* ) );
+    b->string_lens     = malloc_safe_nolimit( b->num_dict_entries * sizeof( unsigned int ) );
     pnt                = b->dict_start;
     for( i=0; i<b->num_dict_entries; i++ ) {
       b->string_pointers[i] = pnt;
@@ -750,7 +750,7 @@ struct lxt2_rd_trace* lxt2_rd_init( const char* name ) {
 
 }
 #else
-struct lxt2_rd_trace* lxt2_rd_init( const char* name ) {
+struct lxt2_rd_trace* lxt2_rd_init( const char* name ) { PROFILE(LXT2_RD_INIT);
 
   struct lxt2_rd_trace* lt = (struct lxt2_rd_trace*)calloc( 1, sizeof( struct lxt2_rd_trace ) );
   int                   i;
@@ -836,7 +836,7 @@ struct lxt2_rd_trace* lxt2_rd_init( const char* name ) {
 
       /* Open and read the name section of the file that is compressed */
       lt->zhandle = gzdopen( dup( fileno( lt->handle ) ), "rb" );
-      m  = (char*)malloc( lt->zfacname_predec_size );
+      m  = (char*)malloc_safe_nolimit( lt->zfacname_predec_size );
       rc = gzread( lt->zhandle, m, lt->zfacname_predec_size );
       gzclose( lt->zhandle );
       lt->zhandle = NULL;
@@ -854,14 +854,14 @@ struct lxt2_rd_trace* lxt2_rd_init( const char* name ) {
 
       lt->faccache = calloc( 1, sizeof( struct lxt2_rd_facname_cache ) );
       lt->faccache->old_facidx = lt->numfacs;   /* Causes lxt2_rd_get_facname to initialize its unroll ptr as this is always invalid */
-      lt->faccache->bufcurr = malloc( lt->longestname + 1 );
-      lt->faccache->bufprev = malloc( lt->longestname + 1 );
+      lt->faccache->bufcurr = malloc_safe_nolimit( lt->longestname + 1 );
+      lt->faccache->bufprev = malloc_safe_nolimit( lt->longestname + 1 );
 
       fseeko( lt->handle, (pos = (pos + lt->zfacnamesize)), SEEK_SET );
       lt->zhandle = gzdopen( dup( fileno( lt->handle ) ), "rb" );
 
       t  = lt->numfacs * 4 * sizeof( lxtint32_t );
-      m  = (char*)malloc( t );				
+      m  = (char*)malloc_safe_nolimit( t );				
       rc = gzread( lt->zhandle, m, t );
       gzclose( lt->zhandle );
       lt->zhandle = NULL;
@@ -881,13 +881,13 @@ struct lxt2_rd_trace* lxt2_rd_init( const char* name ) {
 
       pos = pos + lt->zfacgeometrysize;
 
-      lt->rows       = malloc( lt->numfacs * sizeof( lxtint32_t ) );
-      lt->msb        = malloc( lt->numfacs * sizeof( lxtint32_t ) );
-      lt->lsb        = malloc( lt->numfacs * sizeof( lxtint32_t ) );
-      lt->flags      = malloc( lt->numfacs * sizeof( lxtint32_t ) );
-      lt->len        = malloc( lt->numfacs * sizeof( lxtint32_t ) );
-      lt->value      = malloc( lt->numfacs * sizeof( char* ) );
-      lt->next_radix = malloc( lt->numfacs * sizeof( void* ) );
+      lt->rows       = malloc_safe_nolimit( lt->numfacs * sizeof( lxtint32_t ) );
+      lt->msb        = malloc_safe_nolimit( lt->numfacs * sizeof( lxtint32_t ) );
+      lt->lsb        = malloc_safe_nolimit( lt->numfacs * sizeof( lxtint32_t ) );
+      lt->flags      = malloc_safe_nolimit( lt->numfacs * sizeof( lxtint32_t ) );
+      lt->len        = malloc_safe_nolimit( lt->numfacs * sizeof( lxtint32_t ) );
+      lt->value      = malloc_safe_nolimit( lt->numfacs * sizeof( char* ) );
+      lt->next_radix = malloc_safe_nolimit( lt->numfacs * sizeof( void* ) );
 
       for( i=0; i<lt->numfacs; i++ ) {
         lt->rows[i]  = lxt2_rd_get_32( m + i * 16, 0 );
@@ -916,8 +916,8 @@ struct lxt2_rd_trace* lxt2_rd_init( const char* name ) {
       lt->prev_time = ~(LXT2_RD_GRAN_0VAL);
       free( m );
 
-      lt->fac_map    = malloc( lt->numfacs * sizeof( granmsk_t ) );
-      lt->fac_curpos = malloc( lt->numfacs * sizeof( char* ) );
+      lt->fac_map    = malloc_safe_nolimit( lt->numfacs * sizeof( granmsk_t ) );
+      lt->fac_curpos = malloc_safe_nolimit( lt->numfacs * sizeof( char* ) );
 
       for( ; ; ) {
 
@@ -1015,7 +1015,7 @@ struct lxt2_rd_trace* lxt2_rd_init( const char* name ) {
  * calloc() is used to allocate all structs) as performance
  * isn't an issue for this set of cleanup code
  */
-void lxt2_rd_close( struct lxt2_rd_trace* lt ) {
+void lxt2_rd_close( struct lxt2_rd_trace* lt ) { PROFILE(LXT2_RD_CLOSE);
 
   if( lt ) {
 
@@ -1241,7 +1241,7 @@ _LXT2_RD_INLINE char lxt2_rd_get_timescale( struct lxt2_rd_trace* lt ) {
  * performs best when extracting facs with monotonically
  * increasing indices...
  */
-char* lxt2_rd_get_facname( struct lxt2_rd_trace* lt, lxtint32_t facidx ) {
+char* lxt2_rd_get_facname( struct lxt2_rd_trace* lt, lxtint32_t facidx ) { PROFILE(LXT2_RD_GET_FACNAME);
 
   char* pnt;
   int   clone, j;
@@ -1474,7 +1474,7 @@ int lxt2_rd_iter_blocks( struct lxt2_rd_trace* lt,
  */
 int lxt2_rd_iter_blocks( struct lxt2_rd_trace* lt, 
                          void (*value_change_callback)( struct lxt2_rd_trace** lt, lxtint64_t* time, lxtint32_t* facidx, char** value ),
-                         void *user_callback_data_pointer ) {
+                         void *user_callback_data_pointer ) { PROFILE(LXT2_RD_ITER_BLOCKS);
 
   struct lxt2_rd_block* b;
   int                   blk       = 0;
@@ -1530,7 +1530,7 @@ int lxt2_rd_iter_blocks( struct lxt2_rd_trace* lt,
           struct z_stream_s strm;
 
           real_uncompressed_siz = b->uncompressed_siz;
-          pnt = b->mem = malloc( b->uncompressed_siz );
+          pnt = b->mem = malloc_safe_nolimit( b->uncompressed_siz );
           b->uncompressed_siz = 0;
 
           lxt2_rd_regenerate_process_mask( lt );
@@ -1554,7 +1554,7 @@ int lxt2_rd_iter_blocks( struct lxt2_rd_trace* lt,
 
               if( clen > zlen ) {
                 free_safe( zbuff );
-                zbuff = malloc( zlen = (clen * 2) );
+                zbuff = (char*)malloc_safe_nolimit( zlen = (clen * 2) );
               }
 
               fread( zbuff, clen, 1, lt->handle );
@@ -1602,7 +1602,7 @@ int lxt2_rd_iter_blocks( struct lxt2_rd_trace* lt,
 
         } else {
 
-          b->mem      = malloc( b->uncompressed_siz );
+          b->mem      = malloc_safe_nolimit( b->uncompressed_siz );
           lt->zhandle = gzdopen( dup( fileno( lt->handle ) ), "rb" );
           rc          = gzread( lt->zhandle, b->mem, b->uncompressed_siz );
           gzclose( lt->zhandle );
@@ -1685,7 +1685,7 @@ _LXT2_RD_INLINE void* lxt2_rd_get_user_callback_data_pointer( struct lxt2_rd_tra
 
  Limits access to a given timerange in the LXT file
 */
-unsigned int lxt2_rd_limit_time_range( struct lxt2_rd_trace* lt, lxtint64_t strt_time, lxtint64_t end_time ) {
+unsigned int lxt2_rd_limit_time_range( struct lxt2_rd_trace* lt, lxtint64_t strt_time, lxtint64_t end_time ) { PROFILE(LXT2_RD_LIMIT_TIME_RANGE);
 
   lxtint64_t tmp_time;
   int        blk = 0;
@@ -1747,7 +1747,7 @@ unsigned int lxt2_rd_limit_time_range( struct lxt2_rd_trace* lt, lxtint64_t strt
 
  Unrestricts access to the whole LXT file
 */
-unsigned int lxt2_rd_unlimit_time_range( struct lxt2_rd_trace* lt ) {
+unsigned int lxt2_rd_unlimit_time_range( struct lxt2_rd_trace* lt ) { PROFILE(LXT2_RD_UNLIMIT_TIME_RANGE);
 
   int blk = 0;
 

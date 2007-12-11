@@ -50,7 +50,7 @@ extern char user_msg[USER_MSG_LENGTH];
  Parses the specified argument value for all information regarding a state variable
  expression.  This function places all 
 */
-expression* fsm_arg_parse_state( char** arg, char* funit_name ) {
+expression* fsm_arg_parse_state( char** arg, char* funit_name ) { PROFILE(FSM_ARG_PARSE_STATE);
 
   bool        error = FALSE;  /* Specifies if a parsing error has been found */
   vsignal*    sig;            /* Pointer to read-in signal */
@@ -226,7 +226,7 @@ expression* fsm_arg_parse_state( char** arg, char* funit_name ) {
  Parses specified argument string for FSM information.  If the FSM information
  is considered legal, returns TRUE; otherwise, returns FALSE.
 */
-bool fsm_arg_parse( char* arg ) {
+bool fsm_arg_parse( char* arg ) { PROFILE(FSM_ARG_PARSE);
 
   bool        retval = TRUE;  /* Return value for this function */
   char*       ptr    = arg;   /* Pointer to current character in arg */
@@ -292,7 +292,7 @@ bool fsm_arg_parse( char* arg ) {
  parsed value and is returned to the calling function.  If the string is not
  parsed correctly, a value of NULL is returned to the calling function.
 */
-expression* fsm_arg_parse_value( char** str, const func_unit* funit ) {
+expression* fsm_arg_parse_value( char** str, const func_unit* funit ) { PROFILE(FSM_ARG_PARSE_VALUE);
 
   expression* expr = NULL;   /* Pointer to expression containing state value */
   expression* left;          /* Left child expression */
@@ -441,7 +441,7 @@ expression* fsm_arg_parse_value( char** str, const func_unit* funit ) {
  Each transition is then added to the specified FSM table's arc list which is added to the
  FSM arc transition table when the fsm_create_tables() function is called.
 */
-void fsm_arg_parse_trans( expression* expr, fsm* table, const func_unit* funit ) {
+void fsm_arg_parse_trans( expression* expr, fsm* table, const func_unit* funit ) { PROFILE(FSM_ARG_PARSE_TRANS);
 
   expression* from_state;  /* Pointer to from_state value of transition */
   expression* to_state;    /* Pointer to to_state value of transition */
@@ -495,7 +495,7 @@ void fsm_arg_parse_trans( expression* expr, fsm* table, const func_unit* funit )
  Parses the specified attribute parameter for validity and updates FSM structure
  accordingly.
 */
-void fsm_arg_parse_attr( attr_param* ap, const func_unit* funit ) {
+void fsm_arg_parse_attr( attr_param* ap, const func_unit* funit ) { PROFILE(FSM_ARG_PARSE_ATTR);
 
   attr_param* curr;               /* Pointer to current attribute parameter in list */
   fsm_link*   fsml      = NULL;   /* Pointer to found FSM structure */
@@ -601,6 +601,9 @@ void fsm_arg_parse_attr( attr_param* ap, const func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.32  2007/11/20 05:28:58  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.31  2007/09/13 17:03:30  phase1geo
  Cleaning up some const-ness corrections -- still more to go but it's a good
  start.

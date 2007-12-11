@@ -138,11 +138,11 @@ stmt_loop_link* stmt_loop_tail = NULL;
  Creates a new statement structure from heap memory and initializes it with the
  specified parameter information.
 */
-statement* statement_create( expression* exp ) {
+statement* statement_create( expression* exp ) { PROFILE(STATEMENT_CREATE);
 
   statement* stmt;  /* Pointer to newly created statement */
 
-  stmt                    = (statement*)malloc_safe( sizeof( statement ), __FILE__, __LINE__ );
+  stmt                    = (statement*)malloc_safe( sizeof( statement ) );
   stmt->exp               = exp;
   stmt->exp->parent->stmt = stmt;
   stmt->next_true         = NULL;
@@ -185,12 +185,12 @@ void statement_queue_display() {
  Creates a new statement loop link for the specified parameters and adds this
  element to the top of the statement loop queue.
 */
-void statement_queue_add( statement* stmt, int id, bool next_true ) {
+void statement_queue_add( statement* stmt, int id, bool next_true ) { PROFILE(STATEMENT_QUEUE_ADD);
 
   stmt_loop_link* sll;  /* Pointer to newly created statement loop link */
 
   /* Create statement loop link element */
-  sll = (stmt_loop_link*)malloc_safe( sizeof( stmt_loop_link ), __FILE__, __LINE__ );
+  sll = (stmt_loop_link*)malloc_safe( sizeof( stmt_loop_link ) );
 
   /* Populate statement loop link with specified parameters */
   sll->stmt      = stmt;
@@ -220,7 +220,7 @@ void statement_queue_add( statement* stmt, int id, bool next_true ) {
  to the specified statement.  The next head is also compared against this statement
  and the process is repeated until a match is not found.
 */
-void statement_queue_compare( statement* stmt ) {
+void statement_queue_compare( statement* stmt ) { PROFILE(STATEMENT_QUEUE_COMPARE);
 
   stmt_loop_link* sll;       /* Pointer to current element in statement loop list */
   stmt_loop_link* tsll;      /* Temporary pointer to current element in statement loop list */
@@ -279,7 +279,7 @@ void statement_queue_compare( statement* stmt ) {
 
  Recursively sizes all elements for the given statement block.
 */
-void statement_size_elements( statement* stmt, func_unit* funit ) {
+void statement_size_elements( statement* stmt, func_unit* funit ) { PROFILE(STATEMENT_SIZE_ELEMENTS);
 
   if( stmt != NULL ) {
 
@@ -312,7 +312,7 @@ void statement_size_elements( statement* stmt, func_unit* funit ) {
  Recursively writes the contents of the specified statement tree (and its
  associated expression trees to the specified output stream.
 */
-void statement_db_write( statement* stmt, FILE* ofile, bool parse_mode ) {
+void statement_db_write( statement* stmt, FILE* ofile, bool parse_mode ) { PROFILE(STATEMENT_DB_WRITE);
 
   assert( stmt != NULL );
 
@@ -334,7 +334,7 @@ void statement_db_write( statement* stmt, FILE* ofile, bool parse_mode ) {
 
  Traverses specified statement tree, outputting all statements within that tree.
 */
-void statement_db_write_tree( statement* stmt, FILE* ofile ) {
+void statement_db_write_tree( statement* stmt, FILE* ofile ) { PROFILE(STATEMENT_DB_WRITE_TREE);
 
   if( stmt != NULL ) {
 
@@ -363,7 +363,7 @@ void statement_db_write_tree( statement* stmt, FILE* ofile ) {
 
  Traverses the specified statement block, writing all expression trees to specified output file.
 */
-void statement_db_write_expr_tree( statement* stmt, FILE* ofile ) {
+void statement_db_write_expr_tree( statement* stmt, FILE* ofile ) { PROFILE(STATEMENT_DB_WRITE_EXPR_TREE);
 
   if( stmt != NULL ) {
 
@@ -397,7 +397,7 @@ void statement_db_write_expr_tree( statement* stmt, FILE* ofile ) {
  Reads in the contents of the statement from the specified line, creates
  a statement structure to hold the contents.
 */
-bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) {
+bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) { PROFILE(STATEMENT_DB_READ);
 
   bool       retval = TRUE;  /* Return value of this function */
   int        id;             /* ID of root expression that is associated with this statement */
@@ -508,7 +508,7 @@ bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) {
  Recursively traverses the entire statement block and assigns unique expression IDs for each
  expression tree that it finds.
 */
-void statement_assign_expr_ids( statement* stmt, func_unit* funit ) {
+void statement_assign_expr_ids( statement* stmt, func_unit* funit ) { PROFILE(STATEMENT_ASSIGN_EXPR_IDS);
 
   if( stmt != NULL ) {
 
@@ -553,7 +553,7 @@ void display( char* id, statement* curr_stmt, statement* next_stmt, int conn_id 
  that has either next_true or next_false set to NULL, sets next_true and/or 
  next_false of that statement to point to the next_stmt statement.
 */
-bool statement_connect( statement* curr_stmt, statement* next_stmt, int conn_id ) {
+bool statement_connect( statement* curr_stmt, statement* next_stmt, int conn_id ) { PROFILE(STATEMENT_CONNECT);
 
   bool retval = FALSE;  /* Return value for this function */
 
@@ -660,7 +660,7 @@ bool statement_connect( statement* curr_stmt, statement* next_stmt, int conn_id 
  value is returned.  If both the false and tru paths have been parsed, the highest
  numbered line is returned.
 */
-int statement_get_last_line_helper( statement* stmt, statement* base ) {
+int statement_get_last_line_helper( statement* stmt, statement* base ) { PROFILE(STATEMENT_GET_LAST_LINE_HELPER);
 
   expression* last_exp;         /* Pointer to last expression in the statement tree */
   int         last_false = -1;  /* Last false path line number */ 
@@ -694,7 +694,7 @@ int statement_get_last_line_helper( statement* stmt, statement* base ) {
 /*!
  \param stmt  Pointer to statement to get last line number for.
 */
-int statement_get_last_line( statement* stmt ) {
+int statement_get_last_line( statement* stmt ) { PROFILE(STATEMENT_GET_LAST_LINE);
 
   return( statement_get_last_line_helper( stmt, stmt ) );
 
@@ -708,7 +708,7 @@ int statement_get_last_line( statement* stmt ) {
  Searches the specified statement block and returns a list of all signals on the right-hand-side
  of expressions.
 */
-void statement_find_rhs_sigs( statement* stmt, str_link** head, str_link** tail ) {
+void statement_find_rhs_sigs( statement* stmt, str_link** head, str_link** tail ) { PROFILE(STATEMENT_FIND_RHS_SIGS);
 
   if( stmt != NULL ) {
 
@@ -753,7 +753,7 @@ void statement_find_rhs_sigs( statement* stmt, str_link** head, str_link** tail 
 
  \return Returns a pointer to the head statement of the block that contains stmt.
 */
-statement* statement_find_head_statement( statement* stmt, stmt_link* head ) {
+statement* statement_find_head_statement( statement* stmt, stmt_link* head ) { PROFILE(STATEMENT_FIND_HEAD_STATEMENT);
 
   stmt_iter si;  /* Statement iterator used to find head statement */
 
@@ -795,7 +795,7 @@ statement* statement_find_head_statement( statement* stmt, stmt_link* head ) {
  Recursively searches the given statement block for the expression that matches the given
  ID.
 */
-statement* statement_find_statement( statement* curr, int id ) {
+statement* statement_find_statement( statement* curr, int id ) { PROFILE(STATEMENT_FIND_STATEMENT);
 
   statement* found = NULL;  /* Pointer to found statement */
 
@@ -839,7 +839,7 @@ statement* statement_find_statement( statement* curr, int id ) {
  \param tail  Pointer to tail of expression list containing matched expressions
 
 */
-bool statement_contains_expr_calling_stmt( statement* curr, statement* stmt ) {
+bool statement_contains_expr_calling_stmt( statement* curr, statement* stmt ) { PROFILE(STATEMENT_CONTAINS_EXPR_CALLING_STMT);
 
   return( (curr != NULL) &&
           (expression_contains_expr_calling_stmt( curr->exp, stmt ) ||
@@ -856,7 +856,7 @@ bool statement_contains_expr_calling_stmt( statement* curr, statement* stmt ) {
  
  Recursively deallocates specified statement tree.
 */
-void statement_dealloc_recursive( statement* stmt ) {
+void statement_dealloc_recursive( statement* stmt ) { PROFILE(STATEMENT_DEALLOC_RECURSIVE);
     
   if( stmt != NULL ) {
   
@@ -907,7 +907,7 @@ void statement_dealloc_recursive( statement* stmt ) {
  remove attached expression (this is assumed to be cleaned up by the
  expression list removal function).
 */
-void statement_dealloc( statement* stmt ) {
+void statement_dealloc( statement* stmt ) { PROFILE(STATEMENT_DEALLOC);
 
   if( stmt != NULL ) {
  
@@ -921,6 +921,9 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.115  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.114  2007/08/31 22:46:36  phase1geo
  Adding diagnostics from stable branch.  Fixing a few minor bugs and in progress
  of working on static_afunc1 failure (still not quite there yet).  Checkpointing.

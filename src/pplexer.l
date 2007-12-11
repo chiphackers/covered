@@ -332,7 +332,7 @@ static size_t define_cnt = 0;
  Returns NULL (0), if the define was not found in the lookup tree; otherwise,
  returns a pointer to the defined value.
 */
-static tnode* def_lookup( const char* name ) {
+static tnode* def_lookup( const char* name ) { PROFILE(DEF_LOOKUP);
 
   return( tree_find( name, def_table ) );
 
@@ -346,7 +346,7 @@ static tnode* def_lookup( const char* name ) {
  Checks lookup table to see if specified define identifier has been
  previously defined.
 */
-static int is_defined( const char* name ) {
+static int is_defined( const char* name ) { PROFILE(IS_DEFINED);
 
   return( def_lookup( name ) != NULL );
 
@@ -359,7 +359,7 @@ static int is_defined( const char* name ) {
  out instead.
 */
 
-static void def_match() {
+static void def_match() { PROFILE(DEF_MATCH);
 
   tnode* cur = def_lookup( yytext + 1 );  /* Pointer to define identifier node */
   int    i;                               /* Loop iterator */
@@ -388,7 +388,7 @@ static char def_name[256];
 /*!
  Extracts define identifier string from define directive match.
 */
-static void def_start() {
+static void def_start() { PROFILE(DEF_START);
 
   sscanf(yytext, "`define %s", def_name);
 
@@ -401,7 +401,7 @@ static void def_start() {
  Stores define identifer with its value in a define node and placed in
  the binary search tree for quick lookup later on.
 */
-void define_macro( const char* name, const char* value ) {
+void define_macro( const char* name, const char* value ) { PROFILE(DEFINE_MACRO);
 
   tree_add( name, value, TRUE, &def_table );
 
@@ -415,7 +415,7 @@ void define_macro( const char* name, const char* value ) {
  Prepares define value and identifier for storage in the lookup tree and
  then performs the store.
 */
-static void do_define() {
+static void do_define() { PROFILE(DO_DEFINE);
 
   char *cp;  /* Pointer to current token */
 
@@ -460,7 +460,7 @@ static void do_define() {
 /*!
  \return Returns true if the definition text is done; otherwise, returns false.
 */
-static int def_is_done() {
+static int def_is_done() { PROFILE(DEF_IS_DONE);
 
   return( define_continue_flag ? 0 : 1 );
 
@@ -469,7 +469,7 @@ static int def_is_done() {
 /*!
  Completes the define addition phase.
 */
-static void def_finish() {
+static void def_finish() { PROFILE(DEF_FINISH);
 
   define_continue_flag = 0;
 
@@ -494,7 +494,7 @@ static void def_finish() {
  Performs an undefine of an undef indentifier by searching for the
  matching define node and removing it from the tree.
 */
-static void def_undefine() {
+static void def_undefine() { PROFILE(DEF_UNDEFINE);
 
   /* Get undef directive identifier string */
   sscanf( yytext, "`undef %s", def_name );
@@ -522,12 +522,12 @@ static void def_undefine() {
 /*!
  Adds include directive filename to file parsing stack.
 */
-static void include_filename() {
+static void include_filename() { PROFILE(INCLUDE_FILENAME);
 
   assert( standby == 0 );
 
-  standby         = malloc_safe( sizeof(struct include_stack_t), __FILE__, __LINE__ );
-  standby->path   = strdup_safe( (yytext+1), __FILE__, __LINE__ );
+  standby         = malloc_safe( sizeof(struct include_stack_t) );
+  standby->path   = strdup_safe( yytext + 1 );
   standby->path[strlen(standby->path)-1] = 0;
   standby->lineno = 0;
 
@@ -537,7 +537,7 @@ static void include_filename() {
  Performs the file context switch and gets everything ready for parsing
  the new file.
 */
-static void do_include() {
+static void do_include() { PROFILE(DO_INCLUDE);
 
   char      path[4096];  /* Full pathname to include file */
   str_link* curr;        /* Pointer to current include file element */
@@ -594,7 +594,7 @@ static void do_include() {
  * ends. Here I pop the include stack and resume the previous file. If
  * there is no previous file, then the main input is ended.
  */
-static int yywrap() {
+static int yywrap() { PROFILE(YYWRAP);
 
   struct include_stack_t* isp = istack;
 
@@ -647,13 +647,13 @@ static int yywrap() {
  * opened, and the lexor is initialized. The include stack is cleared
  * and ready to go.
  */
-void reset_pplexer( char* filename, FILE* out ) {
+void reset_pplexer( char* filename, FILE* out ) { PROFILE(RESET_PPLEXER);
 
-  struct include_stack_t* isp = malloc_safe( sizeof( struct include_stack_t ), __FILE__, __LINE__ );
+  struct include_stack_t* isp = malloc_safe( sizeof( struct include_stack_t ) );
 
   assert( filename != NULL );
 
-  isp->path   = strdup_safe( filename, __FILE__, __LINE__ );
+  isp->path   = strdup_safe( filename );
   isp->file   = fopen( isp->path, "r" );
   isp->lineno = 0;
   isp->str    = 0;

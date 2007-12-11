@@ -59,7 +59,7 @@ extern isuppl info_suppl;
  Calculates the total and hit memory coverage information for the given memory signal.
 */
 void memory_get_stat( vsignal* sig, float* ae_total, int* wr_hit, int* rd_hit, float* tog_total, int* tog01_hit, int* tog10_hit,
-                      bool ignore_excl ) {
+                      bool ignore_excl ) { PROFILE(MEMORY_GET_STAT);
 
   int    i;       /* Loop iterator */
   int    wr;      /* Number of bits written within an addressable element */
@@ -118,7 +118,7 @@ void memory_get_stat( vsignal* sig, float* ae_total, int* wr_hit, int* rd_hit, f
  \param tog01_hit  Pointer to total number of bits toggling from 0->1
  \param tog10_hit  Pointer to total number of bits toggling from 1->0
 */
-void memory_get_stats( sig_link* sigl, float* ae_total, int* wr_hit, int* rd_hit, float* tog_total, int* tog01_hit, int* tog10_hit ) {
+void memory_get_stats( sig_link* sigl, float* ae_total, int* wr_hit, int* rd_hit, float* tog_total, int* tog01_hit, int* tog10_hit ) { PROFILE(MEMORY_GET_STATS);
 
   while( sigl != NULL ) {
 
@@ -146,7 +146,7 @@ void memory_get_stats( sig_link* sigl, float* ae_total, int* wr_hit, int* rd_hit
 
  Retrieves memory summary information for a given functional unit made by a GUI request.
 */
-bool memory_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit ) {
+bool memory_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit ) { PROFILE(MEMORY_GET_FUNIT_SUMMARY);
 
   bool        retval    = FALSE;  /* Return value for this function */
   func_unit   funit;              /* Functional unit container used for searching */
@@ -208,7 +208,7 @@ bool memory_get_funit_summary( char* funit_name, int funit_type, int* total, int
  Creates a string array for each bit in the given signal corresponding to its position
  in the packed array portion.
 */
-void memory_create_pdim_bit_array( char** str, vsignal* sig, char* prefix, int dim ) {
+void memory_create_pdim_bit_array( char** str, vsignal* sig, char* prefix, int dim ) { PROFILE(MEMORY_CREATE_PDIM_BIT_ARRAY);
 
   char name[4096];  /* Temporary string */
   int  i;           /* Loop iterator */
@@ -264,7 +264,7 @@ void memory_create_pdim_bit_array( char** str, vsignal* sig, char* prefix, int d
 
  Creates memory array structure for Tcl and stores it into the mem_str parameter.
 */
-void memory_get_mem_coverage( char** mem_str, vsignal* sig, vec_data* value, char* prefix, int dim, int parent_dim_width ) {
+void memory_get_mem_coverage( char** mem_str, vsignal* sig, vec_data* value, char* prefix, int dim, int parent_dim_width ) { PROFILE(MEMORY_GET_MEM_COVERAGE);
 
   char name[4096];  /* Contains signal name */
   int  msb;         /* MSB of current dimension */
@@ -319,7 +319,7 @@ void memory_get_mem_coverage( char** mem_str, vsignal* sig, vec_data* value, cha
 
       /* Create dimension string */
       snprintf( int_str, 20, "%d", i );
-      dim_str = (char*)malloc_safe( (strlen( prefix ) + strlen( int_str ) + 5), __FILE__, __LINE__ );
+      dim_str = (char*)malloc_safe( strlen( prefix ) + strlen( int_str ) + 5 );
       snprintf( dim_str, (strlen( prefix ) + strlen( int_str ) + 5), "%s\\[%d\\]", prefix, i );
 
       /* Get toggle information */
@@ -344,7 +344,7 @@ void memory_get_mem_coverage( char** mem_str, vsignal* sig, vec_data* value, cha
       }
 
       /* Create a string list for this entry */
-      entry_str = (char*)malloc_safe( (strlen( dim_str ) + strlen( hit_str ) + strlen( tog01_str ) + strlen( tog10_str ) + 10), __FILE__, __LINE__ );
+      entry_str = (char*)malloc_safe( strlen( dim_str ) + strlen( hit_str ) + strlen( tog01_str ) + strlen( tog10_str ) + 10 );
       snprintf( entry_str, (strlen( dim_str ) + strlen( hit_str ) + strlen( tog01_str ) + strlen( tog10_str ) + 10), "{%s %s %d %d %s %s}",
                 dim_str, hit_str, ((wr == 0) ? 0 : 1), ((rd == 0) ? 0 : 1), tog01_str, tog10_str );
 
@@ -396,7 +396,7 @@ void memory_get_mem_coverage( char** mem_str, vsignal* sig, vec_data* value, cha
  Retrieves memory coverage information for the given signal in the specified functional unit.
 */
 bool memory_get_coverage( char* funit_name, int funit_type, char* signame,
-                          char** pdim_str, char** pdim_array, char** udim_str, char** memory_info, int* excluded ) {
+                          char** pdim_str, char** pdim_array, char** udim_str, char** memory_info, int* excluded ) { PROFILE(MEMORY_GET_COVERAGE);
 
   bool        retval = FALSE;  /* Return value for this function */
   func_unit   funit;           /* Functional unit container used for searching */
@@ -417,7 +417,7 @@ bool memory_get_coverage( char* funit_name, int funit_type, char* signame,
     if( (sigl = sig_link_find( &sig, funitl->funit->sig_head )) != NULL ) {
 
       /* Allocate and populate the pdim_array and pdim_width parameters */
-      *pdim_array = (char*)malloc_safe( 1, __FILE__, __LINE__ );
+      *pdim_array = (char*)malloc_safe( 1 );
       (*pdim_array)[0] = '\0';
       memory_create_pdim_bit_array( pdim_array, sigl->sig, "", sigl->sig->pdim_num );
 
@@ -456,7 +456,7 @@ bool memory_get_coverage( char* funit_name, int funit_type, char* signame,
       }
 
       /* Populate the memory_info string */
-      *memory_info = (char*)malloc_safe( 1, __FILE__, __LINE__ );
+      *memory_info = (char*)malloc_safe( 1 );
       (*memory_info)[0] = '\0';
       memory_get_mem_coverage( memory_info, sigl->sig, sigl->sig->value->value, "", 0, sigl->sig->value->width );
 
@@ -486,7 +486,7 @@ bool memory_get_coverage( char* funit_name, int funit_type, char* signame,
  Collects all signals that are memories and match the given coverage type and stores them
  in the given signal list.
 */
-bool memory_collect( char* funit_name, int funit_type, int cov, sig_link** head, sig_link** tail ) {
+bool memory_collect( char* funit_name, int funit_type, int cov, sig_link** head, sig_link** tail ) { PROFILE(MEMORY_COLLECT);
 
   bool        retval = FALSE;  /* Return value for this function */
   func_unit   funit;           /* Functional unit used for searching */
@@ -548,7 +548,7 @@ bool memory_collect( char* funit_name, int funit_type, int cov, sig_link** head,
 
  Calculates and outputs the memory toggle summary coverage results for a given instance.
 */
-bool memory_display_toggle_instance_summary( FILE* ofile, const char* name, int hits01, int hits10, float total ) {
+bool memory_display_toggle_instance_summary( FILE* ofile, const char* name, int hits01, int hits10, float total ) { PROFILE(MEMORY_DISPLAY_TOGGLE_INSTANCE_SUMMARY);
 
   float percent01;    /* Percentage of bits toggling from 0 -> 1 */
   float percent10;    /* Percentage of bits toggling from 1 -> 0 */
@@ -580,7 +580,7 @@ bool memory_display_toggle_instance_summary( FILE* ofile, const char* name, int 
  iterates through functional unit instance tree, outputting the toggle information that
  is found at that instance.
 */
-bool memory_toggle_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst, int* hits01, int* hits10, float* total ) { 
+bool memory_toggle_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst, int* hits01, int* hits10, float* total ) { PROFILE(MEMORY_TOGGLE_INSTANCE_SUMMARY);
 
   funit_inst* curr;                /* Pointer to current child functional unit instance of this node */
   char        tmpname[4096];       /* Temporary name holder for instance */
@@ -641,7 +641,7 @@ bool memory_toggle_instance_summary( FILE* ofile, funit_inst* root, char* parent
  Calculates the miss and hit percentage statistics for the given instance and outputs this information
  to the given output file.
 */
-bool memory_display_ae_instance_summary( FILE* ofile, char* name, int wr_hit, int rd_hit, float total ) {
+bool memory_display_ae_instance_summary( FILE* ofile, char* name, int wr_hit, int rd_hit, float total ) { PROFILE(MEMORY_DISPLAY_AE_INSTANCE_SUMMARY);
 
   float wr_percent;  /* Percentage of addressable elements written */
   float rd_percent;  /* Percentage of addressable elements read */
@@ -673,7 +673,7 @@ bool memory_display_ae_instance_summary( FILE* ofile, char* name, int wr_hit, in
  iterates through functional unit instance tree, outputting the toggle information that
  is found at that instance.
 */
-bool memory_ae_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst, int* wr_hits, int* rd_hits, float* total ) { 
+bool memory_ae_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst, int* wr_hits, int* rd_hits, float* total ) { PROFILE(MEMORY_AE_INSTANCE_SUMMARY);
 
   funit_inst* curr;                /* Pointer to current child functional unit instance of this node */
   char        tmpname[4096];       /* Temporary name holder for instance */
@@ -734,7 +734,7 @@ bool memory_ae_instance_summary( FILE* ofile, funit_inst* root, char* parent_ins
 
  Calculates and outputs the toggle coverage for all memories in the given functional unit.
 */
-bool memory_display_toggle_funit_summary( FILE* ofile, const char* name, const char* fname, int hit01, int hit10, float total ) {
+bool memory_display_toggle_funit_summary( FILE* ofile, const char* name, const char* fname, int hit01, int hit10, float total ) { PROFILE(MEMORY_DISPLAY_TOGGLE_FUNIT_SUMMARY);
 
   float percent01;  /* Percentage of bits that toggled from 0 to 1 */
   float percent10;  /* Percentage of bits that toggled from 1 to 0 */
@@ -763,7 +763,7 @@ bool memory_display_toggle_funit_summary( FILE* ofile, const char* name, const c
  Iterates through the functional unit list displaying the memory toggle coverage summary for
  each functional unit.
 */
-bool memory_toggle_funit_summary( FILE* ofile, funit_link* head, int* hits01, int* hits10, float* total ) { 
+bool memory_toggle_funit_summary( FILE* ofile, funit_link* head, int* hits01, int* hits10, float* total ) { PROFILE(MEMORY_TOGGLE_FUNIT_SUMMARY);
 
   bool  miss_found = FALSE;  /* Set to TRUE if missing toggles were found */
   char* pname;               /* Printable version of the functional unit name */
@@ -810,7 +810,7 @@ bool memory_toggle_funit_summary( FILE* ofile, funit_link* head, int* hits01, in
 
  Calculates and outputs the summary addressable memory element coverage information for a given functional unit.
 */
-bool memory_display_ae_funit_summary( FILE* ofile, const char* name, const char* fname, int wr_hits, int rd_hits, float total ) {
+bool memory_display_ae_funit_summary( FILE* ofile, const char* name, const char* fname, int wr_hits, int rd_hits, float total ) { PROFILE(MEMORY_DISPLAY_AE_FUNIT_SUMMARY);
 
   float wr_percent;  /* Percentage of addressable elements that were written */
   float rd_percent;  /* Percentage of addressable elements that were read */
@@ -839,7 +839,7 @@ bool memory_display_ae_funit_summary( FILE* ofile, const char* name, const char*
  Iterates through the functional unit list displaying the memory toggle coverage summary for
  each functional unit.
 */
-bool memory_ae_funit_summary( FILE* ofile, funit_link* head, int* wr_hits, int* rd_hits, float* total ) { 
+bool memory_ae_funit_summary( FILE* ofile, funit_link* head, int* wr_hits, int* rd_hits, float* total ) { PROFILE(MEMORY_AE_FUNIT_SUMMARY);
 
   bool  miss_found = FALSE;  /* Set to TRUE if missing toggles were found */
   char* pname;               /* Printable version of the functional unit name */
@@ -884,7 +884,7 @@ bool memory_ae_funit_summary( FILE* ofile, funit_link* head, int* wr_hits, int* 
 
  Outputs the contents of the given memory in verbose output format.
 */
-void memory_display_memory( FILE* ofile, vsignal* sig, vec_data* value, char* prefix, int dim, int parent_dim_width ) {
+void memory_display_memory( FILE* ofile, vsignal* sig, vec_data* value, char* prefix, int dim, int parent_dim_width ) { PROFILE(MEMORY_DISPLAY_MEMORY);
 
   char name[4096];  /* Contains signal name */
   int  msb;         /* MSB of current dimension */
@@ -989,7 +989,7 @@ void memory_display_memory( FILE* ofile, vsignal* sig, vec_data* value, char* pr
  Displays the memories that did not achieve 100% toggle coverage and/or 100%
  write/read coverage to standard output from the specified signal list.
 */
-void memory_display_verbose( FILE* ofile, sig_link* sigl ) {
+void memory_display_verbose( FILE* ofile, sig_link* sigl ) { PROFILE(MEMORY_DISPLAY_VERBOSE);
 
   sig_link* curr_sig;   /* Pointer to current signal link being evaluated */
   int       hit01;      /* Number of bits that toggled from 0 to 1 */
@@ -1059,7 +1059,7 @@ void memory_display_verbose( FILE* ofile, sig_link* sigl ) {
  the bits that did not receive 100% toggle and addressable elements that did not
  receive 100% write/read coverage during simulation.
 */
-void memory_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst ) {
+void memory_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst ) { PROFILE(MEMORY_INSTANCE_VERBOSE);
 
   funit_inst* curr_inst;      /* Pointer to current instance being evaluated */
   char        tmpname[4096];  /* Temporary name holder of instance */
@@ -1124,7 +1124,7 @@ void memory_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst )
  did not receive 100% toggle, and the addressable elements that did not receive 100%
  write/read coverage during simulation.
 */
-void memory_funit_verbose( FILE* ofile, funit_link* head ) {
+void memory_funit_verbose( FILE* ofile, funit_link* head ) { PROFILE(MEMORY_FUNIT_VERBOSE);
 
   while( head != NULL ) {
 
@@ -1162,7 +1162,7 @@ void memory_funit_verbose( FILE* ofile, funit_link* head ) {
  \param ofile    Pointer to output file to write
  \param verbose  Specifies if verbose coverage information should be output
 */
-void memory_report( FILE* ofile, bool verbose ) {
+void memory_report( FILE* ofile, bool verbose ) { PROFILE(MEMORY_REPORT);
 
   bool       missed_found  = FALSE;  /* If set to TRUE, indicates that untoggled bits were found */
   char       tmp[4096];              /* Temporary string value */
@@ -1254,6 +1254,9 @@ void memory_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.17  2007/11/20 05:28:58  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.16  2007/09/13 17:03:30  phase1geo
  Cleaning up some const-ness corrections -- still more to go but it's a good
  start.

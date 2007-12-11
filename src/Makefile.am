@@ -41,6 +41,7 @@ covered_SOURCES = arc.c \
 		  parse.c \
 		  parser_misc.c \
 		  perf.c \
+                  profiler.c \
                   race.c \
                   reentrant.c \
 		  report.c \

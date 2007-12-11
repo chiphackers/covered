@@ -70,7 +70,7 @@ extern int        flag_global_generation;
  Creates root module for module_node tree.  If a module_node points to this node as its parent,
  that node is considered the root node of the tree.
 */
-void search_init() {
+void search_init() { PROFILE(SEARCH_INIT);
 
   func_unit* mod;            /* Pointer to newly created module node from top module */
   char       dutname[4096];  /* Instance name of top-level DUT module */
@@ -81,9 +81,9 @@ void search_init() {
 
     /* Create the global functional unit */
     global_funit           = funit_create();
-    global_funit->name     = strdup_safe( "$root", __FILE__, __LINE__ );
+    global_funit->name     = strdup_safe( "$root" );
     global_funit->type     = FUNIT_MODULE;
-    global_funit->filename = strdup_safe( "NA", __FILE__, __LINE__ );
+    global_funit->filename = strdup_safe( "NA" );
     global_funit->ts_unit  = 0;
     funit_link_add( global_funit, &funit_head, &funit_tail );
     curr_funit = global_funit;
@@ -97,7 +97,7 @@ void search_init() {
   mod->type = FUNIT_MODULE;
 
   if( top_module != NULL ) {
-    mod->name = strdup_safe( top_module, __FILE__, __LINE__ );
+    mod->name = strdup_safe( top_module );
   } else {
     print_output( "No top_module was specified with the -t option.  Please see \"covered -h\" for usage.",
                   FATAL, __FILE__, __LINE__ );
@@ -109,21 +109,21 @@ void search_init() {
 
   /* Initialize instance tree */
   if( top_instance == NULL ) {
-    top_instance = strdup_safe( top_module, __FILE__, __LINE__ );
+    top_instance = strdup_safe( top_module );
     inst_link_add( instance_create( mod, top_instance, NULL ), &inst_head, &inst_tail );
     leading_hierarchies = (char**)realloc( leading_hierarchies, (sizeof( char* ) * (leading_hier_num + 1)) );
-    leading_hierarchies[leading_hier_num] = strdup_safe( "*", __FILE__, __LINE__ );
+    leading_hierarchies[leading_hier_num] = strdup_safe( "*" );
     leading_hier_num++;
   } else {
     scope_extract_back( top_instance, dutname, lhier );
     inst_link_add( instance_create( mod, dutname, NULL ), &inst_head, &inst_tail );
     if( lhier[0] == '\0' ) {
       leading_hierarchies = (char**)realloc( leading_hierarchies, (sizeof( char* ) * (leading_hier_num + 1)) );
-      leading_hierarchies[leading_hier_num] = strdup_safe( "*", __FILE__, __LINE__ );
+      leading_hierarchies[leading_hier_num] = strdup_safe( "*" );
       leading_hier_num++;
     } else {
       leading_hierarchies = (char**)realloc( leading_hierarchies, (sizeof( char* ) * (leading_hier_num + 1)) );
-      leading_hierarchies[leading_hier_num] = strdup_safe( lhier, __FILE__, __LINE__ );
+      leading_hierarchies[leading_hier_num] = strdup_safe( lhier );
       leading_hier_num++;
     }
   }
@@ -136,13 +136,13 @@ void search_init() {
          and specifies an existing directory; otherwise, returns FALSE.
 
 */
-bool search_add_include_path( char* path ) {
+bool search_add_include_path( char* path ) { PROFILE(SEARCH_ADD_INCLUDE_PATH);
 
   bool  retval = TRUE;   /* Return value for this function */
   char* tmp;             /* Temporary directory name */
 
   if( directory_exists( path ) ) {
-    tmp = strdup_safe( path, __FILE__, __LINE__ );
+    tmp = strdup_safe( path );
     str_link_add( tmp, &inc_paths_head, &inc_paths_tail );
   } else {
     retval = FALSE;
@@ -158,14 +158,14 @@ bool search_add_include_path( char* path ) {
          specifies an existing directory; otherwise, returns FALSE.
 
 */
-bool search_add_directory_path( char* path ) {
+bool search_add_directory_path( char* path ) { PROFILE(SEARCH_ADD_DIRECTORY_PATH);
 
   bool retval = TRUE;  /* Return value for this function */
 
   if( directory_exists( path ) ) {
     /* If no library extensions have been specified, assume *.v */
     if( extensions_head == NULL ) {
-      str_link_add( strdup_safe( "v", __FILE__, __LINE__ ), &(extensions_head), &(extensions_tail) );
+      str_link_add( strdup_safe( "v" ), &(extensions_head), &(extensions_tail) );
     }
     directory_load( path, extensions_head, &(use_files_head), &(use_files_tail) );
   } else {
@@ -183,14 +183,14 @@ bool search_add_directory_path( char* path ) {
  \return Returns TRUE if the specified file exists; otherwise, returns FALSE.
 
 */
-bool search_add_file( char* file ) {
+bool search_add_file( char* file ) { PROFILE(SEARCH_ADD_FILE);
 
   bool  retval = TRUE;  /* Return value for this function */
   char* tmp;            /* Temporary filename */
 
   if( file_exists( file ) ) {
     if( str_link_find( file, use_files_head ) == NULL ) {
-      tmp = strdup_safe( file, __FILE__, __LINE__ );
+      tmp = strdup_safe( file );
       str_link_add( tmp, &use_files_head, &use_files_tail );
     }
   } else {
@@ -210,13 +210,13 @@ bool search_add_file( char* file ) {
          returns FALSE.
 
 */
-bool search_add_no_score_funit( char* funit ) {
+bool search_add_no_score_funit( char* funit ) { PROFILE(SEARCH_ADD_NO_SCORE_FUNIT);
 
   bool  retval = TRUE;   /* Return value for this function */
   char* tmp;             /* Temporary module name */
 
   if( is_func_unit( funit ) ) {
-    tmp = strdup_safe( funit, __FILE__, __LINE__ );
+    tmp = strdup_safe( funit );
     str_link_add( tmp, &no_score_head, &no_score_tail );
   } else {
     snprintf( user_msg, USER_MSG_LENGTH, "Value of -e option (%s) is not a valid block name", funit );
@@ -237,7 +237,7 @@ bool search_add_no_score_funit( char* funit ) {
  Parses the given +libext argument, extracting all extensions listed and storing them into
  the globally accessible extensions list.
 */
-bool search_add_extensions( char* ext_list ) {
+bool search_add_extensions( char* ext_list ) { PROFILE(SEARCH_ADD_EXTENSIONS);
 
   bool  retval    = TRUE;      /* Return value for this function */
   char  ext[30];               /* Holder for extension */
@@ -251,7 +251,7 @@ bool search_add_extensions( char* ext_list ) {
     if( *tmp == '+' ) { 
       ext[ext_index] = '\0';
       ext_index      = 0;
-      str_link_add( strdup_safe( ext, __FILE__, __LINE__ ), &extensions_head, &extensions_tail );
+      str_link_add( strdup_safe( ext ), &extensions_head, &extensions_tail );
     } else if( *tmp == '.' ) {
       if( ext_index > 0 ) {
         retval = FALSE;
@@ -281,7 +281,7 @@ bool search_add_extensions( char* ext_list ) {
  This function should be called after all parsing is completed.  
  Deletes all initialized lists.
 */
-void search_free_lists() {
+void search_free_lists() { PROFILE(SEARCH_FREE_LISTS);
 
   str_link_delete_list( inc_paths_head  );
   str_link_delete_list( use_files_head  );
@@ -292,6 +292,9 @@ void search_free_lists() {
 
 /*
  $Log$
+ Revision 1.32  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.31  2007/03/30 22:43:13  phase1geo
  Regression fixes.  Still have a ways to go but we are getting close.
 

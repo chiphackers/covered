@@ -221,7 +221,7 @@ void report_usage() {
  to TRUE.  If a character is found that does not correspond to a
  metric, an error message is flagged to the user (a warning).
 */
-void report_parse_metrics( char* metrics ) {
+void report_parse_metrics( char* metrics ) { PROFILE(REPORT_PARSE_METRICS);
 
   char* ptr;  /* Pointer to current character being evaluated */
 
@@ -273,7 +273,7 @@ void report_parse_metrics( char* metrics ) {
  that option.  If an option is found that is not allowed, an error
  message is reported to the user and the program terminates immediately.
 */
-bool report_parse_args( int argc, int last_arg, char** argv ) {
+bool report_parse_args( int argc, int last_arg, char** argv ) { PROFILE(REPORT_PARSE_ARGS);
 
   bool retval = TRUE;  /* Return value for this function */
   int  i;              /* Loop iterator */
@@ -341,7 +341,7 @@ bool report_parse_args( int argc, int last_arg, char** argv ) {
           print_output( "Only one -o option is allowed on the report command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
         } else {
           if( is_legal_filename( argv[i] ) ) {
-            output_file = strdup_safe( argv[i], __FILE__, __LINE__ );
+            output_file = strdup_safe( argv[i] );
           } else {
             snprintf( user_msg, USER_MSG_LENGTH, "Output file \"%s\" is unwritable", argv[i] );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -377,7 +377,7 @@ bool report_parse_args( int argc, int last_arg, char** argv ) {
 
       if( file_exists( argv[i] ) ) {
      
-        input_db = strdup_safe( argv[i], __FILE__, __LINE__ );
+        input_db = strdup_safe( argv[i] );
  
       } else {
 
@@ -412,7 +412,7 @@ bool report_parse_args( int argc, int last_arg, char** argv ) {
  will have the accumulated information from themselves and all of their
  children.
 */
-void report_gather_instance_stats( funit_inst* root ) {
+void report_gather_instance_stats( funit_inst* root ) { PROFILE(REPORT_GATHER_INSTANCE_STATS);
 
   funit_inst* curr;        /* Pointer to current instance being evaluated */
 
@@ -496,7 +496,7 @@ void report_gather_instance_stats( funit_inst* root ) {
  Traverses functional unit list, creating statistic structures for each
  of the functional units in the tree, and calculates summary coverage information.
 */
-void report_gather_funit_stats( funit_link* head ) {
+void report_gather_funit_stats( funit_link* head ) { PROFILE(REPORT_GATHER_FUNIT_STATS);
 
   while( head != NULL ) {
 
@@ -571,7 +571,7 @@ void report_gather_funit_stats( funit_link* head ) {
 
  Generates generic report header for all reports.
 */
-void report_print_header( FILE* ofile ) {
+void report_print_header( FILE* ofile ) { PROFILE(REPORT_PRINT_HEADER);
 
   int i;  /* Loop iterator */
 
@@ -668,7 +668,7 @@ void report_print_header( FILE* ofile ) {
  Generates a coverage report based on the options specified on the command line
  to the specified output stream.
 */
-void report_generate( FILE* ofile ) {
+void report_generate( FILE* ofile ) { PROFILE(REPORT_GENERATE);
 
   report_print_header( ofile );
 
@@ -723,7 +723,7 @@ void report_generate( FILE* ofile ) {
  Reads in specified CDD file and gathers functional unit statistics to get ready for GUI
  interaction with this CDD file. 
 */
-bool report_read_cdd_and_ready( char* ifile, int read_mode ) {
+bool report_read_cdd_and_ready( char* ifile, int read_mode ) { PROFILE(REPORT_READ_CDD_AND_READY);
 
   bool retval = TRUE;  /* Return value for this function */
 
@@ -751,7 +751,7 @@ bool report_read_cdd_and_ready( char* ifile, int read_mode ) {
 
  Closes the currently loaded CDD file.
 */
-bool report_close_cdd() {
+bool report_close_cdd() { PROFILE(REPORT_CLOSE_CDD);
 
   db_close();
 
@@ -766,7 +766,7 @@ bool report_close_cdd() {
 
  Saves the currently loaded CDD database to the given filename.
 */
-bool report_save_cdd( char* filename ) {
+bool report_save_cdd( char* filename ) { PROFILE(REPORT_SAVE_CDD);
 
   return( db_write( filename, FALSE, TRUE ) );
 
@@ -781,7 +781,7 @@ bool report_save_cdd( char* filename ) {
 
  Performs report command functionality.
 */
-int command_report( int argc, int last_arg, char** argv ) {
+int command_report( int argc, int last_arg, char** argv ) { PROFILE(COMMAND_REPORT);
 
   int   retval = 0;       /* Return value of this function */
   FILE* ofile;            /* Pointer to output stream */
@@ -872,24 +872,24 @@ int command_report( int argc, int last_arg, char** argv ) {
         exit( 1 );
       }
 #else
-      covered_home = strdup( INSTALL_DIR );
+      covered_home = strdup_safe( INSTALL_DIR );
 #endif
 
       /* Get the COVERED_BROWSER environment variable */
 #ifndef COVERED_BROWSER
       covered_browser = getenv( "COVERED_BROWSER" );
 #else
-      covered_browser = strdup( COVERED_BROWSER );
+      covered_browser = strdup_safe( COVERED_BROWSER );
 #endif
 
-      covered_version = strdup( VERSION );
+      covered_version = strdup_safe( VERSION );
       user_home       = getenv( "HOME" );
 
       /* Initialize TCL */
       tcl_func_initialize( interp, user_home, covered_home, covered_version, covered_browser );
 
       /* Call the top-level Tcl file */
-      main_file = (char*)malloc( strlen( covered_home ) + 30 );
+      main_file = (char*)malloc_safe( strlen( covered_home ) + 30 );
       snprintf( main_file, (strlen( covered_home ) + 30), "%s/scripts/main_view.tcl", covered_home );
       Tcl_EvalFile( interp, main_file );
 
@@ -917,6 +917,9 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.83  2007/11/20 05:28:59  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.82  2007/09/01 05:33:38  phase1geo
  Fixing error output in report.c when Tcl/Tk initialization routines return
  in error.  Also removing extra K_EG from static_parser.y file.

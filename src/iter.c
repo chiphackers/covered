@@ -24,6 +24,7 @@
 
 #include "defines.h"
 #include "iter.h"
+#include "profiler.h"
 
 
 /*!
@@ -32,7 +33,7 @@
  
  Initializes the specified statement iterator to begin advancing.
 */
-void stmt_iter_reset( stmt_iter* si, stmt_link* start ) {
+void stmt_iter_reset( stmt_iter* si, stmt_link* start ) { PROFILE(STMT_ITER_RESET);
   
   si->curr = start;
   si->last = NULL;
@@ -45,7 +46,7 @@ void stmt_iter_reset( stmt_iter* si, stmt_link* start ) {
 
  Copies the given statement iterator to the given iterator.
 */
-void stmt_iter_copy( stmt_iter* si, stmt_iter* orig ) {
+void stmt_iter_copy( stmt_iter* si, stmt_iter* orig ) { PROFILE(STMT_ITER_COPY);
 
   si->curr = orig->curr;
   si->last = orig->last;
@@ -60,7 +61,7 @@ void stmt_iter_copy( stmt_iter* si, stmt_iter* orig ) {
  Advances specified statement iterator to next statement
  link in statement list.
 */
-void stmt_iter_next( stmt_iter* si ) {
+void stmt_iter_next( stmt_iter* si ) { PROFILE(STMT_ITER_NEXT);
   
   stmt_link* tmp;    /* Temporary holder for current statement link */
   
@@ -76,7 +77,7 @@ void stmt_iter_next( stmt_iter* si ) {
  Reverses the direction of the iterator and changes the current pointer
  to point to the last statement before the reverse.
 */
-void stmt_iter_reverse( stmt_iter* si ) {
+void stmt_iter_reverse( stmt_iter* si ) { PROFILE(STMT_ITER_REVERSE);
   
   stmt_link* tmp;
   
@@ -94,7 +95,7 @@ void stmt_iter_reverse( stmt_iter* si ) {
  statement head is found, the iterator is reversed (with curr pointing to
  statement head).  Used for displaying statements in line order for reports.
 */
-void stmt_iter_find_head( stmt_iter* si, bool skip ) {
+void stmt_iter_find_head( stmt_iter* si, bool skip ) { PROFILE(STMT_ITER_FIND_HEAD);
   
   while( (si->curr != NULL) && ((ESUPPL_IS_STMT_HEAD( si->curr->stmt->exp->suppl ) == 0) || skip) ) {
     if( ESUPPL_IS_STMT_HEAD( si->curr->stmt->exp->suppl ) == 1 ) {
@@ -119,7 +120,7 @@ void stmt_iter_find_head( stmt_iter* si, bool skip ) {
  and reverse the iterator again.  This function is used to order statements by
  line number in verbose reports.
 */
-void stmt_iter_get_next_in_order( stmt_iter* si ) {
+void stmt_iter_get_next_in_order( stmt_iter* si ) { PROFILE(STMT_ITER_GET_NEXT_IN_ORDER);
 
   stmt_iter lsi;                  /* Points to lowest statement iterator */
   int       lowest = 0x7fffffff;  /* Line number of the lowest statement */
@@ -176,7 +177,7 @@ void stmt_iter_get_next_in_order( stmt_iter* si ) {
  before the given line number.  Places curr on this statement and places last on the
  statement whose line number is either equal to or less than curr.
 */
-void stmt_iter_get_line_before( stmt_iter* si, int lnum ) {
+void stmt_iter_get_line_before( stmt_iter* si, int lnum ) { PROFILE(STMT_ITER_GET_LINE_BEFORE);
 
   if( si->curr != NULL ) {
 
@@ -207,6 +208,9 @@ void stmt_iter_get_line_before( stmt_iter* si, int lnum ) {
 
 /*
  $Log$
+ Revision 1.15  2007/11/20 05:28:58  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.14  2007/03/20 04:29:32  phase1geo
  Fixing bugs in new stmt_link_merge function.  Updated regressions (only 11
  diagnostics are currently failing in IV regression).  Checkpointing.

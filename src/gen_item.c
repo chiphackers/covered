@@ -55,7 +55,7 @@ extern func_unit* curr_funit;
  Creates a user-readable version of the specified generate item and stores it in
  the specified string.
 */
-void gen_item_stringify( gen_item* gi, char* str, int str_len ) {
+void gen_item_stringify( gen_item* gi, char* str, int str_len ) { PROFILE(GEN_ITEM_STRINGIFY);
 
   char* tmp;  /* Temporary string */
 
@@ -64,7 +64,7 @@ void gen_item_stringify( gen_item* gi, char* str, int str_len ) {
   if( gi != NULL ) {
 
     /* Allocate some memory in the tmp string */
-    tmp = (char*)malloc_safe( str_len, __FILE__, __LINE__ );
+    tmp = (char*)malloc_safe( str_len );
 
     snprintf( str, str_len, "%p, suppl: %x", gi, gi->suppl.all );
 
@@ -117,7 +117,7 @@ void gen_item_stringify( gen_item* gi, char* str, int str_len ) {
 
  Displays the contents of the specified generate item to standard output (used for debugging purposes).
 */
-void gen_item_display( gen_item* gi ) {
+void gen_item_display( gen_item* gi ) { PROFILE(GEN_ITEM_DISPLAY);
 
   char str[4096];  /* String to store data into */
 
@@ -132,7 +132,7 @@ void gen_item_display( gen_item* gi ) {
 
  Displays an entire generate block to standard output (used for debugging purposes).
 */
-void gen_item_display_block_helper( gen_item* root ) {
+void gen_item_display_block_helper( gen_item* root ) { PROFILE(GEN_ITEM_DISPLAY_BLOCK_HELPER);
 
   if( root != NULL ) {
 
@@ -166,7 +166,7 @@ void gen_item_display_block_helper( gen_item* root ) {
 
  Displays an entire generate block to standard output (used for debugging purposes).
 */
-void gen_item_display_block( gen_item* root ) {
+void gen_item_display_block( gen_item* root ) { PROFILE(GEN_ITEM_DISPLAY_BLOCK);
 
   printf( "Generate block:\n" );
 
@@ -181,7 +181,7 @@ void gen_item_display_block( gen_item* root ) {
  \return Returns TRUE if the two specified generate items are equivalent; otherwise,
          returns FALSE.
 */
-bool gen_item_compare( gen_item* gi1, gen_item* gi2 ) {
+bool gen_item_compare( gen_item* gi1, gen_item* gi2 ) { PROFILE(GEN_ITEM_COMPARE);
 
   bool retval = FALSE;  /* Return value for this function */
 
@@ -215,7 +215,7 @@ bool gen_item_compare( gen_item* gi1, gen_item* gi2 ) {
  Recursively traverses the specified generate item block searching for a generate item
  that matches the specified generate item.
 */
-gen_item* gen_item_find( gen_item* root, gen_item* gi ) {
+gen_item* gen_item_find( gen_item* root, gen_item* gi ) { PROFILE(GEN_ITEM_FIND);
 
   gen_item* found = NULL;  /* Return value for this function */
 
@@ -258,7 +258,7 @@ gen_item* gen_item_find( gen_item* root, gen_item* gi ) {
  \param stmt  Pointer to statement to search for
 
 */
-void gen_item_remove_if_contains_expr_calling_stmt( gen_item* gi, statement* stmt ) {
+void gen_item_remove_if_contains_expr_calling_stmt( gen_item* gi, statement* stmt ) { PROFILE(GEN_ITEM_REMOVE_IF_CONTAINS_EXPR_CALLING_STMT);
 
   if( gi != NULL ) {
 
@@ -307,7 +307,7 @@ void gen_item_remove_if_contains_expr_calling_stmt( gen_item* gi, statement* stm
  to the beginning of the generate variable, and post is set to point to the string
  succeeding the ']'.
 */
-void gen_item_get_genvar( char* varname, char** pre, char** genvar, char** post ) { 
+void gen_item_get_genvar( char* varname, char** pre, char** genvar, char** post ) { PROFILE(GEN_ITEM_GET_GENVAR);
 
   int i = 0;  /* Loop iterator */
 
@@ -370,7 +370,7 @@ void gen_item_get_genvar( char* varname, char** pre, char** genvar, char** post 
  list.  If the specified signal name contains a generate variable, we need to create a generate item
  binding element so that we can properly substitute the generate variable name with its current value.
 */
-bool gen_item_varname_contains_genvar( char* name ) {
+bool gen_item_varname_contains_genvar( char* name ) { PROFILE(GEN_ITEM_VARNAME_CONTAINS_GENVAR);
 
   bool  retval = FALSE;  /* Return value for this function */
   char* pre;             /* String prior to the generate variable */
@@ -379,7 +379,7 @@ bool gen_item_varname_contains_genvar( char* name ) {
   char* tmpname;         /* Copy of the given name */
 
   /* Allocate memory */
-  tmpname = strdup_safe( name, __FILE__, __LINE__ );
+  tmpname = strdup_safe( name );
   
   /* Find the first generate variable */
   gen_item_get_genvar( tmpname, &pre, &genvar, &post );
@@ -406,7 +406,7 @@ bool gen_item_varname_contains_genvar( char* name ) {
 
  Iterates through the given name, substituting any found generate variables with their current value.
 */
-char* gen_item_calc_signal_name( char* name, func_unit* funit, int line, bool no_genvars ) {
+char* gen_item_calc_signal_name( char* name, func_unit* funit, int line, bool no_genvars ) { PROFILE(GEN_ITEM_CALC_SIGNAL_NAME);
 
   char* new_name = NULL;  /* Return value of this function */
   char* tmpname;          /* Temporary name of current part of variable */
@@ -417,9 +417,9 @@ char* gen_item_calc_signal_name( char* name, func_unit* funit, int line, bool no
   char* ptr;              /* Pointer to allocated memory for name */
 
   /* Allocate memory */
-  tmpname  = strdup_safe( name, __FILE__, __LINE__ );
+  tmpname  = strdup_safe( name );
   ptr      = tmpname;
-  new_name = strdup_safe( "", __FILE__, __LINE__ );
+  new_name = strdup_safe( "" );
 
   do {
     gen_item_get_genvar( tmpname, &pre, &genvar, &post );
@@ -451,12 +451,12 @@ char* gen_item_calc_signal_name( char* name, func_unit* funit, int line, bool no
 
  Creates a new generate item for an expression.
 */
-gen_item* gen_item_create_expr( expression* expr ) {
+gen_item* gen_item_create_expr( expression* expr ) { PROFILE(GEN_ITEM_CREATE_EXPR);
 
   gen_item* gi;
 
   /* Create the generate item for an expression */
-  gi = (gen_item*)malloc_safe( sizeof( gen_item ), __FILE__, __LINE__ );
+  gi = (gen_item*)malloc_safe( sizeof( gen_item ) );
   gi->elem.expr       = expr;
   gi->suppl.all       = 0;
   gi->suppl.part.type = GI_TYPE_EXPR;
@@ -484,12 +484,12 @@ gen_item* gen_item_create_expr( expression* expr ) {
 
  Creates a new generate item for a signal.
 */
-gen_item* gen_item_create_sig( vsignal* sig ) {
+gen_item* gen_item_create_sig( vsignal* sig ) { PROFILE(GEN_ITEM_CREATE_SIG);
 
   gen_item* gi;
 
   /* Create the generate item for a signal */
-  gi = (gen_item*)malloc_safe( sizeof( gen_item ), __FILE__, __LINE__ );
+  gi = (gen_item*)malloc_safe( sizeof( gen_item ) );
   gi->elem.sig        = sig;
   gi->suppl.all       = 0;
   gi->suppl.part.type = GI_TYPE_SIG;
@@ -517,12 +517,12 @@ gen_item* gen_item_create_sig( vsignal* sig ) {
 
  Create a new generate item for a statement.
 */
-gen_item* gen_item_create_stmt( statement* stmt ) {
+gen_item* gen_item_create_stmt( statement* stmt ) { PROFILE(GEN_ITEM_CREATE_STMT);
 
   gen_item* gi;
 
   /* Create the generate item for a statement */
-  gi = (gen_item*)malloc_safe( sizeof( gen_item ), __FILE__, __LINE__ );
+  gi = (gen_item*)malloc_safe( sizeof( gen_item ) );
   gi->elem.stmt       = stmt;
   gi->suppl.all       = 0;
   gi->suppl.part.type = GI_TYPE_STMT;
@@ -550,12 +550,12 @@ gen_item* gen_item_create_stmt( statement* stmt ) {
 
  Create a new generate item for an instance.
 */
-gen_item* gen_item_create_inst( funit_inst* inst ) {
+gen_item* gen_item_create_inst( funit_inst* inst ) { PROFILE(GEN_ITEM_CREATE_INST);
 
   gen_item* gi;
 
   /* Create the generate item for an instance */
-  gi = (gen_item*)malloc_safe( sizeof( gen_item ), __FILE__, __LINE__ );
+  gi = (gen_item*)malloc_safe( sizeof( gen_item ) );
   gi->elem.inst       = inst;
   gi->suppl.all       = 0;
   gi->suppl.part.type = GI_TYPE_INST;
@@ -583,12 +583,12 @@ gen_item* gen_item_create_inst( funit_inst* inst ) {
 
  Create a new generate item for a namespace.
 */
-gen_item* gen_item_create_tfn( funit_inst* inst ) {
+gen_item* gen_item_create_tfn( funit_inst* inst ) { PROFILE(GEN_ITEM_CREATE_TFN);
 
   gen_item* gi;
 
   /* Create the generate item for a namespace */
-  gi = (gen_item*)malloc_safe( sizeof( gen_item ), __FILE__, __LINE__ );
+  gi = (gen_item*)malloc_safe( sizeof( gen_item ) );
   gi->elem.inst       = inst;
   gi->suppl.all       = 0;
   gi->suppl.part.type = GI_TYPE_TFN;
@@ -616,16 +616,16 @@ gen_item* gen_item_create_tfn( funit_inst* inst ) {
 
  Create a new generate item for a namespace.
 */
-gen_item* gen_item_create_bind( char* name, expression* expr ) {
+gen_item* gen_item_create_bind( char* name, expression* expr ) { PROFILE(GEN_ITEM_CREATE_BIND);
 
   gen_item* gi;
 
   /* Create the generate item for a namespace */
-  gi = (gen_item*)malloc_safe( sizeof( gen_item ), __FILE__, __LINE__ );
+  gi = (gen_item*)malloc_safe( sizeof( gen_item ) );
   gi->elem.expr       = expr;
   gi->suppl.all       = 0;
   gi->suppl.part.type = GI_TYPE_BIND;
-  gi->varname         = strdup_safe( name, __FILE__, __LINE__ );
+  gi->varname         = strdup_safe( name );
   gi->next_true       = NULL;
   gi->next_false      = NULL;
 
@@ -649,7 +649,7 @@ gen_item* gen_item_create_bind( char* name, expression* expr ) {
  Recursively iterates the the specified generate item block, resizing all statements
  within that block.
 */
-void gen_item_resize_stmts_and_sigs( gen_item* gi, func_unit* funit ) {
+void gen_item_resize_stmts_and_sigs( gen_item* gi, func_unit* funit ) { PROFILE(GEN_ITEM_RESIZE_STMTS_AND_SIGS);
 
   if( gi != NULL ) {
 
@@ -684,7 +684,7 @@ void gen_item_resize_stmts_and_sigs( gen_item* gi, func_unit* funit ) {
 
  Assigns unique expression IDs to each expression in the tree given for a generated statement.
 */
-void gen_item_assign_expr_ids( gen_item* gi, func_unit* funit ) {
+void gen_item_assign_expr_ids( gen_item* gi, func_unit* funit ) { PROFILE(GEN_ITEM_ASSIGN_EXPR_IDS);
 
   if( (gi->suppl.part.type == GI_TYPE_STMT) && (gi->suppl.part.removed == 0) ) {
 
@@ -703,7 +703,7 @@ void gen_item_assign_expr_ids( gen_item* gi, func_unit* funit ) {
  outputs the given generate item to the specified output file.  If they do
  not match, nothing is done.
 */
-void gen_item_db_write( gen_item* gi, control type, FILE* ofile ) {
+void gen_item_db_write( gen_item* gi, control type, FILE* ofile ) { PROFILE(GEN_ITEM_DB_WRITE);
 
   /* If the types match, output based on type */
   if( (gi->suppl.part.type == type) && (gi->suppl.part.removed == 0) ) {
@@ -730,7 +730,7 @@ void gen_item_db_write( gen_item* gi, control type, FILE* ofile ) {
 
  Outputs all expressions for the statement contained in the specified generate item.
 */
-void gen_item_db_write_expr_tree( gen_item* gi, FILE* ofile ) {
+void gen_item_db_write_expr_tree( gen_item* gi, FILE* ofile ) { PROFILE(GEN_ITEM_DB_WRITE_EXPR_TREE);
 
   /* Only do this for statements */
   if( (gi->suppl.part.type == GI_TYPE_STMT) && (gi->suppl.part.removed == 0) ) {
@@ -748,7 +748,7 @@ void gen_item_db_write_expr_tree( gen_item* gi, FILE* ofile ) {
 
  \return Returns TRUE if the connection was successful; otherwise, returns FALSE.
 */
-bool gen_item_connect( gen_item* gi1, gen_item* gi2, int conn_id ) {
+bool gen_item_connect( gen_item* gi1, gen_item* gi2, int conn_id ) { PROFILE(GEN_ITEM_CONNECT);
 
   bool retval;  /* Return value for this function */
 
@@ -821,7 +821,7 @@ bool gen_item_connect( gen_item* gi1, gen_item* gi2, int conn_id ) {
  within it.  This is called by the generate_resolve function (in the middle of the binding process) and
  by the funit_size_elements function (just prior to outputting this instance to the CDD file).
 */
-void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
+void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) { PROFILE(GEN_ITEM_RESOLVE);
 
   funit_inst* child;    /* Pointer to child instance of this instance to resolve */
   char*       varname;  /* Pointer to new, substituted name (used for BIND types) */
@@ -954,7 +954,7 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
  Updates the specified expression name to be that of the generate item name
  if the current generate item is a BIND type.
 */
-void gen_item_bind( gen_item* gi, func_unit* funit ) {
+void gen_item_bind( gen_item* gi, func_unit* funit ) { PROFILE(GEN_ITEM_BIND);
 
   if( gi->suppl.part.type == GI_TYPE_BIND ) {
 
@@ -962,7 +962,7 @@ void gen_item_bind( gen_item* gi, func_unit* funit ) {
     free_safe( gi->elem.expr->name );
 
     /* Assign the new name */
-    gi->elem.expr->name = strdup_safe( gi->varname, __FILE__, __LINE__ );
+    gi->elem.expr->name = strdup_safe( gi->varname );
 
   }
 
@@ -974,7 +974,7 @@ void gen_item_bind( gen_item* gi, func_unit* funit ) {
  Recursively resolves all generate items in the design.  This is called at a specific point
  in the binding process.
 */
-void generate_resolve( funit_inst* root ) {
+void generate_resolve( funit_inst* root ) { PROFILE(GENERATE_RESOLVE);
 
   gitem_link* curr_gi;     /* Pointer to current gitem_link element to resolve for */
   funit_inst* curr_child;  /* Pointer to current child to resolve for */
@@ -1005,7 +1005,7 @@ void generate_resolve( funit_inst* root ) {
 
  \return Returns TRUE if we found at least one match; otherwise, returns FALSE.
 */
-bool generate_remove_stmt_helper( funit_inst* root, statement* stmt ) {
+bool generate_remove_stmt_helper( funit_inst* root, statement* stmt ) { PROFILE(GENERATE_REMOVE_STMT_HELPER);
 
   bool        retval   = FALSE;  /* Return value for this function */
   funit_inst* curr_child;        /* Pointer to current child to search */
@@ -1042,7 +1042,7 @@ bool generate_remove_stmt_helper( funit_inst* root, statement* stmt ) {
  that match the given statement ID.  This will get called by the stmt_blk_remove() function
  when a statement has been found that does not exist in a functional unit.
 */
-bool generate_remove_stmt( statement* stmt ) {
+bool generate_remove_stmt( statement* stmt ) { PROFILE(GENERATE_REMOVE_STMT);
 
   bool       retval = FALSE;  /* Return value for this function */
   inst_link* instl;           /* Pointer to current instance list to parse */
@@ -1064,7 +1064,7 @@ bool generate_remove_stmt( statement* stmt ) {
 
  Recursively deallocates the gen_item structure tree.
 */
-void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
+void gen_item_dealloc( gen_item* gi, bool rm_elem ) { PROFILE(GEN_ITEM_DEALLOC);
 
   if( gi != NULL ) {
 
@@ -1116,6 +1116,9 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.48  2007/11/20 05:28:58  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.47  2007/08/31 22:46:36  phase1geo
  Adding diagnostics from stable branch.  Fixing a few minor bugs and in progress
  of working on static_afunc1 failure (still not quite there yet).  Checkpointing.

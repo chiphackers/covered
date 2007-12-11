@@ -55,11 +55,11 @@
  next pointer of element to NULL, sets the tail element to point to the
  new element and sets the tail value to the new element.
 */
-str_link* str_link_add( char* str, str_link** head, str_link** tail ) {
+str_link* str_link_add( char* str, str_link** head, str_link** tail ) { PROFILE(STR_LINK_ADD);
 
   str_link* tmp;    /* Temporary pointer to newly created str_link element */
 
-  tmp = (str_link*)malloc_safe( sizeof( str_link ), __FILE__, __LINE__ );
+  tmp = (str_link*)malloc_safe( sizeof( str_link ) );
 
   tmp->str    = str;
   tmp->suppl  = 0x0;
@@ -88,11 +88,11 @@ str_link* str_link_add( char* str, str_link** head, str_link** tail ) {
  next pointer of element to head, sets the head element to point to the
  new element and (possibly) sets the tail value to the new element.
 */
-void stmt_link_add_head( statement* stmt, stmt_link** head, stmt_link** tail ) {
+void stmt_link_add_head( statement* stmt, stmt_link** head, stmt_link** tail ) { PROFILE(STMT_LINK_ADD_HEAD);
 
   stmt_link* tmp;    /* Temporary pointer to newly created stmt_link element */
 
-  tmp = (stmt_link*)malloc_safe( sizeof( stmt_link ), __FILE__, __LINE__ );
+  tmp = (stmt_link*)malloc_safe( sizeof( stmt_link ) );
 
   tmp->stmt = stmt;
 
@@ -115,11 +115,11 @@ void stmt_link_add_head( statement* stmt, stmt_link** head, stmt_link** tail ) {
  Creates a new stmt_link element with the value specified for stmt.  Sets
  next pointer of element to NULL and sets the tail value to the new element.
 */
-void stmt_link_add_tail( statement* stmt, stmt_link** head, stmt_link** tail ) {
+void stmt_link_add_tail( statement* stmt, stmt_link** head, stmt_link** tail ) { PROFILE(STMT_LINK_ADD_TAIL);
 
   stmt_link* tmp;    /* Temporary pointer to newly created stmt_link element */
 
-  tmp = (stmt_link*)malloc_safe( sizeof( stmt_link ), __FILE__, __LINE__ );
+  tmp = (stmt_link*)malloc_safe( sizeof( stmt_link ) );
 
   tmp->stmt = stmt;
 
@@ -141,7 +141,7 @@ void stmt_link_add_tail( statement* stmt, stmt_link** head, stmt_link** tail ) {
  Joins two statement links together such that the statements are stored in line order.
  Assumes that the base list contains at least one statement link.
 */
-void stmt_link_merge( stmt_link** base_head, stmt_link** base_tail, stmt_link* other_head, stmt_link* other_tail ) {
+void stmt_link_merge( stmt_link** base_head, stmt_link** base_tail, stmt_link* other_head, stmt_link* other_tail ) { PROFILE(STMT_LINK_MERGE);
 
   stmt_iter si_base;   /* Statement iterator for the base list */
   stmt_iter si_base2;  /* Statement iterator for the base list */
@@ -232,11 +232,11 @@ void stmt_link_merge( stmt_link** base_head, stmt_link** base_tail, stmt_link* o
  Sets next pointer of element to NULL, sets the tail element to point
  to the new element and sets the tail value to the new element.
 */
-void exp_link_add( expression* expr, exp_link** head, exp_link** tail ) {
+void exp_link_add( expression* expr, exp_link** head, exp_link** tail ) { PROFILE(EXP_LINK_ADD);
 
   exp_link* tmp;   /* Temporary pointer to newly created exp_link element */
 
-  tmp = (exp_link*)malloc_safe( sizeof( exp_link ), __FILE__, __LINE__ );
+  tmp = (exp_link*)malloc_safe( sizeof( exp_link ) );
 
   tmp->exp  = expr;
   tmp->next = NULL;
@@ -259,11 +259,11 @@ void exp_link_add( expression* expr, exp_link** head, exp_link** tail ) {
  Sets next pointer of element to NULL, sets the tail element to point
  to the new element and sets the tail value to the new element.
 */
-void sig_link_add( vsignal* sig, sig_link** head, sig_link** tail ) {
+void sig_link_add( vsignal* sig, sig_link** head, sig_link** tail ) { PROFILE(SIG_LINK_ADD);
 
   sig_link* tmp;   /* Temporary pointer to newly created sig_link element */
 
-  tmp = (sig_link*)malloc_safe( sizeof( sig_link ), __FILE__, __LINE__ );
+  tmp = (sig_link*)malloc_safe( sizeof( sig_link ) );
 
   tmp->sig  = sig;
   tmp->next = NULL;
@@ -286,11 +286,11 @@ void sig_link_add( vsignal* sig, sig_link** head, sig_link** tail ) {
  Sets next pointer of element to NULL, sets the tail element to point
  to the new element and sets the tail value to the new element.
 */
-void fsm_link_add( fsm* table, fsm_link** head, fsm_link** tail ) {
+void fsm_link_add( fsm* table, fsm_link** head, fsm_link** tail ) { PROFILE(FSM_LINK_ADD);
 
   fsm_link* tmp;  /* Temporary pointer to newly created fsm_link element */
 
-  tmp = (fsm_link*)malloc_safe( sizeof( fsm_link ), __FILE__, __LINE__ );
+  tmp = (fsm_link*)malloc_safe( sizeof( fsm_link ) );
 
   tmp->table = table;
   tmp->next  = NULL;
@@ -313,11 +313,11 @@ void fsm_link_add( fsm* table, fsm_link** head, fsm_link** tail ) {
  Sets next pointer of element to NULL, sets the tail element to point
  to the new element and sets the tail value to the new element.
 */
-void funit_link_add( func_unit* funit, funit_link** head, funit_link** tail ) {
+void funit_link_add( func_unit* funit, funit_link** head, funit_link** tail ) { PROFILE(FUNIT_LINK_ADD);
 	
   funit_link* tmp;   /* Temporary pointer to newly created funit_link element */
 	
-  tmp = (funit_link*)malloc_safe( sizeof( funit_link ), __FILE__, __LINE__ );
+  tmp = (funit_link*)malloc_safe( sizeof( funit_link ) );
 	
   tmp->funit = funit;
   tmp->next  = NULL;
@@ -341,11 +341,11 @@ void funit_link_add( func_unit* funit, funit_link** head, funit_link** tail ) {
  Sets next pointer of element to NULL, sets the tail element to point
  to the new element and sets the tail value to the new element.
 */
-void gitem_link_add( gen_item* gi, gitem_link** head, gitem_link** tail ) {
+void gitem_link_add( gen_item* gi, gitem_link** head, gitem_link** tail ) { PROFILE(GITEM_LINK_ADD);
 
   gitem_link* tmp;  /* Temporary pointer to newly created gitem_link element */
 
-  tmp = (gitem_link*)malloc_safe( sizeof( gitem_link ), __FILE__, __LINE__ );
+  tmp = (gitem_link*)malloc_safe( sizeof( gitem_link ) );
 
   tmp->gi   = gi;
   tmp->next = NULL;
@@ -371,11 +371,11 @@ void gitem_link_add( gen_item* gi, gitem_link** head, gitem_link** tail ) {
  Sets next pointer of element to NULL, sets the tail element to point
  to the new element and sets the tail value to the new element.
 */
-inst_link* inst_link_add( funit_inst* inst, inst_link** head, inst_link** tail ) {
+inst_link* inst_link_add( funit_inst* inst, inst_link** head, inst_link** tail ) { PROFILE(INST_LINK_ADD);
 
   inst_link* tmp;  /* Temporary pointer to newly created inst_link element */
 
-  tmp = (inst_link*)malloc_safe( sizeof( inst_link ), __FILE__, __LINE__ );
+  tmp = (inst_link*)malloc_safe( sizeof( inst_link ) );
 
   tmp->inst = inst;
   tmp->next = NULL;
@@ -548,7 +548,7 @@ void inst_link_display( inst_link* head ) {
  a matching string is found, the pointer to this element is returned.  If the specified
  string could not be matched, the value of NULL is returned.
 */
-str_link* str_link_find( char* value, str_link* head ) {
+str_link* str_link_find( char* value, str_link* head ) { PROFILE(STR_LINK_FIND);
 
   str_link* curr;    /* Pointer to current str_link link */
   
@@ -571,7 +571,7 @@ str_link* str_link_find( char* value, str_link* head ) {
  a matching statement is found, the pointer to this element is returned.  If the specified
  statement could not be matched, the value of NULL is returned.
 */
-stmt_link* stmt_link_find( int id, stmt_link* head ) {
+stmt_link* stmt_link_find( int id, stmt_link* head ) { PROFILE(STMT_LINK_FIND);
 
   stmt_iter curr;   /* Statement list iterator */
 
@@ -594,7 +594,7 @@ stmt_link* stmt_link_find( int id, stmt_link* head ) {
  a matching expression is found, the pointer to this element is returned.  If the specified
  expression could not be matched, the value of NULL is returned.
 */
-exp_link* exp_link_find( expression* exp, exp_link* head ) {
+exp_link* exp_link_find( expression* exp, exp_link* head ) { PROFILE(EXP_LINK_FIND);
 
   exp_link* curr;   /* Expression list iterator */
 
@@ -616,7 +616,7 @@ exp_link* exp_link_find( expression* exp, exp_link* head ) {
  a matching signal is found, the pointer to this element is returned.  If the specified
  signal could not be matched, the value of NULL is returned.
 */
-sig_link* sig_link_find( vsignal* sig, sig_link* head ) {
+sig_link* sig_link_find( vsignal* sig, sig_link* head ) { PROFILE(SIG_LINK_FIND);
 
   sig_link* curr;    /* Pointer to current sig_link link */
 
@@ -639,7 +639,7 @@ sig_link* sig_link_find( vsignal* sig, sig_link* head ) {
  a matching FSM is found, the pointer to this element is returned.  If the specified
  FSM structure could not be matched, the value of NULL is returned.
 */
-fsm_link* fsm_link_find( fsm* table, fsm_link* head ) {
+fsm_link* fsm_link_find( fsm* table, fsm_link* head ) { PROFILE(FSM_LINK_FIND);
 
   fsm_link* curr;  /* Pointer to current fsm_link element */
 
@@ -662,7 +662,7 @@ fsm_link* fsm_link_find( fsm* table, fsm_link* head ) {
  a matching functional unit is found, the pointer to this element is returned.  If the specified
  functional unit could not be matched, the value of NULL is returned.
 */
-funit_link* funit_link_find( func_unit* funit, funit_link* head ) {
+funit_link* funit_link_find( func_unit* funit, funit_link* head ) { PROFILE(FUNIT_LINK_FIND);
 
   funit_link* curr;    /* Pointer to current funit_link link */
 
@@ -686,7 +686,7 @@ funit_link* funit_link_find( func_unit* funit, funit_link* head ) {
  a matching generate item is found, the pointer to this element is returned.  If the specified
  generate item could not be matched, the value of NULL is returned.
 */
-gitem_link* gitem_link_find( gen_item* gi, gitem_link* head ) {
+gitem_link* gitem_link_find( gen_item* gi, gitem_link* head ) { PROFILE(GITEM_LINK_FIND);
 
   gitem_link* curr;  /* Pointer to current gitem_link */
 
@@ -710,7 +710,7 @@ gitem_link* gitem_link_find( gen_item* gi, gitem_link* head ) {
  a matching instance is found, the pointer to this element is returned.  If the specified
  generate item could not be matched, the value of NULL is returned.
 */
-funit_inst* inst_link_find_by_scope( char* scope, inst_link* head ) {
+funit_inst* inst_link_find_by_scope( char* scope, inst_link* head ) { PROFILE(INST_LINK_FIND_BY_SCOPE);
 
   inst_link*  curr;  /* Pointer to current inst_link */
   funit_inst* inst;  /* Pointer to found instance */
@@ -734,7 +734,7 @@ funit_inst* inst_link_find_by_scope( char* scope, inst_link* head ) {
  a matching instance is found, the pointer to this element is returned.  If the specified
  generate item could not be matched, the value of NULL is returned.
 */
-funit_inst* inst_link_find_by_funit( const func_unit* funit, inst_link* head, int* ignore ) {
+funit_inst* inst_link_find_by_funit( const func_unit* funit, inst_link* head, int* ignore ) { PROFILE(INST_LINK_FIND_BY_FUNIT);
 
   inst_link*  curr;  /* Pointer to current inst_link */
   funit_inst* inst;  /* Pointer to found instance */
@@ -758,7 +758,7 @@ funit_inst* inst_link_find_by_funit( const func_unit* funit, inst_link* head, in
  Searches specified list for string that matches the specified string.  If
  a match is found, remove it from the list and deallocate the link memory.
 */
-void str_link_remove( char* str, str_link** head, str_link** tail ) {
+void str_link_remove( char* str, str_link** head, str_link** tail ) { PROFILE(STR_LINK_REMOVE);
 
   str_link* curr;  /* Pointer to current string link */
   str_link* last;  /* Pointer to last string link */
@@ -803,7 +803,7 @@ void str_link_remove( char* str, str_link** head, str_link** tail ) {
  Searches specified list for expression that matches the specified expression.  If
  a match is found, remove it from the list and deallocate the link memory.
 */
-void exp_link_remove( expression* exp, exp_link** head, exp_link** tail, bool recursive ) {
+void exp_link_remove( expression* exp, exp_link** head, exp_link** tail, bool recursive ) { PROFILE(EXP_LINK_REMOVE);
 
   exp_link* curr;  /* Pointer to current expression link */
   exp_link* last;  /* Pointer to last expression link */
@@ -863,7 +863,7 @@ void exp_link_remove( expression* exp, exp_link** head, exp_link** tail, bool re
  Deletes specified generate item from the given list, adjusting the head and
  tail pointers accordingly.
 */
-void gitem_link_remove( gen_item* gi, gitem_link** head, gitem_link** tail ) {
+void gitem_link_remove( gen_item* gi, gitem_link** head, gitem_link** tail ) { PROFILE(GITEM_LINK_REMOVE);
 
   gitem_link* gil;   /* Pointer to current generate item link */
   gitem_link* last;  /* Pointer to last generate item link traversed */
@@ -903,7 +903,7 @@ void gitem_link_remove( gen_item* gi, gitem_link** head, gitem_link** tail ) {
  Searches for and removes the given functional unit from the given list and adjusts list as
  necessary.
 */
-void funit_link_remove( func_unit* funit, funit_link** head, funit_link** tail, bool rm_funit ) {
+void funit_link_remove( func_unit* funit, funit_link** head, funit_link** tail, bool rm_funit ) { PROFILE(FUNIT_LINK_REMOVE);
 
   funit_link* curr = *head;  /* Pointer to current functional unit link */
   funit_link* last = NULL;   /* Pointer to last functional unit link traversed */
@@ -949,7 +949,7 @@ void funit_link_remove( func_unit* funit, funit_link** head, funit_link** tail, 
  all unnamed scopes within it.  Only called by the report command after the CDD has been
  read into the database.
 */
-void inst_link_flatten( inst_link* head ) {
+void inst_link_flatten( inst_link* head ) { PROFILE(INST_LINK_FLATTEN);
 
   while( head != NULL ) {
     instance_flatten( head->inst );
@@ -965,7 +965,7 @@ void inst_link_flatten( inst_link* head ) {
 
  Deletes each element of the specified list.
 */
-void str_link_delete_list( str_link* head ) {
+void str_link_delete_list( str_link* head ) { PROFILE(STR_LINK_DELETE_LIST);
 
   str_link* tmp;   /* Temporary pointer to current link in list */
 
@@ -996,7 +996,7 @@ void str_link_delete_list( str_link* head ) {
  the statement link is found that matches, removes that link from the list and repairs
  the list.
 */
-void stmt_link_unlink( statement* stmt, stmt_link** head, stmt_link** tail ) {
+void stmt_link_unlink( statement* stmt, stmt_link** head, stmt_link** tail ) { PROFILE(STMT_LINK_UNLINK);
 
   stmt_iter  curr;   /* Statement list iterator */
   stmt_link* next;   /* Pointer to next stmt_link in list */
@@ -1042,7 +1042,7 @@ void stmt_link_unlink( statement* stmt, stmt_link** head, stmt_link** tail ) {
 
  Deletes each element of the specified list.
 */
-void stmt_link_delete_list( stmt_link* head ) {
+void stmt_link_delete_list( stmt_link* head ) { PROFILE(STMT_LINK_DELETE_LIST);
 
   stmt_iter curr;  /* Statement list iterator */
 
@@ -1074,7 +1074,7 @@ void stmt_link_delete_list( stmt_link* head ) {
 
  Deletes each element of the specified list.
 */
-void exp_link_delete_list( exp_link* head, bool del_exp ) {
+void exp_link_delete_list( exp_link* head, bool del_exp ) { PROFILE(EXP_LINK_DELETE_LIST);
 
   exp_link* tmp;  /* Pointer to current expression link to remove */
   
@@ -1102,7 +1102,7 @@ void exp_link_delete_list( exp_link* head, bool del_exp ) {
 
  Deletes each element of the specified list.
 */
-void sig_link_delete_list( sig_link* head, bool del_sig ) {
+void sig_link_delete_list( sig_link* head, bool del_sig ) { PROFILE(SIG_LINK_DELETE_LIST);
 
   sig_link* tmp;   /* Temporary pointer to current link in list */
 
@@ -1129,7 +1129,7 @@ void sig_link_delete_list( sig_link* head, bool del_sig ) {
 
  Deletes each element of the specified list.
 */
-void fsm_link_delete_list( fsm_link* head ) {
+void fsm_link_delete_list( fsm_link* head ) { PROFILE(FSM_LINK_DELETE_LIST);
 
   fsm_link* tmp;  /* Temporary pointer to current link in list */
 
@@ -1156,7 +1156,7 @@ void fsm_link_delete_list( fsm_link* head ) {
 
  Deletes each element of the specified list.
 */
-void funit_link_delete_list( funit_link** head, funit_link** tail, bool rm_funit ) {
+void funit_link_delete_list( funit_link** head, funit_link** tail, bool rm_funit ) { PROFILE(FUNIT_LINK_DELETE_LIST);
 
   funit_link* tmp;   /* Temporary pointer to current link in list */
 
@@ -1187,7 +1187,7 @@ void funit_link_delete_list( funit_link** head, funit_link** tail, bool rm_funit
 
  Deletes each element of the specified list.
 */
-void gitem_link_delete_list( gitem_link* head, bool rm_elems ) {
+void gitem_link_delete_list( gitem_link* head, bool rm_elems ) { PROFILE(GITEM_LINK_DELETE_LIST);
 
   gitem_link* tmp;  /* Temporary pointer to current link in list */
 
@@ -1212,7 +1212,7 @@ void gitem_link_delete_list( gitem_link* head, bool rm_elems ) {
 
  Deletes each element of the specified list.
 */
-void inst_link_delete_list( inst_link* head ) {
+void inst_link_delete_list( inst_link* head ) { PROFILE(INST_LINK_DELETE_LIST);
 
   inst_link* tmp;  /* Temporary pointer to current link in list */
 
@@ -1234,6 +1234,9 @@ void inst_link_delete_list( inst_link* head ) {
 
 /*
  $Log$
+ Revision 1.68  2007/11/20 05:28:58  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.67  2007/09/13 17:03:30  phase1geo
  Cleaning up some const-ness corrections -- still more to go but it's a good
  start.

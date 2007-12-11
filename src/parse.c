@@ -62,7 +62,7 @@ extern char*     top_module;
  or EOF is encountered.  Returns the read line and the number of characters
  stored in the line.  No newline character is added to the line.
 */
-int parse_readline( FILE* file, char* line, int size ) {
+int parse_readline( FILE* file, char* line, int size ) { PROFILE(PARSE_READLINE);
 
   int i = 0;  /* Loop iterator */
 
@@ -93,11 +93,11 @@ int parse_readline( FILE* file, char* line, int size ) {
  After all design files are parsed, their information will be appropriately
  stored in the associated lists.
 */
-bool parse_design( char* top, char* output_db ) {
+bool parse_design( char* top, char* output_db ) { PROFILE(PARSE_DESIGN);
 
   bool retval = TRUE;  /* Return value of this function */
 
-  str_link_add( strdup_safe( top, __FILE__, __LINE__ ), &modlist_head, &modlist_tail );
+  str_link_add( strdup_safe( top ), &modlist_head, &modlist_tail );
 
   if( use_files_head != NULL ) {
 
@@ -197,7 +197,7 @@ bool parse_design( char* top, char* output_db ) {
  performs re-simulation and writes the scored design back to the specified CDD database file
  for merging or reporting.
 */
-bool parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) {
+bool parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) { PROFILE(PARSE_AND_SCORE_DUMPFILE);
 
   bool retval = TRUE;  /* Return value of this function */
 
@@ -261,6 +261,9 @@ bool parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) {
 
 /*
  $Log$
+ Revision 1.51  2007/11/20 05:28:59  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.50  2007/09/04 22:50:50  phase1geo
  Fixed static_afunc1 issues.  Reran regressions and updated necessary files.
  Also working on debugging one remaining issue with mem1.v (not solved yet).
