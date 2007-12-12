@@ -443,6 +443,8 @@ void sim_thread_insert_into_delay_queue( thread* thr, uint64 sim_time ) { PROFIL
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -1085,9 +1087,6 @@ void sim_thread( thread* thr, uint64 sim_time ) { PROFILE(SIM_THREAD);
 */
 void sim_simulate( uint64 sim_time ) { PROFILE(SIM_SIMULATE);
 
-  uint64  last_time;  /* Last time placed into the active thread queue */      
-  thread* thr;        /* Temporary thread pointer */
-
   /* Simulate all threads in the active queue */
   while( active_head != NULL ) {
     sim_thread( active_head, sim_time );
@@ -1096,7 +1095,44 @@ void sim_simulate( uint64 sim_time ) { PROFILE(SIM_SIMULATE);
   /* Simulate delay queue for each timestep less than the current simulation time */
   while( (delayed_head != NULL) && (delayed_head->curr_time <= sim_time) ) {
 
-    last_time = delayed_head->curr_time;
+    uint64  last_time = delayed_head->curr_time;  /* Last time placed into the active thread queue */
+    thread* thr       = delayed_head;             /* Current thread being examined for time */
+
+    /* Find final thread in this same timestep */
+    do {
+      thr->suppl.part.state = THR_ST_ACTIVE;
+      thr = thr->queue_next;
+    } while( (thr != NULL) && (thr->curr_time == last_time) );
+
+    /* Add segment of delayed queue to the active queue */
+    active_head = delayed_head;
+    active_head->queue_prev = NULL;
+    if (thr == NULL) {
+      active_tail  = delayed_tail;
+      delayed_head = delayed_tail = NULL;
+    } else {
+      active_tail = thr->queue_prev;
+      active_tail->queue_next = NULL;
+      delayed_head = thr;
+    }
+
+    /* Simulate all threads in the active queue */
+    while( active_head != NULL ) {
+      sim_thread( active_head, sim_time );
+    }
+
+  }
+
+  /* Adjust the delayed_tail if the delayed queue is now empty */
+  if( delayed_head == NULL ) {
+    delayed_tail = NULL;
+  }
+
+#ifdef OBSOLETE
+  /* Simulate delay queue for each timestep less than the current simulation time */
+  while( (delayed_head != NULL) && (delayed_head->curr_time <= sim_time) ) {
+
+    uint64 last_time = delayed_head->curr_time;  /* Last time placed into the active thread queue */
 
     /* Change the state to ACTIVE */
     delayed_head->suppl.part.state = THR_ST_ACTIVE;
@@ -1115,7 +1151,7 @@ void sim_simulate( uint64 sim_time ) { PROFILE(SIM_SIMULATE);
     }
 
     while( (delayed_head != NULL) && (delayed_head->curr_time == last_time) ) {
-      thr = delayed_head;
+      thread* thr = delayed_head;
       delayed_head             = delayed_head->queue_next;
       thr->suppl.part.state = THR_ST_ACTIVE;
       thr->queue_prev = active_tail;
@@ -1135,6 +1171,7 @@ void sim_simulate( uint64 sim_time ) { PROFILE(SIM_SIMULATE);
     }
 
   }
+#endif
 
 #ifdef DEBUG_MODE
   if( debug_mode && !flag_use_command_line_debug ) {
@@ -1196,6 +1233,9 @@ void sim_dealloc() { PROFILE(SIM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.107  2007/12/12 14:17:44  phase1geo
+ Enhancing the profiling report.
+
  Revision 1.106  2007/12/12 08:04:15  phase1geo
  Adding more timed functions for profiling purposes.
 

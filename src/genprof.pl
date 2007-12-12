@@ -8,8 +8,9 @@
 #           Generates genprof.h and genprof.c files that contain defines and structures requires for profiling purposes.
 
 # Initialize all global variables
-@funcs  = ();
-$header =
+@funcs       = ();
+@open_stack  = ();
+$header      =
 "/*
  Copyright (c) 2006 Trevor Williams
 
@@ -39,8 +40,10 @@ while( $file = readdir(DIR) ) {
         $index = $1;
         chomp($index);
         $funcs[@funcs] = $index;
+        push(@open_stack,$#funcs);
       } elsif( /PROFILE_END/ ) {
-        $funcs[@funcs-1] .= ":TRUE";
+        $funcs[pop(@open_stack)] .= ":TRUE";
+        $next_to_end--;
       }
     }
     close(IFILE);

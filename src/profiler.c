@@ -135,16 +135,13 @@ void profiler_dealloc() {
 
 }
 
-void profiler_display_calls( FILE* ofile ) {
+void profiler_sort_by_calls( FILE* ofile ) {
 
   int largest;             /* Index of largest calls profile */
   int i;                   /* Loop iterator */
   int j;                   /* Loop iterator */
   int list[NUM_PROFILES];  /* List of indices that can be used to sort */
   int tmp;                 /* Used for value swapping */
-
-  /* Stop the simulation timer and deallocate it */
-  timer_stop( &sim_timer );
 
   /* Prepare a list of key/value pairs */
   for( i=0; i<NUM_PROFILES; i++ ) {
@@ -153,18 +150,11 @@ void profiler_display_calls( FILE* ofile ) {
 
   /* Display header for this section */
   fprintf( ofile, "==============================================================================\n" );
-  fprintf( ofile, "=                           Function Calls Profile                           =\n" );
+  fprintf( ofile, "=                           Sort by calls Profile                            =\n" );
   fprintf( ofile, "==============================================================================\n" );
-  fprintf( ofile, "\n" );
-  fprintf( ofile, "This section describes the number of times each function was called\n" );
-  fprintf( ofile, "during the command run.  Note that functions are ordered from the most\n" );
-  fprintf( ofile, "called to the least called.\n" );
   fprintf( ofile, "\n" );
   fprintf( ofile, "Total simulation time: %ld\n", sim_timer->total );
   fprintf( ofile, "\n" );
-
-  free_safe( sim_timer );
-
   fprintf( ofile, "------------------------------------------------------------------------------------------------------\n" );
   fprintf( ofile, "Function Name                               calls       time        avg. time   mallocs     frees\n" );
   fprintf( ofile, "------------------------------------------------------------------------------------------------------\n" );
@@ -185,14 +175,120 @@ void profiler_display_calls( FILE* ofile ) {
         fprintf( ofile, "  %-40.40s  %10d          NA          NA  %10d  %10d\n",
                  profiles[list[j]].func_name, profiles[list[j]].calls, profiles[list[j]].mallocs, profiles[list[j]].frees );
       } else {
-        fprintf( ofile, "  %-40.40s  %10d  %10d  %06.3f  %10d  %10d\n",
+        fprintf( ofile, "  %-40.40s  %10d  %10d  %10.3f  %10d  %10d\n",
                  profiles[list[j]].func_name, profiles[list[j]].calls, profiles[list[j]].time_in->total,
                  (profiles[list[j]].time_in->total / (profiles[list[j]].calls * 1.0)), profiles[list[j]].mallocs, profiles[list[j]].frees );
       }
     }
   }
 
+  fprintf( ofile, "\n\n\n" );
+    
 }
+
+void profiler_sort_by_time( FILE* ofile ) {
+
+  int largest;             /* Index of largest calls profile */
+  int i;                   /* Loop iterator */
+  int j;                   /* Loop iterator */
+  int list[NUM_PROFILES];  /* List of indices that can be used to sort */
+  int tmp;                 /* Used for value swapping */
+
+  /* Prepare a list of key/value pairs */
+  for( i=0; i<NUM_PROFILES; i++ ) {
+    list[i] = i;
+  }
+
+  /* Display header for this section */
+  fprintf( ofile, "==============================================================================\n" );
+  fprintf( ofile, "=                           Sort by time Profile                             =\n" );
+  fprintf( ofile, "==============================================================================\n" );
+  fprintf( ofile, "\n" );
+  fprintf( ofile, "Total simulation time: %ld\n", sim_timer->total );
+  fprintf( ofile, "\n" );
+  fprintf( ofile, "------------------------------------------------------------------------------------------------------\n" );
+  fprintf( ofile, "Function Name                               calls       time        avg. time   mallocs     frees\n" );
+  fprintf( ofile, "------------------------------------------------------------------------------------------------------\n" );
+
+  /* Output them in order of most to least */
+  for( i=(NUM_PROFILES-1); i>=0; i-- ) {
+    largest = 0;
+    for( j=0; j<i; j++ ) {
+      if( (profiles[list[j]].time_in != NULL) && ((profiles[list[largest]].time_in == NULL) || (profiles[list[j]].time_in->total > profiles[list[largest]].time_in->total)) ) {
+        largest = j;
+      }
+    }
+    tmp           = list[j];
+    list[j]       = list[largest];
+    list[largest] = tmp;
+    if( profiles[list[j]].calls > 0 ) {
+      if( profiles[list[j]].time_in == NULL ) {
+        fprintf( ofile, "  %-40.40s  %10d          NA          NA  %10d  %10d\n",
+                 profiles[list[j]].func_name, profiles[list[j]].calls, profiles[list[j]].mallocs, profiles[list[j]].frees );
+      } else {
+        fprintf( ofile, "  %-40.40s  %10d  %10d  %10.3f  %10d  %10d\n",
+                 profiles[list[j]].func_name, profiles[list[j]].calls, profiles[list[j]].time_in->total,
+                 (profiles[list[j]].time_in->total / (profiles[list[j]].calls * 1.0)), profiles[list[j]].mallocs, profiles[list[j]].frees );
+      }
+    }
+  } 
+    
+  fprintf( ofile, "\n\n\n" );
+    
+}   
+
+void profiler_sort_by_avg_time( FILE* ofile ) {
+
+  int largest;             /* Index of largest calls profile */
+  int i;                   /* Loop iterator */
+  int j;                   /* Loop iterator */
+  int list[NUM_PROFILES];  /* List of indices that can be used to sort */
+  int tmp;                 /* Used for value swapping */
+
+  /* Prepare a list of key/value pairs */
+  for( i=0; i<NUM_PROFILES; i++ ) {
+    list[i] = i;
+  }
+
+  /* Display header for this section */
+  fprintf( ofile, "==============================================================================\n" );
+  fprintf( ofile, "=                           Sort by avg. time Profile                        =\n" );
+  fprintf( ofile, "==============================================================================\n" );
+  fprintf( ofile, "\n" );
+  fprintf( ofile, "Total simulation time: %ld\n", sim_timer->total );
+  fprintf( ofile, "\n" );
+  fprintf( ofile, "------------------------------------------------------------------------------------------------------\n" );
+  fprintf( ofile, "Function Name                               calls       time        avg. time   mallocs     frees\n" );
+  fprintf( ofile, "------------------------------------------------------------------------------------------------------\n" );
+
+  /* Output them in order of most to least */
+  for( i=(NUM_PROFILES-1); i>=0; i-- ) {
+    largest = 0;
+    for( j=0; j<i; j++ ) {
+      if( (profiles[list[j]].time_in != NULL) &&
+          ((profiles[list[largest]].time_in == NULL) ||
+           ((profiles[list[j]].time_in->total / profiles[list[j]].calls) > (profiles[list[largest]].time_in->total / profiles[list[largest]].calls))) ) {
+        largest = j;
+      }
+    }
+    tmp           = list[j];
+    list[j]       = list[largest];
+    list[largest] = tmp;
+    if( profiles[list[j]].calls > 0 ) {
+      if( profiles[list[j]].time_in == NULL ) {
+        fprintf( ofile, "  %-40.40s  %10d          NA          NA  %10d  %10d\n",
+                 profiles[list[j]].func_name, profiles[list[j]].calls, profiles[list[j]].mallocs, profiles[list[j]].frees );
+      } else {
+        fprintf( ofile, "  %-40.40s  %10d  %10d  %10.3f  %10d  %10d\n",
+                 profiles[list[j]].func_name, profiles[list[j]].calls, profiles[list[j]].time_in->total,
+                 (profiles[list[j]].time_in->total / (profiles[list[j]].calls * 1.0)), profiles[list[j]].mallocs, profiles[list[j]].frees );
+      }
+    }
+  } 
+
+  fprintf( ofile, "\n\n\n" );
+    
+}   
 
 /*!
  Generates profiling report if the profiling mode is set to TRUE.
@@ -207,7 +303,16 @@ void profiler_report() {
 
     if( (ofile = fopen( profiling_output, "w" )) != NULL ) {
 
-      profiler_display_calls( ofile );
+      /* Stop the simulation timer and deallocate it */
+      timer_stop( &sim_timer );
+
+      /* Output profiling results */
+      profiler_sort_by_time( ofile );
+      profiler_sort_by_avg_time( ofile );
+      profiler_sort_by_calls( ofile );
+
+      /* Deallocate sim_timer */
+      free_safe( sim_timer );
 
       /* Close the output file */
       fclose( ofile );
@@ -229,6 +334,9 @@ void profiler_report() {
 
 /*
  $Log$
+ Revision 1.4  2007/12/12 14:17:44  phase1geo
+ Enhancing the profiling report.
+
  Revision 1.3  2007/12/12 07:23:19  phase1geo
  More work on profiling.  I have now included the ability to get function runtimes.
  Still more work to do but everything is currently working at the moment.
