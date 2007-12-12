@@ -36,6 +36,9 @@ static unsigned int stack[4096];
 /*! Current size of the profile stack */
 static unsigned int stack_size = 0;
 
+#ifdef HAVE_SYS_TIME_H
+static timer* sim_timer = NULL;
+#endif
 
 
 extern char user_msg[USER_MSG_LENGTH];
@@ -50,6 +53,12 @@ void profiler_set_mode( bool value ) {
 
   profiling_mode = value;
 
+#ifdef HAVE_SYS_TIME_H
+  if( profiling_mode ) {
+    timer_start( &sim_timer );
+  }
+#endif
+    
 }
 
 /*!
@@ -134,6 +143,9 @@ void profiler_display_calls( FILE* ofile ) {
   int list[NUM_PROFILES];  /* List of indices that can be used to sort */
   int tmp;                 /* Used for value swapping */
 
+  /* Stop the simulation timer and deallocate it */
+  timer_stop( &sim_timer );
+
   /* Prepare a list of key/value pairs */
   for( i=0; i<NUM_PROFILES; i++ ) {
     list[i] = i;
@@ -148,6 +160,11 @@ void profiler_display_calls( FILE* ofile ) {
   fprintf( ofile, "during the command run.  Note that functions are ordered from the most\n" );
   fprintf( ofile, "called to the least called.\n" );
   fprintf( ofile, "\n" );
+  fprintf( ofile, "Total simulation time: %ld\n", sim_timer->total );
+  fprintf( ofile, "\n" );
+
+  free_safe( sim_timer );
+
   fprintf( ofile, "------------------------------------------------------------------------------------------------------\n" );
   fprintf( ofile, "Function Name                               calls       time        avg. time   mallocs     frees\n" );
   fprintf( ofile, "------------------------------------------------------------------------------------------------------\n" );
@@ -168,9 +185,9 @@ void profiler_display_calls( FILE* ofile ) {
         fprintf( ofile, "  %-40.40s  %10d          NA          NA  %10d  %10d\n",
                  profiles[list[j]].func_name, profiles[list[j]].calls, profiles[list[j]].mallocs, profiles[list[j]].frees );
       } else {
-        fprintf( ofile, "  %-40.40s  %10d  %10d  %10d  %10d  %10d\n",
+        fprintf( ofile, "  %-40.40s  %10d  %10d  %06.3f  %10d  %10d\n",
                  profiles[list[j]].func_name, profiles[list[j]].calls, profiles[list[j]].time_in->total,
-                 (profiles[list[j]].time_in->total / profiles[list[j]].calls), profiles[list[j]].mallocs, profiles[list[j]].frees );
+                 (profiles[list[j]].time_in->total / (profiles[list[j]].calls * 1.0)), profiles[list[j]].mallocs, profiles[list[j]].frees );
       }
     }
   }
@@ -212,6 +229,10 @@ void profiler_report() {
 
 /*
  $Log$
+ Revision 1.3  2007/12/12 07:23:19  phase1geo
+ More work on profiling.  I have now included the ability to get function runtimes.
+ Still more work to do but everything is currently working at the moment.
+
  Revision 1.2  2007/12/11 23:19:14  phase1geo
  Fixed compile issues and completed first pass injection of profiling calls.
  Working on ordering the calls from most to least.

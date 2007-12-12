@@ -551,7 +551,7 @@ void sim_expr_changed( expression* expr, uint64 sim_time ) { PROFILE(SIM_EXPR_CH
       (expr->op == EXP_OP_COND) ) {
 
     /* If we are not the root expression, do the following */
-    if( ESUPPL_IS_ROOT( expr->suppl ) == 0 ) {
+    if( ESUPPL_IS_ROOT( expr->suppl ) == 0 ) { PROFILE(SIM_EXPR_CHANGED_A);
 
       /* Set the appropriate CHANGED bit of the parent expression */
       if( (expr->parent->expr->left != NULL) && (expr->parent->expr->left->id == expr->id) ) {
@@ -575,11 +575,13 @@ void sim_expr_changed( expression* expr, uint64 sim_time ) { PROFILE(SIM_EXPR_CH
       /* Continue up the tree */
       sim_expr_changed( expr->parent->expr, sim_time );
 
+      PROFILE_END;
+
     /*
      Otherwise, if we have hit the root expression and the parent pointer is valid, add 
      this statement (if it is the head) back onto the active queue.
     */
-    } else if( expr->parent->expr != NULL ) {
+    } else if( expr->parent->expr != NULL ) { PROFILE(SIM_EXPR_CHANGED_B);
 
 //      printf( "Waiting list:\n" );
 //      sim_display_wait_queue();
@@ -592,6 +594,8 @@ void sim_expr_changed( expression* expr, uint64 sim_time ) { PROFILE(SIM_EXPR_CH
         }
         thr = thr->queue_next;
       }
+
+      PROFILE_END;
 
     }
 
@@ -1192,6 +1196,9 @@ void sim_dealloc() { PROFILE(SIM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.106  2007/12/12 08:04:15  phase1geo
+ Adding more timed functions for profiling purposes.
+
  Revision 1.105  2007/12/12 07:23:19  phase1geo
  More work on profiling.  I have now included the ability to get function runtimes.
  Still more work to do but everything is currently working at the moment.
