@@ -126,6 +126,8 @@ vector* vector_create( int width, int type, bool data ) { PROFILE(VECTOR_CREATE)
 
   vector_init( new_vec, value, width, type );
 
+  PROFILE_END;
+
   return( new_vec );
 
 }
@@ -952,6 +954,8 @@ bool vector_is_unknown( const vector* vec ) { PROFILE(VECTOR_IS_UNKNOWN);
     }
   }
 
+  PROFILE_END;
+
   return( unknown );
 
 }
@@ -1009,6 +1013,8 @@ int vector_to_int( vector* vec ) { PROFILE(VECTOR_TO_INT);
       retval |= (vec->value[width-1].part.val.value << i);
     }
   }
+
+  PROFILE_END;
 
   return( retval );
 
@@ -1651,6 +1657,8 @@ bool vector_op_compare( vector* tgt, vector* left, vector* right, int comp_type 
 
   retval = vector_set_value( tgt, &value, VTYPE_VAL, 1, 0, 0 );
 
+  PROFILE_END;
+
   return( retval );
 
 }
@@ -1836,6 +1844,8 @@ bool vector_op_add( vector* tgt, vector* left, vector* right ) { PROFILE(VECTOR_
     retval |= vector_set_value( tgt, &value, VTYPE_VAL, 1, 0, i );
 
   }
+
+  PROFILE_END;
 
   return( retval );
 
@@ -2169,10 +2179,16 @@ void vector_dealloc( vector* vec ) { PROFILE(VECTOR_DEALLOC);
 
   }
 
+  PROFILE_END;
+
 }
 
 /*
  $Log$
+ Revision 1.93  2007/12/12 07:23:19  phase1geo
+ More work on profiling.  I have now included the ability to get function runtimes.
+ Still more work to do but everything is currently working at the moment.
+
  Revision 1.92  2007/12/11 23:19:14  phase1geo
  Fixed compile issues and completed first pass injection of profiling calls.
  Working on ordering the calls from most to least.

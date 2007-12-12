@@ -656,6 +656,8 @@ thread* sim_create_thread( thread* parent, statement* stmt, func_unit* funit ) {
   thr->queue_prev = NULL;
   thr->queue_next = NULL;
 
+  PROFILE_END;
+
   return( thr );
 
 }
@@ -755,6 +757,8 @@ thread* sim_add_thread( thread* parent, statement* stmt, func_unit* funit ) { PR
 
   }
 
+  PROFILE_END;
+
   return( thr );
 
 }
@@ -842,6 +846,8 @@ void sim_kill_thread( thread* thr ) { PROFILE(SIM_KILL_THREAD);
   }
 #endif
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -866,6 +872,8 @@ void sim_kill_thread_with_funit( func_unit* funit ) { PROFILE(SIM_KILL_THREAD_WI
     thr = thr->all_next;
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -883,6 +891,8 @@ void sim_add_statics() { PROFILE(SIM_ADD_STATICS);
   }
   
   exp_link_delete_list( static_expr_head, FALSE );
+
+  PROFILE_END;
   
 }
 
@@ -1129,6 +1139,8 @@ void sim_simulate( uint64 sim_time ) { PROFILE(SIM_SIMULATE);
   }
 #endif
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -1145,6 +1157,8 @@ void sim_initialize() { PROFILE(SIM_INITIALIZE);
   cli_debug_mode = debug_mode;
 #endif
 #endif
+
+  PROFILE_END;
 
 }
 
@@ -1171,11 +1185,17 @@ void sim_dealloc() { PROFILE(SIM_DEALLOC);
 #endif
 #endif
 
+  PROFILE_END;
+
 }
 
 
 /*
  $Log$
+ Revision 1.105  2007/12/12 07:23:19  phase1geo
+ More work on profiling.  I have now included the ability to get function runtimes.
+ Still more work to do but everything is currently working at the moment.
+
  Revision 1.104  2007/12/11 05:48:26  phase1geo
  Fixing more compile errors with new code changes and adding more profiling.
  Still have a ways to go before we can compile cleanly again (next submission

@@ -2477,6 +2477,8 @@ bool expression_op_func__aedge( expression* expr, thread* thr ) { PROFILE(EXPRES
 
   }
 
+  PROFILE_END;
+
   return( retval );
 
 }
@@ -2509,6 +2511,8 @@ bool expression_op_func__eor( expression* expr, thread* thr ) { PROFILE(EXPRESSI
     retval = FALSE;
 
   }
+
+  PROFILE_END;
 
   return( retval );
 
@@ -2681,6 +2685,8 @@ bool expression_op_func__bassign( expression* expr, thread* thr ) { PROFILE(EXPR
   int intval = 0;  /* Integer value */
 
   expression_assign( expr->left, expr->right, &intval, ((thr == NULL) ? 0 : thr->curr_time) );
+
+  PROFILE_END;
 
   return( TRUE );
 
@@ -3836,6 +3842,8 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb, uint64 sim_t
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -3966,11 +3974,17 @@ void expression_dealloc( expression* expr, bool exp_only ) { PROFILE(EXPRESSION_
 
   }
 
+  PROFILE_END;
+
 }
 
 
 /* 
  $Log$
+ Revision 1.260  2007/12/12 07:23:19  phase1geo
+ More work on profiling.  I have now included the ability to get function runtimes.
+ Still more work to do but everything is currently working at the moment.
+
  Revision 1.259  2007/12/11 05:48:25  phase1geo
  Fixing more compile errors with new code changes and adding more profiling.
  Still have a ways to go before we can compile cleanly again (next submission
