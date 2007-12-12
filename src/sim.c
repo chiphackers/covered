@@ -356,6 +356,8 @@ void sim_thread_pop_head() { PROFILE(SIM_THREAD_POP_HEAD);
   }
 #endif
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -512,6 +514,8 @@ void sim_thread_push( thread* thr, uint64 sim_time ) { PROFILE(SIM_THREAD_PUSH);
   }
 #endif
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -597,6 +601,8 @@ void sim_expr_changed( expression* expr, uint64 sim_time ) { PROFILE(SIM_EXPR_CH
     }
 
   }
+
+  PROFILE_END;
 
 }
 
@@ -955,6 +961,8 @@ bool sim_expression( expression* expr, thread* thr ) { PROFILE(SIM_EXPRESSION);
     retval = expression_operate( expr, thr );
   }
 
+  PROFILE_END;
+
   return( retval );
 
 }
@@ -1049,6 +1057,8 @@ void sim_thread( thread* thr, uint64 sim_time ) { PROFILE(SIM_THREAD);
     }
 
   }
+
+  PROFILE_END;
 
 }
 
@@ -1166,6 +1176,11 @@ void sim_dealloc() { PROFILE(SIM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.104  2007/12/11 05:48:26  phase1geo
+ Fixing more compile errors with new code changes and adding more profiling.
+ Still have a ways to go before we can compile cleanly again (next submission
+ should do it).
+
  Revision 1.103  2007/11/20 05:29:00  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

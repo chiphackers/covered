@@ -239,6 +239,8 @@ mod_parm* funit_find_param( char* name, func_unit* funit ) { PROFILE(FUNIT_FIND_
 
   }
 
+  PROFILE_END;
+
   return( mparm );
 
 }
@@ -1119,6 +1121,11 @@ void funit_dealloc( func_unit* funit ) { PROFILE(FUNIT_DEALLOC);
 
 /*
  $Log$
+ Revision 1.81  2007/12/11 05:48:25  phase1geo
+ Fixing more compile errors with new code changes and adding more profiling.
+ Still have a ways to go before we can compile cleanly again (next submission
+ should do it).
+
  Revision 1.80  2007/11/20 05:28:58  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

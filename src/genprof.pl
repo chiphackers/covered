@@ -35,9 +35,12 @@ while( $file = readdir(DIR) ) {
   if( $file =~ /\S+\.c/ ) {
     open(IFILE,"$file") || die "Can't open $file for reading: $!\n";
     while( <IFILE> ) {
-      if (/PROFILE\((\S+)\)/) {
+      if( /PROFILE\((\S+)\)/ ) {
         $index = $1;
+        chomp($index);
         $funcs[@funcs] = $index;
+      } elsif( /PROFILE_END/ ) {
+        $funcs[@funcs-1] .= ":TRUE";
       }
     }
     close(IFILE);
@@ -56,11 +59,13 @@ print GP_H "#define NUM_PROFILES " . @funcs . "\n\n#ifdef DEBUG\n";
 print GP_C "$header\n\n#include \"genprof.h\"\n\n#ifdef DEBUG\nprofiler profiles[NUM_PROFILES] = {\n";
 
 for( $i=0; $i<@funcs; $i++ ) {
-  $tfunc = $funcs[$i];
-  chomp($tfunc);
-  print GP_H "#define $tfunc $i\n";
-  $tfunc =~ tr/A-Z/a-z/;
-  print GP_C "  {\"$tfunc\", NULL, 0, 0, 0}";
+  ($func,$timed) = split( /:/, $funcs[$i] );
+  if( $timed eq "" ) {
+    $timed = "FALSE";
+  }
+  print GP_H "#define $func $i\n";
+  $func =~ tr/A-Z/a-z/;
+  print GP_C "  {\"$func\", NULL, 0, 0, 0, $timed}";
   if (($i+1)<@funcs) {
     print GP_C ",";
   }

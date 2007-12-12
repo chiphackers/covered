@@ -434,6 +434,8 @@ void vsignal_propagate( vsignal* sig, uint64 sim_time ) { PROFILE(VSIGNAL_PROPAG
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -488,6 +490,8 @@ void vsignal_vcd_assign( vsignal* sig, char* value, int msb, int lsb, uint64 sim
     vsignal_propagate( sig, sim_time );
 
   } 
+
+  PROFILE_END;
 
 }
 
@@ -696,6 +700,10 @@ void vsignal_dealloc( vsignal* sig ) { PROFILE(VSIGNAL_DEALLOC);
 
 /*
  $Log$
+ Revision 1.46  2007/12/11 23:19:14  phase1geo
+ Fixed compile issues and completed first pass injection of profiling calls.
+ Working on ordering the calls from most to least.
+
  Revision 1.45  2007/11/20 05:29:00  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

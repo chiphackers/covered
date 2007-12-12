@@ -30,6 +30,13 @@ bool profiling_mode = TRUE;
 /*! Name of output profiling file */
 char* profiling_output = NULL;
 
+/*! Stack of profiles that have been called */
+static unsigned int stack[4096];
+
+/*! Current size of the profile stack */
+static unsigned int stack_size = 0;
+
+
 
 extern char user_msg[USER_MSG_LENGTH];
 
@@ -60,6 +67,49 @@ void profiler_set_filename( const char* fname ) {
 }
 
 /*!
+ \param index  Profiler index of current function.
+
+ Increases the current call count for the current function, stops the timer for
+ the last running counter and starts the timer for the current function.
+*/
+void profiler_enter( unsigned int index ) {
+
+  /* Stop the last running timer if we are going to be timed */
+  if( (stack_size > 0) && profiles[index].timed && profiles[stack[stack_size-1]].timed ) {
+    timer_stop( &profiles[stack[stack_size-1]].time_in );
+  }
+
+  /* Increment the calls counter */
+  profiles[index].calls++;
+
+  /* Start the timer for this function, if needed */
+  if( profiles[index].timed ) {
+    timer_start( &profiles[index].time_in );
+    stack[stack_size] = index;
+    stack_size++;
+  }
+
+}
+
+/*!
+ Gets called when leaving a profiling function.  Stops the current timer and pops the stack.
+*/
+void profiler_exit( unsigned int index ) {
+
+  /* Stop the current timer */
+  timer_stop( &profiles[index].time_in );
+
+  /* Pop the stack */
+  stack_size--;
+
+  /* Start the timer, if needed */
+  if( (stack_size > 0) && profiles[stack[stack_size-1]].timed ) {
+    timer_start( &profiles[stack[stack_size-1]].time_in );
+  }
+
+}
+
+/*!
  Deallocates all allocated memory for profiler.
 */
 void profiler_dealloc() {
@@ -78,23 +128,50 @@ void profiler_dealloc() {
 
 void profiler_display_calls( FILE* ofile ) {
 
-  int largest;  /* Index of largest calls profile */
-  int i;        /* Loop iterator */
-  int j;        /* Loop iterator */
+  int largest;             /* Index of largest calls profile */
+  int i;                   /* Loop iterator */
+  int j;                   /* Loop iterator */
+  int list[NUM_PROFILES];  /* List of indices that can be used to sort */
+  int tmp;                 /* Used for value swapping */
 
-  fprintf( ofile, "Function Name                               # of calls\n" );
-  fprintf( ofile, "------------------------------------------------------\n" );
+  /* Prepare a list of key/value pairs */
+  for( i=0; i<NUM_PROFILES; i++ ) {
+    list[i] = i;
+  }
+
+  /* Display header for this section */
+  fprintf( ofile, "==============================================================================\n" );
+  fprintf( ofile, "=                           Function Calls Profile                           =\n" );
+  fprintf( ofile, "==============================================================================\n" );
+  fprintf( ofile, "\n" );
+  fprintf( ofile, "This section describes the number of times each function was called\n" );
+  fprintf( ofile, "during the command run.  Note that functions are ordered from the most\n" );
+  fprintf( ofile, "called to the least called.\n" );
+  fprintf( ofile, "\n" );
+  fprintf( ofile, "------------------------------------------------------------------------------------------------------\n" );
+  fprintf( ofile, "Function Name                               calls       time        avg. time   mallocs     frees\n" );
+  fprintf( ofile, "------------------------------------------------------------------------------------------------------\n" );
 
   /* Output them in order of most to least */
-  for( i=0; i<NUM_PROFILES; i++ ) {
+  for( i=(NUM_PROFILES-1); i>=0; i-- ) {
     largest = 0;
     for( j=0; j<i; j++ ) {
-      if( profiles[j].calls > profiles[largest].calls ) {
+      if( profiles[list[j]].calls > profiles[list[largest]].calls ) {
         largest = j;
       }
     }
-    if( profiles[largest].calls > 0 ) {
-      fprintf( ofile, "  %-40.40s  %10d\n", profiles[largest].func_name, profiles[largest].calls );
+    tmp           = list[j];
+    list[j]       = list[largest];
+    list[largest] = tmp;
+    if( profiles[list[j]].calls > 0 ) {
+      if( profiles[list[j]].time_in == NULL ) {
+        fprintf( ofile, "  %-40.40s  %10d          NA          NA  %10d  %10d\n",
+                 profiles[list[j]].func_name, profiles[list[j]].calls, profiles[list[j]].mallocs, profiles[list[j]].frees );
+      } else {
+        fprintf( ofile, "  %-40.40s  %10d  %10d  %10d  %10d  %10d\n",
+                 profiles[list[j]].func_name, profiles[list[j]].calls, profiles[list[j]].time_in->total,
+                 (profiles[list[j]].time_in->total / profiles[list[j]].calls), profiles[list[j]].mallocs, profiles[list[j]].frees );
+      }
     }
   }
 
@@ -135,6 +212,10 @@ void profiler_report() {
 
 /*
  $Log$
+ Revision 1.2  2007/12/11 23:19:14  phase1geo
+ Fixed compile issues and completed first pass injection of profiling calls.
+ Working on ordering the calls from most to least.
+
  Revision 1.1  2007/12/11 15:07:57  phase1geo
  Adding missing file.
 

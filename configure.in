@@ -134,7 +134,7 @@ fi
 
 dnl AC_CHECK_HEADERS(getopt.h)
 AC_CHECK_HEADERS(string.h)
-AC_CHECK_HEADERS(sys/times.h)
+AC_CHECK_HEADERS(sys/time.h)
 
 dnl Checks for libraries.
 dnl AM_WITH_MPATROL(yes)

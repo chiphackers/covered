@@ -158,7 +158,6 @@ int main( int argc, char** argv ) {
             curr_arg++;
             profiler_set_filename( argv[curr_arg] );
           } else {
-            printf( "Setting profiler output file name to %s\n", PROFILING_OUTPUT_NAME );
             profiler_set_filename( PROFILING_OUTPUT_NAME );
           }
 #else
@@ -219,6 +218,10 @@ int main( int argc, char** argv ) {
 
 /*
  $Log$
+ Revision 1.20  2007/12/11 23:19:14  phase1geo
+ Fixed compile issues and completed first pass injection of profiling calls.
+ Working on ordering the calls from most to least.
+
  Revision 1.19  2007/12/11 05:48:25  phase1geo
  Fixing more compile errors with new code changes and adding more profiling.
  Still have a ways to go before we can compile cleanly again (next submission

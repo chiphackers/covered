@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/time.h>
 #include <unistd.h>
 #include <assert.h>
 #include <dirent.h>
@@ -746,6 +747,8 @@ char* scope_gen_printable( const char* str ) { PROFILE(SCOPE_GEN_PRINTABLE);
     sscanf( str, "\\%[^ \n\t\r\b]", new_str );
   }
 
+  PROFILE_END;
+
   return( new_str );
 
 } 
@@ -773,6 +776,8 @@ bool scope_compare( const char* str1, const char* str2 ) { PROFILE(SCOPE_COMPARE
   /* Deallocate the memory */
   free_safe( new_str1 );
   free_safe( new_str2 );
+
+  PROFILE_END;
 
   return( retval );
 
@@ -808,6 +813,8 @@ bool scope_local( const char* scope ) { PROFILE(SCOPE_LOCAL);
     }
     ptr++;
   }
+
+  PROFILE_END;
 
   return( *ptr == '\0' );
 
@@ -1053,7 +1060,7 @@ void gen_space( char* spaces, int num_spaces ) { PROFILE(GEN_SPACE);
   
 }
 
-#ifdef HAVE_SYS_TIMES_H
+#ifdef HAVE_SYS_TIME_H
 /*!
  \param tm  Pointer to timer structure to clear.
 
@@ -1081,7 +1088,7 @@ void timer_start( timer** tm ) {
     timer_clear( tm );
   }
 
-  times( &((*tm)->start) );
+  gettimeofday( &((*tm)->start), NULL );
 
 }
 
@@ -1093,12 +1100,12 @@ void timer_start( timer** tm ) {
 */
 void timer_stop( timer** tm ) {
 
-  struct tms tmp;  /* Temporary holder for stop time */
+  struct timeval tmp;  /* Temporary holder for stop time */
 
   assert( *tm != NULL );
 
-  times( &tmp );
-  (*tm)->total += tmp.tms_utime - (*tm)->start.tms_utime;
+  gettimeofday( &tmp, NULL );
+  (*tm)->total += ((tmp.tv_sec - (*tm)->start.tv_sec) * 1000000) + (tmp.tv_usec - (*tm)->start.tv_usec);
 
 }
 #endif
@@ -1148,6 +1155,10 @@ void calc_miss_percent( int hits, float total, float* misses, float* percent ) {
 
 /*
  $Log$
+ Revision 1.69  2007/12/11 23:19:14  phase1geo
+ Fixed compile issues and completed first pass injection of profiling calls.
+ Working on ordering the calls from most to least.
+
  Revision 1.68  2007/12/10 23:16:22  phase1geo
  Working on adding profiler for use in finding performance issues.  Things don't compile
  at the moment.

@@ -954,6 +954,8 @@ int expression_get_curr_dimension( expression* expr ) { PROFILE(EXPRESSION_GET_C
 
   }
 
+  PROFILE_END;
+
   return( dim );
 
 }
@@ -1431,6 +1433,8 @@ bool expression_db_merge( expression* base, char** line, bool same ) { PROFILE(E
 const char* expression_string_op( int op ) { PROFILE(EXPRESSION_STRING_OP);
 
   assert( (op >= 0) && (op < EXP_OP_NUM) );
+
+  PROFILE_END;
 
   return( exp_op_info[op].name );
 
@@ -2027,6 +2031,8 @@ bool expression_op_func__cond_sel( expression* expr, thread* thr ) { PROFILE(EXP
     }
   }
 
+  PROFILE_END;
+
   return( retval );
 
 }
@@ -2153,6 +2159,8 @@ bool expression_op_func__unxor( expression* expr, thread* thr ) { PROFILE(EXPRES
 */
 bool expression_op_func__null( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP_FUNC__NULL);
 
+  PROFILE_END;
+
   return( TRUE );
 
 }
@@ -2215,6 +2223,8 @@ bool expression_op_func__sbit( expression* expr, thread* thr ) { PROFILE(EXPRESS
 
   }
 
+  PROFILE_END;
+
   return( TRUE );
 
 }
@@ -2266,6 +2276,8 @@ bool expression_op_func__mbit( expression* expr, thread* thr ) { PROFILE(EXPRESS
     assert( intval < vwidth );
     expr->value->value = vstart + intval;
   }
+
+  PROFILE_END;
 
   return( TRUE );
 
@@ -3381,6 +3393,8 @@ bool expression_operate( expression* expr, thread* thr ) { PROFILE(EXPRESSION_OP
   /* Specify that we have executed this expression */
   (expr->exec_num)++;
 
+  PROFILE_END;
+
   return( retval );
 
 }
@@ -3957,6 +3971,11 @@ void expression_dealloc( expression* expr, bool exp_only ) { PROFILE(EXPRESSION_
 
 /* 
  $Log$
+ Revision 1.259  2007/12/11 05:48:25  phase1geo
+ Fixing more compile errors with new code changes and adding more profiling.
+ Still have a ways to go before we can compile cleanly again (next submission
+ should do it).
+
  Revision 1.258  2007/12/10 23:16:21  phase1geo
  Working on adding profiler for use in finding performance issues.  Things don't compile
  at the moment.

@@ -302,6 +302,8 @@ void symtable_set_value( char* sym, char* value ) { PROFILE(SYMTABLE_SET_VALUE);
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -362,10 +364,16 @@ void symtable_dealloc( symtable* symtab ) { PROFILE(SYMTABLE_DEALLOC);
 
   }
 
+  PROFILE_END;
+
 }
 
 /*
  $Log$
+ Revision 1.29  2007/12/11 23:19:14  phase1geo
+ Fixed compile issues and completed first pass injection of profiling calls.
+ Working on ordering the calls from most to least.
+
  Revision 1.28  2007/11/20 05:29:00  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

@@ -2296,6 +2296,8 @@ void db_set_symbol_char( char* sym, char value ) { PROFILE(DB_SET_SYMBOL_CHAR);
   /* Set value of all matching occurrences in current timestep. */
   symtable_set_value( sym, val );
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -2368,6 +2370,10 @@ void db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.263  2007/12/10 23:16:21  phase1geo
+ Working on adding profiler for use in finding performance issues.  Things don't compile
+ at the moment.
+
  Revision 1.262  2007/11/20 05:28:57  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

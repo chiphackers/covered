@@ -29,8 +29,8 @@
 
 #include "../config.h"
 
-#ifdef HAVE_SYS_TIMES_H
-#include <sys/times.h>
+#ifdef HAVE_SYS_TIME_H
+#include <sys/time.h>
 #endif
 
 #ifdef HAVE_STRING_H
@@ -1520,7 +1520,7 @@ struct case_gitem_s;
 struct funit_inst_s;
 struct tnode_s;
 
-#ifdef HAVE_SYS_TIMES_H
+#ifdef HAVE_SYS_TIME_H
 struct timer_s;
 #endif
 
@@ -1702,7 +1702,7 @@ typedef struct funit_inst_s funit_inst;
 */
 typedef struct tnode_s tnode;
 
-#ifdef HAVE_SYS_TIMES_H
+#ifdef HAVE_SYS_TIME_H
 /*!
  Renaming timer structure for convenience.
 */
@@ -2241,7 +2241,7 @@ struct tnode_s {
   tnode* up;                         /*!< Pointer to parent node */
 };
 
-#ifdef HAVE_SYS_TIMES_H
+#ifdef HAVE_SYS_TIME_H
 /*!
  Structure for holding code timing data.  This information can be useful for optimizing
  code segments.  To use a timer, create a pointer to a timer structure in global
@@ -2251,8 +2251,8 @@ struct tnode_s {
  To clear the total for a timer, call timer_clear.
 */
 struct timer_s {
-  struct tms start;                  /*!< Contains start time of a particular timer */
-  clock_t    total;                  /*!< Contains the total amount of user time accrued for this timer */
+  struct timeval start;              /*!< Contains start time of a particular timer */
+  time_t         total;              /*!< Contains the total amount of user time accrued for this timer */
 };
 #endif
 
@@ -2479,17 +2479,23 @@ struct su_member_s {
 */
 struct profiler_s {
   char*  func_name;                  /*!< Name of function that this profiler is associated with */
-#ifdef HAVE_SYS_TIMES_H
+#ifdef HAVE_SYS_TIME_H
   timer* time_in;                    /*!< Time spent running this function */
 #endif
   int    calls;                      /*!< Number of times this function has been called */
   int    mallocs;                    /*!< Number of malloc calls made in this function */
   int    frees;                      /*!< Number of free calls made in this function */
+  bool   timed;                      /*!< Specifies if the function should be timed or not */
 };
 
 
 /*
  $Log$
+ Revision 1.268  2007/12/11 05:48:25  phase1geo
+ Fixing more compile errors with new code changes and adding more profiling.
+ Still have a ways to go before we can compile cleanly again (next submission
+ should do it).
+
  Revision 1.267  2007/12/10 23:16:21  phase1geo
  Working on adding profiler for use in finding performance issues.  Things don't compile
  at the moment.

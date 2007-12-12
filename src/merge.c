@@ -151,7 +151,7 @@ bool merge_parse_args( int argc, int last_arg, char** argv ) {
 
  Performs merge command functionality.
 */
-int command_merge( int argc, int last_arg, char** argv ) {
+int command_merge( int argc, int last_arg, char** argv ) { PROFILE(COMMAND_MERGE);
 
   int retval = 0;  /* Return value of this function */
   int i;           /* Loop iterator */
@@ -200,12 +200,19 @@ int command_merge( int argc, int last_arg, char** argv ) {
   }
   free_safe( merge_in );
 
+  PROFILE_END;
+
   return( retval );
 
 }
 
 /*
  $Log$
+ Revision 1.33  2007/12/11 05:48:25  phase1geo
+ Fixing more compile errors with new code changes and adding more profiling.
+ Still have a ways to go before we can compile cleanly again (next submission
+ should do it).
+
  Revision 1.32  2007/11/20 05:28:59  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

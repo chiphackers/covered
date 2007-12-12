@@ -120,7 +120,7 @@ char* strdup_safe1( const char* str, const char* file, int line, unsigned int pr
 /*! \brief Creates a string containing space characters. */
 void gen_space( char* spaces, int num_spaces );
 
-#ifdef HAVE_SYS_TIMES_H
+#ifdef HAVE_SYS_TIME_H
 /*! \brief Clears the specified timer structure. */
 void timer_clear( timer** tm );
 
@@ -141,6 +141,10 @@ void calc_miss_percent( int hits, float total, float* misses, float* percent );
 
 /*
  $Log$
+ Revision 1.30  2007/12/10 23:16:22  phase1geo
+ Working on adding profiler for use in finding performance issues.  Things don't compile
+ at the moment.
+
  Revision 1.29  2007/11/20 05:29:00  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

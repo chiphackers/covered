@@ -964,12 +964,19 @@ int command_score( int argc, int last_arg, char** argv ) { PROFILE(COMMAND_SCORE
 
   }
 
+  PROFILE_END;
+
   return( retval );
 
 }
 
 /*
  $Log$
+ Revision 1.99  2007/12/11 05:48:26  phase1geo
+ Fixing more compile errors with new code changes and adding more profiling.
+ Still have a ways to go before we can compile cleanly again (next submission
+ should do it).
+
  Revision 1.98  2007/11/20 05:29:00  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

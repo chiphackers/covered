@@ -28,23 +28,25 @@
 
 
 #define PROFILE(index)
-#define PROFILE_TIME_START
-#define PROFILE_TIME_STOP
+#define PROFILE_START(index)
+#define PROFILE_END
 #define MALLOC_CALL
 #define FREE_CALL
 
-#ifdef DEBUG
-#ifdef HAVE_SYS_TIMES_H
+#ifdef DEBUG_MODE
+#ifdef HAVE_SYS_TIME_H
+
 #undef PROFILE
-#undef PROFILE_TIME_START
-#undef PROFILE_TIME_STOP
+#undef PROFILE_START
+#undef PROFILE_END
 #undef MALLOC_CALL
 #undef FREE_CALL
-#define PROFILE(index)     unsigned int profile_index = index;  if(profiling_mode) profiles[index].calls++;
-#define PROFILE_TIME_START if(profiling_mode) timer_start(&profiles[profile_index].time_in);
-#define PROFILE_TIME_STOP  if(profiling_mode) timer_stop(&profiles[profile_index].time_in);
+
+#define PROFILE(index)     unsigned int profile_index = index;  if(profiling_mode) profiler_enter(index);
+#define PROFILE_END        if(profiling_mode) profiler_exit(profile_index);
 #define MALLOC_CALL(index) if(profiling_mode) profiles[index].mallocs++;
 #define FREE_CALL(index)   if(profiling_mode) profiles[index].frees++;
+
 #endif
 #endif
 
@@ -58,12 +60,21 @@ void profiler_set_mode( bool value );
 /*! \brief Sets the profiling output file to the given value. */
 void profiler_set_filename( const char* fname );
 
+/*! \brief Function to be called whenever a new function is entered. */
+void profiler_enter( unsigned int index );
+
+/*! \brief Function to be called whenever a timed function is exited. */
+void profiler_exit( unsigned int index );
+
 /*! \brief Output profiler report. */
 void profiler_report();
 
 
 /*
  $Log$
+ Revision 1.3  2007/12/11 15:07:35  phase1geo
+ More modifications.
+
  Revision 1.2  2007/12/11 05:48:26  phase1geo
  Fixing more compile errors with new code changes and adding more profiling.
  Still have a ways to go before we can compile cleanly again (next submission

@@ -910,6 +910,8 @@ int command_report( int argc, int last_arg, char** argv ) { PROFILE(COMMAND_REPO
   /* Close the database */
   db_close();
 
+  PROFILE_END;
+
   return( retval );
 
 }
@@ -917,6 +919,11 @@ int command_report( int argc, int last_arg, char** argv ) { PROFILE(COMMAND_REPO
 
 /*
  $Log$
+ Revision 1.84  2007/12/11 05:48:26  phase1geo
+ Fixing more compile errors with new code changes and adding more profiling.
+ Still have a ways to go before we can compile cleanly again (next submission
+ should do it).
+
  Revision 1.83  2007/11/20 05:28:59  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 
