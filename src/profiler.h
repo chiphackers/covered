@@ -33,7 +33,7 @@
 #define MALLOC_CALL
 #define FREE_CALL
 
-#ifdef DEBUG_MODE
+#ifdef PROFILER
 #ifdef HAVE_SYS_TIME_H
 
 #undef PROFILE
@@ -72,6 +72,10 @@ void profiler_report();
 
 /*
  $Log$
+ Revision 1.4  2007/12/12 07:23:19  phase1geo
+ More work on profiling.  I have now included the ability to get function runtimes.
+ Still more work to do but everything is currently working at the moment.
+
  Revision 1.3  2007/12/11 15:07:35  phase1geo
  More modifications.
 

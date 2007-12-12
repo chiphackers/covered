@@ -390,3 +390,9 @@ AC_DEFUN([COVERED_DEBUG],
 [AC_ARG_ENABLE(debug,
                AC_HELP_STRING([--enable-debug],[Enables debugging output to be generated]),
                AC_SUBST([DEBUGDEF],["-DDEBUG_MODE"]))])
+
+## COVERED_PROFILE_MODE
+AC_DEFUN([COVERED_PROFILER],
+[AC_ARG_ENABLE(profiling,
+               AC_HELP_STRING([--enable-profiling],[Enables source code profiler]),
+               AC_SUBST([PROFILEDEF],["-DPROFILER"]))])

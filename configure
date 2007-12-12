@@ -715,6 +715,7 @@ X_EXTRA_LIBS
 use_tcltk
 COVERED_BROWSER
 DEBUGDEF
+PROFILEDEF
 IVLIB
 IVDIR
 VCSLIB
@@ -1321,6 +1322,7 @@ Optional Features:
   --enable-dependency-tracking   do not reject slow dependency extractors
   --disable-largefile     omit support for large files
   --enable-debug          Enables debugging output to be generated
+  --enable-profiling      Enables source code profiler
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -7170,6 +7172,13 @@ if test "${enable_debug+set}" = set; then
 fi
 
 
+# Check whether --enable-profiling was given.
+if test "${enable_profiling+set}" = set; then
+  enableval=$enable_profiling; PROFILEDEF="-DPROFILER"
+
+fi
+
+
 ## Simulators supported
 
 # Check whether --with-iv was given.
@@ -11166,6 +11175,7 @@ X_EXTRA_LIBS!$X_EXTRA_LIBS$ac_delim
 use_tcltk!$use_tcltk$ac_delim
 COVERED_BROWSER!$COVERED_BROWSER$ac_delim
 DEBUGDEF!$DEBUGDEF$ac_delim
+PROFILEDEF!$PROFILEDEF$ac_delim
 IVLIB!$IVLIB$ac_delim
 IVDIR!$IVDIR$ac_delim
 VCSLIB!$VCSLIB$ac_delim
@@ -11176,7 +11186,7 @@ LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 13; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 14; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5

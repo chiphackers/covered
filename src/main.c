@@ -52,14 +52,24 @@ void usage() {
 
   printf( "\n" );
 #ifdef DEBUG_MODE
+#ifdef PROFILER
   printf( "Usage:  covered (-h | -v | (-D | -Q) (-P [<file>]) (-B) <command> <command_options>))\n" );
 #else
+  printf( "Usage:  covered (-h | -v | (-D | -Q) (-B) <command> <command_options>))\n" );
+#endif
+#else
+#ifdef PROFILER
+  printf( "Usage:  covered (-h | -v | (-Q) (-P [<file>]) (-B) <command> <command_options>))\n" );
+#else
   printf( "Usage:  covered (-h | -v | (-Q) (-B) <command> <command_options>))\n" );
+#endif
 #endif
   printf( "\n" );
   printf( "   Options:\n" );
 #ifdef DEBUG_MODE
   printf( "      -D                      Debug.  Display information helpful for debugging tool problems\n" );
+#endif
+#ifdef PROFILER
   printf( "      -P [<file>]             Profile.  Generate profiling information file from command.  Default output file is covered.prof\n" );
 #endif
   printf( "      -Q                      Quiet mode.  Causes all output to be suppressed\n" );
@@ -149,7 +159,7 @@ int main( int argc, char** argv ) {
 
         } else if( strncmp( "-P", argv[curr_arg], 2 ) == 0 ) {
 
-#ifdef DEBUG_MODE
+#ifdef PROFILER
           profiler_set_mode( TRUE );
           if( check_option_value( argc, argv, curr_arg )      &&
               (strncmp( "score",  argv[curr_arg+1], 5 ) != 0) &&
@@ -161,7 +171,7 @@ int main( int argc, char** argv ) {
             profiler_set_filename( PROFILING_OUTPUT_NAME );
           }
 #else
-          print_output( "Global command -P can only be used when Covered is configured with the --enable-debug flag when being built", FATAL, __FILE__, __LINE__ );
+          print_output( "Global command -P can only be used when Covered is configured with the --enable-profiling flag when being built", FATAL, __FILE__, __LINE__ );
 #endif
 
         } else if( strncmp( "-B", argv[curr_arg], 2 ) == 0 ) {
@@ -218,6 +228,10 @@ int main( int argc, char** argv ) {
 
 /*
  $Log$
+ Revision 1.21  2007/12/12 07:23:19  phase1geo
+ More work on profiling.  I have now included the ability to get function runtimes.
+ Still more work to do but everything is currently working at the moment.
+
  Revision 1.20  2007/12/11 23:19:14  phase1geo
  Fixed compile issues and completed first pass injection of profiling calls.
  Working on ordering the calls from most to least.

@@ -69,6 +69,9 @@ COVERED_PROG_BROWSER
 dnl Specify debug enabling
 COVERED_DEBUG
 
+dnl Specify profiler enabling
+COVERED_PROFILER
+
 ## Simulators supported
 AC_ARG_WITH([iv],
 [AC_HELP_STRING([--with-iv=IV_BASE_DIR],

@@ -127,6 +127,7 @@ PACKAGE_STRING = @PACKAGE_STRING@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
+PROFILEDEF = @PROFILEDEF@
 RANLIB = @RANLIB@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
@@ -261,7 +262,7 @@ covered_SOURCES = arc.c \
 
 covered_LDADD = $(TCLTK_LIBS)
 INCLUDES = -I..
-AM_CPPFLAGS = -DINSTALL_DIR=\"@datadir@/covered\" $(TCLTK_CPPFLAGS) $(DEBUGDEF)
+AM_CPPFLAGS = -DINSTALL_DIR=\"@datadir@/covered\" $(TCLTK_CPPFLAGS) $(DEBUGDEF) $(PROFILEDEF)
 CLEANFILES = pplexer.c lexer.c static_lexer.c keywords_1995.c keywords_2001.c keywords_sv.c parser.c parser.h parser.output static_parser.c static_parser.h static_parser.output
 all: all-am
 
