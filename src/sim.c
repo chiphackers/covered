@@ -1114,6 +1114,7 @@ void sim_simulate( uint64 sim_time ) { PROFILE(SIM_SIMULATE);
       active_tail = thr->queue_prev;
       active_tail->queue_next = NULL;
       delayed_head = thr;
+      delayed_head->queue_prev = NULL;
     }
 
     /* Simulate all threads in the active queue */
@@ -1121,11 +1122,6 @@ void sim_simulate( uint64 sim_time ) { PROFILE(SIM_SIMULATE);
       sim_thread( active_head, sim_time );
     }
 
-  }
-
-  /* Adjust the delayed_tail if the delayed queue is now empty */
-  if( delayed_head == NULL ) {
-    delayed_tail = NULL;
   }
 
 #ifdef OBSOLETE
@@ -1233,6 +1229,12 @@ void sim_dealloc() { PROFILE(SIM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.108  2007/12/12 23:36:57  phase1geo
+ Optimized vector_op_add function significantly.  Other improvements made to
+ profiler output.  Attempted to optimize the sim_simulation function although
+ it hasn't had the intended effect and delay1.3 is currently failing.  Checkpointing
+ for now.
+
  Revision 1.107  2007/12/12 14:17:44  phase1geo
  Enhancing the profiling report.
 
