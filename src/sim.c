@@ -534,8 +534,6 @@ void sim_thread_push( thread* thr, uint64 sim_time ) { PROFILE(SIM_THREAD_PUSH);
 */
 void sim_expr_changed( expression* expr, uint64 sim_time ) { PROFILE(SIM_EXPR_CHANGED);
 
-  thread* thr;  /* Pointer to current thread */
-
   assert( expr != NULL );
 
 #ifdef DEBUG_MODE
@@ -585,17 +583,24 @@ void sim_expr_changed( expression* expr, uint64 sim_time ) { PROFILE(SIM_EXPR_CH
     */
     } else if( expr->parent->expr != NULL ) { PROFILE(SIM_EXPR_CHANGED_B);
 
-//      printf( "Waiting list:\n" );
-//      sim_display_wait_queue();
+      thread* thr = waiting_head;  /* Pointer to current thread */
+      unsigned num_in_wait = 0;
+      unsigned num_pushed  = 0;
 
-      thr = waiting_head;
+      //printf( "Waiting list:\n" );
+      //sim_display_wait_queue();
+
       while( thr != NULL ) {
+        num_in_wait++;
 //        printf( "thr->curr: %p, expr->parent->stmt: %p\n", thr->curr, expr->parent->stmt );
         if( thr->curr == expr->parent->stmt ) {
+          num_pushed++;
           sim_thread_push( thr, sim_time );
         }
         thr = thr->queue_next;
       }
+
+      //printf( "TIME: %lld, num in waiting queue: %d, num pushed: %d\n", sim_time, num_in_wait, num_pushed );
 
       PROFILE_END;
 
@@ -1092,6 +1097,25 @@ void sim_simulate( uint64 sim_time ) { PROFILE(SIM_SIMULATE);
     sim_thread( active_head, sim_time );
   }
 
+  while( (delayed_head != NULL) && (delayed_head->curr_time <= sim_time) ) {
+
+    active_head  = active_tail = delayed_head;
+    delayed_head = delayed_head->queue_next;
+    active_head->queue_prev = active_head->queue_next = NULL;
+    if( delayed_head != NULL ) {
+      delayed_head->queue_prev = NULL;
+    } else {
+      delayed_tail = NULL;
+    }
+    active_head->suppl.part.state = THR_ST_ACTIVE;
+
+    while( active_head != NULL ) {
+      sim_thread( active_head, sim_time );
+    }
+
+  }
+
+#ifdef OBSOLETE2
   /* Simulate delay queue for each timestep less than the current simulation time */
   while( (delayed_head != NULL) && (delayed_head->curr_time <= sim_time) ) {
 
@@ -1123,6 +1147,7 @@ void sim_simulate( uint64 sim_time ) { PROFILE(SIM_SIMULATE);
     }
 
   }
+#endif
 
 #ifdef OBSOLETE
   /* Simulate delay queue for each timestep less than the current simulation time */
@@ -1229,6 +1254,9 @@ void sim_dealloc() { PROFILE(SIM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.109  2007/12/13 02:32:39  phase1geo
+ Fixing segmentation fault.
+
  Revision 1.108  2007/12/12 23:36:57  phase1geo
  Optimized vector_op_add function significantly.  Other improvements made to
  profiler output.  Attempted to optimize the sim_simulation function although
