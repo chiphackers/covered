@@ -584,17 +584,17 @@ void sim_expr_changed( expression* expr, uint64 sim_time ) { PROFILE(SIM_EXPR_CH
     } else if( expr->parent->expr != NULL ) { PROFILE(SIM_EXPR_CHANGED_B);
 
       thread* thr = waiting_head;  /* Pointer to current thread */
-      unsigned num_in_wait = 0;
-      unsigned num_pushed  = 0;
+//      unsigned num_in_wait = 0;
+//      unsigned num_pushed  = 0;
 
       //printf( "Waiting list:\n" );
       //sim_display_wait_queue();
 
       while( thr != NULL ) {
-        num_in_wait++;
+//        num_in_wait++;
 //        printf( "thr->curr: %p, expr->parent->stmt: %p\n", thr->curr, expr->parent->stmt );
         if( thr->curr == expr->parent->stmt ) {
-          num_pushed++;
+          //num_pushed++;
           sim_thread_push( thr, sim_time );
         }
         thr = thr->queue_next;
@@ -1050,6 +1050,7 @@ void sim_thread( thread* thr, uint64 sim_time ) { PROFILE(SIM_THREAD);
       (((thr->curr->next_true == NULL) && (thr->curr->next_false == NULL)) ||
        (!EXPR_IS_CONTEXT_SWITCH( thr->curr->exp ) && !ESUPPL_IS_STMT_CONTINUOUS( thr->curr->exp->suppl )))) ||
       (thr->curr == NULL) ||
+      (!expr_changed && (stmt == NULL) && ((thr->curr->exp->op == EXP_OP_CASE) || (thr->curr->exp->op == EXP_OP_CASEX) || (thr->curr->exp->op == EXP_OP_CASEZ))) ||
       thr->suppl.part.kill ) {
 
 #ifdef DEBUG_MODE
@@ -1254,6 +1255,10 @@ void sim_dealloc() { PROFILE(SIM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.110  2007/12/13 14:25:12  phase1geo
+ Attempting to enhance performance of the sim_simulation function (I have a few
+ different code segments here to do the task at the moment).
+
  Revision 1.109  2007/12/13 02:32:39  phase1geo
  Fixing segmentation fault.
 
