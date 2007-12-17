@@ -211,6 +211,8 @@ void db_close() { PROFILE(DB_CLOSE);
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -240,6 +242,8 @@ bool db_check_for_top_module() { PROFILE(DB_CHECK_FOR_TOP_MODULE);
     retval = funit_is_top_module( instl->inst->funit );
 
   }
+
+  PROFILE_END;
 
   return( retval );
 
@@ -286,6 +290,8 @@ bool db_write( char* file, bool parse_mode, bool report_save ) { PROFILE(DB_WRIT
     retval = FALSE;
 
   }
+
+  PROFILE_END;
 
   return( retval );
 
@@ -530,6 +536,8 @@ bool db_read( char* file, int read_mode ) { PROFILE(DB_READ);
   }
 #endif
 
+  PROFILE_END;
+
   return( retval );
 
 }
@@ -554,6 +562,8 @@ uint64 db_scale_to_precision( uint64 value, func_unit* funit ) { PROFILE(DB_SCAL
     value *= (uint64)10;
   }
 
+  PROFILE_END;
+
   return( value );
 
 }
@@ -572,6 +582,8 @@ char* db_create_unnamed_scope() { PROFILE(DB_CREATE_UNNAMED_SCOPE);
   snprintf( name, 30, "$u%d", unique_id );
   unique_id++;
 
+  PROFILE_END;
+
   return( name );
 
 }
@@ -583,7 +595,11 @@ char* db_create_unnamed_scope() { PROFILE(DB_CREATE_UNNAMED_SCOPE);
 */
 bool db_is_unnamed_scope( char* scope ) { PROFILE(DB_IS_UNNAMED_SCOPE);
 
-  return( (scope != NULL) && (scope[0] == '$') && (scope[1] == 'u') );
+  bool is_unnamed = (scope != NULL) && (scope[0] == '$') && (scope[1] == 'u');
+
+  PROFILE_END;
+
+  return( is_unnamed );
 
 }
 
@@ -603,6 +619,8 @@ void db_set_timescale( int unit, int precision ) { PROFILE(DB_SET_TIMESCALE);
     global_timescale_precision = precision;
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -611,6 +629,8 @@ void db_set_timescale( int unit, int precision ) { PROFILE(DB_SET_TIMESCALE);
  This function returns a pointer to the current functional unit being parsed.
 */
 func_unit* db_get_curr_funit() { PROFILE(DB_GET_CURR_FUNIT);
+
+  PROFILE_END;
 
   return( curr_funit );
 
@@ -724,6 +744,8 @@ func_unit* db_add_instance( char* scope, char* name, int type, vector_width* ran
       
   }
 
+  PROFILE_END;
+
   return( score ? funit : NULL );
 
 }
@@ -761,6 +783,8 @@ void db_add_module( char* name, char* file, int start_line ) { PROFILE(DB_ADD_MO
   curr_funit->filename   = strdup_safe( file );
   curr_funit->start_line = start_line;
   curr_funit->ts_unit    = current_timescale_unit;
+
+  PROFILE_END;
   
 }
 
@@ -782,6 +806,8 @@ void db_end_module( int end_line ) { PROFILE(DB_END_MODULE);
 
   /* Return the current functional unit to the global functional unit, if it exists */
   curr_funit = global_funit;
+
+  PROFILE_END;
 
 }
 
@@ -847,6 +873,8 @@ bool db_add_function_task_namedblock( int type, char* name, char* file, int star
 
   free_safe( full_name );
 
+  PROFILE_END;
+
   return( tf != NULL );
 
 }
@@ -883,6 +911,8 @@ void db_end_function_task_namedblock( int end_line ) { PROFILE(DB_END_FUNCTION_T
 
   /* Set the current functional unit to the parent module */
   curr_funit = curr_funit->parent;
+
+  PROFILE_END;
 
 }
 
@@ -921,6 +951,8 @@ void db_add_declared_param( bool is_signed, static_expr* msb, static_expr* lsb, 
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -947,6 +979,8 @@ void db_add_override_param( char* inst_name, expression* expr, char* param_name 
 
   /* Add override parameter to module parameter list */
   mparm = mod_parm_add( param_name, NULL, NULL, FALSE, expr, PARAM_TYPE_OVERRIDE, curr_funit, inst_name );
+
+  PROFILE_END;
 
 }
 
@@ -980,6 +1014,8 @@ void db_add_vector_param( vsignal* sig, expression* parm_exp, int type, int dime
   /* Set the dimension value of the module parameter to our dimension */
   mparm->suppl.part.dimension = dimension;
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -999,6 +1035,8 @@ void db_add_defparam( char* name, expression* expr ) { PROFILE(DB_ADD_DEFPARAM);
   print_output( user_msg, WARNING, __FILE__, __LINE__ );
 
   expression_dealloc( expr, FALSE );
+
+  PROFILE_END;
 
 }
 
@@ -1109,6 +1147,8 @@ void db_add_signal( char* name, int type, sig_range* prange, sig_range* urange, 
     sig->suppl.part.not_handled = handled ? 0 : 1;
 
   }
+
+  PROFILE_END;
   
 }
 
@@ -1129,6 +1169,8 @@ void db_add_enum( vsignal* enum_sig, static_expr* value ) { PROFILE(DB_ADD_ENUM)
 
   enumerate_add_item( enum_sig, value, curr_funit );
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -1141,6 +1183,8 @@ void db_end_enum_list() { PROFILE(DB_END_ENUM_LIST);
 #endif 
 
   enumerate_end_list( curr_funit );
+
+  PROFILE_END;
 
 }
 
@@ -1182,6 +1226,8 @@ void db_add_typedef( char* name, bool is_signed, bool is_handled, bool is_sizeab
     curr_funit->tdi_tail       = tdi;
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -1212,6 +1258,8 @@ vsignal* db_find_signal( char* name, bool okay_if_not_found ) { PROFILE(DB_FIND_
 
   }
 
+  PROFILE_END;
+
   return( found_sig );
 
 }
@@ -1230,6 +1278,8 @@ void db_add_gen_item_block( gen_item* gi ) { PROFILE(DB_ADD_GEN_ITEM_BLOCK);
     gitem_link_add( gi, &(curr_funit->gitem_head), &(curr_funit->gitem_tail) );
 
   }
+
+  PROFILE_END;
 
 }
 
@@ -1259,6 +1309,8 @@ gen_item* db_find_gen_item( gen_item* root, gen_item* gi ) { PROFILE(DB_FIND_GEN
 
   /* Deallocate the user-specified generate item */
   gen_item_dealloc( gi, FALSE );
+
+  PROFILE_END;
 
   return( found );
 
@@ -1302,6 +1354,8 @@ typedef_item* db_find_typedef( const char* name ) { PROFILE(DB_FIND_TYPEDEF);
 
   }
 
+  PROFILE_END;
+
   return( tdi );
 
 }
@@ -1321,6 +1375,8 @@ gen_item* db_get_curr_gen_block() { PROFILE(DB_GET_CURR_GEN_BLOCK);
   curr_gi_block = NULL;
   last_gi       = NULL;
 
+  PROFILE_END;
+
   return( block );
 
 }
@@ -1338,6 +1394,8 @@ int db_curr_signal_count() { PROFILE(DB_CURR_SIGNAL_COUNT);
     sig_cnt++;
     sigl = sigl->next;
   }
+
+  PROFILE_END;
 
   return( sig_cnt );
 
@@ -1454,6 +1512,8 @@ expression* db_create_expression( expression* right, expression* left, int op, b
     }
 
   }
+
+  PROFILE_END;
  
   return( expr );
 
@@ -1490,6 +1550,8 @@ void db_bind_expr_tree( expression* root, char* sig_name ) { PROFILE(DB_BIND_EXP
     }
 
   }
+
+  PROFILE_END;
 
 }
 
@@ -1532,6 +1594,8 @@ expression* db_create_expr_from_static( static_expr* se, int line, int first_col
 
   /* Deallocate static expression */
   static_expr_dealloc( se, FALSE );
+
+  PROFILE_END;
 
   return( expr );
 
@@ -1585,6 +1649,8 @@ void db_add_expression( expression* root ) { PROFILE(DB_ADD_EXPRESSION);
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -1633,6 +1699,8 @@ expression* db_create_sensitivity_list( statement* stmt ) { PROFILE(DB_CREATE_SE
     str_link_delete_list( sig_head );
 
   }
+
+  PROFILE_END;
 
   return( expc );
 
@@ -1698,6 +1766,8 @@ statement* db_parallelize_statement( statement* stmt ) { PROFILE(DB_PARALLELIZE_
 
   }
 
+  PROFILE_END;
+
   return( stmt );
 
 }
@@ -1724,6 +1794,8 @@ statement* db_create_statement( expression* exp ) { PROFILE(DB_CREATE_STATEMENT)
 
   /* If we are a parallel statement, create a FORK statement for this statement block */
   stmt = db_parallelize_statement( stmt );
+
+  PROFILE_END;
 
   return( stmt );
 
@@ -1780,6 +1852,8 @@ void db_add_statement( statement* stmt, statement* start ) { PROFILE(DB_ADD_STAT
 
   }
 
+  PROFILE_END;
+
 }
 #endif
 
@@ -1819,6 +1893,8 @@ void db_remove_statement_from_current_funit( statement* stmt ) { PROFILE(DB_REMO
 
   }
 
+  PROFILE_END;
+
 }
 
 #ifndef VPI_ONLY
@@ -1843,6 +1919,8 @@ void db_remove_statement( statement* stmt ) { PROFILE(DB_REMOVE_STATEMENT);
     statement_dealloc_recursive( stmt );
 
   }
+
+  PROFILE_END;
 
 }
 
@@ -1875,6 +1953,8 @@ void db_connect_statement_true( statement* stmt, statement* next_true ) { PROFIL
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -1906,6 +1986,8 @@ void db_connect_statement_false( statement* stmt, statement* next_false ) { PROF
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -1925,6 +2007,8 @@ void db_gen_item_connect_true( gen_item* gi1, gen_item* gi2 ) { PROFILE(DB_GEN_I
 
   gi1->next_true = gi2;  
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -1943,6 +2027,8 @@ void db_gen_item_connect_false( gen_item* gi1, gen_item* gi2 ) { PROFILE(DB_GEN_
 #endif
 
   gi1->next_false = gi2;
+
+  PROFILE_END;
 
 }
 
@@ -1967,6 +2053,8 @@ bool db_gen_item_connect( gen_item* gi1, gen_item* gi2 ) { PROFILE(DB_GEN_ITEM_C
 
   /* Increment gi_conn_id for next connection */
   gi_conn_id++;
+
+  PROFILE_END;
 
   return( retval );
 
@@ -2022,6 +2110,8 @@ bool db_statement_connect( statement* curr_stmt, statement* next_stmt ) { PROFIL
   /* Increment stmt_conn_id for next statement connection */
   stmt_conn_id++;
 
+  PROFILE_END;
+
   return( retval );
 
 }
@@ -2049,6 +2139,8 @@ attr_param* db_create_attr_param( char* name, expression* expr ) { PROFILE(DB_CR
 
   attr = attribute_create( name, expr );
 
+  PROFILE_END;
+
   return( attr );
 
 }
@@ -2069,6 +2161,8 @@ void db_parse_attribute( attr_param* ap ) { PROFILE(DB_PARSE_ATTRIBUTE);
 
   /* Then deallocate the structure */
   attribute_dealloc( ap );
+
+  PROFILE_END;
 
 }
 #endif /* VPI_ONLY */
@@ -2096,6 +2190,8 @@ void db_remove_stmt_blks_calling_statement( statement* stmt ) { PROFILE(DB_REMOV
     instance_remove_stmt_blks_calling_stmt( instl->inst, stmt );
     instl = instl->next;
   }
+
+  PROFILE_END;
 
 }
 
@@ -2126,6 +2222,8 @@ char* db_gen_curr_inst_scope() { PROFILE(DB_GEN_CURR_INST_SCOPE);
     }
 
   }
+
+  PROFILE_END;
 
   return scope;
 
@@ -2168,6 +2266,8 @@ void db_sync_curr_instance() { PROFILE(DB_SYNC_CURR_INSTANCE);
 
   }
 
+  PROFILE_END;
+
 } 
 
 /*!
@@ -2191,6 +2291,8 @@ void db_set_vcd_scope( char* scope ) { PROFILE(DB_SET_VCD_SCOPE);
 
   /* Synchronize the current instance to the value of curr_inst_scope */
   db_sync_curr_instance();
+
+  PROFILE_END;
 
 }
 
@@ -2219,6 +2321,8 @@ void db_vcd_upscope() { PROFILE(DB_VCD_UPSCOPE);
     db_sync_curr_instance();
 
   }
+
+  PROFILE_END;
 
 }
 
@@ -2268,6 +2372,8 @@ void db_assign_symbol( char* name, char* symbol, int msb, int lsb ) { PROFILE(DB
     }
 
   }
+
+  PROFILE_END;
 
 }
 
@@ -2319,6 +2425,8 @@ void db_set_symbol_string( char* sym, char* value ) { PROFILE(DB_SET_SYMBOL_STRI
   /* Set value of all matching occurrences in current timestep. */
   symtable_set_value( sym, value );
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -2365,11 +2473,17 @@ void db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
   /* Assign all stored values in current post-timestep to stored signals */
   symtable_assign( time );
 
+  PROFILE_END;
+
 }
 
 
 /*
  $Log$
+ Revision 1.264  2007/12/12 07:23:18  phase1geo
+ More work on profiling.  I have now included the ability to get function runtimes.
+ Still more work to do but everything is currently working at the moment.
+
  Revision 1.263  2007/12/10 23:16:21  phase1geo
  Working on adding profiler for use in finding performance issues.  Things don't compile
  at the moment.

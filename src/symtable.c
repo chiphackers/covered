@@ -175,6 +175,8 @@ void symtable_add_sym_sig( symtable* symtab, vsignal* sig, int msb, int lsb ) { 
     symtab->sig_tail       = new_ss;
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -190,6 +192,8 @@ void symtable_init( symtable* symtab, int msb, int lsb ) { PROFILE(SYMTABLE_INIT
   symtab->size     = (msb - lsb) + 2;
   symtab->value    = (char*)malloc_safe( symtab->size );
   symtab->value[0] = '\0';
+
+  PROFILE_END;
 
 }
 
@@ -211,6 +215,8 @@ symtable* symtable_create() { PROFILE(SYMTABLE_CREATE);
   for( i=0; i<256; i++ ) {
     symtab->table[i] = NULL;
   }
+
+  PROFILE_END;
 
   return( symtab );
 
@@ -255,6 +261,8 @@ void symtable_add( char* sym, vsignal* sig, int msb, int lsb ) { PROFILE(SYMTABL
    Finally increment the number of entries in the root table structure.
   */
   vcd_symtab_size++;
+
+  PROFILE_END;
 
 }
 
@@ -329,6 +337,8 @@ void symtable_assign( uint64 sim_time ) { PROFILE(SYMTABLE_ASSIGN);
   }
   postsim_size = 0;
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -370,6 +380,10 @@ void symtable_dealloc( symtable* symtab ) { PROFILE(SYMTABLE_DEALLOC);
 
 /*
  $Log$
+ Revision 1.30  2007/12/12 07:23:19  phase1geo
+ More work on profiling.  I have now included the ability to get function runtimes.
+ Still more work to do but everything is currently working at the moment.
+
  Revision 1.29  2007/12/11 23:19:14  phase1geo
  Fixed compile issues and completed first pass injection of profiling calls.
  Working on ordering the calls from most to least.

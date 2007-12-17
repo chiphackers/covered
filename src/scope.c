@@ -86,6 +86,8 @@ func_unit* scope_find_funit_from_scope( const char* scope, func_unit* curr_funit
 
   }
 
+  PROFILE_END;
+
   return( (funiti == NULL) ? NULL : funiti->funit );
 
 }
@@ -152,6 +154,8 @@ bool scope_find_param( const char* name, func_unit* curr_funit, mod_parm** found
   }
 
   free_safe( parm_name );
+
+  PROFILE_END;
 
   return( *found_parm != NULL );
 
@@ -231,6 +235,8 @@ bool scope_find_signal( const char* name, func_unit* curr_funit, vsignal** found
 
   free_safe( sig_name );
 
+  PROFILE_END;
+
   return( *found_sig != NULL );
 
 }
@@ -269,6 +275,8 @@ bool scope_find_task_function_namedblock( const char* name, int type, func_unit*
 
   }
 
+  PROFILE_END;
+
   return( *found_funit != NULL );
 
 }
@@ -302,6 +310,8 @@ func_unit* scope_get_parent_funit( const char* scope ) { PROFILE(SCOPE_GET_PAREN
 
   free_safe( rest );
   free_safe( back );
+
+  PROFILE_END;
 
   return( inst->funit );
 
@@ -339,6 +349,8 @@ func_unit* scope_get_parent_module( const char* scope ) { PROFILE(SCOPE_GET_PARE
   free_safe( curr_scope );
   free_safe( rest );
   free_safe( back );
+
+  PROFILE_END;
 
   return( inst->funit );
 
@@ -378,6 +390,8 @@ char* scope_flatten( char* scope ) { PROFILE(SCOPE_FLATTEN);
     }
   } while( rest[0] != '\0' );
 
+  PROFILE_END;
+
   return( new_scope );
 
 }
@@ -386,6 +400,11 @@ char* scope_flatten( char* scope ) { PROFILE(SCOPE_FLATTEN);
 
 /*
  $Log$
+ Revision 1.38  2007/12/11 05:48:26  phase1geo
+ Fixing more compile errors with new code changes and adding more profiling.
+ Still have a ways to go before we can compile cleanly again (next submission
+ should do it).
+
  Revision 1.37  2007/11/20 05:29:00  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

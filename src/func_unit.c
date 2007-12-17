@@ -94,6 +94,8 @@ void funit_init( func_unit* funit ) { PROFILE(FUNIT_INIT);
   funit->ei_tail    = NULL;
   funit->parent     = NULL;
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -111,6 +113,8 @@ func_unit* funit_create() { PROFILE(FUNIT_CREATE);
   funit = (func_unit*)malloc_safe( sizeof( func_unit ) );
 
   funit_init( funit );
+
+  PROFILE_END;
 
   return( funit );
 
@@ -130,6 +134,8 @@ func_unit* funit_get_curr_module( func_unit* funit ) { PROFILE(FUNIT_GET_CURR_MO
   while( funit->parent != NULL ) {
     funit = funit->parent;
   }
+
+  PROFILE_END;
 
   return( funit );
 
@@ -151,6 +157,8 @@ const func_unit* funit_get_curr_module_safe( const func_unit* funit ) { PROFILE(
     funit = funit->parent;
   }
 
+  PROFILE_END;
+
   return( funit );
 
 }
@@ -169,6 +177,8 @@ func_unit* funit_get_curr_function( func_unit* funit ) { PROFILE(FUNIT_GET_CURR_
     funit = funit->parent;
   }
 
+  PROFILE_END;
+
   return( ((funit->type == FUNIT_FUNCTION) || (funit->type == FUNIT_AFUNCTION)) ? funit : NULL );
 
 }
@@ -186,6 +196,8 @@ func_unit* funit_get_curr_task( func_unit* funit ) { PROFILE(FUNIT_GET_CURR_TASK
   while( (funit->type != FUNIT_TASK) && (funit->type != FUNIT_ATASK) && (funit->type != FUNIT_MODULE) ) {
     funit = funit->parent;
   }
+
+  PROFILE_END;
 
   return( ((funit->type == FUNIT_TASK) || (funit->type == FUNIT_ATASK)) ? funit : NULL );
 
@@ -212,6 +224,8 @@ int funit_get_port_count( func_unit* funit ) { PROFILE(FUNIT_GET_PORT_COUNT);
     }
     sigl = sigl->next;
   }
+
+  PROFILE_END;
 
   return( port_cnt );
 
@@ -295,6 +309,8 @@ vsignal* funit_find_signal( char* name, func_unit* funit ) { PROFILE(FUNIT_FIND_
 
   }
 
+  PROFILE_END;
+
   return( found_sig );
 
 }
@@ -319,6 +335,8 @@ void funit_remove_stmt_blks_calling_stmt( func_unit* funit, statement* stmt ) { 
     stmt_iter_next( &si );
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -336,6 +354,8 @@ char* funit_gen_task_function_namedblock_name( char* orig_name, func_unit* paren
 
   /* Generate full name to use for the function/task */
   snprintf( full_name, 4096, "%s.%s", parent->name, orig_name );
+
+  PROFILE_END;
 
   return( strdup_safe( full_name ) );
 
@@ -481,6 +501,8 @@ void funit_size_elements( func_unit* funit, funit_inst* inst, bool gen_all, bool
     }
 
   }
+
+  PROFILE_END;
     
 }
 
@@ -642,6 +664,8 @@ bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
 
   }
 
+  PROFILE_END;
+
   return( retval );
 
 }
@@ -674,6 +698,8 @@ bool funit_db_read( func_unit* funit, char* scope, char** line ) { PROFILE(FUNIT
     retval = FALSE;
 
   }
+
+  PROFILE_END;
 
   return( retval );
 
@@ -810,6 +836,8 @@ bool funit_db_merge( func_unit* base, FILE* file, bool same ) { PROFILE(FUNIT_DB
     }
   }
 
+  PROFILE_END;
+
   return( retval );
 
 }
@@ -841,6 +869,8 @@ char* funit_flatten_name( func_unit* funit ) { PROFILE(FUNIT_FLATTEN_NAME);
     scope_extract_front( tmp, front, rest ); 
   }
 
+  PROFILE_END;
+
   return fscope;
 
 }
@@ -869,6 +899,8 @@ func_unit* funit_find_by_id( int id ) { PROFILE(FUNIT_FIND_BY_ID);
       funitl = funitl->next;
     }
   }
+
+  PROFILE_END;
       
   return( (funitl == NULL) ? NULL : funitl->funit );
     
@@ -902,6 +934,8 @@ bool funit_is_top_module( func_unit* funit ) { PROFILE(FUNIT_IS_TOP_MODULE);
 
   }
 
+  PROFILE_END;
+
   return( retval );
 
 }
@@ -928,6 +962,8 @@ bool funit_is_unnamed( func_unit* funit ) { PROFILE(FUNIT_IS_UNNAMED);
     retval = db_is_unnamed_scope( back );
   }
 
+  PROFILE_END;
+
   return( retval );
 
 }
@@ -944,6 +980,8 @@ bool funit_is_unnamed_child_of( func_unit* parent, func_unit* child ) { PROFILE(
     child = child->parent;
   }
 
+  PROFILE_END;
+
   return( child->parent == parent );
 
 }
@@ -959,6 +997,8 @@ bool funit_is_child_of( func_unit* parent, func_unit* child ) { PROFILE(FUNIT_IS
   while( (child->parent != NULL) && (child->parent != parent) ) {
     child = child->parent;
   }
+
+  PROFILE_END;
 
   return( child->parent == parent );
 
@@ -982,6 +1022,8 @@ void funit_display_signals( func_unit* funit ) { PROFILE(FUNIT_DISPLAY_SIGNALS);
     sigl = sigl->next;
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -1001,6 +1043,8 @@ void funit_display_expressions( func_unit* funit ) { PROFILE(FUNIT_DISPLAY_EXPRE
     expression_display( expl->exp );
     expl = expl->next;
   }
+
+  PROFILE_END;
 
 }
 
@@ -1096,6 +1140,8 @@ void funit_clean( func_unit* funit ) { PROFILE(FUNIT_CLEAN);
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -1116,11 +1162,17 @@ void funit_dealloc( func_unit* funit ) { PROFILE(FUNIT_DEALLOC);
 
   }
 
+  PROFILE_END;
+
 }
 
 
 /*
  $Log$
+ Revision 1.82  2007/12/12 07:23:19  phase1geo
+ More work on profiling.  I have now included the ability to get function runtimes.
+ Still more work to do but everything is currently working at the moment.
+
  Revision 1.81  2007/12/11 05:48:25  phase1geo
  Fixing more compile errors with new code changes and adding more profiling.
  Still have a ways to go before we can compile cleanly again (next submission

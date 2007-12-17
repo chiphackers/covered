@@ -149,6 +149,8 @@ statement* statement_create( expression* exp ) { PROFILE(STATEMENT_CREATE);
   stmt->next_false        = NULL;
   stmt->conn_id           = 0;
 
+  PROFILE_END;
+
   return( stmt );
 
 }
@@ -205,6 +207,8 @@ void statement_queue_add( statement* stmt, int id, bool next_true ) { PROFILE(ST
     stmt_loop_tail->next = sll;
     stmt_loop_tail       = sll;
   }
+
+  PROFILE_END;
 
   // printf( "After SLL add\n" );
   // statement_queue_display();
@@ -271,6 +275,8 @@ void statement_queue_compare( statement* stmt ) { PROFILE(STATEMENT_QUEUE_COMPAR
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -302,6 +308,8 @@ void statement_size_elements( statement* stmt, func_unit* funit ) { PROFILE(STAT
 
   }
 
+  PROFILE_END;
+
 }
     
 /*!
@@ -325,6 +333,8 @@ void statement_db_write( statement* stmt, FILE* ofile, bool parse_mode ) { PROFI
   );
 
   fprintf( ofile, "\n" );
+
+  PROFILE_END;
 
 }
 
@@ -355,6 +365,8 @@ void statement_db_write_tree( statement* stmt, FILE* ofile ) { PROFILE(STATEMENT
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -384,6 +396,7 @@ void statement_db_write_expr_tree( statement* stmt, FILE* ofile ) { PROFILE(STAT
 
   }
 
+  PROFILE_END;
 
 }
 
@@ -497,6 +510,8 @@ bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) { PR
 
   }
 
+  PROFILE_END;
+
   return( retval );
 
 }
@@ -528,6 +543,8 @@ void statement_assign_expr_ids( statement* stmt, func_unit* funit ) { PROFILE(ST
     }
 
   }
+
+  PROFILE_END;
 
 }
 
@@ -644,6 +661,8 @@ bool statement_connect( statement* curr_stmt, statement* next_stmt, int conn_id 
 
   }
 
+  PROFILE_END;
+
   return( retval );
 
 }
@@ -685,6 +704,8 @@ int statement_get_last_line_helper( statement* stmt, statement* base ) { PROFILE
     }
 
   }
+
+  PROFILE_END;
 
   /* Return the greater of the two path last lines */
   return( (last_false > last_true) ? last_false : last_true );
@@ -745,6 +766,8 @@ void statement_find_rhs_sigs( statement* stmt, str_link** head, str_link** tail 
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -755,14 +778,15 @@ void statement_find_rhs_sigs( statement* stmt, str_link** head, str_link** tail 
 */
 statement* statement_find_head_statement( statement* stmt, stmt_link* head ) { PROFILE(STATEMENT_FIND_HEAD_STATEMENT);
 
-  stmt_iter si;  /* Statement iterator used to find head statement */
+  stmt_iter  si;     /* Statement iterator used to find head statement */
+  statement* fhead;  /* Pointer to found head statement */
 
   assert( stmt != NULL );
 
   /* If the specified statement is the head statement, just return it */
   if( ESUPPL_IS_STMT_HEAD( stmt->exp->suppl ) == 1 ) {
 
-    return( stmt );
+    fhead = stmt;
 
   } else {
 
@@ -779,9 +803,13 @@ statement* statement_find_head_statement( statement* stmt, stmt_link* head ) { P
 
     assert( si.curr != NULL );
 
-    return( si.curr->stmt );
+    fhead = si.curr->stmt;
 
   }
+
+  PROFILE_END;
+
+  return( fhead );
 
 }
 
@@ -828,6 +856,8 @@ statement* statement_find_statement( statement* curr, int id ) { PROFILE(STATEME
 
   }
 
+  PROFILE_END;
+
   return( found );
 
 }
@@ -841,13 +871,17 @@ statement* statement_find_statement( statement* curr, int id ) { PROFILE(STATEME
 */
 bool statement_contains_expr_calling_stmt( statement* curr, statement* stmt ) { PROFILE(STATEMENT_CONTAINS_EXPR_CALLING_STMT);
 
-  return( (curr != NULL) &&
-          (expression_contains_expr_calling_stmt( curr->exp, stmt ) ||
-           ((ESUPPL_IS_STMT_STOP_TRUE( curr->exp->suppl ) == 0) &&
-            statement_contains_expr_calling_stmt( curr->next_true, stmt )) ||
-           ((curr->next_false != curr->next_false) &&
-            (ESUPPL_IS_STMT_STOP_FALSE( curr->exp->suppl ) == 0) &&
-            statement_contains_expr_calling_stmt( curr->next_false, stmt ))) );
+  bool contains = (curr != NULL) &&
+                  (expression_contains_expr_calling_stmt( curr->exp, stmt ) ||
+                  ((ESUPPL_IS_STMT_STOP_TRUE( curr->exp->suppl ) == 0) &&
+                    statement_contains_expr_calling_stmt( curr->next_true, stmt )) ||
+                  ((curr->next_false != curr->next_false) &&
+                   (ESUPPL_IS_STMT_STOP_FALSE( curr->exp->suppl ) == 0) &&
+                    statement_contains_expr_calling_stmt( curr->next_false, stmt )));
+
+  PROFILE_END;
+
+  return( contains );
 
 }
 
@@ -897,6 +931,8 @@ void statement_dealloc_recursive( statement* stmt ) { PROFILE(STATEMENT_DEALLOC_
     free_safe( stmt );
     
   }
+
+  PROFILE_END;
   
 }
 
@@ -916,11 +952,18 @@ void statement_dealloc( statement* stmt ) { PROFILE(STATEMENT_DEALLOC);
 
   }
 
+  PROFILE_END;
+
 }
 
 
 /*
  $Log$
+ Revision 1.116  2007/12/11 05:48:26  phase1geo
+ Fixing more compile errors with new code changes and adding more profiling.
+ Still have a ways to go before we can compile cleanly again (next submission
+ should do it).
+
  Revision 1.115  2007/11/20 05:29:00  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

@@ -123,6 +123,8 @@ void set_debug( bool value ) { PROFILE(SET_DEBUG);
 
   debug_mode = value;
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -262,6 +264,8 @@ bool check_option_value( int argc, char** argv, int option_index ) { PROFILE(CHE
     retval = FALSE;
   }
 
+  PROFILE_END;
+
   return( retval );
 
 }
@@ -305,6 +309,8 @@ bool is_variable( const char* token ) { PROFILE(IS_VARIABLE);
 
   }
 
+  PROFILE_END;
+
   return( retval );
 
 }
@@ -342,6 +348,8 @@ bool is_func_unit( const char* token ) { PROFILE(IS_FUNC_UNIT);
   free_safe( rest );
   free_safe( front );
 
+  PROFILE_END;
+
   return( okay );
 
 }
@@ -361,6 +369,8 @@ bool is_legal_filename( const char* token ) { PROFILE(IS_LEGAL_FILENAME);
     retval = TRUE;
     fclose( tmpfile );
   }
+
+  PROFILE_END;
 
   return( retval );
 
@@ -386,6 +396,8 @@ const char* get_basename( const char* str ) { PROFILE(GET_BASENAME);
   if( *ptr == '/' ) {
     ptr++;
   }
+
+  PROFILE_END;
 
   return( ptr );
 
@@ -413,6 +425,8 @@ char* get_dirname( char* str ) { PROFILE(GET_DIRNAME);
   }
 
   *ptr = '\0';
+  
+  PROFILE_END;
 
   return( str );
 
@@ -439,6 +453,8 @@ bool directory_exists( const char* dir ) { PROFILE(DIRECTORY_EXISTS);
     }
 
   }
+
+  PROFILE_END;
 
   return( retval );
 
@@ -504,6 +520,8 @@ void directory_load( const char* dir, const str_link* ext_head, str_link** file_
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -527,6 +545,8 @@ bool file_exists( const char* file ) { PROFILE(FILE_EXISTS);
     }
 
   }
+
+  PROFILE_END;
 
   return( retval );
 
@@ -567,6 +587,8 @@ bool util_readline( FILE* file, char** line ) { PROFILE(UTIL_READLINE);
     free_safe( *line );
     *line = NULL;
   }
+
+  PROFILE_END;
 
   return( !feof( file ) );
 
@@ -622,6 +644,8 @@ char* substitute_env_vars( const char* value ) { PROFILE(SUBSTITUTE_ENV_VARS);
     ptr++;
   }
 
+  PROFILE_END;
+
   return( newvalue );
 
 }
@@ -666,6 +690,8 @@ void scope_extract_front( const char* scope, char* front, char* rest ) { PROFILE
   } else {
     rest[0] = '\0';
   }
+
+  PROFILE_END;
   
 }
 
@@ -708,6 +734,8 @@ void scope_extract_back( const char* scope, char* back, char* rest ) { PROFILE(S
 
   strncpy( back, ptr, ((strlen( scope ) + scope) - ptr) );
   back[ ((strlen( scope ) + scope) - ptr) ] = '\0';
+
+  PROFILE_END;
   
 }
 
@@ -724,6 +752,8 @@ void scope_extract_scope( const char* scope, const char* front, char* back ) { P
   if( (strncmp( scope, front, strlen( front ) ) == 0) && (strlen( scope ) > strlen( front )) ) {
     strcpy( back, (scope + strlen( front ) + 1) );
   }
+
+  PROFILE_END;
 
 }
 
@@ -869,6 +899,8 @@ void convert_file_to_module( char* mname, int len, char* fname ) { PROFILE(CONVE
   }
   mname[i] = '\0';
 
+  PROFILE_END;
+
 }
 
   
@@ -905,6 +937,8 @@ str_link* get_next_vfile( str_link* curr, const char* mod ) { PROFILE(GET_NEXT_V
   if( next != NULL ) {
     next->suppl2 = 1;
   }
+
+  PROFILE_END;
 
   return( next );
 
@@ -1057,6 +1091,8 @@ void gen_space( char* spaces, int num_spaces ) { PROFILE(GEN_SPACE);
   }
 
   spaces[i] = '\0';
+
+  PROFILE_END;
   
 }
 
@@ -1125,6 +1161,8 @@ const char* get_funit_type( int type ) { PROFILE(GET_FUNIT_TYPE);
     type_str = funit_types[FUNIT_TYPES];
   }
 
+  PROFILE_END;
+
   return( type_str );
 
 }
@@ -1150,11 +1188,17 @@ void calc_miss_percent( int hits, float total, float* misses, float* percent ) {
   }
   *misses = (total - hits);
 
+  PROFILE_END;
+
 }
 
 
 /*
  $Log$
+ Revision 1.70  2007/12/12 07:23:19  phase1geo
+ More work on profiling.  I have now included the ability to get function runtimes.
+ Still more work to do but everything is currently working at the moment.
+
  Revision 1.69  2007/12/11 23:19:14  phase1geo
  Fixed compile issues and completed first pass injection of profiling calls.
  Working on ordering the calls from most to least.

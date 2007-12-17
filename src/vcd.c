@@ -74,6 +74,8 @@ void vcd_parse_def_ignore( FILE* vcd ) { PROFILE(VCD_PARSE_DEF_IGNORE);
 
   assert( end_seen );
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -157,6 +159,8 @@ void vcd_parse_def_var( FILE* vcd ) { PROFILE(VCD_PARSE_DEF_VAR);
   
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -184,6 +188,8 @@ void vcd_parse_def_scope( FILE* vcd ) { PROFILE(VCD_PARSE_DEF_SCOPE);
     exit( 1 );
 
   }
+
+  PROFILE_END;
   
 }
 
@@ -253,6 +259,8 @@ void vcd_parse_def( FILE* vcd ) { PROFILE(VCD_PARSE_DEF);
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -280,6 +288,8 @@ void vcd_parse_sim_vector( FILE* vcd, char* value ) { PROFILE(VCD_PARSE_SIM_VECT
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -301,6 +311,8 @@ void vcd_parse_sim_ignore( FILE* vcd ) { PROFILE(VCD_PARSE_SIM_IGNORE);
   }
   
   assert( chars_read <= 256 );
+
+  PROFILE_END;
 
 }
 
@@ -372,6 +384,8 @@ void vcd_parse_sim( FILE* vcd ) { PROFILE(VCD_PARSE_SIM);
     db_do_timestep( last_timestep, FALSE );
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -415,10 +429,16 @@ void vcd_parse( char* vcd_file ) { PROFILE(VCD_PARSE);
 
   }
 
+  PROFILE_END;
+
 }
 
 /*
  $Log$
+ Revision 1.29  2007/12/11 23:19:14  phase1geo
+ Fixed compile issues and completed first pass injection of profiling calls.
+ Working on ordering the calls from most to least.
+
  Revision 1.28  2007/11/20 05:31:14  phase1geo
  Fixing syntax error in VCD parser per bug 1832592.
 

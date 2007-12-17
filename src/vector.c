@@ -158,6 +158,8 @@ void vector_copy( vector* from_vec, vector** to_vec ) { PROFILE(VECTOR_COPY);
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -189,6 +191,8 @@ unsigned int vector_nibbles_to_uint( nibble dat0, nibble dat1, nibble dat2, nibb
              ((d[i] & 0x80) << (i + 21)) );
   }
 
+  PROFILE_END;
+
   return( d[0] | d[1] | d[2] | d[3] );
 
 }
@@ -212,6 +216,8 @@ void vector_uint_to_nibbles( unsigned int data, nibble* dat ) { PROFILE(VECTOR_U
                         ((data & (0x01000000 << i)      ) >> (i + 18)) |
                         ((data & (0x10000000 << i)      ) >> (i + 21))) & 0xff );
   }
+
+  PROFILE_END;
 
 }
 
@@ -291,6 +297,8 @@ void vector_db_write( vector* vec, FILE* file, bool write_data ) { PROFILE(VECTO
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -358,6 +366,8 @@ bool vector_db_read( vector** vec, char** line ) { PROFILE(VECTOR_DB_READ);
     retval = FALSE;
 
   }
+
+  PROFILE_END;
 
   return( retval );
 
@@ -442,6 +452,8 @@ bool vector_db_merge( vector* base, char** line, bool same ) { PROFILE(VECTOR_DB
 
   }
 
+  PROFILE_END;
+
   return( retval );
 
 }
@@ -465,6 +477,8 @@ char* vector_get_toggle01( vec_data* nib, int width ) { PROFILE(VECTOR_GET_TOGGL
 
   bits[width] = '\0';
 
+  PROFILE_END;
+
   return( bits );
 
 }
@@ -487,6 +501,8 @@ char* vector_get_toggle10( vec_data* nib, int width ) { PROFILE(VECTOR_GET_TOGGL
   }
 
   bits[width] = '\0';
+
+  PROFILE_END;
 
   return( bits );
 
@@ -518,6 +534,8 @@ void vector_display_toggle01( vec_data* nib, int width, FILE* ofile ) { PROFILE(
     }
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -545,6 +563,8 @@ void vector_display_toggle10( vec_data* nib, int width, FILE* ofile ) { PROFILE(
       fprintf( ofile, "_" );
     }
   }
+
+  PROFILE_END;
 
 }
 
@@ -722,6 +742,8 @@ void vector_toggle_count( vector* vec, int* tog01_cnt, int* tog10_cnt ) { PROFIL
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -740,6 +762,8 @@ void vector_mem_rw_count( vector* vec, int* wr_cnt, int* rd_cnt ) { PROFILE(VECT
     *wr_cnt += vec->value[i].part.mem.wr;
     *rd_cnt += vec->value[i].part.mem.rd;
   }
+
+  PROFILE_END;
 
 }
 
@@ -768,6 +792,8 @@ bool vector_set_assigned( vector* vec, int msb, int lsb ) { PROFILE(VECTOR_SET_A
     }
     vec->value[i].part.sig.misc = 1;
   }
+
+  PROFILE_END;
 
   return( prev_assigned );
 
@@ -924,6 +950,8 @@ bool vector_bit_fill( vector* vec, int msb, int lsb ) { PROFILE(VECTOR_BIT_FILL)
     changed |= vector_set_value( vec, &value, VTYPE_VAL, 1, 0, i );
   }
 
+  PROFILE_END;
+
   return( changed );
 
 }
@@ -973,6 +1001,8 @@ bool vector_is_set( vector* vec ) { PROFILE(VECTOR_IS_SET);
   assert( vec->value != NULL );
 
   while( (i < vec->width) && (vec->value[i].part.sig.set == 0) ) i++;
+
+  PROFILE_END;
 
   return( i < vec->width );
 
@@ -1054,6 +1084,8 @@ uint64 vector_to_uint64( vector* vec ) { PROFILE(VECTOR_TO_UINT64);
     }
   }
 
+  PROFILE_END;
+
   return( retval );
 
 }
@@ -1083,6 +1115,8 @@ void vector_from_int( vector* vec, int value ) { PROFILE(VECTOR_FROM_INT);
   /* Because this value came from an integer, specify that the vector is signed */
   vec->suppl.part.is_signed = 1;
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -1108,6 +1142,8 @@ void vector_from_uint64( vector* vec, uint64 value ) { PROFILE(VECTOR_FROM_UINT6
 
   /* Because this value came from an unsigned integer, specify that the vector is unsigned */
   vec->suppl.part.is_signed = 0;
+
+  PROFILE_END;
 
 }
 
@@ -1163,6 +1199,8 @@ void vector_set_static( vector* vec, char* str, int bits_per_char ) { PROFILE(VE
     }
     ptr--;
   }
+
+  PROFILE_END;
 
 }  
 
@@ -1295,6 +1333,8 @@ char* vector_to_string( vector* vec ) { PROFILE(VECTOR_TO_STRING);
 
   }
 
+  PROFILE_END;
+
   return( str );
 
 }
@@ -1394,11 +1434,11 @@ vector* vector_from_string( char** str, bool quoted ) { PROFILE(VECTOR_FROM_STRI
       *str          = *str + chars_read;
     } else {
       /* If the specified string is none of the above, return NULL */
-      return( NULL );
+      vec = NULL;
     }
 
     /* If we have exceeded the maximum number of bits, return a value of NULL */
-    if( size > MAX_BIT_WIDTH ) {
+    if( (size > MAX_BIT_WIDTH) || (vec == NULL) ) {
 
       vec = NULL;
 
@@ -1423,6 +1463,8 @@ vector* vector_from_string( char** str, bool quoted ) { PROFILE(VECTOR_FROM_STRI
     }
 
   }
+
+  PROFILE_END;
 
   return( vec );
 
@@ -1539,6 +1581,8 @@ bool vector_bitwise_op( vector* tgt, vector* src1, vector* src2, nibble* optab )
     retval |= vector_set_value( tgt, vec.value, VTYPE_VAL, 1, 0, i );
     
   }
+
+  PROFILE_END;
 
   return( retval );
 
@@ -1704,6 +1748,8 @@ bool vector_op_lshift( vector* tgt, vector* left, vector* right ) { PROFILE(VECT
 
   }
 
+  PROFILE_END;
+
   return( retval );
     
 }
@@ -1749,6 +1795,8 @@ bool vector_op_rshift( vector* tgt, vector* left, vector* right ) { PROFILE(VECT
     }
 
   }
+
+  PROFILE_END;
 
   return( retval );
 
@@ -1796,6 +1844,8 @@ bool vector_op_arshift( vector* tgt, vector* left, vector* right ) { PROFILE(VEC
     }
 
   }
+
+  PROFILE_END;
 
   return( retval );
 
@@ -1870,6 +1920,8 @@ bool vector_op_negate( vector* tgt, vector* src ) { PROFILE(VECTOR_OP_NEGATE);
   vector_dealloc( vec1 );
   vector_dealloc( vec2 );
 
+  PROFILE_END;
+
   return( retval );
 
 }
@@ -1901,6 +1953,8 @@ bool vector_op_subtract( vector* tgt, vector* left, vector* right ) { PROFILE(VE
 
   /* Deallocate used memory */ 
   vector_dealloc( vec );
+
+  PROFILE_END;
 
   return( retval );
 
@@ -1978,6 +2032,8 @@ bool vector_op_multiply( vector* tgt, vector* left, vector* right ) { PROFILE(VE
   /* Set target value */
   retval = vector_set_value( tgt, vec.value, VTYPE_VAL, vec.width, 0, 0 );
 
+  PROFILE_END;
+
   return( retval );
 
 }
@@ -2004,6 +2060,8 @@ bool vector_op_inc( vector* tgt ) { PROFILE(VECTOR_OP_INC);
   /* Finally add the values and assign them back to the target */
   vector_op_add( tgt, tmp1, tmp2 );
 
+  PROFILE_END;
+
   return( TRUE );
 
 }
@@ -2029,6 +2087,8 @@ bool vector_op_dec( vector* tgt ) { PROFILE(VECTOR_OP_DEC);
 
   /* Finally add the values and assign them back to the target */
   vector_op_subtract( tgt, tmp1, tmp2 );
+
+  PROFILE_END;
 
   return( TRUE );
 
@@ -2067,6 +2127,8 @@ bool vector_unary_inv( vector* tgt, vector* src ) { PROFILE(VECTOR_UNARY_INV);
     retval |= vector_set_value( tgt, vec.value, VTYPE_VAL, 1, 0, i );
 
   }
+
+  PROFILE_END;
 
   return( retval );
 
@@ -2131,13 +2193,18 @@ bool vector_unary_op( vector* tgt, vector* src, nibble* optab ) { PROFILE(VECTOR
 */
 bool vector_unary_not( vector* tgt, vector* src ) { PROFILE(VECTOR_UNARY_NOT);
 
+  bool     retval;   /* Return value of this function */
   vector   vec;      /* Temporary vector value */
   vec_data vec_val;  /* Temporary value */
 
   vector_init( &vec, &vec_val, 1, VTYPE_VAL );
   vector_unary_op( &vec, src, or_optab );
 
-  return( vector_unary_inv( tgt, &vec ) );
+  retval = vector_unary_inv( tgt, &vec );
+
+  PROFILE_END;
+
+  return( retval );
 
 }
 
@@ -2173,6 +2240,12 @@ void vector_dealloc( vector* vec ) { PROFILE(VECTOR_DEALLOC);
 
 /*
  $Log$
+ Revision 1.95  2007/12/12 23:36:57  phase1geo
+ Optimized vector_op_add function significantly.  Other improvements made to
+ profiler output.  Attempted to optimize the sim_simulation function although
+ it hasn't had the intended effect and delay1.3 is currently failing.  Checkpointing
+ for now.
+
  Revision 1.94  2007/12/12 08:04:16  phase1geo
  Adding more timed functions for profiling purposes.
 
