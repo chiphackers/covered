@@ -50,10 +50,10 @@ bool vsignal_db_read( char** line, /*@null@*/func_unit* curr_funit );
 bool vsignal_db_merge( vsignal* base, char** line, bool same );
 
 /*! \brief Propagates specified signal information to rest of design. */
-void vsignal_propagate( vsignal* sig, uint64 sim_time );
+void vsignal_propagate( vsignal* sig, const sim_time* time );
 
 /*! \brief Assigns specified VCD value to specified vsignal. */
-void vsignal_vcd_assign( vsignal* sig, char* value, int msb, int lsb, uint64 sim_time );
+void vsignal_vcd_assign( vsignal* sig, char* value, int msb, int lsb, const sim_time* time );
 
 /*! \brief Adds an expression to the vsignal list. */
 void vsignal_add_expression( vsignal* sig, expression* expr );
@@ -76,6 +76,9 @@ void vsignal_dealloc( vsignal* sig );
 
 /*
  $Log$
+ Revision 1.20  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.19  2007/03/30 22:43:13  phase1geo
  Regression fixes.  Still have a ways to go but we are getting close.
 

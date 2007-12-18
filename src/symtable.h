@@ -36,7 +36,7 @@ void symtable_add( char* sym, vsignal* sig, int msb, int lsb );
 void symtable_set_value( char* sym, char* value );
 
 /*! \brief Assigns stored values to all associated signals stored in specified symbol table. */
-void symtable_assign( uint64 sim_time );
+void symtable_assign( const sim_time* time );
 
 /*! \brief Deallocates all symtable entries for specified symbol table. */
 void symtable_dealloc( symtable* symtab );
@@ -44,6 +44,9 @@ void symtable_dealloc( symtable* symtab );
 
 /*
  $Log$
+ Revision 1.17  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.16  2006/11/27 04:11:42  phase1geo
  Adding more changes to properly support thread time.  This is a work in progress
  and regression is currently broken for the moment.  Checkpointing.

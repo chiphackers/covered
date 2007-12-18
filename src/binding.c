@@ -145,6 +145,8 @@ void bind_add( int type, const char* name, expression* exp, func_unit* funit ) {
     eb_tail->next = eb;
     eb_tail       = eb;
   }
+
+  PROFILE_END;
   
 }
 
@@ -171,6 +173,8 @@ void bind_append_fsm_expr( expression* fsm_exp, const expression* exp, const fun
   assert( curr != NULL );
 
   curr->fsm = fsm_exp;
+
+  PROFILE_END;
 
 }
 
@@ -279,6 +283,8 @@ void bind_remove( int id, bool clear_assigned ) { PROFILE(BIND_REMOVE);
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -324,6 +330,8 @@ char* bind_find_sig_name( const expression* exp ) { PROFILE(BIND_FIND_SIG_NAME);
       name = strdup_safe( curr->name );
     }
   }
+
+  PROFILE_END;
 
   return( name );
 
@@ -379,6 +387,8 @@ bool bind_param( const char* name, expression* exp, func_unit* funit_exp, int ex
     }
 
   }
+
+  PROFILE_END;
 
   return( retval );
 
@@ -537,6 +547,8 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
 
   }
 
+  PROFILE_END;
+
   return( retval );
 
 }
@@ -615,6 +627,8 @@ void bind_task_function_ports( expression* expr, func_unit* funit, char* name, i
     }
 
   }
+
+  PROFILE_END;
 
 }
 
@@ -697,6 +711,8 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
     }
 
   }
+
+  PROFILE_END;
 
   return( retval );
 
@@ -844,6 +860,8 @@ void bind_perform( bool cdd_reading, int pass ) { PROFILE(BIND_PERFORM);
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -871,10 +889,16 @@ void bind_dealloc() { PROFILE(BIND_DEALLOC);
   /* Reset the head and tail pointers */
   eb_head = eb_tail = NULL;
 
+  PROFILE_END;
+
 }
 
 /* 
  $Log$
+ Revision 1.117  2007/12/10 23:16:21  phase1geo
+ Working on adding profiler for use in finding performance issues.  Things don't compile
+ at the moment.
+
  Revision 1.116  2007/11/20 05:28:57  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

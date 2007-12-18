@@ -589,14 +589,13 @@ void cli_prompt_user() {
 }
 
 /*!
+ \param time  Pointer to current simulation time.
+
  Performs CLI prompting if necessary.
 */
-void cli_execute() {
+void cli_execute( const sim_time* time ) {
 
-  char args[3][4096];  /* User-specified command-line args */
-  int  argc;           /* Number of arguments specified by the user */
-  bool simulate;       /* Specifies if we should continue with simulation */
-  int  i;              /* Loop iterator */
+  static sim_time last_timestep;
 
   if( flag_use_command_line_debug ) {
 
@@ -606,12 +605,12 @@ void cli_execute() {
     }
 
     /* Decrement timesteps_left it is set and the last timestep differs from the current simulation time */
-    if( (timesteps_left > 0) && (last_timestep != curr_sim_time) ) {
+    if( (timesteps_left > 0) && TIME_CMP(last_timestep, !=, *time) ) {
       timesteps_left--;
     }
 
     /* Record the last timestep seen */
-    last_timestep = curr_sim_time;
+    last_timestep = *time;
 
     /* If we have no more statements to execute and we are not supposed to continuely run, prompt the user */
     if( (stmts_left == 0) && (timesteps_left == 0) && !dont_stop ) {
@@ -672,6 +671,9 @@ bool cli_read_hist_file( char* fname ) {
 
 /*
  $Log$
+ Revision 1.8  2007/11/20 05:28:57  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.7  2007/04/18 22:34:58  phase1geo
  Revamping simulator core again.  Checkpointing.
 

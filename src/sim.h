@@ -46,7 +46,7 @@ thread* sim_current_thread();
 void sim_thread_insert_into_delay_queue( thread* thr, uint64 sim_time );
 
 /*! \brief Adds specified expression's statement to pre-simulation statement queue. */
-void sim_expr_changed( expression* expr, uint64 sim_time );
+void sim_expr_changed( expression* expr, const sim_time* time );
 
 /*! \brief Creates a thread for the given statement and adds it to the thread simulation queue. */
 thread* sim_add_thread( thread* parent, statement* stmt, func_unit* funit );
@@ -64,7 +64,7 @@ void sim_add_statics();
 void sim_thread( thread* thr, uint64 sim_time );
 
 /*! \brief Simulates current timestep. */
-void sim_simulate( uint64 sim_time );
+void sim_simulate( const sim_time* time );
 
 /*! \brief Initializes the simulator */
 void sim_initialize();
@@ -75,6 +75,9 @@ void sim_dealloc();
 
 /*
  $Log$
+ Revision 1.29  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.28  2007/04/18 22:35:02  phase1geo
  Revamping simulator core again.  Checkpointing.
 

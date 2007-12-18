@@ -315,12 +315,12 @@ void symtable_set_value( char* sym, char* value ) { PROFILE(SYMTABLE_SET_VALUE);
 }
 
 /*!
- \param sim_time  Current simulation time.
+ \param time  Pointer to current simulation time structure.
 
  Traverses simulation symentry array, assigning stored string value to the
  stored signal.
 */
-void symtable_assign( uint64 sim_time ) { PROFILE(SYMTABLE_ASSIGN);
+void symtable_assign( const sim_time* time ) { PROFILE(SYMTABLE_ASSIGN);
 
   symtable* curr;  /* Pointer to current symtable entry */
   sym_sig*  sig;   /* Pointer to current sym_sig in list */
@@ -330,7 +330,7 @@ void symtable_assign( uint64 sim_time ) { PROFILE(SYMTABLE_ASSIGN);
     curr = timestep_tab[i];
     sig = curr->sig_head;
     while( sig != NULL ) {
-      vsignal_vcd_assign( sig->sig, curr->value, sig->msb, sig->lsb, sim_time );
+      vsignal_vcd_assign( sig->sig, curr->value, sig->msb, sig->lsb, time );
       sig = sig->next;
     }
     curr->value[0] = '\0';
@@ -380,6 +380,9 @@ void symtable_dealloc( symtable* symtab ) { PROFILE(SYMTABLE_DEALLOC);
 
 /*
  $Log$
+ Revision 1.31  2007/12/17 23:47:48  phase1geo
+ Adding more profiling information.
+
  Revision 1.30  2007/12/12 07:23:19  phase1geo
  More work on profiling.  I have now included the ability to get function runtimes.
  Still more work to do but everything is currently working at the moment.

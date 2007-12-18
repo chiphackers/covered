@@ -137,10 +137,17 @@ const char* get_funit_type( int type );
 /*! \brief Calculates miss and percent information from given hit and total information */
 void calc_miss_percent( int hits, float total, float* misses, float* percent );
 
+/*! \brief Sets the given timestep to the correct value from VCD simulation file */
+void set_timestep( sim_time* st, char* value );
+
 
 
 /*
  $Log$
+ Revision 1.31  2007/12/12 07:23:19  phase1geo
+ More work on profiling.  I have now included the ability to get function runtimes.
+ Still more work to do but everything is currently working at the moment.
+
  Revision 1.30  2007/12/10 23:16:22  phase1geo
  Working on adding profiler for use in finding performance issues.  Things don't compile
  at the moment.

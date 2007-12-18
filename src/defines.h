@@ -1152,6 +1152,12 @@ typedef enum exp_op_type_e {
 /*! Overload for the snprintf function which verifies that we don't overrun character arrays */
 #define snprintf(x,y,...)	assert( snprintf( x, y, __VA_ARGS__ ) < (y) );
 
+/*! Performs time comparison with the sim_time structure */
+#define TIME_CMP(x,y,z)         (((x).lo y (z).lo) || ((x).hi y (z).hi)
+
+/*! Performs time increment where x is the sim_time structure to increment and y is a 64-bit value to increment to */
+#define TIME_INC(x,y)           (x).hi+=((0xffffffff-(x).lo)<(y).lo)?((y).hi+1):(y); x.lo+=y.lo;
+
 /*!
  Defines boolean variables used in most functions.
 */
@@ -1542,6 +1548,7 @@ struct rstack_entry_s;
 struct struct_union_s;
 struct su_member_s;
 struct profiler_s;
+struct sim_time_s;
 
 /*------------------------------------------------------------------------------*/
 /*  STRUCTURE/UNION TYPEDEFS  */
@@ -1803,6 +1810,11 @@ typedef struct su_member_s su_member;
 */
 typedef struct profiler_s profiler;
 
+/*!
+ Renaming sim_time_s structure for convenience.
+*/
+typedef struct sim_time_s sim_time;
+
 /*------------------------------------------------------------------------------*/
 /*  STRUCTURE/UNION DEFINITIONS  */
 
@@ -1812,7 +1824,7 @@ typedef struct profiler_s profiler;
 struct exp_info_s {
   char* name;                             /*!< Operation name */
   char* op_str;                           /*!< Operation string name for report output purposes */
-  bool  (*func)( expression*, thread* );  /*!< Operation function to call */
+  bool  (*func)( expression*, thread*, const sim_time* );  /*!< Operation function to call */
   struct {
     nibble is_event:1;                    /*!< Specifies if operation is an event */
     nibble is_static:1;                   /*!< Specifies if operation is a static value (does not change during simulation) */
@@ -2328,7 +2340,7 @@ struct thread_s {
   thread*    queue_next;             /*!< Pointer to next thread in active/delayed queue */
   thread*    all_prev;               /*!< Pointer to previous thread in all pool */
   thread*    all_next;               /*!< Pointer to next thread in all pool */
-  uint64     curr_time;              /*!< Set to the current simulation time for this thread */
+  const sim_time* curr_time;         /*!< Set to the current simulation time for this thread */
 };
 
 /*!
@@ -2487,9 +2499,25 @@ struct profiler_s {
   bool   timed;                      /*!< Specifies if the function should be timed or not */
 };
 
+/*!
+ Representation of simulation time -- used for performance enhancement purposes.
+*/
+struct sim_time_s {
+  unsigned int lo;                   /*!< Lower 32-bits of the current time */
+  unsigned int hi;                   /*!< Upper 32-bits of the current time */
+  uint64       full;                 /*!< Full 64 bits of the current time - for displaying purposes only */
+  bool         final;                /*!< Specifies if this is the final simulation timestep */
+};
+
 
 /*
  $Log$
+ Revision 1.270  2007/12/12 23:36:57  phase1geo
+ Optimized vector_op_add function significantly.  Other improvements made to
+ profiler output.  Attempted to optimize the sim_simulation function although
+ it hasn't had the intended effect and delay1.3 is currently failing.  Checkpointing
+ for now.
+
  Revision 1.269  2007/12/12 07:23:19  phase1geo
  More work on profiling.  I have now included the ability to get function runtimes.
  Still more work to do but everything is currently working at the moment.

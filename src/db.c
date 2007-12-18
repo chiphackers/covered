@@ -126,24 +126,6 @@ int curr_inst_scope_size = 0;
 int       curr_expr_id  = 1;
 
 /*!
- This static value contains the current simulation time which is specified by the db_do_timestep
- function.  It is used for calculating delay expressions in the simulation engine.
-*/
-uint64    curr_sim_time   = 0;
-
-/*!
- Set to TRUE in the db_do_timestep function to indicate that this is the final simulation timestep.
-*/
-bool      final_sim_time  = FALSE;
-
-/*!
- Contains timestep value when simulation was last performed.  This value is used to determine
- if the current timestep needs to be printed to standard output (if the -ts option is specified
- to the score command.
-*/
-uint64    last_sim_update = 0;
-
-/*!
  Specifies current connection ID to use for connecting statements.  This value should be passed
  to the statement_connect function and incremented immediately after.
 */
@@ -2440,6 +2422,9 @@ void db_set_symbol_string( char* sym, char* value ) { PROFILE(DB_SET_SYMBOL_STRI
 */
 void db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
+  static sim_time curr_time;
+  static uint64   last_sim_update = 0;
+
 #ifdef DEBUG_MODE
   if( final ) {
     print_output( "Performing final timestep", DEBUG, __FILE__, __LINE__ );
@@ -2449,21 +2434,26 @@ void db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
   }
 #endif
 
-  curr_sim_time  = time;
-  final_sim_time = final;
+  curr_time.lo    = (time & 0xffffffffLL);
+  curr_time.hi    = ((time >> 32) & 0xffffffffLL);
+  curr_time.full  = time;
+  curr_time.final = final;
 
-  if( (timestep_update > 0) && ((curr_sim_time - last_sim_update) >= timestep_update) && !debug_mode && !final ) {
-    last_sim_update = curr_sim_time;
-    printf( "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bPerforming timestep %10lld", curr_sim_time );
+  if( (timestep_update > 0) && ((time - last_sim_update) >= timestep_update) && !debug_mode && !final ) {
+    last_sim_update = time;
+    printf( "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bPerforming timestep %10lld", time );
     fflush( stdout );
   }
 
   /* Simulate the current timestep */
-  sim_simulate( time );
+  sim_simulate( &curr_time );
 
   /* If this is the last timestep, add the final list and do one more simulate */
   if( final ) {
-    sim_simulate( 0xffffffffffffffffLL );
+    curr_time.lo   = 0xffffffff;
+    curr_time.hi   = 0xffffffff;
+    curr_time.full = 0xffffffffffffffffLL;
+    sim_simulate( &curr_time );
   }
 
 #ifdef DEBUG_MODE
@@ -2471,7 +2461,7 @@ void db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 #endif
 
   /* Assign all stored values in current post-timestep to stored signals */
-  symtable_assign( time );
+  symtable_assign( &curr_time );
 
   PROFILE_END;
 
@@ -2480,6 +2470,9 @@ void db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.265  2007/12/17 23:47:48  phase1geo
+ Adding more profiling information.
+
  Revision 1.264  2007/12/12 07:23:18  phase1geo
  More work on profiling.  I have now included the ability to get function runtimes.
  Still more work to do but everything is currently working at the moment.

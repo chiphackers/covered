@@ -75,6 +75,8 @@ str_link* str_link_add( char* str, str_link** head, str_link** tail ) { PROFILE(
     *tail         = tmp;
   }
 
+  PROFILE_END;
+
   return( tmp );
 
 }
@@ -105,6 +107,8 @@ void stmt_link_add_head( statement* stmt, stmt_link** head, stmt_link** tail ) {
     *head        = tmp;
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -131,6 +135,8 @@ void stmt_link_add_tail( statement* stmt, stmt_link** head, stmt_link** tail ) {
     (*tail)->ptr = (stmt_link*)((long int)((*tail)->ptr) ^ (long int)tmp);
     *tail        = tmp;
   }
+
+  PROFILE_END;
 
 }
 
@@ -221,6 +227,8 @@ void stmt_link_merge( stmt_link** base_head, stmt_link** base_tail, stmt_link* o
   /* Finally, clear the IS_STMT_HEAD bit */
   other_head->stmt->exp->suppl.part.stmt_head = 0;
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -277,6 +285,8 @@ void sig_link_add( vsignal* sig, sig_link** head, sig_link** tail ) { PROFILE(SI
     *tail         = tmp;
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -304,6 +314,8 @@ void fsm_link_add( fsm* table, fsm_link** head, fsm_link** tail ) { PROFILE(FSM_
     *tail         = tmp;
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -330,6 +342,8 @@ void funit_link_add( func_unit* funit, funit_link** head, funit_link** tail ) { 
     (*tail)->next = tmp;
     *tail         = tmp;
   }
+
+  PROFILE_END;
   
 }
 
@@ -358,6 +372,8 @@ void gitem_link_add( gen_item* gi, gitem_link** head, gitem_link** tail ) { PROF
     (*tail)->next = tmp;
     *tail         = tmp;
   }
+
+  PROFILE_END;
 
 }
 #endif /* VPI_ONLY */
@@ -388,6 +404,8 @@ inst_link* inst_link_add( funit_inst* inst, inst_link** head, inst_link** tail )
     (*tail)->next = tmp;
     *tail         = tmp;
   }
+
+  PROFILE_END;
 
   return( tmp );
 
@@ -559,6 +577,8 @@ str_link* str_link_find( char* value, str_link* head ) { PROFILE(STR_LINK_FIND);
     curr = curr->next;
   }
 
+  PROFILE_END;
+
   return( curr );
 
 }
@@ -581,6 +601,8 @@ stmt_link* stmt_link_find( int id, stmt_link* head ) { PROFILE(STMT_LINK_FIND);
   while( (curr.curr != NULL) && (curr.curr->stmt->exp->id != id) ) {
     stmt_iter_next( &curr );
   }
+
+  PROFILE_END;
 
   return( curr.curr );
 
@@ -605,6 +627,8 @@ exp_link* exp_link_find( expression* exp, exp_link* head ) { PROFILE(EXP_LINK_FI
     curr = curr->next;
   }
 
+  PROFILE_END;
+
   return( curr );
 
 }
@@ -626,6 +650,8 @@ sig_link* sig_link_find( vsignal* sig, sig_link* head ) { PROFILE(SIG_LINK_FIND)
   while( (curr != NULL) && !scope_compare( curr->sig->name, sig->name ) ) {
     curr = curr->next;
   }
+
+  PROFILE_END;
 
   return( curr );
 
@@ -650,6 +676,8 @@ fsm_link* fsm_link_find( fsm* table, fsm_link* head ) { PROFILE(FSM_LINK_FIND);
     curr = curr->next;
   }
 
+  PROFILE_END;
+
   return( curr );
 
 }
@@ -672,6 +700,8 @@ funit_link* funit_link_find( func_unit* funit, funit_link* head ) { PROFILE(FUNI
   while( (curr != NULL) && (!scope_compare( curr->funit->name, funit->name ) || (curr->funit->type != funit->type)) ) {
     curr = curr->next;
   }
+
+  PROFILE_END;
 
   return( curr );
 
@@ -696,6 +726,8 @@ gitem_link* gitem_link_find( gen_item* gi, gitem_link* head ) { PROFILE(GITEM_LI
   while( (curr != NULL) && (gen_item_find( curr->gi, gi ) == NULL) ) {
     curr = curr->next;
   }
+
+  PROFILE_END;
 
   return( curr );
 
@@ -722,6 +754,8 @@ funit_inst* inst_link_find_by_scope( char* scope, inst_link* head ) { PROFILE(IN
     curr = curr->next;
   }
 
+  PROFILE_END;
+
   return( inst );
 
 }
@@ -745,6 +779,8 @@ funit_inst* inst_link_find_by_funit( const func_unit* funit, inst_link* head, in
   while( (curr != NULL) && ((inst = instance_find_by_funit( curr->inst, funit, ignore )) == NULL) ) {
     curr = curr->next;
   }
+
+  PROFILE_END;
 
   return( inst );
 
@@ -793,6 +829,8 @@ void str_link_remove( char* str, str_link** head, str_link** tail ) { PROFILE(ST
     free_safe( curr );
 
   }
+
+  PROFILE_END;
 
 }
 
@@ -854,6 +892,8 @@ void exp_link_remove( expression* exp, exp_link** head, exp_link** tail, bool re
     expression_dealloc( exp, TRUE );
   }
 
+  PROFILE_END;
+
 }
 
 #ifndef VPI_ONLY
@@ -892,6 +932,8 @@ void gitem_link_remove( gen_item* gi, gitem_link** head, gitem_link** tail ) { P
     free_safe( gil );
 
   }
+
+  PROFILE_END;
 
 }
 #endif /* VPI_ONLY */
@@ -942,6 +984,8 @@ void funit_link_remove( func_unit* funit, funit_link** head, funit_link** tail, 
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -957,6 +1001,8 @@ void inst_link_flatten( inst_link* head ) { PROFILE(INST_LINK_FLATTEN);
     instance_flatten( head->inst );
     head = head->next;
   }
+
+  PROFILE_END;
 
 }
 
@@ -986,6 +1032,8 @@ void str_link_delete_list( str_link* head ) { PROFILE(STR_LINK_DELETE_LIST);
     free_safe( tmp );
 
   }
+
+  PROFILE_END;
 
 }
 
@@ -1037,6 +1085,8 @@ void stmt_link_unlink( statement* stmt, stmt_link** head, stmt_link** tail ) { P
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -1068,6 +1118,8 @@ void stmt_link_delete_list( stmt_link* head ) { PROFILE(STMT_LINK_DELETE_LIST);
     
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -1095,6 +1147,8 @@ void exp_link_delete_list( exp_link* head, bool del_exp ) { PROFILE(EXP_LINK_DEL
     free_safe( tmp );
     
   }
+
+  PROFILE_END;
 
 }
 
@@ -1124,6 +1178,8 @@ void sig_link_delete_list( sig_link* head, bool del_sig ) { PROFILE(SIG_LINK_DEL
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -1148,6 +1204,8 @@ void fsm_link_delete_list( fsm_link* head ) { PROFILE(FSM_LINK_DELETE_LIST);
     free_safe( tmp );
 
   }
+
+  PROFILE_END;
 
 }
 
@@ -1180,6 +1238,8 @@ void funit_link_delete_list( funit_link** head, funit_link** tail, bool rm_funit
 
   *tail = NULL;
 
+  PROFILE_END;
+
 }
 
 #ifndef VPI_ONLY
@@ -1206,6 +1266,8 @@ void gitem_link_delete_list( gitem_link* head, bool rm_elems ) { PROFILE(GITEM_L
 
   }
 
+  PROFILE_END;
+
 }
 #endif /* VPI_ONLY */
 
@@ -1231,11 +1293,17 @@ void inst_link_delete_list( inst_link* head ) { PROFILE(INST_LINK_DELETE_LIST);
 
   }
 
+  PROFILE_END;
+
 }
 
 
 /*
  $Log$
+ Revision 1.70  2007/12/12 07:23:19  phase1geo
+ More work on profiling.  I have now included the ability to get function runtimes.
+ Still more work to do but everything is currently working at the moment.
+
  Revision 1.69  2007/12/11 05:48:25  phase1geo
  Fixing more compile errors with new code changes and adding more profiling.
  Still have a ways to go before we can compile cleanly again (next submission

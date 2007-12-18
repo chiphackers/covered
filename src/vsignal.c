@@ -58,7 +58,7 @@ extern char   user_msg[USER_MSG_LENGTH];
  creating temporary vsignals (reduces the need for dynamic memory allocation).
  for performance enhancing purposes.
 */
-void vsignal_init( vsignal* sig, char* name, int type, vector* value, int line, int col ) {
+void vsignal_init( vsignal* sig, char* name, int type, vector* value, int line, int col ) { PROFILE(VSIGNAL_INIT);
 
   sig->name            = name;
   sig->pdim_num        = 0;
@@ -71,6 +71,8 @@ void vsignal_init( vsignal* sig, char* name, int type, vector* value, int line, 
   sig->line            = line;
   sig->exp_head        = NULL;
   sig->exp_tail        = NULL;
+
+  PROFILE_END;
 
 }
 
@@ -96,6 +98,8 @@ vsignal* vsignal_create( char* name, int type, int width, int line, int col ) { 
 
   vsignal_init( new_sig, ((name != NULL) ? strdup_safe( name ) : NULL),
                 type, vector_create( width, ((type == SSUPPL_TYPE_MEM) ? VTYPE_MEM : VTYPE_SIG), TRUE ), line, col );
+
+  PROFILE_END;
 
   return( new_sig );
 
@@ -156,6 +160,8 @@ void vsignal_create_vec( vsignal* sig ) { PROFILE(VSIGNAL_CREATE_VEC);
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -202,6 +208,8 @@ vsignal* vsignal_duplicate( vsignal* sig ) { PROFILE(VSIGNAL_DUPLICATE);
     expl = expl->next;
   }
 
+  PROFILE_END;
+
   return( new_sig );
 
 }
@@ -245,6 +253,8 @@ void vsignal_db_write( vsignal* sig, FILE* file ) { PROFILE(VSIGNAL_DB_WRITE);
     fprintf( file, "\n" );
 
   }
+
+  PROFILE_END;
 
 }
 
@@ -336,6 +346,8 @@ bool vsignal_db_read( char** line, func_unit* curr_funit ) { PROFILE(VSIGNAL_DB_
 
   }
 
+  PROFILE_END;
+
   return( retval );
 
 }
@@ -403,6 +415,8 @@ bool vsignal_db_merge( vsignal* base, char** line, bool same ) { PROFILE(VSIGNAL
 
   }
 
+  PROFILE_END;
+
   return( retval );
 
 }
@@ -415,7 +429,7 @@ bool vsignal_db_merge( vsignal* base, char** line, bool same ) { PROFILE(VSIGNAL
   is called to propagate the value change to the simulator to cause any statements
   waiting on this value change to be resimulated.
 */
-void vsignal_propagate( vsignal* sig, uint64 sim_time ) { PROFILE(VSIGNAL_PROPAGATE);
+void vsignal_propagate( vsignal* sig, const sim_time* time ) { PROFILE(VSIGNAL_PROPAGATE);
 
   exp_link* curr_expr;  /* Pointer to current expression in signal list */
 
@@ -427,7 +441,7 @@ void vsignal_propagate( vsignal* sig, uint64 sim_time ) { PROFILE(VSIGNAL_PROPAG
     if( (ESUPPL_IS_LHS( curr_expr->exp->suppl ) == 0) &&
         (curr_expr->exp->op != EXP_OP_FUNC_CALL) &&
         (curr_expr->exp->op != EXP_OP_PASSIGN) ) {
-      sim_expr_changed( curr_expr->exp, sim_time );
+      sim_expr_changed( curr_expr->exp, time );
     }
 
     curr_expr = curr_expr->next;
@@ -439,17 +453,17 @@ void vsignal_propagate( vsignal* sig, uint64 sim_time ) { PROFILE(VSIGNAL_PROPAG
 }
 
 /*!
- \param sig       Pointer to vsignal to assign VCD value to.
- \param value     String version of VCD value.
- \param msb       Most significant bit to assign to.
- \param lsb       Least significant bit to assign to.
- \param sim_time  Current simulation time signal is being assigned.
+ \param sig    Pointer to vsignal to assign VCD value to.
+ \param value  String version of VCD value.
+ \param msb    Most significant bit to assign to.
+ \param lsb    Least significant bit to assign to.
+ \param time   Current simulation time signal is being assigned.
 
  Assigns the associated value to the specified vsignal's vector.  After this, it
  iterates through its expression list, setting the TRUE and FALSE bits accordingly.
  Finally, calls the simulator expr_changed function for each expression.
 */
-void vsignal_vcd_assign( vsignal* sig, char* value, int msb, int lsb, uint64 sim_time ) { PROFILE(VSIGNAL_VCD_ASSIGN);
+void vsignal_vcd_assign( vsignal* sig, char* value, int msb, int lsb, const sim_time* time ) { PROFILE(VSIGNAL_VCD_ASSIGN);
 
   bool vec_changed;  /* Specifies if assigned value differed from original value */
 
@@ -487,7 +501,7 @@ void vsignal_vcd_assign( vsignal* sig, char* value, int msb, int lsb, uint64 sim
   if( vec_changed ) {
 
     /* Propagate signal changes to rest of design */
-    vsignal_propagate( sig, sim_time );
+    vsignal_propagate( sig, time );
 
   } 
 
@@ -505,6 +519,8 @@ void vsignal_vcd_assign( vsignal* sig, char* value, int msb, int lsb, uint64 sim
 void vsignal_add_expression( vsignal* sig, expression* expr ) { PROFILE(VSIGNAL_ADD_EXPRESSION);
 
   exp_link_add( expr, &(sig->exp_head), &(sig->exp_tail) );
+
+  PROFILE_END;
 
 }
 
@@ -610,6 +626,8 @@ vsignal* vsignal_from_string( char** str ) { PROFILE(VSIGNAL_FROM_STRING);
     sig = NULL;
   }
 
+  PROFILE_END;
+
   return( sig );
 
 }
@@ -698,10 +716,15 @@ void vsignal_dealloc( vsignal* sig ) { PROFILE(VSIGNAL_DEALLOC);
 
   }
 
+  PROFILE_END;
+
 }
 
 /*
  $Log$
+ Revision 1.48  2007/12/12 08:04:18  phase1geo
+ Adding more timed functions for profiling purposes.
+
  Revision 1.47  2007/12/12 07:23:19  phase1geo
  More work on profiling.  I have now included the ability to get function runtimes.
  Still more work to do but everything is currently working at the moment.

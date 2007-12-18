@@ -30,11 +30,14 @@
 reentrant* reentrant_create( func_unit* funit );
 
 /*! \brief Deallocates all memory associated with the given reentrant structure */
-void reentrant_dealloc( reentrant* ren, func_unit* funit, uint64 sim_time, expression* expr );
+void reentrant_dealloc( reentrant* ren, func_unit* funit, expression* expr );
 
 
 /*
  $Log$
+ Revision 1.6  2007/11/20 05:28:59  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.5  2007/07/30 22:42:02  phase1geo
  Making some progress on automatic function support.  Things currently don't compile
  but I need to checkpoint for now.

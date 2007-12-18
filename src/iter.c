@@ -37,6 +37,8 @@ void stmt_iter_reset( stmt_iter* si, stmt_link* start ) { PROFILE(STMT_ITER_RESE
   
   si->curr = start;
   si->last = NULL;
+
+  PROFILE_END;
   
 }
 
@@ -50,6 +52,8 @@ void stmt_iter_copy( stmt_iter* si, stmt_iter* orig ) { PROFILE(STMT_ITER_COPY);
 
   si->curr = orig->curr;
   si->last = orig->last;
+
+  PROFILE_END;
 
 }
 
@@ -68,6 +72,8 @@ void stmt_iter_next( stmt_iter* si ) { PROFILE(STMT_ITER_NEXT);
   tmp      = si->curr;
   si->curr = (stmt_link*)((long int)si->curr->ptr ^ (long int)si->last);
   si->last = tmp;
+
+  PROFILE_END;
   
 }
 
@@ -84,6 +90,8 @@ void stmt_iter_reverse( stmt_iter* si ) { PROFILE(STMT_ITER_REVERSE);
   tmp      = si->curr;
   si->curr = si->last;
   si->last = tmp;
+
+  PROFILE_END;
   
 }
 
@@ -108,6 +116,8 @@ void stmt_iter_find_head( stmt_iter* si, bool skip ) { PROFILE(STMT_ITER_FIND_HE
     stmt_iter_next( si );
     stmt_iter_reverse( si );
   }
+
+  PROFILE_END;
   
 }
 
@@ -167,6 +177,8 @@ void stmt_iter_get_next_in_order( stmt_iter* si ) { PROFILE(STMT_ITER_GET_NEXT_I
     si->curr->stmt->exp->suppl.part.stmt_added = 1;
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -204,10 +216,17 @@ void stmt_iter_get_line_before( stmt_iter* si, int lnum ) { PROFILE(STMT_ITER_GE
 
   }
 
+  PROFILE_END;
+
 }
 
 /*
  $Log$
+ Revision 1.16  2007/12/11 05:48:25  phase1geo
+ Fixing more compile errors with new code changes and adding more profiling.
+ Still have a ways to go before we can compile cleanly again (next submission
+ should do it).
+
  Revision 1.15  2007/11/20 05:28:58  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

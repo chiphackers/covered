@@ -106,6 +106,8 @@ tnode* tree_add( const char* key, const char* value, bool override, tnode** root
     }
   }
 
+  PROFILE_END;
+
   return( node );
 
 }
@@ -131,6 +133,8 @@ tnode* tree_find( const char* key, tnode* root ) { PROFILE(TREE_FIND);
       root = root->right;
     }
   }
+
+  PROFILE_END;
 
   return( root );
 
@@ -256,6 +260,8 @@ void tree_remove( const char* key, tnode** root ) { PROFILE(TREE_REMOVE);
     free_safe(node);
 
   }
+
+  PROFILE_END;
   
 }
 
@@ -282,11 +288,17 @@ void tree_dealloc( tnode* root ) { PROFILE(TREE_DEALLOC);
     free_safe( root );
     
   }
+
+  PROFILE_END;
   
 }
 
 /*
  $Log$
+ Revision 1.7  2007/12/11 23:19:14  phase1geo
+ Fixed compile issues and completed first pass injection of profiling calls.
+ Working on ordering the calls from most to least.
+
  Revision 1.6  2007/11/20 05:29:00  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

@@ -106,6 +106,8 @@ race_blk* race_blk_create( int reason, int start_line, int end_line ) { PROFILE(
   rb->end_line   = end_line;
   rb->next       = NULL;
 
+  PROFILE_END;
+
   return( rb );
 
 }
@@ -157,6 +159,8 @@ bool race_find_head_statement_containing_statement_helper( statement* curr, stat
 
   }
 
+  PROFILE_END;
+
   return( retval );
 
 }
@@ -184,6 +188,8 @@ statement* race_find_head_statement_containing_statement( statement* stmt ) { PR
     stmt_conn_id++;
   }
 
+  PROFILE_END;
+
   return( (i == sb_size) ? NULL : sb[i].stmt );
 
 }
@@ -208,6 +214,8 @@ statement* race_get_head_statement( expression* expr ) { PROFILE(RACE_GET_HEAD_S
 
   }
 
+  PROFILE_END;
+
   return( curr_stmt );
 
 }
@@ -225,6 +233,8 @@ int race_find_head_statement( statement* stmt ) { PROFILE(RACE_FIND_HEAD_STATEME
   while( (i < sb_size) && (sb[i].stmt != stmt) ) {
     i++;
   }
+
+  PROFILE_END;
 
   return( (i == sb_size) ? -1 : i );
 
@@ -255,6 +265,8 @@ void race_calc_stmt_blk_type( expression* expr, int sb_index ) { PROFILE(RACE_CA
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -277,6 +289,8 @@ void race_calc_expr_assignment( expression* exp, int sb_index ) { PROFILE(RACE_C
     case EXP_OP_NB_CALL   :  race_calc_assignments( exp->elem.funit->first_stmt, sb_index );  break;
     default               :  break;
   }
+
+  PROFILE_END;
 
 }
 
@@ -305,6 +319,8 @@ void race_calc_assignments( statement* stmt, int sb_index ) { PROFILE(RACE_CALC_
     race_calc_expr_assignment( stmt->exp, sb_index );
 
   }
+
+  PROFILE_END;
 
 }
 
@@ -433,6 +449,8 @@ void race_handle_race_condition( expression* expr, func_unit* mod, statement* st
   /* Increment races found flag */
   races_found++;
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -467,6 +485,8 @@ void race_check_assignment_types( func_unit* mod ) { PROFILE(RACE_CHECK_ASSIGNME
     }
 
   }
+
+  PROFILE_END;
 
 }
 
@@ -640,6 +660,8 @@ void race_check_one_block_assignment( func_unit* mod ) { PROFILE(RACE_CHECK_ONE_
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -660,6 +682,8 @@ void race_check_race_count() { PROFILE(RACE_CHECK_RACE_COUNT);
     exit( 1 );
 
   }
+
+  PROFILE_END;
 
 }
 
@@ -762,6 +786,8 @@ void race_check_modules() { PROFILE(RACE_CHECK_MODULES);
   /* Handle output if any race conditions were found */
   race_check_race_count();
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -782,6 +808,8 @@ bool race_db_write( race_blk* rb, FILE* file ) { PROFILE(RACE_DB_WRITE);
     rb->start_line,
     rb->end_line
   );
+
+  PROFILE_END;
 
   return( retval );
 
@@ -835,6 +863,8 @@ bool race_db_read( char** line, func_unit* curr_mod ) { PROFILE(RACE_DB_READ);
 
   }
 
+  PROFILE_END;
+
   return( retval );
 
 }
@@ -863,6 +893,8 @@ void race_get_stats( race_blk* curr, int* race_total, int type_total[][RACE_TYPE
     (*race_total)++;
     curr = curr->next;
   }
+
+  PROFILE_END;
 
 }
 
@@ -894,6 +926,8 @@ bool race_report_summary( FILE* ofile, funit_link* head ) { PROFILE(RACE_REPORT_
     head = head->next;
 
   }
+
+  PROFILE_END;
 
   return( found );
 
@@ -945,6 +979,8 @@ void race_report_verbose( FILE* ofile, funit_link* head ) { PROFILE(RACE_REPORT_
 											       
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -972,6 +1008,8 @@ void race_report( FILE* ofile, bool verbose ) { PROFILE(RACE_REPORT);
   }
 
   fprintf( ofile, "\n\n" );
+
+  PROFILE_END;
 
 }
 
@@ -1030,6 +1068,8 @@ bool race_collect_lines( char* funit_name, int funit_type, int** slines, int** e
 
   free_safe( mod.name );
 
+  PROFILE_END;
+
   return( retval );
 
 }
@@ -1051,10 +1091,17 @@ void race_blk_delete_list( race_blk* rb ) { PROFILE(RACE_BLK_DELETE_LIST);
 
   }
 
+  PROFILE_END;
+
 }
 
 /*
  $Log$
+ Revision 1.60  2007/12/11 05:48:26  phase1geo
+ Fixing more compile errors with new code changes and adding more profiling.
+ Still have a ways to go before we can compile cleanly again (next submission
+ should do it).
+
  Revision 1.59  2007/11/20 05:28:59  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

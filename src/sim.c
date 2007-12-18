@@ -191,7 +191,7 @@ void sim_display_thread( thread* thr, bool show_queue, bool endl ) {
     printf( "    " );
   }
 
-  printf( "time %llu, ", thr->curr_time );
+  printf( "time %llu, ", thr->curr_time.full );
 
   if( thr->curr == NULL ) {
     printf( "stmt NONE, " );
@@ -361,18 +361,18 @@ void sim_thread_pop_head() { PROFILE(SIM_THREAD_POP_HEAD);
 }
 
 /*!
- \param thr       Pointer to the thread to add to the delay queue.
- \param sim_time  Time to insert the given thread.
+ \param thr   Pointer to the thread to add to the delay queue.
+ \param time  Pointer to time to insert the given thread.
 
  This function is called by the expression_op_func__delay() function.
 */
-void sim_thread_insert_into_delay_queue( thread* thr, uint64 sim_time ) { PROFILE(SIM_THREAD_INSERT_INTO_DELAY_QUEUE);
+void sim_thread_insert_into_delay_queue( thread* thr, const sim_time* time ) { PROFILE(SIM_THREAD_INSERT_INTO_DELAY_QUEUE);
 
   thread* curr;  /* Pointer to current thread in delayed queue to compare against */
 
 #ifdef DEBUG_MODE
   if( debug_mode && !flag_use_command_line_debug ) {
-    printf( "Before delay thread is inserted for time %llu...\n", sim_time );
+    printf( "Before delay thread is inserted for time %llu...\n", time->full );
   }
 #endif
 
@@ -402,8 +402,8 @@ void sim_thread_insert_into_delay_queue( thread* thr, uint64 sim_time ) { PROFIL
     /* Specify that the thread is queued and delayed */
     thr->suppl.part.state = THR_ST_DELAYED;
 
-    /* Set the thread simulation time to the given sim_time */
-    thr->curr_time = sim_time;
+    /* Set the thread simulation time to the given time */
+    thr->curr_time = *time;
 
     /* Add the given thread to the delayed queue in simulation time order */
     if( delayed_head == NULL ) {
@@ -412,7 +412,7 @@ void sim_thread_insert_into_delay_queue( thread* thr, uint64 sim_time ) { PROFIL
       thr->queue_next = NULL;
     } else {
       curr = delayed_tail;
-      while( (curr != NULL) && (curr->curr_time > sim_time) ) {
+      while( (curr != NULL) && TIME_CMP(curr->curr_time, >, *time) ) {
         curr = curr->queue_prev;
       }
       if( curr == NULL ) {
@@ -448,14 +448,14 @@ void sim_thread_insert_into_delay_queue( thread* thr, uint64 sim_time ) { PROFIL
 }
 
 /*!
- \param thr       Pointer to thread to add to the tail of the simulation queue.
- \param sim_time  Current simulation time of thread to push
+ \param thr   Pointer to thread to add to the tail of the simulation queue.
+ \param time  Current simulation time of thread to push
 
  Adds the specified thread to the end of the current simulation queue.  This function gets
  called whenever a head statement has a signal change or the head statement is a delay operation
  and
 */
-void sim_thread_push( thread* thr, uint64 sim_time ) { PROFILE(SIM_THREAD_PUSH);
+void sim_thread_push( thread* thr, const sim_time* time ) { PROFILE(SIM_THREAD_PUSH);
 
   exp_op_type op;  /* Operation type of current expression in given thread */
 
@@ -493,7 +493,7 @@ void sim_thread_push( thread* thr, uint64 sim_time ) { PROFILE(SIM_THREAD_PUSH);
       (op == EXP_OP_SLIST)       ||
       (op == EXP_OP_ALWAYS_COMB) ||
       (op == EXP_OP_ALWAYS_LATCH) ) {
-    thr->curr_time = sim_time;
+    thr->curr_time = *time;
   }
 
   /* Set the active next and prev pointers to NULL */
@@ -521,8 +521,8 @@ void sim_thread_push( thread* thr, uint64 sim_time ) { PROFILE(SIM_THREAD_PUSH);
 }
 
 /*!
- \param expr      Pointer to expression that contains a changed signal value.
- \param sim_time  Specifies current simulation time for the thread to push.
+ \param expr  Pointer to expression that contains a changed signal value.
+ \param time  Specifies current simulation time for the thread to push.
 
  Traverses up expression tree pointed to by leaf node expr, setting the
  CHANGED bits as it reaches the root expression.  When the root expression is
@@ -532,7 +532,7 @@ void sim_thread_push( thread* thr, uint64 sim_time ) { PROFILE(SIM_THREAD_PUSH);
  bit set, we know that the statement has already been added, so stop here and
  do not add the statement again.
 */
-void sim_expr_changed( expression* expr, uint64 sim_time ) { PROFILE(SIM_EXPR_CHANGED);
+void sim_expr_changed( expression* expr, const sim_time* time ) { PROFILE(SIM_EXPR_CHANGED);
 
   assert( expr != NULL );
 
@@ -541,7 +541,7 @@ void sim_expr_changed( expression* expr, uint64 sim_time ) { PROFILE(SIM_EXPR_CH
             expr->id, expression_string_op( expr->op ), expr->line,
             ESUPPL_IS_LEFT_CHANGED( expr->suppl ),
             ESUPPL_IS_RIGHT_CHANGED( expr->suppl ),
-            sim_time );
+            time->full );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
@@ -573,7 +573,7 @@ void sim_expr_changed( expression* expr, uint64 sim_time ) { PROFILE(SIM_EXPR_CH
       }
 
       /* Continue up the tree */
-      sim_expr_changed( expr->parent->expr, sim_time );
+      sim_expr_changed( expr->parent->expr, time );
 
       PROFILE_END;
 
@@ -595,12 +595,12 @@ void sim_expr_changed( expression* expr, uint64 sim_time ) { PROFILE(SIM_EXPR_CH
 //        printf( "thr->curr: %p, expr->parent->stmt: %p\n", thr->curr, expr->parent->stmt );
         if( thr->curr == expr->parent->stmt ) {
           //num_pushed++;
-          sim_thread_push( thr, sim_time );
+          sim_thread_push( thr, time );
         }
         thr = thr->queue_next;
       }
 
-      //printf( "TIME: %lld, num in waiting queue: %d, num pushed: %d\n", sim_time, num_in_wait, num_pushed );
+      //printf( "TIME: %lld, num in waiting queue: %d, num pushed: %d\n", time->full, num_in_wait, num_pushed );
 
       PROFILE_END;
 
@@ -658,14 +658,17 @@ thread* sim_create_thread( thread* parent, statement* stmt, func_unit* funit ) {
   }
 
   /* Initialize the contents of the thread */
-  thr->funit      = funit;
-  thr->parent     = parent;
-  thr->curr       = stmt;
-  thr->ren        = NULL;
-  thr->suppl.all  = 0;  /* Sets the current state of the thread to NONE */
-  thr->curr_time  = 0;
-  thr->queue_prev = NULL;
-  thr->queue_next = NULL;
+  thr->funit           = funit;
+  thr->parent          = parent;
+  thr->curr            = stmt;
+  thr->ren             = NULL;
+  thr->suppl.all       = 0;  /* Sets the current state of the thread to NONE */
+  thr->curr_time.lo    = 0;
+  thr->curr_time.hi    = 0;
+  thr->curr_time.full  = 0LL;
+  thr->curr_time.final = false;
+  thr->queue_prev      = NULL;
+  thr->queue_next      = NULL;
 
   PROFILE_END;
 
@@ -677,13 +680,14 @@ thread* sim_create_thread( thread* parent, statement* stmt, func_unit* funit ) {
  \param parent  Pointer to parent thread of the new thread to create (set to NULL if there is no parent thread)
  \param stmt    Pointer to head statement to have new thread point to.
  \param funit   Pointer to functional unit that is creating this thread.
+ \param time    Pointer to current simulation time.
 
  \return Returns the pointer to the thread that was added to the active queue (if one was added).
 
  Creates a new thread with the given information and adds the thread to the active queue to run.  Returns a pointer
  to the newly created thread for joining/running purposes.
 */
-thread* sim_add_thread( thread* parent, statement* stmt, func_unit* funit ) { PROFILE(SIM_ADD_THREAD);
+thread* sim_add_thread( thread* parent, statement* stmt, func_unit* funit, const sim_time* time ) { PROFILE(SIM_ADD_THREAD);
 
   thread* thr = NULL;  /* Pointer to added thread */
 
@@ -696,7 +700,6 @@ thread* sim_add_thread( thread* parent, statement* stmt, func_unit* funit ) { PR
     /* Initialize thread runtime components */
     thr->suppl.all       = 0;
     thr->active_children = 0;
-    thr->curr_time       = curr_sim_time;
     thr->queue_prev      = NULL;
     thr->queue_next      = NULL;
 
@@ -722,14 +725,22 @@ thread* sim_add_thread( thread* parent, statement* stmt, func_unit* funit ) { PR
 
     } else {
 
+      thr->curr_time = *time;
+
       /*
        If this statement is an always_comb or always_latch, add it to the delay list and change its right
        expression so that it will be executed at time 0 after all initial and always blocks have completed
       */
       if( (thr->curr->exp->op == EXP_OP_ALWAYS_COMB) || (thr->curr->exp->op == EXP_OP_ALWAYS_LATCH) ) {
 
+        sim_time tmp_time;
+
         /* Add this thread into the delay queue at time 0 */
-        sim_thread_insert_into_delay_queue( thr, 0 );
+        time.lo    = 0;
+        time.hi    = 0;
+        time.full  = 0LL;
+        time.final = false;
+        sim_thread_insert_into_delay_queue( thr, &tmp_time );
 
         /* Specify that this block should be evaluated */
         thr->curr->exp->right->suppl.part.eval_t = 1;
@@ -997,14 +1008,14 @@ bool sim_expression( expression* expr, thread* thr ) { PROFILE(SIM_EXPRESSION);
  it.  Continues to run for current statement tree until statement tree hits a
  wait-for-event condition (or we reach the end of a simulation tree).
 */
-void sim_thread( thread* thr, uint64 sim_time ) { PROFILE(SIM_THREAD);
+void sim_thread( thread* thr, const sim_time* time ) { PROFILE(SIM_THREAD);
 
   statement* stmt;                  /* Pointer to current statement to evaluate */
   bool       expr_changed = FALSE;  /* Specifies if expression tree was modified in any way */
 
   /* If the thread has a reentrant structure assigned to it, pop it */
   if( thr->ren != NULL ) {
-    reentrant_dealloc( thr->ren, thr->funit, sim_time, FALSE );
+    reentrant_dealloc( thr->ren, thr->funit, time, FALSE );
     thr->ren = NULL;
   }
 
@@ -1015,7 +1026,7 @@ void sim_thread( thread* thr, uint64 sim_time ) { PROFILE(SIM_THREAD);
 
 #ifdef DEBUG_MODE
 #ifndef VPI_ONLY
-    cli_execute();
+    cli_execute( time );
 #endif
 #endif
 
@@ -1091,14 +1102,15 @@ void sim_thread( thread* thr, uint64 sim_time ) { PROFILE(SIM_THREAD);
  db_do_timestep() function in db.c  and moves the statements and expressions into
  the appropriate simulation functions.  See above explanation on this procedure.
 */
-void sim_simulate( uint64 sim_time ) { PROFILE(SIM_SIMULATE);
+void sim_simulate( const sim_time* time ) { PROFILE(SIM_SIMULATE);
 
   /* Simulate all threads in the active queue */
   while( active_head != NULL ) {
-    sim_thread( active_head, sim_time );
+    sim_thread( active_head, time );
   }
 
-  while( (delayed_head != NULL) && (delayed_head->curr_time <= sim_time) ) {
+  while( (delayed_head != NULL) && TIME_CMP(delayed_head->curr_time, <=, *time) ) {
+  //while( (delayed_head != NULL) && (delayed_head->curr_time <= sim_time) ) {
 
     active_head  = active_tail = delayed_head;
     delayed_head = delayed_head->queue_next;
@@ -1111,7 +1123,7 @@ void sim_simulate( uint64 sim_time ) { PROFILE(SIM_SIMULATE);
     active_head->suppl.part.state = THR_ST_ACTIVE;
 
     while( active_head != NULL ) {
-      sim_thread( active_head, sim_time );
+      sim_thread( active_head, time );
     }
 
   }
@@ -1144,7 +1156,7 @@ void sim_simulate( uint64 sim_time ) { PROFILE(SIM_SIMULATE);
 
     /* Simulate all threads in the active queue */
     while( active_head != NULL ) {
-      sim_thread( active_head, sim_time );
+      sim_thread( active_head, time );
     }
 
   }
@@ -1189,7 +1201,7 @@ void sim_simulate( uint64 sim_time ) { PROFILE(SIM_SIMULATE);
 
     /* Simulate all threads in the active queue */
     while( active_head != NULL ) {
-      sim_thread( active_head, sim_time );
+      sim_thread( active_head, time );
     }
 
   }
@@ -1255,6 +1267,9 @@ void sim_dealloc() { PROFILE(SIM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.111  2007/12/14 23:38:37  phase1geo
+ More performance enhancements.  Checkpointing.
+
  Revision 1.110  2007/12/13 14:25:12  phase1geo
  Attempting to enhance performance of the sim_simulation function (I have a few
  different code segments here to do the task at the moment).

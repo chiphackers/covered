@@ -88,6 +88,8 @@ void instance_display_tree_helper( funit_inst* root, char* prefix ) { PROFILE(IN
   free_safe( piname );
   free_safe( pfname );
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -99,6 +101,8 @@ void instance_display_tree_helper( funit_inst* root, char* prefix ) { PROFILE(IN
 void instance_display_tree( funit_inst* root ) { PROFILE(INSTANCE_DISPLAY_TREE);
 
   instance_display_tree_helper( root, "" );
+
+  PROFILE_END;
 
 }
 
@@ -144,6 +148,8 @@ funit_inst* instance_create( func_unit* funit, char* inst_name, vector_width* ra
     new_inst->range->right->exp = range->right->exp;
   }
 
+  PROFILE_END;
+
   return( new_inst );
 
 }
@@ -174,6 +180,8 @@ void instance_gen_scope( char* scope, funit_inst* leaf, bool flatten ) { PROFILE
     }
 
   }
+
+  PROFILE_END;
 
 }
 
@@ -221,6 +229,8 @@ bool instance_compare( char* inst_name, funit_inst* inst ) { PROFILE(INSTANCE_CO
 
   }
 
+  PROFILE_END;
+
   return( retval );
 
 }
@@ -267,6 +277,8 @@ funit_inst* instance_find_scope( funit_inst* root, char* scope, bool rm_unnamed 
     }
   }
 
+  PROFILE_END;
+
   return( inst );
 
 }
@@ -310,6 +322,8 @@ funit_inst* instance_find_by_funit( funit_inst* root, const func_unit* funit, in
     }
     
   }
+
+  PROFILE_END;
 
   return( match_inst );
 
@@ -370,6 +384,8 @@ funit_inst* instance_add_child( funit_inst* inst, func_unit* child, char* name, 
 
   }
 
+  PROFILE_END;
+
   return( new_inst );
 
 }
@@ -407,6 +423,8 @@ void instance_copy( funit_inst* from_inst, funit_inst* to_inst, char* name, vect
     }
 
   }
+
+  PROFILE_END;
 
 }
 
@@ -450,6 +468,8 @@ void instance_attach_child( funit_inst* parent, funit_inst* child ) { PROFILE(IN
     curr_inst->parent = parent; 
 
   }
+
+  PROFILE_END;
 
 }
 
@@ -522,6 +542,8 @@ bool instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child,
 
   }
 
+  PROFILE_END;
+
   return( retval );
 
 }
@@ -584,6 +606,8 @@ bool instance_resolve_inst( funit_inst* root, funit_inst* curr ) { PROFILE(INSTA
     free_safe( new_name );
 
   }
+
+  PROFILE_END;
   
   return( width != -1 );
 
@@ -613,6 +637,8 @@ void instance_resolve_helper( funit_inst* root, funit_inst* curr ) { PROFILE(INS
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -627,6 +653,8 @@ void instance_resolve( funit_inst* root ) { PROFILE(INSTANCE_RESOLVE);
 
   /* Now resolve all of the rest of the parameters */
   // param_resolve( root );
+
+  PROFILE_END;
 
 }
 
@@ -682,6 +710,8 @@ bool instance_read_add( funit_inst** root, char* parent, func_unit* child, char*
     }
  
   }
+
+  PROFILE_END;
 
   return( retval );
 
@@ -744,6 +774,8 @@ void instance_db_write( funit_inst* root, FILE* file, char* scope, bool parse_mo
     instance_db_write( curr, file, tscope, parse_mode, report_save );
     curr = curr->next;
   }
+
+  PROFILE_END;
 
 }
 
@@ -840,6 +872,8 @@ void instance_flatten_helper( funit_inst* root, funit_link** rm_head, funit_link
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -869,6 +903,8 @@ void instance_flatten( funit_inst* root ) { PROFILE(INSTANCE_FLATTEN);
     funitl = funitl->next;
   }
   funit_link_delete_list( &rm_head, &rm_tail, TRUE );
+
+  PROFILE_END;
 
 }
 
@@ -907,6 +943,8 @@ void instance_remove_stmt_blks_calling_stmt( funit_inst* root, statement* stmt )
     }
 
   }
+
+  PROFILE_END;
 
 }
 
@@ -949,6 +987,8 @@ void instance_remove_parms_with_expr( funit_inst* root, statement* stmt ) { PROF
     curr_child = curr_child->next;
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -986,6 +1026,8 @@ void instance_dealloc_single( funit_inst* inst ) { PROFILE(INSTANCE_DEALLOC_SING
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -1013,6 +1055,8 @@ void instance_dealloc_tree( funit_inst* root ) { PROFILE(INSTANCE_DEALLOC_TREE);
     instance_dealloc_single( root );
 
   }
+
+  PROFILE_END;
 
 }
 
@@ -1077,10 +1121,17 @@ void instance_dealloc( funit_inst* root, char* scope ) { PROFILE(INSTANCE_DEALLO
 
   }
 
+  PROFILE_END;
+
 }
 
 /*
  $Log$
+ Revision 1.82  2007/12/11 05:48:25  phase1geo
+ Fixing more compile errors with new code changes and adding more profiling.
+ Still have a ways to go before we can compile cleanly again (next submission
+ should do it).
+
  Revision 1.81  2007/11/20 05:28:58  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 
