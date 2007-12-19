@@ -125,6 +125,7 @@ void fsm_create_tables( fsm* table ) { PROFILE(FSM_CREATE_TABLES);
 
   fsm_arc* curr_arc;    /* Pointer to current FSM arc structure */
   bool     set = TRUE;  /* Specifies if specified bit was set */
+  sim_time time;        /* Current simulation time */
 
   /* Create the FSM arc transition table */
   assert( table != NULL );
@@ -133,13 +134,19 @@ void fsm_create_tables( fsm* table ) { PROFILE(FSM_CREATE_TABLES);
   assert( table->table == NULL );
   table->table = arc_create( table->to_state->value->width );
 
+  /* Initialize the current time */
+  time.lo    = 0;
+  time.hi    = 0;
+  time.full  = 0;
+  time.final = FALSE;
+
   /* Set valid table */
   curr_arc = table->arc_head;
   while( (curr_arc != NULL) && set ) {
 
     /* Evaluate from and to state expressions */
-    expression_operate( curr_arc->from_state, NULL );
-    expression_operate( curr_arc->to_state, NULL );
+    expression_operate( curr_arc->from_state, NULL, &time );
+    expression_operate( curr_arc->to_state, NULL, &time );
 
     /* Set table entry in table, if possible */
     arc_add( &(table->table), curr_arc->from_state->value, curr_arc->to_state->value, 0 );
@@ -1186,6 +1193,11 @@ void fsm_dealloc( fsm* table ) { PROFILE(FSM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.73  2007/12/11 05:48:25  phase1geo
+ Fixing more compile errors with new code changes and adding more profiling.
+ Still have a ways to go before we can compile cleanly again (next submission
+ should do it).
+
  Revision 1.72  2007/11/20 05:28:58  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

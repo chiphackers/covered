@@ -2771,16 +2771,7 @@ bool expression_op_func__trigger( expression* expr, thread* thr, const sim_time*
   expr->value->value[0].part.exp.value = 1;
 
   /* Propagate event */
-  if( thr == NULL ) {
-    sim_time tmp_time;
-    tmp_time.lo    = 0;
-    tmp_time.hi    = 0;
-    tmp_time.full  = 0;
-    tmp_time.final = FALSE;
-    vsignal_propagate( expr->sig, &tmp_time );
-  } else {
-    vsignal_propagate( expr->sig, &(thr->curr_time) );
-  }
+  vsignal_propagate( expr->sig, ((thr == NULL) ? time : &(thr->curr_time)) );
 
   PROFILE_END;
 
@@ -2874,18 +2865,7 @@ bool expression_op_func__bassign( expression* expr, thread* thr, const sim_time*
 
   int intval = 0;  /* Integer value */
 
-  if( thr == NULL ) {
-    sim_time tmp_time;
-
-    tmp_time.lo    = 0;
-    tmp_time.hi    = 0;
-    tmp_time.full  = 0;
-    tmp_time.final = FALSE;
-
-    expression_assign( expr->left, expr->right, &intval, &tmp_time );
-  } else {
-    expression_assign( expr->left, expr->right, &intval, &(thr->curr_time) );
-  }
+  expression_assign( expr->left, expr->right, &intval, ((thr == NULL) ? time : &(thr->curr_time)) );
 
   PROFILE_END;
 
@@ -2907,18 +2887,7 @@ bool expression_op_func__func_call( expression* expr, thread* thr, const sim_tim
   bool retval;  /* Return value for this function */
 
   /* First, simulate the function */
-  if( thr == NULL ) {
-    sim_time tmp_time;
-
-    tmp_time.lo    = 0;
-    tmp_time.hi    = 0;
-    tmp_time.full  = 0;
-    tmp_time.final = FALSE;
-
-    sim_thread( sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit ), &tmp_time );
-  } else {
-    sim_thread( sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit ), &(thr->curr_time) );
-  }
+  sim_thread( sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit ), ((thr == NULL) ? time : &(thr->curr_time)) );
 
   /* Then copy the function variable to this expression */
   retval = vector_set_value( expr->value, expr->sig->value->value, VTYPE_VAL, expr->value->width, 0, 0 );
@@ -3139,18 +3108,7 @@ bool expression_op_func__passign( expression* expr, thread* thr, const sim_time*
     /* If the connected signal is an input type, copy the parameter expression value to this vector */
     case SSUPPL_TYPE_INPUT :
       retval = vector_set_value( expr->value, expr->right->value->value, expr->right->value->suppl.part.type, expr->right->value->width, 0, 0 );
-      if( thr == NULL ) {
-        sim_time tmp_time;
-
-        tmp_time.lo    = 0;
-        tmp_time.hi    = 0;
-        tmp_time.full  = 0;
-        tmp_time.final = FALSE;
-
-        vsignal_propagate( expr->sig, &tmp_time );
-      } else {
-        vsignal_propagate( expr->sig, &(thr->curr_time) );
-      }
+      vsignal_propagate( expr->sig, ((thr == NULL) ? time : &(thr->curr_time)) );
       break;
 
     /*
@@ -3158,18 +3116,7 @@ bool expression_op_func__passign( expression* expr, thread* thr, const sim_time*
      to the right expression.
     */
     case SSUPPL_TYPE_OUTPUT :
-      if( thr == NULL ) {
-        sim_time tmp_time;
-  
-        tmp_time.lo    = 0;
-        tmp_time.hi    = 0;
-        tmp_time.full  = 0;
-        tmp_time.final = FALSE;
-
-        expression_assign( expr->right, expr, &intval, &tmp_time );
-      } else {
-        expression_assign( expr->right, expr, &intval, &(thr->curr_time) );
-      }
+      expression_assign( expr->right, expr, &intval, ((thr == NULL) ? time : &(thr->curr_time)) );
       retval = TRUE;
       break;
 
@@ -3308,7 +3255,7 @@ bool expression_op_func__iinc( expression* expr, thread* thr, const sim_time* ti
 #endif
 
   /* Propagate value change */
-  vsignal_propagate( expr->left->sig, ((thr == NULL) ? 0 : thr->curr_time) );
+  vsignal_propagate( expr->left->sig, ((thr == NULL) ? time : &(thr->curr_time)) );
 
   PROFILE_END;
 
@@ -3340,7 +3287,7 @@ bool expression_op_func__pinc( expression* expr, thread* thr, const sim_time* ti
 #endif
 
   /* Propagate value change */
-  vsignal_propagate( expr->left->sig, ((thr == NULL) ? 0 : thr->curr_time) );
+  vsignal_propagate( expr->left->sig, ((thr == NULL) ? time : &(thr->curr_time)) );
 
   PROFILE_END;
 
@@ -3372,7 +3319,7 @@ bool expression_op_func__idec( expression* expr, thread* thr, const sim_time* ti
 #endif
 
   /* Propagate value change */
-  vsignal_propagate( expr->left->sig, ((thr == NULL) ? 0 : thr->curr_time) );
+  vsignal_propagate( expr->left->sig, ((thr == NULL) ? time : &(thr->curr_time)) );
 
   PROFILE_END;
 
@@ -3404,7 +3351,7 @@ bool expression_op_func__pdec( expression* expr, thread* thr, const sim_time* ti
 #endif
 
   /* Propagate value change */
-  vsignal_propagate( expr->left->sig, ((thr == NULL) ? 0 : thr->curr_time) );
+  vsignal_propagate( expr->left->sig, ((thr == NULL) ? time : &(thr->curr_time)) );
 
   PROFILE_END;
 
@@ -3433,7 +3380,7 @@ bool expression_op_func__dly_assign( expression* expr, thread* thr, const sim_ti
 
   /* Check the dly_op expression.  If eval_t is set to 1, perform the assignment */
   if( ESUPPL_IS_TRUE( expr->right->suppl ) == 1 ) {
-    expression_assign( expr->left, expr->right, &intval, ((thr == NULL) ? 0 : thr->curr_time) );
+    expression_assign( expr->left, expr->right, &intval, ((thr == NULL) ? time : &(thr->curr_time)) );
     expr->suppl.part.eval_t = 1;
     retval = TRUE;
   } else {
@@ -4285,6 +4232,9 @@ void expression_dealloc( expression* expr, bool exp_only ) { PROFILE(EXPRESSION_
 
 /* 
  $Log$
+ Revision 1.264  2007/12/19 04:27:52  phase1geo
+ More fixes for compiler errors (still more to go).  Checkpointing.
+
  Revision 1.263  2007/12/18 23:55:21  phase1geo
  Starting to remove 64-bit time and replacing it with a sim_time structure
  for performance enhancement purposes.  Also removing global variables for time-related
