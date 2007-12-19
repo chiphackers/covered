@@ -851,6 +851,10 @@ bool db_add_function_task_namedblock( int type, char* name, char* file, int star
     curr_funit->start_line = start_line;
     curr_funit->ts_unit    = current_timescale_unit;
     
+  } else {
+
+    printf( "Unable to add instance %s (%s)\n", name, full_name );
+
   }
 
   free_safe( full_name );
@@ -2470,6 +2474,12 @@ void db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.266  2007/12/18 23:55:21  phase1geo
+ Starting to remove 64-bit time and replacing it with a sim_time structure
+ for performance enhancement purposes.  Also removing global variables for time-related
+ information and passing this information around by reference for performance
+ enhancement purposes.
+
  Revision 1.265  2007/12/17 23:47:48  phase1geo
  Adding more profiling information.
 

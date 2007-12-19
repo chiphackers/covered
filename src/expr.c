@@ -2714,7 +2714,7 @@ bool expression_op_func__slist( expression* expr, thread* thr, const sim_time* t
 */
 bool expression_op_func__delay( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__DELAY);
 
-  bool     retval = FALSE;  /* Return value for this function */
+  bool retval = FALSE;  /* Return value for this function */
 
   /* Clear the evaluated TRUE indicator */
   expr->suppl.part.eval_t = 0;
@@ -2742,9 +2742,13 @@ bool expression_op_func__delay( expression* expr, thread* thr, const sim_time* t
     tmp_time.full  = intval;
     tmp_time.final = FALSE;
 
+    printf( "Delay   time: %d %d (%lld), intval: %lld\n", tmp_time.lo, tmp_time.hi, tmp_time.full, intval );
+    printf( "Current time: %d %d (%lld)\n", thr->curr_time.lo, thr->curr_time.hi, thr->curr_time.full );
+
     /* Add this delay into the delay queue if this is not the final simulation step */
     if( !time->final ) {
       TIME_INC(tmp_time, thr->curr_time);
+      printf( "Time after delay: %d %d (%lld)\n", tmp_time.lo, tmp_time.hi, tmp_time.full );
       sim_thread_insert_into_delay_queue( thr, &tmp_time );
     }
 
@@ -2887,7 +2891,7 @@ bool expression_op_func__func_call( expression* expr, thread* thr, const sim_tim
   bool retval;  /* Return value for this function */
 
   /* First, simulate the function */
-  sim_thread( sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit ), ((thr == NULL) ? time : &(thr->curr_time)) );
+  sim_thread( sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit, time ), ((thr == NULL) ? time : &(thr->curr_time)) );
 
   /* Then copy the function variable to this expression */
   retval = vector_set_value( expr->value, expr->sig->value->value, VTYPE_VAL, expr->value->width, 0, 0 );
@@ -2915,7 +2919,7 @@ bool expression_op_func__func_call( expression* expr, thread* thr, const sim_tim
 */
 bool expression_op_func__task_call( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__TASK_CALL);
 
-  sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit );
+  sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit, time );
 
   PROFILE_END;
 
@@ -2937,7 +2941,7 @@ bool expression_op_func__nb_call( expression* expr, thread* thr, const sim_time*
   bool    retval = FALSE;  /* Return value for this function */
 
   /* Add the thread to the active queue */
-  thread* tmp = sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit );
+  thread* tmp = sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit, time );
 
   if( ESUPPL_IS_IN_FUNC( expr->suppl ) ) {
 
@@ -2963,7 +2967,7 @@ bool expression_op_func__nb_call( expression* expr, thread* thr, const sim_time*
 */
 bool expression_op_func__fork( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__FORK);
 
-  sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit );
+  sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit, time );
 
   PROFILE_END;
 
@@ -4232,6 +4236,9 @@ void expression_dealloc( expression* expr, bool exp_only ) { PROFILE(EXPRESSION_
 
 /* 
  $Log$
+ Revision 1.265  2007/12/19 14:37:29  phase1geo
+ More compiler fixes (still more to go).  Checkpointing.
+
  Revision 1.264  2007/12/19 04:27:52  phase1geo
  More fixes for compiler errors (still more to go).  Checkpointing.
 

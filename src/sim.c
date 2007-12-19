@@ -102,10 +102,8 @@ extern nibble                or_optab[OPTAB_SIZE];
 extern char                  user_msg[USER_MSG_LENGTH];
 extern bool                  debug_mode;
 extern exp_info              exp_op_info[EXP_OP_NUM];
-extern uint64                curr_sim_time;
 extern /*@null@*/inst_link*  inst_head;
 extern bool                  flag_use_command_line_debug;
-extern bool                  final_sim_time;
 #ifdef DEBUG_MODE
 #ifndef VPI_ONLY
 extern bool                  cli_debug_mode;
@@ -413,6 +411,7 @@ void sim_thread_insert_into_delay_queue( thread* thr, const sim_time* time ) { P
     } else {
       curr = delayed_tail;
       while( (curr != NULL) && TIME_CMP(curr->curr_time, >, *time) ) {
+        printf( "curr->curr_time (%d %d), time (%d %d)\n", curr->curr_time.hi, curr->curr_time.lo, time->hi, time->lo );
         curr = curr->queue_prev;
       }
       if( curr == NULL ) {
@@ -666,7 +665,7 @@ thread* sim_create_thread( thread* parent, statement* stmt, func_unit* funit ) {
   thr->curr_time.lo    = 0;
   thr->curr_time.hi    = 0;
   thr->curr_time.full  = 0LL;
-  thr->curr_time.final = false;
+  thr->curr_time.final = FALSE;
   thr->queue_prev      = NULL;
   thr->queue_next      = NULL;
 
@@ -736,10 +735,10 @@ thread* sim_add_thread( thread* parent, statement* stmt, func_unit* funit, const
         sim_time tmp_time;
 
         /* Add this thread into the delay queue at time 0 */
-        time.lo    = 0;
-        time.hi    = 0;
-        time.full  = 0LL;
-        time.final = false;
+        tmp_time.lo    = 0;
+        tmp_time.hi    = 0;
+        tmp_time.full  = 0LL;
+        tmp_time.final = FALSE;
         sim_thread_insert_into_delay_queue( thr, &tmp_time );
 
         /* Specify that this block should be evaluated */
@@ -749,7 +748,14 @@ thread* sim_add_thread( thread* parent, statement* stmt, func_unit* funit, const
 
         /* If the statement block is specified as a final block, add it to the end of the delay queue */
         if( ESUPPL_STMT_FINAL( thr->curr->exp->suppl ) == 1 ) {
-          sim_thread_insert_into_delay_queue( thr, 0xffffffffffffffffLL );
+
+          sim_time tmp_time;
+
+          tmp_time.lo    = 0xffffffff;
+          tmp_time.hi    = 0xffffffff;
+          tmp_time.full  = UINT64(0xffffffffffffffff);
+          tmp_time.final = TRUE;
+          sim_thread_insert_into_delay_queue( thr, &tmp_time );
 
         /* Otherwise, add it to the active thread list */
         } else {
@@ -905,10 +911,17 @@ void sim_kill_thread_with_funit( func_unit* funit ) { PROFILE(SIM_KILL_THREAD_WI
 void sim_add_statics() { PROFILE(SIM_ADD_STATICS);
   
   exp_link* curr;   /* Pointer to current expression link */
+  sim_time  time;   /* Current simulation time */
+
+  /* Initialize the time to 0 */
+  time.lo    = 0;
+  time.hi    = 0;
+  time.full  = 0;
+  time.final = FALSE;
   
   curr = static_expr_head;
   while( curr != NULL ) {
-    sim_expr_changed( curr->exp, 0 );
+    sim_expr_changed( curr->exp, &time );
     curr = curr->next;
   }
   
@@ -921,6 +934,7 @@ void sim_add_statics() { PROFILE(SIM_ADD_STATICS);
 /*!
  \param expr  Pointer to expression to simulate.
  \param thr   Pointer to current thread that is being simulated.
+ \param time  Pointer to current simulation time.
 
  \return Returns TRUE if this expression has changed value from previous sim; otherwise,
          returns FALSE.
@@ -932,7 +946,7 @@ void sim_add_statics() { PROFILE(SIM_ADD_STATICS);
  expression operation for the current expression, clear both changed bits and
  return.
 */
-bool sim_expression( expression* expr, thread* thr ) { PROFILE(SIM_EXPRESSION);
+static bool sim_expression( expression* expr, thread* thr, const sim_time* time ) { PROFILE(SIM_EXPRESSION);
 
   bool retval        = FALSE;  /* Return value for this function */
   bool left_changed  = FALSE;  /* Signifies if left expression tree has changed value */
@@ -959,7 +973,7 @@ bool sim_expression( expression* expr, thread* thr ) { PROFILE(SIM_EXPRESSION);
     /* Simulate the left expression if it has changed */
     if( expr->left != NULL ) {
       if( expr->left->suppl.part.lhs == 0 ) {
-        left_changed = sim_expression( expr->left, thr );
+        left_changed = sim_expression( expr->left, thr, time );
       }
     } else {
       left_changed = TRUE;
@@ -977,7 +991,7 @@ bool sim_expression( expression* expr, thread* thr ) { PROFILE(SIM_EXPRESSION);
     /* Simulate the right expression if it has changed */
     if( expr->right != NULL ) {
       if( expr->right->suppl.part.lhs == 0 ) {
-        right_changed = sim_expression( expr->right, thr );
+        right_changed = sim_expression( expr->right, thr, time );
       }
     } else {
       right_changed = TRUE;
@@ -990,7 +1004,7 @@ bool sim_expression( expression* expr, thread* thr ) { PROFILE(SIM_EXPRESSION);
    expressions trees have changed.
   */
   if( (ESUPPL_IS_STMT_CONTINUOUS( expr->suppl ) == 0) || left_changed || right_changed ) {
-    retval = expression_operate( expr, thr );
+    retval = expression_operate( expr, thr, time );
   }
 
   PROFILE_END;
@@ -1015,7 +1029,7 @@ void sim_thread( thread* thr, const sim_time* time ) { PROFILE(SIM_THREAD);
 
   /* If the thread has a reentrant structure assigned to it, pop it */
   if( thr->ren != NULL ) {
-    reentrant_dealloc( thr->ren, thr->funit, time, FALSE );
+    reentrant_dealloc( thr->ren, thr->funit, FALSE );
     thr->ren = NULL;
   }
 
@@ -1031,7 +1045,7 @@ void sim_thread( thread* thr, const sim_time* time ) { PROFILE(SIM_THREAD);
 #endif
 
     /* Place expression in expression simulator and run */
-    expr_changed = sim_expression( stmt->exp, thr );
+    expr_changed = sim_expression( stmt->exp, thr, time );
 
 #ifdef DEBUG_MODE
     snprintf( user_msg, USER_MSG_LENGTH, "  Executed statement %d, expr changed %d", stmt->exp->id, expr_changed );
@@ -1083,7 +1097,7 @@ void sim_thread( thread* thr, const sim_time* time ) { PROFILE(SIM_THREAD);
     /* Pop this packet out of the active queue */
     if( ((thr->curr->exp->op != EXP_OP_DELAY) && 
          ((thr->curr->exp->op != EXP_OP_DLY_ASSIGN) || (thr->curr->exp->right->left->op != EXP_OP_DELAY))) ||
-        final_sim_time ) {
+        time->final ) {
       sim_thread_pop_head();
     } else {
       thr->suppl.part.exec_first = 1;
@@ -1110,6 +1124,7 @@ void sim_simulate( const sim_time* time ) { PROFILE(SIM_SIMULATE);
   }
 
   while( (delayed_head != NULL) && TIME_CMP(delayed_head->curr_time, <=, *time) ) {
+    printf( "In sim_simulate, delayed_head->curr_time (%d %d), time (%d %d)\n", delayed_head->curr_time.hi, delayed_head->curr_time.lo, time->hi, time->lo );
   //while( (delayed_head != NULL) && (delayed_head->curr_time <= sim_time) ) {
 
     active_head  = active_tail = delayed_head;
@@ -1267,6 +1282,12 @@ void sim_dealloc() { PROFILE(SIM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.112  2007/12/18 23:55:21  phase1geo
+ Starting to remove 64-bit time and replacing it with a sim_time structure
+ for performance enhancement purposes.  Also removing global variables for time-related
+ information and passing this information around by reference for performance
+ enhancement purposes.
+
  Revision 1.111  2007/12/14 23:38:37  phase1geo
  More performance enhancements.  Checkpointing.
 

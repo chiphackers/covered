@@ -36,7 +36,6 @@
 
 extern char                 user_msg[USER_MSG_LENGTH];
 extern bool                 flag_use_command_line_debug;
-extern uint64               curr_sim_time;
 extern /*@null@*/inst_link* inst_head;
 
 
@@ -303,12 +302,13 @@ void cli_display_lines( unsigned num ) {
  \param line       User-specified command line to parse
  \param perform    Set to TRUE if we should perform the specified command
  \param replaying  Set to TRUE if we are calling this due to replaying the history
+ \param time       Pointer to current simulation time
 
  \return Returns TRUE if the user specified a valid command; otherwise, returns FALSE
 
  Parses the given command from the user.
 */
-bool cli_parse_input( char* line, bool perform, bool replaying ) {
+bool cli_parse_input( char* line, bool perform, bool replaying, const sim_time* time ) {
 
   char     arg[4096];         /* Holder for user argument */
   bool     valid_cmd = TRUE;  /* Specifies if the given command was valid */
@@ -339,12 +339,12 @@ bool cli_parse_input( char* line, bool perform, bool replaying ) {
       line++;
       if( arg[1] == '!' ) {
         free_safe( history[history_index] );
-        cli_parse_input( strdup( history[history_index-1] ), perform, replaying );
+        cli_parse_input( strdup( history[history_index-1] ), perform, replaying, time );
         history_index--;
       } else if( sscanf( line, "%d", &num ) == 1 ) {
         if( num < (history_index + 1) ) {
           free_safe( history[history_index] );
-          cli_parse_input( strdup( history[num-1] ), perform, replaying );
+          cli_parse_input( strdup( history[num-1] ), perform, replaying, time );
           history_index--;
         } else {
           cli_print_error( "Illegal history number", perform );
@@ -415,7 +415,7 @@ bool cli_parse_input( char* line, bool perform, bool replaying ) {
           }
         } else if( strncmp( "time", arg, 4 ) == 0 ) {
           if( perform ) {
-            printf( "    TIME: %lld\n", curr_sim_time );
+            printf( "    TIME: %lld\n", time->full );
           }
         } else {
           cli_print_error( "Unknown display type", perform );
@@ -550,10 +550,12 @@ bool cli_parse_input( char* line, bool perform, bool replaying ) {
 }
 
 /*!
+ \param time  Pointer to current simulation time.
+
  Takes care of either replaying the history buffer or prompting the user for the next command
  to be issued.
 */
-void cli_prompt_user() {
+void cli_prompt_user( const sim_time* time ) {
 
   char* line;        /* Read line from user */
   char  arg[4096];   /* Holder for user argument */
@@ -568,7 +570,7 @@ void cli_prompt_user() {
 
       printf( "\ncli %d> %s\n", (cli_replay_index + 1), history[cli_replay_index] );
 
-      (void)cli_parse_input( history[cli_replay_index], TRUE, TRUE );
+      (void)cli_parse_input( history[cli_replay_index], TRUE, TRUE, time );
 
     } else {
 
@@ -580,7 +582,7 @@ void cli_prompt_user() {
       (void)util_readline( stdin, &line );
 
       /* Parse the command line */
-      (void)cli_parse_input( line, TRUE, FALSE );
+      (void)cli_parse_input( line, TRUE, FALSE, time );
 
     }
 
@@ -605,7 +607,7 @@ void cli_execute( const sim_time* time ) {
     }
 
     /* Decrement timesteps_left it is set and the last timestep differs from the current simulation time */
-    if( (timesteps_left > 0) && TIME_CMP(last_timestep, !=, *time) ) {
+    if( (timesteps_left > 0) && TIME_CMP_NE(last_timestep, *time) ) {
       timesteps_left--;
     }
 
@@ -621,7 +623,7 @@ void cli_execute( const sim_time* time ) {
       }
 
       /* Get the next instruction from the user */
-      cli_prompt_user();
+      cli_prompt_user( time );
 
     }
 
@@ -646,8 +648,10 @@ bool cli_read_hist_file( char* fname ) {
   /* Read the contents of the history file, storing the read lines into the history array */
   if( (hfile = fopen( fname, "r" )) != NULL ) {
 
+    sim_time time;
+
     while( util_readline( hfile, &line ) && retval ) {
-      retval = cli_parse_input( line, FALSE, FALSE );
+      retval = cli_parse_input( line, FALSE, FALSE, &time );
     }
 
     fclose( hfile );
@@ -671,6 +675,12 @@ bool cli_read_hist_file( char* fname ) {
 
 /*
  $Log$
+ Revision 1.9  2007/12/18 23:55:21  phase1geo
+ Starting to remove 64-bit time and replacing it with a sim_time structure
+ for performance enhancement purposes.  Also removing global variables for time-related
+ information and passing this information around by reference for performance
+ enhancement purposes.
+
  Revision 1.8  2007/11/20 05:28:57  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

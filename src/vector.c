@@ -845,7 +845,7 @@ bool vector_set_value( vector* vec, vec_data* value, int val_type, int width, in
       retval = TRUE;
       break;
     case VTYPE_SIG :
-      for( i=0; i<width; i++ ) {
+      for( i=width; i--; ) {
         set_val  = vval[i + to_idx];
         from_val = ((v2st & value[i + from_idx].part.val.value) > 1) ? 0 : value[i + from_idx].part.val.value;
         to_val   = set_val.part.sig.value;
@@ -867,7 +867,7 @@ bool vector_set_value( vector* vec, vec_data* value, int val_type, int width, in
       }
       break;
     case VTYPE_MEM :
-      for( i=0; i<width; i++ ) {
+      for( i=width; i--; ) {
         set_val  = vval[i + to_idx];
         from_val = ((v2st & value[i + from_idx].part.val.value) > 1) ? 0 : value[i + from_idx].part.val.value;
         to_val   = set_val.part.mem.value;
@@ -888,7 +888,7 @@ bool vector_set_value( vector* vec, vec_data* value, int val_type, int width, in
       }
       break;
     case VTYPE_EXP :
-      for( i=0; i<width; i++ ) {
+      for( i=width; i--; ) {
         set_val  = vval[i + to_idx];
         from_val = ((v2st & value[i + from_idx].part.val.value) > 1) ? 0 : value[i + from_idx].part.val.value;
         to_val   = set_val.part.exp.value;
@@ -1101,10 +1101,11 @@ uint64 vector_to_uint64( vector* vec ) { PROFILE(VECTOR_TO_UINT64);
 void vector_to_sim_time( vector* vec, sim_time* time ) { PROFILE(VECTOR_TO_SIM_TIME);
 
   int width;  /* Number of bits to use in creating sim_time */
+  int i;      /* Loop iterator */
 
   width = (vec->width > 64) ? 64 : vec->width;
 
-  for( i=(width - 1); i-- ) {
+  for( i=(width - 1); i--; ) {
     switch( vec->value[i].part.val.value ) {
       case 0 :
         time->lo   = (i <  32) ? (time->lo << 1) : time->lo;
@@ -1471,11 +1472,11 @@ vector* vector_from_string( char** str, bool quoted ) { PROFILE(VECTOR_FROM_STRI
       *str          = *str + chars_read;
     } else {
       /* If the specified string is none of the above, return NULL */
-      vec = NULL;
+      bits_per_char = 0;
     }
 
     /* If we have exceeded the maximum number of bits, return a value of NULL */
-    if( (size > MAX_BIT_WIDTH) || (vec == NULL) ) {
+    if( (size > MAX_BIT_WIDTH) || (bits_per_char == 0) ) {
 
       vec = NULL;
 
@@ -1911,12 +1912,13 @@ bool vector_op_add( vector* tgt, vector* left, vector* right ) { PROFILE(VECTOR_
     nibble rbit = (i < right->width) ? right->value[i].part.val.value : 0;
 
     if( (carry > 1) || (lbit > 1) || (rbit > 1) ) {
-      tgt->value[i].part.val.value = v2st ? 0 : 2;
+      tgt->value[i].part.exp.value = v2st ? 0 : 2;
       carry                        = v2st ? 0 : 2;
     } else {
-      tgt->value[i].part.val.value = (carry + lbit + rbit) & 0x1;
+      tgt->value[i].part.exp.value = (carry + lbit + rbit) & 0x1;
       carry                        = (carry + lbit + rbit) >> 1;
     }
+    tgt->value[i].part.exp.set = 1;
 
   }
 
@@ -2277,6 +2279,9 @@ void vector_dealloc( vector* vec ) { PROFILE(VECTOR_DEALLOC);
 
 /*
  $Log$
+ Revision 1.97  2007/12/19 04:27:52  phase1geo
+ More fixes for compiler errors (still more to go).  Checkpointing.
+
  Revision 1.96  2007/12/17 23:47:48  phase1geo
  Adding more profiling information.
 

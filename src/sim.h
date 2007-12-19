@@ -49,7 +49,7 @@ void sim_thread_insert_into_delay_queue( thread* thr, const sim_time* time );
 void sim_expr_changed( expression* expr, const sim_time* time );
 
 /*! \brief Creates a thread for the given statement and adds it to the thread simulation queue. */
-thread* sim_add_thread( thread* parent, statement* stmt, func_unit* funit );
+thread* sim_add_thread( thread* parent, statement* stmt, func_unit* funit, const sim_time* time );
 
 /*! \brief Deallocates thread and removes it from parent and thread queue lists */
 void sim_kill_thread( thread* thr );
@@ -75,6 +75,9 @@ void sim_dealloc();
 
 /*
  $Log$
+ Revision 1.31  2007/12/19 04:27:52  phase1geo
+ More fixes for compiler errors (still more to go).  Checkpointing.
+
  Revision 1.30  2007/12/18 23:55:21  phase1geo
  Starting to remove 64-bit time and replacing it with a sim_time structure
  for performance enhancement purposes.  Also removing global variables for time-related

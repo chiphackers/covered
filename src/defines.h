@@ -1153,7 +1153,10 @@ typedef enum exp_op_type_e {
 #define snprintf(x,y,...)	assert( snprintf( x, y, __VA_ARGS__ ) < (y) );
 
 /*! Performs time comparison with the sim_time structure */
-#define TIME_CMP(x,y,z)         (((x).lo y (z).lo) || ((x).hi y (z).hi))
+#define TIME_CMP_LE(x,y)         ((((x).lo <= (y).lo) && ((x).hi <= (y).hi)) || ((x).hi < (y).hi))
+
+#define TIME_CMP_GT(x,y)         (((x).lo > (y).lo) || ((x).hi > (y).hi))
+#define TIME_CMP_NE(x,y)         (((x).lo != (y).lo) && ((x).hi != (y).hi))
 
 /*! Performs time increment where x is the sim_time structure to increment and y is a 64-bit value to increment to */
 #define TIME_INC(x,y)           (x).hi+=((0xffffffff-(x).lo)<(y).lo)?((y).hi+1):(y).hi; (x).lo+=(y).lo;
@@ -2512,6 +2515,9 @@ struct profiler_s {
 
 /*
  $Log$
+ Revision 1.272  2007/12/19 04:27:52  phase1geo
+ More fixes for compiler errors (still more to go).  Checkpointing.
+
  Revision 1.271  2007/12/18 23:55:21  phase1geo
  Starting to remove 64-bit time and replacing it with a sim_time structure
  for performance enhancement purposes.  Also removing global variables for time-related
