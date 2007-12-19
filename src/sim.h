@@ -43,7 +43,7 @@ void sim_display_all_list();
 thread* sim_current_thread();
 
 /*! \brief Inserts the given thread into the delay queue at the given time slot */
-void sim_thread_insert_into_delay_queue( thread* thr, uint64 sim_time );
+void sim_thread_insert_into_delay_queue( thread* thr, const sim_time* time );
 
 /*! \brief Adds specified expression's statement to pre-simulation statement queue. */
 void sim_expr_changed( expression* expr, const sim_time* time );
@@ -61,7 +61,7 @@ void sim_kill_thread_with_funit( func_unit* funit );
 void sim_add_statics();
 
 /*! \brief Simulates one thread until it has either completed or enters a context switch */
-void sim_thread( thread* thr, uint64 sim_time );
+void sim_thread( thread* thr, const sim_time* time );
 
 /*! \brief Simulates current timestep. */
 void sim_simulate( const sim_time* time );
@@ -75,6 +75,12 @@ void sim_dealloc();
 
 /*
  $Log$
+ Revision 1.30  2007/12/18 23:55:21  phase1geo
+ Starting to remove 64-bit time and replacing it with a sim_time structure
+ for performance enhancement purposes.  Also removing global variables for time-related
+ information and passing this information around by reference for performance
+ enhancement purposes.
+
  Revision 1.29  2007/11/20 05:29:00  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

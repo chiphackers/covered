@@ -2714,8 +2714,7 @@ bool expression_op_func__slist( expression* expr, thread* thr, const sim_time* t
 */
 bool expression_op_func__delay( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__DELAY);
 
-  bool   retval = FALSE;  /* Return value for this function */
-  uint64 intval;          /* 64-bit integer value holder */
+  bool     retval = FALSE;  /* Return value for this function */
 
   /* Clear the evaluated TRUE indicator */
   expr->suppl.part.eval_t = 0;
@@ -2731,12 +2730,22 @@ bool expression_op_func__delay( expression* expr, thread* thr, const sim_time* t
 
   } else {
 
+    sim_time tmp_time;   /* Contains the time that the delay is set for */
+    uint64   intval;     /* 64-bit value */
+
     /* Get number of clocks to delay */
     intval = vector_to_uint64( expr->right->value ) * *(expr->elem.scale);
 
+    /* Populate the tmp_time structure */
+    tmp_time.lo    = intval & UINT64(0xffffffff);
+    tmp_time.hi    = (intval >> 32) & UINT64(0xffffffff);
+    tmp_time.full  = intval;
+    tmp_time.final = FALSE;
+
     /* Add this delay into the delay queue if this is not the final simulation step */
-    if( !final_sim_time ) {
-      sim_thread_insert_into_delay_queue( thr, (thr->curr_time + intval) );
+    if( !time->final ) {
+      TIME_INC(tmp_time, thr->curr_time);
+      sim_thread_insert_into_delay_queue( thr, &tmp_time );
     }
 
   }
@@ -2762,7 +2771,16 @@ bool expression_op_func__trigger( expression* expr, thread* thr, const sim_time*
   expr->value->value[0].part.exp.value = 1;
 
   /* Propagate event */
-  vsignal_propagate( expr->sig, ((thr == NULL) ? 0 : thr->curr_time) );
+  if( thr == NULL ) {
+    sim_time tmp_time;
+    tmp_time.lo    = 0;
+    tmp_time.hi    = 0;
+    tmp_time.full  = 0;
+    tmp_time.final = FALSE;
+    vsignal_propagate( expr->sig, &tmp_time );
+  } else {
+    vsignal_propagate( expr->sig, &(thr->curr_time) );
+  }
 
   PROFILE_END;
 
@@ -2856,7 +2874,18 @@ bool expression_op_func__bassign( expression* expr, thread* thr, const sim_time*
 
   int intval = 0;  /* Integer value */
 
-  expression_assign( expr->left, expr->right, &intval, ((thr == NULL) ? 0 : thr->curr_time) );
+  if( thr == NULL ) {
+    sim_time tmp_time;
+
+    tmp_time.lo    = 0;
+    tmp_time.hi    = 0;
+    tmp_time.full  = 0;
+    tmp_time.final = FALSE;
+
+    expression_assign( expr->left, expr->right, &intval, &tmp_time );
+  } else {
+    expression_assign( expr->left, expr->right, &intval, &(thr->curr_time) );
+  }
 
   PROFILE_END;
 
@@ -2878,14 +2907,25 @@ bool expression_op_func__func_call( expression* expr, thread* thr, const sim_tim
   bool retval;  /* Return value for this function */
 
   /* First, simulate the function */
-  sim_thread( sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit ), ((thr == NULL) ? 0 : thr->curr_time) );
+  if( thr == NULL ) {
+    sim_time tmp_time;
+
+    tmp_time.lo    = 0;
+    tmp_time.hi    = 0;
+    tmp_time.full  = 0;
+    tmp_time.final = FALSE;
+
+    sim_thread( sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit ), &tmp_time );
+  } else {
+    sim_thread( sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit ), &(thr->curr_time) );
+  }
 
   /* Then copy the function variable to this expression */
   retval = vector_set_value( expr->value, expr->sig->value->value, VTYPE_VAL, expr->value->width, 0, 0 );
   
   /* Deallocate the reentrant structure of the current thread (if it exists) */
   if( (thr != NULL) && (thr->ren != NULL) ) {
-    reentrant_dealloc( thr->ren, thr->funit, thr->curr_time, expr );
+    reentrant_dealloc( thr->ren, thr->funit, expr );
     thr->ren = NULL;
   }
 
@@ -2926,14 +2966,13 @@ bool expression_op_func__task_call( expression* expr, thread* thr, const sim_tim
 bool expression_op_func__nb_call( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__NB_CALL);
 
   bool    retval = FALSE;  /* Return value for this function */
-  thread* tmp;             /* Pointer to temporary thread */
 
   /* Add the thread to the active queue */
-  tmp = sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit );
+  thread* tmp = sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit );
 
   if( ESUPPL_IS_IN_FUNC( expr->suppl ) ) {
 
-    sim_thread( tmp, thr->curr_time );
+    sim_thread( tmp, &(thr->curr_time) );
     retval = TRUE;
 
   }
@@ -3100,7 +3139,18 @@ bool expression_op_func__passign( expression* expr, thread* thr, const sim_time*
     /* If the connected signal is an input type, copy the parameter expression value to this vector */
     case SSUPPL_TYPE_INPUT :
       retval = vector_set_value( expr->value, expr->right->value->value, expr->right->value->suppl.part.type, expr->right->value->width, 0, 0 );
-      vsignal_propagate( expr->sig, ((thr == NULL) ? 0 : thr->curr_time) );
+      if( thr == NULL ) {
+        sim_time tmp_time;
+
+        tmp_time.lo    = 0;
+        tmp_time.hi    = 0;
+        tmp_time.full  = 0;
+        tmp_time.final = FALSE;
+
+        vsignal_propagate( expr->sig, &tmp_time );
+      } else {
+        vsignal_propagate( expr->sig, &(thr->curr_time) );
+      }
       break;
 
     /*
@@ -3108,7 +3158,18 @@ bool expression_op_func__passign( expression* expr, thread* thr, const sim_time*
      to the right expression.
     */
     case SSUPPL_TYPE_OUTPUT :
-      expression_assign( expr->right, expr, &intval, ((thr == NULL) ? 0 : thr->curr_time) );
+      if( thr == NULL ) {
+        sim_time tmp_time;
+  
+        tmp_time.lo    = 0;
+        tmp_time.hi    = 0;
+        tmp_time.full  = 0;
+        tmp_time.final = FALSE;
+
+        expression_assign( expr->right, expr, &intval, &tmp_time );
+      } else {
+        expression_assign( expr->right, expr, &intval, &(thr->curr_time) );
+      }
       retval = TRUE;
       break;
 
@@ -3367,7 +3428,7 @@ bool expression_op_func__dly_assign( expression* expr, thread* thr, const sim_ti
 
   /* If we are the first statement in the queue, perform the dly_op manually */
   if( thr->suppl.part.exec_first && (expr->right->left->op == EXP_OP_DELAY) ) {
-    expression_op_func__dly_op( expr->right, thr );
+    expression_op_func__dly_op( expr->right, thr, time );
   }
 
   /* Check the dly_op expression.  If eval_t is set to 1, perform the assignment */
@@ -3404,7 +3465,7 @@ bool expression_op_func__dly_op( expression* expr, thread* thr, const sim_time* 
 
   /* Explicitly call the delay/event.  If the delay is complete, set eval_t to TRUE */
   if( expr->left->op == EXP_OP_DELAY ) {
-    expr->suppl.part.eval_t = exp_op_info[expr->left->op].func( expr->left, thr );
+    expr->suppl.part.eval_t = exp_op_info[expr->left->op].func( expr->left, thr, time );
   } else {
     expr->suppl.part.eval_t = expr->left->suppl.part.eval_t;
   }
@@ -3429,14 +3490,14 @@ bool expression_op_func__repeat_dly( expression* expr, thread* thr, const sim_ti
   bool retval = FALSE;  /* Return value for this function */
 
   /* If the delay condition has been met, call the repeat operation */
-  if( exp_op_info[expr->right->op].func( expr->right, thr ) ) {
+  if( exp_op_info[expr->right->op].func( expr->right, thr, time ) ) {
 
     /* Execute repeat operation */
-    expression_op_func__repeat( expr->left, thr );
+    expression_op_func__repeat( expr->left, thr, time );
 
     /* If the repeat operation evaluated to TRUE, perform delay operation */
     if( expr->left->value->value[0].part.exp.value == 1 ) {
-      exp_op_info[expr->right->op].func( expr->right, thr );
+      exp_op_info[expr->right->op].func( expr->right, thr, time );
       expr->suppl.part.eval_t = 0;
 
     /* Otherwise, we are done with the repeat/delay sequence */
@@ -3681,7 +3742,7 @@ void expression_operate_recursively( expression* expr, func_unit* funit, bool si
     }
     
     /* Perform operation */
-    expression_operate( expr, NULL );
+    expression_operate( expr, NULL, NULL );
 
     if( sizing ) {
 
@@ -3871,15 +3932,15 @@ void expression_set_assigned( expression* expr ) { PROFILE(EXPRESSION_SET_ASSIGN
 }
 
 /*!
- \param lhs       Pointer to current expression on left-hand-side of assignment to calculate for.
- \param rhs       Pointer to the right-hand-expression that will be assigned from.
- \param lsb       Current least-significant bit in rhs value to start assigning.
- \param sim_time  Specifies current simulation time when expression assignment occurs.
+ \param lhs   Pointer to current expression on left-hand-side of assignment to calculate for.
+ \param rhs   Pointer to the right-hand-expression that will be assigned from.
+ \param lsb   Current least-significant bit in rhs value to start assigning.
+ \param time  Specifies current simulation time when expression assignment occurs.
 
  Recursively iterates through specified LHS expression, assigning the value from the RHS expression.
  This is called whenever a blocking assignment expression is found during simulation.
 */
-void expression_assign( expression* lhs, expression* rhs, int* lsb, uint64 sim_time ) { PROFILE(EXPRESSION_ASSIGN);
+void expression_assign( expression* lhs, expression* rhs, int* lsb, const sim_time* time ) { PROFILE(EXPRESSION_ASSIGN);
 
   int       intval1;    /* Integer value to use */
   vec_data* vstart;     /* Starting vector data */
@@ -3919,7 +3980,7 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb, uint64 sim_t
 #ifdef DEBUG_MODE
     if( assign ) {
       snprintf( user_msg, USER_MSG_LENGTH, "        In expression_assign, lhs_op: %s, rhs_op: %s, lsb: %d, time: %llu",
-                expression_string_op( lhs->op ), expression_string_op( rhs->op ), *lsb, sim_time );
+                expression_string_op( lhs->op ), expression_string_op( rhs->op ), *lsb, time->full );
       print_output( user_msg, DEBUG, __FILE__, __LINE__ );
     }
 #endif
@@ -3937,7 +3998,7 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb, uint64 sim_t
               printf( "        " );  vsignal_display( lhs->sig );
             }
 #endif
-            vsignal_propagate( lhs->sig, sim_time );
+            vsignal_propagate( lhs->sig, time );
           }
         }
         if( assign ) {
@@ -3967,7 +4028,7 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb, uint64 sim_t
               printf( "        " );  vsignal_display( lhs->sig );
             }
 #endif
-            vsignal_propagate( lhs->sig, sim_time );
+            vsignal_propagate( lhs->sig, time );
           }
         }
         if( assign ) {
@@ -3995,7 +4056,7 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb, uint64 sim_t
               printf( "        " );  vsignal_display( lhs->sig );
             }
 #endif
-    	    vsignal_propagate( lhs->sig, sim_time );
+    	    vsignal_propagate( lhs->sig, time );
           }
         }
         if( assign ) {
@@ -4019,7 +4080,7 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb, uint64 sim_t
               printf( "        " );  vsignal_display( lhs->sig );
             }
 #endif
-            vsignal_propagate( lhs->sig, sim_time );
+            vsignal_propagate( lhs->sig, time );
           }
         }
         if( assign ) {
@@ -4042,7 +4103,7 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb, uint64 sim_t
               printf( "        " );  vsignal_display( lhs->sig );
             }
 #endif
-            vsignal_propagate( lhs->sig, sim_time );
+            vsignal_propagate( lhs->sig, time );
           }
         }
         if( assign ) {
@@ -4052,12 +4113,12 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb, uint64 sim_t
 #endif
       case EXP_OP_CONCAT   :
       case EXP_OP_LIST     :
-        expression_assign( lhs->right, rhs, lsb, sim_time );
-        expression_assign( lhs->left,  rhs, lsb, sim_time );
+        expression_assign( lhs->right, rhs, lsb, time );
+        expression_assign( lhs->left,  rhs, lsb, time );
         break;
       case EXP_OP_DIM      :
-        expression_assign( lhs->left,  rhs, lsb, sim_time );
-        expression_assign( lhs->right, rhs, lsb, sim_time );
+        expression_assign( lhs->left,  rhs, lsb, time );
+        expression_assign( lhs->right, rhs, lsb, time );
         break;
       case EXP_OP_STATIC   :
         break;
@@ -4224,6 +4285,12 @@ void expression_dealloc( expression* expr, bool exp_only ) { PROFILE(EXPRESSION_
 
 /* 
  $Log$
+ Revision 1.263  2007/12/18 23:55:21  phase1geo
+ Starting to remove 64-bit time and replacing it with a sim_time structure
+ for performance enhancement purposes.  Also removing global variables for time-related
+ information and passing this information around by reference for performance
+ enhancement purposes.
+
  Revision 1.262  2007/12/17 23:47:48  phase1geo
  Adding more profiling information.
 

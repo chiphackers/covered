@@ -1153,10 +1153,10 @@ typedef enum exp_op_type_e {
 #define snprintf(x,y,...)	assert( snprintf( x, y, __VA_ARGS__ ) < (y) );
 
 /*! Performs time comparison with the sim_time structure */
-#define TIME_CMP(x,y,z)         (((x).lo y (z).lo) || ((x).hi y (z).hi)
+#define TIME_CMP(x,y,z)         (((x).lo y (z).lo) || ((x).hi y (z).hi))
 
 /*! Performs time increment where x is the sim_time structure to increment and y is a 64-bit value to increment to */
-#define TIME_INC(x,y)           (x).hi+=((0xffffffff-(x).lo)<(y).lo)?((y).hi+1):(y); x.lo+=y.lo;
+#define TIME_INC(x,y)           (x).hi+=((0xffffffff-(x).lo)<(y).lo)?((y).hi+1):(y).hi; (x).lo+=(y).lo;
 
 /*!
  Defines boolean variables used in most functions.
@@ -1819,6 +1819,16 @@ typedef struct sim_time_s sim_time;
 /*  STRUCTURE/UNION DEFINITIONS  */
 
 /*!
+ Representation of simulation time -- used for performance enhancement purposes.
+*/
+struct sim_time_s {
+  unsigned int lo;                   /*!< Lower 32-bits of the current time */
+  unsigned int hi;                   /*!< Upper 32-bits of the current time */
+  uint64       full;                 /*!< Full 64 bits of the current time - for displaying purposes only */
+  bool         final;                /*!< Specifies if this is the final simulation timestep */
+};
+
+/*!
  Contains static information about each expression operation type.
 */
 struct exp_info_s {
@@ -2340,7 +2350,7 @@ struct thread_s {
   thread*    queue_next;             /*!< Pointer to next thread in active/delayed queue */
   thread*    all_prev;               /*!< Pointer to previous thread in all pool */
   thread*    all_next;               /*!< Pointer to next thread in all pool */
-  const sim_time* curr_time;         /*!< Set to the current simulation time for this thread */
+  sim_time   curr_time;              /*!< Set to the current simulation time for this thread */
 };
 
 /*!
@@ -2499,19 +2509,15 @@ struct profiler_s {
   bool   timed;                      /*!< Specifies if the function should be timed or not */
 };
 
-/*!
- Representation of simulation time -- used for performance enhancement purposes.
-*/
-struct sim_time_s {
-  unsigned int lo;                   /*!< Lower 32-bits of the current time */
-  unsigned int hi;                   /*!< Upper 32-bits of the current time */
-  uint64       full;                 /*!< Full 64 bits of the current time - for displaying purposes only */
-  bool         final;                /*!< Specifies if this is the final simulation timestep */
-};
-
 
 /*
  $Log$
+ Revision 1.271  2007/12/18 23:55:21  phase1geo
+ Starting to remove 64-bit time and replacing it with a sim_time structure
+ for performance enhancement purposes.  Also removing global variables for time-related
+ information and passing this information around by reference for performance
+ enhancement purposes.
+
  Revision 1.270  2007/12/12 23:36:57  phase1geo
  Optimized vector_op_add function significantly.  Other improvements made to
  profiler output.  Attempted to optimize the sim_simulation function although

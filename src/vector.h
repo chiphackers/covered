@@ -97,6 +97,9 @@ int vector_to_int( vector* vec );
 /*! \brief Converts vector into a 64-bit value. */
 uint64 vector_to_uint64( vector* vec );
 
+/*! \brief Converts vector into a sim_time structure. */
+void vector_to_sim_time( vector* vec, sim_time* time );
+
 /*! \brief Converts integer into vector value. */
 void vector_from_int( vector* vec, int value );
 
@@ -169,6 +172,9 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.44  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.43  2007/09/13 17:03:30  phase1geo
  Cleaning up some const-ness corrections -- still more to go but it's a good
  start.

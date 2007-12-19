@@ -1068,7 +1068,7 @@ uint64 vector_to_uint64( vector* vec ) { PROFILE(VECTOR_TO_UINT64);
 
   for( i=(width - 1); i>=0; i-- ) {
     switch( vec->value[i].part.val.value ) {
-      case 0 :  retval = (retval << 1) | 0;  break;
+      case 0 :  retval = (retval << 1);  break;
       case 1 :  retval = (retval << 1) | 1;  break;
       default:
         print_output( "Vector converting to 64-bit integer contains X or Z values", FATAL, __FILE__, __LINE__ );
@@ -1087,6 +1087,43 @@ uint64 vector_to_uint64( vector* vec ) { PROFILE(VECTOR_TO_UINT64);
   PROFILE_END;
 
   return( retval );
+
+}
+
+/*!
+ \param vec   Pointer to vector to convert into integer.
+ \param time  Pointer to sim_time structure to populate.
+
+ Converts a vector structure into a sim_time structure.  If the number of bits for the
+ vector exceeds the number of bits in an 64-bit integer, the upper bits of the vector are
+ unused.
+*/
+void vector_to_sim_time( vector* vec, sim_time* time ) { PROFILE(VECTOR_TO_SIM_TIME);
+
+  int width;  /* Number of bits to use in creating sim_time */
+
+  width = (vec->width > 64) ? 64 : vec->width;
+
+  for( i=(width - 1); i-- ) {
+    switch( vec->value[i].part.val.value ) {
+      case 0 :
+        time->lo   = (i <  32) ? (time->lo << 1) : time->lo;
+        time->hi   = (i >= 32) ? (time->hi << 1) : time->hi;
+        time->full = (time->full << 1);
+        break;
+      case 1 :
+        time->lo   = (i <  32) ? (time->lo << 1) | 1 : time->lo;
+        time->hi   = (i >= 32) ? (time->hi << 1) | 1 : time->hi;
+        time->full = (time->full << 1) | UINT64(1);
+        break;
+      default :
+        print_output( "Vector converting to sim_time contains X or Z values", FATAL, __FILE__, __LINE__ );
+        assert( vec->value[i].part.val.value < 2 );
+        break;
+    }
+  }
+
+  PROFILE_END;
 
 }
 
@@ -2240,6 +2277,9 @@ void vector_dealloc( vector* vec ) { PROFILE(VECTOR_DEALLOC);
 
 /*
  $Log$
+ Revision 1.96  2007/12/17 23:47:48  phase1geo
+ Adding more profiling information.
+
  Revision 1.95  2007/12/12 23:36:57  phase1geo
  Optimized vector_op_add function significantly.  Other improvements made to
  profiler output.  Attempted to optimize the sim_simulation function although
