@@ -17,6 +17,7 @@ libcovered_a_SOURCES = ../src/arc.c \
                        ../src/fsm.c \
                        ../src/func_iter.c \
                        ../src/func_unit.c \
+                       ../src/genprof.c \
                        ../src/info.c \
                        ../src/instance.c \
                        ../src/iter.c \
@@ -25,6 +26,7 @@ libcovered_a_SOURCES = ../src/arc.c \
                        ../src/ovl.c \
                        ../src/param.c \
                        ../src/parser_misc.c \
+                       ../src/profiler.c \
                        ../src/race.c \
                        ../src/reentrant.c \
                        ../src/scope.c \
@@ -42,7 +44,7 @@ libcovered_a_SOURCES = ../src/arc.c \
                        ../src/vsignal.c
 
 INCLUDES=	-I..
-AM_CPPFLAGS=-DVPI_ONLY -DINSTALL_DIR=\"@datadir@/covered\" $(TCLTK_CPPFLAGS) $(DEBUGDEF)
+AM_CPPFLAGS=-DVPI_ONLY -DINSTALL_DIR=\"@datadir@/covered\" $(TCLTK_CPPFLAGS) $(DEBUGDEF) $(PROFILEDEF)
 
 if BUILD_CYGWIN
 covered.cver.dll: vpi.cver.o libcovered.a
@@ -62,13 +64,13 @@ covered.vpi: vpi.iv.o libcovered.a
 	$(CC) -shared vpi.iv.o -L. -lcovered -L$(IVDIR)/lib -lveriuser -lvpi -o covered.vpi
 
 vpi.vcs.o: ../src/vpi.c
-	$(CC) -fPIC -g -DVCS -DNOIV $(DEBUGDEF) -I$(VCSINC) -I.. -c -o vpi.vcs.o ../src/vpi.c
+	$(CC) -fPIC -g -DVCS -DNOIV $(DEBUGDEF) $(PROFILEDEF) -I$(VCSINC) -I.. -c -o vpi.vcs.o ../src/vpi.c
 
 vpi.cver.o: ../src/vpi.c
-	$(CC) -fPIC -g -DCVER -DNOIV $(DEBUGDEF) -I$(CVERINC) -I.. -c -o vpi.cver.o ../src/vpi.c
+	$(CC) -fPIC -g -DCVER -DNOIV $(DEBUGDEF) $(PROFILEDEF) -I$(CVERINC) -I.. -c -o vpi.cver.o ../src/vpi.c
 
 vpi.iv.o: ../src/vpi.c
-	$(CC) -fPIC -g $(DEBUGDEF) -I$(IVDIR)/include -I.. -c -o vpi.iv.o ../src/vpi.c
+	$(CC) -fPIC -g $(DEBUGDEF) $(PROFILEDEF) -I$(IVDIR)/include -I.. -c -o vpi.iv.o ../src/vpi.c
 
 #covered.vpi: $(libcovered_a_OBJECTS) ../src/vpi.c
 #	iverilog-vpi --name=covered $(libcovered_a_OBJECTS) ../src/vpi.c

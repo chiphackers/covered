@@ -33,6 +33,7 @@
 #include "instance.h"
 #include "link.h"
 #include "obfuscate.h"
+#include "profiler.h"
 #include "symtable.h"
 #include "util.h"
 
@@ -109,14 +110,14 @@ void vpi_print_output( const char* msg ) {
  Stores the given signal symbol and initial value in the sym_value list that
  will be assigned to the simulator once the timestep table has been allocated.
 */
-void sym_value_store( char* sym, char* value ) {
+void sym_value_store( char* sym, char* value ) { PROFILE(SYM_VALUE_STORE);
 
   sym_value* sval;  /* Pointer to newly allocated sym_value structure */
 
   /* Allocate and initialize the sym_value structure */
-  sval = (sym_value*)malloc_safe( sizeof( sym_value ), __FILE__, __LINE__ );
-  sval->sym   = strdup( sym );
-  sval->value = strdup( value );
+  sval = (sym_value*)malloc_safe( sizeof( sym_value ) );
+  sval->sym   = strdup_safe( sym );
+  sval->value = strdup_safe( value );
   sval->next  = NULL; 
 
   /* Add the newly created sym_value structure to the sv list */
@@ -127,13 +128,15 @@ void sym_value_store( char* sym, char* value ) {
     sv_tail       = sval;
   }
 
+  PROFILE_END;
+
 }
 
 /*!
  Iterates through the sym_value list, adding the information to Covered's simulation
  core and deallocating its memory.  Called by the covered_sim_calltf function.
 */
-void add_sym_values_to_sim() {
+void add_sym_values_to_sim() { PROFILE(ADD_SYM_VALUES_TO_SIM);
 
   sym_value* sval;  /* Pointer to current sym_value structure */
 
@@ -153,6 +156,8 @@ void add_sym_values_to_sim() {
     free_safe( sval );
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -164,7 +169,7 @@ void add_sym_values_to_sim() {
  this value in the Covered symtable and calls the db_do_timestep if this value change occurred
  on a new timestep.
 */
-PLI_INT32 covered_value_change( p_cb_data cb ) {
+PLI_INT32 covered_value_change( p_cb_data cb ) { PROFILE(COVERED_VALUE_CHANGE);
 
 #ifndef NOIV
   s_vpi_value value;
@@ -208,13 +213,15 @@ PLI_INT32 covered_value_change( p_cb_data cb ) {
   db_set_symbol_string( cb->user_data, cb->value->value.str );
 #endif
 
+  PROFILE_END;
+
   return( 0 );
 
 }
 
 /*!
 */
-PLI_INT32 covered_end_of_sim( p_cb_data cb ) {
+PLI_INT32 covered_end_of_sim( p_cb_data cb ) { PROFILE(COVERED_END_OF_SIM);
 
   p_vpi_time final_time;
 
@@ -223,7 +230,7 @@ PLI_INT32 covered_end_of_sim( p_cb_data cb ) {
   }
 
   /* Get the final simulation time */
-  final_time       = (p_vpi_time)malloc_safe( sizeof( s_vpi_time ), __FILE__, __LINE__ );
+  final_time       = (p_vpi_time)malloc_safe( sizeof( s_vpi_time ) );
   final_time->type = vpiSimTime;
   vpi_get_time( NULL, final_time );
 
@@ -252,11 +259,13 @@ PLI_INT32 covered_end_of_sim( p_cb_data cb ) {
     free_safe( timestep_tab );
   }
 
+  PROFILE_END;
+
   return( 0 );
 
 }
 
-PLI_INT32 covered_cb_error_handler( p_cb_data cb ) {
+PLI_INT32 covered_cb_error_handler( p_cb_data cb ) { PROFILE(COVERED_CB_ERROR_HANDLER);
 
   struct t_vpi_error_info einfotab;
   struct t_vpi_error_info *einfop;
@@ -284,11 +293,13 @@ PLI_INT32 covered_cb_error_handler( p_cb_data cb ) {
     vpi_control( vpiFinish, 0 );
   }
 
+  PROFILE_END;
+
   return( 0 );
 
 }
 
-char* gen_next_symbol() {
+char* gen_next_symbol() { PROFILE(GEN_NEXT_SYMBOL);
 
   static char symbol[21]   = {32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,'\0'};
   static int  symbol_index = 19;
@@ -306,7 +317,9 @@ char* gen_next_symbol() {
   }
   symbol[i]++;
 
-  return( strdup_safe( (symbol + symbol_index), __FILE__, __LINE__ ) );
+  PROFILE_END;
+
+  return( strdup_safe( symbol + symbol_index ) );
 
 }
 
@@ -318,7 +331,7 @@ char* gen_next_symbol() {
  value of the signal and stores it in the sym_value list and creates a symbol in the symtable
  structure for this signal.
 */
-void covered_create_value_change_cb( vpiHandle sig ) {
+void covered_create_value_change_cb( vpiHandle sig ) { PROFILE(COVERED_CREATE_VALUE_CHANGE_CB);
 
   p_cb_data   cb;
   vsignal     vsig;
@@ -374,9 +387,11 @@ void covered_create_value_change_cb( vpiHandle sig ) {
 
   }
 
+  PROFILE_END;
+
 }
 
-void covered_parse_task_func( vpiHandle mod ) {
+void covered_parse_task_func( vpiHandle mod ) { PROFILE(COVERED_PARSE_TASK_FUNC);
 
   vpiHandle iter, handle;
   vpiHandle liter, scope;
@@ -400,7 +415,7 @@ void covered_parse_task_func( vpiHandle mod ) {
         if( curr_inst_scope != NULL ) {
           free_safe( curr_inst_scope );
         }
-        curr_inst_scope = strdup_safe( vpi_get_str( vpiFullName, scope ), __FILE__, __LINE__ );
+        curr_inst_scope = strdup_safe( vpi_get_str( vpiFullName, scope ) );
 
         /* Synchronize curr_instance to point to curr_inst_scope */
         db_sync_curr_instance();
@@ -450,9 +465,11 @@ void covered_parse_task_func( vpiHandle mod ) {
 
   }
 
+  PROFILE_END;
+
 }
 
-void covered_parse_signals( vpiHandle mod ) {
+void covered_parse_signals( vpiHandle mod ) { PROFILE(COVERED_PARSE_SIGNALS);
 
   vpiHandle iter, handle;
   int       type;
@@ -499,9 +516,11 @@ void covered_parse_signals( vpiHandle mod ) {
     }
   }
 
+  PROFILE_END;
+
 }
 
-void covered_parse_instance( vpiHandle inst ) {
+void covered_parse_instance( vpiHandle inst ) { PROFILE(COVERED_PARSE_INSTANCE);
 
   vpiHandle iter, handle;
 
@@ -509,7 +528,7 @@ void covered_parse_instance( vpiHandle inst ) {
   if( curr_inst_scope != NULL ) {
     free_safe( curr_inst_scope );
   }
-  curr_inst_scope = strdup_safe( vpi_get_str( vpiFullName, inst ), __FILE__, __LINE__ );
+  curr_inst_scope = strdup_safe( vpi_get_str( vpiFullName, inst ) );
 
   /* Synchronize curr_instance to point to curr_inst_scope */
   db_sync_curr_instance();
@@ -546,6 +565,8 @@ void covered_parse_instance( vpiHandle inst ) {
 
   }
 
+  PROFILE_END;
+
 }
 
 #ifdef NOIV
@@ -557,6 +578,7 @@ PLI_INT32 covered_sim_calltf() {
 #else
 PLI_INT32 covered_sim_calltf( char* name ) {
 #endif
+  PROFILE(COVERED_SIM_CALLTF);
 
   vpiHandle       systf_handle, arg_iterator, module_handle;
   vpiHandle       arg_handle;
@@ -602,6 +624,7 @@ PLI_INT32 covered_sim_calltf( char* name ) {
 
   /* Get name of CDD database to write to (default is cov.cdd) and debug mode */
   strcpy( out_db_name, "cov.cdd" );
+  profiler_set_mode( FALSE );
   if( vpi_get_vlog_info( &info ) ) {
     for( i=1; i<info.argc; i++ ) {
       argvptr = info.argv[i];
@@ -611,6 +634,14 @@ PLI_INT32 covered_sim_calltf( char* name ) {
       } else if( strncmp( "+covered_debug", argvptr, 14 ) == 0 ) {
         vpi_printf( "covered VPI: Turning debug mode on\n" );
         debug_mode = TRUE;
+      } else if( strncmp( "+covered_profile=", argvptr, 17 ) == 0 ) {
+        vpi_printf( "covered VPI: Turning profiler on.  Outputting to %s\n", argvptr + 17 );
+        profiler_set_mode( TRUE );
+        profiler_set_filename( argvptr + 17 );
+      } else if( strncmp( "+covered_profile", argvptr, 16 ) == 0 ) {
+        vpi_printf( "covered VPI: Turning profiler on.  Outputting to %s\n", PROFILING_OUTPUT_NAME );
+        profiler_set_mode( TRUE );
+        profiler_set_filename( PROFILING_OUTPUT_NAME );
       }
     }
   }
@@ -642,7 +673,7 @@ PLI_INT32 covered_sim_calltf( char* name ) {
 
   /* Create timestep symbol table array */
   if( vcd_symtab_size > 0 ) {
-    timestep_tab = malloc_safe_nolimit( (sizeof( symtable*) * vcd_symtab_size), __FILE__, __LINE__ );
+    timestep_tab = malloc_safe_nolimit( (sizeof( symtable*) * vcd_symtab_size) );
   }
 
   /* Add all of the sym_value structures to the simulation core */
@@ -653,11 +684,13 @@ PLI_INT32 covered_sim_calltf( char* name ) {
   db_do_timestep( 0, FALSE );
 #endif
 
+  PROFILE_END;
+
   return 0;
 
 }
 
-void covered_register() {
+void covered_register() { PROFILE(COVERED_REGISTER);
 
   s_vpi_systf_data tf_data;
 
@@ -668,6 +701,8 @@ void covered_register() {
   tf_data.sizetf    = 0;
   tf_data.user_data = "$covered_sim";
   vpi_register_systf( &tf_data );
+
+  PROFILE_END;
 
 }
 
