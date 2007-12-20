@@ -1,5 +1,0 @@
-ERROR!  syntax error, unexpected K_bool,
-        File: gen1.5.v, Line: 3, Column: 4
-ERROR!  Syntax error in reg variable list,
-        File: gen1.5.v, Line: 3, Column: 8
-ERROR!  Error in parsing design
