@@ -410,8 +410,7 @@ void sim_thread_insert_into_delay_queue( thread* thr, const sim_time* time ) { P
       thr->queue_next = NULL;
     } else {
       curr = delayed_tail;
-      while( (curr != NULL) && TIME_CMP(curr->curr_time, >, *time) ) {
-        printf( "curr->curr_time (%d %d), time (%d %d)\n", curr->curr_time.hi, curr->curr_time.lo, time->hi, time->lo );
+      while( (curr != NULL) && TIME_CMP_GT(curr->curr_time, *time) ) {
         curr = curr->queue_prev;
       }
       if( curr == NULL ) {
@@ -1123,9 +1122,7 @@ void sim_simulate( const sim_time* time ) { PROFILE(SIM_SIMULATE);
     sim_thread( active_head, time );
   }
 
-  while( (delayed_head != NULL) && TIME_CMP(delayed_head->curr_time, <=, *time) ) {
-    printf( "In sim_simulate, delayed_head->curr_time (%d %d), time (%d %d)\n", delayed_head->curr_time.hi, delayed_head->curr_time.lo, time->hi, time->lo );
-  //while( (delayed_head != NULL) && (delayed_head->curr_time <= sim_time) ) {
+  while( (delayed_head != NULL) && TIME_CMP_LE(delayed_head->curr_time, *time) ) {
 
     active_head  = active_tail = delayed_head;
     delayed_head = delayed_head->queue_next;
@@ -1282,6 +1279,9 @@ void sim_dealloc() { PROFILE(SIM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.113  2007/12/19 22:54:35  phase1geo
+ More compiler fixes (almost there now).  Checkpointing.
+
  Revision 1.112  2007/12/18 23:55:21  phase1geo
  Starting to remove 64-bit time and replacing it with a sim_time structure
  for performance enhancement purposes.  Also removing global variables for time-related

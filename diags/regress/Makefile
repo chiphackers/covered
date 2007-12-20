@@ -102,19 +102,19 @@ ERRSCORE      = err1.0          err2.0          err3            err3.1          
 ERRMERGE      =
 ERRREPORT     = err2.1
 
-NOSIMLIST     = gen1            gen1.1          gen1.3          gen2.1          gen3.1 \
-                gen4.1          gen5.1          gen6.1          gen7.1          gen8.1 \
-                gen9.1          gen10.1         gen11.1         gen12.1         gen13.1 \
-                gen14.1         gen15.1         gen16.1         gen17.1         gen18.1 \
-                gen19           gen19.1         gen20           gen20.1         gen21 \
-                gen21.1         gen22           gen22.1         gen23           gen23.1 \
-                gen24           gen24.1         gen25.2         gen26.2         gen27.2 \
-                gen28.2         gen29.2         gen30.2         gen31.2         gen32.2 \
-                gen33.2         gen34.2         gen35.2         gen36.2         gen37.2 \
-                gen38.2         gen39.2         gen40.2
+NOSIMLIST     = gen1            gen1.1          gen1.3          gen1.4          gen1.5 \
+                gen2.1          gen3.1          gen4.1          gen5.1          gen6.1 \
+                gen7.1          gen8.1          gen9.1          gen10.1         gen11.1 \
+                gen12.1         gen13.1         gen14.1         gen15.1         gen16.1 \
+                gen17.1         gen18.1         gen19           gen19.1         gen20 \
+                gen20.1         gen21           gen21.1         gen22           gen22.1 \
+                gen23           gen23.1         gen24           gen24.1         gen25.2 \
+                gen26.2         gen27.2         gen28.2         gen29.2         gen30.2 \
+                gen31.2         gen32.2         gen33.2         gen34.2         gen35.2 \
+                gen36.2         gen37.2         gen38.2         gen39.2         gen40.2
 
 NOSIMERRLIST  = comment1        enum2           err4            err4.1          for7 \
-                for7.1          gen1.2          gen1.4          gen1.5          gen2            gen3 \
+                for7.1          gen1.2          gen2            gen3 \
                 gen4            gen5            gen6            gen7            gen8 \
                 gen9            gen10           gen11           gen12           gen13 \
                 gen14           gen15           gen16           gen17           gen18 \
@@ -200,35 +200,35 @@ CVERVCSDIAGS4 =
 
 iverilog:
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q VERILOG_EXTRA_FLAGS="$(IVERILOG_FLAGS1)" DIAGLIST="$(DIAGS1) $(IVONLYDIAGS1) $(IVVCSDIAGS1) $(IVCVERDIAGS1)" MERGELIST="$(MERGE1)" MERGE3LIST="$(MERGE3)" ERRSCORELIST="$(ERRSCORE)" ERRMERGELIST="$(ERRMERGE)" ERRREPORTLIST="$(ERRREPORT)" RACELIST="$(RACELIST)" NOSIMLIST="$(NOSIMLIST)" NOSIMERRLIST="$(NOSIMERRLIST)" regress
+	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= VERILOG_EXTRA_FLAGS="$(IVERILOG_FLAGS1)" DIAGLIST="$(DIAGS1) $(IVONLYDIAGS1) $(IVVCSDIAGS1) $(IVCVERDIAGS1)" MERGELIST="$(MERGE1)" MERGE3LIST="$(MERGE3)" ERRSCORELIST="$(ERRSCORE)" ERRMERGELIST="$(ERRMERGE)" ERRREPORTLIST="$(ERRREPORT)" RACELIST="$(RACELIST)" NOSIMLIST="$(NOSIMLIST)" NOSIMERRLIST="$(NOSIMERRLIST)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q VERILOG_EXTRA_FLAGS="$(IVERILOG_FLAGS2)" DIAGLIST="$(DIAGS2) $(IVONLYDIAGS2) $(IVVCSDIAGS2) $(IVCVERDIAGS2)" regress
+	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= VERILOG_EXTRA_FLAGS="$(IVERILOG_FLAGS2)" DIAGLIST="$(DIAGS2) $(IVONLYDIAGS2) $(IVVCSDIAGS2) $(IVCVERDIAGS2)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q VERILOG_EXTRA_FLAGS="$(IVERILOG_FLAGS3)" DIAGLIST="$(DIAGS3) $(IVONLYDIAGS3) $(IVVCSDIAGS3) $(IVCVERDIAGS3)" regress
+	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= VERILOG_EXTRA_FLAGS="$(IVERILOG_FLAGS3)" DIAGLIST="$(DIAGS3) $(IVONLYDIAGS3) $(IVVCSDIAGS3) $(IVCVERDIAGS3)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q VERILOG_EXTRA_FLAGS="$(IVERILOG_FLAGS4)" DIAGLIST="$(DIAGS4) $(IVONLYDIAGS4) $(IVVCSDIAGS4) $(IVCVERDIAGS4)" regress
+	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= VERILOG_EXTRA_FLAGS="$(IVERILOG_FLAGS4)" DIAGLIST="$(DIAGS4) $(IVONLYDIAGS4) $(IVVCSDIAGS4) $(IVCVERDIAGS4)" regress
 	@cd ../verilog;  $(MAKE) eot;  $(MAKE) clean
 
 vcs:
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q USE_VCS=1 VERILOG_EXTRA_FLAGS="$(VCS_FLAGS1)" DIAGLIST="$(DIAGS1) $(VCSONLYDIAGS1) $(IVVCSDIAGS1) $(CVERVCSDIAGS1)" MERGELIST="$(MERGE1)" MERGE3LIST="$(MERGE3)" regress
+	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_VCS=1 VERILOG_EXTRA_FLAGS="$(VCS_FLAGS1)" DIAGLIST="$(DIAGS1) $(VCSONLYDIAGS1) $(IVVCSDIAGS1) $(CVERVCSDIAGS1)" MERGELIST="$(MERGE1)" MERGE3LIST="$(MERGE3)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q USE_VCS=1 VERILOG_EXTRA_FLAGS="$(VCS_FLAGS2)" DIAGLIST="$(DIAGS2) $(VCSONLYDIAGS2) $(IVVCSDIAGS2) $(CVERVCSDIAGS2)" regress
+	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_VCS=1 VERILOG_EXTRA_FLAGS="$(VCS_FLAGS2)" DIAGLIST="$(DIAGS2) $(VCSONLYDIAGS2) $(IVVCSDIAGS2) $(CVERVCSDIAGS2)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q USE_VCS=1 VERILOG_EXTRA_FLAGS="$(VCS_FLAGS3)" DIAGLIST="$(DIAGS3) $(VCSONLYDIAGS3) $(IVVCSDIAGS3) $(CVERVCSDIAGS3)" regress
+	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_VCS=1 VERILOG_EXTRA_FLAGS="$(VCS_FLAGS3)" DIAGLIST="$(DIAGS3) $(VCSONLYDIAGS3) $(IVVCSDIAGS3) $(CVERVCSDIAGS3)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q USE_VCS=1 VERILOG_EXTRA_FLAGS="$(VCS_FLAGS4)" DIAGLIST="$(DIAGS4) $(VCSONLYDIAGS4) $(IVVCSDIAGS4) $(CVERVCSDIAGS4)" regress
+	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_VCS=1 VERILOG_EXTRA_FLAGS="$(VCS_FLAGS4)" DIAGLIST="$(DIAGS4) $(VCSONLYDIAGS4) $(IVVCSDIAGS4) $(CVERVCSDIAGS4)" regress
 	@cd ../verilog;  $(MAKE) eot;  $(MAKE) clean
 
 cver:
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q USE_CVER=1 VERILOG_EXTRA_FLAGS="$(CVER_FLAGS1)" DIAGLIST="$(DIAGS1) $(CVERONLYDIAGS1) $(IVCVERDIAGS1) $(CVERVCSDIAGS1)" MERGELIST="$(MERGE1)" MERGE3LIST="$(MERGE3)" regress
+	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_CVER=1 VERILOG_EXTRA_FLAGS="$(CVER_FLAGS1)" DIAGLIST="$(DIAGS1) $(CVERONLYDIAGS1) $(IVCVERDIAGS1) $(CVERVCSDIAGS1)" MERGELIST="$(MERGE1)" MERGE3LIST="$(MERGE3)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q USE_CVER=1 VERILOG_EXTRA_FLAGS="$(CVER_FLAGS2)" DIAGLIST="$(DIAGS2) $(CVERONLYDIAGS2) $(IVCVERDIAGS2) $(CVERVCSDIAGS2)" regress
+	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_CVER=1 VERILOG_EXTRA_FLAGS="$(CVER_FLAGS2)" DIAGLIST="$(DIAGS2) $(CVERONLYDIAGS2) $(IVCVERDIAGS2) $(CVERVCSDIAGS2)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q USE_CVER=1 VERILOG_EXTRA_FLAGS="$(CVER_FLAGS3)" DIAGLIST="$(DIAGS3) $(CVERONLYDIAGS3) $(IVCVERDIAGS3) $(CVERVCSDIAGS3)" regress
+	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_CVER=1 VERILOG_EXTRA_FLAGS="$(CVER_FLAGS3)" DIAGLIST="$(DIAGS3) $(CVERONLYDIAGS3) $(IVCVERDIAGS3) $(CVERVCSDIAGS3)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q USE_CVER=1 VERILOG_EXTRA_FLAGS="$(CVER_FLAGS4)" DIAGLIST="$(DIAGS4) $(CVERONLYDIAGS4) $(IVCVERDIAGS4) $(CVERVCSDIAGS4)" regress
+	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_CVER=1 VERILOG_EXTRA_FLAGS="$(CVER_FLAGS4)" DIAGLIST="$(DIAGS4) $(CVERONLYDIAGS4) $(IVCVERDIAGS4) $(CVERVCSDIAGS4)" regress
 	@cd ../verilog;  $(MAKE) eot;  $(MAKE) clean
 
 all:

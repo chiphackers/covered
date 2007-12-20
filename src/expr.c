@@ -2722,7 +2722,7 @@ bool expression_op_func__delay( expression* expr, thread* thr, const sim_time* t
   /* If this is the first statement in the current thread, we are executing for the first time */
   if( thr->suppl.part.exec_first ) {
 
-    if( TIME_CMP( thr->curr_time, <=, *time ) || time->final ) {
+    if( TIME_CMP_LE( thr->curr_time, *time ) || time->final ) {
       expr->suppl.part.eval_t = 1;
       expr->suppl.part.true   = 1;
       retval = TRUE;
@@ -2742,13 +2742,9 @@ bool expression_op_func__delay( expression* expr, thread* thr, const sim_time* t
     tmp_time.full  = intval;
     tmp_time.final = FALSE;
 
-    printf( "Delay   time: %d %d (%lld), intval: %lld\n", tmp_time.lo, tmp_time.hi, tmp_time.full, intval );
-    printf( "Current time: %d %d (%lld)\n", thr->curr_time.lo, thr->curr_time.hi, thr->curr_time.full );
-
     /* Add this delay into the delay queue if this is not the final simulation step */
     if( !time->final ) {
       TIME_INC(tmp_time, thr->curr_time);
-      printf( "Time after delay: %d %d (%lld)\n", tmp_time.lo, tmp_time.hi, tmp_time.full );
       sim_thread_insert_into_delay_queue( thr, &tmp_time );
     }
 
@@ -4236,6 +4232,9 @@ void expression_dealloc( expression* expr, bool exp_only ) { PROFILE(EXPRESSION_
 
 /* 
  $Log$
+ Revision 1.266  2007/12/19 22:54:35  phase1geo
+ More compiler fixes (almost there now).  Checkpointing.
+
  Revision 1.265  2007/12/19 14:37:29  phase1geo
  More compiler fixes (still more to go).  Checkpointing.
 

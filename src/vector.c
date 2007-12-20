@@ -1530,6 +1530,7 @@ bool vector_vcd_assign( vector* vec, char* value, int msb, int lsb ) { PROFILE(V
 
   assert( vec != NULL );
   assert( value != NULL );
+  printf( "msb: %d, vec->width: %d\n", msb, vec->width );
   assert( msb <= vec->width );
 
   /* Set pointer to LSB */
@@ -2279,6 +2280,9 @@ void vector_dealloc( vector* vec ) { PROFILE(VECTOR_DEALLOC);
 
 /*
  $Log$
+ Revision 1.98  2007/12/19 22:54:35  phase1geo
+ More compiler fixes (almost there now).  Checkpointing.
+
  Revision 1.97  2007/12/19 04:27:52  phase1geo
  More fixes for compiler errors (still more to go).  Checkpointing.
 
