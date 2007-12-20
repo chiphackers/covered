@@ -3688,8 +3688,11 @@ void expression_operate_recursively( expression* expr, func_unit* funit, bool si
 
     }
     
+    /* Create dummy time */
+    sim_time time = {0,0,0,FALSE};
+
     /* Perform operation */
-    expression_operate( expr, NULL, NULL );
+    expression_operate( expr, NULL, &time );
 
     if( sizing ) {
 
@@ -4232,6 +4235,10 @@ void expression_dealloc( expression* expr, bool exp_only ) { PROFILE(EXPRESSION_
 
 /* 
  $Log$
+ Revision 1.267  2007/12/20 04:47:50  phase1geo
+ Fixing the last of the regression failures from previous changes.  Removing unnecessary
+ output used for debugging.
+
  Revision 1.266  2007/12/19 22:54:35  phase1geo
  More compiler fixes (almost there now).  Checkpointing.
 

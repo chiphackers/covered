@@ -1530,7 +1530,6 @@ bool vector_vcd_assign( vector* vec, char* value, int msb, int lsb ) { PROFILE(V
 
   assert( vec != NULL );
   assert( value != NULL );
-  printf( "msb: %d, vec->width: %d\n", msb, vec->width );
   assert( msb <= vec->width );
 
   /* Set pointer to LSB */
@@ -2280,6 +2279,10 @@ void vector_dealloc( vector* vec ) { PROFILE(VECTOR_DEALLOC);
 
 /*
  $Log$
+ Revision 1.99  2007/12/20 04:47:50  phase1geo
+ Fixing the last of the regression failures from previous changes.  Removing unnecessary
+ output used for debugging.
+
  Revision 1.98  2007/12/19 22:54:35  phase1geo
  More compiler fixes (almost there now).  Checkpointing.
 
