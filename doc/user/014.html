@@ -138,7 +138,7 @@
     <TD valign=top>
       <P class="pg">
       To create the CDD and populate it with the simulation dumpfile results, you 
-      must use the score (see <A href="014.html">The score Command</A> for details) 
+      must use the score (see <A href="016.html">The score Command</A> for details) 
       command. This command parses in the DUT files and generates an initial CDD 
       for the design. This CDD does not contain any coverage details but only the 
       design elements that Covered needs to gain coverage results.</P>
@@ -202,7 +202,7 @@
     <TD valign=top>
       <P class="pg">
       Merging multiple CDDs from the same design is easy with Covered, and is 
-      accomplished with the merge (see <A href="015.html">The merge Command</A> for 
+      accomplished with the merge (see <A href="017.html">The merge Command</A> for 
       details) command. This command reads in two or more CDDs, merges their results and 
       outputs the merged CDD to a different file or replaces the first CDD 
       with the results of the merge.</P>
@@ -230,7 +230,7 @@
       <P class="pg">
       After a CDD is created or merged, the contents of the CDD can be extracted and 
       transformed into human readable coverage reports with the report 
-      (see <A href="016.html">The report Command</A> for details) command. A 
+      (see <A href="018.html">The report Command</A> for details) command. A 
       summary report containing the percentage of metrics covered is generated for 
       each module. Additionally, to aid in understanding what and why something was 
       not covered, a verbose reporting mechanism exists. Verbose reporting will 
@@ -282,7 +282,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="code">covered (-h | -v | (-D) (-Q) &lt;command&gt; (&lt;command_options&gt;))</P>
+      <P class="code">covered (-h | -v | (-P (filename)) (-D) (-Q) &lt;command&gt; (&lt;command_options&gt;))</P>
     </TD>
   </TR>
 
@@ -370,6 +370,25 @@
     </TD>
     <TD></TD>
     <TD valign=top>
+      <P class="pg">
+      The -P option causes Covered to enable internal code profiling and generates a profiling
+      report that is output to either the given filename or the default filename of "covered.prof".
+      This option is only available if the --enable-profiling configuration option is specified
+      and will cause performance degradation.  This option should only be used by Covered developers
+      or those interested in finding performance bottlenecks in Covered's code.  It is not
+      recommended that the --enable-profiling configuration option and the -P global option be
+      specified for normal users of Covered.  See <a href="029.html">Built-in Profiling</a> for
+      more information on profiling and understanding the profiling report file.
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
       <P class="header2">7.3&nbsp; <A name="7_3"></A>Covered options</P>
     </TD>
   </TR>
@@ -401,28 +420,32 @@
             <P class="blockIndentLeft">&nbsp;</P>
           </TD>
           <TD width=100% align=center>
-				<table cellspacing=2 cellpadding=4 border=1> 
-					<tr> 
-						<td colspan=2 class="tableHeader"> Options to Covered </td> </tr> 
-					<tr>
-						<td> <strong>Option</strong> </td> 
-						<td> <strong>Description</strong> <td> </tr> 
-					<tr> 
-						<td> -Q </td> 
-						<td> Quite mode. Suppresses user output to screen. Use in conjunction with a command. </td> </tr> 
-					<tr> 
-						<td> -D </td> 
-						<td> Debug mode. Outputs code debug information to screen. Use in conjunction with commands. </td> </tr> 
-                                        <tr>
-                                                <td> -B </td>
-                                                <td> Obfuscate.  Obfuscates all design sensitive names before outputting them. </td> </tr>
-					<tr> 
-						<td> -h </td> 
-						<td> Generates usage output to standard output </td> </tr> 
-					<tr>
-						<td> -v </td> 
-						<td> Outputs current version of Covered </td> </tr> 
-				</table>
+            <table cellspacing=2 cellpadding=4 border=1> 
+              <tr> 
+                <td colspan=2 class="tableHeader"> Options to Covered </td> </tr> 
+              <tr>
+                <td> <strong>Option</strong> </td> 
+                <td> <strong>Description</strong> <td> </tr> 
+              <tr> 
+                <td> -Q </td> 
+                <td> Quiet mode. Suppresses user output to screen. Use in conjunction with a command. </td> </tr> 
+              <tr> 
+                <td> -D </td> 
+                <td> Debug mode. Outputs code debug information to screen. Use in conjunction with commands. </td> </tr> 
+              <tr>
+                <td> -B </td>
+                <td> Obfuscate.  Obfuscates all design sensitive names before outputting them. </td> </tr>
+              <tr>
+                <td> -P (&lt;filename&gt;)</td>
+                <td> Profiling mode.  Outputs profiling report to either the given &lt;filename&gt; or "covered.prof" if
+                     no &lt;filename&gt; was specified.
+              <tr> 
+                <td> -h </td> 
+                <td> Generates usage output to standard output </td> </tr> 
+              <tr>
+                <td> -v </td> 
+                <td> Outputs current version of Covered </td> </tr> 
+            </table>
           </TD>
           <TD>
             <P class="blockIndentRight">&nbsp;</P>
