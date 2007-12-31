@@ -3347,6 +3347,7 @@ bool expression_op_func__pdec( expression* expr, thread* thr, const sim_time* ti
 #ifdef DEBUG_MODE
   if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
     printf( "        " );  vsignal_display( expr->left->sig );
+    printf( "        " );  expression_display( expr->left );
   }
 #endif
 
@@ -4235,6 +4236,9 @@ void expression_dealloc( expression* expr, bool exp_only ) { PROFILE(EXPRESSION_
 
 /* 
  $Log$
+ Revision 1.268  2007/12/20 05:18:30  phase1geo
+ Fixing another regression bug with running in --enable-debug mode and removing unnecessary output.
+
  Revision 1.267  2007/12/20 04:47:50  phase1geo
  Fixing the last of the regression failures from previous changes.  Removing unnecessary
  output used for debugging.

@@ -4,7 +4,7 @@ tcl_SCRIPTS = assert.tcl \
               cdd_view.tcl \
               comb.tcl \
               cov_create.tcl \
-              cov_icon.xbm \
+              cov_icon.png \
               fsm.tcl \
               help.tcl \
               help_wrapper.tcl \

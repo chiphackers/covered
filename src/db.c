@@ -1042,10 +1042,11 @@ void db_add_defparam( char* name, expression* expr ) { PROFILE(DB_ADD_DEFPARAM);
 */
 void db_add_signal( char* name, int type, sig_range* prange, sig_range* urange, bool is_signed, bool mba, int line, int col, bool handled ) { PROFILE(DB_ADD_SIGNAL);
 
-  vsignal  tmpsig;  /* Temporary signal for signal searching */
-  vsignal* sig;     /* Container for newly created signal */
-  int      i;       /* Loop iterator */
-  int      j = 0;   /* Loop iterator */
+  vsignal   tmpsig;      /* Temporary signal for signal searching */
+  vsignal*  sig = NULL;  /* Container for newly created signal */
+  sig_link* sigl;        /* Pointer to found signal link */
+  int       i;           /* Loop iterator */
+  int       j = 0;       /* Loop iterator */
 
 #ifdef DEBUG_MODE
   snprintf( user_msg, USER_MSG_LENGTH, "In db_add_signal, signal: %s, type: %d, line: %d, col: %d", obf_sig( name ), type, line, col );
@@ -1055,7 +1056,7 @@ void db_add_signal( char* name, int type, sig_range* prange, sig_range* urange, 
   tmpsig.name = name;
 
   /* Add signal to current module's signal list if it does not already exist */
-  if( sig_link_find( &tmpsig, curr_funit->sig_head ) == NULL ) {
+  if( (sigl = sig_link_find( &tmpsig, curr_funit->sig_head )) == NULL ) {
 
     /* Create the signal */
     if( type == SSUPPL_TYPE_GENVAR ) {
@@ -1066,7 +1067,17 @@ void db_add_signal( char* name, int type, sig_range* prange, sig_range* urange, 
       sig = vsignal_create( name, type, 1, line, col );
     }
 
-    /* Check all of the dimensions within range and create vector parameters, if necessary */
+  /* If the signal has currently existed, check to see if the signal is unsized, and, if so, size it now */
+  } else if( sigl->sig->suppl.part.implicit_size ) {
+
+    sig = sigl->sig;
+    sig->suppl.part.implicit_size = 0;
+
+  }
+
+  /* Check all of the dimensions within range and create vector parameters, if necessary */
+  if( sig != NULL ) {
+
     assert( prange != NULL );
     sig->udim_num = (urange != NULL) ? urange->dim_num : 0;
     sig->pdim_num = prange->dim_num;
@@ -1103,6 +1114,11 @@ void db_add_signal( char* name, int type, sig_range* prange, sig_range* urange, 
       j++;
     }
 
+  }
+
+  /* Only do the following if the signal was not previously found */
+  if( sigl == NULL ) {
+
     /* Add the signal to either the functional unit or a generate item */
     if( (generate_top_mode > 0) && (type != SSUPPL_TYPE_GENVAR) ) {
       last_gi = gen_item_create_sig( sig );
@@ -1127,6 +1143,12 @@ void db_add_signal( char* name, int type, sig_range* prange, sig_range* urange, 
 
     /* Indicate handled attribute */
     sig->suppl.part.not_handled = handled ? 0 : 1;
+
+    /* Set the implicit_size attribute */
+    sig->suppl.part.implicit_size = (((type == SSUPPL_TYPE_INPUT) || (type == SSUPPL_TYPE_OUTPUT) || (type == SSUPPL_TYPE_INOUT)) &&
+                                     (prange != NULL) && prange->dim[0].implicit &&
+                                     (prange->dim[0].left->exp == NULL) && (prange->dim[0].left->num == 0) &&
+                                     (prange->dim[0].right->exp == NULL) && (prange->dim[0].right->num == 0)) ? 1 : 0;
 
   }
 
@@ -2470,6 +2492,10 @@ void db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.268  2007/12/20 04:47:50  phase1geo
+ Fixing the last of the regression failures from previous changes.  Removing unnecessary
+ output used for debugging.
+
  Revision 1.267  2007/12/19 22:54:34  phase1geo
  More compiler fixes (almost there now).  Checkpointing.
 

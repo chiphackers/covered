@@ -115,8 +115,8 @@ Instance                                           Hit/ Miss/Total    Percent hi
 
       Instance Name               Assertion Name          Coverage Point
       ---------------------------------------------------------------------------------------------------------
-      foo                         assert_zero_one_hot     "test_expr_all_zeros covered           "
       foo                         assert_zero_one_hot     "all_one_hots_checked covered          "
+      foo                         assert_zero_one_hot     "test_expr_all_zeros covered           "
 
 
 

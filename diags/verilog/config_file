@@ -3,5 +3,6 @@
 +define+OVL_COVER_NONE 
 +define+OVL_COVER_ON
 +define+OVL_VERILOG
++define+OVL_COVER_DEFAULT=15
 +incdir+./ovl
 -y ./ovl

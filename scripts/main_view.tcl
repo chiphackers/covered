@@ -136,7 +136,7 @@ proc main_view {} {
   # Set the window icon
   global HOME
   wm title . "Covered - Verilog Code Coverage Tool"
-  wm iconbitmap . -default [image create bitmap -file "$HOME/scripts/cov_icon.xbm"]
+  #wm iconphoto . "$HOME/scripts/cov_icon.png"
 
   # Set focus on the new window
   # wm focus .

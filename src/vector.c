@@ -1906,20 +1906,78 @@ bool vector_op_add( vector* tgt, vector* left, vector* right ) { PROFILE(VECTOR_
   nibble v2st      = tgt->suppl.part.is_2state;
   nibble carry     = 0;
 
-  for( i=0; i<tgt_width; i++ ) {
-    
-    nibble lbit = (i < left->width)  ? left->value[i].part.val.value  : 0;
-    nibble rbit = (i < right->width) ? right->value[i].part.val.value : 0;
-
-    if( (carry > 1) || (lbit > 1) || (rbit > 1) ) {
-      tgt->value[i].part.exp.value = v2st ? 0 : 2;
-      carry                        = v2st ? 0 : 2;
-    } else {
-      tgt->value[i].part.exp.value = (carry + lbit + rbit) & 0x1;
-      carry                        = (carry + lbit + rbit) >> 1;
-    }
-    tgt->value[i].part.exp.set = 1;
-
+  switch( tgt->suppl.part.type ) {
+    case VTYPE_EXP :
+      for( i=0; i<tgt_width; i++ ) {
+        nibble lbit = (i < left->width)  ? left->value[i].part.val.value  : 0;
+        nibble rbit = (i < right->width) ? right->value[i].part.val.value : 0;
+        if( (carry > 1) || (lbit > 1) || (rbit > 1) ) {
+          tgt->value[i].part.exp.value = v2st ? 0 : 2;
+          carry                        = v2st ? 0 : 2;
+        } else {
+          nibble val = carry + lbit + rbit;
+          tgt->value[i].part.exp.value = val & 0x1;
+          carry                        = val >> 1;
+        }
+        tgt->value[i].part.exp.set = 1;
+      }
+      break;
+    case VTYPE_SIG :
+      for( i=0; i<tgt_width; i++ ) {
+        nibble lbit = (i < left->width)  ? left->value[i].part.val.value  : 0;
+        nibble rbit = (i < right->width) ? right->value[i].part.val.value : 0;
+        if( (carry > 1) || (lbit > 1) || (rbit > 1) ) {
+          tgt->value[i].part.sig.value = v2st ? 0 : 2;
+          carry                        = v2st ? 0 : 2;
+        } else {
+          nibble val = carry + lbit + rbit;
+          if( tgt->value[i].part.sig.set ) {
+            if( (tgt->value[i].part.sig.value == 0) && ((val & 0x1) == 1) ) {
+              tgt->value[i].part.sig.tog01 = 1;
+            } else if ( (tgt->value[i].part.sig.value == 1) && ((val & 0x1) == 0) ) {
+              tgt->value[i].part.sig.tog10 = 1;
+            }
+          }
+          tgt->value[i].part.sig.value = val & 0x1;
+          carry                        = val >> 1;
+        }
+        tgt->value[i].part.sig.set = 1;
+      }
+      break;
+    case VTYPE_VAL :
+      for( i=0; i<tgt_width; i++ ) { 
+        nibble lbit = (i < left->width)  ? left->value[i].part.val.value  : 0;
+        nibble rbit = (i < right->width) ? right->value[i].part.val.value : 0;
+        if( (carry > 1) || (lbit > 1) || (rbit > 1) ) {
+          tgt->value[i].part.val.value = v2st ? 0 : 2;
+          carry                        = v2st ? 0 : 2;
+        } else {
+          nibble val = carry + lbit + rbit;
+          tgt->value[i].part.val.value = val & 0x1;
+          carry                        = val >> 1;
+        }
+      }
+      break;
+    case VTYPE_MEM :
+      for( i=0; i<tgt_width; i++ ) {
+        nibble lbit = (i < left->width)  ? left->value[i].part.val.value  : 0;
+        nibble rbit = (i < right->width) ? right->value[i].part.val.value : 0;
+        if( (carry > 1) || (lbit > 1) || (rbit > 1) ) {
+          tgt->value[i].part.mem.value = v2st ? 0 : 2;
+          carry                        = v2st ? 0 : 2;
+        } else {
+          nibble val = carry + lbit + rbit;
+          if( (tgt->value[i].part.sig.value == 0) && ((val & 0x1) == 1) ) {
+            tgt->value[i].part.mem.tog01 = 1;
+          } else if ( (tgt->value[i].part.sig.value == 1) && ((val & 0x1) == 0) ) {
+            tgt->value[i].part.mem.tog10 = 1;
+          }
+          tgt->value[i].part.mem.value = val & 0x1;
+          carry                        = val >> 1;
+        }
+        tgt->value[i].part.mem.wr = 1;
+      }
+      break;
   }
 
   PROFILE_END;
@@ -2279,6 +2337,9 @@ void vector_dealloc( vector* vec ) { PROFILE(VECTOR_DEALLOC);
 
 /*
  $Log$
+ Revision 1.100  2007/12/20 05:18:30  phase1geo
+ Fixing another regression bug with running in --enable-debug mode and removing unnecessary output.
+
  Revision 1.99  2007/12/20 04:47:50  phase1geo
  Fixing the last of the regression failures from previous changes.  Removing unnecessary
  output used for debugging.
