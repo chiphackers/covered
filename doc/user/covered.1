@@ -16,14 +16,17 @@ Covered \- Verilog Code Coverage Analyzer
 .LP 
 These options are placed immediately after the keyword \fIcovered\fR in the command\-line.  They can be used for any command (with the exception of \fI\-v\fR and \fI\-h\fR) and have the same effect in each case.
 .TP 
-\fB\-D\fR
-Debug.  Display information helpful for debugging tool problems.  Note:  This option is now only available when covered is built with the \-\-enable\-debug configuration option.
-.TP 
 \fB\-B\fR
 Obfuscate.  Obfuscates all design\-sensitive names before outputting in user\-readable format.  This option is useful when sharing output with the developers of Covered for debugging purposes.
 .TP 
+\fB\-D\fR
+Debug.  Display information helpful for debugging tool problems.  Note:  This option is now only available when covered is built with the \-\-enable\-debug configuration option.
+.TP 
 \fB\-h\fR
 Help.  Display this usage information.
+.TP
+\fB\-P\fR [\fIfilename\fR]
+Profiling mode.  Turns on internal source code profiler that will produce a profiling report of the run command to either the specified \fIfilename\fR or, if no \fIfilename\fR is present, to a file called \fIcovered.prof\fR.  This option is only available if the \fI\-\-enable\-profiling\fR configuration option was specified when Covered was built.
 .TP 
 \fB\-Q\fR
 Quiet mode.  Causes all output to be suppressed.

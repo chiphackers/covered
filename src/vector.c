@@ -119,6 +119,12 @@ vector* vector_create( int width, int type, bool data ) { PROFILE(VECTOR_CREATE)
   new_vec = (vector*)malloc_safe( sizeof( vector ) );
 
   if( data == TRUE ) {
+    if( width > MAX_BIT_WIDTH ) {
+      snprintf( user_msg, USER_MSG_LENGTH, "Found a vector width (%d) that exceeds the maximum currently allowed by Covered (%d)",
+                width, MAX_BIT_WIDTH );
+      print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      exit( 1 );
+    }
     value = (vec_data*)malloc_safe( sizeof( vec_data ) * width );
     new_vec->suppl.part.owns_data = 1;
   }
@@ -2337,6 +2343,9 @@ void vector_dealloc( vector* vec ) { PROFILE(VECTOR_DEALLOC);
 
 /*
  $Log$
+ Revision 1.101  2007/12/31 23:43:36  phase1geo
+ Fixing bug 1858408.  Also fixing issues with vector_op_add functionality.
+
  Revision 1.100  2007/12/20 05:18:30  phase1geo
  Fixing another regression bug with running in --enable-debug mode and removing unnecessary output.
 

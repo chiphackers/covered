@@ -349,6 +349,12 @@ void expression_create_value( expression* exp, int width, bool data ) { PROFILE(
   vec_data* value = NULL;  /* Temporary storage of vector nibble array */
 
   if( (data == TRUE) || ((exp->suppl.part.gen_expr == 1) && (width > 0)) ) {
+    if( width > MAX_BIT_WIDTH ) {
+      snprintf( user_msg, USER_MSG_LENGTH, "Found an expression width (%d) that exceeds the maximum currently allowed by Covered (%d)",
+                width, MAX_BIT_WIDTH );
+      print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      exit( 1 );
+    }
     value = (vec_data*)malloc_safe( sizeof( vec_data ) * width );
   }
 
@@ -439,19 +445,13 @@ expression* expression_create( expression* right, expression* left, exp_op_type 
   if( ((op == EXP_OP_MULTIPLY) || (op == EXP_OP_LIST)) && (rwidth > 0) && (lwidth > 0) ) {
 
     /* For multiplication, we need a width the sum of the left and right expressions */
-    assert( rwidth < 1024 );
-    assert( lwidth < 1024 );
     expression_create_value( new_expr, (lwidth + rwidth), data );
 
   } else if( (op == EXP_OP_CONCAT) && (rwidth > 0) ) {
 
-    assert( rwidth < 1024 );
     expression_create_value( new_expr, rwidth, data );
 
   } else if( (op == EXP_OP_EXPAND) && (rwidth > 0) && (lwidth > 0) && (left->value->value != NULL) ) {
-
-    assert( rwidth < 1024 );
-    assert( lwidth < 1024 );
 
     /*
      If the left-hand expression is a known value, go ahead and create the value here; otherwise,
@@ -508,11 +508,9 @@ expression* expression_create( expression* right, expression* left, exp_op_type 
 
       if( rwidth >= lwidth ) {
         /* Check to make sure that nothing has gone drastically wrong */
-        assert( rwidth < 1024 );
         expression_create_value( new_expr, rwidth, data );
       } else {
         /* Check to make sure that nothing has gone drastically wrong */
-        assert( lwidth < 1024 );
         expression_create_value( new_expr, lwidth, data );
       }
 
@@ -4236,6 +4234,9 @@ void expression_dealloc( expression* expr, bool exp_only ) { PROFILE(EXPRESSION_
 
 /* 
  $Log$
+ Revision 1.269  2007/12/31 23:43:36  phase1geo
+ Fixing bug 1858408.  Also fixing issues with vector_op_add functionality.
+
  Revision 1.268  2007/12/20 05:18:30  phase1geo
  Fixing another regression bug with running in --enable-debug mode and removing unnecessary output.
 
