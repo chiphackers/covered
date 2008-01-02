@@ -86,7 +86,8 @@ extern bool        debug_mode;
 extern symtable*   vcd_symtab;
 extern int         vcd_symtab_size;
 extern symtable**  timestep_tab;
-extern char*       curr_inst_scope;
+extern char**      curr_inst_scope;
+extern int         curr_inst_scope_size;
 extern funit_inst* curr_instance;
 extern char        user_msg[USER_MSG_LENGTH];
 extern isuppl      info_suppl;
@@ -255,6 +256,7 @@ PLI_INT32 covered_end_of_sim( p_cb_data cb ) { PROFILE(COVERED_END_OF_SIM);
   /* Deallocate memory */
   symtable_dealloc( vcd_symtab );
   sim_dealloc();
+  db_close();
   if( timestep_tab != NULL ) {
     free_safe( timestep_tab );
   }
@@ -412,10 +414,11 @@ void covered_parse_task_func( vpiHandle mod ) { PROFILE(COVERED_PARSE_TASK_FUNC)
 #endif
 
         /* Set current scope in database */
-        if( curr_inst_scope != NULL ) {
-          free_safe( curr_inst_scope );
+        if( curr_inst_scope[0] != NULL ) {
+          free_safe( curr_inst_scope[0] );
         }
-        curr_inst_scope = strdup_safe( vpi_get_str( vpiFullName, scope ) );
+        curr_inst_scope[0]   = strdup_safe( vpi_get_str( vpiFullName, scope ) );
+        curr_inst_scope_size = 1;
 
         /* Synchronize curr_instance to point to curr_inst_scope */
         db_sync_curr_instance();
@@ -525,10 +528,11 @@ void covered_parse_instance( vpiHandle inst ) { PROFILE(COVERED_PARSE_INSTANCE);
   vpiHandle iter, handle;
 
   /* Set current scope in database */
-  if( curr_inst_scope != NULL ) {
-    free_safe( curr_inst_scope );
+  if( curr_inst_scope[0] != NULL ) {
+    free_safe( curr_inst_scope[0] );
   }
-  curr_inst_scope = strdup_safe( vpi_get_str( vpiFullName, inst ) );
+  curr_inst_scope[0] = strdup_safe( vpi_get_str( vpiFullName, inst ) );
+  curr_inst_scope_size = 1;
 
   /* Synchronize curr_instance to point to curr_inst_scope */
   db_sync_curr_instance();
@@ -538,7 +542,7 @@ void covered_parse_instance( vpiHandle inst ) { PROFILE(COVERED_PARSE_INSTANCE);
 
 #ifdef DEBUG_MODE
     snprintf( user_msg, USER_MSG_LENGTH, "Found module to be covered: %s, hierarchy: %s",
-              obf_funit( vpi_get_str( vpiName, inst ) ), obf_inst( curr_inst_scope ) );
+              obf_funit( vpi_get_str( vpiName, inst ) ), obf_inst( curr_inst_scope[0] ) );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
@@ -665,6 +669,11 @@ PLI_INT32 covered_sim_calltf( char* name ) {
 
   /* Create initial symbol table */
   vcd_symtab = symtable_create();
+
+  /* Initialize the curr_inst_scope structure */
+  curr_inst_scope      = (char**)malloc( sizeof( char* ) );
+  curr_inst_scope[0]   = NULL;
+  curr_inst_scope_size = 1;
 
   /* Parse child instances - associate a signal in the design with a signal in Covered */
   while( (module_handle = vpi_scan( arg_iterator )) != NULL ) {

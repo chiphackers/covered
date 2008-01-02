@@ -119,12 +119,14 @@ vector* vector_create( int width, int type, bool data ) { PROFILE(VECTOR_CREATE)
   new_vec = (vector*)malloc_safe( sizeof( vector ) );
 
   if( data == TRUE ) {
+#ifdef SKIP
     if( width > MAX_BIT_WIDTH ) {
       snprintf( user_msg, USER_MSG_LENGTH, "Found a vector width (%d) that exceeds the maximum currently allowed by Covered (%d)",
                 width, MAX_BIT_WIDTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       exit( 1 );
     }
+#endif
     value = (vec_data*)malloc_safe( sizeof( vec_data ) * width );
     new_vec->suppl.part.owns_data = 1;
   }
@@ -2343,6 +2345,10 @@ void vector_dealloc( vector* vec ) { PROFILE(VECTOR_DEALLOC);
 
 /*
  $Log$
+ Revision 1.102  2008/01/02 06:00:08  phase1geo
+ Updating user documentation to include the CLI and profiling documentation.
+ (CLI documentation is not complete at this time).  Fixes bug 1861986.
+
  Revision 1.101  2007/12/31 23:43:36  phase1geo
  Fixing bug 1858408.  Also fixing issues with vector_op_add functionality.
 
