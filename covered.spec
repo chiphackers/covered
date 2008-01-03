@@ -42,6 +42,7 @@ make clean
 /usr/local/share/covered/scripts/cdd_view.tcl
 /usr/local/share/covered/scripts/comb.tcl
 /usr/local/share/covered/scripts/cov_create.tcl
+/usr/local/share/covered/scripts/cov_icon.bmp
 /usr/local/share/covered/scripts/fsm.tcl
 /usr/local/share/covered/scripts/help.tcl
 /usr/local/share/covered/scripts/main_view.tcl
@@ -79,6 +80,9 @@ make clean
 /usr/local/share/covered/doc/user/025.html
 /usr/local/share/covered/doc/user/026.html
 /usr/local/share/covered/doc/user/027.html
+/usr/local/share/covered/doc/user/028.html
+/usr/local/share/covered/doc/user/029.html
+/usr/local/share/covered/doc/user/030.html
 /usr/local/share/covered/doc/user/banner.gif
 /usr/local/share/covered/doc/user/example.rptI.html
 /usr/local/share/covered/doc/user/example.rptM.html

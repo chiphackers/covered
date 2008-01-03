@@ -28,6 +28,9 @@ doc_DATA = 001.html \
            025.html \
            026.html \
            027.html \
+           028.html \
+           029.html \
+           030.html \
            banner.gif \
            test/example.rptI.html \
            test/example.rptM.html \
