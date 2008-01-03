@@ -47,9 +47,15 @@
     ./configure --with-mpatrol
 
   If you would like to see the built-in debugging information that Covered can produce
-  while it runs a command, you will need to specify the following configuration command:
+  while it runs a command or use the score command CLI, you will need to specify the
+  following configuration command:
 
     ./configure --enable-debug
+
+  If you would like to use the built-in profiling facility (-P global option), you will need
+  to specify the following configuration command:
+
+    ./configure --enable-profiling
 
   After configure has been called and 'make' run, you can get the Covered debug information
   generated to standard output by specifying the global '-D' option (see 'covered -h' for more
