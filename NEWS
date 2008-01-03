@@ -1,6 +1,28 @@
 Covered-Related NEWS
 ====================
 
+    * 1/3/2008
+
+Development release covered-20080103 made.  This is primarily a bug fix and performance enhancement
+release over the last development release of Covered with a few new feature additions.
+The following changes are included in this release.
+
+  - Added support for embedded type information within for loops (i.e., for( int i=0; ... )).
+  - Started adding const information to function input pointers that will not be modified (small
+    performance enhancement that the compiler can take advantage of).
+  - Added initial parsing capability for structs/unions.
+  - Updated all trevorw@charter.net e-mail addresses to new phase1geo@gmail.com e-mail address.
+  - Fixed VCD parsing error (bug 1832592).
+  - Added built-in profiling facility to generate profiling reports of Covered's internal functions
+    (useful for enhancing/fixing performance problems in commands)
+  - Added several performance enhancements to Covered's score command (achieved 8x speedup in one
+    simulation)
+  - Added "Debugging" section to user guide to document the usage of the CLI, verbose debugging output
+    generator and profiler.
+  - Fixed bug 1858408.  This bug occurred when using newer versions of the OVL as well.
+  - Fixed bug 1861986.
+  - Added new diagnostics to verify additional functionality.
+
     * 9/6/2007
 
 Development release covered-20070906 finally made.  Several severe changes to support CLI-style

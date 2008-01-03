@@ -1,476 +1,245 @@
-2007-09-05 16:07  phase1geo
+2008-01-02 22:43  phase1geo
 
-	Fixing bug 1788991.  Full regression passes.  Removed excess output
-	used for debugging.  May want to create a new development release
-	with these changes.
+	Updating user documentation for debugging information.	This
+	documentation is now complete.
 
-2007-09-04 17:50  phase1geo
+2008-01-02 17:48  phase1geo
 
-	Fixed static_afunc1 issues.  Reran regressions and updated
-	necessary files.  Also working on debugging one remaining issue
-	with mem1.v (not solved yet).
+	Removing unnecessary check in vector.c.  Fixing bug 1862769.
 
-2007-09-01 14:31  phase1geo
+2008-01-02 00:00  phase1geo
 
-	Attempting to fix static_afunc1 failure -- we are getting further
-	but am now getting a new type of error.
+	Updating user documentation to include the CLI and profiling
+	documentation.	(CLI documentation is not complete at this time). 
+	Fixes bug 1861986.
 
-2007-09-01 00:33  phase1geo
+2007-12-31 17:46  phase1geo
 
-	Fixing error output in report.c when Tcl/Tk initialization routines
-	return in error.  Also removing extra K_EG from static_parser.y
-	file.
+	Adding new port4 diagnostic to verify fix for bug 1858408.
 
-2007-08-31 22:37  phase1geo
+2007-12-31 17:43  phase1geo
 
-	Fixing memory leak issue in parser.
+	Fixing bug 1858408.  Also fixing issues with vector_op_add
+	functionality.
 
-2007-08-31 17:46  phase1geo
+2007-12-28 15:34  phase1geo
 
-	Adding diagnostics from stable branch.	Fixing a few minor bugs and
-	in progress of working on static_afunc1 failure (still not quite
-	there yet).  Checkpointing.
+	Adding title-bar icon files.
 
-2007-08-31 13:01  phase1geo
+2007-12-21 13:31  phase1geo
 
-	file generate14.v was initially added on branch covered-0_5-branch.
+	Updating site shortcuts for new page.
 
-2007-08-31 13:01  phase1geo
+2007-12-21 12:53  phase1geo
 
-	file generate14.rptM was initially added on branch
-	covered-0_5-branch.
+	Starting to update User Guide with Debugging section and for other
+	modifications regarding the new release.
 
-2007-08-31 13:01  phase1geo
+2007-12-20 17:47  phase1geo
 
-	file generate14.rptI was initially added on branch
-	covered-0_5-branch.
+	Adding +covered_profile option to VPI mode of operation.  Fixed a
+	few bugs with VPI usage.
 
-2007-08-31 13:01  phase1geo
+2007-12-19 23:18  phase1geo
 
-	file generate14.rptWI was initially added on branch
-	covered-0_5-branch.
+	Fixing another regression bug with running in --enable-debug mode
+	and removing unnecessary output.
 
-2007-08-31 13:01  phase1geo
+2007-12-19 22:47  phase1geo
 
-	file generate14.cfg was initially added on branch
-	covered-0_5-branch.
+	Fixing the last of the regression failures from previous changes. 
+	Removing unnecessary output used for debugging.
 
-2007-08-31 13:01  phase1geo
+2007-12-19 22:26  phase1geo
 
-	file generate14.rptWM was initially added on branch
-	covered-0_5-branch.
+	Removing files.
 
-2007-08-31 13:01  phase1geo
+2007-12-19 16:54  phase1geo
 
-	file generate14.cdd was initially added on branch
-	covered-0_5-branch.
+	More compiler fixes (almost there now).  Checkpointing.
 
-2007-08-30 12:14  phase1geo
+2007-12-19 08:37  phase1geo
 
-	file generate13.v was initially added on branch covered-0_5-branch.
+	More compiler fixes (still more to go).  Checkpointing.
 
-2007-08-30 12:14  phase1geo
+2007-12-18 22:27  phase1geo
 
-	file generate13.rptWI was initially added on branch
-	covered-0_5-branch.
+	More fixes for compiler errors (still more to go).  Checkpointing.
 
-2007-08-30 12:14  phase1geo
+2007-12-18 17:55  phase1geo
 
-	file generate13.rptWM was initially added on branch
-	covered-0_5-branch.
+	Starting to remove 64-bit time and replacing it with a sim_time
+	structure for performance enhancement purposes.  Also removing
+	global variables for time-related information and passing this
+	information around by reference for performance enhancement
+	purposes.
 
-2007-08-30 12:14  phase1geo
+2007-12-17 17:47  phase1geo
 
-	file generate13.rptM was initially added on branch
-	covered-0_5-branch.
+	Adding more profiling information.
 
-2007-08-30 12:14  phase1geo
+2007-12-14 17:38  phase1geo
 
-	file generate13.rptI was initially added on branch
-	covered-0_5-branch.
+	More performance enhancements.	Checkpointing.
 
-2007-08-30 12:14  phase1geo
+2007-12-13 08:25  phase1geo
 
-	file generate13.cfg was initially added on branch
-	covered-0_5-branch.
+	Attempting to enhance performance of the sim_simulation function (I
+	have a few different code segments here to do the task at the
+	moment).
 
-2007-08-30 12:14  phase1geo
+2007-12-12 20:32  phase1geo
 
-	file generate13.cdd was initially added on branch
-	covered-0_5-branch.
+	Fixing segmentation fault.
 
-2007-08-28 00:02  phase1geo
+2007-12-12 17:36  phase1geo
 
-	file concat7.rptM was initially added on branch covered-0_5-branch.
+	Optimized vector_op_add function significantly.  Other improvements
+	made to profiler output.  Attempted to optimize the sim_simulation
+	function although it hasn't had the intended effect and delay1.3 is
+	currently failing.  Checkpointing for now.
 
-2007-08-28 00:02  phase1geo
+2007-12-12 08:17  phase1geo
 
-	file concat7.rptWI was initially added on branch
-	covered-0_5-branch.
+	Enhancing the profiling report.
 
-2007-08-28 00:02  phase1geo
+2007-12-12 02:04  phase1geo
 
-	file concat7.rptWM was initially added on branch
-	covered-0_5-branch.
+	Adding more timed functions for profiling purposes.
 
-2007-08-28 00:02  phase1geo
+2007-12-12 01:52  phase1geo
 
-	file concat7.rptI was initially added on branch covered-0_5-branch.
+	Separating debugging and profiling so that we can do profiling
+	without all of the debug overhead.
 
-2007-08-28 00:02  phase1geo
+2007-12-12 01:23  phase1geo
 
-	file concat7.cdd was initially added on branch covered-0_5-branch.
+	More work on profiling.  I have now included the ability to get
+	function runtimes.  Still more work to do but everything is
+	currently working at the moment.
 
-2007-08-23 07:53  phase1geo
+2007-12-11 17:19  phase1geo
 
-	file exclude7.cfg was initially added on branch covered-0_5-branch.
+	Fixed compile issues and completed first pass injection of
+	profiling calls.  Working on ordering the calls from most to least.
 
-2007-08-23 07:53  phase1geo
+2007-12-11 09:08  phase1geo
 
-	file exclude7.rptWM was initially added on branch
-	covered-0_5-branch.
+	Updates to Makefiles.
 
-2007-08-23 07:53  phase1geo
+2007-12-11 09:07  phase1geo
 
-	file exclude7.v was initially added on branch covered-0_5-branch.
+	Adding missing file.
 
-2007-08-23 07:53  phase1geo
+2007-12-11 09:07  phase1geo
 
-	file exclude7.rptM was initially added on branch
-	covered-0_5-branch.
+	More modifications.
 
-2007-08-23 07:53  phase1geo
+2007-12-10 23:48  phase1geo
 
-	file exclude7.rptWI was initially added on branch
-	covered-0_5-branch.
+	Fixing more compile errors with new code changes and adding more
+	profiling.  Still have a ways to go before we can compile cleanly
+	again (next submission should do it).
 
-2007-08-23 07:53  phase1geo
+2007-12-10 17:16  phase1geo
 
-	file exclude7.rptI was initially added on branch
-	covered-0_5-branch.
+	Working on adding profiler for use in finding performance issues. 
+	Things don't compile at the moment.
 
-2007-08-23 07:53  phase1geo
+2007-11-19 23:31  phase1geo
 
-	file exclude7.cdd was initially added on branch covered-0_5-branch.
+	Fixing syntax error in VCD parser per bug 1832592.
 
-2007-08-18 21:08  phase1geo
+2007-11-19 23:28  phase1geo
 
-	Fixing one syntax error with fix for compiling issue when
-	--enable-debug is not specified.
+	Updating e-mail address from trevorw@charter.net to
+	phase1geo@gmail.com.
 
-2007-08-17 17:08  phase1geo
+2007-09-18 16:41  phase1geo
 
-	Fixing linker issue when --enable-debug is not specified to the
-	configure script.
+	Removing inport indicator bit in vector and replacing with
+	owns_data bit indicator.  Full regression passes.
 
-2007-08-07 17:41  phase1geo
+2007-09-17 08:32  phase1geo
 
-	Fixing bug in pplexer for parsing SLIST operator (confused this
-	with an attribute).
+	Adding some new structure members to support struct/union.
 
-2007-08-07 14:09  phase1geo
+2007-09-14 16:22  phase1geo
 
-	Updating config.h.in file to allow large file compilation.
+	Fixing compile issues.
 
-2007-08-06 22:42  phase1geo
+2007-09-14 01:22  phase1geo
 
-	Adding ability to enter defined values inside of covered_fsm
-	attributes (to match the documentation).  Fix for bug 1709984. 
-	Added fsm11 diagnostic to verify this new ability.
+	Filling in existing functions in struct_union.	Completed parser
+	code for handling struct/union declarations.  Code compiles thus
+	far.
 
-2007-08-06 21:23  phase1geo
+2007-09-13 17:50  phase1geo
 
-	Fixing bug 1687409.
+	Initial creation of struct_union files.  Added initial parsing
+	ability for structs and unions (though I don't believe this is
+	complete at this time).
 
-2007-08-06 20:54  phase1geo
+2007-09-13 12:03  phase1geo
 
-	Adding named_block4 diagnostic to regression suite to verify bug
-	fix.  Also adding AC_SYS_LARGEFILE to configure.in and rebuilding
-	configure with this change to properly support reading in files
-	larger than 2GB.
+	Cleaning up some const-ness corrections -- still more to go but
+	it's a good start.
 
-2007-07-31 17:17  phase1geo
+2007-09-12 10:27  phase1geo
 
-	Attempting to debug issue with automatic static functions.  Updated
-	regressions per last change.
+	Fixing a few parser issues and adding missing files to get
+	regressions to fully pass.
 
-2007-07-31 15:06  phase1geo
+2007-09-12 00:40  phase1geo
 
-	Finished work on automatic function support and added new
-	static_afunc1 diagnostic to verify static use of automatic
-	functions (this diagnostic is currently not passing).
+	Adding support for bool and char types in FOR loop initialization
+	blocks.  Adding a plethora of new diagnostics to completely verify
+	this new functionality.  These new diagnostics have not been run
+	yet so they will fail in the next run of regression but should be
+	ready to be checked out.
 
-2007-07-30 22:36  phase1geo
+2007-09-11 17:39  phase1geo
 
-	Fixing last known issue with automatic functions.  Also fixing
-	issue with toggle report output (still a problem with the toggle
-	calculation for the return value of the function).
+	Updating TODO.
 
-2007-07-30 17:42  phase1geo
+2007-09-11 17:38  phase1geo
 
-	Making some progress on automatic function support.  Things
-	currently don't compile but I need to checkpoint for now.
+	Fixing for loop variable instantiation.  Added for5 to regression
+	suite -- in the process of running full regressions with this
+	change.
 
-2007-07-30 15:36  phase1geo
+2007-09-11 00:01  phase1geo
 
-	Fixing rest of issues pertaining to new implementation of function
-	calls.	Full regression passes (with the exception of afunc1 which
-	we do not expect to pass with these changes as of yet).
+	Updating parser to handle embedded type information and consecutive
+	data assignments in initialization block of FOR loop (not added for
+	generate for blocks yet, however).  Fixed a few other parser
+	compile errors.
 
-2007-07-28 22:32  phase1geo
+2007-09-10 17:52  phase1geo
 
-	First attempt to make FUNC_CALL expressions copy the functional
-	return value to the expression vector.	Not quite working yet --
-	checkpointing.
+	Fixing compile errors.	Added for5 diagnostic for preparation for
+	feature addition.
 
-2007-07-27 17:43  phase1geo
+2007-09-08 00:15  phase1geo
 
-	Starting to add support for saving expression information for
-	re-entrant tasks/functions.  Still more work to go.
+	Cleaning up parser2.y (much more work to do here yet).
 
-2007-07-27 17:26  phase1geo
+2007-09-07 17:36  phase1geo
 
-	Regression updates from latest change.
+	Completed first pass of new parser.  Still encountering some bison
+	errors with the original syntax, but this includes the entire
+	normative.
 
-2007-07-27 16:57  phase1geo
+2007-09-07 00:39  phase1geo
 
-	Adding afunc1 diagnostic to regression suite (though this
-	diagnostic does not currently pass).  Checkpointing.
+	More parser updates to support SystemVerilog BNF.
 
-2007-07-27 14:11  phase1geo
+2007-09-06 17:53  phase1geo
 
-	Putting in rest of support for automatic functions/tasks.  Checked
-	in atask1 diagnostic files.
+	Starting to create new parser that is fully SystemVerilog
+	compliant.  This represents only the beginning of this work.
 
-2007-07-26 17:23  phase1geo
+2007-09-06 11:07  phase1geo
 
-	Starting to work on the functionality for automatic
-	tasks/functions.  Just checkpointing some work.
-
-2007-07-26 15:12  phase1geo
-
-	Fixing bug related to failure of hier1.1 diagnostic.  Placing
-	functional unit scope in quotes for cases where backslashes are
-	used in the scope names (requiring spaces in the names to escape
-	the backslash).  Incrementing CDD version and regenerated all
-	regression files.  Only atask1 is currently failing in regressions
-	now.
-
-2007-07-26 15:08  phase1geo
-
-	Fixing bug related to failure of hier1.1 diagnostic.  Placing
-	functional unit scope in quotes for cases where backslashes are
-	used in the scope names (requiring spaces in the names to escape
-	the backslash).  Incrementing CDD version and regenerated all
-	regression files.  Only atask1 is currently failing in regressions
-	now.
-
-2007-07-26 12:05  phase1geo
-
-	Fixing problem with static functions (vector data associated with
-	expressions were not being allocated).	Regressions have been run. 
-	Only two failures in total still to be fixed.
-
-2007-07-26 00:03  phase1geo
-
-	Starting to work on fix for static function support.  Fixing issue
-	if func_call is called with NULL thr parameter (to avoid
-	segmentation fault).  IV regression fully passes.
-
-2007-07-24 17:52  phase1geo
-
-	More clean-up for VCS regressions.  Still not fully passing yet.
-
-2007-07-23 07:32  phase1geo
-
-	Updating ChangeLog and fixing some compile issues with the VPI
-	library.
-
-2007-07-21 07:34  phase1geo
-
-	Updating regression for latest version of Icarus Verilog.
-
-2007-07-18 17:39  phase1geo
-
-	Checkpointing generate work though we are at a fairly broken state
-	at the moment.
-
-2007-07-17 21:15  phase1geo
-
-	Attempts to fix a problem with generating instances with hierarchy.
-	 Also fixing an issue with named blocks in generate statements. 
-	Still some work to go before regressions are passing again,
-	however.
-
-2007-07-17 09:19  phase1geo
-
-	Updating VCS regression files.	VCS regressions do not fully
-	complete successfully at this point, however.
-
-2007-07-17 07:52  phase1geo
-
-	Updating TODO list.
-
-2007-07-16 17:24  phase1geo
-
-	Fixed bugs in accumulated coverage output and updated regression
-	files for this change.	VCS simulated results are not contained
-	here, however.
-
-2007-07-16 13:39  phase1geo
-
-	Finishing adding accumulated coverage output to report files.  Also
-	fixed compiler warnings with static values in C code that are
-	inputs to 64-bit variables.  Full regression was not run with these
-	changes due to pre-existing simulator problems in core code.
-
-2007-07-16 07:39  phase1geo
-
-	Started to add support for displaying accumulated coverage results
-	for each metric.  Finished line and toggle and am half-way done
-	with memory coverage (still have combinational logic, FSM and
-	assertion coverage to complete before this feature is fully
-	functional).
-
-2007-04-20 17:56  phase1geo
-
-	More regression updates and simulator core fixes.  Still a ways to
-	go.
-
-2007-04-19 07:43  phase1geo
-
-	file concat7.v was initially added on branch covered-0_5-branch.
-
-2007-04-19 07:43  phase1geo
-
-	file concat7.cfg was initially added on branch covered-0_5-branch.
-
-2007-04-18 17:34  phase1geo
-
-	Revamping simulator core again.  Checkpointing.
-
-2007-04-17 11:31  phase1geo
-
-	file param16.rptWI was initially added on branch
-	covered-0_5-branch.
-
-2007-04-17 11:31  phase1geo
-
-	file param16.rptWM was initially added on branch
-	covered-0_5-branch.
-
-2007-04-17 11:31  phase1geo
-
-	file param16.v was initially added on branch covered-0_5-branch.
-
-2007-04-17 11:31  phase1geo
-
-	file param16.rptI was initially added on branch covered-0_5-branch.
-
-2007-04-17 11:31  phase1geo
-
-	file param16.rptM was initially added on branch covered-0_5-branch.
-
-2007-04-17 11:31  phase1geo
-
-	file param16.cfg was initially added on branch covered-0_5-branch.
-
-2007-04-17 11:31  phase1geo
-
-	file param16.cdd was initially added on branch covered-0_5-branch.
-
-2007-04-13 16:47  phase1geo
-
-	More simulation debugging.  Added 'display all_list' command to CLI
-	to output the list of all threads.  Updated regressions though we
-	are not fully passing at the moment.  Checkpointing.
-
-2007-04-12 16:35  phase1geo
-
-	More bug fixes to simulation core.  Checkpointing.
-
-2007-04-12 15:54  phase1geo
-
-	Adding cli > output when replaying and adding back all of the
-	functions (since the cli > prompt helps give it context.  Fixing
-	bugs in simulation core.  Checkpointing.
-
-2007-04-12 09:28  phase1geo
-
-	Adding ability to display the last <num> lines of history to the
-	history command.  Changed behavior of 'display active_queue' and
-	'display delayed_queue' commands to output when replaying history. 
-	Also modified look of the help output to hopefully make it easier
-	to read.
-
-2007-04-11 23:15  phase1geo
-
-	Adding history all command, added list command and updated the
-	display current command to include statement output.
-
-2007-04-11 22:46  phase1geo
-
-	Fixing bugs with CLI.  History and history file saving/loading is
-	implemented and working as desired.
-
-2007-04-11 17:29  phase1geo
-
-	Adding support for CLI to score command.  Still some work to go to
-	get history stuff right.  Otherwise, it seems to be working.
-
-2007-04-10 22:15  phase1geo
-
-	Attempting to fix delay expression for new simulation core.  Almost
-	there.
-
-2007-04-10 22:04  phase1geo
-
-	Fixing bug 1688487.
-
-2007-04-10 17:10  phase1geo
-
-	Fixing some more simulation issues.
-
-2007-04-09 22:56  phase1geo
-
-	Completing majority of code to support new simulation core. 
-	Starting to debug this though we still have quite a ways to go
-	here.  Checkpointing.
-
-2007-04-09 17:47  phase1geo
-
-	Starting to modify the simulation engine for performance purposes. 
-	Code is not complete and is untested at this point.
-
-2007-04-03 13:55  phase1geo
-
-	Fixing more bugs in reporting mechanisms for unnamed scopes. 
-	Checking in more regression updates per these changes. 
-	Checkpointing.
-
-2007-04-02 23:15  phase1geo
-
-	Fixing bugs in func_iter functionality.  Modified functional unit
-	name flattening function (though this does not appear to be working
-	correctly at this time).  Added calls to funit_flatten_name in all
-	of the reporting files.  Checkpointing.
-
-2007-04-02 15:19  phase1geo
-
-	Checkpointing more work on use of functional iterators.  Not
-	working correctly yet.
-
-2007-04-01 23:50  phase1geo
-
-	Adding func_iter files to iterate through a functional unit for
-	reporting purposes.  Updated affected files.
-
-2007-03-30 17:43  phase1geo
-
-	Regression fixes.  Still have a ways to go but we are getting
-	close.
-
-2007-03-28 13:46  phase1geo
-
-	Adding TODO item to make all C code splint clean.
+	Getting everything ready for 20070906 development release.
 
