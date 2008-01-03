@@ -174,7 +174,8 @@
       	<li>The design being scored is sufficiently large</li> 
       	<li>The VCD/LXT dumpfile is sufficiently large</li> 
       	<li>The VCD/LXT dumpfile contains dump information for a part of 
-      	the design not being scored</li> 
+      	the design not being scored</li>
+      	<li>When Covered was configured, the --enable-debug and/or --enable-profiling options were specified</li>
       </ol></P>
     </TD>
   </TR>
@@ -234,6 +235,21 @@
       to only generate VCD/LXT dump information for the modules included in scoring. 
       If there are modules not being scored which are included in the $dumpvars 
       calls, please remove these unnecessary modules from dumpfile output.</P>
+    </TD>
+  </TR>
+  
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin">4.</P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      If reason (4) is true, Covered should be reconfigured without these options
+      specified.  The debugging and profiling facilities are enormous performance
+      degraders and immediate simulation performance enhancement will be seen if
+      Covered is rebuilt without these options specified.</P>
     </TD>
   </TR>
 

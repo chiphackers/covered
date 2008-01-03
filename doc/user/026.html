@@ -78,7 +78,117 @@
       encounter a problem in the resimulation process or will experience a performance issue during certain runs
       and will want to investigate the issue a bit themselves before posting a bug report.  There may also be
       people out there who just might want to learn more about how Covered operates "under the hood".  For those
-      people whom I have just mentioned, this section is for you.
+      people whom I have just mentioned, this section is for you.</P>
+    </TD>
+  </TR>
+  
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header2">13.1&nbsp;&nbsp; <A name="13_1"></A>Verbose Debug Output</P>
+    </TD>
+  </TR>
+  
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      The brute force method of understanding Covered's internals is to generate verbose debug output using the
+      global "-D" option to any of Covered's commands.  The user of this method should take care to note that using
+      this option may generate an <b>extremely</b> large amount of output and will definitely cause Covered's
+      runtime performance to degrade considerably.  If this option is used, its output should probably be redirected
+      to a file for post-processing purposes.  It should be noted that the verbose debug output is most useful
+      for the developer's of Covered and is not meant to be of much help to the normal user.</P>
+    </TD>
+  </TR>
+  
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header3">13.1.1&nbsp;&nbsp; <A name="13_1_1"></A>Building Covered for Verbose Debug Outputting</P>
+    </TD>
+  </TR>
+  
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      Because generating verbose debug output can have a tremendous degradation in performance when it is
+      even compiled, Covered requires the user to specify an option to the configuration/build process to
+      enable this feature.  To enable verbose debug outputting, simply specify the <b>--enable-debug</b> option
+      to the configure script.  This will cause Covered to compile in verbose debug output support and enable
+      the use of the -D global option.</P>
+    </TD>
+  </TR>
+  
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin">Note</P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      If the user has not specified the --enable-debug option to the configuration script but proceeds to
+      specify the -D global option, Covered will emit a warning message that it is unable to output verbose
+      debug information due to the lack of the --enable-debug option being specified.  It will then proceed
+      to ignore the -D option.</P>
+    </TD>
+  </TR>
+  
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header3">13.1.2&nbsp;&nbsp; <A name="13_1_2"></A>Alternatives</P>
+    </TD>
+  </TR>
+  
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      If wasting valuable time sifting through thousands of lines of verbose (and somewhat terse) output is not
+      your cup of tea, Covered also has two other means of extracting runtime information through the following
+      facilities:</P>
+    </TD>
+  </TR>
+  
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      <OL>
+        <LI><A href="027.html#13_1">The Interactive Command-line Debugger</A></LI>
+        <LI><A href="028.html#13_2">The Source Code Profiler</A></LI>
+      </OL></P>
     </TD>
   </TR>
 

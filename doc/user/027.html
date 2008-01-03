@@ -62,7 +62,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="header1">13.1&nbsp;&nbsp; <A name="13_1"></A>Command-Line Interface<BR><IMG src="img/12568c.gif" height=2 width=650></P>
+      <P class="header2">13.2&nbsp;&nbsp; <A name="13_2"></A>Command-Line Interface</P>
     </TD>
   </TR>
 
@@ -79,7 +79,239 @@
       interface is a command-line driven utility that starts at the beginning of the resimulation.  Its
       purpose is to allow the user to step through simulation execution and view the contents of signals, time,
       scopes, code and internal thread queues for the purposes of debugging and/or understanding Covered.  This
-      utility works much in the same way as simulator CLIs and the GDB debugging utility.
+      utility works much in the same way as simulator CLIs and the GDB debugging utility.</P>
+    </TD>
+  </TR>
+  
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header3">13.2.1&nbsp;&nbsp; <A name="13_2_1"></A>Building Covered for the CLI</P>
+    </TD>
+  </TR>
+  
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      Because interactive command-line debugging has a small performance penalty when compiled in and
+      is closely associated with the verbose debug output option, Covered requires the user to specify
+      an option to the configuation/build process to enable this feature.  To enable the CLI, simply
+      specify the <b>--enable-debug</b> option to the configure script.  This will cause Covered to
+      compile in CLI capabilities and enable the user of the -cli score command option.</P>
+    </TD>
+  </TR>
+  
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header3">13.2.2&nbsp;&nbsp; <A name="13_2_2"></A>Using the CLI</P>
+    </TD>
+  </TR>
+  
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      To allow the score command to use the CLI for interactive resimulation, simply specify the
+      <b>-cli [<i>filename</i>]</b> option to the score command.  If <i>filename</i> is specified to
+      this option, the contents of this file will be parsed and executed once the score command has reached the
+      resimulation process.  The contents of this file are a series of CLI commands (one command per line)
+      in ASCII format and can be automatically produced with the "savehist" CLI command (see below).
+      This feature allows a user to quickly save off the CLI commands made during one score run and reuse them
+      in a subsequent score run without having to remember and manually input the same commands.</P>
+    </TD>
+  </TR>
+  
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      Once the -cli option is invoked, Covered will run the score command until it gets to the beginning
+      of the resimulation process.  At this time, if the optional <i>filename</i> is specified, it will
+      parse the contents of this file and execute the CLI commands found there until all commands are executed.
+      If <i>filename</i> was not specified, a prompt will be displayed and the resimulation execution will halt
+      until the user has specified otherwise via command-line options.  After entering a command-line option,
+      simply press return to invoke that command.  In the event that the command was a step, next or continue
+      option, resimulation will resume until it reaches the next stop point.</P>
+    </TD>
+  </TR>
+  
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header3">13.2.3&nbsp;&nbsp; <A name="13_2_3"></A>CLI commands</P>
+    </TD>
+  </TR>
+  
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      The following is a list of all of the CLI options available to the user.</P>
+    </TD>
+  </TR>
+  
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <TABLE cellpadding=0 cellspacing=0 border=0 width=100%>
+        <TR>
+          <TD>
+            <P class="blockIndentLeft">&nbsp;</P>
+          </TD>
+          <TD width=100% align=center>
+	      <TABLE cellspacing=2 cellpadding=4 border=1> 
+	        <TR> 
+		      <TD colspan=2 class="tableHeader"> CLI Command-line Options </td>
+            </TR> 
+            <TR>
+              <TH>Option</TH>
+              <TH>Description</TH>
+            </TR>
+            <TR>
+              <TD>step [<i>num</i>]</TD>
+              <TD>
+              Advances to the next statement if <i>num</i> is not specified; otherwise, advances <i>num</i>
+              statements before returning to the CLI prompt.</TD>
+            </TR>
+            <TR>
+              <TD>next [<i>num</i>]</TD>
+              <TD>
+              Advances to the next timestep if <i>num</i> is not specified; otherwise, advances <i>num</i>
+              timesteps before returning to the CLI prompt.</TD>
+            </TR>
+            <TR>
+              <TD>run</TD>
+              <TD>
+              Runs the simulation to completion.</TD>
+            </TR>
+            <TR>
+              <TD>continue</TD>
+              <TD>
+              Continues running the simulation to completion.</TD>
+            </TR>
+            <TR>
+              <TD>display active_queue</TD>
+              <TD>
+              Displays the current state of the internal active simulation queue.  This queue consists
+              of process threads that will be executed in the current timestep.</TD>
+            </TR>
+            <TR>
+              <TD>display delayed_queue</TD>
+              <TD>
+              Displays the current state of the internal delayed simulation queue.  This queue consists
+              of process threads that will be executed at a later time as dictated by a delay statement.</TD>
+            </TR>
+            <TR>
+              <TD>display waiting_queue</TD>
+              <TD>
+              Displays the current state of the internal waiting simulation queue.  This queue consists
+              of process threads that are not active or delayed but may be activated by a value change in
+              one of the signals in its expression tree.</TD>
+            </TR>
+            <TR>
+              <TD>display all_list</TD>
+              <TD>
+              Displays the current state of all process threads in the simulator.</TD>
+            </TR>
+            <TR>
+              <TD>display current</TD>
+              <TD>
+              Displays the current scope, block, filename and line number of the statement that is about
+              to be executed in the active queue.</TD>
+            </TR>
+            <TR>
+              <TD>display time</TD>
+              <TD>
+              Displays the current simulation time.</TD>
+            </TR>
+            <TR>
+              <TD>show <i>signal_name</i></TD>
+              <TD>
+              Displays the current value of the given net/variable.</TD>
+            </TR>
+            <TR>
+              <TD>debug [on | off]</TD>
+              <TD>
+              Turns verbose debug output from the simulator on or off.  If 'on'
+              or 'off' is not specified, displays the current debug mode.</TD>
+            </TR>
+            <TR>
+              <TD>list [<i>num</i>]</TD>
+              <TD>
+              Lists the contents of the file where the current statement is to be executed.
+              If <i>num</i> is specified, outputs the given number of lines; otherwise,
+              outputs 10 lines.</TD>
+            </TR>
+            <TR>
+              <TD>savehist <i>filename</i></TD>
+              <TD>
+              Saves the current history to the specified file.</TD>
+            </TR>
+            <TR>
+              <TD>history [(<i>num</i> | all)]</TD>
+              <TD>
+              Displays the last 10 lines of command-line history.  If 'all' is specified, the entire
+              history contents will be displayed.  If <i>num</i> is specified, the last <i>num</i>
+              commands will be displayed.</TD>
+            </TR>
+            <TR>
+              <TD>!<i>num</i></TD>
+              <TD>
+              Executes the command at the <i>num</i> position in history.</TD>
+            </TR>
+            <TR>
+              <TD>!!</TD>
+              <TD>
+              Executes the last valid command.</TD>
+            </TR>
+            <TR>
+              <TD>help</TD>
+              <TD>
+              Displays the available command-line options.</TD>
+            </TR>
+            <TR>
+              <TD>quit</TD>
+              <TD>
+              Ends simulation immediately.</TD>
+            </TR>
+          </TABLE>
+          </TD>
+        </TR>
+      </TABLE></P>
     </TD>
   </TR>
 
