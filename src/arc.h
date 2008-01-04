@@ -29,7 +29,7 @@
 
 
 /*! \brief Returns the width of the specified arc. */
-int arc_get_width( const char* arcs );
+unsigned int arc_get_width( const char* arcs );
 
 /*! \brief Allocates and initializes new state transition array. */
 char* arc_create( int width );
@@ -75,6 +75,9 @@ void arc_dealloc( char* arcs );
 
 /*
  $Log$
+ Revision 1.19  2007/11/20 05:28:57  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.18  2007/09/13 17:03:30  phase1geo
  Cleaning up some const-ness corrections -- still more to go but it's a good
  start.

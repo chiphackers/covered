@@ -159,7 +159,7 @@ int arc_get_entry_width( int width ) { PROFILE(ARC_GET_ENTRY_WIDTH);
  state transition arc array.  Note that the width cannot exceed
  2^16.
 */
-void arc_set_width( char* arcs, int width ) { PROFILE(ARC_SET_WIDTH);
+void arc_set_width( char* arcs, unsigned int width ) { PROFILE(ARC_SET_WIDTH);
 
   arcs[0] = (char)(width & 0xff);
   arcs[1] = (char)((width >> 8) & 0xff);
@@ -175,9 +175,9 @@ void arc_set_width( char* arcs, int width ) { PROFILE(ARC_SET_WIDTH);
  Retrieves the previously stored value of the state transition arc
  width.
 */
-int arc_get_width( const char* arcs ) { PROFILE(ARC_GET_WIDTH);
+unsigned int arc_get_width( const char* arcs ) { PROFILE(ARC_GET_WIDTH);
 
-  int width = (((int)arcs[1] & 0xff) << 8) | ((int)arcs[0] & 0xff);
+  unsigned int width = (((unsigned int)arcs[1] & 0xff) << 8) | ((unsigned int)arcs[0] & 0xff);
   return( width );
 
 }
@@ -1285,6 +1285,10 @@ void arc_dealloc( char* arcs ) { PROFILE(ARC_DEALLOC);
 
 /*
  $Log$
+ Revision 1.42  2007/12/10 23:16:21  phase1geo
+ Working on adding profiler for use in finding performance issues.  Things don't compile
+ at the moment.
+
  Revision 1.41  2007/11/20 05:28:57  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 
