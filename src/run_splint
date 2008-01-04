@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# Runs splint on source code
+splint -preproc *.c

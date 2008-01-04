@@ -736,7 +736,6 @@ bool report_read_cdd_and_ready( char* ifile, int read_mode ) { PROFILE(REPORT_RE
 
     if( (retval = db_read( ifile, read_mode )) ) {
       bind_perform( TRUE, 0 );
-      ///*TBD*/inst_link_flatten( inst_head );
       report_gather_funit_stats( funit_head );
     }
 
@@ -919,6 +918,10 @@ int command_report( int argc, int last_arg, char** argv ) { PROFILE(COMMAND_REPO
 
 /*
  $Log$
+ Revision 1.85  2007/12/12 07:23:19  phase1geo
+ More work on profiling.  I have now included the ability to get function runtimes.
+ Still more work to do but everything is currently working at the moment.
+
  Revision 1.84  2007/12/11 05:48:26  phase1geo
  Fixing more compile errors with new code changes and adding more profiling.
  Still have a ways to go before we can compile cleanly again (next submission
