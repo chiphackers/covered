@@ -440,7 +440,7 @@ bool cli_parse_input( char* line, bool perform, bool replaying, const sim_time* 
     } else if( strncmp( "quit", arg, 4 ) == 0 ) {
 
       if( perform ) {
-        exit( 0 );
+        exit( EXIT_SUCCESS );
       }
  
     } else if( strncmp( "debug", arg, 5 ) == 0 ) {
@@ -675,6 +675,9 @@ bool cli_read_hist_file( char* fname ) {
 
 /*
  $Log$
+ Revision 1.10  2007/12/19 22:54:34  phase1geo
+ More compiler fixes (almost there now).  Checkpointing.
+
  Revision 1.9  2007/12/18 23:55:21  phase1geo
  Starting to remove 64-bit time and replacing it with a sim_time structure
  for performance enhancement purposes.  Also removing global variables for time-related

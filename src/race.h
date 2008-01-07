@@ -48,7 +48,7 @@ void race_get_stats( race_blk* curr, int* race_total, int type_total[][RACE_TYPE
 void race_report( FILE* ofile, bool verbose );
 
 /*! \brief Collects all of the lines in the specified module that were not verified due to race condition breach */
-bool race_collect_lines( char* funit_name, int funit_type, int** slines, int** elines, int** reasons, int* line_cnt );
+bool race_collect_lines( const char* funit_name, int funit_type, int** slines, int** elines, int** reasons, int* line_cnt );
 
 /*! \brief Deallocates the specified race condition block from memory */
 void race_blk_delete_list( race_blk* rb );
@@ -56,6 +56,9 @@ void race_blk_delete_list( race_blk* rb );
 
 /*
  $Log$
+ Revision 1.19  2007/11/20 05:28:59  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.18  2007/03/30 22:43:13  phase1geo
  Regression fixes.  Still have a ways to go but we are getting close.
 

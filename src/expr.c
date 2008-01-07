@@ -353,7 +353,7 @@ void expression_create_value( expression* exp, int width, bool data ) { PROFILE(
       snprintf( user_msg, USER_MSG_LENGTH, "Found an expression width (%d) that exceeds the maximum currently allowed by Covered (%d)",
                 width, MAX_BIT_WIDTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      exit( 1 );
+      exit( EXIT_FAILURE );
     }
     value = (vec_data*)malloc_safe( sizeof( vec_data ) * width );
   }
@@ -1255,7 +1255,6 @@ bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) { PROFI
   expression* left;           /* Pointer to current expression's left expression */
   int         chars_read;     /* Number of characters scanned in from line */
   vector*     vec;            /* Holders vector value of this expression */
-  expression  texp;           /* Temporary expression link holder for searching */
   exp_link*   expl;           /* Pointer to found expression in functional unit */
   int         tmpid;          /* ID of statement that the current expression is bound to */
 
@@ -1273,25 +1272,23 @@ bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) { PROFI
     } else {
 
       /* Find right expression */
-      texp.id = right_id;
       if( right_id == 0 ) {
         right = NULL;
-      } else if( (expl = exp_link_find( &texp, curr_funit->exp_head )) == NULL ) {
+      } else if( (expl = exp_link_find( right_id, curr_funit->exp_head )) == NULL ) {
         snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  root expression (%d) found before leaf expression (%d) in database file", id, right_id );
   	    print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        exit( 1 );
+        exit( EXIT_FAILURE );
       } else {
         right = expl->exp;
       }
 
       /* Find left expression */
-      texp.id = left_id;
       if( left_id == 0 ) {
         left = NULL;
-      } else if( (expl = exp_link_find( &texp, curr_funit->exp_head )) == NULL ) {
+      } else if( (expl = exp_link_find( left_id, curr_funit->exp_head )) == NULL ) {
         snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  root expression (%d) found before leaf expression (%d) in database file", id, left_id );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        exit( 1 );
+        exit( EXIT_FAILURE );
       } else {
         left = expl->exp;
       }
@@ -1417,7 +1414,7 @@ bool expression_db_merge( expression* base, char** line, bool same ) { PROFILE(E
 
       print_output( "Attempting to merge databases derived from different designs.  Unable to merge",
                     FATAL, __FILE__, __LINE__ );
-      exit( 1 );
+      exit( EXIT_FAILURE );
 
     } else {
 
@@ -1610,7 +1607,7 @@ bool expression_op_func__divide( expression* expr, /*@unused@*/ thread* thr, /*@
 
     if( intval2 == 0 ) {
       print_output( "Division by 0 error", FATAL, __FILE__, __LINE__ );
-      exit( 1 );
+      exit( EXIT_FAILURE );
     }
 
     intval1 = intval1 / intval2;
@@ -1666,7 +1663,7 @@ bool expression_op_func__mod( expression* expr, /*@unused@*/ thread* thr, /*@unu
 
     if( intval2 == 0 ) {
       print_output( "Division by 0 error", FATAL, __FILE__, __LINE__ );
-      exit( 1 );
+      exit( EXIT_FAILURE );
     }
 
     intval1 = intval1 % intval2;
@@ -4234,6 +4231,9 @@ void expression_dealloc( expression* expr, bool exp_only ) { PROFILE(EXPRESSION_
 
 /* 
  $Log$
+ Revision 1.271  2008/01/07 05:01:57  phase1geo
+ Cleaning up more splint errors.
+
  Revision 1.270  2008/01/02 06:00:08  phase1geo
  Updating user documentation to include the CLI and profiling documentation.
  (CLI documentation is not complete at this time).  Fixes bug 1861986.

@@ -42,7 +42,7 @@ void assertion_get_stats( const func_unit* funit, float* total, int* hit );
 void assertion_report( FILE* ofile, bool verbose );
 
 /*! \brief Retrieves the total and hit counts of assertions for the specified functional unit */
-bool assertion_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit );
+bool assertion_get_funit_summary( const char* funit_name, int funit_type, /*@out@*/ int* total, /*@out@*/ int* hit );
 
 /*! \brief Collects uncovered and covered assertion instance names for the given module */
 bool assertion_collect( const char* funit_name, int funit_type, char*** uncov_inst_names, int** excludes, int* uncov_inst_size,
@@ -54,6 +54,9 @@ bool assertion_get_coverage( const char* funit_name, int funit_type, const char*
 
 /*
  $Log$
+ Revision 1.10  2007/11/20 05:28:57  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.9  2007/09/13 17:03:30  phase1geo
  Cleaning up some const-ness corrections -- still more to go but it's a good
  start.

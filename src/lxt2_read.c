@@ -307,7 +307,7 @@ void lxt2_rd_iter_radix( struct lxt2_rd_trace *lt, struct lxt2_rd_block *b ) { P
           if( vch >= b->num_dict_entries ) {
             snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  vch(%d) >= num_dict_entries(%d)", vch, b->num_dict_entries );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
-            exit( 1 );
+            exit( EXIT_FAILURE );
           }
           if( lt->flags[idx] & (LXT2_RD_SYM_F_DOUBLE | LXT2_RD_SYM_F_STRING) ) {
             free_safe( lt->value[idx] );
@@ -324,7 +324,7 @@ void lxt2_rd_iter_radix( struct lxt2_rd_trace *lt, struct lxt2_rd_block *b ) { P
             snprintf( user_msg, USER_MSG_LENGTH, "Internal error: %d ('%s') vs %d ('%s')",
                       lt->len[idx], lt->value[idx], b->string_lens[vch], b->string_pointers[vch] );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
-            exit( 1 );
+            exit( EXIT_FAILURE );
           }
           break;
       }
@@ -396,7 +396,8 @@ void lxt2_rd_iter_radix0( struct lxt2_rd_trace* lt, struct lxt2_rd_block* b, lxt
     case LXT2_RD_ENC_SUB3:
     case LXT2_RD_ENC_SUB4:
       print_output( "Internal error in granule 0 position 0", FATAL, __FILE__, __LINE__ );
-      exit( 1 );
+      exit( EXIT_FAILURE );
+      break;
     case LXT2_RD_ENC_X:
       for( i=0; i<lt->len[idx]; i++ ) {
         if( lt->value[idx][i] != 'x' ) {
@@ -426,7 +427,7 @@ void lxt2_rd_iter_radix0( struct lxt2_rd_trace* lt, struct lxt2_rd_block* b, lxt
       if( vch >= b->num_dict_entries ) {
         snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  vch(%d) >= num_dict_entries(%d)", vch, b->num_dict_entries );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        exit( 1 );
+        exit( EXIT_FAILURE );
       }
       if( lt->flags[idx] & (LXT2_RD_SYM_F_DOUBLE | LXT2_RD_SYM_F_STRING) ) {
         if( strcmp( lt->value[idx], b->string_pointers[vch] ) ) {
@@ -464,7 +465,7 @@ void lxt2_rd_iter_radix0( struct lxt2_rd_trace* lt, struct lxt2_rd_block* b, lxt
         snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  %d ('%s') vs %d ('%s')",
                   lt->len[idx], lt->value[idx], b->string_lens[vch], b->string_pointers[vch] );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        exit( 1 );
+        exit( EXIT_FAILURE );
       }
       break;
   }
@@ -597,7 +598,7 @@ int lxt2_rd_process_block( struct lxt2_rd_trace* lt, struct lxt2_rd_block* b ) {
 
   if( vld != LXT2_RD_GRAN_SECT_DICT ) {
     print_output( "Malformed section", FATAL, __FILE__, __LINE__ );
-    exit( 1 );
+    exit( EXIT_FAILURE );
   }
 
   if( b->num_dict_entries ) {
@@ -611,7 +612,7 @@ int lxt2_rd_process_block( struct lxt2_rd_trace* lt, struct lxt2_rd_block* b ) {
     }
     if( pnt != b->map_start ) {
       print_output( "Dictionary corrupt, exiting...", FATAL, __FILE__, __LINE__ );
-      exit( 1 );
+      exit( EXIT_FAILURE );
     }
   }
 
@@ -669,7 +670,7 @@ int lxt2_rd_process_block( struct lxt2_rd_trace* lt, struct lxt2_rd_block* b ) {
     if( !lt->fac_map_index_width || (lt->fac_map_index_width > 4) ) {
       snprintf( user_msg, USER_MSG_LENGTH, "Map index width of %d is illegal, exiting...", lt->fac_map_index_width );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      exit( 1 );
+      exit( EXIT_FAILURE );
     }
     pnt++;
 
@@ -703,7 +704,7 @@ int lxt2_rd_process_block( struct lxt2_rd_trace* lt, struct lxt2_rd_block* b ) {
     if( !lt->fac_curpos_width || (lt->fac_curpos_width > 4) ) {
       snprintf( user_msg, USER_MSG_LENGTH, "Curpos index width of %d is illegal, exiting...", lt->fac_curpos_width );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      exit( 1 );
+      exit( EXIT_FAILURE );
     }
     pnt++;
 

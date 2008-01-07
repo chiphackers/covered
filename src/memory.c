@@ -146,10 +146,9 @@ void memory_get_stats( sig_link* sigl, float* ae_total, int* wr_hit, int* rd_hit
 
  Retrieves memory summary information for a given functional unit made by a GUI request.
 */
-bool memory_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit ) { PROFILE(MEMORY_GET_FUNIT_SUMMARY);
+bool memory_get_funit_summary( const char* funit_name, int funit_type, int* total, int* hit ) { PROFILE(MEMORY_GET_FUNIT_SUMMARY);
 
   bool        retval    = FALSE;  /* Return value for this function */
-  func_unit   funit;              /* Functional unit container used for searching */
   funit_link* funitl;             /* Pointer to functional unit link containing the requested functional unit */
   sig_link*   sigl;               /* Pointer to current signal link in list */
   float       ae_total  = 0;      /* Total number of addressable elements */
@@ -159,11 +158,7 @@ bool memory_get_funit_summary( char* funit_name, int funit_type, int* total, int
   int         tog01_hit = 0;      /* Number of bits toggling from 0->1 */
   int         tog10_hit = 0;      /* Number of bits toggling from 1->0 */
 
-  /* Find the given functional unit in the design */
-  funit.name = funit_name;
-  funit.type = funit_type;
-
-  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
   
     /* Initialize total and hit information */
     *total = 0;
@@ -395,11 +390,10 @@ void memory_get_mem_coverage( char** mem_str, vsignal* sig, vec_data* value, cha
 
  Retrieves memory coverage information for the given signal in the specified functional unit.
 */
-bool memory_get_coverage( char* funit_name, int funit_type, char* signame,
+bool memory_get_coverage( const char* funit_name, int funit_type, char* signame,
                           char** pdim_str, char** pdim_array, char** udim_str, char** memory_info, int* excluded ) { PROFILE(MEMORY_GET_COVERAGE);
 
   bool        retval = FALSE;  /* Return value for this function */
-  func_unit   funit;           /* Functional unit container used for searching */
   funit_link* funitl;          /* Pointer to found functional unit link */
   vsignal     sig;             /* Signal container used for searching */
   sig_link*   sigl;            /* Pointer to found signal link */
@@ -407,14 +401,11 @@ bool memory_get_coverage( char* funit_name, int funit_type, char* signame,
   char        tmp1[20];        /* Temporary string holder */
   char        tmp2[20];        /* Temporary string holder */
 
-  funit.name = funit_name;
-  funit.type = funit_type;
+  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
 
-  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
+    if( (sigl = sig_link_find( signame, funitl->funit->sig_head )) != NULL ) {
 
-    sig.name = signame;
-
-    if( (sigl = sig_link_find( &sig, funitl->funit->sig_head )) != NULL ) {
+      unsigned int rv;
 
       /* Allocate and populate the pdim_array and pdim_width parameters */
       *pdim_array = (char*)malloc_safe( 1 );
@@ -424,11 +415,16 @@ bool memory_get_coverage( char* funit_name, int funit_type, char* signame,
       /* Allocate and populate the pdim_str string */
       *pdim_str = NULL;
       for( i=sigl->sig->udim_num; i<(sigl->sig->pdim_num + sigl->sig->udim_num); i++ ) {
-        snprintf( tmp1, 20, "%d", sigl->sig->dim[i].msb );
-        snprintf( tmp2, 20, "%d", sigl->sig->dim[i].lsb );
-        *pdim_str = (char*)realloc( *pdim_str, (strlen( tmp1 ) + strlen( tmp2 ) + 4) );
+        unsigned int slen;
+        rv = snprintf( tmp1, 20, "%d", sigl->sig->dim[i].msb );
+        assert( rv < 20 );
+        rv = snprintf( tmp2, 20, "%d", sigl->sig->dim[i].lsb );
+        assert( rv < 20 );
+        slen = strlen( tmp1 ) + strlen( tmp2 ) + 4;
+        *pdim_str = (char*)realloc( *pdim_str, slen );
         if( i == sigl->sig->udim_num ) {
-          snprintf( *pdim_str, (strlen( tmp1 ) + strlen( tmp2 ) + 4), "[%s:%s]", tmp1, tmp2 );
+          rv = snprintf( *pdim_str, slen, "[%s:%s]", tmp1, tmp2 );
+          assert( rv < slen );
         } else {
           strcat( *pdim_str, "[" );
           strcat( *pdim_str, tmp1 );
@@ -441,11 +437,16 @@ bool memory_get_coverage( char* funit_name, int funit_type, char* signame,
       /* Allocate and populate the udim_info string */
       *udim_str = NULL;
       for( i=0; i<sigl->sig->udim_num; i++ ) {
-        snprintf( tmp1, 20, "%d", sigl->sig->dim[i].msb );
-        snprintf( tmp2, 20, "%d", sigl->sig->dim[i].lsb );
-        *udim_str = (char*)realloc( *udim_str, (strlen( tmp1 ) + strlen( tmp2 ) + 4) );
+        unsigned int slen;
+        rv = snprintf( tmp1, 20, "%d", sigl->sig->dim[i].msb );
+        assert( rv < 20 );
+        rv = snprintf( tmp2, 20, "%d", sigl->sig->dim[i].lsb );
+        assert( rv < 20 );
+        slen = strlen( tmp1 ) + strlen( tmp2 ) + 4;
+        *udim_str = (char*)realloc( *udim_str, slen );
         if( i == 0 ) {
-          snprintf( *udim_str, (strlen( tmp1 ) + strlen( tmp2 ) + 4), "[%s:%s]", tmp1, tmp2 );
+          rv = snprintf( *udim_str, slen, "[%s:%s]", tmp1, tmp2 );
+          assert( rv < slen );
         } else {
           strcat( *udim_str, "[" );
           strcat( *udim_str, tmp1 );
@@ -486,10 +487,9 @@ bool memory_get_coverage( char* funit_name, int funit_type, char* signame,
  Collects all signals that are memories and match the given coverage type and stores them
  in the given signal list.
 */
-bool memory_collect( char* funit_name, int funit_type, int cov, sig_link** head, sig_link** tail ) { PROFILE(MEMORY_COLLECT);
+bool memory_collect( const char* funit_name, int funit_type, int cov, sig_link** head, sig_link** tail ) { PROFILE(MEMORY_COLLECT);
 
   bool        retval = FALSE;  /* Return value for this function */
-  func_unit   funit;           /* Functional unit used for searching */
   funit_link* funitl;          /* Pointer to found functional unit link */
   sig_link*   sigl;            /* Pointer to current signal link being evaluated */
   float       ae_total  = 0;   /* Total number of addressable elements */
@@ -499,11 +499,7 @@ bool memory_collect( char* funit_name, int funit_type, int cov, sig_link** head,
   int         hit01     = 0;   /* Number of bits that toggled from 0 to 1 */
   int         hit10     = 0;   /* Number of bits that toggled from 1 to 0 */
 
-  /* First, find functional unit in functional unit array */
-  funit.name = funit_name;
-  funit.type = funit_type;
-
-  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
 
     sigl = funitl->funit->sig_head;
     retval = TRUE;
@@ -597,7 +593,8 @@ bool memory_toggle_instance_summary( FILE* ofile, funit_inst* root, char* parent
   } else if( strcmp( parent_inst, "*" ) == 0 ) {
     strcpy( tmpname, pname );
   } else {
-    snprintf( tmpname, 4096, "%s.%s", parent_inst, pname );
+    unsigned int rv = snprintf( tmpname, 4096, "%s.%s", parent_inst, pname );
+    assert( rv < 4096 );
   }
 
   free_safe( pname );
@@ -1254,6 +1251,11 @@ void memory_report( FILE* ofile, bool verbose ) { PROFILE(MEMORY_REPORT);
 
 /*
  $Log$
+ Revision 1.18  2007/12/11 05:48:25  phase1geo
+ Fixing more compile errors with new code changes and adding more profiling.
+ Still have a ways to go before we can compile cleanly again (next submission
+ should do it).
+
  Revision 1.17  2007/11/20 05:28:58  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

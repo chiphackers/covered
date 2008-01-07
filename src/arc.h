@@ -71,10 +71,13 @@ void arc_get_transitions( char*** from_states, char*** to_states, int** excludes
 bool arc_are_any_excluded( const char* arcs );
 
 /*! \brief Deallocates memory for specified arcs array. */
-void arc_dealloc( char* arcs );
+void arc_dealloc( /*@only@*/ char* arcs );
 
 /*
  $Log$
+ Revision 1.21  2008/01/07 05:01:57  phase1geo
+ Cleaning up more splint errors.
+
  Revision 1.20  2008/01/04 23:07:58  phase1geo
  More splint updates.
 

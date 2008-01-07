@@ -536,7 +536,7 @@ void defparam_add( char* scope, vector* value ) { PROFILE(DEFPARAM_ADD);
 
     snprintf( user_msg, USER_MSG_LENGTH, "Parameter (%s) value is assigned more than once", obf_sig( scope ) );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    exit( 1 );
+    exit( EXIT_FAILURE );
 
   }
 
@@ -580,7 +580,7 @@ void param_find_and_set_expr_value( expression* expr, funit_inst* inst ) { PROFI
   if( inst != NULL ) {
 
     icurr = inst->param_head;
-    while( (icurr != NULL) && ((icurr->mparm == NULL) || (exp_link_find( expr, icurr->mparm->exp_head ) == NULL)) ) {
+    while( (icurr != NULL) && ((icurr->mparm == NULL) || (exp_link_find( expr->id, icurr->mparm->exp_head ) == NULL)) ) {
       icurr = icurr->next;
     }
 
@@ -595,7 +595,7 @@ void param_find_and_set_expr_value( expression* expr, funit_inst* inst ) { PROFI
       } else {
         snprintf( user_msg, USER_MSG_LENGTH, "Parameter used in expression but not defined in current module, line %d", expr->line );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        exit( 1 );
+        exit( EXIT_FAILURE );
       }
 
     } else {
@@ -1061,6 +1061,9 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) { PROFILE(INST_PARM_D
 
 /*
  $Log$
+ Revision 1.95  2007/12/19 14:37:29  phase1geo
+ More compiler fixes (still more to go).  Checkpointing.
+
  Revision 1.94  2007/12/11 05:48:26  phase1geo
  Fixing more compile errors with new code changes and adding more profiling.
  Still have a ways to go before we can compile cleanly again (next submission

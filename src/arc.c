@@ -1155,6 +1155,11 @@ void arc_get_states( char*** states, int* state_size, const char* arcs, bool hit
   int i;  /* Loop iterator */
   int j;  /* Loop iterator */
 
+  /*@-nullstate@*/
+
+  assert( states != NULL );
+  assert( state_size != NULL );
+
   /* Initialize states array to NULL */
   *states     = NULL;
   *state_size = 0;
@@ -1300,6 +1305,9 @@ void arc_dealloc( char* arcs ) { PROFILE(ARC_DEALLOC);
 
 /*
  $Log$
+ Revision 1.44  2008/01/07 05:01:57  phase1geo
+ Cleaning up more splint errors.
+
  Revision 1.43  2008/01/04 23:07:58  phase1geo
  More splint updates.
 

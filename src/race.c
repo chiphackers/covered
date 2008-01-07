@@ -679,7 +679,7 @@ void race_check_race_count() { PROFILE(RACE_CHECK_RACE_COUNT);
 
     snprintf( user_msg, USER_MSG_LENGTH, "%d race conditions were detected.  Exiting score command.", races_found );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    exit( 1 );
+    exit( EXIT_FAILURE );
 
   }
 
@@ -1026,18 +1026,14 @@ void race_report( FILE* ofile, bool verbose ) { PROFILE(RACE_REPORT);
  Collects all of the line numbers in the specified module that were ignored from coverage due to
  detecting a race condition.  This function is primarily used by the GUI for outputting purposes.
 */
-bool race_collect_lines( char* funit_name, int funit_type, int** slines, int** elines, int** reasons, int* line_cnt ) { PROFILE(RACE_COLLECT_LINES);
+bool race_collect_lines( const char* funit_name, int funit_type, int** slines, int** elines, int** reasons, int* line_cnt ) { PROFILE(RACE_COLLECT_LINES);
 
   bool        retval    = TRUE;  /* Return value for this function */
-  func_unit   mod;               /* Temporary module used to search for module name */
   funit_link* modl;              /* Pointer to found module link containing specified module */
   race_blk*   curr_race = NULL;  /* Pointer to current race condition block */
   int         line_size = 20;    /* Current number of lines allocated in lines array */
 
-  mod.name = strdup_safe( funit_name );
-  mod.type = funit_type;
-
-  if( (modl = funit_link_find( &mod, funit_head )) != NULL ) {
+  if( (modl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
 
     /* Begin by allocating some memory for the lines */
     *slines   = (int*)malloc_safe( sizeof( int ) * line_size );
@@ -1065,8 +1061,6 @@ bool race_collect_lines( char* funit_name, int funit_type, int** slines, int** e
     retval = FALSE;
 
   }
-
-  free_safe( mod.name );
 
   PROFILE_END;
 
@@ -1097,6 +1091,12 @@ void race_blk_delete_list( race_blk* rb ) { PROFILE(RACE_BLK_DELETE_LIST);
 
 /*
  $Log$
+ Revision 1.61  2007/12/18 23:55:21  phase1geo
+ Starting to remove 64-bit time and replacing it with a sim_time structure
+ for performance enhancement purposes.  Also removing global variables for time-related
+ information and passing this information around by reference for performance
+ enhancement purposes.
+
  Revision 1.60  2007/12/11 05:48:26  phase1geo
  Fixing more compile errors with new code changes and adding more profiling.
  Still have a ways to go before we can compile cleanly again (next submission

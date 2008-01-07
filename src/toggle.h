@@ -32,14 +32,14 @@
 void toggle_get_stats( sig_link* sigl, float* total, int* hit01, int* hit10 );
 
 /*! \brief Collects all toggle expressions that match the specified coverage indication. */
-bool toggle_collect( char* funit_name, int funit_type, int cov, sig_link** sig_head, sig_link** sig_tail );
+bool toggle_collect( const char* funit_name, int funit_type, int cov, sig_link** sig_head, sig_link** sig_tail );
 
 /*! \brief Gets toggle coverage information for a single signal in the specified functional unit */
-bool toggle_get_coverage( char* funit_name, int funit_type, char* sig_name, int* msb, int* lsb,
+bool toggle_get_coverage( const char* funit_name, int funit_type, char* sig_name, int* msb, int* lsb,
                           char** tog01, char** tog10, int* excluded );
 
 /*! \brief Gets total and hit toggle signal status for the specified functional unit */
-bool toggle_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit );
+bool toggle_get_funit_summary( const char* funit_name, int funit_type, /*@out@*/ int* total, /*@out@*/ int* hit );
 
 /*! \brief Generates report output for toggle coverage. */
 void toggle_report( FILE* ofile, bool verbose );
@@ -47,6 +47,9 @@ void toggle_report( FILE* ofile, bool verbose );
 
 /*
  $Log$
+ Revision 1.15  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.14  2006/06/29 22:44:57  phase1geo
  Fixing newly introduced bug in FSM report handler.  Also adding pointers back
  to main text window when exclusion properties are changed.  Fixing toggle

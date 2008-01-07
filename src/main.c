@@ -199,7 +199,7 @@ int main( int argc, char** argv ) {
 
           snprintf( user_msg, USER_MSG_LENGTH, "Unknown command/global option \"%s\".  Please see \"covered -h\" for usage.", argv[curr_arg] );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          exit( 1 );
+          exit( EXIT_FAILURE );
 
         }
 
@@ -230,6 +230,10 @@ int main( int argc, char** argv ) {
 
 /*
  $Log$
+ Revision 1.23  2007/12/20 04:47:50  phase1geo
+ Fixing the last of the regression failures from previous changes.  Removing unnecessary
+ output used for debugging.
+
  Revision 1.22  2007/12/12 07:53:00  phase1geo
  Separating debugging and profiling so that we can do profiling without all
  of the debug overhead.

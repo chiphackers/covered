@@ -26,7 +26,7 @@
 #include "defines.h"
 
 /*! \brief Collects array of uncovered/covered lines from given functional unit. */
-bool line_collect( char* funit_name, int funit_type, int cov, int** lines, int** excludes, int* line_cnt );
+bool line_collect( const char* funit_name, int funit_type, int cov, int** lines, int** excludes, int* line_cnt );
 
 /*! \brief Returns hit and total information for specified functional unit. */
 bool line_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit );
@@ -42,6 +42,9 @@ bool funit_get_start_and_end_lines( const char* funit_name, int funit_type, int*
 
 /*
  $Log$
+ Revision 1.9  2007/11/20 05:28:58  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.8  2006/06/26 04:12:55  phase1geo
  More updates for supporting coverage exclusion.  Still a bit more to go
  before this is working properly.

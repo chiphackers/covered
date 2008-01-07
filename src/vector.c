@@ -124,7 +124,7 @@ vector* vector_create( int width, int type, bool data ) { PROFILE(VECTOR_CREATE)
       snprintf( user_msg, USER_MSG_LENGTH, "Found a vector width (%d) that exceeds the maximum currently allowed by Covered (%d)",
                 width, MAX_BIT_WIDTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      exit( 1 );
+      exit( EXIT_FAILURE );
     }
 #endif
     value = (vec_data*)malloc_safe( sizeof( vec_data ) * width );
@@ -415,7 +415,7 @@ bool vector_db_merge( vector* base, char** line, bool same ) { PROFILE(VECTOR_DB
       if( same ) {
         print_output( "Attempting to merge databases derived from different designs.  Unable to merge",
                       FATAL, __FILE__, __LINE__ );
-        exit( 1 );
+        exit( EXIT_FAILURE );
       }
 
     } else {
@@ -1318,7 +1318,7 @@ char* vector_to_string( vector* vec ) { PROFILE(VECTOR_TO_STRING);
         break;
       default          :  
         print_output( "Internal Error:  Unknown vector_to_string type\n", FATAL, __FILE__, __LINE__ );
-        exit( 1 );
+        exit( EXIT_FAILURE );
         break;
     }
 
@@ -1357,7 +1357,7 @@ char* vector_to_string( vector* vec ) { PROFILE(VECTOR_TO_STRING);
           case 17  :  tmp[pos] = 'Z';  pos++;  break;
           default  :  
             print_output( "Internal Error:  Value in vector_to_string exceeds allowed limit\n", FATAL, __FILE__, __LINE__ );
-            exit( 1 );
+            exit( EXIT_FAILURE );
             break;
         }
         value = 0;
@@ -1555,7 +1555,7 @@ bool vector_vcd_assign( vector* vec, char* value, int msb, int lsb ) { PROFILE(V
       default :  
         snprintf( user_msg, USER_MSG_LENGTH, "VCD file contains value change character that is not four-state" );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        exit( 1 );
+        exit( EXIT_FAILURE );
         break;
     }
 
@@ -1738,7 +1738,7 @@ bool vector_op_compare( vector* tgt, vector* left, vector* right, int comp_type 
       default        :
         snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  Unidentified comparison type %d", comp_type );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        exit( 1 );
+        exit( EXIT_FAILURE );
         break;
     }
 
@@ -2345,6 +2345,9 @@ void vector_dealloc( vector* vec ) { PROFILE(VECTOR_DEALLOC);
 
 /*
  $Log$
+ Revision 1.103  2008/01/02 23:48:47  phase1geo
+ Removing unnecessary check in vector.c.  Fixing bug 1862769.
+
  Revision 1.102  2008/01/02 06:00:08  phase1geo
  Updating user documentation to include the CLI and profiling documentation.
  (CLI documentation is not complete at this time).  Fixes bug 1861986.

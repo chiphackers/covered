@@ -854,7 +854,7 @@ void instance_flatten_helper( funit_inst* root, funit_link** rm_head, funit_link
         child = child->next;
 
         /* Add the current functional unit to the list of functional units to remove */
-        if( funit_link_find( tmp->funit, *rm_head ) == NULL ) {
+        if( funit_link_find( tmp->funit->name, tmp->funit->type, *rm_head ) == NULL ) {
           funit_link_add( tmp->funit, rm_head, rm_tail );
         }
 
@@ -1127,6 +1127,12 @@ void instance_dealloc( funit_inst* root, char* scope ) { PROFILE(INSTANCE_DEALLO
 
 /*
  $Log$
+ Revision 1.83  2007/12/18 23:55:21  phase1geo
+ Starting to remove 64-bit time and replacing it with a sim_time structure
+ for performance enhancement purposes.  Also removing global variables for time-related
+ information and passing this information around by reference for performance
+ enhancement purposes.
+
  Revision 1.82  2007/12/11 05:48:25  phase1geo
  Fixing more compile errors with new code changes and adding more profiling.
  Still have a ways to go before we can compile cleanly again (next submission

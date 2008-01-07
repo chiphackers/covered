@@ -41,18 +41,18 @@ void combination_get_tree_stats( expression* exp, int* ulid, unsigned int curr_d
 void combination_get_stats( func_unit* funit, float* total, int* hit );
 
 /*! \brief Collects all toggle expressions that match the specified coverage indication. */
-bool combination_collect( char* funit_name, int funit_type, expression*** covs, int* cov_cnt,
+bool combination_collect( const char* funit_name, int funit_type, expression*** covs, int* cov_cnt,
                           expression*** uncovs, int** excludes, int* uncov_cnt );
 
 /*! \brief Gets combinational logic summary statistics for specified module. */
-bool combination_get_module_summary( char* funit_name, int funit_type, int* total, int* hit );
+bool combination_get_module_summary( const char* funit_name, int funit_type, int* total, int* hit );
 
 /*! \brief Gets output for specified expression including underlines and code */
-bool combination_get_expression( char* funit_name, int funit_type, int expr_id, char*** code, int** uline_groups,
+bool combination_get_expression( const char* funit_name, int funit_type, int expr_id, char*** code, int** uline_groups,
                                  int* code_size, char*** ulines, int* uline_size, int** excludes, int* exclude_size );
 
 /*! \brief Gets output for specified expression including coverage information */
-bool combination_get_coverage( char* funit_name, int funit_type, int exp_id, int uline_id, char*** info, int* info_size );
+bool combination_get_coverage( const char* funit_name, int funit_type, int exp_id, int uline_id, char*** info, int* info_size );
 
 /*! \brief Generates report output for combinational logic coverage. */
 void combination_report( FILE* ofile, bool verbose );
@@ -60,6 +60,9 @@ void combination_report( FILE* ofile, bool verbose );
 
 /*
  $Log$
+ Revision 1.22  2007/11/20 05:28:57  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.21  2007/04/02 20:19:36  phase1geo
  Checkpointing more work on use of functional iterators.  Not working correctly
  yet.

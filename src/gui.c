@@ -108,20 +108,12 @@ bool funit_get_list( char*** funit_names, char*** funit_types, int* funit_size )
 */
 char* funit_get_filename( const char* funit_name, int funit_type ) { PROFILE(FUNIT_GET_FILENAME);
 
-  func_unit   funit;         /* Temporary functional unit container used for searching */
   funit_link* funitl;        /* Pointer to functional unit link containing matched functional unit */
   char*       fname = NULL;  /* Name of filename containing specified functional unit */
 
-  funit.name = strdup_safe( funit_name );
-  funit.type = funit_type;
-
-  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
-     
+  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
     fname = strdup_safe( funitl->funit->filename );
-
   }
-
-  free_safe( funit.name );
 
   return( fname );
 
@@ -142,13 +134,9 @@ char* funit_get_filename( const char* funit_name, int funit_type ) { PROFILE(FUN
 bool funit_get_start_and_end_lines( const char* funit_name, int funit_type, int* start_line, int* end_line ) { PROFILE(FUNIT_GET_START_AND_END_LINES);
 
   bool        retval = TRUE;  /* Return value of this function */
-  func_unit   funit;          /* Temporary functional unit container used for searching */
   funit_link* funitl;         /* Pointer to functional unit line containing matched functional unit */
   
-  funit.name = strdup_safe( funit_name );
-  funit.type = funit_type;
-
-  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
 
     *start_line = funitl->funit->start_line;
     *end_line   = funitl->funit->end_line;
@@ -159,14 +147,17 @@ bool funit_get_start_and_end_lines( const char* funit_name, int funit_type, int*
 
   }
 
-  free_safe( funit.name );
-
   return( retval );
 
 }
 
 /*
  $Log$
+ Revision 1.11  2007/12/11 05:48:25  phase1geo
+ Fixing more compile errors with new code changes and adding more profiling.
+ Still have a ways to go before we can compile cleanly again (next submission
+ should do it).
+
  Revision 1.10  2007/11/20 05:28:58  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

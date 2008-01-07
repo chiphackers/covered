@@ -52,14 +52,14 @@ void fsm_table_set( fsm* table );
 void fsm_get_stats( fsm_link* table, float* state_total, int* state_hit, float* arc_total, int* arc_hit );
 
 /*! \brief Retrieves the FSM summary information for the specified functional unit. */
-bool fsm_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit );
+bool fsm_get_funit_summary( const char* funit_name, int funit_type, /*@out@*/ int* total, /*@out@*/ int* hit );
 
 /*! \brief Retrieves covered and uncovered FSMs from the specified functional unit. */
-bool fsm_collect( char* funit_name, int funit_type, sig_link** cov_head, sig_link** cov_tail,
+bool fsm_collect( const char* funit_name, int funit_type, sig_link** cov_head, sig_link** cov_tail,
                   sig_link** uncov_head, sig_link** uncov_tail, int** expr_ids, int** excludes );
 
 /*! \brief Collects all coverage information for the specified FSM */
-bool fsm_get_coverage( char* funit_name, int funit_type, int expr_id, int* width,
+bool fsm_get_coverage( const char* funit_name, int funit_type, int expr_id, int* width,
                        char*** total_states, int* total_state_num,
                        char*** hit_states, int* hit_state_num,
                        char*** total_from_arcs, char*** total_to_arcs, int** excludes, int* total_arc_num,
@@ -74,6 +74,9 @@ void fsm_dealloc( fsm* table );
 
 /*
  $Log$
+ Revision 1.22  2007/11/20 05:28:58  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.21  2007/03/30 22:43:13  phase1geo
  Regression fixes.  Still have a ways to go but we are getting close.
 

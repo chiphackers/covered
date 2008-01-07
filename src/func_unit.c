@@ -285,11 +285,10 @@ vsignal* funit_find_signal( char* name, func_unit* funit ) { PROFILE(FUNIT_FIND_
   funit_inst* inst;              /* Pointer to current functional unit instance */
 #endif
 
-  /* Populate a signal structure for searching purposes */
   sig.name = name;
 
   /* Search for signal in given functional unit signal list */
-  if( (sigl = sig_link_find( &sig, funit->sig_head )) != NULL ) {
+  if( (sigl = sig_link_find( name, funit->sig_head )) != NULL ) {
 
     found_sig = sigl->sig;
 
@@ -889,13 +888,10 @@ func_unit* funit_find_by_id( int id ) { PROFILE(FUNIT_FIND_BY_ID);
 
   funit_link* funitl;       /* Temporary pointer to functional unit link */
   exp_link*   expl = NULL;  /* Temporary pointer to expression link */
-  expression  exp;          /* Temporary expression used for comparison purposes */
-
-  exp.id = id;
 
   funitl = funit_head;
   while( (funitl != NULL) && (expl == NULL) ) {
-    if( (expl = exp_link_find( &exp, funitl->funit->exp_head )) == NULL ) {
+    if( (expl = exp_link_find( id, funitl->funit->exp_head )) == NULL ) {
       funitl = funitl->next;
     }
   }
@@ -1169,6 +1165,9 @@ void funit_dealloc( func_unit* funit ) { PROFILE(FUNIT_DEALLOC);
 
 /*
  $Log$
+ Revision 1.83  2007/12/17 23:47:48  phase1geo
+ Adding more profiling information.
+
  Revision 1.82  2007/12/12 07:23:19  phase1geo
  More work on profiling.  I have now included the ability to get function runtimes.
  Still more work to do but everything is currently working at the moment.

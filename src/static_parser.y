@@ -319,7 +319,7 @@ int parse_static_expr( char* str, func_unit* funit, int lineno, bool no_genvars 
 
   /* Call the parser */
   if( SEparse() != 0 ) {
-    exit( 1 );
+    exit( EXIT_FAILURE );
   }
 
   return( se_value );
@@ -337,7 +337,7 @@ int SEerror( char* str ) {
 
   snprintf( user_msg, USER_MSG_LENGTH, "%s,   file: %s, line: %d", str, obf_file( se_funit->name ), se_lineno );
   print_output( user_msg, FATAL, __FILE__, __LINE__ );
-  exit( 1 );
+  exit( EXIT_FAILURE );
 
   return( 0 );
 

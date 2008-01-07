@@ -248,7 +248,7 @@ PLI_INT32 covered_end_of_sim( p_cb_data cb ) { PROFILE(COVERED_END_OF_SIM);
   /* Write contents to database file */
   if( !db_write( out_db_name, FALSE, FALSE ) ) {
     vpi_printf( "covered VPI: Unable to write database file\n" );
-    exit( 1 );
+    exit( EXIT_FAILURE );
   } else {
     vpi_printf( "covered VPI: Output coverage information to %s\n", out_db_name );
   }
@@ -656,7 +656,7 @@ PLI_INT32 covered_sim_calltf( char* name ) {
   /* Read in contents of specified database file */
   if( !db_read( in_db_name, READ_MODE_MERGE_NO_MERGE ) ) {
     vpi_printf( "covered VPI: Unable to read database file\n" );
-    exit( 1 );
+    exit( EXIT_FAILURE );
   } else {
     vpi_printf( "covered VPI: Read design information from %s\n", in_db_name );
   }

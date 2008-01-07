@@ -114,14 +114,14 @@ WSPACE [ \t\b\f]+
          snprintf( user_msg, USER_MSG_LENGTH, "Unable to find generate variable %s in module %s",
                    obf_sig( yytext ), obf_funit( se_funit->name ) );
          print_output( user_msg, FATAL, __FILE__, __LINE__ );
-         exit( 1 );
+         exit( EXIT_FAILURE );
        }
        yylval.number = vector_to_int( gvar->value );
      } else {
        snprintf( user_msg, USER_MSG_LENGTH, "Generate variable found in constant expression outside of generate block, file: %s, line: %d",
                  obf_file( se_funit->filename ), se_lineno );
        print_output( user_msg, FATAL, __FILE__, __LINE__ );
-       exit( 1 );
+       exit( EXIT_FAILURE );
      }
      return NUMBER;
  }

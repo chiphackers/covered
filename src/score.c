@@ -206,14 +206,14 @@ void score_generate_top_vpi_module( char* vpi_file, char* output_db, char* top_i
 
       snprintf( user_msg, USER_MSG_LENGTH, "Unable to open %s for writing", vpi_file );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      exit( 1 );
+      exit( EXIT_FAILURE );
 
     }
 
   } else {
 
     print_output( "Specified -vpi filename did not contain a file extension", FATAL, __FILE__, __LINE__ );
-    exit( 1 );
+    exit( EXIT_FAILURE );
 
   }
 
@@ -252,14 +252,14 @@ void score_generate_pli_tab_file( char* tab_file, char* top_mod ) { PROFILE(SCOR
   
       snprintf( user_msg, USER_MSG_LENGTH, "Unable to open %s for writing", mod_name );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      exit( 1 );
+      exit( EXIT_FAILURE );
 
     }
 
   } else {
 
     print_output( "Specified -vpi filename did not contain a file extension", FATAL, __FILE__, __LINE__ );
-    exit( 1 );
+    exit( EXIT_FAILURE );
 
   }
 
@@ -686,7 +686,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) { PROFILE(SCORE_PAR
           } else {
             snprintf( user_msg, USER_MSG_LENGTH, "Unrecognizable filename %s specified for -p option.", argv[i] );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
-            exit( 1 );
+            exit( EXIT_FAILURE );
           }
         }
       }
@@ -702,7 +702,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) { PROFILE(SCORE_PAR
         if( *ptr == '\0' ) {
           print_output( "Option -P must specify a value to assign.  See \"covered score -h\" for more information.",
                         FATAL, __FILE__, __LINE__ );
-          exit( 1 );
+          exit( EXIT_FAILURE );
         } else {
           score_add_arg( argv[i-1] );
           score_add_arg( argv[i] );
@@ -734,7 +734,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) { PROFILE(SCORE_PAR
           } else {
             snprintf( user_msg, USER_MSG_LENGTH, "Unknown -T value (%s).  Please specify min, max or typ.", argv[i] );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
-            exit( 1 );
+            exit( EXIT_FAILURE );
           }
         }
       }
@@ -972,6 +972,10 @@ int command_score( int argc, int last_arg, char** argv ) { PROFILE(COMMAND_SCORE
 
 /*
  $Log$
+ Revision 1.100  2007/12/12 07:23:19  phase1geo
+ More work on profiling.  I have now included the ability to get function runtimes.
+ Still more work to do but everything is currently working at the moment.
+
  Revision 1.99  2007/12/11 05:48:26  phase1geo
  Fixing more compile errors with new code changes and adding more profiling.
  Still have a ways to go before we can compile cleanly again (next submission

@@ -110,7 +110,7 @@ void vcd_parse_def_var( FILE* vcd ) { PROFILE(VCD_PARSE_DEF_VAR);
         
         if( sscanf( tmp, "\[%d]", &lsb ) != 1 ) {
           print_output( "Unrecognized $var format", FATAL, __FILE__, __LINE__ );
-          exit( 1 );
+          exit( EXIT_FAILURE );
         } else {
           msb = lsb;
         }
@@ -119,7 +119,7 @@ void vcd_parse_def_var( FILE* vcd ) { PROFILE(VCD_PARSE_DEF_VAR);
 
       if( (fscanf( vcd, "%s", tmp ) != 1) || (strncmp( "$end", tmp, 4 ) != 0) ) {
         print_output( "Unrecognized $var format", FATAL, __FILE__, __LINE__ );
-        exit( 1 );
+        exit( EXIT_FAILURE );
       }
 
     } else if( sscanf( ref, "%[a-zA-Z0-9_]\[%s]", reftmp, tmp ) == 2 ) {
@@ -129,7 +129,7 @@ void vcd_parse_def_var( FILE* vcd ) { PROFILE(VCD_PARSE_DEF_VAR);
       if( sscanf( tmp, "%d:%d", &msb, &lsb ) != 2 ) {
         if( sscanf( tmp, "%d", &lsb ) != 1 ) {
           print_output( "Unrecognized $var format", FATAL, __FILE__, __LINE__ );
-          exit( 1 );
+          exit( EXIT_FAILURE );
         } else {
           msb = lsb;
         }
@@ -155,7 +155,7 @@ void vcd_parse_def_var( FILE* vcd ) { PROFILE(VCD_PARSE_DEF_VAR);
   } else {
 
     print_output( "Unrecognized $var format", FATAL, __FILE__, __LINE__ );
-    exit( 1 );
+    exit( EXIT_FAILURE );
   
   }
 
@@ -185,7 +185,7 @@ void vcd_parse_def_scope( FILE* vcd ) { PROFILE(VCD_PARSE_DEF_SCOPE);
   } else {
 
     print_output( "Unrecognized $scope format", FATAL, __FILE__, __LINE__ );
-    exit( 1 );
+    exit( EXIT_FAILURE );
 
   }
 
@@ -228,7 +228,7 @@ void vcd_parse_def( FILE* vcd ) { PROFILE(VCD_PARSE_DEF);
 
       snprintf( user_msg, USER_MSG_LENGTH, "Non-keyword located where one should have been \"%s\"", keyword );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      exit( 1 );
+      exit( EXIT_FAILURE );
 
     }
   
@@ -236,7 +236,7 @@ void vcd_parse_def( FILE* vcd ) { PROFILE(VCD_PARSE_DEF);
 
   if( !enddef_found ) {
     print_output( "Specified VCD file is not a valid VCD file", FATAL, __FILE__, __LINE__ );
-    exit( 1 );
+    exit( EXIT_FAILURE );
   }
 
   assert( enddef_found );
@@ -255,7 +255,7 @@ void vcd_parse_def( FILE* vcd ) { PROFILE(VCD_PARSE_DEF);
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
     }
 
-    exit( 1 );
+    exit( EXIT_FAILURE );
 
   }
 
@@ -284,7 +284,7 @@ void vcd_parse_sim_vector( FILE* vcd, char* value ) { PROFILE(VCD_PARSE_SIM_VECT
   } else {
 
     print_output( "Bad file format", FATAL, __FILE__, __LINE__ );
-    exit( 1 );
+    exit( EXIT_FAILURE );
 
   }
 
@@ -306,7 +306,7 @@ void vcd_parse_sim_ignore( FILE* vcd ) { PROFILE(VCD_PARSE_SIM_IGNORE);
   if( fscanf( vcd, "%s%n", sym, &chars_read ) != 1 ) {
 
     print_output( "Bad file format", FATAL, __FILE__, __LINE__ );
-    exit( 1 );
+    exit( EXIT_FAILURE );
 
   }
   
@@ -367,7 +367,7 @@ void vcd_parse_sim( FILE* vcd ) { PROFILE(VCD_PARSE_SIM);
 
         snprintf( user_msg, USER_MSG_LENGTH, "Badly placed token \"%s\"", token );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        exit( 1 );
+        exit( EXIT_FAILURE );
 
       }
 
@@ -425,7 +425,7 @@ void vcd_parse( char* vcd_file ) { PROFILE(VCD_PARSE);
   } else {
 
     print_output( "Unable to open specified VCD file", FATAL, __FILE__, __LINE__ );
-    exit( 1 );
+    exit( EXIT_FAILURE );
 
   }
 
@@ -435,6 +435,9 @@ void vcd_parse( char* vcd_file ) { PROFILE(VCD_PARSE);
 
 /*
  $Log$
+ Revision 1.30  2007/12/17 23:47:48  phase1geo
+ Adding more profiling information.
+
  Revision 1.29  2007/12/11 23:19:14  phase1geo
  Fixed compile issues and completed first pass injection of profiling calls.
  Working on ordering the calls from most to least.

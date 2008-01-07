@@ -390,7 +390,7 @@ bool vsignal_db_merge( vsignal* base, char** line, bool same ) { PROFILE(VSIGNAL
 
       print_output( "Attempting to merge two databases derived from different designs.  Unable to merge",
                     FATAL, __FILE__, __LINE__ );
-      exit( 1 );
+      exit( EXIT_FAILURE );
 
     } else {
 
@@ -722,6 +722,12 @@ void vsignal_dealloc( vsignal* sig ) { PROFILE(VSIGNAL_DEALLOC);
 
 /*
  $Log$
+ Revision 1.49  2007/12/18 23:55:21  phase1geo
+ Starting to remove 64-bit time and replacing it with a sim_time structure
+ for performance enhancement purposes.  Also removing global variables for time-related
+ information and passing this information around by reference for performance
+ enhancement purposes.
+
  Revision 1.48  2007/12/12 08:04:18  phase1geo
  Adding more timed functions for profiling purposes.
 

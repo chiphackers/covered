@@ -92,16 +92,16 @@ str_link* str_link_find( char* value, str_link* head );
 stmt_link* stmt_link_find( int id, stmt_link* head );
 
 /*! \brief Finds specified expression in the given exp_link list. */
-exp_link* exp_link_find( expression* exp, exp_link* head );
+exp_link* exp_link_find( int id, exp_link* head );
 
 /*! \brief Finds specified signal in given sig_link list. */
-sig_link* sig_link_find( vsignal* sig, sig_link* head );
+sig_link* sig_link_find( const char* name, sig_link* head );
 
 /*! \brief Finds specified FSM structure in fsm_link list. */
-fsm_link* fsm_link_find( fsm* table, fsm_link* head );
+fsm_link* fsm_link_find( const char* name, fsm_link* head );
 
 /*! \brief Finds specified functional unit in given funit_link list. */
-funit_link* funit_link_find( func_unit* funit, funit_link* head );
+funit_link* funit_link_find( const char* name, int type, funit_link* head );
 
 #ifndef VPI_ONLY
 /*! \brief Finds specified generate item in given gitem_link list. */
@@ -167,6 +167,9 @@ void inst_link_delete_list( inst_link* head );
 
 /*
  $Log$
+ Revision 1.30  2007/11/20 05:28:58  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.29  2007/09/13 17:03:30  phase1geo
  Cleaning up some const-ness corrections -- still more to go but it's a good
  start.

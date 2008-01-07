@@ -553,17 +553,13 @@ void combination_get_stats( func_unit* funit, float* total, int* hit ) { PROFILE
 
  Retrieves the combinational logic summary information for the specified functional unit
 */
-bool combination_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit ) { PROFILE(COMBINATION_GET_FUNIT_SUMMARY);
+bool combination_get_funit_summary( const char* funit_name, int funit_type, int* total, int* hit ) { PROFILE(COMBINATION_GET_FUNIT_SUMMARY);
 
   bool        retval = TRUE;  /* Return value of this function */
-  func_unit   funit;          /* Functional unit used for searching */
   funit_link* funitl;         /* Pointer to found functional unit link */
   char        tmp[21];        /* Temporary string for total */
 
-  funit.name = funit_name;
-  funit.type = funit_type;
-
-  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
 
     unsigned int rv = snprintf( tmp, 21, "%20.0f", funitl->funit->stat->comb_total );
     assert( rv < 21 );
@@ -1180,7 +1176,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
                                exp->op );
                 assert( rv < USER_MSG_LENGTH );
                 print_output( user_msg, FATAL, __FILE__, __LINE__ );
-                exit( 1 );
+                exit( EXIT_FAILURE );
                 break;
             }
   
@@ -1280,7 +1276,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
           } else {
 
             print_output( "Internal error:  Reached entry without a left or right underline", FATAL, __FILE__, __LINE__ );
-            exit( 1 );
+            exit( EXIT_FAILURE );
 
           }
 
@@ -2143,6 +2139,8 @@ void combination_multi_vars( char*** info, int* info_size, expression* exp ) { P
 
     if( hit != (int)total ) {
 
+      unsigned int rv;
+
       /* Gather report output for this expression */
       combination_multi_var_exprs( &line1, &line2, &line3, exp );
 
@@ -2151,16 +2149,20 @@ void combination_multi_vars( char*** info, int* info_size, expression* exp ) { P
       *info      = (char**)malloc_safe( sizeof( char* ) * (*info_size) );
 
       /* Calculate needed line length */
-      snprintf( tmp, 20, "%d", exp->ulid );
+      rv = snprintf( tmp, 20, "%d", exp->ulid );
+      assert( rv < 20 );
       line_size += strlen( tmp );
-      snprintf( tmp, 20, "%d", hit );
+      rv = snprintf( tmp, 20, "%d", hit );
+      assert( rv < 20 );
       line_size += strlen( tmp );
-      snprintf( tmp, 20, "%.0f", total );
+      rv = snprintf( tmp, 20, "%.0f", total );
+      assert( rv < 20 );
       line_size += strlen( tmp );
       line_size += 27;                   /* Number of additional characters in line below */
       (*info)[0] = (char*)malloc_safe( line_size );
     
-      snprintf( (*info)[0], line_size, "        Expression %d   (%d/%.0f)", exp->ulid, hit, total );
+      rv = snprintf( (*info)[0], line_size, "        Expression %d   (%d/%.0f)", exp->ulid, hit, total );
+      assert( rv < line_size );
     
       switch( exp->op ) {
         case EXP_OP_AND  :  (*info)[1] = strdup_safe( "        ^^^^^^^^^^^^^ - &" );   break;
@@ -2411,7 +2413,8 @@ void combination_instance_verbose( FILE* ofile, funit_inst* root, char* parent )
   } else if( strcmp( parent, "*" ) == 0 ) {
     strcpy( tmpname, pname );
   } else {
-    snprintf( tmpname, 4096, "%s.%s", parent, pname );
+    unsigned int rv = snprintf( tmpname, 4096, "%s.%s", parent, pname );
+    assert( rv < 4096 );
   }
 
   free_safe( pname );
@@ -2512,11 +2515,10 @@ void combination_funit_verbose( FILE* ofile, funit_link* head ) { PROFILE(COMBIN
  Gathers the covered and uncovered combinational logic information, storing their expressions in the covs and uncovs
  expression arrays.  Used by the GUI for verbose combinational logic output.
 */
-bool combination_collect( char* funit_name, int funit_type, expression*** covs, int* cov_cnt,
+bool combination_collect( const char* funit_name, int funit_type, expression*** covs, int* cov_cnt,
                           expression*** uncovs, int** excludes, int* uncov_cnt ) { PROFILE(COMBINATION_COLLECT);
 
   bool        retval = TRUE;   /* Return value of this function */
-  func_unit   funit;           /* Functional unit used for searching */
   funit_link* funitl;          /* Pointer to found functional unit link */
   func_iter   fi;              /* Functional unit iterator */
   statement*  stmt;            /* Pointer to current statement */
@@ -2525,11 +2527,7 @@ bool combination_collect( char* funit_name, int funit_type, expression*** covs, 
   int         cov_size;        /* Current maximum allocated space in covs array */
   int         uncov_size;      /* Current maximum allocated space in uncovs array */
  
-  /* First, find functional unit in functional unit array */
-  funit.name = funit_name;
-  funit.type = funit_type;
-
-  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
 
     /* Reset combination counted bits */
     combination_reset_counted_exprs( funitl->funit );
@@ -2644,29 +2642,22 @@ void combination_get_exclude_list( expression* exp, int** excludes, int* exclude
  Gets the combinational logic coverage information for the specified expression ID, storing the output in the
  code and ulines arrays.  Used by the GUI for displaying an expression's coverage information.
 */
-bool combination_get_expression( char* funit_name, int funit_type, int expr_id, char*** code, int** uline_groups,
+bool combination_get_expression( const char* funit_name, int funit_type, int expr_id, char*** code, int** uline_groups,
                                  int* code_size, char*** ulines, int* uline_size, int** excludes, int* exclude_size ) { PROFILE(COMBINATION_GET_EXPRESSION);
 
   bool        retval    = TRUE;  /* Return value for this function */
-  func_unit   funit;             /* Functional unit used for searching */
   funit_link* funitl;            /* Pointer to found functional unit link */
-  expression  exp;               /* Expression used for searching */
   exp_link*   expl;              /* Pointer to found signal link */
   int         tmp;               /* Temporary integer (unused) */
-  int         i, j;
+  int         i, j;              /* Loop iterators */
   char**      tmp_ulines;
   int         tmp_uline_size;
   int         start     = 0;
   int         uline_max = 20;
 
-  funit.name = funit_name;
-  funit.type = funit_type;
+  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
 
-  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
-
-    exp.id = expr_id;
-
-    if( (expl = exp_link_find( &exp, funitl->funit->exp_head )) != NULL ) {
+    if( (expl = exp_link_find( expr_id, funitl->funit->exp_head )) != NULL ) {
 
       /* Generate line of code that missed combinational coverage */
       codegen_gen_expr( expl->exp, expl->exp->op, code, code_size, funitl->funit );
@@ -2750,24 +2741,18 @@ bool combination_get_expression( char* funit_name, int funit_type, int expr_id, 
  info and info_size arguments.  The coverage detail created matches the coverage detail output format that
  is used in the ASCII reports.
 */
-bool combination_get_coverage( char* funit_name, int funit_type, int exp_id, int uline_id, char*** info, int* info_size ) { PROFILE(COMBINATION_GET_COVERAGE);
+bool combination_get_coverage( const char* funit_name, int funit_type, int exp_id, int uline_id, char*** info, int* info_size ) { PROFILE(COMBINATION_GET_COVERAGE);
 
   bool        retval = FALSE;  /* Return value for this function */
-  func_unit   funit;           /* Module used to find specified functional unit */
   funit_link* funitl;          /* Pointer to found functional unit link */
   exp_link*   expl;            /* Pointer to current expression link */
   expression* exp;             /* Pointer to found expression */
-  expression  tmpexp;          /* Temporary expression used for searching */
-
-  funit.name = funit_name;
-  funit.type = funit_type;
 
   /* Find the functional unit containing this subexpression */
-  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
 
     /* Find statement containing this expression */
-    tmpexp.id = exp_id;
-    if( (expl = exp_link_find( &tmpexp, funitl->funit->exp_head )) != NULL ) {
+    if( (expl = exp_link_find( exp_id, funitl->funit->exp_head )) != NULL ) {
 
       /* Now find the subexpression that matches the given underline ID */
       if( (exp = expression_find_uline_id( expl->exp, uline_id )) != NULL ) {
@@ -2858,6 +2843,9 @@ void combination_report( FILE* ofile, bool verbose ) { PROFILE(COMBINATION_REPOR
 
 /*
  $Log$
+ Revision 1.176  2008/01/07 05:01:57  phase1geo
+ Cleaning up more splint errors.
+
  Revision 1.175  2007/12/10 23:16:21  phase1geo
  Working on adding profiler for use in finding performance issues.  Things don't compile
  at the moment.

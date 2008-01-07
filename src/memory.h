@@ -36,14 +36,14 @@ void memory_get_stat( vsignal* sig, float* ae_total, int* wr_hit, int* rd_hit, f
 void memory_get_stats( sig_link* sigl, float* ae_total, int* wr_hit, int* rd_hit, float* tog_total, int* tog01_hit, int* tog10_hit );
 
 /*! \brief Gets memory summary information for a GUI request */
-bool memory_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit );
+bool memory_get_funit_summary( const char* funit_name, int funit_type, int* total, int* hit );
 
 /*! \brief Gets coverage information for the specified memory */
-bool memory_get_coverage( char* funit_name, int funit_type, char* signame,
+bool memory_get_coverage( const char* funit_name, int funit_type, char* signame,
                           char** pdim_str, char** pdim_array, char** udim_str, char** memory_info, int* excluded );
 
 /*! \brief Collects all signals that are memories and match the given coverage metric for the given functional unit */
-bool memory_collect( char* funit_name, int funit_type, int cov, sig_link** head, sig_link** tail );
+bool memory_collect( const char* funit_name, int funit_type, int cov, sig_link** head, sig_link** tail );
 
 /*! \brief Generates report output for line coverage. */
 void memory_report( FILE* ofile, bool verbose );
@@ -51,6 +51,9 @@ void memory_report( FILE* ofile, bool verbose );
 
 /*
  $Log$
+ Revision 1.7  2007/11/20 05:28:59  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.6  2006/10/06 22:45:57  phase1geo
  Added support for the wait() statement.  Added wait1 diagnostic to regression
  suite to verify its behavior.  Also added missing GPL license note at the top

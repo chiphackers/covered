@@ -609,7 +609,7 @@ stmt_link* stmt_link_find( int id, stmt_link* head ) { PROFILE(STMT_LINK_FIND);
 }
 
 /*!
- \param exp   Pointer to expression to find.
+ \param id    Expression ID to find.
  \param head  Pointer to head of exp_link list to search.
 
  \return Returns the pointer to the found exp_link or NULL if the search was unsuccessful.
@@ -618,12 +618,12 @@ stmt_link* stmt_link_find( int id, stmt_link* head ) { PROFILE(STMT_LINK_FIND);
  a matching expression is found, the pointer to this element is returned.  If the specified
  expression could not be matched, the value of NULL is returned.
 */
-exp_link* exp_link_find( expression* exp, exp_link* head ) { PROFILE(EXP_LINK_FIND);
+exp_link* exp_link_find( int id, exp_link* head ) { PROFILE(EXP_LINK_FIND);
 
   exp_link* curr;   /* Expression list iterator */
 
   curr = head;
-  while( (curr != NULL) && (curr->exp->id != exp->id) ) {
+  while( (curr != NULL) && (curr->exp->id != id) ) {
     curr = curr->next;
   }
 
@@ -634,7 +634,7 @@ exp_link* exp_link_find( expression* exp, exp_link* head ) { PROFILE(EXP_LINK_FI
 }
 
 /*!
- \param sig   Pointer to signal to find.
+ \param name  Name of signal to find
  \param head  Pointer to head of sig_link list to search.
  \return Returns the pointer to the found sig_link or NULL if the search was unsuccessful.
 
@@ -642,12 +642,12 @@ exp_link* exp_link_find( expression* exp, exp_link* head ) { PROFILE(EXP_LINK_FI
  a matching signal is found, the pointer to this element is returned.  If the specified
  signal could not be matched, the value of NULL is returned.
 */
-sig_link* sig_link_find( vsignal* sig, sig_link* head ) { PROFILE(SIG_LINK_FIND);
+sig_link* sig_link_find( const char* name, sig_link* head ) { PROFILE(SIG_LINK_FIND);
 
   sig_link* curr;    /* Pointer to current sig_link link */
 
   curr = head;
-  while( (curr != NULL) && !scope_compare( curr->sig->name, sig->name ) ) {
+  while( (curr != NULL) && !scope_compare( curr->sig->name, name ) ) {
     curr = curr->next;
   }
 
@@ -658,8 +658,8 @@ sig_link* sig_link_find( vsignal* sig, sig_link* head ) { PROFILE(SIG_LINK_FIND)
 }
 
 /*!
- \param table  Pointer to FSM structure to find.
- \param head   Pointer to head of fsm_link list to search.
+ \param name  Name of FSM structure to find.
+ \param head  Pointer to head of fsm_link list to search.
 
  \return Returns the pointer to the found fsm_link, or NULL if the search was unsuccessful.
 
@@ -667,12 +667,12 @@ sig_link* sig_link_find( vsignal* sig, sig_link* head ) { PROFILE(SIG_LINK_FIND)
  a matching FSM is found, the pointer to this element is returned.  If the specified
  FSM structure could not be matched, the value of NULL is returned.
 */
-fsm_link* fsm_link_find( fsm* table, fsm_link* head ) { PROFILE(FSM_LINK_FIND);
+fsm_link* fsm_link_find( const char* name, fsm_link* head ) { PROFILE(FSM_LINK_FIND);
 
   fsm_link* curr;  /* Pointer to current fsm_link element */
 
   curr = head;
-  while( (curr != NULL) && (strcmp( curr->table->name, table->name ) != 0) ) {
+  while( (curr != NULL) && (strcmp( curr->table->name, name ) != 0) ) {
     curr = curr->next;
   }
 
@@ -683,8 +683,9 @@ fsm_link* fsm_link_find( fsm* table, fsm_link* head ) { PROFILE(FSM_LINK_FIND);
 }
 
 /*!
- \param funit  Pointer to functional unit to find.
- \param head   Pointer to head of funit_link list to search.
+ \param name  Name of functional unit to find.
+ \param type  Type of functional unit to find.
+ \param head  Pointer to head of funit_link list to search.
  
  \return Returns the pointer to the found funit_link or NULL if the search was unsuccessful.
 
@@ -692,12 +693,12 @@ fsm_link* fsm_link_find( fsm* table, fsm_link* head ) { PROFILE(FSM_LINK_FIND);
  a matching functional unit is found, the pointer to this element is returned.  If the specified
  functional unit could not be matched, the value of NULL is returned.
 */
-funit_link* funit_link_find( func_unit* funit, funit_link* head ) { PROFILE(FUNIT_LINK_FIND);
+funit_link* funit_link_find( const char* name, int type, funit_link* head ) { PROFILE(FUNIT_LINK_FIND);
 
   funit_link* curr;    /* Pointer to current funit_link link */
 
   curr = head;
-  while( (curr != NULL) && (!scope_compare( curr->funit->name, funit->name ) || (curr->funit->type != funit->type)) ) {
+  while( (curr != NULL) && (!scope_compare( curr->funit->name, name ) || (curr->funit->type != type)) ) {
     curr = curr->next;
   }
 
@@ -1300,6 +1301,12 @@ void inst_link_delete_list( inst_link* head ) { PROFILE(INST_LINK_DELETE_LIST);
 
 /*
  $Log$
+ Revision 1.71  2007/12/18 23:55:21  phase1geo
+ Starting to remove 64-bit time and replacing it with a sim_time structure
+ for performance enhancement purposes.  Also removing global variables for time-related
+ information and passing this information around by reference for performance
+ enhancement purposes.
+
  Revision 1.70  2007/12/12 07:23:19  phase1geo
  More work on profiling.  I have now included the ability to get function runtimes.
  Still more work to do but everything is currently working at the moment.

@@ -383,7 +383,7 @@ bool report_parse_args( int argc, int last_arg, char** argv ) { PROFILE(REPORT_P
 
         snprintf( user_msg, USER_MSG_LENGTH, "Cannot find %s database file for opening", argv[i] );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        exit( 1 );
+        exit( EXIT_FAILURE );
 
       }
 
@@ -808,7 +808,7 @@ int command_report( int argc, int last_arg, char** argv ) { PROFILE(COMMAND_REPO
 
         snprintf( user_msg, USER_MSG_LENGTH, "Database file not specified in command line" );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        exit( 1 );
+        exit( EXIT_FAILURE );
 
       } else {
 
@@ -856,19 +856,19 @@ int command_report( int argc, int last_arg, char** argv ) { PROFILE(COMMAND_REPO
 
       if( Tcl_Init( interp ) == TCL_ERROR ) {
         printf( "ERROR: %s\n", interp->result );
-        exit( 1 );
+        exit( EXIT_FAILURE );
       }
 
       if( Tk_SafeInit( interp ) == TCL_ERROR ) {
         printf( "ERROR: %s\n", interp->result );
-        exit( 1 );
+        exit( EXIT_FAILURE );
       }
 
       /* Get the COVERED_HOME environment variable */
 #ifndef INSTALL_DIR
       if( (covered_home = getenv( "COVERED_HOME" )) == NULL ) {
         print_output( "COVERED_HOME not initialized.  Exiting...", FATAL, __FILE__, __LINE__ );
-        exit( 1 );
+        exit( EXIT_FAILURE );
       }
 #else
       covered_home = strdup_safe( INSTALL_DIR );
@@ -918,6 +918,9 @@ int command_report( int argc, int last_arg, char** argv ) { PROFILE(COMMAND_REPO
 
 /*
  $Log$
+ Revision 1.86  2008/01/04 23:01:42  phase1geo
+ Adding initial form of splint run script.  Started cleaning up splint errors/warnings.
+
  Revision 1.85  2007/12/12 07:23:19  phase1geo
  More work on profiling.  I have now included the ability to get function runtimes.
  Still more work to do but everything is currently working at the moment.

@@ -27,7 +27,7 @@
 
 
 /*! \brief Allocates, initializes and adds FSM variable to global list. */
-fsm_var* fsm_var_add( char* funit_name, expression* in_state, expression* out_state, char* name );
+fsm_var* fsm_var_add( const char* funit_name, expression* in_state, expression* out_state, char* name );
 
 /*! \brief Adds specified signal and expression to binding list. */
 void fsm_var_bind_add( char* sig_name, expression* expr, char* funit_name );
@@ -44,6 +44,9 @@ void fsm_var_remove( fsm_var* fv );
 
 /*
  $Log$
+ Revision 1.7  2007/11/20 05:28:58  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.6  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

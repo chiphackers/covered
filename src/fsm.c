@@ -208,15 +208,15 @@ bool fsm_db_write( fsm* table, FILE* file, bool parse_mode ) { PROFILE(FSM_DB_WR
 bool fsm_db_read( char** line, func_unit* funit ) { PROFILE(FSM_DB_READ);
 
   bool       retval = TRUE;  /* Return value for this function */
-  expression iexp;           /* Temporary signal used for finding state variable */
-  expression oexp;           /* Temporary signal used for finding state variable */
+  int        iexp_id;        /* Input expression ID */
+  int        oexp_id;        /* Output expression ID */
   exp_link*  iexpl;          /* Pointer to found state variable */
   exp_link*  oexpl;          /* Pointer to found state variable */
   int        chars_read;     /* Number of characters read from sscanf */
   fsm*       table;          /* Pointer to newly created FSM structure from CDD */
   int        is_table;       /* Holds value of is_table entry of FSM output */
  
-  if( sscanf( *line, "%d %d %d%n", &(iexp.id), &(oexp.id), &is_table, &chars_read ) == 3 ) {
+  if( sscanf( *line, "%d %d %d%n", &iexp_id, &oexp_id, &is_table, &chars_read ) == 3 ) {
 
     *line = *line + chars_read + 1;
 
@@ -228,8 +228,8 @@ bool fsm_db_read( char** line, func_unit* funit ) { PROFILE(FSM_DB_READ);
     } else {
 
       /* Find specified signal */
-      if( ((iexpl = exp_link_find( &iexp, funit->exp_head )) != NULL) &&
-          ((oexpl = exp_link_find( &oexp, funit->exp_head )) != NULL) ) {
+      if( ((iexpl = exp_link_find( iexp_id, funit->exp_head )) != NULL) &&
+          ((oexpl = exp_link_find( oexp_id, funit->exp_head )) != NULL) ) {
 
         /* Create new FSM */
         table = fsm_create( iexpl->exp, oexpl->exp );
@@ -237,8 +237,8 @@ bool fsm_db_read( char** line, func_unit* funit ) { PROFILE(FSM_DB_READ);
         /*
          If the input state variable is the same as the output state variable, create the new expression now.
         */
-        if( iexp.id == oexp.id ) {
-          table->from_state = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, iexp.id, 0, 0, 0, FALSE );
+        if( iexp_id == oexp_id ) {
+          table->from_state = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, iexp_id, 0, 0, 0, FALSE );
           vector_dealloc( table->from_state->value );
           bind_append_fsm_expr( table->from_state, iexpl->exp, funit );
         } else {
@@ -272,7 +272,7 @@ bool fsm_db_read( char** line, func_unit* funit ) { PROFILE(FSM_DB_READ);
  
       } else {
 
-        snprintf( user_msg, USER_MSG_LENGTH, "Unable to find state variable expressions (%d, %d) for current FSM", iexp.id, oexp.id );
+        snprintf( user_msg, USER_MSG_LENGTH, "Unable to find state variable expressions (%d, %d) for current FSM", iexp_id, oexp_id );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         retval = FALSE;
 
@@ -324,7 +324,7 @@ bool fsm_db_merge( fsm* base, char** line, bool same ) { PROFILE(FSM_DB_MERGE);
 
       print_output( "Attempting to merge two databases derived from different designs.  Unable to merge",
                     FATAL, __FILE__, __LINE__ );
-      exit( 1 );
+      exit( EXIT_FAILURE );
 
     } else if( is_table == 1 ) {
 #endif
@@ -388,17 +388,13 @@ void fsm_get_stats( fsm_link* table, float* state_total, int* state_hit, float* 
 
  Retrieves the FSM summary information for the specified functional unit.
 */
-bool fsm_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit ) { PROFILE(FSM_GET_FUNIT_SUMMARY);
+bool fsm_get_funit_summary( const char* funit_name, int funit_type, int* total, int* hit ) { PROFILE(FSM_GET_FUNIT_SUMMARY);
 
   bool        retval = TRUE;  /* Return value of this function */
-  func_unit   funit;          /* Functional unit used for searching */
   funit_link* funitl;         /* Pointer to found functional unit link */
   char        tmp[21];        /* Temporary string for total */
 
-  funit.name = funit_name;
-  funit.type = funit_type;
-
-  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
 
     snprintf( tmp, 21, "%20.0f", funitl->funit->stat->arc_total );
     assert( sscanf( tmp, "%d", total ) == 1 );
@@ -469,11 +465,10 @@ void fsm_gather_signals( expression* expr, sig_link** head, sig_link** tail, int
  Gathers the covered and uncovered FSM information, storing their expressions in the cov and uncov signal lists.
  Used by the GUI for verbose FSM output.
 */
-bool fsm_collect( char* funit_name, int funit_type, sig_link** cov_head, sig_link** cov_tail,
+bool fsm_collect( const char* funit_name, int funit_type, sig_link** cov_head, sig_link** cov_tail,
                   sig_link** uncov_head, sig_link** uncov_tail, int** expr_ids, int** excludes ) { PROFILE(FSM_COLLECT);
 
   bool        retval = TRUE;   /* Return value for this function */
-  func_unit   funit;           /* Functional unit used for searching */
   funit_link* funitl;          /* Pointer to found functional unit link */
   fsm_link*   curr_fsm;        /* Pointer to current FSM link being evaluated */
   float       state_total;     /* Total number of states in current FSM */
@@ -482,11 +477,7 @@ bool fsm_collect( char* funit_name, int funit_type, sig_link** cov_head, sig_lin
   int         arc_hit;         /* Number of arcs in current FSM hit */
   int         uncov_size = 0;  /* Number of expressions IDs stored in expr_ids array */
 
-  /* First, find functional unit in functional unit array */
-  funit.name = funit_name;
-  funit.type = funit_type;
-
-  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
 
     /* Initialize list pointers */
     *cov_tail   = *cov_head   = NULL;
@@ -559,7 +550,7 @@ bool fsm_collect( char* funit_name, int funit_type, sig_link** cov_head, sig_lin
  Gets the FSM coverage information for the specified FSM in the specified functional unit.  Used by the GUI
  for creating the contents of the verbose FSM viewer.
 */
-bool fsm_get_coverage( char* funit_name, int funit_type, int expr_id, int* width,
+bool fsm_get_coverage( const char* funit_name, int funit_type, int expr_id, int* width,
                        char*** total_states, int* total_state_num,
                        char*** hit_states, int* hit_state_num,
                        char*** total_from_arcs, char*** total_to_arcs, int** excludes, int* total_arc_num,
@@ -567,16 +558,11 @@ bool fsm_get_coverage( char* funit_name, int funit_type, int expr_id, int* width
                        char*** input_state, int* input_size, char*** output_state, int* output_size ) { PROFILE(FSM_GET_COVERAGE);
 
   bool        retval = FALSE;  /* Return value for this function */
-  func_unit   funit;           /* Functional unit structure used for searching */
   funit_link* funitl;          /* Pointer to found functional unit link */
   fsm_link*   curr_fsm;        /* Pointer to current FSM link */
   int*        tmp;             /* Temporary integer array */
 
-  /* First, find functional unit in functional unit array */
-  funit.name = funit_name;
-  funit.type = funit_type;
-
-  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
 
     curr_fsm = funitl->funit->fsm_head;
     while( (curr_fsm != NULL) && (curr_fsm->table->to_state->id != expr_id) ) {
@@ -1193,6 +1179,9 @@ void fsm_dealloc( fsm* table ) { PROFILE(FSM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.74  2007/12/19 14:37:29  phase1geo
+ More compiler fixes (still more to go).  Checkpointing.
+
  Revision 1.73  2007/12/11 05:48:25  phase1geo
  Fixing more compile errors with new code changes and adding more profiling.
  Still have a ways to go before we can compile cleanly again (next submission

@@ -426,7 +426,7 @@ bool db_read( char* file, int read_mode ) { PROFILE(DB_READ);
               merge_mode = TRUE;
               curr_funit = foundinst->funit;
               funit_db_merge( foundinst->funit, db_handle, TRUE );
-            } else if( (read_mode == READ_MODE_REPORT_MOD_MERGE) && ((foundfunit = funit_link_find( &tmpfunit, funit_head )) != NULL) ) {
+            } else if( (read_mode == READ_MODE_REPORT_MOD_MERGE) && ((foundfunit = funit_link_find( tmpfunit.name, tmpfunit.type, funit_head )) != NULL) ) {
               merge_mode = TRUE;
               curr_funit = foundfunit->funit;
               funit_db_merge( foundfunit->funit, db_handle, FALSE );
@@ -664,13 +664,13 @@ func_unit* db_add_instance( char* scope, char* name, int type, vector_width* ran
     }
   }
 
-  if( ((found_funit_link = funit_link_find( funit, funit_head )) != NULL) && (generate_top_mode == 0) ) {
+  if( ((found_funit_link = funit_link_find( funit->name, funit->type, funit_head )) != NULL) && (generate_top_mode == 0) ) {
 
     if( type != FUNIT_MODULE ) {
       snprintf( user_msg, USER_MSG_LENGTH, "Multiple identical task/function/named-begin-end names (%s) found in module %s, file %s\n",
                 scope, obf_funit( curr_funit->name ), obf_file( curr_funit->filename ) );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      exit( 1 );
+      exit( EXIT_FAILURE );
     }
 
     /* If we are currently within a generate block, create a generate item for this instance to resolve it later */
@@ -744,7 +744,6 @@ func_unit* db_add_instance( char* scope, char* name, int type, vector_width* ran
 */
 void db_add_module( char* name, char* file, int start_line ) { PROFILE(DB_ADD_MODULE);
 
-  func_unit   mod;   /* Temporary module for comparison */
   funit_link* modl;  /* Pointer to found tree node */
 
 #ifdef DEBUG_MODE
@@ -753,11 +752,7 @@ void db_add_module( char* name, char* file, int start_line ) { PROFILE(DB_ADD_MO
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
-  /* Set current module to this module */
-  mod.name = name;
-  mod.type = FUNIT_MODULE;
-
-  modl = funit_link_find( &mod, funit_head );
+  modl = funit_link_find( name, FUNIT_MODULE, funit_head );
 
   assert( modl != NULL );
 
@@ -1042,7 +1037,6 @@ void db_add_defparam( char* name, expression* expr ) { PROFILE(DB_ADD_DEFPARAM);
 */
 void db_add_signal( char* name, int type, sig_range* prange, sig_range* urange, bool is_signed, bool mba, int line, int col, bool handled ) { PROFILE(DB_ADD_SIGNAL);
 
-  vsignal   tmpsig;      /* Temporary signal for signal searching */
   vsignal*  sig = NULL;  /* Container for newly created signal */
   sig_link* sigl;        /* Pointer to found signal link */
   int       i;           /* Loop iterator */
@@ -1053,10 +1047,8 @@ void db_add_signal( char* name, int type, sig_range* prange, sig_range* urange, 
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
-  tmpsig.name = name;
-
   /* Add signal to current module's signal list if it does not already exist */
-  if( (sigl = sig_link_find( &tmpsig, curr_funit->sig_head )) == NULL ) {
+  if( (sigl = sig_link_find( name, curr_funit->sig_head )) == NULL ) {
 
     /* Create the signal */
     if( type == SSUPPL_TYPE_GENVAR ) {
@@ -1258,7 +1250,7 @@ vsignal* db_find_signal( char* name, bool okay_if_not_found ) { PROFILE(DB_FIND_
 
     snprintf( user_msg, USER_MSG_LENGTH, "Unable to find variable %s in module %s", obf_sig( name ), obf_funit( curr_funit->name ) );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    exit( 1 );
+    exit( EXIT_FAILURE );
 
   }
 
@@ -1464,7 +1456,7 @@ expression* db_create_expression( expression* right, expression* left, int op, b
        (op == EXP_OP_EOR)) ) {
     snprintf( user_msg, USER_MSG_LENGTH, "Attempting to use a delay, task call, non-blocking assign or event controls in function %s, file %s, line %d", obf_funit( func_funit->name ), obf_file( curr_funit->filename ), line );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    exit( 1 );
+    exit( EXIT_FAILURE );
   }
 
   /* Create expression with next expression ID */
@@ -2340,8 +2332,7 @@ void db_vcd_upscope() { PROFILE(DB_VCD_UPSCOPE);
 */
 void db_assign_symbol( char* name, char* symbol, int msb, int lsb ) { PROFILE(DB_ASSIGN_SYMBOL);
 
-  sig_link* slink;   /* Pointer to signal containing this symbol */
-  vsignal   tmpsig;  /* Temporary signal to search for */
+  sig_link* slink;  /* Pointer to signal containing this symbol */
 
 #ifdef DEBUG_MODE
   char* scope = db_gen_curr_inst_scope();
@@ -2355,10 +2346,8 @@ void db_assign_symbol( char* name, char* symbol, int msb, int lsb ) { PROFILE(DB
 
   if( curr_instance != NULL ) {
     
-    tmpsig.name = name;
-
     /* Find the signal that matches the specified signal name */
-    if( (slink = sig_link_find( &tmpsig, curr_instance->funit->sig_head )) != NULL ) {
+    if( (slink = sig_link_find( name, curr_instance->funit->sig_head )) != NULL ) {
 
       /* Only add the symbol if we are not going to generate this value ourselves */
       if( (slink->sig->suppl.part.assigned == 0)              &&
@@ -2492,6 +2481,9 @@ void db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.269  2007/12/31 23:43:36  phase1geo
+ Fixing bug 1858408.  Also fixing issues with vector_op_add functionality.
+
  Revision 1.268  2007/12/20 04:47:50  phase1geo
  Fixing the last of the regression failures from previous changes.  Removing unnecessary
  output used for debugging.

@@ -1040,7 +1040,7 @@ static int yywrap() { PROFILE(LEXER_YYWRAP);
       curr = curr->next;
     }
     assert( unlink( ppfilename ) == 0 );
-    exit( 1 );
+    exit( EXIT_FAILURE );
   }
   
   /* Create temporary output filename */
@@ -1087,7 +1087,7 @@ void reset_lexer( str_link* file_list_head ) { PROFILE(RESET_LEXER);
 
   if( (curr = get_next_vfile( curr, modlist_head->str )) == NULL ) {
     print_output( "No verilog files specified", FATAL, __FILE__, __LINE__ );
-    exit( 1 );
+    exit( EXIT_FAILURE );
   }
 
   assert( curr->str != NULL );
@@ -1102,7 +1102,7 @@ void reset_lexer( str_link* file_list_head ) { PROFILE(RESET_LEXER);
   if( out == NULL ) {
     snprintf( user_msg, USER_MSG_LENGTH, "Unable to open temporary file %s for writing", ppfilename );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    exit( 1 );
+    exit( EXIT_FAILURE );
   }
   
   /* Now the preprocessor on this file first */

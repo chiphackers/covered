@@ -120,11 +120,10 @@ void line_get_stats( func_unit* funit, float* total, int* hit ) { PROFILE(LINE_G
  not hit during simulation and a value of TRUE is returned.  If the functional unit name was
  not found, a value of FALSE is returned.
 */
-bool line_collect( char* funit_name, int funit_type, int cov, int** lines, int** excludes, int* line_cnt ) { PROFILE(LINE_COLLECT);
+bool line_collect( const char* funit_name, int funit_type, int cov, int** lines, int** excludes, int* line_cnt ) { PROFILE(LINE_COLLECT);
 
   bool        retval = TRUE;  /* Return value for this function */
   stmt_iter   stmti;          /* Statement list iterator */
-  func_unit   funit;          /* Functional unit used for searching */
   funit_link* funitl;         /* Pointer to found functional unit link */
   int         i;              /* Loop iterator */
   int         last_line;      /* Specifies the last line of the current expression  */
@@ -132,11 +131,7 @@ bool line_collect( char* funit_name, int funit_type, int cov, int** lines, int**
   statement*  stmt;           /* Pointer to current statement */
   func_iter   fi;             /* Functional unit iterator */
 
-  /* First, find functional unit in functional unit array */
-  funit.name = funit_name;
-  funit.type = funit_type;
-
-  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
 
     /* Create an array that will hold the number of uncovered lines */
     line_size = 20;
@@ -209,17 +204,13 @@ bool line_collect( char* funit_name, int funit_type, int cov, int** lines, int**
  function, indicating that the functional unit was not found in the design and the values
  of total and hit should not be used.
 */
-bool line_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit ) { PROFILE(LINE_GET_FUNIT_SUMMARY);
+bool line_get_funit_summary( const char* funit_name, int funit_type, int* total, int* hit ) { PROFILE(LINE_GET_FUNIT_SUMMARY);
 
   bool        retval = TRUE;  /* Return value for this function */
-  func_unit   funit;          /* Functional unit used for searching */
   funit_link* funitl;         /* Pointer to found functional unit link */
   char        tmp[21];        /* Temporary string for total */
 
-  funit.name = funit_name;
-  funit.type = funit_type;
-
-  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
 
     snprintf( tmp, 21, "%20.0f", funitl->funit->stat->line_total );
     assert( sscanf( tmp, "%d", total ) == 1 );
@@ -637,6 +628,11 @@ void line_report( FILE* ofile, bool verbose ) { PROFILE(LINE_REPORT);
 
 /*
  $Log$
+ Revision 1.79  2007/12/11 05:48:25  phase1geo
+ Fixing more compile errors with new code changes and adding more profiling.
+ Still have a ways to go before we can compile cleanly again (next submission
+ should do it).
+
  Revision 1.78  2007/11/20 05:28:58  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

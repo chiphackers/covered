@@ -100,11 +100,10 @@ fv_bind* fsm_var_stmt_tail = NULL;
  Adds the specified Verilog hierarchical scope to a list of FSM scopes to
  find during the parsing phase.
 */
-fsm_var* fsm_var_add( char* funit_name, expression* in_state, expression* out_state, char* name ) { PROFILE(FSM_VAR_ADD);
+fsm_var* fsm_var_add( const char* funit_name, expression* in_state, expression* out_state, char* name ) { PROFILE(FSM_VAR_ADD);
 
   fsm_var*    new_var = NULL;  /* Pointer to newly created FSM variable */
   funit_link* funitl;          /* Pointer to functional unit link found */
-  func_unit   funit;           /* Temporary functional unit used for searching */
   fsm*        table;           /* Pointer to newly create FSM */
 
   /* If we have not parsed, design add new FSM variable to list */
@@ -128,11 +127,7 @@ fsm_var* fsm_var_add( char* funit_name, expression* in_state, expression* out_st
 
   } else {
 
-    /* Just create the new FSM */
-    funit.name = funit_name;
-    funit.type = FUNIT_MODULE;
-
-    if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
+    if( (funitl = funit_link_find( funit_name, FUNIT_MODULE, funit_head )) != NULL ) {
       table = fsm_create( in_state, out_state );
       if( name != NULL ) {
         table->name = strdup_safe( name );
@@ -192,12 +187,8 @@ bool fsm_var_bind_expr( char* sig_name, expression* expr, char* funit_name ) { P
 
   bool        retval = TRUE;  /* Return value for this function */
   funit_link* funitl;         /* Pointer to found functional unit link element */
-  func_unit   funit;          /* Temporary functional unit used for searching  */
 
-  funit.name = funit_name;
-  funit.type = FUNIT_MODULE;
-
-  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, FUNIT_MODULE, funit_head )) != NULL ) {
     if( !bind_signal( sig_name, expr, funitl->funit, TRUE, FALSE, FALSE, expr->line, FALSE ) ) {
       snprintf( user_msg, USER_MSG_LENGTH, "Unable to bind FSM-specified signal (%s) to expression (%d) in module (%s)",
                 obf_sig( sig_name ), expr->id, obf_funit( funit_name ) );
@@ -225,7 +216,7 @@ void fsm_var_add_expr( expression* expr, func_unit* funit ) { PROFILE(FSM_VAR_AD
 
   if( expr != NULL ) {
 
-    if( exp_link_find( expr, funit->exp_head ) == NULL ) {
+    if( exp_link_find( expr->id, funit->exp_head ) == NULL ) {
 
       /* Set the global curr_funit to the expression's functional unit */
       curr_funit = funit;
@@ -261,17 +252,13 @@ void fsm_var_add_expr( expression* expr, func_unit* funit ) { PROFILE(FSM_VAR_AD
  of TRUE to the calling function.  If the functional unit could not be found, this
  function, returns a value of FALSE to the calling function.
 */
-bool fsm_var_bind_stmt( statement* stmt, char* funit_name ) { PROFILE(FSM_VAR_BIND_STMT);
+bool fsm_var_bind_stmt( statement* stmt, const char* funit_name ) { PROFILE(FSM_VAR_BIND_STMT);
 
   bool        retval = FALSE;  /* Return value for this function */
   funit_link* funitl;          /* Pointer to found functional unit link element */
-  func_unit   funit;           /* Temporary functional unit used for searching */
   fsm_var*    fv;              /* Pointer to found FSM variable */
 
-  funit.name = funit_name;
-  funit.type = FUNIT_MODULE;  /* TBD */
-
-  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, FUNIT_MODULE, funit_head )) != NULL ) {
 
     /* First, add expression tree to found functional unit expression list */
     fsm_var_add_expr( stmt->exp, funitl->funit );
@@ -335,7 +322,7 @@ void fsm_var_bind_add( char* sig_name, expression* expr, char* funit_name ) { PR
   } else {
 
     if( !fsm_var_bind_expr( sig_name, expr, funit_name ) ) {
-      exit( 1 );
+      exit( EXIT_FAILURE );
     }
 
   }
@@ -424,7 +411,7 @@ void fsm_var_bind() { PROFILE(FSM_VAR_BIND);
 
   } else {
 
-    exit( 1 );
+    exit( EXIT_FAILURE );
 
   }
 
@@ -491,6 +478,11 @@ void fsm_var_remove( fsm_var* fv ) { PROFILE(FSM_VAR_REMOVE);
 
 /*
  $Log$
+ Revision 1.31  2007/12/11 05:48:25  phase1geo
+ Fixing more compile errors with new code changes and adding more profiling.
+ Still have a ways to go before we can compile cleanly again (next submission
+ should do it).
+
  Revision 1.30  2007/11/20 05:28:58  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

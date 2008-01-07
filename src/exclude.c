@@ -212,17 +212,13 @@ void exclude_arc_assign_and_recalc( char* arcs, int arc_index, bool forward, fun
  Using the specified functional unit information, returns the functional unit instance that
  corresponds to this description.  If one could not be found, a value of NULL is returned.
 */
-funit_inst* exclude_find_instance_from_funit_info( char* funit_name, int funit_type ) {
+funit_inst* exclude_find_instance_from_funit_info( const char* funit_name, int funit_type ) {
 
-  func_unit   funit;          /* Temporary functional unit structure used for searching */
   funit_link* funitl;         /* Found functional unit link */
   int         ignore = 0;     /* Number of functional unit instances to ignore in search */
   funit_inst* inst   = NULL;  /* Found functional unit instance */
 
-  funit.name = funit_name;
-  funit.type = funit_type;
-
-  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
     inst = inst_link_find_by_funit( funitl->funit, inst_head, &ignore );
   }
 
@@ -242,18 +238,14 @@ funit_inst* exclude_find_instance_from_funit_info( char* funit_name, int funit_t
  the exclude_expr_assign_and_recalc function for each matching expression, setting the excluded bit
  of the expression and recalculating the summary coverage information.
 */
-bool exclude_set_line_exclude( char* funit_name, int funit_type, int line, int value ) {
+bool exclude_set_line_exclude( const char* funit_name, int funit_type, int line, int value ) {
 
   bool        retval = FALSE;  /* Return value for this function */
-  func_unit   funit;           /* Temporary functional unit used for searching */
   funit_link* funitl;          /* Pointer to found functional unit link */
   exp_link*   expl;            /* Pointer to current expression link */
 
-  funit.name = funit_name;
-  funit.type = funit_type;
-
   /* Find the functional unit that matches the description */
-  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
 
     /* Find the expression(s) that match the given line number */
     expl = funitl->funit->exp_head;
@@ -286,23 +278,17 @@ bool exclude_set_line_exclude( char* funit_name, int funit_type, int line, int v
  the exclude_sig_assign_and_recalc function for the matching signal, setting the excluded bit
  of the signal and recalculating the summary coverage information.
 */
-bool exclude_set_toggle_exclude( char* funit_name, int funit_type, char* sig_name, int value ) {
+bool exclude_set_toggle_exclude( const char* funit_name, int funit_type, const char* sig_name, int value ) {
 
   bool        retval = FALSE;  /* Return value for this function */
-  func_unit   funit;           /* Temporary functional unit used for searching */
   funit_link* funitl;          /* Pointer to found functional unit link */
-  vsignal     sig;             /* Temporary signal used for searching */
   sig_link*   sigl;            /* Pointer to current signal link */
 
-  funit.name = funit_name;
-  funit.type = funit_type;
-
   /* Find the functional unit that matches the description */
-  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
 
     /* Find the signal that matches the given signal name and sets its excluded bit */
-    sig.name = sig_name;
-    if( (sigl = sig_link_find( &sig, funitl->funit->sig_head )) != NULL ) {
+    if( (sigl = sig_link_find( sig_name, funitl->funit->sig_head )) != NULL ) {
       exclude_sig_assign_and_recalc( sigl->sig, funitl->funit, (value == 1) );
       retval = TRUE;
     }
@@ -326,24 +312,18 @@ bool exclude_set_toggle_exclude( char* funit_name, int funit_type, char* sig_nam
  the exclude_expr_assign_and_recalc function for the matching expression, setting the excluded bit
  of the expression and recalculating the summary coverage information.
 */
-bool exclude_set_comb_exclude( char* funit_name, int funit_type, int expr_id, int uline_id, int value ) {
+bool exclude_set_comb_exclude( const char* funit_name, int funit_type, int expr_id, int uline_id, int value ) {
 
   bool        retval = FALSE;  /* Return value for this function */
-  func_unit   funit;           /* Temporary functional unit used for searching */
   funit_link* funitl;          /* Pointer to found functional unit link */
-  expression  exp;             /* Temporary expression used for searching */
   exp_link*   expl;            /* Pointer to current expression link */
   expression* subexp;          /* Pointer to found subexpression */
 
-  funit.name = funit_name;
-  funit.type = funit_type;
-
   /* Find the functional unit that matches the description */
-  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
 
     /* Find the signal that matches the given signal name and sets its excluded bit */
-    exp.id = expr_id;
-    if( (expl = exp_link_find( &exp, funitl->funit->exp_head )) != NULL ) {
+    if( (expl = exp_link_find( expr_id, funitl->funit->exp_head )) != NULL ) {
       if( (subexp = expression_find_uline_id( expl->exp, uline_id )) != NULL ) {
         exclude_expr_assign_and_recalc( subexp, funitl->funit, (value == 1), FALSE );
         retval = TRUE;
@@ -367,10 +347,9 @@ bool exclude_set_comb_exclude( char* funit_name, int funit_type, int expr_id, in
  \return Returns TRUE if we successfully set the appropriate expression(s); otherwise, returns FALSE.
 
 */
-bool exclude_set_fsm_exclude( char* funit_name, int funit_type, int expr_id, char* from_state, char* to_state, int value ) {
+bool exclude_set_fsm_exclude( const char* funit_name, int funit_type, int expr_id, char* from_state, char* to_state, int value ) {
 
   bool        retval = FALSE;  /* Return value for this function */
-  func_unit   funit;           /* Temporary functional unit used for searching */
   funit_link* funitl;          /* Pointer to found functional unit link */
   int         find_val;        /* Value from return of arc_find function */
   int         found_index;     /* Index of found arc entry */
@@ -378,11 +357,8 @@ bool exclude_set_fsm_exclude( char* funit_name, int funit_type, int expr_id, cha
   vector*     to_vec;          /* Vector form of to_state */
   fsm_link*   curr_fsm;        /* Pointer to the current FSM to search on */
 
-  funit.name = funit_name;
-  funit.type = funit_type;
-
   /* Find the functional unit instance that matches the functional unit description */
-  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
 
     /* Find the corresponding table */
     curr_fsm = funitl->funit->fsm_head;
@@ -422,12 +398,11 @@ bool exclude_set_fsm_exclude( char* funit_name, int funit_type, int expr_id, cha
  the exclude_expr_assign_and_recalc function for the matching expression, setting the excluded bit
  of the expression and recalculating the summary coverage information.
 */
-bool exclude_set_assert_exclude( char* funit_name, int funit_type, char* inst_name, int expr_id, int value ) {
+bool exclude_set_assert_exclude( const char* funit_name, int funit_type, char* inst_name, int expr_id, int value ) {
 
   bool        retval = FALSE;  /* Return value for this function */
   funit_inst* inst;          /* Pointer to found functional unit instance */
   funit_inst* curr_child;      /* Pointer to current child functional instance */
-  expression  exp;             /* Temporary expression used for searching */
   exp_link*   expl;            /* Pointer to current expression link */
 
   /* Find the functional unit instance that matches the description */
@@ -441,8 +416,7 @@ bool exclude_set_assert_exclude( char* funit_name, int funit_type, char* inst_na
     assert( curr_child != NULL );
 
     /* Find the signal that matches the given signal name and sets its excluded bit */
-    exp.id = expr_id;
-    if( (expl = exp_link_find( &exp, curr_child->funit->exp_head )) != NULL ) {
+    if( (expl = exp_link_find( expr_id, curr_child->funit->exp_head )) != NULL ) {
       exclude_expr_assign_and_recalc( expl->exp, curr_child->funit, (value == 1), FALSE );
       retval = TRUE;
     }
@@ -456,6 +430,9 @@ bool exclude_set_assert_exclude( char* funit_name, int funit_type, char* inst_na
 
 /*
  $Log$
+ Revision 1.15  2007/11/20 05:28:58  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.14  2006/10/12 22:48:46  phase1geo
  Updates to remove compiler warnings.  Still some work left to go here.
 

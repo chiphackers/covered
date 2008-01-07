@@ -98,20 +98,15 @@ void toggle_get_stats( sig_link* sigl, float* total, int* hit01, int* hit10 ) { 
  Searches the list of signals for the specified functional unit for signals that are either covered
  or uncovered.  When a signal is found that meets the requirements, signal is added to the signal list.
 */
-bool toggle_collect( char* funit_name, int funit_type, int cov, sig_link** sig_head, sig_link** sig_tail ) { PROFILE(TOGGLE_COLLECT);
+bool toggle_collect( const char* funit_name, int funit_type, int cov, sig_link** sig_head, sig_link** sig_tail ) { PROFILE(TOGGLE_COLLECT);
 
   bool        retval = TRUE;  /* Return value for this function */
-  func_unit   funit;          /* Functional unit used for searching */
   funit_link* funitl;         /* Pointer to found functional unit link */
   sig_link*   curr_sig;       /* Pointer to current signal link being evaluated */
   int         hit01;          /* Number of bits that toggled from 0 to 1 */
   int         hit10;          /* Number of bits that toggled from 1 to 0 */
      
-  /* First, find functional unit in functional unit array */
-  funit.name = funit_name;
-  funit.type = funit_type;
-
-  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
 
     curr_sig = funitl->funit->sig_head;
 
@@ -166,22 +161,15 @@ bool toggle_collect( char* funit_name, int funit_type, int cov, sig_link** sig_h
  Returns toggle coverage information for a specified signal in a specified functional unit.  This
  is needed by the GUI for verbose toggle coverage display.
 */
-bool toggle_get_coverage( char* funit_name, int funit_type, char* sig_name, int* msb, int* lsb, char** tog01, char** tog10, int* excluded ) { PROFILE(TOGGLE_GET_COVERAGE);
+bool toggle_get_coverage( const char* funit_name, int funit_type, char* sig_name, int* msb, int* lsb, char** tog01, char** tog10, int* excluded ) { PROFILE(TOGGLE_GET_COVERAGE);
 
   bool        retval = TRUE;  /* Return value for this function */
-  func_unit   funit;          /* Functional unit used for searching */
   funit_link* funitl;         /* Pointer to found functional unit link */
-  vsignal     sig;            /* Signal used for searching */
   sig_link*   sigl;           /* Pointer to found signal link */
 
-  funit.name = funit_name;
-  funit.type = funit_type;
+  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
 
-  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
-
-    sig.name = sig_name;
-
-    if( (sigl = sig_link_find( &sig, funitl->funit->sig_head )) != NULL ) {
+    if( (sigl = sig_link_find( sig_name, funitl->funit->sig_head )) != NULL ) {
       assert( sigl->sig->dim != NULL );
       *msb      = sigl->sig->dim[0].msb;
       *lsb      = sigl->sig->dim[0].lsb; 
@@ -217,23 +205,19 @@ bool toggle_get_coverage( char* funit_name, int funit_type, char* sig_name, int*
  function, indicating that the functional unit was not found in the design and the values
  of total and hit should not be used.
 */
-bool toggle_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit ) { PROFILE(TOGGLE_GET_FUNIT_SUMMARY);
+bool toggle_get_funit_summary( const char* funit_name, int funit_type, int* total, int* hit ) { PROFILE(TOGGLE_GET_FUNIT_SUMMARY);
 
   bool        retval = TRUE;  /* Return value for this function */
-  func_unit   funit;          /* Functional unit used for searching */
   funit_link* funitl;         /* Pointer to found functional unit link */
   sig_link*   curr_sig;       /* Pointer to current signal */
   int         hit01;          /* Number of bits toggling from a 0 to 1 */
   int         hit10;          /* Number of bits toggling from a 1 to 0 */
 
-  funit.name = funit_name;
-  funit.type = funit_type;
-
   /* Initialize total and hit */
   *total = 0;
   *hit   = 0;
 
-  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
 
     curr_sig = funitl->funit->sig_head;
 
@@ -689,6 +673,10 @@ void toggle_report( FILE* ofile, bool verbose ) { PROFILE(TOGGLE_REPORT);
 
 /*
  $Log$
+ Revision 1.63  2007/12/11 23:19:14  phase1geo
+ Fixed compile issues and completed first pass injection of profiling calls.
+ Working on ordering the calls from most to least.
+
  Revision 1.62  2007/11/20 05:29:00  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

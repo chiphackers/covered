@@ -880,7 +880,7 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) { PROFILE(GEN_
             snprintf( user_msg, USER_MSG_LENGTH, "Unable to find variable %s in module %s",
                       obf_sig( gi->varname ), obf_funit( inst->funit->name ) );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
-            exit( 1 );
+            exit( EXIT_FAILURE );
           }
           snprintf( inst_name, 4096, "%s[%d]", gi->elem.inst->name, vector_to_int( genvar->value ) );
           instance_parse_add( &inst, inst->funit, gi->elem.inst->funit, inst_name, NULL, FALSE, TRUE );
@@ -1116,6 +1116,11 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) { PROFILE(GEN_ITEM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.49  2007/12/11 05:48:25  phase1geo
+ Fixing more compile errors with new code changes and adding more profiling.
+ Still have a ways to go before we can compile cleanly again (next submission
+ should do it).
+
  Revision 1.48  2007/11/20 05:28:58  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

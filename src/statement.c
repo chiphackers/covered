@@ -416,7 +416,6 @@ bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) { PR
   int        id;             /* ID of root expression that is associated with this statement */
   int        true_id;        /* ID of root expression that is associated with the next_true statement */
   int        false_id;       /* ID of root expression that is associated with the next_false statement */
-  expression tmpexp;         /* Temporary expression used for expression search */
   statement* stmt;           /* Pointer to newly created statement */
   exp_link*  expl;           /* Pointer to found expression link */
   stmt_link* stmtl;          /* Pointer to found statement link */
@@ -434,8 +433,7 @@ bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) { PR
     } else {
 
       /* Find associated root expression */
-      tmpexp.id = id;
-      expl = exp_link_find( &tmpexp, curr_funit->exp_head );
+      expl = exp_link_find( id, curr_funit->exp_head );
       assert( expl != NULL );
 
       stmt = statement_create( expl->exp );
@@ -964,6 +962,9 @@ void statement_dealloc( statement* stmt ) { PROFILE(STATEMENT_DEALLOC);
 
 /*
  $Log$
+ Revision 1.118  2007/12/19 22:54:35  phase1geo
+ More compiler fixes (almost there now).  Checkpointing.
+
  Revision 1.117  2007/12/17 23:47:48  phase1geo
  Adding more profiling information.
 

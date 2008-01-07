@@ -180,7 +180,7 @@ bool assertion_instance_summary( FILE* ofile, const funit_inst* root, const char
 
  Displays the assertion summary information for a given instance to the specified output stream.
 */
-bool assertion_display_funit_summary( FILE* ofile, const char* name, const char* fname, int hits, float total ) { PROFILE(ASSERTION_DISPLAY_FUNIT_SUMMARY);
+bool assertion_display_funit_summary( FILE* ofile, /*@temp@*/ const char* name, const char* fname, int hits, float total ) { PROFILE(ASSERTION_DISPLAY_FUNIT_SUMMARY);
 
   float percent;  /* Percentage of assertions hit */
   float miss;     /* Number of assertions missed */
@@ -206,8 +206,8 @@ bool assertion_display_funit_summary( FILE* ofile, const char* name, const char*
 */
 bool assertion_funit_summary( FILE* ofile, const funit_link* head, int* hits, float* total ) { PROFILE(ASSERTION_FUNIT_SUMMARY);
 
-  bool  miss_found = FALSE;  /* Set to TRUE if assertion was found to be missed */
-  char* pname;               /* Printable version of functional unit name */
+             bool  miss_found = FALSE;  /* Set to TRUE if assertion was found to be missed */
+  /*@temp@*/ char* pname;               /* Printable version of functional unit name */
 
   while( head != NULL ) {
 
@@ -448,21 +448,17 @@ void assertion_report( FILE* ofile, bool verbose ) { PROFILE(ASSERTION_REPORT);
  
  Counts the total number and number of hit assertions for the specified functional unit.
 */
-bool assertion_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit ) { PROFILE(ASSERTION_GET_FUNIT_SUMMARY);
+bool assertion_get_funit_summary( const char* funit_name, int funit_type, int* total, int* hit ) { PROFILE(ASSERTION_GET_FUNIT_SUMMARY);
 	
   bool        retval = TRUE;  /* Return value for this function */
-  func_unit   funit;          /* Functional unit used for searching */
   funit_link* funitl;         /* Pointer to found functional unit link */
   float       ftotal;         /* Float version of total */
-  
-  funit.name = funit_name;
-  funit.type = funit_type;
   
   /* Initialize total and hit counts */
   ftotal = 0;
   *hit   = 0;
   
-  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
     
     if( info_suppl.part.assert_ovl == 1 ) {
       ovl_get_funit_stats( funitl->funit, &ftotal, hit );
@@ -498,15 +494,10 @@ bool assertion_collect( const char* funit_name, int funit_type, char*** uncov_in
                         char*** cov_inst_names, int* cov_inst_size ) { PROFILE(ASSERTION_COLLECT);
   
   bool        retval = TRUE;  /* Return value for this function */
-  func_unit   funit;          /* Temporary functional unit used for searching */
   funit_link* funitl;         /* Pointer to found functional unit */
   
-  /* Initialize functional unit to search for */
-  funit.name = strdup_safe( funit_name );
-  funit.type = funit_type;
-  
   /* Find functional unit */
-  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
     
     /* Initialize outputs */
     *uncov_inst_names = NULL;
@@ -526,8 +517,6 @@ bool assertion_collect( const char* funit_name, int funit_type, char*** uncov_in
     
   }
 
-  free_safe( funit.name );
-  
   return( retval );
   
 }
@@ -548,14 +537,10 @@ bool assertion_collect( const char* funit_name, int funit_type, char*** uncov_in
 bool assertion_get_coverage( const char* funit_name, int funit_type, const char* inst_name, char** assert_mod, str_link** cp_head, str_link** cp_tail ) { PROFILE(ASSERTION_GET_COVERAGE);
 
   bool        retval = TRUE;  /* Return value for this function */
-  func_unit   funit;          /* Temporary functional unit used for searching */
   funit_link* funitl;         /* Pointer to found functional unit link */
 
-  funit.name = strdup_safe( funit_name );
-  funit.type = funit_type;
-
   /* Find functional unit */
-  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
 
     *cp_head = *cp_tail = NULL;
 
@@ -570,14 +555,15 @@ bool assertion_get_coverage( const char* funit_name, int funit_type, const char*
 
   }
  
-  free_safe( funit.name );
-
   return( retval );
 
 }
 
 /*
  $Log$
+ Revision 1.24  2008/01/07 05:01:57  phase1geo
+ Cleaning up more splint errors.
+
  Revision 1.23  2007/12/10 23:16:21  phase1geo
  Working on adding profiler for use in finding performance issues.  Things don't compile
  at the moment.

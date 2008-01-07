@@ -107,7 +107,7 @@ bool parse_design( char* top, char* output_db ) { PROFILE(PARSE_DESIGN);
     /* Starting parser */
     if( (VLparse() != 0) || (error_count > 0) ) {
       print_output( "Error in parsing design", FATAL, __FILE__, __LINE__ );
-      exit( 1 );
+      exit( EXIT_FAILURE );
     }
 
     /* Deallocate any memory in curr_range variable */
@@ -124,7 +124,7 @@ bool parse_design( char* top, char* output_db ) { PROFILE(PARSE_DESIGN);
         snprintf( user_msg, USER_MSG_LENGTH, "Module specified with -t option (%s) is a top-level module.", top_module );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         print_output( "The -i option should not have been specified", FATAL_WRAP, __FILE__, __LINE__ );
-        exit( 1 );
+        exit( EXIT_FAILURE );
       }
     } else {
       if( !instance_specified ) {
@@ -132,7 +132,7 @@ bool parse_design( char* top, char* output_db ) { PROFILE(PARSE_DESIGN);
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         print_output( "The -i option must be specified to provide the hierarchy to the module specified with", FATAL_WRAP, __FILE__, __LINE__ );
         print_output( "the -t option.", FATAL_WRAP, __FILE__, __LINE__ );
-        exit( 1 );
+        exit( EXIT_FAILURE );
       }
     }
 
@@ -167,7 +167,7 @@ bool parse_design( char* top, char* output_db ) { PROFILE(PARSE_DESIGN);
   /* Write contents to baseline database file. */
   if( !db_write( output_db, TRUE, FALSE ) ) {
     print_output( "Unable to write database file", FATAL, __FILE__, __LINE__ );
-    exit( 1 );
+    exit( EXIT_FAILURE );
   }
 
   /* Deallocate simulator stuff */
@@ -214,7 +214,7 @@ bool parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) { PROF
   /* Read in contents of specified database file */
   if( !db_read( db, READ_MODE_MERGE_NO_MERGE ) ) {
     print_output( "Unable to read database file", FATAL, __FILE__, __LINE__ );
-    exit( 1 );
+    exit( EXIT_FAILURE );
   }
   
   /* Bind expressions to signals/functional units */
@@ -249,7 +249,7 @@ bool parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) { PROF
   /* Write contents to database file */
   if( !db_write( db, FALSE, FALSE ) ) {
     print_output( "Unable to write database file", FATAL, __FILE__, __LINE__ );
-    exit( 1 );
+    exit( EXIT_FAILURE );
   }
 
   /* Deallocate simulator stuff */
@@ -261,6 +261,11 @@ bool parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) { PROF
 
 /*
  $Log$
+ Revision 1.52  2007/12/11 05:48:26  phase1geo
+ Fixing more compile errors with new code changes and adding more profiling.
+ Still have a ways to go before we can compile cleanly again (next submission
+ should do it).
+
  Revision 1.51  2007/11/20 05:28:59  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

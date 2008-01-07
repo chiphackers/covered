@@ -94,7 +94,7 @@ void scope_extract_back( const char* scope, /*@out@*/char* back, /*@out@*/char* 
 void scope_extract_scope( const char* scope, const char* front, /*@out@*/char* back );
 
 /*! \brief Generates printable version of given signal/instance string */
-char* scope_gen_printable( const char* str );
+/*@only@*/ char* scope_gen_printable( const char* str );
 
 /*! \brief Compares two signal names or two instance names. */
 bool scope_compare( const char* str1, const char* str2 );
@@ -106,16 +106,16 @@ bool scope_local( const char* scope );
 str_link* get_next_vfile( str_link* curr, const char* mod );
 
 /*! \brief Performs safe malloc call. */
-void* malloc_safe1( size_t size, const char* file, int line, unsigned int profile_index );
+/*@only@*/ void* malloc_safe1( size_t size, const char* file, int line, unsigned int profile_index );
 
 /*! \brief Performs safe malloc call without upper bound on byte allocation. */
-void* malloc_safe_nolimit1( size_t size, const char* file, int line, unsigned int profile_index );
+/*@only@*/ void* malloc_safe_nolimit1( size_t size, const char* file, int line, unsigned int profile_index );
 
 /*! \brief Performs safe deallocation of heap memory. */
-void free_safe1( /*@null@*/ void* ptr, unsigned int profile_index ) /*@releases ptr@*/;
+void free_safe1( /*@only@*/ /*@out@*/ /*@null@*/ void* ptr, unsigned int profile_index );
 
 /*! \brief Safely allocates heap memory by performing a call to strdup */
-char* strdup_safe1( const char* str, const char* file, int line, unsigned int profile_index );
+/*@only@*/ char* strdup_safe1( const char* str, const char* file, int line, unsigned int profile_index );
 
 /*! \brief Creates a string containing space characters. */
 void gen_space( char* spaces, int num_spaces );
@@ -144,6 +144,9 @@ void set_timestep( sim_time* st, char* value );
 
 /*
  $Log$
+ Revision 1.33  2008/01/07 05:01:58  phase1geo
+ Cleaning up more splint errors.
+
  Revision 1.32  2007/12/18 23:55:21  phase1geo
  Starting to remove 64-bit time and replacing it with a sim_time structure
  for performance enhancement purposes.  Also removing global variables for time-related

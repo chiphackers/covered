@@ -133,9 +133,7 @@ bool scope_find_param( const char* name, func_unit* curr_funit, mod_parm** found
                   obf_sig( name ), get_funit_type( curr_funit->type ), obf_funit( curr_funit->name ),
                   obf_file( curr_funit->filename ), line );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        inst_link_display( inst_head );
-        assert( 0 );
-        exit( 1 );
+        exit( EXIT_FAILURE );
       }
  
     }
@@ -203,7 +201,7 @@ bool scope_find_signal( const char* name, func_unit* curr_funit, vsignal** found
                   obf_sig( name ), get_funit_type( curr_funit->type ), obf_funit( curr_funit->name ),
                   obf_file( curr_funit->filename ), line );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        exit( 1 );
+        exit( EXIT_FAILURE );
       }
  
     }
@@ -271,7 +269,7 @@ bool scope_find_task_function_namedblock( const char* name, int type, func_unit*
               get_funit_type( type ), obf_funit( name ), get_funit_type( curr_funit->type ),
               obf_funit( curr_funit->name ), obf_file( curr_funit->filename ), line );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    exit( 1 );
+    exit( EXIT_FAILURE );
 
   }
 
@@ -400,6 +398,9 @@ char* scope_flatten( char* scope ) { PROFILE(SCOPE_FLATTEN);
 
 /*
  $Log$
+ Revision 1.39  2007/12/17 23:47:48  phase1geo
+ Adding more profiling information.
+
  Revision 1.38  2007/12/11 05:48:26  phase1geo
  Fixing more compile errors with new code changes and adding more profiling.
  Still have a ways to go before we can compile cleanly again (next submission

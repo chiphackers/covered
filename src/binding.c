@@ -656,7 +656,6 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
                                     bool cdd_reading, int exp_line, bool bind_locally ) { PROFILE(BIND_TASK_FUNCTION_NAMEDBLOCK);
 
   bool       retval = FALSE;  /* Return value for this function */
-  vsignal    sig;             /* Temporary signal for comparison purposes */
   sig_link*  sigl;            /* Temporary signal link holder */
   func_unit* found_funit;     /* Pointer to found task/function functional unit */
   char       rest[4096];      /* Temporary string */
@@ -682,8 +681,7 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
         if( type == FUNIT_FUNCTION ) {
 
           scope_extract_back( found_funit->name, back, rest );
-          sig.name = back;
-          sigl     = sig_link_find( &sig, found_funit->sig_head );
+          sigl = sig_link_find( back, found_funit->sig_head );
 
           assert( sigl != NULL );
 
@@ -708,7 +706,7 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
                                         get_funit_type( type ), port_order, get_funit_type( type ), port_cnt, obf_file( funit_exp->filename ), exp->line );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
-            exit( 1 );
+            exit( EXIT_FAILURE );
           }
 
         }
@@ -903,6 +901,9 @@ void bind_dealloc() { PROFILE(BIND_DEALLOC);
 
 /* 
  $Log$
+ Revision 1.119  2008/01/07 05:01:57  phase1geo
+ Cleaning up more splint errors.
+
  Revision 1.118  2007/12/18 23:55:21  phase1geo
  Starting to remove 64-bit time and replacing it with a sim_time structure
  for performance enhancement purposes.  Also removing global variables for time-related

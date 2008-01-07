@@ -101,7 +101,7 @@ void search_init() { PROFILE(SEARCH_INIT);
   } else {
     print_output( "No top_module was specified with the -t option.  Please see \"covered -h\" for usage.",
                   FATAL, __FILE__, __LINE__ );
-    exit( 1 );
+    exit( EXIT_FAILURE );
   }
 
   /* Initialize functional unit linked list */
@@ -292,6 +292,11 @@ void search_free_lists() { PROFILE(SEARCH_FREE_LISTS);
 
 /*
  $Log$
+ Revision 1.33  2007/12/11 05:48:26  phase1geo
+ Fixing more compile errors with new code changes and adding more profiling.
+ Still have a ways to go before we can compile cleanly again (next submission
+ should do it).
+
  Revision 1.32  2007/11/20 05:29:00  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

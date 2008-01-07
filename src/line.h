@@ -28,10 +28,10 @@
 #include "defines.h"
 
 /*! \brief Calculates line coverage numbers for the specified expression list. */
-void line_get_stats( func_unit* funit, float* total, int* hit );
+void line_get_stats( func_unit* funit, /*@out@*/ float* total, /*@out@*/ int* hit );
 
 /*! \brief Gathers line numbers from specified functional unit that were not hit during simulation. */
-bool line_collect( char* funit_name, int funit_type, int cov, int** lines, int** excludes, int* line_cnt );
+bool line_collect( const char* funit_name, int funit_type, int cov, int** lines, int** excludes, int* line_cnt );
 
 /*! \brief Generates report output for line coverage. */
 void line_report( FILE* ofile, bool verbose );
@@ -39,6 +39,9 @@ void line_report( FILE* ofile, bool verbose );
 
 /*
  $Log$
+ Revision 1.16  2007/11/20 05:28:58  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.15  2007/04/02 04:50:04  phase1geo
  Adding func_iter files to iterate through a functional unit for reporting
  purposes.  Updated affected files.

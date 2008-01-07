@@ -501,7 +501,7 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
       } else {
         unsigned int slen;
         pname  = scope_gen_printable( expr->name );
-        slen   = strlen( pname + 2 );
+        slen   = strlen( pname ) + 2;
         tmpstr = (char*)malloc_safe( slen );
         rv = snprintf( tmpstr, slen, "%s[", pname );
         assert( rv < slen );
@@ -947,6 +947,9 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.85  2008/01/07 05:01:57  phase1geo
+ Cleaning up more splint errors.
+
  Revision 1.84  2007/12/10 23:16:21  phase1geo
  Working on adding profiler for use in finding performance issues.  Things don't compile
  at the moment.
