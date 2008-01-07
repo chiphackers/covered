@@ -565,7 +565,8 @@ bool combination_get_funit_summary( char* funit_name, int funit_type, int* total
 
   if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
 
-    snprintf( tmp, 21, "%20.0f", funitl->funit->stat->comb_total );
+    unsigned int rv = snprintf( tmp, 21, "%20.0f", funitl->funit->stat->comb_total );
+    assert( rv < 21 );
     assert( sscanf( tmp, "%d", total ) == 1 );
     *hit = funitl->funit->stat->comb_hit;
 
@@ -628,7 +629,8 @@ bool combination_instance_summary( FILE* ofile, funit_inst* root, char* parent, 
   } else if( strcmp( parent, "*" ) == 0 ) {
     strcpy( tmpname, pname );
   } else {
-    snprintf( tmpname, 4096, "%s.%s", parent, obf_inst( pname ) );
+    unsigned int rv = snprintf( tmpname, 4096, "%s.%s", parent, obf_inst( pname ) );
+    assert( rv < 4096 );
   }
 
   free_safe( pname );
@@ -736,12 +738,14 @@ bool combination_funit_summary( FILE* ofile, funit_link* head, int* hits, float*
 */
 void combination_draw_line( char* line, int size, int exp_id ) { PROFILE(COMBINATION_DRAW_LINE);
 
-  char str_exp_id[12];   /* String containing value of exp_id */
-  int  exp_id_size;      /* Number of characters exp_id is in length */
-  int  i;                /* Loop iterator */
+  char         str_exp_id[12];  /* String containing value of exp_id */
+  int          exp_id_size;     /* Number of characters exp_id is in length */
+  int          i;               /* Loop iterator */
+  unsigned int rv;              /* Return value from calls to snprintf */
 
   /* Calculate size of expression ID */
-  snprintf( str_exp_id, 12, "%d", exp_id );
+  rv = snprintf( str_exp_id, 12, "%d", exp_id );
+  assert( rv < 12 );
   exp_id_size = strlen( str_exp_id );
 
   line[0] = '|';
@@ -769,12 +773,14 @@ void combination_draw_line( char* line, int size, int exp_id ) { PROFILE(COMBINA
 */
 void combination_draw_centered_line( char* line, int size, int exp_id, bool left_bar, bool right_bar ) { PROFILE(COMBINATION_DRAW_CENTERED_LINE);
 
-  char str_exp_id[12];   /* String containing value of exp_id */
-  int  exp_id_size;      /* Number of characters exp_id is in length */
-  int  i;                /* Loop iterator */
+  char         str_exp_id[12];   /* String containing value of exp_id */
+  int          exp_id_size;      /* Number of characters exp_id is in length */
+  int          i;                /* Loop iterator */
+  unsigned int rv;               /* Return value from snprintf call */
 
   /* Calculate size of expression ID */
-  snprintf( str_exp_id, 12, "%d", exp_id );
+  rv = snprintf( str_exp_id, 12, "%d", exp_id );
+  assert( rv < 12 );
   exp_id_size = strlen( str_exp_id );
 
   if( left_bar ) {
@@ -819,21 +825,22 @@ void combination_draw_centered_line( char* line, int size, int exp_id, bool left
 void combination_underline_tree( expression* exp, unsigned int curr_depth, char*** lines, int* depth, int* size,
                                  int parent_op, bool center, func_unit* funit ) { PROFILE(COMBINATION_UNDERLINE_TREE);
 
-  char**     l_lines;         /* Pointer to left underline stack */
-  char**     r_lines;         /* Pointer to right underline stack */
-  int        l_depth = 0;     /* Index to top of left stack */
-  int        r_depth = 0;     /* Index to top of right stack */
-  int        l_size;          /* Number of characters for left expression */
-  int        r_size;          /* Number of characters for right expression */
-  int        i;               /* Loop iterator */
-  char*      exp_sp;          /* Space to take place of missing expression(s) */
-  char       code_fmt[300];   /* Contains format string for rest of stack */
-  char*      tmpstr;          /* Temporary string value */
-  int        comb_missed;     /* If set to 1, current combination was missed */
-  char*      tmpname = NULL;  /* Temporary pointer to current signal name */
-  char*      pname;           /* Printable version of signal/function/task name */
-  func_unit* tfunit;          /* Temporary pointer to found functional unit */
-  int        ulid;            /* Underline ID to use */
+  char**       l_lines;         /* Pointer to left underline stack */
+  char**       r_lines;         /* Pointer to right underline stack */
+  int          l_depth = 0;     /* Index to top of left stack */
+  int          r_depth = 0;     /* Index to top of right stack */
+  int          l_size;          /* Number of characters for left expression */
+  int          r_size;          /* Number of characters for right expression */
+  int          i;               /* Loop iterator */
+  char*        exp_sp;          /* Space to take place of missing expression(s) */
+  char         code_fmt[300];   /* Contains format string for rest of stack */
+  char*        tmpstr;          /* Temporary string value */
+  int          comb_missed;     /* If set to 1, current combination was missed */
+  char*        tmpname = NULL;  /* Temporary pointer to current signal name */
+  char*        pname;           /* Printable version of signal/function/task name */
+  func_unit*   tfunit;          /* Temporary pointer to found functional unit */
+  int          ulid;            /* Underline ID to use */
+  unsigned int rv;              /* Return value from snprintf calls */
   
   *depth  = 0;
   *size   = 0;
@@ -850,7 +857,8 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
 
       if( exp->value->suppl.part.base == DECIMAL ) {
 
-        snprintf( code_fmt, 300, "%d", vector_to_int( exp->value ) );
+        rv = snprintf( code_fmt, 300, "%d", vector_to_int( exp->value ) );
+        assert( rv < 300 );
         *size = strlen( code_fmt );
 
         /*
@@ -917,6 +925,8 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
         } else {
 
           if( parent_op == exp->op ) {
+
+            unsigned int rv;
 
             switch( exp->op ) {
               case EXP_OP_XOR        :  *size = l_size + r_size + 3;  strcpy( code_fmt, "%s   %s"        );  break;
@@ -1166,8 +1176,9 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
               case EXP_OP_PINC     :
               case EXP_OP_PDEC     :  *size = l_size + 2;           strcpy( code_fmt, "%s  "             );  break;
               default              :
-                snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  Unknown expression type in combination_underline_tree (%d)",
-                          exp->op );
+                rv = snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  Unknown expression type in combination_underline_tree (%d)",
+                               exp->op );
+                assert( rv < USER_MSG_LENGTH );
                 print_output( user_msg, FATAL, __FILE__, __LINE__ );
                 exit( 1 );
                 break;
@@ -1224,7 +1235,8 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
           if( (i < l_depth) && (i < r_depth) ) {
             
             /* Merge left and right lines */
-            snprintf( (*lines)[i], (*size + 1), code_fmt, l_lines[i], r_lines[i] );
+            rv = snprintf( (*lines)[i], (*size + 1), code_fmt, l_lines[i], r_lines[i] );
+            assert( rv < (*size + 1) );
             
             free_safe( l_lines[i] );
             free_safe( r_lines[i] );
@@ -1236,7 +1248,8 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
             gen_space( exp_sp, r_size );
 
             /* Merge left side only */
-            snprintf( (*lines)[i], (*size + 1), code_fmt, l_lines[i], exp_sp );
+            rv = snprintf( (*lines)[i], (*size + 1), code_fmt, l_lines[i], exp_sp );
+            assert( rv < (*size + 1) );
             
             free_safe( l_lines[i] );
             free_safe( exp_sp );
@@ -1245,7 +1258,8 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
 
             if( l_size == 0 ) { 
 
-              snprintf( (*lines)[i], (*size + 1), code_fmt, r_lines[i] );
+              rv = snprintf( (*lines)[i], (*size + 1), code_fmt, r_lines[i] );
+              assert( rv < (*size + 1) );
 
             } else {
 
@@ -1254,7 +1268,8 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
               gen_space( exp_sp, l_size );
 
               /* Merge right side only */
-              snprintf( (*lines)[i], (*size + 1), code_fmt, exp_sp, r_lines[i] );
+              rv = snprintf( (*lines)[i], (*size + 1), code_fmt, exp_sp, r_lines[i] );
+              assert( rv < (*size + 1) );
               
               free_safe( exp_sp );
           
@@ -1465,12 +1480,13 @@ void combination_underline( FILE* ofile, char** code, int code_depth, expression
 */
 void combination_unary( char*** info, int* info_size, expression* exp ) { PROFILE(COMBINATION_UNARY);
 
-  int   hit = 0;                           /* Number of combinations hit for this expression */
-  int   tot;                               /* Total number of coverage points possible */
-  char  tmp[20];                           /* Temporary string used for sizing lines for numbers */
-  int   length;                            /* Length of the current line to allocate */
-  char* op = exp_op_info[exp->op].op_str;  /* Operations string */
-  int   lines;                             /* Specifies the number of lines to allocate memory for */
+  int          hit = 0;                           /* Number of combinations hit for this expression */
+  int          tot;                               /* Total number of coverage points possible */
+  char         tmp[20];                           /* Temporary string used for sizing lines for numbers */
+  int          length;                            /* Length of the current line to allocate */
+  char*        op = exp_op_info[exp->op].op_str;  /* Operations string */
+  int          lines;                             /* Specifies the number of lines to allocate memory for */
+  unsigned int rv;                                /* Return value from snprintf calls */
 
   assert( exp != NULL );
 
@@ -1499,14 +1515,16 @@ void combination_unary( char*** info, int* info_size, expression* exp ) { PROFIL
 
     /* Allocate lines and assign values */ 
     length = 27;
-    snprintf( tmp, 20, "%d", exp->ulid );  length += strlen( tmp );
-    snprintf( tmp, 20, "%d", hit );        length += strlen( tmp );
-    snprintf( tmp, 20, "%d", tot );        length += strlen( tmp );
+    rv = snprintf( tmp, 20, "%d", exp->ulid );  assert( rv < 20 );  length += strlen( tmp );
+    rv = snprintf( tmp, 20, "%d", hit );        assert( rv < 20 );  length += strlen( tmp );
+    rv = snprintf( tmp, 20, "%d", tot );        assert( rv < 20 );  length += strlen( tmp );
     (*info)[0] = (char*)malloc_safe( length );
-    snprintf( (*info)[0], length, "        Expression %d   (%d/%d)", exp->ulid, hit, tot );
+    rv = snprintf( (*info)[0], length, "        Expression %d   (%d/%d)", exp->ulid, hit, tot );
+    assert( rv < length );
 
     length  = 25 + strlen( op );  (*info)[1] = (char*)malloc_safe( length );
-    snprintf( (*info)[1], length, "        ^^^^^^^^^^^^^ - %s", op );
+    rv = snprintf( (*info)[1], length, "        ^^^^^^^^^^^^^ - %s", op );
+    assert( rv < length );
 
     if( report_bitwise && (exp->value->width > 1) ) {
 
@@ -1517,15 +1535,17 @@ void combination_unary( char*** info, int* info_size, expression* exp ) { PROFIL
 
       length = 22;
       (*info)[4] = (char*)malloc_safe( length );
-      snprintf( (*info)[4], length, "          All | %c   %c",
-                ((ESUPPL_WAS_FALSE( exp->suppl ) == 1) ? ' ' : '*'),
-                ((ESUPPL_WAS_TRUE( exp->suppl )  == 1) ? ' ' : '*') )
+      rv = snprintf( (*info)[4], length, "          All | %c   %c",
+                     ((ESUPPL_WAS_FALSE( exp->suppl ) == 1) ? ' ' : '*'),
+                     ((ESUPPL_WAS_TRUE( exp->suppl )  == 1) ? ' ' : '*') );
+      assert( rv < length );
       (*info)[5] = strdup_safe( "        ------|---|---" );
       for( i=0; i<exp->value->width; i++ ) {
         (*info)[i+6] = (char*)malloc_safe( length );
-        snprintf( (*info)[i+6], length, "         %4d | %c   %c", i,
-                  ((exp->value->value[i].part.exp.eval_a == 1) ? ' ' : '*'),
-                  ((exp->value->value[i].part.exp.eval_b == 1) ? ' ' : '*') );
+        rv = snprintf( (*info)[i+6], length, "         %4d | %c   %c", i,
+                       ((exp->value->value[i].part.exp.eval_a == 1) ? ' ' : '*'),
+                       ((exp->value->value[i].part.exp.eval_b == 1) ? ' ' : '*') );
+        assert( rv < length );
       }
 
     } else {
@@ -1534,9 +1554,10 @@ void combination_unary( char*** info, int* info_size, expression* exp ) { PROFIL
       (*info)[3] = strdup_safe( "        =0=|=1=" );
 
       length = 15;  (*info)[4] = (char*)malloc_safe( length );
-      snprintf( (*info)[4], length, "         %c   %c",
-                ((ESUPPL_WAS_FALSE( exp->suppl ) == 1) ? ' ' : '*'),
-                ((ESUPPL_WAS_TRUE( exp->suppl )  == 1) ? ' ' : '*') );
+      rv = snprintf( (*info)[4], length, "         %c   %c",
+                     ((ESUPPL_WAS_FALSE( exp->suppl ) == 1) ? ' ' : '*'),
+                     ((ESUPPL_WAS_TRUE( exp->suppl )  == 1) ? ' ' : '*') );
+      assert( rv < length );
 
     }
 
@@ -1562,6 +1583,8 @@ void combination_event( char*** info, int* info_size, expression* exp ) { PROFIL
 
   if( !ESUPPL_WAS_TRUE( exp->suppl ) ) {
 
+    unsigned int rv;
+
     assert( exp->ulid != -1 );
 
     /* Allocate memory for info array */
@@ -1569,12 +1592,14 @@ void combination_event( char*** info, int* info_size, expression* exp ) { PROFIL
     *info      = (char**)malloc_safe( sizeof( char* ) * (*info_size) );
 
     /* Allocate lines and assign values */
-    length = 28;  snprintf( tmp, 20, "%d", exp->ulid );  length += strlen( tmp );
+    length = 28;  rv = snprintf( tmp, 20, "%d", exp->ulid );  assert( rv < 20 );  length += strlen( tmp );
     (*info)[0] = (char*)malloc_safe( length );
-    snprintf( (*info)[0], length, "        Expression %d   (0/1)", exp->ulid );
+    rv = snprintf( (*info)[0], length, "        Expression %d   (0/1)", exp->ulid );
+    assert( rv < length );
 
     length  = 25 + strlen( op );  (*info)[1] = (char*)malloc_safe( length );
-    snprintf( (*info)[1], length, "        ^^^^^^^^^^^^^ - %s", op );
+    rv = snprintf( (*info)[1], length, "        ^^^^^^^^^^^^^ - %s", op );
+    assert( rv < length );
 
     (*info)[2] = strdup_safe( "         * Event did not occur" );
 
@@ -1592,12 +1617,13 @@ void combination_event( char*** info, int* info_size, expression* exp ) { PROFIL
 */
 void combination_two_vars( char*** info, int* info_size, expression* exp ) { PROFILE(COMBINATION_TWO_VARS);
 
-  int   hit;                               /* Number of combinations hit for this expression */
-  int   total;                             /* Total number of combinations for this expression */
-  char  tmp[20];                           /* Temporary string used for calculating line width */
-  int   length;                            /* Specifies the length of the current line */
-  char* op = exp_op_info[exp->op].op_str;  /* Operation string */
-  int   lines;                             /* Specifies the number of lines needed to output this vector */
+  int          hit;                               /* Number of combinations hit for this expression */
+  int          total;                             /* Total number of combinations for this expression */
+  char         tmp[20];                           /* Temporary string used for calculating line width */
+  int          length;                            /* Specifies the length of the current line */
+  char*        op = exp_op_info[exp->op].op_str;  /* Operation string */
+  int          lines;                             /* Specifies the number of lines needed to output this vector */
+  unsigned int rv;                                /* Return value from snprintf calls */
 
   assert( exp != NULL );
 
@@ -1672,15 +1698,17 @@ void combination_two_vars( char*** info, int* info_size, expression* exp ) { PRO
 
     /* Allocate lines and assign values */ 
     length = 27;
-    snprintf( tmp, 20, "%d", exp->ulid );  length += strlen( tmp );
-    snprintf( tmp, 20, "%d", hit );        length += strlen( tmp );
-    snprintf( tmp, 20, "%d", total );      length += strlen( tmp );
+    rv = snprintf( tmp, 20, "%d", exp->ulid );  assert( rv < 20 );  length += strlen( tmp );
+    rv = snprintf( tmp, 20, "%d", hit );        assert( rv < 20 );  length += strlen( tmp );
+    rv = snprintf( tmp, 20, "%d", total );      assert( rv < 20 );  length += strlen( tmp );
     (*info)[0] = (char*)malloc_safe( length );
-    snprintf( (*info)[0], length, "        Expression %d   (%d/%d)", exp->ulid, hit, total );
+    rv = snprintf( (*info)[0], length, "        Expression %d   (%d/%d)", exp->ulid, hit, total );
+    assert( rv < length );
 
     length = 25 + strlen( op );
     (*info)[1] = (char*)malloc_safe( length );
-    snprintf( (*info)[1], length, "        ^^^^^^^^^^^^^ - %s", op );
+    rv = snprintf( (*info)[1], length, "        ^^^^^^^^^^^^^ - %s", op );
+    assert( rv < length );
 
     if( exp_op_info[exp->op].suppl.is_comb == AND_COMB ) {
 
@@ -1693,17 +1721,19 @@ void combination_two_vars( char*** info, int* info_size, expression* exp ) { PRO
 
         length = 28;
         (*info)[4] = (char*)malloc_safe( length );
-        snprintf( (*info)[4], length, "          All | %c    %c    %c",
-                  (ESUPPL_WAS_FALSE( exp->left->suppl )  ? ' ' : '*'),
-                  (ESUPPL_WAS_FALSE( exp->right->suppl ) ? ' ' : '*'),
-                  ((exp->suppl.part.eval_11 > 0) ? ' ' : '*') );
+        rv = snprintf( (*info)[4], length, "          All | %c    %c    %c",
+                       (ESUPPL_WAS_FALSE( exp->left->suppl )  ? ' ' : '*'),
+                       (ESUPPL_WAS_FALSE( exp->right->suppl ) ? ' ' : '*'),
+                       ((exp->suppl.part.eval_11 > 0) ? ' ' : '*') );
+        assert( rv < length );
         (*info)[5] = strdup_safe( "        ------|----|----|----" );
         for( i=0; i<exp->value->width; i++ ) {
           (*info)[i+6] = (char*)malloc_safe( length );
-          snprintf( (*info)[i+6], length, "         %4d | %c    %c    %c", i,
-                    ((exp->value->value[i].part.exp.eval_a == 1) ? ' ' : '*'),
-                    ((exp->value->value[i].part.exp.eval_b == 1) ? ' ' : '*'),
-                    ((exp->value->value[i].part.exp.eval_c == 1) ? ' ' : '*') );
+          rv = snprintf( (*info)[i+6], length, "         %4d | %c    %c    %c", i,
+                         ((exp->value->value[i].part.exp.eval_a == 1) ? ' ' : '*'),
+                         ((exp->value->value[i].part.exp.eval_b == 1) ? ' ' : '*'),
+                         ((exp->value->value[i].part.exp.eval_c == 1) ? ' ' : '*') );
+          assert( rv < length );
         }
 
       } else {
@@ -1713,10 +1743,11 @@ void combination_two_vars( char*** info, int* info_size, expression* exp ) { PRO
 
         length = 21;
         (*info)[4] = (char*)malloc_safe( length );
-        snprintf( (*info)[4], length, "         %c    %c    %c",
-                  (ESUPPL_WAS_FALSE( exp->left->suppl )  ? ' ' : '*'),
-                  (ESUPPL_WAS_FALSE( exp->right->suppl ) ? ' ' : '*'),
-                  ((exp->suppl.part.eval_11 > 0) ? ' ' : '*') );
+        rv = snprintf( (*info)[4], length, "         %c    %c    %c",
+                       (ESUPPL_WAS_FALSE( exp->left->suppl )  ? ' ' : '*'),
+                       (ESUPPL_WAS_FALSE( exp->right->suppl ) ? ' ' : '*'),
+                       ((exp->suppl.part.eval_11 > 0) ? ' ' : '*') );
+        assert( rv < length );
 
       }
 
@@ -1731,17 +1762,19 @@ void combination_two_vars( char*** info, int* info_size, expression* exp ) { PRO
 
         length = 28;
         (*info)[4] = (char*)malloc_safe( length );
-        snprintf( (*info)[4], length, "          All | %c    %c    %c",
-                  (ESUPPL_WAS_TRUE( exp->left->suppl )  ? ' ' : '*'),
-                  (ESUPPL_WAS_TRUE( exp->right->suppl ) ? ' ' : '*'),
-                  ((exp->suppl.part.eval_00 > 0) ? ' ' : '*') );
+        rv = snprintf( (*info)[4], length, "          All | %c    %c    %c",
+                       (ESUPPL_WAS_TRUE( exp->left->suppl )  ? ' ' : '*'),
+                       (ESUPPL_WAS_TRUE( exp->right->suppl ) ? ' ' : '*'),
+                       ((exp->suppl.part.eval_00 > 0) ? ' ' : '*') );
+        assert( rv < length );
         (*info)[5] = strdup_safe( "        ------|----|----|----" );
         for( i=0; i<exp->value->width; i++ ) {
           (*info)[i+6] = (char*)malloc_safe( length );
-          snprintf( (*info)[i+6], length, "         %4d | %c    %c    %c", i,
-                    ((exp->value->value[i].part.exp.eval_a == 1) ? ' ' : '*'),
-                    ((exp->value->value[i].part.exp.eval_b == 1) ? ' ' : '*'),
-                    ((exp->value->value[i].part.exp.eval_c == 1) ? ' ' : '*') );
+          rv = snprintf( (*info)[i+6], length, "         %4d | %c    %c    %c", i,
+                         ((exp->value->value[i].part.exp.eval_a == 1) ? ' ' : '*'),
+                         ((exp->value->value[i].part.exp.eval_b == 1) ? ' ' : '*'),
+                         ((exp->value->value[i].part.exp.eval_c == 1) ? ' ' : '*') );
+          assert( rv < length );
         }
 
       } else {
@@ -1751,10 +1784,11 @@ void combination_two_vars( char*** info, int* info_size, expression* exp ) { PRO
 
         length = 21;
         (*info)[4] = (char*)malloc_safe( length );
-        snprintf( (*info)[4], length, "         %c    %c    %c",
-                  (ESUPPL_WAS_TRUE( exp->left->suppl )  ? ' ' : '*'),
-                  (ESUPPL_WAS_TRUE( exp->right->suppl ) ? ' ' : '*'),
-                  ((exp->suppl.part.eval_00 > 0) ? ' ' : '*') );
+        rv = snprintf( (*info)[4], length, "         %c    %c    %c",
+                       (ESUPPL_WAS_TRUE( exp->left->suppl )  ? ' ' : '*'),
+                       (ESUPPL_WAS_TRUE( exp->right->suppl ) ? ' ' : '*'),
+                       ((exp->suppl.part.eval_00 > 0) ? ' ' : '*') );
+        assert( rv < length );
 
       }
 
@@ -1769,19 +1803,21 @@ void combination_two_vars( char*** info, int* info_size, expression* exp ) { PRO
 
         length = 33;
         (*info)[4] = (char*)malloc_safe( length );
-        snprintf( (*info)[4], length, "          All | %c    %c    %c    %c",
-                  ((exp->suppl.part.eval_00 == 1) ? ' ' : '*'),
-                  ((exp->suppl.part.eval_01 == 1) ? ' ' : '*'),
-                  ((exp->suppl.part.eval_10 == 1) ? ' ' : '*'),
-                  ((exp->suppl.part.eval_11 == 1) ? ' ' : '*') );
+        rv = snprintf( (*info)[4], length, "          All | %c    %c    %c    %c",
+                       ((exp->suppl.part.eval_00 == 1) ? ' ' : '*'),
+                       ((exp->suppl.part.eval_01 == 1) ? ' ' : '*'),
+                       ((exp->suppl.part.eval_10 == 1) ? ' ' : '*'),
+                       ((exp->suppl.part.eval_11 == 1) ? ' ' : '*') );
+        assert( rv < length );
         (*info)[5] = strdup_safe( "        ------|----|----|----|----" );
         for( i=0; i<exp->value->width; i++ ) {
           (*info)[i+6] = (char*)malloc_safe( length );
-          snprintf( (*info)[i+6], length, "         %4d | %c    %c    %c    %c", i,
-                    ((exp->value->value[i].part.exp.eval_a == 1) ? ' ' : '*'),
-                    ((exp->value->value[i].part.exp.eval_b == 1) ? ' ' : '*'),
-                    ((exp->value->value[i].part.exp.eval_c == 1) ? ' ' : '*'),
-                    ((exp->value->value[i].part.exp.eval_d == 1) ? ' ' : '*') );
+          rv = snprintf( (*info)[i+6], length, "         %4d | %c    %c    %c    %c", i,
+                         ((exp->value->value[i].part.exp.eval_a == 1) ? ' ' : '*'),
+                         ((exp->value->value[i].part.exp.eval_b == 1) ? ' ' : '*'),
+                         ((exp->value->value[i].part.exp.eval_c == 1) ? ' ' : '*'),
+                         ((exp->value->value[i].part.exp.eval_d == 1) ? ' ' : '*') );
+          assert( rv < length );
         }
 
       } else {
@@ -1791,11 +1827,12 @@ void combination_two_vars( char*** info, int* info_size, expression* exp ) { PRO
   
         length = 26;
         (*info)[4] = (char*)malloc_safe( length );
-        snprintf( (*info)[4], length, "         %c    %c    %c    %c",
-                  ((exp->suppl.part.eval_00 == 1) ? ' ' : '*'),
-                  ((exp->suppl.part.eval_01 == 1) ? ' ' : '*'),
-                  ((exp->suppl.part.eval_10 == 1) ? ' ' : '*'),
-                  ((exp->suppl.part.eval_11 == 1) ? ' ' : '*') );
+        rv = snprintf( (*info)[4], length, "         %c    %c    %c    %c",
+                       ((exp->suppl.part.eval_00 == 1) ? ' ' : '*'),
+                       ((exp->suppl.part.eval_01 == 1) ? ' ' : '*'),
+                       ((exp->suppl.part.eval_10 == 1) ? ' ' : '*'),
+                       ((exp->suppl.part.eval_11 == 1) ? ' ' : '*') );
+        assert( rv < length );
 
       }
 
@@ -1816,16 +1853,17 @@ void combination_two_vars( char*** info, int* info_size, expression* exp ) { PRO
 */
 void combination_multi_var_exprs( char** line1, char** line2, char** line3, expression* exp ) { PROFILE(COMBINATION_MULTI_VAR_EXPRS);
 
-  char* left_line1  = NULL;
-  char* left_line2  = NULL;
-  char* left_line3  = NULL;
-  char* right_line1 = NULL;
-  char* right_line2 = NULL;
-  char* right_line3 = NULL;
-  char  curr_id_str[20];
-  int   curr_id_str_len;
-  int   i;
-  bool  and_op;
+  char*        left_line1  = NULL;
+  char*        left_line2  = NULL;
+  char*        left_line3  = NULL;
+  char*        right_line1 = NULL;
+  char*        right_line2 = NULL;
+  char*        right_line3 = NULL;
+  char         curr_id_str[20];
+  int          curr_id_str_len;
+  int          i;
+  bool         and_op;
+  unsigned int rv;                  /* Return value from snprintf calls */
 
   if( exp != NULL ) {
 
@@ -1835,29 +1873,35 @@ void combination_multi_var_exprs( char** line1, char** line2, char** line3, expr
     if( (exp->left != NULL) && (exp->op != exp->left->op) ) {
 
       assert( exp->left->ulid != -1 );
-      snprintf( curr_id_str, 20, "%d", exp->left->ulid );
+      rv = snprintf( curr_id_str, 20, "%d", exp->left->ulid );
+      assert( rv < 20 );
       curr_id_str_len = strlen( curr_id_str );
       left_line1 = (char*)malloc_safe( curr_id_str_len + 4 );
       left_line2 = (char*)malloc_safe( curr_id_str_len + 4 );
       left_line3 = (char*)malloc_safe( curr_id_str_len + 4 );
-      snprintf( left_line1, (curr_id_str_len + 4), " %s |", curr_id_str );
+      rv = snprintf( left_line1, (curr_id_str_len + 4), " %s |", curr_id_str );
+      assert( rv < (curr_id_str_len + 4) );
       for( i=0; i<(curr_id_str_len-1); i++ ) {
         curr_id_str[i] = '=';
       }
       curr_id_str[i] = '\0'; 
       if( and_op ) { 
-        snprintf( left_line2, (curr_id_str_len + 4), "=0%s=|", curr_id_str );
+        rv = snprintf( left_line2, (curr_id_str_len + 4), "=0%s=|", curr_id_str );
+        assert( rv < (curr_id_str_len + 4) );
       } else { 
-        snprintf( left_line2, (curr_id_str_len + 4), "=1%s=|", curr_id_str );
+        rv = snprintf( left_line2, (curr_id_str_len + 4), "=1%s=|", curr_id_str );
+        assert( rv < (curr_id_str_len + 4) );
       }
       for( i=0; i<(curr_id_str_len - 1); i++ ) {
         curr_id_str[i] = ' ';
       }
       curr_id_str[i] = '\0';
       if( and_op ) {
-        snprintf( left_line3, (curr_id_str_len + 4), " %c%s  ", ((ESUPPL_WAS_FALSE( exp->left->suppl ) == 1) ? ' ' : '*'), curr_id_str );
+        rv = snprintf( left_line3, (curr_id_str_len + 4), " %c%s  ", ((ESUPPL_WAS_FALSE( exp->left->suppl ) == 1) ? ' ' : '*'), curr_id_str );
+        assert( rv < (curr_id_str_len + 4) );
       } else {
-        snprintf( left_line3, (curr_id_str_len + 4), " %c%s  ", ((ESUPPL_WAS_TRUE( exp->left->suppl )  == 1) ? ' ' : '*'), curr_id_str );
+        rv = snprintf( left_line3, (curr_id_str_len + 4), " %c%s  ", ((ESUPPL_WAS_TRUE( exp->left->suppl )  == 1) ? ' ' : '*'), curr_id_str );
+        assert( rv < (curr_id_str_len + 4) );
       }
 
     } else {
@@ -1870,29 +1914,35 @@ void combination_multi_var_exprs( char** line1, char** line2, char** line3, expr
     if( (exp->right != NULL) && (exp->op != exp->right->op) ) {
 
       assert( exp->right->ulid != -1 );
-      snprintf( curr_id_str, 20, "%d", exp->right->ulid );
+      rv = snprintf( curr_id_str, 20, "%d", exp->right->ulid );
+      assert( rv < 20 );
       curr_id_str_len = strlen( curr_id_str );
       right_line1 = (char*)malloc_safe( curr_id_str_len + 4 );
       right_line2 = (char*)malloc_safe( curr_id_str_len + 4 );
       right_line3 = (char*)malloc_safe( curr_id_str_len + 4 );
-      snprintf( right_line1, (curr_id_str_len + 4), " %s |", curr_id_str );
+      rv = snprintf( right_line1, (curr_id_str_len + 4), " %s |", curr_id_str );
+      assert( rv < (curr_id_str_len + 4) );
       for( i=0; i<(curr_id_str_len-1); i++ ) {
         curr_id_str[i] = '=';
       }
       curr_id_str[i] = '\0';
       if( and_op ) {
-        snprintf( right_line2, (curr_id_str_len + 4), "=0%s=|", curr_id_str );
+        rv = snprintf( right_line2, (curr_id_str_len + 4), "=0%s=|", curr_id_str );
+        assert( rv < (curr_id_str_len + 4) );
       } else {
-        snprintf( right_line2, (curr_id_str_len + 4), "=1%s=|", curr_id_str );
+        rv = snprintf( right_line2, (curr_id_str_len + 4), "=1%s=|", curr_id_str );
+        assert( rv < (curr_id_str_len + 4) );
       }
       for( i=0; i<(curr_id_str_len - 1); i++ ) {
         curr_id_str[i] = ' ';
       }
       curr_id_str[i] = '\0';
       if( and_op ) {
-        snprintf( right_line3, (curr_id_str_len + 4), " %c%s  ", ((ESUPPL_WAS_FALSE( exp->right->suppl ) == 1) ? ' ' : '*'), curr_id_str );
+        rv = snprintf( right_line3, (curr_id_str_len + 4), " %c%s  ", ((ESUPPL_WAS_FALSE( exp->right->suppl ) == 1) ? ' ' : '*'), curr_id_str );
+        assert( rv < (curr_id_str_len + 4) );
       } else {
-        snprintf( right_line3, (curr_id_str_len + 4), " %c%s  ", ((ESUPPL_WAS_TRUE( exp->right->suppl )  == 1) ? ' ' : '*'), curr_id_str );
+        rv = snprintf( right_line3, (curr_id_str_len + 4), " %c%s  ", ((ESUPPL_WAS_TRUE( exp->right->suppl )  == 1) ? ' ' : '*'), curr_id_str );
+        assert( rv < (curr_id_str_len + 4) );
       }
 
     } else {
@@ -1903,12 +1953,18 @@ void combination_multi_var_exprs( char** line1, char** line2, char** line3, expr
 
     if( left_line1 != NULL ) {
       if( right_line1 != NULL ) {
-        *line1 = (char*)malloc_safe( strlen( left_line1 ) + strlen( right_line1 ) + 1 );
-        *line2 = (char*)malloc_safe( strlen( left_line2 ) + strlen( right_line2 ) + 1 );
-        *line3 = (char*)malloc_safe( strlen( left_line3 ) + strlen( right_line3 ) + 1 );
-        snprintf( *line1, (strlen( left_line1 ) + strlen( right_line1 ) + 1), "%s%s", left_line1, right_line1 );
-        snprintf( *line2, (strlen( left_line2 ) + strlen( right_line2 ) + 1), "%s%s", left_line2, right_line2 );
-        snprintf( *line3, (strlen( left_line3 ) + strlen( right_line3 ) + 1), "%s%s", left_line3, right_line3 );
+        unsigned int slen1 = strlen( left_line1 ) + strlen( right_line1 ) + 1;
+        unsigned int slen2 = strlen( left_line2 ) + strlen( right_line2 ) + 1;
+        unsigned int slen3 = strlen( left_line3 ) + strlen( right_line3 ) + 1;
+        *line1 = (char*)malloc_safe( slen1 );
+        *line2 = (char*)malloc_safe( slen2 );
+        *line3 = (char*)malloc_safe( slen3 );
+        rv = snprintf( *line1, slen1, "%s%s", left_line1, right_line1 );
+        assert( rv < slen1 );
+        rv = snprintf( *line2, slen2, "%s%s", left_line2, right_line2 );
+        assert( rv < slen2 );
+        rv = snprintf( *line3, slen3, "%s%s", left_line3, right_line3 );
+        assert( rv < slen3 );
         free_safe( left_line1 );
         free_safe( left_line2 );
         free_safe( left_line3 );
@@ -1929,20 +1985,29 @@ void combination_multi_var_exprs( char** line1, char** line2, char** line3, expr
 
     /* If we are the root, output all value */
     if( (ESUPPL_IS_ROOT( exp->suppl ) == 1) || (exp->op != exp->parent->expr->op) ) {
+      unsigned int slen1 = strlen( *line1 ) + 7;
+      unsigned int slen2 = strlen( *line2 ) + 7;
+      unsigned int slen3 = strlen( *line3 ) + 7;
       left_line1 = *line1;
       left_line2 = *line2;
       left_line3 = *line3;
-      *line1     = (char*)malloc_safe( strlen( left_line1 ) + 7 );
-      *line2     = (char*)malloc_safe( strlen( left_line2 ) + 7 );
-      *line3     = (char*)malloc_safe( strlen( left_line3 ) + 7 );
+      *line1     = (char*)malloc_safe( slen1 );
+      *line2     = (char*)malloc_safe( slen2 );
+      *line3     = (char*)malloc_safe( slen3 );
       if( and_op ) {
-        snprintf( *line1, (strlen( left_line1 ) + 7), "%s All",   left_line1 );
-        snprintf( *line2, (strlen( left_line2 ) + 7), "%s==1==",  left_line2 );
-        snprintf( *line3, (strlen( left_line3 ) + 7), "%s  %c  ", left_line3, ((exp->suppl.part.eval_11 == 1) ? ' ' : '*') );
+        rv = snprintf( *line1, slen1, "%s All",   left_line1 );
+        assert( rv < slen1 );
+        rv = snprintf( *line2, slen2, "%s==1==",  left_line2 );
+        assert( rv < slen2 );
+        rv = snprintf( *line3, slen3, "%s  %c  ", left_line3, ((exp->suppl.part.eval_11 == 1) ? ' ' : '*') );
+        assert( rv < slen3 );
       } else {
-        snprintf( *line1, (strlen( left_line1 ) + 7), "%s All",   left_line1 );
-        snprintf( *line2, (strlen( left_line2 ) + 7), "%s==0==",  left_line2 );
-        snprintf( *line3, (strlen( left_line3 ) + 7), "%s  %c  ", left_line3, ((exp->suppl.part.eval_00 == 1) ? ' ' : '*') );
+        rv = snprintf( *line1, slen1, "%s All",   left_line1 );
+        assert( rv < slen1 );
+        rv = snprintf( *line2, slen2, "%s==0==",  left_line2 );
+        assert( rv < slen2 );
+        rv = snprintf( *line3, slen3, "%s  %c  ", left_line3, ((exp->suppl.part.eval_00 == 1) ? ' ' : '*') );
+        assert( rv < slen3 );
       }
       free_safe( left_line1 );
       free_safe( left_line2 );
@@ -2000,27 +2065,47 @@ void combination_multi_expr_output( char** info, char* line1, char* line2, char*
 
     if( (i + 1) == len ) {
 
-      info[info_index+0] = (char*)malloc_safe( strlen( line1 + start ) + 9 );
-      info[info_index+1] = (char*)malloc_safe( strlen( line2 + start ) + 9 );
-      info[info_index+2] = (char*)malloc_safe( strlen( line3 + start ) + 9 );
+      unsigned int rv;
+      unsigned int slen1 = strlen( line1 + start ) + 9;
+      unsigned int slen2 = strlen( line2 + start ) + 9;
+      unsigned int slen3 = strlen( line3 + start ) + 9;
 
-      snprintf( info[info_index+0], (strlen( line1 + start ) + 9), "        %s", (line1 + start) );
-      snprintf( info[info_index+1], (strlen( line2 + start ) + 9), "        %s", (line2 + start) );
-      snprintf( info[info_index+2], (strlen( line3 + start ) + 9), "        %s", (line3 + start) );
+      info[info_index+0] = (char*)malloc_safe( slen1 );
+      info[info_index+1] = (char*)malloc_safe( slen2 );
+      info[info_index+2] = (char*)malloc_safe( slen3 );
+
+      rv = snprintf( info[info_index+0], slen1, "        %s", (line1 + start) );
+      assert( rv < slen1 );
+      rv = snprintf( info[info_index+1], slen2, "        %s", (line2 + start) );
+      assert( rv < slen2 );
+      rv = snprintf( info[info_index+2], slen3, "        %s", (line3 + start) );
+      assert( rv < slen3 );
 
     } else if( (line1[i] == '|') && ((i - start) >= line_width) ) {
+
+      unsigned int rv;
+      unsigned int slen1;
+      unsigned int slen2;
+      unsigned int slen3;
 
       line1[i] = '\0';
       line2[i] = '\0';
       line3[i] = '\0';
 
-      info[info_index+0] = (char*)malloc_safe( strlen( line1 + start ) + 10 );
-      info[info_index+1] = (char*)malloc_safe( strlen( line2 + start ) + 10 );
-      info[info_index+2] = (char*)malloc_safe( strlen( line3 + start ) + 11 );
+      slen1 = strlen( line1 + start ) + 10;
+      slen2 = strlen( line2 + start ) + 10;
+      slen3 = strlen( line3 + start ) + 11;
 
-      snprintf( info[info_index+0], (strlen( line1 + start ) + 10), "        %s|",   (line1 + start) );
-      snprintf( info[info_index+1], (strlen( line2 + start ) + 10), "        %s|",   (line2 + start) );
-      snprintf( info[info_index+2], (strlen( line3 + start ) + 11), "        %s \n", (line3 + start) );
+      info[info_index+0] = (char*)malloc_safe( slen1 );
+      info[info_index+1] = (char*)malloc_safe( slen2 );
+      info[info_index+2] = (char*)malloc_safe( slen3 );
+
+      rv = snprintf( info[info_index+0], slen1, "        %s|",   (line1 + start) );
+      assert( rv < slen1 );
+      rv = snprintf( info[info_index+1], slen2, "        %s|",   (line2 + start) );
+      assert( rv < slen2 );
+      rv = snprintf( info[info_index+2], slen3, "        %s \n", (line3 + start) );
+      assert( rv < slen3 );
 
       start       = i + 1;
       info_index += 3;
@@ -2773,6 +2858,10 @@ void combination_report( FILE* ofile, bool verbose ) { PROFILE(COMBINATION_REPOR
 
 /*
  $Log$
+ Revision 1.175  2007/12/10 23:16:21  phase1geo
+ Working on adding profiler for use in finding performance issues.  Things don't compile
+ at the moment.
+
  Revision 1.174  2007/11/20 05:28:57  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

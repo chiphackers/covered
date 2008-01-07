@@ -1535,11 +1535,11 @@ void expression_display( expression* expr ) {
 
  Performs XOR operation.
 */
-bool expression_op_func__xor( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__XOR);
+bool expression_op_func__xor( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__XOR);
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
-    vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type, expr->parent->expr->left->value->width, 0, 0 );
+    (void)vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type, expr->parent->expr->left->value->width, 0, 0 );
   }
 
   PROFILE_END;
@@ -1557,11 +1557,11 @@ bool expression_op_func__xor( expression* expr, thread* thr, const sim_time* tim
 
  Performs a multiply operation.
 */
-bool expression_op_func__multiply( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__MULTIPLY);
+bool expression_op_func__multiply( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__MULTIPLY);
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
-    vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type, expr->parent->expr->left->value->width, 0, 0 );
+    (void)vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type, expr->parent->expr->left->value->width, 0, 0 );
   }
 
   PROFILE_END;
@@ -1579,7 +1579,7 @@ bool expression_op_func__multiply( expression* expr, thread* thr, const sim_time
 
  Performs a 32-bit divide operation.
 */
-bool expression_op_func__divide( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__DIVIDE);
+bool expression_op_func__divide( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__DIVIDE);
 
   vector   vec1;            /* Temporary vector */
   vec_data bit;             /* Holds the value of a single bit in a vector value */
@@ -1591,7 +1591,7 @@ bool expression_op_func__divide( expression* expr, thread* thr, const sim_time* 
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
-    vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type, expr->parent->expr->left->value->width, 0, 0 );
+    (void)vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type, expr->parent->expr->left->value->width, 0, 0 );
   }
 
   if( vector_is_unknown( expr->left->value ) || vector_is_unknown( expr->right->value ) ) {
@@ -1634,7 +1634,7 @@ bool expression_op_func__divide( expression* expr, thread* thr, const sim_time* 
 
  Performs a 32-bit modulus operation.
 */
-bool expression_op_func__mod( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__MOD);
+bool expression_op_func__mod( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__MOD);
 
   vector   vec1;            /* Temporary vector */
   vec_data bit;             /* Holds the value of a single bit in a vector value */
@@ -1646,7 +1646,7 @@ bool expression_op_func__mod( expression* expr, thread* thr, const sim_time* tim
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
-    vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type,
+    (void)vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type,
                       expr->parent->expr->left->value->width, 0, 0 );
   }
 
@@ -1690,11 +1690,11 @@ bool expression_op_func__mod( expression* expr, thread* thr, const sim_time* tim
 
  Performs an addition operation.
 */
-bool expression_op_func__add( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__ADD);
+bool expression_op_func__add( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__ADD);
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
-    vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type,
+    (void)vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type,
                       expr->parent->expr->left->value->width, 0, 0 );
   }
 
@@ -1713,11 +1713,11 @@ bool expression_op_func__add( expression* expr, thread* thr, const sim_time* tim
 
  Performs a subtraction operation.
 */
-bool expression_op_func__subtract( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__SUBTRACT);
+bool expression_op_func__subtract( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__SUBTRACT);
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
-    vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type,
+    (void)vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type,
                       expr->parent->expr->left->value->width, 0, 0 );
   }
 
@@ -1736,11 +1736,11 @@ bool expression_op_func__subtract( expression* expr, thread* thr, const sim_time
 
  Performs a bitwise AND operation.
 */
-bool expression_op_func__and( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__AND);
+bool expression_op_func__and( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__AND);
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
-    vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type,
+    (void)vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type,
                       expr->parent->expr->left->value->width, 0, 0 );
   }
 
@@ -1759,11 +1759,11 @@ bool expression_op_func__and( expression* expr, thread* thr, const sim_time* tim
 
  Performs a bitwise OR operation.
 */
-bool expression_op_func__or( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__OR);
+bool expression_op_func__or( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__OR);
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
-    vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type,
+    (void)vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type,
                       expr->parent->expr->left->value->width, 0, 0 );
   }
 
@@ -1782,7 +1782,7 @@ bool expression_op_func__or( expression* expr, thread* thr, const sim_time* time
 
  Performs a bitwise NAND operation.
 */
-bool expression_op_func__nand( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__NAND);
+bool expression_op_func__nand( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__NAND);
 
   PROFILE_END;
 
@@ -1799,7 +1799,7 @@ bool expression_op_func__nand( expression* expr, thread* thr, const sim_time* ti
 
  Performs a bitwise NOR operation.
 */
-bool expression_op_func__nor( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__NOR);
+bool expression_op_func__nor( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__NOR);
 
   PROFILE_END;
 
@@ -1816,7 +1816,7 @@ bool expression_op_func__nor( expression* expr, thread* thr, const sim_time* tim
 
  Performs a bitwise NXOR operation.
 */
-bool expression_op_func__nxor( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__NXOR);
+bool expression_op_func__nxor( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__NXOR);
 
   PROFILE_END;
 
@@ -1833,7 +1833,7 @@ bool expression_op_func__nxor( expression* expr, thread* thr, const sim_time* ti
 
  Performs a less-than comparison operation.
 */
-bool expression_op_func__lt( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__LT);
+bool expression_op_func__lt( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__LT);
 
   PROFILE_END;
 
@@ -1850,7 +1850,7 @@ bool expression_op_func__lt( expression* expr, thread* thr, const sim_time* time
 
  Performs a greater-than comparison operation.
 */
-bool expression_op_func__gt( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__GT);
+bool expression_op_func__gt( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__GT);
 
   PROFILE_END;
 
@@ -1867,11 +1867,11 @@ bool expression_op_func__gt( expression* expr, thread* thr, const sim_time* time
 
  Performs a left shift operation.
 */
-bool expression_op_func__lshift( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__LSHIFT);
+bool expression_op_func__lshift( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__LSHIFT);
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
-    vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type,
+    (void)vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type,
                       expr->parent->expr->left->value->width, 0, 0 );
   }
 
@@ -1890,11 +1890,11 @@ bool expression_op_func__lshift( expression* expr, thread* thr, const sim_time* 
 
  Performs a right shift operation.
 */
-bool expression_op_func__rshift( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__RSHIFT);
+bool expression_op_func__rshift( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__RSHIFT);
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
-    vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type,
+    (void)vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type,
                       expr->parent->expr->left->value->width, 0, 0 );
   }
 
@@ -1913,11 +1913,11 @@ bool expression_op_func__rshift( expression* expr, thread* thr, const sim_time* 
 
  Performs an arithmetic right shift operation.
 */
-bool expression_op_func__arshift( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__ARSHIFT);
+bool expression_op_func__arshift( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__ARSHIFT);
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
-    vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type,
+    (void)vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type,
                       expr->parent->expr->left->value->width, 0, 0 );
   }
 
@@ -1936,7 +1936,7 @@ bool expression_op_func__arshift( expression* expr, thread* thr, const sim_time*
 
  Performs an equality (==) comparison operation.
 */
-bool expression_op_func__eq( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__EQ);
+bool expression_op_func__eq( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__EQ);
 
   PROFILE_END;
 
@@ -1953,7 +1953,7 @@ bool expression_op_func__eq( expression* expr, thread* thr, const sim_time* time
 
  Performs an equality (===) comparison operation.
 */
-bool expression_op_func__ceq( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__CEQ);
+bool expression_op_func__ceq( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__CEQ);
 
   PROFILE_END;
 
@@ -1970,7 +1970,7 @@ bool expression_op_func__ceq( expression* expr, thread* thr, const sim_time* tim
 
  Performs a less-than-or-equal comparison operation.
 */
-bool expression_op_func__le( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__LE);
+bool expression_op_func__le( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__LE);
 
   PROFILE_END;
 
@@ -1987,7 +1987,7 @@ bool expression_op_func__le( expression* expr, thread* thr, const sim_time* time
 
  Performs a greater-than-or-equal comparison operation.
 */
-bool expression_op_func__ge( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__GE);
+bool expression_op_func__ge( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__GE);
 
   PROFILE_END;
 
@@ -2004,7 +2004,7 @@ bool expression_op_func__ge( expression* expr, thread* thr, const sim_time* time
 
  Performs a not-equal (!=) comparison operation.
 */
-bool expression_op_func__ne( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__NE);
+bool expression_op_func__ne( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__NE);
 
   PROFILE_END;
 
@@ -2021,7 +2021,7 @@ bool expression_op_func__ne( expression* expr, thread* thr, const sim_time* time
 
  Performs a not-equal (!==) comparison operation.
 */
-bool expression_op_func__cne( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__CNE);
+bool expression_op_func__cne( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__CNE);
 
   PROFILE_END;
 
@@ -2038,7 +2038,7 @@ bool expression_op_func__cne( expression* expr, thread* thr, const sim_time* tim
 
  Performs a logical OR operation.
 */
-bool expression_op_func__lor( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__LOR);
+bool expression_op_func__lor( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__LOR);
 
   vector   vec1;     /* Used for logical reduction */
   vector   vec2;     /* Used for logical reduction */
@@ -2048,8 +2048,8 @@ bool expression_op_func__lor( expression* expr, thread* thr, const sim_time* tim
   vector_init( &vec1, &value1a, 1, VTYPE_VAL );
   vector_init( &vec2, &value1b, 1, VTYPE_VAL );
 
-  vector_unary_op( &vec1, expr->left->value,  or_optab );
-  vector_unary_op( &vec2, expr->right->value, or_optab );
+  (void)vector_unary_op( &vec1, expr->left->value,  or_optab );
+  (void)vector_unary_op( &vec2, expr->right->value, or_optab );
 
   PROFILE_END;
 
@@ -2066,7 +2066,7 @@ bool expression_op_func__lor( expression* expr, thread* thr, const sim_time* tim
 
  Performs a logical AND operation.
 */
-bool expression_op_func__land( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__LAND);
+bool expression_op_func__land( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__LAND);
 
   vector   vec1;     /* Used for logical reduction */
   vector   vec2;     /* Used for logical reduction */
@@ -2076,8 +2076,8 @@ bool expression_op_func__land( expression* expr, thread* thr, const sim_time* ti
   vector_init( &vec1, &value1a, 1, VTYPE_VAL );
   vector_init( &vec2, &value1b, 1, VTYPE_VAL );
 
-  vector_unary_op( &vec1, expr->left->value,  or_optab );
-  vector_unary_op( &vec2, expr->right->value, or_optab );
+  (void)vector_unary_op( &vec1, expr->left->value,  or_optab );
+  (void)vector_unary_op( &vec2, expr->right->value, or_optab );
 
   PROFILE_END;
 
@@ -2094,7 +2094,7 @@ bool expression_op_func__land( expression* expr, thread* thr, const sim_time* ti
 
  Performs a conditional (?:) operation.
 */
-bool expression_op_func__cond( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__COND);
+bool expression_op_func__cond( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__COND);
 
   PROFILE_END;
 
@@ -2112,7 +2112,7 @@ bool expression_op_func__cond( expression* expr, thread* thr, const sim_time* ti
 
  Performs a conditional select (?:) operation.
 */
-bool expression_op_func__cond_sel( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__COND_SEL);
+bool expression_op_func__cond_sel( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__COND_SEL);
 
   vector   vec1;            /* Used for logical reduction */
   vec_data bit1;            /* 1-bit vector value */
@@ -2121,7 +2121,7 @@ bool expression_op_func__cond_sel( expression* expr, thread* thr, const sim_time
   bool     retval = FALSE;  /* Return value for this function */
 
   vector_init( &vec1, &bit1, 1, VTYPE_VAL );
-  vector_unary_op( &vec1, expr->parent->expr->left->value, or_optab );
+  (void)vector_unary_op( &vec1, expr->parent->expr->left->value, or_optab );
 
   if( vec1.value[0].part.exp.value == 0 ) {
     retval = vector_set_value( expr->value, expr->right->value->value, expr->right->value->suppl.part.type, expr->right->value->width, 0, 0 );
@@ -2150,7 +2150,7 @@ bool expression_op_func__cond_sel( expression* expr, thread* thr, const sim_time
 
  Performs a unary invert operation.
 */
-bool expression_op_func__uinv( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__UINV);
+bool expression_op_func__uinv( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__UINV);
 
   PROFILE_END;
 
@@ -2167,7 +2167,7 @@ bool expression_op_func__uinv( expression* expr, thread* thr, const sim_time* ti
 
  Performs a unary AND operation.
 */
-bool expression_op_func__uand( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__UAND);
+bool expression_op_func__uand( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__UAND);
 
   PROFILE_END;
 
@@ -2184,7 +2184,7 @@ bool expression_op_func__uand( expression* expr, thread* thr, const sim_time* ti
 
  Performs a unary NOT operation.
 */
-bool expression_op_func__unot( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__UNOT);
+bool expression_op_func__unot( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__UNOT);
 
   PROFILE_END;
 
@@ -2201,7 +2201,7 @@ bool expression_op_func__unot( expression* expr, thread* thr, const sim_time* ti
 
  Performs a unary OR operation.
 */
-bool expression_op_func__uor( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__UOR);
+bool expression_op_func__uor( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__UOR);
 
   PROFILE_END;
 
@@ -2218,7 +2218,7 @@ bool expression_op_func__uor( expression* expr, thread* thr, const sim_time* tim
 
  Performs a unary XOR operation.
 */
-bool expression_op_func__uxor( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__UXOR);
+bool expression_op_func__uxor( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__UXOR);
 
   PROFILE_END;
 
@@ -2235,7 +2235,7 @@ bool expression_op_func__uxor( expression* expr, thread* thr, const sim_time* ti
 
  Performs a unary NAND operation.
 */
-bool expression_op_func__unand( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__UNAND);
+bool expression_op_func__unand( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__UNAND);
 
   PROFILE_END;
 
@@ -2252,7 +2252,7 @@ bool expression_op_func__unand( expression* expr, thread* thr, const sim_time* t
 
  Performs a unary NOR operation.
 */
-bool expression_op_func__unor( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__UNOR);
+bool expression_op_func__unor( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__UNOR);
 
   PROFILE_END;
 
@@ -2269,7 +2269,7 @@ bool expression_op_func__unor( expression* expr, thread* thr, const sim_time* ti
 
  Performs a unary NXOR operation.
 */
-bool expression_op_func__unxor( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__UNXOR);
+bool expression_op_func__unxor( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__UNXOR);
 
   PROFILE_END;
 
@@ -2286,7 +2286,7 @@ bool expression_op_func__unxor( expression* expr, thread* thr, const sim_time* t
 
  No operation is performed -- expression value is assumed to be changed.
 */
-bool expression_op_func__null( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__NULL);
+bool expression_op_func__null( /*@unused@*/ expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__NULL);
 
   PROFILE_END;
 
@@ -2303,7 +2303,7 @@ bool expression_op_func__null( expression* expr, thread* thr, const sim_time* ti
 
  Performs a single bit select operation.
 */
-bool expression_op_func__sbit( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__SBIT);
+bool expression_op_func__sbit( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__SBIT);
 
   int       intval;     /* Integer value */
   vec_data* vstart;     /* Calculated starting vector bit */
@@ -2368,7 +2368,7 @@ bool expression_op_func__sbit( expression* expr, thread* thr, const sim_time* ti
 
  Performs a multi-bit select operation.
 */
-bool expression_op_func__mbit( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__MBIT);
+bool expression_op_func__mbit( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__MBIT);
 
   int       intval;     /* Integer value */
   vec_data* vstart;     /* Calculated starting vector bit */
@@ -2423,7 +2423,7 @@ bool expression_op_func__mbit( expression* expr, thread* thr, const sim_time* ti
 
  Performs a expansion ({{}}) operation.
 */
-bool expression_op_func__expand( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__EXPAND);
+bool expression_op_func__expand( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__EXPAND);
 
   vec_data bit;             /* 1-bit vector value */
   int      i;               /* Loop iterator */
@@ -2467,7 +2467,7 @@ bool expression_op_func__expand( expression* expr, thread* thr, const sim_time* 
 
  Performs a list (,) operation.
 */
-bool expression_op_func__list( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__LIST);
+bool expression_op_func__list( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__LIST);
 
   bool retval = FALSE;  /* Return value for this function */
 
@@ -2489,7 +2489,7 @@ bool expression_op_func__list( expression* expr, thread* thr, const sim_time* ti
 
  Performs a concatenation ({}) operation.
 */
-bool expression_op_func__concat( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__CONCAT);
+bool expression_op_func__concat( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__CONCAT);
 
   PROFILE_END;
 
@@ -2584,7 +2584,7 @@ bool expression_op_func__nedge( expression* expr, thread* thr, const sim_time* t
 
  Performs an any-edge event operation.
 */
-bool expression_op_func__aedge( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__AEDGE);
+bool expression_op_func__aedge( expression* expr, thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__AEDGE);
 
   vector   vec;     /* Temporary vector */
   vec_data bit;     /* 1-bit vector value */
@@ -2616,7 +2616,7 @@ bool expression_op_func__aedge( expression* expr, thread* thr, const sim_time* t
       expr->suppl.part.true   = 1;
       expr->suppl.part.eval_t = 1;
       retval = TRUE;
-      vector_set_value( expr->left->value, expr->right->value->value, expr->right->value->suppl.part.type, expr->right->value->width, 0, 0 );
+      (void)vector_set_value( expr->left->value, expr->right->value->value, expr->right->value->suppl.part.type, expr->right->value->width, 0, 0 );
     } else {
       expr->suppl.part.eval_t = 0;
       retval = FALSE;
@@ -2639,7 +2639,7 @@ bool expression_op_func__aedge( expression* expr, thread* thr, const sim_time* t
 
  Performs a event OR operation.
 */
-bool expression_op_func__eor( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__EOR);
+bool expression_op_func__eor( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__EOR);
 
   bool retval;  /* Return value for this function */
 
@@ -2675,7 +2675,7 @@ bool expression_op_func__eor( expression* expr, thread* thr, const sim_time* tim
 
  Performs a sensitivity list operation.
 */
-bool expression_op_func__slist( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__SLIST);
+bool expression_op_func__slist( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__SLIST);
 
   bool retval;  /* Return value for this function */
 
@@ -2786,7 +2786,7 @@ bool expression_op_func__trigger( expression* expr, thread* thr, const sim_time*
 
  Performs a case comparison operation.
 */
-bool expression_op_func__case( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__CASE);
+bool expression_op_func__case( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__CASE);
 
   PROFILE_END;
 
@@ -2803,7 +2803,7 @@ bool expression_op_func__case( expression* expr, thread* thr, const sim_time* ti
 
  Performs a casex comparison operation.
 */
-bool expression_op_func__casex( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__CASEX);
+bool expression_op_func__casex( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__CASEX);
 
   PROFILE_END;
 
@@ -2820,7 +2820,7 @@ bool expression_op_func__casex( expression* expr, thread* thr, const sim_time* t
 
  Performs a casez comparison operation.
 */
-bool expression_op_func__casez( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__CASEZ);
+bool expression_op_func__casez( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__CASEZ);
 
   PROFILE_END;
 
@@ -2837,7 +2837,7 @@ bool expression_op_func__casez( expression* expr, thread* thr, const sim_time* t
 
  Performs a case default comparison operation.
 */
-bool expression_op_func__default( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__DEFAULT);
+bool expression_op_func__default( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__DEFAULT);
 
   vec_data bit;  /* 1-bit vector value */
 
@@ -2913,7 +2913,7 @@ bool expression_op_func__func_call( expression* expr, thread* thr, const sim_tim
 */
 bool expression_op_func__task_call( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__TASK_CALL);
 
-  sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit, time );
+  (void)sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit, time );
 
   PROFILE_END;
 
@@ -2961,7 +2961,7 @@ bool expression_op_func__nb_call( expression* expr, thread* thr, const sim_time*
 */
 bool expression_op_func__fork( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__FORK);
 
-  sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit, time );
+  (void)sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit, time );
 
   PROFILE_END;
 
@@ -2978,7 +2978,7 @@ bool expression_op_func__fork( expression* expr, thread* thr, const sim_time* ti
 
  Performs a join operation.
 */
-bool expression_op_func__join( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__JOIN);
+bool expression_op_func__join( /*@unused@*/ expression* expr, thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__JOIN);
 
   PROFILE_END;
 
@@ -2995,7 +2995,7 @@ bool expression_op_func__join( expression* expr, thread* thr, const sim_time* ti
 
  Performs a block disable operation.
 */
-bool expression_op_func__disable( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__DISABLE);
+bool expression_op_func__disable( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__DISABLE);
 
   sim_kill_thread_with_funit( expr->elem.funit );
 
@@ -3014,7 +3014,7 @@ bool expression_op_func__disable( expression* expr, thread* thr, const sim_time*
 
  Performs a repeat loop operation.
 */
-bool expression_op_func__repeat( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__REPEAT);
+bool expression_op_func__repeat( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__REPEAT);
 
   bool retval;  /* Return value for this function */
 
@@ -3041,7 +3041,7 @@ bool expression_op_func__repeat( expression* expr, thread* thr, const sim_time* 
 
  Performs an exponential power operation.
 */
-bool expression_op_func__exponent( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__EXPONENT);
+bool expression_op_func__exponent( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__EXPONENT);
 
   bool     retval  = FALSE;  /* Return value for this function */
   vec_data bit;              /* 1-bit vector value */
@@ -3092,8 +3092,8 @@ bool expression_op_func__exponent( expression* expr, thread* thr, const sim_time
 */
 bool expression_op_func__passign( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__PASSIGN);
 
-  bool retval;      /* Return value for this function */
-  int  intval = 0;  /* Integer value */
+  bool retval = FALSE;  /* Return value for this function */
+  int  intval = 0;      /* Integer value */
 
   /* If the current thread is running an automatic function, create a reentrant structure for it */
   if( (thr != NULL) && (thr->ren == NULL) &&
@@ -3141,7 +3141,7 @@ bool expression_op_func__passign( expression* expr, thread* thr, const sim_time*
 
  Performs a positive variable multi-bit select operation.
 */
-bool expression_op_func__mbit_pos( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__MBIT_POS);
+bool expression_op_func__mbit_pos( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__MBIT_POS);
 
   int       intval;  /* Integer value */
   vec_data* vstart;  /* Starting bit position */
@@ -3180,7 +3180,7 @@ bool expression_op_func__mbit_pos( expression* expr, thread* thr, const sim_time
 
  Performs a negative variable multi-bit select operation.
 */
-bool expression_op_func__mbit_neg( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__MBIT_NEG);
+bool expression_op_func__mbit_neg( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__MBIT_NEG);
 
   int       intval1;  /* Integer value */
   int       intval2;  /* Integer value */
@@ -3221,7 +3221,7 @@ bool expression_op_func__mbit_neg( expression* expr, thread* thr, const sim_time
 
  Performs a negate of the specified expression.
 */
-bool expression_op_func__negate( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__NEGATE);
+bool expression_op_func__negate( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__NEGATE);
 
   PROFILE_END;
 
@@ -3241,10 +3241,10 @@ bool expression_op_func__negate( expression* expr, thread* thr, const sim_time* 
 bool expression_op_func__iinc( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__IINC);
 
   /* Perform increment */
-  vector_op_inc( expr->left->value );
+  (void)vector_op_inc( expr->left->value );
 
   /* Copy the left-hand value to our expression */
-  vector_set_value( expr->value, expr->left->value->value, expr->left->value->suppl.part.type, expr->left->value->width, 0, 0 );
+  (void)vector_set_value( expr->value, expr->left->value->value, expr->left->value->suppl.part.type, expr->left->value->width, 0, 0 );
 
 #ifdef DEBUG_MODE
   if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
@@ -3273,10 +3273,10 @@ bool expression_op_func__iinc( expression* expr, thread* thr, const sim_time* ti
 bool expression_op_func__pinc( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__PINC);
 
   /* Copy the left-hand value to our expression */
-  vector_set_value( expr->value, expr->left->value->value, expr->left->value->suppl.part.type, expr->left->value->width, 0, 0 );
+  (void)vector_set_value( expr->value, expr->left->value->value, expr->left->value->suppl.part.type, expr->left->value->width, 0, 0 );
 
   /* Perform increment */
-  vector_op_inc( expr->left->value );
+  (void)vector_op_inc( expr->left->value );
 
 #ifdef DEBUG_MODE
   if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
@@ -3305,10 +3305,10 @@ bool expression_op_func__pinc( expression* expr, thread* thr, const sim_time* ti
 bool expression_op_func__idec( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__IDEC);
 
   /* Perform decrement */
-  vector_op_dec( expr->left->value );
+  (void)vector_op_dec( expr->left->value );
 
   /* Copy the left-hand value to our expression */
-  vector_set_value( expr->value, expr->left->value->value, expr->left->value->suppl.part.type, expr->left->value->width, 0, 0 );
+  (void)vector_set_value( expr->value, expr->left->value->value, expr->left->value->suppl.part.type, expr->left->value->width, 0, 0 );
 
 #ifdef DEBUG_MODE
   if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
@@ -3337,10 +3337,10 @@ bool expression_op_func__idec( expression* expr, thread* thr, const sim_time* ti
 bool expression_op_func__pdec( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__PDEC);
 
   /* Copy the left-hand value to our expression */
-  vector_set_value( expr->value, expr->left->value->value, expr->left->value->suppl.part.type, expr->left->value->width, 0, 0 );
+  (void)vector_set_value( expr->value, expr->left->value->value, expr->left->value->suppl.part.type, expr->left->value->width, 0, 0 );
 
   /* Perform decrement */
-  vector_op_dec( expr->left->value );
+  (void)vector_op_dec( expr->left->value );
 
 #ifdef DEBUG_MODE
   if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
@@ -3374,7 +3374,7 @@ bool expression_op_func__dly_assign( expression* expr, thread* thr, const sim_ti
 
   /* If we are the first statement in the queue, perform the dly_op manually */
   if( thr->suppl.part.exec_first && (expr->right->left->op == EXP_OP_DELAY) ) {
-    expression_op_func__dly_op( expr->right, thr, time );
+    (void)expression_op_func__dly_op( expr->right, thr, time );
   }
 
   /* Check the dly_op expression.  If eval_t is set to 1, perform the assignment */
@@ -3406,7 +3406,7 @@ bool expression_op_func__dly_op( expression* expr, thread* thr, const sim_time* 
 
   /* If we are not waiting for the delay to occur, copy the contents of the operation */
   if( !thr->suppl.part.exec_first ) {
-    vector_set_value( expr->value, expr->right->value->value, expr->right->value->suppl.part.type, expr->right->value->width, 0, 0 );
+    (void)vector_set_value( expr->value, expr->right->value->value, expr->right->value->suppl.part.type, expr->right->value->width, 0, 0 );
   }
 
   /* Explicitly call the delay/event.  If the delay is complete, set eval_t to TRUE */
@@ -3439,11 +3439,11 @@ bool expression_op_func__repeat_dly( expression* expr, thread* thr, const sim_ti
   if( exp_op_info[expr->right->op].func( expr->right, thr, time ) ) {
 
     /* Execute repeat operation */
-    expression_op_func__repeat( expr->left, thr, time );
+    (void)expression_op_func__repeat( expr->left, thr, time );
 
     /* If the repeat operation evaluated to TRUE, perform delay operation */
     if( expr->left->value->value[0].part.exp.value == 1 ) {
-      exp_op_info[expr->right->op].func( expr->right, thr, time );
+      (void)exp_op_info[expr->right->op].func( expr->right, thr, time );
       expr->suppl.part.eval_t = 0;
 
     /* Otherwise, we are done with the repeat/delay sequence */
@@ -3469,7 +3469,7 @@ bool expression_op_func__repeat_dly( expression* expr, thread* thr, const sim_ti
 
  Performs a wait statement operation.
 */
-bool expression_op_func__wait( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__WAIT);
+bool expression_op_func__wait( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__WAIT);
 
   bool     retval = TRUE;  /* Return value for this function */
   vector   vec;            /* Temporary vector */
@@ -3477,7 +3477,7 @@ bool expression_op_func__wait( expression* expr, thread* thr, const sim_time* ti
 
   /* Check to see if the right expression has evaluated to a value of TRUE */
   vector_init( &vec, &bit, 1, VTYPE_VAL );
-  vector_unary_op( &vec, expr->right->value, or_optab );
+  (void)vector_unary_op( &vec, expr->right->value, or_optab );
 
   /* If the right expression evaluates to TRUE, continue; otherwise, do a context switch */
   if( vec.value[0].part.val.value == 1 ) {
@@ -3542,7 +3542,7 @@ bool expression_operate( expression* expr, thread* thr, const sim_time* time ) {
       
         /* Set TRUE/FALSE bits to indicate value */
         vector_init( &vec, &bit, 1, VTYPE_VAL );
-        vector_unary_op( &vec, expr->value, or_optab );
+        (void)vector_unary_op( &vec, expr->value, or_optab );
         switch( vec.value[0].part.exp.value ) {
           case 0 :  expr->suppl.part.false = 1;  expr->suppl.part.eval_f = 1;  break;
           case 1 :  expr->suppl.part.true  = 1;  expr->suppl.part.eval_t = 1;  break;
@@ -3634,10 +3634,10 @@ bool expression_operate( expression* expr, thread* thr, const sim_time* time ) {
 
     }
 
-  }
+    /* Specify that we have executed this expression */
+    (expr->exec_num)++;
 
-  /* Specify that we have executed this expression */
-  (expr->exec_num)++;
+  }
 
   PROFILE_END;
 
@@ -3938,7 +3938,7 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb, const sim_ti
       case EXP_OP_SIG      :
         if( lhs->sig->suppl.part.assigned == 1 ) {
           if( assign ) {
-            vector_set_value( lhs->value, rhs->value->value, rhs->value->suppl.part.type, rhs->value->width, *lsb, 0 );
+            (void)vector_set_value( lhs->value, rhs->value->value, rhs->value->suppl.part.type, rhs->value->width, *lsb, 0 );
             if( rhs->value->width < lhs->value->width ) {
               vector_bit_fill( lhs->value, lhs->value->width, (rhs->value->width + *lsb) );
             }
@@ -3968,7 +3968,7 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb, const sim_ti
             }
           }
           if( assign ) {
-            vector_set_value( lhs->value, rhs->value->value, rhs->value->suppl.part.type, rhs->value->width, *lsb, 0 );
+            (void)vector_set_value( lhs->value, rhs->value->value, rhs->value->suppl.part.type, rhs->value->width, *lsb, 0 );
             if( rhs->value->width < lhs->value->width ) {
               vector_bit_fill( lhs->value, lhs->value->width, (rhs->value->width + *lsb) );
             }
@@ -3996,7 +3996,7 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb, const sim_ti
             lhs->value->value = vstart + intval1;
           }
           if( assign ) {
-            vector_set_value( lhs->value, rhs->value->value, rhs->value->suppl.part.type, rhs->value->width, *lsb, 0 );
+            (void)vector_set_value( lhs->value, rhs->value->value, rhs->value->suppl.part.type, rhs->value->width, *lsb, 0 );
             if( rhs->value->width < lhs->value->width ) {
               vector_bit_fill( lhs->value, lhs->value->width, (rhs->value->width + *lsb) );
             }
@@ -4023,7 +4023,7 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb, const sim_ti
             lhs->value->value = vstart + intval1;
           }
           if( assign ) {
-            vector_set_value( lhs->value, rhs->value->value, rhs->value->suppl.part.type, intval2, *lsb, 0 );
+            (void)vector_set_value( lhs->value, rhs->value->value, rhs->value->suppl.part.type, intval2, *lsb, 0 );
 #ifdef DEBUG_MODE
             if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
               printf( "        " );  vsignal_display( lhs->sig );
@@ -4046,7 +4046,7 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb, const sim_ti
             lhs->value->value = vstart + ((intval1 - intval2) + 1);
           }
           if( assign ) {
-            vector_set_value( lhs->value, rhs->value->value, rhs->value->suppl.part.type, intval2, *lsb, 0 );
+            (void)vector_set_value( lhs->value, rhs->value->value, rhs->value->suppl.part.type, intval2, *lsb, 0 );
 #ifdef DEBUG_MODE
             if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
               printf( "        " );  vsignal_display( lhs->sig );
@@ -4234,6 +4234,10 @@ void expression_dealloc( expression* expr, bool exp_only ) { PROFILE(EXPRESSION_
 
 /* 
  $Log$
+ Revision 1.270  2008/01/02 06:00:08  phase1geo
+ Updating user documentation to include the CLI and profiling documentation.
+ (CLI documentation is not complete at this time).  Fixes bug 1861986.
+
  Revision 1.269  2007/12/31 23:43:36  phase1geo
  Fixing bug 1858408.  Also fixing issues with vector_op_add functionality.
 

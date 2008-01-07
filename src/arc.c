@@ -143,7 +143,7 @@
  Calculates the amount of storage (in numbers of characters) needed
  to store one bidirectional state transition arc.
 */
-int arc_get_entry_width( int width ) { PROFILE(ARC_GET_ENTRY_WIDTH);
+unsigned int arc_get_entry_width( unsigned int width ) { /*@unused@*/PROFILE(ARC_GET_ENTRY_WIDTH);
 
   return( ((((width * 2) + ARC_ENTRY_SUPPL_SIZE) % 8) == 0) ?
                  (((width * 2) + ARC_ENTRY_SUPPL_SIZE) / 8) :
@@ -163,6 +163,8 @@ void arc_set_width( char* arcs, unsigned int width ) { PROFILE(ARC_SET_WIDTH);
 
   arcs[0] = (char)(width & 0xff);
   arcs[1] = (char)((width >> 8) & 0xff);
+
+  PROFILE_END;
 
 }
 
@@ -191,7 +193,7 @@ unsigned int arc_get_width( const char* arcs ) { PROFILE(ARC_GET_WIDTH);
  in the state transition arc array.  The value of size is the number of
  bidirectional state transition arc entries within the table.
 */
-void arc_set_max_size( char* arcs, int size ) { PROFILE(ARC_SET_MAX_SIZE);
+void arc_set_max_size( char* arcs, unsigned int size ) { PROFILE(ARC_SET_MAX_SIZE);
 
   arcs[2] = (char)(size & 0xff);
   arcs[3] = (char)((size >> 8) & 0xff);
@@ -207,9 +209,9 @@ void arc_set_max_size( char* arcs, int size ) { PROFILE(ARC_SET_MAX_SIZE);
  array size that is encoded into the arcs array.  This value is the number
  of bidirectional state transition arc entries allocated in this arc array.
 */
-int arc_get_max_size( const char* arcs ) { PROFILE(ARC_GET_MAX_SIZE);
+unsigned int arc_get_max_size( const char* arcs ) { PROFILE(ARC_GET_MAX_SIZE);
 
-  int size = (((int)arcs[3] & 0xff) << 8) | ((int)arcs[2] & 0xff);
+  unsigned int size = (((unsigned int)arcs[3] & 0xff) << 8) | ((unsigned int)arcs[2] & 0xff);
   return( size );
 
 }
@@ -223,7 +225,7 @@ int arc_get_max_size( const char* arcs ) { PROFILE(ARC_GET_MAX_SIZE);
  in the state transition arc array.  The value of size is the number of
  bidirectional state transition arc entries currently used within the table.
 */
-void arc_set_curr_size( char* arcs, int size ) { PROFILE(ARC_SET_CURR_SIZE);
+void arc_set_curr_size( char* arcs, unsigned int size ) { PROFILE(ARC_SET_CURR_SIZE);
 
   arcs[4] = (char)(size & 0xff);
   arcs[5] = (char)((size >> 8) & 0xff);
@@ -239,9 +241,9 @@ void arc_set_curr_size( char* arcs, int size ) { PROFILE(ARC_SET_CURR_SIZE);
  Retrieves the previously stored value of the number of currently used
  bidirectional state transition arc entries in the specified arcs array.
 */
-int arc_get_curr_size( const char* arcs ) { PROFILE(ARC_GET_CURR_SIZE);
+unsigned int arc_get_curr_size( const char* arcs ) { PROFILE(ARC_GET_CURR_SIZE);
 
-  int size = (((int)(arcs[5]) & 0xff) << 8) | ((int)(arcs[4]) & 0xff);
+  unsigned int size = (((unsigned int)(arcs[5]) & 0xff) << 8) | ((unsigned int)(arcs[4]) & 0xff);
   return( size );
 
 }
@@ -253,7 +255,7 @@ int arc_get_curr_size( const char* arcs ) { PROFILE(ARC_GET_CURR_SIZE);
  Sets the supplemental control field of the specified arc array to
  the specified value.
 */
-void arc_set_suppl( char* arcs, int suppl ) { PROFILE(ARC_SET_SUPPL);
+void arc_set_suppl( char* arcs, unsigned int suppl ) { PROFILE(ARC_SET_SUPPL);
 
   arcs[6] = (char)(suppl & 0xff);
 
@@ -269,9 +271,9 @@ void arc_set_suppl( char* arcs, int suppl ) { PROFILE(ARC_SET_SUPPL);
  Retrieves the value of the supplemental field in the specified arc
  array.
 */
-int arc_get_suppl( const char* arcs, int type ) { PROFILE(ARC_GET_SUPPL);
+unsigned int arc_get_suppl( const char* arcs, unsigned int type ) { PROFILE(ARC_GET_SUPPL);
 
-  return( ((int)arcs[6] >> type) & 0x1 );
+  return( ((unsigned int)arcs[6] >> type) & 0x1 );
 
 }
 
@@ -287,15 +289,15 @@ int arc_get_suppl( const char* arcs, int type ) { PROFILE(ARC_GET_SUPPL);
 */
 bool arc_set_states( char* arcs, int start, const vector* left, const vector* right ) { PROFILE(ARC_SET_STATES);
 
-  bool   retval = TRUE;  /* Return value of this function */
-  char   mask;           /* Mask to apply to current bit select */
-  vector value;          /* Vector to hold current bit select */
-  int    pos;            /* Current 8-bit boundary bit position */
-  int    i;              /* Loop iterator */
-  int    j;              /* Loop iterator */
-  int    curr;           /* Current index of arc array to set */
-  int    entry_size;     /* Number of characters needed to store one entry */
-  int    index;          /* Current index of vector to extract */
+  bool          retval = TRUE;  /* Return value of this function */
+  unsigned char mask;           /* Mask to apply to current bit select */
+  vector        value;          /* Vector to hold current bit select */
+  unsigned int  pos;            /* Current 8-bit boundary bit position */
+  int           i;              /* Loop iterator */
+  int           j;              /* Loop iterator */
+  int           curr;           /* Current index of arc array to set */
+  int           entry_size;     /* Number of characters needed to store one entry */
+  int           index;          /* Current index of vector to extract */
 
   /* Check specified vector for unknown information */
   if( vector_is_unknown( left ) || vector_is_unknown( right ) ) {
@@ -329,7 +331,7 @@ bool arc_set_states( char* arcs, int start, const vector* left, const vector* ri
           mask <<= 1;
           mask  |= (0x1 << pos);
         }
-        arcs[curr] |= ((vector_to_int( &value ) << pos) & mask);
+        arcs[curr] |= ((/*@-shiftimplementation@*/vector_to_int( &value ) << pos) & mask);
         /* printf( "arcs[%d]: %x, value: %x\n", curr, ((int)arcs[curr] & 0xff), ((vector_to_int( &value ) << pos) & mask) ); */
         index       += value.width;
         value.value += value.width;
@@ -355,7 +357,7 @@ bool arc_set_states( char* arcs, int start, const vector* left, const vector* ri
  Sets the value of the specified type bit in the arc entry specified
  by arcs and curr.
 */
-void arc_set_entry_suppl( char* arcs, int curr, int type, char val ) { PROFILE(ARC_SET_ENTRY_SUPPL);
+void arc_set_entry_suppl( char* arcs, int curr, unsigned int type, char val ) { PROFILE(ARC_SET_ENTRY_SUPPL);
 
   int entry_size = arc_get_entry_width( arc_get_width( arcs ) );
 
@@ -375,7 +377,7 @@ void arc_set_entry_suppl( char* arcs, int curr, int type, char val ) { PROFILE(A
  Retrieves the arc entry supplemental field bit specified by the function
  parameters.
 */
-int arc_get_entry_suppl( const char* arcs, int curr, int type ) { PROFILE(ARC_GET_ENTRY_SUPPL);
+int arc_get_entry_suppl( const char* arcs, int curr, unsigned int type ) { PROFILE(ARC_GET_ENTRY_SUPPL);
 
   int entry_size = arc_get_entry_width( arc_get_width( arcs ) );
 
@@ -603,7 +605,7 @@ void arc_add( char** arcs, const vector* fr_st, const vector* to_st, int hit ) {
  Performs a bitwise comparison of the two states indicated by their index and pos
  values.  If both states compare, return TRUE; otherwise, return FALSE.
 */
-bool arc_compare_states( const char* arcs, int index1, int pos1, int index2, int pos2 ) { PROFILE(ARC_COMPARE_STATES);
+bool arc_compare_states( const char* arcs, int index1, unsigned int pos1, int index2, unsigned int pos2 ) { PROFILE(ARC_COMPARE_STATES);
 
   int i;  /* Loop iterator */
 
@@ -886,7 +888,7 @@ bool arc_db_write( const char* arcs, FILE* file ) { PROFILE(ARC_DB_WRITE);
     if( (int)arcs[i] == 0 ) {
       fprintf( file, "," );
     } else {
-      fprintf( file, "%02x", (((int)arcs[i]) & 0xff) );
+      fprintf( file, "%02x", (((unsigned int)arcs[i]) & 0xff) );
     }
   }
 
@@ -905,10 +907,10 @@ bool arc_db_write( const char* arcs, FILE* file ) { PROFILE(ARC_DB_WRITE);
  combination of two hexidecimal digits (which correspond to an 8-bit ASCII
  character) or the comma (,) character which represents a value of 0.
 */
-int arc_read_get_next_value( char** line ) { PROFILE(ARC_READ_GET_NEXT_VALUE);
+unsigned int arc_read_get_next_value( char** line ) { PROFILE(ARC_READ_GET_NEXT_VALUE);
 
-  char tmp[3];
-  int  value;
+  char         tmp[3];
+  unsigned int value;
 
   if( (*line)[0] == ',' ) {
     value = 0;
@@ -940,7 +942,7 @@ int arc_read_get_next_value( char** line ) { PROFILE(ARC_READ_GET_NEXT_VALUE);
  space to hold the table.  Returns TRUE if the specified line contained an
  appropriately written arc transition table; otherwise, returns FALSE.
 */
-bool arc_db_read( char** arcs, char** line ) { PROFILE(ARC_DB_READ);
+bool arc_db_read( /*@out@*/ char** arcs, char** line ) { PROFILE(ARC_DB_READ);
 
   bool retval = TRUE;  /* Return value for this function */
   int  i;              /* Loop iterator */
@@ -954,8 +956,8 @@ bool arc_db_read( char** arcs, char** line ) { PROFILE(ARC_DB_READ);
               ((arc_read_get_next_value( line ) & 0xff) << 8);
 
   /* We don't need the max_size information, so we just read it */
-  arc_read_get_next_value( line );
-  arc_read_get_next_value( line );
+  (void)arc_read_get_next_value( line );
+  (void)arc_read_get_next_value( line );
 
   curr_size =  (arc_read_get_next_value( line ) & 0xff) |
               ((arc_read_get_next_value( line ) & 0xff) << 8);
@@ -996,12 +998,12 @@ bool arc_db_read( char** arcs, char** line ) { PROFILE(ARC_DB_READ);
 */
 void arc_state_to_string( const char* arcs, int index, bool left, char* str ) { PROFILE(ARC_STATE_TO_STRING);
 
-  char tmp[2];       /* Temporary string holder */
-  int  val;          /* Temporary storage for integer value of 4-bits */
-  int  str_index;    /* Index to store next character into str */
-  int  pos;          /* Specifies current bit position to extract */
-  int  entry_width;  /* Character width to store one arc entry */
-  int  i;            /* Loop iterator */
+  char         tmp[2];       /* Temporary string holder */
+  unsigned int val;          /* Temporary storage for integer value of 4-bits */
+  int          str_index;    /* Index to store next character into str */
+  unsigned int pos;          /* Specifies current bit position to extract */
+  int          entry_width;  /* Character width to store one arc entry */
+  unsigned int i;            /* Loop iterator */
 
   /* Initialize variables */
   str_index   = ((arc_get_width( arcs ) % 4) == 0) ? (arc_get_width( arcs ) / 4) : ((arc_get_width( arcs ) / 4) + 1);
@@ -1026,7 +1028,7 @@ void arc_state_to_string( const char* arcs, int index, bool left, char* str ) { 
     val >>= 1;
     val  |= ((int)(arcs[index] >> pos) & 0x1) << 3;  
     if( (i % 4) == 3 ) {
-      snprintf( tmp, 2, "%x", val );
+      /*@-retvalint@*/snprintf( tmp, 2, "%x", val );
       assert( str_index >= 0 );
       str[str_index] = tmp[0];
       str_index--;
@@ -1056,6 +1058,8 @@ void arc_state_to_string( const char* arcs, int index, bool left, char* str ) { 
 */
 bool arc_db_merge( char** base, char** line, bool same ) { PROFILE(ARC_DB_MERGE);
 
+  /*@-mustfreeonly -mustfreefresh@*/
+
   bool    retval = TRUE;  /* Return value for this function */
   char*   arcs;           /* Read arc array */
   char*   strl;           /* Left state value string */
@@ -1078,11 +1082,11 @@ bool arc_db_merge( char** base, char** line, bool same ) { PROFILE(ARC_DB_MERGE)
       */
       print_output( "Attempting to merge two databases derived from different designs.  Unable to merge",
                     FATAL, __FILE__, __LINE__ );
-      exit( 1 );
+      exit( EXIT_FAILURE );
     }
 
     /* Calculate strlen of arc array width */
-    snprintf( str_width, 20, "%d", arc_get_width( arcs ) );
+    snprintf( str_width, 20, "%u", arc_get_width( arcs ) );
 
     /* Allocate string to hold value string */
     strl = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 4 + strlen( str_width ) );
@@ -1131,6 +1135,8 @@ bool arc_db_merge( char** base, char** line, bool same ) { PROFILE(ARC_DB_MERGE)
 
   return( retval );
 
+  /*@=mustfreeonly =mustfreefresh@*/
+
 }
 
 /*!
@@ -1161,6 +1167,7 @@ void arc_get_states( char*** states, int* state_size, const char* arcs, bool hit
         if( arc_get_entry_suppl( arcs, i, ARC_NOT_UNIQUE_L ) == 0 ) {
           if( (arc_get_entry_suppl( arcs, i, ARC_HIT_F ) == hit) || any ) {
             *states                  = (char**)realloc( *states, (sizeof( char* ) * ((*state_size) + 1)) );
+            assert( *states != NULL );
             (*states)[(*state_size)] = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 2 );
             arc_state_to_string( arcs, i, TRUE, (*states)[(*state_size)] );
             (*state_size)++;
@@ -1170,6 +1177,7 @@ void arc_get_states( char*** states, int* state_size, const char* arcs, bool hit
         if( arc_get_entry_suppl( arcs, i, ARC_NOT_UNIQUE_R ) == 0 ) {
           if( (arc_get_entry_suppl( arcs, i, ARC_HIT_F ) == hit) || any ) {
             *states                  = (char**)realloc( *states, (sizeof( char* ) * ((*state_size) + 1)) );
+            assert( *states != NULL );
             (*states)[(*state_size)] = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 2 );
             arc_state_to_string( arcs, i, FALSE, (*states)[(*state_size)] );
             (*state_size)++;
@@ -1202,7 +1210,8 @@ void arc_get_transitions( char*** from_states, char*** to_states, int** excludes
   int   i;     /* Loop iterator */
 
   /* Initialize state arrays and arc_size */
-  *from_states = *to_states = NULL;
+  *from_states = NULL;
+  *to_states   = NULL;
   *excludes    = NULL;
   *arc_size    = 0;
 
@@ -1214,11 +1223,14 @@ void arc_get_transitions( char*** from_states, char*** to_states, int** excludes
     /* Check forward first */
     if( (arc_get_entry_suppl( arcs, i, ARC_HIT_F ) == hit) || any ) {
       *from_states                = (char**)realloc( *from_states, (sizeof( char* ) * (*arc_size + 1)) );
+      assert( *from_states != NULL );
       (*from_states)[(*arc_size)] = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 2 );
       *to_states                  = (char**)realloc( *to_states,   (sizeof( char* ) * (*arc_size + 1)) );
+      assert( *to_states != NULL );
       (*to_states)[(*arc_size)]   = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 2 );
       if( any ) {
         *excludes = (int*)realloc( *excludes, (sizeof( int ) * (*arc_size + 1)) );
+        assert( *excludes != NULL );
         (*excludes)[(*arc_size)] = arc_get_entry_suppl( arcs, i, ARC_EXCLUDED_F );
       }
       arc_state_to_string( arcs, i, TRUE,  (*from_states)[(*arc_size)] );
@@ -1229,11 +1241,14 @@ void arc_get_transitions( char*** from_states, char*** to_states, int** excludes
     if( ((arc_get_entry_suppl( arcs, i, ARC_HIT_R ) == hit) || any) &&
         (arc_get_entry_suppl( arcs, i, ARC_BIDIR ) == 1) ) {
       *from_states                = (char**)realloc( *from_states, (sizeof( char* ) * (*arc_size + 1)) );
+      assert( *from_states != NULL );
       (*from_states)[(*arc_size)] = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 2 );
       *to_states                  = (char**)realloc( *to_states,   (sizeof( char* ) * (*arc_size + 1)) );
+      assert( *to_states != NULL );
       (*to_states)[(*arc_size)]   = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 2 );
       if( any ) {
         *excludes = (int*)realloc( *excludes, (sizeof( int ) * (*arc_size + 1)) );
+        assert( *excludes != NULL );
         (*excludes)[(*arc_size)] = arc_get_entry_suppl( arcs, i, ARC_EXCLUDED_R );
       }
       arc_state_to_string( arcs, i, FALSE, (*from_states)[(*arc_size)] );
@@ -1285,6 +1300,9 @@ void arc_dealloc( char* arcs ) { PROFILE(ARC_DEALLOC);
 
 /*
  $Log$
+ Revision 1.43  2008/01/04 23:07:58  phase1geo
+ More splint updates.
+
  Revision 1.42  2007/12/10 23:16:21  phase1geo
  Working on adding profiler for use in finding performance issues.  Things don't compile
  at the moment.

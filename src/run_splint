@@ -1,4 +1,4 @@
 #!/bin/sh
 
 # Runs splint on source code
-splint -preproc *.c
+splint -compdestroy -predboolothers -branchstate -type -varuse -shadow -incondefs +posixlib +trytorecover *.c | tee osplint

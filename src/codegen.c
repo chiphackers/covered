@@ -78,18 +78,19 @@ extern const exp_info exp_op_info[EXP_OP_NUM];
 void codegen_create_expr_helper( char** code,
                                  int    code_index,
                                  char*  first,
-                                 char** left,
+                                 /*@null@*/ char** left,
                                  int    left_depth,
                                  bool   first_same_line,
                                  char*  middle,
-                                 char** right,
+                                 /*@null@*/ char** right,
                                  int    right_depth,
                                  bool   last_same_line,
-                                 char*  last ) { PROFILE(CODEGEN_CREATE_EXPR_HELPER);
+                                 /*@null@*/ char*  last ) { PROFILE(CODEGEN_CREATE_EXPR_HELPER);
 
-  char* tmpstr;         /* Temporary string holder */
-  int   code_size = 0;  /* Length of current string to generate */
-  int   i;              /* Loop iterator */
+  char*        tmpstr;         /* Temporary string holder */
+  int          code_size = 0;  /* Length of current string to generate */
+  int          i;              /* Loop iterator */
+  unsigned int rv;             /* Return value from snprintf calls */
 
   assert( left_depth > 0 );
 
@@ -122,17 +123,20 @@ void codegen_create_expr_helper( char** code,
   code[code_index][0] = '\0';
 
   if( first != NULL ) {
-    snprintf( code[code_index], (code_size + 1), "%s", first );
+    rv = snprintf( code[code_index], (code_size + 1), "%s", first );
+    assert( rv < (code_size + 1) );
   }
   if( first_same_line ) {
     tmpstr = strdup_safe( code[code_index] );
-    snprintf( code[code_index], (code_size + 1), "%s%s", tmpstr, left[0] );
+    rv = snprintf( code[code_index], (code_size + 1), "%s%s", tmpstr, left[0] );
+    assert( rv < (code_size + 1) );
     free_safe( tmpstr );
     free_safe( left[0] );
     if( (left_depth == 1) && (middle != NULL) ) {
       code_size = strlen( code[code_index] ) + strlen( middle );
       tmpstr    = (char*)malloc_safe( code_size + 1 );
-      snprintf( tmpstr, (code_size + 1), "%s%s", code[code_index], middle );
+      rv = snprintf( tmpstr, (code_size + 1), "%s%s", code[code_index], middle );
+      assert( rv < (code_size + 1) );
       if( right_depth > 0 ) {
         codegen_create_expr_helper( code, code_index, tmpstr, right, right_depth, last_same_line, last, NULL, 0, FALSE, NULL );
         free_safe( tmpstr );
@@ -147,7 +151,8 @@ void codegen_create_expr_helper( char** code,
         }
         code_size = strlen( left[i] ) + strlen( middle );
         tmpstr    = (char*)malloc_safe( code_size + 1 );
-        snprintf( tmpstr, (code_size + 1), "%s%s", left[i], middle );
+        rv = snprintf( tmpstr, (code_size + 1), "%s%s", left[i], middle );
+        assert( rv < (code_size + 1) );
         free_safe( left[i] );
         if( right_depth > 0 ) {
           codegen_create_expr_helper( code, (code_index + i), tmpstr, right, right_depth, last_same_line, last, NULL, 0, FALSE, NULL );
@@ -168,7 +173,8 @@ void codegen_create_expr_helper( char** code,
       }
       code_size = strlen( left[i] ) + strlen( middle );
       tmpstr    = (char*)malloc_safe( code_size + 1 );
-      snprintf( tmpstr, (code_size + 1), "%s%s", left[i], middle );
+      rv = snprintf( tmpstr, (code_size + 1), "%s%s", left[i], middle );
+      assert( rv < (code_size + 1) );
       free_safe( left[i] );
       if( right_depth > 0 ) {
         codegen_create_expr_helper( code, (code_index + i), tmpstr, right, right_depth, last_same_line, last, NULL, 0, FALSE, NULL );
@@ -205,15 +211,15 @@ void codegen_create_expr_helper( char** code,
 void codegen_create_expr( char***     code,
                           int*        code_depth,
                           int         curr_line,
-                          char*       first,
+                          /*@null@*/ char*       first,
                           char**      left,
                           int         left_depth,
                           expression* left_exp,
-                          char*       middle,
-                          char**      right,
+                          /*@null@*/ char*       middle,
+                          /*@null@*/ char**      right,
                           int         right_depth,
-                          expression* right_exp,
-                          char*       last ) { PROFILE(CODEGEN_CREATE_EXPR);
+                          /*@null@*/ expression* right_exp,
+                          /*@null@*/ char*       last ) { PROFILE(CODEGEN_CREATE_EXPR);
 
   int         total_len = 0;    /* Total length of first, left, middle, right, and last strings */
   int         i;                /* Loop iterator */ 
@@ -322,16 +328,17 @@ void codegen_create_expr( char***     code,
 */
 void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_depth, func_unit* funit ) { PROFILE(CODEGEN_GEN_EXPR);
 
-  char**     right_code;              /* Pointer to the code that is generated by the right side of the expression */
-  char**     left_code;               /* Pointer to the code that is generated by the left side of the expression */
-  int        left_code_depth  = 0;    /* Depth of left code string array */
-  int        right_code_depth = 0;    /* Depth of right code string array */
-  char       code_format[20];         /* Format for creating my_code string */
-  char*      tmpstr;                  /* Temporary string holder */
-  char*      before;
-  char*      after;
-  func_unit* tfunit;
-  char*      pname            = NULL;  /* Printable version of signal name */
+  char**       right_code;               /* Pointer to the code that is generated by the right side of the expression */
+  char**       left_code;                /* Pointer to the code that is generated by the left side of the expression */
+  int          left_code_depth  = 0;     /* Depth of left code string array */
+  int          right_code_depth = 0;     /* Depth of right code string array */
+  char         code_format[20];          /* Format for creating my_code string */
+  char*        tmpstr;                   /* Temporary string holder */
+  char*        before;                   /* String before operation */
+  char*        after;                    /* String after operation */
+  func_unit*   tfunit;                   /* Temporary pointer to functional unit */
+  char*        pname            = NULL;  /* Printable version of signal name */
+  unsigned int rv;                       /* Return value from calls to snprintf */
 
   if( expr != NULL ) {
 
@@ -355,7 +362,8 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
       if( expr->value->suppl.part.base == DECIMAL ) {
 
-        snprintf( code_format, 20, "%d", vector_to_int( expr->value ) );
+        rv = snprintf( code_format, 20, "%d", vector_to_int( expr->value ) );
+        assert( rv < 20 );
         if( (strlen( code_format ) == 1) && (expr->parent->expr->op == EXP_OP_NEGATE) ) {
           strcat( code_format, " " );
         }
@@ -363,9 +371,12 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
       } else if( expr->value->suppl.part.base == QSTRING ) {
 
+        unsigned int slen;
         tmpstr = vector_to_string( expr->value );
-        (*code)[0] = (char*)malloc_safe( strlen( tmpstr ) + 3 );
-        snprintf( (*code)[0], (strlen( tmpstr ) + 3), "\"%s\"", tmpstr );
+        slen   = strlen( tmpstr ) + 3;
+        (*code)[0] = (char*)malloc_safe( slen );
+        rv = snprintf( (*code)[0], slen, "\"%s\"", tmpstr );
+        assert( rv < slen );
         free_safe( tmpstr );
 
       } else { 
@@ -384,13 +395,15 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
           *code       = (char**)malloc_safe( sizeof( char* ) );
           (*code)[0]  = (char*)malloc_safe( 4 );
           *code_depth = 1;
-          snprintf( (*code)[0], 4, " %s ", tmpstr );
+          rv = snprintf( (*code)[0], 4, " %s ", tmpstr );
+          assert( rv < 4 );
           break;
         case 2 :
           *code       = (char**)malloc_safe( sizeof( char* ) );
           (*code)[0]  = (char*)malloc_safe( 4 );
           *code_depth = 1;
-          snprintf( (*code)[0], 4, " %s", tmpstr );
+          rv = snprintf( (*code)[0], 4, " %s", tmpstr );
+          assert( rv < 4 );
           break;
         default :
           *code       = (char**)malloc_safe( sizeof( char* ) );
@@ -407,11 +420,15 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
           (expr->parent->expr->op == EXP_OP_DIM) &&
           (expr->parent->expr->right == expr) ) {
         tmpstr = (char*)malloc_safe( 2 );
-        snprintf( tmpstr, 2, "[" );
+        rv = snprintf( tmpstr, 2, "[" );
+        assert( rv < 2 );
       } else {
+        unsigned int slen;
         pname  = scope_gen_printable( expr->name );
-        tmpstr = (char*)malloc_safe( strlen( pname ) + 2 );
-        snprintf( tmpstr, (strlen( pname ) + 2), "%s[", pname );
+        slen   = strlen( pname ) + 2;
+        tmpstr = (char*)malloc_safe( slen );
+        rv = snprintf( tmpstr, slen, "%s[", pname );
+        assert( rv < slen );
       }
 
       codegen_create_expr( code, code_depth, expr->line, tmpstr, left_code, left_code_depth,
@@ -426,11 +443,15 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
           (expr->parent->expr->op == EXP_OP_DIM) &&
           (expr->parent->expr->right == expr) ) {
         tmpstr = (char*)malloc_safe( 2 );
-        snprintf( tmpstr, 2, "[" );
+        rv = snprintf( tmpstr, 2, "[" );
+        assert( rv < 2 );
       } else {
+        unsigned int slen;
         pname  = scope_gen_printable( expr->name );
-        tmpstr = (char*)malloc_safe( strlen( pname ) + 2 );
-        snprintf( tmpstr, (strlen( pname ) + 2), "%s[", pname );
+        slen   = strlen( pname ) + 2;
+        tmpstr = (char*)malloc_safe( slen );
+        rv = snprintf( tmpstr, slen, "%s[", pname );
+        assert( rv < slen );
       }
 
       if( ESUPPL_WAS_SWAPPED( expr->suppl ) ) {
@@ -452,11 +473,15 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
           (expr->parent->expr->op == EXP_OP_DIM) &&
           (expr->parent->expr->right == expr) ) {
         tmpstr = (char*)malloc_safe( 2 );
-        snprintf( tmpstr, 2, "[" );
+        rv = snprintf( tmpstr, 2, "[" );
+        assert( rv < 2 );
       } else {
+        unsigned int slen;
         pname  = scope_gen_printable( expr->name );
-        tmpstr = (char*)malloc_safe( strlen( pname ) + 2 );
-        snprintf( tmpstr, (strlen( pname ) + 2), "%s[", pname );
+        slen   = strlen( pname ) + 2;
+        tmpstr = (char*)malloc_safe( slen );
+        rv = snprintf( tmpstr, slen, "%s[", pname );
+        assert( rv < slen );
       }
 
       codegen_create_expr( code, code_depth, expr->line, tmpstr, left_code, left_code_depth, expr->left, "+:",
@@ -471,11 +496,15 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
           (expr->parent->expr->op == EXP_OP_DIM) &&
           (expr->parent->expr->right == expr) ) {
         tmpstr = (char*)malloc_safe( 2 );
-        snprintf( tmpstr, 2, "[" );
+        rv = snprintf( tmpstr, 2, "[" );
+        assert( rv < 2 );
       } else {
+        unsigned int slen;
         pname  = scope_gen_printable( expr->name );
-        tmpstr = (char*)malloc_safe( strlen( pname ) + 2 );
-        snprintf( tmpstr, (strlen( pname ) + 2), "%s[", pname );
+        slen   = strlen( pname + 2 );
+        tmpstr = (char*)malloc_safe( slen );
+        rv = snprintf( tmpstr, slen, "%s[", pname );
+        assert( rv < slen );
       }
 
       codegen_create_expr( code, code_depth, expr->line, tmpstr, left_code, left_code_depth, expr->left, "-:",
@@ -497,8 +526,11 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
         (*code)[0]  = strdup_safe( pname );
         *code_depth = 1;
       } else {
+        unsigned int slen;
         tmpstr = (char*)malloc_safe( strlen( pname ) + 3 );
-        snprintf( tmpstr, (strlen( pname ) + 3), "%s( ", pname );
+        slen   = strlen( pname ) + 3;
+        rv = snprintf( tmpstr, slen, "%s( ", pname );
+        assert( rv < slen );
         codegen_create_expr( code, code_depth, expr->line, tmpstr, left_code, left_code_depth, expr->left, " )", NULL, 0, NULL, NULL );
         free_safe( tmpstr );
       }
@@ -506,12 +538,13 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
       free_safe( pname );
 
     } else if( expr->op == EXP_OP_TRIGGER ) {
-
+      unsigned int slen;
       assert( expr->sig != NULL );
-
       pname  = scope_gen_printable( expr->name );
-      tmpstr = (char*)malloc_safe( strlen( pname ) + 3 );
-      snprintf( tmpstr, (strlen( pname ) + 3), "->%s", pname );
+      slen   = strlen( pname ) + 3;
+      tmpstr = (char*)malloc_safe( slen );
+      rv = snprintf( tmpstr, slen, "->%s", pname );
+      assert( rv < slen );
 
       *code       = (char**)malloc_safe( sizeof( char* ) );
       (*code)[0]  = strdup_safe( tmpstr );
@@ -521,12 +554,13 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
       free_safe( pname );
 
     } else if( expr->op == EXP_OP_DISABLE ) {
-
+      unsigned int slen;
       assert( expr->elem.funit != NULL );
-
       pname  = scope_gen_printable( expr->name );
-      tmpstr = (char*)malloc_safe( strlen( pname ) + 9 );
-      snprintf( tmpstr, (strlen( pname ) + 9), "disable %s", pname );
+      slen   = strlen( pname ) + 9;
+      tmpstr = (char*)malloc_safe( slen );
+      rv = snprintf( tmpstr, slen, "disable %s", pname );
+      assert( rv < slen );
 
       *code       = (char**)malloc_safe( sizeof( char* ) );
       (*code)[0]  = strdup_safe( tmpstr );
@@ -913,6 +947,10 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.84  2007/12/10 23:16:21  phase1geo
+ Working on adding profiler for use in finding performance issues.  Things don't compile
+ at the moment.
+
  Revision 1.83  2007/11/20 05:28:57  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

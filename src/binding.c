@@ -319,8 +319,11 @@ char* bind_find_sig_name( const expression* exp ) { PROFILE(BIND_FIND_SIG_NAME);
         rest  = strdup_safe( found_funit->name );
         scope_extract_front( found_funit->name, front, rest );
         if( rest[0] != '\0' ) {
-          name = (char*)malloc_safe( strlen( curr->name ) + strlen( rest ) + 2 );
-          snprintf( name, (strlen( curr->name ) + strlen( found_funit->name ) + 2), "%s.%s", rest, curr->name );
+          unsigned int sig_size = strlen( curr->name ) + strlen( rest ) + 2;
+          unsigned int rv;
+          name = (char*)malloc_safe( sig_size );
+          rv = snprintf( name, sig_size, "%s.%s", rest, curr->name );
+          assert( rv < sig_size );
         }
         free_safe( front );
         free_safe( rest );
@@ -415,12 +418,13 @@ bool bind_param( const char* name, expression* exp, func_unit* funit_exp, int ex
 bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bind, bool cdd_reading,
                   bool clear_assigned, int exp_line, bool bind_locally ) { PROFILE(BIND_SIGNAL);
 
-  bool        retval = TRUE;  /* Return value for this function */
-  vsignal*    found_sig;      /* Pointer to found signal in design for the given name */
-  func_unit*  found_funit;    /* Pointer to found functional unit containing given signal */
-  funit_inst* found_inst;     /* Pointer to found instance containing given signal */
-  statement*  stmt;           /* Pointer to root statement for the given expression */
-  exp_link*   expl;           /* Pointer to current expression link */
+  bool         retval = TRUE;  /* Return value for this function */
+  vsignal*     found_sig;      /* Pointer to found signal in design for the given name */
+  func_unit*   found_funit;    /* Pointer to found functional unit containing given signal */
+  funit_inst*  found_inst;     /* Pointer to found instance containing given signal */
+  statement*   stmt;           /* Pointer to root statement for the given expression */
+  exp_link*    expl;           /* Pointer to current expression link */
+  unsigned int rv;             /* Return value from snprintf calls */
 
   /* Skip signal binding if the name is not local and we are binding locally */
   if( scope_local( name ) || !bind_locally || (!clear_assigned && (exp->op == EXP_OP_PASSIGN)) ) {
@@ -430,20 +434,21 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
 
       /* If we are binding an FSM, output an error message */
       if( fsm_bind ) {
-        snprintf( user_msg, USER_MSG_LENGTH, "Unable to find specified FSM signal \"%s\" in module \"%s\" in file %s",
-                  obf_sig( name ),
-                  obf_funit( funit_exp->name ),
-                  obf_file( funit_exp->filename ) );
+        rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to find specified FSM signal \"%s\" in module \"%s\" in file %s",
+                       obf_sig( name ), obf_funit( funit_exp->name ), obf_file( funit_exp->filename ) );
+        assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         retval = FALSE;
 
       /* Otherwise, implicitly create the signal and bind to it */
       } else {
         assert( exp != NULL );
-        snprintf( user_msg, USER_MSG_LENGTH, "Implicit declaration of signal \"%s\", creating 1-bit version of signal", obf_sig( name ) );
+        rv = snprintf( user_msg, USER_MSG_LENGTH, "Implicit declaration of signal \"%s\", creating 1-bit version of signal", obf_sig( name ) );
+        assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, WARNING, __FILE__, __LINE__ );
-        snprintf( user_msg, USER_MSG_LENGTH, "module \"%s\", file \"%s\", line %d",
-                  obf_funit( funit_exp->name ), obf_file( funit_exp->filename ), exp_line );
+        rv = snprintf( user_msg, USER_MSG_LENGTH, "module \"%s\", file \"%s\", line %d",
+                       obf_funit( funit_exp->name ), obf_file( funit_exp->filename ), exp_line );
+        assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, WARNING_WRAP, __FILE__, __LINE__ );
         found_sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT, 1, exp->line, ((exp->col >> 16) & 0xffff) );
         found_sig->pdim_num   = 1;
@@ -527,8 +532,9 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
           while( expl != NULL ) {
             if( (stmt = expression_get_root_statement( expl->exp )) != NULL ) {
 #ifdef DEBUG_MODE
-              snprintf( user_msg, USER_MSG_LENGTH, "Removing statement block %d, line %d because it needed to be assigned but would not be",
-                        stmt->exp->id, stmt->exp->line );
+              unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Removing statement block %d, line %d because it needed to be assigned but would not be",
+                                          stmt->exp->id, stmt->exp->line );
+              assert( rv < USER_MSG_LENGTH );
               print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
               stmt_blk_add_to_remove_list( stmt );
@@ -611,7 +617,7 @@ void bind_task_function_ports( expression* expr, func_unit* funit, char* name, i
       if( sigl != NULL ) {
 
         /* Create signal name to bind */
-        snprintf( sig_name, 4096, "%s.%s", name, sigl->sig->name );
+        unsigned int rv = snprintf( sig_name, 4096, "%s.%s", name, sigl->sig->name );
 
         /* Add the signal to the binding list */
         bind_add( 0, sig_name, expr, funit_exp );
@@ -698,8 +704,9 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
 
           /* Check to see if the call port count matches the actual port count */
           if( (port_cnt = funit_get_port_count( found_funit )) != port_order ) {
-            snprintf( user_msg, USER_MSG_LENGTH, "Number of arguments in %s call (%d) does not match its %s port list (%d), file %s, line %d",
-                      get_funit_type( type ), port_order, get_funit_type( type ), port_cnt, obf_file( funit_exp->filename ), exp->line );
+            unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Number of arguments in %s call (%d) does not match its %s port list (%d), file %s, line %d",
+                                        get_funit_type( type ), port_order, get_funit_type( type ), port_cnt, obf_file( funit_exp->filename ), exp->line );
+            assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
             exit( 1 );
           }
@@ -804,8 +811,9 @@ void bind_perform( bool cdd_reading, int pass ) { PROFILE(BIND_PERFORM);
       if( !bound && (curr_eb->clear_assigned == 0) && (pass == 1) ) {
         if( (tmp_stmt = expression_get_root_statement( curr_eb->exp )) != NULL ) {
 #ifdef DEBUG_MODE
-          snprintf( user_msg, USER_MSG_LENGTH, "Removing statement block containing line %d in file \"%s\", because it was unbindable",
-                    curr_eb->exp->line, obf_file( curr_eb->funit->filename ) );
+          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Removing statement block containing line %d in file \"%s\", because it was unbindable",
+                                      curr_eb->exp->line, obf_file( curr_eb->funit->filename ) );
+          assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif        
           stmt_blk_add_to_remove_list( tmp_stmt );
@@ -895,6 +903,12 @@ void bind_dealloc() { PROFILE(BIND_DEALLOC);
 
 /* 
  $Log$
+ Revision 1.118  2007/12/18 23:55:21  phase1geo
+ Starting to remove 64-bit time and replacing it with a sim_time structure
+ for performance enhancement purposes.  Also removing global variables for time-related
+ information and passing this information around by reference for performance
+ enhancement purposes.
+
  Revision 1.117  2007/12/10 23:16:21  phase1geo
  Working on adding profiler for use in finding performance issues.  Things don't compile
  at the moment.

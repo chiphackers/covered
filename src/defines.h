@@ -1150,7 +1150,7 @@ typedef enum exp_op_type_e {
 /*! @} */
 
 /*! Overload for the snprintf function which verifies that we don't overrun character arrays */
-#define snprintf(x,y,...)	assert( snprintf( x, y, __VA_ARGS__ ) < (y) );
+//#define snprintf(x,y,...)	assert( snprintf( x, y, __VA_ARGS__ ) < (y) );
 
 /*! Performs time comparison with the sim_time structure */
 #define TIME_CMP_LE(x,y)         ((((x).lo <= (y).lo) && ((x).hi <= (y).hi)) || ((x).hi < (y).hi))
@@ -2515,6 +2515,9 @@ struct profiler_s {
 
 /*
  $Log$
+ Revision 1.275  2007/12/31 23:43:36  phase1geo
+ Fixing bug 1858408.  Also fixing issues with vector_op_add functionality.
+
  Revision 1.274  2007/12/20 04:47:50  phase1geo
  Fixing the last of the regression failures from previous changes.  Removing unnecessary
  output used for debugging.

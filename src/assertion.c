@@ -49,7 +49,7 @@ extern isuppl      info_suppl;
 
  Parses the specified command-line argument as an assertion to consider for coverage.
 */
-void assertion_parse( const char* arg ) { PROFILE(ASSERTION_PARSE);
+void assertion_parse( /*@unused@*/const char* arg ) { PROFILE(ASSERTION_PARSE);
 
 }
 
@@ -59,7 +59,7 @@ void assertion_parse( const char* arg ) { PROFILE(ASSERTION_PARSE);
 
  Parses the specified assertion attribute for assertion coverage details.
 */
-void assertion_parse_attr( attr_param* ap, const func_unit* funit ) { PROFILE(ASSERTION_PARSE_ATTR);
+void assertion_parse_attr( /*@unused@*/attr_param* ap, /*@unused@*/const func_unit* funit ) { PROFILE(ASSERTION_PARSE_ATTR);
 
 }
 
@@ -138,7 +138,7 @@ bool assertion_instance_summary( FILE* ofile, const funit_inst* root, const char
   } else if( strcmp( parent_inst, "*" ) == 0 ) {
     strcpy( tmpname, pname );
   } else {
-    snprintf( tmpname, 4096, "%s.%s", parent_inst, pname );
+    /*@-retvalint@*/snprintf( tmpname, 4096, "%s.%s", parent_inst, pname );
   }
 
   free_safe( pname );
@@ -406,7 +406,7 @@ void assertion_report( FILE* ofile, bool verbose ) { PROFILE(ASSERTION_REPORT);
       instl = instl->next;
     }
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
-    assertion_display_instance_summary( ofile, "Accumulated", acc_hits, acc_total );
+    (void)assertion_display_instance_summary( ofile, "Accumulated", acc_hits, acc_total );
 
     if( verbose && (missed_found || report_covered) ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
@@ -425,7 +425,7 @@ void assertion_report( FILE* ofile, bool verbose ) { PROFILE(ASSERTION_REPORT);
 
     missed_found = assertion_funit_summary( ofile, funit_head, &acc_hits, &acc_total );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
-    assertion_display_funit_summary( ofile, "Accumulated", "", acc_hits, acc_total );
+    (void)assertion_display_funit_summary( ofile, "Accumulated", "", acc_hits, acc_total );
 
     if( verbose && (missed_found || report_covered) ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
@@ -578,6 +578,10 @@ bool assertion_get_coverage( const char* funit_name, int funit_type, const char*
 
 /*
  $Log$
+ Revision 1.23  2007/12/10 23:16:21  phase1geo
+ Working on adding profiler for use in finding performance issues.  Things don't compile
+ at the moment.
+
  Revision 1.22  2007/11/20 05:28:57  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

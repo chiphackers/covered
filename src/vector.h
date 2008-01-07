@@ -29,7 +29,7 @@
 
 
 /*! \brief Initializes specified vector. */
-void vector_init( vector* vec, vec_data* value, int width, int type );
+void vector_init( /*@out@*/ vector* vec, vec_data* value, int width, int type );
 
 /*! \brief Creates and initializes new vector */
 vector* vector_create( int width, int type, bool data );
@@ -172,6 +172,9 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.45  2007/12/19 04:27:52  phase1geo
+ More fixes for compiler errors (still more to go).  Checkpointing.
+
  Revision 1.44  2007/11/20 05:29:00  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 
