@@ -180,7 +180,7 @@ bool assertion_instance_summary( FILE* ofile, const funit_inst* root, const char
 
  Displays the assertion summary information for a given instance to the specified output stream.
 */
-bool assertion_display_funit_summary( FILE* ofile, /*@temp@*/ const char* name, const char* fname, int hits, float total ) { PROFILE(ASSERTION_DISPLAY_FUNIT_SUMMARY);
+bool assertion_display_funit_summary( FILE* ofile, const char* name, const char* fname, int hits, float total ) { PROFILE(ASSERTION_DISPLAY_FUNIT_SUMMARY);
 
   float percent;  /* Percentage of assertions hit */
   float miss;     /* Number of assertions missed */
@@ -206,8 +206,7 @@ bool assertion_display_funit_summary( FILE* ofile, /*@temp@*/ const char* name, 
 */
 bool assertion_funit_summary( FILE* ofile, const funit_link* head, int* hits, float* total ) { PROFILE(ASSERTION_FUNIT_SUMMARY);
 
-             bool  miss_found = FALSE;  /* Set to TRUE if assertion was found to be missed */
-  /*@temp@*/ char* pname;               /* Printable version of functional unit name */
+  bool miss_found = FALSE;  /* Set to TRUE if assertion was found to be missed */
 
   while( head != NULL ) {
 
@@ -216,7 +215,7 @@ bool assertion_funit_summary( FILE* ofile, const funit_link* head, int* hits, fl
         ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( head->funit )) ) {
 
       /* Get printable version of functional unit name */
-      pname = scope_gen_printable( funit_flatten_name( head->funit ) );
+      /*@only@*/ char* pname = scope_gen_printable( funit_flatten_name( head->funit ) );
 
       miss_found |= assertion_display_funit_summary( ofile, pname, get_basename( obf_file( head->funit->filename ) ),
                                                      head->funit->stat->assert_hit, head->funit->stat->assert_total );
@@ -561,6 +560,9 @@ bool assertion_get_coverage( const char* funit_name, int funit_type, const char*
 
 /*
  $Log$
+ Revision 1.25  2008/01/07 23:59:54  phase1geo
+ More splint updates.
+
  Revision 1.24  2008/01/07 05:01:57  phase1geo
  Cleaning up more splint errors.
 

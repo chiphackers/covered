@@ -1,4 +1,4 @@
 #!/bin/sh
 
 # Runs splint on source code
-$SPLINTBIN/splint -I$IVPREFIX/include -compdestroy -predboolothers -branchstate -type -varuse -shadow -incondefs +posixlib +trytorecover *.c | tee osplint
+$SPLINTBIN/splint -I$IVPREFIX/include -weak -compdestroy -predboolothers -branchstate -type -varuse -shadow -incondefs +posixlib +trytorecover *.c | tee osplint

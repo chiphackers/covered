@@ -64,7 +64,7 @@ bool is_legal_filename( const char* token );
 bool is_func_unit( const char* token );
 
 /*! \brief Extracts filename from file pathname. */
-const char* get_basename( const char* str );
+const char* get_basename( /*@returned@*/ const char* str );
 
 /*! \brief Extracts directory path from file pathname. */
 char* get_dirname( char* str );
@@ -112,7 +112,7 @@ str_link* get_next_vfile( str_link* curr, const char* mod );
 /*@only@*/ void* malloc_safe_nolimit1( size_t size, const char* file, int line, unsigned int profile_index );
 
 /*! \brief Performs safe deallocation of heap memory. */
-void free_safe1( /*@only@*/ /*@out@*/ /*@null@*/ void* ptr, unsigned int profile_index );
+void free_safe1( /*@only@*/ /*@out@*/ /*@null@*/ void* ptr, unsigned int profile_index ) /*@releases ptr@*/;
 
 /*! \brief Safely allocates heap memory by performing a call to strdup */
 /*@only@*/ char* strdup_safe1( const char* str, const char* file, int line, unsigned int profile_index );
@@ -144,6 +144,9 @@ void set_timestep( sim_time* st, char* value );
 
 /*
  $Log$
+ Revision 1.34  2008/01/07 23:59:55  phase1geo
+ More splint updates.
+
  Revision 1.33  2008/01/07 05:01:58  phase1geo
  Cleaning up more splint errors.
 

@@ -86,33 +86,33 @@ void inst_link_display( inst_link* head );
 /*********************************************************************************/
 
 /*! \brief Finds specified string in the given str_link list. */
-str_link* str_link_find( char* value, str_link* head );
+/*@null@*/ str_link* str_link_find( char* value, str_link* head );
 
 /*! \brief Finds specified statement in the given stmt_link list. */
-stmt_link* stmt_link_find( int id, stmt_link* head );
+/*@null@*/ stmt_link* stmt_link_find( int id, stmt_link* head );
 
 /*! \brief Finds specified expression in the given exp_link list. */
-exp_link* exp_link_find( int id, exp_link* head );
+/*@null@*/ exp_link* exp_link_find( int id, exp_link* head );
 
 /*! \brief Finds specified signal in given sig_link list. */
-sig_link* sig_link_find( const char* name, sig_link* head );
+/*@null@*/ sig_link* sig_link_find( const char* name, sig_link* head );
 
 /*! \brief Finds specified FSM structure in fsm_link list. */
-fsm_link* fsm_link_find( const char* name, fsm_link* head );
+/*@null@*/ fsm_link* fsm_link_find( const char* name, fsm_link* head );
 
 /*! \brief Finds specified functional unit in given funit_link list. */
-funit_link* funit_link_find( const char* name, int type, funit_link* head );
+/*@null@*/ /*@shared@*/ funit_link* funit_link_find( const char* name, int type, funit_link* head );
 
 #ifndef VPI_ONLY
 /*! \brief Finds specified generate item in given gitem_link list. */
-gitem_link* gitem_link_find( gen_item* gi, gitem_link* head );
+/*@null@*/ gitem_link* gitem_link_find( gen_item* gi, gitem_link* head );
 #endif
 
 /*! \brief Finds specified functional unit instance in given inst_link list. */
-funit_inst* inst_link_find_by_scope( char* scope, inst_link* head );
+/*@null@*/ funit_inst* inst_link_find_by_scope( char* scope, inst_link* head );
 
 /*! \brief Finds specified functional unit instance in given inst_link list. */
-funit_inst* inst_link_find_by_funit( const func_unit* funit, inst_link* head, int* ignore );
+/*@null@*/ funit_inst* inst_link_find_by_funit( const func_unit* funit, inst_link* head, int* ignore );
 
 /*********************************************************************************/
 
@@ -167,6 +167,9 @@ void inst_link_delete_list( inst_link* head );
 
 /*
  $Log$
+ Revision 1.31  2008/01/07 23:59:55  phase1geo
+ More splint updates.
+
  Revision 1.30  2007/11/20 05:28:58  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

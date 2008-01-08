@@ -497,7 +497,7 @@ bool db_read( char* file, int read_mode ) { PROFILE(DB_READ);
         instl = instl->next;
       }
       if( instl == NULL ) {
-        inst_link_add( instance_create( curr_funit, funit_scope, NULL ), &inst_head, &inst_tail );
+        (void)inst_link_add( instance_create( curr_funit, funit_scope, NULL ), &inst_head, &inst_tail );
       }
 
     }
@@ -657,10 +657,10 @@ func_unit* db_add_instance( char* scope, char* name, int type, vector_width* ran
   /* If a range has been specified, calculate its width and lsb now */
   if( (range != NULL) && score ) {
     if( (range->left != NULL) && (range->left->exp != NULL) ) {
-      mod_parm_add( NULL, NULL, NULL, FALSE, range->left->exp, PARAM_TYPE_INST_MSB, curr_funit, scope );
+      (void)mod_parm_add( NULL, NULL, NULL, FALSE, range->left->exp, PARAM_TYPE_INST_MSB, curr_funit, scope );
     }
     if( (range->right != NULL) && (range->right->exp != NULL) ) {
-      mod_parm_add( NULL, NULL, NULL, FALSE, range->right->exp, PARAM_TYPE_INST_LSB, curr_funit, scope );
+      (void)mod_parm_add( NULL, NULL, NULL, FALSE, range->right->exp, PARAM_TYPE_INST_LSB, curr_funit, scope );
     }
   }
 
@@ -688,7 +688,7 @@ func_unit* db_add_instance( char* scope, char* name, int type, vector_width* ran
           instl = instl->next;
         }
         if( instl == NULL ) {
-          inst_link_add( instance_create( found_funit_link->funit, scope, range ), &inst_head, &inst_tail );
+          (void)inst_link_add( instance_create( found_funit_link->funit, scope, range ), &inst_head, &inst_tail );
         }
       }
     }
@@ -715,13 +715,13 @@ func_unit* db_add_instance( char* scope, char* name, int type, vector_width* ran
           instl = instl->next;
         }
         if( instl == NULL ) {
-          inst_link_add( instance_create( funit, scope, range ), &inst_head, &inst_tail );
+          (void)inst_link_add( instance_create( funit, scope, range ), &inst_head, &inst_tail );
         }
       }
     }
 
     if( (type == FUNIT_MODULE) && score && (str_link_find( name, modlist_head ) == NULL) ) {
-      str_link_add( strdup_safe( name ), &modlist_head, &modlist_tail );
+      (void)str_link_add( strdup_safe( name ), &modlist_head, &modlist_tail );
     }
       
   }
@@ -1738,7 +1738,7 @@ statement* db_parallelize_statement( statement* stmt ) { PROFILE(DB_PARALLELIZE_
       /* Bind the FORK expression now */
       exp->elem.funit      = curr_funit;
       exp->suppl.part.type = ETYPE_FUNIT;
-      exp->name            = strdup( scope );
+      exp->name            = strdup_safe( scope );
 
       /* Restore the original functional unit */
       db_end_function_task_namedblock( stmt->exp->line );
@@ -2452,7 +2452,7 @@ void db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
   if( (timestep_update > 0) && ((time - last_sim_update) >= timestep_update) && !debug_mode && !final ) {
     last_sim_update = time;
-    printf( "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bPerforming timestep %10lld", time );
+    printf( "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bPerforming timestep %10llu", time );
     fflush( stdout );
   }
 
@@ -2481,6 +2481,9 @@ void db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.270  2008/01/07 23:59:54  phase1geo
+ More splint updates.
+
  Revision 1.269  2007/12/31 23:43:36  phase1geo
  Fixing bug 1858408.  Also fixing issues with vector_op_add functionality.
 

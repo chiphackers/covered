@@ -46,7 +46,7 @@ void ovl_get_funit_stats( const func_unit* funit, float* total, int* hit );
 void ovl_display_verbose( FILE* ofile, const func_unit* funit );
 
 /*! \brief Finds the instance names of all uncovered and covered assertions in the specified functional unit. */
-void ovl_collect( func_unit* funit, char*** uncov_inst_names, int** excludes, int* uncov_inst_size,
+void ovl_collect( func_unit* funit, /*@null@*/ char*** uncov_inst_names, int** excludes, int* uncov_inst_size,
                   char*** cov_inst_names, int* cov_inst_size );
 
 /*! \brief Gets missed coverage points for the given assertion */
@@ -54,6 +54,9 @@ void ovl_get_coverage( const func_unit* funit, const char* inst_name, char** ass
 
 /*
  $Log$
+ Revision 1.11  2007/11/20 05:28:59  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.10  2007/09/13 17:03:30  phase1geo
  Cleaning up some const-ness corrections -- still more to go but it's a good
  start.
