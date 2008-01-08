@@ -85,11 +85,11 @@ void search_init() { PROFILE(SEARCH_INIT);
     global_funit->type     = FUNIT_MODULE;
     global_funit->filename = strdup_safe( "NA" );
     global_funit->ts_unit  = 0;
-    funit_link_add( global_funit, &funit_head, &funit_tail );
+    (void)funit_link_add( global_funit, &funit_head, &funit_tail );
     curr_funit = global_funit;
 
     /* Add it in the first instance tree */
-    inst_link_add( instance_create( global_funit, "$root", NULL ), &inst_head, &inst_tail );
+    (void)inst_link_add( instance_create( global_funit, "$root", NULL ), &inst_head, &inst_tail );
   }
 
   /* Now create top-level module of design */
@@ -105,18 +105,18 @@ void search_init() { PROFILE(SEARCH_INIT);
   }
 
   /* Initialize functional unit linked list */
-  funit_link_add( mod, &funit_head, &funit_tail );
+  (void)funit_link_add( mod, &funit_head, &funit_tail );
 
   /* Initialize instance tree */
   if( top_instance == NULL ) {
     top_instance = strdup_safe( top_module );
-    inst_link_add( instance_create( mod, top_instance, NULL ), &inst_head, &inst_tail );
+    (void)inst_link_add( instance_create( mod, top_instance, NULL ), &inst_head, &inst_tail );
     leading_hierarchies = (char**)realloc( leading_hierarchies, (sizeof( char* ) * (leading_hier_num + 1)) );
     leading_hierarchies[leading_hier_num] = strdup_safe( "*" );
     leading_hier_num++;
   } else {
     scope_extract_back( top_instance, dutname, lhier );
-    inst_link_add( instance_create( mod, dutname, NULL ), &inst_head, &inst_tail );
+    (void)inst_link_add( instance_create( mod, dutname, NULL ), &inst_head, &inst_tail );
     if( lhier[0] == '\0' ) {
       leading_hierarchies = (char**)realloc( leading_hierarchies, (sizeof( char* ) * (leading_hier_num + 1)) );
       leading_hierarchies[leading_hier_num] = strdup_safe( "*" );
@@ -143,7 +143,7 @@ bool search_add_include_path( char* path ) { PROFILE(SEARCH_ADD_INCLUDE_PATH);
 
   if( directory_exists( path ) ) {
     tmp = strdup_safe( path );
-    str_link_add( tmp, &inc_paths_head, &inc_paths_tail );
+    (void)str_link_add( tmp, &inc_paths_head, &inc_paths_tail );
   } else {
     retval = FALSE;
   }
@@ -165,7 +165,7 @@ bool search_add_directory_path( char* path ) { PROFILE(SEARCH_ADD_DIRECTORY_PATH
   if( directory_exists( path ) ) {
     /* If no library extensions have been specified, assume *.v */
     if( extensions_head == NULL ) {
-      str_link_add( strdup_safe( "v" ), &(extensions_head), &(extensions_tail) );
+      (void)str_link_add( strdup_safe( "v" ), &(extensions_head), &(extensions_tail) );
     }
     directory_load( path, extensions_head, &(use_files_head), &(use_files_tail) );
   } else {
@@ -191,7 +191,7 @@ bool search_add_file( char* file ) { PROFILE(SEARCH_ADD_FILE);
   if( file_exists( file ) ) {
     if( str_link_find( file, use_files_head ) == NULL ) {
       tmp = strdup_safe( file );
-      str_link_add( tmp, &use_files_head, &use_files_tail );
+      (void)str_link_add( tmp, &use_files_head, &use_files_tail );
     }
   } else {
     snprintf( user_msg, USER_MSG_LENGTH, "File %s does not exist", file );
@@ -217,7 +217,7 @@ bool search_add_no_score_funit( char* funit ) { PROFILE(SEARCH_ADD_NO_SCORE_FUNI
 
   if( is_func_unit( funit ) ) {
     tmp = strdup_safe( funit );
-    str_link_add( tmp, &no_score_head, &no_score_tail );
+    (void)str_link_add( tmp, &no_score_head, &no_score_tail );
   } else {
     snprintf( user_msg, USER_MSG_LENGTH, "Value of -e option (%s) is not a valid block name", funit );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -251,7 +251,7 @@ bool search_add_extensions( char* ext_list ) { PROFILE(SEARCH_ADD_EXTENSIONS);
     if( *tmp == '+' ) { 
       ext[ext_index] = '\0';
       ext_index      = 0;
-      str_link_add( strdup_safe( ext ), &extensions_head, &extensions_tail );
+      (void)str_link_add( strdup_safe( ext ), &extensions_head, &extensions_tail );
     } else if( *tmp == '.' ) {
       if( ext_index > 0 ) {
         retval = FALSE;
@@ -292,6 +292,9 @@ void search_free_lists() { PROFILE(SEARCH_FREE_LISTS);
 
 /*
  $Log$
+ Revision 1.34  2008/01/07 23:59:55  phase1geo
+ More splint updates.
+
  Revision 1.33  2007/12/11 05:48:26  phase1geo
  Fixing more compile errors with new code changes and adding more profiling.
  Still have a ways to go before we can compile cleanly again (next submission

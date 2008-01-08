@@ -84,8 +84,8 @@ extern char**    score_args;
 extern int       score_arg_num;
 
 
-bool process_timescale( const char* txt, bool report );
-void define_macro( const char* name, const char* value );
+extern bool process_timescale( const char* txt, bool report );
+extern void define_macro( const char* name, const char* value );
 
 
 /*!
@@ -291,7 +291,7 @@ bool read_command_file( char* cmd_file, char*** arg_list, int* arg_num ) { PROFI
     if( (cmd_handle = fopen( cmd_file, "r" )) != NULL ) {
 
       while( fscanf( cmd_handle, "%s", tmp_str ) == 1 ) {
-        str_link_add( substitute_env_vars( tmp_str ), &head, &tail );
+        (void)str_link_add( substitute_env_vars( tmp_str ), &head, &tail );
         tmp_num++;
       }
 
@@ -929,10 +929,14 @@ int command_score( int argc, int last_arg, char** argv ) { PROFILE(COMMAND_SCORE
     if( dump_mode != DUMP_FMT_NONE ) {
       print_output( "***  Scoring completed successfully!  ***\n", NORMAL, __FILE__, __LINE__ );
     }
-    snprintf( user_msg, USER_MSG_LENGTH, "Dynamic memory allocated:   %lld bytes", largest_malloc_size );
+    /*@-duplicatequals -formattype@*/
+    snprintf( user_msg, USER_MSG_LENGTH, "Dynamic memory allocated:   %llu bytes", largest_malloc_size );
+    /*@=duplicatequals =formattype@*/
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 #ifdef DEBUG_MODE
-    snprintf( user_msg, USER_MSG_LENGTH, "Allocated memory remaining: %lld bytes", curr_malloc_size );
+    /*@-duplicatequals -formattype@*/
+    snprintf( user_msg, USER_MSG_LENGTH, "Allocated memory remaining: %llu bytes", curr_malloc_size );
+    /*@=duplicatequals =formattype@*/
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
     print_output( "", NORMAL, __FILE__, __LINE__ );
@@ -972,6 +976,9 @@ int command_score( int argc, int last_arg, char** argv ) { PROFILE(COMMAND_SCORE
 
 /*
  $Log$
+ Revision 1.101  2008/01/07 23:59:55  phase1geo
+ More splint updates.
+
  Revision 1.100  2007/12/12 07:23:19  phase1geo
  More work on profiling.  I have now included the ability to get function runtimes.
  Still more work to do but everything is currently working at the moment.

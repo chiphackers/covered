@@ -567,6 +567,7 @@ bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
       funit->timescale = db_scale_to_precision( (uint64)1, funit );
     }
   
+    /*@-duplicatequals -formattype@*/
     fprintf( file, "%d %d %s \"%s\" %s %d %d %llu\n",
       DB_TYPE_FUNIT,
       funit->type,
@@ -577,6 +578,7 @@ bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
       funit->end_line,
       funit->timescale
     );
+    /*@=duplicatequals =formattype@*/
 
     /* Now print all expressions in functional unit */
     curr_exp = funit->exp_head;
@@ -685,8 +687,10 @@ bool funit_db_read( func_unit* funit, char* scope, char** line ) { PROFILE(FUNIT
   int  chars_read;     /* Number of characters currently read */
   int  params;         /* Number of parameters in string that were parsed */
 
+  /*@-duplicatequals -formattype@*/
   if( (params = sscanf( *line, "%d %s \"%[^\"]\" %s %d %d %llu%n", &(funit->type), funit->name, scope, funit->filename,
-              &(funit->start_line), &(funit->end_line), &(funit->timescale), &chars_read )) == 7 ) {
+                        &(funit->start_line), &(funit->end_line), &(funit->timescale), &chars_read )) == 7 ) {
+  /*@=duplicatequals =formattype@*/
 
     *line = *line + chars_read;
 
@@ -1165,6 +1169,9 @@ void funit_dealloc( func_unit* funit ) { PROFILE(FUNIT_DEALLOC);
 
 /*
  $Log$
+ Revision 1.84  2008/01/07 23:59:54  phase1geo
+ More splint updates.
+
  Revision 1.83  2007/12/17 23:47:48  phase1geo
  Adding more profiling information.
 

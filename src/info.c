@@ -142,14 +142,14 @@ void info_db_write( FILE* file ) { PROFILE(INFO_DB_WRITE);
 */
 bool info_db_read( char** line ) { PROFILE(INFO_DB_READ);
 
-  bool    retval = TRUE;  /* Return value for this function */
-  int     chars_read;     /* Number of characters scanned in from this line */
-  control scored;         /* Indicates if this file contains scored data */
-  int     version;        /* Contains CDD version from file */
-  int     mnum;           /* Temporary merge num */
-  char    tmp1[4096];     /* Temporary string */
-  char    tmp2[4096];     /* Temporary string */
-  int     i;              /* Loop iterator */
+  bool         retval = TRUE;  /* Return value for this function */
+  int          chars_read;     /* Number of characters scanned in from this line */
+  control      scored;         /* Indicates if this file contains scored data */
+  unsigned int version;        /* Contains CDD version from file */
+  int          mnum;           /* Temporary merge num */
+  char         tmp1[4096];     /* Temporary string */
+  char         tmp2[4096];     /* Temporary string */
+  int          i;              /* Loop iterator */
 
   /* Save off original scored value */
   scored = info_suppl.part.scored;
@@ -283,6 +283,11 @@ void info_dealloc() { PROFILE(INFO_DEALLOC);
 
 /*
  $Log$
+ Revision 1.21  2007/12/11 05:48:25  phase1geo
+ Fixing more compile errors with new code changes and adding more profiling.
+ Still have a ways to go before we can compile cleanly again (next submission
+ should do it).
+
  Revision 1.20  2007/11/20 05:28:58  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

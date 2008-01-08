@@ -449,7 +449,7 @@ WSPACE [ \t\b\f]+
          if( (foundmod = str_link_find( yytext, modlist_head )) == NULL ) {
            free_safe( yylval.text );
            BEGIN( IGNORE_MODULE );
-           tree_add( yytext, yylloc.text, FALSE, &found_modules );
+           (void)tree_add( yytext, yylloc.text, FALSE, &found_modules );
            rc = IGNORE;
          } else {
            if( (filelist_curr != filelist_head) && (error_count == 0) ) {
@@ -720,7 +720,7 @@ WSPACE [ \t\b\f]+
  }
 
   /* Final catchall. something got lost or mishandled. */
-. { fprintf( stderr, "%d: unmatched character (%c)\n", yylloc.first_line, yytext[0] ); }
+. { fprintf( stderr, "%u: unmatched character (%c)\n", yylloc.first_line, yytext[0] ); }
 
 %%
 

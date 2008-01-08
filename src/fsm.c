@@ -812,7 +812,7 @@ void fsm_display_state_verbose( FILE* ofile, fsm* table ) { PROFILE(FSM_DISPLAY_
 
   /* Display all of the found states */
   for( i=0; i<state_size; i++ ) {
-    fprintf( ofile, "          %d'h%s\n", arc_get_width( table->table ), states[i] );
+    fprintf( ofile, "          %u'h%s\n", arc_get_width( table->table ), states[i] );
     free_safe( states[i] );
   }
 
@@ -878,8 +878,8 @@ void fsm_display_arc_verbose( FILE* ofile, fsm* table ) { PROFILE(FSM_DISPLAY_AR
   /* Output the information to the specified output stream */
   snprintf( fstr, 100, "          %%-%d.%ds -> %%-%d.%ds\n", width, width, width, width );
   for( i=0; i<arc_size; i++ ) {
-    snprintf( tmpfst, 4096, "%d'h%s", arc_get_width( table->table ), from_states[i] );
-    snprintf( tmptst, 4096, "%d'h%s", arc_get_width( table->table ), to_states[i] );
+    snprintf( tmpfst, 4096, "%u'h%s", arc_get_width( table->table ), from_states[i] );
+    snprintf( tmptst, 4096, "%u'h%s", arc_get_width( table->table ), to_states[i] );
     fprintf( ofile, fstr, tmpfst, tmptst );
     free_safe( from_states[i] );
     free_safe( to_states[i] );
@@ -1179,6 +1179,9 @@ void fsm_dealloc( fsm* table ) { PROFILE(FSM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.75  2008/01/07 23:59:54  phase1geo
+ More splint updates.
+
  Revision 1.74  2007/12/19 14:37:29  phase1geo
  More compiler fixes (still more to go).  Checkpointing.
 

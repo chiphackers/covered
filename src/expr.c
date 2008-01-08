@@ -1000,7 +1000,7 @@ void expression_find_rhs_sigs( expression* expr, str_link** head, str_link** tai
     
       /* If the signal isn't already in the list, add it */
       if( str_link_find( sig_name, *head ) == NULL ) {
-        str_link_add( sig_name, head, tail );
+        (void)str_link_add( sig_name, head, tail );
       } else {
         free_safe( sig_name );
       }
@@ -1241,22 +1241,22 @@ void expression_db_write_tree( expression* root, FILE* ofile ) { PROFILE(EXPRESS
 */
 bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) { PROFILE(EXPRESSION_DB_READ);
 
-  bool        retval = TRUE;  /* Return value for this function */
-  int         id;             /* Holder of expression ID */
-  expression* expr;           /* Pointer to newly created expression */
-  int         linenum;        /* Holder of current line for this expression */
-  int         column;         /* Holder of column alignment information */
-  control     exec_num;       /* Holder of expression's execution number */
-  control     op;             /* Holder of expression operation */
-  esuppl      suppl;          /* Holder of supplemental value of this expression */
-  int         right_id;       /* Holder of expression ID to the right */
-  int         left_id;        /* Holder of expression ID to the left */
-  expression* right;          /* Pointer to current expression's right expression */
-  expression* left;           /* Pointer to current expression's left expression */
-  int         chars_read;     /* Number of characters scanned in from line */
-  vector*     vec;            /* Holders vector value of this expression */
-  exp_link*   expl;           /* Pointer to found expression in functional unit */
-  int         tmpid;          /* ID of statement that the current expression is bound to */
+  bool         retval = TRUE;  /* Return value for this function */
+  int          id;             /* Holder of expression ID */
+  expression*  expr;           /* Pointer to newly created expression */
+  int          linenum;        /* Holder of current line for this expression */
+  unsigned int column;         /* Holder of column alignment information */
+  control      exec_num;       /* Holder of expression's execution number */
+  control      op;             /* Holder of expression operation */
+  esuppl       suppl;          /* Holder of supplemental value of this expression */
+  int          right_id;       /* Holder of expression ID to the right */
+  int          left_id;        /* Holder of expression ID to the left */
+  expression*  right;          /* Pointer to current expression's right expression */
+  expression*  left;           /* Pointer to current expression's left expression */
+  int          chars_read;     /* Number of characters scanned in from line */
+  vector*      vec;            /* Holders vector value of this expression */
+  exp_link*    expl;           /* Pointer to found expression in functional unit */
+  int          tmpid;          /* ID of statement that the current expression is bound to */
 
   if( sscanf( *line, "%d %d %x %x %x %x %d %d%n", &id, &linenum, &column, &exec_num, &op, &(suppl.all), &right_id, &left_id, &chars_read ) == 8 ) {
 
@@ -1393,16 +1393,16 @@ bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) { PROFI
 */
 bool expression_db_merge( expression* base, char** line, bool same ) { PROFILE(EXPRESSION_DB_MERGE);
 
-  bool    retval = TRUE;  /* Return value for this function */
-  int     id;             /* Expression ID field */
-  int     linenum;        /* Expression line number */
-  int     column;         /* Column information */
-  control exec_num;       /* Execution number */
-  control op;             /* Expression operation */
-  esuppl  suppl;          /* Supplemental field */
-  int     right_id;       /* ID of right child */
-  int     left_id;        /* ID of left child */
-  int     chars_read;     /* Number of characters read */
+  bool         retval = TRUE;  /* Return value for this function */
+  int          id;             /* Expression ID field */
+  int          linenum;        /* Expression line number */
+  unsigned int column;         /* Column information */
+  control      exec_num;       /* Execution number */
+  control      op;             /* Expression operation */
+  esuppl       suppl;          /* Supplemental field */
+  int          right_id;       /* ID of right child */
+  int          left_id;        /* ID of left child */
+  int          chars_read;     /* Number of characters read */
 
   assert( base != NULL );
 
@@ -1504,7 +1504,7 @@ void expression_display( expression* expr ) {
     right_id = expr->right->id;
   }
 
-  printf( "  Expression =>  id: %d, op: %s, line: %d, col: %x, suppl: %x, exec_num: %d, left: %d, right: %d, ", 
+  printf( "  Expression =>  id: %d, op: %s, line: %d, col: %x, suppl: %x, exec_num: %u, left: %d, right: %d, ", 
           expr->id,
           expression_string_op( expr->op ),
           expr->line,
@@ -3656,6 +3656,9 @@ void expression_operate_recursively( expression* expr, func_unit* funit, bool si
     
   if( expr != NULL ) {
     
+    /* Create dummy time */
+    sim_time time = {0,0,0,FALSE};
+
     /* Evaluate children */
     expression_operate_recursively( expr->left,  funit, sizing );
     expression_operate_recursively( expr->right, funit, sizing );
@@ -3684,9 +3687,6 @@ void expression_operate_recursively( expression* expr, func_unit* funit, bool si
 
     }
     
-    /* Create dummy time */
-    sim_time time = {0,0,0,FALSE};
-
     /* Perform operation */
     expression_operate( expr, NULL, &time );
 
@@ -4231,6 +4231,9 @@ void expression_dealloc( expression* expr, bool exp_only ) { PROFILE(EXPRESSION_
 
 /* 
  $Log$
+ Revision 1.272  2008/01/07 23:59:54  phase1geo
+ More splint updates.
+
  Revision 1.271  2008/01/07 05:01:57  phase1geo
  Cleaning up more splint errors.
 

@@ -149,7 +149,7 @@ WSPACE [ \t\b\f]+
      do_include();
  }
 <INCLUDE>.          {
-     snprintf( user_msg, USER_MSG_LENGTH, "malformed `include directive, line %d, \"%s\"", istack->lineno, obf_file( istack->path ) );
+     snprintf( user_msg, USER_MSG_LENGTH, "malformed `include directive, line %u, \"%s\"", istack->lineno, obf_file( istack->path ) );
      print_output( user_msg, FATAL, __FILE__, __LINE__ );
      BEGIN( ERROR_LINE );
  }
@@ -372,7 +372,7 @@ static void def_match() { PROFILE(DEF_MATCH);
 
   } else {
 
-    snprintf( user_msg, USER_MSG_LENGTH, "macro %s undefined (and assumed null) at this point, line %d, \"%s\"",
+    snprintf( user_msg, USER_MSG_LENGTH, "macro %s undefined (and assumed null) at this point, line %u, \"%s\"",
               yytext, istack->lineno, obf_file( istack->path ) );
     print_output( user_msg, WARNING, __FILE__, __LINE__ );
 
@@ -403,7 +403,7 @@ static void def_start() { PROFILE(DEF_START);
 */
 void define_macro( const char* name, const char* value ) { PROFILE(DEFINE_MACRO);
 
-  tree_add( name, value, TRUE, &def_table );
+  (void)tree_add( name, value, TRUE, &def_table );
 
 }
 

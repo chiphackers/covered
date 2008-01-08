@@ -2996,7 +2996,7 @@ module_item
   | block_item_decl
   | attribute_list_opt K_defparam defparam_assign_list ';'
     {
-      snprintf( user_msg, USER_MSG_LENGTH, "Defparam found but not used, file: %s, line: %d.  Please use -P option to specify",
+      snprintf( user_msg, USER_MSG_LENGTH, "Defparam found but not used, file: %s, line: %u.  Please use -P option to specify",
                 obf_file( @1.text ), @1.first_line );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
     }
@@ -3025,7 +3025,7 @@ module_item
           }
           free_safe( po );
         }
-        db_add_instance( curr->str, $2, FUNIT_MODULE, curr->range );
+        (void)db_add_instance( curr->str, $2, FUNIT_MODULE, curr->range );
         curr = curr->next;
       }
       str_link_delete_list( tmp );
@@ -5288,7 +5288,7 @@ delay_value
         if( delay_expr_type == DELAY_EXPR_DEFAULT ) {
           snprintf( user_msg,
                     USER_MSG_LENGTH,
-                    "Delay expression type for min:typ:max not specified, using default of 'typ', file %s, line %d",
+                    "Delay expression type for min:typ:max not specified, using default of 'typ', file %s, line %u",
                     obf_file( @1.text ),
                     @1.first_line );
           print_output( user_msg, WARNING, __FILE__, __LINE__ );

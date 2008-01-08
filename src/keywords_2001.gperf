@@ -26,7 +26,7 @@
 #include "profiler.h"
 
 %}
-struct keyword { char *name; int type; };
+struct keyword_2001 { char *name; int type; };
 %%
 automatic,           K_automatic
 cell,                K_cell
@@ -49,8 +49,8 @@ use,                 K_use
 
 int lexer_keyword_2001_code( const char* str, int length ) { PROFILE(LEXER_KEYWORD_2001_CODE);
 
-  const struct keyword* rc   = check_identifier_2001(str, length);
-  int                   type = IDENTIFIER;
+  const struct keyword_2001* rc   = check_identifier_2001(str, length);
+  int                        type = IDENTIFIER;
 
   if( rc != 0 ) {
     type = rc->type;

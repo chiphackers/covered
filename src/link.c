@@ -449,7 +449,7 @@ void stmt_link_display( stmt_link* head ) {
   while( curr.curr != NULL ) {
     assert( curr.curr->stmt != NULL );
     assert( curr.curr->stmt->exp != NULL );
-    printf( "  id: %d, line: %d, stmt_head: %d\n", curr.curr->stmt->exp->id, curr.curr->stmt->exp->line, ESUPPL_IS_STMT_HEAD( curr.curr->stmt->exp->suppl ) );
+    printf( "  id: %d, line: %d, stmt_head: %u\n", curr.curr->stmt->exp->id, curr.curr->stmt->exp->line, ESUPPL_IS_STMT_HEAD( curr.curr->stmt->exp->suppl ) );
     stmt_iter_next( &curr );
   }
 
@@ -1301,6 +1301,9 @@ void inst_link_delete_list( inst_link* head ) { PROFILE(INST_LINK_DELETE_LIST);
 
 /*
  $Log$
+ Revision 1.72  2008/01/07 23:59:55  phase1geo
+ More splint updates.
+
  Revision 1.71  2007/12/18 23:55:21  phase1geo
  Starting to remove 64-bit time and replacing it with a sim_time structure
  for performance enhancement purposes.  Also removing global variables for time-related

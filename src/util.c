@@ -507,7 +507,7 @@ void directory_load( const char* dir, const str_link* ext_head, str_link** file_
           tmpfile  = (char*)malloc_safe( tmpchars );
           snprintf( tmpfile, tmpchars, "%s/%s", dir, dirp->d_name );
           if( str_link_find( tmpfile, *file_head ) == NULL ) {
-            str_link_add( tmpfile, file_head, file_tail );
+            (void)str_link_add( tmpfile, file_head, file_tail );
             (*file_tail)->suppl = 0x1;
           } else {
             free_safe( tmpfile );
@@ -1200,6 +1200,9 @@ void calc_miss_percent( int hits, float total, float* misses, float* percent ) {
 
 /*
  $Log$
+ Revision 1.72  2008/01/07 23:59:55  phase1geo
+ More splint updates.
+
  Revision 1.71  2007/12/17 23:47:48  phase1geo
  Adding more profiling information.
 

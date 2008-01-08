@@ -492,12 +492,8 @@ bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) { PR
          is called.
         */
         if( ESUPPL_STMT_IS_CALLED( stmt->exp->suppl ) == 0 ) {
-          sim_time tmp_time;
-          tmp_time.lo    = 0;
-          tmp_time.hi    = 0;
-          tmp_time.full  = 0;
-          tmp_time.final = FALSE;
-          sim_add_thread( NULL, stmt, curr_funit, &tmp_time );
+          sim_time tmp_time = {0,0,0,FALSE};
+          (void)sim_add_thread( NULL, stmt, curr_funit, &tmp_time );
         }
 
       } else {
@@ -962,6 +958,9 @@ void statement_dealloc( statement* stmt ) { PROFILE(STATEMENT_DEALLOC);
 
 /*
  $Log$
+ Revision 1.119  2008/01/07 23:59:55  phase1geo
+ More splint updates.
+
  Revision 1.118  2007/12/19 22:54:35  phase1geo
  More compiler fixes (almost there now).  Checkpointing.
 

@@ -137,7 +137,7 @@ void lxt_parse( char* lxt_file ) { PROFILE(LXT_PARSE);
     numfacs = lxt2_rd_get_num_facs( lt );
 
     lxt2_rd_set_fac_process_mask_all( lt );
-    lxt2_rd_set_max_block_mem_usage( lt, 0 ); /* no need to cache blocks */
+    (void)lxt2_rd_set_max_block_mem_usage( lt, 0 ); /* no need to cache blocks */
 
     /* Create initial symbol table */
     vcd_symtab = symtable_create();
@@ -230,6 +230,9 @@ void lxt_parse( char* lxt_file ) { PROFILE(LXT_PARSE);
 
 /*
  $Log$
+ Revision 1.13  2008/01/07 23:59:55  phase1geo
+ More splint updates.
+
  Revision 1.12  2007/12/11 05:48:25  phase1geo
  Fixing more compile errors with new code changes and adding more profiling.
  Still have a ways to go before we can compile cleanly again (next submission

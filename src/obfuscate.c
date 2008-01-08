@@ -93,7 +93,7 @@ char* obfuscate_name( const char* real_name, char prefix ) { PROFILE(OBFUSCATE_N
     obf_curr_id++;
 
     /* Add the obfuscated name to the tree */
-    tree_add( key, obfname, FALSE, &obf_tree );
+    (void)tree_add( key, obfname, FALSE, &obf_tree );
 
   }
 
@@ -116,6 +116,11 @@ void obfuscate_dealloc() { PROFILE(OBFUSCATE_DEALLOC);
 
 /*
  $Log$
+ Revision 1.8  2007/12/11 05:48:25  phase1geo
+ Fixing more compile errors with new code changes and adding more profiling.
+ Still have a ways to go before we can compile cleanly again (next submission
+ should do it).
+
  Revision 1.7  2007/11/20 05:28:59  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

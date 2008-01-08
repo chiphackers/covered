@@ -97,7 +97,7 @@ bool parse_design( char* top, char* output_db ) { PROFILE(PARSE_DESIGN);
 
   bool retval = TRUE;  /* Return value of this function */
 
-  str_link_add( strdup_safe( top ), &modlist_head, &modlist_tail );
+  (void)str_link_add( strdup_safe( top ), &modlist_head, &modlist_tail );
 
   if( use_files_head != NULL ) {
 
@@ -261,6 +261,9 @@ bool parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) { PROF
 
 /*
  $Log$
+ Revision 1.53  2008/01/07 23:59:55  phase1geo
+ More splint updates.
+
  Revision 1.52  2007/12/11 05:48:26  phase1geo
  Fixing more compile errors with new code changes and adding more profiling.
  Still have a ways to go before we can compile cleanly again (next submission

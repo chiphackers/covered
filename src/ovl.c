@@ -293,7 +293,7 @@ void ovl_display_verbose( FILE* ofile, const func_unit* funit ) { PROFILE(OVL_DI
             fprintf( ofile, "      %-26s  %-22s  \"%-38s\"\n",
                      obf_inst( curr_child->name ), obf_funit( funit_flatten_name( curr_child->funit ) ), cov_point );
           } else if( (stmt->exp->exec_num > 0) && report_covered ) {
-            fprintf( ofile, "      %-26s  %-22s  \"%-38s\"  %9d\n",
+            fprintf( ofile, "      %-26s  %-22s  \"%-38s\"  %9u\n",
                      obf_inst( curr_child->name ), obf_funit( funit_flatten_name( curr_child->funit ) ), cov_point, stmt->exp->exec_num );
           }
           
@@ -436,7 +436,7 @@ void ovl_get_coverage( const func_unit* funit, const char* inst_name, char** ass
     if( ovl_is_coverage_point( si.curr->stmt->exp ) ) {
 
       /* Store the coverage point string and execution count */
-      str_link_add( ovl_get_coverage_point( si.curr->stmt ), cp_head, cp_tail );
+      (void)str_link_add( ovl_get_coverage_point( si.curr->stmt ), cp_head, cp_tail );
       (*cp_tail)->suppl  = si.curr->stmt->exp->exec_num;
       (*cp_tail)->suppl2 = si.curr->stmt->exp->id;
       (*cp_tail)->suppl3 = ESUPPL_EXCLUDED( si.curr->stmt->exp->suppl );
@@ -452,6 +452,11 @@ void ovl_get_coverage( const func_unit* funit, const char* inst_name, char** ass
 
 /*
  $Log$
+ Revision 1.16  2007/12/11 05:48:25  phase1geo
+ Fixing more compile errors with new code changes and adding more profiling.
+ Still have a ways to go before we can compile cleanly again (next submission
+ should do it).
+
  Revision 1.15  2007/11/20 05:28:59  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

@@ -305,7 +305,7 @@ void lxt2_rd_iter_radix( struct lxt2_rd_trace *lt, struct lxt2_rd_block *b ) { P
         default:
           vch -= LXT2_RD_DICT_START;
           if( vch >= b->num_dict_entries ) {
-            snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  vch(%d) >= num_dict_entries(%d)", vch, b->num_dict_entries );
+            snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  vch(%u) >= num_dict_entries(%u)", vch, (unsigned int)b->num_dict_entries );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
             exit( EXIT_FAILURE );
           }
@@ -321,8 +321,8 @@ void lxt2_rd_iter_radix( struct lxt2_rd_trace *lt, struct lxt2_rd_block *b ) { P
             memset( lt->value[idx], ((b->string_pointers[vch][0] != '1') ?  b->string_pointers[vch][0] : '0'), lendelta );
             strcpy( (lt->value[idx] + lendelta), b->string_pointers[vch] );
           } else {
-            snprintf( user_msg, USER_MSG_LENGTH, "Internal error: %d ('%s') vs %d ('%s')",
-                      lt->len[idx], lt->value[idx], b->string_lens[vch], b->string_pointers[vch] );
+            snprintf( user_msg, USER_MSG_LENGTH, "Internal error: %u ('%s') vs %u ('%s')",
+                      (unsigned int)lt->len[idx], lt->value[idx], (unsigned int)b->string_lens[vch], b->string_pointers[vch] );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
             exit( EXIT_FAILURE );
           }
@@ -425,7 +425,7 @@ void lxt2_rd_iter_radix0( struct lxt2_rd_trace* lt, struct lxt2_rd_block* b, lxt
     default:
       vch -= LXT2_RD_DICT_START;
       if( vch >= b->num_dict_entries ) {
-        snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  vch(%d) >= num_dict_entries(%d)", vch, b->num_dict_entries );
+        snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  vch(%u) >= num_dict_entries(%u)", vch, (unsigned int)b->num_dict_entries );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( EXIT_FAILURE );
       }
@@ -462,8 +462,8 @@ void lxt2_rd_iter_radix0( struct lxt2_rd_trace* lt, struct lxt2_rd_block* b, lxt
           }
         }
       } else {
-        snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  %d ('%s') vs %d ('%s')",
-                  lt->len[idx], lt->value[idx], b->string_lens[vch], b->string_pointers[vch] );
+        snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  %u ('%s') vs %u ('%s')",
+                  (unsigned int)lt->len[idx], lt->value[idx], (unsigned int)b->string_lens[vch], b->string_pointers[vch] );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( EXIT_FAILURE );
       }
@@ -772,9 +772,9 @@ struct lxt2_rd_trace* lxt2_rd_init( const char* name ) { PROFILE(LXT2_RD_INIT);
     /* Keeps gzip from acting weird in tandem with fopen */
     setvbuf( lt->handle, (char*)NULL, _IONBF, 0 );
 
-    fread( &id, 2, 1, lt->handle );
-    fread( &version, 2, 1, lt->handle );
-    fread( &lt->granule_size, 1, 1, lt->handle );
+    (void)fread( &id, 2, 1, lt->handle );
+    (void)fread( &version, 2, 1, lt->handle );
+    (void)fread( &lt->granule_size, 1, 1, lt->handle );
 	
     if( (foo = lxt2_rd_get_16( &id, 0 )) != LXT2_RD_HDRID ) {
 
@@ -784,15 +784,15 @@ struct lxt2_rd_trace* lxt2_rd_init( const char* name ) { PROFILE(LXT2_RD_INIT);
 
     } else if( (version = lxt2_rd_get_16( &version, 0 )) > LXT2_RD_VERSION ) {
 
-      snprintf( user_msg, USER_MSG_LENGTH, "LXT dumpfile is version %d which is not supported by Covered", version );
+      snprintf( user_msg, USER_MSG_LENGTH, "LXT dumpfile is version %u which is not supported by Covered", (unsigned int)version );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       lxt2_rd_close( lt );
       lt = NULL;
 
     } else if( lt->granule_size > LXT2_RD_GRANULE_SIZE ) {
 
-      snprintf( user_msg, USER_MSG_LENGTH, "LXT dumpfile contains granule size of %d (>%d) which is not supported by Covered",
-                lt->granule_size, LXT2_RD_GRANULE_SIZE );
+      snprintf( user_msg, USER_MSG_LENGTH, "LXT dumpfile contains granule size of %u (>%d) which is not supported by Covered",
+                (unsigned int)lt->granule_size, LXT2_RD_GRANULE_SIZE );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       lxt2_rd_close( lt );
       lt = NULL;
@@ -805,25 +805,25 @@ struct lxt2_rd_trace* lxt2_rd_init( const char* name ) { PROFILE(LXT2_RD_INIT);
       int   t;
       struct lxt2_rd_block* b;
 
-      fread( &lt->numfacs, 4, 1, lt->handle );
+      (void)fread( &lt->numfacs, 4, 1, lt->handle );
       lt->numfacs = lxt2_rd_get_32( &lt->numfacs, 0 );
 
-      fread( &lt->numfacbytes, 4, 1, lt->handle );
+      (void)fread( &lt->numfacbytes, 4, 1, lt->handle );
       lt->numfacbytes = lxt2_rd_get_32( &lt->numfacbytes, 0 );
 
-      fread( &lt->longestname, 4, 1, lt->handle );
+      (void)fread( &lt->longestname, 4, 1, lt->handle );
       lt->longestname = lxt2_rd_get_32( &lt->longestname, 0 );
 
-      fread( &lt->zfacnamesize, 4, 1, lt->handle );
+      (void)fread( &lt->zfacnamesize, 4, 1, lt->handle );
       lt->zfacnamesize = lxt2_rd_get_32( &lt->zfacnamesize, 0 );
 
-      fread( &lt->zfacname_predec_size, 4, 1, lt->handle );
+      (void)fread( &lt->zfacname_predec_size, 4, 1, lt->handle );
       lt->zfacname_predec_size = lxt2_rd_get_32( &lt->zfacname_predec_size, 0 );
 
-      fread( &lt->zfacgeometrysize, 4, 1, lt->handle );
+      (void)fread( &lt->zfacgeometrysize, 4, 1, lt->handle );
       lt->zfacgeometrysize = lxt2_rd_get_32( &lt->zfacgeometrysize, 0 );
 
-      fread( &lt->timescale, 1, 1, lt->handle );  /* No swap necessary */
+      (void)fread( &lt->timescale, 1, 1, lt->handle );  /* No swap necessary */
 
 #ifdef DEBUG_MODE
       snprintf( user_msg, USER_MSG_LENGTH, "LXT:  %d facilities", lt->numfacs );
@@ -843,7 +843,7 @@ struct lxt2_rd_trace* lxt2_rd_init( const char* name ) { PROFILE(LXT2_RD_INIT);
       lt->zhandle = NULL;
 
       if( rc != lt->zfacname_predec_size ) {
-        snprintf( user_msg, USER_MSG_LENGTH, "LXT:  Name section mangled %d (actual) vs %d (expected)", rc, lt->zfacname_predec_size );
+        snprintf( user_msg, USER_MSG_LENGTH, "LXT:  Name section mangled %d (actual) vs %u (expected)", rc, (unsigned int)lt->zfacname_predec_size );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         free( m );
         lxt2_rd_close( lt );
@@ -933,16 +933,16 @@ struct lxt2_rd_trace* lxt2_rd_init( const char* name ) { PROFILE(LXT2_RD_INIT);
 
         b = calloc( 1, sizeof( struct lxt2_rd_block ) );
 		
-        fread( &b->uncompressed_siz, 4, 1, lt->handle );
+        (void)fread( &b->uncompressed_siz, 4, 1, lt->handle );
         b->uncompressed_siz = lxt2_rd_get_32( &b->uncompressed_siz, 0 );
 
-        fread( &b->compressed_siz, 4, 1, lt->handle );
+        (void)fread( &b->compressed_siz, 4, 1, lt->handle );
         b->compressed_siz = lxt2_rd_get_32( &b->compressed_siz, 0 );
 
-        fread( &b->start, 8, 1, lt->handle );
+        (void)fread( &b->start, 8, 1, lt->handle );
         b->start = lxt2_rd_get_64( &b->start, 0 );
 
-        fread( &b->end, 8, 1, lt->handle );
+        (void)fread( &b->end, 8, 1, lt->handle );
         b->end = lxt2_rd_get_64( &b->end, 0 );
 
         pos = ftello( lt->handle );
@@ -1300,7 +1300,7 @@ char* lxt2_rd_get_facname( struct lxt2_rd_trace* lt, lxtint32_t facidx ) { PROFI
         }
 
         for( j=strt; j<facidx; j++ ) {
-          lxt2_rd_get_facname( lt, j );
+          (void)lxt2_rd_get_facname( lt, j );
         }
 	
         return( lxt2_rd_get_facname( lt, j ) );
@@ -1517,7 +1517,7 @@ int lxt2_rd_iter_blocks( struct lxt2_rd_trace* lt,
 
         fseeko( lt->handle, b->filepos, SEEK_SET );
         gzid[0] = gzid[1] = 0;
-        fread( &gzid, 2, 1, lt->handle );
+        (void)fread( &gzid, 2, 1, lt->handle );
         fseeko( lt->handle, b->filepos, SEEK_SET );
 
         if( (striped_kill = (gzid[0] != 0x1f) || (gzid[1] != 0x8b)) ) {
@@ -1540,13 +1540,13 @@ int lxt2_rd_iter_blocks( struct lxt2_rd_trace* lt,
 
             clen = unclen = iter = 0;				
 
-            fread( &clen, 4, 1, lt->handle );
+            (void)fread( &clen, 4, 1, lt->handle );
             clen = lxt2_rd_get_32( &clen, 0 );
 
-            fread( &unclen, 4, 1, lt->handle );
+            (void)fread( &unclen, 4, 1, lt->handle );
             unclen = lxt2_rd_get_32( &unclen, 0 );
 
-            fread( &iter, 4, 1, lt->handle );
+            (void)fread( &iter, 4, 1, lt->handle );
             iter = lxt2_rd_get_32( &iter, 0 );
 
             fspos += 12;
@@ -1558,7 +1558,7 @@ int lxt2_rd_iter_blocks( struct lxt2_rd_trace* lt,
                 zbuff = (char*)malloc_safe_nolimit( zlen = (clen * 2) );
               }
 
-              fread( zbuff, clen, 1, lt->handle );
+              (void)fread( zbuff, clen, 1, lt->handle );
 
               strm.avail_in  = clen - 10;
               strm.avail_out = unclen;
@@ -1576,8 +1576,8 @@ int lxt2_rd_iter_blocks( struct lxt2_rd_trace* lt,
               rc = inflateEnd( &strm );
 
               if( strm.total_out != unclen ) {
-                snprintf( user_msg, USER_MSG_LENGTH, "LXT:  Short read on subblock %ld vs %d (expected), ignoring...",
-                          strm.total_out, unclen );
+                snprintf( user_msg, USER_MSG_LENGTH, "LXT:  Short read on subblock %lu vs %u (expected), ignoring...",
+                          strm.total_out, (unsigned int)unclen );
                 print_output( user_msg, WARNING, __FILE__, __LINE__ );
                 free_safe( b->mem );
                 b->mem = NULL;
@@ -1610,7 +1610,7 @@ int lxt2_rd_iter_blocks( struct lxt2_rd_trace* lt,
           lt->zhandle = NULL;
 
           if( rc != b->uncompressed_siz ) {
-            snprintf( user_msg, USER_MSG_LENGTH, "LXT:  Short read on block %d vs %d (expected), ignoring...", rc, b->uncompressed_siz );
+            snprintf( user_msg, USER_MSG_LENGTH, "LXT:  Short read on block %d vs %u (expected), ignoring...", rc, (unsigned int)b->uncompressed_siz );
             print_output( user_msg, WARNING, __FILE__, __LINE__ );
             free_safe( b->mem );
             b->mem = NULL;

@@ -26,7 +26,7 @@
 #include "profiler.h"
 
 %}
-struct keyword { char *name; int type; };
+struct keyword_sv { char *name; int type; };
 %%
 alias,         K_alias
 always_comb,   K_always_comb
@@ -136,8 +136,8 @@ within,        K_within
 
 int lexer_keyword_sv_code( const char* str, int length ) { PROFILE(LEXER_KEYWORD_SV_CODE);
 
-  const struct keyword* rc   = check_identifier_sv(str, length);
-  int                   type = IDENTIFIER;
+  const struct keyword_sv* rc   = check_identifier_sv(str, length);
+  int                      type = IDENTIFIER;
 
   if( rc != 0 ) {
     type = rc->type;

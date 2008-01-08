@@ -153,7 +153,7 @@ void profiler_sort_by_calls( FILE* ofile ) {
   fprintf( ofile, "=                           Sort by calls Profile                            =\n" );
   fprintf( ofile, "==============================================================================\n" );
   fprintf( ofile, "\n" );
-  fprintf( ofile, "Total simulation time: %ld\n", sim_timer->total );
+  fprintf( ofile, "Total simulation time: %ld\n", (long int)sim_timer->total );
   fprintf( ofile, "\n" );
   fprintf( ofile, "------------------------------------------------------------------------------------------------------\n" );
   fprintf( ofile, "Function Name                               calls       time        avg. time   mallocs     frees\n" );
@@ -176,8 +176,8 @@ void profiler_sort_by_calls( FILE* ofile ) {
                  profiles[list[j]].func_name, profiles[list[j]].calls, profiles[list[j]].mallocs, profiles[list[j]].frees );
       } else {
         fprintf( ofile, "  %-40.40s  %10d  %10d  %10.3f  %10d  %10d\n",
-                 profiles[list[j]].func_name, profiles[list[j]].calls, profiles[list[j]].time_in->total,
-                 (profiles[list[j]].time_in->total / (profiles[list[j]].calls * 1.0)), profiles[list[j]].mallocs, profiles[list[j]].frees );
+                 profiles[list[j]].func_name, profiles[list[j]].calls, (long int)profiles[list[j]].time_in->total,
+                 (float)(profiles[list[j]].time_in->total / (profiles[list[j]].calls * 1.0)), profiles[list[j]].mallocs, profiles[list[j]].frees );
       }
     }
   }
@@ -204,7 +204,7 @@ void profiler_sort_by_time( FILE* ofile ) {
   fprintf( ofile, "=                           Sort by time Profile                             =\n" );
   fprintf( ofile, "==============================================================================\n" );
   fprintf( ofile, "\n" );
-  fprintf( ofile, "Total simulation time: %ld\n", sim_timer->total );
+  fprintf( ofile, "Total simulation time: %ld\n", (long int)sim_timer->total );
   fprintf( ofile, "\n" );
   fprintf( ofile, "------------------------------------------------------------------------------------------------------\n" );
   fprintf( ofile, "Function Name                               calls       time        avg. time   mallocs     frees\n" );
@@ -227,8 +227,8 @@ void profiler_sort_by_time( FILE* ofile ) {
                  profiles[list[j]].func_name, profiles[list[j]].calls, profiles[list[j]].mallocs, profiles[list[j]].frees );
       } else {
         fprintf( ofile, "  %-40.40s  %10d  %10d  %10.3f  %10d  %10d\n",
-                 profiles[list[j]].func_name, profiles[list[j]].calls, profiles[list[j]].time_in->total,
-                 (profiles[list[j]].time_in->total / (profiles[list[j]].calls * 1.0)), profiles[list[j]].mallocs, profiles[list[j]].frees );
+                 profiles[list[j]].func_name, profiles[list[j]].calls, (long int)profiles[list[j]].time_in->total,
+                 (float)(profiles[list[j]].time_in->total / (profiles[list[j]].calls * 1.0)), profiles[list[j]].mallocs, profiles[list[j]].frees );
       }
     }
   } 
@@ -255,7 +255,7 @@ void profiler_sort_by_avg_time( FILE* ofile ) {
   fprintf( ofile, "=                           Sort by avg. time Profile                        =\n" );
   fprintf( ofile, "==============================================================================\n" );
   fprintf( ofile, "\n" );
-  fprintf( ofile, "Total simulation time: %ld\n", sim_timer->total );
+  fprintf( ofile, "Total simulation time: %ld\n", (long int)sim_timer->total );
   fprintf( ofile, "\n" );
   fprintf( ofile, "------------------------------------------------------------------------------------------------------\n" );
   fprintf( ofile, "Function Name                               calls       time        avg. time   mallocs     frees\n" );
@@ -279,9 +279,9 @@ void profiler_sort_by_avg_time( FILE* ofile ) {
         fprintf( ofile, "  %-40.40s  %10d          NA          NA  %10d  %10d\n",
                  profiles[list[j]].func_name, profiles[list[j]].calls, profiles[list[j]].mallocs, profiles[list[j]].frees );
       } else {
-        fprintf( ofile, "  %-40.40s  %10d  %10d  %10.3f  %10d  %10d\n",
-                 profiles[list[j]].func_name, profiles[list[j]].calls, profiles[list[j]].time_in->total,
-                 (profiles[list[j]].time_in->total / (profiles[list[j]].calls * 1.0)), profiles[list[j]].mallocs, profiles[list[j]].frees );
+        fprintf( ofile, "  %-40.40s  %10d  %10ld  %10.3f  %10d  %10d\n",
+                 profiles[list[j]].func_name, profiles[list[j]].calls, (long int)profiles[list[j]].time_in->total,
+                 (float)(profiles[list[j]].time_in->total / (profiles[list[j]].calls * 1.0)), profiles[list[j]].mallocs, profiles[list[j]].frees );
       }
     }
   } 
@@ -334,6 +334,12 @@ void profiler_report() {
 
 /*
  $Log$
+ Revision 1.5  2007/12/12 23:36:57  phase1geo
+ Optimized vector_op_add function significantly.  Other improvements made to
+ profiler output.  Attempted to optimize the sim_simulation function although
+ it hasn't had the intended effect and delay1.3 is currently failing.  Checkpointing
+ for now.
+
  Revision 1.4  2007/12/12 14:17:44  phase1geo
  Enhancing the profiling report.
 

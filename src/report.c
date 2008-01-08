@@ -866,10 +866,11 @@ int command_report( int argc, int last_arg, char** argv ) { PROFILE(COMMAND_REPO
 
       /* Get the COVERED_HOME environment variable */
 #ifndef INSTALL_DIR
-      if( (covered_home = getenv( "COVERED_HOME" )) == NULL ) {
+      if( getenv( "COVERED_HOME" ) == NULL ) {
         print_output( "COVERED_HOME not initialized.  Exiting...", FATAL, __FILE__, __LINE__ );
         exit( EXIT_FAILURE );
       }
+      covered_home = strdup_safe( getenv( "COVERED_HOME" ) );
 #else
       covered_home = strdup_safe( INSTALL_DIR );
 #endif
@@ -918,6 +919,9 @@ int command_report( int argc, int last_arg, char** argv ) { PROFILE(COMMAND_REPO
 
 /*
  $Log$
+ Revision 1.87  2008/01/07 23:59:55  phase1geo
+ More splint updates.
+
  Revision 1.86  2008/01/04 23:01:42  phase1geo
  Adding initial form of splint run script.  Started cleaning up splint errors/warnings.
 

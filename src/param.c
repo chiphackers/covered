@@ -271,10 +271,10 @@ void mod_parm_display( mod_parm* mparm ) {
       default                        :  strcpy( type_str, "UNKNOWN" );         break;
     }
     if( mparm->name == NULL ) {
-      printf( "  mparam => type: %s, order: %d, owns_exp: %d",
+      printf( "  mparam => type: %s, order: %u, owns_exp: %u",
               type_str, mparm->suppl.part.order, mparm->suppl.part.owns_expr );
     } else {
-      printf( "  mparam => name: %s, type: %s, order: %d, owns_exp: %d",
+      printf( "  mparam => name: %s, type: %s, order: %u, owns_exp: %u",
                obf_sig( mparm->name ), type_str, mparm->suppl.part.order, mparm->suppl.part.owns_expr );
     }
     if( mparm->expr != NULL ) {
@@ -528,7 +528,7 @@ void defparam_add( char* scope, vector* value ) { PROFILE(DEFPARAM_ADD);
     lsb.num = 0;
     lsb.exp = NULL;
 
-    inst_parm_add( scope, NULL, &msb, &lsb, FALSE, value, NULL, defparam_list );
+    (void)inst_parm_add( scope, NULL, &msb, &lsb, FALSE, value, NULL, defparam_list );
 
     vector_dealloc( value );
 
@@ -683,6 +683,9 @@ void param_expr_eval( expression* expr, funit_inst* inst ) { PROFILE(PARAM_EXPR_
 
   if( expr != NULL ) {
 
+    /* Initialize the current time */
+    sim_time time = {0,0,0,FALSE};
+
     /* For constant functions, resolve parameters and resize the functional unit first */
     if( expr->op == EXP_OP_FUNC_CALL ) {
       funit = expr->elem.funit;
@@ -730,14 +733,6 @@ void param_expr_eval( expression* expr, funit_inst* inst ) { PROFILE(PARAM_EXPR_
 #endif
         break;
     }
-
-    /* Initialize the current time */
-    sim_time time;
-
-    time.lo    = 0;
-    time.hi    = 0;
-    time.full  = 0;
-    time.final = FALSE;
 
     /* Perform the operation */
     expression_operate( expr, NULL, &time );
@@ -890,7 +885,7 @@ void param_resolve_declared( mod_parm* mparm, funit_inst* inst ) { PROFILE(PARAM
     param_expr_eval( mparm->expr, inst );
 
     /* Now add the new instance parameter */
-    inst_parm_add( mparm->name, NULL, mparm->msb, mparm->lsb, mparm->is_signed, mparm->expr->value, mparm, inst );
+    (void)inst_parm_add( mparm->name, NULL, mparm->msb, mparm->lsb, mparm->is_signed, mparm->expr->value, mparm, inst );
 
   }
 
@@ -917,7 +912,7 @@ void param_resolve_override( mod_parm* oparm, funit_inst* inst ) { PROFILE(PARAM
     param_expr_eval( oparm->expr, inst );
 
     /* Add the new instance override parameter */
-    inst_parm_add( oparm->name, oparm->inst_name, oparm->msb, oparm->lsb, oparm->is_signed, oparm->expr->value, oparm, inst );
+    (void)inst_parm_add( oparm->name, oparm->inst_name, oparm->msb, oparm->lsb, oparm->is_signed, oparm->expr->value, oparm, inst );
 
   }
 
@@ -1061,6 +1056,9 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) { PROFILE(INST_PARM_D
 
 /*
  $Log$
+ Revision 1.96  2008/01/07 23:59:55  phase1geo
+ More splint updates.
+
  Revision 1.95  2007/12/19 14:37:29  phase1geo
  More compiler fixes (still more to go).  Checkpointing.
 

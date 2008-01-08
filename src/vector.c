@@ -57,12 +57,14 @@
 #include "util.h"
 
 
+/*@-initsize@*/
 nibble xor_optab[OPTAB_SIZE]  = { XOR_OP_TABLE  };  /*!< XOR operation table */
 nibble and_optab[OPTAB_SIZE]  = { AND_OP_TABLE  };  /*!< AND operation table */
 nibble or_optab[OPTAB_SIZE]   = { OR_OP_TABLE   };  /*!< OR operation table */
 nibble nand_optab[OPTAB_SIZE] = { NAND_OP_TABLE };  /*!< NAND operation table */
 nibble nor_optab[OPTAB_SIZE]  = { NOR_OP_TABLE  };  /*!< NOR operation table */
 nibble nxor_optab[OPTAB_SIZE] = { NXOR_OP_TABLE };  /*!< NXOR operation table */
+/*@=initsize@*/
 
 extern char user_msg[USER_MSG_LENGTH];
 
@@ -396,13 +398,13 @@ bool vector_db_read( vector** vec, char** line ) { PROFILE(VECTOR_DB_READ);
 */
 bool vector_db_merge( vector* base, char** line, bool same ) { PROFILE(VECTOR_DB_MERGE);
 
-  bool   retval = TRUE;   /* Return value of this function */
-  int    width;           /* Width of read vector */
-  int    suppl;           /* Supplemental value of vector */
-  int    chars_read;      /* Number of characters read */
-  int    i;               /* Loop iterator */
-  int    value;           /* Integer form of value */
-  nibble nibs[4];         /* Temporary nibble containers */
+  bool         retval = TRUE;   /* Return value of this function */
+  int          width;           /* Width of read vector */
+  int          suppl;           /* Supplemental value of vector */
+  int          chars_read;      /* Number of characters read */
+  int          i;               /* Loop iterator */
+  unsigned int value;           /* Integer form of value */
+  nibble       nibs[4];         /* Temporary nibble containers */
 
   assert( base != NULL );
 
@@ -526,8 +528,8 @@ char* vector_get_toggle10( vec_data* nib, int width ) { PROFILE(VECTOR_GET_TOGGL
 */
 void vector_display_toggle01( vec_data* nib, int width, FILE* ofile ) { PROFILE(VECTOR_DISPLAY_TOGGLE01);
 
-  int value = 0;  /* Current 4-bit hexidecimal value of toggle */
-  int i;          /* Loop iterator */
+  unsigned int value = 0;  /* Current 4-bit hexidecimal value of toggle */
+  int          i;          /* Loop iterator */
 
   fprintf( ofile, "%d'h", width );
 
@@ -556,8 +558,8 @@ void vector_display_toggle01( vec_data* nib, int width, FILE* ofile ) { PROFILE(
 */
 void vector_display_toggle10( vec_data* nib, int width, FILE* ofile ) { PROFILE(VECTOR_DISPLAY_TOGGLE10);
 
-  int value = 0;  /* Current 4-bit hexidecimal value of toggle */
-  int i;          /* Loop iterator */
+  unsigned int value = 0;  /* Current 4-bit hexidecimal value of toggle */
+  int          i;          /* Loop iterator */
 
   fprintf( ofile, "%d'h", width );
 
@@ -2345,6 +2347,9 @@ void vector_dealloc( vector* vec ) { PROFILE(VECTOR_DEALLOC);
 
 /*
  $Log$
+ Revision 1.104  2008/01/07 23:59:55  phase1geo
+ More splint updates.
+
  Revision 1.103  2008/01/02 23:48:47  phase1geo
  Removing unnecessary check in vector.c.  Fixing bug 1862769.
 

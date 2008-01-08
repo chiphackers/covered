@@ -60,7 +60,7 @@ void VLerror( char* msg ) { PROFILE(VLERROR);
   
   snprintf( user_msg, USER_MSG_LENGTH, "%s,", msg );
   print_output( user_msg, FATAL, __FILE__, __LINE__ );
-  snprintf( user_msg, USER_MSG_LENGTH, "File: %s, Line: %d, Column: %d",
+  snprintf( user_msg, USER_MSG_LENGTH, "File: %s, Line: %u, Column: %u",
             obf_file( yylloc.text ), yylloc.first_line, yylloc.first_column );
   print_output( user_msg, FATAL_WRAP, __FILE__, __LINE__ );
 
@@ -78,7 +78,7 @@ void VLwarn( char* msg ) { PROFILE(VLWARN);
   
   snprintf( user_msg, USER_MSG_LENGTH, "%s,", msg );
   print_output( user_msg, WARNING, __FILE__, __LINE__ );
-  snprintf( user_msg, USER_MSG_LENGTH, "File: %s, Line: %d, Column: %d",
+  snprintf( user_msg, USER_MSG_LENGTH, "File: %s, Line: %u, Column: %u",
             obf_file( yylloc.text ), yylloc.first_line, yylloc.first_column );
   print_output( user_msg, WARNING_WRAP, __FILE__, __LINE__ );
 
@@ -287,6 +287,11 @@ bool parser_check_generation( int gen ) { PROFILE(PARSER_CHECK_GENERATION);
 
 /*
  $Log$
+ Revision 1.17  2007/12/11 05:48:26  phase1geo
+ Fixing more compile errors with new code changes and adding more profiling.
+ Still have a ways to go before we can compile cleanly again (next submission
+ should do it).
+
  Revision 1.16  2007/11/20 05:28:59  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

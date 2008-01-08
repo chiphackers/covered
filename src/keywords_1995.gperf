@@ -26,7 +26,7 @@
 #include "profiler.h"
 
 %}
-struct keyword { char *name; int type; };
+struct keyword_1995 { char *name; int type; };
 %%
 always,         K_always
 and,            K_and
@@ -134,8 +134,8 @@ xor,            K_xor
 
 int lexer_keyword_1995_code( const char* str, int length ) { PROFILE(LEXER_KEYWORD_1995_CODE);
 
-  const struct keyword* rc   = check_identifier_1995(str, length);
-  int                   type = IDENTIFIER;
+  const struct keyword_1995* rc   = check_identifier_1995(str, length);
+  int                        type = IDENTIFIER;
 
   if( rc != 0 ) {
     type = rc->type;

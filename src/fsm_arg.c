@@ -255,7 +255,7 @@ bool fsm_arg_parse( char* arg ) { PROFILE(FSM_ARG_PARSE);
         ptr++;
 
         if( (out_state = fsm_arg_parse_state( &ptr, arg )) != NULL ) {
-          fsm_var_add( arg, in_state, out_state, NULL );
+          (void)fsm_var_add( arg, in_state, out_state, NULL );
         } else {
           retval = TRUE;
         }
@@ -263,7 +263,7 @@ bool fsm_arg_parse( char* arg ) { PROFILE(FSM_ARG_PARSE);
       } else {
 
         /* Copy the current expression */
-        fsm_var_add( arg, in_state, in_state, NULL );
+        (void)fsm_var_add( arg, in_state, in_state, NULL );
 
       }
 
@@ -539,7 +539,7 @@ void fsm_arg_parse_attr( attr_param* ap, const func_unit* funit ) { PROFILE(FSM_
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
           exit( EXIT_FAILURE );
         } else {
-          fsm_var_add( funit->name, out_state, out_state, curr->name );
+          (void)fsm_var_add( funit->name, out_state, out_state, curr->name );
           fsml = fsm_link_find( curr->name, funit->fsm_head );
         }
         free_safe( tmp );
@@ -558,7 +558,7 @@ void fsm_arg_parse_attr( attr_param* ap, const func_unit* funit ) { PROFILE(FSM_
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
           exit( EXIT_FAILURE );
         } else {
-          fsm_var_add( funit->name, in_state, out_state, curr->name );
+          (void)fsm_var_add( funit->name, in_state, out_state, curr->name );
           fsml = fsm_link_find( curr->name, funit->fsm_head );
         }
         free_safe( tmp );
@@ -599,6 +599,9 @@ void fsm_arg_parse_attr( attr_param* ap, const func_unit* funit ) { PROFILE(FSM_
 
 /*
  $Log$
+ Revision 1.34  2008/01/07 23:59:54  phase1geo
+ More splint updates.
+
  Revision 1.33  2007/12/11 05:48:25  phase1geo
  Fixing more compile errors with new code changes and adding more profiling.
  Still have a ways to go before we can compile cleanly again (next submission
