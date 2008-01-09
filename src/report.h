@@ -25,7 +25,13 @@
 
 
 /*! \brief Parses command-line for report command and performs report functionality. */
-int command_report( int argc, int last_arg, char** argv );
+int command_report( int argc, int last_arg, const char** argv );
+
+/*! \brief Prints header of report. */
+void report_print_header( FILE* ofile );
+
+/*! \brief Parses arguments on report command command-line. */
+bool report_parse_args( int argc, int last_arg, const char** argv );
 
 /*! \brief Reads the CDD and readies the design for reporting */
 bool report_read_cdd_and_ready( char* ifile, int read_mode );
@@ -39,6 +45,9 @@ bool report_save_cdd( char* filename );
 
 /*
  $Log$
+ Revision 1.11  2007/11/20 05:28:59  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.10  2006/06/20 22:14:32  phase1geo
  Adding support for saving CDD files (needed for file merging and saving exclusion
  information for a CDD file) in the GUI.  Still have a bit to go as I am getting core

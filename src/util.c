@@ -72,7 +72,7 @@ static bool cli_debug_mode = FALSE;
 /*!
  If set to TRUE, suppresses all non-fatal error messages from being displayed.
 */
-bool output_suppressed;
+static bool output_suppressed;
 
 /*!
  If set to TRUE, causes debug information to be spewed to screen.
@@ -100,7 +100,7 @@ char user_msg[USER_MSG_LENGTH];
 /*!
  Array of functional unit names used for output purposes.
 */
-const char* funit_types[FUNIT_TYPES+1] = { "module", "named block", "function", "task", "no_score", "afunction", "atask", "named block", "UNKNOWN" };
+static const char* funit_types[FUNIT_TYPES+1] = { "module", "named block", "function", "task", "no_score", "afunction", "atask", "named block", "UNKNOWN" };
 
 
 /*!
@@ -254,7 +254,7 @@ void print_output( const char* msg, int type, const char* file, int line ) {
  the correct type).  Outputs an error message and returns a value of FALSE if a value was
  not specified; otherwise, returns TRUE.
 */
-bool check_option_value( int argc, char** argv, int option_index ) { PROFILE(CHECK_OPTION_VALUE);
+bool check_option_value( int argc, const char** argv, int option_index ) { PROFILE(CHECK_OPTION_VALUE);
 
   bool retval = TRUE;  /* Return value for this function */
 
@@ -860,7 +860,7 @@ bool scope_local( const char* scope ) { PROFILE(SCOPE_LOCAL);
  off.  Much like the the functionality of the unix command "basename".  Returns the 
  stripped filename in the mname parameter.
 */
-void convert_file_to_module( char* mname, int len, char* fname ) { PROFILE(CONVERT_FILE_TO_MODULE);
+static void convert_file_to_module( char* mname, int len, char* fname ) { PROFILE(CONVERT_FILE_TO_MODULE);
 
   char* ptr;   /* Pointer to current character in filename */
   char* lptr;  /* Pointer to last character in module name */
@@ -1200,6 +1200,9 @@ void calc_miss_percent( int hits, float total, float* misses, float* percent ) {
 
 /*
  $Log$
+ Revision 1.73  2008/01/08 21:13:08  phase1geo
+ Completed -weak splint run.  Full regressions pass.
+
  Revision 1.72  2008/01/07 23:59:55  phase1geo
  More splint updates.
 

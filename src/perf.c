@@ -42,7 +42,7 @@ extern inst_link*  inst_head;
  of expressions in the given functional unit and the number of times these expressions that
  were executed during simulation.
 */
-perf_stat* perf_gen_stats( func_unit* funit ) { PROFILE(PERF_GEN_STATS);
+static perf_stat* perf_gen_stats( func_unit* funit ) { PROFILE(PERF_GEN_STATS);
 
   exp_link*  expl;   /* Pointer to current expression link */
   perf_stat* pstat;  /* Pointer to newly created performance stat structure */
@@ -73,7 +73,7 @@ perf_stat* perf_gen_stats( func_unit* funit ) { PROFILE(PERF_GEN_STATS);
 
  Outputs the expression performance statistics to the given output stream.
 */
-void perf_output_mod_stats( FILE* ofile, func_unit* funit ) { PROFILE(PERF_OUTPUT_MOD_STATS);
+static void perf_output_mod_stats( FILE* ofile, func_unit* funit ) { PROFILE(PERF_OUTPUT_MOD_STATS);
 
   perf_stat* pstat;     /* Pointer to performance statistic structure for this funit */
   int        i;         /* Loop iterator */
@@ -105,7 +105,7 @@ void perf_output_mod_stats( FILE* ofile, func_unit* funit ) { PROFILE(PERF_OUTPU
  Called by the perf_output_inst_report function to output a performance report on an
  instance basis.
 */
-void perf_output_inst_report_helper( FILE* ofile, funit_inst* root ) { PROFILE(PERF_OUTPUT_INST_REPORT_HELPER);
+static void perf_output_inst_report_helper( FILE* ofile, funit_inst* root ) { PROFILE(PERF_OUTPUT_INST_REPORT_HELPER);
 
   funit_inst* curr;  /* Pointer to current child instance to output */
 
@@ -144,6 +144,9 @@ void perf_output_inst_report( FILE* ofile ) { PROFILE(PERF_OUTPUT_INST_REPORT);
 
 /*
  $Log$
+ Revision 1.8  2008/01/08 21:13:08  phase1geo
+ Completed -weak splint run.  Full regressions pass.
+
  Revision 1.7  2007/12/11 05:48:26  phase1geo
  Fixing more compile errors with new code changes and adding more profiling.
  Still have a ways to go before we can compile cleanly again (next submission

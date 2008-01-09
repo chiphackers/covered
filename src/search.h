@@ -31,19 +31,19 @@
 void search_init();
 
 /*! \brief Adds an include directory to the list of directories to search for `include directives. */
-bool search_add_include_path( char* path );
+bool search_add_include_path( const char* path );
 
 /*! \brief Adds a directory to the list of directories to find unspecified Verilog modules. */
-bool search_add_directory_path( char* path );
+bool search_add_directory_path( const char* path );
 
 /*! \brief Adds a specific Verilog module to the list of modules to score. */
-bool search_add_file( char* file );
+bool search_add_file( const char* file );
 
 /*! \brief Adds specified functional unit to list of functional units not to score. */
-bool search_add_no_score_funit( char* funit );
+bool search_add_no_score_funit( const char* funit );
 
 /*! \brief Adds specified extensions to allowed file extension list. */
-bool search_add_extensions( char* ext_list );
+bool search_add_extensions( const char* ext_list );
 
 /*! \brief Deallocates all used memory for search lists. */
 void search_free_lists();
@@ -51,6 +51,9 @@ void search_free_lists();
 
 /*
  $Log$
+ Revision 1.8  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.7  2006/03/28 22:28:28  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

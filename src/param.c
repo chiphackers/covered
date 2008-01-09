@@ -305,7 +305,7 @@ void mod_parm_display( mod_parm* mparm ) {
  the found instance parameter is returned to the calling function; otherwise, a value of NULL
  is returned if no match was found.
 */
-inst_parm* inst_parm_find( char* name, inst_parm* iparm ) { PROFILE(INST_PARM_FIND);
+inst_parm* inst_parm_find( const char* name, inst_parm* iparm ) { PROFILE(INST_PARM_FIND);
 
   assert( name != NULL );
 
@@ -332,7 +332,7 @@ inst_parm* inst_parm_find( char* name, inst_parm* iparm ) { PROFILE(INST_PARM_FI
  Creates a new instance parameter with the specified information and adds 
  it to the instance parameter list.
 */
-inst_parm* inst_parm_add( char* name, char* inst_name, static_expr* msb, static_expr* lsb, bool is_signed,
+inst_parm* inst_parm_add( const char* name, char* inst_name, static_expr* msb, static_expr* lsb, bool is_signed,
                           vector* value, mod_parm* mparm, funit_inst* inst ) { PROFILE(INST_PARM_ADD);
 
   inst_parm* iparm;           /* Temporary pointer to instance parameter */
@@ -506,7 +506,7 @@ void inst_parm_bind( inst_parm* iparm ) { PROFILE(INST_PARM_BIND);
  being set to a new value.  If no match occurs, adds the new defparam to the
  defparam list.  This function is called for each -P option to the score command.
 */
-void defparam_add( char* scope, vector* value ) { PROFILE(DEFPARAM_ADD);
+void defparam_add( const char* scope, vector* value ) { PROFILE(DEFPARAM_ADD);
 
   static_expr msb;  /* MSB of this defparam (forced to be 31) */
   static_expr lsb;  /* LSB of this defparam (forced to be 0) */
@@ -753,7 +753,7 @@ void param_expr_eval( expression* expr, funit_inst* inst ) { PROFILE(PARAM_EXPR_
  override is found, adds the new instance parameter using the value of the
  override.  If no override is found, returns NULL and does nothing.
 */
-inst_parm* param_has_override( mod_parm* mparm, funit_inst* inst ) { PROFILE(PARAM_HAS_OVERRIDE);
+static inst_parm* param_has_override( mod_parm* mparm, funit_inst* inst ) { PROFILE(PARAM_HAS_OVERRIDE);
 
   inst_parm*  icurr = NULL;  /* Pointer to current instance parameter in parent */
   inst_parm*  parm  = NULL;  /* Pointer to newly created parameter (if one is created) */
@@ -805,7 +805,7 @@ inst_parm* param_has_override( mod_parm* mparm, funit_inst* inst ) { PROFILE(PAR
  instance parameter is created with the value of the found defparam.  If a match
  is not found, return NULL and do nothing else.
 */
-inst_parm* param_has_defparam( mod_parm* mparm, funit_inst* inst ) { PROFILE(PARAM_HAS_DEFPARAM);
+static inst_parm* param_has_defparam( mod_parm* mparm, funit_inst* inst ) { PROFILE(PARAM_HAS_DEFPARAM);
 
   inst_parm* parm = NULL;       /* Pointer newly created instance parameter (if one is created) */
   inst_parm* icurr;             /* Pointer to current defparam */
@@ -1056,6 +1056,9 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) { PROFILE(INST_PARM_D
 
 /*
  $Log$
+ Revision 1.97  2008/01/08 21:13:08  phase1geo
+ Completed -weak splint run.  Full regressions pass.
+
  Revision 1.96  2008/01/07 23:59:55  phase1geo
  More splint updates.
 

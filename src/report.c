@@ -67,70 +67,70 @@ extern isuppl      info_suppl;
  If set to a boolean value of TRUE, reports the line coverage for the specified database
  file; otherwise, omits line coverage from the report output.
 */
-bool report_line         = TRUE;
+bool report_line = TRUE;
 
 /*!
  If set to a boolean value of TRUE, reports the toggle coverage for the specified database
  file; otherwise, omits toggle coverage from the report output.
 */
-bool report_toggle       = TRUE;
+bool report_toggle = TRUE;
 
 /*!
  If set to a boolean value of TRUE, reports the combinational logic coverage for the specified
  database file; otherwise, omits combinational logic coverage from the report output.
 */
-bool report_combination  = TRUE;
+bool report_combination = TRUE;
 
 /*!
  If set to a boolean value of TRUE, reports the finite state machine coverage for the
  specified database file; otherwise, omits finite state machine coverage from the
  report output.
 */
-bool report_fsm          = TRUE;
+bool report_fsm = TRUE;
 
 /*!
  If set to a boolean value of TRUE, reports the race condition violations for the specified
  database file; otherwise, omits this information from the report output.
 */
-bool report_race         = FALSE;
+bool report_race = FALSE;
 
 /*!
  If set to a boolean value of TRUE, reports the assertion coverage for the specified
  database file; otherwise, omits assertion coverage from the report output.
 */
-bool report_assertion    = FALSE;
+bool report_assertion = FALSE;
 
 /*!
  If set to a boolean value of TRUE, reports the memory coverage for the specified database file;
  otherwise, omits memory coverage from the report output.
 */
-bool report_memory       = FALSE;
+bool report_memory = FALSE;
 
 /*!
  If set to a boolean value of TRUE, provides a coverage information for individual
  functional unit instances.  If set to a value of FALSE, reports coverage information on a
  functional unit basis, merging results from all instances of same functional unit.
 */
-bool report_instance     = FALSE;
+bool report_instance = FALSE;
 
 /*!
  If set to a boolean value of TRUE, displays covered logic for a particular CDD file.
  By default, Covered will display uncovered logic.  Must be used in conjunction with
  the -v (verbose output) option.
 */
-bool report_covered      = FALSE;
+bool report_covered = FALSE;
 
 /*!
  If set to a boolean value of TRUE, displays GUI report viewer instead of generating text
  report files.
 */
-bool report_gui          = FALSE;
+bool report_gui = FALSE;
 
 /*!
  If set to a boolean value of TRUE, displays all vector combinational logic on a bitwise
  basis.
 */
-bool report_bitwise      = FALSE;
+bool report_bitwise = FALSE;
 
 /*!
  If set to a boolean value of TRUE, displays combination logic output in a by-line-width
@@ -142,7 +142,7 @@ bool flag_use_line_width = FALSE;
  Specifies the number of characters wide that an expression will allowed to be output for
  if the flag_use_line_width value is set to TRUE.
 */
-int line_width           = DEFAULT_LINE_WIDTH;
+int line_width = DEFAULT_LINE_WIDTH;
 
 /*!
  If set to a non-zero value, causes Covered to only generate combinational logic
@@ -154,19 +154,19 @@ unsigned int report_comb_depth = REPORT_SUMMARY;
  Name of output file to write report contents to.  If output_file is NULL, the report
  will be written to standard output.
 */
-char* output_file      = NULL;
+char* output_file = NULL;
 
 /*!
  Name of input CDD file to read for generating coverage report.  This value must be
  specified to a value other than NULL for the report phase to complete properly.
 */
-char* input_db         = NULL;
+static char* input_db = NULL;
 
 /*!
  Suppresses functional units that do not contain any coverage information from being output
  to the report file.
 */
-bool  flag_suppress_empty_funits = FALSE;
+bool flag_suppress_empty_funits = FALSE;
 
 #ifdef HAVE_TCLTK
 /*!
@@ -178,7 +178,7 @@ Tcl_Interp* interp;
 /*!
  Displays usage information about the report command.
 */
-void report_usage() {
+static void report_usage() {
 
   printf( "\n" );
 #ifdef HAVE_TCLTK
@@ -221,9 +221,9 @@ void report_usage() {
  to TRUE.  If a character is found that does not correspond to a
  metric, an error message is flagged to the user (a warning).
 */
-void report_parse_metrics( char* metrics ) { PROFILE(REPORT_PARSE_METRICS);
+static void report_parse_metrics( const char* metrics ) { PROFILE(REPORT_PARSE_METRICS);
 
-  char* ptr;  /* Pointer to current character being evaluated */
+  const char* ptr;  /* Pointer to current character being evaluated */
 
   /* Set all flags to FALSE */
   report_line        = FALSE;
@@ -273,7 +273,7 @@ void report_parse_metrics( char* metrics ) { PROFILE(REPORT_PARSE_METRICS);
  that option.  If an option is found that is not allowed, an error
  message is reported to the user and the program terminates immediately.
 */
-bool report_parse_args( int argc, int last_arg, char** argv ) { PROFILE(REPORT_PARSE_ARGS);
+bool report_parse_args( int argc, int last_arg, const char** argv ) { PROFILE(REPORT_PARSE_ARGS);
 
   bool retval = TRUE;  /* Return value for this function */
   int  i;              /* Loop iterator */
@@ -412,7 +412,7 @@ bool report_parse_args( int argc, int last_arg, char** argv ) { PROFILE(REPORT_P
  will have the accumulated information from themselves and all of their
  children.
 */
-void report_gather_instance_stats( funit_inst* root ) { PROFILE(REPORT_GATHER_INSTANCE_STATS);
+static void report_gather_instance_stats( funit_inst* root ) { PROFILE(REPORT_GATHER_INSTANCE_STATS);
 
   funit_inst* curr;        /* Pointer to current instance being evaluated */
 
@@ -496,7 +496,7 @@ void report_gather_instance_stats( funit_inst* root ) { PROFILE(REPORT_GATHER_IN
  Traverses functional unit list, creating statistic structures for each
  of the functional units in the tree, and calculates summary coverage information.
 */
-void report_gather_funit_stats( funit_link* head ) { PROFILE(REPORT_GATHER_FUNIT_STATS);
+static void report_gather_funit_stats( funit_link* head ) { PROFILE(REPORT_GATHER_FUNIT_STATS);
 
   while( head != NULL ) {
 
@@ -668,7 +668,7 @@ void report_print_header( FILE* ofile ) { PROFILE(REPORT_PRINT_HEADER);
  Generates a coverage report based on the options specified on the command line
  to the specified output stream.
 */
-void report_generate( FILE* ofile ) { PROFILE(REPORT_GENERATE);
+static void report_generate( FILE* ofile ) { PROFILE(REPORT_GENERATE);
 
   report_print_header( ofile );
 
@@ -780,7 +780,7 @@ bool report_save_cdd( char* filename ) { PROFILE(REPORT_SAVE_CDD);
 
  Performs report command functionality.
 */
-int command_report( int argc, int last_arg, char** argv ) { PROFILE(COMMAND_REPORT);
+int command_report( int argc, int last_arg, const char** argv ) { PROFILE(COMMAND_REPORT);
 
   int   retval = 0;       /* Return value of this function */
   FILE* ofile;            /* Pointer to output stream */
@@ -919,6 +919,9 @@ int command_report( int argc, int last_arg, char** argv ) { PROFILE(COMMAND_REPO
 
 /*
  $Log$
+ Revision 1.88  2008/01/08 21:13:08  phase1geo
+ Completed -weak splint run.  Full regressions pass.
+
  Revision 1.87  2008/01/07 23:59:55  phase1geo
  More splint updates.
 

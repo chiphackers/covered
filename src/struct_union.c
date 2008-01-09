@@ -33,7 +33,7 @@
 
  Counts the number of stored struct/union members in the given struct/union.
 */
-int struct_union_length( struct_union* su ) { PROFILE(STRUCT_UNION_LENGTH);
+static int struct_union_length( struct_union* su ) { PROFILE(STRUCT_UNION_LENGTH);
 
   su_member* curr;       /* Pointer to current struct/union member */
   int        count = 0;  /* Number of members counted */
@@ -226,7 +226,7 @@ struct_union* struct_union_create( const char* name, sig_range* range, int type,
 
  Deallocates all memory associated with the given struct/union member.
 */
-void struct_union_member_dealloc( su_member* mem ) { PROFILE(STRUCT_UNION_MEMBER_DEALLOC);
+static void struct_union_member_dealloc( su_member* mem ) { PROFILE(STRUCT_UNION_MEMBER_DEALLOC);
 
   if( mem != NULL ) {
 
@@ -302,6 +302,10 @@ void struct_union_dealloc_list( func_unit* funit ) { PROFILE(STRUCT_UNION_DEALLO
 
 /*
  $Log$
+ Revision 1.4  2007/12/11 23:19:14  phase1geo
+ Fixed compile issues and completed first pass injection of profiling calls.
+ Working on ordering the calls from most to least.
+
  Revision 1.3  2007/11/20 05:29:00  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

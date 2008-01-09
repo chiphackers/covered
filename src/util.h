@@ -52,7 +52,7 @@ void set_debug( bool value );
 void print_output( const char* msg, int type, const char* file, int line );
 
 /*! \brief Checks to make sure that a value was properly specified for a given option. */
-bool check_option_value( int argc, char** argv, int option_index );
+bool check_option_value( int argc, const char** argv, int option_index );
 
 /*! \brief Returns TRUE if the specified string is a legal variable name. */
 bool is_variable( const char* token );
@@ -144,6 +144,9 @@ void set_timestep( sim_time* st, char* value );
 
 /*
  $Log$
+ Revision 1.35  2008/01/08 13:27:46  phase1geo
+ More splint updates.
+
  Revision 1.34  2008/01/07 23:59:55  phase1geo
  More splint updates.
 

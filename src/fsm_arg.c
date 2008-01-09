@@ -50,7 +50,7 @@ extern char user_msg[USER_MSG_LENGTH];
  Parses the specified argument value for all information regarding a state variable
  expression.  This function places all 
 */
-expression* fsm_arg_parse_state( char** arg, char* funit_name ) { PROFILE(FSM_ARG_PARSE_STATE);
+expression* fsm_arg_parse_state( const char** arg, char* funit_name ) { PROFILE(FSM_ARG_PARSE_STATE);
 
   bool        error = FALSE;  /* Specifies if a parsing error has been found */
   vsignal*    sig;            /* Pointer to read-in signal */
@@ -226,12 +226,13 @@ expression* fsm_arg_parse_state( char** arg, char* funit_name ) { PROFILE(FSM_AR
  Parses specified argument string for FSM information.  If the FSM information
  is considered legal, returns TRUE; otherwise, returns FALSE.
 */
-bool fsm_arg_parse( char* arg ) { PROFILE(FSM_ARG_PARSE);
+bool fsm_arg_parse( const char* arg ) { PROFILE(FSM_ARG_PARSE);
 
-  bool        retval = TRUE;  /* Return value for this function */
-  char*       ptr    = arg;   /* Pointer to current character in arg */
-  expression* in_state;       /* Pointer to input state expression */
-  expression* out_state;      /* Pointer to output state expression */
+  bool        retval = TRUE;                /* Return value for this function */
+  char*       tmp    = strdup_safe( arg );  /* Temporary copy of given argument */
+  char*       ptr    = tmp;                 /* Pointer to current character in arg */
+  expression* in_state;                     /* Pointer to input state expression */
+  expression* out_state;                    /* Pointer to output state expression */
 
   while( (*ptr != '\0') && (*ptr != '=') ) {
     ptr++;
@@ -248,13 +249,13 @@ bool fsm_arg_parse( char* arg ) { PROFILE(FSM_ARG_PARSE);
     *ptr = '\0';
     ptr++;
 
-    if( (in_state = fsm_arg_parse_state( &ptr, arg )) != NULL ) {
+    if( (in_state = fsm_arg_parse_state( &ptr, tmp )) != NULL ) {
 
       if( *ptr == ',' ) {
 
         ptr++;
 
-        if( (out_state = fsm_arg_parse_state( &ptr, arg )) != NULL ) {
+        if( (out_state = fsm_arg_parse_state( &ptr, tmp )) != NULL ) {
           (void)fsm_var_add( arg, in_state, out_state, NULL );
         } else {
           retval = TRUE;
@@ -274,6 +275,9 @@ bool fsm_arg_parse( char* arg ) { PROFILE(FSM_ARG_PARSE);
     }
 
   }
+
+  /* Deallocate temporary memory */
+  free_safe( tmp );
 
   return( retval );
 
@@ -599,6 +603,9 @@ void fsm_arg_parse_attr( attr_param* ap, const func_unit* funit ) { PROFILE(FSM_
 
 /*
  $Log$
+ Revision 1.35  2008/01/08 21:13:08  phase1geo
+ Completed -weak splint run.  Full regressions pass.
+
  Revision 1.34  2008/01/07 23:59:54  phase1geo
  More splint updates.
 

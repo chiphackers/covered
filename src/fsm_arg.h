@@ -27,7 +27,7 @@
 
 
 /*! \brief Parses specified -F argument for FSM information. */
-bool fsm_arg_parse( char* arg );
+bool fsm_arg_parse( const char* arg );
 
 /*! \brief Parses specified attribute argument for FSM information. */
 void fsm_arg_parse_attr( attr_param* ap, const func_unit* funit );
@@ -35,6 +35,9 @@ void fsm_arg_parse_attr( attr_param* ap, const func_unit* funit );
 
 /*
  $Log$
+ Revision 1.6  2007/11/20 05:28:58  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.5  2007/09/13 17:03:30  phase1geo
  Cleaning up some const-ness corrections -- still more to go but it's a good
  start.

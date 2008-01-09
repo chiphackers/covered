@@ -568,7 +568,7 @@ void inst_link_display( inst_link* head ) {
  a matching string is found, the pointer to this element is returned.  If the specified
  string could not be matched, the value of NULL is returned.
 */
-str_link* str_link_find( char* value, str_link* head ) { PROFILE(STR_LINK_FIND);
+str_link* str_link_find( const char* value, str_link* head ) { PROFILE(STR_LINK_FIND);
 
   str_link* curr;    /* Pointer to current str_link link */
   
@@ -1301,6 +1301,9 @@ void inst_link_delete_list( inst_link* head ) { PROFILE(INST_LINK_DELETE_LIST);
 
 /*
  $Log$
+ Revision 1.73  2008/01/08 21:13:08  phase1geo
+ Completed -weak splint run.  Full regressions pass.
+
  Revision 1.72  2008/01/07 23:59:55  phase1geo
  More splint updates.
 

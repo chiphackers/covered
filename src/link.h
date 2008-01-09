@@ -86,7 +86,7 @@ void inst_link_display( inst_link* head );
 /*********************************************************************************/
 
 /*! \brief Finds specified string in the given str_link list. */
-/*@null@*/ str_link* str_link_find( char* value, str_link* head );
+/*@null@*/ str_link* str_link_find( const char* value, str_link* head );
 
 /*! \brief Finds specified statement in the given stmt_link list. */
 /*@null@*/ stmt_link* stmt_link_find( int id, stmt_link* head );
@@ -167,6 +167,9 @@ void inst_link_delete_list( inst_link* head );
 
 /*
  $Log$
+ Revision 1.32  2008/01/08 13:27:46  phase1geo
+ More splint updates.
+
  Revision 1.31  2008/01/07 23:59:55  phase1geo
  More splint updates.
 

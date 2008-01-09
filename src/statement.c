@@ -122,12 +122,12 @@ extern exp_info exp_op_info[EXP_OP_NUM];
 /*!
  Pointer to head of statement loop list.
 */
-stmt_loop_link* stmt_loop_head = NULL;
+static stmt_loop_link* stmt_loop_head = NULL;
 
 /*!
  Pointer to tail of statement loop list.
 */
-stmt_loop_link* stmt_loop_tail = NULL;
+static stmt_loop_link* stmt_loop_tail = NULL;
 
 
 /*!
@@ -187,7 +187,7 @@ void statement_queue_display() {
  Creates a new statement loop link for the specified parameters and adds this
  element to the top of the statement loop queue.
 */
-void statement_queue_add( statement* stmt, int id, bool next_true ) { PROFILE(STATEMENT_QUEUE_ADD);
+static void statement_queue_add( statement* stmt, int id, bool next_true ) { PROFILE(STATEMENT_QUEUE_ADD);
 
   stmt_loop_link* sll;  /* Pointer to newly created statement loop link */
 
@@ -224,7 +224,7 @@ void statement_queue_add( statement* stmt, int id, bool next_true ) { PROFILE(ST
  to the specified statement.  The next head is also compared against this statement
  and the process is repeated until a match is not found.
 */
-void statement_queue_compare( statement* stmt ) { PROFILE(STATEMENT_QUEUE_COMPARE);
+static void statement_queue_compare( statement* stmt ) { PROFILE(STATEMENT_QUEUE_COMPARE);
 
   stmt_loop_link* sll;       /* Pointer to current element in statement loop list */
   stmt_loop_link* tsll;      /* Temporary pointer to current element in statement loop list */
@@ -678,7 +678,7 @@ bool statement_connect( statement* curr_stmt, statement* next_stmt, int conn_id 
  value is returned.  If both the false and tru paths have been parsed, the highest
  numbered line is returned.
 */
-int statement_get_last_line_helper( statement* stmt, statement* base ) { PROFILE(STATEMENT_GET_LAST_LINE_HELPER);
+static int statement_get_last_line_helper( statement* stmt, statement* base ) { PROFILE(STATEMENT_GET_LAST_LINE_HELPER);
 
   expression* last_exp;         /* Pointer to last expression in the statement tree */
   int         last_false = -1;  /* Last false path line number */ 
@@ -958,6 +958,9 @@ void statement_dealloc( statement* stmt ) { PROFILE(STATEMENT_DEALLOC);
 
 /*
  $Log$
+ Revision 1.120  2008/01/08 21:13:08  phase1geo
+ Completed -weak splint run.  Full regressions pass.
+
  Revision 1.119  2008/01/07 23:59:55  phase1geo
  More splint updates.
 

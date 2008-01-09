@@ -25,14 +25,17 @@
 
 
 /*! \brief Parses the specified define from the command-line */
-void score_parse_define( char* def );
+void score_parse_define( const char* def );
 
 /*! \brief Parses score command-line and performs score. */
-int command_score( int argc, int last_arg, char** argv );
+int command_score( int argc, int last_arg, const char** argv );
 
 
 /*
  $Log$
+ Revision 1.10  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.9  2006/05/03 22:49:42  phase1geo
  Causing all files to be preprocessed when written to the file viewer.  I'm sure that
  I am breaking all kinds of things at this point, but things do work properly on a few

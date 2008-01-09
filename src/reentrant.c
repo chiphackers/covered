@@ -38,7 +38,7 @@ extern const exp_info exp_op_info[EXP_OP_NUM];
  Recursively iterates up the functional unit tree keeping track of the total number of bits needed
  to store all information in the current reentrant task/function.
 */
-int reentrant_count_afu_bits( func_unit* funit ) { PROFILE(REENTRANT_COUNT_AFU_BITS);
+static int reentrant_count_afu_bits( func_unit* funit ) { PROFILE(REENTRANT_COUNT_AFU_BITS);
 
   sig_link* sigl;      /* Pointer to current signal link */
   exp_link* expl;      /* Pointer to current expression link */
@@ -82,7 +82,7 @@ int reentrant_count_afu_bits( func_unit* funit ) { PROFILE(REENTRANT_COUNT_AFU_B
  Recursively gathers all signal data bits to store and stores them in the given reentrant
  structure.
 */
-void reentrant_store_data_bits( func_unit* funit, reentrant* ren, int curr_bit ) { PROFILE(REENTRANT_STORE_DATA_BITS);
+static void reentrant_store_data_bits( func_unit* funit, reentrant* ren, int curr_bit ) { PROFILE(REENTRANT_STORE_DATA_BITS);
 
   sig_link* sigl;  /* Pointer to current signal link in current functional unit */
   exp_link* expl;  /* Pointer to current expression link in current functional unit */
@@ -145,7 +145,7 @@ void reentrant_store_data_bits( func_unit* funit, reentrant* ren, int curr_bit )
 
  Recursively restores the signal and expression values of the functional units in a reentrant task/function.
 */
-void reentrant_restore_data_bits( func_unit* funit, reentrant* ren, int curr_bit, expression* expr ) { PROFILE(REENTRANT_RESTORE_DATA_BITS);
+static void reentrant_restore_data_bits( func_unit* funit, reentrant* ren, int curr_bit, expression* expr ) { PROFILE(REENTRANT_RESTORE_DATA_BITS);
 
   sig_link* sigl;  /* Pointer to current signal link */
   exp_link* expl;  /* Pointer to current expression link */
@@ -282,6 +282,9 @@ void reentrant_dealloc( reentrant* ren, func_unit* funit, expression* expr ) { P
 
 /*
  $Log$
+ Revision 1.14  2007/12/19 14:37:29  phase1geo
+ More compiler fixes (still more to go).  Checkpointing.
+
  Revision 1.13  2007/12/18 23:55:21  phase1geo
  Starting to remove 64-bit time and replacing it with a sim_time structure
  for performance enhancement purposes.  Also removing global variables for time-related

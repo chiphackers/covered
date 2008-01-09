@@ -38,17 +38,17 @@
 #include "instance.h"
 
 
-/*@null@*/str_link* inc_paths_head  = NULL;   /*!< Pointer to head element of include paths list */
-/*@null@*/str_link* inc_paths_tail  = NULL;   /*!< Pointer to tail element of include paths list */
+/*@null@*/        str_link* inc_paths_head  = NULL;   /*!< Pointer to head element of include paths list */
+/*@null@*/ static str_link* inc_paths_tail  = NULL;   /*!< Pointer to tail element of include paths list */
 
-/*@null@*/str_link* use_files_head  = NULL;   /*!< Pointer to head element of used files list */
-/*@null@*/str_link* use_files_tail  = NULL;   /*!< Pointer to tail element of used files list */
+/*@null@*/        str_link* use_files_head  = NULL;   /*!< Pointer to head element of used files list */
+/*@null@*/ static str_link* use_files_tail  = NULL;   /*!< Pointer to tail element of used files list */
 
-/*@null@*/str_link* no_score_head   = NULL;   /*!< Pointer to head element of functional units not-to-score list */
-/*@null@*/str_link* no_score_tail   = NULL;   /*!< Pointer to tail element of functional units not-to-score list */
+/*@null@*/        str_link* no_score_head   = NULL;   /*!< Pointer to head element of functional units not-to-score list */
+/*@null@*/ static str_link* no_score_tail   = NULL;   /*!< Pointer to tail element of functional units not-to-score list */
 
-/*@null@*/str_link* extensions_head = NULL;   /*!< Pointer to head element of extensions list */
-/*@null@*/str_link* extensions_tail = NULL;   /*!< Pointer to tail element of extensions list */
+/*@null@*/ static str_link* extensions_head = NULL;   /*!< Pointer to head element of extensions list */
+/*@null@*/ static str_link* extensions_tail = NULL;   /*!< Pointer to tail element of extensions list */
 
 /*@null@*/funit_link* funit_head    = NULL;   /*!< Pointer to head element of functional unit list */
 /*@null@*/funit_link* funit_tail    = NULL;   /*!< Pointer to tail element of functional unit list */
@@ -136,7 +136,7 @@ void search_init() { PROFILE(SEARCH_INIT);
          and specifies an existing directory; otherwise, returns FALSE.
 
 */
-bool search_add_include_path( char* path ) { PROFILE(SEARCH_ADD_INCLUDE_PATH);
+bool search_add_include_path( const char* path ) { PROFILE(SEARCH_ADD_INCLUDE_PATH);
 
   bool  retval = TRUE;   /* Return value for this function */
   char* tmp;             /* Temporary directory name */
@@ -158,7 +158,7 @@ bool search_add_include_path( char* path ) { PROFILE(SEARCH_ADD_INCLUDE_PATH);
          specifies an existing directory; otherwise, returns FALSE.
 
 */
-bool search_add_directory_path( char* path ) { PROFILE(SEARCH_ADD_DIRECTORY_PATH);
+bool search_add_directory_path( const char* path ) { PROFILE(SEARCH_ADD_DIRECTORY_PATH);
 
   bool retval = TRUE;  /* Return value for this function */
 
@@ -183,7 +183,7 @@ bool search_add_directory_path( char* path ) { PROFILE(SEARCH_ADD_DIRECTORY_PATH
  \return Returns TRUE if the specified file exists; otherwise, returns FALSE.
 
 */
-bool search_add_file( char* file ) { PROFILE(SEARCH_ADD_FILE);
+bool search_add_file( const char* file ) { PROFILE(SEARCH_ADD_FILE);
 
   bool  retval = TRUE;  /* Return value for this function */
   char* tmp;            /* Temporary filename */
@@ -210,7 +210,7 @@ bool search_add_file( char* file ) { PROFILE(SEARCH_ADD_FILE);
          returns FALSE.
 
 */
-bool search_add_no_score_funit( char* funit ) { PROFILE(SEARCH_ADD_NO_SCORE_FUNIT);
+bool search_add_no_score_funit( const char* funit ) { PROFILE(SEARCH_ADD_NO_SCORE_FUNIT);
 
   bool  retval = TRUE;   /* Return value for this function */
   char* tmp;             /* Temporary module name */
@@ -237,7 +237,7 @@ bool search_add_no_score_funit( char* funit ) { PROFILE(SEARCH_ADD_NO_SCORE_FUNI
  Parses the given +libext argument, extracting all extensions listed and storing them into
  the globally accessible extensions list.
 */
-bool search_add_extensions( char* ext_list ) { PROFILE(SEARCH_ADD_EXTENSIONS);
+bool search_add_extensions( const char* ext_list ) { PROFILE(SEARCH_ADD_EXTENSIONS);
 
   bool  retval    = TRUE;      /* Return value for this function */
   char  ext[30];               /* Holder for extension */
@@ -292,6 +292,9 @@ void search_free_lists() { PROFILE(SEARCH_FREE_LISTS);
 
 /*
  $Log$
+ Revision 1.35  2008/01/08 21:13:08  phase1geo
+ Completed -weak splint run.  Full regressions pass.
+
  Revision 1.34  2008/01/07 23:59:55  phase1geo
  More splint updates.
 

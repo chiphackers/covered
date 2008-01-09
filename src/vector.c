@@ -181,7 +181,7 @@ void vector_copy( vector* from_vec, vector** to_vec ) { PROFILE(VECTOR_COPY);
  \return Returns an unsigned integer containing the values of dat0, dat1, dat2 and dat3
          in an encoded, packed manner.
 */
-unsigned int vector_nibbles_to_uint( nibble dat0, nibble dat1, nibble dat2, nibble dat3 ) { PROFILE(VECTOR_NIBBLES_TO_UINT);
+static unsigned int vector_nibbles_to_uint( nibble dat0, nibble dat1, nibble dat2, nibble dat3 ) { PROFILE(VECTOR_NIBBLES_TO_UINT);
 
   unsigned int d[4];  /* Array of unsigned int format of dat0,1,2,3 */
   int          i;     /* Loop iterator */
@@ -213,7 +213,7 @@ unsigned int vector_nibbles_to_uint( nibble dat0, nibble dat1, nibble dat2, nibb
 
  Decodes and unpacks the given unsigned integer value into the specified nibble array.
 */
-void vector_uint_to_nibbles( unsigned int data, nibble* dat ) { PROFILE(VECTOR_UINT_TO_NIBBLES);
+static void vector_uint_to_nibbles( unsigned int data, nibble* dat ) { PROFILE(VECTOR_UINT_TO_NIBBLES);
 
   int i;  /* Loop iterator */
 
@@ -1203,7 +1203,7 @@ void vector_from_uint64( vector* vec, uint64 value ) { PROFILE(VECTOR_FROM_UINT6
  Iterates through string str starting at the left-most character, calculates the int value
  of the character and sets the appropriate number of bits in the specified vector locations.
 */
-void vector_set_static( vector* vec, char* str, int bits_per_char ) { PROFILE(VECTOR_SET_STATIC);
+static void vector_set_static( vector* vec, char* str, int bits_per_char ) { PROFILE(VECTOR_SET_STATIC);
 
   char* ptr;      /* Pointer to current character evaluating */
   int   pos;      /* Current bit position in vector */
@@ -2347,6 +2347,9 @@ void vector_dealloc( vector* vec ) { PROFILE(VECTOR_DEALLOC);
 
 /*
  $Log$
+ Revision 1.105  2008/01/08 21:13:08  phase1geo
+ Completed -weak splint run.  Full regressions pass.
+
  Revision 1.104  2008/01/07 23:59:55  phase1geo
  More splint updates.
 

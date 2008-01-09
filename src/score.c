@@ -51,26 +51,65 @@
 #include "vpi.h"
 
 
-char*     top_module             = NULL;                /*!< Name of top-level module to score */
-char*     top_instance           = NULL;                /*!< Name of top-level instance name */
-char*     output_db              = NULL;                /*!< Name of output score database file to generate */
-char*     dump_file              = NULL;                /*!< Name of dumpfile to parse */
-int       dump_mode              = DUMP_FMT_NONE;       /*!< Specifies dumpfile format to parse */
-char*     lxt_file               = NULL;                /*!< Name of LXT dumpfile to parse */
-char*     vpi_file               = NULL;                /*!< Name of VPI output file to write contents to */
-int       delay_expr_type        = DELAY_EXPR_DEFAULT;  /*!< Value to use when a delay expression with min:typ:max */
-char*     ppfilename             = NULL;                /*!< Name of preprocessor filename to use */
-bool      instance_specified     = FALSE;               /*!< Specifies if -i option was specified */
-uint64    timestep_update        = 0;                   /*!< Specifies timestep increment to display current time */
-int       flag_race_check        = WARNING;             /*!< Specifies how race conditions should be handled */
-bool      flag_check_races       = TRUE;                /*!< Specifies if race condition checking should occur */
-bool      flag_display_sim_stats = FALSE;               /*!< Specifies if simulation performance information should be output */
-int       flag_global_generation = GENERATION_SV;       /*!< Specifies the supported global generation value */
-bool      flag_use_command_line_debug = FALSE;          /*!< Specifies whether the command-line debugger should be enabled */
-char*     command_line_debug_file = NULL;               /*!< Specifies the name of an input file to use for debugging */
-str_link* gen_mod_head           = NULL;                /*!< Pointer to the head of the generation module list */
-str_link* gen_mod_tail           = NULL;                /*!< Pointer to the tail of the generation module list */
-char*     vpi_timescale          = NULL;                /*!< Specifies the user-supplied timescale information for VPI */
+/*! Name of top-level module to score */
+char* top_module = NULL;
+
+/*! Name of top-level instance name */
+char* top_instance = NULL;
+
+/*! Name of output score database file to generate */
+static char* output_db = NULL;
+
+/*! Name of dumpfile to parse */
+static char* dump_file = NULL;
+
+/*! Specifies dumpfile format to parse */
+static int dump_mode = DUMP_FMT_NONE;
+
+/*! Name of LXT dumpfile to parse */
+char* lxt_file = NULL;
+
+/*! Name of VPI output file to write contents to */
+static char* vpi_file = NULL;
+
+/*! Value to use when a delay expression with min:typ:max */
+int delay_expr_type = DELAY_EXPR_DEFAULT;
+
+/*! Name of preprocessor filename to use */
+char* ppfilename = NULL;
+
+/*! Specifies if -i option was specified */
+bool instance_specified = FALSE;
+
+/*! Specifies timestep increment to display current time */
+uint64 timestep_update = 0;
+
+/*! Specifies how race conditions should be handled */
+int flag_race_check = WARNING;
+
+/*! Specifies if race condition checking should occur */
+bool flag_check_races = TRUE;
+
+/*! Specifies if simulation performance information should be output */
+static bool flag_display_sim_stats = FALSE;
+
+/*! Specifies the supported global generation value */
+int flag_global_generation = GENERATION_SV;
+
+/*! Specifies whether the command-line debugger should be enabled */
+bool flag_use_command_line_debug = FALSE;
+
+/*! Specifies the name of an input file to use for debugging */
+char* command_line_debug_file = NULL;
+
+/*! Pointer to the head of the generation module list */
+str_link* gen_mod_head = NULL;
+
+/*! Pointer to the tail of the generation module list */
+static str_link* gen_mod_tail = NULL;
+
+/*! Specifies the user-supplied timescale information for VPI */
+static char* vpi_timescale = NULL;
 
 extern uint64    largest_malloc_size;
 extern uint64    curr_malloc_size;
@@ -91,7 +130,7 @@ extern void define_macro( const char* name, const char* value );
 /*!
  Displays usage information for score command.
 */
-void score_usage() {
+static void score_usage() {
 
   printf( "\n" );
   printf( "Usage:  covered score -t <top-level_module_name> [-vcd <dumpfile> | -lxt <dumpfile>] [<options>]\n" );
@@ -181,7 +220,7 @@ void score_usage() {
 
  Creates a Verilog file that calls the Covered VPI system task.
 */
-void score_generate_top_vpi_module( char* vpi_file, char* output_db, char* top_inst ) { PROFILE(SCORE_GENERATE_TOP_VPI_MODULE);
+static void score_generate_top_vpi_module( char* vpi_file, char* output_db, char* top_inst ) { PROFILE(SCORE_GENERATE_TOP_VPI_MODULE);
 
   FILE* vfile;     /* File handle to VPI top-level module */
   char* mod_name;  /* Name of VPI module */
@@ -229,7 +268,7 @@ void score_generate_top_vpi_module( char* vpi_file, char* output_db, char* top_i
 
  Creates a PLI table file.
 */
-void score_generate_pli_tab_file( char* tab_file, char* top_mod ) { PROFILE(SCORE_GENERATE_PLI_TAB_FILE);
+static void score_generate_pli_tab_file( char* tab_file, char* top_mod ) { PROFILE(SCORE_GENERATE_PLI_TAB_FILE);
 
   FILE* tfile;     /* File handle of VPI tab file - only necessary for VCS */
   char* mod_name;  /* Name of VPI module */
@@ -276,7 +315,7 @@ void score_generate_pli_tab_file( char* tab_file, char* top_mod ) { PROFILE(SCOR
  \return Returns TRUE if read of command file was successful; otherwise,
          returns FALSE.
 */
-bool read_command_file( char* cmd_file, char*** arg_list, int* arg_num ) { PROFILE(READ_COMMAND_FILE);
+static bool read_command_file( const char* cmd_file, char*** arg_list, int* arg_num ) { PROFILE(READ_COMMAND_FILE);
 
   bool      retval  = TRUE;  /* Return value for this function */
   str_link* head    = NULL;  /* Pointer to head element of arg list */
@@ -348,11 +387,11 @@ bool read_command_file( char* cmd_file, char*** arg_list, int* arg_num ) { PROFI
  Parses the specified define from the command-line, storing the define value in the
  define tree according to its value.
 */
-void score_parse_define( char* def ) { PROFILE(SCORE_PARSE_DEFINE);
+void score_parse_define( const char* def ) { PROFILE(SCORE_PARSE_DEFINE);
 
-  char* ptr;  /* Pointer to current character in define */
+  char* tmp = strdup_safe( def );  /* Temporary copy of the given argument */
+  char* ptr = tmp;                 /* Pointer to current character in define */
 
-  ptr = def;
   while( (*ptr != '\0') && (*ptr != '=') ) {
     ptr++;
   }
@@ -360,10 +399,13 @@ void score_parse_define( char* def ) { PROFILE(SCORE_PARSE_DEFINE);
   if( *ptr == '=' ) {
     *ptr = '\0';
     ptr++;
-    define_macro( def, ptr );
+    define_macro( tmp, ptr );
   } else {
-    define_macro( def, "1" );
+    define_macro( tmp, "1" );
   }
+
+  /* Deallocate memory */
+  free_safe( tmp );
 
 }
 
@@ -372,7 +414,7 @@ void score_parse_define( char* def ) { PROFILE(SCORE_PARSE_DEFINE);
  
  Adds the specified argument to the list of score arguments that will be written to the CDD file.
 */
-void score_add_arg( char* arg ) { PROFILE(SCORE_ADD_ARG);
+static void score_add_arg( const char* arg ) { PROFILE(SCORE_ADD_ARG);
 
   score_args = (char**)realloc( score_args, (sizeof( char* ) * (score_arg_num + 1)) );
   score_args[score_arg_num] = strdup_safe( arg );
@@ -391,7 +433,7 @@ void score_add_arg( char* arg ) { PROFILE(SCORE_ADD_ARG);
  Parses score command argument list and performs specified functions based
  on these arguments.
 */
-bool score_parse_args( int argc, int last_arg, char** argv ) { PROFILE(SCORE_PARSE_ARGS);
+static bool score_parse_args( int argc, int last_arg, const char** argv ) { PROFILE(SCORE_PARSE_ARGS);
 
   bool   retval  = TRUE;          /* Return value for this function */
   int    i       = last_arg + 1;  /* Loop iterator */
@@ -694,8 +736,9 @@ bool score_parse_args( int argc, int last_arg, char** argv ) { PROFILE(SCORE_PAR
     } else if( strncmp( "-P", argv[i], 2 ) == 0 ) {
 
       if( (retval = check_option_value( argc, argv, i )) ) {
+        char* tmp = strdup_safe( argv[i] );
         i++;
-        ptr = argv[i];
+        ptr = tmp;
         while( (*ptr != '\0') && (*ptr != '=') ) {
           ptr++;
         }
@@ -710,6 +753,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) { PROFILE(SCORE_PAR
           ptr++;
           defparam_add( argv[i], vector_from_string( &ptr, FALSE ) );
         }
+        free_safe( tmp );
       }
       
     } else if( strncmp( "-T", argv[i], 2 ) == 0 ) {
@@ -882,7 +926,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) { PROFILE(SCORE_PAR
 
  Performs score command functionality.
 */
-int command_score( int argc, int last_arg, char** argv ) { PROFILE(COMMAND_SCORE);
+int command_score( int argc, int last_arg, const char** argv ) { PROFILE(COMMAND_SCORE);
 
   int retval = 0;  /* Return value for this function */
 
@@ -976,6 +1020,9 @@ int command_score( int argc, int last_arg, char** argv ) { PROFILE(COMMAND_SCORE
 
 /*
  $Log$
+ Revision 1.102  2008/01/08 21:13:08  phase1geo
+ Completed -weak splint run.  Full regressions pass.
+
  Revision 1.101  2008/01/07 23:59:55  phase1geo
  More splint updates.
 

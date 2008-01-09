@@ -144,7 +144,7 @@ symtable** timestep_tab    = NULL;
  Maintains the current number of elements in the timestep_tab array that need to be
  evaluated after simulation for a timestep.
 */
-int        postsim_size    = 0;
+static int postsim_size    = 0;
 
 
 /*!
@@ -156,7 +156,7 @@ int        postsim_size    = 0;
  Creates and adds the specified symtable signal structure to the sym_sig
  list for the specified symtab.
 */
-void symtable_add_sym_sig( symtable* symtab, vsignal* sig, int msb, int lsb ) { PROFILE(SYMTABLE_ADD_SYM_SIG);
+static void symtable_add_sym_sig( symtable* symtab, vsignal* sig, int msb, int lsb ) { PROFILE(SYMTABLE_ADD_SYM_SIG);
 
   sym_sig* new_ss;  /* Pointer to newly created sym_sig structure */
 
@@ -186,7 +186,7 @@ void symtable_add_sym_sig( symtable* symtab, vsignal* sig, int msb, int lsb ) { 
 
  Initializes the contents of a symbol table entry.
 */
-void symtable_init( symtable* symtab, int msb, int lsb ) { PROFILE(SYMTABLE_INIT);
+static void symtable_init( symtable* symtab, int msb, int lsb ) { PROFILE(SYMTABLE_INIT);
 
   /* Allocate and initialize the entry */
   symtab->size     = (msb - lsb) + 2;
@@ -380,6 +380,12 @@ void symtable_dealloc( symtable* symtab ) { PROFILE(SYMTABLE_DEALLOC);
 
 /*
  $Log$
+ Revision 1.32  2007/12/18 23:55:21  phase1geo
+ Starting to remove 64-bit time and replacing it with a sim_time structure
+ for performance enhancement purposes.  Also removing global variables for time-related
+ information and passing this information around by reference for performance
+ enhancement purposes.
+
  Revision 1.31  2007/12/17 23:47:48  phase1geo
  Adding more profiling information.
 

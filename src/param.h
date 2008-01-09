@@ -42,10 +42,10 @@ mod_parm* mod_parm_add( char* scope, static_expr* msb, static_expr* lsb, bool is
 void mod_parm_display( mod_parm* mparm );
 
 /*! \brief Searches specified instance parameter list for matching parameter. */
-inst_parm* inst_parm_find( char* name, inst_parm* parm );
+inst_parm* inst_parm_find( const char* name, inst_parm* parm );
 
 /*! \brief Creates and adds new instance parameter to specified instance parameter list. */
-inst_parm* inst_parm_add( char* name, char* inst_name, static_expr* msb, static_expr* lsb, bool is_signed,
+inst_parm* inst_parm_add( const char* name, char* inst_name, static_expr* msb, static_expr* lsb, bool is_signed,
                           vector* value, mod_parm* mparm, funit_inst* inst );
 
 /*! \brief Creates a new instance parameter for a generate variable */
@@ -55,7 +55,7 @@ void inst_parm_add_genvar( vsignal* sig, funit_inst* inst );
 void inst_parm_bind( inst_parm* iparm );
 
 /*! \brief Adds parameter override to defparam list. */
-void defparam_add( char* scope, vector* expr );
+void defparam_add( const char* scope, vector* expr );
 
 /*! \brief Deallocates all memory associated with defparam storage from command-line */
 void defparam_dealloc();
@@ -87,6 +87,9 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive );
 
 /*
  $Log$
+ Revision 1.28  2007/11/20 05:28:59  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.27  2007/04/18 22:35:02  phase1geo
  Revamping simulator core again.  Checkpointing.
 

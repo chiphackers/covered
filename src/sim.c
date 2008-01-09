@@ -183,7 +183,7 @@ static const char* thread_state_str[4] = {"NONE", "ACTIVE", "DELAYED", "WAITING"
 
  Displays the contents of the given thread to standard output.
 */
-void sim_display_thread( thread* thr, bool show_queue, bool endl ) {
+static void sim_display_thread( thread* thr, bool show_queue, bool endl ) {
 
   if( !endl ) {
     printf( "    " );
@@ -218,7 +218,7 @@ void sim_display_thread( thread* thr, bool show_queue, bool endl ) {
 
  Displays the current state of the active queue (for debug purposes only).
 */
-void sim_display_queue( thread* queue_head, thread* queue_tail ) {
+static void sim_display_queue( thread* queue_head, thread* queue_tail ) {
 
   thread* thr;  /* Pointer to current thread */
 
@@ -303,7 +303,7 @@ thread* sim_current_thread() { PROFILE(SIM_CURRENT_THREAD);
 /*!
  Pops the head thread from the active queue without deallocating the thread.
 */
-void sim_thread_pop_head() { PROFILE(SIM_THREAD_POP_HEAD);
+static void sim_thread_pop_head() { PROFILE(SIM_THREAD_POP_HEAD);
 
   thread* thr = active_head;  /* Pointer to head of active queue */
 
@@ -455,7 +455,7 @@ void sim_thread_insert_into_delay_queue( thread* thr, const sim_time* time ) { P
  called whenever a head statement has a signal change or the head statement is a delay operation
  and
 */
-void sim_thread_push( thread* thr, const sim_time* time ) { PROFILE(SIM_THREAD_PUSH);
+static void sim_thread_push( thread* thr, const sim_time* time ) { PROFILE(SIM_THREAD_PUSH);
 
   exp_op_type op;  /* Operation type of current expression in given thread */
 
@@ -628,7 +628,7 @@ void sim_expr_changed( expression* expr, const sim_time* time ) { PROFILE(SIM_EX
  everything that can be done at time 0.  This function does not place the thread into any
  queues (this is left to the sim_add_thread function).
 */
-thread* sim_create_thread( thread* parent, statement* stmt, func_unit* funit ) { PROFILE(SIM_CREATE_THREAD);
+static thread* sim_create_thread( thread* parent, statement* stmt, func_unit* funit ) { PROFILE(SIM_CREATE_THREAD);
 
   thread* thr;  /* Pointer to newly allocated thread */
 
@@ -1281,6 +1281,9 @@ void sim_dealloc() { PROFILE(SIM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.115  2008/01/08 21:13:08  phase1geo
+ Completed -weak splint run.  Full regressions pass.
+
  Revision 1.114  2007/12/20 04:47:50  phase1geo
  Fixing the last of the regression failures from previous changes.  Removing unnecessary
  output used for debugging.

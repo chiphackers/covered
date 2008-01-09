@@ -90,7 +90,7 @@ void vsignal_init( vsignal* sig, char* name, int type, vector* value, int line, 
  values for a vsignal and returns a pointer to this newly created
  vsignal.
 */
-vsignal* vsignal_create( char* name, int type, int width, int line, int col ) { PROFILE(VSIGNAL_CREATE);
+vsignal* vsignal_create( const char* name, int type, int width, int line, int col ) { PROFILE(VSIGNAL_CREATE);
 
   vsignal* new_sig;  /* Pointer to newly created vsignal */
 
@@ -568,7 +568,7 @@ void vsignal_display( vsignal* sig ) {
  vsignal may be a standard vsignal name, a single bit select vsignal or a
  multi-bit select vsignal.
 */
-vsignal* vsignal_from_string( char** str ) { PROFILE(VSIGNAL_FROM_STRING);
+vsignal* vsignal_from_string( const char** str ) { PROFILE(VSIGNAL_FROM_STRING);
 
   vsignal* sig;             /* Pointer to newly created vsignal */
   char     name[4096];      /* Signal name */
@@ -722,6 +722,9 @@ void vsignal_dealloc( vsignal* sig ) { PROFILE(VSIGNAL_DEALLOC);
 
 /*
  $Log$
+ Revision 1.50  2008/01/07 23:59:55  phase1geo
+ More splint updates.
+
  Revision 1.49  2007/12/18 23:55:21  phase1geo
  Starting to remove 64-bit time and replacing it with a sim_time structure
  for performance enhancement purposes.  Also removing global variables for time-related

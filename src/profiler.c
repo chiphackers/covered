@@ -28,7 +28,7 @@
 bool profiling_mode = TRUE;
 
 /*! Name of output profiling file */
-char* profiling_output = NULL;
+static char* profiling_output = NULL;
 
 /*! Stack of profiles that have been called */
 static unsigned int stack[4096];
@@ -121,7 +121,7 @@ void profiler_exit( unsigned int index ) {
 /*!
  Deallocates all allocated memory for profiler.
 */
-void profiler_dealloc() {
+static void profiler_dealloc() {
 
   int i;  /* Loop iterator */
 
@@ -135,7 +135,7 @@ void profiler_dealloc() {
 
 }
 
-void profiler_sort_by_calls( FILE* ofile ) {
+static void profiler_sort_by_calls( FILE* ofile ) {
 
   int largest;             /* Index of largest calls profile */
   int i;                   /* Loop iterator */
@@ -186,7 +186,7 @@ void profiler_sort_by_calls( FILE* ofile ) {
     
 }
 
-void profiler_sort_by_time( FILE* ofile ) {
+static void profiler_sort_by_time( FILE* ofile ) {
 
   int largest;             /* Index of largest calls profile */
   int i;                   /* Loop iterator */
@@ -237,7 +237,7 @@ void profiler_sort_by_time( FILE* ofile ) {
     
 }   
 
-void profiler_sort_by_avg_time( FILE* ofile ) {
+static void profiler_sort_by_avg_time( FILE* ofile ) {
 
   int largest;             /* Index of largest calls profile */
   int i;                   /* Loop iterator */
@@ -334,6 +334,9 @@ void profiler_report() {
 
 /*
  $Log$
+ Revision 1.6  2008/01/08 21:13:08  phase1geo
+ Completed -weak splint run.  Full regressions pass.
+
  Revision 1.5  2007/12/12 23:36:57  phase1geo
  Optimized vector_op_add function significantly.  Other improvements made to
  profiler output.  Attempted to optimize the sim_simulation function although

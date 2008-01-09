@@ -32,7 +32,7 @@
 void vsignal_init( vsignal* sig, char* name, int type, vector* value, int line, int col );
 
 /*! \brief Creates a new vsignal based on the information passed to this function. */
-vsignal* vsignal_create( char* name, int type, int width, int line, int col );
+vsignal* vsignal_create( const char* name, int type, int width, int line, int col );
 
 /*! \brief Creates the vector for a given signal based on the values of its dimension information */
 void vsignal_create_vec( vsignal* sig );
@@ -62,7 +62,7 @@ void vsignal_add_expression( vsignal* sig, expression* expr );
 void vsignal_display( vsignal* sig );
 
 /*! \brief Converts a string to a vsignal. */
-vsignal* vsignal_from_string( char** str );
+vsignal* vsignal_from_string( const char** str );
 
 /*! \brief Calculates width of the specified signal's vector value based on the given expression */
 int vsignal_calc_width_for_expr( expression* expr, vsignal* sig );
@@ -76,6 +76,12 @@ void vsignal_dealloc( vsignal* sig );
 
 /*
  $Log$
+ Revision 1.21  2007/12/18 23:55:21  phase1geo
+ Starting to remove 64-bit time and replacing it with a sim_time structure
+ for performance enhancement purposes.  Also removing global variables for time-related
+ information and passing this information around by reference for performance
+ enhancement purposes.
+
  Revision 1.20  2007/11/20 05:29:00  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

@@ -110,7 +110,7 @@ void covered_cleanup( void ) {
  Main function for the Covered utility.  Parses command-line arguments and calls
  the appropriate functions.
 */
-int main( int argc, char** argv ) {
+int main( int argc, const char** argv ) {
 
   int  retval    = 0;      /* Return value of this utility */
   int  curr_arg  = 1;      /* Current position in argument list */
@@ -230,6 +230,9 @@ int main( int argc, char** argv ) {
 
 /*
  $Log$
+ Revision 1.24  2008/01/07 23:59:55  phase1geo
+ More splint updates.
+
  Revision 1.23  2007/12/20 04:47:50  phase1geo
  Fixing the last of the regression failures from previous changes.  Removing unnecessary
  output used for debugging.
