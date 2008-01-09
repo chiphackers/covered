@@ -58,13 +58,13 @@ extern bool       report_instance;
 /*!
  Specifies the module names of all OVL assertions that contain functional coverage task calls.
 */
-char* ovl_assertions[OVL_ASSERT_NUM] = { "assert_change",      "assert_cycle_sequence", "assert_decrement",     "assert_delta",
-                                         "assert_even_parity", "assert_fifo_index",     "assert_frame",         "assert_handshake",
-                                         "assert_implication", "assert_increment",      "assert_never_unknown", "assert_next",
-                                         "assert_no_overflow", "assert_no_transition",  "assert_no_underflow",  "assert_odd_parity",
-                                         "assert_one_cold",    "assert_one_hot",        "assert_range",         "assert_time",
-                                         "assert_transition",  "assert_unchange",       "assert_width",         "assert_win_change",
-                                         "assert_window",      "assert_win_unchange",   "assert_zero_one_hot" };
+static char* ovl_assertions[OVL_ASSERT_NUM] = { "assert_change",      "assert_cycle_sequence", "assert_decrement",     "assert_delta",
+                                                "assert_even_parity", "assert_fifo_index",     "assert_frame",         "assert_handshake",
+                                                "assert_implication", "assert_increment",      "assert_never_unknown", "assert_next",
+                                                "assert_no_overflow", "assert_no_transition",  "assert_no_underflow",  "assert_odd_parity",
+                                                "assert_one_cold",    "assert_one_hot",        "assert_range",         "assert_time",
+                                                "assert_transition",  "assert_unchange",       "assert_width",         "assert_win_change",
+                                                "assert_window",      "assert_win_unchange",   "assert_zero_one_hot" };
 
 /*!
  \param name  Name of assertion module to check
@@ -224,7 +224,7 @@ void ovl_get_funit_stats( const func_unit* funit, float* total, int* hit ) { PRO
  Finds the task call parameter that specifies the name of the coverage point and returns this
  string value to the calling function.
 */
-char* ovl_get_coverage_point( statement* stmt ) { PROFILE(OVL_GET_COVERAGE_POINT);
+static char* ovl_get_coverage_point( statement* stmt ) { PROFILE(OVL_GET_COVERAGE_POINT);
 
   /*
    We are going to make a lot of assumptions about the structure of the statement, so just
@@ -452,6 +452,9 @@ void ovl_get_coverage( const func_unit* funit, const char* inst_name, char** ass
 
 /*
  $Log$
+ Revision 1.17  2008/01/08 21:13:08  phase1geo
+ Completed -weak splint run.  Full regressions pass.
+
  Revision 1.16  2007/12/11 05:48:25  phase1geo
  Fixing more compile errors with new code changes and adding more profiling.
  Still have a ways to go before we can compile cleanly again (next submission

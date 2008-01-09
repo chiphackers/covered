@@ -31,17 +31,17 @@
 /*!
  Pointer to the root of the obfuscation tree containing real to obfuscated name pairings.
 */
-tnode* obf_tree    = NULL;
+static tnode* obf_tree = NULL;
 
 /*!
  Current obfuscation identifier.  Incremented by one each time that a new obfuscation occurs.
 */
-int    obf_curr_id = 1000;
+static int obf_curr_id = 1000;
 
 /*!
  Specifies obfuscation mode.
 */
-bool   obf_mode;
+bool obf_mode;
 
 
 /*!
@@ -116,6 +116,9 @@ void obfuscate_dealloc() { PROFILE(OBFUSCATE_DEALLOC);
 
 /*
  $Log$
+ Revision 1.9  2008/01/08 21:13:08  phase1geo
+ Completed -weak splint run.  Full regressions pass.
+
  Revision 1.8  2007/12/11 05:48:25  phase1geo
  Fixing more compile errors with new code changes and adding more profiling.
  Still have a ways to go before we can compile cleanly again (next submission

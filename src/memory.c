@@ -203,7 +203,7 @@ bool memory_get_funit_summary( const char* funit_name, int funit_type, int* tota
  Creates a string array for each bit in the given signal corresponding to its position
  in the packed array portion.
 */
-void memory_create_pdim_bit_array( char** str, vsignal* sig, char* prefix, int dim ) { PROFILE(MEMORY_CREATE_PDIM_BIT_ARRAY);
+static void memory_create_pdim_bit_array( char** str, vsignal* sig, char* prefix, int dim ) { PROFILE(MEMORY_CREATE_PDIM_BIT_ARRAY);
 
   char name[4096];  /* Temporary string */
   int  i;           /* Loop iterator */
@@ -259,7 +259,7 @@ void memory_create_pdim_bit_array( char** str, vsignal* sig, char* prefix, int d
 
  Creates memory array structure for Tcl and stores it into the mem_str parameter.
 */
-void memory_get_mem_coverage( char** mem_str, vsignal* sig, vec_data* value, char* prefix, int dim, int parent_dim_width ) { PROFILE(MEMORY_GET_MEM_COVERAGE);
+static void memory_get_mem_coverage( char** mem_str, vsignal* sig, vec_data* value, char* prefix, int dim, int parent_dim_width ) { PROFILE(MEMORY_GET_MEM_COVERAGE);
 
   char name[4096];  /* Contains signal name */
   int  msb;         /* MSB of current dimension */
@@ -544,7 +544,7 @@ bool memory_collect( const char* funit_name, int funit_type, int cov, sig_link**
 
  Calculates and outputs the memory toggle summary coverage results for a given instance.
 */
-bool memory_display_toggle_instance_summary( FILE* ofile, const char* name, int hits01, int hits10, float total ) { PROFILE(MEMORY_DISPLAY_TOGGLE_INSTANCE_SUMMARY);
+static bool memory_display_toggle_instance_summary( FILE* ofile, const char* name, int hits01, int hits10, float total ) { PROFILE(MEMORY_DISPLAY_TOGGLE_INSTANCE_SUMMARY);
 
   float percent01;    /* Percentage of bits toggling from 0 -> 1 */
   float percent10;    /* Percentage of bits toggling from 1 -> 0 */
@@ -576,7 +576,7 @@ bool memory_display_toggle_instance_summary( FILE* ofile, const char* name, int 
  iterates through functional unit instance tree, outputting the toggle information that
  is found at that instance.
 */
-bool memory_toggle_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst, int* hits01, int* hits10, float* total ) { PROFILE(MEMORY_TOGGLE_INSTANCE_SUMMARY);
+static bool memory_toggle_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst, int* hits01, int* hits10, float* total ) { PROFILE(MEMORY_TOGGLE_INSTANCE_SUMMARY);
 
   funit_inst* curr;                /* Pointer to current child functional unit instance of this node */
   char        tmpname[4096];       /* Temporary name holder for instance */
@@ -638,7 +638,7 @@ bool memory_toggle_instance_summary( FILE* ofile, funit_inst* root, char* parent
  Calculates the miss and hit percentage statistics for the given instance and outputs this information
  to the given output file.
 */
-bool memory_display_ae_instance_summary( FILE* ofile, char* name, int wr_hit, int rd_hit, float total ) { PROFILE(MEMORY_DISPLAY_AE_INSTANCE_SUMMARY);
+static bool memory_display_ae_instance_summary( FILE* ofile, char* name, int wr_hit, int rd_hit, float total ) { PROFILE(MEMORY_DISPLAY_AE_INSTANCE_SUMMARY);
 
   float wr_percent;  /* Percentage of addressable elements written */
   float rd_percent;  /* Percentage of addressable elements read */
@@ -670,7 +670,7 @@ bool memory_display_ae_instance_summary( FILE* ofile, char* name, int wr_hit, in
  iterates through functional unit instance tree, outputting the toggle information that
  is found at that instance.
 */
-bool memory_ae_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst, int* wr_hits, int* rd_hits, float* total ) { PROFILE(MEMORY_AE_INSTANCE_SUMMARY);
+static bool memory_ae_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst, int* wr_hits, int* rd_hits, float* total ) { PROFILE(MEMORY_AE_INSTANCE_SUMMARY);
 
   funit_inst* curr;                /* Pointer to current child functional unit instance of this node */
   char        tmpname[4096];       /* Temporary name holder for instance */
@@ -731,7 +731,7 @@ bool memory_ae_instance_summary( FILE* ofile, funit_inst* root, char* parent_ins
 
  Calculates and outputs the toggle coverage for all memories in the given functional unit.
 */
-bool memory_display_toggle_funit_summary( FILE* ofile, const char* name, const char* fname, int hit01, int hit10, float total ) { PROFILE(MEMORY_DISPLAY_TOGGLE_FUNIT_SUMMARY);
+static bool memory_display_toggle_funit_summary( FILE* ofile, const char* name, const char* fname, int hit01, int hit10, float total ) { PROFILE(MEMORY_DISPLAY_TOGGLE_FUNIT_SUMMARY);
 
   float percent01;  /* Percentage of bits that toggled from 0 to 1 */
   float percent10;  /* Percentage of bits that toggled from 1 to 0 */
@@ -836,7 +836,7 @@ bool memory_display_ae_funit_summary( FILE* ofile, const char* name, const char*
  Iterates through the functional unit list displaying the memory toggle coverage summary for
  each functional unit.
 */
-bool memory_ae_funit_summary( FILE* ofile, funit_link* head, int* wr_hits, int* rd_hits, float* total ) { PROFILE(MEMORY_AE_FUNIT_SUMMARY);
+static bool memory_ae_funit_summary( FILE* ofile, funit_link* head, int* wr_hits, int* rd_hits, float* total ) { PROFILE(MEMORY_AE_FUNIT_SUMMARY);
 
   bool  miss_found = FALSE;  /* Set to TRUE if missing toggles were found */
   char* pname;               /* Printable version of the functional unit name */
@@ -881,7 +881,7 @@ bool memory_ae_funit_summary( FILE* ofile, funit_link* head, int* wr_hits, int* 
 
  Outputs the contents of the given memory in verbose output format.
 */
-void memory_display_memory( FILE* ofile, vsignal* sig, vec_data* value, char* prefix, int dim, int parent_dim_width ) { PROFILE(MEMORY_DISPLAY_MEMORY);
+static void memory_display_memory( FILE* ofile, vsignal* sig, vec_data* value, char* prefix, int dim, int parent_dim_width ) { PROFILE(MEMORY_DISPLAY_MEMORY);
 
   char name[4096];  /* Contains signal name */
   int  msb;         /* MSB of current dimension */
@@ -986,7 +986,7 @@ void memory_display_memory( FILE* ofile, vsignal* sig, vec_data* value, char* pr
  Displays the memories that did not achieve 100% toggle coverage and/or 100%
  write/read coverage to standard output from the specified signal list.
 */
-void memory_display_verbose( FILE* ofile, sig_link* sigl ) { PROFILE(MEMORY_DISPLAY_VERBOSE);
+static void memory_display_verbose( FILE* ofile, sig_link* sigl ) { PROFILE(MEMORY_DISPLAY_VERBOSE);
 
   sig_link* curr_sig;   /* Pointer to current signal link being evaluated */
   int       hit01;      /* Number of bits that toggled from 0 to 1 */
@@ -1056,7 +1056,7 @@ void memory_display_verbose( FILE* ofile, sig_link* sigl ) { PROFILE(MEMORY_DISP
  the bits that did not receive 100% toggle and addressable elements that did not
  receive 100% write/read coverage during simulation.
 */
-void memory_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst ) { PROFILE(MEMORY_INSTANCE_VERBOSE);
+static void memory_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst ) { PROFILE(MEMORY_INSTANCE_VERBOSE);
 
   funit_inst* curr_inst;      /* Pointer to current instance being evaluated */
   char        tmpname[4096];  /* Temporary name holder of instance */
@@ -1121,7 +1121,7 @@ void memory_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst )
  did not receive 100% toggle, and the addressable elements that did not receive 100%
  write/read coverage during simulation.
 */
-void memory_funit_verbose( FILE* ofile, funit_link* head ) { PROFILE(MEMORY_FUNIT_VERBOSE);
+static void memory_funit_verbose( FILE* ofile, funit_link* head ) { PROFILE(MEMORY_FUNIT_VERBOSE);
 
   while( head != NULL ) {
 
@@ -1251,6 +1251,9 @@ void memory_report( FILE* ofile, bool verbose ) { PROFILE(MEMORY_REPORT);
 
 /*
  $Log$
+ Revision 1.19  2008/01/07 23:59:55  phase1geo
+ More splint updates.
+
  Revision 1.18  2007/12/11 05:48:25  phase1geo
  Fixing more compile errors with new code changes and adding more profiling.
  Still have a ways to go before we can compile cleanly again (next submission

@@ -83,7 +83,7 @@
  in a functional unit instance instead of individual head and tail pointers.  The defparams in this functional
  unit can refer to any functional unit instance, however.
 */
-funit_inst*   defparam_list = NULL;
+static funit_inst* defparam_list = NULL;
 
 extern char   user_msg[USER_MSG_LENGTH];
 extern char** leading_hierarchies;
@@ -573,7 +573,7 @@ void defparam_dealloc() { PROFILE(DEFPARAM_DEALLOC);
  an error message is displayed to the user (the user has created a module in which
  a parameter value is used without being defined).
 */
-void param_find_and_set_expr_value( expression* expr, funit_inst* inst ) { PROFILE(PARAM_FIND_AND_SET_EXPR_VALUE);
+static void param_find_and_set_expr_value( expression* expr, funit_inst* inst ) { PROFILE(PARAM_FIND_AND_SET_EXPR_VALUE);
 
   inst_parm* icurr;  /* Pointer to current instance parameter being evaluated */
     
@@ -646,7 +646,7 @@ void param_set_sig_size( vsignal* sig, inst_parm* icurr ) { PROFILE(PARAM_SET_SI
  Recursively iterates through all functional units of given function, sizing them as
  appropriate for the purposes of static function allocation and execution.
 */
-void param_size_function( funit_inst* inst, func_unit* funit ) { PROFILE(PARAM_SIZE_FUNCTION);
+static void param_size_function( funit_inst* inst, func_unit* funit ) { PROFILE(PARAM_SIZE_FUNCTION);
 
   funit_inst* child;  /* Pointer to current child instance */
 
@@ -1056,6 +1056,9 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) { PROFILE(INST_PARM_D
 
 /*
  $Log$
+ Revision 1.98  2008/01/09 05:22:22  phase1geo
+ More splint updates using the -standard option.
+
  Revision 1.97  2008/01/08 21:13:08  phase1geo
  Completed -weak splint run.  Full regressions pass.
 

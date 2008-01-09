@@ -28,7 +28,7 @@ extern int merged_code;
 /*!
  Specifies the output filename of the CDD file that contains the merged data.
 */
-char* merged_file = NULL;
+static char* merged_file = NULL;
 
 /*!
  Specifies the names of the input CDD files.  If the user does not specify an output
@@ -47,7 +47,7 @@ extern char user_msg[USER_MSG_LENGTH];
 /*!
  Outputs usage informaiton to standard output for merge command.
 */
-void merge_usage() {
+static void merge_usage() {
 
   printf( "\n" );
   printf( "Usage:  covered merge [<options>] <existing_database> <database_to_merge>+\n" );
@@ -74,7 +74,7 @@ void merge_usage() {
  for the merge operation, an error message is displayed to the
  user.
 */
-bool merge_parse_args( int argc, int last_arg, char** argv ) {
+static bool merge_parse_args( int argc, int last_arg, const char** argv ) {
 
   bool retval = TRUE;  /* Return value for this function */
   int  i;              /* Loop iterator */
@@ -151,7 +151,7 @@ bool merge_parse_args( int argc, int last_arg, char** argv ) {
 
  Performs merge command functionality.
 */
-int command_merge( int argc, int last_arg, char** argv ) { PROFILE(COMMAND_MERGE);
+int command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAND_MERGE);
 
   int retval = 0;  /* Return value of this function */
   int i;           /* Loop iterator */
@@ -208,6 +208,10 @@ int command_merge( int argc, int last_arg, char** argv ) { PROFILE(COMMAND_MERGE
 
 /*
  $Log$
+ Revision 1.34  2007/12/12 07:23:19  phase1geo
+ More work on profiling.  I have now included the ability to get function runtimes.
+ Still more work to do but everything is currently working at the moment.
+
  Revision 1.33  2007/12/11 05:48:25  phase1geo
  Fixing more compile errors with new code changes and adding more profiling.
  Still have a ways to go before we can compile cleanly again (next submission
