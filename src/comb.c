@@ -102,7 +102,7 @@ extern isuppl         info_suppl;
  Based on the current point in the expression tree, calculates the left or
  right child's curr_depth value.
 */
-int combination_calc_depth( expression* exp, unsigned int curr_depth, bool left ) { PROFILE(COMBINATION_CALC_DEPTH);
+static int combination_calc_depth( expression* exp, unsigned int curr_depth, bool left ) { PROFILE(COMBINATION_CALC_DEPTH);
 
   if( ((report_comb_depth == REPORT_DETAILED) && ((curr_depth + 1) <= report_comb_depth)) ||
        (report_comb_depth == REPORT_VERBOSE) ) {
@@ -138,7 +138,7 @@ int combination_calc_depth( expression* exp, unsigned int curr_depth, bool left 
 
  \return Returns TRUE if the given expression multi-expression tree needs to be underlined
 */
-bool combination_does_multi_exp_need_ul( expression* exp ) { PROFILE(COMBINATION_DOES_MULTI_EXP_NEED_UL);
+static bool combination_does_multi_exp_need_ul( expression* exp ) { PROFILE(COMBINATION_DOES_MULTI_EXP_NEED_UL);
 
   bool ul = FALSE;  /* Return value for this function */
   bool and_op;      /* Specifies if current expression is an AND or LAND operation */
@@ -182,7 +182,13 @@ bool combination_does_multi_exp_need_ul( expression* exp ) { PROFILE(COMBINATION
  Parses the specified expression tree, calculating the hit and total values of all
  sub-expressions that are the same operation types as their left children.
 */
-void combination_multi_expr_calc( expression* exp, int* ulid, bool ul, bool excluded, int* hit, float* total ) { PROFILE(COMBINATION_MULTI_EXPR_CALC);
+static void combination_multi_expr_calc(
+  expression* exp,
+  int* ulid,
+  bool ul,
+  bool excluded,
+  int* hit,
+  float* total ) { PROFILE(COMBINATION_MULTI_EXPR_CALC);
 
   bool and_op;  /* Specifies if current expression is an AND or LAND operation */
 
@@ -272,7 +278,7 @@ void combination_multi_expr_calc( expression* exp, int* ulid, bool ul, bool excl
  expression tree -- the ID will be assigned to it when the multi-value expression tree is
  assigned underline IDs.
 */
-bool combination_is_expr_multi_node( expression* exp ) { PROFILE(COMBINATION_IS_EXPR_MULTI_NODE);
+static bool combination_is_expr_multi_node( expression* exp ) { PROFILE(COMBINATION_IS_EXPR_MULTI_NODE);
 
   return( (exp != NULL) &&
           (ESUPPL_IS_ROOT( exp->suppl ) == 0) && 
@@ -462,7 +468,7 @@ void combination_get_tree_stats( expression* exp, int* ulid, unsigned int curr_d
  in the supplemental field of each expression.  This function needs to get called
  whenever a new module is picked by the GUI.
 */
-void combination_reset_counted_exprs( func_unit* funit ) { PROFILE(COMBINATION_RESET_COUNTED_EXPRS);
+static void combination_reset_counted_exprs( func_unit* funit ) { PROFILE(COMBINATION_RESET_COUNTED_EXPRS);
 
   exp_link*   expl;   /* Pointer to current expression list */
   funit_link* child;  /* Pointer to current child functional unit */
@@ -553,7 +559,12 @@ void combination_get_stats( func_unit* funit, float* total, int* hit ) { PROFILE
 
  Retrieves the combinational logic summary information for the specified functional unit
 */
-bool combination_get_funit_summary( const char* funit_name, int funit_type, int* total, int* hit ) { PROFILE(COMBINATION_GET_FUNIT_SUMMARY);
+bool combination_get_funit_summary(
+  const char* funit_name,
+  int funit_type,
+  int* total,
+  int* hit )
+{ PROFILE(COMBINATION_GET_FUNIT_SUMMARY);
 
   bool        retval = TRUE;  /* Return value of this function */
   funit_link* funitl;         /* Pointer to found functional unit link */
@@ -576,7 +587,12 @@ bool combination_get_funit_summary( const char* funit_name, int funit_type, int*
 
 }
 
-bool combination_display_instance_summary( FILE* ofile, char* name, int hits, float total ) { PROFILE(COMBINATION_DISPLAY_INSTANCE_SUMMARY);
+static bool combination_display_instance_summary(
+  FILE* ofile,
+  char* name,
+  int hits,
+  float total )
+{ PROFILE(COMBINATION_DISPLAY_INSTANCE_SUMMARY);
 
   float percent;  /* Percentage of lines hit */
   float miss;     /* Number of lines missed */
@@ -607,7 +623,13 @@ bool combination_display_instance_summary( FILE* ofile, char* name, int hits, fl
  design.  An expression is said to be measurable for combinational coverage 
  if it evaluates to a value of 0 or 1.
 */
-bool combination_instance_summary( FILE* ofile, funit_inst* root, char* parent, int* hits, float* total ) { PROFILE(COMBINATION_INSTANCE_SUMMARY);
+static bool combination_instance_summary(
+  FILE* ofile,
+  funit_inst* root,
+  char* parent,
+  int* hits,
+  float* total )
+{ PROFILE(COMBINATION_INSTANCE_SUMMARY);
 
   funit_inst* curr;                /* Pointer to current child functional unit instance of this node */
   char        tmpname[4096];       /* Temporary name holder of instance */
@@ -668,7 +690,13 @@ bool combination_instance_summary( FILE* ofile, funit_inst* root, char* parent, 
 
  Outputs the summary combinational logic information for the specified functional unit to the given output stream.
 */
-bool combination_display_funit_summary( FILE* ofile, const char* name, const char* fname, int hits, float total ) { PROFILE(COMBINATION_DISPLAY_FUNIT_SUMMARY);
+static bool combination_display_funit_summary(
+    FILE* ofile,
+    const char* name,
+    const char* fname,
+    int hits,
+    float total )
+{ PROFILE(COMBINATION_DISPLAY_FUNIT_SUMMARY);
 
   float percent;  /* Percentage of lines hit */
   float miss;     /* Number of lines missed */
@@ -696,7 +724,12 @@ bool combination_display_funit_summary( FILE* ofile, const char* name, const cha
  design.  An expression is said to be measurable for combinational coverage 
  if it evaluates to a value of 0 or 1.
 */
-bool combination_funit_summary( FILE* ofile, funit_link* head, int* hits, float* total ) { PROFILE(COMBINATION_FUNIT_SUMMARY);
+static bool combination_funit_summary(
+    FILE* ofile,
+    funit_link* head,
+    int* hits,
+    float* total )
+{ PROFILE(COMBINATION_FUNIT_SUMMARY);
 
   bool miss_found = FALSE;  /* Set to TRUE if missing combinations were found */
 
@@ -732,7 +765,11 @@ bool combination_funit_summary( FILE* ofile, funit_link* head, int* hits, float*
  line.  The expression ID will be placed immediately following the beginning
  vertical bar.
 */
-void combination_draw_line( char* line, int size, int exp_id ) { PROFILE(COMBINATION_DRAW_LINE);
+static void combination_draw_line(
+    char* line,
+    int size,
+    int exp_id )
+{ PROFILE(COMBINATION_DRAW_LINE);
 
   char         str_exp_id[12];  /* String containing value of exp_id */
   int          exp_id_size;     /* Number of characters exp_id is in length */
@@ -767,7 +804,13 @@ void combination_draw_line( char* line, int size, int exp_id ) { PROFILE(COMBINA
  Draws an underline containing the specified expression ID to the specified
  line.  The expression ID will be placed in the center of the generated underline.
 */
-void combination_draw_centered_line( char* line, int size, int exp_id, bool left_bar, bool right_bar ) { PROFILE(COMBINATION_DRAW_CENTERED_LINE);
+static void combination_draw_centered_line(
+    char* line,
+    int size,
+    int exp_id,
+    bool left_bar,
+    bool right_bar )
+{ PROFILE(COMBINATION_DRAW_CENTERED_LINE);
 
   char         str_exp_id[12];   /* String containing value of exp_id */
   int          exp_id_size;      /* Number of characters exp_id is in length */
@@ -818,8 +861,16 @@ void combination_draw_centered_line( char* line, int size, int exp_id, bool left
  Recursively parses specified expression tree, underlining and labeling each
  measurable expression.
 */
-void combination_underline_tree( expression* exp, unsigned int curr_depth, char*** lines, int* depth, int* size,
-                                 int parent_op, bool center, func_unit* funit ) { PROFILE(COMBINATION_UNDERLINE_TREE);
+static void combination_underline_tree(
+    expression* exp,
+    unsigned int curr_depth,
+    char*** lines,
+    int* depth,
+    int* size,
+    int parent_op,
+    bool center,
+    func_unit* funit )
+{ PROFILE(COMBINATION_UNDERLINE_TREE);
 
   char**       l_lines;         /* Pointer to left underline stack */
   char**       r_lines;         /* Pointer to right underline stack */
@@ -1313,7 +1364,11 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
  function must be called after the underline lines have been calculated prior to being
  output to the ASCII report or the GUI.
 */
-char* combination_prep_line( char* line, int start, int len ) { PROFILE(COMBINATION_PREP_LINE);
+static char* combination_prep_line(
+    char* line,
+    int start,
+    int len )
+{ PROFILE(COMBINATION_PREP_LINE);
 
   char* str;                /* Prepared line to return */
   int   exp_id;             /* Expression ID of current line */
@@ -1409,7 +1464,13 @@ char* combination_prep_line( char* line, int start, int len ) { PROFILE(COMBINAT
  does not have complete combination logic coverage.  Each underline (children to
  parent creates an inverted tree) and contains a number for the specified expression.
 */
-void combination_underline( FILE* ofile, char** code, int code_depth, expression* exp, func_unit* funit ) { PROFILE(COMBINATION_UNDERLINE);
+static void combination_underline(
+    FILE* ofile,
+    char** code,
+    int code_depth,
+    expression* exp,
+    func_unit* funit )
+{ PROFILE(COMBINATION_UNDERLINE);
 
   char** lines;    /* Pointer to a stack of lines */
   int    depth;    /* Depth of underline stack */
@@ -1474,7 +1535,11 @@ void combination_underline( FILE* ofile, char** code, int code_depth, expression
  Displays the missed unary combination(s) that keep the combination coverage for
  the specified expression from achieving 100% coverage.
 */
-void combination_unary( char*** info, int* info_size, expression* exp ) { PROFILE(COMBINATION_UNARY);
+static void combination_unary(
+    char*** info,
+    int* info_size,
+    expression* exp )
+{ PROFILE(COMBINATION_UNARY);
 
   int          hit = 0;                           /* Number of combinations hit for this expression */
   int          tot;                               /* Total number of coverage points possible */
@@ -1569,7 +1634,11 @@ void combination_unary( char*** info, int* info_size, expression* exp ) { PROFIL
  Displays the missed unary combination(s) that keep the combination coverage for
  the specified expression from achieving 100% coverage.
 */
-void combination_event( char*** info, int* info_size, expression* exp ) { PROFILE(COMBINATION_EVENT);
+static void combination_event(
+    char*** info,
+    int* info_size,
+    expression* exp )
+{ PROFILE(COMBINATION_EVENT);
 
   char  tmp[20];
   int   length;
@@ -1611,7 +1680,11 @@ void combination_event( char*** info, int* info_size, expression* exp ) { PROFIL
  Displays the missed combinational sequences for the specified expression to the
  specified output stream in tabular form.
 */
-void combination_two_vars( char*** info, int* info_size, expression* exp ) { PROFILE(COMBINATION_TWO_VARS);
+static void combination_two_vars(
+    char*** info,
+    int* info_size,
+    expression* exp )
+{ PROFILE(COMBINATION_TWO_VARS);
 
   int          hit;                               /* Number of combinations hit for this expression */
   int          total;                             /* Total number of combinations for this expression */
@@ -1847,7 +1920,12 @@ void combination_two_vars( char*** info, int* info_size, expression* exp ) { PRO
  Creates the verbose report information for a multi-variable expression, storing its output in
  the line1, line2, and line3 strings.
 */
-void combination_multi_var_exprs( char** line1, char** line2, char** line3, expression* exp ) { PROFILE(COMBINATION_MULTI_VAR_EXPRS);
+static void combination_multi_var_exprs(
+    char** line1,
+    char** line2,
+    char** line3,
+    expression* exp )
+{ PROFILE(COMBINATION_MULTI_VAR_EXPRS);
 
   char*        left_line1  = NULL;
   char*        left_line2  = NULL;
@@ -2022,7 +2100,11 @@ void combination_multi_var_exprs( char** line1, char** line2, char** line3, expr
  \return Returns the number of lines required to store the multi-variable expression output
          contained in line1, line2, and line3.
 */
-int combination_multi_expr_output_length( char* line1, char* line2, char* line3 ) { PROFILE(COMBINATION_MULTI_EXPR_OUTPUT_LENGTH);
+static int combination_multi_expr_output_length(
+    char* line1,
+    char* line2,
+    char* line3 )
+{ PROFILE(COMBINATION_MULTI_EXPR_OUTPUT_LENGTH);
 
   int start  = 0;
   int i;
@@ -2050,7 +2132,12 @@ int combination_multi_expr_output_length( char* line1, char* line2, char* line3 
 
  Stores the information from line1, line2 and line3 in the string array info.
 */
-void combination_multi_expr_output( char** info, char* line1, char* line2, char* line3 ) { PROFILE(COMBINATION_MULTI_EXPR_OUTPUT);
+static void combination_multi_expr_output(
+    char** info,
+    char* line1,
+    char* line2,
+    char* line3 )
+{ PROFILE(COMBINATION_MULTI_EXPR_OUTPUT);
 
   int start      = 0;
   int i;
@@ -2120,7 +2207,11 @@ void combination_multi_expr_output( char** info, char* line1, char* line2, char*
  Displays the missed combinational sequences for the specified expression to the
  specified output stream in tabular form.
 */
-void combination_multi_vars( char*** info, int* info_size, expression* exp ) { PROFILE(COMBINATION_MULTI_VARS);
+static void combination_multi_vars(
+    char*** info,
+    int* info_size,
+    expression* exp )
+{ PROFILE(COMBINATION_MULTI_VARS);
 
   int   ulid      = 1;
   float total     = 0;
@@ -2195,7 +2286,12 @@ void combination_multi_vars( char*** info, int* info_size, expression* exp ) { P
  Calculates the missed coverage detail output for the given expression, placing the output to the info array.  This
  array can then be sent to an ASCII report file or the GUI.
 */
-void combination_get_missed_expr( char*** info, int* info_size, expression* exp, unsigned int curr_depth ) { PROFILE(COMBINATION_GET_MISSED_EXPR);
+static void combination_get_missed_expr(
+    char*** info,
+    int* info_size,
+    expression* exp,
+    unsigned int curr_depth )
+{ PROFILE(COMBINATION_GET_MISSED_EXPR);
 
   assert( exp != NULL );
 
@@ -2251,7 +2347,11 @@ void combination_get_missed_expr( char*** info, int* info_size, expression* exp,
  displaying the combinations of the children expressions that were not run
  during simulation.
 */
-void combination_list_missed( FILE* ofile, expression* exp, unsigned int curr_depth ) { PROFILE(COMBINATION_LIST_MISSED);
+static void combination_list_missed(
+    FILE* ofile,
+    expression* exp,
+    unsigned int curr_depth )
+{ PROFILE(COMBINATION_LIST_MISSED);
 
   char** info;       /* String array containing combination coverage information for this expression */
   int    info_size;  /* Specifies the number of valid entries in the info array */
@@ -2295,7 +2395,12 @@ void combination_list_missed( FILE* ofile, expression* exp, unsigned int curr_de
  if an expression is found that has not received 100% coverage for
  combinational logic.
 */
-void combination_output_expr( expression* expr, unsigned int curr_depth, int* any_missed, int* any_measurable ) { PROFILE(COMBINATION_OUTPUT_EXPR);
+static void combination_output_expr(
+    expression* expr,
+    unsigned int curr_depth,
+    int* any_missed,
+    int* any_measurable )
+{ PROFILE(COMBINATION_OUTPUT_EXPR);
 
   if( (expr != NULL) && (ESUPPL_WAS_COMB_COUNTED( expr->suppl ) == 1) ) {
 
@@ -2332,7 +2437,10 @@ void combination_output_expr( expression* expr, unsigned int curr_depth, int* an
  the Verilog code, showing those logical combinations that were not hit
  during simulation.
 */
-void combination_display_verbose( FILE* ofile, func_unit* funit ) { PROFILE(COMBINATION_DISPLAY_VERBOSE);
+static void combination_display_verbose(
+    FILE* ofile,
+    func_unit* funit )
+{ PROFILE(COMBINATION_DISPLAY_VERBOSE);
 
   func_iter   fi;              /* Functional unit iterator */
   statement*  stmt;            /* Pointer to current statement */
@@ -2397,7 +2505,11 @@ void combination_display_verbose( FILE* ofile, func_unit* funit ) { PROFILE(COMB
  Outputs the verbose coverage report for the specified functional unit instance
  to the specified output stream.
 */
-void combination_instance_verbose( FILE* ofile, funit_inst* root, char* parent ) { PROFILE(COMBINATION_INSTANCE_VERBOSE);
+static void combination_instance_verbose(
+    FILE* ofile,
+    funit_inst* root,
+    char* parent )
+{ PROFILE(COMBINATION_INSTANCE_VERBOSE);
 
   funit_inst* curr_inst;      /* Pointer to current instance being evaluated */
   char        tmpname[4096];  /* Temporary name holder of instance */
@@ -2461,7 +2573,10 @@ void combination_instance_verbose( FILE* ofile, funit_inst* root, char* parent )
  Outputs the verbose coverage report for the specified functional unit
  to the specified output stream.
 */
-void combination_funit_verbose( FILE* ofile, funit_link* head ) { PROFILE(COMBINATION_FUNIT_VERBOSE);
+static void combination_funit_verbose(
+    FILE* ofile,
+    funit_link* head )
+{ PROFILE(COMBINATION_FUNIT_VERBOSE);
 
   char* pname;  /* Printable version of functional unit name */
 
@@ -2600,7 +2715,11 @@ bool combination_collect( const char* funit_name, int funit_type, expression*** 
  for each underlined expression within the tree.  The values are stored in the excludes
  parameter and its size is stored in the exclude_size parameter.
 */
-void combination_get_exclude_list( expression* exp, int** excludes, int* exclude_size ) { PROFILE(COMBINATION_GET_EXCLUDE_LIST);
+static void combination_get_exclude_list(
+    expression* exp,
+    int** excludes,
+    int* exclude_size )
+{ PROFILE(COMBINATION_GET_EXCLUDE_LIST);
 
   if( exp != NULL ) {
 
@@ -2843,6 +2962,9 @@ void combination_report( FILE* ofile, bool verbose ) { PROFILE(COMBINATION_REPOR
 
 /*
  $Log$
+ Revision 1.177  2008/01/07 23:59:54  phase1geo
+ More splint updates.
+
  Revision 1.176  2008/01/07 05:01:57  phase1geo
  Cleaning up more splint errors.
 

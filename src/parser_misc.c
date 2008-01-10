@@ -46,7 +46,7 @@ unsigned error_count = 0;
 /*!
  Counts the number of warnings found during the parsing process.
 */
-unsigned warn_count  = 0;
+static unsigned warn_count = 0;
 
 /*!
  \param msg  String containing error message to display to user.
@@ -287,6 +287,9 @@ bool parser_check_generation( int gen ) { PROFILE(PARSER_CHECK_GENERATION);
 
 /*
  $Log$
+ Revision 1.18  2008/01/08 21:13:08  phase1geo
+ Completed -weak splint run.  Full regressions pass.
+
  Revision 1.17  2007/12/11 05:48:26  phase1geo
  Fixing more compile errors with new code changes and adding more profiling.
  Still have a ways to go before we can compile cleanly again (next submission

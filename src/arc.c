@@ -143,7 +143,7 @@
  Calculates the amount of storage (in numbers of characters) needed
  to store one bidirectional state transition arc.
 */
-unsigned int arc_get_entry_width( unsigned int width ) { /*@unused@*/PROFILE(ARC_GET_ENTRY_WIDTH);
+static unsigned int arc_get_entry_width( unsigned int width ) { /*@unused@*/PROFILE(ARC_GET_ENTRY_WIDTH);
 
   return( ((((width * 2) + ARC_ENTRY_SUPPL_SIZE) % 8) == 0) ?
                  (((width * 2) + ARC_ENTRY_SUPPL_SIZE) / 8) :
@@ -159,7 +159,7 @@ unsigned int arc_get_entry_width( unsigned int width ) { /*@unused@*/PROFILE(ARC
  state transition arc array.  Note that the width cannot exceed
  2^16.
 */
-void arc_set_width( char* arcs, unsigned int width ) { PROFILE(ARC_SET_WIDTH);
+static void arc_set_width( char* arcs, unsigned int width ) { PROFILE(ARC_SET_WIDTH);
 
   arcs[0] = (char)(width & 0xff);
   arcs[1] = (char)((width >> 8) & 0xff);
@@ -193,7 +193,7 @@ unsigned int arc_get_width( const char* arcs ) { PROFILE(ARC_GET_WIDTH);
  in the state transition arc array.  The value of size is the number of
  bidirectional state transition arc entries within the table.
 */
-void arc_set_max_size( char* arcs, unsigned int size ) { PROFILE(ARC_SET_MAX_SIZE);
+static void arc_set_max_size( char* arcs, unsigned int size ) { PROFILE(ARC_SET_MAX_SIZE);
 
   arcs[2] = (char)(size & 0xff);
   arcs[3] = (char)((size >> 8) & 0xff);
@@ -209,7 +209,7 @@ void arc_set_max_size( char* arcs, unsigned int size ) { PROFILE(ARC_SET_MAX_SIZ
  array size that is encoded into the arcs array.  This value is the number
  of bidirectional state transition arc entries allocated in this arc array.
 */
-unsigned int arc_get_max_size( const char* arcs ) { PROFILE(ARC_GET_MAX_SIZE);
+static unsigned int arc_get_max_size( const char* arcs ) { PROFILE(ARC_GET_MAX_SIZE);
 
   unsigned int size = (((unsigned int)arcs[3] & 0xff) << 8) | ((unsigned int)arcs[2] & 0xff);
   return( size );
@@ -225,7 +225,7 @@ unsigned int arc_get_max_size( const char* arcs ) { PROFILE(ARC_GET_MAX_SIZE);
  in the state transition arc array.  The value of size is the number of
  bidirectional state transition arc entries currently used within the table.
 */
-void arc_set_curr_size( char* arcs, unsigned int size ) { PROFILE(ARC_SET_CURR_SIZE);
+static void arc_set_curr_size( char* arcs, unsigned int size ) { PROFILE(ARC_SET_CURR_SIZE);
 
   arcs[4] = (char)(size & 0xff);
   arcs[5] = (char)((size >> 8) & 0xff);
@@ -241,7 +241,7 @@ void arc_set_curr_size( char* arcs, unsigned int size ) { PROFILE(ARC_SET_CURR_S
  Retrieves the previously stored value of the number of currently used
  bidirectional state transition arc entries in the specified arcs array.
 */
-unsigned int arc_get_curr_size( const char* arcs ) { PROFILE(ARC_GET_CURR_SIZE);
+static unsigned int arc_get_curr_size( const char* arcs ) { PROFILE(ARC_GET_CURR_SIZE);
 
   unsigned int size = (((unsigned int)(arcs[5]) & 0xff) << 8) | ((unsigned int)(arcs[4]) & 0xff);
   return( size );
@@ -255,7 +255,7 @@ unsigned int arc_get_curr_size( const char* arcs ) { PROFILE(ARC_GET_CURR_SIZE);
  Sets the supplemental control field of the specified arc array to
  the specified value.
 */
-void arc_set_suppl( char* arcs, unsigned int suppl ) { PROFILE(ARC_SET_SUPPL);
+static void arc_set_suppl( char* arcs, unsigned int suppl ) { PROFILE(ARC_SET_SUPPL);
 
   arcs[6] = (char)(suppl & 0xff);
 
@@ -287,7 +287,7 @@ unsigned int arc_get_suppl( const char* arcs, unsigned int type ) { PROFILE(ARC_
 
  Sets the state value of 
 */
-bool arc_set_states( char* arcs, int start, const vector* left, const vector* right ) { PROFILE(ARC_SET_STATES);
+static bool arc_set_states( char* arcs, int start, const vector* left, const vector* right ) { PROFILE(ARC_SET_STATES);
 
   bool          retval = TRUE;  /* Return value of this function */
   unsigned char mask;           /* Mask to apply to current bit select */
@@ -605,7 +605,7 @@ void arc_add( char** arcs, const vector* fr_st, const vector* to_st, int hit ) {
  Performs a bitwise comparison of the two states indicated by their index and pos
  values.  If both states compare, return TRUE; otherwise, return FALSE.
 */
-bool arc_compare_states( const char* arcs, int index1, unsigned int pos1, int index2, unsigned int pos2 ) { PROFILE(ARC_COMPARE_STATES);
+static bool arc_compare_states( const char* arcs, int index1, unsigned int pos1, int index2, unsigned int pos2 ) { PROFILE(ARC_COMPARE_STATES);
 
   int i;  /* Loop iterator */
 
@@ -637,7 +637,7 @@ bool arc_compare_states( const char* arcs, int index1, unsigned int pos1, int in
  start comparing the left state at the next index of the table and continue for
  the rest of the table.
 */
-void arc_compare_all_states( char* arcs, int start, bool left ) { PROFILE(ARC_COMPARE_ALL_STATES);
+static void arc_compare_all_states( char* arcs, int start, bool left ) { PROFILE(ARC_COMPARE_ALL_STATES);
 
   int state1_pos;    /* Bit position of current state */
   int state1_index;  /* Character position of current state */
@@ -710,7 +710,7 @@ void arc_compare_all_states( char* arcs, int start, bool left ) { PROFILE(ARC_CO
  array.  This function should only be called if the ARC_TRANS_KNOWN bit
  is set; otherwise, an incorrect value will be reported.
 */
-float arc_state_total( const char* arcs ) { PROFILE(ARC_STATE_TOTAL);
+static float arc_state_total( const char* arcs ) { PROFILE(ARC_STATE_TOTAL);
 
   float total = 0;  /* Total number of states hit during simulation */
   int   i;          /* Loop iterator */
@@ -740,7 +740,7 @@ float arc_state_total( const char* arcs ) { PROFILE(ARC_STATE_TOTAL);
  second state has its ARC_NOT_UNIQUE_x set to indicate that this state
  is not unique to the table.
 */
-int arc_state_hits( char* arcs ) { PROFILE(ARC_STATE_HITS);
+static int arc_state_hits( char* arcs ) { PROFILE(ARC_STATE_HITS);
 
   int hit = 0;  /* Number of states hit */
   int i;        /* Loop iterator */
@@ -790,7 +790,7 @@ int arc_state_hits( char* arcs ) { PROFILE(ARC_STATE_HITS);
  For consistency, this function should be called after calling
  arc_transition_hits().
 */
-float arc_transition_total( const char* arcs ) { PROFILE(ARC_TRANSITION_TOTAL);
+static float arc_transition_total( const char* arcs ) { PROFILE(ARC_TRANSITION_TOTAL);
 
   float total;  /* Number of total state transitions in arc array */
   int   i;      /* Loop iterator */
@@ -818,7 +818,7 @@ float arc_transition_total( const char* arcs ) { PROFILE(ARC_TRANSITION_TOTAL);
  Iterates through arc array, accumulating the number of state
  transitions that were hit in simulation.
 */
-int arc_transition_hits( const char* arcs ) { PROFILE(ARC_TRANSITION_HITS);
+static int arc_transition_hits( const char* arcs ) { PROFILE(ARC_TRANSITION_HITS);
 
   int hit = 0;    /* Number of arcs hit */
   int i;          /* Loop iterator */
@@ -907,7 +907,7 @@ bool arc_db_write( const char* arcs, FILE* file ) { PROFILE(ARC_DB_WRITE);
  combination of two hexidecimal digits (which correspond to an 8-bit ASCII
  character) or the comma (,) character which represents a value of 0.
 */
-unsigned int arc_read_get_next_value( char** line ) { PROFILE(ARC_READ_GET_NEXT_VALUE);
+static unsigned int arc_read_get_next_value( char** line ) { PROFILE(ARC_READ_GET_NEXT_VALUE);
 
   char         tmp[3];
   unsigned int value;
@@ -996,7 +996,7 @@ bool arc_db_read( /*@out@*/ char** arcs, char** line ) { PROFILE(ARC_DB_READ);
  Converts the state specified by index and left parameters from its compacted bit format
  to a hexidecimal string format.
 */
-void arc_state_to_string( const char* arcs, int index, bool left, char* str ) { PROFILE(ARC_STATE_TO_STRING);
+static void arc_state_to_string( const char* arcs, int index, bool left, char* str ) { PROFILE(ARC_STATE_TO_STRING);
 
   char         tmp[2];       /* Temporary string holder */
   unsigned int val;          /* Temporary storage for integer value of 4-bits */
@@ -1305,6 +1305,9 @@ void arc_dealloc( char* arcs ) { PROFILE(ARC_DEALLOC);
 
 /*
  $Log$
+ Revision 1.45  2008/01/07 23:59:54  phase1geo
+ More splint updates.
+
  Revision 1.44  2008/01/07 05:01:57  phase1geo
  Cleaning up more splint errors.
 

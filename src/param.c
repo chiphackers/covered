@@ -121,7 +121,10 @@ mod_parm* mod_parm_find( char* name, mod_parm* parm ) { PROFILE(MOD_PARM_FIND);
  Searches list of module parameter expression lists for specified expression.  If
  the expression is found in one of the lists, remove the expression link.
 */
-void mod_parm_find_expr_and_remove( expression* exp, mod_parm* parm ) { PROFILE(MOD_PARM_FIND_EXPR_AND_REMOVE);
+static void mod_parm_find_expr_and_remove(
+  expression* exp,
+  mod_parm*   parm
+) { PROFILE(MOD_PARM_FIND_EXPR_AND_REMOVE);
 
   if( exp != NULL ) {
 
@@ -305,7 +308,10 @@ void mod_parm_display( mod_parm* mparm ) {
  the found instance parameter is returned to the calling function; otherwise, a value of NULL
  is returned if no match was found.
 */
-inst_parm* inst_parm_find( const char* name, inst_parm* iparm ) { PROFILE(INST_PARM_FIND);
+static inst_parm* inst_parm_find(
+  const char* name,
+  inst_parm*  iparm
+) { PROFILE(INST_PARM_FIND);
 
   assert( name != NULL );
 
@@ -332,8 +338,16 @@ inst_parm* inst_parm_find( const char* name, inst_parm* iparm ) { PROFILE(INST_P
  Creates a new instance parameter with the specified information and adds 
  it to the instance parameter list.
 */
-inst_parm* inst_parm_add( const char* name, char* inst_name, static_expr* msb, static_expr* lsb, bool is_signed,
-                          vector* value, mod_parm* mparm, funit_inst* inst ) { PROFILE(INST_PARM_ADD);
+static inst_parm* inst_parm_add(
+  const char*  name,
+  char*        inst_name,
+  static_expr* msb,
+  static_expr* lsb,
+  bool         is_signed,
+  vector*      value,
+  mod_parm*    mparm,
+  funit_inst*  inst
+) { PROFILE(INST_PARM_ADD);
 
   inst_parm* iparm;           /* Temporary pointer to instance parameter */
   int        sig_width;       /* Width of this parameter signal */
@@ -865,7 +879,10 @@ static inst_parm* param_has_defparam( mod_parm* mparm, funit_inst* inst ) { PROF
  -# If (2) fails, calculate the current expression's value by evaluating the
     parameter's expression tree.
 */
-void param_resolve_declared( mod_parm* mparm, funit_inst* inst ) { PROFILE(PARAM_RESOLVE_DECLARED);
+static void param_resolve_declared(
+  mod_parm*   mparm,
+  funit_inst* inst
+) { PROFILE(PARAM_RESOLVE_DECLARED);
 
   assert( mparm != NULL );
 
@@ -901,7 +918,10 @@ void param_resolve_declared( mod_parm* mparm, funit_inst* inst ) { PROFILE(PARAM
  parameter to the specified instance parameter list, preserving the order and
  type of the override parameter.
 */
-void param_resolve_override( mod_parm* oparm, funit_inst* inst ) { PROFILE(PARAM_RESOLVE_OVERRIDE);
+static void param_resolve_override(
+  mod_parm*   oparm,
+  funit_inst* inst
+) { PROFILE(PARAM_RESOLVE_OVERRIDE);
 
   assert( oparm != NULL );
 
@@ -1056,6 +1076,9 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) { PROFILE(INST_PARM_D
 
 /*
  $Log$
+ Revision 1.99  2008/01/09 23:54:15  phase1geo
+ More splint updates.
+
  Revision 1.98  2008/01/09 05:22:22  phase1geo
  More splint updates using the -standard option.
 

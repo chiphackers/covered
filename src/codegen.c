@@ -75,7 +75,7 @@ extern const exp_info exp_op_info[EXP_OP_NUM];
 
  Generates multi-line expression code strings from current, left, and right expressions.
 */
-void codegen_create_expr_helper( char** code,
+static void codegen_create_expr_helper( char** code,
                                  int    code_index,
                                  char*  first,
                                  /*@null@*/ char** left,
@@ -208,18 +208,19 @@ void codegen_create_expr_helper( char** code,
  Allocates enough memory in code array to store all code lines for the current expression.
  Calls the helper function to actually generate code lines (to populate the code array).
 */
-void codegen_create_expr( char***     code,
-                          int*        code_depth,
-                          int         curr_line,
-                          /*@null@*/ char*       first,
-                          char**      left,
-                          int         left_depth,
-                          expression* left_exp,
-                          /*@null@*/ char*       middle,
-                          /*@null@*/ char**      right,
-                          int         right_depth,
-                          /*@null@*/ expression* right_exp,
-                          /*@null@*/ char*       last ) { PROFILE(CODEGEN_CREATE_EXPR);
+static void codegen_create_expr(
+  char***     code,
+  int*        code_depth,
+  int         curr_line,
+  /*@null@*/ char*       first,
+  char**      left,
+  int         left_depth,
+  expression* left_exp,
+  /*@null@*/ char*       middle,
+  /*@null@*/ char**      right,
+  int         right_depth,
+  /*@null@*/ expression* right_exp,
+  /*@null@*/ char*       last ) { PROFILE(CODEGEN_CREATE_EXPR);
 
   int         total_len = 0;    /* Total length of first, left, middle, right, and last strings */
   int         i;                /* Loop iterator */ 
@@ -947,6 +948,9 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.86  2008/01/07 23:59:54  phase1geo
+ More splint updates.
+
  Revision 1.85  2008/01/07 05:01:57  phase1geo
  Cleaning up more splint errors.
 

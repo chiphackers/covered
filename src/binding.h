@@ -45,10 +45,6 @@ void bind_rm_stmt( int id );
 bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bind, bool cdd_reading,
                   bool clear_assigned, int exp_line, bool bind_locally );
 
-/*! \brief Binds a function or task to an expression */
-bool bind_task_function_namedblock( int type, char* name, expression* exp, func_unit* funit_exp,
-                                    bool cdd_reading, int exp_line, bool bind_locally );
-
 /*! \brief Performs vsignal/expression bind (performed after parse completed). */
 void bind_perform( bool cdd_reading, int pass );
 
@@ -58,6 +54,9 @@ void bind_dealloc();
 
 /* 
  $Log$
+ Revision 1.30  2007/11/20 05:28:57  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.29  2007/09/13 17:03:30  phase1geo
  Cleaning up some const-ness corrections -- still more to go but it's a good
  start.

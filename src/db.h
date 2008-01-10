@@ -72,9 +72,6 @@ void db_add_declared_param( bool is_signed, static_expr* msb, static_expr* lsb, 
 /*! \brief Adds specified override parameter to parameter list.  Called by parser. */
 void db_add_override_param( char* inst_name, expression* expr, char* param_name );
 
-/*! \brief Adds vsignal/expression vector parameter to parameter list. */
-void db_add_vector_param( vsignal* sig, expression* parm_exp, int type, int dimension );
-
 /*! \brief Adds specified defparam to parameter override list.  Called by parser. */
 void db_add_defparam( char* name, expression* expr );
 
@@ -195,6 +192,9 @@ void db_do_timestep( uint64 time, bool final );
 
 /*
  $Log$
+ Revision 1.79  2007/11/20 05:28:58  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.78  2007/09/12 05:40:11  phase1geo
  Adding support for bool and char types in FOR loop initialization blocks.  Adding
  a plethora of new diagnostics to completely verify this new functionality.  These

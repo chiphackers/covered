@@ -50,7 +50,11 @@ extern char       user_msg[USER_MSG_LENGTH];
  a top-of-tree search.  The specified scope should only be for a functional unit.  If the user is attempting
  to get the functional unit for a signal, the signal name should be removed prior to calling this function.
 */
-func_unit* scope_find_funit_from_scope( const char* scope, func_unit* curr_funit, bool rm_unnamed ) { PROFILE(SCOPE_FIND_FUNIT_FROM_SCOPE);
+static func_unit* scope_find_funit_from_scope(
+  const char* scope,
+  func_unit*  curr_funit,
+  bool        rm_unnamed
+) { PROFILE(SCOPE_FIND_FUNIT_FROM_SCOPE);
 
   funit_inst* curr_inst;      /* Pointer to current instance */
   funit_inst* funiti = NULL;  /* Pointer to functional unit instance found */
@@ -398,6 +402,9 @@ char* scope_flatten( char* scope ) { PROFILE(SCOPE_FLATTEN);
 
 /*
  $Log$
+ Revision 1.40  2008/01/07 23:59:55  phase1geo
+ More splint updates.
+
  Revision 1.39  2007/12/17 23:47:48  phase1geo
  Adding more profiling information.
 

@@ -51,7 +51,9 @@
 #endif
 
 
+/*@-exportlocal@*/
 extern bool profiling_mode;
+/*@=exportlocal@*/
 
 
 /*! \brief Sets the current profiling mode to the given value. */
@@ -72,6 +74,9 @@ void profiler_report();
 
 /*
  $Log$
+ Revision 1.6  2008/01/07 05:01:58  phase1geo
+ Cleaning up more splint errors.
+
  Revision 1.5  2007/12/12 07:53:00  phase1geo
  Separating debugging and profiling so that we can do profiling without all
  of the debug overhead.

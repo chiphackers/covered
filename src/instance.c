@@ -49,7 +49,8 @@ extern funit_link* funit_tail;
 extern char        user_msg[USER_MSG_LENGTH];
 
 
-bool instance_resolve_inst( funit_inst* root, funit_inst* curr );
+static bool instance_resolve_inst( funit_inst*, funit_inst* );
+static void instance_dealloc_single( funit_inst* );
 
 
 /*!
@@ -58,7 +59,10 @@ bool instance_resolve_inst( funit_inst* root, funit_inst* curr );
 
  Helper function for the \ref instance_display_tree function.
 */
-void instance_display_tree_helper( funit_inst* root, char* prefix ) { PROFILE(INSTANCE_DISPLAY_TREE_HELPER);
+static void instance_display_tree_helper(
+  funit_inst* root,
+  char*       prefix
+) { PROFILE(INSTANCE_DISPLAY_TREE_HELPER);
 
   char        sp[4096];  /* Contains prefix for children */
   funit_inst* curr;      /* Pointer to current child instance */
@@ -194,7 +198,10 @@ void instance_gen_scope( char* scope, funit_inst* leaf, bool flatten ) { PROFILE
          also check to make sure that the index of inst_name falls within the legal range of this
          instance.
 */
-bool instance_compare( char* inst_name, funit_inst* inst ) { PROFILE(INSTANCE_COMPARE);
+static bool instance_compare(
+  char*       inst_name,
+  funit_inst* inst
+) { PROFILE(INSTANCE_COMPARE);
 
   bool retval = FALSE;  /* Return value of this function */
   char bname[4096];     /* Base name of inst_name */
@@ -342,7 +349,13 @@ funit_inst* instance_find_by_funit( funit_inst* root, const func_unit* funit, in
  Generates new instance, adds it to the child list of the inst functional unit
  instance, and resolves any parameters.
 */
-funit_inst* instance_add_child( funit_inst* inst, func_unit* child, char* name, vector_width* range, bool resolve ) { PROFILE(INSTANCE_ADD_CHILD);
+static funit_inst* instance_add_child(
+  funit_inst*   inst,
+  func_unit*    child,
+  char*         name,
+  vector_width* range,
+  bool          resolve
+) { PROFILE(INSTANCE_ADD_CHILD);
 
   funit_inst* new_inst;  /* Pointer to newly created instance to add */
 
@@ -619,7 +632,10 @@ bool instance_resolve_inst( funit_inst* root, funit_inst* curr ) { PROFILE(INSTA
 
  Recursively iterates through the entire instance tree
 */
-void instance_resolve_helper( funit_inst* root, funit_inst* curr ) { PROFILE(INSTANCE_RESOLVE_HELPER);
+static void instance_resolve_helper(
+  funit_inst* root,
+  funit_inst* curr
+) { PROFILE(INSTANCE_RESOLVE_HELPER);
 
   funit_inst* curr_child;  /* Pointer to current child */
 
@@ -788,7 +804,11 @@ void instance_db_write( funit_inst* root, FILE* file, char* scope, bool parse_mo
  not contain any signals into their parent modules.  This function only gets called
  during the report command.
 */
-void instance_flatten_helper( funit_inst* root, funit_link** rm_head, funit_link** rm_tail ) { PROFILE(INSTANCE_FLATTEN_HELPER);
+static void instance_flatten_helper(
+  funit_inst*  root,
+  funit_link** rm_head,
+  funit_link** rm_tail
+) { PROFILE(INSTANCE_FLATTEN_HELPER);
 
   funit_inst* child;                 /* Pointer to current child instance */
   funit_inst* last_child    = NULL;  /* Pointer to the last child instance */
@@ -1128,6 +1148,9 @@ void instance_dealloc( funit_inst* root, char* scope ) { PROFILE(INSTANCE_DEALLO
 
 /*
  $Log$
+ Revision 1.85  2008/01/08 21:13:08  phase1geo
+ Completed -weak splint run.  Full regressions pass.
+
  Revision 1.84  2008/01/07 23:59:54  phase1geo
  More splint updates.
 

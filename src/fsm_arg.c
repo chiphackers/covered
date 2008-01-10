@@ -50,7 +50,10 @@ extern char user_msg[USER_MSG_LENGTH];
  Parses the specified argument value for all information regarding a state variable
  expression.  This function places all 
 */
-expression* fsm_arg_parse_state( const char** arg, char* funit_name ) { PROFILE(FSM_ARG_PARSE_STATE);
+static expression* fsm_arg_parse_state(
+    const char** arg,
+    char*        funit_name
+) { PROFILE(FSM_ARG_PARSE_STATE);
 
   bool        error = FALSE;  /* Specifies if a parsing error has been found */
   vsignal*    sig;            /* Pointer to read-in signal */
@@ -296,7 +299,10 @@ bool fsm_arg_parse( const char* arg ) { PROFILE(FSM_ARG_PARSE);
  parsed value and is returned to the calling function.  If the string is not
  parsed correctly, a value of NULL is returned to the calling function.
 */
-expression* fsm_arg_parse_value( char** str, const func_unit* funit ) { PROFILE(FSM_ARG_PARSE_VALUE);
+static expression* fsm_arg_parse_value(
+    char**           str,
+    const func_unit* funit
+) { PROFILE(FSM_ARG_PARSE_VALUE);
 
   expression* expr = NULL;   /* Pointer to expression containing state value */
   expression* left;          /* Left child expression */
@@ -445,7 +451,11 @@ expression* fsm_arg_parse_value( char** str, const func_unit* funit ) { PROFILE(
  Each transition is then added to the specified FSM table's arc list which is added to the
  FSM arc transition table when the fsm_create_tables() function is called.
 */
-void fsm_arg_parse_trans( expression* expr, fsm* table, const func_unit* funit ) { PROFILE(FSM_ARG_PARSE_TRANS);
+static void fsm_arg_parse_trans(
+    expression*      expr,
+    fsm*             table,
+    const func_unit* funit
+) { PROFILE(FSM_ARG_PARSE_TRANS);
 
   expression* from_state;  /* Pointer to from_state value of transition */
   expression* to_state;    /* Pointer to to_state value of transition */
@@ -603,6 +613,9 @@ void fsm_arg_parse_attr( attr_param* ap, const func_unit* funit ) { PROFILE(FSM_
 
 /*
  $Log$
+ Revision 1.36  2008/01/09 05:22:21  phase1geo
+ More splint updates using the -standard option.
+
  Revision 1.35  2008/01/08 21:13:08  phase1geo
  Completed -weak splint run.  Full regressions pass.
 

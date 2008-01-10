@@ -1107,7 +1107,7 @@ void gen_space( char* spaces, int num_spaces ) { PROFILE(GEN_SPACE);
 
  Clears the total accumulated time in the specified timer structure.
 */
-void timer_clear( timer** tm ) {
+static void timer_clear( timer** tm ) {
 
   if( *tm == NULL ) {
     *tm = (timer*)malloc_safe( sizeof( timer ) );
@@ -1200,6 +1200,9 @@ void calc_miss_percent( int hits, float total, float* misses, float* percent ) {
 
 /*
  $Log$
+ Revision 1.74  2008/01/09 05:22:22  phase1geo
+ More splint updates using the -standard option.
+
  Revision 1.73  2008/01/08 21:13:08  phase1geo
  Completed -weak splint run.  Full regressions pass.
 

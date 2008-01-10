@@ -29,8 +29,10 @@
 #include "defines.h"
 
 
+/*@-exportlocal@*/
 /*! \brief Displays the specified generate item to standard output */
 void gen_item_display( gen_item* gi );
+/*@=exportlocal@*/
 
 /*! \brief Displays an entire generate block */
 void gen_item_display_block( gen_item* root );
@@ -81,9 +83,6 @@ void gen_item_db_write_expr_tree( gen_item* gi, FILE* file );
 /*! \brief Connects a generate item block to a new generate item */
 bool gen_item_connect( gen_item* gi1, gen_item* gi2, int conn_id );
 
-/*! \brief Resolves a generate block */
-void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add );
-
 /*! \brief Checks generate item and if it is a bind, adds it to binding pool and returns TRUE */
 void gen_item_bind( gen_item* gi, func_unit* funit );
 
@@ -98,6 +97,9 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem );
 
 /*
  $Log$
+ Revision 1.20  2007/11/20 05:28:58  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.19  2007/08/31 22:46:36  phase1geo
  Adding diagnostics from stable branch.  Fixing a few minor bugs and in progress
  of working on static_afunc1 failure (still not quite there yet).  Checkpointing.

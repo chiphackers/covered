@@ -142,7 +142,7 @@ static lxtint64_t lxt2_rd_get_64( void *mm, int offset ) {
  */
 #if LXT2_RD_GRANULE_SIZE > 32
 
-_LXT2_RD_INLINE granmsk_t lxt2_rd_ones_cnt( granmsk_t x ) {
+static _LXT2_RD_INLINE granmsk_t lxt2_rd_ones_cnt( granmsk_t x ) {
 
   x -= ((x >> 1) & LXT2_RD_ULLDESC(0x5555555555555555));
   x = (((x >> 2) & LXT2_RD_ULLDESC(0x3333333333333333)) + (x & LXT2_RD_ULLDESC(0x3333333333333333)));
@@ -154,7 +154,7 @@ _LXT2_RD_INLINE granmsk_t lxt2_rd_ones_cnt( granmsk_t x ) {
 
 #else
 
-_LXT2_RD_INLINE granmsk_t lxt2_rd_ones_cnt( granmsk_t x ) {
+static _LXT2_RD_INLINE granmsk_t lxt2_rd_ones_cnt( granmsk_t x ) {
 
   x -= ((x >> 1) & 0x55555555);
   x = (((x >> 2) & 0x33333333) + (x & 0x33333333));
@@ -173,7 +173,7 @@ _LXT2_RD_INLINE granmsk_t lxt2_rd_ones_cnt( granmsk_t x ) {
  * "return the bitposition of the least significant 1 in a granmsk_t"
  * (use x &= ~(x&-x) to clear out that bit quickly)
  */
-_LXT2_RD_INLINE granmsk_t lxt2_rd_tzc( granmsk_t x ) {
+static _LXT2_RD_INLINE granmsk_t lxt2_rd_tzc( granmsk_t x ) {
   return( lxt2_rd_ones_cnt( (x & -x) - LXT2_RD_GRAN_1VAL ) );
 }
 
@@ -199,7 +199,7 @@ static char* lxt2_rd_expand_integer_to_bits( int len, unsigned int value ) { PRO
 
 }
 
-unsigned int lxt2_rd_expand_bits_to_integer( int len, char* s ) { PROFILE(LXT2_RD_EXPAND_BITS_TO_INTEGER);
+static unsigned int lxt2_rd_expand_bits_to_integer( int len, char* s ) { PROFILE(LXT2_RD_EXPAND_BITS_TO_INTEGER);
 
   unsigned int v = 0;
   int          i;
@@ -219,7 +219,7 @@ unsigned int lxt2_rd_expand_bits_to_integer( int len, char* s ) { PROFILE(LXT2_R
  * (as they're all unique based on the timeslot scheme, no duplicate
  * checking is necessary...)
  */
-void lxt2_rd_iter_radix( struct lxt2_rd_trace *lt, struct lxt2_rd_block *b ) { PROFILE(LXT2_RD_ITER_RADIX);
+static void lxt2_rd_iter_radix( struct lxt2_rd_trace *lt, struct lxt2_rd_block *b ) { PROFILE(LXT2_RD_ITER_RADIX);
 
   unsigned int which_time;
   int          offset;
@@ -345,7 +345,11 @@ void lxt2_rd_iter_radix( struct lxt2_rd_trace *lt, struct lxt2_rd_block *b ) { P
  * called for only 1st vch in a block: blocks out emission of duplicate
  * vch from preceeding block
  */
-void lxt2_rd_iter_radix0( struct lxt2_rd_trace* lt, struct lxt2_rd_block* b, lxtint32_t idx ) { PROFILE(LXT2_RD_ITER_RADIX0);
+static void lxt2_rd_iter_radix0(
+  struct lxt2_rd_trace* lt,
+  struct lxt2_rd_block* b,
+  lxtint32_t            idx
+) { PROFILE(LXT2_RD_ITER_RADIX0);
 
   unsigned int vch;
   unsigned int which_time;
@@ -569,7 +573,10 @@ static void lxt2_rd_regenerate_process_mask( struct lxt2_rd_trace* lt ) { PROFIL
 /*
  * process a single block and execute the vch callback as necessary
  */
-int lxt2_rd_process_block( struct lxt2_rd_trace* lt, struct lxt2_rd_block* b ) { PROFILE(LXT2_RD_PROCESS_BLOCK);
+static int lxt2_rd_process_block(
+  struct lxt2_rd_trace* lt,
+  struct lxt2_rd_block* b
+) { PROFILE(LXT2_RD_PROCESS_BLOCK);
 
   char       vld;
   char*      pnt;
@@ -734,7 +741,12 @@ int lxt2_rd_process_block( struct lxt2_rd_trace* lt, struct lxt2_rd_block* b ) {
 /*
  * null callback used when a user passes NULL as an argument to lxt2_rd_iter_blocks()
  */
-void lxt2_rd_null_callback( struct lxt2_rd_trace** lt, lxtint64_t* pnt_time, lxtint32_t* pnt_facidx, char** pnt_value ) {
+static void lxt2_rd_null_callback(
+  struct lxt2_rd_trace** lt,
+  lxtint64_t*            pnt_time,
+  lxtint32_t*            pnt_facidx,
+  char**                 pnt_value
+) {
 }
 
 /****************************************************************************/

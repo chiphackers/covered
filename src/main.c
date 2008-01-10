@@ -48,7 +48,7 @@ extern char* ppfilename;
 /*!
  Displays usage information about this utility.
 */
-void usage() {
+static void usage() {
 
   printf( "\n" );
 #ifdef DEBUG_MODE
@@ -92,7 +92,7 @@ void usage() {
 /*!
  Function called at the end of execution which takes care of cleaning up state and temporary files.
 */
-void covered_cleanup( void ) {
+static void covered_cleanup( void ) {
 
   /* Remove temporary pre-processor file (if it still exists) */
   if( ppfilename != NULL ) {
@@ -230,6 +230,9 @@ int main( int argc, const char** argv ) {
 
 /*
  $Log$
+ Revision 1.25  2008/01/09 05:22:22  phase1geo
+ More splint updates using the -standard option.
+
  Revision 1.24  2008/01/07 23:59:55  phase1geo
  More splint updates.
 

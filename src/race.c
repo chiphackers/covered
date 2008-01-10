@@ -79,6 +79,8 @@ const char* race_msgs[RACE_TYPE_NUM] = { "Sequential statement block contains bl
 					 "System call $strobe used to output signal assigned via blocking assignment",
 					 "Procedural assignment with #0 delay performed" };
 
+static void race_calc_assignments( statement*, int );
+
 extern int         flag_race_check;
 extern char        user_msg[USER_MSG_LENGTH];
 extern funit_link* funit_head;
@@ -301,7 +303,10 @@ static void race_calc_expr_assignment( expression* exp, int sb_index ) { PROFILE
  Recursively iterates through the given statement block, searching for all assignment types used
  within the block.
 */
-void race_calc_assignments( statement* stmt, int sb_index ) { PROFILE(RACE_CALC_ASSIGNMENTS);
+void race_calc_assignments(
+  statement* stmt,
+  int        sb_index
+) { PROFILE(RACE_CALC_ASSIGNMENTS);
 
   if( (stmt != NULL) && (stmt->conn_id != stmt_conn_id) ) {
 
@@ -1091,6 +1096,9 @@ void race_blk_delete_list( race_blk* rb ) { PROFILE(RACE_BLK_DELETE_LIST);
 
 /*
  $Log$
+ Revision 1.63  2008/01/09 05:22:22  phase1geo
+ More splint updates using the -standard option.
+
  Revision 1.62  2008/01/07 23:59:55  phase1geo
  More splint updates.
 

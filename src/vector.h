@@ -61,8 +61,10 @@ void vector_display_toggle10( vec_data* nib, int width, FILE* ofile );
 /*! \brief Outputs the binary value of the specified nibble array to standard output */
 void vector_display_value( vec_data* nib, int width );
 
+/*@-exportlocal@*/
 /*! \brief Outputs nibble to standard output. */
 void vector_display_nibble( vec_data* nib, int width, int type );
+/*@=exportlocal@*/
 
 /*! \brief Outputs vector contents to standard output. */
 void vector_display( vector* vec );
@@ -172,6 +174,9 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.46  2008/01/07 05:01:58  phase1geo
+ Cleaning up more splint errors.
+
  Revision 1.45  2007/12/19 04:27:52  phase1geo
  More fixes for compiler errors (still more to go).  Checkpointing.
 

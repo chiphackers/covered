@@ -51,14 +51,8 @@ void sim_expr_changed( expression* expr, const sim_time* time );
 /*! \brief Creates a thread for the given statement and adds it to the thread simulation queue. */
 thread* sim_add_thread( thread* parent, statement* stmt, func_unit* funit, const sim_time* time );
 
-/*! \brief Deallocates thread and removes it from parent and thread queue lists */
-void sim_kill_thread( thread* thr );
-
 /*! \brief Deallocates thread and removes it from parent and thread queue lists for specified functional unit */
 void sim_kill_thread_with_funit( func_unit* funit );
-
-/*! \brief Adds static expression values to initial simulator */
-void sim_add_statics();
 
 /*! \brief Simulates one thread until it has either completed or enters a context switch */
 void sim_thread( thread* thr, const sim_time* time );
@@ -75,6 +69,9 @@ void sim_dealloc();
 
 /*
  $Log$
+ Revision 1.32  2007/12/19 22:54:35  phase1geo
+ More compiler fixes (almost there now).  Checkpointing.
+
  Revision 1.31  2007/12/19 04:27:52  phase1geo
  More fixes for compiler errors (still more to go).  Checkpointing.
 

@@ -83,78 +83,78 @@ extern int         generate_expr_mode;
 /*!
  Specifies the string Verilog scope that is currently specified in the VCD file.
 */
-/*@null@*/char** curr_inst_scope = NULL;
+/*@null@*/ char** curr_inst_scope = NULL;
 
 /*!
  Current size of curr_inst_scope array
 */
-int curr_inst_scope_size = 0;
+static int curr_inst_scope_size = 0;
 
 /*!
  Pointer to the current instance selected by the VCD parser.  If this value is
  NULL, the current instance does not reside in the design specified for coverage.
 */
-/*@null@*/funit_inst* curr_instance = NULL;
+/*@null@*/ funit_inst* curr_instance = NULL;
 
 /*!
  Pointer to head of list of module names that need to be parsed yet.  These names
  are added in the db_add_instance function and removed in the db_end_module function.
 */
-/*@null@*/str_link* modlist_head  = NULL;
+/*@null@*/ str_link* modlist_head = NULL;
 
 /*!
  Pointer to tail of list of module names that need to be parsed yet.  These names
  are added in the db_add_instance function and removed in the db_end_module function.
 */
-/*@null@*/str_link* modlist_tail  = NULL;
+/*@null@*/ str_link* modlist_tail = NULL;
 
 /*!
  Pointer to the functional unit structure for the functional unit that is currently being parsed.
 */
-/*@null@*/func_unit* curr_funit   = NULL;
+/*@null@*/ func_unit* curr_funit = NULL;
 
 /*!
  Pointer to the global function unit that is available in SystemVerilog.
 */
-/*@null@*/func_unit* global_funit = NULL;
+/*@null@*/ func_unit* global_funit = NULL;
 
 /*!
  This static value contains the current expression ID number to use for the next expression found, it
  is incremented by one when an expression is found.  This allows us to have a unique expression ID
  for each expression (since expressions have no intrinsic names).
 */
-int       curr_expr_id  = 1;
+int curr_expr_id = 1;
 
 /*!
  Specifies current connection ID to use for connecting statements.  This value should be passed
  to the statement_connect function and incremented immediately after.
 */
-int       stmt_conn_id    = 1;
+int stmt_conn_id = 1;
 
 /*!
  Specifies current connection ID to use for connecting generate items.
 */
-int       gi_conn_id      = 1;
+int gi_conn_id = 1;
 
 /*!
  Pointer to current implicitly connected generate item block.
 */
-/*@null@*/gen_item* curr_gi_block   = NULL;
+/*@null@*/ static gen_item* curr_gi_block = NULL;
 
 /*!
  Pointer to the most recently created generate item.
 */
-/*@null@*/gen_item* last_gi         = NULL;
+/*@null@*/ gen_item* last_gi = NULL;
 
 /*!
  Specifies the current timescale unit shift value.
 */
-int current_timescale_unit      = 0;
+static int current_timescale_unit = 0;
 
 /*!
  Specifies the global timescale precision shift value.
 */
-int global_timescale_precision  = 0;
+static int global_timescale_precision  = 0;
 
 
 /*!
@@ -970,7 +970,12 @@ void db_add_override_param( char* inst_name, expression* expr, char* param_name 
  Creates a vector parameter for the specified signal or expression with the specified
  parameter expression.  This function is called by the parser.
 */
-void db_add_vector_param( vsignal* sig, expression* parm_exp, int type, int dimension ) { PROFILE(DB_ADD_VECTOR_PARAM);
+static void db_add_vector_param(
+    vsignal*    sig,
+    expression* parm_exp,
+    int         type,
+    int         dimension )
+{ PROFILE(DB_ADD_VECTOR_PARAM);
 
   mod_parm* mparm;  /* Holds newly created module parameter */
 
@@ -2194,7 +2199,8 @@ void db_remove_stmt_blks_calling_statement( statement* stmt ) { PROFILE(DB_REMOV
 /*!
  \return Returns the string version of the current instance scope (memory allocated).
 */
-char* db_gen_curr_inst_scope() { PROFILE(DB_GEN_CURR_INST_SCOPE);
+static char* db_gen_curr_inst_scope()
+{ PROFILE(DB_GEN_CURR_INST_SCOPE);
 
   char* scope      = NULL;  /* Pointer to current scope */
   int   scope_size = 0;     /* Calculated size of current instance scope */
@@ -2483,6 +2489,9 @@ void db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.272  2008/01/08 21:13:08  phase1geo
+ Completed -weak splint run.  Full regressions pass.
+
  Revision 1.271  2008/01/08 13:27:46  phase1geo
  More splint updates.
 

@@ -174,7 +174,6 @@ int command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAND
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
     db_read( merge_in[0], READ_MODE_MERGE_NO_MERGE );
     bind_perform( TRUE, 0 );
-    //sim_add_statics();
 
     /* Read in databases to merge */
     for( i=1; i<mnum; i++ ) {
@@ -208,6 +207,9 @@ int command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAND
 
 /*
  $Log$
+ Revision 1.35  2008/01/09 23:54:15  phase1geo
+ More splint updates.
+
  Revision 1.34  2007/12/12 07:23:19  phase1geo
  More work on profiling.  I have now included the ability to get function runtimes.
  Still more work to do but everything is currently working at the moment.

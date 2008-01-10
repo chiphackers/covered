@@ -55,7 +55,11 @@ extern func_unit* curr_funit;
  Creates a user-readable version of the specified generate item and stores it in
  the specified string.
 */
-void gen_item_stringify( gen_item* gi, char* str, int str_len ) { PROFILE(GEN_ITEM_STRINGIFY);
+static void gen_item_stringify(
+  gen_item* gi,
+  char*     str,
+  int       str_len
+) { PROFILE(GEN_ITEM_STRINGIFY);
 
   char* tmp;  /* Temporary string */
 
@@ -132,7 +136,7 @@ void gen_item_display( gen_item* gi ) { PROFILE(GEN_ITEM_DISPLAY);
 
  Displays an entire generate block to standard output (used for debugging purposes).
 */
-void gen_item_display_block_helper( gen_item* root ) { PROFILE(GEN_ITEM_DISPLAY_BLOCK_HELPER);
+static void gen_item_display_block_helper( gen_item* root ) { PROFILE(GEN_ITEM_DISPLAY_BLOCK_HELPER);
 
   if( root != NULL ) {
 
@@ -181,7 +185,10 @@ void gen_item_display_block( gen_item* root ) { PROFILE(GEN_ITEM_DISPLAY_BLOCK);
  \return Returns TRUE if the two specified generate items are equivalent; otherwise,
          returns FALSE.
 */
-bool gen_item_compare( gen_item* gi1, gen_item* gi2 ) { PROFILE(GEN_ITEM_COMPARE);
+static bool gen_item_compare(
+  gen_item* gi1,
+  gen_item* gi2
+) { PROFILE(GEN_ITEM_COMPARE);
 
   bool retval = FALSE;  /* Return value for this function */
 
@@ -307,7 +314,12 @@ void gen_item_remove_if_contains_expr_calling_stmt( gen_item* gi, statement* stm
  to the beginning of the generate variable, and post is set to point to the string
  succeeding the ']'.
 */
-void gen_item_get_genvar( char* varname, char** pre, char** genvar, char** post ) { PROFILE(GEN_ITEM_GET_GENVAR);
+static void gen_item_get_genvar(
+  char*  varname,
+  char** pre,
+  char** genvar,
+  char** post
+) { PROFILE(GEN_ITEM_GET_GENVAR);
 
   int i = 0;  /* Loop iterator */
 
@@ -821,7 +833,11 @@ bool gen_item_connect( gen_item* gi1, gen_item* gi2, int conn_id ) { PROFILE(GEN
  within it.  This is called by the generate_resolve function (in the middle of the binding process) and
  by the funit_size_elements function (just prior to outputting this instance to the CDD file).
 */
-void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) { PROFILE(GEN_ITEM_RESOLVE);
+static void gen_item_resolve(
+  gen_item*   gi,
+  funit_inst* inst,
+  bool        add
+) { PROFILE(GEN_ITEM_RESOLVE);
 
   funit_inst* child;    /* Pointer to child instance of this instance to resolve */
   char*       varname;  /* Pointer to new, substituted name (used for BIND types) */
@@ -1005,7 +1021,10 @@ void generate_resolve( funit_inst* root ) { PROFILE(GENERATE_RESOLVE);
 
  \return Returns TRUE if we found at least one match; otherwise, returns FALSE.
 */
-bool generate_remove_stmt_helper( funit_inst* root, statement* stmt ) { PROFILE(GENERATE_REMOVE_STMT_HELPER);
+static bool generate_remove_stmt_helper(
+  funit_inst* root,
+  statement*  stmt
+) { PROFILE(GENERATE_REMOVE_STMT_HELPER);
 
   bool        retval   = FALSE;  /* Return value for this function */
   funit_inst* curr_child;        /* Pointer to current child to search */
@@ -1116,6 +1135,9 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) { PROFILE(GEN_ITEM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.50  2008/01/07 23:59:54  phase1geo
+ More splint updates.
+
  Revision 1.49  2007/12/11 05:48:25  phase1geo
  Fixing more compile errors with new code changes and adding more profiling.
  Still have a ways to go before we can compile cleanly again (next submission

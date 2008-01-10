@@ -798,7 +798,7 @@ thread* sim_add_thread( thread* parent, statement* stmt, func_unit* funit, const
  Removes the specified thread from its parent and the thread simulation queue and finally deallocates
  the specified thread.
 */
-void sim_kill_thread( thread* thr ) { PROFILE(SIM_KILL_THREAD);
+static void sim_kill_thread( thread* thr ) { PROFILE(SIM_KILL_THREAD);
 
   assert( thr != NULL );
 
@@ -909,7 +909,7 @@ void sim_kill_thread_with_funit( func_unit* funit ) { PROFILE(SIM_KILL_THREAD_WI
  Iterates through static expression list and causes the simulator to
  evaluate these expressions at simulation time.
 */
-void sim_add_statics() { PROFILE(SIM_ADD_STATICS);
+static void sim_add_statics() { PROFILE(SIM_ADD_STATICS);
   
   exp_link* curr;   /* Pointer to current expression link */
   sim_time  time;   /* Current simulation time */
@@ -1281,6 +1281,9 @@ void sim_dealloc() { PROFILE(SIM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.116  2008/01/09 05:22:22  phase1geo
+ More splint updates using the -standard option.
+
  Revision 1.115  2008/01/08 21:13:08  phase1geo
  Completed -weak splint run.  Full regressions pass.
 

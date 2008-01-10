@@ -28,9 +28,6 @@
 #include "defines.h"
 
 
-/*! \brief Initializes specified vsignal with specified values. */
-void vsignal_init( vsignal* sig, char* name, int type, vector* value, int line, int col );
-
 /*! \brief Creates a new vsignal based on the information passed to this function. */
 vsignal* vsignal_create( const char* name, int type, int width, int line, int col );
 
@@ -76,6 +73,9 @@ void vsignal_dealloc( vsignal* sig );
 
 /*
  $Log$
+ Revision 1.22  2008/01/09 05:22:22  phase1geo
+ More splint updates using the -standard option.
+
  Revision 1.21  2007/12/18 23:55:21  phase1geo
  Starting to remove 64-bit time and replacing it with a sim_time structure
  for performance enhancement purposes.  Also removing global variables for time-related

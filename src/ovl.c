@@ -72,7 +72,7 @@ static char* ovl_assertions[OVL_ASSERT_NUM] = { "assert_change",      "assert_cy
  \return Returns TRUE if the specified name refers to a supported OVL coverage module; otherwise,
          returns FALSE.
 */
-bool ovl_is_assertion_name( const char* name ) { PROFILE(OVL_IS_ASSERTION_NAME);
+static bool ovl_is_assertion_name( const char* name ) { PROFILE(OVL_IS_ASSERTION_NAME);
 
   int i = OVL_ASSERT_NUM;  /* Loop iterator */
 
@@ -452,6 +452,9 @@ void ovl_get_coverage( const func_unit* funit, const char* inst_name, char** ass
 
 /*
  $Log$
+ Revision 1.18  2008/01/09 23:54:15  phase1geo
+ More splint updates.
+
  Revision 1.17  2008/01/08 21:13:08  phase1geo
  Completed -weak splint run.  Full regressions pass.
 

@@ -226,7 +226,12 @@ bool line_get_funit_summary( const char* funit_name, int funit_type, int* total,
 
 }
 
-bool line_display_instance_summary( FILE* ofile, char* name, int hits, float total ) { PROFILE(LINE_DISPLAY_INSTANCE_SUMMARY);
+static bool line_display_instance_summary(
+  FILE* ofile,
+  char* name,
+  int   hits,
+  float total
+) { PROFILE(LINE_DISPLAY_INSTANCE_SUMMARY);
 
   float percent;  /* Percentage of lines hits */
   float miss;     /* Number of lines missed */
@@ -254,7 +259,13 @@ bool line_display_instance_summary( FILE* ofile, char* name, int hits, float tot
  executed during the course of simulation.  The parent node will
  display its information before calling its children.
 */
-bool line_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst, int* hits, float* total ) { PROFILE(LINE_INSTANCE_SUMMARY);
+static bool line_instance_summary(
+  FILE*       ofile,
+  funit_inst* root,
+  char*       parent_inst,
+  int*        hits,
+  float*      total
+) { PROFILE(LINE_INSTANCE_SUMMARY);
 
   funit_inst* curr;                /* Pointer to current child functional unit instance of this node */
   char        tmpname[4096];       /* Temporary holder of instance name */
@@ -315,7 +326,13 @@ bool line_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst, in
  Calculates the percentage and miss information for the given hit and total coverage info and
  outputs this information in human-readable format to the given output file.
 */
-bool line_display_funit_summary( FILE* ofile, const char* name, const char* fname, int hits, float total ) { PROFILE(LINE_DISPLAY_FUNIT_SUMMARY);
+static bool line_display_funit_summary(
+  FILE*       ofile,
+  const char* name,
+  const char* fname,
+  int         hits,
+  float       total
+) { PROFILE(LINE_DISPLAY_FUNIT_SUMMARY);
 
   float percent;  /* Percentage of lines hits */
   float miss;     /* Number of lines missed */
@@ -341,7 +358,12 @@ bool line_display_funit_summary( FILE* ofile, const char* name, const char* fnam
  Iterates through the functional unit list, displaying the line coverage results (summary
  format) for each functional unit.
 */
-bool line_funit_summary( FILE* ofile, funit_link* head, int* hits, float* total ) { PROFILE(LINE_FUNIT_SUMMARY);
+static bool line_funit_summary(
+  FILE*       ofile,
+  funit_link* head,
+  int*        hits,
+  float*      total
+) { PROFILE(LINE_FUNIT_SUMMARY);
 
   float percent;             /* Percentage of lines hit */
   bool  miss_found = FALSE;  /* Set to TRUE if line was found to be missed */
@@ -381,7 +403,10 @@ bool line_funit_summary( FILE* ofile, funit_link* head, int* hits, float* total 
  Displays the lines missed during simulation to standard output from the
  specified expression list.
 */
-void line_display_verbose( FILE* ofile, func_unit* funit ) { PROFILE(LINE_DISPLAY_VERBOSE);
+static void line_display_verbose(
+  FILE*      ofile,
+  func_unit* funit
+) { PROFILE(LINE_DISPLAY_VERBOSE);
 
   statement*  stmt;        /* Pointer to current statement */
   expression* unexec_exp;  /* Pointer to current unexecuted expression */
@@ -452,7 +477,11 @@ void line_display_verbose( FILE* ofile, func_unit* funit ) { PROFILE(LINE_DISPLA
  (and associated verilog code) and file/functional unit name of the lines that were 
  not hit during simulation.
 */
-void line_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst ) { PROFILE(LINE_INSTANCE_VERBOSE);
+static void line_instance_verbose(
+  FILE*       ofile,
+  funit_inst* root,
+  char*       parent_inst
+) { PROFILE(LINE_INSTANCE_VERBOSE);
 
   funit_inst* curr_inst;      /* Pointer to current instance being evaluated */
   char        tmpname[4096];  /* Temporary name holder for instance */
@@ -517,7 +546,10 @@ void line_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst ) {
  The verbose line coverage includes the line numbers (and associated verilog
  code) and file/functional unit name of the lines that were not hit during simulation.
 */
-void line_funit_verbose( FILE* ofile, funit_link* head ) { PROFILE(LINE_FUNIT_VERBOSE);
+static void line_funit_verbose(
+  FILE*       ofile,
+  funit_link* head
+) { PROFILE(LINE_FUNIT_VERBOSE);
 
   char* pname;  /* Printable version of functional unit name */
 
@@ -628,6 +660,9 @@ void line_report( FILE* ofile, bool verbose ) { PROFILE(LINE_REPORT);
 
 /*
  $Log$
+ Revision 1.80  2008/01/07 23:59:55  phase1geo
+ More splint updates.
+
  Revision 1.79  2007/12/11 05:48:25  phase1geo
  Fixing more compile errors with new code changes and adding more profiling.
  Still have a ways to go before we can compile cleanly again (next submission

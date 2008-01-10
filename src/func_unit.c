@@ -63,7 +63,7 @@ extern inst_link*  inst_head;
 
  Initializes all contents to NULL.
 */  
-void funit_init( func_unit* funit ) { PROFILE(FUNIT_INIT);
+static void funit_init( func_unit* funit ) { PROFILE(FUNIT_INIT);
     
   funit->type       = FUNIT_MODULE;
   funit->name       = NULL;
@@ -1053,7 +1053,7 @@ void funit_display_expressions( func_unit* funit ) { PROFILE(FUNIT_DISPLAY_EXPRE
 
  Deallocates functional unit contents: name and filename strings.
 */
-void funit_clean( func_unit* funit ) { PROFILE(FUNIT_CLEAN);
+static void funit_clean( func_unit* funit ) { PROFILE(FUNIT_CLEAN);
 
   func_unit*    old_funit = curr_funit;  /* Holds the original functional unit in curr_funit */
   typedef_item* tdi;                     /* Pointer to current typedef item */
@@ -1169,6 +1169,9 @@ void funit_dealloc( func_unit* funit ) { PROFILE(FUNIT_DEALLOC);
 
 /*
  $Log$
+ Revision 1.85  2008/01/08 21:13:08  phase1geo
+ Completed -weak splint run.  Full regressions pass.
+
  Revision 1.84  2008/01/07 23:59:54  phase1geo
  More splint updates.
 

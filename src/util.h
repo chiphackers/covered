@@ -121,9 +121,6 @@ void free_safe1( /*@only@*/ /*@out@*/ /*@null@*/ void* ptr, unsigned int profile
 void gen_space( char* spaces, int num_spaces );
 
 #ifdef HAVE_SYS_TIME_H
-/*! \brief Clears the specified timer structure. */
-void timer_clear( timer** tm );
-
 /*! \brief Starts timing the specified timer structure. */
 void timer_start( timer** tm );
 
@@ -144,6 +141,9 @@ void set_timestep( sim_time* st, char* value );
 
 /*
  $Log$
+ Revision 1.36  2008/01/09 05:22:22  phase1geo
+ More splint updates using the -standard option.
+
  Revision 1.35  2008/01/08 13:27:46  phase1geo
  More splint updates.
 

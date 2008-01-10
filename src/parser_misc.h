@@ -52,9 +52,11 @@ extern YYLTYPE yylloc;
 extern int  VLlex();
 extern void VLerror( char* msg );
 #define yywarn VLwarn
+/*@-exportlocal@*/
 extern void VLwarn( char* msg );
+/*@=exportlocal@*/
 
-extern unsigned error_count, warn_count;
+extern unsigned error_count;
 
 /*! \brief Deallocates the curr_sig_width variable if it has been previously set */
 void parser_dealloc_sig_range( sig_range* range, bool rm_ptr );
@@ -76,6 +78,9 @@ bool parser_check_generation( int gen );
 
 /*
  $Log$
+ Revision 1.12  2007/11/20 05:28:59  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.11  2006/09/22 19:56:45  phase1geo
  Final set of fixes and regression updates per recent changes.  Full regression
  now passes.

@@ -46,7 +46,7 @@ extern char*      curr_inst_scope;
 static lxtint64_t vcd_prevtime = -1;
 
 /*! Specifies when we are handling dumping */
-bool vcd_blackout;
+static bool vcd_blackout;
 
 
 /*!
@@ -72,7 +72,12 @@ static char* vcdid( int value ) { PROFILE(VCDID);
 
 }
 
-void vcd_callback(struct lxt2_rd_trace **lt, lxtint64_t *pnt_time, lxtint32_t *pnt_facidx, char **pnt_value) { PROFILE(VCD_CALLBACK);
+static void vcd_callback(
+  struct lxt2_rd_trace **lt,
+  lxtint64_t           *pnt_time,
+  lxtint32_t           *pnt_facidx,
+  char                 **pnt_value
+) { PROFILE(VCD_CALLBACK);
 
   struct lxt2_rd_geometry *g = lxt2_rd_get_fac_geometry( *lt, *pnt_facidx );
 
@@ -230,6 +235,9 @@ void lxt_parse( char* lxt_file ) { PROFILE(LXT_PARSE);
 
 /*
  $Log$
+ Revision 1.14  2008/01/08 21:13:08  phase1geo
+ Completed -weak splint run.  Full regressions pass.
+
  Revision 1.13  2008/01/07 23:59:55  phase1geo
  More splint updates.
 

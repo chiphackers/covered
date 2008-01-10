@@ -45,7 +45,7 @@ void func_iter_display( func_iter* fi ) { PROFILE(FUNC_ITER_DISPLAY);
 
  Performs a bubble sort of the first element such that the first line is in location 0 of the sis array.
 */
-void func_iter_sort( func_iter* fi ) { PROFILE(FUNC_ITER_SORT);
+static void func_iter_sort( func_iter* fi ) { PROFILE(FUNC_ITER_SORT);
 
   stmt_iter* tmp;  /* Temporary statement iterator */
   int        i;    /* Loop iterator */
@@ -89,7 +89,7 @@ void func_iter_sort( func_iter* fi ) { PROFILE(FUNC_ITER_SORT);
  \return Returns the number of statement iterators found in all of the unnamed functional units
          within a named functional unit.
 */
-int func_iter_count_stmt_iters( func_unit* funit ) { PROFILE(FUNC_ITER_COUNT_STMT_ITERS);
+static int func_iter_count_stmt_iters( func_unit* funit ) { PROFILE(FUNC_ITER_COUNT_STMT_ITERS);
 
   int         count = 1;  /* Number of statement iterators within this functional unit */
   funit_link* child;      /* Pointer to child functional unit */
@@ -113,7 +113,10 @@ int func_iter_count_stmt_iters( func_unit* funit ) { PROFILE(FUNC_ITER_COUNT_STM
 
 }
 
-void func_iter_add_stmt_iters( func_iter* fi, func_unit* funit ) { PROFILE(FUNC_ITER_ADD_STMT_ITERS);
+static void func_iter_add_stmt_iters(
+  func_iter* fi,
+  func_unit* funit
+) { PROFILE(FUNC_ITER_ADD_STMT_ITERS);
 
   funit_link* child;   /* Pointer to child functional unit */
   func_unit*  parent;  /* Pointer to parent module of this functional unit */
@@ -227,6 +230,11 @@ void func_iter_dealloc( func_iter* fi ) { PROFILE(FUNC_ITER_DEALLOC);
 
 /*
  $Log$
+ Revision 1.4  2007/12/11 05:48:25  phase1geo
+ Fixing more compile errors with new code changes and adding more profiling.
+ Still have a ways to go before we can compile cleanly again (next submission
+ should do it).
+
  Revision 1.3  2007/11/20 05:28:58  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

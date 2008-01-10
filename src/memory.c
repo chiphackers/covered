@@ -760,7 +760,13 @@ static bool memory_display_toggle_funit_summary( FILE* ofile, const char* name, 
  Iterates through the functional unit list displaying the memory toggle coverage summary for
  each functional unit.
 */
-bool memory_toggle_funit_summary( FILE* ofile, funit_link* head, int* hits01, int* hits10, float* total ) { PROFILE(MEMORY_TOGGLE_FUNIT_SUMMARY);
+static bool memory_toggle_funit_summary(
+  FILE*       ofile,
+  funit_link* head,
+  int*        hits01,
+  int*        hits10,
+  float*      total
+) { PROFILE(MEMORY_TOGGLE_FUNIT_SUMMARY);
 
   bool  miss_found = FALSE;  /* Set to TRUE if missing toggles were found */
   char* pname;               /* Printable version of the functional unit name */
@@ -807,7 +813,14 @@ bool memory_toggle_funit_summary( FILE* ofile, funit_link* head, int* hits01, in
 
  Calculates and outputs the summary addressable memory element coverage information for a given functional unit.
 */
-bool memory_display_ae_funit_summary( FILE* ofile, const char* name, const char* fname, int wr_hits, int rd_hits, float total ) { PROFILE(MEMORY_DISPLAY_AE_FUNIT_SUMMARY);
+static bool memory_display_ae_funit_summary(
+  FILE*       ofile,
+  const char* name,
+  const char* fname,
+  int         wr_hits,
+  int         rd_hits,
+  float       total
+) { PROFILE(MEMORY_DISPLAY_AE_FUNIT_SUMMARY);
 
   float wr_percent;  /* Percentage of addressable elements that were written */
   float rd_percent;  /* Percentage of addressable elements that were read */
@@ -1251,6 +1264,9 @@ void memory_report( FILE* ofile, bool verbose ) { PROFILE(MEMORY_REPORT);
 
 /*
  $Log$
+ Revision 1.20  2008/01/09 23:54:15  phase1geo
+ More splint updates.
+
  Revision 1.19  2008/01/07 23:59:55  phase1geo
  More splint updates.
 

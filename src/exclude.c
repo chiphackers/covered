@@ -46,7 +46,9 @@ extern isuppl      info_suppl;
  \return Returns TRUE if a parent expression of this expression was found to be excluded from
          coverage; otherwise, returns FALSE.
 */
-bool exclude_is_parent_excluded( expression* expr ) {
+static bool exclude_is_parent_excluded(
+    expression* expr
+) {
 
   return( (expr != NULL) &&
           ((ESUPPL_EXCLUDED( expr->suppl ) == 1) ||
@@ -63,7 +65,12 @@ bool exclude_is_parent_excluded( expression* expr ) {
  Sets the specified expression's exclude bit to the given value and recalculates all
  affected coverage information for this instance.
 */
-void exclude_expr_assign_and_recalc( expression* expr, func_unit* funit, bool excluded, bool set_line ) {
+static void exclude_expr_assign_and_recalc(
+    expression* expr,
+    func_unit*  funit,
+    bool        excluded,
+    bool        set_line
+) {
 
   float comb_total = 0;  /* Total number of combinational logic coverage points within this tree */
   int   comb_hit   = 0;  /* Total number of hit combinations within this tree */
@@ -123,7 +130,11 @@ void exclude_expr_assign_and_recalc( expression* expr, func_unit* funit, bool ex
  Sets the specified signal's exclude bit to the given value and recalculates all
  affected coverage information for this instance.
 */
-void exclude_sig_assign_and_recalc( vsignal* sig, func_unit* funit, bool excluded ) {
+static void exclude_sig_assign_and_recalc(
+    vsignal*   sig,
+    func_unit* funit,
+    bool       excluded
+) {
 
   /* First, set the exclude bit in the signal supplemental field */
   sig->suppl.part.excluded = excluded ? 1 : 0;
@@ -186,7 +197,13 @@ void exclude_sig_assign_and_recalc( vsignal* sig, func_unit* funit, bool exclude
  Sets the specified arc entry's exclude bit to the given value and recalculates all
  affected coverage information for this instance.
 */
-void exclude_arc_assign_and_recalc( char* arcs, int arc_index, bool forward, func_unit* funit, bool excluded ) {
+static void exclude_arc_assign_and_recalc(
+    char*      arcs,
+    int        arc_index,
+    bool       forward,
+    func_unit* funit,
+    bool       excluded
+) {
 
   /* Set the excluded bit in the specified entry */
   arc_set_entry_suppl( arcs, arc_index, (forward ? ARC_EXCLUDED_F : ARC_EXCLUDED_R), (excluded ? 1 : 0) );
@@ -212,7 +229,10 @@ void exclude_arc_assign_and_recalc( char* arcs, int arc_index, bool forward, fun
  Using the specified functional unit information, returns the functional unit instance that
  corresponds to this description.  If one could not be found, a value of NULL is returned.
 */
-funit_inst* exclude_find_instance_from_funit_info( const char* funit_name, int funit_type ) {
+static funit_inst* exclude_find_instance_from_funit_info(
+    const char* funit_name,
+    int         funit_type
+) {
 
   funit_link* funitl;         /* Found functional unit link */
   int         ignore = 0;     /* Number of functional unit instances to ignore in search */
@@ -430,6 +450,9 @@ bool exclude_set_assert_exclude( const char* funit_name, int funit_type, char* i
 
 /*
  $Log$
+ Revision 1.16  2008/01/07 23:59:54  phase1geo
+ More splint updates.
+
  Revision 1.15  2007/11/20 05:28:58  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

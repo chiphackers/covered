@@ -31,22 +31,12 @@
 /*! \brief Searches specified module parameter list for matching parameter. */
 mod_parm* mod_parm_find( char* name, mod_parm* parm );
 
-/*! \brief Find specified expression and remove if found from module parameter expression lists. */
-void mod_parm_find_expr_and_remove( expression* exp, mod_parm* parm );
-
 /*! \brief Creates new module parameter and adds it to the specified list. */
 mod_parm* mod_parm_add( char* scope, static_expr* msb, static_expr* lsb, bool is_signed,
                         expression* expr, int type, func_unit* funit, char* inst_name );
 
 /*! \brief Outputs contents of module parameter list to standard output. */
 void mod_parm_display( mod_parm* mparm );
-
-/*! \brief Searches specified instance parameter list for matching parameter. */
-inst_parm* inst_parm_find( const char* name, inst_parm* parm );
-
-/*! \brief Creates and adds new instance parameter to specified instance parameter list. */
-inst_parm* inst_parm_add( const char* name, char* inst_name, static_expr* msb, static_expr* lsb, bool is_signed,
-                          vector* value, mod_parm* mparm, funit_inst* inst );
 
 /*! \brief Creates a new instance parameter for a generate variable */
 void inst_parm_add_genvar( vsignal* sig, funit_inst* inst );
@@ -66,12 +56,6 @@ void param_set_sig_size( vsignal* sig, inst_parm* icurr );
 /*! \brief Evaluates parameter expression for the given instance. */
 void param_expr_eval( expression* expr, funit_inst* inst );
 
-/*! \brief Transforms a declared module parameter into an instance parameter. */
-void param_resolve_declared( mod_parm* mparm, funit_inst* inst );
-
-/*! \brief Transforms an override module parameter into an instance parameter. */
-void param_resolve_override( mod_parm* oparm, funit_inst* inst );
-
 /*! \brief Resolves all parameters for the specified instance. */
 void param_resolve( funit_inst* inst );
 
@@ -87,6 +71,9 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive );
 
 /*
  $Log$
+ Revision 1.29  2008/01/09 05:22:22  phase1geo
+ More splint updates using the -standard option.
+
  Revision 1.28  2007/11/20 05:28:59  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

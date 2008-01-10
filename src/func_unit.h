@@ -28,9 +28,6 @@
 #include "defines.h"
 
 
-/*! \brief Initializes all values of functional_unit. */
-void funit_init( func_unit* mod );
-
 /*! \brief Creates new functional unit from heap and initializes structure. */
 func_unit* funit_create();
 
@@ -98,15 +95,15 @@ void funit_display_signals( func_unit* funit );
 /*! \brief Displays expressions stored in this functional unit. */
 void funit_display_expressions( func_unit* funit );
 
-/*! \brief Deallocates functional unit element contents only from heap. */
-void funit_clean( func_unit* funit );
-
 /*! \brief Deallocates functional unit element from heap. */
 void funit_dealloc( func_unit* funit );
 
 
 /*
  $Log$
+ Revision 1.31  2008/01/07 23:59:54  phase1geo
+ More splint updates.
+
  Revision 1.30  2007/11/20 05:28:58  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

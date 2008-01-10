@@ -28,9 +28,6 @@
 #include "defines.h"
 
 
-/*! \brief Creates an expression value and initializes it. */
-void expression_create_value( expression* exp, int width, bool data );
-
 /*! \brief Creates new expression. */
 expression* expression_create( /*@null@*/ expression* right, /*@null@*/ expression* left, exp_op_type op, bool lhs, int id, int line, int first, int last, bool data );
 
@@ -57,9 +54,6 @@ int expression_get_curr_dimension( expression* expr );
 
 /*! \brief Finds all RHS signals in given expression tree */
 void expression_find_rhs_sigs( expression* expr, str_link** head, str_link** tail );
-
-/*! \brief Finds all parameter expressions in the given expression tree */
-void expression_find_params( expression* expr, exp_link** head, exp_link** tail );
 
 /*! \brief Finds the expression in this expression tree with the specified underline id. */
 expression* expression_find_uline_id( expression* expr, int ulid );
@@ -106,9 +100,6 @@ void expression_operate_recursively( expression* expr, func_unit* funit, bool si
 /*! \brief Returns TRUE if specified expression is found to contain all static leaf expressions. */
 bool expression_is_static_only( expression* expr );
 
-/*! \brief Returns TRUE if specified expression is on the LHS of a blocking assignment operator. */
-bool expression_is_assigned( expression* expr );
-
 /*! \brief Returns TRUE if specified expression is a part of an bit select expression tree. */
 bool expression_is_bit_select( expression* expr );
 
@@ -121,15 +112,15 @@ bool expression_is_last_select( expression* expr );
 /*! \brief Sets the expression signal supplemental field assigned bit if the given expression is an RHS of an assignment */
 void expression_set_assigned( expression* expr );
 
-/*! \brief Performs blocking assignment assignment to variables. */
-void expression_assign( expression* lhs, expression* rhs, int* lsb, const sim_time* time );
-
 /*! \brief Deallocates memory used for expression. */
 void expression_dealloc( expression* expr, bool exp_only );
 
 
 /*
  $Log$
+ Revision 1.61  2008/01/07 05:01:58  phase1geo
+ Cleaning up more splint errors.
+
  Revision 1.60  2007/12/19 04:27:52  phase1geo
  More fixes for compiler errors (still more to go).  Checkpointing.
 

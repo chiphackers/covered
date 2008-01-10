@@ -95,7 +95,7 @@ void assertion_get_stats( const func_unit* funit, float* total, int* hit ) { PRO
 
  Displays the assertion summary information for a given instance to the specified output stream.
 */
-bool assertion_display_instance_summary( FILE* ofile, const char* name, int hits, float total ) { PROFILE(ASSERTION_DISPLAY_INSTANCE_SUMMARY);
+static bool assertion_display_instance_summary( FILE* ofile, const char* name, int hits, float total ) { PROFILE(ASSERTION_DISPLAY_INSTANCE_SUMMARY);
 
   float percent;  /* Percentage of assertions hit */
   float miss;     /* Number of assertions missed */
@@ -119,7 +119,7 @@ bool assertion_display_instance_summary( FILE* ofile, const char* name, int hits
  Outputs the instance summary assertion coverage information for the given functional
  unit instance to the given output file.
 */
-bool assertion_instance_summary( FILE* ofile, const funit_inst* root, const char* parent_inst, int* hits, float* total ) { PROFILE(ASSERTION_INSTANCE_SUMMARY);
+static bool assertion_instance_summary( FILE* ofile, const funit_inst* root, const char* parent_inst, int* hits, float* total ) { PROFILE(ASSERTION_INSTANCE_SUMMARY);
 
   funit_inst* curr;                /* Pointer to current child functional unit instance of this node */
   char        tmpname[4096];       /* Temporary holder of instance name */
@@ -180,7 +180,7 @@ bool assertion_instance_summary( FILE* ofile, const funit_inst* root, const char
 
  Displays the assertion summary information for a given instance to the specified output stream.
 */
-bool assertion_display_funit_summary( FILE* ofile, const char* name, const char* fname, int hits, float total ) { PROFILE(ASSERTION_DISPLAY_FUNIT_SUMMARY);
+static bool assertion_display_funit_summary( FILE* ofile, const char* name, const char* fname, int hits, float total ) { PROFILE(ASSERTION_DISPLAY_FUNIT_SUMMARY);
 
   float percent;  /* Percentage of assertions hit */
   float miss;     /* Number of assertions missed */
@@ -204,7 +204,7 @@ bool assertion_display_funit_summary( FILE* ofile, const char* name, const char*
  Outputs the functional unit summary assertion coverage information for the given
  functional unit to the given output file.
 */
-bool assertion_funit_summary( FILE* ofile, const funit_link* head, int* hits, float* total ) { PROFILE(ASSERTION_FUNIT_SUMMARY);
+static bool assertion_funit_summary( FILE* ofile, const funit_link* head, int* hits, float* total ) { PROFILE(ASSERTION_FUNIT_SUMMARY);
 
   bool miss_found = FALSE;  /* Set to TRUE if assertion was found to be missed */
 
@@ -242,7 +242,7 @@ bool assertion_funit_summary( FILE* ofile, const funit_link* head, int* hits, fl
 
  Displays the verbose hit/miss assertion information for the given functional unit.
 */
-void assertion_display_verbose( FILE* ofile, const func_unit* funit ) { PROFILE(ASSERTION_DISPLAY_VERBOSE);
+static void assertion_display_verbose( FILE* ofile, const func_unit* funit ) { PROFILE(ASSERTION_DISPLAY_VERBOSE);
 
   if( report_covered ) {
     fprintf( ofile, "    Hit Assertions\n\n" );
@@ -267,7 +267,7 @@ void assertion_display_verbose( FILE* ofile, const func_unit* funit ) { PROFILE(
  Outputs the instance verbose assertion coverage information for the given functional
  unit instance to the given output file.
 */
-void assertion_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst ) { PROFILE(ASSERTION_INSTANCE_VERBOSE);
+static void assertion_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst ) { PROFILE(ASSERTION_INSTANCE_VERBOSE);
 
   funit_inst* curr_inst;      /* Pointer to current instance being evaluated */
   char        tmpname[4096];  /* Temporary name holder for instance */
@@ -330,7 +330,7 @@ void assertion_instance_verbose( FILE* ofile, funit_inst* root, char* parent_ins
  Outputs the functional unit verbose assertion coverage information for the given
  functional unit to the given output file.
 */
-void assertion_funit_verbose( FILE* ofile, const funit_link* head ) { PROFILE(ASSERTION_FUNIT_VERBOSE);
+static void assertion_funit_verbose( FILE* ofile, const funit_link* head ) { PROFILE(ASSERTION_FUNIT_VERBOSE);
 
   char* pname;  /* Printable version of functional unit name */
 
@@ -560,6 +560,9 @@ bool assertion_get_coverage( const char* funit_name, int funit_type, const char*
 
 /*
  $Log$
+ Revision 1.26  2008/01/08 13:27:46  phase1geo
+ More splint updates.
+
  Revision 1.25  2008/01/07 23:59:54  phase1geo
  More splint updates.
 

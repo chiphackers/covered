@@ -38,12 +38,12 @@ void fsm_var_stmt_add( statement* stmt, char* funit_name );
 /*! \brief Performs FSM signal/expression binding process. */
 void fsm_var_bind();
 
-/*! \brief Removes specified FSM variable from global FSM variable list. */
-void fsm_var_remove( fsm_var* fv );
-
 
 /*
  $Log$
+ Revision 1.8  2008/01/07 23:59:54  phase1geo
+ More splint updates.
+
  Revision 1.7  2007/11/20 05:28:58  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

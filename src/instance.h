@@ -41,9 +41,6 @@ funit_inst* instance_find_scope( funit_inst* root, char* scope, bool rm_unnamed 
 /*! \brief Returns instance that points to specified functional unit for each instance. */
 funit_inst* instance_find_by_funit( funit_inst* root, const func_unit* funit, int* ignore );
 
-/*! \brief Adds an instance to the specified parent instance */
-funit_inst* instance_add_child( funit_inst* inst, func_unit* child, char* name, vector_width* range, bool resolve );
-
 /*! \brief Attaches the given child instance to the given parent instance */
 void instance_attach_child( funit_inst* parent, funit_inst* child );
 
@@ -72,9 +69,6 @@ void instance_remove_stmt_blks_calling_stmt( funit_inst* root, statement* stmt )
 /*! \brief Removes expressions from instance parameters within the given instance that match the given expression */
 void instance_remove_parms_with_expr( funit_inst* root, statement* stmt );
 
-/*! \brief Deallocates single functional unit instance memory */
-void instance_dealloc_single( funit_inst* inst );
-
 /*! \brief Recursively deallocates all memory for the associated instance tree */
 void instance_dealloc_tree( funit_inst* root );
 
@@ -84,6 +78,9 @@ void instance_dealloc( funit_inst* root, char* scope );
 
 /*
  $Log$
+ Revision 1.33  2007/11/20 05:28:58  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.32  2007/09/13 17:03:30  phase1geo
  Cleaning up some const-ness corrections -- still more to go but it's a good
  start.

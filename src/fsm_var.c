@@ -53,12 +53,12 @@ extern func_unit*  curr_funit;
  may make the FSM extraction more automatic (smarter) in the future, but we will always allow
  the user to make these choices with the -F option to the score command.
 */
-fsm_var* fsm_var_head = NULL;
+static fsm_var* fsm_var_head = NULL;
 
 /*!
  Pointer to the tail of the list of FSM scopes in the design.
 */
-fsm_var* fsm_var_tail = NULL;
+static fsm_var* fsm_var_tail = NULL;
 
 /*!
  Pointer to the head of the list of FSM variable bindings between signal names and expression
@@ -67,12 +67,12 @@ fsm_var* fsm_var_tail = NULL;
  completed, the FSM bind function needs to be called to bind all FSM signals/expressions to
  each other.
 */
-fv_bind* fsm_var_bind_head = NULL;
+static fv_bind* fsm_var_bind_head = NULL;
 
 /*!
  Pointer to the tail of the list of FSM variable bindings.
 */
-fv_bind* fsm_var_bind_tail = NULL;
+static fv_bind* fsm_var_bind_tail = NULL;
 
 /*!
  Pointer to the head of the list of FSM variable statement/functional unit bindings.  During the
@@ -81,13 +81,14 @@ fv_bind* fsm_var_bind_tail = NULL;
  the FSM bind function needs to be called to bind all FSM statements/functional units to
  each other.
 */
-fv_bind* fsm_var_stmt_head = NULL;
+static fv_bind* fsm_var_stmt_head = NULL;
 
 /*!
  Pointer to the tail of the list of FSM statement/functional unit bindings.
 */
-fv_bind* fsm_var_stmt_tail = NULL;
+static fv_bind* fsm_var_stmt_tail = NULL;
 
+static void fsm_var_remove( fsm_var* );
 
 /*!
  \param funit_name   String containing functional unit containing FSM state variable.
@@ -100,7 +101,12 @@ fv_bind* fsm_var_stmt_tail = NULL;
  Adds the specified Verilog hierarchical scope to a list of FSM scopes to
  find during the parsing phase.
 */
-fsm_var* fsm_var_add( const char* funit_name, expression* in_state, expression* out_state, char* name ) { PROFILE(FSM_VAR_ADD);
+fsm_var* fsm_var_add(
+  const char* funit_name,
+  expression* in_state,
+  expression* out_state,
+  char*       name
+) { PROFILE(FSM_VAR_ADD);
 
   fsm_var*    new_var = NULL;  /* Pointer to newly created FSM variable */
   funit_link* funitl;          /* Pointer to functional unit link found */
@@ -155,7 +161,9 @@ fsm_var* fsm_var_add( const char* funit_name, expression* in_state, expression* 
  expression as its output state expression.  If no FSM variable was found, returns
  a value of NULL to the calling function.
 */
-fsm_var* fsm_var_is_output_state( expression* expr ) { PROFILE(FSM_VAR_IS_OUTPUT_STATE);
+static fsm_var* fsm_var_is_output_state(
+  expression* expr
+) { PROFILE(FSM_VAR_IS_OUTPUT_STATE);
 
   fsm_var* curr;  /* Pointer to current FSM variable structure */
 
@@ -183,7 +191,11 @@ fsm_var* fsm_var_is_output_state( expression* expr ) { PROFILE(FSM_VAR_IS_OUTPUT
  in the design, no binding occurs and the function displays an error message and returns a
  value of FALSE to the calling function.
 */
-bool fsm_var_bind_expr( char* sig_name, expression* expr, char* funit_name ) { PROFILE(FSM_VAR_BIND_EXPR);
+static bool fsm_var_bind_expr(
+  char*       sig_name,
+  expression* expr,
+  char*       funit_name
+) { PROFILE(FSM_VAR_BIND_EXPR);
 
   bool        retval = TRUE;  /* Return value for this function */
   funit_link* funitl;         /* Pointer to found functional unit link element */
@@ -212,7 +224,10 @@ bool fsm_var_bind_expr( char* sig_name, expression* expr, char* funit_name ) { P
  Iterates through specified expression tree, adding each expression to the
  specified functional unit if the expression does not already exist in the functional unit.
 */
-void fsm_var_add_expr( expression* expr, func_unit* funit ) { PROFILE(FSM_VAR_ADD_EXPR);
+static void fsm_var_add_expr(
+  expression* expr,
+  func_unit* funit
+) { PROFILE(FSM_VAR_ADD_EXPR);
 
   if( expr != NULL ) {
 
@@ -252,7 +267,10 @@ void fsm_var_add_expr( expression* expr, func_unit* funit ) { PROFILE(FSM_VAR_AD
  of TRUE to the calling function.  If the functional unit could not be found, this
  function, returns a value of FALSE to the calling function.
 */
-bool fsm_var_bind_stmt( statement* stmt, const char* funit_name ) { PROFILE(FSM_VAR_BIND_STMT);
+static bool fsm_var_bind_stmt(
+  statement*  stmt,
+  const char* funit_name
+) { PROFILE(FSM_VAR_BIND_STMT);
 
   bool        retval = FALSE;  /* Return value for this function */
   funit_link* funitl;          /* Pointer to found functional unit link element */
@@ -422,7 +440,9 @@ void fsm_var_bind() { PROFILE(FSM_VAR_BIND);
 
  Deallocates an FSM variable entry from memory.
 */
-void fsm_var_dealloc( fsm_var* fv ) { PROFILE(FSM_VAR_DEALLOC);
+static void fsm_var_dealloc(
+  fsm_var* fv
+) { PROFILE(FSM_VAR_DEALLOC);
 
   if( fv != NULL ) {
 
@@ -478,6 +498,9 @@ void fsm_var_remove( fsm_var* fv ) { PROFILE(FSM_VAR_REMOVE);
 
 /*
  $Log$
+ Revision 1.32  2008/01/07 23:59:54  phase1geo
+ More splint updates.
+
  Revision 1.31  2007/12/11 05:48:25  phase1geo
  Fixing more compile errors with new code changes and adding more profiling.
  Still have a ways to go before we can compile cleanly again (next submission

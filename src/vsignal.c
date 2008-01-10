@@ -58,7 +58,14 @@ extern char   user_msg[USER_MSG_LENGTH];
  creating temporary vsignals (reduces the need for dynamic memory allocation).
  for performance enhancing purposes.
 */
-void vsignal_init( vsignal* sig, char* name, int type, vector* value, int line, int col ) { PROFILE(VSIGNAL_INIT);
+static void vsignal_init(
+  vsignal* sig,
+  char*    name,
+  int      type,
+  vector*  value,
+  int      line,
+  int      col
+) { PROFILE(VSIGNAL_INIT);
 
   sig->name            = name;
   sig->pdim_num        = 0;
@@ -722,6 +729,9 @@ void vsignal_dealloc( vsignal* sig ) { PROFILE(VSIGNAL_DEALLOC);
 
 /*
  $Log$
+ Revision 1.51  2008/01/09 05:22:22  phase1geo
+ More splint updates using the -standard option.
+
  Revision 1.50  2008/01/07 23:59:55  phase1geo
  More splint updates.
 

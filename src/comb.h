@@ -28,9 +28,6 @@
 #include "defines.h"
 
 
-/*! \brief Resets combination counted bits in expression list */
-void combination_reset_counted_exprs( func_unit* funit );
-
 /*! \brief Resets combination counted bits in expression tree */
 void combination_reset_counted_expr_tree( expression* exp );
 
@@ -60,6 +57,9 @@ void combination_report( FILE* ofile, bool verbose );
 
 /*
  $Log$
+ Revision 1.23  2008/01/07 23:59:54  phase1geo
+ More splint updates.
+
  Revision 1.22  2007/11/20 05:28:57  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

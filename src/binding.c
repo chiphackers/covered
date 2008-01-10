@@ -103,12 +103,12 @@ extern bool        debug_mode;
 /*!
  Pointer to the head of the signal/functional unit/expression binding list.
 */
-exp_bind* eb_head;
+static exp_bind* eb_head;
 
 /*!
  Pointer to the tail of the signal/functional unit/expression binding list.
 */
-exp_bind* eb_tail;
+static exp_bind* eb_tail;
 
 
 /*!
@@ -353,7 +353,7 @@ char* bind_find_sig_name( const expression* exp ) { PROFILE(BIND_FIND_SIG_NAME);
  Attempts to bind the specified expression to a parameter in the design.  If binding is successful,
  returns TRUE; otherwise, returns FALSE.
 */
-bool bind_param( const char* name, expression* exp, func_unit* funit_exp, int exp_line, bool bind_locally ) { PROFILE(BIND_PARAM);
+static bool bind_param( const char* name, expression* exp, func_unit* funit_exp, int exp_line, bool bind_locally ) { PROFILE(BIND_PARAM);
 
   bool       retval = FALSE;  /* Return value for this function */
   mod_parm*  found_parm;      /* Pointer to found parameter in design for the given name */
@@ -569,7 +569,7 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
  Binds a given task/function call port parameter to the matching signal in the specified
  task/function.
 */
-void bind_task_function_ports( expression* expr, func_unit* funit, char* name, int* order, func_unit* funit_exp ) { PROFILE(BIND_TASK_FUNCTION_PORTS);
+static void bind_task_function_ports( expression* expr, func_unit* funit, char* name, int* order, func_unit* funit_exp ) { PROFILE(BIND_TASK_FUNCTION_PORTS);
 
   sig_link* sigl;            /* Pointer to current signal link to examine */
   int       i;               /* Loop iterator */
@@ -652,8 +652,15 @@ void bind_task_function_ports( expression* expr, func_unit* funit, char* name, i
 
  Binds an expression to a function/task/named block.
 */
-bool bind_task_function_namedblock( int type, char* name, expression* exp, func_unit* funit_exp,
-                                    bool cdd_reading, int exp_line, bool bind_locally ) { PROFILE(BIND_TASK_FUNCTION_NAMEDBLOCK);
+static bool bind_task_function_namedblock(
+    int type,
+    char* name,
+    expression* exp,
+    func_unit* funit_exp,
+    bool cdd_reading,
+    int exp_line,
+    bool bind_locally )
+{ PROFILE(BIND_TASK_FUNCTION_NAMEDBLOCK);
 
   bool       retval = FALSE;  /* Return value for this function */
   sig_link*  sigl;            /* Temporary signal link holder */
@@ -901,6 +908,9 @@ void bind_dealloc() { PROFILE(BIND_DEALLOC);
 
 /* 
  $Log$
+ Revision 1.120  2008/01/07 23:59:54  phase1geo
+ More splint updates.
+
  Revision 1.119  2008/01/07 05:01:57  phase1geo
  Cleaning up more splint errors.
 

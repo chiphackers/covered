@@ -238,6 +238,8 @@ static bool expression_op_func__dly_op( expression*, thread*, const sim_time* );
 static bool expression_op_func__repeat_dly( expression*, thread*, const sim_time* );
 static bool expression_op_func__wait( expression*, thread*, const sim_time* );
 
+static void expression_assign( expression*, expression*, int*, const sim_time* );
+
 /*!
  Array containing static information about expression operation types.  NOTE:  This structure MUST be
  updated if a new expression is added!  The third argument is an initialization to the exp_info_s structure.
@@ -344,7 +346,11 @@ const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",         "",             ex
  function should be called by either the expression_create function, the bind
  function, or the signal db_read function.
 */
-void expression_create_value( expression* exp, int width, bool data ) { PROFILE(EXPRESSION_CREATE_VALUE);
+static void expression_create_value(
+    expression* exp,
+    int width,
+    bool data
+) { PROFILE(EXPRESSION_CREATE_VALUE);
 
   vec_data* value = NULL;  /* Temporary storage of vector nibble array */
 
@@ -1029,7 +1035,11 @@ void expression_find_rhs_sigs( expression* expr, str_link** head, str_link** tai
  Recursively traverses given expression tree, adding any expressions found that point to parameter
  values.
 */
-void expression_find_params( expression* expr, exp_link** head, exp_link** tail ) { PROFILE(EXPRESSION_FIND_PARAMS);
+static void expression_find_params(
+    expression* expr,
+    exp_link**  head,
+    exp_link**  tail
+) { PROFILE(EXPRESSION_FIND_PARAMS);
 
   if( expr != NULL ) {
 
@@ -3739,7 +3749,7 @@ bool expression_is_static_only( expression* expr ) { PROFILE(EXPRESSION_IS_STATI
 }
 
 /*! \brief Returns TRUE if specified expression is on the LHS of a blocking assignment operator. */
-bool expression_is_assigned( expression* expr ) { PROFILE(EXPRESSION_IS_ASSIGNED);
+static bool expression_is_assigned( expression* expr ) { PROFILE(EXPRESSION_IS_ASSIGNED);
 
   bool retval = FALSE;  /* Return value for this function */
 
@@ -3886,7 +3896,12 @@ void expression_set_assigned( expression* expr ) { PROFILE(EXPRESSION_SET_ASSIGN
  Recursively iterates through specified LHS expression, assigning the value from the RHS expression.
  This is called whenever a blocking assignment expression is found during simulation.
 */
-void expression_assign( expression* lhs, expression* rhs, int* lsb, const sim_time* time ) { PROFILE(EXPRESSION_ASSIGN);
+void expression_assign(
+  expression*     lhs,
+  expression*     rhs,
+  int*            lsb,
+  const sim_time* time
+) { PROFILE(EXPRESSION_ASSIGN);
 
   int       intval1;    /* Integer value to use */
   vec_data* vstart;     /* Starting vector data */
@@ -4231,6 +4246,9 @@ void expression_dealloc( expression* expr, bool exp_only ) { PROFILE(EXPRESSION_
 
 /* 
  $Log$
+ Revision 1.273  2008/01/08 21:13:08  phase1geo
+ Completed -weak splint run.  Full regressions pass.
+
  Revision 1.272  2008/01/07 23:59:54  phase1geo
  More splint updates.
 
