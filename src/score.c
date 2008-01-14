@@ -736,7 +736,7 @@ static bool score_parse_args( int argc, int last_arg, const char** argv ) { PROF
     } else if( strncmp( "-P", argv[i], 2 ) == 0 ) {
 
       if( (retval = check_option_value( argc, argv, i )) ) {
-        char* tmp = strdup_safe( argv[i] );
+        char* tmp = strdup_safe( argv[i+1] );
         i++;
         ptr = tmp;
         while( (*ptr != '\0') && (*ptr != '=') ) {
@@ -1020,6 +1020,9 @@ int command_score( int argc, int last_arg, const char** argv ) { PROFILE(COMMAND
 
 /*
  $Log$
+ Revision 1.103  2008/01/09 05:22:22  phase1geo
+ More splint updates using the -standard option.
+
  Revision 1.102  2008/01/08 21:13:08  phase1geo
  Completed -weak splint run.  Full regressions pass.
 

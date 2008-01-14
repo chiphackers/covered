@@ -691,7 +691,7 @@ int vsignal_calc_lsb_for_expr( expression* expr, vsignal* sig, int lsb_val ) { P
  Deallocates all malloc'ed memory back to the heap for the specified
  vsignal.
 */
-void vsignal_dealloc( vsignal* sig ) { PROFILE(VSIGNAL_DEALLOC);
+void vsignal_dealloc( /*@only@*/ vsignal* sig ) { PROFILE(VSIGNAL_DEALLOC);
 
   exp_link* curr_expl;  /* Pointer to current expression link to set to NULL */
 
@@ -729,6 +729,9 @@ void vsignal_dealloc( vsignal* sig ) { PROFILE(VSIGNAL_DEALLOC);
 
 /*
  $Log$
+ Revision 1.52  2008/01/10 04:59:05  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.51  2008/01/09 05:22:22  phase1geo
  More splint updates using the -standard option.
 
