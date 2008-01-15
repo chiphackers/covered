@@ -42,12 +42,12 @@ extern /*@null@*/inst_link* inst_head;
 /*!
  Specifies the number of statements left to execute before returning to the CLI prompt.
 */
-static int    stmts_left = 0;
+static int stmts_left = 0;
 
 /*!
  Specifies the number of timesteps left to execute before returning to the CLI prompt.
 */
-static int    timesteps_left = 0;
+static int timesteps_left = 0;
 
 /*!
  Records the last timestep that was seen by the CLI.
@@ -57,17 +57,17 @@ static uint64 last_timestep;
 /*!
  Specifies if we should run without stopping (ignore stmts_left value)
 */
-static bool   dont_stop = FALSE;
+static bool dont_stop = FALSE;
 
 /*!
  Specifies if the history buffer needs to be replayed prior to CLI prompting.
 */
-static int    cli_replay_index = 0;
+static int cli_replay_index = 0;
 
 /*!
  Specifies if simulator debug information should be output during CLI operation.
 */
-bool          cli_debug_mode = FALSE;
+bool cli_debug_mode = FALSE;
 
 /*!
  Array of user-specified command strings.
@@ -77,12 +77,12 @@ static char** history = NULL;
 /*!
  Index of current command string in history array to store.
 */
-static int    history_index = 0;
+static int history_index = 0;
 
 /*!
  The currently allocated size of the history array.
 */
-static int    history_size = 0;
+static int history_size = 0;
 
 
 /*!
@@ -657,13 +657,15 @@ bool cli_read_hist_file( char* fname ) {
     fclose( hfile );
 
     if( !retval ) {
-      snprintf( user_msg, USER_MSG_LENGTH, "Specified -cli file \"%s\" is not a valid CLI history file", fname );
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Specified -cli file \"%s\" is not a valid CLI history file", fname );
+      assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
     }
 
   } else {
 
-    snprintf( user_msg, USER_MSG_LENGTH, "Unable to read history file \"%s\"", fname );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to read history file \"%s\"", fname );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = FALSE;
 
@@ -675,6 +677,9 @@ bool cli_read_hist_file( char* fname ) {
 
 /*
  $Log$
+ Revision 1.11  2008/01/07 23:59:54  phase1geo
+ More splint updates.
+
  Revision 1.10  2007/12/19 22:54:34  phase1geo
  More compiler fixes (almost there now).  Checkpointing.
 
