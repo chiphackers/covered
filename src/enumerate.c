@@ -106,8 +106,10 @@ void enumerate_resolve( funit_inst* inst ) { PROFILE(ENUMERATE_RESOLVE);
       if( first ) {
         vector_from_int( ei->sig->value, 0 );
       } else if( last_value == -1 ) {
+        unsigned int rv;
         print_output( "Implicit enumerate assignment cannot follow an X or Z value", FATAL, __FILE__, __LINE__ );
-        snprintf( user_msg, USER_MSG_LENGTH, "File: %s, Line: %d", obf_file( inst->funit->filename ), ei->sig->line );
+        rv = snprintf( user_msg, USER_MSG_LENGTH, "File: %s, Line: %d", obf_file( inst->funit->filename ), ei->sig->line );
+        assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL_WRAP, __FILE__, __LINE__ );
         exit( EXIT_FAILURE );
       } else {
@@ -121,7 +123,7 @@ void enumerate_resolve( funit_inst* inst ) { PROFILE(ENUMERATE_RESOLVE);
         vector_from_int( ei->sig->value, ei->value->num );
       } else {
         param_expr_eval( ei->value->exp, inst );
-        vector_set_value( ei->sig->value, ei->value->exp->value->value, VTYPE_VAL, ei->sig->value->width, 0, 0 );
+        (void)vector_set_value( ei->sig->value, ei->value->exp->value->value, ei->sig->value->width, 0, 0 );
       }
 
     }
@@ -189,6 +191,9 @@ void enumerate_dealloc_list( func_unit* funit ) { PROFILE(ENUMERATE_DEALLOC_LIST
 
 /*
  $Log$
+ Revision 1.11  2008/01/07 23:59:54  phase1geo
+ More splint updates.
+
  Revision 1.10  2007/12/10 23:16:21  phase1geo
  Working on adding profiler for use in finding performance issues.  Things don't compile
  at the moment.

@@ -243,7 +243,8 @@ static void score_generate_top_vpi_module( char* vpi_file, char* output_db, char
 
     } else {
 
-      snprintf( user_msg, USER_MSG_LENGTH, "Unable to open %s for writing", vpi_file );
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to open %s for writing", vpi_file );
+      assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       exit( EXIT_FAILURE );
 
@@ -289,7 +290,8 @@ static void score_generate_pli_tab_file( char* tab_file, char* top_mod ) { PROFI
 
     } else {
   
-      snprintf( user_msg, USER_MSG_LENGTH, "Unable to open %s for writing", mod_name );
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to open %s for writing", mod_name );
+      assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       exit( EXIT_FAILURE );
 
@@ -363,7 +365,8 @@ static bool read_command_file( const char* cmd_file, char*** arg_list, int* arg_
 
     } else {
 
-      snprintf( user_msg, USER_MSG_LENGTH, "Unable to open command file %s for reading", cmd_file );
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to open command file %s for reading", cmd_file );
+      assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       retval = FALSE;
 
@@ -371,7 +374,8 @@ static bool read_command_file( const char* cmd_file, char*** arg_list, int* arg_
 
   } else {
 
-    snprintf( user_msg, USER_MSG_LENGTH, "Command file %s does not exist", cmd_file );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Command file %s does not exist", cmd_file );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = FALSE;
 
@@ -475,7 +479,8 @@ static bool score_parse_args( int argc, int last_arg, const char** argv ) { PROF
             score_add_arg( argv[i-1] );
             score_add_arg( argv[i] );
           } else {
-            snprintf( user_msg, USER_MSG_LENGTH, "Output file \"%s\" is not writable", argv[i] );
+            unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Output file \"%s\" is not writable", argv[i] );
+            assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
             retval = FALSE;
           }
@@ -507,7 +512,8 @@ static bool score_parse_args( int argc, int last_arg, const char** argv ) { PROF
             score_add_arg( argv[i-1] );
             score_add_arg( argv[i] );
           } else {
-            snprintf( user_msg, USER_MSG_LENGTH, "Illegal top-level module name specified \"%s\"", argv[i] );
+            unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Illegal top-level module name specified \"%s\"", argv[i] );
+            assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
             retval = FALSE;
           }
@@ -556,7 +562,8 @@ static bool score_parse_args( int argc, int last_arg, const char** argv ) { PROF
           }
           free_safe( arg_list );
         } else {
-          snprintf( user_msg, USER_MSG_LENGTH, "Cannot find argument file %s specified with -f option", argv[i] );
+          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Cannot find argument file %s specified with -f option", argv[i] );
+          assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
           retval = FALSE;
         }
@@ -599,7 +606,8 @@ static bool score_parse_args( int argc, int last_arg, const char** argv ) { PROF
               score_add_arg( argv[i-1] );
               score_add_arg( argv[i] );
             } else {
-              snprintf( user_msg, USER_MSG_LENGTH, "VCD dumpfile not found \"%s\"", argv[i] );
+              unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "VCD dumpfile not found \"%s\"", argv[i] );
+              assert( rv < USER_MSG_LENGTH );
               print_output( user_msg, FATAL, __FILE__, __LINE__ );
               retval = FALSE;
             }
@@ -630,7 +638,8 @@ static bool score_parse_args( int argc, int last_arg, const char** argv ) { PROF
               score_add_arg( argv[i-1] );
               score_add_arg( argv[i] );
             } else {
-              snprintf( user_msg, USER_MSG_LENGTH, "LXT dumpfile not found \"%s\"", argv[i] );
+              unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "LXT dumpfile not found \"%s\"", argv[i] );
+              assert( rv < USER_MSG_LENGTH );
               print_output( user_msg, FATAL, __FILE__, __LINE__ );
               retval = FALSE;
             }
@@ -726,7 +735,8 @@ static bool score_parse_args( int argc, int last_arg, const char** argv ) { PROF
             score_add_arg( argv[i-1] );
             score_add_arg( argv[i] );
           } else {
-            snprintf( user_msg, USER_MSG_LENGTH, "Unrecognizable filename %s specified for -p option.", argv[i] );
+            unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unrecognizable filename %s specified for -p option.", argv[i] );
+            assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
             exit( EXIT_FAILURE );
           }
@@ -776,7 +786,8 @@ static bool score_parse_args( int argc, int last_arg, const char** argv ) { PROF
             score_add_arg( argv[i-1] );
             score_add_arg( argv[i] );
           } else {
-            snprintf( user_msg, USER_MSG_LENGTH, "Unknown -T value (%s).  Please specify min, max or typ.", argv[i] );
+            unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown -T value (%s).  Please specify min, max or typ.", argv[i] );
+            assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
             exit( EXIT_FAILURE );
           }
@@ -792,8 +803,11 @@ static bool score_parse_args( int argc, int last_arg, const char** argv ) { PROF
         case 'S'  :
         case '\0' :  flag_race_check  = NORMAL;   break;
         default   :
-          snprintf( user_msg, USER_MSG_LENGTH, "Unknown race condition value %c (available types are E, W, S or I)", argv[i][2] );
-          print_output( user_msg, FATAL, __FILE__, __LINE__ );
+          {
+            unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown race condition value %c (available types are E, W, S or I)", argv[i][2] );
+            assert( rv < USER_MSG_LENGTH );
+            print_output( user_msg, FATAL, __FILE__, __LINE__ );
+          }
           retval = FALSE;
           break;
       }
@@ -817,7 +831,8 @@ static bool score_parse_args( int argc, int last_arg, const char** argv ) { PROF
           score_add_arg( argv[i-1] );
           score_add_arg( argv[i] );
         } else {
-          snprintf( user_msg, USER_MSG_LENGTH, "Unknown -A value (%s).  Please specify ovl.", argv[i] );
+          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown -A value (%s).  Please specify ovl.", argv[i] );
+          assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
           retval = FALSE;
         }
@@ -837,7 +852,8 @@ static bool score_parse_args( int argc, int last_arg, const char** argv ) { PROF
         } else if( argv[i][(strlen( argv[i] ) - 1)] == '3' ) {
           generation = GENERATION_SV;
         } else {
-          snprintf( user_msg, USER_MSG_LENGTH, "Unknown generation value '%c'.  Legal values are 1, 2 or 3.\n", argv[i][(strlen( argv[i] ) - 1)] );
+          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown generation value '%c'.  Legal values are 1, 2 or 3.\n", argv[i][(strlen( argv[i] ) - 1)] );
+          assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ ); 
           retval = FALSE;
         }
@@ -852,8 +868,8 @@ static bool score_parse_args( int argc, int last_arg, const char** argv ) { PROF
               strl        = str_link_add( strdup_safe( tmp ), &gen_mod_head, &gen_mod_tail );
               strl->suppl = generation;
             } else {
-              snprintf( user_msg, USER_MSG_LENGTH, "Illegal -g syntax \"%s\".  See \"covered score -h\" for correct syntax.",
-                        tmp );
+              unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Illegal -g syntax \"%s\".  See \"covered score -h\" for correct syntax.", tmp );
+              assert( rv < USER_MSG_LENGTH );
               print_output( user_msg, FATAL, __FILE__, __LINE__ );
               retval = FALSE;
             }
@@ -893,7 +909,8 @@ static bool score_parse_args( int argc, int last_arg, const char** argv ) { PROF
 
     } else {
 
-      snprintf( user_msg, USER_MSG_LENGTH, "Unknown score command option \"%s\".  See \"covered score -h\" for more information.", argv[i] );
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown score command option \"%s\".  See \"covered score -h\" for more information.", argv[i] );
+      assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       retval = FALSE;
 
@@ -928,12 +945,14 @@ static bool score_parse_args( int argc, int last_arg, const char** argv ) { PROF
 */
 int command_score( int argc, int last_arg, const char** argv ) { PROFILE(COMMAND_SCORE);
 
-  int retval = 0;  /* Return value for this function */
+  int          retval = 0;  /* Return value for this function */
+  unsigned int rv;          /* Return value from snprintf calls */
 
   /* Parse score command-line */
   if( score_parse_args( argc, last_arg, argv ) ) {
 
-    snprintf( user_msg, USER_MSG_LENGTH, COVERED_HEADER );
+    rv = snprintf( user_msg, USER_MSG_LENGTH, COVERED_HEADER );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 
     if( output_db == NULL ) {
@@ -952,7 +971,8 @@ int command_score( int argc, int last_arg, const char** argv ) { PROFILE(COMMAND
     /* Generate VPI-based top module */
     if( vpi_file != NULL ) {
 
-      snprintf( user_msg, USER_MSG_LENGTH, "Outputting VPI file %s...", vpi_file );
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "Outputting VPI file %s...", vpi_file );
+      assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, NORMAL, __FILE__, __LINE__ );
       score_generate_top_vpi_module( vpi_file, output_db, top_instance );
       score_generate_pli_tab_file( vpi_file, top_module );
@@ -961,9 +981,10 @@ int command_score( int argc, int last_arg, const char** argv ) { PROFILE(COMMAND
     } else if( dump_mode != DUMP_FMT_NONE ) {
 
       switch( dump_mode ) {
-        case DUMP_FMT_VCD :  snprintf( user_msg, USER_MSG_LENGTH, "Scoring VCD dumpfile %s...", dump_file );  break;
-        case DUMP_FMT_LXT :  snprintf( user_msg, USER_MSG_LENGTH, "Scoring LXT dumpfile %s...", dump_file );  break;
+        case DUMP_FMT_VCD :  rv = snprintf( user_msg, USER_MSG_LENGTH, "Scoring VCD dumpfile %s...", dump_file );  break;
+        case DUMP_FMT_LXT :  rv = snprintf( user_msg, USER_MSG_LENGTH, "Scoring LXT dumpfile %s...", dump_file );  break;
       }
+      assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, NORMAL, __FILE__, __LINE__ );
       parse_and_score_dumpfile( output_db, dump_file, dump_mode );
       print_output( "", NORMAL, __FILE__, __LINE__ );
@@ -974,12 +995,14 @@ int command_score( int argc, int last_arg, const char** argv ) { PROFILE(COMMAND
       print_output( "***  Scoring completed successfully!  ***\n", NORMAL, __FILE__, __LINE__ );
     }
     /*@-duplicatequals -formattype@*/
-    snprintf( user_msg, USER_MSG_LENGTH, "Dynamic memory allocated:   %llu bytes", largest_malloc_size );
+    rv = snprintf( user_msg, USER_MSG_LENGTH, "Dynamic memory allocated:   %llu bytes", largest_malloc_size );
+    assert( rv < USER_MSG_LENGTH );
     /*@=duplicatequals =formattype@*/
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 #ifdef DEBUG_MODE
     /*@-duplicatequals -formattype@*/
-    snprintf( user_msg, USER_MSG_LENGTH, "Allocated memory remaining: %llu bytes", curr_malloc_size );
+    rv = snprintf( user_msg, USER_MSG_LENGTH, "Allocated memory remaining: %llu bytes", curr_malloc_size );
+    assert( rv < USER_MSG_LENGTH );
     /*@=duplicatequals =formattype@*/
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
@@ -1020,6 +1043,9 @@ int command_score( int argc, int last_arg, const char** argv ) { PROFILE(COMMAND
 
 /*
  $Log$
+ Revision 1.104  2008/01/14 05:08:45  phase1geo
+ Fixing bug created while doing splint updates.
+
  Revision 1.103  2008/01/09 05:22:22  phase1geo
  More splint updates using the -standard option.
 

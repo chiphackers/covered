@@ -145,8 +145,8 @@ void fsm_create_tables( fsm* table ) { PROFILE(FSM_CREATE_TABLES);
   while( (curr_arc != NULL) && set ) {
 
     /* Evaluate from and to state expressions */
-    expression_operate( curr_arc->from_state, NULL, &time );
-    expression_operate( curr_arc->to_state, NULL, &time );
+    (void)expression_operate( curr_arc->from_state, NULL, &time );
+    (void)expression_operate( curr_arc->to_state, NULL, &time );
 
     /* Set table entry in table, if possible */
     arc_add( &(table->table), curr_arc->from_state->value, curr_arc->to_state->value, 0 );
@@ -179,7 +179,7 @@ bool fsm_db_write( fsm* table, FILE* file, bool parse_mode ) { PROFILE(FSM_DB_WR
   /* Print set table */
   if( table->table != NULL ) {
     fprintf( file, "1 " );
-    arc_db_write( table->table, file );
+    retval = arc_db_write( table->table, file );
 
     /* Deallocate the given table after writing it */
     if( table->table != NULL ) {
@@ -272,7 +272,8 @@ bool fsm_db_read( char** line, func_unit* funit ) { PROFILE(FSM_DB_READ);
  
       } else {
 
-        snprintf( user_msg, USER_MSG_LENGTH, "Unable to find state variable expressions (%d, %d) for current FSM", iexp_id, oexp_id );
+        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to find state variable expressions (%d, %d) for current FSM", iexp_id, oexp_id );
+        assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         retval = FALSE;
 
@@ -330,7 +331,7 @@ bool fsm_db_merge( fsm* base, char** line, bool same ) { PROFILE(FSM_DB_MERGE);
 #endif
     if( is_table == 1 ) {
 
-      arc_db_merge( &(base->table), line, same );
+      retval &= arc_db_merge( &(base->table), line, same );
           
     }
 
@@ -396,8 +397,10 @@ bool fsm_get_funit_summary( const char* funit_name, int funit_type, int* total, 
 
   if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
 
-    snprintf( tmp, 21, "%20.0f", funitl->funit->stat->arc_total );
-    assert( sscanf( tmp, "%d", total ) == 1 );
+    unsigned int rv = snprintf( tmp, 21, "%20.0f", funitl->funit->stat->arc_total );
+    assert( rv < 21 );
+    rv = sscanf( tmp, "%d", total );
+    assert( rv == 1 );
     *hit = funitl->funit->stat->arc_hit;
 
   } else {
@@ -674,7 +677,8 @@ static bool fsm_instance_summary(
   } else if( strcmp( parent_inst, "*" ) == 0 ) {
     strcpy( tmpname, pname );
   } else {
-    snprintf( tmpname, 4096, "%s.%s", parent_inst, pname ); 
+    unsigned int rv = snprintf( tmpname, 4096, "%s.%s", parent_inst, pname ); 
+    assert( rv < 4096 );
   }
 
   free_safe( pname );
@@ -877,19 +881,20 @@ static void fsm_display_arc_verbose(
     fsm* table
 ) { PROFILE(FSM_DISPLAY_ARC_VERBOSE);
 
-  bool   trans_known;   /* Set to TRUE if the number of state transitions is known */
-  char   fstr[100];     /* Format string */
-  char   tmp[20];       /* Temporary string */
-  int    width;         /* Width (in characters) of the entire output value */
-  int    val_width;     /* Number of bits in output state expression */
-  int    len_width;     /* Number of characters needed to store the width of the output state expression */
-  char** from_states;   /* String array containing from_state information */
-  char** to_states;     /* String array containing to_state information */
-  int*   excludes;      /* Temporary container (not used in this functio) */
-  int    arc_size;      /* Number of elements in the from_states and to_states arrays */
-  int    i;             /* Loop iterator */
-  char   tmpfst[4096];  /* Temporary string holder for from_state value */
-  char   tmptst[4096];  /* Temporary string holder for to_state value */
+  bool         trans_known;   /* Set to TRUE if the number of state transitions is known */
+  char         fstr[100];     /* Format string */
+  char         tmp[20];       /* Temporary string */
+  int          width;         /* Width (in characters) of the entire output value */
+  int          val_width;     /* Number of bits in output state expression */
+  int          len_width;     /* Number of characters needed to store the width of the output state expression */
+  char**       from_states;   /* String array containing from_state information */
+  char**       to_states;     /* String array containing to_state information */
+  int*         excludes;      /* Temporary container (not used in this functio) */
+  int          arc_size;      /* Number of elements in the from_states and to_states arrays */
+  int          i;             /* Loop iterator */
+  char         tmpfst[4096];  /* Temporary string holder for from_state value */
+  char         tmptst[4096];  /* Temporary string holder for to_state value */
+  unsigned int rv;            /* Return value from snprintf calls */
 
   /* Figure out if transactions were known */
   trans_known = (arc_get_suppl( table->table, ARC_TRANS_KNOWN ) == 0) ? TRUE : FALSE;
@@ -903,14 +908,16 @@ static void fsm_display_arc_verbose(
   val_width = table->to_state->value->width;
 
   /* Calculate width of length string */
-  snprintf( tmp, 20, "%d", val_width );
+  rv = snprintf( tmp, 20, "%d", val_width );
+  assert( rv < 20 );
   len_width = strlen( tmp );
 
   /* Create format string to hold largest output value */
   width = ((val_width % 4) == 0) ? (val_width / 4) : ((val_width / 4) + 1);
   width = width + len_width + 2;
   width = (width > 10) ? width : 10;
-  snprintf( fstr, 100, "          %%-%d.%ds    %%-%d.%ds\n", width, width, width, width );
+  rv = snprintf( fstr, 100, "          %%-%d.%ds    %%-%d.%ds\n", width, width, width, width );
+  assert( rv < 100 );
 
   fprintf( ofile, fstr, "From State", "To State" );
   fprintf( ofile, fstr, "==========", "==========" );
@@ -919,10 +926,13 @@ static void fsm_display_arc_verbose(
   arc_get_transitions( &from_states, &to_states, &excludes, &arc_size, table->table, (report_covered || trans_known), FALSE );
 
   /* Output the information to the specified output stream */
-  snprintf( fstr, 100, "          %%-%d.%ds -> %%-%d.%ds\n", width, width, width, width );
+  rv = snprintf( fstr, 100, "          %%-%d.%ds -> %%-%d.%ds\n", width, width, width, width );
+  assert( rv < 100 );
   for( i=0; i<arc_size; i++ ) {
-    snprintf( tmpfst, 4096, "%u'h%s", arc_get_width( table->table ), from_states[i] );
-    snprintf( tmptst, 4096, "%u'h%s", arc_get_width( table->table ), to_states[i] );
+    rv = snprintf( tmpfst, 4096, "%u'h%s", arc_get_width( table->table ), from_states[i] );
+    assert( rv < 4096 );
+    rv = snprintf( tmptst, 4096, "%u'h%s", arc_get_width( table->table ), to_states[i] );
+    assert( rv < 4096 );
     fprintf( ofile, fstr, tmpfst, tmptst );
     free_safe( from_states[i] );
     free_safe( to_states[i] );
@@ -1019,7 +1029,8 @@ static void fsm_instance_verbose(
   } else if( strcmp( parent_inst, "*" ) == 0 ) {
     strcpy( tmpname, pname );
   } else {
-    snprintf( tmpname, 4096, "%s.%s", parent_inst, pname );
+    unsigned int rv = snprintf( tmpname, 4096, "%s.%s", parent_inst, pname );
+    assert( rv < 4096 );
   }
 
   free_safe( pname );
@@ -1232,6 +1243,9 @@ void fsm_dealloc( fsm* table ) { PROFILE(FSM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.77  2008/01/10 04:59:04  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.76  2008/01/08 21:13:08  phase1geo
  Completed -weak splint run.  Full regressions pass.
 

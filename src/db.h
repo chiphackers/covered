@@ -148,7 +148,7 @@ void db_gen_item_connect_true( gen_item* gi1, gen_item* gi2 );
 void db_gen_item_connect_false( gen_item* gi1, gen_item* gi2 );
 
 /*! \brief Connects one generate item block to another. */
-bool db_gen_item_connect( gen_item* gi1, gen_item* gi2 );
+void db_gen_item_connect( gen_item* gi1, gen_item* gi2 );
 
 /*! \brief Connects one statement block to another. */
 bool db_statement_connect( statement* curr_stmt, statement* next_stmt );
@@ -192,6 +192,9 @@ void db_do_timestep( uint64 time, bool final );
 
 /*
  $Log$
+ Revision 1.80  2008/01/10 04:59:04  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.79  2007/11/20 05:28:58  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

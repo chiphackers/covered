@@ -123,8 +123,9 @@ vector* vector_create( int width, int type, bool data ) { PROFILE(VECTOR_CREATE)
   if( data == TRUE ) {
 #ifdef SKIP
     if( width > MAX_BIT_WIDTH ) {
-      snprintf( user_msg, USER_MSG_LENGTH, "Found a vector width (%d) that exceeds the maximum currently allowed by Covered (%d)",
-                width, MAX_BIT_WIDTH );
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Found a vector width (%d) that exceeds the maximum currently allowed by Covered (%d)",
+                                  width, MAX_BIT_WIDTH );
+      assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       exit( EXIT_FAILURE );
     }
@@ -184,7 +185,7 @@ void vector_copy( vector* from_vec, vector** to_vec ) { PROFILE(VECTOR_COPY);
 static unsigned int vector_nibbles_to_uint( nibble dat0, nibble dat1, nibble dat2, nibble dat3 ) { PROFILE(VECTOR_NIBBLES_TO_UINT);
 
   unsigned int d[4];  /* Array of unsigned int format of dat0,1,2,3 */
-  int          i;     /* Loop iterator */
+  unsigned int i;     /* Loop iterator */
 
   d[0] = ((unsigned int)dat0) & 0xff;
   d[1] = ((unsigned int)dat1) & 0xff;
@@ -215,7 +216,7 @@ static unsigned int vector_nibbles_to_uint( nibble dat0, nibble dat1, nibble dat
 */
 static void vector_uint_to_nibbles( unsigned int data, nibble* dat ) { PROFILE(VECTOR_UINT_TO_NIBBLES);
 
-  int i;  /* Loop iterator */
+  unsigned int i;  /* Loop iterator */
 
   for( i=0; i<4; i++ ) {
     dat[i] = (nibble)( (((data & (0x00000003 << (i * 2))) >> ((i * 2) + 0)) |
@@ -261,7 +262,7 @@ void vector_db_write( vector* vec, FILE* file, bool write_data ) { PROFILE(VECTO
   dflt = (vec->suppl.part.is_2state == 1) ? 0x0 : 0x2;
 
   /* Output vector information to specified file */
-  fprintf( file, "%d %d",
+  fprintf( file, "%d %hhu",
     vec->width,
     vec->suppl.all
   );
@@ -481,7 +482,8 @@ char* vector_get_toggle01( vec_data* nib, int width ) { PROFILE(VECTOR_GET_TOGGL
   char  tmp[2];
 
   for( i=(width - 1); i>=0; i-- ) {
-    snprintf( tmp, 2, "%x", nib[i].part.sig.tog01 );
+    unsigned int rv = snprintf( tmp, 2, "%hhx", nib[i].part.sig.tog01 );
+    assert( rv < 2 );
     bits[((width - 1) - i)] = tmp[0];
   }
 
@@ -506,7 +508,8 @@ char* vector_get_toggle10( vec_data* nib, int width ) { PROFILE(VECTOR_GET_TOGGL
   char  tmp[2];
 
   for( i=(width - 1); i>=0; i-- ) {
-    snprintf( tmp, 2, "%x", nib[i].part.sig.tog10 );
+    unsigned int rv = snprintf( tmp, 2, "%hhx", nib[i].part.sig.tog10 );
+    assert( rv < 2 );
     bits[((width - 1) - i)] = tmp[0];
   }
 
@@ -534,7 +537,7 @@ void vector_display_toggle01( vec_data* nib, int width, FILE* ofile ) { PROFILE(
   fprintf( ofile, "%d'h", width );
 
   for( i=(width - 1); i>=0; i-- ) {
-    value = value | (nib[i].part.sig.tog01 << (i % 4));
+    value = value | (nib[i].part.sig.tog01 << ((unsigned)i % 4));
     if( (i % 4) == 0 ) {
       fprintf( ofile, "%1x", value );
       value = 0;
@@ -564,7 +567,7 @@ void vector_display_toggle10( vec_data* nib, int width, FILE* ofile ) { PROFILE(
   fprintf( ofile, "%d'h", width );
 
   for( i=(width - 1); i>=0; i-- ) {
-    value = value | (nib[i].part.sig.tog10 << (i % 4));
+    value = value | (nib[i].part.sig.tog10 << ((unsigned)i % 4));
     if( (i % 4) == 0 ) {
       fprintf( ofile, "%1x", value );
       value = 0;
@@ -618,7 +621,7 @@ void vector_display_nibble( vec_data* nib, int width, int type ) {
   printf( "      raw value:" );
   
   for( i=(width - 1); i>=0; i-- ) {
-    printf( " %08x", nib[i].all );
+    printf( " %hhx", nib[i].all );
   }
 
   /* Display nibble value */
@@ -640,7 +643,7 @@ void vector_display_nibble( vec_data* nib, int width, int type ) {
       /* Display bit set information */
       printf( ", set: %d'b", width );
       for( i=(width - 1); i>=0; i-- ) {
-        printf( "%d", nib[i].part.sig.set );
+        printf( "%hhu", nib[i].part.sig.set );
       }
 
       break;
@@ -650,31 +653,31 @@ void vector_display_nibble( vec_data* nib, int width, int type ) {
       /* Display eval_a information */
       printf( ", a: %d'b", width );
       for( i=(width - 1); i>=0; i-- ) {
-        printf( "%d", nib[i].part.exp.eval_a );
+        printf( "%hhu", nib[i].part.exp.eval_a );
       }
 
       /* Display eval_b information */
       printf( ", b: %d'b", width );
       for( i=(width - 1); i>=0; i-- ) {
-        printf( "%d", nib[i].part.exp.eval_b );
+        printf( "%hhu", nib[i].part.exp.eval_b );
       }
 
       /* Display eval_c information */
       printf( ", c: %d'b", width );
       for( i=(width - 1); i>=0; i-- ) {
-        printf( "%d", nib[i].part.exp.eval_c );
+        printf( "%hhu", nib[i].part.exp.eval_c );
       }
 
       /* Display eval_d information */
       printf( ", d: %d'b", width );
       for( i=(width - 1); i>=0; i-- ) {
-        printf( "%d", nib[i].part.exp.eval_d );
+        printf( "%hhu", nib[i].part.exp.eval_d );
       }
 
       /* Display set information */
       printf( ", set: %d'b", width );
       for( i=(width - 1); i>=0; i-- ) {
-        printf( "%d", nib[i].part.exp.set );
+        printf( "%hhu", nib[i].part.exp.set );
       }
 
       break;
@@ -692,13 +695,13 @@ void vector_display_nibble( vec_data* nib, int width, int type ) {
       /* Write history */
       printf( ", wr: %d'b", width );
       for( i=(width - 1); i>=0; i-- ) {
-        printf( "%d", nib[i].part.mem.wr );
+        printf( "%hhu", nib[i].part.mem.wr );
       }
 
       /* Read history */
       printf( ", rd: %d'b", width );
       for( i=(width - 1); i>=0; i-- ) {
-        printf( "%d", nib[i].part.mem.rd );
+        printf( "%hhu", nib[i].part.mem.rd );
       }
 
       break;
@@ -812,7 +815,6 @@ bool vector_set_assigned( vector* vec, int msb, int lsb ) { PROFILE(VECTOR_SET_A
 /*!
  \param vec       Pointer to vector to set value to.
  \param value     New value to set vector value to.
- \param val_type  Type of vector value being assigned from.
  \param width     Width of new value.
  \param from_idx  Starting bit index of value to start copying.
  \param to_idx    Starting bit index of value to copy to.
@@ -825,7 +827,7 @@ bool vector_set_assigned( vector* vec, int msb, int lsb ) { PROFILE(VECTOR_SET_A
  been set, checks to see if new vector bits have toggled, sets appropriate
  toggle values, sets the new value to this value and returns.
 */
-bool vector_set_value( vector* vec, vec_data* value, int val_type, int width, int from_idx, int to_idx ) { PROFILE(VECTOR_SET_VALUE);
+bool vector_set_value( vector* vec, vec_data* value, int width, int from_idx, int to_idx ) { PROFILE(VECTOR_SET_VALUE);
 
   bool      retval = FALSE;  /* Return value for this function */
   nibble    from_val;        /* Current bit value of value being assigned */
@@ -914,13 +916,6 @@ bool vector_set_value( vector* vec, vec_data* value, int val_type, int width, in
     default : break;
   }
 
-#ifdef OBSOLETE
-  /* If the value being assigned from is a memory, set the read bit on the first read bit */
-  if( val_type == VTYPE_MEM ) {
-    value[from_idx].part.mem.rd = 1;
-  }
-#endif
-
   PROFILE_END;
 
   return( retval );
@@ -957,7 +952,7 @@ bool vector_bit_fill( vector* vec, int msb, int lsb ) { PROFILE(VECTOR_BIT_FILL)
   }
 
   for( i=lsb; i<msb; i++ ) {
-    changed |= vector_set_value( vec, &value, VTYPE_VAL, 1, 0, i );
+    changed |= vector_set_value( vec, &value, 1, 0, i );
   }
 
   PROFILE_END;
@@ -1263,16 +1258,16 @@ static void vector_set_static( vector* vec, char* str, int bits_per_char ) { PRO
 */
 char* vector_to_string( vector* vec ) { PROFILE(VECTOR_TO_STRING);
 
-  char*  str = NULL;     /* Pointer to allocated string */
-  char*  tmp;            /* Pointer to temporary string value */
-  int    i;              /* Loop iterator */
-  int    str_size;       /* Number of characters needed to hold vector string */
-  int    vec_size;       /* Number of characters needed to hold vector value */
-  int    group;          /* Number of vector bits to group together for type */
-  char   type_char;      /* Character type specifier */
-  int    pos;            /* Current bit position in string */
-  nibble value;          /* Current value of string character */
-  char   width_str[20];  /* Holds value of width string to calculate string size */
+  char*        str = NULL;     /* Pointer to allocated string */
+  char*        tmp;            /* Pointer to temporary string value */
+  int          i;              /* Loop iterator */
+  int          str_size;       /* Number of characters needed to hold vector string */
+  int          vec_size;       /* Number of characters needed to hold vector value */
+  unsigned int group;          /* Number of vector bits to group together for type */
+  char         type_char;      /* Character type specifier */
+  int          pos;            /* Current bit position in string */
+  nibble       value;          /* Current value of string character */
+  char         width_str[20];  /* Holds value of width string to calculate string size */
 
   if( vec->suppl.part.base == QSTRING ) {
 
@@ -1299,6 +1294,8 @@ char* vector_to_string( vector* vec ) { PROFILE(VECTOR_TO_STRING);
     str[pos] = '\0';
  
   } else {
+
+    unsigned int rv;
 
     switch( vec->suppl.part.base ) {
       case BINARY :  
@@ -1331,13 +1328,13 @@ char* vector_to_string( vector* vec ) { PROFILE(VECTOR_TO_STRING);
     for( i=(vec->width - 1); i>=0; i-- ) {
       switch( vec->value[i].part.val.value ) {
         case 0 :  value = value;                                              break;
-        case 1 :  value = (value < 16) ? ((1 << (i%group)) | value) : value;  break;
+        case 1 :  value = (value < 16) ? ((1 << ((unsigned)i%group)) | value) : value;  break;
         case 2 :  value = 16;                                                 break;
         case 3 :  value = 17;                                                 break;
         default:  break;
       }
       assert( pos < vec_size );
-      if( (i % group) == 0 ) {
+      if( ((unsigned)i % group) == 0 ) {
         switch( value ) {
           case 0x0 :  if( (pos > 0) || (i == 0) ) { tmp[pos] = '0';  pos++; }  break;
           case 0x1 :  tmp[pos] = '1';  pos++;  break;
@@ -1360,7 +1357,9 @@ char* vector_to_string( vector* vec ) { PROFILE(VECTOR_TO_STRING);
           default  :  
             print_output( "Internal Error:  Value in vector_to_string exceeds allowed limit\n", FATAL, __FILE__, __LINE__ );
             exit( EXIT_FAILURE );
+            /*@-unreachable@*/
             break;
+            /*@=unreachable@*/
         }
         value = 0;
       }
@@ -1368,14 +1367,16 @@ char* vector_to_string( vector* vec ) { PROFILE(VECTOR_TO_STRING);
 
     tmp[pos] = '\0';
 
-    snprintf( width_str, 20, "%d", vec->width );
+    rv = snprintf( width_str, 20, "%d", vec->width );
+    assert( rv < 20 );
     str_size = strlen( width_str ) + 2 + strlen( tmp ) + 1 + vec->suppl.part.is_signed;
     str      = (char*)malloc_safe( str_size );
     if( vec->suppl.part.is_signed == 0 ) {
-      snprintf( str, str_size, "%d'%c%s", vec->width, type_char, tmp );
+      rv = snprintf( str, str_size, "%d'%c%s", vec->width, type_char, tmp );
     } else {
-      snprintf( str, str_size, "%d's%c%s", vec->width, type_char, tmp );
+      rv = snprintf( str, str_size, "%d's%c%s", vec->width, type_char, tmp );
     }
+    assert( rv < str_size );
 
     free_safe( tmp );
 
@@ -1555,13 +1556,18 @@ bool vector_vcd_assign( vector* vec, char* value, int msb, int lsb ) { PROFILE(V
       case 'x':  vval.all = 2;  break;
       case 'z':  vval.all = 3;  break;
       default :  
-        snprintf( user_msg, USER_MSG_LENGTH, "VCD file contains value change character that is not four-state" );
-        print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        exit( EXIT_FAILURE );
+        {
+          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "VCD file contains value change character that is not four-state" );
+          assert( rv < USER_MSG_LENGTH );
+          print_output( user_msg, FATAL, __FILE__, __LINE__ );
+          exit( EXIT_FAILURE );
+        }
+        /*@-unreachable@*/
         break;
+        /*@=unreachable@*/
     }
 
-    retval |= vector_set_value( vec, &vval, VTYPE_VAL, 1, 0, i );
+    retval |= vector_set_value( vec, &vval, 1, 0, i );
 
     ptr--;
     i++;
@@ -1573,7 +1579,7 @@ bool vector_vcd_assign( vector* vec, char* value, int msb, int lsb ) { PROFILE(V
   /* Perform VCD value bit-fill if specified value did not match width of vector value */
   for( ; i<=msb; i++ ) {
     if( vval.all == 1 ) { vval.all = 0; }
-    retval |= vector_set_value( vec, &vval, VTYPE_VAL, 1, 0, i );
+    retval |= vector_set_value( vec, &vval, 1, 0, i );
   }
 
   PROFILE_END;
@@ -1626,7 +1632,7 @@ bool vector_bitwise_op( vector* tgt, vector* src1, vector* src2, nibble* optab )
     }
 
     vec.value[0].part.val.value = optab[ ((bit1 << 2) | bit2) ];
-    retval |= vector_set_value( tgt, vec.value, VTYPE_VAL, 1, 0, i );
+    retval |= vector_set_value( tgt, vec.value, 1, 0, i );
     
   }
 
@@ -1738,15 +1744,20 @@ bool vector_op_compare( vector* tgt, vector* left, vector* right, int comp_type 
       case COMP_NE   :
       case COMP_CNE  :  value.all = (lbit == rbit)                                 ? 0 : 1;  break;
       default        :
-        snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  Unidentified comparison type %d", comp_type );
-        print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        exit( EXIT_FAILURE );
+        {
+          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  Unidentified comparison type %d", comp_type );
+          assert( rv < USER_MSG_LENGTH );
+          print_output( user_msg, FATAL, __FILE__, __LINE__ );
+          exit( EXIT_FAILURE );
+        }
+        /*@-unreachable@*/
         break;
+        /*@=unreachable@*/
     }
 
   }
 
-  retval = vector_set_value( tgt, &value, VTYPE_VAL, 1, 0, 0 );
+  retval = vector_set_value( tgt, &value, 1, 0, 0 );
 
   PROFILE_END;
 
@@ -1778,20 +1789,20 @@ bool vector_op_lshift( vector* tgt, vector* left, vector* right ) { PROFILE(VECT
   if( vector_is_unknown( right ) ) {
 
     for( i=0; i<tgt->width; i++ ) {
-      retval |= vector_set_value( tgt, &unknown, VTYPE_VAL, 1, 0, i );
+      retval |= vector_set_value( tgt, &unknown, 1, 0, i );
     }
 
   } else {
 
     /* Zero-fill LSBs */
     for( i=0; i<tgt->width; i++ ) {
-      retval |= vector_set_value( tgt, &zero, VTYPE_VAL, 1, 0, i );
+      retval |= vector_set_value( tgt, &zero, 1, 0, i );
     }
 
     shift_val = vector_to_int( right );
 
     if( shift_val < left->width ) {
-      retval |= vector_set_value( tgt, left->value, VTYPE_VAL, (left->width - shift_val), 0, shift_val );
+      retval |= vector_set_value( tgt, left->value, (left->width - shift_val), 0, shift_val );
     }
 
   }
@@ -1826,20 +1837,20 @@ bool vector_op_rshift( vector* tgt, vector* left, vector* right ) { PROFILE(VECT
   if( vector_is_unknown( right ) ) {
 
     for( i=0; i<tgt->width; i++ ) {
-      retval |= vector_set_value( tgt, &unknown, VTYPE_VAL, 1, 0, i );
+      retval |= vector_set_value( tgt, &unknown, 1, 0, i );
     }
 
   } else {
 
     /* Perform zero-fill */
     for( i=0; i<tgt->width; i++ ) {
-      retval |= vector_set_value( tgt, &zero, VTYPE_VAL, 1, 0, i );
+      retval |= vector_set_value( tgt, &zero, 1, 0, i );
     }
 
     shift_val = vector_to_int( right );
 
     if( shift_val < left->width ) {
-      retval |= vector_set_value( tgt, left->value, VTYPE_VAL, (left->width - shift_val), shift_val, 0 );
+      retval |= vector_set_value( tgt, left->value, (left->width - shift_val), shift_val, 0 );
     }
 
   }
@@ -1875,20 +1886,20 @@ bool vector_op_arshift( vector* tgt, vector* left, vector* right ) { PROFILE(VEC
   if( vector_is_unknown( right ) ) {
 
     for( i=0; i<tgt->width; i++ ) {
-      retval |= vector_set_value( tgt, &unknown, VTYPE_VAL, 1, 0, i );
+      retval |= vector_set_value( tgt, &unknown, 1, 0, i );
     }
 
   } else {
 
     /* Perform sign extend-fill */
     for( i=0; i<tgt->width; i++ ) {
-      retval |= vector_set_value( tgt, &sign, VTYPE_VAL, 1, 0, i );
+      retval |= vector_set_value( tgt, &sign, 1, 0, i );
     }
 
     shift_val = vector_to_int( right );
 
     if( shift_val < left->width ) {
-      retval |= vector_set_value( tgt, left->value, VTYPE_VAL, (left->width - shift_val), shift_val, 0 );
+      retval |= vector_set_value( tgt, left->value, (left->width - shift_val), shift_val, 0 );
     }
 
   }
@@ -2018,7 +2029,7 @@ bool vector_op_negate( vector* tgt, vector* src ) { PROFILE(VECTOR_OP_NEGATE);
   vec2->value[0].part.val.value = 1;
 
   /* Perform twos complement inversion on right expression */
-  vector_unary_inv( vec1, src );
+  (void)vector_unary_inv( vec1, src );
 
   /* Add one to the inverted value */
   retval = vector_op_add( tgt, vec1, vec2 );
@@ -2053,7 +2064,7 @@ bool vector_op_subtract( vector* tgt, vector* left, vector* right ) { PROFILE(VE
   vec = vector_create( tgt->width, VTYPE_VAL, TRUE );
 
   /* Negate the value on the right */
-  vector_op_negate( vec, right );
+  (void)vector_op_negate( vec, right );
 
   /* Add new value to left value */
   retval = vector_op_add( tgt, left, vec );
@@ -2096,8 +2107,8 @@ bool vector_op_multiply( vector* tgt, vector* left, vector* right ) { PROFILE(VE
   vector_init( &rcomp, &rcomp_val, 1,  VTYPE_VAL );
   vector_init( &vec,   vec_val,    32, VTYPE_VAL );
 
-  vector_unary_op( &lcomp, left,  xor_optab );
-  vector_unary_op( &rcomp, right, xor_optab );
+  (void)vector_unary_op( &lcomp, left,  xor_optab );
+  (void)vector_unary_op( &rcomp, right, xor_optab );
 
   /* Perform 4-state multiplication */
   if( (lcomp.value[0].part.val.value == 2) && (rcomp.value[0].part.val.value == 2) ) {
@@ -2111,7 +2122,7 @@ bool vector_op_multiply( vector* tgt, vector* left, vector* right ) { PROFILE(VE
     if( vector_to_int( left ) == 0 ) {
       vector_from_int( &vec, 0 );
     } else if( vector_to_int( left ) == 1 ) {
-      vector_set_value( &vec, right->value, right->suppl.part.type, right->width, 0, 0 );
+      (void)vector_set_value( &vec, right->value, right->width, 0, 0 );
     } else {
       for( i=0; i<vec.width; i++ ) {
         vec.value[i].part.val.value = 2;
@@ -2123,7 +2134,7 @@ bool vector_op_multiply( vector* tgt, vector* left, vector* right ) { PROFILE(VE
     if( vector_to_int( right ) == 0 ) {
       vector_from_int( &vec, 0 );
     } else if( vector_to_int( right ) == 1 ) {
-      vector_set_value( &vec, left->value, left->suppl.part.type, left->width, 0, 0 );
+      (void)vector_set_value( &vec, left->value, left->width, 0, 0 );
     } else {
       for( i=0; i<vec.width; i++ ) {
         vec.value[i].part.val.value = 2;
@@ -2137,7 +2148,7 @@ bool vector_op_multiply( vector* tgt, vector* left, vector* right ) { PROFILE(VE
   }
 
   /* Set target value */
-  retval = vector_set_value( tgt, vec.value, VTYPE_VAL, vec.width, 0, 0 );
+  retval = vector_set_value( tgt, vec.value, vec.width, 0, 0 );
 
   PROFILE_END;
 
@@ -2165,7 +2176,7 @@ bool vector_op_inc( vector* tgt ) { PROFILE(VECTOR_OP_INC);
   tmp2->value[0].part.val.value = 1;
   
   /* Finally add the values and assign them back to the target */
-  vector_op_add( tgt, tmp1, tmp2 );
+  (void)vector_op_add( tgt, tmp1, tmp2 );
 
   PROFILE_END;
 
@@ -2193,7 +2204,7 @@ bool vector_op_dec( vector* tgt ) { PROFILE(VECTOR_OP_DEC);
   tmp2->value[0].part.val.value = 1;
 
   /* Finally add the values and assign them back to the target */
-  vector_op_subtract( tgt, tmp1, tmp2 );
+  (void)vector_op_subtract( tgt, tmp1, tmp2 );
 
   PROFILE_END;
 
@@ -2231,7 +2242,7 @@ bool vector_unary_inv( vector* tgt, vector* src ) { PROFILE(VECTOR_UNARY_INV);
       case 1  :  vec.value[0].part.val.value = 0;  break;
       default :  vec.value[0].part.val.value = 2;  break;
     }
-    retval |= vector_set_value( tgt, vec.value, VTYPE_VAL, 1, 0, i );
+    retval |= vector_set_value( tgt, vec.value, 1, 0, i );
 
   }
 
@@ -2280,7 +2291,7 @@ bool vector_unary_op( vector* tgt, vector* src, nibble* optab ) { PROFILE(VECTOR
     }
 
     vec.value[0].part.val.value = uval;
-    retval = vector_set_value( tgt, vec.value, VTYPE_VAL, 1, 0, 0 );
+    retval = vector_set_value( tgt, vec.value, 1, 0, 0 );
 
   }
 
@@ -2305,7 +2316,7 @@ bool vector_unary_not( vector* tgt, vector* src ) { PROFILE(VECTOR_UNARY_NOT);
   vec_data vec_val;  /* Temporary value */
 
   vector_init( &vec, &vec_val, 1, VTYPE_VAL );
-  vector_unary_op( &vec, src, or_optab );
+  (void)vector_unary_op( &vec, src, or_optab );
 
   retval = vector_unary_inv( tgt, &vec );
 
@@ -2347,6 +2358,9 @@ void vector_dealloc( vector* vec ) { PROFILE(VECTOR_DEALLOC);
 
 /*
  $Log$
+ Revision 1.106  2008/01/09 05:22:22  phase1geo
+ More splint updates using the -standard option.
+
  Revision 1.105  2008/01/08 21:13:08  phase1geo
  Completed -weak splint run.  Full regressions pass.
 

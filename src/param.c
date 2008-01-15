@@ -424,7 +424,7 @@ static inst_parm* inst_parm_add(
   iparm->sig->value->suppl.part.is_signed = is_signed;
   
   /* Copy the contents of the specified vector value to the signal */
-  vector_set_value( iparm->sig->value, value->value, value->suppl.part.type, value->width, 0, 0 );
+  (void)vector_set_value( iparm->sig->value, value->value, value->width, 0, 0 );
 
   iparm->mparm = mparm;
   iparm->next  = NULL;
@@ -1076,6 +1076,9 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) { PROFILE(INST_PARM_D
 
 /*
  $Log$
+ Revision 1.100  2008/01/10 04:59:04  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.99  2008/01/09 23:54:15  phase1geo
  More splint updates.
 

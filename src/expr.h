@@ -29,7 +29,7 @@
 
 
 /*! \brief Creates new expression. */
-expression* expression_create( /*@null@*/ expression* right, /*@null@*/ expression* left, exp_op_type op, bool lhs, int id, int line, int first, int last, bool data );
+expression* expression_create( /*@null@*/ expression* right, /*@null@*/ expression* left, exp_op_type op, bool lhs, int id, int line, unsigned int first, unsigned int last, bool data );
 
 /*! \brief Sets the specified expression value to the specified vector value. */
 void expression_set_value( expression* exp, vsignal* sig, func_unit* funit );
@@ -118,6 +118,9 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.62  2008/01/10 04:59:04  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.61  2008/01/07 05:01:58  phase1geo
  Cleaning up more splint errors.
 

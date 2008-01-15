@@ -341,9 +341,10 @@ void race_calc_assignments(
 */
 static void race_handle_race_condition( expression* expr, func_unit* mod, statement* stmt, statement* base, int reason ) { PROFILE(RACE_HANDLE_RACE_CONDITION);
 
-  race_blk* rb;         /* Pointer to race condition block to add to specified module */
-  int       i;          /* Loop iterator */
-  int       last_line;  /* Holds the line number of the last line in the specified statement */
+  race_blk*    rb;         /* Pointer to race condition block to add to specified module */
+  int          i;          /* Loop iterator */
+  int          last_line;  /* Holds the line number of the last line in the specified statement */
+  unsigned int rv;         /* Return value from snprintf calls */
 
   /* If the base pointer is NULL, the stmt refers to a statement block that conflicts with an input port */
   if( base == NULL ) {
@@ -351,15 +352,18 @@ static void race_handle_race_condition( expression* expr, func_unit* mod, statem
     if( flag_race_check != NORMAL ) {
 
       print_output( "", (flag_race_check + 1), __FILE__, __LINE__ );
-      snprintf( user_msg, USER_MSG_LENGTH, "Possible race condition detected - %s", race_msgs[reason] );
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "Possible race condition detected - %s", race_msgs[reason] );
+      assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, flag_race_check, __FILE__, __LINE__ );
-      snprintf( user_msg, USER_MSG_LENGTH, "  Signal assigned in file: %s, line: %d", obf_file( mod->filename ), expr->line );
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "  Signal assigned in file: %s, line: %d", obf_file( mod->filename ), expr->line );
+      assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, (flag_race_check + 1), __FILE__, __LINE__ );
 
       if( flag_race_check == WARNING ) {
         print_output( "  * Safely removing statement block from coverage consideration", WARNING_WRAP, __FILE__, __LINE__ );
-        snprintf( user_msg, USER_MSG_LENGTH, "    Statement block starting at file: %s, line: %d",
-                  obf_file( mod->filename ), stmt->exp->line );
+        rv = snprintf( user_msg, USER_MSG_LENGTH, "    Statement block starting at file: %s, line: %d",
+                       obf_file( mod->filename ), stmt->exp->line );
+        assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, WARNING_WRAP, __FILE__, __LINE__ );
       }
               
@@ -371,18 +375,22 @@ static void race_handle_race_condition( expression* expr, func_unit* mod, statem
     if( flag_race_check != NORMAL ) {
 
       print_output( "", (flag_race_check + 1), __FILE__, __LINE__ );
-      snprintf( user_msg, USER_MSG_LENGTH, "Possible race condition detected - %s", race_msgs[reason] );
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "Possible race condition detected - %s", race_msgs[reason] );
+      assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, flag_race_check, __FILE__, __LINE__ );
-      snprintf( user_msg, USER_MSG_LENGTH, "  Signal assigned in file: %s, line: %d", obf_file( mod->filename ), expr->line );
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "  Signal assigned in file: %s, line: %d", obf_file( mod->filename ), expr->line );
+      assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, (flag_race_check + 1), __FILE__, __LINE__ );
-      snprintf( user_msg, USER_MSG_LENGTH, "  Signal also assigned in statement starting at file: %s, line: %d",
-                obf_file( mod->filename ), base->exp->line );
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "  Signal also assigned in statement starting at file: %s, line: %d",
+                     obf_file( mod->filename ), base->exp->line );
+      assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, (flag_race_check + 1), __FILE__, __LINE__ );
 
       if( flag_race_check == WARNING ) {
         print_output( "  * Safely removing statement block from coverage consideration", WARNING_WRAP, __FILE__, __LINE__ );
-        snprintf( user_msg, USER_MSG_LENGTH, "    Statement block starting at file: %s, line: %d",
-                  obf_file( mod->filename ), stmt->exp->line );
+        rv = snprintf( user_msg, USER_MSG_LENGTH, "    Statement block starting at file: %s, line: %d",
+                       obf_file( mod->filename ), stmt->exp->line );
+        assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, WARNING_WRAP, __FILE__, __LINE__ );
       }
 
@@ -396,10 +404,12 @@ static void race_handle_race_condition( expression* expr, func_unit* mod, statem
       if( reason != 6 ) {
 	
         print_output( "", (flag_race_check + 1), __FILE__, __LINE__ );
-	snprintf( user_msg, USER_MSG_LENGTH, "Possible race condition detected - %s", race_msgs[reason] );
+	rv = snprintf( user_msg, USER_MSG_LENGTH, "Possible race condition detected - %s", race_msgs[reason] );
+        assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, flag_race_check, __FILE__, __LINE__ );
-        snprintf( user_msg, USER_MSG_LENGTH, "  Statement block starting in file: %s, line: %d",
-                  obf_file( mod->filename ), stmt->exp->line );
+        rv = snprintf( user_msg, USER_MSG_LENGTH, "  Statement block starting in file: %s, line: %d",
+                       obf_file( mod->filename ), stmt->exp->line );
+        assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, (flag_race_check + 1), __FILE__, __LINE__ );
 	if( flag_race_check == WARNING ) {
 	  print_output( "  * Safely removing statement block from coverage consideration", WARNING_WRAP, __FILE__, __LINE__ );
@@ -410,8 +420,9 @@ static void race_handle_race_condition( expression* expr, func_unit* mod, statem
 	if( flag_race_check == WARNING ) {
           print_output( "", WARNING_WRAP, __FILE__, __LINE__ );
 	  print_output( "* Safely removing statement block from coverage consideration", WARNING, __FILE__, __LINE__ );
-          snprintf( user_msg, USER_MSG_LENGTH, "  Statement block starting at file: %s, line: %d",
-                    obf_file( mod->filename ), stmt->exp->line );
+          rv = snprintf( user_msg, USER_MSG_LENGTH, "  Statement block starting at file: %s, line: %d",
+                         obf_file( mod->filename ), stmt->exp->line );
+          assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, WARNING_WRAP, __FILE__, __LINE__ );
 	}
 
@@ -682,7 +693,8 @@ static void race_check_race_count() { PROFILE(RACE_CHECK_RACE_COUNT);
   */
   if( (races_found > 0) && (flag_race_check == FATAL) ) {
 
-    snprintf( user_msg, USER_MSG_LENGTH, "%d race conditions were detected.  Exiting score command.", races_found );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "%d race conditions were detected.  Exiting score command.", races_found );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     exit( EXIT_FAILURE );
 
@@ -1096,6 +1108,9 @@ void race_blk_delete_list( race_blk* rb ) { PROFILE(RACE_BLK_DELETE_LIST);
 
 /*
  $Log$
+ Revision 1.64  2008/01/10 04:59:04  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.63  2008/01/09 05:22:22  phase1geo
  More splint updates using the -standard option.
 

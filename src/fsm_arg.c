@@ -468,15 +468,17 @@ static void fsm_arg_parse_trans(
   tmp = str = vector_to_string( expr->value );
 
   if( (from_state = fsm_arg_parse_value( &str, funit )) == NULL ) {
-    snprintf( user_msg, USER_MSG_LENGTH, "Left-hand side FSM transition value must be a constant value or parameter, line: %d, file: %s",
-              expr->line, obf_file( funit->filename ) );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Left-hand side FSM transition value must be a constant value or parameter, line: %d, file: %s",
+                                expr->line, obf_file( funit->filename ) );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     exit( EXIT_FAILURE );
   } else {
 
     if( (str[0] != '-') || (str[1] != '>') ) {
-      snprintf( user_msg, USER_MSG_LENGTH, "FSM transition values must contain the string '->' between them, line: %d, file: %s",
-                expr->line, obf_file( funit->filename ) );
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "FSM transition values must contain the string '->' between them, line: %d, file: %s",
+                                  expr->line, obf_file( funit->filename ) );
+      assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       exit( EXIT_FAILURE );
     } else {
@@ -484,8 +486,9 @@ static void fsm_arg_parse_trans(
     }
 
     if( (to_state = fsm_arg_parse_value( &str, funit )) == NULL ) {
-      snprintf( user_msg, USER_MSG_LENGTH, "Right-hand side FSM transition value must be a constant value or parameter, line: %d, file: %s",
-                expr->line, obf_file( funit->filename ) );
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Right-hand side FSM transition value must be a constant value or parameter, line: %d, file: %s",
+                                  expr->line, obf_file( funit->filename ) );
+      assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       exit( EXIT_FAILURE );
     } else {
@@ -534,14 +537,16 @@ void fsm_arg_parse_attr( attr_param* ap, const func_unit* funit ) { PROFILE(FSM_
       if( fsml == NULL ) {
         tmp = str = vector_to_string( curr->expr->value );
         if( (in_state = fsm_arg_parse_state( &str, funit->name )) == NULL ) {
-          snprintf( user_msg, USER_MSG_LENGTH, "Illegal input state expression (%s), file: %s", str, obf_file( funit->filename ) );
+          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Illegal input state expression (%s), file: %s", str, obf_file( funit->filename ) );
+          assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
           exit( EXIT_FAILURE );
         }
         free_safe( tmp );
       } else {
-        snprintf( user_msg, USER_MSG_LENGTH, "Input state specified after output state for this FSM has already been specified, file: %s",
-                  obf_file( funit->filename ) );
+        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Input state specified after output state for this FSM has already been specified, file: %s",
+                                    obf_file( funit->filename ) );
+        assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( EXIT_FAILURE );
       }
@@ -549,7 +554,8 @@ void fsm_arg_parse_attr( attr_param* ap, const func_unit* funit ) { PROFILE(FSM_
       if( fsml == NULL ) {
         tmp = str = vector_to_string( curr->expr->value );
         if( (out_state = fsm_arg_parse_state( &str, funit->name )) == NULL ) {
-          snprintf( user_msg, USER_MSG_LENGTH, "Illegal output state expression (%s), file: %s", str, obf_file( funit->filename ) );
+          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Illegal output state expression (%s), file: %s", str, obf_file( funit->filename ) );
+          assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
           exit( EXIT_FAILURE );
         } else {
@@ -558,8 +564,9 @@ void fsm_arg_parse_attr( attr_param* ap, const func_unit* funit ) { PROFILE(FSM_
         }
         free_safe( tmp );
       } else {
-        snprintf( user_msg, USER_MSG_LENGTH, "Output state specified after output state for this FSM has already been specified, file: %s",
-                  obf_file( funit->filename ) );
+        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Output state specified after output state for this FSM has already been specified, file: %s",
+                                    obf_file( funit->filename ) );
+        assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( EXIT_FAILURE );
       }
@@ -568,7 +575,8 @@ void fsm_arg_parse_attr( attr_param* ap, const func_unit* funit ) { PROFILE(FSM_
       if( fsml == NULL ) {
         tmp = str = vector_to_string( curr->expr->value );
         if( (out_state = fsm_arg_parse_state( &str, funit->name )) == NULL ) {
-          snprintf( user_msg, USER_MSG_LENGTH, "Illegal output state expression (%s), file: %s", str, obf_file( funit->filename ) );
+          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Illegal output state expression (%s), file: %s", str, obf_file( funit->filename ) );
+          assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
           exit( EXIT_FAILURE );
         } else {
@@ -577,26 +585,28 @@ void fsm_arg_parse_attr( attr_param* ap, const func_unit* funit ) { PROFILE(FSM_
         }
         free_safe( tmp );
       } else {
-        snprintf( user_msg, USER_MSG_LENGTH, "Output state specified after output state for this FSM has already been specified, file: %s",
-                  obf_file( funit->filename ) );
+        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Output state specified after output state for this FSM has already been specified, file: %s",
+                                    obf_file( funit->filename ) );
+        assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( EXIT_FAILURE );
       }
     } else if( (index > 1) && (strcmp( curr->name, "trans" ) == 0) && (curr->expr != NULL) ) {
       if( fsml == NULL ) {
-        snprintf( user_msg, USER_MSG_LENGTH, "Attribute FSM name (%s) has not been previously created, file: %s",
-                  obf_sig( curr->name ), obf_file( funit->filename ) );
+        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Attribute FSM name (%s) has not been previously created, file: %s",
+                                    obf_sig( curr->name ), obf_file( funit->filename ) );
+        assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( EXIT_FAILURE );
       } else {
         fsm_arg_parse_trans( curr->expr, fsml->table, funit );
       }
     } else {
+      unsigned int rv;
       tmp = vector_to_string( curr->expr->value );
-      snprintf( user_msg, USER_MSG_LENGTH, "Invalid covered_fsm attribute parameter (%s=%s), file: %s",
-                curr->name,
-                tmp,
-                obf_file( funit->filename ) );
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "Invalid covered_fsm attribute parameter (%s=%s), file: %s",
+                     curr->name, tmp, obf_file( funit->filename ) );
+      assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       free_safe( tmp );
       exit( EXIT_FAILURE );
@@ -613,6 +623,9 @@ void fsm_arg_parse_attr( attr_param* ap, const func_unit* funit ) { PROFILE(FSM_
 
 /*
  $Log$
+ Revision 1.37  2008/01/10 04:59:04  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.36  2008/01/09 05:22:21  phase1geo
  More splint updates using the -standard option.
 

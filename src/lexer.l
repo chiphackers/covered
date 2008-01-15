@@ -106,6 +106,7 @@ char*            directive_filename = NULL;
 */
 static bool      file_prev_parsed;
 
+/*@-unreachable@*/
 %}
 
 %option stack
@@ -723,6 +724,8 @@ WSPACE [ \t\b\f]+
 . { fprintf( stderr, "%u: unmatched character (%c)\n", yylloc.first_line, yytext[0] ); }
 
 %%
+
+/*@=unreachable@*/
 
 /*!
  Called at the start of UDP table parsing.

@@ -574,7 +574,8 @@ bool combination_get_funit_summary(
 
     unsigned int rv = snprintf( tmp, 21, "%20.0f", funitl->funit->stat->comb_total );
     assert( rv < 21 );
-    assert( sscanf( tmp, "%d", total ) == 1 );
+    rv = sscanf( tmp, "%d", total );
+    assert( rv == 1 );
     *hit = funitl->funit->stat->comb_hit;
 
   } else {
@@ -1228,7 +1229,9 @@ static void combination_underline_tree(
                 assert( rv < USER_MSG_LENGTH );
                 print_output( user_msg, FATAL, __FILE__, __LINE__ );
                 exit( EXIT_FAILURE );
+                /*@-unreachable@*/
                 break;
+                /*@=unreachable@*/
             }
   
           }
@@ -2101,9 +2104,7 @@ static void combination_multi_var_exprs(
          contained in line1, line2, and line3.
 */
 static int combination_multi_expr_output_length(
-    char* line1,
-    char* line2,
-    char* line3 )
+    char* line1 )
 { PROFILE(COMBINATION_MULTI_EXPR_OUTPUT_LENGTH);
 
   int start  = 0;
@@ -2236,7 +2237,7 @@ static void combination_multi_vars(
       combination_multi_var_exprs( &line1, &line2, &line3, exp );
 
       /* Calculate the array needed to store the output information and allocate this memory */
-      *info_size = combination_multi_expr_output_length( line1, line2, line3 ) + 2;
+      *info_size = combination_multi_expr_output_length( line1 ) + 2;
       *info      = (char**)malloc_safe( sizeof( char* ) * (*info_size) );
 
       /* Calculate needed line length */
@@ -2927,7 +2928,7 @@ void combination_report( FILE* ofile, bool verbose ) { PROFILE(COMBINATION_REPOR
       instl = instl->next;
     }
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
-    combination_display_instance_summary( ofile, "Accumulated", acc_hits, acc_total );
+    (void)combination_display_instance_summary( ofile, "Accumulated", acc_hits, acc_total );
     
     if( verbose && (missed_found || report_covered) ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
@@ -2946,7 +2947,7 @@ void combination_report( FILE* ofile, bool verbose ) { PROFILE(COMBINATION_REPOR
 
     missed_found = combination_funit_summary( ofile, funit_head, &acc_hits, &acc_total );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
-    combination_display_funit_summary( ofile, "Accumulated", "", acc_hits, acc_total );
+    (void)combination_display_funit_summary( ofile, "Accumulated", "", acc_hits, acc_total );
 
     if( verbose && (missed_found || report_covered) ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
@@ -2962,6 +2963,9 @@ void combination_report( FILE* ofile, bool verbose ) { PROFILE(COMBINATION_REPOR
 
 /*
  $Log$
+ Revision 1.178  2008/01/10 04:59:04  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.177  2008/01/07 23:59:54  phase1geo
  More splint updates.
 

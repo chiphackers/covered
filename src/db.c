@@ -251,6 +251,8 @@ bool db_write( char* file, bool parse_mode, bool report_save ) { PROFILE(DB_WRIT
 
   if( (db_handle = fopen( file, "w" )) != NULL ) {
 
+    unsigned int rv;
+
     /* Reset expression IDs */
     curr_expr_id = 1;
 
@@ -263,11 +265,13 @@ bool db_write( char* file, bool parse_mode, bool report_save ) { PROFILE(DB_WRIT
       instance_db_write( instl->inst, db_handle, instl->inst->name, parse_mode, report_save );
       instl = instl->next;
     }
-    assert( fclose( db_handle ) == 0 );
+    rv = fclose( db_handle );
+    assert( rv == 0 );
 
   } else {
 
-    snprintf( user_msg, USER_MSG_LENGTH, "Could not open %s for writing", obf_file( file ) );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Could not open %s for writing", obf_file( file ) );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = FALSE;
 
@@ -315,8 +319,11 @@ bool db_read( char* file, int read_mode ) { PROFILE(DB_READ);
   func_unit*   parent_mod;           /* Pointer to parent module of this functional unit */
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_read, file: %s, mode: %d", obf_file( file ), read_mode );
-  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_read, file: %s, mode: %d", obf_file( file ), read_mode );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  }
 #endif
 
   /* Setup temporary module for storage */
@@ -326,6 +333,8 @@ bool db_read( char* file, int read_mode ) { PROFILE(DB_READ);
   curr_funit  = NULL;
 
   if( (db_handle = fopen( file, "r" )) != NULL ) {
+
+    unsigned int rv;
 
     while( util_readline( db_handle, &curr_line ) && retval ) {
 
@@ -425,11 +434,11 @@ bool db_read( char* file, int read_mode ) { PROFILE(DB_READ);
             if( (read_mode == READ_MODE_MERGE_INST_MERGE) && ((foundinst = inst_link_find_by_scope( funit_scope, inst_head )) != NULL) ) {
               merge_mode = TRUE;
               curr_funit = foundinst->funit;
-              funit_db_merge( foundinst->funit, db_handle, TRUE );
+              retval = funit_db_merge( foundinst->funit, db_handle, TRUE );
             } else if( (read_mode == READ_MODE_REPORT_MOD_MERGE) && ((foundfunit = funit_link_find( tmpfunit.name, tmpfunit.type, funit_head )) != NULL) ) {
               merge_mode = TRUE;
               curr_funit = foundfunit->funit;
-              funit_db_merge( foundfunit->funit, db_handle, FALSE );
+              retval = funit_db_merge( foundfunit->funit, db_handle, FALSE );
             } else {
               curr_funit             = funit_create();
               curr_funit->name       = strdup_safe( funit_name );
@@ -454,7 +463,8 @@ bool db_read( char* file, int read_mode ) { PROFILE(DB_READ);
 
         } else {
 
-          snprintf( user_msg, USER_MSG_LENGTH, "Unexpected type %d when parsing database file %s", type, obf_file( file ) );
+          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unexpected type %d when parsing database file %s", type, obf_file( file ) );
+          assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
           retval = FALSE;
 
@@ -462,7 +472,8 @@ bool db_read( char* file, int read_mode ) { PROFILE(DB_READ);
 
       } else {
 
-        snprintf( user_msg, USER_MSG_LENGTH, "Unexpected line in database file %s", obf_file( file ) );
+        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unexpected line in database file %s", obf_file( file ) );
+        assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         retval = FALSE;
 
@@ -472,11 +483,13 @@ bool db_read( char* file, int read_mode ) { PROFILE(DB_READ);
 
     }
 
-    fclose( db_handle );
+    rv = fclose( db_handle );
+    assert( rv == 0 );
 
   } else {
 
-    snprintf( user_msg, USER_MSG_LENGTH, "Could not open %s for reading", obf_file( file ) );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Could not open %s for reading", obf_file( file ) );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = FALSE;
 
@@ -555,13 +568,11 @@ uint64 db_scale_to_precision( uint64 value, func_unit* funit ) { PROFILE(DB_SCAL
 */
 char* db_create_unnamed_scope() { PROFILE(DB_CREATE_UNNAMED_SCOPE);
 
-  static int unique_id = 0;
+  static int   unique_id = 0;
+  char*        name      = (char*)malloc_safe( 30 );
+  unsigned int rv        = snprintf( name, 30, "$u%d", unique_id );
 
-  /* Allocate memory for the unnamed scope name */
-  char* name = (char*)malloc_safe( 30 );
-
-  /* Create unnamed scope name */
-  snprintf( name, 30, "$u%d", unique_id );
+  assert( rv < 30 );
   unique_id++;
 
   PROFILE_END;
@@ -644,9 +655,12 @@ func_unit* db_add_instance( char* scope, char* name, int type, vector_width* ran
   score = str_link_find( name, no_score_head ) == NULL;
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_add_instance, instance: %s, %s: %s (curr_funit: %s)",
-            obf_inst( scope ), get_funit_type( type ), obf_funit( name ), obf_funit( curr_funit->name ) );
-  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_add_instance, instance: %s, %s: %s (curr_funit: %s)",
+                                obf_inst( scope ), get_funit_type( type ), obf_funit( name ), obf_funit( curr_funit->name ) );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  }
 #endif
 
   /* Create new functional unit node */
@@ -667,8 +681,9 @@ func_unit* db_add_instance( char* scope, char* name, int type, vector_width* ran
   if( ((found_funit_link = funit_link_find( funit->name, funit->type, funit_head )) != NULL) && (generate_top_mode == 0) ) {
 
     if( type != FUNIT_MODULE ) {
-      snprintf( user_msg, USER_MSG_LENGTH, "Multiple identical task/function/named-begin-end names (%s) found in module %s, file %s\n",
-                scope, obf_funit( curr_funit->name ), obf_file( curr_funit->filename ) );
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Multiple identical task/function/named-begin-end names (%s) found in module %s, file %s\n",
+                                  scope, obf_funit( curr_funit->name ), obf_file( curr_funit->filename ) );
+      assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       exit( EXIT_FAILURE );
     }
@@ -747,9 +762,12 @@ void db_add_module( char* name, char* file, int start_line ) { PROFILE(DB_ADD_MO
   funit_link* modl;  /* Pointer to found tree node */
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_add_module, module: %s, file: %s, start_line: %d",
-            obf_funit( name ), obf_file( file ), start_line );
-  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_add_module, module: %s, file: %s, start_line: %d",
+                                obf_funit( name ), obf_file( file ), start_line );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  }
 #endif
 
   modl = funit_link_find( name, FUNIT_MODULE, funit_head );
@@ -773,8 +791,11 @@ void db_add_module( char* name, char* file, int start_line ) { PROFILE(DB_ADD_MO
 void db_end_module( int end_line ) { PROFILE(DB_END_MODULE);
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_end_module, end_line: %d", end_line );
-  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_end_module, end_line: %d", end_line );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  }
 #endif
 
   curr_funit->end_line = end_line;
@@ -807,9 +828,12 @@ bool db_add_function_task_namedblock( int type, char* name, char* file, int star
           (type == FUNIT_AFUNCTION) || (type == FUNIT_ATASK) );
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_add_function_task_namedblock, %s: %s, file: %s, start_line: %d",
-            get_funit_type( type ), obf_funit( name ), obf_file( file ), start_line );
-  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_add_function_task_namedblock, %s: %s, file: %s, start_line: %d",
+                                get_funit_type( type ), obf_funit( name ), obf_file( file ), start_line );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  }
 #endif
 
   /* Generate full name to use for the function/task */
@@ -864,8 +888,11 @@ void db_end_function_task_namedblock( int end_line ) { PROFILE(DB_END_FUNCTION_T
   stmt_iter si;  /* Statement iterator for finding the first statement of the functional unit */
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_end_function_task_namedblock, end_line: %d", end_line );
-  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_end_function_task_namedblock, end_line: %d", end_line );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  }
 #endif
 
   /* Store last line information */
@@ -915,8 +942,11 @@ void db_add_declared_param( bool is_signed, static_expr* msb, static_expr* lsb, 
   if( expr != NULL ) {
 
 #ifdef DEBUG_MODE
-    snprintf( user_msg, USER_MSG_LENGTH, "In db_add_declared_param, param: %s, expr: %d, local: %d", obf_sig( name ), expr->id, local );
-    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    {
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_add_declared_param, param: %s, expr: %d, local: %d", obf_sig( name ), expr->id, local );
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    }
 #endif
 
     if( mod_parm_find( name, curr_funit->param_head ) == NULL ) {
@@ -945,13 +975,17 @@ void db_add_override_param( char* inst_name, expression* expr, char* param_name 
   mod_parm* mparm;  /* Pointer to module parameter added to current module */
 
 #ifdef DEBUG_MODE
-  if( param_name != NULL ) {
-    snprintf( user_msg, USER_MSG_LENGTH, "In db_add_override_param, instance: %s, param_name: %s",
-              obf_inst( inst_name ), obf_sig( param_name ) );
-  } else {
-    snprintf( user_msg, USER_MSG_LENGTH, "In db_add_override_param, instance: %s", obf_inst( inst_name ) );
+  {
+    unsigned int rv;
+    if( param_name != NULL ) {
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_add_override_param, instance: %s, param_name: %s",
+                     obf_inst( inst_name ), obf_sig( param_name ) );
+    } else {
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_add_override_param, instance: %s", obf_inst( inst_name ) );
+    }
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
   }
-  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
   /* Add override parameter to module parameter list */
@@ -983,8 +1017,11 @@ static void db_add_vector_param(
   assert( (type == PARAM_TYPE_SIG_LSB) || (type == PARAM_TYPE_SIG_MSB) );
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_add_vector_param, signal: %s, type: %d", obf_sig( sig->name ), type );
-  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_add_vector_param, signal: %s, type: %d", obf_sig( sig->name ), type );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  }
 #endif
 
   /* Add signal vector parameter to module parameter list */
@@ -1006,15 +1043,21 @@ static void db_add_vector_param(
 
  Adds specified parameter to the defparam list.
 */
-void db_add_defparam( char* name, expression* expr ) { PROFILE(DB_ADD_DEFPARAM);
+void db_add_defparam( /*@unused@*/ char* name, expression* expr ) { PROFILE(DB_ADD_DEFPARAM);
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_add_defparam, defparam: %s", obf_sig( name ) );
-  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_add_defparam, defparam: %s", obf_sig( name ) );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  }
 #endif
 
-  snprintf( user_msg, USER_MSG_LENGTH, "defparam construct is not supported, line: %d.  Use -P option to score instead", expr->line );
-  print_output( user_msg, WARNING, __FILE__, __LINE__ );
+  {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "defparam construct is not supported, line: %d.  Use -P option to score instead", expr->line );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, WARNING, __FILE__, __LINE__ );
+  }
 
   expression_dealloc( expr, FALSE );
 
@@ -1048,8 +1091,11 @@ void db_add_signal( char* name, int type, sig_range* prange, sig_range* urange, 
   int       j = 0;       /* Loop iterator */
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_add_signal, signal: %s, type: %d, line: %d, col: %d", obf_sig( name ), type, line, col );
-  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_add_signal, signal: %s, type: %d, line: %d, col: %d", obf_sig( name ), type, line, col );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  }
 #endif
 
   /* Add signal to current module's signal list if it does not already exist */
@@ -1164,8 +1210,11 @@ void db_add_enum( vsignal* enum_sig, static_expr* value ) { PROFILE(DB_ADD_ENUM)
   assert( enum_sig != NULL );
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_add_enum, sig_name: %s", enum_sig->name );
-  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_add_enum, sig_name: %s", enum_sig->name );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  }
 #endif
 
   enumerate_add_item( enum_sig, value, curr_funit );
@@ -1204,9 +1253,12 @@ void db_add_typedef( char* name, bool is_signed, bool is_handled, bool is_sizeab
   typedef_item* tdi;   /* Typedef item to create */
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_add_typedef, name: %s, is_signed: %d, is_handled: %d, is_sizeable: %d",
-            name, is_signed, is_handled, is_sizeable );
-  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_add_typedef, name: %s, is_signed: %d, is_handled: %d, is_sizeable: %d",
+                                name, is_signed, is_handled, is_sizeable );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  }
 #endif
 
   /* Allocate memory and initialize the structure */
@@ -1247,13 +1299,17 @@ vsignal* db_find_signal( char* name, bool okay_if_not_found ) { PROFILE(DB_FIND_
   func_unit* found_funit;  /* Pointer to found functional unit (not used) */
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_find_signal, searching for signal %s", obf_sig( name ) );
-  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_find_signal, searching for signal %s", obf_sig( name ) );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  }
 #endif
 
   if( !scope_find_signal( name, curr_funit, &found_sig, &found_funit, 0 ) && !okay_if_not_found ) {
 
-    snprintf( user_msg, USER_MSG_LENGTH, "Unable to find variable %s in module %s", obf_sig( name ), obf_funit( curr_funit->name ) );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to find variable %s in module %s", obf_sig( name ), obf_funit( curr_funit->name ) );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     exit( EXIT_FAILURE );
 
@@ -1301,8 +1357,11 @@ gen_item* db_find_gen_item( gen_item* root, gen_item* gi ) { PROFILE(DB_FIND_GEN
   gen_item* found;  /* Return value for this function */
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_find_gen_item, type %d", gi->suppl.part.type );
-  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_find_gen_item, type %d", gi->suppl.part.type );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  }
 #endif
 
   /* Search for the specified generate item */
@@ -1332,8 +1391,11 @@ typedef_item* db_find_typedef( const char* name ) { PROFILE(DB_FIND_TYPEDEF);
   assert( name != NULL );
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_find_typedef, searching for name: %s", name );
-  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_find_typedef, searching for name: %s", name );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  }
 #endif
 
   if( curr_funit != NULL ) {
@@ -1419,32 +1481,37 @@ int db_curr_signal_count() { PROFILE(DB_CURR_SIGNAL_COUNT);
 */
 expression* db_create_expression( expression* right, expression* left, int op, bool lhs, int line, int first, int last, char* sig_name ) { PROFILE(DB_CREATE_EXPRESSION);
 
-  expression* expr;        /* Temporary pointer to newly created expression */
-  func_unit*  func_funit;  /* Pointer to function, if we are nested in one */
+  expression*  expr;        /* Temporary pointer to newly created expression */
+  func_unit*   func_funit;  /* Pointer to function, if we are nested in one */
+
 #ifdef DEBUG_MODE
-  int         right_id;    /* ID of right expression */
-  int         left_id;     /* ID of left expression */
+  {
+    int          right_id;    /* ID of right expression */
+    int          left_id;     /* ID of left expression */
+    unsigned int rv;          /* Return value from snprintf call */
 
-  if( right == NULL ) {
-    right_id = 0;
-  } else {
-    right_id = right->id;
-  }
+    if( right == NULL ) {
+      right_id = 0;
+    } else {
+      right_id = right->id;
+    }
 
-  if( left == NULL ) {
-    left_id = 0;
-  } else {
-    left_id = left->id;
-  }
+    if( left == NULL ) {
+      left_id = 0;
+    } else {
+      left_id = left->id;
+    }
 
-  if( sig_name == NULL ) {
-    snprintf( user_msg, USER_MSG_LENGTH, "In db_create_expression, right: %d, left: %d, id: %d, op: %s, lhs: %d, line: %d, first: %d, last: %d", 
-              right_id, left_id, curr_expr_id, expression_string_op( op ), lhs, line, first, last );
-  } else {
-    snprintf( user_msg, USER_MSG_LENGTH, "In db_create_expression, right: %d, left: %d, id: %d, op: %s, lhs: %d, line: %d, first: %d, last: %d, sig_name: %s",
-              right_id, left_id, curr_expr_id, expression_string_op( op ), lhs, line, first, last, sig_name );
+    if( sig_name == NULL ) {
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_create_expression, right: %d, left: %d, id: %d, op: %s, lhs: %d, line: %d, first: %d, last: %d", 
+                     right_id, left_id, curr_expr_id, expression_string_op( op ), lhs, line, first, last );
+    } else {
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_create_expression, right: %d, left: %d, id: %d, op: %s, lhs: %d, line: %d, first: %d, last: %d, sig_name: %s",
+                     right_id, left_id, curr_expr_id, expression_string_op( op ), lhs, line, first, last, sig_name );
+    }
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
   }
-  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
   /* Check to see if current expression is in a function */
@@ -1459,7 +1526,9 @@ expression* db_create_expression( expression* right, expression* left, int op, b
        (op == EXP_OP_NEDGE)     ||
        (op == EXP_OP_AEDGE)     ||
        (op == EXP_OP_EOR)) ) {
-    snprintf( user_msg, USER_MSG_LENGTH, "Attempting to use a delay, task call, non-blocking assign or event controls in function %s, file %s, line %d", obf_funit( func_funit->name ), obf_file( curr_funit->filename ), line );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Attempting to use a delay, task call, non-blocking assign or event controls in function %s, file %s, line %d",
+                                obf_funit( func_funit->name ), obf_file( curr_funit->filename ), line );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     exit( EXIT_FAILURE );
   }
@@ -1534,8 +1603,11 @@ void db_bind_expr_tree( expression* root, char* sig_name ) { PROFILE(DB_BIND_EXP
   if( root != NULL ) {
 
 #ifdef DEBUG_MODE
-    snprintf( user_msg, USER_MSG_LENGTH, "In db_bind_expr_tree, root id: %d, sig_name: %s", root->id, sig_name );
-    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    {
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_bind_expr_tree, root id: %d, sig_name: %s", root->id, sig_name );
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    }
 #endif
 
     /* Bind the children first */
@@ -1567,9 +1639,12 @@ expression* db_create_expr_from_static( static_expr* se, int line, int first_col
   vector*     vec;   /* Temporary vector */
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_create_expr_from_static, se: %p, line: %d, first_col: %d, last_col: %d",
-            se, line, first_col, last_col );
-  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_create_expr_from_static, se: %p, line: %d, first_col: %d, last_col: %d",
+                                se, line, first_col, last_col );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  }
 #endif
 
   if( se->exp == NULL ) {
@@ -1613,9 +1688,12 @@ void db_add_expression( expression* root ) { PROFILE(DB_ADD_EXPRESSION);
   if( (root != NULL) && (root->suppl.part.exp_added == 0) ) {
 
 #ifdef DEBUG_MODE
-    snprintf( user_msg, USER_MSG_LENGTH, "In db_add_expression, id: %d, op: %s, line: %d", 
-              root->id, expression_string_op( root->op ), root->line );
-    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    {
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_add_expression, id: %d, op: %s, line: %d", 
+                                  root->id, expression_string_op( root->op ), root->line );
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    }
 #endif
 
     if( generate_top_mode > 0 ) {
@@ -1723,9 +1801,12 @@ statement* db_parallelize_statement( statement* stmt ) { PROFILE(DB_PARALLELIZE_
   if( (stmt != NULL) && (fork_depth != -1) && (fork_block_depth[fork_depth] == block_depth) ) {
 
 #ifdef DEBUG_MODE
-    snprintf( user_msg, USER_MSG_LENGTH, "In db_parallelize_statement, id: %d, %s, line: %d, fork_depth: %d, block_depth: %d, fork_block_depth: %d",
-              stmt->exp->id, expression_string_op( stmt->exp->op ), stmt->exp->line, fork_depth, block_depth, fork_block_depth[fork_depth] );
-    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    {
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_parallelize_statement, id: %d, %s, line: %d, fork_depth: %d, block_depth: %d, fork_block_depth: %d",
+                                  stmt->exp->id, expression_string_op( stmt->exp->op ), stmt->exp->line, fork_depth, block_depth, fork_block_depth[fork_depth] );
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    }
 #endif
 
     /* Create FORK expression */
@@ -1786,8 +1867,11 @@ statement* db_create_statement( expression* exp ) { PROFILE(DB_CREATE_STATEMENT)
   statement* stmt;  /* Pointer to newly created statement */
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_create_statement, id: %d, line: %d", exp->id, exp->line );
-  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_create_statement, id: %d, line: %d", exp->id, exp->line );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  }
 #endif
 
   /* Create the given statement */
@@ -1814,8 +1898,11 @@ void db_add_statement( statement* stmt, statement* start ) { PROFILE(DB_ADD_STAT
   if( (stmt != NULL) && (stmt->exp->suppl.part.stmt_added == 0) ) {
 
 #ifdef DEBUG_MODE
-    snprintf( user_msg, USER_MSG_LENGTH, "In db_add_statement, id: %d, start id: %d", stmt->exp->id, start->exp->id );
-    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    {
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_add_statement, id: %d, start id: %d", stmt->exp->id, start->exp->id );
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    }
 #endif
 
     /* Now add current statement */
@@ -1871,9 +1958,12 @@ void db_remove_statement_from_current_funit( statement* stmt ) { PROFILE(DB_REMO
   if( (stmt != NULL) && (stmt->exp != NULL) ) {
 
 #ifdef DEBUG_MODE
-    snprintf( user_msg, USER_MSG_LENGTH, "In db_remove_statement_from_current_funit %s, stmt id: %d, %s, line: %d",
-              obf_funit( curr_funit->name ), stmt->exp->id, expression_string_op( stmt->exp->op ), stmt->exp->line );
-    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    {
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_remove_statement_from_current_funit %s, stmt id: %d, %s, line: %d",
+                                  obf_funit( curr_funit->name ), stmt->exp->id, expression_string_op( stmt->exp->op ), stmt->exp->line );
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    }
 #endif
 
     /*
@@ -1911,9 +2001,12 @@ void db_remove_statement( statement* stmt ) { PROFILE(DB_REMOVE_STATEMENT);
   if( stmt != NULL ) {
 
 #ifdef DEBUG_MODE
-    snprintf( user_msg, USER_MSG_LENGTH, "In db_remove_statement, stmt id: %d, line: %d", 
-              stmt->exp->id, stmt->exp->line );
-    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    {
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_remove_statement, stmt id: %d, line: %d", 
+                                  stmt->exp->id, stmt->exp->line );
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    }
 #endif
 
     /* Call the recursive statement deallocation function */
@@ -1940,14 +2033,18 @@ void db_connect_statement_true( statement* stmt, statement* next_true ) { PROFIL
   if( stmt != NULL ) {
 
 #ifdef DEBUG_MODE
-    if( next_true == NULL ) {
-      next_id = 0;
-    } else {
-      next_id = next_true->exp->id;
-    }
+    {
+      unsigned int rv;
+      if( next_true == NULL ) {
+        next_id = 0;
+      } else {
+        next_id = next_true->exp->id;
+      }
 
-    snprintf( user_msg, USER_MSG_LENGTH, "In db_connect_statement_true, id: %d, next: %d", stmt->exp->id, next_id );
-    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_connect_statement_true, id: %d, next: %d", stmt->exp->id, next_id );
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    }
 #endif
 
     stmt->next_true = next_true;
@@ -1973,14 +2070,18 @@ void db_connect_statement_false( statement* stmt, statement* next_false ) { PROF
   if( stmt != NULL ) {
 
 #ifdef DEBUG_MODE
-    if( next_false == NULL ) {
-      next_id = 0;
-    } else {
-      next_id = next_false->exp->id;
-    }
+    {
+      unsigned int rv;
+      if( next_false == NULL ) {
+        next_id = 0;
+      } else {
+        next_id = next_false->exp->id;
+      }
 
-    snprintf( user_msg, USER_MSG_LENGTH, "In db_connect_statement_false, id: %d, next: %d", stmt->exp->id, next_id );
-    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_connect_statement_false, id: %d, next: %d", stmt->exp->id, next_id );
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    }
 #endif
 
     stmt->next_false = next_false;
@@ -2002,8 +2103,11 @@ void db_gen_item_connect_true( gen_item* gi1, gen_item* gi2 ) { PROFILE(DB_GEN_I
   assert( gi1 != NULL );
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_gen_item_connect_true, gi1: %p, gi2: %p", gi1, gi2 );
-  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_gen_item_connect_true, gi1: %p, gi2: %p", gi1, gi2 );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  }
 #endif
 
   gi1->next_true = gi2;  
@@ -2023,8 +2127,11 @@ void db_gen_item_connect_false( gen_item* gi1, gen_item* gi2 ) { PROFILE(DB_GEN_
   assert( gi1 != NULL );
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_gen_item_connect_false, gi1: %p, gi2: %p", gi1, gi2 );
-  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_gen_item_connect_false, gi1: %p, gi2: %p", gi1, gi2 );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  }
 #endif
 
   gi1->next_false = gi2;
@@ -2037,27 +2144,28 @@ void db_gen_item_connect_false( gen_item* gi1, gen_item* gi2 ) { PROFILE(DB_GEN_
  \param gi1  Pointer to generate item block to connect to gi2
  \param gi2  Pointer to generate item that will be connected to gi1
 
- \return Returns TRUE if a generate item connection was properly established; otherwise,
-         returns FALSE.
+ Connects two generate items together.
 */
-bool db_gen_item_connect( gen_item* gi1, gen_item* gi2 ) { PROFILE(DB_GEN_ITEM_CONNECT);
+void db_gen_item_connect( gen_item* gi1, gen_item* gi2 ) { PROFILE(DB_GEN_ITEM_CONNECT);
 
-  bool retval;  /* Return value for this function */
+  bool rv;
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_gen_item_connect, gi1: %p, gi2: %p, conn_id: %d", gi1, gi2, gi_conn_id );
-  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_gen_item_connect, gi1: %p, gi2: %p, conn_id: %d", gi1, gi2, gi_conn_id );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  }
 #endif
 
   /* Connect generate items */
-  retval = gen_item_connect( gi1, gi2, gi_conn_id );
+  rv = gen_item_connect( gi1, gi2, gi_conn_id );
+  assert( rv );
 
   /* Increment gi_conn_id for next connection */
   gi_conn_id++;
 
   PROFILE_END;
-
-  return( retval );
 
 }
 
@@ -2077,23 +2185,27 @@ bool db_statement_connect( statement* curr_stmt, statement* next_stmt ) { PROFIL
   bool retval;  /* Return value for this function */
 
 #ifdef DEBUG_MODE
-  int curr_id;  /* Current statement ID */
-  int next_id;  /* Next statement ID */
+  {
+    int          curr_id;  /* Current statement ID */
+    int          next_id;  /* Next statement ID */
+    unsigned int rv;
 
-  if( curr_stmt == NULL ) {
-    curr_id = 0;
-  } else {
-    curr_id = curr_stmt->exp->id;
+    if( curr_stmt == NULL ) {
+      curr_id = 0;
+    } else {
+      curr_id = curr_stmt->exp->id;
+    }
+
+    if( next_stmt == NULL ) {
+      next_id = 0;
+    } else {
+      next_id = next_stmt->exp->id;
+    }
+
+    rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_statement_connect, curr_stmt: %d, next_stmt: %d", curr_id, next_id );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
   }
-
-  if( next_stmt == NULL ) {
-    next_id = 0;
-  } else {
-    next_id = next_stmt->exp->id;
-  }
-
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_statement_connect, curr_stmt: %d, next_stmt: %d", curr_id, next_id );
-  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
   /*
@@ -2102,8 +2214,9 @@ bool db_statement_connect( statement* curr_stmt, statement* next_stmt ) { PROFIL
   */
   if( !(retval = statement_connect( curr_stmt, next_stmt, stmt_conn_id )) ) {
 
-    snprintf( user_msg, USER_MSG_LENGTH, "Unreachable statement found starting at line %d in file %s.  Ignoring...",
-              next_stmt->exp->line, obf_file( curr_funit->filename ) );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unreachable statement found starting at line %d in file %s.  Ignoring...",
+                                next_stmt->exp->line, obf_file( curr_funit->filename ) );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, WARNING, __FILE__, __LINE__ );
 
   }
@@ -2130,12 +2243,16 @@ attr_param* db_create_attr_param( char* name, expression* expr ) { PROFILE(DB_CR
   attr_param* attr;  /* Pointer to newly allocated/initialized attribute parameter */
 
 #ifdef DEBUG_MODE
-  if( expr != NULL ) {
-    snprintf( user_msg, USER_MSG_LENGTH, "In db_create_attr_param, name: %s, expr: %d", name, expr->id );
-  } else {
-    snprintf( user_msg, USER_MSG_LENGTH, "In db_create_attr_param, name: %s", name );
+  {
+    unsigned int rv;
+    if( expr != NULL ) {
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_create_attr_param, name: %s, expr: %d", name, expr->id );
+    } else {
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_create_attr_param, name: %s", name );
+    }
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
   }
-  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
   attr = attribute_create( name, expr );
@@ -2280,8 +2397,11 @@ void db_sync_curr_instance() { PROFILE(DB_SYNC_CURR_INSTANCE);
 void db_set_vcd_scope( char* scope ) { PROFILE(DB_SET_VCD_SCOPE);
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_set_vcd_scope, scope: %s", obf_inst( scope ) );
-  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_set_vcd_scope, scope: %s", obf_inst( scope ) );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  }
 #endif
 
   assert( scope != NULL );
@@ -2308,10 +2428,13 @@ void db_vcd_upscope() { PROFILE(DB_VCD_UPSCOPE);
   char rest[4096];   /* Hierarchy up one level */
 
 #ifdef DEBUG_MODE
-  char* scope = db_gen_curr_inst_scope();
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_vcd_upscope, curr_inst_scope: %s", obf_inst( scope ) );
-  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
-  free_safe( scope );
+  {
+    char*        scope = db_gen_curr_inst_scope();
+    unsigned int rv    = snprintf( user_msg, USER_MSG_LENGTH, "In db_vcd_upscope, curr_inst_scope: %s", obf_inst( scope ) );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    free_safe( scope );
+  }
 #endif
 
   /* Deallocate the last scope item */
@@ -2341,11 +2464,14 @@ void db_assign_symbol( char* name, char* symbol, int msb, int lsb ) { PROFILE(DB
   sig_link* slink;  /* Pointer to signal containing this symbol */
 
 #ifdef DEBUG_MODE
-  char* scope = db_gen_curr_inst_scope();
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_assign_symbol, name: %s, symbol: %s, curr_inst_scope: %s, msb: %d, lsb: %d",
-            obf_sig( name ), symbol, obf_inst( scope ), msb, lsb );
-  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
-  free_safe( scope );
+  {
+    char*        scope = db_gen_curr_inst_scope();
+    unsigned int rv    = snprintf( user_msg, USER_MSG_LENGTH, "In db_assign_symbol, name: %s, symbol: %s, curr_inst_scope: %s, msb: %d, lsb: %d",
+                                   obf_sig( name ), symbol, obf_inst( scope ), msb, lsb );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    free_safe( scope );
+  }
 #endif
 
   assert( name != NULL );
@@ -2390,8 +2516,11 @@ void db_set_symbol_char( char* sym, char value ) { PROFILE(DB_SET_SYMBOL_CHAR);
   char val[2];  /* Value to store */
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_set_symbol_char, sym: %s, value: %c", sym, value );
-  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_set_symbol_char, sym: %s, value: %c", sym, value );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  }
 #endif
 
   /* Put together value string */
@@ -2417,8 +2546,11 @@ void db_set_symbol_char( char* sym, char value ) { PROFILE(DB_SET_SYMBOL_CHAR);
 void db_set_symbol_string( char* sym, char* value ) { PROFILE(DB_SET_SYMBOL_STRING);
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_set_symbol_string, sym: %s, value: %s", sym, value );
-  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_set_symbol_string, sym: %s, value: %s", sym, value );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  }
 #endif
 
   /* Set value of all matching occurrences in current timestep. */
@@ -2446,7 +2578,8 @@ void db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
   if( final ) {
     print_output( "Performing final timestep", DEBUG, __FILE__, __LINE__ );
   } else {
-    snprintf( user_msg, USER_MSG_LENGTH, "Performing timestep #%lld", time );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Performing timestep #%lld", time );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
   }
 #endif
@@ -2457,11 +2590,13 @@ void db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
   curr_time.final = final;
 
   if( (timestep_update > 0) && ((time - last_sim_update) >= timestep_update) && !debug_mode && !final ) {
+    unsigned int rv;
     last_sim_update = time;
     /*@-formattype -duplicatequals@*/
     printf( "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bPerforming timestep %10llu", time );
     /*@=formattype =duplicatequals@*/
-    fflush( stdout );
+    rv = fflush( stdout );
+    assert( rv == 0 );
   }
 
   /* Simulate the current timestep */
@@ -2489,6 +2624,9 @@ void db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.273  2008/01/10 04:59:04  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.272  2008/01/08 21:13:08  phase1geo
  Completed -weak splint run.  Full regressions pass.
 

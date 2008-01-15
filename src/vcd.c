@@ -226,7 +226,8 @@ static void vcd_parse_def( FILE* vcd ) { PROFILE(VCD_PARSE_DEF);
 
     } else {
 
-      snprintf( user_msg, USER_MSG_LENGTH, "Non-keyword located where one should have been \"%s\"", keyword );
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Non-keyword located where one should have been \"%s\"", keyword );
+      assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       exit( EXIT_FAILURE );
 
@@ -251,7 +252,8 @@ static void vcd_parse_def( FILE* vcd ) { PROFILE(VCD_PARSE_DEF);
       print_output( "  Please use -i option to specify correct hierarchy to top-level module to score",
                     FATAL, __FILE__, __LINE__ );
     } else {
-      snprintf( user_msg, USER_MSG_LENGTH, "  Incorrect hierarchical path specified in -i option: %s", top_instance );
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "  Incorrect hierarchical path specified in -i option: %s", top_instance );
+      assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
     }
 
@@ -365,7 +367,8 @@ static void vcd_parse_sim( FILE* vcd ) { PROFILE(VCD_PARSE_SIM);
 
       } else {
 
-        snprintf( user_msg, USER_MSG_LENGTH, "Badly placed token \"%s\"", token );
+        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Badly placed token \"%s\"", token );
+        assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( EXIT_FAILURE );
 
@@ -401,6 +404,8 @@ void vcd_parse( char* vcd_file ) { PROFILE(VCD_PARSE);
 
   if( (vcd_handle = fopen( vcd_file, "r" )) != NULL ) {
 
+    unsigned int rv;
+
     /* Create initial symbol table */
     vcd_symtab = symtable_create();
 
@@ -420,7 +425,8 @@ void vcd_parse( char* vcd_file ) { PROFILE(VCD_PARSE);
     }
 
     /* Close VCD file */
-    fclose( vcd_handle );
+    rv = fclose( vcd_handle );
+    assert( rv == 0 );
 
   } else {
 
@@ -435,6 +441,9 @@ void vcd_parse( char* vcd_file ) { PROFILE(VCD_PARSE);
 
 /*
  $Log$
+ Revision 1.32  2008/01/09 05:22:22  phase1geo
+ More splint updates using the -standard option.
+
  Revision 1.31  2008/01/07 23:59:55  phase1geo
  More splint updates.
 

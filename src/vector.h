@@ -73,7 +73,7 @@ void vector_display( vector* vec );
 nibble vector_bit_val( nibble* value, int pos );
 
 /*! \brief Sets specified vector value to new value and maintains coverage history. */
-bool vector_set_value( vector* vec, vec_data* value, int val_type, int width, int from_idx, int to_idx );
+bool vector_set_value( vector* vec, vec_data* value, int width, int from_idx, int to_idx );
 
 /*! \brief Bit fills the given vector with the appropriate value given the specified msb and lsb */
 bool vector_bit_fill( vector* vec, int msb, int lsb );
@@ -174,6 +174,9 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.47  2008/01/10 04:59:05  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.46  2008/01/07 05:01:58  phase1geo
  Cleaning up more splint errors.
 

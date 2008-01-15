@@ -356,8 +356,9 @@ static void expression_create_value(
 
   if( (data == TRUE) || ((exp->suppl.part.gen_expr == 1) && (width > 0)) ) {
     if( width > MAX_BIT_WIDTH ) {
-      snprintf( user_msg, USER_MSG_LENGTH, "Found an expression width (%d) that exceeds the maximum currently allowed by Covered (%d)",
-                width, MAX_BIT_WIDTH );
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Found an expression width (%d) that exceeds the maximum currently allowed by Covered (%d)",
+                                  width, MAX_BIT_WIDTH );
+      assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       exit( EXIT_FAILURE );
     }
@@ -388,7 +389,7 @@ static void expression_create_value(
  usage.  Right and left expressions need to be created before this function is called.
 */
 expression* expression_create( expression* right, expression* left, exp_op_type op, bool lhs, int id,
-                               int line, int first, int last, bool data ) { PROFILE(EXPRESSION_CREATE);
+                               int line, unsigned int first, unsigned int last, bool data ) { PROFILE(EXPRESSION_CREATE);
 
   expression* new_expr;    /* Pointer to newly created expression */
   int         rwidth = 0;  /* Bit width of expression on right */
@@ -1275,7 +1276,8 @@ bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) { PROFI
     /* Find functional unit instance name */
     if( curr_funit == NULL ) {
 
-      snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  expression (%d) in database written before its functional unit", id );
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  expression (%d) in database written before its functional unit", id );
+      assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       retval = FALSE;
 
@@ -1285,8 +1287,9 @@ bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) { PROFI
       if( right_id == 0 ) {
         right = NULL;
       } else if( (expl = exp_link_find( right_id, curr_funit->exp_head )) == NULL ) {
-        snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  root expression (%d) found before leaf expression (%d) in database file", id, right_id );
-  	    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  root expression (%d) found before leaf expression (%d) in database file", id, right_id );
+        assert( rv < USER_MSG_LENGTH );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( EXIT_FAILURE );
       } else {
         right = expl->exp;
@@ -1296,7 +1299,8 @@ bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) { PROFI
       if( left_id == 0 ) {
         left = NULL;
       } else if( (expl = exp_link_find( left_id, curr_funit->exp_head )) == NULL ) {
-        snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  root expression (%d) found before leaf expression (%d) in database file", id, left_id );
+        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  root expression (%d) found before leaf expression (%d) in database file", id, left_id );
+        assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( EXIT_FAILURE );
       } else {
@@ -1481,7 +1485,8 @@ const char* expression_string_op( int op ) { PROFILE(EXPRESSION_STRING_OP);
 */
 char* expression_string( expression* exp ) { PROFILE(EXPRESSION_STRING);
 
-  snprintf( user_msg, USER_MSG_LENGTH, "%d (%s line %d)", exp->id, expression_string_op( exp->op ), exp->line );
+  unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "%d (%s line %d)", exp->id, expression_string_op( exp->op ), exp->line );
+  assert( rv < USER_MSG_LENGTH );
 
   PROFILE_END;
 
@@ -1546,7 +1551,7 @@ bool expression_op_func__xor( expression* expr, /*@unused@*/ thread* thr, /*@unu
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
-    (void)vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type, expr->parent->expr->left->value->width, 0, 0 );
+    (void)vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->width, 0, 0 );
   }
 
   PROFILE_END;
@@ -1568,7 +1573,7 @@ bool expression_op_func__multiply( expression* expr, /*@unused@*/ thread* thr, /
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
-    (void)vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type, expr->parent->expr->left->value->width, 0, 0 );
+    (void)vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->width, 0, 0 );
   }
 
   PROFILE_END;
@@ -1598,7 +1603,7 @@ bool expression_op_func__divide( expression* expr, /*@unused@*/ thread* thr, /*@
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
-    (void)vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type, expr->parent->expr->left->value->width, 0, 0 );
+    (void)vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->width, 0, 0 );
   }
 
   if( vector_is_unknown( expr->left->value ) || vector_is_unknown( expr->right->value ) ) {
@@ -1606,7 +1611,7 @@ bool expression_op_func__divide( expression* expr, /*@unused@*/ thread* thr, /*@
     bit.all            = 0;
     bit.part.exp.value = 0x2;
     for( i=0; i<expr->value->width; i++ ) {
-      retval |= vector_set_value( expr->value, &bit, VTYPE_VAL, 1, 0, i );
+      retval |= vector_set_value( expr->value, &bit, 1, 0, i );
     }
 
   } else {
@@ -1622,7 +1627,7 @@ bool expression_op_func__divide( expression* expr, /*@unused@*/ thread* thr, /*@
 
     intval1 = intval1 / intval2;
     vector_from_int( &vec1, intval1 );
-    retval = vector_set_value( expr->value, vec1.value, VTYPE_VAL, expr->value->width, 0, 0 );
+    retval = vector_set_value( expr->value, vec1.value, expr->value->width, 0, 0 );
 
   }
 
@@ -1653,8 +1658,7 @@ bool expression_op_func__mod( expression* expr, /*@unused@*/ thread* thr, /*@unu
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
-    (void)vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type,
-                      expr->parent->expr->left->value->width, 0, 0 );
+    (void)vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->width, 0, 0 );
   }
 
   if( vector_is_unknown( expr->left->value ) || vector_is_unknown( expr->right->value ) ) {
@@ -1662,7 +1666,7 @@ bool expression_op_func__mod( expression* expr, /*@unused@*/ thread* thr, /*@unu
     bit.all            = 0;
     bit.part.exp.value = 0x2;
     for( i=0; i<expr->value->width; i++ ) {
-      retval |= vector_set_value( expr->value, &bit, VTYPE_VAL, 1, 0, i );
+      retval |= vector_set_value( expr->value, &bit, 1, 0, i );
     }
 
   } else {
@@ -1678,7 +1682,7 @@ bool expression_op_func__mod( expression* expr, /*@unused@*/ thread* thr, /*@unu
 
     intval1 = intval1 % intval2;
     vector_from_int( &vec1, intval1 );
-    retval = vector_set_value( expr->value, vec1.value, VTYPE_VAL, expr->value->width, 0, 0 );
+    retval = vector_set_value( expr->value, vec1.value, expr->value->width, 0, 0 );
 
   }
 
@@ -1701,8 +1705,7 @@ bool expression_op_func__add( expression* expr, /*@unused@*/ thread* thr, /*@unu
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
-    (void)vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type,
-                      expr->parent->expr->left->value->width, 0, 0 );
+    (void)vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->width, 0, 0 );
   }
 
   PROFILE_END;
@@ -1724,8 +1727,7 @@ bool expression_op_func__subtract( expression* expr, /*@unused@*/ thread* thr, /
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
-    (void)vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type,
-                      expr->parent->expr->left->value->width, 0, 0 );
+    (void)vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->width, 0, 0 );
   }
 
   PROFILE_END;
@@ -1747,8 +1749,7 @@ bool expression_op_func__and( expression* expr, /*@unused@*/ thread* thr, /*@unu
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
-    (void)vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type,
-                      expr->parent->expr->left->value->width, 0, 0 );
+    (void)vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->width, 0, 0 );
   }
 
   PROFILE_END;
@@ -1770,8 +1771,7 @@ bool expression_op_func__or( expression* expr, /*@unused@*/ thread* thr, /*@unus
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
-    (void)vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type,
-                      expr->parent->expr->left->value->width, 0, 0 );
+    (void)vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->width, 0, 0 );
   }
 
   PROFILE_END;
@@ -1878,8 +1878,7 @@ bool expression_op_func__lshift( expression* expr, /*@unused@*/ thread* thr, /*@
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
-    (void)vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type,
-                      expr->parent->expr->left->value->width, 0, 0 );
+    (void)vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->width, 0, 0 );
   }
 
   PROFILE_END;
@@ -1901,8 +1900,7 @@ bool expression_op_func__rshift( expression* expr, /*@unused@*/ thread* thr, /*@
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
-    (void)vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type,
-                      expr->parent->expr->left->value->width, 0, 0 );
+    (void)vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->width, 0, 0 );
   }
 
   PROFILE_END;
@@ -1924,8 +1922,7 @@ bool expression_op_func__arshift( expression* expr, /*@unused@*/ thread* thr, /*
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
-    (void)vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->suppl.part.type,
-                      expr->parent->expr->left->value->width, 0, 0 );
+    (void)vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->width, 0, 0 );
   }
 
   PROFILE_END;
@@ -2106,7 +2103,7 @@ bool expression_op_func__cond( expression* expr, /*@unused@*/ thread* thr, /*@un
   PROFILE_END;
 
   /* Simple vector copy from right side */
-  return( vector_set_value( expr->value, expr->right->value->value, expr->right->value->suppl.part.type, expr->right->value->width, 0, 0 ) );
+  return( vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 ) );
 
 }
 
@@ -2131,14 +2128,14 @@ bool expression_op_func__cond_sel( expression* expr, /*@unused@*/ thread* thr, /
   (void)vector_unary_op( &vec1, expr->parent->expr->left->value, or_optab );
 
   if( vec1.value[0].part.exp.value == 0 ) {
-    retval = vector_set_value( expr->value, expr->right->value->value, expr->right->value->suppl.part.type, expr->right->value->width, 0, 0 );
+    retval = vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 );
   } else if( vec1.value[0].part.exp.value == 1 ) {
-    retval = vector_set_value( expr->value, expr->left->value->value, expr->left->value->suppl.part.type, expr->left->value->width, 0, 0 );
+    retval = vector_set_value( expr->value, expr->left->value->value, expr->left->value->width, 0, 0 );
   } else {
     bitx.all            = 0; 
     bitx.part.exp.value = 2;
     for( i=0; i<expr->value->width; i++ ) {
-      retval |= vector_set_value( expr->value, &bitx, VTYPE_VAL, 1, 0, i );
+      retval |= vector_set_value( expr->value, &bitx, 1, 0, i );
     }
   }
 
@@ -2444,7 +2441,7 @@ bool expression_op_func__expand( expression* expr, /*@unused@*/ thread* thr, /*@
 
     bit.part.exp.value = 0x2;
     for( i=0; i<expr->value->width; i++ ) {
-      retval |= vector_set_value( expr->value, &bit, VTYPE_VAL, 1, 0, i );
+      retval |= vector_set_value( expr->value, &bit, 1, 0, i );
     }
 
   } else {
@@ -2453,7 +2450,7 @@ bool expression_op_func__expand( expression* expr, /*@unused@*/ thread* thr, /*@
       bit.part.exp.value = expr->right->value->value[j].part.exp.value;
       width              = vector_to_int( expr->left->value );
       for( i=0; i<width; i++ ) {
-        retval |= vector_set_value( expr->value, &bit, VTYPE_VAL, 1, 0, ((j * expr->right->value->width) + i) );
+        retval |= vector_set_value( expr->value, &bit, 1, 0, ((j * expr->right->value->width) + i) );
       }
     }
 
@@ -2478,8 +2475,8 @@ bool expression_op_func__list( expression* expr, /*@unused@*/ thread* thr, /*@un
 
   bool retval = FALSE;  /* Return value for this function */
 
-  retval |= vector_set_value( expr->value, expr->right->value->value, expr->right->value->suppl.part.type, expr->right->value->width, 0, 0 );
-  retval |= vector_set_value( expr->value, expr->left->value->value,  expr->left->value->suppl.part.type,  expr->left->value->width,  0, expr->right->value->width );
+  retval |= vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 );
+  retval |= vector_set_value( expr->value, expr->left->value->value,  expr->left->value->width,  0, expr->right->value->width );
 
   PROFILE_END;
 
@@ -2500,7 +2497,7 @@ bool expression_op_func__concat( expression* expr, /*@unused@*/ thread* thr, /*@
 
   PROFILE_END;
 
-  return( vector_set_value( expr->value, expr->right->value->value, expr->right->value->suppl.part.type, expr->right->value->width, 0, 0 ) );
+  return( vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 ) );
 
 }
 
@@ -2513,7 +2510,7 @@ bool expression_op_func__concat( expression* expr, /*@unused@*/ thread* thr, /*@
 
  Performs a positive edge event operation.
 */
-bool expression_op_func__pedge( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__PEDGE);
+bool expression_op_func__pedge( expression* expr, thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__PEDGE);
 
   bool              retval;   /* Return value for this function */
   register vec_data value1a;  /* 1-bit vector value */
@@ -2552,7 +2549,7 @@ bool expression_op_func__pedge( expression* expr, thread* thr, const sim_time* t
 
  Performs a negative-edge event operation.
 */
-bool expression_op_func__nedge( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__NEDGE);
+bool expression_op_func__nedge( expression* expr, thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__NEDGE);
 
   bool              retval;   /* Return value for this function */
   register vec_data value1a;  /* 1-bit vector value */
@@ -2616,14 +2613,14 @@ bool expression_op_func__aedge( expression* expr, thread* thr, /*@unused@*/ cons
   } else {
 
     vector_init( &vec, &bit, 1, VTYPE_VAL );
-    vector_op_compare( &vec, expr->left->value, expr->right->value, COMP_CEQ );
+    (void)vector_op_compare( &vec, expr->left->value, expr->right->value, COMP_CEQ );
 
     /* If the last value and the current value are NOT equal, we have a fired event */
     if( (bit.part.exp.value == 0) && thr->suppl.part.exec_first ) {
       expr->suppl.part.true   = 1;
       expr->suppl.part.eval_t = 1;
       retval = TRUE;
-      (void)vector_set_value( expr->left->value, expr->right->value->value, expr->right->value->suppl.part.type, expr->right->value->width, 0, 0 );
+      (void)vector_set_value( expr->left->value, expr->right->value->value, expr->right->value->width, 0, 0 );
     } else {
       expr->suppl.part.eval_t = 0;
       retval = FALSE;
@@ -2853,7 +2850,7 @@ bool expression_op_func__default( expression* expr, /*@unused@*/ thread* thr, /*
 
   PROFILE_END;
 
-  return( vector_set_value( expr->value, &bit, VTYPE_VAL, 1, 0, 0 ) );
+  return( vector_set_value( expr->value, &bit, 1, 0, 0 ) );
 
 }
 
@@ -2895,7 +2892,7 @@ bool expression_op_func__func_call( expression* expr, thread* thr, const sim_tim
   sim_thread( sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit, time ), ((thr == NULL) ? time : &(thr->curr_time)) );
 
   /* Then copy the function variable to this expression */
-  retval = vector_set_value( expr->value, expr->sig->value->value, VTYPE_VAL, expr->value->width, 0, 0 );
+  retval = vector_set_value( expr->value, expr->sig->value->value, expr->value->width, 0, 0 );
   
   /* Deallocate the reentrant structure of the current thread (if it exists) */
   if( (thr != NULL) && (thr->ren != NULL) ) {
@@ -3064,7 +3061,7 @@ bool expression_op_func__exponent( expression* expr, /*@unused@*/ thread* thr, /
     bit.all            = 0;
     bit.part.exp.value = 0x2;
     for( i=0; i<expr->value->width; i++ ) {
-      retval |= vector_set_value( expr->value, &bit, VTYPE_VAL, 1, 0, i );
+      retval |= vector_set_value( expr->value, &bit, 1, 0, i );
     }
 
   } else {
@@ -3078,7 +3075,7 @@ bool expression_op_func__exponent( expression* expr, /*@unused@*/ thread* thr, /
     }
 
     vector_from_int( &vec, intval3 );
-    retval = vector_set_value( expr->value, vec.value, VTYPE_VAL, expr->value->width, 0, 0 );
+    retval = vector_set_value( expr->value, vec.value, expr->value->width, 0, 0 );
 
   }
 
@@ -3112,7 +3109,7 @@ bool expression_op_func__passign( expression* expr, thread* thr, const sim_time*
 
     /* If the connected signal is an input type, copy the parameter expression value to this vector */
     case SSUPPL_TYPE_INPUT :
-      retval = vector_set_value( expr->value, expr->right->value->value, expr->right->value->suppl.part.type, expr->right->value->width, 0, 0 );
+      retval = vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 );
       vsignal_propagate( expr->sig, ((thr == NULL) ? time : &(thr->curr_time)) );
       break;
 
@@ -3251,7 +3248,7 @@ bool expression_op_func__iinc( expression* expr, thread* thr, const sim_time* ti
   (void)vector_op_inc( expr->left->value );
 
   /* Copy the left-hand value to our expression */
-  (void)vector_set_value( expr->value, expr->left->value->value, expr->left->value->suppl.part.type, expr->left->value->width, 0, 0 );
+  (void)vector_set_value( expr->value, expr->left->value->value, expr->left->value->width, 0, 0 );
 
 #ifdef DEBUG_MODE
   if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
@@ -3280,7 +3277,7 @@ bool expression_op_func__iinc( expression* expr, thread* thr, const sim_time* ti
 bool expression_op_func__pinc( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__PINC);
 
   /* Copy the left-hand value to our expression */
-  (void)vector_set_value( expr->value, expr->left->value->value, expr->left->value->suppl.part.type, expr->left->value->width, 0, 0 );
+  (void)vector_set_value( expr->value, expr->left->value->value, expr->left->value->width, 0, 0 );
 
   /* Perform increment */
   (void)vector_op_inc( expr->left->value );
@@ -3315,7 +3312,7 @@ bool expression_op_func__idec( expression* expr, thread* thr, const sim_time* ti
   (void)vector_op_dec( expr->left->value );
 
   /* Copy the left-hand value to our expression */
-  (void)vector_set_value( expr->value, expr->left->value->value, expr->left->value->suppl.part.type, expr->left->value->width, 0, 0 );
+  (void)vector_set_value( expr->value, expr->left->value->value, expr->left->value->width, 0, 0 );
 
 #ifdef DEBUG_MODE
   if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
@@ -3344,7 +3341,7 @@ bool expression_op_func__idec( expression* expr, thread* thr, const sim_time* ti
 bool expression_op_func__pdec( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__PDEC);
 
   /* Copy the left-hand value to our expression */
-  (void)vector_set_value( expr->value, expr->left->value->value, expr->left->value->suppl.part.type, expr->left->value->width, 0, 0 );
+  (void)vector_set_value( expr->value, expr->left->value->value, expr->left->value->width, 0, 0 );
 
   /* Perform decrement */
   (void)vector_op_dec( expr->left->value );
@@ -3413,7 +3410,7 @@ bool expression_op_func__dly_op( expression* expr, thread* thr, const sim_time* 
 
   /* If we are not waiting for the delay to occur, copy the contents of the operation */
   if( !thr->suppl.part.exec_first ) {
-    (void)vector_set_value( expr->value, expr->right->value->value, expr->right->value->suppl.part.type, expr->right->value->width, 0, 0 );
+    (void)vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 );
   }
 
   /* Explicitly call the delay/event.  If the delay is complete, set eval_t to TRUE */
@@ -3526,9 +3523,12 @@ bool expression_operate( expression* expr, thread* thr, const sim_time* time ) {
   if( expr != NULL ) {
 
 #ifdef DEBUG_MODE
-    snprintf( user_msg, USER_MSG_LENGTH, "      In expression_operate, id: %d, op: %s, line: %d, addr: %p",
-              expr->id, expression_string_op( expr->op ), expr->line, expr );
-    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    {
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "      In expression_operate, id: %d, op: %s, line: %d, addr: %p",
+                                  expr->id, expression_string_op( expr->op ), expr->line, expr );
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    }
 #endif
 
     assert( expr->value != NULL );
@@ -3698,7 +3698,7 @@ void expression_operate_recursively( expression* expr, func_unit* funit, bool si
     }
     
     /* Perform operation */
-    expression_operate( expr, NULL, &time );
+    (void)expression_operate( expr, NULL, &time );
 
     if( sizing ) {
 
@@ -3940,8 +3940,9 @@ void expression_assign(
 
 #ifdef DEBUG_MODE
     if( assign ) {
-      snprintf( user_msg, USER_MSG_LENGTH, "        In expression_assign, lhs_op: %s, rhs_op: %s, lsb: %d, time: %llu",
-                expression_string_op( lhs->op ), expression_string_op( rhs->op ), *lsb, time->full );
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "        In expression_assign, lhs_op: %s, rhs_op: %s, lsb: %d, time: %llu",
+                                  expression_string_op( lhs->op ), expression_string_op( rhs->op ), *lsb, time->full );
+      assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, DEBUG, __FILE__, __LINE__ );
     }
 #endif
@@ -3950,9 +3951,9 @@ void expression_assign(
       case EXP_OP_SIG      :
         if( lhs->sig->suppl.part.assigned == 1 ) {
           if( assign ) {
-            (void)vector_set_value( lhs->value, rhs->value->value, rhs->value->suppl.part.type, rhs->value->width, *lsb, 0 );
+            (void)vector_set_value( lhs->value, rhs->value->value, rhs->value->width, *lsb, 0 );
             if( rhs->value->width < lhs->value->width ) {
-              vector_bit_fill( lhs->value, lhs->value->width, (rhs->value->width + *lsb) );
+              (void)vector_bit_fill( lhs->value, lhs->value->width, (rhs->value->width + *lsb) );
             }
 #ifdef DEBUG_MODE
             if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
@@ -3980,9 +3981,9 @@ void expression_assign(
             }
           }
           if( assign ) {
-            (void)vector_set_value( lhs->value, rhs->value->value, rhs->value->suppl.part.type, rhs->value->width, *lsb, 0 );
+            (void)vector_set_value( lhs->value, rhs->value->value, rhs->value->width, *lsb, 0 );
             if( rhs->value->width < lhs->value->width ) {
-              vector_bit_fill( lhs->value, lhs->value->width, (rhs->value->width + *lsb) );
+              (void)vector_bit_fill( lhs->value, lhs->value->width, (rhs->value->width + *lsb) );
             }
 #ifdef DEBUG_MODE
             if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
@@ -4008,9 +4009,9 @@ void expression_assign(
             lhs->value->value = vstart + intval1;
           }
           if( assign ) {
-            (void)vector_set_value( lhs->value, rhs->value->value, rhs->value->suppl.part.type, rhs->value->width, *lsb, 0 );
+            (void)vector_set_value( lhs->value, rhs->value->value, rhs->value->width, *lsb, 0 );
             if( rhs->value->width < lhs->value->width ) {
-              vector_bit_fill( lhs->value, lhs->value->width, (rhs->value->width + *lsb) );
+              (void)vector_bit_fill( lhs->value, lhs->value->width, (rhs->value->width + *lsb) );
             }
 #ifdef DEBUG_MODE
             if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
@@ -4035,7 +4036,7 @@ void expression_assign(
             lhs->value->value = vstart + intval1;
           }
           if( assign ) {
-            (void)vector_set_value( lhs->value, rhs->value->value, rhs->value->suppl.part.type, intval2, *lsb, 0 );
+            (void)vector_set_value( lhs->value, rhs->value->value, intval2, *lsb, 0 );
 #ifdef DEBUG_MODE
             if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
               printf( "        " );  vsignal_display( lhs->sig );
@@ -4058,7 +4059,7 @@ void expression_assign(
             lhs->value->value = vstart + ((intval1 - intval2) + 1);
           }
           if( assign ) {
-            (void)vector_set_value( lhs->value, rhs->value->value, rhs->value->suppl.part.type, intval2, *lsb, 0 );
+            (void)vector_set_value( lhs->value, rhs->value->value, intval2, *lsb, 0 );
 #ifdef DEBUG_MODE
             if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
               printf( "        " );  vsignal_display( lhs->sig );
@@ -4138,7 +4139,9 @@ void expression_dealloc( expression* expr, bool exp_only ) { PROFILE(EXPRESSION_
 
         if( !exp_only ) {
 #ifdef DEBUG_MODE
-          snprintf( user_msg, USER_MSG_LENGTH, "Removing statement block starting at line %d because it is a NB_CALL and its calling expression is being removed", expr->elem.funit->first_stmt->exp->line );
+          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Removing statement block starting at line %d because it is a NB_CALL and its calling expression is being removed",
+                                      expr->elem.funit->first_stmt->exp->line );
+          assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
           stmt_blk_add_to_remove_list( expr->elem.funit->first_stmt );
@@ -4246,6 +4249,9 @@ void expression_dealloc( expression* expr, bool exp_only ) { PROFILE(EXPRESSION_
 
 /* 
  $Log$
+ Revision 1.274  2008/01/10 04:59:04  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.273  2008/01/08 21:13:08  phase1geo
  Completed -weak splint run.  Full regressions pass.
 
