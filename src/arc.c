@@ -878,27 +878,22 @@ void arc_get_stats(
  \param arcs  Pointer to state transition arc array to write.
  \param file  Pointer to CDD file to write.
 
- \return Returns TRUE if write was successful; otherwise, returns FALSE.
-
  Writes the specified arcs array to the specified CDD output file.  An arc array
  is output in a special format that is described in the above documentation for
  this file.
 */
-bool arc_db_write( const char* arcs, FILE* file ) { PROFILE(ARC_DB_WRITE);
+void arc_db_write( const char* arcs, FILE* file ) { PROFILE(ARC_DB_WRITE);
 
-  bool retval = TRUE;  /* Return value for this function */
-  int  i;              /* Loop iterator */
+  unsigned int  i;   /* Loop iterator */
 
   for( i=0; i<(arc_get_curr_size( arcs ) * arc_get_entry_width( arc_get_width( arcs ) )) + ARC_STATUS_SIZE; i++ ) {
     /* printf( "arcs[%d]; %x\n", i, (int)arcs[i] & 0xff ); */
-    if( (int)arcs[i] == 0 ) {
+    if( (unsigned int)arcs[i] == 0 ) {
       fprintf( file, "," );
     } else {
       fprintf( file, "%02x", (((unsigned int)arcs[i]) & 0xff) );
     }
   }
-
-  return( retval );
 
 }
 
@@ -1311,6 +1306,9 @@ void arc_dealloc( char* arcs ) { PROFILE(ARC_DEALLOC);
 
 /*
  $Log$
+ Revision 1.47  2008/01/16 05:01:21  phase1geo
+ Switched totals over from float types to int types for splint purposes.
+
  Revision 1.46  2008/01/10 04:59:03  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 

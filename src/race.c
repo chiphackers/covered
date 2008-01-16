@@ -811,13 +811,9 @@ void race_check_modules() { PROFILE(RACE_CHECK_MODULES);
  \param rb    Pointer to race condition block to write to specified output file
  \param file  File handle of output stream to write.
 
- \return Returns TRUE if write occurred sucessfully; otherwise, returns FALSE.
-
  Writes contents of specified race condition block to the specified output stream.
 */
-bool race_db_write( race_blk* rb, FILE* file ) { PROFILE(RACE_DB_WRITE);
-
-  bool retval = TRUE;  /* Return value for this function */
+void race_db_write( race_blk* rb, FILE* file ) { PROFILE(RACE_DB_WRITE);
 
   fprintf( file, "%d %d %d %d\n",
     DB_TYPE_RACE,
@@ -827,8 +823,6 @@ bool race_db_write( race_blk* rb, FILE* file ) { PROFILE(RACE_DB_WRITE);
   );
 
   PROFILE_END;
-
-  return( retval );
 
 }
 
@@ -1108,6 +1102,9 @@ void race_blk_delete_list( race_blk* rb ) { PROFILE(RACE_BLK_DELETE_LIST);
 
 /*
  $Log$
+ Revision 1.66  2008/01/16 05:01:23  phase1geo
+ Switched totals over from float types to int types for splint purposes.
+
  Revision 1.65  2008/01/15 23:01:15  phase1geo
  Continuing to make splint updates (not doing any memory checking at this point).
 

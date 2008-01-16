@@ -346,13 +346,15 @@ void funit_remove_stmt_blks_calling_stmt( func_unit* funit, statement* stmt ) { 
 */
 char* funit_gen_task_function_namedblock_name( char* orig_name, func_unit* parent ) { PROFILE(FUNIT_GEN_TASK_FUNCTION_NAMEDBLOCK_NAME);
 
-  char full_name[4096];  /* Container for new name */
+  char         full_name[4096];  /* Container for new name */
+  unsigned int rv;               /* Return value for snprintf calls */
 
   assert( parent != NULL );
   assert( orig_name != NULL );
 
   /* Generate full name to use for the function/task */
-  snprintf( full_name, 4096, "%s.%s", parent->name, orig_name );
+  rv = snprintf( full_name, 4096, "%s.%s", parent->name, orig_name );
+  assert( rv < 4096 );
 
   PROFILE_END;
 
@@ -418,7 +420,7 @@ void funit_size_elements( func_unit* funit, funit_inst* inst, bool gen_all, bool
   */
   curr_gi = inst->gitem_head;
   while( curr_gi != NULL ) {
-    gen_item_bind( curr_gi->gi, inst->funit );
+    gen_item_bind( curr_gi->gi );
     curr_gi = curr_gi->next;
   }
 #endif
@@ -513,15 +515,12 @@ void funit_size_elements( func_unit* funit, funit_inst* inst, bool gen_all, bool
  \param report_save  Specifies that we are attempting to save a CDD after modifying the database in
                      the report command.
 
- \return Returns TRUE if file output was successful; otherwise, returns FALSE.
-
  Prints the database line for the specified functional unit to the specified database
  file.  If there are any problems with the write, returns FALSE; otherwise,
  returns TRUE.
 */
-bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst, bool report_save ) { PROFILE(FUNIT_DB_WRITE);
+void funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst, bool report_save ) { PROFILE(FUNIT_DB_WRITE);
 
-  bool        retval = TRUE;  /* Return value for this function */
   sig_link*   curr_sig;       /* Pointer to current functional unit sig_link element */
   exp_link*   curr_exp;       /* Pointer to current functional unit exp_link element */
   stmt_iter   curr_stmt;      /* Statement list iterator */
@@ -541,23 +540,29 @@ bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
             (funit->type == FUNIT_FUNCTION)  || (funit->type == FUNIT_TASK)        ||
             (funit->type == FUNIT_AFUNCTION) || (funit->type == FUNIT_ATASK)       ||
             (funit->type == FUNIT_ANAMED_BLOCK) );
-    snprintf( user_msg, USER_MSG_LENGTH, "Writing %s %s", get_funit_type( funit->type ), obf_funit( funit->name ) );
-    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    {
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Writing %s %s", get_funit_type( funit->type ), obf_funit( funit->name ) );
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    }
 #endif
 
     /* Calculate module name to display */
     if( scope_local( funit->name ) || (inst == NULL) ) {
       strcpy( modname, funit->name );
     } else {
-      funit_inst* parent_inst = inst->parent;
+      funit_inst*  parent_inst = inst->parent;
+      unsigned int rv;
       strcpy( modname, inst->name );
       assert( parent_inst != NULL );
       while( parent_inst->funit->type != FUNIT_MODULE ) {
-        snprintf( tmp, 4096, "%s.%s", parent_inst->name, modname );
+        unsigned int rv = snprintf( tmp, 4096, "%s.%s", parent_inst->name, modname );
+        assert( rv < 4096 );
         strcpy( modname, tmp );
         parent_inst = parent_inst->parent;
       }
-      snprintf( tmp, 4096, "%s.%s", parent_inst->funit->name, modname );
+      rv = snprintf( tmp, 4096, "%s.%s", parent_inst->funit->name, modname );
+      assert( rv < 4096 );
       strcpy( modname, tmp );
     }
 
@@ -667,8 +672,6 @@ bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
 
   PROFILE_END;
 
-  return( retval );
-
 }
 
 /*!
@@ -696,7 +699,9 @@ bool funit_db_read( func_unit* funit, char* scope, char** line ) { PROFILE(FUNIT
 
   } else {
 
-    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Incorrect number of parameters for func_unit, should be 7 but is %d\n", params );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Incorrect number of parameters for func_unit, should be 7 but is %d\n",
+                                params );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = FALSE;
 
@@ -1169,6 +1174,9 @@ void funit_dealloc( func_unit* funit ) { PROFILE(FUNIT_DEALLOC);
 
 /*
  $Log$
+ Revision 1.86  2008/01/10 04:59:04  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.85  2008/01/08 21:13:08  phase1geo
  Completed -weak splint run.  Full regressions pass.
 

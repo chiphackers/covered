@@ -455,7 +455,8 @@ WSPACE [ \t\b\f]+
          } else {
            if( (filelist_curr != filelist_head) && (error_count == 0) ) {
              /* The module has been found, recirculate filelist */
-             snprintf( user_msg, USER_MSG_LENGTH, "Parsing file '%s'", obf_file( yylloc.text ) );
+             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Parsing file '%s'", obf_file( yylloc.text ) );
+             assert( rv < USER_MSG_LENGTH );
              print_output( user_msg, NORMAL, __FILE__, __LINE__ );
              filelist_curr = filelist_head;
            }
@@ -486,8 +487,11 @@ WSPACE [ \t\b\f]+
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
      if( ignore_mode == 0 ) {
-       yylval.text = (char*)malloc_safe( strlen( yytext ) + 2 );
-       snprintf( yylval.text, (strlen( yytext ) + 2), "%s ", yytext );
+       unsigned int rv;
+       unsigned int slen = strlen( yytext ) + 2;
+       yylval.text = (char*)malloc_safe( slen );
+       rv = snprintf( yylval.text, slen, "%s ", yytext );
+       assert( rv < slen );
        return IDENTIFIER; 
      } else {
        return UNUSED_IDENTIFIER;
@@ -685,7 +689,7 @@ WSPACE [ \t\b\f]+
         yymore();
  }
 <PPTIMESCALE>\n      {
-     process_timescale( yytext, TRUE );
+     (void)process_timescale( yytext, TRUE );
      yylloc.first_line += 1;
      BEGIN( state_enter );
      yylloc.last_column = 0;
@@ -877,7 +881,8 @@ bool process_timescale_token( char* token, char* type, int* value, bool report )
 
   if( i == 0 ) {
     if( report ) {
-      snprintf( msg, USER_MSG_LENGTH, "Illegal time %s value specified (must be 1, 10 or 100)", type );
+      unsigned int rv = snprintf( msg, USER_MSG_LENGTH, "Illegal time %s value specified (must be 1, 10 or 100)", type );
+      assert( rv < USER_MSG_LENGTH );
       VLerror( msg );
     }
     retval = FALSE;
@@ -892,7 +897,8 @@ bool process_timescale_token( char* token, char* type, int* value, bool report )
     else if( strncmp( "fs", token, 2 ) == 0 ) { token += 2;  *value -= 15; }
     else {
       if( report ) {
-        snprintf( msg, USER_MSG_LENGTH, "Illegal time %s measurement specified (must be 's', 'ms', 'us', 'ns', 'ps' or 'fs')", type );
+        unsigned int rv = snprintf( msg, USER_MSG_LENGTH, "Illegal time %s measurement specified (must be 's', 'ms', 'us', 'ns', 'ps' or 'fs')", type );
+        assert( rv < USER_MSG_LENGTH );
         VLerror( msg );
       }
       retval = FALSE;
@@ -972,6 +978,8 @@ bool process_timescale( const char* txt, bool report ) { PROFILE(PROCESS_TIMESCA
   /* Finally, deallocate memory */
   free_safe( str );
 
+  return( retval );
+
 }
 
 
@@ -985,15 +993,17 @@ bool process_timescale( const char* txt, bool report ) { PROFILE(PROCESS_TIMESCA
 */
 static int yywrap() { PROFILE(LEXER_YYWRAP);
 
-  str_link* curr;
-  str_link* tmpm;
-  char*     fname = NULL;
-  FILE*     out;
-  tnode*    node;
+  str_link*    curr;
+  str_link*    tmpm;
+  char*        fname = NULL;
+  FILE*        out;
+  tnode*       node;
+  unsigned int rv;
   
   /* Close input file */
   if( yyin != 0 ) {
-    fclose( yyin );
+    rv = fclose( yyin );
+    assert( rv == 0 );
   }
   
   /* Delete the current buffer */
@@ -1005,7 +1015,8 @@ static int yywrap() { PROFILE(LEXER_YYWRAP);
    stop parsing.
   */
   if( modlist_head == NULL ) {
-    assert( unlink( ppfilename ) == 0 );
+    rv = unlink( ppfilename );
+    assert( rv == 0 );
     tree_dealloc( found_modules );
     return( 1 );
   }
@@ -1038,11 +1049,13 @@ static int yywrap() { PROFILE(LEXER_YYWRAP);
     print_output( "Unable to find the following modules:", FATAL, __FILE__, __LINE__ );
     curr = modlist_head;
     while( curr != NULL ) {
-      snprintf( user_msg, USER_MSG_LENGTH, "%s", obf_funit( curr->str ) );
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "%s", obf_funit( curr->str ) );
+      assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL_WRAP, __FILE__, __LINE__ );
       curr = curr->next;
     }
-    assert( unlink( ppfilename ) == 0 );
+    rv = unlink( ppfilename );
+    assert( rv == 0 );
     exit( EXIT_FAILURE );
   }
   
@@ -1052,9 +1065,10 @@ static int yywrap() { PROFILE(LEXER_YYWRAP);
   
   /* Now run the preprocessor on this file first */
   reset_pplexer( fname, out );
-  PPVLlex();
+  (void)PPVLlex();
   
-  fclose( out );
+  rv = fclose( out );
+  assert( rv == 0 );
 
   yyin = fopen( ppfilename, "r" );
   yyrestart( yyin );
@@ -1085,8 +1099,9 @@ static int yywrap() { PROFILE(LEXER_YYWRAP);
 */
 void reset_lexer( str_link* file_list_head ) { PROFILE(RESET_LEXER);
 
-  FILE*     out;
-  str_link* curr = file_list_head;
+  FILE*        out;
+  str_link*    curr = file_list_head;
+  unsigned int rv;
 
   if( (curr = get_next_vfile( curr, modlist_head->str )) == NULL ) {
     print_output( "No verilog files specified", FATAL, __FILE__, __LINE__ );
@@ -1097,22 +1112,26 @@ void reset_lexer( str_link* file_list_head ) { PROFILE(RESET_LEXER);
   
   /* Create temporary output filename */
   if( ppfilename == NULL ) {
+    unsigned int rv;
     ppfilename = (char*)malloc_safe( 10 );
-    snprintf( ppfilename, 10, "tmpXXXXXX" );
+    rv = snprintf( ppfilename, 10, "tmpXXXXXX" );
+    assert( rv < 10 );
     assert( mkstemp( ppfilename ) != 0 );
   }
   out = fopen( ppfilename, "w" );
   if( out == NULL ) {
-    snprintf( user_msg, USER_MSG_LENGTH, "Unable to open temporary file %s for writing", ppfilename );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to open temporary file %s for writing", ppfilename );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     exit( EXIT_FAILURE );
   }
   
   /* Now the preprocessor on this file first */
   reset_pplexer( curr->str, out );
-  PPVLlex();
+  (void)PPVLlex();
   
-  fclose( out );
+  rv = fclose( out );
+  assert( rv == 0 );
 
   yyin = fopen( ppfilename, "r" );
   yyrestart( yyin );

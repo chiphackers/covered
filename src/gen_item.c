@@ -67,29 +67,38 @@ static void gen_item_stringify(
 
   if( gi != NULL ) {
 
+    unsigned int rv;
+
     /* Allocate some memory in the tmp string */
     tmp = (char*)malloc_safe( str_len );
 
-    snprintf( str, str_len, "%p, suppl: %x", gi, gi->suppl.all );
+    rv = snprintf( str, str_len, "%p, suppl: %x", gi, gi->suppl.all );
+    assert( rv < str_len );
 
     switch( gi->suppl.part.type ) {
       case GI_TYPE_EXPR :
-        snprintf( tmp, str_len, ", EXPR, %s", expression_string( gi->elem.expr ) );
+        rv = snprintf( tmp, str_len, ", EXPR, %s", expression_string( gi->elem.expr ) );
+        assert( rv < str_len );
         break;
       case GI_TYPE_SIG :
-        snprintf( tmp, str_len, ", SIG, name: %s", obf_sig( gi->elem.sig->name ) );
+        rv = snprintf( tmp, str_len, ", SIG, name: %s", obf_sig( gi->elem.sig->name ) );
+        assert( rv < str_len );
         break;
       case GI_TYPE_STMT :
-        snprintf( tmp, str_len, ", STMT, id: %d, line: %d", gi->elem.stmt->exp->id, gi->elem.stmt->exp->line );
+        rv = snprintf( tmp, str_len, ", STMT, id: %d, line: %d", gi->elem.stmt->exp->id, gi->elem.stmt->exp->line );
+        assert( rv < str_len );
         break;
       case GI_TYPE_INST :
-        snprintf( tmp, str_len, ", INST, name: %s", obf_inst( gi->elem.inst->name ) );
+        rv = snprintf( tmp, str_len, ", INST, name: %s", obf_inst( gi->elem.inst->name ) );
+        assert( rv < str_len );
         break;
       case GI_TYPE_TFN :
-        snprintf( tmp, str_len, ", TFN, name: %s, type: %s", obf_inst( gi->elem.inst->name ), get_funit_type( gi->elem.inst->funit->type ) );
+        rv = snprintf( tmp, str_len, ", TFN, name: %s, type: %s", obf_inst( gi->elem.inst->name ), get_funit_type( gi->elem.inst->funit->type ) );
+        assert( rv < str_len );
         break;
       case GI_TYPE_BIND :
-        snprintf( tmp, str_len, ", BIND, %s", expression_string( gi->elem.expr ) );
+        rv = snprintf( tmp, str_len, ", BIND, %s", expression_string( gi->elem.expr ) );
+        assert( rv < str_len );
         break;
       default :
         strcpy( tmp, "UNKNOWN!\n" );
@@ -97,11 +106,13 @@ static void gen_item_stringify(
     }
     strcat( str, tmp );
 
-    snprintf( tmp, str_len, ", next_true: %p, next_false: %p", gi->next_true, gi->next_false );
+    rv = snprintf( tmp, str_len, ", next_true: %p, next_false: %p", gi->next_true, gi->next_false );
+    assert( rv < str_len );
     strcat( str, tmp );
 
     if( gi->varname != NULL ) {
-      snprintf( tmp, str_len, ", varname: %s", obf_sig( gi->varname ) );
+      rv = snprintf( tmp, str_len, ", varname: %s", obf_sig( gi->varname ) );
+      assert( rv < str_len );
       strcat( str, tmp );
     }
 
@@ -436,7 +447,8 @@ char* gen_item_calc_signal_name( char* name, func_unit* funit, int line, bool no
   do {
     gen_item_get_genvar( tmpname, &pre, &genvar, &post );
     if( genvar != NULL ) {
-      snprintf( intstr, 20, "%d", parse_static_expr( genvar, funit, line, no_genvars ) );
+      unsigned int rv = snprintf( intstr, 20, "%d", parse_static_expr( genvar, funit, line, no_genvars ) );
+      assert( rv < 20 );
       new_name = (char*)realloc( new_name, (strlen( new_name ) + strlen( pre ) + strlen( intstr ) + 3) );
       strncat( new_name, pre, strlen( pre ) );
       strncat( new_name, "[", 1 );
@@ -478,9 +490,11 @@ gen_item* gen_item_create_expr( expression* expr ) { PROFILE(GEN_ITEM_CREATE_EXP
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {
-    char str[USER_MSG_LENGTH];
+    char         str[USER_MSG_LENGTH];
+    unsigned int rv;
     gen_item_stringify( gi, str, USER_MSG_LENGTH );
-    snprintf( user_msg, USER_MSG_LENGTH, "In gen_item_create_expr, %s", str );
+    rv = snprintf( user_msg, USER_MSG_LENGTH, "In gen_item_create_expr, %s", str );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
   }
 #endif
@@ -511,9 +525,11 @@ gen_item* gen_item_create_sig( vsignal* sig ) { PROFILE(GEN_ITEM_CREATE_SIG);
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {
-    char str[USER_MSG_LENGTH];
+    char         str[USER_MSG_LENGTH];
+    unsigned int rv;
     gen_item_stringify( gi, str, USER_MSG_LENGTH );
-    snprintf( user_msg, USER_MSG_LENGTH, "In gen_item_create_sig, %s", str );
+    rv = snprintf( user_msg, USER_MSG_LENGTH, "In gen_item_create_sig, %s", str );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
   }
 #endif
@@ -544,9 +560,11 @@ gen_item* gen_item_create_stmt( statement* stmt ) { PROFILE(GEN_ITEM_CREATE_STMT
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {
-    char str[USER_MSG_LENGTH];
+    char         str[USER_MSG_LENGTH];
+    unsigned int rv;
     gen_item_stringify( gi, str, USER_MSG_LENGTH );
-    snprintf( user_msg, USER_MSG_LENGTH, "In gen_item_create_stmt, %s", str );
+    rv = snprintf( user_msg, USER_MSG_LENGTH, "In gen_item_create_stmt, %s", str );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
   }
 #endif
@@ -577,9 +595,11 @@ gen_item* gen_item_create_inst( funit_inst* inst ) { PROFILE(GEN_ITEM_CREATE_INS
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {
-    char str[USER_MSG_LENGTH];
+    char         str[USER_MSG_LENGTH];
+    unsigned int rv;
     gen_item_stringify( gi, str, USER_MSG_LENGTH );
-    snprintf( user_msg, USER_MSG_LENGTH, "In gen_item_create_inst, %s", str );
+    rv = snprintf( user_msg, USER_MSG_LENGTH, "In gen_item_create_inst, %s", str );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
   }
 #endif
@@ -611,8 +631,10 @@ gen_item* gen_item_create_tfn( funit_inst* inst ) { PROFILE(GEN_ITEM_CREATE_TFN)
 #ifdef DEBUG_MODE
   if( debug_mode ) {
     char str[USER_MSG_LENGTH];
+    unsigned int rv;
     gen_item_stringify( gi, str, USER_MSG_LENGTH );
-    snprintf( user_msg, USER_MSG_LENGTH, "In gen_item_create_tfn, %s", str );
+    rv = snprintf( user_msg, USER_MSG_LENGTH, "In gen_item_create_tfn, %s", str );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
   }
 #endif
@@ -643,9 +665,11 @@ gen_item* gen_item_create_bind( char* name, expression* expr ) { PROFILE(GEN_ITE
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {
-    char str[USER_MSG_LENGTH];
+    char         str[USER_MSG_LENGTH];
+    unsigned int rv;
     gen_item_stringify( gi, str, USER_MSG_LENGTH );
-    snprintf( user_msg, USER_MSG_LENGTH, "In gen_item_create_bind, %s", str );
+    rv = snprintf( user_msg, USER_MSG_LENGTH, "In gen_item_create_bind, %s", str );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
   }
 #endif
@@ -827,7 +851,6 @@ bool gen_item_connect( gen_item* gi1, gen_item* gi2, int conn_id ) { PROFILE(GEN
 /*!
  \param gi             Pointer to current generate item to resolve
  \param inst           Pointer to instance to store results to
- \param add            If set to TRUE, adds the current generate item to the functional unit pointed to be inst
 
  Recursively iterates through the entire generate block specified by gi, resolving all generate items
  within it.  This is called by the generate_resolve function (in the middle of the binding process) and
@@ -835,8 +858,7 @@ bool gen_item_connect( gen_item* gi1, gen_item* gi2, int conn_id ) { PROFILE(GEN
 */
 static void gen_item_resolve(
   gen_item*   gi,
-  funit_inst* inst,
-  bool        add
+  funit_inst* inst
 ) { PROFILE(GEN_ITEM_RESOLVE);
 
   funit_inst* child;    /* Pointer to child instance of this instance to resolve */
@@ -846,9 +868,11 @@ static void gen_item_resolve(
 
 #ifdef DEBUG_MODE 
     if( debug_mode ) {
-      char str[USER_MSG_LENGTH];
+      char         str[USER_MSG_LENGTH];
+      unsigned int rv;
       gen_item_stringify( gi, str, USER_MSG_LENGTH );
-      snprintf( user_msg, USER_MSG_LENGTH, "Resolving generate item, %s for inst: %s", str, obf_inst( inst->name ) );
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "Resolving generate item, %s for inst: %s", str, obf_inst( inst->name ) );
+      assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, DEBUG, __FILE__, __LINE__ );
     }
 #endif
@@ -865,53 +889,58 @@ static void gen_item_resolve(
         }
         expression_operate_recursively( gi->elem.expr, inst->funit, FALSE );
         if( ESUPPL_IS_TRUE( gi->elem.expr->suppl ) ) {
-          gen_item_resolve( gi->next_true, inst, FALSE );
+          gen_item_resolve( gi->next_true, inst );
         } else {
-          gen_item_resolve( gi->next_false, inst, FALSE );
+          gen_item_resolve( gi->next_false, inst );
         }
         break;
 
       case GI_TYPE_SIG :
         gitem_link_add( gen_item_create_sig( gi->elem.sig ), &(inst->gitem_head), &(inst->gitem_tail) );
-        gen_item_resolve( gi->next_true, inst, FALSE );
+        gen_item_resolve( gi->next_true, inst );
         break;
 
       case GI_TYPE_STMT :
         gitem_link_add( gen_item_create_stmt( gi->elem.stmt ), &(inst->gitem_head), &(inst->gitem_tail) );
-        gen_item_resolve( gi->next_true, inst, FALSE );
+        gen_item_resolve( gi->next_true, inst );
         break;
 
       case GI_TYPE_INST :
-        //instance_attach_child( inst, gi->elem.inst );
         instance_copy( gi->elem.inst, inst, gi->elem.inst->name, gi->elem.inst->range, FALSE );
-        gen_item_resolve( gi->next_true, inst, FALSE );
+        gen_item_resolve( gi->next_true, inst );
         break;
 
       case GI_TYPE_TFN :
         if( gi->varname != NULL ) {
-          char       inst_name[4096];
-          vsignal*   genvar;
-          func_unit* found_funit;
+          char         inst_name[4096];
+          vsignal*     genvar;
+          func_unit*   found_funit;
+          unsigned int rv;
           if( !scope_find_signal( gi->varname, inst->funit, &genvar, &found_funit, 0 ) ) {
-            snprintf( user_msg, USER_MSG_LENGTH, "Unable to find variable %s in module %s",
-                      obf_sig( gi->varname ), obf_funit( inst->funit->name ) );
+            rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to find variable %s in module %s",
+                           obf_sig( gi->varname ), obf_funit( inst->funit->name ) );
+            assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
             exit( EXIT_FAILURE );
           }
-          snprintf( inst_name, 4096, "%s[%d]", gi->elem.inst->name, vector_to_int( genvar->value ) );
-          instance_parse_add( &inst, inst->funit, gi->elem.inst->funit, inst_name, NULL, FALSE, TRUE );
-          snprintf( inst_name, 4096, "%s.%s[%d]", inst->name, gi->elem.inst->name, vector_to_int( genvar->value ) );
+          rv = snprintf( inst_name, 4096, "%s[%d]", gi->elem.inst->name, vector_to_int( genvar->value ) );
+          assert( rv < 4096 );
+          (void)instance_parse_add( &inst, inst->funit, gi->elem.inst->funit, inst_name, NULL, FALSE, TRUE );
+          rv = snprintf( inst_name, 4096, "%s.%s[%d]", inst->name, gi->elem.inst->name, vector_to_int( genvar->value ) );
+          assert( rv < 4096 );
           if( (child = instance_find_scope( inst, inst_name, TRUE )) != NULL ) {
             inst_parm_add_genvar( genvar, child );
           }
         } else {
-          char inst_name[4096];
-          instance_parse_add( &inst, inst->funit, gi->elem.inst->funit, gi->elem.inst->name, NULL, FALSE, TRUE );
-          snprintf( inst_name, 4096, "%s.%s", inst->name, gi->elem.inst->name );
+          char         inst_name[4096];
+          unsigned int rv;
+          (void)instance_parse_add( &inst, inst->funit, gi->elem.inst->funit, gi->elem.inst->name, NULL, FALSE, TRUE );
+          rv = snprintf( inst_name, 4096, "%s.%s", inst->name, gi->elem.inst->name );
+          assert( rv < 4096 );
           child = instance_find_scope( inst, inst_name, TRUE );
         }
-        gen_item_resolve( gi->next_true, child, TRUE );
-        gen_item_resolve( gi->next_false, inst, FALSE );
+        gen_item_resolve( gi->next_true, child );
+        gen_item_resolve( gi->next_false, inst );
         break;
 
       case GI_TYPE_BIND :
@@ -925,7 +954,7 @@ static void gen_item_resolve(
         }
         gitem_link_add( gen_item_create_bind( varname, gi->elem.expr ), &(inst->gitem_head), &(inst->gitem_tail) );
         free_safe( varname ); 
-        gen_item_resolve( gi->next_true, inst, FALSE );
+        gen_item_resolve( gi->next_true, inst );
         break;
 
       default :
@@ -936,41 +965,17 @@ static void gen_item_resolve(
 
     }
 
-#ifdef OBSOLETE
-    /* If we need to add the current generate item to the given functional unit, do so now */
-    if( add ) {
-      if( inst->funit->type == FUNIT_MODULE ) {
-        funit_link* funitl;
-        char        front[4096];
-        char        back[4096];
-        inst_link*  instl;
-        funitl = inst->funit->tf_head;
-        while( funitl != NULL ) {
-          scope_extract_back( funitl->funit->name, back, front );
-          instl = inst_head;
-          while( (instl != NULL) && !instance_parse_add( &(instl->inst), funitl->funit->parent, funitl->funit, back, NULL, FALSE, TRUE ) ) {
-            instl = instl->next;
-          }
-          assert( instl != NULL );
-          funitl = funitl->next;
-        }
-      }
-    }
-#endif
-
-
   }
 
 }
 
 /*!
- \param gi     Pointer to generate item to examine
- \param funit  Pointer to functional unit containing this generate item
+ \param gi  Pointer to generate item to examine
 
  Updates the specified expression name to be that of the generate item name
  if the current generate item is a BIND type.
 */
-void gen_item_bind( gen_item* gi, func_unit* funit ) { PROFILE(GEN_ITEM_BIND);
+void gen_item_bind( gen_item* gi ) { PROFILE(GEN_ITEM_BIND);
 
   if( gi->suppl.part.type == GI_TYPE_BIND ) {
 
@@ -1000,7 +1005,7 @@ void generate_resolve( funit_inst* root ) { PROFILE(GENERATE_RESOLVE);
     /* Resolve ourself */
     curr_gi = root->funit->gitem_head;
     while( curr_gi != NULL ) {
-      gen_item_resolve( curr_gi->gi, root, TRUE );
+      gen_item_resolve( curr_gi->gi, root );
       curr_gi = curr_gi->next;
     }
 
@@ -1135,6 +1140,9 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) { PROFILE(GEN_ITEM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.51  2008/01/10 04:59:04  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.50  2008/01/07 23:59:54  phase1geo
  More splint updates.
 

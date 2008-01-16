@@ -57,6 +57,7 @@ extern char       user_msg[USER_MSG_LENGTH];
 static int   comment_enter;
 static int   yywrap();
 
+/*@-unreachable@*/
 %}
 
 %option stack
@@ -221,6 +222,8 @@ WSPACE [ \t\b\f]+
 . { fprintf( stderr, "%d: unmatched character (%c)\n", se_lineno, yytext[0] ); }
 
 %%
+
+/*@=unreachable@*/
 
 /*!
  \param buf       Pointer to buffer to copy

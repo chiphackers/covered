@@ -37,7 +37,7 @@ void fsm_add_arc( fsm* table, expression* from_state, expression* to_state );
 void fsm_create_tables( fsm* table );
 
 /*! \brief Outputs contents of specified FSM to CDD file. */
-bool fsm_db_write( fsm* table, FILE* file, bool parse_mode );
+void fsm_db_write( fsm* table, FILE* file, bool parse_mode );
 
 /*! \brief Reads in contents of specified FSM. */
 bool fsm_db_read( char** line, /*@null@*/func_unit* funit );
@@ -104,6 +104,9 @@ void fsm_dealloc( fsm* table );
 
 /*
  $Log$
+ Revision 1.24  2008/01/16 05:01:22  phase1geo
+ Switched totals over from float types to int types for splint purposes.
+
  Revision 1.23  2008/01/07 23:59:54  phase1geo
  More splint updates.
 

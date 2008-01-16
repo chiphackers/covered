@@ -568,11 +568,11 @@ void combination_get_stats( func_unit* funit, int* total, int* hit ) { PROFILE(C
  Retrieves the combinational logic summary information for the specified functional unit
 */
 bool combination_get_funit_summary(
-  const char* funit_name,
-  int funit_type,
-  int* total,
-  int* hit )
-{ PROFILE(COMBINATION_GET_FUNIT_SUMMARY);
+            const char* funit_name,
+            int         funit_type,
+  /*@out@*/ int*        total,
+  /*@out@*/ int*        hit
+) { PROFILE(COMBINATION_GET_FUNIT_SUMMARY);
 
   bool        retval = TRUE;  /* Return value of this function */
   funit_link* funitl;         /* Pointer to found functional unit link */
@@ -580,7 +580,7 @@ bool combination_get_funit_summary(
 
   if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
 
-    unsigned int rv = snprintf( tmp, 21, "%20.0f", funitl->funit->stat->comb_total );
+    unsigned int rv = snprintf( tmp, 21, "%20d", funitl->funit->stat->comb_total );
     assert( rv < 21 );
     rv = sscanf( tmp, "%d", total );
     assert( rv == 1 );
@@ -2263,13 +2263,13 @@ static void combination_multi_vars(
       rv = snprintf( tmp, 20, "%d", hit );
       assert( rv < 20 );
       line_size += strlen( tmp );
-      rv = snprintf( tmp, 20, "%.0f", total );
+      rv = snprintf( tmp, 20, "%d", total );
       assert( rv < 20 );
       line_size += strlen( tmp );
       line_size += 27;                   /* Number of additional characters in line below */
       (*info)[0] = (char*)malloc_safe( line_size );
     
-      rv = snprintf( (*info)[0], line_size, "        Expression %d   (%d/%.0f)", exp->ulid, hit, total );
+      rv = snprintf( (*info)[0], line_size, "        Expression %d   (%d/%d)", exp->ulid, hit, total );
       assert( rv < line_size );
     
       switch( exp->op ) {
@@ -2979,6 +2979,9 @@ void combination_report( FILE* ofile, bool verbose ) { PROFILE(COMBINATION_REPOR
 
 /*
  $Log$
+ Revision 1.180  2008/01/16 05:01:22  phase1geo
+ Switched totals over from float types to int types for splint purposes.
+
  Revision 1.179  2008/01/15 23:01:10  phase1geo
  Continuing to make splint updates (not doing any memory checking at this point).
 

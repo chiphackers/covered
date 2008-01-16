@@ -62,7 +62,7 @@ char* funit_gen_task_function_namedblock_name( char* orig_name, func_unit* paren
 void funit_size_elements( func_unit* funit, funit_inst* inst, bool gen_all, bool alloc_exprs );
 
 /*! \brief Writes contents of provided functional unit to specified output. */
-bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst, bool report_save );
+void funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst, bool report_save );
 
 /*! \brief Read contents of current line from specified file, creates functional unit
            and adds to functional unit list. */
@@ -101,6 +101,9 @@ void funit_dealloc( func_unit* funit );
 
 /*
  $Log$
+ Revision 1.32  2008/01/10 04:59:04  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.31  2008/01/07 23:59:54  phase1geo
  More splint updates.
 

@@ -74,7 +74,7 @@ char score_run_path[4096];
 /*!
  Array containing all of the score arguments.
 */
-char** score_args = NULL;
+/*@null@*/ char** score_args = NULL;
 
 /*!
  Number of valid elements in the score args array.
@@ -283,6 +283,9 @@ void info_dealloc() { PROFILE(INFO_DEALLOC);
 
 /*
  $Log$
+ Revision 1.22  2008/01/08 21:13:08  phase1geo
+ Completed -weak splint run.  Full regressions pass.
+
  Revision 1.21  2007/12/11 05:48:25  phase1geo
  Fixing more compile errors with new code changes and adding more profiling.
  Still have a ways to go before we can compile cleanly again (next submission

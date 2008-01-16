@@ -64,10 +64,11 @@ static void instance_display_tree_helper(
   char*       prefix
 ) { PROFILE(INSTANCE_DISPLAY_TREE_HELPER);
 
-  char        sp[4096];  /* Contains prefix for children */
-  funit_inst* curr;      /* Pointer to current child instance */
-  char*       piname;    /* Printable version of this instance */
-  char*       pfname;    /* Printable version of this instance functional unit */
+  char         sp[4096];  /* Contains prefix for children */
+  funit_inst*  curr;      /* Pointer to current child instance */
+  char*        piname;    /* Printable version of this instance */
+  char*        pfname;    /* Printable version of this instance functional unit */
+  unsigned int rv;        /* Return value from snprintf calls */
 
   assert( root != NULL );
 
@@ -79,7 +80,8 @@ static void instance_display_tree_helper(
   printf( "%s%s (%s)\n", prefix, piname, pfname );
 
   /* Calculate prefix */
-  snprintf( sp, 4096, "%s   ", prefix );
+  rv = snprintf( sp, 4096, "%s   ", prefix );
+  assert( rv < 4096 );
 
   /* Display our children */
   curr = root->child_head;
@@ -583,6 +585,9 @@ bool instance_resolve_inst( funit_inst* root, funit_inst* curr ) { PROFILE(INSTA
 
   if( curr->range != NULL ) {
 
+    unsigned int rv;
+    unsigned int slen;
+
     /* Get LSB and width information */
     static_expr_calc_lsb_and_width_post( curr->range->left, curr->range->right, &width, &lsb, &big_endian );
     assert( width != -1 );
@@ -599,18 +604,21 @@ bool instance_resolve_inst( funit_inst* root, funit_inst* curr ) { PROFILE(INSTA
     free_safe( curr->name );
 
     /* For the first instance, just modify the name */
-    new_name   = (char*)malloc_safe( strlen( name_copy ) + 23 );
-    snprintf( new_name, (strlen( name_copy ) + 23), "%s[%d]", name_copy, lsb );
+    slen     = strlen( name_copy ) + 23;
+    new_name = (char*)malloc_safe( slen );
+    rv = snprintf( new_name, slen, "%s[%d]", name_copy, lsb );
+    assert( rv < slen );
     curr->name = strdup_safe( new_name );
 
     /* For all of the rest of the instances, do the instance_parse_add function call */
     for( i=1; i<width; i++ ) {
 
       /* Create the new name */
-      snprintf( new_name, (strlen( curr->name ) + 23), "%s[%d]", name_copy, (lsb + i) );
+      rv = snprintf( new_name, slen, "%s[%d]", name_copy, (lsb + i) );
+      assert( rv < slen );
 
       /* Add the instance */
-      instance_parse_add( &root, ((curr->parent == NULL) ? NULL : curr->parent->funit), curr->funit, new_name, NULL, TRUE, FALSE );
+      (void)instance_parse_add( &root, ((curr->parent == NULL) ? NULL : curr->parent->funit), curr->funit, new_name, NULL, TRUE, FALSE );
 
     }
 
@@ -649,7 +657,7 @@ static void instance_resolve_helper(
     }
 
     /* Now resolve this instance */
-    instance_resolve_inst( root, curr );
+    (void)instance_resolve_inst( root, curr );
 
   }
 
@@ -786,7 +794,8 @@ void instance_db_write( funit_inst* root, FILE* file, char* scope, bool parse_mo
   /* Display children */
   curr = root->child_head;
   while( curr != NULL ) {
-    snprintf( tscope, 4096, "%s.%s", scope, curr->name );
+    unsigned int rv = snprintf( tscope, 4096, "%s.%s", scope, curr->name );
+    assert( rv < 4096 );
     instance_db_write( curr, file, tscope, parse_mode, report_save );
     curr = curr->next;
   }
@@ -1148,6 +1157,9 @@ void instance_dealloc( funit_inst* root, char* scope ) { PROFILE(INSTANCE_DEALLO
 
 /*
  $Log$
+ Revision 1.86  2008/01/10 04:59:04  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.85  2008/01/08 21:13:08  phase1geo
  Completed -weak splint run.  Full regressions pass.
 

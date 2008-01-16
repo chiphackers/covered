@@ -212,8 +212,10 @@ bool line_get_funit_summary( const char* funit_name, int funit_type, int* total,
 
   if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
 
-    snprintf( tmp, 21, "%20.0f", funitl->funit->stat->line_total );
-    assert( sscanf( tmp, "%d", total ) == 1 );
+    unsigned int rv = snprintf( tmp, 21, "%20d", funitl->funit->stat->line_total );
+    assert( rv < 21 );
+    rv = sscanf( tmp, "%d", total );
+    assert( rv == 1 );
     *hit = funitl->funit->stat->line_hit;
 
   } else {
@@ -294,7 +296,8 @@ static bool line_instance_summary(
   } else if( strcmp( parent_inst, "*" ) == 0 ) {
     strcpy( tmpname, pname );
   } else {
-    snprintf( tmpname, 4096, "%s.%s", parent_inst, pname );
+    unsigned int rv = snprintf( tmpname, 4096, "%s.%s", parent_inst, pname );
+    assert( rv < 4096 );
   }
 
   free_safe( pname );
@@ -507,7 +510,8 @@ static void line_instance_verbose(
   } else if( strcmp( parent_inst, "*" ) == 0 ) {
     strcpy( tmpname, pname );
   } else {
-    snprintf( tmpname, 4096, "%s.%s", parent_inst, pname );
+    unsigned int rv = snprintf( tmpname, 4096, "%s.%s", parent_inst, pname );
+    assert( rv < 4096 );
   }
 
   free_safe( pname );
@@ -637,7 +641,7 @@ void line_report( FILE* ofile, bool verbose ) { PROFILE(LINE_REPORT);
       instl = instl->next;
     }
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
-    line_display_instance_summary( ofile, "Accumulated", acc_hits, acc_total );
+    (void)line_display_instance_summary( ofile, "Accumulated", acc_hits, acc_total );
     
     if( verbose && (missed_found || report_covered) ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
@@ -655,7 +659,7 @@ void line_report( FILE* ofile, bool verbose ) { PROFILE(LINE_REPORT);
 
     missed_found = line_funit_summary( ofile, funit_head, &acc_hits, &acc_total );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
-    line_display_funit_summary( ofile, "Accumulated", "", acc_hits, acc_total );
+    (void)line_display_funit_summary( ofile, "Accumulated", "", acc_hits, acc_total );
 
     if( verbose && (missed_found || report_covered) ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
@@ -670,6 +674,9 @@ void line_report( FILE* ofile, bool verbose ) { PROFILE(LINE_REPORT);
 
 /*
  $Log$
+ Revision 1.82  2008/01/16 05:01:22  phase1geo
+ Switched totals over from float types to int types for splint purposes.
+
  Revision 1.81  2008/01/10 04:59:04  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 

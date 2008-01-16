@@ -162,13 +162,9 @@ void fsm_create_tables( fsm* table ) { PROFILE(FSM_CREATE_TABLES);
  \param file        Pointer to file output stream to write to.
  \param parse_mode  Set to TRUE when we are writing immediately after parsing
 
- \return Returns TRUE if file writing is successful; otherwise, returns FALSE.
-
  Outputs the contents of the specified FSM to the specified CDD file.
 */
-bool fsm_db_write( fsm* table, FILE* file, bool parse_mode ) { PROFILE(FSM_DB_WRITE);
-
-  bool retval = TRUE;  /* Return value for this function */
+void fsm_db_write( fsm* table, FILE* file, bool parse_mode ) { PROFILE(FSM_DB_WRITE);
 
   fprintf( file, "%d %d %d ",
     DB_TYPE_FSM,
@@ -179,7 +175,7 @@ bool fsm_db_write( fsm* table, FILE* file, bool parse_mode ) { PROFILE(FSM_DB_WR
   /* Print set table */
   if( table->table != NULL ) {
     fprintf( file, "1 " );
-    retval = arc_db_write( table->table, file );
+    arc_db_write( table->table, file );
 
     /* Deallocate the given table after writing it */
     if( table->table != NULL ) {
@@ -191,8 +187,6 @@ bool fsm_db_write( fsm* table, FILE* file, bool parse_mode ) { PROFILE(FSM_DB_WR
   }
 
   fprintf( file, "\n" );
-
-  return( retval );
 
 } 
 
@@ -403,7 +397,7 @@ bool fsm_get_funit_summary( const char* funit_name, int funit_type, int* total, 
 
   if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
 
-    unsigned int rv = snprintf( tmp, 21, "%20.0f", funitl->funit->stat->arc_total );
+    unsigned int rv = snprintf( tmp, 21, "%20d", funitl->funit->stat->arc_total );
     assert( rv < 21 );
     rv = sscanf( tmp, "%d", total );
     assert( rv == 1 );
@@ -1184,7 +1178,7 @@ void fsm_report( FILE* ofile, bool verbose ) { PROFILE(FSM_REPORT);
       instl = instl->next;
     }
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
-    fsm_display_instance_summary( ofile, "Accumulated", acc_st_hits, acc_st_total, acc_arc_hits, acc_arc_total );
+    (void)fsm_display_instance_summary( ofile, "Accumulated", acc_st_hits, acc_st_total, acc_arc_hits, acc_arc_total );
    
     if( verbose && (missed_found || report_covered) ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
@@ -1203,7 +1197,7 @@ void fsm_report( FILE* ofile, bool verbose ) { PROFILE(FSM_REPORT);
 
     missed_found = fsm_funit_summary( ofile, funit_head, &acc_st_hits, &acc_st_total, &acc_arc_hits, &acc_arc_total );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
-    fsm_display_funit_summary( ofile, "Accumulated", "", acc_st_hits, acc_st_total, acc_arc_hits, acc_arc_total );
+    (void)fsm_display_funit_summary( ofile, "Accumulated", "", acc_st_hits, acc_st_total, acc_arc_hits, acc_arc_total );
 
     if( verbose && (missed_found || report_covered) ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
@@ -1262,6 +1256,9 @@ void fsm_dealloc( fsm* table ) { PROFILE(FSM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.79  2008/01/16 05:01:22  phase1geo
+ Switched totals over from float types to int types for splint purposes.
+
  Revision 1.78  2008/01/15 23:01:14  phase1geo
  Continuing to make splint updates (not doing any memory checking at this point).
 

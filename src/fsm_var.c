@@ -53,12 +53,12 @@ extern func_unit*  curr_funit;
  may make the FSM extraction more automatic (smarter) in the future, but we will always allow
  the user to make these choices with the -F option to the score command.
 */
-static fsm_var* fsm_var_head = NULL;
+/*@null@*/ static fsm_var* fsm_var_head = NULL;
 
 /*!
  Pointer to the tail of the list of FSM scopes in the design.
 */
-static fsm_var* fsm_var_tail = NULL;
+/*@null@*/ static fsm_var* fsm_var_tail = NULL;
 
 /*!
  Pointer to the head of the list of FSM variable bindings between signal names and expression
@@ -67,12 +67,12 @@ static fsm_var* fsm_var_tail = NULL;
  completed, the FSM bind function needs to be called to bind all FSM signals/expressions to
  each other.
 */
-static fv_bind* fsm_var_bind_head = NULL;
+/*@null@*/ static fv_bind* fsm_var_bind_head = NULL;
 
 /*!
  Pointer to the tail of the list of FSM variable bindings.
 */
-static fv_bind* fsm_var_bind_tail = NULL;
+/*@null@*/ static fv_bind* fsm_var_bind_tail = NULL;
 
 /*!
  Pointer to the head of the list of FSM variable statement/functional unit bindings.  During the
@@ -81,12 +81,12 @@ static fv_bind* fsm_var_bind_tail = NULL;
  the FSM bind function needs to be called to bind all FSM statements/functional units to
  each other.
 */
-static fv_bind* fsm_var_stmt_head = NULL;
+/*@null@*/ static fv_bind* fsm_var_stmt_head = NULL;
 
 /*!
  Pointer to the tail of the list of FSM statement/functional unit bindings.
 */
-static fv_bind* fsm_var_stmt_tail = NULL;
+/*@null@*/ static fv_bind* fsm_var_stmt_tail = NULL;
 
 static void fsm_var_remove( fsm_var* );
 
@@ -202,13 +202,15 @@ static bool fsm_var_bind_expr(
 
   if( (funitl = funit_link_find( funit_name, FUNIT_MODULE, funit_head )) != NULL ) {
     if( !bind_signal( sig_name, expr, funitl->funit, TRUE, FALSE, FALSE, expr->line, FALSE ) ) {
-      snprintf( user_msg, USER_MSG_LENGTH, "Unable to bind FSM-specified signal (%s) to expression (%d) in module (%s)",
-                obf_sig( sig_name ), expr->id, obf_funit( funit_name ) );
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to bind FSM-specified signal (%s) to expression (%d) in module (%s)",
+                                  obf_sig( sig_name ), expr->id, obf_funit( funit_name ) );
+      assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       retval = FALSE;
     }
   } else {
-    snprintf( user_msg, USER_MSG_LENGTH, "Unable to find FSM-specified module (%s) in design", obf_funit( funit_name ) ); 
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to find FSM-specified module (%s) in design", obf_funit( funit_name ) ); 
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = FALSE;
   }
@@ -415,7 +417,8 @@ void fsm_var_bind() { PROFILE(FSM_VAR_BIND);
     while( curr != NULL ) {
 
       /* Bind statement to functional unit */
-      fsm_var_bind_stmt( curr->stmt, curr->funit_name );
+      bool rv = fsm_var_bind_stmt( curr->stmt, curr->funit_name );
+      assert( rv );
 
       tmp = curr->next;
 
@@ -498,6 +501,9 @@ void fsm_var_remove( fsm_var* fv ) { PROFILE(FSM_VAR_REMOVE);
 
 /*
  $Log$
+ Revision 1.33  2008/01/10 04:59:04  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.32  2008/01/07 23:59:54  phase1geo
  More splint updates.
 

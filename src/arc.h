@@ -53,7 +53,7 @@ int arc_find( const char* arcs, const vector* from_st, const vector* to_st, int*
 void arc_get_stats( char* arcs, int* state_total, int* state_hits, int* arc_total, int* arc_hits );
 
 /*! \brief Writes specified arc array to specified CDD file. */
-bool arc_db_write( const char* arcs, FILE* file );
+void arc_db_write( const char* arcs, FILE* file );
 
 /*! \brief Reads in arc array from CDD database string. */
 bool arc_db_read( char** arcs, char** line );
@@ -75,6 +75,9 @@ void arc_dealloc( /*@only@*/ char* arcs );
 
 /*
  $Log$
+ Revision 1.23  2008/01/16 05:01:21  phase1geo
+ Switched totals over from float types to int types for splint purposes.
+
  Revision 1.22  2008/01/07 23:59:54  phase1geo
  More splint updates.
 
