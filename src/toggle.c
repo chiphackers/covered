@@ -328,7 +328,8 @@ static bool toggle_instance_summary(
   } else if( strcmp( parent_inst, "*" ) == 0 ) {
     strcpy( tmpname, pname );
   } else {
-    snprintf( tmpname, 4096, "%s.%s", parent_inst, pname );
+    unsigned int rv = snprintf( tmpname, 4096, "%s.%s", parent_inst, pname );
+    assert( rv < 4096 );
   }
 
   free_safe( pname );
@@ -546,7 +547,8 @@ static void toggle_instance_verbose( FILE* ofile, funit_inst* root, char* parent
   } else if( strcmp( parent_inst, "*" ) == 0 ) {
     strcpy( tmpname, pname );
   } else {
-    snprintf( tmpname, 4096, "%s.%s", parent_inst, pname );
+    unsigned int rv = snprintf( tmpname, 4096, "%s.%s", parent_inst, pname );
+    assert( rv < 4096 );
   }
 
   free_safe( pname );
@@ -665,7 +667,7 @@ void toggle_report( FILE* ofile, bool verbose ) { PROFILE(TOGGLE_REPORT);
       instl = instl->next;
     }
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
-    toggle_display_instance_summary( ofile, "Accumulated", acc_hits01, acc_hits10, acc_total );
+    (void)toggle_display_instance_summary( ofile, "Accumulated", acc_hits01, acc_hits10, acc_total );
     
     if( verbose && missed_found ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
@@ -684,7 +686,7 @@ void toggle_report( FILE* ofile, bool verbose ) { PROFILE(TOGGLE_REPORT);
 
     missed_found = toggle_funit_summary( ofile, funit_head, &acc_hits01, &acc_hits10, &acc_total );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
-    toggle_display_funit_summary( ofile, "Accumulated", "", acc_hits01, acc_hits10, acc_total );
+    (void)toggle_display_funit_summary( ofile, "Accumulated", "", acc_hits01, acc_hits10, acc_total );
 
     if( verbose && missed_found ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
@@ -699,6 +701,9 @@ void toggle_report( FILE* ofile, bool verbose ) { PROFILE(TOGGLE_REPORT);
 
 /*
  $Log$
+ Revision 1.66  2008/01/16 05:01:23  phase1geo
+ Switched totals over from float types to int types for splint purposes.
+
  Revision 1.65  2008/01/09 05:22:22  phase1geo
  More splint updates using the -standard option.
 

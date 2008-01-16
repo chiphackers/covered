@@ -548,7 +548,8 @@ void defparam_add( const char* scope, vector* value ) { PROFILE(DEFPARAM_ADD);
 
   } else {
 
-    snprintf( user_msg, USER_MSG_LENGTH, "Parameter (%s) value is assigned more than once", obf_sig( scope ) );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Parameter (%s) value is assigned more than once", obf_sig( scope ) );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     exit( EXIT_FAILURE );
 
@@ -607,7 +608,8 @@ static void param_find_and_set_expr_value( expression* expr, funit_inst* inst ) 
       if( inst->funit->parent != NULL ) {
         param_find_and_set_expr_value( expr, inst->parent );
       } else {
-        snprintf( user_msg, USER_MSG_LENGTH, "Parameter used in expression but not defined in current module, line %d", expr->line );
+        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Parameter used in expression but not defined in current module, line %d", expr->line );
+        assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( EXIT_FAILURE );
       }
@@ -749,7 +751,7 @@ void param_expr_eval( expression* expr, funit_inst* inst ) { PROFILE(PARAM_EXPR_
     }
 
     /* Perform the operation */
-    expression_operate( expr, NULL, &time );
+    (void)expression_operate( expr, NULL, &time );
 
   }
   
@@ -840,9 +842,11 @@ static inst_parm* param_has_defparam( mod_parm* mparm, funit_inst* inst ) { PROF
 
     /* Generate full hierarchy of this parameter */
     if( strcmp( leading_hierarchies[0], "*" ) == 0 ) {
-      snprintf( parm_scope, 4096, "%s.%s", scope, mparm->name );
+      unsigned int rv = snprintf( parm_scope, 4096, "%s.%s", scope, mparm->name );
+      assert( rv < 4096 );
     } else {
-      snprintf( parm_scope, 4096, "%s.%s.%s", leading_hierarchies[0], scope, mparm->name );
+      unsigned int rv = snprintf( parm_scope, 4096, "%s.%s.%s", leading_hierarchies[0], scope, mparm->name );
+      assert( rv < 4096 );
     }
 
     icurr = defparam_list->param_head;
@@ -973,9 +977,8 @@ void param_resolve( funit_inst* inst ) { PROFILE(PARAM_RESOLVE);
 }
 
 /*!
- \param iparm       Pointer to instance parameter to output to file.
- \param file        Pointer to file handle to write parameter contents to.
- \param parse_mode  Specifies if we are writing after just parsing the design
+ \param iparm  Pointer to instance parameter to output to file.
+ \param file   Pointer to file handle to write parameter contents to.
 
  Prints contents of specified instance parameter to the specified output stream.
  Parameters get output in the same format as signals (they type specified for parameters
@@ -983,7 +986,7 @@ void param_resolve( funit_inst* inst ) { PROFILE(PARAM_RESOLVE);
  that the current signal is a parameter and not a signal, and should therefore not
  be scored as a signal.
 */
-void param_db_write( inst_parm* iparm, FILE* file, bool parse_mode ) { PROFILE(PARAM_DB_WRITE);
+void param_db_write( inst_parm* iparm, FILE* file ) { PROFILE(PARAM_DB_WRITE);
 
   /*
    If the parameter does not have a name, it will not be used in expressions;
@@ -1076,6 +1079,9 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) { PROFILE(INST_PARM_D
 
 /*
  $Log$
+ Revision 1.101  2008/01/15 23:01:15  phase1geo
+ Continuing to make splint updates (not doing any memory checking at this point).
+
  Revision 1.100  2008/01/10 04:59:04  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 

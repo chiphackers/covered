@@ -56,12 +56,16 @@ static unsigned warn_count = 0;
 */
 void VLerror( char* msg ) { PROFILE(VLERROR);
 
+  unsigned int rv;
+
   error_count++;
   
-  snprintf( user_msg, USER_MSG_LENGTH, "%s,", msg );
+  rv = snprintf( user_msg, USER_MSG_LENGTH, "%s,", msg );
+  assert( rv < USER_MSG_LENGTH );
   print_output( user_msg, FATAL, __FILE__, __LINE__ );
-  snprintf( user_msg, USER_MSG_LENGTH, "File: %s, Line: %u, Column: %u",
-            obf_file( yylloc.text ), yylloc.first_line, yylloc.first_column );
+  rv = snprintf( user_msg, USER_MSG_LENGTH, "File: %s, Line: %u, Column: %u",
+                 obf_file( yylloc.text ), yylloc.first_line, yylloc.first_column );
+  assert( rv < USER_MSG_LENGTH );
   print_output( user_msg, FATAL_WRAP, __FILE__, __LINE__ );
 
 }
@@ -74,12 +78,16 @@ void VLerror( char* msg ) { PROFILE(VLERROR);
 */
 void VLwarn( char* msg ) { PROFILE(VLWARN);
 
+  unsigned int rv;
+
   warn_count++;
   
-  snprintf( user_msg, USER_MSG_LENGTH, "%s,", msg );
+  rv = snprintf( user_msg, USER_MSG_LENGTH, "%s,", msg );
+  assert( rv < USER_MSG_LENGTH );
   print_output( user_msg, WARNING, __FILE__, __LINE__ );
-  snprintf( user_msg, USER_MSG_LENGTH, "File: %s, Line: %u, Column: %u",
-            obf_file( yylloc.text ), yylloc.first_line, yylloc.first_column );
+  rv = snprintf( user_msg, USER_MSG_LENGTH, "File: %s, Line: %u, Column: %u",
+                 obf_file( yylloc.text ), yylloc.first_line, yylloc.first_column );
+  assert( rv < USER_MSG_LENGTH );
   print_output( user_msg, WARNING_WRAP, __FILE__, __LINE__ );
 
 }
@@ -287,6 +295,9 @@ bool parser_check_generation( int gen ) { PROFILE(PARSER_CHECK_GENERATION);
 
 /*
  $Log$
+ Revision 1.19  2008/01/10 04:59:04  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.18  2008/01/08 21:13:08  phase1geo
  Completed -weak splint run.  Full regressions pass.
 

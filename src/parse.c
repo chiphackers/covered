@@ -75,7 +75,8 @@ int parse_readline( FILE* file, char* line, int size ) { PROFILE(PARSE_READLINE)
   }
 
   if( i == size ) {
-    snprintf( user_msg, USER_MSG_LENGTH, "Line too long.  Must be less than %d characters.", size );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Line too long.  Must be less than %d characters.", size );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
   }
 
@@ -87,15 +88,11 @@ int parse_readline( FILE* file, char* line, int size ) { PROFILE(PARSE_READLINE)
  \param top        Name of top-level module to score
  \param output_db  Name of output directory for generated scored files.
 
- \return Returns TRUE if parsing is successful; otherwise, returns FALSE.
-
  Resets the lexer and parses all Verilog files specified in use_files list.
  After all design files are parsed, their information will be appropriately
  stored in the associated lists.
 */
-bool parse_design( char* top, char* output_db ) { PROFILE(PARSE_DESIGN);
-
-  bool retval = TRUE;  /* Return value of this function */
+void parse_design( char* top, char* output_db ) { PROFILE(PARSE_DESIGN);
 
   (void)str_link_add( strdup_safe( top ), &modlist_head, &modlist_tail );
 
@@ -121,14 +118,16 @@ bool parse_design( char* top, char* output_db ) { PROFILE(PARSE_DESIGN);
     /* Check to make sure that the -t and -i options were specified correctly */
     if( db_check_for_top_module() ) {
       if( instance_specified ) {
-        snprintf( user_msg, USER_MSG_LENGTH, "Module specified with -t option (%s) is a top-level module.", top_module );
+        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Module specified with -t option (%s) is a top-level module.", top_module );
+        assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         print_output( "The -i option should not have been specified", FATAL_WRAP, __FILE__, __LINE__ );
         exit( EXIT_FAILURE );
       }
     } else {
       if( !instance_specified ) {
-        snprintf( user_msg, USER_MSG_LENGTH, "Module specified with -t option (%s) is not a top-level module.", top_module );
+        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Module specified with -t option (%s) is not a top-level module.", top_module );
+        assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         print_output( "The -i option must be specified to provide the hierarchy to the module specified with", FATAL_WRAP, __FILE__, __LINE__ );
         print_output( "the -t option.", FATAL_WRAP, __FILE__, __LINE__ );
@@ -160,7 +159,7 @@ bool parse_design( char* top, char* output_db ) { PROFILE(PARSE_DESIGN);
   } else {
 
     print_output( "No Verilog input files specified", FATAL, __FILE__, __LINE__ );
-    retval = FALSE;
+    exit( EXIT_FAILURE );
 
   }
 
@@ -177,11 +176,12 @@ bool parse_design( char* top, char* output_db ) { PROFILE(PARSE_DESIGN);
   db_close();
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "========  Design written to database %s successfully  ========\n\n", output_db );
-  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "========  Design written to database %s successfully  ========\n\n", output_db );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  }
 #endif
-
-  return( retval );
 
 }
 
@@ -190,22 +190,20 @@ bool parse_design( char* top, char* output_db ) { PROFILE(PARSE_DESIGN);
  \param dump_file  Name of dumpfile to parse for scoring.
  \param dump_mode  Type of dumpfile being used (see \ref dumpfile_fmt for legal values)
 
- \return Returns TRUE if dumpfile parsing and scoring is successful; otherwise,
-         returns FALSE.
-
  Reads in specified CDD database file, reads in specified dumpfile in the specified format,
  performs re-simulation and writes the scored design back to the specified CDD database file
  for merging or reporting.
 */
-bool parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) { PROFILE(PARSE_AND_SCORE_DUMPFILE);
-
-  bool retval = TRUE;  /* Return value of this function */
+void parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) { PROFILE(PARSE_AND_SCORE_DUMPFILE);
 
   assert( dump_file != NULL );
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "========  Reading in database %s  ========\n", db );
-  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "========  Reading in database %s  ========\n", db );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  }
 #endif
 
   /* Initialize all global information variables */
@@ -224,8 +222,11 @@ bool parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) { PROF
   sim_initialize();
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "========  Reading in VCD dumpfile %s  ========\n", dump_file );
-  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "========  Reading in VCD dumpfile %s  ========\n", dump_file );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  }
 #endif
   
   /* Perform the parse */
@@ -239,8 +240,11 @@ bool parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) { PROF
   db_do_timestep( 0, TRUE );
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "========  Writing database %s  ========\n", db );
-  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "========  Writing database %s  ========\n", db );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  }
 #endif
 
   /* Indicate that this CDD contains scored information */
@@ -255,12 +259,13 @@ bool parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) { PROF
   /* Deallocate simulator stuff */
   sim_dealloc();
 
-  return( retval );
-
 }
 
 /*
  $Log$
+ Revision 1.54  2008/01/08 21:13:08  phase1geo
+ Completed -weak splint run.  Full regressions pass.
+
  Revision 1.53  2008/01/07 23:59:55  phase1geo
  More splint updates.
 

@@ -252,8 +252,11 @@ static void report_parse_metrics( const char* metrics ) { PROFILE(REPORT_PARSE_M
       case 'm' :
       case 'M' :  report_memory      = TRUE;  break;
       default  :
-        snprintf( user_msg, USER_MSG_LENGTH, "Unknown metric specified '%c'...  Ignoring.", *ptr );
-        print_output( user_msg, WARNING, __FILE__, __LINE__ );
+        {
+          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown metric specified '%c'...  Ignoring.", *ptr );
+          assert( rv < USER_MSG_LENGTH );
+          print_output( user_msg, WARNING, __FILE__, __LINE__ );
+        }
         break;
     }
 
@@ -327,7 +330,8 @@ bool report_parse_args( int argc, int last_arg, const char** argv ) { PROFILE(RE
         } else if( argv[i][0] == 'v' ) {
           report_comb_depth = REPORT_VERBOSE;
         } else {
-          snprintf( user_msg, USER_MSG_LENGTH, "Unrecognized detail type: -d %s\n", argv[i] );
+          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unrecognized detail type: -d %s\n", argv[i] );
+          assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
           retval = FALSE;
         }
@@ -343,7 +347,8 @@ bool report_parse_args( int argc, int last_arg, const char** argv ) { PROFILE(RE
           if( is_legal_filename( argv[i] ) ) {
             output_file = strdup_safe( argv[i] );
           } else {
-            snprintf( user_msg, USER_MSG_LENGTH, "Output file \"%s\" is unwritable", argv[i] );
+            unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Output file \"%s\" is unwritable", argv[i] );
+            assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
             retval = FALSE;
           }
@@ -381,7 +386,8 @@ bool report_parse_args( int argc, int last_arg, const char** argv ) { PROFILE(RE
  
       } else {
 
-        snprintf( user_msg, USER_MSG_LENGTH, "Cannot find %s database file for opening", argv[i] );
+        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Cannot find %s database file for opening", argv[i] );
+        assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( EXIT_FAILURE );
 
@@ -389,7 +395,8 @@ bool report_parse_args( int argc, int last_arg, const char** argv ) { PROFILE(RE
 
     } else {
 
-      snprintf( user_msg, USER_MSG_LENGTH, "Unknown report command option \"%s\".  See \"covered -h\" for more information.", argv[i] );
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown report command option \"%s\".  See \"covered -h\" for more information.", argv[i] );
+      assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       retval = FALSE;
 
@@ -795,7 +802,8 @@ int command_report( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
   /* Parse score command-line */
   if( report_parse_args( argc, last_arg, argv ) ) {
 
-    snprintf( user_msg, USER_MSG_LENGTH, COVERED_HEADER );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, COVERED_HEADER );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 
     /* Initialize all global variables */
@@ -806,7 +814,8 @@ int command_report( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
       /* Open database file for reading */
       if( input_db == NULL ) {
 
-        snprintf( user_msg, USER_MSG_LENGTH, "Database file not specified in command line" );
+        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Database file not specified in command line" );
+        assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( EXIT_FAILURE );
 
@@ -814,6 +823,8 @@ int command_report( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
         /* Read in CDD file */
         if( db_read( input_db, (report_instance ? READ_MODE_REPORT_NO_MERGE : READ_MODE_REPORT_MOD_MERGE) ) ) {
+
+          unsigned int rv;
 
           /* Perform binding */
           bind_perform( TRUE, 0 );
@@ -824,7 +835,8 @@ int command_report( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
           /* Open output stream */
           if( output_file != NULL ) {
             if( (ofile = fopen( output_file, "w" )) == NULL ) {
-              snprintf( user_msg, USER_MSG_LENGTH, "Unable to open report output file %s for writing", output_file );
+              unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to open report output file %s for writing", output_file );
+              assert( rv < USER_MSG_LENGTH );
               print_output( user_msg, FATAL, __FILE__, __LINE__ );
             } else {
               free_safe( output_file );
@@ -837,7 +849,8 @@ int command_report( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
           report_generate( ofile );
 
           /* Close output file */
-          fclose( ofile );
+          rv = fclose( ofile );
+          assert( rv == 0 );
 
         }
 
@@ -846,8 +859,14 @@ int command_report( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 #ifdef HAVE_TCLTK
     } else {
 
+      unsigned int slen;
+      unsigned int rv;
+
       if( input_db != NULL ) {
-        report_read_cdd_and_ready( input_db, READ_MODE_REPORT_MOD_MERGE );
+        if( !report_read_cdd_and_ready( input_db, READ_MODE_REPORT_MOD_MERGE ) ) {
+          print_output( "Input database file was not able to be read", FATAL, __FILE__, __LINE__ );
+          exit( EXIT_FAILURE );
+        } 
       }
 
       /* Initialize the Tcl/Tk interpreter */
@@ -889,9 +908,12 @@ int command_report( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
       tcl_func_initialize( interp, user_home, covered_home, covered_version, covered_browser );
 
       /* Call the top-level Tcl file */
-      main_file = (char*)malloc_safe( strlen( covered_home ) + 30 );
-      snprintf( main_file, (strlen( covered_home ) + 30), "%s/scripts/main_view.tcl", covered_home );
-      Tcl_EvalFile( interp, main_file );
+      slen = strlen( covered_home ) + 30;
+      main_file = (char*)malloc_safe( slen );
+      rv = snprintf( main_file, slen, "%s/scripts/main_view.tcl", covered_home );
+      assert( rv < slen );
+      rv = Tcl_EvalFile( interp, main_file );
+      assert( rv == TCL_OK );
 
       /* Call the main-loop */
       Tk_MainLoop ();
@@ -919,6 +941,9 @@ int command_report( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
 /*
  $Log$
+ Revision 1.89  2008/01/09 05:22:22  phase1geo
+ More splint updates using the -standard option.
+
  Revision 1.88  2008/01/08 21:13:08  phase1geo
  Completed -weak splint run.  Full regressions pass.
 

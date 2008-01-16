@@ -67,14 +67,18 @@ void obfuscate_set_mode( bool value ) { PROFILE(OBFUSCATE_SET_MODE);
 */
 char* obfuscate_name( const char* real_name, char prefix ) { PROFILE(OBFUSCATE_NAME);
 
-  tnode* obfnode;    /* Pointer to obfuscated tree node */
-  char*  obfname;    /* Obfuscated name */
-  char*  key;        /* Temporary name used for searching */
-  char   tname[30];  /* Temporary name used for sizing obfuscation ID */
+  tnode*       obfnode;    /* Pointer to obfuscated tree node */
+  char*        obfname;    /* Obfuscated name */
+  char*        key;        /* Temporary name used for searching */
+  char         tname[30];  /* Temporary name used for sizing obfuscation ID */
+  unsigned int slen;       /* Length of string to allocate and populate */
+  unsigned int rv;         /* Return value from snprintf calls */
 
   /* Create temporary name */
-  key = (char*)malloc_safe( strlen( real_name ) + 3 );
-  snprintf( key, (strlen( real_name ) + 3), "%s-%c", real_name, prefix );
+  slen = strlen( real_name ) + 3;
+  key = (char*)malloc_safe( slen );
+  rv = snprintf( key, slen, "%s-%c", real_name, prefix );
+  assert( rv < slen );
 
   /* If the name was previously obfuscated, return that name */
   if( (obfnode = tree_find( key, obf_tree )) != NULL ) {
@@ -85,11 +89,14 @@ char* obfuscate_name( const char* real_name, char prefix ) { PROFILE(OBFUSCATE_N
   } else {
 
     /* Calculate the size needed for storing the obfuscated name */
-    snprintf( tname, 30, "%04d", obf_curr_id );
+    rv = snprintf( tname, 30, "%04d", obf_curr_id );
+    assert( rv < 30 );
 
     /* Create obfuscated name */
-    obfname = (char*)malloc_safe( strlen( tname ) + 2 );
-    snprintf( obfname, (strlen( tname ) + 2), "%c%04d", prefix, obf_curr_id );
+    slen    = strlen( tname ) + 2;
+    obfname = (char*)malloc_safe( slen );
+    rv = snprintf( obfname, slen, "%c%04d", prefix, obf_curr_id );
+    assert( rv < slen );
     obf_curr_id++;
 
     /* Add the obfuscated name to the tree */
@@ -116,6 +123,9 @@ void obfuscate_dealloc() { PROFILE(OBFUSCATE_DEALLOC);
 
 /*
  $Log$
+ Revision 1.10  2008/01/09 23:54:15  phase1geo
+ More splint updates.
+
  Revision 1.9  2008/01/08 21:13:08  phase1geo
  Completed -weak splint run.  Full regressions pass.
 

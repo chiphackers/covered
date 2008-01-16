@@ -144,14 +144,18 @@ void ovl_add_assertions_to_no_score_list( bool rm_tasks ) { PROFILE(OVL_ADD_ASSE
 
   for( i=0; i<OVL_ASSERT_NUM; i++ ) {
     if( rm_tasks ) {
-      snprintf( tmp, 4096, "%s.ovl_error_t", ovl_assertions[i] );
-      search_add_no_score_funit( tmp );
-      snprintf( tmp, 4096, "%s.ovl_finish_t", ovl_assertions[i] );
-      search_add_no_score_funit( tmp );
-      snprintf( tmp, 4096, "%s.ovl_init_msg_t", ovl_assertions[i] );
-      search_add_no_score_funit( tmp );
+      unsigned int rv;
+      rv = snprintf( tmp, 4096, "%s.ovl_error_t", ovl_assertions[i] );
+      assert( rv < 4096 );
+      (void)search_add_no_score_funit( tmp );
+      rv = snprintf( tmp, 4096, "%s.ovl_finish_t", ovl_assertions[i] );
+      assert( rv < 4096 );
+      (void)search_add_no_score_funit( tmp );
+      rv = snprintf( tmp, 4096, "%s.ovl_init_msg_t", ovl_assertions[i] );
+      assert( rv < 4096 );
+      (void)search_add_no_score_funit( tmp );
     } else {
-      search_add_no_score_funit( ovl_assertions[i] );
+      (void)search_add_no_score_funit( ovl_assertions[i] );
     }
   }
 
@@ -456,6 +460,9 @@ void ovl_get_coverage( const func_unit* funit, const char* inst_name, char** ass
 
 /*
  $Log$
+ Revision 1.20  2008/01/16 05:01:23  phase1geo
+ Switched totals over from float types to int types for splint purposes.
+
  Revision 1.19  2008/01/10 04:59:04  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 

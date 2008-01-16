@@ -60,7 +60,7 @@ void param_expr_eval( expression* expr, funit_inst* inst );
 void param_resolve( funit_inst* inst );
 
 /*! \brief Outputs specified instance parameter to specified output stream. */
-void param_db_write( inst_parm* iparm, FILE* file, bool parse_mode );
+void param_db_write( inst_parm* iparm, FILE* file );
 
 /*! \brief Deallocates specified module parameter and possibly entire module parameter list. */
 void mod_parm_dealloc( mod_parm* parm, bool recursive );
@@ -71,6 +71,9 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive );
 
 /*
  $Log$
+ Revision 1.30  2008/01/10 04:59:04  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.29  2008/01/09 05:22:22  phase1geo
  More splint updates using the -standard option.
 

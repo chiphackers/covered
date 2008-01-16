@@ -95,7 +95,8 @@ static bool merge_parse_args( int argc, int last_arg, const char** argv ) {
         if( is_legal_filename( argv[i] ) ) {
           merged_file = strdup_safe( argv[i] );
         } else {
-          snprintf( user_msg, USER_MSG_LENGTH, "Output file \"%s\" is not writable", argv[i] );
+          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Output file \"%s\" is not writable", argv[i] );
+          assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
           retval = FALSE;
         }
@@ -118,7 +119,8 @@ static bool merge_parse_args( int argc, int last_arg, const char** argv ) {
 
       } else {
 
-        snprintf( user_msg, USER_MSG_LENGTH, "CDD file (%s) does not exist", argv[i] );
+        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "CDD file (%s) does not exist", argv[i] );
+        assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         retval = FALSE;
 
@@ -160,7 +162,8 @@ int command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAND
   /* Parse score command-line */
   if( merge_parse_args( argc, last_arg, argv ) ) {
 
-    snprintf( user_msg, USER_MSG_LENGTH, COVERED_HEADER );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, COVERED_HEADER );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 
     /* Initialize all global information */
@@ -170,20 +173,37 @@ int command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAND
     mnum = merge_in_num;
 
     /* Read in base database */
-    snprintf( user_msg, USER_MSG_LENGTH, "Reading CDD file \"%s\"", merge_in[0] );
+    rv = snprintf( user_msg, USER_MSG_LENGTH, "Reading CDD file \"%s\"", merge_in[0] );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-    db_read( merge_in[0], READ_MODE_MERGE_NO_MERGE );
+    if( !db_read( merge_in[0], READ_MODE_MERGE_NO_MERGE ) ) {
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "Error reading CDD file \"%s\"", merge_in[0] );
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      exit( EXIT_FAILURE );
+    }
     bind_perform( TRUE, 0 );
 
     /* Read in databases to merge */
     for( i=1; i<mnum; i++ ) {
-      snprintf( user_msg, USER_MSG_LENGTH, "Merging CDD file \"%s\"", merge_in[i] );
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "Merging CDD file \"%s\"", merge_in[i] );
+      assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-      db_read( merge_in[i], READ_MODE_MERGE_INST_MERGE );
+      if( !db_read( merge_in[i], READ_MODE_MERGE_INST_MERGE ) ) {
+        rv = snprintf( user_msg, USER_MSG_LENGTH, "Error reading CDD file \"%s\"", merge_in[1] );
+        assert( rv < USER_MSG_LENGTH );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        exit( EXIT_FAILURE );
+      }
     }
 
     /* Write out new database to output file */
-    db_write( merged_file, FALSE, FALSE );
+    if( !db_write( merged_file, FALSE, FALSE ) ) {
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "Error writing CDD file \"%s\"", merged_file );
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      exit( EXIT_FAILURE );
+    }
 
     print_output( "\n***  Merging completed successfully!  ***", NORMAL, __FILE__, __LINE__ );
 
@@ -207,6 +227,9 @@ int command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAND
 
 /*
  $Log$
+ Revision 1.36  2008/01/10 04:59:04  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.35  2008/01/09 23:54:15  phase1geo
  More splint updates.
 

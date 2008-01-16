@@ -175,7 +175,7 @@ static void profiler_sort_by_calls( FILE* ofile ) {
         fprintf( ofile, "  %-40.40s  %10d          NA          NA  %10d  %10d\n",
                  profiles[list[j]].func_name, profiles[list[j]].calls, profiles[list[j]].mallocs, profiles[list[j]].frees );
       } else {
-        fprintf( ofile, "  %-40.40s  %10d  %10d  %10.3f  %10d  %10d\n",
+        fprintf( ofile, "  %-40.40s  %10d  %10ld  %10.3f  %10d  %10d\n",
                  profiles[list[j]].func_name, profiles[list[j]].calls, (long int)profiles[list[j]].time_in->total,
                  (float)(profiles[list[j]].time_in->total / (profiles[list[j]].calls * 1.0)), profiles[list[j]].mallocs, profiles[list[j]].frees );
       }
@@ -226,7 +226,7 @@ static void profiler_sort_by_time( FILE* ofile ) {
         fprintf( ofile, "  %-40.40s  %10d          NA          NA  %10d  %10d\n",
                  profiles[list[j]].func_name, profiles[list[j]].calls, profiles[list[j]].mallocs, profiles[list[j]].frees );
       } else {
-        fprintf( ofile, "  %-40.40s  %10d  %10d  %10.3f  %10d  %10d\n",
+        fprintf( ofile, "  %-40.40s  %10d  %10ld  %10.3f  %10d  %10d\n",
                  profiles[list[j]].func_name, profiles[list[j]].calls, (long int)profiles[list[j]].time_in->total,
                  (float)(profiles[list[j]].time_in->total / (profiles[list[j]].calls * 1.0)), profiles[list[j]].mallocs, profiles[list[j]].frees );
       }
@@ -303,6 +303,8 @@ void profiler_report() {
 
     if( (ofile = fopen( profiling_output, "w" )) != NULL ) {
 
+      unsigned int rv;
+
       /* Stop the simulation timer and deallocate it */
       timer_stop( &sim_timer );
 
@@ -315,11 +317,13 @@ void profiler_report() {
       free_safe( sim_timer );
 
       /* Close the output file */
-      fclose( ofile );
+      rv = fclose( ofile );
+      assert( rv == 0 );
 
     } else {
 
-      snprintf( user_msg, USER_MSG_LENGTH, "Unable to open profiling output file \"%s\" for writing", profiling_output );
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to open profiling output file \"%s\" for writing", profiling_output );
+      assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
 
     }
@@ -334,6 +338,9 @@ void profiler_report() {
 
 /*
  $Log$
+ Revision 1.7  2008/01/09 05:22:22  phase1geo
+ More splint updates using the -standard option.
+
  Revision 1.6  2008/01/08 21:13:08  phase1geo
  Completed -weak splint run.  Full regressions pass.
 

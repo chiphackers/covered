@@ -193,7 +193,7 @@ su_member* struct_union_add_member_struct_union( struct_union* su, struct_union*
  Allocates, intializes and adds a new struct/union structure to the given functional unit's list of 
  struct/union members.
 */
-struct_union* struct_union_create( const char* name, sig_range* range, int type, bool packed, bool is_signed, func_unit* funit ) { PROFILE(STRUCT_UNION_CREATE);
+struct_union* struct_union_create( const char* name, /*@unused@*/ sig_range* range, int type, bool packed, bool is_signed, func_unit* funit ) { PROFILE(STRUCT_UNION_CREATE);
 
   struct_union* su;  /* Pointer to newly allocated struct/union structure */
 
@@ -302,6 +302,9 @@ void struct_union_dealloc_list( func_unit* funit ) { PROFILE(STRUCT_UNION_DEALLO
 
 /*
  $Log$
+ Revision 1.5  2008/01/09 05:22:22  phase1geo
+ More splint updates using the -standard option.
+
  Revision 1.4  2007/12/11 23:19:14  phase1geo
  Fixed compile issues and completed first pass injection of profiling calls.
  Working on ordering the calls from most to least.

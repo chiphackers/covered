@@ -235,11 +235,13 @@ static void score_generate_top_vpi_module( char* vpi_file, char* output_db, char
 
     if( (vfile = fopen( vpi_file, "w" )) != NULL ) {
   
+      unsigned int rv;
       if( vpi_timescale != NULL ) {
         fprintf( vfile, "`timescale %s\n", vpi_timescale );
       }
       fprintf( vfile, "module %s;\ninitial $covered_sim( \"%s\", %s );\nendmodule\n", mod_name, output_db, top_inst );
-      fclose( vfile );
+      rv = fclose( vfile );
+      assert( rv == 0 );
 
     } else {
 
@@ -285,8 +287,10 @@ static void score_generate_pli_tab_file( char* tab_file, char* top_mod ) { PROFI
     strcat( mod_name, ".tab" );
     if( (tfile = fopen( mod_name, "w" )) != NULL ) {
 
+      unsigned int rv;
       fprintf( tfile, "$covered_sim  call=covered_sim_calltf  acc+=r,cbk:%s+\n", top_mod );
-      fclose( tfile );
+      rv = fclose( tfile );
+      assert( rv == 0 );
 
     } else {
   
@@ -331,12 +335,15 @@ static bool read_command_file( const char* cmd_file, char*** arg_list, int* arg_
 
     if( (cmd_handle = fopen( cmd_file, "r" )) != NULL ) {
 
+      unsigned int rv;
+
       while( fscanf( cmd_handle, "%s", tmp_str ) == 1 ) {
         (void)str_link_add( substitute_env_vars( tmp_str ), &head, &tail );
         tmp_num++;
       }
 
-      fclose( cmd_handle );
+      rv = fclose( cmd_handle );
+      assert( rv == 0 );
 
       /* Set the argument list number now */
       *arg_num = tmp_num;
@@ -555,8 +562,8 @@ static bool score_parse_args( int argc, int last_arg, const char** argv ) { PROF
       if( (retval = check_option_value( argc, argv, i )) ) {
         i++;
         if( file_exists( argv[i] ) ) {
-          read_command_file( argv[i], &arg_list, &arg_num );
-          retval = score_parse_args( arg_num, -1, arg_list );
+          retval = retval && read_command_file( argv[i], &arg_list, &arg_num );
+          retval = retval && score_parse_args( arg_num, -1, arg_list );
           for( j=0; j<arg_num; j++ ) {
             free_safe( arg_list[j] );
           }
@@ -922,11 +929,14 @@ static bool score_parse_args( int argc, int last_arg, const char** argv ) { PROF
 
   if( retval ) {
     
+    char* rv;
+
     /* If the -A option was not specified, add all OVL modules to list of no-score modules */
     ovl_add_assertions_to_no_score_list( info_suppl.part.assert_ovl );
     
     /* Get the current directory */
-    assert( getcwd( score_run_path, 4096 ) != NULL );
+    rv = getcwd( score_run_path, 4096 );
+    assert( rv != NULL );
 
   }
 
@@ -1043,6 +1053,9 @@ int command_score( int argc, int last_arg, const char** argv ) { PROFILE(COMMAND
 
 /*
  $Log$
+ Revision 1.105  2008/01/15 23:01:15  phase1geo
+ Continuing to make splint updates (not doing any memory checking at this point).
+
  Revision 1.104  2008/01/14 05:08:45  phase1geo
  Fixing bug created while doing splint updates.
 

@@ -149,7 +149,8 @@ WSPACE [ \t\b\f]+
      do_include();
  }
 <INCLUDE>.          {
-     snprintf( user_msg, USER_MSG_LENGTH, "malformed `include directive, line %u, \"%s\"", istack->lineno, obf_file( istack->path ) );
+     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "malformed `include directive, line %u, \"%s\"", istack->lineno, obf_file( istack->path ) );
+     assert( rv < USER_MSG_LENGTH );
      print_output( user_msg, FATAL, __FILE__, __LINE__ );
      BEGIN( ERROR_LINE );
  }
@@ -167,12 +168,14 @@ WSPACE [ \t\b\f]+
      do_define();
  }
 <DEFINE>(\n|"\r\n"|"\n\r") {
+   int rv;
    if( def_is_done() ) {
      def_finish();
      istack->lineno += 1;
      yy_pop_state();
    }
-   fputc( '\n', yyout );
+   rv = fputc( '\n', yyout );
+   assert( rv == '\n' );
  }
 
   /* Undefine directive */
@@ -251,8 +254,10 @@ WSPACE [ \t\b\f]+
 
   /* increment the line number when in an unused block and a newline is seen */
 <IFDEF_FALSE,IFDEF_SUPR,ELSIF_FALSE>\n    {
+     int rv;
      istack->lineno += 1;
-     fputc( '\n', yyout );
+     rv = fputc( '\n', yyout );
+     assert( rv == '\n' );
  }
 
   /* endif directive */
@@ -262,9 +267,11 @@ WSPACE [ \t\b\f]+
 `timescale { comment_enter = YY_START;  BEGIN( PPTIMESCALE );  ECHO; }
 <PPTIMESCALE>.       { ECHO; }
 <PPTIMESCALE>\n      {
+     int rv;
      istack->lineno += 1;
      BEGIN( comment_enter );
-     fputc( '\n', yyout );
+     rv = fputc( '\n', yyout );
+     assert( rv == '\n' );
  }
 
   /* For protected code, we need to completely ignore this information until a endprotected is seen */
@@ -372,8 +379,9 @@ static void def_match() { PROFILE(DEF_MATCH);
 
   } else {
 
-    snprintf( user_msg, USER_MSG_LENGTH, "macro %s undefined (and assumed null) at this point, line %u, \"%s\"",
-              yytext, istack->lineno, obf_file( istack->path ) );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "macro %s undefined (and assumed null) at this point, line %u, \"%s\"",
+                                yytext, istack->lineno, obf_file( istack->path ) );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, WARNING, __FILE__, __LINE__ );
 
   }
@@ -390,7 +398,8 @@ static char def_name[256];
 */
 static void def_start() { PROFILE(DEF_START);
 
-  sscanf(yytext, "`define %s", def_name);
+  unsigned int rv = sscanf(yytext, "`define %s", def_name);
+  assert( rv == 1 );
 
 }
 
@@ -497,7 +506,8 @@ static void def_finish() { PROFILE(DEF_FINISH);
 static void def_undefine() { PROFILE(DEF_UNDEFINE);
 
   /* Get undef directive identifier string */
-  sscanf( yytext, "`undef %s", def_name );
+  unsigned int rv = sscanf( yytext, "`undef %s", def_name );
+  assert( rv == 1 );
 
   tree_remove( def_name, &def_table );
 
@@ -539,15 +549,17 @@ static void include_filename() { PROFILE(INCLUDE_FILENAME);
 */
 static void do_include() { PROFILE(DO_INCLUDE);
 
-  char      path[4096];  /* Full pathname to include file */
-  str_link* curr;        /* Pointer to current include file element */
+  char         path[4096];  /* Full pathname to include file */
+  str_link*    curr;        /* Pointer to current include file element */
+  unsigned int rv;          /* Return value from snprintf calls */
 
   if( standby->path[0] == '/') {
 
     standby->file = fopen(standby->path, "r");
 
     if( standby->file == 0 ) {
-      snprintf( user_msg, USER_MSG_LENGTH, "Unable to open `include file \"%s\"", obf_file( standby->path ) );
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to open `include file \"%s\"", obf_file( standby->path ) );
+      assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
     }
 
@@ -558,14 +570,16 @@ static void do_include() { PROFILE(DO_INCLUDE);
 
     while( (curr != NULL) && (standby->file == 0) ) {
 
-      snprintf( path, 4096, "%s/%s", curr->str, standby->path );
+      rv = snprintf( path, 4096, "%s/%s", curr->str, standby->path );
+      assert( rv < 4096 );
       standby->file = fopen(path, "r");
       curr = curr->next;
 
     }
 
     if( (curr == NULL) && (standby->file == 0) ) {
-      snprintf( user_msg, USER_MSG_LENGTH, "Unable to find `include file \"%s\" in include path", obf_file( standby->path ) );
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to find `include file \"%s\" in include path", obf_file( standby->path ) );
+      assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       exit( EXIT_FAILURE );
     }
@@ -580,7 +594,8 @@ static void do_include() { PROFILE(DO_INCLUDE);
   istack            = standby;
   standby           = 0;
 
-  snprintf( user_msg, USER_MSG_LENGTH, "Parsing include file '%s'", obf_file( path ) );
+  rv = snprintf( user_msg, USER_MSG_LENGTH, "Parsing include file '%s'", obf_file( path ) );
+  assert( rv < USER_MSG_LENGTH );
   print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 
   yy_switch_to_buffer( yy_create_buffer( istack->file, YY_BUF_SIZE ) );
@@ -616,7 +631,8 @@ static int yywrap() { PROFILE(YYWRAP);
   yy_delete_buffer( YY_CURRENT_BUFFER );
 
   if( isp->file ) {
-    fclose(isp->file);
+    unsigned int rv = fclose(isp->file);
+    assert( rv == 0 );
     free_safe(isp->path);
   }
 
@@ -628,7 +644,8 @@ static int yywrap() { PROFILE(YYWRAP);
   if( istack != 0 ) {
 
     /* Otherwise, resume the input buffer that is the new stack top. */
-    snprintf( user_msg, USER_MSG_LENGTH, "Resume parsing '%s'", obf_file( istack->path ) );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Resume parsing '%s'", obf_file( istack->path ) );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
     yy_switch_to_buffer( istack->yybs );
 

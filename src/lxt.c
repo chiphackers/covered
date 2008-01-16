@@ -43,7 +43,10 @@ extern char*      curr_inst_scope;
 
 
 /*! Specifies the last timestamp simulated */
-static lxtint64_t vcd_prevtime = -1;
+static lxtint64_t vcd_prevtime = 0;
+
+/*! Specifies the vcd_prevtime value has been assigned by the simulator */
+static bool vcd_prevtime_valid = FALSE;
 
 /*! Specifies when we are handling dumping */
 static bool vcd_blackout;
@@ -82,11 +85,12 @@ static void vcd_callback(
   struct lxt2_rd_geometry *g = lxt2_rd_get_fac_geometry( *lt, *pnt_facidx );
 
   /* If this is a new timestamp, perform a simulation */
-  if( vcd_prevtime != *pnt_time ) {
-    if( vcd_prevtime >= 0 ) {
+  if( (vcd_prevtime != *pnt_time) || !vcd_prevtime_valid ) {
+    if( vcd_prevtime_valid ) {
       db_do_timestep( vcd_prevtime, FALSE );
     }
-    vcd_prevtime = *pnt_time;
+    vcd_prevtime       = *pnt_time;
+    vcd_prevtime_valid = TRUE;
   }
 
   /* Handle dumpon/off information */
@@ -141,7 +145,7 @@ void lxt_parse( char* lxt_file ) { PROFILE(LXT_PARSE);
 
     numfacs = lxt2_rd_get_num_facs( lt );
 
-    lxt2_rd_set_fac_process_mask_all( lt );
+    (void)lxt2_rd_set_fac_process_mask_all( lt );
     (void)lxt2_rd_set_max_block_mem_usage( lt, 0 ); /* no need to cache blocks */
 
     /* Create initial symbol table */
@@ -194,7 +198,8 @@ void lxt_parse( char* lxt_file ) { PROFILE(LXT_PARSE);
         print_output( "  Please use -i option to specify correct hierarchy to top-level module to score",
                       FATAL, __FILE__, __LINE__ );
       } else {
-        snprintf( user_msg, USER_MSG_LENGTH, "  Incorrect hierarchical path specified in -i option: %s", top_instance );
+        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "  Incorrect hierarchical path specified in -i option: %s", top_instance );
+        assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
       }
 
@@ -208,10 +213,10 @@ void lxt_parse( char* lxt_file ) { PROFILE(LXT_PARSE);
     }
 
     /* Perform simulation */
-    lxt2_rd_iter_blocks( lt, vcd_callback, NULL );
+    (void)lxt2_rd_iter_blocks( lt, vcd_callback, NULL );
 
     /* Perform last simulation if necessary */
-    if( vcd_prevtime >= 0 ) {
+    if( vcd_prevtime_valid ) {
       db_do_timestep( vcd_prevtime, FALSE );
     }
 
@@ -235,6 +240,9 @@ void lxt_parse( char* lxt_file ) { PROFILE(LXT_PARSE);
 
 /*
  $Log$
+ Revision 1.15  2008/01/10 04:59:04  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.14  2008/01/08 21:13:08  phase1geo
  Completed -weak splint run.  Full regressions pass.
 

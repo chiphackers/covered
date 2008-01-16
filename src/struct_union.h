@@ -42,7 +42,7 @@ su_member* struct_union_add_member_enum( struct_union* su, enum_item* ei );
 su_member* struct_union_add_member_struct_union( struct_union* su, struct_union* sui );
 
 /*! \brief Allocates, initializes and adds a new enumerated item to the given functional unit */
-struct_union* struct_union_create( const char* name, sig_range* range, int type, bool packed, bool is_signed, func_unit* funit );
+struct_union* struct_union_create( const char* name, /*@unused@*/ sig_range* range, int type, bool packed, bool is_signed, func_unit* funit );
 
 /*! \brief Deallocates given struct/union */
 void struct_union_dealloc( struct_union* su );
@@ -53,6 +53,9 @@ void struct_union_dealloc_list( func_unit* funit );
 
 /*
  $Log$
+ Revision 1.3  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.2  2007/09/14 06:22:12  phase1geo
  Filling in existing functions in struct_union.  Completed parser code for handling
  struct/union declarations.  Code compiles thus far.

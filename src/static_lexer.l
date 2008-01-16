@@ -90,16 +90,16 @@ WSPACE [ \t\b\f]+
  }
 
   /* Multi-character symbols */
-"<<"   { return K_LS; }
-">>"   { return K_RS; }
-"<="   { return K_LE; }
-">="   { return K_GE; }
-"=="   { return K_EQ; }
-"!="   { return K_NE; }
-"~|"   { return K_NOR; }
-"~^"   { return K_NXOR; }
-"^~"   { return K_NXOR; }
-"~&"   { return K_NAND; }
+"<<"   { return S_LS; }
+">>"   { return S_RS; }
+"<="   { return S_LE; }
+">="   { return S_GE; }
+"=="   { return S_EQ; }
+"!="   { return S_NE; }
+"~|"   { return S_NOR; }
+"~^"   { return S_NXOR; }
+"^~"   { return S_NXOR; }
+"~&"   { return S_NAND; }
 
   /* Single character symbols */
 [}{;:\[\],()#=.@&!?<>%|^~+*/-] {
@@ -112,15 +112,17 @@ WSPACE [ \t\b\f]+
      func_unit* found_funit;
      if( !se_no_gvars ) {
        if( !scope_find_signal( yytext, se_funit, &gvar, &found_funit, 0 ) ) {
-         snprintf( user_msg, USER_MSG_LENGTH, "Unable to find generate variable %s in module %s",
-                   obf_sig( yytext ), obf_funit( se_funit->name ) );
+         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to find generate variable %s in module %s",
+                                     obf_sig( yytext ), obf_funit( se_funit->name ) );
+         assert( rv < USER_MSG_LENGTH );
          print_output( user_msg, FATAL, __FILE__, __LINE__ );
          exit( EXIT_FAILURE );
        }
        yylval.number = vector_to_int( gvar->value );
      } else {
-       snprintf( user_msg, USER_MSG_LENGTH, "Generate variable found in constant expression outside of generate block, file: %s, line: %d",
-                 obf_file( se_funit->filename ), se_lineno );
+       unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Generate variable found in constant expression outside of generate block, file: %s, line: %d",
+                                   obf_file( se_funit->filename ), se_lineno );
+       assert( rv < USER_MSG_LENGTH );
        print_output( user_msg, FATAL, __FILE__, __LINE__ );
        exit( EXIT_FAILURE );
      }

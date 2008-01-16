@@ -65,6 +65,8 @@ bool        se_no_gvars;
 int yydebug = 1; 
 */
 
+/*@-retvalint@*/
+
 %}
 
 %union {
@@ -75,17 +77,17 @@ int yydebug = 1;
 %token <text>     IDENTIFIER
 %token <number>   NUMBER
 %token <realtime> REALTIME
-%token            K_LE K_GE K_EG K_EQ K_NE K_CEQ K_CNE K_LS K_LSS K_RS K_RSS K_SG
-%token            K_NAND K_NOR K_NXOR
+%token            S_LE S_GE S_EG S_EQ S_NE S_CEQ S_CNE S_LS S_LSS S_RS S_RSS S_SG
+%token            S_NAND S_NOR S_NXOR
 
 %type <number>    static_expr static_expr_primary static_expr_port_list
 
 %left '|'
-%left '^' K_NXOR K_NOR
-%left '&' K_NAND
-%left K_EQ K_NE K_CEQ K_CNE
-%left K_GE K_LE '<' '>'
-%left K_LS K_RS K_LSS K_RSS
+%left '^' S_NXOR S_NOR
+%left '&' S_NAND
+%left S_EQ S_NE S_CEQ S_CNE
+%left S_GE S_LE '<' '>'
+%left S_LS S_RS S_LSS S_RSS
 %left '+' '-'
 %left '*' '/' '%'
 %left UNARY_PREC
@@ -128,10 +130,12 @@ static_expr
     }
   | '&' static_expr_primary %prec UNARY_PREC
     {
-      int val = $2 & 0x1;
-      int i;
+      int          val = $2 & 0x1;
+      unsigned int i;
       for( i=1; i<(SIZEOF_INT * 8); i++ ) {
+        /*@-shiftimplementation*/
         val &= (($2 >> i) & 0x1);
+        /*@=shiftimplementation@*/
       }
       $$ = val;
     }
@@ -141,46 +145,56 @@ static_expr
     }
   | '|' static_expr_primary %prec UNARY_PREC
     {
-      int val = $2 & 0x1;
-      int i;
+      int          val = $2 & 0x1;
+      unsigned int i;
       for( i=1; i<(SIZEOF_INT * 8); i++ ) {
+        /*@-shiftimplementation@*/
         val |= (($2 >> i) & 0x1);
+        /*@=shiftimplementation@*/
       }
       $$ = val;
     }
   | '^' static_expr_primary %prec UNARY_PREC
     {
-      int val = $2 & 0x1;
-      int i;
+      int          val = $2 & 0x1;
+      unsigned int i;
       for( i=1; i<(SIZEOF_INT * 8); i++ ) {
+        /*@-shiftimplementation@*/
         val ^= (($2 >> i) & 0x1);
+        /*@=shiftimplementation@*/
       }
       $$ = val;
     }
-  | K_NAND static_expr_primary %prec UNARY_PREC
+  | S_NAND static_expr_primary %prec UNARY_PREC
     {
-      int val = $2 & 0x1;
-      int i;
+      int          val = $2 & 0x1;
+      unsigned int i;
       for( i=1; i<(SIZEOF_INT * 8); i++ ) {
+        /*@-shiftimplementation@*/
         val &= (($2 >> i) & 0x1);
+        /*@=shiftimplementation@*/
       }
       $$ = (val == 0) ? 1 : 0;
     }
-  | K_NOR static_expr_primary %prec UNARY_PREC
+  | S_NOR static_expr_primary %prec UNARY_PREC
     {
-      int val = $2 & 0x1;
-      int i;
+      int          val = $2 & 0x1;
+      unsigned int i;
       for( i=1; i<(SIZEOF_INT * 8); i++ ) {
+        /*@-shiftimplementation@*/
         val |= (($2 >> i) & 0x1);
+        /*@=shiftimplementation@*/
       }
       $$ = (val == 0) ? 1 : 0;
     }
-  | K_NXOR static_expr_primary %prec UNARY_PREC
+  | S_NXOR static_expr_primary %prec UNARY_PREC
     {
-      int val = $2 & 0x1;
-      int i;
+      int          val = $2 & 0x1;
+      unsigned int i;
       for( i=1; i<(SIZEOF_INT * 8); i++ ) {
+        /*@-shiftimplementation@*/
         val ^= (($2 >> i) & 0x1);
+        /*@=shiftimplementation@*/
       }
       $$ = (val == 0) ? 1 : 0;
     }
@@ -213,7 +227,7 @@ static_expr
       int value = 1;
       int i;
       if( !parser_check_generation( GENERATION_2001 ) ) {
-        SEerror( "Exponential power operation found in block that is specified to not allow Verilog-2001 syntax" );
+        (void)SEerror( "Exponential power operation found in block that is specified to not allow Verilog-2001 syntax" );
       } else {
         for( i=0; i<$4; i++ ) {
           value *= $1;
@@ -229,39 +243,43 @@ static_expr
     {
       $$ = $1 | $3;
     }
-  | static_expr K_NOR static_expr
+  | static_expr S_NOR static_expr
     {
       $$ = ~($1 | $3);
     }
-  | static_expr K_NAND static_expr
+  | static_expr S_NAND static_expr
     {
       $$ = ~($1 & $3);
     }
-  | static_expr K_NXOR static_expr
+  | static_expr S_NXOR static_expr
     {
       $$ = ~($1 ^ $3);
     }
-  | static_expr K_LS static_expr
+  | static_expr S_LS static_expr
     {
+      /*@-shiftnegative -shiftimplementation@*/
       $$ = $1 << $3;
+      /*@=shiftnegative =shiftimplementation@*/
     }
-  | static_expr K_RS static_expr
+  | static_expr S_RS static_expr
     {
+      /*@-shiftnegative -shiftimplementation@*/
       $$ = $1 >> $3;
+      /*@=shiftnegative =shiftimplementation@*/
     }
-  | static_expr K_GE static_expr
+  | static_expr S_GE static_expr
     {
       $$ = ($1 >= $3);
     }
-  | static_expr K_LE static_expr
+  | static_expr S_LE static_expr
     {
       $$ = ($1 <= $3);
     }
-  | static_expr K_EQ static_expr
+  | static_expr S_EQ static_expr
     {
       $$ = ($1 == $3);
     }
-  | static_expr K_NE static_expr
+  | static_expr S_NE static_expr
     {
       $$ = ($1 != $3);
     }
@@ -282,7 +300,7 @@ static_expr_primary
     }
   | REALTIME
     {
-      SEerror( "Realtime value found in constant expression which is not currently supported" );
+      (void)SEerror( "Realtime value found in constant expression which is not currently supported" );
       $$ = 0;
     }
   | '(' static_expr ')'
@@ -291,11 +309,13 @@ static_expr_primary
     }
   | IDENTIFIER '(' static_expr_port_list ')'
     {
-      SEerror( "Static function call used in constant expression which is not currently supported" );
+      (void)SEerror( "Static function call used in constant expression which is not currently supported" );
     }
   ;
 
 %%
+
+/*@=retvalint@*/
 
 /*!
  \param str         Pointer to string to parse as a static expression.
@@ -335,10 +355,13 @@ int parse_static_expr( char* str, func_unit* funit, int lineno, bool no_genvars 
 */
 int SEerror( char* str ) {
 
-  snprintf( user_msg, USER_MSG_LENGTH, "%s,   file: %s, line: %d", str, obf_file( se_funit->name ), se_lineno );
+  unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "%s,   file: %s, line: %d", str, obf_file( se_funit->name ), se_lineno );
+  assert( rv < USER_MSG_LENGTH );
   print_output( user_msg, FATAL, __FILE__, __LINE__ );
   exit( EXIT_FAILURE );
 
+  /*@-unreachable@*/
   return( 0 );
+  /*@=unreachable@*/
 
 }

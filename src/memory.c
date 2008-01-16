@@ -232,14 +232,16 @@ static void memory_create_pdim_bit_array( char** str, vsignal* sig, char* prefix
 
     for( i=sig->dim[dim].lsb; i<=sig->dim[dim].msb; i++ ) {
       if( last_dim ) {
-        snprintf( name, 4096, "%d", i );
+        unsigned int rv = snprintf( name, 4096, "%d", i );
+        assert( rv < 4096 );
         *str = (char*)realloc( *str, (strlen( *str ) + strlen( prefix ) + strlen( name ) + 4) );
         strcat( *str, prefix );
         strcat( *str, "[" );
         strcat( *str, name );
         strcat( *str, "] " );
       } else {
-        snprintf( name, 4096, "%s[%d]", prefix, i );
+        unsigned int rv = snprintf( name, 4096, "%s[%d]", prefix, i );
+        assert( rv < 4096 );
         memory_create_pdim_bit_array( str, sig, name, (dim + 1) );
       }
     }
@@ -248,14 +250,16 @@ static void memory_create_pdim_bit_array( char** str, vsignal* sig, char* prefix
 
     for( i=sig->dim[dim].lsb; i>=sig->dim[dim].msb; i-- ) {
       if( last_dim ) {
-        snprintf( name, 4096, "%d", i );
+        unsigned int rv = snprintf( name, 4096, "%d", i );
+        assert( rv < 4096 );
         *str = (char*)realloc( *str, (strlen( *str ) + strlen( prefix ) + strlen( name ) + 4) );
         strcat( *str, prefix );
         strcat( *str, "[" );
         strcat( *str, name );
         strcat( *str, "] " );
       } else {
-        snprintf( name, 4096, "%s[%d]", prefix, i );
+        unsigned int rv = snprintf( name, 4096, "%s[%d]", prefix, i );
+        assert( rv < 4096 );
         memory_create_pdim_bit_array( str, sig, name, (dim + 1) );
       }
     }
@@ -320,6 +324,9 @@ static void memory_get_mem_coverage( char** mem_str, vsignal* sig, vec_data* val
     /* Iterate through each addressable element in the current dimension */
     for( i=0; i<((msb - lsb) + 1); i++ ) {
 
+      unsigned int rv;
+      unsigned int slen;
+
       /* Initialize the vector */
       vector_init( &vec, NULL, FALSE, dim_width, VTYPE_MEM );
       if( be ) {
@@ -329,9 +336,12 @@ static void memory_get_mem_coverage( char** mem_str, vsignal* sig, vec_data* val
       }
 
       /* Create dimension string */
-      snprintf( int_str, 20, "%d", i );
-      dim_str = (char*)malloc_safe( strlen( prefix ) + strlen( int_str ) + 5 );
-      snprintf( dim_str, (strlen( prefix ) + strlen( int_str ) + 5), "%s\\[%d\\]", prefix, i );
+      rv = snprintf( int_str, 20, "%d", i );
+      assert( rv < 20 );
+      slen    = strlen( prefix ) + strlen( int_str ) + 5;
+      dim_str = (char*)malloc_safe( slen );
+      rv = snprintf( dim_str, slen, "%s\\[%d\\]", prefix, i );
+      assert( rv < slen );
 
       /* Get toggle information */
       tog01 = 0;
@@ -355,9 +365,11 @@ static void memory_get_mem_coverage( char** mem_str, vsignal* sig, vec_data* val
       }
 
       /* Create a string list for this entry */
-      entry_str = (char*)malloc_safe( strlen( dim_str ) + strlen( hit_str ) + strlen( tog01_str ) + strlen( tog10_str ) + 10 );
-      snprintf( entry_str, (strlen( dim_str ) + strlen( hit_str ) + strlen( tog01_str ) + strlen( tog10_str ) + 10), "{%s %s %d %d %s %s}",
+      slen      = strlen( dim_str ) + strlen( hit_str ) + strlen( tog01_str ) + strlen( tog10_str ) + 10;
+      entry_str = (char*)malloc_safe( slen );
+      rv = snprintf( entry_str, slen, "{%s %s %d %d %s %s}",
                 dim_str, hit_str, ((wr == 0) ? 0 : 1), ((rd == 0) ? 0 : 1), tog01_str, tog10_str );
+      assert( rv < slen );
 
       *mem_str = (char*)realloc( *mem_str, (strlen( *mem_str ) + strlen( entry_str ) + 2) );
       strcat( *mem_str, " " );
@@ -378,7 +390,8 @@ static void memory_get_mem_coverage( char** mem_str, vsignal* sig, vec_data* val
     for( i=0; i<((msb - lsb) + 1); i++ ) {
 
       /* Create new prefix */
-      snprintf( name, 4096, "%s[%d]", prefix, i );
+      unsigned int rv = snprintf( name, 4096, "%s[%d]", prefix, i );
+      assert( rv < 4096 );
 
       if( be ) {
         memory_get_mem_coverage( mem_str, sig, (value + (dim_width * ((msb - lsb) - i))), name, (dim + 1), dim_width );
@@ -729,7 +742,8 @@ static bool memory_ae_instance_summary(
   } else if( strcmp( parent_inst, "*" ) == 0 ) {
     strcpy( tmpname, pname );
   } else {
-    snprintf( tmpname, 4096, "%s.%s", parent_inst, pname );
+    unsigned int rv = snprintf( tmpname, 4096, "%s.%s", parent_inst, pname );
+    assert( rv < 4096 );
   }
 
   free_safe( pname );
@@ -1011,7 +1025,8 @@ static void memory_display_memory( FILE* ofile, vsignal* sig, vec_data* value, c
 
         int j;
 
-        snprintf( name, 4096, "%s[%d]", prefix, i );
+        unsigned int rv = snprintf( name, 4096, "%s[%d]", prefix, i );
+        assert( rv < 4096 );
         fprintf( ofile, "        %s  Written: %d  0->1: ", name, ((wr == 0) ? 0 : 1) );
         vector_display_toggle01( vec.value, vec.width, ofile );
         fprintf( ofile, "\n" );
@@ -1033,7 +1048,8 @@ static void memory_display_memory( FILE* ofile, vsignal* sig, vec_data* value, c
     for( i=0; i<((msb - lsb) + 1); i++ ) {
 
       /* Create new prefix */
-      snprintf( name, 4096, "%s[%d]", prefix, i );
+      unsigned int rv = snprintf( name, 4096, "%s[%d]", prefix, i );
+      assert( rv < 4096 );
 
       if( be ) {
         memory_display_memory( ofile, sig, (value + (dim_width * ((msb - lsb) - i))), name, (dim + 1), dim_width );
@@ -1140,7 +1156,8 @@ static void memory_instance_verbose( FILE* ofile, funit_inst* root, char* parent
   } else if( strcmp( parent_inst, "*" ) == 0 ) {
     strcpy( tmpname, pname );
   } else {
-    snprintf( tmpname, 4096, "%s.%s", parent_inst, pname );
+    unsigned int rv = snprintf( tmpname, 4096, "%s.%s", parent_inst, pname );
+    assert( rv < 4096 );
   }
 
   free_safe( pname );
@@ -1262,7 +1279,7 @@ void memory_report( FILE* ofile, bool verbose ) { PROFILE(MEMORY_REPORT);
       instl = instl->next;
     }
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
-    memory_display_toggle_instance_summary( ofile, "Accumulated", acc_hits01, acc_hits10, acc_tog_total );
+    (void)memory_display_toggle_instance_summary( ofile, "Accumulated", acc_hits01, acc_hits10, acc_tog_total );
 
     fprintf( ofile, "\n" );
     fprintf( ofile, "                                                    Addressable elements written         Addressable elements read\n" );
@@ -1275,7 +1292,7 @@ void memory_report( FILE* ofile, bool verbose ) { PROFILE(MEMORY_REPORT);
       instl = instl->next;
     }
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
-    memory_display_ae_instance_summary( ofile, "Accumulated", acc_wr_hits, acc_rd_hits, acc_ae_total );
+    (void)memory_display_ae_instance_summary( ofile, "Accumulated", acc_wr_hits, acc_rd_hits, acc_ae_total );
 
     if( verbose && missed_found ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
@@ -1294,7 +1311,7 @@ void memory_report( FILE* ofile, bool verbose ) { PROFILE(MEMORY_REPORT);
 
     missed_found |= memory_toggle_funit_summary( ofile, funit_head, &acc_hits01, &acc_hits10, &acc_tog_total );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
-    memory_display_toggle_funit_summary( ofile, "Accumulated", "", acc_hits01, acc_hits10, acc_tog_total );
+    (void)memory_display_toggle_funit_summary( ofile, "Accumulated", "", acc_hits01, acc_hits10, acc_tog_total );
 
     fprintf( ofile, "\n" );
     fprintf( ofile, "                                                    Addressable elements written         Addressable elements read\n" );
@@ -1303,7 +1320,7 @@ void memory_report( FILE* ofile, bool verbose ) { PROFILE(MEMORY_REPORT);
 
     missed_found |= memory_ae_funit_summary( ofile, funit_head, &acc_wr_hits, &acc_rd_hits, &acc_ae_total );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
-    memory_display_ae_funit_summary( ofile, "Accumulated", "", acc_wr_hits, acc_rd_hits, acc_ae_total );
+    (void)memory_display_ae_funit_summary( ofile, "Accumulated", "", acc_wr_hits, acc_rd_hits, acc_ae_total );
 
     if( verbose && missed_found ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
@@ -1319,6 +1336,9 @@ void memory_report( FILE* ofile, bool verbose ) { PROFILE(MEMORY_REPORT);
 
 /*
  $Log$
+ Revision 1.22  2008/01/16 05:01:22  phase1geo
+ Switched totals over from float types to int types for splint purposes.
+
  Revision 1.21  2008/01/10 04:59:04  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 

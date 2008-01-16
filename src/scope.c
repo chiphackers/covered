@@ -67,7 +67,8 @@ static func_unit* scope_find_funit_from_scope(
   if( (curr_inst = inst_link_find_by_funit( curr_funit, inst_head, &ignore )) != NULL ) {
 
     /* First check scope based on a relative path if unnamed scopes are not ignored */
-    snprintf( tscope, 4096, "%s.%s", curr_inst->name, scope );
+    unsigned int rv = snprintf( tscope, 4096, "%s.%s", curr_inst->name, scope );
+    assert( rv < 4096 );
     funiti = instance_find_scope( curr_inst, tscope, rm_unnamed );
 
     /*
@@ -81,8 +82,10 @@ static func_unit* scope_find_funit_from_scope(
           funiti = instance_find_scope( curr_inst, tscope, rm_unnamed );
           curr_inst = curr_inst->parent;
         } else {
+          unsigned int rv;
           curr_inst = curr_inst->parent;
-          snprintf( tscope, 4096, "%s.%s", curr_inst->name, scope );
+          rv = snprintf( tscope, 4096, "%s.%s", curr_inst->name, scope );
+          assert( rv < 4096 );
           funiti = instance_find_scope( curr_inst, tscope, rm_unnamed );
         }
       } while( (curr_inst != NULL) && (funiti == NULL) );
@@ -133,9 +136,10 @@ bool scope_find_param( const char* name, func_unit* curr_funit, mod_parm** found
     if( (*found_funit = scope_find_funit_from_scope( scope, curr_funit, TRUE )) == NULL ) {
 
       if( line > 0 ) {
-        snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined signal hierarchy (%s) in %s %s, file %s, line %d",
-                  obf_sig( name ), get_funit_type( curr_funit->type ), obf_funit( curr_funit->name ),
-                  obf_file( curr_funit->filename ), line );
+        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined signal hierarchy (%s) in %s %s, file %s, line %d",
+                                    obf_sig( name ), get_funit_type( curr_funit->type ), obf_funit( curr_funit->name ),
+                                    obf_file( curr_funit->filename ), line );
+        assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( EXIT_FAILURE );
       }
@@ -201,9 +205,10 @@ bool scope_find_signal( const char* name, func_unit* curr_funit, vsignal** found
     if( (*found_funit = scope_find_funit_from_scope( scope, curr_funit, TRUE )) == NULL ) {
 
       if( line > 0 ) {
-        snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined signal hierarchy (%s) in %s %s, file %s, line %d",
-                  obf_sig( name ), get_funit_type( curr_funit->type ), obf_funit( curr_funit->name ),
-                  obf_file( curr_funit->filename ), line );
+        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined signal hierarchy (%s) in %s %s, file %s, line %d",
+                                    obf_sig( name ), get_funit_type( curr_funit->type ), obf_funit( curr_funit->name ),
+                                    obf_file( curr_funit->filename ), line );
+        assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( EXIT_FAILURE );
       }
@@ -269,9 +274,10 @@ bool scope_find_task_function_namedblock( const char* name, int type, func_unit*
   */
   if( ((*found_funit = scope_find_funit_from_scope( name, curr_funit, rm_unnamed )) == NULL) && must_find ) {
 
-    snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined %s hierarchy (%s) in %s %s, file %s, line %d",
-              get_funit_type( type ), obf_funit( name ), get_funit_type( curr_funit->type ),
-              obf_funit( curr_funit->name ), obf_file( curr_funit->filename ), line );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined %s hierarchy (%s) in %s %s, file %s, line %d",
+                                get_funit_type( type ), obf_funit( name ), get_funit_type( curr_funit->type ),
+                                obf_funit( curr_funit->name ), obf_file( curr_funit->filename ), line );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     exit( EXIT_FAILURE );
 
@@ -402,6 +408,9 @@ char* scope_flatten( char* scope ) { PROFILE(SCOPE_FLATTEN);
 
 /*
  $Log$
+ Revision 1.41  2008/01/10 04:59:04  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.40  2008/01/07 23:59:55  phase1geo
  More splint updates.
 

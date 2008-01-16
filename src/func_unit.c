@@ -607,7 +607,7 @@ void funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
     if( inst != NULL ) {
       curr_parm = inst->param_head;
       while( curr_parm != NULL ) {
-        param_db_write( curr_parm, file, (inst != NULL) );
+        param_db_write( curr_parm, file );
         curr_parm = curr_parm->next;
       }
     }
@@ -1174,6 +1174,9 @@ void funit_dealloc( func_unit* funit ) { PROFILE(FUNIT_DEALLOC);
 
 /*
  $Log$
+ Revision 1.87  2008/01/16 06:40:37  phase1geo
+ More splint updates.
+
  Revision 1.86  2008/01/10 04:59:04  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 

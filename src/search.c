@@ -169,7 +169,8 @@ bool search_add_directory_path( const char* path ) { PROFILE(SEARCH_ADD_DIRECTOR
     }
     directory_load( path, extensions_head, &(use_files_head), &(use_files_tail) );
   } else {
-    snprintf( user_msg, USER_MSG_LENGTH, "Library directory %s does not exist", path );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Library directory %s does not exist", path );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, WARNING, __FILE__, __LINE__ );
     retval = FALSE;
   }
@@ -194,7 +195,8 @@ bool search_add_file( const char* file ) { PROFILE(SEARCH_ADD_FILE);
       (void)str_link_add( tmp, &use_files_head, &use_files_tail );
     }
   } else {
-    snprintf( user_msg, USER_MSG_LENGTH, "File %s does not exist", file );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "File %s does not exist", file );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = FALSE;
   }
@@ -219,7 +221,8 @@ bool search_add_no_score_funit( const char* funit ) { PROFILE(SEARCH_ADD_NO_SCOR
     tmp = strdup_safe( funit );
     (void)str_link_add( tmp, &no_score_head, &no_score_tail );
   } else {
-    snprintf( user_msg, USER_MSG_LENGTH, "Value of -e option (%s) is not a valid block name", funit );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Value of -e option (%s) is not a valid block name", funit );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = FALSE;
   }
@@ -239,10 +242,10 @@ bool search_add_no_score_funit( const char* funit ) { PROFILE(SEARCH_ADD_NO_SCOR
 */
 bool search_add_extensions( const char* ext_list ) { PROFILE(SEARCH_ADD_EXTENSIONS);
 
-  bool  retval    = TRUE;      /* Return value for this function */
-  char  ext[30];               /* Holder for extension */
-  int   ext_index = 0;         /* Index to ext array */
-  char* tmp       = ext_list;  /* Temporary extension name */
+  bool        retval    = TRUE;      /* Return value for this function */
+  char        ext[30];               /* Holder for extension */
+  int         ext_index = 0;         /* Index to ext array */
+  const char* tmp       = ext_list;  /* Temporary extension name */
 
   assert( ext_list != NULL );
 
@@ -265,7 +268,8 @@ bool search_add_extensions( const char* ext_list ) { PROFILE(SEARCH_ADD_EXTENSIO
 
   /* If extension list is not empty, we have hit a parsing error */
   if( (strlen( tmp ) > 0) || (ext_index > 0) ) {
-    snprintf( user_msg, USER_MSG_LENGTH, "Parsing error in +libext+%s  ", ext_list );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Parsing error in +libext+%s  ", ext_list );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     gen_space( user_msg, (25 + (strlen( ext_list ) - strlen( tmp ))) );
     strcat( user_msg, "^" );
@@ -292,6 +296,9 @@ void search_free_lists() { PROFILE(SEARCH_FREE_LISTS);
 
 /*
  $Log$
+ Revision 1.36  2008/01/09 05:22:22  phase1geo
+ More splint updates using the -standard option.
+
  Revision 1.35  2008/01/08 21:13:08  phase1geo
  Completed -weak splint run.  Full regressions pass.
 

@@ -267,10 +267,12 @@ void vector_db_write( vector* vec, FILE* file, bool write_data ) { PROFILE(VECTO
   dflt = (vec->suppl.part.is_2state == 1) ? 0x0 : 0x2;
 
   /* Output vector information to specified file */
+  /*@-formatcode@*/
   fprintf( file, "%d %hhu",
     vec->width,
     vec->suppl.all
   );
+  /*@=formatcode@*/
 
   if( vec->value == NULL ) {
 
@@ -487,7 +489,9 @@ char* vector_get_toggle01( vec_data* nib, int width ) { PROFILE(VECTOR_GET_TOGGL
   char  tmp[2];
 
   for( i=(width - 1); i>=0; i-- ) {
+    /*@-formatcode@*/
     unsigned int rv = snprintf( tmp, 2, "%hhx", nib[i].part.sig.tog01 );
+    /*@=formatcode@*/
     assert( rv < 2 );
     bits[((width - 1) - i)] = tmp[0];
   }
@@ -513,7 +517,9 @@ char* vector_get_toggle10( vec_data* nib, int width ) { PROFILE(VECTOR_GET_TOGGL
   char  tmp[2];
 
   for( i=(width - 1); i>=0; i-- ) {
+    /*@-formatcode@*/
     unsigned int rv = snprintf( tmp, 2, "%hhx", nib[i].part.sig.tog10 );
+    /*@=formatcode@*/
     assert( rv < 2 );
     bits[((width - 1) - i)] = tmp[0];
   }
@@ -626,7 +632,9 @@ void vector_display_nibble( vec_data* nib, int width, int type ) {
   printf( "      raw value:" );
   
   for( i=(width - 1); i>=0; i-- ) {
+    /*@-formatcode@*/
     printf( " %hhx", nib[i].all );
+    /*@=formatcode@*/
   }
 
   /* Display nibble value */
@@ -648,7 +656,9 @@ void vector_display_nibble( vec_data* nib, int width, int type ) {
       /* Display bit set information */
       printf( ", set: %d'b", width );
       for( i=(width - 1); i>=0; i-- ) {
+        /*@-formatcode@*/
         printf( "%hhu", nib[i].part.sig.set );
+        /*@=formatcode@*/
       }
 
       break;
@@ -658,31 +668,41 @@ void vector_display_nibble( vec_data* nib, int width, int type ) {
       /* Display eval_a information */
       printf( ", a: %d'b", width );
       for( i=(width - 1); i>=0; i-- ) {
+        /*@-formatcode@*/
         printf( "%hhu", nib[i].part.exp.eval_a );
+        /*@=formatcode@*/
       }
 
       /* Display eval_b information */
       printf( ", b: %d'b", width );
       for( i=(width - 1); i>=0; i-- ) {
+        /*@-formatcode@*/
         printf( "%hhu", nib[i].part.exp.eval_b );
+        /*@=formatcode@*/
       }
 
       /* Display eval_c information */
       printf( ", c: %d'b", width );
       for( i=(width - 1); i>=0; i-- ) {
+        /*@-formatcode@*/
         printf( "%hhu", nib[i].part.exp.eval_c );
+        /*@=formatcode@*/
       }
 
       /* Display eval_d information */
       printf( ", d: %d'b", width );
       for( i=(width - 1); i>=0; i-- ) {
+        /*@-formatcode@*/
         printf( "%hhu", nib[i].part.exp.eval_d );
+        /*@=formatcode@*/
       }
 
       /* Display set information */
       printf( ", set: %d'b", width );
       for( i=(width - 1); i>=0; i-- ) {
+        /*@-formatcode@*/
         printf( "%hhu", nib[i].part.exp.set );
+        /*@=formatcode@*/
       }
 
       break;
@@ -700,13 +720,17 @@ void vector_display_nibble( vec_data* nib, int width, int type ) {
       /* Write history */
       printf( ", wr: %d'b", width );
       for( i=(width - 1); i>=0; i-- ) {
+        /*@-formatcode@*/
         printf( "%hhu", nib[i].part.mem.wr );
+        /*@=formatcode@*/
       }
 
       /* Read history */
       printf( ", rd: %d'b", width );
       for( i=(width - 1); i>=0; i-- ) {
+        /*@-formatcode@*/
         printf( "%hhu", nib[i].part.mem.rd );
+        /*@=formatcode@*/
       }
 
       break;
@@ -726,7 +750,9 @@ void vector_display( vector* vec ) {
 
   assert( vec != NULL );
 
-  printf( "Vector => width: %d, suppl: %x\n", vec->width, vec->suppl.all );
+  /*@-formatcode@*/
+  printf( "Vector => width: %d, suppl: %hhx\n", vec->width, vec->suppl.all );
+  /*@=formatcode@*/
 
   if( (vec->width > 0) && (vec->value != NULL) ) {
     vector_display_nibble( vec->value, vec->width, vec->suppl.part.type );
@@ -1037,8 +1063,10 @@ int vector_to_int( vector* vec ) { PROFILE(VECTOR_TO_INT);
 
   for( i=(width - 1); i>=0; i-- ) {
     switch( vec->value[i].part.val.value ) {
+      /*@-shiftimplementation@*/
       case 0 :  retval = (retval << 1) | 0;  break;
       case 1 :  retval = (retval << 1) | 1;  break;
+      /*@=shiftimplementation@*/
       default:
         print_output( "Vector converting to integer contains X or Z values", FATAL, __FILE__, __LINE__ );
         assert( vec->value[i].part.val.value < 2 );
@@ -1049,7 +1077,9 @@ int vector_to_int( vector* vec ) { PROFILE(VECTOR_TO_INT);
   /* If the vector is signed, sign-extend the integer */
   if( vec->suppl.part.is_signed == 1 ) {
     for( i=width; i<(SIZEOF_INT * 8); i++ ) {
+      /*@-shiftnegative@*/
       retval |= (vec->value[width-1].part.val.value << i);
+      /*@=shiftnegative@*/
     }
   }
 
@@ -1090,7 +1120,9 @@ uint64 vector_to_uint64( vector* vec ) { PROFILE(VECTOR_TO_UINT64);
   /* If the vector is signed, sign-extend the integer */
   if( vec->suppl.part.is_signed == 1 ) {
     for( i=width; i<64; i++ ) {
+      /*@-shiftnegative@*/
       retval |= (vec->value[width-1].part.val.value << i);
+      /*@=shiftnegative@*/
     }
   }
 
@@ -1157,7 +1189,9 @@ void vector_from_int( vector* vec, int value ) { PROFILE(VECTOR_FROM_INT);
 
   for( i=0; i<width; i++ ) {
     vec->value[i].part.val.value = (value & 0x1);
+    /*@-shiftimplementation@*/
     value >>= 1;
+    /*@=shiftimplementation@*/
   }
 
   /* Because this value came from an integer, specify that the vector is signed */
@@ -1185,7 +1219,9 @@ void vector_from_uint64( vector* vec, uint64 value ) { PROFILE(VECTOR_FROM_UINT6
 
   for( i=0; i<width; i++ ) {
     vec->value[i].part.val.value = (value & 0x1);
+    /*@-shiftimplementation@*/
     value >>= 1;
+    /*@=shiftimplementation@*/
   }
 
   /* Because this value came from an unsigned integer, specify that the vector is unsigned */
@@ -1205,10 +1241,10 @@ void vector_from_uint64( vector* vec, uint64 value ) { PROFILE(VECTOR_FROM_UINT6
 */
 static void vector_set_static( vector* vec, char* str, int bits_per_char ) { PROFILE(VECTOR_SET_STATIC);
 
-  char* ptr;      /* Pointer to current character evaluating */
-  int   pos;      /* Current bit position in vector */
-  int   val;      /* Temporary holder for value of current character */
-  int   i;        /* Loop iterator */
+  char*        ptr;  /* Pointer to current character evaluating */
+  unsigned int pos;  /* Current bit position in vector */
+  unsigned int val;  /* Temporary holder for value of current character */
+  unsigned int i;    /* Loop iterator */
 
   pos = 0;
 
@@ -1285,7 +1321,9 @@ char* vector_to_string( vector* vec ) { PROFILE(VECTOR_TO_STRING);
     for( i=(vec->width - 1); i>=0; i-- ) {
       switch( vec->value[i].part.val.value ) {
         case 0 :  value  = value;           break;
+        /*@-shiftnegative@*/
         case 1 :  value |= (1 << (i % 8));  break;
+        /*@=shiftnegative@*/
         default:  break;
       }
       assert( pos < vec_size );
@@ -1310,20 +1348,22 @@ char* vector_to_string( vector* vec ) { PROFILE(VECTOR_TO_STRING);
         break;
       case OCTAL :  
         vec_size  = ((vec->width % 3) == 0) ? ((vec->width / 3) + 1)
-                                          : ((vec->width / 3) + 2);
+                                            : ((vec->width / 3) + 2);
         group     = 3;
         type_char = 'o';
         break;
       case HEXIDECIMAL :  
         vec_size  = ((vec->width % 4) == 0) ? ((vec->width / 4) + 1)
-                                          : ((vec->width / 4) + 2);
+                                            : ((vec->width / 4) + 2);
         group     = 4;
         type_char = 'h';
         break;
       default          :  
         print_output( "Internal Error:  Unknown vector_to_string type\n", FATAL, __FILE__, __LINE__ );
         exit( EXIT_FAILURE );
+        /*@-unreachable@*/
         break;
+        /*@=unreachable@*/
     }
 
     tmp   = (char*)malloc_safe( vec_size );
@@ -1405,15 +1445,16 @@ char* vector_to_string( vector* vec ) { PROFILE(VECTOR_TO_STRING);
 */
 vector* vector_from_string( char** str, bool quoted ) { PROFILE(VECTOR_FROM_STRING);
 
-  vector* vec;                   /* Temporary holder for newly created vector */
-  int     bits_per_char;         /* Number of bits represented by a single character in the value string str */
-  int     size;                  /* Specifies bit width of vector to create */
-  char    value[MAX_BIT_WIDTH];  /* String to store string value in */
-  char    stype[2];              /* Temporary holder for type of string being parsed */
-  nibble  type;                  /* Type of string being parsed */
-  int     chars_read;            /* Number of characters read by a sscanf() function call */
-  int     i, j;                  /* Loop iterators */
-  int     pos;                   /* Bit position */
+  vector*      vec;                   /* Temporary holder for newly created vector */
+  int          bits_per_char;         /* Number of bits represented by a single character in the value string str */
+  int          size;                  /* Specifies bit width of vector to create */
+  char         value[MAX_BIT_WIDTH];  /* String to store string value in */
+  char         stype[2];              /* Temporary holder for type of string being parsed */
+  nibble       type;                  /* Type of string being parsed */
+  int          chars_read;            /* Number of characters read by a sscanf() function call */
+  int          i;                     /* Loop iterator */
+  unsigned int j;                     /* Loop iterator */
+  int          pos;                   /* Bit position */
 
   if( quoted ) {
 
@@ -2363,6 +2404,9 @@ void vector_dealloc( vector* vec ) { PROFILE(VECTOR_DEALLOC);
 
 /*
  $Log$
+ Revision 1.108  2008/01/16 05:01:23  phase1geo
+ Switched totals over from float types to int types for splint purposes.
+
  Revision 1.107  2008/01/15 23:01:15  phase1geo
  Continuing to make splint updates (not doing any memory checking at this point).
 

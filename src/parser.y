@@ -2028,7 +2028,8 @@ identifier
     { PROFILE(PARSER_IDENTIFIER_A);
       int   len = strlen( $1 ) + strlen( $3 ) + 2;
       char* str = (char*)malloc_safe( len );
-      snprintf( str, len, "%s.%s", $1, $3 );
+      unsigned int rv = snprintf( str, len, "%s.%s", $1, $3 );
+      assert( rv < len );
       if( $1 != NULL ) {
         free_safe( $1 );
       }
@@ -2996,8 +2997,9 @@ module_item
   | block_item_decl
   | attribute_list_opt K_defparam defparam_assign_list ';'
     {
-      snprintf( user_msg, USER_MSG_LENGTH, "Defparam found but not used, file: %s, line: %u.  Please use -P option to specify",
-                obf_file( @1.text ), @1.first_line );
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Defparam found but not used, file: %s, line: %u.  Please use -P option to specify",
+                                  obf_file( @1.text ), @1.first_line );
+      assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
     }
   | attribute_list_opt K_event
@@ -4265,11 +4267,11 @@ statement
       if( (ignore_mode == 0) && ($4 != NULL) && ($6 != NULL) && ($8 != NULL) && ($10 != NULL) ) {
         block_depth++;
         stmt2 = db_create_statement( $6 );
-        db_statement_connect( stmt1, stmt2 );
+        assert( db_statement_connect( stmt1, stmt2 ) );
         db_connect_statement_true( stmt2, stmt4 );
-        db_statement_connect( stmt4, stmt3 );
+        assert( db_statement_connect( stmt4, stmt3 ) );
         stmt2->conn_id = stmt_conn_id;   /* This will cause the STOP bit to be set for the stmt3 */
-        db_statement_connect( stmt3, stmt2 );
+        assert( db_statement_connect( stmt3, stmt2 ) );
         block_depth--;
         stmt1 = db_parallelize_statement( stmt1 );
         stmt1->exp->suppl.part.stmt_head      = 1;
@@ -5286,11 +5288,12 @@ delay_value
       static_expr* se = NULL;
       if( ignore_mode == 0 ) {
         if( delay_expr_type == DELAY_EXPR_DEFAULT ) {
-          snprintf( user_msg,
-                    USER_MSG_LENGTH,
-                    "Delay expression type for min:typ:max not specified, using default of 'typ', file %s, line %u",
-                    obf_file( @1.text ),
-                    @1.first_line );
+          unsigned int rv = snprintf( user_msg,
+                                      USER_MSG_LENGTH,
+                                      "Delay expression type for min:typ:max not specified, using default of 'typ', file %s, line %u",
+                                      obf_file( @1.text ),
+                                      @1.first_line );
+          assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, WARNING, __FILE__, __LINE__ );
         }
         switch( delay_expr_type ) {

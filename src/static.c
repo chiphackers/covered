@@ -86,9 +86,9 @@ extern int        curr_expr_id;
 */
 static_expr* static_expr_gen_unary( static_expr* stexp, int op, int line, int first, int last ) { PROFILE(STATIC_EXPR_GEN_UNARY);
 
-  expression* tmpexp;  /* Container for newly created expression */
-  int uop;             /* Temporary bit holder */
-  int i;               /* Loop iterator */
+  expression*  tmpexp;  /* Container for newly created expression */
+  int          uop;     /* Temporary bit holder */
+  unsigned int i;       /* Loop iterator */
 
   if( stexp != NULL ) {
 
@@ -114,11 +114,13 @@ static_expr* static_expr_gen_unary( static_expr* stexp, int op, int line, int fi
           for( i=1; i<(SIZEOF_INT * 8); i++ ) {
             switch( op ) {
               case EXP_OP_UNAND :
+              /*@-shiftimplementation@*/
               case EXP_OP_UAND  :  uop = uop & ((stexp->num >> i) & 0x1);  break;
               case EXP_OP_UNOR  :
               case EXP_OP_UOR   :  uop = uop | ((stexp->num >> i) & 0x1);  break;
               case EXP_OP_UNXOR :
               case EXP_OP_UXOR  :  uop = uop ^ ((stexp->num >> i) & 0x1);  break;
+              /*@=shiftimplementation@*/
               default           :  break;
             }
           }
@@ -221,8 +223,10 @@ static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int
           case EXP_OP_NOR      :  right->num = ~(left->num | right->num);  break;
           case EXP_OP_NAND     :  right->num = ~(left->num & right->num);  break;
           case EXP_OP_NXOR     :  right->num = ~(left->num ^ right->num);  break;
+          /*@-shiftnegative -shiftimplementation@*/
           case EXP_OP_LSHIFT   :  right->num = left->num << right->num;    break;
           case EXP_OP_RSHIFT   :  right->num = left->num >> right->num;    break;
+          /*@=shiftnegative =shiftimplementation@*/
           case EXP_OP_GE       :  right->num = (left->num >= right->num) ? 1 : 0;  break;
           case EXP_OP_LE       :  right->num = (left->num <= right->num) ? 1 : 0;  break;
           case EXP_OP_EQ       :  right->num = (left->num == right->num) ? 1 : 0;  break;
@@ -408,6 +412,9 @@ void static_expr_dealloc( static_expr* stexp, bool rm_exp ) { PROFILE(STATIC_EXP
 
 /*
  $Log$
+ Revision 1.29  2008/01/16 05:01:23  phase1geo
+ Switched totals over from float types to int types for splint purposes.
+
  Revision 1.28  2007/12/11 05:48:26  phase1geo
  Fixing more compile errors with new code changes and adding more profiling.
  Still have a ways to go before we can compile cleanly again (next submission

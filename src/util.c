@@ -147,7 +147,8 @@ void print_output( const char* msg, int type, const char* file, int line ) {
 #ifdef VPI_ONLY
         vpi_print_output( msg );
 #else
-        printf( "%s\n", msg );  fflush( stdout );
+        unsigned int rv;
+        printf( "%s\n", msg );  rv = fflush( stdout );  assert( rv == 0 );
 #endif
       }
       break;
@@ -163,7 +164,8 @@ void print_output( const char* msg, int type, const char* file, int line ) {
     case WARNING:
       if( !output_suppressed ) {
         if( report_gui ) {
-          snprintf( tmpmsg, USER_MSG_LENGTH, "WARNING!  %s\n", msg );
+          unsigned int rv = snprintf( tmpmsg, USER_MSG_LENGTH, "WARNING!  %s\n", msg );
+          assert( rv < USER_MSG_LENGTH );
 #ifndef VPI_ONLY
 #ifdef HAVE_TCLTK
           Tcl_SetResult( interp, tmpmsg, TCL_VOLATILE );
@@ -174,7 +176,8 @@ void print_output( const char* msg, int type, const char* file, int line ) {
         }
       } else if( debug_mode ) {
         if( report_gui ) {
-          snprintf( tmpmsg, USER_MSG_LENGTH, "WARNING!  %s (file: %s, line: %d)\n", msg, file, line );
+          unsigned int rv = snprintf( tmpmsg, USER_MSG_LENGTH, "WARNING!  %s (file: %s, line: %d)\n", msg, file, line );
+          assert( rv < USER_MSG_LENGTH );
 #ifndef VPI_ONLY
 #ifdef HAVE_TCLTK
           Tcl_SetResult( interp, tmpmsg, TCL_VOLATILE );
@@ -188,7 +191,8 @@ void print_output( const char* msg, int type, const char* file, int line ) {
     case WARNING_WRAP:
       if( !output_suppressed || debug_mode ) {
         if( report_gui ) {
-          snprintf( tmpmsg, USER_MSG_LENGTH, "              %s\n", msg );
+          unsigned int rv = snprintf( tmpmsg, USER_MSG_LENGTH, "              %s\n", msg );
+          assert( rv < USER_MSG_LENGTH );
 #ifndef VPI_ONLY
 #ifdef HAVE_TCLTK
           Tcl_AppendElement( interp, tmpmsg );
@@ -202,7 +206,8 @@ void print_output( const char* msg, int type, const char* file, int line ) {
     case FATAL:
       if( debug_mode ) {
         if( report_gui ) {
-          snprintf( tmpmsg, USER_MSG_LENGTH, "%s (file: %s, line: %d)\n", msg, file, line );
+          unsigned int rv = snprintf( tmpmsg, USER_MSG_LENGTH, "%s (file: %s, line: %d)\n", msg, file, line );
+          assert( rv < USER_MSG_LENGTH );
 #ifndef VPI_ONLY
 #ifdef HAVE_TCLTK
           Tcl_SetResult( interp, tmpmsg, TCL_VOLATILE );
@@ -213,7 +218,8 @@ void print_output( const char* msg, int type, const char* file, int line ) {
         }
       } else {
         if( report_gui ) {
-          snprintf( tmpmsg, USER_MSG_LENGTH, "%s\n", msg );
+          unsigned int rv = snprintf( tmpmsg, USER_MSG_LENGTH, "%s\n", msg );
+          assert( rv < USER_MSG_LENGTH );
 #ifndef VPI_ONLY
 #ifdef HAVE_TCLTK
           Tcl_SetResult( interp, tmpmsg, TCL_VOLATILE );
@@ -226,7 +232,8 @@ void print_output( const char* msg, int type, const char* file, int line ) {
       break;
     case FATAL_WRAP:
       if( report_gui ) {
-        snprintf( tmpmsg, USER_MSG_LENGTH, "%s\n", msg );
+        unsigned int rv = snprintf( tmpmsg, USER_MSG_LENGTH, "%s\n", msg );
+        assert( rv < USER_MSG_LENGTH );
 #ifndef VPI_ONLY
 #ifdef HAVE_TCLTK
         Tcl_AppendElement( interp, tmpmsg );
@@ -259,7 +266,8 @@ bool check_option_value( int argc, const char** argv, int option_index ) { PROFI
   bool retval = TRUE;  /* Return value for this function */
 
   if( ((option_index + 1) >= argc) || (argv[option_index+1][0] == '-') ) {
-    snprintf( user_msg, USER_MSG_LENGTH, "Missing option value to the right of the %s option", argv[option_index] );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Missing option value to the right of the %s option", argv[option_index] );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = FALSE;
   }
@@ -366,8 +374,9 @@ bool is_legal_filename( const char* token ) { PROFILE(IS_LEGAL_FILENAME);
   FILE* tmpfile;         /* Temporary file pointer */
 
   if( (tmpfile = fopen( token, "w" )) != NULL ) {
+    unsigned int rv = fclose( tmpfile );
+    assert( rv == 0 );
     retval = TRUE;
-    fclose( tmpfile );
   }
 
   PROFILE_END;
@@ -483,11 +492,14 @@ void directory_load( const char* dir, const str_link* ext_head, str_link** file_
 
   if( (dir_handle = opendir( dir )) == NULL ) {
 
-    snprintf( user_msg, USER_MSG_LENGTH, "Unable to read directory %s", dir );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to read directory %s", dir );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     exit( EXIT_FAILURE );
 
   } else {
+
+    unsigned int rv;
 
     while( (dirp = readdir( dir_handle )) != NULL ) {
       ptr = dirp->d_name + strlen( dirp->d_name ) - 1;
@@ -502,10 +514,12 @@ void directory_load( const char* dir, const str_link* ext_head, str_link** file_
           curr_ext = curr_ext->next;
         }
         if( curr_ext != NULL ) {
+          unsigned int rv;
           /* Found valid extension, add to list */
           tmpchars = strlen( dirp->d_name ) + strlen( dir ) + 2;
           tmpfile  = (char*)malloc_safe( tmpchars );
-          snprintf( tmpfile, tmpchars, "%s/%s", dir, dirp->d_name );
+          rv = snprintf( tmpfile, tmpchars, "%s/%s", dir, dirp->d_name );
+          assert( rv < tmpchars );
           if( str_link_find( tmpfile, *file_head ) == NULL ) {
             (void)str_link_add( tmpfile, file_head, file_tail );
             (*file_tail)->suppl = 0x1;
@@ -516,7 +530,8 @@ void directory_load( const char* dir, const str_link* ext_head, str_link** file_
       }
     }
 
-    closedir( dir_handle );
+    rv = closedir( dir_handle );
+    assert( rv == 0 );
 
   }
 
@@ -627,7 +642,8 @@ char* substitute_env_vars( const char* value ) { PROFILE(SUBSTITUTE_ENV_VARS);
           parsing_var = FALSE;
           ptr--;
         } else {
-          snprintf( user_msg, USER_MSG_LENGTH, "Unknown environment variable $%s in string \"%s\"", env_var, value );
+          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown environment variable $%s in string \"%s\"", env_var, value );
+          assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
           exit( EXIT_FAILURE );
         }
@@ -774,7 +790,8 @@ char* scope_gen_printable( const char* str ) { PROFILE(SCOPE_GEN_PRINTABLE);
 
   /* Remove escape sequences, if any */
   if( str[0] == '\\' ) {
-    sscanf( str, "\\%[^ \n\t\r\b]", new_str );
+    unsigned int rv = sscanf( str, "\\%[^ \n\t\r\b]", new_str );
+    assert( rv == 1 );
   }
 
   PROFILE_END;
@@ -962,9 +979,6 @@ void* malloc_safe1( size_t size, const char* file, int line, unsigned int profil
   if( size > 100000 ) {
     print_output( "Allocating memory chunk larger than 100000 bytes.  Possible error.", WARNING, file, line );
     assert( size <= 100000 );
-  } else if( size <= 0 ) {
-    print_output( "Internal:  Attempting to allocate memory of size <= 0", FATAL, file, line );
-    assert( size > 0 );
   }
 
   curr_malloc_size += size;
@@ -1002,11 +1016,6 @@ void* malloc_safe1( size_t size, const char* file, int line, unsigned int profil
 void* malloc_safe_nolimit1( size_t size, const char* file, int line, unsigned int profile_index ) {
 
   void* obj;  /* Object getting malloc address */
-
-  if( size <= 0 ) {
-    print_output( "Internal:  Attempting to allocate memory of size <= 0", FATAL, file, line );
-    assert( size > 0 );
-  }
 
   curr_malloc_size += size;
 
@@ -1206,6 +1215,9 @@ void calc_miss_percent(
 
 /*
  $Log$
+ Revision 1.76  2008/01/16 05:01:23  phase1geo
+ Switched totals over from float types to int types for splint purposes.
+
  Revision 1.75  2008/01/10 04:59:05  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 
