@@ -140,7 +140,7 @@ static_expr* static_expr_gen_unary( static_expr* stexp, int op, int line, int fi
         case EXP_OP_PASSIGN :
           tmpexp = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, line, first, last, FALSE );
           curr_expr_id++;
-          vector_init( tmpexp->value, (vec_data*)malloc_safe( sizeof( vec_data ) * 32 ), 32, VTYPE_EXP );
+          vector_init( tmpexp->value, (vec_data*)malloc_safe( sizeof( vec_data ) * 32 ), TRUE, 32, VTYPE_EXP );
           vector_from_int( tmpexp->value, stexp->num );
         
           stexp->exp = expression_create( tmpexp, NULL, op, FALSE, curr_expr_id, line, first, last, FALSE );
@@ -235,7 +235,7 @@ static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int
 
         right->exp = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, line, first, last, FALSE );
         curr_expr_id++;
-        vector_init( right->exp->value, (vec_data*)malloc_safe( sizeof( vec_data ) * 32 ), 32, VTYPE_EXP );  
+        vector_init( right->exp->value, (vec_data*)malloc_safe( sizeof( vec_data ) * 32 ), TRUE, 32, VTYPE_EXP );  
         vector_from_int( right->exp->value, right->num );
 
         tmpexp = expression_create( right->exp, left->exp, op, FALSE, curr_expr_id, line, first, last, FALSE );
@@ -250,7 +250,7 @@ static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int
 
         left->exp = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, line, first, last, FALSE );
         curr_expr_id++;
-        vector_init( left->exp->value, (vec_data*)malloc_safe( sizeof( vec_data ) * 32 ), 32, VTYPE_EXP );
+        vector_init( left->exp->value, (vec_data*)malloc_safe( sizeof( vec_data ) * 32 ), TRUE, 32, VTYPE_EXP );
         vector_from_int( left->exp->value, left->num );
 
         tmpexp = expression_create( right->exp, left->exp, op, FALSE, curr_expr_id, line, first, last, FALSE );
@@ -408,6 +408,11 @@ void static_expr_dealloc( static_expr* stexp, bool rm_exp ) { PROFILE(STATIC_EXP
 
 /*
  $Log$
+ Revision 1.28  2007/12/11 05:48:26  phase1geo
+ Fixing more compile errors with new code changes and adding more profiling.
+ Still have a ways to go before we can compile cleanly again (next submission
+ should do it).
+
  Revision 1.27  2007/11/20 05:29:00  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

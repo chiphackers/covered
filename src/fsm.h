@@ -49,22 +49,52 @@ bool fsm_db_merge( fsm* base, char** line, bool same );
 void fsm_table_set( fsm* table );
 
 /*! \brief Gathers statistics about the current FSM */
-void fsm_get_stats( fsm_link* table, float* state_total, int* state_hit, float* arc_total, int* arc_hit );
+void fsm_get_stats(
+            fsm_link* table,
+  /*@out@*/ int*      state_total,
+  /*@out@*/ int*      state_hit,
+  /*@out@*/ int*      arc_total,
+  /*@out@*/ int*      arc_hit );
 
 /*! \brief Retrieves the FSM summary information for the specified functional unit. */
-bool fsm_get_funit_summary( const char* funit_name, int funit_type, /*@out@*/ int* total, /*@out@*/ int* hit );
+bool fsm_get_funit_summary(
+            const char* funit_name,
+            int         funit_type,
+  /*@out@*/ int*        total,
+  /*@out@*/ int*        hit );
 
 /*! \brief Retrieves covered and uncovered FSMs from the specified functional unit. */
-bool fsm_collect( const char* funit_name, int funit_type, sig_link** cov_head, sig_link** cov_tail,
-                  sig_link** uncov_head, sig_link** uncov_tail, int** expr_ids, int** excludes );
+bool fsm_collect(
+  const char* funit_name,
+  int         funit_type,
+  sig_link**  cov_head,
+  sig_link**  cov_tail,
+  sig_link**  uncov_head,
+  sig_link**  uncov_tail,
+  int**       expr_ids,
+  int**       excludes );
 
 /*! \brief Collects all coverage information for the specified FSM */
-bool fsm_get_coverage( const char* funit_name, int funit_type, int expr_id, int* width,
-                       char*** total_states, int* total_state_num,
-                       char*** hit_states, int* hit_state_num,
-                       char*** total_from_arcs, char*** total_to_arcs, int** excludes, int* total_arc_num,
-                       char*** hit_from_arcs, char*** hit_to_arcs, int* hit_arc_num,
-                       char*** input_state, int* input_size, char*** output_state, int* output_size );
+bool fsm_get_coverage(
+  const char* funit_name,
+  int         funit_type,
+  int         expr_id,
+  int*        width,
+  char***     total_states,
+  int*        total_state_num,
+  char***     hit_states,
+  int*        hit_state_num,
+  char***     total_from_arcs,
+  char***     total_to_arcs,
+  int**       excludes,
+  int*        total_arc_num,
+  char***     hit_from_arcs,
+  char***     hit_to_arcs,
+  int*        hit_arc_num,
+  char***     input_state,
+  int*        input_size,
+  char***     output_state,
+  int*        output_size );
 
 /*! \brief Generates report output for FSM coverage. */
 void fsm_report( FILE* ofile, bool verbose );
@@ -74,6 +104,9 @@ void fsm_dealloc( fsm* table );
 
 /*
  $Log$
+ Revision 1.23  2008/01/07 23:59:54  phase1geo
+ More splint updates.
+
  Revision 1.22  2007/11/20 05:28:58  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

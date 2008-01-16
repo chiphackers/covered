@@ -70,31 +70,37 @@ extern char user_msg[USER_MSG_LENGTH];
 
 
 /*!
- \param vec    Pointer to vector to initialize.
- \param value  Pointer to vec_data array for vector.
- \param width  Bit width of specified vector.
- \param type   Type of vector to initialize this to.
+ \param vec         Pointer to vector to initialize.
+ \param value       Pointer to vec_data array for vector.
+ \param owns_value  Set to TRUE if this vector is responsible for deallocating the given value array
+ \param width       Bit width of specified vector.
+ \param type        Type of vector to initialize this to.
  
  Initializes the specified vector with the contents of width
  and value (if value != NULL).  If value != NULL, initializes all contents 
  of value array to 0x2 (X-value).
 */
-void vector_init( vector* vec, vec_data* value, int width, int type ) { PROFILE(VECTOR_INIT);
+void vector_init( vector* vec, vec_data* value, bool owns_value, int width, int type ) { PROFILE(VECTOR_INIT);
 
-  int i;  /* Loop iterator */
-
-  vec->width           = width;
-  vec->suppl.all       = 0;
-  vec->suppl.part.type = type;
-  vec->value           = value;
+  vec->width                = width;
+  vec->suppl.all            = 0;
+  vec->suppl.part.type      = type;
+  vec->suppl.part.owns_data = owns_value;
+  vec->value                = value;
 
   if( value != NULL ) {
+
+    int i;  /* Loop iterator */
 
     assert( width > 0 );
 
     for( i=0; i<width; i++ ) {
       vec->value[i].all = 0x0;
     }
+
+  } else {
+
+    assert( !owns_value );
 
   }
 
@@ -131,10 +137,9 @@ vector* vector_create( int width, int type, bool data ) { PROFILE(VECTOR_CREATE)
     }
 #endif
     value = (vec_data*)malloc_safe( sizeof( vec_data ) * width );
-    new_vec->suppl.part.owns_data = 1;
   }
 
-  vector_init( new_vec, value, width, type );
+  vector_init( new_vec, value, (value != NULL), width, type );
 
   PROFILE_END;
 
@@ -1615,7 +1620,7 @@ bool vector_bitwise_op( vector* tgt, vector* src1, vector* src2, nibble* optab )
   nibble   bit1;            /* Current bit value for src1 */
   nibble   bit2;            /* Current bit value for src2 */
 
-  vector_init( &vec, &vecval, 1, VTYPE_VAL );
+  vector_init( &vec, &vecval, FALSE, 1, VTYPE_VAL );
 
   for( i=0; i<tgt->width; i++ ) {
 
@@ -2103,9 +2108,9 @@ bool vector_op_multiply( vector* tgt, vector* left, vector* right ) { PROFILE(VE
   int      i;               /* Loop iterator */
 
   /* Initialize temporary vectors */
-  vector_init( &lcomp, &lcomp_val, 1,  VTYPE_VAL );
-  vector_init( &rcomp, &rcomp_val, 1,  VTYPE_VAL );
-  vector_init( &vec,   vec_val,    32, VTYPE_VAL );
+  vector_init( &lcomp, &lcomp_val, FALSE, 1,  VTYPE_VAL );
+  vector_init( &rcomp, &rcomp_val, FALSE, 1,  VTYPE_VAL );
+  vector_init( &vec,   vec_val,    FALSE, 32, VTYPE_VAL );
 
   (void)vector_unary_op( &lcomp, left,  xor_optab );
   (void)vector_unary_op( &rcomp, right, xor_optab );
@@ -2229,7 +2234,7 @@ bool vector_unary_inv( vector* tgt, vector* src ) { PROFILE(VECTOR_UNARY_INV);
   int      i;               /* Loop iterator */
   int      swidth;          /* Smallest width between tgt and src */
 
-  vector_init( &vec, &vec_val, 1, VTYPE_VAL );
+  vector_init( &vec, &vec_val, FALSE, 1, VTYPE_VAL );
 
   swidth = (tgt->width < src->width) ? tgt->width : src->width;
 
@@ -2278,7 +2283,7 @@ bool vector_unary_op( vector* tgt, vector* src, nibble* optab ) { PROFILE(VECTOR
 
   } else {
 
-    vector_init( &vec, &vec_val, 1, VTYPE_VAL );
+    vector_init( &vec, &vec_val, FALSE, 1, VTYPE_VAL );
 
     assert( src != NULL );
     assert( src->value != NULL );
@@ -2315,7 +2320,7 @@ bool vector_unary_not( vector* tgt, vector* src ) { PROFILE(VECTOR_UNARY_NOT);
   vector   vec;      /* Temporary vector value */
   vec_data vec_val;  /* Temporary value */
 
-  vector_init( &vec, &vec_val, 1, VTYPE_VAL );
+  vector_init( &vec, &vec_val, FALSE, 1, VTYPE_VAL );
   (void)vector_unary_op( &vec, src, or_optab );
 
   retval = vector_unary_inv( tgt, &vec );
@@ -2358,6 +2363,9 @@ void vector_dealloc( vector* vec ) { PROFILE(VECTOR_DEALLOC);
 
 /*
  $Log$
+ Revision 1.107  2008/01/15 23:01:15  phase1geo
+ Continuing to make splint updates (not doing any memory checking at this point).
+
  Revision 1.106  2008/01/09 05:22:22  phase1geo
  More splint updates using the -standard option.
 

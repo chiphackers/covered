@@ -63,7 +63,7 @@ extern isuppl info_suppl;
  the value of hit01 is incremented by one.  For each bit that toggled from
  a 1 to a 0, the value of hit10 is incremented by one.
 */
-void toggle_get_stats( sig_link* sigl, float* total, int* hit01, int* hit10 ) { PROFILE(TOGGLE_GET_STATS);
+void toggle_get_stats( sig_link* sigl, int* total, int* hit01, int* hit10 ) { PROFILE(TOGGLE_GET_STATS);
 
   sig_link* curr_sig = sigl;  /* Current signal being evaluated */
   
@@ -269,17 +269,23 @@ bool toggle_get_funit_summary( const char* funit_name, int funit_type, int* tota
  Displays the toggle instance summary information to the given output file, calculating the miss and
  percentage information.
 */
-static bool toggle_display_instance_summary( FILE* ofile, char* name, int hits01, int hits10, float total ) { PROFILE(TOGGLE_DISPLAY_INSTANCE_SUMMARY);
+static bool toggle_display_instance_summary(
+  FILE* ofile,
+  char* name,
+  int   hits01,
+  int   hits10,
+  int   total
+) { PROFILE(TOGGLE_DISPLAY_INSTANCE_SUMMARY);
 
   float percent01;  /* Percentage of bits toggled from 0 -> 1 */
   float percent10;  /* Percentage of bits toggled from 1 -> 0 */
-  float miss01;     /* Number of bits not toggled from 0 -> 1 */
-  float miss10;     /* Number of bits not toggled from 1 -> 0 */
+  int   miss01;     /* Number of bits not toggled from 0 -> 1 */
+  int   miss10;     /* Number of bits not toggled from 1 -> 0 */
 
   calc_miss_percent( hits01, total, &miss01, &percent01 );
   calc_miss_percent( hits10, total, &miss10, &percent10 );
 
-  fprintf( ofile, "  %-43.43s    %5d/%5.0f/%5.0f      %3.0f%%         %5d/%5.0f/%5.0f      %3.0f%%\n",
+  fprintf( ofile, "  %-43.43s    %5d/%5d/%5d      %3.0f%%         %5d/%5d/%5d      %3.0f%%\n",
            name, hits01, miss01, total, percent01, hits10, miss10, total, percent10 );
 
   return( (miss01 > 0) || (miss10 > 0) );
@@ -297,7 +303,14 @@ static bool toggle_display_instance_summary( FILE* ofile, char* name, int hits01
  iterates through functional unit instance tree, outputting the toggle information that
  is found at that instance.
 */
-static bool toggle_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst, int* hits01, int* hits10, float* total ) { PROFILE(TOGGLE_INSTANCE_SUMMARY);
+static bool toggle_instance_summary(
+            FILE*       ofile,
+            funit_inst* root,
+            char*       parent_inst,
+  /*@out@*/ int*        hits01,
+  /*@out@*/ int*        hits10,
+  /*@out@*/ int*        total
+) { PROFILE(TOGGLE_INSTANCE_SUMMARY);
 
   funit_inst* curr;                /* Pointer to current child functional unit instance of this node */
   char        tmpname[4096];       /* Temporary name holder for instance */
@@ -360,17 +373,24 @@ static bool toggle_instance_summary( FILE* ofile, funit_inst* root, char* parent
  Displays the toggle functional unit summary information to the given output file, calculating the miss and
  percentage information.
 */
-static bool toggle_display_funit_summary( FILE* ofile, const char* name, const char* fname, int hits01, int hits10, float total ) { PROFILE(TOGGLE_DISPLAY_FUNIT_SUMMARY);
+static bool toggle_display_funit_summary(
+  FILE*       ofile,
+  const char* name,
+  const char* fname,
+  int         hits01,
+  int         hits10,
+  int         total
+) { PROFILE(TOGGLE_DISPLAY_FUNIT_SUMMARY);
 
   float percent01;  /* Percentage of bits that toggled from 0 to 1 */
   float percent10;  /* Percentage of bits that toggled from 1 to 0 */
-  float miss01;     /* Number of bits that did not toggle from 0 to 1 */
-  float miss10;     /* Number of bits that did not toggle from 1 to 0 */
+  int   miss01;     /* Number of bits that did not toggle from 0 to 1 */
+  int   miss10;     /* Number of bits that did not toggle from 1 to 0 */
 
   calc_miss_percent( hits01, total, &miss01, &percent01 );
   calc_miss_percent( hits10, total, &miss10, &percent10 );
 
-  fprintf( ofile, "  %-20.20s    %-20.20s   %5d/%5.0f/%5.0f      %3.0f%%         %5d/%5.0f/%5.0f      %3.0f%%\n",
+  fprintf( ofile, "  %-20.20s    %-20.20s   %5d/%5d/%5d      %3.0f%%         %5d/%5d/%5d      %3.0f%%\n",
            name, fname, hits01, miss01, total, percent01, hits10, miss10, total, percent10 );
 
   return( (miss01 > 0) || (miss10 > 0) );
@@ -389,7 +409,13 @@ static bool toggle_display_funit_summary( FILE* ofile, const char* name, const c
  Iterates through the functional unit list displaying the toggle coverage for
  each functional unit.
 */
-static bool toggle_funit_summary( FILE* ofile, funit_link* head, int* hits01, int* hits10, float* total ) { PROFILE(TOGGLE_FUNIT_SUMMARY);
+static bool toggle_funit_summary(
+            FILE*       ofile,
+            funit_link* head,
+  /*@out@*/ int*        hits01,
+  /*@out@*/ int*        hits10,
+  /*@out@*/ int*        total
+) { PROFILE(TOGGLE_FUNIT_SUMMARY);
 
   bool  miss_found = FALSE;  /* Set to TRUE if missing toggles were found */
   char* pname;               /* Printable version of the functional unit name */
@@ -614,7 +640,7 @@ void toggle_report( FILE* ofile, bool verbose ) { PROFILE(TOGGLE_REPORT);
   inst_link* instl;                 /* Pointer to current instance link */
   int        acc_hits01   = 0;      /* Accumulated 0 -> 1 toggle hit count */
   int        acc_hits10   = 0;      /* Accumulated 1 -> 0 toggle hit count */
-  float      acc_total    = 0;      /* Accumulated bit count */
+  int        acc_total    = 0;      /* Accumulated bit count */
 
   fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
   fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   TOGGLE COVERAGE RESULTS   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
@@ -673,6 +699,9 @@ void toggle_report( FILE* ofile, bool verbose ) { PROFILE(TOGGLE_REPORT);
 
 /*
  $Log$
+ Revision 1.65  2008/01/09 05:22:22  phase1geo
+ More splint updates using the -standard option.
+
  Revision 1.64  2008/01/07 23:59:55  phase1geo
  More splint updates.
 

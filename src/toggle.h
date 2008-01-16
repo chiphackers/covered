@@ -29,7 +29,7 @@
 
 
 /*! \brief Calculates the toggle coverage for the specifed expression and signal lists. */
-void toggle_get_stats( sig_link* sigl, float* total, int* hit01, int* hit10 );
+void toggle_get_stats( sig_link* sigl, int* total, int* hit01, int* hit10 );
 
 /*! \brief Collects all toggle expressions that match the specified coverage indication. */
 bool toggle_collect( const char* funit_name, int funit_type, int cov, sig_link** sig_head, sig_link** sig_tail );
@@ -47,6 +47,9 @@ void toggle_report( FILE* ofile, bool verbose );
 
 /*
  $Log$
+ Revision 1.16  2008/01/07 23:59:55  phase1geo
+ More splint updates.
+
  Revision 1.15  2007/11/20 05:29:00  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

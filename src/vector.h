@@ -29,7 +29,7 @@
 
 
 /*! \brief Initializes specified vector. */
-void vector_init( /*@out@*/ vector* vec, vec_data* value, int width, int type );
+void vector_init( /*@out@*/ vector* vec, vec_data* value, bool owns_value, int width, int type );
 
 /*! \brief Creates and initializes new vector */
 vector* vector_create( int width, int type, bool data );
@@ -174,6 +174,9 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.48  2008/01/15 23:01:16  phase1geo
+ Continuing to make splint updates (not doing any memory checking at this point).
+
  Revision 1.47  2008/01/10 04:59:05  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 

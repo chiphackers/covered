@@ -132,7 +132,11 @@ void timer_stop( timer** tm );
 const char* get_funit_type( int type );
 
 /*! \brief Calculates miss and percent information from given hit and total information */
-void calc_miss_percent( int hits, float total, /*@out@*/ float* misses, /*@out@*/ float* percent );
+void calc_miss_percent(
+            int    hits,
+            int    total,
+  /*@out@*/ int*   misses,
+  /*@out@*/ float* percent );
 
 /*! \brief Sets the given timestep to the correct value from VCD simulation file */
 void set_timestep( sim_time* st, char* value );
@@ -141,6 +145,9 @@ void set_timestep( sim_time* st, char* value );
 
 /*
  $Log$
+ Revision 1.37  2008/01/10 04:59:05  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.36  2008/01/09 05:22:22  phase1geo
  More splint updates using the -standard option.
 

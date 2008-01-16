@@ -165,7 +165,11 @@ void ovl_add_assertions_to_no_score_list( bool rm_tasks ) { PROFILE(OVL_ADD_ASSE
  Gathers the total and hit assertion coverage information for the specified functional unit and
  stores this information in the total and hit pointers.
 */
-void ovl_get_funit_stats( const func_unit* funit, float* total, int* hit ) { PROFILE(OVL_GET_FNIT_STATS);
+void ovl_get_funit_stats(
+  const func_unit* funit,
+  int*             total,
+  int*             hit
+) { PROFILE(OVL_GET_FNIT_STATS);
 
   funit_inst* funiti;      /* Pointer to found functional unit instance containing this functional unit */
   funit_inst* curr_child;  /* Current child of this functional unit's instance */
@@ -452,6 +456,9 @@ void ovl_get_coverage( const func_unit* funit, const char* inst_name, char** ass
 
 /*
  $Log$
+ Revision 1.19  2008/01/10 04:59:04  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.18  2008/01/09 23:54:15  phase1geo
  More splint updates.
 

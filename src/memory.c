@@ -58,8 +58,16 @@ extern isuppl info_suppl;
 
  Calculates the total and hit memory coverage information for the given memory signal.
 */
-void memory_get_stat( vsignal* sig, float* ae_total, int* wr_hit, int* rd_hit, float* tog_total, int* tog01_hit, int* tog10_hit,
-                      bool ignore_excl ) { PROFILE(MEMORY_GET_STAT);
+void memory_get_stat(
+  vsignal* sig,
+  int*     ae_total,
+  int*     wr_hit,
+  int*     rd_hit,
+  int*     tog_total,
+  int*     tog01_hit,
+  int*     tog10_hit,
+  bool     ignore_excl
+) { PROFILE(MEMORY_GET_STAT);
 
   int    i;       /* Loop iterator */
   int    wr;      /* Number of bits written within an addressable element */
@@ -83,7 +91,7 @@ void memory_get_stat( vsignal* sig, float* ae_total, int* wr_hit, int* rd_hit, f
       (*wr_hit)++;
       (*rd_hit)++;
     } else {
-      vector_init( &vec, NULL, pwidth, VTYPE_MEM );
+      vector_init( &vec, NULL, FALSE, pwidth, VTYPE_MEM );
       vec.value = &(sig->value->value[i]);
       wr = 0;
       rd = 0;
@@ -118,7 +126,15 @@ void memory_get_stat( vsignal* sig, float* ae_total, int* wr_hit, int* rd_hit, f
  \param tog01_hit  Pointer to total number of bits toggling from 0->1
  \param tog10_hit  Pointer to total number of bits toggling from 1->0
 */
-void memory_get_stats( sig_link* sigl, float* ae_total, int* wr_hit, int* rd_hit, float* tog_total, int* tog01_hit, int* tog10_hit ) { PROFILE(MEMORY_GET_STATS);
+void memory_get_stats(
+  sig_link* sigl,
+  int*      ae_total,
+  int*      wr_hit,
+  int*      rd_hit,
+  int*      tog_total,
+  int*      tog01_hit,
+  int*      tog10_hit
+) { PROFILE(MEMORY_GET_STATS);
 
   while( sigl != NULL ) {
 
@@ -151,10 +167,10 @@ bool memory_get_funit_summary( const char* funit_name, int funit_type, int* tota
   bool        retval    = FALSE;  /* Return value for this function */
   funit_link* funitl;             /* Pointer to functional unit link containing the requested functional unit */
   sig_link*   sigl;               /* Pointer to current signal link in list */
-  float       ae_total  = 0;      /* Total number of addressable elements */
+  int         ae_total  = 0;      /* Total number of addressable elements */
   int         wr_hit    = 0;      /* Number of addressable elements written */
   int         rd_hit    = 0;      /* Number of addressable elements read */
-  float       tog_total = 0;      /* Total number of toggle bits */
+  int         tog_total = 0;      /* Total number of toggle bits */
   int         tog01_hit = 0;      /* Number of bits toggling from 0->1 */
   int         tog10_hit = 0;      /* Number of bits toggling from 1->0 */
 
@@ -305,7 +321,7 @@ static void memory_get_mem_coverage( char** mem_str, vsignal* sig, vec_data* val
     for( i=0; i<((msb - lsb) + 1); i++ ) {
 
       /* Initialize the vector */
-      vector_init( &vec, NULL, dim_width, VTYPE_MEM );
+      vector_init( &vec, NULL, FALSE, dim_width, VTYPE_MEM );
       if( be ) {
         vec.value = value + (dim_width * ((msb - lsb) - i));
       } else {
@@ -492,10 +508,10 @@ bool memory_collect( const char* funit_name, int funit_type, int cov, sig_link**
   bool        retval = FALSE;  /* Return value for this function */
   funit_link* funitl;          /* Pointer to found functional unit link */
   sig_link*   sigl;            /* Pointer to current signal link being evaluated */
-  float       ae_total  = 0;   /* Total number of addressable elements */
+  int         ae_total  = 0;   /* Total number of addressable elements */
   int         wr_hit    = 0;   /* Total number of addressable elements written */
   int         rd_hit    = 0;   /* Total number of addressable elements read */
-  float       tog_total = 0;   /* Total number of toggle bits */
+  int         tog_total = 0;   /* Total number of toggle bits */
   int         hit01     = 0;   /* Number of bits that toggled from 0 to 1 */
   int         hit10     = 0;   /* Number of bits that toggled from 1 to 0 */
 
@@ -544,18 +560,24 @@ bool memory_collect( const char* funit_name, int funit_type, int cov, sig_link**
 
  Calculates and outputs the memory toggle summary coverage results for a given instance.
 */
-static bool memory_display_toggle_instance_summary( FILE* ofile, const char* name, int hits01, int hits10, float total ) { PROFILE(MEMORY_DISPLAY_TOGGLE_INSTANCE_SUMMARY);
+static bool memory_display_toggle_instance_summary(
+  FILE*       ofile,
+  const char* name,
+  int         hits01,
+  int         hits10,
+  int         total
+) { PROFILE(MEMORY_DISPLAY_TOGGLE_INSTANCE_SUMMARY);
 
   float percent01;    /* Percentage of bits toggling from 0 -> 1 */
   float percent10;    /* Percentage of bits toggling from 1 -> 0 */
-  float miss01  = 0;  /* Number of bits that did not toggle from 0 -> 1 */
-  float miss10  = 0;  /* Number of bits that did not toggle from 1 -> 0 */
+  int   miss01  = 0;  /* Number of bits that did not toggle from 0 -> 1 */
+  int   miss10  = 0;  /* Number of bits that did not toggle from 1 -> 0 */
 
   calc_miss_percent( hits01, total, &miss01, &percent01 );
   calc_miss_percent( hits10, total, &miss10, &percent10 );
 
   /* Output toggle information */
-  fprintf( ofile, "  %-43.43s    %5d/%5.0f/%5.0f      %3.0f%%         %5d/%5.0f/%5.0f      %3.0f%%\n",
+  fprintf( ofile, "  %-43.43s    %5d/%5d/%5d      %3.0f%%         %5d/%5d/%5d      %3.0f%%\n",
            name, hits01, miss01, total, percent01, hits10, miss10, total, percent10 );
 
   return( (miss01 > 0) || (miss10 > 0) );
@@ -576,7 +598,14 @@ static bool memory_display_toggle_instance_summary( FILE* ofile, const char* nam
  iterates through functional unit instance tree, outputting the toggle information that
  is found at that instance.
 */
-static bool memory_toggle_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst, int* hits01, int* hits10, float* total ) { PROFILE(MEMORY_TOGGLE_INSTANCE_SUMMARY);
+static bool memory_toggle_instance_summary(
+            FILE*       ofile,
+            funit_inst* root,
+            char*       parent_inst,
+  /*@out@*/ int*        hits01,
+  /*@out@*/ int*        hits10,
+  /*@out@*/ int*        total
+) { PROFILE(MEMORY_TOGGLE_INSTANCE_SUMMARY);
 
   funit_inst* curr;                /* Pointer to current child functional unit instance of this node */
   char        tmpname[4096];       /* Temporary name holder for instance */
@@ -638,18 +667,24 @@ static bool memory_toggle_instance_summary( FILE* ofile, funit_inst* root, char*
  Calculates the miss and hit percentage statistics for the given instance and outputs this information
  to the given output file.
 */
-static bool memory_display_ae_instance_summary( FILE* ofile, char* name, int wr_hit, int rd_hit, float total ) { PROFILE(MEMORY_DISPLAY_AE_INSTANCE_SUMMARY);
+static bool memory_display_ae_instance_summary(
+  FILE* ofile,
+  char* name,
+  int   wr_hit,
+  int   rd_hit,
+  int   total
+) { PROFILE(MEMORY_DISPLAY_AE_INSTANCE_SUMMARY);
 
   float wr_percent;  /* Percentage of addressable elements written */
   float rd_percent;  /* Percentage of addressable elements read */
-  float wr_miss;     /* Number of addressable elements that were not written */
-  float rd_miss;     /* Number of addressable elements that were not read */
+  int   wr_miss;     /* Number of addressable elements that were not written */
+  int   rd_miss;     /* Number of addressable elements that were not read */
 
   calc_miss_percent( wr_hit, total, &wr_miss, &wr_percent );
   calc_miss_percent( rd_hit, total, &rd_miss, &rd_percent );
 
   /* Output toggle information */
-  fprintf( ofile, "  %-43.43s    %5d/%5.0f/%5.0f      %3.0f%%         %5d/%5.0f/%5.0f      %3.0f%%\n",
+  fprintf( ofile, "  %-43.43s    %5d/%5d/%5d      %3.0f%%         %5d/%5d/%5d      %3.0f%%\n",
            name, wr_hit, wr_miss, total, wr_percent, rd_hit, rd_miss, total, rd_percent );
 
   return( (wr_miss > 0) || (rd_miss > 0) );
@@ -670,7 +705,14 @@ static bool memory_display_ae_instance_summary( FILE* ofile, char* name, int wr_
  iterates through functional unit instance tree, outputting the toggle information that
  is found at that instance.
 */
-static bool memory_ae_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst, int* wr_hits, int* rd_hits, float* total ) { PROFILE(MEMORY_AE_INSTANCE_SUMMARY);
+static bool memory_ae_instance_summary(
+            FILE*       ofile,
+            funit_inst* root,
+            char*       parent_inst,
+  /*@out@*/ int*        wr_hits,
+  /*@out@*/ int*        rd_hits,
+  /*@out@*/ int*        total
+) { PROFILE(MEMORY_AE_INSTANCE_SUMMARY);
 
   funit_inst* curr;                /* Pointer to current child functional unit instance of this node */
   char        tmpname[4096];       /* Temporary name holder for instance */
@@ -731,17 +773,24 @@ static bool memory_ae_instance_summary( FILE* ofile, funit_inst* root, char* par
 
  Calculates and outputs the toggle coverage for all memories in the given functional unit.
 */
-static bool memory_display_toggle_funit_summary( FILE* ofile, const char* name, const char* fname, int hit01, int hit10, float total ) { PROFILE(MEMORY_DISPLAY_TOGGLE_FUNIT_SUMMARY);
+static bool memory_display_toggle_funit_summary(
+  FILE*       ofile,
+  const char* name,
+  const char* fname,
+  int         hit01,
+  int         hit10,
+  int         total
+) { PROFILE(MEMORY_DISPLAY_TOGGLE_FUNIT_SUMMARY);
 
   float percent01;  /* Percentage of bits that toggled from 0 to 1 */
   float percent10;  /* Percentage of bits that toggled from 1 to 0 */
-  float miss01;     /* Number of bits that did not toggle from 0 to 1 */
-  float miss10;     /* Number of bits that did not toggle from 1 to 0 */
+  int   miss01;     /* Number of bits that did not toggle from 0 to 1 */
+  int   miss10;     /* Number of bits that did not toggle from 1 to 0 */
 
   calc_miss_percent( hit01, total, &miss01, &percent01 );
   calc_miss_percent( hit10, total, &miss10, &percent10 );
 
-  fprintf( ofile, "  %-20.20s    %-20.20s   %5d/%5.0f/%5.0f      %3.0f%%         %5d/%5.0f/%5.0f      %3.0f%%\n",
+  fprintf( ofile, "  %-20.20s    %-20.20s   %5d/%5d/%5d      %3.0f%%         %5d/%5d/%5d      %3.0f%%\n",
            name, fname, hit01, miss01, total, percent01, hit10, miss10, total, percent10 );
 
   return( (miss01 > 0) || (miss10 > 0) );
@@ -761,11 +810,11 @@ static bool memory_display_toggle_funit_summary( FILE* ofile, const char* name, 
  each functional unit.
 */
 static bool memory_toggle_funit_summary(
-  FILE*       ofile,
-  funit_link* head,
-  int*        hits01,
-  int*        hits10,
-  float*      total
+            FILE*       ofile,
+            funit_link* head,
+  /*@out@*/ int*        hits01,
+  /*@out@*/ int*        hits10,
+  /*@out@*/ int*        total
 ) { PROFILE(MEMORY_TOGGLE_FUNIT_SUMMARY);
 
   bool  miss_found = FALSE;  /* Set to TRUE if missing toggles were found */
@@ -819,18 +868,18 @@ static bool memory_display_ae_funit_summary(
   const char* fname,
   int         wr_hits,
   int         rd_hits,
-  float       total
+  int         total
 ) { PROFILE(MEMORY_DISPLAY_AE_FUNIT_SUMMARY);
 
   float wr_percent;  /* Percentage of addressable elements that were written */
   float rd_percent;  /* Percentage of addressable elements that were read */
-  float wr_miss;     /* Number of addressable elements that were not written */
-  float rd_miss;     /* Number of addressable elements that were not read */
+  int   wr_miss;     /* Number of addressable elements that were not written */
+  int   rd_miss;     /* Number of addressable elements that were not read */
 
   calc_miss_percent( wr_hits, total, &wr_miss, &wr_percent );
   calc_miss_percent( rd_hits, total, &rd_miss, &rd_percent );
 
-  fprintf( ofile, "  %-20.20s    %-20.20s   %5d/%5.0f/%5.0f      %3.0f%%         %5d/%5.0f/%5.0f      %3.0f%%\n",
+  fprintf( ofile, "  %-20.20s    %-20.20s   %5d/%5d/%5d      %3.0f%%         %5d/%5d/%5d      %3.0f%%\n",
            name, fname, wr_hits, wr_miss, total, wr_percent, rd_hits, rd_miss, total, rd_percent );
 
   return( (wr_miss > 0) || (rd_miss > 0) );
@@ -849,7 +898,13 @@ static bool memory_display_ae_funit_summary(
  Iterates through the functional unit list displaying the memory toggle coverage summary for
  each functional unit.
 */
-static bool memory_ae_funit_summary( FILE* ofile, funit_link* head, int* wr_hits, int* rd_hits, float* total ) { PROFILE(MEMORY_AE_FUNIT_SUMMARY);
+static bool memory_ae_funit_summary(
+            FILE*       ofile,
+            funit_link* head,
+  /*@out@*/ int*        wr_hits,
+  /*@out@*/ int*        rd_hits,
+  /*@out@*/ int*        total
+) { PROFILE(MEMORY_AE_FUNIT_SUMMARY);
 
   bool  miss_found = FALSE;  /* Set to TRUE if missing toggles were found */
   char* pname;               /* Printable version of the functional unit name */
@@ -934,7 +989,7 @@ static void memory_display_memory( FILE* ofile, vsignal* sig, vec_data* value, c
     for( i=0; i<((msb - lsb) + 1); i++ ) {
 
       /* Initialize the vector */
-      vector_init( &vec, NULL, dim_width, VTYPE_MEM );
+      vector_init( &vec, NULL, FALSE, dim_width, VTYPE_MEM );
       if( be ) {
         vec.value = value + (dim_width * ((msb - lsb) - i));
       } else {
@@ -1179,10 +1234,10 @@ void memory_report( FILE* ofile, bool verbose ) { PROFILE(MEMORY_REPORT);
   inst_link* instl;                  /* Pointer to current instance link */
   int        acc_hits01    = 0;      /* Accumulated hits 0 -> 1 count */
   int        acc_hits10    = 0;      /* Accumulated hits 1 -> 0 count */
-  float      acc_tog_total = 0;      /* Accumulated bit toggle count */
+  int        acc_tog_total = 0;      /* Accumulated bit toggle count */
   int        acc_wr_hits   = 0;      /* Accumulated number of addressable elements written */
   int        acc_rd_hits   = 0;      /* Accumulated number of addressable elements read */
-  float      acc_ae_total  = 0;      /* Accumulated number of addressable elements */
+  int        acc_ae_total  = 0;      /* Accumulated number of addressable elements */
 
   fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
   fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   MEMORY COVERAGE RESULTS   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
@@ -1264,6 +1319,9 @@ void memory_report( FILE* ofile, bool verbose ) { PROFILE(MEMORY_REPORT);
 
 /*
  $Log$
+ Revision 1.21  2008/01/10 04:59:04  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.20  2008/01/09 23:54:15  phase1geo
  More splint updates.
 

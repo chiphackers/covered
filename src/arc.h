@@ -50,7 +50,7 @@ int arc_get_entry_suppl( const char* arcs, int curr, unsigned int type );
 int arc_find( const char* arcs, const vector* from_st, const vector* to_st, int* ptr );
 
 /*! \brief Calculates all state and state transition values for reporting purposes. */
-void arc_get_stats( char* arcs, float* state_total, int* state_hits, float* arc_total, int* arc_hits );
+void arc_get_stats( char* arcs, int* state_total, int* state_hits, int* arc_total, int* arc_hits );
 
 /*! \brief Writes specified arc array to specified CDD file. */
 bool arc_db_write( const char* arcs, FILE* file );
@@ -75,6 +75,9 @@ void arc_dealloc( /*@only@*/ char* arcs );
 
 /*
  $Log$
+ Revision 1.22  2008/01/07 23:59:54  phase1geo
+ More splint updates.
+
  Revision 1.21  2008/01/07 05:01:57  phase1geo
  Cleaning up more splint errors.
 

@@ -28,7 +28,7 @@
 #include "defines.h"
 
 /*! \brief Calculates line coverage numbers for the specified expression list. */
-void line_get_stats( func_unit* funit, /*@out@*/ float* total, /*@out@*/ int* hit );
+void line_get_stats( func_unit* funit, /*@out@*/ int* total, /*@out@*/ int* hit );
 
 /*! \brief Gathers line numbers from specified functional unit that were not hit during simulation. */
 bool line_collect( const char* funit_name, int funit_type, int cov, int** lines, int** excludes, int* line_cnt );
@@ -39,6 +39,9 @@ void line_report( FILE* ofile, bool verbose );
 
 /*
  $Log$
+ Revision 1.17  2008/01/07 23:59:55  phase1geo
+ More splint updates.
+
  Revision 1.16  2007/11/20 05:28:58  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

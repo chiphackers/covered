@@ -66,15 +66,15 @@ static bool exclude_is_parent_excluded(
  affected coverage information for this instance.
 */
 static void exclude_expr_assign_and_recalc(
-    expression* expr,
-    func_unit*  funit,
-    bool        excluded,
-    bool        set_line
+  expression* expr,
+  func_unit*  funit,
+  bool        excluded,
+  bool        set_line
 ) {
 
-  float comb_total = 0;  /* Total number of combinational logic coverage points within this tree */
-  int   comb_hit   = 0;  /* Total number of hit combinations within this tree */
-  int   ulid       = 0;  /* Temporary value */
+  int comb_total = 0;  /* Total number of combinational logic coverage points within this tree */
+  int comb_hit   = 0;  /* Total number of hit combinations within this tree */
+  int ulid       = 0;  /* Temporary value */
 
   /* Now recalculate the coverage information for all metrics if this module is not an OVL module */
   if( (info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( funit ) ) {
@@ -131,9 +131,9 @@ static void exclude_expr_assign_and_recalc(
  affected coverage information for this instance.
 */
 static void exclude_sig_assign_and_recalc(
-    vsignal*   sig,
-    func_unit* funit,
-    bool       excluded
+  vsignal*   sig,
+  func_unit* funit,
+  bool       excluded
 ) {
 
   /* First, set the exclude bit in the signal supplemental field */
@@ -142,12 +142,12 @@ static void exclude_sig_assign_and_recalc(
   /* If the signal is a memory, we need to update the memory coverage numbers */
   if( sig->suppl.part.type == SSUPPL_TYPE_MEM ) {
 
-    float ae_total  = 0;  /* Number of addressable elements in this memory */
-    int   wr_hit    = 0;  /* Number of addressable elements written */
-    int   rd_hit    = 0;  /* Number of addressable elements read */
-    float tog_total = 0;  /* Total number of toggle bits */
-    int   tog01_hit = 0;  /* Number of bits toggling from 0->1 */
-    int   tog10_hit = 0;  /* Number of bits toggling from 1->0 */
+    int ae_total  = 0;  /* Number of addressable elements in this memory */
+    int wr_hit    = 0;  /* Number of addressable elements written */
+    int rd_hit    = 0;  /* Number of addressable elements read */
+    int tog_total = 0;  /* Total number of toggle bits */
+    int tog01_hit = 0;  /* Number of bits toggling from 0->1 */
+    int tog10_hit = 0;  /* Number of bits toggling from 1->0 */
 
     /* Get the stats for the current memory */
     memory_get_stat( sig, &ae_total, &wr_hit, &rd_hit, &tog_total, &tog01_hit, &tog10_hit, TRUE );
@@ -450,6 +450,9 @@ bool exclude_set_assert_exclude( const char* funit_name, int funit_type, char* i
 
 /*
  $Log$
+ Revision 1.17  2008/01/10 04:59:04  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.16  2008/01/07 23:59:54  phase1geo
  More splint updates.
 

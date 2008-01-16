@@ -67,7 +67,7 @@ extern bool         flag_suppress_empty_funits;
  lines were missed during simulation.  This information is used to report
  summary information about line coverage.
 */
-void line_get_stats( func_unit* funit, float* total, int* hit ) { PROFILE(LINE_GET_STATS);
+void line_get_stats( func_unit* funit, int* total, int* hit ) { PROFILE(LINE_GET_STATS);
 
   statement* stmt;  /* Pointer to current statement */
   func_iter  fi;    /* Functional unit iterator */
@@ -226,19 +226,29 @@ bool line_get_funit_summary( const char* funit_name, int funit_type, int* total,
 
 }
 
+/*!
+ \param ofile  Pointer to output file to display information to
+ \param name   Name of instance to display
+ \param hits   Number of lines hit in the given instance
+ \param total  Total number of lines in the given instance
+
+ \return Returns TRUE if any missed lines were found.
+
+ Outputs the instance summary information to the given output file.
+*/
 static bool line_display_instance_summary(
-  FILE* ofile,
-  char* name,
-  int   hits,
-  float total
+  FILE*       ofile,
+  const char* name,
+  int         hits,
+  int         total
 ) { PROFILE(LINE_DISPLAY_INSTANCE_SUMMARY);
 
   float percent;  /* Percentage of lines hits */
-  float miss;     /* Number of lines missed */
+  int   miss;     /* Number of lines missed */
 
   calc_miss_percent( hits, total, &miss, &percent );
 
-  fprintf( ofile, "  %-43.43s    %5d/%5.0f/%5.0f      %3.0f%%\n",
+  fprintf( ofile, "  %-43.43s    %5d/%5d/%5d      %3.0f%%\n",
            name, hits, miss, total, percent );
 
   return( miss > 0 );
@@ -260,11 +270,11 @@ static bool line_display_instance_summary(
  display its information before calling its children.
 */
 static bool line_instance_summary(
-  FILE*       ofile,
-  funit_inst* root,
-  char*       parent_inst,
-  int*        hits,
-  float*      total
+            FILE*       ofile,
+            funit_inst* root,
+            char*       parent_inst,
+  /*@out@*/ int*        hits,
+  /*@out@*/ int*        total
 ) { PROFILE(LINE_INSTANCE_SUMMARY);
 
   funit_inst* curr;                /* Pointer to current child functional unit instance of this node */
@@ -331,15 +341,15 @@ static bool line_display_funit_summary(
   const char* name,
   const char* fname,
   int         hits,
-  float       total
+  int         total
 ) { PROFILE(LINE_DISPLAY_FUNIT_SUMMARY);
 
   float percent;  /* Percentage of lines hits */
-  float miss;     /* Number of lines missed */
+  int   miss;     /* Number of lines missed */
 
   calc_miss_percent( hits, total, &miss, &percent );
 
-  fprintf( ofile, "  %-20.20s    %-20.20s   %5d/%5.0f/%5.0f      %3.0f%%\n", 
+  fprintf( ofile, "  %-20.20s    %-20.20s   %5d/%5d/%5d      %3.0f%%\n", 
            name, fname, hits, miss, total, percent );
 
   return (miss > 0);
@@ -359,10 +369,10 @@ static bool line_display_funit_summary(
  format) for each functional unit.
 */
 static bool line_funit_summary(
-  FILE*       ofile,
-  funit_link* head,
-  int*        hits,
-  float*      total
+            FILE*       ofile,
+            funit_link* head,
+  /*@out@*/ int*        hits,
+  /*@out@*/ int*        total
 ) { PROFILE(LINE_FUNIT_SUMMARY);
 
   float percent;             /* Percentage of lines hit */
@@ -603,7 +613,7 @@ void line_report( FILE* ofile, bool verbose ) { PROFILE(LINE_REPORT);
   char       tmp[4096];             /* Temporary string value */
   inst_link* instl;                 /* Pointer to current instance link */
   int        acc_hits     = 0;      /* Accumulated line hits for entire design */
-  float      acc_total    = 0;      /* Accumulated line total for entire design */
+  int        acc_total    = 0;      /* Accumulated line total for entire design */
 
   fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
   fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   LINE COVERAGE RESULTS   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
@@ -660,6 +670,9 @@ void line_report( FILE* ofile, bool verbose ) { PROFILE(LINE_REPORT);
 
 /*
  $Log$
+ Revision 1.81  2008/01/10 04:59:04  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.80  2008/01/07 23:59:55  phase1geo
  More splint updates.
 

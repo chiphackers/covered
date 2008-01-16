@@ -29,11 +29,25 @@
 
 
 /*! \brief Calculates the memory coverage numbers for a given memory signal */
-void memory_get_stat( vsignal* sig, float* ae_total, int* wr_hit, int* rd_hit, float* tog_total, int* tog01_hit, int* tog10_hit,
-                      bool ignore_excl );
+void memory_get_stat(
+  vsignal* sig,
+  /*@out@*/ int* ae_total,
+  /*@out@*/ int* wr_hit,
+  /*@out@*/ int* rd_hit,
+  /*@out@*/ int* tog_total,
+  /*@out@*/ int* tog01_hit,
+  /*@out@*/ int* tog10_hit,
+  bool ignore_excl );
 
 /*! \brief Calculates memory coverage numbers for the specified signal list. */
-void memory_get_stats( sig_link* sigl, float* ae_total, int* wr_hit, int* rd_hit, float* tog_total, int* tog01_hit, int* tog10_hit );
+void memory_get_stats(
+  sig_link* sigl,
+  /*@out@*/ int* ae_total,
+  /*@out@*/ int* wr_hit,
+  /*@out@*/ int* rd_hit,
+  /*@out@*/ int* tog_total,
+  /*@out@*/ int* tog01_hit,
+  /*@out@*/ int* tog10_hit );
 
 /*! \brief Gets memory summary information for a GUI request */
 bool memory_get_funit_summary( const char* funit_name, int funit_type, int* total, int* hit );
@@ -51,6 +65,9 @@ void memory_report( FILE* ofile, bool verbose );
 
 /*
  $Log$
+ Revision 1.8  2008/01/07 23:59:55  phase1geo
+ More splint updates.
+
  Revision 1.7  2007/11/20 05:28:59  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

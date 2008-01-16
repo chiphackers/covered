@@ -5268,7 +5268,7 @@ delay_value
       if( (ignore_mode == 0) && (se != NULL) ) {
         if( se->exp == NULL ) {
           tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-          vector_init( tmp->value, (vec_data*)malloc_safe( (sizeof( vec_data ) * 32) ), 32, VTYPE_VAL );
+          vector_init( tmp->value, (vec_data*)malloc_safe( (sizeof( vec_data ) * 32) ), TRUE, 32, VTYPE_VAL );
           vector_from_int( tmp->value, se->num );
           static_expr_dealloc( se, TRUE );
         } else {
@@ -5319,7 +5319,7 @@ delay_value
         if( se != NULL ) {
           if( se->exp == NULL ) {
             tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-            vector_init( tmp->value, (vec_data*)malloc_safe( (sizeof( vec_data ) * 32) ), 32, VTYPE_VAL );
+            vector_init( tmp->value, (vec_data*)malloc_safe( (sizeof( vec_data ) * 32) ), TRUE, 32, VTYPE_VAL );
             vector_from_int( tmp->value, se->num );
             static_expr_dealloc( se, TRUE );
           } else {

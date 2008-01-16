@@ -32,10 +32,19 @@
 void combination_reset_counted_expr_tree( expression* exp );
 
 /*! \brief Calculates combination logic statistics for a single expression tree */
-void combination_get_tree_stats( expression* exp, int* ulid, unsigned int curr_depth, bool excluded, float* total, int* hit );
+void combination_get_tree_stats(
+            expression*  exp,
+            int*         ulid,
+            unsigned int curr_depth,
+            bool         excluded,
+  /*@out@*/ int*         total,
+  /*@out@*/ int*         hit );
 
 /*! \brief Calculates combination logic statistics for summary output */
-void combination_get_stats( func_unit* funit, float* total, int* hit );
+void combination_get_stats(
+            func_unit* funit,
+  /*@out@*/ int*       total,
+  /*@out@*/ int*       hit );
 
 /*! \brief Collects all toggle expressions that match the specified coverage indication. */
 bool combination_collect( const char* funit_name, int funit_type, expression*** covs, int* cov_cnt,
@@ -57,6 +66,9 @@ void combination_report( FILE* ofile, bool verbose );
 
 /*
  $Log$
+ Revision 1.24  2008/01/10 04:59:04  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.23  2008/01/07 23:59:54  phase1geo
  More splint updates.
 

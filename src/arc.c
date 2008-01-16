@@ -851,7 +851,13 @@ static int arc_transition_hits( const char* arcs ) { PROFILE(ARC_TRANSITION_HITS
  return a value of -1 for total values to indicate to the calling function that a
  different report output is required.
 */
-void arc_get_stats( char* arcs, float* state_total, int* state_hits, float* arc_total, int* arc_hits ) { PROFILE(ARC_GET_STATS);
+void arc_get_stats(
+  char* arcs,
+  int*  state_total,
+  int*  state_hits,
+  int*  arc_total,
+  int*  arc_hits
+) { PROFILE(ARC_GET_STATS);
 
   /* First get hits */
   *state_hits += arc_state_hits( arcs );
@@ -1305,6 +1311,9 @@ void arc_dealloc( char* arcs ) { PROFILE(ARC_DEALLOC);
 
 /*
  $Log$
+ Revision 1.46  2008/01/10 04:59:03  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.45  2008/01/07 23:59:54  phase1geo
  More splint updates.
 

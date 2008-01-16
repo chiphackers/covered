@@ -367,7 +367,13 @@ void fsm_table_set( fsm* table ) { PROFILE(FSM_TABLE_SET);
 
  Recursive
 */
-void fsm_get_stats( fsm_link* table, float* state_total, int* state_hit, float* arc_total, int* arc_hit ) { PROFILE(FSM_GET_STATS);
+void fsm_get_stats(
+            fsm_link* table,
+  /*@out@*/ int*      state_total,
+  /*@out@*/ int*      state_hit,
+  /*@out@*/ int*      arc_total,
+  /*@out@*/ int*      arc_hit
+) { PROFILE(FSM_GET_STATS);
 
   fsm_link* curr;   /* Pointer to current FSM in table list */
 
@@ -481,9 +487,9 @@ bool fsm_collect( const char* funit_name, int funit_type, sig_link** cov_head, s
   bool        retval = TRUE;   /* Return value for this function */
   funit_link* funitl;          /* Pointer to found functional unit link */
   fsm_link*   curr_fsm;        /* Pointer to current FSM link being evaluated */
-  float       state_total;     /* Total number of states in current FSM */
+  int         state_total;     /* Total number of states in current FSM */
   int         state_hit;       /* Number of states in current FSM hit */
-  float       arc_total;       /* Total number of arcs in current FSM */
+  int         arc_total;       /* Total number of arcs in current FSM */
   int         arc_hit;         /* Number of arcs in current FSM hit */
   int         uncov_size = 0;  /* Number of expressions IDs stored in expr_ids array */
 
@@ -609,19 +615,32 @@ bool fsm_get_coverage( const char* funit_name, int funit_type, int expr_id, int*
 
 }
 
+/*!
+ \param ofile  Pointer to output file to write data to
+ \param name   Name of instance to display
+ \param state_hit    Number of FSM states hit in the given instance
+ \param state_total  Total number of FSM states in the given instance
+ \param arc_hit      Number of FSM state transitions in the given instance
+ \param arc_total    Total number of FSM state transitions in the given instance
+
+ \return Returns TRUE if at least one FSM state or FSM state transition was found to be missed
+
+ Calculates and displays the FSM state and state transition instance summary information for the
+ given instance.
+*/
 static bool fsm_display_instance_summary(
-    FILE* ofile,
-    char* name,
-    int   state_hit,
-    float state_total,
-    int   arc_hit,
-    float arc_total
+  FILE*       ofile,
+  const char* name,
+  int         state_hit,
+  int         state_total,
+  int         arc_hit,
+  int         arc_total
 ) { PROFILE(FSM_DISPLAY_INSTANCE_SUMMARY);
 
   float state_percent;  /* Percentage of states hit */
   float arc_percent;    /* Percentage of arcs hit */
-  float state_miss;     /* Number of states missed */
-  float arc_miss;       /* Number of arcs missed */
+  int   state_miss;     /* Number of states missed */
+  int   arc_miss;       /* Number of arcs missed */
 
   if( (state_total == -1) || (arc_total == -1) ) {
     fprintf( ofile, "  %-43.43s    %4d/  ? /  ?        ? %%         %4d/  ? /  ?        ? %%\n",
@@ -630,7 +649,7 @@ static bool fsm_display_instance_summary(
   } else {
     calc_miss_percent( state_hit, state_total, &state_miss, &state_percent );
     calc_miss_percent( arc_hit, arc_total, &arc_miss, &arc_percent );
-    fprintf( ofile, "  %-43.43s    %4d/%4.0f/%4.0f      %3.0f%%         %4d/%4.0f/%4.0f      %3.0f%%\n",
+    fprintf( ofile, "  %-43.43s    %4d/%4d/%4d      %3.0f%%         %4d/%4d/%4d      %3.0f%%\n",
              name, state_hit, state_miss, state_total, state_percent, arc_hit, arc_miss, arc_total, arc_percent );
   }
 
@@ -652,13 +671,13 @@ static bool fsm_display_instance_summary(
  Generates an instance summary report of the current FSM states and arcs hit during simulation.
 */
 static bool fsm_instance_summary(
-    FILE*       ofile,
-    funit_inst* root,
-    char*       parent_inst,
-    int*        state_hits,
-    float*      state_total,
-    int*        arc_hits,
-    float*      arc_total
+            FILE*       ofile,
+            funit_inst* root,
+            char*       parent_inst,
+  /*@out@*/ int*        state_hits,
+  /*@out@*/ int*        state_total,
+  /*@out@*/ int*        arc_hits,
+  /*@out@*/ int*        arc_total
 ) { PROFILE(FSM_INSTANCE_SUMMARY);
 
   funit_inst* curr;                /* Pointer to current child functional unit instance of this node */
@@ -733,19 +752,19 @@ static bool fsm_instance_summary(
  Outputs the summary FSM state/arc information for a given functional unit to the given output stream.
 */
 static bool fsm_display_funit_summary(
-    FILE*       ofile,
-    const char* name,
-    const char* fname,
-    int         state_hits,
-    float       state_total,
-    int         arc_hits,
-    float       arc_total
+  FILE*       ofile,
+  const char* name,
+  const char* fname,
+  int         state_hits,
+  int         state_total,
+  int         arc_hits,
+  int         arc_total
 ) { PROFILE(FSM_DISPLAY_FUNIT_SUMMARY);
 
   float state_percent;  /* Percentage of states hit */
   float arc_percent;    /* Percentage of arcs hit */
-  float state_miss;     /* Number of states missed */
-  float arc_miss;       /* Number of arcs missed */
+  int   state_miss;     /* Number of states missed */
+  int   arc_miss;       /* Number of arcs missed */
 
   if( (state_total == -1) || (arc_total == -1) ) {
     fprintf( ofile, "  %-20.20s    %-20.20s   %4d/  ? /  ?        ? %%         %4d/  ? /  ?        ? %%\n",
@@ -754,7 +773,7 @@ static bool fsm_display_funit_summary(
   } else {
     calc_miss_percent( state_hits, state_total, &state_miss, &state_percent );
     calc_miss_percent( arc_hits, arc_total, &arc_miss, &arc_percent );
-    fprintf( ofile, "  %-20.20s    %-20.20s   %4d/%4.0f/%4.0f      %3.0f%%         %4d/%4.0f/%4.0f      %3.0f%%\n",
+    fprintf( ofile, "  %-20.20s    %-20.20s   %4d/%4d/%4d      %3.0f%%         %4d/%4d/%4d      %3.0f%%\n",
              name, fname, state_hits, state_miss, state_total, state_percent, arc_hits, arc_miss, arc_total, arc_percent );
   }
 
@@ -771,12 +790,12 @@ static bool fsm_display_funit_summary(
  Generates a functional unit summary report of the current FSM states and arcs hit during simulation.
 */
 static bool fsm_funit_summary(
-              FILE*       ofile,
-              funit_link* head,
-    /*@out@*/ int*        state_hits,
-    /*@out@*/ float*      state_total,
-    /*@out@*/ int*        arc_hits,
-    /*@out@*/ float*      arc_total
+            FILE*       ofile,
+            funit_link* head,
+  /*@out@*/ int*        state_hits,
+  /*@out@*/ int*        state_total,
+  /*@out@*/ int*        arc_hits,
+  /*@out@*/ int*        arc_total
 ) { PROFILE(FSM_FUNIT_SUMMARY);
 
   bool  miss_found = FALSE;  /* Set to TRUE if state/arc was found to be missed */
@@ -1138,9 +1157,9 @@ void fsm_report( FILE* ofile, bool verbose ) { PROFILE(FSM_REPORT);
   char       tmp[4096];              /* Temporary string value */
   inst_link* instl;                  /* Pointer to current instance link */
   int        acc_st_hits   = 0;      /* Accumulated number of states hit */
-  float      acc_st_total  = 0;      /* Accumulated number of states in design */
+  int        acc_st_total  = 0;      /* Accumulated number of states in design */
   int        acc_arc_hits  = 0;      /* Accumulated number of arcs hit */
-  float      acc_arc_total = 0;      /* Accumulated number of arcs in design */
+  int        acc_arc_total = 0;      /* Accumulated number of arcs in design */
 
   fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
   fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   FINITE STATE MACHINE COVERAGE RESULTS   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
@@ -1243,6 +1262,9 @@ void fsm_dealloc( fsm* table ) { PROFILE(FSM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.78  2008/01/15 23:01:14  phase1geo
+ Continuing to make splint updates (not doing any memory checking at this point).
+
  Revision 1.77  2008/01/10 04:59:04  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 

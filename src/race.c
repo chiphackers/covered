@@ -585,7 +585,7 @@ static void race_check_one_block_assignment( func_unit* mod ) { PROFILE(RACE_CHE
             case EXP_OP_SBIT_SEL :
               if( expl->exp->left->op == EXP_OP_STATIC ) {
                 intval = (vector_to_int( expl->exp->left->value ) - dim_lsb) * dim_width;
-                vector_init( &vec, NULL, expl->exp->value->width, VTYPE_SIG );
+                vector_init( &vec, NULL, FALSE, expl->exp->value->width, VTYPE_SIG );
                 if( dim_be ) {
                   vec.value = vstart + (vwidth - (intval + expl->exp->value->width));
                 } else {
@@ -599,7 +599,7 @@ static void race_check_one_block_assignment( func_unit* mod ) { PROFILE(RACE_CHE
             case EXP_OP_MBIT_SEL :
 	      if( (expl->exp->left->op == EXP_OP_STATIC) && (expl->exp->right->op == EXP_OP_STATIC) ) {
                 intval = ((dim_be ? vector_to_int( expl->exp->left->value ) : vector_to_int( expl->exp->right->value )) - dim_lsb) * dim_width;
-                vector_init( &vec, NULL, expl->exp->value->width, VTYPE_SIG );
+                vector_init( &vec, NULL, FALSE, expl->exp->value->width, VTYPE_SIG );
                 if( dim_be ) {
                   vec.value = vstart + (vwidth - (intval + expl->exp->value->width));
                 } else {
@@ -1108,6 +1108,9 @@ void race_blk_delete_list( race_blk* rb ) { PROFILE(RACE_BLK_DELETE_LIST);
 
 /*
  $Log$
+ Revision 1.65  2008/01/15 23:01:15  phase1geo
+ Continuing to make splint updates (not doing any memory checking at this point).
+
  Revision 1.64  2008/01/10 04:59:04  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 

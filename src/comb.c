@@ -183,12 +183,13 @@ static bool combination_does_multi_exp_need_ul( expression* exp ) { PROFILE(COMB
  sub-expressions that are the same operation types as their left children.
 */
 static void combination_multi_expr_calc(
-  expression* exp,
-  int* ulid,
-  bool ul,
-  bool excluded,
-  int* hit,
-  float* total ) { PROFILE(COMBINATION_MULTI_EXPR_CALC);
+            expression* exp,
+            int*        ulid,
+            bool        ul,
+            bool        excluded,
+  /*@out@*/ int*        hit,
+  /*@out@*/ int*        total
+) { PROFILE(COMBINATION_MULTI_EXPR_CALC);
 
   bool and_op;  /* Specifies if current expression is an AND or LAND operation */
 
@@ -311,7 +312,14 @@ static bool combination_is_expr_multi_node( expression* exp ) { PROFILE(COMBINAT
  hit during the course of simulation.  An expression can be considered for
  combinational coverage if the "measured" bit is set in the expression.
 */
-void combination_get_tree_stats( expression* exp, int* ulid, unsigned int curr_depth, bool excluded, float* total, int* hit ) { PROFILE(COMBINATION_GET_TREE_STATS);
+void combination_get_tree_stats(
+  expression*  exp,
+  int*         ulid,
+  unsigned int curr_depth,
+  bool         excluded,
+  int*         total,
+  int*         hit
+) { PROFILE(COMBINATION_GET_TREE_STATS);
 
   int num_hit = 0;  /* Number of expression value hits for the current expression */
   int tot_num;      /* Total number of combinations for the current expression */
@@ -522,7 +530,7 @@ void combination_reset_counted_expr_tree( expression* exp ) { PROFILE(COMBINATIO
  each root expression, the combination_get_tree_stats function is called to generate
  the coverage numbers for the specified expression tree.  Called by report function.
 */
-void combination_get_stats( func_unit* funit, float* total, int* hit ) { PROFILE(COMBINATION_GET_STATS);
+void combination_get_stats( func_unit* funit, int* total, int* hit ) { PROFILE(COMBINATION_GET_STATS);
 
   func_iter  fi;    /* Functional unit iterator */
   statement* stmt;  /* Pointer to current statement being examined */
@@ -588,19 +596,27 @@ bool combination_get_funit_summary(
 
 }
 
+/*!
+ \param ofile  Pointer to file to output instance summary to
+ \param name   Name of instance to display
+ \param hits   Number of combinations hit in instance
+ \param total  Total number of logic combinations in instance
+
+ Outputs the instance combinational logic summary information to the given output file.
+*/
 static bool combination_display_instance_summary(
   FILE* ofile,
   char* name,
-  int hits,
-  float total )
-{ PROFILE(COMBINATION_DISPLAY_INSTANCE_SUMMARY);
+  int   hits,
+  int   total
+) { PROFILE(COMBINATION_DISPLAY_INSTANCE_SUMMARY);
 
   float percent;  /* Percentage of lines hit */
-  float miss;     /* Number of lines missed */
+  int   miss;     /* Number of lines missed */
 
   calc_miss_percent( hits, total, &miss, &percent );
 
-  fprintf( ofile, "  %-63.63s    %4d/%4.0f/%4.0f      %3.0f%%\n",
+  fprintf( ofile, "  %-63.63s    %4d/%4d/%4d      %3.0f%%\n",
            name, hits, miss, total, percent );
 
   return( miss > 0 );
@@ -625,11 +641,11 @@ static bool combination_display_instance_summary(
  if it evaluates to a value of 0 or 1.
 */
 static bool combination_instance_summary(
-  FILE* ofile,
-  funit_inst* root,
-  char* parent,
-  int* hits,
-  float* total )
+            FILE*       ofile,
+            funit_inst* root,
+            char*       parent,
+  /*@out@*/ int*        hits,
+  /*@out@*/ int*        total )
 { PROFILE(COMBINATION_INSTANCE_SUMMARY);
 
   funit_inst* curr;                /* Pointer to current child functional unit instance of this node */
@@ -692,19 +708,19 @@ static bool combination_instance_summary(
  Outputs the summary combinational logic information for the specified functional unit to the given output stream.
 */
 static bool combination_display_funit_summary(
-    FILE* ofile,
-    const char* name,
-    const char* fname,
-    int hits,
-    float total )
-{ PROFILE(COMBINATION_DISPLAY_FUNIT_SUMMARY);
+  FILE*       ofile,
+  const char* name,
+  const char* fname,
+  int         hits,
+  int         total
+) { PROFILE(COMBINATION_DISPLAY_FUNIT_SUMMARY);
 
   float percent;  /* Percentage of lines hit */
-  float miss;     /* Number of lines missed */
+  int   miss;     /* Number of lines missed */
 
   calc_miss_percent( hits, total, &miss, &percent );
 
-  fprintf( ofile, "  %-30.30s    %-30.30s   %4d/%4.0f/%4.0f      %3.0f%%\n",
+  fprintf( ofile, "  %-30.30s    %-30.30s   %4d/%4d/%4d      %3.0f%%\n",
            name, fname, hits, miss, total, percent );
 
   return( miss > 0 );
@@ -726,11 +742,11 @@ static bool combination_display_funit_summary(
  if it evaluates to a value of 0 or 1.
 */
 static bool combination_funit_summary(
-    FILE* ofile,
-    funit_link* head,
-    int* hits,
-    float* total )
-{ PROFILE(COMBINATION_FUNIT_SUMMARY);
+            FILE*       ofile,
+            funit_link* head,
+  /*@out@*/ int*        hits,
+  /*@out@*/ int*        total
+) { PROFILE(COMBINATION_FUNIT_SUMMARY);
 
   bool miss_found = FALSE;  /* Set to TRUE if missing combinations were found */
 
@@ -2215,7 +2231,7 @@ static void combination_multi_vars(
 { PROFILE(COMBINATION_MULTI_VARS);
 
   int   ulid      = 1;
-  float total     = 0;
+  int   total     = 0;
   int   hit       = 0;
   char* line1     = NULL;
   char* line2     = NULL;
@@ -2903,7 +2919,7 @@ void combination_report( FILE* ofile, bool verbose ) { PROFILE(COMBINATION_REPOR
   char       tmp[4096];             /* Temporary string value */
   inst_link* instl;                 /* Pointer to current instance link */
   int        acc_hits     = 0;      /* Accumulated number of combinations hit */
-  float      acc_total    = 0;      /* Accumulated number of combinations in design */
+  int        acc_total    = 0;      /* Accumulated number of combinations in design */
 
   fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
   fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   COMBINATIONAL LOGIC COVERAGE RESULTS   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
@@ -2963,6 +2979,9 @@ void combination_report( FILE* ofile, bool verbose ) { PROFILE(COMBINATION_REPOR
 
 /*
  $Log$
+ Revision 1.179  2008/01/15 23:01:10  phase1geo
+ Continuing to make splint updates (not doing any memory checking at this point).
+
  Revision 1.178  2008/01/10 04:59:04  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 

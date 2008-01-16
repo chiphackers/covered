@@ -2025,25 +2025,25 @@ struct stmt_loop_link_s {
  Contains statistics for coverage results which is stored in a functional unit instance.
 */
 struct statistic_s {
-  float line_total;                  /*!< Total number of lines parsed */
+  int   line_total;                  /*!< Total number of lines parsed */
   int   line_hit;                    /*!< Number of lines executed during simulation */
-  float tog_total;                   /*!< Total number of bits to toggle */
+  int   tog_total;                   /*!< Total number of bits to toggle */
   int   tog01_hit;                   /*!< Number of bits toggling from 0 to 1 */
   int   tog10_hit;                   /*!< Number of bits toggling from 1 to 0 */
-  float comb_total;                  /*!< Total number of expression combinations */
+  int   comb_total;                  /*!< Total number of expression combinations */
   int   comb_hit;                    /*!< Number of logic combinations hit */
-  float state_total;                 /*!< Total number of FSM states */
+  int   state_total;                 /*!< Total number of FSM states */
   int   state_hit;                   /*!< Number of FSM states reached */
-  float arc_total;                   /*!< Total number of FSM arcs */
+  int   arc_total;                   /*!< Total number of FSM arcs */
   int   arc_hit;                     /*!< Number of FSM arcs traversed */
   int   race_total;                  /*!< Total number of race conditions found */
   int   rtype_total[RACE_TYPE_NUM];  /*!< Total number of each race condition type found */
-  float assert_total;                /*!< Total number of assertions */
+  int   assert_total;                /*!< Total number of assertions */
   int   assert_hit;                  /*!< Number of assertions covered during simulation */
-  float mem_ae_total;                /*!< Total number of addressable memory elements */
+  int   mem_ae_total;                /*!< Total number of addressable memory elements */
   int   mem_wr_hit;                  /*!< Total number of addressable memory elements written */
   int   mem_rd_hit;                  /*!< Total number of addressable memory elements read */
-  float mem_tog_total;               /*!< Total number of bits in memories */
+  int   mem_tog_total;               /*!< Total number of bits in memories */
   int   mem_tog01_hit;               /*!< Total number of bits toggling from 0 to 1 in memories */
   int   mem_tog10_hit;               /*!< Total number of bits toggling from 1 to 0 in memories */
   bool  show;                        /*!< Set to TRUE if this module should be output to the report */
@@ -2515,6 +2515,9 @@ struct profiler_s {
 
 /*
  $Log$
+ Revision 1.276  2008/01/07 05:01:57  phase1geo
+ Cleaning up more splint errors.
+
  Revision 1.275  2007/12/31 23:43:36  phase1geo
  Fixing bug 1858408.  Also fixing issues with vector_op_add functionality.
 

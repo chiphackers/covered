@@ -366,7 +366,7 @@ static void expression_create_value(
   }
 
   /* Create value */
-  vector_init( exp->value, value, width, VTYPE_EXP );
+  vector_init( exp->value, value, (value != NULL), width, VTYPE_EXP );
 
   PROFILE_END;
 
@@ -1616,7 +1616,7 @@ bool expression_op_func__divide( expression* expr, /*@unused@*/ thread* thr, /*@
 
   } else {
 
-    vector_init( &vec1, value32, 32, VTYPE_VAL );
+    vector_init( &vec1, value32, FALSE, 32, VTYPE_VAL );
     intval1 = vector_to_int( expr->left->value );
     intval2 = vector_to_int( expr->right->value );
 
@@ -1671,7 +1671,7 @@ bool expression_op_func__mod( expression* expr, /*@unused@*/ thread* thr, /*@unu
 
   } else {
 
-    vector_init( &vec1, value32, 32, VTYPE_VAL );
+    vector_init( &vec1, value32, FALSE, 32, VTYPE_VAL );
     intval1 = vector_to_int( expr->left->value );
     intval2 = vector_to_int( expr->right->value );
 
@@ -2049,8 +2049,8 @@ bool expression_op_func__lor( expression* expr, /*@unused@*/ thread* thr, /*@unu
   vec_data value1a;  /* 1-bit nibble value */
   vec_data value1b;  /* 1-bit nibble value */
 
-  vector_init( &vec1, &value1a, 1, VTYPE_VAL );
-  vector_init( &vec2, &value1b, 1, VTYPE_VAL );
+  vector_init( &vec1, &value1a, FALSE, 1, VTYPE_VAL );
+  vector_init( &vec2, &value1b, FALSE, 1, VTYPE_VAL );
 
   (void)vector_unary_op( &vec1, expr->left->value,  or_optab );
   (void)vector_unary_op( &vec2, expr->right->value, or_optab );
@@ -2077,8 +2077,8 @@ bool expression_op_func__land( expression* expr, /*@unused@*/ thread* thr, /*@un
   vec_data value1a;  /* 1-bit nibble value */
   vec_data value1b;  /* 1-bit nibble value */
 
-  vector_init( &vec1, &value1a, 1, VTYPE_VAL );
-  vector_init( &vec2, &value1b, 1, VTYPE_VAL );
+  vector_init( &vec1, &value1a, FALSE, 1, VTYPE_VAL );
+  vector_init( &vec2, &value1b, FALSE, 1, VTYPE_VAL );
 
   (void)vector_unary_op( &vec1, expr->left->value,  or_optab );
   (void)vector_unary_op( &vec2, expr->right->value, or_optab );
@@ -2124,7 +2124,7 @@ bool expression_op_func__cond_sel( expression* expr, /*@unused@*/ thread* thr, /
   int      i;               /* Loop iterator */
   bool     retval = FALSE;  /* Return value for this function */
 
-  vector_init( &vec1, &bit1, 1, VTYPE_VAL );
+  vector_init( &vec1, &bit1, FALSE, 1, VTYPE_VAL );
   (void)vector_unary_op( &vec1, expr->parent->expr->left->value, or_optab );
 
   if( vec1.value[0].part.exp.value == 0 ) {
@@ -2612,7 +2612,7 @@ bool expression_op_func__aedge( expression* expr, thread* thr, /*@unused@*/ cons
 
   } else {
 
-    vector_init( &vec, &bit, 1, VTYPE_VAL );
+    vector_init( &vec, &bit, FALSE, 1, VTYPE_VAL );
     (void)vector_op_compare( &vec, expr->left->value, expr->right->value, COMP_CEQ );
 
     /* If the last value and the current value are NOT equal, we have a fired event */
@@ -3066,7 +3066,7 @@ bool expression_op_func__exponent( expression* expr, /*@unused@*/ thread* thr, /
 
   } else {
 
-    vector_init( &vec, value32, 32, VTYPE_VAL );
+    vector_init( &vec, value32, FALSE, 32, VTYPE_VAL );
     intval1 = vector_to_int( expr->left->value );
     intval2 = vector_to_int( expr->right->value );
 
@@ -3480,7 +3480,7 @@ bool expression_op_func__wait( expression* expr, /*@unused@*/ thread* thr, /*@un
   vec_data bit;            /* Temporary vector data */
 
   /* Check to see if the right expression has evaluated to a value of TRUE */
-  vector_init( &vec, &bit, 1, VTYPE_VAL );
+  vector_init( &vec, &bit, FALSE, 1, VTYPE_VAL );
   (void)vector_unary_op( &vec, expr->right->value, or_optab );
 
   /* If the right expression evaluates to TRUE, continue; otherwise, do a context switch */
@@ -3548,7 +3548,7 @@ bool expression_operate( expression* expr, thread* thr, const sim_time* time ) {
         }
       
         /* Set TRUE/FALSE bits to indicate value */
-        vector_init( &vec, &bit, 1, VTYPE_VAL );
+        vector_init( &vec, &bit, FALSE, 1, VTYPE_VAL );
         (void)vector_unary_op( &vec, expr->value, or_optab );
         switch( vec.value[0].part.exp.value ) {
           case 0 :  expr->suppl.part.false = 1;  expr->suppl.part.eval_f = 1;  break;
@@ -4249,6 +4249,9 @@ void expression_dealloc( expression* expr, bool exp_only ) { PROFILE(EXPRESSION_
 
 /* 
  $Log$
+ Revision 1.275  2008/01/15 23:01:14  phase1geo
+ Continuing to make splint updates (not doing any memory checking at this point).
+
  Revision 1.274  2008/01/10 04:59:04  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 

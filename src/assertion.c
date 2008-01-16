@@ -70,7 +70,11 @@ void assertion_parse_attr( /*@unused@*/attr_param* ap, /*@unused@*/const func_un
 
  Gets total and hit assertion coverage statistics for the given functional unit.
 */
-void assertion_get_stats( const func_unit* funit, float* total, int* hit ) { PROFILE(ASSERTION_GET_STATS);
+void assertion_get_stats(
+            const func_unit* funit,
+  /*@out@*/ int*             total,
+  /*@out@*/ int*             hit
+) { PROFILE(ASSERTION_GET_STATS);
 
   assert( funit != NULL );
 
@@ -95,14 +99,20 @@ void assertion_get_stats( const func_unit* funit, float* total, int* hit ) { PRO
 
  Displays the assertion summary information for a given instance to the specified output stream.
 */
-static bool assertion_display_instance_summary( FILE* ofile, const char* name, int hits, float total ) { PROFILE(ASSERTION_DISPLAY_INSTANCE_SUMMARY);
+static bool assertion_display_instance_summary(
+  FILE*       ofile,
+  const char* name,
+  int         hits,
+  int         total
+) { PROFILE(ASSERTION_DISPLAY_INSTANCE_SUMMARY);
 
   float percent;  /* Percentage of assertions hit */
-  float miss;     /* Number of assertions missed */
+  int   miss;     /* Number of assertions missed */
 
   calc_miss_percent( hits, total, &miss, &percent );
 
-  fprintf( ofile, "  %-43.43s    %5d/%5.0f/%5.0f      %3.0f%%\n", name, hits, miss, total, percent );
+  fprintf( ofile, "  %-43.43s    %5d/%5d/%5d      %3.0f%%\n",
+           name, hits, miss, total, percent );
 
   return( miss > 0 );
 
@@ -119,7 +129,13 @@ static bool assertion_display_instance_summary( FILE* ofile, const char* name, i
  Outputs the instance summary assertion coverage information for the given functional
  unit instance to the given output file.
 */
-static bool assertion_instance_summary( FILE* ofile, const funit_inst* root, const char* parent_inst, int* hits, float* total ) { PROFILE(ASSERTION_INSTANCE_SUMMARY);
+static bool assertion_instance_summary(
+            FILE*             ofile,
+            const funit_inst* root,
+            const char*       parent_inst,
+  /*@out@*/ int*              hits,
+  /*@out@*/ int*              total
+) { PROFILE(ASSERTION_INSTANCE_SUMMARY);
 
   funit_inst* curr;                /* Pointer to current child functional unit instance of this node */
   char        tmpname[4096];       /* Temporary holder of instance name */
@@ -180,14 +196,20 @@ static bool assertion_instance_summary( FILE* ofile, const funit_inst* root, con
 
  Displays the assertion summary information for a given instance to the specified output stream.
 */
-static bool assertion_display_funit_summary( FILE* ofile, const char* name, const char* fname, int hits, float total ) { PROFILE(ASSERTION_DISPLAY_FUNIT_SUMMARY);
+static bool assertion_display_funit_summary(
+  FILE*       ofile,
+  const char* name,
+  const char* fname,
+  int         hits,
+  int         total
+) { PROFILE(ASSERTION_DISPLAY_FUNIT_SUMMARY);
 
   float percent;  /* Percentage of assertions hit */
-  float miss;     /* Number of assertions missed */
+  int   miss;     /* Number of assertions missed */
 
   calc_miss_percent( hits, total, &miss, &percent );
 
-  fprintf( ofile, "  %-20.20s    %-20.20s   %5d/%5.0f/%5.0f      %3.0f%%\n",
+  fprintf( ofile, "  %-20.20s    %-20.20s   %5d/%5d/%5d      %3.0f%%\n",
            name, fname, hits, miss, total, percent );
 
   return( miss > 0 );
@@ -204,7 +226,12 @@ static bool assertion_display_funit_summary( FILE* ofile, const char* name, cons
  Outputs the functional unit summary assertion coverage information for the given
  functional unit to the given output file.
 */
-static bool assertion_funit_summary( FILE* ofile, const funit_link* head, int* hits, float* total ) { PROFILE(ASSERTION_FUNIT_SUMMARY);
+static bool assertion_funit_summary(
+            FILE*             ofile,
+            const funit_link* head,
+  /*@out@*/ int*              hits,
+  /*@out@*/ int*              total
+) { PROFILE(ASSERTION_FUNIT_SUMMARY);
 
   bool miss_found = FALSE;  /* Set to TRUE if assertion was found to be missed */
 
@@ -381,7 +408,7 @@ void assertion_report( FILE* ofile, bool verbose ) { PROFILE(ASSERTION_REPORT);
   char       tmp[4096];             /* Temporary string value */
   inst_link* instl;                 /* Pointer to current instance link */
   int        acc_hits     = 0;      /* Total number of assertions hit */
-  float      acc_total    = 0;      /* Total number of assertions in design */
+  int        acc_total    = 0;      /* Total number of assertions in design */
 
   fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
   fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   ASSERTION COVERAGE RESULTS   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
@@ -447,20 +474,24 @@ void assertion_report( FILE* ofile, bool verbose ) { PROFILE(ASSERTION_REPORT);
  
  Counts the total number and number of hit assertions for the specified functional unit.
 */
-bool assertion_get_funit_summary( const char* funit_name, int funit_type, int* total, int* hit ) { PROFILE(ASSERTION_GET_FUNIT_SUMMARY);
+bool assertion_get_funit_summary(
+            const char* funit_name,
+            int         funit_type,
+  /*@out@*/ int*        total,
+  /*@out@*/ int*        hit
+) { PROFILE(ASSERTION_GET_FUNIT_SUMMARY);
 	
   bool        retval = TRUE;  /* Return value for this function */
   funit_link* funitl;         /* Pointer to found functional unit link */
-  float       ftotal;         /* Float version of total */
   
   /* Initialize total and hit counts */
-  ftotal = 0;
+  *total = 0;
   *hit   = 0;
   
   if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
     
     if( info_suppl.part.assert_ovl == 1 ) {
-      ovl_get_funit_stats( funitl->funit, &ftotal, hit );
+      ovl_get_funit_stats( funitl->funit, total, hit );
     }
     
   } else {
@@ -468,9 +499,6 @@ bool assertion_get_funit_summary( const char* funit_name, int funit_type, int* t
     retval = FALSE;
     
   }
-  
-  /* Convert the floating point value to an integer value */
-  *total = (int)ftotal;
   
   return( retval );
   
@@ -489,8 +517,15 @@ bool assertion_get_funit_summary( const char* funit_name, int funit_type, int* t
  
  Searches the specified functional unit, collecting all uncovered and covered assertion module instance names.
 */
-bool assertion_collect( const char* funit_name, int funit_type, char*** uncov_inst_names, int** excludes, int* uncov_inst_size,
-                        char*** cov_inst_names, int* cov_inst_size ) { PROFILE(ASSERTION_COLLECT);
+bool assertion_collect(
+  const char* funit_name,
+  int         funit_type,
+  char***     uncov_inst_names,
+  int**       excludes,
+  int*        uncov_inst_size,
+  char***     cov_inst_names,
+  int*        cov_inst_size
+) { PROFILE(ASSERTION_COLLECT);
   
   bool        retval = TRUE;  /* Return value for this function */
   funit_link* funitl;         /* Pointer to found functional unit */
@@ -560,6 +595,9 @@ bool assertion_get_coverage( const char* funit_name, int funit_type, const char*
 
 /*
  $Log$
+ Revision 1.27  2008/01/10 04:59:03  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.26  2008/01/08 13:27:46  phase1geo
  More splint updates.
 
