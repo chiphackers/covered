@@ -336,16 +336,12 @@ char* gen_next_symbol() { PROFILE(GEN_NEXT_SYMBOL);
 void covered_create_value_change_cb( vpiHandle sig ) { PROFILE(COVERED_CREATE_VALUE_CHANGE_CB);
 
   p_cb_data   cb;
-  vsignal     vsig;
   sig_link*   vsigl;
   char*       symbol;
   s_vpi_value value;
 
-  /* Find current signal in coverage database */
-  vsig.name = vpi_get_str( vpiName, sig );
-
   /* Only add the signal if it is in our database and needs to be assigned from the simulator */
-  if( ((vsigl = sig_link_find( &vsig, curr_instance->funit->sig_head )) != NULL) &&
+  if( ((vsigl = sig_link_find( vpi_get_str( vpiName, sig ), curr_instance->funit->sig_head )) != NULL) &&
       (vsigl->sig->suppl.part.assigned == 0) ) {
 
 #ifdef DEBUG_MODE
