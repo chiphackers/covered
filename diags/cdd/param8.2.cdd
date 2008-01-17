@@ -2,14 +2,14 @@
 8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd param8.2.vcd -o param8.2.cdd -v param8.2.v
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" param8.2.v 1 21 1
-1 a 3 3000a 1 0 0 0 1 1 2
-1 b 4 3000a 1 0 1 0 2 1 a
-1 c 5 3000a 1 0 2 0 3 1 2a
+1 a 3 3000a 1 0 0 0 1 33 2
+1 b 4 3000a 1 0 1 0 2 33 a
+1 c 5 3000a 1 0 2 0 3 33 2a
 3 0 foo "main.bar" param8.2.v 24 30 1
-1 SIZE1 0 80000 1 0 1 0 2 1 1
-1 SIZE2 0 80000 1 0 1 0 2 1 4
-1 FOO 0 80000 1 0 31 0 32 1 5 0 0 0 0 0 0 0
-1 a 25 1b 1 0 0 0 1 1 2
-1 b 26 1b 1 0 1 0 2 1 a
-1 c 27 1b 1 0 2 0 3 1 2a
+1 SIZE1 0 80000 1 0 1 0 2 33 1
+1 SIZE2 0 80000 1 0 1 0 2 33 4
+1 FOO 0 80000 1 0 31 0 32 33 5 0 0 0 0 0 0 0
+1 a 25 1b 1 0 0 0 1 33 2
+1 b 26 1b 1 0 1 0 2 33 a
+1 c 27 1b 1 0 2 0 3 33 2a
 3 1 main.$u0 "main.$u0" param8.2.v 0 19 1

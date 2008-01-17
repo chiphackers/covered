@@ -10,11 +10,11 @@
 3 1 main.$u1 "main.$u1" signed4.1.v 0 22 1
 3 2 main.foo_func "main.foo_func" signed4.1.v 24 29 1
 2 3 26 20006 0 3d 131802 0 0 1 2 2 $u2
-1 foo_func 24 850017 1 0 31 0 32 65 aa aa aa aa aa aa aa aa
-1 in 25 16 1 0 31 0 32 65 aa aa aa aa aa aa aa aa
+1 foo_func 24 850017 1 0 31 0 32 97 aa aa aa aa aa aa aa aa
+1 in 25 16 1 0 31 0 32 97 aa aa aa aa aa aa aa aa
 4 3 0 0
 3 1 main.foo_func.$u2 "main.foo_func.$u2" signed4.1.v 0 28 1
-2 4 27 140014 0 0 20810 0 0 32 64 1 0 0 0 0 0 0 0
+2 4 27 140014 0 0 20810 0 0 32 96 1 0 0 0 0 0 0 0
 2 5 27 f0010 0 1 810 0 0 in
 2 6 27 f0014 0 7 20830 4 5 32 66 aa aa aa aa aa aa aa aa
 2 7 27 4000b 0 1 c00 0 0 foo_func
