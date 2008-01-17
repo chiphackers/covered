@@ -1,17 +1,17 @@
 5 b 1 * 0
-8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd param10.3.vcd -o param10.3.cdd -v param10.3.v
+8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd param10.3.vcd -o param10.3.cdd -v param10.3.v
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" param10.3.v 1 14 1
 3 0 foo "main.a" param10.3.v 17 29 1
 2 1 23 8000c 1 3d 121002 0 0 1 2 2 foo_begin
-1 hoo 0 80000 1 0 31 0 32 1 5 0 0 0 0 0 0 0
-1 b 21 30011 1 0 2 0 3 1 2a
+1 hoo 0 80000 1 0 31 0 32 33 5 0 0 0 0 0 0 0
+1 b 21 30011 1 0 2 0 3 33 2a
 4 1 0 0
 3 1 foo.foo_begin "main.a.foo_begin" param10.3.v 23 27 1
-2 2 26 50008 1 0 20004 0 0 1 4 0
+2 2 26 50008 1 0 20004 0 0 1 36 0
 2 3 26 10001 0 1 400 0 0 a
 2 4 26 10008 1 37 11006 2 3
-1 bar 0 80000 1 0 31 0 32 1 11 0 0 0 0 0 0 0
-1 a 25 830011 1 0 4 0 5 1 aa 2
+1 bar 0 80000 1 0 31 0 32 33 11 0 0 0 0 0 0 0
+1 a 25 830011 1 0 4 0 5 33 aa 2
 4 4 0 0
 3 1 main.$u0 "main.$u0" param10.3.v 0 12 1

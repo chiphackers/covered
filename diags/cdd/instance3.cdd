@@ -1,10 +1,10 @@
 5 b 1 * 0
-8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd instance3.vcd -o instance3.cdd -v instance3.v
+8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd instance3.vcd -o instance3.cdd -v instance3.v
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" instance3.v 1 12 1
 3 0 foo "main.bar" instance3.v 14 33 1
-2 1 19 160019 1 0 20008 0 0 1 4 1
-2 2 19 f0012 1 0 20004 0 0 1 4 0
+2 1 19 160019 1 0 20008 0 0 1 36 1
+2 2 19 f0012 1 0 20004 0 0 1 36 0
 2 3 19 b0012 3 1a 2008c 1 2 1 2 1102
 2 4 19 b000b 2 1 c 0 0 b
 2 5 19 b0019 3 19 2018c 3 4 1 2 1102
@@ -17,10 +17,10 @@
 2 12 21 190019 0 1b 20020 11 0 1 2 2
 2 13 21 140014 0 1 400 0 0 d
 2 14 21 14001a 0 38 6022 12 13
-1 a 16 30009 1 0 0 0 1 1 1002
-1 b 17 30009 1 0 0 0 1 1 102
-1 c 17 3000c 1 0 0 0 1 1 2
-1 d 17 3000f 1 0 0 0 1 1 2
+1 a 16 30009 1 0 0 0 1 33 1002
+1 b 17 30009 1 0 0 0 1 33 102
+1 c 17 3000c 1 0 0 0 1 33 2
+1 d 17 3000f 1 0 0 0 1 33 2
 4 7 7 7
 4 14 10 10
 4 10 14 0

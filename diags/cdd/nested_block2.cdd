@@ -1,5 +1,5 @@
 5 b 1 * 0
-8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd nested_block2.vcd -o nested_block2.cdd -v nested_block2.v
+8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd nested_block2.vcd -o nested_block2.cdd -v nested_block2.v
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" nested_block2.v 1 32 1
 2 1 4 e000e 1 1 4 0 0 b
@@ -7,17 +7,17 @@
 2 3 4 90010 1 3a 120004 0 2 1 2 102 foo
 2 4 4 50005 0 1 400 0 0 a
 2 5 4 50010 1 36 f006 3 4
-1 b 3 30005 1 0 0 0 1 1 2
-1 a 4 30005 1 0 0 0 1 1 2
+1 b 3 30005 1 0 0 0 1 33 2
+1 a 4 30005 1 0 0 0 1 33 2
 4 5 5 5
 3 1 main.$u0 "main.$u0" nested_block2.v 0 14 1
 3 2 main.foo "main.foo" nested_block2.v 16 23 1
 2 6 18 20006 1 3d 131802 0 0 1 2 2 foo_block
-1 foo 16 850009 1 0 0 0 1 1 2
-1 a 17 800008 1 0 0 0 1 1 2
+1 foo 16 850009 1 0 0 0 1 33 2
+1 a 17 800008 1 0 0 0 1 33 2
 4 6 0 0
 3 1 main.foo.foo_block "main.foo.foo_block" nested_block2.v 18 22 1
-2 7 20 a000d 1 0 20808 0 0 1 4 1
+2 7 20 a000d 1 0 20808 0 0 1 36 1
 2 8 20 40004 0 1 c00 0 0 c
 2 9 20 4000d 1 37 1180a 7 8
 2 10 21 f000f 1 1 808 0 0 c
@@ -25,13 +25,13 @@
 2 12 21 a0011 1 3a 120804 0 11 1 2 102 bar
 2 13 21 40006 0 1 c00 0 0 foo
 2 14 21 40011 1 37 806 12 13
-1 c 19 830008 1 0 0 0 1 1 2
+1 c 19 830008 1 0 0 0 1 33 2
 4 14 0 0
 4 9 14 14
 3 2 main.bar "main.bar" nested_block2.v 25 30 1
 2 15 27 20006 1 3d 131802 0 0 1 2 2 $u1
-1 bar 25 850009 1 0 0 0 1 1 2
-1 a 26 800008 1 0 0 0 1 1 2
+1 bar 25 850009 1 0 0 0 1 33 2
+1 a 26 800008 1 0 0 0 1 33 2
 4 15 0 0
 3 1 main.bar.$u1 "main.bar.$u1" nested_block2.v 0 29 1
 2 16 28 b000b 1 1 808 0 0 a

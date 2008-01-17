@@ -1,9 +1,9 @@
 5 b 1 * 0
-8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd race1.vcd -o race1.cdd -v race1.v
+8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd race1.vcd -o race1.cdd -v race1.v
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" race1.v 1 16 1
-1 a 3 30005 1 0 0 0 1 1 2
+1 a 3 30005 1 0 0 0 1 33 2
 3 0 foobar "main.bar" race1.v 19 25 1
-1 a 21 6 1 0 0 0 1 1 2
+1 a 21 6 1 0 0 0 1 33 2
 7 5 23 23
 3 1 main.$u0 "main.$u0" race1.v 0 14 1

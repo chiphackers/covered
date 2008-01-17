@@ -1,5 +1,5 @@
 5 b 1 main1 2 merge1a.cdd main1 merge1b.cdd main2
-8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t dut_and -i main1.dut -vcd merge1a.vcd -o merge1a.cdd -v merge1a.v -y ./lib -t dut_and -i main2.dut -vcd merge1b.vcd -o merge1b.cdd -v merge1b.v -y ./lib
+8 /Users/trevorw/projects/covered/diags/verilog -t dut_and -i main1.dut -vcd merge1a.vcd -o merge1a.cdd -v merge1a.v -y ./lib -t dut_and -i main2.dut -vcd merge1b.vcd -o merge1b.cdd -v merge1b.v -y ./lib
 3 0 $root "$root" NA 0 0 1
 3 0 dut_and "dut" ./lib/dut_and.v 1 9 1
 2 1 7 f000f 1 1 4 0 0 c
@@ -7,7 +7,7 @@
 2 3 7 b000f 1 8 20144 1 2 1 2 1102
 2 4 7 70007 0 1 400 0 0 a
 2 5 7 7000f 1 35 f006 3 4
-1 a 3 10008 1 0 0 0 1 1 2
-1 b 4 8 1 0 0 0 1 1 2
-1 c 5 8 1 0 0 0 1 1 2
+1 a 3 10008 1 0 0 0 1 33 2
+1 b 4 8 1 0 0 0 1 33 2
+1 c 5 8 1 0 0 0 1 33 2
 4 5 5 5

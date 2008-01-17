@@ -1,5 +1,5 @@
 5 b 1 * 0
-8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd param5.vcd -o param5.cdd -v param5.v
+8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd param5.vcd -o param5.cdd -v param5.v
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" param5.v 1 26 1
 2 1 8 100010 4 1 c 0 0 a
@@ -9,8 +9,8 @@
 2 5 8 b0011 4 26 20008 4 0 4 2 ffaa
 2 6 8 70007 0 1 400 0 0 b
 2 7 8 70011 4 35 f00a 5 6
-1 dude 0 80000 1 0 31 0 32 1 4 0 0 0 0 0 0 0
-1 a 5 30019 1 0 1 0 2 1 230a
-1 b 6 30019 1 0 3 0 4 1 beaa
+1 dude 0 80000 1 0 31 0 32 33 4 0 0 0 0 0 0 0
+1 a 5 30019 1 0 1 0 2 33 230a
+1 b 6 30019 1 0 3 0 4 33 beaa
 4 7 7 7
 3 1 main.$u0 "main.$u0" param5.v 0 24 1

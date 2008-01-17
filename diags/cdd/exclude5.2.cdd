@@ -1,5 +1,5 @@
 5 b 9 * 0
-8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd exclude5.2.vcd -o exclude5.2.cdd -v exclude5.2.v -ei
+8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd exclude5.2.vcd -o exclude5.2.cdd -v exclude5.2.v -ei
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" exclude5.2.v 1 27 1
 2 1 6 d000d 2 1 c 0 0 c
@@ -18,10 +18,10 @@
 2 14 16 190019 1 1b 20008 13 0 1 2 1002
 2 15 16 140014 0 1 400 0 0 d
 2 16 16 14001a 1 38 600a 14 15
-1 b 3 30005 1 0 0 0 1 1 102
-1 d 3 30008 1 0 0 0 1 1 2
-1 c 4 30005 1 0 0 0 1 1 1002
-1 a 6 30005 1 0 0 0 1 1 2
+1 b 3 30005 1 0 0 0 1 33 102
+1 d 3 30008 1 0 0 0 1 33 2
+1 c 4 30005 1 0 0 0 1 33 1002
+1 a 6 30005 1 0 0 0 1 33 2
 4 5 5 5
 4 9 9 9
 4 16 12 12

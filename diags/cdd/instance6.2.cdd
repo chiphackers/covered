@@ -1,29 +1,29 @@
 5 b 1 * 0
-8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd instance6.2.vcd -o instance6.2.cdd -v instance6.2.v
+8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd instance6.2.vcd -o instance6.2.cdd -v instance6.2.v
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" instance6.2.v 6 28 1
-1 a 8 3000a 1 0 3 0 4 1 15aa
-1 b 8 3000d 1 0 3 0 4 1 aa
+1 a 8 3000a 1 0 3 0 4 33 15aa
+1 b 8 3000d 1 0 3 0 4 33 aa
 3 0 foobar "main.foo" instance6.2.v 31 41 1
-2 1 39 f000f 1 0 20004 0 0 32 64 0 0 0 0 0 0 0 0
-2 2 39 d000d 4 0 20008 0 0 32 64 1 0 0 0 0 0 0 0
+2 1 39 f000f 1 0 20004 0 0 32 96 0 0 0 0 0 0 0 0
+2 2 39 d000d 4 0 20008 0 0 32 96 1 0 0 0 0 0 0 0
 2 3 39 b0010 4 24 10c 1 2 b
 2 4 39 70007 0 1 400 0 0 a
 2 5 39 70010 4 35 f00e 3 4
-1 bsize 0 80000 1 0 31 0 32 1 10 0 0 0 0 0 0 0
-1 b 35 13 1 0 3 0 4 1 15aa
-1 a 37 3000b 1 0 1 0 2 1 110a
+1 bsize 0 80000 1 0 31 0 32 33 10 0 0 0 0 0 0 0
+1 b 35 13 1 0 3 0 4 33 15aa
+1 a 37 3000b 1 0 1 0 2 33 110a
 4 5 5 5
 3 0 barfoo "main.bar" instance6.2.v 44 50 1
-1 b 46 d 1 0 3 0 4 1 aa
+1 b 46 d 1 0 3 0 4 33 aa
 3 0 foobar "main.bar.dude" instance6.2.v 31 41 1
-2 6 39 f000f 1 0 20004 0 0 32 64 0 0 0 0 0 0 0 0
-2 7 39 d000d 2 0 20008 0 0 32 64 1 0 0 0 0 0 0 0
+2 6 39 f000f 1 0 20004 0 0 32 96 0 0 0 0 0 0 0 0
+2 7 39 d000d 2 0 20008 0 0 32 96 1 0 0 0 0 0 0 0
 2 8 39 b0010 2 24 108 6 7 b
 2 9 39 70007 0 1 400 0 0 a
 2 10 39 70010 2 35 f00a 8 9
-1 bsize 0 80000 1 0 31 0 32 1 4 0 0 0 0 0 0 0
-1 b 35 13 1 0 1 0 2 1 a
-1 a 37 3000b 1 0 1 0 2 1 a
+1 bsize 0 80000 1 0 31 0 32 33 4 0 0 0 0 0 0 0
+1 b 35 13 1 0 1 0 2 33 a
+1 a 37 3000b 1 0 1 0 2 33 a
 4 10 10 10
 3 1 main.$u0 "main.$u0" instance6.2.v 0 26 1

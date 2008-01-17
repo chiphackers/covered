@@ -96,8 +96,7 @@ static void covered_cleanup( void ) {
 
   /* Remove temporary pre-processor file (if it still exists) */
   if( ppfilename != NULL ) {
-    unsigned int rv = unlink( ppfilename );
-    assert( rv == 0 );
+    (void)unlink( ppfilename );
     free_safe( ppfilename );
   }
 
@@ -234,6 +233,10 @@ int main( int argc, const char** argv ) {
 
 /*
  $Log$
+ Revision 1.27  2008/01/16 23:10:31  phase1geo
+ More splint updates.  Code is now warning/error free with current version
+ of run_splint.  Still have regression issues to debug.
+
  Revision 1.26  2008/01/10 04:59:04  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 

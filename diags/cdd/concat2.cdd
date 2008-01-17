@@ -1,5 +1,5 @@
 5 b 1 * 0
-8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd concat2.vcd -o concat2.cdd -v concat2.v
+8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd concat2.vcd -o concat2.cdd -v concat2.v
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" concat2.v 1 24 1
 2 1 7 1b001b 2 1 c 0 0 c
@@ -12,8 +12,8 @@
 2 8 7 b001e 3 26 2000c 7 0 2 2 230a
 2 9 7 70007 0 1 400 0 0 a
 2 10 7 7001e 3 35 f00e 8 9
-1 a 3 3000d 1 0 1 0 2 1 220a
-1 b 4 3000d 1 0 0 0 1 1 1002
-1 c 5 3000d 1 0 0 0 1 1 102
+1 a 3 3000d 1 0 1 0 2 33 220a
+1 b 4 3000d 1 0 0 0 1 33 1002
+1 c 5 3000d 1 0 0 0 1 33 102
 4 10 10 10
 3 1 main.$u0 "main.$u0" concat2.v 0 22 1

@@ -1,29 +1,29 @@
 5 b 1 * 0
-8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd hier3.vcd -o hier3.cdd -v hier3.v
+8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd hier3.vcd -o hier3.cdd -v hier3.v
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" hier3.v 1 14 1
 3 0 foo "main.a" hier3.v 18 26 1
 3 0 bar "main.a.a" hier3.v 30 34 1
-1 y 32 830004 1 0 0 0 1 1 2
+1 y 32 830004 1 0 0 0 1 33 2
 3 0 bar "main.a.b" hier3.v 30 34 1
-1 y 32 830004 1 0 0 0 1 1 1002
+1 y 32 830004 1 0 0 0 1 33 1002
 3 0 bar "main.a.c" hier3.v 30 34 1
-1 y 32 830004 1 0 0 0 1 1 2
+1 y 32 830004 1 0 0 0 1 33 2
 3 0 test "main.a.t" hier3.v 38 48 1
 2 1 40 8000c 1 3d 121002 0 0 1 2 2 $u1
 4 1 0 0
 3 1 test.$u1 "main.a.t.$u1" hier3.v 0 44 1
-2 2 41 7000a 1 0 20008 0 0 1 4 1
+2 2 41 7000a 1 0 20008 0 0 1 36 1
 2 3 41 10003 0 1 400 0 0 b.y
 2 4 41 1000a 1 37 1100a 2 3
-2 5 42 20002 1 0 20008 0 0 32 64 11 0 0 0 0 0 0 0
+2 5 42 20002 1 0 20008 0 0 32 96 11 0 0 0 0 0 0 0
 2 6 42 10002 2 2c 22000a 5 0 32 2 aa aa aa aa aa aa aa aa
-2 7 43 7000a 1 0 20004 0 0 1 4 0
+2 7 43 7000a 1 0 20004 0 0 1 36 0
 2 8 43 10003 0 1 400 0 0 b.y
 2 9 43 1000a 1 37 6 7 8
 4 9 0 0
 4 6 9 0
 4 4 6 6
 3 0 boo "main.a.t.a" hier3.v 52 56 1
-1 y 54 30004 1 0 0 0 1 1 2
+1 y 54 30004 1 0 0 0 1 33 2
 3 1 main.$u0 "main.$u0" hier3.v 0 12 1

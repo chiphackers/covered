@@ -1,24 +1,24 @@
 5 b 1 * 0
-8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd param10.4.vcd -o param10.4.cdd -v param10.4.v
+8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd param10.4.vcd -o param10.4.cdd -v param10.4.v
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" param10.4.v 1 14 1
 3 0 foo "main.a" param10.4.v 17 35 1
 2 1 24 8000c 1 3d 121002 0 0 1 2 2 foo_begin
 2 2 30 8000c 1 3d 121002 0 0 1 2 2 $u1
-1 bar 0 80000 1 0 31 0 32 1 4 0 0 0 0 0 0 0
-1 b 21 30011 1 0 1 0 2 1 a
-1 c 22 830011 1 0 31 0 32 1 2aa aa aa aa aa aa aa aa
+1 bar 0 80000 1 0 31 0 32 33 4 0 0 0 0 0 0 0
+1 b 21 30011 1 0 1 0 2 33 a
+1 c 22 830011 1 0 31 0 32 33 2aa aa aa aa aa aa aa aa
 4 1 0 0
 4 2 0 0
 3 1 foo.foo_begin "main.a.foo_begin" param10.4.v 24 28 1
-2 3 27 50008 1 0 20004 0 0 1 4 0
+2 3 27 50008 1 0 20004 0 0 1 36 0
 2 4 27 10001 0 1 400 0 0 a
 2 5 27 10008 1 37 11006 3 4
-1 bar 0 80000 1 0 31 0 32 1 11 0 0 0 0 0 0 0
-1 a 26 830011 1 0 4 0 5 1 aa 2
+1 bar 0 80000 1 0 31 0 32 33 11 0 0 0 0 0 0 0
+1 a 26 830011 1 0 4 0 5 33 aa 2
 4 5 0 0
 3 1 foo.$u1 "main.a.$u1" param10.4.v 0 33 1
-2 6 31 c000c 1 0 20004 0 0 32 64 0 0 0 0 0 0 0 0
+2 6 31 c000c 1 0 20004 0 0 32 96 0 0 0 0 0 0 0 0
 2 7 31 80008 0 1 400 0 0 c
 2 8 31 8000c 1 37 11006 6 7
 2 9 32 c000e 1 32 8 0 0 bar

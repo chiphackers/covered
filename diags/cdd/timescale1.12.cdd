@@ -1,17 +1,17 @@
 5 b 1 * 0
-8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd timescale1.12.vcd -o timescale1.12.cdd -v timescale1.12.v
+8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd timescale1.12.vcd -o timescale1.12.cdd -v timescale1.12.v
 3 0 $root "$root" NA 0 0 1000
 3 0 main "main" timescale1.12.v 10 29 1000
 2 1 14 8000c 1 3d 121002 0 0 1 2 2 $u0
-1 a 12 830004 1 0 0 0 1 1 102
+1 a 12 830004 1 0 0 0 1 33 102
 4 1 0 0
 3 1 main.$u0 "main.$u0" timescale1.12.v 0 18 1000
-2 2 15 50008 1 0 20004 0 0 1 4 0
+2 2 15 50008 1 0 20004 0 0 1 36 0
 2 3 15 10001 0 1 400 0 0 a
 2 4 15 10008 1 37 11006 2 3
-2 5 16 20003 1 0 20008 0 0 32 64 44 0 0 0 0 0 0 0
+2 5 16 20003 1 0 20008 0 0 32 96 44 0 0 0 0 0 0 0
 2 6 16 10003 2 2c 22000a 5 0 32 2 aa aa aa aa aa aa aa aa
-2 7 17 50008 1 0 20008 0 0 1 4 1
+2 7 17 50008 1 0 20008 0 0 1 36 1
 2 8 17 10001 0 1 400 0 0 a
 2 9 17 10008 1 37 a 7 8
 4 9 0 0

@@ -1,5 +1,5 @@
 5 b 1 * 0
-8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd mbit_sel6.3.vcd -o mbit_sel6.3.cdd -v mbit_sel6.3.v
+8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd mbit_sel6.3.vcd -o mbit_sel6.3.cdd -v mbit_sel6.3.v
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" mbit_sel6.3.v 1 28 1
 2 1 0 0 4 1 8 0 0 c
@@ -19,10 +19,10 @@
 2 15 10 6000f 4 4c 208 13 14 a
 2 16 10 20002 0 1 400 0 0 b
 2 17 10 2000f 4 37 600a 15 16
-1 incr 0 80000 1 0 31 0 32 1 10 0 0 0 0 0 0 0
-1 a 0 80000 1 0 15 0 16 1 1 4 10 40
-1 b 6 83000c 1 0 3 0 4 1 7eaa
-1 c 7 3000c 1 0 3 0 4 1 4caa
+1 incr 0 80000 1 0 31 0 32 33 10 0 0 0 0 0 0 0
+1 a 0 80000 1 0 15 0 16 33 1 4 10 40
+1 b 6 83000c 1 0 3 0 4 33 7eaa
+1 c 7 3000c 1 0 3 0 4 33 4caa
 4 17 12 12
 4 12 17 0
 3 1 main.$u0 "main.$u0" mbit_sel6.3.v 0 26 1

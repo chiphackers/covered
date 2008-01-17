@@ -1,8 +1,8 @@
 5 b 1 * 0
-8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd localparam1.1.vcd -o localparam1.1.cdd -v localparam1.1.v
+8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd localparam1.1.vcd -o localparam1.1.cdd -v localparam1.1.v
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" localparam1.1.v 1 14 1
 3 0 foo "main.bar" localparam1.1.v 17 23 1
-1 SIZE 0 80000 1 0 31 0 32 1 11 0 0 0 0 0 0 0
-1 a 21 30012 1 0 4 0 5 1 aa 2
+1 SIZE 0 80000 1 0 31 0 32 33 11 0 0 0 0 0 0 0
+1 a 21 30012 1 0 4 0 5 33 aa 2
 3 1 main.$u0 "main.$u0" localparam1.1.v 0 12 1
