@@ -396,3 +396,108 @@ AC_DEFUN([COVERED_PROFILER],
 [AC_ARG_ENABLE(profiling,
                AC_HELP_STRING([--enable-profiling],[Enables source code profiler]),
                AC_SUBST([PROFILEDEF],["-DPROFILER"]))])
+
+# AX_LD_SHAREDLIB_OPTS
+# --------------------
+# linker options when building a shared library
+AC_DEFUN([AX_LD_SHAREDLIB_OPTS],
+[AC_MSG_CHECKING([for shared library link flag])
+shared=-shared
+case "${host}" in
+     *-*-cygwin*)
+        shared="-shared -Wl,--enable-auto-image-base"
+        ;;
+        
+     *-*-hpux*)
+        shared="-b"
+        ;;
+
+     *-*-darwin1.[0123])
+        shared="-bundle -undefined suppress"
+        ;; 
+
+     *-*-darwin*)
+        shared="-bundle -undefined suppress -flat_namespace"
+        ;;
+esac
+AC_SUBST(shared)
+AC_MSG_RESULT($shared)
+])# AX_LD_SHAREDLIB_OPTS
+    
+# AX_C_PICFLAG
+# ------------
+# The -fPIC flag is used to tell the compiler to make position
+# independent code. It is needed when making shared objects.
+AC_DEFUN([AX_C_PICFLAG],
+[AC_MSG_CHECKING([for flag to make position independent code])
+PICFLAG=-fPIC
+case "${host}" in
+
+     *-*-cygwin*)
+        PICFLAG=
+        ;;
+
+     *-*-hpux*)
+        PICFLAG=+z
+        ;;
+
+esac
+AC_SUBST(PICFLAG)
+AC_MSG_RESULT($PICFLAG)
+])# AX_C_PICFLAG
+
+# AX_LD_RDYNAMIC
+# --------------
+# The -rdynamic flag is used by iverilog when compiling the target,
+# to know how to export symbols of the main program to loadable modules
+# that are brought in by -ldl
+AC_DEFUN([AX_LD_RDYNAMIC],
+[AC_MSG_CHECKING([for -rdynamic compiler flag])
+rdynamic=-rdynamic
+case "${host}" in
+
+    *-*-netbsd*)
+        rdynamic="-Wl,--export-dynamic"
+        ;;
+
+    *-*-openbsd*)
+        rdynamic="-Wl,--export-dynamic"
+        ;;
+
+    *-*-solaris*)
+        rdynamic=""
+        ;;
+    
+    *-*-cygwin*)
+        rdynamic=""
+        ;;
+    
+    *-*-hpux*)
+        rdynamic="-E"
+        ;;
+    
+    *-*-darwin*)
+        rdynamic="-Wl,-all_load"
+        strip_dynamic="-SX"
+        ;;
+
+esac
+AC_SUBST(rdynamic)
+AC_MSG_RESULT($rdynamic)
+AC_SUBST(strip_dynamic)
+# since we didn't tell them we're "checking", no good place to tell the answer
+# AC_MSG_RESULT($strip_dynamic)
+])# AX_LD_RDYNAMIC
+
+# AX_CPP_PRECOMP
+# --------------
+AC_DEFUN([AX_CPP_PRECOMP],
+[# Darwin requires -no-cpp-precomp
+case "${host}" in
+    *-*-darwin*)
+        CPPFLAGS="-no-cpp-precomp $CPPFLAGS"
+        CFLAGS="-no-cpp-precomp $CFLAGS"
+        ;;
+esac
+])# AX_CPP_PRECOMP
+

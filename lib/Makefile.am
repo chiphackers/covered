@@ -44,7 +44,7 @@ libcovered_a_SOURCES = ../src/arc.c \
                        ../src/vsignal.c
 
 INCLUDES=	-I..
-AM_CPPFLAGS=-DVPI_ONLY -DINSTALL_DIR=\"@datadir@/covered\" $(TCLTK_CPPFLAGS) $(DEBUGDEF) $(PROFILEDEF)
+AM_CPPFLAGS=-DVPI_ONLY -DINSTALL_DIR=\"@datadir@/covered\" $(TCLTK_CPPFLAGS) $(DEBUGDEF) $(PROFILEDEF) @PICFLAG@
 
 if BUILD_CYGWIN
 covered.cver.dll: vpi.cver.o libcovered.a
@@ -61,18 +61,15 @@ covered.cver.so: vpi.cver.o libcovered.a
 endif
 
 covered.vpi: vpi.iv.o libcovered.a
-	$(CC) -shared vpi.iv.o -L. -lcovered -L$(IVDIR)/lib -lveriuser -lvpi -o covered.vpi
+	$(CC) @shared@ vpi.iv.o -L. -lcovered -L$(IVDIR)/lib -lveriuser -lvpi -o covered.vpi
 
 vpi.vcs.o: ../src/vpi.c
-	$(CC) -fPIC -g -DVCS -DNOIV $(DEBUGDEF) $(PROFILEDEF) -I$(VCSINC) -I.. -c -o vpi.vcs.o ../src/vpi.c
+	$(CC) @PICFLAG@ -g -DVCS -DNOIV $(DEBUGDEF) $(PROFILEDEF) -I$(VCSINC) -I.. -c -o vpi.vcs.o ../src/vpi.c
 
 vpi.cver.o: ../src/vpi.c
-	$(CC) -fPIC -g -DCVER -DNOIV $(DEBUGDEF) $(PROFILEDEF) -I$(CVERINC) -I.. -c -o vpi.cver.o ../src/vpi.c
+	$(CC) @PICFLAG@ -g -DCVER -DNOIV $(DEBUGDEF) $(PROFILEDEF) -I$(CVERINC) -I.. -c -o vpi.cver.o ../src/vpi.c
 
 vpi.iv.o: ../src/vpi.c
-	$(CC) -fPIC -g $(DEBUGDEF) $(PROFILEDEF) -I$(IVDIR)/include -I.. -c -o vpi.iv.o ../src/vpi.c
-
-#covered.vpi: $(libcovered_a_OBJECTS) ../src/vpi.c
-#	iverilog-vpi --name=covered $(libcovered_a_OBJECTS) ../src/vpi.c
+	$(CC) @PICFLAG@ -g $(DEBUGDEF) $(PROFILEDEF) -I$(IVDIR)/include -I.. -c -o vpi.iv.o ../src/vpi.c
 
 CLEANFILES = vpi.o vpi.vcs.o vpi.cver.o covered.vcs.so covered.cver.so covered.vpi

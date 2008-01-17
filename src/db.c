@@ -88,7 +88,7 @@ extern int         generate_expr_mode;
 /*!
  Current size of curr_inst_scope array
 */
-static int curr_inst_scope_size = 0;
+int curr_inst_scope_size = 0;
 
 /*!
  Pointer to the current instance selected by the VCD parser.  If this value is
@@ -2624,6 +2624,9 @@ void db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.274  2008/01/15 23:01:13  phase1geo
+ Continuing to make splint updates (not doing any memory checking at this point).
+
  Revision 1.273  2008/01/10 04:59:04  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 

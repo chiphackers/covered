@@ -157,6 +157,21 @@ dnl Checks for library functions.
 AC_TYPE_SIGNAL
 AC_TYPE_SIZE_T
 
+dnl Stuff for creating dynamically loadable shared objects in a system-neutral way
+# Compiler option for position independent code, needed when making shared objects.
+# CFLAGS inherited by cadpli/Makefile?
+AX_C_PICFLAG
+
+# may modify CPPFLAGS and CFLAGS
+AX_CPP_PRECOMP
+
+# Linker option used when compiling the target
+AX_LD_RDYNAMIC
+
+# linker options when building a shared library
+AX_LD_SHAREDLIB_OPTS
+
+
 AC_OUTPUT(Makefile src/Makefile lib/Makefile scripts/Makefile doc/Makefile doc/user/Makefile doc/gui/Makefile)
 
 if test -n "${warn_tcltk_version}"; then
