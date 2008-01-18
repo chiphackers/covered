@@ -34,6 +34,13 @@
 #include "vsignal.h"
 
 
+/*!
+ Specifies the maximum number of dashes to draw for a status bar (Note: This value
+ should not exceed 100!)
+*/
+#define CLI_NUM_DASHES 50
+
+
 extern char                 user_msg[USER_MSG_LENGTH];
 extern bool                 flag_use_command_line_debug;
 extern /*@null@*/inst_link* inst_head;
@@ -42,17 +49,27 @@ extern /*@null@*/inst_link* inst_head;
 /*!
  Specifies the number of statements left to execute before returning to the CLI prompt.
 */
-static int stmts_left = 0;
+static unsigned int stmts_left = 0;
+
+/*!
+ Specifies the number of statements to execute (provided by the user).
+*/
+static unsigned int stmts_specified = 0;
 
 /*!
  Specifies the number of timesteps left to execute before returning to the CLI prompt.
 */
-static int timesteps_left = 0;
+static unsigned int timesteps_left = 0;
 
 /*!
- Records the last timestep that was seen by the CLI.
+ Specifies the number of timesteps to execute (provided by the user).
 */
-static uint64 last_timestep;
+static unsigned int timesteps_specified = 0;
+
+/*!
+ Specifies the timestep to jump to from here.
+*/
+static sim_time goto_timestep = {0,0,0,FALSE};
 
 /*!
  Specifies if we should run without stopping (ignore stmts_left value)
@@ -88,63 +105,44 @@ static int history_size = 0;
 /*!
  Displays CLI usage information to standard output.
 */
-void cli_usage() {
+static void cli_usage() {
 
   printf( "\n" );
   printf( "Covered score command CLI usage:\n" );
   printf( "\n" );
   printf( "  step [<num>]            Advances to the next statement if <num> is not\n" );
-  printf( "                          specified; otherwise, advances <num> statements\n" );
-  printf( "                          before returning to the CLI prompt.\n" );
-  printf( "\n" );
+  printf( "                            specified; otherwise, advances <num> statements\n" );
+  printf( "                            before returning to the CLI prompt.\n" );
   printf( "  next [<num>]            Advances to the next timestep if <num> is not\n" );
-  printf( "                          specified; otherwise, advances <num> timesteps\n" );
-  printf( "                          before returning to the CLI prompt.\n" );
-  printf( "\n" );
+  printf( "                            specified; otherwise, advances <num> timesteps\n" );
+  printf( "                            before returning to the CLI prompt.\n" );
+  printf( "  goto <timestep>         Advances to the given timestep (or the next timestep after the\n" );
+  printf( "                            given value if the timestep is not executed).\n" );
   printf( "  run                     Runs the simulation.\n" );
-  printf( "\n" );
   printf( "  continue                Continues running the simulation.\n" );
-  printf( "\n" );
-  printf( "  display <type>          Displays the current state of the given type.\n" );
-  printf( "      Valid types:\n" );
-  printf( "        active_queue      Displays the current state of the active\n" );
-  printf( "                          simulation queue.\n" );
-  printf( "        delayed_queue     Displays the current state of the delayed\n" );
-  printf( "                          simulation queue.\n" );
-  printf( "        waiting_queue     Displays the current state of the waiting\n" );
-  printf( "                          simulation queue.\n" );
-  printf( "        all_list          Displays the list of all threads.\n" );
-  printf( "        current           Displays the current scope, block, filename\n" );
-  printf( "                          and line number.\n" );
-  printf( "        time              Displays the current simulation time.\n" );
-  printf( "\n" );
+  printf( "  display active_queue    Displays the current state of the active simulation queue.\n" );
+  printf( "  display delayed_queue   Displays the current state of the delayed simulation queue.\n" );
+  printf( "  display waiting_queue   Displays the current state of the waiting simulation queue.\n" );
+  printf( "  display all_list        Displays the list of all threads.\n" );
+  printf( "  display current         Displays the current scope, block, filename and line number.\n" );
+  printf( "  display time            Displays the current simulation time.\n" );
   printf( "  show <signal>           Displays the current value of the given net/variable.\n" );
-  printf( "\n" );
   printf( "  debug [on | off]        Turns verbose debug output from simulator on\n" );
-  printf( "                          or off.  If 'on' or 'off' is not specified,\n" );
-  printf( "                          displays the current debug mode.\n" );
-  printf( "\n" );
+  printf( "                            or off.  If 'on' or 'off' is not specified,\n" );
+  printf( "                            displays the current debug mode.\n" );
   printf( "  list [<num>]            Lists the contents of the file where the\n" );
-  printf( "                          current statement is to be executed.  If\n" );
-  printf( "                          <num> is specified, outputs the given number\n" );
-  printf( "                          of lines; otherwise, outputs 10 lines.\n" );
-  printf( "\n" );
-  printf( "  savehist <file>         Saves the current history to the specified\n" );
-  printf( "                          file.\n" );
-  printf( "\n" );
+  printf( "                            current statement is to be executed.  If\n" );
+  printf( "                            <num> is specified, outputs the given number\n" );
+  printf( "                            of lines; otherwise, outputs 10 lines.\n" );
+  printf( "  savehist <file>         Saves the current history to the specified file.\n" );
   printf( "  history [(<num> | all)] Displays the last 10 lines of command-line\n" );
-  printf( "                          history.  If 'all' is specified, the entire\n" );
-  printf( "                          history contents will be displayed.  If <num>\n" );
-  printf( "                          is specified, the last <num> commands will be\n" );
-  printf( "                          displayed.\n" );
-  printf( "\n" );
-  printf( "  !<num>                  Executes the command at the <num> position\n" );
-  printf( "                          in history.\n" );
-  printf( "\n" );
+  printf( "                            history.  If 'all' is specified, the entire\n" );
+  printf( "                            history contents will be displayed.  If <num>\n" );
+  printf( "                            is specified, the last <num> commands will be\n" );
+  printf( "                            displayed.\n" );
+  printf( "  !<num>                  Executes the command at the <num> position in history.\n" );
   printf( "  !!                      Executes the last valid command.\n" );
-  printf( "\n" );
   printf( "  help                    Displays this usage message.\n" );
-  printf( "\n" );
   printf( "  quit                    Ends simulation.\n" );
   printf( "\n" );
 
@@ -156,7 +154,7 @@ void cli_usage() {
 
  Displays the specified error message.
 */
-void cli_print_error( char* msg, bool standard ) {
+static void cli_print_error( char* msg, bool standard ) {
 
   if( standard ) {
     printf( "%s.  Type 'help' for usage information.\n", msg );
@@ -165,9 +163,64 @@ void cli_print_error( char* msg, bool standard ) {
 }
 
 /*!
+ Erases a previously drawn status bar from the screen.
+*/
+static void cli_erase_status_bar() {
+
+  unsigned int i;   /* Loop iterator */
+  unsigned int rv;  /* Return value from fflush */
+
+  for( i=0; i<(CLI_NUM_DASHES+2); i++ ) {
+    printf( "\b" );
+  }
+  rv = fflush( stdout );
+  assert( rv == 0 );
+
+}
+
+/*!
+ \param percent  Specifies the percentage of completion to show.
+
+ Erases and redraws status bar for a given command (that takes time).
+*/
+static void cli_draw_status_bar(
+  unsigned int percent
+) {
+
+  static unsigned int last_percent = 100;  /* Last percent value given */
+  unsigned int        i;                   /* Loop iterator */
+  unsigned int        rv;                  /* Return value from fflush */
+
+  /* Only redisplay status bar if it needs to be updated */
+  if( last_percent != percent ) {
+
+    cli_erase_status_bar();
+
+    printf( "|" );
+
+    for( i=0; i<CLI_NUM_DASHES; i++ ) {
+      if( percent <= ((100 / CLI_NUM_DASHES) * i) ) {
+        printf( " " );
+      } else {
+        printf( "-" );
+      }
+    }
+
+    printf( "|" );
+
+    rv = fflush( stdout );
+    assert( rv == 0 );
+
+    last_percent = percent;
+
+  }
+
+}
+
+/*!
  Displays the current statement to standard output.
 */
-void cli_display_current_stmt() {
+static void cli_display_current_stmt() {
 
   thread* curr;        /* Pointer to current thread in queue */
   char**  code;        /* Pointer to code string from code generator */
@@ -199,7 +252,7 @@ void cli_display_current_stmt() {
 /*!
  Outputs the scope, block name, filename and line number of the current thread in the active queue to standard output.
 */
-void cli_display_current() {
+static void cli_display_current() {
 
   thread* curr;         /* Pointer to current thread */
   char    scope[4096];  /* String containing scope of given functional unit */
@@ -229,7 +282,7 @@ void cli_display_current() {
 
  Outputs the given signal value to standard output.
 */
-bool cli_display_signal( char* name ) {
+static bool cli_display_signal( char* name ) {
 
   bool       retval = TRUE;  /* Return value for this function */
   thread*    curr;           /* Pointer to current thread in simulator */
@@ -266,7 +319,7 @@ bool cli_display_signal( char* name ) {
 
  Starting at the current statement line, outputs the next num lines to standard output.
 */
-void cli_display_lines( unsigned num ) {
+static void cli_display_lines( unsigned num ) {
 
   thread* curr;        /* Pointer to current thread in simulation */
   FILE*   vfile;       /* File pointer to Verilog file */
@@ -280,21 +333,30 @@ void cli_display_lines( unsigned num ) {
   assert( curr != NULL );
   assert( curr->funit != NULL );
   assert( curr->curr != NULL );
-  assert( (vfile = fopen( curr->funit->filename, "r" )) != NULL );
 
-  /* Get the starting line number */
-  start_line = curr->curr->exp->line;
+  if( (vfile = fopen( curr->funit->filename, "r" )) != NULL ) {
 
-  /* Read the Verilog file and output lines when we are in range */
-  while( util_readline( vfile, &line ) ) {
-    if( (lnum >= start_line) && (lnum < (start_line + num)) ) {
-      printf( "    %7d:  %s\n", lnum, line );
+    /* Get the starting line number */
+    start_line = curr->curr->exp->line;
+
+    /* Read the Verilog file and output lines when we are in range */
+    while( util_readline( vfile, &line ) ) {
+      if( (lnum >= start_line) && (lnum < (start_line + num)) ) {
+        printf( "    %7d:  %s\n", lnum, line );
+      }
+      free_safe( line );
+      lnum++;
     }
-    free_safe( line );
-    lnum++;
-  }
 
-  fclose( vfile );
+    fclose( vfile );
+
+  } else {
+
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to open current file: %s", curr->funit->filename );
+    assert( rv < USER_MSG_LENGTH );
+    cli_print_error( user_msg, TRUE );
+
+  }
 
 }
 
@@ -308,7 +370,7 @@ void cli_display_lines( unsigned num ) {
 
  Parses the given command from the user.
 */
-bool cli_parse_input( char* line, bool perform, bool replaying, const sim_time* time ) {
+static bool cli_parse_input( char* line, bool perform, bool replaying, const sim_time* time ) {
 
   char     arg[4096];         /* Holder for user argument */
   bool     valid_cmd = TRUE;  /* Specifies if the given command was valid */
@@ -364,16 +426,32 @@ bool cli_parse_input( char* line, bool perform, bool replaying, const sim_time* 
     } else if( strncmp( "step", arg, 4 ) == 0 ) {
 
       if( perform ) {
-        if( sscanf( line, "%d", &stmts_left ) != 1 ) {
+        if( sscanf( line, "%u", &stmts_left ) != 1 ) {
           stmts_left = 1;
         }
+        stmts_specified = stmts_left;
       }
 
     } else if( strncmp( "next", arg, 4 ) == 0 ) {
 
       if( perform ) {
-        if( sscanf( line, "%d", &timesteps_left ) != 1 ) {
+        if( sscanf( line, "%u", &timesteps_left ) != 1 ) {
           timesteps_left = 1;
+        }
+        timesteps_specified = timesteps_left;
+      }
+
+    } else if( strncmp( "goto", arg, 4 ) == 0 ) {
+
+      if( perform ) {
+        uint64 timestep;
+        if( sscanf( line, "%llu", &timestep ) != 1 ) {
+          cli_print_error( "No timestep specified for goto command", perform );
+          valid_cmd = FALSE;
+        } else {
+          goto_timestep.lo   = (timestep & 0xffffffffLL);
+          goto_timestep.hi   = ((timestep >> 32) & 0xffffffffLL);
+          goto_timestep.full = timestep;
         }
       }
 
@@ -430,7 +508,7 @@ bool cli_parse_input( char* line, bool perform, bool replaying, const sim_time* 
 
       if( sscanf( line, "%s", arg ) == 1 ) {
         if( perform ) {
-          cli_display_signal( arg );
+          (void)cli_display_signal( arg );
         }
       } else {
         cli_print_error( "No signal name specified", perform );
@@ -555,7 +633,7 @@ bool cli_parse_input( char* line, bool perform, bool replaying, const sim_time* 
  Takes care of either replaying the history buffer or prompting the user for the next command
  to be issued.
 */
-void cli_prompt_user( const sim_time* time ) {
+static void cli_prompt_user( const sim_time* time ) {
 
   char* line;        /* Read line from user */
   char  arg[4096];   /* Holder for user argument */
@@ -586,7 +664,7 @@ void cli_prompt_user( const sim_time* time ) {
 
     }
 
-  } while( (stmts_left == 0) && (timesteps_left == 0) && !dont_stop );
+  } while( (stmts_left == 0) && (timesteps_left == 0) && TIME_CMP_GE(*time, goto_timestep) && !dont_stop );
 
 }
 
@@ -597,7 +675,7 @@ void cli_prompt_user( const sim_time* time ) {
 */
 void cli_execute( const sim_time* time ) {
 
-  static sim_time last_timestep;
+  static sim_time last_timestep = {0,0,0,FALSE};
 
   if( flag_use_command_line_debug ) {
 
@@ -606,16 +684,24 @@ void cli_execute( const sim_time* time ) {
       stmts_left--;
     }
 
-    /* Decrement timesteps_left it is set and the last timestep differs from the current simulation time */
-    if( (timesteps_left > 0) && TIME_CMP_NE(last_timestep, *time) ) {
-      timesteps_left--;
+    /* If the given time is not 0, possibly decrement the number of timesteps left */
+    if( (time->hi!=0) || (time->lo!=0) ) {
+
+      /* Decrement timesteps_left it is set and the last timestep differs from the current simulation time */
+      if( (timesteps_left > 0) && TIME_CMP_NE(last_timestep, *time) ) {
+        timesteps_left--;
+      }
+
+      /* Record the last timestep seen */
+      last_timestep = *time;
+
     }
 
-    /* Record the last timestep seen */
-    last_timestep = *time;
-
     /* If we have no more statements to execute and we are not supposed to continuely run, prompt the user */
-    if( (stmts_left == 0) && (timesteps_left == 0) && !dont_stop ) {
+    if( (stmts_left == 0) && (timesteps_left == 0) && TIME_CMP_GE(*time, goto_timestep) && !dont_stop ) {
+
+      /* Erase the status bar */
+      cli_erase_status_bar();
 
       /* Display current line that will be executed if we are not replaying */
       if( cli_replay_index == history_index ) {
@@ -624,6 +710,17 @@ void cli_execute( const sim_time* time ) {
 
       /* Get the next instruction from the user */
       cli_prompt_user( time );
+
+    /* Otherwise, potentially display a status bar */
+    } else {
+
+      if( stmts_left > 0 ) {
+        cli_draw_status_bar( ((stmts_specified - stmts_left) * 100) / stmts_specified );
+      } else if ( timesteps_left > 0 ) {
+        cli_draw_status_bar( ((timesteps_specified - timesteps_left) * 100) / timesteps_specified );
+      } else if ( TIME_CMP_GT(goto_timestep, *time) ) {
+        cli_draw_status_bar( 100 - (((goto_timestep.full - time->full) * 100) / goto_timestep.full) );
+      }
 
     }
 
@@ -677,6 +774,9 @@ bool cli_read_hist_file( char* fname ) {
 
 /*
  $Log$
+ Revision 1.12  2008/01/15 23:04:27  phase1geo
+ A few more updates.
+
  Revision 1.11  2008/01/07 23:59:54  phase1geo
  More splint updates.
 
