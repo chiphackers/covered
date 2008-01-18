@@ -116,8 +116,8 @@ static void cli_usage() {
   printf( "  next [<num>]            Advances to the next timestep if <num> is not\n" );
   printf( "                            specified; otherwise, advances <num> timesteps\n" );
   printf( "                            before returning to the CLI prompt.\n" );
-  printf( "  goto <timestep>         Advances to the given timestep (or the next timestep after the\n" );
-  printf( "                            given value if the timestep is not executed).\n" );
+  printf( "  goto <num>              Advances to the given timestep (or the next timestep after the\n" );
+  printf( "                            given value if the timestep is not executed) specified by <num>.\n" );
   printf( "  run                     Runs the simulation.\n" );
   printf( "  continue                Continues running the simulation.\n" );
   printf( "  display active_queue    Displays the current state of the active simulation queue.\n" );
@@ -414,11 +414,13 @@ static bool cli_parse_input( char* line, bool perform, bool replaying, const sim
         free_safe( history[history_index] );
         cli_parse_input( strdup( history[history_index-1] ), perform, replaying, time );
         history_index--;
+        cli_replay_index--;
       } else if( sscanf( line, "%d", &num ) == 1 ) {
         if( num < (history_index + 1) ) {
           free_safe( history[history_index] );
           cli_parse_input( strdup( history[num-1] ), perform, replaying, time );
           history_index--;
+          cli_replay_index--;
         } else {
           cli_print_error( "Illegal history number", perform );
           valid_cmd = FALSE;
@@ -785,6 +787,9 @@ bool cli_read_hist_file( char* fname ) {
 
 /*
  $Log$
+ Revision 1.14  2008/01/18 05:19:01  phase1geo
+ Fixing output glitch from status bar.
+
  Revision 1.13  2008/01/18 05:03:14  phase1geo
  Fixing bug in CLI that didn't stop the CLI prompt at the right location.
  Added "goto" command to allow us to simply simulate to a specific timestep.
