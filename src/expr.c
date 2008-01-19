@@ -758,10 +758,21 @@ void expression_resize( expression* expr, func_unit* funit, bool recursive, bool
       /* Need to set LAST (left) expression and our width to 1 */
       case EXP_OP_NEDGE   :
       case EXP_OP_PEDGE   :
-      case EXP_OP_AEDGE   :
         if( (expr->left->value->width != 1) || (expr->left->value->value == NULL) ) {
           assert( expr->left->value->value == NULL );
           expression_create_value( expr->left, 1, alloc );
+        }
+        if( (expr->value->width != 1) || (expr->value->value == NULL) ) {
+          assert( expr->value->value == NULL );
+          expression_create_value( expr, 1, alloc );
+        }
+        break;
+
+      /* Need to set LAST (left) expression to width of right and our width to 1 */
+      case EXP_OP_AEDGE   :
+        if( (expr->left->value->width != expr->right->value->width) || (expr->left->value->value == NULL) ) {
+          assert( expr->left->value->value == NULL );
+          expression_create_value( expr->left, expr->right->value->width, alloc );
         }
         if( (expr->value->width != 1) || (expr->value->value == NULL) ) {
           assert( expr->value->value == NULL );
@@ -4249,6 +4260,9 @@ void expression_dealloc( expression* expr, bool exp_only ) { PROFILE(EXPRESSION_
 
 /* 
  $Log$
+ Revision 1.276  2008/01/16 05:01:22  phase1geo
+ Switched totals over from float types to int types for splint purposes.
+
  Revision 1.275  2008/01/15 23:01:14  phase1geo
  Continuing to make splint updates (not doing any memory checking at this point).
 

@@ -25,7 +25,8 @@ CDD_DIR       = ../cdd
 
 LOGFILE = regress.log
 
-DIAGS1        = add1            always1         always2         always3         always3.1.11A \
+DIAGS1        = add1            aedge1          aedge1.1        always1         always2 \
+                always3         always3.1.11A \
                 always4         always5         always6         always7         always7.1 \
                 always8         always9         always10        always11        always11.1 \
                 always11.2      always12        always13        ashift1         ashift2 \
