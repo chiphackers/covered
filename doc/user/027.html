@@ -214,6 +214,12 @@
               timesteps before returning to the CLI prompt.</TD>
             </TR>
             <TR>
+              <TD>goto <i>num</i></TD>
+              <TD>
+              Advances to the given timestep (or the next timestep after the given value if the timestep 
+              is not executed) specified by <i>num</i>.</TD>
+            </TR>
+            <TR>
               <TD>run</TD>
               <TD>
               Runs the simulation to completion.</TD>
@@ -224,44 +230,50 @@
               Continues running the simulation to completion.</TD>
             </TR>
             <TR>
-              <TD>display active_queue</TD>
+              <TD>thread active</TD>
               <TD>
               Displays the current state of the internal active simulation queue.  This queue consists
               of process threads that will be executed in the current timestep.</TD>
             </TR>
             <TR>
-              <TD>display delayed_queue</TD>
+              <TD>thread delayed</TD>
               <TD>
               Displays the current state of the internal delayed simulation queue.  This queue consists
               of process threads that will be executed at a later time as dictated by a delay statement.</TD>
             </TR>
             <TR>
-              <TD>display waiting_queue</TD>
+              <TD>thread waiting</TD>
               <TD>
               Displays the current state of the internal waiting simulation queue.  This queue consists
               of process threads that are not active or delayed but may be activated by a value change in
               one of the signals in its expression tree.</TD>
             </TR>
             <TR>
-              <TD>display all_list</TD>
+              <TD>thread all</TD>
               <TD>
               Displays the current state of all process threads in the simulator.</TD>
             </TR>
             <TR>
-              <TD>display current</TD>
+              <TD>current</TD>
               <TD>
               Displays the current scope, block, filename and line number of the statement that is about
               to be executed in the active queue.</TD>
             </TR>
             <TR>
-              <TD>display time</TD>
+              <TD>time</TD>
               <TD>
               Displays the current simulation time.</TD>
             </TR>
             <TR>
-              <TD>show <i>signal_name</i></TD>
+              <TD>signal <i>name</i></TD>
               <TD>
               Displays the current value of the given net/variable.</TD>
+            </TR>
+            <TR>
+              <TD>expr <i>num</i></TD>
+              <TD>
+              Displays the given expression and its current value where <i>num</i> is the ID of the 
+              expression to output.</TD>
             </TR>
             <TR>
               <TD>debug [on | off]</TD>

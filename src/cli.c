@@ -28,6 +28,9 @@
 
 #include "cli.h"
 #include "codegen.h"
+#include "expr.h"
+#include "func_unit.h"
+#include "link.h"
 #include "scope.h"
 #include "sim.h"
 #include "util.h"
@@ -120,13 +123,15 @@ static void cli_usage() {
   printf( "                            given value if the timestep is not executed) specified by <num>.\n" );
   printf( "  run                     Runs the simulation.\n" );
   printf( "  continue                Continues running the simulation.\n" );
-  printf( "  display active_queue    Displays the current state of the active simulation queue.\n" );
-  printf( "  display delayed_queue   Displays the current state of the delayed simulation queue.\n" );
-  printf( "  display waiting_queue   Displays the current state of the waiting simulation queue.\n" );
-  printf( "  display all_list        Displays the list of all threads.\n" );
-  printf( "  display current         Displays the current scope, block, filename and line number.\n" );
-  printf( "  display time            Displays the current simulation time.\n" );
-  printf( "  show <signal>           Displays the current value of the given net/variable.\n" );
+  printf( "  thread active            Displays the current state of the active simulation queue.\n" );
+  printf( "  thread delayed           Displays the current state of the delayed simulation queue.\n" );
+  printf( "  thread waiting           Displays the current state of the waiting simulation queue.\n" );
+  printf( "  thread all              Displays the list of all threads.\n" );
+  printf( "  current                 Displays the current scope, block, filename and line number.\n" );
+  printf( "  time                    Displays the current simulation time.\n" );
+  printf( "  signal <name>           Displays the current value of the given net/variable.\n" );
+  printf( "  expr <num>              Displays the given expression and its current value where <num>\n" );
+  printf( "                            is the ID of the expression to output.\n" );
   printf( "  debug [on | off]        Turns verbose debug output from simulator on\n" );
   printf( "                            or off.  If 'on' or 'off' is not specified,\n" );
   printf( "                            displays the current debug mode.\n" );
@@ -291,6 +296,8 @@ static void cli_display_current() {
 /*!
  \param name  Name of signal to display
 
+ \return Returns TRUE if signal was found; otherwise, returns FALSE.
+
  Outputs the given signal value to standard output.
 */
 static bool cli_display_signal( char* name ) {
@@ -317,6 +324,55 @@ static bool cli_display_signal( char* name ) {
   } else {
 
     cli_print_error( "Unable to find specified signal", TRUE );
+    retval = FALSE;
+
+  }
+
+  return( retval );
+
+}
+
+/*!
+ \param id  Expression ID of expression to display
+
+ \param Returns TRUE if expression was found; otherwise, returns FALSE.
+
+ Outputs the given expression and its value to standard output.
+*/
+static bool cli_display_expression( int id ) {
+
+  bool       retval = TRUE;  /* Return value for this function */
+  func_unit* funit;          /* Pointer to functional unit that contains the given expression */
+
+  /* Find the functional unit that contains this expression ID */
+  if( (funit = funit_find_by_id( id )) != NULL ) {
+
+    char**       code       = NULL;  /* Code to output */
+    int          code_depth = 0;     /* Number of elements in code array */
+    unsigned int i;                  /* Loop iterator */
+    exp_link*    expl;               /* Pointer to found expression */
+
+    /* Find the expression */
+    expl = exp_link_find( id, funit->exp_head );
+    assert( expl != NULL );
+    assert( expl->exp != NULL );
+
+    /* Output the expression */
+    codegen_gen_expr( expl->exp, expl->exp->op, &code, &code_depth, funit );
+    assert( code_depth > 0 );
+    for( i=0; i<code_depth; i++ ) {
+      printf( "    %s\n", code[i] );
+      free_safe( code[i] );
+    }
+    free_safe( code );
+
+    /* Output the expression value */
+    printf( "\n  " );
+    expression_display( expl->exp );
+
+  } else {
+
+    cli_print_error( "Unable to find specified expression", TRUE );
     retval = FALSE;
 
   }
@@ -481,43 +537,47 @@ static bool cli_parse_input( char* line, bool perform, bool replaying, const sim
         dont_stop = TRUE;
       }
 
-    } else if( strncmp( "display", arg, 7 ) == 0 ) {
+    } else if( strncmp( "thread", arg, 6 ) == 0 ) {
 
       if( sscanf( line, "%s", arg ) == 1 ) {
-        if( strncmp( "active_queue", arg, 12 ) == 0 ) {
+        if( strncmp( "active", arg, 6 ) == 0 ) {
           if( perform ) {
             sim_display_active_queue();
           }
-        } else if( strncmp( "delayed_queue", arg, 13 ) == 0 ) {
+        } else if( strncmp( "delayed", arg, 7 ) == 0 ) {
           if( perform ) {
             sim_display_delay_queue();
           }
-        } else if( strncmp( "waiting_queue", arg, 13 ) == 0 ) {
+        } else if( strncmp( "waiting", arg, 7 ) == 0 ) {
           if( perform ) {
             sim_display_wait_queue();
           }
-        } else if( strncmp( "all_list", arg, 8 ) == 0 ) {
+        } else if( strncmp( "all", arg, 3 ) == 0 ) {
           if( perform ) {
             sim_display_all_list();
           }
-        } else if( strncmp( "current", arg, 5 ) == 0 ) {
-          if( perform ) {
-            cli_display_current();
-          }
-        } else if( strncmp( "time", arg, 4 ) == 0 ) {
-          if( perform ) {
-            printf( "    TIME: %lld\n", time->full );
-          }
         } else {
-          cli_print_error( "Unknown display type", perform );
-          valid_cmd = FALSE; 
+          cli_print_error( "Illegal thread type specified", perform );
+          valid_cmd = FALSE;
         }
       } else {
-        cli_print_error( "Type information missing from display command", perform );
-        valid_cmd = FALSE; 
+        cli_print_error( "Type information missing from thread command", perform );
+        valid_cmd = FALSE;
       }
 
-    } else if( strncmp( "show", arg, 4 ) == 0 ) {
+    } else if( strncmp( "current", arg, 7 ) == 0 ) {
+
+      if( perform ) {
+        cli_display_current();
+      }
+
+    } else if( strncmp( "time", arg, 4 ) == 0 ) {
+
+      if( perform ) {
+        printf( "    TIME: %lld\n", time->full );
+      }
+
+    } else if( strncmp( "signal", arg, 6 ) == 0 ) {
 
       if( sscanf( line, "%s", arg ) == 1 ) {
         if( perform ) {
@@ -525,6 +585,18 @@ static bool cli_parse_input( char* line, bool perform, bool replaying, const sim
         }
       } else {
         cli_print_error( "No signal name specified", perform );
+        valid_cmd = FALSE;
+      }
+
+    } else if (strncmp( "expr", arg, 4 ) == 0 ) {
+
+      int id;
+      if( sscanf( line, "%d", &id ) == 1 ) {
+        if( perform ) {
+          (void)cli_display_expression( id );
+        }
+      } else {
+        cli_print_error( "No expression ID specified", perform );
         valid_cmd = FALSE;
       }
 
@@ -787,6 +859,9 @@ bool cli_read_hist_file( char* fname ) {
 
 /*
  $Log$
+ Revision 1.15  2008/01/18 23:37:27  phase1geo
+ Fixing some issues surrounding the use of the !! command.
+
  Revision 1.14  2008/01/18 05:19:01  phase1geo
  Fixing output glitch from status bar.
 
