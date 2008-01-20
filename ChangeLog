@@ -1,245 +1,137 @@
-2008-01-02 22:43  phase1geo
+2008-01-19 22:39  phase1geo
 
-	Updating user documentation for debugging information.	This
-	documentation is now complete.
+	Renaming commands in CLI to make things easier to remember and
+	shorter to type.  Added CLI expr command that outputs a given
+	expression and its current state/value.  Updated documentation per
+	CLI changes.  Also updated build scripts and user documentation for
+	upcoming development release.
 
-2008-01-02 17:48  phase1geo
+2008-01-19 10:50  phase1geo
 
-	Removing unnecessary check in vector.c.  Fixing bug 1862769.
+	Updating regressions in VCS per latest code fix.
 
-2008-01-02 00:00  phase1geo
+2008-01-18 23:57  phase1geo
 
-	Updating user documentation to include the CLI and profiling
-	documentation.	(CLI documentation is not complete at this time). 
-	Fixes bug 1861986.
+	Fixing bug 1875180.  The anyedge operator now properly compares the
+	values for changes.  Added aedge1 and aedge1.1 diagnostics to
+	regression suite to verify this fix.  Updated bad CDD files per
+	this change.
 
-2007-12-31 17:46  phase1geo
+2008-01-18 17:37  phase1geo
 
-	Adding new port4 diagnostic to verify fix for bug 1858408.
+	Fixing some issues surrounding the use of the !! command.
 
-2007-12-31 17:43  phase1geo
+2008-01-17 23:19  phase1geo
 
-	Fixing bug 1858408.  Also fixing issues with vector_op_add
-	functionality.
+	Fixing output glitch from status bar.
 
-2007-12-28 15:34  phase1geo
+2008-01-17 23:03  phase1geo
 
-	Adding title-bar icon files.
+	Fixing bug in CLI that didn't stop the CLI prompt at the right
+	location.  Added "goto" command to allow us to simply simulate to a
+	specific timestep.  Added status bar to indicate to the user how
+	much we have gotten to our simulation goal for the CLI.
 
-2007-12-21 13:31  phase1geo
+2008-01-17 14:24  phase1geo
 
-	Updating site shortcuts for new page.
+	Fixed VPI issue that led to failing regressions.  Regressions now
+	completely pass in both VCD and VPI modes of operation!
 
-2007-12-21 12:53  phase1geo
+2008-01-17 12:04  phase1geo
 
-	Starting to update User Guide with Debugging section and for other
-	modifications regarding the new release.
+	Added the rest of updates for VCS regressions.
 
-2007-12-20 17:47  phase1geo
+2008-01-17 01:04  phase1geo
 
-	Adding +covered_profile option to VPI mode of operation.  Fixed a
-	few bugs with VPI usage.
+	Adding support for running in VPI mode on Mac OS X.  Still some
+	work left to do here.
 
-2007-12-19 23:18  phase1geo
+2008-01-17 00:03  phase1geo
 
-	Fixing another regression bug with running in --enable-debug mode
-	and removing unnecessary output.
+	Completing regression runs.
 
-2007-12-19 22:47  phase1geo
+2008-01-16 22:34  phase1geo
 
-	Fixing the last of the regression failures from previous changes. 
-	Removing unnecessary output used for debugging.
+	Updating regression per latest bug fixes and splint updates.
 
-2007-12-19 22:26  phase1geo
+2008-01-16 17:10  phase1geo
 
-	Removing files.
+	More splint updates.  Code is now warning/error free with current
+	version of run_splint.	Still have regression issues to debug.
 
-2007-12-19 16:54  phase1geo
+2008-01-16 00:40  phase1geo
 
-	More compiler fixes (almost there now).  Checkpointing.
+	More splint updates.
 
-2007-12-19 08:37  phase1geo
+2008-01-15 23:01  phase1geo
 
-	More compiler fixes (still more to go).  Checkpointing.
-
-2007-12-18 22:27  phase1geo
-
-	More fixes for compiler errors (still more to go).  Checkpointing.
-
-2007-12-18 17:55  phase1geo
-
-	Starting to remove 64-bit time and replacing it with a sim_time
-	structure for performance enhancement purposes.  Also removing
-	global variables for time-related information and passing this
-	information around by reference for performance enhancement
+	Switched totals over from float types to int types for splint
 	purposes.
 
-2007-12-17 17:47  phase1geo
+2008-01-15 17:04  phase1geo
 
-	Adding more profiling information.
+	A few more updates.
 
-2007-12-14 17:38  phase1geo
+2008-01-15 17:01  phase1geo
 
-	More performance enhancements.	Checkpointing.
+	Continuing to make splint updates (not doing any memory checking at
+	this point).
 
-2007-12-13 08:25  phase1geo
+2008-01-13 23:08  phase1geo
 
-	Attempting to enhance performance of the sim_simulation function (I
-	have a few different code segments here to do the task at the
-	moment).
+	Fixing bug created while doing splint updates.
 
-2007-12-12 20:32  phase1geo
+2008-01-10 08:46  phase1geo
 
-	Fixing segmentation fault.
+	Adding cexcept.h file for exception-handling purposes.	This file
+	is currently not in use at this point, however.
 
-2007-12-12 17:36  phase1geo
+2008-01-09 22:59  phase1geo
 
-	Optimized vector_op_add function significantly.  Other improvements
-	made to profiler output.  Attempted to optimize the sim_simulation
-	function although it hasn't had the intended effect and delay1.3 is
-	currently failing.  Checkpointing for now.
+	More splint updates.  All exportlocal cases are now taken care of.
 
-2007-12-12 08:17  phase1geo
+2008-01-09 17:54  phase1geo
 
-	Enhancing the profiling report.
+	More splint updates.
 
-2007-12-12 02:04  phase1geo
+2008-01-08 23:22  phase1geo
 
-	Adding more timed functions for profiling purposes.
+	More splint updates using the -standard option.
 
-2007-12-12 01:52  phase1geo
+2008-01-08 15:13  phase1geo
 
-	Separating debugging and profiling so that we can do profiling
-	without all of the debug overhead.
+	Completed -weak splint run.  Full regressions pass.
 
-2007-12-12 01:23  phase1geo
+2008-01-08 07:27  phase1geo
 
-	More work on profiling.  I have now included the ability to get
-	function runtimes.  Still more work to do but everything is
-	currently working at the moment.
+	More splint updates.
 
-2007-12-11 17:19  phase1geo
+2008-01-07 17:59  phase1geo
 
-	Fixed compile issues and completed first pass injection of
-	profiling calls.  Working on ordering the calls from most to least.
+	More splint updates.
 
-2007-12-11 09:08  phase1geo
+2008-01-06 23:01  phase1geo
 
-	Updates to Makefiles.
+	Cleaning up more splint errors.
 
-2007-12-11 09:07  phase1geo
+2008-01-04 17:07  phase1geo
 
-	Adding missing file.
+	More splint updates.
 
-2007-12-11 09:07  phase1geo
+2008-01-04 17:01  phase1geo
 
-	More modifications.
+	Adding initial form of splint run script.  Started cleaning up
+	splint errors/warnings.
 
-2007-12-10 23:48  phase1geo
+2008-01-03 10:46  phase1geo
 
-	Fixing more compile errors with new code changes and adding more
-	profiling.  Still have a ways to go before we can compile cleanly
-	again (next submission should do it).
+	Updating AUTHORS.
 
-2007-12-10 17:16  phase1geo
+2008-01-03 10:20  phase1geo
 
-	Working on adding profiler for use in finding performance issues. 
-	Things don't compile at the moment.
+	Updating INSTALL notes for profiler and score CLI command.
 
-2007-11-19 23:31  phase1geo
+2008-01-03 10:17  phase1geo
 
-	Fixing syntax error in VCD parser per bug 1832592.
-
-2007-11-19 23:28  phase1geo
-
-	Updating e-mail address from trevorw@charter.net to
-	phase1geo@gmail.com.
-
-2007-09-18 16:41  phase1geo
-
-	Removing inport indicator bit in vector and replacing with
-	owns_data bit indicator.  Full regression passes.
-
-2007-09-17 08:32  phase1geo
-
-	Adding some new structure members to support struct/union.
-
-2007-09-14 16:22  phase1geo
-
-	Fixing compile issues.
-
-2007-09-14 01:22  phase1geo
-
-	Filling in existing functions in struct_union.	Completed parser
-	code for handling struct/union declarations.  Code compiles thus
-	far.
-
-2007-09-13 17:50  phase1geo
-
-	Initial creation of struct_union files.  Added initial parsing
-	ability for structs and unions (though I don't believe this is
-	complete at this time).
-
-2007-09-13 12:03  phase1geo
-
-	Cleaning up some const-ness corrections -- still more to go but
-	it's a good start.
-
-2007-09-12 10:27  phase1geo
-
-	Fixing a few parser issues and adding missing files to get
-	regressions to fully pass.
-
-2007-09-12 00:40  phase1geo
-
-	Adding support for bool and char types in FOR loop initialization
-	blocks.  Adding a plethora of new diagnostics to completely verify
-	this new functionality.  These new diagnostics have not been run
-	yet so they will fail in the next run of regression but should be
-	ready to be checked out.
-
-2007-09-11 17:39  phase1geo
-
-	Updating TODO.
-
-2007-09-11 17:38  phase1geo
-
-	Fixing for loop variable instantiation.  Added for5 to regression
-	suite -- in the process of running full regressions with this
-	change.
-
-2007-09-11 00:01  phase1geo
-
-	Updating parser to handle embedded type information and consecutive
-	data assignments in initialization block of FOR loop (not added for
-	generate for blocks yet, however).  Fixed a few other parser
-	compile errors.
-
-2007-09-10 17:52  phase1geo
-
-	Fixing compile errors.	Added for5 diagnostic for preparation for
-	feature addition.
-
-2007-09-08 00:15  phase1geo
-
-	Cleaning up parser2.y (much more work to do here yet).
-
-2007-09-07 17:36  phase1geo
-
-	Completed first pass of new parser.  Still encountering some bison
-	errors with the original syntax, but this includes the entire
-	normative.
-
-2007-09-07 00:39  phase1geo
-
-	More parser updates to support SystemVerilog BNF.
-
-2007-09-06 17:53  phase1geo
-
-	Starting to create new parser that is fully SystemVerilog
-	compliant.  This represents only the beginning of this work.
-
-2007-09-06 11:07  phase1geo
-
-	Getting everything ready for 20070906 development release.
+	Updating some missed files in the installation process.
 

@@ -1,6 +1,33 @@
 Covered-Related NEWS
 ====================
 
+    * 1/20/2008
+
+Development release covered-20080120 made.  This is primarily a bug fix release over the last development
+release and also includes some enhancements to the CLI.  Additionally, Covered has been run under splint
+to remove some potential issues.  This release is meant to be a beta testing ground for the upcoming 0.6
+stable release as it gets a pre-0.6 release into the hands of the general public.  Please report any bugs
+found with this release as soon as possible so that I can get a 0.6 stable release available.  The
+following is a list of changes in this release:
+
+  - Fixed code to run splint clean with the -weak option as well as a reduced set of the -standard option
+    (the shell script in the src directory contains the command-line that was run with splint if you want
+    to know exactly which checks were performed/not performed with splint).
+  - Fixed several bugs and potential bugs in code found by the splint utility. 
+  - Added capability of running in VPI mode on Mac OS X (Icarus Verilog works at this point).
+  - Fixed 'next' command in CLI to work as intended
+  - Added 'goto' command in CLI to allow the user to jump to a specific timestep
+  - Added 'expr' command in CLI to allow the user to view a given expression by its Covered ID and its
+    current state/value.
+  - Renamed several CLI commands to make them easier to remember and reduces amount of typing required.
+  - Added status bar for step, next and goto commands in CLI to help the user understand if/when
+    progress was being made by the simulator.
+  - Fixed bugs with regards to the '!!' command in CLI (this should now work as intended).
+  - Fixed bug 1875180 which would lead to incorrect simulation results and would possibly cause a 
+    Covered simulation to go into an "infinite loop".
+  - Added new diagnostics to regression suite.
+  - Documentation updates per changes. 
+
     * 1/3/2008
 
 Development release covered-20080103 made.  This is primarily a bug fix and performance enhancement
