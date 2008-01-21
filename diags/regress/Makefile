@@ -127,10 +127,10 @@ NOSIMERRLIST  = comment1        enum2           err4            err4.1          
                 gen32           gen32.1         gen33           gen33.1         gen34 \
                 gen34.1         gen35           gen35.1         gen36           gen36.1 \
                 gen37           gen37.1         gen38           gen38.1         gen39 \
-                gen39.1         gen40           gen40.1         timescale3      timescale3.1 \
-                timescale3.2    timescale3.3    timescale3.4    timescale3.5    timescale3.6 \
-                timescale3.7    timescale3.8    timescale3.9    timescale3.10   timescale3.11 \
-                timescale3.12   timescale3.13   timescale3.14
+                gen39.1         gen40           gen40.1         include_err     timescale3 \
+                timescale3.1    timescale3.2    timescale3.3    timescale3.4    timescale3.5 \
+                timescale3.6    timescale3.7    timescale3.8    timescale3.9    timescale3.10 \
+                timescale3.11   timescale3.12   timescale3.13   timescale3.14
            
 IVONLYDIAGS1  = always5.1       assign1         assign2.8       example         fsm1 \
                 fsm1.1          fsm1.2          fsm1.3          fsm1.4          fsm6 \

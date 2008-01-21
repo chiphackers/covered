@@ -145,7 +145,9 @@ bool search_add_include_path( const char* path ) { PROFILE(SEARCH_ADD_INCLUDE_PA
     tmp = strdup_safe( path );
     (void)str_link_add( tmp, &inc_paths_head, &inc_paths_tail );
   } else {
-    retval = FALSE;
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Include directory %s does not exist", path );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, WARNING, __FILE__, __LINE__ );
   }
 
   return( retval );
@@ -172,7 +174,6 @@ bool search_add_directory_path( const char* path ) { PROFILE(SEARCH_ADD_DIRECTOR
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Library directory %s does not exist", path );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, WARNING, __FILE__, __LINE__ );
-    retval = FALSE;
   }
 
   return( retval );
@@ -198,7 +199,6 @@ bool search_add_file( const char* file ) { PROFILE(SEARCH_ADD_FILE);
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "File %s does not exist", file );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    retval = FALSE;
   }
 
   return( retval );
@@ -296,6 +296,10 @@ void search_free_lists() { PROFILE(SEARCH_FREE_LISTS);
 
 /*
  $Log$
+ Revision 1.37  2008/01/16 23:10:33  phase1geo
+ More splint updates.  Code is now warning/error free with current version
+ of run_splint.  Still have regression issues to debug.
+
  Revision 1.36  2008/01/09 05:22:22  phase1geo
  More splint updates using the -standard option.
 

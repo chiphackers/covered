@@ -818,7 +818,7 @@ void cli_execute( const sim_time* time ) {
 
  \return Returns TRUE if history file was read without error; otherwise, returns FALSE.
 */
-bool cli_read_hist_file( char* fname ) {
+bool cli_read_hist_file( const char* fname ) {
 
   bool  retval = TRUE;  /* Return value for this function */
   char* line;           /* Holds current line read from history file */
@@ -859,6 +859,12 @@ bool cli_read_hist_file( char* fname ) {
 
 /*
  $Log$
+ Revision 1.16  2008/01/20 04:39:42  phase1geo
+ Renaming commands in CLI to make things easier to remember and shorter to type.
+ Added CLI expr command that outputs a given expression and its current state/value.
+ Updated documentation per CLI changes.  Also updated build scripts and user
+ documentation for upcoming development release.
+
  Revision 1.15  2008/01/18 23:37:27  phase1geo
  Fixing some issues surrounding the use of the !! command.
 

@@ -949,21 +949,22 @@ static bool score_parse_args( int argc, int last_arg, const char** argv ) { PROF
  \param last_arg  Index of last parsed argument in list.
  \param argv      Arguments from command-line to parse.
 
- \return Returns 0 if scoring is successful; otherwise, returns -1.
+ \return Returns EXIT_SUCCESS if scoring is successful; otherwise, returns EXIT_FAILURE.
 
  Performs score command functionality.
 */
 int command_score( int argc, int last_arg, const char** argv ) { PROFILE(COMMAND_SCORE);
 
-  int          retval = 0;  /* Return value for this function */
-  unsigned int rv;          /* Return value from snprintf calls */
+  int          retval = EXIT_SUCCESS;  /* Return value for this function */
+  unsigned int rv;                     /* Return value from snprintf calls */
+
+  /* Output header information */
+  rv = snprintf( user_msg, USER_MSG_LENGTH, COVERED_HEADER );
+  assert( rv < USER_MSG_LENGTH );
+  print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 
   /* Parse score command-line */
   if( score_parse_args( argc, last_arg, argv ) ) {
-
-    rv = snprintf( user_msg, USER_MSG_LENGTH, COVERED_HEADER );
-    assert( rv < USER_MSG_LENGTH );
-    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 
     if( output_db == NULL ) {
       output_db = strdup_safe( DFLT_OUTPUT_CDD );
@@ -1043,6 +1044,10 @@ int command_score( int argc, int last_arg, const char** argv ) { PROFILE(COMMAND
     free_safe( top_instance );
     free_safe( vpi_timescale );
 
+  } else {
+
+    retval = EXIT_FAILURE;
+
   }
 
   PROFILE_END;
@@ -1053,6 +1058,9 @@ int command_score( int argc, int last_arg, const char** argv ) { PROFILE(COMMAND
 
 /*
  $Log$
+ Revision 1.107  2008/01/17 06:03:08  phase1geo
+ Completing regression runs.
+
  Revision 1.106  2008/01/16 23:10:33  phase1geo
  More splint updates.  Code is now warning/error free with current version
  of run_splint.  Still have regression issues to debug.

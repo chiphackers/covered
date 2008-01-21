@@ -149,22 +149,26 @@ static bool merge_parse_args( int argc, int last_arg, const char** argv ) {
  \param last_arg  Index of last parsed argument from list.
  \param argv      List of arguments from command-line to parse.
 
- \return Returns 0 if merge is successful; otherwise, returns -1.
+ \return Returns EXIT_SUCCESS if merge is successful; otherwise, returns EXIT_FAILURE.
 
  Performs merge command functionality.
 */
 int command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAND_MERGE);
 
-  int retval = 0;  /* Return value of this function */
-  int i;           /* Loop iterator */
-  int mnum;        /* Number of merge files to read */
+  int          retval = EXIT_SUCCESS;  /* Return value of this function */
+  int          i;                      /* Loop iterator */
+  int          mnum;                   /* Number of merge files to read */
+  unsigned int rv;                     /* Return value from snprintf calls */
+
+  /* Output header information */
+  rv = snprintf( user_msg, USER_MSG_LENGTH, COVERED_HEADER );
+  assert( rv < USER_MSG_LENGTH );
+  print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 
   /* Parse score command-line */
   if( merge_parse_args( argc, last_arg, argv ) ) {
 
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, COVERED_HEADER );
-    assert( rv < USER_MSG_LENGTH );
-    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+    unsigned int rv;
 
     /* Initialize all global information */
     info_initialize();
@@ -210,6 +214,10 @@ int command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAND
     /* Close database */
     db_close();
 
+  } else {
+
+    retval = EXIT_FAILURE;
+
   }
 
   /* Deallocate memory */
@@ -227,6 +235,10 @@ int command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAND
 
 /*
  $Log$
+ Revision 1.37  2008/01/16 23:10:31  phase1geo
+ More splint updates.  Code is now warning/error free with current version
+ of run_splint.  Still have regression issues to debug.
+
  Revision 1.36  2008/01/10 04:59:04  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 

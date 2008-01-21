@@ -105,17 +105,18 @@ static void covered_cleanup( void ) {
 /*!
  \param argc Number of arguments specified in argv parameter list.
  \param argv List of arguments passed to this process from the command-line.
- \return Returns 0 to indicate a successful return; otherwise, returns a non-zero value.
+
+ \return Returns EXIT_SUCCESS to indicate a successful return; otherwise, returns EXIT_FAILURE.
 
  Main function for the Covered utility.  Parses command-line arguments and calls
  the appropriate functions.
 */
 int main( int argc, const char** argv ) {
 
-  int          retval    = 0;      /* Return value of this utility */
-  int          curr_arg  = 1;      /* Current position in argument list */
-  bool         cmd_found = FALSE;  /* Set to TRUE when command found in arg list */
-  unsigned int rv;                 /* Temporary return value from functions */
+  int          retval    = EXIT_SUCCESS;  /* Return value of this utility */
+  int          curr_arg  = 1;             /* Current position in argument list */
+  bool         cmd_found = FALSE;         /* Set to TRUE when command found in arg list */
+  unsigned int rv;                        /* Temporary return value from functions */
 
   /* Initialize error suppression value */
   set_output_suppression( FALSE );
@@ -156,7 +157,7 @@ int main( int argc, const char** argv ) {
 #ifdef DEBUG_MODE
           set_debug( TRUE );
 #else
-          print_output( "Global command -D can only be used when Covered is configured with the --enable-debug flag when being built", FATAL, __FILE__, __LINE__ );
+          print_output( "Global command -D can only be used when Covered is configured with the --enable-debug flag when being built", WARNING, __FILE__, __LINE__ );
 #endif
 
         } else if( strncmp( "-P", argv[curr_arg], 2 ) == 0 ) {
@@ -175,7 +176,7 @@ int main( int argc, const char** argv ) {
             profiler_set_filename( PROFILING_OUTPUT_NAME );
           }
 #else
-          print_output( "Global command -P can only be used when Covered is configured with the --enable-profiling flag when being built", FATAL, __FILE__, __LINE__ );
+          print_output( "Global command -P can only be used when Covered is configured with the --enable-profiling flag when being built", WARNING, __FILE__, __LINE__ );
 #endif
 
         } else if( strncmp( "-B", argv[curr_arg], 2 ) == 0 ) {
@@ -213,7 +214,7 @@ int main( int argc, const char** argv ) {
       if( !cmd_found ) {
  
         print_output( "Must specify a command (score, merge, report, -v, or -h)", FATAL, __FILE__, __LINE__ );
-        retval = -1;
+        retval = EXIT_FAILURE;
 
       }
 
@@ -233,6 +234,9 @@ int main( int argc, const char** argv ) {
 
 /*
  $Log$
+ Revision 1.28  2008/01/17 04:35:12  phase1geo
+ Updating regression per latest bug fixes and splint updates.
+
  Revision 1.27  2008/01/16 23:10:31  phase1geo
  More splint updates.  Code is now warning/error free with current version
  of run_splint.  Still have regression issues to debug.

@@ -31,10 +31,16 @@
 void cli_execute( const sim_time* time );
 
 /*! \brief Reads in given history file from -cli option */
-bool cli_read_hist_file( char* fname );
+bool cli_read_hist_file( const char* fname );
 
 /*
  $Log$
+ Revision 1.4  2007/12/18 23:55:21  phase1geo
+ Starting to remove 64-bit time and replacing it with a sim_time structure
+ for performance enhancement purposes.  Also removing global variables for time-related
+ information and passing this information around by reference for performance
+ enhancement purposes.
+
  Revision 1.3  2007/11/20 05:28:57  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

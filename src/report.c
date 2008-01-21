@@ -783,28 +783,30 @@ bool report_save_cdd( char* filename ) { PROFILE(REPORT_SAVE_CDD);
  \param last_arg  Index of last parsed argument from list.
  \param argv      Arguments passed to report command to parse.
 
- \return Returns 0 is report is successful; otherwise, returns -1.
+ \return Returns EXIT_SUCCESS is report is successful; otherwise, returns EXIT_FAILURE.
 
  Performs report command functionality.
 */
 int command_report( int argc, int last_arg, const char** argv ) { PROFILE(COMMAND_REPORT);
 
-  int   retval = 0;       /* Return value of this function */
-  FILE* ofile;            /* Pointer to output stream */
+  int          retval = EXIT_SUCCESS;  /* Return value of this function */
+  FILE*        ofile;                  /* Pointer to output stream */
 #ifdef HAVE_TCLTK
-  char* covered_home;     /* Pathname to Covered's home installation directory */
-  char* covered_browser;  /* Name of browser to use for GUI help pages */
-  char* covered_version;  /* String version of current Covered version */
-  char* main_file;        /* Name of main TCL file to interpret */ 
-  char* user_home;        /* HOME environment variable */
+  char*        covered_home;           /* Pathname to Covered's home installation directory */
+  char*        covered_browser;        /* Name of browser to use for GUI help pages */
+  char*        covered_version;        /* String version of current Covered version */
+  char*        main_file;              /* Name of main TCL file to interpret */ 
+  char*        user_home;              /* HOME environment variable */
 #endif
+  unsigned int rv;                     /* Return value from snprintf calls */
+
+  /* Output header information */
+  rv = snprintf( user_msg, USER_MSG_LENGTH, COVERED_HEADER );
+  assert( rv < USER_MSG_LENGTH );
+  print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 
   /* Parse score command-line */
   if( report_parse_args( argc, last_arg, argv ) ) {
-
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, COVERED_HEADER );
-    assert( rv < USER_MSG_LENGTH );
-    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 
     /* Initialize all global variables */
     info_initialize();
@@ -925,6 +927,10 @@ int command_report( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
     }
 
+  } else {
+
+    retval = EXIT_FAILURE;
+
   }
 
   free_safe( input_db );
@@ -941,6 +947,10 @@ int command_report( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
 /*
  $Log$
+ Revision 1.90  2008/01/16 23:10:33  phase1geo
+ More splint updates.  Code is now warning/error free with current version
+ of run_splint.  Still have regression issues to debug.
+
  Revision 1.89  2008/01/09 05:22:22  phase1geo
  More splint updates using the -standard option.
 

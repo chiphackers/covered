@@ -180,7 +180,7 @@ tcl_SCRIPTS = assert.tcl \
               cdd_view.tcl \
               comb.tcl \
               cov_create.tcl \
-              cov_icon.png \
+              cov_icon.bmp \
               fsm.tcl \
               help.tcl \
               help_wrapper.tcl \
