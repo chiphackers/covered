@@ -3699,13 +3699,6 @@ void expression_operate_recursively( expression* expr, func_unit* funit, bool si
       /* Resize current expression only */
       expression_resize( expr, funit, FALSE, TRUE );
     
-#ifdef OBSOLETE
-      /* Create vector value to store operation information */
-      if( expr->value->value == NULL ) {
-        expression_create_value( expr, expr->value->width, TRUE );
-      }
-#endif
-
     }
     
     /* Perform operation */
@@ -4260,6 +4253,11 @@ void expression_dealloc( expression* expr, bool exp_only ) { PROFILE(EXPRESSION_
 
 /* 
  $Log$
+ Revision 1.277  2008/01/19 05:57:14  phase1geo
+ Fixing bug 1875180.  The anyedge operator now properly compares the values for
+ changes.  Added aedge1 and aedge1.1 diagnostics to regression suite to verify
+ this fix.  Updated bad CDD files per this change.
+
  Revision 1.276  2008/01/16 05:01:22  phase1geo
  Switched totals over from float types to int types for splint purposes.
 
