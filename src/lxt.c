@@ -39,7 +39,8 @@ extern symtable*  vcd_symtab;
 extern int        vcd_symtab_size;
 extern symtable** timestep_tab;
 extern bool       one_instance_found;
-extern char*      curr_inst_scope;
+extern char**     curr_inst_scope;
+extern int        curr_inst_scope_size;
 
 
 /*! Specifies the last timestamp simulated */
@@ -152,7 +153,9 @@ void lxt_parse( char* lxt_file ) { PROFILE(LXT_PARSE);
     vcd_symtab = symtable_create();
 
     /* Allocate memory for instance scope */
-    curr_inst_scope = (char*)malloc_safe( 4096 );
+    curr_inst_scope      = (char**)malloc_safe( sizeof( char* ) );
+    curr_inst_scope[0]   = (char*)malloc_safe( 4096 );
+    curr_inst_scope_size = 1;
 
     /* Get symbol information */
     for( i=0; i<numfacs; i++ ) {
@@ -161,7 +164,7 @@ void lxt_parse( char* lxt_file ) { PROFILE(LXT_PARSE);
       newindx = lxt2_rd_get_alias_root( lt, i );
 
       /* Extract scope and net name from facility name */
-      scope_extract_back( lxt2_rd_get_facname( lt, i ), netname, curr_inst_scope );
+      scope_extract_back( lxt2_rd_get_facname( lt, i ), netname, curr_inst_scope[0] );
       db_sync_curr_instance();
 
       if( g->flags & LXT2_RD_SYM_F_DOUBLE ) {
@@ -240,6 +243,10 @@ void lxt_parse( char* lxt_file ) { PROFILE(LXT_PARSE);
 
 /*
  $Log$
+ Revision 1.16  2008/01/16 23:10:30  phase1geo
+ More splint updates.  Code is now warning/error free with current version
+ of run_splint.  Still have regression issues to debug.
+
  Revision 1.15  2008/01/10 04:59:04  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 
