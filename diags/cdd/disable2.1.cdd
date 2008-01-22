@@ -2,14 +2,14 @@
 8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd disable2.1.vcd -o disable2.1.cdd -v disable2.1.v
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" disable2.1.v 1 27 1
-2 1 3 8000c 1 3d 121002 0 0 1 2 2 $u0
+2 1 3 8000c 1 3d 121002 0 0 1 34 2 $u0
 4 1 0 0
 3 1 main.$u0 "main.$u0" disable2.1.v 0 5 1
-2 2 4 10004 1 3b 131002 0 0 1 2 2 foo
+2 2 4 10004 1 3b 131002 0 0 1 34 2 foo
 4 2 0 0
 3 1 main.$u1 "main.$u1" disable2.1.v 0 14 1
 3 3 main.foo "main.foo" disable2.1.v 16 25 1
-2 3 18 20006 1 3d 131002 0 0 1 2 2 $u2
+2 3 18 20006 1 3d 131002 0 0 1 34 2 $u2
 1 a 17 830006 1 0 0 0 1 33 2
 4 3 0 0
 3 1 main.foo.$u2 "main.foo.$u2" disable2.1.v 0 24 1
@@ -21,7 +21,7 @@
 2 9 23 a000d 0 0 20010 0 0 1 36 0
 2 10 23 60006 0 1 400 0 0 a
 2 11 23 6000d 0 37 22 9 10
-2 12 21 60010 1 40 120002 0 0 1 2 2 foo
+2 12 21 60010 1 40 120002 0 0 1 34 2 foo
 4 11 0 0
 4 12 0 0
 4 8 12 11

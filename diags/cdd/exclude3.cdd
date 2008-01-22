@@ -5,10 +5,10 @@
 3 0 foo_module "main.bar" ./lib/foo_module.v 1 34 1
 2 1 9 19001c 1 0 20004 0 0 1 36 0
 2 2 9 19001c 1 47 4 1 0 foo_func.a
-2 3 9 f001e 1 3a 120008 0 2 1 2 1002 foo_func
+2 3 9 f001e 1 3a 120008 0 2 1 34 1002 foo_func
 2 4 9 7000b 0 1 400 0 0 foo_a
 2 5 9 7001e 1 35 f00a 3 4
-2 6 15 8000c 1 3d 121002 0 0 1 2 2 foo_named_block
+2 6 15 8000c 1 3d 121002 0 0 1 34 2 foo_named_block
 1 foo_c 3 6 1 0 0 0 1 33 2
 1 foo_a 5 30005 1 0 0 0 1 33 2
 1 foo_b 6 30005 1 0 0 0 1 33 102
@@ -21,13 +21,13 @@
 2 9 16 1000c 1 37 1100a 7 8
 4 9 0 0
 3 2 foo_module.foo_func "main.bar.foo_func" ./lib/foo_module.v 19 24 1
-2 10 21 20006 1 3d 131802 0 0 1 2 2 $u2
+2 10 21 20006 1 3d 131802 0 0 1 34 2 $u2
 1 foo_func 19 850009 1 0 0 0 1 33 2
 1 a 20 800008 1 0 0 0 1 33 2
 4 10 0 0
 3 1 foo_module.foo_func.$u2 "main.bar.foo_func.$u2" ./lib/foo_module.v 0 23 1
 2 11 22 100010 1 1 804 0 0 a
-2 12 22 f000f 1 1b 20808 11 0 1 2 1002
+2 12 22 f000f 1 1b 20808 11 0 1 34 1002
 2 13 22 4000b 0 1 c00 0 0 foo_func
 2 14 22 40010 1 37 1180a 12 13
 4 14 0 0

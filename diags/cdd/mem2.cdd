@@ -2,7 +2,7 @@
 8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd mem2.vcd -o mem2.cdd -v mem2.v
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" mem2.v 1 22 1
-2 1 8 8000c 1 3d 121002 0 0 1 2 2 foo
+2 1 8 8000c 1 3d 121002 0 0 1 34 2 foo
 1 BAR0 0 80000 1 0 31 0 1 33 0
 1 BAR1 0 80000 1 0 31 0 1 33 1
 1 m 6 18b0004 1 1 0 1 0 0 2 35 3000a

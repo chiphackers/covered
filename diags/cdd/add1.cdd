@@ -2,7 +2,7 @@
 8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd add1.vcd -o add1.cdd -v add1.v
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" add1.v 1 19 1
-2 1 5 8000c 1 3d 121002 0 0 1 2 2 $u0
+2 1 5 8000c 1 3d 121002 0 0 1 34 2 $u0
 1 i 3 830008 1 0 31 0 32 97 aa aa aa aa aa aa aa aa
 1 j 3 83000b 1 0 31 0 32 97 aa aa aa aa aa aa aa aa
 4 1 0 0
@@ -11,20 +11,20 @@
 2 3 6 e000e 1 0 20008 0 0 32 96 1 0 0 0 0 0 0 0
 2 4 6 a000a 1 0 20008 0 0 32 96 11 0 0 0 0 0 0 0
 2 5 6 50006 1 0 20008 0 0 32 96 44 0 0 0 0 0 0 0
-2 6 6 5000a 1 6 20208 4 5 32 2 a50aa faa faa faa faa faa faa faa
-2 7 6 5000e 1 6 20208 3 6 32 2 1e00aa faa faa faa faa faa faa faa
-2 8 6 50014 1 6 20208 2 7 32 2 69aa 186aa faa faa faa faa faa faa
+2 6 6 5000a 1 6 20208 4 5 32 34 a50aa faa faa faa faa faa faa faa
+2 7 6 5000e 1 6 20208 3 6 32 34 1e00aa faa faa faa faa faa faa faa
+2 8 6 50014 1 6 20208 2 7 32 34 69aa 186aa faa faa faa faa faa faa
 2 9 6 10001 0 1 400 0 0 i
 2 10 6 10014 1 37 1100a 8 9
 2 11 7 140016 1 0 20008 0 0 32 96 14 40 0 0 0 0 0 0
-2 12 7 130013 1 4d 20008 11 0 32 66 a5aa 78aa f0aa f0aa f0aa f0aa f0aa f0aa
+2 12 7 130013 1 4d 20008 11 0 32 98 a5aa 78aa f0aa f0aa f0aa f0aa f0aa f0aa
 2 13 7 f000f 1 0 20008 0 0 32 96 1 0 0 0 0 0 0 0
-2 14 7 e000e 1 4d 20008 13 0 32 66 f0aa f0aa f0aa f0aa f0aa f0aa f0aa f0aa
+2 14 7 e000e 1 4d 20008 13 0 32 98 f0aa f0aa f0aa f0aa f0aa f0aa f0aa f0aa
 2 15 7 a000a 1 0 20008 0 0 32 96 11 0 0 0 0 0 0 0
 2 16 7 50006 1 0 20008 0 0 32 96 44 0 0 0 0 0 0 0
-2 17 7 5000a 1 6 20208 15 16 32 2 a50aa faa faa faa faa faa faa faa
-2 18 7 5000f 1 6 20208 14 17 32 2 f000aa f0aa f0aa f0aa f0aa f0aa f0aa f0aa
-2 19 7 50016 1 6 20208 12 18 32 2 a401aa 78aa f0aa f0aa f0aa f0aa f0aa f0aa
+2 17 7 5000a 1 6 20208 15 16 32 34 a50aa faa faa faa faa faa faa faa
+2 18 7 5000f 1 6 20208 14 17 32 34 f000aa f0aa f0aa f0aa f0aa f0aa f0aa f0aa
+2 19 7 50016 1 6 20208 12 18 32 34 a401aa 78aa f0aa f0aa f0aa f0aa f0aa f0aa
 2 20 7 10001 0 1 400 0 0 j
 2 21 7 10016 1 37 a 19 20
 4 21 0 0

@@ -4,7 +4,7 @@
 3 0 main "main" mult1.v 1 26 1
 2 1 7 f000f 3 1 c 0 0 c
 2 2 7 b000b 3 1 c 0 0 b
-2 3 7 b000f 5 3 203cc 1 2 32 2 1faa faa faa faa faa faa faa faa
+2 3 7 b000f 5 3 203cc 1 2 32 34 1faa faa faa faa faa faa faa faa
 2 4 7 70007 0 1 400 0 0 a
 2 5 7 7000f 3 35 f00e 3 4
 1 a 3 3000c 1 0 31 0 32 33 11aa aa aa aa aa aa aa aa
