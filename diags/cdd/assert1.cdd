@@ -2,16 +2,16 @@
 8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd assert1.vcd -o assert1.cdd -v assert1.v
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" assert1.v 1 21 1
-2 1 5 8000c 1 3d 121002 0 0 1 2 2 $u0
+2 1 5 8000c 1 3d 121002 0 0 1 34 2 $u0
 1 a 3 830004 1 0 0 0 1 33 102
 4 1 0 0
 3 1 main.$u0 "main.$u0" assert1.v 0 10 1
 2 2 6 50005 1 0 20004 0 0 32 96 0 0 0 0 0 0 0 0
 2 3 6 10001 0 1 400 0 0 a
 2 4 6 10005 1 37 11006 2 3
-2 5 0 0 1 4e 20002 0 0 1 2 2
+2 5 0 0 1 4e 20002 0 0 1 34 2
 2 6 8 20002 1 0 20008 0 0 32 96 11 0 0 0 0 0 0 0
-2 7 8 10002 2 2c 22000a 6 0 32 2 aa aa aa aa aa aa aa aa
+2 7 8 10002 2 2c 22000a 6 0 32 34 aa aa aa aa aa aa aa aa
 2 8 9 50005 1 0 20008 0 0 32 96 1 0 0 0 0 0 0 0
 2 9 9 10001 0 1 400 0 0 a
 2 10 9 10005 1 37 a 8 9

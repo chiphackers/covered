@@ -2,7 +2,7 @@
 8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd elsif2.vcd -o elsif2.cdd -v elsif2.v
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" elsif2.v 3 32 1
-2 1 7 8000c 1 3d 121002 0 0 1 2 2 $u0
+2 1 7 8000c 1 3d 121002 0 0 1 34 2 $u0
 1 a 5 30004 1 0 0 0 1 33 2
 1 b 5 830007 1 0 0 0 1 33 102
 4 1 0 0

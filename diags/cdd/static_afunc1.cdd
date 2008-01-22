@@ -2,7 +2,7 @@
 8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd static_afunc1.vcd -o static_afunc1.cdd -v static_afunc1.v
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" static_afunc1.v 9 40 1
-2 1 15 8000c 1 3d 121002 0 0 1 2 2 $u0
+2 1 15 8000c 1 3d 121002 0 0 1 34 2 $u0
 1 FOO_SIZE 0 80000 1 0 31 0 32 33 14 0 0 0 0 0 0 0
 1 foo 13 830015 1 0 5 0 6 33 faa 30a
 4 1 0 0
@@ -11,7 +11,7 @@
 2 3 16 10003 0 1 400 0 0 foo
 2 4 16 10009 1 37 11006 2 3
 2 5 17 20002 1 0 20008 0 0 32 96 11 0 0 0 0 0 0 0
-2 6 17 10002 2 2c 22000a 5 0 32 2 aa aa aa aa aa aa aa aa
+2 6 17 10002 2 2c 22000a 5 0 32 34 aa aa aa aa aa aa aa aa
 2 7 18 7000a 1 0 20008 0 0 32 44 55 55 0 0 0 0 0 0
 2 8 18 10003 0 1 400 0 0 foo
 2 9 18 1000a 1 37 a 7 8
@@ -20,14 +20,14 @@
 4 4 6 6
 3 1 main.$u1 "main.$u1" static_afunc1.v 0 28 1
 3 5 main.div2 "main.div2" static_afunc1.v 30 38 1
-2 10 32 20006 7 3d 131806 0 0 1 2 102 $u2
+2 10 32 20006 7 3d 131806 0 0 1 34 102 $u2
 1 div2 30 85001a 1 0 31 0 32 33 7aa aa aa aa aa aa aa aa
 1 a 31 80000f 1 0 31 0 32 33 ffaa 31aa aa aa aa aa aa aa
 4 10 0 0
 3 7 main.div2.$u2 "main.div2.$u2" static_afunc1.v 0 37 1
 2 11 33 c000c 0 0 20810 0 0 32 96 0 0 0 0 0 0 0 0
 2 12 33 80008 7 1 80c 0 0 a
-2 13 33 8000c 7 e 2082c 11 12 1 2 1102
+2 13 33 8000c 7 e 2082c 11 12 1 34 1102
 2 14 33 4000e 7 39 1182e 13 0
 2 15 36 d000d 0 0 20810 0 0 32 96 0 0 0 0 0 0 0 0
 2 16 36 60009 0 1 c00 0 0 div2
@@ -35,10 +35,10 @@
 2 18 34 1e001e 0 0 20810 0 0 32 96 1 0 0 0 0 0 0 0
 2 19 34 180018 0 0 20810 0 0 32 96 1 0 0 0 0 0 0 0
 2 20 34 130013 6 1 808 0 0 a
-2 21 34 130018 6 10 2082c 19 20 32 2 ffaa 1faa faa faa faa faa faa faa
+2 21 34 130018 6 10 2082c 19 20 32 34 ffaa 1faa faa faa faa faa faa faa
 2 22 34 130018 6 47 82c 21 0 div2.a
-2 23 34 d001a 6 3a 12081c 0 22 32 2 7faa faa faa faa faa faa faa faa div2
-2 24 34 d001e 6 6 20838 18 23 32 2 161eaa faa faa faa faa faa faa faa
+2 23 34 d001a 6 3a 12081c 0 22 32 34 7faa faa faa faa faa faa faa faa div2
+2 24 34 d001e 6 6 20838 18 23 32 34 161eaa faa faa faa faa faa faa faa
 2 25 34 60009 0 1 c00 0 0 div2
 2 26 34 6001e 6 37 82a 24 25
 4 17 0 0
