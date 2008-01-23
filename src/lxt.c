@@ -197,7 +197,7 @@ void lxt_parse( char* lxt_file ) { PROFILE(LXT_PARSE);
       print_output( "No instances were found in specified VCD file that matched design", FATAL, __FILE__, __LINE__ );
 
       /* If the -i option was not specified, let the user know */
-      if( instance_specified ) {
+      if( !instance_specified ) {
         print_output( "  Please use -i option to specify correct hierarchy to top-level module to score",
                       FATAL, __FILE__, __LINE__ );
       } else {
@@ -243,6 +243,9 @@ void lxt_parse( char* lxt_file ) { PROFILE(LXT_PARSE);
 
 /*
  $Log$
+ Revision 1.17  2008/01/22 19:53:22  phase1geo
+ First attempt to fix bug 1876681.
+
  Revision 1.16  2008/01/16 23:10:30  phase1geo
  More splint updates.  Code is now warning/error free with current version
  of run_splint.  Still have regression issues to debug.
