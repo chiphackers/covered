@@ -46,7 +46,9 @@ endif
 IVERILOG       = iverilog
 IVERILOG_FLAGS = -cconfig_file -y ./lib -I./include -DRUNTEST
 ifdef VPI
-IVERILOG_FLAGS += -DVPI -m ../../lib/covered.vpi
+IVERILOG_FLAGS += -m ../../lib/covered.vpi
+else
+IVERILOG_FLAGS += -DDUMP
 endif
 IVERILOG_EXEC  = a.out
 IVERILOG_INTER = vvp
@@ -54,7 +56,9 @@ IVERILOG_INTER = vvp
 VCS       = vcs
 VCS_FLAGS = +libext+.v+.vlib+ -y ./lib -y ./ovl +incdir+./ovl +incdir+./include +define+RUNTEST +define+OVL_VERILOG +define+OVL_COVER_ON +define+OVL_COVER_DEFAULT=15 +v2k -sverilog -PP
 ifdef VPI
-VCS_FLAGS += +define+VPI +vpi -load ../../lib/covered.vcs.so:covered_register
+VCS_FLAGS += +vpi -load ../../lib/covered.vcs.so:covered_register
+else
+VCS_FLAGS += +define+DUMP
 endif
 VCS_EXEC  = ./simv
 
@@ -62,11 +66,16 @@ CVER      = cver
 CVER_FLAGS = -q +libext+.v+.vlib+ -y ./lib -y ./ovl +incdir+./ovl +incdir+./include +define+RUNTEST +define+OVL_VERILOG +define+OVL_COVER_ON +define+OVL_COVER_DEFAULT=15
 ifdef VPI
 CVER_FLAGS += +loadvpi=../../lib/covered.cver.so:vpi_compat_bootstrap
+else
+CVER_FLAGS += +define+DUMP
 endif
 CVER_EXEC =
 
 VERIWELL       = veriwell
 VERIWELL_FLAGS = +libext+.v+.vlib+ -y ./lib -y ./ovl +incdir+./ovl +incdir+./include +define+RUNTEST +define+OVL_VERILOG +define+OVL_COVER_ON +define+OVL_COVER_DEFAULT=15 +define+VPI=0
+ifndef VPI
+VERIWELL_FLAGS = +define+DUMP
+endif
 VERIWELL_EXEC  =
 
 ifdef USE_VCS

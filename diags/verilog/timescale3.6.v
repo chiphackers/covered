@@ -11,7 +11,7 @@
 module main;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "timescale3.6.vcd" );
         $dumpvars( 0, main );
 `endif

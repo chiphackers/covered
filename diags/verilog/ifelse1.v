@@ -5,7 +5,7 @@ reg	clock, reset, a, b, sel;
 wire	z;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "ifelse1.vcd" );
 	$dumpvars( 0, main );
 `endif

@@ -11,7 +11,7 @@ initial begin
 end
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "enum1.1.vcd" );
         $dumpvars( 0, main );
 `endif

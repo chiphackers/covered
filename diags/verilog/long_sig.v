@@ -8,7 +8,7 @@ assign a = 1'b0;
 assign b = 70000'h0;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "long_sig.vcd" );
 	$dumpvars( 0, main );
 `endif

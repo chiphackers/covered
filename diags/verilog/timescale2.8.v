@@ -13,7 +13,7 @@ module main;
 ts_module tsm();
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "timescale2.8.vcd" );
         $dumpvars( 0, main );
 `endif

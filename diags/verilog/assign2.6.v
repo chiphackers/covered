@@ -8,7 +8,7 @@ wand        w2 = ~a;
 wand [1:0]  w3 = w0 & |w1 & w2;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "assign2.6.vcd" );
         $dumpvars( 0, main );
 `endif

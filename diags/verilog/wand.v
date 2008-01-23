@@ -10,7 +10,7 @@ assign b = {d, e};
 assign c = {2{a}} | b;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "wand.vcd" );
 	$dumpvars( 0, main );
 `endif

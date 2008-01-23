@@ -8,7 +8,7 @@ wor        w2 = ~a;
 wor [1:0]  w3 = w0 & |w1 & w2;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "assign2.7.vcd" );
         $dumpvars( 0, main );
 `endif

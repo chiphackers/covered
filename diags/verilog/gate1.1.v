@@ -24,7 +24,7 @@ cmos( wo, w1, w2, w3 );
 rcmos( xo, x1, x2, x3 );
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "gate1.1.vcd" );
 	$dumpvars( 0, main );
 `endif

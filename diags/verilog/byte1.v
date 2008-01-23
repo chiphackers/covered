@@ -5,7 +5,7 @@ byte signed   b = 0;
 byte unsigned c = 0;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "byte1.vcd" );
         $dumpvars( 0, main );
 `endif

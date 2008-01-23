@@ -19,7 +19,7 @@ initial begin
 end
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "static_afunc1.vcd" );
         $dumpvars( 0, main );
 `endif

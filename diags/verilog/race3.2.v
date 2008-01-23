@@ -12,7 +12,7 @@ always @(posedge clk)
   end
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "race3.2.vcd" );
         $dumpvars( 0, main );
 `endif

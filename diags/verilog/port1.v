@@ -15,7 +15,7 @@ foo bar (
 );
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "port1.vcd" );
         $dumpvars( 0, main );
 `endif

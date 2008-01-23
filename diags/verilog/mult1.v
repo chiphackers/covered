@@ -7,7 +7,7 @@ reg		c;
 assign a = b * c;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "mult1.vcd" );
 	$dumpvars( 0, main );
 `endif

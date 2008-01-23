@@ -9,7 +9,7 @@ initial begin
 end
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "enum1.2.vcd" );
         $dumpvars( 0, main );
 `endif

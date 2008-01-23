@@ -7,7 +7,7 @@ generate
      reg b;
      reg c;
      initial begin
-`ifndef VPI
+`ifdef DUMP
              $dumpfile( "generate10.1.vcd" );
              $dumpvars( 0, main );
 `endif

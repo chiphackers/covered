@@ -15,7 +15,7 @@ reg     b;
 wire    a = (b & `FOOBAR) | `BARFOO;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "define4.1.vcd" );
 	$dumpvars( 0, main );
 `endif

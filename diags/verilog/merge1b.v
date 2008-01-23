@@ -6,7 +6,7 @@ reg     b, c;
 dut_and dut( a, b, c );
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "merge1b.vcd" );
 	$dumpvars( 0, main2 );
 `endif

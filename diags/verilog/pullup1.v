@@ -6,7 +6,7 @@ wire    a = b;
 pullup( a );
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "pullup1.vcd" );
 	$dumpvars( 0, main );
 `endif

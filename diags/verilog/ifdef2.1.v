@@ -16,7 +16,7 @@ reg  b;
 assign a = b ? `VALUE0 : `VALUE1;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "ifdef2.1.vcd" );
 	$dumpvars( 0, main );
 `endif

@@ -15,7 +15,7 @@ fsm fsm (
 );
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "fsm2b.vcd" );
 	$dumpvars( 0, main );
 `endif

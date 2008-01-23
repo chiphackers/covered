@@ -4,7 +4,7 @@ reg  b;
 wire a = foo( b );
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "nested_block2.1.vcd" );
         $dumpvars( 0, main );
 `endif

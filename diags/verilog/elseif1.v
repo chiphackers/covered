@@ -22,7 +22,7 @@ always @(posedge coreclk) begin
 end
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "elseif1.vcd" );
         $dumpvars( 0, main );
 `endif

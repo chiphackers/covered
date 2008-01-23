@@ -3,7 +3,7 @@ module main;
 wire [1:0] a = return_two( 1'b0 );
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "func3.2.vcd" );
         $dumpvars( 0, main );
 `endif

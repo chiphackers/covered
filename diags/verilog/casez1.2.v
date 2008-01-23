@@ -11,7 +11,7 @@ always @( a )
   endcase
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "casez1.2.vcd" );
 	$dumpvars( 0, main );
 `endif

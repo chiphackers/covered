@@ -10,7 +10,7 @@ module main;
 foo f( -1 );
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "signed4.vcd" );
         $dumpvars( 0, main );
 `endif

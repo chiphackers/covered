@@ -28,7 +28,7 @@ assign b3 = {d, e};
 assign c3 = {2{a3}} | b3;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "trireg.vcd" );
 	$dumpvars( 0, main );
 `endif

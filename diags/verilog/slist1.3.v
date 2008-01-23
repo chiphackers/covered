@@ -18,7 +18,7 @@ initial begin
 end
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "slist1.3.vcd" );
         $dumpvars( 0, main );
 `endif

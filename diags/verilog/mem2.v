@@ -11,7 +11,7 @@ initial begin : foo
 end
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "mem2.vcd" );
         $dumpvars( 0, main );
 `endif

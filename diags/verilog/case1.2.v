@@ -10,7 +10,7 @@ always @(posedge clock)
   endcase
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "case1.2.vcd" );
 	$dumpvars( 0, main );
 `endif

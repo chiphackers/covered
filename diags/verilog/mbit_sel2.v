@@ -8,7 +8,7 @@ assign a[2:1] = b;
 assign a[0]   = c;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "mbit_sel2.vcd" );
 	$dumpvars( 0, main );
 `endif

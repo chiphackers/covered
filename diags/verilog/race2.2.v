@@ -7,7 +7,7 @@ always @(x) a  =  x;
 always @(x) b <= ~x;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "race2.2.vcd" );
 	$dumpvars( 0, main );
 `endif

@@ -7,7 +7,7 @@ reg     c, d;
 assign a = b ? c : d;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "cond1.vcd" );
         $dumpvars( 0, main );
 `endif

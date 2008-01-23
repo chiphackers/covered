@@ -13,7 +13,7 @@ wire [31:0] b;
 foo foo_mod(a,b);
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "port4.vcd" );
         $dumpvars( 0, main );
 `endif

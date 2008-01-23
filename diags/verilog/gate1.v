@@ -45,7 +45,7 @@ rpmos( p_o, p1, p2 );
 
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "gate1.vcd" );
 	$dumpvars( 0, main );
 `endif

@@ -5,7 +5,7 @@ parameter FOO = static_func( 4 );
 wire [(FOO-1):0] a;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "static_func1.vcd" );
         $dumpvars( 0, main );
 `endif

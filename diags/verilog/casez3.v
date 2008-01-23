@@ -12,7 +12,7 @@ always @*
   endcase
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "casez3.vcd" );
         $dumpvars( 0, main );
 `endif

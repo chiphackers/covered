@@ -13,7 +13,7 @@ always @*
   endcase
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "casex2.vcd" );
         $dumpvars( 0, main );
 `endif

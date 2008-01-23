@@ -25,7 +25,7 @@ end
 `line 4 "include2.v" 2
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "line1.vcd" );
 	$dumpvars( 0, main );
 `endif

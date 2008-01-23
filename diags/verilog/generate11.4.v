@@ -11,7 +11,7 @@ endgenerate
 initial #5 U[00].x = 1'b1;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "generate11.4.vcd" );
         $dumpvars( 0, main );
 `endif

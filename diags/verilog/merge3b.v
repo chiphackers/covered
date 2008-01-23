@@ -20,7 +20,7 @@ initial begin
 end
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "merge3b.vcd" );
         $dumpvars( 0, main );
 `endif

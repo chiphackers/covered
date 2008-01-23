@@ -10,7 +10,7 @@ assert_zero_one_hot #(.width(4)) foo (
 );
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "ovl1.vcd" );
         $dumpvars( 0, main );
 `endif

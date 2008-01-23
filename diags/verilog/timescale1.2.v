@@ -18,7 +18,7 @@ initial begin
 end
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "timescale1.2.vcd" );
         $dumpvars( 0, main );
 `endif

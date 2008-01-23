@@ -7,7 +7,7 @@ parameter xsize = `BITSIZE;
 reg  [xsize-1:0] x;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "param3.3.vcd" );
 	$dumpvars( 0, main );
 `endif

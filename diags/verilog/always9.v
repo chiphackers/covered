@@ -48,7 +48,7 @@ always @(posedge clock)
   end
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "always9.vcd" );
 	$dumpvars( 0, main );
 `endif

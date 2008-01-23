@@ -6,7 +6,7 @@ reg        b;
 assign a = {5{b}};
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "expand1.vcd" );
 	$dumpvars( 0, main );
 `endif

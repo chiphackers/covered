@@ -5,7 +5,7 @@ reg	c, d;
 always @(posedge c or negedge c) d <= ~d;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "always4.vcd" );
 	$dumpvars( 0, main );
 `endif

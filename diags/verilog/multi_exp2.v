@@ -8,7 +8,7 @@ foobar bar( c );
 assign a = ~b & (c ^ d) & (e | (f == 1'b1) | g);
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "multi_exp2.vcd" );
 	$dumpvars( 0, main );
 `endif

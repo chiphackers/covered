@@ -5,7 +5,7 @@ reg a;
 foo f( a );
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "instance7.vcd" );
 	$dumpvars( 0, main );
 `endif

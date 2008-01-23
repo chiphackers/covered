@@ -19,7 +19,7 @@ initial begin : foo
 end
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "for5.6.vcd" );
         $dumpvars( 0, main );
 `endif

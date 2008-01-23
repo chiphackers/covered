@@ -19,7 +19,7 @@ initial begin
 end
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "sbit_sel2.1.vcd" );
         $dumpvars( 0, main );
 `endif

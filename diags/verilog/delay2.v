@@ -10,7 +10,7 @@ always @(posedge clk)
   end
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "delay2.vcd" );
 	$dumpvars( 0, main );
 `endif

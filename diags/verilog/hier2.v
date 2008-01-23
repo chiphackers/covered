@@ -7,7 +7,7 @@ foo a[3:0] ();
 initial b = a[1].b[2].c;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "hier2.vcd" );
         $dumpvars( 0, main );
 `endif

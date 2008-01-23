@@ -7,7 +7,7 @@ always @(posedge clock or x) a  =  x;
 always @(posedge clock or x) b <= ~x;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "race2.3.vcd" );
 	$dumpvars( 0, main );
 `endif

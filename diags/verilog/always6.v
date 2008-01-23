@@ -6,7 +6,7 @@ reg       b;
 always @(a) b = a[1];
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "always6.vcd" );
 	$dumpvars( 0, main );
 `endif

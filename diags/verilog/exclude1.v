@@ -3,7 +3,7 @@ module main;
 foo_module bar( 1'b0 );
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "exclude1.vcd" );
         $dumpvars( 0, main );
 `endif

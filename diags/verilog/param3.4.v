@@ -4,7 +4,7 @@ reg  [1:0] x;
 reg  [2:0] y;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "param3.4.vcd" );
 	$dumpvars( 0, main );
 `endif

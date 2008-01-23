@@ -6,7 +6,7 @@ reg	b, c, d;
 always @(a, posedge b, negedge c) d <= ~d;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "always5.1.vcd" );
 	$dumpvars( 0, main );
 `endif

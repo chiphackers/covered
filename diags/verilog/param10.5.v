@@ -5,7 +5,7 @@ foo #(3,4)     b();
 foo #(.car(6)) c();
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "param10.5.vcd" );
         $dumpvars( 0, main );
 `endif

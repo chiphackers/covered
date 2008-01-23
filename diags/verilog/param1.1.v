@@ -9,7 +9,7 @@ parameter value1 = value0 | 1'b1;
 assign a = b ? value0 : value1;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "param1.1.vcd" );
 	$dumpvars( 0, main );
 `endif

@@ -4,7 +4,7 @@ real     r;
 realtime rt;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "implicit2.1.vcd" );
 	$dumpvars( 0, main );
 `endif

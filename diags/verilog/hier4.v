@@ -4,7 +4,7 @@ foo a();
 foo b();
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "hier4.vcd" );
         $dumpvars( 0, main );
 `endif

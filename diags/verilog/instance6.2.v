@@ -11,7 +11,7 @@ foobar foo( a );
 barfoo bar( b );
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "instance6.2.vcd" );
 	$dumpvars( 0, main );
 `endif

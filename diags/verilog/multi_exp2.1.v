@@ -6,7 +6,7 @@ wire a = b & c & d;
 wire e = 1'b0 & b;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "multi_exp2.1.vcd" );
 	$dumpvars( 0, main );
 `endif

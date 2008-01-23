@@ -13,7 +13,7 @@ wire i = ~^a;
 wire j = !(|a);
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "unary1.vcd" );
 	$dumpvars( 0, main );
 `endif

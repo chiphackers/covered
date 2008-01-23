@@ -8,7 +8,7 @@ initial begin : bar
 end
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "param10.vcd" );
         $dumpvars( 0, main );
 `endif

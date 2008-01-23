@@ -7,7 +7,7 @@ always @(b)
   a = b & (0.1 == 0.2);
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "real1.1.vcd" );
 	$dumpvars( 0, main );
 `endif

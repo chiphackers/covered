@@ -1,7 +1,7 @@
 module main;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "task5.vcd" );
         $dumpvars( 0, main );
 `endif

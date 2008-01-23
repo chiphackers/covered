@@ -17,7 +17,7 @@ initial begin
 end
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "elsif1.4.vcd" );
         $dumpvars( 0, main );
 `endif

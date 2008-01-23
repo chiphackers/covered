@@ -16,7 +16,7 @@ always @(b) d <= ~d;
 always @(c) d <= ~d;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "event1.vcd" );
 	$dumpvars( 0, main );
 `endif

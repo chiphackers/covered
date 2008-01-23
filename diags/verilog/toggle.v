@@ -5,7 +5,7 @@ reg  [17:0]   a;
 integer i;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "toggle.vcd" );
 	$dumpvars( 0, main );
 `endif

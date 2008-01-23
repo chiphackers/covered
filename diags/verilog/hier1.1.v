@@ -6,7 +6,7 @@ wire [3:0] \foobar[]isthe___.neatest = ~{4{ \this/is/some/kind/of/name[0] .a}};
 wire c = | \foobar[]isthe___.neatest ;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "hier1.1.vcd" );
         $dumpvars( 0, main );
 `endif

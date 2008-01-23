@@ -22,7 +22,7 @@ always @(b)
        b[  3:  0], b[  7:  4]};
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "concat5.vcd" );
 	$dumpvars( 0, main );
 `endif

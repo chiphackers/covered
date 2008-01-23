@@ -5,7 +5,7 @@ char signed   b = 0;
 char unsigned c = 0;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "char1.vcd" );
         $dumpvars( 0, main );
 `endif

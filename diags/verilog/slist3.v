@@ -11,7 +11,7 @@ always @*
   end
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "slist3.vcd" );
         $dumpvars( 0, main );
 `endif

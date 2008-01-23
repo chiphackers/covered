@@ -4,7 +4,7 @@ mod_a a();
 mod_b b();
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "task4.vcd" );
         $dumpvars( 0, main );
 `endif

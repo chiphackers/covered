@@ -11,7 +11,7 @@ always @(c)
   end
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "bassign1.vcd" );
         $dumpvars( 0, main );
 `endif

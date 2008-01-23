@@ -14,7 +14,7 @@ fsmb fsm2( clk, go );
 wire error = (state[0] & state[1]) || (state[0] & state[2]) || (state[1] & state[2]) || (state == 3'b000);
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "example.vcd" );
 	$dumpvars( 0, main );
 `endif

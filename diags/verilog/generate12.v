@@ -11,7 +11,7 @@ foo #(2) f1();
 foo #(3) f2();
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "generate12.vcd" );
         $dumpvars( 0, main );
 `endif

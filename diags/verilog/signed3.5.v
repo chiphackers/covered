@@ -15,7 +15,7 @@ initial begin
 end
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "signed3.5.vcd" );
         $dumpvars( 0, main );
 `endif

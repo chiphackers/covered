@@ -6,7 +6,7 @@ always @*
    a = b & c;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "slist2.vcd" );
         $dumpvars( 0, main );
 `endif

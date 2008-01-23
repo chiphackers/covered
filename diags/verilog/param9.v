@@ -3,7 +3,7 @@ module main;
 foo #(10,20) bar();
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "param9.vcd" );
         $dumpvars( 0, main );
 `endif

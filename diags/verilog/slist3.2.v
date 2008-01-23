@@ -12,7 +12,7 @@ always @*
 foobar bar();
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "slist3.2.vcd" );
         $dumpvars( 0, main );
 `endif

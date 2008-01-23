@@ -9,7 +9,7 @@ reg a, b, c;
 wire d = `FOO;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "define5.vcd" );
         $dumpvars( 0, main );
 `endif

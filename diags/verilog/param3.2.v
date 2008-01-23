@@ -5,7 +5,7 @@ parameter major = 1;
 reg	x, y;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "param3.2.vcd" );
 	$dumpvars( 0, main );
 `endif

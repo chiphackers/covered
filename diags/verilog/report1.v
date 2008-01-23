@@ -20,7 +20,7 @@ assign a = ({
            );
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "report1.vcd" );
         $dumpvars( 0, main );
 `endif

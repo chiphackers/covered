@@ -5,7 +5,7 @@ event a;
 always @(a) #5;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "always7.vcd" );
 	$dumpvars( 0, main );
 `endif

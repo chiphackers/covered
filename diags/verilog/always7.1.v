@@ -7,7 +7,7 @@ always @(a)
   if( b ) c = 1'b1;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "always7.1.vcd" );
 	$dumpvars( 0, main );
 `endif

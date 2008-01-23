@@ -25,7 +25,7 @@ always
   end
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "race2.4.vcd" );
 	$dumpvars( 0, main );
 `endif

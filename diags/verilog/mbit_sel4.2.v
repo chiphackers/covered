@@ -3,7 +3,7 @@ module main;
 reg  [4:1] a;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "mbit_sel4.2.vcd" );
 	$dumpvars( 0, main );
 `endif

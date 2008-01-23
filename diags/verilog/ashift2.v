@@ -10,7 +10,7 @@ always @(a)
   end
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "ashift2.vcd" );
         $dumpvars( 0, main );
 `endif

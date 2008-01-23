@@ -8,7 +8,7 @@ tri1        w2 = ~a;
 tri1 [1:0]  w3 = w0 & |w1 & w2;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "assign2.3.vcd" );
         $dumpvars( 0, main );
 `endif

@@ -12,7 +12,7 @@ always @(b)
   end
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "do_while2.vcd" );
         $dumpvars( 0, main );
 `endif

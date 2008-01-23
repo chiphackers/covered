@@ -4,7 +4,7 @@ initial begin :foo
 end
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "named_block2.vcd" );
         $dumpvars( 0, main );
 `endif

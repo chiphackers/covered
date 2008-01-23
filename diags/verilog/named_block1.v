@@ -25,7 +25,7 @@ initial begin
 end
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "named_block1.vcd" );
         $dumpvars( 0, main );
 `endif

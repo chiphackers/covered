@@ -24,7 +24,7 @@ always @(posedge clk)
    endcase
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "fsm4.1.vcd" );
 	$dumpvars( 0, main );
 `endif

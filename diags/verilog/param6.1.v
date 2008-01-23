@@ -9,7 +9,7 @@ wire   [SIZE1-1:0]     a;
 assign a = b[SIZE1+SIZE0:SIZE0+1];
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "param6.1.vcd" );
 	$dumpvars( 0, main );
 `endif

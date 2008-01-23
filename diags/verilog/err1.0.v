@@ -9,7 +9,7 @@ reg     valid;
 fsma fsm( clk, reset, head, tail, valid );
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "err1.0.vcd" );
 	$dumpvars( 0, main );
 `endif

@@ -27,7 +27,7 @@ initial begin
 end
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "generate9.2.vcd" );
         $dumpvars( 0, main );
 `endif

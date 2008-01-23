@@ -33,7 +33,7 @@ initial begin
 end
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "aedge1.1.vcd" );
         $dumpvars( 0, main );
 `endif

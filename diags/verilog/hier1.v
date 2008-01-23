@@ -5,7 +5,7 @@ wire [1:0] a = foo.a;
 bar foo();
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "hier1.vcd" );
 	$dumpvars( 0, main );
 `endif

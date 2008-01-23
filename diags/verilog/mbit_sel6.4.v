@@ -6,7 +6,7 @@ foo #(.b(11)) f2();
 foo #(.b(15)) f3();
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "mbit_sel6.4.vcd" );
         $dumpvars( 0, main );
 `endif

@@ -3,7 +3,7 @@ module main;
 reg	x, y;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "param3.vcd" );
 	$dumpvars( 0, main );
 `endif

@@ -4,7 +4,7 @@ reg  b;
 wire a = invert( b );
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "func2.vcd" );
         $dumpvars( 0, main );
 `endif

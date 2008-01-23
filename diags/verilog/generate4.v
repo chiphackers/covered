@@ -10,7 +10,7 @@ generate
 endgenerate
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "generate4.vcd" );
         $dumpvars( 0, main );
 `endif

@@ -10,7 +10,7 @@ always @(posedge a)
   end
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "always11.vcd" );
 	$dumpvars( 0, main );
 `endif

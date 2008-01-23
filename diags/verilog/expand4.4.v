@@ -6,7 +6,7 @@ reg        b;
 assign a = {4{b & ~b}};
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "expand4.4.vcd" );
 	$dumpvars( 0, main );
 `endif

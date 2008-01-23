@@ -13,7 +13,7 @@ initial begin
 end
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "wait1.vcd" );
         $dumpvars( 0, main );
 `endif

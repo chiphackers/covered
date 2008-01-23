@@ -26,7 +26,7 @@ always @(state or head or valid or tail)
   end
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "fsm3.vcd" );
 	$dumpvars( 0, main );
 `endif

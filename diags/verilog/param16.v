@@ -11,7 +11,7 @@ foo #(      .b(32),.c(64)) b();
 foo #(.a(0),.b(16),.c(32)) a();
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "param16.vcd" );
         $dumpvars( 0, main );
 `endif

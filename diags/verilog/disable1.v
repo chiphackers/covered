@@ -17,7 +17,7 @@ initial begin
 end
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "disable1.vcd" );
         $dumpvars( 0, main );
 `endif

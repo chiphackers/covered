@@ -7,7 +7,7 @@ foo bar (
 );
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "param8.vcd" );
         $dumpvars( 0, main );
 `endif

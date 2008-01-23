@@ -15,7 +15,7 @@ assign d[1:0] = c;
 assign d[2:1] = ~c;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "race1.2.vcd" );
 	$dumpvars( 0, main );
 `endif

@@ -10,7 +10,7 @@ module main;
 enum logic { FOO_0 = 1'bx, FOO_1 } foo;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "enum2.vcd" );
         $dumpvars( 0, main );
 `endif

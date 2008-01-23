@@ -5,7 +5,7 @@ initial begin
 end
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "task3.1.vcd" );
         $dumpvars( 0, main );
 `endif

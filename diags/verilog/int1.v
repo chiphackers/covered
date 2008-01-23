@@ -5,7 +5,7 @@ int signed   b = 0;
 int unsigned c = 0;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "int1.vcd" );
         $dumpvars( 0, main );
 `endif

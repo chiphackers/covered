@@ -3,7 +3,7 @@ module main;
 foo a();
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "hier3.1.vcd" );
         $dumpvars( 0, main );
 `endif

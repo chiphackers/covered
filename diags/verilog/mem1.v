@@ -9,7 +9,7 @@ always @(b[c[0]])
   a[2] <= b[c[0]];
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "mem1.vcd" );
 	$dumpvars( 0, main );
 `endif

@@ -6,7 +6,7 @@ wire a = b ?
          c : d;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "long_exp3.vcd" );
 	$dumpvars( 0, main );
 `endif

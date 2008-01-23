@@ -6,7 +6,7 @@ always @(b)
   invert_a;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "task1.vcd" );
         $dumpvars( 0, main );
 `endif

@@ -11,7 +11,7 @@ assign c = 1'b1 & VAL0;
 assign d = 1'b1 & VAL1;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "static2.2.vcd" );
         $dumpvars( 0, main );
 `endif

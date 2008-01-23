@@ -8,7 +8,7 @@ reg  [3:0] b;
 assign a = b & vec;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "param4.1.vcd" );
 	$dumpvars( 0, main );
 `endif

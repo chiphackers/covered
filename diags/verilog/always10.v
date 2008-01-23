@@ -8,7 +8,7 @@ always @(posedge clock)
     b <= c;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "always10.vcd" );
 	$dumpvars( 0, main );
 `endif

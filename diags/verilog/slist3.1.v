@@ -9,7 +9,7 @@ always @*
   join
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "slist3.1.vcd" );
         $dumpvars( 0, main );
 `endif

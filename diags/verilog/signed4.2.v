@@ -10,7 +10,7 @@ module main;
 wire signed [1:0] a;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "signed4.2.vcd" );
         $dumpvars( 0, main );
 `endif

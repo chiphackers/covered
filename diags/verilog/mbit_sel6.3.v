@@ -10,7 +10,7 @@ always @*
   b = a[c-:incr];
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "mbit_sel6.3.vcd" );
         $dumpvars( 0, main );
 `endif

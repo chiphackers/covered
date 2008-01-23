@@ -48,7 +48,7 @@ print DIAG "module main;\n\n";
 
 if( $type ne "gen" ) {
   print DIAG "initial begin\n";
-  print DIAG "`ifndef VPI\n";
+  print DIAG "`ifdef DUMP\n";
   print DIAG "        \$dumpfile( \"${diag}.vcd\" );\n";
   print DIAG "        \$dumpvars( 0, main );\n";
   print DIAG "`endif\n";

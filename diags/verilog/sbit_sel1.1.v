@@ -11,7 +11,7 @@ assign b = vec[16];
 assign c = vec;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "sbit_sel1.1.vcd" );
 	$dumpvars( 0, main );
 `endif

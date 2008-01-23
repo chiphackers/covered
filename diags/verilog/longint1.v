@@ -5,7 +5,7 @@ longint signed   b = 0;
 longint unsigned c = 0;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "longint1.vcd" );
         $dumpvars( 0, main );
 `endif

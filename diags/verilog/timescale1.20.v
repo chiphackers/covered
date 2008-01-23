@@ -19,7 +19,7 @@ initial begin
 end
 
 initial begin
-`ifndef VPI
+`ifdef VPI
         $dumpfile( "timescale1.20.vcd" );
         $dumpvars( 0, main );
 `endif

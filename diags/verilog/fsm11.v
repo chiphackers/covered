@@ -22,7 +22,7 @@ always @(a)
   endcase
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "fsm11.vcd" );
         $dumpvars( 0, main );
 `endif

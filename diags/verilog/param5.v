@@ -8,7 +8,7 @@ wire   [((dude*2)-1):0]  b;
 assign b = {a, ~a};
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "param5.vcd" );
 	$dumpvars( 0, main );
 `endif

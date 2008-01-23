@@ -8,7 +8,7 @@ reg          b2;
 assign a = {b2, b1, b0};
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "concat1.vcd" );
 	$dumpvars( 0, main );
 `endif

@@ -5,7 +5,7 @@ reg  b, c, d, e;
 wire a = (b != 1'b0) & (~c & ~d & ~e);
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "multi_exp3.vcd" );
 	$dumpvars( 0, main );
 `endif

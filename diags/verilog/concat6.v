@@ -4,7 +4,7 @@ reg  [1:0] b;
 wire [1:0] a = {b};
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
 	$dumpfile( "concat6.vcd" );
 	$dumpvars( 0, main );
 `endif

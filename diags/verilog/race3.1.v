@@ -5,7 +5,7 @@ reg a, b;
 always @(b) a = b;
 
 initial begin
-`ifndef VPI
+`ifdef DUMP
         $dumpfile( "race3.1.vcd" );
         $dumpvars( 0, main );
 `endif
