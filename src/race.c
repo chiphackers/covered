@@ -585,13 +585,17 @@ static void race_check_one_block_assignment( func_unit* mod ) { PROFILE(RACE_CHE
             case EXP_OP_SBIT_SEL :
               if( expl->exp->left->op == EXP_OP_STATIC ) {
                 intval = (vector_to_int( expl->exp->left->value ) - dim_lsb) * dim_width;
-                vector_init( &vec, NULL, FALSE, expl->exp->value->width, VTYPE_SIG );
-                if( dim_be ) {
-                  vec.value = vstart + (vwidth - (intval + expl->exp->value->width));
+                if( (intval >= 0) && (intval < expl->exp->value->width) ) {
+                  vector_init( &vec, NULL, FALSE, expl->exp->value->width, VTYPE_SIG );
+                  if( dim_be ) {
+                    vec.value = vstart + (vwidth - (intval + expl->exp->value->width));
+                  } else {
+                    vec.value = vstart + intval;
+                  }
+                  curr_race = vector_set_assigned( &vec, (vec.width - 1), 0 );
                 } else {
-                  vec.value = vstart + intval;
+                  curr_race = FALSE;
                 }
-                curr_race = vector_set_assigned( &vec, (vec.width - 1), 0 );
 	      } else { 
                 curr_race = vector_set_assigned( sigl->sig->value, (sigl->sig->value->width - 1), 0 );
               }
@@ -1102,6 +1106,9 @@ void race_blk_delete_list( race_blk* rb ) { PROFILE(RACE_BLK_DELETE_LIST);
 
 /*
  $Log$
+ Revision 1.67  2008/01/16 06:40:37  phase1geo
+ More splint updates.
+
  Revision 1.66  2008/01/16 05:01:23  phase1geo
  Switched totals over from float types to int types for splint purposes.
 

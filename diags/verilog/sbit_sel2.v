@@ -13,7 +13,7 @@ reg       b;
 integer   i;
 
 initial begin
-        a = 4'h6;
+        a = 4'h8;
 	for( i=0; i<6; i=i+1 ) begin
           b = a[i];
           #5;

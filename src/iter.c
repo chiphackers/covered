@@ -194,25 +194,14 @@ void stmt_iter_get_line_before( stmt_iter* si, int lnum ) { PROFILE(STMT_ITER_GE
   if( si->curr != NULL ) {
 
     if( si->curr->stmt->exp->line < lnum ) {
-      //printf( "HERE A\n" );
       while( (si->curr != NULL) && (si->curr->stmt->exp->line < lnum) ) {
-        //printf( "si->curr: %d, lnum: %d\n", si->curr->stmt->exp->line, lnum );
         stmt_iter_next( si );
       }
     } else {
-      //printf( "HERE B\n" );
       while( (si->curr != NULL) && (si->curr->stmt->exp->line > lnum) ) {
-        //printf( "si->curr: %d, lnum: %d\n", si->curr->stmt->exp->line, lnum );
         stmt_iter_next( si );
       }
     }
-
-/*
-    printf( "Found line # prior to %d (curr: %d, last: %d)\n", 
-            lnum, 
-            ((si->curr == NULL) ? -1 : si->curr->stmt->exp->line),
-            ((si->last == NULL) ? -1 : si->last->stmt->exp->line) );
-*/
 
   }
 
@@ -222,6 +211,12 @@ void stmt_iter_get_line_before( stmt_iter* si, int lnum ) { PROFILE(STMT_ITER_GE
 
 /*
  $Log$
+ Revision 1.17  2007/12/18 23:55:21  phase1geo
+ Starting to remove 64-bit time and replacing it with a sim_time structure
+ for performance enhancement purposes.  Also removing global variables for time-related
+ information and passing this information around by reference for performance
+ enhancement purposes.
+
  Revision 1.16  2007/12/11 05:48:25  phase1geo
  Fixing more compile errors with new code changes and adding more profiling.
  Still have a ways to go before we can compile cleanly again (next submission

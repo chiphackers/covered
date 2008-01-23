@@ -335,6 +335,9 @@ const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",         "",             ex
                                            {"DIM",            "",             expression_op_func__null,       {0, 0, NOT_COMB,   0, 0, 0, 0} },
                                            {"WAIT",           "wait",         expression_op_func__wait,       {1, 0, NOT_COMB,   0, 1, 1, 0} } };
 
+/*! One bit unknown value that can be used by vector selection operators */
+static vec_data x_value = {0x2};
+
 
 /*!
  \param exp    Pointer to expression to add value to.
@@ -2352,13 +2355,22 @@ bool expression_op_func__sbit( expression* expr, /*@unused@*/ thread* thr, /*@un
 
     /* Adjust this expression's vector data pointer to point to correct bits in signal */
     intval = (vector_to_int( expr->left->value ) - dim_lsb) * dim_width;
-    assert( intval >= 0 );
-    if( dim_be ) {
-      assert( intval <= vwidth );
-      expr->value->value = vstart + (vwidth - (intval + expr->value->width));
+    if( intval < 0 ) {
+      expr->value->value = &x_value;
     } else {
-      assert( intval < vwidth );
-      expr->value->value = vstart + intval;
+      if( dim_be ) {
+        if( intval > vwidth ) {
+          expr->value->value = &x_value;
+        } else {
+          expr->value->value = vstart + (vwidth - (intval + expr->value->width));
+        }
+      } else {
+        if( intval >= vwidth ) {
+          expr->value->value = &x_value;
+        } else {
+          expr->value->value = vstart + intval;
+        }
+      }
     }
 
     /* If this expression references a memory and is the last unpacked dimension, set the first read vector data bit to 1 */
@@ -3975,13 +3987,22 @@ void expression_assign(
         if( lhs->sig->suppl.part.assigned == 1 ) {
           if( !vector_is_unknown( lhs->left->value ) ) {
             intval1 = (vector_to_int( lhs->left->value ) - dim_lsb) * dim_width;
-            assert( intval1 >= 0 );
-            if( dim_be ) {
-              assert( intval1 <= vwidth );
-              lhs->value->value = vstart + (vwidth - (intval1 + lhs->value->width));
+            if( intval1 >= 0 ) {           // Only perform assignment if selected bit is within range
+              if( dim_be ) {
+                if( intval1 <= vwidth ) {  // Only perform assignment if selected bit is within range
+                  lhs->value->value = vstart + (vwidth - (intval1 + lhs->value->width));
+                } else {
+                  assign = FALSE;
+                }
+              } else {
+                if( intval1 < vwidth ) {   // Only perform assignment if selected bit is within range
+                  lhs->value->value = vstart + intval1;
+                } else {
+                  assign = FALSE;
+                }
+              }
             } else {
-              assert( intval1 < vwidth );
-              lhs->value->value = vstart + intval1;
+              assign = FALSE;
             }
           }
           if( assign ) {
@@ -4253,6 +4274,9 @@ void expression_dealloc( expression* expr, bool exp_only ) { PROFILE(EXPRESSION_
 
 /* 
  $Log$
+ Revision 1.278  2008/01/22 03:53:17  phase1geo
+ Fixing bug 1876417.  Removing obsolete code in expr.c.
+
  Revision 1.277  2008/01/19 05:57:14  phase1geo
  Fixing bug 1875180.  The anyedge operator now properly compares the values for
  changes.  Added aedge1 and aedge1.1 diagnostics to regression suite to verify
