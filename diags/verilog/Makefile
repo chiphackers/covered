@@ -65,6 +65,10 @@ CVER_FLAGS += +loadvpi=../../lib/covered.cver.so:vpi_compat_bootstrap
 endif
 CVER_EXEC =
 
+VERIWELL       = veriwell
+VERIWELL_FLAGS = +libext+.v+.vlib+ -y ./lib -y ./ovl +incdir+./ovl +incdir+./include +define+RUNTEST +define+OVL_VERILOG +define+OVL_COVER_ON +define+OVL_COVER_DEFAULT=15 +define+VPI=0
+VERIWELL_EXEC  =
+
 ifdef USE_VCS
 VERILOG       = $(VCS)
 VERILOG_FLAGS = $(VCS_FLAGS) $(VERILOG_EXTRA_FLAGS)
@@ -77,10 +81,17 @@ VERILOG_FLAGS = $(CVER_FLAGS) $(VERILOG_EXTRA_FLAGS)
 VERILOG_EXEC  = $(CVER_EXEC)
 VERILOG_CMD   = $(CVER_EXEC)
 else
+ifdef USE_VERIWELL
+VERILOG       = $(VERIWELL)
+VERILOG_FLAGS = $(VERIWELL_FLAGS) $(VERILOG_EXTRA_FLAGS)
+VERILOG_EXEC  = $(VERIWELL_EXEC)
+VERILOG_CMD   = $(VERIWELL_EXEC)
+else
 VERILOG       = $(IVERILOG)
 VERILOG_FLAGS = $(IVERILOG_FLAGS) $(VERILOG_EXTRA_FLAGS)
 VERILOG_EXEC  = $(IVERILOG_EXEC)
 VERILOG_CMD   = $(IVERILOG_INTER) $(IVERILOG_EXEC) $(DUMP_FMT)
+endif
 endif
 endif
 
