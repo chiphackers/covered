@@ -72,7 +72,7 @@ endif
 CVER_EXEC =
 
 VERIWELL       = veriwell
-VERIWELL_FLAGS = +libext+.v+.vlib+ -y ./lib -y ./ovl +incdir+./ovl +incdir+./include +define+RUNTEST +define+OVL_VERILOG +define+OVL_COVER_ON +define+OVL_COVER_DEFAULT=15 +define+VPI=0
+VERIWELL_FLAGS = +libext+.v+.vlib+ -y ./lib -y ./ovl +incdir+./ovl +incdir+./include +define+RUNTEST +define+OVL_VERILOG +define+OVL_COVER_ON +define+OVL_COVER_DEFAULT=15
 ifndef VPI
 VERIWELL_FLAGS += +define+DUMP
 endif
@@ -149,10 +149,10 @@ ifndef USE_CVER
 endif
 	@vg_exists=`which $(VG_EXEC) | wc -w`
 	@if test "$$vg_exists" = "1"; then \
-		$(VG_COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg; \
+		$(VG_COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP; \
 		$(VG_COVERED) $(COVERED_GFLAG) report -d v -m ltcfam -o $(DIAG).rptM $(DIAG).cdd; \
 	else \
-		$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg; \
+		$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP; \
 		$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfam -o $(DIAG).rptM $(DIAG).cdd; \
 	fi
 	@$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfam -i -o $(DIAG).rptI $(DIAG).cdd
@@ -200,10 +200,10 @@ ifndef USE_CVER
 endif
 	@vg_exists=`which $(VG_EXEC) | wc -w`
 	@if test "$$vg_exists" = "1"; then \
-		$(VG_COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg; \
+		$(VG_COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP; \
 		$(VG_COVERED) $(COVERED_GFLAG) report -d v -m ltcfr -o $(DIAG).rptM $(DIAG).cdd; \
 	else \
-		$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg; \
+		$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP; \
 		$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfr -o $(DIAG).rptM $(DIAG).cdd; \
 	fi
 	@$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfr -i -o $(DIAG).rptI $(DIAG).cdd
@@ -250,10 +250,10 @@ ifndef USE_CVER
 endif
 	@vg_exists=`which $(VG_EXEC) | wc -w`
 	@if test "$$vg_exists" = "1"; then \
-		$(VG_COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg; \
+		$(VG_COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP; \
 		$(VG_COVERED) $(COVERED_GFLAG) report -d v -o $(DIAG).rptM $(DIAG).cdd; \
 	else \
-		$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg; \
+		$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP; \
 		$(COVERED) $(COVERED_GFLAG) report -d v -o $(DIAG).rptM $(DIAG).cdd; \
 	fi
 	@$(COVERED) $(COVERED_GFLAG) report -d v -i -o $(DIAG).rptI $(DIAG).cdd
@@ -317,7 +317,7 @@ ifndef VPI
 ifndef USE_CVER
 	@$(VERILOG_CMD)
 endif
-	@-$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg 2> $(DIAG).err
+	@-$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP 2> $(DIAG).err
 	@rm -f $(DIAG).cfg
 	@cat $(DIAG).err
 	@./check_test $(DIAG) 1 1
@@ -338,7 +338,7 @@ ifndef VPI
 ifndef USE_CVER
 	@$(VERILOG_CMD)
 endif
-	@$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg
+	@$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP
 	@rm -f $(DIAG).cfg
 endif
 
@@ -368,7 +368,7 @@ ifndef USE_CVER
 	@$(VERILOG_CMD)
 endif
 	@./convert_cfg $(CFG_CMD) $(DIAG).cfg
-	@$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg
+	@$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP
 	@$(COVERED) $(COVERED_GFLAG) report -d v $(DIAG).cdd 2> $(DIAG).err
 	@rm -f $(DIAG).cfg
 	@cat $(DIAG).err

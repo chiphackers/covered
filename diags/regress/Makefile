@@ -71,9 +71,9 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 param9          param9.1        param9.2        param10         param10.2 \
                 param10.3       param10.4       param11         param13         param13.1 \
                 param14         param15         param16         port1           port3 \
-                port4           pulldown1       pullup1         rassign1        real1 \
-                repeat1         repeat2         report1         sbit_sel1       sbit_sel1.1 \
-                sbit_sel2       sbit_sel2.1     signed1         signed3         signed3.1       signed3.2 \
+                pulldown1       pullup1         rassign1        real1           repeat1 \
+                repeat2         report1         sbit_sel1       sbit_sel1.1     sbit_sel2 \
+                sbit_sel2.1     signed1         signed3         signed3.1       signed3.2 \
                 signed3.3       signed3.4       signed3.5       signed3.6       signed4 \
                 signed4.2       slist1          slist1.1        slist1.2        slist1.3 \
                 slist2          slist3          slist3.2        slist4          static1 \
@@ -95,9 +95,7 @@ MERGE3        = merge2
 RACELIST      = race1           race1.1         race1.2         race2.1         race2.2 \
                 race2.3         race2.4         race4
 
-ERRSCORE      = err1.0          err2.0          err3            err3.1          func3 \
-                func3.1         func3.2         func3.3         func3.4         func3.5 \
-                func3.6         func4           func4.1         func4.2         func4.3 \
+ERRSCORE      = err1.0          err2.0          err3            err3.1          func4           func4.1         func4.2         func4.3 \
                 func4.4         func4.5         func4.6         task5
 ERRMERGE      =
 ERRREPORT     = err2.1
@@ -114,7 +112,8 @@ NOSIMLIST     = gen1            gen1.1          gen1.3          gen1.4          
                 gen36.2         gen37.2         gen38.2         gen39.2         gen40.2
 
 NOSIMERRLIST  = comment1        enum2           err4            err4.1          for7 \
-                for7.1          gen1.2          gen2            gen3 \
+                for7.1          func3           func3.1         func3.2         func3.3 \
+                func3.4         func3.5         func3.6         gen1.2          gen2            gen3 \
                 gen4            gen5            gen6            gen7            gen8 \
                 gen9            gen10           gen11           gen12           gen13 \
                 gen14           gen15           gen16           gen17           gen18 \
@@ -135,7 +134,7 @@ IVONLYDIAGS1  = always5.1       assign1         assign2.8       example         
                 fsm7            fsm7.1          fsm7.2          fsm7.3          fsm7.4 \
                 fsm7.5          fsm8            fsm8.1          fsm8.2          fsm8.3 \
                 fsm9            fsm9.1          fsm9.2          fsm10           fsm10.1 \
-                fsm10.2         generate1       hier2           ifdef1.1        implicit1 \
+                fsm10.2         generate1       hier2           ifdef1.1 \
                 implicit2       real1.1         static2         static2.1       static2.2 \
                 unary1
 IVONLYDIAGS2  = 
@@ -193,7 +192,7 @@ IVVCSDIAGS2   =
 IVVCSDIAGS3   =
 IVVCSDIAGS4   =
 
-CVERVCSDIAGS1 = timescale1.20   timescale2.6    timescale2.7
+CVERVCSDIAGS1 = port4           timescale1.20   timescale2.6    timescale2.7
 CVERVCSDIAGS2 =
 CVERVCSDIAGS3 =
 CVERVCSDIAGS4 =
