@@ -74,7 +74,7 @@ CVER_EXEC =
 VERIWELL       = veriwell
 VERIWELL_FLAGS = +libext+.v+.vlib+ -y ./lib -y ./ovl +incdir+./ovl +incdir+./include +define+RUNTEST +define+OVL_VERILOG +define+OVL_COVER_ON +define+OVL_COVER_DEFAULT=15 +define+VPI=0
 ifndef VPI
-VERIWELL_FLAGS = +define+DUMP
+VERIWELL_FLAGS += +define+DUMP
 endif
 VERIWELL_EXEC  =
 
