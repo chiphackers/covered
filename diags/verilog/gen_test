@@ -39,10 +39,12 @@ print "Generating test ${diag}...\n";
 # Generate template Verilog diagnostic
 open( DIAG, ">${diag}.v" ) || die "Can't open ${diag}: $!\n";
 print DIAG "/*\n";
-print DIAG " Name:     ${diag}.v\n";
-print DIAG " Author:   ${author}\n";
-print DIAG " Date:     ${date}\n";
-print DIAG " Purpose:  \n";
+print DIAG " Name:        ${diag}.v\n";
+print DIAG " Author:      ${author}\n";
+print DIAG " Date:        ${date}\n";
+print DIAG " Purpose:     \n";
+print DIAG " Simulators:  IV CVER VERIWELL VCS\n";
+print DIAG " Modes:       VCD LXT VPI\n";
 print DIAG "*/\n\n";
 print DIAG "module main;\n\n";
 

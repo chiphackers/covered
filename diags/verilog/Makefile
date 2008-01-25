@@ -123,7 +123,7 @@ diagrun:
 	@echo Running $(DIAG)
 	@./convert_cfg $(CFG_CMD) $(DIAG).cfg
 ifdef VPI
-	@$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg
+	@$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP
 ifdef USE_CVER
 	@if test "$(COVERED_GFLAG)" = "-D"; then \
 		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v +covered_cdd=$(DIAG).cdd +covered_debug; \
@@ -174,7 +174,7 @@ racerun:
 	@echo Running $(DIAG)
 	@./convert_cfg $(CFG_CMD) $(DIAG).cfg
 ifdef VPI
-	@$(VG_COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg
+	@$(VG_COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP
 ifdef USE_CVER
 	@if test "$(COVERED_GFLAG)" = "-D"; then \
 		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v +covered_cdd=$(DIAG).cdd +covered_debug; \
@@ -224,7 +224,7 @@ $(RACELIST):
 onemergerun:
 	@./convert_cfg $(CFG_CMD) $(DIAG).cfg
 ifdef VPI
-	@$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg
+	@$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP
 ifdef USE_CVER
 	@if test "$(COVERED_GFLAG)" = "-D"; then \
 		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v +covered_cdd=$(DIAG).cdd +covered_debug; \
