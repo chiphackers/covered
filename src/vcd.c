@@ -330,14 +330,20 @@ static void vcd_parse_sim( FILE* vcd ) { PROFILE(VCD_PARSE_SIM);
   bool   use_last_timestep = FALSE;  /* Specifies if timestep has been encountered */
   int    chars_read;                 /* Number of characters scanned in */
   bool   carry_over        = FALSE;  /* Specifies if last string was too long */
+  bool   curr_line_end     = FALSE;  /* Specifies that the current line saw an $end symbol */
+  bool   last_line_end     = FALSE;  /* Specifies that the last line parsed was an $end symbol */
  
   while( !feof( vcd ) && (fscanf( vcd, "%4099s%n", token, &chars_read ) == 1) ) {
+
+    last_line_end = curr_line_end;
 
     if( chars_read < 4099 ) {
     
       if( token[0] == '$' ) {
 
-        /* Currently ignore all simulation keywords */
+        if( strncmp( token, "$end", 4 ) == 0 ) {
+          curr_line_end = TRUE;
+        }
 
       } else if( (token[0] == 'b') || (token[0] == 'B') ) {
 
@@ -348,12 +354,16 @@ static void vcd_parse_sim( FILE* vcd ) { PROFILE(VCD_PARSE_SIM);
         vcd_parse_sim_ignore( vcd );
         carry_over = FALSE;
 
-      } else if( token[0] == '#' ) {
+      } else if( (token[0] == '#') || last_line_end ) {
 
         if( use_last_timestep ) {
           db_do_timestep( last_timestep, FALSE );
         }
-        last_timestep     = ato64( token + 1 );
+        if( token[0] != '#' ) {
+          last_timestep = last_timestep + 1;
+        } else {
+          last_timestep = ato64( token + 1 );
+        }
         use_last_timestep = TRUE;
 
       } else if( (token[0] == '0') ||
@@ -441,6 +451,9 @@ void vcd_parse( char* vcd_file ) { PROFILE(VCD_PARSE);
 
 /*
  $Log$
+ Revision 1.33  2008/01/15 23:01:15  phase1geo
+ Continuing to make splint updates (not doing any memory checking at this point).
+
  Revision 1.32  2008/01/09 05:22:22  phase1geo
  More splint updates using the -standard option.
 
