@@ -1056,15 +1056,14 @@ uninstall-am: uninstall-libexecPROGRAMS
 
 
 @BUILD_CYGWIN_TRUE@covered.cver.dll: vpi.cver.o libcovered.a
-@BUILD_CYGWIN_TRUE@	$(CC) -shared -o covered.cver.dll -Wl,--out-implib=covered.cver.dll.a \
-@BUILD_CYGWIN_TRUE@		-Wl,--export-all -Wl,--enable-auto-image-base \
-@BUILD_CYGWIN_TRUE@		-Wl,--export-dynamic -Wl,--output-def=covered.cver.def \
+@BUILD_CYGWIN_TRUE@	$(CC) @shared@ -o covered.cver.dll -Wl,--out-implib=covered.cver.dll.a \
+@BUILD_CYGWIN_TRUE@		-Wl,--export-all @rdynamic@ -Wl,--output-def=covered.cver.def \
 @BUILD_CYGWIN_TRUE@		vpi.cver.o -L. -lcovered -lcver
 @BUILD_CYGWIN_FALSE@covered.vcs.so: vpi.vcs.o libcovered.a
-@BUILD_CYGWIN_FALSE@	ld -G -shared -export-dynamic vpi.vcs.o -L. -lcovered -o covered.vcs.so
+@BUILD_CYGWIN_FALSE@	$(CC) @shared@ @rdynamic@ vpi.vcs.o -L. -lcovered -o covered.vcs.so
 
 @BUILD_CYGWIN_FALSE@covered.cver.so: vpi.cver.o libcovered.a
-@BUILD_CYGWIN_FALSE@	ld -G -shared -export-dynamic vpi.cver.o -L. -lcovered -o covered.cver.so
+@BUILD_CYGWIN_FALSE@	$(CC) @shared@ @rdynamic@ vpi.cver.o -L. -lcovered -o covered.cver.so
 
 covered.vpi: vpi.iv.o libcovered.a
 	$(CC) @shared@ vpi.iv.o -L. -lcovered -L$(IVDIR)/lib -lveriuser -lvpi -o covered.vpi

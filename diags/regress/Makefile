@@ -197,17 +197,6 @@ CVERVCSDIAGS2 =
 CVERVCSDIAGS3 =
 CVERVCSDIAGS4 =
 
-# List of diagnostics that should not be run when using the VeriWell simulator
-ifeq ($(MAKECMDGOALS),veriwell)
-NOVWDIAGS    := ashift1         ashift2         case5           casex2          casez3 \
-                define5         fsm11           hier4           implicit2.1     param8 \
-                param8.1        param9.1        param9.2        param10.2       param10.3 \
-                param10.4       param16         port1           rassign1        signed1 \
-                signed3         signed4         signed4.2       slist1          slist1.1 \
-                slist1.2        slist1.3        slist2          slist3          slist3.2 \
-                slist4          task4.1
-endif
-
 # List of diagnostics that should not be run if we are using LXT dumpfiles (because they don't output any value changes after time 0)
 ifdef LXT
 NOLXTDIAGS   := add1            always7         always7.1       always11.2      ashift1 \
@@ -226,33 +215,33 @@ NOLXTDIAGS   := add1            always7         always7.1       always11.2      
                 param10.2       param10.3       param10.4       param10.5       param13 \
                 param13.1       param14         param16         port1           port2 \
                 port3           race1           race1.1         race1.2         rassign1 \
-                real1           repeat1         sbit_sel1.1     signed1         signed3 \
-                signed4         signed4.2       slist2          static1         static2 \
-                static2.1       static2.2       task3.1         timescale1.16   timescale1.17 \
-                timescale1.18   timescale1.19   timescale2.8    unary1          wait1 \
-                wait1.1
+                real1           repeat1         sbit_sel1.1     sbit_sel2.1     signed1 \
+                signed3         signed4         signed4.2       slist2          static1 \
+                static2         static2.1       static2.2       task3.1         timescale1.16 \
+                timescale1.17   timescale1.18   timescale1.19   timescale2.8    unary1 \
+                wait1           wait1.1
 endif
                  
 # Remove filtered diagnostics
-DIAGS1       := $(filter-out $(NOLXTDIAGS) $(NOVWDIAGS), $(DIAGS1))
-DIAGS2       := $(filter-out $(NOLXTDIAGS) $(NOVWDIAGS), $(DIAGS2))
-DIAGS3       := $(filter-out $(NOLXTDIAGS) $(NOVWDIAGS), $(DIAGS3))
-DIAGS4       := $(filter-out $(NOLXTDIAGS) $(NOVWDIAGS), $(DIAGS4))
-IVONLYDIAGS1 := $(filter-out $(NOLXTDIAGS) $(NOVWDIAGS), $(IVONLYDIAGS1))
-IVONLYDIAGS2 := $(filter-out $(NOLXTDIAGS) $(NOVWDIAGS), $(IVONLYDIAGS2))
-IVONLYDIAGS3 := $(filter-out $(NOLXTDIAGS) $(NOVWDIAGS), $(IVONLYDIAGS3))
-IVONLYDIAGS4 := $(filter-out $(NOLXTDIAGS) $(NOVWDIAGS), $(IVONLYDIAGS4))
-IVVCSDIAGS1  := $(filter-out $(NOLXTDIAGS) $(NOVWDIAGS), $(IVVCSDIAGS1))
-IVVCSDIAGS2  := $(filter-out $(NOLXTDIAGS) $(NOVWDIAGS), $(IVVCSDIAGS2))
-IVVCSDIAGS3  := $(filter-out $(NOLXTDIAGS) $(NOVWDIAGS), $(IVVCSDIAGS3))
-IVVCSDIAGS4  := $(filter-out $(NOLXTDIAGS) $(NOVWDIAGS), $(IVVCSDIAGS4))
-IVCVERDIAGS1 := $(filter-out $(NOLXTDIAGS) $(NOVWDIAGS), $(IVCVERDIAGS1))
-IVCVERDIAGS2 := $(filter-out $(NOLXTDIAGS) $(NOVWDIAGS), $(IVCVERDIAGS2))
-IVCVERDIAGS3 := $(filter-out $(NOLXTDIAGS) $(NOVWDIAGS), $(IVCVERDIAGS3))
-IVCVERDIAGS4 := $(filter-out $(NOLXTDIAGS) $(NOVWDIAGS), $(IVCVERDIAGS4))
-MERGE1       := $(filter-out $(NOLXTDIAGS) $(NOVWDIAGS), $(MERGE1))
-MERGE3       := $(filter-out $(NOLXTDIAGS) $(NOVWDIAGS), $(MERGE3))
-RACELIST     := $(filter-out $(NOLXTDIAGS) $(NOVWDIAGS), $(RACELIST))
+DIAGS1       := $(filter-out $(NOLXTDIAGS), $(DIAGS1))
+DIAGS2       := $(filter-out $(NOLXTDIAGS), $(DIAGS2))
+DIAGS3       := $(filter-out $(NOLXTDIAGS), $(DIAGS3))
+DIAGS4       := $(filter-out $(NOLXTDIAGS), $(DIAGS4))
+IVONLYDIAGS1 := $(filter-out $(NOLXTDIAGS), $(IVONLYDIAGS1))
+IVONLYDIAGS2 := $(filter-out $(NOLXTDIAGS), $(IVONLYDIAGS2))
+IVONLYDIAGS3 := $(filter-out $(NOLXTDIAGS), $(IVONLYDIAGS3))
+IVONLYDIAGS4 := $(filter-out $(NOLXTDIAGS), $(IVONLYDIAGS4))
+IVVCSDIAGS1  := $(filter-out $(NOLXTDIAGS), $(IVVCSDIAGS1))
+IVVCSDIAGS2  := $(filter-out $(NOLXTDIAGS), $(IVVCSDIAGS2))
+IVVCSDIAGS3  := $(filter-out $(NOLXTDIAGS), $(IVVCSDIAGS3))
+IVVCSDIAGS4  := $(filter-out $(NOLXTDIAGS), $(IVVCSDIAGS4))
+IVCVERDIAGS1 := $(filter-out $(NOLXTDIAGS), $(IVCVERDIAGS1))
+IVCVERDIAGS2 := $(filter-out $(NOLXTDIAGS), $(IVCVERDIAGS2))
+IVCVERDIAGS3 := $(filter-out $(NOLXTDIAGS), $(IVCVERDIAGS3))
+IVCVERDIAGS4 := $(filter-out $(NOLXTDIAGS), $(IVCVERDIAGS4))
+MERGE1       := $(filter-out $(NOLXTDIAGS), $(MERGE1))
+MERGE3       := $(filter-out $(NOLXTDIAGS), $(MERGE3))
+RACELIST     := $(filter-out $(NOLXTDIAGS), $(RACELIST))
 
 iverilog:
 	@cd ../verilog; \
@@ -287,16 +276,41 @@ cver:
 	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_CVER=1 VERILOG_EXTRA_FLAGS="$(CVER_FLAGS4)" DIAGLIST="$(DIAGS4) $(CVERONLYDIAGS4) $(IVCVERDIAGS4) $(CVERVCSDIAGS4)" regress
 	@cd ../verilog;  $(MAKE) eot;  $(MAKE) clean
 
-veriwell:
-	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_VERIWELL=1 VERILOG_EXTRA_FLAGS="$(VERIWELL_FLAGS1)" DIAGLIST="$(DIAGS1)" MERGELIST="$(MERGE1)" MERGE3LIST="$(MERGE3)" regress
-	@cd ../verilog;  $(MAKE) eot;  $(MAKE) clean
-
-all:
+all-vcd-quick:
 	$(MAKE) iverilog LEAVE=1
 	$(MAKE) cver LEAVE=1
-	$(MAKE) veriwell LEAVE=1
 	$(MAKE) vcs
+
+all-vcd-full:
+	$(MAKE) iverilog
+	$(MAKE) cver
+	$(MAKE) vcs
+
+all-lxt-quick:
+	$(MAKE) iverilog LXT=1
+
+all-lxt-full:
+	$(MAKE) iverilog LXT=1
+
+all-vpi-quick:
+	$(MAKE) iverilog VPI=1 LEAVE=1
+	$(MAKE) cver VPI=1 LEAVE=1
+	$(MAKE) vcs VPI=1
+
+all-vpi-full:
+	$(MAKE) iverilog VPI=1
+	$(MAKE) cver VPI=1
+	$(MAKE) vcs VPI=1
+
+all-quick:
+	$(MAKE) all-vcd-quick
+	$(MAKE) all-lxt-quick
+	$(MAKE) all-vpi-quick
+
+all all-full:
+	$(MAKE) all-vcd-full
+	$(MAKE) all-lxt-full
+	$(MAKE) all-vpi-full
 
 clean:
 	@cd ../verilog;  $(MAKE) clobber

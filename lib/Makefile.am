@@ -48,16 +48,15 @@ AM_CPPFLAGS=-DVPI_ONLY -DINSTALL_DIR=\"@datadir@/covered\" $(TCLTK_CPPFLAGS) $(D
 
 if BUILD_CYGWIN
 covered.cver.dll: vpi.cver.o libcovered.a
-	$(CC) -shared -o covered.cver.dll -Wl,--out-implib=covered.cver.dll.a \
-		-Wl,--export-all -Wl,--enable-auto-image-base \
-		-Wl,--export-dynamic -Wl,--output-def=covered.cver.def \
+	$(CC) @shared@ -o covered.cver.dll -Wl,--out-implib=covered.cver.dll.a \
+		-Wl,--export-all @rdynamic@ -Wl,--output-def=covered.cver.def \
 		vpi.cver.o -L. -lcovered -lcver
 else
 covered.vcs.so: vpi.vcs.o libcovered.a
-	ld -G -shared -export-dynamic vpi.vcs.o -L. -lcovered -o covered.vcs.so
+	$(CC) @shared@ @rdynamic@ vpi.vcs.o -L. -lcovered -o covered.vcs.so
 
 covered.cver.so: vpi.cver.o libcovered.a
-	ld -G -shared -export-dynamic vpi.cver.o -L. -lcovered -o covered.cver.so
+	$(CC) @shared@ @rdynamic@ vpi.cver.o -L. -lcovered -o covered.cver.so
 endif
 
 covered.vpi: vpi.iv.o libcovered.a
