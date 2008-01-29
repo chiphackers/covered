@@ -11,9 +11,9 @@
 2.  Required Tools
   The following is a list of tools that are necessary for building/compiling the
   Covered executable.
-  - gcc  (Version 2.96 -- not sure if >=3.0 versions will work yet)
+  - gcc  (Version 2.96)
   - flex (Version 2.5.4 -- later versions are known to not work yet)
-  - bison (Version 1.28 or higher)
+  - bison (Version 1.85 or higher)
   - GNU make (Version 3.27.1 or higher)
   - GNU gperf (Version 2.7.2 or higher)
   - TCL (Version 8.3 or higher)
