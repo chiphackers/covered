@@ -32,9 +32,11 @@ Score command
 
    7.  Add SystemVerilog features/syntax
 IP      - typedef
-        - struct
-        - union
+IP      - struct
+IP      - union
 IP      - enum
+
+   8.  Add code pragmas to allow the user to exclude parts of design from coverage consideration.
 
 
 Merge command
@@ -46,17 +48,22 @@ Merge command
 Report command
 --------------
 
-X  1.  Add accumulative coverage statistics for each metric in ASCII reports
-
 
 Miscellaneous
 -------------
 
 IP 1.  Add regression that produces known, achievable error conditions in the code.
 
-   2.  Make all code splint clean.
+IP 2.  Make all code splint clean.
+
+   3.  Replace current exit strategy with cexcept usage (throw exceptions instead of immediately exiting)
+
+   4.  Have parser generate dumpvars file to cause only needed signals by Covered to get dumped (performance enhancement).
 
 
 GUI
 ---
 
+   1.  Update GUI to make interface a bit easier to use (less cluttered)
+
+   2.  Create GUI for Mac OS X using TclTkAquaBI
