@@ -120,9 +120,9 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      Covered is primarily developed on Fedora Core 3 but has been known to compile 
+      Covered is primarily developed on Fedora Core but has been known to compile 
       with both 32-bit and 64-bit compilers that contain the general GNU library of 
-      tools.</P>
+      tools.  It has also been compiled and run on Cygwin and Mac OS X.</P>
     </TD>
   </TR>
 
@@ -239,6 +239,7 @@
       <P class="pg">
       <ol>
         <li>Do you need to debug Covered?</li>
+        <li>Do you want to profile Covered's internal functionality?</li>
         <li>Will you being using Covered as a VPI module and, if so, what simulator(s)
             will you need VPI modules built for?</li>
       </ol></P>
@@ -255,9 +256,26 @@
       <P class="pg">
       If the answer to question (1) is yes, configure the build environment with the
       <b>--enable-debug</b> option to the configure script.  Doing so will allow you 
-      to use the global -D option for debugging; however, it will also have the side 
-      effect of causing the score command to run slower.  For normal usage of Covered, 
-      this option should not be specified when configuring.</P>
+      to use the global -D option and/or the -cli (<A href="027.html#13_2">Command-Line Interface</A>)
+      score command option for debugging; however, it will also have the side effect
+      of causing the score command to run slower.  For normal usage of Covered, this
+      option should not be specified when configuring.</P>
+    </TD>
+  </TR>
+ 
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">
+      If the answer to question (2) is yes, configure the build environment with the
+      <b>--enable-profiling</b> option to the configure script.  Doing so will allow you
+      to use the global -P option to generate an output file containing internal profiling
+      information for the run command.  See <A href="028.html#13_3">Source Code Profiling</A>
+      for more information on the -P option.</P>
     </TD>
   </TR>
   
@@ -269,7 +287,7 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">
-      If the answer to question (2) is yes and you need to build a VPI module for
+      If the answer to question (3) is yes and you need to build a VPI module for
       the Icarus Verilog simulation tool, simply add <b>--with-iv</b> on the configure
       command-line.  If a VPI shared object module is needed for the Cver simulator,
       simply add <b>--with-cver=<i>cver_include_dir</i></b> on the configure command
