@@ -66,10 +66,11 @@
  But first of all, what is the purpose of this project?  Covered is a Verilog code coverage 
  analyzation utility that allows a user to examine the effectiveness of a suite of diagnostics,
  testing a design-under-test (DUT).  The goal of Covered is to allow the user to determine the
- amount of verification "done-ness" by examining four metrics:  line coverage, toggle coverage,
- combinational logic coverage, and FSM coverage.  Each of these four metrics are useful for
- finding logic that is currently unexercised, bits that are not toggled on/off, untested
- logical conditions, and untraveled state machine states and/or state transitions.  Covered is
+ amount of verification "done-ness" by examining several metrics:  line, toggle, memory,
+ combinational logic, FSM state/state transition, and assertion coverage.  Each of these metrics
+ are useful for finding logic that is currently unexercised, bits that are not toggled on/off,
+ memory locations that have not been written/read, untested logical conditions, untraveled state
+ machine states and/or state transitions, and unhit OVL cover assertions.  Covered is
  not intended to inform the user if the logic works correctly, however.
  
  \par
@@ -109,12 +110,13 @@
  The goals of the Covered project as it pertains to its users are as follows:
 
  \par
- -# Have the ability to parse all legal Verilog code as defined by the Verilog 2000 LRM
- -# Generate concise, human-readable summary reports for line, toggle, combinational,
-    and FSM state and arc coverage in which a user may quickly discern the amount of
+ -# Have the ability to parse all legal Verilog, Verilog-2001 and SystemVerilog code as
+    defined by their individual LRMs.
+ -# Generate concise, human-readable summary reports for line, toggle, memory, combinational,
+    FSM state and arc, and assertion coverage in which a user may quickly discern the amount of
     coverage achieved.
- -# Generate concise, human-readable verbose reports for line, toggle, combinational,
-    and FSM state and arc coverage in which a user may easily discern why certain coverage
+ -# Generate concise, human-readable verbose reports for line, toggle, memory, combinational,
+    FSM state and arc, and assertion coverage in which a user may easily discern why certain coverage
     results did not achieve 100% coverage.  Verbose reports should contain all information
     necessary for diagnosing the cause for lack of coverage without being excessive in
     the amount of information provided to aid in readability.
@@ -141,7 +143,7 @@
  -# Maintain sufficient amount of in-line documentation to understand purpose of functions,
     structures, defines, variables, etc.
  -# Use autoconf and automake to generate configuration files and Makefiles that will
-    be able to compile the source code on any UNIX-based operating system.
+    be able to compile the source code on any *NIX-like operating system.
  -# Use CVS for project management and file revision purposes, allowing outside developers
     to contribute to source code.
  -# Use the Doxygen utility for generating documentation from source files that is used
@@ -259,11 +261,13 @@
  \par
  <ol>
    <li> Avoid using tabs in any of the source files.  Tabs are interpreted differently by all
-     kinds of editors.  What looks well-formatted in your editor, may be messy and hard to
-     read in someone else's editor.  Please use only spaces for formatting code.
+        kinds of editors.  What looks well-formatted in your editor, may be messy and hard to
+        read in someone else's editor.  Please use only spaces for formatting code.
+   <li> Make sure that all files contain the GPL header information (see any source file to
+        get a copy of this license agreement).
    <li> All defines and global structures are defined in the defines.h file.  If you need to
-     create any new defines and/or structures for the code, please place these in this file
-     in the appropriate places.
+        create any new defines and/or structures for the code, please place these in this file
+        in the appropriate places.
    <li> For all header files, place an
  </ol>
 
@@ -306,7 +310,7 @@
  \par
  Doxygen is a command-line tool that takes in a configuration file to specify how to generate
  the appropriate documentation.  The name of Covered's Doxygen configuration file is
- located in the root directory of Covered called covered.dox.  To generate documentation for
+ located in the doc directory of Covered called covered.dox.  To generate documentation for
  the source files, enter the following command:
 
  \par
@@ -315,7 +319,7 @@
  \par
  The Covered project uses Doxygen's source file documentation extraction capabilities for
  generating this developer's document.  The output of Doxygen is two directories underneath
- the \c covered/doc directory:  html and latex.  It also places a Makefile in the latex
+ the \c doc/devel directory:  html and latex.  It also places a Makefile in the latex
  directory for creating PDF versions of the documentation.
 
  \par
@@ -333,27 +337,7 @@
 
 <HR>
 
- \par Section 4.2.  ManStyle
- 
- \par
- The ManStyle project is basically an HTML document generator with an easy to use GUI 
- interface.  It was used in Covered to create the user's manual and is mentioned mostly
- for credit sake.  The \c covered/manstyle directory contains the source files that
- ManStyle creates when you use the GUI.  If you are interested in updating the user
- manual and would like to use the ManStyle utility for doing so, the main project file to
- be opened, when performing an "open" procedure in ManStyle, is "user".  Opening this file
- will load the entire user's manual for the project.  Note that the user's manual is an
- HTML document only and, as such, may be edited with any editor.
-
- \par
- You can download ManStyle from the following website:
-
- \par
- http://manstyle.sourceforge.net/index.php3
-
-<HR>
-
- \par Section 4.3.  CVS
+ \par Section 4.2.  CVS
  
  \par
  CVS is used as the file revision and project management tool for Covered.  The CVS server
@@ -364,43 +348,27 @@
 
 <HR>
 
- \par Section 4.4.  MPatrol
+ \par Section 4.3.  Valgrind
+
+ \par
+ The valgrind utility is useful for performing lots of various runtime checks.  Most UNIX
+ variants come equipped with the valgrind utility.  For those environments that do not
+ have this utility available, it can be downloaded and fairly easily built and installed.
+ Please see its documentation for information on how to use it.
+
+ \par
+ To use valgrind for memory checking (is most useful function, in my opinion), simply run
+ any command prefixed with
+
+ \par
+ \code
+ valgrind --tool=memcheck -v
+ \endcode
+
+ \par
+ This will run the given Covered command using Valgrind to perform memory checking.  No
+ further configuration of Covered is necessary.
  
- \par
- Like most good C codes, Covered performs a lot heap memory allocations and deallocations,
- using lots of pointers to keep track of memory locations.  As such, it is possible that
- during development and debugging that a memory leak or memory allocation/deallocation error
- will occur (go figure).  To aid in dynamic memory allocation/deallocation debugging, the
- Covered project uses a library called "MPatrol" which contains all of the dynamic memory
- functions available for most C codes but are special in that they can track memory
- allocations, memory deallocations, and related function failures and display this in
- meaningful output files.  This utility has saved a lot of time and frustration so far in
- the project development and will probably serve a great deal more use in the future.
-
- \par
- Since MPatrol is a library, it may be linked with the executable (overriding the standard
- functions) or may not be linked, allowing the use of the standard library.  By default,
- MPatrol is not linked with the executable as MPatrol does add some overhead to the overall
- runtime of Covered.  This is the mode that we want to release to Covered user's.  However,
- during development, it may be useful, if not necessary, to link in the MPatrol library.
- This is simply achieved by calling the \c ./configure script in the following way:
-
- \par
- \c ./configure \c -with-mpatrol
-
- \par
- This will create the appropriate Makefiles to include the MPatrol library into all
- compiles of the project.  Of course, this means that if you want to try compiling without
- MPatrol (after turning it on), you will have to call \c ./configure again and recompile
- the project.
-
- \par
- The MPatrol library and associated documentation can be downloaded from the following
- website:
-
- \par
- http://www.cbmamiga.demon.co.uk/mpatrol/
-
 <HR>
 
  \par Go To Section...
@@ -435,11 +403,11 @@
  bits of information for a vector.
  
  \par
- The value member is an allocated array of 32-bit unsigned values large enough to store the
- amount of information as specified by the width.  Each each 32-bit value (otherwise referred
- to as a nibble within Covered) can store all of the information for 4 bits.  Each bit can contain
- 4-state information (two bits used to store a bit value).  The following two-bit values are
- used to represent the following simulation states:
+ The value member is an allocated array of 8-bit unsigned values large enough to store the
+ amount of information as specified by the width.  Each each 8-bit value (otherwise referred
+ to as a nibble within Covered) can store all of the information for a single Verilog bit.
+ Each bit can contain 4-state information (two bits used to store a bit value).  The following
+ two-bit values are used to represent the following simulation states:
  
  \par
  <ul>
@@ -477,9 +445,9 @@
  organized in a binary tree structure with a pointer to the parent expression and two pointers
  to the expression's child expressions.  An expression also contains a pointer to a vector
  (which stores the expression's coverage information and current value), a pointer to a vsignal
- (if the expression is a signal type), and a 32-bit control element called the supplemental
- field (see \ref control for bit-breakout of the supplemental field).  The expression's operation
- type and state/descriptor bits are stored in the supplemental field (for more information on
+ (if the expression is a signal type), an opcode, and a 32-bit control element called the supplemental
+ field (see \ref control for bit-breakout of the supplemental field).  The expression's
+ state/descriptor bits are stored in the supplemental field (for more information on
  the supplemental field bit breakout, please refer to expr.c).  Expressions are used to calculate
  line, combinational logic and FSM coverage.
  
@@ -502,21 +470,22 @@
  the most complicated code implemented in Covered.  As such, more detail can be found in the param.c
  source file regarding parameters.
  
- \par Section 5.1.6.  Modules
+ \par Section 5.1.6.  Functional Units
  
  \par
- Modules are the glue that holds all of the information for a particular Verilog module, including
- the module's filename, module name, list of vsignals, list of parameters, list of expressions, list
- of statements, and Coverage summary statistic structures.  A module and all structures within it
- are autonomous from all other modules in that coverage metrics can be gathered for a module
- independently from all other modules.  Modules are organized into a globally accessible list but
- a module in the list has no relation to other modules in the list.  Modules are handled in module.c.
+ Functional units are the glue that holds all of the information for a particular Verilog scope, including
+ filename, scope name, list of vsignals, list of parameters, list of expressions, list
+ of statements, and Coverage summary statistic structures.  A functional unit and all structures within it
+ are autonomous from all other functional units in that coverage metrics can be gathered independently
+ from all other functional units.  Functional units are organized into a globally accessible list but
+ a functional unit in the list has no relation to other functional units in the list.  Functional units
+ are handled in func_unit.c.
  
  \par Section 5.1.7.  Instances
  
  \par
- Instances of modules are structures that contain the instance name of the module instance and a
- pointer to the module that represents that instance.  Instances are organized into a tree structure
+ Instances of functional units are structures that contain the instance name of the module instance and a
+ pointer to the functional unit that represents that instance.  Instances are organized into a tree structure
  that resembles the Verilog hierarchy of the DUT.  The root of this globally accessible instance
  tree is called instance_root.  Instances are described in more detail below and are handled in
  the instance.c source file.
@@ -1231,6 +1200,9 @@
 
 /*
  $Log$
+ Revision 1.12  2008/01/30 05:51:50  phase1geo
+ Fixing doxygen errors.  Updated parameter list syntax to make it more readable.
+
  Revision 1.11  2007/11/20 05:28:58  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 
