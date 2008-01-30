@@ -296,6 +296,9 @@ static bool toggle_display_instance_summary(
  \param ofile        File to output coverage information to.
  \param root         Instance node in the functional unit instance tree being evaluated.
  \param parent_inst  Name of parent instance.
+ \param hits01       Pointer to number of 0 -> 1 toggles that were hit in the given instance tree
+ \param hits10       Pointer to number of 1 -> 0 toggles that were hit in the given instance tree
+ \param total        Pointer to total number of bits that could be toggled in the given instance tree
 
  \return Returns TRUE if any bits were found to be not toggled; otherwise, returns FALSE.
 
@@ -701,6 +704,10 @@ void toggle_report( FILE* ofile, bool verbose ) { PROFILE(TOGGLE_REPORT);
 
 /*
  $Log$
+ Revision 1.67  2008/01/16 23:10:34  phase1geo
+ More splint updates.  Code is now warning/error free with current version
+ of run_splint.  Still have regression issues to debug.
+
  Revision 1.66  2008/01/16 05:01:23  phase1geo
  Switched totals over from float types to int types for splint purposes.
 

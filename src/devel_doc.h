@@ -773,7 +773,7 @@
  The generic output format for the CDD file is as follows:
 
  \par
- \c <unique_numeric_ID_for_construct> \c <information_about_construct_separated_by_spaces>
+ \c \<unique_numeric_ID_for_construct\> \c \<information_about_construct_separated_by_spaces\>
 
  \par
  If a new construct needs to be added to the tool, one merely needs to select a unique ID
@@ -1231,6 +1231,9 @@
 
 /*
  $Log$
+ Revision 1.11  2007/11/20 05:28:58  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.10  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

@@ -119,7 +119,11 @@ void stmt_link_add_head( statement* stmt, stmt_link** head, stmt_link** tail ) {
  Creates a new stmt_link element with the value specified for stmt.  Sets
  next pointer of element to NULL and sets the tail value to the new element.
 */
-void stmt_link_add_tail( statement* stmt, stmt_link** head, stmt_link** tail ) { PROFILE(STMT_LINK_ADD_TAIL);
+void stmt_link_add_tail(
+  statement*  stmt,
+  stmt_link** head,
+  stmt_link** tail
+) { PROFILE(STMT_LINK_ADD_TAIL);
 
   stmt_link* tmp;    /* Temporary pointer to newly created stmt_link element */
 
@@ -141,23 +145,24 @@ void stmt_link_add_tail( statement* stmt, stmt_link** head, stmt_link** tail ) {
 }
 
 /*!
- \param tail  Pointer to head of statement link of first statement link list to merge into.
- \param head  Pointer to head of statement link of second statement link list to merge.
+ \param base_head   Pointer to head of statement link of first statement link list to merge into.
+ \param base_tail   Pointer to tail of statement link of first statement link list to merge into.
+ \param other_head  Pointer to head of statement link of second statement link list to merge.
+ \param other_tail  Pointer to tail of statement link of second statement link list to merge.
 
  Joins two statement links together such that the statements are stored in line order.
  Assumes that the base list contains at least one statement link.
 */
-void stmt_link_merge( stmt_link** base_head, stmt_link** base_tail, stmt_link* other_head, stmt_link* other_tail ) { PROFILE(STMT_LINK_MERGE);
+void stmt_link_merge(
+  stmt_link** base_head,
+  stmt_link** base_tail,
+  stmt_link*  other_head,
+  stmt_link*  other_tail
+) { PROFILE(STMT_LINK_MERGE);
 
   stmt_iter si_base;   /* Statement iterator for the base list */
   stmt_iter si_base2;  /* Statement iterator for the base list */
   stmt_iter si_other;  /* Statement iterator for the other list */
-
-/*
-  printf( "In stmt_link_merge\n" );
-  stmt_link_display( *base_head );
-  stmt_link_display( other_head );
-*/
 
   /* Get next to last statement link in tail list */
   stmt_iter_reset( &si_base, *base_head );
@@ -167,7 +172,6 @@ void stmt_link_merge( stmt_link** base_head, stmt_link** base_tail, stmt_link* o
   /* The other list should succeed the base list */
   if( si_base.curr == NULL ) {
 
-    //printf( "*** other succeeds base ***\n" );
     stmt_iter_reverse( &si_base );
     stmt_iter_next( &si_base );
     stmt_iter_reverse( &si_base );
@@ -181,7 +185,6 @@ void stmt_link_merge( stmt_link** base_head, stmt_link** base_tail, stmt_link* o
   /* The other list should precede the base list */
   } else if( si_base.last == NULL ) {
 
-    //printf( "*** other precedes base ***\n" );
     stmt_iter_next( &si_base );
     stmt_iter_next( &si_base );
     while( si_other.curr != NULL ) {
@@ -199,7 +202,6 @@ void stmt_link_merge( stmt_link** base_head, stmt_link** base_tail, stmt_link* o
   /* Otherwise, the other list needs to be merged into the base list */
   } else {
 
-    //printf( "*** other interrupts base ***\n" );
     stmt_iter_next( &si_other );
     stmt_iter_copy( &si_base2, &si_base );
     stmt_iter_next( &si_base2 );
@@ -240,9 +242,13 @@ void stmt_link_merge( stmt_link** base_head, stmt_link** base_tail, stmt_link* o
  Sets next pointer of element to NULL, sets the tail element to point
  to the new element and sets the tail value to the new element.
 */
-void exp_link_add( expression* expr, exp_link** head, exp_link** tail ) { PROFILE(EXP_LINK_ADD);
+void exp_link_add(
+  expression* expr,
+  exp_link**  head,
+  exp_link**  tail
+) { PROFILE(EXP_LINK_ADD);
 
-  exp_link* tmp;   /* Temporary pointer to newly created exp_link element */
+  exp_link* tmp;  /* Temporary pointer to newly created exp_link element */
 
   tmp = (exp_link*)malloc_safe( sizeof( exp_link ) );
 
@@ -269,7 +275,11 @@ void exp_link_add( expression* expr, exp_link** head, exp_link** tail ) { PROFIL
  Sets next pointer of element to NULL, sets the tail element to point
  to the new element and sets the tail value to the new element.
 */
-void sig_link_add( vsignal* sig, sig_link** head, sig_link** tail ) { PROFILE(SIG_LINK_ADD);
+void sig_link_add(
+  vsignal*   sig,
+  sig_link** head,
+  sig_link** tail
+) { PROFILE(SIG_LINK_ADD);
 
   sig_link* tmp;   /* Temporary pointer to newly created sig_link element */
 
@@ -298,7 +308,11 @@ void sig_link_add( vsignal* sig, sig_link** head, sig_link** tail ) { PROFILE(SI
  Sets next pointer of element to NULL, sets the tail element to point
  to the new element and sets the tail value to the new element.
 */
-void fsm_link_add( fsm* table, fsm_link** head, fsm_link** tail ) { PROFILE(FSM_LINK_ADD);
+void fsm_link_add(
+  fsm*       table,
+  fsm_link** head,
+  fsm_link** tail
+) { PROFILE(FSM_LINK_ADD);
 
   fsm_link* tmp;  /* Temporary pointer to newly created fsm_link element */
 
@@ -642,7 +656,10 @@ exp_link* exp_link_find( int id, exp_link* head ) { PROFILE(EXP_LINK_FIND);
  a matching signal is found, the pointer to this element is returned.  If the specified
  signal could not be matched, the value of NULL is returned.
 */
-sig_link* sig_link_find( const char* name, sig_link* head ) { PROFILE(SIG_LINK_FIND);
+sig_link* sig_link_find(
+  const char* name,
+  sig_link*   head
+) { PROFILE(SIG_LINK_FIND);
 
   sig_link* curr;    /* Pointer to current sig_link link */
 
@@ -762,8 +779,9 @@ funit_inst* inst_link_find_by_scope( char* scope, inst_link* head ) { PROFILE(IN
 }
 
 /*!
- \param funit  Functional unit to search for.
- \param head   Pointer to head of inst_link list to search.
+ \param funit   Functional unit to search for.
+ \param head    Pointer to head of inst_link list to search.
+ \param ignore  Pointer to integer specifying the number of instances to ignore that match the given functional unit
 
  \return Returns the pointer to the found funit_inst or NULL if the search was unsuccessful.
 
@@ -771,7 +789,11 @@ funit_inst* inst_link_find_by_scope( char* scope, inst_link* head ) { PROFILE(IN
  a matching instance is found, the pointer to this element is returned.  If the specified
  generate item could not be matched, the value of NULL is returned.
 */
-funit_inst* inst_link_find_by_funit( const func_unit* funit, inst_link* head, int* ignore ) { PROFILE(INST_LINK_FIND_BY_FUNIT);
+funit_inst* inst_link_find_by_funit(
+  const func_unit* funit,
+  inst_link*       head,
+  int*             ignore
+) { PROFILE(INST_LINK_FIND_BY_FUNIT);
 
   inst_link*  curr;  /* Pointer to current inst_link */
   funit_inst* inst;  /* Pointer to found instance */
@@ -1301,6 +1323,9 @@ void inst_link_delete_list( inst_link* head ) { PROFILE(INST_LINK_DELETE_LIST);
 
 /*
  $Log$
+ Revision 1.74  2008/01/09 05:22:21  phase1geo
+ More splint updates using the -standard option.
+
  Revision 1.73  2008/01/08 21:13:08  phase1geo
  Completed -weak splint run.  Full regressions pass.
 

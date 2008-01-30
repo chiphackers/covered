@@ -96,7 +96,7 @@ static int       last_keyword  = 0;
 static tnode*    found_modules = NULL;
 
 /*!
- Holds the name of the file specified in a `line or #line preprocessor directive.
+ Holds the name of the file specified in a `line or \#line preprocessor directive.
 */
 char*            directive_filename = NULL;
 

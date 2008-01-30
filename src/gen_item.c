@@ -429,7 +429,12 @@ bool gen_item_varname_contains_genvar( char* name ) { PROFILE(GEN_ITEM_VARNAME_C
 
  Iterates through the given name, substituting any found generate variables with their current value.
 */
-char* gen_item_calc_signal_name( char* name, func_unit* funit, int line, bool no_genvars ) { PROFILE(GEN_ITEM_CALC_SIGNAL_NAME);
+char* gen_item_calc_signal_name(
+  const char* name,
+  func_unit*  funit,
+  int         line,
+  bool        no_genvars
+) { PROFILE(GEN_ITEM_CALC_SIGNAL_NAME);
 
   char* new_name = NULL;  /* Return value of this function */
   char* tmpname;          /* Temporary name of current part of variable */
@@ -475,7 +480,9 @@ char* gen_item_calc_signal_name( char* name, func_unit* funit, int line, bool no
 
  Creates a new generate item for an expression.
 */
-gen_item* gen_item_create_expr( expression* expr ) { PROFILE(GEN_ITEM_CREATE_EXPR);
+gen_item* gen_item_create_expr(
+  expression* expr
+) { PROFILE(GEN_ITEM_CREATE_EXPR);
 
   gen_item* gi;
 
@@ -504,13 +511,15 @@ gen_item* gen_item_create_expr( expression* expr ) { PROFILE(GEN_ITEM_CREATE_EXP
 }
 
 /*!
- \param expr  Pointer to signal to create a generate item for (wire/reg instantions)
+ \param sig  Pointer to signal to create a generate item for (wire/reg instantions)
 
  \return Returns a pointer to created generate item.
 
  Creates a new generate item for a signal.
 */
-gen_item* gen_item_create_sig( vsignal* sig ) { PROFILE(GEN_ITEM_CREATE_SIG);
+gen_item* gen_item_create_sig(
+  vsignal* sig
+) { PROFILE(GEN_ITEM_CREATE_SIG);
 
   gen_item* gi;
 
@@ -545,7 +554,9 @@ gen_item* gen_item_create_sig( vsignal* sig ) { PROFILE(GEN_ITEM_CREATE_SIG);
 
  Create a new generate item for a statement.
 */
-gen_item* gen_item_create_stmt( statement* stmt ) { PROFILE(GEN_ITEM_CREATE_STMT);
+gen_item* gen_item_create_stmt(
+  statement* stmt
+) { PROFILE(GEN_ITEM_CREATE_STMT);
 
   gen_item* gi;
 
@@ -574,13 +585,15 @@ gen_item* gen_item_create_stmt( statement* stmt ) { PROFILE(GEN_ITEM_CREATE_STMT
 }
 
 /*!
- \param stmt  Pointer to instance to create a generate item for (instantiations)
+ \param inst  Pointer to instance to create a generate item for (instantiations)
 
  \return Returns a pointer to create generate item.
 
  Create a new generate item for an instance.
 */
-gen_item* gen_item_create_inst( funit_inst* inst ) { PROFILE(GEN_ITEM_CREATE_INST);
+gen_item* gen_item_create_inst(
+  funit_inst* inst
+) { PROFILE(GEN_ITEM_CREATE_INST);
 
   gen_item* gi;
 
@@ -644,13 +657,17 @@ gen_item* gen_item_create_tfn( funit_inst* inst ) { PROFILE(GEN_ITEM_CREATE_TFN)
 }
 
 /*!
- \param inst  Pointer to namespace to create a generate item for (named blocks, functions or tasks)
+ \param name  Name of signal to bind to
+ \param expr  Pointer to expression to bind signal to
 
  \return Returns a pointer to create generate item.
 
  Create a new generate item for a namespace.
 */
-gen_item* gen_item_create_bind( char* name, expression* expr ) { PROFILE(GEN_ITEM_CREATE_BIND);
+gen_item* gen_item_create_bind(
+  const char* name,
+  expression* expr
+) { PROFILE(GEN_ITEM_CREATE_BIND);
 
   gen_item* gi;
 
@@ -720,7 +737,10 @@ void gen_item_resize_stmts_and_sigs( gen_item* gi, func_unit* funit ) { PROFILE(
 
  Assigns unique expression IDs to each expression in the tree given for a generated statement.
 */
-void gen_item_assign_expr_ids( gen_item* gi, func_unit* funit ) { PROFILE(GEN_ITEM_ASSIGN_EXPR_IDS);
+void gen_item_assign_expr_ids(
+  gen_item*  gi,
+  func_unit* funit
+) { PROFILE(GEN_ITEM_ASSIGN_EXPR_IDS);
 
   if( (gi->suppl.part.type == GI_TYPE_STMT) && (gi->suppl.part.removed == 0) ) {
 
@@ -731,15 +751,19 @@ void gen_item_assign_expr_ids( gen_item* gi, func_unit* funit ) { PROFILE(GEN_IT
 }
 
 /*!
- \param gi    Pointer to current generate item to test and output
- \param type  Specifies the type of the generate item to output
- \param file  Output file to display generate item to
+ \param gi     Pointer to current generate item to test and output
+ \param type   Specifies the type of the generate item to output
+ \param ofile  Output file to display generate item to
 
  Checks the given generate item against the supplied type.  If they match,
  outputs the given generate item to the specified output file.  If they do
  not match, nothing is done.
 */
-void gen_item_db_write( gen_item* gi, control type, FILE* ofile ) { PROFILE(GEN_ITEM_DB_WRITE);
+void gen_item_db_write(
+  gen_item* gi,
+  control   type,
+  FILE*     ofile
+) { PROFILE(GEN_ITEM_DB_WRITE);
 
   /* If the types match, output based on type */
   if( (gi->suppl.part.type == type) && (gi->suppl.part.removed == 0) ) {
@@ -766,7 +790,10 @@ void gen_item_db_write( gen_item* gi, control type, FILE* ofile ) { PROFILE(GEN_
 
  Outputs all expressions for the statement contained in the specified generate item.
 */
-void gen_item_db_write_expr_tree( gen_item* gi, FILE* ofile ) { PROFILE(GEN_ITEM_DB_WRITE_EXPR_TREE);
+void gen_item_db_write_expr_tree(
+  gen_item* gi,
+  FILE* ofile
+) { PROFILE(GEN_ITEM_DB_WRITE_EXPR_TREE);
 
   /* Only do this for statements */
   if( (gi->suppl.part.type == GI_TYPE_STMT) && (gi->suppl.part.removed == 0) ) {
@@ -784,7 +811,11 @@ void gen_item_db_write_expr_tree( gen_item* gi, FILE* ofile ) { PROFILE(GEN_ITEM
 
  \return Returns TRUE if the connection was successful; otherwise, returns FALSE.
 */
-bool gen_item_connect( gen_item* gi1, gen_item* gi2, int conn_id ) { PROFILE(GEN_ITEM_CONNECT);
+bool gen_item_connect(
+  gen_item* gi1,
+  gen_item* gi2,
+  int conn_id
+) { PROFILE(GEN_ITEM_CONNECT);
 
   bool retval;  /* Return value for this function */
 
@@ -1057,7 +1088,6 @@ static bool generate_remove_stmt_helper(
 }
 
 /*!
- \param root  Pointer to root instance to search
  \param stmt  Statement to set "remove" bit on
 
  \return Returns TRUE if we found at least one match; otherwise, returns FALSE.
@@ -1066,7 +1096,9 @@ static bool generate_remove_stmt_helper(
  that match the given statement ID.  This will get called by the stmt_blk_remove() function
  when a statement has been found that does not exist in a functional unit.
 */
-bool generate_remove_stmt( statement* stmt ) { PROFILE(GENERATE_REMOVE_STMT);
+bool generate_remove_stmt(
+  statement* stmt
+) { PROFILE(GENERATE_REMOVE_STMT);
 
   bool       retval = FALSE;  /* Return value for this function */
   inst_link* instl;           /* Pointer to current instance list to parse */
@@ -1140,6 +1172,9 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) { PROFILE(GEN_ITEM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.52  2008/01/16 06:40:37  phase1geo
+ More splint updates.
+
  Revision 1.51  2008/01/10 04:59:04  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 

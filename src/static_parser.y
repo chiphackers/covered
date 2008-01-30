@@ -318,8 +318,8 @@ static_expr_primary
 /*@=retvalint@*/
 
 /*!
- \param str         Pointer to string to parse as a static expression.
- \param fname       Filename containing this expression
+ \param str         Pointer to string to parse as a static expression
+ \param funit       Pointer to functional unit containing this static expression
  \param lineno      Line number containing this expression
  \param no_genvars  Specifies if generate variables can exist in the given expression string
 
@@ -327,7 +327,12 @@ static_expr_primary
 
  Parses given static expression string and returns its calculated integer value.
 */
-int parse_static_expr( char* str, func_unit* funit, int lineno, bool no_genvars ) {
+int parse_static_expr(
+  char* str,
+  func_unit* funit,
+  int lineno,
+  bool no_genvars
+) {
 
   /* Set the global values */
   se_funit    = funit;
@@ -353,7 +358,9 @@ int parse_static_expr( char* str, func_unit* funit, int lineno, bool no_genvars 
 
  Displays an error message from the static expression parser and exits execution.
 */
-int SEerror( char* str ) {
+int SEerror(
+  char* str
+) {
 
   unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "%s,   file: %s, line: %d", str, obf_file( se_funit->name ), se_lineno );
   assert( rv < USER_MSG_LENGTH );

@@ -48,7 +48,7 @@ bool gen_item_varname_contains_genvar( char* name );
 
 /*! \brief Returns the actual signal name specified by the given signal name which references a
            generated hierarchy */
-char* gen_item_calc_signal_name( char* name, func_unit* funit, int line, bool no_genvars );
+char* gen_item_calc_signal_name( const char* name, func_unit* funit, int line, bool no_genvars );
 
 /*! \brief Creates a generate item for an expression */
 gen_item* gen_item_create_expr( expression* expr );
@@ -66,7 +66,7 @@ gen_item* gen_item_create_inst( funit_inst* inst );
 gen_item* gen_item_create_tfn( funit_inst* inst );
 
 /*! \brief Creates a generate item for a binding */
-gen_item* gen_item_create_bind( char* name, expression* expr );
+gen_item* gen_item_create_bind( const char* name, expression* expr );
 
 /*! \brief Resizes all statements and signals in the given generate item block */
 void gen_item_resize_stmts_and_sigs( gen_item* gi, func_unit* funit );
@@ -97,6 +97,9 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem );
 
 /*
  $Log$
+ Revision 1.22  2008/01/16 06:40:37  phase1geo
+ More splint updates.
+
  Revision 1.21  2008/01/10 04:59:04  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 

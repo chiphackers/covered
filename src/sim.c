@@ -215,10 +215,14 @@ static void sim_display_thread( thread* thr, bool show_queue, bool endl ) {
 
 /*!
  \param queue_head  Pointer to head of queue to display
+ \param queue_tail  Pointer to tail of queue to display
 
  Displays the current state of the active queue (for debug purposes only).
 */
-static void sim_display_queue( thread* queue_head, thread* queue_tail ) {
+static void sim_display_queue(
+  thread* queue_head,
+  thread* queue_tail
+) {
 
   thread* thr;  /* Pointer to current thread */
 
@@ -366,7 +370,10 @@ static void sim_thread_pop_head() { PROFILE(SIM_THREAD_POP_HEAD);
 
  This function is called by the expression_op_func__delay() function.
 */
-void sim_thread_insert_into_delay_queue( thread* thr, const sim_time* time ) { PROFILE(SIM_THREAD_INSERT_INTO_DELAY_QUEUE);
+void sim_thread_insert_into_delay_queue(
+  thread*         thr,
+  const sim_time* time
+) { PROFILE(SIM_THREAD_INSERT_INTO_DELAY_QUEUE);
 
   thread* curr;  /* Pointer to current thread in delayed queue to compare against */
 
@@ -455,7 +462,10 @@ void sim_thread_insert_into_delay_queue( thread* thr, const sim_time* time ) { P
  called whenever a head statement has a signal change or the head statement is a delay operation
  and
 */
-static void sim_thread_push( thread* thr, const sim_time* time ) { PROFILE(SIM_THREAD_PUSH);
+static void sim_thread_push(
+  thread*         thr,
+  const sim_time* time
+) { PROFILE(SIM_THREAD_PUSH);
 
   exp_op_type op;  /* Operation type of current expression in given thread */
 
@@ -1015,15 +1025,18 @@ static bool sim_expression( expression* expr, thread* thr, const sim_time* time 
 }
 
 /*!
- \param thr       Pointer to current thread to simulate.
- \param sim_time  Current simulation time to simulate.
+ \param thr   Pointer to current thread to simulate.
+ \param time  Current simulation time to simulate.
 
  Performs statement simulation as described above.  Calls expression simulator if
  the associated root expression is specified that signals have changed value within
  it.  Continues to run for current statement tree until statement tree hits a
  wait-for-event condition (or we reach the end of a simulation tree).
 */
-void sim_thread( thread* thr, const sim_time* time ) { PROFILE(SIM_THREAD);
+void sim_thread(
+  thread*         thr,
+  const sim_time* time
+) { PROFILE(SIM_THREAD);
 
   statement* stmt;                  /* Pointer to current statement to evaluate */
   bool       expr_changed = FALSE;  /* Specifies if expression tree was modified in any way */
@@ -1111,13 +1124,15 @@ void sim_thread( thread* thr, const sim_time* time ) { PROFILE(SIM_THREAD);
 }
 
 /*!
- \param sim_time  Current simulation time from dumpfile or simulator.
+ \param time  Current simulation time from dumpfile or simulator.
 
  This function is the heart of the simulation engine.  It is called by the
  db_do_timestep() function in db.c  and moves the statements and expressions into
  the appropriate simulation functions.  See above explanation on this procedure.
 */
-void sim_simulate( const sim_time* time ) { PROFILE(SIM_SIMULATE);
+void sim_simulate(
+  const sim_time* time
+) { PROFILE(SIM_SIMULATE);
 
   /* Simulate all threads in the active queue */
   while( active_head != NULL ) {
@@ -1141,85 +1156,6 @@ void sim_simulate( const sim_time* time ) { PROFILE(SIM_SIMULATE);
     }
 
   }
-
-#ifdef OBSOLETE2
-  /* Simulate delay queue for each timestep less than the current simulation time */
-  while( (delayed_head != NULL) && (delayed_head->curr_time <= sim_time) ) {
-
-    uint64  last_time = delayed_head->curr_time;  /* Last time placed into the active thread queue */
-    thread* thr       = delayed_head;             /* Current thread being examined for time */
-
-    /* Find final thread in this same timestep */
-    do {
-      thr->suppl.part.state = THR_ST_ACTIVE;
-      thr = thr->queue_next;
-    } while( (thr != NULL) && (thr->curr_time == last_time) );
-
-    /* Add segment of delayed queue to the active queue */
-    active_head = delayed_head;
-    active_head->queue_prev = NULL;
-    if (thr == NULL) {
-      active_tail  = delayed_tail;
-      delayed_head = delayed_tail = NULL;
-    } else {
-      active_tail = thr->queue_prev;
-      active_tail->queue_next = NULL;
-      delayed_head = thr;
-      delayed_head->queue_prev = NULL;
-    }
-
-    /* Simulate all threads in the active queue */
-    while( active_head != NULL ) {
-      sim_thread( active_head, time );
-    }
-
-  }
-#endif
-
-#ifdef OBSOLETE
-  /* Simulate delay queue for each timestep less than the current simulation time */
-  while( (delayed_head != NULL) && (delayed_head->curr_time <= sim_time) ) {
-
-    uint64 last_time = delayed_head->curr_time;  /* Last time placed into the active thread queue */
-
-    /* Change the state to ACTIVE */
-    delayed_head->suppl.part.state = THR_ST_ACTIVE;
-
-    /* Now extract items from the delayed queue and put them in the active thread list */
-    assert( active_head == NULL );
-
-    active_head = active_tail = delayed_head; 
-    delayed_head = delayed_head->queue_next;
-    active_head->queue_prev = NULL; 
-    active_head->queue_next = NULL; 
-    if( delayed_head != NULL ) {
-      delayed_head->queue_prev = NULL;
-    } else {
-      delayed_tail = NULL;
-    }
-
-    while( (delayed_head != NULL) && (delayed_head->curr_time == last_time) ) {
-      thread* thr = delayed_head;
-      delayed_head             = delayed_head->queue_next;
-      thr->suppl.part.state = THR_ST_ACTIVE;
-      thr->queue_prev = active_tail;
-      thr->queue_next = NULL;
-      active_tail->queue_next  = thr;
-      active_tail              = thr;
-      if( delayed_head != NULL ) {
-        delayed_head->queue_prev = NULL;
-      } else {
-        delayed_tail = NULL;
-      }
-    }
-
-    /* Simulate all threads in the active queue */
-    while( active_head != NULL ) {
-      sim_thread( active_head, time );
-    }
-
-  }
-#endif
 
 #ifdef DEBUG_MODE
   if( debug_mode && !flag_use_command_line_debug ) {
@@ -1281,6 +1217,9 @@ void sim_dealloc() { PROFILE(SIM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.117  2008/01/10 04:59:04  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.116  2008/01/09 05:22:22  phase1geo
  More splint updates using the -standard option.
 

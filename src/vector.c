@@ -822,9 +822,14 @@ void vector_mem_rw_count( vector* vec, int* wr_cnt, int* rd_cnt ) { PROFILE(VECT
  \return Returns TRUE if assigned bit that is being set to 1 in this function was
          found to be previously set; otherwise, returns FALSE.
 
- This function is called by the \ref vsignal_set_assigned function.
+ Sets the assigned supplemental bit for the given bit range in the given vector.  Called by
+ race condition checker code.
 */
-bool vector_set_assigned( vector* vec, int msb, int lsb ) { PROFILE(VECTOR_SET_ASSIGNED);
+bool vector_set_assigned(
+  vector* vec,
+  int msb,
+  int lsb
+) { PROFILE(VECTOR_SET_ASSIGNED);
 
   bool prev_assigned = FALSE;  /* Specifies if any set bit was previously set */
   int  i;                      /* Loop iterator */
@@ -861,7 +866,13 @@ bool vector_set_assigned( vector* vec, int msb, int lsb ) { PROFILE(VECTOR_SET_A
  been set, checks to see if new vector bits have toggled, sets appropriate
  toggle values, sets the new value to this value and returns.
 */
-bool vector_set_value( vector* vec, vec_data* value, int width, int from_idx, int to_idx ) { PROFILE(VECTOR_SET_VALUE);
+bool vector_set_value(
+  vector*   vec,
+  vec_data* value,
+  int       width,
+  int       from_idx,
+  int       to_idx
+) { PROFILE(VECTOR_SET_VALUE);
 
   bool      retval = FALSE;  /* Return value for this function */
   nibble    from_val;        /* Current bit value of value being assigned */
@@ -2407,6 +2418,9 @@ void vector_dealloc( vector* vec ) { PROFILE(VECTOR_DEALLOC);
 
 /*
  $Log$
+ Revision 1.110  2008/01/22 03:53:18  phase1geo
+ Fixing bug 1876417.  Removing obsolete code in expr.c.
+
  Revision 1.109  2008/01/16 23:10:34  phase1geo
  More splint updates.  Code is now warning/error free with current version
  of run_splint.  Still have regression issues to debug.

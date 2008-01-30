@@ -564,6 +564,7 @@ bool instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child,
 }
 
 /*!
+ \param root  Pointer to root functional unit to traverse
  \param curr  Pointer to current instance to resolve
 
  \return Returns TRUE if instance was resolved; otherwise, returns FALSE.
@@ -572,7 +573,10 @@ bool instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child,
  a range was found, create all of the instances for this range and add them to the instance
  tree.
 */
-bool instance_resolve_inst( funit_inst* root, funit_inst* curr ) { PROFILE(INSTANCE_RESOLVE_INST);
+bool instance_resolve_inst(
+  funit_inst* root,
+  funit_inst* curr
+) { PROFILE(INSTANCE_RESOLVE_INST);
 
   int   width = -1;  /* Width of the instance range */
   int   lsb;         /* LSB of the instance range */
@@ -979,12 +983,15 @@ void instance_remove_stmt_blks_calling_stmt( funit_inst* root, statement* stmt )
 }
 
 /*!
- \param root  Pointer to functional unit instance to remove expression from
- \param exp   Pointer to expression to remove from list
+ \param root   Pointer to functional unit instance to remove expression from
+ \param stmt   Pointer to statement to remove from list
 
- Recursively traverses the given instance tree, removing the given expression (and its sub
+ Recursively traverses the given instance tree, removing the given statement.
 */
-void instance_remove_parms_with_expr( funit_inst* root, statement* stmt ) { PROFILE(INSTANCE_REMOVE_PARMS_WITH_EXPR);
+void instance_remove_parms_with_expr(
+  funit_inst* root,
+  statement*  stmt
+) { PROFILE(INSTANCE_REMOVE_PARMS_WITH_EXPR);
 
   funit_inst* curr_child;  /* Pointer to current child instance to traverse */
   inst_parm*  iparm;       /* Pointer to current instance parameter */
@@ -1157,6 +1164,9 @@ void instance_dealloc( funit_inst* root, char* scope ) { PROFILE(INSTANCE_DEALLO
 
 /*
  $Log$
+ Revision 1.87  2008/01/16 06:40:37  phase1geo
+ More splint updates.
+
  Revision 1.86  2008/01/10 04:59:04  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 

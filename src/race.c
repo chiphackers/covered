@@ -98,7 +98,11 @@ extern int         stmt_conn_id;
 
  Allocates and initializes memory for a race condition block.
 */
-static race_blk* race_blk_create( int reason, int start_line, int end_line ) { PROFILE(RACE_BLK_CREATE);
+static race_blk* race_blk_create(
+  int reason,
+  int start_line,
+  int end_line
+) { PROFILE(RACE_BLK_CREATE);
 
   race_blk* rb;  /* Pointer to newly allocated race condition block */
 
@@ -125,7 +129,10 @@ static race_blk* race_blk_create( int reason, int start_line, int end_line ) { P
  If the statement is found, a value of TRUE is returned to the calling function; otherwise, a value of
  FALSE is returned.
 */
-static bool race_find_head_statement_containing_statement_helper( statement* curr, statement* to_find ) { PROFILE(RACE_FIND_HEAD_STATEMENT_CONTAINING_STATEMENT_HELPER);
+static bool race_find_head_statement_containing_statement_helper(
+  statement* curr,
+  statement* to_find
+) { PROFILE(RACE_FIND_HEAD_STATEMENT_CONTAINING_STATEMENT_HELPER);
 
   bool retval = FALSE;  /* Return value for this function */
 
@@ -177,7 +184,9 @@ static bool race_find_head_statement_containing_statement_helper( statement* cur
  to the head statement block is returned to the calling function.  If it is not found, a value of NULL is returned,
  indicating that the statement block could not be found for the given statement.
 */
-static statement* race_find_head_statement_containing_statement( statement* stmt ) { PROFILE(RACE_FIND_HEAD_STATEMENT_CONTAINING_STATEMENT);
+static statement* race_find_head_statement_containing_statement(
+  statement* stmt
+) { PROFILE(RACE_FIND_HEAD_STATEMENT_CONTAINING_STATEMENT);
 
   int i = 0;   /* Loop iterator */
 
@@ -197,7 +206,6 @@ static statement* race_find_head_statement_containing_statement( statement* stmt
 }
 
 /*!
- \param mod   Pointer to module containing statement list to parse.
  \param expr  Pointer to root expression to find in statement list.
 
  \return Returns pointer to head statement of statement block containing the specified expression
@@ -205,7 +213,9 @@ static statement* race_find_head_statement_containing_statement( statement* stmt
  Finds the head statement of the statement block containing the expression specified in the parameter list.
  Verifies that the return value is never NULL (this would be an internal error if it existed).
 */
-static statement* race_get_head_statement( expression* expr ) { PROFILE(RACE_GET_HEAD_STATEMENT);
+static statement* race_get_head_statement(
+  expression* expr
+) { PROFILE(RACE_GET_HEAD_STATEMENT);
 
   statement* curr_stmt;  /* Pointer to current statement containing the expression */
 
@@ -228,7 +238,9 @@ static statement* race_get_head_statement( expression* expr ) { PROFILE(RACE_GET
  \return Returns index of found head statement in statement block array if found; otherwise,
          returns a value of -1 to indicate that no such statement block exists.
 */
-static int race_find_head_statement( statement* stmt ) { PROFILE(RACE_FIND_HEAD_STATEMENT);
+static int race_find_head_statement(
+  statement* stmt
+) { PROFILE(RACE_FIND_HEAD_STATEMENT);
 
   int i = 0;   /* Loop iterator */
 
@@ -339,7 +351,13 @@ void race_calc_assignments(
  Outputs necessary information to user regarding the race condition that was detected and performs any
  necessary memory cleanup to remove the statement block involved in the race condition.
 */
-static void race_handle_race_condition( expression* expr, func_unit* mod, statement* stmt, statement* base, int reason ) { PROFILE(RACE_HANDLE_RACE_CONDITION);
+static void race_handle_race_condition(
+  expression* expr,
+  func_unit*  mod,
+  statement*  stmt,
+  statement*  base,
+  int         reason
+) { PROFILE(RACE_HANDLE_RACE_CONDITION);
 
   race_blk*    rb;         /* Pointer to race condition block to add to specified module */
   int          i;          /* Loop iterator */
@@ -472,7 +490,9 @@ static void race_handle_race_condition( expression* expr, func_unit* mod, statem
 /*!
  \param mod  Pointer to functional unit to check assignment types for
 */
-static void race_check_assignment_types( func_unit* mod ) { PROFILE(RACE_CHECK_ASSIGNMENT_TYPES);
+static void race_check_assignment_types(
+  func_unit* mod
+) { PROFILE(RACE_CHECK_ASSIGNMENT_TYPES);
 
   int i;  /* Loop iterator */
 
@@ -513,7 +533,9 @@ static void race_check_assignment_types( func_unit* mod ) { PROFILE(RACE_CHECK_A
  assigned in more than one statement block, both statement block's need to be removed
  from coverage consideration and a possible warning/error message generated to the user.
 */
-static void race_check_one_block_assignment( func_unit* mod ) { PROFILE(RACE_CHECK_ONE_BLOCK_ASSIGNMENT);
+static void race_check_one_block_assignment(
+  func_unit* mod
+) { PROFILE(RACE_CHECK_ONE_BLOCK_ASSIGNMENT);
 
   sig_link*  sigl;                /* Pointer to current signal */
   exp_link*  expl;                /* Pointer to current expression */
@@ -817,7 +839,10 @@ void race_check_modules() { PROFILE(RACE_CHECK_MODULES);
 
  Writes contents of specified race condition block to the specified output stream.
 */
-void race_db_write( race_blk* rb, FILE* file ) { PROFILE(RACE_DB_WRITE);
+void race_db_write(
+  race_blk* rb,
+  FILE*     file
+) { PROFILE(RACE_DB_WRITE);
 
   fprintf( file, "%d %d %d %d\n",
     DB_TYPE_RACE,
@@ -839,7 +864,10 @@ void race_db_write( race_blk* rb, FILE* file ) { PROFILE(RACE_DB_WRITE);
  Reads the specified line from the CDD file and parses it for race condition block
  information.
 */
-bool race_db_read( char** line, func_unit* curr_mod ) { PROFILE(RACE_DB_READ);
+bool race_db_read(
+  char**     line,
+  func_unit* curr_mod
+) { PROFILE(RACE_DB_READ);
 
   bool      retval = TRUE;  /* Return value for this function */
   int       start_line;     /* Starting line for race condition block */
@@ -892,7 +920,11 @@ bool race_db_read( char** line, func_unit* curr_mod ) { PROFILE(RACE_DB_READ);
  Iterates through specified race condition block list, totaling the number of race conditions found as
  well as tallying each type of race condition.
 */
-void race_get_stats( race_blk* curr, int* race_total, int type_total[][RACE_TYPE_NUM] ) { PROFILE(RACE_GET_STATS);
+void race_get_stats(
+  race_blk* curr,
+  int*      race_total,
+  int       type_total[][RACE_TYPE_NUM]
+) { PROFILE(RACE_GET_STATS);
 
   int i;  /* Loop iterator */
 
@@ -921,7 +953,10 @@ void race_get_stats( race_blk* curr, int* race_total, int type_total[][RACE_TYPE
 
  Displays the summary report for race conditions for all functional units in design.
 */
-static bool race_report_summary( FILE* ofile, funit_link* head ) { PROFILE(RACE_REPORT_SUMMARY);
+static bool race_report_summary(
+  FILE* ofile,
+  funit_link* head
+) { PROFILE(RACE_REPORT_SUMMARY);
 
   bool found = FALSE;  /* Return value for this function */
 
@@ -955,7 +990,10 @@ static bool race_report_summary( FILE* ofile, funit_link* head ) { PROFILE(RACE_
  Outputs a verbose race condition report to the specified output file specifying
  the line number and race condition reason for all functional units in the design.
 */
-static void race_report_verbose( FILE* ofile, funit_link* head ) { PROFILE(RACE_REPORT_VERBOSE);
+static void race_report_verbose(
+  FILE* ofile,
+  funit_link* head
+) { PROFILE(RACE_REPORT_VERBOSE);
 
   race_blk* curr_race;  /* Pointer to current race condition block */
 
@@ -1005,7 +1043,10 @@ static void race_report_verbose( FILE* ofile, funit_link* head ) { PROFILE(RACE_
  Generates the race condition report information and displays it to the specified
  output stream.
 */
-void race_report( FILE* ofile, bool verbose ) { PROFILE(RACE_REPORT);
+void race_report(
+  FILE* ofile,
+  bool verbose
+) { PROFILE(RACE_REPORT);
 
   bool found;  /* If set to TRUE, race conditions were found */
 
@@ -1041,7 +1082,14 @@ void race_report( FILE* ofile, bool verbose ) { PROFILE(RACE_REPORT);
  Collects all of the line numbers in the specified module that were ignored from coverage due to
  detecting a race condition.  This function is primarily used by the GUI for outputting purposes.
 */
-bool race_collect_lines( const char* funit_name, int funit_type, int** slines, int** elines, int** reasons, int* line_cnt ) { PROFILE(RACE_COLLECT_LINES);
+bool race_collect_lines(
+            const char* funit_name,
+            int         funit_type,
+  /*@out@*/ int**       slines,
+  /*@out@*/ int**       elines,
+  /*@out@*/ int**       reasons,
+  /*@out@*/ int*       line_cnt
+) { PROFILE(RACE_COLLECT_LINES);
 
   bool        retval    = TRUE;  /* Return value for this function */
   funit_link* modl;              /* Pointer to found module link containing specified module */
@@ -1088,7 +1136,9 @@ bool race_collect_lines( const char* funit_name, int funit_type, int** slines, i
 
  Recursively deallocates the specified race condition block list.
 */
-void race_blk_delete_list( race_blk* rb ) { PROFILE(RACE_BLK_DELETE_LIST);
+void race_blk_delete_list(
+  race_blk* rb
+) { PROFILE(RACE_BLK_DELETE_LIST);
 
   if( rb != NULL ) {
 
@@ -1106,6 +1156,10 @@ void race_blk_delete_list( race_blk* rb ) { PROFILE(RACE_BLK_DELETE_LIST);
 
 /*
  $Log$
+ Revision 1.68  2008/01/23 20:48:03  phase1geo
+ Fixing bug 1878134 and adding new diagnostics to regression suite to verify
+ its behavior.  Full regressions pass.
+
  Revision 1.67  2008/01/16 06:40:37  phase1geo
  More splint updates.
 

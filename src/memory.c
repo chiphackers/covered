@@ -118,7 +118,7 @@ void memory_get_stat(
 }
 
 /*!
- \param sig        Pointer to signal list to traverse for memories
+ \param sigl       Pointer to signal list to traverse for memories
  \param ae_total   Pointer to total number of addressable elements
  \param wr_hit     Pointer to total number of addressable elements written
  \param rd_hit     Pointer to total number of addressable elements read
@@ -127,13 +127,13 @@ void memory_get_stat(
  \param tog10_hit  Pointer to total number of bits toggling from 1->0
 */
 void memory_get_stats(
-  sig_link* sigl,
-  int*      ae_total,
-  int*      wr_hit,
-  int*      rd_hit,
-  int*      tog_total,
-  int*      tog01_hit,
-  int*      tog10_hit
+            sig_link* sigl,
+  /*@out@*/ int*      ae_total,
+  /*@out@*/ int*      wr_hit,
+  /*@out@*/ int*      rd_hit,
+  /*@out@*/ int*      tog_total,
+  /*@out@*/ int*      tog01_hit,
+  /*@out@*/ int*      tog10_hit
 ) { PROFILE(MEMORY_GET_STATS);
 
   while( sigl != NULL ) {
@@ -409,8 +409,9 @@ static void memory_get_mem_coverage( char** mem_str, vsignal* sig, vec_data* val
  \param funit_name   Name of functional unit containing the given signal
  \param funit_type   Type of functional unit containing the given signal
  \param signame      Name of signal to find memory coverage information for
- \param pdim_info    Pointer to string to store packed dimensional information
- \param udim_info    Pointer to string to store unpacked dimensional information
+ \param pdim_str     Pointer to string to store packed dimensional information
+ \param pdim_array   Pointer to string to store packed dimensional array
+ \param udim_str     Pointer to string to store unpacked dimensional information
  \param memory_info  Pointer to string to store memory information into
  \param excluded     Pointer to excluded indicator to store
 
@@ -419,8 +420,16 @@ static void memory_get_mem_coverage( char** mem_str, vsignal* sig, vec_data* val
 
  Retrieves memory coverage information for the given signal in the specified functional unit.
 */
-bool memory_get_coverage( const char* funit_name, int funit_type, char* signame,
-                          char** pdim_str, char** pdim_array, char** udim_str, char** memory_info, int* excluded ) { PROFILE(MEMORY_GET_COVERAGE);
+bool memory_get_coverage(
+            const char* funit_name,
+            int         funit_type,
+            const char* signame,
+  /*@out@*/ char**      pdim_str,
+  /*@out@*/ char**      pdim_array,
+  /*@out@*/ char**      udim_str,
+  /*@out@*/ char**      memory_info,
+  /*@out@*/ int*        excluded
+) { PROFILE(MEMORY_GET_COVERAGE);
 
   bool        retval = FALSE;  /* Return value for this function */
   funit_link* funitl;          /* Pointer to found functional unit link */
@@ -1336,6 +1345,10 @@ void memory_report( FILE* ofile, bool verbose ) { PROFILE(MEMORY_REPORT);
 
 /*
  $Log$
+ Revision 1.23  2008/01/16 23:10:31  phase1geo
+ More splint updates.  Code is now warning/error free with current version
+ of run_splint.  Still have regression issues to debug.
+
  Revision 1.22  2008/01/16 05:01:22  phase1geo
  Switched totals over from float types to int types for splint purposes.
 

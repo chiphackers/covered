@@ -122,6 +122,8 @@ static bool assertion_display_instance_summary(
  \param ofile        Pointer to the file to output the instance summary information to
  \param root         Pointer to the current functional unit instance to look at
  \param parent_inst  Scope of parent instance of this instance
+ \param hits         Pointer to number of assertions hit in given instance tree
+ \param total        Pointer to total number of assertions found in given instance tree
 
  \return Returns TRUE if at least one assertion was found to not be covered in this
          function unit instance; otherwise, returns FALSE.
@@ -219,6 +221,8 @@ static bool assertion_display_funit_summary(
 /*!
  \param ofile  Pointer to output file to display summary information to
  \param head   Pointer to the current functional unit link to evaluate
+ \param hits   Pointer to the number of assertions hit in all functional units
+ \param total  Pointer to the total number of assertions found in all functional units
 
  \return Returns TRUE if at least one assertion was found to not be covered in this
          functional unit; otherwise, returns FALSE.
@@ -561,14 +565,21 @@ bool assertion_collect(
  \param inst_name   Name of assertion module instance to retrieve
  \param assert_mod  Pointer to name of assertion module being retrieved
  \param cp_head     Pointer to head of list of strings/integers containing coverage point information
- \param cp_head     Pointer to tail of list of strings/integers containing coverage point information
+ \param cp_tail     Pointer to tail of list of strings/integers containing coverage point information
 
  \return Returns TRUE if the specified functional unit was found; otherwise, returns FALSE.
 
  Finds all of the coverage points for the given assertion instance and stores their
  string descriptions and execution counts in the cp list.
 */
-bool assertion_get_coverage( const char* funit_name, int funit_type, const char* inst_name, char** assert_mod, str_link** cp_head, str_link** cp_tail ) { PROFILE(ASSERTION_GET_COVERAGE);
+bool assertion_get_coverage(
+  const char* funit_name,
+  int         funit_type,
+  const char* inst_name,
+  char**      assert_mod,
+  str_link**  cp_head,
+  str_link**  cp_tail
+) { PROFILE(ASSERTION_GET_COVERAGE);
 
   bool        retval = TRUE;  /* Return value for this function */
   funit_link* funitl;         /* Pointer to found functional unit link */
@@ -595,6 +606,9 @@ bool assertion_get_coverage( const char* funit_name, int funit_type, const char*
 
 /*
  $Log$
+ Revision 1.28  2008/01/16 05:01:22  phase1geo
+ Switched totals over from float types to int types for splint purposes.
+
  Revision 1.27  2008/01/10 04:59:03  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 

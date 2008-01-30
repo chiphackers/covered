@@ -54,7 +54,9 @@ static unsigned warn_count = 0;
  Outputs specified error message string to standard output and increments
  error count.
 */
-void VLerror( char* msg ) { PROFILE(VLERROR);
+void VLerror(
+  char* msg
+) { PROFILE(VLERROR);
 
   unsigned int rv;
 
@@ -76,7 +78,9 @@ void VLerror( char* msg ) { PROFILE(VLERROR);
  Outputs specified warning message string to standard output and increments
  warning count.
 */
-void VLwarn( char* msg ) { PROFILE(VLWARN);
+void VLwarn(
+  char* msg
+) { PROFILE(VLWARN);
 
   unsigned int rv;
 
@@ -109,7 +113,10 @@ int VLwrap() {
  Deallocates all allocated memory within associated signal range variable, but does
  not deallocate the pointer itself (unless rm_ptr is set to TRUE).
 */
-void parser_dealloc_sig_range( sig_range* range, bool rm_ptr ) { PROFILE(PARSER_DEALLOC_SIG_RANGE);
+void parser_dealloc_sig_range(
+  sig_range* range,
+  bool       rm_ptr
+) { PROFILE(PARSER_DEALLOC_SIG_RANGE);
 
   int i;  /* Loop iterator */
 
@@ -140,7 +147,9 @@ void parser_dealloc_sig_range( sig_range* range, bool rm_ptr ) { PROFILE(PARSER_
 
  Creates a copy of the curr_range variable for stored usage.
 */
-sig_range* parser_copy_curr_range( bool packed ) { PROFILE(PARSER_COPY_CURR_RANGE);
+sig_range* parser_copy_curr_range(
+  bool packed
+) { PROFILE(PARSER_COPY_CURR_RANGE);
 
   sig_range* crange;  /* Pointer to curr_range variable to copy */
   sig_range* range;   /* Copy of the curr_range variable */
@@ -172,14 +181,16 @@ sig_range* parser_copy_curr_range( bool packed ) { PROFILE(PARSER_COPY_CURR_RANG
 }
 
 /*!
- \param left    Pointer to left static_expression to copy to current range
- \param right   Pointer to right static_expression to copy to current range
+ \param range   Pointer to signal vector range
  \param packed  Specifies if curr_prange (TRUE) or curr_urange (FALSE) should be updated.
 
  Copies specifies static expressions to the specified current range.  Primarily used for
  copying typedef'ed ranges to the current range.
 */
-void parser_copy_range_to_curr_range( sig_range* range, bool packed ) { PROFILE(PARSER_COPY_RANGE_TO_CURR_RANGE);
+void parser_copy_range_to_curr_range(
+  sig_range* range,
+  bool       packed
+) { PROFILE(PARSER_COPY_RANGE_TO_CURR_RANGE);
 
   sig_range* crange = packed ? &curr_prange : &curr_urange;  /* Pointer to curr_Xrange to use */
   int        i;                                              /* Loop iterator */
@@ -211,7 +222,11 @@ void parser_copy_range_to_curr_range( sig_range* range, bool packed ) { PROFILE(
 
  Deallocates and sets the curr_range variable from static expressions
 */
-void parser_explicitly_set_curr_range( static_expr* left, static_expr* right, bool packed ) { PROFILE(PARSER_EXPLICITLY_SET_CURR_RANGE);
+void parser_explicitly_set_curr_range(
+  static_expr* left,
+  static_expr* right,
+  bool         packed
+) { PROFILE(PARSER_EXPLICITLY_SET_CURR_RANGE);
 
   sig_range* crange;  /* Pointer to curr_Xrange to change */
 
@@ -239,7 +254,11 @@ void parser_explicitly_set_curr_range( static_expr* left, static_expr* right, bo
 
  Deallocates and sets the curr_range variable from known integer values.
 */
-void parser_implicitly_set_curr_range( int left_num, int right_num, bool packed ) { PROFILE(PARSER_IMPLICITLY_SET_CURR_RANGE);
+void parser_implicitly_set_curr_range(
+  int  left_num,
+  int  right_num,
+  bool packed
+) { PROFILE(PARSER_IMPLICITLY_SET_CURR_RANGE);
 
   sig_range* crange;  /* Pointer to curr_Xrange to modify */
 
@@ -270,7 +289,9 @@ void parser_implicitly_set_curr_range( int left_num, int right_num, bool packed 
  \return Returns TRUE if the given gen value (see \ref generations for legal values) is less than
          or equal to the generation value specified for the current functional unit (or globally).
 */
-bool parser_check_generation( int gen ) { PROFILE(PARSER_CHECK_GENERATION);
+bool parser_check_generation(
+  int gen
+) { PROFILE(PARSER_CHECK_GENERATION);
 
   bool      retval;    /* Return value for this function */
   str_link* strl;      /* Pointer to the str_link found to match the given mod_name */
@@ -295,6 +316,10 @@ bool parser_check_generation( int gen ) { PROFILE(PARSER_CHECK_GENERATION);
 
 /*
  $Log$
+ Revision 1.20  2008/01/16 23:10:32  phase1geo
+ More splint updates.  Code is now warning/error free with current version
+ of run_splint.  Still have regression issues to debug.
+
  Revision 1.19  2008/01/10 04:59:04  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 

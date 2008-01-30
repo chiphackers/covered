@@ -88,7 +88,7 @@ void db_add_enum( vsignal* enum_sig, static_expr* value );
 void db_end_enum_list();
 
 /*! \brief Adds given typedefs to the database */
-void db_add_typedef( char* name, bool is_signed, bool is_handled, bool is_sizable, sig_range* prange, sig_range* urange );
+void db_add_typedef( const char* name, bool is_signed, bool is_handled, bool is_sizable, sig_range* prange, sig_range* urange );
 
 /*! \brief Called when the endmodule keyword is parsed. */
 void db_end_module( int end_line );
@@ -192,6 +192,9 @@ void db_do_timestep( uint64 time, bool final );
 
 /*
  $Log$
+ Revision 1.81  2008/01/15 23:01:14  phase1geo
+ Continuing to make splint updates (not doing any memory checking at this point).
+
  Revision 1.80  2008/01/10 04:59:04  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 

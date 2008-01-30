@@ -429,14 +429,17 @@ bool vsignal_db_merge( vsignal* base, char** line, bool same ) { PROFILE(VSIGNAL
 }
 
 /*!
- \param sig       Pointer to signal to propagate change information from.
- \param sim_time  Current simulation time when signal changed.
+ \param sig   Pointer to signal to propagate change information from.
+ \param time  Current simulation time when signal changed.
 
   When the specified signal in the parameter list has changed values, this function
   is called to propagate the value change to the simulator to cause any statements
   waiting on this value change to be resimulated.
 */
-void vsignal_propagate( vsignal* sig, const sim_time* time ) { PROFILE(VSIGNAL_PROPAGATE);
+void vsignal_propagate(
+  vsignal*        sig,
+  const sim_time* time
+) { PROFILE(VSIGNAL_PROPAGATE);
 
   exp_link* curr_expr;  /* Pointer to current expression in signal list */
 
@@ -729,6 +732,9 @@ void vsignal_dealloc( /*@only@*/ vsignal* sig ) { PROFILE(VSIGNAL_DEALLOC);
 
 /*
  $Log$
+ Revision 1.53  2008/01/14 05:08:45  phase1geo
+ Fixing bug created while doing splint updates.
+
  Revision 1.52  2008/01/10 04:59:05  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 

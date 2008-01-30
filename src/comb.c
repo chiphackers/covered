@@ -728,8 +728,10 @@ static bool combination_display_funit_summary(
 }
 
 /*!
- \param ofile   Pointer to file to output results to.
- \param head    Pointer to link in current functional unit list to evaluate.
+ \param ofile  Pointer to file to output results to.
+ \param head   Pointer to link in current functional unit list to evaluate.
+ \param hits   Pointer to number of combinations hit in all functional units
+ \param total  Pointer to total number of combinations found in all functional units
 
  \return Returns TRUE if combinations were found to be missed; otherwise,
          returns FALSE.
@@ -2113,8 +2115,6 @@ static void combination_multi_var_exprs(
 
 /*!
  \param line1  First line of multi-variable expression output
- \param line2  Second line of multi-variable expression output
- \param line3  Third line of multi-variable expression output
 
  \return Returns the number of lines required to store the multi-variable expression output
          contained in line1, line2, and line3.
@@ -2979,6 +2979,9 @@ void combination_report( FILE* ofile, bool verbose ) { PROFILE(COMBINATION_REPOR
 
 /*
  $Log$
+ Revision 1.181  2008/01/16 06:40:33  phase1geo
+ More splint updates.
+
  Revision 1.180  2008/01/16 05:01:22  phase1geo
  Switched totals over from float types to int types for splint purposes.
 

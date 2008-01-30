@@ -1074,7 +1074,6 @@ void db_add_defparam( /*@unused@*/ char* name, expression* expr ) { PROFILE(DB_A
  \param mba        Set to TRUE if specified signal must be assigned by simulated results.
  \param line       Line number where signal was declared.
  \param col        Starting column where signal was declared.
- \param gi         Pointer to created generate item
  \param handled    Specifies if this signal is handled by Covered or not.
 
  Creates a new signal with the specified parameter information and adds this
@@ -1239,7 +1238,7 @@ void db_end_enum_list() { PROFILE(DB_END_ENUM_LIST);
 }
 
 /*!
- \param name_list    List of typedef names for this type
+ \param name         Typedef name for this type
  \param is_signed    Specifies if this typedef is signed or not
  \param is_handled   Specifies if this typedef is handled or not
  \param is_sizeable  Specifies if a range can be later placed on this value
@@ -1248,7 +1247,14 @@ void db_end_enum_list() { PROFILE(DB_END_ENUM_LIST);
 
  Adds the given names and information to the list of typedefs for the current module.
 */
-void db_add_typedef( char* name, bool is_signed, bool is_handled, bool is_sizeable, sig_range* prange, sig_range* urange ) { PROFILE(DB_ADD_TYPEDEF);
+void db_add_typedef(
+  const char* name,
+  bool        is_signed,
+  bool        is_handled,
+  bool        is_sizeable,
+  sig_range*  prange,
+  sig_range*  urange
+) { PROFILE(DB_ADD_TYPEDEF);
 
   typedef_item* tdi;   /* Typedef item to create */
 
@@ -1629,11 +1635,19 @@ void db_bind_expr_tree( expression* root, char* sig_name ) { PROFILE(DB_BIND_EXP
 }
 
 /*!
- \param se  Pointer to static expression structure
+ \param se         Pointer to static expression structure
+ \param line       Line number that static expression was found on
+ \param first_col  Column that the static expression starts on
+ \param last_col   Column that the static expression ends on
  
  \return Returns a pointer to an expression that represents the static expression specified
 */
-expression* db_create_expr_from_static( static_expr* se, int line, int first_col, int last_col ) { PROFILE(DB_CREATE_EXPR_FROM_STATIC);
+expression* db_create_expr_from_static(
+  static_expr* se,
+  int          line,
+  int          first_col,
+  int          last_col
+) { PROFILE(DB_CREATE_EXPR_FROM_STATIC);
 
   expression* expr;  /* Return value for this function */
   vector*     vec;   /* Temporary vector */
@@ -1679,7 +1693,6 @@ expression* db_create_expr_from_static( static_expr* se, int line, int first_col
 
 /*!
  \param root  Pointer to root expression to add to module expression list.
- \param gi    Pointer to created generate item
 
  Adds the specified expression to the current module's expression list.
 */
@@ -2624,6 +2637,9 @@ void db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.275  2008/01/17 07:04:13  phase1geo
+ Adding support for running in VPI mode on Mac OS X.  Still some work left to do here.
+
  Revision 1.274  2008/01/15 23:01:13  phase1geo
  Continuing to make splint updates (not doing any memory checking at this point).
 

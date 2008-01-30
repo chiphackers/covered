@@ -409,6 +409,7 @@ bool exclude_set_fsm_exclude( const char* funit_name, int funit_type, int expr_i
 /*!
  \param funit_name  Name of functional unit containing expression to set combination/assertion exclusioo for
  \param funit_type  Type of functional unit containing expression to set combination/assertion exclusion for
+ \param inst_name   Name of child instance to find in given functional unit
  \param expr_id     Expression ID of expression to set exclude value for
  \param value       Specifies if we should exclude (1) or include (0) the specified line
 
@@ -418,7 +419,13 @@ bool exclude_set_fsm_exclude( const char* funit_name, int funit_type, int expr_i
  the exclude_expr_assign_and_recalc function for the matching expression, setting the excluded bit
  of the expression and recalculating the summary coverage information.
 */
-bool exclude_set_assert_exclude( const char* funit_name, int funit_type, char* inst_name, int expr_id, int value ) {
+bool exclude_set_assert_exclude(
+  const char* funit_name,
+  int         funit_type,
+  char*       inst_name,
+  int         expr_id,
+  int         value
+) {
 
   bool        retval = FALSE;  /* Return value for this function */
   funit_inst* inst;          /* Pointer to found functional unit instance */
@@ -450,6 +457,9 @@ bool exclude_set_assert_exclude( const char* funit_name, int funit_type, char* i
 
 /*
  $Log$
+ Revision 1.18  2008/01/16 05:01:22  phase1geo
+ Switched totals over from float types to int types for splint purposes.
+
  Revision 1.17  2008/01/10 04:59:04  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 

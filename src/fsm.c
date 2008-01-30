@@ -389,7 +389,12 @@ void fsm_get_stats(
 
  Retrieves the FSM summary information for the specified functional unit.
 */
-bool fsm_get_funit_summary( const char* funit_name, int funit_type, int* total, int* hit ) { PROFILE(FSM_GET_FUNIT_SUMMARY);
+bool fsm_get_funit_summary(
+  const char* funit_name,
+  int         funit_type,
+  int*        total,
+  int*        hit
+) { PROFILE(FSM_GET_FUNIT_SUMMARY);
 
   bool        retval = TRUE;  /* Return value of this function */
   funit_link* funitl;         /* Pointer to found functional unit link */
@@ -547,9 +552,9 @@ bool fsm_collect( const char* funit_name, int funit_type, sig_link** cov_head, s
  \param total_to_arcs    Pointer to a string array containing all possible state transition to states
  \param excludes         Pointer to an integer array containing the exclude values for each state transition
  \param total_arc_num    Pointer to the number of elements in both the total_from_arcs, total_to_arcs and excludes arrays
- \param total_from_arcs  Pointer to a string array containing the hit state transition from states
- \param total_to_arcs    Pointer to a string array containing the hit state transition to states
- \param total_arc_num    Pointer to the number of elements in both the hit_from_arcs and hit_to_arcs arrays
+ \param hit_from_arcs    Pointer to a string array containing the hit state transition from states
+ \param hit_to_arcs      Pointer to a string array containing the hit state transition to states
+ \param hit_arc_num      Pointer to the number of elements in both the hit_from_arcs and hit_to_arcs arrays
  \param input_state      Pointer to a string array containing the code for the input state expression
  \param input_size       Pointer to the number of elements stored in the input state array
  \param output_state     Pointer to a string array containing the code for the output state expression
@@ -560,12 +565,27 @@ bool fsm_collect( const char* funit_name, int funit_type, sig_link** cov_head, s
  Gets the FSM coverage information for the specified FSM in the specified functional unit.  Used by the GUI
  for creating the contents of the verbose FSM viewer.
 */
-bool fsm_get_coverage( const char* funit_name, int funit_type, int expr_id, int* width,
-                       char*** total_states, int* total_state_num,
-                       char*** hit_states, int* hit_state_num,
-                       char*** total_from_arcs, char*** total_to_arcs, int** excludes, int* total_arc_num,
-                       char*** hit_from_arcs, char*** hit_to_arcs, int* hit_arc_num,
-                       char*** input_state, int* input_size, char*** output_state, int* output_size ) { PROFILE(FSM_GET_COVERAGE);
+bool fsm_get_coverage(
+            const char* funit_name,
+            int         funit_type,
+            int         expr_id,
+  /*@out@*/ int*        width,
+  /*@out@*/ char***     total_states,
+  /*@out@*/ int*        total_state_num,
+  /*@out@*/ char***     hit_states,
+  /*@out@*/ int*        hit_state_num,
+  /*@out@*/ char***     total_from_arcs,
+  /*@out@*/ char***     total_to_arcs,
+  /*@out@*/ int**       excludes,
+  /*@out@*/ int*        total_arc_num,
+  /*@out@*/ char***     hit_from_arcs,
+  /*@out@*/ char***     hit_to_arcs,
+  /*@out@*/ int*        hit_arc_num,
+  /*@out@*/ char***     input_state,
+  /*@out@*/ int*        input_size,
+  /*@out@*/ char***     output_state,
+  /*@out@*/ int*        output_size
+) { PROFILE(FSM_GET_COVERAGE);
 
   bool        retval = FALSE;  /* Return value for this function */
   funit_link* funitl;          /* Pointer to found functional unit link */
@@ -776,8 +796,12 @@ static bool fsm_display_funit_summary(
 }
 
 /*!
- \param ofile  Pointer to output file to display report contents to.
- \param head   Pointer to functional unit list to traverse.
+ \param ofile        Pointer to output file to display report contents to.
+ \param head         Pointer to functional unit list to traverse.
+ \param state_hits   Pointer to number of states that were hit in all functional units
+ \param state_total  Pointer to total number of states found in all functional units
+ \param arc_hits     Pointer to number of state transitions found in all functional units
+ \param arc_total    Pointer to total number of state transitions found in all functional units
 
  \return Returns TRUE if any FSM states/arcs were found missing; otherwise, returns FALSE.
 
@@ -1256,6 +1280,9 @@ void fsm_dealloc( fsm* table ) { PROFILE(FSM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.80  2008/01/16 06:40:34  phase1geo
+ More splint updates.
+
  Revision 1.79  2008/01/16 05:01:22  phase1geo
  Switched totals over from float types to int types for splint purposes.
 

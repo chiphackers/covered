@@ -864,11 +864,13 @@ statement* statement_find_statement( statement* curr, int id ) { PROFILE(STATEME
 /*!
  \param curr  Pointer to current statement to traverse
  \param stmt  Pointer to statement to find in the associated expression tree
- \param head  Pointer to head of expression list containing matched expressions
- \param tail  Pointer to tail of expression list containing matched expressions
 
+ \return Returns TRUE if the given statement contains the given expression; otherwise, returns FALSE.
 */
-bool statement_contains_expr_calling_stmt( statement* curr, statement* stmt ) { PROFILE(STATEMENT_CONTAINS_EXPR_CALLING_STMT);
+bool statement_contains_expr_calling_stmt(
+  statement* curr,
+  statement* stmt
+) { PROFILE(STATEMENT_CONTAINS_EXPR_CALLING_STMT);
 
   bool contains = (curr != NULL) &&
                   (expression_contains_expr_calling_stmt( curr->exp, stmt ) ||
@@ -889,7 +891,9 @@ bool statement_contains_expr_calling_stmt( statement* curr, statement* stmt ) { 
  
  Recursively deallocates specified statement tree.
 */
-void statement_dealloc_recursive( statement* stmt ) { PROFILE(STATEMENT_DEALLOC_RECURSIVE);
+void statement_dealloc_recursive(
+  statement* stmt
+) { PROFILE(STATEMENT_DEALLOC_RECURSIVE);
     
   if( stmt != NULL ) {
   
@@ -958,6 +962,9 @@ void statement_dealloc( statement* stmt ) { PROFILE(STATEMENT_DEALLOC);
 
 /*
  $Log$
+ Revision 1.121  2008/01/09 05:22:22  phase1geo
+ More splint updates using the -standard option.
+
  Revision 1.120  2008/01/08 21:13:08  phase1geo
  Completed -weak splint run.  Full regressions pass.
 
