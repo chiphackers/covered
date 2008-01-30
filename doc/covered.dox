@@ -5,7 +5,7 @@
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = Covered
-PROJECT_NUMBER         = 20060909
+PROJECT_NUMBER         = 0.6
 OUTPUT_DIRECTORY       = ./devel
 CREATE_SUBDIRS         = NO
 OUTPUT_LANGUAGE        = English
