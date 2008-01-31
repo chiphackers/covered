@@ -754,11 +754,16 @@
 
  \par
  <ul>
-   <li> vsignal (1; vsignal.c)
-   <li> expression (2; expr.c)
-   <li> module (3; module.c)
-   <li> statement (4; statement.c)
-   <li> info (5; info.c)
+   <li> vsignal (1; vsignal.c) </li>
+   <li> expression (2; expr.c) </li>
+   <li> functional unit (3; func_unit.c) </li>
+   <li> statement (4; statement.c) </li>
+   <li> info (5; info.c) </li>
+   <li> fsm (6; fsm.c) </li>
+   <li> race (7; race.c) </li>
+   <li> score args (8; info.c) </li>
+   <li> struct/union start (9; struct_union.c) </li>
+   <li> struct/union end (10; struct_union.c) </li>
  </ul>
 
  \par
@@ -969,7 +974,7 @@
  \par Section 7.1.2.  Verilog Testing Methodology
  
  \par
- The Verilog regression suite consists of four directories:  regress, verilog, cdd, and rpt.  The
+ The Verilog regression suite consists of five directories:  regress, verilog, cdd, err, and rpt.  The
  regress directory is the directory where all Verilog regressions are run from.  In this directory
  is the main Makefile and supporting *.cfg files.  Each *.cfg file is named after its corresponding
  Verilog diagnostic file and in it contains all of the options to be passed to Covered on the score
@@ -989,6 +994,11 @@
  directory.  All CDD files in this directory are used to compare the final CDD output from a diagnostic
  run to determine if the generated CDD file is correct.  Compares are performed via the "diff" Unix
  command.
+
+ \par
+ The err directory contains error output generated from running Covered in such a way that produces
+ an error.  It is used as a means of testing Covered's error detection capabilities in a regression
+ environment.
  
  \par
  The rpt directory contains a generated module (*.rptM) and instance (*.rptI) report for each Verilog
@@ -1071,13 +1081,15 @@
  \par
  When a bug is found using Covered, it is often useful for a developer to understand
  what utilities are available for debugging the problem at hand.  Besides using some
- standard debugger, Covered comes with two built-in debugging facilities useful for
+ standard debugger, Covered comes with several built-in debugging facilities useful for
  narrowing in on the code that is causing the problem.  They are the following:
  
  \par
  <ol>
-   <li> Global Covered option -D
-   <li> Internal code assertions
+   <li> Global Covered option -D </li>
+   <li> Internal code assertions </li>
+   <li> Command-Line Interface (CLI) interactive layer </li>
+   <li> Internal source code profiler </li>
  </ol>
  
  \par
@@ -1165,6 +1177,77 @@
  shy about putting them in wherever and whenver appropriate.
  
  <HR>
+
+ \par Section 8.3.  Command-Line Interface
+
+ \par
+ Covered comes equipped with its own command-line interface which allows the user to interactively
+ run Covered's simulator and view internal signal, expression, thread and queue information.  This
+ CLI is called in the simulator (sim.c) each time a thread is executed.  This allows the user to
+ 'step' one thread simulation at a time, go to the 'next' timestep, or simply 'run' the simulation
+ without user interaction.  The CLI provides a prompt for the user to enter a command to execute.
+
+ \par
+ For more information on how to use the CLI for debugging purposes, see the User Guide or simply
+ type 'help' at the CLI command-line.  Note that this capability only exists when Covered is built
+ with the --enable-debug option to the configuration script.
+
+ <HR>
+
+ \par Section 8.4.  Internal Source Code Profiler
+
+ \par
+ Though gcc and gprof work well as a generic source code profiling toolset, it was determined that
+ it would be useful for Covered to have its own built-in profiler for the purposes of getting more
+ Covered-specific information that developers might find interesting and/or useful.
+
+ \par
+ The usage of a built-in profiler does, however, require the developers of Covered to add special
+ calls within the source code to allow the timers to accurately record time spent in each function.
+ Some of this work is done manually and some of it is done through the use of a Perl script which
+ is located in the /b src directory called /b gen_prof.pl.  The following paragraphs describe
+ how to properly add this information so that the profiler can generate profiling statistics about
+ this function.
+
+ \par
+ When a new function is added that the user wants to make profiling information available for, a
+ macro called "PROFILE" should be called with the name of the function (capitalized) specified as the argument
+ for the macro.  Likewise, if the function is meant to be timed, the PROFILE_END macro should be
+ specified as the last line prior the function returning.  Please note that only one PROFILE_END can be
+ specified per function, so these types of functions can only have one return() call at the very end of
+ the function.  The following example shows how this is accomplished:
+
+ \par
+ \code
+ bool foobar() { PROFILE(FOOBAR);
+   bool retval = TRUE;
+   // Do some stuff.
+   PROFILE_END;
+   return (retval);
+ }
+ \endcode
+
+ \par
+ Once these profiling commands have been added to all needed functions, the code developer must
+ run the \b gen_prof.pl script in the \b src directory to add these new functions to a mapping
+ structure that is used by the profiling source code.  If this script is not run, the new functions
+ will not compile.  There are no arguments to this script.  It will parse all .c files looking for
+ all PROFILE(...) calls, take the string specified within the call and append this information to
+ a globally accessible structure located in the gen_prof.h and gen_prof.c files.  Note that these
+ two files are completely generated so any hand-modifications to these files will be lost when
+ the gen_prof.pl script is run again.  Please make any necessary modifications to this script
+ instead.
+
+ \par
+ Since the gen_prof.pl script only parses .c files, any profiling macros specified in a .y or .l
+ file will not be parsed until the code is first generated into .c files.
+
+ \par
+ Also note that certain functions should not be profiled!  All profiling code should not be profiled.
+ Also the timer functions in the util.c file should not be profiled (this would cause Covered to go
+ into an infinite loop if this were to occur).
+
+ <HR>
  
  \par Go To Section...
  - \ref page_intro
@@ -1200,6 +1283,9 @@
 
 /*
  $Log$
+ Revision 1.13  2008/01/30 17:08:21  phase1geo
+ Updates to development documentation.
+
  Revision 1.12  2008/01/30 05:51:50  phase1geo
  Fixing doxygen errors.  Updated parameter list syntax to make it more readable.
 
