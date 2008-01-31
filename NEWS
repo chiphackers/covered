@@ -1,6 +1,31 @@
 Covered-Related NEWS
 ====================
 
+    * 1/30/2008
+
+Stable release covered-0.6 made.  This release has been finally made after almost a year since the last
+stable release was made.  Many coding improvements have been made for performance optimization and portability.
+Better debug features have been added along with a host of bug fixes.  Please check out the following list
+for a high-level view of what has been added to this release since the last stable release.
+
+  - Added support for unnamed scopes and the ability to create variables within these scopes.
+  - Modified simulator memory handling to optimize performance.
+  - Added support for a CLI debugging environment when scoring simulations (only available if Covered is built with the --enable-debug option).
+  - Added accumulated summary coverage information to generated reports for each metric.
+  - Fixed some compilation warnings dealing with large static values being assigned to unsigned long long variables.
+  - Added the ability to simulate and get coverage for automatic tasks/functions.
+  - Added ability to read/write file sizes that extend beyond 2G in size.
+  - Added support for embedded type information within for loops (i.e., for( int i=0; ... )).
+  - Started adding const information to function input pointers that will not be modified (small performance enhancement that the compiler can take advantage of).
+  - Added initial parsing capability for structs/unions.
+  - Added built-in profiling facility to generate profiling reports of Covered's internal functions (useful for enhancing/fixing performance problems in commands)
+  - Added several performance enhancements to Covered's score command (achieved 8x speedup in one simulation)
+  - Added additional build support to get VPI libraries to compile on more architectures.
+  - Lots of bug fixes.
+  - Added "Debugging" section to user guide to document the usage of the CLI, verbose debugging output generator and profiler.
+  - Updated user guide and development documentation
+  - Enhanced regression suite
+
     * 1/20/2008
 
 Development release covered-20080120 made.  This is primarily a bug fix release over the last development

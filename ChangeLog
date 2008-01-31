@@ -1,137 +1,98 @@
-2008-01-19 22:39  phase1geo
+2008-01-30 22:23  phase1geo
 
-	Renaming commands in CLI to make things easier to remember and
-	shorter to type.  Added CLI expr command that outputs a given
-	expression and its current state/value.  Updated documentation per
-	CLI changes.  Also updated build scripts and user documentation for
-	upcoming development release.
+	More updates to development documentation.
 
-2008-01-19 10:50  phase1geo
+2008-01-30 11:08  phase1geo
 
-	Updating regressions in VCS per latest code fix.
+	Updates to development documentation.
 
-2008-01-18 23:57  phase1geo
+2008-01-29 23:53  phase1geo
 
-	Fixing bug 1875180.  The anyedge operator now properly compares the
-	values for changes.  Added aedge1 and aedge1.1 diagnostics to
-	regression suite to verify this fix.  Updated bad CDD files per
-	this change.
+	Updating version number for development documentation.
 
-2008-01-18 17:37  phase1geo
+2008-01-29 23:51  phase1geo
 
-	Fixing some issues surrounding the use of the !! command.
+	Fixing doxygen errors.	Updated parameter list syntax to make it
+	more readable.
 
-2008-01-17 23:19  phase1geo
+2008-01-29 17:37  phase1geo
 
-	Fixing output glitch from status bar.
+	Updating user documentation to repair broken links, update
+	documentation, etc.
 
-2008-01-17 23:03  phase1geo
+2008-01-29 08:05  phase1geo
 
-	Fixing bug in CLI that didn't stop the CLI prompt at the right
-	location.  Added "goto" command to allow us to simply simulate to a
-	specific timestep.  Added status bar to indicate to the user how
-	much we have gotten to our simulation goal for the CLI.
+	Updating INSTALL notes.
 
-2008-01-17 14:24  phase1geo
+2008-01-29 08:04  phase1geo
 
-	Fixed VPI issue that led to failing regressions.  Regressions now
-	completely pass in both VCD and VPI modes of operation!
+	Updating TODO file for 0.7 stable release goals (since they are on
+	my mind).
 
-2008-01-17 12:04  phase1geo
+2008-01-28 22:40  phase1geo
 
-	Added the rest of updates for VCS regressions.
+	Fixing bug with VPI builds on Mac OS X.  Removing attempt to get
+	Veriwell simulator to work with VCD reader.  Updates to regression
+	Makefiles.
 
-2008-01-17 01:04  phase1geo
+2008-01-28 09:05  phase1geo
 
-	Adding support for running in VPI mode on Mac OS X.  Still some
-	work left to do here.
+	Attempt to fix issue with Veriwell regressions (still some work to
+	do here).
 
-2008-01-17 00:03  phase1geo
+2008-01-24 21:34  phase1geo
 
-	Completing regression runs.
+	Fixing regression for VPI mode of operation.
 
-2008-01-16 22:34  phase1geo
+2008-01-24 17:55  phase1geo
 
-	Updating regression per latest bug fixes and splint updates.
+	Fixing IV, Cver and VCS regressions.  Regressions updated for
+	latest version of Icarus Verilog.
 
-2008-01-16 17:10  phase1geo
+2008-01-24 01:11  phase1geo
 
-	More splint updates.  Code is now warning/error free with current
-	version of run_splint.	Still have regression issues to debug.
+	Initial work to support VeriWell simulator in regression testing. 
+	Need to fix some failing diagnostics before more progress can be
+	made in this area.
 
-2008-01-16 00:40  phase1geo
+2008-01-23 17:50  phase1geo
 
-	More splint updates.
+	Reading the regression tests for use with VeriWell simulator.
 
-2008-01-15 23:01  phase1geo
+2008-01-23 14:47  phase1geo
 
-	Switched totals over from float types to int types for splint
-	purposes.
+	Fixing bug 1878134 and adding new diagnostics to regression suite
+	to verify its behavior.  Full regressions pass.
 
-2008-01-15 17:04  phase1geo
+2008-01-23 08:25  phase1geo
 
-	A few more updates.
+	Adding new sbit_sel2 diagnostic which currently fails.
 
-2008-01-15 17:01  phase1geo
+2008-01-22 22:05  phase1geo
 
-	Continuing to make splint updates (not doing any memory checking at
-	this point).
+	Fixing LXT regressions.  Added code to regression Makefile to
+	remove certain diagnostics from being run in LXT regression due to
+	the apparent inability for LXT files to contain time-0 only
+	information.  Also contains a fix for bug 1877853.  Full
+	regressions now run cleanly.
 
-2008-01-13 23:08  phase1geo
+2008-01-22 13:53  phase1geo
 
-	Fixing bug created while doing splint updates.
+	First attempt to fix bug 1876681.
 
-2008-01-10 08:46  phase1geo
+2008-01-21 23:20  phase1geo
 
-	Adding cexcept.h file for exception-handling purposes.	This file
-	is currently not in use at this point, however.
+	Updating VCS regression files from latest changes.
 
-2008-01-09 22:59  phase1geo
+2008-01-21 21:59  phase1geo
 
-	More splint updates.  All exportlocal cases are now taken care of.
+	Updating regression files per latest change.
 
-2008-01-09 17:54  phase1geo
+2008-01-21 21:53  phase1geo
 
-	More splint updates.
+	Fixing bug 1876417.  Removing obsolete code in expr.c.
 
-2008-01-08 23:22  phase1geo
+2008-01-21 15:39  phase1geo
 
-	More splint updates using the -standard option.
-
-2008-01-08 15:13  phase1geo
-
-	Completed -weak splint run.  Full regressions pass.
-
-2008-01-08 07:27  phase1geo
-
-	More splint updates.
-
-2008-01-07 17:59  phase1geo
-
-	More splint updates.
-
-2008-01-06 23:01  phase1geo
-
-	Cleaning up more splint errors.
-
-2008-01-04 17:07  phase1geo
-
-	More splint updates.
-
-2008-01-04 17:01  phase1geo
-
-	Adding initial form of splint run script.  Started cleaning up
-	splint errors/warnings.
-
-2008-01-03 10:46  phase1geo
-
-	Updating AUTHORS.
-
-2008-01-03 10:20  phase1geo
-
-	Updating INSTALL notes for profiler and score CLI command.
-
-2008-01-03 10:17  phase1geo
-
-	Updating some missed files in the installation process.
+	Bug fix for bug 1876376.
 
