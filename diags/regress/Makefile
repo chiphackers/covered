@@ -46,7 +46,7 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 event1.1        exclude1        exclude2        exclude3        exclude4 \
                 exclude6        exclude6.1      exclude7        exclude7.1      exclude8 \
                 exclude8.1      exclude9        exclude9.1      exclude9.2      exclude9.3 \
-                exclude9.4 \
+                exclude9.4      exclude9.5 \
                 expand1         expand2         expand3         expand4         expand4.1 \
                 expand4.2       expand4.3       expand4.4       for1            for2 \
                 forever1        fork1           fork2           fsm3            fsm4 \
