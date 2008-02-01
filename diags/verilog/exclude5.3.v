@@ -1,6 +1,6 @@
 module main;
 
-reg  b, d;
+reg  b, d, e;
 wire c;
 
 wire a = b & c;

@@ -1189,8 +1189,12 @@ void check_for_pragma(
 
           /* Set the exclude_mode as specified by the user */
           if( strcmp( value, "on" ) == 0 ) {
-            assert( exclude_mode > 0 );
-            exclude_mode--;
+
+            /* Don't allow exclude_mode to wrap */
+            if( exclude_mode > 0 ) {
+              exclude_mode--;
+            }
+
           } else if( strcmp( value, "off" ) == 0 ) {
             exclude_mode++;
           }
