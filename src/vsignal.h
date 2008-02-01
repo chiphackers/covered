@@ -59,7 +59,7 @@ void vsignal_add_expression( vsignal* sig, expression* expr );
 void vsignal_display( vsignal* sig );
 
 /*! \brief Converts a string to a vsignal. */
-vsignal* vsignal_from_string( const char** str );
+vsignal* vsignal_from_string( char** str );
 
 /*! \brief Calculates width of the specified signal's vector value based on the given expression */
 int vsignal_calc_width_for_expr( expression* expr, vsignal* sig );
@@ -73,6 +73,9 @@ void vsignal_dealloc( vsignal* sig );
 
 /*
  $Log$
+ Revision 1.23  2008/01/10 04:59:05  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.22  2008/01/09 05:22:22  phase1geo
  More splint updates using the -standard option.
 

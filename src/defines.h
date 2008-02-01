@@ -1490,6 +1490,8 @@ union isuppl_u {
     control excl_assign : 1;    /*!< Specifies if assign statements are being excluded from coverage */
     control excl_always : 1;    /*!< Specifies if always statements are being excluded from coverage */
     control excl_init   : 1;    /*!< Specifies if initial statements are being excluded from coverage */
+    control excl_final  : 1;    /*!< Specifies if final statements are being excluded from coverage */
+    control excl_pragma : 1;    /*!< Specifies if code encapsulated in coverage pragmas should be excluded from coverage */
     control assert_ovl  : 1;    /*!< Specifies that OVL assertions should be included for coverage */
   } part;
 };
@@ -1950,6 +1952,7 @@ struct fsm_s {
   fsm_arc*    arc_head;              /*!< Pointer to head of list of expression pairs that describe the valid FSM arcs */
   fsm_arc*    arc_tail;              /*!< Pointer to tail of list of expression pairs that describe the valid FSM arcs */
   char*       table;                 /*!< FSM arc traversal table */
+  bool        exclude;               /*!< Set to TRUE if the states/transitions of this table should be excluded as determined by pragmas */
 };
 
 /*!
@@ -2291,6 +2294,7 @@ struct fsm_var_s {
   expression* ovar;                  /*!< Pointer to output state expression */
   vsignal*    iexp;                  /*!< Pointer to input signal matching ovar name */
   fsm*        table;                 /*!< Pointer to FSM containing signal from ovar */
+  bool        exclude;               /*!< Set to TRUE if the associated FSM needs to be excluded from coverage consideration */
   fsm_var*    next;                  /*!< Pointer to next fsm_var element in list */
 };
 
@@ -2516,6 +2520,12 @@ struct profiler_s {
 
 /*
  $Log$
+ Revision 1.279  2008/01/18 05:03:14  phase1geo
+ Fixing bug in CLI that didn't stop the CLI prompt at the right location.
+ Added "goto" command to allow us to simply simulate to a specific timestep.
+ Added status bar to indicate to the user how much we have gotten to our
+ simulation goal for the CLI.
+
  Revision 1.278  2008/01/16 06:40:33  phase1geo
  More splint updates.
 

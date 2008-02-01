@@ -28,10 +28,18 @@
 #include "defines.h"
 
 /*! \brief Creates and initializes new FSM structure. */
-fsm* fsm_create( expression* from_state, expression* to_state );
+fsm* fsm_create(
+  expression* from_state,
+  expression* to_state,
+  bool        exclude
+);
 
 /*! \brief Adds new FSM arc structure to specified FSMs arc list. */
-void fsm_add_arc( fsm* table, expression* from_state, expression* to_state );
+void fsm_add_arc(
+  fsm*        table,
+  expression* from_state,
+  expression* to_state
+);
 
 /*! \brief Sets sizes of tables in specified FSM structure. */
 void fsm_create_tables( fsm* table );
@@ -104,6 +112,9 @@ void fsm_dealloc( fsm* table );
 
 /*
  $Log$
+ Revision 1.25  2008/01/16 06:40:35  phase1geo
+ More splint updates.
+
  Revision 1.24  2008/01/16 05:01:22  phase1geo
  Switched totals over from float types to int types for splint purposes.
 

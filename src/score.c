@@ -118,6 +118,7 @@ extern char      user_msg[USER_MSG_LENGTH];
 extern char*     directive_filename;
 extern bool      debug_mode;
 extern isuppl    info_suppl;
+extern char*     pragma_coverage_name;
 extern char      score_run_path[4096];
 extern char**    score_args;
 extern int       score_arg_num;
@@ -204,6 +205,11 @@ static void score_usage() {
   printf( "      -ec                          Exclude continuous assignment blocks from coverage.\n" );
   printf( "      -ea                          Exclude always blocks from coverage.\n" );
   printf( "      -ei                          Exclude initial blocks from coverage.\n" );
+  printf( "      -ef                          Exclude final blocks from coverage.\n" );
+  printf( "      -ep [<name>]                 Exclude all code enclosed by pragmas.  By default, the pragmas are of\n" );
+  printf( "                                   the format '// coverage (on|off)'; however, if <name> is specified for\n" );
+  printf( "                                   this option, the pragma keyword 'coverage' will be replaced with that value.\n" );
+  printf( "\n" );
   printf( "    Note:\n" );
   printf( "      The top-level module specifies the module to begin scoring.  All\n" );
   printf( "      modules beneath this module in the hierarchy will also be scored\n" );
@@ -590,6 +596,23 @@ static bool score_parse_args( int argc, int last_arg, const char** argv ) { PROF
 
       info_suppl.part.excl_init = 1;
       score_add_arg( argv[i] );
+
+    } else if( strncmp( "-ef", argv[i], 3 ) == 0 ) {
+
+      info_suppl.part.excl_final = 1;
+      score_add_arg( argv[i] );
+
+    } else if( strncmp( "-ep", argv[i], 3 ) == 0 ) {
+
+      info_suppl.part.excl_pragma = 1;
+      score_add_arg( argv[i] );
+      if( ((i+1) < argc) && (argv[i+1] != '-') ) {
+        i++;
+        pragma_coverage_name = strdup_safe( argv[i] );
+        score_add_arg( argv[i] );
+      } else {
+        pragma_coverage_name = strdup_safe( "coverage" );
+      }
 
     } else if( strncmp( "-e", argv[i], 2 ) == 0 ) {
 
@@ -1058,6 +1081,9 @@ int command_score( int argc, int last_arg, const char** argv ) { PROFILE(COMMAND
 
 /*
  $Log$
+ Revision 1.108  2008/01/21 21:39:55  phase1geo
+ Bug fix for bug 1876376.
+
  Revision 1.107  2008/01/17 06:03:08  phase1geo
  Completing regression runs.
 

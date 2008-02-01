@@ -33,7 +33,7 @@ $funcs[@funcs] = "UNREGISTERED";
 opendir(DIR,".") || die "Can't open the current directory for reading: $!\n";
 while( $file = readdir(DIR) ) {
   chomp($file);
-  if( $file =~ /\S+\.c/ ) {
+  if( $file =~ /^\S+\.c$/ ) {
     open(IFILE,"$file") || die "Can't open $file for reading: $!\n";
     while( <IFILE> ) {
       if( /PROFILE\((\S+)\)/ ) {

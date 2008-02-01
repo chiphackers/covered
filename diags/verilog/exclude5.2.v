@@ -1,6 +1,6 @@
 module main;
 
-reg  b, d;
+reg  b, d, e;
 wire c;
 
 wire a = b & c;
@@ -14,6 +14,11 @@ initial begin
 end
 
 always @(posedge b) d <= ~a;
+
+final begin
+      e = 1'b0;
+      e = 1'b1;
+end
 
 initial begin
 `ifdef DUMP

@@ -156,6 +156,12 @@ static int current_timescale_unit = 0;
 */
 static int global_timescale_precision  = 0;
 
+/*!
+ Specifies the state of pragma-controlled exclusion.  If the mode is a value of 0, we
+ should be excluding anything.  If it a value greater than 0, we will exclude.
+*/
+unsigned int exclude_mode = 0;
+
 
 /*!
  Deallocates all memory associated with the database.
@@ -1156,6 +1162,9 @@ void db_add_signal( char* name, int type, sig_range* prange, sig_range* urange, 
       j++;
     }
 
+    /* If exclude_mode is not zero, set the exclude bit in the signal */
+    sig->suppl.part.excluded = (exclude_mode > 0) ? 1 : 0;
+
   }
 
   /* Only do the following if the signal was not previously found */
@@ -1485,7 +1494,16 @@ int db_curr_signal_count() { PROFILE(DB_CURR_SIGNAL_COUNT);
  Creates a new expression with the specified parameter information and returns a
  pointer to the newly created expression.
 */
-expression* db_create_expression( expression* right, expression* left, int op, bool lhs, int line, int first, int last, char* sig_name ) { PROFILE(DB_CREATE_EXPRESSION);
+expression* db_create_expression(
+  expression* right,
+  expression* left,
+  int         op,
+  bool        lhs,
+  int         line,
+  int         first,
+  int         last,
+  char*       sig_name
+) { PROFILE(DB_CREATE_EXPRESSION);
 
   expression*  expr;        /* Temporary pointer to newly created expression */
   func_unit*   func_funit;  /* Pointer to function, if we are nested in one */
@@ -1545,6 +1563,12 @@ expression* db_create_expression( expression* right, expression* left, int op, b
 
   /* If current functional unit is nested in a function, set the IN_FUNC supplemental field bit */
   expr->suppl.part.in_func = (func_funit != NULL) ? 1 : 0;
+
+  /* If we are in exclude mode, set the exclude and stmt_exclude bits */
+  if( exclude_mode > 0 ) {
+    expr->suppl.part.excluded      = 1;
+    expr->suppl.part.stmt_excluded = 1;
+  }
 
   /*
    If this is some kind of assignment expression operator, set the our expression vector to that of
@@ -2288,7 +2312,7 @@ void db_parse_attribute( attr_param* ap ) { PROFILE(DB_PARSE_ATTRIBUTE);
 #endif
 
   /* First, parse the entire attribute */
-  attribute_parse( ap, curr_funit );
+  attribute_parse( ap, curr_funit, (exclude_mode > 0) );
 
   /* Then deallocate the structure */
   attribute_dealloc( ap );
@@ -2637,6 +2661,9 @@ void db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.276  2008/01/30 05:51:50  phase1geo
+ Fixing doxygen errors.  Updated parameter list syntax to make it more readable.
+
  Revision 1.275  2008/01/17 07:04:13  phase1geo
  Adding support for running in VPI mode on Mac OS X.  Still some work left to do here.
 

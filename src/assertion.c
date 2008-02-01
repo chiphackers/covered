@@ -54,12 +54,17 @@ void assertion_parse( /*@unused@*/const char* arg ) { PROFILE(ASSERTION_PARSE);
 }
 
 /*!
- \param ap     Pointer to attribute to parse
- \param funit  Pointer to current functional unit containing this attribute
+ \param ap       Pointer to attribute to parse
+ \param funit    Pointer to current functional unit containing this attribute
+ \param exclude  If TRUE, excludes this assertion from coverage consideration
 
  Parses the specified assertion attribute for assertion coverage details.
 */
-void assertion_parse_attr( /*@unused@*/attr_param* ap, /*@unused@*/const func_unit* funit ) { PROFILE(ASSERTION_PARSE_ATTR);
+void assertion_parse_attr(
+  /*@unused@*/ attr_param*      ap,
+  /*@unused@*/ const func_unit* funit,
+  /*@unused@*/ bool             exclude
+) { PROFILE(ASSERTION_PARSE_ATTR);
 
 }
 
@@ -606,6 +611,9 @@ bool assertion_get_coverage(
 
 /*
  $Log$
+ Revision 1.29  2008/01/30 05:51:50  phase1geo
+ Fixing doxygen errors.  Updated parameter list syntax to make it more readable.
+
  Revision 1.28  2008/01/16 05:01:22  phase1geo
  Switched totals over from float types to int types for splint purposes.
 

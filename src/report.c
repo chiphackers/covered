@@ -619,7 +619,11 @@ void report_print_header( FILE* ofile ) { PROFILE(REPORT_PRINT_HEADER);
     fprintf( ofile, "* Reported by                    : Module\n\n" );
   }
 
-  if( (info_suppl.part.excl_assign == 1) || (info_suppl.part.excl_always == 1) || (info_suppl.part.excl_init == 1) ) {
+  if( (info_suppl.part.excl_assign == 1) ||
+      (info_suppl.part.excl_always == 1) ||
+      (info_suppl.part.excl_init   == 1) ||
+      (info_suppl.part.excl_final  == 1) ||
+      (info_suppl.part.excl_pragma == 1) ) {
     fprintf( ofile, "* CDD file excludes the following block types:\n" );
     if( info_suppl.part.excl_assign == 1 ) {
       fprintf( ofile, "    assign - Continuous Assigments\n" );
@@ -629,6 +633,12 @@ void report_print_header( FILE* ofile ) { PROFILE(REPORT_PRINT_HEADER);
     }
     if( info_suppl.part.excl_init == 1 ) {
       fprintf( ofile, "    initial - Initial Statements\n" );
+    }
+    if( info_suppl.part.excl_final == 1 ) {
+      fprintf( ofile, "    final - Final Statements\n" );
+    }
+    if( info_suppl.part.excl_pragma == 1 ) {
+      fprintf( ofile, "    pragma - Code surrounded by coverage off/on pragmas\n" );
     }
     fprintf( ofile, "\n" );
   }
@@ -947,6 +957,9 @@ int command_report( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
 /*
  $Log$
+ Revision 1.91  2008/01/21 21:39:55  phase1geo
+ Bug fix for bug 1876376.
+
  Revision 1.90  2008/01/16 23:10:33  phase1geo
  More splint updates.  Code is now warning/error free with current version
  of run_splint.  Still have regression issues to debug.

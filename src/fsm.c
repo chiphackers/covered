@@ -66,12 +66,17 @@ extern isuppl       info_suppl;
 /*!
  \param from_state  Pointer to expression that is input state variable for this FSM.
  \param to_state    Pointer to expression that is output state variable for this FSM.
+ \param exclude     Value to set the exclude bit to
 
  \return Returns a pointer to the newly allocated FSM structure.
 
  Allocates and initializes an FSM structure.
 */
-fsm* fsm_create( expression* from_state, expression* to_state ) { PROFILE(FSM_CREATE);
+fsm* fsm_create(
+  expression* from_state,
+  expression* to_state,
+  bool        exclude
+) { PROFILE(FSM_CREATE);
 
   fsm* table;  /* Pointer to newly created FSM */
 
@@ -82,6 +87,7 @@ fsm* fsm_create( expression* from_state, expression* to_state ) { PROFILE(FSM_CR
   table->arc_head   = NULL;
   table->arc_tail   = NULL;
   table->table      = NULL;
+  table->exclude    = exclude;
 
   return( table );
 
@@ -91,10 +97,15 @@ fsm* fsm_create( expression* from_state, expression* to_state ) { PROFILE(FSM_CR
  \param table       Pointer to FSM structure to add new arc to.
  \param from_state  Pointer to from_state expression to add.
  \param to_state    Pointer to to_state expression to add.
+ \param exclude     If TRUE, excludes the new arc from coverage consideration.
 
  Adds new FSM arc structure to specified FSMs arc list.
 */
-void fsm_add_arc( fsm* table, expression* from_state, expression* to_state ) { PROFILE(FSM_ADD_ARC);
+void fsm_add_arc(
+  fsm*        table,
+  expression* from_state,
+  expression* to_state
+) { PROFILE(FSM_ADD_ARC);
 
   fsm_arc* arc;  /* Pointer to newly created FSM arc structure */
 
@@ -149,7 +160,7 @@ void fsm_create_tables( fsm* table ) { PROFILE(FSM_CREATE_TABLES);
     (void)expression_operate( curr_arc->to_state, NULL, &time );
 
     /* Set table entry in table, if possible */
-    arc_add( &(table->table), curr_arc->from_state->value, curr_arc->to_state->value, 0 );
+    arc_add( &(table->table), curr_arc->from_state->value, curr_arc->to_state->value, 0, table->exclude );
 
     curr_arc = curr_arc->next;
 
@@ -226,7 +237,7 @@ bool fsm_db_read( char** line, func_unit* funit ) { PROFILE(FSM_DB_READ);
           ((oexpl = exp_link_find( oexp_id, funit->exp_head )) != NULL) ) {
 
         /* Create new FSM */
-        table = fsm_create( iexpl->exp, oexpl->exp );
+        table = fsm_create( iexpl->exp, oexpl->exp, FALSE );
 
         /*
          If the input state variable is the same as the output state variable, create the new expression now.
@@ -348,7 +359,7 @@ bool fsm_db_merge( fsm* base, char** line, bool same ) { PROFILE(FSM_DB_MERGE);
 */
 void fsm_table_set( fsm* table ) { PROFILE(FSM_TABLE_SET);
 
-  arc_add( &(table->table), table->from_state->value, table->to_state->value, 1 );
+  arc_add( &(table->table), table->from_state->value, table->to_state->value, 1, table->exclude );
 
 }
 
@@ -1280,6 +1291,9 @@ void fsm_dealloc( fsm* table ) { PROFILE(FSM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.81  2008/01/30 05:51:50  phase1geo
+ Fixing doxygen errors.  Updated parameter list syntax to make it more readable.
+
  Revision 1.80  2008/01/16 06:40:34  phase1geo
  More splint updates.
 

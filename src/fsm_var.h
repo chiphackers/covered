@@ -27,7 +27,13 @@
 
 
 /*! \brief Allocates, initializes and adds FSM variable to global list. */
-fsm_var* fsm_var_add( const char* funit_name, expression* in_state, expression* out_state, char* name );
+fsm_var* fsm_var_add(
+  const char* funit_name,
+  expression* in_state,
+  expression* out_state,
+  char*       name,
+  bool        exclude
+);
 
 /*! \brief Adds specified signal and expression to binding list. */
 void fsm_var_bind_add( char* sig_name, expression* expr, char* funit_name );
@@ -41,6 +47,9 @@ void fsm_var_bind();
 
 /*
  $Log$
+ Revision 1.9  2008/01/10 04:59:04  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.8  2008/01/07 23:59:54  phase1geo
  More splint updates.
 

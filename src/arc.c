@@ -503,10 +503,11 @@ char* arc_create( int width ) { PROFILE(ARC_CREATE);
 }
 
 /*!
- \param arcs   Pointer to state transition arc array to add to.
- \param fr_st  Pointer to vector containing the from state.
- \param to_st  Pointer to vector containing the to state.
- \param hit    Specifies if arc entry should be marked as hit.
+ \param arcs     Pointer to state transition arc array to add to.
+ \param fr_st    Pointer to vector containing the from state.
+ \param to_st    Pointer to vector containing the to state.
+ \param hit      Specifies if arc entry should be marked as hit.
+ \param exclude  If new arc is created, sets the exclude bit to this value
 
  If specified arcs array has not been created yet (value is set to NULL),
  allocate enough memory in the arc array to hold width number of state transitions.
@@ -516,7 +517,13 @@ char* arc_create( int width ) { PROFILE(ARC_CREATE);
  a state transition entry from the fr_st and to_st expressions, setting the
  hit bits in the entry to 0.
 */
-void arc_add( char** arcs, const vector* fr_st, const vector* to_st, int hit ) { PROFILE(ARC_ADD);
+void arc_add(
+  char**        arcs,
+  const vector* fr_st,
+  const vector* to_st,
+  int           hit,
+  bool          exclude
+) { PROFILE(ARC_ADD);
 
   char* tmp;          /* Temporary char array holder */
   int   entry_width;  /* Width of a signal entry in the arc array */
@@ -567,6 +574,8 @@ void arc_add( char** arcs, const vector* fr_st, const vector* to_st, int hit ) {
       if( arc_set_states( *arcs, arc_get_curr_size( *arcs ), fr_st, to_st ) ) {
         arc_set_entry_suppl( *arcs, arc_get_curr_size( *arcs ), ARC_HIT_F, hit );
         arc_set_entry_suppl( *arcs, arc_get_curr_size( *arcs ), ARC_HIT_R, 0 );
+        arc_set_entry_suppl( *arcs, arc_get_curr_size( *arcs ), ARC_EXCLUDED_F, (exclude ? 1 : 0) );
+        arc_set_entry_suppl( *arcs, arc_get_curr_size( *arcs ), ARC_EXCLUDED_R, (exclude ? 1 : 0) );
         arc_set_curr_size( *arcs, (arc_get_curr_size( *arcs ) + 1) );
       }
 
@@ -1111,9 +1120,9 @@ bool arc_db_merge( char** base, char** line, bool same ) { PROFILE(ARC_DB_MERGE)
       vecr = vector_from_string( &strr, FALSE );
 
       /* Add these states to the base arc array */
-      arc_add( base, vecl, vecr, arc_get_entry_suppl( arcs, i, ARC_HIT_F ) );
+      arc_add( base, vecl, vecr, arc_get_entry_suppl( arcs, i, ARC_HIT_F ), FALSE );
       if( arc_get_entry_suppl( arcs, i, ARC_BIDIR ) == 1 ) {
-        arc_add( base, vecr, vecl, arc_get_entry_suppl( arcs, i, ARC_HIT_R ) );
+        arc_add( base, vecr, vecl, arc_get_entry_suppl( arcs, i, ARC_HIT_R ), FALSE );
       }
 
       strl = tmpl;
@@ -1306,6 +1315,9 @@ void arc_dealloc( char* arcs ) { PROFILE(ARC_DEALLOC);
 
 /*
  $Log$
+ Revision 1.48  2008/01/16 06:40:33  phase1geo
+ More splint updates.
+
  Revision 1.47  2008/01/16 05:01:21  phase1geo
  Switched totals over from float types to int types for splint purposes.
 

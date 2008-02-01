@@ -51,8 +51,8 @@ extern char user_msg[USER_MSG_LENGTH];
  expression.  This function places all 
 */
 static expression* fsm_arg_parse_state(
-    const char** arg,
-    char*        funit_name
+  char** arg,
+  char*  funit_name
 ) { PROFILE(FSM_ARG_PARSE_STATE);
 
   bool        error = FALSE;  /* Specifies if a parsing error has been found */
@@ -259,7 +259,7 @@ bool fsm_arg_parse( const char* arg ) { PROFILE(FSM_ARG_PARSE);
         ptr++;
 
         if( (out_state = fsm_arg_parse_state( &ptr, tmp )) != NULL ) {
-          (void)fsm_var_add( arg, in_state, out_state, NULL );
+          (void)fsm_var_add( arg, in_state, out_state, NULL, FALSE );
         } else {
           retval = TRUE;
         }
@@ -267,7 +267,7 @@ bool fsm_arg_parse( const char* arg ) { PROFILE(FSM_ARG_PARSE);
       } else {
 
         /* Copy the current expression */
-        (void)fsm_var_add( arg, in_state, in_state, NULL );
+        (void)fsm_var_add( arg, in_state, in_state, NULL, FALSE );
 
       }
 
@@ -452,9 +452,9 @@ static expression* fsm_arg_parse_value(
  FSM arc transition table when the fsm_create_tables() function is called.
 */
 static void fsm_arg_parse_trans(
-    expression*      expr,
-    fsm*             table,
-    const func_unit* funit
+  expression*      expr,
+  fsm*             table,
+  const func_unit* funit
 ) { PROFILE(FSM_ARG_PARSE_TRANS);
 
   expression* from_state;  /* Pointer to from_state value of transition */
@@ -506,13 +506,18 @@ static void fsm_arg_parse_trans(
 }
 
 /*!
- \param ap     Pointer to attribute parameter list.
- \param funit  Pointer to functional unit containing this attribute.
+ \param ap       Pointer to attribute parameter list.
+ \param funit    Pointer to functional unit containing this attribute.
+ \param exclude  If TRUE, sets the exclude bits in the FSM.
 
  Parses the specified attribute parameter for validity and updates FSM structure
  accordingly.
 */
-void fsm_arg_parse_attr( attr_param* ap, const func_unit* funit ) { PROFILE(FSM_ARG_PARSE_ATTR);
+void fsm_arg_parse_attr(
+  attr_param*      ap,
+  const func_unit* funit,
+  bool             exclude
+) { PROFILE(FSM_ARG_PARSE_ATTR);
 
   attr_param* curr;               /* Pointer to current attribute parameter in list */
   fsm_link*   fsml      = NULL;   /* Pointer to found FSM structure */
@@ -559,7 +564,7 @@ void fsm_arg_parse_attr( attr_param* ap, const func_unit* funit ) { PROFILE(FSM_
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
           exit( EXIT_FAILURE );
         } else {
-          (void)fsm_var_add( funit->name, out_state, out_state, curr->name );
+          (void)fsm_var_add( funit->name, out_state, out_state, curr->name, exclude );
           fsml = fsm_link_find( curr->name, funit->fsm_head );
         }
         free_safe( tmp );
@@ -580,7 +585,7 @@ void fsm_arg_parse_attr( attr_param* ap, const func_unit* funit ) { PROFILE(FSM_
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
           exit( EXIT_FAILURE );
         } else {
-          (void)fsm_var_add( funit->name, in_state, out_state, curr->name );
+          (void)fsm_var_add( funit->name, in_state, out_state, curr->name, exclude );
           fsml = fsm_link_find( curr->name, funit->fsm_head );
         }
         free_safe( tmp );
@@ -623,6 +628,9 @@ void fsm_arg_parse_attr( attr_param* ap, const func_unit* funit ) { PROFILE(FSM_
 
 /*
  $Log$
+ Revision 1.38  2008/01/15 23:01:15  phase1geo
+ Continuing to make splint updates (not doing any memory checking at this point).
+
  Revision 1.37  2008/01/10 04:59:04  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 

@@ -1,5 +1,5 @@
-5 b 11 * 0
-8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd ovl1.1.vcd -o ovl1.1.cdd -v ovl1.1.v -A ovl -D OVL_COVER_DEFAULT=15 +libext+.vlib+ -y ./ovl -I ./ovl -I ./ovl/vlog95
+5 b 41 * 0
+8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd ovl1.1.vcd -o ovl1.1.cdd -v ovl1.1.v -A ovl -D OVL_COVER_DEFAULT=15 +libext+.vlib+ -y ./ovl -I ./ovl -I ./ovl/vlog95 -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" ovl1.1.v 1 30 1
 1 width 0 80000 1 0 31 0 32 33 10 0 0 0 0 0 0 0

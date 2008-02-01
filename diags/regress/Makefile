@@ -44,7 +44,7 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 disable1        disable1.1      disable2        disable2.1      disable3 \
                 dly_assign1     endian1         endian2         endian3         event1 \
                 event1.1        exclude1        exclude2        exclude3        exclude4 \
-                exclude5        exclude5.1      exclude5.2      exclude6        exclude6.1 \
+                exclude6        exclude6.1      exclude7 \
                 expand1         expand2         expand3         expand4         expand4.1 \
                 expand4.2       expand4.3       expand4.4       for1            for2 \
                 forever1        fork1           fork2           fsm3            fsm4 \
@@ -148,6 +148,7 @@ VCSONLYDIAGS1 = afunc1          always_comb1    always_ff1      always_latch1   
                 do_while1       do_while1.1     do_while2       elsif1          elsif1.1 \
                 elsif1.2        elsif1.3        elsif1.4        elsif2          elsif2.1 \
                 enum1           enum1.1         enum1.2         enum1.3         enum2.1 \
+                exclude5        exclude5.1      exclude5.2      exclude5.3 \
                 exponent1       final1          for3            for5            for5.1 \
                 for5.2          for5.3          for5.4          for5.5          for5.6 \
                 for5.8          for5.9          for5.10         for6            gate1.1         generate1.1 \

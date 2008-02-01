@@ -1,6 +1,6 @@
 module main;
 
-reg  b, d, e;
+reg  b, d;
 wire c;
 
 wire a = b & c;
@@ -22,7 +22,7 @@ end
 
 initial begin
 `ifdef DUMP
-        $dumpfile( "exclude5.1.vcd" );
+        $dumpfile( "exclude5.3.vcd" );
         $dumpvars( 0, main );
 `endif
         #100;

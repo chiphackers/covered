@@ -91,10 +91,11 @@ extern func_unit*  curr_funit;
 static void fsm_var_remove( fsm_var* );
 
 /*!
- \param funit_name   String containing functional unit containing FSM state variable.
- \param in_state   Pointer to expression containing input state.
- \param out_state  Pointer to expression containing output state.
- \param name       Name of this FSM (only valid for attributes).
+ \param funit_name  String containing functional unit containing FSM state variable.
+ \param in_state    Pointer to expression containing input state.
+ \param out_state   Pointer to expression containing output state.
+ \param name        Name of this FSM (only valid for attributes).
+ \param exclude     If TRUE, excludes the FSM from coverage consideration.
 
  \return Returns pointer to newly allocated FSM variable.
 
@@ -105,7 +106,8 @@ fsm_var* fsm_var_add(
   const char* funit_name,
   expression* in_state,
   expression* out_state,
-  char*       name
+  char*       name,
+  bool        exclude
 ) { PROFILE(FSM_VAR_ADD);
 
   fsm_var*    new_var = NULL;  /* Pointer to newly created FSM variable */
@@ -115,14 +117,15 @@ fsm_var* fsm_var_add(
   /* If we have not parsed, design add new FSM variable to list */
   if( funit_head == NULL ) {
 
-    new_var        = (fsm_var*)malloc_safe( sizeof( fsm_var ) );
-    new_var->funit = strdup_safe( funit_name );
-    new_var->name  = NULL;
-    new_var->ivar  = in_state;
-    new_var->ovar  = out_state;
-    new_var->iexp  = NULL;
-    new_var->table = NULL;
-    new_var->next  = NULL;
+    new_var          = (fsm_var*)malloc_safe( sizeof( fsm_var ) );
+    new_var->funit   = strdup_safe( funit_name );
+    new_var->name    = NULL;
+    new_var->ivar    = in_state;
+    new_var->ovar    = out_state;
+    new_var->iexp    = NULL;
+    new_var->table   = NULL;
+    new_var->exclude = exclude;
+    new_var->next    = NULL;
 
     if( fsm_var_head == NULL ) {
       fsm_var_head = fsm_var_tail = new_var;
@@ -134,7 +137,7 @@ fsm_var* fsm_var_add(
   } else {
 
     if( (funitl = funit_link_find( funit_name, FUNIT_MODULE, funit_head )) != NULL ) {
-      table = fsm_create( in_state, out_state );
+      table = fsm_create( in_state, out_state, exclude );
       if( name != NULL ) {
         table->name = strdup_safe( name );
       }
@@ -291,7 +294,7 @@ static bool fsm_var_bind_stmt(
 
     /* Finally, create the new FSM if we are the output state */
     if( (fv = fsm_var_is_output_state( stmt->exp )) != NULL ) {
-      fv->table       = fsm_create( fv->ivar, fv->ovar );
+      fv->table       = fsm_create( fv->ivar, fv->ovar, fv->exclude );
       fv->ivar->table = fv->table;
       fv->ovar->table = fv->table;
       fsm_link_add( fv->table, &(funitl->funit->fsm_head), &(funitl->funit->fsm_tail) );
@@ -500,6 +503,9 @@ void fsm_var_remove( fsm_var* fv ) { PROFILE(FSM_VAR_REMOVE);
 
 /*
  $Log$
+ Revision 1.35  2008/01/17 04:35:12  phase1geo
+ Updating regression per latest bug fixes and splint updates.
+
  Revision 1.34  2008/01/16 06:40:37  phase1geo
  More splint updates.
 

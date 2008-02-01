@@ -3164,7 +3164,7 @@ module_item
     {
       statement* stmt = $3;
       if( stmt != NULL ) {
-        if( info_suppl.part.excl_init == 0 ) {
+        if( info_suppl.part.excl_final == 0 ) {
           stmt->exp->suppl.part.stmt_head  = 1;
           stmt->exp->suppl.part.stmt_final = 1;
           db_add_statement( stmt, stmt );

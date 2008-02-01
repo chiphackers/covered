@@ -30,7 +30,11 @@
 attr_param* attribute_create( const char* name, expression* expr );
 
 /*! \brief Parses and handles specified attribute parameter list. */
-void attribute_parse( attr_param* ap, const func_unit* mod );
+void attribute_parse(
+  attr_param*      ap,
+  const func_unit* mod,
+  bool             exclude
+);
 
 /*! \brief Deallocates entire attribute parameter list. */
 void attribute_dealloc( attr_param* ap );
@@ -38,6 +42,9 @@ void attribute_dealloc( attr_param* ap );
 
 /*
  $Log$
+ Revision 1.8  2007/11/20 05:28:57  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.7  2007/09/13 17:03:30  phase1geo
  Cleaning up some const-ness corrections -- still more to go but it's a good
  start.

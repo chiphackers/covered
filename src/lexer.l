@@ -49,26 +49,30 @@ extern YYLTYPE yylloc;
 extern void reset_pplexer( char* filename, FILE* out );
 extern int PPVLlex( void );
 
-extern int        ignore_mode;
-extern int        generate_mode;
-extern int        attr_mode;
-extern char       user_msg[USER_MSG_LENGTH];
-extern char*      ppfilename;
-extern str_link*  modlist_head;
-extern str_link*  modlist_tail;
-extern func_unit* curr_funit;
-extern sig_range  curr_prange;
-extern sig_range  curr_urange;
-extern gen_item*  last_gi;
+extern int          ignore_mode;
+extern int          generate_mode;
+extern int          attr_mode;
+extern unsigned int exclude_mode;
+extern char         user_msg[USER_MSG_LENGTH];
+extern char*        ppfilename;
+extern str_link*    modlist_head;
+extern str_link*    modlist_tail;
+extern func_unit*   curr_funit;
+extern sig_range    curr_prange;
+extern sig_range    curr_urange;
+extern gen_item*    last_gi;
+extern isuppl       info_suppl;
 
 /*!
  Contains state before entering exclusive block.
 */
 static int  state_enter;
+
 static void line_directive();
 static void line_directive2();
 bool process_timescale( const char* txt, bool report );
 static int  yywrap();
+static void check_for_pragma( char* comment );
 
 /*!
  Temporary string container.
@@ -88,23 +92,28 @@ static str_link* filelist_curr = 0;
 /*!
  Integer value of last keyword parsed.
 */
-static int       last_keyword  = 0;
+static int last_keyword = 0;
 
 /*!
  Tree containing all found modules parsed within the design.
 */
-static tnode*    found_modules = NULL;
+static tnode* found_modules = NULL;
 
 /*!
  Holds the name of the file specified in a `line or \#line preprocessor directive.
 */
-char*            directive_filename = NULL;
+char* directive_filename = NULL;
 
 /*!
  Specifies if the current file was previously parsed.  If it was, we need to ignore
  all globally declared stuff.
 */
-static bool      file_prev_parsed;
+static bool file_prev_parsed;
+
+/*!
+ Specifies the keyword of the coverage on/off pragma.
+*/
+char* pragma_coverage_name = NULL;
 
 /*@-unreachable@*/
 %}
@@ -168,6 +177,7 @@ WSPACE [ \t\b\f]+
 	yymore();
  }
 <LCOMMENT>\n  {
+        check_for_pragma( yytext );
 	BEGIN( state_enter );
 	yylloc.first_line += 1;
 	yylloc.last_column = 0;
@@ -191,6 +201,7 @@ WSPACE [ \t\b\f]+
  }
 <CCOMMENT>"*/" {
 	yylloc.last_column += 2;
+        check_for_pragma( yytext );
 	BEGIN( state_enter );
  }
 
@@ -1133,6 +1144,9 @@ void reset_lexer( str_link* file_list_head ) { PROFILE(RESET_LEXER);
   rv = fclose( out );
   assert( rv == 0 );
 
+  /* Clear the exclude_mode */
+  exclude_mode = 0;
+
   yyin = fopen( ppfilename, "r" );
   yyrestart( yyin );
 
@@ -1149,3 +1163,50 @@ void reset_lexer( str_link* file_list_head ) { PROFILE(RESET_LEXER);
 
 }
 
+/*!
+ \param comment  User-provided comment taken from a comment block.
+
+ Checks the comment for pragma information in the given comment block and takes
+ the appropriate action.
+*/
+void check_for_pragma(
+  char* comment
+) { PROFILE(CHECK_FOR_PRAGMA);
+
+  if( comment != NULL ) {
+
+    char* keyword = strdup_safe( comment );
+    char* value   = strdup_safe( comment );
+
+    /* Get the keyword and value if this comment is a pragma */
+    if( sscanf( comment, "%s %s", keyword, value ) == 2 ) {
+
+      /* If the user has chosen to pay attention to coverage pragmas, continue */
+      if( info_suppl.part.excl_pragma == 1 ) {
+
+        /* If the keyword matches the given pragma keyword, check the value */
+        if( strcmp( keyword, pragma_coverage_name ) == 0 ) {
+
+          /* Set the exclude_mode as specified by the user */
+          if( strcmp( value, "on" ) == 0 ) {
+            exclude_mode++;
+          } else if( strcmp( value, "off" ) == 0 ) {
+            assert( exclude_mode > 0 );
+            exclude_mode--;
+          }
+ 
+        }
+        
+      }
+
+    }
+
+    /* Deallocate memory */
+    free_safe( keyword );
+    free_safe( value );
+
+  }
+
+  PROFILE_END;
+
+}

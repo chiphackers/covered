@@ -73,25 +73,30 @@ attr_param* attribute_create( const char* name, expression* expr ) { PROFILE(ATT
 }
 
 /*!
- \param ap     Pointer to current element of attribute parameter list to parse.
- \param funit  Pointer to current functional unit containing this attribute.
+ \param ap       Pointer to current element of attribute parameter list to parse.
+ \param funit    Pointer to current functional unit containing this attribute.
+ \param exclude  If set to 1, sets the exclude bits (if they exist) in the structure created by the attribute.
 
  Parses the attribute parameter list in a recursive fashion.  First,
  we go for the last entry and see if it refers to an attribute that covered
  should parse.  If this attribute is identified by Covered as one of its own, it
  calls the appropriate function to handle the entire attribute parameter list.
 */
-void attribute_parse( attr_param* ap, const func_unit* funit ) { PROFILE(ATTRIBUTE_PARSE);
+void attribute_parse(
+  attr_param*      ap,
+  const func_unit* funit,
+  bool             exclude
+) { PROFILE(ATTRIBUTE_PARSE);
 
   if( ap != NULL ) {
 
     if( ap->next != NULL ) {
-      attribute_parse( ap->next, funit );
+      attribute_parse( ap->next, funit, exclude );
     } else {
       if( strcmp( ap->name, "covered_fsm" ) == 0 ) {
-        fsm_arg_parse_attr( ap->prev, funit );
+        fsm_arg_parse_attr( ap->prev, funit, exclude );
       } else if( strcmp( ap->name, "covered_assert" ) == 0 ) {
-        assertion_parse_attr( ap->prev, funit );
+        assertion_parse_attr( ap->prev, funit, exclude );
       }
     }
 
@@ -126,6 +131,10 @@ void attribute_dealloc( attr_param* ap ) { PROFILE(ATTRIBUTE_DEALLOC);
 
 /*
  $Log$
+ Revision 1.9  2007/12/10 23:16:21  phase1geo
+ Working on adding profiler for use in finding performance issues.  Things don't compile
+ at the moment.
+
  Revision 1.8  2007/11/20 05:28:57  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

@@ -350,9 +350,9 @@ static vec_data x_value = {0x2};
  function, or the signal db_read function.
 */
 static void expression_create_value(
-    expression* exp,
-    int width,
-    bool data
+  expression* exp,
+  int         width,
+  bool        data
 ) { PROFILE(EXPRESSION_CREATE_VALUE);
 
   vec_data* value = NULL;  /* Temporary storage of vector nibble array */
@@ -376,23 +376,32 @@ static void expression_create_value(
 }
 
 /*!
- \param right  Pointer to expression on right.
- \param left   Pointer to expression on left.
- \param op     Operation to perform for this expression.
- \param lhs    Specifies this expression is a left-hand-side assignment expression.
- \param id     ID for this expression as determined by the parent.
- \param line   Line number this expression is on.
- \param first  First column index of expression.
- \param last   Last column index of expression.
- \param data   Specifies if we should create a nibble array for the vector value.
+ \param right    Pointer to expression on right.
+ \param left     Pointer to expression on left.
+ \param op       Operation to perform for this expression.
+ \param lhs      Specifies this expression is a left-hand-side assignment expression.
+ \param id       ID for this expression as determined by the parent.
+ \param line     Line number this expression is on.
+ \param first    First column index of expression.
+ \param last     Last column index of expression.
+ \param data     Specifies if we should create a nibble array for the vector value.
 
  \return Returns pointer to newly created expression.
 
  Creates a new expression from heap memory and initializes its values for
  usage.  Right and left expressions need to be created before this function is called.
 */
-expression* expression_create( expression* right, expression* left, exp_op_type op, bool lhs, int id,
-                               int line, unsigned int first, unsigned int last, bool data ) { PROFILE(EXPRESSION_CREATE);
+expression* expression_create(
+  expression*  right,
+  expression*  left,
+  exp_op_type  op,
+  bool         lhs,
+  int          id,
+  int          line,
+  unsigned int first,
+  unsigned int last,
+  bool         data
+) { PROFILE(EXPRESSION_CREATE);
 
   expression* new_expr;    /* Pointer to newly created expression */
   int         rwidth = 0;  /* Bit width of expression on right */
@@ -4274,6 +4283,10 @@ void expression_dealloc( expression* expr, bool exp_only ) { PROFILE(EXPRESSION_
 
 /* 
  $Log$
+ Revision 1.279  2008/01/23 20:48:03  phase1geo
+ Fixing bug 1878134 and adding new diagnostics to regression suite to verify
+ its behavior.  Full regressions pass.
+
  Revision 1.278  2008/01/22 03:53:17  phase1geo
  Fixing bug 1876417.  Removing obsolete code in expr.c.
 
