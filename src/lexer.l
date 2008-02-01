@@ -166,7 +166,7 @@ WSPACE [ \t\b\f]+
  }
 
   /* Single-line comment -- we ignore this information */
-"//".*        {
+"//"          {
 	yylloc.first_column = yylloc.last_column;
 	yylloc.last_column += strlen( yytext );
 	state_enter         = YY_START;
@@ -1189,10 +1189,10 @@ void check_for_pragma(
 
           /* Set the exclude_mode as specified by the user */
           if( strcmp( value, "on" ) == 0 ) {
-            exclude_mode++;
-          } else if( strcmp( value, "off" ) == 0 ) {
             assert( exclude_mode > 0 );
             exclude_mode--;
+          } else if( strcmp( value, "off" ) == 0 ) {
+            exclude_mode++;
           }
  
         }

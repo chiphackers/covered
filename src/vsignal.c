@@ -323,6 +323,7 @@ bool vsignal_db_read( char** line, func_unit* curr_funit ) { PROFILE(VSIGNAL_DB_
         sig->suppl.part.assigned   = suppl.part.assigned;
         sig->suppl.part.mba        = suppl.part.mba;
         sig->suppl.part.big_endian = suppl.part.big_endian;
+        sig->suppl.part.excluded   = suppl.part.excluded;
         sig->pdim_num              = pdim_num;
         sig->udim_num              = udim_num;
         sig->dim                   = dim;
@@ -732,6 +733,10 @@ void vsignal_dealloc( /*@only@*/ vsignal* sig ) { PROFILE(VSIGNAL_DEALLOC);
 
 /*
  $Log$
+ Revision 1.55  2008/02/01 06:37:09  phase1geo
+ Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
+ using pragma excludes (this code is not fully working yet).  More to be done.
+
  Revision 1.54  2008/01/30 05:51:51  phase1geo
  Fixing doxygen errors.  Updated parameter list syntax to make it more readable.
 

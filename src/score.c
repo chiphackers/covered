@@ -606,7 +606,7 @@ static bool score_parse_args( int argc, int last_arg, const char** argv ) { PROF
 
       info_suppl.part.excl_pragma = 1;
       score_add_arg( argv[i] );
-      if( ((i+1) < argc) && (argv[i+1] != '-') ) {
+      if( ((i+1) < argc) && (argv[i+1][0] != '-') ) {
         i++;
         pragma_coverage_name = strdup_safe( argv[i] );
         score_add_arg( argv[i] );
@@ -1081,6 +1081,10 @@ int command_score( int argc, int last_arg, const char** argv ) { PROFILE(COMMAND
 
 /*
  $Log$
+ Revision 1.109  2008/02/01 06:37:08  phase1geo
+ Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
+ using pragma excludes (this code is not fully working yet).  More to be done.
+
  Revision 1.108  2008/01/21 21:39:55  phase1geo
  Bug fix for bug 1876376.
 

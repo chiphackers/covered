@@ -76,6 +76,7 @@ void toggle_get_stats( sig_link* sigl, int* total, int* hit01, int* hit10 ) { PR
       *total += curr_sig->sig->value->width;
       if( curr_sig->sig->suppl.part.excluded == 1 ) {
         *hit01 += curr_sig->sig->value->width;
+        *hit10 += curr_sig->sig->value->width;
       } else {
         vector_toggle_count( curr_sig->sig->value, hit01, hit10 );
       }
@@ -704,6 +705,9 @@ void toggle_report( FILE* ofile, bool verbose ) { PROFILE(TOGGLE_REPORT);
 
 /*
  $Log$
+ Revision 1.68  2008/01/30 05:51:51  phase1geo
+ Fixing doxygen errors.  Updated parameter list syntax to make it more readable.
+
  Revision 1.67  2008/01/16 23:10:34  phase1geo
  More splint updates.  Code is now warning/error free with current version
  of run_splint.  Still have regression issues to debug.
