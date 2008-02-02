@@ -391,7 +391,7 @@ int arc_get_entry_suppl( const char* arcs, int curr, unsigned int type ) { PROFI
 
  Displays the given state transition arcs in a human-readable format.
 */
-static void arc_display( char* arcs ) {
+static void arc_display( const char* arcs ) {
 
   unsigned int curr_size   = arc_get_curr_size( arcs );     /* Current number of entries in the table */
   unsigned int width       = arc_get_width( arcs );         /* Width of the variable */
@@ -1377,6 +1377,11 @@ void arc_dealloc( char* arcs ) { PROFILE(ARC_DEALLOC);
 
 /*
  $Log$
+ Revision 1.50  2008/02/02 05:50:16  phase1geo
+ Adding more exclusion diagnostics to regression suite.  Fixed bug in arc
+ state and state transition hit calculator.  Added arc_display function for
+ debugging purposes.
+
  Revision 1.49  2008/02/01 06:37:07  phase1geo
  Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
  using pragma excludes (this code is not fully working yet).  More to be done.
