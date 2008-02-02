@@ -22,6 +22,7 @@ reg [1:0]  next_state;
 
 always @(posedge clock) state <= reset ? STATE_IDLE : next_state;
 
+// coverage off
 always @(state or head or valid or tail)
   begin
    case( state )
@@ -31,5 +32,6 @@ always @(state or head or valid or tail)
      STATE_TAIL:  next_state = (valid & head) ? STATE_HEAD : STATE_IDLE;
    endcase
   end
+// coverage on
 
 endmodule

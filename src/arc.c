@@ -51,7 +51,7 @@
  An entry contains enough information to describe a bidirectional state transition with coverage
  information.  The bit-width of an entry is determined by taking bytes 0 & 1 of the header (the output
  state variable width, multiplying this value by 2, and adding the number of entry supplemental bits
- for an entry (currently this value is 5).  Each entry is byte-aligned in the arc array.  The fields that
+ for an entry (currently this value is 6).  Each entry is byte-aligned in the arc array.  The fields that
  comprise an entry are described below.
 
  \par
@@ -62,9 +62,10 @@
    <tr> <td> 2 </td> <td> Set to 1 if this entry is bidirectional (reverse is a transition); otherwise, only forward is valid. </td> </tr>
    <tr> <td> 3 </td> <td> Set to 1 if the output state of the forward transition is a new state in the arc array. </td> </tr>
    <tr> <td> 4 </td> <td> Set to 1 if the input state of the forward transition is a new state in the arc array. </td> </tr>
-   <tr> <td> 5 </td> <td> Set to 1 if the state transition is excluded from coverage. </td> </tr>
-   <tr> <td> (width + 6):6 </td> <td> Bit value of output state of the forward transition. </td> </tr>
-   <tr> <td> ((width * 2) + 6):(width + 6) </td> <td> Bit value of input state of the forward transition. </td> </tr>
+   <tr> <td> 5 </td> <td> Set to 1 if the forward state transition is excluded from coverage. </td> </tr>
+   <tr> <td> 6 </td> <td> Set to 1 if the reverse state transition is excluded from coverage. </td> </tr>
+   <tr> <td> (width + 6):7 </td> <td> Bit value of output state of the forward transition. </td> </tr>
+   <tr> <td> ((width * 2) + 6):(width + 7) </td> <td> Bit value of input state of the forward transition. </td> </tr>
  </table>
 
  \par Adding State Transitions
@@ -386,6 +387,74 @@ int arc_get_entry_suppl( const char* arcs, int curr, unsigned int type ) { PROFI
 }
 
 /*!
+ \param arcs  Pointer to state transition arc array to display
+
+ Displays the given state transition arcs in a human-readable format.
+*/
+static void arc_display( char* arcs ) {
+
+  unsigned int curr_size   = arc_get_curr_size( arcs );     /* Current number of entries in the table */
+  unsigned int width       = arc_get_width( arcs );         /* Width of the variable */
+  unsigned int entry_width = arc_get_entry_width( width );  /* Width of an entry */
+  char*        value;
+  unsigned int i;
+  int          j;
+
+  printf( "arc -> width: %u, allocated: %u, occupied: %u, unknown: %u\n", width, arc_get_max_size( arcs ), curr_size, arc_get_suppl( arcs, ARC_TRANS_KNOWN ) );
+
+  /* Allocate some memory to store the output values */
+  value = (char*)malloc_safe( width );
+
+  for( i=0; i<curr_size; i++ ) {
+
+    printf( "       entry %d: ", i );
+
+    /* Get the L value */
+    unsigned int index  = (i * entry_width) + ((width + ARC_ENTRY_SUPPL_SIZE) / 8) + ARC_STATUS_SIZE;
+    unsigned int bitpos = (width + ARC_ENTRY_SUPPL_SIZE) % 8;
+    for( j=0; j<width; j++ ) {
+      value[j] = (arcs[index] >> bitpos) & 0x1;
+      bitpos = (bitpos + 1) % 8;
+      index  = (bitpos == 0) ? (index + 1) : index;
+    }
+    for( j=(width-1); j>=0; j-- ) {
+      printf( "%1x", (unsigned int)value[j] );
+    }
+
+    if( arc_get_entry_suppl( arcs, i, ARC_BIDIR ) == 1 ) {
+      printf( " <-> " );
+    } else {
+      printf( " --> " );
+    }
+
+    /* Get the R value */
+    index  = (i * entry_width) + ARC_STATUS_SIZE;
+    bitpos = ARC_ENTRY_SUPPL_SIZE;
+    for( j=0; j<width; j++ ) {
+      value[j] = (arcs[index] >> bitpos) & 0x1;
+      bitpos = (bitpos + 1) % 8;
+      index  = (bitpos == 0) ? (index + 1) : index;
+    }
+    for( j=(width-1); j>=0; j-- ) {
+      printf( "%1x", (unsigned int)value[j] );
+    }
+
+    /* Now output the relevant supplemental information */
+    printf( "  (%s %s %s %s %s %s)\n",
+            ((arc_get_entry_suppl( arcs, i, ARC_EXCLUDED_R ) == 1) ? "RE" : "  "),
+            ((arc_get_entry_suppl( arcs, i, ARC_EXCLUDED_F ) == 1) ? "FE" : "  "),
+            ((arc_get_entry_suppl( arcs, i, ARC_NOT_UNIQUE_L ) == 0) ? "UL" : "  "),
+            ((arc_get_entry_suppl( arcs, i, ARC_NOT_UNIQUE_R ) == 0) ? "UR" : "  "),
+            ((arc_get_entry_suppl( arcs, i, ARC_HIT_R ) == 1) ? "RH" : "  "),
+            ((arc_get_entry_suppl( arcs, i, ARC_HIT_F ) == 1) ? "FH" : "  ") );
+
+  }
+
+  free_safe( value );
+
+}
+
+/*!
  \param arcs     Pointer to arc array to search in.
  \param from_st  From state to use for matching.
  \param to_st    To state to use for matching.
@@ -616,10 +685,10 @@ void arc_add(
 */
 static bool arc_compare_states( const char* arcs, int index1, unsigned int pos1, int index2, unsigned int pos2 ) { PROFILE(ARC_COMPARE_STATES);
 
-  int i;  /* Loop iterator */
+  unsigned int width = arc_get_width( arcs );  /* Container for width of state variables */
+  unsigned int i     = 0;                      /* Loop iterator */
 
-  i = 0;
-  while( (i < arc_get_width( arcs )) && (((arcs[index1] >> pos1) & 0x1) == ((arcs[index2] >> pos2) & 0x1)) ) {
+  while( (i < width) && (((arcs[index1] >> pos1) & 0x1) == ((arcs[index2] >> pos2) & 0x1)) ) {
     pos1   = (pos1 + 1) % 8;
     pos2   = (pos2 + 1) % 8;
     index1 = (pos1 == 0) ? (index1 + 1) : index1;
@@ -627,7 +696,7 @@ static bool arc_compare_states( const char* arcs, int index1, unsigned int pos1,
     i++;
   }
 
-  return( i == arc_get_width( arcs ) );
+  return( i == width );
 
 }
 
@@ -660,7 +729,7 @@ static void arc_compare_all_states( char* arcs, int start, bool left ) { PROFILE
   entry_size  = arc_get_entry_width( arc_get_width( arcs ) );
   hit_forward = arc_get_entry_suppl( arcs, start, ARC_HIT_F );
 
-  /* printf( "Comparing against start: %d, left: %d\n", start, left ); */
+  // printf( "Comparing against start: %d, left: %d\n", start, left );
 
   if( left ) {
     state1_pos   = (arc_get_width( arcs ) + ARC_ENTRY_SUPPL_SIZE) % 8;
@@ -676,7 +745,7 @@ static void arc_compare_all_states( char* arcs, int start, bool left ) { PROFILE
   for( i=start; i<arc_get_curr_size( arcs ); i++ ) {
     for( ; j<2; j++ ) {
    
-      /* printf( "Comparing with i: %d, j: %d\n", i, j ); */
+      // printf( "    Comparing with i: %d, j: %d\n", i, j );
 
       /* Left */
       if( j == 0 ) {
@@ -688,7 +757,7 @@ static void arc_compare_all_states( char* arcs, int start, bool left ) { PROFILE
       }
 
       if( arc_compare_states( arcs, state1_index, state1_pos, state2_index, state2_pos ) ) {
-        /* printf( "Found match\n" ); */
+        // printf( "  Found match\n" );
         if( hit_forward == 0 ) {
           if( left ) {
             arc_set_entry_suppl( arcs, start, ARC_NOT_UNIQUE_L, 1 );
@@ -756,29 +825,23 @@ static int arc_state_hits( char* arcs ) { PROFILE(ARC_STATE_HITS);
   int j;        /* Loop iterator */
 
   for( i=0; i<arc_get_curr_size( arcs ); i++ ) {
-    for( j=0; j<2; j++ ) {
-
-      /* Do left first */
-      if( j == 0 ) {
-        if( arc_get_entry_suppl( arcs, i, ARC_NOT_UNIQUE_L ) == 0 ) {
-          arc_compare_all_states( arcs, i, TRUE );
-          if( (arc_get_entry_suppl( arcs, i, ARC_HIT_F ) == 1) &&
-              (arc_get_entry_suppl( arcs, i, ARC_EXCLUDED_F ) == 0) ) {
-            hit++;
-          }
-        }
-      } else {
-        if( arc_get_entry_suppl( arcs, i, ARC_NOT_UNIQUE_R ) == 0 ) {
-          if( (i + 1) < arc_get_curr_size( arcs ) ) {
-            arc_compare_all_states( arcs, i, FALSE );
-          }
-          if( (arc_get_entry_suppl( arcs, i, ARC_HIT_F ) == 1) &&
-              (arc_get_entry_suppl( arcs, i, ARC_EXCLUDED_F ) == 0) ) {
-            hit++;
-          }
-        }
+    if( arc_get_entry_suppl( arcs, i, ARC_NOT_UNIQUE_L ) == 0 ) {
+      arc_compare_all_states( arcs, i, TRUE );
+      if( (arc_get_entry_suppl( arcs, i, ARC_NOT_UNIQUE_L ) == 0) && 
+          ((arc_get_entry_suppl( arcs, i, ARC_HIT_F ) == 1) ||
+           (arc_get_entry_suppl( arcs, i, ARC_EXCLUDED_F ) == 1)) ) {
+        hit++;
       }
-
+    }
+    if( arc_get_entry_suppl( arcs, i, ARC_NOT_UNIQUE_R ) == 0 ) {
+      if( (i + 1) < arc_get_curr_size( arcs ) ) {
+        arc_compare_all_states( arcs, i, FALSE );
+      }
+      if( (arc_get_entry_suppl( arcs, i, ARC_NOT_UNIQUE_R ) == 0) &&
+          ((arc_get_entry_suppl( arcs, i, ARC_HIT_F ) == 1) ||
+           (arc_get_entry_suppl( arcs, i, ARC_EXCLUDED_F ) == 1)) ) {
+        hit++;
+      }
     }
   }
 
@@ -839,7 +902,7 @@ static int arc_transition_hits( const char* arcs ) { PROFILE(ARC_TRANSITION_HITS
   /* Count the number of hits in the FSM arc */
   for( i=0; i<curr_size; i++ ) {
     hit += arc_get_entry_suppl( arcs, i, ARC_HIT_F ) | arc_get_entry_suppl( arcs, i, ARC_EXCLUDED_F );
-    hit += arc_get_entry_suppl( arcs, i, ARC_HIT_R ) | arc_get_entry_suppl( arcs, i, ARC_EXCLUDED_R );
+    hit += arc_get_entry_suppl( arcs, i, ARC_HIT_R ) | (arc_get_entry_suppl( arcs, i, ARC_EXCLUDED_R ) & arc_get_entry_suppl( arcs, i, ARC_BIDIR ));
   }
 
   return( hit );
@@ -896,7 +959,6 @@ void arc_db_write( const char* arcs, FILE* file ) { PROFILE(ARC_DB_WRITE);
   unsigned int  i;   /* Loop iterator */
 
   for( i=0; i<(arc_get_curr_size( arcs ) * arc_get_entry_width( arc_get_width( arcs ) )) + ARC_STATUS_SIZE; i++ ) {
-    /* printf( "arcs[%d]; %x\n", i, (int)arcs[i] & 0xff ); */
     if( (unsigned int)arcs[i] == 0 ) {
       fprintf( file, "," );
     } else {
@@ -1315,6 +1377,10 @@ void arc_dealloc( char* arcs ) { PROFILE(ARC_DEALLOC);
 
 /*
  $Log$
+ Revision 1.49  2008/02/01 06:37:07  phase1geo
+ Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
+ using pragma excludes (this code is not fully working yet).  More to be done.
+
  Revision 1.48  2008/01/16 06:40:33  phase1geo
  More splint updates.
 
