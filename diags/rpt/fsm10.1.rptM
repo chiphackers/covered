@@ -28,7 +28,7 @@ Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hi
     -------------------------------------------------------------------------------------------------------------
     Missed Lines
 
-           39:    next_state = (valid & tail) ? STATE_TAIL : STATE_DATA
+           40:    next_state = (valid & tail) ? STATE_TAIL : STATE_DATA
 
 
 
@@ -112,7 +112,7 @@ Module/Task/Function                Filename                          Hit/Miss/T
       =========================================================================================================
        Line #     Expression
       =========================================================================================================
-             38:    next_state = (valid & tail) ? STATE_TAIL : STATE_DATA
+             39:    next_state = (valid & tail) ? STATE_TAIL : STATE_DATA
                                  |-----1------|                          
                                  |------------------2-------------------|
 
@@ -131,7 +131,7 @@ Module/Task/Function                Filename                          Hit/Miss/T
       =========================================================================================================
        Line #     Expression
       =========================================================================================================
-             39:    next_state = (valid & tail) ? STATE_TAIL : STATE_DATA
+             40:    next_state = (valid & tail) ? STATE_TAIL : STATE_DATA
                                  |-----1------|                          
                                  |------------------2-------------------|
 
@@ -150,7 +150,7 @@ Module/Task/Function                Filename                          Hit/Miss/T
       =========================================================================================================
        Line #     Expression
       =========================================================================================================
-             40:    next_state = (valid & head) ? STATE_HEAD : STATE_IDLE
+             41:    next_state = (valid & head) ? STATE_HEAD : STATE_IDLE
                                  |-----1------|                          
                                  |------------------2-------------------|
 
