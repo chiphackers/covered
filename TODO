@@ -36,7 +36,9 @@ IP      - struct
 IP      - union
 IP      - enum
 
-   8.  Add code pragmas to allow the user to exclude parts of design from coverage consideration.
+X  8.  Add code pragmas to allow the user to exclude parts of design from coverage consideration.
+
+   9.  Have Covered have the ability to generate XML CDD files.
 
 
 Merge command
