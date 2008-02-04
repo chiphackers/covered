@@ -71,6 +71,12 @@ Excludes all continuous assignments from being considered for coverage.
 .TP 
 \fB\-ei\fR
 Excludes all initial blocks from being considered for coverage.
+.TP
+\fB\-ef\fR
+Excludes all final blocks from being considered for coverage.
+.TP
+\fB\-ep [name]\fR
+Excludes all code found between '// coverage off' and '// coverage on' pragmas embedded within the design.  If \fIname\fR is specified, the keyword in the pragma will be changed to that name instead of the default "coverage", allowing the user to change the look of the pragma if it conflicts with any other tools.
 .TP 
 \fB\-F\fR \fImodule_name=[in_expr,]out_expr\fR
 Indicates to the parser where to find the FSM located in module \fImodule_name\fR which has an input state expression called \fIin_expr\fR and output state expression called \fIout_expr\fR.  If \fIin_expr\fR is not specified, \fIout_expr\fR is used as both the input and output state expression.
