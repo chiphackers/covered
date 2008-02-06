@@ -100,13 +100,13 @@ proc process_funit_line_cov {} {
     # If we have some uncovered values, enable the "next" pointer and menu item
     if {$line_summary_total != $line_summary_hit} {
       .bot.right.h.next configure -state normal
-      .menubar.view.menu entryconfigure 2 -state normal
+      .menubar.view entryconfigure 2 -state normal
     } else {
       .bot.right.h.next configure -state disabled
-      .menubar.view.menu entryconfigure 2 -state disabled
+      .menubar.view entryconfigure 2 -state disabled
     }
     .bot.right.h.prev configure -state disabled
-    .menubar.view.menu entryconfigure 3 -state disabled
+    .menubar.view entryconfigure 3 -state disabled
 
     calc_and_display_line_cov
 
@@ -805,13 +805,13 @@ proc process_funit_fsm_cov {} {
     # If we have some uncovered values, enable the "next" pointer and menu item
     if {$fsm_summary_total != $fsm_summary_hit} {
       .bot.right.h.next configure -state normal
-      .menubar.view.menu entryconfigure 2 -state normal
+      .menubar.view entryconfigure 2 -state normal
     } else {
       .bot.right.h.next configure -state disabled
-      .menubar.view.menu entryconfigure 2 -state disabled
+      .menubar.view entryconfigure 2 -state disabled
     }
     .bot.right.h.prev configure -state disabled
-    .menubar.view.menu entryconfigure 3 -state disabled
+    .menubar.view entryconfigure 3 -state disabled
 
     calc_and_display_fsm_cov
 
@@ -973,13 +973,13 @@ proc process_funit_assert_cov {} {
     # If we have some uncovered values, enable the "next" pointer and menu item
     if {$assert_summary_total != $assert_summary_hit} {
       .bot.right.h.next configure -state normal
-      .menubar.view.menu entryconfigure 2 -state normal
+      .menubar.view entryconfigure 2 -state normal
     } else {
       .bot.right.h.next configure -state disabled
-      .menubar.view.menu entryconfigure 2 -state disabled
+      .menubar.view entryconfigure 2 -state disabled
     }
     .bot.right.h.prev configure -state disabled
-    .menubar.view.menu entryconfigure 3 -state disabled
+    .menubar.view entryconfigure 3 -state disabled
 
     calc_and_display_assert_cov
 

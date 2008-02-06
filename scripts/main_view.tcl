@@ -34,8 +34,7 @@ proc main_view {} {
   tcl_func_get_race_reason_msgs
 
   # Create the frame for menubar creation
-  frame .menubar -width 710 -relief raised -borderwidth 1
-  menu_create .menubar
+  menu_create
 
   # Create the information frame
   frame .covbox -width 710 -height 25
@@ -372,7 +371,7 @@ proc rm_pointer {curr_ptr} {
   .bot.right.txt configure -state disabled
 
   # Disable "Show current selection" menu item
-  .menubar.view.menu entryconfigure 4 -state disabled
+  .menubar.view entryconfigure 4 -state disabled
 
   # Clear current pointer
   set ptr ""
@@ -400,7 +399,7 @@ proc set_pointer {curr_ptr line} {
   .bot.right.txt see $line.0
 
   # Enable the "Show current selection" menu option
-  .menubar.view.menu entryconfigure 4 -state normal
+  .menubar.view entryconfigure 4 -state normal
 
   # Set the current pointer to the specified line
   set ptr $line
@@ -433,10 +432,10 @@ proc goto_uncov {curr_index} {
   # Disable/enable previous button
   if {$prev_uncov_index != ""} {
     .bot.right.h.prev configure -state normal
-    .menubar.view.menu entryconfigure 3 -state normal
+    .menubar.view entryconfigure 3 -state normal
   } else {
     .bot.right.h.prev configure -state disabled
-    .menubar.view.menu entryconfigure 3 -state disabled
+    .menubar.view entryconfigure 3 -state disabled
   }
 
   # Get next uncovered index
@@ -445,10 +444,10 @@ proc goto_uncov {curr_index} {
   # Disable/enable next button
   if {$next_uncov_index != ""} {
     .bot.right.h.next configure -state normal
-    .menubar.view.menu entryconfigure 2 -state normal
+    .menubar.view entryconfigure 2 -state normal
   } else {
     .bot.right.h.next configure -state disabled
-    .menubar.view.menu entryconfigure 2 -state disabled
+    .menubar.view entryconfigure 2 -state disabled
   }
 
 }
@@ -459,7 +458,7 @@ proc update_all_windows {} {
 
   # Update the main window
   goto_uncov $curr_uncov_index
-  .menubar.view.menu entryconfigure 4 -state disabled
+  .menubar.view entryconfigure 4 -state disabled
 
   # Update the summary window
   update_summary

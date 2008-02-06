@@ -18,49 +18,55 @@ set rpt_file_types {
 
 proc do_keybind {.menubar} {
 
-  bind all <Control-o> {.menubar.file.menu invoke 0}
-  bind all <Control-s> {.menubar.file.menu invoke 3}
-  bind all <Control-w> {.menubar.file.menu invoke 4}
-  bind all <Control-x> {.menubar.file.menu invoke 8}
+  # Add Mac OS X familiar shortcuts for the menubar
+  if {[tk windowingsystem] eq "aqua"} {
+    bind all <Command-o> {.menubar.file invoke 0}
+    bind all <Command-s> {.menubar.file invoke 3}
+    bind all <Command-w> {.menubar.file invoke 4}
+  }
 
-  bind all <Control-r> {.menubar.file.menu.gen invoke 0}
+  bind all <Control-o> {.menubar.file invoke 0}
+  bind all <Control-s> {.menubar.file invoke 3}
+  bind all <Control-w> {.menubar.file invoke 4}
+  bind all <Control-x> {.menubar.file invoke 8}
 
-  bind all <Control-n> {.menubar.view.menu invoke 2}
-  bind all <Control-p> {.menubar.view.menu invoke 3}
-  bind all <Control-c> {.menubar.view.menu invoke 4}
+  bind all <Control-r> {.menubar.file.gen invoke 0}
+
+  bind all <Control-n> {.menubar.view invoke 2}
+  bind all <Control-p> {.menubar.view invoke 3}
+  bind all <Control-c> {.menubar.view invoke 4}
 
 }
 
 proc enable_cdd_save {} {
 
-  .menubar.file.menu entryconfigure 3 -state normal
+  .menubar.file entryconfigure 3 -state normal
 
 }
 
-proc menu_create {.menubar} {
+proc menu_create {} {
 
   global start_line end_line
   global cdd_name
   global BROWSER
   global prev_uncov_index next_uncov_index
 
-  # Create the menu-buttons for File, Preferences and About
-  menubutton .menubar.file   -text "File"        -underline 0
-  menubutton .menubar.report -text "Report"      -underline 0
-  menubutton .menubar.view   -text "View"        -underline 0
-  menubutton .menubar.help   -text "Help"        -underline 0
+  # Create the menubar frame
+  #frame .menubar -width 710 -relief raised -borderwidth 1
+  set mb [menu .menubar -tearoff false]
+  . configure -menu $mb
 
   # Configure the file option
-  .menubar.file config -menu .menubar.file.menu
-  set tfm [menu .menubar.file.menu -tearoff false]
+  set tfm [menu $mb.file -tearoff false]
+  $mb add cascade -label "File" -menu $tfm
 
   # FILE - entry 0
   $tfm add command -label "Open/Merge CDDs..." -accelerator "Ctrl-o" -underline 0 -command {
     if {[open_files] != ""} {
-      .menubar.file.menu entryconfigure 1 -state normal
-      .menubar.file.menu entryconfigure 4 -state normal
-      .menubar.file.menu.gen entryconfigure 0 -state normal
-      .menubar.view.menu entryconfigure 0 -state normal
+      .menubar.file entryconfigure 1 -state normal
+      .menubar.file entryconfigure 4 -state normal
+      .menubar.file.gen entryconfigure 0 -state normal
+      .menubar.view entryconfigure 0 -state normal
     }
   }
   # FILE - entry 1
@@ -78,16 +84,16 @@ proc menu_create {.menubar} {
       } 
       tcl_func_save_cdd $save_name
       .info configure -text "$save_name successfully saved"
-      .menubar.file.menu entryconfigure 3 -state disabled
+      .menubar.file entryconfigure 3 -state disabled
     }
   }
   # FILE - entry 4
   $tfm add command -label "Close CDD(s)" -accelerator "Ctrl-w" -state disabled -underline 0 -command {
-    if {[.menubar.file.menu entrycget 3 -state] == "normal"} {
+    if {[.menubar.file entrycget 3 -state] == "normal"} {
       set exit_status [tk_messageBox -message "Opened database has changed.  Would you like to save before closing?" \
                        -type yesnocancel -icon warning]
       if {$exit_status == "yes"} {
-        .menubar.file.menu invoke 3
+        .menubar.file invoke 3
       } elseif {$exit_status == "cancel"} {
         return
       }
@@ -99,11 +105,11 @@ proc menu_create {.menubar} {
     clear_cdd_filelist
     populate_listbox .bot.left.l
     clear_all_windows
-    .menubar.file.menu entryconfigure 1 -state disabled
-    .menubar.file.menu entryconfigure 3 -state disabled
-    .menubar.file.menu entryconfigure 4 -state disabled
-    .menubar.file.menu.gen entryconfigure 0 -state disabled
-    .menubar.view.menu entryconfigure 0 -state disabled
+    .menubar.file entryconfigure 1 -state disabled
+    .menubar.file entryconfigure 3 -state disabled
+    .menubar.file entryconfigure 4 -state disabled
+    .menubar.file.gen entryconfigure 0 -state disabled
+    .menubar.view entryconfigure 0 -state disabled
   }
   # FILE - entry 5
   $tfm add separator
@@ -114,25 +120,29 @@ proc menu_create {.menubar} {
   $tfm.gen add command -label "ASCII Report..." -accelerator "Ctrl-r" -state disabled -command {
     create_report_selection_window
   }
-  # FILE - entry 7
-  $tfm add separator
-  # FILE - entry 8
-  $tfm add command -label Exit -accelerator "Ctrl-x" -underline 1 -command {
-    if {[.menubar.file.menu entrycget 3 -state] == "normal"} {
-      set exit_status [tk_messageBox -message "Opened database has changed.  Would you like to save before exiting?" \
-                                     -type yesnocancel -icon warning]
-      if {$exit_status == "yes"} {
-        .menubar.file.menu invoke 3
-      } elseif {$exit_status == "cancel"} {
-        return
+
+  # We don't need the exit function if we are running the Aqua version
+  if {[tk windowingsystem] ne "aqua"} {
+    # FILE - entry 7
+    $tfm add separator
+    # FILE - entry 8
+    $tfm add command -label Exit -accelerator "Ctrl-x" -underline 1 -command {
+      if {[.menubar.file entrycget 3 -state] == "normal"} {
+        set exit_status [tk_messageBox -message "Opened database has changed.  Would you like to save before exiting?" \
+                                       -type yesnocancel -icon warning]
+        if {$exit_status == "yes"} {
+          .menubar.file invoke 3
+        } elseif {$exit_status == "cancel"} {
+          return
+        }
       }
+      exit
     }
-    exit
   }
 
   # Configure the report option
-  .menubar.report config -menu .menubar.report.menu
-  set report [menu .menubar.report.menu -tearoff false]
+  set report [menu $mb.report -tearoff false]
+  $mb add cascade -label "Report" -menu $report
 
   global mod_inst_type cov_uncov_type cov_rb
 
@@ -193,8 +203,8 @@ proc menu_create {.menubar} {
   set mod_inst_type  "module"
 
   # Configure the color options
-  .menubar.view config -menu .menubar.view.menu
-  set m [menu .menubar.view.menu -tearoff false]
+  set m [menu $mb.view -tearoff false]
+  $mb add cascade -label "View" -menu $m
 
   # Summary window
   $m add command -label "Summary..." -state disabled -underline 0 -command {
@@ -224,8 +234,8 @@ proc menu_create {.menubar} {
   }
 
   # Configure the help option
-  .menubar.help config -menu .menubar.help.menu
-  set thm [menu .menubar.help.menu -tearoff false]
+  set thm [menu $mb.help -tearoff false]
+  $mb add cascade -label "Help" -menu $thm
 
   # Add Manual and About information
   $thm add command -label "Manual" -state disabled -underline 0 -command {
@@ -241,15 +251,6 @@ proc menu_create {.menubar} {
     $thm entryconfigure 0 -state normal
   }
     
-  # Pack the .menubar frame
-  pack .menubar -side top -fill x
-  
-  # Pack the menu-buttons
-  pack .menubar.file   -side left
-  pack .menubar.report -side left
-  pack .menubar.view   -side left
-  pack .menubar.help   -side right
-
   # Do key bindings for the Top Level Menus
   do_keybind .menubar
 
@@ -297,7 +298,7 @@ proc open_files {} {
         tcl_func_open_cdd $fname
       } else {
         tcl_func_merge_cdd $fname
-        .menubar.file.menu entryconfigure 3 -state normal
+        .menubar.file entryconfigure 3 -state normal
       }
 
       # Populate the listbox
