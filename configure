@@ -7024,7 +7024,6 @@ r_save_CPPFLAGS="${CPPFLAGS}"
 r_save_LIBS="${LIBS}"
 CPPFLAGS="${CPPFLAGS} ${TCLTK_CPPFLAGS}"
 LIBS="${LIBS} ${TCLTK_LIBS}"
-echo "$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
