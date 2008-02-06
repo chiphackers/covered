@@ -211,24 +211,24 @@ proc highlight_listbox {} {
     # If we are in module mode, list modules (otherwise, list instances)
     set funits [llength $funit_names]
     for {set i 0} {$i < $funits} {incr i} {
-      if {$cov_rb == "line"} {
+      if {$cov_rb == "Line"} {
         tcl_func_get_line_summary [lindex $funit_names $i] [lindex $funit_types $i]
         set fully_covered [expr $line_summary_total == $line_summary_hit]
-      } elseif {$cov_rb == "toggle"} {
+      } elseif {$cov_rb == "Toggle"} {
         tcl_func_get_toggle_summary [lindex $funit_names $i] [lindex $funit_types $i]
         set fully_covered [expr $toggle_summary_total == $toggle_summary_hit]
-      } elseif {$cov_rb == "comb"} {
-        tcl_func_get_comb_summary [lindex $funit_names $i] [lindex $funit_types $i]
-        set fully_covered [expr $comb_summary_total == $comb_summary_hit]
-      } elseif {$cov_rb == "fsm"} {
-        tcl_func_get_fsm_summary [lindex $funit_names $i] [lindex $funit_types $i]
-        set fully_covered [expr $fsm_summary_total == $fsm_summary_hit]
-      } elseif {$cov_rb == "assert"} {
-        tcl_func_get_assert_summary [lindex $funit_names $i] [lindex $funit_types $i]
-        set fully_covered [expr $assert_summary_total == $assert_summary_hit]
-      } elseif {$cov_rb == "memory"} {
+      } elseif {$cov_rb == "Memory"} {
         tcl_func_get_memory_summary [lindex $funit_names $i] [lindex $funit_types $i]
         set fully_covered [expr $memory_summary_total == $memory_summary_hit]
+      } elseif {$cov_rb == "Logic"} {
+        tcl_func_get_comb_summary [lindex $funit_names $i] [lindex $funit_types $i]
+        set fully_covered [expr $comb_summary_total == $comb_summary_hit]
+      } elseif {$cov_rb == "FSM"} {
+        tcl_func_get_fsm_summary [lindex $funit_names $i] [lindex $funit_types $i]
+        set fully_covered [expr $fsm_summary_total == $fsm_summary_hit]
+      } elseif {$cov_rb == "Assert"} {
+        tcl_func_get_assert_summary [lindex $funit_names $i] [lindex $funit_types $i]
+        set fully_covered [expr $assert_summary_total == $assert_summary_hit]
       } else {
         # ERROR
       }
@@ -261,17 +261,17 @@ proc populate_text {} {
       set curr_funit_type [lindex $funit_types $index]
       set curr_toggle_ptr ""
 
-      if {$cov_rb == "line"} {
+      if {$cov_rb == "Line"} {
         process_funit_line_cov
-      } elseif {$cov_rb == "toggle"} {
+      } elseif {$cov_rb == "Toggle"} {
         process_funit_toggle_cov
-      } elseif {$cov_rb == "memory"} {
+      } elseif {$cov_rb == "Memory"} {
         process_funit_memory_cov
-      } elseif {$cov_rb == "comb"} {
+      } elseif {$cov_rb == "Logic"} {
         process_funit_comb_cov
-      } elseif {$cov_rb == "fsm"} {
+      } elseif {$cov_rb == "FSM"} {
         process_funit_fsm_cov
-      } elseif {$cov_rb == "assert"} {
+      } elseif {$cov_rb == "Assert"} {
         process_funit_assert_cov
       } else {
         # ERROR
@@ -413,7 +413,7 @@ proc goto_uncov {curr_index} {
   global cov_rb
 
   # Calculate the name of the tag to use
-  if {$cov_rb == "line"} {
+  if {$cov_rb == "Line"} {
     set tag_name "uncov_colorMap"
   } else {
     set tag_name "uncov_button"

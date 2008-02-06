@@ -148,11 +148,11 @@ proc menu_create {.menubar} {
   $report add checkbutton -label "Show Uncovered" -variable uncov_type -onvalue 1 -offvalue 0 -underline 5 -command {
     set text_x [.bot.right.txt xview]
     set text_y [.bot.right.txt yview]
-    if {$cov_rb == "line"} {
+    if {$cov_rb == "Line"} {
       display_line_cov
-    } elseif {$cov_rb == "toggle"} {
+    } elseif {$cov_rb == "Toggle"} {
       display_toggle_cov
-    } elseif {$cov_rb == "comb"} {
+    } elseif {$cov_rb == "Logic"} {
       display_comb_cov
     } else {
       # Error
@@ -163,11 +163,11 @@ proc menu_create {.menubar} {
   $report add checkbutton -label "Show Covered" -variable cov_type -onvalue 1 -offvalue 0 -underline 5 -command {
     set text_x [.bot.right.txt xview]
     set text_y [.bot.right.txt yview]
-    if {$cov_rb == "line"} {
+    if {$cov_rb == "Line"} {
       display_line_cov
-    } elseif {$cov_rb == "toggle"} {
+    } elseif {$cov_rb == "Toggle"} {
       display_toggle_cov
-    } elseif {$cov_rb == "comb"} {
+    } elseif {$cov_rb == "Logic"} {
       display_comb_cov
     } else {
       # Error
@@ -178,11 +178,11 @@ proc menu_create {.menubar} {
   $report add checkbutton -label "Show Race Conditions" -variable race_type -onvalue 1 -offvalue 0 -underline 5 -command {
     set text_x [.bot.right.txt xview]
     set text_y [.bot.right.txt yview]
-    if {$cov_rb == "line"} {
+    if {$cov_rb == "Line"} {
       display_line_cov
-    } elseif {$cov_rb == "toggle"} {
+    } elseif {$cov_rb == "Toggle"} {
       display_toggle_cov
-    } elseif {$cov_rb == "comb"} {
+    } elseif {$cov_rb == "Logic"} {
       display_comb_cov
     } else {
       # Error
@@ -208,11 +208,11 @@ proc menu_create {.menubar} {
     goto_uncov $prev_uncov_index
   }
   $m add command -label "Show Current Selection" -state disabled -accelerator "Ctrl-c" -underline 5 -command {
-    if {$cov_rb == "toggle"} {
+    if {$cov_rb == "Toggle"} {
       if {$curr_toggle_ptr != ""} {
         .bot.right.txt see $curr_toggle_ptr.0
       }
-    } elseif {$cov_rb == "comb"} {
+    } elseif {$cov_rb == "Logic"} {
       if {$curr_comb_ptr != ""} {
         .bot.right.txt see $curr_comb_ptr.0
       }

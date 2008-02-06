@@ -176,7 +176,7 @@ proc update_toggle {} {
   if {[winfo exists .togwin] == 1} {
 
     # If the current metric mode is not toggle, disable the prev/next buttons
-    if {$cov_rb != "toggle"} {
+    if {$cov_rb != "Toggle"} {
 
       .togwin.bf.prev configure -state disabled
       .togwin.bf.next configure -state disabled

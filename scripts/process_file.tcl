@@ -322,7 +322,7 @@ proc display_toggle_cov {} {
   global uncov_type cov_type
   global start_line end_line
   global toggle_summary_total toggle_summary_hit
-  global cov_rb mod_inst_type
+  global mod_inst_type
   global toggle01_verbose toggle10_verbose toggle_width
   global curr_funit_name curr_funit_type
 
@@ -489,7 +489,7 @@ proc display_memory_cov {} {
   global uncov_type cov_type
   global start_line end_line
   global memory_summary_total memory_summary_hit
-  global cov_rb mod_inst_type
+  global mod_inst_type
   global memory01_verbose memory10_verbose memory_width
   global curr_funit_name curr_funit_type
 
@@ -658,7 +658,7 @@ proc display_comb_cov {} {
   global uncov_type cov_type
   global start_line end_line
   global comb_summary_total comb_summary_hit
-  global cov_rb mod_inst_type
+  global mod_inst_type
   global curr_funit_name curr_funit_type
 
   if {$curr_funit_name != 0} {

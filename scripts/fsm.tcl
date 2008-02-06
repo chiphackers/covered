@@ -508,7 +508,7 @@ proc update_fsm {} {
   if {[winfo exists .fsmwin] == 1} {
 
     # If the current metric mode is not FSM, disable the prev/next buttons
-    if {$cov_rb != "fsm"} {
+    if {$cov_rb != "FSM"} {
 
       .fsmwin.bf.prev configure -state disabled
       .fsmwin.bf.next configure -state disabled

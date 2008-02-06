@@ -749,15 +749,17 @@ proc apply_preferences {} {
     set text_y [.bot.right.txt yview]
 
     # Redisplay the information in the main file viewer
-    if {$cov_rb == "line"} {
+    if {$cov_rb == "Line"} {
       display_line_cov
-    } elseif {$cov_rb == "toggle"} {
+    } elseif {$cov_rb == "Toggle"} {
       display_toggle_cov
-    } elseif {$cov_rb == "comb"} {
+    } elseif {$cov_rb == "Memory"} {
+      display_memory_cov
+    } elseif {$cov_rb == "Logic"} {
       display_comb_cov
-    } elseif {$cov_rb == "fsm"} {
+    } elseif {$cov_rb == "FSM"} {
       display_fsm_cov
-    } elseif {$cov_rb == "assert"} {
+    } elseif {$cov_rb == "Assert"} {
       display_assert_cov
     } else {
       # Error

@@ -98,15 +98,17 @@ proc create_summary {} {
   }
 
   ;# Update title of window
-  if {$cov_rb == "line"} {
+  if {$cov_rb == "Line"} {
     wm title .sumwin "Line Coverage Summary"
-  } elseif {$cov_rb == "toggle"} {
+  } elseif {$cov_rb == "Toggle"} {
     wm title .sumwin "Toggle Coverage Summary"
-  } elseif {$cov_rb == "comb"} {
+  } elseif {$cov_rb == "Memory"} {
+    wm title .sumwin "Memory Coverage Summary"
+  } elseif {$cov_rb == "Logic"} {
     wm title .sumwin "Combinational Logic Coverage Summary"
-  } elseif {$cov_rb == "fsm"} {
+  } elseif {$cov_rb == "FSM"} {
     wm title .sumwin "FSM State/Arc Coverage Summary"
-  } elseif {$cov_rb == "assert"} {
+  } elseif {$cov_rb == "Assert"} {
     wm title .sumwin "Assertion Coverage Summary"
   } else {
     ;# ERROR!
@@ -146,6 +148,7 @@ proc populate_summary { w } {
   global mod_inst_type funit_names funit_types cov_rb
   global line_summary_hit line_summary_total line_low_limit
   global toggle_summary_hit toggle_summary_total toggle_low_limit
+  global memory_summary_hit memory_summary_total memory_low_limit
   global comb_summary_hit comb_summary_total comb_low_limit
   global fsm_summary_hit fsm_summary_total fsm_low_limit
   global assert_summary_hit assert_summary_total assert_low_limit
@@ -154,26 +157,31 @@ proc populate_summary { w } {
   for {set i 0} {$i < [llength $funit_names]} {incr i} {
 
     ;# Get summary information for the current type
-    if {$cov_rb == "line"} {
+    if {$cov_rb == "Line"} {
       tcl_func_get_line_summary [lindex $funit_names $i] [lindex $funit_types $i]
       set hit       $line_summary_hit
       set total     $line_summary_total
       set low_limit $line_low_limit
-    } elseif {$cov_rb == "toggle"} {
+    } elseif {$cov_rb == "Toggle"} {
       tcl_func_get_toggle_summary [lindex $funit_names $i] [lindex $funit_types $i]
       set hit       $toggle_summary_hit
       set total     $toggle_summary_total
       set low_limit $toggle_low_limit
-    } elseif {$cov_rb == "comb"} {
+    } elseif {$cov_rb == "Memory"} {
+      tcl_func_get_memory_summary [lindex $funit_names $i] [lindex $funit_types $i]
+      set hit       $memory_summary_hit
+      set total     $memory_summary_total
+      set low_limit $memory_low_limit
+    } elseif {$cov_rb == "Logic"} {
       tcl_func_get_comb_summary [lindex $funit_names $i] [lindex $funit_types $i]
       set hit       $comb_summary_hit
       set total     $comb_summary_total
       set low_limit $comb_low_limit
-    } elseif {$cov_rb == "fsm"} {
+    } elseif {$cov_rb == "FSM"} {
       set hit       $fsm_summary_hit
       set total     $fsm_summary_total
       set low_limit $fsm_low_limit
-    } elseif {$cov_rb == "assert"} {
+    } elseif {$cov_rb == "Assert"} {
       set hit       $assert_summary_hit
       set total     $assert_summary_total
       set low_limit $assert_low_limit

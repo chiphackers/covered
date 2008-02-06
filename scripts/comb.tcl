@@ -677,7 +677,7 @@ proc update_comb {} {
   if {[winfo exists .combwin] == 1} {
 
     # If the current metric mode is not combinational logic, disable the prev/next buttons
-    if {$cov_rb != "comb"} {
+    if {$cov_rb != "Logic"} {
 
       .combwin.bf.prev configure -state disabled
       .combwin.bf.next configure -state disabled

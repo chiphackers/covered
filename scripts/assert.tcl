@@ -217,7 +217,7 @@ proc update_assert {} {
   if {[winfo exists .assertwin] == 1} {
 
     # If the current metric mode is not assert, disable the prev/next buttons
-    if {$cov_rb != "assert"} {
+    if {$cov_rb != "Assert"} {
 
       .assertwin.bf.prev configure -state disabled
       .assertwin.bf.next configure -state disabled

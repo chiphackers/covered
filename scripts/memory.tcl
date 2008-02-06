@@ -346,7 +346,7 @@ proc update_memory {} {
   if {[winfo exists .memwin] == 1} {
 
     # If the current metric mode is not memory, disable the prev/next buttons
-    if {$cov_rb != "memory"} {
+    if {$cov_rb != "Memory"} {
 
       .memwin.bf.prev configure -state disabled
       .memwin.bf.next configure -state disabled
