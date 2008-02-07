@@ -3,6 +3,7 @@
 ;# Global variables
 set line_low_limit   90
 set toggle_low_limit 90
+set memory_low_limit 90
 set comb_low_limit   90
 set fsm_low_limit    90
 set assert_low_limit 90

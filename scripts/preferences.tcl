@@ -13,6 +13,7 @@ set race_fgColor            white
 set race_bgColor            blue
 set line_low_limit          90
 set toggle_low_limit        90
+set memory_low_limit        90
 set comb_low_limit          90
 set fsm_low_limit           90
 set assert_low_limit        90
@@ -27,18 +28,18 @@ set rc_file_to_write        ""
 set hl_mode                 0
 set last_pref_index         -1
 set rsel_sdv                "s"
-set rsel_mi                 ""
-set rsel_cu                 ""
+set rsel_mi                 "None"
+set rsel_cu                 "None"
 set rsel_l                  "l"
 set rsel_t                  "t"
 set rsel_m                  "m"
 set rsel_c                  "c"
 set rsel_f                  "f"
-set rsel_a                  ""
-set rsel_r                  ""
+set rsel_a                  "None"
+set rsel_r                  "None"
 set rsel_wsel               0
 set rsel_width              "80"
-set rsel_sup                ""
+set rsel_sup                "None"
 
 
 # Create a list from 100 to 0
@@ -51,7 +52,7 @@ proc read_coveredrc {} {
   global uncov_fgColor uncov_bgColor
   global cov_fgColor   cov_bgColor
   global race_fgColor  race_bgColor
-  global line_low_limit toggle_low_limit comb_low_limit fsm_low_limit assert_low_limit
+  global line_low_limit toggle_low_limit memory_low_limit comb_low_limit fsm_low_limit assert_low_limit
   global vlog_hl_mode vlog_hl_ppkeyword_color vlog_hl_keyword_color
   global vlog_hl_comment_color vlog_hl_string_color vlog_hl_value_color
   global vlog_hl_symbol_color
@@ -103,6 +104,8 @@ proc read_coveredrc {} {
           set line_low_limit $value
         } elseif {$field == "AcceptableTogglePercentage"} {
           set toggle_low_limit $value
+        } elseif {$field == "AcceptableMemoryPercentage"} {
+          set memory_low_limit $value
         } elseif {$field == "AcceptableCombinationalLogicPercentage"} {
           set comb_low_limit $value
         } elseif {$field == "AcceptableFsmPercentage"} {
@@ -131,48 +134,48 @@ proc read_coveredrc {} {
           }
         } elseif {$field == "ReportAccumulateBy"} {
           switch $value {
-            module   { set rsel_mi "" }
+            module   { set rsel_mi "None" }
             instance { set rsel_mi "-i" }
           }
         } elseif {$field == "ReportShowMetrics"} {
           if {[string first "l" $value] != -1} {
             set rsel_l "l"
           } else {
-            set rsel_l ""
+            set rsel_l "None"
           }
           if {[string first "t" $value] != -1} {
             set rsel_t "t"
           } else {
-            set rsel_t ""
+            set rsel_t "None"
           }
           if {[string first "m" $value] != -1} {
             set rsel_m "m"
           } else {
-            set rsel_m ""
+            set rsel_m "None"
           }
           if {[string first "c" $value] != -1} {
             set rsel_c "c"
           } else {
-            set rsel_c ""
+            set rsel_c "None"
           }
           if {[string first "f" $value] != -1} {
             set rsel_f "f"
           } else {
-            set rsel_f ""
+            set rsel_f "None"
           }
           if {[string first "a" $value] != -1} {
             set rsel_a "a"
           } else {
-            set rsel_a ""
+            set rsel_a "None"
           }
           if {[string first "r" $value] != -1} {
             set rsel_r "r"
           } else {
-            set rsel_r ""
+            set rsel_r "None"
           }
         } elseif {$field == "ReportCoverageType"} {
           switch $value {
-            uncovered { set rsel_cu "" }
+            uncovered { set rsel_cu "None" }
             covered   { set rsel_cu "-c" }
           }
         } elseif {$field == "ReportLineWidth"} {
@@ -183,7 +186,7 @@ proc read_coveredrc {} {
         } elseif {$field == "ReportSuppressEmptyModules"} {
           switch $value {
             yes { set rsel_sup "-s" }
-            no  { set rsel_sup ""   }
+            no  { set rsel_sup "None" }
           }
         }
 
@@ -202,7 +205,7 @@ proc write_coveredrc {} {
   global uncov_fgColor uncov_bgColor
   global cov_fgColor   cov_bgColor
   global race_fgColor  race_bgColor
-  global line_low_limit toggle_low_limit comb_low_limit fsm_low_limit assert_low_limit
+  global line_low_limit toggle_low_limit memory_low_limit comb_low_limit fsm_low_limit assert_low_limit
   global vlog_hl_mode vlog_hl_ppkeyword_color vlog_hl_keyword_color
   global vlog_hl_comment_color vlog_hl_string_color vlog_hl_value_color
   global vlog_hl_symbol_color
@@ -268,6 +271,13 @@ proc write_coveredrc {} {
     puts $rc "# \"good enough\".  This value must be in the range of 0 - 100.\n"
 
     puts $rc "AcceptableTogglePercentage = $toggle_low_limit\n"
+
+    puts $rc "# Causes the summary color for a module/instance that has achieved a memory"
+    puts $rc "# coverage percentage greater than or equal to this value (but not 100%) to be"
+    puts $rc "# colored \"yellow\", indicating that the memory coverage can possibly be deemed"
+    puts $rc "# \"good enough\".  This value must be in the range of 0 - 100.\n"
+
+    puts $rc "AcceptableMemoryPercentage = $memory_low_limit\n"
 
     puts $rc "# Causes the summary color for a module/instance that has achieved a combinational"
     puts $rc "# logic coverage percentage greater than or equal to this value (but not 100%) to be"
@@ -341,7 +351,7 @@ proc write_coveredrc {} {
     puts $rc "# accumulate coverage statistics on a module or instance basis.  Legal values are 'module'"
     puts $rc "# or 'instance'.\n"
 
-    if {$rsel_mi == ""} {
+    if {$rsel_mi == "None"} {
       puts $rc "ReportAccumulateBy = module\n"
     } else {
       puts $rc "ReportAccumulateBy = instance\n"
@@ -352,13 +362,20 @@ proc write_coveredrc {} {
     puts $rc "# 'l' (line), 't' (toggle), 'c' (combinational logic), 'f' (FSM), 'a' (assertion) and/or"
     puts $rc "# 'r' (race condition).\n"
 
-    puts $rc "ReportShowMetrics = $rsel_l$rsel_t$rsel_m$rsel_c$rsel_f$rsel_a$rsel_r\n"
+    if {$rsel_l == "None"} { set l "" } else { set l $rsel_l }
+    if {$rsel_t == "None"} { set t "" } else { set t $rsel_t }
+    if {$rsel_m == "None"} { set m "" } else { set m $rsel_m }
+    if {$rsel_c == "None"} { set c "" } else { set c $rsel_c }
+    if {$rsel_f == "None"} { set f "" } else { set f $rsel_f }
+    if {$rsel_a == "None"} { set a "" } else { set a $rsel_a }
+    if {$rsel_r == "None"} { set r "" } else { set r $rsel_r }
+    puts $rc "ReportShowMetrics = $l$t$m$c$f$a$r\n"
 
     puts $rc "# When an ASCII report is generated, this option specifies whether uncovered or covered"
     puts $rc "# information will be displayed to the report file.  Legal values are 'uncovered' or"
     puts $rc "# 'covered'.\n"
 
-    if {$rsel_cu == ""} {
+    if {$rsel_cu == "None"} {
       puts $rc "ReportCoverageType = uncovered\n"
     } else {
       puts $rc "ReportCoverageType = covered\n"
@@ -379,7 +396,7 @@ proc write_coveredrc {} {
     puts $rc "# contain no coverage information (for all possible metrics) are suppressed from the"
     puts $rc "# report output.  Legal values are 'yes' or 'no'.\n"
 
-    if {$rsel_sup == ""} {
+    if {$rsel_sup == "None"} {
       puts $rc "ReportSuppressEmptyModules = no\n"
     } else {
       puts $rc "ReportSuppressEmptyModules = yes\n"
@@ -399,6 +416,7 @@ proc create_preferences {start_index} {
   global race_fgColor  race_bgColor  tmp_race_fgColor  tmp_race_bgColor
   global line_low_limit          tmp_line_low_limit
   global toggle_low_limit        tmp_toggle_low_limit
+  global memory_low_limit        tmp_memory_low_limit
   global comb_low_limit          tmp_comb_low_limit
   global fsm_low_limit           tmp_fsm_low_limit
   global assert_low_limit        tmp_assert_low_limit
@@ -436,6 +454,7 @@ proc create_preferences {start_index} {
     set tmp_race_bgColor            $race_bgColor
     set tmp_line_low_limit          $line_low_limit
     set tmp_toggle_low_limit        $toggle_low_limit
+    set tmp_memory_low_limit        $memory_low_limit
     set tmp_comb_low_limit          $comb_low_limit
     set tmp_fsm_low_limit           $fsm_low_limit
     set tmp_assert_low_limit        $assert_low_limit
@@ -467,7 +486,7 @@ proc create_preferences {start_index} {
     toplevel .prefwin
     wm title .prefwin "Covered - Preferences"
     # wm resizable .prefwin 0 0
-    wm geometry .prefwin =500x450
+    wm geometry .prefwin =600x450
 
     # Create listbox frame
     frame .prefwin.lbf -relief raised -borderwidth 1
@@ -487,7 +506,7 @@ proc create_preferences {start_index} {
     # Create preference frame
     frame .prefwin.pf -relief raised -borderwidth 1
     frame .prefwin.pf.f
-    label .prefwin.pf.f.l -text "Select an option category on the left to view/edit.\nClick the \"Apply button\" to apply all preference options\nto the rest of the GUI.  Click the \"OK\" button to apply\nand save the changes to the Covered configuration file\nand exit this window.  Click the \"Cancel\" button to\nforget all preference changes made the exit this\nwindow.  Click the \"Help\" button to get help for the\nshown option window." -justify left
+    label .prefwin.pf.f.l -text "- Select an option category on the left to view/edit.\n\n- Click the \"Apply button\" to apply all preference options\nto the rest of the GUI.\n\n- Click the \"OK\" button to apply and save the changes to\nthe Covered configuration file and exit this window.\n\n- Click the \"Cancel\" button to forget all preference changes\nmade the exit this window.\n\n- Click the \"Help\" button to get help for the shown option window." -justify left
     pack .prefwin.pf.f.l -fill y -padx 8 -pady 10 
     pack .prefwin.pf.f -fill both
 
@@ -585,6 +604,7 @@ proc apply_preferences {} {
   global race_bgColor     tmp_race_bgColor
   global line_low_limit   tmp_line_low_limit
   global toggle_low_limit tmp_toggle_low_limit
+  global memory_low_limit tmp_memory_low_limit
   global comb_low_limit   tmp_comb_low_limit
   global fsm_low_limit    tmp_fsm_low_limit
   global assert_low_limit tmp_assert_low_limit
@@ -646,6 +666,10 @@ proc apply_preferences {} {
   }
   if {$toggle_low_limit != $tmp_toggle_low_limit} {
     set toggle_low_limit $tmp_toggle_low_limit
+    set changed 1
+  }
+  if {$memory_low_limit != $tmp_memory_low_limit} {
+    set memory_low_limit $tmp_memory_low_limit
     set changed 1
   }
   if {$comb_low_limit != $tmp_comb_low_limit} {
@@ -823,10 +847,7 @@ proc percent_spinner {w showval} {
   # If the Tk version is 8.5 or higher, the spinbox widget exists so make use of it
   if {[info tclversion] >= 8.4} {
 
-    spinbox $w -from 0 -to 100 -increment 1.0 -width 3 -validate key -invcmd bell -vcmd {
-      puts %P
-      return [expr 0 <= %P] && [expr %P <= 100]
-    }
+    spinbox $w -from 0 -to 100 -increment 1.0 -width 3 -state readonly
     $w set $showval
 
     return $w
@@ -902,7 +923,7 @@ proc create_color_pref {} {
 
   # Create main frame
   frame .prefwin.pf.f
-  label .prefwin.pf.f.l -anchor w -text "Set Highlight Color"
+  label .prefwin.pf.f.l -anchor w -text "Set Highlight Color (F=Change Foreground, B=Change Background)"
 
   # Uncovered selectors
   button .prefwin.pf.f.ufb -text "F" -relief groove -command {
@@ -938,17 +959,17 @@ proc create_color_pref {} {
   label .prefwin.pf.f.rl -bg $tmp_race_bgColor -fg $tmp_race_fgColor -text "Race Condition Sample"
 
   # Pack the color widgets into the color frame
-  grid columnconfigure .prefwin.pf.f 2 -weight 1
-  grid .prefwin.pf.f.l   -row 0 -column 0 -columnspan 3 -sticky news -pady 4
-  grid .prefwin.pf.f.ufb -row 1 -column 0 -sticky news -padx 4
-  grid .prefwin.pf.f.ubb -row 1 -column 1 -sticky news -padx 4
-  grid .prefwin.pf.f.ul  -row 1 -column 2 -sticky news -padx 4
-  grid .prefwin.pf.f.cfb -row 2 -column 0 -sticky news -padx 4
-  grid .prefwin.pf.f.cbb -row 2 -column 1 -sticky news -padx 4
-  grid .prefwin.pf.f.cl  -row 2 -column 2 -sticky news -padx 4
-  grid .prefwin.pf.f.rfb -row 3 -column 0 -sticky news -padx 4
-  grid .prefwin.pf.f.rbb -row 3 -column 1 -sticky news -padx 4
-  grid .prefwin.pf.f.rl  -row 3 -column 2 -sticky news -padx 4
+  grid columnconfigure .prefwin.pf.f 3 -weight 1
+  grid .prefwin.pf.f.l   -row 0 -column 0 -columnspan 4 -sticky news -pady 4
+  grid .prefwin.pf.f.ul  -row 1 -column 0 -sticky news -padx 4
+  grid .prefwin.pf.f.ufb -row 1 -column 1 -sticky news -padx 4
+  grid .prefwin.pf.f.ubb -row 1 -column 2 -sticky news -padx 4
+  grid .prefwin.pf.f.cl  -row 2 -column 0 -sticky news -padx 4
+  grid .prefwin.pf.f.cfb -row 2 -column 1 -sticky news -padx 4
+  grid .prefwin.pf.f.cbb -row 2 -column 2 -sticky news -padx 4
+  grid .prefwin.pf.f.rl  -row 3 -column 0 -sticky news -padx 4
+  grid .prefwin.pf.f.rfb -row 3 -column 1 -sticky news -padx 4
+  grid .prefwin.pf.f.rbb -row 3 -column 2 -sticky news -padx 4
 
   # Pack the frame
   pack .prefwin.pf.f -fill both
@@ -957,7 +978,7 @@ proc create_color_pref {} {
 
 proc create_cov_goal_pref {} {
 
-  global tmp_line_low_limit tmp_toggle_low_limit tmp_comb_low_limit tmp_fsm_low_limit tmp_assert_low_limit
+  global tmp_line_low_limit tmp_toggle_low_limit tmp_memory_low_limit tmp_comb_low_limit tmp_fsm_low_limit tmp_assert_low_limit
 
   # Create widgets
   frame .prefwin.pf.f
@@ -968,6 +989,9 @@ proc create_cov_goal_pref {} {
 
   label .prefwin.pf.f.tl -anchor e -text "Toggle Coverage %:"
   percent_spinner .prefwin.pf.f.ts $tmp_toggle_low_limit
+
+  label .prefwin.pf.f.ml -anchor e -text "Memory Coverage %:"
+  percent_spinner .prefwin.pf.f.ms $tmp_memory_low_limit
 
   label .prefwin.pf.f.cl -anchor e -text "Combinational Logic Coverage %:"
   percent_spinner .prefwin.pf.f.cs $tmp_comb_low_limit
@@ -985,12 +1009,14 @@ proc create_cov_goal_pref {} {
   grid .prefwin.pf.f.ls -row 1 -column 1 -sticky news
   grid .prefwin.pf.f.tl -row 2 -column 0 -sticky news
   grid .prefwin.pf.f.ts -row 2 -column 1 -sticky news
-  grid .prefwin.pf.f.cl -row 3 -column 0 -sticky news
-  grid .prefwin.pf.f.cs -row 3 -column 1 -sticky news
-  grid .prefwin.pf.f.fl -row 4 -column 0 -sticky news
-  grid .prefwin.pf.f.fs -row 4 -column 1 -sticky news
-  grid .prefwin.pf.f.al -row 5 -column 0 -sticky news
-  grid .prefwin.pf.f.as -row 5 -column 1 -sticky news
+  grid .prefwin.pf.f.ml -row 3 -column 0 -sticky news
+  grid .prefwin.pf.f.ms -row 3 -column 1 -sticky news
+  grid .prefwin.pf.f.cl -row 4 -column 0 -sticky news
+  grid .prefwin.pf.f.cs -row 4 -column 1 -sticky news
+  grid .prefwin.pf.f.fl -row 5 -column 0 -sticky news
+  grid .prefwin.pf.f.fs -row 5 -column 1 -sticky news
+  grid .prefwin.pf.f.al -row 6 -column 0 -sticky news
+  grid .prefwin.pf.f.as -row 6 -column 1 -sticky news
 
   # Pack the frame
   pack .prefwin.pf.f -fill both
@@ -1012,7 +1038,7 @@ proc create_syntax_pref {} {
   frame .prefwin.pf.f
   label .prefwin.pf.f.l -anchor w -text "Set Syntax Highlighting Options"
 
-  checkbutton .prefwin.pf.f.mcb -variable tmp_vlog_hl_mode -onvalue on -offvalue off -anchor e \
+  checkbutton .prefwin.pf.f.mcb -variable tmp_vlog_hl_mode -onvalue on -offvalue off -anchor w \
                                   -text "Turn on syntax highlighting mode" -command {
     synchronize_syntax_widgets $tmp_vlog_hl_mode
   }
@@ -1047,7 +1073,7 @@ proc create_syntax_pref {} {
         [pref_set_label_color .prefwin.pf.f.stcl bg $tmp_vlog_hl_string_color "Choose String Highlight Color"]
   }
 
-  label .prefwin.pf.f.sycl -bg $vlog_hl_symobl_color -anchor e -text "Symbol highlight color:"
+  label .prefwin.pf.f.sycl -bg $vlog_hl_symbol_color -anchor e -text "Symbol highlight color:"
   button .prefwin.pf.f.sycb -text "Change" -command {
     set tmp_vlog_hl_symbol_color \
         [pref_set_label_color .prefwin.pf.f.sycl bg $tmp_vlog_hl_symbol_color "Choose Symbol Highlight Color"]
@@ -1056,18 +1082,18 @@ proc create_syntax_pref {} {
   grid columnconfigure .prefwin.pf.f 2 -weight 1
   grid .prefwin.pf.f.l    -row 0 -column 0 -sticky news -pady 4
   grid .prefwin.pf.f.mcb  -row 1 -column 0 -sticky news -pady 4
-  grid .prefwin.pf.f.ppcl -row 2 -column 0 -sticky news
-  grid .prefwin.pf.f.ppcb -row 2 -column 1 -sticky news
-  grid .prefwin.pf.f.pcl  -row 3 -column 0 -sticky news
-  grid .prefwin.pf.f.pcb  -row 3 -column 1 -sticky news
-  grid .prefwin.pf.f.ccl  -row 4 -column 0 -sticky news
-  grid .prefwin.pf.f.ccb  -row 4 -column 1 -sticky news
-  grid .prefwin.pf.f.vcl  -row 5 -column 0 -sticky news
-  grid .prefwin.pf.f.vcb  -row 5 -column 1 -sticky news
-  grid .prefwin.pf.f.stcl -row 6 -column 0 -sticky news
-  grid .prefwin.pf.f.stcb -row 6 -column 1 -sticky news
-  grid .prefwin.pf.f.sycl -row 7 -column 0 -sticky news
-  grid .prefwin.pf.f.sycb -row 7 -column 1 -sticky news
+  grid .prefwin.pf.f.ppcl -row 2 -column 0 -sticky news -padx 4
+  grid .prefwin.pf.f.ppcb -row 2 -column 1 -sticky news -padx 4
+  grid .prefwin.pf.f.pcl  -row 3 -column 0 -sticky news -padx 4
+  grid .prefwin.pf.f.pcb  -row 3 -column 1 -sticky news -padx 4
+  grid .prefwin.pf.f.ccl  -row 4 -column 0 -sticky news -padx 4
+  grid .prefwin.pf.f.ccb  -row 4 -column 1 -sticky news -padx 4
+  grid .prefwin.pf.f.vcl  -row 5 -column 0 -sticky news -padx 4
+  grid .prefwin.pf.f.vcb  -row 5 -column 1 -sticky news -padx 4
+  grid .prefwin.pf.f.stcl -row 6 -column 0 -sticky news -padx 4
+  grid .prefwin.pf.f.stcb -row 6 -column 1 -sticky news -padx 4
+  grid .prefwin.pf.f.sycl -row 7 -column 0 -sticky news -padx 4
+  grid .prefwin.pf.f.sycb -row 7 -column 1 -sticky news -padx 4
 
   pack .prefwin.pf.f -fill both
 
@@ -1103,27 +1129,27 @@ proc create_report_pref {} {
 
   # Create module/instance selection area
   label .prefwin.pf.f.mi_lbl -text "Accumulate By" -anchor w
-  radiobutton .prefwin.pf.f.mi_m -text "Module"   -variable tmp_rsel_mi -value ""   -anchor w
+  radiobutton .prefwin.pf.f.mi_m -text "Module"   -variable tmp_rsel_mi -value "None" -anchor w
   radiobutton .prefwin.pf.f.mi_i -text "Instance" -variable tmp_rsel_mi -value "-i" -anchor w
 
   # Create metric selection area
   label .prefwin.pf.f.metric_lbl -text "Show Metrics" -anchor w
-  checkbutton .prefwin.pf.f.metric_l -text "Line"            -variable tmp_rsel_l -onvalue "l" -offvalue "" -anchor w
-  checkbutton .prefwin.pf.f.metric_t -text "Toggle"          -variable tmp_rsel_t -onvalue "t" -offvalue "" -anchor w
-  checkbutton .prefwin.pf.f.metric_m -text "Memory"          -variable tmp_rsel_m -onvalue "m" -offvalue "" -anchor w
-  checkbutton .prefwin.pf.f.metric_c -text "Logic"           -variable tmp_rsel_c -onvalue "c" -offvalue "" -anchor w
-  checkbutton .prefwin.pf.f.metric_f -text "FSM"             -variable tmp_rsel_f -onvalue "f" -offvalue "" -anchor w
-  checkbutton .prefwin.pf.f.metric_a -text "Assertion"       -variable tmp_rsel_a -onvalue "a" -offvalue "" -anchor w
-  checkbutton .prefwin.pf.f.metric_r -text "Race Conditions" -variable tmp_rsel_r -onvalue "r" -offvalue "" -anchor w
+  checkbutton .prefwin.pf.f.metric_l -text "Line"            -variable tmp_rsel_l -onvalue "l" -offvalue "None" -anchor w
+  checkbutton .prefwin.pf.f.metric_t -text "Toggle"          -variable tmp_rsel_t -onvalue "t" -offvalue "None" -anchor w
+  checkbutton .prefwin.pf.f.metric_m -text "Memory"          -variable tmp_rsel_m -onvalue "m" -offvalue "None" -anchor w
+  checkbutton .prefwin.pf.f.metric_c -text "Logic"           -variable tmp_rsel_c -onvalue "c" -offvalue "None" -anchor w
+  checkbutton .prefwin.pf.f.metric_f -text "FSM"             -variable tmp_rsel_f -onvalue "f" -offvalue "None" -anchor w
+  checkbutton .prefwin.pf.f.metric_a -text "Assertion"       -variable tmp_rsel_a -onvalue "a" -offvalue "None" -anchor w
+  checkbutton .prefwin.pf.f.metric_r -text "Race Conditions" -variable tmp_rsel_r -onvalue "r" -offvalue "None" -anchor w
 
   # Create covered/uncovered selection area
   label .prefwin.pf.f.cu_lbl -text "Coverage Type" -anchor w
-  radiobutton .prefwin.pf.f.cu_u -text "Uncovered" -variable tmp_rsel_cu -value ""   -anchor w
+  radiobutton .prefwin.pf.f.cu_u -text "Uncovered" -variable tmp_rsel_cu -value "None" -anchor w
   radiobutton .prefwin.pf.f.cu_c -text "Covered"   -variable tmp_rsel_cu -value "-c" -anchor w
 
   # Create empty module/instance suppression area
   checkbutton .prefwin.pf.f.sup_val -text "Suppress modules/instances from output if they\ncontain no coverage information" \
-                                    -variable tmp_rsel_sup -onvalue "-s" -offvalue "" -anchor w
+                                    -variable tmp_rsel_sup -onvalue "-s" -offvalue "None" -anchor w
 
   # Now pack all of the windows
   grid columnconfigure .prefwin.pf.f 2 -weight 1
@@ -1133,24 +1159,24 @@ proc create_report_pref {} {
   grid .prefwin.pf.f.width_lbl  -row 1  -column 2 -sticky news -pady 4
   grid .prefwin.pf.f.sup_val    -row 2  -column 0 -columnspan 3 -sticky nw -pady 4
   grid .prefwin.pf.f.sdv_lbl    -row 3  -column 0 -sticky news -pady 4
-  grid .prefwin.pf.f.mi_lbl     -row 3  -column 2 -sticky news -pady 4
+  grid .prefwin.pf.f.metric_lbl -row 3  -column 2 -sticky news -pady 4
   grid .prefwin.pf.f.sdv_s      -row 4  -column 0 -sticky news -padx 12
-  grid .prefwin.pf.f.mi_m       -row 4  -column 2 -sticky news -padx 12
+  grid .prefwin.pf.f.metric_l   -row 4  -column 2 -sticky news -padx 12
   grid .prefwin.pf.f.sdv_d      -row 5  -column 0 -sticky news -padx 12
-  grid .prefwin.pf.f.mi_i       -row 5  -column 2 -sticky news -padx 12
+  grid .prefwin.pf.f.metric_t   -row 5  -column 2 -sticky news -padx 12
   grid .prefwin.pf.f.sdv_v      -row 6  -column 0 -sticky news -padx 12
-  grid .prefwin.pf.f.metric_lbl -row 7  -column 0 -sticky news -pady 4
-  grid .prefwin.pf.f.cu_lbl     -row 7  -column 2 -sticky news -pady 4
-  grid .prefwin.pf.f.metric_l   -row 8  -column 0 -sticky news -padx 12
-  grid .prefwin.pf.f.cu_u       -row 8  -column 2 -sticky news -padx 12
-  grid .prefwin.pf.f.metric_t   -row 9  -column 0 -sticky news -padx 12
-  grid .prefwin.pf.f.cu_c       -row 9  -column 2 -sticky news -padx 12
-  grid .prefwin.pf.f.metric_m   -row 10 -column 0 -sticky news -padx 12
-  grid .prefwin.pf.f.metric_c   -row 11 -column 0 -sticky news -padx 12
-  grid .prefwin.pf.f.metric_f   -row 12 -column 0 -sticky news -padx 12
-  grid .prefwin.pf.f.metric_a   -row 13 -column 0 -sticky news -padx 12
-  grid .prefwin.pf.f.metric_r   -row 14 -column 0 -sticky news -padx 12
-
+  grid .prefwin.pf.f.metric_m   -row 6  -column 2 -sticky news -padx 12
+  grid .prefwin.pf.f.mi_lbl     -row 7  -column 0 -sticky news -pady 4
+  grid .prefwin.pf.f.metric_c   -row 7  -column 2 -sticky news -padx 12
+  grid .prefwin.pf.f.mi_m       -row 8  -column 0 -sticky news -padx 12
+  grid .prefwin.pf.f.metric_f   -row 8  -column 2 -sticky news -padx 12
+  grid .prefwin.pf.f.mi_i       -row 9  -column 0 -sticky news -padx 12
+  grid .prefwin.pf.f.metric_a   -row 9  -column 2 -sticky news -padx 12
+  grid .prefwin.pf.f.cu_lbl     -row 10 -column 0 -sticky news -pady 4
+  grid .prefwin.pf.f.metric_r   -row 10 -column 2 -sticky news -padx 12
+  grid .prefwin.pf.f.cu_u       -row 11 -column 0 -sticky news -padx 12
+  grid .prefwin.pf.f.cu_c       -row 12 -column 0 -sticky news -padx 12
+  
   pack .prefwin.pf.f -fill both
 
 }
@@ -1159,16 +1185,70 @@ proc create_report_pref {} {
 # values of each spinner box.
 proc save_spinners {index} {
 
-  global tmp_line_low_limit tmp_toggle_low_limit tmp_comb_low_limit tmp_fsm_low_limit tmp_assert_low_limit
+  global tmp_line_low_limit tmp_toggle_low_limit tmp_memory_low_limit tmp_comb_low_limit tmp_fsm_low_limit tmp_assert_low_limit
 
   if {$index == 1} {
 
-    set tmp_line_low_limit   [expr 100 - [.prefwin.pf.f.ls.l nearest 0]]
-    set tmp_toggle_low_limit [expr 100 - [.prefwin.pf.f.ts.l nearest 0]]
-    set tmp_comb_low_limit   [expr 100 - [.prefwin.pf.f.cs.l nearest 0]]
-    set tmp_fsm_low_limit    [expr 100 - [.prefwin.pf.f.fs.l nearest 0]]
-    set tmp_assert_low_limit [expr 100 - [.prefwin.pf.f.as.l nearest 0]]
+    if {[info tclversion] >= 8.4} {
+      set tmp_line_low_limit   [.prefwin.pf.f.ls get]
+      set tmp_toggle_low_limit [.prefwin.pf.f.ts get]
+      set tmp_memory_low_limit [.prefwin.pf.f.ms get]
+      set tmp_comb_low_limit   [.prefwin.pf.f.cs get]
+      set tmp_fsm_low_limit    [.prefwin.pf.f.fs get]
+      set tmp_assert_low_limit [.prefwin.pf.f.as get]
+    } else {
+      set tmp_line_low_limit   [expr 100 - [.prefwin.pf.f.ls.l nearest 0]]
+      set tmp_toggle_low_limit [expr 100 - [.prefwin.pf.f.ts.l nearest 0]]
+      set tmp_memory_low_limit [expr 100 - [.prefwin.pf.f.ms.l nearest 0]]
+      set tmp_comb_low_limit   [expr 100 - [.prefwin.pf.f.cs.l nearest 0]]
+      set tmp_fsm_low_limit    [expr 100 - [.prefwin.pf.f.fs.l nearest 0]]
+      set tmp_assert_low_limit [expr 100 - [.prefwin.pf.f.as.l nearest 0]]
+    }
 
+  }
+
+}
+
+# Function to verify the contents of an entry or spinbox entry (not currently used)
+proc validInteger {win event X oldX min max} {
+
+  # Make sure min<=max
+  if {$min > $max} {
+    set tmp $min; set min $max; set max $tmp
+  }
+
+  # Allow valid integers, empty strings, sign without number
+  # Reject Octal numbers, but allow a single "0"
+  # Which signes are allowed ?
+  if {($min <= 0) && ($max >= 0)} {   ;# positive & negative sign
+    set pattern {^[+-]?(()|0|([1-9][0-9]*))$}
+  } elseif {$max < 0} {               ;# negative sign
+    set pattern {^[-]?(()|0|([1-9][0-9]*))$}
+  } else {                            ;# positive sign
+    set pattern {^[+]?(()|0|([1-9][0-9]*))$}
+  }
+
+  # Weak integer checking: allow empty string, empty sign, reject octals
+  set weakCheck [regexp $pattern $X]
+
+  # if weak check fails, continue with old value
+  if {! $weakCheck} {set X $oldX}
+
+  # Strong integer checking with range
+  set strongCheck [expr {[string is int -strict $X] && ($X >= $min) && ($X <= $max)}]
+
+  switch $event {
+    key {
+      $win configure -bg [expr {$strongCheck ? "white" : "yellow"}]
+      return $weakCheck
+    }
+    focusout {
+      if {! $strongCheck} {$win configure -bg red}
+        return $strongCheck
+      }
+    default {
+      return 1
+    }
   }
 
 }

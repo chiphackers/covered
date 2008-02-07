@@ -406,12 +406,18 @@ proc create_report_selection_window {} {
   frame .rselwin.bf -relief raised -borderwidth 1
   button .rselwin.bf.create -width 10 -text "Create" -command {
     # Create command-line to report command of Covered
-    if {$rsel_wsel == 0} {
-      set w ""
-    } else {
-      set w "-w $rsel_width"
-    }
-    set cmd "-d $rsel_sdv $rsel_mi $rsel_cu -m $rsel_l$rsel_t$rsel_m$rsel_c$rsel_f$rsel_a$rsel_r $w -o $rsel_fname $rsel_sup $cdd_name"
+    if {$rsel_wsel == 0} { set w "" } else { set w "-w $rsel_width" }
+    if {$rsel_mi  == "None"} { set mi  "" } else { set mi  $rsel_mi }
+    if {$rsel_cu  == "None"} { set cu  "" } else { set cu  $rsel_cu }
+    if {$rsel_sup == "None"} { set sup "" } else { set sup $rsel_sup }
+    if {$rsel_l   == "None"} { set l   "" } else { set l   $rsel_l }
+    if {$rsel_t   == "None"} { set t   "" } else { set t   $rsel_t }
+    if {$rsel_m   == "None"} { set m   "" } else { set m   $rsel_m }
+    if {$rsel_c   == "None"} { set c   "" } else { set c   $rsel_c }
+    if {$rsel_f   == "None"} { set f   "" } else { set f   $rsel_f }
+    if {$rsel_a   == "None"} { set a   "" } else { set a   $rsel_a }
+    if {$rsel_r   == "None"} { set r   "" } else { set r   $rsel_r }
+    set cmd "-d $rsel_sdv $mi $cu -m $l$t$m$c$f$a$r $w -o $rsel_fname $sup $cdd_name"
     puts "cmd: $cmd"
     eval "tcl_func_generate_report $cmd"
     destroy .rselwin
@@ -455,12 +461,12 @@ proc update_report_select {} {
       v { set sdv_name "Verbose" }
     }
     switch -- $rsel_mi {
-      ""   { set mi_name "Module" }
-      "-i" { set mi_name "Instance" }
+      "None" { set mi_name "Module" }
+      "-i"   { set mi_name "Instance" }
     }
     switch -- $rsel_cu {
-      ""   { set cu_name "Uncovered" }
-      "-c" { set cu_name "Covered" }
+      "None" { set cu_name "Uncovered" }
+      "-c"   { set cu_name "Covered" }
     }
     if {$rsel_l == "l"} {
       lappend metric_list "Line"

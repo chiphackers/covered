@@ -54,6 +54,13 @@ AcceptableLinePercentage = 90
 
 AcceptableTogglePercentage = 90
 
+# Causes the summary color for a module/instance that has achieved a memory
+# coverage percentage greater than or equal to this value (but not 100%) to be
+# colored "yellow", indicating that the memory coverage can possibly be deemed
+# "good enough".  This value must be in the range of 0 - 100.
+
+AcceptableMemoryPercentage = 90
+
 # Causes the summary color for a module/instance that has achieved a combinational
 # logic coverage percentage greater than or equal to this value (but not 100%) to be
 # colored "yellow", indicating that the combinational logic coverage can possibly be
@@ -129,7 +136,7 @@ ReportAccumulateBy = module
 # 'l' (line), 't' (toggle), 'c' (combinational logic), 'f' (FSM), 'a' (assertion) and/or
 # 'r' (race condition).
 
-ReportShowMetrics = ltmcfar
+ReportShowMetrics = ltmcf
 
 # When an ASCII report is generated, this option specifies whether uncovered or covered
 # information will be displayed to the report file.  Legal values are 'uncovered' or
