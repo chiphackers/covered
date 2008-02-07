@@ -3,7 +3,7 @@
 .forecolor black
 .backcolor white
 .linkcolor #006800
-.buttons "back forw sep prev up next sep stop sep find search sep cont"
+.buttons "back forw sep prev up next sep stop sep find search sep cont sep incr decr"
 .controls "back forw sep prev up next sep cont"
 
 ; do not append list of subtopics to topic page

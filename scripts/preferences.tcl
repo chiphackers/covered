@@ -790,7 +790,7 @@ proc apply_preferences {} {
 
 }
 
-proc pref_set_button_color {fbutton bbutton type origcolor title} {
+proc pref_set_label_color {clabel type origcolor title} {
 
   # Get color from color chooser window
   set color [tk_chooseColor -initialcolor $origcolor -title $title]
@@ -800,11 +800,9 @@ proc pref_set_button_color {fbutton bbutton type origcolor title} {
 
     # Set foreground or background colors on buttons
     if {$type == "fg"} {
-      $fbutton configure -fg $color -activeforeground $color
-      $bbutton configure -fg $color -activeforeground $color
+      $clabel configure -fg $color
     } else {
-      $fbutton configure -bg $color -activebackground $color
-      $bbutton configure -bg $color -activebackground $color
+      $clabel configure -bg $color
     }
 
     return $color
@@ -822,30 +820,45 @@ proc percent_spinner {w showval} {
 
   global percent_range
 
-  # Create up arrow
-  set im(up) [image create bitmap -data "
-    #define i_width 5\n#define i_height 3\nstatic char i_bits[] = {\n4,14,31}"]
+  # If the Tk version is 8.5 or higher, the spinbox widget exists so make use of it
+  if {[info tclversion] >= 8.4} {
 
-  # Create down arrow
-  set im(dn) [image create bitmap -data "
-  #define i_width 5\n#define i_height 3\nstatic char i_bits[] = {\n31,14,4}"]
+    spinbox $w -from 0 -to 100 -increment 1.0 -width 3 -validate key -invcmd bell -vcmd {
+      puts %P
+      return [expr 0 <= %P] && [expr %P <= 100]
+    }
+    $w set $showval
 
-  # Create the spinner widgets
-  frame $w
-  listbox $w.l -height 1 -width 3 -listvar percent_range -relief flat
-  $w.l configure -selectbackground [$w.l cget -bg] -selectforeground [$w.l cget -fg]
-  frame $w.f
-  button $w.f.1 -image $im(up) -width 10 -height 4 -command [list $w.l yview scroll -1 unit]
-  button $w.f.2 -image $im(dn) -width 10 -height 4 -command [list $w.l yview scroll 1 unit]
+    return $w
 
-  # Pack the widgets
-  pack $w.f.1 $w.f.2
-  pack $w.l $w.f -side left -fill y
+  } else {
 
-  # Display current percentage value
-  $w.l see [expr 100 - $showval]
+    # Create up arrow
+    set im(up) [image create bitmap -data "
+      #define i_width 5\n#define i_height 3\nstatic char i_bits[] = {\n4,14,31}"]
 
-  return $w.l
+    # Create down arrow
+    set im(dn) [image create bitmap -data "
+    #define i_width 5\n#define i_height 3\nstatic char i_bits[] = {\n31,14,4}"]
+
+    # Create the spinner widgets
+    frame $w
+    listbox $w.l -height 1 -width 3 -listvar percent_range -relief flat
+    $w.l configure -selectbackground [$w.l cget -bg] -selectforeground [$w.l cget -fg]
+    frame $w.f
+    button $w.f.1 -image $im(up) -width 10 -height 4 -command [list $w.l yview scroll -1 unit]
+    button $w.f.2 -image $im(dn) -width 10 -height 4 -command [list $w.l yview scroll 1 unit]
+
+    # Pack the widgets
+    pack $w.f.1 $w.f.2
+    pack $w.l $w.f -side left -fill y
+
+    # Display current percentage value
+    $w.l see [expr 100 - $showval]
+
+    return $w.l
+
+  }
 
 }
 
@@ -892,56 +905,50 @@ proc create_color_pref {} {
   label .prefwin.pf.f.l -anchor w -text "Set Highlight Color"
 
   # Uncovered selectors
-  button .prefwin.pf.f.ufb -bg $tmp_uncov_bgColor -fg $tmp_uncov_fgColor \
-         -activebackground $tmp_uncov_bgColor -activeforeground $tmp_uncov_fgColor \
-         -text "Change Uncovered Foreground" -relief groove -command {
+  button .prefwin.pf.f.ufb -text "F" -relief groove -command {
     set tmp_uncov_fgColor \
-        [pref_set_button_color .prefwin.pf.f.ufb .prefwin.pf.f.ubb fg $tmp_uncov_fgColor "Choose Uncovered Foreground"]
+        [pref_set_label_color .prefwin.pf.f.ul fg $tmp_uncov_fgColor "Choose Uncovered Foreground"]
   }
-  button .prefwin.pf.f.ubb -bg $tmp_uncov_bgColor -fg $tmp_uncov_fgColor \
-         -activebackground $tmp_uncov_bgColor -activeforeground $tmp_uncov_fgColor \
-         -text "Change Uncovered Background" -relief groove -command {
+  button .prefwin.pf.f.ubb -text "B" -relief groove -command {
     set tmp_uncov_bgColor \
-        [pref_set_button_color .prefwin.pf.f.ufb .prefwin.pf.f.ubb bg $tmp_uncov_bgColor "Choose Uncovered Background"]
+        [pref_set_label_color .prefwin.pf.f.ul bg $tmp_uncov_bgColor "Choose Uncovered Background"]
   }
+  label .prefwin.pf.f.ul -bg $tmp_uncov_bgColor -fg $tmp_uncov_fgColor -text "Uncovered Sample"
 
   # Covered selectors
-  button .prefwin.pf.f.cfb -bg $tmp_cov_bgColor -fg $tmp_cov_fgColor \
-         -activebackground $tmp_cov_bgColor -activeforeground $tmp_cov_fgColor \
-         -text "Change Covered Foreground" -relief groove -command {
+  button .prefwin.pf.f.cfb -text "F" -relief groove -command {
     set tmp_cov_fgColor \
-        [pref_set_button_color .prefwin.pf.f.cfb .prefwin.pf.f.cbb fg $tmp_cov_fgColor "Choose Covered Foreground"]
+        [pref_set_label_color .prefwin.pf.f.cl fg $tmp_cov_fgColor "Choose Covered Foreground"]
   }
-  button .prefwin.pf.f.cbb -bg $tmp_cov_bgColor -fg $tmp_cov_fgColor \
-         -activebackground $tmp_cov_bgColor -activeforeground $tmp_cov_fgColor \
-         -text "Change Covered Background" -relief groove -command {
+  button .prefwin.pf.f.cbb -text "B" -relief groove -command {
     set tmp_cov_bgColor \
-        [pref_set_button_color .prefwin.pf.f.cfb .prefwin.pf.f.cbb bg $tmp_cov_bgColor "Choose Covered Background"]
+        [pref_set_label_color .prefwin.pf.f.cl bg $tmp_cov_bgColor "Choose Covered Background"]
   }
+  label .prefwin.pf.f.cl -bg $tmp_cov_bgColor -fg $tmp_cov_fgColor -text "Covered Sample"
 
   # Race selectors
-  button .prefwin.pf.f.rfb -bg $tmp_race_bgColor -fg $tmp_race_fgColor \
-         -activebackground $tmp_race_bgColor -activeforeground $tmp_race_fgColor \
-         -text "Change Race Condition Foreground" -relief groove -command {
+  button .prefwin.pf.f.rfb -text "F" -relief groove -command {
     set tmp_race_fgColor \
-        [pref_set_button_color .prefwin.pf.f.rfb .prefwin.pf.f.rbb fg $tmp_race_fgColor "Choose Race Condition Foreground"]
+        [pref_set_label_color .prefwin.pf.f.rl fg $tmp_race_fgColor "Choose Race Condition Foreground"]
   }
-  button .prefwin.pf.f.rbb -bg $tmp_race_bgColor -fg $tmp_race_fgColor \
-         -activebackground $tmp_race_bgColor -activeforeground $tmp_race_fgColor \
-         -text "Change Race Condition Background" -relief groove -command {
+  button .prefwin.pf.f.rbb -text "B" -relief groove -command {
     set tmp_race_bgColor \
-        [pref_set_button_color .prefwin.pf.f.rfb .prefwin.pf.f.rbb bg $tmp_race_bgColor "Choose Race Condition Background"]
+        [pref_set_label_color .prefwin.pf.f.rl bg $tmp_race_bgColor "Choose Race Condition Background"]
   }
+  label .prefwin.pf.f.rl -bg $tmp_race_bgColor -fg $tmp_race_fgColor -text "Race Condition Sample"
 
   # Pack the color widgets into the color frame
-  grid columnconfigure .prefwin.pf.f 1 -weight 1
-  grid .prefwin.pf.f.l   -row 0 -column 0 -sticky news -pady 4
-  grid .prefwin.pf.f.ufb -row 1 -column 0 -sticky news -padx 8
-  grid .prefwin.pf.f.ubb -row 2 -column 0 -sticky news -padx 8
-  grid .prefwin.pf.f.cfb -row 3 -column 0 -sticky news -padx 8
-  grid .prefwin.pf.f.cbb -row 4 -column 0 -sticky news -padx 8
-  grid .prefwin.pf.f.rfb -row 5 -column 0 -sticky news -padx 8
-  grid .prefwin.pf.f.rbb -row 6 -column 0 -sticky news -padx 8
+  grid columnconfigure .prefwin.pf.f 2 -weight 1
+  grid .prefwin.pf.f.l   -row 0 -column 0 -columnspan 3 -sticky news -pady 4
+  grid .prefwin.pf.f.ufb -row 1 -column 0 -sticky news -padx 4
+  grid .prefwin.pf.f.ubb -row 1 -column 1 -sticky news -padx 4
+  grid .prefwin.pf.f.ul  -row 1 -column 2 -sticky news -padx 4
+  grid .prefwin.pf.f.cfb -row 2 -column 0 -sticky news -padx 4
+  grid .prefwin.pf.f.cbb -row 2 -column 1 -sticky news -padx 4
+  grid .prefwin.pf.f.cl  -row 2 -column 2 -sticky news -padx 4
+  grid .prefwin.pf.f.rfb -row 3 -column 0 -sticky news -padx 4
+  grid .prefwin.pf.f.rbb -row 3 -column 1 -sticky news -padx 4
+  grid .prefwin.pf.f.rl  -row 3 -column 2 -sticky news -padx 4
 
   # Pack the frame
   pack .prefwin.pf.f -fill both
@@ -1010,40 +1017,40 @@ proc create_syntax_pref {} {
     synchronize_syntax_widgets $tmp_vlog_hl_mode
   }
 
-  label .prefwin.pf.f.ppcl -anchor e -text "Preprocessor keyword highlight color:"
-  button .prefwin.pf.f.ppcb -bg $vlog_hl_ppkeyword_color -activebackground $vlog_hl_ppkeyword_color -command {
+  label .prefwin.pf.f.ppcl -bg $vlog_hl_ppkeyword_color -anchor e -text "Preprocessor keyword highlight color:"
+  button .prefwin.pf.f.ppcb -text "Change" -command {
     set tmp_vlog_hl_ppkeyword_color \
-        [pref_set_button_color .prefwin.pf.f.ppcb .prefwin.pf.f.ppcb bg $tmp_vlog_hl_ppkeyword_color "Choose Preprocessor Keyword Highlight Color"]
+        [pref_set_label_color .prefwin.pf.f.ppcl bg $tmp_vlog_hl_ppkeyword_color "Choose Preprocessor Keyword Highlight Color"]
   }
 
-  label .prefwin.pf.f.pcl -anchor e -text "Keyword highlight color:"
-  button .prefwin.pf.f.pcb -bg $vlog_hl_keyword_color -activebackground $vlog_hl_keyword_color -command {
+  label .prefwin.pf.f.pcl -bg $vlog_hl_keyword_color -anchor e -text "Keyword highlight color:"
+  button .prefwin.pf.f.pcb -text "Change" -command {
     set tmp_vlog_hl_keyword_color \
-        [pref_set_button_color .prefwin.pf.f.pcb .prefwin.pf.f.pcb bg $tmp_vlog_hl_keyword_color "Choose Keyword Highlight Color"]
+        [pref_set_label_color .prefwin.pf.f.pcl bg $tmp_vlog_hl_keyword_color "Choose Keyword Highlight Color"]
   }
 
-  label .prefwin.pf.f.ccl -anchor e -text "Comment highlight color:"
-  button .prefwin.pf.f.ccb -bg $vlog_hl_comment_color -activebackground $vlog_hl_comment_color -command {
+  label .prefwin.pf.f.ccl -bg $vlog_hl_comment_color -anchor e -text "Comment highlight color:"
+  button .prefwin.pf.f.ccb -text "Change" -command {
     set tmp_vlog_hl_comment_color \
-        [pref_set_button_color .prefwin.pf.f.ccb .prefwin.pf.f.ccb bg $tmp_vlog_hl_comment_color "Choose Comment Highlight Color"]
+        [pref_set_label_color .prefwin.pf.f.ccl bg $tmp_vlog_hl_comment_color "Choose Comment Highlight Color"]
   }
 
-  label .prefwin.pf.f.vcl -anchor e -text "Value highlight color:"
-  button .prefwin.pf.f.vcb -bg $vlog_hl_value_color -activebackground $vlog_hl_value_color -command {
+  label .prefwin.pf.f.vcl -bg $vlog_hl_value_color -anchor e -text "Value highlight color:"
+  button .prefwin.pf.f.vcb -text "Change" -command {
     set tmp_vlog_hl_value_color \
-        [pref_set_button_color .prefwin.pf.f.vcb .prefwin.pf.f.vcb bg $tmp_vlog_hl_value_color "Choose Value Highlight Color"]
+        [pref_set_label_color .prefwin.pf.f.vcl bg $tmp_vlog_hl_value_color "Choose Value Highlight Color"]
   }
 
-  label .prefwin.pf.f.stcl -anchor e -text "String highlight color:"
-  button .prefwin.pf.f.stcb -bg $vlog_hl_string_color -activebackground $vlog_hl_string_color -command {
+  label .prefwin.pf.f.stcl -bg $vlog_hl_string_color -anchor e -text "String highlight color:"
+  button .prefwin.pf.f.stcb -text "Change" -command {
     set tmp_vlog_hl_string_color \
-        [pref_set_button_color .prefwin.pf.f.stcb .prefwin.pf.f.stcb bg $tmp_vlog_hl_string_color "Choose String Highlight Color"]
+        [pref_set_label_color .prefwin.pf.f.stcl bg $tmp_vlog_hl_string_color "Choose String Highlight Color"]
   }
 
-  label .prefwin.pf.f.sycl -anchor e -text "Symbol highlight color:"
-  button .prefwin.pf.f.sycb -bg $vlog_hl_symbol_color -activebackground $vlog_hl_symbol_color -command {
+  label .prefwin.pf.f.sycl -bg $vlog_hl_symobl_color -anchor e -text "Symbol highlight color:"
+  button .prefwin.pf.f.sycb -text "Change" -command {
     set tmp_vlog_hl_symbol_color \
-        [pref_set_button_color .prefwin.pf.f.sycb .prefwin.pf.f.sycb bg $tmp_vlog_hl_symbol_color "Choose Symbol Highlight Color"]
+        [pref_set_label_color .prefwin.pf.f.sycl bg $tmp_vlog_hl_symbol_color "Choose Symbol Highlight Color"]
   }
 
   grid columnconfigure .prefwin.pf.f 2 -weight 1

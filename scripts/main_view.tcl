@@ -135,10 +135,11 @@ proc main_view {} {
   # Set the window icon
   global HOME
   wm title . "Covered - Verilog Code Coverage Tool"
-  #wm iconphoto . "$HOME/scripts/cov_icon.png"
 
   # Set focus on the new window
-  # wm focus .
+  #wm attributes . -topmost true
+  wm focusmodel . active
+  raise .
 
 }
 

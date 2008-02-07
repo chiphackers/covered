@@ -241,9 +241,23 @@ proc menu_create {} {
   $thm add command -label "Manual" -state disabled -underline 0 -command {
     help_show_manual "contents"
   }
-  $thm add separator
-  $thm add command -label "About Covered" -underline 0 -command {
-    help_show_about
+  # Do not display the About information in the help menu if we are running on Mac OS X
+  if {[tk windowingsystem] ne "aqua"} {
+    $thm add separator
+    $thm add command -label "About Covered" -underline 0 -command {
+      help_show_about
+    }
+  }
+
+  # If we are running on Mac OS X, add items to the applications menu
+  if {[tk windowingsystem] eq "aqua"} {
+    set appl [menu $mb.apple -tearoff false]
+    $mb add cascade -menu $appl
+
+    $appl add command -label "About Covered" -command {
+      help_show_about
+    }
+    $appl add separator
   }
 
   # Enable the manual help entry if we have a browser to use
