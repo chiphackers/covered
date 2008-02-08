@@ -1,20 +1,20 @@
 #!/usr/bin/env wish
 
 # Include the necessary auxiliary files 
-source $HOME/scripts/menu_create.tcl
-source $HOME/scripts/cov_create.tcl
-source $HOME/scripts/process_file.tcl
-source $HOME/scripts/toggle.tcl
-source $HOME/scripts/comb.tcl
-source $HOME/scripts/fsm.tcl
-source $HOME/scripts/help_wrapper.tcl
-source $HOME/scripts/help.tcl
-source $HOME/scripts/summary.tcl
-source $HOME/scripts/preferences.tcl
-source $HOME/scripts/cdd_view.tcl
-source $HOME/scripts/assert.tcl
-source $HOME/scripts/verilog.tcl
-source $HOME/scripts/memory.tcl
+source [file join $HOME scripts menu_create.tcl]
+source [file join $HOME scripts cov_create.tcl]
+source [file join $HOME scripts process_file.tcl]
+source [file join $HOME scripts toggle.tcl]
+source [file join $HOME scripts comb.tcl]
+source [file join $HOME scripts fsm.tcl]
+source [file join $HOME scripts help_wrapper.tcl]
+source [file join $HOME scripts help.tcl]
+source [file join $HOME scripts summary.tcl]
+source [file join $HOME scripts preferences.tcl]
+source [file join $HOME scripts cdd_view.tcl]
+source [file join $HOME scripts assert.tcl]
+source [file join $HOME scripts verilog.tcl]
+source [file join $HOME scripts memory.tcl]
 
 set last_lb_index      ""
 set lwidth             -1 
@@ -140,6 +140,9 @@ proc main_view {} {
   #wm attributes . -topmost true
   wm focusmodel . active
   raise .
+
+  # Set icon
+  wm iconphoto . -default [image create photo -file [file join $HOME scripts cov_icon.gif]]
 
 }
 

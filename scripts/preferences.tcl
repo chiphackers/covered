@@ -63,12 +63,12 @@ proc read_coveredrc {} {
   if {[file exists ".coveredrc"] == 1} {
     set rc [open ".coveredrc" r]
     set rc_file_to_write ".coveredrc"
-  } elseif {[file exists "$USER_HOME/.coveredrc"] == 1} {
-    set rc [open "$USER_HOME/.coveredrc" r]
-    set rc_file_to_write "$USER_HOME/.coveredrc"
-  } elseif {[file exists "$HOME/.coveredrc"] == 1} {
-    set rc [open "$HOME/.coveredrc" r]
-    set rc_file_to_write "$USER_HOME/.coveredrc"
+  } elseif {[file exists [file join $USER_HOME .coveredrc]] == 1} {
+    set rc [open [file join $USER_HOME .coveredrc] r]
+    set rc_file_to_write [file join $USER_HOME .coveredrc]
+  } elseif {[file exists [file join $HOME .coveredrc]] == 1} {
+    set rc [open [file join $HOME .coveredrc] r]
+    set rc_file_to_write [file join $USER_HOME .coveredrc]
   } else {
     set rc -1
     set rc_file_to_write ""

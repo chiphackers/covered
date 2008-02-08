@@ -42,10 +42,13 @@ make clean
 /usr/local/share/covered/scripts/cdd_view.tcl
 /usr/local/share/covered/scripts/comb.tcl
 /usr/local/share/covered/scripts/cov_create.tcl
-/usr/local/share/covered/scripts/cov_icon.bmp
+/usr/local/share/covered/scripts/cov_icon.gif
 /usr/local/share/covered/scripts/fsm.tcl
 /usr/local/share/covered/scripts/help.tcl
+/usr/local/share/covered/scripts/help_tbl.tcl
+/usr/local/share/covered/scripts/help_wrapper.tcl
 /usr/local/share/covered/scripts/main_view.tcl
+/usr/local/share/covered/scripts/memory.tcl
 /usr/local/share/covered/scripts/menu_create.tcl
 /usr/local/share/covered/scripts/preferences.tcl
 /usr/local/share/covered/scripts/process_file.tcl

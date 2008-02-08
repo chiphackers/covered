@@ -14,15 +14,17 @@ proc help_show_about {} {
     toplevel .helpabout -background white
     wm title .helpabout "About Covered"
 
-    label .helpabout.i -background white -image [image create photo -file "$HOME/scripts/banner.gif"]
-    label .helpabout.l -background white -justify left -text "Version:      $VERSION\nAuthor:       Trevor Williams\nEmail:         phase1geo@gmail.com\nHomepage:  http://covered.sourceforge.net\n\nFreely distributable under the GPL license"
     button .helpabout.b -text "Close" -command {
       destroy .helpabout
     }
+    label .helpabout.i -background white -image [image create photo -file [file join $HOME scripts banner.gif]]
+    label .helpabout.l -background white -justify left -text "Version:      $VERSION\nAuthor:       Trevor Williams\nEmail:         phase1geo@gmail.com\nHomepage:  http://covered.sourceforge.net\n\nFreely distributable under the GPL license"
 
     pack .helpabout.i -pady 10
     pack .helpabout.l -padx 10 -pady 10
     pack .helpabout.b -pady 10
+
+    focus -force .helpabout.b
 
   } 
 
