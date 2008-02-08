@@ -745,19 +745,27 @@ bool funit_db_merge( func_unit* base, FILE* file, bool same ) { PROFILE(FUNIT_DB
   curr_base_exp = base->exp_head;
   while( (curr_base_exp != NULL) && retval ) {
     if( util_readline( file, &curr_line ) ) {
-      if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
-        rest_line = curr_line + chars_read;
-        if( type == DB_TYPE_EXPRESSION ) {
-          retval = expression_db_merge( curr_base_exp->exp, &rest_line, same );
+      Try {
+        if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
+          rest_line = curr_line + chars_read;
+          if( type == DB_TYPE_EXPRESSION ) {
+            expression_db_merge( curr_base_exp->exp, &rest_line, same );
+          } else {
+            print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
+            Throw 0;
+          }
         } else {
-          retval = FALSE;
+          print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
+          Throw 0;
         }
-      } else {
-        retval = FALSE;
+      } Catch_anonymous {
+        free_safe( curr_line );
+        Throw 0;
       }
       free_safe( curr_line );
     } else {
-      retval = FALSE;
+      print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
+      Throw 0;
     }
     curr_base_exp = curr_base_exp->next;
   }
@@ -766,19 +774,27 @@ bool funit_db_merge( func_unit* base, FILE* file, bool same ) { PROFILE(FUNIT_DB
   curr_base_sig = base->sig_head;
   while( (curr_base_sig != NULL) && retval ) {
     if( util_readline( file, &curr_line ) ) {
-      if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
-        rest_line = curr_line + chars_read;
-        if( type == DB_TYPE_SIGNAL ) {
-          retval = vsignal_db_merge( curr_base_sig->sig, &rest_line, same );
+      Try {
+        if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
+          rest_line = curr_line + chars_read;
+          if( type == DB_TYPE_SIGNAL ) {
+            vsignal_db_merge( curr_base_sig->sig, &rest_line, same );
+          } else {
+            print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
+            Throw 0;
+          }
         } else {
-          retval = FALSE;
+          print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
+          Throw 0;
         }
-      } else {
-        retval = FALSE;
+      } Catch_anonymous {
+        free_safe( curr_line );
+        Throw 0;
       }
       free_safe( curr_line );
     } else {
-      retval = FALSE;
+      print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
+      Throw 0;
     }
     curr_base_sig = curr_base_sig->next;
   }
@@ -1174,6 +1190,10 @@ void funit_dealloc( func_unit* funit ) { PROFILE(FUNIT_DEALLOC);
 
 /*
  $Log$
+ Revision 1.88  2008/01/16 23:10:30  phase1geo
+ More splint updates.  Code is now warning/error free with current version
+ of run_splint.  Still have regression issues to debug.
+
  Revision 1.87  2008/01/16 06:40:37  phase1geo
  More splint updates.
 

@@ -37,7 +37,7 @@ bool db_check_for_top_module();
 bool db_write( char* file, bool parse_mode, bool report_save );
 
 /*! \brief Reads contents of database file and stores into internal lists. */
-bool db_read( char* file, int read_mode );
+void db_read( char* file, int read_mode );
 
 /*! \brief Returns a scaled version of the given value to the timescale for the given functional unit. */
 uint64 db_scale_to_precision( uint64 value, func_unit* funit );
@@ -192,6 +192,9 @@ void db_do_timestep( uint64 time, bool final );
 
 /*
  $Log$
+ Revision 1.82  2008/01/30 05:51:50  phase1geo
+ Fixing doxygen errors.  Updated parameter list syntax to make it more readable.
+
  Revision 1.81  2008/01/15 23:01:14  phase1geo
  Continuing to make splint updates (not doing any memory checking at this point).
 

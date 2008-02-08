@@ -44,7 +44,7 @@ void vsignal_db_write( vsignal* sig, FILE* file );
 bool vsignal_db_read( char** line, /*@null@*/func_unit* curr_funit );
 
 /*! \brief Reads and merges two vsignals, placing result into base vsignal. */
-bool vsignal_db_merge( vsignal* base, char** line, bool same );
+void vsignal_db_merge( vsignal* base, char** line, bool same );
 
 /*! \brief Propagates specified signal information to rest of design. */
 void vsignal_propagate( vsignal* sig, const sim_time* time );
@@ -73,6 +73,10 @@ void vsignal_dealloc( vsignal* sig );
 
 /*
  $Log$
+ Revision 1.24  2008/02/01 06:37:09  phase1geo
+ Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
+ using pragma excludes (this code is not fully working yet).  More to be done.
+
  Revision 1.23  2008/01/10 04:59:05  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 

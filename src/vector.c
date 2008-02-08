@@ -399,17 +399,14 @@ bool vector_db_read( vector** vec, char** line ) { PROFILE(VECTOR_DB_READ);
  \param line  Pointer to line to parse for vector information.
  \param same  Specifies if vector to merge needs to be exactly the same as the existing vector.
 
- \return Returns TRUE if parsing successful; otherwise, returns FALSE.
-
  Parses current file line for vector information and performs vector merge of 
  base vector and read vector information.  If the vectors are found to be different
  (width is not equal), an error message is sent to the user and the
  program is halted.  If the vectors are found to be equivalents, the merge is
  performed on the vector nibbles.
 */
-bool vector_db_merge( vector* base, char** line, bool same ) { PROFILE(VECTOR_DB_MERGE);
+void vector_db_merge( vector* base, char** line, bool same ) { PROFILE(VECTOR_DB_MERGE);
 
-  bool         retval = TRUE;   /* Return value of this function */
   int          width;           /* Width of read vector */
   int          suppl;           /* Supplemental value of vector */
   int          chars_read;      /* Number of characters read */
@@ -428,13 +425,13 @@ bool vector_db_merge( vector* base, char** line, bool same ) { PROFILE(VECTOR_DB
       if( same ) {
         print_output( "Attempting to merge databases derived from different designs.  Unable to merge",
                       FATAL, __FILE__, __LINE__ );
-        exit( EXIT_FAILURE );
+        Throw 0;
       }
 
     } else {
 
       i = 0;
-      while( (i < width) && retval ) {
+      while( i < width ) {
         if( sscanf( *line, "%x%n", &value, &chars_read ) == 1 ) {
           *line += chars_read;
           vector_uint_to_nibbles( value, nibs );
@@ -460,7 +457,8 @@ bool vector_db_merge( vector* base, char** line, bool same ) { PROFILE(VECTOR_DB
               break;
           }
         } else {
-          retval = FALSE;
+          print_output( "Unable to parse vector line from database file.  Unable to merge.", FATAL, __FILE__, __LINE__ );
+          Throw 0;
         }
         i += 4;
       }
@@ -469,13 +467,12 @@ bool vector_db_merge( vector* base, char** line, bool same ) { PROFILE(VECTOR_DB
 
   } else {
 
-    retval = FALSE;
+    print_output( "Unable to parse vector line from database file.  Unable to merge.", FATAL, __FILE__, __LINE__ );
+    Throw 0;
 
   }
 
   PROFILE_END;
-
-  return( retval );
 
 }
 
@@ -2418,6 +2415,9 @@ void vector_dealloc( vector* vec ) { PROFILE(VECTOR_DEALLOC);
 
 /*
  $Log$
+ Revision 1.111  2008/01/30 05:51:51  phase1geo
+ Fixing doxygen errors.  Updated parameter list syntax to make it more readable.
+
  Revision 1.110  2008/01/22 03:53:18  phase1geo
  Fixing bug 1876417.  Removing obsolete code in expr.c.
 

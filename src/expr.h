@@ -90,7 +90,7 @@ void expression_db_write_tree( expression* root, FILE* file );
 bool expression_db_read( char** line, /*@null@*/func_unit* curr_mod, bool eval );
 
 /*! \brief Reads and merges two expressions and stores result in base expression. */
-bool expression_db_merge( expression* base, char** line, bool same );
+void expression_db_merge( expression* base, char** line, bool same );
 
 /*! \brief Returns user-readable name of specified expression operation. */
 const char* expression_string_op( int op );
@@ -128,6 +128,10 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.64  2008/02/01 06:37:08  phase1geo
+ Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
+ using pragma excludes (this code is not fully working yet).  More to be done.
+
  Revision 1.63  2008/01/15 23:01:14  phase1geo
  Continuing to make splint updates (not doing any memory checking at this point).
 

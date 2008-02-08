@@ -740,25 +740,21 @@ static void report_generate( FILE* ofile ) { PROFILE(REPORT_GENERATE);
  Reads in specified CDD file and gathers functional unit statistics to get ready for GUI
  interaction with this CDD file. 
 */
-bool report_read_cdd_and_ready( char* ifile, int read_mode ) { PROFILE(REPORT_READ_CDD_AND_READY);
-
-  bool retval = TRUE;  /* Return value for this function */
+void report_read_cdd_and_ready( char* ifile, int read_mode ) { PROFILE(REPORT_READ_CDD_AND_READY);
 
   /* Open database file for reading */
   if( (ifile == NULL) || (ifile[0] == '\0') ) {
 
-    retval = FALSE;
+    print_output( "CDD file name was not specified for reading", FATAL, __FILE__, __LINE__ );
+    Throw 0;
 
   } else {
 
-    if( (retval = db_read( ifile, read_mode )) ) {
-      bind_perform( TRUE, 0 );
-      report_gather_funit_stats( funit_head );
-    }
+    db_read( ifile, read_mode );
+    bind_perform( TRUE, 0 );
+    report_gather_funit_stats( funit_head );
 
   }
-
-  return( retval );
 
 }
 
@@ -834,7 +830,7 @@ int command_report( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
       } else {
 
         /* Read in CDD file */
-        if( db_read( input_db, (report_instance ? READ_MODE_REPORT_NO_MERGE : READ_MODE_REPORT_MOD_MERGE) ) ) {
+        db_read( input_db, (report_instance ? READ_MODE_REPORT_NO_MERGE : READ_MODE_REPORT_MOD_MERGE) );  FOOBAR
 
           unsigned int rv;
 
@@ -960,6 +956,11 @@ int command_report( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
 /*
  $Log$
+ Revision 1.93  2008/02/06 00:06:04  phase1geo
+ Changing metric mode selection from radio buttons to a tk_optionMenu widget.
+ Also attempted to fix issue with bad Tcl/Tk code being read in via report
+ command.  Still some work to do here, I believe.
+
  Revision 1.92  2008/02/01 06:37:08  phase1geo
  Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
  using pragma excludes (this code is not fully working yet).  More to be done.

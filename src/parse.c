@@ -94,79 +94,84 @@ int parse_readline( FILE* file, char* line, int size ) { PROFILE(PARSE_READLINE)
 */
 void parse_design( char* top, char* output_db ) { PROFILE(PARSE_DESIGN);
 
-  (void)str_link_add( strdup_safe( top ), &modlist_head, &modlist_tail );
+  Try {
 
-  if( use_files_head != NULL ) {
+    (void)str_link_add( strdup_safe( top ), &modlist_head, &modlist_tail );
 
-    /* Initialize lexer with first file */
-    reset_lexer( use_files_head );
+    if( use_files_head != NULL ) {
 
-    /* Starting parser */
-    if( (VLparse() != 0) || (error_count > 0) ) {
-      print_output( "Error in parsing design", FATAL, __FILE__, __LINE__ );
-      exit( EXIT_FAILURE );
-    }
+      /* Initialize lexer with first file */
+      reset_lexer( use_files_head );
 
-    /* Deallocate any memory in curr_range variable */
-    parser_dealloc_sig_range( &curr_urange, FALSE );
-    parser_dealloc_sig_range( &curr_prange, FALSE );
+      /* Starting parser */
+      if( (VLparse() != 0) || (error_count > 0) ) {
+        print_output( "Error in parsing design", FATAL, __FILE__, __LINE__ );
+        Throw 0;
+      }
+
+      /* Deallocate any memory in curr_range variable */
+      parser_dealloc_sig_range( &curr_urange, FALSE );
+      parser_dealloc_sig_range( &curr_prange, FALSE );
 
 #ifdef DEBUG_MODE
-    print_output( "========  Completed design parsing  ========\n", DEBUG, __FILE__, __LINE__ );
+      print_output( "========  Completed design parsing  ========\n", DEBUG, __FILE__, __LINE__ );
 #endif
 
-    /* Check to make sure that the -t and -i options were specified correctly */
-    if( db_check_for_top_module() ) {
-      if( instance_specified ) {
-        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Module specified with -t option (%s) is a top-level module.", top_module );
-        assert( rv < USER_MSG_LENGTH );
-        print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        print_output( "The -i option should not have been specified", FATAL_WRAP, __FILE__, __LINE__ );
-        exit( EXIT_FAILURE );
+      /* Check to make sure that the -t and -i options were specified correctly */
+      if( db_check_for_top_module() ) {
+        if( instance_specified ) {
+          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Module specified with -t option (%s) is a top-level module.", top_module );
+          assert( rv < USER_MSG_LENGTH );
+          print_output( user_msg, FATAL, __FILE__, __LINE__ );
+          print_output( "The -i option should not have been specified", FATAL_WRAP, __FILE__, __LINE__ );
+          Throw 0;
+        }
+      } else {
+        if( !instance_specified ) {
+          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Module specified with -t option (%s) is not a top-level module.", top_module );
+          assert( rv < USER_MSG_LENGTH );
+          print_output( user_msg, FATAL, __FILE__, __LINE__ );
+          print_output( "The -i option must be specified to provide the hierarchy to the module specified with", FATAL_WRAP, __FILE__, __LINE__ );
+          print_output( "the -t option.", FATAL_WRAP, __FILE__, __LINE__ );
+          Throw 0;
+        }
       }
-    } else {
-      if( !instance_specified ) {
-        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Module specified with -t option (%s) is not a top-level module.", top_module );
-        assert( rv < USER_MSG_LENGTH );
-        print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        print_output( "The -i option must be specified to provide the hierarchy to the module specified with", FATAL_WRAP, __FILE__, __LINE__ );
-        print_output( "the -t option.", FATAL_WRAP, __FILE__, __LINE__ );
-        exit( EXIT_FAILURE );
-      }
-    }
 
-    /* Perform all signal/expression binding */
-    bind_perform( FALSE, 0 );
-    fsm_var_bind();
+      /* Perform all signal/expression binding */
+      bind_perform( FALSE, 0 );
+      fsm_var_bind();
   
-    /* Perform race condition checking */
-    if( flag_check_races ) {
-      print_output( "\nChecking for race conditions...", NORMAL, __FILE__, __LINE__ );
-      race_check_modules();
-    } else {
-      print_output( "The -rI option was specified in the command-line, causing Covered to skip race condition", WARNING, __FILE__, __LINE__ );
-      print_output( "checking; therefore, coverage information may not be accurate if actual race conditions", WARNING_WRAP, __FILE__, __LINE__ );
-      print_output( "do exist.  Proceed at your own risk!", WARNING_WRAP, __FILE__, __LINE__ );
-    }
+      /* Perform race condition checking */
+      if( flag_check_races ) {
+        print_output( "\nChecking for race conditions...", NORMAL, __FILE__, __LINE__ );
+        race_check_modules();
+      } else {
+        print_output( "The -rI option was specified in the command-line, causing Covered to skip race condition", WARNING, __FILE__, __LINE__ );
+        print_output( "checking; therefore, coverage information may not be accurate if actual race conditions", WARNING_WRAP, __FILE__, __LINE__ );
+        print_output( "do exist.  Proceed at your own risk!", WARNING_WRAP, __FILE__, __LINE__ );
+      }
 
-    /* Remove all statement blocks that cannot be considered for coverage */
-    stmt_blk_remove();
+      /* Remove all statement blocks that cannot be considered for coverage */
+      stmt_blk_remove();
 
 #ifdef DEBUG_MODE
-    print_output( "========  Completed race condition checking  ========\n", DEBUG, __FILE__, __LINE__ );
+      print_output( "========  Completed race condition checking  ========\n", DEBUG, __FILE__, __LINE__ );
 #endif
 
-  } else {
+    } else {
 
-    print_output( "No Verilog input files specified", FATAL, __FILE__, __LINE__ );
-    exit( EXIT_FAILURE );
+      print_output( "No Verilog input files specified", FATAL, __FILE__, __LINE__ );
+      Throw 0;
 
-  }
+    }
 
-  /* Write contents to baseline database file. */
-  if( !db_write( output_db, TRUE, FALSE ) ) {
-    print_output( "Unable to write database file", FATAL, __FILE__, __LINE__ );
-    exit( EXIT_FAILURE );
+    /* Write contents to baseline database file. */
+    db_write( output_db, TRUE, FALSE );
+
+  } Catch_anonymous {
+    sim_dealloc();
+    db_close();
+    Throw 0;
   }
 
   /* Deallocate simulator stuff */
@@ -198,62 +203,63 @@ void parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) { PROF
 
   assert( dump_file != NULL );
 
-#ifdef DEBUG_MODE
-  {
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "========  Reading in database %s  ========\n", db );
-    assert( rv < USER_MSG_LENGTH );
-    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
-  }
-#endif
-
-  /* Initialize all global information variables */
-  info_initialize();
-
-  /* Read in contents of specified database file */
-  if( !db_read( db, READ_MODE_MERGE_NO_MERGE ) ) {
-    print_output( "Unable to read database file", FATAL, __FILE__, __LINE__ );
-    exit( EXIT_FAILURE );
-  }
-  
-  /* Bind expressions to signals/functional units */
-  bind_perform( TRUE, 0 );
-
-  /* Add static values to simulator */
-  sim_initialize();
+  Try {
 
 #ifdef DEBUG_MODE
-  {
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "========  Reading in VCD dumpfile %s  ========\n", dump_file );
-    assert( rv < USER_MSG_LENGTH );
-    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
-  }
+    {
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "========  Reading in database %s  ========\n", db );
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    }
+#endif
+
+    /* Initialize all global information variables */
+    info_initialize();
+
+    /* Read in contents of specified database file */
+    db_read( db, READ_MODE_MERGE_NO_MERGE );
+  
+    /* Bind expressions to signals/functional units */
+    bind_perform( TRUE, 0 );
+
+    /* Add static values to simulator */
+    sim_initialize();
+
+#ifdef DEBUG_MODE
+    {
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "========  Reading in VCD dumpfile %s  ========\n", dump_file );
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    }
 #endif
   
-  /* Perform the parse */
-  switch( dump_mode ) {
-    case DUMP_FMT_VCD :  vcd_parse( dump_file );  break;
-    case DUMP_FMT_LXT :  lxt_parse( dump_file );  break;
-    default           :  assert( (dump_mode == DUMP_FMT_VCD) || (dump_mode == DUMP_FMT_LXT) );
-  }
+    /* Perform the parse */
+    switch( dump_mode ) {
+      case DUMP_FMT_VCD :  vcd_parse( dump_file );  break;
+      case DUMP_FMT_LXT :  lxt_parse( dump_file );  break;
+      default           :  assert( (dump_mode == DUMP_FMT_VCD) || (dump_mode == DUMP_FMT_LXT) );
+    }
     
-  /* Flush any pending statement trees that are waiting for delay */
-  db_do_timestep( 0, TRUE );
+    /* Flush any pending statement trees that are waiting for delay */
+    db_do_timestep( 0, TRUE );
 
 #ifdef DEBUG_MODE
-  {
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "========  Writing database %s  ========\n", db );
-    assert( rv < USER_MSG_LENGTH );
-    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
-  }
+    {
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "========  Writing database %s  ========\n", db );
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    }
 #endif
 
-  /* Indicate that this CDD contains scored information */
-  info_suppl.part.scored = 1;
+    /* Indicate that this CDD contains scored information */
+    info_suppl.part.scored = 1;
 
-  /* Write contents to database file */
-  if( !db_write( db, FALSE, FALSE ) ) {
-    print_output( "Unable to write database file", FATAL, __FILE__, __LINE__ );
-    exit( EXIT_FAILURE );
+    /* Write contents to database file */
+    db_write( db, FALSE, FALSE );
+
+  } Catch_anonymous {
+    sim_dealloc();
+    Throw 0;
   }
 
   /* Deallocate simulator stuff */
@@ -263,6 +269,10 @@ void parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) { PROF
 
 /*
  $Log$
+ Revision 1.55  2008/01/16 23:10:31  phase1geo
+ More splint updates.  Code is now warning/error free with current version
+ of run_splint.  Still have regression issues to debug.
+
  Revision 1.54  2008/01/08 21:13:08  phase1geo
  Completed -weak splint run.  Full regressions pass.
 

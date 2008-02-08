@@ -972,22 +972,21 @@ static bool score_parse_args( int argc, int last_arg, const char** argv ) { PROF
  \param last_arg  Index of last parsed argument in list.
  \param argv      Arguments from command-line to parse.
 
- \return Returns EXIT_SUCCESS if scoring is successful; otherwise, returns EXIT_FAILURE.
-
  Performs score command functionality.
 */
-int command_score( int argc, int last_arg, const char** argv ) { PROFILE(COMMAND_SCORE);
+void command_score( int argc, int last_arg, const char** argv ) { PROFILE(COMMAND_SCORE);
 
-  int          retval = EXIT_SUCCESS;  /* Return value for this function */
-  unsigned int rv;                     /* Return value from snprintf calls */
+  unsigned int rv;  /* Return value from snprintf calls */
 
   /* Output header information */
   rv = snprintf( user_msg, USER_MSG_LENGTH, COVERED_HEADER );
   assert( rv < USER_MSG_LENGTH );
   print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 
-  /* Parse score command-line */
-  if( score_parse_args( argc, last_arg, argv ) ) {
+  Try {
+
+    /* Parse score command-line */
+    score_parse_args( argc, last_arg, argv );
 
     if( output_db == NULL ) {
       output_db = strdup_safe( DFLT_OUTPUT_CDD );
@@ -1047,40 +1046,43 @@ int command_score( int argc, int last_arg, const char** argv ) { PROFILE(COMMAND
       perf_output_inst_report( stdout );
     }
 
-    /* Close database */
-    db_close();
+  } Catch_anonymous {}
 
-    /* Deallocate memory for search engine */
-    search_free_lists();
+  /* Close database */
+  db_close();
 
-    /* Deallocate memory for defparams */
-    defparam_dealloc();
+  /* Deallocate memory for search engine */
+  search_free_lists();
 
-    free_safe( output_db );
-    free_safe( dump_file );
-    free_safe( vpi_file );
-    free_safe( top_module );
-    free_safe( ppfilename );
-    ppfilename = NULL;
+  /* Deallocate memory for defparams */
+  defparam_dealloc();
 
-    free_safe( directive_filename );
-    free_safe( top_instance );
-    free_safe( vpi_timescale );
+  free_safe( output_db );
+  free_safe( dump_file );
+  free_safe( vpi_file );
+  free_safe( top_module );
+  free_safe( ppfilename );
+  ppfilename = NULL;
 
-  } else {
-
-    retval = EXIT_FAILURE;
-
-  }
+  free_safe( directive_filename );
+  free_safe( top_instance );
+  free_safe( vpi_timescale );
 
   PROFILE_END;
-
-  return( retval );
 
 }
 
 /*
  $Log$
+ Revision 1.110  2008/02/01 07:03:20  phase1geo
+ Fixing bugs in pragma exclusion code.  Added diagnostics to regression suite
+ to verify that we correctly exclude/include signals when pragmas are set
+ around a register instantiation and the -ep is present/not present, respectively.
+ Full regression passes at this point.  Fixed bug in vsignal.c where the excluded
+ bit was getting lost when a CDD file was read back in.  Also fixed bug in toggle
+ coverage reporting where a 1 -> 0 bit transition was not getting excluded when
+ the excluded bit was set for a signal.
+
  Revision 1.109  2008/02/01 06:37:08  phase1geo
  Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
  using pragma excludes (this code is not fully working yet).  More to be done.

@@ -40,6 +40,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include "cexcept.h"
 
 /*!
  Specifies current version of the Covered utility.
@@ -2517,9 +2518,19 @@ struct profiler_s {
   bool   timed;                      /*!< Specifies if the function should be timed or not */
 };
 
+/*!
+ This will define the exception type that gets thrown (Covered does not care about this value)
+*/
+define_exception_type(int);
+
+extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.280  2008/02/01 06:37:07  phase1geo
+ Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
+ using pragma excludes (this code is not fully working yet).  More to be done.
+
  Revision 1.279  2008/01/18 05:03:14  phase1geo
  Fixing bug in CLI that didn't stop the CLI prompt at the right location.
  Added "goto" command to allow us to simply simulate to a specific timestep.

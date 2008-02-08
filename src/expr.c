@@ -1419,8 +1419,6 @@ bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) { PROFI
  \param line  Pointer to CDD line to parse.
  \param same  Specifies if expression to be merged needs to be exactly the same as the existing expression.
 
- \return Returns TRUE if parse and merge was sucessful; otherwise, returns FALSE.
-
  Parses specified line for expression information and merges contents into the
  base expression.  If the two expressions given are not the same (IDs, op,
  and/or line position differ) we know that the database files being merged 
@@ -1428,9 +1426,8 @@ bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) { PROFI
  to the user in this case.  If both expressions are the same, perform the 
  merge.
 */
-bool expression_db_merge( expression* base, char** line, bool same ) { PROFILE(EXPRESSION_DB_MERGE);
+void expression_db_merge( expression* base, char** line, bool same ) { PROFILE(EXPRESSION_DB_MERGE);
 
-  bool         retval = TRUE;  /* Return value for this function */
   int          id;             /* Expression ID field */
   int          linenum;        /* Expression line number */
   unsigned int column;         /* Column information */
@@ -1451,7 +1448,7 @@ bool expression_db_merge( expression* base, char** line, bool same ) { PROFILE(E
 
       print_output( "Attempting to merge databases derived from different designs.  Unable to merge",
                     FATAL, __FILE__, __LINE__ );
-      exit( EXIT_FAILURE );
+      Throw 0;
 
     } else {
 
@@ -1466,7 +1463,7 @@ bool expression_db_merge( expression* base, char** line, bool same ) { PROFILE(E
       if( ESUPPL_OWNS_VEC( suppl ) ) {
 
         /* Merge expression vectors */
-        retval = vector_db_merge( base->value, line, same );
+        vector_db_merge( base->value, line, same );
 
       }
 
@@ -1474,13 +1471,12 @@ bool expression_db_merge( expression* base, char** line, bool same ) { PROFILE(E
 
   } else {
 
-    retval = FALSE;
+    print_output( "Unable to parse expression line in database.  Unable to merge.", FATAL, __FILE__, __LINE__ );
+    Throw 0;
 
   }
 
   PROFILE_END;
-
-  return( retval );
 
 }
 
@@ -4283,6 +4279,10 @@ void expression_dealloc( expression* expr, bool exp_only ) { PROFILE(EXPRESSION_
 
 /* 
  $Log$
+ Revision 1.280  2008/02/01 06:37:07  phase1geo
+ Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
+ using pragma excludes (this code is not fully working yet).  More to be done.
+
  Revision 1.279  2008/01/23 20:48:03  phase1geo
  Fixing bug 1878134 and adding new diagnostics to regression suite to verify
  its behavior.  Full regressions pass.

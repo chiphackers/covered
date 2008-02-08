@@ -297,17 +297,14 @@ bool db_write( char* file, bool parse_mode, bool report_save ) { PROFILE(DB_WRIT
                    - 2 = Instance, merge, merge command
                    - 3 = Module, merge, report command
 
- \return Returns TRUE if database read was successful; otherwise, returns FALSE.
-
  Opens specified database file for reading.  Reads in each line from the
  file examining its contents and creating the appropriate type to store
  the specified information and stores it into the appropriate internal
  list.  If there are any problems opening the file for reading or parsing
  errors, returns FALSE; otherwise, returns TRUE.
 */
-bool db_read( char* file, int read_mode ) { PROFILE(DB_READ);
+void db_read( char* file, int read_mode ) { PROFILE(DB_READ);
 
-  bool         retval = TRUE;        /* Return value for this function */
   FILE*        db_handle;            /* Pointer to database file being read */
   int          type;                 /* Specifies object type */
   func_unit    tmpfunit;             /* Temporary functional unit pointer */
@@ -340,156 +337,173 @@ bool db_read( char* file, int read_mode ) { PROFILE(DB_READ);
 
   if( (db_handle = fopen( file, "r" )) != NULL ) {
 
-    unsigned int rv;
+    Try {
 
-    while( util_readline( db_handle, &curr_line ) && retval ) {
+      unsigned int rv;
 
-      if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
+      while( util_readline( db_handle, &curr_line ) ) {
 
-        rest_line = curr_line + chars_read;
+        Try {
 
-        if( type == DB_TYPE_INFO ) {
+          if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
+
+            rest_line = curr_line + chars_read;
+
+            if( type == DB_TYPE_INFO ) {
           
-          /* Parse rest of line for general info */
-          retval = info_db_read( &rest_line );
-
-          /* If we are in report mode and this CDD file has not been written bow out now */
-          if( (info_suppl.part.scored == 0) && 
-              ((read_mode == READ_MODE_REPORT_NO_MERGE) ||
-               (read_mode == READ_MODE_REPORT_MOD_MERGE)) ) {
-            print_output( "Attempting to generate report on non-scored design.  Not supported.", FATAL, __FILE__, __LINE__ );
-            retval = FALSE;
-          }
+              /* Parse rest of line for general info */
+              info_db_read( &rest_line );
+  
+              /* If we are in report mode and this CDD file has not been written bow out now */
+              if( (info_suppl.part.scored == 0) && 
+                  ((read_mode == READ_MODE_REPORT_NO_MERGE) ||
+                   (read_mode == READ_MODE_REPORT_MOD_MERGE)) ) {
+                print_output( "Attempting to generate report on non-scored design.  Not supported.", FATAL, __FILE__, __LINE__ );
+                Throw 0;
+              }
           
-        } else if( type == DB_TYPE_SCORE_ARGS ) {
+            } else if( type == DB_TYPE_SCORE_ARGS ) {
           
-          assert( !merge_mode );
-          
-          /* Parse rest of line for argument info */
-          retval = args_db_read( &rest_line );
-          
-        } else if( type == DB_TYPE_SIGNAL ) {
+              assert( !merge_mode );
+         
+              /* Parse rest of line for argument info */
+              args_db_read( &rest_line );
+            
+            } else if( type == DB_TYPE_SIGNAL ) {
+  
+              assert( !merge_mode );
 
-          assert( !merge_mode );
+              /* Parse rest of line for signal info */
+              vsignal_db_read( &rest_line, curr_funit );
+ 
+            } else if( type == DB_TYPE_EXPRESSION ) {
 
-          /* Parse rest of line for signal info */
-          retval = vsignal_db_read( &rest_line, curr_funit );
-	    
-        } else if( type == DB_TYPE_EXPRESSION ) {
+              assert( !merge_mode );
 
-          assert( !merge_mode );
+              /* Parse rest of line for expression info */
+              expression_db_read( &rest_line, curr_funit, (read_mode == READ_MODE_MERGE_NO_MERGE) );
+  
+            } else if( type == DB_TYPE_STATEMENT ) {
 
-          /* Parse rest of line for expression info */
-          retval = expression_db_read( &rest_line, curr_funit, (read_mode == READ_MODE_MERGE_NO_MERGE) );
+              assert( !merge_mode );
 
-        } else if( type == DB_TYPE_STATEMENT ) {
+              /* Parse rest of line for statement info */
+              statement_db_read( &rest_line, curr_funit, read_mode );
 
-          assert( !merge_mode );
+            } else if( type == DB_TYPE_FSM ) {
 
-          /* Parse rest of line for statement info */
-          retval = statement_db_read( &rest_line, curr_funit, read_mode );
+              assert( !merge_mode );
 
-        } else if( type == DB_TYPE_FSM ) {
+              /* Parse rest of line for FSM info */
+              fsm_db_read( &rest_line, curr_funit );
 
-          assert( !merge_mode );
+            } else if( type == DB_TYPE_RACE ) {
 
-          /* Parse rest of line for FSM info */
-          retval = fsm_db_read( &rest_line, curr_funit );
+              assert( !merge_mode );
 
-        } else if( type == DB_TYPE_RACE ) {
+              /* Parse rest of line for race condition block info */
+              race_db_read( &rest_line, curr_funit );
 
-          assert( !merge_mode );
+            } else if( type == DB_TYPE_FUNIT ) {
 
-          /* Parse rest of line for race condition block info */
-          retval = race_db_read( &rest_line, curr_funit );
-
-        } else if( type == DB_TYPE_FUNIT ) {
-
-          /* Finish handling last functional unit read from CDD file */
-          if( curr_funit != NULL ) {
+              /* Finish handling last functional unit read from CDD file */
+              if( curr_funit != NULL ) {
               
-            if( read_mode != READ_MODE_MERGE_INST_MERGE ) {
+                if( read_mode != READ_MODE_MERGE_INST_MERGE ) {
 
-              inst_link* instl = inst_head;  /* Pointer to current instance link */
+                  inst_link* instl = inst_head;  /* Pointer to current instance link */
 
-              /* Get the scope of the parent module */
-              scope_extract_back( funit_scope, back, parent_scope );
+                  /* Get the scope of the parent module */
+                  scope_extract_back( funit_scope, back, parent_scope );
 
-              /* Attempt to add it to each instance tree until a suitable one is found */
-              while( (instl != NULL) && !instance_read_add( &(instl->inst), parent_scope, curr_funit, back ) ) {
-                instl = instl->next;
+                  /* Attempt to add it to each instance tree until a suitable one is found */
+                  while( (instl != NULL) && !instance_read_add( &(instl->inst), parent_scope, curr_funit, back ) ) {
+                    instl = instl->next;
+                  }
+                  if( instl == NULL ) {
+                    (void)inst_link_add( instance_create( curr_funit, funit_scope, NULL ), &inst_head, &inst_tail );
+                  }
+
+                }
+
+                /* If the current functional unit is a merged unit, don't add it to the funit list again */
+                if( !merge_mode ) {
+                  funit_link_add( curr_funit, &funit_head, &funit_tail );
+                }
+
               }
-              if( instl == NULL ) {
-                (void)inst_link_add( instance_create( curr_funit, funit_scope, NULL ), &inst_head, &inst_tail );
+
+              /* Reset merge mode */
+              merge_mode = FALSE;
+
+              /* Now finish reading functional unit line */
+              funit_db_read( &tmpfunit, funit_scope, &rest_line );
+              if( (read_mode == READ_MODE_MERGE_INST_MERGE) && ((foundinst = inst_link_find_by_scope( funit_scope, inst_head )) != NULL) ) {
+                merge_mode = TRUE;
+                curr_funit = foundinst->funit;
+                funit_db_merge( foundinst->funit, db_handle, TRUE );
+              } else if( (read_mode == READ_MODE_REPORT_MOD_MERGE) && ((foundfunit = funit_link_find( tmpfunit.name, tmpfunit.type, funit_head )) != NULL) ) {
+                merge_mode = TRUE;
+                curr_funit = foundfunit->funit;
+                funit_db_merge( foundfunit->funit, db_handle, FALSE );
+              } else {
+                curr_funit             = funit_create();
+                curr_funit->name       = strdup_safe( funit_name );
+                curr_funit->type       = tmpfunit.type;
+                curr_funit->filename   = strdup_safe( funit_file );
+                curr_funit->start_line = tmpfunit.start_line;
+                curr_funit->end_line   = tmpfunit.end_line;
+                curr_funit->timescale  = tmpfunit.timescale;
+                if( tmpfunit.type != FUNIT_MODULE ) {
+                  curr_funit->parent = scope_get_parent_funit( funit_scope );
+                  parent_mod         = scope_get_parent_module( funit_scope );
+                  funit_link_add( curr_funit, &(parent_mod->tf_head), &(parent_mod->tf_tail) );
+                }
+              }
+  
+              /* Set global functional unit, if it has been found */
+              if( (curr_funit != NULL) && (strncmp( curr_funit->name, "$root", 5 ) == 0) ) {
+                global_funit = curr_funit;
               }
 
-            }
-
-            /* If the current functional unit is a merged unit, don't add it to the funit list again */
-            if( !merge_mode ) {
-              funit_link_add( curr_funit, &funit_head, &funit_tail );
-            }
-
-          }
-
-          /* Reset merge mode */
-          merge_mode = FALSE;
-
-          /* Now finish reading functional unit line */
-          if( (retval = funit_db_read( &tmpfunit, funit_scope, &rest_line )) == TRUE ) {
-            if( (read_mode == READ_MODE_MERGE_INST_MERGE) && ((foundinst = inst_link_find_by_scope( funit_scope, inst_head )) != NULL) ) {
-              merge_mode = TRUE;
-              curr_funit = foundinst->funit;
-              retval = funit_db_merge( foundinst->funit, db_handle, TRUE );
-            } else if( (read_mode == READ_MODE_REPORT_MOD_MERGE) && ((foundfunit = funit_link_find( tmpfunit.name, tmpfunit.type, funit_head )) != NULL) ) {
-              merge_mode = TRUE;
-              curr_funit = foundfunit->funit;
-              retval = funit_db_merge( foundfunit->funit, db_handle, FALSE );
             } else {
-              curr_funit             = funit_create();
-              curr_funit->name       = strdup_safe( funit_name );
-              curr_funit->type       = tmpfunit.type;
-              curr_funit->filename   = strdup_safe( funit_file );
-              curr_funit->start_line = tmpfunit.start_line;
-              curr_funit->end_line   = tmpfunit.end_line;
-              curr_funit->timescale  = tmpfunit.timescale;
-              if( tmpfunit.type != FUNIT_MODULE ) {
-                curr_funit->parent = scope_get_parent_funit( funit_scope );
-                parent_mod         = scope_get_parent_module( funit_scope );
-                funit_link_add( curr_funit, &(parent_mod->tf_head), &(parent_mod->tf_tail) );
-              }
+
+              unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unexpected type %d when parsing database file %s", type, obf_file( file ) );
+              assert( rv < USER_MSG_LENGTH );
+              print_output( user_msg, FATAL, __FILE__, __LINE__ );
+              Throw 0;
+
             }
 
-            /* Set global functional unit, if it has been found */
-            if( (curr_funit != NULL) && (strncmp( curr_funit->name, "$root", 5 ) == 0) ) {
-              global_funit = curr_funit;
-            }
+          } else {
+
+            unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unexpected line in database file %s", obf_file( file ) );
+            assert( rv < USER_MSG_LENGTH );
+            print_output( user_msg, FATAL, __FILE__, __LINE__ );
+            Throw 0;
 
           }
 
-        } else {
+        } Catch_anonymous {
 
-          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unexpected type %d when parsing database file %s", type, obf_file( file ) );
-          assert( rv < USER_MSG_LENGTH );
-          print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          retval = FALSE;
+          free_safe( curr_line );
+          Throw 0;
 
         }
 
-      } else {
-
-        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unexpected line in database file %s", obf_file( file ) );
-        assert( rv < USER_MSG_LENGTH );
-        print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        retval = FALSE;
+        free_safe( curr_line );
 
       }
 
-      free_safe( curr_line );
+    } Catch_anonymous {
+
+      unsigned int rv = fclose( db_handle );
+      assert( rv == 0 );
+      Throw 0;
 
     }
-
-    rv = fclose( db_handle );
+ 
+    unsigned int rv = fclose( db_handle );
     assert( rv == 0 );
 
   } else {
@@ -497,7 +511,7 @@ bool db_read( char* file, int read_mode ) { PROFILE(DB_READ);
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Could not open %s for reading", obf_file( file ) );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    retval = FALSE;
+    Throw 0;
 
   }
 
@@ -532,14 +546,12 @@ bool db_read( char* file, int read_mode ) { PROFILE(DB_READ);
 
 #ifdef DEBUG_MODE
   /* Display the instance trees, if we are debugging */
-  if( debug_mode && retval ) {
+  if( debug_mode ) {
     inst_link_display( inst_head );
   }
 #endif
 
   PROFILE_END;
-
-  return( retval );
 
 }
 
@@ -2661,6 +2673,10 @@ void db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.277  2008/02/01 06:37:07  phase1geo
+ Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
+ using pragma excludes (this code is not fully working yet).  More to be done.
+
  Revision 1.276  2008/01/30 05:51:50  phase1geo
  Fixing doxygen errors.  Updated parameter list syntax to make it more readable.
 

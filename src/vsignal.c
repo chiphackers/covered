@@ -365,8 +365,6 @@ bool vsignal_db_read( char** line, func_unit* curr_funit ) { PROFILE(VSIGNAL_DB_
  \param line  Pointer to line of CDD file to parse.
  \param same  Specifies if vsignal to merge needs to be exactly the same as the existing vsignal.
 
- \return Returns TRUE if parsing successful; otherwise, returns FALSE.
-
  Parses specified line for vsignal information and performs merge 
  of the base and in vsignals, placing the resulting merged vsignal 
  into the base vsignal.  If the vsignals are found to be unalike 
@@ -374,9 +372,8 @@ bool vsignal_db_read( char** line, func_unit* curr_funit ) { PROFILE(VSIGNAL_DB_
  If both vsignals are the same, perform the merge on the vsignal's 
  vectors.
 */
-bool vsignal_db_merge( vsignal* base, char** line, bool same ) { PROFILE(VSIGNAL_DB_MERGE);
+void vsignal_db_merge( vsignal* base, char** line, bool same ) { PROFILE(VSIGNAL_DB_MERGE);
  
-  bool    retval = TRUE;  /* Return value of this function */
   char    name[256];      /* Name of current vsignal */
   int     sline;          /* Declared line number */
   int     pdim_num;       /* Number of packed dimensions */
@@ -398,7 +395,7 @@ bool vsignal_db_merge( vsignal* base, char** line, bool same ) { PROFILE(VSIGNAL
 
       print_output( "Attempting to merge two databases derived from different designs.  Unable to merge",
                     FATAL, __FILE__, __LINE__ );
-      exit( EXIT_FAILURE );
+      Throw 0;
 
     } else {
 
@@ -411,7 +408,7 @@ bool vsignal_db_merge( vsignal* base, char** line, bool same ) { PROFILE(VSIGNAL
       if( i == (pdim_num + udim_num) ) {
 
         /* Read in vector information */
-        retval = vector_db_merge( base->value, line, same );
+        vector_db_merge( base->value, line, same );
 
       }
 
@@ -419,13 +416,12 @@ bool vsignal_db_merge( vsignal* base, char** line, bool same ) { PROFILE(VSIGNAL
 
   } else {
 
-    retval = FALSE;
+    print_output( "Unable to parse vsignal in database file.  Unable to merge.", FATAL, __FILE__, __LINE__ );
+    Throw 0;
 
   }
 
   PROFILE_END;
-
-  return( retval );
 
 }
 
@@ -733,6 +729,15 @@ void vsignal_dealloc( /*@only@*/ vsignal* sig ) { PROFILE(VSIGNAL_DEALLOC);
 
 /*
  $Log$
+ Revision 1.56  2008/02/01 07:03:21  phase1geo
+ Fixing bugs in pragma exclusion code.  Added diagnostics to regression suite
+ to verify that we correctly exclude/include signals when pragmas are set
+ around a register instantiation and the -ep is present/not present, respectively.
+ Full regression passes at this point.  Fixed bug in vsignal.c where the excluded
+ bit was getting lost when a CDD file was read back in.  Also fixed bug in toggle
+ coverage reporting where a 1 -> 0 bit transition was not getting excluded when
+ the excluded bit was set for a signal.
+
  Revision 1.55  2008/02/01 06:37:09  phase1geo
  Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
  using pragma excludes (this code is not fully working yet).  More to be done.

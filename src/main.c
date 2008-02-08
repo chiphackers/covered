@@ -41,6 +41,12 @@
 #include "util.h"
 
 
+/*!
+ Exception context structure used by cexcept.h for throwing and catching exceptions.
+*/
+struct exception_context the_exception_context[1];
+
+
 extern char  user_msg[USER_MSG_LENGTH];
 extern char* ppfilename;
 
@@ -90,19 +96,6 @@ static void usage() {
 }
 
 /*!
- Function called at the end of execution which takes care of cleaning up state and temporary files.
-*/
-static void covered_cleanup( void ) {
-
-  /* Remove temporary pre-processor file (if it still exists) */
-  if( ppfilename != NULL ) {
-    (void)unlink( ppfilename );
-    free_safe( ppfilename );
-  }
-
-}
-
-/*!
  \param argc Number of arguments specified in argv parameter list.
  \param argv List of arguments passed to this process from the command-line.
 
@@ -118,108 +111,113 @@ int main( int argc, const char** argv ) {
   bool         cmd_found = FALSE;         /* Set to TRUE when command found in arg list */
   unsigned int rv;                        /* Temporary return value from functions */
 
+  /* Initialize the exception context */
+  init_exception_context( the_exception_context );
+
   /* Initialize error suppression value */
   set_output_suppression( FALSE );
   set_debug( FALSE );
   obfuscate_set_mode( FALSE );
   profiler_set_mode( FALSE );
 
-  /* Setup function to be called at exit */
-  rv = atexit( covered_cleanup );
-  assert( rv == 0 );
+  Try {
 
-  if( argc == 1 ) {
+    if( argc == 1 ) {
 
-    print_output( "Must specify a command (score, merge, report, -v, or -h)", FATAL, __FILE__, __LINE__ );
-    retval = -1;
-
-  } else {
-
-    if( strncmp( "-v", argv[1], 2 ) == 0 ) {
-
-      /* Display version of Covered */
-      print_output( COVERED_VERSION, NORMAL, __FILE__, __LINE__ );
-
-    } else if( strncmp( "-h", argv[1], 2 ) == 0 ) {
-
-      usage();
+      print_output( "Must specify a command (score, merge, report, -v, or -h)", FATAL, __FILE__, __LINE__ );
+      retval = -1;
 
     } else {
 
-      do {
+      if( strncmp( "-v", argv[1], 2 ) == 0 ) {
 
-        if( strncmp( "-Q", argv[curr_arg], 2 ) == 0 ) {
+        /* Display version of Covered */
+        print_output( COVERED_VERSION, NORMAL, __FILE__, __LINE__ );
 
-          set_output_suppression( TRUE );
+      } else if( strncmp( "-h", argv[1], 2 ) == 0 ) {
 
-        } else if( strncmp( "-D", argv[curr_arg], 2 ) == 0 ) {
+        usage();
+
+      } else {
+
+        do {
+
+          if( strncmp( "-Q", argv[curr_arg], 2 ) == 0 ) {
+  
+            set_output_suppression( TRUE );
+
+          } else if( strncmp( "-D", argv[curr_arg], 2 ) == 0 ) {
 
 #ifdef DEBUG_MODE
-          set_debug( TRUE );
+            set_debug( TRUE );
 #else
-          print_output( "Global command -D can only be used when Covered is configured with the --enable-debug flag when being built", WARNING, __FILE__, __LINE__ );
+            print_output( "Global command -D can only be used when Covered is configured with the --enable-debug flag when being built", WARNING, __FILE__, __LINE__ );
 #endif
 
-        } else if( strncmp( "-P", argv[curr_arg], 2 ) == 0 ) {
+          } else if( strncmp( "-P", argv[curr_arg], 2 ) == 0 ) {
 
 #ifdef PROFILER
-          profiler_set_mode( TRUE );
-          curr_arg++;
-          if( (curr_arg < argc) && (argv[curr_arg][0] != '-') &&
-              (strncmp( "score",  argv[curr_arg], 5 ) != 0) &&
-              (strncmp( "merge",  argv[curr_arg], 5 ) != 0) &&
-              (strncmp( "report", argv[curr_arg], 6 ) != 0)) {
+            profiler_set_mode( TRUE );
             curr_arg++;
-            profiler_set_filename( argv[curr_arg] );
-          } else {
-            curr_arg--;
-            profiler_set_filename( PROFILING_OUTPUT_NAME );
-          }
+            if( (curr_arg < argc) && (argv[curr_arg][0] != '-') &&
+                (strncmp( "score",  argv[curr_arg], 5 ) != 0) &&
+                (strncmp( "merge",  argv[curr_arg], 5 ) != 0) &&
+                (strncmp( "report", argv[curr_arg], 6 ) != 0)) {
+              curr_arg++;
+              profiler_set_filename( argv[curr_arg] );
+            } else {
+              curr_arg--;
+              profiler_set_filename( PROFILING_OUTPUT_NAME );
+            }
 #else
-          print_output( "Global command -P can only be used when Covered is configured with the --enable-profiling flag when being built", WARNING, __FILE__, __LINE__ );
+            print_output( "Global command -P can only be used when Covered is configured with the --enable-profiling flag when being built", WARNING, __FILE__, __LINE__ );
 #endif
 
-        } else if( strncmp( "-B", argv[curr_arg], 2 ) == 0 ) {
+          } else if( strncmp( "-B", argv[curr_arg], 2 ) == 0 ) {
 
-          obfuscate_set_mode( TRUE );
+            obfuscate_set_mode( TRUE );
 
-        } else if( strncmp( "score", argv[curr_arg], 5 ) == 0 ) {
+          } else if( strncmp( "score", argv[curr_arg], 5 ) == 0 ) {
 
-          retval    = command_score( argc, curr_arg, argv );
-          cmd_found = TRUE;
+            command_score( argc, curr_arg, argv );
+            cmd_found = TRUE;
 
-        } else if( strncmp( "merge", argv[curr_arg], 5 ) == 0 ) {
+          } else if( strncmp( "merge", argv[curr_arg], 5 ) == 0 ) {
 
-          retval    = command_merge( argc, curr_arg, argv );
-          cmd_found = TRUE;
+            command_merge( argc, curr_arg, argv );
+            cmd_found = TRUE;
 
-        } else if( strncmp( "report", argv[curr_arg], 6 ) == 0 ) {
+          } else if( strncmp( "report", argv[curr_arg], 6 ) == 0 ) {
 
-          retval    = command_report( argc, curr_arg, argv );
-          cmd_found = TRUE;
+            command_report( argc, curr_arg, argv );
+            cmd_found = TRUE;
 
-        } else {
+          } else {
 
-          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown command/global option \"%s\".  Please see \"covered -h\" for usage.", argv[curr_arg] );
-          assert( rv < USER_MSG_LENGTH );
-          print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          exit( EXIT_FAILURE );
+            unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown command/global option \"%s\".  Please see \"covered -h\" for usage.", argv[curr_arg] );
+            assert( rv < USER_MSG_LENGTH );
+            print_output( user_msg, FATAL, __FILE__, __LINE__ );
+            Throw 0;
+
+          }
+
+          curr_arg++;
+
+        } while( (curr_arg < argc) && !cmd_found );
+
+        if( !cmd_found ) {
+ 
+          print_output( "Must specify a command (score, merge, report, -v, or -h)", FATAL, __FILE__, __LINE__ );
+          Throw 0;
 
         }
-
-        curr_arg++;
-
-      } while( (curr_arg < argc) && !cmd_found );
-
-      if( !cmd_found ) {
- 
-        print_output( "Must specify a command (score, merge, report, -v, or -h)", FATAL, __FILE__, __LINE__ );
-        retval = EXIT_FAILURE;
 
       }
 
     }
 
+  } Catch_anonymous {
+    retval = EXIT_FAILURE;
   }
 
   /* Output profiling information, if necessary */
@@ -234,6 +232,9 @@ int main( int argc, const char** argv ) {
 
 /*
  $Log$
+ Revision 1.29  2008/01/21 21:39:55  phase1geo
+ Bug fix for bug 1876376.
+
  Revision 1.28  2008/01/17 04:35:12  phase1geo
  Updating regression per latest bug fixes and splint updates.
 

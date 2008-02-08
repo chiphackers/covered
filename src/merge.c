@@ -165,10 +165,10 @@ int command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAND
   assert( rv < USER_MSG_LENGTH );
   print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 
-  /* Parse score command-line */
-  if( merge_parse_args( argc, last_arg, argv ) ) {
+  Try {
 
-    unsigned int rv;
+    /* Parse score command-line */
+    merge_parse_args( argc, last_arg, argv );
 
     /* Initialize all global information */
     info_initialize();
@@ -180,12 +180,7 @@ int command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAND
     rv = snprintf( user_msg, USER_MSG_LENGTH, "Reading CDD file \"%s\"", merge_in[0] );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-    if( !db_read( merge_in[0], READ_MODE_MERGE_NO_MERGE ) ) {
-      rv = snprintf( user_msg, USER_MSG_LENGTH, "Error reading CDD file \"%s\"", merge_in[0] );
-      assert( rv < USER_MSG_LENGTH );
-      print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      exit( EXIT_FAILURE );
-    }
+    db_read( merge_in[0], READ_MODE_MERGE_NO_MERGE );
     bind_perform( TRUE, 0 );
 
     /* Read in databases to merge */
@@ -193,32 +188,18 @@ int command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAND
       rv = snprintf( user_msg, USER_MSG_LENGTH, "Merging CDD file \"%s\"", merge_in[i] );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-      if( !db_read( merge_in[i], READ_MODE_MERGE_INST_MERGE ) ) {
-        rv = snprintf( user_msg, USER_MSG_LENGTH, "Error reading CDD file \"%s\"", merge_in[1] );
-        assert( rv < USER_MSG_LENGTH );
-        print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        exit( EXIT_FAILURE );
-      }
+      db_read( merge_in[i], READ_MODE_MERGE_INST_MERGE );
     }
 
     /* Write out new database to output file */
-    if( !db_write( merged_file, FALSE, FALSE ) ) {
-      rv = snprintf( user_msg, USER_MSG_LENGTH, "Error writing CDD file \"%s\"", merged_file );
-      assert( rv < USER_MSG_LENGTH );
-      print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      exit( EXIT_FAILURE );
-    }
+    db_write( merged_file, FALSE, FALSE );
 
     print_output( "\n***  Merging completed successfully!  ***", NORMAL, __FILE__, __LINE__ );
 
-    /* Close database */
-    db_close();
+  } Catch_anonymous {}
 
-  } else {
-
-    retval = EXIT_FAILURE;
-
-  }
+  /* Close database */
+  db_close();
 
   /* Deallocate memory */
   free_safe( merged_file );
@@ -229,12 +210,13 @@ int command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAND
 
   PROFILE_END;
 
-  return( retval );
-
 }
 
 /*
  $Log$
+ Revision 1.38  2008/01/21 21:39:55  phase1geo
+ Bug fix for bug 1876376.
+
  Revision 1.37  2008/01/16 23:10:31  phase1geo
  More splint updates.  Code is now warning/error free with current version
  of run_splint.  Still have regression issues to debug.
