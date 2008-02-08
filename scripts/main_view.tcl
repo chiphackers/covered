@@ -142,7 +142,8 @@ proc main_view {} {
   raise .
 
   # Set icon
-  wm iconphoto . -default [image create photo -file [file join $HOME scripts cov_icon.gif]]
+  set icon_img [image create photo -file [file join $HOME scripts cov_icon.gif]]
+  wm iconphoto . -default $icon_img
 
 }
 
