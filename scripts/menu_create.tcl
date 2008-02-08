@@ -162,8 +162,14 @@ proc menu_create {} {
       display_line_cov
     } elseif {$cov_rb == "Toggle"} {
       display_toggle_cov
+    } elseif {$cov_rb == "Memory"} {
+      display_memory_cov
     } elseif {$cov_rb == "Logic"} {
       display_comb_cov
+    } elseif {$cov_rb == "FSM"} {
+      display_fsm_cov
+    } elseif {$cov_rb == "Assert"} {
+      display_assert_cov
     } else {
       # Error
     }
@@ -177,8 +183,14 @@ proc menu_create {} {
       display_line_cov
     } elseif {$cov_rb == "Toggle"} {
       display_toggle_cov
+    } elseif {$cov_rb == "Memory"} {
+      display_memory_cov
     } elseif {$cov_rb == "Logic"} {
       display_comb_cov
+    } elseif {$cov_rb == "FSM"} {
+      display_fsm_cov
+    } elseif {$cov_rb == "Assert"} {
+      display_assert_cov
     } else {
       # Error
     }
@@ -192,8 +204,14 @@ proc menu_create {} {
       display_line_cov
     } elseif {$cov_rb == "Toggle"} {
       display_toggle_cov
+    } elseif {$cov_rb == "Memory"} {
+      display_memory_cov
     } elseif {$cov_rb == "Logic"} {
       display_comb_cov
+    } elseif {$cov_rb == "FSM"} {
+      display_fsm_cov
+    } elseif {$cov_rb == "Assert"} {
+      display_assert_cov
     } else {
       # Error
     }

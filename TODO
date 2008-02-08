@@ -66,6 +66,6 @@ IP 2.  Make all code splint clean.
 GUI
 ---
 
-   1.  Update GUI to make interface a bit easier to use (less cluttered)
+X  1.  Update GUI to make interface a bit easier to use (less cluttered)
 
-   2.  Create GUI for Mac OS X using TclTkAquaBI
+X  2.  Create GUI for Mac OS X using TclTkAquaBI
