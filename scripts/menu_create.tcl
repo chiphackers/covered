@@ -351,7 +351,7 @@ proc create_report_selection_window {} {
   toplevel .rselwin
   wm title .rselwin "Create ASCII report"
   wm resizable .rselwin 0 0
-  wm geometry .rselwin =550x220
+  wm geometry .rselwin =550x250
 
   # Create default report filename
   set rsel_fname "[file rootname $cdd_name].rpt"
