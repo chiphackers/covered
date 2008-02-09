@@ -31,19 +31,19 @@
 void search_init();
 
 /*! \brief Adds an include directory to the list of directories to search for `include directives. */
-bool search_add_include_path( const char* path );
+void search_add_include_path( const char* path );
 
 /*! \brief Adds a directory to the list of directories to find unspecified Verilog modules. */
-bool search_add_directory_path( const char* path );
+void search_add_directory_path( const char* path );
 
 /*! \brief Adds a specific Verilog module to the list of modules to score. */
-bool search_add_file( const char* file );
+void search_add_file( const char* file );
 
 /*! \brief Adds specified functional unit to list of functional units not to score. */
-bool search_add_no_score_funit( const char* funit );
+void search_add_no_score_funit( const char* funit );
 
 /*! \brief Adds specified extensions to allowed file extension list. */
-bool search_add_extensions( const char* ext_list );
+void search_add_extensions( const char* ext_list );
 
 /*! \brief Deallocates all used memory for search lists. */
 void search_free_lists();
@@ -51,6 +51,9 @@ void search_free_lists();
 
 /*
  $Log$
+ Revision 1.9  2008/01/09 05:22:22  phase1geo
+ More splint updates using the -standard option.
+
  Revision 1.8  2007/11/20 05:29:00  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

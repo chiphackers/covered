@@ -1,3 +1,2 @@
 ERROR!  Illegal time precision measurement specified (must be 's', 'ms', 'us', 'ns', 'ps' or 'fs'),
         File: timescale3.6.v, Line: 9, Column: 101
-ERROR!  Error in parsing design

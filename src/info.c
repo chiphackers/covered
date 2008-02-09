@@ -140,9 +140,8 @@ void info_db_write( FILE* file ) { PROFILE(INFO_DB_WRITE);
 
  Reads information line from specified string and stores its information.
 */
-bool info_db_read( char** line ) { PROFILE(INFO_DB_READ);
+void info_db_read( char** line ) { PROFILE(INFO_DB_READ);
 
-  bool         retval = TRUE;  /* Return value for this function */
   int          chars_read;     /* Number of characters scanned in from this line */
   control      scored;         /* Indicates if this file contains scored data */
   unsigned int version;        /* Contains CDD version from file */
@@ -160,7 +159,7 @@ bool info_db_read( char** line ) { PROFILE(INFO_DB_READ);
 
     if( version != CDD_VERSION ) {
       print_output( "CDD file being read is incompatible with this version of Covered", FATAL, __FILE__, __LINE__ );
-      retval = FALSE;
+      Throw 0;
     }
 
     /* Set leading_hiers_differ to TRUE if this is not the first hierarchy and it differs from the first */
@@ -196,7 +195,7 @@ bool info_db_read( char** line ) { PROFILE(INFO_DB_READ);
 
       } else {
         print_output( "CDD file being read is incompatible with this version of Covered", FATAL, __FILE__, __LINE__ );
-        retval = FALSE;
+        Throw 0;
       }
 
     }
@@ -209,24 +208,19 @@ bool info_db_read( char** line ) { PROFILE(INFO_DB_READ);
   } else {
 
     print_output( "CDD file being read is incompatible with this version of Covered", FATAL, __FILE__, __LINE__ );
-    retval = FALSE;
+    Throw 0;
 
   }
-
-  return( retval );
 
 }
 
 /*!
  \param line  Pointer to string containing information line to parse.
  
- \return Returns TRUE if there were no errors while parsing the score args line; otherwise, returns FALSE.
-
  Reads score command-line args line from specified string and stores its information.
 */
-bool args_db_read( char** line ) { PROFILE(ARGS_DB_READ);
+void args_db_read( char** line ) { PROFILE(ARGS_DB_READ);
 
-  bool retval = TRUE;  /* Return value for this function */
   int  chars_read;     /* Number of characters scanned in from this line */
   char tmp1[4096];     /* Temporary string */
 
@@ -245,11 +239,9 @@ bool args_db_read( char** line ) { PROFILE(ARGS_DB_READ);
   } else {
 
     print_output( "CDD file being read is incompatible with this version of Covered", FATAL, __FILE__, __LINE__ );
-    retval = FALSE;
+    Throw 0;
 
   }
-
-  return( retval );
 
 }
 
@@ -283,6 +275,9 @@ void info_dealloc() { PROFILE(INFO_DEALLOC);
 
 /*
  $Log$
+ Revision 1.23  2008/01/16 06:40:37  phase1geo
+ More splint updates.
+
  Revision 1.22  2008/01/08 21:13:08  phase1geo
  Completed -weak splint run.  Full regressions pass.
 

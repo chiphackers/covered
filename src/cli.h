@@ -31,10 +31,13 @@
 void cli_execute( const sim_time* time );
 
 /*! \brief Reads in given history file from -cli option */
-bool cli_read_hist_file( const char* fname );
+void cli_read_hist_file( const char* fname );
 
 /*
  $Log$
+ Revision 1.5  2008/01/21 21:39:55  phase1geo
+ Bug fix for bug 1876376.
+
  Revision 1.4  2007/12/18 23:55:21  phase1geo
  Starting to remove 64-bit time and replacing it with a sim_time structure
  for performance enhancement purposes.  Also removing global variables for time-related

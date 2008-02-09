@@ -41,7 +41,7 @@ void vector_copy( vector* from_vec, vector** to_vec );
 void vector_db_write( vector* vec, FILE* file, bool write_data );
 
 /*! \brief Creates and parses current file line for vector information */
-bool vector_db_read( vector** vec, char** line );
+void vector_db_read( vector** vec, char** line );
 
 /*! \brief Reads and merges two vectors, placing the result into base vector. */
 void vector_db_merge( vector* base, char** line, bool same );
@@ -174,6 +174,10 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.50  2008/02/08 23:58:07  phase1geo
+ Starting to work on exception handling.  Much work to do here (things don't
+ compile at the moment).
+
  Revision 1.49  2008/01/16 05:01:23  phase1geo
  Switched totals over from float types to int types for splint purposes.
 

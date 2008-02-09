@@ -36,7 +36,7 @@ void race_check_modules();
 void race_db_write( race_blk* head, FILE* file );
 
 /*! \brief Reads contents from specified line for a race condition block and assigns the new block to the curr_mod */
-bool race_db_read( char** line, /*@null@*/func_unit* curr_mod );
+void race_db_read( char** line, /*@null@*/func_unit* curr_mod );
 
 /*! \brief Get statistic information for the specified race condition block list */
 void race_get_stats( race_blk* curr, int* race_total, int type_total[][RACE_TYPE_NUM] );
@@ -53,6 +53,9 @@ void race_blk_delete_list( race_blk* rb );
 
 /*
  $Log$
+ Revision 1.22  2008/01/16 06:40:37  phase1geo
+ More splint updates.
+
  Revision 1.21  2008/01/10 04:59:04  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 

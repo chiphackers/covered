@@ -66,10 +66,10 @@ void funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
 
 /*! \brief Read contents of current line from specified file, creates functional unit
            and adds to functional unit list. */
-bool funit_db_read( func_unit* funit, /*@out@*/char* scope, char** line );
+void funit_db_read( func_unit* funit, /*@out@*/char* scope, char** line );
 
 /*! \brief Reads and merges two functional units into base functional unit. */
-bool funit_db_merge( func_unit* base, FILE* file, bool same );
+void funit_db_merge( func_unit* base, FILE* file, bool same );
 
 /*! \brief Flattens the functional unit name by removing all unnamed scope portions */
 /*@shared@*/ char* funit_flatten_name( func_unit* funit );
@@ -101,6 +101,9 @@ void funit_dealloc( func_unit* funit );
 
 /*
  $Log$
+ Revision 1.33  2008/01/16 06:40:37  phase1geo
+ More splint updates.
+
  Revision 1.32  2008/01/10 04:59:04  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 

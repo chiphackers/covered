@@ -41,7 +41,7 @@ vsignal* vsignal_duplicate( vsignal* sig );
 void vsignal_db_write( vsignal* sig, FILE* file );
 
 /*! \brief Reads vsignal information from specified file. */
-bool vsignal_db_read( char** line, /*@null@*/func_unit* curr_funit );
+void vsignal_db_read( char** line, /*@null@*/func_unit* curr_funit );
 
 /*! \brief Reads and merges two vsignals, placing result into base vsignal. */
 void vsignal_db_merge( vsignal* base, char** line, bool same );
@@ -73,6 +73,10 @@ void vsignal_dealloc( vsignal* sig );
 
 /*
  $Log$
+ Revision 1.25  2008/02/08 23:58:07  phase1geo
+ Starting to work on exception handling.  Much work to do here (things don't
+ compile at the moment).
+
  Revision 1.24  2008/02/01 06:37:09  phase1geo
  Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
  using pragma excludes (this code is not fully working yet).  More to be done.

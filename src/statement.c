@@ -405,14 +405,11 @@ void statement_db_write_expr_tree( statement* stmt, FILE* ofile ) { PROFILE(STAT
  \param curr_funit  Pointer to current module.
  \param read_mode   If set to REPORT, adds statement to head of list; otherwise, adds statement to tail.
  
- \return Returns TRUE if the line is read without error; otherwise, returns FALSE.
-
  Reads in the contents of the statement from the specified line, creates
  a statement structure to hold the contents.
 */
-bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) { PROFILE(STATEMENT_DB_READ);
+void statement_db_read( char** line, func_unit* curr_funit, int read_mode ) { PROFILE(STATEMENT_DB_READ);
 
-  bool       retval = TRUE;  /* Return value of this function */
   int        id;             /* ID of root expression that is associated with this statement */
   int        true_id;        /* ID of root expression that is associated with the next_true statement */
   int        false_id;       /* ID of root expression that is associated with the next_false statement */
@@ -428,7 +425,7 @@ bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) { PR
     if( curr_funit == NULL ) {
 
       print_output( "Internal error:  statement in database written before its functional unit", FATAL, __FILE__, __LINE__ );
-      retval = FALSE;
+      Throw 0;
 
     } else {
 
@@ -449,7 +446,6 @@ bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) { PR
            (curr_funit->type == FUNIT_AFUNCTION)   ||
            (curr_funit->type == FUNIT_NAMED_BLOCK) ||
            (curr_funit->type == FUNIT_ANAMED_BLOCK)) ) {
-        //assert( curr_funit->first_stmt == NULL );
         curr_funit->first_stmt = stmt;
       }
 
@@ -505,13 +501,11 @@ bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) { PR
   } else {
 
     print_output( "Unable to read statement value", FATAL, __FILE__, __LINE__ );
-    retval = FALSE;
+    Throw 0;
 
   }
 
   PROFILE_END;
-
-  return( retval );
 
 }
 
@@ -962,6 +956,9 @@ void statement_dealloc( statement* stmt ) { PROFILE(STATEMENT_DEALLOC);
 
 /*
  $Log$
+ Revision 1.122  2008/01/30 05:51:50  phase1geo
+ Fixing doxygen errors.  Updated parameter list syntax to make it more readable.
+
  Revision 1.121  2008/01/09 05:22:22  phase1geo
  More splint updates using the -standard option.
 

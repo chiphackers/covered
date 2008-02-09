@@ -269,16 +269,12 @@ void vsignal_db_write( vsignal* sig, FILE* file ) { PROFILE(VSIGNAL_DB_WRITE);
  \param line        Pointer to current line from database file to parse.
  \param curr_funit  Pointer to current functional unit instantiating this vsignal.
 
- \return Returns TRUE if vsignal information read successfully; otherwise,
-         returns FALSE.
-
  Creates a new vsignal structure, parses current file line for vsignal
  information and stores it to the specified vsignal.  If there are any problems
  in reading in the current line, returns FALSE; otherwise, returns TRUE.
 */
-bool vsignal_db_read( char** line, func_unit* curr_funit ) { PROFILE(VSIGNAL_DB_READ);
+void vsignal_db_read( char** line, func_unit* curr_funit ) { PROFILE(VSIGNAL_DB_READ);
 
-  bool       retval = TRUE;  /* Return value for this function */
   char       name[256];      /* Name of current vsignal */
   vsignal*   sig;            /* Pointer to the newly created vsignal */
   vector*    vec;            /* Vector value for this vsignal */
@@ -295,68 +291,61 @@ bool vsignal_db_read( char** line, func_unit* curr_funit ) { PROFILE(VSIGNAL_DB_
 
     *line = *line + chars_read;
 
-    /* Allocate dimensional information */
-    dim = (dim_range*)malloc_safe( sizeof( dim_range ) * (pdim_num + udim_num) );
+    Try {
 
-    /* Read in dimensional information */
-    i = 0;
-    while( (i < (pdim_num + udim_num)) && retval ) {
-      if( sscanf( *line, " %d %d%n", &(dim[i].msb), &(dim[i].lsb), &chars_read ) == 2 ) {
-        *line = *line + chars_read;
-      } else {
-        retval = FALSE;
+      /* Allocate dimensional information */
+      dim = (dim_range*)malloc_safe( sizeof( dim_range ) * (pdim_num + udim_num) );
+
+      /* Read in dimensional information */
+      i = 0;
+      while( i < (pdim_num + udim_num) ) {
+        if( sscanf( *line, " %d %d%n", &(dim[i].msb), &(dim[i].lsb), &chars_read ) == 2 ) {
+          *line = *line + chars_read;
+        } else {
+          print_output( "Unable to parse signal line in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
+          Throw 0;
+        }
+        i++;
       }
-      i++;
+
+    } Catch_anonymous {
+      free_safe( dim );
+      Throw 0;
     }
 
-    if( !retval ) {
+    /* Read in vector information */
+    vector_db_read( &vec, line );
 
-      free_safe( dim );
+    /* Create new vsignal */
+    sig = vsignal_create( name, suppl.part.type, vec->width, sline, suppl.part.col );
+    sig->suppl.part.assigned   = suppl.part.assigned;
+    sig->suppl.part.mba        = suppl.part.mba;
+    sig->suppl.part.big_endian = suppl.part.big_endian;
+    sig->suppl.part.excluded   = suppl.part.excluded;
+    sig->pdim_num              = pdim_num;
+    sig->udim_num              = udim_num;
+    sig->dim                   = dim;
 
+    /* Copy over vector value */
+    vector_dealloc( sig->value );
+    sig->value = vec;
+
+    /* Add vsignal to vsignal list */
+    if( curr_funit == NULL ) {
+      print_output( "Internal error:  vsignal in database written before its functional unit", FATAL, __FILE__, __LINE__ );
+      Throw 0;
     } else {
-
-      /* Read in vector information */
-      if( vector_db_read( &vec, line ) ) {
-
-        /* Create new vsignal */
-        sig = vsignal_create( name, suppl.part.type, vec->width, sline, suppl.part.col );
-        sig->suppl.part.assigned   = suppl.part.assigned;
-        sig->suppl.part.mba        = suppl.part.mba;
-        sig->suppl.part.big_endian = suppl.part.big_endian;
-        sig->suppl.part.excluded   = suppl.part.excluded;
-        sig->pdim_num              = pdim_num;
-        sig->udim_num              = udim_num;
-        sig->dim                   = dim;
-
-        /* Copy over vector value */
-        vector_dealloc( sig->value );
-        sig->value = vec;
-
-        /* Add vsignal to vsignal list */
-        if( curr_funit == NULL ) {
-          print_output( "Internal error:  vsignal in database written before its functional unit", FATAL, __FILE__, __LINE__ );
-          retval = FALSE;
-        } else {
-          sig_link_add( sig, &(curr_funit->sig_head), &(curr_funit->sig_tail) );
-        }
-
-      } else {
-
-        retval = FALSE;
-
-      }
-
+      sig_link_add( sig, &(curr_funit->sig_head), &(curr_funit->sig_tail) );
     }
 
   } else {
 
-    retval = FALSE;
+    print_output( "Unable to parse signal line in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
+    Throw 0;
 
   }
 
   PROFILE_END;
-
-  return( retval );
 
 }
 
@@ -729,6 +718,10 @@ void vsignal_dealloc( /*@only@*/ vsignal* sig ) { PROFILE(VSIGNAL_DEALLOC);
 
 /*
  $Log$
+ Revision 1.57  2008/02/08 23:58:07  phase1geo
+ Starting to work on exception handling.  Much work to do here (things don't
+ compile at the moment).
+
  Revision 1.56  2008/02/01 07:03:21  phase1geo
  Fixing bugs in pragma exclusion code.  Added diagnostics to regression suite
  to verify that we correctly exclude/include signals when pragmas are set

@@ -324,12 +324,12 @@ static void score_generate_pli_tab_file( char* tab_file, char* top_mod ) { PROFI
  \param cmd_file Name of file to read commands from.
  \param arg_list List of arguments found in specified command file.
  \param arg_num  Number of arguments in arg_list array.
- \return Returns TRUE if read of command file was successful; otherwise,
-         returns FALSE.
-*/
-static bool read_command_file( const char* cmd_file, char*** arg_list, int* arg_num ) { PROFILE(READ_COMMAND_FILE);
 
-  bool      retval  = TRUE;  /* Return value for this function */
+ Parses the given file specified by the '-f' option to Covered's score command which can contain
+ any command-line arguments.
+*/
+static void read_command_file( const char* cmd_file, char*** arg_list, int* arg_num ) { PROFILE(READ_COMMAND_FILE);
+
   str_link* head    = NULL;  /* Pointer to head element of arg list */
   str_link* tail    = NULL;  /* Pointer to tail element of arg list */
   FILE*     cmd_handle;      /* Pointer to command file */
@@ -381,7 +381,7 @@ static bool read_command_file( const char* cmd_file, char*** arg_list, int* arg_
       unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to open command file %s for reading", cmd_file );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      retval = FALSE;
+      Throw 0;
 
     }
 
@@ -390,11 +390,9 @@ static bool read_command_file( const char* cmd_file, char*** arg_list, int* arg_
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Command file %s does not exist", cmd_file );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    retval = FALSE;
+    Throw 0;
 
   }
-
-  return( retval );
 
 }
 
@@ -444,31 +442,27 @@ static void score_add_arg( const char* arg ) { PROFILE(SCORE_ADD_ARG);
  \param last_arg  Index of last parsed argument in list.
  \param argv      List of arguments to parse.
 
- \return Returns TRUE if successful in dealing with arguments; otherwise,
-         returns FALSE.
-
  Parses score command argument list and performs specified functions based
  on these arguments.
 */
-static bool score_parse_args( int argc, int last_arg, const char** argv ) { PROFILE(SCORE_PARSE_ARGS);
+static void score_parse_args( int argc, int last_arg, const char** argv ) { PROFILE(SCORE_PARSE_ARGS);
 
-  bool   retval  = TRUE;          /* Return value for this function */
   int    i       = last_arg + 1;  /* Loop iterator */
   char** arg_list;                /* List of command_line arguments */
   int    arg_num;                 /* Number of arguments in arg_list */
   int    j;                       /* Loop iterator */
   char*  ptr;                     /* Pointer to current character in defined value */
 
-  while( (i < argc) && retval ) {
+  while( i < argc ) {
 
     if( strncmp( "-h", argv[i], 2 ) == 0 ) {
 
       score_usage();
-      retval = FALSE;
+      Throw 0;
 
     } else if( strncmp( "-i", argv[i], 2 ) == 0 ) {
 
-      if( (retval = check_option_value( argc, argv, i )) ) {
+      if( check_option_value( argc, argv, i ) ) {
         i++;
         if( instance_specified ) {
           print_output( "Only one -i option may be present on the command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
@@ -478,11 +472,13 @@ static bool score_parse_args( int argc, int last_arg, const char** argv ) { PROF
           score_add_arg( argv[i] );
           instance_specified = TRUE;
         }
+      } else {
+        Throw 0;
       }
 
     } else if( strncmp( "-o", argv[i], 2 ) == 0 ) {
 
-      if( (retval = check_option_value( argc, argv, i )) ) {
+      if( check_option_value( argc, argv, i ) ) {
         i++;
         if( output_db != NULL ) {
           print_output( "Only one -o option may be present on the command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
@@ -495,14 +491,16 @@ static bool score_parse_args( int argc, int last_arg, const char** argv ) { PROF
             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Output file \"%s\" is not writable", argv[i] );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
-            retval = FALSE;
+            Throw 0;
           }
         }
+      } else {
+        Throw 0;
       }
 
     } else if( strncmp( "-ts", argv[i], 3 ) == 0 ) {
 
-      if( (retval = check_option_value( argc, argv, i )) ) {
+      if( check_option_value( argc, argv, i ) ) {
         i++;
         if( timestep_update != 0 ) {
           print_output( "Only one -ts option may be present on the command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
@@ -511,11 +509,13 @@ static bool score_parse_args( int argc, int last_arg, const char** argv ) { PROF
           score_add_arg( argv[i-1] );
           score_add_arg( argv[i] );
         }
+      } else {
+        Throw 0;
       }
 
     } else if( strncmp( "-t", argv[i], 2 ) == 0 ) {
 
-      if( (retval = check_option_value( argc, argv, i )) ) {
+      if( check_option_value( argc, argv, i ) ) {
         i++;
         if( top_module != NULL ) {
           print_output( "Only one -t option may be present on the command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
@@ -528,48 +528,61 @@ static bool score_parse_args( int argc, int last_arg, const char** argv ) { PROF
             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Illegal top-level module name specified \"%s\"", argv[i] );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
-            retval = FALSE;
+            Throw 0;
           }
         }
+      } else {
+        Throw 0;
       }
 
     } else if( strncmp( "-I", argv[i], 2 ) == 0 ) {
 
-      if( (retval = check_option_value( argc, argv, i )) ) {
+      if( check_option_value( argc, argv, i ) ) {
         i++;
-        if( (retval = search_add_include_path( argv[i] )) ) {
-          score_add_arg( argv[i-1] );
-          score_add_arg( argv[i] );
-        }
+        search_add_include_path( argv[i] );
+        score_add_arg( argv[i-1] );
+        score_add_arg( argv[i] );
+      } else {
+        Throw 0;
       }
 
     } else if( strncmp( "-y", argv[i], 2 ) == 0 ) {
 
-      if( (retval = check_option_value( argc, argv, i )) ) {
+      if( check_option_value( argc, argv, i ) ) {
         i++;
-        if( (retval = search_add_directory_path( argv[i] )) ) {
-          score_add_arg( argv[i-1] );
-          score_add_arg( argv[i] );
-        }
+        search_add_directory_path( argv[i] );
+        score_add_arg( argv[i-1] );
+        score_add_arg( argv[i] );
+      } else {
+        Throw 0;
       }
 
     } else if( strncmp( "-F", argv[i], 2 ) == 0 ) {
 
-      if( (retval = check_option_value( argc, argv, i )) ) {
+      if( check_option_value( argc, argv, i ) ) {
         i++;
-        if( (retval = fsm_arg_parse( argv[i] )) ) {
-          score_add_arg( argv[i-1] );
-          score_add_arg( argv[i] );
-        }
+        fsm_arg_parse( argv[i] );
+        score_add_arg( argv[i-1] );
+        score_add_arg( argv[i] );
+      } else {
+        Throw 0;
       }
       
     } else if( strncmp( "-f", argv[i], 2 ) == 0 ) {
 
-      if( (retval = check_option_value( argc, argv, i )) ) {
+      if( check_option_value( argc, argv, i ) ) {
         i++;
         if( file_exists( argv[i] ) ) {
-          retval = retval && read_command_file( argv[i], &arg_list, &arg_num );
-          retval = retval && score_parse_args( arg_num, -1, arg_list );
+          Try {
+            read_command_file( argv[i], &arg_list, &arg_num );
+            score_parse_args( arg_num, -1, arg_list );
+          } Catch_anonymous {
+            for( j=0; j<arg_num; j++ ) {
+              free_safe( arg_list[j] );
+            }
+            free_safe( arg_list );
+            Throw 0;
+          }
           for( j=0; j<arg_num; j++ ) {
             free_safe( arg_list[j] );
           }
@@ -578,8 +591,10 @@ static bool score_parse_args( int argc, int last_arg, const char** argv ) { PROF
           unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Cannot find argument file %s specified with -f option", argv[i] );
           assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          retval = FALSE;
+          Throw 0;
         }
+      } else {
+        Throw 0;
       }
 
     } else if( strncmp( "-ec", argv[i], 3 ) == 0 ) {
@@ -616,17 +631,18 @@ static bool score_parse_args( int argc, int last_arg, const char** argv ) { PROF
 
     } else if( strncmp( "-e", argv[i], 2 ) == 0 ) {
 
-      if( (retval = check_option_value( argc, argv, i )) ) {
+      if( check_option_value( argc, argv, i ) ) {
         i++;
-        if( (retval = search_add_no_score_funit( argv[i] )) ) {
-          score_add_arg( argv[i-1] );
-          score_add_arg( argv[i] );
-        }
+        search_add_no_score_funit( argv[i] );
+        score_add_arg( argv[i-1] );
+        score_add_arg( argv[i] );
+      } else {
+        Throw 0;
       }
 
     } else if( strncmp( "-vcd", argv[i], 4 ) == 0 ) {
 
-      if( (retval = check_option_value( argc, argv, i )) ) {
+      if( check_option_value( argc, argv, i ) ) {
         i++;
         switch( dump_mode ) {
           case DUMP_FMT_NONE :
@@ -639,26 +655,28 @@ static bool score_parse_args( int argc, int last_arg, const char** argv ) { PROF
               unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "VCD dumpfile not found \"%s\"", argv[i] );
               assert( rv < USER_MSG_LENGTH );
               print_output( user_msg, FATAL, __FILE__, __LINE__ );
-              retval = FALSE;
+              Throw 0;
             }
             break;
           case DUMP_FMT_VCD :
             print_output( "Only one -vcd option is allowed on the score command-line", FATAL, __FILE__, __LINE__ );
-            retval = FALSE;
+            Throw 0;
             break;
           case DUMP_FMT_LXT :
             print_output( "Both the -vcd and -lxt options were specified on the command-line", FATAL, __FILE__, __LINE__ );
-            retval = FALSE;
+            Throw 0;
             break;
           default :
             assert( 0 );
             break;
         }
+      } else {
+        Throw 0;
       }
 
     } else if( strncmp( "-lxt", argv[i], 4 ) == 0 ) {
  
-      if( (retval = check_option_value( argc, argv, i )) ) {
+      if( check_option_value( argc, argv, i ) ) {
         i++; 
         switch( dump_mode ) {
           case DUMP_FMT_NONE :
@@ -671,26 +689,28 @@ static bool score_parse_args( int argc, int last_arg, const char** argv ) { PROF
               unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "LXT dumpfile not found \"%s\"", argv[i] );
               assert( rv < USER_MSG_LENGTH );
               print_output( user_msg, FATAL, __FILE__, __LINE__ );
-              retval = FALSE;
+              Throw 0;
             }
             break;
           case DUMP_FMT_VCD :
             print_output( "Both the -vcd and -lxt options were specified on the command-line", FATAL, __FILE__, __LINE__ );
-            retval = FALSE;
+            Throw 0;
             break;
           case DUMP_FMT_LXT :
             print_output( "Only one -lxt option is allowed on the score command-line", FATAL, __FILE__, __LINE__ );
-            retval = FALSE;
+            Throw 0;
             break;
           default :
             assert( 0 );
             break;
         }
+      } else {
+        Throw 0;
       }
 
     } else if( strncmp( "-vpi_ts", argv[i], 7 ) == 0 ) {
 
-      if( (retval = check_option_value( argc, argv, i )) ) {
+      if( check_option_value( argc, argv, i ) ) {
         i++;
         if( vpi_timescale != NULL ) {
           print_output( "Only one -vpi_ts option is allowed on the score command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
@@ -698,14 +718,13 @@ static bool score_parse_args( int argc, int last_arg, const char** argv ) { PROF
             i--;
           }
         } else {
-          if( (retval = process_timescale( argv[i], FALSE )) ) {
-            vpi_timescale = strdup_safe( argv[i] );
-            score_add_arg( argv[i-1] );
-            score_add_arg( argv[i] );
-          } else {
-            print_output( "Timescale specified with -vpi_ts option is in an illegal format", FATAL, __FILE__, __LINE__ );
-          }
+          process_timescale( argv[i], FALSE );
+          vpi_timescale = strdup_safe( argv[i] );
+          score_add_arg( argv[i-1] );
+          score_add_arg( argv[i] );
         }
+      } else {
+        Throw 0;
       }
 
     } else if( strncmp( "-vpi", argv[i], 4 ) == 0 ) {
@@ -730,32 +749,34 @@ static bool score_parse_args( int argc, int last_arg, const char** argv ) { PROF
 
     } else if( strncmp( "-v", argv[i], 2 ) == 0 ) {
 
-      if( (retval = check_option_value( argc, argv, i )) ) {
+      if( check_option_value( argc, argv, i ) ) {
         i++;
-        if( (retval = search_add_file( argv[i] )) ) {
-          score_add_arg( argv[i-1] );
-          score_add_arg( argv[i] );
-        }
+        search_add_file( argv[i] );
+        score_add_arg( argv[i-1] );
+        score_add_arg( argv[i] );
+      } else {
+        Throw 0;
       }
 
     } else if( strncmp( "+libext+", argv[i], 8 ) == 0 ) {
 
-      if( (retval = search_add_extensions( argv[i] + 8 )) ) {
-        score_add_arg( argv[i] );
-      }
+      search_add_extensions( argv[i] + 8 );
+      score_add_arg( argv[i] );
 
     } else if( strncmp( "-D", argv[i], 2 ) == 0 ) {
 
-      if( (retval = check_option_value( argc, argv, i )) ) {
+      if( check_option_value( argc, argv, i ) ) {
         i++;
         score_parse_define( argv[i] );
         score_add_arg( argv[i-1] );
         score_add_arg( argv[i] );
+      } else {
+        Throw 0;
       }
  
     } else if( strncmp( "-p", argv[i], 2 ) == 0 ) {
       
-      if( (retval = check_option_value( argc, argv, i )) ) {
+      if( check_option_value( argc, argv, i ) ) {
         i++;
         if( ppfilename != NULL ) {
           print_output( "Only one -p option is allowed on the score command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
@@ -768,37 +789,46 @@ static bool score_parse_args( int argc, int last_arg, const char** argv ) { PROF
             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unrecognizable filename %s specified for -p option.", argv[i] );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
-            exit( EXIT_FAILURE );
+            Throw 0;
           }
         }
+      } else {
+        Throw 0;
       }
         
     } else if( strncmp( "-P", argv[i], 2 ) == 0 ) {
 
-      if( (retval = check_option_value( argc, argv, i )) ) {
+      if( check_option_value( argc, argv, i ) ) {
         char* tmp = strdup_safe( argv[i+1] );
-        i++;
-        ptr = tmp;
-        while( (*ptr != '\0') && (*ptr != '=') ) {
-          ptr++;
-        }
-        if( *ptr == '\0' ) {
-          print_output( "Option -P must specify a value to assign.  See \"covered score -h\" for more information.",
-                        FATAL, __FILE__, __LINE__ );
-          exit( EXIT_FAILURE );
-        } else {
-          score_add_arg( argv[i-1] );
-          score_add_arg( argv[i] );
-          *ptr = '\0';
-          ptr++;
-          defparam_add( tmp, vector_from_string( &ptr, FALSE ) );
+        Try {
+          i++;
+          ptr = tmp;
+          while( (*ptr != '\0') && (*ptr != '=') ) {
+            ptr++;
+          }
+          if( *ptr == '\0' ) {
+            print_output( "Option -P must specify a value to assign.  See \"covered score -h\" for more information.",
+                          FATAL, __FILE__, __LINE__ );
+            Throw 0;
+          } else {
+            score_add_arg( argv[i-1] );
+            score_add_arg( argv[i] );
+            *ptr = '\0';
+            ptr++;
+            defparam_add( tmp, vector_from_string( &ptr, FALSE ) );
+          }
+        } Catch_anonymous {
+          free_safe( tmp );
+          Throw 0;
         }
         free_safe( tmp );
+      } else {
+        Throw 0;
       }
       
     } else if( strncmp( "-T", argv[i], 2 ) == 0 ) {
       
-      if( (retval = check_option_value( argc, argv, i )) ) {
+      if( check_option_value( argc, argv, i ) ) {
         i++;
         if( delay_expr_type != DELAY_EXPR_DEFAULT ) {
           print_output( "Only one -T option is allowed on the score command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
@@ -819,9 +849,11 @@ static bool score_parse_args( int argc, int last_arg, const char** argv ) { PROF
             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown -T value (%s).  Please specify min, max or typ.", argv[i] );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
-            exit( EXIT_FAILURE );
+            Throw 0;
           }
         }
+      } else {
+        Throw 0;
       }
 
     } else if( strncmp( "-r", argv[i], 2 ) == 0 ) {
@@ -838,12 +870,10 @@ static bool score_parse_args( int argc, int last_arg, const char** argv ) { PROF
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
           }
-          retval = FALSE;
+          Throw 0;
           break;
       }
-      if( retval ) {
-        score_add_arg( argv[i] );
-      }
+      score_add_arg( argv[i] );
 
     } else if( strncmp( "-S", argv[i], 2 ) == 0 ) {
 
@@ -852,7 +882,7 @@ static bool score_parse_args( int argc, int last_arg, const char** argv ) { PROF
 
     } else if( strncmp( "-A", argv[i], 2 ) == 0 ) {
 
-      if( (retval = check_option_value( argc, argv, i )) ) {
+      if( check_option_value( argc, argv, i ) ) {
         i++;
         if( strncmp( argv[i], "ovl", 3 ) == 0 ) {
           info_suppl.part.assert_ovl = 1;
@@ -864,8 +894,10 @@ static bool score_parse_args( int argc, int last_arg, const char** argv ) { PROF
           unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown -A value (%s).  Please specify ovl.", argv[i] );
           assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          retval = FALSE;
+          Throw 0;
         }
+      } else {
+        Throw 0;
       }
 
     } else if( strncmp( "-g", argv[i], 2 ) == 0 ) {
@@ -873,7 +905,7 @@ static bool score_parse_args( int argc, int last_arg, const char** argv ) { PROF
       int  generation;
       char tmp[256];
 
-      if( (retval = check_option_value( argc, argv, i )) ) {
+      if( check_option_value( argc, argv, i ) ) {
         i++;
         if( argv[i][(strlen( argv[i] ) - 1)] == '1' ) {
           generation = GENERATION_1995;
@@ -885,30 +917,28 @@ static bool score_parse_args( int argc, int last_arg, const char** argv ) { PROF
           unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown generation value '%c'.  Legal values are 1, 2 or 3.\n", argv[i][(strlen( argv[i] ) - 1)] );
           assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ ); 
-          retval = FALSE;
+          Throw 0;
         }
-        if( retval ) {
-          if( strlen( argv[i] ) == 1 ) {
-            flag_global_generation = generation;
+        if( strlen( argv[i] ) == 1 ) {
+          flag_global_generation = generation;
+        } else {
+          strcpy( tmp, argv[i] );
+          if( tmp[(strlen( tmp ) - 2)] == '=' ) {
+            str_link* strl;
+            tmp[(strlen( tmp ) - 2)] = '\0';
+            strl        = str_link_add( strdup_safe( tmp ), &gen_mod_head, &gen_mod_tail );
+            strl->suppl = generation;
           } else {
-            strcpy( tmp, argv[i] );
-            if( tmp[(strlen( tmp ) - 2)] == '=' ) {
-              str_link* strl;
-              tmp[(strlen( tmp ) - 2)] = '\0';
-              strl        = str_link_add( strdup_safe( tmp ), &gen_mod_head, &gen_mod_tail );
-              strl->suppl = generation;
-            } else {
-              unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Illegal -g syntax \"%s\".  See \"covered score -h\" for correct syntax.", tmp );
-              assert( rv < USER_MSG_LENGTH );
-              print_output( user_msg, FATAL, __FILE__, __LINE__ );
-              retval = FALSE;
-            }
+            unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Illegal -g syntax \"%s\".  See \"covered score -h\" for correct syntax.", tmp );
+            assert( rv < USER_MSG_LENGTH );
+            print_output( user_msg, FATAL, __FILE__, __LINE__ );
+            Throw 0;
           }
         }
-        if( retval ) {
-          score_add_arg( argv[i-1] );
-          score_add_arg( argv[i] );
-        }
+        score_add_arg( argv[i-1] );
+        score_add_arg( argv[i] );
+      } else {
+        Throw 0;
       }
 
     } else if( strncmp( "-cli", argv[i], 2 ) == 0 ) {
@@ -922,10 +952,9 @@ static bool score_parse_args( int argc, int last_arg, const char** argv ) { PROF
         }
       } else {
         if( (i < argc) && (argv[i][0] != '-') ) {
-          if( (retval = cli_read_hist_file( argv[i] )) ) {
-            score_add_arg( argv[i-1] );
-            score_add_arg( argv[i] );
-          }
+          cli_read_hist_file( argv[i] );
+          score_add_arg( argv[i-1] );
+          score_add_arg( argv[i] );
         } else {
           i--;
           score_add_arg( argv[i] );
@@ -934,7 +963,7 @@ static bool score_parse_args( int argc, int last_arg, const char** argv ) { PROF
       }
 #else
       print_output( "Command-line debugger (-cli option) is not available because Covered was not configured with the --enable-debug option", FATAL, __FILE__, __LINE__ );
-      retval = FALSE;
+      Throw 0;
 #endif
 
     } else {
@@ -942,7 +971,7 @@ static bool score_parse_args( int argc, int last_arg, const char** argv ) { PROF
       unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown score command option \"%s\".  See \"covered score -h\" for more information.", argv[i] );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      retval = FALSE;
+      Throw 0;
 
     }
 
@@ -950,20 +979,14 @@ static bool score_parse_args( int argc, int last_arg, const char** argv ) { PROF
 
   }
 
-  if( retval ) {
+  char* rv;
+
+  /* If the -A option was not specified, add all OVL modules to list of no-score modules */
+  ovl_add_assertions_to_no_score_list( info_suppl.part.assert_ovl );
     
-    char* rv;
-
-    /* If the -A option was not specified, add all OVL modules to list of no-score modules */
-    ovl_add_assertions_to_no_score_list( info_suppl.part.assert_ovl );
-    
-    /* Get the current directory */
-    rv = getcwd( score_run_path, 4096 );
-    assert( rv != NULL );
-
-  }
-
-  return( retval );
+  /* Get the current directory */
+  rv = getcwd( score_run_path, 4096 );
+  assert( rv != NULL );
 
 }
 
@@ -1074,6 +1097,10 @@ void command_score( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
 /*
  $Log$
+ Revision 1.111  2008/02/08 23:58:07  phase1geo
+ Starting to work on exception handling.  Much work to do here (things don't
+ compile at the moment).
+
  Revision 1.110  2008/02/01 07:03:20  phase1geo
  Fixing bugs in pragma exclusion code.  Added diagnostics to regression suite
  to verify that we correctly exclude/include signals when pragmas are set

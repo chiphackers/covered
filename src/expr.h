@@ -87,7 +87,7 @@ void expression_db_write( expression* expr, FILE* file, bool parse_mode );
 void expression_db_write_tree( expression* root, FILE* file );
 
 /*! \brief Reads current line of specified file and parses for expression information. */
-bool expression_db_read( char** line, /*@null@*/func_unit* curr_mod, bool eval );
+void expression_db_read( char** line, /*@null@*/func_unit* curr_mod, bool eval );
 
 /*! \brief Reads and merges two expressions and stores result in base expression. */
 void expression_db_merge( expression* base, char** line, bool same );
@@ -128,6 +128,10 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.65  2008/02/08 23:58:07  phase1geo
+ Starting to work on exception handling.  Much work to do here (things don't
+ compile at the moment).
+
  Revision 1.64  2008/02/01 06:37:08  phase1geo
  Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
  using pragma excludes (this code is not fully working yet).  More to be done.

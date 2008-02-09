@@ -42,7 +42,7 @@ void statement_db_write_tree( statement* stmt, FILE* ofile );
 void statement_db_write_expr_tree( statement* stmt, FILE* ofile );
 
 /*! \brief Reads in statement line from specified string and stores statement in specified functional unit. */
-bool statement_db_read( char** line, /*@null@*/func_unit* curr_funit, int read_mode );
+void statement_db_read( char** line, /*@null@*/func_unit* curr_funit, int read_mode );
 
 /*! \brief Assigns unique expression IDs to each expression in the given statement block. */
 void statement_assign_expr_ids( statement* stmt, func_unit* funit );
@@ -74,6 +74,9 @@ void statement_dealloc( statement* stmt );
 
 /*
  $Log$
+ Revision 1.34  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.33  2007/08/31 22:46:36  phase1geo
  Adding diagnostics from stable branch.  Fixing a few minor bugs and in progress
  of working on static_afunc1 failure (still not quite there yet).  Checkpointing.

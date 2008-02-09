@@ -33,10 +33,10 @@ void info_initialize();
 void info_db_write( FILE* file );
 
 /*! \brief  Reads info line from specified line and stores information. */
-bool info_db_read( char** line );
+void info_db_read( char** line );
 
 /*! \brief Reads score args line from specified line and stores information. */
-bool args_db_read( char** line );
+void args_db_read( char** line );
 
 /*! \brief Deallocates all memory associated with the information section of a database file. */
 void info_dealloc();
@@ -44,6 +44,9 @@ void info_dealloc();
 
 /*
  $Log$
+ Revision 1.7  2007/11/20 05:28:58  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.6  2006/07/27 16:08:46  phase1geo
  Fixing several memory leak bugs, cleaning up output and fixing regression
  bugs.  Full regression now passes (including all current generate diagnostics).

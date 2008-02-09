@@ -132,14 +132,14 @@ void search_init() { PROFILE(SEARCH_INIT);
  
 /*!
  \param path Name of include path to search for `include directives.
- \return Returns TRUE if the specified path is a legal directory string
-         and specifies an existing directory; otherwise, returns FALSE.
 
+ Adds the given include directory path to the include path list if the pathname exists.
 */
-bool search_add_include_path( const char* path ) { PROFILE(SEARCH_ADD_INCLUDE_PATH);
+void search_add_include_path(
+  const char* path
+) { PROFILE(SEARCH_ADD_INCLUDE_PATH);
 
-  bool  retval = TRUE;   /* Return value for this function */
-  char* tmp;             /* Temporary directory name */
+  char* tmp;  /* Temporary directory name */
 
   if( directory_exists( path ) ) {
     tmp = strdup_safe( path );
@@ -150,19 +150,16 @@ bool search_add_include_path( const char* path ) { PROFILE(SEARCH_ADD_INCLUDE_PA
     print_output( user_msg, WARNING, __FILE__, __LINE__ );
   }
 
-  return( retval );
-
 }
 
 /*!
  \param path Name of directory to find unspecified Verilog files
- \return Returns TRUE if the specified string is a legal directory string and
-         specifies an existing directory; otherwise, returns FALSE.
 
+ Adds the given library directory path to the list if the pathname is valid.
 */
-bool search_add_directory_path( const char* path ) { PROFILE(SEARCH_ADD_DIRECTORY_PATH);
-
-  bool retval = TRUE;  /* Return value for this function */
+void search_add_directory_path(
+  const char* path
+) { PROFILE(SEARCH_ADD_DIRECTORY_PATH);
 
   if( directory_exists( path ) ) {
     /* If no library extensions have been specified, assume *.v */
@@ -176,19 +173,18 @@ bool search_add_directory_path( const char* path ) { PROFILE(SEARCH_ADD_DIRECTOR
     print_output( user_msg, WARNING, __FILE__, __LINE__ );
   }
 
-  return( retval );
-
 }
 
 /*!
  \param file Name of Verilog file to add to scoring list.
- \return Returns TRUE if the specified file exists; otherwise, returns FALSE.
 
+ Adds the given file to the search path list if the file exists.
 */
-bool search_add_file( const char* file ) { PROFILE(SEARCH_ADD_FILE);
+void search_add_file(
+  const char* file
+) { PROFILE(SEARCH_ADD_FILE);
 
-  bool  retval = TRUE;  /* Return value for this function */
-  char* tmp;            /* Temporary filename */
+  char* tmp;  /* Temporary filename */
 
   if( file_exists( file ) ) {
     if( str_link_find( file, use_files_head ) == NULL ) {
@@ -199,23 +195,22 @@ bool search_add_file( const char* file ) { PROFILE(SEARCH_ADD_FILE);
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "File %s does not exist", file );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    Throw 0;
   }
-
-  return( retval );
 
 }
 
 /*!
  \param funit  Name of functional unit to specifically not score
 
- \return Returns TRUE if the specified string is a legal functional unit name; otherwise,
-         returns FALSE.
-
+ Checks the given functional unit name and adds this name to the list of functional units
+ to exclude from coverage.
 */
-bool search_add_no_score_funit( const char* funit ) { PROFILE(SEARCH_ADD_NO_SCORE_FUNIT);
+void search_add_no_score_funit(
+  const char* funit
+) { PROFILE(SEARCH_ADD_NO_SCORE_FUNIT);
 
-  bool  retval = TRUE;   /* Return value for this function */
-  char* tmp;             /* Temporary module name */
+  char* tmp;  /* Temporary module name */
 
   if( is_func_unit( funit ) ) {
     tmp = strdup_safe( funit );
@@ -224,32 +219,28 @@ bool search_add_no_score_funit( const char* funit ) { PROFILE(SEARCH_ADD_NO_SCOR
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Value of -e option (%s) is not a valid block name", funit );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    retval = FALSE;
+    Throw 0;
   }
-
-  return( retval );
 
 }
 
 /*!
  \param ext_list String containing extensions to allow in search.
 
- \return Returns TRUE if the specified string is in the correct format;
-         otherwise, returns FALSE.
-
  Parses the given +libext argument, extracting all extensions listed and storing them into
  the globally accessible extensions list.
 */
-bool search_add_extensions( const char* ext_list ) { PROFILE(SEARCH_ADD_EXTENSIONS);
+void search_add_extensions(
+  const char* ext_list
+) { PROFILE(SEARCH_ADD_EXTENSIONS);
 
-  bool        retval    = TRUE;      /* Return value for this function */
   char        ext[30];               /* Holder for extension */
   int         ext_index = 0;         /* Index to ext array */
   const char* tmp       = ext_list;  /* Temporary extension name */
 
   assert( ext_list != NULL );
 
-  while( (*tmp != '\0') && retval ) {
+  while( *tmp != '\0' ) {
     assert( ext_index < 30 );
     if( *tmp == '+' ) { 
       ext[ext_index] = '\0';
@@ -257,7 +248,7 @@ bool search_add_extensions( const char* ext_list ) { PROFILE(SEARCH_ADD_EXTENSIO
       (void)str_link_add( strdup_safe( ext ), &extensions_head, &extensions_tail );
     } else if( *tmp == '.' ) {
       if( ext_index > 0 ) {
-        retval = FALSE;
+        Throw 0;
       }
     } else {
       ext[ext_index] = *tmp;
@@ -274,10 +265,8 @@ bool search_add_extensions( const char* ext_list ) { PROFILE(SEARCH_ADD_EXTENSIO
     gen_space( user_msg, (25 + (strlen( ext_list ) - strlen( tmp ))) );
     strcat( user_msg, "^" );
     print_output( user_msg, FATAL_WRAP, __FILE__, __LINE__ );
-    retval = FALSE;
+    Throw 0;
   }
-
-  return( retval );
 
 }
 
@@ -289,13 +278,14 @@ void search_free_lists() { PROFILE(SEARCH_FREE_LISTS);
 
   str_link_delete_list( inc_paths_head  );
   str_link_delete_list( use_files_head  );
-  str_link_delete_list( no_score_head   );
-  str_link_delete_list( extensions_head );
 
 }
 
 /*
  $Log$
+ Revision 1.38  2008/01/21 21:39:55  phase1geo
+ Bug fix for bug 1876376.
+
  Revision 1.37  2008/01/16 23:10:33  phase1geo
  More splint updates.  Code is now warning/error free with current version
  of run_splint.  Still have regression issues to debug.

@@ -391,7 +391,7 @@ int arc_get_entry_suppl( const char* arcs, int curr, unsigned int type ) { PROFI
 
  Displays the given state transition arcs in a human-readable format.
 */
-static void arc_display( const char* arcs ) {
+/*@unused@*/ static void arc_display( const char* arcs ) {
 
   unsigned int curr_size   = arc_get_curr_size( arcs );     /* Current number of entries in the table */
   unsigned int width       = arc_get_width( arcs );         /* Width of the variable */
@@ -407,11 +407,14 @@ static void arc_display( const char* arcs ) {
 
   for( i=0; i<curr_size; i++ ) {
 
-    printf( "       entry %d: ", i );
+    unsigned int index;
+    unsigned int bitpos;
+
+    printf( "       entry %u: ", i );
 
     /* Get the L value */
-    unsigned int index  = (i * entry_width) + ((width + ARC_ENTRY_SUPPL_SIZE) / 8) + ARC_STATUS_SIZE;
-    unsigned int bitpos = (width + ARC_ENTRY_SUPPL_SIZE) % 8;
+    index  = (i * entry_width) + ((width + ARC_ENTRY_SUPPL_SIZE) / 8) + ARC_STATUS_SIZE;
+    bitpos = (width + ARC_ENTRY_SUPPL_SIZE) % 8;
     for( j=0; j<width; j++ ) {
       value[j] = (arcs[index] >> bitpos) & 0x1;
       bitpos = (bitpos + 1) % 8;
@@ -1007,16 +1010,15 @@ static unsigned int arc_read_get_next_value( char** line ) { PROFILE(ARC_READ_GE
  \param arcs  Pointer to state transition arc array.
  \param line  String containing current CDD line of arc information.
 
- \return Returns TRUE if arc was read and stored correctly; otherwise,
-         returns FALSE.
-
  Reads in specified state transition arc table, allocating the appropriate
  space to hold the table.  Returns TRUE if the specified line contained an
  appropriately written arc transition table; otherwise, returns FALSE.
 */
-bool arc_db_read( /*@out@*/ char** arcs, char** line ) { PROFILE(ARC_DB_READ);
+void arc_db_read(
+  /*@out@*/ char** arcs,
+  char** line
+) { PROFILE(ARC_DB_READ);
 
-  bool retval = TRUE;  /* Return value for this function */
   int  i;              /* Loop iterator */
   int  val;            /* Current character value */
   int  width;          /* Arc signal width */
@@ -1038,24 +1040,33 @@ bool arc_db_read( /*@out@*/ char** arcs, char** line ) { PROFILE(ARC_DB_READ);
   /* Allocate memory */
   *arcs = (char*)malloc_safe( (arc_get_entry_width( width ) * curr_size) + ARC_STATUS_SIZE );
 
-  /* Initialize */
-  arc_set_width( *arcs, width );
-  arc_set_max_size( *arcs, curr_size );
-  arc_set_curr_size( *arcs, curr_size );
-  arc_set_suppl( *arcs, suppl );
+  Try {
 
-  /* Read in rest of values */ 
-  i = ARC_STATUS_SIZE;
-  while( (i < ((curr_size * arc_get_entry_width( width )) + ARC_STATUS_SIZE)) && retval ) {
-    if( (val = arc_read_get_next_value( line )) != -1 ) {
-      (*arcs)[i] = (char)(val & 0xff);
-    } else {
-      retval = FALSE;
+    /* Initialize */
+    arc_set_width( *arcs, width );
+    arc_set_max_size( *arcs, curr_size );
+    arc_set_curr_size( *arcs, curr_size );
+    arc_set_suppl( *arcs, suppl );
+
+    /* Read in rest of values */ 
+    i = ARC_STATUS_SIZE;
+    while( i < ((curr_size * arc_get_entry_width( width )) + ARC_STATUS_SIZE) ) {
+      if( (val = arc_read_get_next_value( line )) != -1 ) {
+        (*arcs)[i] = (char)(val & 0xff);
+      } else {
+        print_output( "Unable to parse FSM arc information from database.  Unable to read.", FATAL, __FILE__, __LINE__ );
+        Throw 0;
+      }
+      i++;
     }
-    i++;
+
+  } Catch_anonymous {
+    free_safe( *arcs );
+    *arcs = NULL;
+    Throw 0;
   }
 
-  return( retval );
+  PROFILE_END;
 
 }
 
@@ -1124,15 +1135,12 @@ static void arc_state_to_string( const char* arcs, int index, bool left, char* s
  \param line  Pointer to read in line from CDD file to merge.
  \param same  Specifies if arc table to merge needs to be exactly the same as the existing arc table.
 
- \return Returns TRUE if line was read in correctly; otherwise, returns FALSE.
-
  Merges the specified FSM arc information from the current line into the base FSM arc information.
 */
-bool arc_db_merge( char** base, char** line, bool same ) { PROFILE(ARC_DB_MERGE);
+void arc_db_merge( char** base, char** line, bool same ) { PROFILE(ARC_DB_MERGE);
 
   /*@-mustfreeonly -mustfreefresh@*/
 
-  bool    retval = TRUE;  /* Return value for this function */
   char*   arcs;           /* Read arc array */
   char*   strl;           /* Left state value string */
   char*   strr;           /* Right state value string */
@@ -1143,69 +1151,63 @@ bool arc_db_merge( char** base, char** line, bool same ) { PROFILE(ARC_DB_MERGE)
   int     i;              /* Loop iterator */
   char    str_width[20];  /* Temporary string holder */
 
-  if( arc_db_read( &arcs, line ) ) {
+  arc_db_read( &arcs, line );
 
-    /* Check to make sure that arc arrays are compatible */
-    if( same && (arc_get_width( *base ) != arc_get_width( arcs )) ) {
-      /*
-       This case has been proven to be unreachable; however, we will keep it here
-       in case future code changes make it valid.  There is no diagnostic in error
-       regression that hits this failure.
-      */
-      print_output( "Attempting to merge two databases derived from different designs.  Unable to merge",
-                    FATAL, __FILE__, __LINE__ );
-      exit( EXIT_FAILURE );
+  /* Check to make sure that arc arrays are compatible */
+  if( same && (arc_get_width( *base ) != arc_get_width( arcs )) ) {
+    /*
+     This case has been proven to be unreachable; however, we will keep it here
+     in case future code changes make it valid.  There is no diagnostic in error
+     regression that hits this failure.
+    */
+    print_output( "Attempting to merge two databases derived from different designs.  Unable to merge",
+                  FATAL, __FILE__, __LINE__ );
+    Throw 0;
+  }
+
+  /* Calculate strlen of arc array width */
+  snprintf( str_width, 20, "%u", arc_get_width( arcs ) );
+
+  /* Allocate string to hold value string */
+  strl = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 4 + strlen( str_width ) );
+  strr = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 4 + strlen( str_width ) );
+
+  /* Get prefix of left and right state value strings ready */
+  snprintf( strl, ((arc_get_width( arcs ) / 4) + 4 + strlen( str_width )), "%s'h", str_width );
+  snprintf( strr, ((arc_get_width( arcs ) / 4) + 4 + strlen( str_width )), "%s'h", str_width );
+
+  tmpl = strl;
+  tmpr = strr;
+
+  for( i=0; i<arc_get_curr_size( arcs ); i++ ) {
+
+    /* Get string versions of state values */
+    arc_state_to_string( arcs, i, TRUE,  (strl + 2 + strlen( str_width )) );      
+    arc_state_to_string( arcs, i, FALSE, (strr + 2 + strlen( str_width )) );      
+
+    /* Convert these strings to vectors */
+    vecl = vector_from_string( &strl, FALSE );
+    vecr = vector_from_string( &strr, FALSE );
+
+    /* Add these states to the base arc array */
+    arc_add( base, vecl, vecr, arc_get_entry_suppl( arcs, i, ARC_HIT_F ), FALSE );
+    if( arc_get_entry_suppl( arcs, i, ARC_BIDIR ) == 1 ) {
+      arc_add( base, vecr, vecl, arc_get_entry_suppl( arcs, i, ARC_HIT_R ), FALSE );
     }
 
-    /* Calculate strlen of arc array width */
-    snprintf( str_width, 20, "%u", arc_get_width( arcs ) );
+    strl = tmpl;
+    strr = tmpr;
 
-    /* Allocate string to hold value string */
-    strl = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 4 + strlen( str_width ) );
-    strr = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 4 + strlen( str_width ) );
-
-    /* Get prefix of left and right state value strings ready */
-    snprintf( strl, ((arc_get_width( arcs ) / 4) + 4 + strlen( str_width )), "%s'h", str_width );
-    snprintf( strr, ((arc_get_width( arcs ) / 4) + 4 + strlen( str_width )), "%s'h", str_width );
-
-    tmpl = strl;
-    tmpr = strr;
-
-    for( i=0; i<arc_get_curr_size( arcs ); i++ ) {
-
-      /* Get string versions of state values */
-      arc_state_to_string( arcs, i, TRUE,  (strl + 2 + strlen( str_width )) );      
-      arc_state_to_string( arcs, i, FALSE, (strr + 2 + strlen( str_width )) );      
-
-      /* Convert these strings to vectors */
-      vecl = vector_from_string( &strl, FALSE );
-      vecr = vector_from_string( &strr, FALSE );
-
-      /* Add these states to the base arc array */
-      arc_add( base, vecl, vecr, arc_get_entry_suppl( arcs, i, ARC_HIT_F ), FALSE );
-      if( arc_get_entry_suppl( arcs, i, ARC_BIDIR ) == 1 ) {
-        arc_add( base, vecr, vecl, arc_get_entry_suppl( arcs, i, ARC_HIT_R ), FALSE );
-      }
-
-      strl = tmpl;
-      strr = tmpr;
-
-      vector_dealloc( vecl );
-      vector_dealloc( vecr );
-
-    }
-
-    free_safe( strl );
-    free_safe( strr );
-    free_safe( arcs );
-
-  } else {
-
-    retval = FALSE;
+    vector_dealloc( vecl );
+    vector_dealloc( vecr );
 
   }
 
-  return( retval );
+  free_safe( strl );
+  free_safe( strr );
+  free_safe( arcs );
+
+  PROFILE_END;
 
   /*@=mustfreeonly =mustfreefresh@*/
 
@@ -1377,6 +1379,9 @@ void arc_dealloc( char* arcs ) { PROFILE(ARC_DEALLOC);
 
 /*
  $Log$
+ Revision 1.51  2008/02/02 14:11:54  phase1geo
+ Adding new diagnostic for exclusion testing purposes.
+
  Revision 1.50  2008/02/02 05:50:16  phase1geo
  Adding more exclusion diagnostics to regression suite.  Fixed bug in arc
  state and state transition hit calculator.  Added arc_display function for

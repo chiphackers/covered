@@ -1266,16 +1266,13 @@ void expression_db_write_tree( expression* root, FILE* ofile ) { PROFILE(EXPRESS
  \param curr_funit  Pointer to current functional unit that instantiates this expression.
  \param eval        If TRUE, evaluate expression if children are static.
 
- \return Returns TRUE if parsing successful; otherwise, returns FALSE.
-
  Reads in the specified expression information, creates new expression from
  heap, populates the expression with specified information from file and 
  returns that value in the specified expression pointer.  If all is 
  successful, returns TRUE; otherwise, returns FALSE.
 */
-bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) { PROFILE(EXPRESSION_DB_READ);
+void expression_db_read( char** line, func_unit* curr_funit, bool eval ) { PROFILE(EXPRESSION_DB_READ);
 
-  bool         retval = TRUE;  /* Return value for this function */
   int          id;             /* Holder of expression ID */
   expression*  expr;           /* Pointer to newly created expression */
   int          linenum;        /* Holder of current line for this expression */
@@ -1302,7 +1299,7 @@ bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) { PROFI
       unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  expression (%d) in database written before its functional unit", id );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      retval = FALSE;
+      Throw 0;
 
     } else {
 
@@ -1313,7 +1310,7 @@ bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) { PROFI
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  root expression (%d) found before leaf expression (%d) in database file", id, right_id );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        exit( EXIT_FAILURE );
+        Throw 0;
       } else {
         right = expl->exp;
       }
@@ -1325,7 +1322,7 @@ bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) { PROFI
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  root expression (%d) found before leaf expression (%d) in database file", id, left_id );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        exit( EXIT_FAILURE );
+        Throw 0;
       } else {
         left = expl->exp;
       }
@@ -1344,19 +1341,19 @@ bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) { PROFI
 
       if( ESUPPL_OWNS_VEC( suppl ) ) {
 
-        /* Read in vector information */
-        if( vector_db_read( &vec, line ) ) {
+        Try {
 
-          /* Copy expression value */
-          vector_dealloc( expr->value );
-          expr->value = vec;
+          /* Read in vector information */
+          vector_db_read( &vec, line );
 
-        } else {
-
-          print_output( "Unable to read vector value for expression", FATAL, __FILE__, __LINE__ );
-          retval = FALSE;
- 
+        } Catch_anonymous {
+          expression_dealloc( expr, FALSE );
+          Throw 0;
         }
+
+        /* Copy expression value */
+        vector_dealloc( expr->value );
+        expr->value = vec;
 
       }
 
@@ -1404,13 +1401,11 @@ bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) { PROFI
   } else {
 
     print_output( "Unable to read expression value", FATAL, __FILE__, __LINE__ );
-    retval = FALSE;
+    Throw 0;
 
   }
 
   PROFILE_END;
-
-  return( retval );
 
 }
 
@@ -4279,6 +4274,10 @@ void expression_dealloc( expression* expr, bool exp_only ) { PROFILE(EXPRESSION_
 
 /* 
  $Log$
+ Revision 1.281  2008/02/08 23:58:06  phase1geo
+ Starting to work on exception handling.  Much work to do here (things don't
+ compile at the moment).
+
  Revision 1.280  2008/02/01 06:37:07  phase1geo
  Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
  using pragma excludes (this code is not fully working yet).  More to be done.

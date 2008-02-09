@@ -337,6 +337,8 @@ void db_read( char* file, int read_mode ) { PROFILE(DB_READ);
 
   if( (db_handle = fopen( file, "r" )) != NULL ) {
 
+    unsigned int rv;
+
     Try {
 
       unsigned int rv;
@@ -503,7 +505,7 @@ void db_read( char* file, int read_mode ) { PROFILE(DB_READ);
 
     }
  
-    unsigned int rv = fclose( db_handle );
+    rv = fclose( db_handle );
     assert( rv == 0 );
 
   } else {
@@ -2673,6 +2675,10 @@ void db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.278  2008/02/08 23:58:06  phase1geo
+ Starting to work on exception handling.  Much work to do here (things don't
+ compile at the moment).
+
  Revision 1.277  2008/02/01 06:37:07  phase1geo
  Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
  using pragma excludes (this code is not fully working yet).  More to be done.

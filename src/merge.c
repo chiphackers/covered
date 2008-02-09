@@ -66,22 +66,19 @@ static void merge_usage() {
  \param last_arg  Index of last parsed argument from list.
  \param argv      Argument list passed to this program.
 
- \return Returns TRUE if argument parsing was successful; otherwise,
-         returns FALSE.
-
  Parses the merge argument list, placing all parsed values into
  global variables.  If an argument is found that is not valid
  for the merge operation, an error message is displayed to the
  user.
 */
-static bool merge_parse_args( int argc, int last_arg, const char** argv ) {
+static void merge_parse_args( int argc, int last_arg, const char** argv ) {
 
   bool retval = TRUE;  /* Return value for this function */
   int  i;              /* Loop iterator */
 
   i = last_arg + 1;
 
-  while( (i < argc) && retval ) {
+  while( i < argc ) {
 
     if( strncmp( "-h", argv[i], 2 ) == 0 ) {
 
@@ -98,7 +95,7 @@ static bool merge_parse_args( int argc, int last_arg, const char** argv ) {
           unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Output file \"%s\" is not writable", argv[i] );
           assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          retval = FALSE;
+          Throw 0;
         }
       }
 
@@ -122,7 +119,7 @@ static bool merge_parse_args( int argc, int last_arg, const char** argv ) {
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "CDD file (%s) does not exist", argv[i] );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        retval = FALSE;
+        Throw 0;
 
       }
 
@@ -133,14 +130,12 @@ static bool merge_parse_args( int argc, int last_arg, const char** argv ) {
   }
 
   /* Check to make sure that the user specified at least two files to merge */
-  if( retval && (merge_in_num < 2) ) {
+  if( merge_in_num < 2 ) {
 
     print_output( "Must specify at least two CDD files to merge", FATAL, __FILE__, __LINE__ );
-    retval = FALSE;
+    Throw 0;
 
   }
-
-  return( retval );
 
 }
 
@@ -149,16 +144,13 @@ static bool merge_parse_args( int argc, int last_arg, const char** argv ) {
  \param last_arg  Index of last parsed argument from list.
  \param argv      List of arguments from command-line to parse.
 
- \return Returns EXIT_SUCCESS if merge is successful; otherwise, returns EXIT_FAILURE.
-
  Performs merge command functionality.
 */
-int command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAND_MERGE);
+void command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAND_MERGE);
 
-  int          retval = EXIT_SUCCESS;  /* Return value of this function */
-  int          i;                      /* Loop iterator */
-  int          mnum;                   /* Number of merge files to read */
-  unsigned int rv;                     /* Return value from snprintf calls */
+  int          i;     /* Loop iterator */
+  int          mnum;  /* Number of merge files to read */
+  unsigned int rv;    /* Return value from snprintf calls */
 
   /* Output header information */
   rv = snprintf( user_msg, USER_MSG_LENGTH, COVERED_HEADER );
@@ -214,6 +206,10 @@ int command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAND
 
 /*
  $Log$
+ Revision 1.39  2008/02/08 23:58:07  phase1geo
+ Starting to work on exception handling.  Much work to do here (things don't
+ compile at the moment).
+
  Revision 1.38  2008/01/21 21:39:55  phase1geo
  Bug fix for bug 1876376.
 

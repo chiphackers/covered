@@ -679,16 +679,13 @@ void funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
  \param scope  Pointer to name of read functional unit scope.
  \param line   Pointer to current line to parse.
 
- \return Returns TRUE if read was successful; otherwise, returns FALSE.
-
  Reads the current line of the specified file and parses it for a functional unit.
  If all is successful, returns TRUE; otherwise, returns FALSE.
 */
-bool funit_db_read( func_unit* funit, char* scope, char** line ) { PROFILE(FUNIT_DB_READ);
+void funit_db_read( func_unit* funit, char* scope, char** line ) { PROFILE(FUNIT_DB_READ);
 
-  bool retval = TRUE;  /* Return value for this function */
-  int  chars_read;     /* Number of characters currently read */
-  int  params;         /* Number of parameters in string that were parsed */
+  int  chars_read;   /* Number of characters currently read */
+  int  params;       /* Number of parameters in string that were parsed */
 
   /*@-duplicatequals -formattype@*/
   if( (params = sscanf( *line, "%d %s \"%[^\"]\" %s %d %d %llu%n", &(funit->type), funit->name, scope, funit->filename,
@@ -703,13 +700,11 @@ bool funit_db_read( func_unit* funit, char* scope, char** line ) { PROFILE(FUNIT
                                 params );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    retval = FALSE;
+    Throw 0;
 
   }
 
   PROFILE_END;
-
-  return( retval );
 
 }
 
@@ -718,16 +713,13 @@ bool funit_db_read( func_unit* funit, char* scope, char** line ) { PROFILE(FUNIT
  \param file  Pointer to CDD file handle to read.
  \param same  Specifies if functional unit to be merged should match existing functional unit exactly or not.
 
- \return Returns TRUE if parse and merge was successful; otherwise, returns FALSE.
-
  Parses specified line for functional unit information and performs a merge of the two 
  specified functional units, placing the resulting merge functional unit into the functional unit named base.
  If there are any differences between the two functional units, a warning or error will be
  displayed to the user.
 */
-bool funit_db_merge( func_unit* base, FILE* file, bool same ) { PROFILE(FUNIT_DB_MERGE);
+void funit_db_merge( func_unit* base, FILE* file, bool same ) { PROFILE(FUNIT_DB_MERGE);
 
-  bool      retval = TRUE;   /* Return value of this function */
   exp_link* curr_base_exp;   /* Pointer to current expression in base functional unit expression list */
   sig_link* curr_base_sig;   /* Pointer to current signal in base functional unit signal list */
   stmt_iter curr_base_stmt;  /* Statement list iterator */
@@ -743,7 +735,7 @@ bool funit_db_merge( func_unit* base, FILE* file, bool same ) { PROFILE(FUNIT_DB
 
   /* Handle all functional unit expressions */
   curr_base_exp = base->exp_head;
-  while( (curr_base_exp != NULL) && retval ) {
+  while( curr_base_exp != NULL ) {
     if( util_readline( file, &curr_line ) ) {
       Try {
         if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
@@ -772,7 +764,7 @@ bool funit_db_merge( func_unit* base, FILE* file, bool same ) { PROFILE(FUNIT_DB
 
   /* Handle all functional unit signals */
   curr_base_sig = base->sig_head;
-  while( (curr_base_sig != NULL) && retval ) {
+  while( curr_base_sig != NULL ) {
     if( util_readline( file, &curr_line ) ) {
       Try {
         if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
@@ -801,40 +793,56 @@ bool funit_db_merge( func_unit* base, FILE* file, bool same ) { PROFILE(FUNIT_DB
 
   /* Since statements don't get merged, we will just read these lines in */
   stmt_iter_reset( &curr_base_stmt, base->stmt_head );
-  while( (curr_base_stmt.curr != NULL) && retval ) {
+  while( curr_base_stmt.curr != NULL ) {
     if( util_readline( file, &curr_line ) ) {
-      if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
-        rest_line = curr_line + chars_read;
-        if( type != DB_TYPE_STATEMENT ) {
-          retval = FALSE;
+      Try {
+        if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
+          rest_line = curr_line + chars_read;
+          if( type != DB_TYPE_STATEMENT ) {
+            print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
+            Throw 0;
+          }
+        } else {
+          print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
+          Throw 0;
         }
-      } else {
-        retval = FALSE;
+      } Catch_anonymous {
+        free_safe( curr_line );
+        Throw 0;
       }
       free_safe( curr_line );
     } else {
-      retval = FALSE;
+      print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
+      Throw 0;
     }
     stmt_iter_next( &curr_base_stmt );
   }
 
   /* Handle all functional unit FSMs */
   curr_base_fsm = base->fsm_head;
-  while( (curr_base_fsm != NULL) && retval ) {
+  while( curr_base_fsm != NULL ) {
     if( util_readline( file, &curr_line ) ) {
-      if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
-        rest_line = curr_line + chars_read;
-        if( type == DB_TYPE_FSM ) {
-          retval = fsm_db_merge( curr_base_fsm->table, &rest_line, same );
+      Try {
+        if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
+          rest_line = curr_line + chars_read;
+          if( type == DB_TYPE_FSM ) {
+            fsm_db_merge( curr_base_fsm->table, &rest_line, same );
+          } else {
+            print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
+            Throw 0;
+          }
         } else {
-          retval = FALSE;
+          print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
+          Throw 0;
         }
-      } else {
-        retval = FALSE;
+      } Catch_anonymous {
+        free_safe( curr_line );
+        Throw 0;
       }
       free_safe( curr_line );
     } else {
-      retval = FALSE;
+      print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
+      Throw 0;
     }
     curr_base_fsm = curr_base_fsm->next;
   }
@@ -842,27 +850,33 @@ bool funit_db_merge( func_unit* base, FILE* file, bool same ) { PROFILE(FUNIT_DB
   /* Since race condition blocks don't get merged, we will just read these lines in */
   if( base->type == FUNIT_MODULE ) {
     curr_base_race = base->race_head;
-    while( (curr_base_race != NULL) && retval ) {
+    while( curr_base_race != NULL ) {
       if( util_readline( file, &curr_line ) ) {
-        if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
-          rest_line = curr_line + chars_read;
-          if( type != DB_TYPE_RACE ) {
-            retval = FALSE;
+        Try {
+          if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
+            rest_line = curr_line + chars_read;
+            if( type != DB_TYPE_RACE ) {
+              print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
+              Throw 0;
+            }
+          } else {
+            print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
+            Throw 0;
           }
-        } else {
-          retval = FALSE;
+        } Catch_anonymous {
+          free_safe( curr_line );
+          Throw 0;
         }
         free_safe( curr_line );
       } else {
-        retval = FALSE;
+        print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
+        Throw 0;
       }
       curr_base_race = curr_base_race->next;
     }
   }
 
   PROFILE_END;
-
-  return( retval );
 
 }
 
@@ -1190,6 +1204,10 @@ void funit_dealloc( func_unit* funit ) { PROFILE(FUNIT_DEALLOC);
 
 /*
  $Log$
+ Revision 1.89  2008/02/08 23:58:07  phase1geo
+ Starting to work on exception handling.  Much work to do here (things don't
+ compile at the moment).
+
  Revision 1.88  2008/01/16 23:10:30  phase1geo
  More splint updates.  Code is now warning/error free with current version
  of run_splint.  Still have regression issues to debug.

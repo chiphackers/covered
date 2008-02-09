@@ -25,11 +25,14 @@
 
 
 /*! \brief Parses command-line for merge options and performs merge command. */
-int command_merge( int argc, int last_arg, const char** argv );
+void command_merge( int argc, int last_arg, const char** argv );
 
 
 /*
  $Log$
+ Revision 1.9  2008/01/09 23:54:15  phase1geo
+ More splint updates.
+
  Revision 1.8  2007/11/20 05:28:59  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

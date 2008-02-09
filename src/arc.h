@@ -29,10 +29,14 @@
 
 
 /*! \brief Returns the width of the specified arc. */
-unsigned int arc_get_width( const char* arcs );
+unsigned int arc_get_width(
+  const char* arcs
+);
 
 /*! \brief Allocates and initializes new state transition array. */
-char* arc_create( int width );
+char* arc_create(
+  int width
+);
 
 /*! \brief Adds new state transition arc entry to specified table. */
 void arc_add(
@@ -44,43 +48,98 @@ void arc_add(
 );
 
 /*! \brief Gets supplemental field value from specified arc entry table. */
-unsigned int arc_get_suppl( const char* arcs, unsigned int type );
+unsigned int arc_get_suppl(
+  const char*  arcs,
+  unsigned int type
+);
 
 /*! \brief Sets supplemental field value to specified arc entry. */
-void arc_set_entry_suppl( char* arcs, int curr, unsigned int type, char val );
+void arc_set_entry_suppl(
+  char*        arcs,
+  int          curr,
+  unsigned int type,
+  char         val
+);
 
 /*! \brief Gets supplemental field value from specified arc entry. */
-int arc_get_entry_suppl( const char* arcs, int curr, unsigned int type );
+int arc_get_entry_suppl(
+  const char*  arcs,
+  int          curr,
+  unsigned int type
+);
 
 /*! \brief Finds the specified state transition in the given arc array */
-int arc_find( const char* arcs, const vector* from_st, const vector* to_st, int* ptr );
+int arc_find(
+  const char*   arcs,
+  const vector* from_st,
+  const vector* to_st,
+  int*          ptr
+);
 
 /*! \brief Calculates all state and state transition values for reporting purposes. */
-void arc_get_stats( char* arcs, int* state_total, int* state_hits, int* arc_total, int* arc_hits );
+void arc_get_stats(
+  char* arcs,
+  int*  state_total,
+  int*  state_hits,
+  int*  arc_total,
+  int*  arc_hits
+);
 
 /*! \brief Writes specified arc array to specified CDD file. */
-void arc_db_write( const char* arcs, FILE* file );
+void arc_db_write(
+  const char* arcs,
+  FILE*       file
+);
 
 /*! \brief Reads in arc array from CDD database string. */
-bool arc_db_read( char** arcs, char** line );
+void arc_db_read(
+  char** arcs,
+  char** line
+);
 
 /*! \brief Merges contents of arc table from line to specified base array. */
-bool arc_db_merge( char** arcs, char** line, bool same );
+void arc_db_merge(
+  char** arcs,
+  char** line,
+  bool   same
+);
 
 /*! \brief Stores arc array state values to specified string array. */
-void arc_get_states( char*** states, int* state_size, const char* arcs, bool hit, bool any );
+void arc_get_states(
+  char***     states,
+  int*        state_size,
+  const char* arcs,
+  bool        hit,
+  bool        any
+);
 
 /*! \brief Outputs arc array state transition values to specified output stream. */
-void arc_get_transitions( char*** from_states, char*** to_states, int** excludes, int* arc_size, const char* arcs, bool hit, bool any );
+void arc_get_transitions(
+  char***     from_states,
+  char***     to_states,
+  int**       excludes,
+  int*        arc_size,
+  const char* arcs,
+  bool        hit,
+  bool        any
+);
 
 /*! \brief Specifies if any state transitions have been excluded from coverage. */
-bool arc_are_any_excluded( const char* arcs );
+bool arc_are_any_excluded(
+  const char* arcs
+);
 
 /*! \brief Deallocates memory for specified arcs array. */
-void arc_dealloc( /*@only@*/ char* arcs );
+void arc_dealloc(
+  /*@only@*/ char* arcs
+);
 
 /*
  $Log$
+ Revision 1.25  2008/02/01 06:37:07  phase1geo
+ Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
+ using pragma excludes (this code is not fully working yet).  More to be done.
+
  Revision 1.24  2008/01/16 06:40:33  phase1geo
  More splint updates.
 

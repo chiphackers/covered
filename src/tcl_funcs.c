@@ -1702,18 +1702,25 @@ int tcl_func_preprocess_verilog( ClientData d, Tcl_Interp* tcl, int argc, const 
   assert( mkstemp( ppfilename ) != 0 );
 
   out = fopen( ppfilename, "w" );
-  if( out == NULL ) {
-    snprintf( user_msg, USER_MSG_LENGTH, "Unable to open temporary file %s for writing", ppfilename );
-    print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    exit( EXIT_FAILURE );
-  }
 
-  /* Now the preprocessor on this file first */
-  if( strcmp( argv[1], "NA" ) == 0 ) {
-    fprintf( out, "No information available\n" );
-  } else {
-    reset_pplexer( argv[1], out );
-    PPVLlex();
+  Try {
+
+    if( out == NULL ) {
+      snprintf( user_msg, USER_MSG_LENGTH, "Unable to open temporary file %s for writing", ppfilename );
+      print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      Throw 0;
+    }
+
+    /* Now the preprocessor on this file first */
+    if( strcmp( argv[1], "NA" ) == 0 ) {
+      fprintf( out, "No information available\n" );
+    } else {
+      reset_pplexer( argv[1], out );
+      PPVLlex();
+    }
+
+  } Catch_anonymous {
+    retval = TCL_ERROR;
   }
 
   fclose( out );
@@ -2265,6 +2272,10 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.69  2008/02/08 23:58:07  phase1geo
+ Starting to work on exception handling.  Much work to do here (things don't
+ compile at the moment).
+
  Revision 1.68  2008/01/07 23:59:55  phase1geo
  More splint updates.
 

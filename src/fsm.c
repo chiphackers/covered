@@ -205,14 +205,11 @@ void fsm_db_write( fsm* table, FILE* file, bool parse_mode ) { PROFILE(FSM_DB_WR
  \param line   Pointer to current line being read from the CDD file.
  \param funit  Pointer to current functional unit.
 
- \return Returns TRUE if read was successful; otherwise, returns FALSE.
-
  Reads in contents of FSM line from CDD file and stores newly created
  FSM into the specified functional unit.
 */
-bool fsm_db_read( char** line, func_unit* funit ) { PROFILE(FSM_DB_READ);
+void fsm_db_read( char** line, func_unit* funit ) { PROFILE(FSM_DB_READ);
 
-  bool       retval = TRUE;  /* Return value for this function */
   int        iexp_id;        /* Input expression ID */
   int        oexp_id;        /* Output expression ID */
   exp_link*  iexpl;          /* Pointer to found state variable */
@@ -228,7 +225,7 @@ bool fsm_db_read( char** line, func_unit* funit ) { PROFILE(FSM_DB_READ);
     if( funit == NULL ) {
 
       print_output( "Internal error:  FSM in database written before its functional unit", FATAL, __FILE__, __LINE__ );
-      retval = FALSE;
+      Throw 0;
 
     } else {
 
@@ -249,38 +246,31 @@ bool fsm_db_read( char** line, func_unit* funit ) { PROFILE(FSM_DB_READ);
         } else {
           table->from_state = iexpl->exp;
         }
-
+  
         /* Set output expression tables to point to this FSM */
         table->to_state->table = table;
-
+  
         /* Now read in set table */
         if( is_table == 1 ) {
 
-          if( arc_db_read( &(table->table), line ) ) {
-
-            /* Add fsm to current functional unit */
-            fsm_link_add( table, &(funit->fsm_head), &(funit->fsm_tail) );
- 
-          } else {
-
-            print_output( "Unable to read FSM state transition arc array", FATAL, __FILE__, __LINE__ );
-            retval = FALSE;
-
+          Try {
+            arc_db_read( &(table->table), line );
+          } Catch_anonymous {
+            fsm_dealloc( table );
+            Throw 0;
           }
 
-        } else {
-
-          /* Add fsm to current functional unit */
-          fsm_link_add( table, &(funit->fsm_head), &(funit->fsm_tail) );
-
         }
+
+        /* Add fsm to current functional unit */
+        fsm_link_add( table, &(funit->fsm_head), &(funit->fsm_tail) );
  
       } else {
 
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to find state variable expressions (%d, %d) for current FSM", iexp_id, oexp_id );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        retval = FALSE;
+        Throw 0;
 
       }
 
@@ -288,11 +278,12 @@ bool fsm_db_read( char** line, func_unit* funit ) { PROFILE(FSM_DB_READ);
 
   } else {
 
-    retval = FALSE;
+    print_output( "Unable to parse statement line in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
+    Throw 0;
 
   }
 
-  return( retval );
+  PROFILE_END;
 
 }
 
@@ -301,21 +292,22 @@ bool fsm_db_read( char** line, func_unit* funit ) { PROFILE(FSM_DB_READ);
  \param line  Pointer to read in line from CDD file to merge.
  \param same  Specifies if FSM to merge needs to be exactly the same as the existing FSM.
 
- \return Returns TRUE if parsing successful; otherwise, returns FALSE.
-
  Parses specified line for FSM information and performs merge of the base
  and in FSMs, placing the resulting merged FSM into the base signal.  If
  the FSMs are found to be unalike (names are different), an error message
  is displayed to the user.  If both FSMs are the same, perform the merge
  on the FSM's tables.
 */
-bool fsm_db_merge( fsm* base, char** line, bool same ) { PROFILE(FSM_DB_MERGE);
+void fsm_db_merge(
+  fsm*   base,
+  char** line,
+  bool   same
+) { PROFILE(FSM_DB_MERGE);
 
-  bool   retval = TRUE;  /* Return value of this function */
-  int    iid;            /* Input state variable expression ID */
-  int    oid;            /* Output state variable expression ID */
-  int    chars_read;     /* Number of characters read from line */
-  int    is_table;       /* Holds value of is_table signifier */
+  int iid;         /* Input state variable expression ID */
+  int oid;         /* Output state variable expression ID */
+  int chars_read;  /* Number of characters read from line */
+  int is_table;    /* Holds value of is_table signifier */
 
   assert( base != NULL );
   assert( base->from_state != NULL );
@@ -330,23 +322,24 @@ bool fsm_db_merge( fsm* base, char** line, bool same ) { PROFILE(FSM_DB_MERGE);
 
       print_output( "Attempting to merge two databases derived from different designs.  Unable to merge",
                     FATAL, __FILE__, __LINE__ );
-      exit( EXIT_FAILURE );
+      Throw 0;
 
     } else if( is_table == 1 ) {
 #endif
     if( is_table == 1 ) {
 
-      retval &= arc_db_merge( &(base->table), line, same );
+      arc_db_merge( &(base->table), line, same );
           
     }
 
   } else {
 
-    retval = FALSE;
+    print_output( "Database being merged is not compatible with the original database.", FATAL, __FILE__, __LINE__ );
+    Throw 0;
 
   }
 
-  return( retval );
+  PROFILE_END;
 
 }
 
@@ -1291,6 +1284,10 @@ void fsm_dealloc( fsm* table ) { PROFILE(FSM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.82  2008/02/01 06:37:08  phase1geo
+ Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
+ using pragma excludes (this code is not fully working yet).  More to be done.
+
  Revision 1.81  2008/01/30 05:51:50  phase1geo
  Fixing doxygen errors.  Updated parameter list syntax to make it more readable.
 

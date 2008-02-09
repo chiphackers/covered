@@ -326,14 +326,11 @@ void vector_db_write( vector* vec, FILE* file, bool write_data ) { PROFILE(VECTO
  \param vec    Pointer to vector to create.
  \param line   Pointer to line to parse for vector information.
 
- \return Returns TRUE if parsing successful; otherwise, returns FALSE.
-
  Creates a new vector structure, parses current file line for vector information
  and returns new vector structure to calling function.
 */
-bool vector_db_read( vector** vec, char** line ) { PROFILE(VECTOR_DB_READ);
+void vector_db_read( vector** vec, char** line ) { PROFILE(VECTOR_DB_READ);
 
-  bool         retval = TRUE;  /* Return value for this function */
   int          width;          /* Vector bit width */
   int          suppl;          /* Temporary supplemental value */
   int          i;              /* Loop iterator */
@@ -350,47 +347,55 @@ bool vector_db_read( vector** vec, char** line ) { PROFILE(VECTOR_DB_READ);
     *vec              = vector_create( width, VTYPE_VAL, TRUE );
     (*vec)->suppl.all = (char)suppl & 0xff;
 
-    i = 0;
-    while( (i < width) && retval ) {
-      if( sscanf( *line, "%x%n", &value, &chars_read ) == 1 ) {
-        *line += chars_read;
-        vector_uint_to_nibbles( value, nibs );
-        switch( width - i ) {
-          case 0 :  break;
-          case 1 :
-            (*vec)->value[i+0].all = nibs[0];
-            break;
-          case 2 :
-            (*vec)->value[i+0].all = nibs[0];
-            (*vec)->value[i+1].all = nibs[1];
-            break;
-          case 3 :
-            (*vec)->value[i+0].all = nibs[0];
-            (*vec)->value[i+1].all = nibs[1];
-            (*vec)->value[i+2].all = nibs[2];
-            break;
-          default:
-            (*vec)->value[i+0].all = nibs[0];
-            (*vec)->value[i+1].all = nibs[1];
-            (*vec)->value[i+2].all = nibs[2];
-            (*vec)->value[i+3].all = nibs[3];
-            break;
+    Try {
+
+      i = 0;
+      while( i < width ) {
+        if( sscanf( *line, "%x%n", &value, &chars_read ) == 1 ) {
+          *line += chars_read;
+          vector_uint_to_nibbles( value, nibs );
+          switch( width - i ) {
+            case 0 :  break;
+            case 1 :
+              (*vec)->value[i+0].all = nibs[0];
+              break;
+            case 2 :
+              (*vec)->value[i+0].all = nibs[0];
+              (*vec)->value[i+1].all = nibs[1];
+              break;
+            case 3 :
+              (*vec)->value[i+0].all = nibs[0];
+              (*vec)->value[i+1].all = nibs[1];
+              (*vec)->value[i+2].all = nibs[2];
+              break;
+            default:
+              (*vec)->value[i+0].all = nibs[0];
+              (*vec)->value[i+1].all = nibs[1];
+              (*vec)->value[i+2].all = nibs[2];
+              (*vec)->value[i+3].all = nibs[3];
+              break;
+          }
+        } else {
+          print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
+          Throw 0;
         }
-      } else {
-        retval = FALSE;
+        i += 4;
       }
-      i += 4;
+
+    } Catch_anonymous {
+      vector_dealloc( *vec );
+      *vec = NULL;
+      Throw 0;
     }
 
   } else {
 
-    retval = FALSE;
+    print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
+    Throw 0;
 
   }
 
   PROFILE_END;
-
-  return( retval );
 
 }
 
@@ -2415,6 +2420,10 @@ void vector_dealloc( vector* vec ) { PROFILE(VECTOR_DEALLOC);
 
 /*
  $Log$
+ Revision 1.112  2008/02/08 23:58:07  phase1geo
+ Starting to work on exception handling.  Much work to do here (things don't
+ compile at the moment).
+
  Revision 1.111  2008/01/30 05:51:51  phase1geo
  Fixing doxygen errors.  Updated parameter list syntax to make it more readable.
 

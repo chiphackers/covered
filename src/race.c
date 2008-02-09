@@ -859,17 +859,14 @@ void race_db_write(
  \param line      Pointer to line containing information for a race condition block.
  \param curr_mod  Pointer to current module to store race condition block to.
 
- \return Returns TRUE if line was read successfully; otherwise, returns FALSE.
-
  Reads the specified line from the CDD file and parses it for race condition block
  information.
 */
-bool race_db_read(
+void race_db_read(
   char**     line,
   func_unit* curr_mod
 ) { PROFILE(RACE_DB_READ);
 
-  bool      retval = TRUE;  /* Return value for this function */
   int       start_line;     /* Starting line for race condition block */
   int       end_line;       /* Ending line for race condition block */
   int       reason;         /* Reason for why the race condition block exists */
@@ -883,7 +880,7 @@ bool race_db_read(
     if( curr_mod == NULL ) {
 
       print_output( "Internal error:  race condition in database written before its functional unit", FATAL, __FILE__, __LINE__ );
-      retval = FALSE;
+      Throw 0;
 
     } else {
 
@@ -902,13 +899,12 @@ bool race_db_read(
 
   } else {
 
-    retval = FALSE;
+    print_output( "Unable to parse race condition line in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
+    Throw 0;
 
   }
 
   PROFILE_END;
-
-  return( retval );
 
 }
 
@@ -1156,6 +1152,9 @@ void race_blk_delete_list(
 
 /*
  $Log$
+ Revision 1.69  2008/01/30 05:51:50  phase1geo
+ Fixing doxygen errors.  Updated parameter list syntax to make it more readable.
+
  Revision 1.68  2008/01/23 20:48:03  phase1geo
  Fixing bug 1878134 and adding new diagnostics to regression suite to verify
  its behavior.  Full regressions pass.

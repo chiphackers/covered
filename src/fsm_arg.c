@@ -223,66 +223,69 @@ static expression* fsm_arg_parse_state(
 /*!
  \param arg  Command-line argument following -F specifier.
 
- \return Returns TRUE if argument is considered legal for the -F specifier;
-         otherwise, returns FALSE.
-
  Parses specified argument string for FSM information.  If the FSM information
  is considered legal, returns TRUE; otherwise, returns FALSE.
 */
-bool fsm_arg_parse( const char* arg ) { PROFILE(FSM_ARG_PARSE);
+void fsm_arg_parse( const char* arg ) { PROFILE(FSM_ARG_PARSE);
 
-  bool        retval = TRUE;                /* Return value for this function */
   char*       tmp    = strdup_safe( arg );  /* Temporary copy of given argument */
   char*       ptr    = tmp;                 /* Pointer to current character in arg */
   expression* in_state;                     /* Pointer to input state expression */
   expression* out_state;                    /* Pointer to output state expression */
 
-  while( (*ptr != '\0') && (*ptr != '=') ) {
-    ptr++;
-  }
+  Try {
 
-  if( *ptr == '\0' ) {
+    while( (*ptr != '\0') && (*ptr != '=') ) {
+      ptr++;
+    }
 
-    print_output( "Option -F must specify a module/task/function/named block and one or two variables.  See \"covered score -h\" for more information.",
-                  FATAL, __FILE__, __LINE__ );
-    retval = FALSE;
+    if( *ptr == '\0' ) {
 
-  } else {
+      print_output( "Option -F must specify a module/task/function/named block and one or two variables.  See \"covered score -h\" for more information.",
+                    FATAL, __FILE__, __LINE__ );
+      Throw 0;
 
-    *ptr = '\0';
-    ptr++;
+    } else {
 
-    if( (in_state = fsm_arg_parse_state( &ptr, tmp )) != NULL ) {
+      *ptr = '\0';
+      ptr++;
 
-      if( *ptr == ',' ) {
+      if( (in_state = fsm_arg_parse_state( &ptr, tmp )) != NULL ) {
 
-        ptr++;
+        if( *ptr == ',' ) {
 
-        if( (out_state = fsm_arg_parse_state( &ptr, tmp )) != NULL ) {
-          (void)fsm_var_add( arg, in_state, out_state, NULL, FALSE );
+          ptr++;
+
+          if( (out_state = fsm_arg_parse_state( &ptr, tmp )) != NULL ) {
+            (void)fsm_var_add( arg, in_state, out_state, NULL, FALSE );
+          } else {
+            print_output( "Illegal FSM command-line output state", FATAL, __FILE__, __LINE__ );
+            Throw 0;
+          }
+
         } else {
-          retval = TRUE;
+
+          /* Copy the current expression */
+          (void)fsm_var_add( arg, in_state, in_state, NULL, FALSE );
+
         }
 
       } else {
-
-        /* Copy the current expression */
-        (void)fsm_var_add( arg, in_state, in_state, NULL, FALSE );
-
+  
+        print_output( "Illegal FSM command-line input state", FATAL, __FILE__, __LINE__ );
+        Throw 0;
+ 
       }
 
-    } else {
-  
-      retval = FALSE;
- 
     }
 
+  } Catch_anonymous {
+    free_safe( tmp );
+    Throw 0;
   }
 
   /* Deallocate temporary memory */
   free_safe( tmp );
-
-  return( retval );
 
 }
 
@@ -628,6 +631,10 @@ void fsm_arg_parse_attr(
 
 /*
  $Log$
+ Revision 1.39  2008/02/01 06:37:08  phase1geo
+ Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
+ using pragma excludes (this code is not fully working yet).  More to be done.
+
  Revision 1.38  2008/01/15 23:01:15  phase1geo
  Continuing to make splint updates (not doing any memory checking at this point).
 

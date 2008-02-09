@@ -70,7 +70,7 @@ static int  state_enter;
 
 static void line_directive();
 static void line_directive2();
-bool process_timescale( const char* txt, bool report );
+void process_timescale( const char* txt, bool report );
 static int  yywrap();
 static void check_for_pragma( char* comment );
 
@@ -700,7 +700,7 @@ WSPACE [ \t\b\f]+
         yymore();
  }
 <PPTIMESCALE>\n      {
-     (void)process_timescale( yytext, TRUE );
+     process_timescale( yytext, TRUE );
      yylloc.first_line += 1;
      BEGIN( state_enter );
      yylloc.last_column = 0;
@@ -882,9 +882,8 @@ static void line_directive2() { PROFILE(LINE_DIRECTIVE2);
 
  Parses either the time unit or time precision token.
 */
-bool process_timescale_token( char* token, char* type, int* value, bool report ) { PROFILE(PROCESS_TIMESCALE_TOKEN);
+void process_timescale_token( char* token, char* type, int* value, bool report ) { PROFILE(PROCESS_TIMESCALE_TOKEN);
 
-  bool retval = TRUE;         /* Return value for this function */
   int  i      = 3;            /* Loop iterator */
   char msg[USER_MSG_LENGTH];  /* Error message container */
 
@@ -896,7 +895,7 @@ bool process_timescale_token( char* token, char* type, int* value, bool report )
       assert( rv < USER_MSG_LENGTH );
       VLerror( msg );
     }
-    retval = FALSE;
+    Throw 0;
   } else {
     *value = i - 1;
     token += i;
@@ -912,17 +911,15 @@ bool process_timescale_token( char* token, char* type, int* value, bool report )
         assert( rv < USER_MSG_LENGTH );
         VLerror( msg );
       }
-      retval = FALSE;
+      Throw 0;
     }
-    if( retval && (*token != '\0') ) {
+    if( *token != '\0' ) {
       if( report ) {
         VLerror( "Illegal timescale directive specified" );
       }
-      retval = FALSE;
+      Throw 0;
     }
   }
-
-  return( retval );
 
 }
 
@@ -932,9 +929,8 @@ bool process_timescale_token( char* token, char* type, int* value, bool report )
 
  Processes a text string into timescale information.
 */
-bool process_timescale( const char* txt, bool report ) { PROFILE(PROCESS_TIMESCALE);
+void process_timescale( const char* txt, bool report ) { PROFILE(PROCESS_TIMESCALE);
 
-  bool  retval = TRUE;   /* Return value for this function */
   char* str;             /* String version of text minus spaces */
   char* ptr;             /* Pointer to current token */
   int   i;               /* Loop iterator */
@@ -945,51 +941,53 @@ bool process_timescale( const char* txt, bool report ) { PROFILE(PROCESS_TIMESCA
   /* Copy the given string */
   str = strdup_safe( txt );
 
-  /* Remove all spaces */
-  for( i=0; i<(strlen( str )+1); i++ ) {
-    if( (str[i] == ' ') || (str[i] == '\t') || (str[i] == '\n') ) {
-      num_spaces++;
+  Try {
+
+    /* Remove all spaces */
+    for( i=0; i<(strlen( str )+1); i++ ) {
+      if( (str[i] == ' ') || (str[i] == '\t') || (str[i] == '\n') ) {
+        num_spaces++;
+      } else {
+        str[i-num_spaces] = str[i];
+      }
+    }
+
+    /* Get timescale tokens */
+    i = strcspn( str, "/" );
+    if( i == strlen( str ) ) {
+
+      if( report ) {
+        VLerror( "Timescale missing '/' character" );
+      }
+      Throw 0;
+
     } else {
-      str[i-num_spaces] = str[i];
+
+      /* Process the time unit and precision tokens */
+      str[i] = '\0';
+      process_timescale_token( str, "unit", &unit, report );
+      process_timescale_token( (str + i + 1), "precision", &prec, report );
+
     }
-  }
-
-  /* Get timescale tokens */
-  i = strcspn( str, "/" );
-  if( i == strlen( str ) ) {
-
-    if( report ) {
-      VLerror( "Timescale missing '/' character" );
-    }
-    retval = FALSE;
-
-  } else {
-
-    /* Process the time unit and precision tokens */
-    str[i] = '\0';
-    if( (retval = process_timescale_token( str, "unit", &unit, report )) ) {
-      retval = process_timescale_token( (str + i + 1), "precision", &prec, report );
-    }
-
-  }
   
-  /* Check to make sure that the unit setting is greater than the precision */
-  if( retval && (unit < prec) ) {
-    if( report ) {
-      VLerror( "Invalid timescale settings (unit must be greater than the precision)" );
+    /* Check to make sure that the unit setting is greater than the precision */
+    if( unit < prec ) {
+      if( report ) {
+        VLerror( "Invalid timescale settings (unit must be greater than the precision)" );
+      }
+      Throw 0;
     }
-    retval = FALSE;
-  }
 
-  /* Handle the timescale with the database */
-  if( retval ) {
+    /* Handle the timescale with the database */
     db_set_timescale( unit, prec );
+  
+  } Catch_anonymous {
+    free_safe( str );
+    Throw 0;
   }
 
   /* Finally, deallocate memory */
   free_safe( str );
-
-  return( retval );
 
 }
 

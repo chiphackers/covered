@@ -789,13 +789,10 @@ bool report_save_cdd( char* filename ) { PROFILE(REPORT_SAVE_CDD);
  \param last_arg  Index of last parsed argument from list.
  \param argv      Arguments passed to report command to parse.
 
- \return Returns EXIT_SUCCESS is report is successful; otherwise, returns EXIT_FAILURE.
-
  Performs report command functionality.
 */
-int command_report( int argc, int last_arg, const char** argv ) { PROFILE(COMMAND_REPORT);
+void command_report( int argc, int last_arg, const char** argv ) { PROFILE(COMMAND_REPORT);
 
-  int          retval = EXIT_SUCCESS;  /* Return value of this function */
   FILE*        ofile;                  /* Pointer to output stream */
 #ifdef HAVE_TCLTK
   char*        covered_home;           /* Pathname to Covered's home installation directory */
@@ -811,8 +808,10 @@ int command_report( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
   assert( rv < USER_MSG_LENGTH );
   print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 
-  /* Parse score command-line */
-  if( report_parse_args( argc, last_arg, argv ) ) {
+  Try {
+
+    /* Parse score command-line */
+    report_parse_args( argc, last_arg, argv );
 
     /* Initialize all global variables */
     info_initialize();
@@ -830,24 +829,22 @@ int command_report( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
       } else {
 
         /* Read in CDD file */
-        db_read( input_db, (report_instance ? READ_MODE_REPORT_NO_MERGE : READ_MODE_REPORT_MOD_MERGE) );  FOOBAR
+        db_read( input_db, (report_instance ? READ_MODE_REPORT_NO_MERGE : READ_MODE_REPORT_MOD_MERGE) );
 
-          unsigned int rv;
+        /* Perform binding */
+        bind_perform( TRUE, 0 );
 
-          /* Perform binding */
-          bind_perform( TRUE, 0 );
-
-          /* Collapse the design to remove unnamed scopes */
-          //inst_link_flatten( inst_head );
+        Try {
 
           /* Open output stream */
           if( output_file != NULL ) {
-            if( (ofile = fopen( output_file, "w" )) == NULL ) {
+            ofile = fopen( output_file, "w" );
+            free_safe( output_file );
+            if( ofile == NULL ) {
               unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to open report output file %s for writing", output_file );
               assert( rv < USER_MSG_LENGTH );
               print_output( user_msg, FATAL, __FILE__, __LINE__ );
-            } else {
-              free_safe( output_file );
+              Throw 0;
             }
           } else {
             ofile = stdout;
@@ -856,10 +853,18 @@ int command_report( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
           /* Generate report */
           report_generate( ofile );
 
-          /* Close output file */
+        } Catch_anonymous {
+          if( ofile != stdout ) {
+            rv = fclose( ofile );
+            assert( rv == 0 );
+          }
+          Throw 0;
+        }
+
+        /* Close output file */
+        if( ofile != stdout ) {
           rv = fclose( ofile );
           assert( rv == 0 );
-
         }
 
       }
@@ -867,67 +872,73 @@ int command_report( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 #ifdef HAVE_TCLTK
     } else {
 
-      unsigned int slen;
-      unsigned int rv;
+      Try {
 
-      if( input_db != NULL ) {
-        if( !report_read_cdd_and_ready( input_db, READ_MODE_REPORT_MOD_MERGE ) ) {
-          print_output( "Input database file was not able to be read", FATAL, __FILE__, __LINE__ );
-          exit( EXIT_FAILURE );
-        } 
-      }
+        unsigned int slen;
+        unsigned int rv;
 
-      /* Initialize the Tcl/Tk interpreter */
-      interp = Tcl_CreateInterp();
-      assert( interp );
+        if( input_db != NULL ) {
+          report_read_cdd_and_ready( input_db, READ_MODE_REPORT_MOD_MERGE );
+        }
 
-      if( Tcl_Init( interp ) == TCL_ERROR ) {
-        printf( "ERROR: %s\n", interp->result );
-        exit( EXIT_FAILURE );
-      }
+        /* Initialize the Tcl/Tk interpreter */
+        interp = Tcl_CreateInterp();
+        assert( interp );
 
-      if( Tk_SafeInit( interp ) == TCL_ERROR ) {
-        printf( "ERROR: %s\n", interp->result );
-        exit( EXIT_FAILURE );
-      }
+        if( Tcl_Init( interp ) == TCL_ERROR ) {
+          printf( "ERROR: %s\n", interp->result );
+          Throw 0;
+        }
 
-      /* Get the COVERED_HOME environment variable */
+        if( Tk_SafeInit( interp ) == TCL_ERROR ) {
+          printf( "ERROR: %s\n", interp->result );
+          Throw 0;
+        }
+
+        /* Get the COVERED_HOME environment variable */
 #ifndef INSTALL_DIR
-      if( getenv( "COVERED_HOME" ) == NULL ) {
-        print_output( "COVERED_HOME not initialized.  Exiting...", FATAL, __FILE__, __LINE__ );
-        exit( EXIT_FAILURE );
-      }
-      covered_home = strdup_safe( getenv( "COVERED_HOME" ) );
+        if( getenv( "COVERED_HOME" ) == NULL ) {
+          print_output( "COVERED_HOME not initialized.  Exiting...", FATAL, __FILE__, __LINE__ );
+          Throw 0;
+        }
+        covered_home = strdup_safe( getenv( "COVERED_HOME" ) );
 #else
-      covered_home = strdup_safe( INSTALL_DIR );
+        covered_home = strdup_safe( INSTALL_DIR );
 #endif
 
-      /* Get the COVERED_BROWSER environment variable */
+        /* Get the COVERED_BROWSER environment variable */
 #ifndef COVERED_BROWSER
-      covered_browser = getenv( "COVERED_BROWSER" );
+        covered_browser = getenv( "COVERED_BROWSER" );
 #else
-      covered_browser = strdup_safe( COVERED_BROWSER );
+        covered_browser = strdup_safe( COVERED_BROWSER );
 #endif
 
-      covered_version = strdup_safe( VERSION );
-      user_home       = getenv( "HOME" );
+        covered_version = strdup_safe( VERSION );
+        user_home       = getenv( "HOME" );
 
-      /* Initialize TCL */
-      tcl_func_initialize( interp, user_home, covered_home, covered_version, covered_browser );
+        /* Initialize TCL */
+        tcl_func_initialize( interp, user_home, covered_home, covered_version, covered_browser );
 
-      /* Call the top-level Tcl file */
-      slen = strlen( covered_home ) + 30;
-      main_file = (char*)malloc_safe( slen );
-      rv = snprintf( main_file, slen, "%s/scripts/main_view.tcl", covered_home );
-      assert( rv < slen );
-      rv = Tcl_EvalFile( interp, main_file );
-      if( rv != TCL_OK ) {
-        fprintf( stderr, "TCL/TK ERROR: %s\n", Tcl_ErrnoMsg( Tcl_GetErrno() ) );
-        exit( 1 );
+        /* Call the top-level Tcl file */
+        slen      = strlen( covered_home ) + 30;
+        main_file = (char*)malloc_safe( slen );
+        rv        = snprintf( main_file, slen, "%s/scripts/main_view.tcl", covered_home );
+        assert( rv < slen );
+        rv = Tcl_EvalFile( interp, main_file );
+        if( rv != TCL_OK ) {
+          rv = snprintf( user_msg, USER_MSG_LENGTH, "TCL/TK: %s\n", Tcl_ErrnoMsg( Tcl_GetErrno() ) );
+          print_output( user_msg, FATAL, __FILE__, __LINE__ );
+          Throw 0;
+        }
+
+        /* Call the main-loop */
+        Tk_MainLoop ();
+
+      } Catch_anonymous {
+        free_safe( covered_home );
+        free_safe( main_file );
+        Throw 0;
       }
-
-      /* Call the main-loop */
-      Tk_MainLoop ();
 
       /* Clean Up */
       free( covered_home );
@@ -936,10 +947,10 @@ int command_report( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
     }
 
-  } else {
-
-    retval = EXIT_FAILURE;
-
+  } Catch_anonymous {
+    free_safe( input_db );
+    db_close();
+    Throw 0;
   }
 
   free_safe( input_db );
@@ -949,13 +960,15 @@ int command_report( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
   PROFILE_END;
 
-  return( retval );
-
 }
 
 
 /*
  $Log$
+ Revision 1.94  2008/02/08 23:58:07  phase1geo
+ Starting to work on exception handling.  Much work to do here (things don't
+ compile at the moment).
+
  Revision 1.93  2008/02/06 00:06:04  phase1geo
  Changing metric mode selection from radio buttons to a tk_optionMenu widget.
  Also attempted to fix issue with bad Tcl/Tk code being read in via report

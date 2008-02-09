@@ -650,12 +650,14 @@ PLI_INT32 covered_sim_calltf( char* name ) {
   info_initialize();
     
   /* Read in contents of specified database file */
-  if( !db_read( in_db_name, READ_MODE_MERGE_NO_MERGE ) ) {
+  Try {
+    db_read( in_db_name, READ_MODE_MERGE_NO_MERGE ); 
+  } Catch_anonymous {
     vpi_printf( "covered VPI: Unable to read database file\n" );
     vpi_control( vpiFinish, EXIT_FAILURE );
-  } else {
-    vpi_printf( "covered VPI: Read design information from %s\n", in_db_name );
   }
+
+  vpi_printf( "covered VPI: Read design information from %s\n", in_db_name );
 
   /* Bind expressions to signals/functional units */
   bind_perform( TRUE, 0 );

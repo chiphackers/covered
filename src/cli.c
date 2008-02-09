@@ -468,7 +468,7 @@ static bool cli_parse_input( char* line, bool perform, bool replaying, const sim
       line++;
       if( arg[1] == '!' ) {
         free_safe( history[history_index] );
-        cli_parse_input( strdup( history[history_index-1] ), perform, replaying, time );
+        (bool)cli_parse_input( strdup( history[history_index-1] ), perform, replaying, time );
         history_index--;
         cli_replay_index--;
       } else if( sscanf( line, "%d", &num ) == 1 ) {
@@ -816,11 +816,11 @@ void cli_execute( const sim_time* time ) {
 /*!
  \param fname  Name of history file to read in
 
- \return Returns TRUE if history file was read without error; otherwise, returns FALSE.
+ Reads the contents of the CLI history file and parses its information, storing it in a replay
+ buffer when simulation starts.
 */
-bool cli_read_hist_file( const char* fname ) {
+void cli_read_hist_file( const char* fname ) {
 
-  bool  retval = TRUE;  /* Return value for this function */
   char* line;           /* Holds current line read from history file */
   FILE* hfile;          /* File containing history file */
 
@@ -830,35 +830,42 @@ bool cli_read_hist_file( const char* fname ) {
   /* Read the contents of the history file, storing the read lines into the history array */
   if( (hfile = fopen( fname, "r" )) != NULL ) {
 
-    sim_time time;
+    Try {
 
-    while( util_readline( hfile, &line ) && retval ) {
-      retval = cli_parse_input( line, FALSE, FALSE, &time );
+      sim_time time;
+
+      while( util_readline( hfile, &line ) ) {
+        if( !cli_parse_input( line, FALSE, FALSE, &time ) ) {
+          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Specified -cli file \"%s\" is not a valid CLI history file", fname );
+          assert( rv < USER_MSG_LENGTH );
+          print_output( user_msg, FATAL, __FILE__, __LINE__ );
+          Throw 0;
+        }
+      }
+
+    } Catch_anonymous {
+      fclose( hfile );
+      Throw 0;
     }
 
     fclose( hfile );
-
-    if( !retval ) {
-      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Specified -cli file \"%s\" is not a valid CLI history file", fname );
-      assert( rv < USER_MSG_LENGTH );
-      print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    }
 
   } else {
 
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to read history file \"%s\"", fname );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    retval = FALSE;
+    Throw 0;
 
   }
-
-  return( retval );
 
 }
 
 /*
  $Log$
+ Revision 1.17  2008/01/21 21:39:55  phase1geo
+ Bug fix for bug 1876376.
+
  Revision 1.16  2008/01/20 04:39:42  phase1geo
  Renaming commands in CLI to make things easier to remember and shorter to type.
  Added CLI expr command that outputs a given expression and its current state/value.

@@ -1,3 +1,2 @@
 ERROR!  Illegal time unit value specified (must be 1, 10 or 100),
         File: timescale3.13.v, Line: 9, Column: 25
-ERROR!  Error in parsing design

@@ -28,11 +28,14 @@
 void score_parse_define( const char* def );
 
 /*! \brief Parses score command-line and performs score. */
-int command_score( int argc, int last_arg, const char** argv );
+void command_score( int argc, int last_arg, const char** argv );
 
 
 /*
  $Log$
+ Revision 1.11  2008/01/09 05:22:22  phase1geo
+ More splint updates using the -standard option.
+
  Revision 1.10  2007/11/20 05:29:00  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

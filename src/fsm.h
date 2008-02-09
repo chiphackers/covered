@@ -48,10 +48,10 @@ void fsm_create_tables( fsm* table );
 void fsm_db_write( fsm* table, FILE* file, bool parse_mode );
 
 /*! \brief Reads in contents of specified FSM. */
-bool fsm_db_read( char** line, /*@null@*/func_unit* funit );
+void fsm_db_read( char** line, /*@null@*/func_unit* funit );
 
 /*! \brief Reads and merges two FSMs, placing result into base FSM. */
-bool fsm_db_merge( fsm* base, char** line, bool same );
+void fsm_db_merge( fsm* base, char** line, bool same );
 
 /*! \brief Sets the bit in set table based on the values of last and curr. */
 void fsm_table_set( fsm* table );
@@ -112,6 +112,10 @@ void fsm_dealloc( fsm* table );
 
 /*
  $Log$
+ Revision 1.26  2008/02/01 06:37:08  phase1geo
+ Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
+ using pragma excludes (this code is not fully working yet).  More to be done.
+
  Revision 1.25  2008/01/16 06:40:35  phase1geo
  More splint updates.
 

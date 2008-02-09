@@ -25,7 +25,7 @@
 
 
 /*! \brief Parses command-line for report command and performs report functionality. */
-int command_report( int argc, int last_arg, const char** argv );
+void command_report( int argc, int last_arg, const char** argv );
 
 /*! \brief Prints header of report. */
 void report_print_header( FILE* ofile );
@@ -45,6 +45,10 @@ bool report_save_cdd( char* filename );
 
 /*
  $Log$
+ Revision 1.13  2008/02/08 23:58:07  phase1geo
+ Starting to work on exception handling.  Much work to do here (things don't
+ compile at the moment).
+
  Revision 1.12  2008/01/09 05:22:22  phase1geo
  More splint updates using the -standard option.
 
