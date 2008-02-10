@@ -1325,7 +1325,9 @@ int tcl_func_close_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* arg
 
   int retval = TCL_OK;  /* Return value for this function */
 
-  if( !report_close_cdd() ) {
+  Try {
+    report_close_cdd();
+  } Catch_anonymous {
     snprintf( user_msg, USER_MSG_LENGTH, "Unable to close CDD file" );
     Tcl_AddErrorInfo( tcl, user_msg );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -1356,7 +1358,9 @@ int tcl_func_save_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* argv
 
   filename = strdup_safe( argv[1] );
 
-  if( !report_save_cdd( filename ) ) {
+  Try {
+    report_save_cdd( filename );
+  } Catch_anonymous {
     snprintf( user_msg, USER_MSG_LENGTH, "Unable to save CDD file \"%s\"", argv[1] );
     Tcl_AddErrorInfo( tcl, user_msg );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -2132,7 +2136,9 @@ int tcl_func_generate_report( ClientData d, Tcl_Interp* tcl, int argc, const cha
   FILE* ofile;            /* Pointer to opened report file */
 
   /* Get arguments */
-  if( report_parse_args( argc, 0, argv ) ) {
+  Try {
+
+    report_parse_args( argc, 0, argv );
 
     assert( output_file != NULL );
 
@@ -2142,7 +2148,7 @@ int tcl_func_generate_report( ClientData d, Tcl_Interp* tcl, int argc, const cha
       snprintf( user_msg, USER_MSG_LENGTH, "Unable to open report output file %s for writing", output_file );
       Tcl_AddErrorInfo( tcl, user_msg );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      retval = TCL_ERROR;
+      Throw 0;
 
     } else {
 
@@ -2186,7 +2192,7 @@ int tcl_func_generate_report( ClientData d, Tcl_Interp* tcl, int argc, const cha
 
     }
 
-  } else {
+  } Catch_anonymous {
 
     snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Incorrect parameters to report command" );
     Tcl_AddErrorInfo( tcl, user_msg );
@@ -2272,6 +2278,10 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.70  2008/02/09 19:32:45  phase1geo
+ Completed first round of modifications for using exception handler.  Regression
+ passes with these changes.  Updated regressions per these changes.
+
  Revision 1.69  2008/02/08 23:58:07  phase1geo
  Starting to work on exception handling.  Much work to do here (things don't
  compile at the moment).

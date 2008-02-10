@@ -31,20 +31,24 @@ void command_report( int argc, int last_arg, const char** argv );
 void report_print_header( FILE* ofile );
 
 /*! \brief Parses arguments on report command command-line. */
-bool report_parse_args( int argc, int last_arg, const char** argv );
+void report_parse_args( int argc, int last_arg, const char** argv );
 
 /*! \brief Reads the CDD and readies the design for reporting */
 void report_read_cdd_and_ready( char* ifile, int read_mode );
 
 /*! \brief Closes the currently loaded CDD */
-bool report_close_cdd();
+void report_close_cdd();
 
 /*! \brief Saves the currently loaded CDD as the specified filename */
-bool report_save_cdd( char* filename );
+void report_save_cdd( char* filename );
 
 
 /*
  $Log$
+ Revision 1.14  2008/02/09 19:32:45  phase1geo
+ Completed first round of modifications for using exception handler.  Regression
+ passes with these changes.  Updated regressions per these changes.
+
  Revision 1.13  2008/02/08 23:58:07  phase1geo
  Starting to work on exception handling.  Much work to do here (things don't
  compile at the moment).

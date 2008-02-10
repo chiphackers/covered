@@ -124,7 +124,7 @@ extern char**    score_args;
 extern int       score_arg_num;
 
 
-extern bool process_timescale( const char* txt, bool report );
+extern void process_timescale( const char* txt, bool report );
 extern void define_macro( const char* name, const char* value );
 
 
@@ -237,32 +237,40 @@ static void score_generate_top_vpi_module( char* vpi_file, char* output_db, char
   ext      = strdup_safe( vpi_file );
   scope_extract_front( vpi_file, mod_name, ext );
 
-  if( ext[0] != '\0' ) {
+  Try {
+ 
+    if( ext[0] != '\0' ) {
 
-    if( (vfile = fopen( vpi_file, "w" )) != NULL ) {
+      if( (vfile = fopen( vpi_file, "w" )) != NULL ) {
   
-      unsigned int rv;
-      if( vpi_timescale != NULL ) {
-        fprintf( vfile, "`timescale %s\n", vpi_timescale );
+        unsigned int rv;
+        if( vpi_timescale != NULL ) {
+          fprintf( vfile, "`timescale %s\n", vpi_timescale );
+        }
+        fprintf( vfile, "module %s;\ninitial $covered_sim( \"%s\", %s );\nendmodule\n", mod_name, output_db, top_inst );
+        rv = fclose( vfile );
+        assert( rv == 0 );
+
+      } else {
+  
+        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to open %s for writing", vpi_file );
+        assert( rv < USER_MSG_LENGTH );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        Throw 0;
+
       }
-      fprintf( vfile, "module %s;\ninitial $covered_sim( \"%s\", %s );\nendmodule\n", mod_name, output_db, top_inst );
-      rv = fclose( vfile );
-      assert( rv == 0 );
 
     } else {
 
-      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to open %s for writing", vpi_file );
-      assert( rv < USER_MSG_LENGTH );
-      print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      exit( EXIT_FAILURE );
+      print_output( "Specified -vpi filename did not contain a file extension", FATAL, __FILE__, __LINE__ );
+      Throw 0;
 
     }
 
-  } else {
-
-    print_output( "Specified -vpi filename did not contain a file extension", FATAL, __FILE__, __LINE__ );
-    exit( EXIT_FAILURE );
-
+  } Catch_anonymous {
+    free_safe( mod_name );
+    free_safe( ext );
+    Throw 0;
   }
 
   /* Deallocate memory */
@@ -288,30 +296,38 @@ static void score_generate_pli_tab_file( char* tab_file, char* top_mod ) { PROFI
   ext      = strdup_safe( tab_file );
   scope_extract_front( tab_file, mod_name, ext );
 
-  if( ext[0] != '\0' ) {
+  Try {
 
-    strcat( mod_name, ".tab" );
-    if( (tfile = fopen( mod_name, "w" )) != NULL ) {
+    if( ext[0] != '\0' ) {
 
-      unsigned int rv;
-      fprintf( tfile, "$covered_sim  call=covered_sim_calltf  acc+=r,cbk:%s+\n", top_mod );
-      rv = fclose( tfile );
-      assert( rv == 0 );
+      strcat( mod_name, ".tab" );
+      if( (tfile = fopen( mod_name, "w" )) != NULL ) {
+
+        unsigned int rv;
+        fprintf( tfile, "$covered_sim  call=covered_sim_calltf  acc+=r,cbk:%s+\n", top_mod );
+        rv = fclose( tfile );
+        assert( rv == 0 );
+
+      } else {
+  
+        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to open %s for writing", mod_name );
+        assert( rv < USER_MSG_LENGTH );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        Throw 0;
+
+      }
 
     } else {
-  
-      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to open %s for writing", mod_name );
-      assert( rv < USER_MSG_LENGTH );
-      print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      exit( EXIT_FAILURE );
+
+      print_output( "Specified -vpi filename did not contain a file extension", FATAL, __FILE__, __LINE__ );
+      Throw 0;
 
     }
 
-  } else {
-
-    print_output( "Specified -vpi filename did not contain a file extension", FATAL, __FILE__, __LINE__ );
-    exit( EXIT_FAILURE );
-
+  } Catch_anonymous {
+    free_safe( mod_name );
+    free_safe( ext );
+    Throw 0;
   }
 
   /* Deallocate memory */
@@ -452,6 +468,7 @@ static void score_parse_args( int argc, int last_arg, const char** argv ) { PROF
   int    arg_num;                 /* Number of arguments in arg_list */
   int    j;                       /* Loop iterator */
   char*  ptr;                     /* Pointer to current character in defined value */
+  char*  rv;                      /* Return value from snprintf calls */
 
   while( i < argc ) {
 
@@ -661,11 +678,15 @@ static void score_parse_args( int argc, int last_arg, const char** argv ) { PROF
           case DUMP_FMT_VCD :
             print_output( "Only one -vcd option is allowed on the score command-line", FATAL, __FILE__, __LINE__ );
             Throw 0;
+            /*@-unreachable@*/
             break;
+            /*@=unreachable@*/
           case DUMP_FMT_LXT :
             print_output( "Both the -vcd and -lxt options were specified on the command-line", FATAL, __FILE__, __LINE__ );
             Throw 0;
+            /*@-unreachable@*/
             break;
+            /*@=unreachable@*/
           default :
             assert( 0 );
             break;
@@ -695,11 +716,15 @@ static void score_parse_args( int argc, int last_arg, const char** argv ) { PROF
           case DUMP_FMT_VCD :
             print_output( "Both the -vcd and -lxt options were specified on the command-line", FATAL, __FILE__, __LINE__ );
             Throw 0;
+            /*@-unreachable@*/
             break;
+            /*@=unreachable@*/
           case DUMP_FMT_LXT :
             print_output( "Only one -lxt option is allowed on the score command-line", FATAL, __FILE__, __LINE__ );
             Throw 0;
+            /*@-unreachable@*/
             break;
+            /*@=unreachable@*/
           default :
             assert( 0 );
             break;
@@ -869,9 +894,11 @@ static void score_parse_args( int argc, int last_arg, const char** argv ) { PROF
             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown race condition value %c (available types are E, W, S or I)", argv[i][2] );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
+            Throw 0;
           }
-          Throw 0;
+          /*@-unreachable@*/
           break;
+          /*@=unreachable@*/
       }
       score_add_arg( argv[i] );
 
@@ -978,8 +1005,6 @@ static void score_parse_args( int argc, int last_arg, const char** argv ) { PROF
     i++;
 
   }
-
-  char* rv;
 
   /* If the -A option was not specified, add all OVL modules to list of no-score modules */
   ovl_add_assertions_to_no_score_list( info_suppl.part.assert_ovl );
@@ -1097,6 +1122,10 @@ void command_score( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
 /*
  $Log$
+ Revision 1.112  2008/02/09 19:32:45  phase1geo
+ Completed first round of modifications for using exception handler.  Regression
+ passes with these changes.  Updated regressions per these changes.
+
  Revision 1.111  2008/02/08 23:58:07  phase1geo
  Starting to work on exception handling.  Much work to do here (things don't
  compile at the moment).

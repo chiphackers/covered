@@ -269,33 +269,32 @@ static void report_parse_metrics( const char* metrics ) { PROFILE(REPORT_PARSE_M
  \param last_arg  Index of last parsed argument from list.
  \param argv      Argument list passed to this program.
 
- \return Returns TRUE if parsing was successful; otherwise, returns FALSE.
-
  Parses the argument list for options.  If a legal option is
  found for the report command, the appropriate action is taken for
  that option.  If an option is found that is not allowed, an error
  message is reported to the user and the program terminates immediately.
 */
-bool report_parse_args( int argc, int last_arg, const char** argv ) { PROFILE(REPORT_PARSE_ARGS);
+void report_parse_args( int argc, int last_arg, const char** argv ) { PROFILE(REPORT_PARSE_ARGS);
 
-  bool retval = TRUE;  /* Return value for this function */
-  int  i;              /* Loop iterator */
-  int  chars_read;     /* Number of characters read in from sscanf */
+  int  i;           /* Loop iterator */
+  int  chars_read;  /* Number of characters read in from sscanf */
 
   i = last_arg + 1;
 
-  while( (i < argc) && retval ) {
+  while( i < argc ) {
 
     if( strncmp( "-h", argv[i], 2 ) == 0 ) {
  
       report_usage();
-      retval = FALSE;
+      Throw 0;
 
     } else if( strncmp( "-m", argv[i], 2 ) == 0 ) {
     
-      if( (retval = check_option_value( argc, argv, i )) ) {
+      if( check_option_value( argc, argv, i ) ) {
         i++;
         report_parse_metrics( argv[i] );
+      } else {
+        Throw 0;
       }
 
     } else if( strncmp( "-view", argv[i], 5 ) == 0 ) {
@@ -308,7 +307,7 @@ bool report_parse_args( int argc, int last_arg, const char** argv ) { PROFILE(RE
 //      flag_use_line_width = TRUE;
 #else
       print_output( "The -view option is not available with this build", FATAL, __FILE__, __LINE__ );
-      retval = FALSE;
+      Throw 0;
 #endif
 
     } else if( strncmp( "-i", argv[i], 2 ) == 0 ) {
@@ -321,7 +320,7 @@ bool report_parse_args( int argc, int last_arg, const char** argv ) { PROFILE(RE
 
     } else if( strncmp( "-d", argv[i], 2 ) == 0 ) {
 
-      if( (retval = check_option_value( argc, argv, i )) ) {
+      if( check_option_value( argc, argv, i ) ) {
         i++;
         if( argv[i][0] == 's' ) {
           report_comb_depth = REPORT_SUMMARY;
@@ -333,13 +332,15 @@ bool report_parse_args( int argc, int last_arg, const char** argv ) { PROFILE(RE
           unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unrecognized detail type: -d %s\n", argv[i] );
           assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          retval = FALSE;
+          Throw 0;
         }
+      } else {
+        Throw 0;
       }
 
     } else if( strncmp( "-o", argv[i], 2 ) == 0 ) {
 
-      if( (retval = check_option_value( argc, argv, i )) ) {
+      if( check_option_value( argc, argv, i ) ) {
         i++;
         if( output_file != NULL ) {
           print_output( "Only one -o option is allowed on the report command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
@@ -350,9 +351,11 @@ bool report_parse_args( int argc, int last_arg, const char** argv ) { PROFILE(RE
             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Output file \"%s\" is unwritable", argv[i] );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
-            retval = FALSE;
+            Throw 0;
           }
         }
+      } else {
+        Throw 0;
       }
 
     } else if( strncmp( "-w", argv[i], 2 ) == 0 ) {
@@ -389,7 +392,7 @@ bool report_parse_args( int argc, int last_arg, const char** argv ) { PROFILE(RE
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Cannot find %s database file for opening", argv[i] );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        exit( EXIT_FAILURE );
+        Throw 0;
 
       }
 
@@ -398,15 +401,13 @@ bool report_parse_args( int argc, int last_arg, const char** argv ) { PROFILE(RE
       unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown report command option \"%s\".  See \"covered -h\" for more information.", argv[i] );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      retval = FALSE;
+      Throw 0;
 
     }
 
     i++;
 
   }
-
-  return( retval );
 
 }
 
@@ -763,24 +764,20 @@ void report_read_cdd_and_ready( char* ifile, int read_mode ) { PROFILE(REPORT_RE
 
  Closes the currently loaded CDD file.
 */
-bool report_close_cdd() { PROFILE(REPORT_CLOSE_CDD);
+void report_close_cdd() { PROFILE(REPORT_CLOSE_CDD);
 
   db_close();
-
-  return( TRUE );
 
 }
 
 /*!
  \param filename  Name to use for saving the currently loaded filename
 
- \return Returns TRUE if CDD file was saved without error; otherwise, returns FALSE.
-
  Saves the currently loaded CDD database to the given filename.
 */
-bool report_save_cdd( char* filename ) { PROFILE(REPORT_SAVE_CDD);
+void report_save_cdd( char* filename ) { PROFILE(REPORT_SAVE_CDD);
 
-  return( db_write( filename, FALSE, TRUE ) );
+  db_write( filename, FALSE, TRUE );
 
 }
 
@@ -965,6 +962,10 @@ void command_report( int argc, int last_arg, const char** argv ) { PROFILE(COMMA
 
 /*
  $Log$
+ Revision 1.95  2008/02/09 19:32:45  phase1geo
+ Completed first round of modifications for using exception handler.  Regression
+ passes with these changes.  Updated regressions per these changes.
+
  Revision 1.94  2008/02/08 23:58:07  phase1geo
  Starting to work on exception handling.  Much work to do here (things don't
  compile at the moment).

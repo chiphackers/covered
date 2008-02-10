@@ -242,18 +242,15 @@ bool db_check_for_top_module() { PROFILE(DB_CHECK_FOR_TOP_MODULE);
  \param parse_mode   Specifies if we are outputting parse data or score data.
  \param report_save  Specifies if we are attempting to "save" a CDD file modified in the report command
 
- \return Returns TRUE if database write was successful; otherwise, returns FALSE.
-
  Opens specified database for writing.  If database open successful,
  iterates through functional unit, expression and signal lists, displaying each
  to the database file.  If database write successful, returns TRUE; otherwise,
  returns FALSE to the calling function.
 */
-bool db_write( char* file, bool parse_mode, bool report_save ) { PROFILE(DB_WRITE);
+void db_write( char* file, bool parse_mode, bool report_save ) { PROFILE(DB_WRITE);
 
-  bool       retval = TRUE;  /* Return value for this function */
-  FILE*      db_handle;      /* Pointer to database file being written */
-  inst_link* instl;          /* Pointer to current instance link */
+  FILE*      db_handle;  /* Pointer to database file being written */
+  inst_link* instl;      /* Pointer to current instance link */
 
   if( (db_handle = fopen( file, "w" )) != NULL ) {
 
@@ -279,13 +276,11 @@ bool db_write( char* file, bool parse_mode, bool report_save ) { PROFILE(DB_WRIT
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Could not open %s for writing", obf_file( file ) );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    retval = FALSE;
+    Throw 0;
 
   }
 
   PROFILE_END;
-
-  return( retval );
 
 }
 
@@ -2675,6 +2670,10 @@ void db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.279  2008/02/09 19:32:44  phase1geo
+ Completed first round of modifications for using exception handler.  Regression
+ passes with these changes.  Updated regressions per these changes.
+
  Revision 1.278  2008/02/08 23:58:06  phase1geo
  Starting to work on exception handling.  Much work to do here (things don't
  compile at the moment).

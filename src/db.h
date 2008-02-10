@@ -34,7 +34,7 @@ void db_close();
 bool db_check_for_top_module();
 
 /*! \brief Writes contents of expressions, functional units and vsignals to database file. */
-bool db_write( char* file, bool parse_mode, bool report_save );
+void db_write( char* file, bool parse_mode, bool report_save );
 
 /*! \brief Reads contents of database file and stores into internal lists. */
 void db_read( char* file, int read_mode );
@@ -192,6 +192,10 @@ void db_do_timestep( uint64 time, bool final );
 
 /*
  $Log$
+ Revision 1.83  2008/02/08 23:58:06  phase1geo
+ Starting to work on exception handling.  Much work to do here (things don't
+ compile at the moment).
+
  Revision 1.82  2008/01/30 05:51:50  phase1geo
  Fixing doxygen errors.  Updated parameter list syntax to make it more readable.
 
