@@ -722,7 +722,7 @@ static void race_check_race_count() { PROFILE(RACE_CHECK_RACE_COUNT);
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "%d race conditions were detected.  Exiting score command.", races_found );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    exit( EXIT_FAILURE );
+    Throw 0;
 
   }
 
@@ -1152,6 +1152,10 @@ void race_blk_delete_list(
 
 /*
  $Log$
+ Revision 1.70  2008/02/09 19:32:45  phase1geo
+ Completed first round of modifications for using exception handler.  Regression
+ passes with these changes.  Updated regressions per these changes.
+
  Revision 1.69  2008/01/30 05:51:50  phase1geo
  Fixing doxygen errors.  Updated parameter list syntax to make it more readable.
 

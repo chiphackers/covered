@@ -821,7 +821,7 @@ void command_report( int argc, int last_arg, const char** argv ) { PROFILE(COMMA
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Database file not specified in command line" );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        exit( EXIT_FAILURE );
+        Throw 0;
 
       } else {
 
@@ -962,6 +962,9 @@ void command_report( int argc, int last_arg, const char** argv ) { PROFILE(COMMA
 
 /*
  $Log$
+ Revision 1.96  2008/02/10 03:33:13  phase1geo
+ More exception handling added and fixed remaining splint errors.
+
  Revision 1.95  2008/02/09 19:32:45  phase1geo
  Completed first round of modifications for using exception handler.  Regression
  passes with these changes.  Updated regressions per these changes.

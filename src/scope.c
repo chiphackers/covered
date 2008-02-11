@@ -124,39 +124,53 @@ bool scope_find_param( const char* name, func_unit* curr_funit, mod_parm** found
   *found_funit = curr_funit;
   parm_name    = strdup_safe( name );
 
-  /* If there is a hierarchical reference being made, adjust the signal name and current functional unit */
-  if( !scope_local( name ) ) {
+  Try {
 
-    scope = (char *)malloc_safe( strlen( name ) + 1 );
+    /* If there is a hierarchical reference being made, adjust the signal name and current functional unit */
+    if( !scope_local( name ) ) {
 
-    /* Extract the signal name from its scope */
-    scope_extract_back( name, parm_name, scope );
+      scope = (char *)malloc_safe( strlen( name ) + 1 );
 
-    /* Get the functional unit that contains this signal */
-    if( (*found_funit = scope_find_funit_from_scope( scope, curr_funit, TRUE )) == NULL ) {
+      Try {
 
-      if( line > 0 ) {
-        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined signal hierarchy (%s) in %s %s, file %s, line %d",
-                                    obf_sig( name ), get_funit_type( curr_funit->type ), obf_funit( curr_funit->name ),
-                                    obf_file( curr_funit->filename ), line );
-        assert( rv < USER_MSG_LENGTH );
-        print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        exit( EXIT_FAILURE );
-      }
+        /* Extract the signal name from its scope */
+        scope_extract_back( name, parm_name, scope );
+
+        /* Get the functional unit that contains this signal */
+        if( (*found_funit = scope_find_funit_from_scope( scope, curr_funit, TRUE )) == NULL ) {
+
+          if( line > 0 ) {
+            unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined signal hierarchy (%s) in %s %s, file %s, line %d",
+                                        obf_sig( name ), get_funit_type( curr_funit->type ), obf_funit( curr_funit->name ),
+                                        obf_file( curr_funit->filename ), line );
+            assert( rv < USER_MSG_LENGTH );
+            print_output( user_msg, FATAL, __FILE__, __LINE__ );
+            Throw 0;
+          }
  
+        }
+
+      } Catch_anonymous {
+        free_safe( scope );
+        Throw 0;
+      }
+
+      free_safe( scope );
+
     }
 
-    free_safe( scope );
+    /* Get the module parameter, if it exists */
+    *found_parm = funit_find_param( parm_name, *found_funit );
 
-  }
+    /* If we could not find the module parameter in the found_funit, search the global funit, if it exists */
+    if( (*found_parm == NULL) && (global_funit != NULL) ) {
+      *found_funit = global_funit;
+      *found_parm  = funit_find_param( parm_name, *found_funit );
+    }
 
-  /* Get the module parameter, if it exists */
-  *found_parm = funit_find_param( parm_name, *found_funit );
-
-  /* If we could not find the module parameter in the found_funit, search the global funit, if it exists */
-  if( (*found_parm == NULL) && (global_funit != NULL) ) {
-    *found_funit = global_funit;
-    *found_parm  = funit_find_param( parm_name, *found_funit );
+  } Catch_anonymous {
+    free_safe( parm_name );
+    Throw 0;
   }
 
   free_safe( parm_name );
@@ -408,6 +422,10 @@ char* scope_flatten( char* scope ) { PROFILE(SCOPE_FLATTEN);
 
 /*
  $Log$
+ Revision 1.42  2008/01/16 23:10:33  phase1geo
+ More splint updates.  Code is now warning/error free with current version
+ of run_splint.  Still have regression issues to debug.
+
  Revision 1.41  2008/01/10 04:59:04  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 
