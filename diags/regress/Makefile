@@ -45,7 +45,7 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 dly_assign1     endian1         endian2         endian3         event1 \
                 event1.1        exclude1        exclude2        exclude3        exclude4 \
                 exclude6        exclude6.1      exclude7        exclude7.1      exclude7.2 \
-                exclude7.3      exclude8        exclude8.1      exclude9        exclude9.1 \
+                exclude8        exclude8.1      exclude9        exclude9.1 \
                 exclude9.2      exclude9.3      exclude9.4      exclude9.5      exclude9.6 \
                 expand1         expand2         expand3         expand4         expand4.1 \
                 expand4.2       expand4.3       expand4.4       for1            for2 \
@@ -183,7 +183,7 @@ IVCVERDIAGS2  =
 IVCVERDIAGS3  =
 IVCVERDIAGS4  =
 
-IVVCSDIAGS1   = define3         hier3           localparam1 \
+IVVCSDIAGS1   = define3         exclude7.3      hier3           localparam1 \
                 localparam1.1   localparam1.2   localparam1.3   localparam2     localparam3 \
                 mbit_sel5       mbit_sel5.1     mbit_sel5.2     mbit_sel5.3     mbit_sel6 \
                 mbit_sel6.1     mbit_sel6.2     mbit_sel6.3     ovl1            ovl1.1 \

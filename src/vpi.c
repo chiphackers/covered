@@ -247,10 +247,11 @@ PLI_INT32 covered_end_of_sim( p_cb_data cb ) { PROFILE(COVERED_END_OF_SIM);
   info_suppl.part.scored = 1;
 
   /* Write contents to database file */
-  if( !db_write( out_db_name, FALSE, FALSE ) ) {
-    vpi_printf( "covered VPI: Unable to write database file\n" );
-  } else {
+  Try {
+    db_write( out_db_name, FALSE, FALSE );
     vpi_printf( "covered VPI: Output coverage information to %s\n", out_db_name );
+  } Catch_anonymous {
+    vpi_printf( "covered VPI: Unable to write database file\n" );
   }
 
   /* Deallocate memory */
@@ -588,6 +589,9 @@ PLI_INT32 covered_sim_calltf( char* name ) {
   char*           argvptr;
   sig_link*       vsigl;
   s_vpi_value     value;
+
+  /* Initialize the exception handler context structure */
+  init_exception_context( the_exception_context );
 
   systf_handle = vpi_handle( vpiSysTfCall, NULL );
   arg_iterator = vpi_iterate( vpiArgument, systf_handle );
