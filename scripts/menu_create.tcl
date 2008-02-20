@@ -246,9 +246,14 @@ proc menu_create {} {
       }
     }
   }
-  $m add separator
-  $m add command -label "Preferences..." -underline 0 -command {
-    create_preferences -1
+  # If we are running on Mac OS X, add preferences to applications menu
+  if {[tk windowingsystem] eq "aqua"} {
+    proc ::tk::mac::ShowPreferences {} { create_preferences -1 }
+  } else {
+    $m add separator
+    $m add command -label "Preferences..." -underline 0 -command {
+      create_preferences -1
+    }
   }
 
   # Configure the help option
