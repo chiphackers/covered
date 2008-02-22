@@ -1,0 +1,21 @@
+5 b 21 * 0
+8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd exclude9.7.vcd -o exclude9.7.cdd -v exclude9.7.v -ep -D DUMP
+3 0 $root "$root" NA 0 0 1
+3 0 main "main" exclude9.7.v 11 32 1
+2 1 16 8000c 1 3d 1e1002 0 0 1 34 2 $u0
+1 a 13 830004 1 0 0 0 1 33 2
+1 b 13 830007 1 0 0 0 1 33 2
+4 1 0 0
+3 1 main.$u0 "main.$u0" exclude9.7.v 0 20 1
+2 2 17 50008 1 0 e0004 0 0 1 36 0
+2 3 17 10001 0 1 c0400 0 0 a
+2 4 17 10008 1 37 d1006 2 3
+2 5 18 50005 1 1 c0004 0 0 a
+2 6 18 10007 1 39 c0006 5 0
+2 7 19 e0011 0 0 e0010 0 0 1 36 1
+2 8 19 a000a 0 1 c0400 0 0 b
+2 9 19 a0011 0 37 c0022 7 8
+4 9 0 0
+4 6 9 0
+4 4 6 6
+3 1 main.$u1 "main.$u1" exclude9.7.v 0 30 1
