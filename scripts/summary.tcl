@@ -37,6 +37,11 @@ proc create_summary {} {
     ;# Create new window
     toplevel .sumwin
 
+    ;# Create frame to hold metric menubutton and the menubutton itself
+    frame .sumwin.mf -relief raised -borderwidth 1
+    tk_optionMenu .sumwin.mf.metrics cov_rb Line Toggle Memory Logic FSM Assert
+    pack .sumwin.mf.metrics -side left
+
     ;# Create frame to hold grid
     frame .sumwin.f -relief raised -borderwidth 1
 
@@ -120,6 +125,7 @@ proc create_summary {} {
 
   ;# Display the window if we are creating it
   if {$create == 1} {
+    pack .sumwin.mf -fill both
     pack .sumwin.f  -fill both -expand yes
     pack .sumwin.sf -fill both
     pack .sumwin.bf -fill both
