@@ -451,7 +451,7 @@ static void line_display_verbose(
         (stmt->exp->op != EXP_OP_JOIN)    &&
         (stmt->exp->line != 0) ) {
 
-      if( ((stmt->exp->exec_num > 0) ? 1 : 0) == report_covered ) {
+      if( (((stmt->exp->exec_num > 0) ? 1 : 0) == report_covered) && (ESUPPL_STMT_EXCLUDED( stmt->exp->suppl ) == 0) ) {
 
         unexec_exp = stmt->exp;
 
@@ -674,6 +674,9 @@ void line_report( FILE* ofile, bool verbose ) { PROFILE(LINE_REPORT);
 
 /*
  $Log$
+ Revision 1.83  2008/01/16 06:40:37  phase1geo
+ More splint updates.
+
  Revision 1.82  2008/01/16 05:01:22  phase1geo
  Switched totals over from float types to int types for splint purposes.
 
