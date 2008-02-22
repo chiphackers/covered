@@ -664,7 +664,11 @@ PLI_INT32 covered_sim_calltf( char* name ) {
   vpi_printf( "covered VPI: Read design information from %s\n", in_db_name );
 
   /* Bind expressions to signals/functional units */
-  bind_perform( TRUE, 0 );
+  Try {
+    bind_perform( TRUE, 0 );
+  } Catch_anonymous {
+    vpi_control( vpiFinish, EXIT_FAILURE );
+  }
 
   /* Add static values to simulator */
   sim_initialize();

@@ -76,6 +76,13 @@ void search_init() { PROFILE(SEARCH_INIT);
   char       dutname[4096];  /* Instance name of top-level DUT module */
   char       lhier[4096];    /* Temporary storage of leading hierarchy */
 
+  /* Check to make sure that the user specified a -t option value */
+  if( top_module == NULL ) {
+    print_output( "No top module was specified with the -t option.  Please see \"covered -h\" for usage.",
+                  FATAL, __FILE__, __LINE__ );
+    Throw 0;
+  }
+
   /* If the global generation type is SystemVerilog support, create the global $root module space */
   if( flag_global_generation == GENERATION_SV ) {
 
@@ -95,14 +102,7 @@ void search_init() { PROFILE(SEARCH_INIT);
   /* Now create top-level module of design */
   mod       = funit_create();
   mod->type = FUNIT_MODULE;
-
-  if( top_module != NULL ) {
-    mod->name = strdup_safe( top_module );
-  } else {
-    print_output( "No top_module was specified with the -t option.  Please see \"covered -h\" for usage.",
-                  FATAL, __FILE__, __LINE__ );
-    exit( EXIT_FAILURE );
-  }
+  mod->name = strdup_safe( top_module );
 
   /* Initialize functional unit linked list */
   (void)funit_link_add( mod, &funit_head, &funit_tail );
@@ -283,6 +283,10 @@ void search_free_lists() { PROFILE(SEARCH_FREE_LISTS);
 
 /*
  $Log$
+ Revision 1.39  2008/02/09 19:32:45  phase1geo
+ Completed first round of modifications for using exception handler.  Regression
+ passes with these changes.  Updated regressions per these changes.
+
  Revision 1.38  2008/01/21 21:39:55  phase1geo
  Bug fix for bug 1876376.
 

@@ -495,7 +495,7 @@ void directory_load( const char* dir, const str_link* ext_head, str_link** file_
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to read directory %s", dir );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    exit( EXIT_FAILURE );
+    Throw 0;
 
   } else {
 
@@ -553,7 +553,7 @@ bool file_exists( const char* file ) { PROFILE(FILE_EXISTS);
 
   if( stat( file, &filestat ) == 0 ) {
 
-    if( S_ISREG( filestat.st_mode ) ) {
+    if( S_ISREG( filestat.st_mode ) || S_ISFIFO( filestat.st_mode ) ) {
 
       retval = TRUE;
 
@@ -628,36 +628,43 @@ char* substitute_env_vars( const char* value ) { PROFILE(SUBSTITUTE_ENV_VARS);
   ptr            = value;
   newvalue_index = 0;
 
-  while( *ptr != '\0' || parsing_var ) {
-    if( parsing_var ) {
-      if( isalnum( *ptr ) || (*ptr == '_') ) {
-        env_var[env_var_index] = *ptr;
-        env_var_index++;
-      } else {
-        env_var[env_var_index] = '\0';
-        if( (env_value = getenv( env_var )) != NULL ) {
-          newvalue = (char*)realloc( newvalue, (newvalue_index + strlen( env_value ) + 1) );
-          strcat( newvalue, env_value );
-          newvalue_index += strlen( env_value );
-          parsing_var = FALSE;
-          ptr--;
+  Try {
+
+    while( *ptr != '\0' || parsing_var ) {
+      if( parsing_var ) {
+        if( isalnum( *ptr ) || (*ptr == '_') ) {
+          env_var[env_var_index] = *ptr;
+          env_var_index++;
         } else {
-          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown environment variable $%s in string \"%s\"", env_var, value );
-          assert( rv < USER_MSG_LENGTH );
-          print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          exit( EXIT_FAILURE );
+          env_var[env_var_index] = '\0';
+          if( (env_value = getenv( env_var )) != NULL ) {
+            newvalue = (char*)realloc( newvalue, (newvalue_index + strlen( env_value ) + 1) );
+            strcat( newvalue, env_value );
+            newvalue_index += strlen( env_value );
+            parsing_var = FALSE;
+            ptr--;
+          } else {
+            unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown environment variable $%s in string \"%s\"", env_var, value );
+            assert( rv < USER_MSG_LENGTH );
+            print_output( user_msg, FATAL, __FILE__, __LINE__ );
+            Throw 0;
+          }
         }
+      } else if( *ptr == '$' ) {
+        parsing_var   = TRUE;
+        env_var_index = 0;
+      } else {
+        newvalue = (char*)realloc( newvalue, (newvalue_index + 2) );
+        newvalue[newvalue_index]   = *ptr;
+        newvalue[newvalue_index+1] = '\0';
+        newvalue_index++;
       }
-    } else if( *ptr == '$' ) {
-      parsing_var   = TRUE;
-      env_var_index = 0;
-    } else {
-      newvalue = (char*)realloc( newvalue, (newvalue_index + 2) );
-      newvalue[newvalue_index]   = *ptr;
-      newvalue[newvalue_index+1] = '\0';
-      newvalue_index++;
+      ptr++;
     }
-    ptr++;
+
+  } Catch_anonymous {
+    free_safe( newvalue );
+    Throw 0;
   }
 
   PROFILE_END;
@@ -972,15 +979,11 @@ str_link* get_next_vfile( str_link* curr, const char* mod ) { PROFILE(GET_NEXT_V
  Allocated memory like a malloc() call but performs some pre-allocation and
  post-allocation checks to be sure that the malloc call works properly.
 */
-void* malloc_safe1( size_t size, const char* file, int line, unsigned int profile_index ) {
+void* malloc_safe1( size_t size, /*@unused@*/ const char* file, /*@unused@*/ int line, unsigned int profile_index ) {
 
   void* obj;      /* Object getting malloc address */
 
-  if( size > 100000 ) {
-    print_output( "Allocating memory chunk larger than 100000 bytes.  Possible error.", WARNING, file, line );
-    assert( size <= 100000 );
-  }
-
+  assert( size <= 100000 );
   curr_malloc_size += size;
 
   if( curr_malloc_size > largest_malloc_size ) {
@@ -988,11 +991,7 @@ void* malloc_safe1( size_t size, const char* file, int line, unsigned int profil
   }
 
   obj = malloc( size );
-
-  if( obj == NULL ) {
-    print_output( "Out of heap memory", FATAL, file, line );
-    exit( EXIT_FAILURE );
-  }
+  assert( obj != NULL );
 
   /* Profile the malloc */
   MALLOC_CALL(profile_index);
@@ -1013,7 +1012,7 @@ void* malloc_safe1( size_t size, const char* file, int line, unsigned int profil
  post-allocation checks to be sure that the malloc call works properly.  Unlike
  malloc_safe, there is no upper bound on the amount of memory to allocate.
 */
-void* malloc_safe_nolimit1( size_t size, const char* file, int line, unsigned int profile_index ) {
+void* malloc_safe_nolimit1( size_t size, /*@unused@*/ const char* file, /*@unused@*/ int line, unsigned int profile_index ) {
 
   void* obj;  /* Object getting malloc address */
 
@@ -1024,11 +1023,7 @@ void* malloc_safe_nolimit1( size_t size, const char* file, int line, unsigned in
   }
 
   obj = malloc( size );
-
-  if( obj == NULL ) {
-    print_output( "Out of heap memory", FATAL, file, line );
-    exit( EXIT_FAILURE );
-  }
+  assert( obj != NULL );
 
   /* Profile the malloc */
   MALLOC_CALL(profile_index);
@@ -1065,21 +1060,13 @@ void free_safe1( void* ptr, unsigned int profile_index ) {
  Calls the strdup() function for the specified string, making sure that the string to
  allocate is a healthy string (contains NULL character).
 */
-char* strdup_safe1( const char* str, const char* file, int line, unsigned int profile_index ) {
+char* strdup_safe1( const char* str, /*@unused@*/ const char* file, /*@unused@*/ int line, unsigned int profile_index ) {
 
   char* new_str;
 
-  if( strlen( str ) > 10000 ) {
-    print_output( "Attempting to call strdup for a string exceeding 10000 chars", FATAL, file, line );
-    exit( EXIT_FAILURE );
-  }
-
+  assert( strlen( str ) <= 10000 );
   new_str = strdup( str );
-
-  if( new_str == NULL ) {
-    print_output( "Out of heap memory", FATAL, file, line );
-    exit( EXIT_FAILURE );
-  }
+  assert( new_str != NULL );
 
   /* Profile the malloc */
   MALLOC_CALL(profile_index);
@@ -1215,6 +1202,10 @@ void calc_miss_percent(
 
 /*
  $Log$
+ Revision 1.77  2008/01/16 23:10:34  phase1geo
+ More splint updates.  Code is now warning/error free with current version
+ of run_splint.  Still have regression issues to debug.
+
  Revision 1.76  2008/01/16 05:01:23  phase1geo
  Switched totals over from float types to int types for splint purposes.
 

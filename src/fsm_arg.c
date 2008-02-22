@@ -76,11 +76,91 @@ static expression* fsm_arg_parse_state(
       }
       if( (sig = vsignal_from_string( arg )) != NULL ) {
 
+        Try {
+
+          if( sig->value->width == 0 ) {
+
+            expr = expression_create( NULL, NULL, EXP_OP_SIG, FALSE, curr_expr_id, 0, 0, 0, FALSE );
+            curr_expr_id++;
+            fsm_var_bind_add( sig->name, expr, funit_name );
+
+          } else if( sig->value->width == 1 ) {
+
+            expr = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
+            curr_expr_id++;
+            vector_dealloc( expr->value );
+            expr->value = vector_create( 32, VTYPE_VAL, TRUE );
+            vector_from_int( expr->value, sig->dim[0].lsb );
+
+            expr = expression_create( NULL, expr, EXP_OP_SBIT_SEL, FALSE, curr_expr_id, 0, 0, 0, FALSE );
+            curr_expr_id++;
+            fsm_var_bind_add( sig->name, expr, funit_name );
+
+          } else {
+
+            expt = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
+            curr_expr_id++;
+            vector_dealloc( expt->value );
+            expt->value = vector_create( 32, VTYPE_VAL, TRUE );
+            vector_from_int( expt->value, sig->dim[0].lsb );
+
+            expr = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
+            curr_expr_id++;
+            vector_dealloc( expr->value );
+            expr->value = vector_create( 32, VTYPE_VAL, TRUE );
+            vector_from_int( expr->value, ((sig->value->width - 1) + sig->dim[0].lsb) );
+
+            switch( sig->suppl.part.type ) {
+              case SSUPPL_TYPE_IMPLICIT     :  op = EXP_OP_MBIT_SEL;  break;
+              case SSUPPL_TYPE_IMPLICIT_POS :  op = EXP_OP_MBIT_POS;  break;
+              case SSUPPL_TYPE_IMPLICIT_NEG :  op = EXP_OP_MBIT_NEG;  break;
+              default                       :  assert( 0 );           break;
+            }
+            expr = expression_create( expt, expr, op, FALSE, curr_expr_id, 0, 0, 0, FALSE );
+            curr_expr_id++;
+            fsm_var_bind_add( sig->name, expr, funit_name );
+
+          }
+
+          if( expl != NULL ) {
+            expl = expression_create( expr, expl, EXP_OP_LIST, FALSE, curr_expr_id, 0, 0, 0, FALSE );
+            curr_expr_id++;
+          } else {
+            expl = expr;
+          }
+
+          /* Add signal name and expression to FSM var binding list */
+          fsm_var_bind_add( sig->name, expr, funit_name );
+
+        } Catch_anonymous {
+          vsignal_dealloc( sig );
+          Throw 0;
+        }
+
+        /* Deallocate signal */
+        vsignal_dealloc( sig );
+
+      } else {
+        expression_dealloc( expl, FALSE );
+        error = TRUE;
+      }
+    }
+    if( !error ) {
+      (*arg)++;
+      expl = expression_create( expl, NULL, EXP_OP_CONCAT, FALSE, curr_expr_id, 0, 0, 0, FALSE );
+      curr_expr_id++;
+    }
+
+  } else {
+
+    if( (sig = vsignal_from_string( arg )) != NULL ) {
+
+      Try {
+
         if( sig->value->width == 0 ) {
 
-          expr = expression_create( NULL, NULL, EXP_OP_SIG, FALSE, curr_expr_id, 0, 0, 0, FALSE );
+          expl = expression_create( NULL, NULL, EXP_OP_SIG, FALSE, curr_expr_id, 0, 0, 0, FALSE );
           curr_expr_id++;
-          fsm_var_bind_add( sig->name, expr, funit_name );
 
         } else if( sig->value->width == 1 ) {
 
@@ -90,9 +170,8 @@ static expression* fsm_arg_parse_state(
           expr->value = vector_create( 32, VTYPE_VAL, TRUE );
           vector_from_int( expr->value, sig->dim[0].lsb );
 
-          expr = expression_create( NULL, expr, EXP_OP_SBIT_SEL, FALSE, curr_expr_id, 0, 0, 0, FALSE );
+          expl = expression_create( NULL, expr, EXP_OP_SBIT_SEL, FALSE, curr_expr_id, 0, 0, 0, FALSE );
           curr_expr_id++;
-          fsm_var_bind_add( sig->name, expr, funit_name );
 
         } else {
 
@@ -114,84 +193,19 @@ static expression* fsm_arg_parse_state(
             case SSUPPL_TYPE_IMPLICIT_NEG :  op = EXP_OP_MBIT_NEG;  break;
             default                       :  assert( 0 );           break;
           }
-          expr = expression_create( expt, expr, op, FALSE, curr_expr_id, 0, 0, 0, FALSE );
-          curr_expr_id++;
-          fsm_var_bind_add( sig->name, expr, funit_name );
 
-        }
-
-        if( expl != NULL ) {
-          expl = expression_create( expr, expl, EXP_OP_LIST, FALSE, curr_expr_id, 0, 0, 0, FALSE );
+          expl = expression_create( expt, expr, op, FALSE, curr_expr_id, 0, 0, 0, FALSE );
           curr_expr_id++;
-        } else {
-          expl = expr;
+
         }
 
         /* Add signal name and expression to FSM var binding list */
-        fsm_var_bind_add( sig->name, expr, funit_name );
+        fsm_var_bind_add( sig->name, expl, funit_name );
 
-        /* Deallocate signal */
+      } Catch_anonymous {
         vsignal_dealloc( sig );
-
-      } else {
-        expression_dealloc( expl, FALSE );
-        error = TRUE;
+        Throw 0;
       }
-    }
-    if( !error ) {
-      (*arg)++;
-      expl = expression_create( expl, NULL, EXP_OP_CONCAT, FALSE, curr_expr_id, 0, 0, 0, FALSE );
-      curr_expr_id++;
-    }
-
-  } else {
-
-    if( (sig = vsignal_from_string( arg )) != NULL ) {
-
-      if( sig->value->width == 0 ) {
-
-        expl = expression_create( NULL, NULL, EXP_OP_SIG, FALSE, curr_expr_id, 0, 0, 0, FALSE );
-        curr_expr_id++;
-
-      } else if( sig->value->width == 1 ) {
-
-        expr = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
-        curr_expr_id++;
-        vector_dealloc( expr->value );
-        expr->value = vector_create( 32, VTYPE_VAL, TRUE );
-        vector_from_int( expr->value, sig->dim[0].lsb );
-
-        expl = expression_create( NULL, expr, EXP_OP_SBIT_SEL, FALSE, curr_expr_id, 0, 0, 0, FALSE );
-        curr_expr_id++;
-
-      } else {
-
-        expt = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
-        curr_expr_id++;
-        vector_dealloc( expt->value );
-        expt->value = vector_create( 32, VTYPE_VAL, TRUE );
-        vector_from_int( expt->value, sig->dim[0].lsb );
-
-        expr = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
-        curr_expr_id++;
-        vector_dealloc( expr->value );
-        expr->value = vector_create( 32, VTYPE_VAL, TRUE );
-        vector_from_int( expr->value, ((sig->value->width - 1) + sig->dim[0].lsb) );
-
-        switch( sig->suppl.part.type ) {
-          case SSUPPL_TYPE_IMPLICIT     :  op = EXP_OP_MBIT_SEL;  break;
-          case SSUPPL_TYPE_IMPLICIT_POS :  op = EXP_OP_MBIT_POS;  break;
-          case SSUPPL_TYPE_IMPLICIT_NEG :  op = EXP_OP_MBIT_NEG;  break;
-          default                       :  assert( 0 );           break;
-        }
-
-        expl = expression_create( expt, expr, op, FALSE, curr_expr_id, 0, 0, 0, FALSE );
-        curr_expr_id++;
-
-      }
-
-      /* Add signal name and expression to FSM var binding list */
-      fsm_var_bind_add( sig->name, expl, funit_name );
 
       /* Deallocate signal */
       vsignal_dealloc( sig );
@@ -548,7 +562,8 @@ void fsm_arg_parse_attr(
           unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Illegal input state expression (%s), file: %s", str, obf_file( funit->filename ) );
           assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          exit( EXIT_FAILURE );
+          free_safe( tmp );
+          Throw 0;
         }
         free_safe( tmp );
       } else {
@@ -565,7 +580,8 @@ void fsm_arg_parse_attr(
           unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Illegal output state expression (%s), file: %s", str, obf_file( funit->filename ) );
           assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          exit( EXIT_FAILURE );
+          free_safe( tmp );
+          Throw 0;
         } else {
           (void)fsm_var_add( funit->name, out_state, out_state, curr->name, exclude );
           fsml = fsm_link_find( curr->name, funit->fsm_head );
@@ -586,7 +602,8 @@ void fsm_arg_parse_attr(
           unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Illegal output state expression (%s), file: %s", str, obf_file( funit->filename ) );
           assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          exit( EXIT_FAILURE );
+          free_safe( tmp );
+          Throw 0;
         } else {
           (void)fsm_var_add( funit->name, in_state, out_state, curr->name, exclude );
           fsml = fsm_link_find( curr->name, funit->fsm_head );
@@ -631,6 +648,10 @@ void fsm_arg_parse_attr(
 
 /*
  $Log$
+ Revision 1.40  2008/02/09 19:32:44  phase1geo
+ Completed first round of modifications for using exception handler.  Regression
+ passes with these changes.  Updated regressions per these changes.
+
  Revision 1.39  2008/02/01 06:37:08  phase1geo
  Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
  using pragma excludes (this code is not fully working yet).  More to be done.

@@ -114,7 +114,13 @@ static func_unit* scope_find_funit_from_scope(
  are set to the found module parameter and its functional unit; otherwise, a value of FALSE is returned to the
  calling function.
 */
-bool scope_find_param( const char* name, func_unit* curr_funit, mod_parm** found_parm, func_unit** found_funit, int line ) { PROFILE(SCOPE_FIND_PARAM);
+bool scope_find_param(
+  const char* name,
+  func_unit*  curr_funit,
+  mod_parm**  found_parm,
+  func_unit** found_funit,
+  int         line
+) { PROFILE(SCOPE_FIND_PARAM);
 
   char* parm_name;  /* Parameter basename holder */
   char* scope;      /* Parameter scope holder */
@@ -195,10 +201,16 @@ bool scope_find_param( const char* name, func_unit* curr_funit, mod_parm** found
  performs relative referencing to find the signal.  If the signal is found the found_sig and found_funit pointers
  are set to the found signal and its functional unit; otherwise, a value of FALSE is returned to the calling function.
 */
-bool scope_find_signal( const char* name, func_unit* curr_funit, vsignal** found_sig, func_unit** found_funit, int line ) { PROFILE(SCOPE_FIND_SIGNAL);
+bool scope_find_signal(
+  const char* name,
+  func_unit*  curr_funit,
+  vsignal**   found_sig,
+  func_unit** found_funit,
+  int         line
+) { PROFILE(SCOPE_FIND_SIGNAL);
 
-  char*     sig_name;  /* Signal basename holder */
-  char*     scope;     /* Signal scope holder */
+  char* sig_name;  /* Signal basename holder */
+  char* scope;     /* Signal scope holder */
 
   assert( curr_funit != NULL );
 
@@ -207,51 +219,65 @@ bool scope_find_signal( const char* name, func_unit* curr_funit, vsignal** found
 
   sig_name = strdup_safe( name );
 
-  /* If there is a hierarchical reference being made, adjust the signal name and current functional unit */
-  if( !scope_local( name ) ) {
+  Try {
 
-    scope = (char *)malloc_safe( strlen( name ) + 1 );
+    /* If there is a hierarchical reference being made, adjust the signal name and current functional unit */
+    if( !scope_local( name ) ) {
 
-    /* Extract the signal name from its scope */
-    scope_extract_back( name, sig_name, scope );
+      scope = (char *)malloc_safe( strlen( name ) + 1 );
 
-    /* Get the functional unit that contains this signal */
-    if( (*found_funit = scope_find_funit_from_scope( scope, curr_funit, TRUE )) == NULL ) {
+      Try {
 
-      if( line > 0 ) {
-        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined signal hierarchy (%s) in %s %s, file %s, line %d",
-                                    obf_sig( name ), get_funit_type( curr_funit->type ), obf_funit( curr_funit->name ),
-                                    obf_file( curr_funit->filename ), line );
-        assert( rv < USER_MSG_LENGTH );
-        print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        exit( EXIT_FAILURE );
-      }
+        /* Extract the signal name from its scope */
+        scope_extract_back( name, sig_name, scope );
+
+        /* Get the functional unit that contains this signal */
+        if( (*found_funit = scope_find_funit_from_scope( scope, curr_funit, TRUE )) == NULL ) {
+
+          if( line > 0 ) {
+            unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined signal hierarchy (%s) in %s %s, file %s, line %d",
+                                        obf_sig( name ), get_funit_type( curr_funit->type ), obf_funit( curr_funit->name ),
+                                        obf_file( curr_funit->filename ), line );
+            assert( rv < USER_MSG_LENGTH );
+            print_output( user_msg, FATAL, __FILE__, __LINE__ );
+            Throw 0;
+          }
  
+        }
+
+      } Catch_anonymous {
+        free_safe( scope );
+        Throw 0;
+      }
+
+      free_safe( scope );
+
     }
 
-    free_safe( scope );
+    if( *found_funit != NULL ) {
 
-  }
-
-  if( *found_funit != NULL ) {
-
-    /* First, look in the current functional unit */
-    if( (*found_sig = funit_find_signal( sig_name, *found_funit )) == NULL ) {
+      /* First, look in the current functional unit */
+      if( (*found_sig = funit_find_signal( sig_name, *found_funit )) == NULL ) {
   
-      /* Continue to look in parent modules (if there are any) */
-      *found_funit = (*found_funit)->parent;
-      while( (*found_funit != NULL) && ((*found_sig = funit_find_signal( sig_name, *found_funit )) == NULL) ) {
+        /* Continue to look in parent modules (if there are any) */
         *found_funit = (*found_funit)->parent;
-      }
+        while( (*found_funit != NULL) && ((*found_sig = funit_find_signal( sig_name, *found_funit )) == NULL) ) {
+          *found_funit = (*found_funit)->parent;
+        }
 
-      /* If we could still not find the signal, look in the global funit, if it exists */
-      if( (*found_sig == NULL) && (global_funit != NULL) ) {
-        *found_funit = global_funit;
-        *found_sig = funit_find_signal( sig_name, *found_funit );
+        /* If we could still not find the signal, look in the global funit, if it exists */
+        if( (*found_sig == NULL) && (global_funit != NULL) ) {
+          *found_funit = global_funit;
+          *found_sig = funit_find_signal( sig_name, *found_funit );
+        }
+
       }
 
     }
 
+  } Catch_anonymous {
+    free_safe( sig_name );
+    Throw 0;
   }
 
   free_safe( sig_name );
@@ -277,7 +303,15 @@ bool scope_find_signal( const char* name, func_unit* curr_funit, vsignal** found
  found, the found_funit pointer is set to the functional unit and the function returns TRUE; otherwise, the function
  returns FALSE to the calling function.
 */
-bool scope_find_task_function_namedblock( const char* name, int type, func_unit* curr_funit, func_unit** found_funit, int line, bool must_find, bool rm_unnamed ) { PROFILE(SCOPE_FIND_TASK_FUNCTION_NAMEDBLOCK);
+bool scope_find_task_function_namedblock(
+  const char* name,
+  int         type,
+  func_unit*  curr_funit,
+  func_unit** found_funit,
+  int         line,
+  bool        must_find,
+  bool        rm_unnamed
+) { PROFILE(SCOPE_FIND_TASK_FUNCTION_NAMEDBLOCK);
 
   assert( (type == FUNIT_FUNCTION)  || (type == FUNIT_TASK)  || (type == FUNIT_NAMED_BLOCK) ||
           (type == FUNIT_AFUNCTION) || (type == FUNIT_ATASK) || (type == FUNIT_ANAMED_BLOCK) );
@@ -311,7 +345,9 @@ bool scope_find_task_function_namedblock( const char* name, int type, func_unit*
  \note This function should only be called when the scope refers to a functional unit
        that is NOT a module!
 */
-func_unit* scope_get_parent_funit( const char* scope ) { PROFILE(SCOPE_GET_PARENT_FUNIT);
+func_unit* scope_get_parent_funit(
+  const char* scope
+) { PROFILE(SCOPE_GET_PARENT_FUNIT);
 
   funit_inst* inst;  /* Pointer to functional unit instance with the specified scope */
   char*       rest;  /* Temporary holder */
@@ -346,7 +382,9 @@ func_unit* scope_get_parent_funit( const char* scope ) { PROFILE(SCOPE_GET_PAREN
 
  \note Assumes that the given scope is not that of a module itself!
 */
-func_unit* scope_get_parent_module( const char* scope ) { PROFILE(SCOPE_GET_PARENT_MODULE);
+func_unit* scope_get_parent_module(
+  const char* scope
+) { PROFILE(SCOPE_GET_PARENT_MODULE);
 
   funit_inst* inst;        /* Pointer to functional unit instance with the specified scope */
   char*       curr_scope;  /* Current scope to search for */
@@ -378,50 +416,11 @@ func_unit* scope_get_parent_module( const char* scope ) { PROFILE(SCOPE_GET_PARE
 
 }
 
-#ifdef SKIP
-/*!
- \param scope  Instance scope to potentially flatten
-
- \return Returns flattened scope (unnamed instances removed)
-
- \note To match VCS and because I don't know what the SystemVerilog LRM has to say about
-       unnamed scopes and hierachical referencing of these scopes at this time, this function
-       only removes unnamed scopes that do not contain signals.
-*/
-char* scope_flatten( char* scope ) { PROFILE(SCOPE_FLATTEN);
-
-  funit_inst* inst;        /* Pointer to current functional unit instance */
-  char*       curr_scope;  /* Current scope to search for */
-  char*       rest;        /* Temporary holder */
-  char*       back;        /* Temporary holder */
-  char*       new_scope;   /* Pointer to new scope name */
-
-  /* Get a local copy of the specified scope */
-  curr_scope = strdup_safe( scope );
-  rest       = strdup_safe( scope );
-  back       = strdup_safe( scope );
-  new_scope  = (char*)malloc_safe( strlen( scope ) + 1 );
-
-  do {
-    scope_extract_back( curr_scope, back, rest );
-    assert( rest[0] != '\0' );
-    strcpy( curr_scope, rest );
-    inst = inst_link_find_by_scope( curr_scope, inst_head );
-    if( !funit_is_unnamed( inst->funit ) ) {
-      /* TBD */
-    }
-  } while( rest[0] != '\0' );
-
-  PROFILE_END;
-
-  return( new_scope );
-
-}
-#endif
-
-
 /*
  $Log$
+ Revision 1.43  2008/02/11 14:00:09  phase1geo
+ More updates for exception handling.  Regression passes.
+
  Revision 1.42  2008/01/16 23:10:33  phase1geo
  More splint updates.  Code is now warning/error free with current version
  of run_splint.  Still have regression issues to debug.
