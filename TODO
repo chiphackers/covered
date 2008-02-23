@@ -40,6 +40,12 @@ X  8.  Add code pragmas to allow the user to exclude parts of design from covera
 
    9.  Have Covered have the ability to generate XML CDD files.
 
+   10. Add pragma to allow the user to ignore certain codes for race condition checking.
+
+   11. Enhance the -rI option to allow the user to ignore certain types of race conditions.
+
+   12. Provide ability to handle $finish and $stop system calls.
+
 
 Merge command
 -------------
