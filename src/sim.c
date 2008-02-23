@@ -788,6 +788,8 @@ thread* sim_add_thread( thread* parent, statement* stmt, func_unit* funit, const
 
 #ifdef DEBUG_MODE
     if( debug_mode && !flag_use_command_line_debug ) {
+      printf( "Adding thread: " );
+      sim_display_thread( thr, FALSE, TRUE );
       printf( "After thread is added to active queue...\n" );
       sim_display_active_queue();
       sim_display_all_list();
@@ -856,6 +858,9 @@ static void sim_kill_thread( thread* thr ) { PROFILE(SIM_KILL_THREAD);
     }
 
   }
+
+  /* Check to make sure that the thread is not in the waiting queue */
+  assert( thr->suppl.part.state != THR_ST_WAITING );
 
   /* Finally, park this thread at the end of the all_queue (if its not already there) */
   if( thr != all_tail ) {
@@ -966,8 +971,8 @@ static bool sim_expression( expression* expr, thread* thr, const sim_time* time 
   assert( expr != NULL );
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "    In sim_expression %d, left_changed %d, right_changed %d",
-            expr->id, ESUPPL_IS_LEFT_CHANGED( expr->suppl ), ESUPPL_IS_RIGHT_CHANGED( expr->suppl ) );
+  snprintf( user_msg, USER_MSG_LENGTH, "    In sim_expression %d, left_changed %d, right_changed %d, thread %p",
+            expr->id, ESUPPL_IS_LEFT_CHANGED( expr->suppl ), ESUPPL_IS_RIGHT_CHANGED( expr->suppl ), thr );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
@@ -1062,7 +1067,7 @@ void sim_thread(
     expr_changed = sim_expression( stmt->exp, thr, time );
 
 #ifdef DEBUG_MODE
-    snprintf( user_msg, USER_MSG_LENGTH, "  Executed statement %d, expr changed %d", stmt->exp->id, expr_changed );
+    snprintf( user_msg, USER_MSG_LENGTH, "  Executed statement %d, expr changed %d, thread %p", stmt->exp->id, expr_changed, thr );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
       
@@ -1089,7 +1094,11 @@ void sim_thread(
       (((thr->curr->next_true == NULL) && (thr->curr->next_false == NULL)) ||
        (!EXPR_IS_CONTEXT_SWITCH( thr->curr->exp ) && !ESUPPL_IS_STMT_CONTINUOUS( thr->curr->exp->suppl )))) ||
       (thr->curr == NULL) ||
-      (!expr_changed && (stmt == NULL) && ((thr->curr->exp->op == EXP_OP_CASE) || (thr->curr->exp->op == EXP_OP_CASEX) || (thr->curr->exp->op == EXP_OP_CASEZ))) ||
+      (!expr_changed && (stmt == NULL) &&
+       ((thr->curr->exp->op == EXP_OP_CASE)  ||
+        (thr->curr->exp->op == EXP_OP_CASEX) ||
+        (thr->curr->exp->op == EXP_OP_CASEZ) ||
+        (thr->curr->exp->op == EXP_OP_DEFAULT))) ||
       thr->suppl.part.kill ) {
 
 #ifdef DEBUG_MODE
@@ -1217,6 +1226,9 @@ void sim_dealloc() { PROFILE(SIM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.118  2008/01/30 05:51:50  phase1geo
+ Fixing doxygen errors.  Updated parameter list syntax to make it more readable.
+
  Revision 1.117  2008/01/10 04:59:04  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 
