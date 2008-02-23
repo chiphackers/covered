@@ -265,7 +265,7 @@ proc fsm_calc_arc_fillcolor {in out dfltColor} {
 
 }
 
-proc display_fsm_table {expr_id} {
+proc display_fsm_table {} {
 
   global fsm_hit_states fsm_states fsm_hit_arcs fsm_arcs
   global uncov_bgColor cov_bgColor
@@ -275,9 +275,6 @@ proc display_fsm_table {expr_id} {
   set tpad 10
   set xpad 20
   set ypad 20
-
-  # Initialize current expression ID
-  set curr_fsm_expr_id $expr_id
 
   # Calculate the width of a horizontal FSM state value
   .fsmwin.f.t.c create text 1c 1c -text [lindex $fsm_states 1] -anchor nw -tags htext
@@ -445,6 +442,7 @@ proc display_fsm_window {expr_id} {
   global fsm_states fsm_hit_states
   global fsm_arcs fsm_hit_arcs
   global fsm_in_state fsm_out_state
+  global curr_fsm_expr_id
 
   # Get information from design for this expression ID
   set fsm_states     ""
@@ -458,8 +456,11 @@ proc display_fsm_window {expr_id} {
   # Display the state expressions
   display_fsm_state_exprs
 
+  # Initialize current expression ID
+  set curr_fsm_expr_id $expr_id
+
   # Display the state transition table
-  display_fsm_table $expr_id
+  display_fsm_table
 
   # Display the information in the information bar
   set fsm_curr_info "Filename: $file_name, module: $curr_funit_name"

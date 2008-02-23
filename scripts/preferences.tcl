@@ -794,6 +794,11 @@ proc apply_preferences {} {
       display_comb_info
     }
 
+    # Redisplay the FSM logic window, if it exists
+    if {[winfo exists .fsmwin] != 0} {
+      display_fsm_table
+    }
+
     .bot.right.txt xview moveto [lindex $text_x 0]
     .bot.right.txt yview moveto [lindex $text_y 0]
 
