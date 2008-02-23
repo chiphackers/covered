@@ -47,11 +47,12 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 exclude6        exclude6.1      exclude7        exclude7.1      exclude7.2 \
                 exclude8        exclude8.1      exclude9        exclude9.1      exclude9.2 \
                 exclude9.3      exclude9.4      exclude9.5      exclude9.6      exclude9.7 \
-                expand1         expand2         expand3         expand4         expand4.1 \
-                expand4.2       expand4.3       expand4.4       for1            for2 \
-                forever1        fork1           fork2           fsm3            fsm4 \
-                fsm4.1          fsm5            fsm5.1          fsm5.2          fsm5.3 \
-                fsm11           func1           func2           func5           gate1           hier1 \
+                exclude9.8      exclude9.9      expand1         expand2         expand3 \
+                expand4         expand4.1       expand4.2       expand4.3       expand4.4 \
+                for1            for2            forever1        fork1           fork2 \
+                fsm3            fsm4            fsm4.1          fsm5            fsm5.1 \
+                fsm5.2          fsm5.3          fsm11           func1           func2 \
+                func5           gate1           hier1 \
                 hier3.1         hier3.2         hier3.3         hier3.4         hier4 \
                 ifdef1          ifdef1.2        ifdef2.1        ifdef2.2        ifdef2.3 \
                 ifelse1         implicit2.1     include1        include1.1      include2 \
