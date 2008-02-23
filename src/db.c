@@ -548,6 +548,12 @@ void db_read( char* file, int read_mode ) { PROFILE(DB_READ);
   }
 #endif
 
+  /* Check to make sure that the CDD file contained valid information */
+  if( leading_hier_num == 0 ) {
+    print_output( "CDD file was found to be empty", FATAL, __FILE__, __LINE__ );
+    Throw 0;
+  }
+
   PROFILE_END;
 
 }
@@ -2670,6 +2676,9 @@ void db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.280  2008/02/10 03:33:13  phase1geo
+ More exception handling added and fixed remaining splint errors.
+
  Revision 1.279  2008/02/09 19:32:44  phase1geo
  Completed first round of modifications for using exception handler.  Regression
  passes with these changes.  Updated regressions per these changes.
