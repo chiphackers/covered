@@ -51,7 +51,7 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 expand4.2       expand4.3       expand4.4       for1            for2 \
                 forever1        fork1           fork2           fsm3            fsm4 \
                 fsm4.1          fsm5            fsm5.1          fsm5.2          fsm5.3 \
-                fsm11           func1           func2           gate1           hier1 \
+                fsm11           func1           func2           func5           gate1           hier1 \
                 hier3.1         hier3.2         hier3.3         hier3.4         hier4 \
                 ifdef1          ifdef1.2        ifdef2.1        ifdef2.2        ifdef2.3 \
                 ifelse1         implicit2.1     include1        include1.1      include2 \
