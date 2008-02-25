@@ -156,11 +156,11 @@ static bool race_find_head_statement_containing_statement_helper(
         retval = race_find_head_statement_containing_statement_helper( curr->exp->elem.funit->first_stmt, to_find );
       }
 
-      if( !retval && (ESUPPL_IS_STMT_STOP_TRUE( curr->exp->suppl ) == 0) ) {
+      if( !retval && (curr->suppl.part.stop_true == 0) ) {
         retval = race_find_head_statement_containing_statement_helper( curr->next_true, to_find );
       }
    
-      if( !retval && (ESUPPL_IS_STMT_STOP_FALSE( curr->exp->suppl ) == 0) && (curr->next_true != curr->next_false) ) {
+      if( !retval && (curr->suppl.part.stop_false == 0) && (curr->next_true != curr->next_false) ) {
         retval = race_find_head_statement_containing_statement_helper( curr->next_false, to_find );
       }
 
@@ -325,10 +325,10 @@ void race_calc_assignments(
     stmt->conn_id = stmt_conn_id;
 
     /* Calculate children statements */
-    if( ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0 ) {
+    if( stmt->suppl.part.stop_true == 0 ) {
       race_calc_assignments( stmt->next_true, sb_index );
     }
-    if( (ESUPPL_IS_STMT_STOP_FALSE( stmt->exp->suppl ) == 0) && (stmt->next_true != stmt->next_false) ) {
+    if( (stmt->suppl.part.stop_false == 0) && (stmt->next_true != stmt->next_false) ) {
       race_calc_assignments( stmt->next_false, sb_index );
     }
 
@@ -765,8 +765,8 @@ void race_check_modules() { PROFILE(RACE_CHECK_MODULES);
       /* First, get the size of the statement block array for this module */
       stmt_iter_reset( &si, modl->funit->stmt_tail );
       while( si.curr != NULL ) {
-        if( (si.curr->stmt->exp->suppl.part.stmt_head == 1) &&
-            (si.curr->stmt->exp->suppl.part.stmt_is_called == 0) ) {
+        if( (si.curr->stmt->suppl.part.head == 1) &&
+            (si.curr->stmt->suppl.part.is_called == 0) ) {
           sb_size++;
         }
         stmt_iter_next( &si );
@@ -781,8 +781,8 @@ void race_check_modules() { PROFILE(RACE_CHECK_MODULES);
         /* Second, populate the statement block array with pointers to the head statements */
         stmt_iter_reset( &si, modl->funit->stmt_tail );
         while( si.curr != NULL ) {
-          if( (si.curr->stmt->exp->suppl.part.stmt_head == 1) &&
-              (si.curr->stmt->exp->suppl.part.stmt_is_called == 0) ) {
+          if( (si.curr->stmt->suppl.part.head == 1) &&
+              (si.curr->stmt->suppl.part.is_called == 0) ) {
             sb[sb_index].stmt    = si.curr->stmt;
             sb[sb_index].remove  = FALSE;
             sb[sb_index].seq     = FALSE;
@@ -1152,6 +1152,9 @@ void race_blk_delete_list(
 
 /*
  $Log$
+ Revision 1.71  2008/02/11 14:00:09  phase1geo
+ More updates for exception handling.  Regression passes.
+
  Revision 1.70  2008/02/09 19:32:45  phase1geo
  Completed first round of modifications for using exception handler.  Regression
  passes with these changes.  Updated regressions per these changes.

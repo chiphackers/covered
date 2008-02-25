@@ -281,7 +281,7 @@ static bool fsm_var_bind_stmt(
     fsm_var_add_expr( stmt->exp, funitl->funit );
 
     /* Set ADDED bit of this statement */
-    stmt->exp->suppl.part.stmt_added = 1;
+    stmt->suppl.part.added = 1;
 
     /* Second, add our statement to this functional unit's statement list */
     stmt_link_add_head( stmt, &(funitl->funit->stmt_head), &(funitl->funit->stmt_tail) );
@@ -495,6 +495,9 @@ void fsm_var_remove(
 
 /*
  $Log$
+ Revision 1.37  2008/02/22 20:39:22  phase1geo
+ More updates for exception handling.
+
  Revision 1.36  2008/02/01 06:37:08  phase1geo
  Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
  using pragma excludes (this code is not fully working yet).  More to be done.

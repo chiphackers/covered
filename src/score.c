@@ -119,6 +119,7 @@ extern char*     directive_filename;
 extern bool      debug_mode;
 extern isuppl    info_suppl;
 extern char*     pragma_coverage_name;
+extern char*     pragma_racecheck_name;
 extern char      score_run_path[4096];
 extern char**    score_args;
 extern int       score_arg_num;
@@ -177,11 +178,15 @@ static void score_usage() {
   printf( "      -T min|typ|max               Specifies value to use in delay expressions of the form min:typ:max.\n" );
   printf( "      -ts <number>                 If design is being scored, specifying this option will output\n" );
   printf( "                                    the current timestep (by increments of <number>) to standard output.\n" );
-  printf( "      -r(S|W|E|I)                  Specifies action to take when race condition checking finds problems in design.\n" );
+  printf( "      -r(S|W|E|I|P[=<name>])       Specifies action to take when race condition checking finds problems in design.\n" );
   printf( "                                    (-rS = Silent.  Do not report condition was found, just handle it.\n" );
   printf( "                                     -rW = Warning.  Report race condition information, but just handle it.  Default.\n" );
   printf( "                                     -rE = Error.  Report race condition information and stop scoring.\n" );
   printf( "                                     -rI = Ignore.  Skip race condition checking completely.)\n" );
+  printf( "                                     -rP = Use pragmas.  Skip race condition checking for all code surrounded by\n" );
+  printf( "                                           // racecheck off/on embedded pragmas.  The \"racecheck\" keyword can be\n" );
+  printf( "                                           changed by specifying =<name> where <name> is the new name for the race\n" );
+  printf( "                                           condition pragma keyword.\n" );
   printf( "      -S                           Outputs simulation performance information after scoring has completed.  This\n" );
   printf( "                                    information is currently only useful for the developers of Covered.\n" );
   printf( "      -g (<module>=)[1|2|3]        Selects generation of Verilog syntax that the parser will handle.  If\n" );
@@ -897,9 +902,16 @@ static void score_parse_args( int argc, int last_arg, const char** argv ) { PROF
         case 'I'  :  flag_check_races = FALSE;
         case 'S'  :
         case '\0' :  flag_race_check  = NORMAL;   break;
+        case 'P'  :
+          if( argv[i][3] == '=' ) {
+            pragma_racecheck_name = strdup_safe( argv[i] + 4 );
+          } else {
+            pragma_racecheck_name = strdup_safe( "racecheck" );
+          }
+          break;
         default   :
           {
-            unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown race condition value %c (available types are E, W, S or I)", argv[i][2] );
+            unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown race condition value %c (available types are E, W, S, I or P)", argv[i][2] );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
             Throw 0;
@@ -1130,6 +1142,9 @@ void command_score( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
 /*
  $Log$
+ Revision 1.114  2008/02/22 20:39:22  phase1geo
+ More updates for exception handling.
+
  Revision 1.113  2008/02/10 03:33:13  phase1geo
  More exception handling added and fixed remaining splint errors.
 

@@ -118,7 +118,9 @@ static void exclude_expr_assign_and_recalc(
 
   /* Set the exclude bits in the expression supplemental field */
   expr->suppl.part.excluded      = excluded ? 1 : 0;
-  expr->suppl.part.stmt_excluded = (excluded && set_line) ? 1 : 0;
+  if( ESUPPL_IS_ROOT( expr->suppl ) == 1 ) {
+    expr->parent->stmt->suppl.part.excluded = (excluded && set_line) ? 1 : 0;
+  }
 
 }
 
@@ -457,6 +459,9 @@ bool exclude_set_assert_exclude(
 
 /*
  $Log$
+ Revision 1.19  2008/01/30 05:51:50  phase1geo
+ Fixing doxygen errors.  Updated parameter list syntax to make it more readable.
+
  Revision 1.18  2008/01/16 05:01:22  phase1geo
  Switched totals over from float types to int types for splint purposes.
 

@@ -546,7 +546,7 @@ void combination_get_stats( func_unit* funit, int* total, int* hit ) { PROFILE(C
     stmt = func_iter_get_next_statement( &fi );
     while( stmt != NULL ) {
       ulid = 1;
-      combination_get_tree_stats( stmt->exp, &ulid, 0, ESUPPL_STMT_EXCLUDED( stmt->exp->suppl ), total, hit );
+      combination_get_tree_stats( stmt->exp, &ulid, 0, stmt->suppl.part.excluded, total, hit );
       stmt = func_iter_get_next_statement( &fi );
     }
 
@@ -2692,7 +2692,7 @@ bool combination_collect( const char* funit_name, int funit_type, expression*** 
             *excludes   = (int*)realloc( *excludes, (sizeof( int* ) * uncov_size) );
           }
           (*uncovs)[(*uncov_cnt)]   = stmt->exp;
-          (*excludes)[(*uncov_cnt)] = (any_measurable && (ESUPPL_STMT_EXCLUDED( stmt->exp->suppl ) == 0)) ? 0 : 1;
+          (*excludes)[(*uncov_cnt)] = (any_measurable && (stmt->suppl.part.excluded == 0)) ? 0 : 1;
           (*uncov_cnt)++;
         }
         stmt->exp->suppl.part.comb_cntd = 0;
@@ -2979,6 +2979,9 @@ void combination_report( FILE* ofile, bool verbose ) { PROFILE(COMBINATION_REPOR
 
 /*
  $Log$
+ Revision 1.182  2008/01/30 05:51:50  phase1geo
+ Fixing doxygen errors.  Updated parameter list syntax to make it more readable.
+
  Revision 1.181  2008/01/16 06:40:33  phase1geo
  More splint updates.
 

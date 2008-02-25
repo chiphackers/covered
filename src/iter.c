@@ -105,8 +105,8 @@ void stmt_iter_reverse( stmt_iter* si ) { PROFILE(STMT_ITER_REVERSE);
 */
 void stmt_iter_find_head( stmt_iter* si, bool skip ) { PROFILE(STMT_ITER_FIND_HEAD);
   
-  while( (si->curr != NULL) && ((ESUPPL_IS_STMT_HEAD( si->curr->stmt->exp->suppl ) == 0) || skip) ) {
-    if( ESUPPL_IS_STMT_HEAD( si->curr->stmt->exp->suppl ) == 1 ) {
+  while( (si->curr != NULL) && ((si->curr->stmt->suppl.part.head == 0) || skip) ) {
+    if( si->curr->stmt->suppl.part.head == 1 ) {
       skip = FALSE;
     }
     stmt_iter_next( si );
@@ -136,7 +136,7 @@ void stmt_iter_get_next_in_order( stmt_iter* si ) { PROFILE(STMT_ITER_GET_NEXT_I
   int       lowest = 0x7fffffff;  /* Line number of the lowest statement */
 
   /* If the current statement is not a head, go back to the head */
-  if( ESUPPL_IS_STMT_HEAD( si->curr->stmt->exp->suppl ) == 0 ) {
+  if( si->curr->stmt->suppl.part.head == 0 ) {
     stmt_iter_reverse( si );
     stmt_iter_find_head( si, FALSE );
   }
@@ -149,8 +149,8 @@ void stmt_iter_get_next_in_order( stmt_iter* si ) { PROFILE(STMT_ITER_GET_NEXT_I
   stmt_iter_next( si );
   
   /* Search for a statement that has not been traversed yet within this statement block */
-  while( (si->curr != NULL) && (ESUPPL_IS_STMT_HEAD( si->curr->stmt->exp->suppl ) == 0) ) {
-    if( (si->curr->stmt->exp->suppl.part.stmt_added == 0) &&
+  while( (si->curr != NULL) && (si->curr->stmt->suppl.part.head == 0) ) {
+    if( (si->curr->stmt->suppl.part.added == 0) &&
         (si->curr->stmt->exp->line != 0) &&
         (si->curr->stmt->exp->line < lowest) ) {
       lowest   = si->curr->stmt->exp->line;
@@ -162,19 +162,19 @@ void stmt_iter_get_next_in_order( stmt_iter* si ) { PROFILE(STMT_ITER_GET_NEXT_I
 
   /*
     If we were unable to find an untraversed statement, go to the next statement block,
-    resetting the stmt_added supplemental value as we go.
+    resetting the added supplemental value as we go.
   */
   if( (lsi.curr == NULL) && (lsi.last == NULL) ) {
     stmt_iter_reverse( si );
-    while( (si->curr != NULL) && (ESUPPL_IS_STMT_HEAD( si->curr->stmt->exp->suppl ) == 0) ) {
-      si->curr->stmt->exp->suppl.part.stmt_added = 0;
+    while( (si->curr != NULL) && (si->curr->stmt->suppl.part.head == 0) ) {
+      si->curr->stmt->suppl.part.added = 0;
       stmt_iter_next( si );
     }
     stmt_iter_find_head( si, TRUE );
   } else {
     si->curr = lsi.curr;
     si->last = lsi.last;
-    si->curr->stmt->exp->suppl.part.stmt_added = 1;
+    si->curr->stmt->suppl.part.added = 1;
   }
 
   PROFILE_END;
@@ -211,6 +211,10 @@ void stmt_iter_get_line_before( stmt_iter* si, int lnum ) { PROFILE(STMT_ITER_GE
 
 /*
  $Log$
+ Revision 1.18  2008/01/23 20:48:03  phase1geo
+ Fixing bug 1878134 and adding new diagnostics to regression suite to verify
+ its behavior.  Full regressions pass.
+
  Revision 1.17  2007/12/18 23:55:21  phase1geo
  Starting to remove 64-bit time and replacing it with a sim_time structure
  for performance enhancement purposes.  Also removing global variables for time-related

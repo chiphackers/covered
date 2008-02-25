@@ -51,7 +51,7 @@
  Contains the CDD version number of all CDD files that this version of Covered can write
  and read.
 */
-#define CDD_VERSION        11
+#define CDD_VERSION        12
 
 /*!
  This contains the header information specified when executing this tool.
@@ -334,7 +334,7 @@
  supplemental fields are ANDed with this mask and ORed together to perform the
  merge.  See esuppl_u for information on which bits are masked.
 */
-#define ESUPPL_MERGE_MASK            0xffffff
+#define ESUPPL_MERGE_MASK            0x1ffff
 
 /*!
  Specifies the number of bits to store for a given expression for reentrant purposes.
@@ -360,30 +360,6 @@
  expression tree.
 */
 #define ESUPPL_IS_ROOT(x)            x.part.root
-
-/*!
- Returns a value of 1 if the specified supplemental belongs to an expression
- whose associated statement is a head statement.
-*/
-#define ESUPPL_IS_STMT_HEAD(x)       x.part.stmt_head
-
-/*!
- Returns a value of 1 if the specified supplemental belongs to an expression
- whose associated statement is a stop in the true path (for writing purposes).
-*/
-#define ESUPPL_IS_STMT_STOP_TRUE(x)  x.part.stmt_stop_true
-
-/*!
- Returns a value of 1 if the specified supplemental belongs to an expression
- whose associated statement is a stop in the false path (for writing purposes).
-*/
-#define ESUPPL_IS_STMT_STOP_FALSE(x)  x.part.stmt_stop_false
-
-/*!
- Returns a value of 1 if the specified supplemental belongs to an expression
- whose associated statement is a continous assignment.
-*/
-#define ESUPPL_IS_STMT_CONTINUOUS(x) x.part.stmt_cont
 
 /*!
  Returns a value of 1 if the specified supplemental belongs to an expression
@@ -439,13 +415,6 @@
 #define ESUPPL_IS_IN_FUNC(x)         x.part.in_func
 
 /*!
- Returns a value of 1 if the specified statement is called by a TASK_CALL, FUNC_CALL,
- NB_CALL or FORK statement.  If a statement is to be called, it will not be automatically
- placed in the thread queue at time 0.
-*/
-#define ESUPPL_STMT_IS_CALLED(x)     x.part.stmt_is_called
-
-/*!
  Returns a value of 1 if the specified expression owns its vector structure or 0 if it
  shares it with someone else.
 */
@@ -458,22 +427,10 @@
 #define ESUPPL_EXCLUDED(x)           x.part.excluded
 
 /*!
- Returns a value of 1 if the specified statement should be excluded from coverage
- consideration.
-*/
-#define ESUPPL_STMT_EXCLUDED(x)      x.part.stmt_excluded
-
-/*!
  Returns the type of expression that this expression should be treated as.  Legal values
  are specified \ref expression_types.
 */
 #define ESUPPL_TYPE(x)               x.part.type
-
-/*!
- Returns a value of 1 if the specified statement block should only be executed during the
- last simulation step.
-*/
-#define ESUPPL_STMT_FINAL(x)         x.part.stmt_final
 
 /*! @} */
 
@@ -1373,29 +1330,13 @@ union esuppl_u {
     control lhs            :1;  /*!< Bit 10.  Mask bit = 1.  Indicates that this expression exists on the left-hand
                                      side of an assignment operation. */
     control in_func        :1;  /*!< Bit 11.  Mask bit = 1.  Indicates that this expression exists in a function */
-    control stmt_head      :1;  /*!< Bit 12.  Mask bit = 1.  Indicates the statement which this expression belongs is
-                                     a head statement (only valid for root expressions -- parent expression == NULL). */
-    control stmt_stop_true :1;  /*!< Bit 13.  Mask bit = 1.  Indicates the statement which this expression belongs
-                                     should write itself to the CDD and not continue to traverse its next_true pointer. */
-    control stmt_stop_false:1;  /*!< Bit 14.  Mask bit = 1.  Indicates the statement which this expression belongs
-                                     should write itself to the CDD and not continue to traverse its next_false pointer. */
-    control stmt_cont      :1;  /*!< Bit 15.  Mask bit = 1.  Indicates the statement which this expression belongs is
-                                     part of a continuous assignment.  As such, stop simulating this statement tree
-                                     after this expression tree is evaluated. */
-    control stmt_is_called :1;  /*!< Bit 16.  Mask bit = 1.  Indicates that this statement is called by a FUNC_CALL,
-                                     TASK_CALL, NB_CALL or FORK statement.  If a statement has this bit set, it will NOT
-                                     be automatically placed in the thread queue at time 0. */
-    control owns_vec       :1;  /*!< Bit 17.  Mask bit = 1.  Indicates that this expression either owns its vector
+    control owns_vec       :1;  /*!< Bit 12.  Mask bit = 1.  Indicates that this expression either owns its vector
                                      structure or shares it with someone else. */
-    control excluded       :1;  /*!< Bit 18.  Mask bit = 1.  Indicates that this expression should be excluded from
+    control excluded       :1;  /*!< Bit 13.  Mask bit = 1.  Indicates that this expression should be excluded from
                                      coverage results.  If a parent expression has been excluded, all children expressions
                                      within its tree are also considered excluded (even if their excluded bits are not
                                      set. */
-    control stmt_excluded  :1;  /*!< Bit 19.  Mask bit = 1.  Indicates that this statement (and its associated expression
-                                     tree) should be excluded from coverage results. */
-    control type           :3;  /*!< Bits 22:20.  Mask bit = 1.  Indicates how the pointer element should be treated as */
-    control stmt_final     :1;  /*!< Bit 23.  Mask bit = 1.  Indicates that this statement block should only be executed
-                                     during the final simulation step. */
+    control type           :3;  /*!< Bits 16:14.  Mask bit = 1.  Indicates how the pointer element should be treated as */
  
     /* UNMASKED BITS */
     control eval_t         :1;  /*!< Bit 24.  Mask bit = 0.  Indicates that the value of the current expression is
@@ -1405,19 +1346,15 @@ union esuppl_u {
     control comb_cntd      :1;  /*!< Bit 26.  Mask bit = 0.  Indicates that the current expression has been previously
                                      counted for combinational coverage.  Only set by report command (therefore this bit
                                      will always be a zero when written to CDD file. */
-    control stmt_added     :1;  /*!< Bit 27.  Mask bit = 0.  Temporary bit value used by the score command but not
-                                     displayed to the CDD file.  When this bit is set to a one, it indicates to the
-                                     db_add_statement function that this statement and all children statements have
-                                     already been added to the functional unit statement list and should not be added again. */
-    control exp_added      :1;  /*!< Bit 28.  Mask bit = 0.  Temporary bit value used by the score command but not
+    control exp_added      :1;  /*!< Bit 27.  Mask bit = 0.  Temporary bit value used by the score command but not
                                      displayed to the CDD file.  When this bit is set to a one, it indicates to the
                                      db_add_expression function that this expression and all children expressions have
                                      already been added to the functional unit expression list and should not be added again. */
-    control owned          :1;  /*!< Bit 29.  Mask bit = 0.  Temporary value used by the score command to indicate
+    control owned          :1;  /*!< Bit 28.  Mask bit = 0.  Temporary value used by the score command to indicate
                                      if this expression is already owned by a mod_parm structure. */
-    control gen_expr       :1;  /*!< Bit 30.  Mask bit = 0.  Temporary value used by the score command to indicate
+    control gen_expr       :1;  /*!< Bit 29.  Mask bit = 0.  Temporary value used by the score command to indicate
                                      that this expression is a part of a generate expression. */
-    control prev_called    :1;  /*!< Bit 31.  Mask bit = 0.  Temporary value used by named block and task expression
+    control prev_called    :1;  /*!< Bit 30.  Mask bit = 0.  Temporary value used by named block and task expression
                                      functions to indicate if we are in the middle of executing a named block or task
                                      expression (since these cause a context switch to occur. */
   } part;
@@ -1974,6 +1911,35 @@ struct statement_s {
   statement*  next_false;            /*!< Pointer to next statement to run if next_true not picked */
   int         conn_id;               /*!< Current connection ID (used to make sure that we do not infinitely loop
                                           in connecting statements together) */
+  union {
+    control all;
+    struct {
+      /* Masked bits */
+      control head      :1;          /*!< Bit 0.  Mask bit = 1.  Indicates the statement is a head statement */
+      control stop_true :1;          /*!< Bit 1.  Mask bit = 1.  Indicates the statement which this expression belongs
+                                          should write itself to the CDD and not continue to traverse its next_true pointer. */
+      control stop_false:1;          /*!< Bit 2.  Mask bit = 1.  Indicates the statement which this expression belongs
+                                          should write itself to the CDD and not continue to traverse its next_false pointer. */
+      control cont      :1;          /*!< Bit 3.  Mask bit = 1.  Indicates the statement which this expression belongs is
+                                          part of a continuous assignment.  As such, stop simulating this statement tree
+                                          after this expression tree is evaluated. */
+      control is_called :1;          /*!< Bit 4.  Mask bit = 1.  Indicates that this statement is called by a FUNC_CALL,
+                                          TASK_CALL, NB_CALL or FORK statement.  If a statement has this bit set, it will NOT
+                                          be automatically placed in the thread queue at time 0. */
+      control excluded  :1;          /*!< Bit 5.  Mask bit = 1.  Indicates that this statement (and its associated expression
+                                          tree) should be excluded from coverage results. */
+      control final     :1;          /*!< Bit 6.  Mask bit = 1.  Indicates that this statement block should only be executed
+                                          during the final simulation step. */
+      control type      :1;          /*!< Bit 7.  Mask bit = 1.  Specifies the type of pointer that should be used for elem.
+                                          0 = thread, 1 = thread_list. */
+
+      /* Unmasked bits */
+      control added     :1;          /*!< Bit 8.  Mask bit = 0.  Temporary bit value used by the score command but not
+                                          displayed to the CDD file.  When this bit is set to a one, it indicates to the
+                                          db_add_statement function that this statement and all children statements have
+                                          already been added to the functional unit statement list and should not be added again. */
+    } part;
+  } suppl;                           /*!< Supplemental bits for statements */
 };
 
 /*!
@@ -2527,6 +2493,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.281  2008/02/08 23:58:06  phase1geo
+ Starting to work on exception handling.  Much work to do here (things don't
+ compile at the moment).
+
  Revision 1.280  2008/02/01 06:37:07  phase1geo
  Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
  using pragma excludes (this code is not fully working yet).  More to be done.

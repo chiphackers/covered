@@ -158,9 +158,16 @@ static int global_timescale_precision  = 0;
 
 /*!
  Specifies the state of pragma-controlled exclusion.  If the mode is a value of 0, we
- should be excluding anything.  If it a value greater than 0, we will exclude.
+ should not be excluding anything.  If it is a value greater than 0, we will exclude.
 */
 unsigned int exclude_mode = 0;
+
+/*!
+ Specifies the state of pragma-controlled race condition check handling.  If the mode
+ is a value of 0, we should be performing race condition checking.  If it is a value
+ greater than 0, we will not perform race condition checking.
+*/
+unsigned int ignore_racecheck_mode = 0;
 
 
 /*!
@@ -1581,8 +1588,7 @@ expression* db_create_expression(
 
   /* If we are in exclude mode, set the exclude and stmt_exclude bits */
   if( exclude_mode > 0 ) {
-    expr->suppl.part.excluded      = 1;
-    expr->suppl.part.stmt_excluded = 1;
+    expr->suppl.part.excluded = 1;
   }
 
   /*
@@ -1869,8 +1875,8 @@ statement* db_parallelize_statement( statement* stmt ) { PROFILE(DB_PARALLELIZE_
     if( db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, scope, curr_funit->filename, stmt->exp->line ) ) {
 
       /* Create a thread block for this statement block */
-      stmt->exp->suppl.part.stmt_head      = 1;
-      stmt->exp->suppl.part.stmt_is_called = 1;
+      stmt->suppl.part.head      = 1;
+      stmt->suppl.part.is_called = 1;
       db_add_statement( stmt, stmt );
 
       /* Bind the FORK expression now */
@@ -1929,6 +1935,16 @@ statement* db_create_statement( expression* exp ) { PROFILE(DB_CREATE_STATEMENT)
   /* Create the given statement */
   stmt = statement_create( exp );
 
+  /* If we are in the exclude mode, exclude this statement */
+  if( exclude_mode > 0 ) {
+    stmt->suppl.part.excluded = 1;
+  }
+
+  /* If we need to exclude this statement from race condition checking, do so */
+  if( ignore_racecheck_mode > 0 ) {
+    //stmt->suppl.part.ignore_rc = 1;
+  }
+
   /* If we are a parallel statement, create a FORK statement for this statement block */
   stmt = db_parallelize_statement( stmt );
 
@@ -1947,7 +1963,7 @@ statement* db_create_statement( expression* exp ) { PROFILE(DB_CREATE_STATEMENT)
 */
 void db_add_statement( statement* stmt, statement* start ) { PROFILE(DB_ADD_STATEMENT);
  
-  if( (stmt != NULL) && (stmt->exp->suppl.part.stmt_added == 0) ) {
+  if( (stmt != NULL) && (stmt->suppl.part.added == 0) ) {
 
 #ifdef DEBUG_MODE
     {
@@ -1974,16 +1990,16 @@ void db_add_statement( statement* stmt, statement* start ) { PROFILE(DB_ADD_STAT
       db_add_expression( stmt->exp );
 
       /* Add TRUE and FALSE statement paths to list */
-      if( (ESUPPL_IS_STMT_STOP_FALSE( stmt->exp->suppl ) == 0) && (stmt->next_false != start) ) {
+      if( (stmt->suppl.part.stop_false == 0) && (stmt->next_false != start) ) {
         db_add_statement( stmt->next_false, start );
       }
 
-      if( (ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0) && (stmt->next_true != stmt->next_false) && (stmt->next_true != start) ) {
+      if( (stmt->suppl.part.stop_true == 0) && (stmt->next_true != stmt->next_false) && (stmt->next_true != start) ) {
         db_add_statement( stmt->next_true, start );
       }
 
       /* Set ADDED bit of this statement */
-      stmt->exp->suppl.part.stmt_added = 1;
+      stmt->suppl.part.added = 1;
 
       /* Finally, add the statement to the functional unit statement list */
       stmt_link_add_tail( stmt, &(curr_funit->stmt_head), &(curr_funit->stmt_tail) );
@@ -2676,6 +2692,9 @@ void db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.281  2008/02/23 22:38:41  phase1geo
+ Fixing bug 1899674.
+
  Revision 1.280  2008/02/10 03:33:13  phase1geo
  More exception handling added and fixed remaining splint errors.
 

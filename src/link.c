@@ -227,7 +227,7 @@ void stmt_link_merge(
   }
     
   /* Finally, clear the IS_STMT_HEAD bit */
-  other_head->stmt->exp->suppl.part.stmt_head = 0;
+  other_head->stmt->suppl.part.head = 0;
 
   PROFILE_END;
 
@@ -463,7 +463,7 @@ void stmt_link_display( stmt_link* head ) {
   while( curr.curr != NULL ) {
     assert( curr.curr->stmt != NULL );
     assert( curr.curr->stmt->exp != NULL );
-    printf( "  id: %d, line: %d, stmt_head: %u\n", curr.curr->stmt->exp->id, curr.curr->stmt->exp->line, ESUPPL_IS_STMT_HEAD( curr.curr->stmt->exp->suppl ) );
+    printf( "  id: %d, line: %d, stmt_head: %u\n", curr.curr->stmt->exp->id, curr.curr->stmt->exp->line, curr.curr->stmt->suppl.part.head );
     stmt_iter_next( &curr );
   }
 
@@ -1323,6 +1323,9 @@ void inst_link_delete_list( inst_link* head ) { PROFILE(INST_LINK_DELETE_LIST);
 
 /*
  $Log$
+ Revision 1.75  2008/01/30 05:51:50  phase1geo
+ Fixing doxygen errors.  Updated parameter list syntax to make it more readable.
+
  Revision 1.74  2008/01/09 05:22:21  phase1geo
  More splint updates using the -standard option.
 

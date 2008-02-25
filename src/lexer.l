@@ -53,6 +53,7 @@ extern int          ignore_mode;
 extern int          generate_mode;
 extern int          attr_mode;
 extern unsigned int exclude_mode;
+extern unsigned int ignore_racecheck_mode;
 extern char         user_msg[USER_MSG_LENGTH];
 extern char*        ppfilename;
 extern str_link*    modlist_head;
@@ -114,6 +115,11 @@ static bool file_prev_parsed;
  Specifies the keyword of the coverage on/off pragma.
 */
 char* pragma_coverage_name = NULL;
+
+/*!
+ Specifies the keyword of the racecheck on/off pragma.
+*/
+char* pragma_racecheck_name = NULL;
 
 /*@-unreachable@*/
 %}
@@ -1179,26 +1185,36 @@ void check_for_pragma(
     /* Get the keyword and value if this comment is a pragma */
     if( sscanf( comment, "%s %s", keyword, value ) == 2 ) {
 
-      /* If the user has chosen to pay attention to coverage pragmas, continue */
-      if( info_suppl.part.excl_pragma == 1 ) {
+      /* If the keyword matches the given pragma keyword, check the value */
+      if( (info_suppl.part.excl_pragma == 1) && (strcmp( keyword, pragma_coverage_name ) == 0) ) {
 
-        /* If the keyword matches the given pragma keyword, check the value */
-        if( strcmp( keyword, pragma_coverage_name ) == 0 ) {
+        /* Set the exclude_mode as specified by the user */
+        if( strcmp( value, "on" ) == 0 ) {
 
-          /* Set the exclude_mode as specified by the user */
-          if( strcmp( value, "on" ) == 0 ) {
-
-            /* Don't allow exclude_mode to wrap */
-            if( exclude_mode > 0 ) {
-              exclude_mode--;
-            }
-
-          } else if( strcmp( value, "off" ) == 0 ) {
-            exclude_mode++;
+          /* Don't allow exclude_mode to wrap */
+          if( exclude_mode > 0 ) {
+            exclude_mode--;
           }
- 
+
+        } else if( strcmp( value, "off" ) == 0 ) {
+          exclude_mode++;
         }
-        
+ 
+      }
+
+      /* If the keyword matches the given race condition check pragma keyword, check the value */
+      if( (pragma_racecheck_name != NULL) && (strcmp( keyword, pragma_racecheck_name ) == 0) ) {
+
+        if( strcmp( value, "on" ) == 0 ) {
+
+          if( ignore_racecheck_mode > 0 ) {
+            ignore_racecheck_mode--;
+          }
+
+        } else if( strcmp( value, "off" ) == 0 ) {
+          ignore_racecheck_mode++;
+        }
+
       }
 
     }

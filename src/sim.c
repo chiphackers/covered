@@ -702,7 +702,7 @@ thread* sim_add_thread( thread* parent, statement* stmt, func_unit* funit, const
   thread* thr = NULL;  /* Pointer to added thread */
 
   /* Only add expression if it is the head statement of its statement block */
-  if( ESUPPL_IS_STMT_HEAD( stmt->exp->suppl ) == 1 ) {
+  if( stmt->suppl.part.head == 1 ) {
 
     /* Create thread, if needed */
     thr = sim_create_thread( parent, stmt, funit );
@@ -758,7 +758,7 @@ thread* sim_add_thread( thread* parent, statement* stmt, func_unit* funit, const
       } else {
 
         /* If the statement block is specified as a final block, add it to the end of the delay queue */
-        if( ESUPPL_STMT_FINAL( thr->curr->exp->suppl ) == 1 ) {
+        if( thr->curr->suppl.part.final == 1 ) {
 
           sim_time tmp_time;
 
@@ -1019,7 +1019,7 @@ static bool sim_expression( expression* expr, thread* thr, const sim_time* time 
    Now perform expression operation for this expression if left or right
    expressions trees have changed.
   */
-  if( (ESUPPL_IS_STMT_CONTINUOUS( expr->suppl ) == 0) || left_changed || right_changed ) {
+  if( (ESUPPL_IS_ROOT( expr->suppl ) == 0) || (expr->parent->stmt == NULL) || (expr->parent->stmt->suppl.part.cont == 0) || left_changed || right_changed ) {
     retval = expression_operate( expr, thr, time );
   }
 
@@ -1076,7 +1076,7 @@ void sim_thread(
     /* Set exec_first to FALSE */
     thr->suppl.part.exec_first = 0;
 
-    if( ESUPPL_IS_STMT_CONTINUOUS( stmt->exp->suppl ) == 1 ) {
+    if( stmt->suppl.part.cont == 1 ) {
        /* If this is a continuous assignment, don't traverse next pointers. */
        stmt = NULL;
     } else {
@@ -1092,7 +1092,7 @@ void sim_thread(
   /* If this is the last statement in the tree with no loopback, kill the current thread */
   if( (expr_changed && 
       (((thr->curr->next_true == NULL) && (thr->curr->next_false == NULL)) ||
-       (!EXPR_IS_CONTEXT_SWITCH( thr->curr->exp ) && !ESUPPL_IS_STMT_CONTINUOUS( thr->curr->exp->suppl )))) ||
+       (!EXPR_IS_CONTEXT_SWITCH( thr->curr->exp ) && !thr->curr->suppl.part.cont))) ||
       (thr->curr == NULL) ||
       (!expr_changed && (stmt == NULL) &&
        ((thr->curr->exp->op == EXP_OP_CASE)  ||
@@ -1226,6 +1226,9 @@ void sim_dealloc() { PROFILE(SIM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.119  2008/02/23 00:26:02  phase1geo
+ Fixing bug 1899768 and adding extra debug information.
+
  Revision 1.118  2008/01/30 05:51:50  phase1geo
  Fixing doxygen errors.  Updated parameter list syntax to make it more readable.
 

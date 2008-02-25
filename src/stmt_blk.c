@@ -59,7 +59,7 @@ void stmt_blk_add_to_remove_list( statement* stmt ) {
 #endif
 
     /* If this is a head statement, don't bother looking this up again */
-    if( ESUPPL_IS_STMT_HEAD( stmt->exp->suppl ) == 0 ) {
+    if( stmt->suppl.part.head == 0 ) {
 
       /* Find the functional unit that contains this statement */
       funit = funit_find_by_id( stmt->exp->id );
@@ -113,6 +113,9 @@ void stmt_blk_remove() {
 
 /*
  $Log$
+ Revision 1.14  2008/01/09 05:22:22  phase1geo
+ More splint updates using the -standard option.
+
  Revision 1.13  2007/11/20 05:29:00  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

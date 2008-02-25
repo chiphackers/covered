@@ -22,20 +22,16 @@
  Statements are used to indicate flow of execution for a given always or initial
  block.  Each statement is assigned to exactly one expression tree and it
  contains a pointer to the next statement if its expression tree evaluates to
- TRUE (non-zero value) or FALSE (zero value).  To minimize memory use, a statement 
- uses some of the unused bits in its root expression supplemental field instead of
- having its own supplemental field.  There are three bits in the expression
- supplemental value that are only used by statements:  esuppl_u.stmt_head,
- esuppl_u.stmt_stop_true and esuppl_u.stmt_stop_false.
+ TRUE (non-zero value) or FALSE (zero value).
 
  \par
- The STMT_HEAD bit indicates that this statement should be loaded into the
+ The head bit indicates that this statement should be loaded into the
  pre-simulation statement queue if any of its expressions change value in the
  current timestep.  To begin with, the first statement in the always/initial block
  has this bit set, all other statements have this bit cleared.
 
  \par
- The STMT_STOP bits are used for CDD output.  If a statement has these bits set, it will
+ The stop bits are used for CDD output.  If a statement has these bits set, it will
  not traverse its next_true or next_false, respectively, paths when outputting.  This is necessary
  when statement paths merge back to the same path or when statement loops are encountered.
  If this bit was not used, the statements output after the merge/loop would be output more than
@@ -70,9 +66,9 @@
  the FALSE branch.
 
  \par
- To eliminate this redundancy, the STMT_STOP_TRUE and STMT_STOP_FALSE bits are set
+ To eliminate this redundancy, the stop_true and stop_false bits are set
  on statement 4.  The last statement of a TRUE path before merging always gets its
- STMT_STOP bit set.  Additionally, once a statement gets its STMT_STOP bit set by
+ stop bit set.  Additionally, once a statement gets its stop bit set by
  the parser, this value must be maintained (never cleared).
 
  \par Cyclic Statement Trees
@@ -91,7 +87,7 @@
  wait-for-event (ex. \c wait, \c @, etc.), the next_true pointer will point to the
  next statement in the tree; however, the next_false pointer will point to NULL.
  This NULL assignment indicates to the statement simulation engine that this statement
- will receive the STMT_HEAD bit and the current statement tree is finished for this
+ will receive the head bit and the current statement tree is finished for this
  timestep.
 */
 
@@ -148,6 +144,7 @@ statement* statement_create( expression* exp ) { PROFILE(STATEMENT_CREATE);
   stmt->next_true         = NULL;
   stmt->next_false        = NULL;
   stmt->conn_id           = 0;
+  stmt->suppl.all         = 0;
 
   PROFILE_END;
 
@@ -294,14 +291,14 @@ void statement_size_elements( statement* stmt, func_unit* funit ) { PROFILE(STAT
 
     /* Iterate to the next statement */
     if( stmt->next_true == stmt->next_false ) {
-      if( ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0 ) {
+      if( stmt->suppl.part.stop_true == 0 ) {
         statement_size_elements( stmt->next_true, funit );
       }
     } else {
-      if( ESUPPL_IS_STMT_STOP_FALSE( stmt->exp->suppl ) == 0 ) {
+      if( stmt->suppl.part.stop_false == 0 ) {
         statement_size_elements( stmt->next_false, funit );
       }
-      if( ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0 ) {
+      if( stmt->suppl.part.stop_true == 0 ) {
         statement_size_elements( stmt->next_true, funit );
       }
     }
@@ -325,9 +322,10 @@ void statement_db_write( statement* stmt, FILE* ofile, bool parse_mode ) { PROFI
   assert( stmt != NULL );
 
   /* Write out contents of this statement last */
-  fprintf( ofile, "%d %d %d %d",
+  fprintf( ofile, "%d %d %x %d %d",
     DB_TYPE_STATEMENT,
     expression_get_id( stmt->exp, parse_mode ),
+    (stmt->suppl.all & 0xff),
     ((stmt->next_true   == NULL) ? 0 : expression_get_id( stmt->next_true->exp, parse_mode )),
     ((stmt->next_false  == NULL) ? 0 : expression_get_id( stmt->next_false->exp, parse_mode ))
   );
@@ -349,13 +347,13 @@ void statement_db_write_tree( statement* stmt, FILE* ofile ) { PROFILE(STATEMENT
   if( stmt != NULL ) {
 
     /* Traverse down the rest of the statement block */
-    if( (stmt->next_true == stmt->next_false) && (ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0) ) {
+    if( (stmt->next_true == stmt->next_false) && (stmt->suppl.part.stop_true == 0) ) {
       statement_db_write_tree( stmt->next_true, ofile );
     } else {
-      if( ESUPPL_IS_STMT_STOP_FALSE( stmt->exp->suppl ) == 0 ) {
+      if( stmt->suppl.part.stop_false == 0 ) {
         statement_db_write_tree( stmt->next_false, ofile );
       }
-      if( ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0 ) {
+      if( stmt->suppl.part.stop_true == 0 ) {
         statement_db_write_tree( stmt->next_true, ofile );
       }
     }
@@ -383,13 +381,13 @@ void statement_db_write_expr_tree( statement* stmt, FILE* ofile ) { PROFILE(STAT
     expression_db_write_tree( stmt->exp, ofile );
 
     /* Traverse down the rest of the statement block */
-    if( (stmt->next_true == stmt->next_false) && (ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0) ) {
+    if( (stmt->next_true == stmt->next_false) && (stmt->suppl.part.stop_true == 0) ) {
       statement_db_write_expr_tree( stmt->next_true, ofile );
     } else {
-      if( ESUPPL_IS_STMT_STOP_FALSE( stmt->exp->suppl ) == 0 ) {
+      if( stmt->suppl.part.stop_false == 0 ) {
         statement_db_write_expr_tree( stmt->next_false, ofile );
       }
-      if( ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0 ) {
+      if( stmt->suppl.part.stop_true == 0 ) {
         statement_db_write_expr_tree( stmt->next_true, ofile );
       }
     }
@@ -417,8 +415,9 @@ void statement_db_read( char** line, func_unit* curr_funit, int read_mode ) { PR
   exp_link*  expl;           /* Pointer to found expression link */
   stmt_link* stmtl;          /* Pointer to found statement link */
   int        chars_read;     /* Number of characters read from line */
+  control    suppl;          /* Supplemental field value */
 
-  if( sscanf( *line, "%d %d %d%n", &id, &true_id, &false_id, &chars_read ) == 3 ) {
+  if( sscanf( *line, "%d %x %d %d%n", &id, &suppl, &true_id, &false_id, &chars_read ) == 4 ) {
 
     *line = *line + chars_read;
 
@@ -434,12 +433,13 @@ void statement_db_read( char** line, func_unit* curr_funit, int read_mode ) { PR
       assert( expl != NULL );
 
       stmt = statement_create( expl->exp );
+      stmt->suppl.all = suppl;
 
       /*
        If this statement is a head statement and the current functional unit is a task, function or named block,
        set the curr_funit->first_stmt pointer to this statement.
       */
-      if( (ESUPPL_IS_STMT_HEAD( stmt->exp->suppl ) == 1) &&
+      if( (stmt->suppl.part.head == 1) &&
           ((curr_funit->type == FUNIT_TASK)        ||
            (curr_funit->type == FUNIT_ATASK)       ||
            (curr_funit->type == FUNIT_FUNCTION)    ||
@@ -487,7 +487,7 @@ void statement_db_read( char** line, func_unit* curr_funit, int read_mode ) { PR
          or function, do not add this to the presimulation queue (this will be added when the expression
          is called.
         */
-        if( ESUPPL_STMT_IS_CALLED( stmt->exp->suppl ) == 0 ) {
+        if( stmt->suppl.part.is_called == 0 ) {
           sim_time tmp_time = {0,0,0,FALSE};
           (void)sim_add_thread( NULL, stmt, curr_funit, &tmp_time );
         }
@@ -524,13 +524,13 @@ void statement_assign_expr_ids( statement* stmt, func_unit* funit ) { PROFILE(ST
     expression_assign_expr_ids( stmt->exp, funit );
 
     /* Traverse down the rest of the statement block */
-    if( (stmt->next_true == stmt->next_false) && (ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0) ) {
+    if( (stmt->next_true == stmt->next_false) && (stmt->suppl.part.stop_true == 0) ) {
       statement_assign_expr_ids( stmt->next_true, funit );
     } else {
-      if( ESUPPL_IS_STMT_STOP_FALSE( stmt->exp->suppl ) == 0 ) {
+      if( stmt->suppl.part.stop_false == 0 ) {
         statement_assign_expr_ids( stmt->next_false, funit );
       }
-      if( ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0 ) {
+      if( stmt->suppl.part.stop_true == 0 ) {
         statement_assign_expr_ids( stmt->next_true, funit );
       }
     }
@@ -546,7 +546,7 @@ void display( char* id, statement* curr_stmt, statement* next_stmt, int conn_id 
 
   printf( "%s::  curr_stmt id: %d, line: %d, op: %s, conn_id: %d, stop_T: %d, stop_F: %d   next_stmt: %d, line: %d, op: %s   conn_id: %d\n",
           id, curr_stmt->exp->id, curr_stmt->exp->line, expression_string_op( curr_stmt->exp->op ), curr_stmt->conn_id,
-          curr_stmt->exp->suppl.part.stmt_stop_true, curr_stmt->exp->suppl.part.stmt_stop_false, next_stmt->exp->id, next_stmt->exp->line, expression_string_op( next_stmt->exp->op ),
+          curr_stmt->suppl.part.stop_true, curr_stmt->suppl.part.stop_false, next_stmt->exp->id, next_stmt->exp->line, expression_string_op( next_stmt->exp->op ),
           conn_id );
 
 }
@@ -589,8 +589,8 @@ bool statement_connect( statement* curr_stmt, statement* next_stmt, int conn_id 
       }
       if( curr_stmt->next_true->conn_id == conn_id ) {
         //display( "Setting stop_true and stop_false", curr_stmt, next_stmt, conn_id );
-        curr_stmt->exp->suppl.part.stmt_stop_true  = 1;
-        curr_stmt->exp->suppl.part.stmt_stop_false = 1;
+        curr_stmt->suppl.part.stop_true  = 1;
+        curr_stmt->suppl.part.stop_false = 1;
       } else {
         curr_stmt->next_true->conn_id = conn_id;
       }
@@ -598,8 +598,8 @@ bool statement_connect( statement* curr_stmt, statement* next_stmt, int conn_id 
     /* If the TRUE path leads to a loop/merge, set the stop bit and stop traversing */
     } else if( curr_stmt->next_true->conn_id == conn_id ) {
       //display( "Setting stop_true and stop_false", curr_stmt, next_stmt, conn_id );
-      curr_stmt->exp->suppl.part.stmt_stop_true  = 1;
-      curr_stmt->exp->suppl.part.stmt_stop_false = 1;
+      curr_stmt->suppl.part.stop_true  = 1;
+      curr_stmt->suppl.part.stop_false = 1;
     /* Continue to traverse the TRUE path if the next_stmt does not match this statement */
     } else if( curr_stmt->next_true != next_stmt ) {
       //display( "Traversing next_true path", curr_stmt, next_stmt, conn_id );
@@ -615,7 +615,7 @@ bool statement_connect( statement* curr_stmt, statement* next_stmt, int conn_id 
         curr_stmt->next_false = next_stmt;
         if( curr_stmt->next_false->conn_id == conn_id ) {
           //display( "Setting stop_false", curr_stmt, next_stmt, conn_id );
-          curr_stmt->exp->suppl.part.stmt_stop_false = 1;
+          curr_stmt->suppl.part.stop_false = 1;
         } else {
           curr_stmt->next_false->conn_id = conn_id; 
         }
@@ -624,7 +624,7 @@ bool statement_connect( statement* curr_stmt, statement* next_stmt, int conn_id 
     /* If the FALSE path leads to a loop/merge, set the stop bit and stop traversing */
     } else if( curr_stmt->next_false->conn_id == conn_id ) {
       //display( "Setting stop_false", curr_stmt, next_stmt, conn_id );
-      curr_stmt->exp->suppl.part.stmt_stop_false = 1;
+      curr_stmt->suppl.part.stop_false = 1;
     /* Continue to traverse the FALSE path if the next statement does not match this statement */
     } else if( (curr_stmt->next_false != next_stmt) ) {
       //display( "Traversing next_false path", curr_stmt, next_stmt, conn_id );
@@ -637,7 +637,7 @@ bool statement_connect( statement* curr_stmt, statement* next_stmt, int conn_id 
       curr_stmt->next_true = next_stmt;
       if( curr_stmt->next_true->conn_id == conn_id ) {
         //display( "Setting stop_true", curr_stmt, next_stmt, conn_id );
-        curr_stmt->exp->suppl.part.stmt_stop_true = 1;
+        curr_stmt->suppl.part.stop_true = 1;
       } else {
         curr_stmt->next_true->conn_id = conn_id;
       }
@@ -645,7 +645,7 @@ bool statement_connect( statement* curr_stmt, statement* next_stmt, int conn_id 
     /* If the TRUE path leads to a loop/merge, set the stop bit and stop traversing */
     } else if( curr_stmt->next_true->conn_id == conn_id ) {
       //display( "Setting stop_true", curr_stmt, next_stmt, conn_id );
-      curr_stmt->exp->suppl.part.stmt_stop_true = 1;
+      curr_stmt->suppl.part.stop_true = 1;
     /* Continue to traverse the TRUE path if the next statement does not match this statement */
     } else if( curr_stmt->next_true != next_stmt ) {
       //display( "Traversing next_true path", curr_stmt, next_stmt, conn_id );
@@ -684,7 +684,7 @@ static int statement_get_last_line_helper( statement* stmt, statement* base ) { 
     if( (stmt->next_false == NULL) || (stmt->next_false == base) ) {
       last_exp   = expression_get_last_line_expr( stmt->exp );
       last_false = last_exp->line;
-    } else if( ESUPPL_IS_STMT_STOP_FALSE( stmt->exp->suppl ) == 0 ) {
+    } else if( stmt->suppl.part.stop_false == 0 ) {
       last_false = statement_get_last_line_helper( stmt->next_false, base );
     }
 
@@ -692,7 +692,7 @@ static int statement_get_last_line_helper( statement* stmt, statement* base ) { 
     if( (stmt->next_true == NULL) || (stmt->next_true == base) ) {
       last_exp  = expression_get_last_line_expr( stmt->exp );
       last_true = last_exp->line;
-    } else if( ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0 ) {
+    } else if( stmt->suppl.part.stop_true == 0 ) {
       last_true = statement_get_last_line_helper( stmt->next_true, base );
     }
 
@@ -740,18 +740,18 @@ void statement_find_rhs_sigs( statement* stmt, str_link** head, str_link** tail 
     /* If both true and false paths lead to same statement, just traverse the true path */
     if( stmt->next_true == stmt->next_false ) {
 
-      if( ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0 ) {
+      if( stmt->suppl.part.stop_true == 0 ) {
         statement_find_rhs_sigs( stmt->next_true, head, tail );
       }
 
     /* Otherwise, traverse both true and false paths */
     } else {
 
-      if( ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0 ) {
+      if( stmt->suppl.part.stop_true == 0 ) {
         statement_find_rhs_sigs( stmt->next_true, head, tail );
       }
 
-      if( ESUPPL_IS_STMT_STOP_FALSE( stmt->exp->suppl ) == 0 ) {
+      if( stmt->suppl.part.stop_false == 0 ) {
         statement_find_rhs_sigs( stmt->next_false, head, tail );
       }
 
@@ -777,7 +777,7 @@ statement* statement_find_head_statement( statement* stmt, stmt_link* head ) { P
   assert( stmt != NULL );
 
   /* If the specified statement is the head statement, just return it */
-  if( ESUPPL_IS_STMT_HEAD( stmt->exp->suppl ) == 1 ) {
+  if( stmt->suppl.part.head == 1 ) {
 
     fhead = stmt;
 
@@ -831,15 +831,15 @@ statement* statement_find_statement( statement* curr, int id ) { PROFILE(STATEME
       /* If both true and false paths lead to same item, just traverse the true path */
       if( curr->next_true == curr->next_false ) {
 
-        if( ESUPPL_IS_STMT_STOP_TRUE( curr->exp->suppl ) == 0 ) {
+        if( curr->suppl.part.stop_true == 0 ) {
           found = statement_find_statement( curr->next_true, id );
         }
 
       /* Otherwise, traverse both true and false paths */
-      } else if( (ESUPPL_IS_STMT_STOP_TRUE( curr->exp->suppl ) == 0) &&
+      } else if( (curr->suppl.part.stop_true == 0) &&
                  ((found = statement_find_statement( curr->next_true, id )) == NULL) ) {
 
-        if( ESUPPL_IS_STMT_STOP_FALSE( curr->exp->suppl ) == 0 ) {
+        if( curr->suppl.part.stop_false == 0 ) {
           found = statement_find_statement( curr->next_false, id );
         }
 
@@ -868,10 +868,10 @@ bool statement_contains_expr_calling_stmt(
 
   bool contains = (curr != NULL) &&
                   (expression_contains_expr_calling_stmt( curr->exp, stmt ) ||
-                  ((ESUPPL_IS_STMT_STOP_TRUE( curr->exp->suppl ) == 0) &&
+                  ((curr->suppl.part.stop_true == 0) &&
                     statement_contains_expr_calling_stmt( curr->next_true, stmt )) ||
                   ((curr->next_false != curr->next_false) &&
-                   (ESUPPL_IS_STMT_STOP_FALSE( curr->exp->suppl ) == 0) &&
+                   (curr->suppl.part.stop_false == 0) &&
                     statement_contains_expr_calling_stmt( curr->next_false, stmt )));
 
   PROFILE_END;
@@ -905,18 +905,18 @@ void statement_dealloc_recursive(
     /* Remove TRUE path */
     if( stmt->next_true == stmt->next_false ) {
 
-      if( ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0 ) {
+      if( stmt->suppl.part.stop_true == 0 ) {
         statement_dealloc_recursive( stmt->next_true );
       }
 
     } else {
 
-      if( ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0 ) {
+      if( stmt->suppl.part.stop_true == 0 ) {
         statement_dealloc_recursive( stmt->next_true );
       }
   
       /* Remove FALSE path */
-      if( ESUPPL_IS_STMT_STOP_FALSE( stmt->exp->suppl ) == 0 ) {
+      if( stmt->suppl.part.stop_false == 0 ) {
         statement_dealloc_recursive( stmt->next_false );
       }
 
@@ -956,6 +956,10 @@ void statement_dealloc( statement* stmt ) { PROFILE(STATEMENT_DEALLOC);
 
 /*
  $Log$
+ Revision 1.123  2008/02/09 19:32:45  phase1geo
+ Completed first round of modifications for using exception handler.  Regression
+ passes with these changes.  Updated regressions per these changes.
+
  Revision 1.122  2008/01/30 05:51:50  phase1geo
  Fixing doxygen errors.  Updated parameter list syntax to make it more readable.
 

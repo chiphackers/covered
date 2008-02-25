@@ -518,8 +518,8 @@ description
     {
       statement* stmt = $7;
       if( (ignore_mode == 0) && (stmt != NULL) ) {
-        stmt->exp->suppl.part.stmt_head      = 1;
-        stmt->exp->suppl.part.stmt_is_called = 1;
+        stmt->suppl.part.head      = 1;
+        stmt->suppl.part.is_called = 1;
         db_add_statement( stmt, stmt );
       }
     }
@@ -546,8 +546,8 @@ description
     {
       statement* stmt = $9;
       if( (ignore_mode == 0) && (stmt != NULL) ) {
-        stmt->exp->suppl.part.stmt_head      = 1;
-        stmt->exp->suppl.part.stmt_is_called = 1;
+        stmt->suppl.part.head      = 1;
+        stmt->suppl.part.is_called = 1;
         db_add_statement( stmt, stmt );
       }
     }
@@ -3043,7 +3043,7 @@ module_item
       statement* stmt = $3;
       if( stmt != NULL ) {
         if( db_statement_connect( stmt, stmt ) && (info_suppl.part.excl_always == 0) ) {
-          stmt->exp->suppl.part.stmt_head = 1;
+          stmt->suppl.part.head = 1;
           db_add_statement( stmt, stmt );
         } else {
           db_remove_statement( stmt );
@@ -3076,7 +3076,7 @@ module_item
               db_remove_statement( $4 );
             } else {
               if( db_statement_connect( stmt, stmt ) && (info_suppl.part.excl_always == 0) ) {
-                stmt->exp->suppl.part.stmt_head = 1;
+                stmt->suppl.part.head = 1;
                 db_add_statement( stmt, stmt );
               } else {
                 db_remove_statement( stmt );
@@ -3112,7 +3112,7 @@ module_item
               db_remove_statement( $4 );
             } else {
               if( db_statement_connect( stmt, stmt ) && (info_suppl.part.excl_always == 0) ) {
-                stmt->exp->suppl.part.stmt_head = 1;
+                stmt->suppl.part.head = 1;
                 db_add_statement( stmt, stmt );
               } else {
                 db_remove_statement( stmt );
@@ -3138,7 +3138,7 @@ module_item
       } else {
         if( stmt != NULL ) {
           if( db_statement_connect( stmt, stmt ) && (info_suppl.part.excl_always == 0) ) {
-            stmt->exp->suppl.part.stmt_head = 1;
+            stmt->suppl.part.head = 1;
             db_add_statement( stmt, stmt );
           } else {
             db_remove_statement( stmt );
@@ -3152,7 +3152,7 @@ module_item
       statement* stmt = $3;
       if( stmt != NULL ) {
         if( info_suppl.part.excl_init == 0 ) {
-          stmt->exp->suppl.part.stmt_head = 1;
+          stmt->suppl.part.head = 1;
           db_add_statement( stmt, stmt );
         } else {
           db_remove_statement( stmt );
@@ -3165,8 +3165,8 @@ module_item
       statement* stmt = $3;
       if( stmt != NULL ) {
         if( info_suppl.part.excl_final == 0 ) {
-          stmt->exp->suppl.part.stmt_head  = 1;
-          stmt->exp->suppl.part.stmt_final = 1;
+          stmt->suppl.part.head  = 1;
+          stmt->suppl.part.final = 1;
           db_add_statement( stmt, stmt );
         } else {
           db_remove_statement( stmt );
@@ -3192,8 +3192,8 @@ module_item
     {
       statement* stmt = $8;
       if( (ignore_mode == 0) && (stmt != NULL) ) {
-        stmt->exp->suppl.part.stmt_head      = 1;
-        stmt->exp->suppl.part.stmt_is_called = 1;
+        stmt->suppl.part.head      = 1;
+        stmt->suppl.part.is_called = 1;
         db_add_statement( stmt, stmt );
       }
     }
@@ -3229,8 +3229,8 @@ module_item
     {
       statement* stmt = $10;
       if( (ignore_mode == 0) && (stmt != NULL) ) {
-        stmt->exp->suppl.part.stmt_head      = 1;
-        stmt->exp->suppl.part.stmt_is_called = 1;
+        stmt->suppl.part.head      = 1;
+        stmt->suppl.part.is_called = 1;
         db_add_statement( stmt, stmt );
       }
     }
@@ -4274,8 +4274,8 @@ statement
         assert( db_statement_connect( stmt3, stmt2 ) );
         block_depth--;
         stmt1 = db_parallelize_statement( stmt1 );
-        stmt1->exp->suppl.part.stmt_head      = 1;
-        stmt1->exp->suppl.part.stmt_is_called = 1;
+        stmt1->suppl.part.head      = 1;
+        stmt1->suppl.part.is_called = 1;
         db_add_statement( stmt1, stmt1 );
       } else {
         db_remove_statement( stmt1 );
@@ -4350,7 +4350,7 @@ statement
         stmt = db_create_statement( expr );
         assert( db_statement_connect( $3, stmt ) );
         db_connect_statement_true( stmt, $3 );
-        stmt->exp->suppl.part.stmt_stop_true = 1;  /* Set STOP bit for the TRUE path */
+        stmt->suppl.part.stop_true = 1;  /* Set STOP bit for the TRUE path */
         $$ = $3;
       } else {
         expression_dealloc( $7, FALSE );
@@ -4708,8 +4708,8 @@ fork_statement
           stmt = db_create_statement( expr );
           if( db_statement_connect( $4, stmt ) ) {
             stmt = $4;
-            stmt->exp->suppl.part.stmt_head      = 1;
-            stmt->exp->suppl.part.stmt_is_called = 1;
+            stmt->suppl.part.head      = 1;
+            stmt->suppl.part.is_called = 1;
             db_add_statement( stmt, stmt );
             $$ = db_get_curr_funit();
           } else {
@@ -4760,8 +4760,8 @@ begin_end_block
       }
       if( ignore_mode == 0 ) {
         if( stmt != NULL ) {
-          stmt->exp->suppl.part.stmt_head      = 1;
-          stmt->exp->suppl.part.stmt_is_called = 1;
+          stmt->suppl.part.head      = 1;
+          stmt->suppl.part.is_called = 1;
           db_add_statement( stmt, stmt );
           $$ = db_get_curr_funit();
         } else {
@@ -5385,10 +5385,10 @@ assign
       if( ($1 != NULL) && ($3 != NULL) && (info_suppl.part.excl_assign == 0) ) {
         tmp  = db_create_expression( $3, $1, EXP_OP_ASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
         stmt = db_create_statement( tmp );
-        stmt->exp->suppl.part.stmt_head       = 1;
-        stmt->exp->suppl.part.stmt_stop_true  = 1;
-        stmt->exp->suppl.part.stmt_stop_false = 1;
-        stmt->exp->suppl.part.stmt_cont       = 1;
+        stmt->suppl.part.head       = 1;
+        stmt->suppl.part.stop_true  = 1;
+        stmt->suppl.part.stop_false = 1;
+        stmt->suppl.part.cont       = 1;
         /* Statement will be looped back to itself */
         db_connect_statement_true( stmt, stmt );
         db_connect_statement_false( stmt, stmt );
@@ -5475,9 +5475,9 @@ register_variable
           exp = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
           exp = db_create_expression( $3, exp, EXP_OP_RASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
           stmt = db_create_statement( exp );
-          stmt->exp->suppl.part.stmt_head       = 1;
-          stmt->exp->suppl.part.stmt_stop_true  = 1;
-          stmt->exp->suppl.part.stmt_stop_false = 1;
+          stmt->suppl.part.head       = 1;
+          stmt->suppl.part.stop_true  = 1;
+          stmt->suppl.part.stop_false = 1;
           db_add_statement( stmt, stmt );
         }
         free_safe( $1 );
@@ -5730,10 +5730,10 @@ net_decl_assign
           tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
           tmp  = db_create_expression( $3, tmp, EXP_OP_DASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
           stmt = db_create_statement( tmp );
-          stmt->exp->suppl.part.stmt_head       = 1;
-          stmt->exp->suppl.part.stmt_stop_true  = 1;
-          stmt->exp->suppl.part.stmt_stop_false = 1;
-          stmt->exp->suppl.part.stmt_cont       = 1;
+          stmt->suppl.part.head       = 1;
+          stmt->suppl.part.stop_true  = 1;
+          stmt->suppl.part.stop_false = 1;
+          stmt->suppl.part.cont       = 1;
           /* Statement will be looped back to itself */
           db_connect_statement_true( stmt, stmt );
           db_connect_statement_false( stmt, stmt );
@@ -5755,10 +5755,10 @@ net_decl_assign
           tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @2.first_line, @2.first_column, (@2.last_column - 1), $2 );
           tmp  = db_create_expression( $4, tmp, EXP_OP_DASSIGN, FALSE, @2.first_line, @2.first_column, (@4.last_column - 1), NULL );
           stmt = db_create_statement( tmp );
-          stmt->exp->suppl.part.stmt_head       = 1;
-          stmt->exp->suppl.part.stmt_stop_true  = 1;
-          stmt->exp->suppl.part.stmt_stop_false = 1;
-          stmt->exp->suppl.part.stmt_cont       = 1;
+          stmt->suppl.part.head       = 1;
+          stmt->suppl.part.stop_true  = 1;
+          stmt->suppl.part.stop_false = 1;
+          stmt->suppl.part.cont       = 1;
           /* Statement will be looped back to itself */
           db_connect_statement_true( stmt, stmt );
           db_connect_statement_false( stmt, stmt );

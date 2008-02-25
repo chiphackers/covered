@@ -219,12 +219,12 @@ static expression* fsm_arg_parse_state(
   /* Create statement for top-level expression, this statement will work like a continuous assignment */
   if( !error ) {
     stmt = statement_create( expl );
-    stmt->exp->suppl.part.stmt_head       = 1;
-    stmt->exp->suppl.part.stmt_stop_true  = 1;
-    stmt->exp->suppl.part.stmt_stop_false = 1;
-    stmt->exp->suppl.part.stmt_cont       = 1;
-    stmt->next_true                       = stmt;
-    stmt->next_false                      = stmt;
+    stmt->suppl.part.head       = 1;
+    stmt->suppl.part.stop_true  = 1;
+    stmt->suppl.part.stop_false = 1;
+    stmt->suppl.part.cont       = 1;
+    stmt->next_true             = stmt;
+    stmt->next_false            = stmt;
     fsm_var_stmt_add( stmt, funit_name );
   } else {
     expl = NULL;
@@ -648,6 +648,9 @@ void fsm_arg_parse_attr(
 
 /*
  $Log$
+ Revision 1.41  2008/02/22 20:39:22  phase1geo
+ More updates for exception handling.
+
  Revision 1.40  2008/02/09 19:32:44  phase1geo
  Completed first round of modifications for using exception handler.  Regression
  passes with these changes.  Updated regressions per these changes.
