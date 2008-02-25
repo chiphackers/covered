@@ -1932,9 +1932,11 @@ struct statement_s {
                                           during the final simulation step. */
       control type      :1;          /*!< Bit 7.  Mask bit = 1.  Specifies the type of pointer that should be used for elem.
                                           0 = thread, 1 = thread_list. */
+      control ignore_rc :1;          /*!< Bit 8.  Mask bit = 1.  Specifies that we should ignore race condition checking for
+                                          this statement. */
 
       /* Unmasked bits */
-      control added     :1;          /*!< Bit 8.  Mask bit = 0.  Temporary bit value used by the score command but not
+      control added     :1;          /*!< Bit 9.  Mask bit = 0.  Temporary bit value used by the score command but not
                                           displayed to the CDD file.  When this bit is set to a one, it indicates to the
                                           db_add_statement function that this statement and all children statements have
                                           already been added to the functional unit statement list and should not be added again. */
@@ -2493,6 +2495,11 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.282  2008/02/25 18:22:16  phase1geo
+ Moved statement supplemental bits from root expression to statement and starting
+ to add support for race condition checking pragmas (still some work left to do
+ on this item).  Updated IV and Cver regressions per these changes.
+
  Revision 1.281  2008/02/08 23:58:06  phase1geo
  Starting to work on exception handling.  Much work to do here (things don't
  compile at the moment).

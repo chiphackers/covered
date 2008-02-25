@@ -1942,7 +1942,7 @@ statement* db_create_statement( expression* exp ) { PROFILE(DB_CREATE_STATEMENT)
 
   /* If we need to exclude this statement from race condition checking, do so */
   if( ignore_racecheck_mode > 0 ) {
-    //stmt->suppl.part.ignore_rc = 1;
+    stmt->suppl.part.ignore_rc = 1;
   }
 
   /* If we are a parallel statement, create a FORK statement for this statement block */
@@ -2692,6 +2692,11 @@ void db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.282  2008/02/25 18:22:16  phase1geo
+ Moved statement supplemental bits from root expression to statement and starting
+ to add support for race condition checking pragmas (still some work left to do
+ on this item).  Updated IV and Cver regressions per these changes.
+
  Revision 1.281  2008/02/23 22:38:41  phase1geo
  Fixing bug 1899674.
 

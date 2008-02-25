@@ -498,25 +498,29 @@ static void race_check_assignment_types(
 
   for( i=0; i<sb_size; i++ ) {
 
-    /* Check that a sequential logic block contains only non-blocking assignments */
-    if( sb[i].seq && !sb[i].cmb && sb[i].bassign ) {
+    if( sb[i].stmt->suppl.part.ignore_rc == 0 ) {
 
-      race_handle_race_condition( sb[i].stmt->exp, mod, sb[i].stmt, sb[i].stmt, RACE_TYPE_SEQ_USES_NON_BLOCK );
+      /* Check that a sequential logic block contains only non-blocking assignments */
+      if( sb[i].seq && !sb[i].cmb && sb[i].bassign ) {
 
-    /* Check that a combinational logic block contains only blocking assignments */
-    } else if( !sb[i].seq && sb[i].cmb && sb[i].nassign ) {
+        race_handle_race_condition( sb[i].stmt->exp, mod, sb[i].stmt, sb[i].stmt, RACE_TYPE_SEQ_USES_NON_BLOCK );
 
-      race_handle_race_condition( sb[i].stmt->exp, mod, sb[i].stmt, sb[i].stmt, RACE_TYPE_CMB_USES_BLOCK );
+      /* Check that a combinational logic block contains only blocking assignments */
+      } else if( !sb[i].seq && sb[i].cmb && sb[i].nassign ) {
 
-    /* Check that mixed logic block contains only non-blocking assignments */
-    } else if( sb[i].seq && sb[i].cmb && sb[i].bassign ) {
+        race_handle_race_condition( sb[i].stmt->exp, mod, sb[i].stmt, sb[i].stmt, RACE_TYPE_CMB_USES_BLOCK );
 
-      race_handle_race_condition( sb[i].stmt->exp, mod, sb[i].stmt, sb[i].stmt, RACE_TYPE_MIX_USES_NON_BLOCK );
+      /* Check that mixed logic block contains only non-blocking assignments */
+      } else if( sb[i].seq && sb[i].cmb && sb[i].bassign ) {
 
-    /* Check that a statement block doesn't contain both blocking and non-blocking assignments */
-    } else if( sb[i].bassign && sb[i].nassign ) {
+        race_handle_race_condition( sb[i].stmt->exp, mod, sb[i].stmt, sb[i].stmt, RACE_TYPE_MIX_USES_NON_BLOCK );
 
-      race_handle_race_condition( sb[i].stmt->exp, mod, sb[i].stmt, sb[i].stmt, RACE_TYPE_HOMOGENOUS );
+      /* Check that a statement block doesn't contain both blocking and non-blocking assignments */
+      } else if( sb[i].bassign && sb[i].nassign ) {
+
+        race_handle_race_condition( sb[i].stmt->exp, mod, sb[i].stmt, sb[i].stmt, RACE_TYPE_HOMOGENOUS );
+
+      }
 
     }
 
@@ -557,9 +561,6 @@ static void race_check_one_block_assignment(
   sigl = mod->sig_head;
   while( sigl != NULL ) {
 
-    /* Size the given signal */
-    // vsignal_create_vec( sigl->sig );
-
     sig_stmt = -1;
 
     /* Skip checking the expressions of genvar signals */
@@ -572,42 +573,65 @@ static void race_check_one_block_assignment(
         /* Only look at expressions that are part of LHS and they are not part of a bit select */
         if( (ESUPPL_IS_LHS( expl->exp->suppl ) == 1) && !expression_is_bit_select( expl->exp ) && expression_is_last_select( expl->exp ) ) {
 
-          /* Get current dimension of the given expression */
-          exp_dim = expression_get_curr_dimension( expl->exp );
+          /* Get head statement of current expression */
+          curr_stmt = race_get_head_statement( expl->exp );
 
-          /* Calculate starting vector value bit and signal LSB/BE for LHS */
-          if( (ESUPPL_IS_ROOT( expl->exp->suppl ) == 0) &&
-              (expl->exp->parent->expr->op == EXP_OP_DIM) && (expl->exp->parent->expr->right == expl->exp) ) {
-            vstart = expl->exp->parent->expr->left->value->value;
-            vwidth = expl->exp->parent->expr->left->value->width;
-          } else {
-            /* Get starting vector bit from signal itself */
-            vstart = sigl->sig->value->value;
-            vwidth = sigl->sig->value->width;
-          }
-          if( sigl->sig->dim[exp_dim].lsb < sigl->sig->dim[exp_dim].msb ) {
-            dim_lsb = sigl->sig->dim[exp_dim].lsb;
-            dim_be  = FALSE;
-          } else {
-            dim_lsb = sigl->sig->dim[exp_dim].msb;
-            dim_be  = TRUE;
-          }
-          dim_width = vsignal_calc_width_for_expr( expl->exp, sigl->sig );
+          /* If the head statement is being ignored from race condition checking, skip the rest */
+          if( (curr_stmt != NULL) && (curr_stmt->suppl.part.ignore_rc == 0) ) {
 
-          /*
-           If the signal was a part select, set the appropriate misc bits to indicate what
-           bits have been assigned.
-          */
-	  switch( expl->exp->op ) {
-            case EXP_OP_SIG :
-              if( (ESUPPL_IS_ROOT( expl->exp->suppl ) == 0) && !expression_is_in_rassign( expl->exp ) ) {
-                curr_race = vector_set_assigned( sigl->sig->value, (sigl->sig->value->width - 1), 0 );
-              }
-	      break;
-            case EXP_OP_SBIT_SEL :
-              if( expl->exp->left->op == EXP_OP_STATIC ) {
-                intval = (vector_to_int( expl->exp->left->value ) - dim_lsb) * dim_width;
-                if( (intval >= 0) && (intval < expl->exp->value->width) ) {
+            /* Get current dimension of the given expression */
+            exp_dim = expression_get_curr_dimension( expl->exp );
+  
+            /* Calculate starting vector value bit and signal LSB/BE for LHS */
+            if( (ESUPPL_IS_ROOT( expl->exp->suppl ) == 0) &&
+                (expl->exp->parent->expr->op == EXP_OP_DIM) && (expl->exp->parent->expr->right == expl->exp) ) {
+              vstart = expl->exp->parent->expr->left->value->value;
+              vwidth = expl->exp->parent->expr->left->value->width;
+            } else {
+              /* Get starting vector bit from signal itself */
+              vstart = sigl->sig->value->value;
+              vwidth = sigl->sig->value->width;
+            }
+            if( sigl->sig->dim[exp_dim].lsb < sigl->sig->dim[exp_dim].msb ) {
+              dim_lsb = sigl->sig->dim[exp_dim].lsb;
+              dim_be  = FALSE;
+            } else {
+              dim_lsb = sigl->sig->dim[exp_dim].msb;
+              dim_be  = TRUE;
+            }
+            dim_width = vsignal_calc_width_for_expr( expl->exp, sigl->sig );
+
+            /*
+             If the signal was a part select, set the appropriate misc bits to indicate what
+             bits have been assigned.
+            */
+            switch( expl->exp->op ) {
+              case EXP_OP_SIG :
+                if( (ESUPPL_IS_ROOT( expl->exp->suppl ) == 0) && !expression_is_in_rassign( expl->exp ) ) {
+                  curr_race = vector_set_assigned( sigl->sig->value, (sigl->sig->value->width - 1), 0 );
+                }
+  	      break;
+              case EXP_OP_SBIT_SEL :
+                if( expl->exp->left->op == EXP_OP_STATIC ) {
+                  intval = (vector_to_int( expl->exp->left->value ) - dim_lsb) * dim_width;
+                  if( (intval >= 0) && (intval < expl->exp->value->width) ) {
+                    vector_init( &vec, NULL, FALSE, expl->exp->value->width, VTYPE_SIG );
+                    if( dim_be ) {
+                      vec.value = vstart + (vwidth - (intval + expl->exp->value->width));
+                    } else {
+                      vec.value = vstart + intval;
+                    }
+                    curr_race = vector_set_assigned( &vec, (vec.width - 1), 0 );
+                  } else {
+                    curr_race = FALSE;
+                  }
+                } else { 
+                  curr_race = vector_set_assigned( sigl->sig->value, (sigl->sig->value->width - 1), 0 );
+                }
+  	      break;
+              case EXP_OP_MBIT_SEL :
+                if( (expl->exp->left->op == EXP_OP_STATIC) && (expl->exp->right->op == EXP_OP_STATIC) ) {
+                  intval = ((dim_be ? vector_to_int( expl->exp->left->value ) : vector_to_int( expl->exp->right->value )) - dim_lsb) * dim_width;
                   vector_init( &vec, NULL, FALSE, expl->exp->value->width, VTYPE_SIG );
                   if( dim_be ) {
                     vec.value = vstart + (vwidth - (intval + expl->exp->value->width));
@@ -616,78 +640,63 @@ static void race_check_one_block_assignment(
                   }
                   curr_race = vector_set_assigned( &vec, (vec.width - 1), 0 );
                 } else {
-                  curr_race = FALSE;
+                  curr_race = vector_set_assigned( sigl->sig->value, (sigl->sig->value->width - 1), 0 );
                 }
-	      } else { 
-                curr_race = vector_set_assigned( sigl->sig->value, (sigl->sig->value->width - 1), 0 );
-              }
-	      break;
-            case EXP_OP_MBIT_SEL :
-	      if( (expl->exp->left->op == EXP_OP_STATIC) && (expl->exp->right->op == EXP_OP_STATIC) ) {
-                intval = ((dim_be ? vector_to_int( expl->exp->left->value ) : vector_to_int( expl->exp->right->value )) - dim_lsb) * dim_width;
-                vector_init( &vec, NULL, FALSE, expl->exp->value->width, VTYPE_SIG );
-                if( dim_be ) {
-                  vec.value = vstart + (vwidth - (intval + expl->exp->value->width));
+	        break;
+              case EXP_OP_MBIT_POS :
+                if( expl->exp->left->op == EXP_OP_STATIC ) {
+                  lval = vector_to_int( expl->exp->left->value );
+                  rval = vector_to_int( expl->exp->right->value );
+                  curr_race = vector_set_assigned( sigl->sig->value, ((lval + rval) - sigl->sig->dim[exp_dim].lsb), (lval - sigl->sig->dim[exp_dim].lsb) );
                 } else {
-                  vec.value = vstart + intval;
+                  curr_race = vector_set_assigned( sigl->sig->value, (sigl->sig->value->width - 1), 0 );
                 }
-                curr_race = vector_set_assigned( &vec, (vec.width - 1), 0 );
-              } else {
-                curr_race = vector_set_assigned( sigl->sig->value, (sigl->sig->value->width - 1), 0 );
-              }
-	      break;
-            case EXP_OP_MBIT_POS :
-              if( expl->exp->left->op == EXP_OP_STATIC ) {
-                lval = vector_to_int( expl->exp->left->value );
-                rval = vector_to_int( expl->exp->right->value );
-                curr_race = vector_set_assigned( sigl->sig->value, ((lval + rval) - sigl->sig->dim[exp_dim].lsb), (lval - sigl->sig->dim[exp_dim].lsb) );
-              } else {
-                curr_race = vector_set_assigned( sigl->sig->value, (sigl->sig->value->width - 1), 0 );
-              }
-              break;
-            case EXP_OP_MBIT_NEG :
-              if( expl->exp->left->op == EXP_OP_STATIC ) {
-                lval = vector_to_int( expl->exp->left->value );
-                rval = vector_to_int( expl->exp->right->value );
-                curr_race = vector_set_assigned( sigl->sig->value, ((lval + 1) - sigl->sig->dim[exp_dim].lsb), (((lval - rval) + 1) - sigl->sig->dim[exp_dim].lsb) );
-              } else {
-                curr_race = vector_set_assigned( sigl->sig->value, (sigl->sig->value->width - 1), 0 );
-              }
-              break;
-            default :
-              curr_race = FALSE;
-	      break;	
-          }
-
-          /*
-           Get expression's head statement and if the statement is not a register assignment, check for
-           race conditions (the way that RASSIGNs are treated, they will not cause race conditions so omit
-           them from being checked.
-          */
-          if( ((curr_stmt = race_get_head_statement( expl->exp )) != NULL) && (curr_stmt->exp->op != EXP_OP_RASSIGN) ) {
-
-            /* Check to see if the current signal is already being assigned in another statement */
-            if( sig_stmt == -1 ) {
-
-  	      /* Get index of base signal statement in sb array */
-              sig_stmt = race_find_head_statement( curr_stmt );
-	      assert( sig_stmt != -1 );
-
-              /* Check to see if current signal is also an input port */ 
-              if( (sigl->sig->suppl.part.type == SSUPPL_TYPE_INPUT) ||
-                  (sigl->sig->suppl.part.type == SSUPPL_TYPE_INOUT) || curr_race ) {
-                race_handle_race_condition( expl->exp, mod, curr_stmt, NULL, RACE_TYPE_ASSIGN_IN_ONE_BLOCK2 );
-	        sb[sig_stmt].remove = TRUE;
-              }
-
-            } else if( (sb[sig_stmt].stmt != curr_stmt) && curr_race ) {
-
-              race_handle_race_condition( expl->exp, mod, curr_stmt, sb[sig_stmt].stmt, RACE_TYPE_ASSIGN_IN_ONE_BLOCK1 );
-	      sb[sig_stmt].remove = TRUE;
-	      race_found = TRUE;
-
+                break;
+              case EXP_OP_MBIT_NEG :
+                if( expl->exp->left->op == EXP_OP_STATIC ) {
+                  lval = vector_to_int( expl->exp->left->value );
+                  rval = vector_to_int( expl->exp->right->value );
+                  curr_race = vector_set_assigned( sigl->sig->value, ((lval + 1) - sigl->sig->dim[exp_dim].lsb), (((lval - rval) + 1) - sigl->sig->dim[exp_dim].lsb) );
+                } else {
+                  curr_race = vector_set_assigned( sigl->sig->value, (sigl->sig->value->width - 1), 0 );
+                }
+                break;
+              default :
+                curr_race = FALSE;
+	        break;	
             }
+  
+            /*
+             Get expression's head statement and if the statement is not a register assignment, check for
+             race conditions (the way that RASSIGNs are treated, they will not cause race conditions so omit
+             them from being checked.
+            */
+            if( (curr_stmt != NULL) && (curr_stmt->exp->op != EXP_OP_RASSIGN) ) {
 
+              /* Check to see if the current signal is already being assigned in another statement */
+              if( sig_stmt == -1 ) {
+
+                /* Get index of base signal statement in sb array */
+                sig_stmt = race_find_head_statement( curr_stmt );
+                assert( sig_stmt != -1 );
+  
+                /* Check to see if current signal is also an input port */ 
+                if( (sigl->sig->suppl.part.type == SSUPPL_TYPE_INPUT) ||
+                    (sigl->sig->suppl.part.type == SSUPPL_TYPE_INOUT) || curr_race ) {
+                  race_handle_race_condition( expl->exp, mod, curr_stmt, NULL, RACE_TYPE_ASSIGN_IN_ONE_BLOCK2 );
+                  sb[sig_stmt].remove = TRUE;
+                }
+  
+              } else if( (sb[sig_stmt].stmt != curr_stmt) && curr_race ) {
+  
+                race_handle_race_condition( expl->exp, mod, curr_stmt, sb[sig_stmt].stmt, RACE_TYPE_ASSIGN_IN_ONE_BLOCK1 );
+                sb[sig_stmt].remove = TRUE;
+                race_found = TRUE;
+  
+              }
+  
+            }
+  
           }
 
         }
@@ -1152,6 +1161,11 @@ void race_blk_delete_list(
 
 /*
  $Log$
+ Revision 1.72  2008/02/25 18:22:16  phase1geo
+ Moved statement supplemental bits from root expression to statement and starting
+ to add support for race condition checking pragmas (still some work left to do
+ on this item).  Updated IV and Cver regressions per these changes.
+
  Revision 1.71  2008/02/11 14:00:09  phase1geo
  More updates for exception handling.  Regression passes.
 

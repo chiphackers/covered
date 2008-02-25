@@ -325,7 +325,7 @@ void statement_db_write( statement* stmt, FILE* ofile, bool parse_mode ) { PROFI
   fprintf( ofile, "%d %d %x %d %d",
     DB_TYPE_STATEMENT,
     expression_get_id( stmt->exp, parse_mode ),
-    (stmt->suppl.all & 0xff),
+    (stmt->suppl.all & 0x1ff),
     ((stmt->next_true   == NULL) ? 0 : expression_get_id( stmt->next_true->exp, parse_mode )),
     ((stmt->next_false  == NULL) ? 0 : expression_get_id( stmt->next_false->exp, parse_mode ))
   );
@@ -956,6 +956,11 @@ void statement_dealloc( statement* stmt ) { PROFILE(STATEMENT_DEALLOC);
 
 /*
  $Log$
+ Revision 1.124  2008/02/25 18:22:16  phase1geo
+ Moved statement supplemental bits from root expression to statement and starting
+ to add support for race condition checking pragmas (still some work left to do
+ on this item).  Updated IV and Cver regressions per these changes.
+
  Revision 1.123  2008/02/09 19:32:45  phase1geo
  Completed first round of modifications for using exception handler.  Regression
  passes with these changes.  Updated regressions per these changes.
