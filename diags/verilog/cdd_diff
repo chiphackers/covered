@@ -15,7 +15,7 @@ if( ($cdd1 eq "") || ($cdd2 eq "") ) {
 $retval   = 0;
 
 open( CDD1, "$cdd1" ) || die "Can't open $cdd1: $!\n";
-open( CDD2, "$cdd2" ) || die "Can't open $cdd1: $!\n";
+open( CDD2, "$cdd2" ) || die "Can't open $cdd2: $!\n";
 open( OCDD1, ">$cdd1.tmpdiff" ) || die "Can't open $cdd1.tmpdiff: $!\n";
 open( OCDD2, ">$cdd2.tmpdiff" ) || die "Can't open $cdd2.tmpdiff: $!\n";
 
