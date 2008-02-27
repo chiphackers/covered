@@ -49,7 +49,7 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 exclude9.3      exclude9.4      exclude9.5      exclude9.6      exclude9.7 \
                 exclude9.8      exclude9.9      expand1         expand2         expand3 \
                 expand4         expand4.1       expand4.2       expand4.3       expand4.4 \
-                for1            for2            forever1        fork1           fork2 \
+                finish1         for1            for2            forever1        fork1           fork2 \
                 fsm3            fsm4            fsm4.1          fsm5            fsm5.1 \
                 fsm5.2          fsm5.3          fsm11           func1           func2 \
                 func5           gate1           hier1 \

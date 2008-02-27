@@ -175,6 +175,16 @@ static thread* waiting_tail = NULL;
 */
 static const char* thread_state_str[4] = {"NONE", "ACTIVE", "DELAYED", "WAITING"};
 
+/*!
+ Global variable used to cause simulator to stop simulation.  Do not directly modify this variable!
+*/
+static bool simulate = TRUE;
+
+/*!
+ Causes simulation to stop and invoke the CLI prompt, if possible.
+*/
+static bool force_stop = FALSE;
+
 
 /*!
  \param thr         Pointer to thread to display to standard output
@@ -1055,11 +1065,12 @@ void sim_thread(
   /* Set the value of stmt with the head_stmt */
   stmt = thr->curr;
 
-  while( (stmt != NULL) && !thr->suppl.part.kill ) {
+  while( (stmt != NULL) && !thr->suppl.part.kill && simulate ) {
 
 #ifdef DEBUG_MODE
 #ifndef VPI_ONLY
-    cli_execute( time );
+    cli_execute( time, force_stop );
+    force_stop = FALSE;
 #endif
 #endif
 
@@ -1099,7 +1110,8 @@ void sim_thread(
         (thr->curr->exp->op == EXP_OP_CASEX) ||
         (thr->curr->exp->op == EXP_OP_CASEZ) ||
         (thr->curr->exp->op == EXP_OP_DEFAULT))) ||
-      thr->suppl.part.kill ) {
+      thr->suppl.part.kill ||
+      !simulate ) {
 
 #ifdef DEBUG_MODE
     snprintf( user_msg, USER_MSG_LENGTH, "Completed thread %p, killing...\n", thr );
@@ -1135,11 +1147,14 @@ void sim_thread(
 /*!
  \param time  Current simulation time from dumpfile or simulator.
 
+ \return Returns TRUE if simulation should continue; otherwise, returns FALSE to indicate
+         that simulation should no longer continue.
+
  This function is the heart of the simulation engine.  It is called by the
  db_do_timestep() function in db.c  and moves the statements and expressions into
  the appropriate simulation functions.  See above explanation on this procedure.
 */
-void sim_simulate(
+bool sim_simulate(
   const sim_time* time
 ) { PROFILE(SIM_SIMULATE);
 
@@ -1175,6 +1190,8 @@ void sim_simulate(
 
   PROFILE_END;
 
+  return( simulate );
+
 }
 
 /*!
@@ -1191,6 +1208,36 @@ void sim_initialize() { PROFILE(SIM_INITIALIZE);
   cli_debug_mode = debug_mode;
 #endif
 #endif
+
+  PROFILE_END;
+
+}
+
+/*!
+ Stops the simulation and gets the user to a CLI prompt, if possible.
+*/
+void sim_stop() { PROFILE(SIM_STOP);
+
+#ifdef DEBUG_MODE
+#ifndef VPI_ONLY
+  force_stop = TRUE;
+#else
+  simulate = FALSE;
+#endif
+#else
+  simulate = FALSE;
+#endif
+
+  PROFILE_END;
+
+}
+
+/*!
+ Causes the simulator to finish gracefully.
+*/
+void sim_finish() { PROFILE(SIM_FINISH);
+
+  simulate = FALSE;
 
   PROFILE_END;
 
@@ -1226,6 +1273,11 @@ void sim_dealloc() { PROFILE(SIM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.120  2008/02/25 18:22:16  phase1geo
+ Moved statement supplemental bits from root expression to statement and starting
+ to add support for race condition checking pragmas (still some work left to do
+ on this item).  Updated IV and Cver regressions per these changes.
+
  Revision 1.119  2008/02/23 00:26:02  phase1geo
  Fixing bug 1899768 and adding extra debug information.
 

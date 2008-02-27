@@ -58,10 +58,16 @@ void sim_kill_thread_with_funit( func_unit* funit );
 void sim_thread( thread* thr, const sim_time* time );
 
 /*! \brief Simulates current timestep. */
-void sim_simulate( const sim_time* time );
+bool sim_simulate( const sim_time* time );
 
 /*! \brief Initializes the simulator */
 void sim_initialize();
+
+/*! \brief Causes the simulation to stop and enter into CLI mode */
+void sim_stop();
+
+/*! \brief Causes simulator to finish gracefully */
+void sim_finish();
 
 /*! \brief Deallocates all memory for simulator */
 void sim_dealloc();
@@ -69,6 +75,9 @@ void sim_dealloc();
 
 /*
  $Log$
+ Revision 1.33  2008/01/10 04:59:04  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.32  2007/12/19 22:54:35  phase1geo
  More compiler fixes (almost there now).  Checkpointing.
 

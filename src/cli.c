@@ -603,7 +603,8 @@ static bool cli_parse_input( char* line, bool perform, bool replaying, const sim
     } else if( strncmp( "quit", arg, 4 ) == 0 ) {
 
       if( perform ) {
-        exit( EXIT_SUCCESS );
+        dont_stop = TRUE;
+        sim_finish();
       }
  
     } else if( strncmp( "debug", arg, 5 ) == 0 ) {
@@ -713,12 +714,14 @@ static bool cli_parse_input( char* line, bool perform, bool replaying, const sim
 }
 
 /*!
- \param time  Pointer to current simulation time.
+ \param time   Pointer to current simulation time.
 
  Takes care of either replaying the history buffer or prompting the user for the next command
  to be issued.
 */
-static void cli_prompt_user( const sim_time* time ) {
+static void cli_prompt_user(
+  const sim_time* time
+) {
 
   char* line;        /* Read line from user */
   char  arg[4096];   /* Holder for user argument */
@@ -754,15 +757,41 @@ static void cli_prompt_user( const sim_time* time ) {
 }
 
 /*!
- \param time  Pointer to current simulation time.
+ Resets CLI conditions to pre-simulation values.
+*/
+void cli_reset(
+  const sim_time* time
+) {
+
+  stmts_left          = 0;
+  timesteps_left      = 0;
+  goto_timestep.lo    = time->lo;
+  goto_timestep.hi    = time->hi;
+  goto_timestep.full  = time->full;
+  goto_timestep.final = time->final;
+  dont_stop           = FALSE;
+
+}
+
+/*!
+ \param time   Pointer to current simulation time.
+ \param force  Forces us to provide a CLI prompt.
 
  Performs CLI prompting if necessary.
 */
-void cli_execute( const sim_time* time ) {
+void cli_execute(
+  const sim_time* time,
+  bool            force
+) {
 
   static sim_time last_timestep = {0,0,0,FALSE};
 
-  if( flag_use_command_line_debug ) {
+  if( flag_use_command_line_debug || force ) {
+
+    /* If we are forcing a CLI prompt, reset all outstanding counters, times, etc. */
+    if( force ) {
+      cli_reset( time );
+    }
 
     /* Decrement stmts_left if it is set */
     if( stmts_left > 0 ) {
@@ -863,6 +892,10 @@ void cli_read_hist_file( const char* fname ) {
 
 /*
  $Log$
+ Revision 1.18  2008/02/09 19:32:44  phase1geo
+ Completed first round of modifications for using exception handler.  Regression
+ passes with these changes.  Updated regressions per these changes.
+
  Revision 1.17  2008/01/21 21:39:55  phase1geo
  Bug fix for bug 1876376.
 

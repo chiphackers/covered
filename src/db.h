@@ -187,11 +187,14 @@ void db_set_symbol_char( char* sym, char value );
 void db_set_symbol_string( char* sym, char* value );
 
 /*! \brief Performs a timestep for all signal changes during this timestep. */
-void db_do_timestep( uint64 time, bool final ); 
+bool db_do_timestep( uint64 time, bool final ); 
 
 
 /*
  $Log$
+ Revision 1.84  2008/02/10 03:33:13  phase1geo
+ More exception handling added and fixed remaining splint errors.
+
  Revision 1.83  2008/02/08 23:58:06  phase1geo
  Starting to work on exception handling.  Much work to do here (things don't
  compile at the moment).

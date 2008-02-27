@@ -28,13 +28,17 @@
 
 
 /*! \brief Performs CLI management. */
-void cli_execute( const sim_time* time );
+void cli_execute( const sim_time* time, bool force );
 
 /*! \brief Reads in given history file from -cli option */
 void cli_read_hist_file( const char* fname );
 
 /*
  $Log$
+ Revision 1.6  2008/02/09 19:32:44  phase1geo
+ Completed first round of modifications for using exception handler.  Regression
+ passes with these changes.  Updated regressions per these changes.
+
  Revision 1.5  2008/01/21 21:39:55  phase1geo
  Bug fix for bug 1876376.
 

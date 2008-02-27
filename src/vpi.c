@@ -189,7 +189,9 @@ PLI_INT32 covered_value_change( p_cb_data cb ) { PROFILE(COVERED_VALUE_CHANGE);
   if( ((cb->time->low  != (PLI_INT32)(last_time & 0xffffffff)) ||
        (cb->time->high != (PLI_INT32)((last_time >> 32) & 0xffffffff))) &&
       use_last_time ) {
-    db_do_timestep( last_time, FALSE );
+    if( !db_do_timestep( last_time, FALSE ) ) {
+      vpi_control( vpiFinish, EXIT_SUCCESS );
+    }
   }
   last_time     = ((uint64)cb->time->high << 32) | (uint64)cb->time->low;
   use_last_time = TRUE;
@@ -206,7 +208,9 @@ PLI_INT32 covered_value_change( p_cb_data cb ) { PROFILE(COVERED_VALUE_CHANGE);
   if( ((cb->time->low  != (PLI_INT32)(last_time & 0xffffffff)) ||
        (cb->time->high != (PLI_INT32)((last_time >> 32) & 0xffffffff))) &&
       use_last_time ) {
-    db_do_timestep( last_time, FALSE );
+    if( !db_do_timestep( last_time, FALSE ) ) {
+      vpi_control( vpiFinish, EXIT_SUCCESS );
+    }
   }
   last_time     = ((uint64)cb->time->high << 32) | (uint64)cb->time->low;
   use_last_time = TRUE;
@@ -228,7 +232,9 @@ PLI_INT32 covered_end_of_sim( p_cb_data cb ) { PROFILE(COVERED_END_OF_SIM);
   p_vpi_time final_time;
 
   if( use_last_time ) {
-    db_do_timestep( last_time, FALSE );
+    if( !db_do_timestep( last_time, FALSE ) ) {
+      vpi_control( vpiFinish, EXIT_SUCCESS );
+    }
   }
 
   /* Get the final simulation time */
@@ -238,10 +244,14 @@ PLI_INT32 covered_end_of_sim( p_cb_data cb ) { PROFILE(COVERED_END_OF_SIM);
 
   /* Flush any pending statement trees that are waiting for delay */
   last_time = ((uint64)final_time->high << 32) | (uint64)final_time->low;
-  db_do_timestep( last_time, FALSE );
+  if( !db_do_timestep( last_time, FALSE ) ) {
+    vpi_control( vpiFinish, EXIT_SUCCESS );
+  }
 
   /* Perform one last simulation timestep */
-  db_do_timestep( 0, TRUE );
+  if( !db_do_timestep( 0, TRUE ) ) {
+    vpi_control( vpiFinish, EXIT_SUCCESS );
+  }
 
   /* Indicate that this CDD contains scored information */
   info_suppl.part.scored = 1;
@@ -696,7 +706,10 @@ PLI_INT32 covered_sim_calltf( char* name ) {
 
   /* If we are Cver or VCS, perform an initial 0 timestep since this will not get called */
 #ifdef NOIV
-  db_do_timestep( 0, FALSE );
+  if( !db_do_timestep( 0, FALSE ) ) {
+    vpi_control( vpiFinish, EXIT_SUCCESS );
+  }
+
 #endif
 
   PROFILE_END;

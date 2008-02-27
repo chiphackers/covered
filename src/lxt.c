@@ -88,7 +88,7 @@ static void vcd_callback(
   /* If this is a new timestamp, perform a simulation */
   if( (vcd_prevtime != *pnt_time) || !vcd_prevtime_valid ) {
     if( vcd_prevtime_valid ) {
-      db_do_timestep( vcd_prevtime, FALSE );
+      (void)db_do_timestep( vcd_prevtime, FALSE );
     }
     vcd_prevtime       = *pnt_time;
     vcd_prevtime_valid = TRUE;
@@ -220,7 +220,7 @@ void lxt_parse( char* lxt_file ) { PROFILE(LXT_PARSE);
 
     /* Perform last simulation if necessary */
     if( vcd_prevtime_valid ) {
-      db_do_timestep( vcd_prevtime, FALSE );
+      (void)db_do_timestep( vcd_prevtime, FALSE );
     }
 
     /* Deallocate memory */
@@ -243,6 +243,12 @@ void lxt_parse( char* lxt_file ) { PROFILE(LXT_PARSE);
 
 /*
  $Log$
+ Revision 1.18  2008/01/23 04:05:19  phase1geo
+ Fixing LXT regressions.  Added code to regression Makefile to remove certain
+ diagnostics from being run in LXT regression due to the apparent inability for
+ LXT files to contain time-0 only information.  Also contains a fix for bug
+ 1877853.  Full regressions now run cleanly.
+
  Revision 1.17  2008/01/22 19:53:22  phase1geo
  First attempt to fix bug 1876681.
 

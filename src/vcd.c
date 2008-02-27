@@ -330,8 +330,9 @@ static void vcd_parse_sim( FILE* vcd ) { PROFILE(VCD_PARSE_SIM);
   bool   use_last_timestep = FALSE;  /* Specifies if timestep has been encountered */
   int    chars_read;                 /* Number of characters scanned in */
   bool   carry_over        = FALSE;  /* Specifies if last string was too long */
+  bool   simulate          = TRUE;   /* Specifies if we should continue to simulate */
  
-  while( !feof( vcd ) && (fscanf( vcd, "%4099s%n", token, &chars_read ) == 1) ) {
+  while( !feof( vcd ) && (fscanf( vcd, "%4099s%n", token, &chars_read ) == 1) && simulate ) {
 
     if( chars_read < 4099 ) {
     
@@ -351,7 +352,7 @@ static void vcd_parse_sim( FILE* vcd ) { PROFILE(VCD_PARSE_SIM);
       } else if( token[0] == '#' ) {
 
         if( use_last_timestep ) {
-          db_do_timestep( last_timestep, FALSE );
+          simulate = db_do_timestep( last_timestep, FALSE );
         }
         last_timestep = ato64( token + 1 );
         use_last_timestep = TRUE;
@@ -383,8 +384,8 @@ static void vcd_parse_sim( FILE* vcd ) { PROFILE(VCD_PARSE_SIM);
   }
 
   /* Simulate the last timestep now */
-  if( use_last_timestep ) {
-    db_do_timestep( last_timestep, FALSE );
+  if( use_last_timestep && simulate ) {
+    (void)db_do_timestep( last_timestep, FALSE );
   }
 
   PROFILE_END;
@@ -441,6 +442,10 @@ void vcd_parse( char* vcd_file ) { PROFILE(VCD_PARSE);
 
 /*
  $Log$
+ Revision 1.35  2008/01/29 04:40:19  phase1geo
+ Fixing bug with VPI builds on Mac OS X.  Removing attempt to get Veriwell simulator
+ to work with VCD reader.  Updates to regression Makefiles.
+
  Revision 1.34  2008/01/28 15:05:08  phase1geo
  Attempt to fix issue with Veriwell regressions (still some work to do here).
 

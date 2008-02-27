@@ -725,6 +725,8 @@ typedef enum exp_op_type_e {
   EXP_OP_RPT_DLY,         /*!< 87:0x57.  Child expression of DLY_OP, points to the delay expr and the repeat expr */
   EXP_OP_DIM,             /*!< 88:0x58.  Specifies a selection dimension (right expression points to a selection expr) */
   EXP_OP_WAIT,            /*!< 89:0x59.  Specifies a wait statement */
+  EXP_OP_SFINISH,         /*!< 90:0x5a.  Specifies a $finish call */
+  EXP_OP_SSTOP,           /*!< 91:0x5b.  Specifies a $stop call */
   EXP_OP_NUM              /*!< The total number of defines for expression values */
 } exp_op_type;
 
@@ -2495,6 +2497,11 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.283  2008/02/25 20:43:49  phase1geo
+ Checking in code to allow the use of racecheck pragmas.  Added new tests to
+ regression suite to verify this functionality.  Still need to document in
+ User's Guide and manpage.
+
  Revision 1.282  2008/02/25 18:22:16  phase1geo
  Moved statement supplemental bits from root expression to statement and starting
  to add support for race condition checking pragmas (still some work left to do

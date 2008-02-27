@@ -1737,6 +1737,10 @@ expr_primary
       if( (ignore_mode == 0) && ($1 != NULL) ) {
         if( strncmp( $1, "$display", 8 ) == 0 ) {
           $$ = db_create_expression( NULL, NULL, EXP_OP_NOOP, lhs_mode, 0, 0, 0, NULL );
+        } else if( strncmp( $1, "$finish", 7 ) == 0 ) {
+          $$ = db_create_expression( NULL, NULL, EXP_OP_SFINISH, lhs_mode, 0, 0, 0, NULL );
+        } else if( strncmp( $1, "$stop", 5 ) == 0 ) {
+          $$ = db_create_expression( NULL, NULL, EXP_OP_SSTOP, lhs_mode, 0, 0, 0, NULL );
         } else {
           $$ = NULL;
         }
@@ -1839,6 +1843,10 @@ expr_primary
       if( (ignore_mode == 0) && ($1 != NULL) ) {
         if( strncmp( $1, "$display", 8 ) == 0 ) {
           $$ = db_create_expression( NULL, NULL, EXP_OP_NOOP, lhs_mode, 0, 0, 0, NULL );
+        } else if( strncmp( $1, "$finish", 7 ) == 0 ) {
+          $$ = db_create_expression( NULL, NULL, EXP_OP_SFINISH, lhs_mode, 0, 0, 0, NULL );
+        } else if( strncmp( $1, "$stop", 5 ) == 0 ) {
+          $$ = db_create_expression( NULL, NULL, EXP_OP_SSTOP, lhs_mode, 0, 0, 0, NULL );
         } else {
           $$ = NULL;
         }
@@ -4575,15 +4583,15 @@ statement
     }
   | SYSTEM_IDENTIFIER { ignore_mode++; } '(' expression_port_list ')' ';' { ignore_mode--; }
     {
-      expression* exp;
-      statement*  stmt;
       if( (ignore_mode == 0) && ($1 != NULL) ) {
         if( strncmp( $1, "$display", 8 ) == 0 ) {
-          exp  = db_create_expression( NULL, NULL, EXP_OP_NOOP, lhs_mode, 0, 0, 0, NULL );
-          stmt = db_create_statement( exp );
-          $$   = stmt;
+          $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_NOOP, lhs_mode, 0, 0, 0, NULL ) );
+        } else if( strncmp( $1, "$finish", 7 ) == 0 ) {
+          $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_SFINISH, lhs_mode, 0, 0, 0, NULL ) );
+        } else if( strncmp( $1, "$stop", 5 ) == 0 ) {
+          $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_SSTOP, lhs_mode, 0, 0, 0, NULL ) );
         } else {
-          $$   = NULL;
+          $$ = NULL;
         }
         free_safe( $1 );
       } else {
@@ -4599,15 +4607,15 @@ statement
     }
   | SYSTEM_IDENTIFIER ';'
     {
-      expression* exp;
-      statement*  stmt;
       if( (ignore_mode == 0) && ($1 != NULL) ) {
         if( strncmp( $1, "$display", 8 ) == 0 ) {
-          exp  = db_create_expression( NULL, NULL, EXP_OP_NOOP, lhs_mode, 0, 0, 0, NULL );
-          stmt = db_create_statement( exp );
-          $$   = stmt;
+          $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_NOOP, lhs_mode, 0, 0, 0, NULL ) );
+        } else if( strncmp( $1, "$finish", 7 ) == 0 ) {
+          $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_SFINISH, lhs_mode, 0, 0, 0, NULL ) );
+        } else if( strncmp( $1, "$stop", 7 ) == 0 ) {
+          $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_SSTOP, lhs_mode, 0, 0, 0, NULL ) );
         } else {
-          $$   = NULL;
+          $$  = NULL;
         }
         free_safe( $1 );
       } else {

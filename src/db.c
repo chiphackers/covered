@@ -2632,13 +2632,17 @@ void db_set_symbol_string( char* sym, char* value ) { PROFILE(DB_SET_SYMBOL_STRI
  \param time   Current time step value being performed.
  \param final  Specifies that this is the final timestep.
 
+ \return Returns TRUE if simulation should continue to advance; otherwise, returns FALSE
+         to indicate that simulation should stop immediately.
+
  Cycles through expression queue, performing expression evaluations as we go.  If
  an expression has a parent expression, that parent expression is placed in the
  expression queue after that expression has completed its evaluation.  When the
  expression queue is empty, we are finished for this clock period.
 */
-void db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
+bool db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
+  bool            retval;               /* Return value for this function */
   static sim_time curr_time;
   static uint64   last_sim_update = 0;
 
@@ -2668,30 +2672,41 @@ void db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
   }
 
   /* Simulate the current timestep */
-  sim_simulate( &curr_time );
+  retval = sim_simulate( &curr_time );
 
   /* If this is the last timestep, add the final list and do one more simulate */
-  if( final ) {
+  if( final && retval ) {
     curr_time.lo   = 0xffffffff;
     curr_time.hi   = 0xffffffff;
     curr_time.full = 0xffffffffffffffffLL;
-    sim_simulate( &curr_time );
+    retval = sim_simulate( &curr_time );
   }
 
 #ifdef DEBUG_MODE
   print_output( "Assigning postsimulation signals...", DEBUG, __FILE__, __LINE__ );
 #endif
 
-  /* Assign all stored values in current post-timestep to stored signals */
-  symtable_assign( &curr_time );
+  if( retval ) {
+
+    /* Assign all stored values in current post-timestep to stored signals */
+    symtable_assign( &curr_time );
+
+  }
 
   PROFILE_END;
+
+  return( retval );
 
 }
 
 
 /*
  $Log$
+ Revision 1.283  2008/02/25 20:43:48  phase1geo
+ Checking in code to allow the use of racecheck pragmas.  Added new tests to
+ regression suite to verify this functionality.  Still need to document in
+ User's Guide and manpage.
+
  Revision 1.282  2008/02/25 18:22:16  phase1geo
  Moved statement supplemental bits from root expression to statement and starting
  to add support for race condition checking pragmas (still some work left to do

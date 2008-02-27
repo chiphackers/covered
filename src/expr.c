@@ -125,6 +125,9 @@
  \par EXP_OP_DIM
  This expression handles a dimensional selection lookup, allowing us to properly handle multi-dimensional
  array accesses.
+
+ \par EXP_OP_SFINISH, EXP_OP_SSTOP
+ These expression types cause the simulator to stop execution immediately.
 */
 
 #include <stdio.h>
@@ -237,6 +240,8 @@ static bool expression_op_func__dly_assign( expression*, thread*, const sim_time
 static bool expression_op_func__dly_op( expression*, thread*, const sim_time* );
 static bool expression_op_func__repeat_dly( expression*, thread*, const sim_time* );
 static bool expression_op_func__wait( expression*, thread*, const sim_time* );
+static bool expression_op_func__finish( expression*, thread*, const sim_time* );
+static bool expression_op_func__stop( expression*, thread*, const sim_time* );
 
 static void expression_assign( expression*, expression*, int*, const sim_time* );
 
@@ -333,7 +338,9 @@ const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",         "",             ex
                                            {"DLY_OP",         "",             expression_op_func__dly_op,     {1, 0, NOT_COMB,   0, 0, 0, 0} },
                                            {"RPT_DLY",        "",             expression_op_func__repeat_dly, {1, 0, NOT_COMB,   0, 0, 0, 0} },
                                            {"DIM",            "",             expression_op_func__null,       {0, 0, NOT_COMB,   0, 0, 0, 0} },
-                                           {"WAIT",           "wait",         expression_op_func__wait,       {1, 0, NOT_COMB,   0, 1, 1, 0} } };
+                                           {"WAIT",           "wait",         expression_op_func__wait,       {1, 0, NOT_COMB,   0, 1, 1, 0} },
+                                           {"SFINISH",        "$finish",      expression_op_func__finish,     {0, 0, NOT_COMB,   0, 0, 0, 0} },
+                                           {"SSTOP",          "$stop",        expression_op_func__stop,       {0, 0, NOT_COMB,   0, 0, 0, 0} } };
 
 /*! One bit unknown value that can be used by vector selection operators */
 static vec_data x_value = {0x2};
@@ -509,7 +516,9 @@ expression* expression_create(
              (op == EXP_OP_DEFAULT) ||
              (op == EXP_OP_REPEAT)  ||
              (op == EXP_OP_RPT_DLY) ||
-             (op == EXP_OP_WAIT) ) {
+             (op == EXP_OP_WAIT)    ||
+             (op == EXP_OP_SFINISH) ||
+             (op == EXP_OP_SSTOP) ) {
 
     /* If this expression will evaluate to a single bit, create vector now */
     expression_create_value( new_expr, 1, data );
@@ -761,6 +770,8 @@ void expression_resize( expression* expr, func_unit* funit, bool recursive, bool
       case EXP_OP_REPEAT  :
       case EXP_OP_RPT_DLY :
       case EXP_OP_WAIT    :
+      case EXP_OP_SFINISH :
+      case EXP_OP_SSTOP   :
         if( (expr->value->width != 1) || (expr->value->value == NULL) ) {
           assert( expr->value->value == NULL );
           expression_create_value( expr, 1, alloc );
@@ -1009,7 +1020,11 @@ int expression_get_curr_dimension( expression* expr ) { PROFILE(EXPRESSION_GET_C
  When a signal name is found, it is added to the signal name list specified
  by head and tail.
 */
-void expression_find_rhs_sigs( expression* expr, str_link** head, str_link** tail ) { PROFILE(EXPRESSION_FIND_RHS_SIGS);
+void expression_find_rhs_sigs(
+  expression* expr,
+  str_link**  head,
+  str_link**  tail
+) { PROFILE(EXPRESSION_FIND_RHS_SIGS);
 
   char* sig_name;  /* Name of signal found */
 
@@ -1204,7 +1219,11 @@ void expression_assign_expr_ids( expression* root, func_unit* funit ) { PROFILE(
  This function recursively displays the expression information for the specified
  expression tree to the coverage database specified by file.
 */
-void expression_db_write( expression* expr, FILE* file, bool parse_mode ) { PROFILE(EXPRESSION_DB_WRITE);
+void expression_db_write(
+  expression* expr,
+  FILE*       file,
+  bool        parse_mode
+) { PROFILE(EXPRESSION_DB_WRITE);
 
   assert( expr != NULL );
 
@@ -1244,7 +1263,10 @@ void expression_db_write( expression* expr, FILE* file, bool parse_mode ) { PROF
  Recursively iterates through the specified expression tree, outputting the expressions
  to the specified file.
 */
-void expression_db_write_tree( expression* root, FILE* ofile ) { PROFILE(EXPRESSION_DB_WRITE_TREE);
+void expression_db_write_tree(
+  expression* root,
+  FILE*       ofile
+) { PROFILE(EXPRESSION_DB_WRITE_TREE);
 
   if( root != NULL ) {
 
@@ -3523,6 +3545,40 @@ bool expression_op_func__wait( expression* expr, /*@unused@*/ thread* thr, /*@un
 }
 
 /*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+ \param time  Pointer to current simulation time
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a $finish statement operation.
+*/
+bool expression_op_func__finish( /*@unused@*/ expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__FINISH);
+
+  sim_finish();
+
+  return( FALSE );
+
+}
+
+/*!                                        
+ \param expr  Pointer to expression to perform operation on   
+ \param thr   Pointer to thread containing this expression    
+ \param time  Pointer to current simulation time
+                                           
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.  
+                                           
+ Performs a $stop statement operation.
+*/                                         
+bool expression_op_func__stop( /*@unused@*/ expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__STOP);
+
+  sim_stop();
+
+  return( FALSE );
+
+}
+
+/*!
  \param expr  Pointer to expression to set value to.
  \param thr   Pointer to current thread being simulated. 
  \param time  Pointer to current simulation time.
@@ -4274,6 +4330,10 @@ void expression_dealloc( expression* expr, bool exp_only ) { PROFILE(EXPRESSION_
 
 /* 
  $Log$
+ Revision 1.282  2008/02/09 19:32:44  phase1geo
+ Completed first round of modifications for using exception handler.  Regression
+ passes with these changes.  Updated regressions per these changes.
+
  Revision 1.281  2008/02/08 23:58:06  phase1geo
  Starting to work on exception handling.  Much work to do here (things don't
  compile at the moment).
