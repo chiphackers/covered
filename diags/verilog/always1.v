@@ -30,7 +30,6 @@ initial begin
 	c = 1'b0;
 	d = 1'b0;
 	e = 1'b0;
-	f = 1'b0;
 	forever #(4)
 	  begin
 	   b = ~b;
@@ -39,6 +38,7 @@ initial begin
 end
 
 initial begin
+	f = 1'b0;
 	#20;
 	f = 1'b1;
 	#100;

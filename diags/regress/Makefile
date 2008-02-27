@@ -207,7 +207,8 @@ ifdef LXT
 NOLXTDIAGS   := add1            always7         always7.1       always11.2      ashift1 \
                 ashift2         bassign2        bassign3        case5           casex2 \
                 casez3          concat6         define5         disable1        disable2.1 \
-                exclude1        for1            fsm11           hier1           hier2 \
+                exclude1        exclude9.7      exclude9.8      exclude9.9      finish1 \
+                for1            fsm11           func5           hier1           hier2 \
                 hier4           localparam1     localparam1.1   localparam1.2   localparam1.3 \
                 localparam2     localparam3     long_exp1       long_exp2       long_exp3 \
                 mbit_sel3       mbit_sel3.1     mbit_sel4       mbit_sel4.1     mbit_sel4.2 \

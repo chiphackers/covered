@@ -20,6 +20,7 @@ assign a = b ? 1'b0 : 1'b1;
 
 always @(posedge c) d <= ~d;
 
+// racecheck off
 initial begin
 	b = 1'b0;
 	c = 1'b0;
@@ -29,5 +30,6 @@ initial begin
 	#5;
 	$finish;
 end
+// racecheck on
 
 endmodule
