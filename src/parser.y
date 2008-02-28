@@ -61,22 +61,27 @@ extern void lex_end_udp_table();
  If set to a value > 0, specifies that we are currently parsing code that should be ignored by
  Covered; otherwise, evaluate parsed code.
 */
-int  ignore_mode = 0;
+int ignore_mode = 0;
 
 /*!
  If set to a value > 0, specifies that we are parsing a parameter expression
 */
-int  param_mode  = 0;
+int param_mode = 0;
 
 /*!
  If set to a value > 0, specifies that we are parsing an attribute
 */
-int  attr_mode   = 0;
+int attr_mode = 0;
+
+/*!
+ If set to a value > 0, specifies that we are parsing the control block of a for loop.
+*/
+int for_mode = 0;
 
 /*!
  If set to a value > 0, specifies that we are parsing a generate block
 */
-int  generate_mode = 0;
+int generate_mode = 0;
 
 /*!
  If set to a value > 0, specifies that we are parsing the top-most level of structures in a generate block.
@@ -6670,6 +6675,7 @@ inc_for_depth
         free_safe( scope );
       }
       block_depth++;
+      for_mode++;
       $$ = db_get_curr_funit();
     }
   ;
@@ -6678,6 +6684,7 @@ dec_for_depth
   :
     {
       block_depth--;
+      for_mode--;
     }
   ;
 

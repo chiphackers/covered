@@ -79,6 +79,7 @@ extern int         block_depth;
 extern int         generate_mode;
 extern int         generate_top_mode;
 extern int         generate_expr_mode;
+extern int         for_mode;
 
 /*!
  Specifies the string Verilog scope that is currently specified in the VCD file.
@@ -1591,6 +1592,11 @@ expression* db_create_expression(
     expr->suppl.part.excluded = 1;
   }
 
+  /* If this expression is in the for control, set its bit */
+  if( for_mode > 0 ) {
+    expr->suppl.part.for_cntrl = 1;
+  }
+
   /*
    If this is some kind of assignment expression operator, set the our expression vector to that of
    the right expression.
@@ -2702,6 +2708,9 @@ bool db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.284  2008/02/27 05:26:51  phase1geo
+ Adding support for $finish and $stop.
+
  Revision 1.283  2008/02/25 20:43:48  phase1geo
  Checking in code to allow the use of racecheck pragmas.  Added new tests to
  regression suite to verify this functionality.  Still need to document in

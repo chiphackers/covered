@@ -295,9 +295,9 @@ static void race_calc_expr_assignment( expression* exp, int sb_index ) { PROFILE
 
   switch( exp->op ) {
     case EXP_OP_ASSIGN    :
-    case EXP_OP_DASSIGN   :
-    case EXP_OP_BASSIGN   :  sb[sb_index].bassign = TRUE;  break;
+    case EXP_OP_DASSIGN   :  sb[sb_index].bassign = TRUE;  break;
     case EXP_OP_NASSIGN   :  sb[sb_index].nassign = TRUE;  break;
+    case EXP_OP_BASSIGN   :  sb[sb_index].bassign = (exp->suppl.part.for_cntrl == 0);  break;
     case EXP_OP_TASK_CALL :
     case EXP_OP_FORK      :
     case EXP_OP_NB_CALL   :  race_calc_assignments( exp->elem.funit->first_stmt, sb_index );  break;
@@ -1161,6 +1161,11 @@ void race_blk_delete_list(
 
 /*
  $Log$
+ Revision 1.73  2008/02/25 20:43:49  phase1geo
+ Checking in code to allow the use of racecheck pragmas.  Added new tests to
+ regression suite to verify this functionality.  Still need to document in
+ User's Guide and manpage.
+
  Revision 1.72  2008/02/25 18:22:16  phase1geo
  Moved statement supplemental bits from root expression to statement and starting
  to add support for race condition checking pragmas (still some work left to do

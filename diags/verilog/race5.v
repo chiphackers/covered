@@ -12,25 +12,25 @@ module main;
 
 reg [3:0] a, b;
 reg       clk;
-integer   i;
 
 // racecheck off
-always @(posedge clk) begin
-  for( i=0; i<4; i=i+1 )
-    a[i] <= ~b[i];
+initial begin
+	b = 4'h0;
+        forever @(posedge clk) begin
+	  b = b + 1;
+	  a <= ~b;
+	end
 end
 // racecheck on
 
 initial begin
-	b   = 4'b0000;
-	clk = 1'b0;
-	#5;
-	clk = 1'b1;
-	#5;
-	b   = 4'b1001;
-	clk = 1'b0;
-	#5;
-	clk = 1'b1;
+        clk = 1'b0;
+        #5;
+        clk = 1'b1;
+        #5;
+        clk = 1'b0;
+        #5;
+        clk = 1'b1;
 end
 
 initial begin
