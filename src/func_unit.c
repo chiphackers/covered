@@ -44,6 +44,7 @@
 #include "param.h"
 #include "parser_misc.h"
 #include "race.h"
+#include "sim.h"
 #include "stat.h"
 #include "statement.h"
 #include "stmt_blk.h"
@@ -93,6 +94,8 @@ static void funit_init( func_unit* funit ) { PROFILE(FUNIT_INIT);
   funit->ei_head    = NULL;
   funit->ei_tail    = NULL;
   funit->parent     = NULL;
+  funit->elem_type  = 0;
+  funit->elem.thr   = NULL;
 
   PROFILE_END;
 
@@ -1084,6 +1087,173 @@ void funit_display_expressions( func_unit* funit ) { PROFILE(FUNIT_DISPLAY_EXPRE
 }
 
 /*!
+ \param funit  Pointer to functional unit to add given thread pointer to
+ \param thr    Pointer to thread associated with this statement
+
+ Adds the given thread to the given functional unit's thread/thread list element pointer, allocating memory as needed
+ and adjusting values as needed.
+*/
+void funit_add_thread(
+  func_unit* funit,
+  thread*    thr
+) { PROFILE(STATEMENT_ADD_THREAD);
+
+  assert( funit != NULL );
+  assert( thr != NULL );
+
+  /* Statement element should point to a thread */
+  if( funit->elem_type == 0 ) {
+
+    /* If the statement element currently points to nothing, simply point the statement element to the given thread */
+    if( funit->elem.thr == NULL ) {
+      funit->elem.thr = thr;
+
+    /* Otherwise, change the type to a thread list, create a thread list, initialize it and continue */
+    } else {
+
+      thr_list* tlist;  /* Pointer to thread list */
+
+      /* Allocate memory for the thread list */
+      tlist = (thr_list*)malloc_safe( sizeof( thr_list ) );
+
+      /* Create new thread link for existing thread */
+      tlist->head      = (thr_link*)malloc_safe( sizeof( thr_link ) );
+      tlist->head->thr = funit->elem.thr;
+  
+      /* Create new thread link for specified thread */
+      tlist->tail       = (thr_link*)malloc_safe( sizeof( thr_link ) );
+      tlist->tail->thr  = thr;
+      tlist->tail->next = NULL;
+      tlist->head->next = tlist->tail;
+
+      /* Specify the next pointer to be NULL (to indicate that there aren't any available thread links to use) */
+      funit->elem.tlist->next = NULL;
+    
+      /* Repopulate the functional unit */
+      funit->elem.tlist = tlist;
+      funit->elem_type  = 1;
+  
+    }
+
+  /* Otherwise, the statement element is a pointer to a thread list already */
+  } else {
+
+    /* If there are no thread links already allocated and available, allocate a new thread link */
+    if( funit->elem.tlist->next == NULL ) {
+
+      thr_link* thrl;  /* Pointer to a thread link */
+    
+      /* Allocate and initialize thread link */
+      thrl       = (thr_link*)malloc_safe( sizeof( thr_link ) );
+      thrl->thr  = thr;
+      thrl->next = NULL;
+
+      /* Add the new thread link to the list */
+      funit->elem.tlist->tail->next = thrl;
+      funit->elem.tlist->tail       = thrl;
+
+    /* Otherwise, use the link pointed at by next and adjust next */
+    } else {
+
+      funit->elem.tlist->next->thr = thr;
+      funit->elem.tlist->next      = funit->elem.tlist->next->next;
+
+    }
+
+  }
+
+}
+
+/*!
+ \param funit  Pointer of functional unit to push threads from
+ \param time   Pointer to current simulation time
+
+ Adds all of the given functional unit threads to the active simulation queue.
+*/
+void funit_push_threads(
+  func_unit*      funit,
+  const sim_time* time
+) { PROFILE(FUNIT_PUSH_THREADS);
+
+  assert( funit != NULL );
+
+  if( funit->elem_type == 0 ) {
+    if( funit->elem.thr->suppl.part.state == THR_ST_WAITING ) {
+      sim_thread_push( funit->elem.thr, time );
+    }
+  } else {
+    thr_link* curr = funit->elem.tlist->head;
+    while( (curr != NULL) && (curr->thr != NULL) ) {
+      if( curr->thr->suppl.part.state == THR_ST_WAITING ) {
+        sim_thread_push( curr->thr, time );
+      }
+      curr = curr->next;
+    }
+  }
+
+}
+
+/*!
+ \param funit  Pointer to functional unit to delete thread from thread pointer/thread list.
+ \param thr    Pointer to thread to remove from the given statement
+
+ Searches the given functional unit thread element for the given thread.  When the thread is found,
+ its corresponding thread link is moved to the end of the thread list, the next pointer is updated
+ accordingly and the thread pointer is set to NULL.  This function will be called whenever a thread
+ is killed in the simulator.
+*/
+void funit_delete_thread(
+  func_unit* funit,
+  thread*    thr
+) { PROFILE(STATEMENT_DELETE_THREAD);
+
+  assert( funit != NULL );
+  assert( thr != NULL );
+
+  /* If the statement element type is a thread pointer, simply clear the thread pointer */
+  if( funit->elem_type == 0 ) {
+    funit->elem.thr = NULL;
+
+  /* Otherwise, find the given thread in the statement thread list and remove it */
+  } else {
+
+    thr_link* curr = funit->elem.tlist->head;
+    thr_link* last = NULL;
+
+    /* Search the thread list for the matching thread */
+    while( (curr != NULL) && (curr->thr != thr) ) {
+      last = curr;
+      curr = curr->next;
+    }
+
+    /* We should have found the thread in the statement list */
+    assert( curr != NULL );
+
+    /* Move this thread link to the end of the thread link list and clear out its values */
+    if( funit->elem.tlist->tail != curr ) {
+      if( funit->elem.tlist->head == curr ) {
+        funit->elem.tlist->head = curr->next;
+      } else {
+        last->next = curr->next;
+      }
+      funit->elem.tlist->tail->next = curr;
+      funit->elem.tlist->tail       = curr;
+      curr->next = NULL;
+    }
+  
+    /* Clear the thread pointer */
+    curr->thr = NULL; 
+  
+    /* If the thread list next pointer is NULL, set it to the freed thread link structure */
+    if( funit->elem.tlist->next == NULL ) {
+      funit->elem.tlist->next = curr;
+    }
+  
+  } 
+    
+}   
+
+/*!
  \param funit  Pointer to functional unit element to clean.
 
  Deallocates functional unit contents: name and filename strings.
@@ -1170,6 +1340,18 @@ static void funit_clean( func_unit* funit ) { PROFILE(FUNIT_CLEAN);
       funit->filename = NULL;
     }
 
+    /* Free thread list, if available */
+    if( funit->elem_type == 1 ) {
+      thr_link* thrl = funit->elem.tlist->head;
+      thr_link* tmpl;
+      while( thrl != NULL ) {
+        tmpl = thrl;
+        thrl = thrl->next;
+        free_safe( tmpl );
+      }
+      free_safe( funit->elem.tlist );
+    }
+
     /* Reset curr_funit */
     curr_funit = old_funit;
 
@@ -1204,6 +1386,11 @@ void funit_dealloc( func_unit* funit ) { PROFILE(FUNIT_DEALLOC);
 
 /*
  $Log$
+ Revision 1.91  2008/02/25 18:22:16  phase1geo
+ Moved statement supplemental bits from root expression to statement and starting
+ to add support for race condition checking pragmas (still some work left to do
+ on this item).  Updated IV and Cver regressions per these changes.
+
  Revision 1.90  2008/02/09 19:32:44  phase1geo
  Completed first round of modifications for using exception handler.  Regression
  passes with these changes.  Updated regressions per these changes.

@@ -1482,6 +1482,8 @@ struct fv_bind_s;
 struct attr_param_s;
 struct stmt_blk_s;
 struct thread_s;
+struct thr_link_s;
+struct thr_list_s;
 struct perf_stat_s;
 struct port_info_s;
 struct param_oride_s;
@@ -1687,6 +1689,16 @@ typedef struct stmt_blk_s stmt_blk;
  Renaming thread structure for convenience.
 */
 typedef struct thread_s thread;
+
+/*!
+ Renaming thr_link structure for convenience.
+*/
+typedef struct thr_link_s thr_link;
+
+/*!
+ Renaming thr_list structure for convenience.
+*/
+typedef struct thr_list_s thr_list;
 
 /*!
  Renaming perf_stat structure for convenience.
@@ -1915,6 +1927,7 @@ struct statement_s {
   statement*  next_false;            /*!< Pointer to next statement to run if next_true not picked */
   int         conn_id;               /*!< Current connection ID (used to make sure that we do not infinitely loop
                                           in connecting statements together) */
+  func_unit*  funit;                 /*!< Pointer to statement's functional unit that it belongs to */
   union {
     control all;
     struct {
@@ -1934,13 +1947,11 @@ struct statement_s {
                                           tree) should be excluded from coverage results. */
       control final     :1;          /*!< Bit 6.  Mask bit = 1.  Indicates that this statement block should only be executed
                                           during the final simulation step. */
-      control type      :1;          /*!< Bit 7.  Mask bit = 1.  Specifies the type of pointer that should be used for elem.
-                                          0 = thread, 1 = thread_list. */
-      control ignore_rc :1;          /*!< Bit 8.  Mask bit = 1.  Specifies that we should ignore race condition checking for
+      control ignore_rc :1;          /*!< Bit 7.  Mask bit = 1.  Specifies that we should ignore race condition checking for
                                           this statement. */
 
       /* Unmasked bits */
-      control added     :1;          /*!< Bit 9.  Mask bit = 0.  Temporary bit value used by the score command but not
+      control added     :1;          /*!< Bit 8.  Mask bit = 0.  Temporary bit value used by the score command but not
                                           displayed to the CDD file.  When this bit is set to a one, it indicates to the
                                           db_add_statement function that this statement and all children statements have
                                           already been added to the functional unit statement list and should not be added again. */
@@ -2117,6 +2128,12 @@ struct func_unit_s {
   enum_item*    ei_tail;             /*!< Tail pointer to list of enumerated values for this functional unit */
   struct_union* su_head;             /*!< Head pointer to list of struct/unions for this functional unit */
   struct_union* su_tail;             /*!< Tail pointer to list of struct/unions for this functional unit */
+  int           elem_type;           /*!< Set to 0 if elem should be treated as a thread pointer; set to 1 if elem should be treated
+                                          as a thread list pointer. */
+  union {
+    thread*   thr;                   /*!< Pointer to a single thread that this statement is associated with */
+    thr_list* tlist;                 /*!< Pointer to a list of threads that this statement is currently associated with */
+  } elem;                            /*!< Pointer element */
 };
 
 /*!
@@ -2335,6 +2352,23 @@ struct thread_s {
 };
 
 /*!
+ Linked list structure for a thread list.
+*/
+struct thr_link_s {
+  thread*   thr;                     /*!< Pointer to thread */
+  thr_link* next;                    /*!< Pointer to next thread link in list */
+};
+
+/*!
+ Linked list structure for a thread list.
+*/
+struct thr_list_s {
+  thr_link* head;                    /*!< Pointer to the head link of a thread list */
+  thr_link* tail;                    /*!< Pointer to the tail link of a thread list */
+  thr_link* next;                    /*!< Pointer to next thread link in list to use for newly added threads */
+};
+
+/*!
  Performance statistic container used for simulation-time performance characteristics.
 */
 struct perf_stat_s {
@@ -2499,6 +2533,11 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.285  2008/02/28 03:53:17  phase1geo
+ Code addition to support feature request 1902840.  Added race6 diagnostic and updated
+ race5 diagnostics per this change.  For loop control assignments are now no longer
+ considered when performing race condition checking.
+
  Revision 1.284  2008/02/27 05:26:51  phase1geo
  Adding support for $finish and $stop.
 

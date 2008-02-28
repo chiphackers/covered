@@ -472,7 +472,7 @@ void sim_thread_insert_into_delay_queue(
  called whenever a head statement has a signal change or the head statement is a delay operation
  and
 */
-static void sim_thread_push(
+void sim_thread_push(
   thread*         thr,
   const sim_time* time
 ) { PROFILE(SIM_THREAD_PUSH);
@@ -603,6 +603,9 @@ void sim_expr_changed( expression* expr, const sim_time* time ) { PROFILE(SIM_EX
     */
     } else if( expr->parent->expr != NULL ) { PROFILE(SIM_EXPR_CHANGED_B);
 
+      funit_push_threads( expr->parent->stmt->funit, time );
+
+#ifdef OBSOLETE
       thread* thr = waiting_head;  /* Pointer to current thread */
 //      unsigned num_in_wait = 0;
 //      unsigned num_pushed  = 0;
@@ -621,6 +624,7 @@ void sim_expr_changed( expression* expr, const sim_time* time ) { PROFILE(SIM_EX
       }
 
       //printf( "TIME: %lld, num in waiting queue: %d, num pushed: %d\n", time->full, num_in_wait, num_pushed );
+#endif
 
       PROFILE_END;
 
@@ -689,6 +693,9 @@ static thread* sim_create_thread( thread* parent, statement* stmt, func_unit* fu
   thr->curr_time.final = FALSE;
   thr->queue_prev      = NULL;
   thr->queue_next      = NULL;
+
+  /* Add this thread to the given functional unit */
+  funit_add_thread( funit, thr );
 
   PROFILE_END;
 
@@ -840,8 +847,6 @@ static void sim_kill_thread( thread* thr ) { PROFILE(SIM_KILL_THREAD);
     if( thr->parent->active_children == 0 ) {
 
       /* If the parent was sitting in the waiting queue, remove it */
-      //if( thr->parent->suppl.part.state == THR_ST_WAITING ) {
-      //}
       thr->parent->queue_next = thr->queue_next;
       if( thr->queue_next == NULL ) {
         active_tail = thr->parent;
@@ -871,6 +876,9 @@ static void sim_kill_thread( thread* thr ) { PROFILE(SIM_KILL_THREAD);
 
   /* Check to make sure that the thread is not in the waiting queue */
   assert( thr->suppl.part.state != THR_ST_WAITING );
+
+  /* Remove this thread from its functional unit */
+  funit_delete_thread( thr->funit, thr );
 
   /* Finally, park this thread at the end of the all_queue (if its not already there) */
   if( thr != all_tail ) {
@@ -1273,6 +1281,9 @@ void sim_dealloc() { PROFILE(SIM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.121  2008/02/27 05:26:51  phase1geo
+ Adding support for $finish and $stop.
+
  Revision 1.120  2008/02/25 18:22:16  phase1geo
  Moved statement supplemental bits from root expression to statement and starting
  to add support for race condition checking pragmas (still some work left to do

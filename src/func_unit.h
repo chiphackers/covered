@@ -95,12 +95,34 @@ void funit_display_signals( func_unit* funit );
 /*! \brief Displays expressions stored in this functional unit. */
 void funit_display_expressions( func_unit* funit );
 
+/*! \brief Adds given thread to functional unit's thread pointer/thread pointer list */
+void funit_add_thread(
+  func_unit* funit,
+  thread*    thr
+);
+
+/*! \brief Pushes the threads associated with the given functional unit onto the active simulation queue */
+void funit_push_threads(
+  func_unit*      funit,
+  const sim_time* time
+);
+
+/*! \brief Removes given thread from the given functional unit's thread pointer/thread pointer list */
+void funit_delete_thread(
+  func_unit* funit,
+  thread*    thr
+);
+
 /*! \brief Deallocates functional unit element from heap. */
 void funit_dealloc( func_unit* funit );
 
 
 /*
  $Log$
+ Revision 1.34  2008/02/09 19:32:45  phase1geo
+ Completed first round of modifications for using exception handler.  Regression
+ passes with these changes.  Updated regressions per these changes.
+
  Revision 1.33  2008/01/16 06:40:37  phase1geo
  More splint updates.
 
