@@ -1,5 +1,5 @@
-5 b 1 * 0
-8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd param8.2.vcd -o param8.2.cdd -v param8.2.v
+5 c 1 * 0
+8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd param8.2.vcd -o param8.2.cdd -v param8.2.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" param8.2.v 1 21 1
 1 a 3 3000a 1 0 0 0 1 33 2

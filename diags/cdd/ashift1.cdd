@@ -1,5 +1,5 @@
 5 c 1 * 0
-8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd ashift1.vcd -o ashift1.cdd -v ashift1.v -D DUMP
+8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vpi covered_vpi.v -o ashift1.cdd -v ashift1.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" ashift1.v 1 29 1
 2 1 5 8000c 1 3d 5002 0 0 1 34 2 $u0
