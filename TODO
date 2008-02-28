@@ -44,7 +44,7 @@ X  10. Add pragma to allow the user to ignore certain codes for race condition c
 
    11. Enhance the -rI option to allow the user to ignore certain types of race conditions.
 
-   12. Provide ability to handle $finish and $stop system calls.
+X  12. Provide ability to handle $finish and $stop system calls.
 
 
 Merge command
@@ -64,7 +64,7 @@ IP 1.  Add regression that produces known, achievable error conditions in the co
 
 IP 2.  Make all code splint clean.
 
-   3.  Replace current exit strategy with cexcept usage (throw exceptions instead of immediately exiting)
+IP 3.  Replace current exit strategy with cexcept usage (throw exceptions instead of immediately exiting)
 
    4.  Have parser generate dumpvars file to cause only needed signals by Covered to get dumped (performance enhancement).
 
