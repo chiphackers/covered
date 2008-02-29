@@ -877,19 +877,21 @@ static void combination_draw_centered_line(
  \param center      Specifies if expression IDs should be centered in underlines or at beginning.
  \param funit       Pointer to current functional unit containing this expression
 
+ \throws error Anonymous
+
  Recursively parses specified expression tree, underlining and labeling each
  measurable expression.
 */
 static void combination_underline_tree(
-    expression* exp,
-    unsigned int curr_depth,
-    char*** lines,
-    int* depth,
-    int* size,
-    int parent_op,
-    bool center,
-    func_unit* funit )
-{ PROFILE(COMBINATION_UNDERLINE_TREE);
+  expression*  exp,
+  unsigned int curr_depth,
+  char***      lines,
+  int*         depth,
+  int*         size,
+  int          parent_op,
+  bool         center,
+  func_unit*   funit
+) { PROFILE(COMBINATION_UNDERLINE_TREE);
 
   char**       l_lines;         /* Pointer to left underline stack */
   char**       r_lines;         /* Pointer to right underline stack */
@@ -1246,7 +1248,7 @@ static void combination_underline_tree(
                                exp->op );
                 assert( rv < USER_MSG_LENGTH );
                 print_output( user_msg, FATAL, __FILE__, __LINE__ );
-                exit( EXIT_FAILURE );
+                Throw 0;
                 /*@-unreachable@*/
                 break;
                 /*@=unreachable@*/
@@ -1348,7 +1350,7 @@ static void combination_underline_tree(
           } else {
 
             print_output( "Internal error:  Reached entry without a left or right underline", FATAL, __FILE__, __LINE__ );
-            exit( EXIT_FAILURE );
+            Throw 0;
 
           }
 
@@ -2979,6 +2981,11 @@ void combination_report( FILE* ofile, bool verbose ) { PROFILE(COMBINATION_REPOR
 
 /*
  $Log$
+ Revision 1.183  2008/02/25 18:22:16  phase1geo
+ Moved statement supplemental bits from root expression to statement and starting
+ to add support for race condition checking pragmas (still some work left to do
+ on this item).  Updated IV and Cver regressions per these changes.
+
  Revision 1.182  2008/01/30 05:51:50  phase1geo
  Fixing doxygen errors.  Updated parameter list syntax to make it more readable.
 

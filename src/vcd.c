@@ -81,6 +81,8 @@ static void vcd_parse_def_ignore( FILE* vcd ) { PROFILE(VCD_PARSE_DEF_IGNORE);
 /*!
  \param vcd  File handle pointer to opened VCD file.
 
+ \throw error Anonymous
+
  Parses definition $var keyword line until $end keyword is seen.
 */
 static void vcd_parse_def_var( FILE* vcd ) { PROFILE(VCD_PARSE_DEF_VAR);
@@ -110,7 +112,7 @@ static void vcd_parse_def_var( FILE* vcd ) { PROFILE(VCD_PARSE_DEF_VAR);
         
         if( sscanf( tmp, "\[%d]", &lsb ) != 1 ) {
           print_output( "Unrecognized $var format", FATAL, __FILE__, __LINE__ );
-          exit( EXIT_FAILURE );
+          Throw 0;
         } else {
           msb = lsb;
         }
@@ -119,7 +121,7 @@ static void vcd_parse_def_var( FILE* vcd ) { PROFILE(VCD_PARSE_DEF_VAR);
 
       if( (fscanf( vcd, "%s", tmp ) != 1) || (strncmp( "$end", tmp, 4 ) != 0) ) {
         print_output( "Unrecognized $var format", FATAL, __FILE__, __LINE__ );
-        exit( EXIT_FAILURE );
+        Throw 0;
       }
 
     } else if( sscanf( ref, "%[a-zA-Z0-9_]\[%s]", reftmp, tmp ) == 2 ) {
@@ -129,7 +131,7 @@ static void vcd_parse_def_var( FILE* vcd ) { PROFILE(VCD_PARSE_DEF_VAR);
       if( sscanf( tmp, "%d:%d", &msb, &lsb ) != 2 ) {
         if( sscanf( tmp, "%d", &lsb ) != 1 ) {
           print_output( "Unrecognized $var format", FATAL, __FILE__, __LINE__ );
-          exit( EXIT_FAILURE );
+          Throw 0;
         } else {
           msb = lsb;
         }
@@ -155,7 +157,7 @@ static void vcd_parse_def_var( FILE* vcd ) { PROFILE(VCD_PARSE_DEF_VAR);
   } else {
 
     print_output( "Unrecognized $var format", FATAL, __FILE__, __LINE__ );
-    exit( EXIT_FAILURE );
+    Throw 0;
   
   }
 
@@ -165,6 +167,8 @@ static void vcd_parse_def_var( FILE* vcd ) { PROFILE(VCD_PARSE_DEF_VAR);
 
 /*!
  \param vcd  File handle pointer to opened VCD file.
+
+ \throw error Anonymous
 
  Parses definition $scope keyword line until $end keyword is seen.
 */
@@ -185,7 +189,7 @@ static void vcd_parse_def_scope( FILE* vcd ) { PROFILE(VCD_PARSE_DEF_SCOPE);
   } else {
 
     print_output( "Unrecognized $scope format", FATAL, __FILE__, __LINE__ );
-    exit( EXIT_FAILURE );
+    Throw 0;
 
   }
 
@@ -195,6 +199,8 @@ static void vcd_parse_def_scope( FILE* vcd ) { PROFILE(VCD_PARSE_DEF_SCOPE);
 
 /*!
  \param vcd  File handle pointer to opened VCD file.
+
+ \throw error Anonymous
 
  Parses all definition information from specified file.
 */
@@ -229,7 +235,7 @@ static void vcd_parse_def( FILE* vcd ) { PROFILE(VCD_PARSE_DEF);
       unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Non-keyword located where one should have been \"%s\"", keyword );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      exit( EXIT_FAILURE );
+      Throw 0;
 
     }
   
@@ -237,7 +243,7 @@ static void vcd_parse_def( FILE* vcd ) { PROFILE(VCD_PARSE_DEF);
 
   if( !enddef_found ) {
     print_output( "Specified VCD file is not a valid VCD file", FATAL, __FILE__, __LINE__ );
-    exit( EXIT_FAILURE );
+    Throw 0;
   }
 
   assert( enddef_found );
@@ -257,7 +263,7 @@ static void vcd_parse_def( FILE* vcd ) { PROFILE(VCD_PARSE_DEF);
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
     }
 
-    exit( EXIT_FAILURE );
+    Throw 0;
 
   }
 
@@ -268,6 +274,8 @@ static void vcd_parse_def( FILE* vcd ) { PROFILE(VCD_PARSE_DEF);
 /*!
  \param vcd    File handle of opened VCD file.
  \param value  String containing value of current signal.
+
+ \throw error Anonymous
 
  Reads the next token from the file and calls the appropriate database storage
  function for this signal change.
@@ -286,7 +294,7 @@ static void vcd_parse_sim_vector( FILE* vcd, char* value ) { PROFILE(VCD_PARSE_S
   } else {
 
     print_output( "Bad file format", FATAL, __FILE__, __LINE__ );
-    exit( EXIT_FAILURE );
+    Throw 0;
 
   }
 
@@ -296,6 +304,8 @@ static void vcd_parse_sim_vector( FILE* vcd, char* value ) { PROFILE(VCD_PARSE_S
 
 /*!
  \param vcd  File handle of opened VCD file.
+
+ \throw error Anonymous
 
  Reads in symbol from simulation vector line that is to be ignored 
  (unused).  Signals an error message if the line is improperly formatted.
@@ -308,7 +318,7 @@ static void vcd_parse_sim_ignore( FILE* vcd ) { PROFILE(VCD_PARSE_SIM_IGNORE);
   if( fscanf( vcd, "%s%n", sym, &chars_read ) != 1 ) {
 
     print_output( "Bad file format", FATAL, __FILE__, __LINE__ );
-    exit( EXIT_FAILURE );
+    Throw 0;
 
   }
   
@@ -320,6 +330,8 @@ static void vcd_parse_sim_ignore( FILE* vcd ) { PROFILE(VCD_PARSE_SIM_IGNORE);
 
 /*!
  \param vcd  File handle of opened VCD file.
+
+ \throw error Anonymous
 
  Parses all lines that occur in the simulation portion of the VCD file.
 */
@@ -371,7 +383,7 @@ static void vcd_parse_sim( FILE* vcd ) { PROFILE(VCD_PARSE_SIM);
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Badly placed token \"%s\"", token );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        exit( EXIT_FAILURE );
+        Throw 0;
 
       }
 
@@ -395,6 +407,8 @@ static void vcd_parse_sim( FILE* vcd ) { PROFILE(VCD_PARSE_SIM);
 /*!
  \param vcd_file  Name of VCD file to parse.
 
+ \throw error Anonymous
+
  Reads specified VCD file for relevant information and calls the database
  functions when appropriate to store this information.  This replaces the
  need for a lexer and parser which should increase performance.
@@ -410,20 +424,28 @@ void vcd_parse( char* vcd_file ) { PROFILE(VCD_PARSE);
     /* Create initial symbol table */
     vcd_symtab = symtable_create();
 
-    vcd_parse_def( vcd_handle );
+    Try {
 
-    /* Create timestep symbol table array */
-    if( vcd_symtab_size > 0 ) {
-      timestep_tab = malloc_safe_nolimit( sizeof( symtable*) * vcd_symtab_size );
-    }
+      vcd_parse_def( vcd_handle );
+
+      /* Create timestep symbol table array */
+      if( vcd_symtab_size > 0 ) {
+        timestep_tab = malloc_safe_nolimit( sizeof( symtable*) * vcd_symtab_size );
+      }
     
-    vcd_parse_sim( vcd_handle );
+      vcd_parse_sim( vcd_handle );
+
+    } Catch_anonymous {
+      symtable_dealloc( vcd_symtab );
+      free_safe( timestep_tab );
+      rv = fclose( vcd_handle );
+      assert( rv == 0 );
+      Throw 0;
+    }
 
     /* Deallocate memory */
     symtable_dealloc( vcd_symtab );
-    if( timestep_tab != NULL ) {
-      free_safe( timestep_tab );
-    }
+    free_safe( timestep_tab );
 
     /* Close VCD file */
     rv = fclose( vcd_handle );
@@ -432,7 +454,7 @@ void vcd_parse( char* vcd_file ) { PROFILE(VCD_PARSE);
   } else {
 
     print_output( "Unable to open specified VCD file", FATAL, __FILE__, __LINE__ );
-    exit( EXIT_FAILURE );
+    Throw 0;
 
   }
 
@@ -442,6 +464,9 @@ void vcd_parse( char* vcd_file ) { PROFILE(VCD_PARSE);
 
 /*
  $Log$
+ Revision 1.36  2008/02/27 05:26:51  phase1geo
+ Adding support for $finish and $stop.
+
  Revision 1.35  2008/01/29 04:40:19  phase1geo
  Fixing bug with VPI builds on Mac OS X.  Removing attempt to get Veriwell simulator
  to work with VCD reader.  Updates to regression Makefiles.

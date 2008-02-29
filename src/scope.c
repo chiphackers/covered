@@ -327,7 +327,7 @@ bool scope_find_task_function_namedblock(
                                 obf_funit( curr_funit->name ), obf_file( curr_funit->filename ), line );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    exit( EXIT_FAILURE );
+    Throw 0;
 
   }
 
@@ -418,6 +418,9 @@ func_unit* scope_get_parent_module(
 
 /*
  $Log$
+ Revision 1.44  2008/02/22 20:39:22  phase1geo
+ More updates for exception handling.
+
  Revision 1.43  2008/02/11 14:00:09  phase1geo
  More updates for exception handling.  Regression passes.
 

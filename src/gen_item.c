@@ -449,22 +449,30 @@ char* gen_item_calc_signal_name(
   ptr      = tmpname;
   new_name = strdup_safe( "" );
 
-  do {
-    gen_item_get_genvar( tmpname, &pre, &genvar, &post );
-    if( genvar != NULL ) {
-      unsigned int rv = snprintf( intstr, 20, "%d", parse_static_expr( genvar, funit, line, no_genvars ) );
-      assert( rv < 20 );
-      new_name = (char*)realloc( new_name, (strlen( new_name ) + strlen( pre ) + strlen( intstr ) + 3) );
-      strncat( new_name, pre, strlen( pre ) );
-      strncat( new_name, "[", 1 );
-      strncat( new_name, intstr, strlen( intstr ) );
-      strncat( new_name, "]", 1 );
-      tmpname = post;
-    } else {
-      new_name = (char*)realloc( new_name, (strlen( new_name ) + strlen( pre ) + 1) );
-      strncat( new_name, pre, strlen( pre ) );
-    }
-  } while( genvar != NULL );
+  Try {
+
+    do {
+      gen_item_get_genvar( tmpname, &pre, &genvar, &post );
+      if( genvar != NULL ) {
+        unsigned int rv = snprintf( intstr, 20, "%d", parse_static_expr( genvar, funit, line, no_genvars ) );
+        assert( rv < 20 );
+        new_name = (char*)realloc( new_name, (strlen( new_name ) + strlen( pre ) + strlen( intstr ) + 3) );
+        strncat( new_name, pre, strlen( pre ) );
+        strncat( new_name, "[", 1 );
+        strncat( new_name, intstr, strlen( intstr ) );
+        strncat( new_name, "]", 1 );
+        tmpname = post;
+      } else {
+        new_name = (char*)realloc( new_name, (strlen( new_name ) + strlen( pre ) + 1) );
+        strncat( new_name, pre, strlen( pre ) );
+      }
+    } while( genvar != NULL );
+
+  } Catch_anonymous {
+    free_safe( ptr );
+    free_safe( new_name );
+    Throw 0;
+  }
 
   /* Deallocate memory */
   free_safe( ptr );
@@ -1172,6 +1180,9 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) { PROFILE(GEN_ITEM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.53  2008/01/30 05:51:50  phase1geo
+ Fixing doxygen errors.  Updated parameter list syntax to make it more readable.
+
  Revision 1.52  2008/01/16 06:40:37  phase1geo
  More splint updates.
 

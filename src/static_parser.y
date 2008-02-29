@@ -344,7 +344,7 @@ int parse_static_expr(
 
   /* Call the parser */
   if( SEparse() != 0 ) {
-    exit( EXIT_FAILURE );
+    Throw 0;
   }
 
   return( se_value );

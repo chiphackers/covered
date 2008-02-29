@@ -1120,7 +1120,7 @@ void reset_lexer( str_link* file_list_head ) { PROFILE(RESET_LEXER);
 
   if( (curr = get_next_vfile( curr, modlist_head->str )) == NULL ) {
     print_output( "No verilog files specified", FATAL, __FILE__, __LINE__ );
-    exit( EXIT_FAILURE );
+    Throw 0;
   }
 
   assert( curr->str != NULL );
@@ -1138,12 +1138,20 @@ void reset_lexer( str_link* file_list_head ) { PROFILE(RESET_LEXER);
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to open temporary file %s for writing", ppfilename );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    exit( EXIT_FAILURE );
+    Throw 0;
   }
   
-  /* Now the preprocessor on this file first */
-  reset_pplexer( curr->str, out );
-  (void)PPVLlex();
+  Try {
+
+    /* Now run the preprocessor on this file first */
+    reset_pplexer( curr->str, out );
+    (void)PPVLlex();
+
+  } Catch_anonymous {
+    rv = fclose( out );
+    assert( rv == 0 );
+    Throw 0;
+  }
   
   rv = fclose( out );
   assert( rv == 0 );

@@ -581,7 +581,7 @@ static void do_include() { PROFILE(DO_INCLUDE);
       rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to find `include file \"%s\" in include path", obf_file( standby->path ) );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      exit( EXIT_FAILURE );
+      Throw 0;
     }
 
   }
@@ -678,7 +678,7 @@ void reset_pplexer( char* filename, FILE* out ) { PROFILE(RESET_PPLEXER);
 
   if( isp->file == 0 ) {
     perror( isp->path );
-    exit( EXIT_FAILURE );
+    Throw 0;
   }
 
   yyout = out;

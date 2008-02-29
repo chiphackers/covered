@@ -157,77 +157,84 @@ void lxt_parse( char* lxt_file ) { PROFILE(LXT_PARSE);
     curr_inst_scope[0]   = (char*)malloc_safe( 4096 );
     curr_inst_scope_size = 1;
 
-    /* Get symbol information */
-    for( i=0; i<numfacs; i++ ) {
+    Try {
 
-      g       = lxt2_rd_get_fac_geometry( lt, i );
-      newindx = lxt2_rd_get_alias_root( lt, i );
+      /* Get symbol information */
+      for( i=0; i<numfacs; i++ ) {
 
-      /* Extract scope and net name from facility name */
-      scope_extract_back( lxt2_rd_get_facname( lt, i ), netname, curr_inst_scope[0] );
-      db_sync_curr_instance();
+        g       = lxt2_rd_get_fac_geometry( lt, i );
+        newindx = lxt2_rd_get_alias_root( lt, i );
 
-      if( g->flags & LXT2_RD_SYM_F_DOUBLE ) {
+        /* Extract scope and net name from facility name */
+        scope_extract_back( lxt2_rd_get_facname( lt, i ), netname, curr_inst_scope[0] );
+        db_sync_curr_instance();
 
-        /* We ignore real values at the moment */
+        if( g->flags & LXT2_RD_SYM_F_DOUBLE ) {
 
-      } else if( g->flags & LXT2_RD_SYM_F_STRING ) {
+          /* We ignore real values at the moment */
 
-        /* We ignore string values at the moment */
+        } else if( g->flags & LXT2_RD_SYM_F_STRING ) {
 
-      } else {
+          /* We ignore string values at the moment */
 
-        if( g->len == 1 ) {
-          if( (g->msb != -1) && (g->msb != 0) ) {
-            db_assign_symbol( netname, vcdid( newindx ), g->msb, g->msb );
-          } else {
-            db_assign_symbol( netname, vcdid( newindx ), 0, 0 );
-          }
         } else {
-          db_assign_symbol( netname, vcdid( newindx ), ((g->lsb > g->msb) ? g->lsb : g->msb), ((g->lsb > g->msb) ? g->msb : g->lsb) );
+
+          if( g->len == 1 ) {
+            if( (g->msb != -1) && (g->msb != 0) ) {
+              db_assign_symbol( netname, vcdid( newindx ), g->msb, g->msb );
+            } else {
+              db_assign_symbol( netname, vcdid( newindx ), 0, 0 );
+            }
+          } else {
+            db_assign_symbol( netname, vcdid( newindx ), ((g->lsb > g->msb) ? g->lsb : g->msb), ((g->lsb > g->msb) ? g->msb : g->lsb) );
+          }
+
         }
 
       }
 
-    }
+      /* Check to see that at least one instance was found */
+      if( !one_instance_found ) {
 
-    /* Check to see that at least one instance was found */
-    if( !one_instance_found ) {
+        print_output( "No instances were found in specified VCD file that matched design", FATAL, __FILE__, __LINE__ );
 
-      print_output( "No instances were found in specified VCD file that matched design", FATAL, __FILE__, __LINE__ );
+        /* If the -i option was not specified, let the user know */
+        if( !instance_specified ) {
+          print_output( "  Please use -i option to specify correct hierarchy to top-level module to score",
+                        FATAL, __FILE__, __LINE__ );
+        } else {
+          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "  Incorrect hierarchical path specified in -i option: %s", top_instance );
+          assert( rv < USER_MSG_LENGTH );
+          print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        }
 
-      /* If the -i option was not specified, let the user know */
-      if( !instance_specified ) {
-        print_output( "  Please use -i option to specify correct hierarchy to top-level module to score",
-                      FATAL, __FILE__, __LINE__ );
-      } else {
-        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "  Incorrect hierarchical path specified in -i option: %s", top_instance );
-        assert( rv < USER_MSG_LENGTH );
-        print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        Throw 0;
+
       }
 
-      exit( EXIT_FAILURE );
+      /* Create timestep symbol table array */
+      if( vcd_symtab_size > 0 ) {
+        timestep_tab = malloc_safe_nolimit( sizeof( symtable*) * vcd_symtab_size );
+      }
 
-    }
+      /* Perform simulation */
+      (void)lxt2_rd_iter_blocks( lt, vcd_callback, NULL );
 
-    /* Create timestep symbol table array */
-    if( vcd_symtab_size > 0 ) {
-      timestep_tab = malloc_safe_nolimit( sizeof( symtable*) * vcd_symtab_size );
-    }
+      /* Perform last simulation if necessary */
+      if( vcd_prevtime_valid ) {
+        (void)db_do_timestep( vcd_prevtime, FALSE );
+      }
 
-    /* Perform simulation */
-    (void)lxt2_rd_iter_blocks( lt, vcd_callback, NULL );
-
-    /* Perform last simulation if necessary */
-    if( vcd_prevtime_valid ) {
-      (void)db_do_timestep( vcd_prevtime, FALSE );
+    } Catch_anonymous {
+      symtable_dealloc( vcd_symtab );
+      free_safe( timestep_tab );
+      lxt2_rd_close( lt );
+      Throw 0;
     }
 
     /* Deallocate memory */
     symtable_dealloc( vcd_symtab );
-    if( timestep_tab != NULL ) {
-      free_safe( timestep_tab );
-    }
+    free_safe( timestep_tab );
 
     /* Close LXT file */
     lxt2_rd_close( lt );
@@ -235,7 +242,7 @@ void lxt_parse( char* lxt_file ) { PROFILE(LXT_PARSE);
   } else {
 
     print_output( "Unable to read data from LXT dumpfile.  Exiting without scoring.", FATAL, __FILE__, __LINE__ );
-    exit( EXIT_FAILURE );
+    Throw 0;
 
   }
 
@@ -243,6 +250,9 @@ void lxt_parse( char* lxt_file ) { PROFILE(LXT_PARSE);
 
 /*
  $Log$
+ Revision 1.19  2008/02/27 05:26:51  phase1geo
+ Adding support for $finish and $stop.
+
  Revision 1.18  2008/01/23 04:05:19  phase1geo
  Fixing LXT regressions.  Added code to regression Makefile to remove certain
  diagnostics from being run in LXT regression due to the apparent inability for
