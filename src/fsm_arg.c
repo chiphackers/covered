@@ -218,7 +218,7 @@ static expression* fsm_arg_parse_state(
 
   /* Create statement for top-level expression, this statement will work like a continuous assignment */
   if( !error ) {
-    stmt = statement_create( expl );
+    stmt = statement_create( expl, NULL );
     stmt->suppl.part.head       = 1;
     stmt->suppl.part.stop_true  = 1;
     stmt->suppl.part.stop_false = 1;
@@ -648,6 +648,11 @@ void fsm_arg_parse_attr(
 
 /*
  $Log$
+ Revision 1.42  2008/02/25 18:22:16  phase1geo
+ Moved statement supplemental bits from root expression to statement and starting
+ to add support for race condition checking pragmas (still some work left to do
+ on this item).  Updated IV and Cver regressions per these changes.
+
  Revision 1.41  2008/02/22 20:39:22  phase1geo
  More updates for exception handling.
 

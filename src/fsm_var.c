@@ -286,6 +286,9 @@ static bool fsm_var_bind_stmt(
     /* Second, add our statement to this functional unit's statement list */
     stmt_link_add_head( stmt, &(funitl->funit->stmt_head), &(funitl->funit->stmt_tail) );
 
+    /* Third, add the functional unit to this statement's pointer */
+    stmt->funit = funitl->funit;
+
     /* Finally, create the new FSM if we are the output state */
     if( (fv = fsm_var_is_output_state( stmt->exp )) != NULL ) {
       fv->table       = fsm_create( fv->ivar, fv->ovar, fv->exclude );
@@ -495,6 +498,11 @@ void fsm_var_remove(
 
 /*
  $Log$
+ Revision 1.38  2008/02/25 18:22:16  phase1geo
+ Moved statement supplemental bits from root expression to statement and starting
+ to add support for race condition checking pragmas (still some work left to do
+ on this item).  Updated IV and Cver regressions per these changes.
+
  Revision 1.37  2008/02/22 20:39:22  phase1geo
  More updates for exception handling.
 

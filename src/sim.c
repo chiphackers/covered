@@ -161,16 +161,6 @@ static thread* delayed_head = NULL;
 static thread* delayed_tail = NULL;
 
 /*!
- Pointer to head of waiting thread list.
-*/ 
-static thread* waiting_head = NULL;
-
-/*!
- Pointer to tail of waiting thread list.
-*/ 
-static thread* waiting_tail = NULL;
-
-/*!
  List of thread state string names.
 */
 static const char* thread_state_str[4] = {"NONE", "ACTIVE", "DELAYED", "WAITING"};
@@ -193,7 +183,11 @@ static bool force_stop = FALSE;
 
  Displays the contents of the given thread to standard output.
 */
-static void sim_display_thread( thread* thr, bool show_queue, bool endl ) {
+void sim_display_thread(
+  const thread* thr,
+  bool          show_queue,
+  bool          endl
+) {
 
   if( !endl ) {
     printf( "    " );
@@ -270,15 +264,6 @@ void sim_display_delay_queue() {
 }
 
 /*!
- Displays the current state of the waiting queue (for debug purposes only).
-*/
-void sim_display_wait_queue() {
-
-  sim_display_queue( waiting_head, waiting_tail );
-
-}
-
-/*!
  Displays the current state of the all_threads list (for debug purposes only).
 */
 void sim_display_all_list() {
@@ -347,20 +332,6 @@ static void sim_thread_pop_head() { PROFILE(SIM_THREAD_POP_HEAD);
   } else {
     thr->suppl.part.state      = THR_ST_WAITING;
     thr->suppl.part.exec_first = 1; 
-  }
-
-  /* If the current state is waiting, place this thread in the waiting queue */
-  if( thr->suppl.part.state == THR_ST_WAITING ) {
-    if( waiting_head == NULL ) {
-      waiting_head = waiting_tail = thr;
-      thr->queue_prev = NULL;
-      thr->queue_next = NULL;
-    } else {
-      thr->queue_prev          = waiting_tail;
-      thr->queue_next          = NULL;
-      waiting_tail->queue_next = thr;
-      waiting_tail             = thr;
-    }
   }
 
 #ifdef DEBUG_MODE
@@ -486,20 +457,6 @@ void sim_thread_push(
   }
 #endif
 
-  /* Remove the thread from the waiting queue */
-  if( waiting_head == waiting_tail ) {
-    waiting_head = waiting_tail = NULL;
-  } else if( thr == waiting_head ) {
-    waiting_head = thr->queue_next;
-    waiting_head->queue_prev = NULL;
-  } else if( thr == waiting_tail ) {
-    waiting_tail = thr->queue_prev;
-    waiting_tail->queue_next = NULL;
-  } else {
-    thr->queue_prev->queue_next = thr->queue_next;
-    thr->queue_next->queue_prev = thr->queue_prev;
-  }
-
   /* Set the state to ACTIVE */
   thr->suppl.part.state = THR_ST_ACTIVE;
 
@@ -601,32 +558,9 @@ void sim_expr_changed( expression* expr, const sim_time* time ) { PROFILE(SIM_EX
      Otherwise, if we have hit the root expression and the parent pointer is valid, add 
      this statement (if it is the head) back onto the active queue.
     */
-    } else if( expr->parent->expr != NULL ) { PROFILE(SIM_EXPR_CHANGED_B);
+    } else if( expr->parent->expr != NULL ) {
 
-      funit_push_threads( expr->parent->stmt->funit, time );
-
-#ifdef OBSOLETE
-      thread* thr = waiting_head;  /* Pointer to current thread */
-//      unsigned num_in_wait = 0;
-//      unsigned num_pushed  = 0;
-
-      //printf( "Waiting list:\n" );
-      //sim_display_wait_queue();
-
-      while( thr != NULL ) {
-//        num_in_wait++;
-//        printf( "thr->curr: %p, expr->parent->stmt: %p\n", thr->curr, expr->parent->stmt );
-        if( thr->curr == expr->parent->stmt ) {
-          //num_pushed++;
-          sim_thread_push( thr, time );
-        }
-        thr = thr->queue_next;
-      }
-
-      //printf( "TIME: %lld, num in waiting queue: %d, num pushed: %d\n", time->full, num_in_wait, num_pushed );
-#endif
-
-      PROFILE_END;
+      funit_push_threads( expr->parent->stmt->funit, expr->parent->stmt, time );
 
     }
 
@@ -845,8 +779,6 @@ static void sim_kill_thread( thread* thr ) { PROFILE(SIM_KILL_THREAD);
 
     /* If we are the last child, re-insert the parent in our place (setting active_head to the parent) */
     if( thr->parent->active_children == 0 ) {
-
-      /* If the parent was sitting in the waiting queue, remove it */
       thr->parent->queue_next = thr->queue_next;
       if( thr->queue_next == NULL ) {
         active_tail = thr->parent;
@@ -874,7 +806,7 @@ static void sim_kill_thread( thread* thr ) { PROFILE(SIM_KILL_THREAD);
 
   }
 
-  /* Check to make sure that the thread is not in the waiting queue */
+  /* Check to make sure that the thread is not in the waiting state */
   assert( thr->suppl.part.state != THR_ST_WAITING );
 
   /* Remove this thread from its functional unit */
@@ -1281,6 +1213,10 @@ void sim_dealloc() { PROFILE(SIM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.122  2008/02/28 07:54:09  phase1geo
+ Starting to add functionality for simulation optimization in the sim_expr_changed
+ function (feature request 1897410).
+
  Revision 1.121  2008/02/27 05:26:51  phase1geo
  Adding support for $finish and $stop.
 

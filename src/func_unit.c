@@ -1127,7 +1127,7 @@ void funit_add_thread(
       tlist->head->next = tlist->tail;
 
       /* Specify the next pointer to be NULL (to indicate that there aren't any available thread links to use) */
-      funit->elem.tlist->next = NULL;
+      tlist->next = NULL;
     
       /* Repopulate the functional unit */
       funit->elem.tlist = tlist;
@@ -1171,20 +1171,21 @@ void funit_add_thread(
  Adds all of the given functional unit threads to the active simulation queue.
 */
 void funit_push_threads(
-  func_unit*      funit,
-  const sim_time* time
+  func_unit*       funit,
+  const statement* stmt,
+  const sim_time*  time
 ) { PROFILE(FUNIT_PUSH_THREADS);
 
   assert( funit != NULL );
 
   if( funit->elem_type == 0 ) {
-    if( funit->elem.thr->suppl.part.state == THR_ST_WAITING ) {
+    if( (funit->elem.thr != NULL) && (funit->elem.thr->suppl.part.state == THR_ST_WAITING) && (funit->elem.thr->curr == stmt) ) {
       sim_thread_push( funit->elem.thr, time );
     }
   } else {
     thr_link* curr = funit->elem.tlist->head;
     while( (curr != NULL) && (curr->thr != NULL) ) {
-      if( curr->thr->suppl.part.state == THR_ST_WAITING ) {
+      if( (curr->thr != NULL) && (curr->thr->suppl.part.state == THR_ST_WAITING) && (curr->thr->curr == stmt) ) {
         sim_thread_push( curr->thr, time );
       }
       curr = curr->next;
@@ -1386,6 +1387,10 @@ void funit_dealloc( func_unit* funit ) { PROFILE(FUNIT_DEALLOC);
 
 /*
  $Log$
+ Revision 1.92  2008/02/28 07:54:09  phase1geo
+ Starting to add functionality for simulation optimization in the sim_expr_changed
+ function (feature request 1897410).
+
  Revision 1.91  2008/02/25 18:22:16  phase1geo
  Moved statement supplemental bits from root expression to statement and starting
  to add support for race condition checking pragmas (still some work left to do

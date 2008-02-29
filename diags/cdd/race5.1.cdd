@@ -1,5 +1,5 @@
 5 c 1 * 0
-8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd race5.1.vcd -o race5.1.cdd -v race5.1.v -rP -D DUMP
+8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd race5.1.vcd -o race5.1.cdd -v race5.1.v -rP -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" race5.1.v 11 45 1
 2 1 17 8000c 1 3d 5002 0 0 1 34 2 $u0
@@ -7,7 +7,7 @@
 1 a 13 3000a 1 0 3 0 4 33 21aa
 1 b 13 83000d 1 0 3 0 4 33 13aa
 1 clk 14 83000a 1 0 0 0 1 33 1102
-4 1 101 0 0
+4 1 81 0 0
 4 2 1 0 0
 3 1 main.$u0 "main.$u0" race5.1.v 0 23 1
 2 3 18 50008 1 0 1004 0 0 4 44 0
@@ -17,9 +17,9 @@
 2 7 19 b0011 0 2a 1000 0 0 1 34 2
 2 8 19 b0015 7 27 100a 6 7 1 34 2
 2 9 19 18001c 2 3d 5002 0 0 1 34 2 $u1
-4 9 106 8 0
-4 8 100 9 0
-4 5 111 8 8
+4 9 86 8 0
+4 8 80 9 0
+4 5 91 8 8
 3 1 main.$u0.$u1 "main.$u0.$u1" race5.1.v 0 22 1
 2 10 20 c000c 1 0 1008 0 0 32 96 1 0 0 0 0 0 0 0
 2 11 20 80008 2 1 1c 0 0 b
@@ -30,8 +30,8 @@
 2 16 21 f000f 2 1b 1008 15 0 4 34 f3aa
 2 17 21 a000a 0 1 400 0 0 a
 2 18 21 a0010 2 38 a 16 17
-4 18 100 0 0
-4 14 111 18 18
+4 18 80 0 0
+4 14 91 18 18
 3 1 main.$u2 "main.$u2" race5.1.v 0 34 1
 2 19 27 7000a 1 0 1004 0 0 1 36 0
 2 20 27 10003 0 1 400 0 0 clk

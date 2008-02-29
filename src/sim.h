@@ -27,14 +27,18 @@
 #include "defines.h"
 
 
+/*! \brief Displays the given thread to standard output (for debug purposes only). */
+void sim_display_thread(
+  const thread* thr,
+  bool          show_queue,
+  bool          endl
+);
+
 /*! \brief Displays the current state of the active queue (for debug purposes only). */
 void sim_display_active_queue();
 
 /*! \brief Displays the current state of the delay queue (for debug purposes only). */
 void sim_display_delay_queue();
-
-/*! \brief Displays the current state of the waiting queue (for debug purposes only). */
-void sim_display_wait_queue();
 
 /*! \brief Displays the state of all threads */
 void sim_display_all_list();
@@ -54,7 +58,7 @@ thread* sim_add_thread( thread* parent, statement* stmt, func_unit* funit, const
 /*! \brief Deallocates thread and removes it from parent and thread queue lists for specified functional unit */
 void sim_kill_thread_with_funit( func_unit* funit );
 
-/*! \brief Pushes given thread onto the active queue from the waiting queue */
+/*! \brief Pushes given thread onto the active queue */
 void sim_thread_push(
   thread*         thr,
   const sim_time* time
@@ -81,6 +85,10 @@ void sim_dealloc();
 
 /*
  $Log$
+ Revision 1.35  2008/02/28 07:54:09  phase1geo
+ Starting to add functionality for simulation optimization in the sim_expr_changed
+ function (feature request 1897410).
+
  Revision 1.34  2008/02/27 05:26:51  phase1geo
  Adding support for $finish and $stop.
 

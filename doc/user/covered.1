@@ -108,8 +108,8 @@ Overrides default filename used to store intermediate preprocessor output.
 \fB\-P\fR \fIparameter_scope=value\fR
 Performs a defparam on the specified parameter with value.
 .TP 
-\fB\-r(S|W|E|I)\fR
-Specifies action to take when race condition checking finds problems in design (\-rS = Silent, \-rW = Warning, \-rE = Error, \-rI = Ignore race condition checking step).
+\fB\-r(S|W|E|I|P[=\fIname\fR])\fR
+Specifies action to take when race condition checking finds problems in design (\-rS = Silent, \-rW = Warning, \-rE = Error, \-rI = Ignore race condition checking step, \-rP = Use embedded pragmas for ignoring certain code from race condition checking consideration [if \fIname\fR is specified it is used as the pragma keyword]).  See user documentation for more information about race condition checking usage.
 .TP 
 \fB\-S\fR
 Outputs simulation statistics after simulation has completed.  This information is currently only useful for the developers of Covered.

@@ -1939,7 +1939,7 @@ statement* db_create_statement( expression* exp ) { PROFILE(DB_CREATE_STATEMENT)
 #endif
 
   /* Create the given statement */
-  stmt = statement_create( exp );
+  stmt = statement_create( exp, curr_funit );
 
   /* If we are in the exclude mode, exclude this statement */
   if( exclude_mode > 0 ) {
@@ -2708,6 +2708,11 @@ bool db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.285  2008/02/28 03:53:17  phase1geo
+ Code addition to support feature request 1902840.  Added race6 diagnostic and updated
+ race5 diagnostics per this change.  For loop control assignments are now no longer
+ considered when performing race condition checking.
+
  Revision 1.284  2008/02/27 05:26:51  phase1geo
  Adding support for $finish and $stop.
 

@@ -134,7 +134,10 @@ static stmt_loop_link* stmt_loop_tail = NULL;
  Creates a new statement structure from heap memory and initializes it with the
  specified parameter information.
 */
-statement* statement_create( expression* exp ) { PROFILE(STATEMENT_CREATE);
+statement* statement_create(
+  expression* exp,
+  func_unit*  funit
+) { PROFILE(STATEMENT_CREATE);
 
   statement* stmt;  /* Pointer to newly created statement */
 
@@ -145,6 +148,7 @@ statement* statement_create( expression* exp ) { PROFILE(STATEMENT_CREATE);
   stmt->next_false        = NULL;
   stmt->conn_id           = 0;
   stmt->suppl.all         = 0;
+  stmt->funit             = funit;
 
   PROFILE_END;
 
@@ -432,7 +436,7 @@ void statement_db_read( char** line, func_unit* curr_funit, int read_mode ) { PR
       expl = exp_link_find( id, curr_funit->exp_head );
       assert( expl != NULL );
 
-      stmt = statement_create( expl->exp );
+      stmt = statement_create( expl->exp, curr_funit );
       stmt->suppl.all = suppl;
 
       /*
@@ -956,6 +960,10 @@ void statement_dealloc( statement* stmt ) { PROFILE(STATEMENT_DEALLOC);
 
 /*
  $Log$
+ Revision 1.126  2008/02/28 07:54:09  phase1geo
+ Starting to add functionality for simulation optimization in the sim_expr_changed
+ function (feature request 1897410).
+
  Revision 1.125  2008/02/25 20:43:49  phase1geo
  Checking in code to allow the use of racecheck pragmas.  Added new tests to
  regression suite to verify this functionality.  Still need to document in

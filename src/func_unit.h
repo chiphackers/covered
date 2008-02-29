@@ -103,8 +103,9 @@ void funit_add_thread(
 
 /*! \brief Pushes the threads associated with the given functional unit onto the active simulation queue */
 void funit_push_threads(
-  func_unit*      funit,
-  const sim_time* time
+  func_unit*       funit,
+  const statement* stmt,
+  const sim_time*  time
 );
 
 /*! \brief Removes given thread from the given functional unit's thread pointer/thread pointer list */
@@ -119,6 +120,10 @@ void funit_dealloc( func_unit* funit );
 
 /*
  $Log$
+ Revision 1.35  2008/02/28 07:54:09  phase1geo
+ Starting to add functionality for simulation optimization in the sim_expr_changed
+ function (feature request 1897410).
+
  Revision 1.34  2008/02/09 19:32:45  phase1geo
  Completed first round of modifications for using exception handler.  Regression
  passes with these changes.  Updated regressions per these changes.

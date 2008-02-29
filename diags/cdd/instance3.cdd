@@ -1,5 +1,5 @@
 5 c 1 * 0
-8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd instance3.vcd -o instance3.cdd -v instance3.v -rP -D DUMP
+8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd instance3.vcd -o instance3.cdd -v instance3.v -rP -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" instance3.v 1 12 1
 3 0 foo "main.bar" instance3.v 14 35 1
@@ -25,7 +25,7 @@
 4 7 f 7 7
 4 14 6 10 10
 4 10 1 14 0
-4 15 101 0 0
+4 15 81 0 0
 3 1 foo.$u1 "main.bar.$u1" instance3.v 0 32 1
 2 16 25 50008 1 0 1004 0 0 1 36 0
 2 17 25 10001 0 1 400 0 0 b
@@ -44,11 +44,11 @@
 2 30 30 20002 1 0 1008 0 0 32 96 11 0 0 0 0 0 0 0
 2 31 30 10002 2 2c 900a 30 0 32 34 aa aa aa aa aa aa aa aa
 2 32 0 0 1 5a 1002 0 0 1 34 2
-4 32 100 0 0
-4 31 100 32 0
-4 29 100 31 31
-4 26 100 29 0
-4 24 100 26 26
-4 21 100 24 24
-4 18 111 21 21
+4 32 80 0 0
+4 31 80 32 0
+4 29 80 31 31
+4 26 80 29 0
+4 24 80 26 26
+4 21 80 24 24
+4 18 91 21 21
 3 1 main.$u0 "main.$u0" instance3.v 0 10 1
