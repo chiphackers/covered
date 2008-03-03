@@ -512,10 +512,15 @@ description
     list_of_variables ';'
   | K_task automatic_opt IDENTIFIER ';'
     {
-      if( ignore_mode == 0 ) {
-        if( !db_add_function_task_namedblock( ($2 ? FUNIT_ATASK : FUNIT_TASK), $3, @3.text, @3.first_line ) ) {
-          ignore_mode++;
+      Try {
+        if( ignore_mode == 0 ) {
+          if( !db_add_function_task_namedblock( ($2 ? FUNIT_ATASK : FUNIT_TASK), $3, @3.text, @3.first_line ) ) {
+            ignore_mode++;
+          }
         }
+      } Catch_anonymous {
+        free_safe( $3 );
+        Throw 0;
       }
       free_safe( $3 );
     }
@@ -539,10 +544,15 @@ description
   | K_function automatic_opt signed_opt range_or_type_opt IDENTIFIER ';'
     {
       if( ignore_mode == 0 ) {
-        if( db_add_function_task_namedblock( ($2 ? FUNIT_AFUNCTION : FUNIT_FUNCTION), $5, @5.text, @5.first_line ) ) {
-          db_add_signal( $5, SSUPPL_TYPE_IMPLICIT, &curr_prange, NULL, curr_signed, FALSE, @5.first_line, @5.first_column, TRUE );
-        } else {
-          ignore_mode++;
+        Try {
+          if( db_add_function_task_namedblock( ($2 ? FUNIT_AFUNCTION : FUNIT_FUNCTION), $5, @5.text, @5.first_line ) ) {
+            db_add_signal( $5, SSUPPL_TYPE_IMPLICIT, &curr_prange, NULL, curr_signed, FALSE, @5.first_line, @5.first_column, TRUE );
+          } else {
+            ignore_mode++;
+          }
+        } Catch_anonymous {
+          free_safe( $5 );
+          Throw 0;
         }
         free_safe( $5 );
       }
@@ -1048,7 +1058,13 @@ static_expr_primary
       if( ignore_mode == 0 ) {
         tmp = (static_expr*)malloc_safe( sizeof( static_expr ) );
         if( vector_is_unknown( $1 ) ) {
-          tmp->exp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+          Try {
+            tmp->exp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+          } Catch_anonymous {
+            free_safe( tmp );
+            vector_dealloc( $1 );
+            Throw 0;
+          }
           vector_dealloc( tmp->exp->value );
           tmp->exp->value = $1;
         } else {
@@ -1079,7 +1095,13 @@ static_expr_primary
       if( ignore_mode == 0 ) {
         tmp = (static_expr*)malloc_safe( sizeof( static_expr ) );
         tmp->num = -1;
-        tmp->exp = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
+        Try {
+          tmp->exp = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
+        } Catch_anonymous {
+          free_safe( tmp );
+          free_safe( $1 );
+          Throw 0;
+        }
         free_safe( $1 );
         $$ = tmp;
       } else {
@@ -1301,7 +1323,13 @@ expression
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp = db_create_expression( $3, $1, EXP_OP_XOR, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        Try {
+          tmp = db_create_expression( $3, $1, EXP_OP_XOR, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        } Catch_anonymous {
+          expression_dealloc( $1, FALSE );
+          expression_dealloc( $3, FALSE );
+          Throw 0;
+        }
         $$ = tmp;
       } else {
         expression_dealloc( $1, FALSE );
@@ -1313,7 +1341,13 @@ expression
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp = db_create_expression( $3, $1, EXP_OP_MULTIPLY, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        Try {
+          tmp = db_create_expression( $3, $1, EXP_OP_MULTIPLY, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        } Catch_anonymous {
+          expression_dealloc( $1, FALSE );
+          expression_dealloc( $3, FALSE );
+          Throw 0;
+        }
         $$ = tmp;
       } else {
         expression_dealloc( $1, FALSE );
@@ -1325,7 +1359,13 @@ expression
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp = db_create_expression( $3, $1, EXP_OP_DIVIDE, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        Try {
+          tmp = db_create_expression( $3, $1, EXP_OP_DIVIDE, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        } Catch_anonymous {
+          expression_dealloc( $1, FALSE );
+          expression_dealloc( $3, FALSE );
+          Throw 0;
+        }
         $$ = tmp;
       } else {
         expression_dealloc( $1, FALSE );
@@ -1337,7 +1377,13 @@ expression
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp = db_create_expression( $3, $1, EXP_OP_MOD, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        Try {
+          tmp = db_create_expression( $3, $1, EXP_OP_MOD, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        } Catch_anonymous {
+          expression_dealloc( $1, FALSE );
+          expression_dealloc( $3, FALSE );
+          Throw 0;
+        }
         $$ = tmp;
       } else {
         expression_dealloc( $1, FALSE );
@@ -1349,7 +1395,13 @@ expression
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp = db_create_expression( $3, $1, EXP_OP_ADD, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        Try {
+          tmp = db_create_expression( $3, $1, EXP_OP_ADD, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        } Catch_anonymous {
+          expression_dealloc( $1, FALSE );
+          expression_dealloc( $3, FALSE );
+          Throw 0;
+        }
         $$ = tmp;
       } else {
         expression_dealloc( $1, FALSE );
@@ -1361,7 +1413,13 @@ expression
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp = db_create_expression( $3, $1, EXP_OP_SUBTRACT, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        Try {
+          tmp = db_create_expression( $3, $1, EXP_OP_SUBTRACT, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        } Catch_anonymous {
+          expression_dealloc( $1, FALSE );
+          expression_dealloc( $3, FALSE );
+          Throw 0;
+        }
         $$ = tmp;
       } else {
         expression_dealloc( $1, FALSE );
@@ -1379,7 +1437,13 @@ expression
         $$ = NULL;
       } else {
         if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-          tmp = db_create_expression( $3, $1, EXP_OP_EXPONENT, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+          Try {
+            tmp = db_create_expression( $3, $1, EXP_OP_EXPONENT, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+          } Catch_anonymous {
+            expression_dealloc( $1, FALSE );
+            expression_dealloc( $3, FALSE );
+            Throw 0;
+          }
           $$ = tmp;
         } else {
           expression_dealloc( $1, FALSE );
@@ -1392,7 +1456,13 @@ expression
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp = db_create_expression( $3, $1, EXP_OP_AND, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        Try {
+          tmp = db_create_expression( $3, $1, EXP_OP_AND, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        } Catch_anonymous {
+          expression_dealloc( $1, FALSE );
+          expression_dealloc( $3, FALSE );
+          Throw 0;
+        }
         $$ = tmp;
       } else {
         expression_dealloc( $1, FALSE );
@@ -1404,7 +1474,13 @@ expression
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp = db_create_expression( $3, $1, EXP_OP_OR, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        Try {
+          tmp = db_create_expression( $3, $1, EXP_OP_OR, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        } Catch_anonymous {
+          expression_dealloc( $1, FALSE );
+          expression_dealloc( $3, FALSE );
+          Throw 0;
+        }
         $$ = tmp;
       } else {
         expression_dealloc( $1, FALSE );
@@ -1416,7 +1492,13 @@ expression
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp = db_create_expression( $3, $1, EXP_OP_NAND, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        Try {
+          tmp = db_create_expression( $3, $1, EXP_OP_NAND, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        } Catch_anonymous {
+          expression_dealloc( $1, FALSE );
+          expression_dealloc( $3, FALSE );
+          Throw 0;
+        }
         $$ = tmp;
       } else {
         expression_dealloc( $1, FALSE );
@@ -1428,7 +1510,13 @@ expression
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp = db_create_expression( $3, $1, EXP_OP_NOR, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        Try {
+          tmp = db_create_expression( $3, $1, EXP_OP_NOR, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        } Catch_anonymous {
+          expression_dealloc( $1, FALSE );
+          expression_dealloc( $3, FALSE );
+          Throw 0;
+        }
         $$ = tmp;
       } else {
         expression_dealloc( $1, FALSE );
@@ -1440,7 +1528,13 @@ expression
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp = db_create_expression( $3, $1, EXP_OP_NXOR, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        Try {
+          tmp = db_create_expression( $3, $1, EXP_OP_NXOR, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        } Catch_anonymous {
+          expression_dealloc( $1, FALSE );
+          expression_dealloc( $3, FALSE );
+          Throw 0;
+        }
         $$ = tmp;
       } else {
         expression_dealloc( $1, FALSE );
@@ -1452,7 +1546,13 @@ expression
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp = db_create_expression( $3, $1, EXP_OP_LT, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        Try {
+          tmp = db_create_expression( $3, $1, EXP_OP_LT, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        } Catch_anonymous {
+          expression_dealloc( $1, FALSE );
+          expression_dealloc( $3, FALSE );
+          Throw 0;
+        }
         $$ = tmp;
       } else {
         expression_dealloc( $1, FALSE );
@@ -1464,7 +1564,13 @@ expression
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp = db_create_expression( $3, $1, EXP_OP_GT, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        Try {
+          tmp = db_create_expression( $3, $1, EXP_OP_GT, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        } Catch_anonymous {
+          expression_dealloc( $1, FALSE );
+          expression_dealloc( $3, FALSE );
+          Throw 0;
+        }
         $$ = tmp;
       } else {
         expression_dealloc( $1, FALSE );
@@ -1476,7 +1582,13 @@ expression
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp = db_create_expression( $3, $1, EXP_OP_LSHIFT, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        Try {
+          tmp = db_create_expression( $3, $1, EXP_OP_LSHIFT, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        } Catch_anonymous {
+          expression_dealloc( $1, FALSE );
+          expression_dealloc( $3, FALSE );
+          Throw 0;
+        }
         $$ = tmp;
       } else {
         expression_dealloc( $1, FALSE );
@@ -1494,7 +1606,13 @@ expression
         $$ = NULL;
       } else {
         if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-          tmp = db_create_expression( $3, $1, EXP_OP_ALSHIFT, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+          Try {
+            tmp = db_create_expression( $3, $1, EXP_OP_ALSHIFT, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+          } Catch_anonymous {
+            expression_dealloc( $1, FALSE );
+            expression_dealloc( $3, FALSE );
+            Throw 0;
+          }
           $$ = tmp;
         } else {
           expression_dealloc( $1, FALSE );
@@ -1507,7 +1625,13 @@ expression
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp = db_create_expression( $3, $1, EXP_OP_RSHIFT, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        Try {
+          tmp = db_create_expression( $3, $1, EXP_OP_RSHIFT, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        } Catch_anonymous {
+          expression_dealloc( $1, FALSE );
+          expression_dealloc( $3, FALSE );
+          Throw 0;
+        }
         $$ = tmp;
       } else {
         expression_dealloc( $1, FALSE );
@@ -1525,7 +1649,13 @@ expression
         $$ = NULL;
       } else {
         if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-          tmp = db_create_expression( $3, $1, EXP_OP_ARSHIFT, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+          Try {
+            tmp = db_create_expression( $3, $1, EXP_OP_ARSHIFT, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+          } Catch_anonymous {
+            expression_dealloc( $1, FALSE );
+            expression_dealloc( $3, FALSE );
+            Throw 0;
+          }
           $$ = tmp;
         } else {
           expression_dealloc( $1, FALSE );
@@ -3030,18 +3160,30 @@ module_item
       str_link*    tmp  = $4;
       str_link*    curr = tmp;
       param_oride* po;
-      while( curr != NULL ) {
-        while( param_oride_head != NULL ){
-          po               = param_oride_head;
-          param_oride_head = po->next;
-          db_add_override_param( curr->str, po->expr, po->name );
-          if( po->name != NULL ) {
-            free_safe( po->name );
+      Try {
+        while( curr != NULL ) {
+          while( param_oride_head != NULL ){
+            po               = param_oride_head;
+            param_oride_head = po->next;
+            db_add_override_param( curr->str, po->expr, po->name );
+            if( po->name != NULL ) {
+              free_safe( po->name );
+            }
+            free_safe( po );
           }
+          (void)db_add_instance( curr->str, $2, FUNIT_MODULE, curr->range );
+          curr = curr->next;
+        }
+      } Catch_anonymous {
+        str_link_delete_list( tmp );
+        while( param_oride_head != NULL ) {
+          po = param_oride_head;
+          param_oride_head = po->next;
+          free_safe( po->name );
           free_safe( po );
         }
-        (void)db_add_instance( curr->str, $2, FUNIT_MODULE, curr->range );
-        curr = curr->next;
+        free_safe( $2 );
+        Throw 0;
       }
       str_link_delete_list( tmp );
       param_oride_head = NULL;
@@ -3193,10 +3335,15 @@ module_item
         VLerror( "Task definition not allowed within a generate loop" );
         ignore_mode++;
       }
-      if( ignore_mode == 0 ) {
-        if( !db_add_function_task_namedblock( ($3 ? FUNIT_ATASK : FUNIT_TASK), $4, @4.text, @4.first_line ) ) {
-          ignore_mode++;
+      Try {
+        if( ignore_mode == 0 ) {
+          if( !db_add_function_task_namedblock( ($3 ? FUNIT_ATASK : FUNIT_TASK), $4, @4.text, @4.first_line ) ) {
+            ignore_mode++;
+          }
         }
+      } Catch_anonymous {
+        free_safe( $4 );
+        Throw 0;
       }
       free_safe( $4 );
       generate_top_mode--;
@@ -3227,12 +3374,17 @@ module_item
         ignore_mode++;
       }
       if( ignore_mode == 0 ) {
-        if( db_add_function_task_namedblock( ($3 ? FUNIT_AFUNCTION : FUNIT_FUNCTION), $6, @6.text, @6.first_line ) ) {
-          generate_top_mode--;
-          db_add_signal( $6, SSUPPL_TYPE_IMPLICIT, &curr_prange, NULL, curr_signed, FALSE, @6.first_line, @6.first_column, TRUE );
-          generate_top_mode++;
-        } else {
-          ignore_mode++;
+        Try {
+          if( db_add_function_task_namedblock( ($3 ? FUNIT_AFUNCTION : FUNIT_FUNCTION), $6, @6.text, @6.first_line ) ) {
+            generate_top_mode--;
+            db_add_signal( $6, SSUPPL_TYPE_IMPLICIT, &curr_prange, NULL, curr_signed, FALSE, @6.first_line, @6.first_column, TRUE );
+            generate_top_mode++;
+          } else {
+            ignore_mode++;
+          }
+        } Catch_anonymous {
+          free_safe( $6 );
+          Throw 0;
         }
         free_safe( $6 );
       }
@@ -6671,7 +6823,12 @@ inc_for_depth
       func_unit* funit = db_get_curr_funit();
       if( ignore_mode == 0 ) {
         scope = db_create_unnamed_scope();
-        assert( db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, scope, funit->filename, 0 ) );
+        Try {
+          assert( db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, scope, funit->filename, 0 ) );
+        } Catch_anonymous {
+          free_safe( scope );
+          Throw 0;
+        }
         free_safe( scope );
       }
       block_depth++;

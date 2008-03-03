@@ -1014,7 +1014,7 @@ static int yywrap() { PROFILE(LEXER_YYWRAP);
   FILE*        out;
   tnode*       node;
   unsigned int rv;
-  
+
   /* Close input file */
   if( yyin != 0 ) {
     rv = fclose( yyin );
@@ -1071,16 +1071,24 @@ static int yywrap() { PROFILE(LEXER_YYWRAP);
     }
     rv = unlink( ppfilename );
     assert( rv == 0 );
-    exit( EXIT_FAILURE );
+    Throw 0;
   }
   
   /* Create temporary output filename */
   out = fopen( ppfilename, "w" );
   assert( out != NULL );
   
-  /* Now run the preprocessor on this file first */
-  reset_pplexer( fname, out );
-  (void)PPVLlex();
+  Try {
+
+    /* Now run the preprocessor on this file first */
+    reset_pplexer( fname, out );
+    (void)PPVLlex();
+
+  } Catch_anonymous {
+    rv = fclose( out );
+    assert( rv == 0 );
+    Throw 0;
+  }
   
   rv = fclose( out );
   assert( rv == 0 );

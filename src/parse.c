@@ -51,6 +51,9 @@ extern sig_range curr_prange;
 extern sig_range curr_urange;
 extern bool      instance_specified;
 extern char*     top_module;
+extern FILE*     VLin;
+extern FILE*     VLout;
+extern char*     ppfilename;
 
 /*!
  \param file  Pointer to file to read
@@ -100,11 +103,26 @@ void parse_design( char* top, char* output_db ) { PROFILE(PARSE_DESIGN);
 
     if( use_files_head != NULL ) {
 
+      int parser_ret;
+
       /* Initialize lexer with first file */
       reset_lexer( use_files_head );
 
-      /* Starting parser */
-      if( (VLparse() != 0) || (error_count > 0) ) {
+      /* Parse the design -- if we catch an exception, remove the temporary ppfilename */
+      Try {
+        parser_ret = VLparse();
+      } Catch_anonymous {
+        unsigned int rv;
+        rv = fclose( VLin );
+        assert( rv == 0 );
+        rv = fclose( VLout );
+        assert( rv == 0 );
+        rv = unlink( ppfilename );
+        assert( rv == 0 );
+        Throw 0;
+      }
+     
+      if( (parser_ret != 0) || (error_count > 0) ) {
         print_output( "Error in parsing design", FATAL, __FILE__, __LINE__ );
         Throw 0;
       }
@@ -269,6 +287,10 @@ void parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) { PROF
 
 /*
  $Log$
+ Revision 1.56  2008/02/08 23:58:07  phase1geo
+ Starting to work on exception handling.  Much work to do here (things don't
+ compile at the moment).
+
  Revision 1.55  2008/01/16 23:10:31  phase1geo
  More splint updates.  Code is now warning/error free with current version
  of run_splint.  Still have regression issues to debug.

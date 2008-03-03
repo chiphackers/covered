@@ -666,6 +666,8 @@ func_unit* db_get_curr_funit() { PROFILE(DB_GET_CURR_FUNIT);
 
  \return Returns a pointer to the created functional unit if the instance was added to the hierarchy;
          otherwise, returns NULL.
+
+ \throw error Anonymous
  
  Creates a new functional unit node with the instantiation name, search for matching functional unit.  If
  functional unit hasn't been created previously, create it now without a filename associated (NULL).
@@ -714,7 +716,7 @@ func_unit* db_add_instance( char* scope, char* name, int type, vector_width* ran
                                   scope, obf_funit( curr_funit->name ), obf_file( curr_funit->filename ) );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      exit( EXIT_FAILURE );
+      Throw 0;
     }
 
     /* If we are currently within a generate block, create a generate item for this instance to resolve it later */
@@ -846,6 +848,11 @@ void db_end_module( int end_line ) { PROFILE(DB_END_MODULE);
 
  \return Returns TRUE if the new functional unit was added to the design; otherwise, returns FALSE
          to indicate that this block should be ignored.
+
+ \throws error Anonymous
+
+ Creates a new function, task or named block scope and adds it to the instance tree.  Also sets the curr_funit global
+ pointer to point to this new functional unit.
 */
 bool db_add_function_task_namedblock( int type, char* name, char* file, int start_line ) { PROFILE(DB_ADD_FUNCTION_TASK_NAMEDBLOCK);
 
@@ -868,37 +875,44 @@ bool db_add_function_task_namedblock( int type, char* name, char* file, int star
   /* Generate full name to use for the function/task */
   full_name = funit_gen_task_function_namedblock_name( name, curr_funit );
 
-  /* Add this as an instance so we can get scope */
-  if( (tf = db_add_instance( name, full_name, type, NULL )) != NULL ) {
+  Try {
 
-    /* Get parent */
-    parent = funit_get_curr_module( curr_funit );
+    /* Add this as an instance so we can get scope */
+    if( (tf = db_add_instance( name, full_name, type, NULL )) != NULL ) {
 
-    if( generate_expr_mode > 0 ) {
-      /* Change the recently created instance generate item to a TFN item */
-      last_gi->suppl.part.type = GI_TYPE_TFN;
-    } else {
-      /* Store this functional unit in the parent module list */
-      funit_link_add( tf, &(parent->tf_head), &(parent->tf_tail) );
-    }
+      /* Get parent */
+      parent = funit_get_curr_module( curr_funit );
 
-    /* Set our parent pointer to the current functional unit */
-    tf->parent = curr_funit;
+      if( generate_expr_mode > 0 ) {
+        /* Change the recently created instance generate item to a TFN item */
+        last_gi->suppl.part.type = GI_TYPE_TFN;
+      } else {
+        /* Store this functional unit in the parent module list */
+        funit_link_add( tf, &(parent->tf_head), &(parent->tf_tail) );
+      }
 
-    /* If we are in an automatic task or function, set our type to FUNIT_ANAMED_BLOCK */
-    if( (curr_funit->type == FUNIT_AFUNCTION) ||
-        (curr_funit->type == FUNIT_ATASK) ||
-        (curr_funit->type == FUNIT_ANAMED_BLOCK) ) {
-      assert( tf->type == FUNIT_NAMED_BLOCK );
-      tf->type = FUNIT_ANAMED_BLOCK;
-    }
+      /* Set our parent pointer to the current functional unit */
+      tf->parent = curr_funit;
 
-    /* Set current functional unit to this functional unit */
-    curr_funit             = tf;
-    curr_funit->filename   = strdup_safe( file );
-    curr_funit->start_line = start_line;
-    curr_funit->ts_unit    = current_timescale_unit;
+      /* If we are in an automatic task or function, set our type to FUNIT_ANAMED_BLOCK */
+      if( (curr_funit->type == FUNIT_AFUNCTION) ||
+          (curr_funit->type == FUNIT_ATASK) ||
+          (curr_funit->type == FUNIT_ANAMED_BLOCK) ) {
+        assert( tf->type == FUNIT_NAMED_BLOCK );
+        tf->type = FUNIT_ANAMED_BLOCK;
+      }
+
+      /* Set current functional unit to this functional unit */
+      curr_funit             = tf;
+      curr_funit->filename   = strdup_safe( file );
+      curr_funit->start_line = start_line;
+      curr_funit->ts_unit    = current_timescale_unit;
     
+    }
+
+  } Catch_anonymous {
+    free_safe( full_name );
+    Throw 0;
   }
 
   free_safe( full_name );
@@ -1514,6 +1528,8 @@ int db_curr_signal_count() { PROFILE(DB_CURR_SIGNAL_COUNT);
 
  \return Returns pointer to newly created expression.
 
+ \throws error Anonymous
+
  Creates a new expression with the specified parameter information and returns a
  pointer to the newly created expression.
 */
@@ -1577,7 +1593,7 @@ expression* db_create_expression(
                                 obf_funit( func_funit->name ), obf_file( curr_funit->filename ), line );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    exit( EXIT_FAILURE );
+    Throw 0;
   }
 
   /* Create expression with next expression ID */
@@ -1692,6 +1708,10 @@ void db_bind_expr_tree( expression* root, char* sig_name ) { PROFILE(DB_BIND_EXP
  \param last_col   Column that the static expression ends on
  
  \return Returns a pointer to an expression that represents the static expression specified
+
+ \throws error Anonymous
+
+ Creates an expression structure from a static expression structure.
 */
 expression* db_create_expr_from_static(
   static_expr* se,
@@ -1712,25 +1732,32 @@ expression* db_create_expr_from_static(
   }
 #endif
 
-  if( se->exp == NULL ) {
+  Try {
 
-    /* This static expression is a static value so create a static expression from its value */
-    expr = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, line, first_col, last_col, NULL );
+    if( se->exp == NULL ) {
 
-    /* Create the new vector */
-    vec = vector_create( 32, VTYPE_VAL, TRUE );
-    vector_from_int( vec, se->num );
+      /* This static expression is a static value so create a static expression from its value */
+      expr = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, line, first_col, last_col, NULL );
 
-    /* Assign the new vector to the expression's vector (after deallocating the expression's old vector) */
-    assert( expr->value->value == NULL );
-    free_safe( expr->value );
-    expr->value = vec;
+      /* Create the new vector */
+      vec = vector_create( 32, VTYPE_VAL, TRUE );
+      vector_from_int( vec, se->num );
 
-  } else {
+      /* Assign the new vector to the expression's vector (after deallocating the expression's old vector) */
+      assert( expr->value->value == NULL );
+      free_safe( expr->value );
+      expr->value = vec;
 
-    /* The static expression is unresolved, so just get its expression */
-    expr = se->exp;
+    } else {
 
+      /* The static expression is unresolved, so just get its expression */
+      expr = se->exp;
+
+    }
+
+  } Catch_anonymous {
+    static_expr_dealloc( se, FALSE );
+    Throw 0;
   }
 
   /* Deallocate static expression */
@@ -1800,8 +1827,12 @@ void db_add_expression( expression* root ) { PROFILE(DB_ADD_EXPRESSION);
  \param stmt  Pointer to statement block to parse.
 
  \return Returns expression tree to execute a sensitivity list for the given statement block.
+
+ \throws error Anonymous
 */
-expression* db_create_sensitivity_list( statement* stmt ) { PROFILE(DB_CREATE_SENSITIVITY_LIST);
+expression* db_create_sensitivity_list(
+  statement* stmt
+) { PROFILE(DB_CREATE_SENSITIVITY_LIST);
 
   str_link*   sig_head = NULL;  /* Pointer to head of signal name list containing RHS used signals */
   str_link*   sig_tail = NULL;  /* Pointer to tail of signal name list containing RHS used signals */
@@ -1818,24 +1849,31 @@ expression* db_create_sensitivity_list( statement* stmt ) { PROFILE(DB_CREATE_SE
   /* Create sensitivity expression tree for the list of RHS signals */
   if( sig_head != NULL ) {
 
-    strl = sig_head;
-    while( strl != NULL ) {
+    Try {
 
-      /* Create AEDGE and EOR for subsequent signals */
-      exps = db_create_expression( NULL, NULL, EXP_OP_SIG,   FALSE, 0, 0, 0, strl->str );
-      expl = db_create_expression( NULL, NULL, EXP_OP_LAST,  FALSE, 0, 0, 0, NULL );
-      expa = db_create_expression( exps, expl, EXP_OP_AEDGE, FALSE, 0, 0, 0, NULL );
+      strl = sig_head;
+      while( strl != NULL ) {
 
-      /* If we have a child expression already, create the EOR expression to connect them */
-      if( expc != NULL ) {
-        expe = db_create_expression( expa, expc, EXP_OP_EOR, FALSE, 0, 0, 0, NULL );
-        expc = expe;
-      } else {
-        expc = expa;
+        /* Create AEDGE and EOR for subsequent signals */
+        exps = db_create_expression( NULL, NULL, EXP_OP_SIG,   FALSE, 0, 0, 0, strl->str );
+        expl = db_create_expression( NULL, NULL, EXP_OP_LAST,  FALSE, 0, 0, 0, NULL );
+        expa = db_create_expression( exps, expl, EXP_OP_AEDGE, FALSE, 0, 0, 0, NULL );
+
+        /* If we have a child expression already, create the EOR expression to connect them */
+        if( expc != NULL ) {
+          expe = db_create_expression( expa, expc, EXP_OP_EOR, FALSE, 0, 0, 0, NULL );
+          expc = expe;
+        } else {
+          expc = expa;
+        }
+
+        strl = strl->next;
+
       }
 
-      strl = strl->next;
-
+    } Catch_anonymous {
+      str_link_delete_list( sig_head );
+      Throw 0;
     }
 
     /* Deallocate string list */
@@ -1854,8 +1892,12 @@ expression* db_create_sensitivity_list( statement* stmt ) { PROFILE(DB_CREATE_SE
  \param stmt  Pointer to statement to check for parallelization
 
  \return Returns pointer to parallelized statement block
+
+ \throws error Anonymous
 */
-statement* db_parallelize_statement( statement* stmt ) { PROFILE(DB_PARALLELIZE_STATEMENT);
+statement* db_parallelize_statement(
+  statement* stmt
+) { PROFILE(DB_PARALLELIZE_STATEMENT);
 
   expression* exp;    /* Expression containing FORK statement */
   char*       scope;  /* Name of current parallelized statement scope */
@@ -2708,6 +2750,10 @@ bool db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.286  2008/02/29 00:08:31  phase1geo
+ Completed optimization code in simulator.  Still need to verify that code
+ changes enhanced performances as desired.  Checkpointing.
+
  Revision 1.285  2008/02/28 03:53:17  phase1geo
  Code addition to support feature request 1902840.  Added race6 diagnostic and updated
  race5 diagnostics per this change.  For loop control assignments are now no longer
