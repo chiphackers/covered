@@ -371,6 +371,8 @@ char* funit_gen_task_function_namedblock_name( char* orig_name, func_unit* paren
  \param gen_all      Set to TRUE to generate all components (this should only be set
                      by the funit_db_write function).
  \param alloc_exprs  Allocates vector data for all expressions if set to TRUE.
+
+ \throws anonymous Error
  
  Resizes signals if they are contigent upon parameter values.  After
  all signals have been resized, the signal's corresponding expressions
@@ -1387,6 +1389,10 @@ void funit_dealloc( func_unit* funit ) { PROFILE(FUNIT_DEALLOC);
 
 /*
  $Log$
+ Revision 1.93  2008/02/29 00:08:31  phase1geo
+ Completed optimization code in simulator.  Still need to verify that code
+ changes enhanced performances as desired.  Checkpointing.
+
  Revision 1.92  2008/02/28 07:54:09  phase1geo
  Starting to add functionality for simulation optimization in the sim_expr_changed
  function (feature request 1897410).

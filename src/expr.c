@@ -564,6 +564,8 @@ expression* expression_create(
  \param exp    Pointer to expression to set value to.
  \param sig    Pointer to signal containing vector value to set expression to.
  \param funit  Pointer to functional unit containing expression.
+
+ \throws anonymous Error
  
  Sets the specified expression (if necessary) to the value of the
  specified signal's vector value.
@@ -686,6 +688,8 @@ void expression_set_signed( expression* exp ) { PROFILE(EXPRESSION_SET_SIGNED);
  \param funit      Pointer to functional unit containing expression.
  \param recursive  Specifies if we should perform a recursive depth-first resize
  \param alloc      If set to TRUE, allocates vector data for all expressions
+
+ \throws anonymous Error
 
  Resizes the given expression depending on the expression operation and its
  children's sizes.  If recursive is TRUE, performs the resize in a depth-first
@@ -1186,6 +1190,8 @@ statement* expression_get_root_statement( expression* exp ) { PROFILE(EXPRESSION
 /*!
  \param root   Pointer to root of the expression tree to assign unique IDs for
  \param funit  Pointer to functional unit containing this expression tree
+
+ \throws anonymous Error
 
  Recursively iterates down the specified expression tree assigning unique IDs to each expression.
 */
@@ -3735,13 +3741,19 @@ bool expression_operate( expression* expr, thread* thr, const sim_time* time ) {
  \param expr    Pointer to top of expression tree to perform recursive operations.
  \param funit   Pointer to functional unit containing this expression.
  \param sizing  Set to TRUE if we are evaluating for purposes of sizing.
+
+ \throws anonymous Error
  
  Recursively performs the proper operations to cause the top-level expression to
  be set to a value.  This function is called during the parse stage to derive 
  pre-CDD widths of multi-bit expressions.  Each MSB/LSB is an expression tree that 
  needs to be evaluated to set the width properly on the MBIT_SEL expression.
 */
-void expression_operate_recursively( expression* expr, func_unit* funit, bool sizing ) { PROFILE(EXPRESSION_OPERATE_RECURSIVELY);
+void expression_operate_recursively(
+  expression* expr,
+  func_unit*  funit,
+  bool        sizing
+) { PROFILE(EXPRESSION_OPERATE_RECURSIVELY);
     
   if( expr != NULL ) {
     
@@ -4330,6 +4342,9 @@ void expression_dealloc( expression* expr, bool exp_only ) { PROFILE(EXPRESSION_
 
 /* 
  $Log$
+ Revision 1.283  2008/02/27 05:26:51  phase1geo
+ Adding support for $finish and $stop.
+
  Revision 1.282  2008/02/09 19:32:44  phase1geo
  Completed first round of modifications for using exception handler.  Regression
  passes with these changes.  Updated regressions per these changes.

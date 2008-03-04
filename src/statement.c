@@ -284,6 +284,8 @@ static void statement_queue_compare( statement* stmt ) { PROFILE(STATEMENT_QUEUE
  \param stmt   Pointer to statement block to size elements for
  \param funit  Pointer to functional unit containing this statement block
 
+ \throws anonymous Error
+
  Recursively sizes all elements for the given statement block.
 */
 void statement_size_elements( statement* stmt, func_unit* funit ) { PROFILE(STATEMENT_SIZE_ELEMENTS);
@@ -516,6 +518,8 @@ void statement_db_read( char** line, func_unit* curr_funit, int read_mode ) { PR
 /*!
  \param stmt   Pointer to statement block to traverse
  \param funit  Pointer to functional unit containing this statement block
+
+ \throws anonymous Error
 
  Recursively traverses the entire statement block and assigns unique expression IDs for each
  expression tree that it finds.
@@ -960,6 +964,10 @@ void statement_dealloc( statement* stmt ) { PROFILE(STATEMENT_DEALLOC);
 
 /*
  $Log$
+ Revision 1.127  2008/02/29 00:08:31  phase1geo
+ Completed optimization code in simulator.  Still need to verify that code
+ changes enhanced performances as desired.  Checkpointing.
+
  Revision 1.126  2008/02/28 07:54:09  phase1geo
  Starting to add functionality for simulation optimization in the sim_expr_changed
  function (feature request 1897410).

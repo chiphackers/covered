@@ -250,6 +250,8 @@ bool db_check_for_top_module() { PROFILE(DB_CHECK_FOR_TOP_MODULE);
  \param parse_mode   Specifies if we are outputting parse data or score data.
  \param report_save  Specifies if we are attempting to "save" a CDD file modified in the report command
 
+ \throws anonymous Error
+
  Opens specified database for writing.  If database open successful,
  iterates through functional unit, expression and signal lists, displaying each
  to the database file.  If database write successful, returns TRUE; otherwise,
@@ -264,18 +266,27 @@ void db_write( char* file, bool parse_mode, bool report_save ) { PROFILE(DB_WRIT
 
     unsigned int rv;
 
-    /* Reset expression IDs */
-    curr_expr_id = 1;
+    Try {
 
-    /* Iterate through instance tree */
-    assert( inst_head != NULL );
-    info_db_write( db_handle );
+      /* Reset expression IDs */
+      curr_expr_id = 1;
 
-    instl = inst_head;
-    while( instl != NULL ) {
-      instance_db_write( instl->inst, db_handle, instl->inst->name, parse_mode, report_save );
-      instl = instl->next;
+      /* Iterate through instance tree */
+      assert( inst_head != NULL );
+      info_db_write( db_handle );
+
+      instl = inst_head;
+      while( instl != NULL ) {
+        instance_db_write( instl->inst, db_handle, instl->inst->name, parse_mode, report_save );
+        instl = instl->next;
+      }
+
+    } Catch_anonymous {
+      rv = fclose( db_handle );
+      assert( rv == 0 );
+      Throw 0;
     }
+
     rv = fclose( db_handle );
     assert( rv == 0 );
 
@@ -2750,6 +2761,9 @@ bool db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.287  2008/03/03 15:54:15  phase1geo
+ More exception handling updates.  Checkpointing.
+
  Revision 1.286  2008/02/29 00:08:31  phase1geo
  Completed optimization code in simulator.  Still need to verify that code
  changes enhanced performances as desired.  Checkpointing.

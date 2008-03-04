@@ -752,6 +752,8 @@ bool instance_read_add( funit_inst** root, char* parent, func_unit* child, char*
  \param parse_mode   Specifies if we are parsing or scoring.
  \param report_save  Specifies if we are saving a CDD file after modifying it with the report command
 
+ \throws anonymous Error
+
  Calls each functional unit display function in instance tree, starting with
  the root functional unit and ending when all of the leaf functional units are output.
  Note:  the function that calls this function originally should set
@@ -1164,6 +1166,9 @@ void instance_dealloc( funit_inst* root, char* scope ) { PROFILE(INSTANCE_DEALLO
 
 /*
  $Log$
+ Revision 1.88  2008/01/30 05:51:50  phase1geo
+ Fixing doxygen errors.  Updated parameter list syntax to make it more readable.
+
  Revision 1.87  2008/01/16 06:40:37  phase1geo
  More splint updates.
 

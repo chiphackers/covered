@@ -79,6 +79,8 @@ void enumerate_end_list( func_unit* funit ) { PROFILE(ENUMERATE_END_LIST);
 /*!
  \param inst  Pointer to functional unit instance to resolve all enumerated values
 
+ \throws anonymous Error
+
  Resolves all enumerated values for their value for the given instance.  This needs
  to be called during elaboration after all signals have been sized and parameters have
  been resolved.
@@ -111,7 +113,7 @@ void enumerate_resolve( funit_inst* inst ) { PROFILE(ENUMERATE_RESOLVE);
         rv = snprintf( user_msg, USER_MSG_LENGTH, "File: %s, Line: %d", obf_file( inst->funit->filename ), ei->sig->line );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL_WRAP, __FILE__, __LINE__ );
-        exit( EXIT_FAILURE );
+        Throw 0;
       } else {
         vector_from_int( ei->sig->value, (last_value + 1) );
       }
@@ -191,6 +193,9 @@ void enumerate_dealloc_list( func_unit* funit ) { PROFILE(ENUMERATE_DEALLOC_LIST
 
 /*
  $Log$
+ Revision 1.12  2008/01/15 23:01:14  phase1geo
+ Continuing to make splint updates (not doing any memory checking at this point).
+
  Revision 1.11  2008/01/07 23:59:54  phase1geo
  More splint updates.
 

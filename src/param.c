@@ -551,7 +551,7 @@ void defparam_add( const char* scope, vector* value ) { PROFILE(DEFPARAM_ADD);
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Parameter (%s) value is assigned more than once", obf_sig( scope ) );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    exit( EXIT_FAILURE );
+    Throw 0;
 
   }
 
@@ -582,6 +582,8 @@ void defparam_dealloc() { PROFILE(DEFPARAM_DEALLOC);
 
  \return Returns a pointer to the specified value found.
 
+ \throws error Anonymous
+
  This function is called by param_expr_eval when it encounters a parameter in its
  expression tree that needs to be resolved for its value.  If the parameter is
  found, the value of that parameter is returned.  If the parameter is not found,
@@ -611,7 +613,7 @@ static void param_find_and_set_expr_value( expression* expr, funit_inst* inst ) 
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Parameter used in expression but not defined in current module, line %d", expr->line );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        exit( EXIT_FAILURE );
+        Throw 0;
       }
 
     } else {
@@ -684,6 +686,8 @@ static void param_size_function( funit_inst* inst, func_unit* funit ) { PROFILE(
 /*!
  \param expr  Current expression to evaluate.
  \param inst  Pointer to current instance to evaluate for.
+
+ \throws anonymous Error
 
  Recursively evaluates the specified expression tree, calculating the value of leaf nodes
  first.  If a another parameter value is encountered, lookup the value of this parameter
@@ -1079,6 +1083,10 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) { PROFILE(INST_PARM_D
 
 /*
  $Log$
+ Revision 1.102  2008/01/16 23:10:31  phase1geo
+ More splint updates.  Code is now warning/error free with current version
+ of run_splint.  Still have regression issues to debug.
+
  Revision 1.101  2008/01/15 23:01:15  phase1geo
  Continuing to make splint updates (not doing any memory checking at this point).
 

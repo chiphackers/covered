@@ -707,6 +707,8 @@ gen_item* gen_item_create_bind(
  \param gi     Pointer to generate item block to check
  \param funit  Pointer to functional unit that contains this generate item
 
+ \throws anonymous Error
+
  Recursively iterates the the specified generate item block, resizing all statements
  within that block.
 */
@@ -742,6 +744,8 @@ void gen_item_resize_stmts_and_sigs( gen_item* gi, func_unit* funit ) { PROFILE(
 /*!
  \param gi     Pointer to generate item to check and assign expression IDs for
  \param funit  Pointer to functional unit containing this generate item
+
+ \throws anonymous Error
 
  Assigns unique expression IDs to each expression in the tree given for a generated statement.
 */
@@ -891,6 +895,8 @@ bool gen_item_connect(
  \param gi             Pointer to current generate item to resolve
  \param inst           Pointer to instance to store results to
 
+ \throws anonymous Error
+
  Recursively iterates through the entire generate block specified by gi, resolving all generate items
  within it.  This is called by the generate_resolve function (in the middle of the binding process) and
  by the funit_size_elements function (just prior to outputting this instance to the CDD file).
@@ -1030,6 +1036,8 @@ void gen_item_bind( gen_item* gi ) { PROFILE(GEN_ITEM_BIND);
 
 /*!
  \param root  Pointer to current instance in instance tree to resolve for
+
+ \throws anonymous Error
 
  Recursively resolves all generate items in the design.  This is called at a specific point
  in the binding process.
@@ -1180,6 +1188,9 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) { PROFILE(GEN_ITEM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.54  2008/02/29 23:58:19  phase1geo
+ Continuing to work on adding exception handling code.
+
  Revision 1.53  2008/01/30 05:51:50  phase1geo
  Fixing doxygen errors.  Updated parameter list syntax to make it more readable.
 
