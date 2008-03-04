@@ -1374,7 +1374,7 @@ vsignal* db_find_signal( char* name, bool okay_if_not_found ) { PROFILE(DB_FIND_
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to find variable %s in module %s", obf_sig( name ), obf_funit( curr_funit->name ) );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    exit( EXIT_FAILURE );
+    Throw 0;
 
   }
 
@@ -1539,7 +1539,7 @@ int db_curr_signal_count() { PROFILE(DB_CURR_SIGNAL_COUNT);
 
  \return Returns pointer to newly created expression.
 
- \throws error Anonymous
+ \throws anonymous Error
 
  Creates a new expression with the specified parameter information and returns a
  pointer to the newly created expression.
@@ -2393,6 +2393,8 @@ attr_param* db_create_attr_param( char* name, expression* expr ) { PROFILE(DB_CR
 /*!
  \param ap  Pointer to attribute parameter list to parse.
 
+ \throws anonymous Error
+
  Calls the attribute_parse() function and deallocates this list.
 */
 void db_parse_attribute( attr_param* ap ) { PROFILE(DB_PARSE_ATTRIBUTE);
@@ -2761,6 +2763,9 @@ bool db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.288  2008/03/04 00:09:20  phase1geo
+ More exception handling.  Checkpointing.
+
  Revision 1.287  2008/03/03 15:54:15  phase1geo
  More exception handling updates.  Checkpointing.
 

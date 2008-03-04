@@ -47,6 +47,8 @@ extern char user_msg[USER_MSG_LENGTH];
 
  \return Returns pointer to expression tree containing parsed state variable expression.
 
+ \throws anonymous Error
+
  Parses the specified argument value for all information regarding a state variable
  expression.  This function places all 
 */
@@ -311,14 +313,16 @@ void fsm_arg_parse( const char* arg ) { PROFILE(FSM_ARG_PARSE);
          returns a value of NULL to indicate the this parser was unable to parse the
          specified transition value.
 
+ \throws anonymous Error
+
  Parses specified string value for a parameter or constant value.  If the string
  is parsed correctly, a new expression is created to hold the contents of the
  parsed value and is returned to the calling function.  If the string is not
  parsed correctly, a value of NULL is returned to the calling function.
 */
 static expression* fsm_arg_parse_value(
-    char**           str,
-    const func_unit* funit
+  char**           str,
+  const func_unit* funit
 ) { PROFILE(FSM_ARG_PARSE_VALUE);
 
   expression* expr = NULL;   /* Pointer to expression containing state value */
@@ -334,7 +338,12 @@ static expression* fsm_arg_parse_value(
   if( (vec = vector_from_string( str, FALSE )) != NULL ) {
 
     /* This value represents a static value, handle as such */
-    expr = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
+    Try {
+      expr = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
+    } Catch_anonymous {
+      vector_dealloc( vec );
+      Throw 0;
+    }
     curr_expr_id++;
 
     vector_dealloc( expr->value );
@@ -355,14 +364,25 @@ static expression* fsm_arg_parse_value(
         vector_from_int( left->value, msb );
 
         /* Generate right child expression */
-        right = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
+        Try {
+          right = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
+        } Catch_anonymous {
+          expression_dealloc( left, FALSE );
+          Throw 0;
+        }
         curr_expr_id++;
         vector_dealloc( right->value );
         right->value = vector_create( 32, VTYPE_VAL, TRUE );
         vector_from_int( right->value, lsb );
 
         /* Generate multi-bit parameter expression */
-        expr = expression_create( right, left, EXP_OP_PARAM_MBIT, FALSE, curr_expr_id, 0, 0, 0, FALSE ); 
+        Try {
+          expr = expression_create( right, left, EXP_OP_PARAM_MBIT, FALSE, curr_expr_id, 0, 0, 0, FALSE ); 
+        } Catch_anonymous {
+          expression_dealloc( left, FALSE );
+          expression_dealloc( right, FALSE );
+          Throw 0;
+        }
         curr_expr_id++;
         exp_link_add( expr, &(mparm->exp_head), &(mparm->exp_tail) );
 
@@ -379,14 +399,25 @@ static expression* fsm_arg_parse_value(
         vector_from_int( left->value, msb );
 
         /* Generate right child expression */
-        right = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
+        Try {
+          right = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
+        } Catch_anonymous {
+          expression_dealloc( left, FALSE );
+          Throw 0;
+        }
         curr_expr_id++;
         vector_dealloc( right->value );
         right->value = vector_create( 32, VTYPE_VAL, TRUE );
         vector_from_int( right->value, lsb );
 
         /* Generate variable positive multi-bit parameter expression */
-        expr = expression_create( right, left, EXP_OP_PARAM_MBIT_POS, FALSE, curr_expr_id, 0, 0, 0, FALSE );
+        Try {
+          expr = expression_create( right, left, EXP_OP_PARAM_MBIT_POS, FALSE, curr_expr_id, 0, 0, 0, FALSE );
+        } Catch_anonymous {
+          expression_dealloc( left, FALSE );
+          expression_dealloc( right, FALSE );
+          Throw 0;
+        }
         curr_expr_id++;
         exp_link_add( expr, &(mparm->exp_head), &(mparm->exp_tail) );
 
@@ -403,14 +434,25 @@ static expression* fsm_arg_parse_value(
         vector_from_int( left->value, msb );
 
         /* Generate right child expression */
-        right = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
+        Try {
+          right = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
+        } Catch_anonymous {
+          expression_dealloc( left, FALSE );
+          Throw 0;
+        }
         curr_expr_id++;
         vector_dealloc( right->value );
         right->value = vector_create( 32, VTYPE_VAL, TRUE );
         vector_from_int( right->value, lsb );
 
         /* Generate variable positive multi-bit parameter expression */
-        expr = expression_create( right, left, EXP_OP_PARAM_MBIT_NEG, FALSE, curr_expr_id, 0, 0, 0, FALSE );
+        Try {
+          expr = expression_create( right, left, EXP_OP_PARAM_MBIT_NEG, FALSE, curr_expr_id, 0, 0, 0, FALSE );
+        } Catch_anonymous {
+          expression_dealloc( left, FALSE );
+          expression_dealloc( right, FALSE );
+          Throw 0;
+        }
         curr_expr_id++;
         exp_link_add( expr, &(mparm->exp_head), &(mparm->exp_tail) );
 
@@ -427,7 +469,12 @@ static expression* fsm_arg_parse_value(
         vector_from_int( left->value, lsb );
 
         /* Generate single-bit parameter expression */
-        expr = expression_create( NULL, left, EXP_OP_PARAM_SBIT, FALSE, curr_expr_id, 0, 0, 0, FALSE );
+        Try {
+          expr = expression_create( NULL, left, EXP_OP_PARAM_SBIT, FALSE, curr_expr_id, 0, 0, 0, FALSE );
+        } Catch_anonymous {
+          expression_dealloc( left, FALSE );
+          Throw 0;
+        }
         curr_expr_id++;
         exp_link_add( expr, &(mparm->exp_head), &(mparm->exp_tail) );
 
@@ -457,6 +504,8 @@ static expression* fsm_arg_parse_value(
  \param table  Pointer to FSM table to add the transition arcs to.
  \param funit  Pointer to the functional unit that contains the specified FSM.
 
+ \throws anonymous Error
+
  \par
  Parses a transition string carried in the specified expression argument.  All transitions
  must be in the form of:
@@ -484,37 +533,44 @@ static void fsm_arg_parse_trans(
   /* Convert expression value to a string */
   tmp = str = vector_to_string( expr->value );
 
-  if( (from_state = fsm_arg_parse_value( &str, funit )) == NULL ) {
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Left-hand side FSM transition value must be a constant value or parameter, line: %d, file: %s",
-                                expr->line, obf_file( funit->filename ) );
-    assert( rv < USER_MSG_LENGTH );
-    print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    exit( EXIT_FAILURE );
-  } else {
+  Try {
 
-    if( (str[0] != '-') || (str[1] != '>') ) {
-      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "FSM transition values must contain the string '->' between them, line: %d, file: %s",
+    if( (from_state = fsm_arg_parse_value( &str, funit )) == NULL ) {
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Left-hand side FSM transition value must be a constant value or parameter, line: %d, file: %s",
                                   expr->line, obf_file( funit->filename ) );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      exit( EXIT_FAILURE );
-    } else {
-      str += 2;
-    }
-
-    if( (to_state = fsm_arg_parse_value( &str, funit )) == NULL ) {
-      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Right-hand side FSM transition value must be a constant value or parameter, line: %d, file: %s",
-                                  expr->line, obf_file( funit->filename ) );
-      assert( rv < USER_MSG_LENGTH );
-      print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      exit( EXIT_FAILURE );
+      Throw 0;
     } else {
 
-      /* Add both expressions to FSM arc list */
-      fsm_add_arc( table, from_state, to_state );
+      if( (str[0] != '-') || (str[1] != '>') ) {
+        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "FSM transition values must contain the string '->' between them, line: %d, file: %s",
+                                    expr->line, obf_file( funit->filename ) );
+        assert( rv < USER_MSG_LENGTH );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        Throw 0;
+      } else {
+        str += 2;
+      }
+
+      if( (to_state = fsm_arg_parse_value( &str, funit )) == NULL ) {
+        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Right-hand side FSM transition value must be a constant value or parameter, line: %d, file: %s",
+                                    expr->line, obf_file( funit->filename ) );
+        assert( rv < USER_MSG_LENGTH );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        Throw 0;
+      } else {
+
+        /* Add both expressions to FSM arc list */
+        fsm_add_arc( table, from_state, to_state );
+
+      }
 
     }
 
+  } Catch_anonymous {
+    free_safe( tmp );
+    Throw 0;
   }
 
   /* Deallocate string */
@@ -526,6 +582,8 @@ static void fsm_arg_parse_trans(
  \param ap       Pointer to attribute parameter list.
  \param funit    Pointer to functional unit containing this attribute.
  \param exclude  If TRUE, sets the exclude bits in the FSM.
+
+ \throws anonymous Error
 
  Parses the specified attribute parameter for validity and updates FSM structure
  accordingly.
@@ -571,7 +629,7 @@ void fsm_arg_parse_attr(
                                     obf_file( funit->filename ) );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        exit( EXIT_FAILURE );
+        Throw 0;
       }
     } else if( (index == 2) && (strcmp( curr->name, "os" ) == 0) && (curr->expr != NULL) ) {
       if( fsml == NULL ) {
@@ -592,7 +650,7 @@ void fsm_arg_parse_attr(
                                     obf_file( funit->filename ) );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        exit( EXIT_FAILURE );
+        Throw 0;
       }
     } else if( (index == 3) && (strcmp( curr->name, "os" ) == 0) && (out_state == NULL) &&
                (in_state != NULL) && (curr->expr != NULL) ) {
@@ -614,7 +672,7 @@ void fsm_arg_parse_attr(
                                     obf_file( funit->filename ) );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        exit( EXIT_FAILURE );
+        Throw 0;
       }
     } else if( (index > 1) && (strcmp( curr->name, "trans" ) == 0) && (curr->expr != NULL) ) {
       if( fsml == NULL ) {
@@ -622,7 +680,7 @@ void fsm_arg_parse_attr(
                                     obf_sig( curr->name ), obf_file( funit->filename ) );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        exit( EXIT_FAILURE );
+        Throw 0;
       } else {
         fsm_arg_parse_trans( curr->expr, fsml->table, funit );
       }
@@ -634,7 +692,7 @@ void fsm_arg_parse_attr(
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       free_safe( tmp );
-      exit( EXIT_FAILURE );
+      Throw 0;
     }
 
     /* We need to work backwards in attribute parameter lists */
@@ -648,6 +706,10 @@ void fsm_arg_parse_attr(
 
 /*
  $Log$
+ Revision 1.43  2008/02/29 00:08:31  phase1geo
+ Completed optimization code in simulator.  Still need to verify that code
+ changes enhanced performances as desired.  Checkpointing.
+
  Revision 1.42  2008/02/25 18:22:16  phase1geo
  Moved statement supplemental bits from root expression to statement and starting
  to add support for race condition checking pragmas (still some work left to do

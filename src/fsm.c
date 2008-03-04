@@ -205,6 +205,8 @@ void fsm_db_write( fsm* table, FILE* file, bool parse_mode ) { PROFILE(FSM_DB_WR
  \param line   Pointer to current line being read from the CDD file.
  \param funit  Pointer to current functional unit.
 
+ \throws anonymous Error
+
  Reads in contents of FSM line from CDD file and stores newly created
  FSM into the specified functional unit.
 */
@@ -240,13 +242,18 @@ void fsm_db_read( char** line, func_unit* funit ) { PROFILE(FSM_DB_READ);
          If the input state variable is the same as the output state variable, create the new expression now.
         */
         if( iexp_id == oexp_id ) {
-          table->from_state = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, iexp_id, 0, 0, 0, FALSE );
+          Try {
+            table->from_state = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, iexp_id, 0, 0, 0, FALSE );
+          } Catch_anonymous {
+            fsm_dealloc( table );
+            Throw 0;
+          }
           vector_dealloc( table->from_state->value );
           bind_append_fsm_expr( table->from_state, iexpl->exp, funit );
         } else {
           table->from_state = iexpl->exp;
         }
-  
+
         /* Set output expression tables to point to this FSM */
         table->to_state->table = table;
   
@@ -1284,6 +1291,10 @@ void fsm_dealloc( fsm* table ) { PROFILE(FSM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.83  2008/02/09 19:32:44  phase1geo
+ Completed first round of modifications for using exception handler.  Regression
+ passes with these changes.  Updated regressions per these changes.
+
  Revision 1.82  2008/02/01 06:37:08  phase1geo
  Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
  using pragma excludes (this code is not fully working yet).  More to be done.

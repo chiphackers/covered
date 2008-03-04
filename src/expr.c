@@ -351,6 +351,8 @@ static vec_data x_value = {0x2};
  \param width  Width of value to create.
  \param data   Specifies if nibble array should be allocated for vector.
 
+ \throws anonymous Error
+
  Creates a value vector that is large enough to store width number of
  bits in value and sets the specified expression value to this value.  This
  function should be called by either the expression_create function, the bind
@@ -370,7 +372,7 @@ static void expression_create_value(
                                   width, MAX_BIT_WIDTH );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      exit( EXIT_FAILURE );
+      Throw 0;
     }
     value = (vec_data*)malloc_safe( sizeof( vec_data ) * width );
   }
@@ -394,6 +396,8 @@ static void expression_create_value(
  \param data     Specifies if we should create a nibble array for the vector value.
 
  \return Returns pointer to newly created expression.
+
+ \throws anonymous Error
 
  Creates a new expression from heap memory and initializes its values for
  usage.  Right and left expressions need to be created before this function is called.
@@ -467,87 +471,94 @@ expression* expression_create(
 
   }
 
-  /* Create value vector */
-  if( ((op == EXP_OP_MULTIPLY) || (op == EXP_OP_LIST)) && (rwidth > 0) && (lwidth > 0) ) {
+  Try {
 
-    /* For multiplication, we need a width the sum of the left and right expressions */
-    expression_create_value( new_expr, (lwidth + rwidth), data );
+    /* Create value vector */
+    if( ((op == EXP_OP_MULTIPLY) || (op == EXP_OP_LIST)) && (rwidth > 0) && (lwidth > 0) ) {
 
-  } else if( (op == EXP_OP_CONCAT) && (rwidth > 0) ) {
+      /* For multiplication, we need a width the sum of the left and right expressions */
+      expression_create_value( new_expr, (lwidth + rwidth), data );
 
-    expression_create_value( new_expr, rwidth, data );
+    } else if( (op == EXP_OP_CONCAT) && (rwidth > 0) ) {
 
-  } else if( (op == EXP_OP_EXPAND) && (rwidth > 0) && (lwidth > 0) && (left->value->value != NULL) ) {
+      expression_create_value( new_expr, rwidth, data );
 
-    /*
-     If the left-hand expression is a known value, go ahead and create the value here; otherwise,
-     hold off because our vector value will be coming.
-    */
-    if( !vector_is_unknown( left->value ) ) {
-      expression_create_value( new_expr, (vector_to_int( left->value ) * rwidth), data );
-    } else {
-      expression_create_value( new_expr, 1, data );
-    }
+    } else if( (op == EXP_OP_EXPAND) && (rwidth > 0) && (lwidth > 0) && (left->value->value != NULL) ) {
 
-  } else if( (op == EXP_OP_LT   )   ||
-             (op == EXP_OP_GT   )   ||
-             (op == EXP_OP_EQ   )   ||
-             (op == EXP_OP_CEQ  )   ||
-             (op == EXP_OP_LE   )   ||
-             (op == EXP_OP_GE   )   ||
-             (op == EXP_OP_NE   )   ||
-             (op == EXP_OP_CNE  )   ||
-             (op == EXP_OP_LOR  )   ||
-             (op == EXP_OP_LAND )   ||
-             (op == EXP_OP_UAND )   ||
-             (op == EXP_OP_UNOT )   ||
-             (op == EXP_OP_UOR  )   ||
-             (op == EXP_OP_UXOR )   ||
-             (op == EXP_OP_UNAND)   ||
-             (op == EXP_OP_UNOR )   ||
-             (op == EXP_OP_UNXOR)   ||
-             (op == EXP_OP_EOR)     ||
-             (op == EXP_OP_NEDGE)   ||
-             (op == EXP_OP_PEDGE)   ||
-             (op == EXP_OP_AEDGE)   ||
-             (op == EXP_OP_CASE)    ||
-             (op == EXP_OP_CASEX)   ||
-             (op == EXP_OP_CASEZ)   ||
-             (op == EXP_OP_DEFAULT) ||
-             (op == EXP_OP_REPEAT)  ||
-             (op == EXP_OP_RPT_DLY) ||
-             (op == EXP_OP_WAIT)    ||
-             (op == EXP_OP_SFINISH) ||
-             (op == EXP_OP_SSTOP) ) {
-
-    /* If this expression will evaluate to a single bit, create vector now */
-    expression_create_value( new_expr, 1, data );
-
-  } else {
-
-    /* If both right and left values have their width values set. */
-    if( (rwidth > 0) && (lwidth > 0) && 
-        (op != EXP_OP_MBIT_SEL)       &&
-        (op != EXP_OP_MBIT_POS)       &&
-        (op != EXP_OP_MBIT_NEG)       &&
-        (op != EXP_OP_PARAM_MBIT)     &&
-        (op != EXP_OP_PARAM_MBIT_POS) &&
-        (op != EXP_OP_PARAM_MBIT_NEG) ) {
-
-      if( rwidth >= lwidth ) {
-        /* Check to make sure that nothing has gone drastically wrong */
-        expression_create_value( new_expr, rwidth, data );
+      /*
+       If the left-hand expression is a known value, go ahead and create the value here; otherwise,
+       hold off because our vector value will be coming.
+      */
+      if( !vector_is_unknown( left->value ) ) {
+        expression_create_value( new_expr, (vector_to_int( left->value ) * rwidth), data );
       } else {
-        /* Check to make sure that nothing has gone drastically wrong */
-        expression_create_value( new_expr, lwidth, data );
+        expression_create_value( new_expr, 1, data );
       }
 
+    } else if( (op == EXP_OP_LT   )   ||
+               (op == EXP_OP_GT   )   ||
+               (op == EXP_OP_EQ   )   ||
+               (op == EXP_OP_CEQ  )   ||
+               (op == EXP_OP_LE   )   ||
+               (op == EXP_OP_GE   )   ||
+               (op == EXP_OP_NE   )   ||
+               (op == EXP_OP_CNE  )   ||
+               (op == EXP_OP_LOR  )   ||
+               (op == EXP_OP_LAND )   ||
+               (op == EXP_OP_UAND )   ||
+               (op == EXP_OP_UNOT )   ||
+               (op == EXP_OP_UOR  )   ||
+               (op == EXP_OP_UXOR )   ||
+               (op == EXP_OP_UNAND)   ||
+               (op == EXP_OP_UNOR )   ||
+               (op == EXP_OP_UNXOR)   ||
+               (op == EXP_OP_EOR)     ||
+               (op == EXP_OP_NEDGE)   ||
+               (op == EXP_OP_PEDGE)   ||
+               (op == EXP_OP_AEDGE)   ||
+               (op == EXP_OP_CASE)    ||
+               (op == EXP_OP_CASEX)   ||
+               (op == EXP_OP_CASEZ)   ||
+               (op == EXP_OP_DEFAULT) ||
+               (op == EXP_OP_REPEAT)  ||
+               (op == EXP_OP_RPT_DLY) ||
+               (op == EXP_OP_WAIT)    ||
+               (op == EXP_OP_SFINISH) ||
+               (op == EXP_OP_SSTOP) ) {
+  
+      /* If this expression will evaluate to a single bit, create vector now */
+      expression_create_value( new_expr, 1, data );
+
     } else {
+
+      /* If both right and left values have their width values set. */
+      if( (rwidth > 0) && (lwidth > 0) && 
+          (op != EXP_OP_MBIT_SEL)       &&
+          (op != EXP_OP_MBIT_POS)       &&
+          (op != EXP_OP_MBIT_NEG)       &&
+          (op != EXP_OP_PARAM_MBIT)     &&
+          (op != EXP_OP_PARAM_MBIT_POS) &&
+          (op != EXP_OP_PARAM_MBIT_NEG) ) {
+
+        if( rwidth >= lwidth ) {
+          /* Check to make sure that nothing has gone drastically wrong */
+          expression_create_value( new_expr, rwidth, data );
+        } else {
+          /* Check to make sure that nothing has gone drastically wrong */
+          expression_create_value( new_expr, lwidth, data );
+        }
+
+      } else {
  
-      expression_create_value( new_expr, 0, FALSE );
+        expression_create_value( new_expr, 0, FALSE );
  
+      }
+
     }
 
+  } Catch_anonymous {
+    expression_dealloc( new_expr, TRUE );
+    Throw 0;
   }
 
   if( (data == FALSE) && (generate_expr_mode == 0) ) {
@@ -1294,12 +1305,18 @@ void expression_db_write_tree(
  \param curr_funit  Pointer to current functional unit that instantiates this expression.
  \param eval        If TRUE, evaluate expression if children are static.
 
+ \throws anonymous Error
+
  Reads in the specified expression information, creates new expression from
  heap, populates the expression with specified information from file and 
  returns that value in the specified expression pointer.  If all is 
  successful, returns TRUE; otherwise, returns FALSE.
 */
-void expression_db_read( char** line, func_unit* curr_funit, bool eval ) { PROFILE(EXPRESSION_DB_READ);
+void expression_db_read(
+  char**     line,
+  func_unit* curr_funit,
+  bool       eval
+) { PROFILE(EXPRESSION_DB_READ);
 
   int          id;             /* Holder of expression ID */
   expression*  expr;           /* Pointer to newly created expression */
@@ -4342,6 +4359,9 @@ void expression_dealloc( expression* expr, bool exp_only ) { PROFILE(EXPRESSION_
 
 /* 
  $Log$
+ Revision 1.284  2008/03/04 00:09:20  phase1geo
+ More exception handling.  Checkpointing.
+
  Revision 1.283  2008/02/27 05:26:51  phase1geo
  Adding support for $finish and $stop.
 

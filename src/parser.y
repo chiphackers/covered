@@ -376,7 +376,12 @@ attribute_list_opt
       if( !parser_check_generation( GENERATION_2001 ) ) {
         ignore_mode--;
       } else if( ignore_mode == 0 ) {
-        db_parse_attribute( $3 );
+        Try {
+          db_parse_attribute( $3 );
+        } Catch_anonymous {
+          attribute_dealloc( $3 );
+          Throw 0;
+        }
       }
     }
   | K_PSTAR
@@ -831,8 +836,19 @@ static_expr_port_list
       static_expr* tmp = $3;
       if( ignore_mode == 0 ) {
         if( $3 != NULL ) {
-          tmp = static_expr_gen_unary( $3, EXP_OP_PASSIGN, @3.first_line, @3.first_column, (@3.last_column - 1) );
-          tmp = static_expr_gen( tmp, $1, EXP_OP_LIST, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+          Try {
+            tmp = static_expr_gen_unary( $3, EXP_OP_PASSIGN, @3.first_line, @3.first_column, (@3.last_column - 1) );
+          } Catch_anonymous {
+            static_expr_dealloc( $3, TRUE );
+            Throw 0;
+          }
+          Try {
+            tmp = static_expr_gen( tmp, $1, EXP_OP_LIST, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+          } Catch_anonymous {
+            static_expr_dealloc( tmp, TRUE );
+            static_expr_dealloc( $1, TRUE );
+            Throw 0;
+          }
           $$ = tmp;
         } else {
           $$ = $1;
@@ -846,7 +862,12 @@ static_expr_port_list
       static_expr* tmp = $1;
       if( ignore_mode == 0 ) {
         if( $1 != NULL ) {
-          tmp = static_expr_gen_unary( $1, EXP_OP_PASSIGN, @1.first_line, @1.first_column, (@1.last_column - 1) );
+          Try {
+            tmp = static_expr_gen_unary( $1, EXP_OP_PASSIGN, @1.first_line, @1.first_column, (@1.last_column - 1) );
+          } Catch_anonymous {
+            static_expr_dealloc( $1, TRUE );
+            Throw 0;
+          }
         }
         $$ = tmp;
       } else {
@@ -883,49 +904,89 @@ static_expr
   | '~' static_expr_primary %prec UNARY_PREC
     {
       static_expr* tmp;
-      tmp = static_expr_gen_unary( $2, EXP_OP_UINV, @1.first_line, @1.first_column, (@1.last_column - 1) );
+      Try {
+        tmp = static_expr_gen_unary( $2, EXP_OP_UINV, @1.first_line, @1.first_column, (@1.last_column - 1) );
+      } Catch_anonymous {
+        static_expr_dealloc( $2, TRUE );
+        Throw 0;
+      }
       $$ = tmp;
     }
   | '&' static_expr_primary %prec UNARY_PREC
     {
       static_expr* tmp;
-      tmp = static_expr_gen_unary( $2, EXP_OP_UAND, @1.first_line, @1.first_column, (@1.last_column - 1) );
+      Try {
+        tmp = static_expr_gen_unary( $2, EXP_OP_UAND, @1.first_line, @1.first_column, (@1.last_column - 1) );
+      } Catch_anonymous {
+        static_expr_dealloc( $2, TRUE );
+        Throw 0;
+      }
       $$ = tmp;
     }
   | '!' static_expr_primary %prec UNARY_PREC
     {
       static_expr* tmp;
-      tmp = static_expr_gen_unary( $2, EXP_OP_UNOT, @1.first_line, @1.first_column, (@1.last_column - 1) );
+      Try {
+        tmp = static_expr_gen_unary( $2, EXP_OP_UNOT, @1.first_line, @1.first_column, (@1.last_column - 1) );
+      } Catch_anonymous {
+        static_expr_dealloc( $2, TRUE );
+        Throw 0;
+      }
       $$ = tmp;
     }
   | '|' static_expr_primary %prec UNARY_PREC
     {
       static_expr* tmp;
-      tmp = static_expr_gen_unary( $2, EXP_OP_UOR, @1.first_line, @1.first_column, (@1.last_column - 1) );
+      Try {
+        tmp = static_expr_gen_unary( $2, EXP_OP_UOR, @1.first_line, @1.first_column, (@1.last_column - 1) );
+      } Catch_anonymous {
+        static_expr_dealloc( $2, TRUE );
+        Throw 0;
+      }
       $$ = tmp;
     }
   | '^' static_expr_primary %prec UNARY_PREC
     {
       static_expr* tmp;
-      tmp = static_expr_gen_unary( $2, EXP_OP_UXOR, @1.first_line, @1.first_column, (@1.last_column - 1) );
+      Try {
+        tmp = static_expr_gen_unary( $2, EXP_OP_UXOR, @1.first_line, @1.first_column, (@1.last_column - 1) );
+      } Catch_anonymous {
+        static_expr_dealloc( $2, TRUE );
+        Throw 0;
+      }
       $$ = tmp;
     }
   | K_NAND static_expr_primary %prec UNARY_PREC
     {
       static_expr* tmp;
-      tmp = static_expr_gen_unary( $2, EXP_OP_UNAND, @1.first_line, @1.first_column, (@1.last_column - 1) );
+      Try {
+        tmp = static_expr_gen_unary( $2, EXP_OP_UNAND, @1.first_line, @1.first_column, (@1.last_column - 1) );
+      } Catch_anonymous {
+        static_expr_dealloc( $2, TRUE );
+        Throw 0;
+      }
       $$ = tmp;
     }
   | K_NOR static_expr_primary %prec UNARY_PREC
     {
       static_expr* tmp;
-      tmp = static_expr_gen_unary( $2, EXP_OP_UNOR, @1.first_line, @1.first_column, (@1.last_column - 1) );
+      Try {
+        tmp = static_expr_gen_unary( $2, EXP_OP_UNOR, @1.first_line, @1.first_column, (@1.last_column - 1) );
+      } Catch_anonymous {
+        static_expr_dealloc( $2, TRUE );
+        Throw 0;
+      }
       $$ = tmp;
     }
   | K_NXOR static_expr_primary %prec UNARY_PREC
     {
       static_expr* tmp;
-      tmp = static_expr_gen_unary( $2, EXP_OP_UNXOR, @1.first_line, @1.first_column, (@1.last_column - 1) );
+      Try {
+        tmp = static_expr_gen_unary( $2, EXP_OP_UNXOR, @1.first_line, @1.first_column, (@1.last_column - 1) );
+      } Catch_anonymous {
+        static_expr_dealloc( $2, TRUE );
+        Throw 0;
+      }
       $$ = tmp;
     }
   | static_expr '^' static_expr
@@ -4044,13 +4105,19 @@ expression_assignment_list
       statement*  stmt;
       char*       unnamed;
       if( (ignore_mode == 0) && ($4 != NULL) ) {
-        if( ($1 == 1) && !parser_check_generation( GENERATION_SV ) ) {
-          VLerror( "Variables declared in FOR initialization block that is specified to not allow SystemVerilog syntax" );
-        } else if( ($1 == 1) || (db_find_signal( $2, TRUE ) == NULL) ) {
-          db_add_signal( $2, curr_sig_type, &curr_prange, NULL, curr_signed, curr_mba, @2.first_line, @2.first_column, TRUE );
+        Try {
+          if( ($1 == 1) && !parser_check_generation( GENERATION_SV ) ) {
+            VLerror( "Variables declared in FOR initialization block that is specified to not allow SystemVerilog syntax" );
+          } else if( ($1 == 1) || (db_find_signal( $2, TRUE ) == NULL) ) {
+            db_add_signal( $2, curr_sig_type, &curr_prange, NULL, curr_signed, curr_mba, @2.first_line, @2.first_column, TRUE );
+          }
+          tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @2.first_line, @2.first_column, (@2.last_column - 1), $2 );
+        } Catch_anonymous {
+          expression_dealloc( $4, FALSE );
+          free_safe( $2 );
+          Throw 0;
         }
         Try {
-          tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @2.first_line, @2.first_column, (@2.last_column - 1), $2 );
           tmp = db_create_expression( $4, tmp, EXP_OP_BASSIGN, FALSE, @2.first_line, @2.first_column, (@4.last_column - 1), NULL );
         } Catch_anonymous {
           expression_dealloc( tmp, FALSE );
@@ -4075,17 +4142,25 @@ expression_assignment_list
       expression* tmp = NULL;
       statement*  stmt;
       if( (ignore_mode == 0) && ($1 != NULL) && ($6 != NULL) ) {
-        if( ($3 == 1) && !parser_check_generation( GENERATION_SV ) ) {
-          VLerror( "Variables declared in FOR initialization block that is specified to not allow SystemVerilog syntax" );
-        } else if( ($3 == 1) || (db_find_signal( $4, TRUE ) == NULL) ) {
-          db_add_signal( $4, curr_sig_type, &curr_prange, NULL, curr_signed, curr_mba, @4.first_line, @4.first_column, TRUE );
+        Try {
+          if( ($3 == 1) && !parser_check_generation( GENERATION_SV ) ) {
+            VLerror( "Variables declared in FOR initialization block that is specified to not allow SystemVerilog syntax" );
+          } else if( ($3 == 1) || (db_find_signal( $4, TRUE ) == NULL) ) {
+            db_add_signal( $4, curr_sig_type, &curr_prange, NULL, curr_signed, curr_mba, @4.first_line, @4.first_column, TRUE );
+          }
+          tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @4.first_line, @4.first_column, (@4.last_column - 1), $4 );
+        } Catch_anonymous {
+          expression_dealloc( $6, FALSE );
+          db_remove_statement( $1 );
+          free_safe( $4 );
+          Throw 0;
         }
         Try {
-          tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @4.first_line, @4.first_column, (@4.last_column - 1), $4 );
           tmp = db_create_expression( $6, tmp, EXP_OP_BASSIGN, FALSE, @4.first_line, @4.first_column, (@6.last_column - 1), NULL );
         } Catch_anonymous {
           expression_dealloc( tmp, FALSE );
           expression_dealloc( $6, FALSE );
+          db_remove_statement( $1 );
           Throw 0;
         }
         stmt = db_create_statement( tmp );
@@ -7422,14 +7497,24 @@ enum_variable
   : IDENTIFIER
     {
       db_add_signal( $1, SSUPPL_TYPE_ENUM, &curr_prange, NULL, curr_signed, FALSE, @1.first_line, @1.first_column, TRUE );
-      db_add_enum( db_find_signal( $1, FALSE ), NULL );
+      Try {
+        db_add_enum( db_find_signal( $1, FALSE ), NULL );
+      } Catch_anonymous {
+        free_safe( $1 );
+        Throw 0;
+      }
       free_safe( $1 );
     }
   | UNUSED_IDENTIFIER
   | IDENTIFIER '=' static_expr
     {
       db_add_signal( $1, SSUPPL_TYPE_ENUM, &curr_prange, NULL, curr_signed, FALSE, @1.first_line, @1.first_column, TRUE );
-      db_add_enum( db_find_signal( $1, FALSE ), $3 );
+      Try {
+        db_add_enum( db_find_signal( $1, FALSE ), $3 );
+      } Catch_anonymous {
+        free_safe( $1 );
+        Throw 0;
+      }
       free_safe( $1 );
     }
   | UNUSED_IDENTIFIER '=' static_expr

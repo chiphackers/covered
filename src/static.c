@@ -75,6 +75,8 @@ extern int        curr_expr_id;
 
  \return Returns pointer to new static_expr structure.
 
+ \throws anonymous Error
+
  Used by the parser to calculate a new static_expr structure based on the
  unary operation encountered while parsing.  Based on the operation type
  specified in the argument list, performs unary operation (if operand is
@@ -140,12 +142,7 @@ static_expr* static_expr_gen_unary( static_expr* stexp, int op, int line, int fi
           break;
 
         case EXP_OP_PASSIGN :
-          tmpexp = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, line, first, last, FALSE );
-          curr_expr_id++;
-          vector_init( tmpexp->value, (vec_data*)malloc_safe( sizeof( vec_data ) * 32 ), TRUE, 32, VTYPE_EXP );
-          vector_from_int( tmpexp->value, stexp->num );
-        
-          stexp->exp = expression_create( tmpexp, NULL, op, FALSE, curr_expr_id, line, first, last, FALSE );
+          tmpexp = expression_create( tmpexp, NULL, op, FALSE, curr_expr_id, line, first, last, FALSE );
           curr_expr_id++;
           break;
         default :  break;
@@ -412,6 +409,10 @@ void static_expr_dealloc( static_expr* stexp, bool rm_exp ) { PROFILE(STATIC_EXP
 
 /*
  $Log$
+ Revision 1.30  2008/01/16 23:10:33  phase1geo
+ More splint updates.  Code is now warning/error free with current version
+ of run_splint.  Still have regression issues to debug.
+
  Revision 1.29  2008/01/16 05:01:23  phase1geo
  Switched totals over from float types to int types for splint purposes.
 
