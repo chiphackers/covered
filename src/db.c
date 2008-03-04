@@ -257,7 +257,11 @@ bool db_check_for_top_module() { PROFILE(DB_CHECK_FOR_TOP_MODULE);
  to the database file.  If database write successful, returns TRUE; otherwise,
  returns FALSE to the calling function.
 */
-void db_write( char* file, bool parse_mode, bool report_save ) { PROFILE(DB_WRITE);
+void db_write(
+  char* file,
+  bool  parse_mode,
+  bool  report_save
+) { PROFILE(DB_WRITE);
 
   FILE*      db_handle;  /* Pointer to database file being written */
   inst_link* instl;      /* Pointer to current instance link */
@@ -317,7 +321,10 @@ void db_write( char* file, bool parse_mode, bool report_save ) { PROFILE(DB_WRIT
  list.  If there are any problems opening the file for reading or parsing
  errors, returns FALSE; otherwise, returns TRUE.
 */
-void db_read( char* file, int read_mode ) { PROFILE(DB_READ);
+void db_read(
+  char* file,
+  int read_mode
+) { PROFILE(DB_READ);
 
   FILE*        db_handle;            /* Pointer to database file being read */
   int          type;                 /* Specifies object type */
@@ -586,7 +593,10 @@ void db_read( char* file, int read_mode ) { PROFILE(DB_READ);
  Takes in specified delay value and scales it to the correct timescale for the given
  module.
 */
-uint64 db_scale_to_precision( uint64 value, func_unit* funit ) { PROFILE(DB_SCALE_TO_PRECISION);
+uint64 db_scale_to_precision(
+  uint64     value,
+  func_unit* funit
+) { PROFILE(DB_SCALE_TO_PRECISION);
 
   int units = funit->ts_unit;
 
@@ -626,7 +636,9 @@ char* db_create_unnamed_scope() { PROFILE(DB_CREATE_UNNAMED_SCOPE);
 
  \return Returns TRUE if the given scope is an unnamed scope name; otherwise, returns FALSE.
 */
-bool db_is_unnamed_scope( char* scope ) { PROFILE(DB_IS_UNNAMED_SCOPE);
+bool db_is_unnamed_scope(
+  char* scope
+) { PROFILE(DB_IS_UNNAMED_SCOPE);
 
   bool is_unnamed = (scope != NULL) && (scope[0] == '$') && (scope[1] == 'u');
 
@@ -643,7 +655,10 @@ bool db_is_unnamed_scope( char* scope ) { PROFILE(DB_IS_UNNAMED_SCOPE);
 
  Sets the global timescale unit and precision variables.
 */
-void db_set_timescale( int unit, int precision ) { PROFILE(DB_SET_TIMESCALE);
+void db_set_timescale(
+  int unit,
+  int precision
+) { PROFILE(DB_SET_TIMESCALE);
 
   current_timescale_unit = unit;
 
@@ -684,7 +699,12 @@ func_unit* db_get_curr_funit() { PROFILE(DB_GET_CURR_FUNIT);
  functional unit hasn't been created previously, create it now without a filename associated (NULL).
  Add functional unit node to tree if there are no problems in doing so.
 */
-func_unit* db_add_instance( char* scope, char* name, int type, vector_width* range ) { PROFILE(DB_ADD_INSTANCE);
+func_unit* db_add_instance(
+  char*         scope,
+  char*         name,
+  int           type,
+  vector_width* range
+) { PROFILE(DB_ADD_INSTANCE);
 
   func_unit*  funit = NULL;      /* Pointer to functional unit */
   funit_link* found_funit_link;  /* Pointer to found funit_link in functional unit list */
@@ -799,7 +819,11 @@ func_unit* db_add_instance( char* scope, char* name, int type, vector_width* ran
  are actually parsing a module which implies that we must have the name of the module
  at the head of the modlist linked-list structure.
 */
-void db_add_module( char* name, char* file, int start_line ) { PROFILE(DB_ADD_MODULE);
+void db_add_module(
+  char* name,
+  char* file,
+  int   start_line
+) { PROFILE(DB_ADD_MODULE);
 
   funit_link* modl;  /* Pointer to found tree node */
 
@@ -830,7 +854,9 @@ void db_add_module( char* name, char* file, int start_line ) { PROFILE(DB_ADD_MO
 
  Updates the modlist for parsing purposes.
 */
-void db_end_module( int end_line ) { PROFILE(DB_END_MODULE);
+void db_end_module(
+  int end_line
+) { PROFILE(DB_END_MODULE);
 
 #ifdef DEBUG_MODE
   {
@@ -865,7 +891,12 @@ void db_end_module( int end_line ) { PROFILE(DB_END_MODULE);
  Creates a new function, task or named block scope and adds it to the instance tree.  Also sets the curr_funit global
  pointer to point to this new functional unit.
 */
-bool db_add_function_task_namedblock( int type, char* name, char* file, int start_line ) { PROFILE(DB_ADD_FUNCTION_TASK_NAMEDBLOCK);
+bool db_add_function_task_namedblock(
+  int   type,
+  char* name,
+  char* file,
+  int   start_line
+) { PROFILE(DB_ADD_FUNCTION_TASK_NAMEDBLOCK);
 
   func_unit* tf;         /* Pointer to created functional unit */
   func_unit* parent;     /* Pointer to parent module for the newly created functional unit */
@@ -937,7 +968,9 @@ bool db_add_function_task_namedblock( int type, char* name, char* file, int star
 /*!
  \param end_line  Line number of end of this task/function
 */
-void db_end_function_task_namedblock( int end_line ) { PROFILE(DB_END_FUNCTION_TASK_NAMEDBLOCK);
+void db_end_function_task_namedblock(
+  int end_line
+) { PROFILE(DB_END_FUNCTION_TASK_NAMEDBLOCK);
 
   stmt_iter si;  /* Statement iterator for finding the first statement of the functional unit */
 
@@ -986,7 +1019,14 @@ void db_end_function_task_namedblock( int end_line ) { PROFILE(DB_END_FUNCTION_T
  used in the module.  If the parameter name has not been found, it is created added to
  the current module's parameter list.
 */
-void db_add_declared_param( bool is_signed, static_expr* msb, static_expr* lsb, char* name, expression* expr, bool local ) { PROFILE(DB_ADD_DECLARED_PARAM);
+void db_add_declared_param(
+  bool         is_signed,
+  static_expr* msb,
+  static_expr* lsb,
+  char*        name,
+  expression*  expr,
+  bool         local
+) { PROFILE(DB_ADD_DECLARED_PARAM);
 
   mod_parm* mparm;  /* Pointer to added module parameter */
 
@@ -1059,11 +1099,11 @@ void db_add_override_param( char* inst_name, expression* expr, char* param_name 
  parameter expression.  This function is called by the parser.
 */
 static void db_add_vector_param(
-    vsignal*    sig,
-    expression* parm_exp,
-    int         type,
-    int         dimension )
-{ PROFILE(DB_ADD_VECTOR_PARAM);
+  vsignal*    sig,
+  expression* parm_exp,
+  int         type,
+  int         dimension
+) { PROFILE(DB_ADD_VECTOR_PARAM);
 
   mod_parm* mparm;  /* Holds newly created module parameter */
 
@@ -2763,6 +2803,9 @@ bool db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.289  2008/03/04 06:46:47  phase1geo
+ More exception handling updates.  Still work to go.  Checkpointing.
+
  Revision 1.288  2008/03/04 00:09:20  phase1geo
  More exception handling.  Checkpointing.
 

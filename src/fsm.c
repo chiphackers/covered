@@ -299,6 +299,8 @@ void fsm_db_read( char** line, func_unit* funit ) { PROFILE(FSM_DB_READ);
  \param line  Pointer to read in line from CDD file to merge.
  \param same  Specifies if FSM to merge needs to be exactly the same as the existing FSM.
 
+ \throws anonymous Error
+
  Parses specified line for FSM information and performs merge of the base
  and in FSMs, placing the resulting merged FSM into the base signal.  If
  the FSMs are found to be unalike (names are different), an error message
@@ -324,15 +326,6 @@ void fsm_db_merge(
 
     *line = *line + chars_read + 1;
 
-#ifdef TBD
-    if( (base->from_state->id != iid) || (base->to_state->id != oid) ) {
-
-      print_output( "Attempting to merge two databases derived from different designs.  Unable to merge",
-                    FATAL, __FILE__, __LINE__ );
-      Throw 0;
-
-    } else if( is_table == 1 ) {
-#endif
     if( is_table == 1 ) {
 
       arc_db_merge( &(base->table), line, same );
@@ -1291,6 +1284,9 @@ void fsm_dealloc( fsm* table ) { PROFILE(FSM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.84  2008/03/04 06:46:48  phase1geo
+ More exception handling updates.  Still work to go.  Checkpointing.
+
  Revision 1.83  2008/02/09 19:32:44  phase1geo
  Completed first round of modifications for using exception handler.  Regression
  passes with these changes.  Updated regressions per these changes.

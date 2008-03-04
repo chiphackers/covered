@@ -3822,7 +3822,9 @@ void expression_operate_recursively(
  Recursively iterates through specified expression tree and returns TRUE if all of
  the leaf expressions are static expressions (STATIC or parameters).
 */
-bool expression_is_static_only( expression* expr ) { PROFILE(EXPRESSION_IS_STATIC_ONLY);
+bool expression_is_static_only(
+  expression* expr
+) { PROFILE(EXPRESSION_IS_STATIC_ONLY);
 
   if( expr != NULL ) {
 
@@ -3849,8 +3851,14 @@ bool expression_is_static_only( expression* expr ) { PROFILE(EXPRESSION_IS_STATI
 
 }
 
-/*! \brief Returns TRUE if specified expression is on the LHS of a blocking assignment operator. */
-static bool expression_is_assigned( expression* expr ) { PROFILE(EXPRESSION_IS_ASSIGNED);
+/*!
+ \param expr  Pointer to expression to check
+
+ \return Returns TRUE if specified expression is on the LHS of a blocking assignment operator.
+*/
+static bool expression_is_assigned(
+  expression* expr
+) { PROFILE(EXPRESSION_IS_ASSIGNED);
 
   bool retval = FALSE;  /* Return value for this function */
 
@@ -3887,7 +3895,9 @@ static bool expression_is_assigned( expression* expr ) { PROFILE(EXPRESSION_IS_A
 
  \return Returns TRUE if the specifies expression belongs in a single or mult-bit select expression
 */
-bool expression_is_bit_select( expression* expr ) { PROFILE(EXPRESSION_IS_BIT_SELECT);
+bool expression_is_bit_select(
+  expression* expr
+) { PROFILE(EXPRESSION_IS_BIT_SELECT);
 
   bool retval = FALSE;  /* Return value for this function */
 
@@ -3916,7 +3926,9 @@ bool expression_is_bit_select( expression* expr ) { PROFILE(EXPRESSION_IS_BIT_SE
  \return Returns TRUE if the specified expression is the last (most right-hand) part/bit select of a signal;
          otherwise, returns FALSE.
 */
-bool expression_is_last_select( expression* expr ) { PROFILE(EXPRESSION_IS_LAST_SELECT);
+bool expression_is_last_select(
+  expression* expr
+) { PROFILE(EXPRESSION_IS_LAST_SELECT);
 
   return( (ESUPPL_IS_ROOT( expr->suppl ) == 0) &&
           ( ((expr->parent->expr->op == EXP_OP_DIM) &&
@@ -3933,7 +3945,9 @@ bool expression_is_last_select( expression* expr ) { PROFILE(EXPRESSION_IS_LAST_
  \return Returns TRUE if the specified expression is in an RASSIGN expression tree; otherwise,
          returns FALSE.
 */
-bool expression_is_in_rassign( expression* expr ) { PROFILE(EXPRESSION_IS_IN_RASSIGN);
+bool expression_is_in_rassign(
+  expression* expr
+) { PROFILE(EXPRESSION_IS_IN_RASSIGN);
 
   bool retval = FALSE;  /* Return value for this function */
 
@@ -3961,7 +3975,9 @@ bool expression_is_in_rassign( expression* expr ) { PROFILE(EXPRESSION_IS_IN_RAS
  signal will come from Covered instead of the dumpfile.  This is called in the bind_signal function
  after the expression and signal have been bound (only in parsing stage).
 */
-void expression_set_assigned( expression* expr ) { PROFILE(EXPRESSION_SET_ASSIGNED);
+void expression_set_assigned(
+  expression* expr
+) { PROFILE(EXPRESSION_SET_ASSIGNED);
 
   expression* curr;  /* Pointer to current expression */
 
@@ -4228,7 +4244,10 @@ void expression_assign(
 
  Deallocates all heap memory allocated with the malloc routine.
 */
-void expression_dealloc( expression* expr, bool exp_only ) { PROFILE(EXPRESSION_DEALLOC);
+void expression_dealloc(
+  expression* expr,
+  bool exp_only
+) { PROFILE(EXPRESSION_DEALLOC);
 
   int        op;        /* Temporary operation holder */
   exp_link*  tmp_expl;  /* Temporary pointer to expression list */
@@ -4359,6 +4378,9 @@ void expression_dealloc( expression* expr, bool exp_only ) { PROFILE(EXPRESSION_
 
 /* 
  $Log$
+ Revision 1.285  2008/03/04 06:46:48  phase1geo
+ More exception handling updates.  Still work to go.  Checkpointing.
+
  Revision 1.284  2008/03/04 00:09:20  phase1geo
  More exception handling.  Checkpointing.
 
