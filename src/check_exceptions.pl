@@ -36,7 +36,8 @@ while( $file = readdir( CDIR ) ) {
           $in_comment = 1;
           # print "Starting Doxygen comment block (file: ${file}, line: ${lnum})\n";
           $throws = 0;
-        } elsif( ($in_comment == 1) && ($line =~ /\\throws/) ) {
+        } elsif( ($in_comment == 1) && ($line =~ /\\throws anonymous (.*)/) ) {
+          $thrown_funcs = $1;
           $throws = 1;
         } elsif( ($in_comment == 1) && ($line =~ /\*\//) ) {
           $in_comment = 0;
@@ -47,9 +48,10 @@ while( $file = readdir( CDIR ) ) {
             $func_name = $1;
             if( $func_name ne "PROFILE" ) {
               # print "  FOUND FUNCTION ${func_name} (line: ${lnum})\n";
-              $funcs->{$func_name}{CTHROWS} = $throws;
-              $funcs->{$func_name}{FILE}    = $file;
-              $funcs->{$func_name}{LINE}    = $lnum;
+              $funcs->{$func_name}{CTHROWS}       = $throws;
+              $funcs->{$func_name}{CTHROWN_FUNCS} = $thrown_funcs;
+              $funcs->{$func_name}{FILE}          = $file;
+              $funcs->{$func_name}{LINE}          = $lnum;
             }
             if($line =~ /\{/ ) {
               $scope_depth++;
