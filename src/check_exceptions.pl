@@ -13,7 +13,6 @@ while( $file = readdir( CDIR ) ) {
   if( $file =~ /^(\w+.c)$/ ) {
     $file = $1;
     open( IFILE, $file ) || die "Can't open ${file} for reading: $!\n";
-    # print "Parsing file ${file}...\n";
     $lnum        = 1;
     $scope_depth = 0;
     $in_ccomment = 0;
@@ -24,39 +23,33 @@ while( $file = readdir( CDIR ) ) {
       } else {
         if( ($in_ccomment == 0) && ($line =~ /\/\*(\s+|$)/) ) {
           $in_ccomment = 1;
-          # print "Starting normal comment block (file: ${file}, line: ${lnum})\n";
         }
         if( ($in_ccomment == 1) && ($line =~ /\*\//) ) {
           $in_ccomment = 0;
-          # print "Ending normal comment block (file: ${file}, line: ${lnum})\n";
         }
       }
       if( $in_ccomment == 0 ) {
         if( ($scope_depth == 0) && ($line =~ /\/\*\!/) ) {
           $in_comment = 1;
-          # print "Starting Doxygen comment block (file: ${file}, line: ${lnum})\n";
           %thrown_funcs = ();
         } elsif( ($in_comment == 1) && ($line =~ /\\throws\s+anonymous\s+(.*)\s*$/) ) {
           %thrown_funcs = split( join( " 1 ", split( $1 ) ) );
         } elsif( ($in_comment == 1) && ($line =~ /\*\//) ) {
           $in_comment = 0;
-          # print "Ending Doxygen comment block (file: ${file}, line: ${lnum})\n";
         }
         if( $in_comment == 0 ) {
           if( ($scope_depth == 0) && ($line =~ /([a-z0-9_]+)\(/) ) {
             $func_name = $1;
             if( $func_name ne "PROFILE" ) {
-              # print "  FOUND FUNCTION ${func_name} (line: ${lnum})\n";
-              $funcs->{$func_name}{CTHROWS} = $thrown_funcs;
-              print "  FOUND FUNCTION ${func_name} (line: ${lnum}) thrown_funcs: " . $funcs->{$func_name}{CTHROWS} . ".\n";
-              $funcs->{$func_name}{FILE}    = $file;
-              $funcs->{$func_name}{LINE}    = $lnum;
+              $funcs->{$func_name}{FILE} = $file;
+              $funcs->{$func_name}{LINE} = $lnum;
+              print "Found function ${func_name} (${file}:${lnum})\n";
             }
-            if($line =~ /\{/ ) {
+            if($line =~ / \{/ ) {
               $scope_depth++;
             }
           } else {
-            if( $line =~ /\{/ ) {
+            if( $line =~ / \{/ ) {
               $scope_depth++;
             }
             if( $line =~ /\}/ ) {
@@ -70,10 +63,9 @@ while( $file = readdir( CDIR ) ) {
                   ($called_fn ne "switch") &&
                   ($called_fn ne "return") ) {
                 $funcs->{$func_name}{CALLED}{$called_fn}{$lnum} = $thrown_funcs{$called_fn};
-                # print "    FOUND CALLED FUNCTION ${called_fn} (line: ${lnum})\n";
               }
             } elsif( $line =~ /Throw/ ) {
-              $funcs->{$func_name}{THROWS}{$lnum} = 1;
+              $funcs->{$func_name}{CALLED}{"Throw"}{$lnum} = $thrown_funcs{"Throw"};
             } elsif( $line =~ /Try\s*\{/ ) {
               $funcs->{$func_name}{TRY}{$lnum} = 1;
             } elsif( $line =~ /Catch_anonymous/ ) {
@@ -91,12 +83,33 @@ while( $file = readdir( CDIR ) ) {
 closedir( CDIR );
 
 # Now perform exception handling recursive searches to make sure that all functions are handled properly.
-print "The following functions are missing a \\throws command in their function documentation:\n";
 foreach $func (keys %$funcs) {
-  &check_function( $func, "" );
+  &check_function( $func );
 }
 
-sub is_throw_within_try_catch {
+# Now iterate through functions and display.
+print "The following functions are missing a \\throws command in their function documentation:\n";
+foreach $func (keys %$funcs) {
+  $throws_cmd = "\\throws anonymous";
+  $display    = 0;
+  $called_fns = $funcs->{$func}{CALLED};
+  foreach $called_fn (keys %$called_fns) {
+    $called_fn_lines = $funcs->{$func}{CALLED}{$called_fn};
+    foreach $called_fn_line (keys %$called_fn_lines) {
+      if( $funcs->{$func}{CALLED}{$called_fn}{$called_fn_line} > 0 ) {
+        $throws_cmd .= " ${called_fn}";
+        if( $funcs->{$func}{CALLED}{$called_fn}{$called_fn_line} == 2 ) {
+          $display = 1;
+        }
+      }
+    }
+  }
+  if( $display == 1 ) {
+    print "  ${func}  (" . $funcs->{$func}{FILE} . ":" . $funcs->{$func}{LINE} . "):  ${throws_cmd}\n";
+  }
+}
+
+sub is_within_try_catch {
 
   my( $func, $throw ) = @_;
 
@@ -125,48 +138,44 @@ sub is_throw_within_try_catch {
 
 sub check_function {
 
-  my( $func, $called_func ) = @_;
+  my( $func ) = @_;
   my( @throws, $throw );
-  my( $fn, $lnum );
   my( $called_fn_lines, $called_fn_line );
+  my( $fls, $fl );
+  my( $fn );
 
-  # print "Checking function ${func} in " . $funcs->{$func}{FILE} . " on line " . $funcs->{$func}{LINE} . " ...\n";
+  if( $funcs->{$func}{CHECKED} == 0 ) {
 
-  # First, check to see if the function explicitly throws an exception
-  $throws = $funcs->{$func}{THROWS};
-  if( (keys %$throws) > 0 ) {
+    $funcs->{$func}{CHECKED} = 1;
 
-    # print "  Found to throw an exception...\n";
+    $called_fns = $funcs->{$func}{CALLED};
+    foreach $called_fn (keys %$called_fns) {
 
-    # Check to see if this throws lands between a Try and Catch_anonymous call.
-    foreach $throw (keys %$throws) {
+      $called_fn_lines = $funcs->{$func}{CALLED}{$called_fn};
+      foreach $called_fn_line (keys %$called_fn_lines) {
 
-      if( &is_throw_within_try_catch( $func, $throw ) == 0 ) {
+        # If this function is known to throw an exception, continue.
+        if( ($called_fn eq "Throw") || ($funcs->{$func}{CALLED}{$called_fn}{$called_fn_line} > 0) ) {
 
-        # print "    Throw is not caught in the same function (line: ${throw})\n";
+          # If we are not within a try..catch, this function will throw an exception
+          if( &is_within_try_catch( $func, $called_fn_line ) == 0 ) {
 
-        # If this function does not have the \throws command in its documentation, indicate that here.
-        if( $funcs->{$func}{CTHROWS} == 0 ) {
+            print "Function ${called_fn} (in ${func}) is not within a try..catch block\n";
 
-          print "    ${func}   (Line throwing exception " . $funcs->{$func}{FILE} . ":${throw})\n";
-          $funcs->{$func}{CTHROWS} = 1;
-
-          # Then search for all of the functions that call this function and set their throws accordingly.
-          foreach $fn (keys %$funcs) {
-            $called_fn_lines = $funcs->{$fn}{CALLED}{$func};
-            foreach $called_fn_line (keys %$called_fn_lines) {
-              if( $lnum != 0 ) {
-                $funcs->{$fn}{THROWS}{$lnum} = 2;
+            # Find all functions that call this function and iterate upwards
+            foreach $fn (keys %$funcs) {
+              $fls = $funcs->{$fn}{CALLED}{$func};
+              foreach $fl (keys %$fls) {
+                if( $funcs->{$fn}{CALLED}{$func}{$fl} == 0 ) {
+                  $funcs->{$fn}{CALLED}{$func}{$fl} = 2;
+                }
                 &check_function( $fn );
               }
             }
+
           }
 
         }
-
-      } else {
-
-        # print "    Throw is caught in the same function (line: ${throw})\n";
 
       }
 
