@@ -35,10 +35,9 @@ while( $file = readdir( CDIR ) ) {
         if( ($scope_depth == 0) && ($line =~ /\/\*\!/) ) {
           $in_comment = 1;
           # print "Starting Doxygen comment block (file: ${file}, line: ${lnum})\n";
-          $throws = 0;
-        } elsif( ($in_comment == 1) && ($line =~ /\\throws anonymous (.*)/) ) {
-          $thrown_funcs = $1;
-          $throws = 1;
+          %thrown_funcs = ();
+        } elsif( ($in_comment == 1) && ($line =~ /\\throws\s+anonymous\s+(.*)\s*$/) ) {
+          %thrown_funcs = split( join( " 1 ", split( $1 ) ) );
         } elsif( ($in_comment == 1) && ($line =~ /\*\//) ) {
           $in_comment = 0;
           # print "Ending Doxygen comment block (file: ${file}, line: ${lnum})\n";
@@ -48,10 +47,10 @@ while( $file = readdir( CDIR ) ) {
             $func_name = $1;
             if( $func_name ne "PROFILE" ) {
               # print "  FOUND FUNCTION ${func_name} (line: ${lnum})\n";
-              $funcs->{$func_name}{CTHROWS}       = $throws;
-              $funcs->{$func_name}{CTHROWN_FUNCS} = $thrown_funcs;
-              $funcs->{$func_name}{FILE}          = $file;
-              $funcs->{$func_name}{LINE}          = $lnum;
+              $funcs->{$func_name}{CTHROWS} = $thrown_funcs;
+              print "  FOUND FUNCTION ${func_name} (line: ${lnum}) thrown_funcs: " . $funcs->{$func_name}{CTHROWS} . ".\n";
+              $funcs->{$func_name}{FILE}    = $file;
+              $funcs->{$func_name}{LINE}    = $lnum;
             }
             if($line =~ /\{/ ) {
               $scope_depth++;
@@ -70,7 +69,7 @@ while( $file = readdir( CDIR ) ) {
                   ($called_fn ne "for")    &&
                   ($called_fn ne "switch") &&
                   ($called_fn ne "return") ) {
-                $funcs->{$func_name}{CALLED}{$called_fn} = $lnum;
+                $funcs->{$func_name}{CALLED}{$called_fn}{$lnum} = $thrown_funcs{$called_fn};
                 # print "    FOUND CALLED FUNCTION ${called_fn} (line: ${lnum})\n";
               }
             } elsif( $line =~ /Throw/ ) {
@@ -129,6 +128,7 @@ sub check_function {
   my( $func, $called_func ) = @_;
   my( @throws, $throw );
   my( $fn, $lnum );
+  my( $called_fn_lines, $called_fn_line );
 
   # print "Checking function ${func} in " . $funcs->{$func}{FILE} . " on line " . $funcs->{$func}{LINE} . " ...\n";
 
@@ -153,10 +153,12 @@ sub check_function {
 
           # Then search for all of the functions that call this function and set their throws accordingly.
           foreach $fn (keys %$funcs) {
-            $lnum = $funcs->{$fn}{CALLED}{$func};
-            if( $lnum != 0 ) {
-              $funcs->{$fn}{THROWS}{$lnum} = 2;
-              &check_function( $fn );
+            $called_fn_lines = $funcs->{$fn}{CALLED}{$func};
+            foreach $called_fn_line (keys %$called_fn_lines) {
+              if( $lnum != 0 ) {
+                $funcs->{$fn}{THROWS}{$lnum} = 2;
+                &check_function( $fn );
+              }
             }
           }
 
