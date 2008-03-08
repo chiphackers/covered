@@ -10,46 +10,41 @@ opendir( CDIR, "." ) || die "Can't open current directory for reading: $!\n";
 
 while( $file = readdir( CDIR ) ) {
   chomp( $file );
-  if( $file =~ /^(\w+.c)$/ ) {
-    $file = $1;
-    open( IFILE, $file ) || die "Can't open ${file} for reading: $!\n";
-    $lnum        = 1;
+  if( $file =~ /^(\w+).c$/ ) {
+    $base  = $1;
+    $ext   = "c";
+    $wait  = 0;
+    if( -f "${base}.l" ) {
+      $ext  = "l";
+      $wait = 2;
+    } elsif( -f "${base}.y" ) {
+      next;   # Skip parser files for now
+    } elsif( $base eq "vpi" ) {
+      next;   # Skip the vpi.c file for now
+    }
+    $file = "${base}.${ext}";
+    system( "cpp -C ${file} ${base}.pp" ) && die "Unable to run preprocessor on ${file}: $!\n";
+    open( IFILE, "${base}.pp" ) || die "Can't open ${base}.pp for reading: $!\n";
+    $lnum        = 0;
     $scope_depth = 0;
-    $in_ccomment = 0;
+    $parse = 0;
     while( $line = <IFILE> ) {
+      $lnum++;
       chomp( $line );
-      if( $line =~ /^\s*\/\// ) {
-        next;
-      } else {
-        if( ($in_ccomment == 0) && ($line =~ /\/\*(\s+|$)/) ) {
-          $in_ccomment = 1;
-        }
-        if( ($in_ccomment == 1) && ($line =~ /\*\//) ) {
-          $in_ccomment = 0;
-        }
-      }
-      if( $in_ccomment == 0 ) {
-        if( ($scope_depth == 0) && ($line =~ /\/\*\!/) ) {
-          $in_comment = 1;
-          %thrown_funcs = ();
-        } elsif( ($in_comment == 1) && ($line =~ /\\throws\s+anonymous\s+(.*)\s*$/) ) {
-          %thrown_funcs = split( join( " 1 ", split( $1 ) ) );
-        } elsif( ($in_comment == 1) && ($line =~ /\*\//) ) {
-          $in_comment = 0;
-        }
-        if( $in_comment == 0 ) {
+      if( $wait == 0 ) {
+        ($line, $lnum) = &preprocess_line( $line, $base, $ext, $lnum );
+        if( $parse == 1 ) {
           if( ($scope_depth == 0) && ($line =~ /([a-z0-9_]+)\(/) ) {
             $func_name = $1;
             if( $func_name ne "PROFILE" ) {
               $funcs->{$func_name}{FILE} = $file;
               $funcs->{$func_name}{LINE} = $lnum;
-              print "Found function ${func_name} (${file}:${lnum})\n";
             }
-            if($line =~ / \{/ ) {
+            if($line =~ /\{/ ) {
               $scope_depth++;
             }
           } else {
-            if( $line =~ / \{/ ) {
+            if( $line =~ /\{/ ) {
               $scope_depth++;
             }
             if( $line =~ /\}/ ) {
@@ -57,26 +52,30 @@ while( $file = readdir( CDIR ) ) {
             }
             if( $line =~ /([a-z0-9_]+)\(/ ) {
               $called_fn = $1;
-              if( ($called_fn ne "if")   &&
-                  ($called_fn ne "while")  &&
-                  ($called_fn ne "for")    &&
-                  ($called_fn ne "switch") &&
-                  ($called_fn ne "return") ) {
+              if( $called_fn eq "setjmp" ) {
+                $funcs->{$func_name}{TRY}{$lnum} = 1;
+              } elsif( $called_fn eq "longjmp" ) {
+                $funcs->{$func_name}{CALLED}{"Throw"}{$lnum} = $thrown_funcs{"Throw"};
+              } elsif( ($called_fn ne "if")   &&
+                       ($called_fn ne "while")  &&
+                       ($called_fn ne "for")    &&
+                       ($called_fn ne "switch") &&
+                       ($called_fn ne "return") ) {
                 $funcs->{$func_name}{CALLED}{$called_fn}{$lnum} = $thrown_funcs{$called_fn};
               }
-            } elsif( $line =~ /Throw/ ) {
-              $funcs->{$func_name}{CALLED}{"Throw"}{$lnum} = $thrown_funcs{"Throw"};
-            } elsif( $line =~ /Try\s*\{/ ) {
-              $funcs->{$func_name}{TRY}{$lnum} = 1;
-            } elsif( $line =~ /Catch_anonymous/ ) {
+            } elsif( $line =~ /else the_exception_context->caught = 1;/ ) {
               $funcs->{$func_name}{CATCH}{$lnum} = 1;
             }
           }
+        } else {
+          if( ($wait > 0) && ($line =~ /^%%/) ) {
+            $wait--;
+          }
         }
       }
-      $lnum++;
     }
     close( IFILE );
+    system( "rm -f ${base}.pp" ) && die "Unable to remove ${base}.pp: $!\n";
   }
 }
 
@@ -160,8 +159,6 @@ sub check_function {
           # If we are not within a try..catch, this function will throw an exception
           if( &is_within_try_catch( $func, $called_fn_line ) == 0 ) {
 
-            print "Function ${called_fn} (in ${func}) is not within a try..catch block\n";
-
             # Find all functions that call this function and iterate upwards
             foreach $fn (keys %$funcs) {
               $fls = $funcs->{$fn}{CALLED}{$func};
@@ -177,6 +174,143 @@ sub check_function {
 
         }
 
+      }
+
+    }
+
+  }
+
+}
+
+# Variables used exclusively by the preprocess_line command (and subcommands)
+$in_comment  = 0;
+$in_dcomment = 0;
+$in_throws   = 0;
+
+sub preprocess_line {
+
+  my( $line, $base, $ext, $lnum ) = @_;
+  my( $comment, $clean, $file );
+
+  do {
+
+    $clean = 1;
+
+    # Handle preprocessor stuff
+    if( $line =~ /^\s*#/ ) {
+
+      # Handle file line numberings
+      if( $line =~ /^\s*#\s+(\d+)\s+\"(\S+)\"/ ) { 
+        $lnum = $1 - 1;
+        $file = $2;
+        if( $file eq "${base}.${ext}" ) {
+          $parse = 1;
+        } else {
+          $parse = 0;
+        }
+      }
+      $line = "";
+    }
+
+    # If we are currently not in a comment, check for comment structure.
+    if( $in_comment == 0 ) {
+
+      # Handle single line comments (ignore all stuff after the double-slash comment)
+      if( $line =~ /(.*)\/\// ) {
+        $line  = $1;
+        $clean = 0;
+      }
+
+      # Handle multi-line comment that ends on the same line
+      if( $line =~ /^(.*)\/\*(.*)\*\/(.*)$/ ) {
+        $line     = $1 . $3;
+        $comment  = $2;
+        &check_comment_line( $comment );
+        $clean    = 0;
+        
+      # Otherwise, check to see if this is the start of a multi-line comment
+      } elsif( $line =~ /(.*)\/\*(.*)/ ) {
+      	$line       = $1;
+      	$comment    = $2;
+      	&check_comment_line( $comment );
+      	$in_comment = 1;
+      	$clean      = 0;
+
+      # Otherwise, check to see if this is a string
+      } elsif( $line =~ /(.*)\".*\"(.*)/ ) {
+        $line  = $1 . $2;
+        $clean = 0;
+
+      # Otherwise, check to see if this is a character
+      } elsif( $line =~ /(.*)\'.*\'(.*)/ ) {
+        $line  = $1 . $2;
+        $clean = 0;
+      }
+
+    } else {
+
+      # If we see the end-multi-line comment token, return the rest of the line after the token
+      if( $line =~ /(.*)\*\/(.*)$/ ) {
+        $comment     = $1;
+        $line        = $2;
+        $in_dcomment = 0;
+        $in_throws   = 0;
+        &check_comment_line( $comment );
+        $in_comment  = 0;
+        $clean       = 0;
+
+      # Otherwise, return an empty string
+      } else {
+        $comment = $line;
+        &check_comment_line( $comment );
+        $line = "";
+      }
+
+    }
+
+  } while( $clean == 0 );
+
+  return ($line, $lnum);
+
+}
+
+sub check_comment_line {
+
+  my( $comment ) = @_;
+  my( $list );
+
+  # If this is the first line of a multi-line comment, check for Doxygen comment syntax
+  if( $in_comment == 0 ) {
+
+    # If this comment is a Doxygen comment, allow parsing to continue.
+    if( $comment =~ /^\!(.*)/ ) {
+      $comment      = $1;
+      $in_dcomment  = 1;
+      %thrown_funcs = ();
+    }
+
+  }
+
+  # If the current comment block is a Doxygen comment, parse it.
+  if( $in_dcomment == 1 ) {
+
+    # If the current line contains the \throws command, parse it
+    if( $comment =~ /\\throws(.*)$/ ) {
+      $comment   = $1;
+      $in_throws = 1;
+
+    # If this line is a blank line or a new command, stop adding to the thrown_funcs array
+    } elsif( $comment =~ /(^\s*$)|(^\s*\\)/ ) {
+      $in_throws = 0;
+    }
+
+    # If this is the \throws command, parse the thrown functions
+    if( $in_throws == 1 ) {
+
+      # If this is the first time we are parsing the \throws command, ignore the next token
+      if( $comment =~ /^\s*(anonymous)?\s+(.*)\s*$/ ) {
+        $list = $2;
+        %thrown_funcs = (%thrown_funcs, split( /\s+/, join( " 1 ", split( /\s+/, $list ) ) ));
       }
 
     }
