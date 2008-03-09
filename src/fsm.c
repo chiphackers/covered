@@ -299,7 +299,7 @@ void fsm_db_read( char** line, func_unit* funit ) { PROFILE(FSM_DB_READ);
  \param line  Pointer to read in line from CDD file to merge.
  \param same  Specifies if FSM to merge needs to be exactly the same as the existing FSM.
 
- \throws anonymous Error
+ \throws anonymous arc_db_merge Throw
 
  Parses specified line for FSM information and performs merge of the base
  and in FSMs, placing the resulting merged FSM into the base signal.  If
@@ -1284,6 +1284,11 @@ void fsm_dealloc( fsm* table ) { PROFILE(FSM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.85  2008/03/04 22:46:07  phase1geo
+ Working on adding check_exceptions.pl script to help me make sure that all
+ exceptions being thrown are being caught and handled appropriately.  Other
+ code adjustments are made in regards to exception handling.
+
  Revision 1.84  2008/03/04 06:46:48  phase1geo
  More exception handling updates.  Still work to go.  Checkpointing.
 

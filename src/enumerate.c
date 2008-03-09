@@ -79,7 +79,7 @@ void enumerate_end_list( func_unit* funit ) { PROFILE(ENUMERATE_END_LIST);
 /*!
  \param inst  Pointer to functional unit instance to resolve all enumerated values
 
- \throws anonymous Error
+ \throws anonymous Throw param_expr_eval
 
  Resolves all enumerated values for their value for the given instance.  This needs
  to be called during elaboration after all signals have been sized and parameters have
@@ -193,6 +193,9 @@ void enumerate_dealloc_list( func_unit* funit ) { PROFILE(ENUMERATE_DEALLOC_LIST
 
 /*
  $Log$
+ Revision 1.13  2008/03/04 00:09:20  phase1geo
+ More exception handling.  Checkpointing.
+
  Revision 1.12  2008/01/15 23:01:14  phase1geo
  Continuing to make splint updates (not doing any memory checking at this point).
 

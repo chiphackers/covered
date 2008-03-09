@@ -95,7 +95,7 @@ foreach $func (keys %$funcs) {
   foreach $called_fn (keys %$called_fns) {
     $called_fn_lines = $funcs->{$func}{CALLED}{$called_fn};
     foreach $called_fn_line (keys %$called_fn_lines) {
-      if( $funcs->{$func}{CALLED}{$called_fn}{$called_fn_line} > 0 ) {
+      if( ($called_fn eq "Throw") || ($funcs->{$func}{CALLED}{$called_fn}{$called_fn_line} > 0) ) {
         $throws_cmd .= " ${called_fn}";
         if( $funcs->{$func}{CALLED}{$called_fn}{$called_fn_line} == 2 ) {
           $display = 1;

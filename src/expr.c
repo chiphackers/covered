@@ -1459,6 +1459,8 @@ void expression_db_read(
  \param line  Pointer to CDD line to parse.
  \param same  Specifies if expression to be merged needs to be exactly the same as the existing expression.
 
+ \throws anonymous Throw vector_db_merge
+
  Parses specified line for expression information and merges contents into the
  base expression.  If the two expressions given are not the same (IDs, op,
  and/or line position differ) we know that the database files being merged 
@@ -4378,6 +4380,11 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.286  2008/03/04 22:46:07  phase1geo
+ Working on adding check_exceptions.pl script to help me make sure that all
+ exceptions being thrown are being caught and handled appropriately.  Other
+ code adjustments are made in regards to exception handling.
+
  Revision 1.285  2008/03/04 06:46:48  phase1geo
  More exception handling updates.  Still work to go.  Checkpointing.
 

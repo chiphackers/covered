@@ -381,6 +381,8 @@ void fsm_var_stmt_add(
 }
 
 /*!
+ \throws anonymous fsm_var_bind_expr Throw
+
  After Verilog parsing has completed, this function should be called to bind all signals
  to their associated FSM state expressions and functional units.  For each entry in the FSM binding list
  the signal name is looked in the functional unit specified in the binding entry.  If the signal is found,
@@ -398,21 +400,41 @@ void fsm_var_bind() { PROFILE(FSM_VAR_BIND);
   fv_bind*  curr;  /* Pointer to current FSM variable */
   fv_bind*  tmp;   /* Temporary pointer to FSM bind structure */
 
-  curr = fsm_var_bind_head;
-  while( curr != NULL ) {
+  Try {
 
-    /* Perform binding */
-    fsm_var_bind_expr( curr->sig_name, curr->expr, curr->funit_name );
+    curr = fsm_var_bind_head;
+    while( curr != NULL ) {
 
-    tmp = curr->next;
+      /* Perform binding */
+      fsm_var_bind_expr( curr->sig_name, curr->expr, curr->funit_name );
 
-    /* Deallocate memory for this bind structure */
-    free_safe( curr->sig_name );
-    free_safe( curr->funit_name );
-    free_safe( curr );
+      tmp = curr->next;
 
-    curr = tmp;
+      /* Deallocate memory for this bind structure */
+      free_safe( curr->sig_name );
+      free_safe( curr->funit_name );
+      free_safe( curr );
 
+      curr = tmp;
+
+    }
+
+  } Catch_anonymous {
+    while( curr != NULL ) {
+      tmp = curr->next;
+      free_safe( curr->sig_name );
+      free_safe( curr->funit_name );
+      free_safe( curr );
+      curr = tmp;
+    } 
+    curr = fsm_var_stmt_head;
+    while( curr != NULL ) {
+      tmp = curr->next;
+      free_safe( curr->funit_name );
+      free_safe( curr );
+      curr = tmp;
+    }
+    Throw 0;
   }
 
   curr = fsm_var_stmt_head;
@@ -498,6 +520,10 @@ void fsm_var_remove(
 
 /*
  $Log$
+ Revision 1.39  2008/02/29 00:08:31  phase1geo
+ Completed optimization code in simulator.  Still need to verify that code
+ changes enhanced performances as desired.  Checkpointing.
+
  Revision 1.38  2008/02/25 18:22:16  phase1geo
  Moved statement supplemental bits from root expression to statement and starting
  to add support for race condition checking pragmas (still some work left to do
