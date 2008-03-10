@@ -409,7 +409,7 @@ static bool bind_param( const char* name, expression* exp, func_unit* funit_exp,
 
  \return Returns TRUE if bind occurred successfully; otherwise, returns FALSE.
 
- \throws anonymous Error
+ \throws anonymous expression_set_value
  
  Performs a binding of an expression and signal based on the name of the
  signal.  Looks up signal name in the specified functional unit and sets the expression
@@ -652,17 +652,19 @@ static void bind_task_function_ports( expression* expr, func_unit* funit, char* 
  \return Returns TRUE if there were no errors in binding the specified expression to the needed
          functional unit; otherwise, returns FALSE to indicate that we had an error.
 
+ \throws anonymous Throw
+
  Binds an expression to a function/task/named block.
 */
 static bool bind_task_function_namedblock(
-    int type,
-    char* name,
-    expression* exp,
-    func_unit* funit_exp,
-    bool cdd_reading,
-    int exp_line,
-    bool bind_locally )
-{ PROFILE(BIND_TASK_FUNCTION_NAMEDBLOCK);
+  int         type,
+  char*       name,
+  expression* exp,
+  func_unit*  funit_exp,
+  bool        cdd_reading,
+  int         exp_line,
+  bool        bind_locally
+) { PROFILE(BIND_TASK_FUNCTION_NAMEDBLOCK);
 
   bool       retval = FALSE;  /* Return value for this function */
   sig_link*  sigl;            /* Temporary signal link holder */
@@ -736,7 +738,7 @@ static bool bind_task_function_namedblock(
  \param cdd_reading  Set to TRUE if we are binding after reading the CDD file; otherwise, set to FALSE.
  \param pass         Specifies the starting pass to perform (setting this to 1 will bypass resolutions).
 
- \throws anonymous Error
+ \throws anonymous Throw param_resolve bind_signal generate_resolve bind_task_function_namedblock bind_task_function_namedblock
 
  In the process of binding, we go through each element of the binding list,
  finding the signal to be bound in the specified tree, adding the expression
@@ -750,131 +752,146 @@ void bind_perform( bool cdd_reading, int pass ) { PROFILE(BIND_PERFORM);
   bool       bound;     /* Specifies if the current expression was successfully bound or not */
   statement* tmp_stmt;  /* Pointer to temporary statement */
 
-  /* Make three passes through binding list, 0=local signal/param bindings, 1=remote signal/param bindings */
-  for( ; pass<2; pass++ ) {
+  Try {
 
-    curr_eb = eb_head;
-    while( curr_eb != NULL ) {
+    /* Make three passes through binding list, 0=local signal/param bindings, 1=remote signal/param bindings */
+    for( ; pass<2; pass++ ) {
 
-      /* Figure out ID to clear from the binding list after the bind occurs */
-      if( curr_eb->clear_assigned == 0 ) {
-        id = curr_eb->exp->id;
-      } else {
-        id = curr_eb->clear_assigned;
-      }
+      curr_eb = eb_head;
+      while( curr_eb != NULL ) {
 
-      /* If the expression has already been bound, do not attempt to do it again */
-      if( (curr_eb->exp != NULL) && (curr_eb->exp->name != NULL) ) {
+        /* Figure out ID to clear from the binding list after the bind occurs */
+        if( curr_eb->clear_assigned == 0 ) {
+          id = curr_eb->exp->id;
+        } else {
+          id = curr_eb->clear_assigned;
+        }
 
-        bound = TRUE;
+        /* If the expression has already been bound, do not attempt to do it again */
+        if( (curr_eb->exp != NULL) && (curr_eb->exp->name != NULL) ) {
 
-      } else {
+          bound = TRUE;
 
-        /* Handle signal/parameter binding */
-        if( curr_eb->type == 0 ) {
-
-          /* Attempt to bind the expression to a parameter; otherwise, bind to a signal */
-          if( !(bound = bind_param( curr_eb->name, curr_eb->exp, curr_eb->funit, curr_eb->line, (pass == 0) )) ) {
-            bound = bind_signal( curr_eb->name, curr_eb->exp, curr_eb->funit, FALSE, cdd_reading,
-                                 (curr_eb->clear_assigned > 0), curr_eb->line, (pass == 0) );
-          }
-
-          /* If an FSM expression is attached, size it now */
-          if( curr_eb->fsm != NULL ) {
-            curr_eb->fsm->value = vector_create( curr_eb->exp->value->width, VTYPE_EXP, TRUE );
-          }
-
-        /* Otherwise, handle disable binding */
-        } else if( curr_eb->type == 1 ) {
-
-          /* Attempt to bind a named block -- if unsuccessful, attempt to bind with a task */
-          if( !(bound = bind_task_function_namedblock( FUNIT_NAMED_BLOCK, curr_eb->name, curr_eb->exp, curr_eb->funit,
-                                                       cdd_reading, curr_eb->line, (pass == 0) )) ) {
-            bound = bind_task_function_namedblock( FUNIT_TASK, curr_eb->name, curr_eb->exp, curr_eb->funit,
-                                                   cdd_reading, curr_eb->line, (pass == 0) );
-          }
-
-        /* Otherwise, handle function/task binding */
         } else {
 
-          /*
-           Bind the expression to the task/function.  If it is unsuccessful, we need to remove the statement
-           that this expression is a part of.
-          */
-          bound = bind_task_function_namedblock( curr_eb->type, curr_eb->name, curr_eb->exp, curr_eb->funit,
-                                                 cdd_reading, curr_eb->line, (pass == 0) );
+          /* Handle signal/parameter binding */
+          if( curr_eb->type == 0 ) {
+
+            /* Attempt to bind the expression to a parameter; otherwise, bind to a signal */
+            if( !(bound = bind_param( curr_eb->name, curr_eb->exp, curr_eb->funit, curr_eb->line, (pass == 0) )) ) {
+              bound = bind_signal( curr_eb->name, curr_eb->exp, curr_eb->funit, FALSE, cdd_reading,
+                                   (curr_eb->clear_assigned > 0), curr_eb->line, (pass == 0) );
+            }
+
+            /* If an FSM expression is attached, size it now */
+            if( curr_eb->fsm != NULL ) {
+              curr_eb->fsm->value = vector_create( curr_eb->exp->value->width, VTYPE_EXP, TRUE );
+            }
+
+          /* Otherwise, handle disable binding */
+          } else if( curr_eb->type == 1 ) {
+
+            /* Attempt to bind a named block -- if unsuccessful, attempt to bind with a task */
+            if( !(bound = bind_task_function_namedblock( FUNIT_NAMED_BLOCK, curr_eb->name, curr_eb->exp, curr_eb->funit,
+                                                         cdd_reading, curr_eb->line, (pass == 0) )) ) {
+              bound = bind_task_function_namedblock( FUNIT_TASK, curr_eb->name, curr_eb->exp, curr_eb->funit,
+                                                     cdd_reading, curr_eb->line, (pass == 0) );
+            }
+
+          /* Otherwise, handle function/task binding */
+          } else {
+
+            /*
+             Bind the expression to the task/function.  If it is unsuccessful, we need to remove the statement
+             that this expression is a part of.
+            */
+            bound = bind_task_function_namedblock( curr_eb->type, curr_eb->name, curr_eb->exp, curr_eb->funit,
+                                                   cdd_reading, curr_eb->line, (pass == 0) );
+
+          }
+
+          /* If we have bound successfully, copy the name of this exp_bind to the expression */
+          if( bound && (curr_eb->exp != NULL) ) {
+            curr_eb->exp->name = strdup_safe( curr_eb->name );
+          }
 
         }
 
-        /* If we have bound successfully, copy the name of this exp_bind to the expression */
-        if( bound && (curr_eb->exp != NULL) ) {
-          curr_eb->exp->name = strdup_safe( curr_eb->name );
-        }
-
-      }
-
-      /*
-       If the expression was unable to be bound, put its statement block in a list to be removed after
-       binding has been completed.
-      */
-      if( !bound && (curr_eb->clear_assigned == 0) && (pass == 1) ) {
-        if( (tmp_stmt = expression_get_root_statement( curr_eb->exp )) != NULL ) {
+        /*
+         If the expression was unable to be bound, put its statement block in a list to be removed after
+         binding has been completed.
+        */
+        if( !bound && (curr_eb->clear_assigned == 0) && (pass == 1) ) {
+          if( (tmp_stmt = expression_get_root_statement( curr_eb->exp )) != NULL ) {
 #ifdef DEBUG_MODE
-          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Removing statement block containing line %d in file \"%s\", because it was unbindable",
-                                      curr_eb->exp->line, obf_file( curr_eb->funit->filename ) );
-          assert( rv < USER_MSG_LENGTH );
-          print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+            unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Removing statement block containing line %d in file \"%s\", because it was unbindable",
+                                        curr_eb->exp->line, obf_file( curr_eb->funit->filename ) );
+            assert( rv < USER_MSG_LENGTH );
+            print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif        
-          stmt_blk_add_to_remove_list( tmp_stmt );
+            stmt_blk_add_to_remove_list( tmp_stmt );
+          }
         }
+
+        curr_eb = curr_eb->next;
+
+        /* Remove this from the binding list */
+        if( bound ) {
+          bind_remove( id, FALSE );
+        }
+
       }
-
-      curr_eb = curr_eb->next;
-
-      /* Remove this from the binding list */
-      if( bound ) {
-        bind_remove( id, FALSE );
-      }
-
-    }
 
 #ifndef VPI_ONLY
-    /* If we are in parse mode, resolve all parameters and arrays of instances now */
-    if( !cdd_reading && (pass == 0) ) {
-      inst_link* instl;
+      /* If we are in parse mode, resolve all parameters and arrays of instances now */
+      if( !cdd_reading && (pass == 0) ) {
+        inst_link* instl;
 #ifdef DEBUG_MODE
-      if( debug_mode ) {
-        print_output( "Resolving parameters...", DEBUG, __FILE__, __LINE__ );
-      }
+        if( debug_mode ) {
+          print_output( "Resolving parameters...", DEBUG, __FILE__, __LINE__ );
+        }
 #endif
-      instl = inst_head;
-      while( instl != NULL ) {
-        param_resolve( instl->inst );
-        instl = instl->next;
-      }
+        instl = inst_head;
+        while( instl != NULL ) {
+          param_resolve( instl->inst );
+          instl = instl->next;
+        }
 #ifdef DEBUG_MODE
-      if( debug_mode ) {
-        print_output( "Resolving generate statements...", DEBUG, __FILE__, __LINE__ );
-      }
+        if( debug_mode ) {
+          print_output( "Resolving generate statements...", DEBUG, __FILE__, __LINE__ );
+        }
 #endif
-      instl = inst_head;
-      while( instl != NULL ) {
-        generate_resolve( instl->inst );
-        instl = instl->next;
-      }
+        instl = inst_head;
+        while( instl != NULL ) {
+          generate_resolve( instl->inst );
+          instl = instl->next;
+        }
 #ifdef DEBUG_MODE
-      if( debug_mode ) {
-        print_output( "Resolving arrays of instances...", DEBUG, __FILE__, __LINE__ );
-      }
+        if( debug_mode ) {
+          print_output( "Resolving arrays of instances...", DEBUG, __FILE__, __LINE__ );
+        }
 #endif
-      instl = inst_head;
-      while( instl != NULL ) {
-        instance_resolve( instl->inst );
-        instl = instl->next;
+        instl = inst_head;
+        while( instl != NULL ) {
+          instance_resolve( instl->inst );
+          instl = instl->next;
+        }
       }
-    }
 #endif
 
+    }
+
+  } Catch_anonymous {
+    exp_bind* tmp_eb;
+    curr_eb = eb_head;
+    while( curr_eb != NULL ) {
+      tmp_eb  = curr_eb;
+      curr_eb = curr_eb->next;
+      free_safe( tmp_eb->name );
+      free_safe( tmp_eb );
+    }
+    eb_head = eb_tail = NULL;
+    Throw 0;
   }
 
   PROFILE_END;
@@ -912,6 +929,9 @@ void bind_dealloc() { PROFILE(BIND_DEALLOC);
 
 /* 
  $Log$
+ Revision 1.123  2008/03/04 00:09:20  phase1geo
+ More exception handling.  Checkpointing.
+
  Revision 1.122  2008/02/29 23:58:19  phase1geo
  Continuing to work on adding exception handling code.
 

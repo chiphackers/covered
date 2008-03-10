@@ -196,8 +196,12 @@ struct exception_context { \
 #define init_exception_context(ec) ((void)((ec)->last = 0))
 
 #define Catch(e) exception__catch(&(e))
-#define Catch_anonymous exception__catch(0)
 
+#ifndef NOCOMP
+#define Catch_anonymous exception__catch(0)
+#endif
+
+#ifndef NOCOMP
 #define Try \
   { \
     struct exception__state *exception__p, exception__s; \
@@ -208,6 +212,7 @@ struct exception_context { \
       if (exception__i) { \
         if (setjmp(exception__s.env) == 0) { \
           if (&exception__s)
+#endif
 
 #define exception__catch(e_addr) \
           else { } \
@@ -235,10 +240,12 @@ struct exception_context { \
 /* rather than jump into the loop using a switch statement, to        */
 /* appease compilers that warn about jumping into loops.              */
 
+#ifndef NOCOMP
 #define Throw \
   for (;; longjmp(the_exception_context->last->env, 1)) \
     if (the_exception_context->last->exception) \
       *the_exception_context->last->exception =
+#endif
 
 
 #endif /* CEXCEPT_H */

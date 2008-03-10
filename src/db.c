@@ -250,7 +250,7 @@ bool db_check_for_top_module() { PROFILE(DB_CHECK_FOR_TOP_MODULE);
  \param parse_mode   Specifies if we are outputting parse data or score data.
  \param report_save  Specifies if we are attempting to "save" a CDD file modified in the report command
 
- \throws anonymous Error
+ \throws anonymous Throw Throw instance_db_write
 
  Opens specified database for writing.  If database open successful,
  iterates through functional unit, expression and signal lists, displaying each
@@ -315,15 +315,16 @@ void db_write(
                    - 2 = Instance, merge, merge command
                    - 3 = Module, merge, report command
 
+ \throws anonymous info_db_read args_db_read Throw Throw Throw expression_db_read fsm_db_read race_db_read funit_db_read vsignal_db_read funit_db_merge funit_db_merge statement_db_read
+
  Opens specified database file for reading.  Reads in each line from the
  file examining its contents and creating the appropriate type to store
  the specified information and stores it into the appropriate internal
- list.  If there are any problems opening the file for reading or parsing
- errors, returns FALSE; otherwise, returns TRUE.
+ list.
 */
 void db_read(
   char* file,
-  int read_mode
+  int   read_mode
 ) { PROFILE(DB_READ);
 
   FILE*        db_handle;            /* Pointer to database file being read */
@@ -693,7 +694,7 @@ func_unit* db_get_curr_funit() { PROFILE(DB_GET_CURR_FUNIT);
  \return Returns a pointer to the created functional unit if the instance was added to the hierarchy;
          otherwise, returns NULL.
 
- \throw error Anonymous
+ \throws anonymous Throw
  
  Creates a new functional unit node with the instantiation name, search for matching functional unit.  If
  functional unit hasn't been created previously, create it now without a filename associated (NULL).
@@ -747,6 +748,7 @@ func_unit* db_add_instance(
                                   scope, obf_funit( curr_funit->name ), obf_file( curr_funit->filename ) );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      funit_dealloc( funit );
       Throw 0;
     }
 
@@ -886,7 +888,7 @@ void db_end_module(
  \return Returns TRUE if the new functional unit was added to the design; otherwise, returns FALSE
          to indicate that this block should be ignored.
 
- \throws error Anonymous
+ \throws anonymous Throw
 
  Creates a new function, task or named block scope and adds it to the instance tree.  Also sets the curr_funit global
  pointer to point to this new functional unit.
@@ -1392,6 +1394,8 @@ void db_add_typedef(
 
  \return Returns pointer to the found signal.
 
+ \throws anonymous Throw
+
  Searches signal matching the specified name using normal scoping rules.  If the signal is
  found, returns a pointer to the calling function for that signal.  If the signal is not
  found, emits a user error and immediately halts execution.
@@ -1579,7 +1583,7 @@ int db_curr_signal_count() { PROFILE(DB_CURR_SIGNAL_COUNT);
 
  \return Returns pointer to newly created expression.
 
- \throws anonymous Error
+ \throws anonymous expression_create Throw
 
  Creates a new expression with the specified parameter information and returns a
  pointer to the newly created expression.
@@ -1760,7 +1764,7 @@ void db_bind_expr_tree( expression* root, char* sig_name ) { PROFILE(DB_BIND_EXP
  
  \return Returns a pointer to an expression that represents the static expression specified
 
- \throws error Anonymous
+ \throws anonymous db_create_expression Throw
 
  Creates an expression structure from a static expression structure.
 */
@@ -1879,7 +1883,7 @@ void db_add_expression( expression* root ) { PROFILE(DB_ADD_EXPRESSION);
 
  \return Returns expression tree to execute a sensitivity list for the given statement block.
 
- \throws error Anonymous
+ \throws anonymous db_create_expression db_create_expression db_create_expression db_create_expression Throw
 */
 expression* db_create_sensitivity_list(
   statement* stmt
@@ -1944,14 +1948,14 @@ expression* db_create_sensitivity_list(
 
  \return Returns pointer to parallelized statement block
 
- \throws error Anonymous
+ \throws anonymous db_create_statement Throw db_create_expression
 */
 statement* db_parallelize_statement(
   statement* stmt
 ) { PROFILE(DB_PARALLELIZE_STATEMENT);
 
-  expression* exp;    /* Expression containing FORK statement */
-  char*       scope;  /* Name of current parallelized statement scope */
+  expression* exp;         /* Expression containing FORK statement */
+  char*       scope;       /* Name of current parallelized statement scope */
   char        back[4096];  /* Last portion of scope */
 
   /* If we are a parallel statement, create a FORK statement for this statement block */
@@ -1986,9 +1990,6 @@ statement* db_parallelize_statement(
       /* Restore the original functional unit */
       db_end_function_task_namedblock( stmt->exp->line );
 
-      /* Bind the FORK expression to this statement */
-      //bind_add( FUNIT_NAMED_BLOCK, scope, exp, curr_funit );
-
     }
     free_safe( scope );
 
@@ -1996,8 +1997,15 @@ statement* db_parallelize_statement(
     fork_depth--;
     block_depth--;
 
-    /* Create FORK statement and add the expression */
-    stmt = db_create_statement( exp );
+    Try {
+
+      /* Create FORK statement and add the expression */
+      stmt = db_create_statement( exp );
+
+    } Catch_anonymous {
+      expression_dealloc( exp, FALSE );
+      Throw 0;
+    }
 
     /* Restore fork and block depth values for parser */
     fork_depth++;
@@ -2016,10 +2024,14 @@ statement* db_parallelize_statement(
 
  \return Returns pointer to created statement.
 
+ \throws anonymous db_parallelize_statement Throw
+
  Creates an statement structure and adds created statement to current
  module's statement list.
 */
-statement* db_create_statement( expression* exp ) { PROFILE(DB_CREATE_STATEMENT);
+statement* db_create_statement(
+  expression* exp
+) { PROFILE(DB_CREATE_STATEMENT);
 
   statement* stmt;  /* Pointer to newly created statement */
 
@@ -2044,8 +2056,16 @@ statement* db_create_statement( expression* exp ) { PROFILE(DB_CREATE_STATEMENT)
     stmt->suppl.part.ignore_rc = 1;
   }
 
-  /* If we are a parallel statement, create a FORK statement for this statement block */
-  stmt = db_parallelize_statement( stmt );
+  Try {
+
+    /* If we are a parallel statement, create a FORK statement for this statement block */
+    stmt = db_parallelize_statement( stmt );
+
+  } Catch_anonymous {
+    statement_dealloc( stmt );
+    expression_dealloc( exp, FALSE );
+    Throw 0;
+  }
 
   PROFILE_END;
 
@@ -2433,18 +2453,27 @@ attr_param* db_create_attr_param( char* name, expression* expr ) { PROFILE(DB_CR
 /*!
  \param ap  Pointer to attribute parameter list to parse.
 
- \throws anonymous Error
+ \throws anonymous attribute_parse Throw
 
  Calls the attribute_parse() function and deallocates this list.
 */
-void db_parse_attribute( attr_param* ap ) { PROFILE(DB_PARSE_ATTRIBUTE);
+void db_parse_attribute(
+  attr_param* ap
+) { PROFILE(DB_PARSE_ATTRIBUTE);
 
 #ifdef DEBUG_MODE
   print_output( "In db_parse_attribute", DEBUG, __FILE__, __LINE__ );
 #endif
 
-  /* First, parse the entire attribute */
-  attribute_parse( ap, curr_funit, (exclude_mode > 0) );
+  Try {
+
+    /* First, parse the entire attribute */
+    attribute_parse( ap, curr_funit, (exclude_mode > 0) );
+
+  } Catch_anonymous {
+    attribute_dealloc( ap );
+    Throw 0;
+  }
 
   /* Then deallocate the structure */
   attribute_dealloc( ap );
@@ -2485,8 +2514,7 @@ void db_remove_stmt_blks_calling_statement( statement* stmt ) { PROFILE(DB_REMOV
 /*!
  \return Returns the string version of the current instance scope (memory allocated).
 */
-static char* db_gen_curr_inst_scope()
-{ PROFILE(DB_GEN_CURR_INST_SCOPE);
+static char* db_gen_curr_inst_scope() { PROFILE(DB_GEN_CURR_INST_SCOPE);
 
   char* scope      = NULL;  /* Pointer to current scope */
   int   scope_size = 0;     /* Calculated size of current instance scope */
@@ -2803,6 +2831,11 @@ bool db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.290  2008/03/04 22:46:07  phase1geo
+ Working on adding check_exceptions.pl script to help me make sure that all
+ exceptions being thrown are being caught and handled appropriately.  Other
+ code adjustments are made in regards to exception handling.
+
  Revision 1.289  2008/03/04 06:46:47  phase1geo
  More exception handling updates.  Still work to go.  Checkpointing.
 

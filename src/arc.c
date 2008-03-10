@@ -1010,6 +1010,8 @@ static unsigned int arc_read_get_next_value( char** line ) { PROFILE(ARC_READ_GE
  \param arcs  Pointer to state transition arc array.
  \param line  String containing current CDD line of arc information.
 
+ \throws anonymous Throw
+
  Reads in specified state transition arc table, allocating the appropriate
  space to hold the table.  Returns TRUE if the specified line contained an
  appropriately written arc transition table; otherwise, returns FALSE.
@@ -1079,7 +1081,12 @@ void arc_db_read(
  Converts the state specified by index and left parameters from its compacted bit format
  to a hexidecimal string format.
 */
-static void arc_state_to_string( const char* arcs, int index, bool left, char* str ) { PROFILE(ARC_STATE_TO_STRING);
+static void arc_state_to_string(
+  const char* arcs,
+  int         index,
+  bool        left,
+  char*       str
+) { PROFILE(ARC_STATE_TO_STRING);
 
   char         tmp[2];       /* Temporary string holder */
   unsigned int val;          /* Temporary storage for integer value of 4-bits */
@@ -1135,9 +1142,15 @@ static void arc_state_to_string( const char* arcs, int index, bool left, char* s
  \param line  Pointer to read in line from CDD file to merge.
  \param same  Specifies if arc table to merge needs to be exactly the same as the existing arc table.
 
+ \throws anonymous Throw arc_db_read
+
  Merges the specified FSM arc information from the current line into the base FSM arc information.
 */
-void arc_db_merge( char** base, char** line, bool same ) { PROFILE(ARC_DB_MERGE);
+void arc_db_merge(
+  char** base,
+  char** line,
+  bool   same
+) { PROFILE(ARC_DB_MERGE);
 
   /*@-mustfreeonly -mustfreefresh@*/
 
@@ -1379,6 +1392,10 @@ void arc_dealloc( char* arcs ) { PROFILE(ARC_DEALLOC);
 
 /*
  $Log$
+ Revision 1.52  2008/02/09 19:32:44  phase1geo
+ Completed first round of modifications for using exception handler.  Regression
+ passes with these changes.  Updated regressions per these changes.
+
  Revision 1.51  2008/02/02 14:11:54  phase1geo
  Adding new diagnostic for exclusion testing purposes.
 

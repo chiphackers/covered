@@ -77,7 +77,7 @@ attr_param* attribute_create( const char* name, expression* expr ) { PROFILE(ATT
  \param funit    Pointer to current functional unit containing this attribute.
  \param exclude  If set to 1, sets the exclude bits (if they exist) in the structure created by the attribute.
 
- \throw anonymous Error
+ \throws anonymous fsm_arg_parse_attr attribute_parse
 
  Parses the attribute parameter list in a recursive fashion.  First,
  we go for the last entry and see if it refers to an attribute that covered
@@ -133,6 +133,9 @@ void attribute_dealloc( attr_param* ap ) { PROFILE(ATTRIBUTE_DEALLOC);
 
 /*
  $Log$
+ Revision 1.11  2008/03/04 06:46:47  phase1geo
+ More exception handling updates.  Still work to go.  Checkpointing.
+
  Revision 1.10  2008/02/01 06:37:07  phase1geo
  Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
  using pragma excludes (this code is not fully working yet).  More to be done.

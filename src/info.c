@@ -219,6 +219,8 @@ void info_db_read( char** line ) { PROFILE(INFO_DB_READ);
 /*!
  \param line  Pointer to string containing information line to parse.
  
+ \throws anonymous Throw
+
  Reads score command-line args line from specified string and stores its information.
 */
 void args_db_read( char** line ) { PROFILE(ARGS_DB_READ);
@@ -277,6 +279,11 @@ void info_dealloc() { PROFILE(INFO_DEALLOC);
 
 /*
  $Log$
+ Revision 1.25  2008/03/04 22:46:08  phase1geo
+ Working on adding check_exceptions.pl script to help me make sure that all
+ exceptions being thrown are being caught and handled appropriately.  Other
+ code adjustments are made in regards to exception handling.
+
  Revision 1.24  2008/02/09 19:32:45  phase1geo
  Completed first round of modifications for using exception handler.  Regression
  passes with these changes.  Updated regressions per these changes.

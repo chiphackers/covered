@@ -23,7 +23,7 @@ while( $file = readdir( CDIR ) ) {
       next;   # Skip the vpi.c file for now
     }
     $file = "${base}.${ext}";
-    system( "cpp -C ${file} ${base}.pp" ) && die "Unable to run preprocessor on ${file}: $!\n";
+    system( "cpp -C ${file} -DNOCOMP ${base}.pp" ) && die "Unable to run preprocessor on ${file}: $!\n";
     open( IFILE, "${base}.pp" ) || die "Can't open ${base}.pp for reading: $!\n";
     $lnum        = 0;
     $scope_depth = 0;
@@ -52,18 +52,18 @@ while( $file = readdir( CDIR ) ) {
             }
             if( $line =~ /([a-z0-9_]+)\(/ ) {
               $called_fn = $1;
-              if( $called_fn eq "setjmp" ) {
-                $funcs->{$func_name}{TRY}{$lnum} = 1;
-              } elsif( $called_fn eq "longjmp" ) {
-                $funcs->{$func_name}{CALLED}{"Throw"}{$lnum} = $thrown_funcs{"Throw"};
-              } elsif( ($called_fn ne "if")   &&
-                       ($called_fn ne "while")  &&
-                       ($called_fn ne "for")    &&
-                       ($called_fn ne "switch") &&
-                       ($called_fn ne "return") ) {
+              if( ($called_fn ne "if")   &&
+                  ($called_fn ne "while")  &&
+                  ($called_fn ne "for")    &&
+                  ($called_fn ne "switch") &&
+                  ($called_fn ne "return") ) {
                 $funcs->{$func_name}{CALLED}{$called_fn}{$lnum} = $thrown_funcs{$called_fn};
               }
-            } elsif( $line =~ /else the_exception_context->caught = 1;/ ) {
+            } elsif( $line =~ /Try/ ) {
+              $funcs->{$func_name}{TRY}{$lnum} = 1;
+            } elsif( $line =~ /Throw/ ) {
+              $funcs->{$func_name}{CALLED}{"Throw"}{$lnum} = $thrown_funcs{"Throw"};
+            } elsif( $line =~ /Catch_anonymous/ ) {
               $funcs->{$func_name}{CATCH}{$lnum} = 1;
             }
           }
@@ -88,14 +88,14 @@ foreach $func (keys %$funcs) {
 
 # Now iterate through functions and display.
 print "The following functions are missing a \\throws command in their function documentation:\n";
-foreach $func (keys %$funcs) {
+foreach $func (sort keys %$funcs) {
   $throws_cmd = "\\throws anonymous";
   $display    = 0;
   $called_fns = $funcs->{$func}{CALLED};
   foreach $called_fn (keys %$called_fns) {
     $called_fn_lines = $funcs->{$func}{CALLED}{$called_fn};
     foreach $called_fn_line (keys %$called_fn_lines) {
-      if( ($called_fn eq "Throw") || ($funcs->{$func}{CALLED}{$called_fn}{$called_fn_line} > 0) ) {
+      if( $funcs->{$func}{CALLED}{$called_fn}{$called_fn_line} > 0 ) {
         $throws_cmd .= " ${called_fn}";
         if( $funcs->{$func}{CALLED}{$called_fn}{$called_fn_line} == 2 ) {
           $display = 1;
@@ -158,6 +158,11 @@ sub check_function {
 
           # If we are not within a try..catch, this function will throw an exception
           if( &is_within_try_catch( $func, $called_fn_line ) == 0 ) {
+
+            # If this "function" is a Throw and it's not accounted for, mark it in the current function
+            if( ($called_fn eq "Throw") && ($funcs->{$func}{CALLED}{$called_fn}{$called_fn_line} == 0) ) {
+              $funcs->{$func}{CALLED}{$called_fn}{$called_fn_line} = 2;
+            }
 
             # Find all functions that call this function and iterate upwards
             foreach $fn (keys %$funcs) {
@@ -310,7 +315,8 @@ sub check_comment_line {
       # If this is the first time we are parsing the \throws command, ignore the next token
       if( $comment =~ /^\s*(anonymous)?\s+(.*)\s*$/ ) {
         $list = $2;
-        %thrown_funcs = (%thrown_funcs, split( /\s+/, join( " 1 ", split( /\s+/, $list ) ) ));
+        my( @tmp ) = (split( /\s+/, join( " 1 ", split( /\s+/, $list ) )), 1);
+        %thrown_funcs = (%thrown_funcs, (split( /\s+/, join( " 1 ", split( /\s+/, $list ) )), 1));
       }
 
     }
