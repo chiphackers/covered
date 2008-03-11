@@ -23,7 +23,7 @@ while( $file = readdir( CDIR ) ) {
       next;   # Skip the vpi.c file for now
     }
     $file = "${base}.${ext}";
-    system( "cpp -C ${file} -DNOCOMP ${base}.pp" ) && die "Unable to run preprocessor on ${file}: $!\n";
+    system( "cpp -C -DNOCOMP ${file} ${base}.pp" ) && die "Unable to run preprocessor on ${file}: $!\n";
     open( IFILE, "${base}.pp" ) || die "Can't open ${base}.pp for reading: $!\n";
     $lnum        = 0;
     $scope_depth = 0;

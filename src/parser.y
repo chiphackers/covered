@@ -322,7 +322,7 @@ int yydebug = 1;
 %type <expr>      delay_value delay_value_simple
 %type <expr>      delay1 delay3 delay3_opt
 %type <expr>      generate_passign index_expr single_index_expr
-%type <state>     statement statement_list statement_opt 
+%type <state>     statement statement_list statement_or_null 
 %type <state>     if_statement_error
 %type <state>     passign for_initialization
 %type <state>     expression_assignment_list
@@ -529,7 +529,7 @@ description
       }
       free_safe( $3 );
     }
-    task_item_list_opt statement_opt
+    task_item_list_opt statement_or_null
     {
       statement* stmt = $7;
       if( (ignore_mode == 0) && (stmt != NULL) ) {
@@ -3776,7 +3776,7 @@ module_item
       free_safe( $4 );
       generate_top_mode--;
     }
-    task_item_list_opt statement_opt
+    task_item_list_opt statement_or_null
     {
       statement* stmt = $8;
       if( (ignore_mode == 0) && (stmt != NULL) ) {
@@ -4975,7 +4975,7 @@ statement
       VLerror( "Illegal casez expression" );
       $$ = NULL;
     }
-  | cond_specifier_opt K_if '(' expression ')' inc_block_depth statement_opt dec_block_depth %prec less_than_K_else
+  | cond_specifier_opt K_if '(' expression ')' inc_block_depth statement_or_null dec_block_depth %prec less_than_K_else
     {
       expression* tmp;
       statement*  stmt;
@@ -4995,7 +4995,7 @@ statement
         $$ = NULL;
       }
     }
-  | cond_specifier_opt K_if '(' expression ')' inc_block_depth statement_opt dec_block_depth K_else statement_opt
+  | cond_specifier_opt K_if '(' expression ')' inc_block_depth statement_or_null dec_block_depth K_else statement_or_null
     {
       expression* tmp;
       statement*  stmt;
@@ -5139,7 +5139,7 @@ statement
         $$ = NULL;
       }
     }
-  | delay1 inc_block_depth statement_opt dec_block_depth
+  | delay1 inc_block_depth statement_or_null dec_block_depth
     {
       statement* stmt;
       if( (ignore_mode == 0) && ($1 != NULL) ) {
@@ -5157,7 +5157,7 @@ statement
         $$ = NULL;
       }
     }
-  | event_control inc_block_depth statement_opt dec_block_depth
+  | event_control inc_block_depth statement_or_null dec_block_depth
     {
       statement* stmt;
       if( (ignore_mode == 0) && ($1 != NULL) ) {
@@ -5175,7 +5175,7 @@ statement
         $$ = NULL;
       }
     }
-  | '@' '*' inc_block_depth statement_opt dec_block_depth
+  | '@' '*' inc_block_depth statement_or_null dec_block_depth
     {
       expression* expr;
       statement*  stmt;
@@ -5432,7 +5432,7 @@ statement
         $$ = NULL;
       }
     }
-  | K_wait '(' expression ')' inc_block_depth statement_opt dec_block_depth
+  | K_wait '(' expression ')' inc_block_depth statement_or_null dec_block_depth
     {
       expression* exp;
       statement*  stmt;
@@ -5696,11 +5696,11 @@ begin_end_block
   ;
 
 if_statement_error
-  : statement_opt %prec less_than_K_else
+  : statement_or_null %prec less_than_K_else
     {
       $$ = NULL;
     }
-  | statement_opt K_else statement_opt
+  | statement_or_null K_else statement_or_null
     {
       $$ = NULL;
     }
@@ -5732,7 +5732,7 @@ statement_list
     }
   ;
 
-statement_opt
+statement_or_null
   : statement
     {
       $$ = $1;
@@ -6053,7 +6053,7 @@ block_item_decl
   ;	
 
 case_item
-  : expression_list ':' statement_opt
+  : expression_list ':' statement_or_null
     { PROFILE(PARSER_CASE_ITEM_A);
       case_statement* cstmt;
       if( ignore_mode == 0 ) {
@@ -6067,7 +6067,7 @@ case_item
         $$ = NULL;
       }
     }
-  | K_default ':' statement_opt
+  | K_default ':' statement_or_null
     { PROFILE(PARSER_CASE_ITEM_B);
       case_statement* cstmt;
       if( ignore_mode == 0 ) {
@@ -6081,7 +6081,7 @@ case_item
         $$ = NULL;
       }
     }
-  | K_default statement_opt
+  | K_default statement_or_null
     { PROFILE(PARSER_CASE_ITEM_C);
       case_statement* cstmt;
       if( ignore_mode == 0 ) {
@@ -6095,7 +6095,7 @@ case_item
         $$ = NULL;
       }
     }
-  | error { ignore_mode++; } ':' statement_opt { ignore_mode--; }
+  | error { ignore_mode++; } ':' statement_or_null { ignore_mode--; }
     {
       VLerror( "Illegal case expression" );
     }
