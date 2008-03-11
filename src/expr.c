@@ -1475,7 +1475,11 @@ void expression_db_read(
  to the user in this case.  If both expressions are the same, perform the 
  merge.
 */
-void expression_db_merge( expression* base, char** line, bool same ) { PROFILE(EXPRESSION_DB_MERGE);
+void expression_db_merge(
+  expression* base,
+  char**      line,
+  bool        same
+) { PROFILE(EXPRESSION_DB_MERGE);
 
   int          id;             /* Expression ID field */
   int          linenum;        /* Expression line number */
@@ -1535,7 +1539,9 @@ void expression_db_merge( expression* base, char** line, bool same ) { PROFILE(E
  \return Returns a non-writable string that contains the user-readable name of the
          specified expression operation.
 */
-const char* expression_string_op( int op ) { PROFILE(EXPRESSION_STRING_OP);
+const char* expression_string_op(
+  int op
+) { PROFILE(EXPRESSION_STRING_OP);
 
   assert( (op >= 0) && (op < EXP_OP_NUM) );
 
@@ -1551,7 +1557,9 @@ const char* expression_string_op( int op ) { PROFILE(EXPRESSION_STRING_OP);
  Returns a pointer to user_msg that will contain a user-friendly string version of
  the given expression
 */
-char* expression_string( expression* exp ) { PROFILE(EXPRESSION_STRING);
+char* expression_string(
+  expression* exp
+) { PROFILE(EXPRESSION_STRING);
 
   unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "%d (%s line %d)", exp->id, expression_string_op( exp->op ), exp->line );
   assert( rv < USER_MSG_LENGTH );
@@ -1568,7 +1576,9 @@ char* expression_string( expression* exp ) { PROFILE(EXPRESSION_STRING);
  Displays contents of the specified expression to standard output.  This function
  is called by the funit_display function.
 */
-void expression_display( expression* expr ) {
+void expression_display(
+  expression* expr
+) {
 
   int right_id;  /* Value of right expression ID */
   int left_id;   /* Value of left expression ID */
@@ -1615,7 +1625,11 @@ void expression_display( expression* expr ) {
 
  Performs XOR operation.
 */
-bool expression_op_func__xor( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__XOR);
+bool expression_op_func__xor(
+               expression*     expr,
+  /*@unused@*/ thread*         thr,
+  /*@unused@*/ const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__XOR);
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
@@ -1657,9 +1671,15 @@ bool expression_op_func__multiply( expression* expr, /*@unused@*/ thread* thr, /
 
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
+ \throws anonymous Throw
+
  Performs a 32-bit divide operation.
 */
-bool expression_op_func__divide( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__DIVIDE);
+bool expression_op_func__divide(
+               expression*     expr,
+  /*@unused@*/ thread*         thr,
+  /*@unused@*/ const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__DIVIDE);
 
   vector   vec1;            /* Temporary vector */
   vec_data bit;             /* Holds the value of a single bit in a vector value */
@@ -1690,7 +1710,7 @@ bool expression_op_func__divide( expression* expr, /*@unused@*/ thread* thr, /*@
 
     if( intval2 == 0 ) {
       print_output( "Division by 0 error", FATAL, __FILE__, __LINE__ );
-      exit( EXIT_FAILURE );
+      Throw 0;
     }
 
     intval1 = intval1 / intval2;
@@ -3618,6 +3638,8 @@ bool expression_op_func__stop( /*@unused@*/ expression* expr, /*@unused@*/ threa
  \return Returns TRUE if the assigned expression value was different than the previously stored value;
          otherwise, returns FALSE.
 
+ \throw anonymous func
+
  Performs expression operation.  This function must only be run after its
  left and right expressions have been calculated during this clock period.
  Sets the value of the operation in its own vector value and updates the
@@ -4387,6 +4409,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.288  2008/03/11 22:06:47  phase1geo
+ Finishing first round of exception handling code.
+
  Revision 1.287  2008/03/09 20:45:47  phase1geo
  More exception handling updates.
 

@@ -132,7 +132,9 @@ void fsm_add_arc(
  an FSM structure (allocate memory for its tables) and the associated
  FSM arc list is parsed, setting the appropriate bit in the valid table.
 */
-void fsm_create_tables( fsm* table ) { PROFILE(FSM_CREATE_TABLES);
+void fsm_create_tables(
+  fsm* table
+) { PROFILE(FSM_CREATE_TABLES);
 
   fsm_arc* curr_arc;    /* Pointer to current FSM arc structure */
   bool     set = TRUE;  /* Specifies if specified bit was set */
@@ -175,7 +177,11 @@ void fsm_create_tables( fsm* table ) { PROFILE(FSM_CREATE_TABLES);
 
  Outputs the contents of the specified FSM to the specified CDD file.
 */
-void fsm_db_write( fsm* table, FILE* file, bool parse_mode ) { PROFILE(FSM_DB_WRITE);
+void fsm_db_write(
+  fsm*  table,
+  FILE* file,
+  bool  parse_mode
+) { PROFILE(FSM_DB_WRITE);
 
   fprintf( file, "%d %d %d ",
     DB_TYPE_FSM,
@@ -1284,6 +1290,9 @@ void fsm_dealloc( fsm* table ) { PROFILE(FSM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.87  2008/03/11 22:06:47  phase1geo
+ Finishing first round of exception handling code.
+
  Revision 1.86  2008/03/09 20:45:48  phase1geo
  More exception handling updates.
 
