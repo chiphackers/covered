@@ -416,3 +416,4 @@ clean:
 	@rm -f $(IVERILOG_EXEC) $(VCS_EXEC) *.vcd *.log *.cfg
 	@rm -f core *.o
 	@rm -rf $(VCS_EXEC).*
+	@rm -f tmp*
