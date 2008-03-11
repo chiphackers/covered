@@ -67,6 +67,8 @@ extern func_unit* curr_funit;
 extern int        flag_global_generation;
 
 /*!
+ \throws anonymous Throw
+
  Creates root module for module_node tree.  If a module_node points to this node as its parent,
  that node is considered the root node of the tree.
 */
@@ -155,6 +157,8 @@ void search_add_include_path(
 /*!
  \param path Name of directory to find unspecified Verilog files
 
+ \throws anonymous directory_load
+
  Adds the given library directory path to the list if the pathname is valid.
 */
 void search_add_directory_path(
@@ -177,6 +181,8 @@ void search_add_directory_path(
 
 /*!
  \param file Name of Verilog file to add to scoring list.
+
+ \throws anonymous Throw
 
  Adds the given file to the search path list if the file exists.
 */
@@ -203,6 +209,8 @@ void search_add_file(
 /*!
  \param funit  Name of functional unit to specifically not score
 
+ \throws anonymous Throw
+
  Checks the given functional unit name and adds this name to the list of functional units
  to exclude from coverage.
 */
@@ -226,6 +234,8 @@ void search_add_no_score_funit(
 
 /*!
  \param ext_list String containing extensions to allow in search.
+
+ \throws anonymous Throw Throw
 
  Parses the given +libext argument, extracting all extensions listed and storing them into
  the globally accessible extensions list.
@@ -276,13 +286,18 @@ void search_add_extensions(
 */
 void search_free_lists() { PROFILE(SEARCH_FREE_LISTS);
 
-  str_link_delete_list( inc_paths_head  );
-  str_link_delete_list( use_files_head  );
+  str_link_delete_list( inc_paths_head );
+  str_link_delete_list( use_files_head );
+  str_link_delete_list( extensions_head );
+  str_link_delete_list( no_score_head );
 
 }
 
 /*
  $Log$
+ Revision 1.40  2008/02/22 20:39:22  phase1geo
+ More updates for exception handling.
+
  Revision 1.39  2008/02/09 19:32:45  phase1geo
  Completed first round of modifications for using exception handler.  Regression
  passes with these changes.  Updated regressions per these changes.

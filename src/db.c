@@ -258,9 +258,9 @@ bool db_check_for_top_module() { PROFILE(DB_CHECK_FOR_TOP_MODULE);
  returns FALSE to the calling function.
 */
 void db_write(
-  char* file,
-  bool  parse_mode,
-  bool  report_save
+  const char* file,
+  bool        parse_mode,
+  bool        report_save
 ) { PROFILE(DB_WRITE);
 
   FILE*      db_handle;  /* Pointer to database file being written */
@@ -323,8 +323,8 @@ void db_write(
  list.
 */
 void db_read(
-  char* file,
-  int   read_mode
+  const char* file,
+  int         read_mode
 ) { PROFILE(DB_READ);
 
   FILE*        db_handle;            /* Pointer to database file being read */
@@ -2831,6 +2831,10 @@ bool db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.291  2008/03/10 22:00:31  phase1geo
+ Working on more exception handling (script is finished now).  Starting to work
+ on code enhancements again :)  Checkpointing.
+
  Revision 1.290  2008/03/04 22:46:07  phase1geo
  Working on adding check_exceptions.pl script to help me make sure that all
  exceptions being thrown are being caught and handled appropriately.  Other

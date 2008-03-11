@@ -29,11 +29,22 @@
 
 
 /*! \brief Searches specified module parameter list for matching parameter. */
-mod_parm* mod_parm_find( char* name, mod_parm* parm );
+mod_parm* mod_parm_find(
+  const char* name,
+  mod_parm* parm
+);
 
 /*! \brief Creates new module parameter and adds it to the specified list. */
-mod_parm* mod_parm_add( char* scope, static_expr* msb, static_expr* lsb, bool is_signed,
-                        expression* expr, int type, func_unit* funit, char* inst_name );
+mod_parm* mod_parm_add(
+  char*        scope,
+  static_expr* msb,
+  static_expr* lsb,
+  bool         is_signed,
+  expression*  expr,
+  int          type,
+  func_unit*   funit,
+  char*        inst_name
+);
 
 /*! \brief Outputs contents of module parameter list to standard output. */
 void mod_parm_display( mod_parm* mparm );
@@ -71,6 +82,10 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive );
 
 /*
  $Log$
+ Revision 1.31  2008/01/16 23:10:31  phase1geo
+ More splint updates.  Code is now warning/error free with current version
+ of run_splint.  Still have regression issues to debug.
+
  Revision 1.30  2008/01/10 04:59:04  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 

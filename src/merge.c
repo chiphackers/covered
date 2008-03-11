@@ -66,12 +66,18 @@ static void merge_usage() {
  \param last_arg  Index of last parsed argument from list.
  \param argv      Argument list passed to this program.
 
+ \throws anonymous Throw Throw Throw
+
  Parses the merge argument list, placing all parsed values into
  global variables.  If an argument is found that is not valid
  for the merge operation, an error message is displayed to the
  user.
 */
-static void merge_parse_args( int argc, int last_arg, const char** argv ) {
+static void merge_parse_args(
+  int          argc,
+  int          last_arg,
+  const char** argv
+) {
 
   bool retval = TRUE;  /* Return value for this function */
   int  i;              /* Loop iterator */
@@ -131,10 +137,8 @@ static void merge_parse_args( int argc, int last_arg, const char** argv ) {
 
   /* Check to make sure that the user specified at least two files to merge */
   if( merge_in_num < 2 ) {
-
     print_output( "Must specify at least two CDD files to merge", FATAL, __FILE__, __LINE__ );
     Throw 0;
-
   }
 
 }
@@ -206,6 +210,10 @@ void command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
 /*
  $Log$
+ Revision 1.40  2008/02/09 19:32:45  phase1geo
+ Completed first round of modifications for using exception handler.  Regression
+ passes with these changes.  Updated regressions per these changes.
+
  Revision 1.39  2008/02/08 23:58:07  phase1geo
  Starting to work on exception handling.  Much work to do here (things don't
  compile at the moment).

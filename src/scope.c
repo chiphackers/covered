@@ -108,6 +108,8 @@ static func_unit* scope_find_funit_from_scope(
 
  \return Returns TRUE if specified signal was found in the design; otherwise, returns FALSE.
 
+ \throws anonymous Throw
+
  Searches for a given parameter in the design starting with the functional unit in which the parameter is being
  accessed from.  Attempts to find the parameter locally (if the name is not hierarchically referenced); otherwise,
  performs relative referencing to find the parameter.  If the parameter is found, the found_parm and found_funit pointers
@@ -195,6 +197,8 @@ bool scope_find_param(
  \param line         Line number where signal is being used (used for error output)
 
  \return Returns TRUE if specified signal was found in the design; otherwise, returns FALSE.
+
+ \throws anonymous Throw
 
  Searches for a given signal in the design starting with the functional unit in which the signal is being
  accessed from.  Attempts to find the signal locally (if the signal name is not hierarchically referenced); otherwise,
@@ -298,6 +302,8 @@ bool scope_find_signal(
  \param rm_unnamed   Set to TRUE if unnamed scopes should be ignored
 
  \return Returns TRUE if the functional unit was found in the design; otherwise, returns FALSE.
+
+ \throws anonymous Throw
 
  Searches the design for the specified functional unit based on its scoped name.  If the functional unit is
  found, the found_funit pointer is set to the functional unit and the function returns TRUE; otherwise, the function
@@ -418,6 +424,9 @@ func_unit* scope_get_parent_module(
 
 /*
  $Log$
+ Revision 1.45  2008/02/29 23:58:19  phase1geo
+ Continuing to work on adding exception handling code.
+
  Revision 1.44  2008/02/22 20:39:22  phase1geo
  More updates for exception handling.
 

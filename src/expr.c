@@ -351,7 +351,7 @@ static vec_data x_value = {0x2};
  \param width  Width of value to create.
  \param data   Specifies if nibble array should be allocated for vector.
 
- \throws anonymous Error
+ \throws anonymous Throw
 
  Creates a value vector that is large enough to store width number of
  bits in value and sets the specified expression value to this value.  This
@@ -397,7 +397,7 @@ static void expression_create_value(
 
  \return Returns pointer to newly created expression.
 
- \throws anonymous Error
+ \throws anonymous Throw expression_create_value expression_create_value expression_create_value expression_create_value expression_create_value expression_create_value expression_create_value expression_create_value
 
  Creates a new expression from heap memory and initializes its values for
  usage.  Right and left expressions need to be created before this function is called.
@@ -576,7 +576,7 @@ expression* expression_create(
  \param sig    Pointer to signal containing vector value to set expression to.
  \param funit  Pointer to functional unit containing expression.
 
- \throws anonymous Error
+ \throws anonymous expression_operate_recursively expression_operate_recursively expression_operate_recursively
  
  Sets the specified expression (if necessary) to the value of the
  specified signal's vector value.
@@ -700,7 +700,9 @@ void expression_set_signed( expression* exp ) { PROFILE(EXPRESSION_SET_SIGNED);
  \param recursive  Specifies if we should perform a recursive depth-first resize
  \param alloc      If set to TRUE, allocates vector data for all expressions
 
- \throws anonymous Error
+ \throws anonymous expression_create_value expression_create_value expression_create_value expression_create_value expression_create_value
+         expression_create_value expression_create_value expression_create_value expression_create_value expression_create_value expression_create_value
+         expression_create_value expression_create_value funit_size_elements expression_resize expression_resize expression_operate_recursively expression_set_value
 
  Resizes the given expression depending on the expression operation and its
  children's sizes.  If recursive is TRUE, performs the resize in a depth-first
@@ -1186,7 +1188,9 @@ bool expression_contains_expr_calling_stmt( expression* expr, statement* stmt ) 
  one exists).  If the root expression is found, return the pointer to the statement pointing to this
  root expression.  If the root expression was not found, return NULL.
 */
-statement* expression_get_root_statement( expression* exp ) { PROFILE(EXPRESSION_GET_ROOT_STATEMENT);
+statement* expression_get_root_statement(
+  expression* exp
+) { PROFILE(EXPRESSION_GET_ROOT_STATEMENT);
 
   if( exp == NULL ) {
     return( NULL );
@@ -1202,11 +1206,14 @@ statement* expression_get_root_statement( expression* exp ) { PROFILE(EXPRESSION
  \param root   Pointer to root of the expression tree to assign unique IDs for
  \param funit  Pointer to functional unit containing this expression tree
 
- \throws anonymous Error
+ \throws anonymous expression_resize expression_assign_expr_ids expression_assign_expr_ids
 
  Recursively iterates down the specified expression tree assigning unique IDs to each expression.
 */
-void expression_assign_expr_ids( expression* root, func_unit* funit ) { PROFILE(EXPRESSION_ASSIGN_EXPR_IDS);
+void expression_assign_expr_ids(
+  expression* root,
+  func_unit*  funit
+) { PROFILE(EXPRESSION_ASSIGN_EXPR_IDS);
 
   if( root != NULL ) {
 
@@ -1305,7 +1312,7 @@ void expression_db_write_tree(
  \param curr_funit  Pointer to current functional unit that instantiates this expression.
  \param eval        If TRUE, evaluate expression if children are static.
 
- \throws anonymous Error
+ \throws anonymous expression_create Throw Throw Throw Throw Throw vector_db_read
 
  Reads in the specified expression information, creates new expression from
  heap, populates the expression with specified information from file and 
@@ -3761,7 +3768,7 @@ bool expression_operate( expression* expr, thread* thr, const sim_time* time ) {
  \param funit   Pointer to functional unit containing this expression.
  \param sizing  Set to TRUE if we are evaluating for purposes of sizing.
 
- \throws anonymous Error
+ \throws anonymous expression_resize expression_operate_recursively expression_operate_recursively
  
  Recursively performs the proper operations to cause the top-level expression to
  be set to a value.  This function is called during the parse stage to derive 
@@ -4380,6 +4387,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.287  2008/03/09 20:45:47  phase1geo
+ More exception handling updates.
+
  Revision 1.286  2008/03/04 22:46:07  phase1geo
  Working on adding check_exceptions.pl script to help me make sure that all
  exceptions being thrown are being caught and handled appropriately.  Other

@@ -75,7 +75,7 @@ extern int        curr_expr_id;
 
  \return Returns pointer to new static_expr structure.
 
- \throws anonymous Error
+ \throws anonymous expression_create expression_create
 
  Used by the parser to calculate a new static_expr structure based on the
  unary operation encountered while parsing.  Based on the operation type
@@ -86,7 +86,13 @@ extern int        curr_expr_id;
  expression, create an expression for the specified operation type and store
  this expression in the original expression pointer field.
 */
-static_expr* static_expr_gen_unary( static_expr* stexp, int op, int line, int first, int last ) { PROFILE(STATIC_EXPR_GEN_UNARY);
+static_expr* static_expr_gen_unary(
+  static_expr* stexp,
+  int          op,
+  int          line,
+  int          first,
+  int          last
+) { PROFILE(STATIC_EXPR_GEN_UNARY);
 
   expression*  tmpexp;  /* Container for newly created expression */
   int          uop;     /* Temporary bit holder */
@@ -173,6 +179,8 @@ static_expr* static_expr_gen_unary( static_expr* stexp, int op, int line, int fi
 
  \return Returns pointer to new static_expr structure.
 
+ \throws anonymous expression_create expression_create expression_create expression_create expression_create expression_create
+
  Used by the parser to calculate a new static_expr structure based on the
  operation encountered while parsing.  Based on the operation type
  specified in the argument list, performs unary operation (if both operands
@@ -183,7 +191,15 @@ static_expr* static_expr_gen_unary( static_expr* stexp, int op, int line, int fi
  consisting of those two expressions and specified operator.  Store the newly create
  expression in the original right static_expr and deallocate the left static_expr.
 */
-static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int line, int first, int last, char* func_name ) { PROFILE(STATIC_EXPR_GEN);
+static_expr* static_expr_gen(
+  static_expr* right,
+  static_expr* left,
+  int          op,
+  int          line,
+  int          first,
+  int          last,
+  char*        func_name
+) { PROFILE(STATIC_EXPR_GEN);
 
   expression* tmpexp;     /* Temporary expression for holding newly created parent expression */
   int         i;          /* Loop iterator */
@@ -306,7 +322,13 @@ static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int
  static expression), set LSB to -1.  The endianness can only be used if the width is known.
  The returned width and lsb parameters can be used to size a vector instantiation.
 */
-void static_expr_calc_lsb_and_width_pre( static_expr* left, static_expr* right, int* width, int* lsb, int* big_endian ) { PROFILE(STATIC_EXPR_CALC_LSB_AND_WIDTH_PRE);
+void static_expr_calc_lsb_and_width_pre(
+            static_expr* left,
+            static_expr* right,
+  /*@out@*/ int*         width,
+  /*@out@*/ int*         lsb,
+  /*@out@*/ int*         big_endian
+) { PROFILE(STATIC_EXPR_CALC_LSB_AND_WIDTH_PRE);
 
   *width      = -1;
   *lsb        = -1;
@@ -348,7 +370,13 @@ void static_expr_calc_lsb_and_width_pre( static_expr* left, static_expr* right, 
  static expressions.  This function assumes that any expressions have been calculated for
  a legal value.
 */
-void static_expr_calc_lsb_and_width_post( static_expr* left, static_expr* right, int* width, int* lsb, int* big_endian ) { PROFILE(STATIC_EXPR_CALC_LSB_AND_WIDTH_POST);
+void static_expr_calc_lsb_and_width_post(
+            static_expr* left,
+            static_expr* right,
+  /*@out@*/ int*         width,
+  /*@out@*/ int*         lsb,
+  /*@out@*/ int*         big_endian
+) { PROFILE(STATIC_EXPR_CALC_LSB_AND_WIDTH_POST);
   
   assert( left  != NULL );
   assert( right != NULL );
@@ -365,7 +393,6 @@ void static_expr_calc_lsb_and_width_post( static_expr* left, static_expr* right,
   /* If the left static expression contains an expression, get its integer value and place it in the num field */
   if( left->exp != NULL ) {
     left->num = vector_to_int( left->exp->value );
-    // expression_display( left->exp );
   }
   
   /* Get initial value for LSB */
@@ -393,7 +420,10 @@ void static_expr_calc_lsb_and_width_post( static_expr* left, static_expr* right,
  Deallocates all allocated memory from the heap for the specified static_expr
  structure.
 */
-void static_expr_dealloc( static_expr* stexp, bool rm_exp ) { PROFILE(STATIC_EXPR_DEALLOC);
+void static_expr_dealloc(
+  static_expr* stexp,
+  bool         rm_exp
+) { PROFILE(STATIC_EXPR_DEALLOC);
 
   if( stexp != NULL ) {
 
@@ -409,6 +439,9 @@ void static_expr_dealloc( static_expr* stexp, bool rm_exp ) { PROFILE(STATIC_EXP
 
 /*
  $Log$
+ Revision 1.31  2008/03/04 06:46:48  phase1geo
+ More exception handling updates.  Still work to go.  Checkpointing.
+
  Revision 1.30  2008/01/16 23:10:33  phase1geo
  More splint updates.  Code is now warning/error free with current version
  of run_splint.  Still have regression issues to debug.

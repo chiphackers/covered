@@ -59,7 +59,9 @@ bool one_instance_found = FALSE;
 
  Parses specified file until $end keyword is seen, ignoring all text inbetween.
 */
-static void vcd_parse_def_ignore( FILE* vcd ) { PROFILE(VCD_PARSE_DEF_IGNORE);
+static void vcd_parse_def_ignore(
+  FILE* vcd
+) { PROFILE(VCD_PARSE_DEF_IGNORE);
 
   bool end_seen = FALSE;  /* If set to true, $end keyword was seen */
   char token[256];        /* String value of current token */
@@ -81,11 +83,13 @@ static void vcd_parse_def_ignore( FILE* vcd ) { PROFILE(VCD_PARSE_DEF_IGNORE);
 /*!
  \param vcd  File handle pointer to opened VCD file.
 
- \throw error Anonymous
+ \throws anonymous Throw Throw Throw Throw
 
  Parses definition $var keyword line until $end keyword is seen.
 */
-static void vcd_parse_def_var( FILE* vcd ) { PROFILE(VCD_PARSE_DEF_VAR);
+static void vcd_parse_def_var(
+  FILE* vcd
+) { PROFILE(VCD_PARSE_DEF_VAR);
 
   char type[256];     /* Variable type */
   int  size;          /* Bit width of specified variable */
@@ -168,11 +172,13 @@ static void vcd_parse_def_var( FILE* vcd ) { PROFILE(VCD_PARSE_DEF_VAR);
 /*!
  \param vcd  File handle pointer to opened VCD file.
 
- \throw error Anonymous
+ \throws anonymous Throw
 
  Parses definition $scope keyword line until $end keyword is seen.
 */
-static void vcd_parse_def_scope( FILE* vcd ) { PROFILE(VCD_PARSE_DEF_SCOPE);
+static void vcd_parse_def_scope(
+  FILE* vcd
+) { PROFILE(VCD_PARSE_DEF_SCOPE);
 
   char type[256];  /* Scope type */
   char id[256];    /* Name of scope to change to */
@@ -200,11 +206,13 @@ static void vcd_parse_def_scope( FILE* vcd ) { PROFILE(VCD_PARSE_DEF_SCOPE);
 /*!
  \param vcd  File handle pointer to opened VCD file.
 
- \throw error Anonymous
+ \throws anonymous Throw Throw Throw vcd_parse_def_scope vcd_parse_def_var
 
  Parses all definition information from specified file.
 */
-static void vcd_parse_def( FILE* vcd ) { PROFILE(VCD_PARSE_DEF);
+static void vcd_parse_def(
+  FILE* vcd
+) { PROFILE(VCD_PARSE_DEF);
 
   bool enddef_found = FALSE;  /* If set to true, definition section is finished */
   char keyword[256];          /* Holds keyword value */
@@ -275,12 +283,15 @@ static void vcd_parse_def( FILE* vcd ) { PROFILE(VCD_PARSE_DEF);
  \param vcd    File handle of opened VCD file.
  \param value  String containing value of current signal.
 
- \throw error Anonymous
+ \throws anonymous Throw
 
  Reads the next token from the file and calls the appropriate database storage
  function for this signal change.
 */
-static void vcd_parse_sim_vector( FILE* vcd, char* value ) { PROFILE(VCD_PARSE_SIM_VECTOR);
+static void vcd_parse_sim_vector(
+  FILE* vcd,
+  char* value
+) { PROFILE(VCD_PARSE_SIM_VECTOR);
 
   char sym[256];    /* String value of signal symbol */
   int  chars_read;  /* Number of characters scanned in */
@@ -305,12 +316,14 @@ static void vcd_parse_sim_vector( FILE* vcd, char* value ) { PROFILE(VCD_PARSE_S
 /*!
  \param vcd  File handle of opened VCD file.
 
- \throw error Anonymous
+ \throws anonymous Throw
 
  Reads in symbol from simulation vector line that is to be ignored 
  (unused).  Signals an error message if the line is improperly formatted.
 */
-static void vcd_parse_sim_ignore( FILE* vcd ) { PROFILE(VCD_PARSE_SIM_IGNORE);
+static void vcd_parse_sim_ignore(
+  FILE* vcd
+) { PROFILE(VCD_PARSE_SIM_IGNORE);
 
   char sym[256];    /* String value of signal symbol */
   int  chars_read;  /* Number of characters scanned in */
@@ -331,11 +344,13 @@ static void vcd_parse_sim_ignore( FILE* vcd ) { PROFILE(VCD_PARSE_SIM_IGNORE);
 /*!
  \param vcd  File handle of opened VCD file.
 
- \throw error Anonymous
+ \throws anonymous vcd_parse_sim_vector Throw vcd_parse_sim_ignore
 
  Parses all lines that occur in the simulation portion of the VCD file.
 */
-static void vcd_parse_sim( FILE* vcd ) { PROFILE(VCD_PARSE_SIM);
+static void vcd_parse_sim(
+  FILE* vcd
+) { PROFILE(VCD_PARSE_SIM);
 
   char   token[4100];                /* Current token from VCD file */
   uint64 last_timestep     = 0;      /* Value of last timestamp from file */
@@ -407,13 +422,15 @@ static void vcd_parse_sim( FILE* vcd ) { PROFILE(VCD_PARSE_SIM);
 /*!
  \param vcd_file  Name of VCD file to parse.
 
- \throw error Anonymous
+ \throws anonymous Throw Throw vcd_parse_def vcd_parse_sim
 
  Reads specified VCD file for relevant information and calls the database
  functions when appropriate to store this information.  This replaces the
  need for a lexer and parser which should increase performance.
 */
-void vcd_parse( char* vcd_file ) { PROFILE(VCD_PARSE);
+void vcd_parse(
+  const char* vcd_file
+) { PROFILE(VCD_PARSE);
 
   FILE* vcd_handle;        /* Pointer to opened VCD file */
 
@@ -464,6 +481,9 @@ void vcd_parse( char* vcd_file ) { PROFILE(VCD_PARSE);
 
 /*
  $Log$
+ Revision 1.37  2008/02/29 23:58:19  phase1geo
+ Continuing to work on adding exception handling code.
+
  Revision 1.36  2008/02/27 05:26:51  phase1geo
  Adding support for $finish and $stop.
 

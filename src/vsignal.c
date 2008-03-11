@@ -97,7 +97,13 @@ static void vsignal_init(
  values for a vsignal and returns a pointer to this newly created
  vsignal.
 */
-vsignal* vsignal_create( const char* name, int type, int width, int line, int col ) { PROFILE(VSIGNAL_CREATE);
+vsignal* vsignal_create(
+  const char* name,
+  int         type,
+  int         width,
+  int         line,
+  int         col
+) { PROFILE(VSIGNAL_CREATE);
 
   vsignal* new_sig;  /* Pointer to newly created vsignal */
 
@@ -115,11 +121,15 @@ vsignal* vsignal_create( const char* name, int type, int width, int line, int co
 /*!
  \param sig  Pointer to signal to create vector for
 
+ \throws anonymous expression_set_value
+
  Calculates the signal width and creates a vector value that is
  sized to match this width.  This function is called during race condition checking and
  functional unit element sizing function and needs to be called before expression resizing is performed.
 */
-void vsignal_create_vec( vsignal* sig ) { PROFILE(VSIGNAL_CREATE_VEC);
+void vsignal_create_vec(
+  vsignal* sig
+) { PROFILE(VSIGNAL_CREATE_VEC);
 
   int       i;     /* Loop iterator */
   vector*   vec;   /* Temporary vector used for getting a vector value */
@@ -178,7 +188,9 @@ void vsignal_create_vec( vsignal* sig ) { PROFILE(VSIGNAL_CREATE_VEC);
 
  Duplicates the contents of the given signal with the exception of the expression list.
 */
-vsignal* vsignal_duplicate( vsignal* sig ) { PROFILE(VSIGNAL_DUPLICATE);
+vsignal* vsignal_duplicate(
+  vsignal* sig
+) { PROFILE(VSIGNAL_DUPLICATE);
 
   vsignal*  new_sig;  /* Pointer to newly created vsignal */
   exp_link* expl;     /* Pointer to current expression link */
@@ -229,7 +241,10 @@ vsignal* vsignal_duplicate( vsignal* sig ) { PROFILE(VSIGNAL_DUPLICATE);
  specified file.  This file will be the database coverage file
  for this design.
 */
-void vsignal_db_write( vsignal* sig, FILE* file ) { PROFILE(VSIGNAL_DB_WRITE);
+void vsignal_db_write(
+  vsignal* sig,
+  FILE*    file
+) { PROFILE(VSIGNAL_DB_WRITE);
 
   int i;  /* Loop iterator */
 
@@ -269,11 +284,16 @@ void vsignal_db_write( vsignal* sig, FILE* file ) { PROFILE(VSIGNAL_DB_WRITE);
  \param line        Pointer to current line from database file to parse.
  \param curr_funit  Pointer to current functional unit instantiating this vsignal.
 
+ \throws anonymous Throw Throw Throw vector_db_read
+
  Creates a new vsignal structure, parses current file line for vsignal
  information and stores it to the specified vsignal.  If there are any problems
  in reading in the current line, returns FALSE; otherwise, returns TRUE.
 */
-void vsignal_db_read( char** line, func_unit* curr_funit ) { PROFILE(VSIGNAL_DB_READ);
+void vsignal_db_read(
+  char**     line,
+  func_unit* curr_funit
+) { PROFILE(VSIGNAL_DB_READ);
 
   char       name[256];      /* Name of current vsignal */
   vsignal*   sig;            /* Pointer to the newly created vsignal */
@@ -291,10 +311,10 @@ void vsignal_db_read( char** line, func_unit* curr_funit ) { PROFILE(VSIGNAL_DB_
 
     *line = *line + chars_read;
 
-    Try {
+    /* Allocate dimensional information */
+    dim = (dim_range*)malloc_safe( sizeof( dim_range ) * (pdim_num + udim_num) );
 
-      /* Allocate dimensional information */
-      dim = (dim_range*)malloc_safe( sizeof( dim_range ) * (pdim_num + udim_num) );
+    Try {
 
       /* Read in dimensional information */
       i = 0;
@@ -308,13 +328,13 @@ void vsignal_db_read( char** line, func_unit* curr_funit ) { PROFILE(VSIGNAL_DB_
         i++;
       }
 
+      /* Read in vector information */
+      vector_db_read( &vec, line );
+
     } Catch_anonymous {
       free_safe( dim );
       Throw 0;
     }
-
-    /* Read in vector information */
-    vector_db_read( &vec, line );
 
     /* Create new vsignal */
     sig = vsignal_create( name, suppl.part.type, vec->width, sline, suppl.part.col );
@@ -354,6 +374,8 @@ void vsignal_db_read( char** line, func_unit* curr_funit ) { PROFILE(VSIGNAL_DB_
  \param line  Pointer to line of CDD file to parse.
  \param same  Specifies if vsignal to merge needs to be exactly the same as the existing vsignal.
 
+ \throws anonymous vector_db_merge Throw Throw
+
  Parses specified line for vsignal information and performs merge 
  of the base and in vsignals, placing the resulting merged vsignal 
  into the base vsignal.  If the vsignals are found to be unalike 
@@ -361,17 +383,21 @@ void vsignal_db_read( char** line, func_unit* curr_funit ) { PROFILE(VSIGNAL_DB_
  If both vsignals are the same, perform the merge on the vsignal's 
  vectors.
 */
-void vsignal_db_merge( vsignal* base, char** line, bool same ) { PROFILE(VSIGNAL_DB_MERGE);
+void vsignal_db_merge(
+  vsignal* base,
+  char**   line,
+  bool     same
+) { PROFILE(VSIGNAL_DB_MERGE);
  
-  char    name[256];      /* Name of current vsignal */
-  int     sline;          /* Declared line number */
-  int     pdim_num;       /* Number of packed dimensions */
-  int     udim_num;       /* Number of unpacked dimensions */
-  int     msb;            /* MSB of current dimension being read */
-  int     lsb;            /* LSB of current dimension being read */
-  ssuppl  suppl;          /* Supplemental signal information */
-  int     chars_read;     /* Number of characters read from line */
-  int     i;              /* Loop iterator */
+  char    name[256];   /* Name of current vsignal */
+  int     sline;       /* Declared line number */
+  int     pdim_num;    /* Number of packed dimensions */
+  int     udim_num;    /* Number of unpacked dimensions */
+  int     msb;         /* MSB of current dimension being read */
+  int     lsb;         /* LSB of current dimension being read */
+  ssuppl  suppl;       /* Supplemental signal information */
+  int     chars_read;  /* Number of characters read from line */
+  int     i;           /* Loop iterator */
 
   assert( base != NULL );
   assert( base->name != NULL );
@@ -718,6 +744,10 @@ void vsignal_dealloc( /*@only@*/ vsignal* sig ) { PROFILE(VSIGNAL_DEALLOC);
 
 /*
  $Log$
+ Revision 1.58  2008/02/09 19:32:45  phase1geo
+ Completed first round of modifications for using exception handler.  Regression
+ passes with these changes.  Updated regressions per these changes.
+
  Revision 1.57  2008/02/08 23:58:07  phase1geo
  Starting to work on exception handling.  Much work to do here (things don't
  compile at the moment).

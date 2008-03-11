@@ -25,26 +25,44 @@
 
 
 /*! \brief Parses command-line for report command and performs report functionality. */
-void command_report( int argc, int last_arg, const char** argv );
+void command_report(
+  int          argc,
+  int          last_arg,
+  const char** argv
+);
 
 /*! \brief Prints header of report. */
-void report_print_header( FILE* ofile );
+void report_print_header(
+  FILE* ofile
+);
 
 /*! \brief Parses arguments on report command command-line. */
-void report_parse_args( int argc, int last_arg, const char** argv );
+void report_parse_args(
+  int          argc,
+  int          last_arg,
+  const char** argv
+);
 
 /*! \brief Reads the CDD and readies the design for reporting */
-void report_read_cdd_and_ready( char* ifile, int read_mode );
+void report_read_cdd_and_ready(
+  const char* ifile,
+  int         read_mode
+);
 
 /*! \brief Closes the currently loaded CDD */
 void report_close_cdd();
 
 /*! \brief Saves the currently loaded CDD as the specified filename */
-void report_save_cdd( char* filename );
+void report_save_cdd(
+  const char* filename
+);
 
 
 /*
  $Log$
+ Revision 1.15  2008/02/10 03:33:13  phase1geo
+ More exception handling added and fixed remaining splint errors.
+
  Revision 1.14  2008/02/09 19:32:45  phase1geo
  Completed first round of modifications for using exception handler.  Regression
  passes with these changes.  Updated regressions per these changes.

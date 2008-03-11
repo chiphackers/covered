@@ -47,10 +47,12 @@ extern char user_msg[USER_MSG_LENGTH];
 
  \return Returns pointer to expression tree containing parsed state variable expression.
 
- \throws anonymous Error
+ \throws anonymous fsm_var_bind_add fsm_var_bind_add fsm_var_bind_add fsm_var_bind_add fsm_var_bind_add Throw Throw expression_create expression_create
+                   expression_create expression_create expression_create expression_create expression_create expression_create expression_create
+                   expression_create expression_create expression_create expression_create expression_create
 
  Parses the specified argument value for all information regarding a state variable
- expression.  This function places all 
+ expression.
 */
 static expression* fsm_arg_parse_state(
   char** arg,
@@ -239,15 +241,19 @@ static expression* fsm_arg_parse_state(
 /*!
  \param arg  Command-line argument following -F specifier.
 
+ \throws anonymous Throw
+
  Parses specified argument string for FSM information.  If the FSM information
  is considered legal, returns TRUE; otherwise, returns FALSE.
 */
-void fsm_arg_parse( const char* arg ) { PROFILE(FSM_ARG_PARSE);
+void fsm_arg_parse(
+  const char* arg
+) { PROFILE(FSM_ARG_PARSE);
 
-  char*       tmp    = strdup_safe( arg );  /* Temporary copy of given argument */
-  char*       ptr    = tmp;                 /* Pointer to current character in arg */
-  expression* in_state;                     /* Pointer to input state expression */
-  expression* out_state;                    /* Pointer to output state expression */
+  char*       tmp = strdup_safe( arg );  /* Temporary copy of given argument */
+  char*       ptr = tmp;                 /* Pointer to current character in arg */
+  expression* in_state;                  /* Pointer to input state expression */
+  expression* out_state;                 /* Pointer to output state expression */
 
   Try {
 
@@ -313,7 +319,8 @@ void fsm_arg_parse( const char* arg ) { PROFILE(FSM_ARG_PARSE);
          returns a value of NULL to indicate the this parser was unable to parse the
          specified transition value.
 
- \throws anonymous Error
+ \throws anonymous Throw expression_create expression_create expression_create expression_create expression_create expression_create
+                   expression_create expression_create expression_create expression_create expression_create expression_create expression_create
 
  Parses specified string value for a parameter or constant value.  If the string
  is parsed correctly, a new expression is created to hold the contents of the
@@ -504,7 +511,7 @@ static expression* fsm_arg_parse_value(
  \param table  Pointer to FSM table to add the transition arcs to.
  \param funit  Pointer to the functional unit that contains the specified FSM.
 
- \throws anonymous Error
+ \throws anonymous Throw
 
  \par
  Parses a transition string carried in the specified expression argument.  All transitions
@@ -583,7 +590,7 @@ static void fsm_arg_parse_trans(
  \param funit    Pointer to functional unit containing this attribute.
  \param exclude  If TRUE, sets the exclude bits in the FSM.
 
- \throws anonymous Error
+ \throws anonymous Throw Throw Throw Throw Throw Throw Throw Throw fsm_arg_parse_trans
 
  Parses the specified attribute parameter for validity and updates FSM structure
  accordingly.
@@ -706,6 +713,9 @@ void fsm_arg_parse_attr(
 
 /*
  $Log$
+ Revision 1.44  2008/03/04 06:46:48  phase1geo
+ More exception handling updates.  Still work to go.  Checkpointing.
+
  Revision 1.43  2008/02/29 00:08:31  phase1geo
  Completed optimization code in simulator.  Still need to verify that code
  changes enhanced performances as desired.  Checkpointing.

@@ -477,11 +477,18 @@ bool directory_exists( const char* dir ) { PROFILE(DIRECTORY_EXISTS);
 
  \bug Need to order files according to extension first instead of filename.
 
+ \throws anonymous Throw
+
  Opens the specified directory for reading and loads (in order) all files that
  contain the specified extensions (if ext_head is NULL, load only *.v files).
  Stores all string filenames to the specified string list.
 */
-void directory_load( const char* dir, const str_link* ext_head, str_link** file_head, str_link** file_tail ) { PROFILE(DIRECTORY_LOAD);
+void directory_load(
+  const char*     dir,
+  const str_link* ext_head,
+  str_link**      file_head,
+  str_link**      file_tail
+) { PROFILE(DIRECTORY_LOAD);
 
   DIR*            dir_handle;  /* Pointer to opened directory */
   struct dirent*  dirp;        /* Pointer to current directory entry */
@@ -614,8 +621,12 @@ bool util_readline( FILE* file, char** line ) { PROFILE(UTIL_READLINE);
 
  \return Returns the given value with environment variables substituted in.  This value should
          be freed by the calling function.
+ 
+ \throws anonymous Throw
 */
-char* substitute_env_vars( const char* value ) { PROFILE(SUBSTITUTE_ENV_VARS);
+char* substitute_env_vars(
+  const char* value
+) { PROFILE(SUBSTITUTE_ENV_VARS);
 
   char*       newvalue    = NULL;   /* New value */
   int         newvalue_index;       /* Current index into newvalue */
@@ -1202,6 +1213,9 @@ void calc_miss_percent(
 
 /*
  $Log$
+ Revision 1.78  2008/02/22 20:39:22  phase1geo
+ More updates for exception handling.
+
  Revision 1.77  2008/01/16 23:10:34  phase1geo
  More splint updates.  Code is now warning/error free with current version
  of run_splint.  Still have regression issues to debug.

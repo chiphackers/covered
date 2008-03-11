@@ -24,11 +24,16 @@
 */
 
 /*! \brief Parses specified VCD file, storing information into database. */
-void vcd_parse( char* vcd_file );
+void vcd_parse(
+  const char* vcd_file
+);
 
 
 /*
  $Log$
+ Revision 1.6  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.5  2006/03/28 22:28:28  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

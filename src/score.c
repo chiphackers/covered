@@ -229,9 +229,15 @@ static void score_usage() {
  \param output_db  Name of output CDD database file
  \param top_inst   Name of top-level instance
 
+ \throws anonymous Throw
+
  Creates a Verilog file that calls the Covered VPI system task.
 */
-static void score_generate_top_vpi_module( char* vpi_file, char* output_db, char* top_inst ) { PROFILE(SCORE_GENERATE_TOP_VPI_MODULE);
+static void score_generate_top_vpi_module(
+  const char* vpi_file,
+  const char* output_db,
+  const char* top_inst
+) { PROFILE(SCORE_GENERATE_TOP_VPI_MODULE);
 
   FILE* vfile;     /* File handle to VPI top-level module */
   char* mod_name;  /* Name of VPI module */
@@ -288,9 +294,14 @@ static void score_generate_top_vpi_module( char* vpi_file, char* output_db, char
  \param tab_file  Name of PLI tab file to create
  \param top_mod   Name of top-level module
 
+ \throws anonymous Throw
+
  Creates a PLI table file.
 */
-static void score_generate_pli_tab_file( char* tab_file, char* top_mod ) { PROFILE(SCORE_GENERATE_PLI_TAB_FILE);
+static void score_generate_pli_tab_file(
+  const char* tab_file,
+  const char* top_mod
+) { PROFILE(SCORE_GENERATE_PLI_TAB_FILE);
 
   FILE* tfile;     /* File handle of VPI tab file - only necessary for VCS */
   char* mod_name;  /* Name of VPI module */
@@ -346,10 +357,16 @@ static void score_generate_pli_tab_file( char* tab_file, char* top_mod ) { PROFI
  \param arg_list List of arguments found in specified command file.
  \param arg_num  Number of arguments in arg_list array.
 
+ \throws anonymous Throw Throw Throw substitute_env_vars
+
  Parses the given file specified by the '-f' option to Covered's score command which can contain
  any command-line arguments.
 */
-static void read_command_file( const char* cmd_file, char*** arg_list, int* arg_num ) { PROFILE(READ_COMMAND_FILE);
+static void read_command_file(
+  const char* cmd_file,
+  char***     arg_list,
+  int*        arg_num
+) { PROFILE(READ_COMMAND_FILE);
 
   str_link* head    = NULL;  /* Pointer to head element of arg list */
   str_link* tail    = NULL;  /* Pointer to tail element of arg list */
@@ -458,7 +475,9 @@ void score_parse_define( const char* def ) { PROFILE(SCORE_PARSE_DEFINE);
  
  Adds the specified argument to the list of score arguments that will be written to the CDD file.
 */
-static void score_add_arg( const char* arg ) { PROFILE(SCORE_ADD_ARG);
+static void score_add_arg(
+  const char* arg
+) { PROFILE(SCORE_ADD_ARG);
 
   score_args = (char**)realloc( score_args, (sizeof( char* ) * (score_arg_num + 1)) );
   score_args[score_arg_num] = strdup_safe( arg );
@@ -471,17 +490,25 @@ static void score_add_arg( const char* arg ) { PROFILE(SCORE_ADD_ARG);
  \param last_arg  Index of last parsed argument in list.
  \param argv      List of arguments to parse.
 
+ \throws anonymous search_add_directory_path Throw Throw Throw Throw Throw Throw Throw Throw Throw Throw Throw Throw
+                   Throw Throw Throw Throw Throw Throw Throw Throw Throw Throw score_parse_args ovl_add_assertions_to_no_score_list
+                   fsm_arg_parse read_command_file search_add_file defparam_add search_add_extensions search_add_no_score_funit
+
  Parses score command argument list and performs specified functions based
  on these arguments.
 */
-static void score_parse_args( int argc, int last_arg, const char** argv ) { PROFILE(SCORE_PARSE_ARGS);
+static void score_parse_args(
+  int          argc,
+  int          last_arg,
+  const char** argv
+) { PROFILE(SCORE_PARSE_ARGS);
 
-  int    i       = last_arg + 1;  /* Loop iterator */
-  char** arg_list;                /* List of command_line arguments */
-  int    arg_num;                 /* Number of arguments in arg_list */
-  int    j;                       /* Loop iterator */
-  char*  ptr;                     /* Pointer to current character in defined value */
-  char*  rv;                      /* Return value from snprintf calls */
+  int    i = last_arg + 1;  /* Loop iterator */
+  char** arg_list;          /* List of command_line arguments */
+  int    arg_num;           /* Number of arguments in arg_list */
+  int    j;                 /* Loop iterator */
+  char*  ptr;               /* Pointer to current character in defined value */
+  char*  rv;                /* Return value from snprintf calls */
 
   while( i < argc ) {
 
@@ -605,7 +632,7 @@ static void score_parse_args( int argc, int last_arg, const char** argv ) { PROF
         if( file_exists( argv[i] ) ) {
           Try {
             read_command_file( argv[i], &arg_list, &arg_num );
-            score_parse_args( arg_num, -1, arg_list );
+            score_parse_args( arg_num, -1, (const char**)arg_list );
           } Catch_anonymous {
             for( j=0; j<arg_num; j++ ) {
               free_safe( arg_list[j] );
@@ -1142,6 +1169,11 @@ void command_score( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
 /*
  $Log$
+ Revision 1.115  2008/02/25 18:22:16  phase1geo
+ Moved statement supplemental bits from root expression to statement and starting
+ to add support for race condition checking pragmas (still some work left to do
+ on this item).  Updated IV and Cver regressions per these changes.
+
  Revision 1.114  2008/02/22 20:39:22  phase1geo
  More updates for exception handling.
 

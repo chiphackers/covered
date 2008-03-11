@@ -269,12 +269,18 @@ static void report_parse_metrics( const char* metrics ) { PROFILE(REPORT_PARSE_M
  \param last_arg  Index of last parsed argument from list.
  \param argv      Argument list passed to this program.
 
+ \throws anonymous Throw Throw Throw Throw Throw Throw Throw Throw
+
  Parses the argument list for options.  If a legal option is
  found for the report command, the appropriate action is taken for
  that option.  If an option is found that is not allowed, an error
  message is reported to the user and the program terminates immediately.
 */
-void report_parse_args( int argc, int last_arg, const char** argv ) { PROFILE(REPORT_PARSE_ARGS);
+void report_parse_args(
+  int          argc,
+  int          last_arg,
+  const char** argv
+) { PROFILE(REPORT_PARSE_ARGS);
 
   int  i;           /* Loop iterator */
   int  chars_read;  /* Number of characters read in from sscanf */
@@ -304,7 +310,6 @@ void report_parse_args( int argc, int last_arg, const char** argv ) { PROFILE(RE
       report_comb_depth   = REPORT_VERBOSE;
       report_assertion    = TRUE;
       report_memory       = TRUE;
-//      flag_use_line_width = TRUE;
 #else
       print_output( "The -view option is not available with this build", FATAL, __FILE__, __LINE__ );
       Throw 0;
@@ -683,10 +688,14 @@ void report_print_header( FILE* ofile ) { PROFILE(REPORT_PRINT_HEADER);
 /*!
  \param ofile  Pointer to output stream to display report information to.
 
+ \throws anonymous combination_report
+
  Generates a coverage report based on the options specified on the command line
  to the specified output stream.
 */
-static void report_generate( FILE* ofile ) { PROFILE(REPORT_GENERATE);
+static void report_generate(
+  FILE* ofile
+) { PROFILE(REPORT_GENERATE);
 
   report_print_header( ofile );
 
@@ -738,10 +747,15 @@ static void report_generate( FILE* ofile ) { PROFILE(REPORT_GENERATE);
  
  \return Returns TRUE if CDD file was read properly; otherwise, returns FALSE.
 
+ \throws anonymous db_read Throw bind_perform
+
  Reads in specified CDD file and gathers functional unit statistics to get ready for GUI
  interaction with this CDD file. 
 */
-void report_read_cdd_and_ready( char* ifile, int read_mode ) { PROFILE(REPORT_READ_CDD_AND_READY);
+void report_read_cdd_and_ready(
+  const char* ifile,
+  int         read_mode
+) { PROFILE(REPORT_READ_CDD_AND_READY);
 
   /* Open database file for reading */
   if( (ifile == NULL) || (ifile[0] == '\0') ) {
@@ -773,9 +787,13 @@ void report_close_cdd() { PROFILE(REPORT_CLOSE_CDD);
 /*!
  \param filename  Name to use for saving the currently loaded filename
 
+ \throws anonymous db_write
+
  Saves the currently loaded CDD database to the given filename.
 */
-void report_save_cdd( char* filename ) { PROFILE(REPORT_SAVE_CDD);
+void report_save_cdd(
+  const char* filename
+) { PROFILE(REPORT_SAVE_CDD);
 
   db_write( filename, FALSE, TRUE );
 
@@ -788,7 +806,11 @@ void report_save_cdd( char* filename ) { PROFILE(REPORT_SAVE_CDD);
 
  Performs report command functionality.
 */
-void command_report( int argc, int last_arg, const char** argv ) { PROFILE(COMMAND_REPORT);
+void command_report(
+  int          argc,
+  int          last_arg,
+  const char** argv
+) { PROFILE(COMMAND_REPORT);
 
   FILE*        ofile;                  /* Pointer to output stream */
 #ifdef HAVE_TCLTK
@@ -944,11 +966,7 @@ void command_report( int argc, int last_arg, const char** argv ) { PROFILE(COMMA
 
     }
 
-  } Catch_anonymous {
-    free_safe( input_db );
-    db_close();
-    Throw 0;
-  }
+  } Catch_anonymous {}
 
   free_safe( input_db );
 
@@ -962,6 +980,9 @@ void command_report( int argc, int last_arg, const char** argv ) { PROFILE(COMMA
 
 /*
  $Log$
+ Revision 1.97  2008/02/11 14:00:09  phase1geo
+ More updates for exception handling.  Regression passes.
+
  Revision 1.96  2008/02/10 03:33:13  phase1geo
  More exception handling added and fixed remaining splint errors.
 

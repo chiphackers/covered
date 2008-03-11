@@ -317,10 +317,15 @@ void vector_db_write( vector* vec, FILE* file, bool write_data ) { PROFILE(VECTO
  \param vec    Pointer to vector to create.
  \param line   Pointer to line to parse for vector information.
 
+ \throws anonymous Throw Throw
+
  Creates a new vector structure, parses current file line for vector information
  and returns new vector structure to calling function.
 */
-void vector_db_read( vector** vec, char** line ) { PROFILE(VECTOR_DB_READ);
+void vector_db_read(
+  vector** vec,
+  char**   line
+) { PROFILE(VECTOR_DB_READ);
 
   int          width;          /* Vector bit width */
   int          suppl;          /* Temporary supplemental value */
@@ -395,13 +400,19 @@ void vector_db_read( vector** vec, char** line ) { PROFILE(VECTOR_DB_READ);
  \param line  Pointer to line to parse for vector information.
  \param same  Specifies if vector to merge needs to be exactly the same as the existing vector.
 
+ \throws anonymous Throw Throw Throw
+
  Parses current file line for vector information and performs vector merge of 
  base vector and read vector information.  If the vectors are found to be different
  (width is not equal), an error message is sent to the user and the
  program is halted.  If the vectors are found to be equivalents, the merge is
  performed on the vector nibbles.
 */
-void vector_db_merge( vector* base, char** line, bool same ) { PROFILE(VECTOR_DB_MERGE);
+void vector_db_merge(
+  vector* base,
+  char**  line,
+  bool    same
+) { PROFILE(VECTOR_DB_MERGE);
 
   int          width;           /* Width of read vector */
   int          suppl;           /* Supplemental value of vector */
@@ -2411,6 +2422,9 @@ void vector_dealloc( vector* vec ) { PROFILE(VECTOR_DEALLOC);
 
 /*
  $Log$
+ Revision 1.114  2008/02/10 03:33:13  phase1geo
+ More exception handling added and fixed remaining splint errors.
+
  Revision 1.113  2008/02/09 19:32:45  phase1geo
  Completed first round of modifications for using exception handler.  Regression
  passes with these changes.  Updated regressions per these changes.

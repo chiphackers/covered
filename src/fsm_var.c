@@ -184,6 +184,8 @@ static fsm_var* fsm_var_is_output_state(
  \param expr        Pointer to expression to bind to signal called sig_name.
  \param funit_name  String name of functional unit that contains the expression pointed to by expr.
 
+ \throws anonymous Throw Throw
+
  Searches the functional unit list for the functional unit called funit_name.  If the functional unit
  is found in the design, searches this functional unit for the signal called sig_name.  If the signal is found,
  the signal and specified expression expr are bound to each other and this function returns
@@ -312,6 +314,8 @@ static bool fsm_var_bind_stmt(
  \param sig_name    Name of signal to bind.
  \param expr        Pointer to expression to bind.
  \param funit_name  Name of functional unit that will contain the expression and signal being bound.
+
+ \throws anonymous fsm_var_bind_expr
 
  Creates a new FSM binding structure and initializes it with the specified information.
  The FSM binding structure is then added to the global list of FSM binding structures to
@@ -520,6 +524,9 @@ void fsm_var_remove(
 
 /*
  $Log$
+ Revision 1.40  2008/03/09 20:45:48  phase1geo
+ More exception handling updates.
+
  Revision 1.39  2008/02/29 00:08:31  phase1geo
  Completed optimization code in simulator.  Still need to verify that code
  changes enhanced performances as desired.  Checkpointing.

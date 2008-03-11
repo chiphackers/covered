@@ -718,6 +718,8 @@ static void race_check_one_block_assignment(
 /*!
  \return Returns TRUE if no race conditions were found or the user specified that we should continue
          to score the design.
+
+ \throws anonymous Throw
 */
 static void race_check_race_count() { PROFILE(RACE_CHECK_RACE_COUNT);
 
@@ -740,6 +742,8 @@ static void race_check_race_count() { PROFILE(RACE_CHECK_RACE_COUNT);
 }
 
 /*!
+ \throws anonymous race_check_race_count funit_size_elements
+
  Performs race checking for the currently loaded module.  This function should be called when
  the endmodule keyword is detected in the current module.
 */
@@ -867,6 +871,8 @@ void race_db_write(
 /*!
  \param line      Pointer to line containing information for a race condition block.
  \param curr_mod  Pointer to current module to store race condition block to.
+
+ \throws anonymous Throw Throw
 
  Reads the specified line from the CDD file and parses it for race condition block
  information.
@@ -1161,6 +1167,11 @@ void race_blk_delete_list(
 
 /*
  $Log$
+ Revision 1.74  2008/02/28 03:53:17  phase1geo
+ Code addition to support feature request 1902840.  Added race6 diagnostic and updated
+ race5 diagnostics per this change.  For loop control assignments are now no longer
+ considered when performing race condition checking.
+
  Revision 1.73  2008/02/25 20:43:49  phase1geo
  Checking in code to allow the use of racecheck pragmas.  Added new tests to
  regression suite to verify this functionality.  Still need to document in

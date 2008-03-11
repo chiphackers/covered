@@ -372,14 +372,19 @@ char* funit_gen_task_function_namedblock_name( char* orig_name, func_unit* paren
                      by the funit_db_write function).
  \param alloc_exprs  Allocates vector data for all expressions if set to TRUE.
 
- \throws anonymous Error
+ \throws anonymous expression_resize enumerate_resolve param_resolve expression_set_value expression_set_value expression_set_value vsignal_create_vec gen_item_resize_stmts_and_sigs
  
  Resizes signals if they are contigent upon parameter values.  After
  all signals have been resized, the signal's corresponding expressions
  are resized.  This function should be called just prior to outputting
  this funtional unit's contents to the CDD file (after parsing phase only)
 */
-void funit_size_elements( func_unit* funit, funit_inst* inst, bool gen_all, bool alloc_exprs ) { PROFILE(FUNIT_SIZE_ELEMENTS);
+void funit_size_elements(
+  func_unit*  funit,
+  funit_inst* inst,
+  bool        gen_all,
+  bool        alloc_exprs
+) { PROFILE(FUNIT_SIZE_ELEMENTS);
   
   inst_parm*  curr_iparm;       /* Pointer to current instance parameter to evaluate */
   exp_link*   curr_exp;         /* Pointer to current expression link to evaluate */
@@ -519,6 +524,8 @@ void funit_size_elements( func_unit* funit, funit_inst* inst, bool gen_all, bool
  \param inst         Pointer to the current functional unit instance.
  \param report_save  Specifies that we are attempting to save a CDD after modifying the database in
                      the report command.
+
+ \throws anonymous funit_size_elements
 
  Prints the database line for the specified functional unit to the specified database
  file.  If there are any problems with the write, returns FALSE; otherwise,
@@ -684,10 +691,16 @@ void funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
  \param scope  Pointer to name of read functional unit scope.
  \param line   Pointer to current line to parse.
 
+ \throws anonymous Throw
+
  Reads the current line of the specified file and parses it for a functional unit.
  If all is successful, returns TRUE; otherwise, returns FALSE.
 */
-void funit_db_read( func_unit* funit, char* scope, char** line ) { PROFILE(FUNIT_DB_READ);
+void funit_db_read(
+  func_unit* funit,
+  char*      scope,
+  char**     line
+) { PROFILE(FUNIT_DB_READ);
 
   int  chars_read;   /* Number of characters currently read */
   int  params;       /* Number of parameters in string that were parsed */
@@ -717,6 +730,8 @@ void funit_db_read( func_unit* funit, char* scope, char** line ) { PROFILE(FUNIT
  \param base  Module that will merge in that data from the in functional unit
  \param file  Pointer to CDD file handle to read.
  \param same  Specifies if functional unit to be merged should match existing functional unit exactly or not.
+
+ \throws anonymous fsm_db_merge Throw Throw expression_db_merge vsignal_db_merge
 
  Parses specified line for functional unit information and performs a merge of the two 
  specified functional units, placing the resulting merge functional unit into the functional unit named base.
@@ -1389,6 +1404,9 @@ void funit_dealloc( func_unit* funit ) { PROFILE(FUNIT_DEALLOC);
 
 /*
  $Log$
+ Revision 1.94  2008/03/04 00:09:20  phase1geo
+ More exception handling.  Checkpointing.
+
  Revision 1.93  2008/02/29 00:08:31  phase1geo
  Completed optimization code in simulator.  Still need to verify that code
  changes enhanced performances as desired.  Checkpointing.

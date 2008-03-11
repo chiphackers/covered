@@ -126,7 +126,9 @@ bool ovl_is_assertion_module( const func_unit* funit ) { PROFILE(OVL_IS_ASSERTIO
 
  \return Returns TRUE if the specifies expression corresponds to a coverage point; otherwise, returns FALSE.
 */
-bool ovl_is_coverage_point( const expression* exp ) { PROFILE(OVL_IS_COVERAGE_POINT);
+bool ovl_is_coverage_point(
+  const expression* exp
+) { PROFILE(OVL_IS_COVERAGE_POINT);
 
   return( (exp->op == EXP_OP_TASK_CALL) && (strcmp( exp->name, "ovl_cover_t" ) == 0) );
 
@@ -135,9 +137,13 @@ bool ovl_is_coverage_point( const expression* exp ) { PROFILE(OVL_IS_COVERAGE_PO
 /*!
  \param rm_tasks  Removes extraneous tasks only that are not used for coverage
 
+ \throws anonymous search_add_no_score_funit search_add_no_score_funit search_add_no_score_funit search_add_no_score_funit
+
  Adds all OVL assertions to the no_score list.
 */
-void ovl_add_assertions_to_no_score_list( bool rm_tasks ) { PROFILE(OVL_ADD_ASSERTIONS_TO_NO_SCORE_LIST);
+void ovl_add_assertions_to_no_score_list(
+  bool rm_tasks
+) { PROFILE(OVL_ADD_ASSERTIONS_TO_NO_SCORE_LIST);
 
   int  i;          /* Loop iterator */
   char tmp[4096];  /* Temporary string holder */
@@ -460,6 +466,10 @@ void ovl_get_coverage( const func_unit* funit, const char* inst_name, char** ass
 
 /*
  $Log$
+ Revision 1.21  2008/01/16 23:10:31  phase1geo
+ More splint updates.  Code is now warning/error free with current version
+ of run_splint.  Still have regression issues to debug.
+
  Revision 1.20  2008/01/16 05:01:23  phase1geo
  Switched totals over from float types to int types for splint purposes.
 

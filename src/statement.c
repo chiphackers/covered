@@ -188,7 +188,11 @@ void statement_queue_display() {
  Creates a new statement loop link for the specified parameters and adds this
  element to the top of the statement loop queue.
 */
-static void statement_queue_add( statement* stmt, int id, bool next_true ) { PROFILE(STATEMENT_QUEUE_ADD);
+static void statement_queue_add(
+  statement* stmt,
+  int        id,
+  bool       next_true
+) { PROFILE(STATEMENT_QUEUE_ADD);
 
   stmt_loop_link* sll;  /* Pointer to newly created statement loop link */
 
@@ -211,9 +215,6 @@ static void statement_queue_add( statement* stmt, int id, bool next_true ) { PRO
 
   PROFILE_END;
 
-  // printf( "After SLL add\n" );
-  // statement_queue_display();
-
 }
 
 /*!
@@ -225,7 +226,9 @@ static void statement_queue_add( statement* stmt, int id, bool next_true ) { PRO
  to the specified statement.  The next head is also compared against this statement
  and the process is repeated until a match is not found.
 */
-static void statement_queue_compare( statement* stmt ) { PROFILE(STATEMENT_QUEUE_COMPARE);
+static void statement_queue_compare(
+  statement* stmt
+) { PROFILE(STATEMENT_QUEUE_COMPARE);
 
   stmt_loop_link* sll;       /* Pointer to current element in statement loop list */
   stmt_loop_link* tsll;      /* Temporary pointer to current element in statement loop list */
@@ -284,11 +287,14 @@ static void statement_queue_compare( statement* stmt ) { PROFILE(STATEMENT_QUEUE
  \param stmt   Pointer to statement block to size elements for
  \param funit  Pointer to functional unit containing this statement block
 
- \throws anonymous Error
+ \throws anonymous expression_resize statement_size_elements statement_size_elements statement_size_elements
 
  Recursively sizes all elements for the given statement block.
 */
-void statement_size_elements( statement* stmt, func_unit* funit ) { PROFILE(STATEMENT_SIZE_ELEMENTS);
+void statement_size_elements(
+  statement* stmt,
+  func_unit* funit
+) { PROFILE(STATEMENT_SIZE_ELEMENTS);
 
   if( stmt != NULL ) {
 
@@ -323,7 +329,11 @@ void statement_size_elements( statement* stmt, func_unit* funit ) { PROFILE(STAT
  Recursively writes the contents of the specified statement tree (and its
  associated expression trees to the specified output stream.
 */
-void statement_db_write( statement* stmt, FILE* ofile, bool parse_mode ) { PROFILE(STATEMENT_DB_WRITE);
+void statement_db_write(
+  statement* stmt,
+  FILE*      ofile,
+  bool       parse_mode
+) { PROFILE(STATEMENT_DB_WRITE);
 
   assert( stmt != NULL );
 
@@ -348,7 +358,10 @@ void statement_db_write( statement* stmt, FILE* ofile, bool parse_mode ) { PROFI
 
  Traverses specified statement tree, outputting all statements within that tree.
 */
-void statement_db_write_tree( statement* stmt, FILE* ofile ) { PROFILE(STATEMENT_DB_WRITE_TREE);
+void statement_db_write_tree(
+  statement* stmt,
+  FILE*      ofile
+) { PROFILE(STATEMENT_DB_WRITE_TREE);
 
   if( stmt != NULL ) {
 
@@ -379,7 +392,10 @@ void statement_db_write_tree( statement* stmt, FILE* ofile ) { PROFILE(STATEMENT
 
  Traverses the specified statement block, writing all expression trees to specified output file.
 */
-void statement_db_write_expr_tree( statement* stmt, FILE* ofile ) { PROFILE(STATEMENT_DB_WRITE_EXPR_TREE);
+void statement_db_write_expr_tree(
+  statement* stmt,
+  FILE*      ofile
+) { PROFILE(STATEMENT_DB_WRITE_EXPR_TREE);
 
   if( stmt != NULL ) {
 
@@ -409,10 +425,16 @@ void statement_db_write_expr_tree( statement* stmt, FILE* ofile ) { PROFILE(STAT
  \param curr_funit  Pointer to current module.
  \param read_mode   If set to REPORT, adds statement to head of list; otherwise, adds statement to tail.
  
+ \throws anonymous Throw Throw
+
  Reads in the contents of the statement from the specified line, creates
  a statement structure to hold the contents.
 */
-void statement_db_read( char** line, func_unit* curr_funit, int read_mode ) { PROFILE(STATEMENT_DB_READ);
+void statement_db_read(
+  char**     line,
+  func_unit* curr_funit,
+  int        read_mode
+) { PROFILE(STATEMENT_DB_READ);
 
   int        id;             /* ID of root expression that is associated with this statement */
   int        true_id;        /* ID of root expression that is associated with the next_true statement */
@@ -519,12 +541,15 @@ void statement_db_read( char** line, func_unit* curr_funit, int read_mode ) { PR
  \param stmt   Pointer to statement block to traverse
  \param funit  Pointer to functional unit containing this statement block
 
- \throws anonymous Error
+ \throws anonymous statement_assign_expr_ids statement_assign_expr_ids statement_assign_expr_ids expression_assign_expr_ids
 
  Recursively traverses the entire statement block and assigns unique expression IDs for each
  expression tree that it finds.
 */
-void statement_assign_expr_ids( statement* stmt, func_unit* funit ) { PROFILE(STATEMENT_ASSIGN_EXPR_IDS);
+void statement_assign_expr_ids(
+  statement* stmt,
+  func_unit* funit
+) { PROFILE(STATEMENT_ASSIGN_EXPR_IDS);
 
   if( stmt != NULL ) {
 
@@ -571,7 +596,11 @@ void display( char* id, statement* curr_stmt, statement* next_stmt, int conn_id 
  that has either next_true or next_false set to NULL, sets next_true and/or 
  next_false of that statement to point to the next_stmt statement.
 */
-bool statement_connect( statement* curr_stmt, statement* next_stmt, int conn_id ) { PROFILE(STATEMENT_CONNECT);
+bool statement_connect(
+  statement* curr_stmt,
+  statement* next_stmt,
+  int        conn_id
+) { PROFILE(STATEMENT_CONNECT);
 
   bool retval = FALSE;  /* Return value for this function */
 
@@ -680,7 +709,10 @@ bool statement_connect( statement* curr_stmt, statement* next_stmt, int conn_id 
  value is returned.  If both the false and tru paths have been parsed, the highest
  numbered line is returned.
 */
-static int statement_get_last_line_helper( statement* stmt, statement* base ) { PROFILE(STATEMENT_GET_LAST_LINE_HELPER);
+static int statement_get_last_line_helper(
+  statement* stmt,
+  statement* base
+) { PROFILE(STATEMENT_GET_LAST_LINE_HELPER);
 
   expression* last_exp;         /* Pointer to last expression in the statement tree */
   int         last_false = -1;  /* Last false path line number */ 
@@ -716,7 +748,9 @@ static int statement_get_last_line_helper( statement* stmt, statement* base ) { 
 /*!
  \param stmt  Pointer to statement to get last line number for.
 */
-int statement_get_last_line( statement* stmt ) { PROFILE(STATEMENT_GET_LAST_LINE);
+int statement_get_last_line(
+  statement* stmt
+) { PROFILE(STATEMENT_GET_LAST_LINE);
 
   return( statement_get_last_line_helper( stmt, stmt ) );
 
@@ -730,7 +764,11 @@ int statement_get_last_line( statement* stmt ) { PROFILE(STATEMENT_GET_LAST_LINE
  Searches the specified statement block and returns a list of all signals on the right-hand-side
  of expressions.
 */
-void statement_find_rhs_sigs( statement* stmt, str_link** head, str_link** tail ) { PROFILE(STATEMENT_FIND_RHS_SIGS);
+void statement_find_rhs_sigs(
+  statement* stmt,
+  str_link** head,
+  str_link** tail
+) { PROFILE(STATEMENT_FIND_RHS_SIGS);
 
   if( stmt != NULL ) {
 
@@ -777,7 +815,10 @@ void statement_find_rhs_sigs( statement* stmt, str_link** head, str_link** tail 
 
  \return Returns a pointer to the head statement of the block that contains stmt.
 */
-statement* statement_find_head_statement( statement* stmt, stmt_link* head ) { PROFILE(STATEMENT_FIND_HEAD_STATEMENT);
+statement* statement_find_head_statement(
+  statement* stmt,
+  stmt_link* head
+) { PROFILE(STATEMENT_FIND_HEAD_STATEMENT);
 
   stmt_iter  si;     /* Statement iterator used to find head statement */
   statement* fhead;  /* Pointer to found head statement */
@@ -824,7 +865,10 @@ statement* statement_find_head_statement( statement* stmt, stmt_link* head ) { P
  Recursively searches the given statement block for the expression that matches the given
  ID.
 */
-statement* statement_find_statement( statement* curr, int id ) { PROFILE(STATEMENT_FIND_STATEMENT);
+statement* statement_find_statement(
+  statement* curr,
+  int        id
+) { PROFILE(STATEMENT_FIND_STATEMENT);
 
   statement* found = NULL;  /* Pointer to found statement */
 
@@ -948,7 +992,9 @@ void statement_dealloc_recursive(
  remove attached expression (this is assumed to be cleaned up by the
  expression list removal function).
 */
-void statement_dealloc( statement* stmt ) { PROFILE(STATEMENT_DEALLOC);
+void statement_dealloc(
+  statement* stmt
+) { PROFILE(STATEMENT_DEALLOC);
 
   if( stmt != NULL ) {
  
@@ -964,6 +1010,9 @@ void statement_dealloc( statement* stmt ) { PROFILE(STATEMENT_DEALLOC);
 
 /*
  $Log$
+ Revision 1.128  2008/03/04 00:09:20  phase1geo
+ More exception handling.  Checkpointing.
+
  Revision 1.127  2008/02/29 00:08:31  phase1geo
  Completed optimization code in simulator.  Still need to verify that code
  changes enhanced performances as desired.  Checkpointing.

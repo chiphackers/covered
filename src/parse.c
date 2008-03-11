@@ -91,11 +91,16 @@ int parse_readline( FILE* file, char* line, int size ) { PROFILE(PARSE_READLINE)
  \param top        Name of top-level module to score
  \param output_db  Name of output directory for generated scored files.
 
+ \throws anonymous fsm_var_bind race_check_modules Throw bind_perform db_write
+
  Resets the lexer and parses all Verilog files specified in use_files list.
  After all design files are parsed, their information will be appropriately
  stored in the associated lists.
 */
-void parse_design( char* top, char* output_db ) { PROFILE(PARSE_DESIGN);
+void parse_design(
+  const char* top,
+  const char* output_db
+) { PROFILE(PARSE_DESIGN);
 
   Try {
 
@@ -213,11 +218,17 @@ void parse_design( char* top, char* output_db ) { PROFILE(PARSE_DESIGN);
  \param dump_file  Name of dumpfile to parse for scoring.
  \param dump_mode  Type of dumpfile being used (see \ref dumpfile_fmt for legal values)
 
+ \throws anonymous Throw vcd_parse bind_perform db_read lxt_parse db_write
+
  Reads in specified CDD database file, reads in specified dumpfile in the specified format,
  performs re-simulation and writes the scored design back to the specified CDD database file
  for merging or reporting.
 */
-void parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) { PROFILE(PARSE_AND_SCORE_DUMPFILE);
+void parse_and_score_dumpfile(
+  const char* db,
+  const char* dump_file,
+  int         dump_mode
+) { PROFILE(PARSE_AND_SCORE_DUMPFILE);
 
   assert( dump_file != NULL );
 
@@ -287,6 +298,9 @@ void parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) { PROF
 
 /*
  $Log$
+ Revision 1.57  2008/03/03 15:54:15  phase1geo
+ More exception handling updates.  Checkpointing.
+
  Revision 1.56  2008/02/08 23:58:07  phase1geo
  Starting to work on exception handling.  Much work to do here (things don't
  compile at the moment).

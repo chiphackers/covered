@@ -449,30 +449,22 @@ char* gen_item_calc_signal_name(
   ptr      = tmpname;
   new_name = strdup_safe( "" );
 
-  Try {
-
-    do {
-      gen_item_get_genvar( tmpname, &pre, &genvar, &post );
-      if( genvar != NULL ) {
-        unsigned int rv = snprintf( intstr, 20, "%d", parse_static_expr( genvar, funit, line, no_genvars ) );
-        assert( rv < 20 );
-        new_name = (char*)realloc( new_name, (strlen( new_name ) + strlen( pre ) + strlen( intstr ) + 3) );
-        strncat( new_name, pre, strlen( pre ) );
-        strncat( new_name, "[", 1 );
-        strncat( new_name, intstr, strlen( intstr ) );
-        strncat( new_name, "]", 1 );
-        tmpname = post;
-      } else {
-        new_name = (char*)realloc( new_name, (strlen( new_name ) + strlen( pre ) + 1) );
-        strncat( new_name, pre, strlen( pre ) );
-      }
-    } while( genvar != NULL );
-
-  } Catch_anonymous {
-    free_safe( ptr );
-    free_safe( new_name );
-    Throw 0;
-  }
+  do {
+    gen_item_get_genvar( tmpname, &pre, &genvar, &post );
+    if( genvar != NULL ) {
+      unsigned int rv = snprintf( intstr, 20, "%d", parse_static_expr( genvar, funit, line, no_genvars ) );
+      assert( rv < 20 );
+      new_name = (char*)realloc( new_name, (strlen( new_name ) + strlen( pre ) + strlen( intstr ) + 3) );
+      strncat( new_name, pre, strlen( pre ) );
+      strncat( new_name, "[", 1 );
+      strncat( new_name, intstr, strlen( intstr ) );
+      strncat( new_name, "]", 1 );
+      tmpname = post;
+    } else {
+      new_name = (char*)realloc( new_name, (strlen( new_name ) + strlen( pre ) + 1) );
+      strncat( new_name, pre, strlen( pre ) );
+    }
+  } while( genvar != NULL );
 
   /* Deallocate memory */
   free_safe( ptr );
@@ -636,7 +628,9 @@ gen_item* gen_item_create_inst(
 
  Create a new generate item for a namespace.
 */
-gen_item* gen_item_create_tfn( funit_inst* inst ) { PROFILE(GEN_ITEM_CREATE_TFN);
+gen_item* gen_item_create_tfn(
+  funit_inst* inst
+) { PROFILE(GEN_ITEM_CREATE_TFN);
 
   gen_item* gi;
 
@@ -707,12 +701,15 @@ gen_item* gen_item_create_bind(
  \param gi     Pointer to generate item block to check
  \param funit  Pointer to functional unit that contains this generate item
 
- \throws anonymous Error
+ \throws anonymous vsignal_create_vec statement_size_elements gen_item_resize_stmts_and_sigs gen_item_resize_stmts_and_sigs gen_item_resize_stmts_and_sigs
 
  Recursively iterates the the specified generate item block, resizing all statements
  within that block.
 */
-void gen_item_resize_stmts_and_sigs( gen_item* gi, func_unit* funit ) { PROFILE(GEN_ITEM_RESIZE_STMTS_AND_SIGS);
+void gen_item_resize_stmts_and_sigs(
+  gen_item*  gi,
+  func_unit* funit
+) { PROFILE(GEN_ITEM_RESIZE_STMTS_AND_SIGS);
 
   if( gi != NULL ) {
 
@@ -745,7 +742,7 @@ void gen_item_resize_stmts_and_sigs( gen_item* gi, func_unit* funit ) { PROFILE(
  \param gi     Pointer to generate item to check and assign expression IDs for
  \param funit  Pointer to functional unit containing this generate item
 
- \throws anonymous Error
+ \throws anonymous statement_assign_expr_ids
 
  Assigns unique expression IDs to each expression in the tree given for a generated statement.
 */
@@ -892,10 +889,10 @@ bool gen_item_connect(
 }
 
 /*!
- \param gi             Pointer to current generate item to resolve
- \param inst           Pointer to instance to store results to
+ \param gi    Pointer to current generate item to resolve
+ \param inst  Pointer to instance to store results to
 
- \throws anonymous Error
+ \throws anonymous Throw expression_resize expression_operate_recursively gen_item_resolve gen_item_resolve gen_item_resolve gen_item_resolve gen_item_resolve gen_item_resolve gen_item_resolve gen_item_resolve
 
  Recursively iterates through the entire generate block specified by gi, resolving all generate items
  within it.  This is called by the generate_resolve function (in the middle of the binding process) and
@@ -966,7 +963,7 @@ static void gen_item_resolve(
                            obf_sig( gi->varname ), obf_funit( inst->funit->name ) );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
-            exit( EXIT_FAILURE );
+            Throw 0;
           }
           rv = snprintf( inst_name, 4096, "%s[%d]", gi->elem.inst->name, vector_to_int( genvar->value ) );
           assert( rv < 4096 );
@@ -1020,7 +1017,9 @@ static void gen_item_resolve(
  Updates the specified expression name to be that of the generate item name
  if the current generate item is a BIND type.
 */
-void gen_item_bind( gen_item* gi ) { PROFILE(GEN_ITEM_BIND);
+void gen_item_bind(
+  gen_item* gi
+) { PROFILE(GEN_ITEM_BIND);
 
   if( gi->suppl.part.type == GI_TYPE_BIND ) {
 
@@ -1037,12 +1036,14 @@ void gen_item_bind( gen_item* gi ) { PROFILE(GEN_ITEM_BIND);
 /*!
  \param root  Pointer to current instance in instance tree to resolve for
 
- \throws anonymous Error
+ \throws anonymous generate_resolve gen_item_resolve
 
  Recursively resolves all generate items in the design.  This is called at a specific point
  in the binding process.
 */
-void generate_resolve( funit_inst* root ) { PROFILE(GENERATE_RESOLVE);
+void generate_resolve(
+  funit_inst* root
+) { PROFILE(GENERATE_RESOLVE);
 
   gitem_link* curr_gi;     /* Pointer to current gitem_link element to resolve for */
   funit_inst* curr_child;  /* Pointer to current child to resolve for */
@@ -1136,7 +1137,10 @@ bool generate_remove_stmt(
 
  Recursively deallocates the gen_item structure tree.
 */
-void gen_item_dealloc( gen_item* gi, bool rm_elem ) { PROFILE(GEN_ITEM_DEALLOC);
+void gen_item_dealloc(
+  gen_item* gi,
+  bool rm_elem
+) { PROFILE(GEN_ITEM_DEALLOC);
 
   if( gi != NULL ) {
 
@@ -1188,6 +1192,9 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) { PROFILE(GEN_ITEM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.55  2008/03/04 00:09:20  phase1geo
+ More exception handling.  Checkpointing.
+
  Revision 1.54  2008/02/29 23:58:19  phase1geo
  Continuing to work on adding exception handling code.
 

@@ -34,10 +34,17 @@ void db_close();
 bool db_check_for_top_module();
 
 /*! \brief Writes contents of expressions, functional units and vsignals to database file. */
-void db_write( char* file, bool parse_mode, bool report_save );
+void db_write(
+  const char* file,
+  bool        parse_mode,
+  bool        report_save
+);
 
 /*! \brief Reads contents of database file and stores into internal lists. */
-void db_read( char* file, int read_mode );
+void db_read(
+  const char* file,
+  int         read_mode
+);
 
 /*! \brief Returns a scaled version of the given value to the timescale for the given functional unit. */
 uint64 db_scale_to_precision( uint64 value, func_unit* funit );
@@ -192,6 +199,9 @@ bool db_do_timestep( uint64 time, bool final );
 
 /*
  $Log$
+ Revision 1.85  2008/02/27 05:26:51  phase1geo
+ Adding support for $finish and $stop.
+
  Revision 1.84  2008/02/10 03:33:13  phase1geo
  More exception handling added and fixed remaining splint errors.
 
