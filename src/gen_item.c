@@ -427,6 +427,8 @@ bool gen_item_varname_contains_genvar( char* name ) { PROFILE(GEN_ITEM_VARNAME_C
 
  \return Returns allocated string containing the signal name with embedded generate variables evaluated
 
+ \throws anonymous parse_static_expr Throw
+
  Iterates through the given name, substituting any found generate variables with their current value.
 */
 char* gen_item_calc_signal_name(
@@ -449,22 +451,30 @@ char* gen_item_calc_signal_name(
   ptr      = tmpname;
   new_name = strdup_safe( "" );
 
-  do {
-    gen_item_get_genvar( tmpname, &pre, &genvar, &post );
-    if( genvar != NULL ) {
-      unsigned int rv = snprintf( intstr, 20, "%d", parse_static_expr( genvar, funit, line, no_genvars ) );
-      assert( rv < 20 );
-      new_name = (char*)realloc( new_name, (strlen( new_name ) + strlen( pre ) + strlen( intstr ) + 3) );
-      strncat( new_name, pre, strlen( pre ) );
-      strncat( new_name, "[", 1 );
-      strncat( new_name, intstr, strlen( intstr ) );
-      strncat( new_name, "]", 1 );
-      tmpname = post;
-    } else {
-      new_name = (char*)realloc( new_name, (strlen( new_name ) + strlen( pre ) + 1) );
-      strncat( new_name, pre, strlen( pre ) );
-    }
-  } while( genvar != NULL );
+  Try {
+
+    do {
+      gen_item_get_genvar( tmpname, &pre, &genvar, &post );
+      if( genvar != NULL ) {
+        unsigned int rv = snprintf( intstr, 20, "%d", parse_static_expr( genvar, funit, line, no_genvars ) );
+        assert( rv < 20 );
+        new_name = (char*)realloc( new_name, (strlen( new_name ) + strlen( pre ) + strlen( intstr ) + 3) );
+        strncat( new_name, pre, strlen( pre ) );
+        strncat( new_name, "[", 1 );
+        strncat( new_name, intstr, strlen( intstr ) );
+        strncat( new_name, "]", 1 );
+        tmpname = post;
+      } else {
+        new_name = (char*)realloc( new_name, (strlen( new_name ) + strlen( pre ) + 1) );
+        strncat( new_name, pre, strlen( pre ) );
+      }
+    } while( genvar != NULL );
+
+  } Catch_anonymous {
+    free_safe( new_name );
+    free_safe( ptr );
+    Throw 0;
+  }
 
   /* Deallocate memory */
   free_safe( ptr );
@@ -1192,6 +1202,9 @@ void gen_item_dealloc(
 
 /*
  $Log$
+ Revision 1.56  2008/03/11 22:06:48  phase1geo
+ Finishing first round of exception handling code.
+
  Revision 1.55  2008/03/04 00:09:20  phase1geo
  More exception handling.  Checkpointing.
 

@@ -325,6 +325,8 @@ static_expr_primary
 
  \return Returns the value of the given expression string.
 
+ \throw anonymous SEparse Throw
+
  Parses given static expression string and returns its calculated integer value.
 */
 int parse_static_expr(
@@ -365,7 +367,7 @@ int SEerror(
   unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "%s,   file: %s, line: %d", str, obf_file( se_funit->name ), se_lineno );
   assert( rv < USER_MSG_LENGTH );
   print_output( user_msg, FATAL, __FILE__, __LINE__ );
-  exit( EXIT_FAILURE );
+  Throw 0;
 
   /*@-unreachable@*/
   return( 0 );
