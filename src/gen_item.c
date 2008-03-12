@@ -902,7 +902,8 @@ bool gen_item_connect(
  \param gi    Pointer to current generate item to resolve
  \param inst  Pointer to instance to store results to
 
- \throws anonymous Throw expression_resize expression_operate_recursively gen_item_resolve gen_item_resolve gen_item_resolve gen_item_resolve gen_item_resolve gen_item_resolve gen_item_resolve gen_item_resolve
+ \throws anonymous gen_item_calc_signal_name Throw expression_resize expression_operate_recursively gen_item_resolve
+                   gen_item_resolve gen_item_resolve gen_item_resolve gen_item_resolve gen_item_resolve gen_item_resolve gen_item_resolve
 
  Recursively iterates through the entire generate block specified by gi, resolving all generate items
  within it.  This is called by the generate_resolve function (in the middle of the binding process) and
@@ -1202,6 +1203,9 @@ void gen_item_dealloc(
 
 /*
  $Log$
+ Revision 1.57  2008/03/12 21:10:21  phase1geo
+ More exception handling updates.
+
  Revision 1.56  2008/03/11 22:06:48  phase1geo
  Finishing first round of exception handling code.
 
