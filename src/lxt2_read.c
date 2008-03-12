@@ -221,6 +221,9 @@ static unsigned int lxt2_rd_expand_bits_to_integer( int len, char* s ) { PROFILE
  * (as they're all unique based on the timeslot scheme, no duplicate
  * checking is necessary...)
  */
+/*!
+ \throws anonymous Throw Throw
+*/
 static void lxt2_rd_iter_radix( struct lxt2_rd_trace *lt, struct lxt2_rd_block *b ) { PROFILE(LXT2_RD_ITER_RADIX);
 
   unsigned int which_time;
@@ -310,7 +313,7 @@ static void lxt2_rd_iter_radix( struct lxt2_rd_trace *lt, struct lxt2_rd_block *
             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  vch(%u) >= num_dict_entries(%u)", vch, (unsigned int)b->num_dict_entries );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
-            exit( EXIT_FAILURE );
+            Throw 0;
           }
           if( lt->flags[idx] & (LXT2_RD_SYM_F_DOUBLE | LXT2_RD_SYM_F_STRING) ) {
             free_safe( lt->value[idx] );
@@ -328,7 +331,7 @@ static void lxt2_rd_iter_radix( struct lxt2_rd_trace *lt, struct lxt2_rd_block *
                                         (unsigned int)lt->len[idx], lt->value[idx], (unsigned int)b->string_lens[vch], b->string_pointers[vch] );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
-            exit( EXIT_FAILURE );
+            Throw 0;
           }
           break;
       }
@@ -349,6 +352,9 @@ static void lxt2_rd_iter_radix( struct lxt2_rd_trace *lt, struct lxt2_rd_block *
  * called for only 1st vch in a block: blocks out emission of duplicate
  * vch from preceeding block
  */
+/*!
+ \throws anonymous Throw
+*/
 static void lxt2_rd_iter_radix0(
   struct lxt2_rd_trace* lt,
   struct lxt2_rd_block* b,
@@ -404,7 +410,7 @@ static void lxt2_rd_iter_radix0(
     case LXT2_RD_ENC_SUB3:
     case LXT2_RD_ENC_SUB4:
       print_output( "Internal error in granule 0 position 0", FATAL, __FILE__, __LINE__ );
-      exit( EXIT_FAILURE );
+      Throw 0;
       /*@-unreachable@*/
       break;
       /*@=unreachable@*/
@@ -438,7 +444,7 @@ static void lxt2_rd_iter_radix0(
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  vch(%u) >= num_dict_entries(%u)", vch, (unsigned int)b->num_dict_entries );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        exit( EXIT_FAILURE );
+        Throw 0;
       }
       if( lt->flags[idx] & (LXT2_RD_SYM_F_DOUBLE | LXT2_RD_SYM_F_STRING) ) {
         if( strcmp( lt->value[idx], b->string_pointers[vch] ) ) {
@@ -477,7 +483,7 @@ static void lxt2_rd_iter_radix0(
                                     (unsigned int)lt->len[idx], lt->value[idx], (unsigned int)b->string_lens[vch], b->string_pointers[vch] );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        exit( EXIT_FAILURE );
+        Throw 0;
       }
       break;
   }
@@ -497,8 +503,16 @@ fini:
  * time change table.  this runs in strict linear time: we can
  * do this because of the limited domain of the dataset.
  */
-static void lxt2_rd_build_radix( struct lxt2_rd_trace* lt, struct lxt2_rd_block* b, int granule,
-                                 lxtint32_t strtfac, lxtint32_t endfac ) { PROFILE(LXT2_RD_BUILD_RADIX);
+/*!
+ \throws anonymous lxt2_rd_iter_radix0
+*/
+static void lxt2_rd_build_radix(
+  struct lxt2_rd_trace* lt,
+  struct lxt2_rd_block* b,
+  int                   granule,
+  lxtint32_t            strtfac,
+  lxtint32_t endfac
+) { PROFILE(LXT2_RD_BUILD_RADIX);
 
   int i;
   int offset;
@@ -585,6 +599,9 @@ static void lxt2_rd_regenerate_process_mask( struct lxt2_rd_trace* lt ) { PROFIL
 /*
  * process a single block and execute the vch callback as necessary
  */
+/*!
+ \throws anonymous lxt2_rd_build_radix lxt2_rd_iter_radix Throw Throw Throw Throw
+*/
 static int lxt2_rd_process_block(
   struct lxt2_rd_trace* lt,
   struct lxt2_rd_block* b
@@ -617,7 +634,7 @@ static int lxt2_rd_process_block(
 
   if( vld != LXT2_RD_GRAN_SECT_DICT ) {
     print_output( "Malformed section", FATAL, __FILE__, __LINE__ );
-    exit( EXIT_FAILURE );
+    Throw 0;
   }
 
   if( b->num_dict_entries ) {
@@ -631,7 +648,9 @@ static int lxt2_rd_process_block(
     }
     if( pnt != b->map_start ) {
       print_output( "Dictionary corrupt, exiting...", FATAL, __FILE__, __LINE__ );
-      exit( EXIT_FAILURE );
+      free_safe( b->string_pointers );
+      free_safe( b->string_lens );
+      Throw 0;
     }
   }
 
@@ -692,7 +711,7 @@ static int lxt2_rd_process_block(
       /*@=formatcode@*/
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      exit( EXIT_FAILURE );
+      Throw 0;
     }
     pnt++;
 
@@ -729,7 +748,7 @@ static int lxt2_rd_process_block(
       /*@=formatcode@*/
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      exit( EXIT_FAILURE );
+      Throw 0;
     }
     pnt++;
 
@@ -1529,9 +1548,14 @@ int lxt2_rd_iter_blocks( struct lxt2_rd_trace* lt,
  * merely caches the FIRST set of blocks which fit in lt->block_mem_max.
  * n.b., returns number of blocks processed
  */
-int lxt2_rd_iter_blocks( struct lxt2_rd_trace* lt, 
-                         void (*value_change_callback)( struct lxt2_rd_trace** lt, lxtint64_t* time, lxtint32_t* facidx, char** value ),
-                         void *user_callback_data_pointer ) { PROFILE(LXT2_RD_ITER_BLOCKS);
+/*!
+ \throws anonymous Throw lxt2_rd_process_block
+*/
+int lxt2_rd_iter_blocks(
+  struct lxt2_rd_trace* lt, 
+  void (*value_change_callback)( struct lxt2_rd_trace** lt, lxtint64_t* time, lxtint32_t* facidx, char** value ),
+  void *user_callback_data_pointer
+) { PROFILE(LXT2_RD_ITER_BLOCKS);
 
   struct lxt2_rd_block* b;
   int                   blk       = 0;
@@ -1689,7 +1713,12 @@ int lxt2_rd_iter_blocks( struct lxt2_rd_trace* lt,
 
       if( b->mem ) {
 
-        (void)lxt2_rd_process_block( lt, b );
+        Try {
+          (void)lxt2_rd_process_block( lt, b );
+        } Catch_anonymous {
+          free_safe( b->mem );
+          Throw 0;
+        }
 
         if( striped_kill ) {
           free_safe( b->mem );

@@ -1732,9 +1732,15 @@ bool expression_op_func__divide(
 
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
+ \throws anonymous Throw
+
  Performs a 32-bit modulus operation.
 */
-bool expression_op_func__mod( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__MOD);
+bool expression_op_func__mod(
+               expression*     expr,
+  /*@unused@*/ thread*         thr,
+  /*@unused@*/ const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__MOD);
 
   vector   vec1;            /* Temporary vector */
   vec_data bit;             /* Holds the value of a single bit in a vector value */
@@ -1765,7 +1771,7 @@ bool expression_op_func__mod( expression* expr, /*@unused@*/ thread* thr, /*@unu
 
     if( intval2 == 0 ) {
       print_output( "Division by 0 error", FATAL, __FILE__, __LINE__ );
-      exit( EXIT_FAILURE );
+      Throw 0;
     }
 
     intval1 = intval1 % intval2;
@@ -4409,6 +4415,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.289  2008/03/11 22:21:01  phase1geo
+ Continuing to do next round of exception handling.  Checkpointing.
+
  Revision 1.288  2008/03/11 22:06:47  phase1geo
  Finishing first round of exception handling code.
 
