@@ -2409,11 +2409,6 @@ void vector_dealloc( vector* vec ) { PROFILE(VECTOR_DEALLOC);
     /* Deallocate vector itself */
     free_safe( vec );
 
-  } else {
-
-    /* Internal error, we should never be trying to deallocate a NULL vector */
-    assert( vec != NULL );
-
   }
 
   PROFILE_END;
@@ -2422,6 +2417,9 @@ void vector_dealloc( vector* vec ) { PROFILE(VECTOR_DEALLOC);
 
 /*
  $Log$
+ Revision 1.115  2008/03/11 22:06:49  phase1geo
+ Finishing first round of exception handling code.
+
  Revision 1.114  2008/02/10 03:33:13  phase1geo
  More exception handling added and fixed remaining splint errors.
 

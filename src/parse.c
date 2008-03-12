@@ -113,25 +113,30 @@ void parse_design(
       /* Initialize lexer with first file */
       reset_lexer( use_files_head );
 
-      /* Parse the design -- if we catch an exception, remove the temporary ppfilename */
       Try {
-        parser_ret = VLparse();
+
+        /* Parse the design -- if we catch an exception, remove the temporary ppfilename */
+        Try {
+          parser_ret = VLparse();
+        } Catch_anonymous {
+          unsigned int rv;
+          rv = fclose( VLin );
+          Throw 0;
+        }
+
+        if( (parser_ret != 0) || (error_count > 0) ) {
+          print_output( "Error in parsing design", FATAL, __FILE__, __LINE__ );
+          Throw 0;
+        }
+
       } Catch_anonymous {
-        unsigned int rv;
-        rv = fclose( VLin );
-        assert( rv == 0 );
-        rv = fclose( VLout );
-        assert( rv == 0 );
-        rv = unlink( ppfilename );
-        assert( rv == 0 );
+        fclose( VLout );
+        unlink( ppfilename );
+        parser_dealloc_sig_range( &curr_urange, FALSE );
+        parser_dealloc_sig_range( &curr_prange, FALSE );
         Throw 0;
       }
      
-      if( (parser_ret != 0) || (error_count > 0) ) {
-        print_output( "Error in parsing design", FATAL, __FILE__, __LINE__ );
-        Throw 0;
-      }
-
       /* Deallocate any memory in curr_range variable */
       parser_dealloc_sig_range( &curr_urange, FALSE );
       parser_dealloc_sig_range( &curr_prange, FALSE );
@@ -298,6 +303,9 @@ void parse_and_score_dumpfile(
 
 /*
  $Log$
+ Revision 1.58  2008/03/11 22:06:48  phase1geo
+ Finishing first round of exception handling code.
+
  Revision 1.57  2008/03/03 15:54:15  phase1geo
  More exception handling updates.  Checkpointing.
 
