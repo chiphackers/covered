@@ -50,7 +50,13 @@ void vsignal_db_merge( vsignal* base, char** line, bool same );
 void vsignal_propagate( vsignal* sig, const sim_time* time );
 
 /*! \brief Assigns specified VCD value to specified vsignal. */
-void vsignal_vcd_assign( vsignal* sig, char* value, int msb, int lsb, const sim_time* time );
+void vsignal_vcd_assign(
+  vsignal*        sig,
+  const char*     value,
+  int             msb,
+  int             lsb,
+  const sim_time* time
+);
 
 /*! \brief Adds an expression to the vsignal list. */
 void vsignal_add_expression( vsignal* sig, expression* expr );
@@ -73,6 +79,10 @@ void vsignal_dealloc( vsignal* sig );
 
 /*
  $Log$
+ Revision 1.26  2008/02/09 19:32:45  phase1geo
+ Completed first round of modifications for using exception handler.  Regression
+ passes with these changes.  Updated regressions per these changes.
+
  Revision 1.25  2008/02/08 23:58:07  phase1geo
  Starting to work on exception handling.  Much work to do here (things don't
  compile at the moment).

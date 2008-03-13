@@ -2764,6 +2764,8 @@ void db_set_symbol_string( char* sym, char* value ) { PROFILE(DB_SET_SYMBOL_STRI
  \return Returns TRUE if simulation should continue to advance; otherwise, returns FALSE
          to indicate that simulation should stop immediately.
 
+ \throws anonymous symtable_assign
+
  Cycles through expression queue, performing expression evaluations as we go.  If
  an expression has a parent expression, that parent expression is placed in the
  expression queue after that expression has completed its evaluation.  When the
@@ -2831,6 +2833,9 @@ bool db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.292  2008/03/11 22:06:47  phase1geo
+ Finishing first round of exception handling code.
+
  Revision 1.291  2008/03/10 22:00:31  phase1geo
  Working on more exception handling (script is finished now).  Starting to work
  on code enhancements again :)  Checkpointing.

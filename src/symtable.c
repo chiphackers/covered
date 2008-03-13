@@ -126,25 +126,25 @@
  Pointer to the VCD symbol table.  Please see the file description for how this
  structure is used.
 */
-symtable*  vcd_symtab      = NULL;
+symtable* vcd_symtab = NULL;
 
 /*!
  Maintains current number of nodes in the VCD symbol table.  This value is used
  to create the appropriately sized timestep_tab array.
 */
-int        vcd_symtab_size = 0;
+int vcd_symtab_size = 0;
 
 /*!
  Pointer to the current timestep table array.  Please see the file description for
  how this structure is used.
 */
-symtable** timestep_tab    = NULL;
+symtable** timestep_tab = NULL;
 
 /*!
  Maintains the current number of elements in the timestep_tab array that need to be
  evaluated after simulation for a timestep.
 */
-static int postsim_size    = 0;
+static int postsim_size = 0;
 
 
 /*!
@@ -156,7 +156,12 @@ static int postsim_size    = 0;
  Creates and adds the specified symtable signal structure to the sym_sig
  list for the specified symtab.
 */
-static void symtable_add_sym_sig( symtable* symtab, vsignal* sig, int msb, int lsb ) { PROFILE(SYMTABLE_ADD_SYM_SIG);
+static void symtable_add_sym_sig(
+  symtable* symtab,
+  vsignal*  sig,
+  int       msb,
+  int       lsb
+) { PROFILE(SYMTABLE_ADD_SYM_SIG);
 
   sym_sig* new_ss;  /* Pointer to newly created sym_sig structure */
 
@@ -186,7 +191,11 @@ static void symtable_add_sym_sig( symtable* symtab, vsignal* sig, int msb, int l
 
  Initializes the contents of a symbol table entry.
 */
-static void symtable_init( symtable* symtab, int msb, int lsb ) { PROFILE(SYMTABLE_INIT);
+static void symtable_init(
+  symtable* symtab,
+  int       msb,
+  int       lsb
+) { PROFILE(SYMTABLE_INIT);
 
   /* Allocate and initialize the entry */
   symtab->size     = (msb - lsb) + 2;
@@ -231,7 +240,12 @@ symtable* symtable_create() { PROFILE(SYMTABLE_CREATE);
  Using the symbol as a unique ID, creates a new symtable element for specified information
  and places it into the binary tree.
 */
-void symtable_add( char* sym, vsignal* sig, int msb, int lsb ) { PROFILE(SYMTABLE_ADD);
+void symtable_add(
+  char*    sym,
+  vsignal* sig,
+  int      msb,
+  int      lsb
+) { PROFILE(SYMTABLE_ADD);
 
   symtable* curr;  /* Pointer to current symtable entry */
   char*     ptr;   /* Pointer to current character in sym */
@@ -273,7 +287,10 @@ void symtable_add( char* sym, vsignal* sig, int msb, int lsb ) { PROFILE(SYMTABL
  Performs a binary search of the specified tree to find all matching symtable entries.
  When the signal is found, the specified value is assigned to the symtable entry.
 */
-void symtable_set_value( char* sym, char* value ) { PROFILE(SYMTABLE_SET_VALUE);
+void symtable_set_value(
+  char* sym,
+  char* value
+) { PROFILE(SYMTABLE_SET_VALUE);
 
   symtable* curr;         /* Pointer to current symtable */
   char*     ptr;          /* Pointer to current character in symbol */
@@ -317,10 +334,14 @@ void symtable_set_value( char* sym, char* value ) { PROFILE(SYMTABLE_SET_VALUE);
 /*!
  \param time  Pointer to current simulation time structure.
 
+ \throws anonymous vsignal_vcd_assign
+
  Traverses simulation symentry array, assigning stored string value to the
  stored signal.
 */
-void symtable_assign( const sim_time* time ) { PROFILE(SYMTABLE_ASSIGN);
+void symtable_assign(
+  const sim_time* time
+) { PROFILE(SYMTABLE_ASSIGN);
 
   symtable* curr;  /* Pointer to current symtable entry */
   sym_sig*  sig;   /* Pointer to current sym_sig in list */
@@ -346,7 +367,9 @@ void symtable_assign( const sim_time* time ) { PROFILE(SYMTABLE_ASSIGN);
 
  Recursively deallocates all elements of specifies symbol table.
 */ 
-void symtable_dealloc( symtable* symtab ) { PROFILE(SYMTABLE_DEALLOC);
+void symtable_dealloc(
+  symtable* symtab
+) { PROFILE(SYMTABLE_DEALLOC);
 
   sym_sig* curr;  /* Pointer to current sym_sig in list */
   sym_sig* tmp;   /* Temporary pointer to sym_sig */
@@ -380,6 +403,9 @@ void symtable_dealloc( symtable* symtab ) { PROFILE(SYMTABLE_DEALLOC);
 
 /*
  $Log$
+ Revision 1.33  2008/01/09 05:22:22  phase1geo
+ More splint updates using the -standard option.
+
  Revision 1.32  2007/12/18 23:55:21  phase1geo
  Starting to remove 64-bit time and replacing it with a sim_time structure
  for performance enhancement purposes.  Also removing global variables for time-related

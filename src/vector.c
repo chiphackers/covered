@@ -1377,8 +1377,9 @@ char* vector_to_string( vector* vec ) { PROFILE(VECTOR_TO_STRING);
         type_char = 'h';
         break;
       default          :  
-        print_output( "Internal Error:  Unknown vector_to_string type\n", FATAL, __FILE__, __LINE__ );
-        exit( EXIT_FAILURE );
+        assert( (vec->suppl.part.base == BINARY) ||
+                (vec->suppl.part.base == OCTAL)  ||
+                (vec->suppl.part.base == HEXIDECIMAL) );
         /*@-unreachable@*/
         break;
         /*@=unreachable@*/
@@ -1418,8 +1419,8 @@ char* vector_to_string( vector* vec ) { PROFILE(VECTOR_TO_STRING);
           case 16  :  tmp[pos] = 'X';  pos++;  break;
           case 17  :  tmp[pos] = 'Z';  pos++;  break;
           default  :  
-            print_output( "Internal Error:  Value in vector_to_string exceeds allowed limit\n", FATAL, __FILE__, __LINE__ );
-            exit( EXIT_FAILURE );
+            /* Value in vector_to_string exceeds allowed limit */
+            assert( value <= 17 );
             /*@-unreachable@*/
             break;
             /*@=unreachable@*/
@@ -1592,16 +1593,23 @@ vector* vector_from_string( char** str, bool quoted ) { PROFILE(VECTOR_FROM_STRI
  \return Returns TRUE if assigned value differs from the original value; otherwise,
          returns FALSE.
 
+ \throws anonymous Throw
+
  Iterates through specified value string, setting the specified vector value to
  this value.  Performs a VCD-specific bit-fill if the value size is not the size
  of the vector.  The specified value string is assumed to be in binary format.
 */
-bool vector_vcd_assign( vector* vec, char* value, int msb, int lsb ) { PROFILE(VECTOR_VCD_ASSIGN);
+bool vector_vcd_assign(
+  vector*     vec,
+  const char* value,
+  int         msb,
+  int         lsb
+) { PROFILE(VECTOR_VCD_ASSIGN);
 
-  bool     retval = FALSE;  /* Return value for this function */
-  char*    ptr;             /* Pointer to current character under evaluation */
-  int      i;               /* Loop iterator */
-  vec_data vval;            /* Temporary vector value holder */
+  bool        retval = FALSE;  /* Return value for this function */
+  const char* ptr;             /* Pointer to current character under evaluation */
+  int         i;               /* Loop iterator */
+  vec_data    vval;            /* Temporary vector value holder */
 
   assert( vec != NULL );
   assert( value != NULL );
@@ -1624,7 +1632,7 @@ bool vector_vcd_assign( vector* vec, char* value, int msb, int lsb ) { PROFILE(V
           unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "VCD file contains value change character that is not four-state" );
           assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          exit( EXIT_FAILURE );
+          Throw 0;
         }
         /*@-unreachable@*/
         break;
@@ -1808,12 +1816,16 @@ bool vector_op_compare( vector* tgt, vector* left, vector* right, int comp_type 
       case COMP_NE   :
       case COMP_CNE  :  value.all = (lbit == rbit)                                 ? 0 : 1;  break;
       default        :
-        {
-          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  Unidentified comparison type %d", comp_type );
-          assert( rv < USER_MSG_LENGTH );
-          print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          exit( EXIT_FAILURE );
-        }
+        assert( (comp_type == COMP_LT)   ||
+                (comp_type == COMP_GT)   ||
+                (comp_type == COMP_LE)   ||
+                (comp_type == COMP_GE)   ||
+                (comp_type == COMP_EQ)   ||
+                (comp_type == COMP_CEQ)  ||
+                (comp_type == COMP_CXEQ) ||
+                (comp_type == COMP_CZEQ) ||
+                (comp_type == COMP_NE)   ||
+                (comp_type == COMP_CNE) );
         /*@-unreachable@*/
         break;
         /*@=unreachable@*/
@@ -2417,6 +2429,9 @@ void vector_dealloc( vector* vec ) { PROFILE(VECTOR_DEALLOC);
 
 /*
  $Log$
+ Revision 1.116  2008/03/12 03:52:49  phase1geo
+ Fixes for regression failures.
+
  Revision 1.115  2008/03/11 22:06:49  phase1geo
  Finishing first round of exception handling code.
 

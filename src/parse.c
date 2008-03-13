@@ -223,7 +223,7 @@ void parse_design(
  \param dump_file  Name of dumpfile to parse for scoring.
  \param dump_mode  Type of dumpfile being used (see \ref dumpfile_fmt for legal values)
 
- \throws anonymous Throw vcd_parse bind_perform db_read lxt_parse db_write
+ \throws anonymous db_do_timestep Throw vcd_parse bind_perform db_read lxt_parse db_write
 
  Reads in specified CDD database file, reads in specified dumpfile in the specified format,
  performs re-simulation and writes the scored design back to the specified CDD database file
@@ -303,6 +303,9 @@ void parse_and_score_dumpfile(
 
 /*
  $Log$
+ Revision 1.59  2008/03/12 03:52:49  phase1geo
+ Fixes for regression failures.
+
  Revision 1.58  2008/03/11 22:06:48  phase1geo
  Finishing first round of exception handling code.
 

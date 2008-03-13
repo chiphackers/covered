@@ -344,7 +344,7 @@ static void vcd_parse_sim_ignore(
 /*!
  \param vcd  File handle of opened VCD file.
 
- \throws anonymous vcd_parse_sim_vector Throw vcd_parse_sim_ignore
+ \throws anonymous db_do_timestep db_do_timestep vcd_parse_sim_vector Throw vcd_parse_sim_ignore
 
  Parses all lines that occur in the simulation portion of the VCD file.
 */
@@ -481,6 +481,9 @@ void vcd_parse(
 
 /*
  $Log$
+ Revision 1.38  2008/03/11 22:06:49  phase1geo
+ Finishing first round of exception handling code.
+
  Revision 1.37  2008/02/29 23:58:19  phase1geo
  Continuing to work on adding exception handling code.
 

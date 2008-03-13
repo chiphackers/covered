@@ -481,11 +481,19 @@ void vsignal_propagate(
  \param lsb    Least significant bit to assign to.
  \param time   Current simulation time signal is being assigned.
 
+ \throws anonymous vector_vcd_assign vector_vcd_assign
+
  Assigns the associated value to the specified vsignal's vector.  After this, it
  iterates through its expression list, setting the TRUE and FALSE bits accordingly.
  Finally, calls the simulator expr_changed function for each expression.
 */
-void vsignal_vcd_assign( vsignal* sig, char* value, int msb, int lsb, const sim_time* time ) { PROFILE(VSIGNAL_VCD_ASSIGN);
+void vsignal_vcd_assign(
+  vsignal*        sig,
+  const char*     value,
+  int             msb,
+  int             lsb,
+  const sim_time* time
+) { PROFILE(VSIGNAL_VCD_ASSIGN);
 
   bool vec_changed;  /* Specifies if assigned value differed from original value */
 
@@ -538,7 +546,10 @@ void vsignal_vcd_assign( vsignal* sig, char* value, int msb, int lsb, const sim_
  Adds the specified expression to the end of this vsignal's expression
  list.
 */
-void vsignal_add_expression( vsignal* sig, expression* expr ) { PROFILE(VSIGNAL_ADD_EXPRESSION);
+void vsignal_add_expression(
+  vsignal*    sig,
+  expression* expr
+) { PROFILE(VSIGNAL_ADD_EXPRESSION);
 
   exp_link_add( expr, &(sig->exp_head), &(sig->exp_tail) );
 
@@ -551,7 +562,9 @@ void vsignal_add_expression( vsignal* sig, expression* expr ) { PROFILE(VSIGNAL_
 
  Displays vsignal's name, dimensional info, width and value vector to the standard output.
 */
-void vsignal_display( vsignal* sig ) {
+void vsignal_display(
+  vsignal* sig
+) {
 
   int i;  /* Loop iterator */
 
@@ -590,7 +603,9 @@ void vsignal_display( vsignal* sig ) {
  vsignal may be a standard vsignal name, a single bit select vsignal or a
  multi-bit select vsignal.
 */
-vsignal* vsignal_from_string( char** str ) { PROFILE(VSIGNAL_FROM_STRING);
+vsignal* vsignal_from_string(
+  char** str
+) { PROFILE(VSIGNAL_FROM_STRING);
 
   vsignal* sig;             /* Pointer to newly created vsignal */
   char     name[4096];      /* Signal name */
@@ -660,7 +675,10 @@ vsignal* vsignal_from_string( char** str ) { PROFILE(VSIGNAL_FROM_STRING);
 
  \return Returns width of the given expression that is bound to the given signal.
 */
-int vsignal_calc_width_for_expr( expression* expr, vsignal* sig ) { PROFILE(VSIGNAL_CALC_WIDTH_FOR_EXPR);
+int vsignal_calc_width_for_expr(
+  expression* expr,
+  vsignal*    sig
+) { PROFILE(VSIGNAL_CALC_WIDTH_FOR_EXPR);
 
   int exp_dim;    /* Expression dimension number */
   int width = 1;  /* Return value for this function */
@@ -694,7 +712,11 @@ int vsignal_calc_width_for_expr( expression* expr, vsignal* sig ) { PROFILE(VSIG
 
  \return Returns the LSB of the given signal for the given expression.
 */
-int vsignal_calc_lsb_for_expr( expression* expr, vsignal* sig, int lsb_val ) { PROFILE(VSIGNAL_CALC_LSB_FOR_EXPR);
+int vsignal_calc_lsb_for_expr(
+  expression* expr,
+  vsignal*    sig,
+  int         lsb_val
+) { PROFILE(VSIGNAL_CALC_LSB_FOR_EXPR);
 
   return( vsignal_calc_width_for_expr( expr, sig ) * lsb_val );
 
@@ -706,7 +728,9 @@ int vsignal_calc_lsb_for_expr( expression* expr, vsignal* sig, int lsb_val ) { P
  Deallocates all malloc'ed memory back to the heap for the specified
  vsignal.
 */
-void vsignal_dealloc( /*@only@*/ vsignal* sig ) { PROFILE(VSIGNAL_DEALLOC);
+void vsignal_dealloc(
+  /*@only@*/ vsignal* sig
+) { PROFILE(VSIGNAL_DEALLOC);
 
   exp_link* curr_expl;  /* Pointer to current expression link to set to NULL */
 
@@ -744,6 +768,9 @@ void vsignal_dealloc( /*@only@*/ vsignal* sig ) { PROFILE(VSIGNAL_DEALLOC);
 
 /*
  $Log$
+ Revision 1.59  2008/03/11 22:06:49  phase1geo
+ Finishing first round of exception handling code.
+
  Revision 1.58  2008/02/09 19:32:45  phase1geo
  Completed first round of modifications for using exception handler.  Regression
  passes with these changes.  Updated regressions per these changes.

@@ -115,7 +115,12 @@ char* vector_to_string( vector* vec );
 vector* vector_from_string( char** str, bool quoted );
 
 /*! \brief Assigns specified VCD value to specified vector. */
-bool vector_vcd_assign( vector* vec, char* value, int msb, int lsb );
+bool vector_vcd_assign(
+  vector*     vec,
+  const char* value,
+  int         msb,
+  int         lsb
+);
 
 /*! \brief Counts toggle01 and toggle10 information from specifed vector. */
 void vector_toggle_count( vector* vec, int* tog01_cnt, int* tog10_cnt );
@@ -174,6 +179,10 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.51  2008/02/09 19:32:45  phase1geo
+ Completed first round of modifications for using exception handler.  Regression
+ passes with these changes.  Updated regressions per these changes.
+
  Revision 1.50  2008/02/08 23:58:07  phase1geo
  Starting to work on exception handling.  Much work to do here (things don't
  compile at the moment).
