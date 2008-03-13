@@ -49,10 +49,10 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 exclude9.3      exclude9.4      exclude9.5      exclude9.6      exclude9.7 \
                 exclude9.8      exclude9.9      expand1         expand2         expand3 \
                 expand4         expand4.1       expand4.2       expand4.3       expand4.4 \
-                finish1         for1            for2            forever1        fork1           fork2 \
-                fsm3            fsm4            fsm4.1          fsm5            fsm5.1 \
-                fsm5.2          fsm5.3          fsm11           func1           func2 \
-                func5           gate1           hier1 \
+                finish1         for1            for2            forever1        fork1 \
+                fork2           fsm3            fsm4            fsm4.1          fsm5 \
+                fsm5.1          fsm5.2          fsm5.3          fsm11           func1 \
+                func2           func5           gate1           hier1 \
                 hier3.1         hier3.2         hier3.3         hier3.4         hier4 \
                 ifdef1          ifdef1.2        ifdef2.1        ifdef2.2        ifdef2.3 \
                 ifelse1         implicit2.1     include1        include1.1      include2 \
@@ -67,7 +67,8 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 multi_exp1.11   multi_exp1.12   multi_exp1.13   multi_exp1.14   multi_exp1.15 \
                 multi_exp2      multi_exp2.1    multi_exp3      multi_exp4      named_block1 \
                 named_block2    named_block3    named_block4    nested_block1   nested_block2 \
-                nested_block2.1 nested_block3   param1          param1.1        param1.2 \
+                nested_block2.1 nested_block3   null_stmt1      null_stmt1.1    null_stmt1.2 \
+                param1          param1.1        param1.2 \
                 param1.3        param3          param3.1        param3.2        param3.3 \
                 param3.4        param3.5        param4          param4.1        param5 \
                 param6          param6.1        param7          param8          param8.1 \
