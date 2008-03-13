@@ -64,7 +64,7 @@ IP 1.  Add regression that produces known, achievable error conditions in the co
 
 IP 2.  Make all code splint clean.
 
-IP 3.  Replace current exit strategy with cexcept usage (throw exceptions instead of immediately exiting)
+X  3.  Replace current exit strategy with cexcept usage (throw exceptions instead of immediately exiting)
 
    4.  Have parser generate dumpvars file to cause only needed signals by Covered to get dumped (performance enhancement).
 
