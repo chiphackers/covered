@@ -153,6 +153,7 @@ bool scope_find_param(
                                         obf_file( curr_funit->filename ), line );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
+            printf( "scope Throw A\n" );
             Throw 0;
           }
  
@@ -160,6 +161,7 @@ bool scope_find_param(
 
       } Catch_anonymous {
         free_safe( scope );
+        printf( "scope Throw B\n" );
         Throw 0;
       }
 
@@ -178,6 +180,7 @@ bool scope_find_param(
 
   } Catch_anonymous {
     free_safe( parm_name );
+    printf( "scope Throw C\n" );
     Throw 0;
   }
 
@@ -244,6 +247,7 @@ bool scope_find_signal(
                                         obf_file( curr_funit->filename ), line );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
+            printf( "scope Throw D\n" );
             Throw 0;
           }
  
@@ -251,6 +255,7 @@ bool scope_find_signal(
 
       } Catch_anonymous {
         free_safe( scope );
+        printf( "scope Throw E\n" );
         Throw 0;
       }
 
@@ -281,6 +286,7 @@ bool scope_find_signal(
 
   } Catch_anonymous {
     free_safe( sig_name );
+    printf( "scope Throw F\n" );
     Throw 0;
   }
 
@@ -333,6 +339,7 @@ bool scope_find_task_function_namedblock(
                                 obf_funit( curr_funit->name ), obf_file( curr_funit->filename ), line );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    printf( "scope Throw G\n" );
     Throw 0;
 
   }
@@ -424,6 +431,9 @@ func_unit* scope_get_parent_module(
 
 /*
  $Log$
+ Revision 1.46  2008/03/11 22:06:48  phase1geo
+ Finishing first round of exception handling code.
+
  Revision 1.45  2008/02/29 23:58:19  phase1geo
  Continuing to work on adding exception handling code.
 

@@ -138,6 +138,7 @@ static expression* fsm_arg_parse_state(
 
         } Catch_anonymous {
           vsignal_dealloc( sig );
+          printf( "fsm_arg Throw A\n" );
           Throw 0;
         }
 
@@ -208,6 +209,7 @@ static expression* fsm_arg_parse_state(
 
       } Catch_anonymous {
         vsignal_dealloc( sig );
+        printf( "fsm_arg Throw B\n" );
         Throw 0;
       }
 
@@ -265,6 +267,7 @@ void fsm_arg_parse(
 
       print_output( "Option -F must specify a module/task/function/named block and one or two variables.  See \"covered score -h\" for more information.",
                     FATAL, __FILE__, __LINE__ );
+      printf( "fsm_arg Throw C\n" );
       Throw 0;
 
     } else {
@@ -282,6 +285,7 @@ void fsm_arg_parse(
             (void)fsm_var_add( arg, in_state, out_state, NULL, FALSE );
           } else {
             print_output( "Illegal FSM command-line output state", FATAL, __FILE__, __LINE__ );
+            printf( "fsm_arg Throw D\n" );
             Throw 0;
           }
 
@@ -295,6 +299,7 @@ void fsm_arg_parse(
       } else {
   
         print_output( "Illegal FSM command-line input state", FATAL, __FILE__, __LINE__ );
+        printf( "fsm_arg Throw E\n" );
         Throw 0;
  
       }
@@ -303,6 +308,7 @@ void fsm_arg_parse(
 
   } Catch_anonymous {
     free_safe( tmp );
+    printf( "fsm_arg Throw F\n" );
     Throw 0;
   }
 
@@ -349,6 +355,7 @@ static expression* fsm_arg_parse_value(
       expr = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
     } Catch_anonymous {
       vector_dealloc( vec );
+      printf( "fsm_arg Throw G\n" );
       Throw 0;
     }
     curr_expr_id++;
@@ -375,6 +382,7 @@ static expression* fsm_arg_parse_value(
           right = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
         } Catch_anonymous {
           expression_dealloc( left, FALSE );
+          printf( "fsm_arg Throw H\n" );
           Throw 0;
         }
         curr_expr_id++;
@@ -388,6 +396,7 @@ static expression* fsm_arg_parse_value(
         } Catch_anonymous {
           expression_dealloc( left, FALSE );
           expression_dealloc( right, FALSE );
+          printf( "fsm_arg Throw I\n" );
           Throw 0;
         }
         curr_expr_id++;
@@ -410,6 +419,7 @@ static expression* fsm_arg_parse_value(
           right = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
         } Catch_anonymous {
           expression_dealloc( left, FALSE );
+          printf( "fsm_arg Throw J\n" );
           Throw 0;
         }
         curr_expr_id++;
@@ -423,6 +433,7 @@ static expression* fsm_arg_parse_value(
         } Catch_anonymous {
           expression_dealloc( left, FALSE );
           expression_dealloc( right, FALSE );
+          printf( "fsm_arg Throw K\n" );
           Throw 0;
         }
         curr_expr_id++;
@@ -445,6 +456,7 @@ static expression* fsm_arg_parse_value(
           right = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
         } Catch_anonymous {
           expression_dealloc( left, FALSE );
+          printf( "fsm_arg Throw L\n" );
           Throw 0;
         }
         curr_expr_id++;
@@ -458,6 +470,7 @@ static expression* fsm_arg_parse_value(
         } Catch_anonymous {
           expression_dealloc( left, FALSE );
           expression_dealloc( right, FALSE );
+          printf( "fsm_arg Throw M\n" );
           Throw 0;
         }
         curr_expr_id++;
@@ -480,6 +493,7 @@ static expression* fsm_arg_parse_value(
           expr = expression_create( NULL, left, EXP_OP_PARAM_SBIT, FALSE, curr_expr_id, 0, 0, 0, FALSE );
         } Catch_anonymous {
           expression_dealloc( left, FALSE );
+          printf( "fsm_arg Throw N\n" );
           Throw 0;
         }
         curr_expr_id++;
@@ -547,6 +561,7 @@ static void fsm_arg_parse_trans(
                                   expr->line, obf_file( funit->filename ) );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      printf( "fsm_arg Throw O\n" );
       Throw 0;
     } else {
 
@@ -555,6 +570,7 @@ static void fsm_arg_parse_trans(
                                     expr->line, obf_file( funit->filename ) );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        printf( "fsm_arg Throw P\n" );
         Throw 0;
       } else {
         str += 2;
@@ -565,6 +581,7 @@ static void fsm_arg_parse_trans(
                                     expr->line, obf_file( funit->filename ) );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        printf( "fsm_arg Throw Q\n" );
         Throw 0;
       } else {
 
@@ -577,6 +594,7 @@ static void fsm_arg_parse_trans(
 
   } Catch_anonymous {
     free_safe( tmp );
+    printf( "fsm_arg Throw R\n" );
     Throw 0;
   }
 
@@ -628,6 +646,7 @@ void fsm_arg_parse_attr(
           assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
           free_safe( tmp );
+          printf( "fsm_arg Throw S\n" );
           Throw 0;
         }
         free_safe( tmp );
@@ -636,6 +655,7 @@ void fsm_arg_parse_attr(
                                     obf_file( funit->filename ) );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        printf( "fsm_arg Throw T\n" );
         Throw 0;
       }
     } else if( (index == 2) && (strcmp( curr->name, "os" ) == 0) && (curr->expr != NULL) ) {
@@ -646,6 +666,7 @@ void fsm_arg_parse_attr(
           assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
           free_safe( tmp );
+          printf( "fsm_arg Throw U\n" );
           Throw 0;
         } else {
           (void)fsm_var_add( funit->name, out_state, out_state, curr->name, exclude );
@@ -657,6 +678,7 @@ void fsm_arg_parse_attr(
                                     obf_file( funit->filename ) );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        printf( "fsm_arg Throw V\n" );
         Throw 0;
       }
     } else if( (index == 3) && (strcmp( curr->name, "os" ) == 0) && (out_state == NULL) &&
@@ -668,6 +690,7 @@ void fsm_arg_parse_attr(
           assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
           free_safe( tmp );
+          printf( "fsm_arg Throw W\n" );
           Throw 0;
         } else {
           (void)fsm_var_add( funit->name, in_state, out_state, curr->name, exclude );
@@ -679,6 +702,7 @@ void fsm_arg_parse_attr(
                                     obf_file( funit->filename ) );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        printf( "fsm_arg Throw X\n" );
         Throw 0;
       }
     } else if( (index > 1) && (strcmp( curr->name, "trans" ) == 0) && (curr->expr != NULL) ) {
@@ -687,6 +711,7 @@ void fsm_arg_parse_attr(
                                     obf_sig( curr->name ), obf_file( funit->filename ) );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        printf( "fsm_arg Throw Y\n" );
         Throw 0;
       } else {
         fsm_arg_parse_trans( curr->expr, fsml->table, funit );
@@ -699,6 +724,7 @@ void fsm_arg_parse_attr(
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       free_safe( tmp );
+      printf( "fsm_arg Throw Z\n" );
       Throw 0;
     }
 
@@ -713,6 +739,9 @@ void fsm_arg_parse_attr(
 
 /*
  $Log$
+ Revision 1.45  2008/03/11 22:06:47  phase1geo
+ Finishing first round of exception handling code.
+
  Revision 1.44  2008/03/04 06:46:48  phase1geo
  More exception handling updates.  Still work to go.  Checkpointing.
 

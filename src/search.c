@@ -82,6 +82,7 @@ void search_init() { PROFILE(SEARCH_INIT);
   if( top_module == NULL ) {
     print_output( "No top module was specified with the -t option.  Please see \"covered -h\" for usage.",
                   FATAL, __FILE__, __LINE__ );
+    printf( "search Throw A\n" );
     Throw 0;
   }
 
@@ -201,6 +202,7 @@ void search_add_file(
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "File %s does not exist", file );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    printf( "search Throw B\n" );
     Throw 0;
   }
 
@@ -227,6 +229,7 @@ void search_add_no_score_funit(
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Value of -e option (%s) is not a valid block name", funit );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    printf( "search Throw C\n" );
     Throw 0;
   }
 
@@ -258,6 +261,7 @@ void search_add_extensions(
       (void)str_link_add( strdup_safe( ext ), &extensions_head, &extensions_tail );
     } else if( *tmp == '.' ) {
       if( ext_index > 0 ) {
+        printf( "search Throw D\n" );
         Throw 0;
       }
     } else {
@@ -275,6 +279,7 @@ void search_add_extensions(
     gen_space( user_msg, (25 + (strlen( ext_list ) - strlen( tmp ))) );
     strcat( user_msg, "^" );
     print_output( user_msg, FATAL_WRAP, __FILE__, __LINE__ );
+    printf( "search Throw E\n" );
     Throw 0;
   }
 
@@ -295,6 +300,9 @@ void search_free_lists() { PROFILE(SEARCH_FREE_LISTS);
 
 /*
  $Log$
+ Revision 1.41  2008/03/11 22:06:49  phase1geo
+ Finishing first round of exception handling code.
+
  Revision 1.40  2008/02/22 20:39:22  phase1geo
  More updates for exception handling.
 

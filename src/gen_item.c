@@ -473,6 +473,7 @@ char* gen_item_calc_signal_name(
   } Catch_anonymous {
     free_safe( new_name );
     free_safe( ptr );
+    printf( "gen_item Throw A\n" );
     Throw 0;
   }
 
@@ -974,6 +975,7 @@ static void gen_item_resolve(
                            obf_sig( gi->varname ), obf_funit( inst->funit->name ) );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
+            printf( "gen_item Throw B\n" );
             Throw 0;
           }
           rv = snprintf( inst_name, 4096, "%s[%d]", gi->elem.inst->name, vector_to_int( genvar->value ) );
@@ -1203,6 +1205,9 @@ void gen_item_dealloc(
 
 /*
  $Log$
+ Revision 1.58  2008/03/12 21:11:48  phase1geo
+ More updates.
+
  Revision 1.57  2008/03/12 21:10:21  phase1geo
  More exception handling updates.
 

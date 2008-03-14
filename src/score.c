@@ -267,6 +267,7 @@ static void score_generate_top_vpi_module(
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to open %s for writing", vpi_file );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        printf( "score Throw A\n" );
         Throw 0;
 
       }
@@ -274,6 +275,7 @@ static void score_generate_top_vpi_module(
     } else {
 
       print_output( "Specified -vpi filename did not contain a file extension", FATAL, __FILE__, __LINE__ );
+      printf( "score Throw B\n" );
       Throw 0;
 
     }
@@ -281,6 +283,7 @@ static void score_generate_top_vpi_module(
   } Catch_anonymous {
     free_safe( mod_name );
     free_safe( ext );
+    printf( "score Throw C\n" );
     Throw 0;
   }
 
@@ -329,6 +332,7 @@ static void score_generate_pli_tab_file(
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to open %s for writing", mod_name );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        printf( "score Throw D\n" );
         Throw 0;
 
       }
@@ -336,6 +340,7 @@ static void score_generate_pli_tab_file(
     } else {
 
       print_output( "Specified -vpi filename did not contain a file extension", FATAL, __FILE__, __LINE__ );
+      printf( "score Throw E\n" );
       Throw 0;
 
     }
@@ -343,6 +348,7 @@ static void score_generate_pli_tab_file(
   } Catch_anonymous {
     free_safe( mod_name );
     free_safe( ext );
+    printf( "score Throw F\n" );
     Throw 0;
   }
 
@@ -391,6 +397,7 @@ static void read_command_file(
       } Catch_anonymous {
         rv = fclose( cmd_handle );
         assert( rv == 0 );
+        printf( "score Throw G\n" );
         Throw 0;
       }
 
@@ -427,6 +434,7 @@ static void read_command_file(
       unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to open command file %s for reading", cmd_file );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      printf( "score Throw H\n" );
       Throw 0;
 
     }
@@ -436,6 +444,7 @@ static void read_command_file(
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Command file %s does not exist", cmd_file );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    printf( "score Throw I\n" );
     Throw 0;
 
   }
@@ -515,6 +524,7 @@ static void score_parse_args(
     if( strncmp( "-h", argv[i], 2 ) == 0 ) {
 
       score_usage();
+      printf( "score Throw J\n" );
       Throw 0;
 
     } else if( strncmp( "-i", argv[i], 2 ) == 0 ) {
@@ -530,6 +540,7 @@ static void score_parse_args(
           instance_specified = TRUE;
         }
       } else {
+        printf( "score Throw K\n" );
         Throw 0;
       }
 
@@ -548,10 +559,12 @@ static void score_parse_args(
             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Output file \"%s\" is not writable", argv[i] );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
+            printf( "score Throw L\n" );
             Throw 0;
           }
         }
       } else {
+        printf( "score Throw M\n" );
         Throw 0;
       }
 
@@ -567,6 +580,7 @@ static void score_parse_args(
           score_add_arg( argv[i] );
         }
       } else {
+        printf( "score Throw N\n" );
         Throw 0;
       }
 
@@ -585,10 +599,12 @@ static void score_parse_args(
             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Illegal top-level module name specified \"%s\"", argv[i] );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
+            printf( "score Throw O\n" );
             Throw 0;
           }
         }
       } else {
+        printf( "score Throw P\n" );
         Throw 0;
       }
 
@@ -600,6 +616,7 @@ static void score_parse_args(
         score_add_arg( argv[i-1] );
         score_add_arg( argv[i] );
       } else {
+        printf( "score Throw Q\n" );
         Throw 0;
       }
 
@@ -611,6 +628,7 @@ static void score_parse_args(
         score_add_arg( argv[i-1] );
         score_add_arg( argv[i] );
       } else {
+        printf( "score Throw R\n" );
         Throw 0;
       }
 
@@ -622,6 +640,7 @@ static void score_parse_args(
         score_add_arg( argv[i-1] );
         score_add_arg( argv[i] );
       } else {
+        printf( "score Throw S\n" );
         Throw 0;
       }
       
@@ -638,6 +657,7 @@ static void score_parse_args(
               free_safe( arg_list[j] );
             }
             free_safe( arg_list );
+            printf( "score Throw T\n" );
             Throw 0;
           }
           for( j=0; j<arg_num; j++ ) {
@@ -648,9 +668,11 @@ static void score_parse_args(
           unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Cannot find argument file %s specified with -f option", argv[i] );
           assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
+          printf( "score Throw U\n" );
           Throw 0;
         }
       } else {
+        printf( "score Throw V\n" );
         Throw 0;
       }
 
@@ -694,6 +716,7 @@ static void score_parse_args(
         score_add_arg( argv[i-1] );
         score_add_arg( argv[i] );
       } else {
+        printf( "score Throw W\n" );
         Throw 0;
       }
 
@@ -712,17 +735,20 @@ static void score_parse_args(
               unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "VCD dumpfile not found \"%s\"", argv[i] );
               assert( rv < USER_MSG_LENGTH );
               print_output( user_msg, FATAL, __FILE__, __LINE__ );
+              printf( "score Throw X\n" );
               Throw 0;
             }
             break;
           case DUMP_FMT_VCD :
             print_output( "Only one -vcd option is allowed on the score command-line", FATAL, __FILE__, __LINE__ );
+            printf( "score Throw Y\n" );
             Throw 0;
             /*@-unreachable@*/
             break;
             /*@=unreachable@*/
           case DUMP_FMT_LXT :
             print_output( "Both the -vcd and -lxt options were specified on the command-line", FATAL, __FILE__, __LINE__ );
+            printf( "score Throw Z\n" );
             Throw 0;
             /*@-unreachable@*/
             break;
@@ -732,6 +758,7 @@ static void score_parse_args(
             break;
         }
       } else {
+        printf( "score Throw AA\n" );
         Throw 0;
       }
 
@@ -750,17 +777,20 @@ static void score_parse_args(
               unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "LXT dumpfile not found \"%s\"", argv[i] );
               assert( rv < USER_MSG_LENGTH );
               print_output( user_msg, FATAL, __FILE__, __LINE__ );
+              printf( "score Throw AB\n" );
               Throw 0;
             }
             break;
           case DUMP_FMT_VCD :
             print_output( "Both the -vcd and -lxt options were specified on the command-line", FATAL, __FILE__, __LINE__ );
+            printf( "score Throw AC\n" );
             Throw 0;
             /*@-unreachable@*/
             break;
             /*@=unreachable@*/
           case DUMP_FMT_LXT :
             print_output( "Only one -lxt option is allowed on the score command-line", FATAL, __FILE__, __LINE__ );
+            printf( "score Throw AD\n" );
             Throw 0;
             /*@-unreachable@*/
             break;
@@ -770,6 +800,7 @@ static void score_parse_args(
             break;
         }
       } else {
+        printf( "score Throw AE\n" );
         Throw 0;
       }
 
@@ -789,6 +820,7 @@ static void score_parse_args(
           score_add_arg( argv[i] );
         }
       } else {
+        printf( "score Throw AF\n" );
         Throw 0;
       }
 
@@ -820,6 +852,7 @@ static void score_parse_args(
         score_add_arg( argv[i-1] );
         score_add_arg( argv[i] );
       } else {
+        printf( "score Throw AG\n" );
         Throw 0;
       }
 
@@ -836,6 +869,7 @@ static void score_parse_args(
         score_add_arg( argv[i-1] );
         score_add_arg( argv[i] );
       } else {
+        printf( "score Throw AH\n" );
         Throw 0;
       }
  
@@ -854,10 +888,12 @@ static void score_parse_args(
             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unrecognizable filename %s specified for -p option.", argv[i] );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
+            printf( "score Throw AI\n" );
             Throw 0;
           }
         }
       } else {
+        printf( "score Throw AJ\n" );
         Throw 0;
       }
         
@@ -874,6 +910,7 @@ static void score_parse_args(
           if( *ptr == '\0' ) {
             print_output( "Option -P must specify a value to assign.  See \"covered score -h\" for more information.",
                           FATAL, __FILE__, __LINE__ );
+            printf( "score Throw AK\n" );
             Throw 0;
           } else {
             score_add_arg( argv[i-1] );
@@ -884,10 +921,12 @@ static void score_parse_args(
           }
         } Catch_anonymous {
           free_safe( tmp );
+          printf( "score Throw AL\n" );
           Throw 0;
         }
         free_safe( tmp );
       } else {
+        printf( "score Throw AM\n" );
         Throw 0;
       }
       
@@ -914,10 +953,12 @@ static void score_parse_args(
             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown -T value (%s).  Please specify min, max or typ.", argv[i] );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
+            printf( "score Throw AN\n" );
             Throw 0;
           }
         }
       } else {
+        printf( "score Throw AO\n" );
         Throw 0;
       }
 
@@ -941,6 +982,7 @@ static void score_parse_args(
             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown race condition value %c (available types are E, W, S, I or P)", argv[i][2] );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
+            printf( "score Throw AP\n" );
             Throw 0;
           }
           /*@-unreachable@*/
@@ -968,9 +1010,11 @@ static void score_parse_args(
           unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown -A value (%s).  Please specify ovl.", argv[i] );
           assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
+          printf( "score Throw AQ\n" );
           Throw 0;
         }
       } else {
+        printf( "score Throw AR\n" );
         Throw 0;
       }
 
@@ -991,6 +1035,7 @@ static void score_parse_args(
           unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown generation value '%c'.  Legal values are 1, 2 or 3.\n", argv[i][(strlen( argv[i] ) - 1)] );
           assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ ); 
+          printf( "score Throw AS\n" );
           Throw 0;
         }
         if( strlen( argv[i] ) == 1 ) {
@@ -1006,12 +1051,14 @@ static void score_parse_args(
             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Illegal -g syntax \"%s\".  See \"covered score -h\" for correct syntax.", tmp );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
+            printf( "score Throw AT\n" );
             Throw 0;
           }
         }
         score_add_arg( argv[i-1] );
         score_add_arg( argv[i] );
       } else {
+        printf( "score Throw AU\n" );
         Throw 0;
       }
 
@@ -1037,6 +1084,7 @@ static void score_parse_args(
       }
 #else
       print_output( "Command-line debugger (-cli option) is not available because Covered was not configured with the --enable-debug option", FATAL, __FILE__, __LINE__ );
+      printf( "score Throw AV\n" );
       Throw 0;
 #endif
 
@@ -1045,6 +1093,7 @@ static void score_parse_args(
       unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown score command option \"%s\".  See \"covered score -h\" for more information.", argv[i] );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      printf( "score Throw AW\n" );
       Throw 0;
 
     }
@@ -1141,7 +1190,12 @@ void command_score( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
       perf_output_inst_report( stdout );
     }
 
-  } Catch_anonymous {}
+  } Catch_anonymous {
+#ifdef DEBUG_MODE
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Allocated memory remaining: %llu bytes", curr_malloc_size );
+    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+#endif
+  }
 
   /* Close database */
   db_close();
@@ -1169,6 +1223,9 @@ void command_score( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
 /*
  $Log$
+ Revision 1.116  2008/03/11 22:06:49  phase1geo
+ Finishing first round of exception handling code.
+
  Revision 1.115  2008/02/25 18:22:16  phase1geo
  Moved statement supplemental bits from root expression to statement and starting
  to add support for race condition checking pragmas (still some work left to do

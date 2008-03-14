@@ -323,6 +323,7 @@ void vsignal_db_read(
           *line = *line + chars_read;
         } else {
           print_output( "Unable to parse signal line in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
+          printf( "vsignal Throw A\n" );
           Throw 0;
         }
         i++;
@@ -333,6 +334,7 @@ void vsignal_db_read(
 
     } Catch_anonymous {
       free_safe( dim );
+      printf( "vsignal Throw B\n" );
       Throw 0;
     }
 
@@ -353,6 +355,7 @@ void vsignal_db_read(
     /* Add vsignal to vsignal list */
     if( curr_funit == NULL ) {
       print_output( "Internal error:  vsignal in database written before its functional unit", FATAL, __FILE__, __LINE__ );
+      printf( "vsignal Throw C\n" );
       Throw 0;
     } else {
       sig_link_add( sig, &(curr_funit->sig_head), &(curr_funit->sig_tail) );
@@ -361,6 +364,7 @@ void vsignal_db_read(
   } else {
 
     print_output( "Unable to parse signal line in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
+    printf( "vsignal Throw D\n" );
     Throw 0;
 
   }
@@ -410,6 +414,7 @@ void vsignal_db_merge(
 
       print_output( "Attempting to merge two databases derived from different designs.  Unable to merge",
                     FATAL, __FILE__, __LINE__ );
+      printf( "vsignal Throw E\n" );
       Throw 0;
 
     } else {
@@ -432,6 +437,7 @@ void vsignal_db_merge(
   } else {
 
     print_output( "Unable to parse vsignal in database file.  Unable to merge.", FATAL, __FILE__, __LINE__ );
+    printf( "vsignal Throw F\n" );
     Throw 0;
 
   }
@@ -768,6 +774,9 @@ void vsignal_dealloc(
 
 /*
  $Log$
+ Revision 1.60  2008/03/13 10:28:55  phase1geo
+ The last of the exception handling modifications.
+
  Revision 1.59  2008/03/11 22:06:49  phase1geo
  Finishing first round of exception handling code.
 

@@ -346,6 +346,7 @@ int parse_static_expr(
 
   /* Call the parser */
   if( SEparse() != 0 ) {
+    printf( "static_parser Throw A\n" );
     Throw 0;
   }
 
@@ -367,6 +368,7 @@ int SEerror(
   unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "%s,   file: %s, line: %d", str, obf_file( se_funit->name ), se_lineno );
   assert( rv < USER_MSG_LENGTH );
   print_output( user_msg, FATAL, __FILE__, __LINE__ );
+  printf( "static_parser Throw B\n" );
   Throw 0;
 
   /*@-unreachable@*/

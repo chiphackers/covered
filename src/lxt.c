@@ -215,6 +215,7 @@ void lxt_parse(
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
         }
 
+        printf( "lxt Throw A\n" );
         Throw 0;
 
       }
@@ -236,6 +237,7 @@ void lxt_parse(
       symtable_dealloc( vcd_symtab );
       free_safe( timestep_tab );
       lxt2_rd_close( lt );
+      printf( "lxt Throw B\n" );
       Throw 0;
     }
 
@@ -249,6 +251,7 @@ void lxt_parse(
   } else {
 
     print_output( "Unable to read data from LXT dumpfile.  Exiting without scoring.", FATAL, __FILE__, __LINE__ );
+    printf( "lxt Throw C\n" );
     Throw 0;
 
   }
@@ -257,6 +260,9 @@ void lxt_parse(
 
 /*
  $Log$
+ Revision 1.23  2008/03/13 10:28:55  phase1geo
+ The last of the exception handling modifications.
+
  Revision 1.22  2008/03/12 05:09:43  phase1geo
  More exception handling updates.  Added TODO item of creating a graduated test list
  from merged CDD files.

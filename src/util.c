@@ -502,6 +502,7 @@ void directory_load(
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to read directory %s", dir );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    printf( "util Throw A\n" );
     Throw 0;
 
   } else {
@@ -658,6 +659,7 @@ char* substitute_env_vars(
             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown environment variable $%s in string \"%s\"", env_var, value );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
+            printf( "util Throw B\n" );
             Throw 0;
           }
         }
@@ -675,6 +677,7 @@ char* substitute_env_vars(
 
   } Catch_anonymous {
     free_safe( newvalue );
+    printf( "util Throw C\n" );
     Throw 0;
   }
 
@@ -1053,6 +1056,8 @@ void* malloc_safe_nolimit1( size_t size, /*@unused@*/ const char* file, /*@unuse
 */
 void free_safe1( void* ptr, unsigned int profile_index ) {
 
+  curr_malloc_size -= sizeof( ptr );
+
   if( ptr != NULL ) {
     free( ptr );
   }
@@ -1213,6 +1218,9 @@ void calc_miss_percent(
 
 /*
  $Log$
+ Revision 1.79  2008/03/11 22:06:49  phase1geo
+ Finishing first round of exception handling code.
+
  Revision 1.78  2008/02/22 20:39:22  phase1geo
  More updates for exception handling.
 

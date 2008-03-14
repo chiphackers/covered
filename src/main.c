@@ -197,6 +197,7 @@ int main( int argc, const char** argv ) {
             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown command/global option \"%s\".  Please see \"covered -h\" for usage.", argv[curr_arg] );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
+            printf( "main Throw A\n" );
             Throw 0;
 
           }
@@ -208,6 +209,7 @@ int main( int argc, const char** argv ) {
         if( !cmd_found ) {
  
           print_output( "Must specify a command (score, merge, report, -v, or -h)", FATAL, __FILE__, __LINE__ );
+          printf( "main Throw B\n" );
           Throw 0;
 
         }
@@ -232,6 +234,10 @@ int main( int argc, const char** argv ) {
 
 /*
  $Log$
+ Revision 1.30  2008/02/08 23:58:07  phase1geo
+ Starting to work on exception handling.  Much work to do here (things don't
+ compile at the moment).
+
  Revision 1.29  2008/01/21 21:39:55  phase1geo
  Bug fix for bug 1876376.
 

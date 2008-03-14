@@ -176,9 +176,9 @@ unsigned int ignore_racecheck_mode = 0;
 */
 void db_close() { PROFILE(DB_CLOSE);
   
-  int i;  /* Loop iterator */
-
   if( inst_head != NULL ) {
+
+    int i;  /* Loop iterator */
 
     /* Remove memory allocated for inst_head */
     inst_link_delete_list( inst_head );
@@ -196,9 +196,6 @@ void db_close() { PROFILE(DB_CLOSE);
     /* Deallocate the binding list */
     bind_dealloc();
     
-    /* Deallocate the information section memory */
-    info_dealloc();
-
     /* Free memory associated with current instance scope */
     for( i=0; i<curr_inst_scope_size; i++ ) {
       free_safe( curr_inst_scope[i] );
@@ -206,6 +203,9 @@ void db_close() { PROFILE(DB_CLOSE);
     free_safe( curr_inst_scope );
 
   }
+
+  /* Deallocate the information section memory */
+  info_dealloc();
 
   PROFILE_END;
 
@@ -288,6 +288,7 @@ void db_write(
     } Catch_anonymous {
       rv = fclose( db_handle );
       assert( rv == 0 );
+      printf( "db Throw A\n" );
       Throw 0;
     }
 
@@ -299,6 +300,7 @@ void db_write(
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Could not open %s for writing", obf_file( file ) );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    printf( "db Throw B\n" );
     Throw 0;
 
   }
@@ -383,6 +385,7 @@ void db_read(
                   ((read_mode == READ_MODE_REPORT_NO_MERGE) ||
                    (read_mode == READ_MODE_REPORT_MOD_MERGE)) ) {
                 print_output( "Attempting to generate report on non-scored design.  Not supported.", FATAL, __FILE__, __LINE__ );
+                printf( "db Throw C\n" );
                 Throw 0;
               }
           
@@ -495,6 +498,7 @@ void db_read(
               unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unexpected type %d when parsing database file %s", type, obf_file( file ) );
               assert( rv < USER_MSG_LENGTH );
               print_output( user_msg, FATAL, __FILE__, __LINE__ );
+              printf( "db Throw D\n" );
               Throw 0;
 
             }
@@ -504,6 +508,7 @@ void db_read(
             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unexpected line in database file %s", obf_file( file ) );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
+            printf( "db Throw E\n" );
             Throw 0;
 
           }
@@ -511,6 +516,7 @@ void db_read(
         } Catch_anonymous {
 
           free_safe( curr_line );
+          printf( "db Throw F\n" );
           Throw 0;
 
         }
@@ -523,6 +529,7 @@ void db_read(
 
       unsigned int rv = fclose( db_handle );
       assert( rv == 0 );
+      printf( "db Throw G\n" );
       Throw 0;
 
     }
@@ -535,6 +542,7 @@ void db_read(
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Could not open %s for reading", obf_file( file ) );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    printf( "db Throw H\n" );
     Throw 0;
 
   }
@@ -578,6 +586,7 @@ void db_read(
   /* Check to make sure that the CDD file contained valid information */
   if( leading_hier_num == 0 ) {
     print_output( "CDD file was found to be empty", FATAL, __FILE__, __LINE__ );
+    printf( "db Throw I\n" );
     Throw 0;
   }
 
@@ -749,6 +758,7 @@ func_unit* db_add_instance(
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       funit_dealloc( funit );
+      printf( "db Throw J\n" );
       Throw 0;
     }
 
@@ -956,6 +966,7 @@ bool db_add_function_task_namedblock(
 
   } Catch_anonymous {
     free_safe( full_name );
+    printf( "db Throw K\n" );
     Throw 0;
   }
 
@@ -1418,6 +1429,7 @@ vsignal* db_find_signal( char* name, bool okay_if_not_found ) { PROFILE(DB_FIND_
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to find variable %s in module %s", obf_sig( name ), obf_funit( curr_funit->name ) );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    printf( "db Throw L\n" );
     Throw 0;
 
   }
@@ -1648,6 +1660,7 @@ expression* db_create_expression(
                                 obf_funit( func_funit->name ), obf_file( curr_funit->filename ), line );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    printf( "db Throw M\n" );
     Throw 0;
   }
 
@@ -1812,6 +1825,7 @@ expression* db_create_expr_from_static(
 
   } Catch_anonymous {
     static_expr_dealloc( se, FALSE );
+    printf( "db Throw N\n" );
     Throw 0;
   }
 
@@ -1928,6 +1942,7 @@ expression* db_create_sensitivity_list(
 
     } Catch_anonymous {
       str_link_delete_list( sig_head );
+      printf( "db Throw O\n" );
       Throw 0;
     }
 
@@ -2004,6 +2019,7 @@ statement* db_parallelize_statement(
 
     } Catch_anonymous {
       expression_dealloc( exp, FALSE );
+      printf( "db Throw P\n" );
       Throw 0;
     }
 
@@ -2064,6 +2080,7 @@ statement* db_create_statement(
   } Catch_anonymous {
     statement_dealloc( stmt );
     expression_dealloc( exp, FALSE );
+    printf( "db Throw Q\n" );
     Throw 0;
   }
 
@@ -2472,6 +2489,7 @@ void db_parse_attribute(
 
   } Catch_anonymous {
     attribute_dealloc( ap );
+    printf( "db Throw R\n" );
     Throw 0;
   }
 
@@ -2833,6 +2851,9 @@ bool db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.293  2008/03/13 10:28:55  phase1geo
+ The last of the exception handling modifications.
+
  Revision 1.292  2008/03/11 22:06:47  phase1geo
  Finishing first round of exception handling code.
 

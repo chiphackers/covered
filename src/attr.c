@@ -57,7 +57,10 @@
 
  Allocates and initializes an attribute parameter entry.
 */
-attr_param* attribute_create( const char* name, expression* expr ) { PROFILE(ATTRIBUTE_CREATE);
+attr_param* attribute_create(
+  const char* name,
+  expression* expr
+) { PROFILE(ATTRIBUTE_CREATE);
 
   attr_param* ap;  /* Pointer to newly allocated attribute parameter */
 
@@ -111,7 +114,9 @@ void attribute_parse(
 
  Deallocates all memory for the entire attribute parameter list.
 */
-void attribute_dealloc( attr_param* ap ) { PROFILE(ATTRIBUTE_DEALLOC);
+void attribute_dealloc(
+  attr_param* ap
+) { PROFILE(ATTRIBUTE_DEALLOC);
 
   if( ap != NULL ) {
 
@@ -133,6 +138,10 @@ void attribute_dealloc( attr_param* ap ) { PROFILE(ATTRIBUTE_DEALLOC);
 
 /*
  $Log$
+ Revision 1.12  2008/03/10 22:00:31  phase1geo
+ Working on more exception handling (script is finished now).  Starting to work
+ on code enhancements again :)  Checkpointing.
+
  Revision 1.11  2008/03/04 06:46:47  phase1geo
  More exception handling updates.  Still work to go.  Checkpointing.
 

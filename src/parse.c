@@ -121,11 +121,13 @@ void parse_design(
         } Catch_anonymous {
           unsigned int rv;
           rv = fclose( VLin );
+          printf( "parse Throw A\n" );
           Throw 0;
         }
 
         if( (parser_ret != 0) || (error_count > 0) ) {
           print_output( "Error in parsing design", FATAL, __FILE__, __LINE__ );
+          printf( "parse Throw B\n" );
           Throw 0;
         }
 
@@ -134,6 +136,7 @@ void parse_design(
         unlink( ppfilename );
         parser_dealloc_sig_range( &curr_urange, FALSE );
         parser_dealloc_sig_range( &curr_prange, FALSE );
+        printf( "parse Throw C\n" );
         Throw 0;
       }
      
@@ -152,6 +155,7 @@ void parse_design(
           assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
           print_output( "The -i option should not have been specified", FATAL_WRAP, __FILE__, __LINE__ );
+          printf( "parse Throw D\n" );
           Throw 0;
         }
       } else {
@@ -161,6 +165,7 @@ void parse_design(
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
           print_output( "The -i option must be specified to provide the hierarchy to the module specified with", FATAL_WRAP, __FILE__, __LINE__ );
           print_output( "the -t option.", FATAL_WRAP, __FILE__, __LINE__ );
+          printf( "parse Throw E\n" );
           Throw 0;
         }
       }
@@ -189,6 +194,7 @@ void parse_design(
     } else {
 
       print_output( "No Verilog input files specified", FATAL, __FILE__, __LINE__ );
+      printf( "parse Throw F\n" );
       Throw 0;
 
     }
@@ -199,6 +205,7 @@ void parse_design(
   } Catch_anonymous {
     sim_dealloc();
     db_close();
+    printf( "parse Throw G\n" );
     Throw 0;
   }
 
@@ -293,6 +300,7 @@ void parse_and_score_dumpfile(
 
   } Catch_anonymous {
     sim_dealloc();
+    printf( "parse Throw H\n" );
     Throw 0;
   }
 
@@ -303,6 +311,9 @@ void parse_and_score_dumpfile(
 
 /*
  $Log$
+ Revision 1.60  2008/03/13 10:28:55  phase1geo
+ The last of the exception handling modifications.
+
  Revision 1.59  2008/03/12 03:52:49  phase1geo
  Fixes for regression failures.
 

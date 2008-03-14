@@ -452,6 +452,7 @@ void statement_db_read(
     if( curr_funit == NULL ) {
 
       print_output( "Internal error:  statement in database written before its functional unit", FATAL, __FILE__, __LINE__ );
+      printf( "statement Throw A\n" );
       Throw 0;
 
     } else {
@@ -529,6 +530,7 @@ void statement_db_read(
   } else {
 
     print_output( "Unable to read statement value", FATAL, __FILE__, __LINE__ );
+    printf( "statement Throw B\n" );
     Throw 0;
 
   }
@@ -1010,6 +1012,9 @@ void statement_dealloc(
 
 /*
  $Log$
+ Revision 1.129  2008/03/11 22:06:49  phase1geo
+ Finishing first round of exception handling code.
+
  Revision 1.128  2008/03/04 00:09:20  phase1geo
  More exception handling.  Checkpointing.
 

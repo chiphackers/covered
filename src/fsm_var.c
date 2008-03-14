@@ -207,12 +207,14 @@ static void fsm_var_bind_expr(
                                   obf_sig( sig_name ), expr->id, obf_funit( funit_name ) );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      printf( "fsm_var Throw A\n" );
       Throw 0;
     }
   } else {
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to find FSM-specified module (%s) in design", obf_funit( funit_name ) ); 
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    printf( "fsm_var Throw B\n" );
     Throw 0;
   }
 
@@ -438,6 +440,7 @@ void fsm_var_bind() { PROFILE(FSM_VAR_BIND);
       free_safe( curr );
       curr = tmp;
     }
+    printf( "fsm_var Throw C\n" );
     Throw 0;
   }
 
@@ -524,6 +527,9 @@ void fsm_var_remove(
 
 /*
  $Log$
+ Revision 1.41  2008/03/11 22:06:48  phase1geo
+ Finishing first round of exception handling code.
+
  Revision 1.40  2008/03/09 20:45:48  phase1geo
  More exception handling updates.
 

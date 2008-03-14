@@ -292,6 +292,7 @@ void report_parse_args(
     if( strncmp( "-h", argv[i], 2 ) == 0 ) {
  
       report_usage();
+      printf( "report Throw A\n" );
       Throw 0;
 
     } else if( strncmp( "-m", argv[i], 2 ) == 0 ) {
@@ -300,6 +301,7 @@ void report_parse_args(
         i++;
         report_parse_metrics( argv[i] );
       } else {
+        printf( "report Throw B\n" );
         Throw 0;
       }
 
@@ -312,6 +314,7 @@ void report_parse_args(
       report_memory       = TRUE;
 #else
       print_output( "The -view option is not available with this build", FATAL, __FILE__, __LINE__ );
+      printf( "report Throw C\n" );
       Throw 0;
 #endif
 
@@ -337,9 +340,11 @@ void report_parse_args(
           unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unrecognized detail type: -d %s\n", argv[i] );
           assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
+          printf( "report Throw D\n" );
           Throw 0;
         }
       } else {
+        printf( "report Throw E\n" );
         Throw 0;
       }
 
@@ -356,10 +361,12 @@ void report_parse_args(
             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Output file \"%s\" is unwritable", argv[i] );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
+            printf( "report Throw F\n" );
             Throw 0;
           }
         }
       } else {
+        printf( "report Throw G\n" );
         Throw 0;
       }
 
@@ -397,6 +404,7 @@ void report_parse_args(
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Cannot find %s database file for opening", argv[i] );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        printf( "report Throw H\n" );
         Throw 0;
 
       }
@@ -406,6 +414,7 @@ void report_parse_args(
       unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown report command option \"%s\".  See \"covered -h\" for more information.", argv[i] );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      printf( "report Throw I\n" );
       Throw 0;
 
     }
@@ -761,6 +770,7 @@ void report_read_cdd_and_ready(
   if( (ifile == NULL) || (ifile[0] == '\0') ) {
 
     print_output( "CDD file name was not specified for reading", FATAL, __FILE__, __LINE__ );
+    printf( "report Throw J\n" );
     Throw 0;
 
   } else {
@@ -843,6 +853,7 @@ void command_report(
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Database file not specified in command line" );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        printf( "report Throw K\n" );
         Throw 0;
 
       } else {
@@ -863,6 +874,7 @@ void command_report(
               unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to open report output file %s for writing", output_file );
               assert( rv < USER_MSG_LENGTH );
               print_output( user_msg, FATAL, __FILE__, __LINE__ );
+              printf( "report Throw L\n" );
               Throw 0;
             }
           } else {
@@ -877,6 +889,7 @@ void command_report(
             rv = fclose( ofile );
             assert( rv == 0 );
           }
+          printf( "report Throw M\n" );
           Throw 0;
         }
 
@@ -906,11 +919,13 @@ void command_report(
 
         if( Tcl_Init( interp ) == TCL_ERROR ) {
           printf( "ERROR: %s\n", interp->result );
+          printf( "report Throw N\n" );
           Throw 0;
         }
 
         if( Tk_SafeInit( interp ) == TCL_ERROR ) {
           printf( "ERROR: %s\n", interp->result );
+          printf( "report Throw O\n" );
           Throw 0;
         }
 
@@ -918,6 +933,7 @@ void command_report(
 #ifndef INSTALL_DIR
         if( getenv( "COVERED_HOME" ) == NULL ) {
           print_output( "COVERED_HOME not initialized.  Exiting...", FATAL, __FILE__, __LINE__ );
+          printf( "report Throw P\n" );
           Throw 0;
         }
         covered_home = strdup_safe( getenv( "COVERED_HOME" ) );
@@ -947,6 +963,7 @@ void command_report(
         if( rv != TCL_OK ) {
           rv = snprintf( user_msg, USER_MSG_LENGTH, "TCL/TK: %s\n", Tcl_ErrnoMsg( Tcl_GetErrno() ) );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
+          printf( "report Throw Q\n" );
           Throw 0;
         }
 
@@ -956,6 +973,7 @@ void command_report(
       } Catch_anonymous {
         free_safe( covered_home );
         free_safe( main_file );
+        printf( "report Throw R\n" );
         Throw 0;
       }
 
@@ -980,6 +998,9 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.98  2008/03/11 22:06:48  phase1geo
+ Finishing first round of exception handling code.
+
  Revision 1.97  2008/02/11 14:00:09  phase1geo
  More updates for exception handling.  Regression passes.
 

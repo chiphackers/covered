@@ -845,8 +845,8 @@ void cli_execute(
 */
 void cli_read_hist_file( const char* fname ) {
 
-  char* line;           /* Holds current line read from history file */
-  FILE* hfile;          /* File containing history file */
+  char* line;   /* Holds current line read from history file */
+  FILE* hfile;  /* File containing history file */
 
   /* Make sure that this function was not called twice */
   assert( (cli_replay_index == 0) && !flag_use_command_line_debug );
@@ -863,12 +863,15 @@ void cli_read_hist_file( const char* fname ) {
           unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Specified -cli file \"%s\" is not a valid CLI history file", fname );
           assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
+          printf( "cli Throw A\n" );
           Throw 0;
         }
       }
 
     } Catch_anonymous {
-      fclose( hfile );
+      unsigned int rv = fclose( hfile );
+      assert( rv == 0 );
+      printf( "cli Throw B\n" );
       Throw 0;
     }
 
@@ -879,6 +882,7 @@ void cli_read_hist_file( const char* fname ) {
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to read history file \"%s\"", fname );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    printf( "cli Throw C\n" );
     Throw 0;
 
   }
@@ -887,6 +891,10 @@ void cli_read_hist_file( const char* fname ) {
 
 /*
  $Log$
+ Revision 1.20  2008/02/29 00:08:31  phase1geo
+ Completed optimization code in simulator.  Still need to verify that code
+ changes enhanced performances as desired.  Checkpointing.
+
  Revision 1.19  2008/02/27 05:26:51  phase1geo
  Adding support for $finish and $stop.
 

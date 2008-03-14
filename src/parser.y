@@ -376,12 +376,7 @@ attribute_list_opt
       if( !parser_check_generation( GENERATION_2001 ) ) {
         ignore_mode--;
       } else if( ignore_mode == 0 ) {
-        Try {
-          db_parse_attribute( $3 );
-        } Catch_anonymous {
-          attribute_dealloc( $3 );
-          Throw 0;
-        }
+        db_parse_attribute( $3 );
       }
     }
   | K_PSTAR
@@ -525,6 +520,7 @@ description
         }
       } Catch_anonymous {
         free_safe( $3 );
+        printf( "parser Throw B\n" );
         Throw 0;
       }
       free_safe( $3 );
@@ -560,6 +556,7 @@ description
           }
         } Catch_anonymous {
           free_safe( $5 );
+          printf( "parser Throw C\n" );
           Throw 0;
         }
         free_safe( $5 );
@@ -843,6 +840,7 @@ static_expr_port_list
             tmp = static_expr_gen_unary( $3, EXP_OP_PASSIGN, @3.first_line, @3.first_column, (@3.last_column - 1) );
           } Catch_anonymous {
             static_expr_dealloc( $3, TRUE );
+            printf( "parser Throw D\n" );
             Throw 0;
           }
           Try {
@@ -850,6 +848,7 @@ static_expr_port_list
           } Catch_anonymous {
             static_expr_dealloc( tmp, TRUE );
             static_expr_dealloc( $1, TRUE );
+            printf( "parser Throw E\n" );
             Throw 0;
           }
           $$ = tmp;
@@ -869,6 +868,7 @@ static_expr_port_list
             tmp = static_expr_gen_unary( $1, EXP_OP_PASSIGN, @1.first_line, @1.first_column, (@1.last_column - 1) );
           } Catch_anonymous {
             static_expr_dealloc( $1, TRUE );
+            printf( "parser Throw F\n" );
             Throw 0;
           }
         }
@@ -911,6 +911,7 @@ static_expr
         tmp = static_expr_gen_unary( $2, EXP_OP_UINV, @1.first_line, @1.first_column, (@1.last_column - 1) );
       } Catch_anonymous {
         static_expr_dealloc( $2, TRUE );
+        printf( "parser Throw G\n" );
         Throw 0;
       }
       $$ = tmp;
@@ -922,6 +923,7 @@ static_expr
         tmp = static_expr_gen_unary( $2, EXP_OP_UAND, @1.first_line, @1.first_column, (@1.last_column - 1) );
       } Catch_anonymous {
         static_expr_dealloc( $2, TRUE );
+        printf( "parser Throw H\n" );
         Throw 0;
       }
       $$ = tmp;
@@ -933,6 +935,7 @@ static_expr
         tmp = static_expr_gen_unary( $2, EXP_OP_UNOT, @1.first_line, @1.first_column, (@1.last_column - 1) );
       } Catch_anonymous {
         static_expr_dealloc( $2, TRUE );
+        printf( "parser Throw I\n" );
         Throw 0;
       }
       $$ = tmp;
@@ -944,6 +947,7 @@ static_expr
         tmp = static_expr_gen_unary( $2, EXP_OP_UOR, @1.first_line, @1.first_column, (@1.last_column - 1) );
       } Catch_anonymous {
         static_expr_dealloc( $2, TRUE );
+        printf( "parser Throw J\n" );
         Throw 0;
       }
       $$ = tmp;
@@ -955,6 +959,7 @@ static_expr
         tmp = static_expr_gen_unary( $2, EXP_OP_UXOR, @1.first_line, @1.first_column, (@1.last_column - 1) );
       } Catch_anonymous {
         static_expr_dealloc( $2, TRUE );
+        printf( "parser Throw K\n" );
         Throw 0;
       }
       $$ = tmp;
@@ -966,6 +971,7 @@ static_expr
         tmp = static_expr_gen_unary( $2, EXP_OP_UNAND, @1.first_line, @1.first_column, (@1.last_column - 1) );
       } Catch_anonymous {
         static_expr_dealloc( $2, TRUE );
+        printf( "parser Throw L\n" );
         Throw 0;
       }
       $$ = tmp;
@@ -977,6 +983,7 @@ static_expr
         tmp = static_expr_gen_unary( $2, EXP_OP_UNOR, @1.first_line, @1.first_column, (@1.last_column - 1) );
       } Catch_anonymous {
         static_expr_dealloc( $2, TRUE );
+        printf( "parser Throw M\n" );
         Throw 0;
       }
       $$ = tmp;
@@ -988,6 +995,7 @@ static_expr
         tmp = static_expr_gen_unary( $2, EXP_OP_UNXOR, @1.first_line, @1.first_column, (@1.last_column - 1) );
       } Catch_anonymous {
         static_expr_dealloc( $2, TRUE );
+        printf( "parser Throw N\n" );
         Throw 0;
       }
       $$ = tmp;
@@ -1127,6 +1135,7 @@ static_expr_primary
           } Catch_anonymous {
             free_safe( tmp );
             vector_dealloc( $1 );
+            printf( "parser Throw O\n" );
             Throw 0;
           }
           vector_dealloc( tmp->exp->value );
@@ -1164,6 +1173,7 @@ static_expr_primary
         } Catch_anonymous {
           free_safe( tmp );
           free_safe( $1 );
+          printf( "parser Throw P\n" );
           Throw 0;
         }
         free_safe( $1 );
@@ -1245,6 +1255,7 @@ expression
           exp->value->suppl.part.is_signed = 1;
         } Catch_anonymous {
           expression_dealloc( $2, FALSE );
+          printf( "parser Throw Q\n" );
           Throw 0;
         }
         $$ = exp;
@@ -1261,6 +1272,7 @@ expression
             tmp = db_create_expression( $2, NULL, EXP_OP_UINV, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
           } Catch_anonymous {
             expression_dealloc( $2, FALSE );
+            printf( "parser Throw R\n" );
             Throw 0;
           }
         }
@@ -1278,6 +1290,7 @@ expression
             tmp = db_create_expression( $2, NULL, EXP_OP_UAND, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
           } Catch_anonymous {
             expression_dealloc( $2, FALSE );
+            printf( "parser Throw S\n" );
             Throw 0;
           }
         }
@@ -1295,6 +1308,7 @@ expression
             tmp = db_create_expression( $2, NULL, EXP_OP_UNOT, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
           } Catch_anonymous {
             expression_dealloc( $2, FALSE );
+            printf( "parser Throw T\n" );
             Throw 0;
           }
         }
@@ -1312,6 +1326,7 @@ expression
             tmp = db_create_expression( $2, NULL, EXP_OP_UOR, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
           } Catch_anonymous {
             expression_dealloc( $2, FALSE );
+            printf( "parser Throw U\n" );
             Throw 0;
           }
         }
@@ -1329,6 +1344,7 @@ expression
             tmp = db_create_expression( $2, NULL, EXP_OP_UXOR, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
           } Catch_anonymous {
             expression_dealloc( $2, FALSE );
+            printf( "parser Throw V\n" );
             Throw 0;
           }
         }
@@ -1346,6 +1362,7 @@ expression
             tmp = db_create_expression( $2, NULL, EXP_OP_UNAND, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
           } Catch_anonymous {
             expression_dealloc( $2, FALSE );
+            printf( "parser Throw W\n" );
             Throw 0;
           }
         }
@@ -1363,6 +1380,7 @@ expression
             tmp = db_create_expression( $2, NULL, EXP_OP_UNOR, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
           } Catch_anonymous {
             expression_dealloc( $2, FALSE );
+            printf( "parser Throw X\n" );
             Throw 0;
           }
         }
@@ -1380,6 +1398,7 @@ expression
             tmp = db_create_expression( $2, NULL, EXP_OP_UNXOR, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
           } Catch_anonymous {
             expression_dealloc( $2, FALSE );
+            printf( "parser Throw Y\n" );
             Throw 0;
           }
         }
@@ -1437,6 +1456,7 @@ expression
         } Catch_anonymous {
           expression_dealloc( $1, FALSE );
           expression_dealloc( $3, FALSE );
+          printf( "parser Throw Z\n" );
           Throw 0;
         }
         $$ = tmp;
@@ -1455,6 +1475,7 @@ expression
         } Catch_anonymous {
           expression_dealloc( $1, FALSE );
           expression_dealloc( $3, FALSE );
+          printf( "parser Throw AA\n" );
           Throw 0;
         }
         $$ = tmp;
@@ -1473,6 +1494,7 @@ expression
         } Catch_anonymous {
           expression_dealloc( $1, FALSE );
           expression_dealloc( $3, FALSE );
+          printf( "parser Throw AB\n" );
           Throw 0;
         }
         $$ = tmp;
@@ -1491,6 +1513,7 @@ expression
         } Catch_anonymous {
           expression_dealloc( $1, FALSE );
           expression_dealloc( $3, FALSE );
+          printf( "parser Throw AC\n" );
           Throw 0;
         }
         $$ = tmp;
@@ -1509,6 +1532,7 @@ expression
         } Catch_anonymous {
           expression_dealloc( $1, FALSE );
           expression_dealloc( $3, FALSE );
+          printf( "parser Throw AD\n" );
           Throw 0;
         }
         $$ = tmp;
@@ -1527,6 +1551,7 @@ expression
         } Catch_anonymous {
           expression_dealloc( $1, FALSE );
           expression_dealloc( $3, FALSE );
+          printf( "parser Throw AE\n" );
           Throw 0;
         }
         $$ = tmp;
@@ -1551,6 +1576,7 @@ expression
           } Catch_anonymous {
             expression_dealloc( $1, FALSE );
             expression_dealloc( $3, FALSE );
+            printf( "parser Throw AF\n" );
             Throw 0;
           }
           $$ = tmp;
@@ -1570,6 +1596,7 @@ expression
         } Catch_anonymous {
           expression_dealloc( $1, FALSE );
           expression_dealloc( $3, FALSE );
+          printf( "parser Throw AG\n" );
           Throw 0;
         }
         $$ = tmp;
@@ -1588,6 +1615,7 @@ expression
         } Catch_anonymous {
           expression_dealloc( $1, FALSE );
           expression_dealloc( $3, FALSE );
+          printf( "parser Throw AH\n" );
           Throw 0;
         }
         $$ = tmp;
@@ -1606,6 +1634,7 @@ expression
         } Catch_anonymous {
           expression_dealloc( $1, FALSE );
           expression_dealloc( $3, FALSE );
+          printf( "parser Throw AI\n" );
           Throw 0;
         }
         $$ = tmp;
@@ -1624,6 +1653,7 @@ expression
         } Catch_anonymous {
           expression_dealloc( $1, FALSE );
           expression_dealloc( $3, FALSE );
+          printf( "parser Throw AJ\n" );
           Throw 0;
         }
         $$ = tmp;
@@ -1642,6 +1672,7 @@ expression
         } Catch_anonymous {
           expression_dealloc( $1, FALSE );
           expression_dealloc( $3, FALSE );
+          printf( "parser Throw AK\n" );
           Throw 0;
         }
         $$ = tmp;
@@ -1660,6 +1691,7 @@ expression
         } Catch_anonymous {
           expression_dealloc( $1, FALSE );
           expression_dealloc( $3, FALSE );
+          printf( "parser Throw AL\n" );
           Throw 0;
         }
         $$ = tmp;
@@ -1678,6 +1710,7 @@ expression
         } Catch_anonymous {
           expression_dealloc( $1, FALSE );
           expression_dealloc( $3, FALSE );
+          printf( "parser Throw AM\n" );
           Throw 0;
         }
         $$ = tmp;
@@ -1696,6 +1729,7 @@ expression
         } Catch_anonymous {
           expression_dealloc( $1, FALSE );
           expression_dealloc( $3, FALSE );
+          printf( "parser Throw AN\n" );
           Throw 0;
         }
         $$ = tmp;
@@ -1720,6 +1754,7 @@ expression
           } Catch_anonymous {
             expression_dealloc( $1, FALSE );
             expression_dealloc( $3, FALSE );
+            printf( "parser Throw AO\n" );
             Throw 0;
           }
           $$ = tmp;
@@ -1739,6 +1774,7 @@ expression
         } Catch_anonymous {
           expression_dealloc( $1, FALSE );
           expression_dealloc( $3, FALSE );
+          printf( "parser Throw AP\n" );
           Throw 0;
         }
         $$ = tmp;
@@ -1763,6 +1799,7 @@ expression
           } Catch_anonymous {
             expression_dealloc( $1, FALSE );
             expression_dealloc( $3, FALSE );
+            printf( "parser Throw AQ\n" );
             Throw 0;
           }
           $$ = tmp;
@@ -1782,6 +1819,7 @@ expression
         } Catch_anonymous {
           expression_dealloc( $1, FALSE );
           expression_dealloc( $3, FALSE );
+          printf( "parser Throw AR\n" );
           Throw 0;
         }
         $$ = tmp;
@@ -1800,6 +1838,7 @@ expression
         } Catch_anonymous {
           expression_dealloc( $1, FALSE );
           expression_dealloc( $3, FALSE );
+          printf( "parser Throw AS\n" );
           Throw 0;
         }
         $$ = tmp;
@@ -1818,6 +1857,7 @@ expression
         } Catch_anonymous {
           expression_dealloc( $1, FALSE );
           expression_dealloc( $3, FALSE );
+          printf( "parser Throw AT\n" );
           Throw 0;
         }
         $$ = tmp;
@@ -1836,6 +1876,7 @@ expression
         } Catch_anonymous {
           expression_dealloc( $1, FALSE );
           expression_dealloc( $3, FALSE );
+          printf( "parser Throw AU\n" );
           Throw 0;
         }
         $$ = tmp;
@@ -1854,6 +1895,7 @@ expression
         } Catch_anonymous {
           expression_dealloc( $1, FALSE );
           expression_dealloc( $3, FALSE );
+          printf( "parser Throw AV\n" );
           Throw 0;
         }
         $$ = tmp;
@@ -1872,6 +1914,7 @@ expression
         } Catch_anonymous {
           expression_dealloc( $1, FALSE );
           expression_dealloc( $3, FALSE );
+          printf( "parser Throw AW\n" );
           Throw 0;
         }
         $$ = tmp;
@@ -1890,6 +1933,7 @@ expression
         } Catch_anonymous {
           expression_dealloc( $1, FALSE );
           expression_dealloc( $3, FALSE );
+          printf( "parser Throw AX\n" );
           Throw 0;
         }
         $$ = tmp;
@@ -1908,6 +1952,7 @@ expression
         } Catch_anonymous {
           expression_dealloc( $1, FALSE );
           expression_dealloc( $3, FALSE );
+          printf( "parser Throw AY\n" );
           Throw 0;
         }
         $$ = tmp;
@@ -1929,6 +1974,7 @@ expression
           expression_dealloc( $1, FALSE );
           expression_dealloc( $3, FALSE );
           expression_dealloc( $5, FALSE );
+          printf( "parser Throw AZ\n" );
           Throw 0;
         }
         $$ = cond;
@@ -1949,6 +1995,7 @@ expr_primary
         tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
       } Catch_anonymous {
         vector_dealloc( $1 );
+        printf( "parser Throw BA\n" );
         Throw 0;
       }
       vector_dealloc( tmp->value );
@@ -1974,6 +2021,7 @@ expr_primary
         tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
       } Catch_anonymous {
         vector_dealloc( $1 );
+        printf( "parser Throw BB\n" );
         Throw 0;
       }
       vector_dealloc( tmp->value );
@@ -1992,6 +2040,7 @@ expr_primary
           tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
         } Catch_anonymous {
           free_safe( $1 );
+          printf( "parser Throw BC\n" );
           Throw 0;
         }
         $$  = tmp;
@@ -2010,6 +2059,7 @@ expr_primary
         } Catch_anonymous {
           expression_dealloc( tmp, FALSE );
           free_safe( $1 );
+          printf( "parser Throw BD\n" );
           Throw 0;
         }
         $$  = tmp; 
@@ -2028,6 +2078,7 @@ expr_primary
         } Catch_anonymous {
           expression_dealloc( tmp, FALSE );
           free_safe( $1 );
+          printf( "parser Throw BE\n" );
           Throw 0;
         }
         $$  = tmp;
@@ -2046,6 +2097,7 @@ expr_primary
         } Catch_anonymous {
           expression_dealloc( tmp, FALSE );
           free_safe( $2 );
+          printf( "parser Throw BF\n" );
           Throw 0;
         }
         $$  = tmp;
@@ -2064,6 +2116,7 @@ expr_primary
         } Catch_anonymous {
           expression_dealloc( tmp, FALSE );
           free_safe( $2 );
+          printf( "parser Throw BG\n" );
           Throw 0;
         }
         $$  = tmp;
@@ -2087,6 +2140,7 @@ expr_primary
           }
         } Catch_anonymous {
           free_safe( $1 );
+          printf( "parser Throw BH\n" );
           Throw 0;
         }
       } else {
@@ -2123,6 +2177,7 @@ expr_primary
         } Catch_anonymous {
           expression_dealloc( $2, FALSE );
           free_safe( $1 );
+          printf( "parser Throw BI\n" );
           Throw 0;
         }
         $$ = tmp;
@@ -2144,6 +2199,7 @@ expr_primary
         } Catch_anonymous {
           expression_dealloc( $2, FALSE );
           free_safe( $1 );
+          printf( "parser Throw BJ\n" );
           Throw 0;
         }
         $$ = tmp;
@@ -2165,6 +2221,7 @@ expr_primary
         } Catch_anonymous {
           expression_dealloc( $3, FALSE );
           free_safe( $2 );
+          printf( "parser Throw BK\n" );
           Throw 0;
         }
         $$ = tmp;
@@ -2186,6 +2243,7 @@ expr_primary
         } Catch_anonymous {
           expression_dealloc( $3, FALSE );
           free_safe( $2 );
+          printf( "parser Throw BL\n" );
           Throw 0;
         }
         $$ = tmp;
@@ -2204,6 +2262,7 @@ expr_primary
         } Catch_anonymous {
           expression_dealloc( $3, FALSE );
           free_safe( $1 );
+          printf( "parser Throw BM\n" );
           Throw 0;
         }
         $$  = tmp;
@@ -2228,6 +2287,7 @@ expr_primary
           }
         } Catch_anonymous {
           free_safe( $1 );
+          printf( "parser Throw BN\n" );
           Throw 0;
         }
       } else {
@@ -2255,6 +2315,7 @@ expr_primary
           tmp = db_create_expression( $2, NULL, EXP_OP_CONCAT, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
         } Catch_anonymous {
           expression_dealloc( $2, FALSE );
+          printf( "parser Throw BO\n" );
           Throw 0;
         }
         $$ = tmp;
@@ -2272,6 +2333,7 @@ expr_primary
         } Catch_anonymous {
           expression_dealloc( $2, FALSE );
           expression_dealloc( $4, FALSE );
+          printf( "parser Throw BP\n" );
           Throw 0;
         }
         $$ = tmp;
@@ -2298,6 +2360,7 @@ expression_list
             } Catch_anonymous {
               expression_dealloc( $1, FALSE );
               expression_dealloc( exp, FALSE );
+              printf( "parser Throw BQ\n" );
               Throw 0;
             }
             $$ = tmp;
@@ -2399,6 +2462,7 @@ expression_port_list
             expression_dealloc( $1, FALSE );
             expression_dealloc( $3, FALSE );
             expression_dealloc( tmp, FALSE );
+            printf( "parser Throw BR\n" );
             Throw 0;
           }
           $$ = tmp;
@@ -2417,6 +2481,7 @@ expression_port_list
           exp = db_create_expression( $1, NULL, EXP_OP_PASSIGN, 0, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
         } Catch_anonymous {
           expression_dealloc( $1, FALSE );
+          printf( "parser Throw BS\n" );
           Throw 0;
         }
         $$ = exp;
@@ -2643,6 +2708,7 @@ generate_passign
           expression_dealloc( expl, FALSE );
           expression_dealloc( expr, FALSE );
           free_safe( $1 );
+          printf( "parser Throw BT\n" );
           Throw 0;
         }
         $$ = expr;
@@ -2675,6 +2741,7 @@ generate_passign
           expression_dealloc( expl, FALSE );
           expression_dealloc( expr, FALSE );
           free_safe( $1 );
+          printf( "parser Throw BU\n" );
           Throw 0;
         }
         $$ = expr;
@@ -2707,6 +2774,7 @@ generate_passign
           expression_dealloc( expl, FALSE );
           expression_dealloc( expr, FALSE );
           free_safe( $1 );
+          printf( "parser Throw BV\n" );
           Throw 0;
         }
         $$ = expr;
@@ -2739,6 +2807,7 @@ generate_passign
           expression_dealloc( expl, FALSE );
           expression_dealloc( expr, FALSE );
           free_safe( $1 );
+          printf( "parser Throw BW\n" );
           Throw 0;
         }
         $$ = expr;
@@ -2771,6 +2840,7 @@ generate_passign
           expression_dealloc( expl, FALSE );
           expression_dealloc( expr, FALSE );
           free_safe( $1 );
+          printf( "parser Throw BX\n" );
           Throw 0;
         }
         $$ = expr;
@@ -2803,6 +2873,7 @@ generate_passign
           expression_dealloc( expl, FALSE );
           expression_dealloc( expr, FALSE );
           free_safe( $1 );
+          printf( "parser Throw BY\n" );
           Throw 0;
         }
         $$ = expr;
@@ -2835,6 +2906,7 @@ generate_passign
           expression_dealloc( expl, FALSE );
           expression_dealloc( expr, FALSE );
           free_safe( $1 );
+          printf( "parser Throw BZ\n" );
           Throw 0;
         }
         $$ = expr;
@@ -2867,6 +2939,7 @@ generate_passign
           expression_dealloc( expl, FALSE );
           expression_dealloc( expr, FALSE );
           free_safe( $1 );
+          printf( "parser Throw CA\n" );
           Throw 0;
         }
         $$ = expr;
@@ -2899,6 +2972,7 @@ generate_passign
           expression_dealloc( expl, FALSE );
           expression_dealloc( expr, FALSE );
           free_safe( $1 );
+          printf( "parser Throw CB\n" );
           Throw 0;
         }
         $$ = expr;
@@ -2931,6 +3005,7 @@ generate_passign
           expression_dealloc( expl, FALSE );
           expression_dealloc( expr, FALSE );
           free_safe( $1 );
+          printf( "parser Throw CC\n" );
           Throw 0;
         }
         $$ = expr;
@@ -2963,6 +3038,7 @@ generate_passign
           expression_dealloc( expl, FALSE );
           expression_dealloc( expr, FALSE );
           free_safe( $1 );
+          printf( "parser Throw CD\n" );
           Throw 0;
         }
         $$ = expr;
@@ -2995,6 +3071,7 @@ generate_passign
           expression_dealloc( expl, FALSE );
           expression_dealloc( expr, FALSE );
           free_safe( $1 );
+          printf( "parser Throw CE\n" );
           Throw 0;
         }
         $$ = expr;
@@ -3027,6 +3104,7 @@ generate_passign
           expression_dealloc( expl, FALSE );
           expression_dealloc( expr, FALSE );
           free_safe( $1 );
+          printf( "parser Throw CF\n" );
           Throw 0;
         }
         $$ = expr;
@@ -3052,6 +3130,7 @@ generate_passign
       } Catch_anonymous {
         expression_dealloc( expr, FALSE );
         free_safe( $1 );
+        printf( "parser Throw CG\n" );
         Throw 0;
       }
       $$ = expr;
@@ -3072,6 +3151,7 @@ generate_passign
       } Catch_anonymous {
         expression_dealloc( expr, FALSE );
         free_safe( $1 );
+        printf( "parser Throw CH\n" );
         Throw 0;
       }
       $$ = expr;
@@ -3235,6 +3315,7 @@ generate_item
           expression_dealloc( expr, FALSE );
           gen_item_dealloc( db_get_curr_gen_block(), TRUE );
           gen_item_dealloc( $8, TRUE );
+          printf( "parser Throw CI\n" );
           Throw 0;
         }
         db_add_expression( expr );
@@ -3263,6 +3344,7 @@ generate_item
           gen_item_dealloc( db_get_curr_gen_block(), TRUE );
           gen_item_dealloc( $8, TRUE );
           gen_item_dealloc( $11, TRUE );
+          printf( "parser Throw CJ\n" );
           Throw 0;
         }
         db_add_expression( expr );
@@ -3308,6 +3390,7 @@ generate_item
               c_stmt  = c_stmt->prev;
               free_safe( tc_stmt );
             }
+            printf( "parser Throw CK\n" );
             Throw 0;
           }
           db_add_expression( expr );
@@ -3604,6 +3687,7 @@ module_item
           free_safe( po );
         }
         free_safe( $2 );
+        printf( "parser Throw CL\n" );
         Throw 0;
       }
       str_link_delete_list( tmp );
@@ -3649,6 +3733,7 @@ module_item
               slist = db_create_expression( slist, NULL, EXP_OP_ALWAYS_COMB, lhs_mode, @2.first_line, @2.first_column, (@2.last_column - 1), NULL );
             } Catch_anonymous {
               expression_dealloc( slist, FALSE );
+              printf( "parser Throw CM\n" );
               Throw 0;
             }
             stmt = db_create_statement( slist );
@@ -3690,6 +3775,7 @@ module_item
               slist = db_create_expression( slist, NULL, EXP_OP_ALWAYS_LATCH, lhs_mode, @2.first_line, @2.first_column, (@2.last_column - 1), NULL );
             } Catch_anonymous {
               expression_dealloc( slist, FALSE );
+              printf( "parser Throw CN\n" );
               Throw 0;
             }
             stmt  = db_create_statement( slist );
@@ -3774,6 +3860,7 @@ module_item
         }
       } Catch_anonymous {
         free_safe( $4 );
+        printf( "parser Throw CO\n" );
         Throw 0;
       }
       free_safe( $4 );
@@ -3818,6 +3905,7 @@ module_item
           }
         } Catch_anonymous {
           free_safe( $6 );
+          printf( "parser Throw CP\n" );
           Throw 0;
         }
         free_safe( $6 );
@@ -4121,6 +4209,7 @@ expression_assignment_list
         } Catch_anonymous {
           expression_dealloc( $4, FALSE );
           free_safe( $2 );
+          printf( "parser Throw CQ\n" );
           Throw 0;
         }
         Try {
@@ -4128,6 +4217,7 @@ expression_assignment_list
         } Catch_anonymous {
           expression_dealloc( tmp, FALSE );
           expression_dealloc( $4, FALSE );
+          printf( "parser Throw CR\n" );
           Throw 0;
         }
         stmt = db_create_statement( tmp );
@@ -4159,6 +4249,7 @@ expression_assignment_list
           expression_dealloc( $6, FALSE );
           db_remove_statement( $1 );
           free_safe( $4 );
+          printf( "parser Throw CS\n" );
           Throw 0;
         }
         Try {
@@ -4167,6 +4258,7 @@ expression_assignment_list
           expression_dealloc( tmp, FALSE );
           expression_dealloc( $6, FALSE );
           db_remove_statement( $1 );
+          printf( "parser Throw CT\n" );
           Throw 0;
         }
         stmt = db_create_statement( tmp );
@@ -4198,6 +4290,7 @@ passign
         } Catch_anonymous {
           expression_dealloc( $1, FALSE );
           expression_dealloc( $3, FALSE );
+          printf( "parser Throw CU\n" );
           Throw 0;
         }
         stmt = db_create_statement( tmp );
@@ -4227,6 +4320,7 @@ passign
             expression_dealloc( tmp, FALSE );
             expression_dealloc( $1, FALSE );
             expression_dealloc( $3, FALSE );
+            printf( "parser Throw CV\n" );
             Throw 0;
           }
           stmt = db_create_statement( tmp );
@@ -4257,6 +4351,7 @@ passign
             expression_dealloc( tmp, FALSE );
             expression_dealloc( $1, FALSE );
             expression_dealloc( $3, FALSE );
+            printf( "parser Throw CW\n" );
             Throw 0;
           }
           stmt = db_create_statement( tmp );
@@ -4287,6 +4382,7 @@ passign
             expression_dealloc( tmp, FALSE );
             expression_dealloc( $1, FALSE );
             expression_dealloc( $3, FALSE );
+            printf( "parser Throw CX\n" );
             Throw 0;
           }
           stmt = db_create_statement( tmp );
@@ -4317,6 +4413,7 @@ passign
             expression_dealloc( tmp, FALSE );
             expression_dealloc( $1, FALSE );
             expression_dealloc( $3, FALSE );
+            printf( "parser Throw CY\n" );
             Throw 0;
           }
           stmt = db_create_statement( tmp );
@@ -4347,6 +4444,7 @@ passign
             expression_dealloc( tmp, FALSE );
             expression_dealloc( $1, FALSE );
             expression_dealloc( $3, FALSE );
+            printf( "parser Throw CZ\n" );
             Throw 0;
           }
           stmt = db_create_statement( tmp );
@@ -4377,6 +4475,7 @@ passign
             expression_dealloc( tmp, FALSE );
             expression_dealloc( $1, FALSE );
             expression_dealloc( $3, FALSE );
+            printf( "parser Throw DA\n" );
             Throw 0;
           }
           stmt = db_create_statement( tmp );
@@ -4407,6 +4506,7 @@ passign
             expression_dealloc( tmp, FALSE );
             expression_dealloc( $1, FALSE );
             expression_dealloc( $3, FALSE );
+            printf( "parser Throw DB\n" );
             Throw 0;
           }
           stmt = db_create_statement( tmp );
@@ -4437,6 +4537,7 @@ passign
             expression_dealloc( tmp, FALSE );
             expression_dealloc( $1, FALSE );
             expression_dealloc( $3, FALSE );
+            printf( "parser Throw DC\n" );
             Throw 0;
           }
           stmt = db_create_statement( tmp );
@@ -4467,6 +4568,7 @@ passign
             expression_dealloc( tmp, FALSE );
             expression_dealloc( $1, FALSE );
             expression_dealloc( $3, FALSE );
+            printf( "parser Throw DD\n" );
             Throw 0;
           }
           stmt = db_create_statement( tmp );
@@ -4497,6 +4599,7 @@ passign
             expression_dealloc( tmp, FALSE );
             expression_dealloc( $1, FALSE );
             expression_dealloc( $3, FALSE );
+            printf( "parser Throw DE\n" );
             Throw 0;
           }
           stmt = db_create_statement( tmp );
@@ -4527,6 +4630,7 @@ passign
             expression_dealloc( tmp, FALSE );
             expression_dealloc( $1, FALSE );
             expression_dealloc( $3, FALSE );
+            printf( "parser Throw DF\n" );
             Throw 0;
           }
           stmt = db_create_statement( tmp );
@@ -4557,6 +4661,7 @@ passign
             expression_dealloc( tmp, FALSE );
             expression_dealloc( $1, FALSE );
             expression_dealloc( $3, FALSE );
+            printf( "parser Throw DG\n" );
             Throw 0;
           }
           stmt = db_create_statement( tmp );
@@ -4582,6 +4687,7 @@ passign
             tmp = db_create_expression( NULL, $1, EXP_OP_PINC, FALSE, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
           } Catch_anonymous {
             expression_dealloc( $1, FALSE );
+            printf( "parser Throw DH\n" );
             Throw 0;
           }
           stmt = db_create_statement( tmp );
@@ -4606,6 +4712,7 @@ passign
             tmp = db_create_expression( NULL, $1, EXP_OP_PDEC, FALSE, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
           } Catch_anonymous {
             expression_dealloc( $1, FALSE );
+            printf( "parser Throw DI\n" );
             Throw 0;
           }
           stmt = db_create_statement( tmp );
@@ -4716,6 +4823,7 @@ statement
           exp = db_create_expression( NULL, NULL, EXP_OP_DISABLE, FALSE, @1.first_line, @1.first_column, (@2.last_column - 1), $2 );
         } Catch_anonymous {
           free_safe( $2 );
+          printf( "parser Throw DJ\n" );
           Throw 0;
         }
         stmt = db_create_statement( exp );
@@ -4737,6 +4845,7 @@ statement
           expr = db_create_expression( NULL, NULL, EXP_OP_TRIGGER, FALSE, @1.first_line, @1.first_column, (@2.last_column - 1), $2 );
         } Catch_anonymous {
           free_safe( $2 );
+          printf( "parser Throw DK\n" );
           Throw 0;
         }
         stmt = db_create_statement( expr );
@@ -4777,6 +4886,7 @@ statement
           vector_dealloc( vec );
           expression_dealloc( $3, FALSE );
           db_remove_statement( $6 );
+          printf( "parser Throw DL\n" );
           Throw 0;
         }
         Try {
@@ -4785,6 +4895,7 @@ statement
           expression_dealloc( $3, FALSE );
           expression_dealloc( expr, FALSE );
           db_remove_statement( $6 );
+          printf( "parser Throw DM\n" );
           Throw 0;
         }
         stmt = db_create_statement( expr );
@@ -4823,6 +4934,7 @@ statement
               c_stmt  = c_stmt->prev;
               free_safe( tc_stmt );
             }
+            printf( "parser Throw DN\n" );
             Throw 0;
           }
           stmt = db_create_statement( expr );
@@ -4876,6 +4988,7 @@ statement
               c_stmt  = c_stmt->prev;
               free_safe( tc_stmt );
             }
+            printf( "parser Throw DO\n" );
             Throw 0;
           }
           stmt = db_create_statement( expr );
@@ -4929,6 +5042,7 @@ statement
               c_stmt  = c_stmt->prev;
               free_safe( tc_stmt );
             }
+            printf( "parser Throw DP\n" );
             Throw 0;
           }
           stmt = db_create_statement( expr );
@@ -4991,6 +5105,7 @@ statement
         } Catch_anonymous {
           expression_dealloc( $4, FALSE );
           db_remove_statement( $7 );
+          printf( "parser Throw DQ\n" );
           Throw 0;
         }
         stmt = db_create_statement( tmp );
@@ -5012,6 +5127,7 @@ statement
           expression_dealloc( $4, FALSE );
           db_remove_statement( $7 );
           db_remove_statement( $10 );
+          printf( "parser Throw DR\n" );
           Throw 0;
         }
         stmt = db_create_statement( tmp );
@@ -5104,6 +5220,7 @@ statement
         } Catch_anonymous {
           expression_dealloc( $3, FALSE );
           db_remove_statement( $6 );
+          printf( "parser Throw DS\n" );
           Throw 0;
         }
         stmt = db_create_statement( expr );
@@ -5132,6 +5249,7 @@ statement
         } Catch_anonymous {
           expression_dealloc( $7, FALSE );
           db_remove_statement( $3 );
+          printf( "parser Throw DT\n" );
           Throw 0;
         }
         stmt = db_create_statement( expr );
@@ -5201,6 +5319,7 @@ statement
             } Catch_anonymous {
               expression_dealloc( expr, FALSE );
               db_remove_statement( $4 );
+              printf( "parser Throw DU\n" );
               Throw 0;
             }
             stmt = db_create_statement( expr );
@@ -5231,6 +5350,7 @@ statement
         } Catch_anonymous {
           expression_dealloc( $1, FALSE );
           expression_dealloc( $3, FALSE );
+          printf( "parser Throw DV\n" );
           Throw 0;
         }
         stmt = db_create_statement( tmp );
@@ -5252,6 +5372,7 @@ statement
           expression_dealloc( $1, FALSE );
           expression_dealloc( $3, FALSE );
           expression_dealloc( $4, FALSE );
+          printf( "parser Throw DW\n" );
           Throw 0;
         }
         Try {
@@ -5259,6 +5380,7 @@ statement
         } Catch_anonymous {
           expression_dealloc( tmp, FALSE );
           expression_dealloc( $1, FALSE );
+          printf( "parser Throw DX\n" );
           Throw 0;
         }
         stmt = db_create_statement( tmp );
@@ -5282,6 +5404,7 @@ statement
           expression_dealloc( $1, FALSE );
           expression_dealloc( $3, FALSE );
           expression_dealloc( $4, FALSE );
+          printf( "parser Throw DY\n" );
           Throw 0;
         }
         stmt = db_create_statement( tmp );
@@ -5305,6 +5428,7 @@ statement
           expression_dealloc( $1, FALSE );
           expression_dealloc( $3, FALSE );
           expression_dealloc( $4, FALSE );
+          printf( "parser Throw DZ\n" );
           Throw 0;
         }
         Try {
@@ -5312,6 +5436,7 @@ statement
         } Catch_anonymous {
           expression_dealloc( tmp, FALSE );
           expression_dealloc( $1, FALSE );
+          printf( "parser Throw EA\n" );
           Throw 0;
         }
         stmt = db_create_statement( tmp );
@@ -5335,6 +5460,7 @@ statement
           expression_dealloc( $1, FALSE );
           expression_dealloc( $3, FALSE );
           expression_dealloc( $4, FALSE );
+          printf( "parser Throw EB\n" );
           Throw 0;
         }
         stmt = db_create_statement( tmp );
@@ -5366,6 +5492,7 @@ statement
           expression_dealloc( $5, FALSE );
           expression_dealloc( $7, FALSE );
           expression_dealloc( $8, FALSE );
+          printf( "parser Throw EC\n" );
           Throw 0;
         }
         Try {
@@ -5376,6 +5503,7 @@ statement
           expression_dealloc( $5, FALSE );
           expression_dealloc( $7, FALSE );
           expression_dealloc( $8, FALSE );
+          printf( "parser Throw ED\n" );
           Throw 0;
         }
         Try {
@@ -5385,6 +5513,7 @@ statement
           expression_dealloc( $1, FALSE );
           expression_dealloc( $7, FALSE );
           expression_dealloc( $8, FALSE );
+          printf( "parser Throw EE\n" );
           Throw 0;
         }
         Try {
@@ -5393,6 +5522,7 @@ statement
           expression_dealloc( tmp, FALSE );
           expression_dealloc( $1, FALSE );
           expression_dealloc( $8, FALSE );
+          printf( "parser Throw EF\n" );
           Throw 0;
         }
         Try {
@@ -5424,6 +5554,7 @@ statement
           expression_dealloc( $5, FALSE );
           expression_dealloc( $7, FALSE );
           expression_dealloc( $8, FALSE );
+          printf( "parser Throw EG\n" );
           Throw 0;
         }
         stmt = db_create_statement( tmp );
@@ -5448,6 +5579,7 @@ statement
         } Catch_anonymous {
           expression_dealloc( $3, FALSE );
           db_remove_statement( $6 );
+          printf( "parser Throw EH\n" );
           Throw 0;
         }
         stmt = db_create_statement( exp );
@@ -5479,6 +5611,7 @@ statement
           }
         } Catch_anonymous {
           free_safe( $1 );
+          printf( "parser Throw EI\n" );
           Throw 0;
         }
         free_safe( $1 );
@@ -5508,6 +5641,7 @@ statement
           }
         } Catch_anonymous {
           free_safe( $1 );
+          printf( "parser Throw EJ\n" );
           Throw 0;
         }
         free_safe( $1 );
@@ -5530,6 +5664,7 @@ statement
         } Catch_anonymous {
           expression_dealloc( $3, FALSE );
           free_safe( $1 );
+          printf( "parser Throw EK\n" );
           Throw 0;
         }
         stmt = db_create_statement( exp );
@@ -5549,6 +5684,7 @@ statement
           exp = db_create_expression( NULL, NULL, EXP_OP_TASK_CALL, FALSE, @1.first_line, @1.first_column, (@2.last_column - 1), $1 );
         } Catch_anonymous {
           free_safe( $1 );
+          printf( "parser Throw EL\n" );
           Throw 0;
         }
         stmt = db_create_statement( exp );
@@ -5580,6 +5716,7 @@ statement
           exp = db_create_expression( NULL, NULL, EXP_OP_NOOP, lhs_mode, 0, 0, 0, NULL );
         } Catch_anonymous {
           free_safe( $1 );
+          printf( "parser Throw EM\n" );
           Throw 0;
         }
         stmt = db_create_statement( exp );
@@ -5620,6 +5757,7 @@ fork_statement
           } Catch_anonymous {
             db_remove_statement( $4 );
             free_safe( $1 );
+            printf( "parser Throw EN\n" );
             Throw 0;
           }
           stmt = db_create_statement( expr );
@@ -5760,6 +5898,7 @@ lpvalue
           tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
         } Catch_anonymous {
           free_safe( $1 );
+          printf( "parser Throw EO\n" );
           Throw 0;
         }
         free_safe( $1 );
@@ -5791,6 +5930,7 @@ lpvalue
           tmp = db_create_expression( $3, NULL, EXP_OP_CONCAT, TRUE, @1.first_line, @1.first_column, (@5.last_column - 1), NULL );
         } Catch_anonymous {
           expression_dealloc( $3, FALSE );
+          printf( "parser Throw EP\n" );
           Throw 0;
         }
         $$  = tmp;
@@ -5813,6 +5953,7 @@ lavalue
           tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
         } Catch_anonymous {
           free_safe( $1 );
+          printf( "parser Throw EQ\n" );
           Throw 0;
         }
         free_safe( $1 );
@@ -5844,6 +5985,7 @@ lavalue
           tmp = db_create_expression( $3, NULL, EXP_OP_CONCAT, TRUE, @1.first_line, @1.first_column, (@5.last_column - 1), NULL );
         } Catch_anonymous {
           expression_dealloc( $3, FALSE );
+          printf( "parser Throw ER\n" );
           Throw 0;
         }
         $$  = tmp;
@@ -6133,6 +6275,7 @@ delay1
           $$ = db_create_expression( $2, NULL, EXP_OP_DELAY, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
         } Catch_anonymous {
           expression_dealloc( $2, FALSE );
+          printf( "parser Throw ES\n" );
           Throw 0;
         }
       } else {
@@ -6147,6 +6290,7 @@ delay1
           $$ = db_create_expression( $3, NULL, EXP_OP_DELAY, lhs_mode, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
         } Catch_anonymous {
           expression_dealloc( $3, FALSE );
+          printf( "parser Throw ET\n" );
           Throw 0;
         }
       } else {
@@ -6164,6 +6308,7 @@ delay3
           $$ = db_create_expression( $2, NULL, EXP_OP_DELAY, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
         } Catch_anonymous {
           expression_dealloc( $2, FALSE );
+          printf( "parser Throw EU\n" );
           Throw 0;
         }
       } else {
@@ -6178,6 +6323,7 @@ delay3
           $$ = db_create_expression( $3, NULL, EXP_OP_DELAY, lhs_mode, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
         } Catch_anonymous {
           expression_dealloc( $3, FALSE );
+          printf( "parser Throw EV\n" );
           Throw 0;
         }
       } else {
@@ -6193,6 +6339,7 @@ delay3
           $$ = db_create_expression( $3, NULL, EXP_OP_DELAY, lhs_mode, @1.first_line, @1.first_column, (@6.last_column - 1), NULL );
         } Catch_anonymous {
           expression_dealloc( $3, FALSE );
+          printf( "parser Throw EW\n" );
           Throw 0;
         }
       } else {
@@ -6209,6 +6356,7 @@ delay3
           $$ = db_create_expression( $5, NULL, EXP_OP_DELAY, lhs_mode, @1.first_line, @1.first_column, (@8.last_column - 1), NULL );
         } Catch_anonymous {
           expression_dealloc( $5, FALSE );
+          printf( "parser Throw EX\n" );
           Throw 0;
         }
       } else {
@@ -6240,6 +6388,7 @@ delay_value
             tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
           } Catch_anonymous {
             static_expr_dealloc( se, TRUE );
+            printf( "parser Throw EY\n" );
             Throw 0;
            }
           vector_init( tmp->value, (vec_data*)malloc_safe( (sizeof( vec_data ) * 32) ), TRUE, 32, VTYPE_VAL );
@@ -6297,6 +6446,7 @@ delay_value
               tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
             } Catch_anonymous {
               static_expr_dealloc( se, TRUE );
+              printf( "parser Throw EZ\n" );
               Throw 0;
             }
             vector_init( tmp->value, (vec_data*)malloc_safe( (sizeof( vec_data ) * 32) ), TRUE, 32, VTYPE_VAL );
@@ -6324,6 +6474,7 @@ delay_value_simple
         tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
       } Catch_anonymous {
         vector_dealloc( $1 );
+        printf( "parser Throw FA\n" );
         Throw 0;
       }
       assert( tmp->value->value == NULL );
@@ -6350,6 +6501,7 @@ delay_value_simple
         tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
       } Catch_anonymous {
         free_safe( $1 );
+        printf( "parser Throw FB\n" );
         Throw 0;
       }
       free_safe( $1 );
@@ -6377,6 +6529,7 @@ assign
         } Catch_anonymous {
           expression_dealloc( $1, FALSE );
           expression_dealloc( $3, FALSE );
+          printf( "parser Throw FC\n" );
           Throw 0;
         }
         stmt = db_create_statement( tmp );
@@ -6472,6 +6625,7 @@ register_variable
           } Catch_anonymous {
             expression_dealloc( $3, FALSE );
             free_safe( $1 );
+            printf( "parser Throw FD\n" );
             Throw 0;
           }
           Try {
@@ -6479,6 +6633,7 @@ register_variable
           } Catch_anonymous {
             expression_dealloc( $3, FALSE );
             expression_dealloc( exp, FALSE );
+            printf( "parser Throw FE\n" );
             Throw 0;
           }
           stmt = db_create_statement( exp );
@@ -6739,6 +6894,7 @@ net_decl_assign
           } Catch_anonymous {
             expression_dealloc( $3, FALSE );
             free_safe( $1 );
+            printf( "parser Throw FF\n" );
             Throw 0;
           }
           Try {
@@ -6746,6 +6902,7 @@ net_decl_assign
           } Catch_anonymous {
             expression_dealloc( tmp, FALSE );
             expression_dealloc( $3, FALSE );
+            printf( "parser Throw FG\n" );
             Throw 0;
           }
           stmt = db_create_statement( tmp );
@@ -6776,6 +6933,7 @@ net_decl_assign
           } Catch_anonymous {
             expression_dealloc( $4, FALSE );
             free_safe( $2 );
+            printf( "parser Throw FH\n" );
             Throw 0;
           }
           Try {
@@ -6783,6 +6941,7 @@ net_decl_assign
           } Catch_anonymous {
             expression_dealloc( tmp, FALSE );
             expression_dealloc( $4, FALSE );
+            printf( "parser Throw FI\n" );
             Throw 0;
           }
           stmt = db_create_statement( tmp );
@@ -6839,6 +6998,7 @@ event_control
           tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), $2 );
         } Catch_anonymous {
           free_safe( $2 );
+          printf( "parser Throw FJ\n" );
           Throw 0;
         }
         $$  = tmp;
@@ -6876,6 +7036,7 @@ event_expression_list
         } Catch_anonymous {
           expression_dealloc( $1, FALSE );
           expression_dealloc( $3, FALSE );
+          printf( "parser Throw FK\n" );
           Throw 0;
         }
         $$ = tmp;
@@ -6900,6 +7061,7 @@ event_expression_list
           } Catch_anonymous {
             expression_dealloc( $1, FALSE );
             expression_dealloc( $3, FALSE );
+            printf( "parser Throw FL\n" );
             Throw 0;
           }
           $$ = tmp;
@@ -6923,6 +7085,7 @@ event_expression
           tmp1 = db_create_expression( NULL, NULL, EXP_OP_LAST, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
         } Catch_anonymous {
           expression_dealloc( $2, FALSE );
+          printf( "parser Throw FM\n" );
           Throw 0;
         }
         Try {
@@ -6930,6 +7093,7 @@ event_expression
         } Catch_anonymous {
           expression_dealloc( tmp1, FALSE );
           expression_dealloc( $2, FALSE );
+          printf( "parser Throw FN\n" );
           Throw 0;
         }
         $$ = tmp2;
@@ -6946,6 +7110,7 @@ event_expression
           tmp1 = db_create_expression( NULL, NULL, EXP_OP_LAST, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
         } Catch_anonymous {
           expression_dealloc( $2, FALSE );
+          printf( "parser Throw FO\n" );
           Throw 0;
         }
         Try {
@@ -6953,6 +7118,7 @@ event_expression
         } Catch_anonymous {
           expression_dealloc( tmp1, FALSE );
           expression_dealloc( $2, FALSE );
+          printf( "parser Throw FP\n" );
           Throw 0;
         }
         $$ = tmp2;
@@ -6970,6 +7136,7 @@ event_expression
           tmp1 = db_create_expression( NULL, NULL, EXP_OP_LAST, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
         } Catch_anonymous {
           expression_dealloc( expr, FALSE );
+          printf( "parser Throw FQ\n" );
           Throw 0;
         }
         Try {
@@ -6977,6 +7144,7 @@ event_expression
         } Catch_anonymous {
           expression_dealloc( tmp1, FALSE );
           expression_dealloc( expr, FALSE );
+          printf( "parser Throw FR\n" );
           Throw 0;
         }
         $$ = tmp2;
@@ -7507,6 +7675,7 @@ enum_variable
         db_add_enum( db_find_signal( $1, FALSE ), NULL );
       } Catch_anonymous {
         free_safe( $1 );
+        printf( "parser Throw FS\n" );
         Throw 0;
       }
       free_safe( $1 );
@@ -7519,6 +7688,7 @@ enum_variable
         db_add_enum( db_find_signal( $1, FALSE ), $3 );
       } Catch_anonymous {
         free_safe( $1 );
+        printf( "parser Throw FT\n" );
         Throw 0;
       }
       free_safe( $1 );
@@ -7595,6 +7765,7 @@ single_index_expr
           $$ = db_create_expression( NULL, $2, EXP_OP_SBIT_SEL, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
         } Catch_anonymous {
           expression_dealloc( $2, FALSE );
+          printf( "parser Throw FU\n" );
           Throw 0;
         }
       } else {
@@ -7610,6 +7781,7 @@ single_index_expr
         } Catch_anonymous {
           expression_dealloc( $2, FALSE );
           expression_dealloc( $4, FALSE );
+          printf( "parser Throw FV\n" );
           Throw 0;
         }
       } else {
@@ -7634,6 +7806,7 @@ single_index_expr
             } Catch_anonymous {
               expression_dealloc( $2, FALSE );
               static_expr_dealloc( $4, TRUE );
+              printf( "parser Throw FW\n" );
               Throw 0;
             }
             vector_dealloc( tmp->value );
@@ -7645,6 +7818,7 @@ single_index_expr
               expression_dealloc( tmp, FALSE );
               expression_dealloc( $2, FALSE );
               static_expr_dealloc( $4, TRUE );
+              printf( "parser Throw FX\n" );
               Throw 0;
             }
           } else {
@@ -7653,6 +7827,7 @@ single_index_expr
             } Catch_anonymous {
               expression_dealloc( $2, FALSE );
               static_expr_dealloc( $4, TRUE );
+              printf( "parser Throw FY\n" );
               Throw 0;
             }
           }
@@ -7680,6 +7855,7 @@ single_index_expr
             } Catch_anonymous {
               expression_dealloc( $2, FALSE );
               static_expr_dealloc( $4, TRUE );
+              printf( "parser Throw FZ\n" );
               Throw 0;
             }
             vector_dealloc( tmp->value );
@@ -7691,6 +7867,7 @@ single_index_expr
               expression_dealloc( tmp, FALSE );
               expression_dealloc( $2, FALSE );
               static_expr_dealloc( $4, TRUE );
+              printf( "parser Throw GA\n" );
               Throw 0;
             }
           } else {
@@ -7699,6 +7876,7 @@ single_index_expr
             } Catch_anonymous {
               expression_dealloc( $2, FALSE );
               static_expr_dealloc( $4, TRUE );
+              printf( "parser Throw GB\n" );
               Throw 0;
             }
           }
@@ -7721,6 +7899,7 @@ index_expr
         } Catch_anonymous {
           expression_dealloc( $1, FALSE );
           expression_dealloc( $2, FALSE );
+          printf( "parser Throw GC\n" );
           Throw 0;
         }
       } else {
@@ -7805,6 +7984,7 @@ inc_for_depth
           assert( db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, scope, funit->filename, 0 ) );
         } Catch_anonymous {
           free_safe( scope );
+          printf( "parser Throw GD\n" );
           Throw 0;
         }
         free_safe( scope );

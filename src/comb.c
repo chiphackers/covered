@@ -1251,6 +1251,7 @@ static void combination_underline_tree(
                                  exp->op );
                   assert( rv < USER_MSG_LENGTH );
                   print_output( user_msg, FATAL, __FILE__, __LINE__ );
+                  printf( "comb Throw A\n" );
                   Throw 0;
                   /*@-unreachable@*/
                   break;
@@ -1353,6 +1354,7 @@ static void combination_underline_tree(
             } else {
 
               print_output( "Internal error:  Reached entry without a left or right underline", FATAL, __FILE__, __LINE__ );
+              printf( "comb Throw B\n" );
               Throw 0;
 
             }
@@ -1387,6 +1389,7 @@ static void combination_underline_tree(
           free_safe( r_lines[i] );
         }
         free_safe( r_lines );
+        printf( "comb Throw C\n" );
         Throw 0;
       }
 
@@ -2866,6 +2869,7 @@ bool combination_get_expression(
         free_safe( *excludes );
         *excludes     = NULL;
         *exclude_size = 0;
+        printf( "comb Throw D\n" );
         Throw 0;
       }
 
@@ -3046,6 +3050,10 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.185  2008/03/10 22:00:31  phase1geo
+ Working on more exception handling (script is finished now).  Starting to work
+ on code enhancements again :)  Checkpointing.
+
  Revision 1.184  2008/02/29 23:58:19  phase1geo
  Continuing to work on adding exception handling code.
 

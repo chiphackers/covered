@@ -116,6 +116,7 @@ static void vcd_parse_def_var(
         
         if( sscanf( tmp, "\[%d]", &lsb ) != 1 ) {
           print_output( "Unrecognized $var format", FATAL, __FILE__, __LINE__ );
+          printf( "vcd Throw A\n" );
           Throw 0;
         } else {
           msb = lsb;
@@ -125,6 +126,7 @@ static void vcd_parse_def_var(
 
       if( (fscanf( vcd, "%s", tmp ) != 1) || (strncmp( "$end", tmp, 4 ) != 0) ) {
         print_output( "Unrecognized $var format", FATAL, __FILE__, __LINE__ );
+        printf( "vcd Throw B\n" );
         Throw 0;
       }
 
@@ -135,6 +137,7 @@ static void vcd_parse_def_var(
       if( sscanf( tmp, "%d:%d", &msb, &lsb ) != 2 ) {
         if( sscanf( tmp, "%d", &lsb ) != 1 ) {
           print_output( "Unrecognized $var format", FATAL, __FILE__, __LINE__ );
+          printf( "vcd Throw C\n" );
           Throw 0;
         } else {
           msb = lsb;
@@ -161,6 +164,7 @@ static void vcd_parse_def_var(
   } else {
 
     print_output( "Unrecognized $var format", FATAL, __FILE__, __LINE__ );
+    printf( "vcd Throw D\n" );
     Throw 0;
   
   }
@@ -195,6 +199,7 @@ static void vcd_parse_def_scope(
   } else {
 
     print_output( "Unrecognized $scope format", FATAL, __FILE__, __LINE__ );
+    printf( "vcd Throw E\n" );
     Throw 0;
 
   }
@@ -243,6 +248,7 @@ static void vcd_parse_def(
       unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Non-keyword located where one should have been \"%s\"", keyword );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      printf( "vcd Throw F\n" );
       Throw 0;
 
     }
@@ -251,6 +257,7 @@ static void vcd_parse_def(
 
   if( !enddef_found ) {
     print_output( "Specified VCD file is not a valid VCD file", FATAL, __FILE__, __LINE__ );
+    printf( "vcd Throw G\n" );
     Throw 0;
   }
 
@@ -271,6 +278,7 @@ static void vcd_parse_def(
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
     }
 
+    printf( "vcd Throw H\n" );
     Throw 0;
 
   }
@@ -305,6 +313,7 @@ static void vcd_parse_sim_vector(
   } else {
 
     print_output( "Bad file format", FATAL, __FILE__, __LINE__ );
+    printf( "vcd Throw I\n" );
     Throw 0;
 
   }
@@ -331,6 +340,7 @@ static void vcd_parse_sim_ignore(
   if( fscanf( vcd, "%s%n", sym, &chars_read ) != 1 ) {
 
     print_output( "Bad file format", FATAL, __FILE__, __LINE__ );
+    printf( "vcd Throw J\n" );
     Throw 0;
 
   }
@@ -398,6 +408,7 @@ static void vcd_parse_sim(
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Badly placed token \"%s\"", token );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        printf( "vcd Throw K\n" );
         Throw 0;
 
       }
@@ -457,6 +468,7 @@ void vcd_parse(
       free_safe( timestep_tab );
       rv = fclose( vcd_handle );
       assert( rv == 0 );
+      printf( "vcd Throw L\n" );
       Throw 0;
     }
 
@@ -471,6 +483,7 @@ void vcd_parse(
   } else {
 
     print_output( "Unable to open specified VCD file", FATAL, __FILE__, __LINE__ );
+    printf( "vcd Throw M\n" );
     Throw 0;
 
   }
@@ -481,6 +494,9 @@ void vcd_parse(
 
 /*
  $Log$
+ Revision 1.39  2008/03/13 10:28:55  phase1geo
+ The last of the exception handling modifications.
+
  Revision 1.38  2008/03/11 22:06:49  phase1geo
  Finishing first round of exception handling code.
 

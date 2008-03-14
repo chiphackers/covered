@@ -113,6 +113,7 @@ void enumerate_resolve( funit_inst* inst ) { PROFILE(ENUMERATE_RESOLVE);
         rv = snprintf( user_msg, USER_MSG_LENGTH, "File: %s, Line: %d", obf_file( inst->funit->filename ), ei->sig->line );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL_WRAP, __FILE__, __LINE__ );
+        printf( "enumerate Throw A\n" );
         Throw 0;
       } else {
         vector_from_int( ei->sig->value, (last_value + 1) );
@@ -193,6 +194,9 @@ void enumerate_dealloc_list( func_unit* funit ) { PROFILE(ENUMERATE_DEALLOC_LIST
 
 /*
  $Log$
+ Revision 1.14  2008/03/09 20:45:47  phase1geo
+ More exception handling updates.
+
  Revision 1.13  2008/03/04 00:09:20  phase1geo
  More exception handling.  Checkpointing.
 

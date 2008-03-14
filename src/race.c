@@ -733,6 +733,7 @@ static void race_check_race_count() { PROFILE(RACE_CHECK_RACE_COUNT);
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "%d race conditions were detected.  Exiting score command.", races_found );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    printf( "race Throw A\n" );
     Throw 0;
 
   }
@@ -895,6 +896,7 @@ void race_db_read(
     if( curr_mod == NULL ) {
 
       print_output( "Internal error:  race condition in database written before its functional unit", FATAL, __FILE__, __LINE__ );
+      printf( "race Throw B\n" );
       Throw 0;
 
     } else {
@@ -915,6 +917,7 @@ void race_db_read(
   } else {
 
     print_output( "Unable to parse race condition line in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
+    printf( "race Throw C\n" );
     Throw 0;
 
   }
@@ -1167,6 +1170,9 @@ void race_blk_delete_list(
 
 /*
  $Log$
+ Revision 1.75  2008/03/11 22:06:48  phase1geo
+ Finishing first round of exception handling code.
+
  Revision 1.74  2008/02/28 03:53:17  phase1geo
  Code addition to support feature request 1902840.  Added race6 diagnostic and updated
  race5 diagnostics per this change.  For loop control assignments are now no longer

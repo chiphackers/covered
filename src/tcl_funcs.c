@@ -1712,6 +1712,7 @@ int tcl_func_preprocess_verilog( ClientData d, Tcl_Interp* tcl, int argc, const 
     if( out == NULL ) {
       snprintf( user_msg, USER_MSG_LENGTH, "Unable to open temporary file %s for writing", ppfilename );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      printf( "tcl_funcs Throw A\n" );
       Throw 0;
     }
 
@@ -2148,6 +2149,7 @@ int tcl_func_generate_report( ClientData d, Tcl_Interp* tcl, int argc, const cha
       snprintf( user_msg, USER_MSG_LENGTH, "Unable to open report output file %s for writing", output_file );
       Tcl_AddErrorInfo( tcl, user_msg );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      printf( "tcl_funcs Throw B\n" );
       Throw 0;
 
     } else {
@@ -2278,6 +2280,9 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.71  2008/02/10 03:33:13  phase1geo
+ More exception handling added and fixed remaining splint errors.
+
  Revision 1.70  2008/02/09 19:32:45  phase1geo
  Completed first round of modifications for using exception handler.  Regression
  passes with these changes.  Updated regressions per these changes.

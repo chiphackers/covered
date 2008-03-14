@@ -233,6 +233,7 @@ void fsm_db_read( char** line, func_unit* funit ) { PROFILE(FSM_DB_READ);
     if( funit == NULL ) {
 
       print_output( "Internal error:  FSM in database written before its functional unit", FATAL, __FILE__, __LINE__ );
+      printf( "fsm Throw A\n" );
       Throw 0;
 
     } else {
@@ -252,6 +253,7 @@ void fsm_db_read( char** line, func_unit* funit ) { PROFILE(FSM_DB_READ);
             table->from_state = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, iexp_id, 0, 0, 0, FALSE );
           } Catch_anonymous {
             fsm_dealloc( table );
+            printf( "fsm Throw B\n" );
             Throw 0;
           }
           vector_dealloc( table->from_state->value );
@@ -270,6 +272,7 @@ void fsm_db_read( char** line, func_unit* funit ) { PROFILE(FSM_DB_READ);
             arc_db_read( &(table->table), line );
           } Catch_anonymous {
             fsm_dealloc( table );
+            printf( "fsm Throw C\n" );
             Throw 0;
           }
 
@@ -283,6 +286,7 @@ void fsm_db_read( char** line, func_unit* funit ) { PROFILE(FSM_DB_READ);
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to find state variable expressions (%d, %d) for current FSM", iexp_id, oexp_id );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        printf( "fsm Throw D\n" );
         Throw 0;
 
       }
@@ -292,6 +296,7 @@ void fsm_db_read( char** line, func_unit* funit ) { PROFILE(FSM_DB_READ);
   } else {
 
     print_output( "Unable to parse statement line in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
+    printf( "fsm Throw E\n" );
     Throw 0;
 
   }
@@ -341,6 +346,7 @@ void fsm_db_merge(
   } else {
 
     print_output( "Database being merged is not compatible with the original database.", FATAL, __FILE__, __LINE__ );
+    printf( "fsm Throw F\n" );
     Throw 0;
 
   }
@@ -1290,6 +1296,9 @@ void fsm_dealloc( fsm* table ) { PROFILE(FSM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.88  2008/03/11 22:21:01  phase1geo
+ Continuing to do next round of exception handling.  Checkpointing.
+
  Revision 1.87  2008/03/11 22:06:47  phase1geo
  Finishing first round of exception handling code.
 

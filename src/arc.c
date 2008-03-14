@@ -1057,6 +1057,7 @@ void arc_db_read(
         (*arcs)[i] = (char)(val & 0xff);
       } else {
         print_output( "Unable to parse FSM arc information from database.  Unable to read.", FATAL, __FILE__, __LINE__ );
+        printf( "arc Throw A\n" );
         Throw 0;
       }
       i++;
@@ -1065,6 +1066,7 @@ void arc_db_read(
   } Catch_anonymous {
     free_safe( *arcs );
     *arcs = NULL;
+    printf( "arc Throw B\n" );
     Throw 0;
   }
 
@@ -1175,6 +1177,7 @@ void arc_db_merge(
     */
     print_output( "Attempting to merge two databases derived from different designs.  Unable to merge",
                   FATAL, __FILE__, __LINE__ );
+    printf( "arc Throw C\n" );
     Throw 0;
   }
 
@@ -1392,6 +1395,10 @@ void arc_dealloc( char* arcs ) { PROFILE(ARC_DEALLOC);
 
 /*
  $Log$
+ Revision 1.53  2008/03/10 22:00:31  phase1geo
+ Working on more exception handling (script is finished now).  Starting to work
+ on code enhancements again :)  Checkpointing.
+
  Revision 1.52  2008/02/09 19:32:44  phase1geo
  Completed first round of modifications for using exception handler.  Regression
  passes with these changes.  Updated regressions per these changes.

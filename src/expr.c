@@ -372,6 +372,7 @@ static void expression_create_value(
                                   width, MAX_BIT_WIDTH );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      printf( "expr Throw A\n" );
       Throw 0;
     }
     value = (vec_data*)malloc_safe( sizeof( vec_data ) * width );
@@ -558,6 +559,7 @@ expression* expression_create(
 
   } Catch_anonymous {
     expression_dealloc( new_expr, TRUE );
+    printf( "expr Throw B\n" );
     Throw 0;
   }
 
@@ -1351,6 +1353,7 @@ void expression_db_read(
       unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  expression (%d) in database written before its functional unit", id );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      printf( "expr Throw C\n" );
       Throw 0;
 
     } else {
@@ -1362,6 +1365,7 @@ void expression_db_read(
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  root expression (%d) found before leaf expression (%d) in database file", id, right_id );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        printf( "expr Throw D\n" );
         Throw 0;
       } else {
         right = expl->exp;
@@ -1374,6 +1378,7 @@ void expression_db_read(
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  root expression (%d) found before leaf expression (%d) in database file", id, left_id );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        printf( "expr Throw E\n" );
         Throw 0;
       } else {
         left = expl->exp;
@@ -1400,6 +1405,7 @@ void expression_db_read(
 
         } Catch_anonymous {
           expression_dealloc( expr, FALSE );
+          printf( "expr Throw F\n" );
           Throw 0;
         }
 
@@ -1453,6 +1459,7 @@ void expression_db_read(
   } else {
 
     print_output( "Unable to read expression value", FATAL, __FILE__, __LINE__ );
+    printf( "expr Throw G\n" );
     Throw 0;
 
   }
@@ -1501,6 +1508,7 @@ void expression_db_merge(
 
       print_output( "Attempting to merge databases derived from different designs.  Unable to merge",
                     FATAL, __FILE__, __LINE__ );
+      printf( "expr Throw H\n" );
       Throw 0;
 
     } else {
@@ -1525,6 +1533,7 @@ void expression_db_merge(
   } else {
 
     print_output( "Unable to parse expression line in database.  Unable to merge.", FATAL, __FILE__, __LINE__ );
+    printf( "expr Throw I\n" );
     Throw 0;
 
   }
@@ -1710,6 +1719,7 @@ bool expression_op_func__divide(
 
     if( intval2 == 0 ) {
       print_output( "Division by 0 error", FATAL, __FILE__, __LINE__ );
+      printf( "expr Throw J\n" );
       Throw 0;
     }
 
@@ -1771,6 +1781,7 @@ bool expression_op_func__mod(
 
     if( intval2 == 0 ) {
       print_output( "Division by 0 error", FATAL, __FILE__, __LINE__ );
+      printf( "expr Throw K\n" );
       Throw 0;
     }
 
@@ -4415,6 +4426,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.290  2008/03/12 05:09:43  phase1geo
+ More exception handling updates.  Added TODO item of creating a graduated test list
+ from merged CDD files.
+
  Revision 1.289  2008/03/11 22:21:01  phase1geo
  Continuing to do next round of exception handling.  Checkpointing.
 

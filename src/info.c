@@ -161,6 +161,7 @@ void info_db_read( char** line ) { PROFILE(INFO_DB_READ);
 
     if( version != CDD_VERSION ) {
       print_output( "CDD file being read is incompatible with this version of Covered", FATAL, __FILE__, __LINE__ );
+      printf( "info Throw A\n" );
       Throw 0;
     }
 
@@ -197,6 +198,7 @@ void info_db_read( char** line ) { PROFILE(INFO_DB_READ);
 
       } else {
         print_output( "CDD file being read is incompatible with this version of Covered", FATAL, __FILE__, __LINE__ );
+        printf( "info Throw B\n" );
         Throw 0;
       }
 
@@ -210,6 +212,7 @@ void info_db_read( char** line ) { PROFILE(INFO_DB_READ);
   } else {
 
     print_output( "CDD file being read is incompatible with this version of Covered", FATAL, __FILE__, __LINE__ );
+    printf( "info Throw C\n" );
     Throw 0;
 
   }
@@ -243,6 +246,7 @@ void args_db_read( char** line ) { PROFILE(ARGS_DB_READ);
   } else {
 
     print_output( "CDD file being read is incompatible with this version of Covered", FATAL, __FILE__, __LINE__ );
+    printf( "info Throw D\n" );
     Throw 0;
 
   }
@@ -279,6 +283,9 @@ void info_dealloc() { PROFILE(INFO_DEALLOC);
 
 /*
  $Log$
+ Revision 1.27  2008/03/11 22:06:48  phase1geo
+ Finishing first round of exception handling code.
+
  Revision 1.26  2008/03/10 22:00:31  phase1geo
  Working on more exception handling (script is finished now).  Starting to work
  on code enhancements again :)  Checkpointing.

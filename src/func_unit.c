@@ -718,6 +718,7 @@ void funit_db_read(
                                 params );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    printf( "func_unit Throw A\n" );
     Throw 0;
 
   }
@@ -764,19 +765,23 @@ void funit_db_merge( func_unit* base, FILE* file, bool same ) { PROFILE(FUNIT_DB
             expression_db_merge( curr_base_exp->exp, &rest_line, same );
           } else {
             print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
+            printf( "func_unit Throw B\n" );
             Throw 0;
           }
         } else {
           print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
+          printf( "func_unit Throw C\n" );
           Throw 0;
         }
       } Catch_anonymous {
         free_safe( curr_line );
+        printf( "func_unit Throw D\n" );
         Throw 0;
       }
       free_safe( curr_line );
     } else {
       print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
+      printf( "func_unit Throw E\n" );
       Throw 0;
     }
     curr_base_exp = curr_base_exp->next;
@@ -793,19 +798,23 @@ void funit_db_merge( func_unit* base, FILE* file, bool same ) { PROFILE(FUNIT_DB
             vsignal_db_merge( curr_base_sig->sig, &rest_line, same );
           } else {
             print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
+            printf( "func_unit Throw F\n" );
             Throw 0;
           }
         } else {
           print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
+          printf( "func_unit Throw G\n" );
           Throw 0;
         }
       } Catch_anonymous {
         free_safe( curr_line );
+        printf( "func_unit Throw H\n" );
         Throw 0;
       }
       free_safe( curr_line );
     } else {
       print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
+      printf( "func_unit Throw I\n" );
       Throw 0;
     }
     curr_base_sig = curr_base_sig->next;
@@ -820,19 +829,23 @@ void funit_db_merge( func_unit* base, FILE* file, bool same ) { PROFILE(FUNIT_DB
           rest_line = curr_line + chars_read;
           if( type != DB_TYPE_STATEMENT ) {
             print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
+            printf( "func_unit Throw J\n" );
             Throw 0;
           }
         } else {
           print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
+          printf( "func_unit Throw K\n" );
           Throw 0;
         }
       } Catch_anonymous {
         free_safe( curr_line );
+        printf( "func_unit Throw L\n" );
         Throw 0;
       }
       free_safe( curr_line );
     } else {
       print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
+      printf( "func_unit Throw M\n" );
       Throw 0;
     }
     stmt_iter_next( &curr_base_stmt );
@@ -849,19 +862,23 @@ void funit_db_merge( func_unit* base, FILE* file, bool same ) { PROFILE(FUNIT_DB
             fsm_db_merge( curr_base_fsm->table, &rest_line, same );
           } else {
             print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
+            printf( "func_unit Throw N\n" );
             Throw 0;
           }
         } else {
           print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
+          printf( "func_unit Throw O\n" );
           Throw 0;
         }
       } Catch_anonymous {
         free_safe( curr_line );
+        printf( "func_unit Throw P\n" );
         Throw 0;
       }
       free_safe( curr_line );
     } else {
       print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
+      printf( "func_unit Throw Q\n" );
       Throw 0;
     }
     curr_base_fsm = curr_base_fsm->next;
@@ -877,19 +894,23 @@ void funit_db_merge( func_unit* base, FILE* file, bool same ) { PROFILE(FUNIT_DB
             rest_line = curr_line + chars_read;
             if( type != DB_TYPE_RACE ) {
               print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
+              printf( "func_unit Throw R\n" );
               Throw 0;
             }
           } else {
             print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
+            printf( "func_unit Throw S\n" );
             Throw 0;
           }
         } Catch_anonymous {
           free_safe( curr_line );
+          printf( "func_unit Throw T\n" );
           Throw 0;
         }
         free_safe( curr_line );
       } else {
         print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
+        printf( "func_unit Throw U\n" );
         Throw 0;
       }
       curr_base_race = curr_base_race->next;
@@ -1404,6 +1425,9 @@ void funit_dealloc( func_unit* funit ) { PROFILE(FUNIT_DEALLOC);
 
 /*
  $Log$
+ Revision 1.95  2008/03/11 22:06:48  phase1geo
+ Finishing first round of exception handling code.
+
  Revision 1.94  2008/03/04 00:09:20  phase1geo
  More exception handling.  Checkpointing.
 

@@ -901,6 +901,7 @@ void process_timescale_token( char* token, char* type, int* value, bool report )
       assert( rv < USER_MSG_LENGTH );
       VLerror( msg );
     }
+    printf( "lexer Throw A\n" );
     Throw 0;
   } else {
     *value = i - 1;
@@ -917,12 +918,14 @@ void process_timescale_token( char* token, char* type, int* value, bool report )
         assert( rv < USER_MSG_LENGTH );
         VLerror( msg );
       }
+      printf( "lexer Throw B\n" );
       Throw 0;
     }
     if( *token != '\0' ) {
       if( report ) {
         VLerror( "Illegal timescale directive specified" );
       }
+      printf( "lexer Throw C\n" );
       Throw 0;
     }
   }
@@ -965,6 +968,7 @@ void process_timescale( const char* txt, bool report ) { PROFILE(PROCESS_TIMESCA
       if( report ) {
         VLerror( "Timescale missing '/' character" );
       }
+      printf( "lexer Throw D\n" );
       Throw 0;
 
     } else {
@@ -981,6 +985,7 @@ void process_timescale( const char* txt, bool report ) { PROFILE(PROCESS_TIMESCA
       if( report ) {
         VLerror( "Invalid timescale settings (unit must be greater than the precision)" );
       }
+      printf( "lexer Throw E\n" );
       Throw 0;
     }
 
@@ -989,6 +994,7 @@ void process_timescale( const char* txt, bool report ) { PROFILE(PROCESS_TIMESCA
   
   } Catch_anonymous {
     free_safe( str );
+    printf( "lexer Throw F\n" );
     Throw 0;
   }
 
@@ -1071,6 +1077,7 @@ static int yywrap() { PROFILE(LEXER_YYWRAP);
     }
     rv = unlink( ppfilename );
     assert( rv == 0 );
+    printf( "lexer Throw G\n" );
     Throw 0;
   }
   
@@ -1087,6 +1094,7 @@ static int yywrap() { PROFILE(LEXER_YYWRAP);
   } Catch_anonymous {
     rv = fclose( out );
     assert( rv == 0 );
+    printf( "lexer Throw H\n" );
     Throw 0;
   }
   
@@ -1128,6 +1136,7 @@ void reset_lexer( str_link* file_list_head ) { PROFILE(RESET_LEXER);
 
   if( (curr = get_next_vfile( curr, modlist_head->str )) == NULL ) {
     print_output( "No verilog files specified", FATAL, __FILE__, __LINE__ );
+    printf( "lexer Throw I\n" );
     Throw 0;
   }
 
@@ -1146,6 +1155,7 @@ void reset_lexer( str_link* file_list_head ) { PROFILE(RESET_LEXER);
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to open temporary file %s for writing", ppfilename );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    printf( "lexer Throw J\n" );
     Throw 0;
   }
   
@@ -1158,6 +1168,7 @@ void reset_lexer( str_link* file_list_head ) { PROFILE(RESET_LEXER);
   } Catch_anonymous {
     rv = fclose( out );
     assert( rv == 0 );
+    printf( "lexer Throw K\n" );
     Throw 0;
   }
   

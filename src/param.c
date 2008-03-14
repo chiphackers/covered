@@ -470,6 +470,7 @@ static inst_parm* inst_parm_add(
   
   } Catch_anonymous {
     inst_parm_dealloc( iparm, FALSE );
+    printf( "param Throw A\n" );
     Throw 0;
   }
 
@@ -578,6 +579,7 @@ void defparam_add(
       (void)inst_parm_add( scope, NULL, &msb, &lsb, FALSE, value, NULL, defparam_list );
     } Catch_anonymous {
       vector_dealloc( value );
+      printf( "param Throw B\n" );
       Throw 0;
     }
 
@@ -588,6 +590,7 @@ void defparam_add(
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Parameter (%s) value is assigned more than once", obf_sig( scope ) );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    printf( "param Throw C\n" );
     Throw 0;
 
   }
@@ -653,6 +656,7 @@ static void param_find_and_set_expr_value(
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Parameter used in expression but not defined in current module, line %d", expr->line );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        printf( "param Throw D\n" );
         Throw 0;
       }
 
@@ -1161,6 +1165,9 @@ void inst_parm_dealloc(
 
 /*
  $Log$
+ Revision 1.104  2008/03/11 22:06:48  phase1geo
+ Finishing first round of exception handling code.
+
  Revision 1.103  2008/03/04 00:09:20  phase1geo
  More exception handling.  Checkpointing.
 

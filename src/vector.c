@@ -373,6 +373,7 @@ void vector_db_read(
           }
         } else {
           print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
+          printf( "vector Throw A\n" );
           Throw 0;
         }
         i += 4;
@@ -381,12 +382,14 @@ void vector_db_read(
     } Catch_anonymous {
       vector_dealloc( *vec );
       *vec = NULL;
+      printf( "vector Throw B\n" );
       Throw 0;
     }
 
   } else {
 
     print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
+    printf( "vector Throw C\n" );
     Throw 0;
 
   }
@@ -432,6 +435,7 @@ void vector_db_merge(
       if( same ) {
         print_output( "Attempting to merge databases derived from different designs.  Unable to merge",
                       FATAL, __FILE__, __LINE__ );
+        printf( "vector Throw D\n" );
         Throw 0;
       }
 
@@ -465,6 +469,7 @@ void vector_db_merge(
           }
         } else {
           print_output( "Unable to parse vector line from database file.  Unable to merge.", FATAL, __FILE__, __LINE__ );
+          printf( "vector Throw E\n" );
           Throw 0;
         }
         i += 4;
@@ -475,6 +480,7 @@ void vector_db_merge(
   } else {
 
     print_output( "Unable to parse vector line from database file.  Unable to merge.", FATAL, __FILE__, __LINE__ );
+    printf( "vector Throw F\n" );
     Throw 0;
 
   }
@@ -1632,6 +1638,7 @@ bool vector_vcd_assign(
           unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "VCD file contains value change character that is not four-state" );
           assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
+          printf( "vector Throw G\n" );
           Throw 0;
         }
         /*@-unreachable@*/
@@ -2429,6 +2436,9 @@ void vector_dealloc( vector* vec ) { PROFILE(VECTOR_DEALLOC);
 
 /*
  $Log$
+ Revision 1.117  2008/03/13 10:28:55  phase1geo
+ The last of the exception handling modifications.
+
  Revision 1.116  2008/03/12 03:52:49  phase1geo
  Fixes for regression failures.
 
