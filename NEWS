@@ -1,6 +1,49 @@
 Covered-Related NEWS
 ====================
 
+    * 3/14/2008
+
+Development release covered-20080314 made.  This development release contains a slew of new features,
+score optimizations, bug fixes and documentation/regression updates/additions.  The following is a list
+of these changes.
+
+  - Bug fixes from 0.6.1 stable release.
+  - Added -ef option to score command to allow the user to exclude final blocks from coverage consideration.
+  - Added -ep option to score command to allow the user to pay attention to inline pragmas which allow the
+    user to exclude certain code from coverage consideration (more control than other -e? options).
+  - Fixed bug in toggle reporting where the exclusion property was not being handled correctly.
+  - Changed metric mode selection in GUI to a tk_optionMenu widget instead of using radio buttons (minimizes
+    this information in the GUI and makes it somewhat less confusing as to which mode of operation we are in).
+  - Added metric mode selection widget to summary window to allow the user to navigate all metrics in that
+    window alone (events are synchronized between the main window and the summary window).
+  - Fixed several aesthetic issues with the GUI running on Mac OS X.
+  - Removed exit() calls within the code and replaced them with an exception handling scheme using the
+    cexcept (http://cexcept.sourceforge.net) project.  This allows us to much more cleanly exit in terms of
+    memory, file streams and temporary files.
+  - Added support for race condition embedded pragmas to allow the user to skip checking certain blocks of
+    logic (-rP option to score command).
+  - Removed for loop control assignments from race condition checking consideration.
+  - Added support for $finish and $stop system calls.  These are handled correctly by the score command and
+    no longer cause blocks containing them to be excluded from coverage consideration on their merit alone.
+  - Optimized simulator which will become quite apparent for larger designs.
+  - Updated user documentation and man pages to match new features.
+
+Please note that CDD files created by this development release will not be backwards compatible with other
+releases of Covered -- generate new CDD files for merging/reporting with this version of Covered.  Have fun
+and let's see those bug reports!
+
+    * 3/14/2008
+
+Stable release covered-0.6.1 made.  Bug fix release only -- here are the stats:
+
+  - Fixed bug 1899711.  Making reading from FIFOs allowable instead of just FILEs.
+  - Fixed bug 1899735.  Line coverage does not pay attention to exclusion property in generated reports.
+  - Fixed bug 1899768.  Fixed simulation segfault issue caused by an empty default case of a case statement.
+  - Fixed bug 1899674.  Outputting meaningful error message when a read CDD file is found to be empty.
+  - Fixed bug 1898164.  Fixing background colors of FSM states/arcs when preference colors are changed.
+  - Fixed bug 1914056.  Fixing segmentation fault which occurred if the body of a task is the null statement.
+  - Updated regression suite per these changes.
+
     * 1/30/2008
 
 Stable release covered-0.6 made.  This release has been finally made after almost a year since the last
