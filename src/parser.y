@@ -532,7 +532,10 @@ description
     task_item_list_opt statement_or_null
     {
       statement* stmt = $7;
-      if( (ignore_mode == 0) && (stmt != NULL) ) {
+      if( ignore_mode == 0 ) {
+        if( stmt == NULL ) {
+          stmt = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_NOOP, FALSE, @7.first_line, @7.first_column, (@7.last_column - 1), NULL ) );
+        }
         stmt->suppl.part.head      = 1;
         stmt->suppl.part.is_called = 1;
         db_add_statement( stmt, stmt );
@@ -3779,7 +3782,10 @@ module_item
     task_item_list_opt statement_or_null
     {
       statement* stmt = $8;
-      if( (ignore_mode == 0) && (stmt != NULL) ) {
+      if( ignore_mode == 0 ) {
+        if( stmt == NULL ) {
+          stmt = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_NOOP, FALSE, @8.first_line, @8.first_column, (@8.last_column - 1), NULL ) );
+        }
         stmt->suppl.part.head      = 1;
         stmt->suppl.part.is_called = 1;
         db_add_statement( stmt, stmt );

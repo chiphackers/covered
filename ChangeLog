@@ -1,3 +1,488 @@
+2008-03-13 18:20  phase1geo
+
+	Updating null_stmt diagnostics from stable branch.
+
+2008-03-13 17:58  phase1geo
+
+	file null_stmt1.1.rptWI was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 17:58  phase1geo
+
+	file null_stmt1.1.rptM was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 17:58  phase1geo
+
+	file null_stmt1.1.rptWM was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 17:58  phase1geo
+
+	file null_stmt1.cfg was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 17:58  phase1geo
+
+	file null_stmt1.2.rptI was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 17:58  phase1geo
+
+	file null_stmt1.2.rptM was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 17:58  phase1geo
+
+	file null_stmt1.rptM was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 17:58  phase1geo
+
+	file null_stmt1.2.rptWI was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 17:58  phase1geo
+
+	file null_stmt1.rptWM was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 17:58  phase1geo
+
+	file null_stmt1.v was initially added on branch covered-0_6-branch.
+
+2008-03-13 17:58  phase1geo
+
+	file null_stmt1.rptWI was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 17:58  phase1geo
+
+	file null_stmt1.1.v was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 17:58  phase1geo
+
+	file null_stmt1.1.rptI was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 17:58  phase1geo
+
+	file null_stmt1.2.cfg was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 17:58  phase1geo
+
+	file null_stmt1.rptI was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 17:58  phase1geo
+
+	file null_stmt1.2.v was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 17:58  phase1geo
+
+	file null_stmt1.1.cfg was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 17:58  phase1geo
+
+	file null_stmt1.2.rptWM was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 17:58  phase1geo
+
+	file null_stmt1.2.cdd was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 17:58  phase1geo
+
+	file null_stmt1.1.cdd was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 17:58  phase1geo
+
+	Adding first round of null statement diagnostics.
+
+2008-03-13 17:58  phase1geo
+
+	file null_stmt1.cdd was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 16:20  phase1geo
+
+	Updating user documentation.
+
+2008-03-13 05:30  phase1geo
+
+	Updating TODO.
+
+2008-03-13 05:28  phase1geo
+
+	The last of the exception handling modifications.
+
+2008-03-12 16:11  phase1geo
+
+	More updates.
+
+2008-03-12 16:10  phase1geo
+
+	More exception handling updates.
+
+2008-03-12 00:09  phase1geo
+
+	More exception handling updates.  Added TODO item of creating a
+	graduated test list from merged CDD files.
+
+2008-03-11 22:52  phase1geo
+
+	Fixes for regression failures.
+
+2008-03-11 18:41  phase1geo
+
+	Adding new test check to make sure that tmp* files do not exist at
+	the end of any given run.
+
+2008-03-11 17:21  phase1geo
+
+	Continuing to do next round of exception handling.  Checkpointing.
+
+2008-03-11 17:06  phase1geo
+
+	Finishing first round of exception handling code.
+
+2008-03-11 08:01  phase1geo
+
+	Fixing syntax error in cpp command-line.
+
+2008-03-10 17:00  phase1geo
+
+	Working on more exception handling (script is finished now). 
+	Starting to work on code enhancements again :)	Checkpointing.
+
+2008-03-09 15:45  phase1geo
+
+	More exception handling updates.
+
+2008-03-08 15:18  phase1geo
+
+	Completing work on check_exceptions.pl script.
+
+2008-03-06 00:06  phase1geo
+
+	More updates to check_exceptions.pl (still not quite there yet but
+	getting closer).
+
+2008-03-05 18:03  phase1geo
+
+	More updates to check_exceptions.pl script.
+
+2008-03-05 09:45  phase1geo
+
+	Adding support for advanced \throws command.
+
+2008-03-04 16:46  phase1geo
+
+	Working on adding check_exceptions.pl script to help me make sure
+	that all exceptions being thrown are being caught and handled
+	appropriately.	Other code adjustments are made in regards to
+	exception handling.
+
+2008-03-04 00:46  phase1geo
+
+	More exception handling updates.  Still work to go.  Checkpointing.
+
+2008-03-03 18:09  phase1geo
+
+	More exception handling.  Checkpointing.
+
+2008-03-03 17:47  phase1geo
+
+	More work on exception handling.  All db_create_expression calls
+	are now being handled, I believe.  Checkpointing.
+
+2008-03-03 09:54  phase1geo
+
+	More exception handling updates.  Checkpointing.
+
+2008-02-29 17:58  phase1geo
+
+	Continuing to work on adding exception handling code.
+
+2008-02-28 18:08  phase1geo
+
+	Completed optimization code in simulator.  Still need to verify
+	that code changes enhanced performances as desired.  Checkpointing.
+
+2008-02-28 07:33  phase1geo
+
+	Updating TODO.
+
+2008-02-28 01:54  phase1geo
+
+	Starting to add functionality for simulation optimization in the
+	sim_expr_changed function (feature request 1897410).
+
+2008-02-27 21:53  phase1geo
+
+	Code addition to support feature request 1902840.  Added race6
+	diagnostic and updated race5 diagnostics per this change.  For loop
+	control assignments are now no longer considered when performing
+	race condition checking.
+
+2008-02-27 18:00  phase1geo
+
+	Updating VCS regression runs.  Full regressions should now pass.
+
+2008-02-27 01:27  phase1geo
+
+	More regression updates per latest codebase changes.
+
+2008-02-27 01:01  phase1geo
+
+	Starting to update regression suite per latest changes to codebase.
+
+2008-02-26 23:26  phase1geo
+
+	Adding support for $finish and $stop.
+
+2008-02-25 14:43  phase1geo
+
+	Checking in code to allow the use of racecheck pragmas.  Added new
+	tests to regression suite to verify this functionality.  Still need
+	to document in User's Guide and manpage.
+
+2008-02-25 12:19  phase1geo
+
+	Moved statement supplemental bits from root expression to statement
+	and starting to add support for race condition checking pragmas
+	(still some work left to do on this item).  Updated IV and Cver
+	regressions per these changes.
+
+2008-02-23 16:54  phase1geo
+
+	Fixing bug 1898164.
+
+2008-02-23 16:50  phase1geo
+
+	Fixing bug 1898164.
+
+2008-02-23 16:41  phase1geo
+
+	Updating TODO list.
+
+2008-02-23 16:38  phase1geo
+
+	Fixing bug 1899674.
+
+2008-02-23 08:00  phase1geo
+
+	Adding exclude9.8 and exclude9.9 diagnostics to verify a user issue
+	in regards to excluding a default case of a case statement.  Full
+	regression passes.
+
+2008-02-22 22:47  phase1geo
+
+	Adding func5 diagnostics from stable branch.
+
+2008-02-22 22:44  phase1geo
+
+	file func5.v was initially added on branch covered-0_6-branch.
+
+2008-02-22 22:44  phase1geo
+
+	file func5.cfg was initially added on branch covered-0_6-branch.
+
+2008-02-22 22:44  phase1geo
+
+	file func5.rptM was initially added on branch covered-0_6-branch.
+
+2008-02-22 22:44  phase1geo
+
+	file func5.rptWI was initially added on branch covered-0_6-branch.
+
+2008-02-22 22:44  phase1geo
+
+	file func5.rptI was initially added on branch covered-0_6-branch.
+
+2008-02-22 22:44  phase1geo
+
+	file func5.rptWM was initially added on branch covered-0_6-branch.
+
+2008-02-22 22:44  phase1geo
+
+	file func5.cdd was initially added on branch covered-0_6-branch.
+
+2008-02-22 22:44  phase1geo
+
+	Adding func5.v diagnostic to regression suite to verify fix for bug
+	1899768.  Full regression passes.
+
+2008-02-22 22:21  phase1geo
+
+	Fixing bugs 1899711, 1899735 and 1899768.
+
+2008-02-22 18:26  phase1geo
+
+	Fixing bug 1899768 and adding extra debug information.
+
+2008-02-22 14:39  phase1geo
+
+	More updates for exception handling.
+
+2008-02-22 10:40  phase1geo
+
+	Adding exclude9.7 diagnostic to regression suite.
+
+2008-02-22 10:40  phase1geo
+
+	Fixing bug 1899735.
+
+2008-02-22 09:04  phase1geo
+
+	Added metric menubutton to summary window to allow user to check
+	summary coverage information without going back to the main
+	coverage window to do so.
+
+2008-02-20 11:02  phase1geo
+
+	Fixing preferences handling for Mac OS X to use the applications
+	menu instead of the "View" menu (this is more normal for Mac
+	users).
+
+2008-02-11 16:54  phase1geo
+
+	A few updates from the previous checkins.
+
+2008-02-11 08:00  phase1geo
+
+	More updates for exception handling.  Regression passes.
+
+2008-02-09 21:33  phase1geo
+
+	More exception handling added and fixed remaining splint errors.
+
+2008-02-09 13:32  phase1geo
+
+	Completed first round of modifications for using exception handler.
+	 Regression passes with these changes.	Updated regressions per
+	these changes.
+
+2008-02-08 17:58  phase1geo
+
+	Starting to work on exception handling.  Much work to do here
+	(things don't compile at the moment).
+
+2008-02-08 13:17  phase1geo
+
+	Updating TODO and fixing another GUI issue.
+
+2008-02-07 22:18  phase1geo
+
+	Small change to icon scheme.
+
+2008-02-07 22:09  phase1geo
+
+	More GUI updates.  Updated covered.spec to match the scripts
+	directory.
+
+2008-02-07 21:30  phase1geo
+
+	Increasing the size of the report generator window for Mac OS X
+	usage.
+
+2008-02-07 14:32  phase1geo
+
+	Finishing work on preferences window for cross-platform
+	compatibility.
+
+2008-02-06 23:41  phase1geo
+
+	More GUI updates for Mac OS X conformance.
+
+2008-02-05 23:39  phase1geo
+
+	Removing manually added cruft.
+
+2008-02-05 23:35  phase1geo
+
+	First pass at getting the GUI to look and feel right for Mac OS X.
+
+2008-02-05 18:06  phase1geo
+
+	Changing metric mode selection from radio buttons to a
+	tk_optionMenu widget.  Also attempted to fix issue with bad Tcl/Tk
+	code being read in via report command.	Still some work to do here,
+	I believe.
+
+2008-02-04 00:35  phase1geo
+
+	Updating TODO.
+
+2008-02-03 22:50  phase1geo
+
+	Updating user documentation for the -ef and -ep options to the
+	score command and better documentation for describing the effects
+	of coverage exclusion.
+
+2008-02-02 08:11  phase1geo
+
+	Adding new diagnostic for exclusion testing purposes.
+
+2008-02-01 23:52  phase1geo
+
+	Updates to regression files per last changes.
+
+2008-02-01 23:50  phase1geo
+
+	Adding more exclusion diagnostics to regression suite.	Fixed bug
+	in arc state and state transition hit calculator.  Added
+	arc_display function for debugging purposes.
+
+2008-02-01 17:07  phase1geo
+
+	Adding another exclusion diagnostic.
+
+2008-02-01 16:10  phase1geo
+
+	Adding more diagnostics to regression suite for exclusion testing. 
+	Also fixed bug in toggle reporter to not output excluded signals in
+	verbose output.
+
+2008-02-01 08:19  phase1geo
+
+	Adding more diagnostics to test pragma exclusion code.
+
+2008-02-01 08:10  phase1geo
+
+	Checking in corrected CDD file.
+
+2008-02-01 08:09  phase1geo
+
+	Adding more diagnostics for pragma-controlled exclusion testing.
+
+2008-02-01 01:03  phase1geo
+
+	Fixing bugs in pragma exclusion code.  Added diagnostics to
+	regression suite to verify that we correctly exclude/include
+	signals when pragmas are set around a register instantiation and
+	the -ep is present/not present, respectively.  Full regression
+	passes at this point.  Fixed bug in vsignal.c where the excluded
+	bit was getting lost when a CDD file was read back in.	Also fixed
+	bug in toggle coverage reporting where a 1 -> 0 bit transition was
+	not getting excluded when the excluded bit was set for a signal.
+
+2008-02-01 00:37  phase1geo
+
+	Fixing bug in genprof.pl.  Added initial code for excluding final
+	blocks and using pragma excludes (this code is not fully working
+	yet).  More to be done.
+
+2008-01-30 22:42  phase1geo
+
+	Updates for 0.6 stable release.
+
 2008-01-30 22:23  phase1geo
 
 	More updates to development documentation.
@@ -5,94 +490,4 @@
 2008-01-30 11:08  phase1geo
 
 	Updates to development documentation.
-
-2008-01-29 23:53  phase1geo
-
-	Updating version number for development documentation.
-
-2008-01-29 23:51  phase1geo
-
-	Fixing doxygen errors.	Updated parameter list syntax to make it
-	more readable.
-
-2008-01-29 17:37  phase1geo
-
-	Updating user documentation to repair broken links, update
-	documentation, etc.
-
-2008-01-29 08:05  phase1geo
-
-	Updating INSTALL notes.
-
-2008-01-29 08:04  phase1geo
-
-	Updating TODO file for 0.7 stable release goals (since they are on
-	my mind).
-
-2008-01-28 22:40  phase1geo
-
-	Fixing bug with VPI builds on Mac OS X.  Removing attempt to get
-	Veriwell simulator to work with VCD reader.  Updates to regression
-	Makefiles.
-
-2008-01-28 09:05  phase1geo
-
-	Attempt to fix issue with Veriwell regressions (still some work to
-	do here).
-
-2008-01-24 21:34  phase1geo
-
-	Fixing regression for VPI mode of operation.
-
-2008-01-24 17:55  phase1geo
-
-	Fixing IV, Cver and VCS regressions.  Regressions updated for
-	latest version of Icarus Verilog.
-
-2008-01-24 01:11  phase1geo
-
-	Initial work to support VeriWell simulator in regression testing. 
-	Need to fix some failing diagnostics before more progress can be
-	made in this area.
-
-2008-01-23 17:50  phase1geo
-
-	Reading the regression tests for use with VeriWell simulator.
-
-2008-01-23 14:47  phase1geo
-
-	Fixing bug 1878134 and adding new diagnostics to regression suite
-	to verify its behavior.  Full regressions pass.
-
-2008-01-23 08:25  phase1geo
-
-	Adding new sbit_sel2 diagnostic which currently fails.
-
-2008-01-22 22:05  phase1geo
-
-	Fixing LXT regressions.  Added code to regression Makefile to
-	remove certain diagnostics from being run in LXT regression due to
-	the apparent inability for LXT files to contain time-0 only
-	information.  Also contains a fix for bug 1877853.  Full
-	regressions now run cleanly.
-
-2008-01-22 13:53  phase1geo
-
-	First attempt to fix bug 1876681.
-
-2008-01-21 23:20  phase1geo
-
-	Updating VCS regression files from latest changes.
-
-2008-01-21 21:59  phase1geo
-
-	Updating regression files per latest change.
-
-2008-01-21 21:53  phase1geo
-
-	Fixing bug 1876417.  Removing obsolete code in expr.c.
-
-2008-01-21 15:39  phase1geo
-
-	Bug fix for bug 1876376.
 

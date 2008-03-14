@@ -68,7 +68,8 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 multi_exp2      multi_exp2.1    multi_exp3      multi_exp4      named_block1 \
                 named_block2    named_block3    named_block4    nested_block1   nested_block2 \
                 nested_block2.1 nested_block3   null_stmt1      null_stmt1.1    null_stmt1.2 \
-                param1          param1.1        param1.2 \
+                null_stmt1.3    null_stmt1.5    null_stmt1.6    null_stmt1.7    null_stmt1.8 \
+                null_stmt1.9    null_stmt1.10   param1          param1.1        param1.2 \
                 param1.3        param3          param3.1        param3.2        param3.3 \
                 param3.4        param3.5        param4          param4.1        param5 \
                 param6          param6.1        param7          param8          param8.1 \
@@ -88,7 +89,7 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 timescale1.18   timescale2      timescale2.2    timescale2.3    timescale2.4 \
                 timescale2.5    timescale2.8    toggle          tri             tri0 \
                 tri1            triand          trior           wait1           wait1.1 \
-                wand            while1          while1.1        wor
+                wait2           wand            while1          while1.1        wor
 DIAGS2        = delay1.1
 DIAGS3        = delay1.2
 DIAGS4        = delay1.3
@@ -168,7 +169,8 @@ VCSONLYDIAGS1 = afunc1          always_comb1    always_ff1      always_latch1   
                 inc2            inc3            inc3.1          int1            line1 \
                 logic1          longint1        long_sig        marray1         marray1.1 \
                 marray1.2       marray1.3       marray2         marray2.1       marray2.2 \
-                marray2.3       mbit_sel5.4     mbit_sel6.4     mem3            op_assign1 \
+                marray2.3       mbit_sel5.4     mbit_sel6.4     mem3            null_stmt1.4 \
+                op_assign1 \
                 param8.2        param12         param12.1       shortint1       signed4.1 \
                 slist3.1        slist3.3        static_afunc1   static_func1    static_func1.1 \
                 static_func2    static_func2.1  static_func2.2  static_func2.3  trireg
