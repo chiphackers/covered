@@ -1,3 +1,306 @@
+2008-03-14 00:20  phase1geo
+
+	Fixing line.c and updating regressions as necessary.
+
+2008-03-14 00:17  phase1geo
+
+	Merging null statement diagnostics from stable release.  Modifying
+	fix for null task bodies to eliminate unnecessary
+	expressions/statements.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.7.v was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.9.v was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.10.v was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file wait2.rptM was initially added on branch covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file wait2.v was initially added on branch covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.3.v was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.4.v was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.8.v was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.6.v was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file wait2.rptWM was initially added on branch covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file wait2.rptI was initially added on branch covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file wait2.rptWI was initially added on branch covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.5.v was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.5.cfg was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file wait2.cfg was initially added on branch covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.10.rptI was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.8.rptWI was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.10.rptWI was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.7.rptM was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.9.cfg was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.6.rptWM was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.9.rptM was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.9.rptI was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.6.rptI was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.3.rptM was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.6.rptM was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.3.cfg was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.10.rptWM was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.8.cfg was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.10.rptM was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.8.rptWM was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.4.rptM was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.9.rptWM was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.10.cfg was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.6.cfg was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.3.rptWM was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.5.rptM was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.8.rptI was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.3.rptWI was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.9.rptWI was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.7.rptWM was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.8.rptM was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.7.rptI was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.6.rptWI was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.5.rptWI was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.5.rptWM was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.4.cfg was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.7.rptWI was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.3.rptI was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.5.rptI was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.7.cfg was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file wait2.cdd was initially added on branch covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.7.cdd was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.5.cdd was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.8.cdd was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.9.cdd was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.3.cdd was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.6.cdd was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	file null_stmt1.10.cdd was initially added on branch
+	covered-0_6-branch.
+
+2008-03-13 23:52  phase1geo
+
+	Fixing bug 1914056.  Updated regression suite and added new
+	null_stmt* diagnostics to verify null statement behavior.
+
 2008-03-13 18:20  phase1geo
 
 	Updating null_stmt diagnostics from stable branch.
