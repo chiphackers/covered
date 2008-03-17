@@ -362,12 +362,16 @@ func_unit* scope_get_parent_funit(
   const char* scope
 ) { PROFILE(SCOPE_GET_PARENT_FUNIT);
 
-  funit_inst* inst;  /* Pointer to functional unit instance with the specified scope */
-  char*       rest;  /* Temporary holder */
-  char*       back;  /* Temporary holder */
+  funit_inst* inst;     /* Pointer to functional unit instance with the specified scope */
+  char*       rest;     /* Temporary holder */
+  char*       back;     /* Temporary holder */
+  int         str_len;  /* Length of string to allocated/deallocate */
 
-  rest = (char*)malloc_safe( strlen( scope ) + 1 );
-  back = (char*)malloc_safe( strlen( scope ) + 1 );
+  /* Calculate the str_len */
+  str_len = strlen( scope ) + 1;
+
+  rest = (char*)malloc_safe( str_len );
+  back = (char*)malloc_safe( str_len );
 
   /* Go up one in hierarchy */
   scope_extract_back( scope, back, rest );
@@ -379,8 +383,8 @@ func_unit* scope_get_parent_funit(
 
   assert( inst != NULL );
 
-  free_safe( rest, (strlen( rest ) + 1) );
-  free_safe( back, (strlen( back ) + 1) );
+  free_safe( rest, str_len );
+  free_safe( back, str_len );
 
   PROFILE_END;
 
@@ -403,8 +407,12 @@ func_unit* scope_get_parent_module(
   char*       curr_scope;  /* Current scope to search for */
   char*       rest;        /* Temporary holder */
   char*       back;        /* Temporary holder */
+  int         str_len;     /* Length of string to allocate */
 
   assert( scope != NULL );
+
+  /* Calculate the length of the string */
+  str_len = strlen( scope ) + 1;
 
   /* Get a local copy of the specified scope */
   curr_scope = strdup_safe( scope );
@@ -419,9 +427,9 @@ func_unit* scope_get_parent_module(
     assert( inst != NULL );
   } while( inst->funit->type != FUNIT_MODULE );
 
-  free_safe( curr_scope, (strlen( curr_scope ) + 1) );
-  free_safe( rest, (strlen( rest ) + 1) );
-  free_safe( back, (strlen( back ) + 1) );
+  free_safe( curr_scope, str_len );
+  free_safe( rest,       str_len );
+  free_safe( back,       str_len );
 
   PROFILE_END;
 
@@ -431,6 +439,9 @@ func_unit* scope_get_parent_module(
 
 /*
  $Log$
+ Revision 1.48  2008/03/17 05:26:17  phase1geo
+ Checkpointing.  Things don't compile at the moment.
+
  Revision 1.47  2008/03/14 22:00:20  phase1geo
  Beginning to instrument code for exception handling verification.  Still have
  a ways to go before we have anything that is self-checking at this point, though.

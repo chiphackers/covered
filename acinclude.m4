@@ -392,10 +392,18 @@ AC_DEFUN([COVERED_DEBUG],
                AC_SUBST([DEBUGDEF],["-DDEBUG_MODE"]))])
 
 ## COVERED_PROFILE_MODE
+## --------------------
 AC_DEFUN([COVERED_PROFILER],
 [AC_ARG_ENABLE(profiling,
                AC_HELP_STRING([--enable-profiling],[Enables source code profiler]),
                AC_SUBST([PROFILEDEF],["-DPROFILER"]))])
+
+## COVERED_TEST_MODE
+## --------------------
+AC_DEFUN([COVERED_TEST],
+[AC_ARG_ENABLE(test,
+               AC_HELP_STRING([--enable-test],[Enables development testing features]),
+               AC_SUBST([TESTMODEDEF],["-DTESTMODE"]))])
 
 # AX_LD_SHAREDLIB_OPTS
 # --------------------

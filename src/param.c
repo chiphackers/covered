@@ -800,12 +800,6 @@ void param_expr_eval(
                 (expr->op != EXP_OP_MBIT_POS) &&
                 (expr->op != EXP_OP_MBIT_NEG) );
         expression_resize( expr, inst->funit, FALSE, TRUE );
-#ifdef OBSOLETE
-        if( expr->value->value != NULL ) {
-          free_safe( expr->value->value, (sizeof( vec_data* ) * expr->value->width ) );
-        }
-        expression_create_value( expr, expr->value->width, TRUE );
-#endif
         break;
     }
 
@@ -1165,6 +1159,9 @@ void inst_parm_dealloc(
 
 /*
  $Log$
+ Revision 1.106  2008/03/17 05:26:16  phase1geo
+ Checkpointing.  Things don't compile at the moment.
+
  Revision 1.105  2008/03/14 22:00:19  phase1geo
  Beginning to instrument code for exception handling verification.  Still have
  a ways to go before we have anything that is self-checking at this point, though.

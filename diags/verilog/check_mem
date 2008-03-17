@@ -1,0 +1,98 @@
+#!/usr/bin/perl
+
+# Name:     check_mem
+# Author:   Trevor Williams  <phase1geo(gmail.com)>
+# Date:     3/17/2008
+# Usage:    <covered_command> | check_mem
+
+while( defined( $line = <STDIN> ) ) {
+
+  chomp( $line );
+
+  # If the line was a malloc or strdup call, add its memory to our tracker
+  if( $line =~ /(MALLOC|STRDUP)\s+\((\S+)\)\s+(\d+)\s+bytes\s+\(file:\s+(\S+),\s+line:\s+(\d+)/) {
+
+    $addr  = $2;
+    $bytes = $3;
+    $file  = $4;
+    $lnum  = $5;
+
+    if( $addrs->{$addr} != () ) {
+      die "Address $addr found to be allocated twice without a free!\n";
+    } else {
+      $addrs->{$addr}{BYTES} = $bytes;
+      $addrs->{$addr}{AFILE} = $file;
+      $addrs->{$addr}{ALNUM} = $lnum;
+    }
+
+  # Otherwise, if the line was a realloc, delete the old memory and add the new memory to our tracker
+  } elsif( $line =~ /REALLOC\s+\((\S+)\s+->\s+(\S+)\)\s+(\d+)\s+bytes\s+\(file:\s+(\S+),\s+line:\s+(\d+)/) {
+
+    $old_addr = $1;
+    $addr     = $2;
+    $bytes    = $3;
+    $file     = $4;
+    $lnum     = $5;
+
+    # Delete the memory for the old address
+    if( $old_addr ne "(nil)" ) {
+      if( $addrs->{$old_addr} == () ) {
+        die "Address $old_addr being reallocated but never existed!\n";
+      } else {
+        delete $addrs->{$old_addr}; 
+      }
+    }
+
+    # Allocate the new memory
+    if( $addr ne "(nil)" ) {
+      if( $addrs->{$addr} != () ) {
+        die "Address $addr found to be allocated twice without a free!\n";
+      } else {
+        $addrs->{$addr}{BYTES} = $bytes;
+        $addrs->{$addr}{AFILE} = $file;
+        $addrs->{$addr}{ALNUM} = $lnum;
+      }
+    }
+
+  # Otherwise, if the line was a free, check the bytes freed against the bytes allocated and remove the address from our tracker
+  } elsif( $line =~ /FREE\s+\((\S+)\)\s+(\d+)\s+bytes\s+\(file:\s+(\S+),\s+line:\s+(\d+)/) {
+
+    $addr  = $1;
+    $bytes = $2;
+    $file  = $3;
+    $lnum  = $4;
+
+    if( $addrs->{$addr} == () ) {
+      die "Address $addr was being freed when it was never allocated!\n";
+    } elsif( $addrs->{$addr}{BYTES} != $bytes ) {
+      die "Number of bytes freed ($bytes) in $file:$lnum does not match number of bytes allocated (" . $addrs->{$addr}{BYTES} . ") in " . $addrs->{$addr}{AFILE} . ":" . $addrs->{$addr}{ALNUM} . "\n";
+    } else {
+      delete $addrs->{$addr};
+    }
+
+  # Otherwise, if we have reached the end of the output, make sure Covered is reporting 0 bytes of allocated memory
+  } elsif( $line =~ /curr_malloc_size:\s+(\d+)/ ) {
+
+    $malloc_size = $1;
+
+    # If we actually get to this point, make sure that Covered is showing no memory lossage
+    if( $malloc_size != 0 ) {
+      die "Covered is reporting memory lossage ($malloc_size bytes), but check_mem script finds no memory problems!  Please run valgrind...\n";
+    }
+
+  # Otherwise, pass this line to standard output
+  } else {
+
+    print "$line\n";
+
+  }
+
+}
+
+foreach $addr (keys %$addrs) {
+  print "Found unallocated address $addr from " . $addrs->{$addr}{AFILE} . ":" . $addrs->{$addr}{ALNUM} . "\n";
+}
+
+if( keys( %$addrs ) != () ) {
+  die;
+}

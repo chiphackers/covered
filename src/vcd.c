@@ -465,7 +465,7 @@ void vcd_parse(
 
     } Catch_anonymous {
       symtable_dealloc( vcd_symtab );
-      free_safe( timestep_tab );
+      free_safe( timestep_tab, (sizeof( symtable*) * vcd_symtab_size) );
       rv = fclose( vcd_handle );
       assert( rv == 0 );
       printf( "vcd Throw L\n" );
@@ -474,7 +474,7 @@ void vcd_parse(
 
     /* Deallocate memory */
     symtable_dealloc( vcd_symtab );
-    free_safe( timestep_tab );
+    free_safe( timestep_tab, (sizeof( symtable*) * vcd_symtab_size) );
 
     /* Close VCD file */
     rv = fclose( vcd_handle );
@@ -494,6 +494,10 @@ void vcd_parse(
 
 /*
  $Log$
+ Revision 1.40  2008/03/14 22:00:21  phase1geo
+ Beginning to instrument code for exception handling verification.  Still have
+ a ways to go before we have anything that is self-checking at this point, though.
+
  Revision 1.39  2008/03/13 10:28:55  phase1geo
  The last of the exception handling modifications.
 

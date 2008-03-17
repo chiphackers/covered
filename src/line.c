@@ -163,8 +163,8 @@ bool line_collect( const char* funit_name, int funit_type, int cov, int** lines,
           for( i=stmt->exp->line; i<=last_line; i++ ) {
             if( *line_cnt == line_size ) {
               line_size += 20;
-              *lines    = (int*)realloc( *lines,    (sizeof( int ) * line_size) );
-              *excludes = (int*)realloc( *excludes, (sizeof( int ) * line_size) );
+              *lines    = (int*)realloc_safe( *lines,    (sizeof( int ) * (line_size - 20)), (sizeof( int ) * line_size) );
+              *excludes = (int*)realloc_safe( *excludes, (sizeof( int ) * (line_size - 20)), (sizeof( int ) * line_size) );
             }
             (*lines)[(*line_cnt)]    = i;
             (*excludes)[(*line_cnt)] = ESUPPL_EXCLUDED( stmt->exp->suppl );
@@ -677,6 +677,9 @@ void line_report( FILE* ofile, bool verbose ) { PROFILE(LINE_REPORT);
 
 /*
  $Log$
+ Revision 1.87  2008/03/17 05:26:16  phase1geo
+ Checkpointing.  Things don't compile at the moment.
+
  Revision 1.86  2008/03/14 05:20:49  phase1geo
  Fixing line.c and updating regressions as necessary.
 

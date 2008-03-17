@@ -291,11 +291,12 @@ WSPACE [ \t\b\f]+
 	yylloc.last_column += 1;
 	BEGIN( state_enter );
         if( ignore_mode == 0 ) {
+          int str_len = strlen( yytext );
           yylval.text = strdup_safe( yytext );
-          yylval.text[ strlen( yytext ) - 1 ] = '\0';
+          yylval.text[ str_len - 1 ] = '\0';
           tmpstr = yylval.text;
           yylval.number = vector_from_string( &(yylval.text), TRUE );
-          free_safe( tmpstr, (strlen( tmpstr ) + 1) );
+          free_safe( tmpstr, (str_len + 1) );
           return STRING;
         } else {
           return UNUSED_STRING;
@@ -836,7 +837,7 @@ static void line_directive() { PROFILE(LINE_DIRECTIVE);
   qt2 = strchr( qt1, '"' );
   assert( qt2 );
   
-  directive_filename = (char*)realloc( directive_filename, (qt2 - qt1 + 1) );
+  directive_filename = (char*)realloc_safe( directive_filename, (strlen( directive_filename ) + 1), (qt2 - qt1 + 1) );
   strncpy( directive_filename, qt1, qt2-qt1 );
   directive_filename[qt2-qt1] = '\0';
   
@@ -872,7 +873,7 @@ static void line_directive2() { PROFILE(LINE_DIRECTIVE2);
   qt2 = strchr( qt1, '"' );
   assert( qt2 );
   
-  directive_filename = (char*)realloc( directive_filename, (qt2 - qt1 + 1) );
+  directive_filename = (char*)realloc_safe( directive_filename, (strlen( directive_filename ) + 1), (qt2 - qt1 + 1) );
   strncpy( directive_filename, qt1, qt2 - qt1 );
   directive_filename[qt2-qt1] = '\0';
   
@@ -1208,6 +1209,7 @@ void check_for_pragma(
 
     char* keyword = strdup_safe( comment );
     char* value   = strdup_safe( comment );
+    int   str_len = strlen( comment ) + 1;
 
     /* Get the keyword and value if this comment is a pragma */
     if( sscanf( comment, "%s %s", keyword, value ) == 2 ) {
@@ -1247,8 +1249,8 @@ void check_for_pragma(
     }
 
     /* Deallocate memory */
-    free_safe( keyword, (strlen( keyword ) + 1) );
-    free_safe( value, (strlen( value ) + 1) );
+    free_safe( keyword, str_len );
+    free_safe( value, str_len );
 
   }
 

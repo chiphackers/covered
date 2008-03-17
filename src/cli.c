@@ -363,7 +363,7 @@ static bool cli_display_expression( int id ) {
       printf( "    %s\n", code[i] );
       free_safe( code[i], (strlen( code[i] ) + 1) );
     }
-    free_safe( code, (sizeof( char* ) * cod_depth) );
+    free_safe( code, (sizeof( char* ) * code_depth) );
 
     /* Output the expression value */
     printf( "\n  " );
@@ -390,6 +390,7 @@ static void cli_display_lines( unsigned num ) {
   thread* curr;        /* Pointer to current thread in simulation */
   FILE*   vfile;       /* File pointer to Verilog file */
   char*   line;        /* Pointer to current line */
+  int     line_size;   /* Allocated size of the current line */
   int     lnum = 1;    /* Current line number */
   int     start_line;  /* Starting line */
 
@@ -406,11 +407,11 @@ static void cli_display_lines( unsigned num ) {
     start_line = curr->curr->exp->line;
 
     /* Read the Verilog file and output lines when we are in range */
-    while( util_readline( vfile, &line ) ) {
+    while( util_readline( vfile, &line, &line_size ) ) {
       if( (lnum >= start_line) && (lnum < (start_line + num)) ) {
         printf( "    %7d:  %s\n", lnum, line );
       }
-      free_safe( line, (strlen( line ) + 1) );
+      free_safe( line, line_size );
       lnum++;
     }
 
@@ -448,7 +449,7 @@ static bool cli_parse_input( char* line, bool perform, bool replaying, const sim
   /* Resize the history if necessary */
   if( history_index == history_size ) {
     history_size = (history_size == 0) ? 50 : (history_size * 2);
-    history      = (char**)realloc( history, (sizeof( char* ) * (history_size * 2)) );
+    history      = (char**)realloc_safe( history, (sizeof( char* ) * (history_size / 2)), (sizeof( char* ) * history_size) );
   }
 
   /* Store this command in the history buffer if we are not in replay mode */
@@ -467,13 +468,13 @@ static bool cli_parse_input( char* line, bool perform, bool replaying, const sim
       line++;
       if( arg[1] == '!' ) {
         free_safe( history[history_index], (strlen( history[history_index] ) + 1) );
-        (bool)cli_parse_input( strdup( history[history_index-1] ), perform, replaying, time );
+        (bool)cli_parse_input( strdup_safe( history[history_index-1] ), perform, replaying, time );
         history_index--;
         cli_replay_index--;
       } else if( sscanf( line, "%d", &num ) == 1 ) {
         if( num < (history_index + 1) ) {
           free_safe( history[history_index], (strlen( history[history_index] ) + 1) );
-          cli_parse_input( strdup( history[num-1] ), perform, replaying, time );
+          cli_parse_input( strdup_safe( history[num-1] ), perform, replaying, time );
           history_index--;
           cli_replay_index--;
         } else {
@@ -719,6 +720,7 @@ static void cli_prompt_user(
 ) {
 
   char* line;        /* Read line from user */
+  int   line_size;   /* Allocated byte size of read line from user */
   char  arg[4096];   /* Holder for user argument */
   bool  valid_cmd;   /* Specifies if the given command was valid */
   int   chars_read;  /* Specifies the number of characters that was read from the string */
@@ -740,10 +742,13 @@ static void cli_prompt_user(
       fflush( stdout );
 
       /* Read the user-specified command */
-      (void)util_readline( stdin, &line );
+      (void)util_readline( stdin, &line, &line_size );
 
       /* Parse the command line */
       (void)cli_parse_input( line, TRUE, FALSE, time );
+
+      /* Deallocate the memory allocated for the read line */
+      free_safe( line, line_size );
 
     }
 
@@ -845,8 +850,9 @@ void cli_execute(
 */
 void cli_read_hist_file( const char* fname ) {
 
-  char* line;   /* Holds current line read from history file */
-  FILE* hfile;  /* File containing history file */
+  char* line;       /* Holds current line read from history file */
+  int   line_size;  /* Allocated bytes for read line */
+  FILE* hfile;      /* File containing history file */
 
   /* Make sure that this function was not called twice */
   assert( (cli_replay_index == 0) && !flag_use_command_line_debug );
@@ -858,7 +864,7 @@ void cli_read_hist_file( const char* fname ) {
 
       sim_time time;
 
-      while( util_readline( hfile, &line ) ) {
+      while( util_readline( hfile, &line, &line_size ) ) {
         if( !cli_parse_input( line, FALSE, FALSE, &time ) ) {
           unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Specified -cli file \"%s\" is not a valid CLI history file", fname );
           assert( rv < USER_MSG_LENGTH );
@@ -866,6 +872,7 @@ void cli_read_hist_file( const char* fname ) {
           printf( "cli Throw A\n" );
           Throw 0;
         }
+        free_safe( line, line_size );
       }
 
     } Catch_anonymous {
@@ -891,6 +898,9 @@ void cli_read_hist_file( const char* fname ) {
 
 /*
  $Log$
+ Revision 1.22  2008/03/17 05:26:15  phase1geo
+ Checkpointing.  Things don't compile at the moment.
+
  Revision 1.21  2008/03/14 22:00:17  phase1geo
  Beginning to instrument code for exception handling verification.  Still have
  a ways to go before we have anything that is self-checking at this point, though.

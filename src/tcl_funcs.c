@@ -850,12 +850,12 @@ int tcl_func_get_comb_expression( ClientData d, Tcl_Interp* tcl, int argc, const
       Tcl_SetVar( tcl, "comb_code", code[i], (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
       snprintf( tmp, 20, "%d", uline_groups[i] );
       Tcl_SetVar( tcl, "comb_uline_groups", tmp, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
-      free_safe( code[i] );
+      free_safe( code[i], (strlen( code[i] ) + 1) );
     }
 
     for( i=0; i<uline_size; i++ ) {
       Tcl_SetVar( tcl, "comb_ulines", ulines[i], (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
-      free_safe( ulines[i] );
+      free_safe( ulines[i], (strlen( ulines[i] ) + 1) );
     }
 
     for( i=0; i<exclude_size; i++ ) {
@@ -865,16 +865,16 @@ int tcl_func_get_comb_expression( ClientData d, Tcl_Interp* tcl, int argc, const
 
     /* Free up allocated memory */
     if( code_size > 0 ) {
-      free_safe( code );
-      free_safe( uline_groups );
+      free_safe( code, (sizeof( char* ) * code_size) );
+      free_safe( uline_groups, (sizeof( char* ) * code_size) );
     }
 
     if( uline_size > 0 ) {
-      free_safe( ulines );
+      free_safe( ulines, (sizeof( char* ) * uline_size) );
     }
 
     if( exclude_size > 0 ) {
-      free_safe( excludes );
+      free_safe( excludes, (sizeof( int ) * exclude_size) );
     }
 
   } else {
@@ -885,7 +885,7 @@ int tcl_func_get_comb_expression( ClientData d, Tcl_Interp* tcl, int argc, const
   }
 
   /* Free up allocated memory */
-  free_safe( funit_name );
+  free_safe( funit_name, (strlen( funit_name ) + 1) );
 
   return( retval );
 
@@ -925,10 +925,10 @@ int tcl_func_get_comb_coverage( ClientData d, Tcl_Interp* tcl, int argc, const c
 
       for( i=0; i<info_size; i++ ) {
         Tcl_SetVar( tcl, "comb_expr_cov", info[i], (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
-        free_safe( info[i] );
+        free_safe( info[i], (strlen( info[i] ) + 1) );
       }
 
-      free_safe( info );
+      free_safe( info, (sizeof( char* ) * info_size) );
 
     }
 
@@ -940,7 +940,7 @@ int tcl_func_get_comb_coverage( ClientData d, Tcl_Interp* tcl, int argc, const c
   }
 
   /* Free up allocated memory */
-  free_safe( funit_name );
+  free_safe( funit_name, (strlen( funit_name ) + 1) );
 
   return( retval );
 
@@ -1007,7 +1007,7 @@ int tcl_func_collect_fsms( ClientData d, Tcl_Interp* tcl, int argc, const char* 
 
     /* If the expr_ids array has one or more elements, deallocate the array */
     if( i > 0 ) {
-      free_safe( expr_ids );
+      free_safe( expr_ids, (sizeof( int ) * i) );
     }
 
   } else {
@@ -1019,7 +1019,7 @@ int tcl_func_collect_fsms( ClientData d, Tcl_Interp* tcl, int argc, const char* 
 
   }
 
-  free_safe( funit_name );
+  free_safe( funit_name, (strlen( funit_name ) + 1) );
 
   return( retval );
 
@@ -1074,67 +1074,67 @@ int tcl_func_get_fsm_coverage( ClientData d, Tcl_Interp* tcl, int argc, const ch
     for( i=0; i<total_state_num; i++ ) {
       snprintf( str, 4096, "%d'h%s", width, total_states[i] );
       Tcl_SetVar( tcl, "fsm_states", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
-      free_safe( total_states[i] );
+      free_safe( total_states[i], (strlen( total_states[i] ) + 1) );
     }
 
     if( total_state_num > 0 ) {
-      free_safe( total_states );
+      free_safe( total_states, (sizeof( char* ) * total_state_num) );
     }
 
     /* Load FSM hit states into Tcl */
     for( i=0; i<hit_state_num; i++ ) {
       snprintf( str, 4096, "%d'h%s", width, hit_states[i] );
       Tcl_SetVar( tcl, "fsm_hit_states", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
-      free_safe( hit_states[i] );
+      free_safe( hit_states[i], (strlen( hit_states[i] ) + 1) );
     }
 
     if( hit_state_num > 0 ) {
-      free_safe( hit_states );
+      free_safe( hit_states, (sizeof( char* ) * hit_state_num) );
     }
 
     /* Load FSM total arcs into Tcl */
     for( i=0; i<total_arc_num; i++ ) {
       snprintf( str, 4096, "%d'h%s %d'h%s %d", width, total_from_arcs[i], width, total_to_arcs[i], excludes[i] );
       Tcl_SetVar( tcl, "fsm_arcs", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
-      free_safe( total_from_arcs[i] );
-      free_safe( total_to_arcs[i] );
+      free_safe( total_from_arcs[i], (strlen( total_from_arcs[i] ) + 1) );
+      free_safe( total_to_arcs[i], (strlen( total_to_arcs[i] ) + 1) );
     }
 
     if( total_arc_num > 0 ) {
-      free_safe( total_from_arcs );
-      free_safe( total_to_arcs );
-      free_safe( excludes );
+      free_safe( total_from_arcs, (sizeof( char* ) * total_arc_num) );
+      free_safe( total_to_arcs, (sizeof( char* ) * total_arc_num) );
+      free_safe( excludes, (sizeof( int ) * total_arc_num) );
     }
 
     /* Load FSM hit arcs into Tcl */
     for( i=0; i<hit_arc_num; i++ ) {
       snprintf( str, 4096, "%d'h%s %d'h%s", width, hit_from_arcs[i], width, hit_to_arcs[i] );
       Tcl_SetVar( tcl, "fsm_hit_arcs", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
-      free_safe( hit_from_arcs[i] );
-      free_safe( hit_to_arcs[i] );
+      free_safe( hit_from_arcs[i], (strlen( hit_from_arcs[i] ) + 1) );
+      free_safe( hit_to_arcs[i], (strlen( hit_to_arcs[i] ) + 1) );
     }
 
     if( hit_arc_num > 0 ) {
-      free_safe( hit_from_arcs );
-      free_safe( hit_to_arcs );
+      free_safe( hit_from_arcs, (sizeof( char* ) * hit_arc_num) );
+      free_safe( hit_to_arcs, (sizeof( char* ) * hit_arc_num) );
     }
 
     /* Load FSM input state into Tcl */
     if( input_size > 0 ) {
       Tcl_SetVar( tcl, "fsm_in_state", input_state[0], TCL_GLOBAL_ONLY );
       for( i=0; i<input_size; i++ ) {
-        free_safe( input_state[i] );
+        free_safe( input_state[i], (strlen( input_state[i] ) + 1) );
       }
-      free_safe( input_state );
+      free_safe( input_state, (sizeof( char* ) * input_size) );
     }
 
     /* Load FSM output state into Tcl */
     if( output_size > 0 ) {
       Tcl_SetVar( tcl, "fsm_out_state", output_state[0], TCL_GLOBAL_ONLY );
       for( i=0; i<output_size; i++ ) {
-        free_safe( output_state[i] );
+        free_safe( output_state[i], (strlen( output_state[i] ) + 1) );
       }
-      free_safe( output_state );
+      free_safe( output_state, (sizeof( char* ) * output_size) );
     }
 
   } else {
@@ -1146,7 +1146,7 @@ int tcl_func_get_fsm_coverage( ClientData d, Tcl_Interp* tcl, int argc, const ch
 
   }
 
-  free_safe( funit_name );
+  free_safe( funit_name, (strlen( funit_name ) + 1) );
 
   return( retval );
 
@@ -1187,22 +1187,22 @@ int tcl_func_collect_assertions( ClientData d, Tcl_Interp* tcl, int argc, const 
       Tcl_SetVar( tcl, "uncovered_asserts", uncov_inst_names[i], (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
       snprintf( str, 20, "%d", excludes[i] );
       Tcl_SetVar( tcl, "assert_excludes", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
-      free_safe( uncov_inst_names[i] );
+      free_safe( uncov_inst_names[i], (strlen( uncov_inst_names[i] ) + 1) );
     }
 
     if( uncov_inst_size > 0 ) {
-      free_safe( uncov_inst_names );
-      free_safe( excludes );
+      free_safe( uncov_inst_names, (sizeof( char* ) * uncov_inst_size) );
+      free_safe( excludes, (sizeof( int ) * uncov_inst_size) );
     }
 
     /* Load covered assertions into Tcl */
     for( i=0; i<cov_inst_size; i++ ) {
       Tcl_SetVar( tcl, "covered_asserts", cov_inst_names[i], (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
-      free_safe( cov_inst_names[i] );
+      free_safe( cov_inst_names[i], (strlen( cov_inst_names[i] ) + 1) );
     }
     
     if( cov_inst_size > 0 ) {
-      free_safe( cov_inst_names );
+      free_safe( cov_inst_names, (sizeof( int ) * cov_inst_size) );
     }
 
   } else {
@@ -1214,7 +1214,7 @@ int tcl_func_collect_assertions( ClientData d, Tcl_Interp* tcl, int argc, const 
 
   }
 
-  free_safe( funit_name );
+  free_safe( funit_name, (strlen( funit_name ) + 1) );
   
   return( retval );
   
@@ -1251,7 +1251,7 @@ int tcl_func_get_assert_coverage( ClientData d, Tcl_Interp* tcl, int argc, const
   if( assertion_get_coverage( funit_name, funit_type, inst_name, &assert_mod, &cp_head, &cp_tail ) ) {
 
     Tcl_SetVar( tcl, "assert_cov_mod", assert_mod, TCL_GLOBAL_ONLY );
-    free_safe( assert_mod );
+    free_safe( assert_mod, (strlen( assert_mod ) + 1) );
 
     curr_cp = cp_head;
     while( curr_cp != NULL ) {
@@ -1265,8 +1265,8 @@ int tcl_func_get_assert_coverage( ClientData d, Tcl_Interp* tcl, int argc, const
 
   }
 
-  free_safe( funit_name );
-  free_safe( inst_name );
+  free_safe( funit_name, (strlen( funit_name ) + 1) );
+  free_safe( inst_name, (strlen( inst_name ) + 1) );
 
   return( retval );
 
@@ -1302,7 +1302,7 @@ int tcl_func_open_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* argv
       retval = TCL_ERROR;
     }
 
-    free_safe( ifile );
+    free_safe( ifile, (strlen( ifile ) + 1) );
 
   }
 
@@ -1367,7 +1367,7 @@ int tcl_func_save_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* argv
     retval = TCL_ERROR;
   }
 
-  free_safe( filename );
+  free_safe( filename, (strlen( filename ) + 1) );
 
   return( retval );
 
@@ -1395,7 +1395,7 @@ int tcl_func_merge_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* arg
     ifile = strdup_safe( argv[1] );
 
     /* Add the specified merge file to the list */
-    merge_in               = (char**)realloc( merge_in, (sizeof( char* ) * (merge_in_num + 1)) );
+    merge_in               = (char**)realloc_safe( merge_in, (sizeof( char* ) * merge_in_num), (sizeof( char* ) * (merge_in_num + 1)) );
     merge_in[merge_in_num] = ifile;
     merge_in_num++;
 
@@ -1408,7 +1408,7 @@ int tcl_func_merge_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* arg
       retval = TCL_ERROR;
     }
 
-    free_safe( ifile );
+    free_safe( ifile, (strlen( ifile ) + 1) );
 
   }
 
@@ -1452,7 +1452,7 @@ int tcl_func_get_line_summary( ClientData d, Tcl_Interp* tcl, int argc, const ch
     retval = TCL_ERROR;
   }
 
-  free_safe( funit_name );
+  free_safe( funit_name, (strlen( funit_name ) + 1) );
 
   return( retval );
 
@@ -1495,7 +1495,7 @@ int tcl_func_get_toggle_summary( ClientData d, Tcl_Interp* tcl, int argc, const 
     retval = TCL_ERROR;
   }
 
-  free_safe( funit_name );
+  free_safe( funit_name, (strlen( funit_name ) + 1) );
 
   return( retval );
 
@@ -1538,7 +1538,7 @@ int tcl_func_get_memory_summary( ClientData d, Tcl_Interp* tcl, int argc, const 
     retval = TCL_ERROR;
   }
 
-  free_safe( funit_name );
+  free_safe( funit_name, (strlen( funit_name ) + 1) );
 
   return( retval );
 
@@ -1581,7 +1581,7 @@ int tcl_func_get_comb_summary( ClientData d, Tcl_Interp* tcl, int argc, const ch
     retval = TCL_ERROR;
   }
 
-  free_safe( funit_name );
+  free_safe( funit_name, (strlen( funit_name ) + 1) );
 
   return( retval );
 
@@ -1624,7 +1624,7 @@ int tcl_func_get_fsm_summary( ClientData d, Tcl_Interp* tcl, int argc, const cha
     retval = TCL_ERROR;
   }
 
-  free_safe( funit_name );
+  free_safe( funit_name, (strlen( funit_name ) + 1) );
 
   return( retval );
 
@@ -1666,7 +1666,7 @@ int tcl_func_get_assert_summary( ClientData d, Tcl_Interp* tcl, int argc, const 
     retval = TCL_ERROR;
   }
 
-  free_safe( funit_name );
+  free_safe( funit_name, (strlen( funit_name ) + 1) );
 
   return( retval );
 
@@ -1849,7 +1849,7 @@ int tcl_func_get_generation( ClientData d, Tcl_Interp* tcl, int argc, const char
     Tcl_SetResult( tcl, generation, TCL_STATIC );
   }
 
-  free_safe( funit_name );
+  free_safe( funit_name, (strlen( funit_name ) + 1) );
 
   return( retval );
 
@@ -1891,7 +1891,7 @@ int tcl_func_set_line_exclude( ClientData d, Tcl_Interp* tcl, int argc, const ch
   }
 
   /* Free used memory */
-  free_safe( funit_name );
+  free_safe( funit_name, (strlen( funit_name ) + 1) );
 
   return( retval );
 
@@ -1933,8 +1933,8 @@ int tcl_func_set_toggle_exclude( ClientData d, Tcl_Interp* tcl, int argc, const 
   }
 
   /* Free used memory */
-  free_safe( funit_name );
-  free_safe( sig_name );
+  free_safe( funit_name, (strlen( funit_name ) + 1) );
+  free_safe( sig_name, (strlen( sig_name ) + 1) );
 
   return( retval );
 
@@ -1976,8 +1976,8 @@ int tcl_func_set_memory_exclude( ClientData d, Tcl_Interp* tcl, int argc, const 
   }
 
   /* Free used memory */
-  free_safe( funit_name );
-  free_safe( sig_name );
+  free_safe( funit_name, (strlen( funit_name ) + 1) );
+  free_safe( sig_name, (strlen( sig_name ) + 1) );
 
   return( retval );
 
@@ -2021,7 +2021,7 @@ int tcl_func_set_comb_exclude( ClientData d, Tcl_Interp* tcl, int argc, const ch
   }
 
   /* Free used memory */
-  free_safe( funit_name );
+  free_safe( funit_name, (strlen( funit_name ) + 1) );
 
   return( retval );
 
@@ -2067,9 +2067,9 @@ int tcl_func_set_fsm_exclude( ClientData d, Tcl_Interp* tcl, int argc, const cha
   }
 
   /* Free used memory */
-  free_safe( funit_name );
-  free_safe( from_state );
-  free_safe( to_state );
+  free_safe( funit_name, (strlen( funit_name ) + 1) );
+  free_safe( from_state, 0 );  /* TBD */
+  free_safe( to_state, 0 );  /* TBD */
 
   return( retval );
 
@@ -2113,8 +2113,8 @@ int tcl_func_set_assert_exclude( ClientData d, Tcl_Interp* tcl, int argc, const 
   }
 
   /* Free used memory */
-  free_safe( funit_name );
-  free_safe( inst_name );
+  free_safe( funit_name, (strlen( funit_name ) + 1) );
+  free_safe( inst_name, (strlen( inst_name ) + 1) );
 
   return( retval );
 
@@ -2190,7 +2190,7 @@ int tcl_func_generate_report( ClientData d, Tcl_Interp* tcl, int argc, const cha
       snprintf( user_msg, USER_MSG_LENGTH, "Successfully generated report file %s", output_file );
       print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 
-      free_safe( output_file );
+      free_safe( output_file, (strlen( output_file ) + 1) );
 
     }
 
@@ -2280,6 +2280,9 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.73  2008/03/17 05:26:17  phase1geo
+ Checkpointing.  Things don't compile at the moment.
+
  Revision 1.72  2008/03/14 22:00:21  phase1geo
  Beginning to instrument code for exception handling verification.  Still have
  a ways to go before we have anything that is self-checking at this point, though.

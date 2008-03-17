@@ -7934,7 +7934,7 @@ inc_fork_depth
   :
     {
       fork_depth++;
-      fork_block_depth = (int*)realloc( fork_block_depth, ((fork_depth + 1) * sizeof( int )) );
+      fork_block_depth = (int*)realloc_safe( fork_block_depth, (sizeof( int ) * fork_depth), ((fork_depth + 1) * sizeof( int )) );
       fork_block_depth[fork_depth] = block_depth;
     }
   ;
@@ -7943,7 +7943,7 @@ dec_fork_depth
   :
     {
       fork_depth--;
-      fork_block_depth = (int*)realloc( fork_block_depth, ((fork_depth + 1) * sizeof( int )) );
+      fork_block_depth = (int*)realloc_safe( fork_block_depth, (sizeof( int ) * fork_depth), ((fork_depth + 1) * sizeof( int )) );
     }
   ;
 

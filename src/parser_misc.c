@@ -240,7 +240,7 @@ void parser_explicitly_set_curr_range(
 
   /* Now rebuild current range, adding in the new range */
   crange->dim_num++;
-  crange->dim = (vector_width*)realloc( crange->dim, (sizeof( vector_width ) * crange->dim_num) );
+  crange->dim = (vector_width*)realloc_safe( crange->dim, (sizeof( vector_width ) * (crange->dim_num - 1)), (sizeof( vector_width ) * crange->dim_num) );
   crange->dim[crange->dim_num - 1].left     = left;
   crange->dim[crange->dim_num - 1].right    = right;
   crange->dim[crange->dim_num - 1].implicit = FALSE;
@@ -272,7 +272,7 @@ void parser_implicitly_set_curr_range(
 
   /* Now rebuild current range, adding in the new range */
   crange->dim_num++;
-  crange->dim = (vector_width*)realloc( crange->dim, (sizeof( vector_width ) * crange->dim_num) );
+  crange->dim = (vector_width*)realloc_safe( crange->dim, (sizeof( vector_width ) * (crange->dim_num - 1)), (sizeof( vector_width ) * crange->dim_num) );
   crange->dim[crange->dim_num - 1].left       = (static_expr*)malloc_safe( sizeof( static_expr ) );
   crange->dim[crange->dim_num - 1].left->num  = left_num;
   crange->dim[crange->dim_num - 1].left->exp  = NULL;
@@ -316,6 +316,9 @@ bool parser_check_generation(
 
 /*
  $Log$
+ Revision 1.22  2008/03/17 05:26:16  phase1geo
+ Checkpointing.  Things don't compile at the moment.
+
  Revision 1.21  2008/01/30 05:51:50  phase1geo
  Fixing doxygen errors.  Updated parameter list syntax to make it more readable.
 

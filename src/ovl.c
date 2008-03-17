@@ -384,8 +384,8 @@ void ovl_collect( func_unit* funit, char*** uncov_inst_names, int** excludes, in
     
     /* If there are uncovered coverage points, add this instance to the uncov array */
     if( hit < total ) {
-      *uncov_inst_names = (char**)realloc( *uncov_inst_names, (sizeof( char** ) * (*uncov_inst_size + 1)) );
-      *excludes         = (int*)  realloc( *excludes,         (sizeof( int )    * (*uncov_inst_size + 1)) );
+      *uncov_inst_names = (char**)realloc_safe( *uncov_inst_names, (sizeof( char** ) * (*uncov_inst_size)), (sizeof( char** ) * (*uncov_inst_size + 1)) );
+      *excludes         = (int*)  realloc_safe( *excludes,         (sizeof( int )    * (*uncov_inst_size)), (sizeof( int )    * (*uncov_inst_size + 1)) );
       (*uncov_inst_names)[*uncov_inst_size] = strdup_safe( curr_child->name );
       (*excludes)[*uncov_inst_size]         = 0;
       (*uncov_inst_size)++;
@@ -393,13 +393,13 @@ void ovl_collect( func_unit* funit, char*** uncov_inst_names, int** excludes, in
     /* Otherwise, populate the cov array */
     } else {
       if( exclude_found == 1 ) {
-        *uncov_inst_names = (char**)realloc( *uncov_inst_names, (sizeof( char** ) * (*uncov_inst_size + 1)) );
-        *excludes         = (int*)  realloc( *excludes,         (sizeof( int )    * (*uncov_inst_size + 1)) );
+        *uncov_inst_names = (char**)realloc_safe( *uncov_inst_names, (sizeof( char** ) * (*uncov_inst_size)), (sizeof( char** ) * (*uncov_inst_size + 1)) );
+        *excludes         = (int*)  realloc_safe( *excludes,         (sizeof( int )    * (*uncov_inst_size)), (sizeof( int )    * (*uncov_inst_size + 1)) );
         (*uncov_inst_names)[*uncov_inst_size] = strdup_safe( curr_child->name );
         (*excludes)[*uncov_inst_size]         = 1;
         (*uncov_inst_size)++;
       } else {
-        *cov_inst_names = (char**)realloc( *cov_inst_names, (sizeof( char** ) * (*cov_inst_size + 1)) );
+        *cov_inst_names = (char**)realloc_safe( *cov_inst_names, (sizeof( char** ) * (*cov_inst_size)), (sizeof( char** ) * (*cov_inst_size + 1)) );
         (*cov_inst_names)[*cov_inst_size] = strdup_safe( curr_child->name );
         (*cov_inst_size)++;
       }
@@ -466,6 +466,9 @@ void ovl_get_coverage( const func_unit* funit, const char* inst_name, char** ass
 
 /*
  $Log$
+ Revision 1.22  2008/03/11 22:06:48  phase1geo
+ Finishing first round of exception handling code.
+
  Revision 1.21  2008/01/16 23:10:31  phase1geo
  More splint updates.  Code is now warning/error free with current version
  of run_splint.  Still have regression issues to debug.

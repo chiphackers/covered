@@ -38,9 +38,12 @@
 /*! Overload for the strdup_safe function which includes profiling information */
 #define strdup_safe(x)         strdup_safe1(x,__FILE__,__LINE__,profile_index)
 
+/*! Overload for the realloc_safe1 function which includes profiling information */
+#define realloc_safe(x,y,z)      realloc_safe1(x,(((x)!=NULL)?y:0),z,__FILE__,__LINE__,profile_index)
+
 /*! Overload for the free-safe function which includes profiling information */
 #ifdef TESTMODE
-#define free_safe(x,y)         free_safe2(x,y,profile_index)
+#define free_safe(x,y)         free_safe2(x,(((x)!=NULL)?y:0),__FILE__, __LINE__,profile_index)
 #else
 #define free_safe(x,y)         free_safe1(x,profile_index)
 #endif
@@ -83,7 +86,11 @@ void directory_load( const char* dir, const str_link* ext_head, str_link** file_
 bool file_exists( const char* file );
 
 /*! \brief Reads line from file and returns it in string form. */
-bool util_readline( FILE* file, /*@out@*/char** line );
+bool util_readline(
+            FILE*  file,
+  /*@out@*/ char** line,
+  /*@out@*/ int*   line_size
+);
 
 /*! \brief Searches the specified string for environment variables and substitutes their value if found */
 char* substitute_env_vars( const char* value );
@@ -119,10 +126,20 @@ str_link* get_next_vfile( str_link* curr, const char* mod );
 void free_safe1( /*@only@*/ /*@out@*/ /*@null@*/ void* ptr, unsigned int profile_index ) /*@releases ptr@*/;
 
 /*! \brief Performs safe deallocation of heap memory. */
-void free_safe2( /*@only@*/ /*@out@*/ /*@null@*/ void* ptr, size_t size, unsigned int profile_index ) /*@releases ptr@*/;
+void free_safe2( /*@only@*/ /*@out@*/ /*@null@*/ void* ptr, size_t size, const char* file, int line, unsigned int profile_index ) /*@releases ptr@*/;
 
 /*! \brief Safely allocates heap memory by performing a call to strdup */
 /*@only@*/ char* strdup_safe1( const char* str, const char* file, int line, unsigned int profile_index );
+
+/*! \brief Safely reallocates heap memory by performing a call to realloc */
+/*@only@*/ void* realloc_safe1(
+  /*@null@*/ void*        ptr,
+             size_t       old_size,
+             size_t       size,
+             const char*  file,
+             int          line,
+             unsigned int profile_index
+);
 
 /*! \brief Creates a string containing space characters. */
 void gen_space( char* spaces, int num_spaces );
@@ -152,6 +169,9 @@ void set_timestep( sim_time* st, char* value );
 
 /*
  $Log$
+ Revision 1.39  2008/03/17 05:26:17  phase1geo
+ Checkpointing.  Things don't compile at the moment.
+
  Revision 1.38  2008/01/16 05:01:23  phase1geo
  Switched totals over from float types to int types for splint purposes.
 

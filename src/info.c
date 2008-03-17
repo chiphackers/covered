@@ -171,7 +171,7 @@ void info_db_read( char** line ) { PROFILE(INFO_DB_READ);
     }
 
     /* Assign this hierarchy to the leading hierarchies array */
-    leading_hierarchies = (char**)realloc( leading_hierarchies, (sizeof( char* ) * (leading_hier_num + 1)) );
+    leading_hierarchies = (char**)realloc_safe( leading_hierarchies, (sizeof( char* ) * leading_hier_num), (sizeof( char* ) * (leading_hier_num + 1)) );
     leading_hierarchies[leading_hier_num] = strdup_safe( tmp1 );
     leading_hier_num++;
 
@@ -182,7 +182,7 @@ void info_db_read( char** line ) { PROFILE(INFO_DB_READ);
         *line = *line + chars_read;
 
         /* Add merged file */
-        merge_in = (char**)realloc( merge_in, (sizeof( char* ) * (merge_in_num + 1)) );
+        merge_in = (char**)realloc_safe( merge_in, (sizeof( char* ) * merge_in_num), (sizeof( char* ) * (merge_in_num + 1)) );
         merge_in[merge_in_num] = strdup_safe( tmp1 );
         merge_in_num++;
 
@@ -192,7 +192,7 @@ void info_db_read( char** line ) { PROFILE(INFO_DB_READ);
         }
 
         /* Add its hierarchy */
-        leading_hierarchies = (char**)realloc( leading_hierarchies, (sizeof( char* ) * (leading_hier_num + 1)) );
+        leading_hierarchies = (char**)realloc_safe( leading_hierarchies, (sizeof( char* ) * leading_hier_num), (sizeof( char* ) * (leading_hier_num + 1)) );
         leading_hierarchies[leading_hier_num] = strdup_safe( tmp2 );
         leading_hier_num++;
 
@@ -238,7 +238,7 @@ void args_db_read( char** line ) { PROFILE(ARGS_DB_READ);
     /* Store score command-line arguments */
     while( sscanf( *line, "%s%n", tmp1, &chars_read ) == 1 ) {
       *line                     = *line + chars_read;
-      score_args                = (char**)realloc( score_args, (sizeof( char* ) * (score_arg_num + 1)) );
+      score_args                = (char**)realloc_safe( score_args, (sizeof( char* ) * score_arg_num), (sizeof( char* ) * (score_arg_num + 1)) );
       score_args[score_arg_num] = strdup_safe( tmp1 );
       score_arg_num++;
     }
@@ -283,6 +283,9 @@ void info_dealloc() { PROFILE(INFO_DEALLOC);
 
 /*
  $Log$
+ Revision 1.29  2008/03/17 05:26:16  phase1geo
+ Checkpointing.  Things don't compile at the moment.
+
  Revision 1.28  2008/03/14 22:00:19  phase1geo
  Beginning to instrument code for exception handling verification.  Still have
  a ways to go before we have anything that is self-checking at this point, though.

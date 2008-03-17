@@ -1214,22 +1214,27 @@ typedef unsigned long long uint32;
  Create a 64-bit unsigned value.
 */
 #if SIZEOF_CHAR == 8
+typedef char int64;
 typedef unsigned char uint64;
 #define UINT64(x) x
 #define ato64(x)  atoi(x)
 #elif SIZEOF_SHORT == 8
+typedef short int64;
 typedef unsigned short uint64;
 #define UINT64(x) x
 #define ato64(x)  atoi(x)
 #elif SIZEOF_INT == 8
+typedef int int64;
 typedef unsigned int uint64;
 #define UINT64(x) x
 #define ato64(x)  atoi(x)
 #elif SIZEOF_LONG == 8
+typedef long int64;
 typedef unsigned long uint64;
 #define UINT64(x) x
 #define ato64(x)  atol(x)
 #elif SIZEOF_LONG_LONG == 8
+typedef long long int64;
 typedef unsigned long long uint64;
 #define UINT64(x) x ## LL
 #define ato64(x)  atoll(x)
@@ -2533,6 +2538,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.286  2008/02/28 07:54:09  phase1geo
+ Starting to add functionality for simulation optimization in the sim_expr_changed
+ function (feature request 1897410).
+
  Revision 1.285  2008/02/28 03:53:17  phase1geo
  Code addition to support feature request 1902840.  Added race6 diagnostic and updated
  race5 diagnostics per this change.  For loop control assignments are now no longer

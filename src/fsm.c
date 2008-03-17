@@ -464,7 +464,7 @@ static void fsm_gather_signals(
 
       /* Add specified expression ID to the expression IDs array, if needed */
       if( expr_id >= 0 ) {
-        (*expr_ids)                  = (int*)realloc( *expr_ids, (sizeof( int ) * ((*expr_id_size) + 1)) );
+        (*expr_ids)                  = (int*)realloc_safe( *expr_ids, (sizeof( int ) * (*expr_id_size)), (sizeof( int ) * ((*expr_id_size) + 1)) );
         (*expr_ids)[(*expr_id_size)] = expr_id;
         (*expr_id_size)++;
       }
@@ -526,7 +526,7 @@ bool fsm_collect( const char* funit_name, int funit_type, sig_link** cov_head, s
       arc_get_stats( curr_fsm->table->table, &state_total, &state_hit, &arc_total, &arc_hit );
 
       /* Allocate some more memory for the excluded array */
-      *excludes = (int*)realloc( *excludes, (sizeof( int ) * (uncov_size + 1)) );
+      *excludes = (int*)realloc_safe( *excludes, (sizeof( int ) * uncov_size), (sizeof( int ) * (uncov_size + 1)) );
 
       /* If the total number of arcs is not known, consider this FSM as uncovered */
       if( (arc_total == -1) || (arc_total != arc_hit) ) {
@@ -1296,6 +1296,9 @@ void fsm_dealloc( fsm* table ) { PROFILE(FSM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.90  2008/03/17 05:26:16  phase1geo
+ Checkpointing.  Things don't compile at the moment.
+
  Revision 1.89  2008/03/14 22:00:18  phase1geo
  Beginning to instrument code for exception handling verification.  Still have
  a ways to go before we have anything that is self-checking at this point, though.

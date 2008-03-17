@@ -1413,12 +1413,13 @@ static void combination_underline_tree(
  output to the ASCII report or the GUI.
 */
 static char* combination_prep_line(
-    char* line,
-    int start,
-    int len )
-{ PROFILE(COMBINATION_PREP_LINE);
+  char* line,
+  int   start,
+  int   len
+) { PROFILE(COMBINATION_PREP_LINE);
 
   char* str;                /* Prepared line to return */
+  int   str_size;           /* Allocated size of str */
   int   exp_id;             /* Expression ID of current line */
   int   chars_read;         /* Number of characters read from sscanf function */
   int   i;                  /* Loop iterator */
@@ -1428,7 +1429,8 @@ static char* combination_prep_line(
   int   start_ul  = 0;      /* Index of starting underline */
 
   /* Allocate memory for string to return */
-  str = (char*)malloc_safe( len + 2 );
+  str_size = len + 2;
+  str      = (char*)malloc_safe( str_size );
 
   i          = 0;
   curr_index = 0;
@@ -1475,9 +1477,10 @@ static char* combination_prep_line(
   }
 
   if( line_ip ) {
-    /* If our pointer exceeded the alloted size, resize the str to fit */
+    /* If our pointer exceeded the allotted size, resize the str to fit */
     if( i > (start + len) ) {
-      str = (char*)realloc( str, (len + 2 + (i - (start + len))) );
+      str      = (char*)realloc_safe( str, str_size, (len + 2 + (i - (start + len))) );
+      str_size = (len + 2 + (i - (start + len)));
     }
     if( start_ul >= start ) {
       combination_draw_centered_line( (str + curr_index), ((i - start_ul) + 1), exp_id, TRUE,  FALSE );
@@ -1490,7 +1493,7 @@ static char* combination_prep_line(
 
   /* If we didn't see any underlines here, return NULL */
   if( !line_seen ) {
-    free_safe( str, (strlen( str ) + 1) );
+    free_safe( str, str_size );
     str = NULL;
   } else {
     str[curr_index] = '\0';
@@ -1625,7 +1628,7 @@ static void combination_unary(
     *info      = (char**)malloc_safe( sizeof( char* ) * (*info_size) );
 
     /* Allocate lines and assign values */ 
-    length = 27;
+    length = 26;
     rv = snprintf( tmp, 20, "%d", exp->ulid );  assert( rv < 20 );  length += strlen( tmp );
     rv = snprintf( tmp, 20, "%d", hit );        assert( rv < 20 );  length += strlen( tmp );
     rv = snprintf( tmp, 20, "%d", tot );        assert( rv < 20 );  length += strlen( tmp );
@@ -2723,8 +2726,8 @@ bool combination_collect( const char* funit_name, int funit_type, expression*** 
         if( stmt->exp->line != 0 ) {
           if( *uncov_cnt == uncov_size ) {
             uncov_size += 20;
-            *uncovs     = (expression**)realloc( *uncovs, (sizeof( expression* ) * uncov_size) );
-            *excludes   = (int*)realloc( *excludes, (sizeof( int* ) * uncov_size) );
+            *uncovs     = (expression**)realloc_safe( *uncovs, (sizeof( expression* ) * (uncov_size - 20)), (sizeof( expression* ) * uncov_size) );
+            *excludes   = (int*)realloc_safe( *excludes, (sizeof( int* ) * (uncov_size - 20)), (sizeof( int* ) * uncov_size) );
           }
           (*uncovs)[(*uncov_cnt)]   = stmt->exp;
           (*excludes)[(*uncov_cnt)] = (any_measurable && (stmt->suppl.part.excluded == 0)) ? 0 : 1;
@@ -2738,7 +2741,7 @@ bool combination_collect( const char* funit_name, int funit_type, expression*** 
         if( stmt->exp->line != 0 ) {
           if( *cov_cnt == cov_size ) {
             cov_size += 20;
-            *covs     = (expression**)realloc( *covs, (sizeof( expression* ) * cov_size) );
+            *covs     = (expression**)realloc_safe( *covs, (sizeof( expression* ) * (cov_size - 20)), (sizeof( expression* ) * cov_size) );
           }
           (*covs)[(*cov_cnt)] = stmt->exp;
           (*cov_cnt)++;
@@ -2779,7 +2782,7 @@ static void combination_get_exclude_list(
     if( exp->ulid != -1 ) {
      
       if( exp->ulid > *exclude_size ) {
-        *excludes     = (int*)realloc( *excludes, (sizeof( int ) * (exp->ulid + 1)) );
+        *excludes     = (int*)realloc_safe( *excludes, (sizeof( int ) * exp->ulid), (sizeof( int ) * (exp->ulid + 1)) );
         *exclude_size = exp->ulid + 1;
       }
 
@@ -2894,7 +2897,7 @@ bool combination_get_expression(
               (*uline_size)++;
               if( *uline_size == uline_max ) {
                 uline_max += 20;
-                *ulines    = (char**)realloc( *ulines, (sizeof( char* ) * uline_max) );
+                *ulines    = (char**)realloc_safe( *ulines, (sizeof( char* ) * (uline_max - 20)), (sizeof( char* ) * uline_max) );
               }
             }
           }
@@ -3050,6 +3053,9 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.187  2008/03/17 05:26:15  phase1geo
+ Checkpointing.  Things don't compile at the moment.
+
  Revision 1.186  2008/03/14 22:00:17  phase1geo
  Beginning to instrument code for exception handling verification.  Still have
  a ways to go before we have anything that is self-checking at this point, though.

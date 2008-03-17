@@ -111,8 +111,8 @@ static str_link* gen_mod_tail = NULL;
 /*! Specifies the user-supplied timescale information for VPI */
 static char* vpi_timescale = NULL;
 
-extern uint64    largest_malloc_size;
-extern uint64    curr_malloc_size;
+extern int64     largest_malloc_size;
+extern int64     curr_malloc_size;
 extern str_link* use_files_head;
 extern char      user_msg[USER_MSG_LENGTH];
 extern char*     directive_filename;
@@ -488,7 +488,7 @@ static void score_add_arg(
   const char* arg
 ) { PROFILE(SCORE_ADD_ARG);
 
-  score_args = (char**)realloc( score_args, (sizeof( char* ) * (score_arg_num + 1)) );
+  score_args = (char**)realloc_safe( score_args, (sizeof( char* ) * score_arg_num), (sizeof( char* ) * (score_arg_num + 1)) );
   score_args[score_arg_num] = strdup_safe( arg );
   score_arg_num++;
 
@@ -1176,13 +1176,6 @@ void command_score( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
     assert( rv < USER_MSG_LENGTH );
     /*@=duplicatequals =formattype@*/
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-#ifdef DEBUG_MODE
-    /*@-duplicatequals -formattype@*/
-    rv = snprintf( user_msg, USER_MSG_LENGTH, "Allocated memory remaining: %llu bytes", curr_malloc_size );
-    assert( rv < USER_MSG_LENGTH );
-    /*@=duplicatequals =formattype@*/
-    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
-#endif
     print_output( "", NORMAL, __FILE__, __LINE__ );
 
     /* Display simulation statistics if specified */
@@ -1190,12 +1183,7 @@ void command_score( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
       perf_output_inst_report( stdout );
     }
 
-  } Catch_anonymous {
-#ifdef DEBUG_MODE
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Allocated memory remaining: %llu bytes", curr_malloc_size );
-    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-#endif
-  }
+  } Catch_anonymous {}
 
   /* Close database */
   db_close();
@@ -1223,6 +1211,9 @@ void command_score( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
 /*
  $Log$
+ Revision 1.118  2008/03/17 05:26:17  phase1geo
+ Checkpointing.  Things don't compile at the moment.
+
  Revision 1.117  2008/03/14 22:00:20  phase1geo
  Beginning to instrument code for exception handling verification.  Still have
  a ways to go before we have anything that is self-checking at this point, though.

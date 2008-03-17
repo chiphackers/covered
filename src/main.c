@@ -49,6 +49,7 @@ struct exception_context the_exception_context[1];
 
 extern char  user_msg[USER_MSG_LENGTH];
 extern char* ppfilename;
+extern int64 curr_malloc_size;
 
 
 /*!
@@ -228,12 +229,22 @@ int main( int argc, const char** argv ) {
   /* Deallocate obfuscation tree */
   obfuscate_dealloc();
 
+#ifdef TESTMODE
+  /* Make sure that all of our allocate memory has been deallocated */
+  printf( "curr_malloc_size: %lld\n", curr_malloc_size );
+  assert( curr_malloc_size == 0 );
+#endif
+
   return( retval );
 
 }
 
 /*
  $Log$
+ Revision 1.31  2008/03/14 22:00:19  phase1geo
+ Beginning to instrument code for exception handling verification.  Still have
+ a ways to go before we have anything that is self-checking at this point, though.
+
  Revision 1.30  2008/02/08 23:58:07  phase1geo
  Starting to work on exception handling.  Much work to do here (things don't
  compile at the moment).

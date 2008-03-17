@@ -830,7 +830,7 @@ void race_check_modules() { PROFILE(RACE_CHECK_MODULES);
         }
 
         /* Deallocate stmt_blk list */
-        free_safe( sb, sizeof( stmt_blk ) );
+        free_safe( sb, (sizeof( stmt_blk ) * sb_size) );
 
       }
 
@@ -1122,9 +1122,9 @@ bool race_collect_lines(
     while( curr_race != NULL ) {
       if( *line_cnt == line_size ) {
         line_size += 20;
-        *slines  = (int*)realloc( *slines,  (sizeof( int ) * line_size) );
-        *elines  = (int*)realloc( *elines,  (sizeof( int ) * line_size) );
-        *reasons = (int*)realloc( *reasons, (sizeof( int ) * line_size) );
+        *slines  = (int*)realloc_safe( *slines,  (sizeof( int ) * (line_size - 20)), (sizeof( int ) * line_size) );
+        *elines  = (int*)realloc_safe( *elines,  (sizeof( int ) * (line_size - 20)), (sizeof( int ) * line_size) );
+        *reasons = (int*)realloc_safe( *reasons, (sizeof( int ) * (line_size - 20)), (sizeof( int ) * line_size) );
       }
       (*slines)[*line_cnt]  = curr_race->start_line;
       (*elines)[*line_cnt]  = curr_race->end_line;
@@ -1170,6 +1170,9 @@ void race_blk_delete_list(
 
 /*
  $Log$
+ Revision 1.77  2008/03/17 05:26:17  phase1geo
+ Checkpointing.  Things don't compile at the moment.
+
  Revision 1.76  2008/03/14 22:00:20  phase1geo
  Beginning to instrument code for exception handling verification.  Still have
  a ways to go before we have anything that is self-checking at this point, though.

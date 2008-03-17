@@ -28,7 +28,9 @@
 #include "util.h"
 
 
-void func_iter_display( func_iter* fi ) { PROFILE(FUNC_ITER_DISPLAY);
+void func_iter_display(
+  func_iter* fi
+) { PROFILE(FUNC_ITER_DISPLAY);
 
   int i;  /* Loop iterator */
 
@@ -45,7 +47,9 @@ void func_iter_display( func_iter* fi ) { PROFILE(FUNC_ITER_DISPLAY);
 
  Performs a bubble sort of the first element such that the first line is in location 0 of the sis array.
 */
-static void func_iter_sort( func_iter* fi ) { PROFILE(FUNC_ITER_SORT);
+static void func_iter_sort(
+  func_iter* fi
+) { PROFILE(FUNC_ITER_SORT);
 
   stmt_iter* tmp;  /* Temporary statement iterator */
   int        i;    /* Loop iterator */
@@ -67,7 +71,7 @@ static void func_iter_sort( func_iter* fi ) { PROFILE(FUNC_ITER_SORT);
     fi->sis[i] = tmp;
     (fi->si_num)--;
 
-  /* Otherwise, resort them based on line number */
+  /* Otherwise, re-sort them based on line number */
   } else {
 
     i = 0;
@@ -89,7 +93,9 @@ static void func_iter_sort( func_iter* fi ) { PROFILE(FUNC_ITER_SORT);
  \return Returns the number of statement iterators found in all of the unnamed functional units
          within a named functional unit.
 */
-static int func_iter_count_stmt_iters( func_unit* funit ) { PROFILE(FUNC_ITER_COUNT_STMT_ITERS);
+static int func_iter_count_stmt_iters(
+  func_unit* funit
+) { PROFILE(FUNC_ITER_COUNT_STMT_ITERS);
 
   int         count = 1;  /* Number of statement iterators within this functional unit */
   funit_link* child;      /* Pointer to child functional unit */
@@ -123,7 +129,7 @@ static void func_iter_add_stmt_iters(
   int         i;       /* Loop iterator */
 
   /* First, shift all current statement iterators down by one */
-  for( i=(fi->si_num - 1); i>=0; i-- ) {
+  for( i=(fi->sis_num - 2); i>=0; i-- ) {
     fi->sis[i+1] = fi->sis[i];
   }
 
@@ -156,14 +162,18 @@ static void func_iter_add_stmt_iters(
  \param fi     Pointer to functional unit iterator structure to populate
  \param funit  Pointer to main functional unit to create iterator for (must be named)
 */
-void func_iter_init( func_iter* fi, func_unit* funit ) { PROFILE(FUNC_ITER_INIT);
+void func_iter_init(
+  func_iter* fi,
+  func_unit* funit
+) { PROFILE(FUNC_ITER_INIT);
   
   assert( fi != NULL );
   assert( funit != NULL );
 
   /* Allocate array of statement iterators for the current functional unit */
-  fi->sis    = (stmt_iter**)malloc_safe( sizeof( func_iter* ) * func_iter_count_stmt_iters( funit ) );
-  fi->si_num = 0;
+  fi->sis_num = func_iter_count_stmt_iters( funit );
+  fi->sis     = (stmt_iter**)malloc_safe( sizeof( stmt_iter* ) * fi->sis_num );
+  fi->si_num  = 0;
 
   /* Create statement iterators */
   func_iter_add_stmt_iters( fi, funit );
@@ -176,7 +186,9 @@ void func_iter_init( func_iter* fi, func_unit* funit ) { PROFILE(FUNC_ITER_INIT)
  \return Returns pointer to next statement in line order (or NULL if there are no more
          statements in the given functional unit)
 */
-statement* func_iter_get_next_statement( func_iter* fi ) { PROFILE(FUNC_ITER_GET_NEXT_STATEMENT);
+statement* func_iter_get_next_statement(
+  func_iter* fi
+) { PROFILE(FUNC_ITER_GET_NEXT_STATEMENT);
 
   statement* stmt;  /* Pointer to next statement in line order */
 
@@ -210,19 +222,21 @@ statement* func_iter_get_next_statement( func_iter* fi ) { PROFILE(FUNC_ITER_GET
  
  Deallocates all allocated memory for the given functional unit iterator.
 */
-void func_iter_dealloc( func_iter* fi ) { PROFILE(FUNC_ITER_DEALLOC);
+void func_iter_dealloc(
+  func_iter* fi
+) { PROFILE(FUNC_ITER_DEALLOC);
 
   int i;  /* Loop iterator */
   
   if( fi != NULL ) {
 
     /* Deallocate all statement iterators */
-    for( i=0; i<(sizeof( fi->sis ) / sizeof( stmt_iter )); i++ ) {
-      free_safe( fi->sis[i], sizeof( stmt_iter* ) );
+    for( i=0; i<fi->sis_num; i++ ) {
+      free_safe( fi->sis[i], sizeof( stmt_iter ) );
     }
 
     /* Deallocate array of statement iterators */
-    free_safe( fi->sis, (sizeof( stmt_iter* ) * fi->si_num) );
+    free_safe( fi->sis, (sizeof( stmt_iter* ) * fi->sis_num) );
 
   }
   
@@ -230,6 +244,9 @@ void func_iter_dealloc( func_iter* fi ) { PROFILE(FUNC_ITER_DEALLOC);
 
 /*
  $Log$
+ Revision 1.6  2008/03/17 05:26:16  phase1geo
+ Checkpointing.  Things don't compile at the moment.
+
  Revision 1.5  2008/01/10 04:59:04  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 

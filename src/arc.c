@@ -1261,7 +1261,7 @@ void arc_get_states( char*** states, int* state_size, const char* arcs, bool hit
       if( j == 0 ) {
         if( arc_get_entry_suppl( arcs, i, ARC_NOT_UNIQUE_L ) == 0 ) {
           if( (arc_get_entry_suppl( arcs, i, ARC_HIT_F ) == hit) || any ) {
-            *states                  = (char**)realloc( *states, (sizeof( char* ) * ((*state_size) + 1)) );
+            *states                  = (char**)realloc_safe( *states, (sizeof( char* ) * (*state_size)), (sizeof( char* ) * ((*state_size) + 1)) );
             assert( *states != NULL );
             (*states)[(*state_size)] = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 2 );
             arc_state_to_string( arcs, i, TRUE, (*states)[(*state_size)] );
@@ -1271,7 +1271,7 @@ void arc_get_states( char*** states, int* state_size, const char* arcs, bool hit
       } else {
         if( arc_get_entry_suppl( arcs, i, ARC_NOT_UNIQUE_R ) == 0 ) {
           if( (arc_get_entry_suppl( arcs, i, ARC_HIT_F ) == hit) || any ) {
-            *states                  = (char**)realloc( *states, (sizeof( char* ) * ((*state_size) + 1)) );
+            *states                  = (char**)realloc_safe( *states, (sizeof( char* ) * (*state_size)), (sizeof( char* ) * ((*state_size) + 1)) );
             assert( *states != NULL );
             (*states)[(*state_size)] = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 2 );
             arc_state_to_string( arcs, i, FALSE, (*states)[(*state_size)] );
@@ -1317,14 +1317,14 @@ void arc_get_transitions( char*** from_states, char*** to_states, int** excludes
 
     /* Check forward first */
     if( (arc_get_entry_suppl( arcs, i, ARC_HIT_F ) == hit) || any ) {
-      *from_states                = (char**)realloc( *from_states, (sizeof( char* ) * (*arc_size + 1)) );
+      *from_states                = (char**)realloc_safe( *from_states, (sizeof( char* ) * (*arc_size)), (sizeof( char* ) * (*arc_size + 1)) );
       assert( *from_states != NULL );
       (*from_states)[(*arc_size)] = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 2 );
-      *to_states                  = (char**)realloc( *to_states,   (sizeof( char* ) * (*arc_size + 1)) );
+      *to_states                  = (char**)realloc_safe( *to_states,   (sizeof( char* ) * (*arc_size)), (sizeof( char* ) * (*arc_size + 1)) );
       assert( *to_states != NULL );
       (*to_states)[(*arc_size)]   = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 2 );
       if( any ) {
-        *excludes = (int*)realloc( *excludes, (sizeof( int ) * (*arc_size + 1)) );
+        *excludes = (int*)realloc_safe( *excludes, (sizeof( int ) * (*arc_size)), (sizeof( int ) * (*arc_size + 1)) );
         assert( *excludes != NULL );
         (*excludes)[(*arc_size)] = arc_get_entry_suppl( arcs, i, ARC_EXCLUDED_F );
       }
@@ -1335,14 +1335,14 @@ void arc_get_transitions( char*** from_states, char*** to_states, int** excludes
 
     if( ((arc_get_entry_suppl( arcs, i, ARC_HIT_R ) == hit) || any) &&
         (arc_get_entry_suppl( arcs, i, ARC_BIDIR ) == 1) ) {
-      *from_states                = (char**)realloc( *from_states, (sizeof( char* ) * (*arc_size + 1)) );
+      *from_states                = (char**)realloc_safe( *from_states, (sizeof( char* ) * (*arc_size)), (sizeof( char* ) * (*arc_size + 1)) );
       assert( *from_states != NULL );
       (*from_states)[(*arc_size)] = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 2 );
-      *to_states                  = (char**)realloc( *to_states,   (sizeof( char* ) * (*arc_size + 1)) );
+      *to_states                  = (char**)realloc_safe( *to_states,   (sizeof( char* ) * (*arc_size)), (sizeof( char* ) * (*arc_size + 1)) );
       assert( *to_states != NULL );
       (*to_states)[(*arc_size)]   = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 2 );
       if( any ) {
-        *excludes = (int*)realloc( *excludes, (sizeof( int ) * (*arc_size + 1)) );
+        *excludes = (int*)realloc_safe( *excludes, (sizeof( int ) * (*arc_size)), (sizeof( int ) * (*arc_size + 1)) );
         assert( *excludes != NULL );
         (*excludes)[(*arc_size)] = arc_get_entry_suppl( arcs, i, ARC_EXCLUDED_R );
       }
@@ -1395,6 +1395,9 @@ void arc_dealloc( char* arcs ) { PROFILE(ARC_DEALLOC);
 
 /*
  $Log$
+ Revision 1.55  2008/03/17 05:26:15  phase1geo
+ Checkpointing.  Things don't compile at the moment.
+
  Revision 1.54  2008/03/14 22:00:17  phase1geo
  Beginning to instrument code for exception handling verification.  Still have
  a ways to go before we have anything that is self-checking at this point, though.

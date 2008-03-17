@@ -32,6 +32,7 @@
 typedef struct func_iter_s {
   stmt_iter** sis;
   int         si_num;
+  int         sis_num;
 } func_iter;
 
 
@@ -47,6 +48,9 @@ void func_iter_dealloc( func_iter* si );
 
 /*
  $Log$
+ Revision 1.2  2007/11/20 05:28:58  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.1  2007/04/02 20:19:36  phase1geo
  Checkpointing more work on use of functional iterators.  Not working correctly
  yet.

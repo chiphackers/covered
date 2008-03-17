@@ -83,12 +83,12 @@ bool debug_mode;
  Contains the total number of bytes malloc'ed during the simulation run.  This
  information is output to the user after simulation as a performance indicator.
 */
-uint64 curr_malloc_size = 0;
+int64 curr_malloc_size = 0;
 
 /*!
  Holds the largest number of bytes in allocation at one period of time.
 */
-uint64 largest_malloc_size = 0;
+int64 largest_malloc_size = 0;
 
 /*!
  Holds some output that will be displayed via the print_output command.  This is
@@ -352,9 +352,9 @@ bool is_func_unit( const char* token ) { PROFILE(IS_FUNC_UNIT);
   }
 
   /* Deallocate memory */
-  free_safe( orig );
-  free_safe( rest );
-  free_safe( front );
+  free_safe( orig, (strlen( token ) + 1) );
+  free_safe( rest, (strlen( token ) + 1) );
+  free_safe( front, (strlen( token ) + 1) );
 
   PROFILE_END;
 
@@ -532,7 +532,7 @@ void directory_load(
             (void)str_link_add( tmpfile, file_head, file_tail );
             (*file_tail)->suppl = 0x1;
           } else {
-            free_safe( tmpfile );
+            free_safe( tmpfile, (strlen( tmpfile ) + 1) );
           }
         }
       }
@@ -578,25 +578,30 @@ bool file_exists( const char* file ) { PROFILE(FILE_EXISTS);
 /*!
  \param file  File to read next line from.
  \param line  Pointer to string which will contain read line minus newline character.
+ \param line_size  Pointer to number of 
  
  \return Returns FALSE if feof is encountered; otherwise, returns TRUE.
 
  Reads in a single line of information from the specified file and returns a string
  containing the read line to the calling function.
 */
-bool util_readline( FILE* file, char** line ) { PROFILE(UTIL_READLINE);
+bool util_readline(
+  FILE*  file,
+  char** line,
+  int*   line_size
+) { PROFILE(UTIL_READLINE);
 
-  char  c;                 /* Character recently read from file */
-  int   i         = 0;     /* Current index of line */
-  int   line_size = 128;   /* Size of current line */
+  char  c;      /* Character recently read from file */
+  int   i = 0;  /* Current index of line */
 
-  *line = (char*)malloc_safe( line_size );
+  *line_size = 128;
+  *line      = (char*)malloc_safe( *line_size );
 
   while( !feof( file ) && ((c = (char)fgetc( file )) != '\n') ) {
 
-    if( i == (line_size - 1) ) {
-      line_size = line_size * 2;
-      *line     = (char*)realloc( *line, line_size );
+    if( i == (*line_size - 1) ) {
+      *line_size *= 2;
+      *line       = (char*)realloc_safe( *line, (*line_size / 2), *line_size );
     }
 
     (*line)[i] = c;
@@ -607,7 +612,7 @@ bool util_readline( FILE* file, char** line ) { PROFILE(UTIL_READLINE);
   if( !feof( file ) ) {
     (*line)[i] = '\0';
   } else {
-    free_safe( *line );
+    free_safe( *line, *line_size );
     *line = NULL;
   }
 
@@ -650,7 +655,7 @@ char* substitute_env_vars(
         } else {
           env_var[env_var_index] = '\0';
           if( (env_value = getenv( env_var )) != NULL ) {
-            newvalue = (char*)realloc( newvalue, (newvalue_index + strlen( env_value ) + 1) );
+            newvalue = (char*)realloc_safe( newvalue, (strlen( newvalue ) + 1), (newvalue_index + strlen( env_value ) + 1) );
             strcat( newvalue, env_value );
             newvalue_index += strlen( env_value );
             parsing_var = FALSE;
@@ -667,7 +672,7 @@ char* substitute_env_vars(
         parsing_var   = TRUE;
         env_var_index = 0;
       } else {
-        newvalue = (char*)realloc( newvalue, (newvalue_index + 2) );
+        newvalue = (char*)realloc_safe( newvalue, (strlen( newvalue ) + 1), (newvalue_index + 2) );
         newvalue[newvalue_index]   = *ptr;
         newvalue[newvalue_index+1] = '\0';
         newvalue_index++;
@@ -676,7 +681,7 @@ char* substitute_env_vars(
     }
 
   } Catch_anonymous {
-    free_safe( newvalue );
+    free_safe( newvalue, (strlen( newvalue ) + 1) );
     printf( "util Throw C\n" );
     Throw 0;
   }
@@ -842,8 +847,8 @@ bool scope_compare( const char* str1, const char* str2 ) { PROFILE(SCOPE_COMPARE
   retval = (strcmp( new_str1, new_str2 ) == 0);
 
   /* Deallocate the memory */
-  free_safe( new_str1 );
-  free_safe( new_str2 );
+  free_safe( new_str1, (strlen( new_str1 ) + 1) );
+  free_safe( new_str2, (strlen( new_str2 ) + 1) );
 
   PROFILE_END;
 
@@ -995,7 +1000,7 @@ str_link* get_next_vfile( str_link* curr, const char* mod ) { PROFILE(GET_NEXT_V
 */
 void* malloc_safe1( size_t size, /*@unused@*/ const char* file, /*@unused@*/ int line, unsigned int profile_index ) {
 
-  void* obj;      /* Object getting malloc address */
+  void* obj;  /* Object getting malloc address */
 
   assert( size <= 100000 );
   curr_malloc_size += size;
@@ -1005,6 +1010,9 @@ void* malloc_safe1( size_t size, /*@unused@*/ const char* file, /*@unused@*/ int
   }
 
   obj = malloc( size );
+#ifdef TESTMODE
+  printf( "MALLOC (%p) %d bytes (file: %s, line: %d)\n", obj, size, file, line );
+#endif
   assert( obj != NULL );
 
   /* Profile the malloc */
@@ -1037,6 +1045,9 @@ void* malloc_safe_nolimit1( size_t size, /*@unused@*/ const char* file, /*@unuse
   }
 
   obj = malloc( size );
+#ifdef TESTMODE
+  printf( "MALLOC (%p) %d bytes (file: %s, line: %d)\n", obj, size, file, line );
+#endif
   assert( obj != NULL );
 
   /* Profile the malloc */
@@ -1074,9 +1085,12 @@ void free_safe1( void* ptr, unsigned int profile_index ) {
  of current memory usage for output information at end of program
  life.
 */
-void free_safe2( void* ptr, size_t size, unsigned int profile_index ) {
+void free_safe2( void* ptr, size_t size, const char* file, int line, unsigned int profile_index ) {
 
   if( ptr != NULL ) {
+#ifdef TESTMODE
+    printf( "FREE (%p) %d bytes (file: %s, line: %d)\n", ptr, size, file, line );
+#endif
     curr_malloc_size -= size;
     free( ptr );
   }
@@ -1095,18 +1109,72 @@ void free_safe2( void* ptr, size_t size, unsigned int profile_index ) {
  Calls the strdup() function for the specified string, making sure that the string to
  allocate is a healthy string (contains NULL character).
 */
-char* strdup_safe1( const char* str, /*@unused@*/ const char* file, /*@unused@*/ int line, unsigned int profile_index ) {
+char* strdup_safe1(
+               const char*  str,
+  /*@unused@*/ const char*  file,
+  /*@unused@*/ int          line,
+               unsigned int profile_index
+) {
 
   char* new_str;
+  int   str_len = strlen( str ) + 1;
 
-  assert( strlen( str ) <= 10000 );
+  assert( str_len <= 10000 );
+  curr_malloc_size += str_len;
+  if( curr_malloc_size > largest_malloc_size ) {
+    largest_malloc_size = curr_malloc_size;
+  }
   new_str = strdup( str );
+#ifdef TESTMODE
+  printf( "STRDUP (%p) %d bytes (file: %s, line: %d)\n", new_str, str_len, file, line );
+#endif
   assert( new_str != NULL );
 
   /* Profile the malloc */
   MALLOC_CALL(profile_index);
 
   return( new_str );
+
+}
+
+/*!
+ \param ptr            Pointer to old memory to copy
+ \param size           Size of new allocated memory (in bytes)
+ \param file           Name of file that called this function
+ \param line           Line number of file that called this function
+ \param profile_index  Profile index of function that called this function
+
+ Calls the realloc() function for the specified memory and size, making sure that the memory
+ size doesn't exceed a threshold value and that the requested memory was allocated.
+*/
+void* realloc_safe1(
+  /*@null@*/ void*        ptr,
+             size_t       old_size,
+             size_t       size,
+             const char*  file,
+             int          line,
+             unsigned int profile_index
+) {
+
+  void* newptr;
+
+  assert( size <= 10000 );
+
+  curr_malloc_size -= old_size;
+  curr_malloc_size += size;
+  if( curr_malloc_size > largest_malloc_size ) {
+    largest_malloc_size = curr_malloc_size;
+  }
+ 
+  newptr = realloc( ptr, size );
+#ifdef TESTMODE
+  printf( "REALLOC (%p -> %p) %d bytes (file: %s, line: %d)\n", ptr, newptr, size, file, line );
+#endif
+  assert( ((size > 0) && (newptr != NULL)) || ((size == 0) && (newptr == NULL)) );
+
+  MALLOC_CALL(profile_index);
+
+  return( newptr );
 
 }
 
@@ -1237,6 +1305,9 @@ void calc_miss_percent(
 
 /*
  $Log$
+ Revision 1.81  2008/03/17 05:26:17  phase1geo
+ Checkpointing.  Things don't compile at the moment.
+
  Revision 1.80  2008/03/14 22:00:21  phase1geo
  Beginning to instrument code for exception handling verification.  Still have
  a ways to go before we have anything that is self-checking at this point, though.

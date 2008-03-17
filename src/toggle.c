@@ -336,7 +336,7 @@ static bool toggle_instance_summary(
     assert( rv < 4096 );
   }
 
-  free_safe( pname );
+  free_safe( pname, (strlen( pname ) + 1) );
 
   if( root->stat->show && !funit_is_unnamed( root->funit ) &&
       ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
@@ -437,7 +437,7 @@ static bool toggle_funit_summary(
       miss_found |= toggle_display_funit_summary( ofile, pname, get_basename( obf_file( head->funit->filename ) ),
                                                   head->funit->stat->tog01_hit, head->funit->stat->tog10_hit, head->funit->stat->tog_total );
 
-      free_safe( pname );
+      free_safe( pname, (strlen( pname ) + 1) );
 
       /* Update accumulated information */
       *hits01 += head->funit->stat->tog01_hit;
@@ -519,7 +519,7 @@ static void toggle_display_verbose( FILE* ofile, sig_link* sigl ) { PROFILE(TOGG
 
     }
 
-    free_safe( pname );
+    free_safe( pname, (strlen( pname ) + 1) );
 
     curr_sig = curr_sig->next;
 
@@ -556,7 +556,7 @@ static void toggle_instance_verbose( FILE* ofile, funit_inst* root, char* parent
     assert( rv < 4096 );
   }
 
-  free_safe( pname );
+  free_safe( pname, (strlen( pname ) + 1) );
 
   if( !funit_is_unnamed( root->funit ) &&
       ((root->stat->tog01_hit < root->stat->tog_total) ||
@@ -576,7 +576,7 @@ static void toggle_instance_verbose( FILE* ofile, funit_inst* root, char* parent
     pname = scope_gen_printable( funit_flatten_name( root->funit ) );
     fprintf( ofile, "%s, File: %s, Instance: %s\n", pname, obf_file( root->funit->filename ), tmpname );
     fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
-    free_safe( pname );
+    free_safe( pname, (strlen( pname ) + 1) );
 
     toggle_display_verbose( ofile, root->funit->sig_head );
 
@@ -706,6 +706,11 @@ void toggle_report( FILE* ofile, bool verbose ) { PROFILE(TOGGLE_REPORT);
 
 /*
  $Log$
+ Revision 1.70  2008/02/01 22:10:27  phase1geo
+ Adding more diagnostics to regression suite for exclusion testing.
+ Also fixed bug in toggle reporter to not output excluded signals in
+ verbose output.
+
  Revision 1.69  2008/02/01 07:03:21  phase1geo
  Fixing bugs in pragma exclusion code.  Added diagnostics to regression suite
  to verify that we correctly exclude/include signals when pragmas are set

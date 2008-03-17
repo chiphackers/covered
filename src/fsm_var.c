@@ -419,7 +419,7 @@ void fsm_var_bind() { PROFILE(FSM_VAR_BIND);
       /* Deallocate memory for this bind structure */
       free_safe( curr->sig_name, (strlen( curr->sig_name ) + 1) );
       free_safe( curr->funit_name, (strlen( curr->funit_name ) + 1) );
-      free_safe( curr, sizeeof( fv_bind ) );
+      free_safe( curr, sizeof( fv_bind ) );
 
       curr = tmp;
 
@@ -527,6 +527,9 @@ void fsm_var_remove(
 
 /*
  $Log$
+ Revision 1.43  2008/03/17 05:26:16  phase1geo
+ Checkpointing.  Things don't compile at the moment.
+
  Revision 1.42  2008/03/14 22:00:19  phase1geo
  Beginning to instrument code for exception handling verification.  Still have
  a ways to go before we have anything that is self-checking at this point, though.

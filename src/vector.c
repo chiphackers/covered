@@ -80,7 +80,13 @@ extern char user_msg[USER_MSG_LENGTH];
  and value (if value != NULL).  If value != NULL, initializes all contents 
  of value array to 0x2 (X-value).
 */
-void vector_init( vector* vec, vec_data* value, bool owns_value, int width, int type ) { PROFILE(VECTOR_INIT);
+void vector_init(
+  vector*   vec,
+  vec_data* value,
+  bool      owns_value,
+  int       width,
+  int       type
+) { PROFILE(VECTOR_INIT);
 
   vec->width                = width;
   vec->suppl.all            = 0;
@@ -117,7 +123,11 @@ void vector_init( vector* vec, vec_data* value, bool owns_value, int width, int 
 
  Creates new vector from heap memory and initializes all vector contents.
 */
-vector* vector_create( int width, int type, bool data ) { PROFILE(VECTOR_CREATE);
+vector* vector_create(
+  int  width,
+  int  type,
+  bool data
+) { PROFILE(VECTOR_CREATE);
 
   vector*   new_vec;       /* Pointer to newly created vector */
   vec_data* value = NULL;  /* Temporarily stores newly created vector value */
@@ -144,7 +154,10 @@ vector* vector_create( int width, int type, bool data ) { PROFILE(VECTOR_CREATE)
  
  Copies the contents of the from_vec to the to_vec, allocating new memory.
 */
-void vector_copy( vector* from_vec, vector** to_vec ) { PROFILE(VECTOR_COPY);
+void vector_copy(
+  vector*  from_vec,
+  vector** to_vec
+) { PROFILE(VECTOR_COPY);
 
   int i;  /* Loop iterator */
 
@@ -178,7 +191,12 @@ void vector_copy( vector* from_vec, vector** to_vec ) { PROFILE(VECTOR_COPY);
  \return Returns an unsigned integer containing the values of dat0, dat1, dat2 and dat3
          in an encoded, packed manner.
 */
-static unsigned int vector_nibbles_to_uint( nibble dat0, nibble dat1, nibble dat2, nibble dat3 ) { PROFILE(VECTOR_NIBBLES_TO_UINT);
+static unsigned int vector_nibbles_to_uint(
+  nibble dat0,
+  nibble dat1,
+  nibble dat2,
+  nibble dat3
+) { PROFILE(VECTOR_NIBBLES_TO_UINT);
 
   unsigned int d[4];  /* Array of unsigned int format of dat0,1,2,3 */
   unsigned int i;     /* Loop iterator */
@@ -210,7 +228,10 @@ static unsigned int vector_nibbles_to_uint( nibble dat0, nibble dat1, nibble dat
 
  Decodes and unpacks the given unsigned integer value into the specified nibble array.
 */
-static void vector_uint_to_nibbles( unsigned int data, nibble* dat ) { PROFILE(VECTOR_UINT_TO_NIBBLES);
+static void vector_uint_to_nibbles(
+  unsigned int data,
+  nibble*      dat
+) { PROFILE(VECTOR_UINT_TO_NIBBLES);
 
   unsigned int i;  /* Loop iterator */
 
@@ -235,7 +256,11 @@ static void vector_uint_to_nibbles( unsigned int data, nibble* dat ) { PROFILE(V
 
  Writes the specified vector to the specified coverage database file.
 */
-void vector_db_write( vector* vec, FILE* file, bool write_data ) { PROFILE(VECTOR_DB_WRITE);
+void vector_db_write(
+  vector* vec,
+  FILE*   file,
+  bool    write_data
+) { PROFILE(VECTOR_DB_WRITE);
 
   int    i;      /* Loop iterator */
   nibble mask;   /* Mask value for vector value nibbles */
@@ -495,7 +520,10 @@ void vector_db_merge(
 
  \return Returns a string showing the toggle 0 -> 1 information.
 */
-char* vector_get_toggle01( vec_data* nib, int width ) { PROFILE(VECTOR_GET_TOGGLE01);
+char* vector_get_toggle01(
+  vec_data* nib,
+  int       width
+) { PROFILE(VECTOR_GET_TOGGLE01);
 
   char* bits = (char*)malloc_safe( width + 1 );
   int   i;
@@ -523,7 +551,10 @@ char* vector_get_toggle01( vec_data* nib, int width ) { PROFILE(VECTOR_GET_TOGGL
 
  \return Returns a string showing the toggle 1 -> 0 information.
 */
-char* vector_get_toggle10( vec_data* nib, int width ) { PROFILE(VECTOR_GET_TOGGLE10);
+char* vector_get_toggle10(
+  vec_data* nib,
+  int width
+) { PROFILE(VECTOR_GET_TOGGLE10);
 
   char* bits = (char*)malloc_safe( width + 1 );
   int   i; 
@@ -1448,7 +1479,7 @@ char* vector_to_string( vector* vec ) { PROFILE(VECTOR_TO_STRING);
     }
     assert( rv < str_size );
 
-    free_safe( tmp );
+    free_safe( tmp, vec_size );
 
   }
 
@@ -2421,12 +2452,12 @@ void vector_dealloc( vector* vec ) { PROFILE(VECTOR_DEALLOC);
 
     /* Deallocate all vector values */
     if( (vec->value != NULL) && (vec->suppl.part.owns_data == 1) ) {
-      free_safe( vec->value );
+      free_safe( vec->value, vec->width );
       vec->value = NULL;
     }
 
     /* Deallocate vector itself */
-    free_safe( vec );
+    free_safe( vec, sizeof( vector ) );
 
   }
 
@@ -2436,6 +2467,10 @@ void vector_dealloc( vector* vec ) { PROFILE(VECTOR_DEALLOC);
 
 /*
  $Log$
+ Revision 1.118  2008/03/14 22:00:21  phase1geo
+ Beginning to instrument code for exception handling verification.  Still have
+ a ways to go before we have anything that is self-checking at this point, though.
+
  Revision 1.117  2008/03/13 10:28:55  phase1geo
  The last of the exception handling modifications.
 

@@ -272,7 +272,10 @@ mod_parm* funit_find_param( char* name, func_unit* funit ) { PROFILE(FUNIT_FIND_
  Searches the signal list in the given functional unit for the specified signal name.  If
  it isn't found there, we look in the generate item list for the same signal.
 */
-vsignal* funit_find_signal( char* name, func_unit* funit ) { PROFILE(FUNIT_FIND_SIGNAL);
+vsignal* funit_find_signal(
+  char*      name,
+  func_unit* funit
+) { PROFILE(FUNIT_FIND_SIGNAL);
 
   vsignal*    found_sig = NULL;  /* Pointer to the found signal */
   vsignal     sig;               /* Holder for signal to search for */
@@ -281,11 +284,6 @@ vsignal* funit_find_signal( char* name, func_unit* funit ) { PROFILE(FUNIT_FIND_
   gen_item*   gi;                /* Pointer to temporary generate item */
   gen_item*   found_gi;          /* Pointer to found generate item */
   gitem_link* gil;               /* Pointer to found generate item link */
-#endif
-#ifdef OBSOLETE
-  int         ignore;            /* Value to use for ignore purposes */
-  int         i         = 0;     /* Loop iterator */
-  funit_inst* inst;              /* Pointer to current functional unit instance */
 #endif
 
   sig.name = name;
@@ -747,6 +745,7 @@ void funit_db_merge( func_unit* base, FILE* file, bool same ) { PROFILE(FUNIT_DB
   fsm_link* curr_base_fsm;   /* Pointer to current FSM in base functional unit FSM list */
   race_blk* curr_base_race;  /* Pointer to current race condition block in base module list  */
   char*     curr_line;       /* Pointer to current line being read from CDD */
+  int       curr_line_size;  /* Number of bytes allocated for curr_line */
   char*     rest_line;       /* Pointer to rest of read line */
   int       type;            /* Specifies currently read CDD type */
   int       chars_read;      /* Number of characters read from current CDD line */
@@ -757,7 +756,7 @@ void funit_db_merge( func_unit* base, FILE* file, bool same ) { PROFILE(FUNIT_DB
   /* Handle all functional unit expressions */
   curr_base_exp = base->exp_head;
   while( curr_base_exp != NULL ) {
-    if( util_readline( file, &curr_line ) ) {
+    if( util_readline( file, &curr_line, &curr_line_size ) ) {
       Try {
         if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
           rest_line = curr_line + chars_read;
@@ -774,11 +773,11 @@ void funit_db_merge( func_unit* base, FILE* file, bool same ) { PROFILE(FUNIT_DB
           Throw 0;
         }
       } Catch_anonymous {
-        free_safe( curr_line, (strlen( curr_line ) + 1) );
+        free_safe( curr_line, curr_line_size );
         printf( "func_unit Throw D\n" );
         Throw 0;
       }
-      free_safe( curr_line, (strlen( curr_line ) + 1) );
+      free_safe( curr_line, curr_line_size );
     } else {
       print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
       printf( "func_unit Throw E\n" );
@@ -790,7 +789,7 @@ void funit_db_merge( func_unit* base, FILE* file, bool same ) { PROFILE(FUNIT_DB
   /* Handle all functional unit signals */
   curr_base_sig = base->sig_head;
   while( curr_base_sig != NULL ) {
-    if( util_readline( file, &curr_line ) ) {
+    if( util_readline( file, &curr_line, &curr_line_size ) ) {
       Try {
         if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
           rest_line = curr_line + chars_read;
@@ -807,11 +806,11 @@ void funit_db_merge( func_unit* base, FILE* file, bool same ) { PROFILE(FUNIT_DB
           Throw 0;
         }
       } Catch_anonymous {
-        free_safe( curr_line, (strlen( curr_line ) + 1) );
+        free_safe( curr_line, curr_line_size );
         printf( "func_unit Throw H\n" );
         Throw 0;
       }
-      free_safe( curr_line, (strlen( curr_line ) + 1) );
+      free_safe( curr_line, curr_line_size );
     } else {
       print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
       printf( "func_unit Throw I\n" );
@@ -823,7 +822,7 @@ void funit_db_merge( func_unit* base, FILE* file, bool same ) { PROFILE(FUNIT_DB
   /* Since statements don't get merged, we will just read these lines in */
   stmt_iter_reset( &curr_base_stmt, base->stmt_head );
   while( curr_base_stmt.curr != NULL ) {
-    if( util_readline( file, &curr_line ) ) {
+    if( util_readline( file, &curr_line, &curr_line_size ) ) {
       Try {
         if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
           rest_line = curr_line + chars_read;
@@ -838,11 +837,11 @@ void funit_db_merge( func_unit* base, FILE* file, bool same ) { PROFILE(FUNIT_DB
           Throw 0;
         }
       } Catch_anonymous {
-        free_safe( curr_line, (strlen( curr_line ) + 1) );
+        free_safe( curr_line, curr_line_size );
         printf( "func_unit Throw L\n" );
         Throw 0;
       }
-      free_safe( curr_line, (strlen( curr_line ) + 1) );
+      free_safe( curr_line, curr_line_size );
     } else {
       print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
       printf( "func_unit Throw M\n" );
@@ -854,7 +853,7 @@ void funit_db_merge( func_unit* base, FILE* file, bool same ) { PROFILE(FUNIT_DB
   /* Handle all functional unit FSMs */
   curr_base_fsm = base->fsm_head;
   while( curr_base_fsm != NULL ) {
-    if( util_readline( file, &curr_line ) ) {
+    if( util_readline( file, &curr_line, &curr_line_size ) ) {
       Try {
         if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
           rest_line = curr_line + chars_read;
@@ -871,11 +870,11 @@ void funit_db_merge( func_unit* base, FILE* file, bool same ) { PROFILE(FUNIT_DB
           Throw 0;
         }
       } Catch_anonymous {
-        free_safe( curr_line, (strlen( curr_line ) + 1) );
+        free_safe( curr_line, curr_line_size );
         printf( "func_unit Throw P\n" );
         Throw 0;
       }
-      free_safe( curr_line, (strlen( curr_line ) + 1) );
+      free_safe( curr_line, curr_line_size );
     } else {
       print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
       printf( "func_unit Throw Q\n" );
@@ -888,7 +887,7 @@ void funit_db_merge( func_unit* base, FILE* file, bool same ) { PROFILE(FUNIT_DB
   if( base->type == FUNIT_MODULE ) {
     curr_base_race = base->race_head;
     while( curr_base_race != NULL ) {
-      if( util_readline( file, &curr_line ) ) {
+      if( util_readline( file, &curr_line, &curr_line_size ) ) {
         Try {
           if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
             rest_line = curr_line + chars_read;
@@ -903,11 +902,11 @@ void funit_db_merge( func_unit* base, FILE* file, bool same ) { PROFILE(FUNIT_DB
             Throw 0;
           }
         } Catch_anonymous {
-          free_safe( curr_line, (strlen( curr_line ) + 1) );
+          free_safe( curr_line, curr_line_size );
           printf( "func_unit Throw T\n" );
           Throw 0;
         }
-        free_safe( curr_line, (strlen( curr_line ) + 1) );
+        free_safe( curr_line, curr_line_size );
       } else {
         print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
         printf( "func_unit Throw U\n" );
@@ -1425,6 +1424,9 @@ void funit_dealloc( func_unit* funit ) { PROFILE(FUNIT_DEALLOC);
 
 /*
  $Log$
+ Revision 1.97  2008/03/17 05:26:16  phase1geo
+ Checkpointing.  Things don't compile at the moment.
+
  Revision 1.96  2008/03/14 22:00:19  phase1geo
  Beginning to instrument code for exception handling verification.  Still have
  a ways to go before we have anything that is self-checking at this point, though.

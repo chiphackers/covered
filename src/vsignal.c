@@ -131,15 +131,19 @@ void vsignal_create_vec(
   vsignal* sig
 ) { PROFILE(VSIGNAL_CREATE_VEC);
 
-  int       i;     /* Loop iterator */
-  vector*   vec;   /* Temporary vector used for getting a vector value */
-  exp_link* expl;  /* Pointer to current expression in signal expression list */
+  int       i;          /* Loop iterator */
+  vector*   vec;        /* Temporary vector used for getting a vector value */
+  exp_link* expl;       /* Pointer to current expression in signal expression list */
+  int       old_width;  /* Original width of signal vector */
 
   assert( sig != NULL );
   assert( sig->value != NULL );
 
   /* If this signal has been previously simulated, don't create a new vector */
   if( !vector_is_set( sig->value ) ) {
+
+    /* Save the old width */
+    old_width = sig->value->width;
 
     /* Set the initial signal width to 1 */
     sig->value->width = 1;
@@ -161,10 +165,10 @@ void vsignal_create_vec(
     /* Create the vector and assign it to the signal */
     vec = vector_create( sig->value->width, ((sig->suppl.part.type == SSUPPL_TYPE_MEM) ? VTYPE_MEM : VTYPE_SIG), TRUE );
     if( sig->value->value != NULL ) {
-      free_safe( sig->value->value, sig->value->width );
+      free_safe( sig->value->value, old_width );
     }
     sig->value->value = vec->value;
-    free_safe( vec, sizeof( vec ) );
+    free_safe( vec, sizeof( vector ) );
 
     /* Iterate through expression list, setting the expression to this signal */
     expl = sig->exp_head;
@@ -774,6 +778,9 @@ void vsignal_dealloc(
 
 /*
  $Log$
+ Revision 1.62  2008/03/17 05:26:17  phase1geo
+ Checkpointing.  Things don't compile at the moment.
+
  Revision 1.61  2008/03/14 22:00:21  phase1geo
  Beginning to instrument code for exception handling verification.  Still have
  a ways to go before we have anything that is self-checking at this point, though.

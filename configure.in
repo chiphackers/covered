@@ -72,6 +72,9 @@ COVERED_DEBUG
 dnl Specify profiler enabling
 COVERED_PROFILER
 
+dnl Specify test-mode enabling
+COVERED_TEST
+
 ## Simulators supported
 AC_ARG_WITH([iv],
 [AC_HELP_STRING([--with-iv=IV_BASE_DIR],

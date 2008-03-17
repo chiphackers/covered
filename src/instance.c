@@ -1067,7 +1067,7 @@ void instance_dealloc_single( funit_inst* inst ) { PROFILE(INSTANCE_DEALLOC_SING
 #endif
 
     /* Free up memory for this functional unit instance */
-    free_safe( inst, sizeof( func_inst ) );
+    free_safe( inst, sizeof( funit_inst ) );
 
   }
 
@@ -1172,6 +1172,9 @@ void instance_dealloc( funit_inst* root, char* scope ) { PROFILE(INSTANCE_DEALLO
 
 /*
  $Log$
+ Revision 1.91  2008/03/17 05:26:16  phase1geo
+ Checkpointing.  Things don't compile at the moment.
+
  Revision 1.90  2008/03/11 22:06:48  phase1geo
  Finishing first round of exception handling code.
 

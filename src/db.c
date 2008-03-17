@@ -197,10 +197,7 @@ void db_close() { PROFILE(DB_CLOSE);
     bind_dealloc();
     
     /* Free memory associated with current instance scope */
-    for( i=0; i<curr_inst_scope_size; i++ ) {
-      free_safe( curr_inst_scope[i], (strlen( curr_inst_scope[i] ) + 1) );
-    }
-    free_safe( curr_inst_scope, (sizeof( char* ) * curr_inst_scope_size) );
+    assert( curr_inst_scope_size == 0 );
 
   }
 
@@ -333,6 +330,7 @@ void db_read(
   int          type;                 /* Specifies object type */
   func_unit    tmpfunit;             /* Temporary functional unit pointer */
   char*        curr_line;            /* Pointer to current line being read from db */
+  int          curr_line_size;       /* Allocated number of bytes for curr_line */
   char*        rest_line;            /* Pointer to rest of the current line */
   int          chars_read;           /* Number of characters currently read on line */
   char         parent_scope[4096];   /* Scope of parent functional unit to the current instance */
@@ -367,7 +365,7 @@ void db_read(
 
       unsigned int rv;
 
-      while( util_readline( db_handle, &curr_line ) ) {
+      while( util_readline( db_handle, &curr_line, &curr_line_size ) ) {
 
         Try {
 
@@ -515,13 +513,13 @@ void db_read(
 
         } Catch_anonymous {
 
-          free_safe( curr_line, (strlen( curr_line ) + 1) );
+          free_safe( curr_line, curr_line_size );
           printf( "db Throw F\n" );
           Throw 0;
 
         }
 
-        free_safe( curr_line, (strlen( curr_line ) + 1) );
+        free_safe( curr_line, curr_line_size );
 
       }
 
@@ -629,10 +627,13 @@ uint64 db_scale_to_precision(
 char* db_create_unnamed_scope() { PROFILE(DB_CREATE_UNNAMED_SCOPE);
 
   static int   unique_id = 0;
-  char*        name      = (char*)malloc_safe( 30 );
-  unsigned int rv        = snprintf( name, 30, "$u%d", unique_id );
+  char         tmpname[30];
+  char*        name;
+  unsigned int rv        = snprintf( tmpname, 30, "$u%d", unique_id );
 
   assert( rv < 30 );
+  
+  name = strdup_safe( tmpname );
   unique_id++;
 
   PROFILE_END;
@@ -2622,7 +2623,7 @@ void db_set_vcd_scope( char* scope ) { PROFILE(DB_SET_VCD_SCOPE);
   assert( scope != NULL );
 
   /* Create a new scope item */
-  curr_inst_scope = (char**)realloc( curr_inst_scope, (sizeof( char* ) * (curr_inst_scope_size + 1)) );
+  curr_inst_scope = (char**)realloc_safe( curr_inst_scope, (sizeof( char* ) * curr_inst_scope_size), (sizeof( char* ) * (curr_inst_scope_size + 1)) );
   curr_inst_scope[curr_inst_scope_size] = strdup_safe( scope );
   curr_inst_scope_size++;
 
@@ -2657,6 +2658,7 @@ void db_vcd_upscope() { PROFILE(DB_VCD_UPSCOPE);
 
     curr_inst_scope_size--;
     free_safe( curr_inst_scope[curr_inst_scope_size], (strlen( curr_inst_scope[curr_inst_scope_size] ) + 1) );
+    curr_inst_scope = (char**)realloc_safe( curr_inst_scope, (sizeof( char* ) * (curr_inst_scope_size + 1)), (sizeof( char* ) * curr_inst_scope_size) );
 
     db_sync_curr_instance();
 
@@ -2851,6 +2853,9 @@ bool db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.295  2008/03/17 05:26:15  phase1geo
+ Checkpointing.  Things don't compile at the moment.
+
  Revision 1.294  2008/03/14 22:00:18  phase1geo
  Beginning to instrument code for exception handling verification.  Still have
  a ways to go before we have anything that is self-checking at this point, though.

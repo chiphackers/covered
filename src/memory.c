@@ -234,7 +234,7 @@ static void memory_create_pdim_bit_array( char** str, vsignal* sig, char* prefix
       if( last_dim ) {
         unsigned int rv = snprintf( name, 4096, "%d", i );
         assert( rv < 4096 );
-        *str = (char*)realloc( *str, (strlen( *str ) + strlen( prefix ) + strlen( name ) + 4) );
+        *str = (char*)realloc_safe( *str, (strlen( *str ) + 1), (strlen( *str ) + strlen( prefix ) + strlen( name ) + 4) );
         strcat( *str, prefix );
         strcat( *str, "[" );
         strcat( *str, name );
@@ -252,7 +252,7 @@ static void memory_create_pdim_bit_array( char** str, vsignal* sig, char* prefix
       if( last_dim ) {
         unsigned int rv = snprintf( name, 4096, "%d", i );
         assert( rv < 4096 );
-        *str = (char*)realloc( *str, (strlen( *str ) + strlen( prefix ) + strlen( name ) + 4) );
+        *str = (char*)realloc_safe( *str, (strlen( *str ) + 1), (strlen( *str ) + strlen( prefix ) + strlen( name ) + 4) );
         strcat( *str, prefix );
         strcat( *str, "[" );
         strcat( *str, name );
@@ -371,7 +371,7 @@ static void memory_get_mem_coverage( char** mem_str, vsignal* sig, vec_data* val
                 dim_str, hit_str, ((wr == 0) ? 0 : 1), ((rd == 0) ? 0 : 1), tog01_str, tog10_str );
       assert( rv < slen );
 
-      *mem_str = (char*)realloc( *mem_str, (strlen( *mem_str ) + strlen( entry_str ) + 2) );
+      *mem_str = (char*)realloc_safe( *mem_str, (strlen( *mem_str ) + 1), (strlen( *mem_str ) + strlen( entry_str ) + 2) );
       strcat( *mem_str, " " );
       strcat( *mem_str, entry_str );
 
@@ -459,7 +459,7 @@ bool memory_get_coverage(
         rv = snprintf( tmp2, 20, "%d", sigl->sig->dim[i].lsb );
         assert( rv < 20 );
         slen = strlen( tmp1 ) + strlen( tmp2 ) + 4;
-        *pdim_str = (char*)realloc( *pdim_str, slen );
+        *pdim_str = (char*)realloc_safe( *pdim_str, (strlen( *pdim_str ) + 1), slen );
         if( i == sigl->sig->udim_num ) {
           rv = snprintf( *pdim_str, slen, "[%s:%s]", tmp1, tmp2 );
           assert( rv < slen );
@@ -481,7 +481,7 @@ bool memory_get_coverage(
         rv = snprintf( tmp2, 20, "%d", sigl->sig->dim[i].lsb );
         assert( rv < 20 );
         slen = strlen( tmp1 ) + strlen( tmp2 ) + 4;
-        *udim_str = (char*)realloc( *udim_str, slen );
+        *udim_str = (char*)realloc_safe( *udim_str, (strlen( *udim_str ) + 1), slen );
         if( i == 0 ) {
           rv = snprintf( *udim_str, slen, "[%s:%s]", tmp1, tmp2 );
           assert( rv < slen );
@@ -1345,6 +1345,9 @@ void memory_report( FILE* ofile, bool verbose ) { PROFILE(MEMORY_REPORT);
 
 /*
  $Log$
+ Revision 1.25  2008/03/17 05:26:16  phase1geo
+ Checkpointing.  Things don't compile at the moment.
+
  Revision 1.24  2008/01/30 05:51:50  phase1geo
  Fixing doxygen errors.  Updated parameter list syntax to make it more readable.
 

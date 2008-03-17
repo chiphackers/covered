@@ -117,7 +117,7 @@ static void merge_parse_args(
         }
 
         /* Add the specified merge file to the list */
-        merge_in               = (char**)realloc( merge_in, (sizeof( char* ) * (merge_in_num + 1)) );
+        merge_in               = (char**)realloc_safe( merge_in, (sizeof( char* ) * merge_in_num), (sizeof( char* ) * (merge_in_num + 1)) );
         merge_in[merge_in_num] = strdup_safe( argv[i] );
         merge_in_num++;
 
@@ -213,6 +213,9 @@ void command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
 /*
  $Log$
+ Revision 1.43  2008/03/17 05:26:16  phase1geo
+ Checkpointing.  Things don't compile at the moment.
+
  Revision 1.42  2008/03/14 22:00:19  phase1geo
  Beginning to instrument code for exception handling verification.  Still have
  a ways to go before we have anything that is self-checking at this point, though.
