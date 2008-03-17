@@ -1194,7 +1194,7 @@ void sim_dealloc() { PROFILE(SIM_DEALLOC);
   while( all_head != NULL ) {
     tmp = all_head;
     all_head = all_head->all_next;
-    free_safe( tmp );
+    free_safe( tmp, sizeof( thread ) );
   }
 
   all_head = all_tail = all_next = NULL;
@@ -1213,6 +1213,10 @@ void sim_dealloc() { PROFILE(SIM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.123  2008/02/29 00:08:31  phase1geo
+ Completed optimization code in simulator.  Still need to verify that code
+ changes enhanced performances as desired.  Checkpointing.
+
  Revision 1.122  2008/02/28 07:54:09  phase1geo
  Starting to add functionality for simulation optimization in the sim_expr_changed
  function (feature request 1897410).

@@ -124,13 +124,13 @@ void attribute_dealloc(
     attribute_dealloc( ap->next );
 
     /* Deallocate the name string */
-    free_safe( ap->name );
+    free_safe( ap->name, (strlen( ap->name ) + 1) );
 
     /* Deallocate the expression tree */
     expression_dealloc( ap->expr, FALSE );
 
     /* Finally, deallocate myself */
-    free_safe( ap );
+    free_safe( ap, sizeof( attr_param ) );
 
   }
 
@@ -138,6 +138,10 @@ void attribute_dealloc(
 
 /*
  $Log$
+ Revision 1.13  2008/03/14 22:00:17  phase1geo
+ Beginning to instrument code for exception handling verification.  Still have
+ a ways to go before we have anything that is self-checking at this point, though.
+
  Revision 1.12  2008/03/10 22:00:31  phase1geo
  Working on more exception handling (script is finished now).  Starting to work
  on code enhancements again :)  Checkpointing.

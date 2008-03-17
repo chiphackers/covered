@@ -382,18 +382,18 @@ void symtable_dealloc(
     }
 
     if( symtab->value != NULL ) {
-      free_safe( symtab->value );
+      free_safe( symtab->value, (strlen( symtab->value ) + 1) );
     }
 
     /* Remove sym_sig list */
     curr = symtab->sig_head;
     while( curr != NULL ) {
       tmp = curr->next;
-      free_safe( curr );
+      free_safe( curr, sizeof( sym_sig ) );
       curr = tmp;
     }
 
-    free_safe( symtab );
+    free_safe( symtab, sizeof( symtable ) );
 
   }
 
@@ -403,6 +403,9 @@ void symtable_dealloc(
 
 /*
  $Log$
+ Revision 1.34  2008/03/13 10:28:55  phase1geo
+ The last of the exception handling modifications.
+
  Revision 1.33  2008/01/09 05:22:22  phase1geo
  More splint updates using the -standard option.
 

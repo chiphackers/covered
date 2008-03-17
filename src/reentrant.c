@@ -269,12 +269,12 @@ void reentrant_dealloc( reentrant* ren, func_unit* funit, expression* expr ) { P
       reentrant_restore_data_bits( funit, ren, 0, expr );
 
       /* Deallocate the data nibble array */
-      free_safe( ren->data );
+      free_safe( ren->data, (sizeof( nibble ) * ren->data_size) );
 
     }
 
     /* Deallocate memory allocated for this reentrant structure */
-    free_safe( ren );
+    free_safe( ren, sizeof( reentrant ) );
 
   }
 
@@ -282,6 +282,10 @@ void reentrant_dealloc( reentrant* ren, func_unit* funit, expression* expr ) { P
 
 /*
  $Log$
+ Revision 1.16  2008/01/16 23:10:33  phase1geo
+ More splint updates.  Code is now warning/error free with current version
+ of run_splint.  Still have regression issues to debug.
+
  Revision 1.15  2008/01/09 05:22:22  phase1geo
  More splint updates using the -standard option.
 

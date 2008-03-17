@@ -75,17 +75,19 @@ extern const exp_info exp_op_info[EXP_OP_NUM];
 
  Generates multi-line expression code strings from current, left, and right expressions.
 */
-static void codegen_create_expr_helper( char** code,
-                                 int    code_index,
-                                 char*  first,
-                                 /*@null@*/ char** left,
-                                 int    left_depth,
-                                 bool   first_same_line,
-                                 char*  middle,
-                                 /*@null@*/ char** right,
-                                 int    right_depth,
-                                 bool   last_same_line,
-                                 /*@null@*/ char*  last ) { PROFILE(CODEGEN_CREATE_EXPR_HELPER);
+static void codegen_create_expr_helper(
+             char** code,
+             int    code_index,
+             char*  first,
+  /*@null@*/ char** left,
+             int    left_depth,
+             bool   first_same_line,
+             char*  middle,
+  /*@null@*/ char** right,
+             int    right_depth,
+             bool   last_same_line,
+  /*@null@*/ char*  last
+) { PROFILE(CODEGEN_CREATE_EXPR_HELPER);
 
   char*        tmpstr;         /* Temporary string holder */
   int          code_size = 0;  /* Length of current string to generate */
@@ -117,7 +119,7 @@ static void codegen_create_expr_helper( char** code,
     }
   }
   if( code[code_index] != NULL ) {
-    free_safe( code[code_index] );
+    free_safe( code[code_index], (strlen( code[code_index] ) + 1) );
   }
   code[code_index]    = (char*)malloc_safe( code_size + 1 );
   code[code_index][0] = '\0';
@@ -130,8 +132,8 @@ static void codegen_create_expr_helper( char** code,
     tmpstr = strdup_safe( code[code_index] );
     rv = snprintf( code[code_index], (code_size + 1), "%s%s", tmpstr, left[0] );
     assert( rv < (code_size + 1) );
-    free_safe( tmpstr );
-    free_safe( left[0] );
+    free_safe( tmpstr, (strlen( tmpstr ) + 1) );
+    free_safe( left[0], (strlen( left[0] ) + 1) );
     if( (left_depth == 1) && (middle != NULL) ) {
       code_size = strlen( code[code_index] ) + strlen( middle );
       tmpstr    = (char*)malloc_safe( code_size + 1 );
@@ -139,9 +141,9 @@ static void codegen_create_expr_helper( char** code,
       assert( rv < (code_size + 1) );
       if( right_depth > 0 ) {
         codegen_create_expr_helper( code, code_index, tmpstr, right, right_depth, last_same_line, last, NULL, 0, FALSE, NULL );
-        free_safe( tmpstr );
+        free_safe( tmpstr, (strlen( tmpstr ) + 1) );
       } else {
-        free_safe( code[code_index] );
+        free_safe( code[code_index], (strlen( code[code_index] ) + 1) );
         code[code_index] = tmpstr;
       }
     } else {
@@ -153,10 +155,10 @@ static void codegen_create_expr_helper( char** code,
         tmpstr    = (char*)malloc_safe( code_size + 1 );
         rv = snprintf( tmpstr, (code_size + 1), "%s%s", left[i], middle );
         assert( rv < (code_size + 1) );
-        free_safe( left[i] );
+        free_safe( left[i], (strlen( left[i] ) + 1) );
         if( right_depth > 0 ) {
           codegen_create_expr_helper( code, (code_index + i), tmpstr, right, right_depth, last_same_line, last, NULL, 0, FALSE, NULL );
-          free_safe( tmpstr );
+          free_safe( tmpstr, (strlen( tmpstr ) + 1) );
         } else {
           code[code_index+i] = tmpstr;
         }
@@ -175,10 +177,10 @@ static void codegen_create_expr_helper( char** code,
       tmpstr    = (char*)malloc_safe( code_size + 1 );
       rv = snprintf( tmpstr, (code_size + 1), "%s%s", left[i], middle );
       assert( rv < (code_size + 1) );
-      free_safe( left[i] );
+      free_safe( left[i], (strlen( left[i] ) + 1) );
       if( right_depth > 0 ) {
         codegen_create_expr_helper( code, (code_index + i), tmpstr, right, right_depth, last_same_line, last, NULL, 0, FALSE, NULL );
-        free_safe( tmpstr );
+        free_safe( tmpstr, (strlen( tmpstr ) + 1) );
       } else {
         code[code_index+i+1] = tmpstr;
       }
@@ -378,7 +380,7 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
         (*code)[0] = (char*)malloc_safe( slen );
         rv = snprintf( (*code)[0], slen, "\"%s\"", tmpstr );
         assert( rv < slen );
-        free_safe( tmpstr );
+        free_safe( tmpstr, (strlen( tmpstr ) + 1) );
 
       } else { 
 
@@ -413,7 +415,7 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
           break;
       }
 
-      free_safe( tmpstr );
+      free_safe( tmpstr, (strlen( tmpstr ) + 1) );
 
     } else if( (expr->op == EXP_OP_SBIT_SEL) || (expr->op == EXP_OP_PARAM_SBIT) ) {
 
@@ -435,8 +437,8 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
       codegen_create_expr( code, code_depth, expr->line, tmpstr, left_code, left_code_depth,
                            expr->left, "]", NULL, 0, NULL, NULL );
 
-      free_safe( tmpstr );
-      free_safe( pname );
+      free_safe( tmpstr, (strlen( tmpstr ) + 1) );
+      free_safe( pname, (strlen( pname ) + 1) );
 
     } else if( (expr->op == EXP_OP_MBIT_SEL) || (expr->op == EXP_OP_PARAM_MBIT) ) {
 
@@ -465,8 +467,8 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
                              right_code, right_code_depth, expr->right, "]" );
       }
 
-      free_safe( tmpstr );
-      free_safe( pname );
+      free_safe( tmpstr, (strlen( tmpstr ) + 1) );
+      free_safe( pname, (strlen( pname ) + 1) );
 
     } else if( (expr->op == EXP_OP_MBIT_POS) || (expr->op == EXP_OP_PARAM_MBIT_POS) ) {
 
@@ -488,8 +490,8 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
       codegen_create_expr( code, code_depth, expr->line, tmpstr, left_code, left_code_depth, expr->left, "+:",
                            right_code, right_code_depth, expr->right, "]" );
 
-      free_safe( tmpstr );
-      free_safe( pname );
+      free_safe( tmpstr, (strlen( tmpstr ) + 1) );
+      free_safe( pname, (strlen( pname ) + 1) );
 
     } else if( (expr->op == EXP_OP_MBIT_NEG) || (expr->op == EXP_OP_PARAM_MBIT_NEG) ) {
 
@@ -511,8 +513,8 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
       codegen_create_expr( code, code_depth, expr->line, tmpstr, left_code, left_code_depth, expr->left, "-:",
                            right_code, right_code_depth, expr->right, "]" );
 
-      free_safe( tmpstr );
-      free_safe( pname );
+      free_safe( tmpstr, (strlen( tmpstr ) + 1) );
+      free_safe( pname, (strlen( pname ) + 1) );
 
     } else if( (expr->op == EXP_OP_FUNC_CALL) || (expr->op == EXP_OP_TASK_CALL) ) {
 
@@ -533,10 +535,10 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
         rv = snprintf( tmpstr, slen, "%s( ", pname );
         assert( rv < slen );
         codegen_create_expr( code, code_depth, expr->line, tmpstr, left_code, left_code_depth, expr->left, " )", NULL, 0, NULL, NULL );
-        free_safe( tmpstr );
+        free_safe( tmpstr, (strlen( tmpstr ) + 1) );
       }
-      free_safe( after );
-      free_safe( pname );
+      free_safe( after, (strlen( after ) + 1) );
+      free_safe( pname, (strlen( pname ) + 1) );
 
     } else if( expr->op == EXP_OP_TRIGGER ) {
       unsigned int slen;
@@ -551,8 +553,8 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
       (*code)[0]  = strdup_safe( tmpstr );
       *code_depth = 1;
 
-      free_safe( tmpstr );
-      free_safe( pname );
+      free_safe( tmpstr, (strlen( tmpstr ) + 1) );
+      free_safe( pname, (strlen( pname ) + 1) );
 
     } else if( expr->op == EXP_OP_DISABLE ) {
       unsigned int slen;
@@ -567,8 +569,8 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
       (*code)[0]  = strdup_safe( tmpstr );
       *code_depth = 1;
 
-      free_safe( tmpstr );
-      free_safe( pname );
+      free_safe( tmpstr, (strlen( tmpstr ) + 1) );
+      free_safe( pname, (strlen( pname ) + 1) );
 
     } else if( expr->op == EXP_OP_DEFAULT ) {
 
@@ -927,18 +929,18 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
       }
 
       if( parent_op != expr->op ) {
-        free_safe( before );
-        free_safe( after );
+        free_safe( before, (strlen( before ) + 1) );
+        free_safe( after, (strlen( after ) + 1) );
       }
 
     }
 
     if( right_code_depth > 0 ) {
-      free_safe( right_code );
+      free_safe( right_code, (sizeof( char* ) * right_code_depth) );
     }
 
     if( left_code_depth > 0 ) {
-      free_safe( left_code );
+      free_safe( left_code, (sizeof( char* ) * left_code_depth) );
     }
 
   }
@@ -948,6 +950,9 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.87  2008/01/10 04:59:03  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.86  2008/01/07 23:59:54  phase1geo
  More splint updates.
 

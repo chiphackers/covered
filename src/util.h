@@ -39,7 +39,11 @@
 #define strdup_safe(x)         strdup_safe1(x,__FILE__,__LINE__,profile_index)
 
 /*! Overload for the free-safe function which includes profiling information */
-#define free_safe(x)           free_safe1(x,profile_index)
+#ifdef TESTMODE
+#define free_safe(x,y)         free_safe2(x,y,profile_index)
+#else
+#define free_safe(x,y)         free_safe1(x,profile_index)
+#endif
 
 
 /*! \brief Sets error suppression to specified value */
@@ -114,6 +118,9 @@ str_link* get_next_vfile( str_link* curr, const char* mod );
 /*! \brief Performs safe deallocation of heap memory. */
 void free_safe1( /*@only@*/ /*@out@*/ /*@null@*/ void* ptr, unsigned int profile_index ) /*@releases ptr@*/;
 
+/*! \brief Performs safe deallocation of heap memory. */
+void free_safe2( /*@only@*/ /*@out@*/ /*@null@*/ void* ptr, size_t size, unsigned int profile_index ) /*@releases ptr@*/;
+
 /*! \brief Safely allocates heap memory by performing a call to strdup */
 /*@only@*/ char* strdup_safe1( const char* str, const char* file, int line, unsigned int profile_index );
 
@@ -145,6 +152,9 @@ void set_timestep( sim_time* st, char* value );
 
 /*
  $Log$
+ Revision 1.38  2008/01/16 05:01:23  phase1geo
+ Switched totals over from float types to int types for splint purposes.
+
  Revision 1.37  2008/01/10 04:59:05  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 

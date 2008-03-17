@@ -317,7 +317,7 @@ static void lxt2_rd_iter_radix( struct lxt2_rd_trace *lt, struct lxt2_rd_block *
             Throw 0;
           }
           if( lt->flags[idx] & (LXT2_RD_SYM_F_DOUBLE | LXT2_RD_SYM_F_STRING) ) {
-            free_safe( lt->value[idx] );
+            free_safe( lt->value[idx], 0 );  /* TBD */
             lt->value[idx] = strdup_safe( b->string_pointers[vch] );
             break;
           }
@@ -452,7 +452,7 @@ static void lxt2_rd_iter_radix0(
       }
       if( lt->flags[idx] & (LXT2_RD_SYM_F_DOUBLE | LXT2_RD_SYM_F_STRING) ) {
         if( strcmp( lt->value[idx], b->string_pointers[vch] ) ) {
-          free_safe( lt->value[idx] );
+          free_safe( lt->value[idx], 0 );  /* TBD */
           lt->value[idx] = strdup_safe( b->string_pointers[vch] );
           uniq = 1;
         }
@@ -654,8 +654,8 @@ static int lxt2_rd_process_block(
     }
     if( pnt != b->map_start ) {
       print_output( "Dictionary corrupt, exiting...", FATAL, __FILE__, __LINE__ );
-      free_safe( b->string_pointers );
-      free_safe( b->string_lens );
+      free_safe( b->string_pointers, 0 );  /* TBD */
+      free_safe( b->string_lens, 0 );  /* TBD */
       printf( "lxt2_read Throw G\n" );
       Throw 0;
     }
@@ -1021,7 +1021,7 @@ struct lxt2_rd_trace* lxt2_rd_init( const char* name ) { PROFILE(LXT2_RD_INIT);
         fseeko( lt->handle, pos, SEEK_SET );
 
         if( pos >= fend ) {
-          free_safe( b );
+          free_safe( b, 0 );  /* TBD */
           break;
         }
 
@@ -1041,7 +1041,7 @@ struct lxt2_rd_trace* lxt2_rd_init( const char* name ) { PROFILE(LXT2_RD_INIT);
             lt->end        = b->end;
           }			
         } else {
-          free_safe( b );
+          free_safe( b, 0 );  /* TBD */
           break;
         }
 	
@@ -1100,14 +1100,14 @@ void lxt2_rd_close( struct lxt2_rd_trace* lt ) { PROFILE(LXT2_RD_CLOSE);
     struct lxt2_rd_block* bt;
     int                   i;
 
-    free_safe( lt->process_mask );
-    free_safe( lt->process_mask_compressed );
-    free_safe( lt->rows );
-    free_safe( lt->msb );
-    free_safe( lt->lsb );
-    free_safe( lt->flags );
-    free_safe( lt->len );
-    free_safe( lt->next_radix );
+    free_safe( lt->process_mask, 0 );  /* TBD */
+    free_safe( lt->process_mask_compressed, 0 );  /* TBD */
+    free_safe( lt->rows, 0 );  /* TBD */
+    free_safe( lt->msb, 0 );  /* TBD */
+    free_safe( lt->lsb, 0 );  /* TBD */
+    free_safe( lt->flags, 0 );  /* TBD */
+    free_safe( lt->len, 0 );  /* TBD */
+    free_safe( lt->next_radix, 0 );  /* TBD */
 
     lt->process_mask            = NULL;
     lt->process_mask_compressed = NULL;
@@ -1120,32 +1120,32 @@ void lxt2_rd_close( struct lxt2_rd_trace* lt ) { PROFILE(LXT2_RD_CLOSE);
 
     if( lt->value != NULL ) {
       for( i=0; i<lt->numfacs; i++ ) {
-        free_safe( lt->value[i] );
+        free_safe( lt->value[i], 0 );  /* TBD */
         lt->value[i] = NULL; 
       }
-      free_safe( lt->value );
+      free_safe( lt->value, 0 );  /* TBD */
       lt->value = NULL;
     }
 
-    free_safe( lt->zfacnames );
+    free_safe( lt->zfacnames, 0 );  /* TBD */
     lt->zfacnames = NULL;
 
     if( lt->faccache ) {
 
-      free_safe( lt->faccache->bufprev );
+      free_safe( lt->faccache->bufprev, 0 );  /* TBD */
       free( lt->faccache->bufcurr );
 
       lt->faccache->bufprev = NULL;
       lt->faccache->bufcurr = NULL;
 
-      free_safe( lt->faccache );
+      free_safe( lt->faccache, 0 );  /* TBD */
       lt->faccache = NULL;
 
     }
 
-    free_safe( lt->fac_map );
+    free_safe( lt->fac_map, 0 );  /* TBD */
     lt->fac_map = NULL;
-    free_safe( lt->fac_curpos );
+    free_safe( lt->fac_curpos, 0 );  /* TBD */
     lt->fac_curpos = NULL;
 
     b = lt->block_head;
@@ -1153,15 +1153,15 @@ void lxt2_rd_close( struct lxt2_rd_trace* lt ) { PROFILE(LXT2_RD_CLOSE);
 
       bt = b->next;
 
-      free_safe( b->mem );
-      free_safe( b->string_pointers );
-      free_safe( b->string_lens );
+      free_safe( b->mem, 0 );  /* TBD */
+      free_safe( b->string_pointers, 0 );  /* TBD */
+      free_safe( b->string_lens, 0 );  /* TBD */
 
       b->mem             = NULL;
       b->string_pointers = NULL;
       b->string_lens     = NULL;
 
-      free_safe( b );
+      free_safe( b, 0 );  /* TBD */
 
       b = bt;
 
@@ -1183,7 +1183,7 @@ void lxt2_rd_close( struct lxt2_rd_trace* lt ) { PROFILE(LXT2_RD_CLOSE);
       lt->handle = NULL;
     }
 
-    free_safe( lt );	
+    free_safe( lt, sizeof( struct lxt2_rd_trace ) );
 
   }
 
@@ -1644,7 +1644,7 @@ int lxt2_rd_iter_blocks(
             if( (iter == 0xFFFFFFFF) || lt->process_mask_compressed[iter/LXT2_RD_PARTIAL_SIZE] ) {
 
               if( clen > zlen ) {
-                free_safe( zbuff );
+                free_safe( zbuff, 0 );  /* TBD */
                 zbuff = (char*)malloc_safe_nolimit( zlen = (clen * 2) );
               }
 
@@ -1670,7 +1670,7 @@ int lxt2_rd_iter_blocks(
                                             strm.total_out, (unsigned int)unclen );
                 assert( rv < USER_MSG_LENGTH );
                 print_output( user_msg, WARNING, __FILE__, __LINE__ );
-                free_safe( b->mem );
+                free_safe( b->mem, 0 );  /* TBD */
                 b->mem = NULL;
                 b->short_read_ignore = 1;
                 b->uncompressed_siz = real_uncompressed_siz;
@@ -1690,7 +1690,7 @@ int lxt2_rd_iter_blocks(
 
           }
 
-          free_safe( zbuff );
+          free_safe( zbuff, 0 );  /* TBD */
 
         } else {
 
@@ -1706,7 +1706,7 @@ int lxt2_rd_iter_blocks(
             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "LXT:  Short read on block %d vs %u (expected), ignoring...", rc, (unsigned int)b->uncompressed_siz );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, WARNING, __FILE__, __LINE__ );
-            free_safe( b->mem );
+            free_safe( b->mem, 0 );  /* TBD */
             b->mem = NULL;
             b->short_read_ignore = 1;
           } else {
@@ -1725,19 +1725,19 @@ int lxt2_rd_iter_blocks(
         Try {
           (void)lxt2_rd_process_block( lt, b );
         } Catch_anonymous {
-          free_safe( b->mem );
+          free_safe( b->mem, 0 );  /* TBD */
           printf( "lxt2_read Throw J\n" );
           Throw 0;
         }
 
         if( striped_kill ) {
-          free_safe( b->mem );
+          free_safe( b->mem, 0 );  /* TBD */
           b->mem = NULL;
           b->uncompressed_siz = real_uncompressed_siz;
         } else if( lt->numblocks > 1 ) {	/* no sense freeing up the single block case */
           if( lt->block_mem_consumed > lt->block_mem_max ) {
             lt->block_mem_consumed -= b->uncompressed_siz;
-            free_safe( b->mem );
+            free_safe( b->mem, 0 );  /* TBD */
             b->mem = NULL;
           }
         }

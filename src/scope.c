@@ -160,12 +160,12 @@ bool scope_find_param(
         }
 
       } Catch_anonymous {
-        free_safe( scope );
+        free_safe( scope, (strlen( scope ) + 1) );
         printf( "scope Throw B\n" );
         Throw 0;
       }
 
-      free_safe( scope );
+      free_safe( scope, (strlen( scope ) + 1) );
 
     }
 
@@ -179,12 +179,12 @@ bool scope_find_param(
     }
 
   } Catch_anonymous {
-    free_safe( parm_name );
+    free_safe( parm_name, (strlen( parm_name ) + 1) );
     printf( "scope Throw C\n" );
     Throw 0;
   }
 
-  free_safe( parm_name );
+  free_safe( parm_name, (strlen( parm_name ) + 1) );
 
   PROFILE_END;
 
@@ -254,12 +254,12 @@ bool scope_find_signal(
         }
 
       } Catch_anonymous {
-        free_safe( scope );
+        free_safe( scope, (strlen( scope ) + 1) );
         printf( "scope Throw E\n" );
         Throw 0;
       }
 
-      free_safe( scope );
+      free_safe( scope, (strlen( scope ) + 1) );
 
     }
 
@@ -285,12 +285,12 @@ bool scope_find_signal(
     }
 
   } Catch_anonymous {
-    free_safe( sig_name );
+    free_safe( sig_name, (strlen( sig_name ) + 1) );
     printf( "scope Throw F\n" );
     Throw 0;
   }
 
-  free_safe( sig_name );
+  free_safe( sig_name, (strlen( sig_name ) + 1) );
 
   PROFILE_END;
 
@@ -379,8 +379,8 @@ func_unit* scope_get_parent_funit(
 
   assert( inst != NULL );
 
-  free_safe( rest );
-  free_safe( back );
+  free_safe( rest, (strlen( rest ) + 1) );
+  free_safe( back, (strlen( back ) + 1) );
 
   PROFILE_END;
 
@@ -419,9 +419,9 @@ func_unit* scope_get_parent_module(
     assert( inst != NULL );
   } while( inst->funit->type != FUNIT_MODULE );
 
-  free_safe( curr_scope );
-  free_safe( rest );
-  free_safe( back );
+  free_safe( curr_scope, (strlen( curr_scope ) + 1) );
+  free_safe( rest, (strlen( rest ) + 1) );
+  free_safe( back, (strlen( back ) + 1) );
 
   PROFILE_END;
 
@@ -431,6 +431,10 @@ func_unit* scope_get_parent_module(
 
 /*
  $Log$
+ Revision 1.47  2008/03/14 22:00:20  phase1geo
+ Beginning to instrument code for exception handling verification.  Still have
+ a ways to go before we have anything that is self-checking at this point, though.
+
  Revision 1.46  2008/03/11 22:06:48  phase1geo
  Finishing first round of exception handling code.
 

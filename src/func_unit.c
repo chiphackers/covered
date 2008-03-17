@@ -774,11 +774,11 @@ void funit_db_merge( func_unit* base, FILE* file, bool same ) { PROFILE(FUNIT_DB
           Throw 0;
         }
       } Catch_anonymous {
-        free_safe( curr_line );
+        free_safe( curr_line, (strlen( curr_line ) + 1) );
         printf( "func_unit Throw D\n" );
         Throw 0;
       }
-      free_safe( curr_line );
+      free_safe( curr_line, (strlen( curr_line ) + 1) );
     } else {
       print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
       printf( "func_unit Throw E\n" );
@@ -807,11 +807,11 @@ void funit_db_merge( func_unit* base, FILE* file, bool same ) { PROFILE(FUNIT_DB
           Throw 0;
         }
       } Catch_anonymous {
-        free_safe( curr_line );
+        free_safe( curr_line, (strlen( curr_line ) + 1) );
         printf( "func_unit Throw H\n" );
         Throw 0;
       }
-      free_safe( curr_line );
+      free_safe( curr_line, (strlen( curr_line ) + 1) );
     } else {
       print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
       printf( "func_unit Throw I\n" );
@@ -838,11 +838,11 @@ void funit_db_merge( func_unit* base, FILE* file, bool same ) { PROFILE(FUNIT_DB
           Throw 0;
         }
       } Catch_anonymous {
-        free_safe( curr_line );
+        free_safe( curr_line, (strlen( curr_line ) + 1) );
         printf( "func_unit Throw L\n" );
         Throw 0;
       }
-      free_safe( curr_line );
+      free_safe( curr_line, (strlen( curr_line ) + 1) );
     } else {
       print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
       printf( "func_unit Throw M\n" );
@@ -871,11 +871,11 @@ void funit_db_merge( func_unit* base, FILE* file, bool same ) { PROFILE(FUNIT_DB
           Throw 0;
         }
       } Catch_anonymous {
-        free_safe( curr_line );
+        free_safe( curr_line, (strlen( curr_line ) + 1) );
         printf( "func_unit Throw P\n" );
         Throw 0;
       }
-      free_safe( curr_line );
+      free_safe( curr_line, (strlen( curr_line ) + 1) );
     } else {
       print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
       printf( "func_unit Throw Q\n" );
@@ -903,11 +903,11 @@ void funit_db_merge( func_unit* base, FILE* file, bool same ) { PROFILE(FUNIT_DB
             Throw 0;
           }
         } Catch_anonymous {
-          free_safe( curr_line );
+          free_safe( curr_line, (strlen( curr_line ) + 1) );
           printf( "func_unit Throw T\n" );
           Throw 0;
         }
-        free_safe( curr_line );
+        free_safe( curr_line, (strlen( curr_line ) + 1) );
       } else {
         print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
         printf( "func_unit Throw U\n" );
@@ -1356,10 +1356,10 @@ static void funit_clean( func_unit* funit ) { PROFILE(FUNIT_CLEAN);
     while( tdi != NULL ) {
       ttdi = tdi;
       tdi  = tdi->next;
-      free_safe( ttdi->name );
+      free_safe( ttdi->name, (strlen( ttdi->name ) + 1) );
       parser_dealloc_sig_range( ttdi->prange, TRUE );
       parser_dealloc_sig_range( ttdi->urange, TRUE );
-      free_safe( ttdi );
+      free_safe( ttdi, sizeof( typedef_item ) );
     }
     funit->tdi_head = NULL;
     funit->tdi_tail = NULL;
@@ -1369,13 +1369,13 @@ static void funit_clean( func_unit* funit ) { PROFILE(FUNIT_CLEAN);
 
     /* Free functional unit name */
     if( funit->name != NULL ) {
-      free_safe( funit->name );
+      free_safe( funit->name, (strlen( funit->name ) + 1) );
       funit->name = NULL;
     }
 
     /* Free functional unit filename */
     if( funit->filename != NULL ) {
-      free_safe( funit->filename );
+      free_safe( funit->filename, (strlen( funit->filename ) + 1) );
       funit->filename = NULL;
     }
 
@@ -1386,9 +1386,9 @@ static void funit_clean( func_unit* funit ) { PROFILE(FUNIT_CLEAN);
       while( thrl != NULL ) {
         tmpl = thrl;
         thrl = thrl->next;
-        free_safe( tmpl );
+        free_safe( tmpl, sizeof( thr_link ) );
       }
-      free_safe( funit->elem.tlist );
+      free_safe( funit->elem.tlist, sizeof( thr_list ) );
     }
 
     /* Reset curr_funit */
@@ -1414,7 +1414,7 @@ void funit_dealloc( func_unit* funit ) { PROFILE(FUNIT_DEALLOC);
     funit_clean( funit );
 
     /* Deallocate functional unit element itself */
-    free_safe( funit );
+    free_safe( funit, sizeof( func_unit ) );
 
   }
 
@@ -1425,6 +1425,10 @@ void funit_dealloc( func_unit* funit ) { PROFILE(FUNIT_DEALLOC);
 
 /*
  $Log$
+ Revision 1.96  2008/03/14 22:00:19  phase1geo
+ Beginning to instrument code for exception handling verification.  Still have
+ a ways to go before we have anything that is self-checking at this point, though.
+
  Revision 1.95  2008/03/11 22:06:48  phase1geo
  Finishing first round of exception handling code.
 

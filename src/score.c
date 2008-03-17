@@ -281,15 +281,15 @@ static void score_generate_top_vpi_module(
     }
 
   } Catch_anonymous {
-    free_safe( mod_name );
-    free_safe( ext );
+    free_safe( mod_name, (strlen( mod_name ) + 1) );
+    free_safe( ext, (strlen( ext ) + 1) );
     printf( "score Throw C\n" );
     Throw 0;
   }
 
   /* Deallocate memory */
-  free_safe( mod_name );
-  free_safe( ext );
+  free_safe( mod_name, (strlen( mod_name ) + 1) );
+  free_safe( ext, (strlen( ext ) + 1) );
 
 }
 
@@ -346,15 +346,15 @@ static void score_generate_pli_tab_file(
     }
 
   } Catch_anonymous {
-    free_safe( mod_name );
-    free_safe( ext );
+    free_safe( mod_name, (strlen( mod_name ) + 1) );
+    free_safe( ext, (strlen( ext ) + 1) );
     printf( "score Throw F\n" );
     Throw 0;
   }
 
   /* Deallocate memory */
-  free_safe( mod_name );
-  free_safe( ext );
+  free_safe( mod_name, (strlen( mod_name ) + 1) );
+  free_safe( ext, (strlen( ext ) + 1) );
 
 }
 
@@ -475,7 +475,7 @@ void score_parse_define( const char* def ) { PROFILE(SCORE_PARSE_DEFINE);
   }
 
   /* Deallocate memory */
-  free_safe( tmp );
+  free_safe( tmp, (strlen( tmp ) + 1) );
 
 }
 
@@ -654,16 +654,16 @@ static void score_parse_args(
             score_parse_args( arg_num, -1, (const char**)arg_list );
           } Catch_anonymous {
             for( j=0; j<arg_num; j++ ) {
-              free_safe( arg_list[j] );
+              free_safe( arg_list[j], (strlen( arg_list[j] ) + 1) );
             }
-            free_safe( arg_list );
+            free_safe( arg_list, (sizeof( char* ) * arg_num) );
             printf( "score Throw T\n" );
             Throw 0;
           }
           for( j=0; j<arg_num; j++ ) {
-            free_safe( arg_list[j] );
+            free_safe( arg_list[j], (strlen( arg_list[j] ) + 1) );
           }
-          free_safe( arg_list );
+          free_safe( arg_list, (sizeof( char* ) * arg_num) );
         } else {
           unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Cannot find argument file %s specified with -f option", argv[i] );
           assert( rv < USER_MSG_LENGTH );
@@ -920,11 +920,11 @@ static void score_parse_args(
             defparam_add( tmp, vector_from_string( &ptr, FALSE ) );
           }
         } Catch_anonymous {
-          free_safe( tmp );
+          free_safe( tmp, (strlen( tmp ) + 1) );
           printf( "score Throw AL\n" );
           Throw 0;
         }
-        free_safe( tmp );
+        free_safe( tmp, (strlen( tmp ) + 1) );
       } else {
         printf( "score Throw AM\n" );
         Throw 0;
@@ -1206,16 +1206,16 @@ void command_score( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
   /* Deallocate memory for defparams */
   defparam_dealloc();
 
-  free_safe( output_db );
-  free_safe( dump_file );
-  free_safe( vpi_file );
-  free_safe( top_module );
-  free_safe( ppfilename );
+  free_safe( output_db, (strlen( output_db ) + 1) );
+  free_safe( dump_file, (strlen( dump_file ) + 1) );
+  free_safe( vpi_file, (strlen( vpi_file ) + 1) );
+  free_safe( top_module, (strlen( top_module ) + 1) );
+  free_safe( ppfilename, (strlen( ppfilename ) + 1) );
   ppfilename = NULL;
 
-  free_safe( directive_filename );
-  free_safe( top_instance );
-  free_safe( vpi_timescale );
+  free_safe( directive_filename, (strlen( directive_filename ) + 1) );
+  free_safe( top_instance, (strlen( top_instance ) + 1) );
+  free_safe( vpi_timescale, (strlen( vpi_timescale ) + 1) );
 
   PROFILE_END;
 
@@ -1223,6 +1223,10 @@ void command_score( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
 /*
  $Log$
+ Revision 1.117  2008/03/14 22:00:20  phase1geo
+ Beginning to instrument code for exception handling verification.  Still have
+ a ways to go before we have anything that is self-checking at this point, though.
+
  Revision 1.116  2008/03/11 22:06:49  phase1geo
  Finishing first round of exception handling code.
 

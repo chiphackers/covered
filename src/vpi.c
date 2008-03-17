@@ -153,9 +153,9 @@ void add_sym_values_to_sim() { PROFILE(ADD_SYM_VALUES_TO_SIM);
     db_set_symbol_string( sval->sym, sval->value );
 
     /* Deallocate all memory associated with this sym_table structure */
-    free_safe( sval->sym );
-    free_safe( sval->value );
-    free_safe( sval );
+    free_safe( sval->sym, (strlen( sval->sym ) + 1) );
+    free_safe( sval->value, (strlen( sval->value ) + 1) );
+    free_safe( sval, sizeof( sym_value ) );
   }
 
   PROFILE_END;
@@ -269,7 +269,7 @@ PLI_INT32 covered_end_of_sim( p_cb_data cb ) { PROFILE(COVERED_END_OF_SIM);
   sim_dealloc();
   db_close();
   if( timestep_tab != NULL ) {
-    free_safe( timestep_tab );
+    free_safe( timestep_tab, (sizeof( symtable*) * vcd_symtab_size) );
   }
 
   PROFILE_END;
@@ -422,7 +422,7 @@ void covered_parse_task_func( vpiHandle mod ) { PROFILE(COVERED_PARSE_TASK_FUNC)
 
         /* Set current scope in database */
         if( curr_inst_scope[0] != NULL ) {
-          free_safe( curr_inst_scope[0] );
+          free_safe( curr_inst_scope[0], (strlen( curr_inst_scope[0] ) + 1) );
         }
         curr_inst_scope[0]   = strdup_safe( vpi_get_str( vpiFullName, scope ) );
         curr_inst_scope_size = 1;
@@ -536,7 +536,7 @@ void covered_parse_instance( vpiHandle inst ) { PROFILE(COVERED_PARSE_INSTANCE);
 
   /* Set current scope in database */
   if( curr_inst_scope[0] != NULL ) {
-    free_safe( curr_inst_scope[0] );
+    free_safe( curr_inst_scope[0], (strlen( curr_inst_scope[0] ) + 1) );
   }
   curr_inst_scope[0] = strdup_safe( vpi_get_str( vpiFullName, inst ) );
   curr_inst_scope_size = 1;

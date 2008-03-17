@@ -255,11 +255,11 @@ static void cli_display_current_stmt() {
   /* Output the full expression */
   for( i=0; i<code_depth; i++ ) {
     printf( "    %7d:    %s\n", curr->curr->exp->line, code[i] );
-    free_safe( code[i] );
+    free_safe( code[i], (strlen( code[i] ) + 1) );
   }
 
   if( code_depth > 0 ) {
-    free_safe( code );
+    free_safe( code, (sizeof( char* ) * code_depth) );
   }
 
 }
@@ -361,9 +361,9 @@ static bool cli_display_expression( int id ) {
     assert( code_depth > 0 );
     for( i=0; i<code_depth; i++ ) {
       printf( "    %s\n", code[i] );
-      free_safe( code[i] );
+      free_safe( code[i], (strlen( code[i] ) + 1) );
     }
-    free_safe( code );
+    free_safe( code, (sizeof( char* ) * cod_depth) );
 
     /* Output the expression value */
     printf( "\n  " );
@@ -410,7 +410,7 @@ static void cli_display_lines( unsigned num ) {
       if( (lnum >= start_line) && (lnum < (start_line + num)) ) {
         printf( "    %7d:  %s\n", lnum, line );
       }
-      free_safe( line );
+      free_safe( line, (strlen( line ) + 1) );
       lnum++;
     }
 
@@ -466,13 +466,13 @@ static bool cli_parse_input( char* line, bool perform, bool replaying, const sim
       line = arg;
       line++;
       if( arg[1] == '!' ) {
-        free_safe( history[history_index] );
+        free_safe( history[history_index], (strlen( history[history_index] ) + 1) );
         (bool)cli_parse_input( strdup( history[history_index-1] ), perform, replaying, time );
         history_index--;
         cli_replay_index--;
       } else if( sscanf( line, "%d", &num ) == 1 ) {
         if( num < (history_index + 1) ) {
-          free_safe( history[history_index] );
+          free_safe( history[history_index], (strlen( history[history_index] ) + 1) );
           cli_parse_input( strdup( history[num-1] ), perform, replaying, time );
           history_index--;
           cli_replay_index--;
@@ -695,7 +695,7 @@ static bool cli_parse_input( char* line, bool perform, bool replaying, const sim
  
     /* Otherwise, deallocate the command from the history buffer */
     } else {
-      free_safe( history[history_index] );
+      free_safe( history[history_index], (sizeof( history[history_index] ) + 1) );
     }
   }
   
@@ -891,6 +891,10 @@ void cli_read_hist_file( const char* fname ) {
 
 /*
  $Log$
+ Revision 1.21  2008/03/14 22:00:17  phase1geo
+ Beginning to instrument code for exception handling verification.  Still have
+ a ways to go before we have anything that is self-checking at this point, though.
+
  Revision 1.20  2008/02/29 00:08:31  phase1geo
  Completed optimization code in simulator.  Still need to verify that code
  changes enhanced performances as desired.  Checkpointing.

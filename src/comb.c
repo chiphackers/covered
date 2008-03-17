@@ -668,7 +668,7 @@ static bool combination_instance_summary(
     assert( rv < 4096 );
   }
 
-  free_safe( pname );
+  free_safe( pname, (strlen( pname ) + 1) );
 
   if( root->stat->show && !funit_is_unnamed( root->funit ) &&
       ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
@@ -942,7 +942,7 @@ static void combination_underline_tree(
 
         tmpstr = vector_to_string( exp->value );
         *size  = strlen( tmpstr );
-        free_safe( tmpstr );
+        free_safe( tmpstr, (strlen( tmpstr ) + 1) );
 
         /* Adjust for quotation marks */
         if( exp->value->suppl.part.base == QSTRING ) {
@@ -981,7 +981,7 @@ static void combination_underline_tree(
             default:  strcpy( code_fmt, "%s" );                break;
           }
 
-          free_safe( tmpname );
+          free_safe( tmpname, (strlen( tmpname ) + 1) );
         
         } else {
 
@@ -1091,7 +1091,7 @@ static void combination_underline_tree(
                     code_fmt[i] = '\0';
                   }
                   strcat( code_fmt, " %s " );
-                  free_safe( tmpname );
+                  free_safe( tmpname, (strlen( tmpname ) + 1) );
                   break;
                 case EXP_OP_PARAM_MBIT :
                 case EXP_OP_MBIT_SEL   :  
@@ -1108,7 +1108,7 @@ static void combination_underline_tree(
                     code_fmt[i] = '\0';
                   }
                   strcat( code_fmt, " %s %s " );
-                  free_safe( tmpname );
+                  free_safe( tmpname, (strlen( tmpname ) + 1) );
                   break;
                 case EXP_OP_PARAM_MBIT_POS :
                 case EXP_OP_PARAM_MBIT_NEG :
@@ -1127,7 +1127,7 @@ static void combination_underline_tree(
                     code_fmt[i] = '\0';
                   }
                   strcat( code_fmt, " %s  %s " );
-                  free_safe( tmpname );
+                  free_safe( tmpname, (strlen( tmpname ) + 1) );
                   break;
                 case EXP_OP_TRIGGER  :
                   tmpname = scope_gen_printable( exp->name );
@@ -1136,7 +1136,7 @@ static void combination_underline_tree(
                     code_fmt[i] = ' ';
                   }
                   code_fmt[i] = '\0';
-                  free_safe( tmpname );
+                  free_safe( tmpname, (strlen( tmpname ) + 1) );
                   break;
                 case EXP_OP_EXPAND   :  *size = l_size + r_size + 4;  strcpy( code_fmt, " %s %s  "         );  break;
                 case EXP_OP_CONCAT   :  *size = l_size + r_size + 2;  strcpy( code_fmt, " %s "             );  break;
@@ -1237,8 +1237,8 @@ static void combination_underline_tree(
                   }
                   code_fmt[i] = '\0';
                   strcat( code_fmt, "  %s  " );
-                  free_safe( tmpname );
-                  free_safe( pname );
+                  free_safe( tmpname, (strlen( tmpname ) + 1) );
+                  free_safe( pname, (strlen( pname ) + 1) );
                   break;
                 case EXP_OP_NEGATE   :  *size = l_size + r_size + 1;  strcpy( code_fmt, " %s"              );  break;
                 case EXP_OP_DIM      :  *size = l_size + r_size;      strcpy( code_fmt, "%s%s"             );  break;
@@ -1312,8 +1312,8 @@ static void combination_underline_tree(
               rv = snprintf( (*lines)[i], (*size + 1), code_fmt, l_lines[i], r_lines[i] );
               assert( rv < (*size + 1) );
             
-              free_safe( l_lines[i] );
-              free_safe( r_lines[i] );
+              free_safe( l_lines[i], (strlen( l_lines[i] ) + 1) );
+              free_safe( r_lines[i], (strlen( r_lines[i] ) + 1) );
 
             } else if( i < l_depth ) {
             
@@ -1325,8 +1325,8 @@ static void combination_underline_tree(
               rv = snprintf( (*lines)[i], (*size + 1), code_fmt, l_lines[i], exp_sp );
               assert( rv < (*size + 1) );
             
-              free_safe( l_lines[i] );
-              free_safe( exp_sp );
+              free_safe( l_lines[i], (strlen( l_lines[i] ) + 1) );
+              free_safe( exp_sp, (r_size + 1) );
 
             } else if( i < r_depth ) {
 
@@ -1345,11 +1345,11 @@ static void combination_underline_tree(
                 rv = snprintf( (*lines)[i], (*size + 1), code_fmt, exp_sp, r_lines[i] );
                 assert( rv < (*size + 1) );
               
-                free_safe( exp_sp );
+                free_safe( exp_sp, (l_size + 1) );
           
               }
   
-              free_safe( r_lines[i] );
+              free_safe( r_lines[i], (strlen( r_lines[i] ) + 1) );
    
             } else {
 
@@ -1363,12 +1363,12 @@ static void combination_underline_tree(
 
           /* Free left child stack */
           if( l_depth > 0 ) {
-            free_safe( l_lines );
+            free_safe( l_lines, (sizeof( char* ) * l_depth) );
           }
 
           /* Free right child stack */
           if( r_depth > 0 ) {
-            free_safe( r_lines );
+            free_safe( r_lines, (sizeof( char* ) * r_depth) );
           }
 
         }
@@ -1376,19 +1376,19 @@ static void combination_underline_tree(
       } Catch_anonymous {
         int i;
         for( i=0; i<(*depth - comb_missed); i++ ) {
-          free_safe( (*lines)[i] );
+          free_safe( (*lines)[i], (strlen( (*lines)[i] ) + 1) );
         }
-        free_safe( *lines );
+        free_safe( *lines, (sizeof( char* ) * (*depth - comb_missed)) );
         *lines = NULL;
         *depth = 0;
         for( i=0; i<l_depth; i++ ) {
-          free_safe( l_lines[i] );
+          free_safe( l_lines[i], (strlen( l_lines[i] ) + 1) );
         }
-        free_safe( l_lines );
+        free_safe( l_lines, (sizeof( char* ) * l_depth) );
         for( i=0; i<r_depth; i++ ) {
-          free_safe( r_lines[i] );
+          free_safe( r_lines[i], (strlen( r_lines[i] ) + 1) );
         }
-        free_safe( r_lines );
+        free_safe( r_lines, (sizeof( char* ) * r_depth) );
         printf( "comb Throw C\n" );
         Throw 0;
       }
@@ -1490,7 +1490,7 @@ static char* combination_prep_line(
 
   /* If we didn't see any underlines here, return NULL */
   if( !line_seen ) {
-    free_safe( str );
+    free_safe( str, (strlen( str ) + 1) );
     str = NULL;
   } else {
     str[curr_index] = '\0';
@@ -1552,27 +1552,27 @@ static void combination_underline(
       for( i=0; i<depth; i++ ) {
         if( (tmpstr = combination_prep_line( lines[i], start, strlen( code[j] ) )) != NULL ) {
           fprintf( ofile, "                    %s\n", tmpstr );
-          free_safe( tmpstr );
+          free_safe( tmpstr, (strlen( tmpstr ) + 1) );
         }
       }
     }
 
     start += strlen( code[j] );
 
-    free_safe( code[j] );
+    free_safe( code[j], (strlen( code[j] ) + 1) );
 
   }
 
   for( i=0; i<depth; i++ ) {
-    free_safe( lines[i] );
+    free_safe( lines[i], (strlen( lines[i] ) + 1) );
   }
 
   if( depth > 0 ) {
-    free_safe( lines );
+    free_safe( lines, (sizeof( char* ) * depth) );
   }
 
   if( code_depth > 0 ) {
-    free_safe( code );
+    free_safe( code, (sizeof( char* ) * code_depth) );
   }
 
 }
@@ -2089,12 +2089,12 @@ static void combination_multi_var_exprs(
         assert( rv < slen2 );
         rv = snprintf( *line3, slen3, "%s%s", left_line3, right_line3 );
         assert( rv < slen3 );
-        free_safe( left_line1 );
-        free_safe( left_line2 );
-        free_safe( left_line3 );
-        free_safe( right_line1 );
-        free_safe( right_line2 );
-        free_safe( right_line3 );
+        free_safe( left_line1, (strlen( left_line1 ) + 1) );
+        free_safe( left_line2, (strlen( left_line2 ) + 1) );
+        free_safe( left_line3, (strlen( left_line3 ) + 1) );
+        free_safe( right_line1, (strlen( right_line1 ) + 1) );
+        free_safe( right_line2, (strlen( right_line2 ) + 1) );
+        free_safe( right_line3, (strlen( right_line3 ) + 1) );
       } else {
         *line1 = left_line1;
         *line2 = left_line2;
@@ -2133,9 +2133,9 @@ static void combination_multi_var_exprs(
         rv = snprintf( *line3, slen3, "%s  %c  ", left_line3, ((exp->suppl.part.eval_00 == 1) ? ' ' : '*') );
         assert( rv < slen3 );
       }
-      free_safe( left_line1 );
-      free_safe( left_line2 );
-      free_safe( left_line3 );
+      free_safe( left_line1, (strlen( left_line1 ) + 1) );
+      free_safe( left_line2, (strlen( left_line2 ) + 1) );
+      free_safe( left_line3, (strlen( left_line3 ) + 1) );
     }
 
   }
@@ -2312,9 +2312,9 @@ static void combination_multi_vars(
       /* Output the lines paying attention to the current line width */
       combination_multi_expr_output( *info, line1, line2, line3 );
 
-      free_safe( line1 );
-      free_safe( line2 );
-      free_safe( line3 );
+      free_safe( line1, (strlen( line1 ) + 1) );
+      free_safe( line2, (strlen( line2 ) + 1) );
+      free_safe( line3, (strlen( line3 ) + 1) );
 
     }
 
@@ -2417,13 +2417,13 @@ static void combination_list_missed(
       for( i=0; i<info_size; i++ ) {
 
         fprintf( ofile, "%s\n", info[i] );
-        free_safe( info[i] );
+        free_safe( info[i], (strlen( info[i] ) + 1) );
 
       }
 
       fprintf( ofile, "\n" );
 
-      free_safe( info );
+      free_safe( info, (sizeof( char* ) * info_size) );
 
     }
 
@@ -2579,7 +2579,7 @@ static void combination_instance_verbose(
     assert( rv < 4096 );
   }
 
-  free_safe( pname );
+  free_safe( pname, (strlen( pname ) + 1) );
 
   if( !funit_is_unnamed( root->funit ) &&
       (((root->stat->comb_hit < root->stat->comb_total) && !report_covered) ||
@@ -2602,7 +2602,7 @@ static void combination_instance_verbose(
     fprintf( ofile, "%s, File: %s, Instance: %s\n", pname, obf_file( root->funit->filename ), tmpname );
     fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
-    free_safe( pname );
+    free_safe( pname, (strlen( pname ) + 1) );
 
     combination_display_verbose( ofile, root->funit );
 
@@ -2655,7 +2655,7 @@ static void combination_funit_verbose(
       fprintf( ofile, "%s, File: %s\n", pname, obf_file( head->funit->filename ) );
       fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
-      free_safe( pname );
+      free_safe( pname, (strlen( pname ) + 1) );
 
       combination_display_verbose( ofile, head->funit );
 
@@ -2858,15 +2858,15 @@ bool combination_get_expression(
   
       } Catch_anonymous {
         int i;
-        free_safe( *uline_groups );
+        free_safe( *uline_groups, (sizeof( int ) * (*code_size)) );
         *uline_groups = NULL;
         for( i=0; i<*code_size; i++ ) {
-          free_safe( (*code)[i] );
+          free_safe( (*code)[i], (strlen( (*code)[i] ) + 1) );
         }
-        free_safe( *code );
+        free_safe( *code, (sizeof( char* ) * *code_size) );
         *code      = NULL;
         *code_size = 0;
-        free_safe( *excludes );
+        free_safe( *excludes, (sizeof( int* ) * *exclude_size) );
         *excludes     = NULL;
         *exclude_size = 0;
         printf( "comb Throw D\n" );
@@ -2905,11 +2905,11 @@ bool combination_get_expression(
       }
 
       for( i=0; i<tmp_uline_size; i++ ) {
-        free_safe( tmp_ulines[i] );
+        free_safe( tmp_ulines[i], (strlen( tmp_ulines[i] ) + 1) );
       }
 
       if( tmp_uline_size > 0 ) {
-        free_safe( tmp_ulines );
+        free_safe( tmp_ulines, (sizeof( char* ) * tmp_uline_size) );
       }
 
     } else {
@@ -3050,6 +3050,10 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.186  2008/03/14 22:00:17  phase1geo
+ Beginning to instrument code for exception handling verification.  Still have
+ a ways to go before we have anything that is self-checking at this point, though.
+
  Revision 1.185  2008/03/10 22:00:31  phase1geo
  Working on more exception handling (script is finished now).  Starting to work
  on code enhancements again :)  Checkpointing.

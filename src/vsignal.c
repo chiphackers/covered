@@ -161,10 +161,10 @@ void vsignal_create_vec(
     /* Create the vector and assign it to the signal */
     vec = vector_create( sig->value->width, ((sig->suppl.part.type == SSUPPL_TYPE_MEM) ? VTYPE_MEM : VTYPE_SIG), TRUE );
     if( sig->value->value != NULL ) {
-      free_safe( sig->value->value );
+      free_safe( sig->value->value, sig->value->width );
     }
     sig->value->value = vec->value;
-    free_safe( vec );
+    free_safe( vec, sizeof( vec ) );
 
     /* Iterate through expression list, setting the expression to this signal */
     expl = sig->exp_head;
@@ -333,7 +333,7 @@ void vsignal_db_read(
       vector_db_read( &vec, line );
 
     } Catch_anonymous {
-      free_safe( dim );
+      free_safe( dim, sizeof( dim_range ) );
       printf( "vsignal Throw B\n" );
       Throw 0;
     }
@@ -743,11 +743,11 @@ void vsignal_dealloc(
   if( sig != NULL ) {
 
     /* Free the signal name */
-    free_safe( sig->name );
+    free_safe( sig->name, (strlen( sig->name ) + 1) );
     sig->name = NULL;
 
     /* Free the dimension information */
-    free_safe( sig->dim );
+    free_safe( sig->dim, sizeof( dim_range ) );
 
     /* Free up memory for value */
     vector_dealloc( sig->value );
@@ -764,7 +764,7 @@ void vsignal_dealloc(
     sig->exp_head = NULL;
 
     /* Finally free up the memory for this vsignal */
-    free_safe( sig );
+    free_safe( sig, sizeof( vsignal ) );
 
   }
 
@@ -774,6 +774,10 @@ void vsignal_dealloc(
 
 /*
  $Log$
+ Revision 1.61  2008/03/14 22:00:21  phase1geo
+ Beginning to instrument code for exception handling verification.  Still have
+ a ways to go before we have anything that is self-checking at this point, though.
+
  Revision 1.60  2008/03/13 10:28:55  phase1geo
  The last of the exception handling modifications.
 

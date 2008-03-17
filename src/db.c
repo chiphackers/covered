@@ -198,9 +198,9 @@ void db_close() { PROFILE(DB_CLOSE);
     
     /* Free memory associated with current instance scope */
     for( i=0; i<curr_inst_scope_size; i++ ) {
-      free_safe( curr_inst_scope[i] );
+      free_safe( curr_inst_scope[i], (strlen( curr_inst_scope[i] ) + 1) );
     }
-    free_safe( curr_inst_scope );
+    free_safe( curr_inst_scope, (sizeof( char* ) * curr_inst_scope_size) );
 
   }
 
@@ -515,13 +515,13 @@ void db_read(
 
         } Catch_anonymous {
 
-          free_safe( curr_line );
+          free_safe( curr_line, (strlen( curr_line ) + 1) );
           printf( "db Throw F\n" );
           Throw 0;
 
         }
 
-        free_safe( curr_line );
+        free_safe( curr_line, (strlen( curr_line ) + 1) );
 
       }
 
@@ -965,12 +965,12 @@ bool db_add_function_task_namedblock(
     }
 
   } Catch_anonymous {
-    free_safe( full_name );
+    free_safe( full_name, (strlen( full_name ) + 1) );
     printf( "db Throw K\n" );
     Throw 0;
   }
 
-  free_safe( full_name );
+  free_safe( full_name, (strlen( full_name ) + 1) );
 
   PROFILE_END;
 
@@ -1813,7 +1813,7 @@ expression* db_create_expr_from_static(
 
       /* Assign the new vector to the expression's vector (after deallocating the expression's old vector) */
       assert( expr->value->value == NULL );
-      free_safe( expr->value );
+      free_safe( expr->value, sizeof( vector ) );
       expr->value = vec;
 
     } else {
@@ -2006,7 +2006,7 @@ statement* db_parallelize_statement(
       db_end_function_task_namedblock( stmt->exp->line );
 
     }
-    free_safe( scope );
+    free_safe( scope, (strlen( scope ) + 1) );
 
     /* Reduce fork and block depth for the new statement */
     fork_depth--;
@@ -2581,7 +2581,7 @@ void db_sync_curr_instance() { PROFILE(DB_SYNC_CURR_INSTANCE);
       strcpy( stripped_scope, scope );
     }
 
-    free_safe( scope );
+    free_safe( scope, (strlen( scope ) + 1) );
 
     if( stripped_scope[0] != '\0' ) {
 
@@ -2648,7 +2648,7 @@ void db_vcd_upscope() { PROFILE(DB_VCD_UPSCOPE);
     unsigned int rv    = snprintf( user_msg, USER_MSG_LENGTH, "In db_vcd_upscope, curr_inst_scope: %s", obf_inst( scope ) );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
-    free_safe( scope );
+    free_safe( scope, (strlen( scope ) + 1) );
   }
 #endif
 
@@ -2656,7 +2656,7 @@ void db_vcd_upscope() { PROFILE(DB_VCD_UPSCOPE);
   if( curr_inst_scope_size > 0 ) {
 
     curr_inst_scope_size--;
-    free_safe( curr_inst_scope[curr_inst_scope_size] );
+    free_safe( curr_inst_scope[curr_inst_scope_size], (strlen( curr_inst_scope[curr_inst_scope_size] ) + 1) );
 
     db_sync_curr_instance();
 
@@ -2685,7 +2685,7 @@ void db_assign_symbol( char* name, char* symbol, int msb, int lsb ) { PROFILE(DB
                                    obf_sig( name ), symbol, obf_inst( scope ), msb, lsb );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
-    free_safe( scope );
+    free_safe( scope, (strlen( scope ) + 1) );
   }
 #endif
 
@@ -2851,6 +2851,10 @@ bool db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.294  2008/03/14 22:00:18  phase1geo
+ Beginning to instrument code for exception handling verification.  Still have
+ a ways to go before we have anything that is self-checking at this point, though.
+
  Revision 1.293  2008/03/13 10:28:55  phase1geo
  The last of the exception handling modifications.
 

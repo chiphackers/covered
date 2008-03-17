@@ -302,7 +302,7 @@ static bool line_instance_summary(
     assert( rv < 4096 );
   }
 
-  free_safe( pname );
+  free_safe( pname, (strlen( pname ) + 1) );
 
   if( root->stat->show && !funit_is_unnamed( root->funit ) &&
       ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
@@ -399,7 +399,7 @@ static bool line_funit_summary(
       *hits  += head->funit->stat->line_hit;
       *total += head->funit->stat->line_total;
 
-      free_safe( pname );
+      free_safe( pname, (strlen( pname ) + 1) );
 
     }
 
@@ -465,9 +465,9 @@ static void line_display_verbose(
           fprintf( ofile, "      %7d:    %s...\n", unexec_exp->line, code[0] );
         }
         for( i=0; i<code_depth; i++ ) {
-          free_safe( code[i] );
+          free_safe( code[i], (strlen( code[i] ) + 1) );
         }
-        free_safe( code );
+        free_safe( code, (sizeof( char* ) * code_depth) );
 
       }
 
@@ -517,7 +517,7 @@ static void line_instance_verbose(
     assert( rv < 4096 );
   }
 
-  free_safe( pname );
+  free_safe( pname, (strlen( pname ) + 1) );
 
   if( !funit_is_unnamed( root->funit ) &&
       (((root->stat->line_hit < root->stat->line_total) && !report_covered) ||
@@ -540,7 +540,7 @@ static void line_instance_verbose(
     fprintf( ofile, "%s, File: %s, Instance: %s\n", pname, obf_file( root->funit->filename ), tmpname );
     fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
-    free_safe( pname );
+    free_safe( pname, (strlen( pname ) + 1) );
 
     line_display_verbose( ofile, root->funit );
 
@@ -593,7 +593,7 @@ static void line_funit_verbose(
       fprintf( ofile, "%s, File: %s\n", pname, obf_file( head->funit->filename ) );
       fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
-      free_safe( pname );
+      free_safe( pname, (strlen( pname ) + 1) );
 
       line_display_verbose( ofile, head->funit );
   
@@ -677,6 +677,9 @@ void line_report( FILE* ofile, bool verbose ) { PROFILE(LINE_REPORT);
 
 /*
  $Log$
+ Revision 1.86  2008/03/14 05:20:49  phase1geo
+ Fixing line.c and updating regressions as necessary.
+
  Revision 1.85  2008/02/25 18:22:16  phase1geo
  Moved statement supplemental bits from root expression to statement and starting
  to add support for race condition checking pragmas (still some work left to do

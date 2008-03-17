@@ -303,8 +303,8 @@ int tcl_func_collect_uncovered_lines( ClientData d, Tcl_Interp* tcl, int argc, c
       Tcl_SetVar( tcl, "line_excludes", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
     }
 
-    free_safe( lines );
-    free_safe( excludes );
+    free_safe( lines, (sizeof( int ) * line_cnt) );
+    free_safe( excludes, (sizeof( int ) * line_cnt) );
 
   } else {
 
@@ -315,7 +315,7 @@ int tcl_func_collect_uncovered_lines( ClientData d, Tcl_Interp* tcl, int argc, c
 
   }
 
-  free_safe( funit_name );
+  free_safe( funit_name, (strlen( funit_name ) + 1) );
 
   return( retval );
 
@@ -354,8 +354,8 @@ int tcl_func_collect_covered_lines( ClientData d, Tcl_Interp* tcl, int argc, con
       Tcl_SetVar( tcl, "covered_lines", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
     }
 
-    free_safe( lines );
-    free_safe( excludes );
+    free_safe( lines, (sizeof( int ) * line_cnt) );
+    free_safe( excludes, (sizeof( int ) * line_cnt) );
 
   } else {
 
@@ -366,7 +366,7 @@ int tcl_func_collect_covered_lines( ClientData d, Tcl_Interp* tcl, int argc, con
 
   }
 
-  free_safe( funit_name );
+  free_safe( funit_name, (strlen( funit_name ) + 1) );
 
   return( retval );
 
@@ -411,9 +411,9 @@ int tcl_func_collect_race_lines( ClientData d, Tcl_Interp* tcl, int argc, const 
       Tcl_SetVar( tcl, "race_reasons", reason, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
     }
 
-    free_safe( slines );
-    free_safe( elines );
-    free_safe( reasons );
+    free_safe( slines, (sizeof( int ) * line_cnt) );
+    free_safe( elines, (sizeof( int ) * line_cnt) );
+    free_safe( reasons, (sizeof( int ) * line_cnt) );
 
   } else {
 
@@ -424,7 +424,7 @@ int tcl_func_collect_race_lines( ClientData d, Tcl_Interp* tcl, int argc, const 
 
   }
 
-  free_safe( funit_name );
+  free_safe( funit_name, (strlen( funit_name ) + 1) );
 
   return( retval );
 
@@ -484,7 +484,7 @@ int tcl_func_collect_uncovered_toggles( ClientData d, Tcl_Interp* tcl, int argc,
 
   }
 
-  free_safe( funit_name );
+  free_safe( funit_name, (strlen( funit_name ) + 1) );
 
   return( retval );
 
@@ -542,7 +542,7 @@ int tcl_func_collect_covered_toggles( ClientData d, Tcl_Interp* tcl, int argc, c
 
   }
 
-  free_safe( funit_name );
+  free_safe( funit_name, (strlen( funit_name ) + 1) );
 
   return( retval );
 
@@ -619,7 +619,7 @@ int tcl_func_collect_memories( ClientData d, Tcl_Interp* tcl, int argc, const ch
 
   }
 
-  free_safe( funit_name );
+  free_safe( funit_name, (strlen( funit_name ) + 1) );
 
   return( retval );
 
@@ -665,8 +665,8 @@ int tcl_func_get_toggle_coverage( ClientData d, Tcl_Interp* tcl, int argc, const
     Tcl_SetVar( tcl, "toggle_excluded", tmp, TCL_GLOBAL_ONLY );
 
     /* Free up allocated memory */
-    free_safe( tog01 );
-    free_safe( tog10 );
+    free_safe( tog01, (strlen( tog01 ) + 1) );
+    free_safe( tog10, (strlen( tog10 ) + 1) );
 
   } else {
     snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find functional unit %s in design", argv[1] );
@@ -676,8 +676,8 @@ int tcl_func_get_toggle_coverage( ClientData d, Tcl_Interp* tcl, int argc, const
   }
 
   /* Free up allocated memory */
-  free_safe( funit_name );
-  free_safe( signame );
+  free_safe( funit_name, (strlen( funit_name ) + 1) );
+  free_safe( signame, (strlen( signame ) + 1) );
 
   return( retval );
 
@@ -722,10 +722,10 @@ int tcl_func_get_memory_coverage( ClientData d, Tcl_Interp* tcl, int argc, const
     Tcl_SetVar( tcl, "memory_excluded", tmp, TCL_GLOBAL_ONLY );
 
     /* Free up allocated memory */
-    free_safe( pdim_str );
-    free_safe( pdim_array );
-    free_safe( udim_str );
-    free_safe( memory_info );
+    free_safe( pdim_str, (strlen( pdim_str ) + 1) );
+    free_safe( pdim_array, (strlen( pdim_array ) + 1) );
+    free_safe( udim_str, (strlen( udim_str ) + 1) );
+    free_safe( memory_info, (strlen( memory_info ) + 1) );
 
   } else {
     snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find functional unit %s in design", argv[1] );
@@ -735,8 +735,8 @@ int tcl_func_get_memory_coverage( ClientData d, Tcl_Interp* tcl, int argc, const
   }
 
   /* Free up allocated memory */
-  free_safe( funit_name );
-  free_safe( signame );
+  free_safe( funit_name, (strlen( funit_name ) + 1) );
+  free_safe( signame, (strlen( signame ) + 1) );
 
   return( retval );
 
@@ -792,9 +792,9 @@ int tcl_func_collect_combs( ClientData d, Tcl_Interp* tcl, int argc, const char*
     }
 
     /* Deallocate memory */
-    free_safe( uncovs );
-    free_safe( excludes );
-    free_safe( covs );
+    free_safe( uncovs, (sizeof( expression ) * uncov_cnt) );
+    free_safe( excludes, (sizeof( int ) * cov_cnt) );
+    free_safe( covs, (sizeof( expression ) * cov_cnt ) );
 
   } else {
 
@@ -805,7 +805,7 @@ int tcl_func_collect_combs( ClientData d, Tcl_Interp* tcl, int argc, const char*
 
   }
 
-  free_safe( funit_name );
+  free_safe( funit_name, (strlen( funit_name ) + 1) );
 
   return( retval );
 
@@ -2280,6 +2280,10 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.72  2008/03/14 22:00:21  phase1geo
+ Beginning to instrument code for exception handling verification.  Still have
+ a ways to go before we have anything that is self-checking at this point, though.
+
  Revision 1.71  2008/02/10 03:33:13  phase1geo
  More exception handling added and fixed remaining splint errors.
 

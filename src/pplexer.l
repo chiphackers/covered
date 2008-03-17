@@ -486,7 +486,7 @@ static void def_finish() { PROFILE(DEF_FINISH);
 
     if( define_text ) {
       define_macro( def_name, define_text );
-      free_safe( define_text );
+      free_safe( define_text, (strlen( define_text ) + 1) );
       define_text = NULL;
       define_cnt  = 0;
     } else {
@@ -634,10 +634,10 @@ static int yywrap() { PROFILE(YYWRAP);
   if( isp->file ) {
     unsigned int rv = fclose(isp->file);
     assert( rv == 0 );
-    free_safe(isp->path);
+    free_safe( isp->path, (strlen( isp->path ) + 1) );
   }
 
-  free_safe(isp);
+  free_safe( isp, sizeof( struct include_stack_t ) );
 
   /* 
    If I am out of include stack, the main input is done.

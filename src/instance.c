@@ -91,8 +91,8 @@ static void instance_display_tree_helper(
   }
 
   /* Deallocate memory */
-  free_safe( piname );
-  free_safe( pfname );
+  free_safe( piname, (strlen( piname ) + 1) );
+  free_safe( pfname, (strlen( pfname ) + 1) );
 
   PROFILE_END;
 
@@ -600,12 +600,12 @@ bool instance_resolve_inst(
     /* Remove the range information from this instance */
     static_expr_dealloc( curr->range->left,  FALSE );
     static_expr_dealloc( curr->range->right, FALSE );
-    free_safe( curr->range );
+    free_safe( curr->range, sizeof( vector_width ) );
     curr->range = NULL;
 
     /* Copy and deallocate instance name */
     name_copy = strdup_safe( curr->name );
-    free_safe( curr->name );
+    free_safe( curr->name, (strlen( curr->name ) + 1) );
 
     /* For the first instance, just modify the name */
     slen     = strlen( name_copy ) + 23;
@@ -627,8 +627,8 @@ bool instance_resolve_inst(
     }
 
     /* Deallocate the new_name and name_copy pointers */
-    free_safe( name_copy );
-    free_safe( new_name );
+    free_safe( name_copy, (strlen( name_copy ) + 1) );
+    free_safe( new_name, (strlen( new_name ) + 1) );
 
   }
 
@@ -1046,16 +1046,16 @@ void instance_dealloc_single( funit_inst* inst ) { PROFILE(INSTANCE_DEALLOC_SING
   if( inst != NULL ) {
 
     /* Free up memory allocated for name */
-    free_safe( inst->name );
+    free_safe( inst->name, (strlen( inst->name ) + 1) );
 
     /* Free up memory allocated for statistic, if necessary */
-    free_safe( inst->stat );
+    free_safe( inst->stat, sizeof( statistic ) );
 
     /* Free up memory for range, if necessary */
     if( inst->range != NULL ) {
       static_expr_dealloc( inst->range->left,  FALSE );
       static_expr_dealloc( inst->range->right, FALSE );
-      free_safe( inst->range );
+      free_safe( inst->range, sizeof( vector_width ) );
     }
 
     /* Deallocate memory for instance parameter list */
@@ -1067,7 +1067,7 @@ void instance_dealloc_single( funit_inst* inst ) { PROFILE(INSTANCE_DEALLOC_SING
 #endif
 
     /* Free up memory for this functional unit instance */
-    free_safe( inst );
+    free_safe( inst, sizeof( func_inst ) );
 
   }
 
@@ -1172,6 +1172,9 @@ void instance_dealloc( funit_inst* root, char* scope ) { PROFILE(INSTANCE_DEALLO
 
 /*
  $Log$
+ Revision 1.90  2008/03/11 22:06:48  phase1geo
+ Finishing first round of exception handling code.
+
  Revision 1.89  2008/03/04 00:09:20  phase1geo
  More exception handling.  Checkpointing.
 

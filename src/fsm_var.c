@@ -417,9 +417,9 @@ void fsm_var_bind() { PROFILE(FSM_VAR_BIND);
       tmp = curr->next;
 
       /* Deallocate memory for this bind structure */
-      free_safe( curr->sig_name );
-      free_safe( curr->funit_name );
-      free_safe( curr );
+      free_safe( curr->sig_name, (strlen( curr->sig_name ) + 1) );
+      free_safe( curr->funit_name, (strlen( curr->funit_name ) + 1) );
+      free_safe( curr, sizeeof( fv_bind ) );
 
       curr = tmp;
 
@@ -428,16 +428,16 @@ void fsm_var_bind() { PROFILE(FSM_VAR_BIND);
   } Catch_anonymous {
     while( curr != NULL ) {
       tmp = curr->next;
-      free_safe( curr->sig_name );
-      free_safe( curr->funit_name );
-      free_safe( curr );
+      free_safe( curr->sig_name, (strlen( curr->sig_name ) + 1) );
+      free_safe( curr->funit_name, (strlen( curr->funit_name ) + 1) );
+      free_safe( curr, sizeof( fv_bind ) );
       curr = tmp;
     } 
     curr = fsm_var_stmt_head;
     while( curr != NULL ) {
       tmp = curr->next;
-      free_safe( curr->funit_name );
-      free_safe( curr );
+      free_safe( curr->funit_name, (strlen( curr->funit_name ) + 1) );
+      free_safe( curr, sizeof( fv_bind ) );
       curr = tmp;
     }
     printf( "fsm_var Throw C\n" );
@@ -453,8 +453,8 @@ void fsm_var_bind() { PROFILE(FSM_VAR_BIND);
     tmp = curr->next;
 
     /* Deallocate memory for this bind structure */
-    free_safe( curr->funit_name );
-    free_safe( curr );
+    free_safe( curr->funit_name, (strlen( curr->funit_name ) + 1) );
+    free_safe( curr, sizeof( fv_bind ) );
 
     curr = tmp;
 
@@ -474,10 +474,10 @@ static void fsm_var_dealloc(
   if( fv != NULL ) {
 
     /* Deallocate the functional unit name string */
-    free_safe( fv->funit );
+    free_safe( fv->funit, (strlen( fv->funit ) + 1) );
 
     /* Finally, deallocate ourself */
-    free_safe( fv );
+    free_safe( fv, sizeof( fsm_var ) );
 
   }
 
@@ -527,6 +527,10 @@ void fsm_var_remove(
 
 /*
  $Log$
+ Revision 1.42  2008/03/14 22:00:19  phase1geo
+ Beginning to instrument code for exception handling verification.  Still have
+ a ways to go before we have anything that is self-checking at this point, though.
+
  Revision 1.41  2008/03/11 22:06:48  phase1geo
  Finishing first round of exception handling code.
 

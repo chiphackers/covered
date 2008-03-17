@@ -846,10 +846,10 @@ void str_link_remove( char* str, str_link** head, str_link** tail ) { PROFILE(ST
     }
 
     /* Deallocate associated string */
-    free_safe( curr->str );
+    free_safe( curr->str, (strlen( curr->str ) + 1) );
 
     /* Now deallocate this link itself */
-    free_safe( curr );
+    free_safe( curr, sizeof( str_link ) );
 
   }
 
@@ -906,7 +906,7 @@ void exp_link_remove( expression* exp, exp_link** head, exp_link** tail, bool re
       last->next = curr->next;
     }
 
-    free_safe( curr );
+    free_safe( curr, sizeof( exp_link ) );
 
   }
 
@@ -952,7 +952,7 @@ void gitem_link_remove( gen_item* gi, gitem_link** head, gitem_link** tail ) { P
       last->next = gil->next;
     }
 
-    free_safe( gil );
+    free_safe( gil, sizeof( gitem_link ) );
 
   }
 
@@ -1003,7 +1003,7 @@ void funit_link_remove( func_unit* funit, funit_link** head, funit_link** tail, 
     }
 
     /* Deallocate the link */
-    free_safe( curr );
+    free_safe( curr, sizeof( funit_link ) );
 
   }
 
@@ -1047,12 +1047,12 @@ void str_link_delete_list( str_link* head ) { PROFILE(STR_LINK_DELETE_LIST);
 
     /* Deallocate memory for stored string */
     if( tmp->str != NULL ) {
-      free_safe( tmp->str );
+      free_safe( tmp->str, (strlen( tmp->str ) + 1) );
       tmp->str = NULL;
     }
 
     /* Deallocate str_link element itself */
-    free_safe( tmp );
+    free_safe( tmp, sizeof( str_link ) );
 
   }
 
@@ -1104,7 +1104,7 @@ void stmt_link_unlink( statement* stmt, stmt_link** head, stmt_link** tail ) { P
     }
 
     /* Deallocate the stmt_link */
-    free_safe( curr.curr );
+    free_safe( curr.curr, sizeof( stmt_link ) );
 
   }
 
@@ -1135,7 +1135,7 @@ void stmt_link_delete_list( stmt_link* head ) { PROFILE(STMT_LINK_DELETE_LIST);
     }
 
     /* Deallocate stmt_link element itself */
-    free_safe( curr.curr );
+    free_safe( curr.curr, sizeof( stmt_link ) );
 
     stmt_iter_reset( &curr, head );
     
@@ -1167,7 +1167,7 @@ void exp_link_delete_list( exp_link* head, bool del_exp ) { PROFILE(EXP_LINK_DEL
     }
     
     /* Deallocate exp_link element itself */
-    free_safe( tmp );
+    free_safe( tmp, sizeof( exp_link ) );
     
   }
 
@@ -1197,7 +1197,7 @@ void sig_link_delete_list( sig_link* head, bool del_sig ) { PROFILE(SIG_LINK_DEL
     }
 
     /* Deallocate sig_link element itself */
-    free_safe( tmp );
+    free_safe( tmp, sizeof( sig_link ) );
 
   }
 
@@ -1224,7 +1224,7 @@ void fsm_link_delete_list( fsm_link* head ) { PROFILE(FSM_LINK_DELETE_LIST);
     tmp->table = NULL;
 
     /* Deallocate fsm_link element itself */
-    free_safe( tmp );
+    free_safe( tmp, sizeof( fsm_link ) );
 
   }
 
@@ -1255,7 +1255,7 @@ void funit_link_delete_list( funit_link** head, funit_link** tail, bool rm_funit
     }
 
     /* Deallocate funit_link element itself */
-    free_safe( tmp );
+    free_safe( tmp, sizeof( funit_link ) );
 
   }
 
@@ -1285,7 +1285,7 @@ void gitem_link_delete_list( gitem_link* head, bool rm_elems ) { PROFILE(GITEM_L
     gen_item_dealloc( tmp->gi, rm_elems );
 
     /* Deallocate gitem_link element itself */
-    free_safe( tmp );
+    free_safe( tmp, sizeof( gitem_link ) );
 
   }
 
@@ -1312,7 +1312,7 @@ void inst_link_delete_list( inst_link* head ) { PROFILE(INST_LINK_DELETE_LIST);
     instance_dealloc( tmp->inst, tmp->inst->name );
 
     /* Deallocate inst_link element itself */
-    free_safe( tmp );
+    free_safe( tmp, sizeof( inst_link ) );
 
   }
 
@@ -1323,6 +1323,11 @@ void inst_link_delete_list( inst_link* head ) { PROFILE(INST_LINK_DELETE_LIST);
 
 /*
  $Log$
+ Revision 1.76  2008/02/25 18:22:16  phase1geo
+ Moved statement supplemental bits from root expression to statement and starting
+ to add support for race condition checking pragmas (still some work left to do
+ on this item).  Updated IV and Cver regressions per these changes.
+
  Revision 1.75  2008/01/30 05:51:50  phase1geo
  Fixing doxygen errors.  Updated parameter list syntax to make it more readable.
 

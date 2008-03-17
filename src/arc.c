@@ -453,7 +453,7 @@ int arc_get_entry_suppl( const char* arcs, int curr, unsigned int type ) { PROFI
 
   }
 
-  free_safe( value );
+  free_safe( value, width );
 
 }
 
@@ -635,7 +635,7 @@ void arc_add(
       }
 
       /* Deallocate old memory */
-      free_safe( tmp );
+      free_safe( tmp, 0 );   /* TBD */
 
     }
 
@@ -1064,7 +1064,7 @@ void arc_db_read(
     }
 
   } Catch_anonymous {
-    free_safe( *arcs );
+    free_safe( *arcs, ((arc_get_entry_width( width ) * curr_size) + ARC_STATUS_SIZE) );
     *arcs = NULL;
     printf( "arc Throw B\n" );
     Throw 0;
@@ -1219,9 +1219,9 @@ void arc_db_merge(
 
   }
 
-  free_safe( strl );
-  free_safe( strr );
-  free_safe( arcs );
+  free_safe( strl, ((arc_get_width( arcs ) / 4) + 4 + strlen( str_width )) );
+  free_safe( strr, ((arc_get_width( arcs ) / 4) + 4 + strlen( str_width )) );
+  free_safe( arcs, 0 );   /* TBD */
 
   PROFILE_END;
 
@@ -1354,8 +1354,8 @@ void arc_get_transitions( char*** from_states, char*** to_states, int** excludes
   }
 
   /* Deallocate memory */
-  free_safe( strl );
-  free_safe( strr );
+  free_safe( strl, ((arc_get_width( arcs ) / 4) + 2) );
+  free_safe( strr, ((arc_get_width( arcs ) / 4) + 2) );
 
 }
 
@@ -1388,13 +1388,17 @@ bool arc_are_any_excluded( const char* arcs ) { PROFILE(ARC_ARE_ANY_EXCLUDED);
 void arc_dealloc( char* arcs ) { PROFILE(ARC_DEALLOC);
 
   if( arcs != NULL ) {
-    free_safe( arcs );
+    free_safe( arcs, 0 );  /* TBD */
   }
 
 }
 
 /*
  $Log$
+ Revision 1.54  2008/03/14 22:00:17  phase1geo
+ Beginning to instrument code for exception handling verification.  Still have
+ a ways to go before we have anything that is self-checking at this point, though.
+
  Revision 1.53  2008/03/10 22:00:31  phase1geo
  Working on more exception handling (script is finished now).  Starting to work
  on code enhancements again :)  Checkpointing.

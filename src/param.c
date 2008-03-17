@@ -608,7 +608,7 @@ void defparam_dealloc() { PROFILE(DEFPARAM_DEALLOC);
     inst_parm_dealloc( defparam_list->param_head, TRUE );
 
     /* Now free the defparam_list structure itself */
-    free_safe( defparam_list );
+    free_safe( defparam_list, sizeof( funit_inst ) );
 
   }
 
@@ -802,7 +802,7 @@ void param_expr_eval(
         expression_resize( expr, inst->funit, FALSE, TRUE );
 #ifdef OBSOLETE
         if( expr->value->value != NULL ) {
-          free_safe( expr->value->value );
+          free_safe( expr->value->value, (sizeof( vec_data* ) * expr->value->width ) );
         }
         expression_create_value( expr, expr->value->width, TRUE );
 #endif
@@ -1115,13 +1115,13 @@ void mod_parm_dealloc(
     exp_link_delete_list( parm->exp_head, FALSE );
 
     /* Remove the parameter name */
-    free_safe( parm->name );
+    free_safe( parm->name, (strlen( parm->name ) + 1) );
 
     /* Remove instance name, if specified */
-    free_safe( parm->inst_name );
+    free_safe( parm->inst_name, (strlen( parm->inst_name ) + 1) );
 
     /* Remove the parameter itself */
-    free_safe( parm );
+    free_safe( parm, sizeof( mod_parm ) );
 
   }
 
@@ -1152,11 +1152,11 @@ void inst_parm_dealloc(
 
     /* Deallocate instance name, if specified */
     if( iparm->inst_name != NULL ) {
-      free_safe( iparm->inst_name );
+      free_safe( iparm->inst_name, (strlen( iparm->inst_name ) + 1) );
     }
     
     /* Deallocate parameter itself */
-    free_safe( iparm );
+    free_safe( iparm, sizeof( inst_parm ) );
 
   }
 
@@ -1165,6 +1165,10 @@ void inst_parm_dealloc(
 
 /*
  $Log$
+ Revision 1.105  2008/03/14 22:00:19  phase1geo
+ Beginning to instrument code for exception handling verification.  Still have
+ a ways to go before we have anything that is self-checking at this point, though.
+
  Revision 1.104  2008/03/11 22:06:48  phase1geo
  Finishing first round of exception handling code.
 

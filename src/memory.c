@@ -376,10 +376,10 @@ static void memory_get_mem_coverage( char** mem_str, vsignal* sig, vec_data* val
       strcat( *mem_str, entry_str );
 
       /* Deallocate memory */
-      free_safe( dim_str );
-      free_safe( tog01_str );
-      free_safe( tog10_str );
-      free_safe( entry_str );
+      free_safe( dim_str, (strlen( dim_str ) + 1) );
+      free_safe( tog01_str, (strlen( tog01_str ) + 1) );
+      free_safe( tog10_str, (strlen( tog10_str ) + 1) );
+      free_safe( entry_str, (strlen( entry_str ) + 1) );
 
     } 
 
@@ -648,7 +648,7 @@ static bool memory_toggle_instance_summary(
     assert( rv < 4096 );
   }
 
-  free_safe( pname );
+  free_safe( pname, (strlen( pname ) + 1) );
 
   if( root->stat->show && !funit_is_unnamed( root->funit ) &&
       ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
@@ -755,7 +755,7 @@ static bool memory_ae_instance_summary(
     assert( rv < 4096 );
   }
 
-  free_safe( pname );
+  free_safe( pname, (strlen( pname ) + 1) );
 
   if( root->stat->show && !funit_is_unnamed( root->funit ) &&
       ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
@@ -860,7 +860,7 @@ static bool memory_toggle_funit_summary(
       *hits10 += head->funit->stat->mem_tog10_hit;
       *total  += head->funit->stat->mem_tog_total;
 
-      free_safe( pname );
+      free_safe( pname, (strlen( pname ) + 1) );
 
     }
 
@@ -949,7 +949,7 @@ static bool memory_ae_funit_summary(
       *rd_hits += head->funit->stat->mem_rd_hit;
       *total   += head->funit->stat->mem_ae_total; 
 
-      free_safe( pname );
+      free_safe( pname, (strlen( pname ) + 1) );
 
     }
 
@@ -1131,7 +1131,7 @@ static void memory_display_verbose( FILE* ofile, sig_link* sigl ) { PROFILE(MEMO
 
     }
 
-    free_safe( pname );
+    free_safe( pname, (strlen( pname ) + 1) );
 
     curr_sig = curr_sig->next;
 
@@ -1169,7 +1169,7 @@ static void memory_instance_verbose( FILE* ofile, funit_inst* root, char* parent
     assert( rv < 4096 );
   }
 
-  free_safe( pname );
+  free_safe( pname, (strlen( pname ) + 1) );
 
   if( !funit_is_unnamed( root->funit ) &&
       ((root->stat->mem_tog01_hit < root->stat->mem_tog_total) ||
@@ -1191,7 +1191,7 @@ static void memory_instance_verbose( FILE* ofile, funit_inst* root, char* parent
     pname = scope_gen_printable( funit_flatten_name( root->funit ) );
     fprintf( ofile, "%s, File: %s, Instance: %s\n", pname, obf_file( root->funit->filename ), tmpname );
     fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
-    free_safe( pname );
+    free_safe( pname, (strlen( pname ) + 1) );
 
     memory_display_verbose( ofile, root->funit->sig_head );
 
@@ -1345,6 +1345,9 @@ void memory_report( FILE* ofile, bool verbose ) { PROFILE(MEMORY_REPORT);
 
 /*
  $Log$
+ Revision 1.24  2008/01/30 05:51:50  phase1geo
+ Fixing doxygen errors.  Updated parameter list syntax to make it more readable.
+
  Revision 1.23  2008/01/16 23:10:31  phase1geo
  More splint updates.  Code is now warning/error free with current version
  of run_splint.  Still have regression issues to debug.

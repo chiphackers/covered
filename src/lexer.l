@@ -295,7 +295,7 @@ WSPACE [ \t\b\f]+
           yylval.text[ strlen( yytext ) - 1 ] = '\0';
           tmpstr = yylval.text;
           yylval.number = vector_from_string( &(yylval.text), TRUE );
-          free_safe( tmpstr );
+          free_safe( tmpstr, (strlen( tmpstr ) + 1) );
           return STRING;
         } else {
           return UNUSED_STRING;
@@ -465,7 +465,7 @@ WSPACE [ \t\b\f]+
        }
        if( (last_keyword == K_module) || (last_keyword == K_primitive) ) {
          if( (foundmod = str_link_find( yytext, modlist_head )) == NULL ) {
-           free_safe( yylval.text );
+           free_safe( yylval.text, (strlen( yylval.text ) + 1) );
            BEGIN( IGNORE_MODULE );
            (void)tree_add( yytext, yylloc.text, FALSE, &found_modules );
            rc = IGNORE;
@@ -993,13 +993,13 @@ void process_timescale( const char* txt, bool report ) { PROFILE(PROCESS_TIMESCA
     db_set_timescale( unit, prec );
   
   } Catch_anonymous {
-    free_safe( str );
+    free_safe( str, (strlen( str ) + 1) );
     printf( "lexer Throw F\n" );
     Throw 0;
   }
 
   /* Finally, deallocate memory */
-  free_safe( str );
+  free_safe( str, (strlen( str ) + 1) );
 
 }
 
@@ -1247,8 +1247,8 @@ void check_for_pragma(
     }
 
     /* Deallocate memory */
-    free_safe( keyword );
-    free_safe( value );
+    free_safe( keyword, (strlen( keyword ) + 1) );
+    free_safe( value, (strlen( value ) + 1) );
 
   }
 

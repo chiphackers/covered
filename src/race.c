@@ -830,7 +830,7 @@ void race_check_modules() { PROFILE(RACE_CHECK_MODULES);
         }
 
         /* Deallocate stmt_blk list */
-        free_safe( sb );
+        free_safe( sb, sizeof( stmt_blk ) );
 
       }
 
@@ -1160,7 +1160,7 @@ void race_blk_delete_list(
     race_blk_delete_list( rb->next );
 
     /* Deallocate the memory for this race condition block */
-    free_safe( rb );
+    free_safe( rb, sizeof( race_blk ) );
 
   }
 
@@ -1170,6 +1170,10 @@ void race_blk_delete_list(
 
 /*
  $Log$
+ Revision 1.76  2008/03/14 22:00:20  phase1geo
+ Beginning to instrument code for exception handling verification.  Still have
+ a ways to go before we have anything that is self-checking at this point, though.
+
  Revision 1.75  2008/03/11 22:06:48  phase1geo
  Finishing first round of exception handling code.
 

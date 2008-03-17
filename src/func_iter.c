@@ -218,11 +218,11 @@ void func_iter_dealloc( func_iter* fi ) { PROFILE(FUNC_ITER_DEALLOC);
 
     /* Deallocate all statement iterators */
     for( i=0; i<(sizeof( fi->sis ) / sizeof( stmt_iter )); i++ ) {
-      free_safe( fi->sis[i] );
+      free_safe( fi->sis[i], sizeof( stmt_iter* ) );
     }
 
     /* Deallocate array of statement iterators */
-    free_safe( fi->sis );
+    free_safe( fi->sis, (sizeof( stmt_iter* ) * fi->si_num) );
 
   }
   
@@ -230,6 +230,9 @@ void func_iter_dealloc( func_iter* fi ) { PROFILE(FUNC_ITER_DEALLOC);
 
 /*
  $Log$
+ Revision 1.5  2008/01/10 04:59:04  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.4  2007/12/11 05:48:25  phase1geo
  Fixing more compile errors with new code changes and adding more profiling.
  Still have a ways to go before we can compile cleanly again (next submission

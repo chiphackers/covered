@@ -730,7 +730,7 @@ static bool fsm_instance_summary(
     assert( rv < 4096 );
   }
 
-  free_safe( pname );
+  free_safe( pname, (strlen( pname ) + 1) );
 
   if( root->stat->show && !funit_is_unnamed( root->funit ) &&
       ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
@@ -862,7 +862,7 @@ static bool fsm_funit_summary(
         *arc_total += head->funit->stat->arc_total;
       }
 
-      free_safe( pname );
+      free_safe( pname, (strlen( pname ) + 1) );
 
     }
 
@@ -910,14 +910,14 @@ static void fsm_display_state_verbose(
   /* Display all of the found states */
   for( i=0; i<state_size; i++ ) {
     fprintf( ofile, "          %u'h%s\n", arc_get_width( table->table ), states[i] );
-    free_safe( states[i] );
+    free_safe( states[i], (strlen( states[i] ) + 1) );
   }
 
   fprintf( ofile, "\n" );
 
   /* Deallocate the states array */
   if( state_size > 0 ) {
-    free_safe( states );
+    free_safe( states, (sizeof( char* ) * state_size) );
   }
 
 }
@@ -987,16 +987,16 @@ static void fsm_display_arc_verbose(
     rv = snprintf( tmptst, 4096, "%u'h%s", arc_get_width( table->table ), to_states[i] );
     assert( rv < 4096 );
     fprintf( ofile, fstr, tmpfst, tmptst );
-    free_safe( from_states[i] );
-    free_safe( to_states[i] );
+    free_safe( from_states[i], 0 );  /* TBD */
+    free_safe( to_states[i], 0 );  /* TBD */
   }
 
   fprintf( ofile, "\n" );
 
   /* Deallocate memory */
   if( arc_size > 0 ) {
-    free_safe( from_states );
-    free_safe( to_states );
+    free_safe( from_states, (sizeof( char* ) * arc_size) );
+    free_safe( to_states, (sizeof( char* ) * arc_size) );
   }
 
 }
@@ -1025,21 +1025,21 @@ static void fsm_display_verbose(
       codegen_gen_expr( head->table->to_state, head->table->to_state->op, &ocode, &ocode_depth, NULL );
       fprintf( ofile, "      FSM input/output state (%s)\n\n", ocode[0] );
       for( i=0; i<ocode_depth; i++ ) {
-        free_safe( ocode[i] );
+        free_safe( ocode[i], (strlen( ocode[i] ) + 1) );
       }
-      free_safe( ocode );
+      free_safe( ocode, (sizeof( char* ) * ocode_depth) );
     } else {
       codegen_gen_expr( head->table->from_state, head->table->from_state->op, &icode, &icode_depth, NULL );
       codegen_gen_expr( head->table->to_state,   head->table->to_state->op,   &ocode, &ocode_depth, NULL );
       fprintf( ofile, "      FSM input state (%s), output state (%s)\n\n", icode[0], ocode[0] );
       for( i=0; i<icode_depth; i++ ) {
-        free_safe( icode[i] );
+        free_safe( icode[i], (strlen( icode[i] ) + 1) );
       }
-      free_safe( icode );
+      free_safe( icode, (sizeof( char* ) * icode_depth) );
       for( i=0; i<ocode_depth; i++ ) {
-        free_safe( ocode[i] );
+        free_safe( ocode[i], (strlen( ocode[i] ) + 1) );
       }
-      free_safe( ocode );
+      free_safe( ocode, (sizeof( char* ) * ocode_depth) );
     }
 
     fsm_display_state_verbose( ofile, head->table );
@@ -1086,7 +1086,7 @@ static void fsm_instance_verbose(
     assert( rv < 4096 );
   }
 
-  free_safe( pname );
+  free_safe( pname, (strlen( pname ) + 1) );
 
   if( !funit_is_unnamed( root->funit ) &&
       ((((root->stat->state_hit < root->stat->state_total) || (root->stat->arc_hit < root->stat->arc_total)) && !report_covered) ||
@@ -1111,7 +1111,7 @@ static void fsm_instance_verbose(
     fprintf( ofile, "%s, File: %s, Instance: %s\n", pname, obf_file( root->funit->filename ), tmpname );
     fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
-    free_safe( pname );
+    free_safe( pname, (strlen( pname ) + 1) );
 
     fsm_display_verbose( ofile, root->funit->fsm_head );
 
@@ -1164,7 +1164,7 @@ static void fsm_funit_verbose(
       fprintf( ofile, "%s, File: %s\n", pname, obf_file( head->funit->filename ) );
       fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
-      free_safe( pname );
+      free_safe( pname, (strlen( pname ) + 1) );
 
       fsm_display_verbose( ofile, head->funit->fsm_head );
 
@@ -1263,7 +1263,7 @@ void fsm_dealloc( fsm* table ) { PROFILE(FSM_DEALLOC);
 
     /* Free name if one was specified */
     if( table->name != NULL ) {
-      free_safe( table->name );
+      free_safe( table->name, (strlen( table->name ) + 1) );
     }
 
     /* Deallocate tables */
@@ -1273,7 +1273,7 @@ void fsm_dealloc( fsm* table ) { PROFILE(FSM_DEALLOC);
     while( table->arc_head != NULL ) {
       tmp = table->arc_head;
       table->arc_head = table->arc_head->next;
-      free_safe( tmp );
+      free_safe( tmp, sizeof( fsm_arc ) );
     }
 
     /*
@@ -1288,7 +1288,7 @@ void fsm_dealloc( fsm* table ) { PROFILE(FSM_DEALLOC);
     }
 
     /* Deallocate this structure */
-    free_safe( table );
+    free_safe( table, sizeof( fsm ) );
       
   }
 
@@ -1296,6 +1296,10 @@ void fsm_dealloc( fsm* table ) { PROFILE(FSM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.89  2008/03/14 22:00:18  phase1geo
+ Beginning to instrument code for exception handling verification.  Still have
+ a ways to go before we have anything that is self-checking at this point, though.
+
  Revision 1.88  2008/03/11 22:21:01  phase1geo
  Continuing to do next round of exception handling.  Checkpointing.
 

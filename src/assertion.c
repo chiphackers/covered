@@ -164,7 +164,7 @@ static bool assertion_instance_summary(
     /*@-retvalint@*/snprintf( tmpname, 4096, "%s.%s", parent_inst, pname );
   }
 
-  free_safe( pname );
+  free_safe( pname, (strlen( pname ) + 1) );
 
   if( root->stat->show && !funit_is_unnamed( root->funit ) &&
       ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
@@ -260,7 +260,7 @@ static bool assertion_funit_summary(
       *hits  += head->funit->stat->assert_hit;
       *total += head->funit->stat->assert_total;
 
-      free_safe( pname );
+      free_safe( pname, (strlen( pname ) + 1) );
 
     }
 
@@ -322,7 +322,7 @@ static void assertion_instance_verbose( FILE* ofile, funit_inst* root, char* par
     snprintf( tmpname, 4096, "%s.%s", parent_inst, pname );
   }
 
-  free_safe( pname );
+  free_safe( pname, (strlen( pname ) + 1) );
 
   if( !funit_is_unnamed( root->funit ) &&
       (((root->stat->assert_hit < root->stat->assert_total) && !report_covered) ||
@@ -345,7 +345,7 @@ static void assertion_instance_verbose( FILE* ofile, funit_inst* root, char* par
     fprintf( ofile, "%s, File: %s, Instance: %s\n", pname, obf_file( root->funit->filename ), tmpname );
     fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
-    free_safe( pname );
+    free_safe( pname, (strlen( pname ) + 1) );
 
     assertion_display_verbose( ofile, root->funit );
 
@@ -393,7 +393,7 @@ static void assertion_funit_verbose( FILE* ofile, const funit_link* head ) { PRO
       fprintf( ofile, "%s, File: %s\n", pname, obf_file( head->funit->filename ) );
       fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
-      free_safe( pname );
+      free_safe( pname, (strlen( pname ) + 1) );
 
       assertion_display_verbose( ofile, head->funit );
 
@@ -611,6 +611,10 @@ bool assertion_get_coverage(
 
 /*
  $Log$
+ Revision 1.30  2008/02/01 06:37:07  phase1geo
+ Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
+ using pragma excludes (this code is not fully working yet).  More to be done.
+
  Revision 1.29  2008/01/30 05:51:50  phase1geo
  Fixing doxygen errors.  Updated parameter list syntax to make it more readable.
 

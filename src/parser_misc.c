@@ -126,7 +126,7 @@ void parser_dealloc_sig_range(
   }
 
   if( i > 0 ) {
-    free_safe( range->dim );
+    free_safe( range->dim, sizeof( vector_width ) );
     range->dim     = NULL;
     range->dim_num = 0;
   }
@@ -136,7 +136,7 @@ void parser_dealloc_sig_range(
 
   /* Deallocate pointer itself, if specified to do so */
   if( rm_ptr ) {
-    free_safe( range );
+    free_safe( range, sizeof( sig_range ) );
   }
 
 }
@@ -316,6 +316,9 @@ bool parser_check_generation(
 
 /*
  $Log$
+ Revision 1.21  2008/01/30 05:51:50  phase1geo
+ Fixing doxygen errors.  Updated parameter list syntax to make it more readable.
+
  Revision 1.20  2008/01/16 23:10:32  phase1geo
  More splint updates.  Code is now warning/error free with current version
  of run_splint.  Still have regression issues to debug.

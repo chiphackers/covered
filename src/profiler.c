@@ -69,7 +69,7 @@ void profiler_set_mode( bool value ) {
 void profiler_set_filename( const char* fname ) {
 
   /* Deallocate profiling output name, if one was already specified */
-  free_safe( profiling_output );
+  free_safe( profiling_output, (strlen( profiling_output ) + 1) );
 
   profiling_output = strdup_safe( fname );
 
@@ -126,11 +126,11 @@ static void profiler_dealloc() {
   int i;  /* Loop iterator */
 
   /* Deallocate profiling output name */
-  free_safe( profiling_output );
+  free_safe( profiling_output, (strlen( profiling_output ) + 1) );
 
   /* Iterate through the profiler array and deallocate all timer structures */
   for( i=0; i<NUM_PROFILES; i++ ) {
-    free_safe( profiles[i].time_in );
+    free_safe( profiles[i].time_in, sizeof( timer ) );
   }
 
 }
@@ -314,7 +314,7 @@ void profiler_report() {
       profiler_sort_by_calls( ofile );
 
       /* Deallocate sim_timer */
-      free_safe( sim_timer );
+      free_safe( sim_timer, sizeof( timer ) );
 
       /* Close the output file */
       rv = fclose( ofile );
@@ -338,6 +338,10 @@ void profiler_report() {
 
 /*
  $Log$
+ Revision 1.8  2008/01/16 23:10:32  phase1geo
+ More splint updates.  Code is now warning/error free with current version
+ of run_splint.  Still have regression issues to debug.
+
  Revision 1.7  2008/01/09 05:22:22  phase1geo
  More splint updates using the -standard option.
 

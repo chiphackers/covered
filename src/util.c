@@ -1056,9 +1056,28 @@ void* malloc_safe_nolimit1( size_t size, /*@unused@*/ const char* file, /*@unuse
 */
 void free_safe1( void* ptr, unsigned int profile_index ) {
 
-  curr_malloc_size -= sizeof( ptr );
+  if( ptr != NULL ) {
+    free( ptr );
+  }
+
+  /* Profile the free */
+  FREE_CALL(profile_index);
+
+}
+
+/*!
+ \param ptr            Pointer to object to deallocate.
+ \param size           Number of bytes that will be deallocated
+ \param profile_index  Profile index of function that called this function
+
+ Safely performs a free function of heap memory.  Also keeps track
+ of current memory usage for output information at end of program
+ life.
+*/
+void free_safe2( void* ptr, size_t size, unsigned int profile_index ) {
 
   if( ptr != NULL ) {
+    curr_malloc_size -= size;
     free( ptr );
   }
 
@@ -1218,6 +1237,10 @@ void calc_miss_percent(
 
 /*
  $Log$
+ Revision 1.80  2008/03/14 22:00:21  phase1geo
+ Beginning to instrument code for exception handling verification.  Still have
+ a ways to go before we have anything that is self-checking at this point, though.
+
  Revision 1.79  2008/03/11 22:06:49  phase1geo
  Finishing first round of exception handling code.
 

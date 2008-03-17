@@ -1066,7 +1066,7 @@ void expression_find_rhs_sigs(
       if( str_link_find( sig_name, *head ) == NULL ) {
         (void)str_link_add( sig_name, head, tail );
       } else {
-        free_safe( sig_name );
+        free_safe( sig_name, (strlen( sig_name ) + 1) );
       }
 
     }
@@ -4353,7 +4353,7 @@ void expression_dealloc(
           (op != EXP_OP_WHILE)      &&
           (op != EXP_OP_DIM)        &&
           (op != EXP_OP_PASSIGN) ) {
-        free_safe( expr->value );
+        free_safe( expr->value, sizeof( vector ) );
       }
 
       if( expr->sig == NULL ) {
@@ -4407,15 +4407,13 @@ void expression_dealloc(
     }
 
     /* Free up memory for the parent pointer */
-    free_safe( expr->parent );
+    free_safe( expr->parent, sizeof( expr_stmt ) );
 
     /* If name contains data, free it */
-    if( expr->name != NULL ) {
-      free_safe( expr->name );
-    }
+    free_safe( expr->name, (strlen( expr->name ) + 1) );
 
     /* Remove this expression memory */
-    free_safe( expr );
+    free_safe( expr, sizeof( expression ) );
 
   }
 
@@ -4426,6 +4424,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.291  2008/03/14 22:00:18  phase1geo
+ Beginning to instrument code for exception handling verification.  Still have
+ a ways to go before we have anything that is self-checking at this point, though.
+
  Revision 1.290  2008/03/12 05:09:43  phase1geo
  More exception handling updates.  Added TODO item of creating a graduated test list
  from merged CDD files.

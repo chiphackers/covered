@@ -307,13 +307,13 @@ void fsm_arg_parse(
     }
 
   } Catch_anonymous {
-    free_safe( tmp );
+    free_safe( tmp, (strlen( tmp ) + 1) );
     printf( "fsm_arg Throw F\n" );
     Throw 0;
   }
 
   /* Deallocate temporary memory */
-  free_safe( tmp );
+  free_safe( tmp, (strlen( tmp ) + 1) );
 
 }
 
@@ -593,13 +593,13 @@ static void fsm_arg_parse_trans(
     }
 
   } Catch_anonymous {
-    free_safe( tmp );
+    free_safe( tmp, (strlen( tmp ) + 1) );
     printf( "fsm_arg Throw R\n" );
     Throw 0;
   }
 
   /* Deallocate string */
-  free_safe( tmp );
+  free_safe( tmp, (strlen( tmp ) + 1) );
 
 }
 
@@ -645,11 +645,11 @@ void fsm_arg_parse_attr(
           unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Illegal input state expression (%s), file: %s", str, obf_file( funit->filename ) );
           assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          free_safe( tmp );
+          free_safe( tmp, (strlen( tmp ) + 1) );
           printf( "fsm_arg Throw S\n" );
           Throw 0;
         }
-        free_safe( tmp );
+        free_safe( tmp, (strlen( tmp ) + 1) );
       } else {
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Input state specified after output state for this FSM has already been specified, file: %s",
                                     obf_file( funit->filename ) );
@@ -665,14 +665,14 @@ void fsm_arg_parse_attr(
           unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Illegal output state expression (%s), file: %s", str, obf_file( funit->filename ) );
           assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          free_safe( tmp );
+          free_safe( tmp, (strlen( tmp ) + 1) );
           printf( "fsm_arg Throw U\n" );
           Throw 0;
         } else {
           (void)fsm_var_add( funit->name, out_state, out_state, curr->name, exclude );
           fsml = fsm_link_find( curr->name, funit->fsm_head );
         }
-        free_safe( tmp );
+        free_safe( tmp, (strlen( tmp ) + 1) );
       } else {
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Output state specified after output state for this FSM has already been specified, file: %s",
                                     obf_file( funit->filename ) );
@@ -689,14 +689,14 @@ void fsm_arg_parse_attr(
           unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Illegal output state expression (%s), file: %s", str, obf_file( funit->filename ) );
           assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          free_safe( tmp );
+          free_safe( tmp, (strlen( tmp ) + 1) );
           printf( "fsm_arg Throw W\n" );
           Throw 0;
         } else {
           (void)fsm_var_add( funit->name, in_state, out_state, curr->name, exclude );
           fsml = fsm_link_find( curr->name, funit->fsm_head );
         }
-        free_safe( tmp );
+        free_safe( tmp, (strlen( tmp ) + 1) );
       } else {
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Output state specified after output state for this FSM has already been specified, file: %s",
                                     obf_file( funit->filename ) );
@@ -723,7 +723,7 @@ void fsm_arg_parse_attr(
                      curr->name, tmp, obf_file( funit->filename ) );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      free_safe( tmp );
+      free_safe( tmp, (strlen( tmp ) + 1) );
       printf( "fsm_arg Throw Z\n" );
       Throw 0;
     }
@@ -739,6 +739,10 @@ void fsm_arg_parse_attr(
 
 /*
  $Log$
+ Revision 1.46  2008/03/14 22:00:18  phase1geo
+ Beginning to instrument code for exception handling verification.  Still have
+ a ways to go before we have anything that is self-checking at this point, though.
+
  Revision 1.45  2008/03/11 22:06:47  phase1geo
  Finishing first round of exception handling code.
 

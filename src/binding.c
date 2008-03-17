@@ -267,8 +267,8 @@ void bind_remove( int id, bool clear_assigned ) { PROFILE(BIND_REMOVE);
         }
 
         /* Now free the binding element memory */
-        free_safe( curr->name );
-        free_safe( curr );
+        free_safe( curr->name, (strlen( curr->name ) + 1) );
+        free_safe( curr, sizeof( exp_bind ) );
 
       }
 
@@ -325,8 +325,8 @@ char* bind_find_sig_name( const expression* exp ) { PROFILE(BIND_FIND_SIG_NAME);
           rv = snprintf( name, sig_size, "%s.%s", rest, curr->name );
           assert( rv < sig_size );
         }
-        free_safe( front );
-        free_safe( rest );
+        free_safe( front, (strlen( front ) + 1) );
+        free_safe( rest, (strlen( rest ) + 1) );
       }
     }
     if( name == NULL ) {
@@ -888,8 +888,8 @@ void bind_perform( bool cdd_reading, int pass ) { PROFILE(BIND_PERFORM);
     while( curr_eb != NULL ) {
       tmp_eb  = curr_eb;
       curr_eb = curr_eb->next;
-      free_safe( tmp_eb->name );
-      free_safe( tmp_eb );
+      free_safe( tmp_eb->name, (strlen( tmp_eb->name ) + 1) );
+      free_safe( tmp_eb, sizeof( exp_bind ) );
     }
     eb_head = eb_tail = NULL;
     printf( "binding Throw B\n" );
@@ -914,11 +914,11 @@ void bind_dealloc() { PROFILE(BIND_DEALLOC);
 
     /* Deallocate the name, if specified */
     if( tmp->name != NULL ) {
-      free_safe( tmp->name );
+      free_safe( tmp->name, (strlen( tmp->name ) + 1) );
     }
 
     /* Deallocate this structure */
-    free_safe( tmp );
+    free_safe( tmp, sizeof( exp_bind ) );
 
   }
 
@@ -931,6 +931,10 @@ void bind_dealloc() { PROFILE(BIND_DEALLOC);
 
 /* 
  $Log$
+ Revision 1.125  2008/03/14 22:00:17  phase1geo
+ Beginning to instrument code for exception handling verification.  Still have
+ a ways to go before we have anything that is self-checking at this point, though.
+
  Revision 1.124  2008/03/10 22:00:31  phase1geo
  Working on more exception handling (script is finished now).  Starting to work
  on code enhancements again :)  Checkpointing.

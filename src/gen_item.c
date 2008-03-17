@@ -117,7 +117,7 @@ static void gen_item_stringify(
     }
 
     /* Deallocate the temporary string memory */
-    free_safe( tmp );
+    free_safe( tmp, (strlen( tmp ) + 1) );
 
   } else {
 
@@ -412,7 +412,7 @@ bool gen_item_varname_contains_genvar( char* name ) { PROFILE(GEN_ITEM_VARNAME_C
   }
 
   /* Deallocate memory */
-  free_safe( tmpname );
+  free_safe( tmpname, (strlen( tmpname ) + 1)  );
 
   return( retval );
 
@@ -471,14 +471,14 @@ char* gen_item_calc_signal_name(
     } while( genvar != NULL );
 
   } Catch_anonymous {
-    free_safe( new_name );
-    free_safe( ptr );
+    free_safe( new_name, (strlen( new_name ) + 1) );
+    free_safe( ptr, (strlen( ptr ) + 1) );
     printf( "gen_item Throw A\n" );
     Throw 0;
   }
 
   /* Deallocate memory */
-  free_safe( ptr );
+  free_safe( ptr, (strlen( ptr ) + 1) );
 
   return( new_name );
 
@@ -1008,7 +1008,7 @@ static void gen_item_resolve(
           default               :  bind_add( 0,                 varname, gi->elem.expr, inst->funit );  break;
         }
         gitem_link_add( gen_item_create_bind( varname, gi->elem.expr ), &(inst->gitem_head), &(inst->gitem_tail) );
-        free_safe( varname ); 
+        free_safe( varname, (strlen( varname ) + 1) ); 
         gen_item_resolve( gi->next_true, inst );
         break;
 
@@ -1037,7 +1037,7 @@ void gen_item_bind(
   if( gi->suppl.part.type == GI_TYPE_BIND ) {
 
     /* Remove the current name */
-    free_safe( gi->elem.expr->name );
+    free_safe( gi->elem.expr->name, (strlen( gi->elem.expr->name ) + 1) );
 
     /* Assign the new name */
     gi->elem.expr->name = strdup_safe( gi->varname );
@@ -1186,17 +1186,17 @@ void gen_item_dealloc(
         case GI_TYPE_INST :
         case GI_TYPE_TFN  :
           instance_dealloc_tree( gi->elem.inst );
-          free_safe( gi->varname );
+          free_safe( gi->varname, (strlen( gi->varname ) + 1) );
           break;
         case GI_TYPE_BIND :
-          free_safe( gi->varname );
+          free_safe( gi->varname, (strlen( gi->varname ) + 1) );
           break;
         default           :  break;
       }
     }
 
     /* Now deallocate ourselves */
-    free_safe( gi );
+    free_safe( gi, sizeof( gen_item ) );
 
   }
 
@@ -1205,6 +1205,10 @@ void gen_item_dealloc(
 
 /*
  $Log$
+ Revision 1.59  2008/03/14 22:00:19  phase1geo
+ Beginning to instrument code for exception handling verification.  Still have
+ a ways to go before we have anything that is self-checking at this point, though.
+
  Revision 1.58  2008/03/12 21:11:48  phase1geo
  More updates.
 

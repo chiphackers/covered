@@ -263,18 +263,18 @@ void info_dealloc() { PROFILE(INFO_DEALLOC);
 
   /* Deallocate all information regarding hierarchies */
   for( i=0; i<leading_hier_num; i++ ) {
-    free_safe( leading_hierarchies[i] );
+    free_safe( leading_hierarchies[i], (strlen( leading_hierarchies[i] ) + 1) );
   }
-  free_safe( leading_hierarchies );
+  free_safe( leading_hierarchies, (sizeof( char* ) * leading_hier_num) );
 
   leading_hierarchies = NULL;
   leading_hier_num    = 0;
 
   /* Free score arguments */
   for( i=0; i<score_arg_num; i++ ) {
-    free_safe( score_args[i] );
+    free_safe( score_args[i], (strlen( score_args[i] ) + 1) );
   }
-  free_safe( score_args );
+  free_safe( score_args, (sizeof( char* ) * score_arg_num) );
 
   score_args    = NULL;
   score_arg_num = 0;
@@ -283,6 +283,10 @@ void info_dealloc() { PROFILE(INFO_DEALLOC);
 
 /*
  $Log$
+ Revision 1.28  2008/03/14 22:00:19  phase1geo
+ Beginning to instrument code for exception handling verification.  Still have
+ a ways to go before we have anything that is self-checking at this point, though.
+
  Revision 1.27  2008/03/11 22:06:48  phase1geo
  Finishing first round of exception handling code.
 

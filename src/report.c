@@ -869,7 +869,7 @@ void command_report(
           /* Open output stream */
           if( output_file != NULL ) {
             ofile = fopen( output_file, "w" );
-            free_safe( output_file );
+            free_safe( output_file, (strlen( output_file ) + 1) );
             if( ofile == NULL ) {
               unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to open report output file %s for writing", output_file );
               assert( rv < USER_MSG_LENGTH );
@@ -971,8 +971,8 @@ void command_report(
         Tk_MainLoop ();
 
       } Catch_anonymous {
-        free_safe( covered_home );
-        free_safe( main_file );
+        free_safe( covered_home, (strlen( covered_home ) + 1) );
+        free_safe( main_file, (strlen( main_file ) + 1) );
         printf( "report Throw R\n" );
         Throw 0;
       }
@@ -986,7 +986,7 @@ void command_report(
 
   } Catch_anonymous {}
 
-  free_safe( input_db );
+  free_safe( input_db, (strlen( input_db ) + 1) );
 
   /* Close the database */
   db_close();
@@ -998,6 +998,10 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.99  2008/03/14 22:00:20  phase1geo
+ Beginning to instrument code for exception handling verification.  Still have
+ a ways to go before we have anything that is self-checking at this point, though.
+
  Revision 1.98  2008/03/11 22:06:48  phase1geo
  Finishing first round of exception handling code.
 
