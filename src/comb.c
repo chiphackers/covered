@@ -1237,7 +1237,7 @@ static void combination_underline_tree(
                   }
                   code_fmt[i] = '\0';
                   strcat( code_fmt, "  %s  " );
-                  free_safe( tmpname, (strlen( tmpname ) + 1) );
+                  free_safe( tmpname, (strlen( tfunit->name ) + 1) );
                   free_safe( pname, (strlen( pname ) + 1) );
                   break;
                 case EXP_OP_NEGATE   :  *size = l_size + r_size + 1;  strcpy( code_fmt, " %s"              );  break;
@@ -1419,6 +1419,7 @@ static char* combination_prep_line(
 ) { PROFILE(COMBINATION_PREP_LINE);
 
   char* str;                /* Prepared line to return */
+  char* newstr;             /* Prepared line to return */
   int   str_size;           /* Allocated size of str */
   int   exp_id;             /* Expression ID of current line */
   int   chars_read;         /* Number of characters read from sscanf function */
@@ -1493,13 +1494,16 @@ static char* combination_prep_line(
 
   /* If we didn't see any underlines here, return NULL */
   if( !line_seen ) {
-    free_safe( str, str_size );
-    str = NULL;
+    newstr = NULL;
   } else {
     str[curr_index] = '\0';
+    newstr = strdup_safe( str );
   }
 
-  return( str );
+  /* The str may be a bit oversized, so we copied it and now free it here (where we know its allocated size) */
+  free_safe( str, str_size );
+
+  return( newstr );
 
 }
 
@@ -1819,7 +1823,7 @@ static void combination_two_vars(
     *info      = (char**)malloc_safe( sizeof( char* ) * (*info_size) );
 
     /* Allocate lines and assign values */ 
-    length = 27;
+    length = 26;
     rv = snprintf( tmp, 20, "%d", exp->ulid );  assert( rv < 20 );  length += strlen( tmp );
     rv = snprintf( tmp, 20, "%d", hit );        assert( rv < 20 );  length += strlen( tmp );
     rv = snprintf( tmp, 20, "%d", total );      assert( rv < 20 );  length += strlen( tmp );
@@ -1974,11 +1978,11 @@ static void combination_two_vars(
  the line1, line2, and line3 strings.
 */
 static void combination_multi_var_exprs(
-    char** line1,
-    char** line2,
-    char** line3,
-    expression* exp )
-{ PROFILE(COMBINATION_MULTI_VAR_EXPRS);
+  char**      line1,
+  char**      line2,
+  char**      line3,
+  expression* exp
+) { PROFILE(COMBINATION_MULTI_VAR_EXPRS);
 
   char*        left_line1  = NULL;
   char*        left_line2  = NULL;
@@ -2112,9 +2116,9 @@ static void combination_multi_var_exprs(
 
     /* If we are the root, output all value */
     if( (ESUPPL_IS_ROOT( exp->suppl ) == 1) || (exp->op != exp->parent->expr->op) ) {
-      unsigned int slen1 = strlen( *line1 ) + 7;
-      unsigned int slen2 = strlen( *line2 ) + 7;
-      unsigned int slen3 = strlen( *line3 ) + 7;
+      unsigned int slen1 = strlen( *line1 ) + 5;
+      unsigned int slen2 = strlen( *line2 ) + 6;
+      unsigned int slen3 = strlen( *line3 ) + 6;
       left_line1 = *line1;
       left_line2 = *line2;
       left_line3 = *line3;
@@ -2298,7 +2302,7 @@ static void combination_multi_vars(
       rv = snprintf( tmp, 20, "%d", total );
       assert( rv < 20 );
       line_size += strlen( tmp );
-      line_size += 27;                   /* Number of additional characters in line below */
+      line_size += 25;                   /* Number of additional characters in line below */
       (*info)[0] = (char*)malloc_safe( line_size );
     
       rv = snprintf( (*info)[0], line_size, "        Expression %d   (%d/%d)", exp->ulid, hit, total );
@@ -3053,6 +3057,11 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.188  2008/03/17 22:02:30  phase1geo
+ Adding new check_mem script and adding output to perform memory checking during
+ regression runs.  Completed work on free_safe and added realloc_safe function
+ calls.  Regressions are pretty broke at the moment.  Checkpointing.
+
  Revision 1.187  2008/03/17 05:26:15  phase1geo
  Checkpointing.  Things don't compile at the moment.
 

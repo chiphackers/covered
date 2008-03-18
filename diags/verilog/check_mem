@@ -35,7 +35,7 @@ while( defined( $line = <STDIN> ) ) {
     $lnum     = $5;
 
     # Delete the memory for the old address
-    if( $old_addr ne "(nil)" ) {
+    if( ($old_addr ne "(nil)") && ($old_addr ne "0x0") ) {
       if( $addrs->{$old_addr} == () ) {
         die "Address $old_addr being reallocated but never existed!\n";
       } else {
@@ -44,7 +44,7 @@ while( defined( $line = <STDIN> ) ) {
     }
 
     # Allocate the new memory
-    if( $addr ne "(nil)" ) {
+    if( ($addr ne "(nil)") && ($addr ne "0x0") ) {
       if( $addrs->{$addr} != () ) {
         die "Address $addr found to be allocated twice without a free!\n";
       } else {
@@ -71,7 +71,7 @@ while( defined( $line = <STDIN> ) ) {
     }
 
   # Otherwise, if we have reached the end of the output, make sure Covered is reporting 0 bytes of allocated memory
-  } elsif( $line =~ /curr_malloc_size:\s+(\d+)/ ) {
+  } elsif( $line =~ /curr_malloc_size:\s+(-?\d+)/ ) {
 
     $malloc_size = $1;
 

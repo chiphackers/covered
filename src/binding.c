@@ -325,8 +325,8 @@ char* bind_find_sig_name( const expression* exp ) { PROFILE(BIND_FIND_SIG_NAME);
           rv = snprintf( name, sig_size, "%s.%s", rest, curr->name );
           assert( rv < sig_size );
         }
-        free_safe( front, (strlen( front ) + 1) );
-        free_safe( rest, (strlen( rest ) + 1) );
+        free_safe( front, (strlen( found_funit->name ) + 1) );
+        free_safe( rest, (strlen( found_funit->name ) + 1) );
       }
     }
     if( name == NULL ) {
@@ -931,6 +931,9 @@ void bind_dealloc() { PROFILE(BIND_DEALLOC);
 
 /* 
  $Log$
+ Revision 1.126  2008/03/17 05:26:15  phase1geo
+ Checkpointing.  Things don't compile at the moment.
+
  Revision 1.125  2008/03/14 22:00:17  phase1geo
  Beginning to instrument code for exception handling verification.  Still have
  a ways to go before we have anything that is self-checking at this point, though.

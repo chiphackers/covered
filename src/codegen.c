@@ -96,6 +96,7 @@ static void codegen_create_expr_helper(
 
   assert( left_depth > 0 );
 
+/*
   // TEMPORARY
   printf( "code_index: %d, first: %s, left_depth: %d, first_same: %d, middle: %s, right_depth: %d, last_same: %d, last: %s\n",
           code_index, first, left_depth, first_same_line, middle, right_depth, last_same_line, last );
@@ -107,14 +108,15 @@ static void codegen_create_expr_helper(
   for( i=0; i<right_depth; i++ ) {
     printf( "  .%s.\n", right[i] );
   }
+*/
 
   if( first != NULL ) {
     code_size += strlen( first );
-    printf( "code size after first: %d\n", code_size );
+    // printf( "code size after first: %d\n", code_size );
   }
   if( first_same_line ) {
     code_size += strlen( left[0] );
-    printf( "code size after left[0]: %d\n", code_size );
+    // printf( "code size after left[0]: %d\n", code_size );
   //  if( (left_depth == 1) && (middle != NULL) && (right_depth == 0) ) {
   //    code_size += strlen( middle );
   //    printf( "code size after middle: %d\n", code_size );
@@ -124,7 +126,7 @@ static void codegen_create_expr_helper(
     free_safe( code[code_index], (strlen( code[code_index] ) + 1) );
   }
   code[code_index]    = (char*)malloc_safe( code_size + 1 );
-  printf( "Allocated %d bytes for code[%d]\n", (code_size + 1), code_index );
+  //printf( "Allocated %d bytes for code[%d]\n", (code_size + 1), code_index );
   code[code_index][0] = '\0';
 
   if( first != NULL ) {
@@ -143,7 +145,7 @@ static void codegen_create_expr_helper(
       rv = snprintf( tmpstr, (code_size + 1), "%s%s", code[code_index], middle );
       assert( rv < (code_size + 1) );
       if( right_depth > 0 ) {
-        printf( "A code[%d]:%s.\n", code_index, code[code_index] );
+        // printf( "A code[%d]:%s.\n", code_index, code[code_index] );
         codegen_create_expr_helper( code, code_index, tmpstr, right, right_depth, last_same_line, last, NULL, 0, FALSE, NULL );
         free_safe( tmpstr, (strlen( tmpstr ) + 1) );
       } else {
@@ -161,7 +163,7 @@ static void codegen_create_expr_helper(
         assert( rv < (code_size + 1) );
         free_safe( left[i], (strlen( left[i] ) + 1) );
         if( right_depth > 0 ) {
-          printf( "B code[%d+%d]:%s.\n", code_index, i, code[code_index] );
+          // printf( "B code[%d+%d]:%s.\n", code_index, i, code[code_index] );
           codegen_create_expr_helper( code, (code_index + i), tmpstr, right, right_depth, last_same_line, last, NULL, 0, FALSE, NULL );
           free_safe( tmpstr, (strlen( tmpstr ) + 1) );
         } else {
@@ -184,7 +186,7 @@ static void codegen_create_expr_helper(
       assert( rv < (code_size + 1) );
       free_safe( left[i], (strlen( left[i] ) + 1) );
       if( right_depth > 0 ) {
-        printf( "C code[%d+%d]:%s.\n", code_index, i, code[code_index] );
+        // printf( "C code[%d+%d]:%s.\n", code_index, i, code[code_index] );
         codegen_create_expr_helper( code, (code_index + i), tmpstr, right, right_depth, last_same_line, last, NULL, 0, FALSE, NULL );
         free_safe( tmpstr, (strlen( tmpstr ) + 1) );
       } else {
@@ -550,7 +552,7 @@ void codegen_gen_expr(
         codegen_create_expr( code, code_depth, expr->line, tmpstr, left_code, left_code_depth, expr->left, " )", NULL, 0, NULL, NULL );
         free_safe( tmpstr, (strlen( tmpstr ) + 1) );
       }
-      free_safe( after, (strlen( after ) + 1) );
+      free_safe( after, (strlen( tfunit->name ) + 1) );
       free_safe( pname, (strlen( pname ) + 1) );
 
     } else if( expr->op == EXP_OP_TRIGGER ) {
@@ -963,6 +965,11 @@ void codegen_gen_expr(
 
 /*
  $Log$
+ Revision 1.89  2008/03/17 22:02:30  phase1geo
+ Adding new check_mem script and adding output to perform memory checking during
+ regression runs.  Completed work on free_safe and added realloc_safe function
+ calls.  Regressions are pretty broke at the moment.  Checkpointing.
+
  Revision 1.88  2008/03/17 05:26:15  phase1geo
  Checkpointing.  Things don't compile at the moment.
 
