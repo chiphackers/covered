@@ -160,12 +160,12 @@ bool scope_find_param(
         }
 
       } Catch_anonymous {
-        free_safe( scope, (strlen( scope ) + 1) );
+        free_safe( scope, (strlen( name ) + 1) );
         printf( "scope Throw B\n" );
         Throw 0;
       }
 
-      free_safe( scope, (strlen( scope ) + 1) );
+      free_safe( scope, (strlen( name ) + 1) );
 
     }
 
@@ -179,12 +179,12 @@ bool scope_find_param(
     }
 
   } Catch_anonymous {
-    free_safe( parm_name, (strlen( parm_name ) + 1) );
+    free_safe( parm_name, (strlen( name ) + 1) );
     printf( "scope Throw C\n" );
     Throw 0;
   }
 
-  free_safe( parm_name, (strlen( parm_name ) + 1) );
+  free_safe( parm_name, (strlen( name ) + 1) );
 
   PROFILE_END;
 
@@ -439,6 +439,9 @@ func_unit* scope_get_parent_module(
 
 /*
  $Log$
+ Revision 1.50  2008/03/18 03:56:44  phase1geo
+ More updates for memory checking (some "fixes" here as well).
+
  Revision 1.49  2008/03/17 22:02:32  phase1geo
  Adding new check_mem script and adding output to perform memory checking during
  regression runs.  Completed work on free_safe and added realloc_safe function

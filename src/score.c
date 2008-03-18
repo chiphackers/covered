@@ -475,7 +475,7 @@ void score_parse_define( const char* def ) { PROFILE(SCORE_PARSE_DEFINE);
   }
 
   /* Deallocate memory */
-  free_safe( tmp, (strlen( tmp ) + 1) );
+  free_safe( tmp, (strlen( def ) + 1) );
 
 }
 
@@ -920,11 +920,11 @@ static void score_parse_args(
             defparam_add( tmp, vector_from_string( &ptr, FALSE ) );
           }
         } Catch_anonymous {
-          free_safe( tmp, (strlen( tmp ) + 1) );
+          free_safe( tmp, (strlen( argv[i] ) + 1) );
           printf( "score Throw AL\n" );
           Throw 0;
         }
-        free_safe( tmp, (strlen( tmp ) + 1) );
+        free_safe( tmp, (strlen( argv[i] ) + 1) );
       } else {
         printf( "score Throw AM\n" );
         Throw 0;
@@ -1211,6 +1211,11 @@ void command_score( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
 /*
  $Log$
+ Revision 1.119  2008/03/17 22:02:32  phase1geo
+ Adding new check_mem script and adding output to perform memory checking during
+ regression runs.  Completed work on free_safe and added realloc_safe function
+ calls.  Regressions are pretty broke at the moment.  Checkpointing.
+
  Revision 1.118  2008/03/17 05:26:17  phase1geo
  Checkpointing.  Things don't compile at the moment.
 

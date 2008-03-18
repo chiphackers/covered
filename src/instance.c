@@ -628,7 +628,7 @@ bool instance_resolve_inst(
 
     /* Deallocate the new_name and name_copy pointers */
     free_safe( name_copy, (strlen( name_copy ) + 1) );
-    free_safe( new_name, (strlen( new_name ) + 1) );
+    free_safe( new_name, slen );
 
   }
 
@@ -1172,6 +1172,11 @@ void instance_dealloc( funit_inst* root, char* scope ) { PROFILE(INSTANCE_DEALLO
 
 /*
  $Log$
+ Revision 1.92  2008/03/17 22:02:31  phase1geo
+ Adding new check_mem script and adding output to perform memory checking during
+ regression runs.  Completed work on free_safe and added realloc_safe function
+ calls.  Regressions are pretty broke at the moment.  Checkpointing.
+
  Revision 1.91  2008/03/17 05:26:16  phase1geo
  Checkpointing.  Things don't compile at the moment.
 

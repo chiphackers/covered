@@ -753,7 +753,7 @@ void vsignal_dealloc(
     sig->name = NULL;
 
     /* Free the dimension information */
-    free_safe( sig->dim, sizeof( dim_range ) );
+    free_safe( sig->dim, (sizeof( dim_range ) * (sig->pdim_num + sig->udim_num)) );
 
     /* Free up memory for value */
     vector_dealloc( sig->value );
@@ -780,6 +780,9 @@ void vsignal_dealloc(
 
 /*
  $Log$
+ Revision 1.66  2008/03/18 05:36:04  phase1geo
+ More updates (regression still broken).
+
  Revision 1.65  2008/03/18 05:11:28  phase1geo
  More bug fixes for memory handling.
 

@@ -1018,7 +1018,7 @@ static unsigned int arc_read_get_next_value( char** line ) { PROFILE(ARC_READ_GE
 */
 void arc_db_read(
   /*@out@*/ char** arcs,
-  char** line
+            char** line
 ) { PROFILE(ARC_DB_READ);
 
   int  i;              /* Loop iterator */
@@ -1165,6 +1165,7 @@ void arc_db_merge(
   vector* vecr;           /* Right state vector value */
   int     i;              /* Loop iterator */
   char    str_width[20];  /* Temporary string holder */
+  int     str_len;        /* Length of string to allocate */
 
   arc_db_read( &arcs, line );
 
@@ -1184,13 +1185,16 @@ void arc_db_merge(
   /* Calculate strlen of arc array width */
   snprintf( str_width, 20, "%u", arc_get_width( arcs ) );
 
+  /* Calculate the length of the strings needed */
+  str_len = (arc_get_width( arcs ) / 4) + (((arc_get_width( arcs ) % 4) == 0) ? 0 : 1) + 3 + strlen( str_width );
+
   /* Allocate string to hold value string */
-  strl = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 4 + strlen( str_width ) );
-  strr = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 4 + strlen( str_width ) );
+  strl = (char*)malloc_safe( str_len );
+  strr = (char*)malloc_safe( str_len );
 
   /* Get prefix of left and right state value strings ready */
-  snprintf( strl, ((arc_get_width( arcs ) / 4) + 4 + strlen( str_width )), "%s'h", str_width );
-  snprintf( strr, ((arc_get_width( arcs ) / 4) + 4 + strlen( str_width )), "%s'h", str_width );
+  snprintf( strl, str_len, "%s'h", str_width );
+  snprintf( strr, str_len, "%s'h", str_width );
 
   tmpl = strl;
   tmpr = strr;
@@ -1219,9 +1223,9 @@ void arc_db_merge(
 
   }
 
-  free_safe( strl, ((arc_get_width( arcs ) / 4) + 4 + strlen( str_width )) );
-  free_safe( strr, ((arc_get_width( arcs ) / 4) + 4 + strlen( str_width )) );
-  free_safe( arcs, 0 );   /* TBD */
+  free_safe( strl, str_len );
+  free_safe( strr, str_len );
+  free_safe( arcs, ((arc_get_entry_width( arc_get_width( arcs ) ) * arc_get_max_size( arcs )) + ARC_STATUS_SIZE) );
 
   PROFILE_END;
 
@@ -1248,8 +1252,9 @@ void arc_get_states(
   bool        any
 ) { PROFILE(ARC_GET_STATES);
 
-  int i;  /* Loop iterator */
-  int j;  /* Loop iterator */
+  int i;        /* Loop iterator */
+  int j;        /* Loop iterator */
+  int str_len;  /* Length of string needed to hold stringified state information */
 
   /*@-nullstate@*/
 
@@ -1260,6 +1265,9 @@ void arc_get_states(
   *states     = NULL;
   *state_size = 0;
 
+  /* Calculate the string length */
+  str_len = (arc_get_width( arcs ) / 4) + (((arc_get_width( arcs ) % 4) == 0) ? 0 : 1) + 1;
+
   for( i=0; i<arc_get_curr_size( arcs ); i++ ) {
     for( j=0; j<2; j++ ) {
 
@@ -1269,7 +1277,7 @@ void arc_get_states(
           if( (arc_get_entry_suppl( arcs, i, ARC_HIT_F ) == hit) || any ) {
             *states                  = (char**)realloc_safe( *states, (sizeof( char* ) * (*state_size)), (sizeof( char* ) * ((*state_size) + 1)) );
             assert( *states != NULL );
-            (*states)[(*state_size)] = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 1 );
+            (*states)[(*state_size)] = (char*)malloc_safe( str_len );
             arc_state_to_string( arcs, i, TRUE, (*states)[(*state_size)] );
             (*state_size)++;
           }
@@ -1279,7 +1287,7 @@ void arc_get_states(
           if( (arc_get_entry_suppl( arcs, i, ARC_HIT_F ) == hit) || any ) {
             *states                  = (char**)realloc_safe( *states, (sizeof( char* ) * (*state_size)), (sizeof( char* ) * ((*state_size) + 1)) );
             assert( *states != NULL );
-            (*states)[(*state_size)] = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 1 );
+            (*states)[(*state_size)] = (char*)malloc_safe( str_len );
             arc_state_to_string( arcs, i, FALSE, (*states)[(*state_size)] );
             (*state_size)++;
           }
@@ -1306,9 +1314,10 @@ void arc_get_states(
 */
 void arc_get_transitions( char*** from_states, char*** to_states, int** excludes, int* arc_size, const char* arcs, bool hit, bool any ) { PROFILE(ARC_GET_TRANSITIONS);
 
-  char* strl;  /* String containing from_state information */
-  char* strr;  /* String containing to_state information */
-  int   i;     /* Loop iterator */
+  char* strl;     /* String containing from_state information */
+  char* strr;     /* String containing to_state information */
+  int   i;        /* Loop iterator */
+  int   str_len;  /* Length of string needed to store stringified version of state information */
 
   /* Initialize state arrays and arc_size */
   *from_states = NULL;
@@ -1316,8 +1325,12 @@ void arc_get_transitions( char*** from_states, char*** to_states, int** excludes
   *excludes    = NULL;
   *arc_size    = 0;
 
-  strl = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 1 );
-  strr = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 1 );
+  /* Calculate the length of the strings needed */
+  str_len = (arc_get_width( arcs ) / 4) + (((arc_get_width( arcs ) % 4) == 0) ? 0 : 1) + 1;
+
+  /* Allocate memory for strings */
+  strl = (char*)malloc_safe( str_len );
+  strr = (char*)malloc_safe( str_len );
 
   for( i=0; i<arc_get_curr_size( arcs ); i++ ) {
 
@@ -1325,10 +1338,10 @@ void arc_get_transitions( char*** from_states, char*** to_states, int** excludes
     if( (arc_get_entry_suppl( arcs, i, ARC_HIT_F ) == hit) || any ) {
       *from_states                = (char**)realloc_safe( *from_states, (sizeof( char* ) * (*arc_size)), (sizeof( char* ) * (*arc_size + 1)) );
       assert( *from_states != NULL );
-      (*from_states)[(*arc_size)] = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 1 );
+      (*from_states)[(*arc_size)] = (char*)malloc_safe( str_len );
       *to_states                  = (char**)realloc_safe( *to_states,   (sizeof( char* ) * (*arc_size)), (sizeof( char* ) * (*arc_size + 1)) );
       assert( *to_states != NULL );
-      (*to_states)[(*arc_size)]   = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 1 );
+      (*to_states)[(*arc_size)]   = (char*)malloc_safe( str_len );
       if( any ) {
         *excludes = (int*)realloc_safe( *excludes, (sizeof( int ) * (*arc_size)), (sizeof( int ) * (*arc_size + 1)) );
         assert( *excludes != NULL );
@@ -1343,10 +1356,10 @@ void arc_get_transitions( char*** from_states, char*** to_states, int** excludes
         (arc_get_entry_suppl( arcs, i, ARC_BIDIR ) == 1) ) {
       *from_states                = (char**)realloc_safe( *from_states, (sizeof( char* ) * (*arc_size)), (sizeof( char* ) * (*arc_size + 1)) );
       assert( *from_states != NULL );
-      (*from_states)[(*arc_size)] = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 1 );
+      (*from_states)[(*arc_size)] = (char*)malloc_safe( str_len );
       *to_states                  = (char**)realloc_safe( *to_states,   (sizeof( char* ) * (*arc_size)), (sizeof( char* ) * (*arc_size + 1)) );
       assert( *to_states != NULL );
-      (*to_states)[(*arc_size)]   = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 1 );
+      (*to_states)[(*arc_size)]   = (char*)malloc_safe( str_len );
       if( any ) {
         *excludes = (int*)realloc_safe( *excludes, (sizeof( int ) * (*arc_size)), (sizeof( int ) * (*arc_size + 1)) );
         assert( *excludes != NULL );
@@ -1360,8 +1373,8 @@ void arc_get_transitions( char*** from_states, char*** to_states, int** excludes
   }
 
   /* Deallocate memory */
-  free_safe( strl, ((arc_get_width( arcs ) / 4) + 1) );
-  free_safe( strr, ((arc_get_width( arcs ) / 4) + 1) );
+  free_safe( strl, str_len );
+  free_safe( strr, str_len );
 
 }
 
@@ -1401,6 +1414,9 @@ void arc_dealloc( char* arcs ) { PROFILE(ARC_DEALLOC);
 
 /*
  $Log$
+ Revision 1.57  2008/03/18 05:36:04  phase1geo
+ More updates (regression still broken).
+
  Revision 1.56  2008/03/17 22:02:30  phase1geo
  Adding new check_mem script and adding output to perform memory checking during
  regression runs.  Completed work on free_safe and added realloc_safe function

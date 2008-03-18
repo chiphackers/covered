@@ -472,13 +472,13 @@ char* gen_item_calc_signal_name(
 
   } Catch_anonymous {
     free_safe( new_name, (strlen( new_name ) + 1) );
-    free_safe( ptr, (strlen( ptr ) + 1) );
+    free_safe( ptr, (strlen( name ) + 1) );
     printf( "gen_item Throw A\n" );
     Throw 0;
   }
 
   /* Deallocate memory */
-  free_safe( ptr, (strlen( ptr ) + 1) );
+  free_safe( ptr, (strlen( name ) + 1) );
 
   return( new_name );
 
@@ -1205,6 +1205,11 @@ void gen_item_dealloc(
 
 /*
  $Log$
+ Revision 1.61  2008/03/17 22:02:31  phase1geo
+ Adding new check_mem script and adding output to perform memory checking during
+ regression runs.  Completed work on free_safe and added realloc_safe function
+ calls.  Regressions are pretty broke at the moment.  Checkpointing.
+
  Revision 1.60  2008/03/17 05:26:16  phase1geo
  Checkpointing.  Things don't compile at the moment.
 

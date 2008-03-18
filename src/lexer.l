@@ -994,13 +994,13 @@ void process_timescale( const char* txt, bool report ) { PROFILE(PROCESS_TIMESCA
     db_set_timescale( unit, prec );
   
   } Catch_anonymous {
-    free_safe( str, (strlen( str ) + 1) );
+    free_safe( str, (strlen( txt ) + 1) );
     printf( "lexer Throw F\n" );
     Throw 0;
   }
 
   /* Finally, deallocate memory */
-  free_safe( str, (strlen( str ) + 1) );
+  free_safe( str, (strlen( txt ) + 1) );
 
 }
 

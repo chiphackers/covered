@@ -2186,11 +2186,11 @@ static int combination_multi_expr_output_length(
  Stores the information from line1, line2 and line3 in the string array info.
 */
 static void combination_multi_expr_output(
-    char** info,
-    char* line1,
-    char* line2,
-    char* line3 )
-{ PROFILE(COMBINATION_MULTI_EXPR_OUTPUT);
+  char** info,
+  char*  line1,
+  char*  line2,
+  char*  line3
+) { PROFILE(COMBINATION_MULTI_EXPR_OUTPUT);
 
   int start      = 0;
   int i;
@@ -2284,9 +2284,17 @@ static void combination_multi_vars(
     if( hit != (int)total ) {
 
       unsigned int rv;
+      unsigned int slen1;
+      unsigned int slen2;
+      unsigned int slen3;
 
       /* Gather report output for this expression */
       combination_multi_var_exprs( &line1, &line2, &line3, exp );
+
+      /* Get the lengths of the original string lengths -- these strings will be possibly altered by combination_multi_expr_output */
+      slen1 = strlen( line1 ) + 1;
+      slen2 = strlen( line2 ) + 1;
+      slen3 = strlen( line3 ) + 1;
 
       /* Calculate the array needed to store the output information and allocate this memory */
       *info_size = combination_multi_expr_output_length( line1 ) + 2;
@@ -2319,9 +2327,9 @@ static void combination_multi_vars(
       /* Output the lines paying attention to the current line width */
       combination_multi_expr_output( *info, line1, line2, line3 );
 
-      free_safe( line1, (strlen( line1 ) + 1) );
-      free_safe( line2, (strlen( line2 ) + 1) );
-      free_safe( line3, (strlen( line3 ) + 1) );
+      free_safe( line1, slen1 );
+      free_safe( line2, slen2 );
+      free_safe( line3, slen3 );
 
     }
 
@@ -3057,6 +3065,9 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.189  2008/03/18 03:56:44  phase1geo
+ More updates for memory checking (some "fixes" here as well).
+
  Revision 1.188  2008/03/17 22:02:30  phase1geo
  Adding new check_mem script and adding output to perform memory checking during
  regression runs.  Completed work on free_safe and added realloc_safe function
