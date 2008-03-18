@@ -537,8 +537,8 @@ static void include_filename() { PROFILE(INCLUDE_FILENAME);
   assert( standby == 0 );
 
   standby         = malloc_safe( sizeof(struct include_stack_t) );
+  yytext[strlen(yytext)-1] = '\0';
   standby->path   = strdup_safe( yytext + 1 );
-  standby->path[strlen(standby->path)-1] = 0;
   standby->lineno = 0;
 
 }

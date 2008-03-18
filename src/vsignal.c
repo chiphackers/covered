@@ -667,7 +667,7 @@ vsignal* vsignal_from_string(
   } else if( sscanf( *str, "%[a-zA-Z0-9_]%n", name, &chars_read ) == 1 ) {
     sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT, 1, 0, 0 );
     /* Specify that this width is unknown */
-    vector_dealloc( sig->value );
+    free_safe( sig->value->value, sizeof( vec_data ) );
     sig->value->width = 0;
     *str += chars_read;
   } else {
@@ -779,6 +779,9 @@ void vsignal_dealloc(
 
 /*
  $Log$
+ Revision 1.64  2008/03/18 03:56:44  phase1geo
+ More updates for memory checking (some "fixes" here as well).
+
  Revision 1.63  2008/03/17 22:02:32  phase1geo
  Adding new check_mem script and adding output to perform memory checking during
  regression runs.  Completed work on free_safe and added realloc_safe function

@@ -5,17 +5,28 @@
 # Date:     3/17/2008
 # Usage:    <covered_command> | check_mem
 
+$num_allocs = 0;
+$num_frees  = 0;
+$mem_size   = 0;
+$line_num   = 1;
+
 while( defined( $line = <STDIN> ) ) {
 
   chomp( $line );
 
   # If the line was a malloc or strdup call, add its memory to our tracker
-  if( $line =~ /(MALLOC|STRDUP)\s+\((\S+)\)\s+(\d+)\s+bytes\s+\(file:\s+(\S+),\s+line:\s+(\d+)/) {
+  if( $line =~ /(MALLOC|STRDUP)\s+\((\S+)\)\s+(\d+)\s+bytes\s+\(file:\s+(\S+),\s+line:\s+(\d+)\)\s*-\s*(\d+)/) {
 
     $addr  = $2;
     $bytes = $3;
     $file  = $4;
     $lnum  = $5;
+    $curr  = $6;
+
+    if( ($mem_size + $bytes) != $curr ) {
+      die "Memory was modified by something other than a malloc, realloc, strdup, free (line $line_num)\n";
+    }
+    $mem_size = $curr;
 
     if( $addrs->{$addr} != () ) {
       die "Address $addr found to be allocated twice without a free!\n";
@@ -23,16 +34,24 @@ while( defined( $line = <STDIN> ) ) {
       $addrs->{$addr}{BYTES} = $bytes;
       $addrs->{$addr}{AFILE} = $file;
       $addrs->{$addr}{ALNUM} = $lnum;
+      $num_allocs++;
     }
 
   # Otherwise, if the line was a realloc, delete the old memory and add the new memory to our tracker
-  } elsif( $line =~ /REALLOC\s+\((\S+)\s+->\s+(\S+)\)\s+(\d+)\s+bytes\s+\(file:\s+(\S+),\s+line:\s+(\d+)/) {
+  } elsif( $line =~ /REALLOC\s+\((\S+)\s+->\s+(\S+)\)\s+(\d+)\s+\((\d+)\)\s+bytes\s+\(file:\s+(\S+),\s+line:\s+(\d+)\)\s*-\s*(\d+)/) {
 
-    $old_addr = $1;
-    $addr     = $2;
-    $bytes    = $3;
-    $file     = $4;
-    $lnum     = $5;
+    $old_addr  = $1;
+    $addr      = $2;
+    $bytes     = $3;
+    $old_bytes = $4;
+    $file      = $5;
+    $lnum      = $6;
+    $curr      = $7;
+
+    if( ($mem_size - $old_bytes + $bytes) != $curr ) {
+      die "Memory was modified by something other than a malloc, realloc, strdup, free (line $line_num)\n";
+    }
+    $mem_size = $curr;
 
     # Delete the memory for the old address
     if( ($old_addr ne "(nil)") && ($old_addr ne "0x0") ) {
@@ -40,6 +59,7 @@ while( defined( $line = <STDIN> ) ) {
         die "Address $old_addr being reallocated but never existed!\n";
       } else {
         delete $addrs->{$old_addr}; 
+        $num_frees++;
       }
     }
 
@@ -51,16 +71,23 @@ while( defined( $line = <STDIN> ) ) {
         $addrs->{$addr}{BYTES} = $bytes;
         $addrs->{$addr}{AFILE} = $file;
         $addrs->{$addr}{ALNUM} = $lnum;
+        $num_allocs++;
       }
     }
 
   # Otherwise, if the line was a free, check the bytes freed against the bytes allocated and remove the address from our tracker
-  } elsif( $line =~ /FREE\s+\((\S+)\)\s+(\d+)\s+bytes\s+\(file:\s+(\S+),\s+line:\s+(\d+)/) {
+  } elsif( $line =~ /FREE\s+\((\S+)\)\s+(\d+)\s+bytes\s+\(file:\s+(\S+),\s+line:\s+(\d+)\)\s*-\s*(\d+)/) {
 
     $addr  = $1;
     $bytes = $2;
     $file  = $3;
     $lnum  = $4;
+    $curr  = $5;
+
+    if( ($mem_size - $bytes) != $curr ) {
+      die "Memory was modified by something other than a malloc, realloc, strdup, free (line $line_num)\n";
+    }
+    $mem_size = $curr;
 
     if( $addrs->{$addr} == () ) {
       die "Address $addr was being freed when it was never allocated!\n";
@@ -68,6 +95,7 @@ while( defined( $line = <STDIN> ) ) {
       die "Number of bytes freed ($bytes) in $file:$lnum does not match number of bytes allocated (" . $addrs->{$addr}{BYTES} . ") in " . $addrs->{$addr}{AFILE} . ":" . $addrs->{$addr}{ALNUM} . "\n";
     } else {
       delete $addrs->{$addr};
+      $num_frees++;
     }
 
   # Otherwise, if we have reached the end of the output, make sure Covered is reporting 0 bytes of allocated memory
@@ -76,7 +104,7 @@ while( defined( $line = <STDIN> ) ) {
     $malloc_size = $1;
 
     # If we actually get to this point, make sure that Covered is showing no memory lossage
-    if( $malloc_size != 0 ) {
+    if( $malloc_size ne "0" ) {
       die "Covered is reporting memory lossage ($malloc_size bytes), but check_mem script finds no memory problems!  Please run valgrind...\n";
     }
 
@@ -87,10 +115,14 @@ while( defined( $line = <STDIN> ) ) {
 
   }
 
+  $line_num++;
+
 }
 
+# print STDERR "Num allocates: $num_allocs, num frees: $num_frees\n";
+
 foreach $addr (keys %$addrs) {
-  print "Found unallocated address $addr from " . $addrs->{$addr}{AFILE} . ":" . $addrs->{$addr}{ALNUM} . "\n";
+  print STDERR "Found allocated address $addr from " . $addrs->{$addr}{AFILE} . ":" . $addrs->{$addr}{ALNUM} . "\n";
 }
 
 if( keys( %$addrs ) != () ) {

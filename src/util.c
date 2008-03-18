@@ -1011,7 +1011,7 @@ void* malloc_safe1( size_t size, /*@unused@*/ const char* file, /*@unused@*/ int
 
   obj = malloc( size );
 #ifdef TESTMODE
-  printf( "MALLOC (%p) %d bytes (file: %s, line: %d)\n", obj, size, file, line );
+  printf( "MALLOC (%p) %d bytes (file: %s, line: %d) - %lld\n", obj, size, file, line, curr_malloc_size );
 #endif
   assert( obj != NULL );
 
@@ -1046,7 +1046,7 @@ void* malloc_safe_nolimit1( size_t size, /*@unused@*/ const char* file, /*@unuse
 
   obj = malloc( size );
 #ifdef TESTMODE
-  printf( "MALLOC (%p) %d bytes (file: %s, line: %d)\n", obj, size, file, line );
+  printf( "MALLOC (%p) %d bytes (file: %s, line: %d) - %lld\n", obj, size, file, line, curr_malloc_size );
 #endif
   assert( obj != NULL );
 
@@ -1088,10 +1088,10 @@ void free_safe1( void* ptr, unsigned int profile_index ) {
 void free_safe2( void* ptr, size_t size, const char* file, int line, unsigned int profile_index ) {
 
   if( ptr != NULL ) {
-#ifdef TESTMODE
-    printf( "FREE (%p) %d bytes (file: %s, line: %d)\n", ptr, size, file, line );
-#endif
     curr_malloc_size -= size;
+#ifdef TESTMODE
+    printf( "FREE (%p) %d bytes (file: %s, line: %d) - %lld\n", ptr, size, file, line, curr_malloc_size );
+#endif
     free( ptr );
   }
 
@@ -1126,7 +1126,7 @@ char* strdup_safe1(
   }
   new_str = strdup( str );
 #ifdef TESTMODE
-  printf( "STRDUP (%p) %d bytes (file: %s, line: %d)\n", new_str, str_len, file, line );
+  printf( "STRDUP (%p) %d bytes (file: %s, line: %d) - %lld\n", new_str, str_len, file, line, curr_malloc_size );
 #endif
   assert( new_str != NULL );
 
@@ -1167,14 +1167,16 @@ void* realloc_safe1(
   }
  
   if( size == 0 ) {
-    free( ptr );
+    if( ptr != NULL ) {
+      free( ptr );
+    }
     newptr = NULL;
   } else {
     newptr = realloc( ptr, size );
     assert( newptr != NULL );
   }
 #ifdef TESTMODE
-  printf( "REALLOC (%p -> %p) %d bytes (file: %s, line: %d)\n", ptr, newptr, size, file, line );
+  printf( "REALLOC (%p -> %p) %d (%d) bytes (file: %s, line: %d) - %lld\n", ptr, newptr, size, old_size, file, line, curr_malloc_size );
 #endif
 
   MALLOC_CALL(profile_index);
@@ -1310,6 +1312,9 @@ void calc_miss_percent(
 
 /*
  $Log$
+ Revision 1.83  2008/03/18 03:56:44  phase1geo
+ More updates for memory checking (some "fixes" here as well).
+
  Revision 1.82  2008/03/17 22:02:32  phase1geo
  Adding new check_mem script and adding output to perform memory checking during
  regression runs.  Completed work on free_safe and added realloc_safe function
