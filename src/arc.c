@@ -558,7 +558,7 @@ char* arc_create( int width ) { PROFILE(ARC_CREATE);
   int   i;     /* Loop iterator */
 
   /* The arcs char array is not allocated, allocate the default space here */
-  arcs = (char*)malloc_safe( (arc_get_entry_width( width ) * width) + ARC_STATUS_SIZE + 1 );
+  arcs = (char*)malloc_safe( (arc_get_entry_width( width ) * width) + ARC_STATUS_SIZE );
 
   /* Initialize */
   arc_set_width( arcs, width );     /* Signal width */
@@ -635,7 +635,7 @@ void arc_add(
       }
 
       /* Deallocate old memory */
-      free_safe( tmp, 0 );   /* TBD */
+      free_safe( tmp, (entry_width * (arc_get_max_size( tmp )) + ARC_STATUS_SIZE) );   /* TBD */
 
     }
 
@@ -1240,7 +1240,13 @@ void arc_db_merge(
  during simulation (if hit parameter is true or the any parameter is true) or missed during simulation
  (if hit parameter is false or the any parameter is true).
 */
-void arc_get_states( char*** states, int* state_size, const char* arcs, bool hit, bool any ) { PROFILE(ARC_GET_STATES);
+void arc_get_states(
+  char***     states,
+  int*        state_size,
+  const char* arcs,
+  bool        hit,
+  bool        any
+) { PROFILE(ARC_GET_STATES);
 
   int i;  /* Loop iterator */
   int j;  /* Loop iterator */
@@ -1263,7 +1269,7 @@ void arc_get_states( char*** states, int* state_size, const char* arcs, bool hit
           if( (arc_get_entry_suppl( arcs, i, ARC_HIT_F ) == hit) || any ) {
             *states                  = (char**)realloc_safe( *states, (sizeof( char* ) * (*state_size)), (sizeof( char* ) * ((*state_size) + 1)) );
             assert( *states != NULL );
-            (*states)[(*state_size)] = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 2 );
+            (*states)[(*state_size)] = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 1 );
             arc_state_to_string( arcs, i, TRUE, (*states)[(*state_size)] );
             (*state_size)++;
           }
@@ -1273,7 +1279,7 @@ void arc_get_states( char*** states, int* state_size, const char* arcs, bool hit
           if( (arc_get_entry_suppl( arcs, i, ARC_HIT_F ) == hit) || any ) {
             *states                  = (char**)realloc_safe( *states, (sizeof( char* ) * (*state_size)), (sizeof( char* ) * ((*state_size) + 1)) );
             assert( *states != NULL );
-            (*states)[(*state_size)] = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 2 );
+            (*states)[(*state_size)] = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 1 );
             arc_state_to_string( arcs, i, FALSE, (*states)[(*state_size)] );
             (*state_size)++;
           }
@@ -1310,8 +1316,8 @@ void arc_get_transitions( char*** from_states, char*** to_states, int** excludes
   *excludes    = NULL;
   *arc_size    = 0;
 
-  strl = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 2 );
-  strr = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 2 );
+  strl = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 1 );
+  strr = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 1 );
 
   for( i=0; i<arc_get_curr_size( arcs ); i++ ) {
 
@@ -1319,10 +1325,10 @@ void arc_get_transitions( char*** from_states, char*** to_states, int** excludes
     if( (arc_get_entry_suppl( arcs, i, ARC_HIT_F ) == hit) || any ) {
       *from_states                = (char**)realloc_safe( *from_states, (sizeof( char* ) * (*arc_size)), (sizeof( char* ) * (*arc_size + 1)) );
       assert( *from_states != NULL );
-      (*from_states)[(*arc_size)] = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 2 );
+      (*from_states)[(*arc_size)] = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 1 );
       *to_states                  = (char**)realloc_safe( *to_states,   (sizeof( char* ) * (*arc_size)), (sizeof( char* ) * (*arc_size + 1)) );
       assert( *to_states != NULL );
-      (*to_states)[(*arc_size)]   = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 2 );
+      (*to_states)[(*arc_size)]   = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 1 );
       if( any ) {
         *excludes = (int*)realloc_safe( *excludes, (sizeof( int ) * (*arc_size)), (sizeof( int ) * (*arc_size + 1)) );
         assert( *excludes != NULL );
@@ -1337,10 +1343,10 @@ void arc_get_transitions( char*** from_states, char*** to_states, int** excludes
         (arc_get_entry_suppl( arcs, i, ARC_BIDIR ) == 1) ) {
       *from_states                = (char**)realloc_safe( *from_states, (sizeof( char* ) * (*arc_size)), (sizeof( char* ) * (*arc_size + 1)) );
       assert( *from_states != NULL );
-      (*from_states)[(*arc_size)] = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 2 );
+      (*from_states)[(*arc_size)] = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 1 );
       *to_states                  = (char**)realloc_safe( *to_states,   (sizeof( char* ) * (*arc_size)), (sizeof( char* ) * (*arc_size + 1)) );
       assert( *to_states != NULL );
-      (*to_states)[(*arc_size)]   = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 2 );
+      (*to_states)[(*arc_size)]   = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 1 );
       if( any ) {
         *excludes = (int*)realloc_safe( *excludes, (sizeof( int ) * (*arc_size)), (sizeof( int ) * (*arc_size + 1)) );
         assert( *excludes != NULL );
@@ -1354,8 +1360,8 @@ void arc_get_transitions( char*** from_states, char*** to_states, int** excludes
   }
 
   /* Deallocate memory */
-  free_safe( strl, ((arc_get_width( arcs ) / 4) + 2) );
-  free_safe( strr, ((arc_get_width( arcs ) / 4) + 2) );
+  free_safe( strl, ((arc_get_width( arcs ) / 4) + 1) );
+  free_safe( strr, ((arc_get_width( arcs ) / 4) + 1) );
 
 }
 
@@ -1388,13 +1394,18 @@ bool arc_are_any_excluded( const char* arcs ) { PROFILE(ARC_ARE_ANY_EXCLUDED);
 void arc_dealloc( char* arcs ) { PROFILE(ARC_DEALLOC);
 
   if( arcs != NULL ) {
-    free_safe( arcs, 0 );  /* TBD */
+    free_safe( arcs, ((arc_get_entry_width( arc_get_width( arcs )) * arc_get_max_size( arcs )) + ARC_STATUS_SIZE) );
   }
 
 }
 
 /*
  $Log$
+ Revision 1.56  2008/03/17 22:02:30  phase1geo
+ Adding new check_mem script and adding output to perform memory checking during
+ regression runs.  Completed work on free_safe and added realloc_safe function
+ calls.  Regressions are pretty broke at the moment.  Checkpointing.
+
  Revision 1.55  2008/03/17 05:26:15  phase1geo
  Checkpointing.  Things don't compile at the moment.
 

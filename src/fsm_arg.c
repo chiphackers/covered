@@ -307,13 +307,13 @@ void fsm_arg_parse(
     }
 
   } Catch_anonymous {
-    free_safe( tmp, (strlen( tmp ) + 1) );
+    free_safe( tmp, (strlen( arg ) + 1) );
     printf( "fsm_arg Throw F\n" );
     Throw 0;
   }
 
   /* Deallocate temporary memory */
-  free_safe( tmp, (strlen( tmp ) + 1) );
+  free_safe( tmp, (strlen( arg ) + 1) );
 
 }
 
@@ -739,6 +739,9 @@ void fsm_arg_parse_attr(
 
 /*
  $Log$
+ Revision 1.47  2008/03/17 05:26:16  phase1geo
+ Checkpointing.  Things don't compile at the moment.
+
  Revision 1.46  2008/03/14 22:00:18  phase1geo
  Beginning to instrument code for exception handling verification.  Still have
  a ways to go before we have anything that is self-checking at this point, though.

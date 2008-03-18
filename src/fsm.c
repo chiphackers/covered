@@ -987,8 +987,8 @@ static void fsm_display_arc_verbose(
     rv = snprintf( tmptst, 4096, "%u'h%s", arc_get_width( table->table ), to_states[i] );
     assert( rv < 4096 );
     fprintf( ofile, fstr, tmpfst, tmptst );
-    free_safe( from_states[i], 0 );  /* TBD */
-    free_safe( to_states[i], 0 );  /* TBD */
+    free_safe( from_states[i], (strlen( from_states[i] ) + 1) );
+    free_safe( to_states[i], (strlen( to_states[i] ) + 1) );
   }
 
   fprintf( ofile, "\n" );
@@ -1296,6 +1296,11 @@ void fsm_dealloc( fsm* table ) { PROFILE(FSM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.91  2008/03/17 22:02:31  phase1geo
+ Adding new check_mem script and adding output to perform memory checking during
+ regression runs.  Completed work on free_safe and added realloc_safe function
+ calls.  Regressions are pretty broke at the moment.  Checkpointing.
+
  Revision 1.90  2008/03/17 05:26:16  phase1geo
  Checkpointing.  Things don't compile at the moment.
 
