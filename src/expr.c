@@ -376,6 +376,7 @@ static void expression_create_value(
       Throw 0;
     }
     value = (vec_data*)malloc_safe( sizeof( vec_data ) * width );
+    assert( exp->value->value == NULL );
   }
 
   /* Create value */
@@ -438,6 +439,7 @@ expression* expression_create(
   new_expr->right               = right;
   new_expr->left                = left;
   new_expr->value               = (vector*)malloc_safe( sizeof( vector ) );
+  new_expr->value->value        = NULL;
   new_expr->table               = NULL;
   new_expr->elem.funit          = NULL;
   new_expr->name                = NULL;
@@ -4424,6 +4426,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.292  2008/03/17 05:26:16  phase1geo
+ Checkpointing.  Things don't compile at the moment.
+
  Revision 1.291  2008/03/14 22:00:18  phase1geo
  Beginning to instrument code for exception handling verification.  Still have
  a ways to go before we have anything that is self-checking at this point, though.

@@ -101,11 +101,20 @@ while( defined( $line = <STDIN> ) ) {
   # Otherwise, if we have reached the end of the output, make sure Covered is reporting 0 bytes of allocated memory
   } elsif( $line =~ /curr_malloc_size:\s+(-?\d+)/ ) {
 
-    $malloc_size = $1;
+    $malloc_size     = $1;
+    $saw_malloc_size = 1;
+
+    foreach $addr (keys %$addrs) {
+      print STDERR "Found allocated address $addr from " . $addrs->{$addr}{AFILE} . ":" . $addrs->{$addr}{ALNUM} . "\n";
+    }
 
     # If we actually get to this point, make sure that Covered is showing no memory lossage
-    if( $malloc_size ne "0" ) {
-      die "Covered is reporting memory lossage ($malloc_size bytes), but check_mem script finds no memory problems!  Please run valgrind...\n";
+    if( keys( %$addrs ) == () ) {
+      if( $malloc_size ne "0" ) {
+        die "Covered is reporting memory lossage ($malloc_size bytes), but check_mem script finds no memory problems!  Please run valgrind...\n";
+      } else {
+        die;
+      }
     }
 
   # Otherwise, pass this line to standard output
@@ -119,12 +128,6 @@ while( defined( $line = <STDIN> ) ) {
 
 }
 
-# print STDERR "Num allocates: $num_allocs, num frees: $num_frees\n";
-
-foreach $addr (keys %$addrs) {
-  print STDERR "Found allocated address $addr from " . $addrs->{$addr}{AFILE} . ":" . $addrs->{$addr}{ALNUM} . "\n";
-}
-
-if( keys( %$addrs ) != () ) {
+if( $saw_malloc_size == 0 ) {
   die;
 }

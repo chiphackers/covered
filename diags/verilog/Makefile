@@ -133,14 +133,8 @@ else
 ifndef USE_CVER
 	@$(VERILOG_CMD)
 endif
-	@vg_exists=`which $(VG_EXEC) | wc -w`
-	if test "$$vg_exists" = "1"; then \
-		$(VG_COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP; \
-		$(VG_COVERED) $(COVERED_GFLAG) report -d v -m ltcfam -o $(DIAG).rptM $(DIAG).cdd; \
-	else \
-		$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP | ./check_mem; \
-		$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfam -o $(DIAG).rptM $(DIAG).cdd | ./check_mem; \
-	fi
+	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfam -o $(DIAG).rptM $(DIAG).cdd | ./check_mem
 	$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfam -i -o $(DIAG).rptI $(DIAG).cdd | ./check_mem
 	$(COVERED) $(COVERED_GFLAG) report -w -d v -o $(DIAG).rptWM $(DIAG).cdd | ./check_mem
 	$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $(DIAG).rptWI $(DIAG).cdd | ./check_mem
@@ -160,7 +154,7 @@ racerun:
 	@echo Running $(DIAG)
 	@./convert_cfg $(CFG_CMD) $(DIAG).cfg
 ifdef VPI
-	@$(VG_COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP
+	@$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP
 ifdef USE_CVER
 	@if test "$(COVERED_GFLAG)" = "-D"; then \
 		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v +covered_cdd=$(DIAG).cdd +covered_debug; \
@@ -184,14 +178,8 @@ else
 ifndef USE_CVER
 	@$(VERILOG_CMD)
 endif
-	@vg_exists=`which $(VG_EXEC) | wc -w`
-	@if test "$$vg_exists" = "1"; then \
-		$(VG_COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP; \
-		$(VG_COVERED) $(COVERED_GFLAG) report -d v -m ltcfr -o $(DIAG).rptM $(DIAG).cdd; \
-	else \
-		$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP | ./check_mem; \
-		$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfr -o $(DIAG).rptM $(DIAG).cdd | ./check_mem; \
-	fi
+	@$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP | ./check_mem
+	@$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfr -o $(DIAG).rptM $(DIAG).cdd | ./check_mem
 	@$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfr -i -o $(DIAG).rptI $(DIAG).cdd | ./check_mem
 	@$(COVERED) $(COVERED_GFLAG) report -w -d v -m ltcfr -o $(DIAG).rptWM $(DIAG).cdd | ./check_mem
 	@$(COVERED) $(COVERED_GFLAG) report -w -d v -m ltcfr -i -o $(DIAG).rptWI $(DIAG).cdd | ./check_mem
@@ -234,14 +222,8 @@ else
 ifndef USE_CVER
 	@$(VERILOG_CMD)
 endif
-	@vg_exists=`which $(VG_EXEC) | wc -w`
-	@if test "$$vg_exists" = "1"; then \
-		$(VG_COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP; \
-		$(VG_COVERED) $(COVERED_GFLAG) report -d v -o $(DIAG).rptM $(DIAG).cdd; \
-	else \
-		$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP | ./check_mem; \
-		$(COVERED) $(COVERED_GFLAG) report -d v -o $(DIAG).rptM $(DIAG).cdd | ./check_mem; \
-	fi
+	@$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP | ./check_mem
+	@$(COVERED) $(COVERED_GFLAG) report -d v -o $(DIAG).rptM $(DIAG).cdd | ./check_mem
 	@$(COVERED) $(COVERED_GFLAG) report -d v -i -o $(DIAG).rptI $(DIAG).cdd | ./check_mem
 	@$(COVERED) $(COVERED_GFLAG) report -w -d v -o $(DIAG).rptWM $(DIAG).cdd | ./check_mem
 	@$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $(DIAG).rptWI $(DIAG).cdd | ./check_mem
@@ -253,11 +235,7 @@ mergerun:
 	@echo Running $(DIAG)
 	@$(MAKE) DIAG=$(DIAG)a onemergerun
 	@$(MAKE) DIAG=$(DIAG)b onemergerun
-	@if test "$$vg_exists" = "1"; then \
-		$(VG_COVERED) $(COVERED_GFLAG) merge -o $(DIAG).cdd $(DIAG)a.cdd $(DIAG)b.cdd; \
-	else \
-		$(COVERED) $(COVERED_GFLAG) merge -o $(DIAG).cdd $(DIAG)a.cdd $(DIAG)b.cdd | ./check_mem; \
-	fi
+	@$(COVERED) $(COVERED_GFLAG) merge -o $(DIAG).cdd $(DIAG)a.cdd $(DIAG)b.cdd | ./check_mem
 	@$(COVERED) $(COVERED_GFLAG) report -d v -o $(DIAG).rptM $(DIAG).cdd | ./check_mem
 	@$(COVERED) $(COVERED_GFLAG) report -d v -i -o $(DIAG).rptI $(DIAG).cdd | ./check_mem
 	@$(COVERED) $(COVERED_GFLAG) report -w -d v -o $(DIAG).rptWM $(DIAG).cdd | ./check_mem
@@ -276,11 +254,7 @@ merge3run:
 	@$(MAKE) DIAG=$(DIAG)a onemergerun
 	@$(MAKE) DIAG=$(DIAG)b onemergerun
 	@$(MAKE) DIAG=$(DIAG)c onemergerun
-	@if test "$$vg_exists" = "1"; then \
-		$(VG_COVERED) $(COVERED_GFLAG) merge -o $(DIAG).cdd $(DIAG)a.cdd $(DIAG)b.cdd $(DIAG)c.cdd; \
-	else \
-		$(COVERED) $(COVERED_GFLAG) merge -o $(DIAG).cdd $(DIAG)a.cdd $(DIAG)b.cdd $(DIAG)c.cdd | ./check_mem; \
-	fi
+	@$(COVERED) $(COVERED_GFLAG) merge -o $(DIAG).cdd $(DIAG)a.cdd $(DIAG)b.cdd $(DIAG)c.cdd | ./check_mem
 	@$(COVERED) $(COVERED_GFLAG) report -d v -o $(DIAG).rptM $(DIAG).cdd | ./check_mem
 	@$(COVERED) $(COVERED_GFLAG) report -d v -i -o $(DIAG).rptI $(DIAG).cdd | ./check_mem
 	@$(COVERED) $(COVERED_GFLAG) report -w -d v -o $(DIAG).rptWM $(DIAG).cdd | ./check_mem
