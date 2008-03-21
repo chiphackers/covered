@@ -288,19 +288,15 @@ WSPACE [ \t\b\f]+
         return 0;
  }
 <CSTRING>\"   { PROFILE(LEXER_CSTRING_A);
+	int str_len = strlen( yytext );
 	yylloc.last_column += 1;
 	BEGIN( state_enter );
-        if( ignore_mode == 0 ) {
-          int str_len = strlen( yytext );
-          yylval.text = strdup_safe( yytext );
-          yylval.text[ str_len - 1 ] = '\0';
-          tmpstr = yylval.text;
-          yylval.number = vector_from_string( &(yylval.text), TRUE );
-          free_safe( tmpstr, (str_len + 1) );
-          return STRING;
-        } else {
-          return UNUSED_STRING;
-        }
+        yylval.text = strdup_safe( yytext );
+        yylval.text[ str_len - 1 ] = '\0';
+        tmpstr = yylval.text;
+        yylval.number = vector_from_string( &(yylval.text), TRUE );
+        free_safe( tmpstr, (str_len + 1) );
+        return STRING;
  }
 <CSTRING>.    {
 	yylloc.last_column += 1;
@@ -447,22 +443,14 @@ WSPACE [ \t\b\f]+
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
      if( rc == IDENTIFIER ) {
-       if( ignore_mode == 0 ) {
-         if( (generate_mode == 0) && ((last_gi == NULL) || (last_gi->suppl.part.type != GI_TYPE_INST)) && (strchr( yytext, '.' ) != NULL) ) {
-           yylval.text = gen_item_calc_signal_name( yytext, curr_funit, yylloc.first_line, TRUE );
-         } else {
-           yylval.text = strdup_safe( yytext );
-         }
-         // printf( "Allocated IDENTIFIER %p  %s, line %d\n", yylval.text, yylval.text, yylloc.first_line );
-         if( strncmp( yylval.text, "PATHPULSE$", 10) == 0 ) {
-           rc = PATHPULSE_IDENTIFIER;
-         }
+       if( (generate_mode == 0) && ((last_gi == NULL) || (last_gi->suppl.part.type != GI_TYPE_INST)) && (strchr( yytext, '.' ) != NULL) ) {
+         yylval.text = gen_item_calc_signal_name( yytext, curr_funit, yylloc.first_line, TRUE );
        } else {
-         if( strncmp( yytext, "PATHPULSE$", 10) == 0 ) {
-           rc = UNUSED_PATHPULSE_IDENTIFIER;
-         } else {
-           rc = UNUSED_IDENTIFIER;
-         }
+         yylval.text = strdup_safe( yytext );
+       }
+       // printf( "Allocated IDENTIFIER %p  %s, line %d\n", yylval.text, yylval.text, yylloc.first_line );
+       if( strncmp( yylval.text, "PATHPULSE$", 10) == 0 ) {
+         rc = PATHPULSE_IDENTIFIER;
        }
        if( (last_keyword == K_module) || (last_keyword == K_primitive) ) {
          if( (foundmod = str_link_find( yytext, modlist_head )) == NULL ) {
@@ -504,194 +492,106 @@ WSPACE [ \t\b\f]+
 <PARSE>\\[^ \t\b\f\r\n]+  { PROFILE(LEXER_ESCAPED_NAME);
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
-     if( ignore_mode == 0 ) {
-       unsigned int rv;
-       unsigned int slen = strlen( yytext ) + 2;
-       yylval.text = (char*)malloc_safe( slen );
-       rv = snprintf( yylval.text, slen, "%s ", yytext );
-       assert( rv < slen );
-       return IDENTIFIER; 
-     } else {
-       return UNUSED_IDENTIFIER;
-     }
+     unsigned int rv;
+     unsigned int slen = strlen( yytext ) + 2;
+     yylval.text = (char*)malloc_safe( slen );
+     rv = snprintf( yylval.text, slen, "%s ", yytext );
+     assert( rv < slen );
+     return IDENTIFIER; 
  }
 
   /* System call lines -- we ignore this information */
 <PARSE>\$([a-zA-Z0-9$_]+)   { PROFILE(LEXER_SYSTEM_CALL);
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
-     if( ignore_mode == 0 ) {
-       yylval.text = strdup_safe( yytext );
-       return SYSTEM_IDENTIFIER; 
-     } else {
-       return UNUSED_SYSTEM_IDENTIFIER;
-     }
+     yylval.text = strdup_safe( yytext );
+     return SYSTEM_IDENTIFIER; 
  }
 
   /* Decimal number - Size indicated */
 <PARSE>[0-9][0-9_]*[ \t]*\'[sS]?[dD][ \t]*[0-9][0-9_]* {
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
-     if( ignore_mode == 0 ) {
-       yylval.number = vector_from_string( &yytext, FALSE );
-       if( yylval.number != NULL ) {
-         return NUMBER;
-       } else {
-         return UNUSED_NUMBER;
-       }
-     } else {
-       return UNUSED_NUMBER;
-     }
+     yylval.number = vector_from_string( &yytext, FALSE );
+     return NUMBER;
  }
 
   /* Binary number - Size indicated */
 <PARSE>[0-9][0-9_]*[ \t]*\'[sS]?[bB][ \t]*[0-1xzXZ_\?]+ {
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
-     if( ignore_mode == 0 ) {
-       yylval.number = vector_from_string( &yytext, FALSE );
-       if( yylval.number != NULL ) {
-         return NUMBER;
-       } else {
-         return UNUSED_NUMBER;
-       }
-     } else {
-       return UNUSED_NUMBER;
-     }
+     yylval.number = vector_from_string( &yytext, FALSE );
+     return NUMBER;
  }
 
   /* Octal number - Size indicated */
 <PARSE>[0-9][0-9_]*[ \t]*\'[sS]?[oO][ \t]*[0-7xzXZ_\?]+ {
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
-     if( ignore_mode == 0 ) {
-       yylval.number = vector_from_string( &yytext, FALSE );
-       if( yylval.number != NULL ) {
-         return NUMBER;
-       } else {
-         return UNUSED_NUMBER;
-       }
-     } else {
-       return UNUSED_NUMBER;
-     }
+     yylval.number = vector_from_string( &yytext, FALSE );
+     return NUMBER;
  }
 
   /* Hexidecimal number - Size indicated */
 <PARSE>[0-9][0-9_]*[ \t]*\'[sS]?[hH][ \t]*[0-9a-fA-FxzXZ_\?]+ {
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
-     if( ignore_mode == 0 ) {
-       yylval.number = vector_from_string( &yytext, FALSE );
-       if( yylval.number != NULL ) {
-         return NUMBER;
-       } else {
-         return UNUSED_NUMBER;
-       }
-     } else {
-       return UNUSED_NUMBER;
-     }
+     yylval.number = vector_from_string( &yytext, FALSE );
+     return NUMBER;
  }
 
   /* Decimal number - unsized */
 <PARSE>\'[sS]?[dD][ \t]*[0-9][0-9_]* {
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
-     if( ignore_mode == 0 ) {
-       yylval.number = vector_from_string( &yytext, FALSE );
-       if( yylval.number != NULL ) {
-         return NUMBER;
-       } else {
-         return UNUSED_NUMBER;
-       }
-     } else {
-       return UNUSED_NUMBER;
-     }
+     yylval.number = vector_from_string( &yytext, FALSE );
+     return NUMBER;
  }
 
   /* Binary number - unsized */
 <PARSE>\'[sS]?[bB][ \t]*[0-1xzXZ_\?]+ {
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
-     if( ignore_mode == 0 ) {
-       yylval.number = vector_from_string( &yytext, FALSE );
-       if( yylval.number != NULL ) {
-         return NUMBER;
-       } else {
-         return UNUSED_NUMBER;
-       }
-     } else {
-       return UNUSED_NUMBER;
-     }
+     yylval.number = vector_from_string( &yytext, FALSE );
+     return NUMBER;
  }
 
   /* Octal number - unsized */
 <PARSE>\'[sS]?[oO][ \t]*[0-7xzXZ_\?]+ {
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
-     if( ignore_mode == 0 ) {
-       yylval.number = vector_from_string( &yytext, FALSE );
-       if( yylval.number != NULL ) {
-         return NUMBER;
-       } else {
-         return UNUSED_NUMBER;
-       }
-     } else {
-       return UNUSED_NUMBER;
-     }
+     yylval.number = vector_from_string( &yytext, FALSE );
+     return NUMBER;
  }
 
   /* Hexidecimal number - unsized */
 <PARSE>\'[sS]?[hH][ \t]*[0-9a-fA-FxzXZ_\?]+ {
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
-     if( ignore_mode == 0 ) {
-       yylval.number = vector_from_string( &yytext, FALSE );
-       if( yylval.number != NULL ) {
-         return NUMBER;
-       } else {
-         return UNUSED_NUMBER;
-       }
-     } else {
-       return UNUSED_NUMBER;
-     }
+     yylval.number = vector_from_string( &yytext, FALSE );
+     return NUMBER;
  }
 
   /* Unsized decimal number */
 <PARSE>[0-9][0-9_]* {
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
-     if( ignore_mode == 0 ) {
-       yylval.number = vector_from_string( &yytext, FALSE );
-       if( yylval.number != NULL ) {
-         return NUMBER;
-       } else {
-         return UNUSED_NUMBER;
-       }
-     } else {
-       return UNUSED_NUMBER;
-     }
+     yylval.number = vector_from_string( &yytext, FALSE );
+     return NUMBER;
  }
 
   /* Real numbers -- we ignore this information */
 <PARSE>[0-9][0-9_]*\.[0-9][0-9_]*([Ee][+-]?[0-9][0-9_]*)? { 
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
-     if( ignore_mode == 0 ) {
-       return REALTIME;
-     } else {
-       return UNUSED_REALTIME;
-     }
+     return REALTIME;
  }
 
   /* Real numbers -- we ignore this information */
 <PARSE>[0-9][0-9_]*[Ee][+-]?[0-9][0-9_]* { 
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
-     if( ignore_mode == 0 ) {
-       return REALTIME;
-     } else {
-       return UNUSED_REALTIME;
-     }
+     return REALTIME;
  }
 
   /* Timescale directive -- we ignore this information */

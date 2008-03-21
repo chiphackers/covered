@@ -258,11 +258,6 @@ int yydebug = 1;
 %token <realtime> REALTIME
 %token <number>   STRING
 %token IGNORE
-%token UNUSED_IDENTIFIER
-%token UNUSED_PATHPULSE_IDENTIFIER
-%token UNUSED_NUMBER
-%token UNUSED_REALTIME
-%token UNUSED_STRING UNUSED_SYSTEM_IDENTIFIER
 %token K_LE K_GE K_EG K_EQ K_NE K_CEQ K_CNE K_LS K_LSS K_RS K_RSS K_SG
 %token K_ADD_A K_SUB_A K_MLT_A K_DIV_A K_MOD_A K_AND_A K_OR_A K_XOR_A K_LS_A K_RS_A K_ALS_A K_ARS_A K_INC K_DEC K_POW
 %token K_PO_POS K_PO_NEG K_STARP K_PSTAR
@@ -419,10 +414,6 @@ attribute
       }
       free_safe( $1, (strlen( $1 ) + 1) );
     }
-  | UNUSED_IDENTIFIER
-    {
-      $$ = NULL;
-    }
   | IDENTIFIER '=' {attr_mode++;} expression {attr_mode--;}
     {
       attr_param* ap;
@@ -434,10 +425,6 @@ attribute
       }
       free_safe( $1, (strlen( $1 ) + 1) );
     }
-  | UNUSED_IDENTIFIER '=' expression
-    {
-      $$ = NULL;
-    }
   ;
 
 source_file 
@@ -448,7 +435,12 @@ source_file
 description
   : module
   | udp_primitive
-  | KK_attribute { ignore_mode++; } '(' UNUSED_IDENTIFIER ',' UNUSED_STRING ',' UNUSED_STRING ')' { ignore_mode--; }
+  | KK_attribute '(' IDENTIFIER ',' STRING ',' STRING ')'
+    {
+      free_safe( $3, (strlen( $3 ) + 1) );
+      vector_dealloc( $5 );
+      vector_dealloc( $7 );
+    }
   | typedef_decl
   | net_type signed_opt range_opt list_of_variables ';'
   | net_type signed_opt range_opt net_decl_assigns ';'
@@ -799,7 +791,6 @@ port
     {
       free_safe( $2, (strlen( $2 ) + 1) );
     }
-  | '.' UNUSED_IDENTIFIER '(' '{' port_reference_list '}' ')'
   ;
 
 port_reference
@@ -807,22 +798,18 @@ port_reference
     {
       free_safe( $1, (strlen( $1 ) + 1) );
     }
-  | UNUSED_IDENTIFIER
   | IDENTIFIER '[' ignore_more static_expr ':' static_expr ignore_less ']'
     {
       free_safe( $1, (strlen( $1 ) + 1) );
     }
-  | UNUSED_IDENTIFIER '[' ignore_more static_expr ':' static_expr ignore_less ']'
   | IDENTIFIER '[' ignore_more static_expr ignore_less ']'
     {
       free_safe( $1, (strlen( $1 ) + 1) );
     }
-  | UNUSED_IDENTIFIER '[' ignore_more static_expr ignore_less ']'
   | IDENTIFIER '[' error ']'
     {
       free_safe( $1, (strlen( $1 ) + 1) );
     }
-  | UNUSED_IDENTIFIER '[' error ']'
   ;
 
 port_reference_list
@@ -1127,7 +1114,7 @@ static_expr_primary
   : NUMBER
     { PROFILE(PARSER_STATIC_EXPR_PRIMARY_A);
       static_expr* tmp;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($1 != NULL) ) {
         tmp = (static_expr*)malloc_safe( sizeof( static_expr ) );
         if( vector_is_unknown( $1 ) ) {
           Try {
@@ -1147,18 +1134,11 @@ static_expr_primary
         }
         $$ = tmp;
       } else {
+        vector_dealloc( $1 );
         $$ = NULL;
       }
     }
-  | UNUSED_NUMBER
-    {
-      $$ = NULL;
-    }
   | REALTIME
-    {
-      $$ = NULL;
-    }
-  | UNUSED_REALTIME
     {
       $$ = NULL;
     }
@@ -1176,16 +1156,11 @@ static_expr_primary
           printf( "parser Throw P\n" );
           Throw 0;
         }
-        free_safe( $1, (strlen( $1 ) + 1) );
         $$ = tmp;
       } else {
-        assert( $1 == NULL );
         $$ = NULL;
       }
-    }
-  | UNUSED_IDENTIFIER
-    {
-      $$ = NULL;
+      free_safe( $1, (strlen( $1 ) + 1) );
     }
   | '(' static_expr ')'
     {
@@ -1201,11 +1176,6 @@ static_expr_primary
       }
       free_safe( $1, (strlen( $1 ) + 1) );
     }
-  | UNUSED_IDENTIFIER '(' static_expr_port_list ')'
-    {
-      $$ = NULL;
-      static_expr_dealloc( $3, TRUE );
-    }
   | IDENTIFIER '[' static_expr ']'
     {
       if( ignore_mode == 0 ) { 
@@ -1216,18 +1186,9 @@ static_expr_primary
       }
       free_safe( $1, (strlen( $1 ) + 1) );
     }
-  | UNUSED_IDENTIFIER '[' static_expr ']'
-    {
-      $$ = NULL;
-      static_expr_dealloc( $3, TRUE );
-    }
   | SYSTEM_IDENTIFIER
     {
       free_safe( $1, (strlen( $1 ) + 1) );
-      $$ = NULL;
-    }
-  | UNUSED_SYSTEM_IDENTIFIER
-    {
       $$ = NULL;
     }
   ;
@@ -1990,47 +1951,45 @@ expression
 expr_primary
   : NUMBER
     {
-      expression* tmp;
-      Try {
-        tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-      } Catch_anonymous {
+      if( (ignore_mode == 0) && ($1 != NULL) ) {
+        expression* tmp;
+        Try {
+          tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+        } Catch_anonymous {
+          vector_dealloc( $1 );
+          printf( "parser Throw BA\n" );
+          Throw 0;
+        }
+        vector_dealloc( tmp->value );
+        tmp->value = $1;
+        $$ = tmp;
+      } else {
         vector_dealloc( $1 );
-        printf( "parser Throw BA\n" );
-        Throw 0;
+        $$ = NULL;
       }
-      vector_dealloc( tmp->value );
-      tmp->value = $1;
-      $$ = tmp;
-    }
-  | UNUSED_NUMBER
-    {
-      $$ = NULL;
     }
   | REALTIME
-    {
-      $$ = NULL;
-    }
-  | UNUSED_REALTIME
     {
       $$ = NULL;
     }
   | STRING
     {
       expression* tmp;
-      Try {
-        tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-      } Catch_anonymous {
+      if( ignore_mode == 0 ) {
+        Try {
+          tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+        } Catch_anonymous {
+          vector_dealloc( $1 );
+          printf( "parser Throw BB\n" );
+          Throw 0;
+        }
+        vector_dealloc( tmp->value );
+        tmp->value = $1;
+        $$ = tmp;
+      } else {
         vector_dealloc( $1 );
-        printf( "parser Throw BB\n" );
-        Throw 0;
+        $$ = NULL;
       }
-      vector_dealloc( tmp->value );
-      tmp->value = $1;
-      $$ = tmp;
-    }
-  | UNUSED_STRING
-    {
-      $$ = NULL;
     }
   | identifier
     {
@@ -2147,10 +2106,6 @@ expr_primary
         $$ = NULL;
       }
       free_safe( $1, (strlen( $1 ) + 1) );
-    }
-  | UNUSED_SYSTEM_IDENTIFIER
-    {
-      $$ = NULL;
     }
   | identifier index_expr
     {
@@ -2294,10 +2249,6 @@ expr_primary
         $$ = NULL;
       }
       free_safe( $1, (strlen( $1 ) + 1) );
-    }
-  | UNUSED_SYSTEM_IDENTIFIER '(' expression_port_list ')'
-    {
-      $$ = NULL;
     }
   | '(' expression ')'
     {
@@ -2492,75 +2443,82 @@ expression_port_list
   ;
 
 begin_end_id
-  : ':' IDENTIFIER        { $$ = $2;   }
-  | ':' UNUSED_IDENTIFIER { $$ = NULL; }
+  : ':' IDENTIFIER
+    {
+      if( ignore_mode == 0 ) {
+        $$ = $2;
+      } else {
+        free_safe( $2, (strlen( $2 ) + 1) );
+        $$ = NULL;
+      }
+    }
   | { $$ = db_create_unnamed_scope(); }
   ;
 
 identifier
   : IDENTIFIER
     {
-      $$ = $1;
-    }
-  | UNUSED_IDENTIFIER
-    {
-      $$ = NULL;
+      if( ignore_mode == 0 ) {
+        $$ = $1;
+      } else {
+        free_safe( $1, (strlen( $1 ) + 1) );
+        $$ = NULL;
+      }
     }
   | identifier '.' IDENTIFIER
     { PROFILE(PARSER_IDENTIFIER_A);
-      int   len = strlen( $1 ) + strlen( $3 ) + 2;
-      char* str = (char*)malloc_safe( len );
-      unsigned int rv = snprintf( str, len, "%s.%s", $1, $3 );
-      assert( rv < len );
-      if( $1 != NULL ) {
-        free_safe( $1, (strlen( $1 ) + 1) );
+      if( ignore_mode == 0 ) {
+        int   len = strlen( $1 ) + strlen( $3 ) + 2;
+        char* str = (char*)malloc_safe( len );
+        unsigned int rv = snprintf( str, len, "%s.%s", $1, $3 );
+        assert( rv < len );
+        $$ = str;
+      } else {
+        $$ = NULL;
       }
+      free_safe( $1, (strlen( $1 ) + 1) );
       free_safe( $3, (strlen( $3 ) + 1) );
-      $$ = str;
-    }
-  | identifier '.' UNUSED_IDENTIFIER
-    {
-      if( $1 != NULL ) {
-        free_safe( $1, (strlen( $1 ) + 1) );
-      }
-      $$ = NULL;
     }
   ;
 
 list_of_variables
   : IDENTIFIER
     {
-      db_add_signal( $1, curr_sig_type, &curr_prange, NULL, curr_signed, curr_mba, @1.first_line, @1.first_column, curr_handled );
+      if( ignore_mode == 0 ) {
+        db_add_signal( $1, curr_sig_type, &curr_prange, NULL, curr_signed, curr_mba, @1.first_line, @1.first_column, curr_handled );
+      }
       free_safe( $1, (strlen( $1 ) + 1) );
     }
   | IDENTIFIER { curr_packed = FALSE; } range
     {
-      curr_packed = TRUE;
-      if( !parser_check_generation( GENERATION_SV ) ) {
-        VLerror( "Unpacked array specified for net type in block that was specified to not allow SystemVerilog syntax" );
-      } else {
-        db_add_signal( $1, curr_sig_type, &curr_prange, &curr_urange, curr_signed, curr_mba, @1.first_line, @1.first_column, curr_handled );
+      if( ignore_mode == 0 ) {
+        curr_packed = TRUE;
+        if( !parser_check_generation( GENERATION_SV ) ) {
+          VLerror( "Unpacked array specified for net type in block that was specified to not allow SystemVerilog syntax" );
+        } else {
+          db_add_signal( $1, curr_sig_type, &curr_prange, &curr_urange, curr_signed, curr_mba, @1.first_line, @1.first_column, curr_handled );
+        }
       }
       free_safe( $1, (strlen( $1 ) + 1) );
     }
-  | UNUSED_IDENTIFIER
-  | UNUSED_IDENTIFIER range
   | list_of_variables ',' IDENTIFIER
     {
-      db_add_signal( $3, curr_sig_type, &curr_prange, NULL, curr_signed, curr_mba, @3.first_line, @3.first_column, curr_handled );
+      if( ignore_mode == 0 ) {
+        db_add_signal( $3, curr_sig_type, &curr_prange, NULL, curr_signed, curr_mba, @3.first_line, @3.first_column, curr_handled );
+      }
       free_safe( $3, (strlen( $3 ) + 1) );
     }
   | list_of_variables ',' IDENTIFIER range
     {
-      if( !parser_check_generation( GENERATION_SV ) ) {
-        VLerror( "Unpacked array specified for net type in block that was specified to not allow SystemVerilog syntax" );
-      } else {
-        db_add_signal( $3, curr_sig_type, &curr_prange, &curr_urange, curr_signed, curr_mba, @3.first_line, @3.first_column, curr_handled );
+      if( ignore_mode == 0 ) {
+        if( !parser_check_generation( GENERATION_SV ) ) {
+          VLerror( "Unpacked array specified for net type in block that was specified to not allow SystemVerilog syntax" );
+        } else {
+          db_add_signal( $3, curr_sig_type, &curr_prange, &curr_urange, curr_signed, curr_mba, @3.first_line, @3.first_column, curr_handled );
+        }
       }
       free_safe( $3, (strlen( $3 ) + 1) );
     }
-  | list_of_variables ',' UNUSED_IDENTIFIER
-  | list_of_variables ',' UNUSED_IDENTIFIER range
   ;
 
   /* I don't know what to do with UDPs.  This is included to allow designs that contain
@@ -2572,9 +2530,11 @@ udp_primitive
       udp_body
     K_endprimitive
     {
-      /* We will treat primitives like regular modules */
-      db_add_module( $2, @1.text, @1.first_line );
-      db_end_module( @10.first_line );
+      if( ignore_mode == 0 ) {
+        /* We will treat primitives like regular modules */
+        db_add_module( $2, @1.text, @1.first_line );
+        db_end_module( @10.first_line );
+      }
       free_safe( $2, (strlen( $2 ) + 1) );
     }
   | K_primitive IGNORE K_endprimitive
@@ -2695,416 +2655,456 @@ generate_passign
     {
       expression* expr = NULL;
       expression* expl = NULL;
-      if( $3 != NULL ) {
-        Try {
-          expl = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
-          expr = db_create_expr_from_static( $3, @3.first_line, @3.first_column, (@3.last_column - 1) );
-          expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-          if( generate_varname == NULL ) {
-            generate_varname = $1;
+      if( ignore_mode == 0 ) {
+        if( $3 != NULL ) {
+          Try {
+            expl = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
+            expr = db_create_expr_from_static( $3, @3.first_line, @3.first_column, (@3.last_column - 1) );
+            expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            if( generate_varname == NULL ) {
+              generate_varname = $1;
+            }
+          } Catch_anonymous {
+            static_expr_dealloc( $3, TRUE );
+            expression_dealloc( expl, FALSE );
+            expression_dealloc( expr, FALSE );
+            free_safe( $1, (strlen( $1 ) + 1) );
+            printf( "parser Throw BT\n" );
+            Throw 0;
           }
-        } Catch_anonymous {
-          static_expr_dealloc( $3, TRUE );
-          expression_dealloc( expl, FALSE );
-          expression_dealloc( expr, FALSE );
+          $$ = expr;
+        } else {
           free_safe( $1, (strlen( $1 ) + 1) );
-          printf( "parser Throw BT\n" );
-          Throw 0;
+          $$ = NULL;
         }
-        $$ = expr;
       } else {
         free_safe( $1, (strlen( $1 ) + 1) );
+        static_expr_dealloc( $3, TRUE );
         $$ = NULL;
       }
-    }
-  | UNUSED_IDENTIFIER '=' static_expr
-    {
-      static_expr_dealloc( $3, TRUE );
-      $$ = NULL;
     }
   | IDENTIFIER K_ADD_A static_expr
     {
       expression* expr = NULL;
       expression* expl = NULL;
-      if( $3 != NULL ) {
-        Try {
-          expl = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
-          expr = db_create_expr_from_static( $3, @3.first_line, @3.first_column, (@3.last_column - 1) );
-          expr = db_create_expression( expr, expl, EXP_OP_ADD, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
-          expl = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
-          expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-          if( generate_varname == NULL ) {
-            generate_varname = $1;
+      if( ignore_mode == 0 ) {
+        if( $3 != NULL ) {
+          Try {
+            expl = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
+            expr = db_create_expr_from_static( $3, @3.first_line, @3.first_column, (@3.last_column - 1) );
+            expr = db_create_expression( expr, expl, EXP_OP_ADD, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
+            expl = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
+            expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            if( generate_varname == NULL ) {
+              generate_varname = $1;
+            }
+          } Catch_anonymous {
+            static_expr_dealloc( $3, TRUE );
+            expression_dealloc( expl, FALSE );
+            expression_dealloc( expr, FALSE );
+            free_safe( $1, (strlen( $1 ) + 1) );
+            printf( "parser Throw BU\n" );
+            Throw 0;
           }
-        } Catch_anonymous {
-          static_expr_dealloc( $3, TRUE );
-          expression_dealloc( expl, FALSE );
-          expression_dealloc( expr, FALSE );
+          $$ = expr;
+        } else {
           free_safe( $1, (strlen( $1 ) + 1) );
-          printf( "parser Throw BU\n" );
-          Throw 0;
+          $$ = NULL;
         }
-        $$ = expr;
       } else {
         free_safe( $1, (strlen( $1 ) + 1) );
+        static_expr_dealloc( $3, TRUE );
         $$ = NULL;
       }
-    }
-  | UNUSED_IDENTIFIER K_ADD_A static_expr
-    {
-      static_expr_dealloc( $3, TRUE );
-      $$ = NULL;
     }
   | IDENTIFIER K_SUB_A static_expr
     {
       expression* expr = NULL;
       expression* expl = NULL;
-      if( $3 != NULL ) {
-        Try {
-          expl = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
-          expr = db_create_expr_from_static( $3, @3.first_line, @3.first_column, (@3.last_column - 1) );
-          expr = db_create_expression( expr, expl, EXP_OP_SUBTRACT, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
-          expl = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
-          expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-          if( generate_varname == NULL ) {
-            generate_varname = $1;
+      if( ignore_mode == 0 ) {
+        if( $3 != NULL ) {
+          Try {
+            expl = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
+            expr = db_create_expr_from_static( $3, @3.first_line, @3.first_column, (@3.last_column - 1) );
+            expr = db_create_expression( expr, expl, EXP_OP_SUBTRACT, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
+            expl = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
+            expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            if( generate_varname == NULL ) {
+              generate_varname = $1;
+            }
+          } Catch_anonymous {
+            static_expr_dealloc( $3, TRUE );
+            expression_dealloc( expl, FALSE );
+            expression_dealloc( expr, FALSE );
+            free_safe( $1, (strlen( $1 ) + 1) );
+            printf( "parser Throw BV\n" );
+            Throw 0;
           }
-        } Catch_anonymous {
-          static_expr_dealloc( $3, TRUE );
-          expression_dealloc( expl, FALSE );
-          expression_dealloc( expr, FALSE );
+          $$ = expr;
+        } else {
           free_safe( $1, (strlen( $1 ) + 1) );
-          printf( "parser Throw BV\n" );
-          Throw 0;
+          $$ = NULL;
         }
-        $$ = expr;
       } else {
         free_safe( $1, (strlen( $1 ) + 1) );
+        static_expr_dealloc( $3, TRUE );
         $$ = NULL;
       }
-    }
-  | UNUSED_IDENTIFIER K_SUB_A static_expr
-    {
-      static_expr_dealloc( $3, TRUE );
-      $$ = NULL;
     }
   | IDENTIFIER K_MLT_A static_expr
     {
       expression* expr = NULL;
       expression* expl = NULL;
-      if( $3 != NULL ) {
-        Try {
-          expl = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
-          expr = db_create_expr_from_static( $3, @3.first_line, @3.first_column, (@3.last_column - 1) );
-          expr = db_create_expression( expr, expl, EXP_OP_MULTIPLY, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
-          expl = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
-          expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-          if( generate_varname == NULL ) {
-            generate_varname = $1;
+      if( ignore_mode == 0 ) {
+        if( $3 != NULL ) {
+          Try {
+            expl = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
+            expr = db_create_expr_from_static( $3, @3.first_line, @3.first_column, (@3.last_column - 1) );
+            expr = db_create_expression( expr, expl, EXP_OP_MULTIPLY, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
+            expl = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
+            expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            if( generate_varname == NULL ) {
+              generate_varname = $1;
+            }
+          } Catch_anonymous {
+            static_expr_dealloc( $3, TRUE );
+            expression_dealloc( expl, FALSE );
+            expression_dealloc( expr, FALSE );
+            free_safe( $1, (strlen( $1 ) + 1) );
+            printf( "parser Throw BW\n" );
+            Throw 0;
           }
-        } Catch_anonymous {
-          static_expr_dealloc( $3, TRUE );
-          expression_dealloc( expl, FALSE );
-          expression_dealloc( expr, FALSE );
+          $$ = expr;
+        } else {
           free_safe( $1, (strlen( $1 ) + 1) );
-          printf( "parser Throw BW\n" );
-          Throw 0;
+          $$ = NULL;
         }
-        $$ = expr;
       } else {
         free_safe( $1, (strlen( $1 ) + 1) );
+        static_expr_dealloc( $3, TRUE );
         $$ = NULL;
       }
-    }
-  | UNUSED_IDENTIFIER K_MLT_A static_expr
-    {
-      static_expr_dealloc( $3, TRUE );
-      $$ = NULL;
     }
   | IDENTIFIER K_DIV_A static_expr
     {
       expression* expr = NULL;
       expression* expl = NULL;
-      if( $3 != NULL ) {
-        Try {
-          expl = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
-          expr = db_create_expr_from_static( $3, @3.first_line, @3.first_column, (@3.last_column - 1) );
-          expr = db_create_expression( expr, expl, EXP_OP_DIVIDE, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
-          expl = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
-          expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-          if( generate_varname == NULL ) {
-            generate_varname = $1;
+      if( ignore_mode == 0 ) {
+        if( $3 != NULL ) {
+          Try {
+            expl = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
+            expr = db_create_expr_from_static( $3, @3.first_line, @3.first_column, (@3.last_column - 1) );
+            expr = db_create_expression( expr, expl, EXP_OP_DIVIDE, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
+            expl = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
+            expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            if( generate_varname == NULL ) {
+              generate_varname = $1;
+            }
+          } Catch_anonymous {
+            static_expr_dealloc( $3, TRUE );
+            expression_dealloc( expl, FALSE );
+            expression_dealloc( expr, FALSE );
+            free_safe( $1, (strlen( $1 ) + 1) );
+            printf( "parser Throw BX\n" );
+            Throw 0;
           }
-        } Catch_anonymous {
-          static_expr_dealloc( $3, TRUE );
-          expression_dealloc( expl, FALSE );
-          expression_dealloc( expr, FALSE );
+          $$ = expr;
+        } else {
           free_safe( $1, (strlen( $1 ) + 1) );
-          printf( "parser Throw BX\n" );
-          Throw 0;
+          $$ = NULL;
         }
-        $$ = expr;
       } else {
         free_safe( $1, (strlen( $1 ) + 1) );
+        static_expr_dealloc( $3, TRUE );
         $$ = NULL;
       }
-    }
-  | UNUSED_IDENTIFIER K_DIV_A static_expr
-    {
-      static_expr_dealloc( $3, TRUE );
-      $$ = NULL;
     }
   | IDENTIFIER K_MOD_A static_expr
     {
       expression* expr = NULL;
       expression* expl = NULL;
-      if( $3 != NULL ) {
-        Try {
-          expl = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
-          expr = db_create_expr_from_static( $3, @3.first_line, @3.first_column, (@3.last_column - 1) );
-          expr = db_create_expression( expr, expl, EXP_OP_MOD, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
-          expl = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
-          expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-          if( generate_varname == NULL ) {
-            generate_varname = $1;
+      if( ignore_mode == 0 ) {
+        if( $3 != NULL ) {
+          Try {
+            expl = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
+            expr = db_create_expr_from_static( $3, @3.first_line, @3.first_column, (@3.last_column - 1) );
+            expr = db_create_expression( expr, expl, EXP_OP_MOD, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
+            expl = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
+            expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            if( generate_varname == NULL ) {
+              generate_varname = $1;
+            }
+          } Catch_anonymous {
+            static_expr_dealloc( $3, TRUE );
+            expression_dealloc( expl, FALSE );
+            expression_dealloc( expr, FALSE );
+            free_safe( $1, (strlen( $1 ) + 1) );
+            printf( "parser Throw BY\n" );
+            Throw 0;
           }
-        } Catch_anonymous {
-          static_expr_dealloc( $3, TRUE );
-          expression_dealloc( expl, FALSE );
-          expression_dealloc( expr, FALSE );
+          $$ = expr;
+        } else {
           free_safe( $1, (strlen( $1 ) + 1) );
-          printf( "parser Throw BY\n" );
-          Throw 0;
+          $$ = NULL;
         }
-        $$ = expr;
       } else {
         free_safe( $1, (strlen( $1 ) + 1) );
+        static_expr_dealloc( $3, TRUE );
         $$ = NULL;
       }
-    }
-  | UNUSED_IDENTIFIER K_MOD_A static_expr
-    {
-      static_expr_dealloc( $3, TRUE );
-      $$ = NULL;
     }
   | IDENTIFIER K_AND_A static_expr
     {
       expression* expr = NULL;
       expression* expl = NULL;
-      if( $3 != NULL ) {
-        Try {
-          expl = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
-          expr = db_create_expr_from_static( $3, @3.first_line, @3.first_column, (@3.last_column - 1) );
-          expr = db_create_expression( expr, expl, EXP_OP_AND, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
-          expl = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
-          expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-          if( generate_varname == NULL ) {
-            generate_varname = $1;
+      if( ignore_mode == 0 ) {
+        if( $3 != NULL ) {
+          Try {
+            expl = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
+            expr = db_create_expr_from_static( $3, @3.first_line, @3.first_column, (@3.last_column - 1) );
+            expr = db_create_expression( expr, expl, EXP_OP_AND, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
+            expl = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
+            expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            if( generate_varname == NULL ) {
+              generate_varname = $1;
+            }
+          } Catch_anonymous {
+            static_expr_dealloc( $3, TRUE );
+            expression_dealloc( expl, FALSE );
+            expression_dealloc( expr, FALSE );
+            free_safe( $1, (strlen( $1 ) + 1) );
+            printf( "parser Throw BZ\n" );
+            Throw 0;
           }
-        } Catch_anonymous {
-          static_expr_dealloc( $3, TRUE );
-          expression_dealloc( expl, FALSE );
-          expression_dealloc( expr, FALSE );
+          $$ = expr;
+        } else {
           free_safe( $1, (strlen( $1 ) + 1) );
-          printf( "parser Throw BZ\n" );
-          Throw 0;
+          $$ = NULL;
         }
-        $$ = expr;
       } else {
         free_safe( $1, (strlen( $1 ) + 1) );
+        static_expr_dealloc( $3, TRUE );
         $$ = NULL;
       }
-    }
-  | UNUSED_IDENTIFIER K_AND_A static_expr
-    {
-      static_expr_dealloc( $3, TRUE );
-      $$ = NULL;
     }
   | IDENTIFIER K_OR_A static_expr
     {
       expression* expr = NULL;
       expression* expl = NULL;
-      if( $3 != NULL ) {
-        Try {
-          expl = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
-          expr = db_create_expr_from_static( $3, @3.first_line, @3.first_column, (@3.last_column - 1) );
-          expr = db_create_expression( expr, expl, EXP_OP_OR, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
-          expl = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
-          expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-          if( generate_varname == NULL ) {
-            generate_varname = $1;
+      if( ignore_mode == 0 ) {
+        if( $3 != NULL ) {
+          Try {
+            expl = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
+            expr = db_create_expr_from_static( $3, @3.first_line, @3.first_column, (@3.last_column - 1) );
+            expr = db_create_expression( expr, expl, EXP_OP_OR, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
+            expl = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
+            expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            if( generate_varname == NULL ) {
+              generate_varname = $1;
+            }
+          } Catch_anonymous {
+            static_expr_dealloc( $3, TRUE );
+            expression_dealloc( expl, FALSE );
+            expression_dealloc( expr, FALSE );
+            free_safe( $1, (strlen( $1 ) + 1) );
+            printf( "parser Throw CA\n" );
+            Throw 0;
           }
-        } Catch_anonymous {
-          static_expr_dealloc( $3, TRUE );
-          expression_dealloc( expl, FALSE );
-          expression_dealloc( expr, FALSE );
+          $$ = expr;
+        } else {
           free_safe( $1, (strlen( $1 ) + 1) );
-          printf( "parser Throw CA\n" );
-          Throw 0;
+          $$ = NULL;
         }
-        $$ = expr;
       } else {
         free_safe( $1, (strlen( $1 ) + 1) );
+        static_expr_dealloc( $3, TRUE );
         $$ = NULL;
       }
-    }
-  | UNUSED_IDENTIFIER K_OR_A static_expr
-    {
-      static_expr_dealloc( $3, TRUE );
-      $$ = NULL;
     }
   | IDENTIFIER K_XOR_A static_expr
     {
       expression* expr = NULL;
       expression* expl = NULL;
-      if( $3 != NULL ) {
-        Try {
-          expl = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
-          expr = db_create_expr_from_static( $3, @3.first_line, @3.first_column, (@3.last_column - 1) );
-          expr = db_create_expression( expr, expl, EXP_OP_XOR, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
-          expl = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
-          expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-          if( generate_varname == NULL ) {
-            generate_varname = $1;
+      if( ignore_mode == 0 ) {
+        if( $3 != NULL ) {
+          Try {
+            expl = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
+            expr = db_create_expr_from_static( $3, @3.first_line, @3.first_column, (@3.last_column - 1) );
+            expr = db_create_expression( expr, expl, EXP_OP_XOR, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
+            expl = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
+            expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            if( generate_varname == NULL ) {
+              generate_varname = $1;
+            }
+          } Catch_anonymous {
+            static_expr_dealloc( $3, TRUE );
+            expression_dealloc( expl, FALSE );
+            expression_dealloc( expr, FALSE );
+            free_safe( $1, (strlen( $1 ) + 1) );
+            printf( "parser Throw CB\n" );
+            Throw 0;
           }
-        } Catch_anonymous {
-          static_expr_dealloc( $3, TRUE );
-          expression_dealloc( expl, FALSE );
-          expression_dealloc( expr, FALSE );
+          $$ = expr;
+        } else {
           free_safe( $1, (strlen( $1 ) + 1) );
-          printf( "parser Throw CB\n" );
-          Throw 0;
+          $$ = NULL;
         }
-        $$ = expr;
       } else {
         free_safe( $1, (strlen( $1 ) + 1) );
+        static_expr_dealloc( $3, TRUE );
         $$ = NULL;
       }
-    }
-  | UNUSED_IDENTIFIER K_XOR_A static_expr
-    {
-      static_expr_dealloc( $3, TRUE );
-      $$ = NULL;
     }
   | IDENTIFIER K_LS_A static_expr
     {
       expression* expr = NULL;
       expression* expl = NULL;
-      if( $3 != NULL ) {
-        Try {
-          expl = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
-          expr = db_create_expr_from_static( $3, @3.first_line, @3.first_column, (@3.last_column - 1) );
-          expr = db_create_expression( expr, expl, EXP_OP_LSHIFT, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
-          expl = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
-          expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-          if( generate_varname == NULL ) {
-            generate_varname = $1;
+      if( ignore_mode == 0 ) {
+        if( $3 != NULL ) {
+          Try {
+            expl = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
+            expr = db_create_expr_from_static( $3, @3.first_line, @3.first_column, (@3.last_column - 1) );
+            expr = db_create_expression( expr, expl, EXP_OP_LSHIFT, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
+            expl = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
+            expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            if( generate_varname == NULL ) {
+              generate_varname = $1;
+            }
+          } Catch_anonymous {
+            static_expr_dealloc( $3, TRUE );
+            expression_dealloc( expl, FALSE );
+            expression_dealloc( expr, FALSE );
+            free_safe( $1, (strlen( $1 ) + 1) );
+            printf( "parser Throw CC\n" );
+            Throw 0;
           }
-        } Catch_anonymous {
-          static_expr_dealloc( $3, TRUE );
-          expression_dealloc( expl, FALSE );
-          expression_dealloc( expr, FALSE );
+          $$ = expr;
+        } else {
           free_safe( $1, (strlen( $1 ) + 1) );
-          printf( "parser Throw CC\n" );
-          Throw 0;
+          $$ = NULL;
         }
-        $$ = expr;
       } else {
         free_safe( $1, (strlen( $1 ) + 1) );
+        static_expr_dealloc( $3, TRUE );
         $$ = NULL;
       }
-    }
-  | UNUSED_IDENTIFIER K_LS_A static_expr
-    {
-      static_expr_dealloc( $3, TRUE );
-      $$ = NULL;
     }
   | IDENTIFIER K_RS_A static_expr
     {
       expression* expr = NULL;
       expression* expl = NULL;
-      if( $3 != NULL ) {
-        Try {
-          expl = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
-          expr = db_create_expr_from_static( $3, @3.first_line, @3.first_column, (@3.last_column - 1) );
-          expr = db_create_expression( expr, expl, EXP_OP_RSHIFT, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
-          expl = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
-          expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-          if( generate_varname == NULL ) {
-            generate_varname = $1;
+      if( ignore_mode == 0 ) {
+        if( $3 != NULL ) {
+          Try {
+            expl = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
+            expr = db_create_expr_from_static( $3, @3.first_line, @3.first_column, (@3.last_column - 1) );
+            expr = db_create_expression( expr, expl, EXP_OP_RSHIFT, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
+            expl = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
+            expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            if( generate_varname == NULL ) {
+              generate_varname = $1;
+            }
+          } Catch_anonymous {
+            static_expr_dealloc( $3, TRUE );
+            expression_dealloc( expl, FALSE );
+            expression_dealloc( expr, FALSE );
+            free_safe( $1, (strlen( $1 ) + 1) );
+            printf( "parser Throw CD\n" );
+            Throw 0;
           }
-        } Catch_anonymous {
-          static_expr_dealloc( $3, TRUE );
-          expression_dealloc( expl, FALSE );
-          expression_dealloc( expr, FALSE );
+          $$ = expr;
+        } else {
           free_safe( $1, (strlen( $1 ) + 1) );
-          printf( "parser Throw CD\n" );
-          Throw 0;
+          $$ = NULL;
         }
-        $$ = expr;
       } else {
         free_safe( $1, (strlen( $1 ) + 1) );
+        static_expr_dealloc( $3, TRUE );
         $$ = NULL;
       }
-    }
-  | UNUSED_IDENTIFIER K_RS_A static_expr
-    {
-      static_expr_dealloc( $3, TRUE );
-      $$ = NULL;
     }
   | IDENTIFIER K_ALS_A static_expr
     {
       expression* expr = NULL;
       expression* expl = NULL;
-      if( $3 != NULL ) {
-        Try {
-          expl = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
-          expr = db_create_expr_from_static( $3, @3.first_line, @3.first_column, (@3.last_column - 1) );
-          expr = db_create_expression( expr, expl, EXP_OP_ALSHIFT, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
-          expl = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
-          expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-          if( generate_varname == NULL ) {
-            generate_varname = $1;
+      if( ignore_mode == 0 ) {
+        if( $3 != NULL ) {
+          Try {
+            expl = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
+            expr = db_create_expr_from_static( $3, @3.first_line, @3.first_column, (@3.last_column - 1) );
+            expr = db_create_expression( expr, expl, EXP_OP_ALSHIFT, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
+            expl = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
+            expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            if( generate_varname == NULL ) {
+              generate_varname = $1;
+            }
+          } Catch_anonymous {
+            static_expr_dealloc( $3, TRUE );
+            expression_dealloc( expl, FALSE );
+            expression_dealloc( expr, FALSE );
+            free_safe( $1, (strlen( $1 ) + 1) );
+            printf( "parser Throw CE\n" );
+            Throw 0;
           }
-        } Catch_anonymous {
-          static_expr_dealloc( $3, TRUE );
-          expression_dealloc( expl, FALSE );
-          expression_dealloc( expr, FALSE );
+          $$ = expr;
+        } else {
           free_safe( $1, (strlen( $1 ) + 1) );
-          printf( "parser Throw CE\n" );
-          Throw 0;
+          $$ = NULL;
         }
-        $$ = expr;
       } else {
         free_safe( $1, (strlen( $1 ) + 1) );
+        static_expr_dealloc( $3, TRUE );
         $$ = NULL;
       }
-    }
-  | UNUSED_IDENTIFIER K_ALS_A static_expr
-    {
-      static_expr_dealloc( $3, TRUE );
-      $$ = NULL;
     }
   | IDENTIFIER K_ARS_A static_expr
     {
       expression* expr = NULL;
       expression* expl = NULL;
-      if( $3 != NULL ) {
+      if( ignore_mode == 0 ) {
+        if( $3 != NULL ) {
+          Try {
+            expl = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
+            expr = db_create_expr_from_static( $3, @3.first_line, @3.first_column, (@3.last_column - 1) );
+            expr = db_create_expression( expr, expl, EXP_OP_ARSHIFT, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
+            expl = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
+            expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            if( generate_varname == NULL ) {
+              generate_varname = $1;
+            }
+          } Catch_anonymous {
+            static_expr_dealloc( $3, TRUE );
+            expression_dealloc( expl, FALSE );
+            expression_dealloc( expr, FALSE );
+            free_safe( $1, (strlen( $1 ) + 1) );
+            printf( "parser Throw CF\n" );
+            Throw 0;
+          }
+          $$ = expr;
+        } else {
+          free_safe( $1, (strlen( $1 ) + 1) );
+          $$ = NULL;
+        }
+      } else {
+        free_safe( $1, (strlen( $1 ) + 1) );
+        static_expr_dealloc( $3, TRUE );
+        $$ = NULL;
+      }
+    }
+  | IDENTIFIER K_INC
+    {
+      expression* expr = NULL;
+      if( ignore_mode == 0 ) {
         Try {
-          expl = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
-          expr = db_create_expr_from_static( $3, @3.first_line, @3.first_column, (@3.last_column - 1) );
-          expr = db_create_expression( expr, expl, EXP_OP_ARSHIFT, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
-          expl = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
-          expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+          expr = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
+          expr = db_create_expression( NULL, expr, EXP_OP_PINC, FALSE, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
           if( generate_varname == NULL ) {
             generate_varname = $1;
           }
         } Catch_anonymous {
-          static_expr_dealloc( $3, TRUE );
-          expression_dealloc( expl, FALSE );
           expression_dealloc( expr, FALSE );
           free_safe( $1, (strlen( $1 ) + 1) );
-          printf( "parser Throw CF\n" );
+          printf( "parser Throw CG\n" );
           Throw 0;
         }
         $$ = expr;
@@ -3113,52 +3113,27 @@ generate_passign
         $$ = NULL;
       }
     }
-  | UNUSED_IDENTIFIER K_ARS_A static_expr
-    {
-      static_expr_dealloc( $3, TRUE );
-      $$ = NULL;
-    }
-  | IDENTIFIER K_INC
-    {
-      expression* expr = NULL;
-      Try {
-        expr = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
-        expr = db_create_expression( NULL, expr, EXP_OP_PINC, FALSE, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
-        if( generate_varname == NULL ) {
-          generate_varname = $1;
-        }
-      } Catch_anonymous {
-        expression_dealloc( expr, FALSE );
-        free_safe( $1, (strlen( $1 ) + 1) );
-        printf( "parser Throw CG\n" );
-        Throw 0;
-      }
-      $$ = expr;
-    }
-  | UNUSED_IDENTIFIER K_INC
-    {
-      $$ = NULL;
-    }
   | IDENTIFIER K_DEC
     {
       expression* expr = NULL;
-      Try {
-        expr = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
-        expr = db_create_expression( NULL, expr, EXP_OP_PDEC, FALSE, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
-        if( generate_varname == NULL ) {
-          generate_varname = $1;
+      if( ignore_mode == 0 ) {
+        Try {
+          expr = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
+          expr = db_create_expression( NULL, expr, EXP_OP_PDEC, FALSE, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
+          if( generate_varname == NULL ) {
+            generate_varname = $1;
+          }
+        } Catch_anonymous {
+          expression_dealloc( expr, FALSE );
+          free_safe( $1, (strlen( $1 ) + 1) );
+          printf( "parser Throw CH\n" );
+          Throw 0;
         }
-      } Catch_anonymous {
-        expression_dealloc( expr, FALSE );
+        $$ = expr;
+      } else {
         free_safe( $1, (strlen( $1 ) + 1) );
-        printf( "parser Throw CH\n" );
-        Throw 0;
+        $$ = NULL;
       }
-      $$ = expr;
-    }
-  | UNUSED_IDENTIFIER K_DEC
-    {
-      $$ = NULL;
     }
   ;
 
@@ -3205,7 +3180,7 @@ generate_item
   | K_begin ':' IDENTIFIER
     {
       generate_expr_mode++;
-      if( (ignore_mode == 0) && ($3 != NULL) ) {
+      if( ignore_mode == 0 ) {
         if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $3, @3.text, @3.first_line ) ) {
           ignore_mode++;
         } else {
@@ -3213,20 +3188,16 @@ generate_item
           assert( gi != NULL );
           gitem_link_add( gi, &save_gi_head, &save_gi_tail );
         }
-      } else {
-        ignore_mode++;
       }
       generate_expr_mode--;
+      free_safe( $3, (strlen( $3 ) + 1) );
     }
     generate_item_list_opt K_end
     {
-      if( $3 != NULL ) {
+      if( ignore_mode == 0 ) {
         db_end_function_task_namedblock( @6.first_line );
-        free_safe( $3, (strlen( $3 ) + 1) );
       } else {
-        if( ignore_mode > 0 ) {
-          ignore_mode--;
-        }
+        ignore_mode--;
       }
       db_gen_item_connect_true( save_gi_tail->gi, $5 );
       $$ = save_gi_tail->gi;
@@ -3239,7 +3210,7 @@ generate_item
     '(' generate_passign ';' static_expr ';' generate_passign ')' K_begin ':' IDENTIFIER
     {
       generate_for_mode++;
-      if( (ignore_mode == 0) && ($12 != NULL) ) {
+      if( ignore_mode == 0 ) {
         if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $12, @12.text, @12.first_line ) ) {
           ignore_mode++;
         } else {
@@ -3249,22 +3220,19 @@ generate_item
           generate_varname = NULL;
           gitem_link_add( gi, &save_gi_head, &save_gi_tail );
         }
-      } else {
-        ignore_mode++;
       }
       generate_expr_mode--;
+      free_safe( $12, (strlen( $12 ) + 1) );
     }
     generate_item_list_opt K_end
     {
       gen_item*   gi1;
       gen_item*   gi2;
       gen_item*   gi3;
-      if( $12 != NULL ) {
+      if( ignore_mode == 0 ) {
         db_end_function_task_namedblock( @15.first_line );
       } else {
-        if( ignore_mode > 0 ) {
-          ignore_mode--;
-        }
+        ignore_mode--;
       }
       generate_for_mode--;
       generate_expr_mode++;
@@ -3298,7 +3266,6 @@ generate_item
         /* TBD - Deallocate generate block */
         $$ = NULL;
       }
-      free_safe( $12, (strlen( $12 ) + 1) );
       generate_expr_mode--;
     }
   | K_if inc_gen_expr_mode '(' static_expr ')' dec_gen_expr_mode inc_block_depth generate_item dec_block_depth %prec less_than_K_else
@@ -3664,36 +3631,40 @@ module_item
       str_link*    tmp  = $4;
       str_link*    curr = tmp;
       param_oride* po;
-      Try {
-        while( curr != NULL ) {
-          while( param_oride_head != NULL ){
-            po               = param_oride_head;
-            param_oride_head = po->next;
-            db_add_override_param( curr->str, po->expr, po->name );
-            if( po->name != NULL ) {
-              free_safe( po->name, (strlen( po->name ) + 1) );
+      if( ignore_mode == 0 ) {
+        Try {
+          while( curr != NULL ) {
+            while( param_oride_head != NULL ){
+              po               = param_oride_head;
+              param_oride_head = po->next;
+              db_add_override_param( curr->str, po->expr, po->name );
+              if( po->name != NULL ) {
+                free_safe( po->name, (strlen( po->name ) + 1) );
+              }
+              free_safe( po, sizeof( param_oride ) );
             }
+            (void)db_add_instance( curr->str, $2, FUNIT_MODULE, curr->range );
+            curr = curr->next;
+          }
+        } Catch_anonymous {
+          str_link_delete_list( tmp );
+          while( param_oride_head != NULL ) {
+            po = param_oride_head;
+            param_oride_head = po->next;
+            free_safe( po->name, (strlen( po->name ) + 1) );
             free_safe( po, sizeof( param_oride ) );
           }
-          (void)db_add_instance( curr->str, $2, FUNIT_MODULE, curr->range );
-          curr = curr->next;
+          free_safe( $2, (strlen( $2 ) + 1) );
+          printf( "parser Throw CL\n" );
+          Throw 0;
         }
-      } Catch_anonymous {
         str_link_delete_list( tmp );
-        while( param_oride_head != NULL ) {
-          po = param_oride_head;
-          param_oride_head = po->next;
-          free_safe( po->name, (strlen( po->name ) + 1) );
-          free_safe( po, sizeof( param_oride ) );
-        }
+        param_oride_head = NULL;
+        param_oride_tail = NULL;
         free_safe( $2, (strlen( $2 ) + 1) );
-        printf( "parser Throw CL\n" );
-        Throw 0;
+      } else {
+        free_safe( $2, (strlen( $2 ) + 1) );
       }
-      str_link_delete_list( tmp );
-      param_oride_head = NULL;
-      param_oride_tail = NULL;
-      free_safe( $2, (strlen( $2 ) + 1) );
     }
   | attribute_list_opt
     K_assign drive_strength_opt { ignore_mode++; } delay3_opt { ignore_mode--; } assign_list ';'
@@ -3908,9 +3879,9 @@ module_item
           printf( "parser Throw CP\n" );
           Throw 0;
         }
-        free_safe( $6, (strlen( $6 ) + 1) );
       }
       generate_top_mode--;
+      free_safe( $6, (strlen( $6 ) + 1) );
     }
     function_item_list statement
     {
@@ -4048,7 +4019,12 @@ module_item
   /* SystemVerilog program block - we don't currently support these but crudely will parse them */
   | attribute_list_opt
     K_program K_endprogram
-  | KK_attribute '(' { ignore_mode++; } UNUSED_IDENTIFIER ',' UNUSED_STRING ',' UNUSED_STRING { ignore_mode--; }')' ';'
+  | KK_attribute '(' IDENTIFIER ',' STRING ',' STRING ')' ';'
+    {
+      free_safe( $3, (strlen( $3 ) + 1) );
+      vector_dealloc( $5 );
+      vector_dealloc( $7 );
+    } 
   | KK_attribute '(' error ')' ';'
     {
       VLerror( "Syntax error in $attribute parameter list" );
@@ -4228,11 +4204,6 @@ expression_assignment_list
       }
       free_safe( $2, (strlen( $2 ) + 1) );
     }
-  | data_type_opt UNUSED_IDENTIFIER '=' expression
-    {
-      expression_dealloc( $4, FALSE );
-      $$ = NULL;
-    }
   | expression_assignment_list ',' data_type_opt IDENTIFIER '=' expression
     {
       expression* tmp = NULL;
@@ -4270,12 +4241,6 @@ expression_assignment_list
       }
       free_safe( $4, (strlen( $4 ) + 1) );
       $$ = $1;
-    }
-  | expression_assignment_list ',' data_type_opt UNUSED_IDENTIFIER '=' expression
-    {
-      db_remove_statement( $1 );      
-      expression_dealloc( $6, FALSE );
-      $$ = NULL;
     }
   ;
 
@@ -4837,7 +4802,6 @@ statement
   | K_TRIGGER IDENTIFIER ';'
     {
       expression* expr;
-      statement*  stmt;
       if( (ignore_mode == 0) && ($2 != NULL) ) {
         Try {
           expr = db_create_expression( NULL, NULL, EXP_OP_TRIGGER, FALSE, @1.first_line, @1.first_column, (@2.last_column - 1), $2 );
@@ -4846,13 +4810,11 @@ statement
           printf( "parser Throw DK\n" );
           Throw 0;
         }
-        stmt = db_create_statement( expr );
-        free_safe( $2, (strlen( $2 ) + 1) );
-        $$ = stmt;
+        $$ = db_create_statement( expr );
       } else {
-        free_safe( $2, (strlen( $2 ) + 1) );
         $$ = NULL;
       }
+      free_safe( $2, (strlen( $2 ) + 1) );
     }
   | K_forever inc_block_depth statement dec_block_depth
     {
@@ -5610,15 +5572,10 @@ statement
           printf( "parser Throw EI\n" );
           Throw 0;
         }
-        free_safe( $1, (strlen( $1 ) + 1) );
       } else {
-        free_safe( $1, (strlen( $1 ) + 1) );
         $$ = NULL;
       }
-    }
-  | UNUSED_SYSTEM_IDENTIFIER '(' expression_port_list ')' ';'
-    {
-      $$ = NULL;
+      free_safe( $1, (strlen( $1 ) + 1) );
     }
   | SYSTEM_IDENTIFIER ';'
     {
@@ -5638,15 +5595,10 @@ statement
           printf( "parser Throw EJ\n" );
           Throw 0;
         }
-        free_safe( $1, (strlen( $1 ) + 1) );
       } else {
-        free_safe( $1, (strlen( $1 ) + 1) );
         $$ = NULL;
       }
-    }
-  | UNUSED_SYSTEM_IDENTIFIER ';'
-    {
-      $$ = NULL;
+      free_safe( $1, (strlen( $1 ) + 1) );
     }
   | identifier '(' expression_port_list ')' ';'
     {
@@ -5777,10 +5729,6 @@ fork_statement
         free_safe( $1, (strlen( $1 ) + 1) );
         $$ = NULL;
       }
-    }
-  | ':' UNUSED_IDENTIFIER
-    {
-      $$ = NULL;
     }
   |
     {
@@ -6463,47 +6411,44 @@ delay_value
 delay_value_simple
   : NUMBER
     {
-      expression* tmp;
-      Try {
-        tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-      } Catch_anonymous {
+      if( (ignore_mode == 0) && ($1 != NULL) ) {
+        expression* tmp;
+        Try {
+          tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+        } Catch_anonymous {
+          vector_dealloc( $1 );
+          printf( "parser Throw FA\n" );
+          Throw 0;
+        }
+        assert( tmp->value->value == NULL );
+        free_safe( tmp->value, sizeof( vector ) );
+        tmp->value = $1;
+        $$ = tmp;
+      } else {
         vector_dealloc( $1 );
-        printf( "parser Throw FA\n" );
-        Throw 0;
+        $$ = NULL;
       }
-      assert( tmp->value->value == NULL );
-      free_safe( tmp->value, sizeof( vector ) );
-      tmp->value = $1;
-      $$ = tmp;
-    }
-  | UNUSED_NUMBER
-    {
-      $$ = NULL;
     }
   | REALTIME
-    {
-      $$ = NULL;
-    }
-  | UNUSED_REALTIME
     {
       $$ = NULL;
     }
   | IDENTIFIER
     {
       expression* tmp;
-      Try {
-        tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
-      } Catch_anonymous {
-        free_safe( $1, (strlen( $1 ) + 1) );
-        printf( "parser Throw FB\n" );
-        Throw 0;
+      if( ignore_mode == 0 ) {
+        Try {
+          tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
+        } Catch_anonymous {
+          free_safe( $1, (strlen( $1 ) + 1) );
+          printf( "parser Throw FB\n" );
+          Throw 0;
+        }
+        $$ = tmp;
+      } else {
+        $$ = NULL;
       }
       free_safe( $1, (strlen( $1 ) + 1) );
-      $$ = tmp;
-    }
-  | UNUSED_IDENTIFIER
-    {
-      $$ = NULL;
     }
   ;
 
@@ -6599,57 +6544,58 @@ range_or_type_opt
 register_variable
   : IDENTIFIER
     {
-      db_add_signal( $1, curr_sig_type, &curr_prange, NULL, curr_signed, curr_mba, @1.first_line, @1.first_column, TRUE );
+      if( ignore_mode == 0 ) {
+        db_add_signal( $1, curr_sig_type, &curr_prange, NULL, curr_signed, curr_mba, @1.first_line, @1.first_column, TRUE );
+      }
       free_safe( $1, (strlen( $1 ) + 1) );
     }
-  | UNUSED_IDENTIFIER
   | IDENTIFIER '=' expression
     {
       expression* exp;
       statement*  stmt;
-      if( !parser_check_generation( GENERATION_2001 ) ) {
-        VLerror( "Register declaration with initialization found in block that is specified to not allow Verilog-2001 syntax" );
-        free_safe( $1, (strlen( $1 ) + 1) );
-        expression_dealloc( $3, FALSE );
-      } else {
-        db_add_signal( $1, curr_sig_type, &curr_prange, NULL, curr_signed, curr_mba, @1.first_line, @1.first_column, TRUE );
-        if( $3 != NULL ) {
-          Try {
-            exp = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
-          } Catch_anonymous {
-            expression_dealloc( $3, FALSE );
-            free_safe( $1, (strlen( $1 ) + 1) );
-            printf( "parser Throw FD\n" );
-            Throw 0;
+      if( ignore_mode == 0 ) {
+        if( !parser_check_generation( GENERATION_2001 ) ) {
+          VLerror( "Register declaration with initialization found in block that is specified to not allow Verilog-2001 syntax" );
+          free_safe( $1, (strlen( $1 ) + 1) );
+          expression_dealloc( $3, FALSE );
+        } else {
+          db_add_signal( $1, curr_sig_type, &curr_prange, NULL, curr_signed, curr_mba, @1.first_line, @1.first_column, TRUE );
+          if( $3 != NULL ) {
+            Try {
+              exp = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
+            } Catch_anonymous {
+              expression_dealloc( $3, FALSE );
+              free_safe( $1, (strlen( $1 ) + 1) );
+              printf( "parser Throw FD\n" );
+              Throw 0;
+            }
+            Try {
+              exp = db_create_expression( $3, exp, EXP_OP_RASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            } Catch_anonymous {
+              expression_dealloc( $3, FALSE );
+              expression_dealloc( exp, FALSE );
+              printf( "parser Throw FE\n" );
+              Throw 0;
+            }
+            stmt = db_create_statement( exp );
+            stmt->suppl.part.head       = 1;
+            stmt->suppl.part.stop_true  = 1;
+            stmt->suppl.part.stop_false = 1;
+            db_add_statement( stmt, stmt );
           }
-          Try {
-            exp = db_create_expression( $3, exp, EXP_OP_RASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-          } Catch_anonymous {
-            expression_dealloc( $3, FALSE );
-            expression_dealloc( exp, FALSE );
-            printf( "parser Throw FE\n" );
-            Throw 0;
-          }
-          stmt = db_create_statement( exp );
-          stmt->suppl.part.head       = 1;
-          stmt->suppl.part.stop_true  = 1;
-          stmt->suppl.part.stop_false = 1;
-          db_add_statement( stmt, stmt );
         }
-        free_safe( $1, (strlen( $1 ) + 1) );
       }
+      free_safe( $1, (strlen( $1 ) + 1) );
     }
-  | UNUSED_IDENTIFIER '=' expression
   | IDENTIFIER { curr_packed = FALSE; } range
     {
-      /* Unpacked dimensions are now handled */
-      curr_packed = TRUE;
-      if( $1 != NULL ) {
+      if( ignore_mode == 0 ) {
+        /* Unpacked dimensions are now handled */
+        curr_packed = TRUE;
         db_add_signal( $1, SSUPPL_TYPE_MEM, &curr_prange, &curr_urange, curr_signed, TRUE, @1.first_line, @1.first_column, TRUE );
-        free_safe( $1, (strlen( $1 ) + 1) );
       }
+      free_safe( $1, (strlen( $1 ) + 1) );
     }
-  | UNUSED_IDENTIFIER range
   ;
 
 register_variable_list
@@ -6909,12 +6855,9 @@ net_decl_assign
           db_connect_statement_false( stmt, stmt );
           db_add_statement( stmt, stmt );
         }
-        free_safe( $1, (strlen( $1 ) + 1) );
-      } else {
-        free_safe( $1, (strlen( $1 ) + 1) );
       }
+      free_safe( $1, (strlen( $1 ) + 1) );
     }
-  | UNUSED_IDENTIFIER '=' expression
   | delay1 IDENTIFIER '=' expression
     {
       expression* tmp;
@@ -6948,10 +6891,8 @@ net_decl_assign
           db_connect_statement_false( stmt, stmt );
           db_add_statement( stmt, stmt );
         }
-        free_safe( $2, (sizeof( $2 ) + 1) );
-      } else {
-        free_safe( $2, (sizeof( $2 ) + 1) );
       }
+      free_safe( $2, (sizeof( $2 ) + 1) );
     }
   ;
 
@@ -7000,10 +6941,6 @@ event_control
         $$ = NULL;
       }
       free_safe( $2, (sizeof( $2 ) + 1) );
-    }
-  | '@' UNUSED_IDENTIFIER
-    {
-      $$ = NULL;
     }
   | '@' '(' event_expression_list ')'
     {
@@ -7198,7 +7135,6 @@ parameter_value_opt
     {
       vector_dealloc( $2 );
     }
-  | '#' UNUSED_NUMBER
   | '#' error
     {
       VLerror( "Syntax error in parameter value assignment list" );
@@ -7215,32 +7151,36 @@ parameter_value_byname
   : '.' IDENTIFIER '(' expression ')'
     { PROFILE(PARSER_PARAMETER_VALUE_BYNAME_A);
       param_oride* po;
-      if( !parser_check_generation( GENERATION_2001 ) ) {
-        VLerror( "Explicit in-line parameter passing syntax found in block that is specified to not allow Verilog-2001 syntax" );
-        free_safe( $2, (strlen( $2 ) + 1) );
-        expression_dealloc( $4, FALSE );
-      } else {
-        po = (param_oride*)malloc_safe( sizeof( param_oride ) );
-        po->name = $2;
-        po->expr = $4;
-        po->next = NULL;
-        if( param_oride_head == NULL ) {
-          param_oride_head = param_oride_tail = po;
+      if( ignore_mode == 0 ) {
+        if( !parser_check_generation( GENERATION_2001 ) ) {
+          VLerror( "Explicit in-line parameter passing syntax found in block that is specified to not allow Verilog-2001 syntax" );
+          free_safe( $2, (strlen( $2 ) + 1) );
+          expression_dealloc( $4, FALSE );
         } else {
-          param_oride_tail->next = po;
-          param_oride_tail       = po;
+          po = (param_oride*)malloc_safe( sizeof( param_oride ) );
+          po->name = $2;
+          po->expr = $4;
+          po->next = NULL;
+          if( param_oride_head == NULL ) {
+            param_oride_head = param_oride_tail = po;
+          } else {
+            param_oride_tail->next = po;
+            param_oride_tail       = po;
+          }
         }
+      } else {
+        free_safe( $2, (strlen( $2 ) + 1) );
       }
     }
-  | '.' UNUSED_IDENTIFIER '(' expression ')'
   | '.' IDENTIFIER '(' ')'
     {
-      if( !parser_check_generation( GENERATION_2001 ) ) {
-        VLerror( "Explicit in-line parameter passing syntax found in block that is specified to not allow Verilog-2001 syntax" );
+      if( ignore_mode == 0 ) {
+        if( !parser_check_generation( GENERATION_2001 ) ) {
+          VLerror( "Explicit in-line parameter passing syntax found in block that is specified to not allow Verilog-2001 syntax" );
+        }
       }
       free_safe( $2, (strlen( $2 ) + 1) );
     }
-  | '.' UNUSED_IDENTIFIER '(' ')'
   ;
 
 gate_instance_list
@@ -7268,71 +7208,73 @@ gate_instance_list
 gate_instance
   : IDENTIFIER '(' ignore_more expression_list ignore_less ')'
     { PROFILE(PARSER_GATE_INSTANCE_A);
-      str_link* tmp;
-      tmp        = (str_link*)malloc_safe( sizeof( str_link ) );
-      tmp->str   = $1;
-      tmp->range = NULL;
-      tmp->next  = NULL;
-      $$ = tmp;
-    }
-  | UNUSED_IDENTIFIER '(' ignore_more expression_list ignore_less ')'
-    {
-      $$ = NULL;
+      if( ignore_mode == 0 ) {
+        str_link* tmp;
+        tmp        = (str_link*)malloc_safe( sizeof( str_link ) );
+        tmp->str   = $1;
+        tmp->range = NULL;
+        tmp->next  = NULL;
+        $$ = tmp;
+      } else {
+        free_safe( $1, (strlen( $1 ) + 1) );
+        $$ = NULL;
+      }
     }
   | IDENTIFIER range '(' ignore_more expression_list ignore_less ')'
     { PROFILE(PARSER_GATE_INSTANCE_B);
-      str_link* tmp;
       curr_prange.clear = TRUE;
-      if( !parser_check_generation( GENERATION_2001 ) ) {
-        VLerror( "Arrayed instantiation syntax found in block that is specified to not allow Verilog-2001 syntax" );
+      if( ignore_mode == 0 ) {
+        str_link* tmp;
+        if( !parser_check_generation( GENERATION_2001 ) ) {
+          VLerror( "Arrayed instantiation syntax found in block that is specified to not allow Verilog-2001 syntax" );
+          free_safe( $1, (strlen( $1 ) + 1) );
+          $$ = NULL;
+        } else {
+          tmp        = (str_link*)malloc_safe( sizeof( str_link ) );
+          tmp->str   = $1;
+          tmp->range = curr_prange.dim;
+          tmp->next  = NULL;
+          $$ = tmp;
+        }
+      } else {
         free_safe( $1, (strlen( $1 ) + 1) );
         $$ = NULL;
-      } else {
-        tmp        = (str_link*)malloc_safe( sizeof( str_link ) );
-        tmp->str   = $1;
-        tmp->range = curr_prange.dim;
-        tmp->next  = NULL;
-        $$ = tmp;
       }
     }
-  | UNUSED_IDENTIFIER range '(' ignore_more expression_list ignore_less ')'
-    {
-      curr_prange.clear = TRUE;
-      $$ = NULL;
-    }
-
   | IDENTIFIER '(' port_name_list ')'
     { PROFILE(PARSER_GATE_INSTANCE_C);
-      str_link* tmp;
-      tmp        = (str_link*)malloc_safe( sizeof( str_link ) );
-      tmp->str   = $1;
-      tmp->range = NULL;
-      tmp->next  = NULL;
-      $$ = tmp;
-    }
-  | UNUSED_IDENTIFIER '(' port_name_list ')'
-    {
-      $$ = NULL;
+      if( ignore_mode == 0 ) {
+        str_link* tmp;
+        tmp        = (str_link*)malloc_safe( sizeof( str_link ) );
+        tmp->str   = $1;
+        tmp->range = NULL;
+        tmp->next  = NULL;
+        $$ = tmp;
+      } else {
+        free_safe( $1, (strlen( $1 ) + 1) );
+        $$ = NULL;
+      }
     }
   | IDENTIFIER range '(' port_name_list ')'
     { PROFILE(PARSER_GATE_INSTANCE_D);
-      str_link* tmp;
       curr_prange.clear = TRUE;
-      if( !parser_check_generation( GENERATION_2001 ) ) {
-        VLerror( "Arrayed instantiation syntax found in block that is specified to not allow Verilog-2001 syntax" );
+      if( ignore_mode == 0 ) {
+        str_link* tmp;
+        if( !parser_check_generation( GENERATION_2001 ) ) {
+          VLerror( "Arrayed instantiation syntax found in block that is specified to not allow Verilog-2001 syntax" );
+          free_safe( $1, (strlen( $1 ) + 1) );
+          $$ = NULL;
+        } else {
+          tmp        = (str_link*)malloc_safe( sizeof( str_link ) );
+          tmp->str   = $1;
+          tmp->range = curr_prange.dim;
+          tmp->next  = NULL;
+          $$ = tmp;
+        }
+      } else {
         free_safe( $1, (strlen( $1 ) + 1) );
         $$ = NULL;
-      } else {
-        tmp        = (str_link*)malloc_safe( sizeof( str_link ) );
-        tmp->str   = $1;
-        tmp->range = curr_prange.dim;
-        tmp->next  = NULL;
-        $$ = tmp;
       }
-    }
-  | UNUSED_IDENTIFIER range '(' port_name_list ')'
-    {
-      $$ = NULL;
     }
   | '(' ignore_more expression_list ignore_less ')'
     {
@@ -7399,16 +7341,17 @@ parameter_assign_list
 parameter_assign
   : IDENTIFIER '=' expression
     {
-      /* If the size was not set by the user, the left number will be set to 0 but we need to change this to 31 */
-      assert( curr_prange.dim != NULL );
-      if( curr_prange.dim[0].implicit ) {
-        db_add_declared_param( curr_signed, NULL, NULL, $1, $3, FALSE );
-      } else {
-        db_add_declared_param( curr_signed, curr_prange.dim[0].left, curr_prange.dim[0].right, $1, $3, FALSE );
+      if( ignore_mode == 0 ) {
+        /* If the size was not set by the user, the left number will be set to 0 but we need to change this to 31 */
+        assert( curr_prange.dim != NULL );
+        if( curr_prange.dim[0].implicit ) {
+          db_add_declared_param( curr_signed, NULL, NULL, $1, $3, FALSE );
+        } else {
+          db_add_declared_param( curr_signed, curr_prange.dim[0].left, curr_prange.dim[0].right, $1, $3, FALSE );
+        }
       }
       free_safe( $1, (strlen( $1 ) + 1) );
     }
-  | UNUSED_IDENTIFIER '=' expression
   ;
 
 localparam_assign_decl
@@ -7423,16 +7366,17 @@ localparam_assign_list
 localparam_assign
   : IDENTIFIER '=' expression
     {
-      /* If the size was not set by the user, the left number will be set to 0 but we need to change this to 31 */
-      assert( curr_prange.dim != NULL );
-      if( curr_prange.dim[0].implicit ) {
-        db_add_declared_param( curr_signed, NULL, NULL, $1, $3, TRUE );
-      } else {
-        db_add_declared_param( curr_signed, curr_prange.dim[0].left, curr_prange.dim[0].right, $1, $3, TRUE );
+      if( ignore_mode == 0 ) {
+        /* If the size was not set by the user, the left number will be set to 0 but we need to change this to 31 */
+        assert( curr_prange.dim != NULL );
+        if( curr_prange.dim[0].implicit ) {
+          db_add_declared_param( curr_signed, NULL, NULL, $1, $3, TRUE );
+        } else {
+          db_add_declared_param( curr_signed, curr_prange.dim[0].left, curr_prange.dim[0].right, $1, $3, TRUE );
+        }
       }
       free_safe( $1, (strlen( $1 ) + 1) );
     }
-  | UNUSED_IDENTIFIER '=' expression
   ;
 
 port_name_list
@@ -7494,10 +7438,22 @@ specparam_list
   ;
 
 specparam
-  : UNUSED_IDENTIFIER '=' expression
-  | UNUSED_IDENTIFIER '=' expression ':' expression ':' expression
-  | UNUSED_PATHPULSE_IDENTIFIER '=' expression
-  | UNUSED_PATHPULSE_IDENTIFIER '=' '(' expression ',' expression ')'
+  : IDENTIFIER '=' expression
+    {
+      free_safe( $1, (strlen( $1 ) + 1) );
+    }
+  | IDENTIFIER '=' expression ':' expression ':' expression
+    {
+      free_safe( $1, (strlen( $1 ) + 1) );
+    }
+  | PATHPULSE_IDENTIFIER '=' expression
+    {
+      free_safe( $1, (strlen( $1 ) + 1) );
+    }
+  | PATHPULSE_IDENTIFIER '=' '(' expression ',' expression ')'
+    {
+      free_safe( $1, (strlen( $1 ) + 1) );
+    }
   ;
   
 specify_simple_path_decl
@@ -7513,10 +7469,22 @@ specify_simple_path
   ;
 
 specify_path_identifiers
-  : UNUSED_IDENTIFIER
-  | UNUSED_IDENTIFIER '[' expr_primary ']'
-  | specify_path_identifiers ',' UNUSED_IDENTIFIER
-  | specify_path_identifiers ',' UNUSED_IDENTIFIER '[' expr_primary ']'
+  : IDENTIFIER
+    {
+      free_safe( $1, (strlen( $1 ) + 1) );
+    }
+  | IDENTIFIER '[' expr_primary ']'
+    {
+      free_safe( $1, (strlen( $1 ) + 1) );
+    }
+  | specify_path_identifiers ',' IDENTIFIER
+    {
+      free_safe( $3, (strlen( $3 ) + 1) );
+    }
+  | specify_path_identifiers ',' IDENTIFIER '[' expr_primary ']'
+    {
+      free_safe( $3, (strlen( $3 ) + 1) );
+    }
   ;
 
 spec_polarity
@@ -7557,7 +7525,10 @@ spec_notifier
     {
       free_safe( $3, (strlen( $3 ) + 1) );
     }
-  | UNUSED_IDENTIFIER
+  | IDENTIFIER
+    {
+      free_safe( $1, (strlen( $1 ) + 1) );
+    }
   ;
 
 specify_edge_path_decl
@@ -7566,13 +7537,25 @@ specify_edge_path_decl
   ;
 
 specify_edge_path
-  : '(' K_posedge specify_path_identifiers spec_polarity K_EG UNUSED_IDENTIFIER ')'
+  : '(' K_posedge specify_path_identifiers spec_polarity K_EG IDENTIFIER ')'
+    {
+      free_safe( $6, (strlen( $6 ) + 1) );
+    }
   | '(' K_posedge specify_path_identifiers spec_polarity K_EG '(' expr_primary polarity_operator expression ')' ')'
-  | '(' K_posedge specify_path_identifiers spec_polarity K_SG UNUSED_IDENTIFIER ')'
+  | '(' K_posedge specify_path_identifiers spec_polarity K_SG IDENTIFIER ')'
+    {
+      free_safe( $6, (strlen( $6 ) + 1) );
+    }
   | '(' K_posedge specify_path_identifiers spec_polarity K_SG '(' expr_primary polarity_operator expression ')' ')'
-  | '(' K_negedge specify_path_identifiers spec_polarity K_EG UNUSED_IDENTIFIER ')'
+  | '(' K_negedge specify_path_identifiers spec_polarity K_EG IDENTIFIER ')'
+    {
+      free_safe( $6, (strlen( $6 ) + 1) );
+    }
   | '(' K_negedge specify_path_identifiers spec_polarity K_EG '(' expr_primary polarity_operator expression ')' ')'
-  | '(' K_negedge specify_path_identifiers spec_polarity K_SG UNUSED_IDENTIFIER ')'
+  | '(' K_negedge specify_path_identifiers spec_polarity K_SG IDENTIFIER ')'
+    {
+      free_safe( $6, (strlen( $6 ) + 1) );
+    }
   | '(' K_negedge specify_path_identifiers spec_polarity K_SG '(' expr_primary polarity_operator expression ')' ')'
   ;
 
@@ -7658,32 +7641,31 @@ enum_var_type_range_opt
 enum_variable
   : IDENTIFIER
     {
-      db_add_signal( $1, SSUPPL_TYPE_ENUM, &curr_prange, NULL, curr_signed, FALSE, @1.first_line, @1.first_column, TRUE );
-      Try {
-        db_add_enum( db_find_signal( $1, FALSE ), NULL );
-      } Catch_anonymous {
-        free_safe( $1, (strlen( $1 ) + 1) );
-        printf( "parser Throw FS\n" );
-        Throw 0;
+      if( ignore_mode == 0 ) {
+        db_add_signal( $1, SSUPPL_TYPE_ENUM, &curr_prange, NULL, curr_signed, FALSE, @1.first_line, @1.first_column, TRUE );
+        Try {
+          db_add_enum( db_find_signal( $1, FALSE ), NULL );
+        } Catch_anonymous {
+          free_safe( $1, (strlen( $1 ) + 1) );
+          printf( "parser Throw FS\n" );
+          Throw 0;
+        }
       }
       free_safe( $1, (strlen( $1 ) + 1) );
     }
-  | UNUSED_IDENTIFIER
   | IDENTIFIER '=' static_expr
     {
-      db_add_signal( $1, SSUPPL_TYPE_ENUM, &curr_prange, NULL, curr_signed, FALSE, @1.first_line, @1.first_column, TRUE );
-      Try {
-        db_add_enum( db_find_signal( $1, FALSE ), $3 );
-      } Catch_anonymous {
-        free_safe( $1, (strlen( $1 ) + 1) );
-        printf( "parser Throw FT\n" );
-        Throw 0;
+      if( ignore_mode == 0 ) {
+        db_add_signal( $1, SSUPPL_TYPE_ENUM, &curr_prange, NULL, curr_signed, FALSE, @1.first_line, @1.first_column, TRUE );
+        Try {
+          db_add_enum( db_find_signal( $1, FALSE ), $3 );
+        } Catch_anonymous {
+          free_safe( $1, (strlen( $1 ) + 1) );
+          printf( "parser Throw FT\n" );
+          Throw 0;
+        }
       }
       free_safe( $1, (strlen( $1 ) + 1) );
-    }
-  | UNUSED_IDENTIFIER '=' static_expr
-    {
-      static_expr_dealloc( $3, TRUE );
     }
   ;
 
@@ -7695,33 +7677,35 @@ enum_variable_list
 list_of_names
   : IDENTIFIER
     { PROFILE(PARSER_LIST_OF_NAMES_A);
-      str_link* strl = (str_link*)malloc_safe( sizeof( str_link ) );
-      strl->str    = $1;
-      strl->suppl  = @1.first_line;
-      strl->suppl2 = @1.first_column;
-      strl->next   = NULL;
-      $$ = strl;
-    }
-  | UNUSED_IDENTIFIER
-    {
-      $$ = NULL;
+      if( ignore_mode == 0 ) {
+        str_link* strl = (str_link*)malloc_safe( sizeof( str_link ) );
+        strl->str    = $1;
+        strl->suppl  = @1.first_line;
+        strl->suppl2 = @1.first_column;
+        strl->next   = NULL;
+        $$ = strl;
+      } else {
+        free_safe( $1, (strlen( $1 ) + 1) );
+        $$ = NULL;
+      }
     }
   | list_of_names ',' IDENTIFIER
     { PROFILE(PARSER_LIST_OF_NAMES_B);
-      str_link* strl = (str_link*)malloc_safe( sizeof( str_link ) );
-      str_link* strt = $1;
-      strl->str    = $3;
-      strl->suppl  = @3.first_line;
-      strl->suppl2 = @3.first_column;
-      strl->next   = NULL;
-      while( strt->next != NULL ) strt = strt->next;
-      strt->next = strl;
-      $$ = $1; 
-    }
-  | list_of_names ',' UNUSED_IDENTIFIER
-    {
-      str_link_delete_list( $1 );
-      $$ = NULL;
+      if( ignore_mode == 0 ) {
+        str_link* strl = (str_link*)malloc_safe( sizeof( str_link ) );
+        str_link* strt = $1;
+        strl->str    = $3;
+        strl->suppl  = @3.first_line;
+        strl->suppl2 = @3.first_column;
+        strl->next   = NULL;
+        while( strt->next != NULL ) strt = strt->next;
+        strt->next = strl;
+        $$ = $1; 
+      } else {
+        str_link_delete_list( $1 );
+        free_safe( $3, (strlen( $3 ) + 1) );
+        $$ = NULL;
+      }
     }
   ;
 
@@ -7732,16 +7716,16 @@ typedef_decl
       if( ignore_mode == 0 ) {
         assert( curr_prange.dim != NULL );
         db_add_typedef( $3, curr_signed, curr_handled, TRUE, parser_copy_curr_range( TRUE ), parser_copy_curr_range( FALSE ) );
-        free_safe( $3, (strlen( $3 ) + 1) );
       }
+      free_safe( $3, (strlen( $3 ) + 1) );
     }
   | K_typedef net_type_sign_range_opt IDENTIFIER ';'
     {
       if( ignore_mode == 0 ) {
         assert( curr_prange.dim != NULL );
         db_add_typedef( $3, curr_signed, curr_handled, TRUE, parser_copy_curr_range( TRUE ), parser_copy_curr_range( FALSE ) );
-        free_safe( $3, (strlen( $3 ) + 1) );
       }
+      free_safe( $3, (strlen( $3 ) + 1) );
     }
   ;
 

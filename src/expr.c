@@ -444,6 +444,8 @@ expression* expression_create(
   new_expr->elem.funit          = NULL;
   new_expr->name                = NULL;
 
+  printf( "Allocated expression %s (%p -> %p)\n", expression_string( new_expr ), new_expr, new_expr->value );
+
   if( right != NULL ) {
 
     /* Get information from right */
@@ -4430,6 +4432,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.294  2008/03/21 04:33:45  phase1geo
+ Fixing bug 1921909.  Also fixing issue with new check_mem regression script.
+
  Revision 1.293  2008/03/20 21:52:38  phase1geo
  Updates for memory checking.
 

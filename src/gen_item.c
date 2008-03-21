@@ -447,9 +447,8 @@ char* gen_item_calc_signal_name(
   char* ptr;              /* Pointer to allocated memory for name */
 
   /* Allocate memory */
-  tmpname  = strdup_safe( name );
-  ptr      = tmpname;
-  new_name = strdup_safe( "" );
+  tmpname = strdup_safe( name );
+  ptr     = tmpname;
 
   Try {
 
@@ -479,6 +478,9 @@ char* gen_item_calc_signal_name(
 
   /* Deallocate memory */
   free_safe( ptr, (strlen( name ) + 1) );
+
+  /* Make sure that the new_name is set to something */
+  assert( new_name != NULL );
 
   return( new_name );
 
@@ -1205,6 +1207,10 @@ void gen_item_dealloc(
 
 /*
  $Log$
+ Revision 1.62  2008/03/18 21:36:24  phase1geo
+ Updates from regression runs.  Regressions still do not completely pass at
+ this point.  Checkpointing.
+
  Revision 1.61  2008/03/17 22:02:31  phase1geo
  Adding new check_mem script and adding output to perform memory checking during
  regression runs.  Completed work on free_safe and added realloc_safe function

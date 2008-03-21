@@ -460,7 +460,7 @@ static void do_define() { PROFILE(DO_DEFINE);
   }
 
   /* Accumulate this text into the define_text string. */
-  define_text = (char*)realloc_safe( define_text, define_cnt, (define_cnt + (cp-yytext) + 1) );  /* FOOBAR */
+  define_text = (char*)realloc_safe( define_text, (strlen( define_text ) + 1), (define_cnt + (cp-yytext) + 1) );  /* FOOBAR */
   strcpy( (define_text + define_cnt), yytext );
   define_cnt += cp - yytext;
 

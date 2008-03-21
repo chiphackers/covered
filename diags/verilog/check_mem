@@ -6,7 +6,9 @@
 # Usage:    <covered_command> | check_mem
 
 $num_allocs = 0;
+$allocated  = 0;
 $num_frees  = 0;
+$freed      = 0;
 $mem_size   = 0;
 $line_num   = 1;
 
@@ -35,6 +37,7 @@ while( defined( $line = <STDIN> ) ) {
       $addrs->{$addr}{AFILE} = $file;
       $addrs->{$addr}{ALNUM} = $lnum;
       $num_allocs++;
+      $allocated += $bytes;
     }
 
   # Otherwise, if the line was a realloc, delete the old memory and add the new memory to our tracker
@@ -57,9 +60,12 @@ while( defined( $line = <STDIN> ) ) {
     if( ($old_addr ne "(nil)") && ($old_addr ne "0x0") ) {
       if( $addrs->{$old_addr} == () ) {
         die "Address $old_addr being reallocated but never existed!\n";
+      } elsif( $addrs->{$old_addr}{BYTES} != $old_bytes ) {
+        die "Number of bytes freed ($old_bytes) in $file:$lnum does not match number of bytes allocated (" . $addrs->{$addr}{BYTES} . ") in " . $addrs->{$addr}{AFILE} . ":" . $addrs->{$addr}{ALNUM} . "\n";
       } else {
         delete $addrs->{$old_addr}; 
         $num_frees++;
+        $freed += $old_bytes;
       }
     }
 
@@ -72,6 +78,7 @@ while( defined( $line = <STDIN> ) ) {
         $addrs->{$addr}{AFILE} = $file;
         $addrs->{$addr}{ALNUM} = $lnum;
         $num_allocs++;
+        $allocated += $bytes;
       }
     }
 
@@ -96,6 +103,7 @@ while( defined( $line = <STDIN> ) ) {
     } else {
       delete $addrs->{$addr};
       $num_frees++;
+      $freed += $bytes;
     }
 
   # Otherwise, if we have reached the end of the output, make sure Covered is reporting 0 bytes of allocated memory
@@ -103,6 +111,8 @@ while( defined( $line = <STDIN> ) ) {
 
     $malloc_size     = $1;
     $saw_malloc_size = 1;
+
+    print "Number of allocates: $num_allocs ($allocated bytes), number of frees: $num_frees ($freed bytes)\n";
 
     foreach $addr (keys %$addrs) {
       print STDERR "Found allocated address $addr from " . $addrs->{$addr}{AFILE} . ":" . $addrs->{$addr}{ALNUM} . "\n";
@@ -128,6 +138,7 @@ while( defined( $line = <STDIN> ) ) {
 
 }
 
+# If we did not reach the end of simulation for some reason, return that an error occurred.
 if( $saw_malloc_size == 0 ) {
   die;
 }
