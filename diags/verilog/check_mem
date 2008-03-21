@@ -112,9 +112,9 @@ while( defined( $line = <STDIN> ) ) {
     if( keys( %$addrs ) == () ) {
       if( $malloc_size ne "0" ) {
         die "Covered is reporting memory lossage ($malloc_size bytes), but check_mem script finds no memory problems!  Please run valgrind...\n";
-      } else {
-        die;
       }
+    } else {
+      die;
     }
 
   # Otherwise, pass this line to standard output

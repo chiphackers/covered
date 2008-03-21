@@ -722,6 +722,8 @@ void expression_resize( expression* expr, func_unit* funit, bool recursive, bool
 
   if( expr != NULL ) {
 
+    nibble new_owns_data;
+
     if( recursive ) {
       expression_resize( expr->left, funit, recursive, alloc );
       expression_resize( expr->right, funit, recursive, alloc );
@@ -919,8 +921,10 @@ void expression_resize( expression* expr, func_unit* funit, bool recursive, bool
 
     }
 
-    /* Reapply original supplemental field now that expression has been resized */
-    expr->value->suppl.all = old_vec_suppl;
+    /* Reapply original supplemental field (preserving the owns_data bit) now that expression has been resized */
+    new_owns_data                     = expr->value->suppl.part.owns_data;
+    expr->value->suppl.all            = old_vec_suppl;
+    expr->value->suppl.part.owns_data = new_owns_data;
 
   }
 
@@ -4426,6 +4430,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.293  2008/03/20 21:52:38  phase1geo
+ Updates for memory checking.
+
  Revision 1.292  2008/03/17 05:26:16  phase1geo
  Checkpointing.  Things don't compile at the moment.
 
