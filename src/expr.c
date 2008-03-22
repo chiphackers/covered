@@ -424,7 +424,6 @@ expression* expression_create(
 
   new_expr->suppl.all           = 0;
   new_expr->suppl.part.lhs      = (nibble)lhs & 0x1;
-  new_expr->suppl.part.owns_vec = EXPR_OWNS_VEC( op, new_expr->suppl );
   new_expr->suppl.part.gen_expr = (generate_expr_mode > 0) ? 1 : 0;
   new_expr->suppl.part.root     = 1;
   new_expr->op                  = op;
@@ -439,6 +438,7 @@ expression* expression_create(
   new_expr->right               = right;
   new_expr->left                = left;
   new_expr->value               = (vector*)malloc_safe( sizeof( vector ) );
+  new_expr->suppl.part.owns_vec = 1;
   new_expr->value->value        = NULL;
   new_expr->table               = NULL;
   new_expr->elem.funit          = NULL;
@@ -4311,6 +4311,8 @@ void expression_dealloc(
 
   if( expr != NULL ) {
 
+    printf( "Deallocating expression %s (owns_vec: %d)\n", expression_string( expr ), ESUPPL_OWNS_VEC( expr->suppl ) );
+
     op = expr->op;
 
     if( ESUPPL_OWNS_VEC( expr->suppl ) ) {
@@ -4432,6 +4434,12 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.295  2008/03/21 21:16:38  phase1geo
+ Removing UNUSED_* types in lexer due to a bug that was found in the usage of
+ ignore_mode in the lexer (a token that should have been ignored was not due to
+ the parser's need to examine the created token for branch traversal purposes).
+ This cleans up the parser also.
+
  Revision 1.294  2008/03/21 04:33:45  phase1geo
  Fixing bug 1921909.  Also fixing issue with new check_mem regression script.
 

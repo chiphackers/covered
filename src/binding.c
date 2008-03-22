@@ -483,6 +483,7 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
         /* If this is a port assignment, we need to link the expression and signal together immediately */
         if( exp->op == EXP_OP_PASSIGN ) {
           vector_dealloc( exp->value );
+          exp->suppl.part.owns_vec = 0;
           exp->value = found_sig->value;
         }
 
@@ -931,6 +932,9 @@ void bind_dealloc() { PROFILE(BIND_DEALLOC);
 
 /* 
  $Log$
+ Revision 1.127  2008/03/18 03:56:44  phase1geo
+ More updates for memory checking (some "fixes" here as well).
+
  Revision 1.126  2008/03/17 05:26:15  phase1geo
  Checkpointing.  Things don't compile at the moment.
 

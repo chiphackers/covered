@@ -1699,6 +1699,7 @@ expression* db_create_expression(
       (expr->op == EXP_OP_DIM)     ||
       (expr->op == EXP_OP_DLY_ASSIGN) ) {
     vector_dealloc( expr->value );
+    expr->suppl.part.owns_vec = 0;
     expr->value = right->value;
   }
 
@@ -2856,6 +2857,10 @@ bool db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.297  2008/03/18 21:36:24  phase1geo
+ Updates from regression runs.  Regressions still do not completely pass at
+ this point.  Checkpointing.
+
  Revision 1.296  2008/03/17 22:02:30  phase1geo
  Adding new check_mem script and adding output to perform memory checking during
  regression runs.  Completed work on free_safe and added realloc_safe function
