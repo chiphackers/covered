@@ -642,7 +642,9 @@ void expression_set_value( expression* exp, vsignal* sig, func_unit* funit ) { P
   }
 
   /* Point expression value to the signal value */
-  exp->value->value = sig->value->value;
+  exp->value->value                = sig->value->value;
+  printf( "Expression %s in set_value, owns_data: %d\n", expression_string( exp ), exp->value->suppl.part.owns_data );
+  exp->value->suppl.part.owns_data = 0;
 
   PROFILE_END;
 
@@ -3056,7 +3058,11 @@ bool expression_op_func__task_call( expression* expr, thread* thr, const sim_tim
 
  Performs a named block call operation.
 */
-bool expression_op_func__nb_call( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__NB_CALL);
+bool expression_op_func__nb_call(
+  expression*     expr,
+  thread*         thr,
+  const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__NB_CALL);
 
   bool    retval = FALSE;  /* Return value for this function */
 
@@ -3085,7 +3091,11 @@ bool expression_op_func__nb_call( expression* expr, thread* thr, const sim_time*
 
  Performs a fork operation.
 */
-bool expression_op_func__fork( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__FORK);
+bool expression_op_func__fork(
+  expression*     expr,
+  thread*         thr,
+  const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__FORK);
 
   (void)sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit, time );
 
@@ -3104,7 +3114,11 @@ bool expression_op_func__fork( expression* expr, thread* thr, const sim_time* ti
 
  Performs a join operation.
 */
-bool expression_op_func__join( /*@unused@*/ expression* expr, thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__JOIN);
+bool expression_op_func__join(
+  /*@unused@*/ expression*     expr,
+               thread*         thr,
+  /*@unused@*/ const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__JOIN);
 
   PROFILE_END;
 
@@ -3121,7 +3135,11 @@ bool expression_op_func__join( /*@unused@*/ expression* expr, thread* thr, /*@un
 
  Performs a block disable operation.
 */
-bool expression_op_func__disable( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__DISABLE);
+bool expression_op_func__disable(
+               expression*     expr,
+  /*@unused@*/ thread*         thr,
+  /*@unused@*/ const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__DISABLE);
 
   sim_kill_thread_with_funit( expr->elem.funit );
 
@@ -3140,7 +3158,11 @@ bool expression_op_func__disable( expression* expr, /*@unused@*/ thread* thr, /*
 
  Performs a repeat loop operation.
 */
-bool expression_op_func__repeat( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__REPEAT);
+bool expression_op_func__repeat(
+               expression*     expr,
+  /*@unused@*/ thread*         thr,
+  /*@unused@*/ const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__REPEAT);
 
   bool retval;  /* Return value for this function */
 
@@ -3167,7 +3189,11 @@ bool expression_op_func__repeat( expression* expr, /*@unused@*/ thread* thr, /*@
 
  Performs an exponential power operation.
 */
-bool expression_op_func__exponent( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__EXPONENT);
+bool expression_op_func__exponent(
+               expression*     expr,
+  /*@unused@*/ thread*         thr,
+  /*@unused@*/ const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__EXPONENT);
 
   bool     retval  = FALSE;  /* Return value for this function */
   vec_data bit;              /* 1-bit vector value */
@@ -3216,7 +3242,11 @@ bool expression_op_func__exponent( expression* expr, /*@unused@*/ thread* thr, /
 
  Performs a port assignment operation.
 */
-bool expression_op_func__passign( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__PASSIGN);
+bool expression_op_func__passign(
+  expression*     expr,
+  thread*         thr,
+  const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__PASSIGN);
 
   bool retval = FALSE;  /* Return value for this function */
   int  intval = 0;      /* Integer value */
@@ -3267,7 +3297,11 @@ bool expression_op_func__passign( expression* expr, thread* thr, const sim_time*
 
  Performs a positive variable multi-bit select operation.
 */
-bool expression_op_func__mbit_pos( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__MBIT_POS);
+bool expression_op_func__mbit_pos(
+               expression*     expr,
+  /*@unused@*/ thread*         thr,
+  /*@unused@*/ const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__MBIT_POS);
 
   int       intval;  /* Integer value */
   vec_data* vstart;  /* Starting bit position */
@@ -3306,7 +3340,11 @@ bool expression_op_func__mbit_pos( expression* expr, /*@unused@*/ thread* thr, /
 
  Performs a negative variable multi-bit select operation.
 */
-bool expression_op_func__mbit_neg( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__MBIT_NEG);
+bool expression_op_func__mbit_neg(
+               expression*     expr,
+  /*@unused@*/ thread*         thr,
+  /*@unused@*/ const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__MBIT_NEG);
 
   int       intval1;  /* Integer value */
   int       intval2;  /* Integer value */
@@ -3347,7 +3385,11 @@ bool expression_op_func__mbit_neg( expression* expr, /*@unused@*/ thread* thr, /
 
  Performs a negate of the specified expression.
 */
-bool expression_op_func__negate( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__NEGATE);
+bool expression_op_func__negate(
+               expression*     expr,
+  /*@unused@*/ thread*         thr,
+  /*@unused@*/ const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__NEGATE);
 
   PROFILE_END;
 
@@ -3364,7 +3406,11 @@ bool expression_op_func__negate( expression* expr, /*@unused@*/ thread* thr, /*@
 
  Performs an immediate increment operation.
 */
-bool expression_op_func__iinc( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__IINC);
+bool expression_op_func__iinc(
+  expression*     expr,
+  thread*         thr,
+  const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__IINC);
 
   /* Perform increment */
   (void)vector_op_inc( expr->left->value );
@@ -3396,7 +3442,11 @@ bool expression_op_func__iinc( expression* expr, thread* thr, const sim_time* ti
 
  Performs a postponed increment operation.
 */
-bool expression_op_func__pinc( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__PINC);
+bool expression_op_func__pinc(
+  expression*     expr,
+  thread*         thr,
+  const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__PINC);
 
   /* Copy the left-hand value to our expression */
   (void)vector_set_value( expr->value, expr->left->value->value, expr->left->value->width, 0, 0 );
@@ -3428,7 +3478,11 @@ bool expression_op_func__pinc( expression* expr, thread* thr, const sim_time* ti
 
  Performs an immediate decrement operation.
 */
-bool expression_op_func__idec( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__IDEC);
+bool expression_op_func__idec(
+  expression*     expr,
+  thread*         thr,
+  const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__IDEC);
 
   /* Perform decrement */
   (void)vector_op_dec( expr->left->value );
@@ -3460,7 +3514,11 @@ bool expression_op_func__idec( expression* expr, thread* thr, const sim_time* ti
 
  Performs a postponed decrement operation.
 */
-bool expression_op_func__pdec( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__PDEC);
+bool expression_op_func__pdec(
+  expression*     expr,
+  thread*         thr,
+  const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__PDEC);
 
   /* Copy the left-hand value to our expression */
   (void)vector_set_value( expr->value, expr->left->value->value, expr->left->value->width, 0, 0 );
@@ -3493,7 +3551,11 @@ bool expression_op_func__pdec( expression* expr, thread* thr, const sim_time* ti
 
  Performs a delayed assignment.
 */
-bool expression_op_func__dly_assign( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__DLY_ASSIGN);
+bool expression_op_func__dly_assign(
+  expression*     expr,
+  thread*         thr,
+  const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__DLY_ASSIGN);
 
   bool retval;      /* Return value for this function */
   int  intval = 0;  /* Integer value */
@@ -3528,7 +3590,11 @@ bool expression_op_func__dly_assign( expression* expr, thread* thr, const sim_ti
 
  Performs an assignment and delay for a delayed assignment.
 */
-bool expression_op_func__dly_op( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__DLY_OP);
+bool expression_op_func__dly_op(
+  expression*     expr,
+  thread*         thr,
+  const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__DLY_OP);
 
   /* If we are not waiting for the delay to occur, copy the contents of the operation */
   if( !thr->suppl.part.exec_first ) {
@@ -3557,7 +3623,11 @@ bool expression_op_func__dly_op( expression* expr, thread* thr, const sim_time* 
 
  Performs a repeated delay for a given assignment.
 */
-bool expression_op_func__repeat_dly( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__REPEAT_DLY);
+bool expression_op_func__repeat_dly(
+  expression*     expr,
+  thread*         thr,
+  const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__REPEAT_DLY);
 
   bool retval = FALSE;  /* Return value for this function */
 
@@ -3595,7 +3665,11 @@ bool expression_op_func__repeat_dly( expression* expr, thread* thr, const sim_ti
 
  Performs a wait statement operation.
 */
-bool expression_op_func__wait( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__WAIT);
+bool expression_op_func__wait(
+               expression*     expr,
+  /*@unused@*/ thread*         thr,
+  /*@unused@*/ const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__WAIT);
 
   bool     retval = TRUE;  /* Return value for this function */
   vector   vec;            /* Temporary vector */
@@ -3630,7 +3704,11 @@ bool expression_op_func__wait( expression* expr, /*@unused@*/ thread* thr, /*@un
 
  Performs a $finish statement operation.
 */
-bool expression_op_func__finish( /*@unused@*/ expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__FINISH);
+bool expression_op_func__finish(
+  /*@unused@*/ expression*     expr,
+  /*@unused@*/ thread*         thr,
+  /*@unused@*/ const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__FINISH);
 
   sim_finish();
 
@@ -3647,7 +3725,11 @@ bool expression_op_func__finish( /*@unused@*/ expression* expr, /*@unused@*/ thr
                                            
  Performs a $stop statement operation.
 */                                         
-bool expression_op_func__stop( /*@unused@*/ expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__STOP);
+bool expression_op_func__stop(
+  /*@unused@*/ expression*     expr,
+  /*@unused@*/ thread*         thr,
+  /*@unused@*/ const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__STOP);
 
   sim_stop();
 
@@ -3670,7 +3752,11 @@ bool expression_op_func__stop( /*@unused@*/ expression* expr, /*@unused@*/ threa
  Sets the value of the operation in its own vector value and updates the
  suppl nibble as necessary.
 */
-bool expression_operate( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OPERATE);
+bool expression_operate(
+  expression*     expr,
+  thread*         thr,
+  const sim_time* time
+) { PROFILE(EXPRESSION_OPERATE);
 
   bool     retval = TRUE;   /* Return value for this function */
   vector   vec;             /* Used for logical reduction */ 
@@ -4302,7 +4388,7 @@ void expression_assign(
 */
 void expression_dealloc(
   expression* expr,
-  bool exp_only
+  bool        exp_only
 ) { PROFILE(EXPRESSION_DEALLOC);
 
   int        op;        /* Temporary operation holder */
@@ -4318,6 +4404,7 @@ void expression_dealloc(
     if( ESUPPL_OWNS_VEC( expr->suppl ) ) {
 
       /* Free up memory from vector value storage */
+      printf( "  Expression %s owns_data: %d\n", expression_string( expr ), expr->value->suppl.part.owns_data );
       vector_dealloc( expr->value );
       expr->value = NULL;
 
@@ -4434,6 +4521,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.296  2008/03/22 02:21:07  phase1geo
+ Checking in start of changes to properly handle the deallocation of vector
+ memory from expressions.  Things are pretty broke at this point!
+
  Revision 1.295  2008/03/21 21:16:38  phase1geo
  Removing UNUSED_* types in lexer due to a bug that was found in the usage of
  ignore_mode in the lexer (a token that should have been ignored was not due to

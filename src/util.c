@@ -1011,7 +1011,9 @@ void* malloc_safe1( size_t size, /*@unused@*/ const char* file, /*@unused@*/ int
 
   obj = malloc( size );
 #ifdef TESTMODE
-  printf( "MALLOC (%p) %d bytes (file: %s, line: %d) - %lld\n", obj, size, file, line, curr_malloc_size );
+  if( !debug_mode ) {
+    printf( "MALLOC (%p) %d bytes (file: %s, line: %d) - %lld\n", obj, size, file, line, curr_malloc_size );
+  }
 #endif
   assert( obj != NULL );
 
@@ -1046,7 +1048,9 @@ void* malloc_safe_nolimit1( size_t size, /*@unused@*/ const char* file, /*@unuse
 
   obj = malloc( size );
 #ifdef TESTMODE
-  printf( "MALLOC (%p) %d bytes (file: %s, line: %d) - %lld\n", obj, size, file, line, curr_malloc_size );
+  if( !debug_mode ) {
+    printf( "MALLOC (%p) %d bytes (file: %s, line: %d) - %lld\n", obj, size, file, line, curr_malloc_size );
+  }
 #endif
   assert( obj != NULL );
 
@@ -1090,7 +1094,9 @@ void free_safe2( void* ptr, size_t size, const char* file, int line, unsigned in
   if( ptr != NULL ) {
     curr_malloc_size -= size;
 #ifdef TESTMODE
-    printf( "FREE (%p) %d bytes (file: %s, line: %d) - %lld\n", ptr, size, file, line, curr_malloc_size );
+    if( !debug_mode ) {
+      printf( "FREE (%p) %d bytes (file: %s, line: %d) - %lld\n", ptr, size, file, line, curr_malloc_size );
+    }
 #endif
     free( ptr );
   }
@@ -1126,7 +1132,9 @@ char* strdup_safe1(
   }
   new_str = strdup( str );
 #ifdef TESTMODE
-  printf( "STRDUP (%p) %d bytes (file: %s, line: %d) - %lld\n", new_str, str_len, file, line, curr_malloc_size );
+  if( !debug_mode ) {
+    printf( "STRDUP (%p) %d bytes (file: %s, line: %d) - %lld\n", new_str, str_len, file, line, curr_malloc_size );
+  }
 #endif
   assert( new_str != NULL );
 
@@ -1176,7 +1184,9 @@ void* realloc_safe1(
     assert( newptr != NULL );
   }
 #ifdef TESTMODE
-  printf( "REALLOC (%p -> %p) %d (%d) bytes (file: %s, line: %d) - %lld\n", ptr, newptr, size, old_size, file, line, curr_malloc_size );
+  if( !debug_mode ) {
+    printf( "REALLOC (%p -> %p) %d (%d) bytes (file: %s, line: %d) - %lld\n", ptr, newptr, size, old_size, file, line, curr_malloc_size );
+  }
 #endif
 
   MALLOC_CALL(profile_index);
@@ -1312,6 +1322,9 @@ void calc_miss_percent(
 
 /*
  $Log$
+ Revision 1.84  2008/03/18 05:11:28  phase1geo
+ More bug fixes for memory handling.
+
  Revision 1.83  2008/03/18 03:56:44  phase1geo
  More updates for memory checking (some "fixes" here as well).
 

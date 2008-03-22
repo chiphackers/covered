@@ -283,7 +283,7 @@ void vector_db_write(
   dflt = (vec->suppl.part.is_2state == 1) ? 0x0 : 0x2;
 
   /* Set owns_data supplemental bit in all cases */
-  vec->suppl.part.owns_data = 1;
+  //vec->suppl.part.owns_data = 1;
 
   /* Output vector information to specified file */
   /*@-formatcode@*/
@@ -365,8 +365,9 @@ void vector_db_read(
     *line = *line + chars_read;
 
     /* Create new vector */
-    *vec              = vector_create( width, VTYPE_VAL, TRUE );
-    (*vec)->suppl.all = (char)suppl & 0xff;
+    *vec                         = vector_create( width, VTYPE_VAL, TRUE );
+    (*vec)->suppl.all            = (char)suppl & 0xff;
+    (*vec)->suppl.part.owns_data = 1;
 
     Try {
 
@@ -2575,6 +2576,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.121  2008/03/18 21:36:24  phase1geo
+ Updates from regression runs.  Regressions still do not completely pass at
+ this point.  Checkpointing.
+
  Revision 1.120  2008/03/18 03:56:44  phase1geo
  More updates for memory checking (some "fixes" here as well).
 
