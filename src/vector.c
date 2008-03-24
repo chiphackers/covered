@@ -293,43 +293,48 @@ void vector_db_write(
   );
   /*@=formatcode@*/
 
-  if( vec->value == NULL ) {
+  /* Only write our data if we own it */
+  if( vec->suppl.part.owns_data == 1 ) {
 
-    /* If the vector value was NULL, output default value */
-    for( i=0; i<vec->width; i+=4 ) {
-      switch( vec->width - i ) {
-        case 0 :  break;
-        case 1 :  fprintf( file, " %x", vector_nibbles_to_uint( dflt, 0x0,  0x0,  0x0 ) );   break;
-        case 2 :  fprintf( file, " %x", vector_nibbles_to_uint( dflt, dflt, 0x0,  0x0 ) );   break;
-        case 3 :  fprintf( file, " %x", vector_nibbles_to_uint( dflt, dflt, dflt, 0x0 ) );   break;
-        default:  fprintf( file, " %x", vector_nibbles_to_uint( dflt, dflt, dflt, dflt ) );  break;
+    if( vec->value == NULL ) {
+
+      /* If the vector value was NULL, output default value */
+      for( i=0; i<vec->width; i+=4 ) {
+        switch( vec->width - i ) {
+          case 0 :  break;
+          case 1 :  fprintf( file, " %x", vector_nibbles_to_uint( dflt, 0x0,  0x0,  0x0 ) );   break;
+          case 2 :  fprintf( file, " %x", vector_nibbles_to_uint( dflt, dflt, 0x0,  0x0 ) );   break;
+          case 3 :  fprintf( file, " %x", vector_nibbles_to_uint( dflt, dflt, dflt, 0x0 ) );   break;
+          default:  fprintf( file, " %x", vector_nibbles_to_uint( dflt, dflt, dflt, dflt ) );  break;
+        }
       }
-    }
 
-  } else {
+    } else {
 
-    for( i=0; i<vec->width; i+=4 ) {
-      switch( vec->width - i ) {
-        case 0 :  break;
-        case 1 :
-          fprintf( file, " %x", vector_nibbles_to_uint( ((vec->value[i+0].all & mask) | (write_data ? 0 : dflt)), 0, 0, 0 ) );
-          break;
-        case 2 :
-          fprintf( file, " %x", vector_nibbles_to_uint( ((vec->value[i+0].all & mask) | (write_data ? 0 : dflt)),
-                                                        ((vec->value[i+1].all & mask) | (write_data ? 0 : dflt)), 0, 0 ) );
-          break;
-        case 3 :
-          fprintf( file, " %x", vector_nibbles_to_uint( ((vec->value[i+0].all & mask) | (write_data ? 0 : dflt)), 
-                                                        ((vec->value[i+1].all & mask) | (write_data ? 0 : dflt)),
-                                                        ((vec->value[i+2].all & mask) | (write_data ? 0 : dflt)), 0 ) );
-          break;
-        default:
-          fprintf( file, " %x", vector_nibbles_to_uint( ((vec->value[i+0].all & mask) | (write_data ? 0 : dflt)), 
-                                                        ((vec->value[i+1].all & mask) | (write_data ? 0 : dflt)),
-                                                        ((vec->value[i+2].all & mask) | (write_data ? 0 : dflt)),
-                                                        ((vec->value[i+3].all & mask) | (write_data ? 0 : dflt)) ) );
-          break;
+      for( i=0; i<vec->width; i+=4 ) {
+        switch( vec->width - i ) {
+          case 0 :  break;
+          case 1 :
+            fprintf( file, " %x", vector_nibbles_to_uint( ((vec->value[i+0].all & mask) | (write_data ? 0 : dflt)), 0, 0, 0 ) );
+            break;
+          case 2 :
+            fprintf( file, " %x", vector_nibbles_to_uint( ((vec->value[i+0].all & mask) | (write_data ? 0 : dflt)),
+                                                          ((vec->value[i+1].all & mask) | (write_data ? 0 : dflt)), 0, 0 ) );
+            break;
+          case 3 :
+            fprintf( file, " %x", vector_nibbles_to_uint( ((vec->value[i+0].all & mask) | (write_data ? 0 : dflt)), 
+                                                          ((vec->value[i+1].all & mask) | (write_data ? 0 : dflt)),
+                                                          ((vec->value[i+2].all & mask) | (write_data ? 0 : dflt)), 0 ) );
+            break;
+          default:
+            fprintf( file, " %x", vector_nibbles_to_uint( ((vec->value[i+0].all & mask) | (write_data ? 0 : dflt)), 
+                                                          ((vec->value[i+1].all & mask) | (write_data ? 0 : dflt)),
+                                                          ((vec->value[i+2].all & mask) | (write_data ? 0 : dflt)),
+                                                          ((vec->value[i+3].all & mask) | (write_data ? 0 : dflt)) ) );
+            break;
+        }
       }
+
     }
 
   }
@@ -365,51 +370,59 @@ void vector_db_read(
     *line = *line + chars_read;
 
     /* Create new vector */
-    *vec                         = vector_create( width, VTYPE_VAL, TRUE );
-    (*vec)->suppl.all            = (char)suppl & 0xff;
-    (*vec)->suppl.part.owns_data = 1;
+    *vec              = vector_create( width, VTYPE_VAL, TRUE );
+    (*vec)->suppl.all = (char)suppl & 0xff;
 
-    Try {
+    if( (*vec)->suppl.part.owns_data == 1 ) {
 
-      i = 0;
-      while( i < width ) {
-        if( sscanf( *line, "%x%n", &value, &chars_read ) == 1 ) {
-          *line += chars_read;
-          vector_uint_to_nibbles( value, nibs );
-          switch( width - i ) {
-            case 0 :  break;
-            case 1 :
-              (*vec)->value[i+0].all = nibs[0];
-              break;
-            case 2 :
-              (*vec)->value[i+0].all = nibs[0];
-              (*vec)->value[i+1].all = nibs[1];
-              break;
-            case 3 :
-              (*vec)->value[i+0].all = nibs[0];
-              (*vec)->value[i+1].all = nibs[1];
-              (*vec)->value[i+2].all = nibs[2];
-              break;
-            default:
-              (*vec)->value[i+0].all = nibs[0];
-              (*vec)->value[i+1].all = nibs[1];
-              (*vec)->value[i+2].all = nibs[2];
-              (*vec)->value[i+3].all = nibs[3];
-              break;
+      Try {
+
+        i = 0;
+        while( i < width ) {
+          if( sscanf( *line, "%x%n", &value, &chars_read ) == 1 ) {
+            *line += chars_read;
+            vector_uint_to_nibbles( value, nibs );
+            switch( width - i ) {
+              case 0 :  break;
+              case 1 :
+                (*vec)->value[i+0].all = nibs[0];
+                break;
+              case 2 :
+                (*vec)->value[i+0].all = nibs[0];
+                (*vec)->value[i+1].all = nibs[1];
+                break;
+              case 3 :
+                (*vec)->value[i+0].all = nibs[0];
+                (*vec)->value[i+1].all = nibs[1];
+                (*vec)->value[i+2].all = nibs[2];
+                break;
+              default:
+                (*vec)->value[i+0].all = nibs[0];
+                (*vec)->value[i+1].all = nibs[1];
+                (*vec)->value[i+2].all = nibs[2];
+                (*vec)->value[i+3].all = nibs[3];
+                break;
+            }
+          } else {
+            print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
+            printf( "vector Throw A\n" );
+            Throw 0;
           }
-        } else {
-          print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
-          printf( "vector Throw A\n" );
-          Throw 0;
+          i += 4;
         }
-        i += 4;
+
+      } Catch_anonymous {
+        vector_dealloc( *vec );
+        *vec = NULL;
+        printf( "vector Throw B\n" );
+        Throw 0;
       }
 
-    } Catch_anonymous {
-      vector_dealloc( *vec );
-      *vec = NULL;
-      printf( "vector Throw B\n" );
-      Throw 0;
+    /* Otherwise, deallocate the vector data */
+    } else {
+
+      free_safe( (*vec)->value, (sizeof( vec_data ) * width) );
+
     }
 
   } else {
@@ -2576,6 +2589,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.122  2008/03/22 05:23:24  phase1geo
+ More attempts to fix memory problems.  Things are still pretty broke at the moment.
+
  Revision 1.121  2008/03/18 21:36:24  phase1geo
  Updates from regression runs.  Regressions still do not completely pass at
  this point.  Checkpointing.
