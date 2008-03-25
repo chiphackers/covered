@@ -2274,11 +2274,24 @@ bool expression_op_func__nxor(
 
  Performs a less-than comparison operation.
 */
-bool expression_op_func__lt( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__LT);
+bool expression_op_func__lt(
+               expression*     expr,
+  /*@unused@*/ thread*         thr,
+  /*@unused@*/ const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__LT);
+
+  bool retval;  /* Return value for this function */
+
+  /* Perform less-than operation and gather coverage information */
+  if( retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_LT ) ) {
+    expression_set_tf_preclear( expr );
+  }
+  expression_set_unary_evals( expr );
+  expression_set_eval_NN( expr );
 
   PROFILE_END;
 
-  return( vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_LT ) );
+  return( retval );
 
 }
 
@@ -2291,11 +2304,24 @@ bool expression_op_func__lt( expression* expr, /*@unused@*/ thread* thr, /*@unus
 
  Performs a greater-than comparison operation.
 */
-bool expression_op_func__gt( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__GT);
+bool expression_op_func__gt(
+               expression*     expr,
+  /*@unused@*/ thread*         thr,
+  /*@unused@*/ const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__GT);
+
+  bool retval;  /* Return value for this function */
+
+  /* Perform greater-than operation and gather coverage information */
+  if( retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_GT ) ) {
+    expression_set_tf_preclear( expr );
+  }
+  expression_set_unary_evals( expr );
+  expression_set_eval_NN( expr );
 
   PROFILE_END;
 
-  return( vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_GT ) );
+  return( retval );
 
 }
 
@@ -2308,16 +2334,29 @@ bool expression_op_func__gt( expression* expr, /*@unused@*/ thread* thr, /*@unus
 
  Performs a left shift operation.
 */
-bool expression_op_func__lshift( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__LSHIFT);
+bool expression_op_func__lshift(
+               expression*     expr,
+  /*@unused@*/ thread*         thr,
+  /*@unused@*/ const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__LSHIFT);
+
+  bool retval;  /* Return value for this function */
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
     (void)vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->width, 0, 0 );
   }
 
+  /* Perform left shift operation and gather coverage information */
+  if( retval = vector_op_lshift( expr->value, expr->left->value, expr->right->value ) ) {
+    expression_set_tf_preclear( expr );
+  }
+  expression_set_unary_evals( expr );
+  expression_set_eval_NN( expr );
+
   PROFILE_END;
 
-  return( vector_op_lshift( expr->value, expr->left->value, expr->right->value ) );
+  return( retval );
 
 }
 
@@ -2330,16 +2369,29 @@ bool expression_op_func__lshift( expression* expr, /*@unused@*/ thread* thr, /*@
 
  Performs a right shift operation.
 */
-bool expression_op_func__rshift( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__RSHIFT);
+bool expression_op_func__rshift(
+               expression*     expr,
+  /*@unused@*/ thread*         thr,
+  /*@unused@*/ const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__RSHIFT);
+
+  bool retval;  /* Return value for this function */
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
     (void)vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->width, 0, 0 );
   }
 
+  /* Perform right shift operation and gather coverage information */
+  if( vector_op_rshift( expr->value, expr->left->value, expr->right->value ) ) {
+    expression_set_tf_preclear( expr );
+  }
+  expression_set_unary_evals( expr );
+  expression_set_eval_NN( expr );
+
   PROFILE_END;
 
-  return( vector_op_rshift( expr->value, expr->left->value, expr->right->value ) );
+  return( retval );
 
 }
 
@@ -2352,16 +2404,29 @@ bool expression_op_func__rshift( expression* expr, /*@unused@*/ thread* thr, /*@
 
  Performs an arithmetic right shift operation.
 */
-bool expression_op_func__arshift( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__ARSHIFT);
+bool expression_op_func__arshift(
+               expression*     expr,
+  /*@unused@*/ thread*         thr,
+  /*@unused@*/ const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__ARSHIFT);
+
+  bool retval;  /* Return value for this function */
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
     (void)vector_set_value( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->width, 0, 0 );
   }
 
+  /* Perform arithmetic right shift operation and gather coverage information */
+  if( retval = vector_op_arshift( expr->value, expr->left->value, expr->right->value ) ) {
+    expression_set_tf_preclear( expr );
+  }
+  expression_set_unary_evals( expr );
+  expression_set_eval_NN( expr );
+
   PROFILE_END;
 
-  return( vector_op_arshift( expr->value, expr->left->value, expr->right->value ) );
+  return( retval );
 
 }
 
@@ -2374,11 +2439,24 @@ bool expression_op_func__arshift( expression* expr, /*@unused@*/ thread* thr, /*
 
  Performs an equality (==) comparison operation.
 */
-bool expression_op_func__eq( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__EQ);
+bool expression_op_func__eq(
+               expression*     expr,
+  /*@unused@*/ thread*         thr,
+  /*@unused@*/ const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__EQ);
+
+  bool retval;  /* Return value for this function */
+
+  /* Perform  equality operation and gather coverage information */
+  if( retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_EQ ) ) {
+    expression_set_tf_preclear( expr );
+  }
+  expression_set_unary_evals( expr );
+  expression_set_eval_NN( expr );
 
   PROFILE_END;
 
-  return( vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_EQ ) );
+  return( retval );
 
 }
 
@@ -2391,11 +2469,24 @@ bool expression_op_func__eq( expression* expr, /*@unused@*/ thread* thr, /*@unus
 
  Performs an equality (===) comparison operation.
 */
-bool expression_op_func__ceq( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__CEQ);
+bool expression_op_func__ceq(
+               expression*     expr,
+  /*@unused@*/ thread*         thr,
+  /*@unused@*/ const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__CEQ);
+
+  bool retval;  /* Return value for this function */
+
+  /* Perform equality operation and gather coverage information */
+  if( vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CEQ ) ) {
+    expression_set_tf_preclear( expr );
+  }
+  expression_set_unary_evals( expr );
+  expression_set_eval_NN( expr );
 
   PROFILE_END;
 
-  return( vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CEQ ) );
+  return( retval );
 
 }
 
@@ -2408,11 +2499,24 @@ bool expression_op_func__ceq( expression* expr, /*@unused@*/ thread* thr, /*@unu
 
  Performs a less-than-or-equal comparison operation.
 */
-bool expression_op_func__le( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__LE);
+bool expression_op_func__le(
+               expression*     expr,
+  /*@unused@*/ thread*         thr,
+  /*@unused@*/ const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__LE);
+
+  bool retval;  /* Return value for this function */
+
+  /* Perform less-than-or-equal operation and gather coverage information */
+  if( retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_LE ) ) {
+    expression_set_tf_preclear( expr );
+  }
+  expression_set_unary_evals( expr );
+  expression_set_eval_NN( expr );
 
   PROFILE_END;
 
-  return( vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_LE ) );
+  return( retval );
 
 }
 
@@ -2425,11 +2529,24 @@ bool expression_op_func__le( expression* expr, /*@unused@*/ thread* thr, /*@unus
 
  Performs a greater-than-or-equal comparison operation.
 */
-bool expression_op_func__ge( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__GE);
+bool expression_op_func__ge(
+               expression*     expr,
+  /*@unused@*/ thread*         thr,
+  /*@unused@*/ const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__GE);
+
+  bool retval;  /* Return value for this function */
+
+  /* Perform greater-than-or-equal operation and gather coverage information */
+  if( retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_GE ) ) {
+    expression_set_tf_preclear( expr );
+  }
+  expression_set_unary_evals( expr );
+  expression_set_eval_NN( expr );
 
   PROFILE_END;
 
-  return( vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_GE ) );
+  return( retval );
 
 }
 
@@ -2442,11 +2559,24 @@ bool expression_op_func__ge( expression* expr, /*@unused@*/ thread* thr, /*@unus
 
  Performs a not-equal (!=) comparison operation.
 */
-bool expression_op_func__ne( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__NE);
+bool expression_op_func__ne(
+               expression*     expr,
+  /*@unused@*/ thread*         thr,
+  /*@unused@*/ const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__NE);
+
+  bool retval;  /* Return value for this function */
+
+  /* Perform not-equal operation and gather coverage information */
+  if( retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_NE ) ) {
+    expression_set_tf_preclear( expr );
+  }
+  expression_set_unary_evals( expr );
+  expression_set_eval_NN( expr );
 
   PROFILE_END;
 
-  return( vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_NE ) );
+  return( retval );
 
 }
 
@@ -2459,11 +2589,24 @@ bool expression_op_func__ne( expression* expr, /*@unused@*/ thread* thr, /*@unus
 
  Performs a not-equal (!==) comparison operation.
 */
-bool expression_op_func__cne( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__CNE);
+bool expression_op_func__cne(
+               expression*     expr,
+  /*@unused@*/ thread*         thr,
+  /*@unused@*/ const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__CNE);
+
+  bool retval;  /* Return value for this function */
+
+  /* Perform not-equal operation and gather coverage information */
+  if( retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CNE ) ) {
+    expression_set_tf_preclear( expr );
+  }
+  expression_set_unary_evals( expr );
+  expression_set_eval_NN( expr );
 
   PROFILE_END;
 
-  return( vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CNE ) );
+  return( retval );
 
 }
 
@@ -2476,12 +2619,17 @@ bool expression_op_func__cne( expression* expr, /*@unused@*/ thread* thr, /*@unu
 
  Performs a logical OR operation.
 */
-bool expression_op_func__lor( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__LOR);
+bool expression_op_func__lor(
+               expression*     expr,
+  /*@unused@*/ thread*         thr,
+  /*@unused@*/ const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__LOR);
 
   vector   vec1;     /* Used for logical reduction */
   vector   vec2;     /* Used for logical reduction */
   vec_data value1a;  /* 1-bit nibble value */
   vec_data value1b;  /* 1-bit nibble value */
+  bool     retval;   /* Return value for this function */
 
   vector_init( &vec1, &value1a, FALSE, 1, VTYPE_VAL );
   vector_init( &vec2, &value1b, FALSE, 1, VTYPE_VAL );
@@ -2489,9 +2637,16 @@ bool expression_op_func__lor( expression* expr, /*@unused@*/ thread* thr, /*@unu
   (void)vector_unary_op( &vec1, expr->left->value,  or_optab );
   (void)vector_unary_op( &vec2, expr->right->value, or_optab );
 
+  /* Perform bitwise OR operation and gather coverage information */
+  if( retval = vector_bitwise_op( expr->value, &vec1, &vec2, or_optab ) ) {
+    expression_set_tf_preclear( expr );
+  }
+  expression_set_or_comb_evals( expr );
+  expression_set_eval_NN( expr );
+
   PROFILE_END;
 
-  return( vector_bitwise_op( expr->value, &vec1, &vec2, or_optab ) );
+  return( retval );
 
 }
 
@@ -2860,6 +3015,13 @@ bool expression_op_func__null(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__NULL);
 
+  /* Set the true/false indicators as necessary */
+  if( (expr->op != EXP_OP_STATIC) && (expr->op != EXP_OP_PARAM) ) {
+    expression_set_tf_preclear( expr );
+  } else {
+    expression_set_tf( expr );
+  }
+
   PROFILE_END;
 
   return( TRUE );
@@ -2938,6 +3100,10 @@ bool expression_op_func__sbit(
 
   }
 
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr );
+  expression_set_unary_evals( expr );
+
   PROFILE_END;
 
   return( TRUE );
@@ -2953,7 +3119,11 @@ bool expression_op_func__sbit(
 
  Performs a multi-bit select operation.
 */
-bool expression_op_func__mbit( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__MBIT);
+bool expression_op_func__mbit(
+               expression*     expr,
+  /*@unused@*/ thread*         thr,
+  /*@unused@*/ const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__MBIT);
 
   int       intval;     /* Integer value */
   vec_data* vstart;     /* Calculated starting vector bit */
@@ -2992,6 +3162,11 @@ bool expression_op_func__mbit( expression* expr, /*@unused@*/ thread* thr, /*@un
     assert( intval < vwidth );
     expr->value->value = vstart + intval;
   }
+
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr );
+  expression_set_unary_evals( expr );
+  expression_set_eval_NN( expr );
 
   PROFILE_END;
 
@@ -3037,6 +3212,13 @@ bool expression_op_func__expand( expression* expr, /*@unused@*/ thread* thr, /*@
 
   }
 
+  /* Gather coverage information */
+  if( retval ) {
+    expression_set_tf_preclear( expr );
+  }
+  expression_set_unary_evals( expr );
+  expression_set_eval_NN( expr );
+
   PROFILE_END;
 
   return( retval );
@@ -3052,12 +3234,23 @@ bool expression_op_func__expand( expression* expr, /*@unused@*/ thread* thr, /*@
 
  Performs a list (,) operation.
 */
-bool expression_op_func__list( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__LIST);
+bool expression_op_func__list(
+               expression*     expr,
+  /*@unused@*/ thread*         thr,
+  /*@unused@*/ const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__LIST);
 
   bool retval = FALSE;  /* Return value for this function */
 
   retval |= vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 );
   retval |= vector_set_value( expr->value, expr->left->value->value,  expr->left->value->width,  0, expr->right->value->width );
+
+  /* Gather coverage information */
+  if( retval ) {
+    expression_set_tf_preclear( expr );
+  }
+  expression_set_unary_evals( expr );
+  expression_set_eval_NN( expr );
 
   PROFILE_END;
 
@@ -3074,11 +3267,23 @@ bool expression_op_func__list( expression* expr, /*@unused@*/ thread* thr, /*@un
 
  Performs a concatenation ({}) operation.
 */
-bool expression_op_func__concat( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__CONCAT);
+bool expression_op_func__concat(
+               expression*     expr,
+  /*@unused@*/ thread*         thr,
+  /*@unused@*/ const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__CONCAT);
+
+  bool retval;  /* Return value for this function */
+
+  /* Perform concatenation operation and gather coverage information */
+  if( retval = vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 ) ) {
+    expression_set_tf_preclear( expr );
+  }
+  expression_set_unary_evals( expr );
 
   PROFILE_END;
 
-  return( vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 ) );
+  return( retval );
 
 }
 
@@ -3091,7 +3296,11 @@ bool expression_op_func__concat( expression* expr, /*@unused@*/ thread* thr, /*@
 
  Performs a positive edge event operation.
 */
-bool expression_op_func__pedge( expression* expr, thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__PEDGE);
+bool expression_op_func__pedge(
+               expression*     expr,
+               thread*         thr,
+  /*@unused@*/ const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__PEDGE);
 
   bool              retval;   /* Return value for this function */
   register vec_data value1a;  /* 1-bit vector value */
@@ -3130,7 +3339,11 @@ bool expression_op_func__pedge( expression* expr, thread* thr, /*@unused@*/ cons
 
  Performs a negative-edge event operation.
 */
-bool expression_op_func__nedge( expression* expr, thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__NEDGE);
+bool expression_op_func__nedge(
+               expression*     expr,
+               thread*         thr,
+  /*@unused@*/ const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__NEDGE);
 
   bool              retval;   /* Return value for this function */
   register vec_data value1a;  /* 1-bit vector value */
@@ -3169,7 +3382,11 @@ bool expression_op_func__nedge( expression* expr, thread* thr, /*@unused@*/ cons
 
  Performs an any-edge event operation.
 */
-bool expression_op_func__aedge( expression* expr, thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__AEDGE);
+bool expression_op_func__aedge(
+               expression*     expr,
+               thread*         thr,
+  /*@unused@*/ const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__AEDGE);
 
   vector   vec;     /* Temporary vector */
   vec_data bit;     /* 1-bit vector value */
@@ -3224,7 +3441,11 @@ bool expression_op_func__aedge( expression* expr, thread* thr, /*@unused@*/ cons
 
  Performs a event OR operation.
 */
-bool expression_op_func__eor( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__EOR);
+bool expression_op_func__eor(
+               expression*     expr,
+  /*@unused@*/ thread*         thr,
+  /*@unused@*/ const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__EOR);
 
   bool retval;  /* Return value for this function */
 
@@ -3260,7 +3481,11 @@ bool expression_op_func__eor( expression* expr, /*@unused@*/ thread* thr, /*@unu
 
  Performs a sensitivity list operation.
 */
-bool expression_op_func__slist( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__SLIST);
+bool expression_op_func__slist(
+               expression*     expr,
+  /*@unused@*/ thread*         thr,
+  /*@unused@*/ const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__SLIST);
 
   bool retval;  /* Return value for this function */
 
@@ -3295,7 +3520,11 @@ bool expression_op_func__slist( expression* expr, /*@unused@*/ thread* thr, /*@u
 
  Performs a delay operation.
 */
-bool expression_op_func__delay( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__DELAY);
+bool expression_op_func__delay(
+  expression*     expr,
+  thread*         thr,
+  const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__DELAY);
 
   bool retval = FALSE;  /* Return value for this function */
 
@@ -3348,13 +3577,19 @@ bool expression_op_func__delay( expression* expr, thread* thr, const sim_time* t
 
  Performs an event trigger (->) operation.
 */
-bool expression_op_func__trigger( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__TRIGGER);
+bool expression_op_func__trigger(
+  expression*     expr,
+  thread*         thr,
+  const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__TRIGGER);
 
   /* Specify that we have triggered */
   expr->value->value[0].part.exp.value = 1;
 
   /* Propagate event */
   vsignal_propagate( expr->sig, ((thr == NULL) ? time : &(thr->curr_time)) );
+
+  expression_set_tf_preclear( expr );
 
   PROFILE_END;
 
@@ -3371,11 +3606,24 @@ bool expression_op_func__trigger( expression* expr, thread* thr, const sim_time*
 
  Performs a case comparison operation.
 */
-bool expression_op_func__case( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__CASE);
+bool expression_op_func__case(
+               expression*     expr,
+  /*@unused@*/ thread*         thr,
+  /*@unused@*/ const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__CASE);
+
+  bool retval;  /* Return value for this function */
+
+  /* Perform comparison and gather coverage information */
+  if( retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CEQ ) ) {
+    expression_set_tf_preclear( expr );
+  }
+  expression_set_unary_evals( expr );
+  expression_set_eval_NN( expr );
 
   PROFILE_END;
 
-  return( vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CEQ ) );
+  return( retval );
 
 }
 
@@ -3388,11 +3636,24 @@ bool expression_op_func__case( expression* expr, /*@unused@*/ thread* thr, /*@un
 
  Performs a casex comparison operation.
 */
-bool expression_op_func__casex( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__CASEX);
+bool expression_op_func__casex(
+               expression*     expr,
+  /*@unused@*/ thread*         thr,
+  /*@unused@*/ const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__CASEX);
+
+  bool retval;  /* Return value for this function */
+
+  /* Perform comparison and gather coverage information */
+  if( retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CXEQ ) ) {
+    expression_set_tf_preclear( expr );
+  }
+  expression_set_unary_evals( expr );
+  expression_set_eval_NN( expr );
 
   PROFILE_END;
 
-  return( vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CXEQ ) );
+  return( retval );
 
 }
 
@@ -3405,11 +3666,24 @@ bool expression_op_func__casex( expression* expr, /*@unused@*/ thread* thr, /*@u
 
  Performs a casez comparison operation.
 */
-bool expression_op_func__casez( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__CASEZ);
+bool expression_op_func__casez(
+               expression*     expr,
+  /*@unused@*/ thread*         thr,
+  /*@unused@*/ const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__CASEZ);
+
+  bool retval;  /* Return value for this function */
+
+  /* Perform comparison and gather coverage information */
+  if( retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CZEQ ) ) {
+    expression_set_tf_preclear( expr );
+  }
+  expression_set_unary_evals( expr );
+  expression_set_eval_NN( expr );
 
   PROFILE_END;
 
-  return( vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CZEQ ) );
+  return( retval );
 
 }
 
@@ -3422,16 +3696,28 @@ bool expression_op_func__casez( expression* expr, /*@unused@*/ thread* thr, /*@u
 
  Performs a case default comparison operation.
 */
-bool expression_op_func__default( expression* expr, /*@unused@*/ thread* thr, /*@unused@*/ const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__DEFAULT);
+bool expression_op_func__default(
+               expression*     expr,
+  /*@unused@*/ thread*         thr,
+  /*@unused@*/ const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__DEFAULT);
 
-  vec_data bit;  /* 1-bit vector value */
+  bool     retval;  /* Return value for this function */
+  vec_data bit;     /* 1-bit vector value */
 
   bit.all            = 0;
   bit.part.exp.value = 1;
 
+  /* Perform operation and gather coverage information */
+  if( retval = vector_set_value( expr->value, &bit, 1, 0, 0 ) ) {
+    expression_set_tf_preclear( expr );
+  }
+  expression_set_unary_evals( expr );
+  expression_set_eval_NN( expr );
+
   PROFILE_END;
 
-  return( vector_set_value( expr->value, &bit, 1, 0, 0 ) );
+  return( retval );
 
 }
 
@@ -4978,6 +5264,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.299  2008/03/25 13:51:19  phase1geo
+ Starting to work on performance upgrad for expression operations.  This
+ work is not completed at this point.  Checkpointing.
+
  Revision 1.298  2008/03/24 13:16:46  phase1geo
  More changes for memory allocation/deallocation issues.  Things are still pretty
  broke at the moment.
