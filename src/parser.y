@@ -233,7 +233,7 @@ int yydebug = 1;
   bool            logical;
   char*           text;
   int	          integer;
-  vector*         number;
+  const_value     number;
   double          realtime;
   vsignal*        sig;
   expression*     expr;
@@ -438,8 +438,8 @@ description
   | KK_attribute '(' IDENTIFIER ',' STRING ',' STRING ')'
     {
       free_safe( $3, (strlen( $3 ) + 1) );
-      vector_dealloc( $5 );
-      vector_dealloc( $7 );
+      vector_dealloc( $5.vec );
+      vector_dealloc( $7.vec );
     }
   | typedef_decl
   | net_type signed_opt range_opt list_of_variables ';'
@@ -1114,27 +1114,27 @@ static_expr_primary
   : NUMBER
     { PROFILE(PARSER_STATIC_EXPR_PRIMARY_A);
       static_expr* tmp;
-      if( (ignore_mode == 0) && ($1 != NULL) ) {
+      if( (ignore_mode == 0) && ($1.vec != NULL) ) {
         tmp = (static_expr*)malloc_safe( sizeof( static_expr ) );
-        if( vector_is_unknown( $1 ) ) {
+        if( $1.vec->suppl.part.unknown ) {
           Try {
             tmp->exp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
           } Catch_anonymous {
             free_safe( tmp, sizeof( static_expr ) );
-            vector_dealloc( $1 );
+            vector_dealloc( $1.vec );
             printf( "parser Throw O\n" );
             Throw 0;
           }
           vector_dealloc( tmp->exp->value );
-          tmp->exp->value = $1;
+          tmp->exp->value = $1.vec;
         } else {
-          tmp->num = vector_to_int( $1 );
+          tmp->num = vector_to_int( $1.vec );
           tmp->exp = NULL;
-          vector_dealloc( $1 );
+          vector_dealloc( $1.vec );
         }
         $$ = tmp;
       } else {
-        vector_dealloc( $1 );
+        vector_dealloc( $1.vec );
         $$ = NULL;
       }
     }
@@ -1951,20 +1951,20 @@ expression
 expr_primary
   : NUMBER
     {
-      if( (ignore_mode == 0) && ($1 != NULL) ) {
+      if( (ignore_mode == 0) && ($1.vec != NULL) ) {
         expression* tmp;
         Try {
           tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
         } Catch_anonymous {
-          vector_dealloc( $1 );
+          vector_dealloc( $1.vec );
           printf( "parser Throw BA\n" );
           Throw 0;
         }
         vector_dealloc( tmp->value );
-        tmp->value = $1;
+        tmp->value = $1.vec;
         $$ = tmp;
       } else {
-        vector_dealloc( $1 );
+        vector_dealloc( $1.vec );
         $$ = NULL;
       }
     }
@@ -1979,15 +1979,15 @@ expr_primary
         Try {
           tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
         } Catch_anonymous {
-          vector_dealloc( $1 );
+          vector_dealloc( $1.vec );
           printf( "parser Throw BB\n" );
           Throw 0;
         }
         vector_dealloc( tmp->value );
-        tmp->value = $1;
+        tmp->value = $1.vec;
         $$ = tmp;
       } else {
-        vector_dealloc( $1 );
+        vector_dealloc( $1.vec );
         $$ = NULL;
       }
     }
@@ -2579,7 +2579,7 @@ udp_initial
   : K_initial IDENTIFIER '=' NUMBER ';'
     {
       free_safe( $2, (strlen( $2 ) + 1) );
-      vector_dealloc( $4 );
+      vector_dealloc( $4.vec );
     }
   ;
 
@@ -4022,8 +4022,8 @@ module_item
   | KK_attribute '(' IDENTIFIER ',' STRING ',' STRING ')' ';'
     {
       free_safe( $3, (strlen( $3 ) + 1) );
-      vector_dealloc( $5 );
-      vector_dealloc( $7 );
+      vector_dealloc( $5.vec );
+      vector_dealloc( $7.vec );
     } 
   | KK_attribute '(' error ')' ';'
     {
@@ -6411,21 +6411,21 @@ delay_value
 delay_value_simple
   : NUMBER
     {
-      if( (ignore_mode == 0) && ($1 != NULL) ) {
+      if( (ignore_mode == 0) && ($1.vec != NULL) ) {
         expression* tmp;
         Try {
           tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
         } Catch_anonymous {
-          vector_dealloc( $1 );
+          vector_dealloc( $1.vec );
           printf( "parser Throw FA\n" );
           Throw 0;
         }
         assert( tmp->value->value == NULL );
         free_safe( tmp->value, sizeof( vector ) );
-        tmp->value = $1;
+        tmp->value = $1.vec;
         $$ = tmp;
       } else {
-        vector_dealloc( $1 );
+        vector_dealloc( $1.vec );
         $$ = NULL;
       }
     }
@@ -7133,7 +7133,7 @@ parameter_value_opt
   | '#' '(' parameter_value_byname_list ')'
   | '#' NUMBER
     {
-      vector_dealloc( $2 );
+      vector_dealloc( $2.vec );
     }
   | '#' error
     {

@@ -250,10 +250,9 @@ static char* ovl_get_coverage_point( statement* stmt ) { PROFILE(OVL_GET_COVERAG
   assert( stmt->exp->left->op == EXP_OP_PASSIGN );
   assert( stmt->exp->left->right != NULL );
   assert( stmt->exp->left->right->op == EXP_OP_STATIC );
-  assert( stmt->exp->left->right->value != NULL );
-  assert( stmt->exp->left->right->value->suppl.part.base == QSTRING );
+  assert( ESUPPL_STATIC_BASE( stmt->exp->left->right->suppl ) == QSTRING );
 
-  return( vector_to_string( stmt->exp->left->right->value ) );  
+  return( vector_to_string( stmt->exp->left->right->value, ESUPPL_STATIC_BASE( stmt->exp->left->right->suppl ) ) );  
 
 }
 
@@ -469,6 +468,10 @@ void ovl_get_coverage( const func_unit* funit, const char* inst_name, char** ass
 
 /*
  $Log$
+ Revision 1.24  2008/03/18 21:36:24  phase1geo
+ Updates from regression runs.  Regressions still do not completely pass at
+ this point.  Checkpointing.
+
  Revision 1.23  2008/03/17 22:02:31  phase1geo
  Adding new check_mem script and adding output to perform memory checking during
  regression runs.  Completed work on free_safe and added realloc_safe function

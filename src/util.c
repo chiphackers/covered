@@ -119,11 +119,9 @@ void set_output_suppression( bool value ) { PROFILE(SET_OUTPUT_SUPPRESSION);
 
  Sets the global debug mode to the specified value.
 */
-void set_debug( bool value ) { PROFILE(SET_DEBUG);
+void set_debug( bool value ) {
 
   debug_mode = value;
-
-  PROFILE_END;
 
 }
 
@@ -1322,6 +1320,9 @@ void calc_miss_percent(
 
 /*
  $Log$
+ Revision 1.85  2008/03/22 05:23:24  phase1geo
+ More attempts to fix memory problems.  Things are still pretty broke at the moment.
+
  Revision 1.84  2008/03/18 05:11:28  phase1geo
  More bug fixes for memory handling.
 

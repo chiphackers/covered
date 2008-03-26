@@ -378,7 +378,7 @@ void codegen_gen_expr(
       *code       = (char**)malloc_safe( sizeof( char* ) );
       *code_depth = 1;
 
-      if( expr->value->suppl.part.base == DECIMAL ) {
+      if( ESUPPL_STATIC_BASE( expr->suppl ) == DECIMAL ) {
 
         rv = snprintf( code_format, 20, "%d", vector_to_int( expr->value ) );
         assert( rv < 20 );
@@ -387,10 +387,10 @@ void codegen_gen_expr(
         }
         (*code)[0] = strdup_safe( code_format );
 
-      } else if( expr->value->suppl.part.base == QSTRING ) {
+      } else if( ESUPPL_STATIC_BASE( expr->suppl ) == QSTRING ) {
 
         unsigned int slen;
-        tmpstr = vector_to_string( expr->value );
+        tmpstr = vector_to_string( expr->value, QSTRING );
         slen   = strlen( tmpstr ) + 3;
         (*code)[0] = (char*)malloc_safe( slen );
         rv = snprintf( (*code)[0], slen, "\"%s\"", tmpstr );
@@ -399,7 +399,7 @@ void codegen_gen_expr(
 
       } else { 
 
-        (*code)[0] = vector_to_string( expr->value );
+        (*code)[0] = vector_to_string( expr->value, ESUPPL_STATIC_BASE( expr->suppl ) );
 
       }
 
@@ -965,6 +965,9 @@ void codegen_gen_expr(
 
 /*
  $Log$
+ Revision 1.90  2008/03/18 03:56:44  phase1geo
+ More updates for memory checking (some "fixes" here as well).
+
  Revision 1.89  2008/03/17 22:02:30  phase1geo
  Adding new check_mem script and adding output to perform memory checking during
  regression runs.  Completed work on free_safe and added realloc_safe function

@@ -342,13 +342,16 @@ static expression* fsm_arg_parse_value(
   expression* left;          /* Left child expression */
   expression* right;         /* Right child expression */
   vector*     vec;           /* Pointer to newly allocated vector value */
+  int         base;          /* Base of parsed string value */
   char        str_val[256];  /* String version of value parsed */
   int         msb;           /* Most-significant bit position of parameter */
   int         lsb;           /* Least-significant bit position of parameter */
   int         chars_read;    /* Number of characters read from sscanf() */
   mod_parm*   mparm;         /* Pointer to module parameter found */
 
-  if( (vec = vector_from_string( str, FALSE )) != NULL ) {
+  vector_from_string( str, FALSE, &vec, &base );
+
+  if( vec != NULL ) {
 
     /* This value represents a static value, handle as such */
     Try {
@@ -552,7 +555,7 @@ static void fsm_arg_parse_trans(
   assert( expr != NULL );
 
   /* Convert expression value to a string */
-  tmp = str = vector_to_string( expr->value );
+  tmp = str = vector_to_string( expr->value, DECIMAL );
 
   Try {
 
@@ -640,7 +643,7 @@ void fsm_arg_parse_attr(
       }
     } else if( (index == 2) && (strcmp( curr->name, "is" ) == 0) && (curr->expr != NULL) ) {
       if( fsml == NULL ) {
-        tmp = str = vector_to_string( curr->expr->value );
+        tmp = str = vector_to_string( curr->expr->value, DECIMAL );
         if( (in_state = fsm_arg_parse_state( &str, funit->name )) == NULL ) {
           unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Illegal input state expression (%s), file: %s", str, obf_file( funit->filename ) );
           assert( rv < USER_MSG_LENGTH );
@@ -660,7 +663,7 @@ void fsm_arg_parse_attr(
       }
     } else if( (index == 2) && (strcmp( curr->name, "os" ) == 0) && (curr->expr != NULL) ) {
       if( fsml == NULL ) {
-        tmp = str = vector_to_string( curr->expr->value );
+        tmp = str = vector_to_string( curr->expr->value, DECIMAL );
         if( (out_state = fsm_arg_parse_state( &str, funit->name )) == NULL ) {
           unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Illegal output state expression (%s), file: %s", str, obf_file( funit->filename ) );
           assert( rv < USER_MSG_LENGTH );
@@ -684,7 +687,7 @@ void fsm_arg_parse_attr(
     } else if( (index == 3) && (strcmp( curr->name, "os" ) == 0) && (out_state == NULL) &&
                (in_state != NULL) && (curr->expr != NULL) ) {
       if( fsml == NULL ) {
-        tmp = str = vector_to_string( curr->expr->value );
+        tmp = str = vector_to_string( curr->expr->value, DECIMAL );
         if( (out_state = fsm_arg_parse_state( &str, funit->name )) == NULL ) {
           unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Illegal output state expression (%s), file: %s", str, obf_file( funit->filename ) );
           assert( rv < USER_MSG_LENGTH );
@@ -718,7 +721,7 @@ void fsm_arg_parse_attr(
       }
     } else {
       unsigned int rv;
-      tmp = vector_to_string( curr->expr->value );
+      tmp = vector_to_string( curr->expr->value, DECIMAL );
       rv = snprintf( user_msg, USER_MSG_LENGTH, "Invalid covered_fsm attribute parameter (%s=%s), file: %s",
                      curr->name, tmp, obf_file( funit->filename ) );
       assert( rv < USER_MSG_LENGTH );
@@ -739,6 +742,9 @@ void fsm_arg_parse_attr(
 
 /*
  $Log$
+ Revision 1.48  2008/03/18 05:36:04  phase1geo
+ More updates (regression still broken).
+
  Revision 1.47  2008/03/17 05:26:16  phase1geo
  Checkpointing.  Things don't compile at the moment.
 

@@ -133,7 +133,9 @@ WSPACE [ \t\b\f]+
 
   /* Decimal number - Size indicated */
 [0-9][0-9_]*[ \t]*\'[sS]?[dD][ \t]*[0-9][0-9_]* {
-     vector* vec = vector_from_string( &yytext, FALSE );
+     vector* vec;
+     int     base;
+     vector_from_string( &yytext, FALSE, &vec, &base );
      assert( vec != NULL );
      yylval.number = vector_to_int( vec );
      vector_dealloc( vec );
@@ -142,7 +144,9 @@ WSPACE [ \t\b\f]+
 
   /* Binary number - Size indicated */
 [0-9][0-9_]*[ \t]*\'[sS]?[bB][ \t]*[0-1xzXZ_\?]+ {
-     vector* vec = vector_from_string( &yytext, FALSE );
+     vector* vec;
+     int     base;
+     vector_from_string( &yytext, FALSE, &vec, &base );
      assert( vec != NULL );
      yylval.number = vector_to_int( vec );
      vector_dealloc( vec );
@@ -151,7 +155,9 @@ WSPACE [ \t\b\f]+
 
   /* Octal number - Size indicated */
 [0-9][0-9_]*[ \t]*\'[sS]?[oO][ \t]*[0-7xzXZ_\?]+ {
-     vector* vec = vector_from_string( &yytext, FALSE );
+     vector* vec;
+     int     base;
+     vector_from_string( &yytext, FALSE, &vec, &base );
      assert( vec != NULL );
      yylval.number = vector_to_int( vec );
      vector_dealloc( vec );
@@ -160,7 +166,9 @@ WSPACE [ \t\b\f]+
 
   /* Hexidecimal number - Size indicated */
 [0-9][0-9_]*[ \t]*\'[sS]?[hH][ \t]*[0-9a-fA-FxzXZ_\?]+ {
-     vector* vec = vector_from_string( &yytext, FALSE );
+     vector* vec;
+     int     base;
+     vector_from_string( &yytext, FALSE, &vec, &base );
      assert( vec != NULL );
      yylval.number = vector_to_int( vec );
      vector_dealloc( vec );
@@ -169,7 +177,9 @@ WSPACE [ \t\b\f]+
 
   /* Decimal number - unsized */
 \'[sS]?[dD][ \t]*[0-9][0-9_]* {
-     vector* vec = vector_from_string( &yytext, FALSE );
+     vector* vec;
+     int     base;
+     vector_from_string( &yytext, FALSE, &vec, &base );
      assert( vec != NULL );
      yylval.number = vector_to_int( vec );
      vector_dealloc( vec );
@@ -178,7 +188,9 @@ WSPACE [ \t\b\f]+
 
   /* Binary number - unsized */
 \'[sS]?[bB][ \t]*[0-1xzXZ_\?]+ {
-     vector* vec = vector_from_string( &yytext, FALSE );
+     vector* vec;
+     int     base;
+     vector_from_string( &yytext, FALSE, &vec, &base );
      assert( vec != NULL );
      yylval.number = vector_to_int( vec );
      vector_dealloc( vec );
@@ -187,7 +199,9 @@ WSPACE [ \t\b\f]+
 
   /* Octal number - unsized */
 \'[sS]?[oO][ \t]*[0-7xzXZ_\?]+ {
-     vector* vec = vector_from_string( &yytext, FALSE );
+     vector* vec;
+     int     base;
+     vector_from_string( &yytext, FALSE, &vec, &base );
      assert( vec != NULL );
      yylval.number = vector_to_int( vec );
      vector_dealloc( vec );
@@ -196,7 +210,9 @@ WSPACE [ \t\b\f]+
 
   /* Hexidecimal number - unsized */
 \'[sS]?[hH][ \t]*[0-9a-fA-FxzXZ_\?]+ {
-     vector* vec = vector_from_string( &yytext, FALSE );
+     vector* vec;
+     int     base;
+     vector_from_string( &yytext, FALSE, &vec, &base );
      assert( vec != NULL );
      yylval.number = vector_to_int( vec );
      vector_dealloc( vec );
@@ -205,7 +221,9 @@ WSPACE [ \t\b\f]+
 
   /* Unsized decimal number */
 [0-9][0-9_]* {
-     vector* vec = vector_from_string( &yytext, FALSE );
+     vector* vec;
+     int     base;
+     vector_from_string( &yytext, FALSE, &vec, &base );
      assert( vec != NULL );
      yylval.number = vector_to_int( vec );
      vector_dealloc( vec );

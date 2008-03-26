@@ -76,11 +76,6 @@ static int  yywrap();
 static void check_for_pragma( char* comment );
 
 /*!
- Temporary string container.
-*/
-static char* tmpstr;
-
-/*!
  Pointer to head of file list to parse.
 */
 static str_link* filelist_head = 0;
@@ -288,13 +283,13 @@ WSPACE [ \t\b\f]+
         return 0;
  }
 <CSTRING>\"   { PROFILE(LEXER_CSTRING_A);
-	int str_len = strlen( yytext );
+	int   str_len = strlen( yytext );
+        char* tmpstr;
 	yylloc.last_column += 1;
 	BEGIN( state_enter );
-        yylval.text = strdup_safe( yytext );
-        yylval.text[ str_len - 1 ] = '\0';
-        tmpstr = yylval.text;
-        yylval.number = vector_from_string( &(yylval.text), TRUE );
+        tmpstr = strdup_safe( yytext );
+        tmpstr[ str_len - 1 ] = '\0';
+        vector_from_string( &(yylval.text), TRUE, &(yylval.number.vec), &(yylval.number.base) );
         free_safe( tmpstr, (str_len + 1) );
         return STRING;
  }
@@ -512,7 +507,7 @@ WSPACE [ \t\b\f]+
 <PARSE>[0-9][0-9_]*[ \t]*\'[sS]?[dD][ \t]*[0-9][0-9_]* {
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
-     yylval.number = vector_from_string( &yytext, FALSE );
+     vector_from_string( &yytext, FALSE, &(yylval.number.vec), &(yylval.number.base) );
      return NUMBER;
  }
 
@@ -520,7 +515,7 @@ WSPACE [ \t\b\f]+
 <PARSE>[0-9][0-9_]*[ \t]*\'[sS]?[bB][ \t]*[0-1xzXZ_\?]+ {
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
-     yylval.number = vector_from_string( &yytext, FALSE );
+     vector_from_string( &yytext, FALSE, &(yylval.number.vec), &(yylval.number.base) );
      return NUMBER;
  }
 
@@ -528,7 +523,7 @@ WSPACE [ \t\b\f]+
 <PARSE>[0-9][0-9_]*[ \t]*\'[sS]?[oO][ \t]*[0-7xzXZ_\?]+ {
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
-     yylval.number = vector_from_string( &yytext, FALSE );
+     vector_from_string( &yytext, FALSE, &(yylval.number.vec), &(yylval.number.base) );
      return NUMBER;
  }
 
@@ -536,7 +531,7 @@ WSPACE [ \t\b\f]+
 <PARSE>[0-9][0-9_]*[ \t]*\'[sS]?[hH][ \t]*[0-9a-fA-FxzXZ_\?]+ {
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
-     yylval.number = vector_from_string( &yytext, FALSE );
+     vector_from_string( &yytext, FALSE, &(yylval.number.vec), &(yylval.number.base) );
      return NUMBER;
  }
 
@@ -544,7 +539,7 @@ WSPACE [ \t\b\f]+
 <PARSE>\'[sS]?[dD][ \t]*[0-9][0-9_]* {
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
-     yylval.number = vector_from_string( &yytext, FALSE );
+     vector_from_string( &yytext, FALSE, &(yylval.number.vec), &(yylval.number.base) );
      return NUMBER;
  }
 
@@ -552,7 +547,7 @@ WSPACE [ \t\b\f]+
 <PARSE>\'[sS]?[bB][ \t]*[0-1xzXZ_\?]+ {
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
-     yylval.number = vector_from_string( &yytext, FALSE );
+     vector_from_string( &yytext, FALSE, &(yylval.number.vec), &(yylval.number.base) );
      return NUMBER;
  }
 
@@ -560,7 +555,7 @@ WSPACE [ \t\b\f]+
 <PARSE>\'[sS]?[oO][ \t]*[0-7xzXZ_\?]+ {
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
-     yylval.number = vector_from_string( &yytext, FALSE );
+     vector_from_string( &yytext, FALSE, &(yylval.number.vec), &(yylval.number.base) );
      return NUMBER;
  }
 
@@ -568,7 +563,7 @@ WSPACE [ \t\b\f]+
 <PARSE>\'[sS]?[hH][ \t]*[0-9a-fA-FxzXZ_\?]+ {
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
-     yylval.number = vector_from_string( &yytext, FALSE );
+     vector_from_string( &yytext, FALSE, &(yylval.number.vec), &(yylval.number.base) );
      return NUMBER;
  }
 
@@ -576,7 +571,7 @@ WSPACE [ \t\b\f]+
 <PARSE>[0-9][0-9_]* {
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
-     yylval.number = vector_from_string( &yytext, FALSE );
+     vector_from_string( &yytext, FALSE, &(yylval.number.vec), &(yylval.number.base) );
      return NUMBER;
  }
 

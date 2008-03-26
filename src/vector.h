@@ -87,9 +87,6 @@ void vector_set_type( vector* vec, int type );
 /*! \brief Returns value of vector output type. */
 int vector_get_type( vector* vec );
 
-/*! \brief Specifies if vector contains unknown values (X or Z) */
-bool vector_is_unknown( const vector* vec );
-
 /*! \brief Returns TRUE if specified vector has been set (simulated) */
 bool vector_is_set( vector* vec );
 
@@ -109,10 +106,18 @@ void vector_from_int( vector* vec, int value );
 void vector_from_uint64( vector* vec, uint64 value );
 
 /*! \brief Converts vector into a string value in specified format. */
-char* vector_to_string( vector* vec );
+char* vector_to_string(
+  vector* vec, 
+  int     base
+);
 
 /*! \brief Converts character string value into vector. */
-vector* vector_from_string( char** str, bool quoted );
+void vector_from_string(
+            char**   str,
+            bool     quoted,
+  /*@out@*/ vector** vec,
+  /*@out@*/ int*     base
+);
 
 /*! \brief Assigns specified VCD value to specified vector. */
 bool vector_vcd_assign(
@@ -179,6 +184,9 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.52  2008/03/13 10:28:55  phase1geo
+ The last of the exception handling modifications.
+
  Revision 1.51  2008/02/09 19:32:45  phase1geo
  Completed first round of modifications for using exception handler.  Regression
  passes with these changes.  Updated regressions per these changes.

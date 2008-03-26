@@ -112,7 +112,10 @@ while( defined( $line = <STDIN> ) ) {
     $malloc_size     = $1;
     $saw_malloc_size = 1;
 
-    print "Number of allocates: $num_allocs ($allocated bytes), number of frees: $num_frees ($freed bytes)\n";
+    # Output the number of allocates/deallocates to the user if they do not match
+    if( ($num_allocs != $num_frees) || ($allocated != $freed) ) {
+      print "Number of allocates: $num_allocs ($allocated bytes), number of frees: $num_frees ($freed bytes)\n";
+    }
 
     foreach $addr (keys %$addrs) {
       print STDERR "Found allocated address $addr from " . $addrs->{$addr}{AFILE} . ":" . $addrs->{$addr}{ALNUM} . "\n";

@@ -334,7 +334,7 @@
  supplemental fields are ANDed with this mask and ORed together to perform the
  merge.  See esuppl_u for information on which bits are masked.
 */
-#define ESUPPL_MERGE_MASK            0x1ffff
+#define ESUPPL_MERGE_MASK            0xfffff
 
 /*!
  Specifies the number of bits to store for a given expression for reentrant purposes.
@@ -431,6 +431,12 @@
  are specified \ref expression_types.
 */
 #define ESUPPL_TYPE(x)               x.part.type
+
+/*!
+ Returns the base type of the vector value if the expression is an EXP_OP_STATIC.  Legal
+ values are DECIMAL, HEXIDECIMAL, OCTAL, BINARY, and QSTRING.
+*/
+#define ESUPPL_STATIC_BASE(x)        x.part.base
 
 /*! @} */
 
@@ -783,7 +789,7 @@ typedef enum exp_op_type_e {
 /*!
  These expressions all use someone else's vectors instead of their own.
 */
-#define EXPR_OWNS_VEC(o,s)              ((o != EXP_OP_SIG)            && \
+#define EXPR_OWNS_VEC(o)                ((o != EXP_OP_SIG)            && \
                                          (o != EXP_OP_SBIT_SEL)       && \
                                          (o != EXP_OP_MBIT_SEL)       && \
                                          (o != EXP_OP_MBIT_POS)       && \
@@ -1344,27 +1350,29 @@ union esuppl_u {
                                      within its tree are also considered excluded (even if their excluded bits are not
                                      set. */
     control type           :3;  /*!< Bits 16:14.  Mask bit = 1.  Indicates how the pointer element should be treated as */
+    control base           :3;  /*!< Bits 19:17.  Mask bit = 1.  When the expression op is a STATIC, specifies the base
+                                     type of the value (DECIMAL, HEXIDECIMAL, OCTAL, BINARY, QSTRING). */
  
     /* UNMASKED BITS */
-    control eval_t         :1;  /*!< Bit 17.  Mask bit = 0.  Indicates that the value of the current expression is
+    control eval_t         :1;  /*!< Bit 20.  Mask bit = 0.  Indicates that the value of the current expression is
                                      currently set to TRUE (temporary value). */
-    control eval_f         :1;  /*!< Bit 18.  Mask bit = 0.  Indicates that the value of the current expression is
+    control eval_f         :1;  /*!< Bit 21.  Mask bit = 0.  Indicates that the value of the current expression is
                                      currently set to FALSE (temporary value). */
-    control comb_cntd      :1;  /*!< Bit 19.  Mask bit = 0.  Indicates that the current expression has been previously
+    control comb_cntd      :1;  /*!< Bit 22.  Mask bit = 0.  Indicates that the current expression has been previously
                                      counted for combinational coverage.  Only set by report command (therefore this bit
                                      will always be a zero when written to CDD file. */
-    control exp_added      :1;  /*!< Bit 20.  Mask bit = 0.  Temporary bit value used by the score command but not
+    control exp_added      :1;  /*!< Bit 23.  Mask bit = 0.  Temporary bit value used by the score command but not
                                      displayed to the CDD file.  When this bit is set to a one, it indicates to the
                                      db_add_expression function that this expression and all children expressions have
                                      already been added to the functional unit expression list and should not be added again. */
-    control owned          :1;  /*!< Bit 21.  Mask bit = 0.  Temporary value used by the score command to indicate
+    control owned          :1;  /*!< Bit 24.  Mask bit = 0.  Temporary value used by the score command to indicate
                                      if this expression is already owned by a mod_parm structure. */
-    control gen_expr       :1;  /*!< Bit 22.  Mask bit = 0.  Temporary value used by the score command to indicate
+    control gen_expr       :1;  /*!< Bit 25.  Mask bit = 0.  Temporary value used by the score command to indicate
                                      that this expression is a part of a generate expression. */
-    control prev_called    :1;  /*!< Bit 23.  Mask bit = 0.  Temporary value used by named block and task expression
+    control prev_called    :1;  /*!< Bit 26.  Mask bit = 0.  Temporary value used by named block and task expression
                                      functions to indicate if we are in the middle of executing a named block or task
                                      expression (since these cause a context switch to occur. */
-    control for_cntrl      :1;  /*!< Bit 24.  Mask bit = 0.  Temporary value used by the score command which sets to true
+    control for_cntrl      :1;  /*!< Bit 27.  Mask bit = 0.  Temporary value used by the score command which sets to true
                                      if this expression exists within the control portion of a for loop. */
   } part;
 };
@@ -1450,6 +1458,7 @@ union  expr_stmt_u;
 struct exp_info_s;
 struct str_link_s;
 struct vector_s;
+struct const_value_s;
 struct expression_s;
 struct vsignal_s;
 struct fsm_s;
@@ -1522,6 +1531,11 @@ typedef struct str_link_s str_link;
  Renaming vector structure for convenience.
 */
 typedef struct vector_s vector;
+
+/*!
+ Renaming vector structure for convenience.
+*/
+typedef struct const_value_s const_value;
 
 /*!
  Renaming expression statement union for convenience.
@@ -1837,13 +1851,28 @@ struct vector_s {
     struct {
       nibble type      :2;           /*!< Specifies what type of information is stored in this vector
                                           (see \ref vector_types for legal values) */
-      nibble base      :3;           /*!< Base-type of this data when originally parsed */
+      nibble not_zero  :1;           /*!< Specifies that at least one bit in the vector value is not zero */
+      nibble unknown   :1;           /*!< Specifies that at least one bit in the vector value is unknown (X or Z) */
       nibble owns_data :1;           /*!< Specifies if this vector owns its data array or not */
       nibble is_signed :1;           /*!< Specifies that this vector should be treated as a signed value */
       nibble is_2state :1;           /*!< Specifies that this vector should be treated as a 2-state value */
     } part;
   } suppl;                           /*!< Supplemental field */
   vec_data*  value;                  /*!< 4-state current value and toggle history */
+};
+
+/*!
+ Clears the not_zero and unknown bits from the given vector supplemental field.  This needs to be called
+ prior to calling the vector_set_value function.
+*/
+#define VSUPPL_CLR_NZ_AND_UNK(x)     x.all &= 0xf3;
+
+/*!
+ Contains information about a parsed constant value including its data and base type.
+*/
+struct const_value_s {
+  vector* vec;                       /*!< Pointer to vector containing constant value */
+  int     base;                      /*!< Base type of constant value */
 };
 
 /*!
@@ -2538,6 +2567,11 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.287  2008/03/17 22:02:30  phase1geo
+ Adding new check_mem script and adding output to perform memory checking during
+ regression runs.  Completed work on free_safe and added realloc_safe function
+ calls.  Regressions are pretty broke at the moment.  Checkpointing.
+
  Revision 1.286  2008/02/28 07:54:09  phase1geo
  Starting to add functionality for simulation optimization in the sim_expr_changed
  function (feature request 1897410).

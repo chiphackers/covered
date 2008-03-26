@@ -390,9 +390,11 @@ bool exclude_set_fsm_exclude( const char* funit_name, int funit_type, int expr_i
 
     if( curr_fsm != NULL ) {
 
+      int from_base, to_base;
+
       /* Convert from/to state strings into vector values */
-      from_vec = vector_from_string( &from_state, FALSE );
-      to_vec   = vector_from_string( &to_state, FALSE );
+      vector_from_string( &from_state, FALSE, &from_vec, &from_base );
+      vector_from_string( &to_state, FALSE, &to_vec, &to_base );
 
       /* Find the arc entry and perform the exclusion assignment and coverage recalculation */
       if( (find_val = arc_find( curr_fsm->table->table, from_vec, to_vec, &found_index )) != 2 ) {
@@ -459,6 +461,11 @@ bool exclude_set_assert_exclude(
 
 /*
  $Log$
+ Revision 1.20  2008/02/25 18:22:16  phase1geo
+ Moved statement supplemental bits from root expression to statement and starting
+ to add support for race condition checking pragmas (still some work left to do
+ on this item).  Updated IV and Cver regressions per these changes.
+
  Revision 1.19  2008/01/30 05:51:50  phase1geo
  Fixing doxygen errors.  Updated parameter list syntax to make it more readable.
 

@@ -138,7 +138,7 @@ void enumerate_resolve( funit_inst* inst ) { PROFILE(ENUMERATE_RESOLVE);
     first = ei->last;
 
     /* Set last_value to that of this this signal value */
-    if( !vector_is_unknown( ei->sig->value ) ) {
+    if( !ei->sig->value->suppl.part.unknown ) {
       last_value = vector_to_int( ei->sig->value );
     } else {
       last_value = -1;
@@ -194,6 +194,10 @@ void enumerate_dealloc_list( func_unit* funit ) { PROFILE(ENUMERATE_DEALLOC_LIST
 
 /*
  $Log$
+ Revision 1.15  2008/03/14 22:00:18  phase1geo
+ Beginning to instrument code for exception handling verification.  Still have
+ a ways to go before we have anything that is self-checking at this point, though.
+
  Revision 1.14  2008/03/09 20:45:47  phase1geo
  More exception handling updates.
 

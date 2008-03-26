@@ -301,7 +301,7 @@ static bool arc_set_states( char* arcs, int start, const vector* left, const vec
   int           index;          /* Current index of vector to extract */
 
   /* Check specified vector for unknown information */
-  if( vector_is_unknown( left ) || vector_is_unknown( right ) ) {
+  if( left->suppl.part.unknown || right->suppl.part.unknown ) {
 
     retval = FALSE;
 
@@ -605,7 +605,7 @@ void arc_add(
 
   assert( *arcs != NULL );
 
-  if( !vector_is_unknown( fr_st ) && !vector_is_unknown( to_st ) ) {
+  if( !fr_st->suppl.part.unknown && !to_st->suppl.part.unknown ) {
 
     ptr  = 1;   /* Tell find function to check for a match even if opposite bit is not set. */
     side = arc_find( *arcs, fr_st, to_st, &ptr );
@@ -1201,13 +1201,15 @@ void arc_db_merge(
 
   for( i=0; i<arc_get_curr_size( arcs ); i++ ) {
 
+    int basel, baser;
+
     /* Get string versions of state values */
     arc_state_to_string( arcs, i, TRUE,  (strl + 2 + strlen( str_width )) );      
     arc_state_to_string( arcs, i, FALSE, (strr + 2 + strlen( str_width )) );      
 
     /* Convert these strings to vectors */
-    vecl = vector_from_string( &strl, FALSE );
-    vecr = vector_from_string( &strr, FALSE );
+    vector_from_string( &strl, FALSE, &vecl, &basel );
+    vector_from_string( &strr, FALSE, &vecr, &baser );
 
     /* Add these states to the base arc array */
     arc_add( base, vecl, vecr, arc_get_entry_suppl( arcs, i, ARC_HIT_F ), FALSE );
@@ -1414,6 +1416,10 @@ void arc_dealloc( char* arcs ) { PROFILE(ARC_DEALLOC);
 
 /*
  $Log$
+ Revision 1.58  2008/03/18 21:36:24  phase1geo
+ Updates from regression runs.  Regressions still do not completely pass at
+ this point.  Checkpointing.
+
  Revision 1.57  2008/03/18 05:36:04  phase1geo
  More updates (regression still broken).
 

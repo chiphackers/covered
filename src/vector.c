@@ -282,9 +282,6 @@ void vector_db_write(
   /* Calculate default value of bit */
   dflt = (vec->suppl.part.is_2state == 1) ? 0x0 : 0x2;
 
-  /* Set owns_data supplemental bit in all cases */
-  //vec->suppl.part.owns_data = 1;
-
   /* Output vector information to specified file */
   /*@-formatcode@*/
   fprintf( file, "%d %hhu",
@@ -962,6 +959,7 @@ bool vector_set_value(
   vec_data  set_val;         /* Value to set current vec value to */
   vec_data* vval;            /* Pointer to vector value array */
   nibble    v2st;            /* Value to AND with from value bit if the target is a 2-state value */
+  nibble    ored = 0;        /* Stored valued in vector OR'ed */
 
   assert( vec != NULL );
 
@@ -979,6 +977,7 @@ bool vector_set_value(
     case VTYPE_VAL :
       for( i=0; i<width; i++ ) {
         vval[i + to_idx].part.val.value = ((v2st & value[i + from_idx].part.val.value) > 1) ? 0 : value[i + from_idx].part.val.value;
+        ored |= vval[i + to_idx].part.val.value;
       }
       retval = TRUE;
       break;
@@ -999,6 +998,7 @@ bool vector_set_value(
           /* Perform value assignment */
           set_val.part.sig.set   = 1;
           set_val.part.sig.value = from_val;
+          ored                  |= from_val;
           vval[i + to_idx]       = set_val;
           retval = TRUE;
         }
@@ -1020,6 +1020,7 @@ bool vector_set_value(
           set_val.part.mem.wr = 1;
           /* Perform value assignment */
           set_val.part.mem.value = from_val;
+          ored                  |= from_val;
           vval[i + to_idx]       = set_val;
           retval = TRUE;
         }
@@ -1034,6 +1035,7 @@ bool vector_set_value(
           /* Perform value assignment */
           set_val.part.exp.set   = 1;
           set_val.part.exp.value = from_val;
+          ored                  |= from_val;
           vval[i + to_idx]       = set_val;
           retval = TRUE;
         }
@@ -1041,6 +1043,9 @@ bool vector_set_value(
       break;
     default : break;
   }
+
+  /* Store OR'ed value bits in the vector supplemental field bits not_zero and unknown */
+  vec->suppl.all |= (ored << 2);
 
   PROFILE_END;
 
@@ -1088,39 +1093,6 @@ bool vector_bit_fill(
   PROFILE_END;
 
   return( changed );
-
-}
-
-/*!
- \param vec  Pointer to vector to check for unknowns.
-
- \return Returns TRUE if the specified vector contains unknown values; otherwise, returns FALSE.
-
- Checks specified vector for any X or Z values and returns TRUE if any are found; otherwise,
- returns a value of false.  This function is useful to be called before vector_to_int is called.
-*/
-bool vector_is_unknown(
-  const vector* vec
-) { PROFILE(VECTOR_IS_UNKNOWN);
-
-  bool unknown = FALSE;  /* Specifies if vector contains unknown values */
-  int  i;                /* Loop iterator */
-  int  val;              /* Bit value of current bit */
-
-  assert( vec != NULL );
-  assert( vec->width > 0 );
-  assert( vec->value != NULL );
-
-  for( i=0; i<vec->width; i++ ) {
-    val = vec->value[i].part.val.value;
-    if( (val == 0x2) || (val == 0x3) ) {
-      unknown = TRUE;
-    }
-  }
-
-  PROFILE_END;
-
-  return( unknown );
 
 }
 
@@ -1295,13 +1267,18 @@ void vector_from_int(
   int     value
 ) { PROFILE(VECTOR_FROM_INT);
 
-  int width;  /* Number of bits to convert */
-  int i;      /* Loop iterator */
+  int width;        /* Number of bits to convert */
+  int i;            /* Loop iterator */
+  nibble ored = 0;  /* OR'ed contents of stored data */
 
   width = (vec->width < (SIZEOF_INT * 8)) ? vec->width : (SIZEOF_INT * 8);
 
+  /* Clear the not_zero and unknown bits of the supplemental field */
+  VSUPPL_CLR_NZ_AND_UNK( vec->suppl );
+
   for( i=0; i<width; i++ ) {
     vec->value[i].part.val.value = (value & 0x1);
+    ored |= (value & 0x1);
     /*@-shiftimplementation@*/
     value >>= 1;
     /*@=shiftimplementation@*/
@@ -1309,6 +1286,9 @@ void vector_from_int(
 
   /* Because this value came from an integer, specify that the vector is signed */
   vec->suppl.part.is_signed = 1;
+
+  /* Set the not_zero bit */
+  vec->suppl.all |= (ored << 2);
 
   PROFILE_END;
 
@@ -1361,10 +1341,11 @@ static void vector_set_static(
   int     bits_per_char
 ) { PROFILE(VECTOR_SET_STATIC);
 
-  char*        ptr;  /* Pointer to current character evaluating */
-  unsigned int pos;  /* Current bit position in vector */
-  unsigned int val;  /* Temporary holder for value of current character */
-  unsigned int i;    /* Loop iterator */
+  char*        ptr;       /* Pointer to current character evaluating */
+  unsigned int pos;       /* Current bit position in vector */
+  unsigned int val;       /* Temporary holder for value of current character */
+  unsigned int i;         /* Loop iterator */
+  nibble       ored = 0;  /* OR'ed contents of value */
 
   pos = 0;
 
@@ -1376,12 +1357,14 @@ static void vector_set_static(
         for( i=0; i<bits_per_char; i++ ) {
           if( (i + pos) < vec->width ) { 
             vec->value[i + pos].part.val.value = 0x2;
+            ored |= 0x2;
           }
         }
       } else if( (*ptr == 'z') || (*ptr == 'Z') || (*ptr == '?') ) {
         for( i=0; i<bits_per_char; i++ ) {
           if( (i + pos) < vec->width ) { 
             vec->value[i + pos].part.val.value = 0x3;
+            ored |= 0x2;
           }
         }
       } else {
@@ -1396,6 +1379,7 @@ static void vector_set_static(
         for( i=0; i<bits_per_char; i++ ) {
           if( (i + pos) < vec->width ) {
             vec->value[i + pos].part.val.value = ((val >> i) & 0x1);
+            ored |= vec->value[i + pos].part.val.value;
           } 
         }
       }
@@ -1404,12 +1388,16 @@ static void vector_set_static(
     ptr--;
   }
 
+  /* Update the not_zero and unknown bits in the given vector */
+  vec->suppl.all |= (ored << 2);
+
   PROFILE_END;
 
 }  
 
 /*!
  \param vec   Pointer to vector to convert.
+ \param base  Base type of vector value.
 
  \return Returns pointer to the allocated/coverted string.
 
@@ -1418,7 +1406,8 @@ static void vector_set_static(
  value to change vector into.
 */
 char* vector_to_string(
-  vector* vec
+  vector* vec,
+  int     base
 ) { PROFILE(VECTOR_TO_STRING);
 
   char*        str = NULL;     /* Pointer to allocated string */
@@ -1432,7 +1421,7 @@ char* vector_to_string(
   nibble       value;          /* Current value of string character */
   char         width_str[20];  /* Holds value of width string to calculate string size */
 
-  if( vec->suppl.part.base == QSTRING ) {
+  if( base == QSTRING ) {
 
     vec_size  = ((vec->width % 8) == 0) ? ((vec->width / 8) + 1)
                                         : ((vec->width / 8) + 2);
@@ -1462,7 +1451,7 @@ char* vector_to_string(
 
     unsigned int rv;
 
-    switch( vec->suppl.part.base ) {
+    switch( base ) {
       case BINARY :  
         vec_size  = (vec->width + 1);
         group     = 1;
@@ -1481,9 +1470,7 @@ char* vector_to_string(
         type_char = 'h';
         break;
       default          :  
-        assert( (vec->suppl.part.base == BINARY) ||
-                (vec->suppl.part.base == OCTAL)  ||
-                (vec->suppl.part.base == HEXIDECIMAL) );
+        assert( (base == BINARY) || (base == OCTAL)  || (base == HEXIDECIMAL) );
         /*@-unreachable@*/
         break;
         /*@=unreachable@*/
@@ -1557,21 +1544,17 @@ char* vector_to_string(
 }
 
 /*!
- \param str     String version of value.
- \param quoted  If TRUE, treat the string as a literal.
- 
- \return Returns pointer to newly created vector holding string value.
-
  Converts a string value from the lexer into a vector structure appropriately
  sized.  If the string value size exceeds Covered's maximum bit allowance, return
  a value of NULL to indicate this to the calling function.
 */
-vector* vector_from_string(
-  char** str,
-  bool   quoted
+void vector_from_string(
+  char**   str,    /*!< String version of value */
+  bool     quoted, /*!< If TRUE, treat the string as a literal */
+  vector** vec,    /*!< Pointer to vector to allocate and populate with string information */
+  int*     base    /*!< Base type of string value parsed */
 ) { PROFILE(VECTOR_FROM_STRING);
 
-  vector*      vec;                   /* Temporary holder for newly created vector */
   int          bits_per_char;         /* Number of bits represented by a single character in the value string str */
   int          size;                  /* Specifies bit width of vector to create */
   char         value[MAX_BIT_WIDTH];  /* String to store string value in */
@@ -1589,22 +1572,27 @@ vector* vector_from_string(
     /* If we have exceeded the maximum number of bits, return a value of NULL */
     if( size > MAX_BIT_WIDTH ) {
 
-      vec = NULL;
+      *vec  = NULL;
+      *base = 0;
 
     } else {
 
-      /* Create vector */
-      vec = vector_create( size, VTYPE_VAL, TRUE );
+      nibble ored = 0;
 
-      vec->suppl.part.base = QSTRING;
-      pos                  = 0;
+      /* Create vector */
+      *vec  = vector_create( size, VTYPE_VAL, TRUE );
+      *base = QSTRING;
+      pos   = 0;
 
       for( i=(strlen( *str ) - 1); i>=0; i-- ) {
         for( j=0; j<8; j++ ) {
-          vec->value[pos].part.val.value = ((nibble)((*str)[i]) >> j) & 0x1;
+          (*vec)->value[pos].part.val.value = ((nibble)((*str)[i]) >> j) & 0x1;
+          ored |= (*vec)->value[pos].part.val.value;
           pos++;
         }
       }
+
+      (*vec)->suppl.all |= (ored << 2);
 
     }
 
@@ -1612,43 +1600,43 @@ vector* vector_from_string(
 
     if( sscanf( *str, "%d'%[sSdD]%[0-9]%n", &size, stype, value, &chars_read ) == 3 ) {
       bits_per_char = 10;
-      type          = DECIMAL;
+      *base         = DECIMAL;
       *str          = *str + chars_read;
     } else if( sscanf( *str, "%d'%[sSbB]%[01xXzZ_\?]%n", &size, stype, value, &chars_read ) == 3 ) {
       bits_per_char = 1;
-      type          = BINARY;
+      *base         = BINARY;
       *str          = *str + chars_read;
     } else if( sscanf( *str, "%d'%[sSoO]%[0-7xXzZ_\?]%n", &size, stype, value, &chars_read ) == 3 ) {
       bits_per_char = 3;
-      type          = OCTAL;
+      *base         = OCTAL;
       *str          = *str + chars_read;
     } else if( sscanf( *str, "%d'%[sShH]%[0-9a-fA-FxXzZ_\?]%n", &size, stype, value, &chars_read ) == 3 ) {
       bits_per_char = 4;
-      type          = HEXIDECIMAL;
+      *base         = HEXIDECIMAL;
       *str          = *str + chars_read;
     } else if( sscanf( *str, "'%[sSdD]%[0-9]%n", stype, value, &chars_read ) == 2 ) {
       bits_per_char = 10;
-      type          = DECIMAL;
+      *base         = DECIMAL;
       size          = 32;
       *str          = *str + chars_read;
     } else if( sscanf( *str, "'%[sSbB]%[01xXzZ_\?]%n", stype, value, &chars_read ) == 2 ) {
       bits_per_char = 1;
-      type          = BINARY;
+      *base         = BINARY;
       size          = 32;
       *str          = *str + chars_read;
     } else if( sscanf( *str, "'%[sSoO]%[0-7xXzZ_\?]%n", stype, value, &chars_read ) == 2 ) {
       bits_per_char = 3;
-      type          = OCTAL;
+      *base         = OCTAL;
       size          = 32;
       *str          = *str + chars_read;
     } else if( sscanf( *str, "'%[sShH]%[0-9a-fA-FxXzZ_\?]%n", stype, value, &chars_read ) == 2 ) {
       bits_per_char = 4;
-      type          = HEXIDECIMAL;
+      *base         = HEXIDECIMAL;
       size          = 32;
       *str          = *str + chars_read;
     } else if( sscanf( *str, "%[0-9_]%n", value, &chars_read ) == 1 ) {
       bits_per_char = 10;
-      type          = DECIMAL;
+      *base         = DECIMAL;
       stype[0]      = 's';       
       stype[1]      = '\0';
       size          = 32;
@@ -1661,24 +1649,24 @@ vector* vector_from_string(
     /* If we have exceeded the maximum number of bits, return a value of NULL */
     if( (size > MAX_BIT_WIDTH) || (bits_per_char == 0) ) {
 
-      vec = NULL;
+      *vec  = NULL;
+      *base = 0;
 
     } else {
 
       /* Create vector */
-      vec = vector_create( size, VTYPE_VAL, TRUE );
-      vec->suppl.part.base = type;
+      *vec = vector_create( size, VTYPE_VAL, TRUE );
       if( type == DECIMAL ) {
-        vector_from_int( vec, ato32( value ) );
+        vector_from_int( *vec, ato32( value ) );
       } else {
-        vector_set_static( vec, value, bits_per_char ); 
+        vector_set_static( *vec, value, bits_per_char ); 
       }
 
       /* Set the signed bit to the appropriate value based on the signed indicator in the vector string */
       if( (stype[0] == 's') || (stype [0] == 'S') ) {
-        vec->suppl.part.is_signed = 1;
+        (*vec)->suppl.part.is_signed = 1;
       } else {
-        vec->suppl.part.is_signed = 0;
+        (*vec)->suppl.part.is_signed = 0;
       }
 
     }
@@ -1686,8 +1674,6 @@ vector* vector_from_string(
   }
 
   PROFILE_END;
-
-  return( vec );
 
 }
 
@@ -1726,6 +1712,9 @@ bool vector_vcd_assign(
   ptr = (value + strlen( value )) - 1;
   i   = (lsb > 0) ? lsb : 0;
   msb = (lsb > 0) ? msb : msb;
+
+  /* Clear the unknown and not_zero bits */
+  VSUPPL_CLR_NZ_AND_UNK( vec->suppl )
     
   while( ptr >= value ) {
 
@@ -1802,6 +1791,9 @@ bool vector_bitwise_op(
 
   vector_init( &vec, &vecval, FALSE, 1, VTYPE_VAL );
 
+  /* Clear the unknown and not_zero bits */
+  VSUPPL_CLR_NZ_AND_UNK( tgt->suppl )
+    
   for( i=0; i<tgt->width; i++ ) {
 
     if( src1->width > i ) {
@@ -1854,6 +1846,9 @@ bool vector_op_compare(
   vec_data value;           /* Result to be stored in tgt */
   bool     is_signed;       /* Specifies if we are doing a signed compare */
 
+  /* Clear the unknown and not_zero bits */
+  VSUPPL_CLR_NZ_AND_UNK( tgt->suppl )
+    
   /* Determine at which bit position to begin comparing, start at MSB of largest vector */
   if( left->width > right->width ) {
     pos = left->width - 1;
@@ -1984,7 +1979,10 @@ bool vector_op_lshift(
   zero.all    = 0;
   unknown.all = 2;
 
-  if( vector_is_unknown( right ) ) {
+  /* Clear the unknown and not_zero bits */
+  VSUPPL_CLR_NZ_AND_UNK( tgt->suppl )
+    
+  if( right->suppl.part.unknown ) {
 
     for( i=0; i<tgt->width; i++ ) {
       retval |= vector_set_value( tgt, &unknown, 1, 0, i );
@@ -2036,7 +2034,10 @@ bool vector_op_rshift(
   zero.all    = 0;
   unknown.all = 2;
 
-  if( vector_is_unknown( right ) ) {
+  /* Clear the unknown and not_zero bits */
+  VSUPPL_CLR_NZ_AND_UNK( tgt->suppl )
+    
+  if( right->suppl.part.unknown ) {
 
     for( i=0; i<tgt->width; i++ ) {
       retval |= vector_set_value( tgt, &unknown, 1, 0, i );
@@ -2089,7 +2090,10 @@ bool vector_op_arshift(
   sign.part.val.value = left->value[left->width - 1].part.val.value;
   unknown.all         = 2;
 
-  if( vector_is_unknown( right ) ) {
+  /* Clear the unknown and not_zero bits */
+  VSUPPL_CLR_NZ_AND_UNK( tgt->suppl )
+    
+  if( right->suppl.part.unknown ) {
 
     for( i=0; i<tgt->width; i++ ) {
       retval |= vector_set_value( tgt, &unknown, 1, 0, i );
@@ -2136,7 +2140,11 @@ bool vector_op_add(
   int    tgt_width = tgt->width;
   nibble v2st      = tgt->suppl.part.is_2state;
   nibble carry     = 0;
+  nibble ored      = 0;
 
+  /* Clear the unknown and not_zero bits */
+  VSUPPL_CLR_NZ_AND_UNK( tgt->suppl )
+    
   switch( tgt->suppl.part.type ) {
     case VTYPE_EXP :
       for( i=0; i<tgt_width; i++ ) {
@@ -2151,6 +2159,7 @@ bool vector_op_add(
           carry                        = val >> 1;
         }
         tgt->value[i].part.exp.set = 1;
+        ored |= tgt->value[i].part.exp.value;
       }
       break;
     case VTYPE_SIG :
@@ -2173,6 +2182,7 @@ bool vector_op_add(
           carry                        = val >> 1;
         }
         tgt->value[i].part.sig.set = 1;
+        ored |= tgt->value[i].part.sig.value;
       }
       break;
     case VTYPE_VAL :
@@ -2187,6 +2197,7 @@ bool vector_op_add(
           tgt->value[i].part.val.value = val & 0x1;
           carry                        = val >> 1;
         }
+        ored |= tgt->value[i].part.val.value;
       }
       break;
     case VTYPE_MEM :
@@ -2207,9 +2218,13 @@ bool vector_op_add(
           carry                        = val >> 1;
         }
         tgt->value[i].part.mem.wr = 1;
+        ored |= tgt->value[i].part.mem.value;
       }
       break;
   }
+
+  /* Update the unknown and not_zero bits */
+  tgt->suppl.all |= (ored << 2);
 
   PROFILE_END;
 
@@ -2314,59 +2329,61 @@ bool vector_op_multiply(
   vector* right
 ) { PROFILE(VECTOR_OP_MULTIPLY);
 
-  bool     retval = FALSE;  /* Return value for this function */
-  vector   lcomp;           /* Compare vector left */
-  vec_data lcomp_val;       /* Compare value left */
-  vector   rcomp;           /* Compare vector right */
-  vec_data rcomp_val;       /* Compare value right */
-  vector   vec;             /* Intermediate vector */
-  vec_data vec_val[32];     /* Intermediate value */
-  int      i;               /* Loop iterator */
+  bool     retval   = FALSE;                      /* Return value for this function */
+  vector   vec;                                   /* Intermediate vector */
+  vec_data vec_val[32];                           /* Intermediate value */
+  nibble   lunknown = left->suppl.part.unknown;   /* Set to 1 if left vector is unknown */
+  nibble   runknown = right->suppl.part.unknown;  /* Set to 1 if right vector is unknown */
 
   /* Initialize temporary vectors */
-  vector_init( &lcomp, &lcomp_val, FALSE, 1,  VTYPE_VAL );
-  vector_init( &rcomp, &rcomp_val, FALSE, 1,  VTYPE_VAL );
-  vector_init( &vec,   vec_val,    FALSE, 32, VTYPE_VAL );
-
-  (void)vector_unary_op( &lcomp, left,  xor_optab );
-  (void)vector_unary_op( &rcomp, right, xor_optab );
+  vector_init( &vec, vec_val, FALSE, 32, VTYPE_VAL );
 
   /* Perform 4-state multiplication */
-  if( (lcomp.value[0].part.val.value == 2) && (rcomp.value[0].part.val.value == 2) ) {
+  if( !lunknown && !runknown ) {
 
-    for( i=0; i<vec.width; i++ ) {
-      vec.value[i].part.val.value = 2;
+    vector_from_int( &vec, (vector_to_int( left ) * vector_to_int( right )) );
+
+  } else if( lunknown ) {
+
+    if( runknown ) {
+
+      int i;
+      for( i=0; i<vec.width; i++ ) {
+        vec.value[i].part.val.value = 2;
+      }
+
+    } else {
+
+      if( vector_to_int( right ) == 0 ) {
+        vector_from_int( &vec, 0 );
+      } else if( vector_to_int( right ) == 1 ) {
+        (void)vector_set_value( &vec, left->value, left->width, 0, 0 );
+      } else {
+        int i;
+        for( i=0; i<vec.width; i++ ) {
+          vec.value[i].part.val.value = 2;
+        }
+      }
+
     }
 
-  } else if( (lcomp.value[0].part.val.value != 2) && (rcomp.value[0].part.val.value== 2) ) {
+  } else {
 
     if( vector_to_int( left ) == 0 ) {
       vector_from_int( &vec, 0 );
     } else if( vector_to_int( left ) == 1 ) {
       (void)vector_set_value( &vec, right->value, right->width, 0, 0 );
     } else {
+      int i;
       for( i=0; i<vec.width; i++ ) {
         vec.value[i].part.val.value = 2;
       }
     }
-
-  } else if( (lcomp.value[0].part.val.value == 2) && (rcomp.value[0].part.val.value != 2) ) {
-
-    if( vector_to_int( right ) == 0 ) {
-      vector_from_int( &vec, 0 );
-    } else if( vector_to_int( right ) == 1 ) {
-      (void)vector_set_value( &vec, left->value, left->width, 0, 0 );
-    } else {
-      for( i=0; i<vec.width; i++ ) {
-        vec.value[i].part.val.value = 2;
-      }
-    }
-
-  } else {
-
-    vector_from_int( &vec, (vector_to_int( left ) * vector_to_int( right )) );
 
   }
+
+  /* Clear the unknown and not_zero bits */
+  VSUPPL_CLR_NZ_AND_UNK( tgt->suppl )
 
   /* Set target value */
   retval = vector_set_value( tgt, vec.value, vec.width, 0, 0 );
@@ -2461,6 +2478,9 @@ bool vector_unary_inv(
 
   swidth = (tgt->width < src->width) ? tgt->width : src->width;
 
+  /* Clear the unknown and not_zero bits */
+  VSUPPL_CLR_NZ_AND_UNK( tgt->suppl )
+
   for( i=0; i<swidth; i++ ) {
 
     bit = src->value[i].part.val.value;
@@ -2522,6 +2542,9 @@ bool vector_unary_op(
       uval = optab[ ((uval << 2) | bit) ]; 
     }
 
+    /* Clear the unknown and not_zero bits */
+    VSUPPL_CLR_NZ_AND_UNK( tgt->suppl )
+
     vec.value[0].part.val.value = uval;
     retval = vector_set_value( tgt, vec.value, 1, 0, 0 );
 
@@ -2551,8 +2574,7 @@ bool vector_unary_not(
   vec_data vec_val;  /* Temporary value */
 
   vector_init( &vec, &vec_val, FALSE, 1, VTYPE_VAL );
-  (void)vector_unary_op( &vec, src, or_optab );
-
+  vec_val.part.val.value = src->suppl.part.unknown ? 2 : src->suppl.part.not_zero;
   retval = vector_unary_inv( tgt, &vec );
 
   PROFILE_END;
@@ -2590,6 +2612,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.124  2008/03/24 13:55:46  phase1geo
+ More attempts to fix memory issues.  Checkpointing.
+
  Revision 1.123  2008/03/24 13:16:46  phase1geo
  More changes for memory allocation/deallocation issues.  Things are still pretty
  broke at the moment.
