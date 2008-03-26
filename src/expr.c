@@ -3730,11 +3730,19 @@ bool expression_op_func__default(
 
  Performs a blocking assignment operation.
 */
-bool expression_op_func__bassign( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__BASSIGN);
+bool expression_op_func__bassign(
+  expression*     expr,
+  thread*         thr,
+  const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__BASSIGN);
 
   int intval = 0;  /* Integer value */
 
   expression_assign( expr->left, expr->right, &intval, ((thr == NULL) ? time : &(thr->curr_time)) );
+
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr );
+  expression_set_unary_evals( expr );
 
   PROFILE_END;
 
@@ -3751,7 +3759,11 @@ bool expression_op_func__bassign( expression* expr, thread* thr, const sim_time*
 
  Performs a function call operation.
 */
-bool expression_op_func__func_call( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__FUNC_CALL);
+bool expression_op_func__func_call(
+  expression*     expr,
+  thread*         thr,
+  const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__FUNC_CALL);
 
   bool retval;  /* Return value for this function */
 
@@ -3766,6 +3778,12 @@ bool expression_op_func__func_call( expression* expr, thread* thr, const sim_tim
     reentrant_dealloc( thr->ren, thr->funit, expr );
     thr->ren = NULL;
   }
+
+  /* Gather coverage information */
+  if( retval ) {
+    expression_set_tf_preclear( expr );
+  }
+  expression_set_unary_evals( expr );
 
   PROFILE_END;
 
@@ -3782,9 +3800,16 @@ bool expression_op_func__func_call( expression* expr, thread* thr, const sim_tim
 
  Performs a task call operation.
 */
-bool expression_op_func__task_call( expression* expr, thread* thr, const sim_time* time ) { PROFILE(EXPRESSION_OP_FUNC__TASK_CALL);
+bool expression_op_func__task_call(
+  expression*     expr,
+  thread*         thr,
+  const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__TASK_CALL);
 
   (void)sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit, time );
+
+  /* Gather coverage information */
+  expression_set_unary_evals( expr );
 
   PROFILE_END;
 
@@ -3807,7 +3832,7 @@ bool expression_op_func__nb_call(
   const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__NB_CALL);
 
-  bool    retval = FALSE;  /* Return value for this function */
+  bool retval = FALSE;  /* Return value for this function */
 
   /* Add the thread to the active queue */
   thread* tmp = sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit, time );
@@ -3818,6 +3843,9 @@ bool expression_op_func__nb_call(
     retval = TRUE;
 
   }
+
+  /* Gather coverage information */
+  // expression_set_tf_preclear( expr );
 
   PROFILE_END;
 
@@ -3842,6 +3870,9 @@ bool expression_op_func__fork(
 
   (void)sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit, time );
 
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr );
+
   PROFILE_END;
 
   return( TRUE );
@@ -3862,6 +3893,9 @@ bool expression_op_func__join(
                thread*         thr,
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__JOIN);
+
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr );
 
   PROFILE_END;
 
@@ -3885,6 +3919,9 @@ bool expression_op_func__disable(
 ) { PROFILE(EXPRESSION_OP_FUNC__DISABLE);
 
   sim_kill_thread_with_funit( expr->elem.funit );
+
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr );
 
   PROFILE_END;
 
@@ -3916,6 +3953,12 @@ bool expression_op_func__repeat(
   } else {
     vector_from_int( expr->left->value, (vector_to_int( expr->left->value ) + 1) );
   }
+
+  /* Gather coverage information */
+  if( retval ) {
+    expression_set_tf_preclear( expr );
+  }
+  expression_set_unary_evals( expr );
 
   PROFILE_END;
 
@@ -3969,6 +4012,12 @@ bool expression_op_func__exponent(
     retval = vector_set_value( expr->value, vec.value, expr->value->width, 0, 0 );
 
   }
+
+  /* Gather coverage information */
+  if( retval ) {
+    expression_set_tf_preclear( expr );
+  }
+  expression_set_unary_evals( expr );
 
   PROFILE_END;
 
@@ -4025,6 +4074,12 @@ bool expression_op_func__passign(
 
   }
 
+  /* Gather coverage information */
+  if( retval ) {
+    expression_set_tf_preclear( expr );
+  }
+  expression_set_unary_evals( expr );
+
   PROFILE_END;
 
   return( retval );
@@ -4067,6 +4122,11 @@ bool expression_op_func__mbit_pos(
     expr->value->value = vstart + intval;
 
   }
+
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr );
+  expression_set_unary_evals( expr );
+  expression_set_eval_NN( expr );
 
   PROFILE_END;
 
@@ -4113,6 +4173,11 @@ bool expression_op_func__mbit_neg(
 
   }
 
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr );
+  expression_set_unary_evals( expr );
+  expression_set_eval_NN( expr );
+
   PROFILE_END;
 
   return( TRUE );
@@ -4134,9 +4199,17 @@ bool expression_op_func__negate(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__NEGATE);
 
+  bool retval;  /* Return value for this function */
+
+  /* Perform negate operation and gather coverage information */
+  if( retval = vector_op_negate( expr->value, expr->right->value ) ) {
+    expression_set_tf_preclear( expr );
+  }
+  expression_set_unary_evals( expr );
+
   PROFILE_END;
 
-  return( vector_op_negate( expr->value, expr->right->value ) );
+  return( retval );
 
 }
 
@@ -4523,109 +4596,14 @@ bool expression_operate(
     /* Call expression operation */
     retval = exp_op_info[expr->op].func( expr, thr, time );
 
-    /* If we have a new value, recalculate TRUE/FALSE indicators */
-    if( EXPR_IS_EVENT( expr ) == 0 ) {
-
-      if( retval ) {
-
-        /* Clear current TRUE/FALSE indicators */
-        if( (expr->op != EXP_OP_STATIC) && (expr->op != EXP_OP_PARAM ) ) {
-          expr->suppl.part.eval_t = 0;
-          expr->suppl.part.eval_f = 0;
-        }
-      
-        /* Set TRUE/FALSE bits to indicate value */
-        vector_init( &vec, &bit, FALSE, 1, VTYPE_VAL );
-        (void)vector_unary_op( &vec, expr->value, or_optab );
-        switch( vec.value[0].part.exp.value ) {
-          case 0 :  expr->suppl.part.false = 1;  expr->suppl.part.eval_f = 1;  break;
-          case 1 :  expr->suppl.part.true  = 1;  expr->suppl.part.eval_t = 1;  break;
-          default:  break;
-        }
-
+    /* If this expression is attached to an FSM, perform the FSM calculation now */
+    if( expr->table != NULL ) {
+      fsm_table_set( expr->table );
+      /* If from_state was not specified, we need to copy the current contents of to_state to from_state */
+      if( expr->table->from_state->id == expr->id ) {
+        vector_dealloc( expr->table->from_state->value );
+        vector_copy( expr->value, &(expr->table->from_state->value) );
       }
-
-      /* Calculate bitwise coverage if we own our vector -- TBD -- I think this code can be optimized somewhat */
-      if( ESUPPL_OWNS_VEC( expr->suppl ) == 1 ) {
-
-        nibble lval, rval;
-
-        switch( exp_op_info[expr->op].suppl.is_comb ) {
-          case NOT_COMB :
-            if( exp_op_info[expr->op].suppl.is_unary ) {
-              for( i=0; i<expr->value->width; i++ ) {
-                lval = expr->value->value[i].part.exp.value;
-                if( lval < 2 ) {
-                  if( lval == 0 ) {
-                    expr->value->value[i].part.exp.eval_a = 1;
-                  } else {
-                    expr->value->value[i].part.exp.eval_b = 1;
-                  }
-                }
-              }
-            }
-            break;
-          case AND_COMB :
-            for( i=0; i<expr->value->width; i++ ) {
-              lval = (i < expr->left->value->width)  ? expr->left->value->value[i].part.exp.value  : 0;
-              rval = (i < expr->right->value->width) ? expr->right->value->value[i].part.exp.value : 0;
-              if( (lval < 2) || (rval < 2) ) {
-                expr->value->value[i].part.exp.eval_a |= (lval == 0) ? 1 : 0;
-                expr->value->value[i].part.exp.eval_b |= (rval == 0) ? 1 : 0;
-                expr->value->value[i].part.exp.eval_c |= ((lval == 1) && (rval == 1)) ? 1 : 0;
-              }
-            }
-            break;
-          case OR_COMB :
-            for( i=0; i<expr->value->width; i++ ) {
-              lval = (i < expr->left->value->width)  ? expr->left->value->value[i].part.exp.value  : 0;
-              rval = (i < expr->right->value->width) ? expr->right->value->value[i].part.exp.value : 0;
-              if( (lval < 2) || (rval < 2) ) {
-                expr->value->value[i].part.exp.eval_a |= (lval == 1) ? 1 : 0;
-                expr->value->value[i].part.exp.eval_b |= (rval == 1) ? 1 : 0;
-                expr->value->value[i].part.exp.eval_c |= ((lval == 0) && (rval == 0)) ? 1 : 0;
-              }
-            }
-            break;
-          case OTHER_COMB :
-            for( i=0; i<expr->value->width; i++ ) {
-              lval = (i < expr->left->value->width)  ? expr->left->value->value[i].part.exp.value  : 0;
-              rval = (i < expr->right->value->width) ? expr->right->value->value[i].part.exp.value : 0;
-              if( (lval < 2) && (rval < 2) ) {
-                expr->value->value[i].part.exp.eval_a |= ((lval == 0) && (rval == 0)) ? 1 : 0;
-                expr->value->value[i].part.exp.eval_b |= ((lval == 0) && (rval == 1)) ? 1 : 0;
-                expr->value->value[i].part.exp.eval_c |= ((lval == 1) && (rval == 0)) ? 1 : 0;
-                expr->value->value[i].part.exp.eval_d |= ((lval == 1) && (rval == 1)) ? 1 : 0;
-              }
-            }
-            break;
-          default : break;
-        }
-
-      }
-
-      /* Set EVAL00, EVAL01, EVAL10 or EVAL11 bits based on current value of children */
-      if( (expr->left != NULL) && (expr->right != NULL) ) {
-        lf = ESUPPL_IS_FALSE( expr->left->suppl  );
-        lt = ESUPPL_IS_TRUE(  expr->left->suppl  );
-        rf = ESUPPL_IS_FALSE( expr->right->suppl );
-        rt = ESUPPL_IS_TRUE(  expr->right->suppl );
-        expr->suppl.part.eval_00 |= lf & rf;
-        expr->suppl.part.eval_01 |= lf & rt;
-        expr->suppl.part.eval_10 |= lt & rf;
-        expr->suppl.part.eval_11 |= lt & rt;
-      }
-
-      /* If this expression is attached to an FSM, perform the FSM calculation now */
-      if( expr->table != NULL ) {
-        fsm_table_set( expr->table );
-        /* If from_state was not specified, we need to copy the current contents of to_state to from_state */
-        if( expr->table->from_state->id == expr->id ) {
-          vector_dealloc( expr->table->from_state->value );
-          vector_copy( expr->value, &(expr->table->from_state->value) );
-        }
-      }
-
     }
 
     /* Specify that we have executed this expression */
@@ -5264,6 +5242,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.300  2008/03/25 23:17:46  phase1geo
+ More updates to expression operation functions for performance enhancements.
+
  Revision 1.299  2008/03/25 13:51:19  phase1geo
  Starting to work on performance upgrad for expression operations.  This
  work is not completed at this point.  Checkpointing.
