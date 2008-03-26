@@ -5168,6 +5168,8 @@ void expression_dealloc(
 
   if( expr != NULL ) {
 
+    // printf( "Deallocating expression %s (%p) - owns_vec: %d\n", expression_string( expr ), expr, ESUPPL_OWNS_VEC( expr->suppl ) );
+
     op = expr->op;
 
     if( ESUPPL_OWNS_VEC( expr->suppl ) ) {
@@ -5203,56 +5205,43 @@ void expression_dealloc(
           exp_link_remove( expr, &(expr->sig->exp_head), &(expr->sig->exp_tail), FALSE );
         }
 
-      }
-
-    } else {
-
-      /* Deallocate vector memory but not vector itself */
-      if( (op != EXP_OP_ASSIGN)     &&
-          (op != EXP_OP_DASSIGN)    &&
-          (op != EXP_OP_BASSIGN)    &&
-          (op != EXP_OP_RASSIGN)    &&
-          (op != EXP_OP_NASSIGN)    &&
-          (op != EXP_OP_DLY_ASSIGN) &&
-          (op != EXP_OP_IF)         &&
-          (op != EXP_OP_WHILE)      &&
-          (op != EXP_OP_DIM)        &&
-          (op != EXP_OP_PASSIGN) ) {
-        free_safe( expr->value, sizeof( vector ) );
-      }
-
-      if( expr->sig == NULL ) {
-
-        /* Remove this expression from the binding list */
-        bind_remove( expr->id, expression_is_assigned( expr ) );
-
+      /* Otherwise, we assume (for now) that the expression is a signal */
       } else {
 
-        /* Remove this expression from the attached signal's expression list */
-        exp_link_remove( expr, &(expr->sig->exp_head), &(expr->sig->exp_tail), FALSE );
+        if( expr->sig == NULL ) {
 
-        /* Clear the assigned bit of the attached signal */
-        if( expression_is_assigned( expr ) ) {
+          /* Remove this expression from the binding list */
+          bind_remove( expr->id, expression_is_assigned( expr ) );
 
-          expr->sig->suppl.part.assigned = 0;
+        } else {
 
-          /* If this signal must be assigned, remove all statement blocks that reference this signal */
-          if( (expr->sig->suppl.part.mba == 1) && !exp_only ) {
-            tmp_expl = expr->sig->exp_head;
-            while( tmp_expl != NULL ) {
-              if( (tmp_stmt = expression_get_root_statement( tmp_expl->exp )) != NULL ) {
+          /* Remove this expression from the attached signal's expression list */
+          exp_link_remove( expr, &(expr->sig->exp_head), &(expr->sig->exp_tail), FALSE );
+
+          /* Clear the assigned bit of the attached signal */
+          if( expression_is_assigned( expr ) ) {
+  
+            expr->sig->suppl.part.assigned = 0;
+
+            /* If this signal must be assigned, remove all statement blocks that reference this signal */
+            if( (expr->sig->suppl.part.mba == 1) && !exp_only ) {
+              tmp_expl = expr->sig->exp_head;
+              while( tmp_expl != NULL ) {
+                if( (tmp_stmt = expression_get_root_statement( tmp_expl->exp )) != NULL ) {
 #ifdef DEBUG_MODE
-                print_output( "Removing statement block because a statement block is being removed that assigns an MBA", DEBUG, __FILE__, __LINE__ );
+                  print_output( "Removing statement block because a statement block is being removed that assigns an MBA", DEBUG, __FILE__, __LINE__ );
 #endif
-                stmt_blk_add_to_remove_list( tmp_stmt );
+                  stmt_blk_add_to_remove_list( tmp_stmt );
+                }
+                tmp_expl = tmp_expl->next;
               }
-              tmp_expl = tmp_expl->next;
             }
-          }
 
-        }
+          }
         
-      }  
+        }
+
+      }
 
     }
 
@@ -5289,6 +5278,11 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.302  2008/03/26 21:29:31  phase1geo
+ Initial checkin of new optimizations for unknown and not_zero values in vectors.
+ This attempts to speed up expression operations across the board.  Working on
+ debugging regressions.  Checkpointing.
+
  Revision 1.301  2008/03/26 02:39:05  phase1geo
  Completed initial pass of expression operation function optimizations.  Still work
  to go here.

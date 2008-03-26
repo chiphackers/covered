@@ -1119,6 +1119,7 @@ static_expr_primary
         if( $1.vec->suppl.part.unknown ) {
           Try {
             tmp->exp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+            tmp->exp->suppl.part.base = $1.base;
           } Catch_anonymous {
             free_safe( tmp, sizeof( static_expr ) );
             vector_dealloc( $1.vec );
@@ -1955,6 +1956,7 @@ expr_primary
         expression* tmp;
         Try {
           tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+          tmp->suppl.part.base = $1.base;
         } Catch_anonymous {
           vector_dealloc( $1.vec );
           printf( "parser Throw BA\n" );
@@ -6415,6 +6417,7 @@ delay_value_simple
         expression* tmp;
         Try {
           tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+          tmp->suppl.part.base = $1.base;
         } Catch_anonymous {
           vector_dealloc( $1.vec );
           printf( "parser Throw FA\n" );

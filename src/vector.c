@@ -1559,7 +1559,6 @@ void vector_from_string(
   int          size;                  /* Specifies bit width of vector to create */
   char         value[MAX_BIT_WIDTH];  /* String to store string value in */
   char         stype[2];              /* Temporary holder for type of string being parsed */
-  nibble       type;                  /* Type of string being parsed */
   int          chars_read;            /* Number of characters read by a sscanf() function call */
   int          i;                     /* Loop iterator */
   unsigned int j;                     /* Loop iterator */
@@ -1656,7 +1655,7 @@ void vector_from_string(
 
       /* Create vector */
       *vec = vector_create( size, VTYPE_VAL, TRUE );
-      if( type == DECIMAL ) {
+      if( *base == DECIMAL ) {
         vector_from_int( *vec, ato32( value ) );
       } else {
         vector_set_static( *vec, value, bits_per_char ); 
@@ -2612,6 +2611,11 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.125  2008/03/26 21:29:32  phase1geo
+ Initial checkin of new optimizations for unknown and not_zero values in vectors.
+ This attempts to speed up expression operations across the board.  Working on
+ debugging regressions.  Checkpointing.
+
  Revision 1.124  2008/03/24 13:55:46  phase1geo
  More attempts to fix memory issues.  Checkpointing.
 
