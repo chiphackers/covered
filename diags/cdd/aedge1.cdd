@@ -1,5 +1,5 @@
 5 c 1 * 0
-8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/performance/covered/diags/verilog -t main -vcd aedge1.vcd -o aedge1.cdd -v aedge1.v -D DUMP
+8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd aedge1.vcd -o aedge1.cdd -v aedge1.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" aedge1.v 8 38 1
 2 1 13 8000c 1 3d 5002 0 0 1 18 2 $u0
@@ -38,7 +38,7 @@
 2 24 23 20002 1 0 1008 0 0 32 52 11 0 0 0 0 0 0 0
 2 25 23 10002 2 2c 900a 24 0 32 18 aa aa aa aa aa aa aa aa
 2 26 24 50008 1 0 21008 0 0 1 20 1
-2 27 24 10001 0 1 1400 0 0 1 1 a
+2 27 24 10001 0 1 1400 0 0 1 5 a
 2 28 24 10008 1 37 a 26 27
 2 29 25 20002 1 0 1008 0 0 32 52 11 0 0 0 0 0 0 0
 2 30 25 10002 2 2c 900a 29 0 32 18 aa aa aa aa aa aa aa aa

@@ -227,6 +227,7 @@ static bool expression_op_func__join( expression*, thread*, const sim_time* );
 static bool expression_op_func__disable( expression*, thread*, const sim_time* );
 static bool expression_op_func__repeat( expression*, thread*, const sim_time* );
 static bool expression_op_func__null( expression*, thread*, const sim_time* );
+static bool expression_op_func__sig( expression*, thread*, const sim_time* );
 static bool expression_op_func__exponent( expression*, thread*, const sim_time* );
 static bool expression_op_func__passign( expression*, thread*, const sim_time* );
 static bool expression_op_func__mbit_pos( expression*, thread*, const sim_time* );
@@ -250,7 +251,7 @@ static void expression_assign( expression*, expression*, int*, const sim_time* )
  updated if a new expression is added!  The third argument is an initialization to the exp_info_s structure.
 */
 const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",         "",             expression_op_func__null,       {0, 1, NOT_COMB,   1, 0, 0, 0} },
-                                           {"SIG",            "",             expression_op_func__null,       {0, 0, NOT_COMB,   1, 1, 0, 0} },
+                                           {"SIG",            "",             expression_op_func__sig,        {0, 0, NOT_COMB,   1, 1, 0, 0} },
                                            {"XOR",            "^",            expression_op_func__xor,        {0, 0, OTHER_COMB, 0, 1, 0, 1} },
                                            {"MULTIPLY",       "*",            expression_op_func__multiply,   {0, 0, NOT_COMB,   1, 1, 0, 1} },
                                            {"DIVIDE",         "/",            expression_op_func__divide,     {0, 0, NOT_COMB,   1, 1, 0, 1} },
@@ -299,7 +300,7 @@ const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",         "",             ex
                                            {"CASEZ",          "casez",        expression_op_func__casez,      {0, 0, NOT_COMB,   1, 0, 0, 0} },
                                            {"DEFAULT",        "",             expression_op_func__default,    {0, 0, NOT_COMB,   1, 0, 0, 0} },
                                            {"LIST",           "",             expression_op_func__list,       {0, 0, NOT_COMB,   1, 0, 0, 0} },
-                                           {"PARAM",          "",             expression_op_func__null,       {0, 1, NOT_COMB,   1, 0, 0, 0} },
+                                           {"PARAM",          "",             expression_op_func__sig,        {0, 1, NOT_COMB,   1, 0, 0, 0} },
                                            {"PARAM_SBIT",     "[]",           expression_op_func__sbit,       {0, 1, NOT_COMB,   1, 0, 0, 0} },
                                            {"PARAM_MBIT",     "[:]",          expression_op_func__mbit,       {0, 1, NOT_COMB,   1, 0, 0, 0} },
                                            {"ASSIGN",         "",             expression_op_func__null,       {0, 0, NOT_COMB,   1, 0, 0, 0} },
@@ -3059,6 +3060,40 @@ bool expression_op_func__null(
  \param expr  Pointer to expression to perform operation on
  \param thr   Pointer to thread containing this expression
  \param time  Pointer to current simulation time
+    
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+    
+ Performs a signal operation.  This function should be called by any operation that would otherwise
+ call the expression_op_func__null operation but have a valid signal pointer.  We just need to copy
+ the unknown and not_zero bits from the signal's vector supplemental field to our own.
+*/
+bool expression_op_func__sig(
+               expression*     expr,
+  /*@unused@*/ thread*         thr,
+  /*@unused@*/ const sim_time* time
+) { PROFILE(EXPRESSION_OP_FUNC__SIG);
+
+  /* Set the unknown and not_zero bits as necessary */
+  expr->value->suppl.part.unknown  = expr->sig->value->suppl.part.unknown;
+  expr->value->suppl.part.not_zero = expr->sig->value->suppl.part.not_zero;
+
+  /* Gather coverage information */
+  if( expr->op != EXP_OP_PARAM ) {
+    expression_set_tf_preclear( expr );
+  } else {
+    expression_set_tf( expr );
+  }
+
+  PROFILE_END;
+
+  return( TRUE );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+ \param time  Pointer to current simulation time
 
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
@@ -3125,6 +3160,10 @@ bool expression_op_func__sbit(
       expr->value->value[0].part.mem.rd = 1;
     }
 
+    /* Set the unknown and not_zero bits accordingly */
+    expr->value->suppl.part.unknown  = ((expr->value->value[0].part.exp.value & 0x2) >> 1);
+    expr->value->suppl.part.not_zero = (expr->value->value[0].part.exp.value & 0x1);
+
   }
 
   /* Gather coverage information */
@@ -3159,6 +3198,7 @@ bool expression_op_func__mbit(
   int       exp_dim;    /* Expression dimension */
   bool      dim_be;     /* Big endianness of this dimension */
   int       dim_width;  /* Width of the current dimension */
+  int       i;          /* Loop iterator */
 
   /* Calculate starting bit position */
   if( (ESUPPL_IS_ROOT( expr->suppl ) == 0) && (expr->parent->expr->op == EXP_OP_DIM) && (expr->parent->expr->right == expr) ) {
@@ -3188,6 +3228,13 @@ bool expression_op_func__mbit(
   } else {
     assert( intval < vwidth );
     expr->value->value = vstart + intval;
+  }
+
+  /* Calculate unknown and not_zero supplemental fields */
+  VSUPPL_CLR_NZ_AND_UNK( expr->value->suppl )
+  for( i=0; i<expr->value->width; i++ ) {
+    expr->value->suppl.part.unknown  |= (expr->value->value[i].part.exp.value & 0x2) >> 1;
+    expr->value->suppl.part.not_zero |= (expr->value->value[i].part.exp.value & 0x1);
   }
 
   /* Gather coverage information */
@@ -5286,6 +5333,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.306  2008/03/27 18:51:46  phase1geo
+ Fixing more issues with PASSIGN and BASSIGN operations.
+
  Revision 1.305  2008/03/27 16:12:52  phase1geo
  Fixing memory write issue.
 

@@ -289,7 +289,7 @@ WSPACE [ \t\b\f]+
 	BEGIN( state_enter );
         tmpstr = strdup_safe( yytext );
         tmpstr[ str_len - 1 ] = '\0';
-        vector_from_string( &(yylval.text), TRUE, &(yylval.number.vec), &(yylval.number.base) );
+        vector_from_string( &tmpstr, TRUE, &(yylval.number.vec), &(yylval.number.base) );
         free_safe( tmpstr, (str_len + 1) );
         return STRING;
  }

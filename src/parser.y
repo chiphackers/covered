@@ -1980,6 +1980,7 @@ expr_primary
       if( ignore_mode == 0 ) {
         Try {
           tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+          tmp->suppl.part.base = $1.base;
         } Catch_anonymous {
           vector_dealloc( $1.vec );
           printf( "parser Throw BB\n" );
