@@ -824,7 +824,7 @@ void vector_display(
   assert( vec != NULL );
 
   /*@-formatcode@*/
-  printf( "Vector => width: %d, suppl: %hhx\n", vec->width, vec->suppl.all );
+  printf( "Vector (%p) => width: %d, suppl: %hhx\n", vec, vec->width, vec->suppl.all );
   /*@=formatcode@*/
 
   if( (vec->width > 0) && (vec->value != NULL) ) {
@@ -2611,6 +2611,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.126  2008/03/26 22:41:07  phase1geo
+ More fixes per latest changes.
+
  Revision 1.125  2008/03/26 21:29:32  phase1geo
  Initial checkin of new optimizations for unknown and not_zero values in vectors.
  This attempts to speed up expression operations across the board.  Working on

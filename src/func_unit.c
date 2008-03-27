@@ -479,7 +479,9 @@ void funit_size_elements(
       /* Perform an entire expression resize */
       expression_resize( curr_exp->exp, funit, TRUE, alloc_exprs );
     }
-    if( (curr_exp->exp->sig != NULL) && (curr_exp->exp->op != EXP_OP_FUNC_CALL) ) {
+    if( (curr_exp->exp->sig != NULL) &&
+        (curr_exp->exp->op != EXP_OP_FUNC_CALL) &&
+        (curr_exp->exp->op != EXP_OP_PASSIGN) ) {
       expression_set_value( curr_exp->exp, curr_exp->exp->sig, funit );
       assert( curr_exp->exp->value->value != NULL );
     }
@@ -1424,6 +1426,11 @@ void funit_dealloc( func_unit* funit ) { PROFILE(FUNIT_DEALLOC);
 
 /*
  $Log$
+ Revision 1.98  2008/03/17 22:02:31  phase1geo
+ Adding new check_mem script and adding output to perform memory checking during
+ regression runs.  Completed work on free_safe and added realloc_safe function
+ calls.  Regressions are pretty broke at the moment.  Checkpointing.
+
  Revision 1.97  2008/03/17 05:26:16  phase1geo
  Checkpointing.  Things don't compile at the moment.
 

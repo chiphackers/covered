@@ -714,7 +714,12 @@ void expression_set_signed( expression* exp ) { PROFILE(EXPRESSION_SET_SIGNED);
  fashion, resizing the children before resizing the current expression.  If
  recursive is FALSE, only the given expression is evaluated and resized.
 */
-void expression_resize( expression* expr, func_unit* funit, bool recursive, bool alloc ) { PROFILE(EXPRESSION_RESIZE);
+void expression_resize(
+  expression* expr,
+  func_unit*  funit,
+  bool        recursive,
+  bool        alloc
+) { PROFILE(EXPRESSION_RESIZE);
 
   int         largest_width;  /* Holds larger width of left and right children */
   nibble      old_vec_suppl;  /* Holds original vector supplemental field as this will be erased */
@@ -5278,6 +5283,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.303  2008/03/26 22:41:06  phase1geo
+ More fixes per latest changes.
+
  Revision 1.302  2008/03/26 21:29:31  phase1geo
  Initial checkin of new optimizations for unknown and not_zero values in vectors.
  This attempts to speed up expression operations across the board.  Working on
