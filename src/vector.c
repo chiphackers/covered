@@ -1001,6 +1001,8 @@ bool vector_set_value(
           ored                  |= from_val;
           vval[i + to_idx]       = set_val;
           retval = TRUE;
+        } else {
+          ored |= to_val;
         }
       }
       break;
@@ -1016,13 +1018,14 @@ bool vector_set_value(
           } else if( (to_val == 1) && (from_val == 0) ) {
             set_val.part.mem.tog10 = 1;
           }
-          /* Assign write information */
-          set_val.part.mem.wr = 1;
           /* Perform value assignment */
+          set_val.part.mem.wr    = 1;
           set_val.part.mem.value = from_val;
           ored                  |= from_val;
           vval[i + to_idx]       = set_val;
           retval = TRUE;
+        } else {
+          ored |= to_val;
         }
       }
       break;
@@ -1038,6 +1041,8 @@ bool vector_set_value(
           ored                  |= from_val;
           vval[i + to_idx]       = set_val;
           retval = TRUE;
+        } else {
+          ored |= to_val;
         }
       }
       break;
@@ -2611,6 +2616,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.127  2008/03/27 06:09:58  phase1geo
+ Fixing some regression errors.  Checkpointing.
+
  Revision 1.126  2008/03/26 22:41:07  phase1geo
  More fixes per latest changes.
 

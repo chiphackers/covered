@@ -3786,7 +3786,6 @@ bool expression_op_func__bassign(
 
   /* Gather coverage information */
   expression_set_tf_preclear( expr );
-  expression_set_unary_evals( expr );
 
   PROFILE_END;
 
@@ -4129,7 +4128,6 @@ bool expression_op_func__passign(
   if( retval ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_unary_evals( expr );
 
   PROFILE_END;
 
@@ -5288,6 +5286,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.305  2008/03/27 16:12:52  phase1geo
+ Fixing memory write issue.
+
  Revision 1.304  2008/03/27 06:09:58  phase1geo
  Fixing some regression errors.  Checkpointing.
 
