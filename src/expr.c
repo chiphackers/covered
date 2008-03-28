@@ -3168,7 +3168,6 @@ bool expression_op_func__sbit(
 
   /* Gather coverage information */
   expression_set_tf_preclear( expr );
-  expression_set_unary_evals( expr );
 
   PROFILE_END;
 
@@ -3239,7 +3238,6 @@ bool expression_op_func__mbit(
 
   /* Gather coverage information */
   expression_set_tf_preclear( expr );
-  expression_set_unary_evals( expr );
   expression_set_eval_NN( expr );
 
   PROFILE_END;
@@ -5333,6 +5331,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.307  2008/03/27 22:23:34  phase1geo
+ More fixes for regression failures due to recent changes.  Still more work
+ to go here, however.
+
  Revision 1.306  2008/03/27 18:51:46  phase1geo
  Fixing more issues with PASSIGN and BASSIGN operations.
 
