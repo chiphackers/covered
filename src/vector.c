@@ -282,6 +282,12 @@ void vector_db_write(
   /* Calculate default value of bit */
   dflt = (vec->suppl.part.is_2state == 1) ? 0x0 : 0x2;
 
+  /* If we will be writing Xs for our data, make sure that we set not_zero and unknown appropriately */
+  if( !write_data && (dflt == 0x2) ) {
+    vec->suppl.part.unknown  = 1;
+    vec->suppl.part.not_zero = 0;
+  }
+
   /* Output vector information to specified file */
   /*@-formatcode@*/
   fprintf( file, "%d %hhu",
@@ -2639,6 +2645,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.131  2008/03/28 21:11:32  phase1geo
+ Fixing memory leak issues with -ep option and embedded FSM attributes.
+
  Revision 1.130  2008/03/28 18:28:26  phase1geo
  Fixing bug in trigger expression function due to recent changes.
 

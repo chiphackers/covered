@@ -2,17 +2,17 @@
 8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -ep covered_coverage -vcd exclude9.vcd -o exclude9.cdd -v exclude9.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" exclude9.v 11 32 1
-2 1 17 8000c 1 3d 5002 0 0 1 18 2 $u0
-1 a 14 a30004 1 0 0 0 1 21 102
+2 1 17 8000c 1 3d 5002 0 0 1 26 2 $u0
+1 a 14 a30004 1 0 0 0 1 25 102
 4 1 1 0 0
 3 1 main.$u0 "main.$u0" exclude9.v 0 21 1
 2 2 18 50008 1 0 21004 0 0 1 16 0
-2 3 18 10001 0 1 1400 0 0 1 1 a
+2 3 18 10001 0 1 1400 0 0 1 9 a
 2 4 18 10008 1 37 6 2 3
 2 5 19 20002 1 0 1008 0 0 32 52 11 0 0 0 0 0 0 0
-2 6 19 10002 2 2c 900a 5 0 32 18 aa aa aa aa aa aa aa aa
+2 6 19 10002 2 2c 900a 5 0 32 26 aa aa aa aa aa aa aa aa
 2 7 20 50008 1 0 21008 0 0 1 20 1
-2 8 20 10001 0 1 1400 0 0 1 5 a
+2 8 20 10001 0 1 1400 0 0 1 9 a
 2 9 20 10008 1 37 a 7 8
 4 9 0 0 0
 4 6 0 9 0
