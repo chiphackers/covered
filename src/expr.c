@@ -3230,11 +3230,7 @@ bool expression_op_func__mbit(
   }
 
   /* Calculate unknown and not_zero supplemental fields */
-  VSUPPL_CLR_NZ_AND_UNK( expr->value->suppl )
-  for( i=0; i<expr->value->width; i++ ) {
-    expr->value->suppl.part.unknown  |= (expr->value->value[i].part.exp.value & 0x2) >> 1;
-    expr->value->suppl.part.not_zero |= (expr->value->value[i].part.exp.value & 0x1);
-  }
+  vector_sync_nz_and_unk( expr->value );
 
   /* Gather coverage information */
   expression_set_tf_preclear( expr );
@@ -3827,6 +3823,7 @@ bool expression_op_func__bassign(
 
   int intval = 0;  /* Integer value */
 
+  /* Perform assignment */
   expression_assign( expr->left, expr->right, &intval, ((thr == NULL) ? time : &(thr->curr_time)) );
 
   /* Gather coverage information */
@@ -4217,6 +4214,9 @@ bool expression_op_func__mbit_pos(
 
   }
 
+  /* Calculate unknown and not_zero supplemental fields */
+  vector_sync_nz_and_unk( expr->value );
+
   /* Gather coverage information */
   expression_set_tf_preclear( expr );
   expression_set_unary_evals( expr );
@@ -4266,6 +4266,9 @@ bool expression_op_func__mbit_neg(
     expr->value->value = vstart + ((intval1 - intval2) + 1);
 
   }
+
+  /* Synchronize the not_zero and unknown bits */
+  vector_sync_nz_and_unk( expr->value );
 
   /* Gather coverage information */
   expression_set_tf_preclear( expr );
@@ -5029,6 +5032,8 @@ void expression_assign(
             if( rhs->value->width < lhs->value->width ) {
               (void)vector_bit_fill( lhs->value, lhs->value->width, (rhs->value->width + *lsb) );
             }
+            lhs->sig->value->suppl.part.unknown  = lhs->value->suppl.part.unknown;
+            lhs->sig->value->suppl.part.not_zero = lhs->value->suppl.part.not_zero;
 #ifdef DEBUG_MODE
             if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
               printf( "        " );  vsignal_display( lhs->sig );
@@ -5069,6 +5074,7 @@ void expression_assign(
             if( rhs->value->width < lhs->value->width ) {
               (void)vector_bit_fill( lhs->value, lhs->value->width, (rhs->value->width + *lsb) );
             }
+            vector_sync_nz_and_unk( lhs->sig->value );
 #ifdef DEBUG_MODE
             if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
               printf( "        " );  vsignal_display( lhs->sig );
@@ -5098,6 +5104,7 @@ void expression_assign(
             if( rhs->value->width < lhs->value->width ) {
               (void)vector_bit_fill( lhs->value, lhs->value->width, (rhs->value->width + *lsb) );
             }
+            vector_sync_nz_and_unk( lhs->sig->value );
 #ifdef DEBUG_MODE
             if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
               printf( "        " );  vsignal_display( lhs->sig );
@@ -5123,6 +5130,7 @@ void expression_assign(
           if( assign ) {
             VSUPPL_CLR_NZ_AND_UNK( lhs->value->suppl );
             (void)vector_set_value( lhs->value, rhs->value->value, intval2, *lsb, 0 );
+            vector_sync_nz_and_unk( lhs->sig->value );
 #ifdef DEBUG_MODE
             if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
               printf( "        " );  vsignal_display( lhs->sig );
@@ -5147,6 +5155,7 @@ void expression_assign(
           if( assign ) {
             VSUPPL_CLR_NZ_AND_UNK( lhs->value->suppl );
             (void)vector_set_value( lhs->value, rhs->value->value, intval2, *lsb, 0 );
+            vector_sync_nz_and_unk( lhs->sig->value );
 #ifdef DEBUG_MODE
             if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
               printf( "        " );  vsignal_display( lhs->sig );
@@ -5331,6 +5340,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.309  2008/03/28 14:03:50  phase1geo
+ Removing param check from expression_op_func__null function.
+
  Revision 1.308  2008/03/28 02:31:57  phase1geo
  Fixing more problems with expression coverage gathering functions.
 

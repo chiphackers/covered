@@ -11,7 +11,7 @@
 2 6 11 8000c 1 3d 5002 0 0 1 18 2 $u1
 1 foo_c 3 6 1 0 0 0 1 17 2
 1 foo_a 5 30005 1 0 0 0 1 21 2
-1 foo_b 6 830005 1 0 0 0 1 17 102
+1 foo_b 6 830005 1 0 0 0 1 21 102
 1 foo_d 7 30005 1 0 0 0 1 21 2
 4 5 f 5 5
 4 6 1 0 0
@@ -20,7 +20,7 @@
 4 7 11 0 0
 3 2 foo_module.foo_func "main.bar.foo_func" ./lib/foo_module.v 19 24 1
 2 8 21 20006 1 3d 5802 0 0 1 18 2 $u2
-1 foo_func 19 850009 1 0 0 0 1 17 2
+1 foo_func 19 850009 1 0 0 0 1 21 2
 1 a 20 800008 1 0 0 0 1 17 2
 4 8 11 0 0
 3 1 foo_module.foo_func.$u2 "main.bar.foo_func.$u2" ./lib/foo_module.v 0 23 1

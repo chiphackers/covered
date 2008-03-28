@@ -75,6 +75,9 @@ nibble vector_bit_val( nibble* value, int pos );
 /*! \brief Sets specified vector value to new value and maintains coverage history. */
 bool vector_set_value( vector* vec, vec_data* value, int width, int from_idx, int to_idx );
 
+/*! \brief Sets the not_zero and unknown supplement bits to match given value. */
+void vector_sync_nz_and_unk( vector* vec );
+
 /*! \brief Bit fills the given vector with the appropriate value given the specified msb and lsb */
 bool vector_bit_fill( vector* vec, int msb, int lsb );
 
@@ -184,6 +187,11 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.53  2008/03/26 21:29:32  phase1geo
+ Initial checkin of new optimizations for unknown and not_zero values in vectors.
+ This attempts to speed up expression operations across the board.  Working on
+ debugging regressions.  Checkpointing.
+
  Revision 1.52  2008/03/13 10:28:55  phase1geo
  The last of the exception handling modifications.
 

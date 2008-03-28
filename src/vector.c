@@ -1059,6 +1059,24 @@ bool vector_set_value(
 }
 
 /*!
+ \param vec  Pointer to vector to synchronize the data and not_zero/unknown supplemental bits
+
+ Synchronizes the not_zero and unknown supplemental bits with the vectors data payload.
+*/
+inline void vector_sync_nz_and_unk( vector* vec ) {
+
+  int i = 0;  /* Loop iterator */
+
+  VSUPPL_CLR_NZ_AND_UNK( vec->suppl );
+  while( (i < vec->width) && !vec->suppl.part.not_zero && !vec->suppl.part.unknown ) {
+    vec->suppl.part.unknown  = (vec->value[i].part.val.value & 0x2) >> 1;
+    vec->suppl.part.not_zero = (vec->value[i].part.val.value & 0x1);
+    i++;
+  }
+
+}
+
+/*!
  \param vec  Pointer to vector to bit-fill
  \param msb  Most-significant bit to end bit-filling on
  \param lsb  Least-significant bit to start bit-filling
@@ -2616,6 +2634,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.128  2008/03/27 18:51:46  phase1geo
+ Fixing more issues with PASSIGN and BASSIGN operations.
+
  Revision 1.127  2008/03/27 06:09:58  phase1geo
  Fixing some regression errors.  Checkpointing.
 

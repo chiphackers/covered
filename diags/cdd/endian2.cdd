@@ -1,11 +1,11 @@
 5 c 1 * 0
-8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd endian2.vcd -o endian2.cdd -v endian2.v -D DUMP
+8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd endian2.vcd -o endian2.cdd -v endian2.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" endian2.v 1 25 1
 2 1 8 8000c 1 3d 5002 0 0 1 18 2 $u0
 1 FOO 0 80000 1 0 31 0 32 21 5 0 0 0 0 0 0 0
-1 a 5 93000c 1 0 0 3 4 17 caa
-1 b 6 93000c 1 0 3 6 4 17 4aa
+1 a 5 93000c 1 0 0 3 4 21 caa
+1 b 6 93000c 1 0 3 6 4 21 4aa
 4 1 1 0 0
 3 1 main.$u0 "main.$u0" endian2.v 0 14 1
 2 2 9 a000d 1 0 21004 0 0 1 16 0
