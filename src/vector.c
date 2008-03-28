@@ -1065,14 +1065,14 @@ bool vector_set_value(
 */
 inline void vector_sync_nz_and_unk( vector* vec ) {
 
-  int i = 0;  /* Loop iterator */
+  int i        = 0;  /* Loop iterator */
+  nibble ored  = 0;  /* OR'ed values */
 
   VSUPPL_CLR_NZ_AND_UNK( vec->suppl );
-  while( (i < vec->width) && !vec->suppl.part.not_zero && !vec->suppl.part.unknown ) {
-    vec->suppl.part.unknown  = (vec->value[i].part.val.value & 0x2) >> 1;
-    vec->suppl.part.not_zero = (vec->value[i].part.val.value & 0x1);
-    i++;
+  for( i=0; i<vec->width; i++ ) {
+    ored |= vec->value[i].part.val.value;
   }
+  vec->suppl.all |= (ored << 2);
 
 }
 
@@ -2634,6 +2634,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.129  2008/03/28 17:27:00  phase1geo
+ Fixing expression assignment problem due to recent changes.  Updating
+ regression files per changes.
+
  Revision 1.128  2008/03/27 18:51:46  phase1geo
  Fixing more issues with PASSIGN and BASSIGN operations.
 

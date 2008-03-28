@@ -3666,7 +3666,7 @@ bool expression_op_func__trigger(
 ) { PROFILE(EXPRESSION_OP_FUNC__TRIGGER);
 
   /* Specify that we have triggered */
-  expr->value->value[0].part.exp.value = 1;
+  expr->sig->value->suppl.part.not_zero = 1;
 
   /* Propagate event */
   vsignal_propagate( expr->sig, ((thr == NULL) ? time : &(thr->curr_time)) );
@@ -5340,6 +5340,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.310  2008/03/28 17:27:00  phase1geo
+ Fixing expression assignment problem due to recent changes.  Updating
+ regression files per changes.
+
  Revision 1.309  2008/03/28 14:03:50  phase1geo
  Removing param check from expression_op_func__null function.
 
