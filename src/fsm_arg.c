@@ -555,7 +555,7 @@ static void fsm_arg_parse_trans(
   assert( expr != NULL );
 
   /* Convert expression value to a string */
-  tmp = str = vector_to_string( expr->value, DECIMAL );
+  tmp = str = vector_to_string( expr->value, ESUPPL_STATIC_BASE( expr->suppl ) );
 
   Try {
 
@@ -643,7 +643,7 @@ void fsm_arg_parse_attr(
       }
     } else if( (index == 2) && (strcmp( curr->name, "is" ) == 0) && (curr->expr != NULL) ) {
       if( fsml == NULL ) {
-        tmp = str = vector_to_string( curr->expr->value, DECIMAL );
+        tmp = str = vector_to_string( curr->expr->value, ESUPPL_STATIC_BASE( curr->expr->suppl ) );
         if( (in_state = fsm_arg_parse_state( &str, funit->name )) == NULL ) {
           unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Illegal input state expression (%s), file: %s", str, obf_file( funit->filename ) );
           assert( rv < USER_MSG_LENGTH );
@@ -663,7 +663,7 @@ void fsm_arg_parse_attr(
       }
     } else if( (index == 2) && (strcmp( curr->name, "os" ) == 0) && (curr->expr != NULL) ) {
       if( fsml == NULL ) {
-        tmp = str = vector_to_string( curr->expr->value, DECIMAL );
+        tmp = str = vector_to_string( curr->expr->value, ESUPPL_STATIC_BASE( curr->expr->suppl ) );
         if( (out_state = fsm_arg_parse_state( &str, funit->name )) == NULL ) {
           unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Illegal output state expression (%s), file: %s", str, obf_file( funit->filename ) );
           assert( rv < USER_MSG_LENGTH );
@@ -687,7 +687,7 @@ void fsm_arg_parse_attr(
     } else if( (index == 3) && (strcmp( curr->name, "os" ) == 0) && (out_state == NULL) &&
                (in_state != NULL) && (curr->expr != NULL) ) {
       if( fsml == NULL ) {
-        tmp = str = vector_to_string( curr->expr->value, DECIMAL );
+        tmp = str = vector_to_string( curr->expr->value, ESUPPL_STATIC_BASE( curr->expr->suppl ) );
         if( (out_state = fsm_arg_parse_state( &str, funit->name )) == NULL ) {
           unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Illegal output state expression (%s), file: %s", str, obf_file( funit->filename ) );
           assert( rv < USER_MSG_LENGTH );
@@ -721,7 +721,7 @@ void fsm_arg_parse_attr(
       }
     } else {
       unsigned int rv;
-      tmp = vector_to_string( curr->expr->value, DECIMAL );
+      tmp = vector_to_string( curr->expr->value, ESUPPL_STATIC_BASE( curr->expr->suppl ) );
       rv = snprintf( user_msg, USER_MSG_LENGTH, "Invalid covered_fsm attribute parameter (%s=%s), file: %s",
                      curr->name, tmp, obf_file( funit->filename ) );
       assert( rv < USER_MSG_LENGTH );
@@ -742,6 +742,11 @@ void fsm_arg_parse_attr(
 
 /*
  $Log$
+ Revision 1.49  2008/03/26 21:29:31  phase1geo
+ Initial checkin of new optimizations for unknown and not_zero values in vectors.
+ This attempts to speed up expression operations across the board.  Working on
+ debugging regressions.  Checkpointing.
+
  Revision 1.48  2008/03/18 05:36:04  phase1geo
  More updates (regression still broken).
 

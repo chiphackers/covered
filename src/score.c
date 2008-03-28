@@ -1207,6 +1207,7 @@ void command_score( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
   free_safe( directive_filename, (strlen( directive_filename ) + 1) );
   free_safe( top_instance, (strlen( top_instance ) + 1) );
   free_safe( vpi_timescale, (strlen( vpi_timescale ) + 1) );
+  free_safe( pragma_coverage_name, (strlen( pragma_coverage_name ) + 1) );
 
   PROFILE_END;
 
@@ -1214,6 +1215,11 @@ void command_score( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
 /*
  $Log$
+ Revision 1.121  2008/03/26 21:29:31  phase1geo
+ Initial checkin of new optimizations for unknown and not_zero values in vectors.
+ This attempts to speed up expression operations across the board.  Working on
+ debugging regressions.  Checkpointing.
+
  Revision 1.120  2008/03/18 21:36:24  phase1geo
  Updates from regression runs.  Regressions still do not completely pass at
  this point.  Checkpointing.
