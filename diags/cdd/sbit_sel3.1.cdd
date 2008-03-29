@@ -1,0 +1,37 @@
+5 b 1 * 0
+8 /Users/trevorw/projects/branch/covered/diags/verilog -t main -vcd sbit_sel3.1.vcd -o sbit_sel3.1.cdd -v sbit_sel3.1.v -D DUMP
+3 0 $root "$root" NA 0 0 1
+3 0 main "main" sbit_sel3.1.v 11 37 1
+2 1 15 8000c 1 3d 121002 0 0 1 34 2 $u0
+1 a 13 83000b 1 0 31 0 32 33 aa 1aa aa aa aa aa aa aa
+1 b 13 83000e 1 0 31 0 32 33 aa aa aa aa aa aa aa aa
+4 1 0 0
+3 1 main.$u0 "main.$u0" sbit_sel3.1.v 0 19 1
+2 2 16 50005 1 0 20004 0 0 32 96 0 0 0 0 0 0 0 0
+2 3 16 10001 0 1 400 0 0 a
+2 4 16 10005 1 37 11006 2 3
+2 5 17 50005 1 0 20008 0 0 32 96 1 0 0 0 0 0 0 0
+2 6 17 10001 0 1 400 0 0 b
+2 7 17 10005 1 37 a 5 6
+2 8 18 d0010 1 0 20008 0 0 1 36 1
+2 9 18 70007 1 1 408 0 0 b
+2 10 18 70007 1 47 8 9 0 foo.x
+2 11 18 30008 1 3a 120408 0 10 32 34 4baa faa faa faa faa faa faa faa foo
+2 12 18 10009 0 23 400 0 11 a
+2 13 18 10010 1 37 a 8 12
+4 13 0 0
+4 7 13 13
+4 4 7 7
+3 1 main.$u1 "main.$u1" sbit_sel3.1.v 0 28 1
+3 2 main.foo "main.foo" sbit_sel3.1.v 30 35 1
+2 14 32 20006 1 3d 131802 0 0 1 34 2 $u2
+1 foo 30 850010 1 0 31 0 32 33 aa aa aa aa aa aa aa aa
+1 x 31 80000f 1 0 31 0 32 33 aa aa aa aa aa aa aa aa
+4 14 0 0
+3 1 main.foo.$u2 "main.foo.$u2" sbit_sel3.1.v 0 34 1
+2 15 33 f000f 1 0 20808 0 0 32 96 4 0 0 0 0 0 0 0
+2 16 33 a000a 1 1 808 0 0 x
+2 17 33 a000f 1 f 20a08 15 16 32 34 4baa faa faa faa faa faa faa faa
+2 18 33 40006 0 1 c00 0 0 foo
+2 19 33 4000f 1 37 1180a 17 18
+4 19 0 0

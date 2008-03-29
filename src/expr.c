@@ -3476,6 +3476,8 @@ bool expression_op_func__aedge(
   /* If our signal is an event that has been triggered, automatically set ourselves to true */
   if( (expr->right->sig != NULL) && (expr->right->sig->suppl.part.type == SSUPPL_TYPE_EVENT) ) {
 
+    printf( "In expression_op_func__aedge, eval_t: %d\n", expr->right->suppl.part.eval_t );
+
     if( expr->right->suppl.part.eval_t == 1 ) {
       if( thr->suppl.part.exec_first ) {
         expr->suppl.part.true   = 1;
@@ -3666,6 +3668,7 @@ bool expression_op_func__trigger(
 ) { PROFILE(EXPRESSION_OP_FUNC__TRIGGER);
 
   /* Specify that we have triggered */
+  expr->sig->value->suppl.part.unknown  = 0;
   expr->sig->value->suppl.part.not_zero = 1;
 
   /* Propagate event */
@@ -5340,6 +5343,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.311  2008/03/28 18:28:26  phase1geo
+ Fixing bug in trigger expression function due to recent changes.
+
  Revision 1.310  2008/03/28 17:27:00  phase1geo
  Fixing expression assignment problem due to recent changes.  Updating
  regression files per changes.
