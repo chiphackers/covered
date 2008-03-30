@@ -3801,7 +3801,6 @@ bool expression_op_func__default(
     expression_set_tf_preclear( expr );
   }
   expression_set_unary_evals( expr );
-  expression_set_eval_NN( expr );
 
   PROFILE_END;
 
@@ -5347,6 +5346,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.313  2008/03/30 05:14:32  phase1geo
+ Optimizing sim_expr_changed functionality and fixing bug 1928475.
+
  Revision 1.312  2008/03/29 18:38:55  phase1geo
  Adding sbit_sel3* diagnostics from stable branch.
 

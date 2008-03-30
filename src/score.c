@@ -1121,7 +1121,11 @@ static void score_parse_args(
 
  Performs score command functionality.
 */
-void command_score( int argc, int last_arg, const char** argv ) { PROFILE(COMMAND_SCORE);
+void command_score(
+  int          argc,
+  int          last_arg,
+  const char** argv
+) { PROFILE(COMMAND_SCORE);
 
   unsigned int rv;  /* Return value from snprintf calls */
 
@@ -1208,6 +1212,7 @@ void command_score( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
   free_safe( top_instance, (strlen( top_instance ) + 1) );
   free_safe( vpi_timescale, (strlen( vpi_timescale ) + 1) );
   free_safe( pragma_coverage_name, (strlen( pragma_coverage_name ) + 1) );
+  free_safe( pragma_racecheck_name, (strlen( pragma_racecheck_name ) + 1) );
 
   PROFILE_END;
 
@@ -1215,6 +1220,9 @@ void command_score( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
 /*
  $Log$
+ Revision 1.122  2008/03/28 21:11:32  phase1geo
+ Fixing memory leak issues with -ep option and embedded FSM attributes.
+
  Revision 1.121  2008/03/26 21:29:31  phase1geo
  Initial checkin of new optimizations for unknown and not_zero values in vectors.
  This attempts to speed up expression operations across the board.  Working on
