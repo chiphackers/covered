@@ -1,5 +1,5 @@
 5 c 1 * 0
-8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd exclude3.vcd -o exclude3.cdd -v exclude3.v -y ./lib -e foo_module.foo_task -D DUMP
+8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd exclude3.vcd -o exclude3.cdd -v exclude3.v -y ./lib -e foo_module.foo_task -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" exclude3.v 1 14 1
 3 0 foo_module "main.bar" ./lib/foo_module.v 1 34 1
@@ -18,7 +18,7 @@
 3 1 foo_module.foo_named_block "main.bar.foo_named_block" ./lib/foo_module.v 15 17 1
 2 7 16 9000c 1 0 21008 0 0 1 20 1
 2 8 16 10005 0 1 1400 0 0 1 9 foo_d
-2 9 16 1000c 1 37 a 7 8
+2 9 16 1000c 1 37 1a 7 8
 4 9 11 0 0
 3 2 foo_module.foo_func "main.bar.foo_func" ./lib/foo_module.v 19 24 1
 2 10 21 20006 1 3d 5802 0 0 1 26 2 $u2
@@ -29,6 +29,6 @@
 2 11 22 100010 1 1 1804 0 0 1 9 a
 2 12 22 f000f 1 1b 1808 11 0 1 26 1002
 2 13 22 4000b 0 1 1c00 0 0 1 9 foo_func
-2 14 22 40010 1 37 80a 12 13
+2 14 22 40010 1 37 81a 12 13
 4 14 11 0 0
 3 1 main.$u0 "main.$u0" exclude3.v 0 12 1

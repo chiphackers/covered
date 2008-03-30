@@ -1,5 +1,5 @@
 5 c 1 * 0
-8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd disable1.vcd -o disable1.cdd -v disable1.v -D DUMP
+8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd disable1.vcd -o disable1.cdd -v disable1.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" disable1.v 1 28 1
 2 1 5 8000c 1 3d 5002 0 0 1 26 2 $u0
@@ -18,12 +18,12 @@
 3 1 main.$u0.$u1.foo "main.$u0.$u1.foo" disable1.v 7 11 1
 2 6 8 a000d 1 0 21004 0 0 1 16 0
 2 7 8 60006 0 1 1400 0 0 1 9 a
-2 8 8 6000d 1 37 6 6 7
+2 8 8 6000d 1 37 16 6 7
 2 9 9 e000f 1 0 1008 0 0 32 52 10 1 0 0 0 0 0 0
 2 10 9 d000f 1 2c 9002 9 0 32 26 aa aa aa aa aa aa aa aa
-2 11 10 110014 0 0 21010 0 0 1 20 1
+2 11 10 110014 0 0 21000 0 0 1 20 1
 2 12 10 d000d 0 1 1400 0 0 1 9 a
-2 13 10 d0014 0 37 22 11 12
+2 13 10 d0014 0 37 32 11 12
 4 13 0 0 0
 4 10 0 13 0
 4 8 11 10 10

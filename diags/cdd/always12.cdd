@@ -1,5 +1,5 @@
 5 c 1 * 0
-8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd always12.vcd -o always12.cdd -v always12.v -D DUMP
+8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd always12.vcd -o always12.cdd -v always12.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" always12.v 1 38 1
 2 1 5 90009 2 1 1004 0 0 1 9 a
@@ -21,19 +21,19 @@
 4 9 0 10 0
 4 7 11 9 0
 3 1 main.$u0.$u1 "main.$u0.$u1" always12.v 0 15 1
-2 11 10 a000a 0 1 1010 0 0 1 9 b
+2 11 10 a000a 0 1 1000 0 0 1 9 b
 2 12 10 6000c 0 39 22 11 0
-2 13 14 c000f 0 0 21010 0 0 1 16 0
+2 13 14 c000f 0 0 21000 0 0 1 16 0
 2 14 14 80008 0 1 1400 0 0 1 9 b
-2 15 14 8000f 0 37 22 13 14
+2 15 14 8000f 0 37 32 13 14
 2 16 11 8000c 0 3d 5002 0 0 1 26 2 $u2
 4 15 0 0 0
 4 16 6 15 0
 4 12 11 16 15
 3 1 main.$u0.$u1.$u2 "main.$u0.$u1.$u2" always12.v 0 13 1
-2 17 12 d0010 0 0 21010 0 0 1 16 0
+2 17 12 d0010 0 0 21000 0 0 1 16 0
 2 18 12 90009 0 1 1400 0 0 1 9 a
-2 19 12 90010 0 37 22 17 18
+2 19 12 90010 0 37 32 17 18
 4 19 11 0 0
 3 1 main.$u3 "main.$u3" always12.v 0 28 1
 3 3 main.foobar "main.foobar" always12.v 30 36 1
@@ -44,5 +44,5 @@
 3 1 main.foobar.$u4 "main.foobar.$u4" always12.v 0 35 1
 2 21 34 50005 1 1 1004 0 0 1 9 b
 2 22 34 10001 0 1 1400 0 0 1 9 a
-2 23 34 10005 1 37 6 21 22
+2 23 34 10005 1 37 16 21 22
 4 23 11 0 0

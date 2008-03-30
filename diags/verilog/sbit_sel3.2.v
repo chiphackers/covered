@@ -24,11 +24,12 @@ initial begin
         $finish;
 end
 
+// Recursive way to add 1 to the given value
 function automatic [31:0] foo;
-  input x;
+  input [31:0] x;
   begin
     if( x == 0 )
-      foo = 0;
+      foo = 1;
     else
       foo = foo( x - 1 ) + 1;
   end

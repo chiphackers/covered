@@ -1,5 +1,5 @@
 5 c 1 * 0
-8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd forever1.vcd -o forever1.cdd -v forever1.v -D DUMP
+8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd forever1.vcd -o forever1.cdd -v forever1.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" forever1.v 1 20 1
 2 1 5 8000c 1 3d 5002 0 0 1 26 2 $u0
@@ -9,13 +9,13 @@
 3 1 main.$u0 "main.$u0" forever1.v 0 9 1
 2 2 6 50008 1 0 21004 0 0 1 16 0
 2 3 6 10001 0 1 1400 0 0 1 9 a
-2 4 6 10008 1 37 6 2 3
+2 4 6 10008 1 37 16 2 3
 2 5 7 a000a 1 0 1008 0 0 32 52 11 0 0 0 0 0 0 0
 2 6 7 9000a 2b 2c 900a 5 0 32 26 aa aa aa aa aa aa aa aa
-2 7 7 110011 15 1 101c 0 0 1 9 a
+2 7 7 110011 15 1 100c 0 0 1 9 a
 2 8 7 100010 15 1b 102c 7 0 1 26 1102
 2 9 7 c000c 0 1 1400 0 0 1 9 a
-2 10 7 c0011 15 37 2e 8 9
+2 10 7 c0011 15 37 3e 8 9
 4 10 6 6 6
 4 6 0 10 0
 4 4 11 6 6

@@ -1,5 +1,5 @@
 5 c 1 * 0
-8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd bassign1.vcd -o bassign1.cdd -v bassign1.v -D DUMP
+8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd bassign1.vcd -o bassign1.cdd -v bassign1.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" bassign1.v 1 25 1
 2 1 5 a000a 2 1 100c 0 0 1 9 a
@@ -21,10 +21,10 @@
 2 9 9 80008 2 1 100c 0 0 1 9 c
 2 10 9 70007 2 1b 100c 9 0 1 26 1102
 2 11 9 30003 0 1 1400 0 0 1 9 b
-2 12 9 30008 2 37 e 10 11
+2 12 9 30008 2 37 1e 10 11
 2 13 10 70007 2 1 100c 0 0 1 9 b
 2 14 10 30003 0 1 1400 0 0 1 9 a
-2 15 10 30007 2 37 e 13 14
+2 15 10 30007 2 37 1e 13 14
 4 15 0 0 0
 4 12 11 15 15
 3 1 main.$u1 "main.$u1" bassign1.v 0 23 1

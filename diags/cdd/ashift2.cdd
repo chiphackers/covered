@@ -1,5 +1,5 @@
 5 c 1 * 0
-8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd ashift2.vcd -o ashift2.cdd -v ashift2.v -D DUMP
+8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd ashift2.vcd -o ashift2.cdd -v ashift2.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" ashift2.v 1 21 1
 2 1 6 90009 1 1 1000 0 0 1 9 a
@@ -12,13 +12,13 @@
 4 4 6 3 0
 4 3 1 4 0
 3 1 main.$u0 "main.$u0" ashift2.v 0 10 1
-2 5 8 110011 0 0 1010 0 0 32 52 4 0 0 0 0 0 0 0
-2 6 8 8000b 0 0 61010 0 0 4 20 1
+2 5 8 110011 0 0 1000 0 0 32 52 4 0 0 0 0 0 0 0
+2 6 8 8000b 0 0 61000 0 0 4 20 1
 2 7 8 80011 0 43 1030 5 6 4 26 aa
 2 8 8 30003 0 1 1400 0 0 4 9 b
 2 9 8 30012 0 37 22 7 8
-2 10 9 110011 0 0 1010 0 0 32 52 5 0 0 0 0 0 0 0
-2 11 9 8000b 0 0 61010 0 0 4 20 4
+2 10 9 110011 0 0 1000 0 0 32 52 5 0 0 0 0 0 0 0
+2 11 9 8000b 0 0 61000 0 0 4 20 4
 2 12 9 80011 0 44 1030 10 11 4 26 aa
 2 13 9 30003 0 1 1400 0 0 4 9 c
 2 14 9 30012 0 37 22 12 13
