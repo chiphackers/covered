@@ -470,8 +470,10 @@ void vsignal_propagate(
   while( curr_expr != NULL ) {
 
     /* Add to simulation queue if expression is a RHS, not a function call and not a port assignment */
-    if( (ESUPPL_IS_LHS( curr_expr->exp->suppl ) == 0) &&
-        (curr_expr->exp->op != EXP_OP_FUNC_CALL) &&
+//    if( (ESUPPL_IS_LHS( curr_expr->exp->suppl ) == 0) &&
+//        (curr_expr->exp->op != EXP_OP_FUNC_CALL) &&
+//        (curr_expr->exp->op != EXP_OP_PASSIGN) ) {
+    if( (curr_expr->exp->op != EXP_OP_FUNC_CALL) &&
         (curr_expr->exp->op != EXP_OP_PASSIGN) ) {
       sim_expr_changed( curr_expr->exp, time );
     }
@@ -780,6 +782,9 @@ void vsignal_dealloc(
 
 /*
  $Log$
+ Revision 1.68  2008/03/27 06:09:58  phase1geo
+ Fixing some regression errors.  Checkpointing.
+
  Revision 1.67  2008/03/18 21:36:24  phase1geo
  Updates from regression runs.  Regressions still do not completely pass at
  this point.  Checkpointing.

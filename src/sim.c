@@ -511,64 +511,55 @@ void sim_thread_push(
 */
 void sim_expr_changed( expression* expr, const sim_time* time ) { PROFILE(SIM_EXPR_CHANGED);
 
+  expression* parent;  /* Pointer to parent expression of the given expression */
+
   assert( expr != NULL );
 
+  while( ESUPPL_IS_ROOT( expr->suppl ) == 0 ) {
+
+    expression* parent = expr->parent->expr;
+
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In sim_expr_changed, expr %d, op %s, line %d, left_changed: %d, right_changed: %d, time: %llu",
-            expr->id, expression_string_op( expr->op ), expr->line,
-            ESUPPL_IS_LEFT_CHANGED( expr->suppl ),
-            ESUPPL_IS_RIGHT_CHANGED( expr->suppl ),
-            time->full );
-  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    snprintf( user_msg, USER_MSG_LENGTH, "In sim_expr_changed, expr %d, op %s, line %d, left_changed: %d, right_changed: %d, time: %llu",
+              expr->id, expression_string_op( expr->op ), expr->line,
+              ESUPPL_IS_LEFT_CHANGED( expr->suppl ),
+              ESUPPL_IS_RIGHT_CHANGED( expr->suppl ),
+              time->full );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
-  /* No need to continue to traverse up tree if both CHANGED bits are set */
-  if( (ESUPPL_IS_LEFT_CHANGED( expr->suppl ) == 0) ||
-      (ESUPPL_IS_RIGHT_CHANGED( expr->suppl ) == 0) ||
-      (expr->op == EXP_OP_COND) ) {
-
-    /* If we are not the root expression, do the following */
-    if( ESUPPL_IS_ROOT( expr->suppl ) == 0 ) { PROFILE(SIM_EXPR_CHANGED_A);
-
-      /* Set the appropriate CHANGED bit of the parent expression */
-      if( (expr->parent->expr->left != NULL) && (expr->parent->expr->left->id == expr->id) ) {
-
-        expr->parent->expr->suppl.part.left_changed = 1;
-
-        /* If the parent of this expression is a CONDITIONAL, set the RIGHT_CHANGED bit of the parent too */
-        if( expr->parent->expr->op == EXP_OP_COND ) {
-
-          expr->parent->expr->suppl.part.right_changed = 1;
-
+    /* If our expression is on the left of the parent, set the left_changed as needed */
+    if( (parent->left != NULL) && (parent->left->id == expr->id) ) {
+      
+      /* If the bit we need to set is already set, stop iterating up tree */
+      if( ESUPPL_IS_LEFT_CHANGED( parent->suppl ) == 1 ) {
+        break;
+      } else {
+        parent->suppl.part.left_changed = 1;
+        if( parent->op == EXP_OP_COND ) {
+          parent->suppl.part.right_changed = 1;
         }
-
-
-      } else if( (expr->parent->expr->right != NULL) && (expr->parent->expr->right->id == expr->id) ) {
-        
-        expr->parent->expr->suppl.part.right_changed = 1;
-
       }
 
-      /* Continue up the tree */
-      sim_expr_changed( expr->parent->expr, time );
+    /* Otherwise, we assume that we match the right side */
+    } else {   // TBD - This is a bit different than before
 
-      PROFILE_END;
-
-    /*
-     Otherwise, if we have hit the root expression and the parent pointer is valid, add 
-     this statement (if it is the head) back onto the active queue.
-    */
-    } else if( expr->parent->expr != NULL ) {
-
-      funit_push_threads( expr->parent->stmt->funit, expr->parent->stmt, time );
+      /* If the bit we need to set is already set, stop iterating up tree */
+      if( ESUPPL_IS_RIGHT_CHANGED( parent->suppl ) == 1 ) {
+        break;
+      } else {
+        parent->suppl.part.right_changed = 1;
+      }
 
     }
 
-    /* Set one of the changed bits to let the simulator know that it needs to evaluate the expression.  */
-    if( (ESUPPL_IS_LEFT_CHANGED( expr->suppl ) == 0) && (ESUPPL_IS_RIGHT_CHANGED( expr->suppl ) == 0) ) {
-      expr->suppl.part.left_changed = 1;
-    }
+    expr = parent;
 
+  }
+
+  /* If we reached the root expression, push our thread onto the active queue */
+  if( (ESUPPL_IS_ROOT( expr->suppl ) == 1) && (expr->parent->stmt != NULL) ) {
+    funit_push_threads( expr->parent->stmt->funit, expr->parent->stmt, time );
   }
 
   PROFILE_END;
@@ -901,6 +892,7 @@ static void sim_add_statics() { PROFILE(SIM_ADD_STATICS);
  \param expr  Pointer to expression to simulate.
  \param thr   Pointer to current thread that is being simulated.
  \param time  Pointer to current simulation time.
+ \param lhs   Specifies if we should only traverse LHS expressions or RHS expressions
 
  \return Returns TRUE if this expression has changed value from previous sim; otherwise,
          returns FALSE.
@@ -912,7 +904,12 @@ static void sim_add_statics() { PROFILE(SIM_ADD_STATICS);
  expression operation for the current expression, clear both changed bits and
  return.
 */
-static bool sim_expression( expression* expr, thread* thr, const sim_time* time ) { PROFILE(SIM_EXPRESSION);
+bool sim_expression(
+  expression*     expr,
+  thread*         thr,
+  const sim_time* time,
+  bool            lhs
+) { PROFILE(SIM_EXPRESSION);
 
   bool retval        = FALSE;  /* Return value for this function */
   bool left_changed  = FALSE;  /* Signifies if left expression tree has changed value */
@@ -920,57 +917,58 @@ static bool sim_expression( expression* expr, thread* thr, const sim_time* time 
 
   assert( expr != NULL );
 
+  /* If our LHS mode matches the needed LHS mode, continue */
+  if( ESUPPL_IS_LHS( expr->suppl ) == lhs ) {
+
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "    In sim_expression %d, left_changed %d, right_changed %d, thread %p",
-            expr->id, ESUPPL_IS_LEFT_CHANGED( expr->suppl ), ESUPPL_IS_RIGHT_CHANGED( expr->suppl ), thr );
-  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    snprintf( user_msg, USER_MSG_LENGTH, "    In sim_expression %d, left_changed %d, right_changed %d, thread %p",
+              expr->id, ESUPPL_IS_LEFT_CHANGED( expr->suppl ), ESUPPL_IS_RIGHT_CHANGED( expr->suppl ), thr );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
-  /* Traverse left child expression if it has changed */
-  if( ((ESUPPL_IS_LEFT_CHANGED( expr->suppl ) == 1) ||
-       (expr->op == EXP_OP_CASE)                    ||
-       (expr->op == EXP_OP_CASEX)                   ||
-       (expr->op == EXP_OP_CASEZ)) &&
-      ((expr->op != EXP_OP_DLY_OP) || (expr->left == NULL) || (expr->left->op != EXP_OP_DELAY)) ) {
+    /* Traverse left child expression if it has changed */
+    if( ((ESUPPL_IS_LEFT_CHANGED( expr->suppl ) == 1) ||
+         (expr->op == EXP_OP_CASE)                    ||
+         (expr->op == EXP_OP_CASEX)                   ||
+         (expr->op == EXP_OP_CASEZ)) &&
+        ((expr->op != EXP_OP_DLY_OP) || (expr->left == NULL) || (expr->left->op != EXP_OP_DELAY)) ) {
 
-    /* Clear LEFT CHANGED bit */
-    expr->suppl.part.left_changed = 0;
+      /* Clear LEFT CHANGED bit */
+      expr->suppl.part.left_changed = 0;
 
-    /* Simulate the left expression if it has changed */
-    if( expr->left != NULL ) {
-      if( expr->left->suppl.part.lhs == 0 ) {
-        left_changed = sim_expression( expr->left, thr, time );
+      /* Simulate the left expression if it has changed */
+      if( expr->left != NULL ) {
+        left_changed = sim_expression( expr->left, thr, time, lhs );
+      } else {
+        left_changed = TRUE;
       }
-    } else {
-      left_changed = TRUE;
+
     }
 
-  }
-
-  /* Traverse right child expression if it has changed */
-  if( (ESUPPL_IS_RIGHT_CHANGED( expr->suppl ) == 1) &&
-      ((expr->op != EXP_OP_DLY_OP) || !thr->suppl.part.exec_first) ) {
-
-    /* Clear RIGHT CHANGED bit */
-    expr->suppl.part.right_changed = 0;
-
-    /* Simulate the right expression if it has changed */
-    if( expr->right != NULL ) {
-      if( expr->right->suppl.part.lhs == 0 ) {
-        right_changed = sim_expression( expr->right, thr, time );
+    /* Traverse right child expression if it has changed */
+    if( (ESUPPL_IS_RIGHT_CHANGED( expr->suppl ) == 1) &&
+        ((expr->op != EXP_OP_DLY_OP) || !thr->suppl.part.exec_first) ) {
+  
+      /* Clear RIGHT CHANGED bit */
+      expr->suppl.part.right_changed = 0;
+  
+      /* Simulate the right expression if it has changed */
+      if( expr->right != NULL ) {
+        right_changed = sim_expression( expr->right, thr, time, lhs );
+      } else {
+        right_changed = TRUE;
       }
-    } else {
-      right_changed = TRUE;
-    } 
 
-  }
+    }
 
-  /*
-   Now perform expression operation for this expression if left or right
-   expressions trees have changed.
-  */
-  if( (ESUPPL_IS_ROOT( expr->suppl ) == 0) || (expr->parent->stmt == NULL) || (expr->parent->stmt->suppl.part.cont == 0) || left_changed || right_changed ) {
-    retval = expression_operate( expr, thr, time );
+    /*
+     Now perform expression operation for this expression if left or right
+     expressions trees have changed.
+    */
+    if( (ESUPPL_IS_ROOT( expr->suppl ) == 0) || (expr->parent->stmt == NULL) || (expr->parent->stmt->suppl.part.cont == 0) || left_changed || right_changed ) {
+      retval = expression_operate( expr, thr, time );
+    }
+ 
   }
 
   PROFILE_END;
@@ -1005,6 +1003,7 @@ void sim_thread(
   /* Set the value of stmt with the head_stmt */
   stmt = thr->curr;
 
+
   while( (stmt != NULL) && !thr->suppl.part.kill && simulate ) {
 
 #ifdef DEBUG_MODE
@@ -1015,7 +1014,7 @@ void sim_thread(
 #endif
 
     /* Place expression in expression simulator and run */
-    expr_changed = sim_expression( stmt->exp, thr, time );
+    expr_changed = sim_expression( stmt->exp, thr, time, FALSE );
 
 #ifdef DEBUG_MODE
     snprintf( user_msg, USER_MSG_LENGTH, "  Executed statement %d, expr changed %d, thread %p", stmt->exp->id, expr_changed, thr );
@@ -1213,6 +1212,9 @@ void sim_dealloc() { PROFILE(SIM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.124  2008/03/17 05:26:17  phase1geo
+ Checkpointing.  Things don't compile at the moment.
+
  Revision 1.123  2008/02/29 00:08:31  phase1geo
  Completed optimization code in simulator.  Still need to verify that code
  changes enhanced performances as desired.  Checkpointing.

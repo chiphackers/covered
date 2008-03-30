@@ -244,7 +244,7 @@ static bool expression_op_func__wait( expression*, thread*, const sim_time* );
 static bool expression_op_func__finish( expression*, thread*, const sim_time* );
 static bool expression_op_func__stop( expression*, thread*, const sim_time* );
 
-static void expression_assign( expression*, expression*, int*, const sim_time* );
+static void expression_assign( expression*, expression*, int*, thread*, const sim_time* );
 
 /*!
  Array containing static information about expression operation types.  NOTE:  This structure MUST be
@@ -3827,7 +3827,7 @@ bool expression_op_func__bassign(
   int intval = 0;  /* Integer value */
 
   /* Perform assignment */
-  expression_assign( expr->left, expr->right, &intval, ((thr == NULL) ? time : &(thr->curr_time)) );
+  expression_assign( expr->left, expr->right, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)) );
 
   /* Gather coverage information */
   expression_set_tf_preclear( expr );
@@ -4157,7 +4157,7 @@ bool expression_op_func__passign(
      to the right expression.
     */
     case SSUPPL_TYPE_OUTPUT :
-      expression_assign( expr->right, expr, &intval, ((thr == NULL) ? time : &(thr->curr_time)) );
+      expression_assign( expr->right, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)) );
       retval = TRUE;
       break;
 
@@ -4487,7 +4487,7 @@ bool expression_op_func__dly_assign(
 
   /* Check the dly_op expression.  If eval_t is set to 1, perform the assignment */
   if( ESUPPL_IS_TRUE( expr->right->suppl ) == 1 ) {
-    expression_assign( expr->left, expr->right, &intval, ((thr == NULL) ? time : &(thr->curr_time)) );
+    expression_assign( expr->left, expr->right, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)) );
     expr->suppl.part.eval_t = 1;
     retval = TRUE;
   } else {
@@ -4979,6 +4979,7 @@ void expression_assign(
   expression*     lhs,
   expression*     rhs,
   int*            lsb,
+  thread*         thr,
   const sim_time* time
 ) { PROFILE(EXPRESSION_ASSIGN);
 
@@ -5051,6 +5052,7 @@ void expression_assign(
         break;
       case EXP_OP_SBIT_SEL :
         if( lhs->sig->suppl.part.assigned == 1 ) {
+          sim_expression( lhs->left, thr, time, TRUE );
           if( !lhs->left->value->suppl.part.unknown ) {
             intval1 = (vector_to_int( lhs->left->value ) - dim_lsb) * dim_width;
             if( intval1 >= 0 ) {           // Only perform assignment if selected bit is within range
@@ -5123,6 +5125,7 @@ void expression_assign(
 #ifdef NOT_SUPPORTED
       case EXP_OP_MBIT_POS :
         if( lhs->sig->suppl.part.assigned == 1 ) {
+          sim_expression( lhs->left, thr, time, TRUE );
           if( !lhs->left->value->suppl.part.unknown ) {
             intval1 = (vector_to_int( lhs->left->value ) - dim_lsb) * lhs->value->width;
             intval2 = vector_to_int( lhs->right->value ) * lhs->value->width;
@@ -5148,6 +5151,7 @@ void expression_assign(
         break;
       case EXP_OP_MBIT_NEG :
         if( lhs->sig->suppl.part.assigned == 1 ) {
+          sim_expression( lhs->left, thr, time, TRUE );
           if( !lhs->left->value->part.unknown ) {
             intval1 = (vector_to_int( lhs->left->value ) - dim_lsb) * lhs->value->width;
             intval2 = vector_to_int( lhs->right->value ) * lhs->value->width;
@@ -5174,12 +5178,12 @@ void expression_assign(
 #endif
       case EXP_OP_CONCAT   :
       case EXP_OP_LIST     :
-        expression_assign( lhs->right, rhs, lsb, time );
-        expression_assign( lhs->left,  rhs, lsb, time );
+        expression_assign( lhs->right, rhs, lsb, thr, time );
+        expression_assign( lhs->left,  rhs, lsb, thr, time );
         break;
       case EXP_OP_DIM      :
-        expression_assign( lhs->left,  rhs, lsb, time );
-        expression_assign( lhs->right, rhs, lsb, time );
+        expression_assign( lhs->left,  rhs, lsb, thr, time );
+        expression_assign( lhs->right, rhs, lsb, thr, time );
         break;
       case EXP_OP_STATIC   :
         break;
@@ -5343,6 +5347,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.312  2008/03/29 18:38:55  phase1geo
+ Adding sbit_sel3* diagnostics from stable branch.
+
  Revision 1.311  2008/03/28 18:28:26  phase1geo
  Fixing bug in trigger expression function due to recent changes.
 

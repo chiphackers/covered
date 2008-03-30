@@ -2410,7 +2410,7 @@ expression_port_list
       if( ignore_mode == 0 ) {
         if( $3 != NULL ) {
           Try {
-            tmp = db_create_expression( $3, NULL, EXP_OP_PASSIGN, 0, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
+            tmp = db_create_expression( $3, NULL, EXP_OP_PASSIGN, lhs_mode, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
             tmp = db_create_expression( tmp, $1, EXP_OP_LIST, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
           } Catch_anonymous {
             expression_dealloc( $1, FALSE );
@@ -2432,7 +2432,7 @@ expression_port_list
       expression* exp = $1;
       if( ignore_mode == 0 ) {
         Try {
-          exp = db_create_expression( $1, NULL, EXP_OP_PASSIGN, 0, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+          exp = db_create_expression( $1, NULL, EXP_OP_PASSIGN, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
         } Catch_anonymous {
           expression_dealloc( $1, FALSE );
           printf( "parser Throw BS\n" );
