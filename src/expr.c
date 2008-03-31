@@ -4219,8 +4219,6 @@ bool expression_op_func__mbit_pos(
 
   /* Gather coverage information */
   expression_set_tf_preclear( expr );
-  expression_set_unary_evals( expr );
-  expression_set_eval_NN( expr );
 
   PROFILE_END;
 
@@ -4272,8 +4270,6 @@ bool expression_op_func__mbit_neg(
 
   /* Gather coverage information */
   expression_set_tf_preclear( expr );
-  expression_set_unary_evals( expr );
-  expression_set_eval_NN( expr );
 
   PROFILE_END;
 
@@ -5343,6 +5339,11 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.315  2008/03/31 21:40:23  phase1geo
+ Fixing several more memory issues and optimizing a bit of code per regression
+ failures.  Full regression still does not pass but does complete (yeah!)
+ Checkpointing.
+
  Revision 1.314  2008/03/30 05:24:01  phase1geo
  Fixing a few more bugs.  Updated regression files per these changes.  Full regression
  still not running cleanly at this point.  Checkpointing.
