@@ -503,23 +503,21 @@ void statement_db_read(
         statement_queue_compare( stmt );
       }
 
-      /* Add statement to functional unit statement list */
-      if( (read_mode == READ_MODE_MERGE_NO_MERGE) || (read_mode == READ_MODE_MERGE_INST_MERGE) ) {
-
+      /* Add the statement to the functional unit list */
+      if( (read_mode == READ_MODE_NO_MERGE) || (read_mode == READ_MODE_MERGE_NO_MERGE) || (read_mode == READ_MODE_MERGE_INST_MERGE) ) {
         stmt_link_add_tail( stmt, &(curr_funit->stmt_head), &(curr_funit->stmt_tail) );
-
-        /*
-         Possibly add statement to presimulation queue (if the current functional unit is a task
-         or function, do not add this to the presimulation queue (this will be added when the expression
-         is called.
-        */
-        if( stmt->suppl.part.is_called == 0 ) {
-          sim_time tmp_time = {0,0,0,FALSE};
-          (void)sim_add_thread( NULL, stmt, curr_funit, &tmp_time );
-        }
-
       } else {
         stmt_link_add_head( stmt, &(curr_funit->stmt_head), &(curr_funit->stmt_tail) );
+      }
+
+      /*
+       Possibly add statement to presimulation queue (if the current functional unit is a task
+       or function, do not add this to the presimulation queue (this will be added when the expression
+       is called.
+      */
+      if( (read_mode == READ_MODE_NO_MERGE) && (stmt->suppl.part.is_called == 0) ) {
+        sim_time tmp_time = {0,0,0,FALSE};
+        (void)sim_add_thread( NULL, stmt, curr_funit, &tmp_time );
       }
 
     }
@@ -1009,6 +1007,9 @@ void statement_dealloc(
 
 /*
  $Log$
+ Revision 1.131  2008/03/17 05:26:17  phase1geo
+ Checkpointing.  Things don't compile at the moment.
+
  Revision 1.130  2008/03/14 22:00:20  phase1geo
  Beginning to instrument code for exception handling verification.  Still have
  a ways to go before we have anything that is self-checking at this point, though.

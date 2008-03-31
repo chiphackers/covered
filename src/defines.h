@@ -497,16 +497,23 @@
 /*!
  When new functional unit is read from database file, it is placed in the functional
  unit list and is placed in the correct hierarchical position in the instance tree.
- Used when performing a MERGE command or reading after parsing source files.
+ Used when reading after parsing source files.
 */
-#define READ_MODE_MERGE_NO_MERGE          0
+#define READ_MODE_NO_MERGE                0
+
+/*!
+ When new functional unit is read from database file, it is placed in the functional
+ unit list and is placed in the correct hierarchical position in the instance tree.
+ Used when performing a MERGE command on first file.
+*/
+#define READ_MODE_MERGE_NO_MERGE          1
 
 /*!
  When new functional unit is read from database file, it is placed in the functional
  unit list and is placed in the correct hierarchical position in the instance tree.
  Used when performing a REPORT command.
 */
-#define READ_MODE_REPORT_NO_MERGE         1
+#define READ_MODE_REPORT_NO_MERGE         2
 
 /*!
  When functional unit is completely read in (including module, signals, expressions), the
@@ -514,7 +521,7 @@
  functional unit is merged with the instance's functional unit; otherwise, we are attempting to
  merge two databases that were created from different designs.
 */
-#define READ_MODE_MERGE_INST_MERGE        2
+#define READ_MODE_MERGE_INST_MERGE        3
 
 /*!
  When functional unit is completely read in (including module, signals, expressions), the
@@ -522,7 +529,7 @@
  it is merged with the existing functional unit; otherwise, it is added to the functional
  unit list.
 */
-#define READ_MODE_REPORT_MOD_MERGE        3
+#define READ_MODE_REPORT_MOD_MERGE        4
 
 /*! @} */
 
@@ -2567,6 +2574,11 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.288  2008/03/26 21:29:31  phase1geo
+ Initial checkin of new optimizations for unknown and not_zero values in vectors.
+ This attempts to speed up expression operations across the board.  Working on
+ debugging regressions.  Checkpointing.
+
  Revision 1.287  2008/03/17 22:02:30  phase1geo
  Adding new check_mem script and adding output to perform memory checking during
  regression runs.  Completed work on free_safe and added realloc_safe function

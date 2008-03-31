@@ -515,6 +515,9 @@ void sim_expr_changed( expression* expr, const sim_time* time ) { PROFILE(SIM_EX
 
   assert( expr != NULL );
 
+  /* Set my left_changed bit to indicate to sim_expression that it should evaluate me */
+  expr->suppl.part.left_changed = 1;
+
   while( ESUPPL_IS_ROOT( expr->suppl ) == 0 ) {
 
     expression* parent = expr->parent->expr;
@@ -559,7 +562,18 @@ void sim_expr_changed( expression* expr, const sim_time* time ) { PROFILE(SIM_EX
 
   /* If we reached the root expression, push our thread onto the active queue */
   if( (ESUPPL_IS_ROOT( expr->suppl ) == 1) && (expr->parent->stmt != NULL) ) {
+
+#ifdef DEBUG_MODE
+    snprintf( user_msg, USER_MSG_LENGTH, "In sim_expr_changed, expr %d, op %s, line %d, left_changed: %d, right_changed: %d, time: %llu",
+              expr->id, expression_string_op( expr->op ), expr->line,
+              ESUPPL_IS_LEFT_CHANGED( expr->suppl ),
+              ESUPPL_IS_RIGHT_CHANGED( expr->suppl ),
+              time->full );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+#endif
+
     funit_push_threads( expr->parent->stmt->funit, expr->parent->stmt, time );
+
   }
 
   PROFILE_END;
@@ -1212,6 +1226,9 @@ void sim_dealloc() { PROFILE(SIM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.125  2008/03/30 05:14:32  phase1geo
+ Optimizing sim_expr_changed functionality and fixing bug 1928475.
+
  Revision 1.124  2008/03/17 05:26:17  phase1geo
  Checkpointing.  Things don't compile at the moment.
 

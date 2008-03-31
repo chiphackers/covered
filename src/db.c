@@ -406,7 +406,7 @@ void db_read(
               assert( !merge_mode );
 
               /* Parse rest of line for expression info */
-              expression_db_read( &rest_line, curr_funit, (read_mode == READ_MODE_MERGE_NO_MERGE) );
+              expression_db_read( &rest_line, curr_funit, (read_mode == READ_MODE_NO_MERGE) );
   
             } else if( type == DB_TYPE_STATEMENT ) {
 
@@ -2857,6 +2857,10 @@ bool db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.298  2008/03/22 02:21:07  phase1geo
+ Checking in start of changes to properly handle the deallocation of vector
+ memory from expressions.  Things are pretty broke at this point!
+
  Revision 1.297  2008/03/18 21:36:24  phase1geo
  Updates from regression runs.  Regressions still do not completely pass at
  this point.  Checkpointing.

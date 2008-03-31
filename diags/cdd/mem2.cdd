@@ -1,5 +1,5 @@
 5 c 1 * 0
-8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd mem2.vcd -o mem2.cdd -v mem2.v -D DUMP
+8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd mem2.vcd -o mem2.cdd -v mem2.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" mem2.v 1 22 1
 2 1 8 8000c 1 3d 5002 0 0 1 26 2 foo
@@ -10,11 +10,11 @@
 3 1 main.foo "main.foo" mem2.v 8 11 1
 2 2 9 f0012 1 32 1004 0 0 1 9 BAR0
 2 3 9 a000a 1 0 1404 0 0 32 48 0 0 0 0 0 0 0 0
-2 4 9 8000b 0 23 1400 0 3 1 11 m
+2 4 9 8000b 0 23 1410 0 3 1 11 m
 2 5 9 80012 1 37 16 2 4
 2 6 10 8000b 1 32 1008 0 0 1 9 BAR1
 2 7 10 30003 1 0 1408 0 0 32 52 1 0 0 0 0 0 0 0
-2 8 10 10004 0 23 1400 0 7 1 11 m
+2 8 10 10004 0 23 1410 0 7 1 11 m
 2 9 10 1000b 1 37 1a 6 8
 4 9 0 0 0
 4 5 11 9 9

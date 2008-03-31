@@ -1,5 +1,5 @@
 5 c 1 * 0
-8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd param10.2.vcd -o param10.2.cdd -v param10.2.v -D DUMP
+8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd param10.2.vcd -o param10.2.cdd -v param10.2.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" param10.2.v 1 14 1
 3 0 foo "main.a" param10.2.v 17 25 1
@@ -7,7 +7,7 @@
 4 1 1 0 0
 3 1 foo.foo_begin "main.a.foo_begin" param10.2.v 19 23 1
 2 2 22 50008 1 0 21004 0 0 1 16 0
-2 3 22 10001 0 1 1400 0 0 5 9 a
+2 3 22 10001 0 1 1410 0 0 5 9 a
 2 4 22 10008 1 37 16 2 3
 1 bar 0 80000 1 0 31 0 32 21 11 0 0 0 0 0 0 0
 1 a 21 830011 1 0 4 0 5 25 aa 2

@@ -222,7 +222,7 @@ vsignal* vsignal_duplicate(
   }
 
   /* Copy the vector value */
-  vector_copy( sig->value, &(new_sig->value) );
+  vector_clone( sig->value, &(new_sig->value) );
 
   /* Copy the expression pointers */
   expl = sig->exp_head;
@@ -782,6 +782,9 @@ void vsignal_dealloc(
 
 /*
  $Log$
+ Revision 1.69  2008/03/30 05:14:32  phase1geo
+ Optimizing sim_expr_changed functionality and fixing bug 1928475.
+
  Revision 1.68  2008/03/27 06:09:58  phase1geo
  Fixing some regression errors.  Checkpointing.
 

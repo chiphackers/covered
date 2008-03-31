@@ -1,5 +1,5 @@
 5 c 1 * 0
-8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd exclude6.1.vcd -o exclude6.1.cdd -v exclude6.1.v -e main.foo_func2 -D DUMP
+8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd exclude6.1.vcd -o exclude6.1.cdd -v exclude6.1.v -e main.foo_func2 -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" exclude6.1.v 8 47 1
 2 1 12 8000c 1 3d 5002 0 0 1 26 2 $u0
@@ -8,14 +8,14 @@
 4 1 1 0 0
 3 1 main.$u0 "main.$u0" exclude6.1.v 0 16 1
 2 2 13 50008 1 0 21004 0 0 1 16 0
-2 3 13 10001 0 1 1400 0 0 1 9 a
+2 3 13 10001 0 1 1410 0 0 1 9 a
 2 4 13 10008 1 37 16 2 3
 2 5 14 20002 1 0 1008 0 0 32 52 11 0 0 0 0 0 0 0
 2 6 14 10002 2 2c 900a 5 0 32 26 aa aa aa aa aa aa aa aa
 2 7 15 100013 1 0 21004 0 0 1 16 0
 2 8 15 100013 1 47 4 7 0 foo_func1.a
 2 9 15 50015 1 3a 5004 0 8 1 26 102 foo_func1
-2 10 15 10001 0 1 1400 0 0 1 9 a
+2 10 15 10001 0 1 1410 0 0 1 9 a
 2 11 15 10015 1 37 16 9 10
 4 11 0 0 0
 4 6 0 11 0
@@ -28,6 +28,6 @@
 4 12 11 0 0
 3 1 main.foo_func1.$u3 "main.foo_func1.$u3" exclude6.1.v 0 37 1
 2 13 36 100010 1 1 1804 0 0 1 9 a
-2 14 36 4000c 0 1 1c00 0 0 1 9 foo_func1
+2 14 36 4000c 0 1 1c10 0 0 1 9 foo_func1
 2 15 36 40010 1 37 816 13 14
 4 15 11 0 0

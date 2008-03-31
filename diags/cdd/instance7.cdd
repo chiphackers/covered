@@ -1,5 +1,5 @@
 5 c 1 * 0
-8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd instance7.vcd -o instance7.cdd -y ./lib -v instance7.v -D DUMP
+8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd instance7.vcd -o instance7.cdd -y ./lib -v instance7.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" instance7.v 1 19 1
 1 a 3 30004 1 0 0 0 1 25 102
@@ -11,7 +11,7 @@
 2 1 14 f0012 1 0 21004 0 0 1 16 0
 2 2 14 b000b 2 1 100c 0 0 1 9 a
 2 3 14 b0012 3 8 1144 1 2 1 26 1102
-2 4 14 70007 0 1 1400 0 0 1 9 b
+2 4 14 70007 0 1 1410 0 0 1 9 b
 2 5 14 70012 1 35 6 3 4
 1 a 11 a 1 0 0 0 1 25 102
 1 b 12 3000d 1 0 0 0 1 25 2

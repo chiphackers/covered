@@ -279,10 +279,21 @@ void info_dealloc() { PROFILE(INFO_DEALLOC);
   score_args    = NULL;
   score_arg_num = 0;
 
+  /* Free merged arguments */
+  for( i=0; i<merge_in_num; i++ ) {
+    free_safe( merge_in[i], (strlen( merge_in[i] ) + 1) );
+  }
+  free_safe( merge_in, (sizeof( char* ) * merge_in_num) );
+
 }
 
 /*
  $Log$
+ Revision 1.30  2008/03/17 22:02:31  phase1geo
+ Adding new check_mem script and adding output to perform memory checking during
+ regression runs.  Completed work on free_safe and added realloc_safe function
+ calls.  Regressions are pretty broke at the moment.  Checkpointing.
+
  Revision 1.29  2008/03/17 05:26:16  phase1geo
  Checkpointing.  Things don't compile at the moment.
 

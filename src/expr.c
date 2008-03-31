@@ -3476,8 +3476,6 @@ bool expression_op_func__aedge(
   /* If our signal is an event that has been triggered, automatically set ourselves to true */
   if( (expr->right->sig != NULL) && (expr->right->sig->suppl.part.type == SSUPPL_TYPE_EVENT) ) {
 
-    printf( "In expression_op_func__aedge, eval_t: %d\n", expr->right->suppl.part.eval_t );
-
     if( expr->right->suppl.part.eval_t == 1 ) {
       if( thr->suppl.part.exec_first ) {
         expr->suppl.part.true   = 1;
@@ -4699,8 +4697,7 @@ bool expression_operate(
       fsm_table_set( expr->table );
       /* If from_state was not specified, we need to copy the current contents of to_state to from_state */
       if( expr->table->from_state->id == expr->id ) {
-        vector_dealloc( expr->table->from_state->value );
-        vector_copy( expr->value, &(expr->table->from_state->value) );
+        vector_copy( expr->value, expr->table->from_state->value );
       }
     }
 
@@ -5346,6 +5343,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.314  2008/03/30 05:24:01  phase1geo
+ Fixing a few more bugs.  Updated regression files per these changes.  Full regression
+ still not running cleanly at this point.  Checkpointing.
+
  Revision 1.313  2008/03/30 05:14:32  phase1geo
  Optimizing sim_expr_changed functionality and fixing bug 1928475.
 

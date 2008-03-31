@@ -152,14 +152,43 @@ vector* vector_create(
  \param from_vec  Vector to copy.
  \param to_vec    Newly created vector copy.
  
- Copies the contents of the from_vec to the to_vec, allocating new memory.
+ Copies the contents of the from_vec to the to_vec.
 */
 void vector_copy(
-  vector*  from_vec,
-  vector** to_vec
+  const vector* from_vec,
+  vector*       to_vec
 ) { PROFILE(VECTOR_COPY);
 
-  int i;  /* Loop iterator */
+  int    i;               /* Loop iterator */
+  nibble orig_owns_data;  /* Holds the original value of owns_data */
+
+  assert( from_vec != NULL );
+  assert( to_vec != NULL );
+  assert( from_vec->width == to_vec->width );
+
+  /* Copy the data indication supplemental bits */
+  to_vec->suppl.part.unknown  = from_vec->suppl.part.unknown;
+  to_vec->suppl.part.not_zero = from_vec->suppl.part.not_zero;
+
+  /* Copy contents of value array */
+  for( i=0; i<from_vec->width; i++ ) {
+    to_vec->value[i] = from_vec->value[i];
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
+ \param from_vec  Vector to copy.
+ \param to_vec    Newly created vector copy. 
+ 
+ Copies the contents of the from_vec to the to_vec, allocating new memory.
+*/
+void vector_clone(
+            const vector*  from_vec,
+  /*@out@*/ vector**       to_vec
+) { PROFILE(VECTOR_CLONE);
 
   if( from_vec == NULL ) {
 
@@ -171,10 +200,7 @@ void vector_copy(
     /* Create vector */
     *to_vec = vector_create( from_vec->width, from_vec->suppl.part.type, TRUE );
 
-    /* Copy contents of value array */
-    for( i=0; i<from_vec->width; i++ ) {
-      (*to_vec)->value[i] = from_vec->value[i];
-    }
+    vector_copy( from_vec, *to_vec );
 
   }
 
@@ -824,7 +850,7 @@ void vector_display_nibble(
  Outputs contents of vector to standard output (for debugging purposes only).
 */
 void vector_display(
-  vector* vec
+  const vector* vec
 ) {
 
   assert( vec != NULL );
@@ -2442,7 +2468,7 @@ bool vector_op_inc(
   vector* tmp2;  /* Pointer to temporary vector containing the value of 1 */
 
   /* Get a copy of the vector data */
-  vector_copy( tgt, &tmp1 );
+  vector_clone( tgt, &tmp1 );
 
   /* Create a vector containing the value of 1 */
   tmp2 = vector_create( tgt->width, VTYPE_VAL, TRUE );
@@ -2472,7 +2498,7 @@ bool vector_op_dec(
   vector* tmp2;  /* Pointer to temporary vector containing the value of 1 */
 
   /* Get a copy of the vector data */
-  vector_copy( tgt, &tmp1 );
+  vector_clone( tgt, &tmp1 );
 
   /* Create a vector containing the value of 1 */
   tmp2 = vector_create( tgt->width, VTYPE_VAL, TRUE );
@@ -2645,6 +2671,11 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.132  2008/03/28 22:04:53  phase1geo
+ Fixing calculation of unknown and not_zero supplemental field bits in
+ vector_db_write function when X data is being written.  Updated regression
+ files accordingly.  Checkpointing.
+
  Revision 1.131  2008/03/28 21:11:32  phase1geo
  Fixing memory leak issues with -ep option and embedded FSM attributes.
 

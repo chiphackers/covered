@@ -1,5 +1,5 @@
 5 c 1 * 0
-8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd param3.2.vcd -o param3.2.cdd -v param3.2.v -D DUMP
+8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd param3.2.vcd -o param3.2.cdd -v param3.2.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" param3.2.v 1 25 1
 1 major 0 80000 1 0 31 0 32 21 1 0 0 0 0 0 0 0
@@ -10,7 +10,7 @@
 2 1 32 f0013 1 32 1008 0 0 32 9 alpha
 2 2 32 b000b 3 1 100c 0 0 1 9 b
 2 3 32 b0013 4 2 128c 1 2 1 26 101002
-2 4 32 70007 0 1 1400 0 0 1 9 a
+2 4 32 70007 0 1 1410 0 0 1 9 a
 2 5 32 70013 4 35 e 3 4
 1 alpha 0 80000 1 0 31 0 32 21 1 0 0 0 0 0 0 0
 1 b 28 6 1 0 0 0 1 25 1102
@@ -20,7 +20,7 @@
 2 6 32 f0013 1 32 1008 0 0 32 9 alpha
 2 7 32 b000b 1 1 1004 0 0 1 9 b
 2 8 32 b0013 2 2 1088 6 7 1 26 1002
-2 9 32 70007 0 1 1400 0 0 1 9 a
+2 9 32 70007 0 1 1410 0 0 1 9 a
 2 10 32 70013 2 35 a 8 9
 1 alpha 0 80000 1 0 31 0 32 21 1 0 0 0 0 0 0 0
 1 b 28 6 1 0 0 0 1 25 2

@@ -34,8 +34,16 @@ void vector_init( /*@out@*/ vector* vec, vec_data* value, bool owns_value, int w
 /*! \brief Creates and initializes new vector */
 vector* vector_create( int width, int type, bool data );
 
+/*! \brief Copies contents of from_vec to to_vec */
+void vector_copy(
+  const vector* from_vec,
+  vector*       to_vec
+);
+
 /*! \brief Copies contents of from_vec to to_vec, allocating memory */
-void vector_copy( vector* from_vec, vector** to_vec );
+void vector_clone(
+            const vector* from_vec,
+  /*@out@*/ vector**      to_vec );
 
 /*! \brief Displays vector information to specified database file. */
 void vector_db_write( vector* vec, FILE* file, bool write_data );
@@ -67,7 +75,7 @@ void vector_display_nibble( vec_data* nib, int width, int type );
 /*@=exportlocal@*/
 
 /*! \brief Outputs vector contents to standard output. */
-void vector_display( vector* vec );
+void vector_display( const vector* vec );
 
 /*! \brief Selects bit from value array from bit position pos. */
 nibble vector_bit_val( nibble* value, int pos );
@@ -187,6 +195,10 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.54  2008/03/28 17:27:00  phase1geo
+ Fixing expression assignment problem due to recent changes.  Updating
+ regression files per changes.
+
  Revision 1.53  2008/03/26 21:29:32  phase1geo
  Initial checkin of new optimizations for unknown and not_zero values in vectors.
  This attempts to speed up expression operations across the board.  Working on

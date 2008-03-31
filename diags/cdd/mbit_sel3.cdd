@@ -1,9 +1,9 @@
 5 c 1 * 0
-8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd mbit_sel3.vcd -o mbit_sel3.cdd -v mbit_sel3.v -D DUMP
+8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd mbit_sel3.vcd -o mbit_sel3.cdd -v mbit_sel3.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" mbit_sel3.v 1 27 1
 2 1 10 550055 1 0 1004 0 0 32 48 0 0 0 0 0 0 0 0
-2 2 10 510053 1 0 1008 0 0 32 52 55 15 0 0 0 0 0 0
+2 2 10 510053 2 0 1008 0 0 32 52 55 15 0 0 0 0 0 0
 2 3 10 4f0056 2 24 1108 1 2 128 9 e
 2 4 10 4c004c 1 1 1004 0 0 1 9 g
 2 5 10 490049 1 1 1004 0 0 1 9 f
@@ -18,10 +18,10 @@
 2 14 10 380044 2 25 1104 12 13 130 26 faa faa faa faa faa faa faa faa faa faa faa faa faa faa faa faa faa faa faa faa faa faa faa faa faa faa faa faa faa faa faa faa 30a
 2 15 10 380057 2 8 1084 8 14 130 26 ffaa efaa dfaa cfaa bfaa afaa 9faa 8faa 7faa 6faa 5faa 4faa 3faa 2faa 1faa faa faa 1faa 2faa 3faa 4faa 5faa 6faa 7faa 8faa 9faa afaa bfaa cfaa dfaa efaa ffaa 330a
 2 16 10 320032 1 0 1004 0 0 32 48 0 0 0 0 0 0 0 0
-2 17 10 2f0030 1 0 1008 0 0 32 52 55 5 0 0 0 0 0 0
+2 17 10 2f0030 2 0 1008 0 0 32 52 55 5 0 0 0 0 0 0
 2 18 10 2d0033 2 24 1108 16 17 64 9 e
 2 19 10 290029 1 0 1004 0 0 32 48 0 0 0 0 0 0 0 0
-2 20 10 260027 1 0 1008 0 0 32 52 55 5 0 0 0 0 0 0
+2 20 10 260027 2 0 1008 0 0 32 52 55 5 0 0 0 0 0 0
 2 21 10 24002a 2 24 1108 19 20 64 9 e
 2 22 10 1e0021 1 0 21004 0 0 1 16 0
 2 23 10 1b001b 1 1 1004 0 0 1 9 d
@@ -36,7 +36,7 @@
 2 32 10 b0016 2 25 1104 30 31 130 26 faa faa faa faa faa faa faa faa faa faa faa faa faa faa faa faa faa faa faa faa faa faa faa faa faa faa faa faa faa faa faa faa 30a
 2 33 10 b0034 2 8 1084 27 32 130 26 ffaa efaa dfaa cfaa bfaa afaa 9faa 8faa 7faa 6faa 5faa 4faa 3faa 2faa 1faa faa ffaa efaa dfaa cfaa bfaa afaa 9faa 8faa 7faa 6faa 5faa 4faa 3faa 2faa 1faa faa 330a
 2 34 10 b0057 2 9 1044 15 33 130 26 f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa 3000a
-2 35 10 70007 0 1 1400 0 0 130 9 a
+2 35 10 70007 0 1 1410 0 0 130 9 a
 2 36 10 70057 2 35 6 34 35
 1 a 3 30010 1 0 129 0 130 25 aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa a
 1 b 4 30005 1 0 0 0 1 25 2

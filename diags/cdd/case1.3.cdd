@@ -1,5 +1,5 @@
 5 c 1 * 0
-8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd case1.3.vcd -o case1.3.cdd -v case1.3.v -D DUMP
+8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd case1.3.vcd -o case1.3.cdd -v case1.3.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" case1.3.v 1 26 1
 2 1 6 110015 4 1 100c 0 0 1 9 clock
@@ -10,11 +10,11 @@
 2 6 8 0 2 2d 1006 4 5 1 26 102
 2 7 9 40007 1 0 21008 0 0 1 20 1
 2 8 9 0 2 2d 1006 7 5 1 26 102
-2 9 9 110014 0 0 21000 0 0 1 16 0
-2 10 9 c000c 0 1 1400 0 0 1 9 b
+2 9 9 110014 0 0 21010 0 0 1 16 0
+2 10 9 c000c 0 1 1410 0 0 1 9 b
 2 11 9 c0014 0 38 32 9 10
-2 12 8 110014 0 0 21000 0 0 1 20 1
-2 13 8 c000c 0 1 1400 0 0 1 9 b
+2 12 8 110014 0 0 21010 0 0 1 20 1
+2 13 8 c000c 0 1 1410 0 0 1 9 b
 2 14 8 c0014 0 38 32 12 13
 2 15 21 8000c 1 3d 5002 0 0 1 26 2 $u1
 1 clock 3 30004 1 0 0 0 1 25 1102

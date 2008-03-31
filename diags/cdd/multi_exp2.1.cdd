@@ -1,5 +1,5 @@
 5 c 1 * 0
-8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd multi_exp2.1.vcd -o multi_exp2.1.cdd -v multi_exp2.1.v -D DUMP
+8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd multi_exp2.1.vcd -o multi_exp2.1.cdd -v multi_exp2.1.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" multi_exp2.1.v 1 24 1
 2 1 5 110011 2 1 100c 0 0 1 9 d
@@ -7,12 +7,12 @@
 2 3 5 90009 2 1 100c 0 0 1 9 b
 2 4 5 9000d 2 8 124c 2 3 1 26 11102
 2 5 5 90011 2 8 124c 1 4 1 26 11102
-2 6 5 50005 0 1 1400 0 0 1 9 a
+2 6 5 50005 0 1 1410 0 0 1 9 a
 2 7 5 50011 2 36 e 5 6
 2 8 6 100010 2 1 100c 0 0 1 9 b
 2 9 6 9000c 1 0 21004 0 0 1 16 0
 2 10 6 90010 3 8 10c4 8 9 1 26 1102
-2 11 6 50005 0 1 1400 0 0 1 9 e
+2 11 6 50005 0 1 1410 0 0 1 9 e
 2 12 6 50010 1 36 6 10 11
 1 b 3 30005 1 0 0 0 1 25 102
 1 c 3 30008 1 0 0 0 1 25 102

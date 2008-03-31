@@ -1,5 +1,5 @@
 5 c 1 * 0
-8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd param8.1.vcd -o param8.1.cdd -v param8.1.v -D DUMP
+8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd param8.1.vcd -o param8.1.cdd -v param8.1.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" param8.1.v 1 19 1
 1 a 3 3000a 1 0 2 0 3 25 2a
@@ -7,7 +7,7 @@
 2 1 30 f0012 1 32 1004 0 0 32 9 ZERO
 2 2 30 b000b 1 1 1004 0 0 3 9 a
 2 3 30 b0012 2 9 1044 1 2 3 26 7002a
-2 4 30 70007 0 1 1400 0 0 3 9 b
+2 4 30 70007 0 1 1410 0 0 3 9 b
 2 5 30 70012 2 35 6 3 4
 1 SIZE 0 80000 1 0 31 0 32 21 5 0 0 0 0 0 0 0
 1 ZERO 0 80000 1 0 31 0 32 17 0 0 0 0 0 0 0 0

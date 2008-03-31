@@ -1,5 +1,5 @@
 5 c 1 * 0
-8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd add1.vcd -o add1.cdd -v add1.v -D DUMP
+8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd add1.vcd -o add1.cdd -v add1.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" add1.v 1 19 1
 2 1 5 8000c 1 3d 5002 0 0 1 26 2 $u0
@@ -14,7 +14,7 @@
 2 6 6 5000a 1 6 1208 4 5 32 26 a50aa faa faa faa faa faa faa faa
 2 7 6 5000e 1 6 1208 3 6 32 26 1e00aa faa faa faa faa faa faa faa
 2 8 6 50014 1 6 1208 2 7 32 26 69aa 186aa faa faa faa faa faa faa
-2 9 6 10001 0 1 1400 0 0 32 41 i
+2 9 6 10001 0 1 1410 0 0 32 41 i
 2 10 6 10014 1 37 1a 8 9
 2 11 7 140016 1 0 1008 0 0 32 52 14 40 0 0 0 0 0 0
 2 12 7 130013 1 4d 1008 11 0 32 58 a5aa 78aa f0aa f0aa f0aa f0aa f0aa f0aa
@@ -25,7 +25,7 @@
 2 17 7 5000a 1 6 1208 15 16 32 26 a50aa faa faa faa faa faa faa faa
 2 18 7 5000f 1 6 1208 14 17 32 26 f000aa f0aa f0aa f0aa f0aa f0aa f0aa f0aa
 2 19 7 50016 1 6 1208 12 18 32 26 a401aa 78aa f0aa f0aa f0aa f0aa f0aa f0aa
-2 20 7 10001 0 1 1400 0 0 32 41 j
+2 20 7 10001 0 1 1410 0 0 32 41 j
 2 21 7 10016 1 37 1a 19 20
 4 21 0 0 0
 4 10 11 21 21

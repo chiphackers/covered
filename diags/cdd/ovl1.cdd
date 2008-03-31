@@ -10,10 +10,10 @@
 4 1 1 0 0
 3 0 assert_zero_one_hot "main.foo" ./ovl/assert_zero_one_hot.vlib 6 35 1
 2 2 8 180018 1 0 1004 0 0 32 48 0 0 0 0 0 0 0 0
-2 3 8 a0014 0 1 1400 0 0 32 41 error_count
+2 3 8 a0014 0 1 1410 0 0 32 41 error_count
 2 4 8 a0018 1 37 16 2 3
 2 5 9 180018 1 0 1004 0 0 32 48 0 0 0 0 0 0 0 0
-2 6 9 a0014 0 1 1400 0 0 32 41 cover_count
+2 6 9 a0014 0 1 1410 0 0 32 41 cover_count
 2 7 9 a0018 1 37 16 5 6
 2 8 9 530056 1 0 21008 0 0 1 20 1
 2 9 9 4c004f 1 0 21004 0 0 1 16 0
@@ -25,7 +25,7 @@
 2 15 9 420057 1 26 1008 14 0 4 26 1eaa
 2 16 9 27002f 1 1 1004 0 0 4 9 test_expr
 2 17 9 270057 2 7 1088 15 16 4 26 1eaa
-2 18 9 150021 0 1 1400 0 0 4 9 dec_test_expr
+2 18 9 150021 0 1 1410 0 0 4 9 dec_test_expr
 2 19 9 150057 2 36 a 17 18
 2 20 10 4c004f 1 0 21004 0 0 1 16 0
 2 21 10 46004a 1 32 1008 0 0 32 9 width
@@ -34,7 +34,7 @@
 2 24 10 27002f 1 1 1004 0 0 4 9 test_expr
 2 25 10 27003f 1 8 1084 23 24 4 26 faa
 2 26 10 260051 2 11 1048 22 25 1 26 1002
-2 27 10 150021 0 1 1400 0 0 1 9 zoh_test_expr
+2 27 10 150021 0 1 1410 0 0 1 9 zoh_test_expr
 2 28 10 150052 2 36 a 26 27
 2 29 11 4c004f 1 0 21004 0 0 1 16 0
 2 30 11 46004a 1 32 1008 0 0 32 9 width
@@ -43,7 +43,7 @@
 2 33 11 27002f 1 1 1004 0 0 4 9 test_expr
 2 34 11 27003f 1 2 1044 32 33 4 26 faa
 2 35 11 260051 2 11 1048 31 34 1 26 1002
-2 36 11 130021 0 1 1400 0 0 1 9 valid_test_expr
+2 36 11 130021 0 1 1410 0 0 1 9 valid_test_expr
 2 37 11 130052 2 36 a 35 36
 2 38 78 140016 1f 1 100c 0 0 1 9 clk
 2 39 78 c0012 0 2a 1000 0 0 1 26 2
@@ -60,7 +60,7 @@
 2 50 110 1a002c 1 32 1008 0 0 32 9 OVL_COVER_SANITY_ON
 2 51 110 1a0030 1 e 1108 49 50 1 26 1002
 2 52 110 190052 3 18 1104 48 51 1 26 1002
-2 53 110 90014 0 1 1400 0 0 1 9 fire_cover_1
+2 53 110 90014 0 1 1410 0 0 1 9 fire_cover_1
 2 54 110 90053 2 35 6 52 53
 2 55 111 720086 2 1 1004 0 0 4 9 prev_one_hots_checked
 2 56 111 5e006d 2 1 1004 0 0 4 9 one_hots_checked
@@ -75,7 +75,7 @@
 2 65 111 1a0030 1 e 1108 63 64 1 26 1002
 2 66 111 190058 3 18 1104 62 65 1 26 1002
 2 67 111 190087 3 18 1044 57 66 1 26 1102
-2 68 111 90014 0 1 1400 0 0 1 9 fire_cover_2
+2 68 111 90014 0 1 1410 0 0 1 9 fire_cover_2
 2 69 111 90088 2 35 6 67 68
 2 70 112 700073 1 0 21004 0 0 1 16 0
 2 71 112 6a006e 1 32 1008 0 0 32 9 width
@@ -92,7 +92,7 @@
 2 82 112 1a0030 1 e 1108 80 81 1 26 1002
 2 83 112 190051 2 18 1208 79 82 1 26 10002
 2 84 112 190076 3 18 1104 74 83 1 26 1002
-2 85 112 90014 0 1 1400 0 0 1 9 fire_cover_3
+2 85 112 90014 0 1 1410 0 0 1 9 fire_cover_3
 2 86 112 90077 2 35 6 84 85
 1 severity_level 0 80000 1 0 31 0 32 21 1 0 0 0 0 0 0 0
 1 width 0 80000 1 0 31 0 32 21 10 0 0 0 0 0 0 0
@@ -135,13 +135,13 @@
 1 cvr_msg 118 800015 1 0 511 0 512 25 aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa
 4 87 11 0 0
 3 1 assert_zero_one_hot.ovl_cover_t.$u19 "main.foo.ovl_cover_t.$u19" std_ovl_task.h 0 134 1
-2 88 122 210021 0 0 1000 0 0 32 52 1 0 0 0 0 0 0 0
-2 89 122 13001d 0 1 1000 0 0 32 41 cover_count
+2 88 122 210021 0 0 1010 0 0 32 52 1 0 0 0 0 0 0 0
+2 89 122 13001d 0 1 1010 0 0 32 41 cover_count
 2 90 122 130021 0 6 1030 88 89 32 58 aa aa aa aa aa aa aa aa
-2 91 122 5000f 0 1 1400 0 0 32 41 cover_count
+2 91 122 5000f 0 1 1410 0 0 32 41 cover_count
 2 92 122 50021 0 37 32 90 91
-2 93 126 1d001e 0 0 1000 0 0 32 52 55 0 0 0 0 0 0 0
-2 94 126 c0019 0 32 1000 0 0 32 9 coverage_level
+2 93 126 1d001e 0 0 1010 0 0 32 52 55 0 0 0 0 0 0 0
+2 94 126 c0019 0 32 1010 0 0 32 9 coverage_level
 2 95 126 c001e 0 e 1030 93 94 1 26 2
 2 96 126 8001f 0 39 22 95 0
 2 97 0 0 0 4e 1002 0 0 1 26 2
@@ -156,29 +156,29 @@
 1 property_type 158 c 1 0 31 0 32 25 aa aa aa aa aa aa aa aa
 4 99 11 0 0
 3 1 assert_zero_one_hot.ovl_fire_2state_f.$u20 "main.foo.ovl_fire_2state_f.$u20" std_ovl_task.h 0 169 1
-2 100 163 60006 0 0 1800 0 0 32 52 1 0 0 0 0 0 0 0
-2 101 162 60006 0 0 1800 0 0 32 48 0 0 0 0 0 0 0 0
+2 100 163 60006 0 0 1810 0 0 32 52 1 0 0 0 0 0 0 0
+2 101 162 60006 0 0 1810 0 0 32 48 0 0 0 0 0 0 0 0
 2 102 162 60006 0 31 1830 100 101 64 26 aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa
-2 103 161 a0016 0 32 1802 0 0 32 9 property_type
+2 103 161 a0016 0 32 1812 0 0 32 9 property_type
 2 104 162 0 0 2d 1822 102 103 1 26 2
-2 105 165 60006 0 0 1800 0 0 32 52 10 0 0 0 0 0 0 0
-2 106 164 60006 0 0 1800 0 0 32 52 5 0 0 0 0 0 0 0
+2 105 165 60006 0 0 1810 0 0 32 52 10 0 0 0 0 0 0 0
+2 106 164 60006 0 0 1810 0 0 32 52 5 0 0 0 0 0 0 0
 2 107 164 60006 0 31 1830 105 106 64 26 aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa
 2 108 164 0 0 2d 1822 107 103 1 26 2
-2 109 166 60006 0 0 1800 0 0 32 52 4 0 0 0 0 0 0 0
+2 109 166 60006 0 0 1810 0 0 32 52 4 0 0 0 0 0 0 0
 2 110 166 0 0 2d 1822 109 103 1 26 2
 2 111 167 0 0 30 1802 0 0 1 26 2
-2 112 167 2f0032 0 0 21800 0 0 1 16 0
-2 113 167 1b002b 0 1 1c00 0 0 1 9 ovl_fire_2state_f
+2 112 167 2f0032 0 0 21810 0 0 1 16 0
+2 113 167 1b002b 0 1 1c10 0 0 1 9 ovl_fire_2state_f
 2 114 167 1b0032 0 37 832 112 113
-2 115 166 250028 0 0 21800 0 0 1 16 0
-2 116 166 110021 0 1 1c00 0 0 1 9 ovl_fire_2state_f
+2 115 166 250028 0 0 21810 0 0 1 16 0
+2 116 166 110021 0 1 1c10 0 0 1 9 ovl_fire_2state_f
 2 117 166 110028 0 37 832 115 116
-2 118 165 1e0021 0 0 21800 0 0 1 20 1
-2 119 165 a001a 0 1 1c00 0 0 1 9 ovl_fire_2state_f
+2 118 165 1e0021 0 0 21810 0 0 1 20 1
+2 119 165 a001a 0 1 1c10 0 0 1 9 ovl_fire_2state_f
 2 120 165 a0021 0 37 832 118 119
-2 121 163 250028 0 0 21800 0 0 1 20 1
-2 122 163 110021 0 1 1c00 0 0 1 9 ovl_fire_2state_f
+2 121 163 250028 0 0 21810 0 0 1 20 1
+2 122 163 110021 0 1 1c10 0 0 1 9 ovl_fire_2state_f
 2 123 163 110028 0 37 832 121 122
 4 114 0 0 0
 4 111 0 114 0
@@ -194,29 +194,29 @@
 1 property_type 174 c 1 0 31 0 32 25 aa aa aa aa aa aa aa aa
 4 124 11 0 0
 3 1 assert_zero_one_hot.ovl_fire_xcheck_f.$u21 "main.foo.ovl_fire_xcheck_f.$u21" std_ovl_task.h 0 190 1
-2 125 183 60006 0 0 1800 0 0 32 52 1 0 0 0 0 0 0 0
-2 126 182 60006 0 0 1800 0 0 32 48 0 0 0 0 0 0 0 0
+2 125 183 60006 0 0 1810 0 0 32 52 1 0 0 0 0 0 0 0
+2 126 182 60006 0 0 1810 0 0 32 48 0 0 0 0 0 0 0 0
 2 127 182 60006 0 31 1830 125 126 64 26 aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa
-2 128 181 a0016 0 32 1802 0 0 32 9 property_type
+2 128 181 a0016 0 32 1812 0 0 32 9 property_type
 2 129 182 0 0 2d 1822 127 128 1 26 2
-2 130 185 60006 0 0 1800 0 0 32 52 10 0 0 0 0 0 0 0
-2 131 184 60006 0 0 1800 0 0 32 52 5 0 0 0 0 0 0 0
+2 130 185 60006 0 0 1810 0 0 32 52 10 0 0 0 0 0 0 0
+2 131 184 60006 0 0 1810 0 0 32 52 5 0 0 0 0 0 0 0
 2 132 184 60006 0 31 1830 130 131 64 26 aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa
 2 133 184 0 0 2d 1822 132 128 1 26 2
-2 134 186 60006 0 0 1800 0 0 32 52 4 0 0 0 0 0 0 0
+2 134 186 60006 0 0 1810 0 0 32 52 4 0 0 0 0 0 0 0
 2 135 186 0 0 2d 1822 134 128 1 26 2
 2 136 187 0 0 30 1802 0 0 1 26 2
-2 137 187 2f0032 0 0 21800 0 0 1 16 0
-2 138 187 1b002b 0 1 1c00 0 0 1 9 ovl_fire_xcheck_f
+2 137 187 2f0032 0 0 21810 0 0 1 16 0
+2 138 187 1b002b 0 1 1c10 0 0 1 9 ovl_fire_xcheck_f
 2 139 187 1b0032 0 37 832 137 138
-2 140 186 250028 0 0 21800 0 0 1 16 0
-2 141 186 110021 0 1 1c00 0 0 1 9 ovl_fire_xcheck_f
+2 140 186 250028 0 0 21810 0 0 1 16 0
+2 141 186 110021 0 1 1c10 0 0 1 9 ovl_fire_xcheck_f
 2 142 186 110028 0 37 832 140 141
-2 143 185 1e0021 0 0 21800 0 0 1 16 0
-2 144 185 a001a 0 1 1c00 0 0 1 9 ovl_fire_xcheck_f
+2 143 185 1e0021 0 0 21810 0 0 1 16 0
+2 144 185 a001a 0 1 1c10 0 0 1 9 ovl_fire_xcheck_f
 2 145 185 a0021 0 37 832 143 144
-2 146 183 250028 0 0 21800 0 0 1 20 1
-2 147 183 110021 0 1 1c00 0 0 1 9 ovl_fire_xcheck_f
+2 146 183 250028 0 0 21810 0 0 1 20 1
+2 147 183 110021 0 1 1c10 0 0 1 9 ovl_fire_xcheck_f
 2 148 183 110028 0 37 832 146 147
 4 139 0 0 0
 4 136 0 139 0
@@ -228,7 +228,7 @@
 4 129 11 148 133
 3 1 assert_zero_one_hot.$u22 "main.foo.$u22" ./vlog95/assert_zero_one_hot_logic.v 0 90 1
 2 149 79 16001e 1 1 1004 0 0 4 9 test_expr
-2 150 79 40011 0 1 1400 0 0 4 9 prev_test_expr
+2 150 79 40011 0 1 1410 0 0 4 9 prev_test_expr
 2 151 79 4001e f 38 6 149 150
 2 152 80 130016 1 0 21004 0 0 1 16 0
 2 153 80 8000e 2 1 100c 0 0 1 9 reset_n
@@ -244,12 +244,12 @@
 2 158 81 260029 1 0 21004 0 0 1 16 0
 2 159 81 200024 1 32 1008 0 0 32 9 width
 2 160 81 1f002b 1 25 1104 158 159 4 26 faa
-2 161 81 b001a 0 1 1400 0 0 4 9 one_hots_checked
+2 161 81 b001a 0 1 1410 0 0 4 9 one_hots_checked
 2 162 81 b002b 5 38 6 160 161
 2 163 82 260029 1 0 21004 0 0 1 16 0
 2 164 82 200024 1 32 1008 0 0 32 9 width
 2 165 82 1f002b 1 25 1104 163 164 4 26 faa
-2 166 82 6001a 0 1 1400 0 0 4 9 prev_one_hots_checked
+2 166 82 6001a 0 1 1410 0 0 4 9 prev_one_hots_checked
 2 167 82 6002b 5 38 6 165 166
 4 167 0 0 0
 4 162 11 167 167
@@ -259,7 +259,7 @@
 2 170 85 a0029 1 18 1208 168 169 1 26 10002
 2 171 85 6002a a 39 a 170 0
 2 172 88 1f002e 1 1 1004 0 0 4 9 one_hots_checked
-2 173 88 6001a 0 1 1400 0 0 4 9 prev_one_hots_checked
+2 173 88 6001a 0 1 1410 0 0 4 9 prev_one_hots_checked
 2 174 88 6002e a 38 6 172 173
 2 175 85 2c0030 a 3d 5002 0 0 1 26 2 $u25
 4 174 0 0 0
@@ -269,7 +269,7 @@
 2 176 86 2f0037 1 1 1004 0 0 4 9 test_expr
 2 177 86 1c002b 1 1 1004 0 0 4 9 one_hots_checked
 2 178 86 1c0037 1 9 1044 176 177 4 26 f00aa
-2 179 86 80017 0 1 1400 0 0 4 9 one_hots_checked
+2 179 86 80017 0 1 1410 0 0 4 9 one_hots_checked
 2 180 86 80037 a 38 6 178 179
 4 180 11 0 0
 3 1 assert_zero_one_hot.$u26 "main.foo.$u26" ./vlog95/assert_zero_one_hot_logic.v 0 108 1
@@ -297,30 +297,30 @@
 4 194 6 189 0
 4 187 11 194 189
 3 1 assert_zero_one_hot.$u26.$u28.$u29 "main.foo.$u26.$u28.$u29" ./vlog95/assert_zero_one_hot_logic.v 0 100 1
-2 195 99 14002d 0 0 81000 0 0 192 20 10 14 11 14 4 15 11 14 14 15 55 14 5 14 0 4 11 14 15 14 54 14 1 14 40 14 5 14 55 11 4 15 0 15 40 15 11 14 55 11 10 15 5 15 11 14 10 15
+2 195 99 14002d 0 0 81010 0 0 192 20 10 14 11 14 4 15 11 14 14 15 55 14 5 14 0 4 11 14 15 14 54 14 1 14 40 14 5 14 55 11 4 15 0 15 40 15 11 14 55 11 10 15 5 15 11 14 10 15
 2 196 99 14002d 0 47 20 195 0 ovl_cover_t.cvr_msg
 2 197 99 8002f 0 3b 5012 0 196 512 26 aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa ovl_cover_t
 4 197 11 0 0
 3 1 assert_zero_one_hot.$u26.$u28.$u30 "main.foo.$u26.$u28.$u30" ./vlog95/assert_zero_one_hot_logic.v 0 103 1
-2 198 102 140031 0 0 81000 0 0 224 20 10 14 11 14 4 15 11 14 14 15 55 14 5 14 0 4 10 14 11 14 45 14 5 14 11 14 40 14 5 14 55 11 5 15 10 15 55 14 40 14 55 11 11 14 54 14 55 14 55 11 50 14 50 14 1 14
+2 198 102 140031 0 0 81010 0 0 224 20 10 14 11 14 4 15 11 14 14 15 55 14 5 14 0 4 10 14 11 14 45 14 5 14 11 14 40 14 5 14 55 11 5 15 10 15 55 14 40 14 55 11 11 14 54 14 55 14 55 11 50 14 50 14 1 14
 2 199 102 140031 0 47 20 198 0 ovl_cover_t.cvr_msg
 2 200 102 80033 0 3b 5012 0 199 512 26 aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa ovl_cover_t
 4 200 11 0 0
 3 1 assert_zero_one_hot.$u26.$u28.$u31 "main.foo.$u26.$u28.$u31" ./vlog95/assert_zero_one_hot_logic.v 0 106 1
-2 201 105 140030 0 0 81000 0 0 216 20 10 14 11 14 4 15 11 14 14 15 55 14 5 14 0 4 5 15 55 14 4 15 11 14 44 15 55 11 50 14 50 14 1 14 55 11 4 15 0 15 40 15 11 14 55 11 10 15 5 15 11 14 10 15
+2 201 105 140030 0 0 81010 0 0 216 20 10 14 11 14 4 15 11 14 14 15 55 14 5 14 0 4 5 15 55 14 4 15 11 14 44 15 55 11 50 14 50 14 1 14 55 11 4 15 0 15 40 15 11 14 55 11 10 15 5 15 11 14 10 15
 2 202 105 140030 0 47 20 201 0 ovl_cover_t.cvr_msg
 2 203 105 80032 0 3b 5012 0 202 512 26 aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa ovl_cover_t
 4 203 11 0 0
 3 1 main.$u0 "main.$u0" ovl1.v 0 23 1
 3 1 main.$u1 "main.$u1" ovl1.v 0 28 1
 2 204 26 9000c 1 0 21004 0 0 1 16 0
-2 205 26 10005 0 1 1400 0 0 1 9 clock
+2 205 26 10005 0 1 1410 0 0 1 9 clock
 2 206 26 1000c 1 37 16 204 205
 2 207 27 a000a 1 0 1008 0 0 32 52 1 0 0 0 0 0 0 0
 2 208 27 9000a 3f 2c 900a 207 0 32 26 aa aa aa aa aa aa aa aa
-2 209 27 150019 1f 1 100c 0 0 1 9 clock
+2 209 27 150019 1f 1 101c 0 0 1 9 clock
 2 210 27 140014 1f 1b 102c 209 0 1 26 1102
-2 211 27 c0010 0 1 1400 0 0 1 9 clock
+2 211 27 c0010 0 1 1410 0 0 1 9 clock
 2 212 27 c0019 1f 37 3e 210 211
 4 212 6 208 208
 4 208 0 212 0
