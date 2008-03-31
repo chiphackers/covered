@@ -2666,6 +2666,8 @@ generate_passign
             expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
             if( generate_varname == NULL ) {
               generate_varname = $1;
+            } else {
+              free_safe( $1, (strlen( $1 ) + 1) );
             }
           } Catch_anonymous {
             static_expr_dealloc( $3, TRUE );
@@ -2700,6 +2702,8 @@ generate_passign
             expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
             if( generate_varname == NULL ) {
               generate_varname = $1;
+            } else {
+              free_safe( $1, (strlen( $1 ) + 1) );
             }
           } Catch_anonymous {
             static_expr_dealloc( $3, TRUE );
@@ -2734,6 +2738,8 @@ generate_passign
             expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
             if( generate_varname == NULL ) {
               generate_varname = $1;
+            } else {
+              free_safe( $1, (strlen( $1 ) + 1) );
             }
           } Catch_anonymous {
             static_expr_dealloc( $3, TRUE );
@@ -2768,6 +2774,8 @@ generate_passign
             expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
             if( generate_varname == NULL ) {
               generate_varname = $1;
+            } else {
+              free_safe( $1, (strlen( $1 ) + 1) );
             }
           } Catch_anonymous {
             static_expr_dealloc( $3, TRUE );
@@ -2802,6 +2810,8 @@ generate_passign
             expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
             if( generate_varname == NULL ) {
               generate_varname = $1;
+            } else {
+              free_safe( $1, (strlen( $1 ) + 1) );
             }
           } Catch_anonymous {
             static_expr_dealloc( $3, TRUE );
@@ -2836,6 +2846,8 @@ generate_passign
             expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
             if( generate_varname == NULL ) {
               generate_varname = $1;
+            } else {
+              free_safe( $1, (strlen( $1 ) + 1) );
             }
           } Catch_anonymous {
             static_expr_dealloc( $3, TRUE );
@@ -2870,6 +2882,8 @@ generate_passign
             expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
             if( generate_varname == NULL ) {
               generate_varname = $1;
+            } else {
+              free_safe( $1, (strlen( $1 ) + 1) );
             }
           } Catch_anonymous {
             static_expr_dealloc( $3, TRUE );
@@ -2904,6 +2918,8 @@ generate_passign
             expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
             if( generate_varname == NULL ) {
               generate_varname = $1;
+            } else {
+              free_safe( $1, (strlen( $1 ) + 1) );
             }
           } Catch_anonymous {
             static_expr_dealloc( $3, TRUE );
@@ -2938,6 +2954,8 @@ generate_passign
             expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
             if( generate_varname == NULL ) {
               generate_varname = $1;
+            } else {
+              free_safe( $1, (strlen( $1 ) + 1) );
             }
           } Catch_anonymous {
             static_expr_dealloc( $3, TRUE );
@@ -2972,6 +2990,8 @@ generate_passign
             expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
             if( generate_varname == NULL ) {
               generate_varname = $1;
+            } else {
+              free_safe( $1, (strlen( $1 ) + 1) );
             }
           } Catch_anonymous {
             static_expr_dealloc( $3, TRUE );
@@ -3006,6 +3026,8 @@ generate_passign
             expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
             if( generate_varname == NULL ) {
               generate_varname = $1;
+            } else {
+              free_safe( $1, (strlen( $1 ) + 1) );
             }
           } Catch_anonymous {
             static_expr_dealloc( $3, TRUE );
@@ -3040,6 +3062,8 @@ generate_passign
             expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
             if( generate_varname == NULL ) {
               generate_varname = $1;
+            } else {
+              free_safe( $1, (strlen( $1 ) + 1) );
             }
           } Catch_anonymous {
             static_expr_dealloc( $3, TRUE );
@@ -3074,6 +3098,8 @@ generate_passign
             expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
             if( generate_varname == NULL ) {
               generate_varname = $1;
+            } else {
+              free_safe( $1, (strlen( $1 ) + 1) );
             }
           } Catch_anonymous {
             static_expr_dealloc( $3, TRUE );
@@ -3103,6 +3129,8 @@ generate_passign
           expr = db_create_expression( NULL, expr, EXP_OP_PINC, FALSE, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
           if( generate_varname == NULL ) {
             generate_varname = $1;
+          } else {
+            free_safe( $1, (strlen( $1 ) + 1) );
           }
         } Catch_anonymous {
           expression_dealloc( expr, FALSE );
@@ -3125,6 +3153,8 @@ generate_passign
           expr = db_create_expression( NULL, expr, EXP_OP_PDEC, FALSE, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
           if( generate_varname == NULL ) {
             generate_varname = $1;
+          } else {
+            free_safe( $1, (strlen( $1 ) + 1) );
           }
         } Catch_anonymous {
           expression_dealloc( expr, FALSE );
@@ -7807,6 +7837,7 @@ single_index_expr
               Throw 0;
             }
           }
+          free_safe( $4, sizeof( static_expr ) );
           $$ = tmp;
         } else {
           expression_dealloc( $2, FALSE );
@@ -7856,6 +7887,7 @@ single_index_expr
               Throw 0;
             }
           }
+          free_safe( $4, sizeof( static_expr ) );
           $$ = tmp;
         } else {
           expression_dealloc( $2, FALSE );

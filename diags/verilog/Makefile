@@ -222,11 +222,11 @@ else
 ifndef USE_CVER
 	@$(VERILOG_CMD)
 endif
-	@$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP | ./check_mem
-	@$(COVERED) $(COVERED_GFLAG) report -d v -o $(DIAG).rptM $(DIAG).cdd | ./check_mem
-	@$(COVERED) $(COVERED_GFLAG) report -d v -i -o $(DIAG).rptI $(DIAG).cdd | ./check_mem
-	@$(COVERED) $(COVERED_GFLAG) report -w -d v -o $(DIAG).rptWM $(DIAG).cdd | ./check_mem
-	@$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $(DIAG).rptWI $(DIAG).cdd | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) report -d v -o $(DIAG).rptM $(DIAG).cdd | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) report -d v -i -o $(DIAG).rptI $(DIAG).cdd | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) report -w -d v -o $(DIAG).rptWM $(DIAG).cdd | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $(DIAG).rptWI $(DIAG).cdd | ./check_mem
 endif
 	@rm -f $(DIAG).cfg
 	@./check_test $(DIAG) 0 $(CHK_CODE)
@@ -235,11 +235,11 @@ mergerun:
 	@echo Running $(DIAG)
 	@$(MAKE) DIAG=$(DIAG)a onemergerun
 	@$(MAKE) DIAG=$(DIAG)b onemergerun
-	@$(COVERED) $(COVERED_GFLAG) merge -o $(DIAG).cdd $(DIAG)a.cdd $(DIAG)b.cdd | ./check_mem
-	@$(COVERED) $(COVERED_GFLAG) report -d v -o $(DIAG).rptM $(DIAG).cdd | ./check_mem
-	@$(COVERED) $(COVERED_GFLAG) report -d v -i -o $(DIAG).rptI $(DIAG).cdd | ./check_mem
-	@$(COVERED) $(COVERED_GFLAG) report -w -d v -o $(DIAG).rptWM $(DIAG).cdd | ./check_mem
-	@$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $(DIAG).rptWI $(DIAG).cdd | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) merge -o $(DIAG).cdd $(DIAG)a.cdd $(DIAG)b.cdd | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) report -d v -o $(DIAG).rptM $(DIAG).cdd | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) report -d v -i -o $(DIAG).rptI $(DIAG).cdd | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) report -w -d v -o $(DIAG).rptWM $(DIAG).cdd | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $(DIAG).rptWI $(DIAG).cdd | ./check_mem
 	@./check_test $(DIAG) 2 $(CHK_CODE)
 
 $(MERGELIST):

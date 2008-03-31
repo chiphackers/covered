@@ -114,7 +114,7 @@ fsm_var* fsm_var_add(
   funit_link* funitl;          /* Pointer to functional unit link found */
   fsm*        table;           /* Pointer to newly create FSM */
 
-  /* If we have not parsed, design add new FSM variable to list */
+  /* If we have not parsed design, add new FSM variable to list */
   if( funit_head == NULL ) {
 
     new_var          = (fsm_var*)malloc_safe( sizeof( fsm_var ) );
@@ -527,6 +527,11 @@ void fsm_var_remove(
 
 /*
  $Log$
+ Revision 1.44  2008/03/17 22:02:31  phase1geo
+ Adding new check_mem script and adding output to perform memory checking during
+ regression runs.  Completed work on free_safe and added realloc_safe function
+ calls.  Regressions are pretty broke at the moment.  Checkpointing.
+
  Revision 1.43  2008/03/17 05:26:16  phase1geo
  Checkpointing.  Things don't compile at the moment.
 

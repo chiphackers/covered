@@ -442,6 +442,7 @@ WSPACE [ \t\b\f]+
          yylval.text = gen_item_calc_signal_name( yytext, curr_funit, yylloc.first_line, TRUE );
        } else {
          yylval.text = strdup_safe( yytext );
+         //printf( "yylval.text: %s (%p)\n", yylval.text, yylval.text );
        }
        // printf( "Allocated IDENTIFIER %p  %s, line %d\n", yylval.text, yylval.text, yylloc.first_line );
        if( strncmp( yylval.text, "PATHPULSE$", 10) == 0 ) {

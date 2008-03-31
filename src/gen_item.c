@@ -447,8 +447,9 @@ char* gen_item_calc_signal_name(
   char* ptr;              /* Pointer to allocated memory for name */
 
   /* Allocate memory */
-  tmpname = strdup_safe( name );
-  ptr     = tmpname;
+  tmpname  = strdup_safe( name );
+  ptr      = tmpname;
+  new_name = strdup_safe( "" );
 
   Try {
 
@@ -1207,6 +1208,12 @@ void gen_item_dealloc(
 
 /*
  $Log$
+ Revision 1.63  2008/03/21 21:16:41  phase1geo
+ Removing UNUSED_* types in lexer due to a bug that was found in the usage of
+ ignore_mode in the lexer (a token that should have been ignored was not due to
+ the parser's need to examine the created token for branch traversal purposes).
+ This cleans up the parser also.
+
  Revision 1.62  2008/03/18 21:36:24  phase1geo
  Updates from regression runs.  Regressions still do not completely pass at
  this point.  Checkpointing.

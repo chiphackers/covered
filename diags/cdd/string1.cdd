@@ -1,14 +1,14 @@
 5 c 1 * 0
-8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd string1.vcd -o string1.cdd -v string1.v -D DUMP
+8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd string1.vcd -o string1.cdd -v string1.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" string1.v 1 20 1
-2 1 6 150017 2 1 8 0 0 chr
-2 2 6 e0012 1 0 1008 0 0 24 48 55 14 55 14 14 14
-2 3 6 e0017 3 31 1208 1 2 32 34 fdaa 79aa f0aa 69aa f0aa 69aa 69aa 69aa
-2 4 6 d0018 3 26 1008 3 0 64 34 fdaa 79aa f0aa 69aa f0aa 69aa 69aa 69aa aa aa aa aa aa aa aa aa
-2 5 6 70009 0 1 400 0 0 str
+2 1 6 150017 2 1 1008 0 0 8 9 chr
+2 2 6 e0012 1 0 81008 0 0 24 20 55 14 55 14 14 14
+2 3 6 e0017 3 31 1208 1 2 32 26 fdaa 79aa f0aa 69aa f0aa 69aa 69aa 69aa
+2 4 6 d0018 3 26 1008 3 0 64 26 fdaa 79aa f0aa 69aa f0aa 69aa 69aa 69aa aa aa aa aa aa aa aa aa
+2 5 6 70009 0 1 1400 0 0 64 9 str
 2 6 6 70018 3 35 a 4 5
-1 chr 3 30012 1 0 7 0 8 33 daa 10aa
-1 str 4 30012 1 0 63 0 64 33 daa 10aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa
+1 chr 3 30012 1 0 7 0 8 25 daa 10aa
+1 str 4 30012 1 0 63 0 64 25 daa 10aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa
 4 6 f 6 6
 3 1 main.$u0 "main.$u0" string1.v 0 18 1

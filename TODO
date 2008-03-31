@@ -36,15 +36,9 @@ IP      - struct
 IP      - union
 IP      - enum
 
-X  8.  Add code pragmas to allow the user to exclude parts of design from coverage consideration.
+   8.  Have Covered have the ability to generate XML CDD files.
 
-   9.  Have Covered have the ability to generate XML CDD files.
-
-X  10. Add pragma to allow the user to ignore certain codes for race condition checking.
-
-   11. Enhance the -rI option to allow the user to ignore certain types of race conditions.
-
-X  12. Provide ability to handle $finish and $stop system calls.
+   9.  Enhance the -rI option to allow the user to ignore certain types of race conditions.
 
 
 Merge command
@@ -56,6 +50,8 @@ Merge command
 Report command
 --------------
 
+   1.  Provide additional information in toggle coverage regarding port (interface) coverage.
+
 
 Miscellaneous
 -------------
@@ -64,16 +60,10 @@ IP 1.  Add regression that produces known, achievable error conditions in the co
 
 IP 2.  Make all code splint clean.
 
-X  3.  Replace current exit strategy with cexcept usage (throw exceptions instead of immediately exiting)
+   3.  Have parser generate dumpvars file to cause only needed signals by Covered to get dumped (performance enhancement).
 
-   4.  Have parser generate dumpvars file to cause only needed signals by Covered to get dumped (performance enhancement).
-
-   5.  Add ability to create graduated test output in GUI and reports from merged CDD files.
+   4.  Add ability to create graduated test output in GUI and reports from merged CDD files.
 
 
 GUI
 ---
-
-X  1.  Update GUI to make interface a bit easier to use (less cluttered)
-
-X  2.  Create GUI for Mac OS X using TclTkAquaBI

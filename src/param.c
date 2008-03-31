@@ -1097,8 +1097,8 @@ void mod_parm_dealloc(
     }
 
     /* Deallocate MSB and LSB static expressions */
-    static_expr_dealloc( parm->msb, FALSE );
-    static_expr_dealloc( parm->lsb, FALSE );
+    static_expr_dealloc( parm->msb, TRUE );
+    static_expr_dealloc( parm->lsb, TRUE );
 
     /* Remove the attached expression tree */
     if( parm->suppl.part.owns_expr == 1 ) {
@@ -1159,6 +1159,11 @@ void inst_parm_dealloc(
 
 /*
  $Log$
+ Revision 1.107  2008/03/17 22:02:31  phase1geo
+ Adding new check_mem script and adding output to perform memory checking during
+ regression runs.  Completed work on free_safe and added realloc_safe function
+ calls.  Regressions are pretty broke at the moment.  Checkpointing.
+
  Revision 1.106  2008/03/17 05:26:16  phase1geo
  Checkpointing.  Things don't compile at the moment.
 

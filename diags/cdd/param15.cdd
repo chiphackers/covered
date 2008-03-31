@@ -1,21 +1,21 @@
 5 c 1 * 0
-8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd param15.vcd -o param15.cdd -v param15.v -D DUMP
+8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd param15.vcd -o param15.cdd -v param15.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" param15.v 9 31 1
-2 1 16 8000c 1 3d 5002 0 0 1 34 2 $u0
-1 foo 0 80000 1 0 31 0 40 33 55 55 55 55 55 55 55 55 55 55
-1 bar 0 80000 1 0 31 0 2 33 4
-1 a 14 83000b 1 0 39 0 40 33 daa faa faa faa faa faa faa faa faa faa
+2 1 16 8000c 1 3d 5002 0 0 1 26 2 $u0
+1 foo 0 80000 1 0 31 0 40 21 55 55 55 55 55 55 55 55 55 55
+1 bar 0 80000 1 0 31 0 2 21 4
+1 a 14 83000b 1 0 39 0 40 25 daa faa faa faa faa faa faa faa faa faa
 4 1 1 0 0
 3 1 main.$u0 "main.$u0" param15.v 0 20 1
-2 2 17 50007 1 32 8 0 0 bar
-2 3 17 10001 0 1 400 0 0 a
-2 4 17 10007 1 37 a 2 3
-2 5 18 20002 1 0 1008 0 0 32 96 11 0 0 0 0 0 0 0
-2 6 18 10002 2 2c 900a 5 0 32 34 aa aa aa aa aa aa aa aa
-2 7 19 50007 1 32 8 0 0 foo
-2 8 19 10001 0 1 400 0 0 a
-2 9 19 10007 1 37 a 7 8
+2 2 17 50007 1 32 1008 0 0 2 9 bar
+2 3 17 10001 0 1 1400 0 0 40 9 a
+2 4 17 10007 1 37 1a 2 3
+2 5 18 20002 1 0 1008 0 0 32 52 11 0 0 0 0 0 0 0
+2 6 18 10002 2 2c 900a 5 0 32 26 aa aa aa aa aa aa aa aa
+2 7 19 50007 1 32 1008 0 0 40 9 foo
+2 8 19 10001 0 1 1400 0 0 40 9 a
+2 9 19 10007 1 37 1a 7 8
 4 9 0 0 0
 4 6 0 9 0
 4 4 11 6 6
