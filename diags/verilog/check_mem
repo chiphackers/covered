@@ -143,5 +143,5 @@ while( defined( $line = <STDIN> ) ) {
 
 # If we did not reach the end of simulation for some reason, return that an error occurred.
 if( $saw_malloc_size == 0 ) {
-  die;
+  die "curr_malloc_size was not output\n";
 }

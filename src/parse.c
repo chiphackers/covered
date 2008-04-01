@@ -52,7 +52,6 @@ extern sig_range curr_urange;
 extern bool      instance_specified;
 extern char*     top_module;
 extern FILE*     VLin;
-extern FILE*     VLout;
 extern char*     ppfilename;
 
 /*!
@@ -121,7 +120,7 @@ void parse_design(
         } Catch_anonymous {
           unsigned int rv;
           rv = fclose( VLin );
-          printf( "parse Throw A\n" );
+          // printf( "parse Throw A\n" ); - HIT
           Throw 0;
         }
 
@@ -132,11 +131,10 @@ void parse_design(
         }
 
       } Catch_anonymous {
-        fclose( VLout );
         unlink( ppfilename );
         parser_dealloc_sig_range( &curr_urange, FALSE );
         parser_dealloc_sig_range( &curr_prange, FALSE );
-        printf( "parse Throw C\n" );
+        // printf( "parse Throw C\n" ); - HIT
         Throw 0;
       }
      
@@ -203,9 +201,10 @@ void parse_design(
     db_write( output_db, TRUE, FALSE );
 
   } Catch_anonymous {
+    fsm_var_cleanup();
     sim_dealloc();
     db_close();
-    printf( "parse Throw G\n" );
+    // printf( "parse Throw G\n" ); - HIT
     Throw 0;
   }
 
@@ -311,6 +310,11 @@ void parse_and_score_dumpfile(
 
 /*
  $Log$
+ Revision 1.62  2008/03/31 21:40:23  phase1geo
+ Fixing several more memory issues and optimizing a bit of code per regression
+ failures.  Full regression still does not pass but does complete (yeah!)
+ Checkpointing.
+
  Revision 1.61  2008/03/14 22:00:19  phase1geo
  Beginning to instrument code for exception handling verification.  Still have
  a ways to go before we have anything that is self-checking at this point, though.

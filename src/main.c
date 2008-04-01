@@ -223,11 +223,11 @@ int main( int argc, const char** argv ) {
     retval = EXIT_FAILURE;
   }
 
-  /* Output profiling information, if necessary */
-  profiler_report();
-
   /* Deallocate obfuscation tree */
   obfuscate_dealloc();
+
+  /* Output profiling information, if necessary */
+  profiler_report();
 
 #ifdef TESTMODE
   /* Make sure that all of our allocate memory has been deallocated */
@@ -241,6 +241,11 @@ int main( int argc, const char** argv ) {
 
 /*
  $Log$
+ Revision 1.32  2008/03/17 22:02:31  phase1geo
+ Adding new check_mem script and adding output to perform memory checking during
+ regression runs.  Completed work on free_safe and added realloc_safe function
+ calls.  Regressions are pretty broke at the moment.  Checkpointing.
+
  Revision 1.31  2008/03/14 22:00:19  phase1geo
  Beginning to instrument code for exception handling verification.  Still have
  a ways to go before we have anything that is self-checking at this point, though.

@@ -138,7 +138,8 @@ static expression* fsm_arg_parse_state(
 
         } Catch_anonymous {
           vsignal_dealloc( sig );
-          printf( "fsm_arg Throw A\n" );
+          expression_dealloc( expr, FALSE );
+          // printf( "fsm_arg Throw A\n" ); - HIT
           Throw 0;
         }
 
@@ -209,6 +210,7 @@ static expression* fsm_arg_parse_state(
 
       } Catch_anonymous {
         vsignal_dealloc( sig );
+        expression_dealloc( expl, FALSE );
         printf( "fsm_arg Throw B\n" );
         Throw 0;
       }
@@ -643,16 +645,23 @@ void fsm_arg_parse_attr(
       }
     } else if( (index == 2) && (strcmp( curr->name, "is" ) == 0) && (curr->expr != NULL) ) {
       if( fsml == NULL ) {
+        int slen;
         tmp = str = vector_to_string( curr->expr->value, ESUPPL_STATIC_BASE( curr->expr->suppl ) );
-        if( (in_state = fsm_arg_parse_state( &str, funit->name )) == NULL ) {
-          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Illegal input state expression (%s), file: %s", str, obf_file( funit->filename ) );
-          assert( rv < USER_MSG_LENGTH );
-          print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          free_safe( tmp, (strlen( tmp ) + 1) );
-          printf( "fsm_arg Throw S\n" );
+        slen = strlen( tmp );
+        Try {
+          if( (in_state = fsm_arg_parse_state( &str, funit->name )) == NULL ) {
+            unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Illegal input state expression (%s), file: %s", str, obf_file( funit->filename ) );
+            assert( rv < USER_MSG_LENGTH );
+            print_output( user_msg, FATAL, __FILE__, __LINE__ );
+            printf( "fsm_arg Throw S\n" );
+            Throw 0;
+          }
+        } Catch_anonymous {
+          free_safe( tmp, (slen + 1) );
+          printf( "fsm_arg Throw S.1\n" );
           Throw 0;
         }
-        free_safe( tmp, (strlen( tmp ) + 1) );
+        free_safe( tmp, (slen + 1) );
       } else {
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Input state specified after output state for this FSM has already been specified, file: %s",
                                     obf_file( funit->filename ) );
@@ -663,19 +672,26 @@ void fsm_arg_parse_attr(
       }
     } else if( (index == 2) && (strcmp( curr->name, "os" ) == 0) && (curr->expr != NULL) ) {
       if( fsml == NULL ) {
+        int slen;
         tmp = str = vector_to_string( curr->expr->value, ESUPPL_STATIC_BASE( curr->expr->suppl ) );
-        if( (out_state = fsm_arg_parse_state( &str, funit->name )) == NULL ) {
-          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Illegal output state expression (%s), file: %s", str, obf_file( funit->filename ) );
-          assert( rv < USER_MSG_LENGTH );
-          print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          free_safe( tmp, (strlen( tmp ) + 1) );
-          printf( "fsm_arg Throw U\n" );
+        slen = strlen( tmp );
+        Try {
+          if( (out_state = fsm_arg_parse_state( &str, funit->name )) == NULL ) {
+            unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Illegal output state expression (%s), file: %s", str, obf_file( funit->filename ) );
+            assert( rv < USER_MSG_LENGTH );
+            print_output( user_msg, FATAL, __FILE__, __LINE__ );
+            printf( "fsm_arg Throw U\n" );
+            Throw 0;
+          } else {
+            (void)fsm_var_add( funit->name, out_state, out_state, curr->name, exclude );
+            fsml = fsm_link_find( curr->name, funit->fsm_head );
+          }
+        } Catch_anonymous {
+          free_safe( tmp, (slen + 1) );
+          printf( "fsm_arg Throw U.1\n" );
           Throw 0;
-        } else {
-          (void)fsm_var_add( funit->name, out_state, out_state, curr->name, exclude );
-          fsml = fsm_link_find( curr->name, funit->fsm_head );
         }
-        free_safe( tmp, (strlen( tmp ) + 1) );
+        free_safe( tmp, (slen + 1) );
       } else {
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Output state specified after output state for this FSM has already been specified, file: %s",
                                     obf_file( funit->filename ) );
@@ -687,19 +703,26 @@ void fsm_arg_parse_attr(
     } else if( (index == 3) && (strcmp( curr->name, "os" ) == 0) && (out_state == NULL) &&
                (in_state != NULL) && (curr->expr != NULL) ) {
       if( fsml == NULL ) {
+        int slen;
         tmp = str = vector_to_string( curr->expr->value, ESUPPL_STATIC_BASE( curr->expr->suppl ) );
-        if( (out_state = fsm_arg_parse_state( &str, funit->name )) == NULL ) {
-          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Illegal output state expression (%s), file: %s", str, obf_file( funit->filename ) );
-          assert( rv < USER_MSG_LENGTH );
-          print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          free_safe( tmp, (strlen( tmp ) + 1) );
-          printf( "fsm_arg Throw W\n" );
+        slen = strlen( tmp );
+        Try {
+          if( (out_state = fsm_arg_parse_state( &str, funit->name )) == NULL ) {
+            unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Illegal output state expression (%s), file: %s", str, obf_file( funit->filename ) );
+            assert( rv < USER_MSG_LENGTH );
+            print_output( user_msg, FATAL, __FILE__, __LINE__ );
+            printf( "fsm_arg Throw W\n" );
+            Throw 0;
+          } else {
+            (void)fsm_var_add( funit->name, in_state, out_state, curr->name, exclude );
+            fsml = fsm_link_find( curr->name, funit->fsm_head );
+          }
+        } Catch_anonymous {
+          free_safe( tmp, (slen + 1) );
+          // printf( "fsm_arg Throw W.1\n" ); - HIT
           Throw 0;
-        } else {
-          (void)fsm_var_add( funit->name, in_state, out_state, curr->name, exclude );
-          fsml = fsm_link_find( curr->name, funit->fsm_head );
         }
-        free_safe( tmp, (strlen( tmp ) + 1) );
+        free_safe( tmp, (slen + 1) );
       } else {
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Output state specified after output state for this FSM has already been specified, file: %s",
                                     obf_file( funit->filename ) );
@@ -742,6 +765,9 @@ void fsm_arg_parse_attr(
 
 /*
  $Log$
+ Revision 1.50  2008/03/28 21:11:32  phase1geo
+ Fixing memory leak issues with -ep option and embedded FSM attributes.
+
  Revision 1.49  2008/03/26 21:29:31  phase1geo
  Initial checkin of new optimizations for unknown and not_zero values in vectors.
  This attempts to speed up expression operations across the board.  Working on

@@ -109,7 +109,7 @@ diagrun:
 	@echo Running $(DIAG)
 	@./convert_cfg $(CFG_CMD) $(DIAG).cfg
 ifdef VPI
-	@$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP | ./check_mem
 ifdef USE_CVER
 	@if test "$(COVERED_GFLAG)" = "-D"; then \
 		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v +covered_cdd=$(DIAG).cdd +covered_debug; \
@@ -124,10 +124,10 @@ else
 		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd; \
 	fi
 endif
-	@$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfam -o $(DIAG).rptM $(DIAG).cdd | ./check_mem
-	@$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfam -i -o $(DIAG).rptI $(DIAG).cdd | ./check_mem
-	@$(COVERED) $(COVERED_GFLAG) report -w -d v -o $(DIAG).rptWM $(DIAG).cdd | ./check_mem
-	@$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $(DIAG).rptWI $(DIAG).cdd | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfam -o $(DIAG).rptM $(DIAG).cdd | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfam -i -o $(DIAG).rptI $(DIAG).cdd | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) report -w -d v -o $(DIAG).rptWM $(DIAG).cdd | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $(DIAG).rptWI $(DIAG).cdd | ./check_mem
 else
 	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v
 ifndef USE_CVER
@@ -154,7 +154,7 @@ racerun:
 	@echo Running $(DIAG)
 	@./convert_cfg $(CFG_CMD) $(DIAG).cfg
 ifdef VPI
-	@$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP
+	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP
 ifdef USE_CVER
 	@if test "$(COVERED_GFLAG)" = "-D"; then \
 		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v +covered_cdd=$(DIAG).cdd +covered_debug; \
@@ -169,20 +169,20 @@ else
 		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd; \
 	fi
 endif
-	@$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfr -o $(DIAG).rptM $(DIAG).cdd | ./check_mem
-	@$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfr -i -o $(DIAG).rptI $(DIAG).cdd | ./check_mem
-	@$(COVERED) $(COVERED_GFLAG) report -w -d v -m ltcfr -o $(DIAG).rptWM $(DIAG).cdd | ./check_mem
-	@$(COVERED) $(COVERED_GFLAG) report -w -d v -m ltcfr -i -o $(DIAG).rptWI $(DIAG).cdd | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfr -o $(DIAG).rptM $(DIAG).cdd | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfr -i -o $(DIAG).rptI $(DIAG).cdd | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) report -w -d v -m ltcfr -o $(DIAG).rptWM $(DIAG).cdd | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) report -w -d v -m ltcfr -i -o $(DIAG).rptWI $(DIAG).cdd | ./check_mem
 else
 	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v
 ifndef USE_CVER
 	@$(VERILOG_CMD)
 endif
-	@$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP | ./check_mem
-	@$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfr -o $(DIAG).rptM $(DIAG).cdd | ./check_mem
-	@$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfr -i -o $(DIAG).rptI $(DIAG).cdd | ./check_mem
-	@$(COVERED) $(COVERED_GFLAG) report -w -d v -m ltcfr -o $(DIAG).rptWM $(DIAG).cdd | ./check_mem
-	@$(COVERED) $(COVERED_GFLAG) report -w -d v -m ltcfr -i -o $(DIAG).rptWI $(DIAG).cdd | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfr -o $(DIAG).rptM $(DIAG).cdd | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfr -i -o $(DIAG).rptI $(DIAG).cdd | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) report -w -d v -m ltcfr -o $(DIAG).rptWM $(DIAG).cdd | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) report -w -d v -m ltcfr -i -o $(DIAG).rptWI $(DIAG).cdd | ./check_mem
 endif
 	@rm -f $(DIAG).cfg
 	@./check_test $(DIAG) 1 $(CHK_CODE)
@@ -198,7 +198,7 @@ $(RACELIST):
 onemergerun:
 	@./convert_cfg $(CFG_CMD) $(DIAG).cfg
 ifdef VPI
-	@$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP | ./check_mem
 ifdef USE_CVER
 	@if test "$(COVERED_GFLAG)" = "-D"; then \
 		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v +covered_cdd=$(DIAG).cdd +covered_debug; \
@@ -213,10 +213,10 @@ else
 		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd; \
 	fi
 endif
-	@$(COVERED) $(COVERED_GFLAG) report -d v -o $(DIAG).rptM $(DIAG).cdd | ./check_mem
-	@$(COVERED) $(COVERED_GFLAG) report -d v -i -o $(DIAG).rptI $(DIAG).cdd | ./check_mem
-	@$(COVERED) $(COVERED_GFLAG) report -w -d v -o $(DIAG).rptWM $(DIAG).cdd | ./check_mem
-	@$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $(DIAG).rptWI $(DIAG).cdd | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) report -d v -o $(DIAG).rptM $(DIAG).cdd | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) report -d v -i -o $(DIAG).rptI $(DIAG).cdd | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) report -w -d v -o $(DIAG).rptWM $(DIAG).cdd | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $(DIAG).rptWI $(DIAG).cdd | ./check_mem
 else
 	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v
 ifndef USE_CVER
@@ -254,11 +254,11 @@ merge3run:
 	@$(MAKE) DIAG=$(DIAG)a onemergerun
 	@$(MAKE) DIAG=$(DIAG)b onemergerun
 	@$(MAKE) DIAG=$(DIAG)c onemergerun
-	@$(COVERED) $(COVERED_GFLAG) merge -o $(DIAG).cdd $(DIAG)a.cdd $(DIAG)b.cdd $(DIAG)c.cdd | ./check_mem
-	@$(COVERED) $(COVERED_GFLAG) report -d v -o $(DIAG).rptM $(DIAG).cdd | ./check_mem
-	@$(COVERED) $(COVERED_GFLAG) report -d v -i -o $(DIAG).rptI $(DIAG).cdd | ./check_mem
-	@$(COVERED) $(COVERED_GFLAG) report -w -d v -o $(DIAG).rptWM $(DIAG).cdd | ./check_mem
-	@$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $(DIAG).rptWI $(DIAG).cdd | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) merge -o $(DIAG).cdd $(DIAG)a.cdd $(DIAG)b.cdd $(DIAG)c.cdd | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) report -d v -o $(DIAG).rptM $(DIAG).cdd | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) report -d v -i -o $(DIAG).rptI $(DIAG).cdd | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) report -w -d v -o $(DIAG).rptWM $(DIAG).cdd | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $(DIAG).rptWI $(DIAG).cdd | ./check_mem
 	@./check_test $(DIAG) 3 $(CHK_CODE)
 
 $(MERGE3LIST):
@@ -277,7 +277,7 @@ ifndef VPI
 ifndef USE_CVER
 	@$(VERILOG_CMD)
 endif
-	@-$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP 2> $(DIAG).err | ./check_mem
+	-$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP 2> $(DIAG).err | ./check_mem
 	@rm -f $(DIAG).cfg
 	@cat $(DIAG).err
 	@./check_test $(DIAG) 1 1
@@ -298,7 +298,7 @@ ifndef VPI
 ifndef USE_CVER
 	@$(VERILOG_CMD)
 endif
-	@$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP | ./check_mem
 	@rm -f $(DIAG).cfg
 endif
 
@@ -307,7 +307,7 @@ ifndef VPI
 	@echo Running $(DIAG) -- should see an error message
 	@$(MAKE) DIAG=$(DIAG)a oneerrmergerun
 	@$(MAKE) DIAG=$(DIAG)b oneerrmergerun
-	@$(COVERED) $(COVERED_GFLAG) merge -o $(DIAG).cdd $(DIAG)a.cdd $(DIAG)b.cdd 2> $(DIAG).err | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) merge -o $(DIAG).cdd $(DIAG)a.cdd $(DIAG)b.cdd 2> $(DIAG).err | ./check_mem
 	@cat $(DIAG).err
 	@./check_test $(DIAG) 1 1
 endif
@@ -328,8 +328,8 @@ ifndef USE_CVER
 	@$(VERILOG_CMD)
 endif
 	@./convert_cfg $(CFG_CMD) $(DIAG).cfg
-	@$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP | ./check_mem
-	@$(COVERED) $(COVERED_GFLAG) report -d v $(DIAG).cdd 2> $(DIAG).err | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) report -d v $(DIAG).cdd 2> $(DIAG).err | ./check_mem
 	@rm -f $(DIAG).cfg
 	@cat $(DIAG).err
 	@./check_test $(DIAG) 1 1

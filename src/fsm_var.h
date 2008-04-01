@@ -44,9 +44,16 @@ void fsm_var_stmt_add( statement* stmt, char* funit_name );
 /*! \brief Performs FSM signal/expression binding process. */
 void fsm_var_bind();
 
+/*! \brief Cleans up the global lists used in this file. */
+void fsm_var_cleanup();
+
 
 /*
  $Log$
+ Revision 1.10  2008/02/01 06:37:08  phase1geo
+ Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
+ using pragma excludes (this code is not fully working yet).  More to be done.
+
  Revision 1.9  2008/01/10 04:59:04  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 

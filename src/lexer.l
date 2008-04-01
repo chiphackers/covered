@@ -442,7 +442,7 @@ WSPACE [ \t\b\f]+
          yylval.text = gen_item_calc_signal_name( yytext, curr_funit, yylloc.first_line, TRUE );
        } else {
          yylval.text = strdup_safe( yytext );
-         //printf( "yylval.text: %s (%p)\n", yylval.text, yylval.text );
+         printf( "yylval.text: %s (%p)\n", yylval.text, yylval.text );
        }
        // printf( "Allocated IDENTIFIER %p  %s, line %d\n", yylval.text, yylval.text, yylloc.first_line );
        if( strncmp( yylval.text, "PATHPULSE$", 10) == 0 ) {
@@ -815,7 +815,7 @@ void process_timescale_token( char* token, char* type, int* value, bool report )
         assert( rv < USER_MSG_LENGTH );
         VLerror( msg );
       }
-      printf( "lexer Throw B\n" );
+      // printf( "lexer Throw B\n" ); - HIT
       Throw 0;
     }
     if( *token != '\0' ) {
@@ -865,7 +865,7 @@ void process_timescale( const char* txt, bool report ) { PROFILE(PROCESS_TIMESCA
       if( report ) {
         VLerror( "Timescale missing '/' character" );
       }
-      printf( "lexer Throw D\n" );
+      // printf( "lexer Throw D\n" ); - HIT
       Throw 0;
 
     } else {
@@ -882,7 +882,7 @@ void process_timescale( const char* txt, bool report ) { PROFILE(PROCESS_TIMESCA
       if( report ) {
         VLerror( "Invalid timescale settings (unit must be greater than the precision)" );
       }
-      printf( "lexer Throw E\n" );
+      // printf( "lexer Throw E\n" ); - HIT
       Throw 0;
     }
 
@@ -891,7 +891,7 @@ void process_timescale( const char* txt, bool report ) { PROFILE(PROCESS_TIMESCA
   
   } Catch_anonymous {
     free_safe( str, (strlen( txt ) + 1) );
-    printf( "lexer Throw F\n" );
+    // printf( "lexer Throw F\n" ); - HIT
     Throw 0;
   }
 

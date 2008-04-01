@@ -207,7 +207,7 @@ static void fsm_var_bind_expr(
                                   obf_sig( sig_name ), expr->id, obf_funit( funit_name ) );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      printf( "fsm_var Throw A\n" );
+      // printf( "fsm_var Throw A\n" ); - HIT
       Throw 0;
     }
   } else {
@@ -524,9 +524,63 @@ void fsm_var_remove(
 
 }
 
+/*!
+ Iterates through the various global lists in this file, deallocating all memory.  This function
+ is called when an error has occurred during the parsing stage.
+*/
+void fsm_var_cleanup() { PROFILE(FSM_VAR_CLEANUP);
+
+  fsm_var* curr_fv;  /* Pointer to the current fsm_var structure */
+  fsm_var* tmp_fv;   /* Temporary pointer */
+  fv_bind* curr_fvb = fsm_var_bind_head;  /* Pointer to the current fv_bind structure */ 
+  fv_bind* tmp_fvb;                       /* Temporary pointer */
+
+  /* Deallocate fsm_var list */
+  curr_fv = fsm_var_head;
+  while( curr_fv != NULL ) {
+    tmp_fv  = curr_fv;
+    curr_fv = curr_fv->next;
+
+    free_safe( tmp_fv->funit, (strlen( curr_fv->funit ) + 1) );
+    expression_dealloc( tmp_fv->ivar, FALSE );
+    expression_dealloc( tmp_fv->ovar, FALSE );
+    free_safe( tmp_fv, sizeof( fsm_var ) );
+  }
+  fsm_var_head = fsm_var_tail = NULL;
+
+  /* Deallocate fsm_var_bind list */
+  curr_fvb = fsm_var_bind_head;
+  while( curr_fvb != NULL ) {
+    tmp_fvb  = curr_fvb;
+    curr_fvb = curr_fvb->next;
+
+    free_safe( tmp_fvb->sig_name,   (strlen( tmp_fvb->sig_name ) + 1) );
+    free_safe( tmp_fvb->funit_name, (strlen( tmp_fvb->funit_name ) + 1) );
+    expression_dealloc( tmp_fvb->expr, FALSE );
+    free_safe( tmp_fvb, sizeof( fv_bind ) );
+  }
+  fsm_var_bind_head = fsm_var_bind_tail = NULL;
+
+  /* Deallocate fsm_var_stmt list */
+  curr_fvb = fsm_var_stmt_head;
+  while( curr_fvb != NULL ) {
+    tmp_fvb  = curr_fvb;
+    curr_fvb = curr_fvb->next;
+    
+    free_safe( tmp_fvb->funit_name, (strlen( tmp_fvb->funit_name ) + 1) );
+    expression_dealloc( tmp_fvb->stmt->exp, FALSE );
+    statement_dealloc( tmp_fvb->stmt );
+    free_safe( tmp_fvb, sizeof( fv_bind ) );
+  }
+
+}
+
 
 /*
  $Log$
+ Revision 1.45  2008/03/31 18:39:08  phase1geo
+ Fixing more regression issues related to latest code modifications.  Checkpointing.
+
  Revision 1.44  2008/03/17 22:02:31  phase1geo
  Adding new check_mem script and adding output to perform memory checking during
  regression runs.  Completed work on free_safe and added realloc_safe function
