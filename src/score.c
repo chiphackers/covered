@@ -559,7 +559,7 @@ static void score_parse_args(
             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Output file \"%s\" is not writable", argv[i] );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
-            printf( "score Throw L\n" );
+            //printf( "score Throw L\n" ); - HIT
             Throw 0;
           }
         }
@@ -657,7 +657,7 @@ static void score_parse_args(
               free_safe( arg_list[j], (strlen( arg_list[j] ) + 1) );
             }
             free_safe( arg_list, (sizeof( char* ) * arg_num) );
-            printf( "score Throw T\n" );
+            //printf( "score Throw T\n" ); - HIT
             Throw 0;
           }
           for( j=0; j<arg_num; j++ ) {
@@ -1220,6 +1220,9 @@ void command_score(
 
 /*
  $Log$
+ Revision 1.124  2008/04/01 13:00:49  phase1geo
+ More regression fixes and updates.  Checkpointing.
+
  Revision 1.123  2008/03/30 05:24:02  phase1geo
  Fixing a few more bugs.  Updated regression files per these changes.  Full regression
  still not running cleanly at this point.  Checkpointing.

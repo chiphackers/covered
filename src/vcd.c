@@ -278,7 +278,7 @@ static void vcd_parse_def(
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
     }
 
-    printf( "vcd Throw H\n" );
+    //printf( "vcd Throw H\n" ); - HIT
     Throw 0;
 
   }
@@ -468,7 +468,7 @@ void vcd_parse(
       free_safe( timestep_tab, (sizeof( symtable*) * vcd_symtab_size) );
       rv = fclose( vcd_handle );
       assert( rv == 0 );
-      printf( "vcd Throw L\n" );
+      //printf( "vcd Throw L\n" ); - HIT
       Throw 0;
     }
 
@@ -494,6 +494,11 @@ void vcd_parse(
 
 /*
  $Log$
+ Revision 1.41  2008/03/17 22:02:32  phase1geo
+ Adding new check_mem script and adding output to perform memory checking during
+ regression runs.  Completed work on free_safe and added realloc_safe function
+ calls.  Regressions are pretty broke at the moment.  Checkpointing.
+
  Revision 1.40  2008/03/14 22:00:21  phase1geo
  Beginning to instrument code for exception handling verification.  Still have
  a ways to go before we have anything that is self-checking at this point, though.

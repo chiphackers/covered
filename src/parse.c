@@ -51,7 +51,7 @@ extern sig_range curr_prange;
 extern sig_range curr_urange;
 extern bool      instance_specified;
 extern char*     top_module;
-extern FILE*     VLin;
+//extern FILE*     VLin;
 extern char*     ppfilename;
 
 /*!
@@ -115,16 +115,11 @@ void parse_design(
       Try {
 
         /* Parse the design -- if we catch an exception, remove the temporary ppfilename */
-        Try {
-          parser_ret = VLparse();
-        } Catch_anonymous {
-          unsigned int rv;
-          rv = fclose( VLin );
-          // printf( "parse Throw A\n" ); - HIT
-          Throw 0;
-        }
+        parser_ret = VLparse();
 
         if( (parser_ret != 0) || (error_count > 0) ) {
+          //unsigned int rv = fclose( VLin );
+          //assert( rv == 0 );
           print_output( "Error in parsing design", FATAL, __FILE__, __LINE__ );
           printf( "parse Throw B\n" );
           Throw 0;
@@ -299,7 +294,7 @@ void parse_and_score_dumpfile(
 
   } Catch_anonymous {
     sim_dealloc();
-    printf( "parse Throw H\n" );
+    //printf( "parse Throw H\n" ); - HIT
     Throw 0;
   }
 
@@ -310,6 +305,10 @@ void parse_and_score_dumpfile(
 
 /*
  $Log$
+ Revision 1.63  2008/04/01 23:08:21  phase1geo
+ More updates for error diagnostic cleanup.  Full regression still not
+ passing (but is getting close).
+
  Revision 1.62  2008/03/31 21:40:23  phase1geo
  Fixing several more memory issues and optimizing a bit of code per regression
  failures.  Full regression still does not pass but does complete (yeah!)
