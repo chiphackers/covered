@@ -1,4 +1,4 @@
-ERROR!  syntax error, unexpected K_always_comb,
+ERROR!  syntax error, unexpected K_always_comb, expecting IDENTIFIER or K_signed or K_unsigned or '[',
         File: gen19.v, Line: 3, Column: 4
 ERROR!  Syntax error in reg variable list,
         File: gen19.v, Line: 3, Column: 15

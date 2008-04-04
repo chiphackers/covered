@@ -1,4 +1,4 @@
-ERROR!  syntax error, unexpected K_unique,
+ERROR!  syntax error, unexpected K_unique, expecting IDENTIFIER or K_signed or K_unsigned or '[',
         File: gen22.v, Line: 3, Column: 4
 ERROR!  Syntax error in reg variable list,
         File: gen22.v, Line: 3, Column: 10

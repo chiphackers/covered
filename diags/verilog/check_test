@@ -124,6 +124,14 @@ if( ($mode == 3) || ($mode == 4) ) {
     print RPT_FAILED "${test}\n";
     $failed++;
   } else {
+
+    # Check to make sure that a tmp* file does not exist
+    $tmp = `ls | grep ^tmp`;
+    chomp( $tmp );
+    if( $tmp ne "" ) {
+      die "  Temporary file was not removed!\n";
+    }
+
     if( ($mode == 0) || ($mode == 1) || ($mode == 5) ) {
       print "  Checking output results         -- PASSED\n";
     }
@@ -142,12 +150,5 @@ if( ($mode == 3) || ($mode == 4) ) {
   close( RPT_RESULTS );
   close( RPT_FAILED  );
 
-}
-
-# Finally, check to make sure that a tmp* file does not exist
-$tmp = `ls | grep ^tmp`;
-chomp( $tmp );
-if( $tmp ne "" ) {
-  die "  Temporary file was not removed!\n";
 }
 

@@ -347,6 +347,9 @@ int yydebug = 1;
 %nonassoc less_than_K_else
 %nonassoc K_else
 
+/* Make sure that string elements are deallocated if parser errors occur */
+%destructor { free_safe( $$, (strlen( $$ ) + 1) ); } IDENTIFIER SYSTEM_IDENTIFIER PATHPULSE_IDENTIFIER identifier begin_end_id udp_port_list defparam_assign_list defparam_assign
+
 %%
 
   /* A degenerate source file can be completely empty. */
@@ -5179,12 +5182,12 @@ statement
       statement*  stmt;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
         Try {
-          exp = db_create_expression( NULL, $3, EXP_OP_TASK_CALL, FALSE, @1.first_line, @1.first_column, (@5.last_column - 1), $1 );
+          expression* exp = db_create_expression( NULL, $3, EXP_OP_TASK_CALL, FALSE, @1.first_line, @1.first_column, (@5.last_column - 1), $1 );
+          $$ = db_create_statement( exp );
         } Catch_anonymous {
           error_count++;
+          $$ = NULL;
         }
-        stmt = db_create_statement( exp );
-        $$   = stmt;
         free_safe( $1, (strlen( $1 ) + 1) );
       } else {
         free_safe( $1, (strlen( $1 ) + 1) );
@@ -5193,16 +5196,14 @@ statement
     }
   | identifier ';'
     {
-      expression* exp;
-      statement*  stmt;
       if( (ignore_mode == 0) && ($1 != NULL) ) {
         Try {
-          exp = db_create_expression( NULL, NULL, EXP_OP_TASK_CALL, FALSE, @1.first_line, @1.first_column, (@2.last_column - 1), $1 );
+          expression* exp = db_create_expression( NULL, NULL, EXP_OP_TASK_CALL, FALSE, @1.first_line, @1.first_column, (@2.last_column - 1), $1 );
+          $$ = db_create_statement( exp );
         } Catch_anonymous {
           error_count++;
+          $$ = NULL;
         }
-        stmt = db_create_statement( exp );
-        $$   = stmt;
         free_safe( $1, (strlen( $1 ) + 1) );
       } else {
         free_safe( $1, (strlen( $1 ) + 1) );

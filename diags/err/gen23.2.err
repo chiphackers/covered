@@ -1,4 +1,4 @@
-ERROR!  syntax error, unexpected K_priority,
+ERROR!  syntax error, unexpected K_priority, expecting IDENTIFIER or K_signed or K_unsigned or '[',
         File: gen23.v, Line: 3, Column: 4
 ERROR!  Syntax error in reg variable list,
         File: gen23.v, Line: 3, Column: 12

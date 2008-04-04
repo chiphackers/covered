@@ -1,4 +1,4 @@
-ERROR!  syntax error, unexpected K_do,
+ERROR!  syntax error, unexpected K_do, expecting IDENTIFIER or K_signed or K_unsigned or '[',
         File: gen24.v, Line: 3, Column: 4
 ERROR!  Syntax error in reg variable list,
         File: gen24.v, Line: 3, Column: 6

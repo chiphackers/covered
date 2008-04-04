@@ -113,7 +113,7 @@ void enumerate_resolve( funit_inst* inst ) { PROFILE(ENUMERATE_RESOLVE);
         rv = snprintf( user_msg, USER_MSG_LENGTH, "File: %s, Line: %d", obf_file( inst->funit->filename ), ei->sig->line );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL_WRAP, __FILE__, __LINE__ );
-        printf( "enumerate Throw A\n" );
+        // printf( "enumerate Throw A\n" ); - HIT
         Throw 0;
       } else {
         vector_from_int( ei->sig->value, (last_value + 1) );
@@ -165,7 +165,7 @@ void enumerate_dealloc( enum_item* ei ) { PROFILE(ENUMERATE_DEALLOC);
     }
 
     /* Deallocate ourself */
-    free( ei );
+    free_safe( ei, sizeof( enum_item ) );
 
   }
 
@@ -194,6 +194,11 @@ void enumerate_dealloc_list( func_unit* funit ) { PROFILE(ENUMERATE_DEALLOC_LIST
 
 /*
  $Log$
+ Revision 1.16  2008/03/26 21:29:31  phase1geo
+ Initial checkin of new optimizations for unknown and not_zero values in vectors.
+ This attempts to speed up expression operations across the board.  Working on
+ debugging regressions.  Checkpointing.
+
  Revision 1.15  2008/03/14 22:00:18  phase1geo
  Beginning to instrument code for exception handling verification.  Still have
  a ways to go before we have anything that is self-checking at this point, though.

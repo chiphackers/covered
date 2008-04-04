@@ -1,1 +1,3 @@
 ERROR!  Attempting to use a delay, task call, non-blocking assign or event controls in function main.return_two, file func3.4.v, line 17
+ERROR!  Attempting to use a delay, task call, non-blocking assign or event controls in function main.return_two, file func3.4.v, line 17
+ERROR!  Error in parsing design

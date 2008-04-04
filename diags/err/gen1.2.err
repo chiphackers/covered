@@ -1,4 +1,4 @@
-ERROR!  syntax error, unexpected K_generate,
+ERROR!  syntax error, unexpected K_generate, expecting IDENTIFIER or K_signed or K_unsigned or '[',
         File: gen1.2.v, Line: 3, Column: 4
 ERROR!  Syntax error in reg variable list,
         File: gen1.2.v, Line: 3, Column: 12
