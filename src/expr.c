@@ -422,7 +422,6 @@ expression* expression_create(
   int         lwidth = 0;  /* Bit width of expression on left */
 
   new_expr = (expression*)malloc_safe( sizeof( expression ) );
-  //assert( new_expr != (expression*)0x108350 );
 
   new_expr->suppl.all           = 0;
   new_expr->suppl.part.lhs      = (nibble)lhs & 0x1;
@@ -445,6 +444,8 @@ expression* expression_create(
   new_expr->table               = NULL;
   new_expr->elem.funit          = NULL;
   new_expr->name                = NULL;
+
+  // printf( "Allocated expression: " );  expression_display( new_expr );
 
   if( right != NULL ) {
 
@@ -1623,7 +1624,8 @@ void expression_display(
     right_id = expr->right->id;
   }
 
-  printf( "  Expression =>  id: %d, op: %s, line: %d, col: %x, suppl: %x, exec_num: %u, left: %d, right: %d, ", 
+  printf( "  Expression (%p) =>  id: %d, op: %s, line: %d, col: %x, suppl: %x, exec_num: %u, left: %d, right: %d, ", 
+          expr,
           expr->id,
           expression_string_op( expr->op ),
           expr->line,
@@ -5340,6 +5342,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.317  2008/04/02 05:39:50  phase1geo
+ More updates to support error memory deallocation.  Full regression still
+ fails at this point.  Checkpointing.
+
  Revision 1.316  2008/03/31 22:00:38  phase1geo
  Fixing issue with mbit_pos and mbit_neg expressions as found in regression.
  Updated regression files.  Checkpointing.

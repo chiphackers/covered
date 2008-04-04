@@ -764,7 +764,7 @@ func_unit* db_add_instance(
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       funit_dealloc( funit );
-      printf( "db Throw J\n" );
+      // printf( "db Throw J\n" ); - HIT
       Throw 0;
     }
 
@@ -972,7 +972,7 @@ bool db_add_function_task_namedblock(
 
   } Catch_anonymous {
     free_safe( full_name, (strlen( full_name ) + 1) );
-    printf( "db Throw K\n" );
+    // printf( "db Throw K\n" ); - HIT
     Throw 0;
   }
 
@@ -2862,6 +2862,10 @@ bool db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.300  2008/04/01 23:08:20  phase1geo
+ More updates for error diagnostic cleanup.  Full regression still not
+ passing (but is getting close).
+
  Revision 1.299  2008/03/31 21:40:22  phase1geo
  Fixing several more memory issues and optimizing a bit of code per regression
  failures.  Full regression still does not pass but does complete (yeah!)

@@ -504,14 +504,15 @@ description
     list_of_variables ';'
   | K_task automatic_opt IDENTIFIER ';'
     {
-      Try {
-        if( ignore_mode == 0 ) {
+      if( ignore_mode == 0 ) {
+        Try {
           if( !db_add_function_task_namedblock( ($2 ? FUNIT_ATASK : FUNIT_TASK), $3, @3.text, @3.first_line ) ) {
             ignore_mode++;
           }
+        } Catch_anonymous {
+          error_count++;
+          ignore_mode++;
         }
-      } Catch_anonymous {
-        error_count++;
       }
       free_safe( $3, (strlen( $3 ) + 1) );
     }
@@ -546,6 +547,7 @@ description
           }
         } Catch_anonymous {
           error_count++;
+          ignore_mode++;
         }
         free_safe( $5, (strlen( $5 ) + 1) );
       }
@@ -2959,12 +2961,17 @@ generate_item
     {
       generate_expr_mode++;
       if( ignore_mode == 0 ) {
-        if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $3, @3.text, @3.first_line ) ) {
+        Try {
+          if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $3, @3.text, @3.first_line ) ) {
+            ignore_mode++;
+          } else {
+            gen_item* gi = db_get_curr_gen_block();
+            assert( gi != NULL );
+            gitem_link_add( gi, &save_gi_head, &save_gi_tail );
+          }
+        } Catch_anonymous {
+          error_count++;
           ignore_mode++;
-        } else {
-          gen_item* gi = db_get_curr_gen_block();
-          assert( gi != NULL );
-          gitem_link_add( gi, &save_gi_head, &save_gi_tail );
         }
       }
       generate_expr_mode--;
@@ -2989,14 +2996,19 @@ generate_item
     {
       generate_for_mode++;
       if( ignore_mode == 0 ) {
-        if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $12, @12.text, @12.first_line ) ) {
+        Try {
+          if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $12, @12.text, @12.first_line ) ) {
+            ignore_mode++;
+          } else {
+            gen_item* gi = db_get_curr_gen_block();
+            assert( gi != NULL );
+            gi->varname = generate_varname;
+            generate_varname = NULL;
+            gitem_link_add( gi, &save_gi_head, &save_gi_tail );
+          }
+        } Catch_anonymous {
+          error_count++;
           ignore_mode++;
-        } else {
-          gen_item* gi = db_get_curr_gen_block();
-          assert( gi != NULL );
-          gi->varname = generate_varname;
-          generate_varname = NULL;
-          gitem_link_add( gi, &save_gi_head, &save_gi_tail );
         }
       }
       generate_expr_mode--;
@@ -3566,14 +3578,15 @@ module_item
         VLerror( "Task definition not allowed within a generate loop" );
         ignore_mode++;
       }
-      Try {
-        if( ignore_mode == 0 ) {
+      if( ignore_mode == 0 ) {
+        Try {
           if( !db_add_function_task_namedblock( ($3 ? FUNIT_ATASK : FUNIT_TASK), $4, @4.text, @4.first_line ) ) {
             ignore_mode++;
           }
+        } Catch_anonymous {
+          error_count++;
+          ignore_mode++;
         }
-      } Catch_anonymous {
-        error_count++;
       }
       free_safe( $4, (strlen( $4 ) + 1) );
       generate_top_mode--;
@@ -3617,6 +3630,7 @@ module_item
           }
         } Catch_anonymous {
           error_count++;
+          ignore_mode++;
         }
       }
       generate_top_mode--;
@@ -4915,16 +4929,16 @@ statement
     }
   | lpvalue K_LE expression ';'
     {
-      expression* tmp;
-      statement*  stmt;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
         Try {
-          tmp = db_create_expression( $3, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+          expression* tmp = db_create_expression( $3, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+          $$ = db_create_statement( tmp );
         } Catch_anonymous {
+          expression_dealloc( $1, FALSE );
+          expression_dealloc( $3, FALSE );
           error_count++;
+          $$ = NULL;
         }
-        stmt = db_create_statement( tmp );
-        $$ = stmt;
       } else {
         expression_dealloc( $1, FALSE );
         expression_dealloc( $3, FALSE );
@@ -4958,17 +4972,17 @@ statement
     /* We don't handle the non-blocking assignments ourselves, so we can just ignore the delay here */
   | lpvalue K_LE delay1 expression ';'
     {
-      expression* tmp;
-      statement*  stmt;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) && ($4 != NULL) ) {
         Try {
-          tmp = db_create_expression( $4, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
+          expression* tmp = db_create_expression( $4, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
+          $$ = db_create_statement( tmp );
         } Catch_anonymous {
+          expression_dealloc( $1, FALSE );
+          expression_dealloc( $4, FALSE );
           error_count++;
+          $$ = NULL;
         }
-        stmt = db_create_statement( tmp );
         expression_dealloc( $3, FALSE );
-        $$ = stmt;
       } else {
         expression_dealloc( $1, FALSE );
         expression_dealloc( $3, FALSE );
@@ -5003,17 +5017,17 @@ statement
     /* We don't handle the non-blocking assignments ourselves, so we can just ignore the delay here */
   | lpvalue K_LE event_control expression ';'
     {
-      expression* tmp;
-      statement*  stmt;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) && ($4 != NULL) ) {
         Try {
-          tmp = db_create_expression( $4, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
+          expression* tmp = db_create_expression( $4, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
+          $$ = db_create_statement( tmp );
         } Catch_anonymous {
+          expression_dealloc( $1, FALSE );
+          expression_dealloc( $4, FALSE );
           error_count++;
+          $$ = NULL;
         }
-        stmt = db_create_statement( tmp );
         expression_dealloc( $3, FALSE );
-        $$ = stmt;
       } else {
         expression_dealloc( $1, FALSE );
         expression_dealloc( $3, FALSE );
@@ -5075,14 +5089,16 @@ statement
       statement*  stmt;
       if( (ignore_mode == 0) && ($1 != NULL) && ($8 != NULL) ) {
         Try {
-          tmp = db_create_expression( $8, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, @1.first_column, (@8.last_column - 1), NULL );
+          expression* tmp = db_create_expression( $8, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, @1.first_column, (@8.last_column - 1), NULL );
+          $$ = db_create_statement( tmp );
         } Catch_anonymous {
+          expression_dealloc( $1, FALSE );
+          expression_dealloc( $8, FALSE );
           error_count++;
+          $$ = NULL;
         }
-        stmt = db_create_statement( tmp );
         expression_dealloc( $5, FALSE );
         expression_dealloc( $7, FALSE );
-        $$ = stmt;
       } else {
         expression_dealloc( $1, FALSE );
         expression_dealloc( $5, FALSE );
@@ -5231,7 +5247,12 @@ fork_statement
   : begin_end_id
     {
       if( (ignore_mode == 0) && ($1 != NULL) ) {
-        if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $1, @1.text, @1.first_line ) ) {
+        Try {
+          if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $1, @1.text, @1.first_line ) ) {
+            ignore_mode++;
+          }
+        } Catch_anonymous {
+          error_count++;
           ignore_mode++;
         }
       } else {
@@ -5287,7 +5308,12 @@ begin_end_block
   : begin_end_id
     {
       if( (ignore_mode == 0) && ($1 != NULL) ) {
-        if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $1, @1.text, @1.first_line ) ) {
+        Try {
+          if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $1, @1.text, @1.first_line ) ) {
+            ignore_mode++;
+          }
+        } Catch_anonymous {
+          error_count++;
           ignore_mode++;
         }
       } else {
@@ -7406,6 +7432,7 @@ inc_for_depth
           assert( db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, scope, funit->filename, 0 ) );
         } Catch_anonymous {
           error_count++;
+          ignore_mode++;
         }
         free_safe( scope, (strlen( scope ) + 1) );
       }

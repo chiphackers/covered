@@ -1201,6 +1201,9 @@ void command_score(
   /* Deallocate memory for defparams */
   defparam_dealloc();
 
+  /* Deallocate generation module string list */
+  str_link_delete_list( gen_mod_head );
+
   free_safe( output_db, (strlen( output_db ) + 1) );
   free_safe( dump_file, (strlen( dump_file ) + 1) );
   free_safe( vpi_file, (strlen( vpi_file ) + 1) );
@@ -1220,6 +1223,10 @@ void command_score(
 
 /*
  $Log$
+ Revision 1.125  2008/04/02 05:39:51  phase1geo
+ More updates to support error memory deallocation.  Full regression still
+ fails at this point.  Checkpointing.
+
  Revision 1.124  2008/04/01 13:00:49  phase1geo
  More regression fixes and updates.  Checkpointing.
 
