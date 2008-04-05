@@ -2507,6 +2507,10 @@ bool vector_op_dec(
   /* Finally add the values and assign them back to the target */
   (void)vector_op_subtract( tgt, tmp1, tmp2 );
 
+  /* Deallocate temporary vectors */
+  vector_dealloc( tmp1 );
+  vector_dealloc( tmp2 );
+
   PROFILE_END;
 
   return( TRUE );
@@ -2671,6 +2675,11 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.133  2008/03/31 21:40:24  phase1geo
+ Fixing several more memory issues and optimizing a bit of code per regression
+ failures.  Full regression still does not pass but does complete (yeah!)
+ Checkpointing.
+
  Revision 1.132  2008/03/28 22:04:53  phase1geo
  Fixing calculation of unknown and not_zero supplemental field bits in
  vector_db_write function when X data is being written.  Updated regression
