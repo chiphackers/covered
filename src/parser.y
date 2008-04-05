@@ -6399,6 +6399,8 @@ net_decl_assign
           db_connect_statement_false( stmt, stmt );
           db_add_statement( stmt, stmt );
         }
+      } else {
+        expression_dealloc( $3, FALSE );
       }
       free_safe( $1, (strlen( $1 ) + 1) );
     }
@@ -6429,7 +6431,10 @@ net_decl_assign
           db_connect_statement_false( stmt, stmt );
           db_add_statement( stmt, stmt );
         }
+      } else {
+        expression_dealloc( $4, FALSE );
       }
+      expression_dealloc( $1, FALSE );
       free_safe( $2, (sizeof( $2 ) + 1) );
     }
   ;
