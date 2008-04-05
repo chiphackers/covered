@@ -4327,6 +4327,10 @@ bool expression_op_func__iinc(
   /* Perform increment */
   (void)vector_op_inc( expr->left->value );
 
+  /* Copy the left-hand expression vector supplemental bits back to the signal */
+  expr->left->sig->value->suppl.part.unknown  = expr->left->value->suppl.part.unknown;
+  expr->left->sig->value->suppl.part.not_zero = expr->left->value->suppl.part.not_zero;
+
   /* Copy the left-hand value to our expression */
   VSUPPL_CLR_NZ_AND_UNK( expr->value->suppl );
   (void)vector_set_value( expr->value, expr->left->value->value, expr->left->value->width, 0, 0 );
@@ -4368,6 +4372,10 @@ bool expression_op_func__pinc(
   /* Perform increment */
   (void)vector_op_inc( expr->left->value );
 
+  /* Copy the left-hand expression vector supplemental bits back to the signal */
+  expr->left->sig->value->suppl.part.unknown  = expr->left->value->suppl.part.unknown;
+  expr->left->sig->value->suppl.part.not_zero = expr->left->value->suppl.part.not_zero;
+
 #ifdef DEBUG_MODE
   if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
     printf( "        " );  vsignal_display( expr->left->sig );
@@ -4400,6 +4408,10 @@ bool expression_op_func__idec(
 
   /* Perform decrement */
   (void)vector_op_dec( expr->left->value );
+
+  /* Copy the left-hand expression vector supplemental bits back to the signal */
+  expr->left->sig->value->suppl.part.unknown  = expr->left->value->suppl.part.unknown;
+  expr->left->sig->value->suppl.part.not_zero = expr->left->value->suppl.part.not_zero;
 
   /* Copy the left-hand value to our expression */
   VSUPPL_CLR_NZ_AND_UNK( expr->value->suppl );
@@ -4441,6 +4453,10 @@ bool expression_op_func__pdec(
 
   /* Perform decrement */
   (void)vector_op_dec( expr->left->value );
+
+  /* Copy the left-hand expression vector supplemental bits back to the signal */
+  expr->left->sig->value->suppl.part.unknown  = expr->left->value->suppl.part.unknown;
+  expr->left->sig->value->suppl.part.not_zero = expr->left->value->suppl.part.not_zero;
 
 #ifdef DEBUG_MODE
   if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
@@ -5342,6 +5358,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.318  2008/04/04 20:06:39  phase1geo
+ More fixes per regression runs.  Checkpointing.
+
  Revision 1.317  2008/04/02 05:39:50  phase1geo
  More updates to support error memory deallocation.  Full regression still
  fails at this point.  Checkpointing.
