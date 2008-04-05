@@ -2477,6 +2477,10 @@ bool vector_op_inc(
   /* Finally add the values and assign them back to the target */
   (void)vector_op_add( tgt, tmp1, tmp2 );
 
+  /* Deallocate memory */
+  vector_dealloc( tmp1 );
+  vector_dealloc( tmp2 );
+
   PROFILE_END;
 
   return( TRUE );
@@ -2675,6 +2679,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.134  2008/04/05 04:49:46  phase1geo
+ More regression fixes and updates.
+
  Revision 1.133  2008/03/31 21:40:24  phase1geo
  Fixing several more memory issues and optimizing a bit of code per regression
  failures.  Full regression still does not pass but does complete (yeah!)
