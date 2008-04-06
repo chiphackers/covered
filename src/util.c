@@ -805,17 +805,22 @@ void scope_extract_scope( const char* scope, const char* front, char* back ) { P
  Allocates memory for and generates a printable version of the given string (a signal or
  instance name).  The calling function is responsible for deallocating the string returned.
 */
-char* scope_gen_printable( const char* str ) { PROFILE(SCOPE_GEN_PRINTABLE);
+char* scope_gen_printable(
+  const char* str
+) { PROFILE(SCOPE_GEN_PRINTABLE);
 
   char* new_str;  /* New version of string with escaped sequences removed */
 
-  /* Allocate memory for new string */
-  new_str = strdup_safe( obf_sig( str ) );
+  assert( strlen( obf_sig( str ) ) < 4096 );
 
   /* Remove escape sequences, if any */
   if( str[0] == '\\' ) {
-    unsigned int rv = sscanf( str, "\\%[^ \n\t\r\b]", new_str );
+    char         tmp_str[4096];
+    unsigned int rv = sscanf( str, "\\%[^ \n\t\r\b]", tmp_str );
     assert( rv == 1 );
+    new_str = strdup_safe( tmp_str );
+  } else {
+    new_str = strdup_safe( obf_sig( str ) );
   }
 
   PROFILE_END;
@@ -831,7 +836,10 @@ char* scope_gen_printable( const char* str ) { PROFILE(SCOPE_GEN_PRINTABLE);
  \return Returns TRUE if the two strings are equal, properly handling the case where one or
          both are escaped names (start with an escape character and end with a space).
 */
-bool scope_compare( const char* str1, const char* str2 ) { PROFILE(SCOPE_COMPARE);
+bool scope_compare(
+  const char* str1,
+  const char* str2
+) { PROFILE(SCOPE_COMPARE);
 
   bool  retval;    /* Return value for this function */
   char* new_str1;  /* New form of str1 with escaped sequences removed */
@@ -845,8 +853,8 @@ bool scope_compare( const char* str1, const char* str2 ) { PROFILE(SCOPE_COMPARE
   retval = (strcmp( new_str1, new_str2 ) == 0);
 
   /* Deallocate the memory */
-  free_safe( new_str1, (strlen( str1 ) + 1) );
-  free_safe( new_str2, (strlen( str2 ) + 1) );
+  free_safe( new_str1, (strlen( new_str1 ) + 1) );
+  free_safe( new_str2, (strlen( new_str2 ) + 1) );
 
   PROFILE_END;
 
@@ -1320,6 +1328,9 @@ void calc_miss_percent(
 
 /*
  $Log$
+ Revision 1.87  2008/04/06 05:46:54  phase1geo
+ Another regression memory deallocation fix.  Updates to regression files.
+
  Revision 1.86  2008/03/26 21:29:32  phase1geo
  Initial checkin of new optimizations for unknown and not_zero values in vectors.
  This attempts to speed up expression operations across the board.  Working on
