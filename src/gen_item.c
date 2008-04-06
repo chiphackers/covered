@@ -1189,14 +1189,15 @@ void gen_item_dealloc(
         case GI_TYPE_INST :
         case GI_TYPE_TFN  :
           instance_dealloc_tree( gi->elem.inst );
-          free_safe( gi->varname, (strlen( gi->varname ) + 1) );
           break;
         case GI_TYPE_BIND :
-          free_safe( gi->varname, (strlen( gi->varname ) + 1) );
           break;
         default           :  break;
       }
     }
+
+    /* Remove the varname if necessary */
+    free_safe( gi->varname, (strlen( gi->varname ) + 1) );
 
     /* Now deallocate ourselves */
     free_safe( gi, sizeof( gen_item ) );
@@ -1208,6 +1209,10 @@ void gen_item_dealloc(
 
 /*
  $Log$
+ Revision 1.65  2008/04/06 05:24:17  phase1geo
+ Fixing another regression memory problem.  Updated regression files
+ accordingly.  Checkpointing.
+
  Revision 1.64  2008/03/31 18:39:08  phase1geo
  Fixing more regression issues related to latest code modifications.  Checkpointing.
 

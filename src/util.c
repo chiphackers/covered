@@ -845,8 +845,8 @@ bool scope_compare( const char* str1, const char* str2 ) { PROFILE(SCOPE_COMPARE
   retval = (strcmp( new_str1, new_str2 ) == 0);
 
   /* Deallocate the memory */
-  free_safe( new_str1, (strlen( new_str1 ) + 1) );
-  free_safe( new_str2, (strlen( new_str2 ) + 1) );
+  free_safe( new_str1, (strlen( str1 ) + 1) );
+  free_safe( new_str2, (strlen( str2 ) + 1) );
 
   PROFILE_END;
 
@@ -1320,6 +1320,11 @@ void calc_miss_percent(
 
 /*
  $Log$
+ Revision 1.86  2008/03/26 21:29:32  phase1geo
+ Initial checkin of new optimizations for unknown and not_zero values in vectors.
+ This attempts to speed up expression operations across the board.  Working on
+ debugging regressions.  Checkpointing.
+
  Revision 1.85  2008/03/22 05:23:24  phase1geo
  More attempts to fix memory problems.  Things are still pretty broke at the moment.
 
