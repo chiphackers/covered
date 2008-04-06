@@ -148,7 +148,12 @@ static_expr* static_expr_gen_unary(
           break;
 
         case EXP_OP_PASSIGN :
-          tmpexp = expression_create( tmpexp, NULL, op, FALSE, curr_expr_id, line, first, last, FALSE );
+          tmpexp = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, line, first, last, FALSE );
+          curr_expr_id++;
+          vector_init( tmpexp->value, (vec_data*)malloc_safe( sizeof( vec_data ) * 32 ), TRUE, 32, VTYPE_EXP );
+          vector_from_int( tmpexp->value, stexp->num );
+
+          stexp->exp = expression_create( tmpexp, NULL, op, FALSE, curr_expr_id, line, first, last, FALSE );
           curr_expr_id++;
           break;
         default :  break;
@@ -439,6 +444,9 @@ void static_expr_dealloc(
 
 /*
  $Log$
+ Revision 1.33  2008/03/17 05:26:17  phase1geo
+ Checkpointing.  Things don't compile at the moment.
+
  Revision 1.32  2008/03/11 22:06:49  phase1geo
  Finishing first round of exception handling code.
 

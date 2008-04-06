@@ -9,6 +9,8 @@
 
 module main;
 
+reg [31:0] a, b;
+
 initial begin
 	a = 0;
 	b = 2;

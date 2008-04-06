@@ -619,9 +619,9 @@ void codegen_gen_expr(
       assert( right_code_depth > 0 );
 
       /* Copy the contents of the right code */
-      *code       = (char**)malloc_safe( sizeof( char* ) * right_code_depth );
+      *code = (char**)malloc_safe( sizeof( char* ) * right_code_depth );
       for( i=0; i<right_code_depth; i++ ) {
-        (*code)[i]  = strdup_safe( right_code[i] );
+        (*code)[i] = right_code[i];
       }
       *code_depth = right_code_depth;
 
@@ -966,6 +966,9 @@ void codegen_gen_expr(
 
 /*
  $Log$
+ Revision 1.92  2008/04/05 05:30:18  phase1geo
+ Fixing report bug from regressions and updating more regression runs.
+
  Revision 1.91  2008/03/26 21:29:31  phase1geo
  Initial checkin of new optimizations for unknown and not_zero values in vectors.
  This attempts to speed up expression operations across the board.  Working on
