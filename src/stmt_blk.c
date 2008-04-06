@@ -106,13 +106,18 @@ void stmt_blk_remove() {
       db_remove_stmt_blks_calling_statement( stmt );
     }
     /* Deallocate the statement block now */
-    statement_dealloc_recursive( stmt );
+    statement_dealloc_recursive( stmt, TRUE );
   }
 
 }
 
 /*
  $Log$
+ Revision 1.15  2008/02/25 18:22:16  phase1geo
+ Moved statement supplemental bits from root expression to statement and starting
+ to add support for race condition checking pragmas (still some work left to do
+ on this item).  Updated IV and Cver regressions per these changes.
+
  Revision 1.14  2008/01/09 05:22:22  phase1geo
  More splint updates using the -standard option.
 

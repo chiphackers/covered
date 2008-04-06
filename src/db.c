@@ -2224,7 +2224,7 @@ void db_remove_statement( statement* stmt ) { PROFILE(DB_REMOVE_STATEMENT);
 #endif
 
     /* Call the recursive statement deallocation function */
-    statement_dealloc_recursive( stmt );
+    statement_dealloc_recursive( stmt, TRUE );
 
   }
 
@@ -2862,6 +2862,9 @@ bool db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.301  2008/04/04 20:06:39  phase1geo
+ More fixes per regression runs.  Checkpointing.
+
  Revision 1.300  2008/04/01 23:08:20  phase1geo
  More updates for error diagnostic cleanup.  Full regression still not
  passing (but is getting close).

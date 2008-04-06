@@ -69,7 +69,10 @@ statement* statement_find_statement( statement* curr, int id );
 bool statement_contains_expr_calling_stmt( statement* curr, statement* stmt );
 
 /*! \brief Recursively deallocates specified statement tree. */
-void statement_dealloc_recursive( statement* stmt );
+void statement_dealloc_recursive(
+  statement* stmt,
+  bool       rm_stmt_blks
+);
 
 /*! \brief Deallocates statement memory and associated expression tree from the heap. */
 void statement_dealloc( statement* stmt );
@@ -77,6 +80,10 @@ void statement_dealloc( statement* stmt );
 
 /*
  $Log$
+ Revision 1.36  2008/02/29 00:08:31  phase1geo
+ Completed optimization code in simulator.  Still need to verify that code
+ changes enhanced performances as desired.  Checkpointing.
+
  Revision 1.35  2008/02/09 19:32:45  phase1geo
  Completed first round of modifications for using exception handler.  Regression
  passes with these changes.  Updated regressions per these changes.

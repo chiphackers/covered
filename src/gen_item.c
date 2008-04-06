@@ -412,7 +412,7 @@ bool gen_item_varname_contains_genvar( char* name ) { PROFILE(GEN_ITEM_VARNAME_C
   }
 
   /* Deallocate memory */
-  free_safe( tmpname, (strlen( tmpname ) + 1)  );
+  free_safe( tmpname, (strlen( name ) + 1)  );
 
   return( retval );
 
@@ -1184,7 +1184,7 @@ void gen_item_dealloc(
           vsignal_dealloc( gi->elem.sig );
           break;
         case GI_TYPE_STMT :
-          statement_dealloc_recursive( gi->elem.stmt );
+          statement_dealloc_recursive( gi->elem.stmt, FALSE );
           break;
         case GI_TYPE_INST :
         case GI_TYPE_TFN  :
@@ -1208,6 +1208,9 @@ void gen_item_dealloc(
 
 /*
  $Log$
+ Revision 1.64  2008/03/31 18:39:08  phase1geo
+ Fixing more regression issues related to latest code modifications.  Checkpointing.
+
  Revision 1.63  2008/03/21 21:16:41  phase1geo
  Removing UNUSED_* types in lexer due to a bug that was found in the usage of
  ignore_mode in the lexer (a token that should have been ignored was not due to
