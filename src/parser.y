@@ -308,8 +308,6 @@ int yydebug = 1;
 %type <logical>   automatic_opt block_item_decls_opt
 %type <integer>   net_type net_type_sign_range_opt var_type data_type_opt
 %type <text>      identifier begin_end_id
-%type <text>      udp_port_list
-%type <text>      defparam_assign_list defparam_assign
 %type <statexp>   static_expr static_expr_primary static_expr_port_list
 %type <expr>      expr_primary expression_list expression expression_port_list
 %type <expr>      lavalue lpvalue
@@ -348,7 +346,7 @@ int yydebug = 1;
 %nonassoc K_else
 
 /* Make sure that string elements are deallocated if parser errors occur */
-%destructor { free_safe( $$, (strlen( $$ ) + 1) ); } IDENTIFIER SYSTEM_IDENTIFIER PATHPULSE_IDENTIFIER identifier begin_end_id udp_port_list defparam_assign_list defparam_assign
+%destructor { free_safe( $$, (strlen( $$ ) + 1) ); } IDENTIFIER SYSTEM_IDENTIFIER PATHPULSE_IDENTIFIER identifier begin_end_id
 
 %%
 
@@ -2368,12 +2366,10 @@ udp_port_list
   : IDENTIFIER
     {
       free_safe( $1, (strlen( $1 ) + 1) );
-      $$ = NULL;
     }
   | udp_port_list ',' IDENTIFIER
     {
       free_safe( $3, (strlen( $3 ) + 1) );
-      $$ = NULL;
     }
   ;
 
@@ -6615,13 +6611,7 @@ port_type
 
 defparam_assign_list
   : defparam_assign
-    {
-      $$ = 0;
-    }
   | range defparam_assign
-    {
-      $$ = 0;
-    }
   | defparam_assign_list ',' defparam_assign
   ;
 
