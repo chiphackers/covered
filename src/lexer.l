@@ -798,7 +798,7 @@ void process_timescale_token( char* token, char* type, int* value, bool report )
       assert( rv < USER_MSG_LENGTH );
       VLerror( msg );
     }
-    printf( "lexer Throw A\n" );
+    // printf( "lexer Throw A\n" ); - HIT
     Throw 0;
   } else {
     *value = i - 1;

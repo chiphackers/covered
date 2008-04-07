@@ -1669,7 +1669,7 @@ expression* db_create_expression(
                                 obf_funit( func_funit->name ), obf_file( curr_funit->filename ), line );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    printf( "db Throw M\n" );
+    // printf( "db Throw M\n" ); - HIT
     Throw 0;
   }
 
@@ -2862,6 +2862,10 @@ bool db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.302  2008/04/06 05:24:17  phase1geo
+ Fixing another regression memory problem.  Updated regression files
+ accordingly.  Checkpointing.
+
  Revision 1.301  2008/04/04 20:06:39  phase1geo
  More fixes per regression runs.  Checkpointing.
 

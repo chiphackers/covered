@@ -6112,7 +6112,6 @@ register_variable
       if( ignore_mode == 0 ) {
         if( !parser_check_generation( GENERATION_2001 ) ) {
           VLerror( "Register declaration with initialization found in block that is specified to not allow Verilog-2001 syntax" );
-          free_safe( $1, (strlen( $1 ) + 1) );
           expression_dealloc( $3, FALSE );
         } else {
           db_add_signal( $1, curr_sig_type, &curr_prange, NULL, curr_signed, curr_mba, @1.first_line, @1.first_column, TRUE );

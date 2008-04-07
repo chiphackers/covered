@@ -146,7 +146,7 @@ void parse_design(
           assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
           print_output( "The -i option should not have been specified", FATAL_WRAP, __FILE__, __LINE__ );
-          printf( "parse Throw D\n" );
+          // printf( "parse Throw D\n" ); - HIT
           Throw 0;
         }
       } else {
@@ -156,7 +156,7 @@ void parse_design(
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
           print_output( "The -i option must be specified to provide the hierarchy to the module specified with", FATAL_WRAP, __FILE__, __LINE__ );
           print_output( "the -t option.", FATAL_WRAP, __FILE__, __LINE__ );
-          printf( "parse Throw E\n" );
+          // printf( "parse Throw E\n" ); - HIT
           Throw 0;
         }
       }
@@ -303,6 +303,9 @@ void parse_and_score_dumpfile(
 
 /*
  $Log$
+ Revision 1.65  2008/04/04 20:06:39  phase1geo
+ More fixes per regression runs.  Checkpointing.
+
  Revision 1.64  2008/04/02 05:39:51  phase1geo
  More updates to support error memory deallocation.  Full regression still
  fails at this point.  Checkpointing.
