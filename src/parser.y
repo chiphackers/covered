@@ -6541,10 +6541,18 @@ event_expression
         expression* tmp = NULL;
         Try {
           /* Create 1-bit expression to hold last value of right expression */
-          tmp = db_create_expression( NULL, NULL, EXP_OP_LAST, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-          $$  = db_create_expression( $2, tmp, EXP_OP_PEDGE, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
+          Try {
+            tmp = db_create_expression( NULL, NULL, EXP_OP_LAST, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+          } Catch_anonymous {
+            Throw 0;
+          }
+          Try {
+            $$ = db_create_expression( $2, tmp, EXP_OP_PEDGE, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
+          } Catch_anonymous {
+            expression_dealloc( tmp, FALSE );
+            Throw 0;
+          }
         } Catch_anonymous {
-          expression_dealloc( tmp, FALSE );
           expression_dealloc( $2, FALSE );
           error_count++;
         }
@@ -6557,10 +6565,18 @@ event_expression
       if( (ignore_mode == 0) && ($2 != NULL) ) {
         expression* tmp = NULL;
         Try {
-          tmp = db_create_expression( NULL, NULL, EXP_OP_LAST, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-          $$  = db_create_expression( $2, tmp, EXP_OP_NEDGE, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
+          Try {
+            tmp = db_create_expression( NULL, NULL, EXP_OP_LAST, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+          } Catch_anonymous {
+            Throw 0;
+          }
+          Try {
+            $$  = db_create_expression( $2, tmp, EXP_OP_NEDGE, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
+          } Catch_anonymous {
+            expression_dealloc( tmp, FALSE );
+            Throw 0;
+          }
         } Catch_anonymous {
-          expression_dealloc( tmp, FALSE );
           expression_dealloc( $2, FALSE );
           error_count++;
         }
@@ -6573,10 +6589,18 @@ event_expression
       if( (ignore_mode == 0) && ($1 != NULL ) ) {
         expression* tmp = NULL;
         Try {
-          tmp = db_create_expression( NULL, NULL, EXP_OP_LAST, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-          $$  = db_create_expression( $1, tmp, EXP_OP_AEDGE, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+          Try {
+            tmp = db_create_expression( NULL, NULL, EXP_OP_LAST, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+          } Catch_anonymous {
+            Throw 0;
+          }
+          Try {
+            $$  = db_create_expression( $1, tmp, EXP_OP_AEDGE, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+          } Catch_anonymous {
+            expression_dealloc( tmp, FALSE );
+            Throw 0;
+          }
         } Catch_anonymous {
-          expression_dealloc( tmp, FALSE );
           expression_dealloc( $1, FALSE );
           error_count++;
         }
