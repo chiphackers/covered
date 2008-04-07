@@ -854,6 +854,11 @@ typedef enum exp_op_type_e {
                                       (x->left->op == EXP_OP_LAST))
 
 /*!
+ Specifies the number of temporary vectors required by the given expression operation.
+*/
+#define EXPR_TMP_VECS(x)             exp_op_info[op].suppl.tmp_vecs
+
+/*!
  \addtogroup op_tables
 
  The following describe the operation table values for AND, OR, XOR, NAND, NOR and
@@ -1053,6 +1058,15 @@ typedef enum exp_op_type_e {
 
 /*! Specifies that the element pointer points to a delay */
 #define ETYPE_DELAY     2
+
+/*! Specifies that the element pointer points to a thread */
+#define ETYPE_THREAD    3
+
+/*! Specifies that the element pointer points to a single temporary vector */
+#define ETYPE_VEC1      4
+
+/*! Specifies that the element pointer points to a vector2 block */
+#define ETYPE_VEC2      5
 
 /*! @} */
 
@@ -1466,6 +1480,7 @@ struct exp_info_s;
 struct str_link_s;
 struct vector_s;
 struct const_value_s;
+struct vecblk_s;
 struct expression_s;
 struct vsignal_s;
 struct fsm_s;
@@ -1543,6 +1558,11 @@ typedef struct vector_s vector;
  Renaming vector structure for convenience.
 */
 typedef struct const_value_s const_value;
+
+/*!
+ Renaming vector structure for convenience.
+*/
+typedef struct vecblk_s vecblk;
 
 /*!
  Renaming expression statement union for convenience.
@@ -1822,13 +1842,14 @@ struct exp_info_s {
   char* op_str;                           /*!< Operation string name for report output purposes */
   bool  (*func)( expression*, thread*, const sim_time* );  /*!< Operation function to call */
   struct {
-    nibble is_event:1;                    /*!< Specifies if operation is an event */
-    nibble is_static:1;                   /*!< Specifies if operation is a static value (does not change during simulation) */
-    nibble is_comb:2;                     /*!< Specifies if operation is combinational (both left/right expressions valid) */
-    nibble is_unary:1;                    /*!< Specifies if operation is unary (left expression valid only) */
-    nibble measurable:1;                  /*!< Specifies if this operation type can be measured */
-    nibble is_context_switch:1;           /*!< Specifies if this operation will cause a context switch */
-    nibble assignable:1;                  /*!< Specifies if this operation can be immediately assigned (i.e., +=) */
+    control is_event:1;                   /*!< Specifies if operation is an event */
+    control is_static:1;                  /*!< Specifies if operation is a static value (does not change during simulation) */
+    control is_comb:2;                    /*!< Specifies if operation is combinational (both left/right expressions valid) */
+    control is_unary:1;                   /*!< Specifies if operation is unary (left expression valid only) */
+    control measurable:1;                 /*!< Specifies if this operation type can be measured */
+    control is_context_switch:1;          /*!< Specifies if this operation will cause a context switch */
+    control assignable:1;                 /*!< Specifies if this operation can be immediately assigned (i.e., +=) */
+    control tmp_vecs:2;                   /*!< Number of temporary vectors used by this expression */
   } suppl;                                /*!< Supplemental information about this expression */
 };
 
@@ -1883,6 +1904,14 @@ struct const_value_s {
 };
 
 /*!
+ Contains temporary storage vectors used by certain expressions for performance purposes.
+*/
+struct vecblk_s {
+  vector vec[3];                     /*!< Vector array */
+  int    index;                      /*!< Specifies to the called function which vector may be accessed */
+}; 
+
+/*!
  Allows the parent pointer of an expression to point to either another expression
  or a statement.
 */
@@ -1918,6 +1947,7 @@ struct expression_s {
     func_unit* funit;              /*!< Pointer to task/function to be called by this expression */
     thread*    thr;                /*!< Pointer to next thread to be called */
     uint64*    scale;              /*!< Pointer to parent functional unit's timescale value */
+    vecblk*    tvecs;              /*!< Temporary vectors that are sized to match value */   
   } elem;
 };
 
@@ -2574,6 +2604,11 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.290  2008/04/07 19:35:41  phase1geo
+ Incremented CDD version and updated regression files.  Also fixed issue
+ with expression_dealloc function for FUNC_CALL operations.  Full regression
+ passes.
+
  Revision 1.289  2008/03/31 21:40:23  phase1geo
  Fixing several more memory issues and optimizing a bit of code per regression
  failures.  Full regression still does not pass but does complete (yeah!)
