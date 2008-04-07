@@ -1,4 +1,4 @@
-5 c 1 main.inst0 0
+5 d 1 main.inst0 0
 8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t depth2 -i main.inst0.inst1 -vcd instance1.vcd -o instance1.2.cdd -v instance1.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 depth2 "inst1" instance1.v 39 48 1

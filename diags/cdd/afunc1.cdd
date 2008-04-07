@@ -1,4 +1,4 @@
-5 c 1 * 0
+5 d 1 * 0
 8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd afunc1.vcd -o afunc1.cdd -v afunc1.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" afunc1.v 8 36 1

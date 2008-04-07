@@ -1,5 +1,5 @@
-5 c 1 * 0
-8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd gate1.vcd -o gate1.cdd -v gate1.v -D DUMP
+5 d 1 * 0
+8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd gate1.vcd -o gate1.cdd -v gate1.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" gate1.v 1 103 1
 1 a_o 3 30008 1 0 0 0 1 25 2

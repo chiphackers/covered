@@ -1,4 +1,4 @@
-5 c 1 * 0
+5 d 1 * 0
 8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd static_func1.vcd -o static_func1.cdd -v static_func1.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" static_func1.v 1 24 1

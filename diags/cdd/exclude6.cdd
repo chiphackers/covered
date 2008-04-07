@@ -1,4 +1,4 @@
-5 c 1 * 0
+5 d 1 * 0
 8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd exclude6.vcd -o exclude6.cdd -v exclude6.v -e main.foo_func1 -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" exclude6.v 8 47 1

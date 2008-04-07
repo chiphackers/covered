@@ -1,4 +1,4 @@
-5 c 1 * 0
+5 d 1 * 0
 8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd fsm5.1.vcd -o fsm5.1.cdd -y lib -v fsm5.1.v -F main=state[2:1],next_state -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" fsm5.1.v 1 60 1

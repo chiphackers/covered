@@ -1,5 +1,5 @@
-5 c 1 * 0
-8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd timescale2.7.vcd -o timescale2.7.cdd -v timescale2.7.v -y lib -D DUMP
+5 d 1 * 0
+8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd timescale2.7.vcd -o timescale2.7.cdd -v timescale2.7.v -y lib -D DUMP
 3 0 $root "$root" NA 0 0 1000000000000000
 3 0 main "main" timescale2.7.v 11 24 1000000000000000
 3 0 ts_module "main.tsm" lib/ts_module.v 3 15 1000000000000000

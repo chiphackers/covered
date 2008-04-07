@@ -1,4 +1,4 @@
-5 c 1 main 2 fsm2a.cdd main fsm2b.cdd main
+5 d 1 main 2 fsm2a.cdd main fsm2b.cdd main
 8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t fsm -i main.fsm -vcd fsm2a.vcd -o fsm2a.cdd -y lib -v fsm2a.v -F fsm=state,next_state -D DUMP -t fsm -i main.fsm -vcd fsm2b.vcd -o fsm2b.cdd -y lib -v fsm2b.v -F fsm=state,next_state -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 fsm "fsm" lib/fsm.v 1 37 1

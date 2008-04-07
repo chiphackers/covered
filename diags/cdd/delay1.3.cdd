@@ -1,4 +1,4 @@
-5 c 1 * 0
+5 d 1 * 0
 8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd delay1.vcd -o delay1.3.cdd -T max -v delay1.3.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" delay1.3.v 1 28 1

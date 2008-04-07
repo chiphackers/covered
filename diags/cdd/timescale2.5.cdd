@@ -1,4 +1,4 @@
-5 c 1 * 0
+5 d 1 * 0
 8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd timescale2.5.vcd -o timescale2.5.cdd -v timescale2.5.v -y lib -D DUMP
 3 0 $root "$root" NA 0 0 1000000000
 3 0 main "main" timescale2.5.v 11 24 1000000000

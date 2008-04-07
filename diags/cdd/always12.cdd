@@ -1,4 +1,4 @@
-5 c 1 * 0
+5 d 1 * 0
 8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd always12.vcd -o always12.cdd -v always12.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" always12.v 1 38 1

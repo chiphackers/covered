@@ -1,4 +1,4 @@
-5 c 1 main 0
+5 d 1 main 0
 8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t foo -i main.bar1 -vcd param3.vcd -o param3.5.cdd -v param3.5.v -P main.bar1.alpha=1'b1 -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 foo "bar1" param3.5.v 25 32 1

@@ -1,4 +1,4 @@
-5 c 0 * 0
+5 d 0 * 0
 8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t foo -vcd err3.vcd -o err3.cdd -v err3.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 foo "foo" err3.v 24 34 1

@@ -1,4 +1,4 @@
-5 c 1 main 0
+5 d 1 main 0
 8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t foobar -i main.foo -vcd instance4.vcd -o instance4.1.cdd -v instance4.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 foobar "foo" instance4.v 26 35 1
