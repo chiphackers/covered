@@ -6537,55 +6537,49 @@ event_expression_list
 event_expression
   : K_posedge expression
     {
-      expression* tmp1 = NULL;
-      expression* tmp2 = NULL;
       if( (ignore_mode == 0) && ($2 != NULL) ) {
+        expression* tmp = NULL;
         Try {
           /* Create 1-bit expression to hold last value of right expression */
-          tmp1 = db_create_expression( NULL, NULL, EXP_OP_LAST, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-          tmp2 = db_create_expression( $2, tmp1, EXP_OP_PEDGE, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
+          tmp = db_create_expression( NULL, NULL, EXP_OP_LAST, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+          $$  = db_create_expression( $2, tmp, EXP_OP_PEDGE, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
         } Catch_anonymous {
-          expression_dealloc( tmp1, FALSE );
+          expression_dealloc( tmp, FALSE );
           expression_dealloc( $2, FALSE );
           error_count++;
         }
-        $$ = tmp2;
       } else {
         $$ = NULL;
       }
     }
   | K_negedge expression
     {
-      expression* tmp1 = NULL;
-      expression* tmp2 = NULL;
       if( (ignore_mode == 0) && ($2 != NULL) ) {
+        expression* tmp = NULL;
         Try {
-          tmp1 = db_create_expression( NULL, NULL, EXP_OP_LAST, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-          tmp2 = db_create_expression( $2, tmp1, EXP_OP_NEDGE, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
+          tmp = db_create_expression( NULL, NULL, EXP_OP_LAST, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+          $$  = db_create_expression( $2, tmp, EXP_OP_NEDGE, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
         } Catch_anonymous {
-          expression_dealloc( tmp1, FALSE );
+          expression_dealloc( tmp, FALSE );
           expression_dealloc( $2, FALSE );
           error_count++;
         }
-        $$ = tmp2;
       } else {
         $$ = NULL;
       }
     }
   | expression
     {
-      expression* tmp1 = NULL;
-      expression* tmp2 = NULL;
       if( (ignore_mode == 0) && ($1 != NULL ) ) {
+        expression* tmp = NULL;
         Try {
-          tmp1 = db_create_expression( NULL, NULL, EXP_OP_LAST, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-          tmp2 = db_create_expression( $1, tmp1, EXP_OP_AEDGE, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+          tmp = db_create_expression( NULL, NULL, EXP_OP_LAST, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+          $$  = db_create_expression( $1, tmp, EXP_OP_AEDGE, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
         } Catch_anonymous {
-          expression_dealloc( tmp1, FALSE );
+          expression_dealloc( tmp, FALSE );
           expression_dealloc( $1, FALSE );
           error_count++;
         }
-        $$ = tmp2;
       } else {
         $$ = NULL;
       }
