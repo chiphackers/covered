@@ -6555,6 +6555,7 @@ event_expression
         } Catch_anonymous {
           expression_dealloc( $2, FALSE );
           error_count++;
+          $$ = NULL;
         }
       } else {
         $$ = NULL;
@@ -6571,7 +6572,7 @@ event_expression
             Throw 0;
           }
           Try {
-            $$  = db_create_expression( $2, tmp, EXP_OP_NEDGE, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
+            $$ = db_create_expression( $2, tmp, EXP_OP_NEDGE, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
           } Catch_anonymous {
             expression_dealloc( tmp, FALSE );
             Throw 0;
@@ -6579,6 +6580,7 @@ event_expression
         } Catch_anonymous {
           expression_dealloc( $2, FALSE );
           error_count++;
+          $$ = NULL;
         }
       } else {
         $$ = NULL;
@@ -6595,7 +6597,7 @@ event_expression
             Throw 0;
           }
           Try {
-            $$  = db_create_expression( $1, tmp, EXP_OP_AEDGE, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+            $$ = db_create_expression( $1, tmp, EXP_OP_AEDGE, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
           } Catch_anonymous {
             expression_dealloc( tmp, FALSE );
             Throw 0;
@@ -6603,6 +6605,7 @@ event_expression
         } Catch_anonymous {
           expression_dealloc( $1, FALSE );
           error_count++;
+          $$ = NULL;
         }
       } else {
         $$ = NULL;

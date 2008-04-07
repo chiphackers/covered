@@ -5278,6 +5278,8 @@ void expression_dealloc(
           exp_link_remove( expr, &(expr->sig->exp_head), &(expr->sig->exp_tail), FALSE );
         }
 
+        bind_remove( expr->id, FALSE );
+
       /* Otherwise, we assume (for now) that the expression is a signal */
       } else {
 
@@ -5358,6 +5360,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.319  2008/04/05 19:19:50  phase1geo
+ Fixing increment issue and updating regressions.
+
  Revision 1.318  2008/04/04 20:06:39  phase1geo
  More fixes per regression runs.  Checkpointing.
 
