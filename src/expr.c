@@ -1446,7 +1446,7 @@ void expression_db_read(
       }
 
       /* Create temporary vectors if necessary */
-      if( EXPR_TMP_VECS( op ) > 0 ) {
+      if( (EXPR_TMP_VECS( op ) > 0) && (expr->elem.tvecs == NULL) ) {
         unsigned i;
         expr->elem.tvecs = (vecblk*)malloc_safe( sizeof( vecblk ) );
         for( i=0; i<EXPR_TMP_VECS( op ); i++ ) {
@@ -5396,6 +5396,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.322  2008/04/08 05:26:33  phase1geo
+ Second checkin of performance optimizations (regressions do not pass at this
+ point).
+
  Revision 1.321  2008/04/07 23:14:00  phase1geo
  Beginnings of adding support for temporary vector storage for expressions.  Still
  work to go here before it is working.  Checkpointing.
