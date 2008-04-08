@@ -55,6 +55,9 @@ void set_output_suppression( bool value );
 /*! \brief Sets global debug flag to specified value */
 void set_debug( bool value );
 
+/*! \brief Sets the testmode global variable for outputting purposes */
+void set_testmode();
+
 /*! \brief Displays error message to standard output. */
 void print_output( const char* msg, int type, const char* file, int line );
 
@@ -169,6 +172,11 @@ void set_timestep( sim_time* st, char* value );
 
 /*
  $Log$
+ Revision 1.40  2008/03/17 22:02:32  phase1geo
+ Adding new check_mem script and adding output to perform memory checking during
+ regression runs.  Completed work on free_safe and added realloc_safe function
+ calls.  Regressions are pretty broke at the moment.  Checkpointing.
+
  Revision 1.39  2008/03/17 05:26:17  phase1geo
  Checkpointing.  Things don't compile at the moment.
 

@@ -50,6 +50,7 @@ struct exception_context the_exception_context[1];
 extern char  user_msg[USER_MSG_LENGTH];
 extern char* ppfilename;
 extern int64 curr_malloc_size;
+extern bool  test_mode;
 
 
 /*!
@@ -118,6 +119,9 @@ int main( int argc, const char** argv ) {
   /* Initialize error suppression value */
   set_output_suppression( FALSE );
   set_debug( FALSE );
+#ifdef TESTMODE
+  set_testmode();
+#endif
   obfuscate_set_mode( FALSE );
   profiler_set_mode( FALSE );
 
@@ -231,8 +235,10 @@ int main( int argc, const char** argv ) {
 
 #ifdef TESTMODE
   /* Make sure that all of our allocate memory has been deallocated */
-  printf( "curr_malloc_size: %lld\n", curr_malloc_size );
-  assert( curr_malloc_size == 0 );
+  if( test_mode ) {
+    printf( "curr_malloc_size: %lld\n", curr_malloc_size );
+    assert( curr_malloc_size == 0 );
+  }
 #endif
 
   return( retval );
@@ -241,6 +247,10 @@ int main( int argc, const char** argv ) {
 
 /*
  $Log$
+ Revision 1.33  2008/04/01 23:08:21  phase1geo
+ More updates for error diagnostic cleanup.  Full regression still not
+ passing (but is getting close).
+
  Revision 1.32  2008/03/17 22:02:31  phase1geo
  Adding new check_mem script and adding output to perform memory checking during
  regression runs.  Completed work on free_safe and added realloc_safe function

@@ -11,6 +11,7 @@ VG_EXEC       = valgrind
 VG_FLAGS      = --tool=memcheck --leak-check=yes --show-reachable=yes --num-callers=15 --log-file=$(VG_LOG_PREFIX) --suppressions=vg_supp -v
 
 COVERED_SRC   = ../../src
+COVERED_LIB   = ../../lib
 COVERED       = $(COVERED_SRC)/covered
 COVERED_GFLAG = -D
 COVERED_SCORE_GFLAG = -P
@@ -92,6 +93,8 @@ endif
 
 CDD_DIR       = ../cdd
 RPT_DIR       = ../rpt
+
+export COVERED_TESTMODE=1
 
 LOGFILE = regress.log
 
@@ -371,6 +374,7 @@ $(NOSIMERRLIST):
 
 covered:
 	cd $(COVERED_SRC); $(MAKE)
+	cd $(COVERED_LIB); $(MAKE)
 
 eot:
 	@./check_test dummy 1 $(FINISH_CODE)

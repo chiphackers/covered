@@ -80,6 +80,11 @@ static bool output_suppressed;
 bool debug_mode;
 
 /*!
+ If set to TRUE, outputs memory information to standard output for processing.
+*/
+bool test_mode = FALSE;
+
+/*!
  Contains the total number of bytes malloc'ed during the simulation run.  This
  information is output to the user after simulation as a performance indicator.
 */
@@ -122,6 +127,16 @@ void set_output_suppression( bool value ) { PROFILE(SET_OUTPUT_SUPPRESSION);
 void set_debug( bool value ) {
 
   debug_mode = value;
+
+}
+
+/*!
+ Looks at the user's environment and searches for COVERED_TESTMODE, if the environment variable
+ is set, sets the global test_mode variable to TRUE; otherwise, sets it to FALSE.
+*/
+void set_testmode() {
+
+  test_mode = (getenv( "COVERED_TESTMODE" ) != NULL);
 
 }
 
@@ -1017,7 +1032,7 @@ void* malloc_safe1( size_t size, /*@unused@*/ const char* file, /*@unused@*/ int
 
   obj = malloc( size );
 #ifdef TESTMODE
-  if( !debug_mode ) {
+  if( test_mode ) {
     printf( "MALLOC (%p) %d bytes (file: %s, line: %d) - %lld\n", obj, size, file, line, curr_malloc_size );
   }
 #endif
@@ -1054,7 +1069,7 @@ void* malloc_safe_nolimit1( size_t size, /*@unused@*/ const char* file, /*@unuse
 
   obj = malloc( size );
 #ifdef TESTMODE
-  if( !debug_mode ) {
+  if( test_mode ) {
     printf( "MALLOC (%p) %d bytes (file: %s, line: %d) - %lld\n", obj, size, file, line, curr_malloc_size );
   }
 #endif
@@ -1100,7 +1115,7 @@ void free_safe2( void* ptr, size_t size, const char* file, int line, unsigned in
   if( ptr != NULL ) {
     curr_malloc_size -= size;
 #ifdef TESTMODE
-    if( !debug_mode ) {
+    if( test_mode ) {
       printf( "FREE (%p) %d bytes (file: %s, line: %d) - %lld\n", ptr, size, file, line, curr_malloc_size );
     }
 #endif
@@ -1138,7 +1153,7 @@ char* strdup_safe1(
   }
   new_str = strdup( str );
 #ifdef TESTMODE
-  if( !debug_mode ) {
+  if( test_mode ) {
     printf( "STRDUP (%p) %d bytes (file: %s, line: %d) - %lld\n", new_str, str_len, file, line, curr_malloc_size );
   }
 #endif
@@ -1190,7 +1205,7 @@ void* realloc_safe1(
     assert( newptr != NULL );
   }
 #ifdef TESTMODE
-  if( !debug_mode ) {
+  if( test_mode ) {
     printf( "REALLOC (%p -> %p) %d (%d) bytes (file: %s, line: %d) - %lld\n", ptr, newptr, size, old_size, file, line, curr_malloc_size );
   }
 #endif
@@ -1328,6 +1343,9 @@ void calc_miss_percent(
 
 /*
  $Log$
+ Revision 1.88  2008/04/06 12:41:04  phase1geo
+ Fixing memory calculation issue with scope_gen_printable.  Updating regressions.
+
  Revision 1.87  2008/04/06 05:46:54  phase1geo
  Another regression memory deallocation fix.  Updates to regression files.
 
