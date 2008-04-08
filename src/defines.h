@@ -648,98 +648,110 @@
  Enumeration of the various expression operations that Covered supports.
 */
 typedef enum exp_op_type_e {
-  EXP_OP_STATIC = 0,      /*!<  0:0x00.  Specifies constant value. */
-  EXP_OP_SIG,             /*!<  1:0x01.  Specifies signal value. */
-  EXP_OP_XOR,             /*!<  2:0x02.  Specifies '^' operator. */
-  EXP_OP_MULTIPLY,        /*!<  3:0x03.  Specifies '*' operator. */
-  EXP_OP_DIVIDE,          /*!<  4:0x04.  Specifies '/' operator. */
-  EXP_OP_MOD,             /*!<  5:0x05.  Specifies '%' operator. */
-  EXP_OP_ADD,             /*!<  6:0x06.  Specifies '+' operator. */
-  EXP_OP_SUBTRACT,        /*!<  7:0x07.  Specifies '-' operator. */
-  EXP_OP_AND,             /*!<  8:0x08.  Specifies '&' operator. */
-  EXP_OP_OR,              /*!<  9:0x09.  Specifies '|' operator. */
-  EXP_OP_NAND,            /*!< 10:0x0a.  Specifies '~&' operator. */
-  EXP_OP_NOR,             /*!< 11:0x0b.  Specifies '~|' operator. */
-  EXP_OP_NXOR,            /*!< 12:0x0c.  Specifies '~^' operator. */
-  EXP_OP_LT,              /*!< 13:0x0d.  Specifies '<' operator. */
-  EXP_OP_GT,              /*!< 14:0x0e.  Specifies '>' operator. */
-  EXP_OP_LSHIFT,          /*!< 15:0x0f.  Specifies '<<' operator. */
-  EXP_OP_RSHIFT,          /*!< 16:0x10.  Specifies '>>' operator. */
-  EXP_OP_EQ,              /*!< 17:0x11.  Specifies '==' operator. */
-  EXP_OP_CEQ,             /*!< 18:0x12.  Specifies '===' operator. */
-  EXP_OP_LE,              /*!< 19:0x13.  Specifies '<=' operator. */
-  EXP_OP_GE,              /*!< 20:0x14.  Specifies '>=' operator. */
-  EXP_OP_NE,              /*!< 21:0x15.  Specifies '!=' operator. */
-  EXP_OP_CNE,             /*!< 22:0x16.  Specifies '!==' operator. */
-  EXP_OP_LOR,             /*!< 23:0x17.  Specifies '||' operator. */
-  EXP_OP_LAND,            /*!< 24:0x18.  Specifies '&&' operator. */
-  EXP_OP_COND,            /*!< 25:0x19.  Specifies '?:' conditional operator. */
-  EXP_OP_COND_SEL,        /*!< 26:0x1a.  Specifies '?:' conditional select. */
-  EXP_OP_UINV,            /*!< 27:0x1b.  Specifies '~' unary operator. */
-  EXP_OP_UAND,            /*!< 28:0x1c.  Specifies '&' unary operator. */
-  EXP_OP_UNOT,            /*!< 29:0x1d.  Specifies '!' unary operator. */
-  EXP_OP_UOR,             /*!< 30:0x1e.  Specifies '|' unary operator. */
-  EXP_OP_UXOR,            /*!< 31:0x1f.  Specifies '^' unary operator. */
-  EXP_OP_UNAND,           /*!< 32:0x20.  Specifies '~&' unary operator. */
-  EXP_OP_UNOR,            /*!< 33:0x21.  Specifies '~|' unary operator. */
-  EXP_OP_UNXOR,           /*!< 34:0x22.  Specifies '~^' unary operator. */
-  EXP_OP_SBIT_SEL,        /*!< 35:0x23.  Specifies single-bit signal select (i.e., [x]). */
-  EXP_OP_MBIT_SEL,        /*!< 36:0x24.  Specifies multi-bit signal select (i.e., [x:y]). */
-  EXP_OP_EXPAND,          /*!< 37:0x25.  Specifies bit expansion operator (i.e., {x{y}}). */
-  EXP_OP_CONCAT,          /*!< 38:0x26.  Specifies signal concatenation operator (i.e., {x,y}). */
-  EXP_OP_PEDGE,           /*!< 39:0x27.  Specifies posedge operator (i.e., \@posedge x). */
-  EXP_OP_NEDGE,           /*!< 40:0x28.  Specifies negedge operator (i.e., \@negedge x). */
-  EXP_OP_AEDGE,           /*!< 41:0x29.  Specifies anyedge operator (i.e., \@x). */
-  EXP_OP_LAST,            /*!< 42:0x2a.  Specifies 1-bit holder for parent. */
-  EXP_OP_EOR,             /*!< 43:0x2b.  Specifies 'or' event operator. */
-  EXP_OP_DELAY,           /*!< 44:0x2c.  Specifies delay operator (i.e., #(x)). */
-  EXP_OP_CASE,            /*!< 45:0x2d.  Specifies case equality expression. */
-  EXP_OP_CASEX,           /*!< 46:0x2e.  Specifies casex equality expression. */
-  EXP_OP_CASEZ,           /*!< 47:0x2f.  Specifies casez equality expression. */
-  EXP_OP_DEFAULT,         /*!< 48:0x30.  Specifies case/casex/casez default expression. */
-  EXP_OP_LIST,            /*!< 49:0x31.  Specifies comma separated expression list. */
-  EXP_OP_PARAM,           /*!< 50:0x32.  Specifies full parameter. */
-  EXP_OP_PARAM_SBIT,      /*!< 51:0x33.  Specifies single-bit select parameter. */
-  EXP_OP_PARAM_MBIT,      /*!< 52:0x34.  Specifies multi-bit select parameter. */
-  EXP_OP_ASSIGN,          /*!< 53:0x35.  Specifies an assign assignment operator. */
-  EXP_OP_DASSIGN,         /*!< 54:0x36.  Specifies a wire declaration assignment operator. */
-  EXP_OP_BASSIGN,         /*!< 55:0x37.  Specifies a blocking assignment operator. */
-  EXP_OP_NASSIGN,         /*!< 56:0x38.  Specifies a non-blocking assignment operator. */
-  EXP_OP_IF,              /*!< 57:0x39.  Specifies an if statement operator. */
-  EXP_OP_FUNC_CALL,       /*!< 58:0x3a.  Specifies a function call. */
-  EXP_OP_TASK_CALL,       /*!< 59:0x3b.  Specifies a task call (note: this operator MUST be the root of the expression tree) */
-  EXP_OP_TRIGGER,         /*!< 60:0x3c.  Specifies an event trigger (->). */
-  EXP_OP_NB_CALL,         /*!< 61:0x3d.  Specifies a "call" to a named block */
-  EXP_OP_FORK,            /*!< 62:0x3e.  Specifies a fork command */
-  EXP_OP_JOIN,            /*!< 63:0x3f.  Specifies a join command */
-  EXP_OP_DISABLE,         /*!< 64:0x40.  Specifies a disable command */
-  EXP_OP_REPEAT,          /*!< 65:0x41.  Specifies a repeat loop test expression */
-  EXP_OP_WHILE,           /*!< 66:0x42.  Specifies a while loop test expression */
-  EXP_OP_ALSHIFT,         /*!< 67:0x43.  Specifies arithmetic left shift (<<<) */
-  EXP_OP_ARSHIFT,         /*!< 68:0x44.  Specifies arithmetic right shift (>>>) */
-  EXP_OP_SLIST,           /*!< 69:0x45.  Specifies sensitivity list (*) */
-  EXP_OP_EXPONENT,        /*!< 70:0x46.  Specifies the exponential operator "**" */
-  EXP_OP_PASSIGN,         /*!< 71:0x47.  Specifies a port assignment */
-  EXP_OP_RASSIGN,         /*!< 72:0x48.  Specifies register assignment (reg a = 1'b0) */
-  EXP_OP_MBIT_POS,        /*!< 73:0x49.  Specifies positive variable multi-bit select (a[b+:3]) */
-  EXP_OP_MBIT_NEG,        /*!< 74:0x4a.  Specifies negative variable multi-bit select (a[b-:3]) */
-  EXP_OP_PARAM_MBIT_POS,  /*!< 75:0x4b.  Specifies positive variable multi-bit parameter select */
-  EXP_OP_PARAM_MBIT_NEG,  /*!< 76:0x4c.  Specifies negative variable multi-bit parameter select */
-  EXP_OP_NEGATE,          /*!< 77:0x4d.  Specifies the unary negate operator (-) */
-  EXP_OP_NOOP,            /*!< 78:0x4e.  Specifies no operation is to be performed (placeholder) */
-  EXP_OP_ALWAYS_COMB,     /*!< 79:0x4f.  Specifies an always_comb statement (implicit event expression - similar to SLIST) */
-  EXP_OP_ALWAYS_LATCH,    /*!< 80:0x50.  Specifies an always_latch statement (implicit event expression - similar to SLIST) */
-  EXP_OP_IINC,            /*!< 81:0x51.  Specifies the immediate increment SystemVerilog operator (++a) */
-  EXP_OP_PINC,            /*!< 82:0x52.  Specifies the postponed increment SystemVerilog operator (a++) */
-  EXP_OP_IDEC,            /*!< 83:0x53.  Specifies the immediate decrement SystemVerilog operator (--a) */
-  EXP_OP_PDEC,            /*!< 84:0x54.  Specifies the postponed decrement SystemVerilog operator (a--) */
-  EXP_OP_DLY_ASSIGN,      /*!< 85:0x55.  Specifies a delayed assignment (i.e., a = #5 b; or a = @(c) b;) */
-  EXP_OP_DLY_OP,          /*!< 86:0x56.  Child expression of DLY_ASSIGN, points to the delay expr and the op expr */
-  EXP_OP_RPT_DLY,         /*!< 87:0x57.  Child expression of DLY_OP, points to the delay expr and the repeat expr */
-  EXP_OP_DIM,             /*!< 88:0x58.  Specifies a selection dimension (right expression points to a selection expr) */
-  EXP_OP_WAIT,            /*!< 89:0x59.  Specifies a wait statement */
-  EXP_OP_SFINISH,         /*!< 90:0x5a.  Specifies a $finish call */
-  EXP_OP_SSTOP,           /*!< 91:0x5b.  Specifies a $stop call */
+  EXP_OP_STATIC = 0,      /*!<   0:0x00.  Specifies constant value. */
+  EXP_OP_SIG,             /*!<   1:0x01.  Specifies signal value. */
+  EXP_OP_XOR,             /*!<   2:0x02.  Specifies '^' operator. */
+  EXP_OP_MULTIPLY,        /*!<   3:0x03.  Specifies '*' operator. */
+  EXP_OP_DIVIDE,          /*!<   4:0x04.  Specifies '/' operator. */
+  EXP_OP_MOD,             /*!<   5:0x05.  Specifies '%' operator. */
+  EXP_OP_ADD,             /*!<   6:0x06.  Specifies '+' operator. */
+  EXP_OP_SUBTRACT,        /*!<   7:0x07.  Specifies '-' operator. */
+  EXP_OP_AND,             /*!<   8:0x08.  Specifies '&' operator. */
+  EXP_OP_OR,              /*!<   9:0x09.  Specifies '|' operator. */
+  EXP_OP_NAND,            /*!<  10:0x0a.  Specifies '~&' operator. */
+  EXP_OP_NOR,             /*!<  11:0x0b.  Specifies '~|' operator. */
+  EXP_OP_NXOR,            /*!<  12:0x0c.  Specifies '~^' operator. */
+  EXP_OP_LT,              /*!<  13:0x0d.  Specifies '<' operator. */
+  EXP_OP_GT,              /*!<  14:0x0e.  Specifies '>' operator. */
+  EXP_OP_LSHIFT,          /*!<  15:0x0f.  Specifies '<<' operator. */
+  EXP_OP_RSHIFT,          /*!<  16:0x10.  Specifies '>>' operator. */
+  EXP_OP_EQ,              /*!<  17:0x11.  Specifies '==' operator. */
+  EXP_OP_CEQ,             /*!<  18:0x12.  Specifies '===' operator. */
+  EXP_OP_LE,              /*!<  19:0x13.  Specifies '<=' operator. */
+  EXP_OP_GE,              /*!<  20:0x14.  Specifies '>=' operator. */
+  EXP_OP_NE,              /*!<  21:0x15.  Specifies '!=' operator. */
+  EXP_OP_CNE,             /*!<  22:0x16.  Specifies '!==' operator. */
+  EXP_OP_LOR,             /*!<  23:0x17.  Specifies '||' operator. */
+  EXP_OP_LAND,            /*!<  24:0x18.  Specifies '&&' operator. */
+  EXP_OP_COND,            /*!<  25:0x19.  Specifies '?:' conditional operator. */
+  EXP_OP_COND_SEL,        /*!<  26:0x1a.  Specifies '?:' conditional select. */
+  EXP_OP_UINV,            /*!<  27:0x1b.  Specifies '~' unary operator. */
+  EXP_OP_UAND,            /*!<  28:0x1c.  Specifies '&' unary operator. */
+  EXP_OP_UNOT,            /*!<  29:0x1d.  Specifies '!' unary operator. */
+  EXP_OP_UOR,             /*!<  30:0x1e.  Specifies '|' unary operator. */
+  EXP_OP_UXOR,            /*!<  31:0x1f.  Specifies '^' unary operator. */
+  EXP_OP_UNAND,           /*!<  32:0x20.  Specifies '~&' unary operator. */
+  EXP_OP_UNOR,            /*!<  33:0x21.  Specifies '~|' unary operator. */
+  EXP_OP_UNXOR,           /*!<  34:0x22.  Specifies '~^' unary operator. */
+  EXP_OP_SBIT_SEL,        /*!<  35:0x23.  Specifies single-bit signal select (i.e., [x]). */
+  EXP_OP_MBIT_SEL,        /*!<  36:0x24.  Specifies multi-bit signal select (i.e., [x:y]). */
+  EXP_OP_EXPAND,          /*!<  37:0x25.  Specifies bit expansion operator (i.e., {x{y}}). */
+  EXP_OP_CONCAT,          /*!<  38:0x26.  Specifies signal concatenation operator (i.e., {x,y}). */
+  EXP_OP_PEDGE,           /*!<  39:0x27.  Specifies posedge operator (i.e., \@posedge x). */
+  EXP_OP_NEDGE,           /*!<  40:0x28.  Specifies negedge operator (i.e., \@negedge x). */
+  EXP_OP_AEDGE,           /*!<  41:0x29.  Specifies anyedge operator (i.e., \@x). */
+  EXP_OP_LAST,            /*!<  42:0x2a.  Specifies 1-bit holder for parent. */
+  EXP_OP_EOR,             /*!<  43:0x2b.  Specifies 'or' event operator. */
+  EXP_OP_DELAY,           /*!<  44:0x2c.  Specifies delay operator (i.e., #(x)). */
+  EXP_OP_CASE,            /*!<  45:0x2d.  Specifies case equality expression. */
+  EXP_OP_CASEX,           /*!<  46:0x2e.  Specifies casex equality expression. */
+  EXP_OP_CASEZ,           /*!<  47:0x2f.  Specifies casez equality expression. */
+  EXP_OP_DEFAULT,         /*!<  48:0x30.  Specifies case/casex/casez default expression. */
+  EXP_OP_LIST,            /*!<  49:0x31.  Specifies comma separated expression list. */
+  EXP_OP_PARAM,           /*!<  50:0x32.  Specifies full parameter. */
+  EXP_OP_PARAM_SBIT,      /*!<  51:0x33.  Specifies single-bit select parameter. */
+  EXP_OP_PARAM_MBIT,      /*!<  52:0x34.  Specifies multi-bit select parameter. */
+  EXP_OP_ASSIGN,          /*!<  53:0x35.  Specifies an assign assignment operator. */
+  EXP_OP_DASSIGN,         /*!<  54:0x36.  Specifies a wire declaration assignment operator. */
+  EXP_OP_BASSIGN,         /*!<  55:0x37.  Specifies a blocking assignment operator. */
+  EXP_OP_NASSIGN,         /*!<  56:0x38.  Specifies a non-blocking assignment operator. */
+  EXP_OP_IF,              /*!<  57:0x39.  Specifies an if statement operator. */
+  EXP_OP_FUNC_CALL,       /*!<  58:0x3a.  Specifies a function call. */
+  EXP_OP_TASK_CALL,       /*!<  59:0x3b.  Specifies a task call (note: this operator MUST be the root of the expression tree) */
+  EXP_OP_TRIGGER,         /*!<  60:0x3c.  Specifies an event trigger (->). */
+  EXP_OP_NB_CALL,         /*!<  61:0x3d.  Specifies a "call" to a named block */
+  EXP_OP_FORK,            /*!<  62:0x3e.  Specifies a fork command */
+  EXP_OP_JOIN,            /*!<  63:0x3f.  Specifies a join command */
+  EXP_OP_DISABLE,         /*!<  64:0x40.  Specifies a disable command */
+  EXP_OP_REPEAT,          /*!<  65:0x41.  Specifies a repeat loop test expression */
+  EXP_OP_WHILE,           /*!<  66:0x42.  Specifies a while loop test expression */
+  EXP_OP_ALSHIFT,         /*!<  67:0x43.  Specifies arithmetic left shift (<<<) */
+  EXP_OP_ARSHIFT,         /*!<  68:0x44.  Specifies arithmetic right shift (>>>) */
+  EXP_OP_SLIST,           /*!<  69:0x45.  Specifies sensitivity list (*) */
+  EXP_OP_EXPONENT,        /*!<  70:0x46.  Specifies the exponential operator "**" */
+  EXP_OP_PASSIGN,         /*!<  71:0x47.  Specifies a port assignment */
+  EXP_OP_RASSIGN,         /*!<  72:0x48.  Specifies register assignment (reg a = 1'b0) */
+  EXP_OP_MBIT_POS,        /*!<  73:0x49.  Specifies positive variable multi-bit select (a[b+:3]) */
+  EXP_OP_MBIT_NEG,        /*!<  74:0x4a.  Specifies negative variable multi-bit select (a[b-:3]) */
+  EXP_OP_PARAM_MBIT_POS,  /*!<  75:0x4b.  Specifies positive variable multi-bit parameter select */
+  EXP_OP_PARAM_MBIT_NEG,  /*!<  76:0x4c.  Specifies negative variable multi-bit parameter select */
+  EXP_OP_NEGATE,          /*!<  77:0x4d.  Specifies the unary negate operator (-) */
+  EXP_OP_NOOP,            /*!<  78:0x4e.  Specifies no operation is to be performed (placeholder) */
+  EXP_OP_ALWAYS_COMB,     /*!<  79:0x4f.  Specifies an always_comb statement (implicit event expression - similar to SLIST) */
+  EXP_OP_ALWAYS_LATCH,    /*!<  80:0x50.  Specifies an always_latch statement (implicit event expression - similar to SLIST) */
+  EXP_OP_IINC,            /*!<  81:0x51.  Specifies the immediate increment SystemVerilog operator (++a) */
+  EXP_OP_PINC,            /*!<  82:0x52.  Specifies the postponed increment SystemVerilog operator (a++) */
+  EXP_OP_IDEC,            /*!<  83:0x53.  Specifies the immediate decrement SystemVerilog operator (--a) */
+  EXP_OP_PDEC,            /*!<  84:0x54.  Specifies the postponed decrement SystemVerilog operator (a--) */
+  EXP_OP_DLY_ASSIGN,      /*!<  85:0x55.  Specifies a delayed assignment (i.e., a = #5 b; or a = @(c) b;) */
+  EXP_OP_DLY_OP,          /*!<  86:0x56.  Child expression of DLY_ASSIGN, points to the delay expr and the op expr */
+  EXP_OP_RPT_DLY,         /*!<  87:0x57.  Child expression of DLY_OP, points to the delay expr and the repeat expr */
+  EXP_OP_DIM,             /*!<  88:0x58.  Specifies a selection dimension (right expression points to a selection expr) */
+  EXP_OP_WAIT,            /*!<  89:0x59.  Specifies a wait statement */
+  EXP_OP_SFINISH,         /*!<  90:0x5a.  Specifies a $finish call */
+  EXP_OP_SSTOP,           /*!<  91:0x5b.  Specifies a $stop call */
+  EXP_OP_ADD_A,           /*!<  92:0x5c.  Specifies the '+=' operator */
+  EXP_OP_SUB_A,           /*!<  93:0x5d.  Specifies the '-=' operator */
+  EXP_OP_MLT_A,           /*!<  94:0x5e.  Specifies the '*=' operator */
+  EXP_OP_DIV_A,           /*!<  95:0x5f.  Specifies the '/=' operator */
+  EXP_OP_MOD_A,           /*!<  96:0x60.  Specifies the '%=' operator */
+  EXP_OP_AND_A,           /*!<  97:0x61.  Specifies the '&=' operator */
+  EXP_OP_OR_A,            /*!<  98:0x62.  Specifies the '|=' operator */
+  EXP_OP_XOR_A,           /*!<  99:0x63.  Specifies the '^=' operator */
+  EXP_OP_LS_A,            /*!< 100:0x64.  Specifies the '<<=' operator */
+  EXP_OP_RS_A,            /*!< 101:0x65.  Specifies the '>>=' operator */
+  EXP_OP_ALS_A,           /*!< 102:0x66.  Specifies the '<<<=' operator */
+  EXP_OP_ARS_A,           /*!< 103:0x67.  Specifies the '>>>=' operator */
   EXP_OP_NUM              /*!< The total number of defines for expression values */
 } exp_op_type;
 
@@ -849,9 +861,18 @@ typedef enum exp_op_type_e {
 /*!
  Specifies if the expression is an op-and-assign operation (i.e., +=, -=, &=, etc.)
 */
-#define EXPR_IS_OP_AND_ASSIGN(x)     ((exp_op_info[x->op].suppl.assignable == 1) && \
-                                      (x->left != NULL) && \
-                                      (x->left->op == EXP_OP_LAST))
+#define EXPR_IS_OP_AND_ASSIGN(x)     ((x->op == EXP_OP_ADD_A) || \
+                                      (x->op == EXP_OP_SUB_A) || \
+                                      (x->op == EXP_OP_MLT_A) || \
+                                      (x->op == EXP_OP_DIV_A) || \
+                                      (x->op == EXP_OP_MOD_A) || \
+                                      (x->op == EXP_OP_AND_A) || \
+                                      (x->op == EXP_OP_OR_A)  || \
+                                      (x->op == EXP_OP_XOR_A) || \
+                                      (x->op == EXP_OP_LS_A)  || \
+                                      (x->op == EXP_OP_RS_A)  || \
+                                      (x->op == EXP_OP_ALS_A) || \
+                                      (x->op == EXP_OP_ARS_A))
 
 /*!
  Specifies the number of temporary vectors required by the given expression operation.
@@ -2604,6 +2625,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.292  2008/04/08 05:26:33  phase1geo
+ Second checkin of performance optimizations (regressions do not pass at this
+ point).
+
  Revision 1.291  2008/04/07 23:14:00  phase1geo
  Beginnings of adding support for temporary vector storage for expressions.  Still
  work to go here before it is working.  Checkpointing.

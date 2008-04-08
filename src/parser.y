@@ -2507,11 +2507,9 @@ generate_passign
       if( ignore_mode == 0 ) {
         if( $3 != NULL ) {
           Try {
-            expl = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
             expr = db_create_expr_from_static( $3, @3.first_line, @3.first_column, (@3.last_column - 1) );
-            expr = db_create_expression( expr, expl, EXP_OP_ADD, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
             expl = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
-            expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            expr = db_create_expression( expr, expl, EXP_OP_ADD_A, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
             if( generate_varname == NULL ) {
               generate_varname = $1;
             } else {
@@ -2538,11 +2536,9 @@ generate_passign
       if( ignore_mode == 0 ) {
         if( $3 != NULL ) {
           Try {
-            expl = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
             expr = db_create_expr_from_static( $3, @3.first_line, @3.first_column, (@3.last_column - 1) );
-            expr = db_create_expression( expr, expl, EXP_OP_SUBTRACT, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
             expl = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
-            expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            expr = db_create_expression( expr, expl, EXP_OP_SUB_A, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
             if( generate_varname == NULL ) {
               generate_varname = $1;
             } else {
@@ -2569,11 +2565,9 @@ generate_passign
       if( ignore_mode == 0 ) {
         if( $3 != NULL ) {
           Try {
-            expl = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
             expr = db_create_expr_from_static( $3, @3.first_line, @3.first_column, (@3.last_column - 1) );
-            expr = db_create_expression( expr, expl, EXP_OP_MULTIPLY, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
             expl = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
-            expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            expr = db_create_expression( expr, expl, EXP_OP_MLT_A, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
             if( generate_varname == NULL ) {
               generate_varname = $1;
             } else {
@@ -2600,11 +2594,9 @@ generate_passign
       if( ignore_mode == 0 ) {
         if( $3 != NULL ) {
           Try {
-            expl = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
             expr = db_create_expr_from_static( $3, @3.first_line, @3.first_column, (@3.last_column - 1) );
-            expr = db_create_expression( expr, expl, EXP_OP_DIVIDE, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
             expl = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
-            expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            expr = db_create_expression( expr, expl, EXP_OP_DIV_A, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
             if( generate_varname == NULL ) {
               generate_varname = $1;
             } else {
@@ -2631,11 +2623,9 @@ generate_passign
       if( ignore_mode == 0 ) {
         if( $3 != NULL ) {
           Try {
-            expl = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
             expr = db_create_expr_from_static( $3, @3.first_line, @3.first_column, (@3.last_column - 1) );
-            expr = db_create_expression( expr, expl, EXP_OP_MOD, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
             expl = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
-            expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            expr = db_create_expression( expr, expl, EXP_OP_MOD_A, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
             if( generate_varname == NULL ) {
               generate_varname = $1;
             } else {
@@ -2662,11 +2652,9 @@ generate_passign
       if( ignore_mode == 0 ) {
         if( $3 != NULL ) {
           Try {
-            expl = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
             expr = db_create_expr_from_static( $3, @3.first_line, @3.first_column, (@3.last_column - 1) );
-            expr = db_create_expression( expr, expl, EXP_OP_AND, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
             expl = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
-            expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            expr = db_create_expression( expr, expl, EXP_OP_AND_A, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
             if( generate_varname == NULL ) {
               generate_varname = $1;
             } else {
@@ -2693,11 +2681,9 @@ generate_passign
       if( ignore_mode == 0 ) {
         if( $3 != NULL ) {
           Try {
-            expl = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
             expr = db_create_expr_from_static( $3, @3.first_line, @3.first_column, (@3.last_column - 1) );
-            expr = db_create_expression( expr, expl, EXP_OP_OR, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
             expl = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
-            expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            expr = db_create_expression( expr, expl, EXP_OP_OR_A, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
             if( generate_varname == NULL ) {
               generate_varname = $1;
             } else {
@@ -2724,11 +2710,9 @@ generate_passign
       if( ignore_mode == 0 ) {
         if( $3 != NULL ) {
           Try {
-            expl = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
             expr = db_create_expr_from_static( $3, @3.first_line, @3.first_column, (@3.last_column - 1) );
-            expr = db_create_expression( expr, expl, EXP_OP_XOR, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
             expl = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
-            expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            expr = db_create_expression( expr, expl, EXP_OP_XOR_A, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
             if( generate_varname == NULL ) {
               generate_varname = $1;
             } else {
@@ -2755,11 +2739,9 @@ generate_passign
       if( ignore_mode == 0 ) {
         if( $3 != NULL ) {
           Try {
-            expl = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
             expr = db_create_expr_from_static( $3, @3.first_line, @3.first_column, (@3.last_column - 1) );
-            expr = db_create_expression( expr, expl, EXP_OP_LSHIFT, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
             expl = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
-            expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            expr = db_create_expression( expr, expl, EXP_OP_LS_A, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
             if( generate_varname == NULL ) {
               generate_varname = $1;
             } else {
@@ -2786,11 +2768,9 @@ generate_passign
       if( ignore_mode == 0 ) {
         if( $3 != NULL ) {
           Try {
-            expl = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
             expr = db_create_expr_from_static( $3, @3.first_line, @3.first_column, (@3.last_column - 1) );
-            expr = db_create_expression( expr, expl, EXP_OP_RSHIFT, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
             expl = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
-            expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            expr = db_create_expression( expr, expl, EXP_OP_RS_A, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
             if( generate_varname == NULL ) {
               generate_varname = $1;
             } else {
@@ -2817,11 +2797,9 @@ generate_passign
       if( ignore_mode == 0 ) {
         if( $3 != NULL ) {
           Try {
-            expl = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
             expr = db_create_expr_from_static( $3, @3.first_line, @3.first_column, (@3.last_column - 1) );
-            expr = db_create_expression( expr, expl, EXP_OP_ALSHIFT, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
             expl = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
-            expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            expr = db_create_expression( expr, expl, EXP_OP_ALS_A, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
             if( generate_varname == NULL ) {
               generate_varname = $1;
             } else {
@@ -2848,11 +2826,9 @@ generate_passign
       if( ignore_mode == 0 ) {
         if( $3 != NULL ) {
           Try {
-            expl = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
             expr = db_create_expr_from_static( $3, @3.first_line, @3.first_column, (@3.last_column - 1) );
-            expr = db_create_expression( expr, expl, EXP_OP_ARSHIFT, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
             expl = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
-            expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            expr = db_create_expression( expr, expl, EXP_OP_ARS_A, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
             if( generate_varname == NULL ) {
               generate_varname = $1;
             } else {
@@ -4013,9 +3989,7 @@ passign
           $$ = NULL;
         } else {
           Try {
-            tmp = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
-            tmp = db_create_expression( $3, tmp, EXP_OP_ADD, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
-            tmp = db_create_expression( tmp, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            tmp = db_create_expression( $3, $1, EXP_OP_ADD_A, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
           } Catch_anonymous {
             error_count++;
           }
@@ -4040,9 +4014,7 @@ passign
           $$ = NULL;
         } else {
           Try {
-            tmp = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
-            tmp = db_create_expression( $3, tmp, EXP_OP_SUBTRACT, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
-            tmp = db_create_expression( tmp, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            tmp = db_create_expression( $3, $1, EXP_OP_SUB_A, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
           } Catch_anonymous {
             error_count++;
           }
@@ -4067,9 +4039,7 @@ passign
           $$ = NULL;
         } else {
           Try {
-            tmp = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
-            tmp = db_create_expression( $3, tmp, EXP_OP_MULTIPLY, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
-            tmp = db_create_expression( tmp, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            tmp = db_create_expression( $3, $1, EXP_OP_MLT_A, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
           } Catch_anonymous {
             error_count++;
           }
@@ -4094,9 +4064,7 @@ passign
           $$ = NULL;
         } else {
           Try {
-            tmp = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
-            tmp = db_create_expression( $3, tmp, EXP_OP_DIVIDE, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
-            tmp = db_create_expression( tmp, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            tmp = db_create_expression( $3, $1, EXP_OP_DIV_A, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
           } Catch_anonymous {
             error_count++;
           }
@@ -4121,9 +4089,7 @@ passign
           $$ = NULL;
         } else {
           Try {
-            tmp = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
-            tmp = db_create_expression( $3, tmp, EXP_OP_MOD, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
-            tmp = db_create_expression( tmp, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            tmp = db_create_expression( $3, $1, EXP_OP_MOD_A, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
           } Catch_anonymous {
             error_count++;
           }
@@ -4148,9 +4114,7 @@ passign
           $$ = NULL;
         } else {
           Try {
-            tmp = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
-            tmp = db_create_expression( $3, tmp, EXP_OP_AND, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
-            tmp = db_create_expression( tmp, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            tmp = db_create_expression( $3, $1, EXP_OP_AND_A, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
           } Catch_anonymous {
             error_count++;
           }
@@ -4175,9 +4139,7 @@ passign
           $$ = NULL;
         } else {
           Try {
-            tmp = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
-            tmp = db_create_expression( $3, tmp, EXP_OP_OR, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
-            tmp = db_create_expression( tmp, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            tmp = db_create_expression( $3, $1, EXP_OP_OR_A, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
           } Catch_anonymous {
             error_count++;
           }
@@ -4202,10 +4164,10 @@ passign
           $$ = NULL;
         } else {
           Try {
-            tmp = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
-            tmp = db_create_expression( $3, tmp, EXP_OP_XOR, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
-            tmp = db_create_expression( tmp, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            tmp = db_create_expression( $3, $1, EXP_OP_XOR_A, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
           } Catch_anonymous {
+            expression_dealloc( $1, FALSE );
+            expression_dealloc( $3, FALSE );
             error_count++;
           }
           stmt = db_create_statement( tmp );
@@ -4229,10 +4191,10 @@ passign
           $$ = NULL;
         } else {
           Try {
-            tmp = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
-            tmp = db_create_expression( $3, tmp, EXP_OP_LSHIFT, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
-            tmp = db_create_expression( tmp, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            tmp = db_create_expression( $3, $1, EXP_OP_LS_A, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
           } Catch_anonymous {
+            expression_dealloc( $1, FALSE );
+            expression_dealloc( $3, FALSE );
             error_count++;
           }
           stmt = db_create_statement( tmp );
@@ -4256,10 +4218,10 @@ passign
           $$ = NULL;
         } else {
           Try {
-            tmp = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
-            tmp = db_create_expression( $3, tmp, EXP_OP_RSHIFT, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
-            tmp = db_create_expression( tmp, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            tmp = db_create_expression( $3, $1, EXP_OP_RS_A, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
           } Catch_anonymous {
+            expression_dealloc( $1, FALSE );
+            expression_dealloc( $3, FALSE );
             error_count++;
           }
           stmt = db_create_statement( tmp );
@@ -4283,10 +4245,10 @@ passign
           $$ = NULL;
         } else {
           Try {
-            tmp = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
-            tmp = db_create_expression( $3, tmp, EXP_OP_ALSHIFT, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
-            tmp = db_create_expression( tmp, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            tmp = db_create_expression( $3, $1, EXP_OP_ALS_A, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
           } Catch_anonymous {
+            expression_dealloc( $1, FALSE );
+            expression_dealloc( $3, FALSE );
             error_count++;
           }
           stmt = db_create_statement( tmp );
@@ -4310,10 +4272,10 @@ passign
           $$ = NULL;
         } else {
           Try {
-            tmp = db_create_expression( NULL, NULL, EXP_OP_LAST, FALSE, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
-            tmp = db_create_expression( $3, tmp, EXP_OP_ARSHIFT, FALSE, @2.first_line, @2.first_column, (@3.last_column - 1), NULL );
-            tmp = db_create_expression( tmp, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            tmp = db_create_expression( $3, $1, EXP_OP_ARS_A, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
           } Catch_anonymous {
+            expression_dealloc( $1, FALSE );
+            expression_dealloc( $3, FALSE );
             error_count++;
           }
           stmt = db_create_statement( tmp );
@@ -4338,6 +4300,7 @@ passign
           Try {
             tmp = db_create_expression( NULL, $1, EXP_OP_PINC, FALSE, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
           } Catch_anonymous {
+            expression_dealloc( $1, FALSE );
             error_count++;
           }
           stmt = db_create_statement( tmp );
@@ -4361,6 +4324,7 @@ passign
           Try {
             tmp = db_create_expression( NULL, $1, EXP_OP_PDEC, FALSE, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
           } Catch_anonymous {
+            expression_dealloc( $1, FALSE );
             error_count++;
           }
           stmt = db_create_statement( tmp );
