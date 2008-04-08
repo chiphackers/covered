@@ -150,7 +150,7 @@ static_expr* static_expr_gen_unary(
         case EXP_OP_PASSIGN :
           tmpexp = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, line, first, last, FALSE );
           curr_expr_id++;
-          vector_init( tmpexp->value, (vec_data*)malloc_safe( sizeof( vec_data ) * 32 ), TRUE, 32, VTYPE_EXP );
+          vector_init( tmpexp->value, (vec_data*)malloc_safe( sizeof( vec_data ) * 32 ), 0x0, TRUE, 32, VTYPE_EXP );
           vector_from_int( tmpexp->value, stexp->num );
 
           stexp->exp = expression_create( tmpexp, NULL, op, FALSE, curr_expr_id, line, first, last, FALSE );
@@ -257,7 +257,7 @@ static_expr* static_expr_gen(
 
         right->exp = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, line, first, last, FALSE );
         curr_expr_id++;
-        vector_init( right->exp->value, (vec_data*)malloc_safe( sizeof( vec_data ) * 32 ), TRUE, 32, VTYPE_EXP );  
+        vector_init( right->exp->value, (vec_data*)malloc_safe( sizeof( vec_data ) * 32 ), 0x0, TRUE, 32, VTYPE_EXP );  
         vector_from_int( right->exp->value, right->num );
 
         tmpexp = expression_create( right->exp, left->exp, op, FALSE, curr_expr_id, line, first, last, FALSE );
@@ -272,7 +272,7 @@ static_expr* static_expr_gen(
 
         left->exp = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, line, first, last, FALSE );
         curr_expr_id++;
-        vector_init( left->exp->value, (vec_data*)malloc_safe( sizeof( vec_data ) * 32 ), TRUE, 32, VTYPE_EXP );
+        vector_init( left->exp->value, (vec_data*)malloc_safe( sizeof( vec_data ) * 32 ), 0x0, TRUE, 32, VTYPE_EXP );
         vector_from_int( left->exp->value, left->num );
 
         tmpexp = expression_create( right->exp, left->exp, op, FALSE, curr_expr_id, line, first, last, FALSE );
@@ -444,6 +444,9 @@ void static_expr_dealloc(
 
 /*
  $Log$
+ Revision 1.34  2008/04/06 21:31:14  phase1geo
+ Fixing more regression failures.  Last of regression updates.
+
  Revision 1.33  2008/03/17 05:26:17  phase1geo
  Checkpointing.  Things don't compile at the moment.
 

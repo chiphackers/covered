@@ -29,7 +29,14 @@
 
 
 /*! \brief Initializes specified vector. */
-void vector_init( /*@out@*/ vector* vec, vec_data* value, bool owns_value, int width, int type );
+void vector_init(
+  /*@out@*/ vector*   vec,
+            vec_data* value,
+            nibble    data,
+            bool      owns_value,
+            int       width,
+            int       type
+);
 
 /*! \brief Creates and initializes new vector */
 vector* vector_create( int width, int type, bool data );
@@ -210,6 +217,10 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.56  2008/04/08 05:26:34  phase1geo
+ Second checkin of performance optimizations (regressions do not pass at this
+ point).
+
  Revision 1.55  2008/03/31 21:40:24  phase1geo
  Fixing several more memory issues and optimizing a bit of code per regression
  failures.  Full regression still does not pass but does complete (yeah!)

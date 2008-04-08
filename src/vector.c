@@ -72,6 +72,7 @@ extern char user_msg[USER_MSG_LENGTH];
 /*!
  \param vec         Pointer to vector to initialize.
  \param value       Pointer to vec_data array for vector.
+ \param data        Initial value to set each bit to.
  \param owns_value  Set to TRUE if this vector is responsible for deallocating the given value array
  \param width       Bit width of specified vector.
  \param type        Type of vector to initialize this to.
@@ -83,6 +84,7 @@ extern char user_msg[USER_MSG_LENGTH];
 void vector_init(
   vector*   vec,
   vec_data* value,
+  nibble    data,
   bool      owns_value,
   int       width,
   int       type
@@ -101,7 +103,7 @@ void vector_init(
     assert( width > 0 );
 
     for( i=0; i<width; i++ ) {
-      vec->value[i].all = 0x0;
+      vec->value[i].all = data;
     }
 
   } else {
@@ -140,7 +142,7 @@ vector* vector_create(
     value = (vec_data*)malloc_safe( sizeof( vec_data ) * width );
   }
 
-  vector_init( new_vec, value, (value != NULL), width, type );
+  vector_init( new_vec, value, 0x0, (value != NULL), width, type );
 
   PROFILE_END;
 
@@ -2381,7 +2383,7 @@ bool vector_op_multiply(
   nibble   runknown = right->suppl.part.unknown;  /* Set to 1 if right vector is unknown */
 
   /* Initialize temporary vectors */
-  vector_init( &vec, vec_val, FALSE, 32, VTYPE_VAL );
+  vector_init( &vec, vec_val, 0x0, FALSE, 32, VTYPE_VAL );
 
   /* Perform 4-state multiplication */
   if( !lunknown && !runknown ) {
@@ -2567,7 +2569,7 @@ bool vector_unary_op(
 
   } else {
 
-    vector_init( &vec, &vec_val, FALSE, 1, VTYPE_VAL );
+    vector_init( &vec, &vec_val, 0x0, FALSE, 1, VTYPE_VAL );
 
     assert( src != NULL );
     assert( src->value != NULL );
@@ -2610,7 +2612,7 @@ bool vector_unary_not(
   vector   vec;      /* Temporary vector value */
   vec_data vec_val;  /* Temporary value */
 
-  vector_init( &vec, &vec_val, FALSE, 1, VTYPE_VAL );
+  vector_init( &vec, &vec_val, 0x0, FALSE, 1, VTYPE_VAL );
   vec_val.part.val.value = src->suppl.part.unknown ? 2 : src->suppl.part.not_zero;
   retval = vector_unary_inv( tgt, &vec );
 
@@ -2649,6 +2651,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.136  2008/04/08 05:26:34  phase1geo
+ Second checkin of performance optimizations (regressions do not pass at this
+ point).
+
  Revision 1.135  2008/04/05 06:19:42  phase1geo
  Fixes memory issues with increment operation and updates to regressions.
 

@@ -1917,7 +1917,6 @@ expression* db_create_sensitivity_list(
   str_link*   sig_tail = NULL;  /* Pointer to tail of signal name list containing RHS used signals */
   str_link*   strl;             /* Pointer to current signal name link */
   expression* exps;             /* Pointer to created expression for type SIG */
-  expression* expl;             /* Pointer to created expression for type LAST */
   expression* expa;             /* Pointer to created expression for type AEDGE */
   expression* expe;             /* Pointer to created expression for type EOR */
   expression* expc     = NULL;  /* Pointer to left child expression */
@@ -1935,8 +1934,7 @@ expression* db_create_sensitivity_list(
 
         /* Create AEDGE and EOR for subsequent signals */
         exps = db_create_expression( NULL, NULL, EXP_OP_SIG,   FALSE, 0, 0, 0, strl->str );
-        expl = db_create_expression( NULL, NULL, EXP_OP_LAST,  FALSE, 0, 0, 0, NULL );
-        expa = db_create_expression( exps, expl, EXP_OP_AEDGE, FALSE, 0, 0, 0, NULL );
+        expa = db_create_expression( exps, NULL, EXP_OP_AEDGE, FALSE, 0, 0, 0, NULL );
 
         /* If we have a child expression already, create the EOR expression to connect them */
         if( expc != NULL ) {
@@ -2862,6 +2860,10 @@ bool db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.303  2008/04/07 04:49:13  phase1geo
+ Fixing regression failure and removing exception throw output that was
+ hit.
+
  Revision 1.302  2008/04/06 05:24:17  phase1geo
  Fixing another regression memory problem.  Updated regression files
  accordingly.  Checkpointing.

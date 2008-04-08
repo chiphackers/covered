@@ -289,9 +289,9 @@ const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",         "",             ex
                                            {"MBIT_SEL",       "[:]",          expression_op_func__mbit,       {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
                                            {"EXPAND",         "{{}}",         expression_op_func__expand,     {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
                                            {"CONCAT",         "{}",           expression_op_func__concat,     {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
-                                           {"PEDGE",          "posedge",      expression_op_func__pedge,      {1, 0, NOT_COMB,   0, 1, 1, 0, 0} },
-                                           {"NEDGE",          "negedge",      expression_op_func__nedge,      {1, 0, NOT_COMB,   0, 1, 1, 0, 0} },
-                                           {"AEDGE",          "anyedge",      expression_op_func__aedge,      {1, 0, NOT_COMB,   0, 1, 1, 0, 0} },
+                                           {"PEDGE",          "posedge",      expression_op_func__pedge,      {1, 0, NOT_COMB,   0, 1, 1, 0, 1} },
+                                           {"NEDGE",          "negedge",      expression_op_func__nedge,      {1, 0, NOT_COMB,   0, 1, 1, 0, 1} },
+                                           {"AEDGE",          "anyedge",      expression_op_func__aedge,      {1, 0, NOT_COMB,   0, 1, 1, 0, 1} },
                                            {"LAST",           "",             expression_op_func__null,       {0, 0, NOT_COMB,   1, 0, 0, 0, 0} },
                                            {"EOR",            "or",           expression_op_func__eor,        {1, 0, NOT_COMB,   1, 0, 1, 0, 0} },
                                            {"DELAY",          "#",            expression_op_func__delay,      {1, 0, NOT_COMB,   0, 0, 1, 0, 0} },
@@ -348,6 +348,49 @@ static vec_data x_value = {0x2};
 
 
 /*!
+ \param exp    Pointer to expression to allocate temporary vectors for
+ \param width  Number of bits wide the given expression will contain
+
+ Allocates the appropriate amount of memory for the temporary vectors for the
+ given expression.  This function should only be called when memory is required
+ to be allocated and when ourselves and our children expressions within the same
+ tree have been sized.
+*/
+static void expression_create_tmp_vecs(
+  expression* exp,
+  int         width
+) { PROFILE(EXPRESSION_CREATE_TMP_VECS);
+
+  /*
+   Only create temporary vectors for expressions that require them and who have not already have had
+   temporary vectors created.
+  */
+  if( (EXPR_TMP_VECS( exp->op ) > 0) && (exp->elem.tvecs == NULL) ) {
+ 
+    nibble   data;
+    unsigned i;
+
+    /* Calculate the width that we need to allocate */
+    switch( exp->op ) {
+      case EXP_OP_PEDGE :
+      case EXP_OP_NEDGE :  data = 0x2;  width = 1;                         break;
+      case EXP_OP_AEDGE :  data = 0x2;  width = exp->right->value->width;  break;
+      default           :  data = 0x0;                                     break;
+    }
+
+    /* Allocate the memory */
+    exp->elem.tvecs = (vecblk*)malloc_safe( sizeof( vecblk ) );
+    for( i=0; i<EXPR_TMP_VECS( exp->op ); i++ ) {
+      vector_init( &(exp->elem.tvecs->vec[i]), (vec_data*)malloc_safe( sizeof( vec_data ) * width ), data, TRUE, width, VTYPE_VAL );
+    }
+
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
  \param exp    Pointer to expression to add value to.
  \param width  Width of value to create.
  \param data   Specifies if nibble array should be allocated for vector.
@@ -381,19 +424,13 @@ static void expression_create_value(
     value = (vec_data*)malloc_safe( sizeof( vec_data ) * width );
     assert( exp->value->value == NULL );
 
-    /* Create temporary vectors if necessary */
-    if( EXPR_TMP_VECS( exp->op ) > 0 ) {
-      unsigned i;
-      exp->elem.tvecs = (vecblk*)malloc_safe( sizeof( vecblk ) );
-      for( i=0; i<EXPR_TMP_VECS( exp->op ); i++ ) {
-        vector_init( &(exp->elem.tvecs->vec[i]), (vec_data*)malloc_safe( sizeof( vec_data ) * width ), TRUE, width, VTYPE_VAL );
-      }
-    }
+    /* Create the temporary vectors now, if needed */
+    expression_create_tmp_vecs( exp, width );
 
   }
 
   /* Create value */
-  vector_init( exp->value, value, (value != NULL), width, VTYPE_EXP );
+  vector_init( exp->value, value, 0x0, (value != NULL), width, VTYPE_EXP );
 
   PROFILE_END;
 
@@ -816,31 +853,9 @@ void expression_resize(
       case EXP_OP_WAIT    :
       case EXP_OP_SFINISH :
       case EXP_OP_SSTOP   :
-        if( (expr->value->width != 1) || (expr->value->value == NULL) ) {
-          assert( expr->value->value == NULL );
-          expression_create_value( expr, 1, alloc );
-        }
-        break;
-
-      /* Need to set LAST (left) expression and our width to 1 */
       case EXP_OP_NEDGE   :
       case EXP_OP_PEDGE   :
-        if( (expr->left->value->width != 1) || (expr->left->value->value == NULL) ) {
-          assert( expr->left->value->value == NULL );
-          expression_create_value( expr->left, 1, alloc );
-        }
-        if( (expr->value->width != 1) || (expr->value->value == NULL) ) {
-          assert( expr->value->value == NULL );
-          expression_create_value( expr, 1, alloc );
-        }
-        break;
-
-      /* Need to set LAST (left) expression to width of right and our width to 1 */
       case EXP_OP_AEDGE   :
-        if( (expr->left->value->width != expr->right->value->width) || (expr->left->value->value == NULL) ) {
-          assert( expr->left->value->value == NULL );
-          expression_create_value( expr->left, expr->right->value->width, alloc );
-        }
         if( (expr->value->width != 1) || (expr->value->value == NULL) ) {
           assert( expr->value->value == NULL );
           expression_create_value( expr, 1, alloc );
@@ -1446,13 +1461,7 @@ void expression_db_read(
       }
 
       /* Create temporary vectors if necessary */
-      if( (EXPR_TMP_VECS( op ) > 0) && (expr->elem.tvecs == NULL) ) {
-        unsigned i;
-        expr->elem.tvecs = (vecblk*)malloc_safe( sizeof( vecblk ) );
-        for( i=0; i<EXPR_TMP_VECS( op ); i++ ) {
-          vector_init( &(expr->elem.tvecs->vec[i]), (vec_data*)malloc_safe( sizeof( vec_data ) * expr->value->width ), TRUE, expr->value->width, VTYPE_VAL );
-        }
-      }
+      expression_create_tmp_vecs( expr, expr->value->width );
 
       /* Check to see if we are bound to a signal or functional unit */
       if( ((*line)[0] != '\n') && ((*line)[0] != '\0') ) {
@@ -1973,7 +1982,7 @@ bool expression_op_func__divide(
 
   } else {
 
-    vector_init( &vec1, value32, FALSE, 32, VTYPE_VAL );
+    vector_init( &vec1, value32, 0x0, FALSE, 32, VTYPE_VAL );
     intval1 = vector_to_int( expr->left->value );
     intval2 = vector_to_int( expr->right->value );
 
@@ -2046,7 +2055,7 @@ bool expression_op_func__mod(
 
   } else {
 
-    vector_init( &vec1, value32, FALSE, 32, VTYPE_VAL );
+    vector_init( &vec1, value32, 0x0, FALSE, 32, VTYPE_VAL );
     intval1 = vector_to_int( expr->left->value );
     intval2 = vector_to_int( expr->right->value );
 
@@ -2679,8 +2688,8 @@ bool expression_op_func__lor(
   vec_data value1b;  /* 1-bit nibble value */
   bool     retval;   /* Return value for this function */
 
-  vector_init( &vec1, &value1a, FALSE, 1, VTYPE_VAL );
-  vector_init( &vec2, &value1b, FALSE, 1, VTYPE_VAL );
+  vector_init( &vec1, &value1a, 0x0, FALSE, 1, VTYPE_VAL );
+  vector_init( &vec2, &value1b, 0x0, FALSE, 1, VTYPE_VAL );
 
   /* Use the unknown and not_zero supplemental fields to setup the values to LOR */
   value1a.part.val.value = expr->left->value->suppl.part.unknown  ? 2 : expr->left->value->suppl.part.not_zero;
@@ -2720,8 +2729,8 @@ bool expression_op_func__land(
   vec_data value1b;  /* 1-bit nibble value */
   bool     retval;   /* Return value for this function */
 
-  vector_init( &vec1, &value1a, FALSE, 1, VTYPE_VAL );
-  vector_init( &vec2, &value1b, FALSE, 1, VTYPE_VAL );
+  vector_init( &vec1, &value1a, 0x0, FALSE, 1, VTYPE_VAL );
+  vector_init( &vec2, &value1b, 0x0, FALSE, 1, VTYPE_VAL );
 
   /* Use the unknown and not_zero supplemental fields to setup the values to LOR */
   value1a.part.val.value = expr->left->value->suppl.part.unknown  ? 2 : expr->left->value->suppl.part.not_zero;
@@ -3414,7 +3423,7 @@ bool expression_op_func__pedge(
 
   value1a.all            = 0;
   value1a.part.exp.value = expr->right->value->value[0].part.exp.value;
-  value1b.all            = expr->left->value->value[0].all;
+  value1b                = expr->elem.tvecs->vec[0].value[0];
 
   if( (value1a.part.exp.value != value1b.part.exp.value) &&
       ((value1b.part.exp.value == 0) || (value1a.part.exp.value == 1)) &&
@@ -3428,7 +3437,7 @@ bool expression_op_func__pedge(
   }
 
   /* Set left LAST value to current value of right */
-  expr->left->value->value[0].all = value1a.all;
+  expr->elem.tvecs->vec[0].value[0] = value1a;
 
   PROFILE_END;
 
@@ -3457,7 +3466,7 @@ bool expression_op_func__nedge(
 
   value1a.all            = 0;
   value1a.part.exp.value = expr->right->value->value[0].part.exp.value;
-  value1b.all            = expr->left->value->value[0].all;
+  value1b                = expr->elem.tvecs->vec[0].value[0];
 
   if( (value1a.part.exp.value != value1b.part.exp.value) &&
       ((value1b.part.exp.value == 1) || (value1a.part.exp.value == 0)) &&
@@ -3471,7 +3480,7 @@ bool expression_op_func__nedge(
   }
 
   /* Set left LAST value to current value of right */
-  expr->left->value->value[0].all = value1a.all;
+  expr->elem.tvecs->vec[0].value[0] = value1a;
 
   PROFILE_END;
 
@@ -3516,16 +3525,16 @@ bool expression_op_func__aedge(
 
   } else {
 
-    vector_init( &vec, &bit, FALSE, 1, VTYPE_VAL );
-    (void)vector_op_compare( &vec, expr->left->value, expr->right->value, COMP_CEQ );
+    vector_init( &vec, &bit, 0x0, FALSE, 1, VTYPE_VAL );
+    (void)vector_op_compare( &vec, &(expr->elem.tvecs->vec[0]), expr->right->value, COMP_CEQ );
 
     /* If the last value and the current value are NOT equal, we have a fired event */
     if( (bit.part.exp.value == 0) && thr->suppl.part.exec_first ) {
       expr->suppl.part.true   = 1;
       expr->suppl.part.eval_t = 1;
       retval = TRUE;
-      VSUPPL_CLR_NZ_AND_UNK( expr->left->value->suppl );
-      (void)vector_set_value( expr->left->value, expr->right->value->value, expr->right->value->width, 0, 0 );
+      VSUPPL_CLR_NZ_AND_UNK( expr->elem.tvecs->vec[0].suppl );
+      (void)vector_set_value( &(expr->elem.tvecs->vec[0]), expr->right->value->value, expr->right->value->width, 0, 0 );
     } else {
       expr->suppl.part.eval_t = 0;
       retval = FALSE;
@@ -4108,7 +4117,7 @@ bool expression_op_func__exponent(
 
   if( !expr->left->value->suppl.part.unknown && !expr->right->value->suppl.part.unknown ) {
 
-    vector_init( &vec, value32, FALSE, 32, VTYPE_VAL );
+    vector_init( &vec, value32, 0x0, FALSE, 32, VTYPE_VAL );
     intval1 = vector_to_int( expr->left->value );
     intval2 = vector_to_int( expr->right->value );
 
@@ -5396,6 +5405,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.324  2008/04/08 05:52:04  phase1geo
+ Inlining a few expression functions.
+
  Revision 1.323  2008/04/08 05:47:58  phase1geo
  Fixing bug with optimization code.  IV regression runs cleanly.
 
