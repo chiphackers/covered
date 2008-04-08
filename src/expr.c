@@ -1673,7 +1673,7 @@ void expression_display(
  are NOT events AND whose return value is TRUE AND whose op type is not STATIC or
  PARAM.
 */
-static void expression_set_tf_preclear( expression* expr ) {
+inline static void expression_set_tf_preclear( expression* expr ) {
 
   /* Clear current TRUE/FALSE indicators */
   expr->suppl.part.eval_t = 0;
@@ -1699,7 +1699,7 @@ static void expression_set_tf_preclear( expression* expr ) {
  needed.  This function should only be called by expression_op_func__* functions whose
  return value is TRUE AND whose op type is either STATIC or PARAM.
 */
-static void expression_set_tf( expression* expr ) {
+inline static void expression_set_tf( expression* expr ) {
 
   /* Set TRUE/FALSE bits to indicate value */
   if( !expr->value->suppl.part.unknown ) {
@@ -1721,7 +1721,7 @@ static void expression_set_tf( expression* expr ) {
  by expression_op_func__* functions that are unary operations only and own their
  own vectors.
 */
-static void expression_set_unary_evals( expression* expr ) {
+inline static void expression_set_unary_evals( expression* expr ) {
 
   nibble    val;
   int       i;
@@ -1748,7 +1748,7 @@ static void expression_set_unary_evals( expression* expr ) {
  by expression_op_func__* functions that are AND-type combinational operations only and own their
  own vectors.
 */
-static void expression_set_and_comb_evals( expression* expr ) {
+inline static void expression_set_and_comb_evals( expression* expr ) {
 
   nibble    lval, rval;
   int       i;
@@ -1778,7 +1778,7 @@ static void expression_set_and_comb_evals( expression* expr ) {
  by expression_op_func__* functions that are OR-type combinational operations only and own their
  own vectors.
 */            
-static void expression_set_or_comb_evals( expression* expr ) {
+inline static void expression_set_or_comb_evals( expression* expr ) {
               
   nibble    lval, rval;
   int       i;  
@@ -1808,7 +1808,7 @@ static void expression_set_or_comb_evals( expression* expr ) {
  by expression_op_func__* functions that are OTHER-type combinational operations only and own their
  own vectors. 
 */            
-static void expression_set_other_comb_evals( expression* expr ) { 
+inline static void expression_set_other_comb_evals( expression* expr ) { 
                 
   nibble    lval, rval;
   int       i; 
@@ -1839,7 +1839,7 @@ static void expression_set_other_comb_evals( expression* expr ) {
  called by expression_op_func__* functions that are NOT events and have both the left
  and right expression children present.
 */
-static void expression_set_eval_NN( expression* expr ) {
+inline static void expression_set_eval_NN( expression* expr ) {
 
   control lf = ESUPPL_IS_FALSE( expr->left->suppl  );
   control lt = ESUPPL_IS_TRUE(  expr->left->suppl  );
@@ -5396,6 +5396,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.323  2008/04/08 05:47:58  phase1geo
+ Fixing bug with optimization code.  IV regression runs cleanly.
+
  Revision 1.322  2008/04/08 05:26:33  phase1geo
  Second checkin of performance optimizations (regressions do not pass at this
  point).
