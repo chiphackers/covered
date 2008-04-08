@@ -159,8 +159,7 @@ void vector_copy(
   vector*       to_vec
 ) { PROFILE(VECTOR_COPY);
 
-  int    i;               /* Loop iterator */
-  nibble orig_owns_data;  /* Holds the original value of owns_data */
+  unsigned int i;  /* Loop iterator */
 
   assert( from_vec != NULL );
   assert( to_vec != NULL );
@@ -1841,19 +1840,17 @@ bool vector_bitwise_op(
   nibble* optab
 ) { PROFILE(VECTOR_BITWISE_OP);
 
-  bool     retval = FALSE;  /* Return value for this function */
-  vector   vec;             /* Temporary vector value */
-  vec_data vecval;          /* Temporary nibble value for vector */
-  int      i;               /* Loop iterator */
-  nibble   bit1;            /* Current bit value for src1 */
-  nibble   bit2;            /* Current bit value for src2 */
-
-  vector_init( &vec, &vecval, FALSE, 1, VTYPE_VAL );
+  bool retval = FALSE;  /* Return value for this function */
+  int  i;               /* Loop iterator */
 
   /* Clear the unknown and not_zero bits */
   VSUPPL_CLR_NZ_AND_UNK( tgt->suppl )
     
   for( i=0; i<tgt->width; i++ ) {
+
+    vec_data vecval;  /* Temporary nibble value for vector */
+    nibble   bit1;    /* Current bit value for src1 */
+    nibble   bit2;    /* Current bit value for src2 */
 
     if( src1->width > i ) {
       bit1 = src1->value[i].part.val.value;
@@ -1867,8 +1864,8 @@ bool vector_bitwise_op(
       bit2 = 0;
     }
 
-    vec.value[0].part.val.value = optab[ ((bit1 << 2) | bit2) ];
-    retval |= vector_set_value( tgt, vec.value, 1, 0, i );
+    vecval.part.val.value = optab[ ((bit1 << 2) | bit2) ];
+    retval |= vector_set_value( tgt, &vecval, 1, 0, i );
     
   }
 
@@ -2301,16 +2298,13 @@ bool vector_op_add(
 */
 bool vector_op_negate(
   vector* tgt,
-  vector* src
+  vector* src,
+  vecblk* tvb
 ) { PROFILE(VECTOR_OP_NEGATE);
 
-  bool    retval = FALSE;  /* Return value for this function */
-  vector* vec1;            /* Temporary vector holder */
-  vector* vec2;            /* Temporary vector holder */
-
-  /* Create temp vectors */
-  vec1 = vector_create( src->width, VTYPE_VAL, TRUE );
-  vec2 = vector_create( tgt->width, VTYPE_VAL, TRUE );
+  bool    retval = FALSE;                      /* Return value for this function */
+  vector* vec1   = &(tvb->vec[tvb->index++]);  /* Temporary vector holder */
+  vector* vec2   = &(tvb->vec[tvb->index++]);  /* Temporary vector holder */
 
   /* Create vector with a value of 1 */
   vec2->value[0].part.val.value = 1;
@@ -2320,10 +2314,6 @@ bool vector_op_negate(
 
   /* Add one to the inverted value */
   retval = vector_op_add( tgt, vec1, vec2 );
-
-  /* Deallocate vectors */
-  vector_dealloc( vec1 );
-  vector_dealloc( vec2 );
 
   PROFILE_END;
 
@@ -2335,6 +2325,7 @@ bool vector_op_negate(
  \param tgt    Target vector for storage of results.
  \param left   Expression value on left side of - sign.
  \param right  Expression value on right side of - sign.
+ \param tvb    Pointer to vector block
 
  \return Returns TRUE if assigned value differs from original value; otherwise, returns FALSE.
 
@@ -2345,23 +2336,18 @@ bool vector_op_negate(
 bool vector_op_subtract(
   vector* tgt,
   vector* left,
-  vector* right
+  vector* right,
+  vecblk* tvb
 ) { PROFILE(VECTOR_OP_SUBTRACT);
 
-  bool    retval = FALSE;  /* Return value for this function */
-  vector* vec;             /* Temporary vector holder */
-
-  /* Create temp vectors */
-  vec = vector_create( tgt->width, VTYPE_VAL, TRUE );
+  bool    retval = FALSE;                      /* Return value for this function */
+  vector* vec    = &(tvb->vec[tvb->index++]);  /* Temporary vector holder */
 
   /* Negate the value on the right */
-  (void)vector_op_negate( vec, right );
+  (void)vector_op_negate( vec, right, tvb );
 
   /* Add new value to left value */
   retval = vector_op_add( tgt, left, vec );
-
-  /* Deallocate used memory */ 
-  vector_dealloc( vec );
 
   PROFILE_END;
 
@@ -2455,31 +2441,28 @@ bool vector_op_multiply(
 
 /*!
  \param tgt  Target vector to assign data to
+ \param tvb  Pointer to vector block for temporary vectors
 
  \return Returns TRUE (increments will always cause a value change)
 
  Performs an increment operation on the specified vector.
 */
 bool vector_op_inc(
-  vector* tgt
+  vector* tgt,
+  vecblk* tvb
 ) { PROFILE(VECTOR_OP_INC);
 
-  vector* tmp1;  /* Pointer to temporary vector containing the same contents as the target */
-  vector* tmp2;  /* Pointer to temporary vector containing the value of 1 */
+  vector* tmp1 = &(tvb->vec[tvb->index++]);  /* Pointer to temporary vector containing the same contents as the target */
+  vector* tmp2 = &(tvb->vec[tvb->index++]);  /* Pointer to temporary vector containing the value of 1 */
 
   /* Get a copy of the vector data */
-  vector_clone( tgt, &tmp1 );
+  vector_copy( tgt, tmp1 );
 
   /* Create a vector containing the value of 1 */
-  tmp2 = vector_create( tgt->width, VTYPE_VAL, TRUE );
   tmp2->value[0].part.val.value = 1;
   
   /* Finally add the values and assign them back to the target */
   (void)vector_op_add( tgt, tmp1, tmp2 );
-
-  /* Deallocate memory */
-  vector_dealloc( tmp1 );
-  vector_dealloc( tmp2 );
 
   PROFILE_END;
 
@@ -2489,31 +2472,28 @@ bool vector_op_inc(
 
 /*!
  \param tgt  Target vector to assign data to
+ \param tvb  Pointer to vector block for temporary vectors   
 
  \return Returns TRUE (decrements will always cause a value change)
 
  Performs an decrement operation on the specified vector.
 */
 bool vector_op_dec(
-  vector* tgt
+  vector* tgt,
+  vecblk* tvb
 ) { PROFILE(VECTOR_OP_DEC);
 
-  vector* tmp1;  /* Pointer to temporary vector containing the same contents as the target */
-  vector* tmp2;  /* Pointer to temporary vector containing the value of 1 */
+  vector* tmp1 = &(tvb->vec[tvb->index++]);  /* Pointer to temporary vector containing the same contents as the target */
+  vector* tmp2 = &(tvb->vec[tvb->index++]);  /* Pointer to temporary vector containing the value of 1 */
 
   /* Get a copy of the vector data */
-  vector_clone( tgt, &tmp1 );
+  vector_copy( tgt, tmp1 );
 
   /* Create a vector containing the value of 1 */
-  tmp2 = vector_create( tgt->width, VTYPE_VAL, TRUE );
   tmp2->value[0].part.val.value = 1;
 
   /* Finally add the values and assign them back to the target */
-  (void)vector_op_subtract( tgt, tmp1, tmp2 );
-
-  /* Deallocate temporary vectors */
-  vector_dealloc( tmp1 );
-  vector_dealloc( tmp2 );
+  (void)vector_op_subtract( tgt, tmp1, tmp2, tvb );
 
   PROFILE_END;
 
@@ -2536,12 +2516,10 @@ bool vector_unary_inv(
 
   bool     retval = FALSE;  /* Return value for this function */
   nibble   bit;             /* Selected bit from source vector */
-  vector   vec;             /* Temporary vector value */
   vec_data vec_val;         /* Temporary value */
   int      i;               /* Loop iterator */
   int      swidth;          /* Smallest width between tgt and src */
-
-  vector_init( &vec, &vec_val, FALSE, 1, VTYPE_VAL );
+  nibble   vals[4] = {1, 0, 2, 2};
 
   swidth = (tgt->width < src->width) ? tgt->width : src->width;
 
@@ -2549,16 +2527,8 @@ bool vector_unary_inv(
   VSUPPL_CLR_NZ_AND_UNK( tgt->suppl )
 
   for( i=0; i<swidth; i++ ) {
-
-    bit = src->value[i].part.val.value;
-
-    switch( bit ) {
-      case 0  :  vec.value[0].part.val.value = 1;  break;
-      case 1  :  vec.value[0].part.val.value = 0;  break;
-      default :  vec.value[0].part.val.value = 2;  break;
-    }
-    retval |= vector_set_value( tgt, vec.value, 1, 0, i );
-
+    vec_val.part.val.value = vals[src->value[i].part.val.value];
+    retval                |= vector_set_value( tgt, &vec_val, 1, 0, i );
   }
 
   PROFILE_END;
@@ -2679,6 +2649,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.135  2008/04/05 06:19:42  phase1geo
+ Fixes memory issues with increment operation and updates to regressions.
+
  Revision 1.134  2008/04/05 04:49:46  phase1geo
  More regression fixes and updates.
 

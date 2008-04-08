@@ -166,19 +166,34 @@ bool vector_op_arshift( vector* tgt, vector* left, vector* right );
 bool vector_op_add( vector* tgt, vector* left, vector* right );
 
 /*! \brief Performs a twos complement of the src vector and stores the new vector in tgt. */
-bool vector_op_negate( vector* tgt, vector* src );
+bool vector_op_negate(
+  vector* tgt,
+  vector* src,
+  vecblk* tvb
+);
 
 /*! \brief Performs subtraction operation on left and right expression values. */
-bool vector_op_subtract( vector* tgt, vector* left, vector* right );
+bool vector_op_subtract(
+  vector* tgt,
+  vector* left,
+  vector* right,
+  vecblk* tvb
+);
 
 /*! \brief Performs multiplication operation on left and right expression values. */
 bool vector_op_multiply( vector* tgt, vector* left, vector* right );
 
 /*! \brief Performs increment operation on specified vector. */
-bool vector_op_inc( vector* tgt );
+bool vector_op_inc(
+  vector* tgt,
+  vecblk* tvb
+);
 
 /*! \brief Performs increment operation on specified vector. */
-bool vector_op_dec( vector* tgt );
+bool vector_op_dec(
+  vector* tgt,
+  vecblk* tvb
+);
 
 /*! \brief Performs unary bitwise inversion operation on specified vector value. */
 bool vector_unary_inv( vector* tgt, vector* src );
@@ -195,6 +210,11 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.55  2008/03/31 21:40:24  phase1geo
+ Fixing several more memory issues and optimizing a bit of code per regression
+ failures.  Full regression still does not pass but does complete (yeah!)
+ Checkpointing.
+
  Revision 1.54  2008/03/28 17:27:00  phase1geo
  Fixing expression assignment problem due to recent changes.  Updating
  regression files per changes.

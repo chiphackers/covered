@@ -257,7 +257,7 @@ const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",         "",             ex
                                            {"DIVIDE",         "/",            expression_op_func__divide,     {0, 0, NOT_COMB,   1, 1, 0, 1, 0} },
                                            {"MOD",            "%",            expression_op_func__mod,        {0, 0, NOT_COMB,   1, 1, 0, 1, 0} },
                                            {"ADD",            "+",            expression_op_func__add,        {0, 0, OTHER_COMB, 0, 1, 0, 1, 0} },
-                                           {"SUBTRACT",       "-",            expression_op_func__subtract,   {0, 0, OTHER_COMB, 0, 1, 0, 1, 0} },
+                                           {"SUBTRACT",       "-",            expression_op_func__subtract,   {0, 0, OTHER_COMB, 0, 1, 0, 1, 3} },
                                            {"AND",            "&",            expression_op_func__and,        {0, 0, AND_COMB,   0, 1, 0, 1, 0} },
                                            {"OR",             "|",            expression_op_func__or,         {0, 0, OR_COMB,    0, 1, 0, 1, 0} },
                                            {"NAND",           "~&",           expression_op_func__nand,       {0, 0, AND_COMB,   0, 1, 0, 0, 0} },
@@ -327,14 +327,14 @@ const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",         "",             ex
                                            {"MBIT_NEG",       "[-:]",         expression_op_func__mbit_neg,   {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
                                            {"PARAM_MBIT_POS", "[+:]",         expression_op_func__mbit_pos,   {0, 1, NOT_COMB,   1, 0, 0, 0, 0} },
                                            {"PARAM_MBIT_NEG", "[-:]",         expression_op_func__mbit_neg,   {0, 1, NOT_COMB,   1, 0, 0, 0, 0} },
-                                           {"NEGATE",         "-",            expression_op_func__negate,     {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
+                                           {"NEGATE",         "-",            expression_op_func__negate,     {0, 0, NOT_COMB,   1, 1, 0, 0, 2} },
                                            {"NOOP",           "",             expression_op_func__null,       {0, 0, NOT_COMB,   0, 0, 0, 0, 0} },
                                            {"ALWAYS_COMB",    "always_comb",  expression_op_func__slist,      {1, 0, NOT_COMB,   0, 1, 1, 0, 0} },
                                            {"ALWAYS_LATCH",   "always_latch", expression_op_func__slist,      {1, 0, NOT_COMB,   0, 1, 1, 0, 0} },
                                            {"IINC",           "++",           expression_op_func__iinc,       {1, 0, NOT_COMB,   0, 0, 0, 0, 2} },
                                            {"PINC",           "++",           expression_op_func__pinc,       {1, 0, NOT_COMB,   0, 0, 0, 0, 2} },
-                                           {"IDEC",           "--",           expression_op_func__idec,       {1, 0, NOT_COMB,   0, 0, 0, 0, 2} },
-                                           {"PDEC",           "--",           expression_op_func__pdec,       {1, 0, NOT_COMB,   0, 0, 0, 0, 2} },
+                                           {"IDEC",           "--",           expression_op_func__idec,       {1, 0, NOT_COMB,   0, 0, 0, 0, 5} },
+                                           {"PDEC",           "--",           expression_op_func__pdec,       {1, 0, NOT_COMB,   0, 0, 0, 0, 5} },
                                            {"DLY_ASSIGN",     "",             expression_op_func__dly_assign, {1, 0, NOT_COMB,   0, 0, 1, 0, 0} },
                                            {"DLY_OP",         "",             expression_op_func__dly_op,     {1, 0, NOT_COMB,   0, 0, 0, 0, 0} },
                                            {"RPT_DLY",        "",             expression_op_func__repeat_dly, {1, 0, NOT_COMB,   0, 0, 0, 0, 0} },
@@ -368,6 +368,7 @@ static void expression_create_value(
   vec_data* value = NULL;  /* Temporary storage of vector nibble array */
 
   if( (data == TRUE) || ((exp->suppl.part.gen_expr == 1) && (width > 0)) ) {
+
     if( width > MAX_BIT_WIDTH ) {
       unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Found an expression width (%d) that exceeds the maximum currently allowed by Covered (%d)",
                                   width, MAX_BIT_WIDTH );
@@ -376,8 +377,19 @@ static void expression_create_value(
       printf( "expr Throw A\n" );
       Throw 0;
     }
+
     value = (vec_data*)malloc_safe( sizeof( vec_data ) * width );
     assert( exp->value->value == NULL );
+
+    /* Create temporary vectors if necessary */
+    if( EXPR_TMP_VECS( exp->op ) > 0 ) {
+      unsigned i;
+      exp->elem.tvecs = (vecblk*)malloc_safe( sizeof( vecblk ) );
+      for( i=0; i<EXPR_TMP_VECS( exp->op ); i++ ) {
+        vector_init( &(exp->elem.tvecs->vec[i]), (vec_data*)malloc_safe( sizeof( vec_data ) * width ), TRUE, width, VTYPE_VAL );
+      }
+    }
+
   }
 
   /* Create value */
@@ -1438,7 +1450,7 @@ void expression_db_read(
         unsigned i;
         expr->elem.tvecs = (vecblk*)malloc_safe( sizeof( vecblk ) );
         for( i=0; i<EXPR_TMP_VECS( op ); i++ ) {
-          vector_init( &(expr->elem.tvecs->vec[i]), (vec_data*)malloc_safe( sizeof( nibble ) * expr->value->width ), TRUE, expr->value->width, VTYPE_VAL );
+          vector_init( &(expr->elem.tvecs->vec[i]), (vec_data*)malloc_safe( sizeof( vec_data ) * expr->value->width ), TRUE, expr->value->width, VTYPE_VAL );
         }
       }
 
@@ -2123,7 +2135,8 @@ bool expression_op_func__subtract(
   }
 
   /* Perform SUBTRACT operation and gather coverage information */
-  if( retval = vector_op_subtract( expr->value, expr->left->value, expr->right->value ) ) {
+  expr->elem.tvecs->index = 0;
+  if( retval = vector_op_subtract( expr->value, expr->left->value, expr->right->value, expr->elem.tvecs ) ) {
     expression_set_tf_preclear( expr );
   }
   expression_set_other_comb_evals( expr );
@@ -4307,7 +4320,8 @@ bool expression_op_func__negate(
   bool retval;  /* Return value for this function */
 
   /* Perform negate operation and gather coverage information */
-  if( retval = vector_op_negate( expr->value, expr->right->value ) ) {
+  expr->elem.tvecs->index = 0;
+  if( retval = vector_op_negate( expr->value, expr->right->value, expr->elem.tvecs ) ) {
     expression_set_tf_preclear( expr );
   }
   expression_set_unary_evals( expr );
@@ -4334,7 +4348,8 @@ bool expression_op_func__iinc(
 ) { PROFILE(EXPRESSION_OP_FUNC__IINC);
 
   /* Perform increment */
-  (void)vector_op_inc( expr->left->value );
+  expr->elem.tvecs->index = 0;
+  (void)vector_op_inc( expr->left->value, expr->elem.tvecs );
 
   /* Copy the left-hand expression vector supplemental bits back to the signal */
   expr->left->sig->value->suppl.part.unknown  = expr->left->value->suppl.part.unknown;
@@ -4379,7 +4394,8 @@ bool expression_op_func__pinc(
   (void)vector_set_value( expr->value, expr->left->value->value, expr->left->value->width, 0, 0 );
 
   /* Perform increment */
-  (void)vector_op_inc( expr->left->value );
+  expr->elem.tvecs->index = 0;
+  (void)vector_op_inc( expr->left->value, expr->elem.tvecs );
 
   /* Copy the left-hand expression vector supplemental bits back to the signal */
   expr->left->sig->value->suppl.part.unknown  = expr->left->value->suppl.part.unknown;
@@ -4416,7 +4432,8 @@ bool expression_op_func__idec(
 ) { PROFILE(EXPRESSION_OP_FUNC__IDEC);
 
   /* Perform decrement */
-  (void)vector_op_dec( expr->left->value );
+  expr->elem.tvecs->index = 0;
+  (void)vector_op_dec( expr->left->value, expr->elem.tvecs );
 
   /* Copy the left-hand expression vector supplemental bits back to the signal */
   expr->left->sig->value->suppl.part.unknown  = expr->left->value->suppl.part.unknown;
@@ -4461,7 +4478,8 @@ bool expression_op_func__pdec(
   (void)vector_set_value( expr->value, expr->left->value->value, expr->left->value->width, 0, 0 );
 
   /* Perform decrement */
-  (void)vector_op_dec( expr->left->value );
+  expr->elem.tvecs->index = 0;
+  (void)vector_op_dec( expr->left->value, expr->elem.tvecs );
 
   /* Copy the left-hand expression vector supplemental bits back to the signal */
   expr->left->sig->value->suppl.part.unknown  = expr->left->value->suppl.part.unknown;
@@ -5351,6 +5369,15 @@ void expression_dealloc(
 
     }
 
+    /* If we have temporary vectors to deallocate, do so now */
+    if( (expr->elem.tvecs != NULL) && (EXPR_TMP_VECS( expr->op ) > 0) ) {
+      unsigned int i;
+      for( i=0; i<EXPR_TMP_VECS( expr->op ); i++ ) {
+        free_safe( expr->elem.tvecs->vec[i].value, (sizeof( vec_data ) * expr->elem.tvecs->vec[i].width) );
+      }
+      free_safe( expr->elem.tvecs, sizeof( vecblk ) );
+    }
+
     /* Free up memory for the parent pointer */
     free_safe( expr->parent, sizeof( expr_stmt ) );
 
@@ -5369,6 +5396,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.321  2008/04/07 23:14:00  phase1geo
+ Beginnings of adding support for temporary vector storage for expressions.  Still
+ work to go here before it is working.  Checkpointing.
+
  Revision 1.320  2008/04/07 19:35:41  phase1geo
  Incremented CDD version and updated regression files.  Also fixed issue
  with expression_dealloc function for FUNC_CALL operations.  Full regression
