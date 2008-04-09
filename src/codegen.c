@@ -652,7 +652,7 @@ void codegen_gen_expr(
                                right_code, right_code_depth, expr->right, after );
           break;
         case EXP_OP_MOD_A    :
-          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left, " %%= ",
+          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left, " %= ",
                                right_code, right_code_depth, expr->right, after );
           break;
         case EXP_OP_ADD      :
@@ -982,6 +982,10 @@ void codegen_gen_expr(
 
 /*
  $Log$
+ Revision 1.94  2008/04/08 22:45:10  phase1geo
+ Optimizations for op-and-assign expressions.  This is an untested checkin
+ at this point but it does compile cleanly.  Checkpointing.
+
  Revision 1.93  2008/04/06 21:31:12  phase1geo
  Fixing more regression failures.  Last of regression updates.
 

@@ -373,8 +373,11 @@ $(NOSIMERRLIST):
 	fi
 
 covered:
-	cd $(COVERED_SRC); $(MAKE)
+ifdef VPI
 	cd $(COVERED_LIB); $(MAKE)
+else
+	cd $(COVERED_SRC); $(MAKE)
+endif
 
 eot:
 	@./check_test dummy 1 $(FINISH_CODE)

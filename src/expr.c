@@ -255,7 +255,7 @@ static bool expression_op_func__lshift_a( expression*, thread*, const sim_time* 
 static bool expression_op_func__rshift_a( expression*, thread*, const sim_time* );
 static bool expression_op_func__arshift_a( expression*, thread*, const sim_time* );
 
-static void expression_assign( expression*, expression*, int*, thread*, const sim_time* );
+static void expression_assign( expression*, expression*, int*, thread*, const sim_time*, bool eval_lhs );
 
 /*!
  Array containing static information about expression operation types.  NOTE:  This structure MUST be
@@ -360,7 +360,7 @@ const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",         "",             ex
                                            {"MOD_A",          "%=",           expression_op_func__mod_a,      {0, 0, NOT_COMB,   1, 1, 0, 1, 1} },
                                            {"AND_A",          "&=",           expression_op_func__and_a,      {0, 0, AND_COMB,   0, 1, 0, 1, 1} },
                                            {"OR_A",           "|=",           expression_op_func__or_a,       {0, 0, OR_COMB,    0, 1, 0, 1, 1} },
-                                           {"XOR_A",          "^=",           expression_op_func__xor_a,      {0, 0, OR_COMB,    0, 1, 0, 1, 1} },
+                                           {"XOR_A",          "^=",           expression_op_func__xor_a,      {0, 0, OTHER_COMB, 0, 1, 0, 1, 1} },
                                            {"LSHIFT_A",       "<<=",          expression_op_func__lshift_a,   {0, 0, NOT_COMB,   1, 1, 0, 1, 1} },
                                            {"RSHIFT_A",       ">>=",          expression_op_func__rshift_a,   {0, 0, NOT_COMB,   1, 1, 0, 1, 1} },
                                            {"ALSHIFT_A",      "<<<=",         expression_op_func__lshift_a,   {0, 0, NOT_COMB,   1, 1, 0, 1, 1} },
@@ -399,6 +399,18 @@ static void expression_create_tmp_vecs(
       case EXP_OP_PEDGE :
       case EXP_OP_NEDGE :  data = 0x2;  width = 1;                         break;
       case EXP_OP_AEDGE :  data = 0x2;  width = exp->right->value->width;  break;
+      case EXP_OP_ADD_A :
+      case EXP_OP_SUB_A :
+      case EXP_OP_MLT_A :
+      case EXP_OP_DIV_A :
+      case EXP_OP_MOD_A :
+      case EXP_OP_AND_A :
+      case EXP_OP_OR_A  :
+      case EXP_OP_XOR_A :
+      case EXP_OP_LS_A  :
+      case EXP_OP_RS_A  :
+      case EXP_OP_ALS_A :
+      case EXP_OP_ARS_A :  data = 0x0;  width = exp->left->value->width;   break;
       default           :  data = 0x0;                                     break;
     }
 
@@ -1929,19 +1941,21 @@ bool expression_op_func__xor_a(
   vector* tmp    = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
   int     intval = 0;                            /* Integer value */
 
-  /* First, copy the value of the left expression into a temporary vector */
-  VSUPPL_CLR_NZ_AND_UNK( tmp->suppl );
+  /* First, evaluate the left-hand expression */
+  sim_expression( expr->left, thr, time, TRUE );
+
+  /* Second, copy the value of the left expression into a temporary vector */
   vector_copy( expr->left->value, tmp );
 
-  /* Second, perform XOR and gather coverage information */
+  /* Third, perform XOR and gather coverage information */
   if( retval = vector_bitwise_op( expr->value, tmp, expr->right->value, xor_optab ) ) {
     expression_set_tf_preclear( expr );
   }
   expression_set_other_comb_evals( expr );
   expression_set_eval_NN( expr );
 
-  /* Third, assign the new value to the left expression */
-  expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)) );
+  /* Fourth, assign the new value to the left expression */
+  expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
 
   PROFILE_END;
 
@@ -2000,19 +2014,21 @@ bool expression_op_func__multiply_a(
   vector* tmp    = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
   int     intval = 0;                            /* Integer value */
 
-  /* First, copy the value of the left expression into a temporary vector */
-  VSUPPL_CLR_NZ_AND_UNK( tmp->suppl );
+  /* First, evaluate the left-hand expression */
+  sim_expression( expr->left, thr, time, TRUE );
+
+  /* Second, copy the value of the left expression into a temporary vector */
   vector_copy( expr->left->value, tmp );
 
-  /* Second, perform multiply and gather coverage information */
+  /* Third, perform multiply and gather coverage information */
   if( retval = vector_op_multiply( expr->value, tmp, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
   expression_set_unary_evals( expr );
   expression_set_eval_NN( expr );
 
-  /* Third, assign the new value to the left expression */
-  expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)) );
+  /* Fourth, assign the new value to the left expression */
+  expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
 
   PROFILE_END;
 
@@ -2105,10 +2121,13 @@ bool expression_op_func__divide_a(
   vector* tmp    = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
   int     intval = 0;                            /* Integer value */
   
-  /* First, copy the value of the left expression into a temporary vector */
+  /* First, evaluate the left-hand expression */
+  sim_expression( expr->left, thr, time, TRUE );;
+
+  /* Second, copy the value of the left expression into a temporary vector */
   vector_copy( expr->left->value, tmp );
   
-  /* Second, perform divide and gather coverage information */
+  /* Third, perform divide and gather coverage information */
   VSUPPL_CLR_NZ_AND_UNK( expr->value->suppl );
   
   if( tmp->suppl.part.unknown || expr->right->value->suppl.part.unknown ) {
@@ -2147,8 +2166,8 @@ bool expression_op_func__divide_a(
   expression_set_unary_evals( expr );
   expression_set_eval_NN( expr );
 
-  /* Third, assign the new value to the left expression */
-  expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)) );
+  /* Finally, assign the new value to the left expression */
+  expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
   
   PROFILE_END;
 
@@ -2239,10 +2258,13 @@ bool expression_op_func__mod_a(
   vector* tmp    = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
   int     intval = 0;                            /* Integer value */
 
-  /* First, copy the value of the left expression into a temporary vector */
+  /* First, evaluate the left-hand expression */
+  sim_expression( expr->left, thr, time, TRUE );;
+
+  /* Second, copy the value of the left expression into a temporary vector */
   vector_copy( expr->left->value, tmp );
 
-  /* Second, perform divide and gather coverage information */
+  /* Third, perform divide and gather coverage information */
   VSUPPL_CLR_NZ_AND_UNK( expr->value->suppl );
 
   if( tmp->suppl.part.unknown || expr->right->value->suppl.part.unknown ) {
@@ -2281,8 +2303,8 @@ bool expression_op_func__mod_a(
   expression_set_unary_evals( expr );
   expression_set_eval_NN( expr );
 
-  /* Third, assign the new value to the left expression */
-  expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)) );
+  /* Finally, assign the new value to the left expression */
+  expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
 
   PROFILE_END;
 
@@ -2339,18 +2361,21 @@ bool expression_op_func__add_a(
   vector* tmp    = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
   int     intval = 0;                            /* Integer value */
 
-  /* First, copy the value of the left expression into a temporary vector */
+  /* Evaluate the left expression */
+  sim_expression( expr->left, thr, time, TRUE );
+  
+  /* Second, copy the value of the left expression into a temporary vector */
   vector_copy( expr->left->value, tmp );
 
-  /* Second, perform addition and collect coverage information */
+  /* Third, perform addition and collect coverage information */
   if( retval = vector_op_add( expr->value, tmp, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
   expression_set_other_comb_evals( expr );
   expression_set_eval_NN( expr );
 
-  /* Third, assign the new value to the left expression */
-  expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)) );
+  /* Finally, assign the new value to the left expression */
+  expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
 
   PROFILE_END;
 
@@ -2408,10 +2433,13 @@ bool expression_op_func__sub_a(
   vector* tmp    = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
   int     intval = 0;                            /* Integer value */
 
-  /* First, copy the value of the left expression into a temporary vector */
+  /* First, evaluate the left-hand expression */
+  sim_expression( expr->left, thr, time, TRUE );
+  
+  /* Second, copy the value of the left expression into a temporary vector */
   vector_copy( expr->left->value, tmp );
 
-  /* Second, perform addition */
+  /* Third, perform subtraction and gather coverage information */
   expr->elem.tvecs->index = 1;
   if( retval = vector_op_subtract( expr->value, tmp, expr->right->value, expr->elem.tvecs ) ) {
     expression_set_tf_preclear( expr );
@@ -2419,8 +2447,8 @@ bool expression_op_func__sub_a(
   expression_set_other_comb_evals( expr );
   expression_set_eval_NN( expr );
 
-  /* Third, assign the new value to the left expression */
-  expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)) );
+  /* Finally, assign the new value to the left expression */
+  expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
 
   PROFILE_END;
 
@@ -2477,18 +2505,21 @@ bool expression_op_func__and_a(
   vector* tmp    = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
   int     intval = 0;                            /* Integer value */
 
-  /* First, copy the value of the left expression into a temporary vector */
+  /* First, evaluate the left-hand expression */
+  sim_expression( expr->left, thr, time, TRUE );
+
+  /* Second, copy the value of the left expression into a temporary vector */
   vector_copy( expr->left->value, tmp );
 
-  /* Second, perform addition */
+  /* Third, perform AND and gather coverage information */
   if( retval = vector_bitwise_op( expr->value, tmp, expr->right->value, and_optab ) ) {
     expression_set_tf_preclear( expr );
   }
   expression_set_and_comb_evals( expr );
   expression_set_eval_NN( expr );
 
-  /* Third, assign the new value to the left expression */
-  expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)) );
+  /* Finally, assign the new value to the left expression */
+  expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
 
   PROFILE_END;
 
@@ -2545,18 +2576,21 @@ bool expression_op_func__or_a(
   vector* tmp    = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
   int     intval = 0;                            /* Integer value */
 
-  /* First, copy the value of the left expression into a temporary vector */
+  /* First, evaluate the left-hand expression */
+  sim_expression( expr->left, thr, time, TRUE );
+
+  /* Second, copy the value of the left expression into a temporary vector */
   vector_copy( expr->left->value, tmp );
 
-  /* Second, perform addition */
+  /* Third, perform OR and gather coverage information */
   if( retval = vector_bitwise_op( expr->value, tmp, expr->right->value, or_optab ) ) {
     expression_set_tf_preclear( expr );
   }
   expression_set_or_comb_evals( expr );
   expression_set_eval_NN( expr );
 
-  /* Third, assign the new value to the left expression */
-  expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)) );
+  /* Finally, assign the new value to the left expression */
+  expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
 
   PROFILE_END;
 
@@ -2763,18 +2797,21 @@ bool expression_op_func__lshift_a(
   vector* tmp    = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
   int     intval = 0;                            /* Integer value */
   
-  /* First, copy the value of the left expression into a temporary vector */
+  /* First, evaluate the left-hand expression */
+  sim_expression( expr->left, thr, time, TRUE );
+
+  /* Second, copy the value of the left expression into a temporary vector */
   vector_copy( expr->left->value, tmp );
 
-  /* Second, perform left-shift and collect coverage information */
+  /* Third, perform left-shift and collect coverage information */
   if( retval = vector_op_lshift( expr->value, tmp, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
   expression_set_unary_evals( expr );
   expression_set_eval_NN( expr ); 
 
-  /* Third, assign the new value to the left expression */
-  expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)) );
+  /* Finally, assign the new value to the left expression */
+  expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
   
   PROFILE_END;
   
@@ -2831,18 +2868,21 @@ bool expression_op_func__rshift_a(
   vector* tmp    = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
   int     intval = 0;                            /* Integer value */
 
-  /* First, copy the value of the left expression into a temporary vector */
+  /* First, evaluate the left-hand expression */
+  sim_expression( expr->left, thr, time, TRUE );
+
+  /* Second, copy the value of the left expression into a temporary vector */
   vector_copy( expr->left->value, tmp );
 
-  /* Second, perform right-shift and collect coverage information */
+  /* Third, perform right-shift and collect coverage information */
   if( retval = vector_op_rshift( expr->value, tmp, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
   expression_set_unary_evals( expr );
   expression_set_eval_NN( expr );
 
-  /* Third, assign the new value to the left expression */
-  expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)) );
+  /* Finally, assign the new value to the left expression */
+  expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
 
   PROFILE_END;
 
@@ -2899,18 +2939,21 @@ bool expression_op_func__arshift_a(
   vector* tmp    = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
   int     intval = 0;                            /* Integer value */
 
-  /* First, copy the value of the left expression into a temporary vector */
+  /* First, evaluate the left-hand expression */
+  sim_expression( expr->left, thr, time, TRUE );
+
+  /* Second, copy the value of the left expression into a temporary vector */
   vector_copy( expr->left->value, tmp );
 
-  /* Second, perform right-shift and collect coverage information */
+  /* Third, perform arithmetic right-shift and collect coverage information */
   if( retval = vector_op_arshift( expr->value, tmp, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
   expression_set_unary_evals( expr );
   expression_set_eval_NN( expr );
 
-  /* Third, assign the new value to the left expression */
-  expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)) );
+  /* Finally, assign the new value to the left expression */
+  expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
 
   PROFILE_END;
 
@@ -4289,7 +4332,7 @@ bool expression_op_func__bassign(
   int intval = 0;  /* Integer value */
 
   /* Perform assignment */
-  expression_assign( expr->left, expr->right, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)) );
+  expression_assign( expr->left, expr->right, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), TRUE );
 
   /* Gather coverage information */
   expression_set_tf_preclear( expr );
@@ -4619,7 +4662,7 @@ bool expression_op_func__passign(
      to the right expression.
     */
     case SSUPPL_TYPE_OUTPUT :
-      expression_assign( expr->right, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)) );
+      expression_assign( expr->right, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), TRUE );
       retval = TRUE;
       break;
 
@@ -4966,7 +5009,7 @@ bool expression_op_func__dly_assign(
 
   /* Check the dly_op expression.  If eval_t is set to 1, perform the assignment */
   if( ESUPPL_IS_TRUE( expr->right->suppl ) == 1 ) {
-    expression_assign( expr->left, expr->right, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)) );
+    expression_assign( expr->left, expr->right, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), TRUE );
     expr->suppl.part.eval_t = 1;
     retval = TRUE;
   } else {
@@ -5445,10 +5488,13 @@ void expression_set_assigned(
 }
 
 /*!
- \param lhs   Pointer to current expression on left-hand-side of assignment to calculate for.
- \param rhs   Pointer to the right-hand-expression that will be assigned from.
- \param lsb   Current least-significant bit in rhs value to start assigning.
- \param time  Specifies current simulation time when expression assignment occurs.
+ \param lhs       Pointer to current expression on left-hand-side of assignment to calculate for.
+ \param rhs       Pointer to the right-hand-expression that will be assigned from.
+ \param lsb       Current least-significant bit in rhs value to start assigning.
+ \param time      Specifies current simulation time when expression assignment occurs.
+ \param eval_lhs  If TRUE, allows the left-hand expression to be evaluated, if necessary (should be
+                  set to TRUE unless for specific cases where it is not necessary and would be
+                  redundant to do so -- i.e., op-and-assign cases)
 
  Recursively iterates through specified LHS expression, assigning the value from the RHS expression.
  This is called whenever a blocking assignment expression is found during simulation.
@@ -5458,7 +5504,8 @@ void expression_assign(
   expression*     rhs,
   int*            lsb,
   thread*         thr,
-  const sim_time* time
+  const sim_time* time,
+  bool            eval_lhs
 ) { PROFILE(EXPRESSION_ASSIGN);
 
   int       intval1;    /* Integer value to use */
@@ -5530,7 +5577,9 @@ void expression_assign(
         break;
       case EXP_OP_SBIT_SEL :
         if( lhs->sig->suppl.part.assigned == 1 ) {
-          sim_expression( lhs->left, thr, time, TRUE );
+          if( eval_lhs ) {
+            sim_expression( lhs->left, thr, time, TRUE );
+          }
           if( !lhs->left->value->suppl.part.unknown ) {
             intval1 = (vector_to_int( lhs->left->value ) - dim_lsb) * dim_width;
             if( intval1 >= 0 ) {           // Only perform assignment if selected bit is within range
@@ -5656,12 +5705,12 @@ void expression_assign(
 #endif
       case EXP_OP_CONCAT   :
       case EXP_OP_LIST     :
-        expression_assign( lhs->right, rhs, lsb, thr, time );
-        expression_assign( lhs->left,  rhs, lsb, thr, time );
+        expression_assign( lhs->right, rhs, lsb, thr, time, eval_lhs );
+        expression_assign( lhs->left,  rhs, lsb, thr, time, eval_lhs );
         break;
       case EXP_OP_DIM      :
-        expression_assign( lhs->left,  rhs, lsb, thr, time );
-        expression_assign( lhs->right, rhs, lsb, thr, time );
+        expression_assign( lhs->left,  rhs, lsb, thr, time, eval_lhs );
+        expression_assign( lhs->right, rhs, lsb, thr, time, eval_lhs );
         break;
       case EXP_OP_STATIC   :
         break;
@@ -5836,6 +5885,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.326  2008/04/08 22:45:10  phase1geo
+ Optimizations for op-and-assign expressions.  This is an untested checkin
+ at this point but it does compile cleanly.  Checkpointing.
+
  Revision 1.325  2008/04/08 19:50:36  phase1geo
  Removing LAST operator for PEDGE, NEDGE and AEDGE expression operations and
  replacing them with the temporary vector solution.
