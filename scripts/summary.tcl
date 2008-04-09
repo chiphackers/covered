@@ -7,7 +7,7 @@ set memory_low_limit 90
 set comb_low_limit   90
 set fsm_low_limit    90
 set assert_low_limit 90
-set summary_sort     "dec"
+set summary_sort     "none"
 
 proc summary_yset {args} {
 
@@ -74,15 +74,15 @@ proc create_summary {} {
     ;# Create sort order label and radio buttons and pack them
     frame .sumwin.sf -relief raised -borderwidth 1
     label .sumwin.sf.l -text "Sort percentages by:"
-    radiobutton .sumwin.sf.rbd -text "Decreasing order" -variable summary_sort -value "dec" -command {
-      populate_summary .sumwin.f
-    }
-    radiobutton .sumwin.sf.rbi -text "Increasing order" -variable summary_sort -value "inc" -command {
-      populate_summary .sumwin.f
-    }
+    ;# radiobutton .sumwin.sf.rbd -text "Decreasing order" -variable summary_sort -value "dec" -command {
+    ;#   populate_summary .sumwin.f
+    ;# }
+    ;# radiobutton .sumwin.sf.rbi -text "Increasing order" -variable summary_sort -value "inc" -command {
+    ;#   populate_summary .sumwin.f
+    ;# }
     pack .sumwin.sf.l   -side left
-    pack .sumwin.sf.rbd -side left
-    pack .sumwin.sf.rbi -side left
+    ;# pack .sumwin.sf.rbd -side left
+    ;# pack .sumwin.sf.rbi -side left
 
     #############################
     # Create Close/Help buttons #
@@ -150,7 +150,7 @@ proc clear_summary {} {
 
 }
 
-proc populate_summary { w } {
+proc calculate_summary {} {
 
   global mod_inst_type funit_names funit_types cov_rb
   global line_summary_hit line_summary_total line_low_limit
@@ -159,7 +159,10 @@ proc populate_summary { w } {
   global comb_summary_hit comb_summary_total comb_low_limit
   global fsm_summary_hit fsm_summary_total fsm_low_limit
   global assert_summary_hit assert_summary_total assert_low_limit
-  global summary_sort
+  global summary_list summary_sort
+
+  ;# Clear the list
+  set summary_list ""
 
   for {set i 0} {$i < [llength $funit_names]} {incr i} {
 
@@ -196,6 +199,9 @@ proc populate_summary { w } {
       ;# ERROR
     }
 
+    ;# Calculate miss value
+    set miss [expr $total - $hit]
+
     ;# Calculate hit percent
     if {$total == 0} {
       set percent 100
@@ -205,17 +211,35 @@ proc populate_summary { w } {
       set percent [expr round((($hit * 1.0) / $total) * 100)]
     }
 
+    ;# Calculate color
+    if {$percent < $low_limit} {
+      set color red
+    } elseif {$percent < 100} {
+      set color yellow
+    } else {
+      set color green
+    }
+
     ;# Add this functional unit to the list to sort
-    lappend summary_list [list [lindex $funit_names $i] $percent]
+    lappend summary_list [list [lindex $funit_names $i] $hit $miss $total $percent $color]
 
   }
 
   ;# Sort the summary information based on the percent value
   if {$summary_sort == "dec"} {
     set summary_list [lsort -integer -index 1 -decreasing $summary_list]
-  } else {
+  } elseif {$summary_sort == "inc"} {
     set summary_list [lsort -integer -index 1 -increasing $summary_list]
   }
+
+}
+
+proc populate_summary { w } {
+
+  global summary_list
+
+  ;# Calculate summary array
+  calculate_summary
 
   ;# Remove all values from listboxes
   .sumwin.f.flb delete 0 end
@@ -225,22 +249,13 @@ proc populate_summary { w } {
   for {set i 0} {$i < [llength $summary_list]} {incr i} {
 
     ;# Add the summary information to the summary box
-    add_func_unit $w [lindex [lindex $summary_list $i] 0] [lindex [lindex $summary_list $i] 1] $low_limit $i
+    add_func_unit $w [lindex [lindex $summary_list $i] 0] [lindex [lindex $summary_list $i] 1] [lindex [lindex $summary_list $i] 2] $i
 
   }
 
 }
 
-proc add_func_unit { w name percent low_limit num } {
-
-  ;# Calculate color
-  if {$percent < $low_limit} {
-    set color red
-  } elseif {$percent < 100} {
-    set color yellow
-  } else {
-    set color green
-  }
+proc add_func_unit { w name percent color num } {
 
   ;# Populate name and percent listboxes
   .sumwin.f.flb insert end $name

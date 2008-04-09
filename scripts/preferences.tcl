@@ -803,7 +803,7 @@ proc apply_preferences {} {
     .bot.right.txt yview moveto [lindex $text_y 0]
 
     # Update the listbox
-    populate_listbox .bot.left.l
+    populate_listbox
 
     # Update the summary window, if it currently exists
     if {[winfo exists .sumwin] == 1} {

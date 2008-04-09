@@ -80,7 +80,7 @@ proc cov_change_metric args {
     set text_y [.bot.right.txt yview]
     if {$last_cov_rb != $cov_rb} {
       set last_cov_rb $cov_rb
-      highlight_listbox
+      populate_listbox
       if {$cov_rb == "Line"} {
         process_funit_line_cov
       } elseif {$cov_rb == "Toggle"} {

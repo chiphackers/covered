@@ -103,7 +103,7 @@ proc menu_create {} {
     .info configure -text "$cdd_name closed"
     set cdd_name ""
     clear_cdd_filelist
-    populate_listbox .bot.left.l
+    populate_listbox
     clear_all_windows
     .menubar.file entryconfigure 1 -state disabled
     .menubar.file entryconfigure 3 -state disabled
@@ -147,11 +147,11 @@ proc menu_create {} {
   global mod_inst_type cov_uncov_type cov_rb
 
   $report add radiobutton -label "Module-based"   -variable mod_inst_type -value "module" -underline 0 -command {
-    populate_listbox .bot.left.l
+    populate_listbox
     update_summary
   }
   $report add radiobutton -label "Instance-based" -variable mod_inst_type -value "instance" -underline 1 -command {
-    populate_listbox .bot.left.l
+    populate_listbox
     update_summary
   }
   $report add separator
@@ -339,7 +339,7 @@ proc open_files {} {
       }
 
       # Populate the listbox
-      populate_listbox .bot.left.l
+      populate_listbox
 
       # Update the summary window
       update_summary

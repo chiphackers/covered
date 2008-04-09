@@ -66,9 +66,6 @@ proc main_view {} {
     main_place $W $lwidth
   }
 
-  # Create the listbox label
-  label .bot.left.ll -text "Modules" -anchor w
-
   # Create the textbox header frame
   frame .bot.right.h
   label .bot.right.h.tl -text "Cur   Line #       Verilog Source" -anchor w
@@ -99,27 +96,68 @@ proc main_view {} {
   pack .bot.right.h.next  -side right -fill both
   pack .bot.right.h.prev  -side right -fill both
 
+  # Create the listbox frames
+  frame .bot.left.ff -relief flat
+  frame .bot.left.fh -relief flat
+  frame .bot.left.fm -relief flat
+  frame .bot.left.ft -relief flat
+  frame .bot.left.fp -relief flat
+
+  # Create the listbox label
+  label .bot.left.ff.ll -text "Modules" -anchor w -width 30 -borderwidth 1
+  label .bot.left.fh.ll -text "Hit"     -anchor w -width 11 -borderwidth 1
+  label .bot.left.fm.ll -text "Miss"    -anchor w -width 11 -borderwidth 1
+  label .bot.left.ft.ll -text "Total"   -anchor w -width 11 -borderwidth 1
+  label .bot.left.fp.ll -text "Hit %"   -anchor w -width 5  -borderwidth 1
+
   # Create the listbox widget to display file names
-  listbox .bot.left.l -yscrollcommand ".bot.left.lvb set" -xscrollcommand ".bot.left.lhb set" -width 30
-  bind .bot.left.l <<ListboxSelect>> populate_text
-  scrollbar .bot.left.lvb -command ".bot.left.l yview"
-  scrollbar .bot.left.lhb -orient horizontal -command ".bot.left.l xview"
+  listbox .bot.left.ff.l -yscrollcommand listbox_yset -xscrollcommand listbox_xset -width 30 -relief flat -selectborderwidth 0
+  listbox .bot.left.fh.l -yscrollcommand listbox_yset -xscrollcommand listbox_xset -width 11 -relief flat -selectborderwidth 0 -selectbackground [.bot.left.ff.l cget -background]
+  listbox .bot.left.fm.l -yscrollcommand listbox_yset -xscrollcommand listbox_xset -width 11 -relief flat -selectborderwidth 0 -selectbackground [.bot.left.ff.l cget -background]
+  listbox .bot.left.ft.l -yscrollcommand listbox_yset -xscrollcommand listbox_xset -width 11 -relief flat -selectborderwidth 0 -selectbackground [.bot.left.ff.l cget -background]
+  listbox .bot.left.fp.l -yscrollcommand listbox_yset -xscrollcommand listbox_xset -width 5  -relief flat -selectborderwidth 0 -selectbackground [.bot.left.ff.l cget -background]
+  bind .bot.left.ff.l <<ListboxSelect>> populate_text
+  scrollbar .bot.left.lvb -command listbox_yview
+  scrollbar .bot.left.lhb -orient horizontal -command listbox_xview
+
+  # Create bottom information bar
+  label .info -anchor w -relief raised -borderwidth 1
+
+  # Pack the functional unit widgets into the functional unit frame
+  pack .bot.left.ff.ll
+  pack .bot.left.ff.l -fill y
+
+  # Pack the hit count widgets into the hit count frame
+  pack .bot.left.fh.ll
+  pack .bot.left.fh.l -fill y
+
+  # Pack the miss count widgets into the miss count frame
+  pack .bot.left.fm.ll
+  pack .bot.left.fm.l -fill y
+
+  # Pack the total count widgets into the total count frame
+  pack .bot.left.ft.ll
+  pack .bot.left.ft.l -fill y
+
+  # Pack the hit percent widgets into the hit percent frame
+  pack .bot.left.fp.ll
+  pack .bot.left.fp.l -fill y
+
+  # Pack the listbox widgets into the bottom left frame
+  grid rowconfigure    .bot.left 0 -weight 1
+  grid columnconfigure .bot.left 0 -weight 1
+  grid .bot.left.ff  -row 0 -column 0 -sticky nsew
+  grid .bot.left.fh  -row 0 -column 1 -sticky nsew
+  grid .bot.left.fm  -row 0 -column 2 -sticky nsew
+  grid .bot.left.ft  -row 0 -column 3 -sticky nsew
+  grid .bot.left.fp  -row 0 -column 4 -sticky nsew
+  grid .bot.left.lvb -row 0 -column 5 -sticky ns
+  grid .bot.left.lhb -row 1 -column 0 -columnspan 5 -sticky ew
 
   # Create the text widget to display the modules/instances
   text .bot.right.txt -yscrollcommand ".bot.right.vb set" -xscrollcommand ".bot.right.hb set" -wrap none -state disabled
   scrollbar .bot.right.vb -command ".bot.right.txt yview"
   scrollbar .bot.right.hb -orient horizontal -command ".bot.right.txt xview"
-
-  # Create bottom information bar
-  label .info -anchor w -relief raised -borderwidth 1
-
-  # Pack the widgets into the bottom left and right frames
-  grid rowconfigure    .bot.left 1 -weight 1
-  grid columnconfigure .bot.left 0 -weight 1
-  grid .bot.left.ll  -row 0 -column 0 -sticky nsew
-  grid .bot.left.l   -row 1 -column 0 -sticky nsew
-  grid .bot.left.lvb -row 1 -column 1 -sticky ns
-  grid .bot.left.lhb -row 2 -column 0 -sticky ew
 
   grid rowconfigure    .bot.right 1 -weight 1
   grid columnconfigure .bot.right 0 -weight 1
@@ -155,17 +193,22 @@ proc main_place {width value} {
 
 }
  
-proc populate_listbox {listbox_w} {
+proc populate_listbox {} {
 
   global mod_inst_type funit_names funit_types inst_list cdd_name
   global line_summary_total line_summary_hit
   global toggle_summary_total toggle_summary_hit
   global uncov_fgColor uncov_bgColor
   global lb_fgColor lb_bgColor
+  global summary_list
  
-  # Remove contents currently in listbox
-  set lb_size [$listbox_w size]
-  $listbox_w delete 0 $lb_size
+  # Remove contents currently in listboxes
+  set lb_size [.bot.left.ff.l size]
+  .bot.left.ff.l delete 0 $lb_size
+  .bot.left.ff.l delete 0 $lb_size
+  .bot.left.ff.l delete 0 $lb_size
+  .bot.left.ff.l delete 0 $lb_size
+  .bot.left.ff.l delete 0 $lb_size
 
   # Clear funit_names and funit_types values
   set funit_names ""
@@ -175,25 +218,37 @@ proc populate_listbox {listbox_w} {
 
     # If we are in module mode, list modules (otherwise, list instances)
     if {$mod_inst_type == "module"} {
+
+      # Get the list of functional units
       tcl_func_get_funit_list 
-      foreach funit_name $funit_names {
-        $listbox_w insert end $funit_name
+
+      # Calculate the summary_list array
+      calculate_summary
+
+      for {set i 0} {$i < [llength $summary_list]} {incr i} {
+        set funit [lindex $summary_list $i]
+        .bot.left.ff.l insert end [lindex $funit 0]
+        .bot.left.ff.l itemconfigure $i -background [lindex $funit 5]
+        .bot.left.fh.l insert end [join [list [lindex $funit 1] "/"]]
+        .bot.left.fm.l insert end [join [list [lindex $funit 2] "/"]]
+        .bot.left.ft.l insert end [lindex $funit 3]
+        .bot.left.fp.l insert end [join [list [lindex $funit 4] "%"]]
       }
-      .bot.left.ll configure -text "Modules"
+
+      .bot.left.ff.ll configure -text "Modules"
+
     } else {
+
       set inst_list ""
       tcl_func_get_instance_list
+
       foreach inst_name $inst_list {
         $listbox_w insert end $inst_name
       }
-      .bot.left.ll configure -text "Instances"
+
+      .bot.left.ff.ll configure -text "Instances"
+
     }
-
-    # Get default colors of listbox
-    set lb_fgColor [.bot.left.l itemcget 0 -foreground]
-    set lb_bgColor [.bot.left.l itemcget 0 -background]
-
-    highlight_listbox
 
   }
 
@@ -203,43 +258,53 @@ proc highlight_listbox {} {
 
   global cdd_name funit_names funit_types cov_rb
   global uncov_fgColor uncov_bgColor lb_fgColor lb_bgColor
-  global line_summary_total line_summary_hit
-  global toggle_summary_total toggle_summary_hit
-  global comb_summary_total comb_summary_hit
-  global fsm_summary_total fsm_summary_hit
-  global assert_summary_total assert_summary_hit
-  global memory_summary_total memory_summary_hit
+  global summary_list
 
   if {$cdd_name != ""} {
+
+    # Calculate the summary_list array
+    calculate_summary
 
     # If we are in module mode, list modules (otherwise, list instances)
     set funits [llength $funit_names]
     for {set i 0} {$i < $funits} {incr i} {
       if {$cov_rb == "Line"} {
         tcl_func_get_line_summary [lindex $funit_names $i] [lindex $funit_types $i]
-        set fully_covered [expr $line_summary_total == $line_summary_hit]
+        set hit       $line_summary_hit
+        set total     $line_summary_total
+        set low_limit $line_low_limit
       } elseif {$cov_rb == "Toggle"} {
         tcl_func_get_toggle_summary [lindex $funit_names $i] [lindex $funit_types $i]
-        set fully_covered [expr $toggle_summary_total == $toggle_summary_hit]
+        set hit       $toggle_summary_hit
+        set total     $toggle_summary_total
+        set low_limit $toggle_low_limit
       } elseif {$cov_rb == "Memory"} {
         tcl_func_get_memory_summary [lindex $funit_names $i] [lindex $funit_types $i]
-        set fully_covered [expr $memory_summary_total == $memory_summary_hit]
+        set hit       $memory_summary_hit
+        set total     $memory_summary_total
+        set low_limit $memory_low_limit
       } elseif {$cov_rb == "Logic"} {
         tcl_func_get_comb_summary [lindex $funit_names $i] [lindex $funit_types $i]
-        set fully_covered [expr $comb_summary_total == $comb_summary_hit]
+        set hit       $comb_summary_hit
+        set total     $comb_summary_total
+        set low_limit $comb_low_limit
       } elseif {$cov_rb == "FSM"} {
         tcl_func_get_fsm_summary [lindex $funit_names $i] [lindex $funit_types $i]
-        set fully_covered [expr $fsm_summary_total == $fsm_summary_hit]
+        set hit       $fsm_summary_hit
+        set total     $fsm_summary_total
+        set low_limit $fsm_low_limit
       } elseif {$cov_rb == "Assert"} {
         tcl_func_get_assert_summary [lindex $funit_names $i] [lindex $funit_types $i]
-        set fully_covered [expr $assert_summary_total == $assert_summary_hit]
+        set hit       $assert_summary_hit
+        set total     $assert_summary_total
+        set low_limit $assert_low_limit
       } else {
         # ERROR
       }
       if {$fully_covered == 0} {
-        .bot.left.l itemconfigure $i -foreground $uncov_fgColor -background $uncov_bgColor
+        .bot.left.ff.l itemconfigure $i -foreground $uncov_fgColor -background $uncov_bgColor
       } else {
-        .bot.left.l itemconfigure $i -foreground $lb_fgColor -background $lb_bgColor
+        .bot.left.ff.l itemconfigure $i -foreground $lb_fgColor -background $lb_bgColor
       }
     }
 
@@ -254,7 +319,7 @@ proc populate_text {} {
   global start_search_index
   global curr_toggle_ptr
 
-  set index [.bot.left.l curselection]
+  set index [.bot.left.ff.l curselection]
 
   if {$index != ""} {
 
@@ -519,6 +584,41 @@ proc bgerror {msg} {
   set retval [tk_messageBox -message $msg -title "Error" -type ok]
 
 }
+
+proc listbox_yset {args} {
+    
+  eval [linsert $args 0 .bot.left.lvb set]
+  listbox_yview moveto [lindex [.bot.left.lvb get] 0]
+
+} 
+  
+proc listbox_yview {args} {
+
+  eval [linsert $args 0 .bot.left.ff.l yview]
+  eval [linsert $args 0 .bot.left.fh.l yview]
+  eval [linsert $args 0 .bot.left.fm.l yview]
+  eval [linsert $args 0 .bot.left.ft.l yview]
+  eval [linsert $args 0 .bot.left.fp.l yview]
+
+}
+
+proc listbox_xset {args} {
+
+  eval [linsert $args 0 .bot.left.lhb set]
+  listbox_xview moveto [lindex [.bot.left.lhb get] 0]
+
+}
+
+proc listbox_xview {args} {
+
+  eval [linsert $args 0 .bot.left.ff.l xview]
+  eval [linsert $args 0 .bot.left.fh.l xview]
+  eval [linsert $args 0 .bot.left.fm.l xview]
+  eval [linsert $args 0 .bot.left.ft.l xview]
+  eval [linsert $args 0 .bot.left.fp.l xview]
+
+}
+
 
 # Read configuration file
 read_coveredrc
