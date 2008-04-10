@@ -18,6 +18,7 @@ source [file join $HOME scripts memory.tcl]
 
 set last_lb_index      ""
 set lwidth             -1 
+set lwidth_h1          -1
 set start_search_index 1.0
 set curr_uncov_index   ""
 set prev_uncov_index   ""
@@ -41,30 +42,11 @@ proc main_view {} {
   cov_create .covbox
 
   # Create the bottom frame
-  frame .bot -width 120 -height 300
+  panedwindow .bot -width 120 -height 300 -sashrelief raised -sashwidth 4
 
   # Create frames for pane handle
-  frame .bot.left -relief raised -borderwidth 1
+  frame .bot.left  -relief raised -borderwidth 1
   frame .bot.right -relief raised -borderwidth 1
-  frame .bot.handle -borderwidth 2 -relief raised -cursor sb_h_double_arrow
-
-  place .bot.left  -relheight 1 -width -1
-  place .bot.right -relheight 1 -relx 1 -anchor ne -width -1
-  place .bot.handle -rely 0.5 -anchor s -width 8 -height 8
-
-  bind .bot <Configure> {
-    set W  [winfo width .bot]
-    set X0 [winfo rootx .bot]
-    if {$lwidth == -1} {
-      set lwidth [expr .3 * $W]
-    }
-    main_place $W $lwidth
-  }
-
-  bind .bot.handle <B1-Motion> {
-    set lwidth [expr %X - $X0]
-    main_place $W $lwidth
-  }
 
   # Create the textbox header frame
   frame .bot.right.h
@@ -97,23 +79,22 @@ proc main_view {} {
   pack .bot.right.h.prev  -side right -fill both
 
   # Create the listbox frames and handles
-  frame .bot.left.ff   -relief flat
-  frame .bot.left.h1   -relief raised -cursor sb_h_double_arrow
-  frame .bot.left.fhmt -relief flat
-  frame .bot.left.h2   -relief raised -cursor sb_h_double_arrow
-  frame .bot.left.fp   -relief flat
-  frame .bot.left.fvb  -relief flat
+  panedwindow .bot.left.flb -relief raised -borderwidth 1 -sashrelief raised -sashwidth 4
+  frame .bot.left.flb.ff   -relief flat
+  frame .bot.left.flb.fhmt -relief flat
+  frame .bot.left.flb.fp   -relief flat
 
-  # Create the listbox label
-  label .bot.left.ff.ll   -text "Modules" -anchor w -width 30 -borderwidth 1 -relief raised
-  label .bot.left.fhmt.ll -text "(H/M/T)" -anchor w -width 11 -borderwidth 1 -relief raised
-  label .bot.left.fp.ll   -text "Hit %"   -anchor w -width 5  -borderwidth 1 -relief raised
-  label .bot.left.fvb.ll  -text " "       -anchor w -relief flat
+  # Create the listbox labels
+  label .bot.left.flb.ff.ll   -text "Modules" -anchor w -width 30 -borderwidth 1 -relief raised
+  label .bot.left.flb.fhmt.ll -text "(H/M/T)" -anchor w -width 11 -borderwidth 1 -relief raised
+  label .bot.left.flb.fp.ll   -text "Hit %"   -anchor w -width 5  -borderwidth 1 -relief raised
 
   # Create the listbox widget to display file names
-  listbox .bot.left.ff.l -yscrollcommand listbox_yset -xscrollcommand listbox_xset -width 30 -relief flat -selectborderwidth 0
-  listbox .bot.left.fhmt.l -yscrollcommand listbox_yset -xscrollcommand listbox_xset -width 11 -relief flat -selectborderwidth 0 -selectbackground [.bot.left.ff.l cget -background]
+  listbox .bot.left.flb.ff.l -yscrollcommand listbox_yset -xscrollcommand listbox_xset -width 30 -relief flat -selectborderwidth 0
+  listbox .bot.left.flb.fhmt.l -yscrollcommand listbox_yset -xscrollcommand listbox_xset -width 11 -relief flat -selectborderwidth 0 -selectbackground [.bot.left.ff.l cget -background]
   listbox .bot.left.fp.l -yscrollcommand listbox_yset -xscrollcommand listbox_xset -width 5  -relief flat -selectborderwidth 0 -selectbackground [.bot.left.ff.l cget -background]
+
+  label     .bot.left.fvb.ll  -height [.bot.left.flb.ff.ll cget -height]
   scrollbar .bot.left.fvb.lvb -command listbox_yview
   scrollbar .bot.left.lhb -orient horizontal -command listbox_xview
 
@@ -123,50 +104,53 @@ proc main_view {} {
   label .info -anchor w -relief raised -borderwidth 1
 
   # Pack the functional unit widgets into the functional unit frame
-  pack .bot.left.ff.ll -fill x
-  pack .bot.left.ff.l  -fill y
+  pack .bot.left.flb.ff.ll -fill x
+  pack .bot.left.flb.ff.l  -fill both -expand yes
 
   # Pack the hit/miss/total count widgets into the hit/miss/total count frame
-  pack .bot.left.fhmt.ll
-  pack .bot.left.fhmt.l -fill y
+  pack .bot.left.flb.fhmt.ll -fill x
+  pack .bot.left.flb.fhmt.l  -fill both -expand yes
 
   # Pack the hit percent widgets into the hit percent frame
-  pack .bot.left.fp.ll
-  pack .bot.left.fp.l -fill y
+  pack .bot.left.flb.fp.ll -fill x
+  pack .bot.left.flb.fp.l  -fill both -expand yes
+
+  # Pack the left paned window
+  .bot.left.flb add .bot.left.flb.ff
+  .bot.left.flb add .bot.left.flb.fhmt
+  .bot.left.flb add .bot.left.flb.fp
+  
+  .bot.left.flb paneconfigure .bot.left.flb.ff   -sticky news -stretch always
+  .bot.left.flb paneconfigure .bot.left.flb.fhmt -sticky news
+  .bot.left.flb paneconfigure .bot.left.flb.fp   -sticky news -stretch never
 
   # Pack the vertical scrollbar frame
   pack .bot.left.fvb.ll
-  pack .bot.left.fvb.lvb -fill y
+  pack .bot.left.fvb.lvb -expand yes
 
-  # Place the listbox widgets into the bottom left frame
-  # place .bot.left.ff   -relheight 1 -width -1
-  # place .bot.left.h1   -rely 0.5 -anchor s -width 8 -height 8
-  # place .bot.left.fhmt -relheight 1 -relx 1 -anchor ne -width -1
-  # place .bot.left.h2   -rely 0.5 -anchor s -width 8 -height 8
-  # place .bot.left.fp   -relheight 1 -relx 1 -anchor ne -width -1
-  # place .bot.left.fvb
-
+  # Pack the left frame
   grid rowconfigure    .bot.left 0 -weight 1
   grid columnconfigure .bot.left 0 -weight 1
-  grid .bot.left.ff    -row 0 -column 0 -sticky nsew
-  grid .bot.left.h1    -row 0 -column 1 -sticky nsew
-  grid .bot.left.fhmt  -row 0 -column 2 -sticky nsew
-  grid .bot.left.h2    -row 0 -column 3 -sticky nsew
-  grid .bot.left.fp    -row 0 -column 4 -sticky nsew
-  grid .bot.left.fvb   -row 0 -column 5 -sticky nsew
-  grid .bot.left.lhb   -row 1 -column 0 -columnspan 5 -sticky ew
+  grid .bot.left.flb -row 0 -column 0 -sticky news
+  grid .bot.left.fvb -row 0 -column 1 -sticky ns
+  grid .bot.left.lhb -row 1 -column 0 -sticky ew
 
   # Create the text widget to display the modules/instances
   text .bot.right.txt -yscrollcommand ".bot.right.vb set" -xscrollcommand ".bot.right.hb set" -wrap none -state disabled
   scrollbar .bot.right.vb -command ".bot.right.txt yview"
   scrollbar .bot.right.hb -orient horizontal -command ".bot.right.txt xview"
 
+  # Pack the right paned window
   grid rowconfigure    .bot.right 1 -weight 1
   grid columnconfigure .bot.right 0 -weight 1
   grid .bot.right.h   -row 0 -column 0 -columnspan 2 -sticky nsew
   grid .bot.right.txt -row 1 -column 0 -sticky nsew
   grid .bot.right.vb  -row 1 -column 1 -sticky ns
   grid .bot.right.hb  -row 2 -column 0 -sticky ew
+
+  # Pack the bottom window
+  .bot add .bot.left
+  .bot add .bot.right
 
   # Pack the widgets
   pack .bot  -fill both -expand yes
@@ -187,14 +171,6 @@ proc main_view {} {
 
 }
 
-proc main_place {width value} {
-
-  place .bot.left   -width $value
-  place .bot.handle -x $value
-  place .bot.right  -width [expr $width - $value]
-
-}
- 
 proc populate_listbox {} {
 
   global mod_inst_type funit_names funit_types inst_list cdd_name
@@ -205,10 +181,10 @@ proc populate_listbox {} {
   global summary_list
  
   # Remove contents currently in listboxes
-  set lb_size [.bot.left.ff.l size]
-  .bot.left.ff.l   delete 0 $lb_size
-  .bot.left.fhmt.l delete 0 $lb_size
-  .bot.left.fp.l   delete 0 $lb_size
+  set lb_size [.bot.left.flb.ff.l size]
+  .bot.left.flb.ff.l   delete 0 $lb_size
+  .bot.left.flb.fhmt.l delete 0 $lb_size
+  .bot.left.flb.fp.l   delete 0 $lb_size
 
   # Clear funit_names and funit_types values
   set funit_names ""
@@ -227,10 +203,10 @@ proc populate_listbox {} {
 
       for {set i 0} {$i < [llength $summary_list]} {incr i} {
         set funit [lindex $summary_list $i]
-        .bot.left.ff.l   insert end [lindex $funit 0]
-        .bot.left.ff.l   itemconfigure $i -background [lindex $funit 5]
-        .bot.left.fhmt.l insert end "[lindex $funit 1]/[lindex $funit 2]/[lindex $funit 3]"
-        .bot.left.fp.l   insert end "[lindex $funit 4]%"
+        .bot.left.flb.ff.l   insert end [lindex $funit 0]
+        .bot.left.flb.ff.l   itemconfigure $i -background [lindex $funit 5]
+        .bot.left.flb.fhmt.l insert end "[lindex $funit 1]/[lindex $funit 2]/[lindex $funit 3]"
+        .bot.left.flb.fp.l   insert end "[lindex $funit 4]%"
       }
 
       .bot.left.ff.ll configure -text "Modules"
@@ -244,66 +220,8 @@ proc populate_listbox {} {
         $listbox_w insert end $inst_name
       }
 
-      .bot.left.ff.ll configure -text "Instances"
+      .bot.left.flb.ff.ll configure -text "Instances"
 
-    }
-
-  }
-
-}
-
-proc highlight_listbox {} {
-
-  global cdd_name funit_names funit_types cov_rb
-  global uncov_fgColor uncov_bgColor lb_fgColor lb_bgColor
-  global summary_list
-
-  if {$cdd_name != ""} {
-
-    # Calculate the summary_list array
-    calculate_summary
-
-    # If we are in module mode, list modules (otherwise, list instances)
-    set funits [llength $funit_names]
-    for {set i 0} {$i < $funits} {incr i} {
-      if {$cov_rb == "Line"} {
-        tcl_func_get_line_summary [lindex $funit_names $i] [lindex $funit_types $i]
-        set hit       $line_summary_hit
-        set total     $line_summary_total
-        set low_limit $line_low_limit
-      } elseif {$cov_rb == "Toggle"} {
-        tcl_func_get_toggle_summary [lindex $funit_names $i] [lindex $funit_types $i]
-        set hit       $toggle_summary_hit
-        set total     $toggle_summary_total
-        set low_limit $toggle_low_limit
-      } elseif {$cov_rb == "Memory"} {
-        tcl_func_get_memory_summary [lindex $funit_names $i] [lindex $funit_types $i]
-        set hit       $memory_summary_hit
-        set total     $memory_summary_total
-        set low_limit $memory_low_limit
-      } elseif {$cov_rb == "Logic"} {
-        tcl_func_get_comb_summary [lindex $funit_names $i] [lindex $funit_types $i]
-        set hit       $comb_summary_hit
-        set total     $comb_summary_total
-        set low_limit $comb_low_limit
-      } elseif {$cov_rb == "FSM"} {
-        tcl_func_get_fsm_summary [lindex $funit_names $i] [lindex $funit_types $i]
-        set hit       $fsm_summary_hit
-        set total     $fsm_summary_total
-        set low_limit $fsm_low_limit
-      } elseif {$cov_rb == "Assert"} {
-        tcl_func_get_assert_summary [lindex $funit_names $i] [lindex $funit_types $i]
-        set hit       $assert_summary_hit
-        set total     $assert_summary_total
-        set low_limit $assert_low_limit
-      } else {
-        # ERROR
-      }
-      if {$fully_covered == 0} {
-        .bot.left.ff.l itemconfigure $i -foreground $uncov_fgColor -background $uncov_bgColor
-      } else {
-        .bot.left.ff.l itemconfigure $i -foreground $lb_fgColor -background $lb_bgColor
-      }
     }
 
   }
