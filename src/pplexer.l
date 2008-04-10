@@ -578,9 +578,25 @@ static void do_include() { PROFILE(DO_INCLUDE);
     }
 
     if( (curr == NULL) && (standby->file == 0) ) {
+      struct include_stack_t* is = istack;
+      struct include_stack_t* tmp;
       rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to find `include file \"%s\" in include path", obf_file( standby->path ) );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      while( is != 0 ) {
+        tmp = is;
+        is  = is->next;
+        if( tmp->file != 0 ) {
+          rv = fclose( tmp->file );
+          assert( rv == 0 );
+        }
+        free_safe( tmp->path, (strlen( tmp->path ) + 1) );
+        free_safe( tmp, sizeof( struct include_stack_t ) );
+      }
+      istack  = 0;
+      free_safe( standby->path, (strlen( standby->path ) + 1) );
+      free_safe( standby, sizeof( struct include_stack_t ) );
+      standby = 0;
       printf( "pplexer Throw A\n" );
       Throw 0;
     }
@@ -680,6 +696,8 @@ void reset_pplexer( char* filename, FILE* out ) { PROFILE(RESET_PPLEXER);
   if( isp->file == 0 ) {
     perror( isp->path );
     printf( "pplexer Throw B\n" );
+    free_safe( isp->path, (strlen( isp->path ) + 1) );
+    free_safe( isp, sizeof( struct include_stack_t ) );
     Throw 0;
   }
 

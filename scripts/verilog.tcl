@@ -15,11 +15,26 @@ proc regsub-eval {re string cmd} {
 }
 
 # Preprocesses a specified Verilog file, performing 
-proc preprocess_verilog {txt} {
+proc preprocess_verilog {fname} {
 
-  puts $txt
+  global fileContent
 
-  return $txt
+  puts "In preprocess_verilog, fname: $fname"
+
+  set contents [split $fileContent($fname) \n]
+  set fileContent($fname) 0
+  set linenum 1
+
+  foreach line $contents {
+    set tokens [split $line]
+    puts "tokens: $tokens"
+    puts "tokens-0: [lindex $tokens 0], tokens-2: [lindex $tokens 2]."
+    if {[expr ([lindex $tokens 0] == "`line") && ([lindex $tokens 2] == "\"$fname\"")]} {
+      set linenum [lindex $tokens 1]
+    } else {
+      set fileContent($fname) [linsert $fileContent($fname) $linenum $line]
+    }
+  }
 
 }
 
@@ -52,6 +67,7 @@ proc load_verilog {fname pp} {
     if {$pp} {
       file delete -force $tmpname
     }
+    preprocess_verilog $fname
   }
 
   # Return current working directory

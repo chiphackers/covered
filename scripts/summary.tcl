@@ -213,15 +213,18 @@ proc calculate_summary {} {
 
     ;# Calculate color
     if {$percent < $low_limit} {
-      set color red
+      set bcolor "#c00000"
+      set lcolor "#ff7088"
     } elseif {$percent < 100} {
-      set color yellow
+      set bcolor "#e9e500"
+      set lcolor "#ffff80"
     } else {
-      set color green
+      set bcolor "#006400"
+      set lcolor "#90ee90"
     }
 
     ;# Add this functional unit to the list to sort
-    lappend summary_list [list [lindex $funit_names $i] $hit $miss $total $percent $color]
+    lappend summary_list [list [lindex $funit_names $i] $hit $miss $total $percent $bcolor $lcolor]
 
   }
 

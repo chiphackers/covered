@@ -224,6 +224,7 @@ void print_output( const char* msg, int type, const char* file, int line ) {
 #ifndef VPI_ONLY
 #ifdef HAVE_TCLTK
           Tcl_SetResult( interp, tmpmsg, TCL_VOLATILE );
+          fprintf( stderr, "ERROR!  %s (file: %s, line: %d)\n", msg, obf_file( file ), line );
 #endif
 #endif
         } else {
@@ -236,6 +237,7 @@ void print_output( const char* msg, int type, const char* file, int line ) {
 #ifndef VPI_ONLY
 #ifdef HAVE_TCLTK
           Tcl_SetResult( interp, tmpmsg, TCL_VOLATILE );
+          fprintf( stderr, "ERROR!  %s\n", msg );
 #endif
 #endif
         } else {
@@ -1343,6 +1345,10 @@ void calc_miss_percent(
 
 /*
  $Log$
+ Revision 1.89  2008/04/08 23:58:17  phase1geo
+ Fixing test mode code so that it works properly in regression and stand-alone
+ runs.
+
  Revision 1.88  2008/04/06 12:41:04  phase1geo
  Fixing memory calculation issue with scope_gen_printable.  Updating regressions.
 
