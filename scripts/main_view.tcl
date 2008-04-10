@@ -56,7 +56,7 @@ proc main_view {} {
     set W  [winfo width .bot]
     set X0 [winfo rootx .bot]
     if {$lwidth == -1} {
-      set lwidth [expr .5 * $W]
+      set lwidth [expr .3 * $W]
     }
     main_place $W $lwidth
   }
@@ -123,8 +123,8 @@ proc main_view {} {
   label .info -anchor w -relief raised -borderwidth 1
 
   # Pack the functional unit widgets into the functional unit frame
-  pack .bot.left.ff.ll
-  pack .bot.left.ff.l -fill y
+  pack .bot.left.ff.ll -fill x
+  pack .bot.left.ff.l  -fill y
 
   # Pack the hit/miss/total count widgets into the hit/miss/total count frame
   pack .bot.left.fhmt.ll
