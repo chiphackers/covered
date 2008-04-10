@@ -56,7 +56,7 @@ proc main_view {} {
     set W  [winfo width .bot]
     set X0 [winfo rootx .bot]
     if {$lwidth == -1} {
-      set lwidth [expr .25 * $W]
+      set lwidth [expr .5 * $W]
     }
     main_place $W $lwidth
   }
@@ -96,29 +96,28 @@ proc main_view {} {
   pack .bot.right.h.next  -side right -fill both
   pack .bot.right.h.prev  -side right -fill both
 
-  # Create the listbox frames
-  frame .bot.left.ff -relief flat
-  frame .bot.left.fh -relief flat
-  frame .bot.left.fm -relief flat
-  frame .bot.left.ft -relief flat
-  frame .bot.left.fp -relief flat
+  # Create the listbox frames and handles
+  frame .bot.left.ff   -relief flat
+  frame .bot.left.h1   -relief raised -cursor sb_h_double_arrow
+  frame .bot.left.fhmt -relief flat
+  frame .bot.left.h2   -relief raised -cursor sb_h_double_arrow
+  frame .bot.left.fp   -relief flat
+  frame .bot.left.fvb  -relief flat
 
   # Create the listbox label
-  label .bot.left.ff.ll -text "Modules" -anchor w -width 30 -borderwidth 1
-  label .bot.left.fh.ll -text "Hit"     -anchor w -width 11 -borderwidth 1
-  label .bot.left.fm.ll -text "Miss"    -anchor w -width 11 -borderwidth 1
-  label .bot.left.ft.ll -text "Total"   -anchor w -width 11 -borderwidth 1
-  label .bot.left.fp.ll -text "Hit %"   -anchor w -width 5  -borderwidth 1
+  label .bot.left.ff.ll   -text "Modules" -anchor w -width 30 -borderwidth 1 -relief raised
+  label .bot.left.fhmt.ll -text "(H/M/T)" -anchor w -width 11 -borderwidth 1 -relief raised
+  label .bot.left.fp.ll   -text "Hit %"   -anchor w -width 5  -borderwidth 1 -relief raised
+  label .bot.left.fvb.ll  -text " "       -anchor w -relief flat
 
   # Create the listbox widget to display file names
   listbox .bot.left.ff.l -yscrollcommand listbox_yset -xscrollcommand listbox_xset -width 30 -relief flat -selectborderwidth 0
-  listbox .bot.left.fh.l -yscrollcommand listbox_yset -xscrollcommand listbox_xset -width 11 -relief flat -selectborderwidth 0 -selectbackground [.bot.left.ff.l cget -background]
-  listbox .bot.left.fm.l -yscrollcommand listbox_yset -xscrollcommand listbox_xset -width 11 -relief flat -selectborderwidth 0 -selectbackground [.bot.left.ff.l cget -background]
-  listbox .bot.left.ft.l -yscrollcommand listbox_yset -xscrollcommand listbox_xset -width 11 -relief flat -selectborderwidth 0 -selectbackground [.bot.left.ff.l cget -background]
+  listbox .bot.left.fhmt.l -yscrollcommand listbox_yset -xscrollcommand listbox_xset -width 11 -relief flat -selectborderwidth 0 -selectbackground [.bot.left.ff.l cget -background]
   listbox .bot.left.fp.l -yscrollcommand listbox_yset -xscrollcommand listbox_xset -width 5  -relief flat -selectborderwidth 0 -selectbackground [.bot.left.ff.l cget -background]
-  bind .bot.left.ff.l <<ListboxSelect>> populate_text
-  scrollbar .bot.left.lvb -command listbox_yview
+  scrollbar .bot.left.fvb.lvb -command listbox_yview
   scrollbar .bot.left.lhb -orient horizontal -command listbox_xview
+
+  bind .bot.left.ff.l <<ListboxSelect>> populate_text
 
   # Create bottom information bar
   label .info -anchor w -relief raised -borderwidth 1
@@ -127,32 +126,35 @@ proc main_view {} {
   pack .bot.left.ff.ll
   pack .bot.left.ff.l -fill y
 
-  # Pack the hit count widgets into the hit count frame
-  pack .bot.left.fh.ll
-  pack .bot.left.fh.l -fill y
-
-  # Pack the miss count widgets into the miss count frame
-  pack .bot.left.fm.ll
-  pack .bot.left.fm.l -fill y
-
-  # Pack the total count widgets into the total count frame
-  pack .bot.left.ft.ll
-  pack .bot.left.ft.l -fill y
+  # Pack the hit/miss/total count widgets into the hit/miss/total count frame
+  pack .bot.left.fhmt.ll
+  pack .bot.left.fhmt.l -fill y
 
   # Pack the hit percent widgets into the hit percent frame
   pack .bot.left.fp.ll
   pack .bot.left.fp.l -fill y
 
-  # Pack the listbox widgets into the bottom left frame
+  # Pack the vertical scrollbar frame
+  pack .bot.left.fvb.ll
+  pack .bot.left.fvb.lvb -fill y
+
+  # Place the listbox widgets into the bottom left frame
+  # place .bot.left.ff   -relheight 1 -width -1
+  # place .bot.left.h1   -rely 0.5 -anchor s -width 8 -height 8
+  # place .bot.left.fhmt -relheight 1 -relx 1 -anchor ne -width -1
+  # place .bot.left.h2   -rely 0.5 -anchor s -width 8 -height 8
+  # place .bot.left.fp   -relheight 1 -relx 1 -anchor ne -width -1
+  # place .bot.left.fvb
+
   grid rowconfigure    .bot.left 0 -weight 1
   grid columnconfigure .bot.left 0 -weight 1
-  grid .bot.left.ff  -row 0 -column 0 -sticky nsew
-  grid .bot.left.fh  -row 0 -column 1 -sticky nsew
-  grid .bot.left.fm  -row 0 -column 2 -sticky nsew
-  grid .bot.left.ft  -row 0 -column 3 -sticky nsew
-  grid .bot.left.fp  -row 0 -column 4 -sticky nsew
-  grid .bot.left.lvb -row 0 -column 5 -sticky ns
-  grid .bot.left.lhb -row 1 -column 0 -columnspan 5 -sticky ew
+  grid .bot.left.ff    -row 0 -column 0 -sticky nsew
+  grid .bot.left.h1    -row 0 -column 1 -sticky nsew
+  grid .bot.left.fhmt  -row 0 -column 2 -sticky nsew
+  grid .bot.left.h2    -row 0 -column 3 -sticky nsew
+  grid .bot.left.fp    -row 0 -column 4 -sticky nsew
+  grid .bot.left.fvb   -row 0 -column 5 -sticky nsew
+  grid .bot.left.lhb   -row 1 -column 0 -columnspan 5 -sticky ew
 
   # Create the text widget to display the modules/instances
   text .bot.right.txt -yscrollcommand ".bot.right.vb set" -xscrollcommand ".bot.right.hb set" -wrap none -state disabled
@@ -204,11 +206,9 @@ proc populate_listbox {} {
  
   # Remove contents currently in listboxes
   set lb_size [.bot.left.ff.l size]
-  .bot.left.ff.l delete 0 $lb_size
-  .bot.left.ff.l delete 0 $lb_size
-  .bot.left.ff.l delete 0 $lb_size
-  .bot.left.ff.l delete 0 $lb_size
-  .bot.left.ff.l delete 0 $lb_size
+  .bot.left.ff.l   delete 0 $lb_size
+  .bot.left.fhmt.l delete 0 $lb_size
+  .bot.left.fp.l   delete 0 $lb_size
 
   # Clear funit_names and funit_types values
   set funit_names ""
@@ -227,12 +227,10 @@ proc populate_listbox {} {
 
       for {set i 0} {$i < [llength $summary_list]} {incr i} {
         set funit [lindex $summary_list $i]
-        .bot.left.ff.l insert end [lindex $funit 0]
-        .bot.left.ff.l itemconfigure $i -background [lindex $funit 5]
-        .bot.left.fh.l insert end [join [list [lindex $funit 1] "/"]]
-        .bot.left.fm.l insert end [join [list [lindex $funit 2] "/"]]
-        .bot.left.ft.l insert end [lindex $funit 3]
-        .bot.left.fp.l insert end [join [list [lindex $funit 4] "%"]]
+        .bot.left.ff.l   insert end [lindex $funit 0]
+        .bot.left.ff.l   itemconfigure $i -background [lindex $funit 5]
+        .bot.left.fhmt.l insert end "[lindex $funit 1]/[lindex $funit 2]/[lindex $funit 3]"
+        .bot.left.fp.l   insert end "[lindex $funit 4]%"
       }
 
       .bot.left.ff.ll configure -text "Modules"
@@ -587,18 +585,16 @@ proc bgerror {msg} {
 
 proc listbox_yset {args} {
     
-  eval [linsert $args 0 .bot.left.lvb set]
-  listbox_yview moveto [lindex [.bot.left.lvb get] 0]
+  eval [linsert $args 0 .bot.left.fvb.lvb set]
+  listbox_yview moveto [lindex [.bot.left.fvb.lvb get] 0]
 
 } 
   
 proc listbox_yview {args} {
 
-  eval [linsert $args 0 .bot.left.ff.l yview]
-  eval [linsert $args 0 .bot.left.fh.l yview]
-  eval [linsert $args 0 .bot.left.fm.l yview]
-  eval [linsert $args 0 .bot.left.ft.l yview]
-  eval [linsert $args 0 .bot.left.fp.l yview]
+  eval [linsert $args 0 .bot.left.ff.l   yview]
+  eval [linsert $args 0 .bot.left.fhmt.l yview]
+  eval [linsert $args 0 .bot.left.fp.l   yview]
 
 }
 
@@ -611,11 +607,9 @@ proc listbox_xset {args} {
 
 proc listbox_xview {args} {
 
-  eval [linsert $args 0 .bot.left.ff.l xview]
-  eval [linsert $args 0 .bot.left.fh.l xview]
-  eval [linsert $args 0 .bot.left.fm.l xview]
-  eval [linsert $args 0 .bot.left.ft.l xview]
-  eval [linsert $args 0 .bot.left.fp.l xview]
+  eval [linsert $args 0 .bot.left.ff.l   xview]
+  eval [linsert $args 0 .bot.left.fhmt.l xview]
+  eval [linsert $args 0 .bot.left.fp.l   xview]
 
 }
 
