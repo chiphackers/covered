@@ -14,27 +14,25 @@ proc regsub-eval {re string cmd} {
 
 }
 
-# Preprocesses a specified Verilog file, performing 
-proc preprocess_verilog {fname} {
+# Postprocesses a specified Verilog file that contains `line directives from preprocessor
+proc postprocess_verilog {fname} {
 
   global fileContent
 
-  puts "In preprocess_verilog, fname: $fname"
-
   set contents [split $fileContent($fname) \n]
-  set fileContent($fname) 0
   set linenum 1
+  set newContent {}
 
   foreach line $contents {
-    set tokens [split $line]
-    puts "tokens: $tokens"
-    puts "tokens-0: [lindex $tokens 0], tokens-2: [lindex $tokens 2]."
-    if {[expr ([lindex $tokens 0] == "`line") && ([lindex $tokens 2] == "\"$fname\"")]} {
-      set linenum [lindex $tokens 1]
-    } else {
-      set fileContent($fname) [linsert $fileContent($fname) $linenum $line]
+    set pattern "`line\\s+(\\d+)\\s+\"$fname\""
+    if {[regexp "$pattern" $line -> linenum] == 0} {
+      set newContent [linsert $newContent [expr $linenum - 1] $line]
+      incr linenum
     }
   }
+
+  # Recreate the new file content
+  set fileContent($fname) [join $newContent "\n"]
 
 }
 
@@ -67,7 +65,7 @@ proc load_verilog {fname pp} {
     if {$pp} {
       file delete -force $tmpname
     }
-    preprocess_verilog $fname
+    postprocess_verilog $fname
   }
 
   # Return current working directory

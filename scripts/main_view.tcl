@@ -156,7 +156,7 @@ proc main_view {} {
   grid .bot.left.fvb -row 0 -column 1 -sticky ns
 
   # Bind the listbox selection event
-  bind .bot.left.pw.ff.l <<ListboxSelect>> populate_text
+  bind .bot.left.pw.ff.l <<ListboxSelect>> { populate_text .bot.left.pw.ff.l   .bot.left.pw.fhmt.l .bot.left.pw.fp.l   }
 
   # Pack the bottom window
   .bot add .bot.left
@@ -219,7 +219,9 @@ proc populate_listbox {} {
         .bot.left.pw.ff.l   insert end [lindex $funit 0]
         .bot.left.pw.ff.l   itemconfigure $i -background [lindex $funit 6] -selectbackground [lindex $funit 5]
         .bot.left.pw.fhmt.l insert end "[lindex $funit 1]/[lindex $funit 2]/[lindex $funit 3]"
+        .bot.left.pw.fhmt.l itemconfigure $i -background [lindex $funit 6] -selectbackground [lindex $funit 6]
         .bot.left.pw.fp.l   insert end "[lindex $funit 4]%"
+        .bot.left.pw.fp.l   itemconfigure $i -background [lindex $funit 6] -selectbackground [lindex $funit 6]
       }
 
       .bot.left.pw.ff.ll configure -text "Modules"
@@ -241,15 +243,27 @@ proc populate_listbox {} {
 
 }
 
-proc populate_text {} {
+proc populate_text {ours theirs1 theirs2} {
 
   global cov_rb mod_inst_type funit_names funit_types
   global curr_funit_name curr_funit_type last_lb_index
   global start_search_index
   global curr_toggle_ptr
 
-  set index [.bot.left.pw.ff.l curselection]
+  # Get the index of the current selection
+  set index [$ours curselection]
 
+  # Reset background colors for all listboxes at last index
+  if {$last_lb_index != ""} {
+    $theirs1 itemconfigure $last_lb_index -background [$ours itemcget $last_lb_index -background]
+    $theirs2 itemconfigure $last_lb_index -background [$ours itemcget $last_lb_index -background]
+  }
+
+  # Make the others look the same
+  $theirs1 itemconfigure $index -background [$ours itemcget $index -selectbackground]
+  $theirs2 itemconfigure $index -background [$ours itemcget $index -selectbackground]
+
+  # Update the text, if necessary
   if {$index != ""} {
 
     if {$last_lb_index != $index} {

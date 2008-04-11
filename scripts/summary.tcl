@@ -252,7 +252,7 @@ proc populate_summary { w } {
   for {set i 0} {$i < [llength $summary_list]} {incr i} {
 
     ;# Add the summary information to the summary box
-    add_func_unit $w [lindex [lindex $summary_list $i] 0] [lindex [lindex $summary_list $i] 1] [lindex [lindex $summary_list $i] 2] $i
+    add_func_unit $w [lindex [lindex $summary_list $i] 0] [lindex [lindex $summary_list $i] 4] [lindex [lindex $summary_list $i] 6] $i
 
   }
 

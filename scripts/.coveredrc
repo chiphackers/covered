@@ -8,13 +8,13 @@
 # to be uncovered during simulation.  The value can be any legal color
 # value accepted by Tcl.
 
-UncoveredForegroundColor = blue
+UncoveredForegroundColor = #000000
 
 # Sets the background color for all source code that is found
 # to be uncovered during simulation.  The value can be any legal color
 # value accepted by Tcl.
 
-UncoveredBackgroundColor = yellow
+UncoveredBackgroundColor = #a14756
 
 # Sets the foreground color for all source code that is found
 # to be covered during simulation.  The value can be any legal color value
@@ -26,7 +26,7 @@ CoveredForegroundColor = black
 # to be covered during simulation.  The value can be any legal color value.
 # accepted by Tcl.
 
-CoveredBackgroundColor = white
+CoveredBackgroundColor = #90ee90
 
 # Sets the foreground color for all source code that has been detected as
 # containing a race condition situation.  This code is not analyzed by Covered.
