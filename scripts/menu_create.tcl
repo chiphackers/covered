@@ -247,6 +247,43 @@ proc menu_create {} {
       }
     }
   }
+  $m add separator
+  $m add command -label "Hide Summary Hit Column" -command {
+    if {[.bot.left.tl columncget 1 -hide] == 1} {
+      .menubar.view entryconfigure 7 -label "Hide Summary Hit Column"
+      .bot.left.tl columnconfigure 1 -hide false
+    } else {
+      .menubar.view entryconfigure 7 -label "Show Summary Hit Column"
+      .bot.left.tl columnconfigure 1 -hide true
+    }
+  }
+  $m add command -label "Hide Summary Miss Column" -command {
+    if {[.bot.left.tl columncget 2 -hide] == 1} {
+      .menubar.view entryconfigure 8 -label "Hide Summary Miss Column"
+      .bot.left.tl columnconfigure 2 -hide false
+    } else {
+      .menubar.view entryconfigure 8 -label "Show Summary Miss Column"
+      .bot.left.tl columnconfigure 2 -hide true
+    }
+  }
+  $m add command -label "Hide Summary Total Column" -command {
+    if {[.bot.left.tl columncget 3 -hide] == 1} {
+      .menubar.view entryconfigure 9 -label "Hide Summary Total Column"
+      .bot.left.tl columnconfigure 3 -hide false
+    } else {
+      .menubar.view entryconfigure 9 -label "Show Summary Total Column"
+      .bot.left.tl columnconfigure 3 -hide true
+    }
+  }
+  $m add command -label "Hide Summary Hit Percent Column" -command {
+    if {[.bot.left.tl columncget 4 -hide] == 1} {
+      .menubar.view entryconfigure 10 -label "Hide Summary Hit Percent Column"
+      .bot.left.tl columnconfigure 4 -hide false
+    } else {
+      .menubar.view entryconfigure 10 -label "Show Summary Hit Percent Column"
+      .bot.left.tl columnconfigure 4 -hide true
+    }
+  }
   # If we are running on Mac OS X, add preferences to applications menu
   if {[tk windowingsystem] eq "aqua"} {
     proc ::tk::mac::ShowPreferences {} { create_preferences -1 }
