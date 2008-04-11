@@ -1,10 +1,11 @@
 #!/usr/bin/env wish
 
-set cdd_name      ""
-set uncov_type    1
-set cov_type      0
-set race_type     0
-set mod_inst_type "module"
+set cdd_name           ""
+set uncov_type         1
+set cov_type           0
+set race_type          0
+set mod_inst_type      "module"
+set last_mod_inst_type ""
 
 set file_types {
   {{Code Coverage Database Files} {.cdd}}

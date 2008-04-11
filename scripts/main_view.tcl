@@ -16,6 +16,9 @@ source [file join $HOME scripts assert.tcl]
 source [file join $HOME scripts verilog.tcl]
 source [file join $HOME scripts memory.tcl]
 
+# The Tablelist package is used for displaying instance/module hit/miss/total/percent hit information
+package require Tablelist
+
 set last_lb_index      ""
 set lwidth             -1 
 set lwidth_h1          -1
@@ -99,64 +102,28 @@ proc main_view {} {
   # POPULATE LEFT BOTTOM FRAME #
   ##############################
 
-  # Create listbox paned window and associated widgets
-  panedwindow .bot.left.pw -relief flat -borderwidth 1 -sashrelief flat -sashwidth 4
+  # Create Tablelist and associated scrollbars
+  tablelist::tablelist .bot.left.tl \
+    -columns {0 "Module" 0 "Hit" 0 "Miss" 0 "Total" 0 "Hit %" 0 "Index"} \
+    -labelcommand tablelist::sortByColumn -xscrollcommand {.bot.left.hb set} -yscrollcommand {.bot.left.vb set} -stretch all
 
-  # Create and populate functional unit listbox frame
-  frame     .bot.left.pw.ff    -relief flat
-  label     .bot.left.pw.ff.ll -text "Modules" -anchor w -width 30 -relief flat
-  listbox   .bot.left.pw.ff.l  -yscrollcommand listbox_yset -xscrollcommand {.bot.left.pw.ff.hb set} -width 30 -relief sunken -selectborderwidth 0 
-  scrollbar .bot.left.pw.ff.hb -orient horizontal -command {.bot.left.pw.ff.l xview}
+  .bot.left.tl columnconfigure 1 -sortmode integer -stretchable false
+  .bot.left.tl columnconfigure 2 -sortmode integer -stretchable false
+  .bot.left.tl columnconfigure 3 -sortmode integer -stretchable false
+  .bot.left.tl columnconfigure 4 -sortmode integer -stretchable false
+  .bot.left.tl columnconfigure 5 -hide true
 
-  pack .bot.left.pw.ff.ll -fill x
-  pack .bot.left.pw.ff.l  -fill both -expand yes
-  pack .bot.left.pw.ff.hb -fill x
+  scrollbar .bot.left.vb -command {.bot.left.tl yview}
+  scrollbar .bot.left.hb -orient horizontal -command {.bot.left.tl xview}
 
-  # Create and populate hit/miss/total listbox frame
-  frame     .bot.left.pw.fhmt    -relief flat
-  label     .bot.left.pw.fhmt.ll -text "(H/M/T)" -anchor w -width 11 -relief flat
-  listbox   .bot.left.pw.fhmt.l  -yscrollcommand listbox_yset -xscrollcommand {.bot.left.pw.fhmt.hb set} -width 11 -relief sunken -selectborderwidth 0 -selectbackground [.bot.left.pw.ff.l cget -background]
-  scrollbar .bot.left.pw.fhmt.hb -orient horizontal -command {.bot.left.pw.fhmt.l xview}
-
-  pack .bot.left.pw.fhmt.ll -fill x
-  pack .bot.left.pw.fhmt.l  -fill both -expand yes
-  pack .bot.left.pw.fhmt.hb -fill x
-
-  # Create and populate hit percent listbox frame
-  frame     .bot.left.pw.fp    -relief flat
-  label     .bot.left.pw.fp.ll -text "Hit %"   -anchor w -width 5 -relief flat
-  listbox   .bot.left.pw.fp.l  -yscrollcommand listbox_yset -xscrollcommand {.bot.left.pw.fp.hb set} -width 5  -relief sunken -selectborderwidth 0 -selectbackground [.bot.left.pw.ff.l cget -background]
-  scrollbar .bot.left.pw.fp.hb -orient horizontal -command {.bot.left.pw.fp.l xview}
-
-  pack .bot.left.pw.fp.ll -fill x
-  pack .bot.left.pw.fp.l  -fill both -expand yes
-  pack .bot.left.pw.fp.hb -fill x
-
-  # Now add the above listbox frames to the paned window and configure them
-  .bot.left.pw add .bot.left.pw.ff
-  .bot.left.pw add .bot.left.pw.fhmt
-  .bot.left.pw add .bot.left.pw.fp
-  
-  .bot.left.pw paneconfigure .bot.left.pw.ff   -sticky news -stretch always
-  .bot.left.pw paneconfigure .bot.left.pw.fhmt -sticky news
-  .bot.left.pw paneconfigure .bot.left.pw.fp   -sticky news -stretch never
-
-  # Create and populate the vertical scrollbar frame
-  frame     .bot.left.fvb     -relief flat
-  label     .bot.left.fvb.ll  -height [.bot.left.pw.ff.ll cget -height]
-  scrollbar .bot.left.fvb.lvb -command listbox_yview
-
-  pack .bot.left.fvb.ll
-  pack .bot.left.fvb.lvb -fill y -expand yes
-
-  # Pack the left frame
   grid rowconfigure    .bot.left 0 -weight 1
   grid columnconfigure .bot.left 0 -weight 1
-  grid .bot.left.pw  -row 0 -column 0 -sticky news
-  grid .bot.left.fvb -row 0 -column 1 -sticky ns
+  grid .bot.left.tl -row 0 -column 0 -sticky news
+  grid .bot.left.vb -row 0 -column 1 -sticky ns
+  grid .bot.left.hb -row 1 -column 0 -sticky ew
 
   # Bind the listbox selection event
-  bind .bot.left.pw.ff.l <<ListboxSelect>> { populate_text .bot.left.pw.ff.l   .bot.left.pw.fhmt.l .bot.left.pw.fp.l   }
+  bind .bot.left.tl <<ListboxSelect>> populate_text
 
   # Pack the bottom window
   .bot add .bot.left
@@ -186,24 +153,30 @@ proc main_view {} {
 
 proc populate_listbox {} {
 
-  global mod_inst_type funit_names funit_types inst_list cdd_name
+  global mod_inst_type last_mod_inst_type funit_names funit_types inst_list cdd_name
   global line_summary_total line_summary_hit
   global toggle_summary_total toggle_summary_hit
   global uncov_fgColor uncov_bgColor
   global lb_fgColor lb_bgColor
   global summary_list
  
-  # Remove contents currently in listboxes
-  set lb_size [.bot.left.pw.ff.l size]
-  .bot.left.pw.ff.l   delete 0 $lb_size
-  .bot.left.pw.fhmt.l delete 0 $lb_size
-  .bot.left.pw.fp.l   delete 0 $lb_size
-
   # Clear funit_names and funit_types values
   set funit_names ""
   set funit_types ""
 
   if {$cdd_name != ""} {
+
+    # Get the currently loaded indices, if any
+    if {$last_mod_inst_type == $mod_inst_type} {
+      set curr_indices  [.bot.left.tl getcolumn 5]
+      set curr_selected [.bot.left.tl curselection]
+    } else {
+      set curr_indices  {}
+      set curr_selected ""
+    }
+
+    # Remove contents currently in listboxes
+    .bot.left.tl delete 0 end
 
     # If we are in module mode, list modules (otherwise, list instances)
     if {$mod_inst_type == "module"} {
@@ -215,16 +188,17 @@ proc populate_listbox {} {
       calculate_summary
 
       for {set i 0} {$i < [llength $summary_list]} {incr i} {
-        set funit [lindex $summary_list $i]
-        .bot.left.pw.ff.l   insert end [lindex $funit 0]
-        .bot.left.pw.ff.l   itemconfigure $i -background [lindex $funit 6] -selectbackground [lindex $funit 5]
-        .bot.left.pw.fhmt.l insert end "[lindex $funit 1]/[lindex $funit 2]/[lindex $funit 3]"
-        .bot.left.pw.fhmt.l itemconfigure $i -background [lindex $funit 6] -selectbackground [lindex $funit 6]
-        .bot.left.pw.fp.l   insert end "[lindex $funit 4]%"
-        .bot.left.pw.fp.l   itemconfigure $i -background [lindex $funit 6] -selectbackground [lindex $funit 6]
+        if {[llength $curr_indices] > 0} {
+          set index [lindex $curr_indices $i]
+        } else {
+          set index $i
+        }
+        set funit [lindex $summary_list $index]
+        .bot.left.tl insert end [list [lindex $funit 0] [lindex $funit 1] [lindex $funit 2] [lindex $funit 3] [lindex $funit 4] $index]
+        .bot.left.tl rowconfigure end -background [lindex $funit 6] -selectbackground [lindex $funit 5]
       }
 
-      .bot.left.pw.ff.ll configure -text "Modules"
+      .bot.left.tl columnconfigure 0 -title "Modules"
 
     } else {
 
@@ -235,15 +209,23 @@ proc populate_listbox {} {
         $listbox_w insert end $inst_name
       }
 
-      .bot.left.pw.ff.ll configure -text "Instances"
+      .bot.left.tl columnconfigure 0 -title "Instances"
 
     }
+
+    # Re-activate the currently selected item
+    if {$curr_selected != ""} {
+      .bot.left.tl selection set $curr_selected
+    }
+
+    # Set the last module/instance type variable to the current
+    set last_mod_inst_type $mod_inst_type;
 
   }
 
 }
 
-proc populate_text {ours theirs1 theirs2} {
+proc populate_text {} {
 
   global cov_rb mod_inst_type funit_names funit_types
   global curr_funit_name curr_funit_type last_lb_index
@@ -251,17 +233,7 @@ proc populate_text {ours theirs1 theirs2} {
   global curr_toggle_ptr
 
   # Get the index of the current selection
-  set index [$ours curselection]
-
-  # Reset background colors for all listboxes at last index
-  if {$last_lb_index != ""} {
-    $theirs1 itemconfigure $last_lb_index -background [$ours itemcget $last_lb_index -background]
-    $theirs2 itemconfigure $last_lb_index -background [$ours itemcget $last_lb_index -background]
-  }
-
-  # Make the others look the same
-  $theirs1 itemconfigure $index -background [$ours itemcget $index -selectbackground]
-  $theirs2 itemconfigure $index -background [$ours itemcget $index -selectbackground]
+  set index [lindex [.bot.left.tl get [.bot.left.tl curselection]] 5]
 
   # Update the text, if necessary
   if {$index != ""} {
@@ -304,6 +276,14 @@ proc populate_text {ours theirs1 theirs2} {
     }
 
   }
+
+}
+
+proc rearrange_summary_list {} {
+
+  set summary_list {}
+
+  # TBD
 
 }
 
