@@ -104,14 +104,15 @@ proc main_view {} {
 
   # Create Tablelist and associated scrollbars
   tablelist::tablelist .bot.left.tl \
-    -columns {0 "Module" 0 "Hit" 0 "Miss" 0 "Total" 0 "Hit %" 0 "Index"} \
+    -columns {0 "Instance Name" 0 "Module Name" 0 "Hit" 0 "Miss" 0 "Total" 0 "Hit %" 0 "Index"} \
     -labelcommand tablelist::sortByColumn -xscrollcommand {.bot.left.hb set} -yscrollcommand {.bot.left.vb set} -stretch all
 
-  .bot.left.tl columnconfigure 1 -sortmode integer -stretchable false
+  .bot.left.tl columnconfigure 0 -hide true
   .bot.left.tl columnconfigure 2 -sortmode integer -stretchable false
   .bot.left.tl columnconfigure 3 -sortmode integer -stretchable false
   .bot.left.tl columnconfigure 4 -sortmode integer -stretchable false
-  .bot.left.tl columnconfigure 5 -hide true
+  .bot.left.tl columnconfigure 5 -sortmode integer -stretchable false
+  .bot.left.tl columnconfigure 6 -hide true
 
   scrollbar .bot.left.vb -command {.bot.left.tl yview}
   scrollbar .bot.left.hb -orient horizontal -command {.bot.left.tl xview}
@@ -168,7 +169,7 @@ proc populate_listbox {} {
 
     # Get the currently loaded indices, if any
     if {$last_mod_inst_type == $mod_inst_type} {
-      set curr_indices  [.bot.left.tl getcolumn 5]
+      set curr_indices  [.bot.left.tl getcolumn 6]
       set curr_selected [.bot.left.tl curselection]
     } else {
       set curr_indices  {}
@@ -194,11 +195,11 @@ proc populate_listbox {} {
           set index $i
         }
         set funit [lindex $summary_list $index]
-        .bot.left.tl insert end [list [lindex $funit 0] [lindex $funit 1] [lindex $funit 2] [lindex $funit 3] [lindex $funit 4] $index]
+        .bot.left.tl insert end [list "" [lindex $funit 0] [lindex $funit 1] [lindex $funit 2] [lindex $funit 3] [lindex $funit 4] $index]
         .bot.left.tl rowconfigure end -background [lindex $funit 6] -selectbackground [lindex $funit 5]
       }
 
-      .bot.left.tl columnconfigure 0 -title "Modules"
+      .bot.left.tl columnconfigure 0 -hide true
 
     } else {
 
@@ -209,7 +210,7 @@ proc populate_listbox {} {
         $listbox_w insert end $inst_name
       }
 
-      .bot.left.tl columnconfigure 0 -title "Instances"
+      .bot.left.tl columnconfigure 0 -hide false
 
     }
 
@@ -233,7 +234,7 @@ proc populate_text {} {
   global curr_toggle_ptr
 
   # Get the index of the current selection
-  set index [lindex [.bot.left.tl get [.bot.left.tl curselection]] 5]
+  set index [lindex [.bot.left.tl get [.bot.left.tl curselection]] 6]
 
   # Update the text, if necessary
   if {$index != ""} {

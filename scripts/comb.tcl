@@ -55,16 +55,16 @@ proc display_comb_info {} {
   set curr_uline 0
 
   # Remove any tags associated with the toggle text box
-  .combwin.f.top.t tag delete comb_enter
-  .combwin.f.top.t tag delete comb_leave
-  .combwin.f.top.t tag delete comb_bp1
-  .combwin.f.top.t tag delete comb_bp3
+  .combwin.pw.top.t tag delete comb_enter
+  .combwin.pw.top.t tag delete comb_leave
+  .combwin.pw.top.t tag delete comb_bp1
+  .combwin.pw.top.t tag delete comb_bp3
 
   # Allow us to clear out textbox and repopulate
-  .combwin.f.top.t configure -state normal
+  .combwin.pw.top.t configure -state normal
 
   # Clear the textbox before any insertion is being made
-  .combwin.f.top.t delete 1.0 end
+  .combwin.pw.top.t delete 1.0 end
 
   # Get length of comb_code list
   set code_len [llength $comb_code]
@@ -76,58 +76,58 @@ proc display_comb_info {} {
   set curr_line 1
   set first     1
   for {set j 0} {$j<$code_len} {incr j} {
-    .combwin.f.top.t insert end "[lindex $comb_code $j]\n"
+    .combwin.pw.top.t insert end "[lindex $comb_code $j]\n"
     incr curr_line
-    .combwin.f.top.t insert end "[lindex $comb_gen_ulines $j]\n"
+    .combwin.pw.top.t insert end "[lindex $comb_gen_ulines $j]\n"
     comb_calc_indexes [lindex $comb_gen_ulines $j] $curr_line $first
     incr curr_line
     set first 0
-    .combwin.f.top.t insert end "\n"
+    .combwin.pw.top.t insert end "\n"
     incr curr_line
   }
 
   # Perform syntax highlighting
-  verilog_highlight .combwin.f.top.t
+  verilog_highlight .combwin.pw.top.t
 
   # Keep user from writing in text box
-  .combwin.f.top.t configure -state disabled
+  .combwin.pw.top.t configure -state disabled
 
   # Add expression tags and bindings
   if {[llength $comb_uline_indexes] > 0} {
-    eval ".combwin.f.top.t tag add comb_enter $comb_uline_indexes"
-    eval ".combwin.f.top.t tag add comb_leave $comb_uline_indexes"
-    eval ".combwin.f.top.t tag add comb_bp1 $comb_uline_indexes"
-    eval ".combwin.f.top.t tag add comb_bp3 $comb_uline_indexes"
-    .combwin.f.top.t tag configure comb_bp1 -foreground $uncov_fgColor -background $uncov_bgColor
-    .combwin.f.top.t tag bind comb_enter <Enter> {
-      set comb_curr_cursor [.combwin.f.top.t cget -cursor]
-      .combwin.f.top.t configure -cursor hand2
+    eval ".combwin.pw.top.t tag add comb_enter $comb_uline_indexes"
+    eval ".combwin.pw.top.t tag add comb_leave $comb_uline_indexes"
+    eval ".combwin.pw.top.t tag add comb_bp1 $comb_uline_indexes"
+    eval ".combwin.pw.top.t tag add comb_bp3 $comb_uline_indexes"
+    .combwin.pw.top.t tag configure comb_bp1 -foreground $uncov_fgColor -background $uncov_bgColor
+    .combwin.pw.top.t tag bind comb_enter <Enter> {
+      set comb_curr_cursor [.combwin.pw.top.t cget -cursor]
+      .combwin.pw.top.t configure -cursor hand2
       .combwin.info configure -text "Click left button for coverage info / Click right button to see parent expression"
     }
-    .combwin.f.top.t tag bind comb_leave <Leave> {
-      .combwin.f.top.t configure -cursor $comb_curr_cursor
+    .combwin.pw.top.t tag bind comb_leave <Leave> {
+      .combwin.pw.top.t configure -cursor $comb_curr_cursor
       .combwin.info configure -text $comb_curr_info
     }
-    .combwin.f.top.t tag bind comb_bp1 <ButtonPress-1> {
-      set selected_range [.combwin.f.top.t tag prevrange comb_bp1 {current + 1 chars}]
+    .combwin.pw.top.t tag bind comb_bp1 <ButtonPress-1> {
+      set selected_range [.combwin.pw.top.t tag prevrange comb_bp1 {current + 1 chars}]
       set redraw [move_display_down [get_expr_index_from_range $selected_range 1]]
       if {$redraw == 1} {
-        set text_x [.combwin.f.top.t xview]
-        set text_y [.combwin.f.top.t yview]
+        set text_x [.combwin.pw.top.t xview]
+        set text_y [.combwin.pw.top.t yview]
         display_comb_info
-        .combwin.f.top.t xview moveto [lindex $text_x 0]
-        .combwin.f.top.t yview moveto [lindex $text_y 0]
+        .combwin.pw.top.t xview moveto [lindex $text_x 0]
+        .combwin.pw.top.t yview moveto [lindex $text_y 0]
       } 
     }
-    .combwin.f.top.t tag bind comb_bp3 <ButtonPress-3> {
-      set selected_range [.combwin.f.top.t tag prevrange comb_bp3 {current + 1 chars}]
+    .combwin.pw.top.t tag bind comb_bp3 <ButtonPress-3> {
+      set selected_range [.combwin.pw.top.t tag prevrange comb_bp3 {current + 1 chars}]
       set redraw [move_display_up [get_expr_index_from_range $selected_range 0]]
       if {$redraw == 1} {
-        set text_x [.combwin.f.top.t xview]
-        set text_y [.combwin.f.top.t yview]
+        set text_x [.combwin.pw.top.t xview]
+        set text_y [.combwin.pw.top.t yview]
         display_comb_info
-        .combwin.f.top.t xview moveto [lindex $text_x 0]
-        .combwin.f.top.t yview moveto [lindex $text_y 0]
+        .combwin.pw.top.t xview moveto [lindex $text_x 0]
+        .combwin.pw.top.t yview moveto [lindex $text_y 0]
       } 
     }
   }
@@ -140,25 +140,25 @@ proc display_comb_coverage {ulid} {
   global comb_curr_excluded comb_exp_excludes
 
   # Allow us to clear out text box and repopulate
-  .combwin.f.bot.t configure -state normal
+  .combwin.pw.bot.t configure -state normal
 
   # Clear the text-box before any insertion is being made
-  .combwin.f.bot.t delete 1.0 end
+  .combwin.pw.bot.t delete 1.0 end
 
   # Get combinational coverage information
   set comb_expr_cov ""
   tcl_func_get_comb_coverage $curr_funit_name $curr_funit_type $comb_curr_exp_id $ulid
 
   # Display coverage information
-  .combwin.f.bot.t insert end "\n\n"
+  .combwin.pw.bot.t insert end "\n\n"
   foreach line $comb_expr_cov {
-    .combwin.f.bot.t insert end "$line\n"
+    .combwin.pw.bot.t insert end "$line\n"
   }
 
-  .combwin.f.bot.t configure -state disabled
+  .combwin.pw.bot.t configure -state disabled
 
   # Set excluded checkbutton correctly
-  .combwin.f.bot.e configure -state normal
+  .combwin.pw.bot.e configure -state normal
   set comb_curr_excluded [lindex $comb_exp_excludes $ulid]
 
 }
@@ -174,7 +174,7 @@ proc get_expr_index_from_range {selected_range get_uline_id} {
   set end_char   [expr [lindex [split [lindex $selected_range 1] .] 1] - 1]
 
   # Get ID from string
-  set id [regexp -inline -- {\d+} [.combwin.f.top.t get [lindex $selected_range 0] [lindex $selected_range 1]]]
+  set id [regexp -inline -- {\d+} [.combwin.pw.top.t get [lindex $selected_range 0] [lindex $selected_range 1]]]
 
   if {$id != -1} {
 
@@ -518,39 +518,20 @@ proc create_comb_window {expr_id sline} {
     wm title .combwin "Combinational Logic Coverage - Verbose"
 
     # Create all frames for the window
-    frame .combwin.f -bg grey -width 700 -height 350
-    frame .combwin.f.top -relief raised -borderwidth 1
-    frame .combwin.f.bot -relief raised -borderwidth 1
-    frame .combwin.f.handle -borderwidth 2 -relief raised -cursor sb_v_double_arrow
-
-    # Create frame slider
-    place .combwin.f.top -relwidth 1 -height -1
-    place .combwin.f.bot -relwidth 1 -rely 1 -anchor sw -height -1
-    place .combwin.f.handle -relx 0.8 -anchor e -width 8 -height 8
-
-    bind .combwin.f <Configure> {
-      set H [winfo height .combwin.f]
-      set Y0 [winfo rooty .combwin.f]
-      if {$comb_bheight == -1} {
-        set comb_bheight [expr .4 * $H]
-      }
-      comb_place $H $comb_bheight
-    }
-
-    bind .combwin.f.handle <B1-Motion> {
-      set comb_bheight [expr $H - [expr %Y - $Y0]]
-      comb_place $H $comb_bheight
-    }
+    panedwindow .combwin.pw -bg grey -width 700 -height 350 -sashrelief raised -sashwidth 4 -orient vertical
+    frame .combwin.pw.top -relief raised -borderwidth 1
+    frame .combwin.pw.bot -relief raised -borderwidth 1
+    frame .combwin.pw.handle -borderwidth 2 -relief raised -cursor sb_v_double_arrow
 
     # Add expression information
-    label .combwin.f.top.l -anchor w -text "Expression:"
-    text  .combwin.f.top.t -height 20 -width 100 -xscrollcommand ".combwin.f.top.hb set" -yscrollcommand ".combwin.f.top.vb set" -wrap none
-    scrollbar .combwin.f.top.hb -orient horizontal -command ".combwin.f.top.t xview"
-    scrollbar .combwin.f.top.vb -orient vertical   -command ".combwin.f.top.t yview"
+    label .combwin.pw.top.l -anchor w -text "Expression:"
+    text  .combwin.pw.top.t -height 20 -width 100 -xscrollcommand ".combwin.pw.top.hb set" -yscrollcommand ".combwin.pw.top.vb set" -wrap none
+    scrollbar .combwin.pw.top.hb -orient horizontal -command ".combwin.pw.top.t xview"
+    scrollbar .combwin.pw.top.vb -orient vertical   -command ".combwin.pw.top.t yview"
 
     # Add expression coverage information
-    label .combwin.f.bot.l -anchor w -text "Coverage Information:  ('*' represents a case that was not hit)"
-    checkbutton .combwin.f.bot.e -anchor e -text "Excluded" -state disabled -variable comb_curr_excluded -command {
+    label .combwin.pw.bot.l -anchor w -text "Coverage Information:  ('*' represents a case that was not hit)"
+    checkbutton .combwin.pw.bot.e -anchor e -text "Excluded" -state disabled -variable comb_curr_excluded -command {
       tcl_func_set_comb_exclude $curr_funit_name $curr_funit_type $comb_curr_exp_id $comb_curr_uline_id $comb_curr_excluded
       set comb_exp_excludes [lreplace $comb_exp_excludes $comb_curr_uline_id $comb_curr_uline_id $comb_curr_excluded]
       set text_x [.bot.right.txt xview]
@@ -562,9 +543,9 @@ proc create_comb_window {expr_id sline} {
       enable_cdd_save
       set_pointer curr_comb_ptr $curr_comb_ptr
     }
-    text  .combwin.f.bot.t -height 10 -width 100 -xscrollcommand ".combwin.f.bot.hb set" -yscrollcommand ".combwin.f.bot.vb set" -wrap none -state disabled
-    scrollbar .combwin.f.bot.hb -orient horizontal -command ".combwin.f.bot.t xview"
-    scrollbar .combwin.f.bot.vb -orient vertical   -command ".combwin.f.bot.t yview"
+    text  .combwin.pw.bot.t -height 10 -width 100 -xscrollcommand ".combwin.pw.bot.hb set" -yscrollcommand ".combwin.pw.bot.vb set" -wrap none -state disabled
+    scrollbar .combwin.pw.bot.hb -orient horizontal -command ".combwin.pw.bot.t xview"
+    scrollbar .combwin.pw.bot.vb -orient vertical   -command ".combwin.pw.bot.t yview"
 
     # Create information bar
     label .combwin.info -anchor w -relief raised -borderwidth 1 -width 100
@@ -592,36 +573,40 @@ proc create_comb_window {expr_id sline} {
     pack .combwin.bf.close -side right -padx 8 -pady 4
 
     # Pack the widgets into the top frame
-    grid rowconfigure    .combwin.f.top 1 -weight 1
-    grid columnconfigure .combwin.f.top 0 -weight 1
-    grid .combwin.f.top.l  -row 0 -column 0 -sticky nsew
-    grid .combwin.f.top.t  -row 1 -column 0 -sticky nsew
-    grid .combwin.f.top.hb -row 2 -column 0 -sticky ew
-    grid .combwin.f.top.vb -row 1 -column 1 -sticky ns
+    grid rowconfigure    .combwin.pw.top 1 -weight 1
+    grid columnconfigure .combwin.pw.top 0 -weight 1
+    grid .combwin.pw.top.l  -row 0 -column 0 -sticky nsew
+    grid .combwin.pw.top.t  -row 1 -column 0 -sticky nsew
+    grid .combwin.pw.top.hb -row 2 -column 0 -sticky ew
+    grid .combwin.pw.top.vb -row 1 -column 1 -sticky ns
 
     # Pack the widgets into the bottom frame
-    grid rowconfigure    .combwin.f.bot 1 -weight 1
-    grid columnconfigure .combwin.f.bot 0 -weight 1
-    grid .combwin.f.bot.l  -row 0 -column 0 -sticky nsew
-    grid .combwin.f.bot.e  -row 0 -column 1 -sticky nsew
-    grid .combwin.f.bot.t  -row 1 -column 0 -columnspan 2 -sticky nsew
-    grid .combwin.f.bot.vb -row 1 -column 2 -sticky ns
-    grid .combwin.f.bot.hb -row 2 -column 0 -sticky ew
+    grid rowconfigure    .combwin.pw.bot 1 -weight 1
+    grid columnconfigure .combwin.pw.bot 0 -weight 1
+    grid .combwin.pw.bot.l  -row 0 -column 0 -sticky nsew
+    grid .combwin.pw.bot.e  -row 0 -column 1 -sticky nsew
+    grid .combwin.pw.bot.t  -row 1 -column 0 -columnspan 2 -sticky nsew
+    grid .combwin.pw.bot.vb -row 1 -column 2 -sticky ns
+    grid .combwin.pw.bot.hb -row 2 -column 0 -columnspan 2 -sticky ew
+
+    # Pack the top and bottom frame of the panedwindow
+    .combwin.pw add .combwin.pw.top
+    .combwin.pw add .combwin.pw.bot
 
     # Pack the frame, informational bar, and button frame into the window
-    pack .combwin.f    -fill both -expand yes
+    pack .combwin.pw   -fill both -expand yes
     pack .combwin.info -fill both
     pack .combwin.bf   -fill both
 
   } else {
 
     # Clear out bottom text box
-    .combwin.f.bot.t configure -state normal
-    .combwin.f.bot.t delete 1.0 end
-    .combwin.f.bot.t configure -state disabled
+    .combwin.pw.bot.t configure -state normal
+    .combwin.pw.bot.t delete 1.0 end
+    .combwin.pw.bot.t configure -state disabled
 
     # Reset the excluded checkbutton
-    .combwin.f.bot.e configure -state disabled
+    .combwin.pw.bot.e configure -state disabled
 
   }
 
@@ -656,14 +641,6 @@ proc create_comb_window {expr_id sline} {
 
   # Raise this window to the foreground
   raise .combwin
-
-}
-
-proc comb_place {height value} {
-
-  place .combwin.f.top    -height [expr $height - $value]
-  place .combwin.f.handle -y [expr $height - $value]
-  place .combwin.f.bot    -height $value
 
 }
 
