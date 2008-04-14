@@ -30,6 +30,7 @@ set next_uncov_index   ""
 proc main_view {} {
 
   global race_msgs prev_uncov_index next_uncov_index
+  global HOME
 
   # Start off 
 
@@ -58,32 +59,40 @@ proc main_view {} {
   # Create the textbox header frame
   frame .bot.right.h
   label .bot.right.h.tl -text "Cur   Line #       Verilog Source" -anchor w
-  button .bot.right.h.prev -text "<--" -state disabled -command {
+  frame .bot.right.h.pn
+  button .bot.right.h.pn.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -state disabled -relief flat -command {
     goto_uncov $prev_uncov_index
   }
-  button .bot.right.h.next -text "-->" -state disabled -command {
+  button .bot.right.h.pn.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -state disabled -relief flat -command {
     goto_uncov $next_uncov_index
   }
-  button .bot.right.h.find -text "Find:" -state disabled -command {
-    perform_search [.bot.right.h.e get]
+  frame .bot.right.h.search
+  button .bot.right.h.search.find -text "Find:" -state disabled -command {
+    perform_search [.bot.right.h.search.e get]
   }
-  entry .bot.right.h.e -width 15 -relief sunken -state disabled
-  bind .bot.right.h.e <Return> {
-    perform_search [.bot.right.h.e get]
+  entry .bot.right.h.search.e -width 15 -relief sunken -state disabled
+  bind .bot.right.h.search.e <Return> {
+    perform_search [.bot.right.h.search.e get]
   }
-  button .bot.right.h.clear -text "Clear" -state disabled -command {
+  button .bot.right.h.search.clear -text "Clear" -state disabled -command {
     .bot.right.txt tag delete search_found
-    .bot.right.h.e delete 0 end
+    .bot.right.h.search.e delete 0 end
     set start_search_index 1.0
   }
 
+  # Pack the previous/next frame
+  pack .bot.right.h.pn.prev -side left
+  pack .bot.right.h.pn.next -side left
+
+  # Pack the search frame
+  pack .bot.right.h.search.find  -side left
+  pack .bot.right.h.search.e     -side left
+  pack .bot.right.h.search.clear -side left
+
   # Pack the textbox header frame
-  pack .bot.right.h.tl    -side left  -fill both
-  pack .bot.right.h.clear -side right -fill both
-  pack .bot.right.h.e     -side right -fill both
-  pack .bot.right.h.find  -side right -fill both
-  pack .bot.right.h.next  -side right -fill both
-  pack .bot.right.h.prev  -side right -fill both
+  pack .bot.right.h.tl     -side left
+  pack .bot.right.h.pn     -side left -expand yes
+  pack .bot.right.h.search -side right
 
   # Create the text widget to display the modules/instances
   text      .bot.right.txt -yscrollcommand ".bot.right.vb set" -xscrollcommand ".bot.right.hb set" -wrap none -state disabled
@@ -138,7 +147,6 @@ proc main_view {} {
   pack .info -fill both
 
   # Set the window icon
-  global HOME
   wm title . "Covered - Verilog Code Coverage Tool"
 
   # Set focus on the new window
@@ -165,19 +173,19 @@ proc populate_listbox {} {
   set funit_names ""
   set funit_types ""
 
+  # Get the currently loaded indices, if any
+  if {$last_mod_inst_type == $mod_inst_type} {
+    set curr_indices  [.bot.left.tl getcolumn 6]
+    set curr_selected [.bot.left.tl curselection]
+  } else {
+    set curr_indices  {}
+    set curr_selected ""
+  }
+
+  # Remove contents currently in listboxes
+  .bot.left.tl delete 0 end
+
   if {$cdd_name != ""} {
-
-    # Get the currently loaded indices, if any
-    if {$last_mod_inst_type == $mod_inst_type} {
-      set curr_indices  [.bot.left.tl getcolumn 6]
-      set curr_selected [.bot.left.tl curselection]
-    } else {
-      set curr_indices  {}
-      set curr_selected ""
-    }
-
-    # Remove contents currently in listboxes
-    .bot.left.tl delete 0 end
 
     # If we are in module mode, list modules (otherwise, list instances)
     if {$mod_inst_type == "module"} {
@@ -273,9 +281,9 @@ proc populate_text {} {
       goto_uncov $curr_uncov_index
 
       # Enable widgets
-      .bot.right.h.e     configure -state normal -bg white
-      .bot.right.h.find  configure -state normal
-      .bot.right.h.clear configure -state normal
+      .bot.right.h.search.e     configure -state normal -bg white
+      .bot.right.h.search.find  configure -state normal
+      .bot.right.h.search.clear configure -state normal
 
     }
 
@@ -337,7 +345,7 @@ proc perform_search {value} {
     tk_messageBox -message "String \"$value\" not found" -type ok -parent .
 
     # Clear the contents of the search entry box
-    .bot.right.h.e delete 0 end
+    .bot.right.h.search.e delete 0 end
 
     # Reset search index
     set start_search_index 1.0
@@ -368,7 +376,7 @@ proc rm_pointer {curr_ptr} {
   .bot.right.txt configure -state disabled
 
   # Disable "Show current selection" menu item
-  .menubar.view entryconfigure 4 -state disabled
+  .menubar.view entryconfigure 2 -state disabled
 
   # Clear current pointer
   set ptr ""
@@ -396,7 +404,7 @@ proc set_pointer {curr_ptr line} {
   .bot.right.txt see $line.0
 
   # Enable the "Show current selection" menu option
-  .menubar.view entryconfigure 4 -state normal
+  .menubar.view entryconfigure 2 -state normal
 
   # Set the current pointer to the specified line
   set ptr $line
@@ -428,11 +436,11 @@ proc goto_uncov {curr_index} {
 
   # Disable/enable previous button
   if {$prev_uncov_index != ""} {
-    .bot.right.h.prev configure -state normal
-    .menubar.view entryconfigure 3 -state normal
+    .bot.right.h.pn.prev configure -state normal
+    .menubar.view entryconfigure 1 -state normal
   } else {
-    .bot.right.h.prev configure -state disabled
-    .menubar.view entryconfigure 3 -state disabled
+    .bot.right.h.pn.prev configure -state disabled
+    .menubar.view entryconfigure 1 -state disabled
   }
 
   # Get next uncovered index
@@ -440,11 +448,11 @@ proc goto_uncov {curr_index} {
 
   # Disable/enable next button
   if {$next_uncov_index != ""} {
-    .bot.right.h.next configure -state normal
-    .menubar.view entryconfigure 2 -state normal
+    .bot.right.h.pn.next configure -state normal
+    .menubar.view entryconfigure 0 -state normal
   } else {
-    .bot.right.h.next configure -state disabled
-    .menubar.view entryconfigure 2 -state disabled
+    .bot.right.h.pn.next configure -state disabled
+    .menubar.view entryconfigure 0 -state disabled
   }
 
 }
@@ -455,7 +463,7 @@ proc update_all_windows {} {
 
   # Update the main window
   goto_uncov $curr_uncov_index
-  .menubar.view entryconfigure 4 -state disabled
+  .menubar.view entryconfigure 2 -state disabled
 
   # Update the summary window
   update_summary

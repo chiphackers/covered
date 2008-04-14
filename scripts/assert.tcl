@@ -46,6 +46,7 @@ proc create_assert_window {inst} {
   global curr_assert_ptr assert_cov_points assert_cov_mod
   global uncov_bgColor uncov_fgColor
   global cov_bgColor cov_fgColor
+  global HOME
 
   # Now create the window and set the grab to this window
   if {[winfo exists .assertwin] == 0} {
@@ -81,16 +82,16 @@ proc create_assert_window {inst} {
     button .assertwin.bf.help -text "Help" -width 10 -command {
       help_show_manual assert
     }
-    button .assertwin.bf.prev -text "<--" -command {
+    button .assertwin.bf.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -relief flat -command {
       display_assert $prev_assert_index
     }
-    button .assertwin.bf.next -text "-->" -command {
+    button .assertwin.bf.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -relief flat -command {
       display_assert $next_assert_index
     }
 
     # Pack the buttons into the button frame
-    pack .assertwin.bf.prev  -side left  -padx 8 -pady 4
-    pack .assertwin.bf.next  -side left  -padx 8 -pady 4
+    pack .assertwin.bf.prev  -side left
+    pack .assertwin.bf.next  -side left
     pack .assertwin.bf.help  -side right -padx 8 -pady 4
     pack .assertwin.bf.close -side right -padx 8 -pady 4
 

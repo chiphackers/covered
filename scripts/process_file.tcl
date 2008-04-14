@@ -99,14 +99,14 @@ proc process_funit_line_cov {} {
 
     # If we have some uncovered values, enable the "next" pointer and menu item
     if {$line_summary_total != $line_summary_hit} {
-      .bot.right.h.next configure -state normal
-      .menubar.view entryconfigure 2 -state normal
+      .bot.right.h.pn.next configure -state normal
+      .menubar.view entryconfigure 0 -state normal
     } else {
-      .bot.right.h.next configure -state disabled
-      .menubar.view entryconfigure 2 -state disabled
+      .bot.right.h.pn.next configure -state disabled
+      .menubar.view entryconfigure 0 -state disabled
     }
-    .bot.right.h.prev configure -state disabled
-    .menubar.view entryconfigure 3 -state disabled
+    .bot.right.h.pn.prev configure -state disabled
+    .menubar.view entryconfigure 1 -state disabled
 
     calc_and_display_line_cov
 
@@ -280,11 +280,11 @@ proc process_funit_toggle_cov {} {
 
     # If we have some uncovered values, enable the "next" pointer
     if {$toggle_summary_total != $toggle_summary_hit} {
-      .bot.right.h.next configure -state normal
+      .bot.right.h.pn.next configure -state normal
     } else {
-      .bot.right.h.next configure -state disabled
+      .bot.right.h.pn.next configure -state disabled
     }
-    .bot.right.h.prev configure -state disabled
+    .bot.right.h.pn.prev configure -state disabled
 
     calc_and_display_toggle_cov
 
@@ -448,11 +448,11 @@ proc process_funit_memory_cov {} {
 
     # If we have some uncovered values, enable the "next" pointer
     if {$memory_summary_total != $memory_summary_hit} {
-      .bot.right.h.next configure -state normal
+      .bot.right.h.pn.next configure -state normal
     } else {
-      .bot.right.h.next configure -state disabled
+      .bot.right.h.pn.next configure -state disabled
     }
-    .bot.right.h.prev configure -state disabled
+    .bot.right.h.pn.prev configure -state disabled
 
     calc_and_display_memory_cov
 
@@ -615,11 +615,11 @@ proc process_funit_comb_cov {} {
 
     # If we have found uncovered combinations in this module, enable the next button
     if {$comb_summary_total != $comb_summary_hit} {
-      .bot.right.h.next configure -state normal
+      .bot.right.h.pn.next configure -state normal
     } else {
-      .bot.right.h.next configure -state disabled
+      .bot.right.h.pn.next configure -state disabled
     }
-    .bot.right.h.prev configure -state disabled
+    .bot.right.h.pn.prev configure -state disabled
 
     calc_and_display_comb_cov
 
@@ -804,14 +804,14 @@ proc process_funit_fsm_cov {} {
 
     # If we have some uncovered values, enable the "next" pointer and menu item
     if {$fsm_summary_total != $fsm_summary_hit} {
-      .bot.right.h.next configure -state normal
-      .menubar.view entryconfigure 2 -state normal
+      .bot.right.h.pn.next configure -state normal
+      .menubar.view entryconfigure 0 -state normal
     } else {
-      .bot.right.h.next configure -state disabled
-      .menubar.view entryconfigure 2 -state disabled
+      .bot.right.h.pn.next configure -state disabled
+      .menubar.view entryconfigure 0 -state disabled
     }
-    .bot.right.h.prev configure -state disabled
-    .menubar.view entryconfigure 3 -state disabled
+    .bot.right.h.pn.prev configure -state disabled
+    .menubar.view entryconfigure 1 -state disabled
 
     calc_and_display_fsm_cov
 
@@ -972,14 +972,14 @@ proc process_funit_assert_cov {} {
 
     # If we have some uncovered values, enable the "next" pointer and menu item
     if {$assert_summary_total != $assert_summary_hit} {
-      .bot.right.h.next configure -state normal
-      .menubar.view entryconfigure 2 -state normal
+      .bot.right.h.pn.next configure -state normal
+      .menubar.view entryconfigure 0 -state normal
     } else {
-      .bot.right.h.next configure -state disabled
-      .menubar.view entryconfigure 2 -state disabled
+      .bot.right.h.pn.next configure -state disabled
+      .menubar.view entryconfigure 0 -state disabled
     }
-    .bot.right.h.prev configure -state disabled
-    .menubar.view entryconfigure 3 -state disabled
+    .bot.right.h.pn.prev configure -state disabled
+    .menubar.view entryconfigure 1 -state disabled
 
     calc_and_display_assert_cov
 

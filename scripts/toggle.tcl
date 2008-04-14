@@ -31,7 +31,7 @@ proc create_toggle_window {signal} {
   global toggle01_verbose toggle10_verbose toggle_msb toggle_lsb
   global sig_name prev_toggle_index next_toggle_index
   global curr_funit_name curr_funit_type
-  global curr_toggle_ptr
+  global curr_toggle_ptr HOME
 
   set sig_name       $signal
 
@@ -75,16 +75,16 @@ proc create_toggle_window {signal} {
     button .togwin.bf.help -text "Help" -width 10 -command {
       help_show_manual toggle
     }
-    button .togwin.bf.prev -text "<--" -command {
+    button .togwin.bf.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -relief flat -command {
       display_toggle $prev_toggle_index
     }
-    button .togwin.bf.next -text "-->" -command {
+    button .togwin.bf.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -relief flat -command {
       display_toggle $next_toggle_index
     }
 
     # Pack the buttons into the button frame
-    pack .togwin.bf.prev  -side left  -padx 8 -pady 4
-    pack .togwin.bf.next  -side left  -padx 8 -pady 4
+    pack .togwin.bf.prev  -side left
+    pack .togwin.bf.next  -side left
     pack .togwin.bf.help  -side right -padx 8 -pady 4
     pack .togwin.bf.close -side right -padx 8 -pady 4
 

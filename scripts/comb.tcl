@@ -505,7 +505,7 @@ proc create_comb_window {expr_id sline} {
   global file_name comb_curr_info
   global prev_comb_index next_comb_index
   global curr_comb_ptr comb_curr_excluded
-  global comb_exp_excludes
+  global comb_exp_excludes HOME
 
   # Clear the comb_curr_excluded global variable
   set comb_curr_excluded 0
@@ -559,16 +559,16 @@ proc create_comb_window {expr_id sline} {
     button .combwin.bf.help -text "Help" -width 10 -command {
       help_show_manual comb
     }
-    button .combwin.bf.prev -text "<--" -command {
+    button .combwin.bf.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -relief flat -command {
       display_comb $prev_comb_index
     }
-    button .combwin.bf.next -text "-->" -command {
+    button .combwin.bf.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -relief flat -command {
       display_comb $next_comb_index
     }
     
     # Pack the button widgets into button frame
-    pack .combwin.bf.prev  -side left  -padx 8 -pady 4
-    pack .combwin.bf.next  -side left  -padx 8 -pady 4
+    pack .combwin.bf.prev  -side left
+    pack .combwin.bf.next  -side left
     pack .combwin.bf.help  -side right -padx 8 -pady 4
     pack .combwin.bf.close -side right -padx 8 -pady 4
 

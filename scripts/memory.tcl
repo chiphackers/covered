@@ -35,6 +35,7 @@ proc create_memory_window {signal} {
   global curr_memory_ptr memory_pdim_str
   global uncov_fgColor uncov_bgColor
   global cov_fgColor cov_bgColor
+  global HOME
 
   set mem_name $signal
 
@@ -114,16 +115,16 @@ proc create_memory_window {signal} {
     button .memwin.bf.help -text "Help" -width 10 -command {
       help_show_manual memory
     }
-    button .memwin.bf.prev -text "<--" -command {
+    button .memwin.bf.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -relief flat -command {
       display_memory $prev_memory_index
     }
-    button .memwin.bf.next -text "-->" -command {
+    button .memwin.bf.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -relief flat -command {
       display_memory $next_memory_index
     }
 
     # Pack the buttons into the button frame
-    pack .memwin.bf.prev  -side left  -padx 8 -pady 4
-    pack .memwin.bf.next  -side left  -padx 8 -pady 4
+    pack .memwin.bf.prev  -side left
+    pack .memwin.bf.next  -side left
     pack .memwin.bf.help  -side right -padx 8 -pady 4
     pack .memwin.bf.close -side right -padx 8 -pady 4
 

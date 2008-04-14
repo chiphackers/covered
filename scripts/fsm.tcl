@@ -10,7 +10,7 @@ set curr_fsm_ptr   ""
 
 proc create_fsm_window {expr_id} {
 
-  global prev_fsm_index next_fsm_index
+  global prev_fsm_index next_fsm_index HOME
 
   # Now create the window and set the grab to this window
   if {[winfo exists .fsmwin] == 0} {
@@ -63,10 +63,10 @@ proc create_fsm_window {expr_id} {
 
     # Create the button frame
     frame .fsmwin.bf -relief raised -borderwidth 1
-    button .fsmwin.bf.prev -text "<--" -state disabled -command {
+    button .fsmwin.bf.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -relief flat -state disabled -command {
       display_fsm $prev_fsm_index
     }
-    button .fsmwin.bf.next -text "-->" -state disabled -command {
+    button .fsmwin.bf.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -relief flat -state disabled -command {
       display_fsm $next_fsm_index
     }
     button .fsmwin.bf.close -text "Close" -width 10 -command {
@@ -77,13 +77,13 @@ proc create_fsm_window {expr_id} {
     }
 
     # Pack the buttons into the button frame
-    pack .fsmwin.bf.prev  -side left  -padx 8 -pady 4
-    pack .fsmwin.bf.next  -side left  -padx 8 -pady 4
+    pack .fsmwin.bf.prev  -side left
+    pack .fsmwin.bf.next  -side left
     pack .fsmwin.bf.help  -side right -padx 8 -pady 4
     pack .fsmwin.bf.close -side right -padx 8 -pady 4
 
     # Pack frames into window
-    pack .fsmwin.f    -fill both -expand yes
+    pack .fsmwin.pw   -fill both -expand yes
     pack .fsmwin.info -fill both
     pack .fsmwin.bf   -fill x
 

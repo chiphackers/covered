@@ -1036,7 +1036,7 @@ proc create_syntax_pref {} {
   global hl_mode
 
   # Create widgets
-  labelframe .prefwin.pf.f.l -labelanchor nw -text "Set Syntax Highlighting Options" -padx 4 -pady 6
+  labelframe .prefwin.pf.f -labelanchor nw -text "Set Syntax Highlighting Options" -padx 4 -pady 6
 
   checkbutton .prefwin.pf.f.mcb -variable tmp_vlog_hl_mode -onvalue on -offvalue off -anchor w \
                                   -text "Turn on syntax highlighting mode" -command {
@@ -1106,81 +1106,80 @@ proc create_report_pref {} {
   global tmp_rsel_l tmp_rsel_t tmp_rsel_m tmp_rsel_c tmp_rsel_f tmp_rsel_a tmp_rsel_r
   global tmp_rsel_width tmp_rsel_wsel tmp_rsel_sup
 
-  labelframe .prefwin.pf.f -labelanchor nw -text "Set ASCII Report Generation Options" -padx 4 -pady 6
+  frame .prefwin.pf.f
+  labelframe .prefwin.pf.f.misc -labelanchor nw -text "Set ASCII Report Generation Options" -padx 4 -pady 6
 
   # Create width area
-  checkbutton .prefwin.pf.f.width_val -text "Limit line width to:" -variable tmp_rsel_wsel -anchor w -command {
+  checkbutton .prefwin.pf.f.misc.width_val -text "Limit line width to:" -variable tmp_rsel_wsel -anchor w -command {
     if {$tmp_rsel_wsel == 0} {
-      .prefwin.pf.f.width_w configure -state disabled
+      .prefwin.pf.f.misc.width_w configure -state disabled
     } else {
-      .prefwin.pf.f.width_w configure -state normal
+      .prefwin.pf.f.misc.width_w configure -state normal
     }
   }
-  entry .prefwin.pf.f.width_w -textvariable tmp_rsel_width -width 3 -validate key -vcmd {string is int %P} -invalidcommand bell -state disabled
-  label .prefwin.pf.f.width_lbl -text "characters" -anchor w
+  entry .prefwin.pf.f.misc.width_w -textvariable tmp_rsel_width -width 3 -validate key -vcmd {string is int %P} -invalidcommand bell -state disabled
+  label .prefwin.pf.f.misc.width_lbl -text "characters" -anchor w
 
-  grid .prefwin.pf.f.width_val -row 0 -column 0 -sticky news -pady 4
-  grid .prefwin.pf.f.width_w   -row 0 -column 1 -sticky news -pady 4
-  grid .prefwin.pf.f.width_lbl -row 0 -column 2 -sticky news -pady 4
-  grid .prefwin.pf.f.sup_val   -row 1 -column 0 -columnspan 3 -sticky nw -pady 4
+  # Create empty module/instance suppression area
+  checkbutton .prefwin.pf.f.misc.sup_val -text "Suppress modules/instances from output if they\ncontain no coverage information" \
+                                         -variable tmp_rsel_sup -onvalue "-s" -offvalue "None" -anchor w
 
-  # Create detail selection area
+  grid .prefwin.pf.f.misc.width_val -row 0 -column 0 -sticky news -pady 4
+  grid .prefwin.pf.f.misc.width_w   -row 0 -column 1 -sticky news -pady 4
+  grid .prefwin.pf.f.misc.width_lbl -row 0 -column 2 -sticky news -pady 4
+  grid .prefwin.pf.f.misc.sup_val   -row 1 -column 0 -columnspan 3 -sticky nw -pady 4
+
+  # Create and pack detail selection area
   labelframe .prefwin.pf.f.sdv -text "Level of Detail" -labelanchor nw -padx 4 -pady 6
   radiobutton .prefwin.pf.f.sdv.s -text "Summary"  -variable tmp_rsel_sdv -value "s" -anchor w
   radiobutton .prefwin.pf.f.sdv.d -text "Detailed" -variable tmp_rsel_sdv -value "d" -anchor w
   radiobutton .prefwin.pf.f.sdv.v -text "Verbose"  -variable tmp_rsel_sdv -value "v" -anchor w
 
-  grid .prefwin.pf.f.sdv
+  pack .prefwin.pf.f.sdv.s -anchor w
+  pack .prefwin.pf.f.sdv.d -anchor w
+  pack .prefwin.pf.f.sdv.v -anchor w
 
   # Create module/instance selection area
-  labelframe .prefwin.pf.f.mi_lbl -text "Accumulate By" -labelanchor nw -padx 4 -pady 6
-  radiobutton .prefwin.pf.f.mi_m -text "Module"   -variable tmp_rsel_mi -value "None" -anchor w
-  radiobutton .prefwin.pf.f.mi_i -text "Instance" -variable tmp_rsel_mi -value "-i" -anchor w
+  labelframe .prefwin.pf.f.mi -text "Accumulate By" -labelanchor nw -padx 4 -pady 6
+  radiobutton .prefwin.pf.f.mi.m -text "Module"   -variable tmp_rsel_mi -value "None" -anchor w
+  radiobutton .prefwin.pf.f.mi.i -text "Instance" -variable tmp_rsel_mi -value "-i" -anchor w
+
+  pack .prefwin.pf.f.mi.m -anchor w
+  pack .prefwin.pf.f.mi.i -anchor w
 
   # Create metric selection area
-  labelframe .prefwin.pf.f.metric_lbl -text "Show Metrics" -labelanchor nw -padx 4 -pady 6
-  checkbutton .prefwin.pf.f.metric_l -text "Line"            -variable tmp_rsel_l -onvalue "l" -offvalue "None" -anchor w
-  checkbutton .prefwin.pf.f.metric_t -text "Toggle"          -variable tmp_rsel_t -onvalue "t" -offvalue "None" -anchor w
-  checkbutton .prefwin.pf.f.metric_m -text "Memory"          -variable tmp_rsel_m -onvalue "m" -offvalue "None" -anchor w
-  checkbutton .prefwin.pf.f.metric_c -text "Logic"           -variable tmp_rsel_c -onvalue "c" -offvalue "None" -anchor w
-  checkbutton .prefwin.pf.f.metric_f -text "FSM"             -variable tmp_rsel_f -onvalue "f" -offvalue "None" -anchor w
-  checkbutton .prefwin.pf.f.metric_a -text "Assertion"       -variable tmp_rsel_a -onvalue "a" -offvalue "None" -anchor w
-  checkbutton .prefwin.pf.f.metric_r -text "Race Conditions" -variable tmp_rsel_r -onvalue "r" -offvalue "None" -anchor w
+  labelframe .prefwin.pf.f.metric -text "Show Metrics" -labelanchor nw -padx 4 -pady 6
+  checkbutton .prefwin.pf.f.metric.l -text "Line"            -variable tmp_rsel_l -onvalue "l" -offvalue "None" -anchor w
+  checkbutton .prefwin.pf.f.metric.t -text "Toggle"          -variable tmp_rsel_t -onvalue "t" -offvalue "None" -anchor w
+  checkbutton .prefwin.pf.f.metric.m -text "Memory"          -variable tmp_rsel_m -onvalue "m" -offvalue "None" -anchor w
+  checkbutton .prefwin.pf.f.metric.c -text "Logic"           -variable tmp_rsel_c -onvalue "c" -offvalue "None" -anchor w
+  checkbutton .prefwin.pf.f.metric.f -text "FSM"             -variable tmp_rsel_f -onvalue "f" -offvalue "None" -anchor w
+  checkbutton .prefwin.pf.f.metric.a -text "Assertion"       -variable tmp_rsel_a -onvalue "a" -offvalue "None" -anchor w
+  checkbutton .prefwin.pf.f.metric.r -text "Race Conditions" -variable tmp_rsel_r -onvalue "r" -offvalue "None" -anchor w
+
+  pack .prefwin.pf.f.metric.l -anchor w
+  pack .prefwin.pf.f.metric.t -anchor w
+  pack .prefwin.pf.f.metric.m -anchor w
+  pack .prefwin.pf.f.metric.c -anchor w
+  pack .prefwin.pf.f.metric.f -anchor w
+  pack .prefwin.pf.f.metric.a -anchor w
+  pack .prefwin.pf.f.metric.r -anchor w
 
   # Create covered/uncovered selection area
-  labelframe .prefwin.pf.f.cu_lbl -text "Coverage Type" -labelanchor nw -padx 4 -pady 6
-  radiobutton .prefwin.pf.f.cu_u -text "Uncovered" -variable tmp_rsel_cu -value "None" -anchor w
-  radiobutton .prefwin.pf.f.cu_c -text "Covered"   -variable tmp_rsel_cu -value "-c" -anchor w
+  labelframe .prefwin.pf.f.cu -text "Coverage Type" -labelanchor nw -padx 4 -pady 6
+  radiobutton .prefwin.pf.f.cu.u -text "Uncovered" -variable tmp_rsel_cu -value "None" -anchor w
+  radiobutton .prefwin.pf.f.cu.c -text "Covered"   -variable tmp_rsel_cu -value "-c" -anchor w
 
-  # Create empty module/instance suppression area
-  checkbutton .prefwin.pf.f.sup_val -text "Suppress modules/instances from output if they\ncontain no coverage information" \
-                                    -variable tmp_rsel_sup -onvalue "-s" -offvalue "None" -anchor w
+  pack .prefwin.pf.f.cu.u -anchor w
+  pack .prefwin.pf.f.cu.c -anchor w
 
-  # Now pack all of the windows
+  # Now pack all of the labelframes
   grid columnconfigure .prefwin.pf.f 2 -weight 1
-  grid .prefwin.pf.f.l          -row 0  -column 0 -columnspan 3 -sticky news -pady 4
-  grid .prefwin.pf.f.width_val  -row 1  -column 0 -sticky news -pady 4
-  grid .prefwin.pf.f.width_w    -row 1  -column 1 -sticky news -pady 4
-  grid .prefwin.pf.f.width_lbl  -row 1  -column 2 -sticky news -pady 4
-  grid .prefwin.pf.f.sup_val    -row 2  -column 0 -columnspan 3 -sticky nw -pady 4
-  grid .prefwin.pf.f.sdv_lbl    -row 3  -column 0 -sticky news -pady 4
-  grid .prefwin.pf.f.metric_lbl -row 3  -column 2 -sticky news -pady 4
-  grid .prefwin.pf.f.sdv_s      -row 4  -column 0 -sticky news -padx 12
-  grid .prefwin.pf.f.metric_l   -row 4  -column 2 -sticky news -padx 12
-  grid .prefwin.pf.f.sdv_d      -row 5  -column 0 -sticky news -padx 12
-  grid .prefwin.pf.f.metric_t   -row 5  -column 2 -sticky news -padx 12
-  grid .prefwin.pf.f.sdv_v      -row 6  -column 0 -sticky news -padx 12
-  grid .prefwin.pf.f.metric_m   -row 6  -column 2 -sticky news -padx 12
-  grid .prefwin.pf.f.mi_lbl     -row 7  -column 0 -sticky news -pady 4
-  grid .prefwin.pf.f.metric_c   -row 7  -column 2 -sticky news -padx 12
-  grid .prefwin.pf.f.mi_m       -row 8  -column 0 -sticky news -padx 12
-  grid .prefwin.pf.f.metric_f   -row 8  -column 2 -sticky news -padx 12
-  grid .prefwin.pf.f.mi_i       -row 9  -column 0 -sticky news -padx 12
-  grid .prefwin.pf.f.metric_a   -row 9  -column 2 -sticky news -padx 12
-  grid .prefwin.pf.f.cu_lbl     -row 10 -column 0 -sticky news -pady 4
-  grid .prefwin.pf.f.metric_r   -row 10 -column 2 -sticky news -padx 12
-  grid .prefwin.pf.f.cu_u       -row 11 -column 0 -sticky news -padx 12
-  grid .prefwin.pf.f.cu_c       -row 12 -column 0 -sticky news -padx 12
+  grid .prefwin.pf.f.misc   -row 0 -column 0 -columnspan 3 -sticky news -pady 4 -padx 6
+  grid .prefwin.pf.f.sdv    -row 1 -column 0               -sticky news -pady 4 -padx 6
+  grid .prefwin.pf.f.metric -row 1 -column 2 -rowspan 3    -sticky news -pady 4 -padx 6
+  grid .prefwin.pf.f.mi     -row 2 -column 0               -sticky news -pady 4 -padx 6
+  grid .prefwin.pf.f.cu     -row 3 -column 0               -sticky news -pady 4 -padx 6
   
   pack .prefwin.pf.f -fill both
 

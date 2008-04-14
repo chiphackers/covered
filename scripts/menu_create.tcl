@@ -350,7 +350,7 @@ proc open_files {} {
   # Get all cursor values from various widgets (so we can properly restore them after the open)
   set win_cursor [. cget -cursor]
   set txt_cursor [.bot.right.txt cget -cursor]
-  set e_cursor   [.bot.right.h.e cget -cursor]
+  set e_cursor   [.bot.right.h.search.e cget -cursor]
 
   foreach fname $fnames {
 
@@ -367,9 +367,9 @@ proc open_files {} {
     }
 
     # Set all widget cursors to the watch
-    .              configure -cursor watch
-    .bot.right.txt configure -cursor watch
-    .bot.right.h.e configure -cursor watch
+    .                     configure -cursor watch
+    .bot.right.txt        configure -cursor watch
+    .bot.right.h.search.e configure -cursor watch
 
     after 100 {
 
@@ -399,9 +399,9 @@ proc open_files {} {
   .info configure -text "Select a module/instance at left for coverage details"
 
   # Reset the cursors
-  .              configure -cursor $win_cursor
-  .bot.right.txt configure -cursor $txt_cursor
-  .bot.right.h.e configure -cursor $e_cursor
+  .                     configure -cursor $win_cursor
+  .bot.right.txt        configure -cursor $txt_cursor
+  .bot.right.h.search.e configure -cursor $e_cursor
 
   return $cdd_name
 
