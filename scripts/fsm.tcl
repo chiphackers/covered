@@ -8,14 +8,6 @@ set fsm_out_state  state
 set fsm_bheight    -1
 set curr_fsm_ptr   ""
 
-proc fsm_place {height value} {
-
-  place .fsmwin.f.io     -height [expr $height - $value]
-  place .fsmwin.f.handle -y [expr $height - $value]
-  place .fsmwin.f.t      -height $value
-
-}
-
 proc create_fsm_window {expr_id} {
 
   global prev_fsm_index next_fsm_index
@@ -28,62 +20,46 @@ proc create_fsm_window {expr_id} {
     wm title .fsmwin "FSM State/State Transition Coverage - Verbose"
 
     # Create all frames for window
-    frame .fsmwin.f -width 500 -height 350
-    frame .fsmwin.f.io     -relief raised -borderwidth 1
-    frame .fsmwin.f.t      -relief raised -borderwidth 1
-    frame .fsmwin.f.handle -relief raised -borderwidth 2 -cursor sb_v_double_arrow
+    panedwindow .fsmwin.pw -width 500 -height 350 -sashwidth 4 -sashrelief raised -orient vertical
+    frame .fsmwin.pw.io     -relief raised -borderwidth 1
+    frame .fsmwin.pw.t      -relief raised -borderwidth 1
 
-    # Create frame slider
-    place .fsmwin.f.io     -relwidth 1 -height 1
-    place .fsmwin.f.t      -relwidth 1 -rely 1 -anchor sw -height -1
-    place .fsmwin.f.handle -relx 0.8 -anchor e -width 8 -height 8
-
-    bind .fsmwin.f <Configure> {
-      set H [winfo height .fsmwin.f]
-      set Y0 [winfo rooty .fsmwin.f]
-      if {$fsm_bheight == -1} {
-        set fsm_bheight [expr .7 * $H]
-      }
-      fsm_place $H $fsm_bheight
-    }
-
-    bind .fsmwin.f.handle <B1-Motion> {
-      set fsm_bheight [expr $H - [expr %Y - $Y0]]
-      fsm_place $H $fsm_bheight
-    }
+    # Add movable frames to panedwindow
+    .fsmwin.pw add .fsmwin.pw.io
+    .fsmwin.pw add .fsmwin.pw.t
 
     # Create input/output expression frame components
-    label .fsmwin.f.io.l -anchor w -text "FSM Input/Output State Expressions"
-    text .fsmwin.f.io.t -height 4 -width 60 -xscrollcommand ".fsmwin.f.io.hb set" \
-                        -yscrollcommand ".fsmwin.f.io.vb set" -wrap none -state disabled
-    scrollbar .fsmwin.f.io.hb -orient horizontal -command ".fsmwin.f.io.t xview"
-    scrollbar .fsmwin.f.io.vb -command ".fsmwin.f.io.t yview"
+    label .fsmwin.pw.io.l -anchor w -text "FSM Input/Output State Expressions"
+    text .fsmwin.pw.io.t -height 4 -width 60 -xscrollcommand ".fsmwin.pw.io.hb set" \
+                        -yscrollcommand ".fsmwin.pw.io.vb set" -wrap none -state disabled
+    scrollbar .fsmwin.pw.io.hb -orient horizontal -command ".fsmwin.pw.io.t xview"
+    scrollbar .fsmwin.pw.io.vb -command ".fsmwin.pw.io.t yview"
 
     # Pack the input/output expression frame
-    grid rowconfigure    .fsmwin.f.io 1 -weight 1
-    grid columnconfigure .fsmwin.f.io 0 -weight 1
-    grid .fsmwin.f.io.l   -row 0 -column 0 -sticky news
-    grid .fsmwin.f.io.t   -row 1 -column 0 -sticky news
-    grid .fsmwin.f.io.vb  -row 1 -column 1 -sticky news
-    grid .fsmwin.f.io.hb  -row 2 -column 0 -sticky news
+    grid rowconfigure    .fsmwin.pw.io 1 -weight 1
+    grid columnconfigure .fsmwin.pw.io 0 -weight 1
+    grid .fsmwin.pw.io.l   -row 0 -column 0 -sticky news
+    grid .fsmwin.pw.io.t   -row 1 -column 0 -sticky news
+    grid .fsmwin.pw.io.vb  -row 1 -column 1 -sticky news
+    grid .fsmwin.pw.io.hb  -row 2 -column 0 -sticky news
 
     # Create canvas frame components
-    label .fsmwin.f.t.l -anchor w -text "FSM State and State Transition Table"
-    canvas .fsmwin.f.t.c -relief sunken -borderwidth 2 \
-           -xscrollcommand ".fsmwin.f.t.hb set" -yscrollcommand ".fsmwin.f.t.vb set"
-    scrollbar .fsmwin.f.t.hb -orient horizontal -command ".fsmwin.f.t.c xview"
-    scrollbar .fsmwin.f.t.vb -command ".fsmwin.f.t.c yview"
+    label .fsmwin.pw.t.l -anchor w -text "FSM State and State Transition Table"
+    canvas .fsmwin.pw.t.c -relief sunken -borderwidth 2 \
+           -xscrollcommand ".fsmwin.pw.t.hb set" -yscrollcommand ".fsmwin.pw.t.vb set"
+    scrollbar .fsmwin.pw.t.hb -orient horizontal -command ".fsmwin.pw.t.c xview"
+    scrollbar .fsmwin.pw.t.vb -command ".fsmwin.pw.t.c yview"
 
     # Create general information window
     label .fsmwin.info -anchor w -relief raised -borderwidth 1 -width 60
 
     # Pack the main frame widgets
-    grid rowconfigure    .fsmwin.f.t 1 -weight 1
-    grid columnconfigure .fsmwin.f.t 0 -weight 1
-    grid .fsmwin.f.t.l  -row 0 -column 0 -sticky news
-    grid .fsmwin.f.t.c  -row 1 -column 0 -sticky news
-    grid .fsmwin.f.t.hb -row 2 -column 0 -sticky news
-    grid .fsmwin.f.t.vb -row 1 -column 1 -sticky news
+    grid rowconfigure    .fsmwin.pw.t 1 -weight 1
+    grid columnconfigure .fsmwin.pw.t 0 -weight 1
+    grid .fsmwin.pw.t.l  -row 0 -column 0 -sticky news
+    grid .fsmwin.pw.t.c  -row 1 -column 0 -sticky news
+    grid .fsmwin.pw.t.hb -row 2 -column 0 -sticky news
+    grid .fsmwin.pw.t.vb -row 1 -column 1 -sticky news
 
     # Create the button frame
     frame .fsmwin.bf -relief raised -borderwidth 1
@@ -126,17 +102,17 @@ proc display_fsm_state_exprs {} {
   global fsm_in_state fsm_out_state
 
   # Allow us to update the text widget
-  .fsmwin.f.io.t configure -state normal
+  .fsmwin.pw.io.t configure -state normal
 
   # Clear the textbox
-  .fsmwin.f.io.t delete 1.0 end
+  .fsmwin.pw.io.t delete 1.0 end
 
   # Populate the textbox
-  .fsmwin.f.io.t insert end "Input  state expression:  $fsm_in_state\n\n"
-  .fsmwin.f.io.t insert end "Output state expression:  $fsm_out_state\n"
+  .fsmwin.pw.io.t insert end "Input  state expression:  $fsm_in_state\n\n"
+  .fsmwin.pw.io.t insert end "Output state expression:  $fsm_out_state\n"
 
   # Disable the textbox
-  .fsmwin.f.io.t configure -state disabled
+  .fsmwin.pw.io.t configure -state disabled
 
 }
 
@@ -277,14 +253,14 @@ proc display_fsm_table {} {
   set ypad 20
 
   # Calculate the width of a horizontal FSM state value
-  .fsmwin.f.t.c create text 1c 1c -text [lindex $fsm_states 1] -anchor nw -tags htext
-  set hstate_coords [.fsmwin.f.t.c bbox htext]
-  .fsmwin.f.t.c delete htext
+  .fsmwin.pw.t.c create text 1c 1c -text [lindex $fsm_states 1] -anchor nw -tags htext
+  set hstate_coords [.fsmwin.pw.t.c bbox htext]
+  .fsmwin.pw.t.c delete htext
 
   # Calculate the width of a vertical FSM state value
-  .fsmwin.f.t.c create text 1c 1c -text [fsm_gen_vertical_text [lindex $fsm_states 1]] -anchor nw -tags vtext
-  set vstate_coords [.fsmwin.f.t.c bbox vtext]
-  .fsmwin.f.t.c delete vtext
+  .fsmwin.pw.t.c create text 1c 1c -text [fsm_gen_vertical_text [lindex $fsm_states 1]] -anchor nw -tags vtext
+  set vstate_coords [.fsmwin.pw.t.c bbox vtext]
+  .fsmwin.pw.t.c delete vtext
 
   # Initialize y coordinate
   set y $ypad
@@ -307,7 +283,7 @@ proc display_fsm_table {} {
           set t ""
           set xwidth [fsm_calc_xwidth $hstate_coords [expr $tpad * 2]]
           set ywidth [fsm_calc_ywidth $vstate_coords [expr $tpad * 2]]
-          set fillcolor [.fsmwin.f.t.c cget -bg]
+          set fillcolor [.fsmwin.pw.t.c cget -bg]
           set tagname "title"
           set uline 0
         } else {
@@ -342,63 +318,63 @@ proc display_fsm_table {} {
         }
         set xwidth [fsm_calc_xwidth $vstate_coords [expr $tpad * 2]]
         set ywidth [fsm_calc_ywidth $hstate_coords [expr $tpad * 2]]
-        set fillcolor [fsm_calc_arc_fillcolor [expr $row - 1] [expr $col - 1] [.fsmwin.f.t.c cget -bg]]
+        set fillcolor [fsm_calc_arc_fillcolor [expr $row - 1] [expr $col - 1] [.fsmwin.pw.t.c cget -bg]]
       }
 
       # Create square
-      .fsmwin.f.t.c create rect $x $y [expr $x + $xwidth] [expr $y + $ywidth] \
+      .fsmwin.pw.t.c create rect $x $y [expr $x + $xwidth] [expr $y + $ywidth] \
                                 -outline black -fill $fillcolor -tags rect
 
       # Create text
       if {$t != ""} {
-        set tid [.fsmwin.f.t.c create text [expr $x + $tpad] [expr $y + $tpad] -text $t -anchor nw -tags $tagname]
+        set tid [.fsmwin.pw.t.c create text [expr $x + $tpad] [expr $y + $tpad] -text $t -anchor nw -tags $tagname]
         if {$uline == 1} {
-          .fsmwin.f.t.c itemconfigure $tid -font "[.fsmwin.f.t.c itemcget $tid -font] underline"
+          .fsmwin.pw.t.c itemconfigure $tid -font "[.fsmwin.pw.t.c itemcget $tid -font] underline"
         }
       }
 
       # Bind each square
-      .fsmwin.f.t.c bind uncov_arc <Enter> {
-        set curr_cursor [.fsmwin.f.t.c cget -cursor]
+      .fsmwin.pw.t.c bind uncov_arc <Enter> {
+        set curr_cursor [.fsmwin.pw.t.c cget -cursor]
         set curr_info   [.fsmwin.info cget -text]
-        .fsmwin.f.t.c configure -cursor hand2
+        .fsmwin.pw.t.c configure -cursor hand2
         .fsmwin.info configure -text "Click the left button to exclude/include state transition"
       }
-      .fsmwin.f.t.c bind uncov_arc <Leave> {
-        .fsmwin.f.t.c configure -cursor $curr_cursor
+      .fsmwin.pw.t.c bind uncov_arc <Leave> {
+        .fsmwin.pw.t.c configure -cursor $curr_cursor
         .fsmwin.info configure -text $curr_info
       }
-      .fsmwin.f.t.c bind uncov_arc <Button-1> {
-        set coord [.fsmwin.f.t.c coords [.fsmwin.f.t.c find withtag current]]
-        foreach rid [.fsmwin.f.t.c find overlapping [lindex $coord 0] [lindex $coord 1] [lindex $coord 0] [lindex $coord 1]] {
-          if {[.fsmwin.f.t.c type $rid] == "rectangle"} {
+      .fsmwin.pw.t.c bind uncov_arc <Button-1> {
+        set coord [.fsmwin.pw.t.c coords [.fsmwin.pw.t.c find withtag current]]
+        foreach rid [.fsmwin.pw.t.c find overlapping [lindex $coord 0] [lindex $coord 1] [lindex $coord 0] [lindex $coord 1]] {
+          if {[.fsmwin.pw.t.c type $rid] == "rectangle"} {
             break
           }
         }
-        set fsl [.fsmwin.f.t.c find withtag from_state]
+        set fsl [.fsmwin.pw.t.c find withtag from_state]
         for {set i 0} {$i < [llength $fsl]} {incr i} {
-          set fcoord [.fsmwin.f.t.c coords [lindex $fsl $i]]
+          set fcoord [.fsmwin.pw.t.c coords [lindex $fsl $i]]
           if {[lindex $coord 1] == [lindex $fcoord 1]} {
             set from_st [lindex $fsm_states $i]
             break
           }
         }
-        set tsl [.fsmwin.f.t.c find withtag to_state]
+        set tsl [.fsmwin.pw.t.c find withtag to_state]
         for {set i 0} {$i < [llength $tsl]} {incr i} {
-          set tcoord [.fsmwin.f.t.c coords [lindex $tsl $i]]
+          set tcoord [.fsmwin.pw.t.c coords [lindex $tsl $i]]
           if {[lindex $coord 0] == [lindex $tcoord 0]} {
             set to_st [lindex $fsm_states $i]
             break
           }
         }
-        if {[.fsmwin.f.t.c itemcget current -text] == "E"} {
+        if {[.fsmwin.pw.t.c itemcget current -text] == "E"} {
           set exclude 0
-          .fsmwin.f.t.c itemconfigure $rid -fill $uncov_bgColor
-          .fsmwin.f.t.c itemconfigure current -text "I"
+          .fsmwin.pw.t.c itemconfigure $rid -fill $uncov_bgColor
+          .fsmwin.pw.t.c itemconfigure current -text "I"
         } else {
           set exclude 1
-          .fsmwin.f.t.c itemconfigure $rid -fill $cov_bgColor
-          .fsmwin.f.t.c itemconfigure current -text "E"
+          .fsmwin.pw.t.c itemconfigure $rid -fill $cov_bgColor
+          .fsmwin.pw.t.c itemconfigure current -text "E"
         }
         tcl_func_set_fsm_exclude $curr_funit_name $curr_funit_type $curr_fsm_expr_id $from_st $to_st $exclude
         set text_x [.bot.right.txt xview]
@@ -413,10 +389,10 @@ proc display_fsm_table {} {
 
       # If we are in row 0, column 0, draw the special output
       if {[expr $row == 0] && [expr $col == 0]} {
-        .fsmwin.f.t.c create line $x $y [expr $x + $xwidth] [expr $y + $ywidth] -tags line
-        .fsmwin.f.t.c create text [expr [expr $xwidth * 0.25] + $xpad] [expr [expr $ywidth * 0.75] + $ypad] \
+        .fsmwin.pw.t.c create line $x $y [expr $x + $xwidth] [expr $y + $ywidth] -tags line
+        .fsmwin.pw.t.c create text [expr [expr $xwidth * 0.25] + $xpad] [expr [expr $ywidth * 0.75] + $ypad] \
                                 -text "IN"  -anchor center -tags text
-        .fsmwin.f.t.c create text [expr [expr $xwidth * 0.75] + $xpad] [expr [expr $ywidth * 0.25] + $ypad] \
+        .fsmwin.pw.t.c create text [expr [expr $xwidth * 0.75] + $xpad] [expr [expr $ywidth * 0.25] + $ypad] \
                                 -text "OUT" -anchor center -tags text
       }
 
@@ -431,7 +407,7 @@ proc display_fsm_table {} {
   }
 
   # Set the canvas scrollregion so that our rows/columns will fit
-  .fsmwin.f.t.c configure -scrollregion "0 0 [expr $x + $xwidth] [expr $y + $ywidth]"
+  .fsmwin.pw.t.c configure -scrollregion "0 0 [expr $x + $xwidth] [expr $y + $ywidth]"
 
 }
 
