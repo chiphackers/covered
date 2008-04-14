@@ -199,8 +199,6 @@ proc populate_listbox {} {
         .bot.left.tl rowconfigure end -background [lindex $funit 6] -selectbackground [lindex $funit 5]
       }
 
-      .bot.left.tl columnconfigure 0 -hide true
-
     } else {
 
       set inst_list ""
@@ -209,8 +207,6 @@ proc populate_listbox {} {
       foreach inst_name $inst_list {
         $listbox_w insert end $inst_name
       }
-
-      .bot.left.tl columnconfigure 0 -hide false
 
     }
 
@@ -222,6 +218,13 @@ proc populate_listbox {} {
     # Set the last module/instance type variable to the current
     set last_mod_inst_type $mod_inst_type;
 
+  }
+
+  # Regardless of CDD file existence, hide/show the needed columns in the window
+  if {$mod_inst_type == "module"} {
+    .bot.left.tl columnconfigure 0 -hide true
+  } else {
+    .bot.left.tl columnconfigure 0 -hide false
   }
 
 }

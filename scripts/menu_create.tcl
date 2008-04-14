@@ -33,9 +33,9 @@ proc do_keybind {.menubar} {
 
   bind all <Control-r> {.menubar.file.gen invoke 0}
 
-  bind all <Control-n> {.menubar.view invoke 2}
-  bind all <Control-p> {.menubar.view invoke 3}
-  bind all <Control-c> {.menubar.view invoke 4}
+  bind all <Control-n> {.menubar.view invoke 0}
+  bind all <Control-p> {.menubar.view invoke 1}
+  bind all <Control-c> {.menubar.view invoke 2}
 
 }
 
@@ -67,7 +67,6 @@ proc menu_create {} {
       .menubar.file entryconfigure 1 -state normal
       .menubar.file entryconfigure 4 -state normal
       .menubar.file.gen entryconfigure 0 -state normal
-      .menubar.view entryconfigure 0 -state normal
     }
   }
   # FILE - entry 1
@@ -110,7 +109,6 @@ proc menu_create {} {
     .menubar.file entryconfigure 3 -state disabled
     .menubar.file entryconfigure 4 -state disabled
     .menubar.file.gen entryconfigure 0 -state disabled
-    .menubar.view entryconfigure 0 -state disabled
   }
   # FILE - entry 5
   $tfm add separator
@@ -150,10 +148,13 @@ proc menu_create {} {
   $report add radiobutton -label "Module-based"   -variable mod_inst_type -value "module" -underline 0 -command {
     populate_listbox
     update_summary
+    .bot.left.tl columnconfigure 1 -hide false
+    .menubar.view entryconfigure 4 -label "Hide Summary Module Column" -state disabled
   }
   $report add radiobutton -label "Instance-based" -variable mod_inst_type -value "instance" -underline 1 -command {
     populate_listbox
     update_summary
+    .menubar.view entryconfigure 4 -state normal
   }
   $report add separator
   $report add checkbutton -label "Show Uncovered" -variable uncov_type -onvalue 1 -offvalue 0 -underline 5 -command {
@@ -225,11 +226,6 @@ proc menu_create {} {
   set m [menu $mb.view -tearoff false]
   $mb add cascade -label "View" -menu $m
 
-  # Summary window
-  $m add command -label "Summary..." -state disabled -underline 0 -command {
-    create_summary
-  }
-  $m add separator
   $m add command -label "Next Uncovered" -state disabled -accelerator "Ctrl-n" -underline 0 -command {
     goto_uncov $next_uncov_index
   }
@@ -248,40 +244,49 @@ proc menu_create {} {
     }
   }
   $m add separator
-  $m add command -label "Hide Summary Hit Column" -command {
+  $m add command -label "Hide Summary Module Column" -state disabled -command {
     if {[.bot.left.tl columncget 1 -hide] == 1} {
-      .menubar.view entryconfigure 6 -label "Hide Summary Hit Column"
+      .menubar.view entryconfigure 4 -label "Hide Summary Module Column"
       .bot.left.tl columnconfigure 1 -hide false
     } else {
-      .menubar.view entryconfigure 6 -label "Show Summary Hit Column"
+      .menubar.view entryconfigure 4 -label "Show Summary Module Column"
       .bot.left.tl columnconfigure 1 -hide true
     }
   }
-  $m add command -label "Hide Summary Miss Column" -command {
+  $m add command -label "Hide Summary Hit Column" -command {
     if {[.bot.left.tl columncget 2 -hide] == 1} {
-      .menubar.view entryconfigure 7 -label "Hide Summary Miss Column"
+      .menubar.view entryconfigure 5 -label "Hide Summary Hit Column"
       .bot.left.tl columnconfigure 2 -hide false
     } else {
-      .menubar.view entryconfigure 7 -label "Show Summary Miss Column"
+      .menubar.view entryconfigure 5 -label "Show Summary Hit Column"
       .bot.left.tl columnconfigure 2 -hide true
     }
   }
-  $m add command -label "Hide Summary Total Column" -command {
+  $m add command -label "Hide Summary Miss Column" -command {
     if {[.bot.left.tl columncget 3 -hide] == 1} {
-      .menubar.view entryconfigure 8 -label "Hide Summary Total Column"
+      .menubar.view entryconfigure 6 -label "Hide Summary Miss Column"
       .bot.left.tl columnconfigure 3 -hide false
     } else {
-      .menubar.view entryconfigure 8 -label "Show Summary Total Column"
+      .menubar.view entryconfigure 6 -label "Show Summary Miss Column"
       .bot.left.tl columnconfigure 3 -hide true
     }
   }
-  $m add command -label "Hide Summary Hit Percent Column" -command {
+  $m add command -label "Hide Summary Total Column" -command {
     if {[.bot.left.tl columncget 4 -hide] == 1} {
-      .menubar.view entryconfigure 9 -label "Hide Summary Hit Percent Column"
+      .menubar.view entryconfigure 7 -label "Hide Summary Total Column"
       .bot.left.tl columnconfigure 4 -hide false
     } else {
-      .menubar.view entryconfigure 9 -label "Show Summary Hit Percent Column"
+      .menubar.view entryconfigure 7 -label "Show Summary Total Column"
       .bot.left.tl columnconfigure 4 -hide true
+    }
+  }
+  $m add command -label "Hide Summary Hit Percent Column" -command {
+    if {[.bot.left.tl columncget 5 -hide] == 1} {
+      .menubar.view entryconfigure 8 -label "Hide Summary Hit Percent Column"
+      .bot.left.tl columnconfigure 5 -hide false
+    } else {
+      .menubar.view entryconfigure 8 -label "Show Summary Hit Percent Column"
+      .bot.left.tl columnconfigure 5 -hide true
     }
   }
   # If we are running on Mac OS X, add preferences to applications menu
