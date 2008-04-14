@@ -136,14 +136,6 @@ proc create_summary {} {
 
 }
 
-proc update_summary {} {
-
-  if {[winfo exists .sumwin] == 1} {
-    create_summary
-  }
-
-}
-
 proc clear_summary {} {
 
   destroy .sumwin

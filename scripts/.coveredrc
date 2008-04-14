@@ -123,7 +123,7 @@ HighlightSymbolColor = coral
 # When an ASCII report is generated, this option specifies the amount of detail contained
 # in the report.  Legal values are 'summary', 'detailed' or 'verbose'.
 
-ReportDetailLevel = summary
+ReportDetailLevel = verbose
 
 # When an ASCII report is generated, this option specifies whether the report should
 # accumulate coverage statistics on a module or instance basis.  Legal values are 'module'

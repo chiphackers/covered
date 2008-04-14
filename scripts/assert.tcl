@@ -190,7 +190,7 @@ proc create_assert_window {inst} {
     process_funit_assert_cov
     .bot.right.txt xview moveto [lindex $text_x 0]
     .bot.right.txt yview moveto [lindex $text_y 0]
-    update_summary
+    populate_listbox
     enable_cdd_save
     set_pointer curr_assert_ptr $curr_assert_ptr
     create_assert_window $curr_assert_inst

@@ -382,7 +382,7 @@ proc display_fsm_table {} {
         process_funit_fsm_cov
         .bot.right.txt xview moveto [lindex $text_x 0]
         .bot.right.txt yview moveto [lindex $text_y 0]
-        update_summary
+        populate_listbox
         enable_cdd_save
         set_pointer curr_fsm_ptr $curr_fsm_ptr
       }

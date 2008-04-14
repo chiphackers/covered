@@ -81,7 +81,17 @@ static void exclude_expr_assign_and_recalc(
 
     /* If this expression is a root expression, recalculate line coverage */
     if( ESUPPL_IS_ROOT( expr->suppl ) == 1 ) {
-      if( expr->exec_num == 0 ) {
+      if( (expr->op != EXP_OP_DELAY)   &&
+          (expr->op != EXP_OP_CASE)    &&
+          (expr->op != EXP_OP_CASEX)   &&
+          (expr->op != EXP_OP_CASEZ)   &&
+          (expr->op != EXP_OP_DEFAULT) &&
+          (expr->op != EXP_OP_NB_CALL) &&
+          (expr->op != EXP_OP_FORK)    &&
+          (expr->op != EXP_OP_JOIN)    &&
+          (expr->op != EXP_OP_NOOP)    &&
+          (expr->line != 0) &&
+          (expr->exec_num == 0) ) {
         if( excluded ) {
           funit->stat->line_hit++;
         } else {
@@ -118,7 +128,7 @@ static void exclude_expr_assign_and_recalc(
 
   /* Set the exclude bits in the expression supplemental field */
   expr->suppl.part.excluded      = excluded ? 1 : 0;
-  if( ESUPPL_IS_ROOT( expr->suppl ) == 1 ) {
+  if( (ESUPPL_IS_ROOT( expr->suppl ) == 1) && (expr->parent->stmt != NULL) ) {
     expr->parent->stmt->suppl.part.excluded = (excluded && set_line) ? 1 : 0;
   }
 
@@ -461,6 +471,11 @@ bool exclude_set_assert_exclude(
 
 /*
  $Log$
+ Revision 1.21  2008/03/26 21:29:31  phase1geo
+ Initial checkin of new optimizations for unknown and not_zero values in vectors.
+ This attempts to speed up expression operations across the board.  Working on
+ debugging regressions.  Checkpointing.
+
  Revision 1.20  2008/02/25 18:22:16  phase1geo
  Moved statement supplemental bits from root expression to statement and starting
  to add support for race condition checking pragmas (still some work left to do

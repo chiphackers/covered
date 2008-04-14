@@ -61,7 +61,7 @@ proc create_toggle_window {signal} {
       process_funit_toggle_cov
       .bot.right.txt xview moveto [lindex $text_x 0]
       .bot.right.txt yview moveto [lindex $text_y 0]
-      update_summary
+      populate_listbox
       enable_cdd_save
       set_pointer curr_toggle_ptr $curr_toggle_ptr
     }

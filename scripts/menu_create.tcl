@@ -147,13 +147,11 @@ proc menu_create {} {
 
   $report add radiobutton -label "Module-based"   -variable mod_inst_type -value "module" -underline 0 -command {
     populate_listbox
-    update_summary
     .bot.left.tl columnconfigure 1 -hide false
     .menubar.view entryconfigure 4 -label "Hide Summary Module Column" -state disabled
   }
   $report add radiobutton -label "Instance-based" -variable mod_inst_type -value "instance" -underline 1 -command {
     populate_listbox
-    update_summary
     .menubar.view entryconfigure 4 -state normal
   }
   $report add separator
@@ -383,9 +381,6 @@ proc open_files {} {
 
       # Populate the listbox
       populate_listbox
-
-      # Update the summary window
-      update_summary
 
     }
 

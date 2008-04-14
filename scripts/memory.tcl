@@ -63,7 +63,7 @@ proc create_memory_window {signal} {
       process_funit_memory_cov
       .bot.right.txt xview moveto [lindex $text_x 0]
       .bot.right.txt yview moveto [lindex $text_y 0]
-      update_summary
+      populate_listbox
       enable_cdd_save
       set_pointer curr_memory_ptr $curr_memory_ptr
     }

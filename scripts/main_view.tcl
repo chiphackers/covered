@@ -291,14 +291,6 @@ proc populate_text {} {
 
 }
 
-proc rearrange_summary_list {} {
-
-  set summary_list {}
-
-  # TBD
-
-}
-
 proc clear_text {} {
 
   global last_lb_index
@@ -464,9 +456,6 @@ proc update_all_windows {} {
   # Update the main window
   goto_uncov $curr_uncov_index
   .menubar.view entryconfigure 2 -state disabled
-
-  # Update the summary window
-  update_summary
 
   # Update the toggle window
   update_toggle
