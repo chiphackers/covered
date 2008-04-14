@@ -927,8 +927,7 @@ proc create_color_pref {} {
   global race_fgColor  race_bgColor  tmp_race_fgColor  tmp_race_bgColor
 
   # Create main frame
-  frame .prefwin.pf.f
-  label .prefwin.pf.f.l -anchor w -text "Set Highlight Color (F=Change Foreground, B=Change Background)"
+  labelframe .prefwin.pf.f -labelanchor nw -text "Set Highlight Color (F=Change Foreground, B=Change Background)" -pady 6 -padx 4
 
   # Uncovered selectors
   button .prefwin.pf.f.ufb -text "F" -relief groove -command {
@@ -965,16 +964,15 @@ proc create_color_pref {} {
 
   # Pack the color widgets into the color frame
   grid columnconfigure .prefwin.pf.f 3 -weight 1
-  grid .prefwin.pf.f.l   -row 0 -column 0 -columnspan 4 -sticky news -pady 4
-  grid .prefwin.pf.f.ul  -row 1 -column 0 -sticky news -padx 4
-  grid .prefwin.pf.f.ufb -row 1 -column 1 -sticky news -padx 4
-  grid .prefwin.pf.f.ubb -row 1 -column 2 -sticky news -padx 4
-  grid .prefwin.pf.f.cl  -row 2 -column 0 -sticky news -padx 4
-  grid .prefwin.pf.f.cfb -row 2 -column 1 -sticky news -padx 4
-  grid .prefwin.pf.f.cbb -row 2 -column 2 -sticky news -padx 4
-  grid .prefwin.pf.f.rl  -row 3 -column 0 -sticky news -padx 4
-  grid .prefwin.pf.f.rfb -row 3 -column 1 -sticky news -padx 4
-  grid .prefwin.pf.f.rbb -row 3 -column 2 -sticky news -padx 4
+  grid .prefwin.pf.f.ul  -row 0 -column 0 -sticky news -padx 4
+  grid .prefwin.pf.f.ufb -row 0 -column 1 -sticky news -padx 4
+  grid .prefwin.pf.f.ubb -row 0 -column 2 -sticky news -padx 4
+  grid .prefwin.pf.f.cl  -row 1 -column 0 -sticky news -padx 4
+  grid .prefwin.pf.f.cfb -row 1 -column 1 -sticky news -padx 4
+  grid .prefwin.pf.f.cbb -row 1 -column 2 -sticky news -padx 4
+  grid .prefwin.pf.f.rl  -row 2 -column 0 -sticky news -padx 4
+  grid .prefwin.pf.f.rfb -row 2 -column 1 -sticky news -padx 4
+  grid .prefwin.pf.f.rbb -row 2 -column 2 -sticky news -padx 4
 
   # Pack the frame
   pack .prefwin.pf.f -fill both
@@ -986,8 +984,7 @@ proc create_cov_goal_pref {} {
   global tmp_line_low_limit tmp_toggle_low_limit tmp_memory_low_limit tmp_comb_low_limit tmp_fsm_low_limit tmp_assert_low_limit
 
   # Create widgets
-  frame .prefwin.pf.f
-  label .prefwin.pf.f.l -anchor w -text "Set Acceptable Coverage Goals"
+  labelframe .prefwin.pf.f -labelanchor nw -text "Set Acceptable Coverage Goals" -padx 4 -pady 6
 
   label .prefwin.pf.f.ll -anchor e -text "Line Coverage %:"
   percent_spinner .prefwin.pf.f.ls $tmp_line_low_limit
@@ -1009,19 +1006,18 @@ proc create_cov_goal_pref {} {
 
   # Pack widgets into grid
   grid columnconfigure .prefwin.pf.f 2 -weight 1
-  grid .prefwin.pf.f.l  -row 0 -column 0 -sticky news -pady 4
-  grid .prefwin.pf.f.ll -row 1 -column 0 -sticky news
-  grid .prefwin.pf.f.ls -row 1 -column 1 -sticky news
-  grid .prefwin.pf.f.tl -row 2 -column 0 -sticky news
-  grid .prefwin.pf.f.ts -row 2 -column 1 -sticky news
-  grid .prefwin.pf.f.ml -row 3 -column 0 -sticky news
-  grid .prefwin.pf.f.ms -row 3 -column 1 -sticky news
-  grid .prefwin.pf.f.cl -row 4 -column 0 -sticky news
-  grid .prefwin.pf.f.cs -row 4 -column 1 -sticky news
-  grid .prefwin.pf.f.fl -row 5 -column 0 -sticky news
-  grid .prefwin.pf.f.fs -row 5 -column 1 -sticky news
-  grid .prefwin.pf.f.al -row 6 -column 0 -sticky news
-  grid .prefwin.pf.f.as -row 6 -column 1 -sticky news
+  grid .prefwin.pf.f.ll -row 0 -column 0 -sticky news
+  grid .prefwin.pf.f.ls -row 0 -column 1 -sticky news
+  grid .prefwin.pf.f.tl -row 1 -column 0 -sticky news
+  grid .prefwin.pf.f.ts -row 1 -column 1 -sticky news
+  grid .prefwin.pf.f.ml -row 2 -column 0 -sticky news
+  grid .prefwin.pf.f.ms -row 2 -column 1 -sticky news
+  grid .prefwin.pf.f.cl -row 3 -column 0 -sticky news
+  grid .prefwin.pf.f.cs -row 3 -column 1 -sticky news
+  grid .prefwin.pf.f.fl -row 4 -column 0 -sticky news
+  grid .prefwin.pf.f.fs -row 4 -column 1 -sticky news
+  grid .prefwin.pf.f.al -row 5 -column 0 -sticky news
+  grid .prefwin.pf.f.as -row 5 -column 1 -sticky news
 
   # Pack the frame
   pack .prefwin.pf.f -fill both
@@ -1040,8 +1036,7 @@ proc create_syntax_pref {} {
   global hl_mode
 
   # Create widgets
-  frame .prefwin.pf.f
-  label .prefwin.pf.f.l -anchor w -text "Set Syntax Highlighting Options"
+  labelframe .prefwin.pf.f.l -labelanchor nw -text "Set Syntax Highlighting Options" -padx 4 -pady 6
 
   checkbutton .prefwin.pf.f.mcb -variable tmp_vlog_hl_mode -onvalue on -offvalue off -anchor w \
                                   -text "Turn on syntax highlighting mode" -command {
@@ -1085,20 +1080,19 @@ proc create_syntax_pref {} {
   }
 
   grid columnconfigure .prefwin.pf.f 2 -weight 1
-  grid .prefwin.pf.f.l    -row 0 -column 0 -sticky news -pady 4
-  grid .prefwin.pf.f.mcb  -row 1 -column 0 -sticky news -pady 4
-  grid .prefwin.pf.f.ppcl -row 2 -column 0 -sticky news -padx 4
-  grid .prefwin.pf.f.ppcb -row 2 -column 1 -sticky news -padx 4
-  grid .prefwin.pf.f.pcl  -row 3 -column 0 -sticky news -padx 4
-  grid .prefwin.pf.f.pcb  -row 3 -column 1 -sticky news -padx 4
-  grid .prefwin.pf.f.ccl  -row 4 -column 0 -sticky news -padx 4
-  grid .prefwin.pf.f.ccb  -row 4 -column 1 -sticky news -padx 4
-  grid .prefwin.pf.f.vcl  -row 5 -column 0 -sticky news -padx 4
-  grid .prefwin.pf.f.vcb  -row 5 -column 1 -sticky news -padx 4
-  grid .prefwin.pf.f.stcl -row 6 -column 0 -sticky news -padx 4
-  grid .prefwin.pf.f.stcb -row 6 -column 1 -sticky news -padx 4
-  grid .prefwin.pf.f.sycl -row 7 -column 0 -sticky news -padx 4
-  grid .prefwin.pf.f.sycb -row 7 -column 1 -sticky news -padx 4
+  grid .prefwin.pf.f.mcb  -row 0 -column 0 -sticky news -pady 4
+  grid .prefwin.pf.f.ppcl -row 1 -column 0 -sticky news -padx 4
+  grid .prefwin.pf.f.ppcb -row 1 -column 1 -sticky news -padx 4
+  grid .prefwin.pf.f.pcl  -row 2 -column 0 -sticky news -padx 4
+  grid .prefwin.pf.f.pcb  -row 2 -column 1 -sticky news -padx 4
+  grid .prefwin.pf.f.ccl  -row 3 -column 0 -sticky news -padx 4
+  grid .prefwin.pf.f.ccb  -row 3 -column 1 -sticky news -padx 4
+  grid .prefwin.pf.f.vcl  -row 4 -column 0 -sticky news -padx 4
+  grid .prefwin.pf.f.vcb  -row 4 -column 1 -sticky news -padx 4
+  grid .prefwin.pf.f.stcl -row 5 -column 0 -sticky news -padx 4
+  grid .prefwin.pf.f.stcb -row 5 -column 1 -sticky news -padx 4
+  grid .prefwin.pf.f.sycl -row 6 -column 0 -sticky news -padx 4
+  grid .prefwin.pf.f.sycb -row 6 -column 1 -sticky news -padx 4
 
   pack .prefwin.pf.f -fill both
 
@@ -1112,8 +1106,7 @@ proc create_report_pref {} {
   global tmp_rsel_l tmp_rsel_t tmp_rsel_m tmp_rsel_c tmp_rsel_f tmp_rsel_a tmp_rsel_r
   global tmp_rsel_width tmp_rsel_wsel tmp_rsel_sup
 
-  frame .prefwin.pf.f
-  label .prefwin.pf.f.l -anchor w -text "Set ASCII Report Generation Options"
+  labelframe .prefwin.pf.f -labelanchor nw -text "Set ASCII Report Generation Options" -padx 4 -pady 6
 
   # Create width area
   checkbutton .prefwin.pf.f.width_val -text "Limit line width to:" -variable tmp_rsel_wsel -anchor w -command {
@@ -1126,19 +1119,26 @@ proc create_report_pref {} {
   entry .prefwin.pf.f.width_w -textvariable tmp_rsel_width -width 3 -validate key -vcmd {string is int %P} -invalidcommand bell -state disabled
   label .prefwin.pf.f.width_lbl -text "characters" -anchor w
 
+  grid .prefwin.pf.f.width_val -row 0 -column 0 -sticky news -pady 4
+  grid .prefwin.pf.f.width_w   -row 0 -column 1 -sticky news -pady 4
+  grid .prefwin.pf.f.width_lbl -row 0 -column 2 -sticky news -pady 4
+  grid .prefwin.pf.f.sup_val   -row 1 -column 0 -columnspan 3 -sticky nw -pady 4
+
   # Create detail selection area
-  label .prefwin.pf.f.sdv_lbl -text "Level of Detail" -anchor w
-  radiobutton .prefwin.pf.f.sdv_s -text "Summary"  -variable tmp_rsel_sdv -value "s" -anchor w
-  radiobutton .prefwin.pf.f.sdv_d -text "Detailed" -variable tmp_rsel_sdv -value "d" -anchor w
-  radiobutton .prefwin.pf.f.sdv_v -text "Verbose"  -variable tmp_rsel_sdv -value "v" -anchor w
+  labelframe .prefwin.pf.f.sdv -text "Level of Detail" -labelanchor nw -padx 4 -pady 6
+  radiobutton .prefwin.pf.f.sdv.s -text "Summary"  -variable tmp_rsel_sdv -value "s" -anchor w
+  radiobutton .prefwin.pf.f.sdv.d -text "Detailed" -variable tmp_rsel_sdv -value "d" -anchor w
+  radiobutton .prefwin.pf.f.sdv.v -text "Verbose"  -variable tmp_rsel_sdv -value "v" -anchor w
+
+  grid .prefwin.pf.f.sdv
 
   # Create module/instance selection area
-  label .prefwin.pf.f.mi_lbl -text "Accumulate By" -anchor w
+  labelframe .prefwin.pf.f.mi_lbl -text "Accumulate By" -labelanchor nw -padx 4 -pady 6
   radiobutton .prefwin.pf.f.mi_m -text "Module"   -variable tmp_rsel_mi -value "None" -anchor w
   radiobutton .prefwin.pf.f.mi_i -text "Instance" -variable tmp_rsel_mi -value "-i" -anchor w
 
   # Create metric selection area
-  label .prefwin.pf.f.metric_lbl -text "Show Metrics" -anchor w
+  labelframe .prefwin.pf.f.metric_lbl -text "Show Metrics" -labelanchor nw -padx 4 -pady 6
   checkbutton .prefwin.pf.f.metric_l -text "Line"            -variable tmp_rsel_l -onvalue "l" -offvalue "None" -anchor w
   checkbutton .prefwin.pf.f.metric_t -text "Toggle"          -variable tmp_rsel_t -onvalue "t" -offvalue "None" -anchor w
   checkbutton .prefwin.pf.f.metric_m -text "Memory"          -variable tmp_rsel_m -onvalue "m" -offvalue "None" -anchor w
@@ -1148,7 +1148,7 @@ proc create_report_pref {} {
   checkbutton .prefwin.pf.f.metric_r -text "Race Conditions" -variable tmp_rsel_r -onvalue "r" -offvalue "None" -anchor w
 
   # Create covered/uncovered selection area
-  label .prefwin.pf.f.cu_lbl -text "Coverage Type" -anchor w
+  labelframe .prefwin.pf.f.cu_lbl -text "Coverage Type" -labelanchor nw -padx 4 -pady 6
   radiobutton .prefwin.pf.f.cu_u -text "Uncovered" -variable tmp_rsel_cu -value "None" -anchor w
   radiobutton .prefwin.pf.f.cu_c -text "Covered"   -variable tmp_rsel_cu -value "-c" -anchor w
 
