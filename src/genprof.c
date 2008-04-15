@@ -116,6 +116,7 @@ profiler profiles[NUM_PROFILES] = {
   {"combination_get_expression", NULL, 0, 0, 0, FALSE},
   {"combination_get_coverage", NULL, 0, 0, 0, FALSE},
   {"combination_report", NULL, 0, 0, 0, FALSE},
+  {"db_create", NULL, 0, 0, 0, TRUE},
   {"db_close", NULL, 0, 0, 0, TRUE},
   {"db_check_for_top_module", NULL, 0, 0, 0, TRUE},
   {"db_write", NULL, 0, 0, 0, TRUE},

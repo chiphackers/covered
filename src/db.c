@@ -82,6 +82,21 @@ extern int         generate_expr_mode;
 extern int         for_mode;
 
 /*!
+ Array of database pointers storing all currently loaded databases.
+*/
+/*@null@*/ db** db_list = NULL;
+
+/*!
+ Size of the db_list array.
+*/
+unsigned int db_size = 0;
+
+/*!
+ Index of current database in db_list array that is being handled. 
+*/
+unsigned int curr_db = 0;
+
+/*!
  Specifies the string Verilog scope that is currently specified in the VCD file.
 */
 /*@null@*/ char** curr_inst_scope = NULL;
@@ -172,42 +187,81 @@ unsigned int ignore_racecheck_mode = 0;
 
 
 /*!
- Deallocates all memory associated with the database.
+ \return Returns pointer to newly allocated and initialized database structure
+
+ Allocates, initializes and stores new database structure into global database array. 
+*/
+db* db_create() { PROFILE(DB_CREATE);
+
+  db* new_db;  /* Pointer to new database structure */
+
+  /* Allocate new database */
+  new_db             = (db*)malloc_safe( sizeof( db ) );
+  new_db->inst_head  = NULL;
+  new_db->inst_tail  = NULL;
+  new_db->funit_head = NULL;
+  new_db->funit_tail = NULL;
+
+  /* Add this new database to the database array */
+  db_list = (db**)realloc_safe( db_list, (sizeof( db ) * db_size), (sizeof( db ) * (db_size + 1)) );
+  db_list[db_size] = new_db;
+  db_size++;
+
+  PROFILE_END;
+
+  return( new_db );
+
+}
+
+/*!
+ Deallocates all memory associated with the databases.
 */
 void db_close() { PROFILE(DB_CLOSE);
   
-  if( inst_head != NULL ) {
+  unsigned int i;
 
-    int i;  /* Loop iterator */
+  for( i=0; i<db_size; i++ ) {
 
-    /* Remove memory allocated for inst_head */
-    inst_link_delete_list( inst_head );
-    inst_head = NULL;
-    inst_tail = NULL;
+    if( db_list[i]->inst_head != NULL ) {
 
-    /* Remove memory allocated for all functional units */
-    funit_link_delete_list( &funit_head, &funit_tail, TRUE );
-    global_funit = NULL;
+      /* Remove memory allocated for inst_head */
+      inst_link_delete_list( db_list[i]->inst_head );
+      db_list[i]->inst_head = NULL;
+      db_list[i]->inst_tail = NULL;
 
-    /* Deallocate preprocessor define tree */
-    tree_dealloc( def_table );
-    def_table = NULL;
+      /* Remove memory allocated for all functional units */
+      funit_link_delete_list( &(db_list[i]->funit_head), &(db_list[i]->funit_tail), TRUE );
 
-    /* Deallocate the binding list */
-    bind_dealloc();
+      /* Deallocate database structure */
+      free_safe( db_list[i], sizeof( db ) );
 
-    /* Deallocate the needed module list */
-    str_link_delete_list( modlist_head );
-    modlist_head = NULL;
-    modlist_tail = NULL;
-    
-    /* Free memory associated with current instance scope */
-    assert( curr_inst_scope_size == 0 );
+    }
 
   }
 
+  /* Clear the global functional unit */
+  global_funit = NULL;
+
+  /* Deallocate preprocessor define tree */
+  tree_dealloc( def_table );
+  def_table = NULL;
+
+  /* Deallocate the binding list */
+  bind_dealloc();
+
+  /* Deallocate the needed module list */
+  str_link_delete_list( modlist_head );
+  modlist_head = NULL;
+  modlist_tail = NULL;
+    
+  /* Free memory associated with current instance scope */
+  assert( curr_inst_scope_size == 0 );
+
   /* Deallocate the information section memory */
   info_dealloc();
+
+  /* Finally, deallocate the database list */
+  free_safe( db_list, (sizeof( db ) * db_size) );
 
   PROFILE_END;
 
@@ -226,7 +280,7 @@ bool db_check_for_top_module() { PROFILE(DB_CHECK_FOR_TOP_MODULE);
   bool       retval = FALSE;  /* Return value for this function */
   inst_link* instl;           /* Pointer to current instance link being checked */
 
-  instl = inst_head;
+  instl = db_list[curr_db]->inst_head;
   while( (instl != NULL) && (strcmp( instl->inst->funit->name, top_module ) != 0) ) {
     instl = instl->next;
   }
@@ -278,10 +332,10 @@ void db_write(
       curr_expr_id = 1;
 
       /* Iterate through instance tree */
-      assert( inst_head != NULL );
+      assert( db_list[curr_db]->inst_head != NULL );
       info_db_write( db_handle );
 
-      instl = inst_head;
+      instl = db_list[curr_db]->inst_head;
       while( instl != NULL ) {
         instance_db_write( instl->inst, db_handle, instl->inst->name, parse_mode, report_save );
         instl = instl->next;
@@ -441,7 +495,7 @@ void db_read(
               
                 if( read_mode != READ_MODE_MERGE_INST_MERGE ) {
 
-                  inst_link* instl = inst_head;  /* Pointer to current instance link */
+                  inst_link* instl = db_list[curr_db]->inst_head;  /* Pointer to current instance link */
 
                   /* Get the scope of the parent module */
                   scope_extract_back( funit_scope, back, parent_scope );
@@ -451,14 +505,14 @@ void db_read(
                     instl = instl->next;
                   }
                   if( instl == NULL ) {
-                    (void)inst_link_add( instance_create( curr_funit, funit_scope, NULL ), &inst_head, &inst_tail );
+                    (void)inst_link_add( instance_create( curr_funit, funit_scope, NULL ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
                   }
 
                 }
 
                 /* If the current functional unit is a merged unit, don't add it to the funit list again */
                 if( !merge_mode ) {
-                  funit_link_add( curr_funit, &funit_head, &funit_tail );
+                  funit_link_add( curr_funit, &(db_list[curr_db]->funit_head), &(db_list[curr_db]->funit_tail) );
                 }
 
               }
@@ -468,11 +522,11 @@ void db_read(
 
               /* Now finish reading functional unit line */
               funit_db_read( &tmpfunit, funit_scope, &rest_line );
-              if( (read_mode == READ_MODE_MERGE_INST_MERGE) && ((foundinst = inst_link_find_by_scope( funit_scope, inst_head )) != NULL) ) {
+              if( (read_mode == READ_MODE_MERGE_INST_MERGE) && ((foundinst = inst_link_find_by_scope( funit_scope, db_list[curr_db]->inst_head )) != NULL) ) {
                 merge_mode = TRUE;
                 curr_funit = foundinst->funit;
                 funit_db_merge( foundinst->funit, db_handle, TRUE );
-              } else if( (read_mode == READ_MODE_REPORT_MOD_MERGE) && ((foundfunit = funit_link_find( tmpfunit.name, tmpfunit.type, funit_head )) != NULL) ) {
+              } else if( (read_mode == READ_MODE_REPORT_MOD_MERGE) && ((foundfunit = funit_link_find( tmpfunit.name, tmpfunit.type, db_list[curr_db]->funit_head )) != NULL) ) {
                 merge_mode = TRUE;
                 curr_funit = foundfunit->funit;
                 funit_db_merge( foundfunit->funit, db_handle, FALSE );
@@ -555,7 +609,7 @@ void db_read(
 
     if( read_mode != READ_MODE_MERGE_INST_MERGE ) {
 
-      inst_link* instl = inst_head;  /* Pointer to current instance link */
+      inst_link* instl = db_list[curr_db]->inst_head;  /* Pointer to current instance link */
 
       /* Get the scope of the parent module */
       scope_extract_back( funit_scope, back, parent_scope );
@@ -565,14 +619,14 @@ void db_read(
         instl = instl->next;
       }
       if( instl == NULL ) {
-        (void)inst_link_add( instance_create( curr_funit, funit_scope, NULL ), &inst_head, &inst_tail );
+        (void)inst_link_add( instance_create( curr_funit, funit_scope, NULL ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
       }
 
     }
 
     /* If the current functional unit was being merged, don't add it to the functional unit list again */
     if( !merge_mode ) {
-      funit_link_add( curr_funit, &funit_head, &funit_tail );
+      funit_link_add( curr_funit, &(db_list[curr_db]->funit_head), &(db_list[curr_db]->funit_tail) );
     }
 
     curr_funit = NULL;
@@ -582,7 +636,7 @@ void db_read(
 #ifdef DEBUG_MODE
   /* Display the instance trees, if we are debugging */
   if( debug_mode ) {
-    inst_link_display( inst_head );
+    inst_link_display( db_list[curr_db]->inst_head );
   }
 #endif
 
@@ -604,10 +658,10 @@ void db_merge_funits() { PROFILE(DB_MERGE_FUNITS);
 
   funit_link* funitl;  /* Pointer to current functional unit link */
 
-  funitl = funit_head;
+  funitl = db_list[curr_db]->funit_head;
   while( funitl != NULL ) {
 
-    funit_link* tfunitl = funit_head;
+    funit_link* tfunitl = db_list[curr_db]->funit_head;
 
     while( (tfunitl != NULL) && (funitl != tfunitl) ) {
       func_unit* tfunit = tfunitl->funit;
@@ -616,9 +670,9 @@ void db_merge_funits() { PROFILE(DB_MERGE_FUNITS);
         funit_inst* inst;
         int         ignore = 0;
         funit_merge( funitl->funit, tfunit );
-        assert( (inst = inst_link_find_by_funit( tfunit, inst_head, &ignore )) != NULL );
+        assert( (inst = inst_link_find_by_funit( tfunit, db_list[curr_db]->inst_head, &ignore )) != NULL );
         inst->funit = funitl->funit;
-        funit_link_remove( tfunit, &funit_head, &funit_tail, TRUE );
+        funit_link_remove( tfunit, &(db_list[curr_db]->funit_head), &(db_list[curr_db]->funit_tail), TRUE );
       }
     }
 
@@ -789,7 +843,7 @@ func_unit* db_add_instance(
     }
   }
 
-  if( ((found_funit_link = funit_link_find( funit->name, funit->type, funit_head )) != NULL) && (generate_top_mode == 0) ) {
+  if( ((found_funit_link = funit_link_find( funit->name, funit->type, db_list[curr_db]->funit_head )) != NULL) && (generate_top_mode == 0) ) {
 
     if( type != FUNIT_MODULE ) {
       unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Multiple identical task/function/named-begin-end names (%s) found in module %s, file %s\n",
@@ -811,12 +865,12 @@ func_unit* db_add_instance(
       }
     } else {
       if( (last_gi == NULL) || (last_gi->suppl.part.type != GI_TYPE_INST) || !instance_parse_add( &last_gi->elem.inst, curr_funit, found_funit_link->funit, scope, range, FALSE, TRUE ) ) {
-        inst_link* instl = inst_head;
+        inst_link* instl = db_list[curr_db]->inst_head;
         while( (instl != NULL) && !instance_parse_add( &instl->inst, curr_funit, found_funit_link->funit, scope, range, FALSE, FALSE ) ) {
           instl = instl->next;
         }
         if( instl == NULL ) {
-          (void)inst_link_add( instance_create( found_funit_link->funit, scope, range ), &inst_head, &inst_tail );
+          (void)inst_link_add( instance_create( found_funit_link->funit, scope, range ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
         }
       }
     }
@@ -826,7 +880,7 @@ func_unit* db_add_instance(
   } else {
 
     /* Add new functional unit to functional unit list. */
-    funit_link_add( funit, &funit_head, &funit_tail );
+    funit_link_add( funit, &(db_list[curr_db]->funit_head), &(db_list[curr_db]->funit_tail) );
 
     /* If we are currently within a generate block, create a generate item for this instance to resolve it later */
     if( generate_top_mode > 0 ) {
@@ -838,12 +892,12 @@ func_unit* db_add_instance(
       }
     } else {
       if( (last_gi == NULL) || (last_gi->suppl.part.type != GI_TYPE_INST) || !instance_parse_add( &last_gi->elem.inst, curr_funit, funit, scope, range, FALSE, TRUE ) ) {
-        inst_link* instl = inst_head;
+        inst_link* instl = db_list[curr_db]->inst_head;
         while( (instl != NULL) && !instance_parse_add( &instl->inst, curr_funit, funit, scope, range, FALSE, FALSE ) ) {
           instl = instl->next;
         }
         if( instl == NULL ) {
-          (void)inst_link_add( instance_create( funit, scope, range ), &inst_head, &inst_tail );
+          (void)inst_link_add( instance_create( funit, scope, range ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
         }
       }
     }
@@ -887,7 +941,7 @@ void db_add_module(
   }
 #endif
 
-  modl = funit_link_find( name, FUNIT_MODULE, funit_head );
+  modl = funit_link_find( name, FUNIT_MODULE, db_list[curr_db]->funit_head );
 
   assert( modl != NULL );
 
@@ -2215,7 +2269,7 @@ void db_remove_statement_from_current_funit( statement* stmt ) { PROFILE(DB_REMO
      Get a list of all parameters within the given statement expression tree and remove them from
      an instance and module parameters.
     */
-    instl = inst_head;
+    instl = db_list[curr_db]->inst_head;
     while( instl != NULL ) {
       instance_remove_parms_with_expr( instl->inst, stmt );
       instl = instl->next;
@@ -2560,7 +2614,7 @@ void db_remove_stmt_blks_calling_statement( statement* stmt ) { PROFILE(DB_REMOV
 
   assert( stmt != NULL );
 
-  instl = inst_head;
+  instl = db_list[curr_db]->inst_head;
   while( instl != NULL ) {
     instance_remove_stmt_blks_calling_stmt( instl->inst, stmt );
     instl = instl->next;
@@ -2626,7 +2680,7 @@ void db_sync_curr_instance() { PROFILE(DB_SYNC_CURR_INSTANCE);
 
     if( stripped_scope[0] != '\0' ) {
 
-      curr_instance = inst_link_find_by_scope( stripped_scope, inst_head );
+      curr_instance = inst_link_find_by_scope( stripped_scope, db_list[curr_db]->inst_head );
 
       /* If we have found at least one matching instance, set the one_instance_found flag */
       if( curr_instance != NULL ) {
@@ -2893,6 +2947,11 @@ bool db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.305  2008/04/15 06:08:46  phase1geo
+ First attempt to get both instance and module coverage calculatable for
+ GUI purposes.  This is not quite complete at the moment though it does
+ compile.
+
  Revision 1.304  2008/04/08 19:50:36  phase1geo
  Removing LAST operator for PEDGE, NEDGE and AEDGE expression operations and
  replacing them with the temporary vector solution.

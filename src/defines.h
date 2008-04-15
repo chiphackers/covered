@@ -1555,6 +1555,7 @@ struct rstack_entry_s;
 struct struct_union_s;
 struct su_member_s;
 struct profiler_s;
+struct db_s;
 struct sim_time_s;
 
 /*------------------------------------------------------------------------------*/
@@ -1836,6 +1837,11 @@ typedef struct su_member_s su_member;
  Renaming profiler_s structure for convenience.
 */
 typedef struct profiler_s profiler;
+
+/*!
+ Renaming db_s structure for convenience.
+*/
+typedef struct db_s db;
 
 /*!
  Renaming sim_time_s structure for convenience.
@@ -2617,6 +2623,17 @@ struct profiler_s {
 };
 
 /*!
+ Represents a single design database.
+*/
+struct db_s {
+  char*       top_module;            /*!< Name of top-most module in the design */
+  inst_link*  inst_head;             /*!< Pointer to head of instance tree list */
+  inst_link*  inst_tail;             /*!< Pointer to tail of instance tree list */
+  funit_link* funit_head;            /*!< Pointer to head of functional unit list */
+  funit_link* funit_tail;            /*!< Pointer to tail of functional unit list */
+};
+
+/*!
  This will define the exception type that gets thrown (Covered does not care about this value)
 */
 define_exception_type(int);
@@ -2625,6 +2642,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.293  2008/04/08 22:45:10  phase1geo
+ Optimizations for op-and-assign expressions.  This is an untested checkin
+ at this point but it does compile cleanly.  Checkpointing.
+
  Revision 1.292  2008/04/08 05:26:33  phase1geo
  Second checkin of performance optimizations (regressions do not pass at this
  point).

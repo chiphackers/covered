@@ -27,6 +27,9 @@
 #include "defines.h"
 
 
+/*! \brief Creates a new database. */
+db* db_create();
+
 /*! \brief Deallocates all memory consumed by the database. */
 void db_close();
 
@@ -202,6 +205,11 @@ bool db_do_timestep( uint64 time, bool final );
 
 /*
  $Log$
+ Revision 1.87  2008/04/15 06:08:46  phase1geo
+ First attempt to get both instance and module coverage calculatable for
+ GUI purposes.  This is not quite complete at the moment though it does
+ compile.
+
  Revision 1.86  2008/03/11 22:06:47  phase1geo
  Finishing first round of exception handling code.
 
