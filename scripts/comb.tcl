@@ -351,7 +351,8 @@ proc organize_underlines {} {
     for {set j [expr [lindex $comb_uline_groups $i] - 1]} {$j >= 0} {incr j -1} {
       set curr_uline [lindex $comb_ulines [comb_calc_line_index $i $j]]
       set vbar [string first "|" $curr_uline 0]
-      set hbar [string first "-" $curr_uline 0]
+      regexp -indices -- {([0-9]|-)} $curr_uline m
+      set hbar [lindex $m 0]
       if {[expr $vbar < $hbar] && [expr $vbar != -1]} {
         set curr_char $vbar
       } else {
@@ -525,7 +526,7 @@ proc create_comb_window {expr_id sline} {
 
     # Add expression information
     label .combwin.pw.top.l -anchor w -text "Expression:"
-    text  .combwin.pw.top.t -height 20 -width 100 -xscrollcommand ".combwin.pw.top.hb set" -yscrollcommand ".combwin.pw.top.vb set" -wrap none
+    text  .combwin.pw.top.t -height 10 -width 100 -xscrollcommand ".combwin.pw.top.hb set" -yscrollcommand ".combwin.pw.top.vb set" -wrap none
     scrollbar .combwin.pw.top.hb -orient horizontal -command ".combwin.pw.top.t xview"
     scrollbar .combwin.pw.top.vb -orient vertical   -command ".combwin.pw.top.t yview"
 
@@ -592,6 +593,8 @@ proc create_comb_window {expr_id sline} {
     # Pack the top and bottom frame of the panedwindow
     .combwin.pw add .combwin.pw.top
     .combwin.pw add .combwin.pw.bot
+    .combwin.pw paneconfigure .combwin.pw.top -stretch always
+    .combwin.pw paneconfigure .combwin.pw.bot -stretch never
 
     # Pack the frame, informational bar, and button frame into the window
     pack .combwin.pw   -fill both -expand yes
