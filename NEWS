@@ -1,6 +1,40 @@
 Covered-Related NEWS
 ====================
 
+    * 4/15/2008
+
+Development release covered-20080415 made.  This development release contains several code optimizations,
+memory leak fixes, and GUI improvements.  The following is a list of these changes.
+
+  - Bug fixes from 0.6.2 stable release.
+  - Fixed all memory leak issues with regressions and added code instrumentation and some post-processing
+    scripts to automatically verify that there are no memory leaks for regression runs.
+  - Code reduction in parser
+  - Modified the way that vectors were being assigned to fix memory leak issues with their deallocation.
+  - Optimized coverage accumulation during scoring in expression functions.
+  - Optimized unknown and not-zero factoring of vectors to improve scoring speed
+  - Added new diagnostics to regression suite to verify fix for LHS expression calculation
+  - Optimized vector operation functionality to improve scoring speed.
+  - Removed the LAST expression operator type (internally used type that is no longer needed due to the
+    optimization improvements)
+  - Updated several components of the GUI, including the module/instance listbox (now contains summary
+    information including hit, miss, total, hit percent and coverage color in background), removed the
+    summary window (no longer needed due to module/instance listbox change), substituted home-made
+    window resizing handles for Tcl/Tk 8.4/.5 panedwindow types, substituted "-->" and "<--" buttons for
+    graphical buttons to improve look, and several other aesthetic and functional changes.
+  - Fixed several issues/bugs with GUI.
+
+Of particular note is that the CDD version is now incompatible with other versions of Covered.  Also, I am planning
+on only supporting the GUI for Tcl/Tk versions of 8.4 or newer (I used to support 8.3 but the Tcl/Tk homepage no
+longer offers these older versions and I am taking advantage of some of the newer widgets available in these versions).
+The GUI also requires that the tablelist (version 4.8) Tk widget be installed in the auto_path.  Additionally,
+the GUI documentation is not up-to-date with this release, but will be updated by the next development release.
+Give the new performance improvements a try and be sure to check out the improved GUI report analyzer!
+I am planning on working on some (hopefully) major improvements in performance to the score command for the
+next development release as well as adding full support for instance coverage viewing in the GUI as well as
+some advanced coverage merging capabilities that will allow the user to get graded test information as well!
+As always, have fun and be sure to log those bugs!
+
     * 3/14/2008
 
 Development release covered-20080314 made.  This development release contains a slew of new features,

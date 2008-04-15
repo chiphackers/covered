@@ -6,7 +6,7 @@
   Covered has been mostly tested on a RedHat Linux 7.2 system.  Limited testing
   has been done on IRIX-6.5.12.  The intent of this tool is to support any
   POSIX standard environment.  The Icarus Verilog simulator has been used extensively
-  throughout the development process.  VCS has also been used in testing.
+  throughout the development process.  VCS and Cver have also been used in testing.
 
 2.  Required Tools
   The following is a list of tools that are necessary for building/compiling the
@@ -16,8 +16,10 @@
   - bison (Version 1.85 or higher)
   - GNU make (Version 3.27.1 or higher)
   - GNU gperf (Version 2.7.2 or higher)
-  - TCL (Version 8.3 or higher)
-  - TK (Version 8.3 or higher)
+  - TCL (Version 8.4 or higher)
+  - TK (Version 8.4 or higher)
+  - tablelist4.8 (tablelist is a Tk widget that can be found at:
+    //http://www.nemethi.de/)
 
   If you would like to use LXT2 formatted dumpfiles with Covered, you now may but
   it will additionally require you to have the following library package:

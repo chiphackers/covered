@@ -150,7 +150,7 @@ proc menu_create {} {
     .bot.left.tl columnconfigure 1 -hide false
     .menubar.view entryconfigure 4 -label "Hide Summary Module Column" -state disabled
   }
-  $report add radiobutton -label "Instance-based" -variable mod_inst_type -value "instance" -underline 1 -command {
+  $report add radiobutton -label "Instance-based" -variable mod_inst_type -value "instance" -underline 1 -state disabled -command {
     populate_listbox
     .menubar.view entryconfigure 4 -state normal
   }
