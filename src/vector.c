@@ -560,6 +560,28 @@ void vector_db_merge(
 }
 
 /*!
+ Merges two vectors, placing the result back into the base vector.  This function is used by the GUI for calculating
+ module coverage.
+*/
+void vector_merge(
+  vector* base,  /*!< Vector which will contain the merged results */
+  vector* other  /*!< Vector which will merge its results into the base vector */
+) { PROFILE(VECTOR_MERGE);
+
+  int i;  /* Loop iterator */
+
+  assert( base != NULL );
+  assert( base->width == other->width );
+
+  for( i=0; i<base->width; i++ ) {
+    base->value[i].all = (base->value[i].all & VECTOR_MERGE_MASK) | (other->value[i].all & VECTOR_MERGE_MASK);
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
  \param nib    Pointer to vector data array to get string from
  \param width  Width of given vector data array
 
@@ -2651,6 +2673,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.137  2008/04/08 19:50:36  phase1geo
+ Removing LAST operator for PEDGE, NEDGE and AEDGE expression operations and
+ replacing them with the temporary vector solution.
+
  Revision 1.136  2008/04/08 05:26:34  phase1geo
  Second checkin of performance optimizations (regressions do not pass at this
  point).

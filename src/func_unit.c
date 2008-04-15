@@ -739,7 +739,11 @@ void funit_db_read(
  If there are any differences between the two functional units, a warning or error will be
  displayed to the user.
 */
-void funit_db_merge( func_unit* base, FILE* file, bool same ) { PROFILE(FUNIT_DB_MERGE);
+void funit_db_merge(
+  func_unit* base,
+  FILE*      file,
+  bool       same
+) { PROFILE(FUNIT_DB_MERGE);
 
   exp_link* curr_base_exp;   /* Pointer to current expression in base functional unit expression list */
   sig_link* curr_base_sig;   /* Pointer to current signal in base functional unit signal list */
@@ -917,6 +921,59 @@ void funit_db_merge( func_unit* base, FILE* file, bool same ) { PROFILE(FUNIT_DB
       curr_base_race = curr_base_race->next;
     }
   }
+
+  PROFILE_END;
+
+}
+
+/*!
+ Merges two functional units into the base functional unit.  Used for creating merged results
+ for GUI usage.
+*/
+void funit_merge(
+  func_unit* base,   /*!< Base functional unit that will contain the merged results */
+  func_unit* other   /*!< Other functional unit that will be merged */
+) { PROFILE(FUNIT_MERGE);
+
+  exp_link* curr_base_exp;   /* Pointer to current expression in base functional unit expression list */
+  exp_link* curr_other_exp;  /* Pointer to current expression in other functional unit expression list */
+  sig_link* curr_base_sig;   /* Pointer to current signal in base functional unit signal list */
+  sig_link* curr_other_sig;  /* Pointer to current signal in other functional unit signal list */
+  fsm_link* curr_base_fsm;   /* Pointer to current FSM in base functional unit FSM list */
+  fsm_link* curr_other_fsm;  /* Pointer to current FSM in other functional unit FSM list */
+
+  assert( base != NULL );
+  assert( base->name != NULL );
+
+  /* Handle all functional unit expressions */
+  curr_base_exp  = base->exp_head;
+  curr_other_exp = other->exp_head;
+  while( (curr_base_exp != NULL) && (curr_other_exp != NULL) ) {
+    expression_merge( curr_base_exp->exp, curr_other_exp->exp );
+    curr_base_exp  = curr_base_exp->next;
+    curr_other_exp = curr_other_exp->next;
+  }
+  assert( (curr_base_exp == NULL) && (curr_other_exp == NULL) );
+
+  /* Handle all functional unit signals */
+  curr_base_sig  = base->sig_head;
+  curr_other_sig = other->sig_head;
+  while( (curr_base_sig != NULL) && (curr_other_sig != NULL) ) {
+    vsignal_merge( curr_base_sig->sig, curr_other_sig->sig );
+    curr_base_sig  = curr_base_sig->next;
+    curr_other_sig = curr_other_sig->next;
+  }
+  assert( (curr_base_sig == NULL) && (curr_other_exp == NULL) );
+
+  /* Handle all functional unit FSMs */
+  curr_base_fsm  = base->fsm_head;
+  curr_other_fsm = base->fsm_head;
+  while( (curr_base_fsm != NULL) && (curr_other_fsm != NULL) ) {
+    fsm_merge( curr_base_fsm->table, curr_other_fsm->table );
+    curr_base_fsm  = curr_base_fsm->next;
+    curr_other_fsm = curr_other_fsm->next;
+  }
+  assert( (curr_base_fsm == NULL) && (curr_other_fsm == NULL) );
 
   PROFILE_END;
 
@@ -1426,6 +1483,9 @@ void funit_dealloc( func_unit* funit ) { PROFILE(FUNIT_DEALLOC);
 
 /*
  $Log$
+ Revision 1.99  2008/03/27 06:09:58  phase1geo
+ Fixing some regression errors.  Checkpointing.
+
  Revision 1.98  2008/03/17 22:02:31  phase1geo
  Adding new check_mem script and adding output to perform memory checking during
  regression runs.  Completed work on free_safe and added realloc_safe function

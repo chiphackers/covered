@@ -356,6 +356,31 @@ void fsm_db_merge(
 }
 
 /*!
+ Merges two FSMs, placing the resulting FSM into the base.  This function is called when merging modules for
+ the GUI.
+*/
+void fsm_merge(
+  fsm* base,  /*!< Base FSM to store merged results */
+  fsm* other  /*!< Other FSM that will be merged with the base FSM */
+) { PROFILE(FSM_MERGE);
+
+  assert( base != NULL );
+  assert( base->from_state != NULL );
+  assert( base->to_state != NULL );
+  assert( other != NULL );
+  assert( other->from_state != NULL );
+  assert( other->to_state != NULL );
+
+  if( base->table != NULL ) {
+    assert( other->table != NULL );
+    arc_merge( &(base->table), other->table );
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
  \param table  Pointer to FSM structure to set a state in.
 
  Taking the from and to state signal values, a new table entry is added
@@ -1298,6 +1323,9 @@ void fsm_dealloc( fsm* table ) { PROFILE(FSM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.93  2008/03/28 21:11:32  phase1geo
+ Fixing memory leak issues with -ep option and embedded FSM attributes.
+
  Revision 1.92  2008/03/18 05:36:04  phase1geo
  More updates (regression still broken).
 

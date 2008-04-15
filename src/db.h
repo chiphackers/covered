@@ -46,6 +46,9 @@ void db_read(
   int         read_mode
 );
 
+/*! \brief After functional units have been read, merge the contents of the functional units (used in GUI only). */
+void db_merge_funits();
+
 /*! \brief Returns a scaled version of the given value to the timescale for the given functional unit. */
 uint64 db_scale_to_precision( uint64 value, func_unit* funit );
 
@@ -199,6 +202,9 @@ bool db_do_timestep( uint64 time, bool final );
 
 /*
  $Log$
+ Revision 1.86  2008/03/11 22:06:47  phase1geo
+ Finishing first round of exception handling code.
+
  Revision 1.85  2008/02/27 05:26:51  phase1geo
  Adding support for $finish and $stop.
 

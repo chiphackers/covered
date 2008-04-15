@@ -46,6 +46,12 @@ void vsignal_db_read( char** line, /*@null@*/func_unit* curr_funit );
 /*! \brief Reads and merges two vsignals, placing result into base vsignal. */
 void vsignal_db_merge( vsignal* base, char** line, bool same );
 
+/*! \brief Merges two vsignals, placing the result into the base vsignal. */
+void vsignal_merge(
+  vsignal* base,
+  vsignal* other
+);
+
 /*! \brief Propagates specified signal information to rest of design. */
 void vsignal_propagate( vsignal* sig, const sim_time* time );
 
@@ -79,6 +85,9 @@ void vsignal_dealloc( vsignal* sig );
 
 /*
  $Log$
+ Revision 1.27  2008/03/13 10:28:55  phase1geo
+ The last of the exception handling modifications.
+
  Revision 1.26  2008/02/09 19:32:45  phase1geo
  Completed first round of modifications for using exception handler.  Regression
  passes with these changes.  Updated regressions per these changes.

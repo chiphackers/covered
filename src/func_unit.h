@@ -68,8 +68,18 @@ void funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
            and adds to functional unit list. */
 void funit_db_read( func_unit* funit, /*@out@*/char* scope, char** line );
 
+/*! \brief Merges two functional units into the base functional unit. */
+void funit_merge(
+  func_unit* base,
+  func_unit* other
+);
+
 /*! \brief Reads and merges two functional units into base functional unit. */
-void funit_db_merge( func_unit* base, FILE* file, bool same );
+void funit_db_merge(
+  func_unit* base,
+  FILE*      file,
+  bool       same
+);
 
 /*! \brief Flattens the functional unit name by removing all unnamed scope portions */
 /*@shared@*/ char* funit_flatten_name( func_unit* funit );
@@ -120,6 +130,10 @@ void funit_dealloc( func_unit* funit );
 
 /*
  $Log$
+ Revision 1.36  2008/02/29 00:08:31  phase1geo
+ Completed optimization code in simulator.  Still need to verify that code
+ changes enhanced performances as desired.  Checkpointing.
+
  Revision 1.35  2008/02/28 07:54:09  phase1geo
  Starting to add functionality for simulation optimization in the sim_expr_changed
  function (feature request 1897410).

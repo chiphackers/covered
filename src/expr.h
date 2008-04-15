@@ -90,7 +90,17 @@ void expression_db_write_tree( expression* root, FILE* file );
 void expression_db_read( char** line, /*@null@*/func_unit* curr_mod, bool eval );
 
 /*! \brief Reads and merges two expressions and stores result in base expression. */
-void expression_db_merge( expression* base, char** line, bool same );
+void expression_db_merge(
+  expression* base,
+  char**      line,
+  bool        same
+);
+
+/*! \brief Merges two expressions into the base expression. */
+void expression_merge(
+  expression* base,
+  expression* other
+);
 
 /*! \brief Returns user-readable name of specified expression operation. */
 const char* expression_string_op( int op );
@@ -128,6 +138,10 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.66  2008/02/09 19:32:44  phase1geo
+ Completed first round of modifications for using exception handler.  Regression
+ passes with these changes.  Updated regressions per these changes.
+
  Revision 1.65  2008/02/08 23:58:07  phase1geo
  Starting to work on exception handling.  Much work to do here (things don't
  compile at the moment).

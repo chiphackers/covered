@@ -970,7 +970,12 @@ void gitem_link_remove( gen_item* gi, gitem_link** head, gitem_link** tail ) { P
  Searches for and removes the given functional unit from the given list and adjusts list as
  necessary.
 */
-void funit_link_remove( func_unit* funit, funit_link** head, funit_link** tail, bool rm_funit ) { PROFILE(FUNIT_LINK_REMOVE);
+void funit_link_remove(
+  func_unit*   funit,
+  funit_link** head,
+  funit_link** tail,
+  bool         rm_funit
+) { PROFILE(FUNIT_LINK_REMOVE);
 
   funit_link* curr = *head;  /* Pointer to current functional unit link */
   funit_link* last = NULL;   /* Pointer to last functional unit link traversed */
@@ -1326,6 +1331,9 @@ void inst_link_delete_list( inst_link* head ) { PROFILE(INST_LINK_DELETE_LIST);
 
 /*
  $Log$
+ Revision 1.78  2008/04/06 05:46:54  phase1geo
+ Another regression memory deallocation fix.  Updates to regression files.
+
  Revision 1.77  2008/03/17 05:26:16  phase1geo
  Checkpointing.  Things don't compile at the moment.
 

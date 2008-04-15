@@ -104,6 +104,12 @@ void arc_db_merge(
   bool   same
 );
 
+/*! \brief Merges two FSM arcs, placing the results in the base arc. */
+void arc_merge(
+  char** base,
+  char*  other
+);
+
 /*! \brief Stores arc array state values to specified string array. */
 void arc_get_states(
   char***     states,
@@ -136,6 +142,10 @@ void arc_dealloc(
 
 /*
  $Log$
+ Revision 1.26  2008/02/09 19:32:44  phase1geo
+ Completed first round of modifications for using exception handler.  Regression
+ passes with these changes.  Updated regressions per these changes.
+
  Revision 1.25  2008/02/01 06:37:07  phase1geo
  Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
  using pragma excludes (this code is not fully working yet).  More to be done.

@@ -1236,6 +1236,77 @@ void arc_db_merge(
 }
 
 /*!
+ Merges two FSM arcs into one, placing the result back into the base FSM arc.  This function is used to
+ calculate module coverage for the GUI.
+*/
+void arc_merge(
+  char** base,
+  char*  other
+) { PROFILE(ARC_MERGE);
+
+  char*   strl;           /* Left state value string */
+  char*   strr;           /* Right state value string */
+  char*   tmpl;           /* Temporary left state value string */
+  char*   tmpr;           /* Temporary right state value string */
+  vector* vecl;           /* Left state vector value */
+  vector* vecr;           /* Right state vector value */
+  int     i;              /* Loop iterator */
+  char    str_width[20];  /* Temporary string holder */
+  int     str_len;        /* Length of string to allocate */
+
+  assert( arc_get_width( *base ) == arc_get_width( other ) );
+
+  /* Calculate strlen of arc array width */
+  snprintf( str_width, 20, "%u", arc_get_width( other ) );
+
+  /* Calculate the length of the strings needed */
+  str_len = (arc_get_width( other ) / 4) + (((arc_get_width( other ) % 4) == 0) ? 0 : 1) + 3 + strlen( str_width );
+
+  /* Allocate string to hold value string */
+  strl = (char*)malloc_safe( str_len );
+  strr = (char*)malloc_safe( str_len );
+
+  /* Get prefix of left and right state value strings ready */
+  snprintf( strl, str_len, "%s'h", str_width );
+  snprintf( strr, str_len, "%s'h", str_width );
+
+  tmpl = strl;
+  tmpr = strr;
+
+  for( i=0; i<arc_get_curr_size( other ); i++ ) {
+
+    int basel, baser;
+
+    /* Get string versions of state values */
+    arc_state_to_string( other, i, TRUE,  (strl + 2 + strlen( str_width )) );
+    arc_state_to_string( other, i, FALSE, (strr + 2 + strlen( str_width )) );
+
+    /* Convert these strings to vectors */
+    vector_from_string( &strl, FALSE, &vecl, &basel );
+    vector_from_string( &strr, FALSE, &vecr, &baser );
+
+    /* Add these states to the base arc array */
+    arc_add( base, vecl, vecr, arc_get_entry_suppl( other, i, ARC_HIT_F ), FALSE );
+    if( arc_get_entry_suppl( other, i, ARC_BIDIR ) == 1 ) {
+      arc_add( base, vecr, vecl, arc_get_entry_suppl( other, i, ARC_HIT_R ), FALSE );
+    }
+
+    strl = tmpl;
+    strr = tmpr;
+
+    vector_dealloc( vecl );
+    vector_dealloc( vecr );
+
+  }
+
+  free_safe( strl, str_len );
+  free_safe( strr, str_len );
+
+  PROFILE_END;
+
+}
+
+/*!
  \param states      Pointer to string array containing stringified state information
  \param state_size  Pointer to number of elements stored in states array
  \param arcs        Pointer to state transition arc array.
@@ -1416,6 +1487,11 @@ void arc_dealloc( char* arcs ) { PROFILE(ARC_DEALLOC);
 
 /*
  $Log$
+ Revision 1.59  2008/03/26 21:29:31  phase1geo
+ Initial checkin of new optimizations for unknown and not_zero values in vectors.
+ This attempts to speed up expression operations across the board.  Working on
+ debugging regressions.  Checkpointing.
+
  Revision 1.58  2008/03/18 21:36:24  phase1geo
  Updates from regression runs.  Regressions still do not completely pass at
  this point.  Checkpointing.

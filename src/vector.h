@@ -59,7 +59,17 @@ void vector_db_write( vector* vec, FILE* file, bool write_data );
 void vector_db_read( vector** vec, char** line );
 
 /*! \brief Reads and merges two vectors, placing the result into base vector. */
-void vector_db_merge( vector* base, char** line, bool same );
+void vector_db_merge(
+  vector* base,
+  char**  line,
+  bool    same
+);
+
+/*! \brief Merges two vectors, placing the result into the base vector. */
+void vector_merge(
+  vector* base,
+  vector* other
+);
 
 /*! \brief Returns string containing toggle 0 -> 1 information in binary format */
 char* vector_get_toggle01( vec_data* nib, int width );
@@ -217,6 +227,10 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.57  2008/04/08 19:50:37  phase1geo
+ Removing LAST operator for PEDGE, NEDGE and AEDGE expression operations and
+ replacing them with the temporary vector solution.
+
  Revision 1.56  2008/04/08 05:26:34  phase1geo
  Second checkin of performance optimizations (regressions do not pass at this
  point).

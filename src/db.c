@@ -598,6 +598,39 @@ void db_read(
 }
 
 /*!
+ Iterates through the functional unit, merging all matching functional units.
+*/
+void db_merge_funits() { PROFILE(DB_MERGE_FUNITS);
+
+  funit_link* funitl;  /* Pointer to current functional unit link */
+
+  funitl = funit_head;
+  while( funitl != NULL ) {
+
+    funit_link* tfunitl = funit_head;
+
+    while( (tfunitl != NULL) && (funitl != tfunitl) ) {
+      func_unit* tfunit = tfunitl->funit;
+      tfunitl = tfunitl->next;
+      if( (strcmp( funitl->funit->name, tfunit->name ) == 0) && (funitl->funit->type == tfunit->type) ) {
+        funit_inst* inst;
+        int         ignore = 0;
+        funit_merge( funitl->funit, tfunit );
+        assert( (inst = inst_link_find_by_funit( tfunit, inst_head, &ignore )) != NULL );
+        inst->funit = funitl->funit;
+        funit_link_remove( tfunit, &funit_head, &funit_tail, TRUE );
+      }
+    }
+
+    funitl = funitl->next;
+
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
  \param value  Delay value to scale.
  \param funit  Pointer to current functional unit of expression to scale.
 
@@ -2860,6 +2893,10 @@ bool db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.304  2008/04/08 19:50:36  phase1geo
+ Removing LAST operator for PEDGE, NEDGE and AEDGE expression operations and
+ replacing them with the temporary vector solution.
+
  Revision 1.303  2008/04/07 04:49:13  phase1geo
  Fixing regression failure and removing exception throw output that was
  hit.

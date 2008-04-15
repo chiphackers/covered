@@ -1294,7 +1294,7 @@ int tcl_func_open_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* argv
     ifile = strdup_safe( argv[1] );
 
     Try {
-      report_read_cdd_and_ready( ifile, READ_MODE_REPORT_MOD_MERGE );
+      report_read_cdd_and_ready( ifile, READ_MODE_REPORT_NO_MERGE );
     } Catch_anonymous {
       retval = TCL_ERROR;
     }
@@ -1391,7 +1391,7 @@ int tcl_func_merge_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* arg
     merge_in_num++;
 
     Try {
-      report_read_cdd_and_ready( ifile, READ_MODE_REPORT_MOD_MERGE );
+      report_read_cdd_and_ready( ifile, READ_MODE_MERGE_INST_MERGE );
     } Catch_anonymous {
       retval = TCL_ERROR;
     }
@@ -2268,6 +2268,12 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.75  2008/04/10 23:16:42  phase1geo
+ Fixing issues with memory and file handling in preprocessor when an error
+ occurs (so that we can recover properly in the GUI).  Also fixing various
+ GUI issues from the previous checkin.  Working on debugging problem with
+ preprocessing code in verilog.tcl.  Checkpointing.
+
  Revision 1.74  2008/03/17 22:02:32  phase1geo
  Adding new check_mem script and adding output to perform memory checking during
  regression runs.  Completed work on free_safe and added realloc_safe function

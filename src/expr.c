@@ -1619,6 +1619,36 @@ void expression_db_merge(
 }
 
 /*!
+ Performs an expression merge of two expressions, storing the result into the base expression.  This
+ function is used by the GUI for calculating module coverage.
+*/
+void expression_merge(
+  expression* base,  /*!< Base expression that will contain merged results */
+  expression* other  /*!< Other expression that will merge its results with the base results */
+) { PROFILE(EXPRESSION_MERGE);
+
+  assert( base != NULL );
+  assert( base->op   == other->op );
+  assert( base->line == other->line );
+  assert( base->col  == other->col );
+
+  /* Merge expression supplemental fields */
+  base->suppl.all = (base->suppl.all & ESUPPL_MERGE_MASK) | (other->suppl.all & ESUPPL_MERGE_MASK);
+
+  /* Merge execution number information */
+  if( base->exec_num < other->exec_num ) {
+    base->exec_num = other->exec_num;
+  }
+
+  if( ESUPPL_OWNS_VEC( base->suppl ) ) {
+    vector_merge( base->value, other->value );
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
  \param op  Expression operation to get string representation of
 
  \return Returns a non-writable string that contains the user-readable name of the
@@ -5885,6 +5915,12 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.327  2008/04/09 18:00:33  phase1geo
+ Fixing op-and-assign operation and updated regression files appropriately.
+ Also modified verilog/Makefile to compile lib or src directory as needed
+ according to the VPI environment variable being set or not.  Full regression
+ passes.
+
  Revision 1.326  2008/04/08 22:45:10  phase1geo
  Optimizations for op-and-assign expressions.  This is an untested checkin
  at this point but it does compile cleanly.  Checkpointing.

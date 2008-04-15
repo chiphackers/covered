@@ -51,7 +51,17 @@ void fsm_db_write( fsm* table, FILE* file, bool parse_mode );
 void fsm_db_read( char** line, /*@null@*/func_unit* funit );
 
 /*! \brief Reads and merges two FSMs, placing result into base FSM. */
-void fsm_db_merge( fsm* base, char** line, bool same );
+void fsm_db_merge(
+  fsm*   base,
+  char** line,
+  bool   same
+);
+
+/*! \brief Merges two FSMs, placing the result into the base FSM. */
+void fsm_merge(
+  fsm* base,
+  fsm* other
+);
 
 /*! \brief Sets the bit in set table based on the values of last and curr. */
 void fsm_table_set( fsm* table );
@@ -112,6 +122,10 @@ void fsm_dealloc( fsm* table );
 
 /*
  $Log$
+ Revision 1.27  2008/02/09 19:32:44  phase1geo
+ Completed first round of modifications for using exception handler.  Regression
+ passes with these changes.  Updated regressions per these changes.
+
  Revision 1.26  2008/02/01 06:37:08  phase1geo
  Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
  using pragma excludes (this code is not fully working yet).  More to be done.
