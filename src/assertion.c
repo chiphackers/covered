@@ -34,14 +34,14 @@
 #include "util.h"
 
 
-extern inst_link*  inst_head;
-extern funit_link* funit_head;
-extern bool        report_covered;
-extern bool        report_instance;
-extern char**      leading_hierarchies;
-extern int         leading_hier_num;
-extern bool        leading_hiers_differ;
-extern isuppl      info_suppl;
+extern db**         db_list;
+extern unsigned int curr_db;
+extern bool         report_covered;
+extern bool         report_instance;
+extern char**       leading_hierarchies;
+extern int          leading_hier_num;
+extern bool         leading_hiers_differ;
+extern isuppl       info_suppl;
 
 
 /*!
@@ -435,7 +435,7 @@ void assertion_report( FILE* ofile, bool verbose ) { PROFILE(ASSERTION_REPORT);
     fprintf( ofile, "Instance                                           Hit/ Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
-    instl = inst_head;
+    instl = db_list[curr_db]->inst_head;
     while( instl != NULL ) {
       missed_found |= assertion_instance_summary( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*"), &acc_hits, &acc_total );
       instl = instl->next;
@@ -445,7 +445,7 @@ void assertion_report( FILE* ofile, bool verbose ) { PROFILE(ASSERTION_REPORT);
 
     if( verbose && (missed_found || report_covered) ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
-      instl = inst_head;
+      instl = db_list[curr_db]->inst_head;
       while( instl != NULL ) {
         assertion_instance_verbose( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*") );
         instl = instl->next;
@@ -458,13 +458,13 @@ void assertion_report( FILE* ofile, bool verbose ) { PROFILE(ASSERTION_REPORT);
     fprintf( ofile, "Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
-    missed_found = assertion_funit_summary( ofile, funit_head, &acc_hits, &acc_total );
+    missed_found = assertion_funit_summary( ofile, db_list[curr_db]->funit_head, &acc_hits, &acc_total );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
     (void)assertion_display_funit_summary( ofile, "Accumulated", "", acc_hits, acc_total );
 
     if( verbose && (missed_found || report_covered) ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
-      assertion_funit_verbose( ofile, funit_head );
+      assertion_funit_verbose( ofile, db_list[curr_db]->funit_head );
     }
 
   }
@@ -497,7 +497,7 @@ bool assertion_get_funit_summary(
   *total = 0;
   *hit   = 0;
   
-  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
     
     if( info_suppl.part.assert_ovl == 1 ) {
       ovl_get_funit_stats( funitl->funit, total, hit );
@@ -540,7 +540,7 @@ bool assertion_collect(
   funit_link* funitl;         /* Pointer to found functional unit */
   
   /* Find functional unit */
-  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
     
     /* Initialize outputs */
     *uncov_inst_names = NULL;
@@ -590,7 +590,7 @@ bool assertion_get_coverage(
   funit_link* funitl;         /* Pointer to found functional unit link */
 
   /* Find functional unit */
-  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
 
     *cp_head = *cp_tail = NULL;
 
@@ -611,6 +611,9 @@ bool assertion_get_coverage(
 
 /*
  $Log$
+ Revision 1.31  2008/03/17 05:26:15  phase1geo
+ Checkpointing.  Things don't compile at the moment.
+
  Revision 1.30  2008/02/01 06:37:07  phase1geo
  Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
  using pragma excludes (this code is not fully working yet).  More to be done.

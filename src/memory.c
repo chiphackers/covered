@@ -35,8 +35,8 @@
 #include "util.h"
 
 
-extern inst_link*  inst_head;
-extern funit_link* funit_head;
+extern db**         db_list;
+extern unsigned int curr_db;
 
 extern bool   report_covered;
 extern bool   report_instance;
@@ -174,7 +174,7 @@ bool memory_get_funit_summary( const char* funit_name, int funit_type, int* tota
   int         tog01_hit = 0;      /* Number of bits toggling from 0->1 */
   int         tog10_hit = 0;      /* Number of bits toggling from 1->0 */
 
-  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
   
     /* Initialize total and hit information */
     *total = 0;
@@ -439,7 +439,7 @@ bool memory_get_coverage(
   char        tmp1[20];        /* Temporary string holder */
   char        tmp2[20];        /* Temporary string holder */
 
-  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
 
     if( (sigl = sig_link_find( signame, funitl->funit->sig_head )) != NULL ) {
 
@@ -537,7 +537,7 @@ bool memory_collect( const char* funit_name, int funit_type, int cov, sig_link**
   int         hit01     = 0;   /* Number of bits that toggled from 0 to 1 */
   int         hit10     = 0;   /* Number of bits that toggled from 1 to 0 */
 
-  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
 
     sigl = funitl->funit->sig_head;
     retval = TRUE;
@@ -1282,7 +1282,7 @@ void memory_report( FILE* ofile, bool verbose ) { PROFILE(MEMORY_REPORT);
     fprintf( ofile, "Instance                                           Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
-    instl = inst_head;
+    instl = db_list[curr_db]->inst_head;
     while( instl != NULL ) {
       missed_found |= memory_toggle_instance_summary( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*"), &acc_hits01, &acc_hits10, &acc_tog_total );
       instl = instl->next;
@@ -1295,7 +1295,7 @@ void memory_report( FILE* ofile, bool verbose ) { PROFILE(MEMORY_REPORT);
     fprintf( ofile, "                                                   Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
-    instl = inst_head;
+    instl = db_list[curr_db]->inst_head;
     while( instl != NULL ) {
       missed_found |= memory_ae_instance_summary( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*"), &acc_wr_hits, &acc_rd_hits, &acc_ae_total );
       instl = instl->next;
@@ -1305,7 +1305,7 @@ void memory_report( FILE* ofile, bool verbose ) { PROFILE(MEMORY_REPORT);
 
     if( verbose && missed_found ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
-      instl = inst_head;
+      instl = db_list[curr_db]->inst_head;
       while( instl != NULL ) {
         memory_instance_verbose( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*") );
         instl = instl->next;
@@ -1318,7 +1318,7 @@ void memory_report( FILE* ofile, bool verbose ) { PROFILE(MEMORY_REPORT);
     fprintf( ofile, "Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
-    missed_found |= memory_toggle_funit_summary( ofile, funit_head, &acc_hits01, &acc_hits10, &acc_tog_total );
+    missed_found |= memory_toggle_funit_summary( ofile, db_list[curr_db]->funit_head, &acc_hits01, &acc_hits10, &acc_tog_total );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
     (void)memory_display_toggle_funit_summary( ofile, "Accumulated", "", acc_hits01, acc_hits10, acc_tog_total );
 
@@ -1327,13 +1327,13 @@ void memory_report( FILE* ofile, bool verbose ) { PROFILE(MEMORY_REPORT);
     fprintf( ofile, "                                                   Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
-    missed_found |= memory_ae_funit_summary( ofile, funit_head, &acc_wr_hits, &acc_rd_hits, &acc_ae_total );
+    missed_found |= memory_ae_funit_summary( ofile, db_list[curr_db]->funit_head, &acc_wr_hits, &acc_rd_hits, &acc_ae_total );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
     (void)memory_display_ae_funit_summary( ofile, "Accumulated", "", acc_wr_hits, acc_rd_hits, acc_ae_total );
 
     if( verbose && missed_found ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
-      memory_funit_verbose( ofile, funit_head );
+      memory_funit_verbose( ofile, db_list[curr_db]->funit_head );
     }
 
   }
@@ -1345,6 +1345,10 @@ void memory_report( FILE* ofile, bool verbose ) { PROFILE(MEMORY_REPORT);
 
 /*
  $Log$
+ Revision 1.27  2008/04/08 19:50:36  phase1geo
+ Removing LAST operator for PEDGE, NEDGE and AEDGE expression operations and
+ replacing them with the temporary vector solution.
+
  Revision 1.26  2008/03/17 22:02:31  phase1geo
  Adding new check_mem script and adding output to perform memory checking during
  regression runs.  Completed work on free_safe and added realloc_safe function

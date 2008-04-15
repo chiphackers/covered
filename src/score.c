@@ -1136,6 +1136,9 @@ void command_score(
 
   Try {
 
+    /* Create a database to start storing the results */
+    (void)db_create();
+
     /* Parse score command-line */
     score_parse_args( argc, last_arg, argv );
 
@@ -1223,6 +1226,9 @@ void command_score(
 
 /*
  $Log$
+ Revision 1.126  2008/04/04 20:06:39  phase1geo
+ More fixes per regression runs.  Checkpointing.
+
  Revision 1.125  2008/04/02 05:39:51  phase1geo
  More updates to support error memory deallocation.  Full regression still
  fails at this point.  Checkpointing.

@@ -52,11 +52,10 @@
 #include "vsignal.h"
 
 
-extern char        user_msg[USER_MSG_LENGTH];
-extern funit_link* funit_head;
-extern funit_link* funit_tail;
-extern func_unit*  curr_funit;
-extern inst_link*  inst_head;
+extern char         user_msg[USER_MSG_LENGTH];
+extern db**         db_list;
+extern unsigned int curr_db;
+extern func_unit*   curr_funit;
 
 
 /*!
@@ -1027,7 +1026,7 @@ func_unit* funit_find_by_id( int id ) { PROFILE(FUNIT_FIND_BY_ID);
   funit_link* funitl;       /* Temporary pointer to functional unit link */
   exp_link*   expl = NULL;  /* Temporary pointer to expression link */
 
-  funitl = funit_head;
+  funitl = db_list[curr_db]->funit_head;
   while( (funitl != NULL) && (expl == NULL) ) {
     if( (expl = exp_link_find( id, funitl->funit->exp_head )) == NULL ) {
       funitl = funitl->next;
@@ -1483,6 +1482,11 @@ void funit_dealloc( func_unit* funit ) { PROFILE(FUNIT_DEALLOC);
 
 /*
  $Log$
+ Revision 1.100  2008/04/15 06:08:46  phase1geo
+ First attempt to get both instance and module coverage calculatable for
+ GUI purposes.  This is not quite complete at the moment though it does
+ compile.
+
  Revision 1.99  2008/03/27 06:09:58  phase1geo
  Fixing some regression errors.  Checkpointing.
 

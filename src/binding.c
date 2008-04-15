@@ -94,10 +94,11 @@
 #include "vsignal.h"
 
 
-extern inst_link*  inst_head;
-extern funit_link* funit_head;
-extern char        user_msg[USER_MSG_LENGTH];
-extern bool        debug_mode;
+extern db**         db_list;
+extern unsigned int curr_db;
+extern funit_link*  funit_head;
+extern char         user_msg[USER_MSG_LENGTH];
+extern bool         debug_mode;
 
 
 /*!
@@ -890,7 +891,7 @@ void bind_perform(
           print_output( "Resolving parameters...", DEBUG, __FILE__, __LINE__ );
         }
 #endif
-        instl = inst_head;
+        instl = db_list[curr_db]->inst_head;
         while( instl != NULL ) {
           param_resolve( instl->inst );
           instl = instl->next;
@@ -900,7 +901,7 @@ void bind_perform(
           print_output( "Resolving generate statements...", DEBUG, __FILE__, __LINE__ );
         }
 #endif
-        instl = inst_head;
+        instl = db_list[curr_db]->inst_head;
         while( instl != NULL ) {
           generate_resolve( instl->inst );
           instl = instl->next;
@@ -910,7 +911,7 @@ void bind_perform(
           print_output( "Resolving arrays of instances...", DEBUG, __FILE__, __LINE__ );
         }
 #endif
-        instl = inst_head;
+        instl = db_list[curr_db]->inst_head;
         while( instl != NULL ) {
           instance_resolve( instl->inst );
           instl = instl->next;
@@ -969,6 +970,9 @@ void bind_dealloc() { PROFILE(BIND_DEALLOC);
 
 /* 
  $Log$
+ Revision 1.129  2008/03/22 05:23:24  phase1geo
+ More attempts to fix memory problems.  Things are still pretty broke at the moment.
+
  Revision 1.128  2008/03/22 02:21:07  phase1geo
  Checking in start of changes to properly handle the deallocation of vector
  memory from expressions.  Things are pretty broke at this point!

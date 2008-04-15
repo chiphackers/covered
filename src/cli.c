@@ -44,9 +44,10 @@
 #define CLI_NUM_DASHES 50
 
 
-extern char                 user_msg[USER_MSG_LENGTH];
-extern bool                 flag_use_command_line_debug;
-extern /*@null@*/inst_link* inst_head;
+extern db**         db_list;
+extern unsigned int curr_db;
+extern char         user_msg[USER_MSG_LENGTH];
+extern bool         flag_use_command_line_debug;
 
 
 /*!
@@ -282,7 +283,7 @@ static void cli_display_current() {
 
   /* Get the scope of the functional unit represented by the current thread */
   scope[0] = '\0';
-  instance_gen_scope( scope, inst_link_find_by_funit( curr->funit, inst_head, &ignore ), TRUE );
+  instance_gen_scope( scope, inst_link_find_by_funit( curr->funit, db_list[curr_db]->inst_head, &ignore ), TRUE );
 
   /* Output the given scope */
   printf( "    SCOPE: %s, BLOCK: %s, FILE: %s\n", scope, funit_flatten_name( curr->funit ), curr->funit->filename );
@@ -898,6 +899,11 @@ void cli_read_hist_file( const char* fname ) {
 
 /*
  $Log$
+ Revision 1.23  2008/03/17 22:02:30  phase1geo
+ Adding new check_mem script and adding output to perform memory checking during
+ regression runs.  Completed work on free_safe and added realloc_safe function
+ calls.  Regressions are pretty broke at the moment.  Checkpointing.
+
  Revision 1.22  2008/03/17 05:26:15  phase1geo
  Checkpointing.  Things don't compile at the moment.
 

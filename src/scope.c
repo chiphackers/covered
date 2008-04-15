@@ -32,9 +32,10 @@
 #include "obfuscate.h"
 
 
-extern inst_link* inst_head;
-extern func_unit* global_funit;
-extern char       user_msg[USER_MSG_LENGTH];
+extern db**         db_list;
+extern unsigned int curr_db;
+extern func_unit*   global_funit;
+extern char         user_msg[USER_MSG_LENGTH];
 
 
 /*!
@@ -64,7 +65,7 @@ static func_unit* scope_find_funit_from_scope(
   assert( curr_funit != NULL );
 
   /* Get current instance */
-  if( (curr_inst = inst_link_find_by_funit( curr_funit, inst_head, &ignore )) != NULL ) {
+  if( (curr_inst = inst_link_find_by_funit( curr_funit, db_list[curr_db]->inst_head, &ignore )) != NULL ) {
 
     /* First check scope based on a relative path if unnamed scopes are not ignored */
     unsigned int rv = snprintf( tscope, 4096, "%s.%s", curr_inst->name, scope );
@@ -379,7 +380,7 @@ func_unit* scope_get_parent_funit(
   assert( rest != '\0' );
 
   /* Get functional instance for the rest of the scope */
-  inst = inst_link_find_by_scope( rest, inst_head );
+  inst = inst_link_find_by_scope( rest, db_list[curr_db]->inst_head );
 
   assert( inst != NULL );
 
@@ -423,7 +424,7 @@ func_unit* scope_get_parent_module(
     scope_extract_back( curr_scope, back, rest );
     assert( rest[0] != '\0' );
     strcpy( curr_scope, rest );
-    inst = inst_link_find_by_scope( curr_scope, inst_head );
+    inst = inst_link_find_by_scope( curr_scope, db_list[curr_db]->inst_head );
     assert( inst != NULL );
   } while( inst->funit->type != FUNIT_MODULE );
 
@@ -439,6 +440,10 @@ func_unit* scope_get_parent_module(
 
 /*
  $Log$
+ Revision 1.51  2008/03/18 21:36:24  phase1geo
+ Updates from regression runs.  Regressions still do not completely pass at
+ this point.  Checkpointing.
+
  Revision 1.50  2008/03/18 03:56:44  phase1geo
  More updates for memory checking (some "fixes" here as well).
 

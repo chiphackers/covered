@@ -28,8 +28,8 @@
 #include "expr.h"
 
 
-extern funit_link* funit_head;
-extern inst_link*  inst_head;
+extern db**         db_list;
+extern unsigned int curr_db;
 
 
 /*!
@@ -134,7 +134,7 @@ void perf_output_inst_report( FILE* ofile ) { PROFILE(PERF_OUTPUT_INST_REPORT);
 
   fprintf( ofile, "\nSIMULATION PERFORMANCE STATISTICS:\n\n" );
 
-  instl = inst_head;
+  instl = db_list[curr_db]->inst_head;
   while( instl != NULL ) {
     perf_output_inst_report_helper( ofile, instl->inst );
     instl = instl->next;
@@ -144,6 +144,9 @@ void perf_output_inst_report( FILE* ofile ) { PROFILE(PERF_OUTPUT_INST_REPORT);
 
 /*
  $Log$
+ Revision 1.9  2008/01/09 05:22:22  phase1geo
+ More splint updates using the -standard option.
+
  Revision 1.8  2008/01/08 21:13:08  phase1geo
  Completed -weak splint run.  Full regressions pass.
 

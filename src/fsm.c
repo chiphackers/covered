@@ -51,8 +51,8 @@
 #include "vector.h"
 
 
-extern inst_link*   inst_head;
-extern funit_link*  funit_head;
+extern db**         db_list;
+extern unsigned int curr_db;
 extern bool         report_covered; 
 extern unsigned int report_comb_depth;
 extern bool         report_instance;
@@ -441,7 +441,7 @@ bool fsm_get_funit_summary(
   funit_link* funitl;         /* Pointer to found functional unit link */
   char        tmp[21];        /* Temporary string for total */
 
-  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
 
     unsigned int rv = snprintf( tmp, 21, "%20d", funitl->funit->stat->arc_total );
     assert( rv < 21 );
@@ -533,7 +533,7 @@ bool fsm_collect( const char* funit_name, int funit_type, sig_link** cov_head, s
   int         arc_hit;         /* Number of arcs in current FSM hit */
   int         uncov_size = 0;  /* Number of expressions IDs stored in expr_ids array */
 
-  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
 
     /* Initialize list pointers */
     *cov_tail   = *cov_head   = NULL;
@@ -633,7 +633,7 @@ bool fsm_get_coverage(
   fsm_link*   curr_fsm;        /* Pointer to current FSM link */
   int*        tmp;             /* Temporary integer array */
 
-  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
 
     curr_fsm = funitl->funit->fsm_head;
     while( (curr_fsm != NULL) && (curr_fsm->table->to_state->id != expr_id) ) {
@@ -1237,7 +1237,7 @@ void fsm_report( FILE* ofile, bool verbose ) { PROFILE(FSM_REPORT);
     fprintf( ofile, "Instance                                          Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
-    instl = inst_head;
+    instl = db_list[curr_db]->inst_head;
     while( instl != NULL ) {
       missed_found |= fsm_instance_summary( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*"), &acc_st_hits, &acc_st_total, &acc_arc_hits, &acc_arc_total );
       instl = instl->next;
@@ -1247,7 +1247,7 @@ void fsm_report( FILE* ofile, bool verbose ) { PROFILE(FSM_REPORT);
    
     if( verbose && (missed_found || report_covered) ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
-      instl = inst_head;
+      instl = db_list[curr_db]->inst_head;
       while( instl != NULL ) {
         fsm_instance_verbose( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*") );
         instl = instl->next;
@@ -1260,13 +1260,13 @@ void fsm_report( FILE* ofile, bool verbose ) { PROFILE(FSM_REPORT);
     fprintf( ofile, "Module/Task/Function      Filename                Hit/Miss/Total    Percent Hit    Hit/Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
-    missed_found = fsm_funit_summary( ofile, funit_head, &acc_st_hits, &acc_st_total, &acc_arc_hits, &acc_arc_total );
+    missed_found = fsm_funit_summary( ofile, db_list[curr_db]->funit_head, &acc_st_hits, &acc_st_total, &acc_arc_hits, &acc_arc_total );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
     (void)fsm_display_funit_summary( ofile, "Accumulated", "", acc_st_hits, acc_st_total, acc_arc_hits, acc_arc_total );
 
     if( verbose && (missed_found || report_covered) ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
-      fsm_funit_verbose( ofile, funit_head );
+      fsm_funit_verbose( ofile, db_list[curr_db]->funit_head );
     }
 
   }
@@ -1323,6 +1323,11 @@ void fsm_dealloc( fsm* table ) { PROFILE(FSM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.94  2008/04/15 06:08:46  phase1geo
+ First attempt to get both instance and module coverage calculatable for
+ GUI purposes.  This is not quite complete at the moment though it does
+ compile.
+
  Revision 1.93  2008/03/28 21:11:32  phase1geo
  Fixing memory leak issues with -ep option and embedded FSM attributes.
 

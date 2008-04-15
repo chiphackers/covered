@@ -77,8 +77,8 @@
 #include "vector.h"
 
 
-extern inst_link*     inst_head;
-extern funit_link*    funit_head;
+extern db**           db_list;
+extern unsigned int   curr_db;
 extern bool           report_covered;
 extern unsigned int   report_comb_depth;
 extern bool           report_instance;
@@ -578,7 +578,7 @@ bool combination_get_funit_summary(
   funit_link* funitl;         /* Pointer to found functional unit link */
   char        tmp[21];        /* Temporary string for total */
 
-  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
 
     unsigned int rv = snprintf( tmp, 21, "%20d", funitl->funit->stat->comb_total );
     assert( rv < 21 );
@@ -2686,7 +2686,7 @@ bool combination_collect( const char* funit_name, int funit_type, expression*** 
   int         cov_size;        /* Current maximum allocated space in covs array */
   int         uncov_size;      /* Current maximum allocated space in uncovs array */
  
-  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
 
     /* Reset combination counted bits */
     combination_reset_counted_exprs( funitl->funit );
@@ -2830,7 +2830,7 @@ bool combination_get_expression(
   int         start     = 0;
   int         uline_max = 20;
 
-  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
 
     if( (expl = exp_link_find( expr_id, funitl->funit->exp_head )) != NULL ) {
 
@@ -2943,7 +2943,7 @@ bool combination_get_coverage( const char* funit_name, int funit_type, int exp_i
   expression* exp;             /* Pointer to found expression */
 
   /* Find the functional unit containing this subexpression */
-  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
 
     /* Find statement containing this expression */
     if( (expl = exp_link_find( exp_id, funitl->funit->exp_head )) != NULL ) {
@@ -3001,7 +3001,7 @@ void combination_report(
     fprintf( ofile, "Instance                                                              Hit/Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
-    instl = inst_head;
+    instl = db_list[curr_db]->inst_head;
     while( instl != NULL ) {
       missed_found |= combination_instance_summary( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*"), &acc_hits, &acc_total );
       instl = instl->next;
@@ -3011,7 +3011,7 @@ void combination_report(
     
     if( verbose && (missed_found || report_covered) ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
-      instl = inst_head;
+      instl = db_list[curr_db]->inst_head;
       while( instl != NULL ) {
         combination_instance_verbose( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*") );
         instl = instl->next;
@@ -3024,13 +3024,13 @@ void combination_report(
     fprintf( ofile, "Module/Task/Function                Filename                          Hit/Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
-    missed_found = combination_funit_summary( ofile, funit_head, &acc_hits, &acc_total );
+    missed_found = combination_funit_summary( ofile, db_list[curr_db]->funit_head, &acc_hits, &acc_total );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
     (void)combination_display_funit_summary( ofile, "Accumulated", "", acc_hits, acc_total );
 
     if( verbose && (missed_found || report_covered) ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
-      combination_funit_verbose( ofile, funit_head );
+      combination_funit_verbose( ofile, db_list[curr_db]->funit_head );
     }
 
   }
@@ -3042,6 +3042,10 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.192  2008/04/08 22:45:10  phase1geo
+ Optimizations for op-and-assign expressions.  This is an untested checkin
+ at this point but it does compile cleanly.  Checkpointing.
+
  Revision 1.191  2008/03/26 21:29:31  phase1geo
  Initial checkin of new optimizations for unknown and not_zero values in vectors.
  This attempts to speed up expression operations across the board.  Working on

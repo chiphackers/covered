@@ -44,8 +44,8 @@
 #include "ovl.h"
 #include "util.h"
 
-extern inst_link*  inst_head;
-extern funit_link* funit_head;
+extern db**         db_list;
+extern unsigned int curr_db;
 
 extern bool         report_covered;
 extern unsigned int report_comb_depth;
@@ -132,7 +132,7 @@ bool line_collect( const char* funit_name, int funit_type, int cov, int** lines,
   statement*  stmt;           /* Pointer to current statement */
   func_iter   fi;             /* Functional unit iterator */
 
-  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
 
     /* Create an array that will hold the number of uncovered lines */
     line_size = 20;
@@ -212,7 +212,7 @@ bool line_get_funit_summary( const char* funit_name, int funit_type, int* total,
   funit_link* funitl;         /* Pointer to found functional unit link */
   char        tmp[21];        /* Temporary string for total */
 
-  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
 
     unsigned int rv = snprintf( tmp, 21, "%20d", funitl->funit->stat->line_total );
     assert( rv < 21 );
@@ -638,7 +638,7 @@ void line_report( FILE* ofile, bool verbose ) { PROFILE(LINE_REPORT);
     fprintf( ofile, "Instance                                           Hit/ Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
-    instl = inst_head;
+    instl = db_list[curr_db]->inst_head;
     while( instl != NULL ) {
       missed_found |= line_instance_summary( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*"), &acc_hits, &acc_total );
       instl = instl->next;
@@ -648,7 +648,7 @@ void line_report( FILE* ofile, bool verbose ) { PROFILE(LINE_REPORT);
     
     if( verbose && (missed_found || report_covered) ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
-      instl = inst_head;
+      instl = db_list[curr_db]->inst_head;
       while( instl != NULL ) {
         line_instance_verbose( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*") );
         instl = instl->next;
@@ -660,13 +660,13 @@ void line_report( FILE* ofile, bool verbose ) { PROFILE(LINE_REPORT);
     fprintf( ofile, "Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
-    missed_found = line_funit_summary( ofile, funit_head, &acc_hits, &acc_total );
+    missed_found = line_funit_summary( ofile, db_list[curr_db]->funit_head, &acc_hits, &acc_total );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
     (void)line_display_funit_summary( ofile, "Accumulated", "", acc_hits, acc_total );
 
     if( verbose && (missed_found || report_covered) ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
-      line_funit_verbose( ofile, funit_head );
+      line_funit_verbose( ofile, db_list[curr_db]->funit_head );
     }
 
   }
@@ -677,6 +677,11 @@ void line_report( FILE* ofile, bool verbose ) { PROFILE(LINE_REPORT);
 
 /*
  $Log$
+ Revision 1.88  2008/03/17 22:02:31  phase1geo
+ Adding new check_mem script and adding output to perform memory checking during
+ regression runs.  Completed work on free_safe and added realloc_safe function
+ calls.  Regressions are pretty broke at the moment.  Checkpointing.
+
  Revision 1.87  2008/03/17 05:26:16  phase1geo
  Checkpointing.  Things don't compile at the moment.
 

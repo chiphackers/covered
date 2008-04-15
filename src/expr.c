@@ -158,9 +158,10 @@ extern nibble nxor_optab[OPTAB_SIZE];
 
 extern char   user_msg[USER_MSG_LENGTH];
 
-extern exp_link* static_expr_head;
-extern exp_link* static_expr_tail;
-extern inst_link* inst_head;
+extern exp_link*    static_expr_head;
+extern exp_link*    static_expr_tail;
+extern db**         db_list;
+extern unsigned int curr_db;
 
 extern bool debug_mode;
 extern int  generate_expr_mode;
@@ -932,7 +933,7 @@ void expression_resize(
           assert( funit != NULL );
           if( (funit->type != FUNIT_AFUNCTION) && (funit->type != FUNIT_ANAMED_BLOCK) ) {
             assert( expr->elem.funit != NULL );
-            tmp_inst = inst_link_find_by_funit( expr->elem.funit, inst_head, &ignore );
+            tmp_inst = inst_link_find_by_funit( expr->elem.funit, db_list[curr_db]->inst_head, &ignore );
             funit_size_elements( expr->elem.funit, tmp_inst, FALSE, FALSE );
           }
           if( (expr->value->width != expr->sig->value->width) || (expr->value->value == NULL) ) {
@@ -5915,6 +5916,11 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.328  2008/04/15 06:08:46  phase1geo
+ First attempt to get both instance and module coverage calculatable for
+ GUI purposes.  This is not quite complete at the moment though it does
+ compile.
+
  Revision 1.327  2008/04/09 18:00:33  phase1geo
  Fixing op-and-assign operation and updated regression files appropriately.
  Also modified verilog/Makefile to compile lib or src directory as needed

@@ -59,11 +59,7 @@
 
 
 extern char*       top_module;
-extern /*@null@*/inst_link*  inst_head;
-extern /*@null@*/inst_link*  inst_tail;
 extern str_link*   no_score_head;
-extern funit_link* funit_head;
-extern funit_link* funit_tail;
 extern nibble      or_optab[16];
 extern char        user_msg[USER_MSG_LENGTH];
 extern bool        one_instance_found;
@@ -89,7 +85,7 @@ extern int         for_mode;
 /*!
  Size of the db_list array.
 */
-unsigned int db_size = 0;
+static unsigned int db_size = 0;
 
 /*!
  Index of current database in db_list array that is being handled. 
@@ -232,10 +228,10 @@ void db_close() { PROFILE(DB_CLOSE);
       /* Remove memory allocated for all functional units */
       funit_link_delete_list( &(db_list[i]->funit_head), &(db_list[i]->funit_tail), TRUE );
 
-      /* Deallocate database structure */
-      free_safe( db_list[i], sizeof( db ) );
-
     }
+
+    /* Deallocate database structure */
+    free_safe( db_list[i], sizeof( db ) );
 
   }
 
@@ -262,6 +258,9 @@ void db_close() { PROFILE(DB_CLOSE);
 
   /* Finally, deallocate the database list */
   free_safe( db_list, (sizeof( db ) * db_size) );
+  db_list = NULL;
+  db_size = 0;
+  curr_db = 0;
 
   PROFILE_END;
 
@@ -434,6 +433,8 @@ void db_read(
 
             if( type == DB_TYPE_INFO ) {
           
+              (void)db_create();
+
               /* Parse rest of line for general info */
               info_db_read( &rest_line );
   
@@ -2947,6 +2948,10 @@ bool db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.306  2008/04/15 13:59:13  phase1geo
+ Starting to add support for multiple databases.  Things compile but are
+ quite broken at the moment.  Checkpointing.
+
  Revision 1.305  2008/04/15 06:08:46  phase1geo
  First attempt to get both instance and module coverage calculatable for
  GUI purposes.  This is not quite complete at the moment though it does

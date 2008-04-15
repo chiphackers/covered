@@ -35,9 +35,9 @@
 #include "vector.h"
 
 
-extern inst_link*  inst_head;
-extern funit_link* funit_head;
-extern isuppl      info_suppl;
+extern db**         db_list;
+extern unsigned int curr_db;
+extern isuppl       info_suppl;
 
 
 /*!
@@ -250,8 +250,8 @@ static funit_inst* exclude_find_instance_from_funit_info(
   int         ignore = 0;     /* Number of functional unit instances to ignore in search */
   funit_inst* inst   = NULL;  /* Found functional unit instance */
 
-  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
-    inst = inst_link_find_by_funit( funitl->funit, inst_head, &ignore );
+  if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
+    inst = inst_link_find_by_funit( funitl->funit, db_list[curr_db]->inst_head, &ignore );
   }
 
   return( inst );
@@ -277,7 +277,7 @@ bool exclude_set_line_exclude( const char* funit_name, int funit_type, int line,
   exp_link*   expl;            /* Pointer to current expression link */
 
   /* Find the functional unit that matches the description */
-  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
 
     /* Find the expression(s) that match the given line number */
     expl = funitl->funit->exp_head;
@@ -317,7 +317,7 @@ bool exclude_set_toggle_exclude( const char* funit_name, int funit_type, const c
   sig_link*   sigl;            /* Pointer to current signal link */
 
   /* Find the functional unit that matches the description */
-  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
 
     /* Find the signal that matches the given signal name and sets its excluded bit */
     if( (sigl = sig_link_find( sig_name, funitl->funit->sig_head )) != NULL ) {
@@ -352,7 +352,7 @@ bool exclude_set_comb_exclude( const char* funit_name, int funit_type, int expr_
   expression* subexp;          /* Pointer to found subexpression */
 
   /* Find the functional unit that matches the description */
-  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
 
     /* Find the signal that matches the given signal name and sets its excluded bit */
     if( (expl = exp_link_find( expr_id, funitl->funit->exp_head )) != NULL ) {
@@ -390,7 +390,7 @@ bool exclude_set_fsm_exclude( const char* funit_name, int funit_type, int expr_i
   fsm_link*   curr_fsm;        /* Pointer to the current FSM to search on */
 
   /* Find the functional unit instance that matches the functional unit description */
-  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
 
     /* Find the corresponding table */
     curr_fsm = funitl->funit->fsm_head;
@@ -471,6 +471,9 @@ bool exclude_set_assert_exclude(
 
 /*
  $Log$
+ Revision 1.22  2008/04/14 23:10:14  phase1geo
+ More GUI updates and a fix to the line exclusion code.
+
  Revision 1.21  2008/03/26 21:29:31  phase1geo
  Initial checkin of new optimizations for unknown and not_zero values in vectors.
  This attempts to speed up expression operations across the board.  Working on

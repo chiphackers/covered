@@ -41,9 +41,10 @@
 #include "obfuscate.h"
 
 
-extern char        user_msg[USER_MSG_LENGTH];
-extern funit_link* funit_head;
-extern func_unit*  curr_funit;
+extern char         user_msg[USER_MSG_LENGTH];
+extern db**         db_list;
+extern unsigned int curr_db;
+extern func_unit*   curr_funit;
 
 
 /*!
@@ -115,7 +116,7 @@ fsm_var* fsm_var_add(
   fsm*        table;           /* Pointer to newly create FSM */
 
   /* If we have not parsed design, add new FSM variable to list */
-  if( funit_head == NULL ) {
+  if( db_list[curr_db]->funit_head == NULL ) {
 
     new_var          = (fsm_var*)malloc_safe( sizeof( fsm_var ) );
     new_var->funit   = strdup_safe( funit_name );
@@ -136,7 +137,7 @@ fsm_var* fsm_var_add(
 
   } else {
 
-    if( (funitl = funit_link_find( funit_name, FUNIT_MODULE, funit_head )) != NULL ) {
+    if( (funitl = funit_link_find( funit_name, FUNIT_MODULE, db_list[curr_db]->funit_head )) != NULL ) {
       table = fsm_create( in_state, out_state, exclude );
       if( name != NULL ) {
         table->name = strdup_safe( name );
@@ -201,7 +202,7 @@ static void fsm_var_bind_expr(
 
   funit_link* funitl;  /* Pointer to found functional unit link element */
 
-  if( (funitl = funit_link_find( funit_name, FUNIT_MODULE, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, FUNIT_MODULE, db_list[curr_db]->funit_head )) != NULL ) {
     if( !bind_signal( sig_name, expr, funitl->funit, TRUE, FALSE, FALSE, expr->line, FALSE ) ) {
       unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to bind FSM-specified signal (%s) to expression (%d) in module (%s)",
                                   obf_sig( sig_name ), expr->id, obf_funit( funit_name ) );
@@ -279,7 +280,7 @@ static bool fsm_var_bind_stmt(
   funit_link* funitl;          /* Pointer to found functional unit link element */
   fsm_var*    fv;              /* Pointer to found FSM variable */
 
-  if( (funitl = funit_link_find( funit_name, FUNIT_MODULE, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, FUNIT_MODULE, db_list[curr_db]->funit_head )) != NULL ) {
 
     /* First, add expression tree to found functional unit expression list */
     fsm_var_add_expr( stmt->exp, funitl->funit );
@@ -332,7 +333,7 @@ void fsm_var_bind_add(
   fv_bind* fvb;  /* Pointer to new FSM variable binding structure */
 
   /* If the functional unit list does not exist yet, we need to bind this later; otherwise, bind now */
-  if( funit_head == NULL ) {
+  if( db_list[curr_db]->funit_head == NULL ) {
 
     /* Allocate and initialize FSM variable bind structure */
     fvb             = (fv_bind*)malloc_safe( sizeof( fv_bind ) );
@@ -578,6 +579,10 @@ void fsm_var_cleanup() { PROFILE(FSM_VAR_CLEANUP);
 
 /*
  $Log$
+ Revision 1.46  2008/04/01 23:08:21  phase1geo
+ More updates for error diagnostic cleanup.  Full regression still not
+ passing (but is getting close).
+
  Revision 1.45  2008/03/31 18:39:08  phase1geo
  Fixing more regression issues related to latest code modifications.  Checkpointing.
 

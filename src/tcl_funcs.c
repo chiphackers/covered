@@ -51,26 +51,27 @@
 #include "util.h"
 
 
-extern funit_link* funit_head;
-extern inst_link*  inst_head;
-extern char        user_msg[USER_MSG_LENGTH];
-extern const char* race_msgs[RACE_TYPE_NUM];
-extern char        score_run_path[4096];
-extern char**      score_args;
-extern int         score_arg_num;
-extern void        reset_pplexer( const char* filename, FILE* out );
-extern int         PPVLlex( void );
-extern char**      merge_in;
-extern int         merge_in_num;
-extern char*       output_file;
-extern int         report_comb_depth; 
-extern bool        report_line;
-extern bool        report_toggle;
-extern bool        report_memory;
-extern bool        report_combination;
-extern bool        report_fsm;
-extern bool        report_assertion;
-extern bool        report_race;
+extern db**         db_list;
+extern unsigned int curr_db;
+extern funit_link*  funit_head;
+extern char         user_msg[USER_MSG_LENGTH];
+extern const char*  race_msgs[RACE_TYPE_NUM];
+extern char         score_run_path[4096];
+extern char**       score_args;
+extern int          score_arg_num;
+extern void         reset_pplexer( const char* filename, FILE* out );
+extern int          PPVLlex( void );
+extern char**       merge_in;
+extern int          merge_in_num;
+extern char*        output_file;
+extern int          report_comb_depth; 
+extern bool         report_line;
+extern bool         report_toggle;
+extern bool         report_memory;
+extern bool         report_combination;
+extern bool         report_fsm;
+extern bool         report_assertion;
+extern bool         report_race;
 
 
 /*!
@@ -186,8 +187,8 @@ int tcl_func_get_instance_list( ClientData d, Tcl_Interp* tcl, int argc, const c
   int        retval = TCL_OK;  /* Return value for this function */
   inst_link* instl;            /* Pointer to current instance link */
 
-  if( inst_head != NULL ) {
-    instl = inst_head;
+  if( db_list[curr_db]->inst_head != NULL ) {
+    instl = db_list[curr_db]->inst_head;
     while( instl != NULL ) {
       tcl_func_get_instances( tcl, instl->inst );
       instl = instl->next;
@@ -2268,6 +2269,11 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.76  2008/04/15 06:08:47  phase1geo
+ First attempt to get both instance and module coverage calculatable for
+ GUI purposes.  This is not quite complete at the moment though it does
+ compile.
+
  Revision 1.75  2008/04/10 23:16:42  phase1geo
  Fixing issues with memory and file handling in preprocessor when an error
  occurs (so that we can recover properly in the GUI).  Also fixing various

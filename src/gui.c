@@ -34,8 +34,9 @@
 #include "ovl.h"
 
 
-extern funit_link* funit_head;
-extern isuppl      info_suppl;
+extern db**         db_list;
+extern unsigned int curr_db;
+extern isuppl       info_suppl;
 
 
 /*!
@@ -59,7 +60,7 @@ bool funit_get_list( char*** funit_names, char*** funit_types, int* funit_size )
   *funit_size = 0;
 
   /* Count the number of functional units */
-  curr = funit_head;
+  curr = db_list[curr_db]->funit_head;
   while( curr != NULL ) {
     if( !funit_is_unnamed( curr->funit ) &&
         ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( funit_get_curr_module( curr->funit ) )) ) {
@@ -77,7 +78,7 @@ bool funit_get_list( char*** funit_names, char*** funit_types, int* funit_size )
 
     /* Now let's populate the functional unit list */
     i    = 0;
-    curr = funit_head;
+    curr = db_list[curr_db]->funit_head;
     while( curr != NULL ) {
       if( !funit_is_unnamed( curr->funit ) &&
           ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( funit_get_curr_module( curr->funit ) )) ) {
@@ -113,7 +114,7 @@ char* funit_get_filename( const char* funit_name, int funit_type ) { PROFILE(FUN
   funit_link* funitl;        /* Pointer to functional unit link containing matched functional unit */
   char*       fname = NULL;  /* Name of filename containing specified functional unit */
 
-  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
     fname = strdup_safe( funitl->funit->filename );
   }
 
@@ -138,7 +139,7 @@ bool funit_get_start_and_end_lines( const char* funit_name, int funit_type, int*
   bool        retval = TRUE;  /* Return value of this function */
   funit_link* funitl;         /* Pointer to functional unit line containing matched functional unit */
   
-  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
 
     *start_line = funitl->funit->start_line;
     *end_line   = funitl->funit->end_line;
@@ -155,6 +156,9 @@ bool funit_get_start_and_end_lines( const char* funit_name, int funit_type, int*
 
 /*
  $Log$
+ Revision 1.13  2008/01/16 06:40:37  phase1geo
+ More splint updates.
+
  Revision 1.12  2008/01/07 23:59:54  phase1geo
  More splint updates.
 

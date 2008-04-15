@@ -40,8 +40,8 @@
 #include "vector.h"
 
 
-extern inst_link*  inst_head;
-extern funit_link* funit_head;
+extern db**         db_list;
+extern unsigned int curr_db;
 
 extern bool   report_covered;
 extern bool   report_instance;
@@ -107,7 +107,7 @@ bool toggle_collect( const char* funit_name, int funit_type, int cov, sig_link**
   int         hit01;          /* Number of bits that toggled from 0 to 1 */
   int         hit10;          /* Number of bits that toggled from 1 to 0 */
      
-  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
 
     curr_sig = funitl->funit->sig_head;
 
@@ -168,7 +168,7 @@ bool toggle_get_coverage( const char* funit_name, int funit_type, char* sig_name
   funit_link* funitl;         /* Pointer to found functional unit link */
   sig_link*   sigl;           /* Pointer to found signal link */
 
-  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
 
     if( (sigl = sig_link_find( sig_name, funitl->funit->sig_head )) != NULL ) {
       assert( sigl->sig->dim != NULL );
@@ -218,7 +218,7 @@ bool toggle_get_funit_summary( const char* funit_name, int funit_type, int* tota
   *total = 0;
   *hit   = 0;
 
-  if( (funitl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
+  if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
 
     curr_sig = funitl->funit->sig_head;
 
@@ -666,7 +666,7 @@ void toggle_report( FILE* ofile, bool verbose ) { PROFILE(TOGGLE_REPORT);
     fprintf( ofile, "Instance                                           Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
-    instl = inst_head;
+    instl = db_list[curr_db]->inst_head;
     while( instl != NULL ) {
       missed_found |= toggle_instance_summary( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*"), &acc_hits01, &acc_hits10, &acc_total );
       instl = instl->next;
@@ -676,7 +676,7 @@ void toggle_report( FILE* ofile, bool verbose ) { PROFILE(TOGGLE_REPORT);
     
     if( verbose && missed_found ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
-      instl = inst_head;
+      instl = db_list[curr_db]->inst_head;
       while( instl != NULL ) {
         toggle_instance_verbose( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*") );
         instl = instl->next;
@@ -689,13 +689,13 @@ void toggle_report( FILE* ofile, bool verbose ) { PROFILE(TOGGLE_REPORT);
     fprintf( ofile, "Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
-    missed_found = toggle_funit_summary( ofile, funit_head, &acc_hits01, &acc_hits10, &acc_total );
+    missed_found = toggle_funit_summary( ofile, db_list[curr_db]->funit_head, &acc_hits01, &acc_hits10, &acc_total );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
     (void)toggle_display_funit_summary( ofile, "Accumulated", "", acc_hits01, acc_hits10, acc_total );
 
     if( verbose && missed_found ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
-      toggle_funit_verbose( ofile, funit_head );
+      toggle_funit_verbose( ofile, db_list[curr_db]->funit_head );
     }
 
   }
@@ -706,6 +706,11 @@ void toggle_report( FILE* ofile, bool verbose ) { PROFILE(TOGGLE_REPORT);
 
 /*
  $Log$
+ Revision 1.71  2008/03/17 22:02:32  phase1geo
+ Adding new check_mem script and adding output to perform memory checking during
+ regression runs.  Completed work on free_safe and added realloc_safe function
+ calls.  Regressions are pretty broke at the moment.  Checkpointing.
+
  Revision 1.70  2008/02/01 22:10:27  phase1geo
  Adding more diagnostics to regression suite for exclusion testing.
  Also fixed bug in toggle reporter to not output excluded signals in

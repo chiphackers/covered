@@ -42,11 +42,10 @@
 #include "util.h"
 
 
-extern int         curr_expr_id;
-extern inst_link*  inst_head;
-extern funit_link* funit_head;
-extern funit_link* funit_tail;
-extern char        user_msg[USER_MSG_LENGTH];
+extern int          curr_expr_id;
+extern db**         db_list;
+extern unsigned int curr_db;
+extern char         user_msg[USER_MSG_LENGTH];
 
 
 static bool instance_resolve_inst( funit_inst*, funit_inst* );
@@ -391,7 +390,7 @@ static funit_inst* instance_add_child(
 
     /* If the new instance needs to be resolved now, do so */
     if( resolve ) {
-      inst_link* instl = inst_head;
+      inst_link* instl = db_list[curr_db]->inst_head;
       while( (instl != NULL) && !instance_resolve_inst( instl->inst, new_inst ) ) {
         instl = instl->next;
       }
@@ -941,7 +940,7 @@ void instance_flatten( funit_inst* root ) { PROFILE(INSTANCE_FLATTEN);
   /* Now deallocate the list of functional units */
   funitl = rm_head;
   while( funitl != NULL ) {
-    funit_link_remove( funitl->funit, &funit_head, &funit_tail, FALSE );
+    funit_link_remove( funitl->funit, &(db_list[curr_db]->funit_head), &(db_list[curr_db]->funit_tail), FALSE );
     if( funitl->funit->type != FUNIT_MODULE ) {
       parent_mod = funit_get_curr_module( funitl->funit );
       funit_link_remove( funitl->funit, &(parent_mod->tf_head), &(parent_mod->tf_tail), FALSE );
@@ -1176,6 +1175,11 @@ void instance_dealloc( funit_inst* root, char* scope ) { PROFILE(INSTANCE_DEALLO
 
 /*
  $Log$
+ Revision 1.94  2008/04/15 06:08:47  phase1geo
+ First attempt to get both instance and module coverage calculatable for
+ GUI purposes.  This is not quite complete at the moment though it does
+ compile.
+
  Revision 1.93  2008/03/18 21:36:24  phase1geo
  Updates from regression runs.  Regressions still do not completely pass at
  this point.  Checkpointing.

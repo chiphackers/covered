@@ -53,15 +53,15 @@
 #include "util.h"
 
 
-extern char        user_msg[USER_MSG_LENGTH];
-extern inst_link*  inst_head;
-extern funit_link* funit_head;
-extern int         merge_in_num;
-extern char**      merge_in;
-extern char**      leading_hierarchies;
-extern int         leading_hier_num;
-extern bool        leading_hiers_differ;
-extern isuppl      info_suppl;
+extern char         user_msg[USER_MSG_LENGTH];
+extern db**         db_list;
+extern unsigned int curr_db;
+extern int          merge_in_num;
+extern char**       merge_in;
+extern char**       leading_hierarchies;
+extern int          leading_hier_num;
+extern bool         leading_hiers_differ;
+extern isuppl       info_suppl;
 
 /*!
  If set to a boolean value of TRUE, reports the line coverage for the specified database
@@ -710,13 +710,13 @@ static void report_generate(
 
   /* Gather statistics first */
   if( report_instance ) {
-    inst_link* instl = inst_head;
+    inst_link* instl = db_list[curr_db]->inst_head;
     while( instl != NULL ) {
       report_gather_instance_stats( instl->inst );
       instl = instl->next;
     }
   } else {
-    report_gather_funit_stats( funit_head );
+    report_gather_funit_stats( db_list[curr_db]->funit_head );
   }
 
   /* Call out the proper reports for the specified metrics to report */
@@ -775,7 +775,7 @@ void report_read_cdd_and_ready(
 
   } else {
 
-    inst_link* instl = inst_head;
+    inst_link* instl = db_list[curr_db]->inst_head;
 
     /* Read in database, performing instance merging */
     db_read( ifile, read_mode );
@@ -789,7 +789,7 @@ void report_read_cdd_and_ready(
 
     /* Now merge functional units and gather module statistics */
     db_merge_funits();
-    report_gather_funit_stats( funit_head );
+    report_gather_funit_stats( db_list[curr_db]->funit_head );
 
   }
 
@@ -1010,6 +1010,11 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.101  2008/04/15 06:08:47  phase1geo
+ First attempt to get both instance and module coverage calculatable for
+ GUI purposes.  This is not quite complete at the moment though it does
+ compile.
+
  Revision 1.100  2008/03/17 05:26:17  phase1geo
  Checkpointing.  Things don't compile at the moment.
 

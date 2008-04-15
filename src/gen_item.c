@@ -40,11 +40,11 @@
 
 extern int parse_static_expr( char* str, func_unit* funit, int lineno, bool no_genvars );
 
-extern inst_link* inst_head;
-extern inst_link* inst_tail;
-extern char       user_msg[USER_MSG_LENGTH];
-extern bool       debug_mode;
-extern func_unit* curr_funit;
+extern db**         db_list;
+extern unsigned int curr_db;
+extern char         user_msg[USER_MSG_LENGTH];
+extern bool         debug_mode;
+extern func_unit*   curr_funit;
 
 
 /*!
@@ -1137,7 +1137,7 @@ bool generate_remove_stmt(
   inst_link* instl;           /* Pointer to current instance list to parse */
 
   /* Search for the generate item in the instance lists */
-  instl = inst_head;
+  instl = db_list[curr_db]->inst_head;
   while( instl != NULL ) {
     retval |= generate_remove_stmt_helper( instl->inst, stmt );
     instl = instl->next;
@@ -1209,6 +1209,9 @@ void gen_item_dealloc(
 
 /*
  $Log$
+ Revision 1.66  2008/04/06 05:46:54  phase1geo
+ Another regression memory deallocation fix.  Updates to regression files.
+
  Revision 1.65  2008/04/06 05:24:17  phase1geo
  Fixing another regression memory problem.  Updated regression files
  accordingly.  Checkpointing.

@@ -49,10 +49,11 @@
 #define OVL_ASSERT_NUM 27
 
 
-extern bool       flag_check_ovl_assertions;
-extern inst_link* inst_head;
-extern bool       report_covered;
-extern bool       report_instance;
+extern db**         db_list;
+extern unsigned int curr_db;
+extern bool         flag_check_ovl_assertions;
+extern bool         report_covered;
+extern bool         report_instance;
 
 
 /*!
@@ -191,7 +192,7 @@ void ovl_get_funit_stats(
   if( !ovl_is_assertion_module( funit ) ) {
 
     /* Get one instance of this module from the design */
-    funiti = inst_link_find_by_funit( funit, inst_head, &ignore );
+    funiti = inst_link_find_by_funit( funit, db_list[curr_db]->inst_head, &ignore );
     assert( funiti != NULL );
 
     /* Find all child instances of this module that are assertion modules */
@@ -280,7 +281,7 @@ void ovl_display_verbose( FILE* ofile, const func_unit* funit ) { PROFILE(OVL_DI
   fprintf( ofile, "      ---------------------------------------------------------------------------------------------------------\n" );
 
   /* Get one instance of this module from the design */
-  funiti = inst_link_find_by_funit( funit, inst_head, &ignore );
+  funiti = inst_link_find_by_funit( funit, db_list[curr_db]->inst_head, &ignore );
   assert( funiti != NULL );
 
   /* Find all child instances of this module that are assertion modules */
@@ -352,7 +353,7 @@ void ovl_collect( func_unit* funit, char*** uncov_inst_names, int** excludes, in
   int         exclude_found = 0;  /* Set to a value of 1 if at least one excluded coverage point was found */
 
   /* Get one instance of this module from the design */
-  funiti = inst_link_find_by_funit( funit, inst_head, &ignore );
+  funiti = inst_link_find_by_funit( funit, db_list[curr_db]->inst_head, &ignore );
   assert( funiti != NULL );
 
   /* Find all child instances of this module that are assertion modules */
@@ -431,7 +432,7 @@ void ovl_get_coverage( const func_unit* funit, const char* inst_name, char** ass
   stmt_iter   si;          /* Statement iterator */
 
   /* Get one instance of this module from the design */
-  funiti = inst_link_find_by_funit( funit, inst_head, &ignore );
+  funiti = inst_link_find_by_funit( funit, db_list[curr_db]->inst_head, &ignore );
   assert( funiti != NULL );
 
   /* Find child instance */
@@ -468,6 +469,11 @@ void ovl_get_coverage( const func_unit* funit, const char* inst_name, char** ass
 
 /*
  $Log$
+ Revision 1.25  2008/03/26 21:29:31  phase1geo
+ Initial checkin of new optimizations for unknown and not_zero values in vectors.
+ This attempts to speed up expression operations across the board.  Working on
+ debugging regressions.  Checkpointing.
+
  Revision 1.24  2008/03/18 21:36:24  phase1geo
  Updates from regression runs.  Regressions still do not completely pass at
  this point.  Checkpointing.

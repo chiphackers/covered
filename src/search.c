@@ -50,21 +50,18 @@
 /*@null@*/ static str_link* extensions_head = NULL;   /*!< Pointer to head element of extensions list */
 /*@null@*/ static str_link* extensions_tail = NULL;   /*!< Pointer to tail element of extensions list */
 
-/*@null@*/funit_link* funit_head    = NULL;   /*!< Pointer to head element of functional unit list */
-/*@null@*/funit_link* funit_tail    = NULL;   /*!< Pointer to tail element of functional unit list */
-
-/*@null@*/inst_link*  inst_head     = NULL;   /*!< Pointer to head element of functional unit instance list */
-/*@null@*/inst_link*  inst_tail     = NULL;   /*!< Pointer to tail element of functional unit instance list */
-
-extern char*      top_module;
-extern char*      top_instance;
-extern char       user_msg[USER_MSG_LENGTH];
-extern char**     leading_hierarchies;
-extern int        leading_hier_num;
-extern bool       leading_hiers_differ;
-extern func_unit* global_funit;
-extern func_unit* curr_funit;
-extern int        flag_global_generation;
+extern db**         db_list;
+extern unsigned int db_size;
+extern unsigned int curr_db;
+extern char*        top_module;
+extern char*        top_instance;
+extern char         user_msg[USER_MSG_LENGTH];
+extern char**       leading_hierarchies;
+extern int          leading_hier_num;
+extern bool         leading_hiers_differ;
+extern func_unit*   global_funit;
+extern func_unit*   curr_funit;
+extern int          flag_global_generation;
 
 /*!
  \throws anonymous Throw
@@ -95,11 +92,11 @@ void search_init() { PROFILE(SEARCH_INIT);
     global_funit->type     = FUNIT_MODULE;
     global_funit->filename = strdup_safe( "NA" );
     global_funit->ts_unit  = 0;
-    (void)funit_link_add( global_funit, &funit_head, &funit_tail );
+    (void)funit_link_add( global_funit, &(db_list[curr_db]->funit_head), &(db_list[curr_db]->funit_tail) );
     curr_funit = global_funit;
 
     /* Add it in the first instance tree */
-    (void)inst_link_add( instance_create( global_funit, "$root", NULL ), &inst_head, &inst_tail );
+    (void)inst_link_add( instance_create( global_funit, "$root", NULL ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
   }
 
   /* Now create top-level module of design */
@@ -108,18 +105,18 @@ void search_init() { PROFILE(SEARCH_INIT);
   mod->name = strdup_safe( top_module );
 
   /* Initialize functional unit linked list */
-  (void)funit_link_add( mod, &funit_head, &funit_tail );
+  (void)funit_link_add( mod, &(db_list[curr_db]->funit_head), &(db_list[curr_db]->funit_tail) );
 
   /* Initialize instance tree */
   if( top_instance == NULL ) {
     top_instance = strdup_safe( top_module );
-    (void)inst_link_add( instance_create( mod, top_instance, NULL ), &inst_head, &inst_tail );
+    (void)inst_link_add( instance_create( mod, top_instance, NULL ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
     leading_hierarchies = (char**)realloc_safe( leading_hierarchies, (sizeof( char* ) * leading_hier_num), (sizeof( char* ) * (leading_hier_num + 1)) );
     leading_hierarchies[leading_hier_num] = strdup_safe( "*" );
     leading_hier_num++;
   } else {
     scope_extract_back( top_instance, dutname, lhier );
-    (void)inst_link_add( instance_create( mod, dutname, NULL ), &inst_head, &inst_tail );
+    (void)inst_link_add( instance_create( mod, dutname, NULL ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
     if( lhier[0] == '\0' ) {
       leading_hierarchies = (char**)realloc_safe( leading_hierarchies, (sizeof( char* ) * leading_hier_num), (sizeof( char* ) * (leading_hier_num + 1)) );
       leading_hierarchies[leading_hier_num] = strdup_safe( "*" );
@@ -300,6 +297,11 @@ void search_free_lists() { PROFILE(SEARCH_FREE_LISTS);
 
 /*
  $Log$
+ Revision 1.43  2008/03/17 22:02:32  phase1geo
+ Adding new check_mem script and adding output to perform memory checking during
+ regression runs.  Completed work on free_safe and added realloc_safe function
+ calls.  Regressions are pretty broke at the moment.  Checkpointing.
+
  Revision 1.42  2008/03/14 22:00:20  phase1geo
  Beginning to instrument code for exception handling verification.  Still have
  a ways to go before we have anything that is self-checking at this point, though.

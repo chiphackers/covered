@@ -81,13 +81,13 @@ const char* race_msgs[RACE_TYPE_NUM] = { "Sequential statement block contains bl
 
 static void race_calc_assignments( statement*, int );
 
-extern int         flag_race_check;
-extern char        user_msg[USER_MSG_LENGTH];
-extern funit_link* funit_head;
-extern inst_link*  inst_head;
-extern func_unit*  curr_funit;
-extern isuppl      info_suppl;
-extern int         stmt_conn_id;
+extern int          flag_race_check;
+extern char         user_msg[USER_MSG_LENGTH];
+extern db**         db_list;
+extern unsigned int curr_db;
+extern func_unit*   curr_funit;
+extern isuppl       info_suppl;
+extern int          stmt_conn_id;
 
 /*!
  \param reason      Numerical reason for why race condition was detected.
@@ -757,13 +757,13 @@ void race_check_modules() { PROFILE(RACE_CHECK_MODULES);
   int         ignore;    /* Placeholder */
   funit_inst* inst;      /* Instance of this functional unit */
 
-  modl = funit_head;
+  modl = db_list[curr_db]->funit_head;
 
   while( modl != NULL ) {
 
     /* Get instance */
     ignore = 0;
-    inst   = inst_link_find_by_funit( modl->funit, inst_head, &ignore );
+    inst   = inst_link_find_by_funit( modl->funit, db_list[curr_db]->inst_head, &ignore );
 
     /* Only perform race condition checking for modules that are instantiated and are not OVL assertions */
     if( (modl->funit->type == FUNIT_MODULE) &&
@@ -1070,11 +1070,11 @@ void race_report(
   fprintf( ofile, "Module                    Filename                 Number of Violations found\n" );
   fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
-  found = race_report_summary( ofile, funit_head );
+  found = race_report_summary( ofile, db_list[curr_db]->funit_head );
 
   if( verbose && found ) {
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
-    race_report_verbose( ofile, funit_head );
+    race_report_verbose( ofile, db_list[curr_db]->funit_head );
   }
 
   fprintf( ofile, "\n\n" );
@@ -1110,7 +1110,7 @@ bool race_collect_lines(
   race_blk*   curr_race = NULL;  /* Pointer to current race condition block */
   int         line_size = 20;    /* Current number of lines allocated in lines array */
 
-  if( (modl = funit_link_find( funit_name, funit_type, funit_head )) != NULL ) {
+  if( (modl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
 
     /* Begin by allocating some memory for the lines */
     *slines   = (int*)malloc_safe( sizeof( int ) * line_size );
@@ -1170,6 +1170,10 @@ void race_blk_delete_list(
 
 /*
  $Log$
+ Revision 1.79  2008/04/08 19:50:36  phase1geo
+ Removing LAST operator for PEDGE, NEDGE and AEDGE expression operations and
+ replacing them with the temporary vector solution.
+
  Revision 1.78  2008/03/17 22:02:32  phase1geo
  Adding new check_mem script and adding output to perform memory checking during
  regression runs.  Completed work on free_safe and added realloc_safe function
