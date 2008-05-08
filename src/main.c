@@ -168,7 +168,6 @@ int main( int argc, const char** argv ) {
                 (strncmp( "score",  argv[curr_arg], 5 ) != 0) &&
                 (strncmp( "merge",  argv[curr_arg], 5 ) != 0) &&
                 (strncmp( "report", argv[curr_arg], 6 ) != 0)) {
-              curr_arg++;
               profiler_set_filename( argv[curr_arg] );
             } else {
               curr_arg--;
@@ -247,6 +246,10 @@ int main( int argc, const char** argv ) {
 
 /*
  $Log$
+ Revision 1.34  2008/04/08 23:58:17  phase1geo
+ Fixing test mode code so that it works properly in regression and stand-alone
+ runs.
+
  Revision 1.33  2008/04/01 23:08:21  phase1geo
  More updates for error diagnostic cleanup.  Full regression still not
  passing (but is getting close).
