@@ -3902,7 +3902,7 @@ bool vector_op_add(
             vector_copy_val_and_sign_extend_ulong( right, i, rmsb_is_one, &rvall, &rvalh ); 
             vall[i] = lvall + rvall + carry;
             valh[i] = 0;
-            carry   = (((lvall & rvall & vall[i]) | ((lvall | rvall) & ~vall[i])) >> (UL_BITS - 1)) & 0x1;
+            carry   = ((lvall & rvall) | ((lvall | rvall) & ~vall[i])) >> (UL_BITS - 1);
           }
           retval = vector_set_coverage_and_assign_ulong( tgt, vall, valh, 0, (tgt->width - 1) );
         }
@@ -4037,7 +4037,7 @@ bool vector_op_subtract(
             rvall   = ~rvall;
             vall[i] = lvall + rvall + carry;
             valh[i] = 0;
-            carry   = (((lvall & rvall & vall[i]) | ((lvall | rvall) & ~vall[i])) >> (UL_BITS - 1)) & 0x1;
+            carry   = ((lvall & rvall) | ((lvall | rvall) & ~vall[i])) >> (UL_BITS - 1);
           }
           retval = vector_set_coverage_and_assign_ulong( tgt, vall, valh, 0, (tgt->width - 1) );
         }
@@ -4779,6 +4779,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.139  2008/05/30 05:38:33  phase1geo
+ Updating development tree with development branch.  Also attempting to fix
+ bug 1965927.
+
  Revision 1.138.2.92  2008/05/29 23:04:51  phase1geo
  Last set of submissions to get full regression passing.  Fixed a few more
  bugs in vector.c and reentrant.c.
