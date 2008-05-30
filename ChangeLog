@@ -1,3 +1,24 @@
+2008-05-30 15:04  phase1geo
+
+	Fixing bugs 1979698 and 1965927.  Updating regression files per
+	this change.  Full regression passes and we are ready to release
+	covered-20080530.
+
+2008-05-30 08:56  phase1geo
+
+	Tweaking the add/subtract functions to remove some unnecessary
+	logic in the calculation of the carry bit.  Full regressions still
+	pass.
+
+2008-05-30 01:25  phase1geo
+
+	Updating TODO and NEWS items for covered-20080530 development
+	release.
+
+2008-05-30 01:09  phase1geo
+
+	Getting build files ready for development release.
+
 2008-05-30 01:02  phase1geo
 
 	Fixing segmentation fault with GUI opening an initial CDD file.
