@@ -775,13 +775,14 @@ void report_read_cdd_and_ready(
 
   } else {
 
-    inst_link* instl = db_list[curr_db]->inst_head;
+    inst_link* instl;
 
     /* Read in database, performing instance merging */
     db_read( ifile, read_mode );
     bind_perform( TRUE, 0 );
 
     /* Gather instance statistics */
+    instl = db_list[curr_db]->inst_head;
     while( instl != NULL ) {
       report_gather_instance_stats( instl->inst );
       instl = instl->next;
@@ -1010,6 +1011,10 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.103  2008/05/30 05:38:32  phase1geo
+ Updating development tree with development branch.  Also attempting to fix
+ bug 1965927.
+
  Revision 1.102.2.2  2008/05/24 05:36:21  phase1geo
  Fixing bitwise coverage functionality and updating regression files.  Added
  new bitwise1 and err5.1 diagnostics to regression suite.  Removing output
